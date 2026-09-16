@@ -1,0 +1,11 @@
+/* Chicago: the Iziz shell in steel and lake colours */
+html,body{background:#0e1a2a;color:#dfe8f0;font-family:Helvetica,Arial,sans-serif}
+#title{letter-spacing:.3em;text-shadow:0 1px 6px #000}
+#seedtag{color:#9fb4c8}
+#ui button{background:rgba(10,24,40,.8);color:#dfe8f0;border-color:#7fa6c8;font-family:Helvetica,Arial,sans-serif}
+#ui button:active,#ui button[aria-pressed="true"],#ui button[aria-expanded="true"],#views button[aria-current="true"],#display button[aria-pressed="true"]{background:#7fa6c8;color:#08131f}
+#views,#display,#card,#legend{background:rgba(8,20,34,.92);border-color:#3f5a74;color:#dfe8f0;font-family:Helvetica,Arial,sans-serif}
+#views button,#display button{background:rgba(10,24,40,.8);color:#dfe8f0;border-color:#3f5a74;font-family:Helvetica,Arial,sans-serif}
+#views .sub,#display .lbl,#lexicon h3{color:#9fb4c8}
+#card h2{color:#f4f8fc}
+#hud,#timebar{font-family:Helvetica,Arial,sans-serif}

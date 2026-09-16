@@ -28,7 +28,9 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 PROBE = r"""<script>window.__probeErrs=[];addEventListener('error',e=>window.__probeErrs.push((e.message||String(e))+' @'+(e.filename||'').split('/').pop()+':'+e.lineno));</script>
 <script>(function(){const W=THREE.WebGLRenderer;let rd=null,sc=null,frames=[],last=0;
-THREE.WebGLRenderer=function(o){const r=new W(o);rd=r;const R0=r.render;r.render=function(scene,cam){sc=scene;const t=performance.now();if(last)frames.push(t-last);last=t;return R0.call(r,scene,cam);};return r;};
+let wantShot=false;
+THREE.WebGLRenderer=function(o){const r=new W(o);rd=r;const R0=r.render;r.render=function(scene,cam){sc=scene;const t=performance.now();if(last)frames.push(t-last);last=t;const out=R0.call(r,scene,cam);if(wantShot){wantShot=false;try{const u=r.domElement.toDataURL('image/jpeg',0.8);fetch('http://127.0.0.1:SHOTPORT/shot',{method:'POST',mode:'no-cors',body:u});}catch(e){}}return out;};return r;};
+if(SHOTPORT)setTimeout(()=>{wantShot=true;},WAIT-500);
 const rep=o=>{new Image().src='/__probe?'+encodeURIComponent(JSON.stringify(o));};
 const sha=async s=>{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');};
 const r2=x=>Math.round(x*100)/100;
@@ -72,6 +74,9 @@ def main():
     ap.add_argument("--port", type=int, default=8123)
     ap.add_argument("--json", help="write the full report here")
     ap.add_argument("--query", default="", help="extra URL query, e.g. city=iziz-b")
+    ap.add_argument("--hash", default="", help="URL hash, e.g. v=0,720,620,0,20,0&t=12")
+    ap.add_argument("--shot", help="save a JPEG of the rendered canvas here (taken just before the report)")
+    ap.add_argument("--size", default="1600,900", help="browser window size")
     ap.add_argument("--quiet", action="store_true")
     ap.add_argument("--expect", help="golden JSON (tests/golden/iziz-<seed>.json): exit 2 if the layout fingerprint differs")
     ap.add_argument("--save-golden", help="write the layout fingerprint to this golden JSON")
@@ -83,7 +88,8 @@ def main():
     if EXPOSE[0] in src:
         src = src.replace(EXPOSE[0], EXPOSE[1])
     cut = src.index("</script>") + len("</script>")
-    src = src[:cut] + PROBE.replace("WAIT", str(a.wait * 1000)) + src[cut:]
+    shot_port = a.port + 1 if a.shot else 0
+    src = src[:cut] + PROBE.replace("WAIT", str(a.wait * 1000)).replace("SHOTPORT", str(shot_port)) + src[cut:]
 
     ff, snap = firefox_cmd()
     home = os.path.expanduser("~")
@@ -110,11 +116,25 @@ def main():
     open(toml, "w").write("\n".join(lines))
 
     subprocess.run([sys.executable, os.path.join(ROOT, "tools", "build-page.py")], stdout=subprocess.DEVNULL)   # build.js current
+    shot_srv = None
+    if a.shot:
+        import http.server, threading, base64
+        shot_path = os.path.abspath(a.shot)
+        class ShotHandler(http.server.BaseHTTPRequestHandler):
+            def do_POST(self):
+                body = self.rfile.read(int(self.headers.get("Content-Length", "0"))).decode()
+                if body.startswith("data:image/jpeg;base64,"):
+                    open(shot_path, "wb").write(base64.b64decode(body.split(",", 1)[1]))
+                self.send_response(204); self.end_headers()
+            def log_message(self, *args):
+                pass
+        shot_srv = http.server.HTTPServer(("127.0.0.1", shot_port), ShotHandler)
+        threading.Thread(target=shot_srv.serve_forever, daemon=True).start()
     log = open(os.path.join(work, "server.log"), "w+")
     srv = subprocess.Popen([sys.executable, os.path.join(ROOT, "server.py"), "--config", toml], stderr=log, stdout=subprocess.DEVNULL)
     time.sleep(0.8)
-    url = f"http://127.0.0.1:{a.port}/?debug" + (f"&seed={a.seed}" if a.seed else "") + (f"&{a.query}" if a.query else "")
-    fx = subprocess.Popen([ff, "--headless", "--no-remote", "--window-size=1600,900", "--profile", profile, url], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    url = f"http://127.0.0.1:{a.port}/?debug" + (f"&seed={a.seed}" if a.seed else "") + (f"&{a.query}" if a.query else "") + (f"#{a.hash}" if a.hash else "")
+    fx = subprocess.Popen([ff, "--headless", "--no-remote", f"--window-size={a.size}", "--profile", profile, url], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     report = None
     deadline = time.time() + a.wait + 60
     try:
@@ -127,8 +147,11 @@ def main():
                     report = json.loads(urllib.parse.unquote(m.group(1)))
                     break
             if report:
+                time.sleep(1.5)   # let the screenshot POST land
                 break
     finally:
+        if shot_srv:
+            shot_srv.shutdown()
         pid = subprocess.run(["pgrep", "-f", profile], capture_output=True, text=True).stdout.split()
         for p in pid:
             kill_firefox(p, snap)
@@ -140,6 +163,8 @@ def main():
 
     if not report:
         sys.exit("no report from the page (did it load? try --wait 60)")
+    if a.shot:
+        print("screenshot:", a.shot if os.path.exists(a.shot) else "NOT saved")
     if a.json:
         json.dump(report, open(a.json, "w"), indent=1)
     if not a.quiet:

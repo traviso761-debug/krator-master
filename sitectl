@@ -70,8 +70,8 @@ case "$cmd" in
   test)     # 1. pure modules under gjs; 2. headless Firefox: the page must build without errors and lay out the same city as the golden files
             rc=0; if command -v gjs >/dev/null; then gjs -m "$DIR/tests/run.js" || rc=1; else echo "gjs not installed: skipping module tests"; fi
             check >/dev/null || exit 1
-            for g in "$DIR"/tests/golden/iziz-*.json; do seed="${g##*-}"; seed="${seed%.json}"
-              echo "== seed $seed"; python3 "$DIR/tools/probe.py" --seed "$seed" --wait "${1:-12}" --port $((8400 + seed % 100)) --expect "$g" | grep -E '^(errors|layout|LAYOUT|loadMs)' || rc=1
+            for g in "$DIR"/tests/golden/*-*.json; do f="${g##*/}"; f="${f%.json}"; page="${f%-*}"; seed="${f##*-}"
+              echo "== $page seed $seed"; python3 "$DIR/tools/probe.py" --page "$DIR/$page.html" --seed "$seed" --wait "${1:-12}" --port $((8400 + seed % 100)) --expect "$g" | grep -E '^(errors|layout|LAYOUT|loadMs)' || rc=1
             done; exit $rc ;;
   probe)    python3 "$DIR/tools/probe.py" "$@" ;;
   help|-h|--help)

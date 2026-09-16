@@ -37,6 +37,12 @@ file = "painting.jpg"
 title = "Iziz painting"
 
 [[route]]
+path = "/chicago"
+aliases = ["/chicago.html"]
+file = "chicago.html"
+title = "Chicago: massing model"
+
+[[route]]
 path = "/tongue"
 aliases = ["/izani-tongue"]
 file = "The-Izani-Tongue_2.html"

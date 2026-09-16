@@ -1,0 +1,507 @@
+{
+  "name": "Chicago",
+  "note": "Parameters for chicago.html. Units are metres; x runs east, z runs south; (0,0) is State & Madison. Strings are expressions over the values above them (see data/cities/iziz.json). Positions are approximate: a massing model, not a survey.",
+  "WORLD": 3800,
+  "defaultSeed": 1871,
+  "grid": {
+    "pitchX": 130,
+    "pitchZ": 130,
+    "street": 18,
+    "_": "block pitch east–west and north–south, and the plain street width"
+  },
+  "major": {
+    "_": "wider streets: [axis, coordinate, width, name]; axis x = a north–south street at that x, z = an east–west street at that z",
+    "streets": [
+      [
+        "x",
+        0,
+        26,
+        "State St"
+      ],
+      [
+        "x",
+        260,
+        40,
+        "Michigan Ave"
+      ],
+      [
+        "x",
+        -390,
+        26,
+        "LaSalle St"
+      ],
+      [
+        "x",
+        -780,
+        34,
+        "Wacker Dr"
+      ],
+      [
+        "x",
+        520,
+        28,
+        "Columbus Dr"
+      ],
+      [
+        "x",
+        780,
+        50,
+        "Lake Shore Dr"
+      ],
+      [
+        "z",
+        0,
+        22,
+        "Madison St"
+      ],
+      [
+        "z",
+        -520,
+        24,
+        "Lake St"
+      ],
+      [
+        "z",
+        390,
+        40,
+        "Ida B. Wells Dr"
+      ],
+      [
+        "z",
+        -650,
+        30,
+        "Wacker Dr"
+      ],
+      [
+        "z",
+        260,
+        22,
+        "Jackson Blvd"
+      ],
+      [
+        "z",
+        -1040,
+        24,
+        "Chicago Ave"
+      ],
+      [
+        "z",
+        1040,
+        24,
+        "Roosevelt Rd"
+      ]
+    ]
+  },
+  "shore": {
+    "x": 900,
+    "_": "the lakefront runs north–south here; the lake is east of it"
+  },
+  "river": {
+    "main": {
+      "z": -690,
+      "xEast": 900,
+      "xWest": -800,
+      "width": 60
+    },
+    "north": {
+      "x": -800,
+      "zEnd": -1900,
+      "width": 55
+    },
+    "south": {
+      "x": -800,
+      "zEnd": 1900,
+      "width": 55
+    },
+    "_": "the main stem leaves the lake and forks at Wolf Point"
+  },
+  "parks": [
+    {
+      "name": "Grant Park",
+      "x0": 290,
+      "x1": 880,
+      "z0": -300,
+      "z1": 720
+    },
+    {
+      "name": "Millennium Park",
+      "x0": 290,
+      "x1": 560,
+      "z0": -470,
+      "z1": -300
+    },
+    {
+      "name": "Museum Campus",
+      "x0": 600,
+      "x1": 880,
+      "z0": 720,
+      "z1": 1400
+    },
+    {
+      "name": "Lake Shore Park",
+      "x0": 700,
+      "x1": 880,
+      "z0": -1250,
+      "z1": -1050
+    },
+    {
+      "name": "Wolf Point",
+      "x0": -880,
+      "x1": -760,
+      "z0": -760,
+      "z1": -720
+    }
+  ],
+  "beach": {
+    "x0": 880,
+    "z0": -1900,
+    "z1": -1100,
+    "_": "Oak Street and Ohio Street beaches, north of Navy Pier"
+  },
+  "pier": {
+    "x": 900,
+    "z": -980,
+    "length": 1000,
+    "width": 110,
+    "wheelX": 1330,
+    "wheelR": 60
+  },
+  "districts": {
+    "_": "[name, hex colour, base height, tallest], picked by area below",
+    "loop": [
+      "The Loop",
+      "#5c6a80",
+      60,
+      220
+    ],
+    "rivernorth": [
+      "River North",
+      "#8a5a48",
+      40,
+      150
+    ],
+    "streeterville": [
+      "Streeterville",
+      "#6f7f92",
+      60,
+      240
+    ],
+    "westloop": [
+      "West Loop",
+      "#7a6a5a",
+      30,
+      120
+    ],
+    "southloop": [
+      "South Loop",
+      "#8a7a68",
+      20,
+      70
+    ],
+    "goldcoast": [
+      "Gold Coast",
+      "#9a8a78",
+      40,
+      190
+    ],
+    "outer": [
+      "Neighbourhoods",
+      "#8a8478",
+      8,
+      24
+    ]
+  },
+  "landmarks": [
+    {
+      "name": "Willis Tower",
+      "kind": "bundle",
+      "x": -720,
+      "z": 340,
+      "h": 442,
+      "w": 68,
+      "info": "233 S Wacker Dr · 1974 · 442 m, 108 floors. Nine bundled tubes, stepping back at floors 50, 66 and 90."
+    },
+    {
+      "name": "875 North Michigan",
+      "kind": "taper",
+      "x": 260,
+      "z": -1560,
+      "h": 344,
+      "w": 50,
+      "d": 80,
+      "info": "The John Hancock Center · 1969 · 344 m (457 m to the antennas). A tapered tube with X-bracing on the outside."
+    },
+    {
+      "name": "Trump International Hotel & Tower",
+      "kind": "setbacks",
+      "x": 130,
+      "z": -770,
+      "h": 357,
+      "w": 70,
+      "d": 45,
+      "spire": 66,
+      "info": "401 N Wabash Ave · 2009 · 357 m to the roof, 423 m with the spire. Three setbacks answer the heights of its neighbours."
+    },
+    {
+      "name": "Aon Center",
+      "kind": "box",
+      "x": 400,
+      "z": -390,
+      "h": 346,
+      "w": 60,
+      "d": 60,
+      "color": "#e8e4dc",
+      "info": "200 E Randolph St · 1973 · 346 m. A plain white shaft, once clad in marble."
+    },
+    {
+      "name": "St. Regis Chicago",
+      "kind": "stacked",
+      "x": 640,
+      "z": -600,
+      "h": 363,
+      "w": 40,
+      "d": 70,
+      "info": "363 E Wacker Dr · 2020 · 363 m. Three stems of stacked frusta, the tallest building in the world designed by a woman (Jeanne Gang)."
+    },
+    {
+      "name": "Two Prudential Plaza",
+      "kind": "crown",
+      "x": 330,
+      "z": -330,
+      "h": 303,
+      "w": 45,
+      "d": 45,
+      "info": "180 N Stetson Ave · 1990 · 303 m. Chevron setbacks and a spire."
+    },
+    {
+      "name": "Marina City",
+      "kind": "twin",
+      "x": -30,
+      "z": -770,
+      "h": 179,
+      "w": 34,
+      "gap": 44,
+      "info": "300 N State St · 1964 · 179 m. Two 'corn cob' towers: nineteen floors of spiral parking, then apartments with petal balconies."
+    },
+    {
+      "name": "Merchandise Mart",
+      "kind": "slab",
+      "x": -470,
+      "z": -790,
+      "h": 100,
+      "w": 230,
+      "d": 120,
+      "tower": 30,
+      "color": "#9a8470",
+      "info": "222 Merchandise Mart Plaza · 1930 · 100 m. Four million square feet, once the largest building in the world."
+    },
+    {
+      "name": "Chicago Board of Trade",
+      "kind": "deco",
+      "x": -390,
+      "z": 330,
+      "h": 184,
+      "w": 70,
+      "d": 50,
+      "color": "#b8a890",
+      "info": "141 W Jackson Blvd · 1930 · 184 m. Art Deco, closing the view down LaSalle Street; Ceres stands on top."
+    },
+    {
+      "name": "311 South Wacker",
+      "kind": "crowncyl",
+      "x": -740,
+      "z": 440,
+      "h": 293,
+      "w": 55,
+      "d": 55,
+      "color": "#c9b8a0",
+      "info": "311 S Wacker Dr · 1990 · 293 m. The lit glass crown is 32 m tall."
+    },
+    {
+      "name": "Tribune Tower",
+      "kind": "gothic",
+      "x": 265,
+      "z": -840,
+      "h": 141,
+      "w": 40,
+      "d": 40,
+      "color": "#c8c0b0",
+      "info": "435 N Michigan Ave · 1925 · 141 m. Neo-Gothic; stones from famous buildings are set into its base."
+    },
+    {
+      "name": "Wrigley Building",
+      "kind": "clocktower",
+      "x": 215,
+      "z": -770,
+      "h": 130,
+      "w": 45,
+      "d": 70,
+      "color": "#f0ece0",
+      "info": "400 N Michigan Ave · 1924 · 130 m. White terra cotta, floodlit at night."
+    },
+    {
+      "name": "Crain Communications Building",
+      "kind": "diamond",
+      "x": 262,
+      "z": -200,
+      "h": 177,
+      "w": 40,
+      "d": 40,
+      "info": "150 N Michigan Ave · 1984 · 177 m. The diamond-shaped top faces the park."
+    },
+    {
+      "name": "Lake Point Tower",
+      "kind": "ypoint",
+      "x": 930,
+      "z": -880,
+      "h": 197,
+      "w": 60,
+      "info": "505 N Lake Shore Dr · 1968 · 197 m. Three curved wings of bronze glass, the only skyscraper east of Lake Shore Drive."
+    },
+    {
+      "name": "Water Tower",
+      "kind": "watertower",
+      "x": 262,
+      "z": -1480,
+      "h": 47,
+      "w": 12,
+      "color": "#d8d0c0",
+      "info": "806 N Michigan Ave · 1869 · 47 m. Limestone; one of the few buildings to survive the Great Fire of 1871."
+    },
+    {
+      "name": "Cloud Gate",
+      "kind": "bean",
+      "x": 390,
+      "z": -380,
+      "h": 10,
+      "w": 20,
+      "d": 13,
+      "info": "Millennium Park · 2006 · 'The Bean'. 168 welded stainless-steel plates, 100 tonnes."
+    },
+    {
+      "name": "Buckingham Fountain",
+      "kind": "fountain",
+      "x": 620,
+      "z": 200,
+      "h": 8,
+      "w": 85,
+      "info": "Grant Park · 1927. One of the largest fountains in the world; the centre jet reaches 46 m on the hour."
+    },
+    {
+      "name": "Art Institute of Chicago",
+      "kind": "lowrise",
+      "x": 300,
+      "z": 90,
+      "h": 24,
+      "w": 70,
+      "d": 130,
+      "color": "#c8bca8",
+      "info": "111 S Michigan Ave · 1893. Beaux-Arts; the bronze lions guard the steps."
+    },
+    {
+      "name": "Union Station",
+      "kind": "lowrise",
+      "x": -900,
+      "z": 180,
+      "h": 30,
+      "w": 110,
+      "d": 150,
+      "color": "#d0c8b8",
+      "info": "225 S Canal St · 1925. The Great Hall's skylight is 35 m up."
+    },
+    {
+      "name": "Soldier Field",
+      "kind": "stadium",
+      "x": 760,
+      "z": 1180,
+      "h": 40,
+      "w": 160,
+      "d": 260,
+      "info": "1410 Museum Campus Dr · 1924, rebuilt 2003. The colonnades survive; the bowl inside does not match them."
+    },
+    {
+      "name": "Navy Pier",
+      "kind": "pier",
+      "x": 900,
+      "z": -980,
+      "h": 14,
+      "info": "600 E Grand Ave · 1916. A kilometre into the lake; the Centennial Wheel is 60 m tall."
+    }
+  ],
+  "el": {
+    "_": "the Loop elevated: a rectangle of track at 8 m, trains run both ways",
+    "north": -520,
+    "south": 390,
+    "east": 130,
+    "west": -520,
+    "height": 8,
+    "trains": 6,
+    "cars": 6
+  },
+  "views": {
+    "Skyline from the lake": [
+      1500,
+      120,
+      200,
+      200,
+      120,
+      -100
+    ],
+    "The Loop": [
+      -200,
+      260,
+      760,
+      -100,
+      40,
+      0
+    ],
+    "Riverwalk": [
+      -100,
+      12,
+      -620,
+      -600,
+      30,
+      -690
+    ],
+    "Millennium Park": [
+      520,
+      40,
+      -220,
+      380,
+      10,
+      -380
+    ],
+    "Navy Pier": [
+      1700,
+      90,
+      -780,
+      1100,
+      20,
+      -980
+    ],
+    "Willis Tower": [
+      -900,
+      300,
+      700,
+      -720,
+      260,
+      340
+    ],
+    "Michigan Avenue": [
+      270,
+      30,
+      160,
+      262,
+      40,
+      -800
+    ],
+    "Overview": [
+      400,
+      1400,
+      1500,
+      0,
+      0,
+      0
+    ]
+  }
+}
