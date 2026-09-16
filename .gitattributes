@@ -1,0 +1,2 @@
+core/materials/**/*.png filter=lfs diff=lfs merge=lfs -text
+core/materials/**/*.jpg filter=lfs diff=lfs merge=lfs -text

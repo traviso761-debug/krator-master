@@ -1,0 +1,53 @@
+# City of Iziz site configuration. See README.md.
+#
+# Check:  python3 server.py --check
+# Apply:  systemctl --user reload iziz     (host/port changes need: systemctl --user restart iziz)
+#
+# Only the paths listed here are served. Everything else returns 404.
+# Relative file and dir paths are resolved from this file's folder.
+
+[server]
+host = "0.0.0.0"        # "127.0.0.1" = this machine only
+port = 8000
+log_requests = true     # one journal line per request
+health = "/healthz"     # returns "ok"; delete the line to disable
+
+# Sent with every response. A route's or mount's own [headers] override these.
+[server.headers]
+"Cache-Control" = "no-cache"          # browsers re-check, so edits show on reload
+"X-Content-Type-Options" = "nosniff"
+
+# ---- Pages --------------------------------------------------------------
+# path     canonical URL
+# aliases  other URLs for the same file (optional)
+# file     file to serve
+# title    label for --check and the docs (optional)
+# enabled  false hides the page without deleting the entry (optional)
+# headers  extra response headers for this page (optional table)
+
+[[route]]
+path = "/"
+aliases = ["/index.html", "/iziz", "/iziz.html"]
+file = "iziz.html"
+title = "Iziz: massing model"
+
+[[route]]
+path = "/image.png"     # the painting; iziz.html hangs it as framed prints in the city
+file = "image.png"
+title = "Iziz painting"
+
+[[route]]
+path = "/tongue"
+aliases = ["/izani-tongue"]
+file = "The-Izani-Tongue_2.html"
+title = "The Izani Tongue"
+
+# ---- Folders ------------------------------------------------------------
+# Serve every file under a folder at a URL prefix. No directory listings,
+# and requests cannot reach outside the folder.
+#
+# [[mount]]
+# prefix = "/assets"
+# dir = "assets"
+# [mount.headers]
+# "Cache-Control" = "max-age=3600"
