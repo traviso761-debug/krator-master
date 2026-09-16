@@ -529,7 +529,8 @@ stroke(c,DOCKROAD.pts,9,'#5e5a52');stroke(c,DOCKROAD.pts,7,'#77736b');   // the 
  {const B=riverBridge();stroke(c,[B.e0,B.e1],2.4,'#a08a62');}}
 // grass verges: bare earth right beside a street turns green in patches (colour canvas only; streets and plazas stay as they are)
 const VERGE=new Uint8Array(CS*CS);
-{const img=c.getImageData(0,0,CS,CS),d=img.data,isRoad=i=>{const r=d[i],g=d[i+1],b=d[i+2];return Math.abs(r-g)<14&&Math.abs(g-b)<14&&r>55&&r<150;};
+const GROUND_IMG=c.getImageData(0,0,CS,CS);   // the painted ground, read back once here and reused by the jungle and great-tree passes
+{const img=GROUND_IMG,d=img.data,isRoad=i=>{const r=d[i],g=d[i+1],b=d[i+2];return Math.abs(r-g)<14&&Math.abs(g-b)<14&&r>55&&r<150;};
  const earth=i=>{const r=d[i],g=d[i+1],b=d[i+2];return r<150&&g<r*0.75&&g>=b-4&&!(r>150&&g>110&&r-b>55);};   // only the dark earth of the city ground, never sand, plazas or streets
  const RAD=[];for(let dy=-3;dy<=3;dy++)for(let dx=-3;dx<=3;dx++)if(dx*dx+dy*dy<=9&&(dx||dy))RAD.push(dy*CS+dx);
  const lo=Math.floor(px(-280)),hi=Math.ceil(px(280));
@@ -887,6 +888,8 @@ function block(x,y,z,w,h,d,ry,cc,opts){
     else Rb(x,y+h,z,0.4,rr(4,9),0.4,ry,darker);}
 }
 
+// the big static sets: cut into sectors after the build so the far side of the city can be culled (see the culling stage); cat keeps their wireframe colour
+for(const im of [boxes,frusts,domes,lights,tyrells,wedges,pents,hepts,gables,cornices,roofBits,strips,vigas,awnings,neons]){im.userData.sector=true;im.userData.cat='city';}
 // ---- phase 1: decide every lot (kind, footprint, params) ----
 const lots=[];
 const BARRACKS=[0.35,1.15,3.4,4.35].map(a=>({x:PALACE.x+63*Math.cos(a),z:PALACE.z+63*Math.sin(a),a:a,rad:22,fx:18,fz:12,ry:-(a+Math.PI/2),fixed:true}));
@@ -1783,6 +1786,7 @@ const leafM1=new THREE.MeshLambertMaterial({color:0xffffff});leafM1.userData.tex
 const leafM2=new THREE.MeshLambertMaterial({color:0xffffff});leafM2.userData.tex='canopy';leafM2.userData.lod=true;const blobs=new THREE.InstancedMesh(blobG,leafM2,9000);
 const leafM3=new THREE.MeshLambertMaterial({color:0xffffff});leafM3.userData.tex='leaf';leafM3.userData.lod=true;const fronds=new THREE.InstancedMesh(frondG,leafM3,16000);blobs.userData.noShadow=fronds.userData.noShadow=true;   // canopies outside the walls: too many to shadow, and mostly beyond the shadow box
 const glows=new THREE.InstancedMesh(frondG,new THREE.MeshBasicMaterial({color:0xffffff}),2500);
+for(const im of [trunks,tiers,blobs,fronds,glows])im.userData.sector=true;
 let ntr=0,nti=0,nbl=0,nfr=0,ngl=0;
 const GREENS=[0x2e7d3a,0x3c9a4a,0x1f5c2a,0x5cb85c,0x2a6f5a,0x7fc95a,0x3f8f5f,0x1c4a30,0x4fb37a,0x2f8a6e];
 const TEALS=[0x2a8f7a,0x3aa88a,0x1f6f60,0x56b89a];
@@ -1858,7 +1862,7 @@ float izD=length(izTo);izLodF=smoothstep(540.0,600.0,izD);if(izD<535.0)transform
 await stage('life');
 section('life',()=>{
 // ---------- townsfolk: walk the streets and plazas, duck into doors, come back out; shuttles fly the spaceport–palace run ----------
-const cData=c.getImageData(0,0,CS,CS).data;
+const cData=GROUND_IMG.data;
 function walkable(x,z){const ix=Math.floor(px(x)),iz=Math.floor(px(z));if(ix<1||iz<1||ix>=CS-1||iz>=CS-1)return false;const i=(iz*CS+ix)*4;const r=cData[i],gg=cData[i+1],b=cData[i+2];
   const gray=Math.abs(r-gg)<14&&Math.abs(gg-b)<14&&r>55&&r<150,sand=r>150&&gg>110&&r-b>55;if(!(gray||sand))return false;const ex=(x-ARENA.x)/44,ez=(z-ARENA.z)/36;if(ex*ex+ez*ez<1)return false;const p=polar(x,z);return p.r<wallR(p.t)+190;}
 const NP=340,ag=[];
@@ -2495,7 +2499,7 @@ for(let j=0;j<N&&n<24000;j++)for(let i=0;i<N;i++){const x=O+(i+0.5)*G,z=O+(j+0.5
   const t=Math.ceil((hmax+0.02)/RS)*RS,b=hmin-0.6;top[j*N+i]=t;
   const v=hash3(Math.round(t/RS),i>>3,j>>3);put(steps,n++,x,b,z,G,t-b,G,0,(Math.round(219+25*v)<<16)|(Math.round(204+20*v)<<8)|Math.round(173+15*v));
   if(n>=24000)break;}
-steps.count=n;steps.userData.noShadow=true;steps.instanceMatrix.needsUpdate=true;if(steps.instanceColor)steps.instanceColor.needsUpdate=true;if(n)scene.add(steps);
+steps.count=n;steps.userData.noShadow=true;steps.userData.sector=true;steps.instanceMatrix.needsUpdate=true;if(steps.instanceColor)steps.instanceColor.needsUpdate=true;if(n)scene.add(steps);
 STAIRS.top=top;
 // grass tufts on the painted verges, clear of buildings
 const bladeG=new THREE.ConeGeometry(0.06,1,3);bladeG.translate(0,0.5,0);
@@ -2505,7 +2509,7 @@ const R=mkRng(3131);
 for(let k=0;k<60000&&nt<9000;k++){const x=R()*560-280,z=R()*560-280;if(!vergeAt(x,z)||inLot(x,z,0.2,false)||W(x,z))continue;
   const y=meshH(x,z)-0.05,m=3+Math.floor(R()*5),cc=GR[Math.floor(R()*GR.length)];
   for(let q=0;q<m&&nt<9000;q++){const a=R()*6.283,r=R()*0.35;putE(tufts,nt++,x+Math.cos(a)*r,y,z+Math.sin(a)*r,1,0.3+R()*0.5,1,(R()-0.5)*0.5,R()*6.283,(R()-0.5)*0.5,cc);}}
-tufts.count=nt;tufts.instanceMatrix.needsUpdate=true;if(tufts.instanceColor)tufts.instanceColor.needsUpdate=true;tufts.userData.noShadow=true;tufts.userData.cat='veg';if(nt)scene.add(tufts);
+tufts.count=nt;tufts.instanceMatrix.needsUpdate=true;if(tufts.instanceColor)tufts.instanceColor.needsUpdate=true;tufts.userData.noShadow=true;tufts.userData.sector=true;tufts.userData.cat='veg';if(nt)scene.add(tufts);
 let vp=0;for(let k=0;k<VERGE.length;k++)vp+=VERGE[k];
 window._stairs={steps:n,tufts:nt,vergePixels:vp};
 });
@@ -2797,7 +2801,7 @@ const KINDS=[
   {name:'a weeping tree',iz:'vaeliz',izg:'"water-tree": it grows best by pools and wells',h:[9,12],r:[1.2,1.6],cr:[9,12],flat:0.6,cols:[0x5c9a44,0x6aa84a,0x78b050],moss:20},
   {name:'a blossom tree',iz:'shaeliz',izg:'"light-tree", for its pale flowers',h:[9,13],r:[1.1,1.6],cr:[9,12],flat:0.6,cols:[0xe8a0c0,0xf4d0e0,0xd880a8,0x4f8a3a],moss:0}];
 const LANDMARKS=[[PALACE.x,PALACE.z,70],[TEMPLE.x,TEMPLE.z,52],[ARENA.x,ARENA.z,64],[NEEDLE.x,NEEDLE.z,16],[25,40,22],[AMPH.x,AMPH.z,27],[0,0,31]];
-const img=c.getImageData(0,0,CS,CS).data,colAt=(x,z)=>{const i=(Math.floor(px(z))*CS+Math.floor(px(x)))*4;return [img[i],img[i+1],img[i+2]];};
+const img=GROUND_IMG.data,colAt=(x,z)=>{const i=(Math.floor(px(z))*CS+Math.floor(px(x)))*4;return [img[i],img[i+1],img[i+2]];};
 const onBoulevard=(x,z,w)=>GATES.some(g=>{const al=x*Math.cos(g)+z*Math.sin(g),pe=Math.abs(-x*Math.sin(g)+z*Math.cos(g)),Rg=wallR(g);return al>15&&al<Rg+5&&pe<w;});
 const clearOf=(x,z,r)=>{if(blocked(x,z))return false;for(let k=0;k<10;k++){const a=k/10*6.283;if(blocked(x+Math.cos(a)*r,z+Math.sin(a)*r))return false;}return true;};
 // the widest canopy that clears every building taller than its underside
@@ -3538,8 +3542,37 @@ section('batch',()=>{
     scene.add(im);removed+=list.length;made++;}
   window._batch={meshesBefore:before,batched:removed,instancedMeshesAdded:made};
 });
-// r128 culls an InstancedMesh by its base geometry at the origin, not by where the instances are: never cull them
-scene.traverse(o=>{if(o.isInstancedMesh)o.frustumCulled=false;});
+// ---------- culling: r128 would cull an InstancedMesh by its base geometry at the origin, so each static set gets bounds computed from its instances; the biggest sets are cut into sectors so the far side of the city is skipped; unused instance slots are freed ----------
+await stage('cull');
+section('cull',()=>{
+  const isDyn=o=>{for(let p=o;p;p=p.parent)if(p.userData.dynamic||p.userData.life)return true;return false;};
+  const ident=new THREE.Matrix4(),tm=new THREE.Matrix4(),v=new THREE.Vector3(),c=new THREE.Vector3();
+  const geoUse=new Map();scene.traverse(o=>{if(o.geometry)geoUse.set(o.geometry,(geoUse.get(o.geometry)||0)+1);});
+  const sliceAttr=(a,idx)=>{const it=a.itemSize,arr=new a.array.constructor(idx.length*it);for(let d=0;d<idx.length;d++){const s0=idx[d]*it;for(let k=0;k<it;k++)arr[d*it+k]=a.array[s0+k];}const b=new THREE.InstancedBufferAttribute(arr,it);b.normalized=a.normalized;return b;};
+  const shareGeo=g=>{const g2=new THREE.BufferGeometry();g2.setIndex(g.index);for(const k in g.attributes)g2.setAttribute(k,g.attributes[k]);g2.userData.edgeOf=g.userData.edgeOf||g.uuid;return g2;};   // same vertex buffers, its own bounds
+  const part=(o,idx)=>{const g=shareGeo(o.geometry);for(const k in o.geometry.attributes){const a=o.geometry.attributes[k];if(a.isInstancedBufferAttribute)g.setAttribute(k,sliceAttr(a,idx));}
+    const p=new THREE.InstancedMesh(g,o.material,idx.length);p.instanceMatrix=sliceAttr(o.instanceMatrix,idx);if(o.instanceColor)p.instanceColor=sliceAttr(o.instanceColor,idx);
+    p.castShadow=o.castShadow;p.receiveShadow=o.receiveShadow;p.renderOrder=o.renderOrder;p.layers.mask=o.layers.mask;p.userData=Object.assign({},o.userData,{sector:false,partOf:o.uuid});return p;};
+  let split=0,trimmed=0,freed=0,culled=0;
+  const list=[];scene.traverse(o=>{if(o.isInstancedMesh&&!o.userData.isWire)list.push(o);});
+  for(const o of list){const dyn=isDyn(o);
+    if(!dyn&&o.userData.sector&&o.count>=1500&&o.matrixWorld.equals(ident)){const K=8,bins=Array.from({length:K},()=>[]),M=o.instanceMatrix.array;
+      for(let i=0;i<o.count;i++)bins[Math.min(K-1,Math.floor((Math.atan2(M[i*16+14],M[i*16+12])+Math.PI)/(2*Math.PI)*K))].push(i);
+      for(const idx of bins)if(idx.length)scene.add(part(o,idx));o.parent.remove(o);split++;continue;}
+    if(!dyn&&o.count>0&&o.instanceMatrix.count>=500&&o.count<o.instanceMatrix.count*0.9){const idx=Array.from({length:o.count},(_,i)=>i);freed+=(o.instanceMatrix.count-o.count)*64;
+      o.instanceMatrix=sliceAttr(o.instanceMatrix,idx);if(o.instanceColor)o.instanceColor=sliceAttr(o.instanceColor,idx);
+      if(geoUse.get(o.geometry)===1)for(const k in o.geometry.attributes){const a=o.geometry.attributes[k];if(a.isInstancedBufferAttribute&&a.count>o.count)o.geometry.setAttribute(k,sliceAttr(a,idx));}
+      trimmed++;}}
+  scene.traverse(o=>{if(!o.isInstancedMesh||o.userData.isWire)return;
+    if(isDyn(o)||o.count===0||!o.matrixWorld.equals(ident)){o.frustumCulled=false;return;}   // moving sets keep their instances anywhere
+    const g=o.geometry;if(!g.boundingSphere)g.computeBoundingSphere();const r0=g.boundingSphere.radius,c0=g.boundingSphere.center,M=o.instanceMatrix.array,n=o.count,cs=new Float32Array(n*4);
+    c.set(0,0,0);for(let i=0;i<n;i++){tm.fromArray(M,i*16);v.copy(c0).applyMatrix4(tm);const s=Math.max(Math.hypot(M[i*16],M[i*16+1],M[i*16+2]),Math.hypot(M[i*16+4],M[i*16+5],M[i*16+6]),Math.hypot(M[i*16+8],M[i*16+9],M[i*16+10]));cs[i*4]=v.x;cs[i*4+1]=v.y;cs[i*4+2]=v.z;cs[i*4+3]=r0*s;c.add(v);}
+    c.multiplyScalar(1/n);let rad=0;for(let i=0;i<n;i++)rad=Math.max(rad,Math.hypot(cs[i*4]-c.x,cs[i*4+1]-c.y,cs[i*4+2]-c.z)+cs[i*4+3]);
+    const bs=new THREE.Sphere(c.clone(),rad*1.02);
+    if(geoUse.get(g)===1&&!o.userData.partOf)g.boundingSphere=bs;else{const g2=shareGeo(g);g2.boundingSphere=bs;o.geometry=g2;}
+    o.frustumCulled=true;culled++;});
+  window._cull={split,trimmed,freedKB:Math.round(freed/1024),culled};
+});
 // ---------- sky: streaked deep blue, red sun, green moon, jungle horizon ----------
 function skyTexture(){
   const w=1024,h=512,cv=document.createElement('canvas');cv.width=w;cv.height=h;const g=cv.getContext('2d');
@@ -3637,10 +3670,10 @@ function isLifeObj(o){for(let q=o;q;q=q.parent)if(q.userData.life)return true;re
 function catOf(o){for(let q=o;q;q=q.parent)if(q.userData.cat)return q.userData.cat;if(isLifeObj(o))return 'life';if(CITY_IMS.has(o))return 'city';
   const m=o.material;if(m){if(m.isMeshBasicMaterial)return 'light';const t=m.userData&&m.userData.tex;if(t==='leaf'||t==='canopy'||t==='bark')return 'veg';}return 'structure';}
 const edgeCache=new Map();
-function edgeGeo(g){if(edgeCache.has(g.uuid))return edgeCache.get(g.uuid);const eg=new THREE.EdgesGeometry(g,20),a=eg.attributes.position.array;let e=null;
+function edgeGeo(g){const key=g.userData.edgeOf||g.uuid;if(edgeCache.has(key))return edgeCache.get(key);const eg=new THREE.EdgesGeometry(g,20),a=eg.attributes.position.array;let e=null;
   if(a.length){const out=new Float32Array(a.length/6*9);for(let i=0,j=0;i<a.length;i+=6,j+=9){out[j]=a[i];out[j+1]=a[i+1];out[j+2]=a[i+2];out[j+3]=a[i+3];out[j+4]=a[i+4];out[j+5]=a[i+5];out[j+6]=a[i+3];out[j+7]=a[i+4];out[j+8]=a[i+5];}
     e=new THREE.BufferGeometry();e.setAttribute('position',new THREE.BufferAttribute(out,3));}   // each edge as a degenerate triangle, so wireframe mode draws just the edge
-  eg.dispose();edgeCache.set(g.uuid,e);return e;}
+  eg.dispose();edgeCache.set(key,e);return e;}
 function terrainLattice(step){const pts=[],S=TSEG+1,P=(i,j)=>{const k=j*S+i;return [TPOS.getX(k),TPOS.getY(k)+0.05,TPOS.getZ(k)];};
   for(let j=0;j<=TSEG;j+=step)for(let i=0;i<TSEG;i++){const a=P(i,j),b=P(i+1,j);pts.push(...a,...b,...b);}
   for(let i=0;i<=TSEG;i+=step)for(let j=0;j<TSEG;j++){const a=P(i,j),b=P(i,j+1);pts.push(...a,...b,...b);}
@@ -4208,9 +4241,10 @@ addEventListener('hashchange',()=>{if(location.hash!==lastHash&&readHash())markV
  el.addEventListener('webglcontextlost',e=>{e.preventDefault();lost.classList.add('on');rl.hidden=true;clearTimeout(timer);timer=setTimeout(()=>{rl.hidden=false;lost.firstChild.textContent='The graphics card was reset and has not come back yet.';},6000);},false);
  el.addEventListener('webglcontextrestored',()=>{clearTimeout(timer);lost.classList.remove('on');renderer.shadowMap.needsUpdate=true;},false);}
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);updatePx();});
+await stage('wire');
+section('wire',()=>{if(!WIRE.built)buildWire();});   // the wireframe overlay is built now rather than on the first toggle
 await stage('shaders');
 section('shaders',()=>{   // every program compiles now, behind the loading text, instead of in the first visible frame; display-mode materials are warmed the same way
-  if(!WIRE.built)buildWire();
   const warm=new THREE.Group();warm.visible=false;const proto={side:THREE.FrontSide};
   for(const [kind,col] of [['clay',false],['clay',true],['gray',false],['gray',true],['dist',true]]){const m=clayFor(proto,kind,col);const im=new THREE.InstancedMesh(boxG,m,1);if(col)im.setColorAt(0,new THREE.Color(1,1,1));warm.add(im,new THREE.Mesh(boxG,m));}
   scene.add(warm);renderer.compile(scene,camera);renderer.render(scene,camera);scene.remove(warm);});
