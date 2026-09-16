@@ -26,13 +26,14 @@ import urllib.parse
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-PROBE = r"""<script>(function(){const W=THREE.WebGLRenderer;let rd=null,sc=null,frames=[],last=0;
+PROBE = r"""<script>window.__probeErrs=[];addEventListener('error',e=>window.__probeErrs.push((e.message||String(e))+' @'+(e.filename||'').split('/').pop()+':'+e.lineno));</script>
+<script>(function(){const W=THREE.WebGLRenderer;let rd=null,sc=null,frames=[],last=0;
 THREE.WebGLRenderer=function(o){const r=new W(o);rd=r;const R0=r.render;r.render=function(scene,cam){sc=scene;const t=performance.now();if(last)frames.push(t-last);last=t;return R0.call(r,scene,cam);};return r;};
 const rep=o=>{new Image().src='/__probe?'+encodeURIComponent(JSON.stringify(o));};
 const sha=async s=>{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');};
 const r2=x=>Math.round(x*100)/100;
 setTimeout(async()=>{try{const out={};
- out.errors=(document.getElementById('errs')||{}).textContent||'';
+ out.errors=((document.getElementById('errs')||{}).textContent||'')+(window.__probeErrs.length?' | early: '+window.__probeErrs.join('; '):'');out.three=window.THREE&&THREE.REVISION;
  out.load=(typeof LOAD!=='undefined'&&LOAD.times)||null;out.loadMs=window._loadMs||null;
  out.details=window._details||null;out.cull=window._cull||null;out.res=window._res&&window._res.cur;out.fps=window._fps;
  if(window._IZ&&window._IZ.REG){const B=Object.values(window._IZ.REG).map(r=>r.box);out.atlasRegions=B.length;out.atlasMaxY=Math.max(...B.map(b=>b[1]+b[3]));out.atlasMaxX=Math.max(...B.map(b=>b[0]+b[2]));}
@@ -71,6 +72,8 @@ def main():
     ap.add_argument("--port", type=int, default=8123)
     ap.add_argument("--json", help="write the full report here")
     ap.add_argument("--quiet", action="store_true")
+    ap.add_argument("--expect", help="golden JSON (tests/golden/iziz-<seed>.json): exit 2 if the layout fingerprint differs")
+    ap.add_argument("--save-golden", help="write the layout fingerprint to this golden JSON")
     a = ap.parse_args()
 
     src = open(a.page, encoding="utf-8").read()
@@ -151,6 +154,18 @@ def main():
             print("cull:", json.dumps(report["cull"]))
         if report.get("details"):
             print("details:", json.dumps(report["details"]))
+    fp = {k: report.get(k) for k in ("lots", "lotHash", "doors", "doorHash")}
+    if a.save_golden:
+        fp["seed"] = a.seed or 1337
+        json.dump(fp, open(a.save_golden, "w"), indent=1)
+        print("golden written:", a.save_golden)
+    if a.expect:
+        want = json.load(open(a.expect))
+        bad = [k for k in ("lotHash", "doorHash") if want.get(k) != fp.get(k)]
+        if bad or not fp.get("lotHash"):
+            print(f"LAYOUT CHANGED vs {a.expect}: {', '.join(bad) or 'no fingerprint from page'}")
+            return 2
+        print(f"layout matches {a.expect}")
     return 1 if report.get("errors") else 0
 
 
