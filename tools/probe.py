@@ -71,6 +71,7 @@ def main():
     ap.add_argument("--wait", type=int, default=30, help="seconds to let the page run before reporting")
     ap.add_argument("--port", type=int, default=8123)
     ap.add_argument("--json", help="write the full report here")
+    ap.add_argument("--query", default="", help="extra URL query, e.g. city=iziz-b")
     ap.add_argument("--quiet", action="store_true")
     ap.add_argument("--expect", help="golden JSON (tests/golden/iziz-<seed>.json): exit 2 if the layout fingerprint differs")
     ap.add_argument("--save-golden", help="write the layout fingerprint to this golden JSON")
@@ -112,7 +113,7 @@ def main():
     log = open(os.path.join(work, "server.log"), "w+")
     srv = subprocess.Popen([sys.executable, os.path.join(ROOT, "server.py"), "--config", toml], stderr=log, stdout=subprocess.DEVNULL)
     time.sleep(0.8)
-    url = f"http://127.0.0.1:{a.port}/?debug" + (f"&seed={a.seed}" if a.seed else "")
+    url = f"http://127.0.0.1:{a.port}/?debug" + (f"&seed={a.seed}" if a.seed else "") + (f"&{a.query}" if a.query else "")
     fx = subprocess.Popen([ff, "--headless", "--no-remote", "--window-size=1600,900", "--profile", profile, url], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     report = None
     deadline = time.time() + a.wait + 60
