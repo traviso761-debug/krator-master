@@ -31,6 +31,14 @@ function stage(name){const now=performance.now();LOAD.times.push({stage:LOAD.nam
 // everything below runs inside build(), which starts after the loading screen has had a chance to paint
 async function build(){
 if(!window.THREE){document.getElementById('loading').textContent='three.js did not load (vendor/three/three.min.js). Check the site mounts and reload.';return;}
+// ---------- content: city parameters and the Izani lexicon are data files (data/cities/iziz.json, data/lexicon.json), so they can be edited without touching this code ----------
+const DATA=await (async()=>{const get=u=>fetch(u).then(r=>{if(!r.ok)throw new Error(u+': HTTP '+r.status);return r.json();});const [city,lex]=await Promise.all([get('data/cities/iziz.json'),get('data/lexicon.json')]);return {city,lex};})();
+const DATA_FN={Math,rad:d=>d*Math.PI/180};
+function dataExpr(str,scope){try{return Function(...Object.keys(scope),'"use strict";return ('+str+')')(...Object.values(scope));}catch(e){throw new Error('data expression "'+str+'": '+e.message);}}
+function dataValue(node,scope){if(typeof node==='string')return dataExpr(node,scope);if(Array.isArray(node))return node.map(v=>dataValue(v,scope));
+  if(node&&typeof node==='object'){const o={};for(const k in node)if(k!=='_')o[k]=dataValue(node[k],scope);return o;}return node;}
+function resolveCity(c){const skip=new Set(['name','note','districts','views','constellations','art','wall']),scope={...DATA_FN};   // each parameter may refer to the ones above it
+  for(const k in c)if(!skip.has(k))scope[k]=dataValue(c[k],scope);for(const k in DATA_FN)delete scope[k];scope.wall=c.wall;return scope;}
 // 1 heightmap  2 landmark massing  3 street network  4 sanity view
 // 5 infill buildings  6 detailing pass  7 walls / chasm / moat / bridges
 // ============================================================
@@ -233,22 +241,13 @@ window._IZ=IZ;
 
 
 // ---------- city parameters ----------
-const WORLD=1400, PLATEAU=18, CHASM=-16, HILL=42;
-const PALACE={x:80,z:-60}, TEMPLE={x:170,z:70}, ARENA={x:-150,z:2};
-const TPAD={x:TEMPLE.x+38,z:TEMPLE.z-12}, APAD={x:ARENA.x-2,z:ARENA.z-50};   // shuttle pads
-const AMPH={x:-177,z:66};   // park amphitheatre
-const SPIRE={x:-29.4,z:20.4};   // the crowned column beside the central square
-const NEEDLE={x:-60,z:-40},NEEDLE_H=80;   // the observation tower
-const SPA=315*Math.PI/180, SP={x:455*Math.cos(SPA),z:455*Math.sin(SPA)}, SPH=4, SPR=94;
-const BPAD_T=15*Math.PI/180, BPAD={};   // freighter pad at the spaceport, set below   // spaceport on the northwest road
-const GATES=[90,205,315].map(d=>d*Math.PI/180);   // 90° = toward the viewer (+z)
-function wallRaw(t){return 235+22*Math.sin(3*t+1)+10*Math.sin(7*t+2)+6*Math.sin(11*t);}
+const CITY=resolveCity(DATA.city);
+const {WORLD,PLATEAU,CHASM,HILL,PALACE,TEMPLE,ARENA,TPAD,APAD,AMPH,SPIRE,NEEDLE,NEEDLE_H,SPA,SP,SPH,SPR,BPAD_T,GATES,PGATES}=CITY;const BPAD={};   // freighter pad at the spaceport, set below
+function wallRaw(t){let r=CITY.wall.base;for(const [a,f,p] of CITY.wall.waves)r+=a*Math.sin(f*t+p);return r;}
 function wallR(t){let r=wallRaw(t);for(const g of GATES){const d=angDiff(t,g);if(d<0.32){const k=1-smooth(0.06,0.32,d);r=r*(1-k)+wallRaw(g)*k;}}return r;}   // straight and flush around each gatehouse
 function polar(x,z){return {r:Math.hypot(x,z),t:Math.atan2(z,x)};}
-const PGATES=[148*Math.PI/180,302*Math.PI/180];   // palace curtain-wall gates, where the north-east boulevard enters and leaves the precinct
 BPAD.x=SP.x+66*Math.cos(BPAD_T);BPAD.z=SP.z+66*Math.sin(BPAD_T);
-const STATUES=[[0,0,30,2,Math.PI],[TEMPLE.x-30,TEMPLE.z+34,22,0,0],[TEMPLE.x+30,TEMPLE.z+34,22,0,0],[-125,60,18,1,1.2],[60,150,16,2,2.8],[-70,-140,18,0,4.1],
-  [PALACE.x-34,PALACE.z+30,14,1,0.3,'terrace'],[PALACE.x+34,PALACE.z+30,14,0,-0.3,'terrace'],[-100,-130,14,2,0.7],[120,-150,14,1,3.3],[-40,170,14,0,5.1]];
+const STATUES=CITY.STATUES;
 for(const g of GATES){const R=wallR(g)+58;[-1,1].forEach(sd=>{STATUES.push([R*Math.cos(g)-sd*15*Math.sin(g),R*Math.sin(g)+sd*15*Math.cos(g),26,sd<0?0:1,-g+Math.PI/2]);});}   // colossi on the causeways
 function angDiff(a,b){let d=a-b;while(d>Math.PI)d-=2*Math.PI;while(d<-Math.PI)d+=2*Math.PI;return Math.abs(d);}
 
@@ -660,8 +659,8 @@ const lights=new THREE.InstancedMesh(withLightT(boxG,1500),lampHook(glowM.clone(
 domes.material.userData.weather=false;let nb=0,nf=0,nd=0,nl=0;
 const dm=new THREE.Object3D(),col=new THREE.Color();const glowPts=[];const glowSched=[];const animHooks=[];   // glowPts: 7 values per light; glowSched[i] = 0 always, 1 night-boosted (default), 2 arena hours, 3 windows, 4 concert   // [x,y,z,r,g,b,size]
 let curDist='houses';
-const DGROUP={box:'houses',tier:'houses',domed:'houses',barrel:'vaults',tent:'vaults',pyr:'vaults',setback:'setback',tyrell:'brutalist',wedge:'brutalist',pent:'brutalist',hept:'brutalist',midrise:'midrise',hall:'halls',stave:'halls',pueblo:'pueblos',compound:'compounds'};
-const DISTRICTS={houses:['Houses',0xd8c9a0],vaults:['Vaults and tents',0xc8704f],setback:['Setback towers',0x5b8de0],brutalist:['Brutalist blocks',0x9a7fd0],midrise:['Midrise',0x3fb8a8],halls:['Timber halls',0xe27aa6],pueblos:['Pueblos',0xe3a13a],compounds:['Compounds',0x7bbf5a]};
+const DGROUP=DATA.city.districts.groups;
+const DISTRICTS={};for(const k in DATA.city.districts.names){const [n,c]=DATA.city.districts.names[k];DISTRICTS[k]=[n,parseInt(c.slice(1),16)];}
 const DCOLV={};for(const k in DISTRICTS)DCOLV[k]=new THREE.Color(DISTRICTS[k][1]);
 function markDist(im,idx){const d=im.userData.dcol;if(d&&idx*3+2<d.length){const c=DCOLV[curDist];d[idx*3]=c.r;d[idx*3+1]=c.g;d[idx*3+2]=c.b;}}
 let vegHide=false;   // set while a jungle plant that would stand in the river is generated
@@ -2476,7 +2475,7 @@ const timber=new THREE.MeshLambertMaterial({color:0x8a6a45});timber.userData.tex
  animHooks.push(()=>{const tot=window._totalHours||15,d0=Math.floor(tot/24),h=tot-d0*24,d=h<3?d0-1:d0;fest.count=(festDay(d)||festDay(d+1))?nf:0;});
  window._details={posters:n,festPosters:nf};
  // a few posters swap for framed prints of the Iziz painting (painting.jpg, served next to this page); if it fails to load they stay posters
- {const ART={src:'painting.jpg',count:6,frame:'#1b1410',border:0.035};
+ {const ART=DATA.city.art;
   const cands=[];for(let i=0;i<n;i++){const v=posters.geometry.attributes.izVar.array[i],l=posters.userData.lots[i];
     if(posters.geometry.attributes.izFade.array[i]||v===6||v===7||!l)continue;const pp=polar(l.x,l.z);cands.push([pp.r/wallR(pp.t),i,l]);}
   cands.sort((a,b)=>a[0]-b[0]);
@@ -2792,61 +2791,7 @@ await stage('izani');
 section('izani',()=>{
 const groundAt=window._groundAt;
 // every inscription: what it says, how it is built, and what style it is written in
-const E={
- izisa:{lines:['Izisa'],style:'carve',aspect:7,means:'Izisa, the full name of the city',parts:'iz "tree" + sa "house"'},
- vaedun:{lines:['Vaedun'],style:'carve',aspect:7,means:'the Water Gate (south)',parts:'vae "water" + dun "gate"'},
- shaedun:{lines:['Shaedun'],style:'carve',aspect:7,means:'the Star Gate (west)',parts:'shae "star" + dun "gate"'},
- seldun:{lines:['Seldun'],style:'carve',aspect:7,means:'the Hill Gate (north-east)',parts:'sel "hill" + dun "gate"'},
- motto:{lines:['Iziz iz'],style:'carve',aspect:7,means:'"The forest thrives." The city motto.',parts:'Iziz "the forest, the city" · iz "grows, thrives"'},
- proverb:{lines:['iz vae il iz'],style:'carve',aspect:9,means:'"A tree grows toward water." People go where life is.',parts:'iz "tree" · vae "water" · il "toward" · iz "grows"'},
- salor:{lines:['Salor'],style:'carve',aspect:5,means:'Salor, the palace',parts:'sa "house" + -or "great" (l links the vowels)'},
- dusren:{lines:['Dusren'],style:'carve',aspect:7,px:64,means:'Dusren, the sewer outfall',parts:'dus "filth" + -ren "flowing"'},
- st_temple:{lines:['Shaesa','izan izuz izak'],style:'carve',aspect:1.8,px:170,means:'Shaesa, the temple · "The Izan plant the tree."',parts:'shae "star" + sa "house" · izan "the Izan" · izuz "tree" (object) · izak "plant"'},
- st_arena:{lines:['Thuriseth'],style:'carve',aspect:2.6,px:110,means:'Thuriseth, the arena',parts:'thur "war" + -is "little" + -eth "place of"'},
- st_tower:{lines:['Norsa','shaeshae'],style:'carve',aspect:1.8,px:170,means:'Norsa, the observation tower · "constellations"',parts:'nor "tall" + sa "house" · shaeshae "a mass of stars"'},
- st_dome:{lines:['Roneth'],style:'carve',aspect:2.6,px:110,means:'Roneth, the dome hall',parts:'ron "gather" + -eth "place of"'},
- st_amph:{lines:['Weneth'],style:'carve',aspect:2.6,px:110,means:'Weneth, the amphitheatre',parts:'wen "song" + -eth "place of"'},
- st_port:{lines:['Shaenaeleth','shaenae vesh'],style:'carve',aspect:1.8,px:170,means:'Shaenaeleth, the spaceport · "Star-boats: hello and goodbye."',parts:'shae "star" + nae "boat" + -eth "place of" · vesh "hale" (greeting and farewell)'},
- st_square:{lines:['Iziz iz','vesh'],style:'carve',aspect:1.8,px:170,means:'"The forest thrives." · "Hello."',parts:'the motto, and vesh "still standing, hale"'},
- st_lake:{lines:['Shaevae','iz vae il iz'],style:'carve',aspect:1.8,px:170,means:'Shaevae, the lake · "A tree grows toward water."',parts:'shae "star" + vae "water": it holds the stars at night'},
- st_falls:{lines:['Vaeren','vaeren vae'],style:'carve',aspect:1.8,px:170,means:'Vaeren, the river · "The river flows." (Time passes.)',parts:'vae "water" + -ren "flowing" · vae "flows"'},
- st_izor:{lines:['Izor','Iziz iz'],style:'carve',aspect:1.8,px:170,means:'Izor, the great tree · "The forest thrives."',parts:'iz "tree" + -or "great" · the motto'},
- st_well:{lines:['Vaeleth'],style:'carve',aspect:2.6,px:90,means:'Vaeleth, a well',parts:'vae "water" + -eth "place of"'},
- kalis:{lines:['Kalis'],style:'paint',aspect:4,px:72,bg:'#5a3d26',means:'Kalis, the footbridge',parts:'ka "cross" + -is "little"'},
- thuransa:{lines:['Thuransa'],style:'paint',aspect:4.5,px:72,bg:'#7a3d2a',means:'Thuransa, barracks',parts:'thuran "soldier" + sa "house"'},
- vemeth:{lines:['Vemeth'],style:'paint',aspect:4.5,px:72,bg:'#2f5f5a',means:'Vemeth, the market',parts:'vem "trade" + -eth "place of"'},
- sp_docks:{lines:['Naeleth'],style:'paint',aspect:5,px:56,bg:'#8a6a45',means:'"To the docks"',parts:'nae "boat" + -eth "place of"'},
- sp_city:{lines:['Izisa'],style:'paint',aspect:5,px:56,bg:'#8a6a45',means:'"To the city"',parts:'iz "tree" + sa "house"'},
- dometh:{lines:['Dometh'],style:'paint',aspect:5,px:72,means:'Dometh, the waystation inn',parts:'dom "sleep, rest" + -eth "place of"'},
- naeleth:{lines:['Naeleth'],style:'paint',aspect:6.5,px:72,bg:'#2f8f8a',color:'#ffe0a0',means:'Naeleth, the docks',parts:'nae "boat" + -eth "place of"'},
- huleth:{lines:['Huleth'],style:'ink',aspect:6,px:64,color:'#0e3a40',means:'Huleth, the bathhouse',parts:'hu "wash" + -eth "place of" (l links the vowels)'},
- koreth:{lines:['Koreth'],style:'paint',aspect:4.5,px:72,bg:'#3a3632',color:'#ffb070',means:'Koreth, the smithy',parts:'kor "iron" + -eth "place of"'},
- muneth:{lines:['Muneth'],style:'paint',aspect:4.5,px:72,means:'Muneth, a bakery',parts:'mun "bread" + -eth "place of"'},
- salireth:{lines:['Salireth'],style:'paint',aspect:4.5,px:72,bg:'#5a3d26',means:'Salireth, a key-cutter',parts:'salir "key" + -eth "place of"'},
- vaelireth:{lines:['Vaelireth'],style:'paint',aspect:4.5,px:72,bg:'#2f5f5a',means:'Vaelireth, a cup-maker',parts:'vaelir "cup" + -eth "place of"'},
- sholeth:{lines:['Sholeth'],style:'paint',aspect:4.5,px:72,bg:'#3f5a2e',means:'Sholeth, a herbalist',parts:'shol "herb" + -eth "place of"'},
- zatheth:{lines:['Zatheth'],style:'paint',aspect:4.5,px:72,bg:'#1e2a3a',means:'Zatheth, a scribe and carver',parts:'zath "carve, write" + -eth "place of"'},
- feleth:{lines:['Feleth'],style:'paint',aspect:4.5,px:72,bg:'#7a3d8a',means:'Feleth, a weaver',parts:'fel "cloth" + -eth "place of"'},
- izireth:{lines:['Izireth'],style:'paint',aspect:4.5,px:72,means:'Izireth, an axe-maker',parts:'izir "axe" + -eth "place of"'},
- luleth:{lines:['Luleth'],style:'paint',aspect:4.5,px:72,bg:'#2f5f5a',means:'Luleth, a fishmonger',parts:'lu "fish" + -eth "place of" (l links the vowels)'},
- g_war:{lines:['thur un mae'],style:'graffiti',aspect:4,px:72,color:'#c9442a',means:'"War: no good." Painted by someone who has seen the arena.',parts:'thur "war" · un mae "no good, bad"'},
- g_vesh:{lines:['vesh'],style:'graffiti',aspect:2.4,px:72,color:'#e0a030',means:'"Hello." Painted large and cheerful.',parts:'vesh "hale", the greeting'},
- g_names:{lines:['Shaelis Izor'],style:'graffiti',aspect:4.5,px:72,color:'#5fb0e0',means:'Two names painted side by side: Shaelis ("firefly") and Izor ("great tree").',parts:'shae + -is "little star, firefly" · iz + -or "great tree"'},
- g_iziz:{lines:['Iziz iz'],style:'graffiti',aspect:3.4,px:72,color:'#6fcf6a',means:'"The forest thrives." The motto, painted with pride.',parts:'Iziz "the forest, the city" · iz "thrives"'},
- g_cats:{lines:['nesh mae'],style:'graffiti',aspect:3.6,px:72,color:'#f4f0e6',means:'"Cats: good." Blunt, and true.',parts:'nesh "cat" · mae "good"'},
- g_bread:{lines:['mun un'],style:'graffiti',aspect:3.2,px:72,color:'#e8443a',means:'"No bread." A complaint, painted near a bakery.',parts:'mun "bread" · un "no"'},
- g_watch:{lines:['halan un mae'],style:'graffiti',aspect:4.2,px:72,color:'#d070e0',means:'"Watchmen: no good." Someone does not like the night watch.',parts:'halan "watchman" · un mae "no good"'},
- g_izis:{lines:['Izis'],style:'graffiti',aspect:2.2,px:72,color:'#ffd34a',means:'A name tag: Izis, "sapling".',parts:'iz "tree" + -is "little"'},
- g_vaelis:{lines:['Vaelis'],style:'graffiti',aspect:2.6,px:72,color:'#60c8ff',means:'A name tag: Vaelis, "droplet".',parts:'vae "water" + -is "little"'},
- g_days:{lines:['#12'],style:'graffiti',aspect:2.4,px:72,color:'#f4f0e6',means:'Twelve tally marks: someone counting days.',parts:'tallies, every fifth crossed'},
- g_days2:{lines:['#23'],style:'graffiti',aspect:3.6,px:72,color:'#ffb070',means:'Twenty-three tally marks, a long count.',parts:'tallies, every fifth crossed'},
- p_tree:{lines:['tree'],pic:'tree',style:'graffiti',aspect:1.1,px:96,color:'#6fcf6a',means:'A painted tree, the oldest Izan sign.',parts:'a picture, not a word'},
- p_star:{lines:['star'],pic:'star',style:'graffiti',aspect:1.1,px:96,color:'#ffd34a',means:'A painted star.',parts:'a picture, not a word'},
- p_boat:{lines:['boat'],pic:'boat',style:'graffiti',aspect:1.3,px:96,color:'#60c8ff',means:'A painted boat, sails up.',parts:'a picture, not a word'},
- p_burst:{lines:['burst'],pic:'burst',style:'graffiti',aspect:1.1,px:96,color:'#ff6ab0',means:'A painted firework, from a festival night.',parts:'a picture, not a word'},
- p_beast:{lines:['beast'],pic:'beast',style:'graffiti',aspect:1.3,px:96,color:'#f4f0e6',means:'A painted pack beast, horns and all.',parts:'a picture, not a word'},
- p_fish:{lines:['fish'],pic:'fish',style:'graffiti',aspect:1.3,px:96,color:'#60e0d0',means:'A painted fish.',parts:'a picture, not a word'},
-};
+const E=JSON.parse(JSON.stringify(DATA.lex.inscriptions));   // a copy: milestones are added below
 for(let k=1;k<=4;k++)E['m'+k]={lines:['#'+k],style:'carve',aspect:1.2,px:56,means:'Milestone '+k+' on the dock road, in tally marks',parts:'tallies: every fifth stroke is crossed'};
 for(const k in E)IZ.region(k,E[k]);
 window._izE=E;
@@ -3553,12 +3498,7 @@ const moon2=new THREE.Sprite(new THREE.SpriteMaterial({map:MOONS.b.tex,fog:false
 
 // ---------- constellations: five figures the people of Iziz named, fixed in the sky ----------
 const CONST=(()=>{const D=(az,alt)=>{const a=az*Math.PI/180,e=alt*Math.PI/180;return [Math.cos(a)*Math.cos(e),Math.sin(e),Math.sin(a)*Math.cos(e)];};
-  const F=[
-   {name:'Kalir (the Bridge)',s:[[30,28],[38,34],[46,37],[54,37],[62,34],[70,28]],l:[[0,1],[1,2],[2,3],[3,4],[4,5]]},
-   {name:'Fenis (the Lantern)',s:[[140,48],[150,48],[150,58],[140,58],[145,64],[145,52]],l:[[0,1],[1,2],[2,3],[3,0],[2,4],[3,4]]},
-   {name:'Ush (the Serpent)',s:[[200,22],[208,30],[216,25],[224,33],[232,28],[240,36],[246,44]],l:[[0,1],[1,2],[2,3],[3,4],[4,5],[5,6]]},
-   {name:'Tor (the Crown)',s:[[290,55],[298,60],[306,62],[314,60],[322,55],[306,70]],l:[[0,1],[1,2],[2,3],[3,4],[2,5]]},
-   {name:'Lolo (the Twins)',s:[[95,72],[97,78],[99,84],[108,70],[110,76],[112,82]],l:[[0,1],[1,2],[3,4],[4,5],[1,4]]}];
+  const F=DATA.city.constellations;
   const pos=[],mag=[],lines=[];F.forEach(f=>{const base=pos.length/3;f.s.forEach((q,i)=>{pos.push(...D(q[0],q[1]).map(v=>v*2400));mag.push(i===0?1.4:0.8+0.5*hash3(q[0],q[1],7));});
     f.l.forEach(([a,b])=>{lines.push(...pos.slice((base+a)*3,(base+a)*3+3),...pos.slice((base+b)*3,(base+b)*3+3));});});
   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('izMag',new THREE.Float32BufferAttribute(mag,1));
@@ -3731,19 +3671,7 @@ function applyKeys(){if(WALK.on)return stepWalk(performance.now());if(['w','a','
   if(keys.has('q'))ctl.target.y-=k;if(keys.has('e'))ctl.target.y+=k;ctl.target.y=Math.max(ctl.target.y,CHASM);}
 
 // preset views (step 4: the painting view is the sanity check)
-const VIEWS={
-  'Painting view':[-30,9,440,40,52,-10],
-  'Overview':[0,720,620,0,20,0],
-  'Palace':[PALACE.x-150,140,PALACE.z+190,PALACE.x+10,75,PALACE.z],
-  'Temple plaza':[TEMPLE.x+30,52,TEMPLE.z+130,TEMPLE.x,40,TEMPLE.z],
-  'Street level':[6,PLATEAU+4,196,10,PLATEAU+7,0],
-  'Bridge':[52,PLATEAU+22,296,0,PLATEAU+4,236],
-  'Spaceport':[SP.x+90,60,SP.z+120,SP.x,8,SP.z],
-  'Arena':[ARENA.x-60,terrainH(ARENA.x-60,ARENA.z+80)+48,ARENA.z+80,ARENA.x,terrainH(ARENA.x,ARENA.z)+10,ARENA.z],
-  'Arena floor':[ARENA.x-8,terrainH(ARENA.x,ARENA.z)+78,ARENA.z+34,ARENA.x,terrainH(ARENA.x,ARENA.z)+2,ARENA.z-4],
-  'Temple top':[TEMPLE.x-40,terrainH(TEMPLE.x,TEMPLE.z)+68,TEMPLE.z+50,TEMPLE.x,terrainH(TEMPLE.x,TEMPLE.z)+54,TEMPLE.z+8],
-  'Temple hall':[TEMPLE.x+44,terrainH(TEMPLE.x+44,TEMPLE.z)+5,TEMPLE.z,TEMPLE.x,terrainH(TEMPLE.x,TEMPLE.z)+9,TEMPLE.z]
-};
+const VIEWS=(()=>{const scope={...CITY,...DATA_FN,ground:terrainH},out={};for(const k in DATA.city.views)out[k]=dataValue(DATA.city.views[k],scope);return out;})();
 if(SEWER.view)VIEWS['Sewer outfall']=SEWER.view;
 if(SEWER.riverView)VIEWS['River falls']=SEWER.riverView;
 if(SEWER.bridgeView)VIEWS['Rope bridge']=SEWER.bridgeView;
@@ -3854,44 +3782,9 @@ animHooks.push(now=>{const dt=Math.min(0.1,(now-tourLast)/1000);tourLast=now;if(
   if(!fly&&!reduceMotion)ctl.theta+=dt*0.035;   // a slow drift while it lingers
   if(now>TOUR.until)tourNext();});
 // ---- the Izani tongue: what the walls say, the lore behind them, and the words coined for the city ----
-const LEX_WORDS=[
- ['fen','n','fire, flame','root'],['fenis','n','lantern; the Lantern (constellation)','fen + -is "little fire"'],['fenshae','n','fireworks','fen "fire" + shae "stars"'],
- ['kor','n','iron, metal','root'],['koran','n','smith','kor + -an'],['koreth','n','smithy, forge','kor + -eth'],
- ['mun','n','bread, food','root'],['muneth','n','bakery','mun + -eth'],
- ['lu','n','fish','root'],['lulan','n','fisher','lu + -an'],['luleth','n','fishmonger\u2019s, fish market','lu + -eth'],
- ['nae','n','boat','root'],['naelan','n','boatman','nae + -an'],['naeleth','n','docks, harbour','nae + -eth'],['Naeten','prop. n','the dock road','nae "boat" + ten "road"'],['naethur','n','regatta, boat race','nae "boat" + thur "war"'],
- ['shaenae','n','star-boat, spaceship','shae + nae'],['shaenaeleth','n','spaceport','shaenae + -eth'],
- ['hu','v','to wash, bathe','root'],['huleth','n','bathhouse','hu + -eth'],['dom','n','sleep, rest','root'],['dometh','n','inn, waystation','dom + -eth'],
- ['ten','n','road, path','root'],['tenan','n','traveller, trader','ten + -an'],['dun','n','gate, door','root'],
- ['Vaedun','prop. n','the Water Gate (south)','vae + dun'],['Shaedun','prop. n','the Star Gate (west)','shae + dun'],['Seldun','prop. n','the Hill Gate (north-east)','sel + dun'],
- ['vem','v','to trade, exchange','root'],['vemeth','n','market','vem + -eth'],['dus','n','filth, dirt','root'],['Dusren','prop. n','the sewer outfall','dus + -ren "flowing"'],
- ['shol','n','herb','root'],['sholeth','n','herbalist\u2019s','shol + -eth'],['fel','n','cloth','root'],['feleth','n','weaver\u2019s','fel + -eth'],
- ['zath','v','to carve, to write','root'],['zathan','n','carver, scribe','zath + -an'],['zatheth','n','scribe\u2019s house','zath + -eth'],
- ['salireth','n','key-cutter\u2019s','salir "key" + -eth'],['vaelireth','n','cup-maker\u2019s','vaelir "cup" + -eth'],['izireth','n','axe-maker\u2019s','izir "axe" + -eth'],
- ['wen','n','song','root'],['weneth','n','amphitheatre','wen + -eth'],['ron','v','to gather','root'],['roneth','n','assembly hall; the dome hall','ron + -eth'],
- ['nor','adj','tall, high','root'],['Norsa','prop. n','the observation tower','nor "tall" + sa "house"'],
- ['Salor','prop. n','the palace','sa + -or "great house"'],['Shaesa','prop. n','the temple','shae "star" + sa "house"'],
- ['Thuriseth','prop. n','the arena','thuris "skirmish" + -eth'],['thuransa','n','barracks','thuran "soldier" + sa "house"'],
- ['Thurvae','prop. n','the moat','thur "war" + vae "water"'],['Shaevae','prop. n','the lake','shae "star" + vae "water"'],
- ['ka','v','to cross','root'],['kalir','n','bridge; the Bridge (constellation)','ka + -ir'],['kalis','n','footbridge; the rope bridge','ka + -is'],
- ['hal','v','to watch, to guard','root'],['halan','n','watchman','hal + -an'],['halak','v','to post the guard','hal + -ak'],
- ['yol','n','feast','root'],['Yolshae','prop. n','the Feast of Lights, the festival','yol "feast" + shae "lights"'],
- ['kir','n','bird','root'],['vaekir','n','gull','vae + kir'],['sakir','n','pigeon','sa + kir'],['nesh','n','cat','root'],
- ['rol','n','cart, wagon','root'],['norrol','n','hover cart','nor "high" + rol'],
- ['sor','n','sun; Sor, the red dwarf star Iziz orbits','root'],['nu','n','moon; Nu, the green moon','root'],['Nuis','prop. n','the pale moon','nu + -is "little moon"'],
- ['ush','n','snake; the Serpent (constellation)','root'],['tor','n','crown; the Crown (constellation)','root'],['Lolo','prop. n','the Twins (constellation)','lo "two", doubled'],
- ['saliz','n','broad shade tree','sa + iz (l links the vowels): "house-tree"'],['noriz','n','tall tree','nor + iz'],['vaeliz','n','weeping tree','vae + iz: "water-tree"'],['shaeliz','n','blossom tree','shae + iz: "light-tree"'],['Izor','prop. n','the great tree on the palace hill; also a given name','iz + -or'],
- ['Shaelis','prop. n','a given name: "firefly"','shae + -is']];
-const LORE=[
- 'The Izan say their first word was iz, tree, and that every other word grew from it the way branches grow from a stem. So their letters are stems with branches, cut with a knife along the grain. Every child\u2019s first carving is iz: one short stroke and one stem with two falling branches.',
- 'They do not say the city was built. They say it was planted: izak, not salak. The first house stood beside the first tree; that tree, Izor, still stands on the hill below the Salor, the great house, which came later. The city grew outward from its shade. The full name, Izisa, still means "tree-house". The old trees inside the walls (saliz, noriz, vaeliz, shaeliz) are never cut. Iziz iz, "the forest thrives", is cut over the inside of every gate.',
- 'Three gates open on the world. Vaedun, the Water Gate, faces south towards Vaeren and the lake. Shaedun, the Star Gate, faces west, towards the evening sky. Seldun, the Hill Gate, faces north-east, under the palace hill. Their doors drop at night, and the watchmen, halan, are posted (halak) at dawn and dusk.',
- 'Izani is blunt, and so are its walls. A sign is one word: the place. A bakery is muneth, bread-place; a smithy is koreth, iron-place. There are no signs that ask or warn, because there is no word for please. The sewer outfall is simply Dusren, filth-flow.',
- 'Paint is for the young. Soldiers\u2019 children write thur un mae, "war: no good", on the wall walks. Lovers paint two names side by side. Girls are often named for small bright things, like Shaelis, firefly; boys for great ones, like Izor, great tree.',
- 'Above the city: Sor, the red dwarf; Nu, the green moon, which waxes and wanes over eight days; Nuis, the pale moon, which crosses the sky every twenty hours. The carvers\u2019 constellations are Kalir the Bridge, Fenis the Lantern, Ush the Serpent, Tor the Crown and Lolo the Twins.',
- 'Every third evening is Yolshae, the Feast of Lights, with fenshae (fire-stars) over the Shaesa. On feast days the boatmen race, naethur, on Shaevae, the star-water, so called because it holds the stars at night. Its water runs out as Vaeren, and at the falls the carvers wrote vaeren vae: "the river flows", which is how the Izan say that time passes.',
- 'Trade comes by Naeten, the boat road, from Naeleth, the docks, to the Water Gate. Travellers, tenan, sleep at Dometh halfway along. The moat around the city is Thurvae, war-water, though no one alive remembers it being used for war.'];
-const CANON=['Iziz is a forest world orbiting a red dwarf. Its light is low and red; the forest covers almost everything, and the city grew up inside it rather than in a clearing cut from it.'];
+const LEX_WORDS=DATA.lex.words.map(w=>[w.w,w.pos,w.gloss,w.build]);
+const LORE=DATA.lex.lore;
+const CANON=DATA.lex.canon;
 function renderLex(){const E=window._izE||{},I=window._izani||{placed:{},info:[]};const esc2=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   let h=`<p>The speech of the Izan, from your friends\u2019 <em>The Izani Tongue</em>. Every inscription and sign below is written in the Izani alphabet somewhere in the city. <strong>Show me</strong> flies you to one.</p><h3>Words on the walls</h3>`;
   for(const key of Object.keys(E)){const where=I.placed[key];if(!where||!where.length)continue;const e=E[key],inf=I.info[where[0]];
@@ -3946,7 +3839,7 @@ function cartInfo(c,k){const GN=['south','west','north-east'];const gi=GATES.ind
 function birdInfo(b){const tower=b.f.c[1]>110;return {title:'A bird of the '+(tower?'tower':'temple')+' flock',follow:true,pos:()=>b.p?[b.p[0],b.p[1],b.p[2]]:null,
   live:()=>{const d=b.perch&&b.p?Math.hypot(b.p[0]-b.perch[0],b.p[1]-b.perch[1],b.p[2]-b.perch[2]):99;return [{t:nightF(window._hour||0)>0.6?(d<0.2?'Roosting on the battlements':'Flying home to roost'):'Circling '+(tower?'the observation tower':'the temple summit')}];}};}
 // fixed places
-const IZNAME={'The Palace':'salor','The Temple':'st_temple','The Arena':'st_arena','The observation tower':'st_tower','The dome hall':'st_dome','The amphitheatre':'st_amph','The spaceport':'st_port','The central square':'st_square','The lake':'st_lake','The falls':'st_falls','The river':'st_falls','The sewer outfall':'dusren','The outer wall':'motto','The south gate':'vaedun','The west gate':'shaedun','The north-east gate':'seldun','The docks':'naeleth','The waystation':'dometh','The rope bridge':'kalis','Barracks':'thuransa','The dock road':'sp_docks'};
+const IZNAME=DATA.lex.placeNames;
 function izCard(key,where){const e=window._izE[key];return {title:'Izani: '+e.lines.join(' / '),img:IZ.thumb(key,46),imgAlt:e.lines.join(' / '),lines:[{t:e.means},{t:e.parts,sub:true},{t:'Found '+(where||'in the city'),sub:true}]};}
 window._izCard=izCard;
 function lotInfo(l){const b=bodyOf(l)||{w:l.fx*2,d:l.fz*2,h:l.h},L=buildingLight(l.x,l.z),tall={tier:1.02,domed:1.15,barrel:0.75,tent:0.7,midrise:1.02,setback:1.1,stave:1.6,hall:1.75}[l.kind]||1;
