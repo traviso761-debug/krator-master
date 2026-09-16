@@ -66,6 +66,11 @@ case "$cmd" in
   health)   curl -fsS "http://127.0.0.1:$(port)/healthz" ;;
   boot)     echo "Starting at boot needs root once:"; echo "  sudo loginctl enable-linger $USER"
             loginctl show-user "$USER" -p Linger ;;
+  test)     # headless Firefox: the page must build without errors and lay out the same city as the golden files
+            rc=0; for g in "$DIR"/tests/golden/iziz-*.json; do seed="${g##*-}"; seed="${seed%.json}"
+              echo "== seed $seed"; python3 "$DIR/tools/probe.py" --seed "$seed" --wait "${1:-12}" --port $((8400 + seed % 100)) --expect "$g" | grep -E '^(errors|layout|LAYOUT|loadMs)' || rc=1
+            done; exit $rc ;;
+  probe)    python3 "$DIR/tools/probe.py" "$@" ;;
   help|-h|--help)
     cat <<EOF
 Usage: ./sitectl <command>
@@ -84,6 +89,8 @@ Usage: ./sitectl <command>
   url        print the site URLs
   health     ask the running server if it's up
   boot       how to start the site at boot without a login
+  test [S]   headless check: page builds with no errors and the city layout matches tests/golden (S = seconds to wait)
+  probe ...  run tools/probe.py with the given arguments (metrics for one page load)
 
 Editing an HTML page or image needs no command: files are read on every request.
 EOF

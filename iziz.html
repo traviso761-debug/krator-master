@@ -4,96 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
 <title>Iziz — massing model</title>
-<style>
-html,body{margin:0;height:100%;overflow:hidden;background:#0d0b2e;font-family:Georgia,'Times New Roman',serif;color:#e8c98a}
-canvas{display:block;touch-action:none;user-select:none;-webkit-user-select:none}
-#seedtag{font-size:11px;letter-spacing:.1em;margin-left:10px;color:#b89a70}
-#title{position:fixed;top:12px;left:14px;font-size:22px;letter-spacing:.28em;text-shadow:0 1px 6px #000;pointer-events:none}
-#hint{position:fixed;top:40px;left:14px;max-width:min(560px,calc(100% - 300px));font-size:11px;line-height:1.5;opacity:.75;pointer-events:none;text-shadow:0 1px 4px #000;transition:opacity .8s}
-#hint.gone{opacity:0}
-#hint .for-touch{display:none}
-@media (hover:none) and (pointer:coarse){#hint .for-touch{display:inline}#hint .for-mouse{display:none}}
-#ui{position:fixed;left:0;right:0;bottom:0;padding:10px;display:flex;gap:6px;flex-wrap:wrap;justify-content:center;pointer-events:none}
-#ui button{pointer-events:auto;background:rgba(18,14,58,.78);color:#e8c98a;border:1px solid #c99a55;padding:9px 13px;font:14px Georgia,serif;letter-spacing:.05em;border-radius:2px;cursor:pointer}
-#ui button:active,#ui button[aria-pressed="true"],#ui button[aria-expanded="true"],#views button[aria-current="true"],#display button[aria-pressed="true"]{background:#c99a55;color:#1a1040}
-#ui button:focus-visible,#views button:focus-visible,#display button:focus-visible,#views input:focus-visible,#timebar input:focus-visible,#showui:focus-visible{outline:2px solid #f6e2b4;outline-offset:2px}
-#views{position:fixed;left:50%;bottom:calc(var(--barh,56px) + 4px);transform:translateX(-50%);box-sizing:border-box;width:min(520px,calc(100% - 20px));max-height:calc(100% - 180px);overflow:auto;display:none;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:5px;padding:8px;background:rgba(13,11,46,.94);border:1px solid #c99a55;z-index:6}
-#views.open{display:grid}
-#views .sub{grid-column:1/-1;font:12px Georgia,serif;letter-spacing:.12em;text-transform:uppercase;color:#b89a70;margin:8px 0 0}
-#views .row{grid-column:1/-1;display:flex;gap:6px;align-items:stretch}
-#views .row>button:first-child{flex:1}
-#views input{flex:1;min-width:0;background:rgba(10,8,34,.9);color:#f0dcb0;border:1px solid #6a5a8a;padding:8px 10px;font:14px Georgia,serif;border-radius:2px}
-#views .status{grid-column:1/-1;font:12px/1.4 Georgia,serif;color:#e8c98a;min-height:1em;word-break:break-all}
-#views .status code{font:11px monospace;color:#f6e2b4}
-#display{position:fixed;left:50%;bottom:calc(var(--barh,56px) + 4px);transform:translateX(-50%);box-sizing:border-box;width:min(560px,calc(100% - 20px));max-height:calc(100% - 180px);overflow:auto;display:none;flex-direction:column;gap:10px;padding:10px;background:rgba(10,8,34,.95);border:1px solid #6a5a8a;z-index:6}
-#display.open{display:flex}
-#display .grp{display:flex;flex-direction:column;gap:5px}
-#display .lbl{font:12px Georgia,serif;letter-spacing:.12em;text-transform:uppercase;color:#b89a70}
-#display .opts{display:flex;flex-wrap:wrap;gap:6px}
-#display button{background:rgba(18,14,58,.78);color:#e8c98a;border:1px solid #6a5a8a;padding:8px 11px;font:14px Georgia,serif;border-radius:2px;cursor:pointer}
-#display button:hover{border-color:#c99a55}
-#display button:disabled{opacity:.4;cursor:default}
-#display .note{font:12px/1.4 Georgia,serif;color:#b8a888}
-#lexicon{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--barh,56px) + 4px);box-sizing:border-box;width:min(760px,calc(100% - 20px));max-height:calc(100% - 210px);overflow:auto;display:none;padding:12px 14px;background:rgba(10,8,34,.95);border:1px solid #6a5a8a;z-index:6;font:14px/1.5 Georgia,serif;color:#e8c98a}
-#lexicon.open{display:block}
-#lexicon h3{font:13px Georgia,serif;letter-spacing:.14em;text-transform:uppercase;color:#b89a70;margin:14px 0 6px}
-#lexicon p{margin:0 0 8px}
-#lexicon .entry{display:grid;grid-template-columns:minmax(90px,170px) 1fr auto;gap:4px 12px;align-items:center;padding:6px 0;border-top:1px solid rgba(106,90,138,.4)}
-#lexicon .entry img{max-width:100%;max-height:46px;border-radius:2px}
-#lexicon .say{color:#f6e2b4}
-#lexicon .sub{color:#b8a888;font-size:12px}
-#lexicon button{background:rgba(18,14,58,.78);color:#e8c98a;border:1px solid #6a5a8a;padding:6px 10px;font:13px Georgia,serif;border-radius:2px;cursor:pointer}
-#lexicon button:hover{border-color:#c99a55}
-#lexicon button:focus-visible{outline:2px solid #f6e2b4;outline-offset:2px}
-#lexicon table{border-collapse:collapse;width:100%;font-size:13px}
-#lexicon td,#lexicon th{text-align:left;padding:3px 8px 3px 0;border-top:1px solid rgba(106,90,138,.35);vertical-align:top}
-#lexicon th{color:#b89a70;font-weight:normal}
-#lexicon .w{color:#f6e2b4;white-space:nowrap}
-body.bare #lexicon{display:none!important}
-#legend{position:fixed;left:10px;bottom:calc(var(--barh,56px) + 6px);display:none;flex-direction:column;gap:3px;background:rgba(18,14,58,.8);border:1px solid #6a5a8a;padding:8px 10px;font:12px Georgia,serif;color:#e8c98a;z-index:5}
-#legend.on{display:flex}
-#legend span{display:inline-block;width:12px;height:12px;margin-right:7px;vertical-align:-1px;border:1px solid rgba(0,0,0,.4)}
-body.bare #ui,body.bare #side,body.bare #title,body.bare #hint,body.bare #views,body.bare #display,body.bare #legend{display:none!important}
-#card{position:fixed;left:10px;top:46px;width:min(330px,calc(100% - 20px));box-sizing:border-box;background:rgba(10,8,34,.9);border:1px solid #c99a55;padding:10px 12px;font:13px/1.45 Georgia,serif;color:#e8c98a;z-index:6;display:none}
-#card.on{display:block}
-#card .izimg{display:block;max-width:100%;height:46px;margin:4px 0 6px;border-radius:2px}
-#card h2{margin:0 0 4px;font:15px Georgia,serif;letter-spacing:.06em;color:#f6e2b4}
-#card p{margin:0 0 3px}
-#card .sub{color:#b8a888;font-size:12px}
-#card .row{display:flex;gap:6px;margin-top:8px}
-#card button{background:rgba(18,14,58,.78);color:#e8c98a;border:1px solid #6a5a8a;padding:6px 10px;font:13px Georgia,serif;border-radius:2px;cursor:pointer}
-#card button:hover{border-color:#c99a55}
-#card button:focus-visible{outline:2px solid #f6e2b4;outline-offset:2px}
-body.bare #card{display:none!important}
-#modebar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--barh,56px) + 4px);display:none;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;background:rgba(10,8,34,.88);border:1px solid #c99a55;padding:7px 10px;font:13px Georgia,serif;color:#e8c98a;z-index:6;max-width:calc(100% - 20px);box-sizing:border-box}
-#modebar.on{display:flex}
-#modebar button{background:rgba(18,14,58,.78);color:#e8c98a;border:1px solid #6a5a8a;padding:7px 11px;font:13px Georgia,serif;border-radius:2px;cursor:pointer;touch-action:none;user-select:none}
-#modebar button:focus-visible{outline:2px solid #f6e2b4;outline-offset:2px}
-body.bare #modebar{display:none!important}
-#lost{position:fixed;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px;background:rgba(13,11,46,.92);color:#e8c98a;font:16px Georgia,serif;z-index:20}
-#lost.on{display:flex}
-#lost button{background:rgba(18,14,58,.78);color:#e8c98a;border:1px solid #c99a55;padding:9px 14px;font:14px Georgia,serif;cursor:pointer}
-#showui{position:fixed;right:10px;bottom:10px;display:none;background:rgba(18,14,58,.5);color:#e8c98a;border:1px solid rgba(201,154,85,.5);padding:8px 10px;font:13px Georgia,serif;border-radius:2px;z-index:6}
-@media (hover:none){body.bare #showui{display:block}}
-#views button{background:rgba(18,14,58,.78);color:#e8c98a;border:1px solid #6a5a8a;padding:9px 11px;font:14px Georgia,serif;text-align:left;border-radius:2px;cursor:pointer}
-#views button:hover{border-color:#c99a55}
-#side{position:fixed;top:10px;right:12px;display:flex;flex-direction:column;align-items:flex-end;gap:6px;z-index:5;pointer-events:none;max-width:calc(100% - 24px)}
-#side #timebar{pointer-events:auto}
-#errs{position:fixed;top:64px;left:10px;right:10px;max-height:40%;overflow:auto;background:rgba(60,10,10,.9);color:#ffd8c0;font:11px/1.4 monospace;padding:8px;border:1px solid #c44;display:none;white-space:pre-wrap;z-index:8}
-#hud{font:12px/1.5 monospace;color:#e8c98a;background:rgba(18,14,58,.65);padding:6px 9px;border:1px solid #6a5a8a;white-space:pre;pointer-events:none;z-index:5}
-#timebar{display:flex;align-items:center;gap:8px;background:rgba(18,14,58,.65);border:1px solid #6a5a8a;padding:6px 9px;font:12px monospace;color:#e8c98a;z-index:5}
-#timebar input{width:min(220px,38vw);accent-color:#e07a2a}
-#timebar select{background:rgba(10,8,34,.9);color:#e8c98a;border:1px solid #6a5a8a;font:12px monospace;padding:2px}
-@media (max-width:700px){#title{font-size:18px}#hud{font-size:10px}#hint{top:auto;bottom:calc(var(--barh,56px) + 6px);left:10px;right:10px;max-width:none;text-align:center}#legend{bottom:calc(var(--barh,56px) + 56px)}body.panel-open #legend{display:none}#ui{gap:5px;padding:8px}#ui button{padding:8px 9px;font-size:13px}}
-#loading{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;font-size:16px;letter-spacing:.2em;background:#0d0b2e;z-index:9}
-</style>
+<link rel="stylesheet" href="css/iziz.css">
 </head>
 <body>
 <div id="loading">raising Iziz…</div>
 <div id="title">IZIZ<span id="seedtag"></span></div>
 <div id="hint"><span class="for-mouse">Drag to orbit. Right-drag or shift-drag to pan, scroll to zoom, WASD and Q/E to move. Click the ground to read its coordinates.</span><span class="for-touch">Drag to orbit. Pinch to zoom, drag with two fingers to pan. Tap the ground to read its coordinates.</span></div>
 <div id="ui"></div><div id="views" role="dialog" aria-label="Viewpoints"></div><div id="display" role="dialog" aria-label="Display"></div><div id="legend" aria-label="District colours"></div><div id="lexicon" role="dialog" aria-label="The Izani tongue"></div><div id="card" role="dialog" aria-label="Details" aria-live="polite"></div><button id="showui" type="button">Show interface</button><div id="lost" role="alert"><p>The graphics card was reset. Restoring the city…</p><button type="button" id="lostreload" hidden>Reload</button></div><div id="modebar" role="region" aria-label="Walking or touring"></div><div id="side"></div><div id="errs"></div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="vendor/three/three.min.js"></script>
 <script>
 // ---------- diagnostics: every error goes on screen, and one section failing does not stop the rest ----------
 const errBox=document.getElementById('errs');const seen=new Set();
@@ -112,7 +30,7 @@ function stage(name){const now=performance.now();LOAD.times.push({stage:LOAD.nam
 // Iziz — procedural massing model
 // everything below runs inside build(), which starts after the loading screen has had a chance to paint
 async function build(){
-if(!window.THREE){document.getElementById('loading').textContent='three.js did not load from cdnjs. Check the connection and reload.';return;}
+if(!window.THREE){document.getElementById('loading').textContent='three.js did not load (vendor/three/three.min.js). Check the site mounts and reload.';return;}
 // 1 heightmap  2 landmark massing  3 street network  4 sanity view
 // 5 infill buildings  6 detailing pass  7 walls / chasm / moat / bridges
 // ============================================================

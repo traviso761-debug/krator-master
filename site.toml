@@ -45,9 +45,21 @@ title = "The Izani Tongue"
 # ---- Folders ------------------------------------------------------------
 # Serve every file under a folder at a URL prefix. No directory listings,
 # and requests cannot reach outside the folder.
-#
-# [[mount]]
-# prefix = "/assets"
-# dir = "assets"
-# [mount.headers]
-# "Cache-Control" = "max-age=3600"
+
+[[mount]]
+prefix = "/css"         # stylesheets
+dir = "css"
+
+[[mount]]
+prefix = "/src"         # ES modules shared by the pages
+dir = "src"
+
+[[mount]]
+prefix = "/data"        # JSON content: lexicon, city parameters, views
+dir = "data"
+
+[[mount]]
+prefix = "/vendor"      # third-party libraries (three.js), kept local so the LAN works offline
+dir = "vendor"
+[mount.headers]
+"Cache-Control" = "max-age=86400"
