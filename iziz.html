@@ -12,20 +12,14 @@
 <div id="hint"><span class="for-mouse">Drag to orbit. Right-drag or shift-drag to pan, scroll to zoom, WASD and Q/E to move. Click the ground to read its coordinates.</span><span class="for-touch">Drag to orbit. Pinch to zoom, drag with two fingers to pan. Tap the ground to read its coordinates.</span></div>
 <div id="ui"></div><div id="views" role="dialog" aria-label="Viewpoints"></div><div id="display" role="dialog" aria-label="Display"></div><div id="legend" aria-label="District colours"></div><div id="lexicon" role="dialog" aria-label="The Izani tongue"></div><div id="card" role="dialog" aria-label="Details" aria-live="polite"></div><button id="showui" type="button">Show interface</button><div id="lost" role="alert"><p>The graphics card was reset. Restoring the city…</p><button type="button" id="lostreload" hidden>Reload</button></div><div id="modebar" role="region" aria-label="Walking or touring"></div><div id="side"></div><div id="errs"></div>
 <script src="vendor/three/three.min.js"></script>
-<script>
-// ---------- diagnostics: every error goes on screen, and one section failing does not stop the rest ----------
-const errBox=document.getElementById('errs');const seen=new Set();
-function report(where,e){const msg=where+': '+(e&&e.message?e.message:e)+'\n'+(e&&e.stack?e.stack.split('\n').slice(0,4).join('\n'):'');if(seen.has(msg))return;seen.add(msg);errBox.style.display='block';errBox.textContent+=msg+'\n\n';}
-window.addEventListener('error',ev=>report('window',ev.error||ev.message));
-window.addEventListener('unhandledrejection',ev=>report('promise',ev.reason));
-function section(name,fn){try{fn();}catch(e){report(name,e);}}
-// the build yields between sections so the loading line can show progress; each stage's time is kept (console table with ?debug)
-const LOAD={t0:performance.now(),last:performance.now(),paint:performance.now(),name:'terrain',times:[]};
-const LOAD_LABEL={walls:'building the walls',jungle:'planting the jungle',life:'waking the city',textures:'painting surfaces',batch:'gathering the stonework',particles:'stirring the air',river:'filling the river',infill:'raising the houses'};
-function stage(name){const now=performance.now();LOAD.times.push({stage:LOAD.name,ms:Math.round(now-LOAD.last)});LOAD.last=now;LOAD.name=name;
-  const el=document.getElementById('loading');if(el)el.textContent='raising Iziz… '+(LOAD_LABEL[name]||name.replace(/-/g,' '));
-  if(now-LOAD.paint<70)return null;LOAD.paint=now;
-  return new Promise(r=>{let done=false;const go=()=>{if(!done){done=true;LOAD.paint=performance.now();setTimeout(r,0);}};requestAnimationFrame(go);setTimeout(go,120);});}
+<script type="module">
+import {report,section,stage,LOAD,configureLoading,installErrorHandlers} from './src/core/diag.js';
+import {createLcg,makeNoise,clamp,smooth,hash3,mkRng} from './src/core/rng.js';
+import {createEnv} from './src/core/env.js';
+import {createIzani} from './src/izani/atlas.js';
+// ---------- diagnostics: every error goes on screen, and one section failing does not stop the rest (src/core/diag.js) ----------
+installErrorHandlers();window.LOAD=LOAD;
+configureLoading({prefix:'raising Iziz… ',labels:{walls:'building the walls',jungle:'planting the jungle',life:'waking the city',textures:'painting surfaces',batch:'gathering the stonework',particles:'stirring the air',river:'filling the river',infill:'raising the houses'}});
 // ============================================================
 // Iziz — procedural massing model
 // everything below runs inside build(), which starts after the loading screen has had a chance to paint
@@ -43,200 +37,18 @@ function resolveCity(c){const skip=new Set(['name','note','districts','views','c
 // 5 infill buildings  6 detailing pass  7 walls / chasm / moat / bridges
 // ============================================================
 
-// ---------- deterministic randomness & noise ----------
+// ---------- deterministic randomness & noise (src/core/rng.js) ----------
 // the whole layout comes from this seed; #seed=N in the address builds a different city
 const SEED0=(()=>{try{const v=parseInt(new URLSearchParams(location.search).get('seed')||new URLSearchParams(location.hash.slice(1)).get('seed'),10);return v>0&&v<2147483647?v:1337;}catch(e){return 1337;}})();
-let seed=SEED0;
-function rnd(){seed=(seed*16807)%2147483647;return (seed-1)/2147483646;}
-function rr(a,b){return a+(b-a)*rnd();}
-function pick(arr){return arr[Math.floor(rnd()*arr.length)];}
-function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
-function smooth(e0,e1,x){const t=clamp((x-e0)/(e1-e0),0,1);return t*t*(3-2*t);}
-const perm=[];for(let i=0;i<512;i++)perm[i]=Math.floor(rnd()*256);
-function vn(x,z){
-  const xi=Math.floor(x),zi=Math.floor(z),xf=x-xi,zf=z-zi;
-  const h=(a,b)=>perm[(perm[a&255]+(b&255))&255]/255;
-  const u=xf*xf*(3-2*xf),v=zf*zf*(3-2*zf);
-  return h(xi,zi)*(1-u)*(1-v)+h(xi+1,zi)*u*(1-v)+h(xi,zi+1)*(1-u)*v+h(xi+1,zi+1)*u*v;
-}
-function fbm(x,z){return vn(x,z)*0.5+vn(x*2.1+7,z*2.1+3)*0.25+vn(x*4.3+1,z*4.3+9)*0.125;}
+const LCG=createLcg(SEED0);const rnd=LCG.rnd,rr=LCG.rr,pick=LCG.pick;
+const {perm,vn,fbm}=makeNoise(rnd);   // takes the first 512 draws of the seed, as it always has
 // ---------- a second random source for everything added on top of the city: keyed by position or on its own sequence, so the seeded layout above never shifts ----------
-function hash3(a,b,c){let h=Math.imul(Math.round(a*997)|0,374761393)^Math.imul(Math.round(b*991)|0,668265263)^Math.imul(Math.round(c*983)|0,1442695041);h=Math.imul(h^(h>>>13),1274126177);h^=h>>>16;return (h>>>0)/4294967296;}
-function mkRng(s){return ()=>{s=(s+0x6D2B79F5)|0;let t=Math.imul(s^(s>>>15),1|s);t=(t+Math.imul(t^(t>>>7),61|t))^t;return ((t^(t>>>14))>>>0)/4294967296;};}
 const xr=mkRng(20260915),xrr=(a,b)=>a+(b-a)*xr(),xpick=a=>a[Math.floor(xr()*a.length)];
-// ---------- shared shader inputs (updated once per frame) and the light/weather chunk every lit material receives ----------
-const ENV={izFw:{value:new THREE.Vector4(0,0,0,250)},izFwC:{value:new THREE.Color(1,1,1)},izGust:{value:1},izFog:{value:0},izDust:{value:0},izFlash:{value:0},izHour:{value:15},izTime:{value:0},izDay:{value:1},izNight:{value:0},izRain:{value:0},izWet:{value:0},izLight:{value:1},izWind:{value:new THREE.Vector2(0.82,0.36)},izSunDir:{value:new THREE.Vector3(0,1,0)},izCloudMap:{value:null},izCloudOn:{value:1},izPx:{value:600}};
-// a light's schedule is (on hour, off hour, flicker seed); off may run past midnight (25 = 01:00), a negative seed means no flicker on start-up
-const GLSL_LIT=`float izLitAt(float h,vec3 t){float hh=h<12.0?h+24.0:h;float l=smoothstep(t.x,t.x+0.12,hh)*(1.0-smoothstep(t.y,t.y+0.12,hh));float age=hh-t.x;if(t.z>=0.0&&age>0.0&&age<0.22){l*=step(0.42,fract(sin(floor(age*70.0)*12.9898+t.z*78.233)*43758.5453));}return l;}
-`;
-function litAt(h,on,off){const hh=h<12?h+24:h;return smooth(on,on+0.12,hh)*(1-smooth(off,off+0.12,hh));}
-const ENV_PARS=`uniform float izGust;uniform float izTime;uniform float izDay;uniform float izNight;uniform float izRain;uniform float izWet;uniform float izHour;uniform vec2 izWind;uniform sampler2D izCloudMap;uniform float izCloudOn;
-varying vec3 izWp;varying float izUp;varying float izH;varying float izTopGap;varying float izSide;
-`;
-const ENV_VERT=`{
-#ifdef USE_INSTANCING
-mat4 izM=modelMatrix*instanceMatrix;
-#else
-mat4 izM=modelMatrix;
-#endif
-izWp=(izM*vec4(transformed,1.0)).xyz;
-vec3 izN=normalize((izM*vec4(objectNormal,0.0)).xyz);
-izUp=izN.y;izSide=1.0-abs(izN.y);
-float izSy=length(izM[1].xyz);
-izH=position.y*izSy;izTopGap=(1.0-position.y)*izSy;
-}
-`;
-// clouds dim the direct light; rain darkens and cools upward faces; weathered materials get grime under their tops and a dark base band
-const ENV_FRAG=`float izCloudShade=1.0;
-{
-float izC=texture2D(izCloudMap,(izWp.xz+izWind*izTime*14.0)*0.0011).r;
-izCloudShade=1.0-mix(0.5*smoothstep(0.42,0.72,izC)*izCloudOn,0.45,izRain)*izDay;
-float izW=izWet*(0.45+0.55*clamp(izUp,0.0,1.0));
-diffuseColor.rgb*=1.0-0.3*izW;
-diffuseColor.rgb=mix(diffuseColor.rgb,diffuseColor.rgb*vec3(0.9,0.95,1.08),izW);
-#ifdef IZ_WEATHER
-float izU=izWp.x*1.4+izWp.z*1.13;float izCell=floor(izU);float izFr=fract(izU);
-float izR=fract(sin(izCell*91.7+3.1)*43758.5453);
-float izEdge=smoothstep(0.0,0.25,izFr)*(1.0-smoothstep(0.75,1.0,izFr));
-float izStreak=izR*izEdge*(1.0-smoothstep(0.3,5.5+3.0*izR,izTopGap))*izSide;
-float izBase=(1.0-smoothstep(0.0,2.2,izH))*izSide;
-diffuseColor.rgb*=1.0-0.3*izStreak-0.24*izBase;
-#endif
-}
-`;
-// cloth hanging from its top edge (box geometry, y 0..1) ripples across its thin local x
-const WIND_FLAG=a=>`{
-#ifdef USE_INSTANCING
-mat4 izMf=modelMatrix*instanceMatrix;
-#else
-mat4 izMf=modelMatrix;
-#endif
-float izSx=max(length(izMf[0].xyz),0.001);float izPh=izMf[3].x*0.37+izMf[3].z*0.23;
-float izHang=clamp(1.0-position.y,0.0,1.0);float izGust=0.65+0.35*sin(izTime*0.7+izPh);
-transformed.x+=izHang*izGust*(${a.toFixed(3)})/izSx*sin(izTime*2.6*sqrt(izGust)+position.z*2.4+izPh)*(1.0+izRain*0.6)*izGust;
-}
-`;
-// reeds (cone geometry, y 0..1) bend from the root
-const WIND_REED=a=>`{
-#ifdef USE_INSTANCING
-mat4 izMr=modelMatrix*instanceMatrix;
-#else
-mat4 izMr=modelMatrix;
-#endif
-float izSx=max(length(izMr[0].xyz),0.001);float izSz=max(length(izMr[2].xyz),0.001);float izPh=izMr[3].x*0.3+izMr[3].z*0.2;float izB=position.y*position.y;
-transformed.x+=izB*(${a.toFixed(3)})/izSx*(0.6*sin(izTime*1.7+izPh)+0.4*sin(izTime*3.1+izPh*1.7))*(1.0+izRain)*izGust;
-transformed.z+=izB*(${(a*0.5).toFixed(3)})/izSz*sin(izTime*1.3+izPh*2.3)*izGust;
-}
-`;
-// hanging ivy (plane geometry, y -1..0, facing +z) sways out from the wall
-const WIND_HANG=a=>`{
-#ifdef USE_INSTANCING
-mat4 izMh=modelMatrix*instanceMatrix;
-#else
-mat4 izMh=modelMatrix;
-#endif
-float izSz=max(length(izMh[2].xyz),0.001);float izPh=izMh[3].x*0.21+izMh[3].z*0.17;
-float izHang=clamp(-position.y,0.0,1.0);
-transformed.z+=izHang*izHang*(${a.toFixed(3)})/izSz*(0.6+0.4*sin(izTime*1.3+izPh))*(0.5+0.5*sin(izTime*2.1+position.x*3.0+izPh))*izGust;
-}
-`;
-function applyEnv(sh,o){
-  o=o||{};
-  for(const k of ['izGust','izTime','izDay','izNight','izRain','izWet','izHour','izWind','izCloudMap','izCloudOn'])sh.uniforms[k]=ENV[k];
-  let vs=ENV_PARS+(o.vpars||'')+sh.vertexShader,fs=(o.weather?'#define IZ_WEATHER\n':'')+ENV_PARS+(o.fpars||'')+sh.fragmentShader;
-  if(o.K)vs=vs.replace('#include <uv_vertex>',`#ifdef USE_UV
-{
-#ifdef USE_INSTANCING
-mat4 izMu=modelMatrix*instanceMatrix;
-#else
-mat4 izMu=modelMatrix;
-#endif
-vec3 izSc=vec3(length(izMu[0].xyz),length(izMu[1].xyz),length(izMu[2].xyz));
-vUv=uv*vec2(max(izSc.x,izSc.z),izSc.y)*${o.K.toFixed(4)};
-}
-#endif`);
-  if(o.lod){   // beyond a distance the object dithers out and is then not drawn at all (jungle: into the cut-outs; small details: simply gone)
-    const L0=(Array.isArray(o.lod)?o.lod[0]:540).toFixed(1),L1=(Array.isArray(o.lod)?o.lod[1]:600).toFixed(1),L2=((Array.isArray(o.lod)?o.lod[1]:600)+10).toFixed(1);
-    vs='varying float izLodF;\n'+vs.replace('#include <begin_vertex>',`#include <begin_vertex>
-{
-#ifdef USE_INSTANCING
-vec3 izLo=(modelMatrix*instanceMatrix*vec4(0.0,0.0,0.0,1.0)).xyz;
-#else
-vec3 izLo=(modelMatrix*vec4(0.0,0.0,0.0,1.0)).xyz;
-#endif
-float izLd=distance(cameraPosition.xz,izLo.xz);izLodF=smoothstep(${L0},${L1},izLd);if(izLd>${L2})transformed*=0.0;
-}`);
-    fs='varying float izLodF;\n'+fs.replace('#include <map_fragment>','if(izLodF>0.001&&fract(sin(dot(floor(gl_FragCoord.xy),vec2(12.9898,78.233)))*43758.5453)<izLodF)discard;\n#include <map_fragment>');}
-  if(o.uvVar)vs=vs.replace('#include <uv_vertex>','#include <uv_vertex>\n#ifdef USE_UV\nvUv.x=(vUv.x+izVar)/3.0;\n#endif');
-  const wind=o.wind?WIND_FLAG(o.wind):o.hang?WIND_HANG(o.hang):o.reed?WIND_REED(o.reed):'';
-  vs=vs.replace('#include <begin_vertex>','#include <begin_vertex>\n'+wind+(o.vbody||'')+ENV_VERT);
-  const mask=fs.includes('* getShadowMask();');   // clouds shade only the direct light when the chunk allows it
-  fs=fs.replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\n'+(o.fbody||'')+ENV_FRAG+(mask?'':'diffuseColor.rgb*=izCloudShade;\n'));
-  if(mask)fs=fs.replace('* getShadowMask();','* getShadowMask() * izCloudShade;');
-  sh.vertexShader=vs;sh.fragmentShader=fs;
-}
-function setEnv(m,o){const key='env'+JSON.stringify(o,(k,v)=>typeof v==='string'&&v.length>40?v.length+':'+v.slice(0,40):v);m.onBeforeCompile=sh=>applyEnv(sh,o);m.customProgramCacheKey=()=>key+(o.id||'');m.userData.env=true;m.needsUpdate=true;return m;}
-// unlit lamps: dim amber by day, full colour once their own schedule turns them on
-function lampHook(m,id){m.onBeforeCompile=sh=>{sh.uniforms.izHour=ENV.izHour;
-  sh.vertexShader='attribute vec3 izLightT;varying float izLit;uniform float izHour;\n'+GLSL_LIT+sh.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nizLit=izLitAt(izHour,izLightT);');
-  sh.fragmentShader='varying float izLit;\n'+sh.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\ndiffuseColor.rgb*=mix(0.22,1.0,izLit);');};
-  m.customProgramCacheKey=()=>'lamp'+(id||'');m.userData.env=true;return m;}
-function withLightT(g,n){const c=g.clone();c.setAttribute('izLightT',new THREE.InstancedBufferAttribute(new Float32Array(Math.max(1,n)*3),3));return c;}
-function setLT(im,i,on,off,sd){const a=im.geometry.attributes.izLightT;if(!a||i>=a.count)return;a.array[i*3]=on;a.array[i*3+1]=off;a.array[i*3+2]=sd;}
+// ---------- shared shader inputs (updated once per frame) and the light/weather chunk every lit material receives (src/core/env.js) ----------
+const {ENV,GLSL_LIT,litAt,applyEnv,setEnv,lampHook,withLightT,setLT}=createEnv();
 const glowT=[];   // per glow point: [on,off,seed] when it follows its own light
-// ---------- the Izani script, as set down in "The Izani Tongue": straight strokes branching off a stem, stemless vowel marks, tally numerals ----------
-const IZ=(()=>{
-  const S=[0,0,0,1];   // the stem; every stroke is [x1,y1,x2,y2] in an em box, y down, stem at x=0
-  const G={t:[S,[0,.12,.45,0]],d:[S,[0,.12,.45,0],[0,.47,.45,.35]],k:[S,[0,0,-.3,.2],[0,0,.3,.2]],
-    s:[S,[0,0,.45,.22]],z:[S,[0,0,.45,.22],[0,.45,.45,.67]],f:[S,[0,.1,.42,.1]],v:[S,[0,.1,.42,.1],[0,.42,.42,.42]],
-    th:[S,[0,0,-.45,.22]],sh:[S,[0,.12,-.45,0]],zh:[S,[0,.12,-.45,0],[0,.47,-.45,.35]],h:[S,[-.42,.35,.42,.35]],
-    m:[S,[0,1,.45,1]],n:[S,[0,1,-.45,1]],ng:[S,[-.42,1,.42,1]],l:[S,[.35,.05,0,.6]],r:[S,[-.35,.05,0,.6]],
-    y:[[0,.4,0,1],[-.35,0,0,.4],[.35,0,0,.4]],w:[[-.45,0,-.22,1],[-.22,1,0,.25],[0,.25,.22,1],[.22,1,.45,0]],
-    i:[[0,.05,0,.7]],a:[[-.3,.7,0,.05],[0,.05,.3,.7]],e:[[-.2,.05,.2,.375],[.2,.375,-.2,.7]],
-    o:[[0,.05,.25,.375],[.25,.375,0,.7],[0,.7,-.25,.375],[-.25,.375,0,.05]],u:[[-.3,.05,0,.7],[0,.7,.3,.05]]};
-  G.ae=G.o.concat([[0,-.02,0,.77]]);
-  const DI=['th','sh','zh','ng','ae'];
-  const letters=w=>{const out=[];const s2=w.toLowerCase();for(let i=0;i<s2.length;){const two=s2.slice(i,i+2);if(DI.includes(two)){out.push(two);i+=2;}else{out.push(s2[i]);i++;}}return out;};
-  const span=g=>{let a=0,b=0;for(const q of g){a=Math.min(a,q[0],q[2]);b=Math.max(b,q[0],q[2]);}return [a,b];};
-  function layout(text){const segs=[];let x=0;
-    text.trim().split(/\s+/).forEach((wd,wi)=>{if(wi)x+=0.62;const m=/^#(\d+)$/.exec(wd);
-      if(m){let n=+m[1];while(n>0){const grp=Math.min(5,n),gx=x;for(let j=0;j<Math.min(4,grp);j++){segs.push([x,.3,x,.95]);x+=0.24;}
-          if(grp===5)segs.push([gx-0.12,.92,x-0.12,.36]);n-=grp;x+=n>0?0.28:-0.24;}return;}
-      letters(wd).forEach((L,li)=>{const g=G[L];if(!g)return;const [a,b]=span(g);if(li)x+=0.34;x-=a;for(const q of g)segs.push([q[0]+x,q[1],q[2]+x,q[3]]);x+=b;});});
-    return {segs,width:Math.max(x,0.1)};}
-  const PICS={   // painted pictures, drawn the Izan way: straight strokes only
-    tree:[[0,.1,0,1],[0,.35,-.35,.1],[0,.35,.35,.1],[0,.6,-.4,.35],[0,.6,.4,.35],[-.3,1,.3,1]],
-    star:[[0,0,0,1],[-.45,.5,.45,.5],[-.33,.17,.33,.83],[-.33,.83,.33,.17]],
-    boat:[[-.6,.7,-.35,1],[-.35,1,.35,1],[.35,1,.6,.7],[-.6,.7,.6,.7],[0,.7,0,0],[0,0,.45,.55],[.45,.55,0,.55]],
-    burst:[[0,.5,0,0],[0,.5,.35,.15],[0,.5,.5,.5],[0,.5,.35,.85],[0,.5,0,1],[0,.5,-.35,.85],[0,.5,-.5,.5],[0,.5,-.35,.15]],
-    beast:[[-.6,.45,.35,.45],[-.6,.45,-.6,1],[-.35,.45,-.35,1],[.1,.45,.1,1],[.35,.45,.35,1],[.35,.45,.55,.25],[.55,.25,.75,.3],[.55,.25,.5,.05],[.62,.27,.7,.05],[-.6,.45,-.8,.7]],
-    fish:[[-.6,.5,-.2,.2],[-.2,.2,.3,.35],[.3,.35,.6,.1],[.6,.1,.6,.9],[.6,.9,.3,.65],[.3,.65,-.2,.8],[-.2,.8,-.6,.5],[-.35,.45,-.3,.45]]};
-  function draw(ctx,text,cx,cy,size,o){o=o||{};const L=o.pic?{segs:PICS[o.pic].map(q=>[q[0]+0.8,q[1],q[2]+0.8,q[3]]),width:1.6}:layout(text);let sz=size;if(o.maxW)sz=Math.min(sz,o.maxW/L.width);
-    const x0=cx-L.width*sz/2,y0=cy-sz*0.5,lw=Math.max(1,sz*(o.weight||0.09)),R=o.jitter?mkRng(o.seed||7):null;
-    const path=(dx,dy)=>{ctx.beginPath();for(const q of L.segs){const j=()=>R?(R()-0.5)*sz*o.jitter:0;ctx.moveTo(x0+q[0]*sz+dx+j(),y0+q[1]*sz+dy+j());ctx.lineTo(x0+q[2]*sz+dx+j(),y0+q[3]*sz+dy+j());}ctx.stroke();};
-    ctx.save();ctx.lineCap='square';ctx.lineJoin='miter';
-    if(o.style==='carve'){ctx.lineWidth=lw;ctx.strokeStyle='rgba(255,236,200,0.5)';path(lw*0.5,lw*0.5);ctx.strokeStyle=o.color||'rgba(34,24,14,0.96)';path(0,0);}
-    else if(o.style==='paint'){ctx.lineWidth=lw*1.9;ctx.strokeStyle='rgba(22,14,8,0.85)';path(0,0);ctx.lineWidth=lw;ctx.strokeStyle=o.color||'#f0dcaa';path(0,0);}
-    else if(o.style==='spray'){ctx.lineWidth=lw*1.15;ctx.strokeStyle=o.color||'#e0a030';ctx.shadowColor=o.color||'#e0a030';ctx.shadowBlur=lw*1.4;ctx.globalAlpha=0.55;path(0,0);ctx.globalAlpha=1;ctx.shadowBlur=0;ctx.lineWidth=lw;path(0,0);
-      const D=mkRng((o.seed||7)+11);ctx.lineWidth=Math.max(1,lw*0.35);for(const q of L.segs){if(D()>0.3)continue;const bx=x0+(q[1]>q[3]?q[0]:q[2])*sz,by=y0+Math.max(q[1],q[3])*sz;ctx.beginPath();ctx.moveTo(bx,by);ctx.lineTo(bx,by+lw*(1.5+D()*4));ctx.stroke();}}   // drips
-    else{ctx.lineWidth=lw;ctx.strokeStyle=o.color||'#222';path(0,0);}
-    ctx.restore();return L.width*sz;}
-  // one atlas holds every inscription and sign in the city; each gets its own region
-  const AW=2048,AH=2048,acv=document.createElement('canvas');acv.width=AW;acv.height=AH;const ag=acv.getContext('2d');let px=4,py=4,rowH=0;const REG={};let T=null;
-  function region(key,spec){if(REG[key])return REG[key];const h=spec.px||80,w=Math.min(AW-8,Math.round(h*spec.aspect));
-    if(px+w+4>AW){px=4;py+=rowH+8;rowH=0;}if(py+h>AH)report('izani atlas',new Error('the text atlas is full at '+key));const x=px,y=py;px+=w+8;rowH=Math.max(rowH,h);
-    ag.save();ag.beginPath();ag.rect(x,y,w,h);ag.clip();
-    if(spec.style==='paint'){ag.fillStyle=spec.bg||'#6b4a2e';ag.fillRect(x,y,w,h);const R=mkRng(key.length*17+3);ag.strokeStyle='rgba(0,0,0,0.16)';ag.lineWidth=1;
-      for(let k=0;k<8;k++){const yy=y+R()*h;ag.beginPath();ag.moveTo(x,yy);ag.lineTo(x+w,yy+(R()-0.5)*4);ag.stroke();}
-      ag.strokeStyle='rgba(20,12,6,0.8)';ag.lineWidth=Math.max(2,h*0.06);ag.strokeRect(x+h*0.05,y+h*0.05,w-h*0.1,h-h*0.1);}
-    const lines=spec.lines,lh=h/lines.length;
-    lines.forEach((t,i)=>draw(ag,t,x+w/2,y+lh*(i+0.5),lh*(i===0?(spec.pic?0.8:0.66):0.5),{style:spec.style==='graffiti'?'spray':spec.style,pic:spec.pic,color:spec.color,maxW:w*0.84,jitter:spec.style==='graffiti'?0.04:0,seed:key.length*3+(key.charCodeAt(2)||1),weight:spec.style==='graffiti'?0.13:0.09}));
-    ag.restore();if(T)T.needsUpdate=true;
-    return REG[key]={r:[x/AW,1-(y+h)/AH,(x+w)/AW,1-y/AH],spec,box:[x,y,w,h]};}
-  const texture=()=>{if(!T){T=new THREE.CanvasTexture(acv);T.anisotropy=4;}return T;};
-  function thumb(key,hPx){const R2=REG[key];if(!R2)return '';const [x,y,w,h]=R2.box,H2=hPx||44,W2=Math.round(H2*w/h),c=document.createElement('canvas');c.width=W2;c.height=H2;const g=c.getContext('2d');
-    if(R2.spec.style!=='paint'){g.fillStyle=R2.spec.style==='graffiti'?'#b9a98a':'#d8ccb0';g.fillRect(0,0,W2,H2);}g.drawImage(acv,x,y,w,h,0,0,W2,H2);try{return c.toDataURL();}catch(e){return '';}}
-  return {G,letters,layout,draw,region,texture,thumb,REG};})();
+// ---------- the Izani script, as set down in "The Izani Tongue" (src/izani/) ----------
+const IZ=createIzani({report});
 window._IZ=IZ;
 
 
