@@ -34,7 +34,8 @@ const r2=x=>Math.round(x*100)/100;
 setTimeout(async()=>{try{const out={};
  out.errors=(document.getElementById('errs')||{}).textContent||'';
  out.load=(typeof LOAD!=='undefined'&&LOAD.times)||null;out.loadMs=window._loadMs||null;
- out.details=window._details||null;out.res=window._res&&window._res.cur;out.fps=window._fps;
+ out.details=window._details||null;out.cull=window._cull||null;out.res=window._res&&window._res.cur;out.fps=window._fps;
+ if(window._IZ&&window._IZ.REG){const B=Object.values(window._IZ.REG).map(r=>r.box);out.atlasRegions=B.length;out.atlasMaxY=Math.max(...B.map(b=>b[1]+b[3]));out.atlasMaxX=Math.max(...B.map(b=>b[0]+b[2]));}
  if(rd){const inf=rd.info;let n=0,inst=0,cap=0,used=0,pts=0,meshes=0,nocull=0;const mats=new Set();sc.traverse(o=>{n++;if(o.isInstancedMesh){inst++;cap+=o.instanceMatrix.count;used+=o.count;}else if(o.isPoints)pts++;else if(o.isMesh)meshes++;if(o.material)mats.add(o.material);if(o.frustumCulled===false)nocull++;});
   frames=frames.slice(-120);const srt=[...frames].sort((a,b)=>a-b);
   Object.assign(out,{calls:inf.render.calls,triangles:inf.render.triangles,programs:inf.programs.length,textures:inf.memory.textures,objects:n,instanced:inst,instCap:cap,instUsed:used,points:pts,meshes,materials:mats.size,noCull:nocull,
@@ -139,13 +140,15 @@ def main():
     if not a.quiet:
         e = report.get("errors", "")
         print("errors:", "none" if not e else e.strip()[:400])
-        keys = ["loadMs", "calls", "triangles", "programs", "textures", "objects", "instanced", "instCap", "instUsed", "noCull", "frameP50", "frameP95", "res", "fps", "lots", "lotHash", "doors", "doorHash"]
+        keys = ["loadMs", "atlasRegions", "atlasMaxX", "atlasMaxY", "calls", "triangles", "programs", "textures", "objects", "instanced", "instCap", "instUsed", "noCull", "frameP50", "frameP95", "res", "fps", "lots", "lotHash", "doors", "doorHash"]
         for k in keys:
             if k in report:
                 print(f"{k}: {report[k]}")
         if report.get("load"):
             top = sorted(report["load"], key=lambda t: -t["ms"])[:5]
             print("slowest stages:", ", ".join(f"{t['stage']} {t['ms']}ms" for t in top))
+        if report.get("cull"):
+            print("cull:", json.dumps(report["cull"]))
         if report.get("details"):
             print("details:", json.dumps(report["details"]))
     return 1 if report.get("errors") else 0
