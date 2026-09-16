@@ -32,7 +32,7 @@ THREE.WebGLRenderer=function(o){const r=new W(o);rd=r;const R0=r.render;r.render
 const rep=o=>{new Image().src='/__probe?'+encodeURIComponent(JSON.stringify(o));};
 const sha=async s=>{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');};
 const r2=x=>Math.round(x*100)/100;
-setTimeout(async()=>{try{const out={};
+setTimeout(async()=>{try{const out={};const IZ=window._iz||{};for(const k of ['details','cull','res','fps','IZ','loadMs','lotList','doorList','artPrints'])if(window['_'+k]===undefined&&IZ[k]!==undefined)window['_'+k]=IZ[k];
  out.errors=((document.getElementById('errs')||{}).textContent||'')+(window.__probeErrs.length?' | early: '+window.__probeErrs.join('; '):'');out.three=window.THREE&&THREE.REVISION;
  out.load=(window.LOAD||(typeof LOAD!=='undefined'?LOAD:null)||{}).times||null;out.loadMs=window._loadMs||null;
  out.details=window._details||null;out.cull=window._cull||null;out.res=window._res&&window._res.cur;out.fps=window._fps;
@@ -46,7 +46,7 @@ setTimeout(async()=>{try{const out={};
  rep(out);}catch(e){rep({probeError:String(e)});}},WAIT);})();</script>"""
 
 EXPOSE = ("window._lots=lots.filter(l=>!l.fixed).length;",
-          "window._lots=lots.filter(l=>!l.fixed).length;window._lotList=lots;window._doorList=doors;")
+          "window._lots=lots.filter(l=>!l.fixed).length;window._lotList=lots;window._doorList=doors;")   # only needed for pages older than the stage split
 
 
 def firefox_cmd():
@@ -108,6 +108,7 @@ def main():
     toml = os.path.join(work, "site.toml")
     open(toml, "w").write("\n".join(lines))
 
+    subprocess.run([sys.executable, os.path.join(ROOT, "tools", "build-page.py")], stdout=subprocess.DEVNULL)   # build.js current
     log = open(os.path.join(work, "server.log"), "w+")
     srv = subprocess.Popen([sys.executable, os.path.join(ROOT, "server.py"), "--config", toml], stderr=log, stdout=subprocess.DEVNULL)
     time.sleep(0.8)

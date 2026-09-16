@@ -27,6 +27,8 @@ const S=[0,0,0,1];   // the stem; every stroke is [x1,y1,x2,y2] in an em box, y 
     fish:[[-.6,.5,-.2,.2],[-.2,.2,.3,.35],[.3,.35,.6,.1],[.6,.1,.6,.9],[.6,.9,.3,.65],[.3,.65,-.2,.8],[-.2,.8,-.6,.5],[-.35,.45,-.3,.45]]};
 export {S,G,DI,letters,span,layout,PICS};
 // an inline SVG of a word, in the style the Tongue page uses (pad 0.12 em, square caps)
-export function glyphSVG(text,o){o=o||{};const pad=o.pad===undefined?0.12:o.pad,L=layout(text),W=L.width+2*pad,H=1+2*pad,f=v=>(v+pad).toFixed(3),h=o.height||18;
-  const lines=L.segs.map(q=>`<line x1="${f(q[0])}" y1="${f(q[1])}" x2="${f(q[2])}" y2="${f(q[3])}"/>`).join('');
+export function glyphSVG(text,o){o=o||{};const pad=o.pad===undefined?0.12:o.pad,L=layout(text),h=o.height||18;   // sized to the strokes' bounding box (a tally cross overhangs its first bar)
+  let x0=Infinity,x1=-Infinity;for(const q of L.segs){x0=Math.min(x0,q[0],q[2]);x1=Math.max(x1,q[0],q[2]);}if(!L.segs.length){x0=0;x1=0.1;}
+  const W=x1-x0+2*pad,H=1+2*pad,fx=v=>(v-x0+pad).toFixed(3),fy=v=>(v+pad).toFixed(3);
+  const lines=L.segs.map(q=>`<line x1="${fx(q[0])}" y1="${fy(q[1])}" x2="${fx(q[2])}" y2="${fy(q[3])}"/>`).join('');
   return `<svg class="gl" role="img" aria-label="${text} in Izani script" viewBox="0 0 ${W.toFixed(3)} ${H.toFixed(3)}" style="height:${h}px;width:${(h*W/H).toFixed(1)}px"><g stroke="${o.color||'#1f2d25'}" stroke-width="${(o.weight||0.085).toFixed(3)}" stroke-linecap="square" fill="none">${lines}</g></svg>`;}

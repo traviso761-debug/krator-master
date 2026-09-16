@@ -15,7 +15,7 @@ fi
 
 sc() { systemctl --user "$@"; }
 
-check() { python3 "$DIR/server.py" --config "$CONFIG" --check; }
+check() { python3 "$DIR/tools/build-page.py" >/dev/null && python3 "$DIR/server.py" --config "$CONFIG" --check; }
 
 port() { python3 -c 'import sys,tomllib;print(tomllib.load(open(sys.argv[1],"rb")).get("server",{}).get("port",8000))' "$CONFIG"; }
 
@@ -56,6 +56,7 @@ case "$cmd" in
   reload|apply)
             check && sc reload "$UNIT" && sleep 0.5 && journalctl --user -u "$UNIT" -n 3 --no-pager -o cat ;;
   check)    check ;;
+  build)    python3 "$DIR/tools/build-page.py" ;;
   logs)     journalctl --user -u "$UNIT" -n "${1:-50}" --no-pager ;;
   follow|tail)
             journalctl --user -fu "$UNIT" ;;
@@ -66,8 +67,10 @@ case "$cmd" in
   health)   curl -fsS "http://127.0.0.1:$(port)/healthz" ;;
   boot)     echo "Starting at boot needs root once:"; echo "  sudo loginctl enable-linger $USER"
             loginctl show-user "$USER" -p Linger ;;
-  test)     # headless Firefox: the page must build without errors and lay out the same city as the golden files
-            rc=0; for g in "$DIR"/tests/golden/iziz-*.json; do seed="${g##*-}"; seed="${seed%.json}"
+  test)     # 1. pure modules under gjs; 2. headless Firefox: the page must build without errors and lay out the same city as the golden files
+            rc=0; if command -v gjs >/dev/null; then gjs -m "$DIR/tests/run.js" || rc=1; else echo "gjs not installed: skipping module tests"; fi
+            check >/dev/null || exit 1
+            for g in "$DIR"/tests/golden/iziz-*.json; do seed="${g##*-}"; seed="${seed%.json}"
               echo "== seed $seed"; python3 "$DIR/tools/probe.py" --seed "$seed" --wait "${1:-12}" --port $((8400 + seed % 100)) --expect "$g" | grep -E '^(errors|layout|LAYOUT|loadMs)' || rc=1
             done; exit $rc ;;
   probe)    python3 "$DIR/tools/probe.py" "$@" ;;
