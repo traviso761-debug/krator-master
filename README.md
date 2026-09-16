@@ -11,7 +11,7 @@ Which URLs exist is decided by `site.toml`.
 |---|---|---|---|
 | `/` | `/index.html`, `/iziz`, `/iziz.html` | `iziz.html` | Iziz: massing model |
 | `/tongue` | `/izani-tongue` | `The-Izani-Tongue_2.html` | The Izani Tongue |
-| `/image.png` | | `image.png` | The Iziz painting (also hung inside the city model) |
+| `/painting.jpg` | | `painting.jpg` | The Iziz painting (also hung inside the city model); `image.png` is the master copy |
 | `/healthz` | | (built in) | Returns `ok`, for checking the server is up |
 
 Any other URL returns 404, including every file in this folder that isn't listed above.
@@ -24,12 +24,13 @@ device needs internet access. Izani script images (thumbnails, signs) are drawn 
 there are no image files to serve, except the painting below. The page has no sub-pages.
 Its state lives in the URL.
 
-**The painting in the city.** On load, the page fetches `image.png` (a relative URL, so it resolves to
-`/image.png`) and swaps 6 wall posters in the inner city for framed prints of it. Clicking a building
+**The painting in the city.** On load, the page fetches `painting.jpg` (a relative URL, so it resolves to
+`/painting.jpg`) and swaps 6 wall posters in the inner city for framed prints of it. Clicking a building
 with a print says "a framed print of the Iziz painting". If the image can't load, the posters stay as
 they are. The settings are in `iziz.html`: search for `const ART=` to change the file, the count or
-the frame colour. To use a different image, replace `image.png` (same name, no restart), or change
-`src` there and add a route for the new file in `site.toml`.
+the frame colour. To use a different image, replace `painting.jpg` (same name, no restart; re-encode from `image.png` with
+`python3 -c "from PIL import Image; Image.open('image.png').convert('RGB').save('painting.jpg',quality=88,optimize=True)"`),
+or change `src` there and add a route for the new file in `site.toml`.
 
 **Query parameters** (`/?seed=42`)
 
@@ -95,6 +96,7 @@ Add `id="syntax"` etc. to the `<section>` tags in the HTML to enable that.
 | File | Why |
 |---|---|
 | `The-Izani-Tongue_2.pdf` | Print version of the Tongue page (private). To publish it, add a `[[route]]`. |
+| `image.png` | Master copy of the painting (1 MB); `painting.jpg` is what is served |
 | `server.py`, `site.toml`, `sitectl`, `README.md` | Backend |
 
 ## Files

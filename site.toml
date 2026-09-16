@@ -32,8 +32,8 @@ file = "iziz.html"
 title = "Iziz: massing model"
 
 [[route]]
-path = "/image.png"     # the painting; iziz.html hangs it as framed prints in the city
-file = "image.png"
+path = "/painting.jpg"  # the painting; iziz.html hangs it as framed prints in the city (image.png is the master copy)
+file = "painting.jpg"
 title = "Iziz painting"
 
 [[route]]

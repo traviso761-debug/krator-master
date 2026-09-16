@@ -10,6 +10,7 @@ Send SIGHUP (systemctl --user reload iziz) to re-read the config without a resta
 """
 import argparse
 import email.utils
+import gzip
 import http.server
 import mimetypes
 import os
@@ -21,7 +22,8 @@ import urllib.parse
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_CONFIG = os.path.join(ROOT, "site.toml")
-TEXT_TYPES = ("application/javascript", "application/json", "image/svg+xml")
+TEXT_TYPES = ("application/javascript", "application/json", "image/svg+xml", "application/toml")
+GZIP_MIN = 1024   # smaller bodies are not worth compressing
 
 
 class ConfigError(Exception):
@@ -114,7 +116,8 @@ SITE = None
 
 
 class Handler(http.server.BaseHTTPRequestHandler):
-    server_version = "Iziz/1.0"
+    server_version = "Iziz/1.1"
+    protocol_version = "HTTP/1.1"   # keep-alive: one connection serves the page and everything it loads
 
     def do_GET(self):
         self.serve(send_body=True)
@@ -149,21 +152,58 @@ class Handler(http.server.BaseHTTPRequestHandler):
             return
         with f:
             st = os.fstat(f.fileno())
+            etag = f'"{st.st_mtime_ns:x}-{st.st_size:x}"'
+            modified = email.utils.formatdate(st.st_mtime, usegmt=True)
+            if self.not_modified(etag, st.st_mtime):
+                self.send_response(304)
+                self.send_header("ETag", etag)
+                self.send_header("Last-Modified", modified)
+                for k, v in headers.items():
+                    self.send_header(k, v)
+                self.end_headers()
+                return
             ctype = mimetypes.guess_type(file)[0] or "application/octet-stream"
-            if ctype.startswith("text/") or ctype in TEXT_TYPES:
+            text = ctype.startswith("text/") or ctype in TEXT_TYPES
+            if text:
                 ctype += "; charset=utf-8"
+            body = None
+            encoding = None
+            if text and st.st_size >= GZIP_MIN and "gzip" in self.headers.get("Accept-Encoding", ""):
+                body = gzip.compress(f.read(), compresslevel=6, mtime=0)
+                encoding = "gzip"
             self.send_response(200)
             self.send_header("Content-Type", ctype)
-            self.send_header("Content-Length", str(st.st_size))
-            self.send_header("Last-Modified", email.utils.formatdate(st.st_mtime, usegmt=True))
+            self.send_header("Content-Length", str(len(body) if body is not None else st.st_size))
+            self.send_header("Last-Modified", modified)
+            self.send_header("ETag", etag)
+            if encoding:
+                self.send_header("Content-Encoding", encoding)
+            self.send_header("Vary", "Accept-Encoding")
             for k, v in headers.items():
                 self.send_header(k, v)
             self.end_headers()
             if send_body:
                 try:
-                    shutil.copyfileobj(f, self.wfile)
+                    if body is not None:
+                        self.wfile.write(body)
+                    else:
+                        shutil.copyfileobj(f, self.wfile)
                 except (BrokenPipeError, ConnectionResetError):
                     pass
+
+    def not_modified(self, etag, mtime):
+        """True when the client's cached copy is still current."""
+        inm = self.headers.get("If-None-Match")
+        if inm:
+            return etag in [t.strip() for t in inm.split(",")]
+        ims = self.headers.get("If-Modified-Since")
+        if ims:
+            try:
+                since = email.utils.parsedate_to_datetime(ims).timestamp()
+            except (TypeError, ValueError):
+                return False
+            return int(mtime) <= int(since)
+        return False
 
     def log_request(self, code="-", size="-"):
         if SITE.log_requests:
