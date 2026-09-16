@@ -1,5 +1,12 @@
 # City of Iziz: architecture audit
 
+> **Outcome (same day).** Everything in §6 and steps 1–5 of §7 is done, plus a second data-driven city
+> (`?city=iziz-b`) and a second engine page (`chicago.html`). See the README for the new layout. What is
+> **not** done, on purpose: the three.js version bump (needs a visual re-tune of every light and
+> material, §3.7), the light-count reduction (§2.5, look-sensitive), the atlas shrink (§2.6) and
+> wrapping the UI tail in `section()` (§3.2). Line numbers below refer to the single-file page as it
+> was; the same code now lives in `src/iziz/stages/`.
+
 Date: 2026-09-16. Covers `server.py`/`sitectl`/`site.toml`, `iziz.html` (the city model), and
 `The-Izani-Tongue_2.html`. Line numbers refer to `iziz.html` as of this date (4232 lines, 467 KB).
 
