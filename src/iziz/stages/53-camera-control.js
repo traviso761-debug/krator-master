@@ -117,8 +117,9 @@ const tourBtn=document.createElement('button');tourBtn.textContent='Tour the vie
 const izBtn=document.createElement('button');izBtn.textContent='The Izani tongue';moreRow.append(walkBtn,tourBtn,izBtn);
 const cityRow=document.createElement('div');cityRow.className='row';
 const newCityBtn=document.createElement('button');newCityBtn.textContent='Build a different city';cityRow.append(newCityBtn);
-const cityURL=n=>{const base=location.href.split(/[?#]/)[0],q=[];if(n)q.push('seed='+n);if(/debug/.test(location.search))q.push('debug');return base+(q.length?'?'+q.join('&'):'');};
-if(SEED0!==1337){const back=document.createElement('button');back.textContent='The original Iziz';back.onclick=()=>{ctx.leaving=true;location.href=cityURL(0);};cityRow.append(back);document.getElementById('seedtag').textContent='city '+SEED0;}
+const cityURL=n=>{const base=location.href.split(/[?#]/)[0],q=[];if(CITY_ID!=='iziz')q.push('city='+CITY_ID);if(n)q.push('seed='+n);if(/debug/.test(location.search))q.push('debug');return base+(q.length?'?'+q.join('&'):'');};
+if(SEED0!==SEED_DEFAULT){const back=document.createElement('button');back.textContent='The original '+(DATA.city.name||'Iziz');back.onclick=()=>{ctx.leaving=true;location.href=cityURL(0);};cityRow.append(back);}
+if(SEED0!==SEED_DEFAULT||CITY_ID!=='iziz')document.getElementById('seedtag').textContent=(CITY_ID!=='iziz'?(DATA.city.name||CITY_ID)+' · ':'')+'city '+SEED0;
 viewsEl.append(svHead,svList,svRow,lkRow,moreHead,moreRow,cityRow,svStatus);
 function persistViews(){try{localStorage.setItem(SV_KEY,JSON.stringify(savedViews));return true;}catch(e){return false;}}
 function codeLine(sv){return JSON.stringify(sv.name)+':['+sv.v.join(',')+'],';}
@@ -138,7 +139,7 @@ function saveView(){let name=svName.value.trim()||('View '+(savedViews.length+1)
 svBtn.onclick=saveView;
 // the address keeps the view, the hour, the display and the weather, so a link reopens exactly this
 const HASH_OK={wire:['off','edges','triangles'],under:['solid','hidden','xray'],colour:['textured','clay','districts'],weather:['auto','clear','rain','fog','dust','windy'],day:['120','360','720','1440']};
-function stateToHash(){const seedPart=SEED0!==1337?'seed='+SEED0+'&':'';const r1=x=>Math.round(x*10)/10,p=camera.position,t=ctl.target,h=hourNow(clockPaused?pausedAt:performance.now()-clockOffset);
+function stateToHash(){const seedPart=SEED0!==SEED_DEFAULT?'seed='+SEED0+'&':'';const r1=x=>Math.round(x*10)/10,p=camera.position,t=ctl.target,h=hourNow(clockPaused?pausedAt:performance.now()-clockOffset);
   const parts=['v='+[p.x,p.y,p.z,t.x,t.y,t.z].map(r1).join(','),'t='+(Math.round(h*20)/20)];
   if(clockPaused)parts.push('paused');
   if(DISPLAY.wire!=='off')parts.push('wire='+DISPLAY.wire,'under='+DISPLAY.under);
