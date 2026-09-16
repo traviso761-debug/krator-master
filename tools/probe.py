@@ -34,7 +34,7 @@ const sha=async s=>{const b=await crypto.subtle.digest('SHA-256',new TextEncoder
 const r2=x=>Math.round(x*100)/100;
 setTimeout(async()=>{try{const out={};
  out.errors=((document.getElementById('errs')||{}).textContent||'')+(window.__probeErrs.length?' | early: '+window.__probeErrs.join('; '):'');out.three=window.THREE&&THREE.REVISION;
- out.load=(typeof LOAD!=='undefined'&&LOAD.times)||null;out.loadMs=window._loadMs||null;
+ out.load=(window.LOAD||(typeof LOAD!=='undefined'?LOAD:null)||{}).times||null;out.loadMs=window._loadMs||null;
  out.details=window._details||null;out.cull=window._cull||null;out.res=window._res&&window._res.cur;out.fps=window._fps;
  if(window._IZ&&window._IZ.REG){const B=Object.values(window._IZ.REG).map(r=>r.box);out.atlasRegions=B.length;out.atlasMaxY=Math.max(...B.map(b=>b[1]+b[3]));out.atlasMaxX=Math.max(...B.map(b=>b[0]+b[2]));}
  if(rd){const inf=rd.info;let n=0,inst=0,cap=0,used=0,pts=0,meshes=0,nocull=0;const mats=new Set();sc.traverse(o=>{n++;if(o.isInstancedMesh){inst++;cap+=o.instanceMatrix.count;used+=o.count;}else if(o.isPoints)pts++;else if(o.isMesh)meshes++;if(o.material)mats.add(o.material);if(o.frustumCulled===false)nocull++;});
