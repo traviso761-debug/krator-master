@@ -1,0 +1,749 @@
+{
+ "name": "Portland",
+ "note": "Configuration for portland.html (the same engine as chicago.html). The geography comes from OpenStreetMap via tools/fetch-osm.py portland and tools/build-osm-city.py portland into portland-osm.json. This file holds landmark decorations and cards, the detailed street areas and viewpoints. Positions are [lat, lon]. The model is flat: the West Hills are not raised.",
+ "origin": [
+  45.5189,
+  -122.6793
+ ],
+ "defaultSeed": 1851,
+ "defaultView": "Skyline from the east bank",
+ "bounds": [
+  45.492,
+  -122.72,
+  45.544,
+  -122.636
+ ],
+ "osm": "data/cities/portland-osm.json",
+ "fetch": {
+  "bbox": [
+   45.49,
+   -122.722,
+   45.546,
+   -122.634
+  ],
+  "tiles": {
+   "buildings": [
+    2,
+    2
+   ],
+   "roads": [
+    1,
+    2
+   ]
+  },
+  "detailZones": [
+   [
+    45.49,
+    -122.722,
+    45.546,
+    -122.634
+   ]
+  ],
+  "_": "the whole map is a detail zone: every building is kept"
+ },
+ "riverTours": "Willamette",
+ "riverBoats": {
+  "sail": 6,
+  "motor": 10,
+  "kayak": 14
+ },
+ "districts": {
+  "_": "[name, hex colour, base height, tallest, box as [lat south, lon west, lat north, lon east]]",
+  "downtown": [
+   "Downtown",
+   "#5c6a80",
+   20,
+   160,
+   [
+    45.508,
+    -122.686,
+    45.523,
+    -122.67
+   ]
+  ],
+  "pearl": [
+   "Pearl District",
+   "#8a5a48",
+   15,
+   60,
+   [
+    45.523,
+    -122.688,
+    45.534,
+    -122.676
+   ]
+  ],
+  "oldtown": [
+   "Old Town Chinatown",
+   "#9a6a4a",
+   10,
+   40,
+   [
+    45.521,
+    -122.678,
+    45.53,
+    -122.668
+   ]
+  ],
+  "nobhill": [
+   "Northwest (Nob Hill)",
+   "#8a6a54",
+   8,
+   30,
+   [
+    45.523,
+    -122.71,
+    45.544,
+    -122.688
+   ]
+  ],
+  "goosehollow": [
+   "Goose Hollow",
+   "#7a6a5a",
+   8,
+   40,
+   [
+    45.51,
+    -122.71,
+    45.523,
+    -122.686
+   ]
+  ],
+  "southwaterfront": [
+   "South Waterfront",
+   "#6f7f92",
+   10,
+   100,
+   [
+    45.492,
+    -122.68,
+    45.508,
+    -122.66
+   ]
+  ],
+  "lloyd": [
+   "Lloyd District",
+   "#6a7a88",
+   10,
+   80,
+   [
+    45.526,
+    -122.67,
+    45.544,
+    -122.636
+   ]
+  ],
+  "centraleastside": [
+   "Central Eastside",
+   "#7a6e62",
+   8,
+   30,
+   [
+    45.5,
+    -122.67,
+    45.526,
+    -122.636
+   ]
+  ],
+  "outer": [
+   "Neighbourhoods",
+   "#8a8478",
+   6,
+   15,
+   null
+  ]
+ },
+ "focus": [
+  {
+   "name": "Pioneer Courthouse Square",
+   "at": [
+    45.5189,
+    -122.6793
+   ],
+   "radius": 380
+  },
+  {
+   "name": "Pearl District",
+   "at": [
+    45.5268,
+    -122.6822
+   ],
+   "radius": 420
+  },
+  {
+   "name": "Old Town and Chinatown",
+   "at": [
+    45.524,
+    -122.673
+   ],
+   "radius": 300
+  },
+  {
+   "name": "Tom McCall Waterfront Park",
+   "at": [
+    45.515,
+    -122.6735
+   ],
+   "radius": 380,
+   "parked": false
+  }
+ ],
+ "el": {
+  "height": 8,
+  "trainCars": 2,
+  "_": "MAX light rail and the Portland Streetcar run at grade on their mapped tracks"
+ },
+ "landmarks": [
+  {
+   "name": "U.S. Bancorp Tower",
+   "aka": [
+    "Big Pink"
+   ],
+   "at": [
+    45.52244,
+    -122.67617
+   ],
+   "height": 166,
+   "info": "111 SW 5th Ave · 1983 · 166 m. 'Big Pink', for the pink granite and glass that glows at sunset.",
+   "colour": "#b8857a"
+  },
+  {
+   "name": "Wells Fargo Center",
+   "at": [
+    45.5143,
+    -122.67926
+   ],
+   "height": 166,
+   "decor": [
+    [
+     "mast",
+     0,
+     0,
+     20
+    ]
+   ],
+   "info": "1300 SW 5th Ave · 1972 · 166 m, the tallest building in Oregon."
+  },
+  {
+   "name": "KOIN Center",
+   "aka": [
+    "KOIN Tower"
+   ],
+   "at": [
+    45.51313,
+    -122.67787
+   ],
+   "height": 155,
+   "decor": [
+    [
+     "spire",
+     0,
+     0,
+     18
+    ]
+   ],
+   "info": "222 SW Columbia St · 1984 · 155 m. Brick and glass under a pointed blue roof."
+  },
+  {
+   "name": "Park Avenue West",
+   "at": [
+    45.51935,
+    -122.68105
+   ],
+   "height": 152,
+   "info": "760 SW 9th Ave · 2016 · 152 m, finished years after its foundations sat as a hole in the ground through the recession."
+  },
+  {
+   "name": "The Portland Building",
+   "at": [
+    45.51567,
+    -122.67869
+   ],
+   "decor": [
+    [
+     "statue",
+     -18,
+     0,
+     11
+    ]
+   ],
+   "info": "1120 SW 5th Ave · 1982 · Michael Graves. The first major postmodern building; Portlandia kneels over the entrance."
+  },
+  {
+   "name": "Pioneer Courthouse Square",
+   "at": [
+    45.5189,
+    -122.67932
+   ],
+   "info": "'Portland's living room' · 1984 · a brick plaza stepped down like an amphitheatre, with the Weather Machine that forecasts at noon."
+  },
+  {
+   "name": "Pioneer Courthouse",
+   "at": [
+    45.51863,
+    -122.67836
+   ],
+   "decor": [
+    [
+     "cupola",
+     0,
+     0,
+     10
+    ]
+   ],
+   "info": "700 SW 6th Ave · 1875 · the oldest federal building in the Pacific Northwest, with its octagonal cupola."
+  },
+  {
+   "name": "Powell's City of Books",
+   "at": [
+    45.52327,
+    -122.68172
+   ],
+   "info": "1005 W Burnside St · the largest independent bookstore in the world, a full city block of colour-coded rooms."
+  },
+  {
+   "name": "Union Station",
+   "at": [
+    45.52896,
+    -122.67664
+   ],
+   "decor": [
+    [
+     "clocktower",
+     0,
+     0,
+     46
+    ]
+   ],
+   "info": "800 NW 6th Ave · 1896 · the clock tower carries 'Go By Train' in neon."
+  },
+  {
+   "name": "White Stag sign",
+   "aka": [
+    "Portland Oregon sign"
+   ],
+   "at": [
+    45.52345,
+    -122.67077
+   ],
+   "model": "sign",
+   "info": "White Stag Building, Old Town · 1940 · the neon 'Portland Oregon' sign with its leaping stag, over the west end of the Burnside Bridge."
+  },
+  {
+   "name": "Steel Bridge",
+   "at": [
+    45.52706,
+    -122.67008
+   ],
+   "model": "liftbridge",
+   "towerH": 60,
+   "info": "1912 · a double-deck vertical-lift bridge: trains and MAX on the lower deck, cars and MAX above."
+  },
+  {
+   "name": "Hawthorne Bridge",
+   "at": [
+    45.5132,
+    -122.6702
+   ],
+   "model": "liftbridge",
+   "towerH": 50,
+   "info": "1910 · the oldest vertical-lift bridge in operation in the United States."
+  },
+  {
+   "name": "Burnside Bridge",
+   "at": [
+    45.523,
+    -122.6679
+   ],
+   "model": "bascule",
+   "info": "1926 · a double-leaf bascule bridge, the planned seismic lifeline across the river."
+  },
+  {
+   "name": "Morrison Bridge",
+   "at": [
+    45.5174,
+    -122.6696
+   ],
+   "model": "bascule",
+   "info": "1958 · a bascule bridge whose leaves are among the longest of their kind."
+  },
+  {
+   "name": "Broadway Bridge",
+   "at": [
+    45.5317,
+    -122.6737
+   ],
+   "model": "bascule",
+   "info": "1913 · a Rall-type bascule bridge, painted 'Golden Gate red'."
+  },
+  {
+   "name": "Fremont Bridge",
+   "at": [
+    45.53725,
+    -122.68379
+   ],
+   "model": "arch",
+   "archH": 116,
+   "span": 382,
+   "info": "1973 · a tied-arch bridge, 116 m above the river at its crown."
+  },
+  {
+   "name": "Marquam Bridge",
+   "at": [
+    45.50928,
+    -122.66707
+   ],
+   "info": "1966 · the double-deck Interstate 5 crossing."
+  },
+  {
+   "name": "Tilikum Crossing",
+   "at": [
+    45.50506,
+    -122.66664
+   ],
+   "model": "cablestay",
+   "towerH": 55,
+   "info": "2015 · 'Bridge of the People': a cable-stayed bridge for MAX, streetcars, buses, bikes and walkers, with no cars."
+  },
+  {
+   "name": "Tom McCall Waterfront Park",
+   "at": [
+    45.52128,
+    -122.67093
+   ],
+   "info": "Built in 1978 where Harbor Drive, a freeway, used to run along the river."
+  },
+  {
+   "name": "Salmon Street Springs",
+   "at": [
+    45.51537,
+    -122.6733
+   ],
+   "model": "fountain",
+   "w": 16,
+   "info": "Tom McCall Waterfront Park · 1988 · 185 jets that children run through on summer days."
+  },
+  {
+   "name": "Mill Ends Park",
+   "at": [
+    45.51622,
+    -122.67325
+   ],
+   "info": "SW Naito Pkwy and Taylor St · the smallest park in the world, 61 cm across, in the median."
+  },
+  {
+   "name": "Skidmore Fountain",
+   "at": [
+    45.52241,
+    -122.67109
+   ],
+   "model": "fountain",
+   "w": 8,
+   "info": "1888 · the city's oldest piece of public art, beside the Saturday Market."
+  },
+  {
+   "name": "Lan Su Chinese Garden",
+   "at": [
+    45.52569,
+    -122.67296
+   ],
+   "info": "239 NW Everett St · 2000 · a walled Suzhou-style garden around a lake."
+  },
+  {
+   "name": "Chinatown Gate",
+   "at": [
+    45.52329,
+    -122.67441
+   ],
+   "model": "gate",
+   "info": "NW 4th Ave and W Burnside St · 1986 · five roofs and two bronze lions."
+  },
+  {
+   "name": "Vera Katz Eastbank Esplanade",
+   "at": [
+    45.517,
+    -122.6665
+   ],
+   "info": "A 2.4 km path on the east bank, with a floating walkway on the river."
+  },
+  {
+   "name": "Oregon Museum of Science and Industry",
+   "aka": [
+    "OMSI"
+   ],
+   "at": [
+    45.50835,
+    -122.66591
+   ],
+   "model": "submarine",
+   "info": "1945 SE Water Ave · the USS Blueback, the submarine from The Hunt for Red October, is moored beside it."
+  },
+  {
+   "name": "Oregon Convention Center",
+   "at": [
+    45.52814,
+    -122.66318
+   ],
+   "decor": [
+    [
+     "spire",
+     -60,
+     0,
+     76
+    ],
+    [
+     "spire",
+     60,
+     0,
+     76
+    ]
+   ],
+   "info": "777 NE MLK Jr Blvd · 1990 · the twin glass spires are lit at night."
+  },
+  {
+   "name": "Moda Center",
+   "at": [
+    45.53156,
+    -122.6669
+   ],
+   "info": "1 N Center Ct St · 1995 · home of the Trail Blazers."
+  },
+  {
+   "name": "Veterans Memorial Coliseum",
+   "at": [
+    45.53192,
+    -122.66921
+   ],
+   "info": "300 N Winning Way · 1960 · a glass box around the arena bowl."
+  },
+  {
+   "name": "Providence Park",
+   "at": [
+    45.52172,
+    -122.69167
+   ],
+   "stadium": true,
+   "info": "1844 SW Morrison St · 1926 · home of the Timbers and Thorns."
+  },
+  {
+   "name": "Portland Aerial Tram",
+   "at": [
+    45.49945,
+    -122.678
+   ],
+   "model": "tram",
+   "upper": [
+    45.49967,
+    -122.68452
+   ],
+   "lower": [
+    45.49922,
+    -122.6715
+   ],
+   "upperH": 150,
+   "info": "2006 · two cabins climb 150 m in four minutes from South Waterfront to OHSU on Marquam Hill (the model is flat, so the upper station stands on a tower)."
+  },
+  {
+   "name": "Portland Art Museum",
+   "at": [
+    45.51645,
+    -122.68355
+   ],
+   "info": "1219 SW Park Ave · 1892 · the oldest art museum in the Pacific Northwest."
+  },
+  {
+   "name": "Keller Fountain Park",
+   "at": [
+    45.51272,
+    -122.67904
+   ],
+   "model": "fountain",
+   "w": 20,
+   "info": "1971 · Angela Danadjieva's waterfall fountain, meant to be walked on."
+  },
+  {
+   "name": "International Rose Test Garden",
+   "at": [
+    45.51927,
+    -122.70526
+   ],
+   "info": "Washington Park · 1917 · more than 10,000 rose bushes; the reason Portland is the City of Roses."
+  },
+  {
+   "name": "Portland Japanese Garden",
+   "at": [
+    45.51875,
+    -122.70808
+   ],
+   "info": "Washington Park · 1963 · five gardens on the hillside above the rose garden."
+  },
+  {
+   "name": "Mount Hood",
+   "at": [
+    45.3736,
+    -121.6959
+   ],
+   "model": "mountain",
+   "h": 3429,
+   "info": "80 km east · 3,429 m, the highest point in Oregon. Shown at the right size for its distance."
+  },
+  {
+   "name": "Mount St. Helens",
+   "at": [
+    46.1912,
+    -122.1944
+   ],
+   "model": "mountain",
+   "h": 2549,
+   "crater": true,
+   "info": "85 km north-east · 2,549 m since the 1980 eruption took off its top."
+  }
+ ],
+ "views": {
+  "Skyline from the east bank": [
+   [
+    45.515,
+    -122.6645,
+    25
+   ],
+   [
+    45.5185,
+    -122.6785,
+    70
+   ]
+  ],
+  "Pioneer Courthouse Square": [
+   [
+    45.51835,
+    -122.6786,
+    28
+   ],
+   [
+    45.5189,
+    -122.67932,
+    2
+   ]
+  ],
+  "Hawthorne Bridge": [
+   [
+    45.511,
+    -122.6675,
+    30
+   ],
+   [
+    45.5132,
+    -122.6702,
+    10
+   ]
+  ],
+  "Steel Bridge": [
+   [
+    45.5255,
+    -122.6675,
+    35
+   ],
+   [
+    45.5275,
+    -122.6697,
+    15
+   ]
+  ],
+  "Tilikum Crossing": [
+   [
+    45.5025,
+    -122.6625,
+    40
+   ],
+   [
+    45.5048,
+    -122.667,
+    20
+   ]
+  ],
+  "Waterfront Park and the river": [
+   [
+    45.51,
+    -122.6705,
+    60
+   ],
+   [
+    45.52,
+    -122.6725,
+    0
+   ]
+  ],
+  "Old Town and the White Stag sign": [
+   [
+    45.5215,
+    -122.666,
+    30
+   ],
+   [
+    45.5233,
+    -122.6714,
+    25
+   ]
+  ],
+  "Pearl District": [
+   [
+    45.5235,
+    -122.6865,
+    60
+   ],
+   [
+    45.5275,
+    -122.6815,
+    0
+   ]
+  ],
+  "Fremont Bridge": [
+   [
+    45.533,
+    -122.678,
+    80
+   ],
+   [
+    45.5378,
+    -122.6829,
+    60
+   ]
+  ],
+  "Aerial Tram": [
+   [
+    45.496,
+    -122.67,
+    60
+   ],
+   [
+    45.499,
+    -122.679,
+    60
+   ]
+  ],
+  "Mount Hood from the Rose Garden": [
+   [
+    45.519,
+    -122.7055,
+    60
+   ],
+   [
+    45.3736,
+    -121.6959,
+    900
+   ]
+  ],
+  "Overview": [
+   [
+    45.475,
+    -122.63,
+    2500
+   ],
+   [
+    45.52,
+    -122.68,
+    0
+   ]
+  ]
+ },
+ "trails": "Eastbank Esplanade|Waterfront|Springwater|Tilikum|Hawthorne Bridge|Steel Bridge"
+}

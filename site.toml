@@ -43,6 +43,12 @@ file = "chicago.html"
 title = "Chicago: massing model"
 
 [[route]]
+path = "/portland"
+aliases = ["/portland.html"]
+file = "portland.html"
+title = "Portland: massing model"
+
+[[route]]
 path = "/tongue"
 aliases = ["/izani-tongue"]
 file = "The-Izani-Tongue_2.html"

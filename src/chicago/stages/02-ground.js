@@ -42,10 +42,10 @@ section('ground',()=>{
 // water: the lake with the real shore (islands cut out), the river, lagoons and harbour basins
 const waterM=new THREE.MeshPhongMaterial({color:0x2a5f8c,specular:0x9fc4e0,shininess:90,polygonOffset:true,polygonOffsetFactor:-3,polygonOffsetUnits:-6});
 section('water',()=>{
-  const clip=([x,z])=>[Math.max(B.x0-200,Math.min(B.x1+3000,x)),Math.max(B.z0-3000,Math.min(B.z1+3000,z))];
+  if(LAKE.length>2){const clip=([x,z])=>[Math.max(B.x0-200,Math.min(B.x1+3000,x)),Math.max(B.z0-3000,Math.min(B.z1+3000,z))];
   const shape=new THREE.Shape(LAKE.map(clip).map(([x,z])=>new THREE.Vector2(x,-z)));
   for(const r of ISLANDS)shape.holes.push(new THREE.Path(r.map(([x,z])=>new THREE.Vector2(x,-z))));
-  const lake=new THREE.Mesh(new THREE.ShapeGeometry(shape),waterM);lake.rotation.x=-Math.PI/2;lake.position.y=0.05;lake.receiveShadow=true;scene.add(lake);
+  const lake=new THREE.Mesh(new THREE.ShapeGeometry(shape),waterM);lake.rotation.x=-Math.PI/2;lake.position.y=0.05;lake.receiveShadow=true;scene.add(lake);}   // cities without a lake shore skip this
   const wb=tiledBuffer(waterM);for(const w of WATER)wb.poly(w.o,w.i,0.05,col('#2a5f8c'));wb.build('river');
   animHooks.push(now=>{waterM.shininess=70+25*Math.sin(now*0.0011);});
 });
