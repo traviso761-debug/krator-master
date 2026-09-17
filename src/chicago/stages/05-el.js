@@ -26,24 +26,25 @@ section('el',()=>{
     g.userData.info={name:s.name+' station',info:'CTA ’L’ station (elevated).'};g.traverse(o=>o.userData.info=g.userData.info);LANDMARKS.push(g);scene.add(g);nst++;}
   // trains: the joined elevated lines long enough to run on, a train or two each, slowing at stations
   const lines=joinChains(elev.map(r=>r.pts),3).map(p=>polyLen({pts:p})).filter(r=>r.len>700);
-  const carL=14.6,N=C.el.trainCars||6,carM=new THREE.MeshLambertMaterial({color:0xcfd5dc,emissive:0x000000}),trains=[];
+  const winM=new THREE.MeshLambertMaterial({color:0x1e2630});
+  const carL=14.6,N=C.el.trainCars||6,carM=new THREE.MeshLambertMaterial({color:0x8e959c,emissive:0x000000}),trains=[];   // brushed steel, not white
   for(const r of lines){const k=r.len>3000?2:1;for(let i=0;i<k;i++)trains.push({r,s:(i+0.3)*r.len/k,dir:i%2?1:-1,v:13});}
-  const tm=new THREE.InstancedMesh(new THREE.BoxGeometry(carL,3.4,3),carM,Math.max(1,trains.length*N));tm.castShadow=true;tm.frustumCulled=false;scene.add(tm);
+  const tm=new THREE.InstancedMesh(new THREE.BoxGeometry(carL,3.4,3),carM,Math.max(1,trains.length*N)),tw=new THREE.InstancedMesh(new THREE.BoxGeometry(carL-1.2,1.1,3.04).translate(0,0.45,0),winM,Math.max(1,trains.length*N));tm.castShadow=true;tm.frustumCulled=tw.frustumCulled=false;scene.add(tm,tw);
   const stS=lines.map(r=>STATIONS.map(s=>{let bs=-1,bd=60;for(let q=0;q<=r.len;q+=10){const [px,pz]=polyAt(r,q);const dd=Math.hypot(px-s.x,pz-s.z);if(dd<bd){bd=dd;bs=q;}}return bs;}).filter(q=>q>=0));
   let last=performance.now();
   animHooks.push(now=>{const dt=Math.min(0.05,(now-last)/1000);last=now;let i=0;
     for(const tr of trains){const li=lines.indexOf(tr.r),slow=stS[li].some(q=>Math.abs(q-tr.s)<90);tr.s+=tr.dir*(slow?4:tr.v)*dt;
       if(tr.s>tr.r.len-5)tr.dir=-1;if(tr.s<5+N*(carL+1))tr.dir=1;
-      for(let c=0;c<N;c++){const [x,z,a]=polyAt(tr.r,tr.s-tr.dir*c*(carL+1)),o=tr.dir*1.1;d.position.set(x-Math.sin(a)*o,H+2.3,z+Math.cos(a)*o);d.rotation.set(0,-a,0);d.scale.set(1,1,1);d.updateMatrix();tm.setMatrixAt(i++,d.matrix);}}
-    tm.count=i;tm.instanceMatrix.needsUpdate=true;const w=windowF(hourCur);carM.emissive.setRGB(w*0.9,w*0.85,w*0.6);});
+      for(let c=0;c<N;c++){const [x,z,a]=polyAt(tr.r,tr.s-tr.dir*c*(carL+1)),o=tr.dir*1.1;d.position.set(x-Math.sin(a)*o,H+2.3,z+Math.cos(a)*o);d.rotation.set(0,-a,0);d.scale.set(1,1,1);d.updateMatrix();tm.setMatrixAt(i,d.matrix);tw.setMatrixAt(i++,d.matrix);}}
+    tm.count=tw.count=i;tm.instanceMatrix.needsUpdate=tw.instanceMatrix.needsUpdate=true;const w=windowF(hourCur);carM.emissive.setRGB(w*0.9,w*0.85,w*0.6);});
   ctx.details=Object.assign(ctx.details||{},{elevatedTrack:elev.length,stations:nst,trainLines:lines.length,trains:trains.length});
 });
 // Metra: double-deck silver trains on the commuter lines at grade and on their embankments
 section('metra',()=>{
   const lines=joinChains(RAILS.filter(r=>r.type==='rail').map(r=>r.pts),3).map(p=>polyLen({pts:p})).filter(r=>r.len>1500).sort((a,b)=>b.len-a.len).slice(0,8);
-  const carL=26,N=6,m=new THREE.MeshLambertMaterial({color:0xb8bec4,emissive:0x000000}),band=new THREE.MeshLambertMaterial({color:0x2a3a5a});
+  const carL=26,N=6,m=new THREE.MeshLambertMaterial({color:0x8a9096,emissive:0x000000}),band=new THREE.MeshLambertMaterial({color:0x1e2630});   // stainless double-deckers, dark window bands
   const trains=lines.map((r,i)=>({r,s:r.len*((i*0.37)%1),dir:i%2?1:-1,v:14}));
-  const body=new THREE.InstancedMesh(new THREE.BoxGeometry(carL,4.6,3).translate(0,2.9,0),m,Math.max(1,trains.length*N)),stripe=new THREE.InstancedMesh(new THREE.BoxGeometry(carL+0.05,0.5,3.05).translate(0,3.2,0),band,Math.max(1,trains.length*N)),d=new THREE.Object3D();
+  const body=new THREE.InstancedMesh(new THREE.BoxGeometry(carL,4.6,3).translate(0,2.9,0),m,Math.max(1,trains.length*N)),stripe=new THREE.InstancedMesh(new THREE.BoxGeometry(carL-1,1.6,3.05).translate(0,3.1,0),band,Math.max(1,trains.length*N)),d=new THREE.Object3D();
   body.frustumCulled=stripe.frustumCulled=false;body.castShadow=true;scene.add(body,stripe);let last=performance.now();
   animHooks.push(now=>{const dt=Math.min(0.05,(now-last)/1000);last=now;let i=0;
     for(const t of trains){t.s+=t.dir*t.v*dt;if(t.s>t.r.len-5)t.dir=-1;if(t.s<N*(carL+1)+5)t.dir=1;
@@ -58,13 +59,14 @@ section('surface-rail',()=>{
   const off=(pts,o)=>pts.map((p,i)=>{const a=pts[Math.max(0,i-1)],b=pts[Math.min(pts.length-1,i+1)],dx=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dx,dz)||1;return [p[0]-dz/l*o,p[1]+dx/l*o];});
   for(const r of surf)for(const o of [-0.72,0.72])rb.ribbon(off(r.pts,o),0.12,0.02,steel);rb.build('surface rails');
   const make=(type,carL,N,colour,v)=>{const lines=joinChains(surf.filter(r=>type==='tram'?r.type==='tram':r.type!=='tram').map(r=>r.pts),3).map(p=>polyLen({pts:p})).filter(r=>r.len>600);
-    const m=new THREE.MeshLambertMaterial({color:colour,emissive:0x000000}),trains=[];for(const r of lines){const k=r.len>2500?2:1;for(let i=0;i<k;i++)trains.push({r,s:(i+0.4)*r.len/k,dir:i%2?1:-1,v});}
-    const im=new THREE.InstancedMesh(new THREE.BoxGeometry(carL,3.6,2.65).translate(0,2.2,0),m,Math.max(1,trains.length*N)),d=new THREE.Object3D();im.frustumCulled=false;im.castShadow=true;scene.add(im);let last=performance.now();
+    const m=new THREE.MeshLambertMaterial({color:colour,emissive:0x000000}),trains=[],stripeC=type==='tram'?0x1e2228:0x1e2630;for(const r of lines){const k=r.len>2500?2:1;for(let i=0;i<k;i++)trains.push({r,s:(i+0.4)*r.len/k,dir:i%2?1:-1,v});}
+    const im=new THREE.InstancedMesh(new THREE.BoxGeometry(carL,3.6,2.65).translate(0,2.2,0),m,Math.max(1,trains.length*N)),win=new THREE.InstancedMesh(new THREE.BoxGeometry(carL-2,1.3,2.7).translate(0,2.7,0),new THREE.MeshLambertMaterial({color:stripeC,emissive:0x000000}),Math.max(1,trains.length*N)),
+      band=new THREE.InstancedMesh(new THREE.BoxGeometry(carL+0.02,0.45,2.72).translate(0,1.2,0),new THREE.MeshLambertMaterial({color:type==='tram'?0xd8d0c0:0x2a5aa8}),Math.max(1,trains.length*N)),d=new THREE.Object3D();
+    im.frustumCulled=win.frustumCulled=band.frustumCulled=false;im.castShadow=true;scene.add(im,win,band);let last=performance.now();
     animHooks.push(now=>{const dt=Math.min(0.05,(now-last)/1000);last=now;let i=0;for(const t of trains){t.s+=t.dir*t.v*dt;if(t.s>t.r.len-5)t.dir=-1;if(t.s<N*(carL+0.5)+5)t.dir=1;
-        for(let c=0;c<N;c++){const [x,z,a]=polyAt(t.r,t.s-t.dir*c*(carL+0.5));d.position.set(x,deckAt(x,z),z);d.rotation.set(0,-a,0);d.updateMatrix();im.setMatrixAt(i++,d.matrix);}}
-      im.count=i;im.instanceMatrix.needsUpdate=true;const w=windowF(hourCur);m.emissive.setRGB(w*0.7,w*0.66,w*0.5);});return trains.length;};
+        for(let c=0;c<N;c++){const [x,z,a]=polyAt(t.r,t.s-t.dir*c*(carL+0.5));d.position.set(x,deckAt(x,z),z);d.rotation.set(0,-a,0);d.updateMatrix();im.setMatrixAt(i,d.matrix);win.setMatrixAt(i,d.matrix);band.setMatrixAt(i++,d.matrix);}}
+      im.count=win.count=band.count=i;im.instanceMatrix.needsUpdate=win.instanceMatrix.needsUpdate=band.instanceMatrix.needsUpdate=true;const w=windowF(hourCur);m.emissive.setRGB(w*0.7,w*0.66,w*0.5);});return trains.length;};
   // on a bridge the tracks share the road deck: lift the train to it
-  const deckAt=(x,z)=>{const b=roadsNear(x,z,2,r=>deckY(r)>0);return b.length?deckY(b[0].road):0;};
-  const nMax=make('L',28,C.el.trainCars||2,0xe8e8e8,11),nCar=make('tram',20,1,0x8a2a6a,7);
+  const nMax=make('L',28,C.el.trainCars||2,0x9ea3a8,11),nCar=make('tram',20,1,0x7a2a5a,7);   // MAX: grey with a blue stripe; the streetcar in its plum livery
   ctx.details=Object.assign(ctx.details||{},{lightRailTrains:nMax,streetcars:nCar});
 });

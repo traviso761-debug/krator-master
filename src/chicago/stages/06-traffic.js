@@ -7,7 +7,7 @@ section('traffic',()=>{
   const CAR=new Set(['motorway','trunk','primary','secondary']);const groups=new Map();
   for(const r of ROADS){if(!CAR.has(r.c)||!r.name)continue;let g=groups.get(r.name);if(!g){g=[];groups.set(r.name,g);}g.push(r);}
   const routes=[];
-  for(const [name,rs] of groups){const chains=joinChains(rs.map(r=>r.pts.map(p=>[p[0],p[1],deckY(r)])),2);
+  for(const [name,rs] of groups){const chains=joinChains(rs.map(r=>r.pts.map((p,i)=>[p[0],p[1],r.ys?r.ys[i]:0])),2);
     for(const pts of chains){const r=polyLen({pts});if(r.len<250)continue;r.w=rs[0].w;r.y=pts.map(p=>p[2]||0);r.name=name;routes.push(r);}}
   const cars=[];for(const r of routes){const n=Math.max(1,Math.floor(r.len/(/Lake Shore/i.test(r.name)?60:140)));for(const dir of [-1,1])for(let k=0;k<n;k++)cars.push({r,dir,s:xr()*r.len,v:(/Lake Shore/i.test(r.name)?17:10)+xr()*6,off:dir*Math.min(r.w/4,5)});}
   const cm=new THREE.InstancedMesh(new THREE.BoxGeometry(4.4,1.4,1.9).translate(0,0.7,0),new THREE.MeshLambertMaterial({color:0xffffff}),Math.max(1,cars.length)),col2=new THREE.Color(),d=new THREE.Object3D();

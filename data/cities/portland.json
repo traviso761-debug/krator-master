@@ -336,7 +336,7 @@
     -122.67008
    ],
    "model": "liftbridge",
-   "towerH": 60,
+   "towerH": 40,
    "info": "1912 · a double-deck vertical-lift bridge: trains and MAX on the lower deck, cars and MAX above."
   },
   {
@@ -346,7 +346,7 @@
     -122.6702
    ],
    "model": "liftbridge",
-   "towerH": 50,
+   "towerH": 34,
    "info": "1910 · the oldest vertical-lift bridge in operation in the United States."
   },
   {
@@ -402,7 +402,7 @@
     -122.66664
    ],
    "model": "cablestay",
-   "towerH": 55,
+   "towerH": 36,
    "info": "2015 · 'Bridge of the People': a cable-stayed bridge for MAX, streetcars, buses, bikes and walkers, with no cars."
   },
   {
@@ -745,5 +745,18 @@
    ]
   ]
  },
- "trails": "Eastbank Esplanade|Waterfront|Springwater|Tilikum|Hawthorne Bridge|Steel Bridge"
+ "trails": "Eastbank Esplanade|Waterfront|Springwater|Tilikum|Hawthorne Bridge|Steel Bridge",
+ "bridgeDeck": 18,
+ "bridgeHeights": {
+  "Fremont Bridge": 52,
+  "Marquam Bridge": 40,
+  "Ross Island Bridge": 35,
+  "Steel Bridge \\(Lower Deck\\)": 8,
+  "Steel Bridge": 22,
+  "Broadway Bridge": 22,
+  "Burnside Bridge": 20,
+  "Morrison Bridge": 19,
+  "Hawthorne Bridge": 16,
+  "Tilikum Crossing": 23
+ }
 }
