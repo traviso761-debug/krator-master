@@ -7,8 +7,8 @@ renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFShadowMap;
 document.body.appendChild(renderer.domElement);
 const {ENV,setEnv}=createEnv();   // the shared uniforms; setEnv gives materials world-unit UV tiling
 const updatePx=()=>{ENV.izPx.value=innerHeight*renderer.getPixelRatio()/(2*Math.tan(camera.fov*Math.PI/360));};updatePx();
-const ambient=new THREE.AmbientLight(0x9fb4c8,0.35);scene.add(ambient);
-const hemi=new THREE.HemisphereLight(0xbfd8f0,0x5a5048,0.55);scene.add(hemi);
+const ambient=new THREE.AmbientLight(0x9fb4c8,0.22);scene.add(ambient);
+const hemi=new THREE.HemisphereLight(0xbfd8f0,0x5a5048,0.38);scene.add(hemi);
 const sun=new THREE.DirectionalLight(0xfff2dc,1.1);scene.add(sun);scene.add(sun.target);
 sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);{const sc=sun.shadow.camera;sc.left=-700;sc.right=700;sc.top=700;sc.bottom=-700;sc.near=1;sc.far=6000;sc.updateProjectionMatrix();}
 sun.shadow.bias=-0.0008;sun.shadow.normalBias=2;
@@ -35,8 +35,8 @@ function lerpSky(h){const n=nightF(h),dusk=Math.max(0,1-Math.abs(h-18.6)/1.6,1-M
   skyM.uniforms.hor.value.copy(mixTo(SKY.day.hor,SKY.night.hor,n)).lerp(tmpC2.set(SKY.dusk.hor),dusk);
   scene.fog.color.copy(skyM.uniforms.hor.value);renderer.setClearColor(skyM.uniforms.hor.value);
   const S=sunAt(h);skyM.uniforms.sunDir.value.copy(S);skyM.uniforms.sunA.value=S.y>-0.05?1:0;
-  sun.position.copy(S).multiplyScalar(2500).add(sun.target.position);sun.intensity=1.15*Math.max(0,Math.min(1,S.y*4))*(1-0.85*n);
-  sun.color.setHSL(0.09,0.6,0.5+0.45*Math.min(1,S.y*3));hemi.intensity=0.55*(1-0.75*n);ambient.intensity=0.35*(1-0.5*n)+0.12*n;
+  sun.position.copy(S).multiplyScalar(2500).add(sun.target.position);sun.intensity=0.82*Math.max(0,Math.min(1,S.y*4))*(1-0.85*n);
+  sun.color.setHSL(0.09,0.6,0.5+0.45*Math.min(1,S.y*3));hemi.intensity=0.38*(1-0.75*n);ambient.intensity=0.22*(1-0.5*n)+0.1*n;
   ENV.izHour.value=h;ENV.izNight.value=n;ENV.izDay.value=1-n;ENV.izSunDir.value.copy(S);}
 let hourCur=HOUR0;
 animHooks.push(now=>{hourCur=hourNow(clockPaused?pausedAt:now-clockOffset);ctx.hour=hourCur;ENV.izTime.value=now/1000;lerpSky(hourCur);});

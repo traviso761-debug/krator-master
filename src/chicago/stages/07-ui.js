@@ -34,8 +34,15 @@ const hud=document.createElement('pre');hud.id='hud';side.appendChild(hud);let h
 animHooks.push(now=>{if(now-hudT<200)return;hudT=now;const h=hourCur,t=`${String(Math.floor(h)).padStart(2,'0')}:${String(Math.floor((h%1)*60)).padStart(2,'0')}`;if(!dragging)tsl.value=h.toFixed(2);if(t!==tbTxt){tbTxt=t;tlab.textContent=t;}
   hud.textContent=`${t}\ntarget  x ${ctl.target.x.toFixed(0)}  z ${ctl.target.z.toFixed(0)}\n${districtAt(ctl.target.x,ctl.target.z).name}`+(RES.cur<RES.max-0.01?`\nrender  ×${RES.cur.toFixed(2)}`:'');});
 const ray=new THREE.Raycaster(),ndc=new THREE.Vector2();
-function clickAt(cx,cy){ndc.set(cx/innerWidth*2-1,-(cy/innerHeight)*2+1);ray.setFromCamera(ndc,camera);const hits=ray.intersectObjects(LANDMARKS,true);if(!hits.length){closeCard();return;}
-  let o=hits[0].object,info=null;while(o&&!info){info=o.userData.info;o=o.parent;}if(!info)return;showCard(info);}
+function clickAt(cx,cy){ndc.set(cx/innerWidth*2-1,-(cy/innerHeight)*2+1);ray.setFromCamera(ndc,camera);
+  const hits=ray.intersectObjects(LANDMARKS.concat(PICK_TILES),true);if(!hits.length){closeCard();return;}const hit=hits[0];
+  let o=hit.object,info=null;while(o&&!info){info=o.userData.info;o=o.parent;}if(info){showCard(info);return;}
+  // an OSM building: its landmark card if it is one, otherwise its mapped name and height
+  const b=buildingAt(hit),px=hit.point.x,pz=hit.point.z;
+  const card=CARDS.map(c=>({c,d:Math.hypot(c.x-(b?b.cx:px),c.z-(b?b.cz:pz))})).sort((p,q)=>p.d-q.d)[0];
+  if(card&&card.d<(b?70:35)){showCard(card.c.L);return;}
+  if(b){showCard({name:b.name,info:`${Math.round(b.h)} m tall (OpenStreetMap).`});return;}
+  const h=roofAt(px,pz);if(h)showCard({name:'Building',info:`About ${Math.round(h)} m tall. ${districtAt(px,pz).name}.`});else closeCard();}
 function showCard(L){card.innerHTML='';const h=document.createElement('h2');h.textContent=L.name;const p=document.createElement('p');p.textContent=L.info||'';const b=document.createElement('button');b.type='button';b.textContent='Close';b.onclick=closeCard;card.append(h,p,b);card.classList.add('open');card.style.display='block';b.focus();}
 function closeCard(){card.classList.remove('open');card.style.display='';}
 // the address keeps the view and the hour, like the Iziz page: #v=px,py,pz,tx,ty,tz&t=hour
@@ -44,6 +51,7 @@ function readHash(){let q;try{q=new URLSearchParams(location.hash.slice(1));}cat
   const t=parseFloat(q.get('t'));if(Number.isFinite(t))setHour(((t%24)+24)%24);if(q.has('paused')&&!clockPaused)pauseBtn.click();return true;}
 let lastHash='',hashT=0;animHooks.push(now=>{if(now-hashT<1500||ctl.goal||ptrs.size)return;hashT=now;const h=stateToHash();if(h!==lastHash){lastHash=h;try{history.replaceState(null,'',h);}catch(e){}}});
 if(!readHash())setView(...VIEWS['Skyline from the lake'],false);
+{const at=document.createElement('div');at.id='attribution';at.innerHTML='Map data \u00a9 <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors';document.body.appendChild(at);}
 {const hint=document.getElementById('hint');const hide=()=>hint.classList.add('gone');setTimeout(hide,12000);el.addEventListener('pointerdown',hide,{once:true});el.addEventListener('wheel',hide,{once:true,passive:true});}
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);updatePx();});
 if(SEED0!==SEED_DEFAULT)document.getElementById('seedtag').textContent='seed '+SEED0;

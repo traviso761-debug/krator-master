@@ -49,37 +49,32 @@ viewer's browser (`localStorage`), not on the server.
 
 ### `/chicago`: Chicago
 
-The same shell and controls, a different generator, laid out in **real coordinates**: every position in
-`data/cities/chicago.json` is a latitude/longitude, projected to metres around State & Madison. The map
-runs from 18th Street to Armitage and from Western Avenue to the lake.
+Built from **OpenStreetMap** (map data © OpenStreetMap contributors, ODbL; credited on the page). The map runs
+from 18th Street north to Montrose and from Western Avenue to the lake, with full detail downtown, along the
+whole lakefront, in Wrigleyville and in Wicker Park, and only the tall or large buildings elsewhere.
 
-- **Streets:** the named streets downtown and in Wicker Park, Bucktown and Noble Square (Damen, Wood, Noble,
-  Evergreen, Schiller, Blackhawk…) with Chicago's grid filled in around them, Milwaukee Avenue, Wicker Park
-  Avenue and Lake Shore Drive as diagonals; sidewalks, crosswalks at the major corners.
-- **Water:** the lake shore with the Museum Campus peninsula, the river's three branches following their
-  bends, a bridge wherever a street crosses.
-- **Neighbourhoods:** outside downtown every block is two rows of narrow lots either side of an alley:
-  brick two- and three-flats with cornices, gabled frame houses, front yards, garages on the alley, parkway
-  trees. Blocks facing a major street are shopfronts (glass storefronts, awnings), with wooden water tanks on
-  some roofs.
-- **North & Ashland and the six corners (North/Damen/Milwaukee)** are the two detailed intersections
-  (`focus` in the data file): taller shopfronts, shops lining Milwaukee's diagonal, street lights,
-  cycling traffic signals, CTA bus shelters, parked cars and people walking.
-- **Parks:** Millennium, Maggie Daley, Grant, Wicker Park (the triangle, with its fountain and fieldhouse),
-  Pulaski Park (the 1914 fieldhouse and the pool), Holstein, Eckhart, and The 606 on its embankment.
-- **Transit:** the elevated Loop with trains, and the Blue Line rising out of the Milwaukee subway onto its
-  viaduct past the Damen station.
-- **Lake Michigan:** sailboats that tack across the wind, motor yachts and speedboats with wakes, a cruise
-  ship looping from Navy Pier, yellow water taxis to the Museum Campus, moored fleets in Monroe and DuSable
-  harbours, a freighter on the horizon; tour boats on the river.
-- **Landmarks:** 36 at their addresses and real heights, including Northwest Tower, the Flat Iron Building,
-  St. Stanislaus Kostka, Holy Trinity and St. Mary of the Angels near Wicker Park; click one for its card.
-  Cloud Gate is mirrored.
+- **From the map:** the lake shore (Lake Michigan's outline, the harbours, breakwaters and piers), the river and
+  its basins, every park, garden, beach, plaza and pitch, every street, alley and named trail (the Lakefront
+  Trail, the Riverwalk, The 606), the L and Metra, stations, and 38,000 buildings at their mapped heights, with
+  3D parts where they are mapped (Willis Tower's tubes). Bridges are raised decks; movable ones get bridge houses.
+- **Added on top** (`data/cities/chicago.json`): antennas and spires, Cloud Gate (mirrored, aligned with its
+  mapped outline), the Pritzker Pavilion's ribbons and lawn trellis, Buckingham and Wicker Park fountains, the
+  Centennial Wheel, stadium bowls for Wrigley Field (marquee, scoreboard, light towers) and Soldier Field, and
+  a card for every landmark. Heights are corrected where OSM's are missing or wrong.
+- **Detailed areas:** the Magnificent Mile (planted medians and sidewalk planters), the Riverwalk, North &
+  Ashland, the six corners, Wrigleyville: crosswalks and cycling signals at the real intersections, street
+  lights, storefront glass, parked cars (not on Michigan Avenue), people.
+- **Moving:** cars on Lake Shore Drive and the arterials (up onto the bridges), L trains on every elevated
+  line, cyclists and runners on the Lakefront Trail, tour boats on the river, sailboats and motorboats on the
+  lake, the cruise ship and water taxis from Navy Pier, boats moored in every mapped marina, a freighter.
+- **Click** any building for its OSM name and height, or its card if it is a landmark.
 
-Views: Skyline from the lake, Cloud Gate, Millennium Park, The Loop, Riverwalk, River forks, Lake Michigan,
-Monroe Harbor, Navy Pier, Willis Tower, Magnificent Mile, Wicker Park, Six corners, Pulaski Park, The 606,
-Overview. Ordinary buildings are generated per lot, so only the landmarks are the real buildings; small
-details (garages, awnings, trim) are hidden far from the camera to keep the frame rate up.
+Views include Skyline from the lake, Cloud Gate, Millennium Park, Riverwalk, River forks, Magnificent Mile, Navy
+Pier, Lake Michigan, Lakefront Trail, Lincoln Park, Wrigley Field, Montrose Harbor, the six corners, Pulaski Park.
+
+**Updating the map data:** `python3 tools/fetch-osm.py` downloads from the Overpass API into `data/osm/raw/`
+(cached, not committed; `--refresh` to re-download), then `python3 tools/build-chicago-osm.py` writes
+`data/cities/chicago-osm.json` (`--report` lists where each landmark sits in OSM).
 
 ### `/tongue`: The Izani Tongue
 

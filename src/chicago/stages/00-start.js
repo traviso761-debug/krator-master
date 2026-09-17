@@ -1,22 +1,24 @@
-// ---------- start: three.js check, the city file, projection, randomness, where things are ----------
+// ---------- start: three.js check, the config and the OpenStreetMap geography, projection, randomness, lookups ----------
 if(!window.THREE){document.getElementById('loading').textContent='three.js did not load (vendor/three/three.min.js). Check the site mounts and reload.';return;}
 const THREE=window.THREE;
 const CITY_ID=(()=>{const v=new URLSearchParams(location.search).get('city')||'';return /^[a-z0-9-]{1,40}$/.test(v)?v:'chicago';})();
 ctx.cityId=CITY_ID;
-const C=await fetch('data/cities/'+CITY_ID+'.json').then(r=>{if(!r.ok)throw new Error('data/cities/'+CITY_ID+'.json: HTTP '+r.status);return r.json();});
+const getJSON=u=>fetch(u).then(r=>{if(!r.ok)throw new Error(u+': HTTP '+r.status);return r.json();});
+const C=await getJSON('data/cities/'+CITY_ID+'.json');
+await stage('map-data');
+const OSM=await getJSON(C.osm);
 const SEED_DEFAULT=C.defaultSeed||1871;
 const SEED0=(()=>{try{const v=parseInt(new URLSearchParams(location.search).get('seed')||new URLSearchParams(location.hash.slice(1)).get('seed'),10);return v>0&&v<2147483647?v:SEED_DEFAULT;}catch(e){return SEED_DEFAULT;}})();
 const LCG=createLcg(SEED0);const rnd=LCG.rnd,rr=LCG.rr,pick=LCG.pick;
 const {vn,fbm}=makeNoise(rnd);
 const xr=mkRng(20261017),xrr=(a,b)=>a+(b-a)*xr();
 const animHooks=[];
-// projection: metres east (x) and south (z) of the origin; good to a few metres across downtown
+// projection: metres east (x) and south (z) of the origin (the same one tools/build-chicago-osm.py used)
 const [LAT0,LON0]=C.origin,M_LAT=111132,M_LON=111320*Math.cos(LAT0*Math.PI/180);
 const lonX=lon=>(lon-LON0)*M_LON,latZ=lat=>-(lat-LAT0)*M_LAT;
 const P=([lat,lon])=>[lonX(lon),latZ(lat)];
 const toLatLon=(x,z)=>[LAT0-z/M_LAT,LON0+x/M_LON];
 ctx.project=P;ctx.toLatLon=toLatLon;
-// the map rectangle, in metres
 const B=(()=>{const [s,w,n,e]=C.bounds;return {x0:lonX(w),x1:lonX(e),z0:latZ(n),z1:latZ(s)};})();B.w=B.x1-B.x0;B.d=B.z1-B.z0;B.cx=(B.x0+B.x1)/2;B.cz=(B.z0+B.z1)/2;
 const inMap=(x,z,m)=>x>B.x0+(m||0)&&x<B.x1-(m||0)&&z>B.z0+(m||0)&&z<B.z1-(m||0);
 // geometry helpers
@@ -25,38 +27,46 @@ function pathDist(x,z,pts){let d=Infinity;for(let i=0;i+1<pts.length;i++)d=Math.
 function inPoly(x,z,poly){let c=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const [xi,zi]=poly[i],[xj,zj]=poly[j];if((zi>z)!==(zj>z)&&x<(xj-xi)*(z-zi)/(zj-zi)+xi)c=!c;}return c;}
 function segHit(a,b,c,d){const r=[b[0]-a[0],b[1]-a[1]],s=[d[0]-c[0],d[1]-c[1]],den=r[0]*s[1]-r[1]*s[0];if(Math.abs(den)<1e-9)return null;
   const t=((c[0]-a[0])*s[1]-(c[1]-a[1])*s[0])/den,u=((c[0]-a[0])*r[1]-(c[1]-a[1])*r[0])/den;if(t<0||t>1||u<0||u>1)return null;return {x:a[0]+t*r[0],z:a[1]+t*r[1],r,s};}
-// water: the lake is everything east of the shore line; rivers are thick polylines
-const SHORE=C.shore.map(P);
-const LAKE_POLY=[[SHORE[0][0],B.z0-2000],...SHORE,[SHORE[SHORE.length-1][0],B.z1+2000],[B.x1+2000,B.z1+2000],[B.x1+2000,B.z0-2000]];   // shore north to south, then round the east side
-const RIVERS=C.rivers.map(r=>({name:r.name,width:r.width,pts:r.path.map(P)}));
-const PIER=(()=>{const b=P(C.pier.base),e=P(C.pier.end),w=P(C.pier.wheel);return {x0:b[0],x1:e[0],z:b[1],width:C.pier.width,wheelX:w[0],wheelR:C.pier.wheelR,length:e[0]-b[0]};})();
-function onPier(x,z){return x>=PIER.x0-40&&x<=PIER.x1&&Math.abs(z-PIER.z)<=PIER.width/2;}
-function inLake(x,z){return inPoly(x,z,LAKE_POLY)&&!onPier(x,z);}
-function riverAt(x,z,pad){for(const r of RIVERS)if(pathDist(x,z,r.pts)<=r.width/2+(pad||0))return r;return null;}
-const inRiver=(x,z)=>!!riverAt(x,z,0);
-const inWater=(x,z)=>inLake(x,z)||inRiver(x,z);
-// streets: named lists plus the regular Chicago grid filled in around them
-const range=(r,a,b)=>r.length>4?[r[4],r[5]]:[a,b];
-const STREETS=[];   // {name,w,major,a:[x,z],b:[x,z]} straight segments; diagonals are split into segments
-for(const s of C.streetsNS){const [lat0,lat1]=range(s,-90,90);const x=lonX(s[1]);STREETS.push({name:s[0],w:s[2],major:!!s[3],a:[x,Math.max(B.z0,latZ(lat1))],b:[x,Math.min(B.z1,latZ(lat0))],axis:'x',at:x});}
-for(const s of C.streetsEW){const [lon0,lon1]=range(s,-180,180);const z=latZ(s[1]);STREETS.push({name:s[0],w:s[2],major:!!s[3],a:[Math.max(B.x0,lonX(lon0)),z],b:[Math.min(B.x1,lonX(lon1)),z],axis:'z',at:z});}
-{const F=C.fill,nsX=STREETS.filter(s=>s.axis==='x').map(s=>s.at),ewZ=STREETS.filter(s=>s.axis==='z').map(s=>s.at);
- for(let x=Math.ceil(B.x0/F.ns)*F.ns;x<=B.x1;x+=F.ns)if(!nsX.some(v=>Math.abs(v-x)<F.ns*0.6))STREETS.push({name:'',w:F.street,major:false,a:[x,B.z0],b:[x,B.z1],axis:'x',at:x,fill:true});
- for(let z=Math.ceil(B.z0/F.ew)*F.ew;z<=B.z1;z+=F.ew)if(!ewZ.some(v=>Math.abs(v-z)<F.ew*0.45))STREETS.push({name:'',w:F.street,major:false,a:[B.x0,z],b:[B.x1,z],axis:'z',at:z,fill:true});}
-const DIAGONALS=C.diagonals.map(([name,w,path])=>({name,w,major:true,pts:path.map(P)}));
-for(const d of DIAGONALS)for(let i=0;i+1<d.pts.length;i++)STREETS.push({name:d.name,w:d.w,major:true,a:d.pts[i],b:d.pts[i+1],axis:'d'});
-function streetAt(x,z){for(const s of STREETS)if(segDist(x,z,s.a[0],s.a[1],s.b[0],s.b[1])<=s.w/2)return s;return null;}
-// parks, beaches, districts
-const PARKS=C.parks.map(p=>{if(p.poly){const pts=p.poly.map(P),xs=pts.map(q=>q[0]),zs=pts.map(q=>q[1]);return {name:p.name,pts,x0:Math.min(...xs),x1:Math.max(...xs),z0:Math.min(...zs),z1:Math.max(...zs)};}   // a rectangle, or a polygon for parks like Wicker Park's triangle
-  const [la0,lo0,la1,lo1]=p.rect;return {name:p.name,x0:lonX(lo0),x1:lonX(lo1),z0:latZ(la1),z1:latZ(la0)};});
-function parkAt(x,z){for(const p of PARKS)if(x>=p.x0&&x<=p.x1&&z>=p.z0&&z<=p.z1&&(!p.pts||inPoly(x,z,p.pts)))return p;return null;}
-const BEACHES=C.beaches.map(b=>({name:b.name,w:b.width,pts:b.path.map(P)}));
+const polyArea=r=>{let a=0;for(let i=0,j=r.length-1;i<r.length;j=i++)a+=r[j][0]*r[i][1]-r[i][0]*r[j][1];return a/2;};
+// decode the OSM file: flat decimetre integers -> [[x,z],...] in metres, with a bounding box for quick rejection
+const dec=f=>{const o=[];for(let i=0;i+1<f.length;i+=2)o.push([f[i]/10,f[i+1]/10]);return o;};
+const bbox=r=>{let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9;for(const [x,z] of r){if(x<x0)x0=x;if(x>x1)x1=x;if(z<z0)z0=z;if(z>z1)z1=z;}return {x0,x1,z0,z1};};
+const polyRec=p=>{const o=dec(p.o);return {name:p.n||'',kind:p.k,o,i:(p.i||[]).map(dec),bb:bbox(o)};};
+const inRec=(rec,x,z)=>x>=rec.bb.x0&&x<=rec.bb.x1&&z>=rec.bb.z0&&z<=rec.bb.z1&&inPoly(x,z,rec.o)&&!rec.i.some(h=>inPoly(x,z,h));
+const LAKE=dec(OSM.lake),ISLANDS=OSM.islands.map(dec);
+const WATER=OSM.water.map(polyRec),MARINAS=OSM.marina.map(polyRec),BEACHES=OSM.beach.map(polyRec);
+const PIERS=OSM.pier.map(p=>p.line?{line:dec(p.line),w:p.w,name:p.n||''}:polyRec(p));
+const AREAS=OSM.areas.map(polyRec);
+const ROADS=OSM.roads.map(r=>{const pts=dec(r.p);let len=0;for(let i=0;i+1<pts.length;i++)len+=Math.hypot(pts[i+1][0]-pts[i][0],pts[i+1][1]-pts[i][1]);return {c:r.c,w:r.w,name:r.n||'',bridge:r.b||0,layer:r.l||0,pts,len};});
+const RAILS=OSM.rail.map(r=>({type:r.t,elevated:!!r.e,name:r.n||'',pts:dec(r.p)}));
+const STATIONS=OSM.stations.map(s=>({name:s.n,x:s.x/10,z:s.z/10}));
+const WATERWAYS=(OSM.waterways||[]).map(w=>({name:w.n||'',pts:dec(w.p)}));
+const POIS=OSM.pois.map(p=>({name:p.n,x:p.x/10,z:p.z/10,kind:p.k,ang:p.ang||0}));
+// water lookups on a 20 m grid, worked out once for the whole map: 0 land, 1 lake, 2 inland water
+const WG=20,WNX=Math.ceil(B.w/WG),WNZ=Math.ceil(B.d/WG),WGRID=new Uint8Array(WNX*WNZ);
+{for(let j=0;j<WNZ;j++){const z=B.z0+(j+0.5)*WG;
+   // the lake: scanline crossings of the shore polygon at this z
+   const xs=[];for(let i=0,k=LAKE.length-1;i<LAKE.length;k=i++){const [xi,zi]=LAKE[i],[xk,zk]=LAKE[k];if((zi>z)!==(zk>z))xs.push(xi+(z-zi)*(xk-xi)/(zk-zi));}xs.sort((a,b)=>a-b);
+   for(let q=0;q+1<xs.length;q+=2){const a=Math.max(0,Math.floor((xs[q]-B.x0)/WG)),b=Math.min(WNX-1,Math.floor((xs[q+1]-B.x0)/WG));for(let i=a;i<=b;i++)WGRID[j*WNX+i]=1;}}
+ const fillRec=(bb,test,val)=>{for(let j=Math.max(0,Math.floor((bb.z0-B.z0)/WG));j<=Math.min(WNZ-1,Math.floor((bb.z1-B.z0)/WG));j++)for(let i=Math.max(0,Math.floor((bb.x0-B.x0)/WG));i<=Math.min(WNX-1,Math.floor((bb.x1-B.x0)/WG));i++)if(test(B.x0+(i+0.5)*WG,B.z0+(j+0.5)*WG,WGRID[j*WNX+i]))WGRID[j*WNX+i]=val;};
+ for(const r of ISLANDS)fillRec(bbox(r),(x,z)=>inPoly(x,z,r),0);
+ for(const w of WATER)fillRec(w.bb,(x,z,v)=>!v&&inRec(w,x,z),2);}
+const waterCell=(x,z)=>{const i=Math.floor((x-B.x0)/WG),j=Math.floor((z-B.z0)/WG);if(i<0||j<0||i>=WNX||j>=WNZ)return x>B.x1?1:0;return WGRID[j*WNX+i];};
+const inLake=(x,z)=>waterCell(x,z)===1;
+const inRiver=(x,z)=>waterCell(x,z)===2;
+const inWater=(x,z)=>waterCell(x,z)>0;
+// roads on a 50 m grid of segment references, for "what street is this near" questions
+const RG=50,RGRID=new Map();
+ROADS.forEach((r,ri)=>{for(let k=0;k+1<r.pts.length;k++){const [ax,az]=r.pts[k],[bx,bz]=r.pts[k+1],pad=r.w/2+10;
+  for(let gi=Math.floor((Math.min(ax,bx)-pad)/RG);gi<=Math.floor((Math.max(ax,bx)+pad)/RG);gi++)for(let gj=Math.floor((Math.min(az,bz)-pad)/RG);gj<=Math.floor((Math.max(az,bz)+pad)/RG);gj++){const key=gi*100003+gj;let a=RGRID.get(key);if(!a){a=[];RGRID.set(key,a);}a.push(ri,k);}}});
+function roadsNear(x,z,r,filter){const out=[],seen=new Set(),a=RGRID.get(Math.floor(x/RG)*100003+Math.floor(z/RG))||[];
+  for(let q=0;q<a.length;q+=2){const road=ROADS[a[q]],k=a[q+1];if(filter&&!filter(road))continue;const [ax,az]=road.pts[k],[bx,bz]=road.pts[k+1],d=segDist(x,z,ax,az,bx,bz);if(d<=road.w/2+r){const id=a[q]*10000+k;if(!seen.has(id)){seen.add(id);out.push({road,k,d});}}}return out;}
+// districts for colours and the readout
 const DIST={},DIST_BOX=[];
 for(const k in C.districts){if(k==='_')continue;const [name,col,base,tall,box]=C.districts[k];DIST[k]={key:k,name,color:parseInt(col.slice(1),16),base,tall};
   if(box)DIST_BOX.push([DIST[k],lonX(box[1]),lonX(box[3]),latZ(box[2]),latZ(box[0])]);}
 function districtAt(x,z){for(const [d,x0,x1,z0,z1] of DIST_BOX)if(x>=x0&&x<=x1&&z>=z0&&z<=z1)return d;return DIST.outer;}
-const SKY_C=P(C.skylineCentre);
-const EL=(()=>{const e=C.el;return {north:latZ(e.north),south:latZ(e.south),east:lonX(e.east),west:lonX(e.west),height:e.height,trains:e.trains,cars:e.cars,
-  blue:e.blue?{height:e.blue.height,trains:e.blue.trains,cars:e.blue.cars,pts:e.blue.path.map(P),stations:e.blue.stations.map(([la,lo,name])=>[...P([la,lo]),name])}:null};})();
-const TRAILS=(C.trails||[]).map(t=>({name:t.name,info:t.info,height:t.height,width:t.width,pts:t.path.map(P)}));
-ctx.districtAt=districtAt;ctx.inWater=inWater;ctx.streets=STREETS.length;
+const FOCUS=(C.focus||[]).map(f=>{const [x,z]=P(f.at);return Object.assign({},f,{x,z,r:f.radius});});
+const focusAt=(x,z)=>FOCUS.find(f=>Math.hypot(f.x-x,f.z-z)<f.r)||null;
+ctx.districtAt=districtAt;ctx.inWater=inWater;
+ctx.details={roads:ROADS.length,buildings:OSM.buildings.length,areas:AREAS.length};
