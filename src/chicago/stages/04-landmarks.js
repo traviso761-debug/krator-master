@@ -57,19 +57,19 @@ const MODELS={
     const g=group(L,parts);animHooks.push(now=>{wheel.rotation.z=now*0.00009;});return g;},
   // bridges drawn by OSM as road decks: find where the named road crosses the water, then add the structure there
   liftbridge(L,x,z){const c=riverCrossing(L.name,x,z);if(!c)return null;const H=L.towerH||50,parts=[],m=new THREE.MeshLambertMaterial({color:0x5a6068});
-    for(const sd of [-1,1]){const tx=c.x+c.ux*sd*c.half*0.35,tz=c.z+c.uz*sd*c.half*0.35;for(const ss of [-1,1]){parts.push(box(tx-c.uz*ss*(c.w/2+1),0,tz+c.ux*ss*(c.w/2+1),2.2,H,2.2,m));}
-      parts.push(box(tx,H-2,tz,2.2,2.2,c.w+4,m).rotateY(-Math.atan2(c.uz,c.ux)));}
-    const span=box(c.x,H*0.18,c.z,c.half*0.7,3,c.w+2,m);span.rotation.y=-Math.atan2(c.uz,c.ux);parts.push(span);return group(L,parts);},
+    for(const sd of [-1,1]){const tx=c.x+c.ux*sd*c.half*0.35,tz=c.z+c.uz*sd*c.half*0.35;for(const ss of [-1,1]){parts.push(box(tx-c.uz*ss*(c.w/2+1),0,tz+c.ux*ss*(c.w/2+1),2.2,c.y+H,2.2,m));}
+      parts.push(box(tx,c.y+H-2,tz,2.2,2.2,c.w+4,m).rotateY(-Math.atan2(c.uz,c.ux)));}
+    const span=box(c.x,c.y+H*0.25,c.z,c.half*0.7,3,c.w+2,m);span.rotation.y=-Math.atan2(c.uz,c.ux);parts.push(span);return group(L,parts);},
   bascule(L,x,z){const c=riverCrossing(L.name,x,z);if(!c)return null;const parts=[],m=new THREE.MeshLambertMaterial({color:0xc8bca8}),r=new THREE.MeshLambertMaterial({color:0x5a6a62});
-    for(const sd of [-1,1])for(const ss of [-1,1]){const px=c.x+c.ux*sd*c.half*0.3-c.uz*ss*(c.w/2+4),pz=c.z+c.uz*sd*c.half*0.3+c.ux*ss*(c.w/2+4);parts.push(box(px,0,pz,8,16,8,m));const cap=new THREE.Mesh(new THREE.ConeGeometry(6,4,4).translate(0,2,0),r);cap.rotation.y=Math.PI/4;cap.position.set(px,16,pz);parts.push(cap);}
+    for(const sd of [-1,1])for(const ss of [-1,1]){const px=c.x+c.ux*sd*c.half*0.3-c.uz*ss*(c.w/2+4),pz=c.z+c.uz*sd*c.half*0.3+c.ux*ss*(c.w/2+4);parts.push(box(px,0,pz,8,c.y+10,8,m));const cap=new THREE.Mesh(new THREE.ConeGeometry(6,4,4).translate(0,2,0),r);cap.rotation.y=Math.PI/4;cap.position.set(px,c.y+10,pz);parts.push(cap);}
     return group(L,parts);},
   arch(L,x,z){const c=riverCrossing(L.name,x,z);if(!c)return null;const H=L.archH||100,span=L.span||c.half*2,m=new THREE.MeshLambertMaterial({color:0x4f6a8a}),parts=[];
-    for(const ss of [-1,1]){const a=new THREE.Mesh(new THREE.TorusGeometry(1,0.012,6,48,Math.PI),m);a.scale.set(span/2,H*0.55,span/2);a.position.set(c.x-c.uz*ss*(c.w/2),H*0.45,c.z+c.ux*ss*(c.w/2));a.rotation.y=-Math.atan2(c.uz,c.ux);parts.push(a);
-      for(let k=-6;k<=6;k++){const t=k/7,hx=c.x+c.ux*t*span/2-c.uz*ss*(c.w/2),hz=c.z+c.uz*t*span/2+c.ux*ss*(c.w/2),hy=H*0.45+H*0.55*Math.sqrt(Math.max(0,1-t*t));parts.push(box(hx,H*0.45,hz,0.4,hy-H*0.45,0.4,m));}}
-    const deck=box(c.x,H*0.42,c.z,span,2.5,c.w+2,m);deck.rotation.y=-Math.atan2(c.uz,c.ux);parts.push(deck);return group(L,parts);},
+    for(const ss of [-1,1]){const a=new THREE.Mesh(new THREE.TorusGeometry(1,0.012,6,48,Math.PI),m);a.scale.set(span/2,Math.max(10,H-c.y),span/2);a.position.set(c.x-c.uz*ss*(c.w/2),c.y,c.z+c.ux*ss*(c.w/2));a.rotation.y=-Math.atan2(c.uz,c.ux);parts.push(a);
+      for(let k=-6;k<=6;k++){const t=k/7,hx=c.x+c.ux*t*span/2-c.uz*ss*(c.w/2),hz=c.z+c.uz*t*span/2+c.ux*ss*(c.w/2),hy=c.y+Math.max(10,H-c.y)*Math.sqrt(Math.max(0,1-t*t));parts.push(box(hx,c.y,hz,0.4,hy-c.y,0.4,m));}}
+    return group(L,parts);},
   cablestay(L,x,z){const c=riverCrossing(L.name,x,z);if(!c)return null;const H=L.towerH||55,m=new THREE.MeshLambertMaterial({color:0xe8e8e4}),cab=new THREE.LineBasicMaterial({color:0xd0d0d0}),parts=[];
-    for(const sd of [-1,1]){const tx=c.x+c.ux*sd*c.half*0.4,tz=c.z+c.uz*sd*c.half*0.4;parts.push(box(tx,0,tz,3,H,3,m));
-      const pts=[];for(let k=1;k<=10;k++)for(const dir of [-1,1])for(const ss of [-1,1]){const d=k*c.half*0.055;pts.push(new THREE.Vector3(tx,H-k*1.5,tz),new THREE.Vector3(tx+c.ux*dir*d-c.uz*ss*(c.w/2),8,tz+c.uz*dir*d+c.ux*ss*(c.w/2)));}
+    for(const sd of [-1,1]){const tx=c.x+c.ux*sd*c.half*0.4,tz=c.z+c.uz*sd*c.half*0.4;parts.push(box(tx,0,tz,3,c.y+H,3,m));
+      const pts=[];for(let k=1;k<=10;k++)for(const dir of [-1,1])for(const ss of [-1,1]){const d=k*c.half*0.055;pts.push(new THREE.Vector3(tx,c.y+H-k*1.5,tz),new THREE.Vector3(tx+c.ux*dir*d-c.uz*ss*(c.w/2),c.y,tz+c.uz*dir*d+c.ux*ss*(c.w/2)));}
       parts.push(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(pts),cab));}
     return group(L,parts);},
   sign(L,x,z){const top=roofAt(x,z)||15,neonR=new THREE.MeshBasicMaterial({color:0xff3a2a}),neonW=new THREE.MeshBasicMaterial({color:0xfff4d0}),frame=new THREE.MeshLambertMaterial({color:0x3a3a3a}),parts=[];
@@ -106,7 +106,7 @@ const MODELS={
 function riverCrossing(name,x,z){const rs=ROADS.filter(r=>r.name.toLowerCase().startsWith(name.toLowerCase())&&r.c!=='trail');const wet=[];let w=14,dir=null;
   for(const r of rs)for(let i=0;i+1<r.pts.length;i++){const [ax,az]=r.pts[i],[bx,bz]=r.pts[i+1],L2=Math.hypot(bx-ax,bz-az);for(let u=0;u<=L2;u+=6){const px=ax+(bx-ax)*u/L2,pz=az+(bz-az)*u/L2;if(inWater(px,pz)){wet.push([px,pz]);w=Math.max(w,r.w);if(!dir)dir=[(bx-ax)/L2,(bz-az)/L2];}}}
   if(wet.length<3||!dir)return null;const cx=wet.reduce((s,p)=>s+p[0],0)/wet.length,cz=wet.reduce((s,p)=>s+p[1],0)/wet.length;let half=0;for(const [px,pz] of wet)half=Math.max(half,Math.abs((px-cx)*dir[0]+(pz-cz)*dir[1]));
-  return {x:cx,z:cz,ux:dir[0],uz:dir[1],half,w:Math.min(w,30)};}
+  return {x:cx,z:cz,ux:dir[0],uz:dir[1],half,w:Math.min(w,30),y:Math.max(0,...rs.map(r=>r.deck||0))};}
 // stadium bowls: the outer wall, then stands sloping down towards the field (the outline shrunk towards its centre)
 function stadiumBowl(L,x,z){const a=AREAS.filter(q=>q.kind==='stadium').sort((p,q)=>Math.hypot((p.bb.x0+p.bb.x1)/2-x,(p.bb.z0+p.bb.z1)/2-z)-Math.hypot((q.bb.x0+q.bb.x1)/2-x,(q.bb.z0+q.bb.z1)/2-z))[0];
   if(!a||Math.hypot((a.bb.x0+a.bb.x1)/2-x,(a.bb.z0+a.bb.z1)/2-z)>250)return null;
