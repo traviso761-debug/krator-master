@@ -1,6 +1,6 @@
 // ---------- scene: renderer, camera, the sun's day, sky ----------
 const scene=new THREE.Scene();
-const camera=new THREE.PerspectiveCamera(50,innerWidth/innerHeight,1,12000);
+const camera=new THREE.PerspectiveCamera(50,innerWidth/innerHeight,1,24000);
 const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});
 renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);
 renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFShadowMap;
@@ -10,9 +10,9 @@ const updatePx=()=>{ENV.izPx.value=innerHeight*renderer.getPixelRatio()/(2*Math.
 const ambient=new THREE.AmbientLight(0x9fb4c8,0.35);scene.add(ambient);
 const hemi=new THREE.HemisphereLight(0xbfd8f0,0x5a5048,0.55);scene.add(hemi);
 const sun=new THREE.DirectionalLight(0xfff2dc,1.1);scene.add(sun);scene.add(sun.target);
-sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);{const sc=sun.shadow.camera;sc.left=-700;sc.right=700;sc.top=700;sc.bottom=-700;sc.near=1;sc.far=4000;sc.updateProjectionMatrix();}
+sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);{const sc=sun.shadow.camera;sc.left=-700;sc.right=700;sc.top=700;sc.bottom=-700;sc.near=1;sc.far=6000;sc.updateProjectionMatrix();}
 sun.shadow.bias=-0.0008;sun.shadow.normalBias=2;
-scene.fog=new THREE.FogExp2(0xb9cbe0,0.00022);
+scene.fog=new THREE.FogExp2(0xb9cbe0,0.00013);
 // the clock: DAY real seconds per city day
 let DAY=240;const HOUR0=10.5;let clockPaused=false,pausedAt=0,clockOffset=0;
 function hourNow(now){return ((HOUR0+((now/1000)/(DAY/24)))%24+24)%24;}
@@ -27,7 +27,7 @@ const SKY={day:{top:0x2f6fd0,hor:0xbcd3ee},dusk:{top:0x2a3a78,hor:0xf0a060},nigh
 const skyM=new THREE.ShaderMaterial({uniforms:{top:{value:new THREE.Color()},hor:{value:new THREE.Color()},sunDir:{value:new THREE.Vector3(0,1,0)},sunA:{value:1}},side:THREE.BackSide,depthWrite:false,fog:false,
   vertexShader:'varying vec3 vP;void main(){vP=normalize(position);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',
   fragmentShader:'uniform vec3 top;uniform vec3 hor;uniform vec3 sunDir;uniform float sunA;varying vec3 vP;void main(){float t=clamp(vP.y*1.6,0.0,1.0);vec3 c=mix(hor,top,pow(t,0.6));float d=max(dot(vP,sunDir),0.0);c+=vec3(1.0,0.85,0.6)*(pow(d,600.0)*1.2+pow(d,8.0)*0.18)*sunA;gl_FragColor=vec4(c,1.0);}'});
-const sky=new THREE.Mesh(new THREE.SphereGeometry(5500,32,16),skyM);sky.userData.noShadow=true;scene.add(sky);
+const sky=new THREE.Mesh(new THREE.SphereGeometry(11000,32,16),skyM);sky.userData.noShadow=true;scene.add(sky);
 const tmpC=new THREE.Color(),tmpC2=new THREE.Color();
 function lerpSky(h){const n=nightF(h),dusk=Math.max(0,1-Math.abs(h-18.6)/1.6,1-Math.abs(h-6.3)/1.4);
   const mixTo=(a,b,k)=>tmpC.set(a).lerp(tmpC2.set(b),k);

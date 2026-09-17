@@ -49,13 +49,17 @@ viewer's browser (`localStorage`), not on the server.
 
 ### `/chicago`: Chicago
 
-The same shell and controls, a different generator: a metre-scale street grid centred on State &
-Madison, Lake Michigan east of x = 900, the river's main stem and both branches with a bridge at
-every street, Grant and Millennium Parks, Navy Pier and its wheel, a skyline field by district,
-twenty-one parametric landmarks (click one for its card), the elevated Loop with running trains,
-traffic, tour boats and sailboats, a sun that rises over the lake and windows that light at dusk.
-Hash: `#v=...&t=hour[&paused]`. Views: Skyline from the lake, The Loop, Riverwalk, Millennium Park,
-Navy Pier, Willis Tower, Michigan Avenue, Overview. Positions are approximate: it is a massing model.
+The same shell and controls, a different generator, laid out in **real coordinates**: every position in
+`data/cities/chicago.json` is a latitude/longitude, projected to metres around State & Madison. That
+covers the named streets (Michigan, State, LaSalle, Wacker, Grand, Chicago Ave…) with the regular
+grid filled in around them, Milwaukee Avenue and Lake Shore Drive as diagonals, the lake shore with the
+Museum Campus peninsula, the Chicago River's main stem and both branches following their bends (a bridge
+wherever a street crosses, at the crossing's angle), the parks and beaches, Navy Pier, the elevated
+Loop on Lake/Wabash/Van Buren/Wells, and 27 landmarks at their addresses and real heights (click one
+for its card). Cloud Gate is mirrored: it reflects the park and skyline around it while you are nearby.
+Hash: `#v=...&t=hour[&paused]`. Views: Skyline from the lake, Cloud Gate, Millennium Park, The Loop,
+Riverwalk, River forks, Navy Pier, Willis Tower, Magnificent Mile, Overview. Ordinary buildings are
+generated per block (heights follow each district), so only the landmarks are the real buildings.
 
 ### `/tongue`: The Izani Tongue
 
