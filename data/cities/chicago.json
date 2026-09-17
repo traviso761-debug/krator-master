@@ -1,112 +1,662 @@
 {
   "name": "Chicago",
-  "note": "Parameters for chicago.html, in real coordinates: every position is [lat, lon] and is projected to metres around State & Madison (x east, z south). Streets: [name, lon or lat, width m, major 0/1, optional range from, to (lat for north-south streets, lon for east-west)]. Positions are from maps at street-block accuracy; heights are the buildings' real heights.",
+  "note": "Parameters for chicago.html, in real coordinates: every position is [lat, lon] and is projected to metres around State & Madison (x east, z south). Streets: [name, lon or lat, width m, major 0/1, optional range from, to (lat for north-south streets, lon for east-west)]. Positions are from maps at street-block accuracy; heights are the buildings' real heights. 'bounds' is the map rectangle [lat south, lon west, lat north, lon east]; addresses were converted with Chicago's grid (800 per mile from State & Madison).",
   "origin": [41.8819, -87.6278],
-  "WORLD": 6800,
   "defaultSeed": 1871,
-
   "streetsNS": [
-    ["Michigan Ave", -87.6245, 40, 1], ["Wabash Ave", -87.6260, 20, 0], ["State St", -87.6278, 26, 1], ["Dearborn St", -87.6294, 20, 0],
-    ["Clark St", -87.6310, 22, 0], ["LaSalle St", -87.6325, 26, 1], ["Wells St", -87.6340, 20, 0], ["Franklin St", -87.6355, 20, 0],
-    ["Wacker Dr", -87.6368, 34, 1, 41.8740, 41.8870], ["Canal St", -87.6395, 24, 1], ["Clinton St", -87.6410, 20, 0], ["Jefferson St", -87.6425, 20, 0],
-    ["Des Plaines St", -87.6445, 20, 0], ["Halsted St", -87.6475, 28, 1], ["Racine Ave", -87.6570, 22, 0], ["Ashland Ave", -87.6666, 28, 1],
-    ["Columbus Dr", -87.6200, 28, 1, 41.8674, 41.8930], ["Rush St", -87.6255, 18, 0, 41.8890, 41.9036], ["St Clair St", -87.6230, 18, 0, 41.8890, 41.8966],
-    ["Fairbanks Ct", -87.6210, 18, 0, 41.8890, 41.8966], ["McClurg Ct", -87.6180, 18, 0, 41.8890, 41.8966]
+    ["Michigan Ave", -87.6245, 40, 1],
+    ["Wabash Ave", -87.626, 20, 0],
+    ["State St", -87.6278, 26, 1],
+    ["Dearborn St", -87.6294, 20, 0],
+    ["Clark St", -87.631, 22, 0],
+    ["LaSalle St", -87.6325, 26, 1],
+    ["Wells St", -87.634, 20, 0],
+    ["Franklin St", -87.6355, 20, 0],
+    ["Wacker Dr", -87.6368, 34, 1, 41.874, 41.887],
+    ["Canal St", -87.6395, 24, 1],
+    ["Clinton St", -87.641, 20, 0],
+    ["Jefferson St", -87.6425, 20, 0],
+    ["Des Plaines St", -87.6445, 20, 0],
+    ["Halsted St", -87.6475, 28, 1],
+    ["Racine Ave", -87.657, 22, 0],
+    ["Ashland Ave", -87.6666, 28, 1],
+    ["Columbus Dr", -87.62, 28, 1, 41.8674, 41.893],
+    ["Rush St", -87.6255, 18, 0, 41.889, 41.9036],
+    ["St Clair St", -87.623, 18, 0, 41.889, 41.8966],
+    ["Fairbanks Ct", -87.621, 18, 0, 41.889, 41.8966],
+    ["McClurg Ct", -87.618, 18, 0, 41.889, 41.8966],
+    ["Noble St", -87.6618, 18, 0],
+    ["Paulina St", -87.6691, 18, 0],
+    ["Wood St", -87.6715, 18, 0],
+    ["Wolcott Ave", -87.674, 18, 0],
+    ["Damen Ave", -87.6764, 26, 1],
+    ["Hoyne Ave", -87.6789, 18, 0],
+    ["Leavitt St", -87.6813, 18, 0],
+    ["Western Ave", -87.6861, 30, 1]
   ],
   "streetsEW": [
-    ["Wacker Dr", 41.8876, 30, 1, -87.6368, -87.6200], ["Lake St", 41.8857, 22, 1], ["Randolph St", 41.8842, 24, 1], ["Washington St", 41.8833, 20, 0],
-    ["Madison St", 41.8819, 22, 1], ["Monroe St", 41.8806, 22, 0], ["Adams St", 41.8794, 20, 0], ["Jackson Blvd", 41.8781, 22, 1],
-    ["Van Buren St", 41.8768, 20, 0], ["Ida B. Wells Dr", 41.8756, 40, 1], ["Harrison St", 41.8741, 20, 0], ["Balbo Dr", 41.8730, 20, 0],
-    ["Polk St", 41.8720, 20, 0], ["Roosevelt Rd", 41.8674, 30, 1], ["18th St", 41.8577, 22, 0],
-    ["Kinzie St", 41.8893, 20, 0], ["Hubbard St", 41.8900, 18, 0], ["Illinois St", 41.8910, 20, 0], ["Grand Ave", 41.8918, 22, 1],
-    ["Ohio St", 41.8925, 22, 1], ["Ontario St", 41.8932, 22, 1], ["Erie St", 41.8940, 18, 0], ["Huron St", 41.8947, 18, 0],
-    ["Superior St", 41.8955, 18, 0], ["Chicago Ave", 41.8966, 24, 1], ["Chestnut St", 41.8984, 18, 0], ["Delaware Pl", 41.8993, 18, 0],
-    ["Oak St", 41.9008, 20, 0], ["Division St", 41.9036, 26, 1], ["North Ave", 41.9107, 26, 1]
+    ["Wacker Dr", 41.8876, 30, 1, -87.6368, -87.62],
+    ["Lake St", 41.8857, 22, 1],
+    ["Randolph St", 41.8842, 24, 1],
+    ["Washington St", 41.8833, 20, 0],
+    ["Madison St", 41.8819, 22, 1],
+    ["Monroe St", 41.8806, 22, 0],
+    ["Adams St", 41.8794, 20, 0],
+    ["Jackson Blvd", 41.8781, 22, 1],
+    ["Van Buren St", 41.8768, 20, 0],
+    ["Ida B. Wells Dr", 41.8756, 40, 1],
+    ["Harrison St", 41.8741, 20, 0],
+    ["Balbo Dr", 41.873, 20, 0],
+    ["Polk St", 41.872, 20, 0],
+    ["Roosevelt Rd", 41.8674, 30, 1],
+    ["18th St", 41.8577, 22, 0],
+    ["Kinzie St", 41.8893, 20, 0],
+    ["Hubbard St", 41.89, 18, 0],
+    ["Illinois St", 41.891, 20, 0],
+    ["Grand Ave", 41.8918, 22, 1],
+    ["Ohio St", 41.8925, 22, 1],
+    ["Ontario St", 41.8932, 22, 1],
+    ["Erie St", 41.894, 18, 0],
+    ["Huron St", 41.8947, 18, 0],
+    ["Superior St", 41.8955, 18, 0],
+    ["Chicago Ave", 41.8966, 24, 1],
+    ["Chestnut St", 41.8984, 18, 0],
+    ["Delaware Pl", 41.8993, 18, 0],
+    ["Oak St", 41.9008, 20, 0],
+    ["Division St", 41.9036, 26, 1],
+    ["North Ave", 41.9107, 26, 1],
+    ["Evergreen Ave", 41.9054, 18, 0, -87.69, -87.657],
+    ["Schiller St", 41.9072, 18, 0, -87.69, -87.657],
+    ["Blackhawk St", 41.909, 18, 0, -87.69, -87.657],
+    ["Wabansia Ave", 41.9127, 18, 0],
+    ["Bloomingdale Ave", 41.9145, 18, 0],
+    ["Armitage Ave", 41.9181, 24, 1]
   ],
-  "fill": {"ns": 100, "ew": 201, "street": 16, "_": "outside the named streets the grid is filled at Chicago's pitch: north-south streets every 1/16 mile, east-west every 1/8 mile"},
+  "fill": {
+    "ns": 100,
+    "ew": 201,
+    "street": 16,
+    "_": "outside the named streets the grid is filled at Chicago's pitch: north-south streets every 1/16 mile, east-west every 1/8 mile"
+  },
   "diagonals": [
-    ["Milwaukee Ave", 22, [[41.8858, -87.6395], [41.8930, -87.6480], [41.9036, -87.6665]]],
-    ["Lake Shore Dr", 44, [[41.9140, -87.6270], [41.9030, -87.6262], [41.9005, -87.6240], [41.8990, -87.6205], [41.8955, -87.6178], [41.8925, -87.6170], [41.8890, -87.6172], [41.8860, -87.6188], [41.8810, -87.6190], [41.8740, -87.6190], [41.8690, -87.6182], [41.8650, -87.6178], [41.8580, -87.6168], [41.8500, -87.6150]]]
+    [
+      "Milwaukee Ave",
+      22,
+      [[41.8858, -87.6395], [41.893, -87.648], [41.9036, -87.6665], [41.9103, -87.6773], [41.9185, -87.6885]]
+    ],
+    [
+      "Lake Shore Dr",
+      44,
+      [
+        [41.914, -87.627],
+        [41.903, -87.6262],
+        [41.9005, -87.624],
+        [41.899, -87.6205],
+        [41.8955, -87.6178],
+        [41.8925, -87.617],
+        [41.889, -87.6172],
+        [41.886, -87.6188],
+        [41.881, -87.619],
+        [41.874, -87.619],
+        [41.869, -87.6182],
+        [41.865, -87.6178],
+        [41.858, -87.6168],
+        [41.85, -87.615]
+      ]
+    ],
+    [
+      "Wicker Park Ave",
+      14,
+      [[41.9096, -87.6768], [41.9072, -87.6732], [41.906, -87.6712]]
+    ]
   ],
-
-  "shore": [[41.9160, -87.6290], [41.9120, -87.6258], [41.9060, -87.6250], [41.9025, -87.6232], [41.9005, -87.6212], [41.8990, -87.6188], [41.8960, -87.6150], [41.8935, -87.6128], [41.8922, -87.6100], [41.8905, -87.6100], [41.8886, -87.6112], [41.8870, -87.6128], [41.8845, -87.6150], [41.8810, -87.6168], [41.8760, -87.6172], [41.8720, -87.6160], [41.8690, -87.6135], [41.8682, -87.6085], [41.8668, -87.6058], [41.8648, -87.6070], [41.8645, -87.6120], [41.8600, -87.6125], [41.8540, -87.6112], [41.8480, -87.6100]],
+  "shore": [
+    [41.916, -87.629],
+    [41.912, -87.6258],
+    [41.906, -87.625],
+    [41.9025, -87.6232],
+    [41.9005, -87.6212],
+    [41.899, -87.6188],
+    [41.896, -87.615],
+    [41.8935, -87.6128],
+    [41.8922, -87.61],
+    [41.8905, -87.61],
+    [41.8886, -87.6112],
+    [41.887, -87.6128],
+    [41.8845, -87.615],
+    [41.881, -87.6168],
+    [41.876, -87.6172],
+    [41.872, -87.616],
+    [41.869, -87.6135],
+    [41.8682, -87.6085],
+    [41.8668, -87.6058],
+    [41.8648, -87.607],
+    [41.8645, -87.612],
+    [41.86, -87.6125],
+    [41.854, -87.6112],
+    [41.848, -87.61]
+  ],
   "_shore": "the lake shore from north to south; the lake is everything east of it. The bulge at 41.866 is the Adler Planetarium peninsula; Northerly Island continues south.",
-
   "rivers": [
-    {"name": "Main Branch", "width": 64, "path": [[41.8886, -87.6080], [41.8886, -87.6150], [41.8888, -87.6210], [41.8889, -87.6246], [41.8887, -87.6278], [41.8886, -87.6310], [41.8882, -87.6340], [41.8875, -87.6360], [41.8870, -87.6370]]},
-    {"name": "North Branch", "width": 55, "path": [[41.8870, -87.6370], [41.8890, -87.6378], [41.8912, -87.6405], [41.8935, -87.6430], [41.8966, -87.6453], [41.9000, -87.6480], [41.9036, -87.6530], [41.9080, -87.6585], [41.9130, -87.6620]]},
-    {"name": "South Branch", "width": 58, "path": [[41.8870, -87.6370], [41.8857, -87.6373], [41.8819, -87.6377], [41.8768, -87.6383], [41.8741, -87.6378], [41.8720, -87.6365], [41.8690, -87.6345], [41.8674, -87.6336], [41.8620, -87.6334], [41.8577, -87.6340], [41.8540, -87.6385], [41.8500, -87.6440]]}
+    {
+      "name": "Main Branch",
+      "width": 64,
+      "path": [
+        [41.8886, -87.608],
+        [41.8886, -87.615],
+        [41.8888, -87.621],
+        [41.8889, -87.6246],
+        [41.8887, -87.6278],
+        [41.8886, -87.631],
+        [41.8882, -87.634],
+        [41.8875, -87.636],
+        [41.887, -87.637]
+      ]
+    },
+    {
+      "name": "North Branch",
+      "width": 55,
+      "path": [
+        [41.887, -87.637],
+        [41.889, -87.6378],
+        [41.8912, -87.6405],
+        [41.8935, -87.643],
+        [41.8966, -87.6453],
+        [41.9, -87.648],
+        [41.9036, -87.653],
+        [41.908, -87.6585],
+        [41.913, -87.662]
+      ]
+    },
+    {
+      "name": "South Branch",
+      "width": 58,
+      "path": [
+        [41.887, -87.637],
+        [41.8857, -87.6373],
+        [41.8819, -87.6377],
+        [41.8768, -87.6383],
+        [41.8741, -87.6378],
+        [41.872, -87.6365],
+        [41.869, -87.6345],
+        [41.8674, -87.6336],
+        [41.862, -87.6334],
+        [41.8577, -87.634],
+        [41.854, -87.6385],
+        [41.85, -87.644]
+      ]
+    }
   ],
-
   "parks": [
-    {"name": "Millennium Park", "rect": [41.8807, -87.6245, 41.8842, -87.6200]},
-    {"name": "Maggie Daley Park", "rect": [41.8806, -87.6200, 41.8842, -87.6170]},
-    {"name": "Grant Park", "rect": [41.8674, -87.6245, 41.8806, -87.6168]},
-    {"name": "Museum Campus", "rect": [41.8600, -87.6200, 41.8674, -87.6040]},
-    {"name": "Lake Shore East Park", "rect": [41.8858, -87.6185, 41.8868, -87.6160]},
-    {"name": "Olive Park", "rect": [41.8915, -87.6128, 41.8945, -87.6095]},
-    {"name": "Lincoln Park", "rect": [41.9107, -87.6340, 41.9200, -87.6255]},
-    {"name": "Washington Square", "rect": [41.8993, -87.6320, 41.9008, -87.6300]}
+    {
+      "name": "Millennium Park",
+      "rect": [41.8807, -87.6245, 41.8842, -87.62]
+    },
+    {
+      "name": "Maggie Daley Park",
+      "rect": [41.8806, -87.62, 41.8842, -87.617]
+    },
+    {
+      "name": "Grant Park",
+      "rect": [41.8674, -87.6245, 41.8806, -87.6168]
+    },
+    {
+      "name": "Museum Campus",
+      "rect": [41.86, -87.62, 41.8674, -87.604]
+    },
+    {
+      "name": "Lake Shore East Park",
+      "rect": [41.8858, -87.6185, 41.8868, -87.616]
+    },
+    {
+      "name": "Olive Park",
+      "rect": [41.8915, -87.6128, 41.8945, -87.6095]
+    },
+    {
+      "name": "Lincoln Park",
+      "rect": [41.9107, -87.634, 41.92, -87.6255]
+    },
+    {
+      "name": "Washington Square",
+      "rect": [41.8993, -87.632, 41.9008, -87.63]
+    },
+    {
+      "name": "Wicker Park",
+      "poly": [[41.9072, -87.6764], [41.9095, -87.6764], [41.9072, -87.6733]]
+    },
+    {
+      "name": "Pulaski Park",
+      "rect": [41.9078, -87.6632, 41.909, -87.6612]
+    },
+    {
+      "name": "Holstein Park",
+      "rect": [41.9148, -87.68, 41.916, -87.6782]
+    },
+    {
+      "name": "Eckhart Park",
+      "rect": [41.8962, -87.6632, 41.898, -87.6605]
+    }
   ],
-  "beaches": [{"name": "Oak Street Beach", "path": [[41.9055, -87.6252], [41.9025, -87.6234], [41.9005, -87.6214], [41.8992, -87.6192]], "width": 45},
-              {"name": "North Avenue Beach", "path": [[41.9155, -87.6288], [41.9118, -87.6260], [41.9070, -87.6252]], "width": 55}],
-  "pier": {"base": [41.8918, -87.6100], "end": [41.8918, -87.5975], "width": 90, "wheel": [41.8918, -87.6056], "wheelR": 28},
-
-  "districts": {"_": "[name, hex colour, base height, tallest, box as [lat south, lon west, lat north, lon east]]; the first box that contains a block wins",
-    "loop": ["The Loop", "#5c6a80", 60, 230, [41.8741, -87.6375, 41.8880, -87.6245]],
-    "lakeshoreeast": ["Lakeshore East", "#6f8298", 50, 260, [41.8842, -87.6245, 41.8886, -87.6130]],
-    "streeterville": ["Streeterville", "#6f7f92", 50, 240, [41.8890, -87.6245, 41.9008, -87.6080]],
-    "rivernorth": ["River North", "#8a5a48", 30, 150, [41.8890, -87.6440, 41.8966, -87.6245]],
-    "goldcoast": ["Gold Coast", "#9a8a78", 25, 190, [41.8966, -87.6340, 41.9107, -87.6200]],
-    "westloop": ["West Loop", "#7a6a5a", 25, 130, [41.8741, -87.6600, 41.8893, -87.6375]],
-    "southloop": ["South Loop", "#8a7a68", 20, 110, [41.8577, -87.6340, 41.8741, -87.6190]],
+  "beaches": [
+    {
+      "name": "Oak Street Beach",
+      "path": [[41.9055, -87.6252], [41.9025, -87.6234], [41.9005, -87.6214], [41.8992, -87.6192]],
+      "width": 45
+    },
+    {
+      "name": "North Avenue Beach",
+      "path": [[41.9155, -87.6288], [41.9118, -87.626], [41.907, -87.6252]],
+      "width": 55
+    }
+  ],
+  "pier": {
+    "base": [41.8918, -87.61],
+    "end": [41.8918, -87.5975],
+    "width": 90,
+    "wheel": [41.8918, -87.6056],
+    "wheelR": 28
+  },
+  "districts": {
+    "_": "[name, hex colour, base height, tallest, box as [lat south, lon west, lat north, lon east]]; the first box that contains a block wins",
+    "loop": ["The Loop", "#5c6a80", 60, 230, [41.8741, -87.6375, 41.888, -87.6245]],
+    "lakeshoreeast": ["Lakeshore East", "#6f8298", 50, 260, [41.8842, -87.6245, 41.8886, -87.613]],
+    "streeterville": ["Streeterville", "#6f7f92", 50, 240, [41.889, -87.6245, 41.9008, -87.608]],
+    "rivernorth": ["River North", "#8a5a48", 30, 150, [41.889, -87.644, 41.8966, -87.6245]],
+    "goldcoast": ["Gold Coast", "#9a8a78", 25, 190, [41.8966, -87.634, 41.9107, -87.62]],
+    "westloop": ["West Loop", "#7a6a5a", 25, 130, [41.8741, -87.66, 41.8893, -87.6375]],
+    "southloop": ["South Loop", "#8a7a68", 20, 110, [41.8577, -87.634, 41.8741, -87.619]],
+    "wickerpark": ["Wicker Park", "#9a5a44", 8, 24, [41.9036, -87.6861, 41.9127, -87.669]],
+    "bucktown": ["Bucktown", "#8a6a54", 7, 18, [41.9127, -87.69, 41.92, -87.669]],
+    "noblesquare": ["Noble Square", "#8e6252", 8, 22, [41.8966, -87.669, 41.9107, -87.657]],
     "outer": ["Neighbourhoods", "#8a8478", 8, 22, null]
   },
-  "skylineCentre": [41.8830, -87.6280],
-
+  "skylineCentre": [41.883, -87.628],
   "landmarks": [
-    {"name": "Willis Tower", "kind": "bundle", "at": [41.8789, -87.6359], "h": 442, "w": 68, "info": "233 S Wacker Dr · 1974 · 442 m, 108 floors. Nine bundled tubes, stepping back at floors 50, 66 and 90."},
-    {"name": "875 North Michigan", "kind": "taper", "at": [41.8988, -87.6229], "h": 344, "w": 50, "d": 80, "info": "The John Hancock Center · 1969 · 344 m (457 m to the antennas). A tapered tube with X-bracing on the outside."},
-    {"name": "Trump International Hotel & Tower", "kind": "setbacks", "at": [41.8891, -87.6264], "h": 357, "w": 70, "d": 45, "spire": 66, "info": "401 N Wabash Ave · 2009 · 357 m to the roof, 423 m with the spire. Three setbacks answer the heights of its neighbours."},
-    {"name": "Aon Center", "kind": "box", "at": [41.8853, -87.6214], "h": 346, "w": 59, "d": 59, "color": "#e8e4dc", "info": "200 E Randolph St · 1973 · 346 m. A plain white shaft, once clad in marble."},
-    {"name": "St. Regis Chicago", "kind": "stacked", "at": [41.8875, -87.6180], "h": 363, "w": 40, "d": 70, "info": "363 E Wacker Dr · 2020 · 363 m. Three stems of stacked frusta, the tallest building in the world designed by a woman (Jeanne Gang)."},
-    {"name": "Aqua", "kind": "wavy", "at": [41.8864, -87.6198], "h": 262, "w": 38, "d": 32, "info": "225 N Columbus Dr · 2009 · 262 m. Balconies of different depths make the facade ripple like water (Jeanne Gang)."},
-    {"name": "Two Prudential Plaza", "kind": "crown", "at": [41.8847, -87.6228], "h": 303, "w": 45, "d": 45, "info": "180 N Stetson Ave · 1990 · 303 m. Chevron setbacks and a spire."},
-    {"name": "Marina City", "kind": "twin", "at": [41.8882, -87.6286], "h": 179, "w": 34, "gap": 44, "info": "300 N State St · 1964 · 179 m. Two 'corn cob' towers: nineteen floors of spiral parking, then apartments with petal balconies."},
-    {"name": "Merchandise Mart", "kind": "slab", "at": [41.8889, -87.6353], "h": 100, "w": 190, "d": 80, "tower": 30, "color": "#9a8470", "info": "222 Merchandise Mart Plaza · 1930 · 100 m. Four million square feet, once the largest building in the world."},
-    {"name": "Chicago Board of Trade", "kind": "deco", "at": [41.8777, -87.6323], "h": 184, "w": 55, "d": 50, "color": "#b8a890", "info": "141 W Jackson Blvd · 1930 · 184 m. Art Deco, closing the view down LaSalle Street; Ceres stands on top."},
-    {"name": "311 South Wacker", "kind": "crowncyl", "at": [41.8774, -87.6356], "h": 293, "w": 50, "d": 50, "color": "#c9b8a0", "info": "311 S Wacker Dr · 1990 · 293 m. The lit glass crown is 32 m tall."},
-    {"name": "Tribune Tower", "kind": "gothic", "at": [41.8905, -87.6236], "h": 141, "w": 40, "d": 40, "color": "#c8c0b0", "info": "435 N Michigan Ave · 1925 · 141 m. Neo-Gothic; stones from famous buildings are set into its base."},
-    {"name": "Wrigley Building", "kind": "clocktower", "at": [41.8899, -87.6250], "h": 130, "w": 40, "d": 60, "color": "#f0ece0", "info": "400 N Michigan Ave · 1924 · 130 m. White terra cotta, floodlit at night."},
-    {"name": "Crain Communications Building", "kind": "diamond", "at": [41.8846, -87.6250], "h": 177, "w": 40, "d": 40, "info": "150 N Michigan Ave · 1984 · 177 m. The diamond-shaped top faces the park."},
-    {"name": "Lake Point Tower", "kind": "ypoint", "at": [41.8918, -87.6124], "h": 197, "w": 60, "info": "505 N Lake Shore Dr · 1968 · 197 m. Three curved wings of bronze glass, the only skyscraper east of Lake Shore Drive."},
-    {"name": "Water Tower", "kind": "watertower", "at": [41.8972, -87.6245], "h": 47, "w": 12, "color": "#d8d0c0", "info": "806 N Michigan Ave · 1869 · 47 m. Limestone; one of the few buildings to survive the Great Fire of 1871."},
-    {"name": "Cloud Gate", "kind": "bean", "at": [41.8827, -87.6233], "h": 10, "w": 20, "d": 13, "info": "Millennium Park · 2006 · 'The Bean'. 168 welded stainless-steel plates, 100 tonnes, 20 m long. Walk under the arch at its centre."},
-    {"name": "Jay Pritzker Pavilion", "kind": "pavilion", "at": [41.8826, -87.6217], "h": 36, "w": 36, "info": "Millennium Park · 2004 · Frank Gehry. Stainless-steel ribbons over the stage and a lattice of pipes over the lawn."},
-    {"name": "Crown Fountain", "kind": "crownfountain", "at": [41.8814, -87.6238], "h": 15, "w": 7, "gap": 70, "info": "Millennium Park · 2004 · Jaume Plensa. Two glass-brick towers showing the faces of Chicagoans; water spouts from their mouths in summer."},
-    {"name": "Buckingham Fountain", "kind": "fountain", "at": [41.8758, -87.6189], "h": 8, "w": 85, "info": "Grant Park · 1927. One of the largest fountains in the world; the centre jet reaches 46 m on the hour."},
-    {"name": "Art Institute of Chicago", "kind": "lowrise", "at": [41.8796, -87.6232], "h": 24, "w": 60, "d": 150, "color": "#c8bca8", "info": "111 S Michigan Ave · 1893. Beaux-Arts; the bronze lions guard the steps."},
-    {"name": "Union Station", "kind": "lowrise", "at": [41.8787, -87.6403], "h": 30, "w": 90, "d": 110, "color": "#d0c8b8", "info": "225 S Canal St · 1925. The Great Hall's skylight is 35 m up."},
-    {"name": "Field Museum", "kind": "lowrise", "at": [41.8663, -87.6170], "h": 32, "w": 110, "d": 160, "color": "#e8e2d4", "info": "1400 S Lake Shore Dr · 1921. Greek-revival marble; Sue the T. rex lives inside."},
-    {"name": "Shedd Aquarium", "kind": "lowrise", "at": [41.8676, -87.6140], "h": 22, "w": 90, "d": 90, "color": "#e0d8c6", "info": "1200 S DuSable Lake Shore Dr · 1930. An octagonal Beaux-Arts hall on the lake."},
-    {"name": "Adler Planetarium", "kind": "dome", "at": [41.8663, -87.6068], "h": 22, "w": 40, "color": "#9a7a5a", "info": "1300 S DuSable Lake Shore Dr · 1930. America's first planetarium, a twelve-sided Art Deco hall on the peninsula."},
-    {"name": "Soldier Field", "kind": "stadium", "at": [41.8623, -87.6167], "h": 40, "w": 160, "d": 260, "info": "1410 Museum Campus Dr · 1924, rebuilt 2003. The colonnades survive; the bowl inside does not match them."},
-    {"name": "Navy Pier", "kind": "pier", "at": [41.8918, -87.6040], "h": 14, "info": "600 E Grand Ave · 1916. A kilometre into the lake; the Centennial Wheel is 60 m tall."}
+    {
+      "name": "Willis Tower",
+      "kind": "bundle",
+      "at": [41.8789, -87.6359],
+      "h": 442,
+      "w": 68,
+      "info": "233 S Wacker Dr · 1974 · 442 m, 108 floors. Nine bundled tubes, stepping back at floors 50, 66 and 90."
+    },
+    {
+      "name": "875 North Michigan",
+      "kind": "taper",
+      "at": [41.8988, -87.6229],
+      "h": 344,
+      "w": 50,
+      "d": 80,
+      "info": "The John Hancock Center · 1969 · 344 m (457 m to the antennas). A tapered tube with X-bracing on the outside."
+    },
+    {
+      "name": "Trump International Hotel & Tower",
+      "kind": "setbacks",
+      "at": [41.8891, -87.6264],
+      "h": 357,
+      "w": 70,
+      "d": 45,
+      "spire": 66,
+      "info": "401 N Wabash Ave · 2009 · 357 m to the roof, 423 m with the spire. Three setbacks answer the heights of its neighbours."
+    },
+    {
+      "name": "Aon Center",
+      "kind": "box",
+      "at": [41.8853, -87.6214],
+      "h": 346,
+      "w": 59,
+      "d": 59,
+      "color": "#e8e4dc",
+      "info": "200 E Randolph St · 1973 · 346 m. A plain white shaft, once clad in marble."
+    },
+    {
+      "name": "St. Regis Chicago",
+      "kind": "stacked",
+      "at": [41.8875, -87.618],
+      "h": 363,
+      "w": 40,
+      "d": 70,
+      "info": "363 E Wacker Dr · 2020 · 363 m. Three stems of stacked frusta, the tallest building in the world designed by a woman (Jeanne Gang)."
+    },
+    {
+      "name": "Aqua",
+      "kind": "wavy",
+      "at": [41.8864, -87.6198],
+      "h": 262,
+      "w": 38,
+      "d": 32,
+      "info": "225 N Columbus Dr · 2009 · 262 m. Balconies of different depths make the facade ripple like water (Jeanne Gang)."
+    },
+    {
+      "name": "Two Prudential Plaza",
+      "kind": "crown",
+      "at": [41.8847, -87.6228],
+      "h": 303,
+      "w": 45,
+      "d": 45,
+      "info": "180 N Stetson Ave · 1990 · 303 m. Chevron setbacks and a spire."
+    },
+    {
+      "name": "Marina City",
+      "kind": "twin",
+      "at": [41.8882, -87.6286],
+      "h": 179,
+      "w": 34,
+      "gap": 44,
+      "info": "300 N State St · 1964 · 179 m. Two 'corn cob' towers: nineteen floors of spiral parking, then apartments with petal balconies."
+    },
+    {
+      "name": "Merchandise Mart",
+      "kind": "slab",
+      "at": [41.8889, -87.6353],
+      "h": 100,
+      "w": 190,
+      "d": 80,
+      "tower": 30,
+      "color": "#9a8470",
+      "info": "222 Merchandise Mart Plaza · 1930 · 100 m. Four million square feet, once the largest building in the world."
+    },
+    {
+      "name": "Chicago Board of Trade",
+      "kind": "deco",
+      "at": [41.8777, -87.6323],
+      "h": 184,
+      "w": 55,
+      "d": 50,
+      "color": "#b8a890",
+      "info": "141 W Jackson Blvd · 1930 · 184 m. Art Deco, closing the view down LaSalle Street; Ceres stands on top."
+    },
+    {
+      "name": "311 South Wacker",
+      "kind": "crowncyl",
+      "at": [41.8774, -87.6356],
+      "h": 293,
+      "w": 50,
+      "d": 50,
+      "color": "#c9b8a0",
+      "info": "311 S Wacker Dr · 1990 · 293 m. The lit glass crown is 32 m tall."
+    },
+    {
+      "name": "Tribune Tower",
+      "kind": "gothic",
+      "at": [41.8905, -87.6236],
+      "h": 141,
+      "w": 40,
+      "d": 40,
+      "color": "#c8c0b0",
+      "info": "435 N Michigan Ave · 1925 · 141 m. Neo-Gothic; stones from famous buildings are set into its base."
+    },
+    {
+      "name": "Wrigley Building",
+      "kind": "clocktower",
+      "at": [41.8899, -87.625],
+      "h": 130,
+      "w": 40,
+      "d": 60,
+      "color": "#f0ece0",
+      "info": "400 N Michigan Ave · 1924 · 130 m. White terra cotta, floodlit at night."
+    },
+    {
+      "name": "Crain Communications Building",
+      "kind": "diamond",
+      "at": [41.8846, -87.625],
+      "h": 177,
+      "w": 40,
+      "d": 40,
+      "info": "150 N Michigan Ave · 1984 · 177 m. The diamond-shaped top faces the park."
+    },
+    {
+      "name": "Lake Point Tower",
+      "kind": "ypoint",
+      "at": [41.8918, -87.6124],
+      "h": 197,
+      "w": 60,
+      "info": "505 N Lake Shore Dr · 1968 · 197 m. Three curved wings of bronze glass, the only skyscraper east of Lake Shore Drive."
+    },
+    {
+      "name": "Water Tower",
+      "kind": "watertower",
+      "at": [41.8972, -87.6245],
+      "h": 47,
+      "w": 12,
+      "color": "#d8d0c0",
+      "info": "806 N Michigan Ave · 1869 · 47 m. Limestone; one of the few buildings to survive the Great Fire of 1871."
+    },
+    {
+      "name": "Cloud Gate",
+      "kind": "bean",
+      "at": [41.8827, -87.6233],
+      "h": 10,
+      "w": 20,
+      "d": 13,
+      "info": "Millennium Park · 2006 · 'The Bean'. 168 welded stainless-steel plates, 100 tonnes, 20 m long. Walk under the arch at its centre."
+    },
+    {
+      "name": "Jay Pritzker Pavilion",
+      "kind": "pavilion",
+      "at": [41.8826, -87.6217],
+      "h": 36,
+      "w": 36,
+      "info": "Millennium Park · 2004 · Frank Gehry. Stainless-steel ribbons over the stage and a lattice of pipes over the lawn."
+    },
+    {
+      "name": "Crown Fountain",
+      "kind": "crownfountain",
+      "at": [41.8814, -87.6238],
+      "h": 15,
+      "w": 7,
+      "gap": 70,
+      "info": "Millennium Park · 2004 · Jaume Plensa. Two glass-brick towers showing the faces of Chicagoans; water spouts from their mouths in summer."
+    },
+    {
+      "name": "Buckingham Fountain",
+      "kind": "fountain",
+      "at": [41.8758, -87.6189],
+      "h": 8,
+      "w": 85,
+      "info": "Grant Park · 1927. One of the largest fountains in the world; the centre jet reaches 46 m on the hour."
+    },
+    {
+      "name": "Art Institute of Chicago",
+      "kind": "lowrise",
+      "at": [41.8796, -87.6232],
+      "h": 24,
+      "w": 60,
+      "d": 150,
+      "color": "#c8bca8",
+      "info": "111 S Michigan Ave · 1893. Beaux-Arts; the bronze lions guard the steps."
+    },
+    {
+      "name": "Union Station",
+      "kind": "lowrise",
+      "at": [41.8787, -87.6403],
+      "h": 30,
+      "w": 90,
+      "d": 110,
+      "color": "#d0c8b8",
+      "info": "225 S Canal St · 1925. The Great Hall's skylight is 35 m up."
+    },
+    {
+      "name": "Field Museum",
+      "kind": "lowrise",
+      "at": [41.8663, -87.617],
+      "h": 32,
+      "w": 110,
+      "d": 160,
+      "color": "#e8e2d4",
+      "info": "1400 S Lake Shore Dr · 1921. Greek-revival marble; Sue the T. rex lives inside."
+    },
+    {
+      "name": "Shedd Aquarium",
+      "kind": "lowrise",
+      "at": [41.8676, -87.614],
+      "h": 22,
+      "w": 90,
+      "d": 90,
+      "color": "#e0d8c6",
+      "info": "1200 S DuSable Lake Shore Dr · 1930. An octagonal Beaux-Arts hall on the lake."
+    },
+    {
+      "name": "Adler Planetarium",
+      "kind": "dome",
+      "at": [41.8663, -87.6068],
+      "h": 22,
+      "w": 40,
+      "color": "#9a7a5a",
+      "info": "1300 S DuSable Lake Shore Dr · 1930. America's first planetarium, a twelve-sided Art Deco hall on the peninsula."
+    },
+    {
+      "name": "Soldier Field",
+      "kind": "stadium",
+      "at": [41.8623, -87.6167],
+      "h": 40,
+      "w": 160,
+      "d": 260,
+      "info": "1410 Museum Campus Dr · 1924, rebuilt 2003. The colonnades survive; the bowl inside does not match them."
+    },
+    {
+      "name": "Navy Pier",
+      "kind": "pier",
+      "at": [41.8918, -87.604],
+      "h": 14,
+      "info": "600 E Grand Ave · 1916. A kilometre into the lake; the Centennial Wheel is 60 m tall."
+    },
+    {
+      "name": "Northwest Tower",
+      "kind": "deco",
+      "at": [41.9105, -87.6769],
+      "h": 52,
+      "w": 22,
+      "d": 22,
+      "color": "#c8b89a",
+      "info": "1600 N Milwaukee Ave · 1929 · 12 storeys. Wicker Park's Art Deco tower at the six-way corner of North, Damen and Milwaukee; now The Robey hotel."
+    },
+    {
+      "name": "Flat Iron Building",
+      "kind": "flatiron",
+      "at": [41.9097, -87.6758],
+      "h": 17,
+      "w": 40,
+      "d": 22,
+      "color": "#a86a4a",
+      "info": "1579 N Milwaukee Ave · 1913 · a three-storey wedge where Milwaukee Avenue meets North Avenue, long full of artists' studios."
+    },
+    {
+      "name": "Wicker Park Fountain",
+      "kind": "fountain",
+      "at": [41.9079, -87.6757],
+      "h": 4,
+      "w": 12,
+      "info": "Wicker Park · the park Charles and Joel Wicker gave the city in 1870; the cast-iron fountain is a 2002 recreation of the original."
+    },
+    {
+      "name": "Wicker Park Fieldhouse",
+      "kind": "fieldhouse",
+      "at": [41.9076, -87.676],
+      "h": 8,
+      "w": 22,
+      "d": 14,
+      "color": "#9a5a44",
+      "info": "1425 N Damen Ave · Chicago Park District fieldhouse in the triangle between Damen, Schiller and Wicker Park Avenue."
+    },
+    {
+      "name": "Pulaski Park Fieldhouse",
+      "kind": "fieldhouse",
+      "at": [41.9087, -87.6622],
+      "h": 14,
+      "w": 48,
+      "d": 26,
+      "color": "#8a4a36",
+      "info": "1419 W Blackhawk St · 1914 · William Carbys Zimmermann. Arts and Crafts brick with a tiled roof: gymnasium, auditorium and a theatre, built for the Polish Downtown."
+    },
+    {
+      "name": "Pulaski Park Pool",
+      "kind": "pool",
+      "at": [41.9081, -87.662],
+      "h": 1,
+      "w": 25,
+      "d": 16,
+      "info": "Pulaski Park · the outdoor pool, open in summer."
+    },
+    {
+      "name": "St. Stanislaus Kostka",
+      "kind": "church",
+      "at": [41.9056, -87.6603],
+      "h": 60,
+      "w": 36,
+      "d": 64,
+      "color": "#b89a78",
+      "info": "1351 W Evergreen Ave · 1881 · Chicago's first Polish parish, once the largest parish in the United States. The twin towers face Noble Street."
+    },
+    {
+      "name": "Holy Trinity Polish Mission",
+      "kind": "church",
+      "at": [41.9021, -87.6627],
+      "h": 52,
+      "w": 34,
+      "d": 62,
+      "color": "#c8b8a0",
+      "info": "1118 N Noble St · 1906 · a Polish Baroque basilica with twin towers, a short walk from Pulaski Park."
+    },
+    {
+      "name": "St. Mary of the Angels",
+      "kind": "domechurch",
+      "at": [41.9152, -87.671],
+      "h": 42,
+      "w": 40,
+      "d": 70,
+      "color": "#d8ccb4",
+      "info": "1850 N Hermitage Ave · 1920 · a Roman Renaissance church with a copper dome modelled on St Peter's, rising over Bucktown."
+    }
   ],
-
-  "el": {"_": "the Loop elevated: Lake St, Wabash Ave, Van Buren St and Wells St, 8 m up; trains run both ways",
-    "north": 41.8857, "south": 41.8768, "east": -87.6260, "west": -87.6340, "height": 8, "trains": 6, "cars": 6},
-
+  "el": {
+    "_": "the Loop elevated: Lake St, Wabash Ave, Van Buren St and Wells St, 8 m up; trains run both ways",
+    "north": 41.8857,
+    "south": 41.8768,
+    "east": -87.626,
+    "west": -87.634,
+    "height": 8,
+    "trains": 6,
+    "cars": 6,
+    "blue": {
+      "_": "the Blue Line comes up from the Milwaukee subway south of Division and runs elevated past Damen to the northwest",
+      "height": 9,
+      "trains": 2,
+      "cars": 6,
+      "path": [[41.904, -87.6668], [41.9103, -87.677], [41.9185, -87.6882]],
+      "stations": [[41.9098, -87.6771, "Damen"], [41.9036, -87.6667, "Division"]]
+    }
+  },
   "views": {
-    "Skyline from the lake": [[41.8800, -87.5960, 120], [41.8835, -87.6300, 110]],
-    "Cloud Gate": [[41.88238, -87.62300, 2.5], [41.8827, -87.6233, 4.5]],
+    "Skyline from the lake": [[41.88, -87.596, 120], [41.8835, -87.63, 110]],
+    "Cloud Gate": [[41.88238, -87.623, 2.5], [41.8827, -87.6233, 4.5]],
     "Millennium Park": [[41.8795, -87.6195, 70], [41.8825, -87.6228, 4]],
-    "The Loop": [[41.8745, -87.6245, 260], [41.8820, -87.6300, 40]],
-    "Riverwalk": [[41.8887, -87.6225, 12], [41.8884, -87.6330, 20]],
-    "River forks": [[41.8905, -87.6315, 90], [41.8870, -87.6370, 4]],
-    "Navy Pier": [[41.8865, -87.5920, 90], [41.8918, -87.6040, 20]],
-    "Willis Tower": [[41.8735, -87.6430, 300], [41.8789, -87.6359, 260]],
-    "Magnificent Mile": [[41.8882, -87.6243, 30], [41.8990, -87.6245, 50]],
-    "Overview": [[41.8480, -87.6000, 1700], [41.8850, -87.6280, 0]]
-  }
+    "The Loop": [[41.8745, -87.6245, 260], [41.882, -87.63, 40]],
+    "Riverwalk": [[41.8887, -87.6225, 12], [41.8884, -87.633, 20]],
+    "River forks": [[41.8905, -87.6315, 90], [41.887, -87.637, 4]],
+    "Lake Michigan": [[41.8790, -87.6095, 22], [41.8880, -87.6010, 2]],
+    "Monroe Harbor": [[41.8745, -87.6135, 30], [41.8800, -87.6135, 1]],
+    "Navy Pier": [[41.8865, -87.592, 90], [41.8918, -87.604, 20]],
+    "Willis Tower": [[41.8735, -87.643, 300], [41.8789, -87.6359, 260]],
+    "Magnificent Mile": [[41.8882, -87.6243, 30], [41.899, -87.6245, 50]],
+    "Overview": [[41.848, -87.6, 1700], [41.885, -87.628, 0]],
+    "Wicker Park": [[41.9058, -87.674, 70], [41.9082, -87.6758, 4]],
+    "Six corners (North, Damen, Milwaukee)": [[41.9092, -87.679, 30], [41.9104, -87.6768, 20]],
+    "Pulaski Park": [[41.907, -87.6602, 45], [41.9085, -87.6622, 5]],
+    "The 606": [[41.9139, -87.6725, 14], [41.9145, -87.68, 6]]
+  },
+  "bounds": [41.85, -87.69, 41.92, -87.594],
+  "focus": [
+    {"name": "North & Ashland", "at": [41.9107, -87.6666], "radius": 280, "_": "commercial corners: taller shopfronts, street lights, signals, bus stops, parked cars and people"},
+    {"name": "Six Corners (North, Damen, Milwaukee)", "at": [41.9103, -87.6768], "radius": 340}
+  ],
+  "trails": [
+    {
+      "name": "The 606 (Bloomingdale Trail)",
+      "height": 5.5,
+      "width": 12,
+      "path": [[41.9145, -87.669], [41.9145, -87.676], [41.9145, -87.69]],
+      "info": "Bloomingdale Trail · 2015 · a disused rail embankment 5 m above the street, now a 4.4 km park and trail."
+    }
+  ]
 }
