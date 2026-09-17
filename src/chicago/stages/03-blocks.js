@@ -9,30 +9,39 @@ const bldMats={};   // one material per district: colour × window map, tiled in
 function bldMat(d){if(bldMats[d.key])return bldMats[d.key];const m=new THREE.MeshLambertMaterial({color:d.color,map:facadeTex,emissiveMap:glowTex,emissive:0x000000});m.color.multiplyScalar(1.15);setEnv(m,{K:0.25,id:'bld'+d.key});bldMats[d.key]=m;return m;}
 const lots=[];   // {x,z,w,dpt,h,ry,kind,district}
 const boxG=new THREE.BoxGeometry(1,1,1);boxG.translate(0,0.5,0);
-const LOOP_C={x:0,z:-100};
-function skyline(d,x,z){const dist=Math.hypot(x-LOOP_C.x,z-LOOP_C.z),f=Math.pow(Math.max(0,1-dist/1700),1.5),n=0.35+0.65*fbm(x*0.004+3,z*0.004+9);return d.base+(d.tall-d.base)*f*n;}
-const lmFoot=C.landmarks.map(l=>({x:l.x,z:l.z,r:Math.max(l.w||40,l.d||40,l.kind==='pier'?0:0)*0.75+20}));
-const nearLandmark=(x,z)=>lmFoot.some(f=>Math.hypot(f.x-x,f.z-z)<f.r);
-const elBand=(x,z)=>(Math.abs(x-EL.east)<14||Math.abs(x-EL.west)<14)&&z>EL.north-14&&z<EL.south+14||(Math.abs(z-EL.north)<14||Math.abs(z-EL.south)<14)&&x>EL.west-14&&x<EL.east+14;
+function skyline(d,x,z){const dist=Math.hypot(x-SKY_C[0],z-SKY_C[1]),f=Math.pow(Math.max(0,1-dist/1900),1.4),n=0.35+0.65*fbm(x*0.004+3,z*0.004+9);return d.base+(d.tall-d.base)*f*n;}
+const lmFoot=C.landmarks.filter(l=>l.kind!=='pier').map(l=>{const [x,z]=P(l.at);return {x,z,r:Math.max(l.w||40,(l.d||0)+(l.gap||0))*0.6+14};});
+const nearLandmark=(x,z,r)=>lmFoot.some(f=>Math.hypot(f.x-x,f.z-z)<f.r+r);
+const DIAG_SEGS=STREETS.filter(s=>s.axis==='d');
+const dry=(x,z)=>!inWater(x,z)&&!parkAt(x,z)&&!onPier(x,z)&&!DIAG_SEGS.some(s=>segDist(x,z,s.a[0],s.a[1],s.b[0],s.b[1])<=s.w/2+3);   // diagonals (Milwaukee, Lake Shore Drive) cut through the grid
 section('blocks',()=>{
-  const half=GRID.street/2;
-  for(let bx=-WORLD/2;bx<SHORE-GRID.pitchX;bx+=GRID.pitchX)for(let bz=-WORLD/2;bz<WORLD/2-GRID.pitchZ;bz+=GRID.pitchZ){
-    const cx=bx+GRID.pitchX/2,cz=bz+GRID.pitchZ/2;
-    if(inWater(cx,cz)||parkAt(cx,cz)||nearLandmark(cx,cz))continue;
-    if(cx>C.beach.x0-60&&cz>C.beach.z0&&cz<C.beach.z1)continue;
-    // shrink the block away from wide streets and the river
-    let x0=bx+half,x1=bx+GRID.pitchX-half,z0=bz+half,z1=bz+GRID.pitchZ-half;
-    for(const m of MAJOR){const e=m.w/2+2;if(m.axis==='x'){if(m.at>x0-half&&m.at<x1+half){if(m.at<cx)x0=Math.max(x0,m.at+e);else x1=Math.min(x1,m.at-e);}}else{if(m.at>z0-half&&m.at<z1+half){if(m.at<cz)z0=Math.max(z0,m.at+e);else z1=Math.min(z1,m.at-e);}}}
-    if(inRiver(x0,cz)||inRiver(x1,cz)||inRiver(cx,z0)||inRiver(cx,z1)||x1-x0<30||z1-z0<30)continue;
+  // block edges: the centre lines of every axis-aligned street, with the half-width to stay clear of
+  const xs=[...new Map(STREETS.filter(s=>s.axis==='x').map(s=>[Math.round(s.at),s])).values()].sort((a,b)=>a.at-b.at);
+  const zs=[...new Map(STREETS.filter(s=>s.axis==='z').map(s=>[Math.round(s.at),s])).values()].sort((a,b)=>a.at-b.at);
+  const covers=(s,v)=>v>=Math.min(s.a[s.axis==='x'?1:0],s.b[s.axis==='x'?1:0])-1&&v<=Math.max(s.a[s.axis==='x'?1:0],s.b[s.axis==='x'?1:0])+1;   // a street with a range only bounds blocks inside it
+  for(let i=0;i+1<xs.length;i++)for(let j=0;j+1<zs.length;j++){
+    const cx0=(xs[i].at+xs[i+1].at)/2,cz0=(zs[j].at+zs[j+1].at)/2;
+    // a ranged street that does not reach this block does not split it: skip the narrow half-cell, the neighbour covers it
+    let W=xs[i],E=xs[i+1],N=zs[j],S=zs[j+1];
+    if(!covers(W,cz0)||!covers(N,cx0))continue;
+    let ii=i+1;while(ii<xs.length-1&&!covers(xs[ii],cz0))ii++;E=xs[ii];
+    let jj=j+1;while(jj<zs.length-1&&!covers(zs[jj],cx0))jj++;S=zs[jj];
+    let x0=W.at+W.w/2+1,x1=E.at-E.w/2-1,z0=N.at+N.w/2+1,z1=S.at-S.w/2-1;
+    if(x1-x0<24||z1-z0<24)continue;
+    const cx=(x0+x1)/2,cz=(z0+z1)/2;if(Math.abs(cx)>HALF-60||Math.abs(cz)>HALF-60)continue;
     const d=districtAt(cx,cz),H=skyline(d,cx,cz);
-    // lots: one tower on a corner, or two to four buildings filling the block
-    const n=H>90?1+(rnd()<0.35?1:0):H>35?2+Math.floor(rnd()*2):4;
-    const cols=n>=3?2:n,rows=Math.ceil(n/cols);
-    for(let k=0;k<n;k++){const i=k%cols,j=Math.floor(k/cols);const w=(x1-x0)/cols,dd=(z1-z0)/rows;const gx=x0+i*w,gz=z0+j*dd;
-      const inset=H>90?w*0.12:2+rnd()*3,w2=w-2*inset,d2=dd-2*inset;if(w2<8||d2<8)continue;
-      let h=H*(0.55+0.9*rnd());if(k>0&&H>90)h*=0.35;h=Math.max(6,Math.min(h,d.tall*1.1));
-      if(elBand(gx+w/2,gz+dd/2))h=Math.min(h,d.base*0.8);
-      lots.push({x:gx+w/2,z:gz+dd/2,w:w2,dpt:d2,h,ry:0,kind:h>120?'tower':h>35?'midrise':'low',district:d,fixed:false});}}
+    // lots: towers alone or in pairs, midrises two to four, low buildings in a row of narrow frontages
+    const n=H>90?1+(rnd()<0.35?1:0):H>35?2+Math.floor(rnd()*3):Math.max(2,Math.round((z1-z0)/28));
+    const long=(z1-z0)>(x1-x0),cols=H>35?(n>=3?2:n):(long?2:n),rows=H>35?Math.ceil(n/cols):(long?Math.ceil(n/2):1);
+    for(let k=0;k<cols*rows&&k<n+ (H<=35?n:0);k++){const ci=k%cols,rj=Math.floor(k/cols);if(rj>=rows)break;const w=(x1-x0)/cols,dd=(z1-z0)/rows,gx=x0+ci*w,gz=z0+rj*dd;
+      const inset=H>90?Math.min(w,dd)*0.1:1+rnd()*2,w2=w-2*inset,d2=dd-2*inset;if(w2<7||d2<7)continue;
+      const lx=gx+w/2,lz=gz+dd/2,rad=Math.max(w2,d2)/2;
+      // every corner and the middle must be dry land, and clear of the river walls, the parks and the landmarks
+      const pts=[[lx,lz],[gx+inset,gz+inset],[gx+w-inset,gz+inset],[gx+inset,gz+dd-inset],[gx+w-inset,gz+dd-inset]];
+      if(!pts.every(([x,z])=>dry(x,z)&&!riverAt(x,z,8)))continue;
+      if(nearLandmark(lx,lz,rad*0.7))continue;
+      let h=H*(0.55+0.9*rnd());if(k>0&&H>90)h*=0.35;h=Math.max(5,Math.min(h,d.tall*1.1));
+      lots.push({x:lx,z:lz,w:w2,dpt:d2,h,ry:0,kind:h>120?'tower':h>35?'midrise':'low',district:d,fixed:false});}}
   ctx.lots=lots.length;ctx.lotList=lots;
   // geometry: towers get setbacks, everything gets a roof box now and then
   const byD={};for(const l of lots){(byD[l.district.key]=byD[l.district.key]||[]).push(l);}

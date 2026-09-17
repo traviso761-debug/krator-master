@@ -9,19 +9,19 @@ function setView(px,py,pz,tx,ty,tz,fly){const t=new THREE.Vector3(tx,ty,tz),p=ne
 const ptrs=new Map();let pinch0=0,dist0=0;
 el.addEventListener('pointerdown',e=>{el.setPointerCapture(e.pointerId);ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY,b:e.button,sh:e.shiftKey,moved:0});if(ptrs.size===2){const [a,b]=[...ptrs.values()];pinch0=Math.hypot(a.x-b.x,a.y-b.y);dist0=ctl.dist;}});
 el.addEventListener('pointermove',e=>{const p=ptrs.get(e.pointerId);if(!p)return;const dx=e.clientX-p.x,dy=e.clientY-p.y;p.x=e.clientX;p.y=e.clientY;p.moved+=Math.abs(dx)+Math.abs(dy);ctl.goal=null;
-  if(ptrs.size===2){const [a,b]=[...ptrs.values()];const pd=Math.hypot(a.x-b.x,a.y-b.y);ctl.dist=Math.max(30,Math.min(6000,dist0*pinch0/pd));pan(dx/2,dy/2);return;}
+  if(ptrs.size===2){const [a,b]=[...ptrs.values()];const pd=Math.hypot(a.x-b.x,a.y-b.y);ctl.dist=Math.max(8,Math.min(9000,dist0*pinch0/pd));pan(dx/2,dy/2);return;}
   if(p.b===2||p.sh)pan(dx,dy);else{ctl.az+=dx*0.005;ctl.el=Math.max(0.03,Math.min(1.5,ctl.el+dy*0.005));}});
 const endPtr=e=>{const p=ptrs.get(e.pointerId);ptrs.delete(e.pointerId);if(p&&p.moved<6&&e.type==='pointerup'&&p.b===0)clickAt(e.clientX,e.clientY);};
 el.addEventListener('pointerup',endPtr);el.addEventListener('pointercancel',endPtr);el.addEventListener('contextmenu',e=>e.preventDefault());
 function pan(dx,dy){const k=ctl.dist*0.0016;const fx=Math.cos(ctl.az),fz=Math.sin(ctl.az);ctl.target.x+=(-dx*fz+dy*fx)*k*-1;ctl.target.z+=(dx*fx+dy*fz)*k*-1;}
-el.addEventListener('wheel',e=>{e.preventDefault();ctl.goal=null;ctl.dist=Math.max(30,Math.min(6000,ctl.dist*Math.exp(e.deltaY*0.0012)));},{passive:false});
+el.addEventListener('wheel',e=>{e.preventDefault();ctl.goal=null;ctl.dist=Math.max(8,Math.min(9000,ctl.dist*Math.exp(e.deltaY*0.0012)));},{passive:false});
 const keys=new Set();addEventListener('keydown',e=>{if(e.target.tagName==='INPUT'||e.target.tagName==='SELECT')return;keys.add(e.key.toLowerCase());if(e.key==='Escape')closeCard();});addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));
 function applyKeys(){if(!keys.size)return;const s=ctl.dist*0.012,fx=Math.cos(ctl.az),fz=Math.sin(ctl.az);let mx=0,mz=0;if(keys.has('w'))mx-=1;if(keys.has('s'))mx+=1;if(keys.has('a'))mz+=1;if(keys.has('d'))mz-=1;
   ctl.target.x+=(mx*fx-mz*fz)*s;ctl.target.z+=(mx*fz+mz*fx)*s;if(keys.has('q'))ctl.target.y=Math.max(0,ctl.target.y-s);if(keys.has('e'))ctl.target.y+=s;if(mx||mz||keys.has('q')||keys.has('e'))ctl.goal=null;}
 function stepFly(now){const g=ctl.goal;if(!g)return;const u=Math.min(1,(now-g.t0)/1400),k=u*u*(3-2*u);ctl.target.lerpVectors(g.from.target,g.target,k);let da=g.az-g.from.az;da=Math.atan2(Math.sin(da),Math.cos(da));ctl.az=g.from.az+da*k;ctl.el=g.from.el+(g.el-g.from.el)*k;ctl.dist=g.from.dist+(g.dist-g.from.dist)*k;if(u>=1)ctl.goal=null;}
 // the panels: viewpoints, the clock, a card for the landmark you click
 const ui=document.getElementById('ui'),viewsEl=document.getElementById('views'),card=document.getElementById('card'),side=document.getElementById('side');
-const VIEWS={};for(const k in C.views)VIEWS[k]=dataValue(C.views[k],{...C,...DATA_FN});
+const VIEWS={};for(const k in C.views){const [f,t]=C.views[k],[fx,fz]=P(f),[tx,tz]=P(t);VIEWS[k]=[fx,f[2],fz,tx,t[2],tz];}   // [lat,lon,height] from and to
 const mkBtn=(label,parent,fn)=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.onclick=fn;parent.appendChild(b);return b;};
 const viewsBtn=mkBtn('Views',ui,()=>{const open=!viewsEl.classList.contains('open');viewsEl.classList.toggle('open',open);viewsBtn.setAttribute('aria-expanded',String(open));});viewsBtn.setAttribute('aria-expanded','false');
 {const h=document.createElement('div');h.className='sub';h.textContent='Viewpoints';viewsEl.appendChild(h);for(const k in VIEWS)mkBtn(k,viewsEl,()=>{setView(...VIEWS[k]);viewsEl.classList.remove('open');viewsBtn.setAttribute('aria-expanded','false');});}

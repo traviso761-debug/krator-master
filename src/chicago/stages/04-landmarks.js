@@ -34,12 +34,41 @@ const KINDS={
   ypoint(L){const parts=[];for(let k=0;k<3;k++){const a=k/3*Math.PI*2+0.5;const wing=new THREE.Mesh(new THREE.CylinderGeometry(1,1,1,16,1,false,0,Math.PI*0.55),darkM);wing.geometry.translate(0,0.5,0);wing.rotation.y=a;wing.position.set(L.x,0,L.z);wing.scale.set(L.w*0.55,L.h,L.w*0.55);parts.push(wing);}
     const core=new THREE.Mesh(new THREE.CylinderGeometry(1,1,1,12,1),darkM);core.geometry.translate(0,0.5,0);core.position.set(L.x,0,L.z);core.scale.set(L.w*0.22,L.h,L.w*0.22);parts.push(core);return group(L,parts);},
   watertower(L){const m=lmMat(L.color);const parts=[box(L.x,0,L.z,L.w*2.2,L.h*0.3,L.w*2.2,m),box(L.x,L.h*0.3,L.z,L.w,L.h*0.6,L.w,m)];const cap=new THREE.Mesh(new THREE.ConeGeometry(0.7,1,4),m);cap.geometry.translate(0,0.5,0);cap.position.set(L.x,L.h*0.9,L.z);cap.scale.set(L.w,L.h*0.1,L.w);parts.push(cap);return group(L,parts);},
-  bean(L){const b=new THREE.Mesh(new THREE.SphereGeometry(1,32,20),chromeM);b.position.set(L.x,L.h*0.55,L.z);b.scale.set(L.w/2,L.h*0.45,L.d/2);const base=box(L.x,0,L.z,L.w*1.6,0.4,L.d*1.8,stoneM);return group(L,[b,base]);},
+  bean(L){   // Cloud Gate: a polished bean that mirrors the park and the skyline, raised on its two ends over the omphalos arch
+    const g=new THREE.SphereGeometry(1,64,36),v=g.attributes.position;
+    for(let k=0;k<v.count;k++){let x=v.getX(k),y=v.getY(k),z=v.getZ(k);
+      if(y<0)y*=0.55;                                            // a flatter underside
+      x*=1+0.12*Math.max(0,y);                                  // the top swells a little past the ends
+      const arch=Math.max(0,1-Math.abs(x)/0.55);if(y<0)y+=arch*arch*0.62*(-y+0.2)*1.2;   // the arch under the middle
+      v.setXYZ(k,x,y,z);}
+    g.computeVertexNormals();
+    const rt=new THREE.WebGLCubeRenderTarget(256,{format:THREE.RGBFormat,generateMipmaps:true,minFilter:THREE.LinearMipmapLinearFilter});
+    const cube=new THREE.CubeCamera(1,4000,rt);cube.position.set(L.x,6,L.z);scene.add(cube);
+    const beanM=new THREE.MeshPhongMaterial({color:0xdfe4ea,specular:0xffffff,shininess:220,envMap:rt.texture,combine:THREE.MixOperation,reflectivity:0.9});
+    const b=new THREE.Mesh(g,beanM);b.position.set(L.x,L.h*0.5,L.z);b.scale.set(L.w/2,L.h*0.5,L.d/2);
+    const plaza=box(L.x,0,L.z,L.w*3,0.3,L.d*4,new THREE.MeshLambertMaterial({color:0x9e988c}));
+    const grp=group(L,[plaza,b]);b.castShadow=true;
+    let lastR=-1e9;animHooks.push(now=>{if(now-lastR<2500||camera.position.distanceTo(b.position)>900)return;lastR=now;b.visible=false;cube.update(renderer,scene);b.visible=true;});   // the reflection refreshes every few seconds while you are near
+    return grp;},
   fountain(L){const parts=[];for(let k=0;k<3;k++){const r=new THREE.Mesh(new THREE.CylinderGeometry(1,1,1,28,1),stoneM);r.geometry.translate(0,0.5,0);r.position.set(L.x,k*2.2,L.z);r.scale.set(L.w/2*(1-k*0.3),2.2,L.w/2*(1-k*0.3));parts.push(r);}
     const jet=new THREE.Mesh(new THREE.CylinderGeometry(0.6,2.5,1,10,1),waterM);jet.geometry.translate(0,0.5,0);jet.position.set(L.x,6,L.z);jet.scale.set(1,30,1);parts.push(jet);const g=group(L,parts);animHooks.push(now=>{jet.scale.y=18+14*Math.max(0,Math.sin(now*0.0007));});return g;},
   lowrise(L){return reg(box(L.x,0,L.z,L.w,L.h,L.d,lmMat(L.color)),L);},
   stadium(L){const parts=[];const ring=new THREE.Mesh(new THREE.CylinderGeometry(1,1.1,1,32,1,true),stoneM);ring.geometry.translate(0,0.5,0);ring.position.set(L.x,0,L.z);ring.scale.set(L.w/2,L.h,L.d/2);ring.material=stoneM.clone();ring.material.side=THREE.DoubleSide;parts.push(ring);
     for(const s of [-1,1])for(let k=0;k<12;k++){parts.push(box(L.x+s*(L.w/2+8),0,L.z-L.d*0.4+k*L.d*0.8/11,3,L.h*0.55,3,stoneM));}return group(L,parts);},
+  wavy(L){const parts=[box(L.x,0,L.z,L.w,L.h,L.d,glassM)],slabM=lmMat('#e8ecee');   // Aqua: floor plates whose balconies swell and recede
+    for(let k=0,y=12;y<L.h;k++,y+=7.5){const t=y*0.045;const e=[2+2*Math.sin(t+L.x*0.01),2+2*Math.sin(t*1.3+1.7),2+2*Math.sin(t*0.8+3.1),2+2*Math.sin(t*1.1+4.6)];
+      parts.push(box(L.x+(e[1]-e[3])/2,y,L.z+(e[2]-e[0])/2,L.w+e[1]+e[3],0.5,L.d+e[0]+e[2],slabM));}return group(L,parts);},
+  pavilion(L){const parts=[box(L.x,0,L.z,26,14,30,stoneM)];   // Pritzker: the stage, steel ribbons over it, and the trellis over the lawn to the east
+    for(let k=0;k<9;k++){const r=new THREE.Mesh(new THREE.TorusGeometry(10+k*1.6,0.35,3,18,Math.PI*(0.7+0.05*k)),chromeM);r.position.set(L.x+2-k*0.8,18+k*1.8,L.z+(k-4)*3.2);r.rotation.set(0.3*(k%3-1),Math.PI/2+0.25*(k-4),0.6+0.1*k);r.scale.set(1,1.4,3);parts.push(r);}
+    for(let k=1;k<=6;k++){const arc=new THREE.Mesh(new THREE.TorusGeometry(46,0.4,3,24,Math.PI),steelM);arc.position.set(L.x+10+k*16,0,L.z);arc.rotation.y=Math.PI/2;arc.scale.set(1,0.5,1);parts.push(arc);}
+    for(let k=-2;k<=2;k++){const rib=box(L.x+56,22.5-Math.abs(k)*2,L.z+k*18,96,0.6,0.6,steelM);parts.push(rib);}
+    return group(L,parts);},
+  crownfountain(L){const faceM=new THREE.MeshLambertMaterial({color:0xdfe8ee,emissive:0x8fb0c8,emissiveIntensity:0.35,transparent:true,opacity:0.9});const parts=[];
+    for(const s of [-1,1])parts.push(box(L.x,0,L.z+s*L.gap/2,15,L.h,L.w,faceM));
+    const pool=box(L.x,0,L.z,22,0.3,L.gap-L.w,new THREE.MeshPhongMaterial({color:0x1c2a38,specular:0xb0c8e0,shininess:120}));parts.push(pool);
+    const g=group(L,parts);animHooks.push(now=>{const k=0.25+0.2*Math.sin(now*0.0004);faceM.emissiveIntensity=k+0.4*windowF(hourCur);});return g;},
+  dome(L){const m=lmMat(L.color),parts=[];const hall=new THREE.Mesh(new THREE.CylinderGeometry(L.w/2,L.w/2,L.h*0.6,12,1),m);hall.geometry.translate(0,L.h*0.3,0);hall.position.set(L.x,0,L.z);parts.push(hall);
+    const dm=new THREE.Mesh(new THREE.SphereGeometry(L.w*0.34,20,10,0,Math.PI*2,0,Math.PI/2),new THREE.MeshLambertMaterial({color:0xb87a4a}));dm.position.set(L.x,L.h*0.6,L.z);parts.push(dm);return group(L,parts);},
   pier(L){const parts=[];const wheel=new THREE.Group();const rim=new THREE.Mesh(new THREE.TorusGeometry(PIER.wheelR,1.2,6,48),steelM);wheel.add(rim);
     for(let k=0;k<12;k++){const a=k/12*Math.PI*2;const sp=box(0,0,0,1,PIER.wheelR*2,1,steelM);sp.position.set(0,0,0);sp.rotation.z=a;sp.geometry=new THREE.BoxGeometry(1,1,1);sp.scale.set(0.8,PIER.wheelR*2,0.8);wheel.add(sp);
       const car=new THREE.Mesh(new THREE.SphereGeometry(2.4,8,6),new THREE.MeshLambertMaterial({color:0xe8f0ff}));car.position.set(Math.cos(a)*PIER.wheelR,Math.sin(a)*PIER.wheelR,0);wheel.add(car);}
@@ -47,7 +76,7 @@ const KINDS={
     for(const s of [-1,1]){const leg=box(PIER.wheelX,4,PIER.z+s*10,3,PIER.wheelR+2,3,steelM);leg.rotation.x=s*0.16;parts.push(leg);}
     const g=group(L,parts);animHooks.push(now=>{wheel.rotation.x=now*0.00012;});return g;},
 };
-section('landmarks',()=>{for(const L of C.landmarks){const f=KINDS[L.kind];if(!f){report('landmark '+L.name,new Error('unknown kind '+L.kind));continue;}try{f(L);}catch(e){report('landmark '+L.name,e);}}
+section('landmarks',()=>{for(const L of C.landmarks){[L.x,L.z]=P(L.at);const f=KINDS[L.kind];if(!f){report('landmark '+L.name,new Error('unknown kind '+L.kind));continue;}try{f(L);}catch(e){report('landmark '+L.name,e);}}
   // warning beacons on the tallest roofs
   const beacons=[];for(const L of C.landmarks)if(L.h>250){const b=new THREE.Mesh(new THREE.SphereGeometry(2,8,6),new THREE.MeshBasicMaterial({color:0xff2020}));b.position.set(L.x,L.h+(L.kind==='bundle'?80:L.kind==='taper'?110:L.spire||8),L.z);scene.add(b);beacons.push(b);}
   animHooks.push(now=>{const on=(now%1600)<800;for(const b of beacons)b.visible=on||hourCur<6||hourCur>18;});
