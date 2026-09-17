@@ -1,107 +1,79 @@
-// ---------- landmarks: parametric massing for the buildings everyone knows ----------
+// ---------- landmarks: the buildings themselves come from OpenStreetMap; here are what the map does not carry:
+// antennas and spires on their roofs, Cloud Gate, the Pritzker Pavilion's ribbons and trellis, fountains, the Centennial Wheel,
+// stadium bowls (Wrigley Field with its marquee and scoreboard, Soldier Field), and the cards ----------
 await stage('landmarks');
-const LANDMARKS=[];   // meshes with userData.info, for the click card
-const glassM=new THREE.MeshLambertMaterial({color:0x4a6a8a,map:facadeTex,emissiveMap:glowTex,emissive:0x000000});setEnv(glassM,{K:0.25,id:'lmglass'});
-const darkM=new THREE.MeshLambertMaterial({color:0x2c3038,map:facadeTex,emissiveMap:glowTex,emissive:0x000000});setEnv(darkM,{K:0.25,id:'lmdark'});
-const lmMats=[glassM,darkM];
-function lmMat(hex){if(!hex)return glassM;const m=new THREE.MeshLambertMaterial({color:parseInt(hex.slice(1),16),map:facadeTex,emissiveMap:glowTex,emissive:0x000000});setEnv(m,{K:0.25,id:'lm'+hex});lmMats.push(m);return m;}
+const LANDMARKS=[];   // clickable objects, userData.info = {name, info}
+const CARDS=[];       // every landmark position, for cards on clicked OSM buildings
 const chromeM=new THREE.MeshPhongMaterial({color:0xdde4ea,specular:0xffffff,shininess:120});
-function reg(mesh,L){mesh.userData.info=L;mesh.castShadow=mesh.receiveShadow=true;LANDMARKS.push(mesh);scene.add(mesh);return mesh;}
-function box(x,y,z,w,h,d,m){const b=new THREE.Mesh(boxG,m);b.position.set(x,y,z);b.scale.set(w,h,d);return b;}
+const whiteM=new THREE.MeshLambertMaterial({color:0xf0ede6}),redM=new THREE.MeshLambertMaterial({color:0xb01e24,emissive:0x000000}),greenM=new THREE.MeshLambertMaterial({color:0x2f5a3a});
+function box(x,y,z,w,h,d,m){const b=new THREE.Mesh(new THREE.BoxGeometry(w,h,d).translate(0,h/2,0),m);b.position.set(x,y,z);return b;}
 function group(L,parts){const g=new THREE.Group();for(const p of parts){p.castShadow=p.receiveShadow=true;p.userData.info=L;g.add(p);}g.userData.info=L;LANDMARKS.push(g);scene.add(g);return g;}
-const KINDS={
-  bundle(L){const m=darkM,t=L.w/3,H=L.h,levels=[[0,0,1],[1,0,.92],[2,0,.62],[0,1,.62],[1,1,1],[2,1,.83],[0,2,.46],[1,2,.62],[2,2,.46]];   // nine tubes, the taller ones at the core
-    return group(L,levels.map(([i,j,f])=>box(L.x-L.w/2+t*(i+.5),0,L.z-L.w/2+t*(j+.5),t-0.6,H*f,t-0.6,m)).concat([box(L.x-8,H,L.z-8,2,80,2,steelM),box(L.x+8,H,L.z+8,2,70,2,steelM)]));},
-  taper(L){const g=new THREE.Mesh(new THREE.CylinderGeometry(1,1.6,1,4,1),darkM);g.geometry.translate(0,0.5,0);g.rotation.y=Math.PI/4;g.position.set(L.x,0,L.z);g.scale.set(L.w*0.72,L.h,L.d*0.72);
-    const g2=group(L,[g,box(L.x-9,L.h,L.z,1.6,110,1.6,steelM),box(L.x+9,L.h,L.z,1.6,110,1.6,steelM)]);   // X-braces: four thin diagonals a side
-    for(const s of [-1,1])for(let k=0;k<5;k++){const br=box(L.x+s*(L.w*0.36-k*L.w*0.03),k*L.h/5,L.z,1.2,L.h/5*1.06,L.d*0.7,steelM);br.rotation.z=s*0.22;br.userData.info=L;g2.add(br);}return g2;},
-  setbacks(L){const H=L.h,steps=[[1,1,0.3],[0.8,0.85,0.35],[0.62,0.7,0.35]];let y=0;const parts=[];for(const [fw,fd,fh] of steps){parts.push(box(L.x+(1-fw)*L.w/2*0.5,y,L.z,L.w*fw,H*fh,L.d*fd,glassM));y+=H*fh;}
-    if(L.spire)parts.push(box(L.x,H,L.z,2,L.spire,2,chromeM));return group(L,parts);},
-  box(L){return reg(box(L.x,0,L.z,L.w,L.h,L.d,lmMat(L.color)),L);},
-  stacked(L){const parts=[];const stems=[[0,-L.d/3,0.62],[0,0,1],[0,L.d/3,0.8]];for(const [dx,dz,f] of stems){let y=0;for(let k=0;k<7;k++){const hh=L.h*f/7;const fr=new THREE.Mesh(new THREE.CylinderGeometry(0.5*(k%2?0.8:1.1),0.5*(k%2?1.1:0.8),1,4,1),glassM);fr.geometry.translate(0,0.5,0);fr.rotation.y=Math.PI/4;fr.position.set(L.x+dx,y,L.z+dz);fr.scale.set(L.w*0.85,hh,L.d/3*1.05);parts.push(fr);y+=hh;}}return group(L,parts);},
-  crown(L){const parts=[box(L.x,0,L.z,L.w,L.h*0.7,L.d,glassM),box(L.x,L.h*0.7,L.z,L.w*0.8,L.h*0.16,L.d*0.8,glassM),box(L.x,L.h*0.86,L.z,L.w*0.55,L.h*0.14,L.d*0.55,glassM),box(L.x,L.h,L.z,1.5,L.h*0.2,1.5,chromeM)];return group(L,parts);},
-  twin(L){const parts=[];for(const s of [-1,1]){const c=new THREE.Mesh(new THREE.CylinderGeometry(1,1,1,24,1),lmMat('#c9c2b4'));c.geometry.translate(0,0.5,0);c.position.set(L.x+s*L.gap/2,0,L.z);c.scale.set(L.w/2,L.h,L.w/2);parts.push(c);
-      for(let k=0;k<12;k++){const r=new THREE.Mesh(new THREE.TorusGeometry(1,0.04,4,24),darkM);r.rotation.x=Math.PI/2;r.position.set(L.x+s*L.gap/2,L.h*(0.3+k*0.058),L.z);r.scale.setScalar(L.w/2*1.04);parts.push(r);}}return group(L,parts);},
-  slab(L){return group(L,[box(L.x,0,L.z,L.w,L.h,L.d,lmMat(L.color)),box(L.x,L.h,L.z,L.w*0.25,L.tower||20,L.d*0.4,lmMat(L.color))]);},
-  deco(L){const m=lmMat(L.color),parts=[];const steps=[[1,1,0.5],[0.7,0.8,0.25],[0.45,0.55,0.18]];let y=0;for(const [fw,fd,fh] of steps){parts.push(box(L.x,y,L.z,L.w*fw,L.h*fh,L.d*fd,m));y+=L.h*fh;}parts.push(box(L.x,y,L.z,4,L.h*0.09,4,chromeM));return group(L,parts);},
-  crowncyl(L){const c=new THREE.Mesh(new THREE.CylinderGeometry(1,1,1,20,1),new THREE.MeshLambertMaterial({color:0xe8f0ff,emissive:0x8fb4e0,emissiveIntensity:0.5,transparent:true,opacity:0.8}));c.geometry.translate(0,0.5,0);c.position.set(L.x,L.h*0.89,L.z);c.scale.set(L.w*0.36,L.h*0.11,L.w*0.36);
-    return group(L,[box(L.x,0,L.z,L.w,L.h*0.89,L.d,lmMat(L.color)),c]);},
-  gothic(L){const m=lmMat(L.color),parts=[box(L.x,0,L.z,L.w,L.h*0.72,L.d,m),box(L.x,L.h*0.72,L.z,L.w*0.7,L.h*0.28,L.d*0.7,m)];for(let k=0;k<8;k++){const a=k/8*Math.PI*2;parts.push(box(L.x+Math.cos(a)*L.w*0.34,L.h*0.72,L.z+Math.sin(a)*L.d*0.34,2.4,L.h*0.36,2.4,m));}return group(L,parts);},
-  clocktower(L){const m=lmMat(L.color);return group(L,[box(L.x,0,L.z,L.w,L.h*0.6,L.d,m),box(L.x,L.h*0.6,L.z+L.d*0.2,L.w*0.5,L.h*0.3,L.w*0.5,m),box(L.x,L.h*0.9,L.z+L.d*0.2,L.w*0.3,L.h*0.1,L.w*0.3,m)]);},
-  diamond(L){const top=new THREE.Mesh(new THREE.BoxGeometry(1,1,1),glassM);top.geometry.translate(0,0.5,0);top.position.set(L.x,L.h*0.78,L.z);top.rotation.z=0;top.scale.set(L.w,L.h*0.22,L.d*0.5);
-    const wedge=new THREE.Mesh(new THREE.CylinderGeometry(0,1,1,4,1),glassM);wedge.geometry.translate(0,0.5,0);wedge.rotation.y=Math.PI/4;wedge.position.set(L.x,L.h*0.78,L.z);wedge.scale.set(L.w*0.75,L.h*0.22,L.d*0.75);
-    return group(L,[box(L.x,0,L.z,L.w,L.h*0.78,L.d,glassM),wedge]);},
-  ypoint(L){const parts=[];for(let k=0;k<3;k++){const a=k/3*Math.PI*2+0.5;const wing=new THREE.Mesh(new THREE.CylinderGeometry(1,1,1,16,1,false,0,Math.PI*0.55),darkM);wing.geometry.translate(0,0.5,0);wing.rotation.y=a;wing.position.set(L.x,0,L.z);wing.scale.set(L.w*0.55,L.h,L.w*0.55);parts.push(wing);}
-    const core=new THREE.Mesh(new THREE.CylinderGeometry(1,1,1,12,1),darkM);core.geometry.translate(0,0.5,0);core.position.set(L.x,0,L.z);core.scale.set(L.w*0.22,L.h,L.w*0.22);parts.push(core);return group(L,parts);},
-  watertower(L){const m=lmMat(L.color);const parts=[box(L.x,0,L.z,L.w*2.2,L.h*0.3,L.w*2.2,m),box(L.x,L.h*0.3,L.z,L.w,L.h*0.6,L.w,m)];const cap=new THREE.Mesh(new THREE.ConeGeometry(0.7,1,4),m);cap.geometry.translate(0,0.5,0);cap.position.set(L.x,L.h*0.9,L.z);cap.scale.set(L.w,L.h*0.1,L.w);parts.push(cap);return group(L,parts);},
-  bean(L){   // Cloud Gate: a polished bean that mirrors the park and the skyline, raised on its two ends over the omphalos arch
-    const g=new THREE.SphereGeometry(1,64,36),v=g.attributes.position;
-    for(let k=0;k<v.count;k++){let x=v.getX(k),y=v.getY(k),z=v.getZ(k);
-      if(y<0)y*=0.55;                                            // a flatter underside
-      x*=1+0.12*Math.max(0,y);                                  // the top swells a little past the ends
-      const arch=Math.max(0,1-Math.abs(x)/0.55);if(y<0)y+=arch*arch*0.62*(-y+0.2)*1.2;   // the arch under the middle
-      v.setXYZ(k,x,y,z);}
-    g.computeVertexNormals();
-    const rt=new THREE.WebGLCubeRenderTarget(256,{format:THREE.RGBFormat,generateMipmaps:true,minFilter:THREE.LinearMipmapLinearFilter});
-    const cube=new THREE.CubeCamera(1,4000,rt);cube.position.set(L.x,6,L.z);scene.add(cube);
-    const beanM=new THREE.MeshPhongMaterial({color:0xdfe4ea,specular:0xffffff,shininess:220,envMap:rt.texture,combine:THREE.MixOperation,reflectivity:0.9});
-    const b=new THREE.Mesh(g,beanM);b.position.set(L.x,L.h*0.5,L.z);b.scale.set(L.w/2,L.h*0.5,L.d/2);
-    const plaza=box(L.x,0,L.z,L.w*3,0.3,L.d*4,new THREE.MeshLambertMaterial({color:0x9e988c}));
-    const grp=group(L,[plaza,b]);b.castShadow=true;
-    let lastR=-1e9;animHooks.push(now=>{if(now-lastR<2500||camera.position.distanceTo(b.position)>900)return;lastR=now;b.visible=false;cube.update(renderer,scene);b.visible=true;});   // the reflection refreshes every few seconds while you are near
-    return grp;},
-  fountain(L){const parts=[];for(let k=0;k<3;k++){const r=new THREE.Mesh(new THREE.CylinderGeometry(1,1,1,28,1),stoneM);r.geometry.translate(0,0.5,0);r.position.set(L.x,k*2.2,L.z);r.scale.set(L.w/2*(1-k*0.3),2.2,L.w/2*(1-k*0.3));parts.push(r);}
-    const jet=new THREE.Mesh(new THREE.CylinderGeometry(0.6,2.5,1,10,1),waterM);jet.geometry.translate(0,0.5,0);jet.position.set(L.x,6,L.z);jet.scale.set(1,30,1);parts.push(jet);const g=group(L,parts);animHooks.push(now=>{jet.scale.y=18+14*Math.max(0,Math.sin(now*0.0007));});return g;},
-  lowrise(L){return reg(box(L.x,0,L.z,L.w,L.h,L.d,lmMat(L.color)),L);},
-  stadium(L){const parts=[];const ring=new THREE.Mesh(new THREE.CylinderGeometry(1,1.1,1,32,1,true),stoneM);ring.geometry.translate(0,0.5,0);ring.position.set(L.x,0,L.z);ring.scale.set(L.w/2,L.h,L.d/2);ring.material=stoneM.clone();ring.material.side=THREE.DoubleSide;parts.push(ring);
-    for(const s of [-1,1])for(let k=0;k<12;k++){parts.push(box(L.x+s*(L.w/2+8),0,L.z-L.d*0.4+k*L.d*0.8/11,3,L.h*0.55,3,stoneM));}return group(L,parts);},
-  wavy(L){const parts=[box(L.x,0,L.z,L.w,L.h,L.d,glassM)],slabM=lmMat('#e8ecee');   // Aqua: floor plates whose balconies swell and recede
-    for(let k=0,y=12;y<L.h;k++,y+=7.5){const t=y*0.045;const e=[2+2*Math.sin(t+L.x*0.01),2+2*Math.sin(t*1.3+1.7),2+2*Math.sin(t*0.8+3.1),2+2*Math.sin(t*1.1+4.6)];
-      parts.push(box(L.x+(e[1]-e[3])/2,y,L.z+(e[2]-e[0])/2,L.w+e[1]+e[3],0.5,L.d+e[0]+e[2],slabM));}return group(L,parts);},
-  pavilion(L){const parts=[box(L.x,0,L.z,26,14,30,stoneM)];   // Pritzker: the stage, steel ribbons over it, and the trellis over the lawn to the east
-    for(let k=0;k<9;k++){const r=new THREE.Mesh(new THREE.TorusGeometry(10+k*1.6,0.35,3,18,Math.PI*(0.7+0.05*k)),chromeM);r.position.set(L.x+2-k*0.8,18+k*1.8,L.z+(k-4)*3.2);r.rotation.set(0.3*(k%3-1),Math.PI/2+0.25*(k-4),0.6+0.1*k);r.scale.set(1,1.4,3);parts.push(r);}
-    for(let k=1;k<=6;k++){const arc=new THREE.Mesh(new THREE.TorusGeometry(46,0.4,3,24,Math.PI),steelM);arc.position.set(L.x+10+k*16,0,L.z);arc.rotation.y=Math.PI/2;arc.scale.set(1,0.5,1);parts.push(arc);}
-    for(let k=-2;k<=2;k++){const rib=box(L.x+56,22.5-Math.abs(k)*2,L.z+k*18,96,0.6,0.6,steelM);parts.push(rib);}
-    return group(L,parts);},
-  crownfountain(L){const faceM=new THREE.MeshLambertMaterial({color:0xdfe8ee,emissive:0x8fb0c8,emissiveIntensity:0.35,transparent:true,opacity:0.9});const parts=[];
-    for(const s of [-1,1])parts.push(box(L.x,0,L.z+s*L.gap/2,15,L.h,L.w,faceM));
-    const pool=box(L.x,0,L.z,22,0.3,L.gap-L.w,new THREE.MeshPhongMaterial({color:0x1c2a38,specular:0xb0c8e0,shininess:120}));parts.push(pool);
-    const g=group(L,parts);animHooks.push(now=>{const k=0.25+0.2*Math.sin(now*0.0004);faceM.emissiveIntensity=k+0.4*windowF(hourCur);});return g;},
-  dome(L){const m=lmMat(L.color),parts=[];const hall=new THREE.Mesh(new THREE.CylinderGeometry(L.w/2,L.w/2,L.h*0.6,12,1),m);hall.geometry.translate(0,L.h*0.3,0);hall.position.set(L.x,0,L.z);parts.push(hall);
-    const dm=new THREE.Mesh(new THREE.SphereGeometry(L.w*0.34,20,10,0,Math.PI*2,0,Math.PI/2),new THREE.MeshLambertMaterial({color:0xb87a4a}));dm.position.set(L.x,L.h*0.6,L.z);parts.push(dm);return group(L,parts);},
-  flatiron(L){   // a wedge: the sharp end points up Milwaukee Avenue to the six-way corner
-    const m=lmMat(L.color),sh=new THREE.Shape();sh.moveTo(-L.w/2,-L.d/2);sh.lineTo(L.w/2,-L.d/2);sh.lineTo(-L.w/2,L.d/2);sh.closePath();
-    const g=new THREE.ExtrudeGeometry(sh,{depth:L.h,bevelEnabled:false});g.rotateX(-Math.PI/2);const body=new THREE.Mesh(g,m);body.position.set(L.x,0,L.z);body.rotation.y=-0.55;
-    const cap=new THREE.Mesh(new THREE.ExtrudeGeometry(sh,{depth:0.9,bevelEnabled:false}).rotateX(-Math.PI/2),lmMat('#6a4030'));cap.position.set(L.x,L.h,L.z);cap.rotation.y=-0.55;cap.scale.set(1.04,1,1.04);
-    return group(L,[body,cap]);},
-  fieldhouse(L){   // a Park District fieldhouse: brick hall with a hipped tile roof and a lower gym wing
-    const m=lmMat(L.color),tile=new THREE.MeshLambertMaterial({color:0x8a5a3a});const hip=new THREE.Mesh(new THREE.ConeGeometry(0.72,1,4,1),tile);hip.geometry.translate(0,0.5,0);hip.rotation.y=Math.PI/4;
-    hip.position.set(L.x,L.h,L.z);hip.scale.set(L.w,L.h*0.45,L.d);
-    return group(L,[box(L.x,0,L.z,L.w,L.h,L.d,m),hip,box(L.x-L.w*0.62,0,L.z,L.w*0.45,L.h*0.7,L.d*0.8,m),box(L.x,0,L.z+L.d/2+1.5,L.w*0.25,3,3,stoneM)]);},
-  pool(L){const deck=box(L.x,0,L.z,L.w+8,0.3,L.d+8,new THREE.MeshLambertMaterial({color:0xd8d2c4})),w=box(L.x,0.1,L.z,L.w,0.35,L.d,new THREE.MeshPhongMaterial({color:0x3aa0c8,specular:0xffffff,shininess:80}));
-    const fence=[];for(const s of [-1,1]){fence.push(box(L.x,0,L.z+s*(L.d/2+4),L.w+8,2,0.15,steelM),box(L.x+s*(L.w/2+4),0,L.z,0.15,2,L.d+8,steelM));}return group(L,[deck,w,...fence]);},
-  church(L){   // a Polish cathedral church: long nave, gabled front, twin towers with lanterns
-    const m=lmMat(L.color),roof=new THREE.MeshLambertMaterial({color:0x5a6a62}),parts=[box(L.x,0,L.z,L.w,L.h*0.35,L.d,m)];
-    const nave=new THREE.Mesh(prismG,roof);nave.position.set(L.x,L.h*0.35,L.z);nave.scale.set(L.w,L.h*0.16,L.d);parts.push(nave);
-    for(const s of [-1,1]){const tx=L.x+s*(L.w/2-4),tz=L.z-L.d/2+4;parts.push(box(tx,0,tz,8.5,L.h*0.78,8.5,m),box(tx,L.h*0.78,tz,6,L.h*0.1,6,m));
-      const cap=new THREE.Mesh(new THREE.ConeGeometry(3.6,L.h*0.14,8),roof);cap.position.set(tx,L.h*0.88+L.h*0.07,tz);parts.push(cap);
-      const cross=box(tx,L.h*1.02,tz,0.4,3,0.4,chromeM);parts.push(cross);}
-    return group(L,parts);},
-  domechurch(L){const m=lmMat(L.color),copper=new THREE.MeshLambertMaterial({color:0x5f9a84}),parts=[box(L.x,0,L.z,L.w,L.h*0.42,L.d,m)];
-    const drum=new THREE.Mesh(new THREE.CylinderGeometry(L.w*0.28,L.w*0.28,L.h*0.16,20),m);drum.position.set(L.x,L.h*0.42+L.h*0.08,L.z+L.d*0.12);parts.push(drum);
-    const dome=new THREE.Mesh(new THREE.SphereGeometry(L.w*0.3,24,12,0,Math.PI*2,0,Math.PI/2),copper);dome.position.set(L.x,L.h*0.58,L.z+L.d*0.12);dome.scale.y=1.25;parts.push(dome);
-    const lantern=new THREE.Mesh(new THREE.CylinderGeometry(1.4,1.6,L.h*0.1,8),copper);lantern.position.set(L.x,L.h*0.58+L.w*0.37+L.h*0.05,L.z+L.d*0.12);parts.push(lantern);
-    for(const s of [-1,1])parts.push(box(L.x+s*(L.w/2-3),0,L.z-L.d/2+3,6,L.h*0.55,6,m));return group(L,parts);},
-  pier(L){const parts=[];const wheel=new THREE.Group();const rim=new THREE.Mesh(new THREE.TorusGeometry(PIER.wheelR,1.2,6,48),steelM);wheel.add(rim);
-    for(let k=0;k<12;k++){const a=k/12*Math.PI*2;const sp=box(0,0,0,1,PIER.wheelR*2,1,steelM);sp.position.set(0,0,0);sp.rotation.z=a;sp.geometry=new THREE.BoxGeometry(1,1,1);sp.scale.set(0.8,PIER.wheelR*2,0.8);wheel.add(sp);
-      const car=new THREE.Mesh(new THREE.SphereGeometry(2.4,8,6),new THREE.MeshLambertMaterial({color:0xe8f0ff}));car.position.set(Math.cos(a)*PIER.wheelR,Math.sin(a)*PIER.wheelR,0);wheel.add(car);}
-    wheel.position.set(PIER.wheelX,PIER.wheelR+6,PIER.z);wheel.rotation.y=Math.PI/2;wheel.userData.info=L;parts.push(wheel);
-    for(const s of [-1,1]){const leg=box(PIER.wheelX,4,PIER.z+s*10,3,PIER.wheelR+2,3,steelM);leg.rotation.x=s*0.16;parts.push(leg);}
-    const g=group(L,parts);animHooks.push(now=>{wheel.rotation.x=now*0.00012;});return g;},
+const poi=name=>POIS.find(p=>p.name.toLowerCase()===name.toLowerCase())||POIS.find(p=>p.name.toLowerCase().includes(name.toLowerCase()));
+const areaNamed=(re,x,z)=>AREAS.filter(a=>re.test(a.name)).sort((p,q)=>Math.hypot((p.bb.x0+p.bb.x1)/2-x,(p.bb.z0+p.bb.z1)/2-z)-Math.hypot((q.bb.x0+q.bb.x1)/2-x,(q.bb.z0+q.bb.z1)/2-z))[0];   // the nearest area with that name
+const DECOR={
+  mast(L,x,z,[dx,dz,len]){const top=roofAt(x+dx,z+dz);return [box(x+dx,top,z+dz,1.6,len,1.6,steelM),box(x+dx,top+len*0.6,z+dz,0.9,len*0.4,0.9,whiteM)];},
+  spire(L,x,z,[dx,dz,len]){const top=roofAt(x+dx,z+dz);const s=new THREE.Mesh(new THREE.CylinderGeometry(0.3,1.8,len,8).translate(0,len/2,0),chromeM);s.position.set(x+dx,top,z+dz);return [s];},
+  statue(L,x,z,[dx,dz,len]){const top=roofAt(x+dx,z+dz);const s=new THREE.Mesh(new THREE.CylinderGeometry(0.8,1.2,len,8).translate(0,len/2,0),new THREE.MeshLambertMaterial({color:0x6a7a70}));s.position.set(x+dx,top,z+dz);return [s];},
+  crown(L,x,z,[dx,dz,len]){const top=roofAt(x+dx,z+dz),m=new THREE.MeshLambertMaterial({color:0xe8f0ff,emissive:0x8fb4e0,emissiveIntensity:0.2,transparent:true,opacity:0.85});
+    const c=new THREE.Mesh(new THREE.CylinderGeometry(12,14,len,24).translate(0,len/2,0),m);c.position.set(x+dx,Math.max(0,top-len),z+dz);animHooks.push(()=>{m.emissiveIntensity=0.2+1.2*nightF(hourCur);});return [c];},
+  floodlit(L,x,z){return [];},
+  towers(L,x,z,[dx,dz,len]){const m=new THREE.MeshLambertMaterial({color:0xb89a78}),roof=new THREE.MeshLambertMaterial({color:0x5a6a62}),out=[];
+    for(const s of [-1,1]){const tx=x+dx+s*9,tz=z+dz;out.push(box(tx,0,tz,7,len*0.8,7,m));const cap=new THREE.Mesh(new THREE.ConeGeometry(3.2,len*0.2,8).translate(0,len*0.1,0),roof);cap.position.set(tx,len*0.8,tz);out.push(cap);}return out;},
+  dome(L,x,z,[dx,dz,len]){const d=new THREE.Mesh(new THREE.SphereGeometry(10,24,12,0,Math.PI*2,0,Math.PI/2),new THREE.MeshLambertMaterial({color:0x5f9a84}));d.scale.y=1.3;d.position.set(x+dx,Math.max(roofAt(x+dx,z+dz),len-13),z+dz);return [d];},
 };
-section('landmarks',()=>{for(const L of C.landmarks){[L.x,L.z]=P(L.at);const f=KINDS[L.kind];if(!f){report('landmark '+L.name,new Error('unknown kind '+L.kind));continue;}try{f(L);}catch(e){report('landmark '+L.name,e);}}
-  // warning beacons on the tallest roofs
-  const beacons=[];for(const L of C.landmarks)if(L.h>250){const b=new THREE.Mesh(new THREE.SphereGeometry(2,8,6),new THREE.MeshBasicMaterial({color:0xff2020}));b.position.set(L.x,L.h+(L.kind==='bundle'?80:L.kind==='taper'?110:L.spire||8),L.z);scene.add(b);beacons.push(b);}
-  animHooks.push(now=>{const on=(now%1600)<800;for(const b of beacons)b.visible=on||hourCur<6||hourCur>18;});
-  ctx.details.landmarks=LANDMARKS.length;});
-animHooks.push(()=>{const w=windowF(hourCur);for(const m of lmMats)m.emissive.setRGB(w,w*0.92,w*0.8);});
+const MODELS={
+  bean(L,x,z){   // Cloud Gate: a mirrored bean on AT&T Plaza, raised on its two ends over the arch, aligned with its mapped outline
+    const p=poi('Cloud Gate'),ang=p?p.ang:0;if(p){x=p.x;z=p.z;}
+    const g=new THREE.SphereGeometry(1,64,36),v=g.attributes.position;
+    for(let k=0;k<v.count;k++){let px=v.getX(k),py=v.getY(k),pz=v.getZ(k);if(py<0)py*=0.55;px*=1+0.12*Math.max(0,py);const arch=Math.max(0,1-Math.abs(px)/0.55);if(py<0)py+=arch*arch*0.62*(-py+0.2)*1.2;v.setXYZ(k,px,py,pz);}
+    g.computeVertexNormals();
+    const rt=new THREE.WebGLCubeRenderTarget(256,{format:THREE.RGBFormat,generateMipmaps:true,minFilter:THREE.LinearMipmapLinearFilter});const cube=new THREE.CubeCamera(1,3000,rt);cube.position.set(x,6,z);scene.add(cube);
+    const beanM=new THREE.MeshPhongMaterial({color:0xdfe4ea,specular:0xffffff,shininess:220,envMap:rt.texture,combine:THREE.MixOperation,reflectivity:0.92});
+    const b=new THREE.Mesh(g,beanM);b.position.set(x,L.h*0.5,z);b.scale.set(L.w/2,L.h*0.5,L.d/2);b.rotation.y=-ang;
+    const grp=group(L,[b]);let lastR=-1e9;animHooks.push(now=>{if(now-lastR<2500||camera.position.distanceTo(b.position)>700)return;lastR=now;b.visible=false;cube.update(renderer,scene);b.visible=true;});return grp;},
+  pavilion(L,x,z){   // Pritzker: steel ribbons over the stage house (the stage itself is the OSM building), the trellis over the Great Lawn east of it
+    const parts=[],top=Math.max(roofAt(x,z),18);
+    for(let k=0;k<9;k++){const r=new THREE.Mesh(new THREE.TorusGeometry(10+k*1.6,0.35,3,18,Math.PI*(0.7+0.05*k)),chromeM);r.position.set(x-4-k*0.8,top+k*1.6,z+(k-4)*3.2);r.rotation.set(0.3*(k%3-1),Math.PI/2+0.25*(k-4),0.6+0.1*k);r.scale.set(1,1.4,3);parts.push(r);}
+    const lawn=areaNamed(/Great Lawn/i,x,z)||areaNamed(/Pritzker/i,x,z);let lx0=x+20,lx1=x+130,lz0=z-55,lz1=z+55;if(lawn){lx0=lawn.bb.x0;lx1=lawn.bb.x1;lz0=lawn.bb.z0;lz1=lawn.bb.z1;}
+    for(let k=0;k<=6;k++){const ax=lx0+(lx1-lx0)*k/6,arc=new THREE.Mesh(new THREE.TorusGeometry((lz1-lz0)/2,0.4,3,24,Math.PI),steelM);arc.position.set(ax,0,(lz0+lz1)/2);arc.rotation.y=Math.PI/2;arc.scale.set(1,0.42,1);parts.push(arc);}
+    for(let k=-3;k<=3;k++)parts.push(box((lx0+lx1)/2,(lz1-lz0)/2*0.42*Math.cos(k/3.4*Math.PI/2)-0.3,(lz0+lz1)/2+k*(lz1-lz0)/7.2,lx1-lx0,0.5,0.5,steelM));
+    return group(L,parts);},
+  fountain(L,x,z){const p=poi(L.name)||poi('Buckingham');if(p&&L.w>40){x=p.x;z=p.z;}const parts=[],w=L.w||40;
+    const waterTop=new THREE.MeshPhongMaterial({color:0x3a7aa8,specular:0xffffff,shininess:100});
+    for(let k=0;k<3;k++){const r=new THREE.Mesh(new THREE.CylinderGeometry(1,1,1,32).translate(0,0.5,0),stoneM);r.position.set(x,k*w*0.03,z);r.scale.set(w/2*(1-k*0.3),w*0.03,w/2*(1-k*0.3));parts.push(r);
+      const pool=new THREE.Mesh(new THREE.CylinderGeometry(1,1,0.1,32),waterTop);pool.position.set(x,k*w*0.03+w*0.03+0.05,z);pool.scale.set(w/2*(1-k*0.3)-1,1,w/2*(1-k*0.3)-1);parts.push(pool);}
+    const jetM=new THREE.MeshLambertMaterial({color:0xe8f4ff,transparent:true,opacity:0.55});const jet=new THREE.Mesh(new THREE.CylinderGeometry(0.4,w*0.03,1,10).translate(0,0.5,0),jetM);jet.position.set(x,w*0.09,z);parts.push(jet);
+    const g=group(L,parts);animHooks.push(now=>{const on=(now/1000)%60<30;jet.scale.y=(on?w*0.5:w*0.12)*(0.9+0.1*Math.sin(now*0.004));});return g;},
+  wheel(L,x,z){const p=poi('Centennial Wheel');if(p){x=p.x;z=p.z;}const R=L.r||30,parts=[],wheel=new THREE.Group();
+    wheel.add(new THREE.Mesh(new THREE.TorusGeometry(R,0.8,6,64),steelM));for(let k=0;k<21;k++){const a=k/21*Math.PI*2,sp=new THREE.Mesh(new THREE.BoxGeometry(0.4,R*2,0.4),steelM);sp.rotation.z=a;wheel.add(sp);
+      const car=new THREE.Mesh(new THREE.BoxGeometry(2.4,2.4,2.4),new THREE.MeshLambertMaterial({color:0xe8f0ff}));car.position.set(Math.cos(a)*R,Math.sin(a)*R,0);wheel.add(car);}
+    wheel.position.set(x,R+4,z);parts.push(wheel);for(const s of [-1,1]){const leg=box(x+s*6,2,z,1.6,R+4,1.6,steelM);leg.rotation.z=-s*0.18;parts.push(leg);}
+    const g=group(L,parts);animHooks.push(now=>{wheel.rotation.z=now*0.00009;});return g;},
+  wrigley(L,x,z){   // the red marquee at Clark and Addison, the hand-turned scoreboard over the centre-field bleachers, light towers; ivy on the outfield wall
+    const parts=[],field=AREAS.find(a=>a.kind==='pitch'&&Math.hypot((a.bb.x0+a.bb.x1)/2-x,(a.bb.z0+a.bb.z1)/2-z)<150);
+    const [mx,mz]=P(L.marquee||[41.94736,-87.65641]);parts.push(box(mx,6,mz,0.6,4,11,redM),box(mx,0,mz-4,0.5,6,0.5,steelM),box(mx,0,mz+4,0.5,6,0.5,steelM));
+    const [sx,sz]=P(L.scoreboard||[41.94886,-87.65461]);parts.push(box(sx,12,sz,24,11,3,greenM),box(sx,23,sz,3,5,2,greenM));
+    const [cxx,czz]=field?[(field.bb.x0+field.bb.x1)/2,(field.bb.z0+field.bb.z1)/2]:[x,z];
+    for(let k=0;k<6;k++){const a=k/6*Math.PI*2+0.3,lx=cxx+Math.cos(a)*120,lz=czz+Math.sin(a)*105;parts.push(box(lx,0,lz,1.2,40,1.2,steelM),box(lx,40,lz,6,3,1,whiteM));}
+    const g=group(L,parts);animHooks.push(()=>{const w=nightF(hourCur);redM.emissive.setRGB(0.3+0.5*w,0.02,0.02);});return g;},
+};
+// stadium bowls: the outer wall, then stands sloping down towards the field (the outline shrunk towards its centre)
+function stadiumBowl(L,x,z){const a=AREAS.filter(q=>q.kind==='stadium').sort((p,q)=>Math.hypot((p.bb.x0+p.bb.x1)/2-x,(p.bb.z0+p.bb.z1)/2-z)-Math.hypot((q.bb.x0+q.bb.x1)/2-x,(q.bb.z0+q.bb.z1)/2-z))[0];
+  if(!a||Math.hypot((a.bb.x0+a.bb.x1)/2-x,(a.bb.z0+a.bb.z1)/2-z)>250)return null;
+  const ring=a.o,cx=ring.reduce((s,p)=>s+p[0],0)/ring.length,cz=ring.reduce((s,p)=>s+p[1],0)/ring.length,H=/Soldier/i.test(L.name)?32:22,inner=ring.map(([px,pz])=>[cx+(px-cx)*0.7,cz+(pz-cz)*0.7]);
+  const pos=[],idx=[],push=(p,y)=>{pos.push(p[0],y,p[1]);return pos.length/3-1;};
+  for(let i=0;i<ring.length;i++){const j=(i+1)%ring.length,a0=push(ring[i],0),a1=push(ring[j],0),b0=push(ring[i],H),b1=push(ring[j],H),c0=push(inner[i],3),c1=push(inner[j],3);
+    idx.push(a0,b0,b1,a0,b1,a1, b0,c0,c1,b0,c1,b1);}
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setIndex(idx);g.computeVertexNormals();
+  const m=new THREE.Mesh(g,new THREE.MeshLambertMaterial({color:/Wrigley/i.test(L.name)?0x7a8a90:0xb8b4ac,side:THREE.DoubleSide}));return group(L,[m]);}
+section('landmarks',()=>{
+  for(const L of C.landmarks){let [x,z]=P(L.at);CARDS.push({L,x,z});
+    try{if(L.stadium)stadiumBowl(L,x,z);
+      if(L.model&&MODELS[L.model])MODELS[L.model](L,x,z);
+      if(L.decor)group(L,L.decor.flatMap(d=>DECOR[d[0]]?DECOR[d[0]](L,x,z,d.slice(1)):[]));}
+    catch(e){report('landmark '+L.name,e);}}
+  // aircraft warning beacons on the tallest roofs
+  const beacons=[];for(const {L,x,z} of CARDS){const h=roofAt(x,z);if(h>250){const b=new THREE.Mesh(new THREE.SphereGeometry(2,8,6),new THREE.MeshBasicMaterial({color:0xff2020}));b.position.set(x,h+((L.decor||[]).reduce((m,d)=>Math.max(m,d[3]||0),0))+2,z);scene.add(b);beacons.push(b);}}
+  animHooks.push(now=>{const on=(now%1600)<800;for(const b of beacons)b.visible=on;});
+  ctx.details=Object.assign(ctx.details||{},{landmarks:C.landmarks.length,beacons:beacons.length});
+});
