@@ -69,6 +69,29 @@ const KINDS={
     const g=group(L,parts);animHooks.push(now=>{const k=0.25+0.2*Math.sin(now*0.0004);faceM.emissiveIntensity=k+0.4*windowF(hourCur);});return g;},
   dome(L){const m=lmMat(L.color),parts=[];const hall=new THREE.Mesh(new THREE.CylinderGeometry(L.w/2,L.w/2,L.h*0.6,12,1),m);hall.geometry.translate(0,L.h*0.3,0);hall.position.set(L.x,0,L.z);parts.push(hall);
     const dm=new THREE.Mesh(new THREE.SphereGeometry(L.w*0.34,20,10,0,Math.PI*2,0,Math.PI/2),new THREE.MeshLambertMaterial({color:0xb87a4a}));dm.position.set(L.x,L.h*0.6,L.z);parts.push(dm);return group(L,parts);},
+  flatiron(L){   // a wedge: the sharp end points up Milwaukee Avenue to the six-way corner
+    const m=lmMat(L.color),sh=new THREE.Shape();sh.moveTo(-L.w/2,-L.d/2);sh.lineTo(L.w/2,-L.d/2);sh.lineTo(-L.w/2,L.d/2);sh.closePath();
+    const g=new THREE.ExtrudeGeometry(sh,{depth:L.h,bevelEnabled:false});g.rotateX(-Math.PI/2);const body=new THREE.Mesh(g,m);body.position.set(L.x,0,L.z);body.rotation.y=-0.55;
+    const cap=new THREE.Mesh(new THREE.ExtrudeGeometry(sh,{depth:0.9,bevelEnabled:false}).rotateX(-Math.PI/2),lmMat('#6a4030'));cap.position.set(L.x,L.h,L.z);cap.rotation.y=-0.55;cap.scale.set(1.04,1,1.04);
+    return group(L,[body,cap]);},
+  fieldhouse(L){   // a Park District fieldhouse: brick hall with a hipped tile roof and a lower gym wing
+    const m=lmMat(L.color),tile=new THREE.MeshLambertMaterial({color:0x8a5a3a});const hip=new THREE.Mesh(new THREE.ConeGeometry(0.72,1,4,1),tile);hip.geometry.translate(0,0.5,0);hip.rotation.y=Math.PI/4;
+    hip.position.set(L.x,L.h,L.z);hip.scale.set(L.w,L.h*0.45,L.d);
+    return group(L,[box(L.x,0,L.z,L.w,L.h,L.d,m),hip,box(L.x-L.w*0.62,0,L.z,L.w*0.45,L.h*0.7,L.d*0.8,m),box(L.x,0,L.z+L.d/2+1.5,L.w*0.25,3,3,stoneM)]);},
+  pool(L){const deck=box(L.x,0,L.z,L.w+8,0.3,L.d+8,new THREE.MeshLambertMaterial({color:0xd8d2c4})),w=box(L.x,0.1,L.z,L.w,0.35,L.d,new THREE.MeshPhongMaterial({color:0x3aa0c8,specular:0xffffff,shininess:80}));
+    const fence=[];for(const s of [-1,1]){fence.push(box(L.x,0,L.z+s*(L.d/2+4),L.w+8,2,0.15,steelM),box(L.x+s*(L.w/2+4),0,L.z,0.15,2,L.d+8,steelM));}return group(L,[deck,w,...fence]);},
+  church(L){   // a Polish cathedral church: long nave, gabled front, twin towers with lanterns
+    const m=lmMat(L.color),roof=new THREE.MeshLambertMaterial({color:0x5a6a62}),parts=[box(L.x,0,L.z,L.w,L.h*0.35,L.d,m)];
+    const nave=new THREE.Mesh(prismG,roof);nave.position.set(L.x,L.h*0.35,L.z);nave.scale.set(L.w,L.h*0.16,L.d);parts.push(nave);
+    for(const s of [-1,1]){const tx=L.x+s*(L.w/2-4),tz=L.z-L.d/2+4;parts.push(box(tx,0,tz,8.5,L.h*0.78,8.5,m),box(tx,L.h*0.78,tz,6,L.h*0.1,6,m));
+      const cap=new THREE.Mesh(new THREE.ConeGeometry(3.6,L.h*0.14,8),roof);cap.position.set(tx,L.h*0.88+L.h*0.07,tz);parts.push(cap);
+      const cross=box(tx,L.h*1.02,tz,0.4,3,0.4,chromeM);parts.push(cross);}
+    return group(L,parts);},
+  domechurch(L){const m=lmMat(L.color),copper=new THREE.MeshLambertMaterial({color:0x5f9a84}),parts=[box(L.x,0,L.z,L.w,L.h*0.42,L.d,m)];
+    const drum=new THREE.Mesh(new THREE.CylinderGeometry(L.w*0.28,L.w*0.28,L.h*0.16,20),m);drum.position.set(L.x,L.h*0.42+L.h*0.08,L.z+L.d*0.12);parts.push(drum);
+    const dome=new THREE.Mesh(new THREE.SphereGeometry(L.w*0.3,24,12,0,Math.PI*2,0,Math.PI/2),copper);dome.position.set(L.x,L.h*0.58,L.z+L.d*0.12);dome.scale.y=1.25;parts.push(dome);
+    const lantern=new THREE.Mesh(new THREE.CylinderGeometry(1.4,1.6,L.h*0.1,8),copper);lantern.position.set(L.x,L.h*0.58+L.w*0.37+L.h*0.05,L.z+L.d*0.12);parts.push(lantern);
+    for(const s of [-1,1])parts.push(box(L.x+s*(L.w/2-3),0,L.z-L.d/2+3,6,L.h*0.55,6,m));return group(L,parts);},
   pier(L){const parts=[];const wheel=new THREE.Group();const rim=new THREE.Mesh(new THREE.TorusGeometry(PIER.wheelR,1.2,6,48),steelM);wheel.add(rim);
     for(let k=0;k<12;k++){const a=k/12*Math.PI*2;const sp=box(0,0,0,1,PIER.wheelR*2,1,steelM);sp.position.set(0,0,0);sp.rotation.z=a;sp.geometry=new THREE.BoxGeometry(1,1,1);sp.scale.set(0.8,PIER.wheelR*2,0.8);wheel.add(sp);
       const car=new THREE.Mesh(new THREE.SphereGeometry(2.4,8,6),new THREE.MeshLambertMaterial({color:0xe8f0ff}));car.position.set(Math.cos(a)*PIER.wheelR,Math.sin(a)*PIER.wheelR,0);wheel.add(car);}

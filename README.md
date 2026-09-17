@@ -50,16 +50,36 @@ viewer's browser (`localStorage`), not on the server.
 ### `/chicago`: Chicago
 
 The same shell and controls, a different generator, laid out in **real coordinates**: every position in
-`data/cities/chicago.json` is a latitude/longitude, projected to metres around State & Madison. That
-covers the named streets (Michigan, State, LaSalle, Wacker, Grand, Chicago Ave…) with the regular
-grid filled in around them, Milwaukee Avenue and Lake Shore Drive as diagonals, the lake shore with the
-Museum Campus peninsula, the Chicago River's main stem and both branches following their bends (a bridge
-wherever a street crosses, at the crossing's angle), the parks and beaches, Navy Pier, the elevated
-Loop on Lake/Wabash/Van Buren/Wells, and 27 landmarks at their addresses and real heights (click one
-for its card). Cloud Gate is mirrored: it reflects the park and skyline around it while you are nearby.
-Hash: `#v=...&t=hour[&paused]`. Views: Skyline from the lake, Cloud Gate, Millennium Park, The Loop,
-Riverwalk, River forks, Navy Pier, Willis Tower, Magnificent Mile, Overview. Ordinary buildings are
-generated per block (heights follow each district), so only the landmarks are the real buildings.
+`data/cities/chicago.json` is a latitude/longitude, projected to metres around State & Madison. The map
+runs from 18th Street to Armitage and from Western Avenue to the lake.
+
+- **Streets:** the named streets downtown and in Wicker Park, Bucktown and Noble Square (Damen, Wood, Noble,
+  Evergreen, Schiller, Blackhawk…) with Chicago's grid filled in around them, Milwaukee Avenue, Wicker Park
+  Avenue and Lake Shore Drive as diagonals; sidewalks, crosswalks at the major corners.
+- **Water:** the lake shore with the Museum Campus peninsula, the river's three branches following their
+  bends, a bridge wherever a street crosses.
+- **Neighbourhoods:** outside downtown every block is two rows of narrow lots either side of an alley:
+  brick two- and three-flats with cornices, gabled frame houses, front yards, garages on the alley, parkway
+  trees. Blocks facing a major street are shopfronts (glass storefronts, awnings), with wooden water tanks on
+  some roofs.
+- **North & Ashland and the six corners (North/Damen/Milwaukee)** are the two detailed intersections
+  (`focus` in the data file): taller shopfronts, shops lining Milwaukee's diagonal, street lights,
+  cycling traffic signals, CTA bus shelters, parked cars and people walking.
+- **Parks:** Millennium, Maggie Daley, Grant, Wicker Park (the triangle, with its fountain and fieldhouse),
+  Pulaski Park (the 1914 fieldhouse and the pool), Holstein, Eckhart, and The 606 on its embankment.
+- **Transit:** the elevated Loop with trains, and the Blue Line rising out of the Milwaukee subway onto its
+  viaduct past the Damen station.
+- **Lake Michigan:** sailboats that tack across the wind, motor yachts and speedboats with wakes, a cruise
+  ship looping from Navy Pier, yellow water taxis to the Museum Campus, moored fleets in Monroe and DuSable
+  harbours, a freighter on the horizon; tour boats on the river.
+- **Landmarks:** 36 at their addresses and real heights, including Northwest Tower, the Flat Iron Building,
+  St. Stanislaus Kostka, Holy Trinity and St. Mary of the Angels near Wicker Park; click one for its card.
+  Cloud Gate is mirrored.
+
+Views: Skyline from the lake, Cloud Gate, Millennium Park, The Loop, Riverwalk, River forks, Lake Michigan,
+Monroe Harbor, Navy Pier, Willis Tower, Magnificent Mile, Wicker Park, Six corners, Pulaski Park, The 606,
+Overview. Ordinary buildings are generated per lot, so only the landmarks are the real buildings; small
+details (garages, awnings, trim) are hidden far from the camera to keep the frame rate up.
 
 ### `/tongue`: The Izani Tongue
 
