@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Turn the raw OpenStreetMap downloads (data/osm/raw/) into data/cities/chicago-osm.json for chicago.html.
+"""Turn the raw OpenStreetMap downloads (data/osm/raw/<city>/) into data/cities/<city>-osm.json for the city's page.
 
-    python3 tools/build-chicago-osm.py           build
-    python3 tools/build-chicago-osm.py --report  also list where each landmark in chicago.json sits in OSM
+    python3 tools/build-osm-city.py chicago           build
+    python3 tools/build-osm-city.py portland --report  also list where each landmark in the config sits in OSM
 
 Coordinates are decimetres east (x) and south (z) of the origin in chicago.json, as integers.
 Every building in the detail zones is kept; elsewhere only tall or large ones.
@@ -16,9 +16,14 @@ import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-RAW = os.path.join(ROOT, "data", "osm", "raw")
-CITY = json.load(open(os.path.join(ROOT, "data", "cities", "chicago.json")))
-OUT = os.path.join(ROOT, "data", "cities", "chicago-osm.json")
+_ARGS = [a for a in sys.argv[1:] if not a.startswith("--")]
+if not _ARGS:
+    raise SystemExit("usage: build-osm-city.py <city> [--report]")
+CITY_ID = _ARGS[0]
+RAW = os.path.join(ROOT, "data", "osm", "raw", CITY_ID)
+CITY = json.load(open(os.path.join(ROOT, "data", "cities", CITY_ID + ".json")))
+OUT = os.path.join(ROOT, "data", "cities", CITY_ID + "-osm.json")
+FETCH = CITY.get("fetch", {})
 LAT0, LON0 = CITY["origin"]
 M_LAT, M_LON = 111132.0, 111320.0 * math.cos(math.radians(LAT0))
 S, W, N, E = CITY["bounds"]
@@ -163,12 +168,7 @@ def zone_rect(s, w, n, e):
     return lambda p: x0 <= p[0] <= x1 and z0 <= p[1] <= z1
 
 
-ZONES = [
-    zone_rect(41.855, -87.6500, 41.9150, -87.590),   # downtown, the Loop, River North, Streeterville, Gold Coast, Museum Campus
-    zone_rect(41.9150, -87.6620, 41.9720, -87.590),  # the north lakefront: Lincoln Park, Lakeview, Uptown to Montrose
-    zone_rect(41.9420, -87.6650, 41.9540, -87.6450), # Wrigleyville
-    zone_rect(41.9000, -87.6900, 41.9180, -87.6560), # Wicker Park, Bucktown, North & Ashland
-]
+ZONES = [zone_rect(*z) for z in FETCH.get("detailZones", [])]   # [south, west, north, east] boxes from the city's config
 
 
 def detailed(p):
@@ -220,7 +220,7 @@ def main():
     # in OSM the Great Lakes are water areas: take the Lake Michigan relation's outer ways that reach the map
     for e in water:
         t = e.get("tags", {})
-        if e["type"] == "relation" and t.get("name") == "Lake Michigan":
+        if e["type"] == "relation" and FETCH.get("lakeRelation") and t.get("name") == FETCH["lakeRelation"]:
             coast += [pts for pts in (way_pts(m) for m in e.get("members", []) if m.get("type") == "way" and m.get("role") in ("outer", "")) if pts and any(in_bounds(p, 3000) for p in pts)]
     chains = join_rings(coast)
     islands = [c for c in chains if c[0] == c[-1] and abs(area(c)) < 4e6]
@@ -243,7 +243,7 @@ def main():
         kind = ("marina" if t.get("leisure") == "marina" else "beach" if t.get("natural") == "beach" else
                 "pier" if t.get("man_made") in ("breakwater", "pier", "groyne") else
                 "water" if t.get("natural") == "water" or t.get("waterway") == "riverbank" else None)
-        if not kind or t.get("name") == "Lake Michigan" or t.get("water") == "lake" and e["type"] == "relation":
+        if not kind or (FETCH.get("lakeRelation") and t.get("name") == FETCH["lakeRelation"]):
             continue
         if kind == "pier" and e["type"] == "way":
             pts = way_pts(e)
@@ -356,12 +356,12 @@ def main():
             if in_bounds(p) and t.get("name"):
                 stations.append({"n": t["name"], "x": q(p[0]), "z": q(p[1]), "net": t.get("network", t.get("operator", ""))})
             continue
-        if e["type"] != "way" or t.get("tunnel") == "yes" or t.get("railway") not in ("subway", "light_rail", "rail"):
+        if e["type"] != "way" or t.get("tunnel") == "yes" or t.get("railway") not in ("subway", "light_rail", "tram", "rail"):
             continue
         pts = way_pts(e)
         if not any(in_bounds(p, 50) for p in pts):
             continue
-        rails.append({"t": "L" if t.get("railway") in ("subway", "light_rail") else "rail", "e": 1 if (t.get("bridge") not in (None, "no") or t.get("layer") in ("1", "2")) else 0,
+        rails.append({"t": "L" if t.get("railway") in ("subway", "light_rail") else "tram" if t.get("railway") == "tram" else "rail", "e": 1 if (t.get("bridge") not in (None, "no") or t.get("layer") in ("1", "2")) else 0,
                       "p": flat(simplify(pts, 0.8)), "n": t.get("name", "")})
     out["rail"] = rails
     # one station per name, averaged

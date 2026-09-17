@@ -13,6 +13,7 @@ modules and the same page shell; each city is a data file plus a set of build st
 | `/` | `/index.html`, `/iziz`, `/iziz.html` | `iziz.html` | Iziz: massing model |
 | `/?city=iziz-b` | | `data/cities/iziz-b.json` | A variant Iziz (rounder wall, another seed, more prints) |
 | `/chicago` | `/chicago.html` | `chicago.html` | Chicago: massing model |
+| `/portland` | `/portland.html` | `portland.html` | Portland: massing model |
 | `/tongue` | `/izani-tongue` | `The-Izani-Tongue_2.html` | The Izani Tongue |
 | `/painting.jpg` | | `painting.jpg` | The Iziz painting; `image.png` is the master copy |
 | `/css/*`, `/src/*`, `/data/*`, `/vendor/*` | | those folders | stylesheets, modules, content, three.js |
@@ -76,9 +77,31 @@ whole lakefront, in Wrigleyville and in Wicker Park, and only the tall or large 
 Views include Skyline from the lake, Cloud Gate, Millennium Park, Riverwalk, River forks, Magnificent Mile, Navy
 Pier, Lake Michigan, Lakefront Trail, Lincoln Park, Wrigley Field, Montrose Harbor, the six corners, Pulaski Park.
 
-**Updating the map data:** `python3 tools/fetch-osm.py` downloads from the Overpass API into `data/osm/raw/`
-(cached, not committed; `--refresh` to re-download), then `python3 tools/build-chicago-osm.py` writes
+**Updating the map data:** `python3 tools/fetch-osm.py chicago` downloads from the Overpass API into `data/osm/raw/chicago/`
+(cached, not committed; `--refresh` to re-download), then `python3 tools/build-osm-city.py chicago` writes
 `data/cities/chicago-osm.json` (`--report` lists where each landmark sits in OSM).
+
+### `/portland`: Portland
+
+The same engine as Chicago (`src/chicago/stages/`, loaded by `src/portland/main.js`) with Portland's data:
+`data/cities/portland.json` and `portland-osm.json`, built from OpenStreetMap the same way. The map runs from
+South Waterfront to the Fremont Bridge and from Washington Park to the Lloyd District; every building is drawn.
+
+- **From the map:** the Willamette and its banks, every street, park, trail and tree, MAX light rail and the
+  Portland Streetcar (trains and streetcars run on their tracks), 24,000 buildings at their mapped heights.
+- **Added on top:** the Steel and Hawthorne lift-bridge towers, the Burnside, Morrison and Broadway bridge
+  houses, the Fremont Bridge arch, Tilikum Crossing's cable-stayed towers (each placed where its road crosses
+  the river), the White Stag "Portland Oregon" sign (neon at night), the Chinatown Gate, Union Station's clock
+  tower, the Pioneer Courthouse cupola, Salmon Street Springs, Skidmore and Keller fountains, the USS Blueback at
+  OMSI, the Aerial Tram with moving cabins, the Convention Center spires, Providence Park's bowl, and Mount Hood
+  and Mount St. Helens on the horizon at their true apparent size.
+- **Detailed areas:** Pioneer Courthouse Square, the Pearl District, Old Town and Chinatown, Waterfront Park.
+- **On the river:** sailboats, motorboats and kayaks that keep to the channel; cyclists on the Eastbank
+  Esplanade, Waterfront and bridges.
+- **Not modelled:** terrain. The model is flat, so the West Hills and Marquam Hill are not raised (the Aerial
+  Tram's upper station stands on a tower instead).
+
+Data: `python3 tools/fetch-osm.py portland` then `python3 tools/build-osm-city.py portland`.
 
 ### `/tongue`: The Izani Tongue
 

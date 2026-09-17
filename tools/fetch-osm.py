@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Download OpenStreetMap data for the Chicago model from the Overpass API, in tiles, with caching.
 
-    python3 tools/fetch-osm.py              fetch anything not yet cached
-    python3 tools/fetch-osm.py --refresh    fetch everything again
+    python3 tools/fetch-osm.py chicago              fetch anything not yet cached
+    python3 tools/fetch-osm.py portland --refresh   fetch everything again
 
-Raw responses go to data/osm/raw/ (not served, not committed). tools/build-chicago-osm.py turns them
-into the compact data/cities/chicago-osm.json the page loads.
+The area and tiling come from "fetch" in data/cities/<city>.json. Raw responses go to data/osm/raw/<city>/
+(not served, not committed). tools/build-osm-city.py <city> turns them into data/cities/<city>-osm.json.
 Data © OpenStreetMap contributors, available under the Open Database License (ODbL).
 """
 import json
@@ -16,12 +16,10 @@ import urllib.parse
 import urllib.request
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-RAW = os.path.join(ROOT, "data", "osm", "raw")
+RAW_ROOT = os.path.join(ROOT, "data", "osm", "raw")
 URL = "https://overpass-api.de/api/interpreter"
 UA = "CityofIziz-massing-model/1.0 (personal LAN project; contact via OSM)"
 
-# south, west, north, east: 18th St to Montrose, Western Ave to well out in the lake
-BBOX = (41.855, -87.690, 41.972, -87.590)
 
 QUERIES = {
     # water: the lake shore, the river and harbour areas, marinas, beaches, breakwaters and piers
@@ -42,11 +40,11 @@ QUERIES = {
     # river centre lines (the tour boats follow them)
     "waterways": """(way["waterway"~"^(river|canal)$"]({b}););out geom;""",
     # the L, Metra and freight lines
-    "rail": """(way["railway"~"^(subway|light_rail|rail)$"]({b});node["railway"="station"]({b});node["public_transport"="station"]({b}););out geom;""",
+    "rail": """(way["railway"~"^(subway|light_rail|tram|rail|funicular)$"]({b});node["railway"="station"]({b});node["public_transport"="station"]({b}););out geom;""",
     # buildings and 3D building parts, in tiles because there are ~86,000
     "buildings": """(way["building"]({b});relation["building"]({b});way["building:part"]({b});relation["building:part"]({b}););out geom;""",
 }
-TILED = {"buildings": (4, 3), "roads": (2, 2)}   # rows (south-north), columns (west-east)
+DEFAULT_TILES = {"buildings": (2, 2), "roads": (1, 2)}   # rows (south-north), columns (west-east); a city can override in its config
 
 
 def fetch(query, dest):
@@ -67,11 +65,18 @@ def fetch(query, dest):
 
 
 def main():
+    args = [a for a in sys.argv[1:] if not a.startswith("--")]
+    if not args:
+        raise SystemExit("usage: fetch-osm.py <city> [--refresh]")
+    city = args[0]
     refresh = "--refresh" in sys.argv
+    cfg = json.load(open(os.path.join(ROOT, "data", "cities", city + ".json")))["fetch"]
+    RAW = os.path.join(RAW_ROOT, city)
     os.makedirs(RAW, exist_ok=True)
-    s, w, n, e = BBOX
+    s, w, n, e = cfg["bbox"]
+    tiles = {**DEFAULT_TILES, **{k: tuple(v) for k, v in cfg.get("tiles", {}).items()}}
     for name, q in QUERIES.items():
-        rows, cols = TILED.get(name, (1, 1))
+        rows, cols = tiles.get(name, (1, 1))
         for i in range(rows):
             for j in range(cols):
                 b = (s + (n - s) * i / rows, w + (e - w) * j / cols, s + (n - s) * (i + 1) / rows, w + (e - w) * (j + 1) / cols)

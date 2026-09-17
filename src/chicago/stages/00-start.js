@@ -1,7 +1,7 @@
 // ---------- start: three.js check, the config and the OpenStreetMap geography, projection, randomness, lookups ----------
 if(!window.THREE){document.getElementById('loading').textContent='three.js did not load (vendor/three/three.min.js). Check the site mounts and reload.';return;}
 const THREE=window.THREE;
-const CITY_ID=(()=>{const v=new URLSearchParams(location.search).get('city')||'';return /^[a-z0-9-]{1,40}$/.test(v)?v:'chicago';})();
+const CITY_ID=(()=>{const v=new URLSearchParams(location.search).get('city')||'';return /^[a-z0-9-]{1,40}$/.test(v)?v:(ctx.defaultCity||'chicago');})();   // each page sets its own city
 ctx.cityId=CITY_ID;
 const getJSON=u=>fetch(u).then(r=>{if(!r.ok)throw new Error(u+': HTTP '+r.status);return r.json();});
 const C=await getJSON('data/cities/'+CITY_ID+'.json');

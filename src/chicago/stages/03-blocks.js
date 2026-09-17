@@ -39,7 +39,7 @@ function gableRoof(rf,ring,cx,cz,h,shingle,wall){let sxx=0,szz=0,sxz=0;for(const
   const sl=shingle,sl2=shingle.clone().multiplyScalar(0.8);
   tri(A,Bp,R1,sl);tri(A,R1,R0,sl);tri(D,R0,R1,sl2);tri(D,R1,Cp,sl2);tri(A,R0,D,wall);tri(Bp,Cp,R1,wall);}
 const REPLACED=new Set(C.landmarks.flatMap(l=>l.replace||[]).map(s=>s.toLowerCase()));
-const HEIGHT_FIX=C.landmarks.filter(l=>l.height).map(l=>{const [x,z]=P(l.at);return {x,z,h:l.height};});   // known heights for landmarks whose OSM height is missing or wrong
+const HEIGHT_FIX=C.landmarks.filter(l=>l.height||l.colour).map(l=>{const [x,z]=P(l.at);return {x,z,h:l.height||0,c:l.colour?col(l.colour):null};});   // known heights and colours for landmarks whose OSM tags are missing or wrong   // known heights for landmarks whose OSM height is missing or wrong
 const STADIUMS=C.landmarks.filter(l=>l.stadium).map(l=>({...l,xz:P(l.at)}));
 const BUILDINGS=[];   // named buildings {name,h,cx,cz,tile,kind,start,end}, for picking
 const BGRID=new Map();   // every drawn footprint on a 100 m grid: {ring,h,m,x0,x1,z0,z1,name}
@@ -57,8 +57,8 @@ section('buildings',()=>{
     if(!inMap(cx,cz,0))continue;
     // stadiums are drawn as bowls elsewhere; skip their solid outlines
     if(b.t==='stadium'||STADIUMS.some(s=>Math.hypot(s.xz[0]-cx,s.xz[1]-cz)<120&&Math.abs(polyArea(ring))>6000)){skippedStadium++;continue;}
-    let h=b.h;const m0=b.m||0;for(const f of HEIGHT_FIX)if(h<f.h*0.6&&Math.abs(f.x-cx)<120&&Math.abs(f.z-cz)<120&&inPoly(f.x,f.z,ring))h=f.h;
-    const hsh=hash3(cx,cz,3),c=colourOf(b,h,hsh),tall=h>30,W=tall?'tower':'low',t=T(cx,cz),wb=t.walls[W];
+    let h=b.h,fixC=null;const m0=b.m||0;for(const f of HEIGHT_FIX)if(Math.abs(f.x-cx)<120&&Math.abs(f.z-cz)<120&&inPoly(f.x,f.z,ring)){if(h<f.h*0.6)h=f.h;if(f.c)fixC=f.c;}
+    const hsh=hash3(cx,cz,3),c=fixC||colourOf(b,h,hsh),tall=h>30,W=tall?'tower':'low',t=T(cx,cz),wb=t.walls[W];
     const start=wb.idx.length;
     {const bb=bbox(ring),rec={ring,h,m:m0,x0:bb.x0,x1:bb.x1,z0:bb.z0,z1:bb.z1,name:b.n||''};for(let gi=Math.floor(bb.x0/100);gi<=Math.floor(bb.x1/100);gi++)for(let gj=Math.floor(bb.z0/100);gj<=Math.floor(bb.z1/100);gj++){const k=gi*100003+gj;let a=BGRID.get(k);if(!a){a=[];BGRID.set(k,a);}a.push(rec);}}
     // walls: u runs along the facade (one bay per 3.5 m, towers 3 m), v up the floors (3.6 m)

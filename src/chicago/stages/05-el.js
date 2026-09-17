@@ -51,3 +51,20 @@ section('metra',()=>{
     body.count=stripe.count=i;body.instanceMatrix.needsUpdate=stripe.instanceMatrix.needsUpdate=true;const w=windowF(hourCur);m.emissive.setRGB(w*0.5,w*0.48,w*0.35);});
   ctx.details=Object.assign(ctx.details||{},{metraTrains:trains.length});
 });
+// light rail and streetcars at street level (MAX, the Portland Streetcar): rails in the pavement and trains running the joined lines
+section('surface-rail',()=>{
+  const surf=RAILS.filter(r=>(r.type==='L'&&!r.elevated)||r.type==='tram');if(!surf.length)return;
+  const rb=tiledBuffer(groundMat(6),{tile:1000,far:2500}),steel=col('#8a8a86');
+  const off=(pts,o)=>pts.map((p,i)=>{const a=pts[Math.max(0,i-1)],b=pts[Math.min(pts.length-1,i+1)],dx=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dx,dz)||1;return [p[0]-dz/l*o,p[1]+dx/l*o];});
+  for(const r of surf)for(const o of [-0.72,0.72])rb.ribbon(off(r.pts,o),0.12,0.02,steel);rb.build('surface rails');
+  const make=(type,carL,N,colour,v)=>{const lines=joinChains(surf.filter(r=>type==='tram'?r.type==='tram':r.type!=='tram').map(r=>r.pts),3).map(p=>polyLen({pts:p})).filter(r=>r.len>600);
+    const m=new THREE.MeshLambertMaterial({color:colour,emissive:0x000000}),trains=[];for(const r of lines){const k=r.len>2500?2:1;for(let i=0;i<k;i++)trains.push({r,s:(i+0.4)*r.len/k,dir:i%2?1:-1,v});}
+    const im=new THREE.InstancedMesh(new THREE.BoxGeometry(carL,3.6,2.65).translate(0,2.2,0),m,Math.max(1,trains.length*N)),d=new THREE.Object3D();im.frustumCulled=false;im.castShadow=true;scene.add(im);let last=performance.now();
+    animHooks.push(now=>{const dt=Math.min(0.05,(now-last)/1000);last=now;let i=0;for(const t of trains){t.s+=t.dir*t.v*dt;if(t.s>t.r.len-5)t.dir=-1;if(t.s<N*(carL+0.5)+5)t.dir=1;
+        for(let c=0;c<N;c++){const [x,z,a]=polyAt(t.r,t.s-t.dir*c*(carL+0.5));d.position.set(x,deckAt(x,z),z);d.rotation.set(0,-a,0);d.updateMatrix();im.setMatrixAt(i++,d.matrix);}}
+      im.count=i;im.instanceMatrix.needsUpdate=true;const w=windowF(hourCur);m.emissive.setRGB(w*0.7,w*0.66,w*0.5);});return trains.length;};
+  // on a bridge the tracks share the road deck: lift the train to it
+  const deckAt=(x,z)=>{const b=roadsNear(x,z,2,r=>deckY(r)>0);return b.length?deckY(b[0].road):0;};
+  const nMax=make('L',28,C.el.trainCars||2,0xe8e8e8,11),nCar=make('tram',20,1,0x8a2a6a,7);
+  ctx.details=Object.assign(ctx.details||{},{lightRailTrains:nMax,streetcars:nCar});
+});

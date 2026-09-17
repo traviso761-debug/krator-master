@@ -16,7 +16,8 @@ const clearAt=(x,z,pad)=>!inWater(x,z)&&!buildingsAt(x,z,pad).some(b=>inPoly(x,z
 function segNearRing(x,z,ring,pad){for(let i=0;i<ring.length;i++){const a=ring[i],b=ring[(i+1)%ring.length];if(segDist(x,z,a[0],a[1],b[0],b[1])<pad)return true;}return false;}
 section('trees',()=>{
   // one tree = a trunk and a crown in a single low-poly geometry
-  const trunk=new THREE.CylinderGeometry(0.18,0.28,1,5).translate(0,0.5,0),crown=new THREE.IcosahedronGeometry(1,0).scale(0.42,0.38,0.42).translate(0,0.78,0);
+  const trunk=new THREE.CylinderGeometry(0.022,0.036,0.62,5).translate(0,0.31,0),   // the whole tree is scaled by its height, so a 12 m tree gets a trunk about 40 cm across
+  crown=new THREE.IcosahedronGeometry(1,0).scale(0.42,0.38,0.42).translate(0,0.78,0);
   const merge=(a,b)=>{const pa=a.toNonIndexed(),pb=b.toNonIndexed(),g=new THREE.BufferGeometry(),n=pa.attributes.position.count,m=pb.attributes.position.count,pos=new Float32Array((n+m)*3),nor=new Float32Array((n+m)*3),colr=new Float32Array((n+m)*3);
     pos.set(pa.attributes.position.array);pos.set(pb.attributes.position.array,n*3);nor.set(pa.attributes.normal.array);nor.set(pb.attributes.normal.array,n*3);
     for(let i=0;i<n;i++)colr.set([0.36,0.26,0.18],i*3);for(let i=0;i<m;i++)colr.set([1,1,1],(n+i)*3);   // trunks brown; crowns take the instance colour
