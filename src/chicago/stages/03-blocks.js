@@ -24,6 +24,20 @@ function colourOf(b,h,hsh){if(b.c){const k=b.c.toLowerCase();try{return col(NAME
   if(h>90)return hsh<0.55?pickFrom(PALETTE.glass):hsh<0.8?pickFrom(PALETTE.stone):pickFrom(PALETTE.concrete);
   if(h>35)return hsh<0.35?pickFrom(PALETTE.glass):hsh<0.65?pickFrom(PALETTE.brick):pickFrom(PALETTE.stone);
   return hsh<0.7?pickFrom(PALETTE.brick):pickFrom(PALETTE.stone);}
+const PITCHED=new Set(['house','detached','semidetached_house','terrace','bungalow','cabin','church','chapel']);
+const SHINGLE=['#4a4644','#5a3a32','#3e4a52','#6a5a4a','#2e3034','#584a44'].map(col);
+const ROOFTOP=[];   // flat roofs big enough for equipment or a water tank, for the details stage
+// a gable roof over the footprint's oriented bounding box
+function gableRoof(rf,ring,cx,cz,h,shingle,wall){let sxx=0,szz=0,sxz=0;for(const [x,z] of ring){sxx+=(x-cx)**2;szz+=(z-cz)**2;sxz+=(x-cx)*(z-cz);}
+  let a=0.5*Math.atan2(2*sxz,sxx-szz),ux=Math.cos(a),uz=Math.sin(a);let u0=1e9,u1=-1e9,v0=1e9,v1=-1e9;
+  for(const [x,z] of ring){const u=(x-cx)*ux+(z-cz)*uz,v=-(x-cx)*uz+(z-cz)*ux;u0=Math.min(u0,u);u1=Math.max(u1,u);v0=Math.min(v0,v);v1=Math.max(v1,v);}
+  if(v1-v0>u1-u0){[ux,uz]=[-uz,ux];[u0,u1,v0,v1]=[v0,v1,-u1,-u0];}   // ridge along the long side
+  const W=(u,v,y)=>[cx+u*ux-v*uz,y,cz+u*uz+v*ux],rh=Math.min(4.2,(v1-v0)*0.42),vm=(v0+v1)/2;
+  const A=W(u0,v0,h),Bp=W(u1,v0,h),Cp=W(u1,v1,h),D=W(u0,v1,h),R0=W(u0,vm,h+rh),R1=W(u1,vm,h+rh);
+  const tri=(p,q,r,cl)=>{const e1=[q[0]-p[0],q[1]-p[1],q[2]-p[2]],e2=[r[0]-p[0],r[1]-p[1],r[2]-p[2]];let n=[e1[1]*e2[2]-e1[2]*e2[1],e1[2]*e2[0]-e1[0]*e2[2],e1[0]*e2[1]-e1[1]*e2[0]];const l=Math.hypot(...n)||1;n=n.map(v=>v/l);if(n[1]<0)n=n.map(v=>-v);
+    const base=rf.p.length/3;rf.p.push(...p,...q,...r);for(let k=0;k<3;k++){rf.n.push(...n);rf.c.push(cl.r,cl.g,cl.b);}rf.idx.push(base,base+1,base+2);};
+  const sl=shingle,sl2=shingle.clone().multiplyScalar(0.8);
+  tri(A,Bp,R1,sl);tri(A,R1,R0,sl);tri(D,R0,R1,sl2);tri(D,R1,Cp,sl2);tri(A,R0,D,wall);tri(Bp,Cp,R1,wall);}
 const REPLACED=new Set(C.landmarks.flatMap(l=>l.replace||[]).map(s=>s.toLowerCase()));
 const HEIGHT_FIX=C.landmarks.filter(l=>l.height).map(l=>{const [x,z]=P(l.at);return {x,z,h:l.height};});   // known heights for landmarks whose OSM height is missing or wrong
 const STADIUMS=C.landmarks.filter(l=>l.stadium).map(l=>({...l,xz:P(l.at)}));
@@ -58,9 +72,13 @@ section('buildings',()=>{
       if(m0<1&&len>4&&h>=6&&focusAt(cx,cz)){const mx=(a[0]+bb[0])/2,mz=(a[1]+bb[1])/2;
         if(roadsNear(mx+nx*3,mz+nz*3,8,r=>MAIN.has(r.c)).length){const s=t.shop,sb=s.p.length/3,o=0.15,ins=Math.min(1,len*0.1),ax=a[0]+(bb[0]-a[0])/len*ins,az=a[1]+(bb[1]-a[1])/len*ins,bx=bb[0]-(bb[0]-a[0])/len*ins,bz=bb[1]-(bb[1]-a[1])/len*ins;
           s.p.push(ax+nx*o,4.2,az+nz*o,bx+nx*o,4.2,bz+nz*o,bx+nx*o,0.3,bz+nz*o,ax+nx*o,0.3,az+nz*o);for(let k=0;k<4;k++)s.n.push(nx,0,nz);s.idx.push(sb,sb+1,sb+2,sb,sb+2,sb+3);stores++;}}}
-    // roof
-    const rf=t.roof,rb=rf.p.length/3,rc=c.clone().multiplyScalar(0.72);let faces;try{faces=THREE.ShapeUtils.triangulateShape(ring.map(([x,z])=>new THREE.Vector2(x,z)),[]);}catch(e){faces=[];}
-    for(const [x,z] of ring){rf.p.push(x,h,z);rf.n.push(0,1,0);rf.c.push(rc.r,rc.g,rc.b);}for(const f of faces)rf.idx.push(rb+f[0],rb+f[2],rb+f[1]);
+    // roof: houses get a pitched roof fitted to their footprint (ridge along the long side), everything else is flat
+    const rf=t.roof,rc=c.clone().multiplyScalar(0.72),area=Math.abs(polyArea(ring));
+    const pitched=(b.r==='g'||b.r==='h'||PITCHED.has(b.t)||(b.t==='residential'&&h<=11&&area<220&&hsh<0.35))&&area<600&&h<=16&&b.r!=='f';
+    if(pitched)gableRoof(rf,ring,cx,cz,h,SHINGLE[Math.floor(hash3(cx,cz,9)*SHINGLE.length)],c);
+    else{const rb=rf.p.length/3;let faces;try{faces=THREE.ShapeUtils.triangulateShape(ring.map(([x,z])=>new THREE.Vector2(x,z)),[]);}catch(e){faces=[];}
+      for(const [x,z] of ring){rf.p.push(x,h,z);rf.n.push(0,1,0);rf.c.push(rc.r,rc.g,rc.b);}for(const f of faces)rf.idx.push(rb+f[0],rb+f[2],rb+f[1]);
+      if(area>350&&h>=7&&!tall)ROOFTOP.push({x:cx,z:cz,h,area,ring,brick:PALETTE.brick.includes(c),hsh});}
     if(b.n){BUILDINGS.push({name:b.n,h,cx,cz,tile:t,kind:W,start,end:wb.idx.length});}
     n++;}
   // build the tile meshes

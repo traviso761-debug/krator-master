@@ -36,6 +36,9 @@ QUERIES = {
     "roads": """(way["highway"~"^(motorway|trunk|primary|secondary|tertiary|residential|unclassified|living_street|pedestrian)(_link)?$"]({b});
                  way["highway"="service"]["service"="alley"]({b});
                  way["highway"~"^(cycleway|footway|path)$"]["name"]({b});way["highway"~"^(cycleway|footway|path)$"]["bicycle"="designated"]({b}););out geom;""",
+    # what the land is used for (residential yards, shops, industry), parking lots, school and hospital grounds, and mapped trees
+    "landuse": """(nwr["landuse"~"^(residential|commercial|retail|industrial|construction|brownfield|garages|religious|education)$"]({b});
+                   way["amenity"="parking"]({b});nwr["amenity"~"^(school|hospital|university|college)$"]({b});node["natural"="tree"]({b}););out geom;""",
     # river centre lines (the tour boats follow them)
     "waterways": """(way["waterway"~"^(river|canal)$"]({b}););out geom;""",
     # the L, Metra and freight lines

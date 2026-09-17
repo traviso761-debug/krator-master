@@ -56,7 +56,8 @@ whole lakefront, in Wrigleyville and in Wicker Park, and only the tall or large 
 - **From the map:** the lake shore (Lake Michigan's outline, the harbours, breakwaters and piers), the river and
   its basins, every park, garden, beach, plaza and pitch, every street, alley and named trail (the Lakefront
   Trail, the Riverwalk, The 606), the L and Metra, stations, and 38,000 buildings at their mapped heights, with
-  3D parts where they are mapped (Willis Tower's tubes). Bridges are raised decks; movable ones get bridge houses.
+  3D parts where they are mapped (Willis Tower's tubes), land use (residential yards, commercial, industrial, campuses, parking lots),
+  and 18,700 mapped trees. Bridges are raised decks; movable ones get bridge houses. Every building is drawn (81,000).
 - **Added on top** (`data/cities/chicago.json`): antennas and spires, Cloud Gate (mirrored, aligned with its
   mapped outline), the Pritzker Pavilion's ribbons and lawn trellis, Buckingham and Wicker Park fountains, the
   Centennial Wheel, stadium bowls for Wrigley Field (marquee, scoreboard, light towers) and Soldier Field, and
@@ -64,8 +65,11 @@ whole lakefront, in Wrigleyville and in Wicker Park, and only the tall or large 
 - **Detailed areas:** the Magnificent Mile (planted medians and sidewalk planters), the Riverwalk, North &
   Ashland, the six corners, Wrigleyville: crosswalks and cycling signals at the real intersections, street
   lights, storefront glass, parked cars (not on Michigan Avenue), people.
+- **Everywhere:** pitched roofs on houses, rooftop equipment on flat roofs, wooden water tanks on older brick buildings, parkway trees
+  along residential streets where none are mapped, cars parked along residential streets and in parking lots, yellow centre lines
+  and street lights on the arterials. Small details are hidden with distance.
 - **Moving:** cars on Lake Shore Drive and the arterials (up onto the bridges), L trains on every elevated
-  line, cyclists and runners on the Lakefront Trail, tour boats on the river, sailboats and motorboats on the
+  line, Metra trains on the commuter lines, cyclists and runners on the Lakefront Trail, tour boats on the river, sailboats and motorboats on the
   lake, the cruise ship and water taxis from Navy Pier, boats moored in every mapped marina, a freighter.
 - **Click** any building for its OSM name and height, or its card if it is a landmark.
 
