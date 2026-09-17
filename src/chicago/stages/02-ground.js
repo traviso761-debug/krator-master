@@ -30,12 +30,14 @@ const stoneM=new THREE.MeshLambertMaterial({color:0xbdb5a6}),steelM=new THREE.Me
 section('ground',()=>{
   // the land underneath everything, then the land cover, big areas first so the details paint over them
   const base=new THREE.Mesh(new THREE.PlaneGeometry(B.w+400,B.d+400),new THREE.MeshLambertMaterial({color:0x5c5a53}));base.rotation.x=-Math.PI/2;base.position.set(B.cx,-0.02,B.cz);base.receiveShadow=true;scene.add(base);
-  const AREA_COL={park:'#5f8a48',golf:'#6a9a50',cemetery:'#5a7a48',railyard:'#6a645a',reserve:'#557a44',wood:'#3f6a38',grass:'#6a9a52',zoo:'#648a4a',garden:'#5a9048',sand:'#dccda4',plaza:'#b8b0a2',pitch:'#4f8a3e',track:'#9a4a36',play:'#b89a6a',stadium:'#707070'};
-  const BIG=new Set(['park','golf','cemetery','railyard','reserve','wood','grass','zoo']);
-  const land=tiledBuffer(groundMat(1)),detail=tiledBuffer(groundMat(2),{tile:1000,far:4000});
-  for(const a of AREAS)(BIG.has(a.kind)?land:detail).poly(a.o,a.i,0,col(AREA_COL[a.kind]||'#6a9a52'));
+  const AREA_COL={residential:'#5b664e',commercial:'#6c6962',industrial:'#615d56',construction:'#7a6e5a',campus:'#66755a',parking:'#4a4b4f',park:'#5f8a48',golf:'#6a9a50',cemetery:'#5a7a48',railyard:'#6a645a',reserve:'#557a44',wood:'#3f6a38',grass:'#6a9a52',zoo:'#648a4a',garden:'#5a9048',sand:'#dccda4',plaza:'#b8b0a2',pitch:'#4f8a3e',track:'#9a4a36',play:'#b89a6a',stadium:'#707070'};
+  const BIG=new Set(['park','golf','cemetery','railyard','reserve','wood','grass','zoo']),USE=new Set(['residential','commercial','industrial','construction','campus']);
+  const use=tiledBuffer(groundMat(0.5)),land=tiledBuffer(groundMat(1)),detail=tiledBuffer(groundMat(2),{tile:1000,far:4000});
+  // residential blocks get a little variety in their yards so a neighbourhood does not read as one flat sheet
+  for(const a of AREAS){let c=col(AREA_COL[a.kind]||'#6a9a52');if(a.kind==='residential'){const h=hash3(a.bb.x0,a.bb.z0,11);c=c.clone().offsetHSL(0,(h-0.5)*0.06,(h-0.5)*0.05);}
+    (USE.has(a.kind)?use:BIG.has(a.kind)?land:detail).poly(a.o,a.i,0,c);}
   for(const b of BEACHES)detail.poly(b.o,b.i,0,col('#dccda4'));
-  land.build('land');detail.build('land detail');
+  use.build('land use');land.build('land');detail.build('land detail');
 });
 // water: the lake with the real shore (islands cut out), the river, lagoons and harbour basins
 const waterM=new THREE.MeshPhongMaterial({color:0x2a5f8c,specular:0x9fc4e0,shininess:90,polygonOffset:true,polygonOffsetFactor:-3,polygonOffsetUnits:-6});

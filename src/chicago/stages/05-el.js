@@ -38,3 +38,16 @@ section('el',()=>{
     tm.count=i;tm.instanceMatrix.needsUpdate=true;const w=windowF(hourCur);carM.emissive.setRGB(w*0.9,w*0.85,w*0.6);});
   ctx.details=Object.assign(ctx.details||{},{elevatedTrack:elev.length,stations:nst,trainLines:lines.length,trains:trains.length});
 });
+// Metra: double-deck silver trains on the commuter lines at grade and on their embankments
+section('metra',()=>{
+  const lines=joinChains(RAILS.filter(r=>r.type==='rail').map(r=>r.pts),3).map(p=>polyLen({pts:p})).filter(r=>r.len>1500).sort((a,b)=>b.len-a.len).slice(0,8);
+  const carL=26,N=6,m=new THREE.MeshLambertMaterial({color:0xb8bec4,emissive:0x000000}),band=new THREE.MeshLambertMaterial({color:0x2a3a5a});
+  const trains=lines.map((r,i)=>({r,s:r.len*((i*0.37)%1),dir:i%2?1:-1,v:14}));
+  const body=new THREE.InstancedMesh(new THREE.BoxGeometry(carL,4.6,3).translate(0,2.9,0),m,Math.max(1,trains.length*N)),stripe=new THREE.InstancedMesh(new THREE.BoxGeometry(carL+0.05,0.5,3.05).translate(0,3.2,0),band,Math.max(1,trains.length*N)),d=new THREE.Object3D();
+  body.frustumCulled=stripe.frustumCulled=false;body.castShadow=true;scene.add(body,stripe);let last=performance.now();
+  animHooks.push(now=>{const dt=Math.min(0.05,(now-last)/1000);last=now;let i=0;
+    for(const t of trains){t.s+=t.dir*t.v*dt;if(t.s>t.r.len-5)t.dir=-1;if(t.s<N*(carL+1)+5)t.dir=1;
+      for(let c=0;c<N;c++){const [x,z,a]=polyAt(t.r,t.s-t.dir*c*(carL+1));d.position.set(x,0.2,z);d.rotation.set(0,-a,0);d.updateMatrix();body.setMatrixAt(i,d.matrix);stripe.setMatrixAt(i,d.matrix);i++;}}
+    body.count=stripe.count=i;body.instanceMatrix.needsUpdate=stripe.instanceMatrix.needsUpdate=true;const w=windowF(hourCur);m.emissive.setRGB(w*0.5,w*0.48,w*0.35);});
+  ctx.details=Object.assign(ctx.details||{},{metraTrains:trains.length});
+});

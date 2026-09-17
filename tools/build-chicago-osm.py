@@ -291,7 +291,28 @@ def main():
             if not any(in_bounds(pt) for pt in o) or abs(area(o)) < 60:
                 continue
             areas.append({"k": kind, "n": name, "o": flat(ring_simplify(o, 0.6)), "i": [flat(ring_simplify(h, 0.6)) for h in holes], "a": int(abs(area(o)))})
-    order = {"park": 0, "golf": 1, "cemetery": 1, "railyard": 1, "reserve": 2, "wood": 3, "grass": 4, "zoo": 4, "garden": 5, "sand": 5, "plaza": 6, "pitch": 7, "track": 7, "play": 8, "stadium": 9}
+    # land use underneath everything else: yards, shops, industry, parking, campuses
+    LU = {"residential": "residential", "commercial": "commercial", "retail": "commercial", "industrial": "industrial", "construction": "construction",
+          "brownfield": "construction", "garages": "parking", "religious": "campus", "education": "campus"}
+    trees = []
+    lu_els = load("landuse") if glob.glob(os.path.join(RAW, "landuse-*.json")) else []
+    for e in lu_els:
+        t = e.get("tags", {})
+        if e["type"] == "node":
+            if t.get("natural") == "tree":
+                p = xz(e["lat"], e["lon"])
+                if in_bounds(p):
+                    trees += [q(p[0]), q(p[1])]
+            continue
+        kind = "parking" if t.get("amenity") == "parking" else "campus" if t.get("amenity") in ("school", "hospital", "university", "college") else LU.get(t.get("landuse"))
+        if not kind or t.get("parking") in ("underground", "multi-storey", "rooftop"):
+            continue
+        for o, holes in polys_of(e):
+            if not any(in_bounds(pt) for pt in o) or abs(area(o)) < 80:
+                continue
+            areas.append({"k": kind, "n": t.get("name", ""), "o": flat(ring_simplify(o, 0.8)), "i": [flat(ring_simplify(h, 0.8)) for h in holes], "a": int(abs(area(o)))})
+    out["trees"] = trees
+    order = {"residential": -3, "commercial": -3, "industrial": -3, "construction": -2, "campus": -2, "parking": -1, "park": 0, "golf": 1, "cemetery": 1, "railyard": 1, "reserve": 2, "wood": 3, "grass": 4, "zoo": 4, "garden": 5, "sand": 5, "plaza": 6, "pitch": 7, "track": 7, "play": 8, "stadium": 9}
     areas.sort(key=lambda a: (order.get(a["k"], 5), -a["a"]))   # big parks first, details painted over them
     for a in areas:
         del a["a"]
@@ -383,8 +404,8 @@ def main():
     for b in kept:
         t = b["t"]
         small_type = t.get("building") in ("garage", "garages", "shed", "carport", "roof")
-        if not detailed(b["c"]) and (small_type or (b["h"] < 14 and b["a"] < 2500)):
-            skipped += 1
+        if not detailed(b["c"]) and t.get("building") in ("shed", "carport", "roof") and b["a"] < 40:
+            skipped += 1   # every building is kept; only tiny sheds outside the detail zones are dropped
             continue
         r = ring_simplify(b["o"], 0.35)
         if area(r) < 0:   # counter-clockwise in x/z (so walls face out)
@@ -403,8 +424,11 @@ def main():
             rec["mat"] = mat
         if t.get("name"):
             rec["n"] = t["name"]
-        if t.get("roof:shape") in ("gabled", "hipped", "pyramidal", "dome"):
+        if t.get("roof:shape") in ("gabled", "hipped", "pyramidal", "dome", "flat"):
             rec["r"] = t["roof:shape"][0]
+        lv = num(t.get("building:levels"))
+        if lv:
+            rec["lv"] = int(lv)
         buildings.append(rec)
     out["buildings"] = buildings
     json.dump(out, open(OUT, "w"), separators=(",", ":"), ensure_ascii=False)
@@ -412,7 +436,7 @@ def main():
     print(f"wrote {OUT}: {size / 1e6:.1f} MB; buildings {len(buildings)} (skipped {skipped} small outside the detail zones, "
           f"{dropped_by_parts} outlines drawn by their parts); roads {len(roads)}; areas {len(areas)}; water {len(polys['water'])}; "
           f"marinas {len(polys['marina'])}; beaches {len(polys['beach'])}; rail {len(rails)}; stations {len(out['stations'])}; pois {len(pois)}; "
-          f"lake points {len(out['lake']) // 2}")
+          f"lake points {len(out['lake']) // 2}; trees {len(out['trees']) // 2}")
 
     if report:
         named = []
