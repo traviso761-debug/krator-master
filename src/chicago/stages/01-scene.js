@@ -1,6 +1,6 @@
 // ---------- scene: renderer, camera, the sun's day, sky ----------
 const scene=new THREE.Scene();
-const camera=new THREE.PerspectiveCamera(50,innerWidth/innerHeight,1,24000);
+const camera=new THREE.PerspectiveCamera(50,innerWidth/innerHeight,Math.max(1,WORLD*0.5),24000*WORLD);
 const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});
 renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);
 // quality: ?quality=low|medium|high, or the city's own default. Low drops shadows entirely, which on a
@@ -38,7 +38,7 @@ const SKY=(()=>{const D={day:{top:0x2f6fd0,hor:0xbcd3ee},dusk:{top:0x2a3a78,hor:
 const skyM=new THREE.ShaderMaterial({uniforms:{top:{value:new THREE.Color()},hor:{value:new THREE.Color()},sunDir:{value:new THREE.Vector3(0,1,0)},sunA:{value:1}},side:THREE.BackSide,depthWrite:false,fog:false,
   vertexShader:'varying vec3 vP;void main(){vP=normalize(position);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',
   fragmentShader:'uniform vec3 top;uniform vec3 hor;uniform vec3 sunDir;uniform float sunA;varying vec3 vP;void main(){float t=clamp(vP.y*1.6,0.0,1.0);vec3 c=mix(hor,top,pow(t,0.6));float d=max(dot(vP,sunDir),0.0);c+=vec3(1.0,0.85,0.6)*(pow(d,600.0)*1.2+pow(d,8.0)*0.18)*sunA;gl_FragColor=vec4(c,1.0);}'});
-const sky=new THREE.Mesh(new THREE.SphereGeometry(11000,32,16),skyM);sky.userData.noShadow=true;sky.renderOrder=-1;scene.add(sky);
+const sky=new THREE.Mesh(new THREE.SphereGeometry(11000*WORLD,32,16),skyM);sky.userData.noShadow=true;sky.renderOrder=-1;scene.add(sky);
 const tmpC=new THREE.Color(),tmpC2=new THREE.Color();
 function lerpSky(h){const n=nightF(h),dusk=Math.max(0,1-Math.abs(h-18.6)/1.6,1-Math.abs(h-6.3)/1.4);
   const mixTo=(a,b,k)=>tmpC.set(a).lerp(tmpC2.set(b),k);

@@ -7,7 +7,7 @@ const FAR_MESHES=[];
 const DETAIL={k:QUALITY==='high'?1:QUALITY==='medium'?0.7:0.5,max:QUALITY==='high'?1:QUALITY==='medium'?0.7:0.5,min:0.35};
 ctx.detail=DETAIL;
 {let t=0;const c=new THREE.Vector3();animHooks.push(now=>{if(now-t<300)return;t=now;for(const m of FAR_MESHES){c.copy(m.geometry.boundingSphere.center);m.visible=camera.position.distanceTo(c)-m.geometry.boundingSphere.radius<m.userData.far*DETAIL.k;}});}
-function tiledBuffer(material,opts){const tiles=new Map();opts=opts||{};const TS=opts.tile||2000;
+function tiledBuffer(material,opts){const tiles=new Map();opts=opts||{};const TS=(opts.tile||2000)*WORLD;
   return {
     tile(x,z){const k=Math.floor(x/TS)+','+Math.floor(z/TS);let t=tiles.get(k);if(!t){t={p:[],n:[],c:[],idx:[]};tiles.set(k,t);}return t;},
     quad(t,a,b,c,d,cl,nrm){const base=t.p.length/3;t.p.push(...a,...b,...c,...d);const n=nrm||[0,1,0];t.n.push(...n,...n,...n,...n);for(let k=0;k<4;k++)t.c.push(cl.r,cl.g,cl.b);t.idx.push(base,base+1,base+2,base,base+2,base+3);},
@@ -42,13 +42,17 @@ section('ground',()=>{
   // the ground itself: a flat plane where there is no elevation data, otherwise the height grid in cullable chunks
   if(!TER){const base=new THREE.Mesh(new THREE.PlaneGeometry(B.w+400,B.d+400),new THREE.MeshLambertMaterial({color:0x5c5a53}));base.rotation.x=-Math.PI/2;base.position.set(B.cx,-0.02,B.cz);base.receiveShadow=true;scene.add(base);}
   else{const TER_RELIEF=(()=>{let lo=1e9,hi=-1e9;for(let i=0;i<TER.h.length;i+=7){const v=TER.h[i];if(v<lo)lo=v;if(v>hi)hi=v;}return hi-lo;})();
+    // Colour by height and slope relative to the land's own relief. Fixed at 120 m a mountain range reads as one
+    // flat colour, because everything above the first hill is already at the top of the ramp; and a slope measured
+    // over kilometre samples is a tenth of what it is over metres.
+    const H_AT=Math.max(120,TER_RELIEF*0.75),SLOPE_K=1.2*Math.max(1,WORLD*0.3);
     const TC=C.terrainColours||{},terM=new THREE.MeshLambertMaterial({vertexColors:true}),CH=48,   // a city may set its own earth colours
       low=col(TC.low||'#5c5a53'),high=col(TC.high||'#4a5a42'),steepC=col(TC.steep||'#6a6052'),cc=new THREE.Color();
     for(let cj=0;cj<TER.nz-1;cj+=CH)for(let ci=0;ci<TER.nx-1;ci+=CH){const w=Math.min(CH,TER.nx-1-ci),d=Math.min(CH,TER.nz-1-cj),pos=[],colr=[],idx=[];
       for(let j=0;j<=d;j++)for(let i=0;i<=w;i++){const gi=ci+i,gj=cj+j,x=TER.x0+gi*TER.step,z=TER.z0+gj*TER.step,y=TER.h[gj*TER.nx+gi];
         const gx=(TER.h[gj*TER.nx+Math.min(TER.nx-1,gi+1)]-TER.h[gj*TER.nx+Math.max(0,gi-1)])/(2*TER.step),
               gz=(TER.h[Math.min(TER.nz-1,gj+1)*TER.nx+gi]-TER.h[Math.max(0,gj-1)*TER.nx+gi])/(2*TER.step),slope=Math.hypot(gx,gz);
-        pos.push(x,y,z);cc.copy(low).lerp(high,Math.min(1,y/120)).lerp(steepC,Math.min(1,slope*1.2));colr.push(cc.r,cc.g,cc.b);}
+        pos.push(x,y,z);cc.copy(low).lerp(high,Math.min(1,y/H_AT)).lerp(steepC,Math.min(1,slope*SLOPE_K));colr.push(cc.r,cc.g,cc.b);}
       for(let j=0;j<d;j++)for(let i=0;i<w;i++){const a=j*(w+1)+i;idx.push(a,a+w+1,a+1,a+1,a+w+1,a+w+2);}
       const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(colr,3));g.setIndex(idx);g.computeVertexNormals();g.computeBoundingSphere();
       const m=new THREE.Mesh(g,terM);m.receiveShadow=true;m.castShadow=TER_RELIEF>40;scene.add(m);}
@@ -56,15 +60,15 @@ section('ground',()=>{
     // The ring used to start at the map's circumscribed radius, which leaves a gap over the middle of each map
     // edge where the background showed through as a pale slab on the horizon. It now starts inside the box and
     // underlaps it: the terrain and the water both sit above it, so the only place it shows is past the edge.
-    const far=new THREE.Mesh(new THREE.RingGeometry(Math.min(B.w,B.d)*0.45,42000,72,1),new THREE.MeshLambertMaterial({color:col((C.terrainColours||{}).far||'#76837c')}));   // fogged like the land it continues, or it reads as a dark shelf around the map
+    const far=new THREE.Mesh(new THREE.RingGeometry(Math.min(B.w,B.d)*0.45,42000*WORLD,72,1),new THREE.MeshLambertMaterial({color:col((C.terrainColours||{}).far||'#76837c')}));   // fogged like the land it continues, or it reads as a dark shelf around the map
     far.rotation.x=-Math.PI/2;far.position.set(B.cx,-1.5,B.cz);far.userData.noShadow=true;far.renderOrder=-1;scene.add(far);}
   const AREA_COL={residential:'#5b664e',commercial:'#6c6962',industrial:'#615d56',construction:'#7a6e5a',campus:'#66755a',parking:'#4a4b4f',park:'#5f8a48',golf:'#6a9a50',cemetery:'#5a7a48',railyard:'#6a645a',reserve:'#557a44',wood:'#3f6a38',grass:'#6a9a52',zoo:'#648a4a',garden:'#5a9048',sand:'#dccda4',plaza:'#b8b0a2',pitch:'#4f8a3e',track:'#9a4a36',play:'#b89a6a',stadium:'#707070'};
   const BIG=new Set(['park','golf','cemetery','railyard','reserve','wood','grass','zoo']),USE=new Set(['residential','commercial','industrial','construction','campus']);
-  const use=tiledBuffer(groundMat(0.5)),land=tiledBuffer(groundMat(1)),detail=tiledBuffer(groundMat(2),{tile:1000,far:4000});
+  const use=tiledBuffer(groundMat(0.5)),land=tiledBuffer(groundMat(1)),detail=tiledBuffer(groundMat(2),{tile:1000,far:4000*WORLD});
   // residential blocks get a little variety in their yards so a neighbourhood does not read as one flat sheet
   for(const a of AREAS){let c=col(AREA_COL[a.kind]||'#6a9a52');if(a.kind==='residential'){const h=hash3(a.bb.x0,a.bb.z0,11);c=c.clone().offsetHSL(0,(h-0.5)*0.06,(h-0.5)*0.05);}
     const buf=USE.has(a.kind)?use:BIG.has(a.kind)?land:detail,big=(a.bb.x1-a.bb.x0)*(a.bb.z1-a.bb.z0);
-    if(TER&&big>4000)buf.gridPoly(a,big>40000?25:12,0.06,c);else buf.poly(a.o,a.i,gY(0.06),c);}   // anything sizeable follows the ground; small patches stay flat
+    if(TER&&big>4000*WORLD*WORLD)buf.gridPoly(a,(big>40000*WORLD*WORLD?25:12)*WORLD,0.06,c);else buf.poly(a.o,a.i,gY(0.06),c);}   // anything sizeable follows the ground; small patches stay flat
   for(const b of BEACHES)detail.poly(b.o,b.i,gY(0.07),col('#dccda4'));
   use.build('land use');land.build('land');detail.build('land detail');
 });
@@ -119,16 +123,16 @@ const BRIDGES=[],PIERS_AT=[];
 // break a polyline into pieces of at most `step` metres so it can follow the ground
 function resample(pts,step){const out=[];for(let i=0;i+1<pts.length;i++){const [ax,az]=pts[i],[bx,bz]=pts[i+1],L=Math.hypot(bx-ax,bz-az),n=Math.max(1,Math.ceil(L/step));for(let k=0;k<n;k++){const u=k/n;out.push([ax+(bx-ax)*u,az+(bz-az)*u]);}}out.push(pts[pts.length-1]);return out;}
 section('streets',()=>{
-  const walk=tiledBuffer(groundMat(4),{tile:1000,far:3000}),road=tiledBuffer(groundMat(5)),trail=tiledBuffer(groundMat(6),{tile:1000,far:5000}),deck=tiledBuffer(new THREE.MeshLambertMaterial({vertexColors:true}),{cast:true});
+  const walk=tiledBuffer(groundMat(4),{tile:1000,far:3000*WORLD}),road=tiledBuffer(groundMat(5)),trail=tiledBuffer(groundMat(6),{tile:1000,far:5000*WORLD}),deck=tiledBuffer(new THREE.MeshLambertMaterial({vertexColors:true}),{cast:true});
   const walkC=col('#a39f95'),lakefront=col('#7f8a8c');
   for(const r of ROADS){const y=deckY(r),c=col(ROAD_COL[r.c]||'#48494d');
     if(y>0){// resample every 8 m so the ramps are smooth, then the deck with a parapet-deep side, and piers every 45 m
-      const pts=[],ys=[];for(let i=0;i+1<r.pts.length;i++){const [ax,az]=r.pts[i],[bx,bz]=r.pts[i+1],L2=Math.hypot(bx-ax,bz-az),n=Math.max(1,Math.ceil(L2/8));for(let k=0;k<n;k++){const u=k/n;pts.push([ax+(bx-ax)*u,az+(bz-az)*u]);ys.push(r.ys[i]+(r.ys[i+1]-r.ys[i])*u);}}
+      const pts=[],ys=[];for(let i=0;i+1<r.pts.length;i++){const [ax,az]=r.pts[i],[bx,bz]=r.pts[i+1],L2=Math.hypot(bx-ax,bz-az),n=Math.max(1,Math.ceil(L2/(8*WORLD)));for(let k=0;k<n;k++){const u=k/n;pts.push([ax+(bx-ax)*u,az+(bz-az)*u]);ys.push(r.ys[i]+(r.ys[i+1]-r.ys[i])*u);}}
       pts.push(r.pts[r.pts.length-1]);ys.push(r.ys[r.ys.length-1]);
       deck.ribbon(pts,r.w+(WALKED.has(r.c)?4:1),ys,c,y>12?2.4:1.6);BRIDGES.push(r);
       for(let k=0,run=0;k+1<pts.length;k++){run+=Math.hypot(pts[k+1][0]-pts[k][0],pts[k+1][1]-pts[k][1]);if(run<45||ys[k]<7)continue;run=0;PIERS_AT.push([pts[k][0],pts[k][1],ys[k]-(y>12?2.4:1.6),Math.atan2(pts[k+1][1]-pts[k][1],pts[k+1][0]-pts[k][0]),r.w,groundH(pts[k][0],pts[k][1])]);}
       continue;}
-    const pts=TER?resample(r.pts,14):r.pts;
+    const pts=TER?resample(r.pts,14*WORLD):r.pts;   // follow the ground, at a step that suits the size of the map
     if(r.c==='trail'){trail.ribbon(pts,r.w,gY(0.09),/Lakefront/i.test(r.name)?lakefront:c);continue;}
     if(WALKED.has(r.c))walk.ribbon(pts,r.w+5,gY(0.06),walkC);
     (r.c==='alley'?walk:road).ribbon(pts,r.w,gY(0.08),c);}
