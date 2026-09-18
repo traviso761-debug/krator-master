@@ -50,12 +50,13 @@ section('streetscape',()=>{
   // parked cars along the curbs (not on Michigan Avenue or the Riverwalk area)
   const parked=[];for(const r of near){if(r.w<13)continue;along(r,6.8,(x,z,dx,dz,f)=>{if(f.parked===false||nearXing(x,z,26))return;for(const sd of [-1,1]){if(R()<0.3)continue;const px=x-dz*sd*(r.w/2-1.3),pz=z+dx*sd*(r.w/2-1.3);if(!inWater(px,pz))parked.push([px,pz,Math.atan2(dz,dx)]);}});}
   {const n=Math.max(1,parked.length),body=new THREE.InstancedMesh(new THREE.BoxGeometry(4.5,1.0,1.9).translate(0,0.75,0),new THREE.MeshLambertMaterial({color:0xffffff}),n),cab=new THREE.InstancedMesh(new THREE.BoxGeometry(2.4,0.7,1.7).translate(-0.2,1.6,0),new THREE.MeshLambertMaterial({color:0x2a3440}),n),c=new THREE.Color();
-   parked.forEach(([x,z,a],i)=>{d.position.set(x,groundH(x,z),z);d.rotation.set(0,-a,0);d.scale.set(1,1,1);d.updateMatrix();body.setMatrixAt(i,d.matrix);cab.setMatrixAt(i,d.matrix);body.setColorAt(i,c.setHSL(R(),R()<0.4?0.05:0.5,0.2+R()*0.55));});
+   parked.forEach(([x,z,a],i)=>{d.position.set(x,groundH(x,z),z);d.rotation.set(0,-a,0);d.scale.set(1,1,1);d.updateMatrix();body.setMatrixAt(i,d.matrix);cab.setMatrixAt(i,d.matrix);body.setColorAt(i,c.setHSL(carHue(R),carSat(R),carLit(R)));});
    body.count=cab.count=parked.length;body.castShadow=true;scene.add(body,cab);}
   // people on the sidewalks, busier on Michigan Avenue
-  const walkers=[];for(const r of near)along(r,9,(x,z,dx,dz,f)=>{if(R()<(f.planters?0.4:0.7))return;const sd=R()<0.5?-1:1;walkers.push({x0:x,z0:z,dx,dz,sd,off:r.w/2+2.2+R()*1.6,v:(R()<0.5?-1:1)*(1.1+R()*0.5),t:0,col:R()});});
+  const PEOPLE=C.people===undefined?1:C.people;
+  const walkers=[];for(const r of near)along(r,9,(x,z,dx,dz,f)=>{if(R()>(f.planters?0.6:0.3)*PEOPLE)return;const sd=R()<0.5?-1:1;walkers.push({x0:x,z0:z,dx,dz,sd,off:r.w/2+2.2+R()*1.6,v:(R()<0.5?-1:1)*(1.1+R()*0.5),t:0,col:R()});});
   {const n=Math.max(1,walkers.length),body=new THREE.InstancedMesh(new THREE.CylinderGeometry(0.22,0.26,1.35,6).translate(0,0.68,0),new THREE.MeshLambertMaterial({color:0xffffff}),n),head=new THREE.InstancedMesh(new THREE.SphereGeometry(0.13,6,5).translate(0,1.52,0),new THREE.MeshLambertMaterial({color:0xc8a080}),n),c=new THREE.Color();
-   walkers.forEach((w,i)=>body.setColorAt(i,c.setHSL(w.col,0.4,0.25+0.35*((w.col*7)%1))));body.count=head.count=walkers.length;body.frustumCulled=head.frustumCulled=false;scene.add(body,head);
+   walkers.forEach((w,i)=>body.setColorAt(i,DRAB?c.setHSL(0.07+w.col*0.06,0.12,0.16+0.16*((w.col*7)%1)):c.setHSL(w.col,0.4,0.25+0.35*((w.col*7)%1))));body.count=head.count=walkers.length;body.frustumCulled=head.frustumCulled=false;scene.add(body,head);
    let last=performance.now();animHooks.push(now=>{const dt=Math.min(0.05,(now-last)/1000);last=now;
      walkers.forEach((w,i)=>{w.t+=w.v*dt;if(Math.abs(w.t)>40){w.v=-w.v;w.t=Math.sign(w.t)*40;}const x=w.x0+w.dx*w.t-w.dz*w.sd*w.off,z=w.z0+w.dz*w.t+w.dx*w.sd*w.off;
        d.position.set(x,groundH(x,z)+Math.abs(Math.sin(now*0.009+i))*0.05,z);d.rotation.set(0,-Math.atan2(w.dz*Math.sign(w.v),w.dx*Math.sign(w.v)),0);d.scale.set(1,1,1);d.updateMatrix();body.setMatrixAt(i,d.matrix);head.setMatrixAt(i,d.matrix);});
