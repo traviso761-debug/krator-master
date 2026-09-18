@@ -60,7 +60,7 @@ section('ground',()=>{
     // The ring used to start at the map's circumscribed radius, which leaves a gap over the middle of each map
     // edge where the background showed through as a pale slab on the horizon. It now starts inside the box and
     // underlaps it: the terrain and the water both sit above it, so the only place it shows is past the edge.
-    const far=new THREE.Mesh(new THREE.RingGeometry(Math.min(B.w,B.d)*0.45,42000*WORLD,72,1),new THREE.MeshLambertMaterial({color:col((C.terrainColours||{}).far||'#76837c')}));   // fogged like the land it continues, or it reads as a dark shelf around the map
+    const far=new THREE.Mesh(new THREE.RingGeometry(Math.min(B.w,B.d)*0.45,Math.min(42000*WORLD,SKY_R*0.8),72,1),new THREE.MeshLambertMaterial({color:col((C.terrainColours||{}).far||'#76837c')}));   // fogged like the land it continues, or it reads as a dark shelf around the map
     far.rotation.x=-Math.PI/2;far.position.set(B.cx,-1.5,B.cz);far.userData.noShadow=true;far.renderOrder=-1;scene.add(far);}
   const AREA_COL={residential:'#5b664e',commercial:'#6c6962',industrial:'#615d56',construction:'#7a6e5a',campus:'#66755a',parking:'#4a4b4f',park:'#5f8a48',golf:'#6a9a50',cemetery:'#5a7a48',railyard:'#6a645a',reserve:'#557a44',wood:'#3f6a38',grass:'#6a9a52',zoo:'#648a4a',garden:'#5a9048',sand:'#dccda4',plaza:'#b8b0a2',pitch:'#4f8a3e',track:'#9a4a36',play:'#b89a6a',stadium:'#707070'};
   const BIG=new Set(['park','golf','cemetery','railyard','reserve','wood','grass','zoo']),USE=new Set(['residential','commercial','industrial','construction','campus']);

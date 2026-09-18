@@ -8,8 +8,8 @@ function joinChains(lines,tol){const key=p=>Math.round(p[0]/tol)+','+Math.round(
   while(left.length){let c=left.pop(),grew=true;while(grew){grew=false;for(let i=0;i<left.length;i++){const d=left[i];
       if(key(d[0])===key(c[c.length-1])){c=c.concat(d.slice(1));}else if(key(d[d.length-1])===key(c[c.length-1])){c=c.concat(d.slice(0,-1).reverse());}
       else if(key(d[d.length-1])===key(c[0])){c=d.slice(0,-1).concat(c);}else if(key(d[0])===key(c[0])){c=d.slice(1).reverse().concat(c);}else continue;left.splice(i,1);grew=true;break;}}out.push(c);}return out;}
+const EL=C.el||{};   // a land with no railway need not configure one; every section here reads it
 section('el',()=>{
-  const EL=C.el||{};   // a land with no railway need not configure one
   const H=EL.height||8,elev=RAILS.filter(r=>r.type==='L'&&r.elevated);
   const deck=tiledBuffer(new THREE.MeshLambertMaterial({vertexColors:true}),{cast:true}),dc=col('#5e6166');
   const cols=[];

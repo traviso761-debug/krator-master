@@ -89,15 +89,24 @@ def path_dist(x, z, path):
     return best
 
 
-def ridge(x, z, path, width, height, rough=0.0):
-    """A mountain range: a smooth profile falling away either side of its spine."""
+def ridge(x, z, path, width, height, rough=0.0, crest=0.42):
+    """A mountain range built as a wall: steep flanks, a broad crest, and a serrated ridgeline.
+
+    A smoothstep dome is what a hill looks like. These are the walls of Mordor, so the profile rises hard
+    out of the plain (f ** crest, with crest well under 1) and only flattens near the top, and the crest is
+    cut up by two noise waves so it reads as peaks and saddles rather than an embankment. The outermost
+    tenth of the width is eased back to nothing so the toe does not land as a step.
+    """
     d = path_dist(x, z, path)
     if d > width:
         return 0.0
     f = 1 - d / width
-    h = height * f * f * (3 - 2 * f)
+    h = height * (f ** crest) * smoothstep(0.0, 0.11, f)
     if rough:
-        h += rough * height * math.sin(x / 5400.0) * math.cos(z / 4700.0) * f
+        serr = (math.sin(x / 7300.0 + z / 5100.0) * 0.58
+                + math.sin(x / 2600.0 - z / 3100.0) * 0.3
+                + math.sin(x / 1150.0 + z / 1450.0) * 0.12)
+        h *= 1 + rough * serr
     return h
 
 
@@ -122,10 +131,16 @@ def terrain_height(x, z):
     base += 30 * math.sin(x / 26000.0) * math.cos(z / 31000.0) + 18 * math.sin(z / 12000.0 + 1.3)
 
     h = base
-    h += ridge(x, z, ERED_LITHUI, 46000, 2450, 0.16)      # the Ash Mountains
-    h += ridge(x, z, EPHEL_DUATH, 42000, 2850, 0.16)      # the Mountains of Shadow
-    h += ridge(x, z, MORGAI, 15000, 1150, 0.3)            # the Morgai, the inner ridge
-    h += ridge(x, z, SPUR, 17000, 1250, 0.2)              # the spur Barad-dur stands on
+    # Deliberately exaggerated. At true vertical scale these are swells on the horizon; Tolkien's are walls,
+    # and the land only reads as enclosed if they are built as walls.
+    rs = [ridge(x, z, ERED_LITHUI, 34000, 6800, 0.26),    # the Ash Mountains
+          ridge(x, z, EPHEL_DUATH, 30000, 8000, 0.26),    # the Mountains of Shadow
+          ridge(x, z, MORGAI, 11000, 3000, 0.34),         # the Morgai, the inner ridge
+          ridge(x, z, SPUR, 13000, 3400, 0.24)]           # the spur Barad-dur stands on
+    # where two ranges meet they should join, not add: the tallest wins and the rest only bulk it out,
+    # or the north-west corner where both walls run together stacks to twice the height of either
+    top = max(rs)
+    h += top + 0.25 * (sum(rs) - top)
 
     # Cirith Gorgor: the gap in the north-west corner where the ranges almost meet, and Udun behind it
     gap = smoothstep(52000, 0, math.hypot(x - MORANNON[0], z - MORANNON[1]))
@@ -141,12 +156,12 @@ def terrain_height(x, z):
     dd = math.hypot(x - DOOM[0], z - DOOM[1])
     # a 26 km skirt for 1.5 km of height is a 1:17 slope, which reads as flat ground from anywhere on the plain.
     # Orodruin is a cone: about nine kilometres across its foot, and steep enough to be a mountain.
-    if dd < 9000:
-        cone = 1620 * (1 - dd / 9000) ** 1.45
-        if dd < 1100:
-            cone -= 300 * (1 - dd / 1100)                  # the Sammath Naur, sunk into the summit
+    if dd < 13000:
+        cone = 4400 * (1 - dd / 13000) ** 1.25
+        if dd < 1400:
+            cone -= 620 * (1 - dd / 1400)                  # the Sammath Naur, sunk into the summit
         h += cone
-    h += 260 * smoothstep(21000, 8000, dd)                 # the apron of spoil heaped round its foot
+    h += 420 * smoothstep(30000, 11000, dd)                # the apron of spoil heaped round its foot
     # the ash that fell out of it, heaped downwind
     h += 90 * smoothstep(120000, 8000, dd) * (0.5 + 0.5 * math.sin(x / 9000.0 + z / 7000.0))
 
@@ -271,22 +286,104 @@ def main():
                 R.uniform(5, 13), "hut", BLACK[R.randrange(len(BLACK))],
                 name=name if (k == 0 and name) else None)
 
-    # the camps and towers of the plateau, strung along the roads
-    for k in range(34):
+    # ---------- the industry: this is what the land is for ----------
+    pois = []
+    TOWN = ["Kalgur", "Durthak", "Morgath", "Uzgul", "Thrakburz", "Narkuz", "Skarn", "Gorkul", "Ashkag",
+            "Bhulgrim", "Ghashmar", "Zurmak", "Oghrath", "Lugdan", "Vrakhaz", "Mazgul", "Tolkarn", "Udrak",
+            "Crannog", "Belzur", "Hagrim", "Sarkoth"]
+    tn = [0]
+
+    def forge_town(cx, cz, scale=1.0, kind="forge"):
+        """A works: furnace halls, barrack rows, a muster yard and a wall, with stacks that burn day and night."""
+        name = TOWN[tn[0] % len(TOWN)] + ("" if tn[0] < len(TOWN) else " %d" % (tn[0] // len(TOWN) + 1))
+        tn[0] += 1
+        rot = R.uniform(0, math.pi)
+        c, sn = math.cos(rot), math.sin(rot)
+        def place(u, v):
+            return cx + u * c - v * sn, cz + u * sn + v * c
+        # the furnace halls, long and heavy, in a row
+        halls = R.randint(3, 7)
+        for k in range(halls):
+            u = (k - (halls - 1) / 2) * 150 * scale
+            hx, hz = place(u, -120 * scale)
+            put(rect(hx, hz, 120 * scale, 78 * scale, rot), R.uniform(26, 46) * scale, "industrial", "#302c27",
+                name=name + " Forges" if k == 0 else None)
+            pois.append({"n": name, "x": q(hx), "z": q(hz), "k": kind, "ang": round(rot, 3)})
+        # slag: low wide heaps behind the halls
+        for k in range(R.randint(3, 8)):
+            sx, sz = place(R.uniform(-1, 1) * 420 * scale, R.uniform(180, 400) * scale)
+            put(rect(sx, sz, R.uniform(70, 160) * scale, R.uniform(60, 130) * scale, R.uniform(0, math.pi)),
+                R.uniform(9, 26) * scale, "slag", "#3a332b")
+        # barracks: rows of them, all the same, because they hold the same thing
+        rows = R.randint(4, 9)
+        for k in range(rows):
+            for j in range(R.randint(3, 7)):
+                bx, bz = place(-500 * scale + j * 96 * scale, 60 * scale + k * 54 * scale)
+                put(rect(bx, bz, 78 * scale, 26 * scale, rot), R.uniform(9, 15) * scale, "barracks", "#2b2724")
+        # the muster yard, walled
+        for k in range(16):
+            a = k / 16 * math.tau
+            wx, wz = place(math.cos(a) * 620 * scale, math.sin(a) * 520 * scale - 40 * scale)
+            put(rect(wx, wz, 90 * scale, 16 * scale, rot + a), 16 * scale, "wall", "#332f2a")
+        # towers on the corners
+        for k in range(4):
+            a = k / 4 * math.tau + 0.6
+            tx, tz = place(math.cos(a) * 600 * scale, math.sin(a) * 500 * scale - 40 * scale)
+            put(rect(tx, tz, 40 * scale, 40 * scale, rot), R.uniform(40, 70) * scale, "tower", "#262320")
+        return name
+
+    # the works of Gorgoroth: strung along the road between the Isenmouthe, Barad-dur and Orodruin
+    for k in range(20):
         t = R.random()
-        cx = -250000 + t * 230000 + R.uniform(-24000, 24000)
-        cz = -190000 + R.random() * 190000
-        if math.hypot(cx - DOOM[0], cz - DOOM[1]) < 26000 or in_nurnen(cx, cz):
+        cx = -230000 + t * 200000 + R.uniform(-30000, 30000)
+        cz = -180000 + R.random() * 170000
+        if math.hypot(cx - DOOM[0], cz - DOOM[1]) < 20000 or in_nurnen(cx, cz):
             continue
-        camp(cx, cz, R.randint(8, 26), R.uniform(300, 1100))
-    # the slave-farms of Nurn, on the shore
-    for k in range(40):
+        if math.hypot(cx - BARAD[0], cz - BARAD[1]) < 9000:
+            continue
+        forge_town(cx, cz, R.uniform(0.8, 1.5))
+    # the mine workings, cut into the flanks of both walls
+    for k in range(16):
+        path = ERED_LITHUI if k % 2 else EPHEL_DUATH
+        i = R.randrange(len(path) - 1)
+        ax, az = path[i]
+        bx, bz = path[i + 1]
+        t = R.random()
+        mx, mz = ax + (bx - ax) * t, az + (bz - az) * t
+        inward = 1 if path is ERED_LITHUI else 1
+        mx += R.uniform(14000, 30000) * (1 if path is EPHEL_DUATH else 0)
+        mz += R.uniform(14000, 30000) * (1 if path is ERED_LITHUI else 0)
+        if abs(mx) > HX - 40000 or abs(mz) > HZ - 40000 or in_nurnen(mx, mz):
+            continue
+        forge_town(mx, mz, R.uniform(0.5, 0.9), kind="mine")
+    # the slave-fields of Nurn: the camps that work them, round the shore
+    for k in range(26):
         a = R.uniform(0, math.tau)
-        r = nurnen_edge(a) + R.uniform(9000, 42000)
+        r = nurnen_edge(a) + R.uniform(11000, 46000)
         cx, cz = NURNEN[0] + math.cos(a) * r, NURNEN[1] + math.sin(a) * r / 1.45
         if abs(cx) > HX - 30000 or abs(cz) > HZ - 30000:
             continue
-        camp(cx, cz, R.randint(6, 16), R.uniform(400, 1400))
+        if R.random() < 0.45:
+            forge_town(cx, cz, R.uniform(0.5, 0.8), kind="camp")
+        else:
+            camp(cx, cz, R.randint(8, 18), R.uniform(500, 1500))
+    # the fissures: Gorgoroth is cracked open, and what is under it shows through
+    for k in range(90):
+        fx = -250000 + R.random() * 240000
+        fz = -200000 + R.random() * 210000
+        if in_nurnen(fx, fz) or math.hypot(fx - DOOM[0], fz - DOOM[1]) < 9000:
+            continue
+        if abs(fx) > HX - 40000 or abs(fz) > HZ - 40000:
+            continue
+        pois.append({"n": "fissure", "x": q(fx), "z": q(fz), "k": "fissure", "ang": round(R.uniform(0, math.pi), 3)})
+
+    # the lesser camps, scattered over the plateau
+    for k in range(26):
+        cx = -250000 + R.random() * 230000
+        cz = -190000 + R.random() * 190000
+        if math.hypot(cx - DOOM[0], cz - DOOM[1]) < 20000 or in_nurnen(cx, cz):
+            continue
+        camp(cx, cz, R.randint(6, 18), R.uniform(300, 1100))
     # Durthang, a fort in the northern Ephel Duath
     put(rect(DURTHANG[0], DURTHANG[1], 260, 200, 0.3), 90, "tower", "#2b2926", name="Durthang")
     for k in range(4):
@@ -294,7 +391,7 @@ def main():
         put(rect(DURTHANG[0] + math.cos(a) * 150, DURTHANG[1] + math.sin(a) * 150, 70, 70, a), 130, "tower", "#232120")
     out["buildings"] = buildings
     out["trees"] = []
-    out["pois"] = []
+    out["pois"] = pois
 
     json.dump(out, open(OUT, "w"), separators=(",", ":"))
     t = out["terrain"]
