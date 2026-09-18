@@ -1,8 +1,9 @@
 # City of Iziz
 
-Procedural city models served to the local network by a small Python server. Five cities so far:
+Procedural city models served to the local network by a small Python server. Seven cities so far:
 **Iziz**, a science-fantasy city with its own language; **Chicago**, **Portland** and **New York**, built
-from OpenStreetMap and real elevation data; and **City 17**, fan work from Half-Life 2.
+from OpenStreetMap and real elevation data; and three generated from a seed as fan work — **City 17**,
+**Night City** and **Mega-City One**.
 They run on the same core modules and the same page shell; each city is a data file plus a set of build stages.
 
 **Site:** http://192.168.124.227:8000/
@@ -18,6 +19,7 @@ They run on the same core modules and the same page shell; each city is a data f
 | `/nyc` | `/nyc.html`, `/newyork`, `/manhattan` | `nyc.html` | New York: massing model |
 | `/city17` | `/city17.html`, `/halflife` | `city17.html` | City 17: massing model (fan work) |
 | `/nightcity` | `/nightcity.html`, `/night` | `nightcity.html` | Night City: massing model (fan work) |
+| `/megacity` | `/megacity.html`, `/mc1`, `/dredd` | `megacity.html` | Mega-City One: massing model (fan work) |
 | `/tongue` | `/izani-tongue` | `The-Izani-Tongue_2.html` | The Izani Tongue |
 | `/painting.jpg` | | `painting.jpg` | The Iziz painting; `image.png` is the master copy |
 | `/css/*`, `/src/*`, `/data/*`, `/vendor/*` | | those folders | stylesheets, modules, content, three.js |
@@ -174,6 +176,27 @@ are used. It opens at 21:36 and it is raining.
 
 Regenerate with `python3 tools/make-nightcity.py`, then `./sitectl build`.
 
+### `/megacity`: Mega-City One
+
+Fan work in the spirit of Judge Dredd's Mega-City One, which belongs to Rebellion. Generated from a seed
+by `tools/make-megacity.py`; no assets from the comics, films or games are used.
+
+The whole point of the place is scale, so the geometry is built around one rule: **a city block is one
+building**. It holds fifty thousand people, it is three hundred metres across and the better part of a
+kilometre tall, and it has a name you can click. 122 of them stand well apart over 6.4 km, so the city
+reads as a field of enormous separate objects rather than a grid of streets.
+
+- **Generated:** the blocks, each with its setbacks, balcony decks, roof plant, masts and the sky bridges
+  to its neighbours; nine megways curving between them on piers at heights from 62 m to 252 m, never
+  touching the ground; a sparse sector grid far below; the Zoom Line; the Port; the hundred-and-twenty
+  metre city wall along the west, and the Cursed Earth past it where nothing is built; the Black Atlantic
+  to the east, in a colour nobody chose.
+- **Added on top:** the Grand Hall of Justice — a bunker the size of a district with a curved shield
+  frontage and a crest over the doors — and the Statue of Judgement, 165 m of bronze with one arm out
+  over the plaza, at which size it stops being a figure and becomes architecture.
+
+Regenerate with `python3 tools/make-megacity.py`, then `./sitectl build`.
+
 ### `/tongue`: The Izani Tongue
 
 A self-contained reference page (no scripts). Its **City lexicon** tables are generated from
@@ -200,10 +223,10 @@ src/
   chicago/ main.js imports.js stages/*.js build.js  the Chicago build: 10 stage files, shared by Portland and Vashrin
   portland/ main.js                          Portland: the Chicago engine with defaultCity 'portland'
   city17/ main.js                            City 17: the same engine with defaultCity 'city17'
-  nyc/ main.js  nightcity/ main.js           New York and Night City, likewise
+  nyc/ main.js  nightcity/ main.js  megacity/ main.js    New York, Night City and Mega-City One, likewise
 vendor/three/three.min.js     three.js r128 (pinned)
 tools/  build-page.py build-tongue.py probe.py check-city.py
-        fetch-osm.py fetch-terrain.py build-osm-city.py make-city17.py make-nightcity.py
+        fetch-osm.py fetch-terrain.py build-osm-city.py make-city17.py make-nightcity.py make-megacity.py
 tests/  run.js *.test.js golden/ fixtures/
 server.py  site.toml  sitectl
 ```
