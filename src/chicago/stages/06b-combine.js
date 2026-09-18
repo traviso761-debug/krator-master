@@ -170,6 +170,81 @@ section('combine',()=>{
    if(lamps.length)animHooks.push(now=>{const a=now*0.0016;for(let i=0;i<lamps.length;i++)lamps[i].rotation.y=a+i;});}
 
   ctx.striderAt=()=>striders.map(s=>[Math.round(s.g.position.x),Math.round(s.g.position.z)]);   // where the patrols are, for the probe
-  ctx.details=Object.assign(ctx.details||{},{striders:striders.length,manhacks:manhacks.length,dropships:ships.length,
+  // ---- scanners: lens drones nosing along at head height, and they photograph things ----
+  const scanners=[];
+  {const n=K.scanners||0;
+   const bodyG=new THREE.SphereGeometry(0.75,10,7),lensG=new THREE.CylinderGeometry(0.42,0.52,0.5,8).rotateZ(Math.PI/2);
+   const bodies=new THREE.InstancedMesh(bodyG,cdark,Math.max(1,n)),lenses=new THREE.InstancedMesh(lensG,cm,Math.max(1,n)),
+         flashes=new THREE.InstancedMesh(new THREE.SphereGeometry(0.5,8,6),new THREE.MeshBasicMaterial({color:0xffffff}),Math.max(1,n));
+   const streets=ROADS.filter(r=>(r.c==='residential'||r.c==='secondary')&&r.len>70);
+   for(let k=0;k<n&&streets.length;k++){const r=streets[Math.floor(CBR()*streets.length)];
+     const rr=polyLen({pts:r.pts});if(rr.len<40)continue;
+     scanners.push({r:rr,s:CBR()*rr.len,v:(CBR()<0.5?-1:1)*(2.4+CBR()*2.2),y:2.6+CBR()*2.4,bob:CBR()*6.28,flash:CBR()*9000});}
+   bodies.count=lenses.count=flashes.count=scanners.length;
+   bodies.frustumCulled=lenses.frustumCulled=flashes.frustumCulled=false;
+   if(scanners.length)scene.add(bodies,lenses,flashes);
+   let lastS=performance.now();
+   animHooks.push(now=>{const dt=Math.min(0.05,(now-lastS)/1000);lastS=now;
+     scanners.forEach((q,i)=>{q.s+=q.v*dt;const [px,pz]=polyAt(q.r,q.s,true),[ax,az]=polyAt(q.r,q.s+q.v*2,true);
+       const head=Math.atan2(az-pz,ax-px),y=groundH(px,pz)+q.y+Math.sin(now*0.0022+q.bob)*0.35;
+       D.position.set(px,y,pz);D.rotation.set(0,-head,Math.sin(now*0.0016+q.bob)*0.2);D.scale.set(1,1,1);D.updateMatrix();
+       bodies.setMatrixAt(i,D.matrix);lenses.setMatrixAt(i,D.matrix);
+       const lit=((now+q.flash)%7000)<110;D.scale.setScalar(lit?1:0.001);D.updateMatrix();flashes.setMatrixAt(i,D.matrix);});
+     bodies.instanceMatrix.needsUpdate=lenses.instanceMatrix.needsUpdate=flashes.instanceMatrix.needsUpdate=true;});}
+
+  // ---- smart barriers: metal walls that close a street off and open it again on their own schedule ----
+  const smart=[];
+  {const n=K.smartBarriers||0,m=new THREE.MeshPhongMaterial({color:0x474d55,specular:0x70808f,shininess:14,flatShading:true});
+   const side=ROADS.filter(r=>r.c==='residential'&&r.len>80);
+   for(let k=0;k<n&&side.length;k++){const r=side[Math.floor(CBR()*side.length)],i=Math.floor(CBR()*(r.pts.length-1));
+     const [ax,az]=r.pts[i],[bx,bz]=r.pts[i+1],L=Math.hypot(bx-ax,bz-az)||1,dx=(bx-ax)/L,dz=(bz-az)/L,u=Math.min(L-4,10+CBR()*24);
+     const px=ax+dx*u,pz=az+dz*u;if(!inMap(px,pz,8)||inWater(px,pz))continue;
+     const head=Math.atan2(dz,dx),gy=groundH(px,pz),w=r.w/2+0.6;
+     for(const sd of [-1,1]){const post=new THREE.Mesh(new THREE.BoxGeometry(1.6,5.2,1.6).translate(0,2.6,0),m);
+       post.position.set(px-Math.sin(head)*sd*w,gy,pz+Math.cos(head)*sd*w);post.rotation.y=-head;scene.add(post);}
+     const leaf=new THREE.Mesh(new THREE.BoxGeometry(r.w*0.52,4.4,0.5).translate(0,2.2,0),m);
+     const leaf2=leaf.clone();scene.add(leaf,leaf2);
+     smart.push({leaf,leaf2,px,pz,gy,head,w:r.w*0.52,ph:CBR()*6.28,sp:0.00013+CBR()*0.00012});}
+   if(smart.length)animHooks.push(now=>{for(const q of smart){const open=Math.max(0,Math.sin(now*q.sp+q.ph))*q.w*0.98;
+     for(const [mesh,sd] of [[q.leaf,-1],[q.leaf2,1]]){
+       mesh.position.set(q.px-Math.sin(q.head)*sd*(q.w/2+open),q.gy,q.pz+Math.cos(q.head)*sd*(q.w/2+open));
+       mesh.rotation.y=-q.head;}}});}
+
+  // ---- turrets over the works, razor wire on the core fences, and what the street is littered with ----
+  let turrets=0,fires=0,debris=0;
+  {const tm=new THREE.MeshPhongMaterial({color:0x3f454d,specular:0x70808f,shininess:14,flatShading:true}),heads=[];
+   for(const a of AREAS){if(turrets>=(K.turrets||0))continue;if(a.kind!=='industrial'&&a.kind!=='railyard')continue;
+     for(let k=0;k<4&&turrets<(K.turrets||0);k++){
+       const px=a.bb.x0+CBR()*(a.bb.x1-a.bb.x0),pz=a.bb.z0+CBR()*(a.bb.z1-a.bb.z0);
+       if(!inMap(px,pz,10)||inWater(px,pz))continue;const gy=groundH(px,pz);
+       for(let q=0;q<3;q++){const a2=q/3*Math.PI*2,leg=new THREE.Mesh(new THREE.CylinderGeometry(0.16,0.2,3.4,5).translate(0,1.7,0),tm);
+         leg.position.set(px+Math.cos(a2)*0.9,gy,pz+Math.sin(a2)*0.9);leg.rotation.set(Math.sin(a2)*0.22,0,-Math.cos(a2)*0.22);scene.add(leg);}
+       const head=new THREE.Mesh(new THREE.BoxGeometry(1.1,1.5,2.4).translate(0,0.75,0),tm);head.position.set(px,gy+3.2,pz);scene.add(head);
+       const eye=new THREE.Mesh(new THREE.SphereGeometry(0.25,6,5),lampM);eye.position.set(px,gy+3.9,pz);scene.add(eye);
+       heads.push(head);turrets++;}}
+   if(heads.length)animHooks.push(now=>{for(let i=0;i<heads.length;i++)heads[i].rotation.y=Math.sin(now*0.0004+i)*1.5;});
+   // trash fires in the courtyards, and the debris nobody clears
+   const fireM=[0,1,2].map(()=>new THREE.MeshBasicMaterial({color:0xff8c30,transparent:true,opacity:0.85}));
+   const drumM=new THREE.MeshLambertMaterial({color:0x5a4a3c});
+   const DB=tiledInstances(new THREE.BoxGeometry(1,1,1).translate(0,0.5,0),new THREE.MeshLambertMaterial({color:0x6a665e}),900,false);
+   const flames=[];
+   const resid=ROADS.filter(r=>r.c==='residential');
+   for(let pass=0;pass<6&&(fires<(K.fires||0)||debris<(K.debris||0));pass++)for(const r of resid){
+     if(fires<(K.fires||0)&&CBR()<0.12){const i=Math.floor(CBR()*(r.pts.length-1)),[ax,az]=r.pts[i];
+       const px=ax+(CBR()-0.5)*r.w,pz=az+(CBR()-0.5)*r.w;
+       if(inMap(px,pz,8)&&!inWater(px,pz)){const gy=groundH(px,pz);
+         const drum=new THREE.Mesh(new THREE.CylinderGeometry(0.5,0.45,1.1,8).translate(0,0.55,0),drumM);drum.position.set(px,gy,pz);scene.add(drum);
+         const fm=fireM[fires%3],fl=new THREE.Mesh(new THREE.ConeGeometry(0.42,1.5,6).translate(0,0.75,0),fm);
+         fl.position.set(px,gy+1.05,pz);scene.add(fl);flames.push({fl,ph:CBR()*6.28});fires++;}}
+     if(debris<(K.debris||0)&&CBR()<0.5){const i=Math.floor(CBR()*(r.pts.length-1)),[ax,az]=r.pts[i];
+       for(let q=0;q<3&&debris<(K.debris||0);q++){const px=ax+(CBR()-0.5)*r.w*1.4,pz=az+(CBR()-0.5)*r.w*1.4;
+         if(!inMap(px,pz,6)||inWater(px,pz))continue;
+         DB.add(px,groundH(px,pz),pz,CBR()*3.14,0.5+CBR()*1.6,0.25+CBR()*0.5,0.4+CBR()*1.2);debris++;}}}
+   DB.build();
+   if(flames.length)animHooks.push(now=>{for(const f of flames){const k=0.7+0.3*Math.sin(now*0.013+f.ph)+0.15*Math.sin(now*0.031+f.ph*2);
+     f.fl.scale.set(0.8+0.3*k,k,0.8+0.3*k);}
+     for(let i=0;i<3;i++)fireM[i].opacity=0.7+0.3*Math.sin(now*0.01+i*2);});}
+
+  ctx.details=Object.assign(ctx.details||{},{scanners:scanners.length,smartBarriers:smart.length,turrets,trashFires:fires,debris,striders:striders.length,manhacks:manhacks.length,dropships:ships.length,
     carriers:apcs.length,barriers,fieldGates:fields,sentryPosts:posts,queueing:queued});
 });
