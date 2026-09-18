@@ -62,7 +62,7 @@ section('rooftops',()=>{
 section('parked-cars',()=>{
   const body=new THREE.BoxGeometry(4.5,1.0,1.9).translate(0,0.75,0),cabin=new THREE.BoxGeometry(2.4,0.7,1.7).translate(-0.2,1.6,0);
   const B1=tiledInstances(body,new THREE.MeshLambertMaterial({color:0xffffff}),1100,false),C1=tiledInstances(cabin,new THREE.MeshLambertMaterial({color:0x2a3440}),1100,false),c=new THREE.Color(),R=mkRng(4242);
-  const car=(x,z,a)=>{const gy=groundH(x,z);B1.add(x,gy,z,-a,1,1,1,c.setHSL(R(),R()<0.4?0.05:0.5,0.2+R()*0.55).clone());C1.add(x,gy,z,-a,1,1,1);};
+  const car=(x,z,a)=>{const gy=groundH(x,z);B1.add(x,gy,z,-a,1,1,1,c.setHSL(carHue(R),carSat(R),carLit(R)).clone());C1.add(x,gy,z,-a,1,1,1);};
   // along both curbs of residential streets, clear of the corners; a city with few cars (Vashrin) sets parkedCars below 1
   const PARKED=C.parkedCars===undefined?1:C.parkedCars;
   for(const r of ROADS){if(!PARKED||r.c!=='residential'||r.len<40)continue;let carry=12;

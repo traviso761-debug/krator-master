@@ -1,8 +1,9 @@
 # City of Iziz
 
-Procedural city models served to the local network by a small Python server. Four cities so far:
+Procedural city models served to the local network by a small Python server. Five cities so far:
 **Iziz**, a science-fantasy city with its own language; **Chicago** and **Portland**, built from
-OpenStreetMap and real elevation data; and **Vashrin**, an invented occupied city generated from a seed.
+OpenStreetMap and real elevation data; **Vashrin**, an invented occupied city generated from a seed;
+and **City 17**, fan work from Half-Life 2.
 They run on the same core modules and the same page shell; each city is a data file plus a set of build stages.
 
 **Site:** http://192.168.124.227:8000/
@@ -15,7 +16,8 @@ They run on the same core modules and the same page shell; each city is a data f
 | `/?city=iziz-b` | | `data/cities/iziz-b.json` | A variant Iziz (rounder wall, another seed, more prints) |
 | `/chicago` | `/chicago.html` | `chicago.html` | Chicago: massing model |
 | `/portland` | `/portland.html` | `portland.html` | Portland: massing model |
-| `/vashrin` | `/vashrin.html`, `/city17` | `vashrin.html` | Vashrin: massing model (invented) |
+| `/city17` | `/city17.html`, `/halflife` | `city17.html` | City 17: massing model (fan work) |
+| `/vashrin` | `/vashrin.html` | `vashrin.html` | Vashrin: massing model (invented) |
 | `/tongue` | `/izani-tongue` | `The-Izani-Tongue_2.html` | The Izani Tongue |
 | `/painting.jpg` | | `painting.jpg` | The Iziz painting; `image.png` is the master copy |
 | `/css/*`, `/src/*`, `/data/*`, `/vendor/*` | | those folders | stylesheets, modules, content, three.js |
@@ -108,6 +110,34 @@ South Waterfront to the Fremont Bridge and from Washington Park to the Lloyd Dis
 
 Data: `python3 tools/fetch-osm.py portland`, `python3 tools/fetch-terrain.py portland`, then `python3 tools/build-osm-city.py portland`.
 
+### `/city17`: City 17
+
+Fan work: City 17 from Half-Life 2, on the Chicago engine (`src/chicago/stages/`, loaded by
+`src/city17/main.js`). Nothing is surveyed and **no game assets are used** — `tools/make-city17.py`
+generates `data/cities/city17-osm.json` from a seed and every shape is modelled from scratch here in the
+project's own low-poly style. Half-Life 2 and City 17 belong to Valve.
+
+- **Generated:** the Citadel's exclusion zone torn out of the middle of the city, Eastern-European
+  courtyard blocks on a 108 m grid (plated over in Combine armour the closer they are to the cordon),
+  the trainstation plaza, the river and the canals running south, the outer Combine wall with its four
+  gates, the cordon wall, a rail yard, trams, the razor-train viaduct, rubble in the cleared ground and
+  ruins in the wasteland outside the wall.
+- **The Citadel:** a stack of slabs with ribbed faces and corner pilasters, a shoulder ledge with spires
+  hanging beneath it, an irregular crown, a lit socket near the top and seams that only show at night.
+  1,700 m tall, which is the point of it.
+- **The occupation** (`src/chicago/stages/06b-combine.js`, switched on by the `combine` block in the
+  config): nine striders walking the central prospects on a three-legged gait, 200 manhacks holding
+  street corners, four dropships carrying troop pods, sixteen armoured carriers on the arterials,
+  2,600 barriers across and along the side streets with field gates over the gaps, 26 sentry posts,
+  and queues of people stood at every checkpoint.
+- **Added on top:** the Overwatch Nexus with its crest and wall mark, four checkpoints with barriers
+  that lift and fields across the gap, generator pylons ringing the cordon, gunships circling it, and
+  public screens on masts that light after dark.
+- **The mood:** flat overcast sky, a drab palette (`"palette": "drab"` — no vehicle in this city has
+  new paint), almost no private traffic, few people out, and a third of the windows lit at night.
+
+Regenerate with `python3 tools/make-city17.py`, then `./sitectl build`.
+
 ### `/vashrin`: Vashrin
 
 An invented city, not a survey: a dystopian occupied town of concrete courtyard blocks in a river valley,
@@ -156,8 +186,9 @@ src/
   chicago/ main.js imports.js stages/*.js build.js  the Chicago build: 10 stage files, shared by Portland and Vashrin
   portland/ main.js                          Portland: the Chicago engine with defaultCity 'portland'
   vashrin/ main.js                           Vashrin: the same engine with defaultCity 'vashrin'
+  city17/ main.js                            City 17: the same engine with defaultCity 'city17'
 vendor/three/three.min.js     three.js r128 (pinned)
-tools/  build-page.py build-tongue.py probe.py fetch-osm.py fetch-terrain.py build-osm-city.py make-vashrin.py
+tools/  build-page.py build-tongue.py probe.py fetch-osm.py fetch-terrain.py build-osm-city.py make-vashrin.py make-city17.py
 tests/  run.js *.test.js golden/ fixtures/
 server.py  site.toml  sitectl
 ```
@@ -192,9 +223,11 @@ grid spacing (Portland 15 m, Chicago 30 m). A city with no tiles simply stays fl
 
 A city config may set, besides its geography: `sky` (`day`/`dusk`/`night`, each `top` and `hor`), `fog`
 (FogExp2 density), `overcast` (0-1: less sun, more fill light), `terrainColours` (`low`, `high`, `steep`,
-`far`), `litWindows` (how much of the city lights up at night), `streetTrees` and `parkedCars` (0-1
-densities), `attribution` (the credit line in the corner), `bridgeDeck` and `bridgeHeights`. Anything left
-out keeps the Chicago default.
+`far`), `litWindows` (how much of the city lights up at night), `streetTrees`, `parkedCars`, `traffic`
+and `people` (0-1 densities), `palette` (`"drab"` puts vehicles and coats in rust, grey and olive),
+`attribution` (the credit line in the corner), `bridgeDeck` and `bridgeHeights`. A `combine` block
+(`striders`, `manhacks`, `dropships`, `apcs`, `barriers`, `sentries`) turns on the occupation stage, which
+every other city skips. Anything left out keeps the Chicago default.
 
 ### Adding a city
 

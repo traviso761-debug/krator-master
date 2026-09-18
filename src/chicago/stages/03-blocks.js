@@ -11,7 +11,9 @@ const towerM=new THREE.MeshLambertMaterial({vertexColors:true,map:towerTex,emiss
 const lowM=new THREE.MeshLambertMaterial({vertexColors:true,map:lowTex,emissiveMap:lowGlow,emissive:0x000000,side:THREE.DoubleSide});
 const roofM=new THREE.MeshLambertMaterial({vertexColors:true,side:THREE.DoubleSide});
 const shopM=new THREE.MeshLambertMaterial({color:0x1c2630,emissive:0x000000,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2});
-const bldMats={tower:towerM,low:lowM};
+const blankM=new THREE.MeshLambertMaterial({vertexColors:true,side:THREE.DoubleSide});   // walls, armour plating and rubble carry no windows
+const bldMats={tower:towerM,low:lowM,blank:blankM};
+const BLANK_T=new Set(['wall','rubble','ruin','armour','barrier']);
 const PALETTE={
   glass:['#5d7890','#6a8aa0','#4e6478','#8a9aa8','#7c8e9a','#3e5264','#9aa8b2'].map(col),
   stone:['#c8bea8','#b8ae98','#d8d0bc','#a89e8a','#e2dccb','#9c9486','#c2b49a'].map(col),
@@ -48,7 +50,7 @@ function roofAt(x,z){let h=0;for(const b of buildingsAt(x,z,0))if(inPoly(x,z,b.r
 const PICK_TILES=[];
 section('buildings',()=>{
   const tiles=new Map();
-  const T=(x,z)=>{const k=Math.floor(x/800)+','+Math.floor(z/800);let t=tiles.get(k);if(!t){t={walls:{tower:{p:[],n:[],u:[],c:[],idx:[],own:[]},low:{p:[],n:[],u:[],c:[],idx:[],own:[]}},roof:{p:[],n:[],c:[],idx:[]},shop:{p:[],n:[],idx:[]}};tiles.set(k,t);}return t;};
+  const T=(x,z)=>{const k=Math.floor(x/800)+','+Math.floor(z/800);let t=tiles.get(k);if(!t){t={walls:{tower:{p:[],n:[],u:[],c:[],idx:[],own:[]},low:{p:[],n:[],u:[],c:[],idx:[],own:[]},blank:{p:[],n:[],u:[],c:[],idx:[],own:[]}},roof:{p:[],n:[],c:[],idx:[]},shop:{p:[],n:[],idx:[]}};tiles.set(k,t);}return t;};
   const MAIN=new Set(['primary','secondary','tertiary','pedestrian','trunk']);
   let n=0,stores=0,skippedStadium=0;
   for(const b of OSM.buildings){const ring=dec(b.p);if(ring.length<3)continue;
@@ -59,7 +61,7 @@ section('buildings',()=>{
     if(b.t==='stadium'||STADIUMS.some(s=>Math.hypot(s.xz[0]-cx,s.xz[1]-cz)<120&&Math.abs(polyArea(ring))>6000)){skippedStadium++;continue;}
     const g0=groundMin(ring);let h=g0+b.h,fixC=null;const m0=g0+(b.m||0);   // the lowest ground under the footprint: the building stands on it
     for(const f of HEIGHT_FIX)if(Math.abs(f.x-cx)<120&&Math.abs(f.z-cz)<120&&inPoly(f.x,f.z,ring)){if(h-g0<f.h*0.6)h=g0+f.h;if(f.c)fixC=f.c;}
-    const hsh=hash3(cx,cz,3),c=fixC||colourOf(b,h-g0,hsh),tall=h-g0>30,W=tall?'tower':'low',t=T(cx,cz),wb=t.walls[W];
+    const hsh=hash3(cx,cz,3),c=fixC||colourOf(b,h-g0,hsh),tall=h-g0>30,W=BLANK_T.has(b.t)?'blank':(tall?'tower':'low'),t=T(cx,cz),wb=t.walls[W];
     const start=wb.idx.length;
     {const bb=bbox(ring),rec={ring,h,m:m0,x0:bb.x0,x1:bb.x1,z0:bb.z0,z1:bb.z1,name:b.n||''};for(let gi=Math.floor(bb.x0/100);gi<=Math.floor(bb.x1/100);gi++)for(let gj=Math.floor(bb.z0/100);gj<=Math.floor(bb.z1/100);gj++){const k=gi*100003+gj;let a=BGRID.get(k);if(!a){a=[];BGRID.set(k,a);}a.push(rec);}}
     // walls: u runs along the facade (one bay per 3.5 m, towers 3 m), v up the floors (3.6 m)
@@ -86,7 +88,7 @@ section('buildings',()=>{
   const mk=(d,mat,withUV)=>{if(!d.idx.length)return null;const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(d.p,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(d.n,3));
     if(d.c)g.setAttribute('color',new THREE.Float32BufferAttribute(d.c,3));if(withUV)g.setAttribute('uv',new THREE.Float32BufferAttribute(d.u,2));g.setIndex(d.idx);g.computeBoundingSphere();const m=new THREE.Mesh(g,mat);m.castShadow=m.receiveShadow=true;scene.add(m);return m;};
   const far=(m,d)=>{if(m){m.userData.far=d;FAR_MESHES.push(m);}};
-  for(const t of tiles.values()){for(const W of ['tower','low']){const m=mk(t.walls[W],bldMats[W],true);if(m){m.userData.pick={tile:t,kind:W};PICK_TILES.push(m);t.walls[W].mesh=m;if(W==='low')far(m,4500);}}
+  for(const t of tiles.values()){for(const W of ['tower','low','blank']){const m=mk(t.walls[W],bldMats[W],true);if(m){m.userData.pick={tile:t,kind:W};PICK_TILES.push(m);t.walls[W].mesh=m;if(W==='low')far(m,4500);}}
     far(mk(t.roof,roofM,false),4500);const s=mk(t.shop,shopM,false);if(s){s.castShadow=false;far(s,1500);}}
   ctx.lotList=[];for(const a of BGRID.values())for(const r of a)if(!r._fp){r._fp=1;ctx.lotList.push({x:(r.x0+r.x1)/2,z:(r.z0+r.z1)/2,w:r.x1-r.x0,dpt:r.z1-r.z0,h:r.h,ry:0,kind:'osm',fixed:false});}   // the test fingerprint: every drawn footprint
   ctx.lotList.sort((p,q)=>p.x-q.x||p.z-q.z);ctx.lots=ctx.lotList.length;

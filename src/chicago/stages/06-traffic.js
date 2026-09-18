@@ -9,10 +9,11 @@ section('traffic',()=>{
   const routes=[];
   for(const [name,rs] of groups){const chains=joinChains(rs.map(r=>r.pts.map((p,i)=>[p[0],p[1],r.ys?r.ys[i]:0])),2);
     for(const pts of chains){const r=polyLen({pts});if(r.len<250)continue;r.w=rs[0].w;r.y=pts.map(p=>p[2]||0);r.name=name;routes.push(r);}}
-  const cars=[];for(const r of routes){const n=Math.max(1,Math.floor(r.len/(/Lake Shore/i.test(r.name)?60:140)));for(const dir of [-1,1])for(let k=0;k<n;k++)cars.push({r,dir,s:xr()*r.len,v:(/Lake Shore/i.test(r.name)?17:10)+xr()*6,off:dir*Math.min(r.w/4,5)});}
+  const TRAF=C.traffic===undefined?1:C.traffic;
+  const cars=[];for(const r of routes){const n=Math.floor(r.len/(/Lake Shore/i.test(r.name)?60:140)*TRAF);for(const dir of [-1,1])for(let k=0;k<n;k++)cars.push({r,dir,s:xr()*r.len,v:(/Lake Shore/i.test(r.name)?17:10)+xr()*6,off:dir*Math.min(r.w/4,5)});}
   const cm=new THREE.InstancedMesh(new THREE.BoxGeometry(4.4,1.4,1.9).translate(0,0.7,0),new THREE.MeshLambertMaterial({color:0xffffff}),Math.max(1,cars.length)),col2=new THREE.Color(),d=new THREE.Object3D();
   const cab=new THREE.InstancedMesh(new THREE.BoxGeometry(2.3,0.75,1.8).translate(-0.3,1.75,0),new THREE.MeshLambertMaterial({color:0x26303a}),Math.max(1,cars.length));
-  cars.forEach((c,i)=>cm.setColorAt(i,col2.setHSL(xr(),0.45,0.3+xr()*0.4)));cm.frustumCulled=cab.frustumCulled=false;scene.add(cm,cab);
+  cars.forEach((c,i)=>cm.setColorAt(i,DRAB?col2.setHSL(0.05+xr()*0.09,0.1+xr()*0.12,0.13+xr()*0.18):col2.setHSL(xr(),0.45,0.3+xr()*0.4)));cm.frustumCulled=cab.frustumCulled=false;scene.add(cm,cab);
   // the deck height along a route at arc length s (the nearest vertex's height, smoothed over the bridge ends)
   const yAt=(r,s)=>{s=((s%r.len)+r.len)%r.len;let lo=0,hi=r.cum.length-1;while(lo<hi){const mid=(lo+hi+1)>>1;if(r.cum[mid]<=s)lo=mid;else hi=mid-1;}const i=lo,j=Math.min(r.cum.length-1,i+1),u=(s-r.cum[i])/((r.cum[j]-r.cum[i])||1);return r.y[i]+(r.y[j]-r.y[i])*u;};
   let last=performance.now();

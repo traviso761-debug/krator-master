@@ -77,5 +77,7 @@ for(const k in C.districts){if(k==='_')continue;const [name,col,base,tall,box]=C
 function districtAt(x,z){for(const [d,x0,x1,z0,z1] of DIST_BOX)if(x>=x0&&x<=x1&&z>=z0&&z<=z1)return d;return DIST.outer;}
 const FOCUS=(C.focus||[]).map(f=>{const [x,z]=P(f.at);return Object.assign({},f,{x,z,r:f.radius});});
 const focusAt=(x,z)=>FOCUS.find(f=>Math.hypot(f.x-x,f.z-z)<f.r)||null;
+const DRAB=C.palette==='drab';   // an occupied city has no new paint: vehicles and coats in rust, grey and olive
+const carHue=r=>DRAB?0.04+r()*0.1:r(),carSat=r=>DRAB?0.03+r()*0.16:(r()<0.4?0.05:0.5),carLit=r=>DRAB?0.12+r()*0.2:0.2+r()*0.55;
 ctx.districtAt=districtAt;ctx.inWater=inWater;
 ctx.details={roads:ROADS.length,buildings:OSM.buildings.length,areas:AREAS.length,terrain:TER?TER.nx+'x'+TER.nz+' at '+TER.step+' m':'flat'};
