@@ -361,6 +361,35 @@ const MODELS={
     const g=group(L,parts);
     animHooks.push(now=>{for(const p of puffs){const [bx,by,bz,ph]=p.userData.b,t=((now/9000)+ph)%1;p.position.set(bx+t*46,by+t*34,bz+t*10);p.scale.setScalar(1+t*3.4);p.material.opacity=0.3*(1-t);}});
     return g;},
+  ziggurat(L,x,z){   // the corporate pyramid: a mountain of stepped terraces with its own weather at the top
+    const H=L.height||700,g0=gh(x,z),base=L.base||620,tiers=L.tiers||22,parts=[],A=L.turn||0.3;
+    const shell=new THREE.MeshPhongMaterial({color:0x33353b,specular:0x1a1d22,shininess:6,flatShading:true});
+    const dark=new THREE.MeshPhongMaterial({color:0x26282d,specular:0x14161a,shininess:5,flatShading:true});
+    const winM=new THREE.MeshBasicMaterial({color:0xffb454,transparent:true,opacity:0.8});
+    for(let k=0;k<tiers;k++){const t=k/tiers,t1=(k+1)/tiers;
+      const w=base*(1-Math.pow(t,1.35)*0.93),hh=H/tiers;
+      const b=new THREE.Mesh(new THREE.BoxGeometry(w,hh,w*0.86).translate(0,hh/2,0),k%2?shell:dark);
+      b.position.set(x,g0+H*t,z);b.rotation.y=A;parts.push(b);
+      // the lit band along the lip of every terrace, which is the only thing you see of it from the street
+      const lipW=w*0.99,lip=new THREE.Mesh(new THREE.BoxGeometry(lipW,1.6,lipW*0.86),winM);
+      lip.position.set(x,g0+H*t1-2.2,z);lip.rotation.y=A;parts.push(lip);}
+    // the buttresses running the full height of the four faces
+    for(let f=0;f<4;f++){const a=A+f*Math.PI/2;
+      for(let k=0;k<tiers;k+=2){const t=k/tiers,w=base*(1-Math.pow(t,1.35)*0.93),hh=H/tiers*2;
+        const bt=new THREE.Mesh(new THREE.BoxGeometry(26,hh,18).translate(0,hh/2,0),dark);
+        bt.position.set(x+Math.cos(a)*w*0.5,g0+H*t,z+Math.sin(a)*w*0.5);bt.rotation.y=-a;parts.push(bt);}}
+    // the cap: landing decks, masts and the beacons that warn the spinners off
+    const capW=base*0.12;
+    parts.push(box(x,g0+H,z,capW*1.8,10,capW*1.8,dark));
+    for(const sd of [-1,1])parts.push(box(x+sd*capW*1.1,g0+H+10,z,capW*0.8,3,capW*1.4,shell));
+    parts.push(box(x,g0+H+10,z,6,H*0.06,6,dark));
+    const g=group(L,parts);
+    const beacons=[];for(let k=0;k<4;k++){const a=A+k/4*Math.PI*2+0.8;
+      const b=new THREE.Mesh(new THREE.SphereGeometry(3,8,6),new THREE.MeshBasicMaterial({color:0xff3020}));
+      b.position.set(x+Math.cos(a)*capW*1.4,g0+H+16,z+Math.sin(a)*capW*1.4);scene.add(b);beacons.push(b);}
+    animHooks.push(now=>{const n=nightF(hourCur);winM.opacity=0.2+0.7*n;
+      for(const b of beacons)b.visible=(now%2400)<1200;});
+    return g;},
   suspension(L,x,z){   // a suspension bridge: two towers, the main cable slung between them, and the hangers down to the deck
     const c=riverCrossing(L.name,x,z);if(!c)return null;const H=L.towerH||90,parts=[],m=new THREE.MeshLambertMaterial({color:0x8a8478});
     const cabM=new THREE.LineBasicMaterial({color:0xb0b4b8});
