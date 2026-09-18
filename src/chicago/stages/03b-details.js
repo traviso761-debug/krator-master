@@ -26,13 +26,14 @@ section('trees',()=>{
   // instance colour multiplies the vertex colour, so trunks stay brown only if the instance colour is light: tint crowns with green, trunks darken slightly
   const T=tiledInstances(treeG,treeM,2600,true),greens=['#3f7a3a','#4f8a3a','#356a30','#5a8a44','#2f5f34','#6a8a3a'].map(col);
   const mapped=OSM.trees||[];const have=new Set();
-  for(let i=0;i+1<mapped.length;i+=2){const x=mapped[i]/10,z=mapped[i+1]/10;if(!inMap(x,z,5)||inWater(x,z))continue;const hs=hash3(x,z,21),h=7+hs*9;T.add(x,0,z,hs*6,h,h,h,greens[Math.floor(hs*greens.length)]);have.add(Math.floor(x/20)+','+Math.floor(z/20));}
-  // parkway trees: both sides of residential streets every 14 m where there is room and no mapped tree nearby
-  let parkway=0;const R=mkRng(606);
-  for(const r of ROADS){if(r.c!=='residential'&&r.c!=='tertiary')continue;let carry=7;
+  for(let i=0;i+1<mapped.length;i+=2){const x=mapped[i]/10,z=mapped[i+1]/10;if(!inMap(x,z,5)||inWater(x,z))continue;const hs=hash3(x,z,21),h=7+hs*9;T.add(x,groundH(x,z),z,hs*6,h,h,h,greens[Math.floor(hs*greens.length)]);have.add(Math.floor(x/20)+','+Math.floor(z/20));}
+  // parkway trees: both sides of residential streets every 14 m where there is room and no mapped tree nearby.
+  // A city with few street trees (Vashrin) sets streetTrees to a fraction, or 0 for none.
+  let parkway=0;const R=mkRng(606),STREET_TREES=C.streetTrees===undefined?1:C.streetTrees;
+  for(const r of ROADS){if(!STREET_TREES||(r.c!=='residential'&&r.c!=='tertiary'))continue;let carry=7;
     for(let i=0;i+1<r.pts.length;i++){const [ax,az]=r.pts[i],[bx,bz]=r.pts[i+1],L=Math.hypot(bx-ax,bz-az);if(L<0.1)continue;const dx=(bx-ax)/L,dz=(bz-az)/L;
-      for(let u=carry;u<L;u+=14){if((u<10&&i===0)||(i===r.pts.length-2&&L-u<10))continue;for(const sd of [-1,1]){if(R()<0.3)continue;const off=r.w/2+2.3,x=ax+dx*u-dz*sd*off,z=az+dz*u+dx*sd*off;
-          if(!inMap(x,z,5)||have.has(Math.floor(x/20)+','+Math.floor(z/20))||!clearAt(x,z,1.5))continue;const hs=R(),h=8+hs*8;T.add(x,0,z,hs*6,h,h,h,greens[Math.floor(hs*greens.length)]);parkway++;}}
+      for(let u=carry;u<L;u+=14){if((u<10&&i===0)||(i===r.pts.length-2&&L-u<10))continue;for(const sd of [-1,1]){if(R()<1-0.7*STREET_TREES)continue;const off=r.w/2+2.3,x=ax+dx*u-dz*sd*off,z=az+dz*u+dx*sd*off;
+          if(!inMap(x,z,5)||have.has(Math.floor(x/20)+','+Math.floor(z/20))||!clearAt(x,z,1.5))continue;const hs=R(),h=8+hs*8;T.add(x,groundH(x,z),z,hs*6,h,h,h,greens[Math.floor(hs*greens.length)]);parkway++;}}
       carry=Math.max(0,14-((L-carry)%14));}}
   // woodland: Forest Park and the other wooded slopes carry their own trees, and parks get a scattering
   let forest=0;const DENSE={wood:11,reserve:13},OPEN={park:26,cemetery:30,garden:22,zoo:26,golf:34};
@@ -61,11 +62,12 @@ section('rooftops',()=>{
 section('parked-cars',()=>{
   const body=new THREE.BoxGeometry(4.5,1.0,1.9).translate(0,0.75,0),cabin=new THREE.BoxGeometry(2.4,0.7,1.7).translate(-0.2,1.6,0);
   const B1=tiledInstances(body,new THREE.MeshLambertMaterial({color:0xffffff}),1100,false),C1=tiledInstances(cabin,new THREE.MeshLambertMaterial({color:0x2a3440}),1100,false),c=new THREE.Color(),R=mkRng(4242);
-  const car=(x,z,a)=>{B1.add(x,0,z,-a,1,1,1,c.setHSL(R(),R()<0.4?0.05:0.5,0.2+R()*0.55).clone());C1.add(x,0,z,-a,1,1,1);};
-  // along both curbs of residential streets, clear of the corners
-  for(const r of ROADS){if(r.c!=='residential'||r.len<40)continue;let carry=12;
+  const car=(x,z,a)=>{const gy=groundH(x,z);B1.add(x,gy,z,-a,1,1,1,c.setHSL(R(),R()<0.4?0.05:0.5,0.2+R()*0.55).clone());C1.add(x,gy,z,-a,1,1,1);};
+  // along both curbs of residential streets, clear of the corners; a city with few cars (Vashrin) sets parkedCars below 1
+  const PARKED=C.parkedCars===undefined?1:C.parkedCars;
+  for(const r of ROADS){if(!PARKED||r.c!=='residential'||r.len<40)continue;let carry=12;
     for(let i=0;i+1<r.pts.length;i++){const [ax,az]=r.pts[i],[bx,bz]=r.pts[i+1],L=Math.hypot(bx-ax,bz-az);if(L<0.1)continue;const dx=(bx-ax)/L,dz=(bz-az)/L,a=Math.atan2(dz,dx);
-      for(let u=carry;u<L-12;u+=7){for(const sd of [-1,1]){if(R()<0.6)continue;const off=r.w/2-1.2,x=ax+dx*u-dz*sd*off,z=az+dz*u+dx*sd*off;if(!inMap(x,z,5)||inWater(x,z))continue;car(x,z,a);}}
+      for(let u=carry;u<L-12;u+=7){for(const sd of [-1,1]){if(R()<1-0.4*PARKED)continue;const off=r.w/2-1.2,x=ax+dx*u-dz*sd*off,z=az+dz*u+dx*sd*off;if(!inMap(x,z,5)||inWater(x,z))continue;car(x,z,a);}}
       carry=12;}}
   // rows in the mapped surface parking lots (up to 80 a lot)
   let lots=0;for(const p of AREAS){if(p.kind!=='parking')continue;const w=p.bb.x1-p.bb.x0,dd=p.bb.z1-p.bb.z0;if(w*dd<300)continue;let k=0;
@@ -84,7 +86,7 @@ section('street-lines-lights',()=>{
   for(const r of ROADS){if(!['trunk','primary','secondary','tertiary'].includes(r.c)||deckY(r)>0)continue;let carry=17;
     for(let i=0;i+1<r.pts.length;i++){const [ax,az]=r.pts[i],[bx,bz]=r.pts[i+1],L=Math.hypot(bx-ax,bz-az);if(L<0.1)continue;const dx=(bx-ax)/L,dz=(bz-az)/L;
       for(let u=carry;u<L;u+=35)for(const sd of [-1,1]){const x=ax+dx*u-dz*sd*(r.w/2+1.3),z=az+dz*u+dx*sd*(r.w/2+1.3);if(!inMap(x,z,5)||focusAt(x,z)||inWater(x,z))continue;
-        Pl.add(x,0,z,0,1,9,1);Hd.add(x+dz*sd*1.6,8.6,z-dx*sd*1.6,-Math.atan2(dz,dx),1.2,0.35,0.5);}
+        const gy=groundH(x,z);Pl.add(x,gy,z,0,1,9,1);Hd.add(x+dz*sd*1.6,gy+8.6,z-dx*sd*1.6,-Math.atan2(dz,dx),1.2,0.35,0.5);}
       carry=Math.max(0,35-((L-carry)%35));}}
   Pl.build();Hd.build();animHooks.push(()=>{const w=nightF(hourCur);headM.emissive.setRGB(w,w*0.85,w*0.55);});
   ctx.details=Object.assign(ctx.details||{},{arterialLights:Pl.n});

@@ -37,7 +37,8 @@ section('ground',()=>{
   // the land underneath everything, then the land cover, big areas first so the details paint over them
   // the ground itself: a flat plane where there is no elevation data, otherwise the height grid in cullable chunks
   if(!TER){const base=new THREE.Mesh(new THREE.PlaneGeometry(B.w+400,B.d+400),new THREE.MeshLambertMaterial({color:0x5c5a53}));base.rotation.x=-Math.PI/2;base.position.set(B.cx,-0.02,B.cz);base.receiveShadow=true;scene.add(base);}
-  else{const terM=new THREE.MeshLambertMaterial({vertexColors:true}),CH=48,low=col('#5c5a53'),high=col('#4a5a42'),steepC=col('#6a6052'),cc=new THREE.Color();
+  else{const TC=C.terrainColours||{},terM=new THREE.MeshLambertMaterial({vertexColors:true}),CH=48,   // a city may set its own earth colours
+      low=col(TC.low||'#5c5a53'),high=col(TC.high||'#4a5a42'),steepC=col(TC.steep||'#6a6052'),cc=new THREE.Color();
     for(let cj=0;cj<TER.nz-1;cj+=CH)for(let ci=0;ci<TER.nx-1;ci+=CH){const w=Math.min(CH,TER.nx-1-ci),d=Math.min(CH,TER.nz-1-cj),pos=[],colr=[],idx=[];
       for(let j=0;j<=d;j++)for(let i=0;i<=w;i++){const gi=ci+i,gj=cj+j,x=TER.x0+gi*TER.step,z=TER.z0+gj*TER.step,y=TER.h[gj*TER.nx+gi];
         const gx=(TER.h[gj*TER.nx+Math.min(TER.nx-1,gi+1)]-TER.h[gj*TER.nx+Math.max(0,gi-1)])/(2*TER.step),
@@ -47,7 +48,7 @@ section('ground',()=>{
       const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(colr,3));g.setIndex(idx);g.computeVertexNormals();g.computeBoundingSphere();
       const m=new THREE.Mesh(g,terM);m.receiveShadow=true;m.castShadow=true;scene.add(m);}
     // land beyond the map, so distant hills and mountains have something to stand on
-    const far=new THREE.Mesh(new THREE.RingGeometry(Math.hypot(B.w,B.d)/2,42000,72,1),new THREE.MeshLambertMaterial({color:0x76837c,fog:false}));
+    const far=new THREE.Mesh(new THREE.RingGeometry(Math.hypot(B.w,B.d)/2,42000,72,1),new THREE.MeshLambertMaterial({color:col((C.terrainColours||{}).far||'#76837c'),fog:false}));
     far.rotation.x=-Math.PI/2;far.position.set(B.cx,-1.5,B.cz);far.userData.noShadow=true;far.renderOrder=-1;scene.add(far);}
   const AREA_COL={residential:'#5b664e',commercial:'#6c6962',industrial:'#615d56',construction:'#7a6e5a',campus:'#66755a',parking:'#4a4b4f',park:'#5f8a48',golf:'#6a9a50',cemetery:'#5a7a48',railyard:'#6a645a',reserve:'#557a44',wood:'#3f6a38',grass:'#6a9a52',zoo:'#648a4a',garden:'#5a9048',sand:'#dccda4',plaza:'#b8b0a2',pitch:'#4f8a3e',track:'#9a4a36',play:'#b89a6a',stadium:'#707070'};
   const BIG=new Set(['park','golf','cemetery','railyard','reserve','wood','grass','zoo']),USE=new Set(['residential','commercial','industrial','construction','campus']);
