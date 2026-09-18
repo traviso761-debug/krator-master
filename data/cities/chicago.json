@@ -147,22 +147,11 @@
     41.87885,
     -87.6359
    ],
-   "decor": [
-    [
-     "mast",
-     -9,
-     -9,
-     83
-    ],
-    [
-     "mast",
-     9,
-     9,
-     83
-    ]
-   ],
-   "info": "233 S Wacker Dr · 1974 · 442 m, 108 floors, 527 m to the antenna tips. Nine bundled tubes stepping back at floors 50, 66 and 90.",
-   "height": 442
+   "info": "233 S Wacker Dr · 1974 · 442 m, 108 floors, 527 m to the antenna tips. Nine square tubes bundled together: all nine rise to the 50th floor, seven to the 66th, five to the 90th, and two go on to 108.",
+   "height": 442,
+   "aka": [
+    "Sears Tower"
+   ]
   },
   {
    "name": "875 North Michigan",

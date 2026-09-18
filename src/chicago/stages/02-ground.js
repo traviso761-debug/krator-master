@@ -2,7 +2,11 @@
 await stage('ground');
 // geometry buffers split into tiles (2 km unless asked) so the camera can skip what it cannot see; opts.far hides a tile beyond that distance
 const FAR_MESHES=[];
-{let t=0;const c=new THREE.Vector3();animHooks.push(now=>{if(now-t<300)return;t=now;for(const m of FAR_MESHES){c.copy(m.geometry.boundingSphere.center);m.visible=camera.position.distanceTo(c)-m.geometry.boundingSphere.radius<m.userData.far;}});}
+// How far detail is drawn. Every tiled mesh carries its own `far`; this scales all of them at once, and the render
+// loop turns it down when the frame rate slips — losing clutter a kilometre away costs less than losing resolution.
+const DETAIL={k:QUALITY==='high'?1:QUALITY==='medium'?0.7:0.5,max:QUALITY==='high'?1:QUALITY==='medium'?0.7:0.5,min:0.35};
+ctx.detail=DETAIL;
+{let t=0;const c=new THREE.Vector3();animHooks.push(now=>{if(now-t<300)return;t=now;for(const m of FAR_MESHES){c.copy(m.geometry.boundingSphere.center);m.visible=camera.position.distanceTo(c)-m.geometry.boundingSphere.radius<m.userData.far*DETAIL.k;}});}
 function tiledBuffer(material,opts){const tiles=new Map();opts=opts||{};const TS=opts.tile||2000;
   return {
     tile(x,z){const k=Math.floor(x/TS)+','+Math.floor(z/TS);let t=tiles.get(k);if(!t){t={p:[],n:[],c:[],idx:[]};tiles.set(k,t);}return t;},
@@ -37,7 +41,8 @@ section('ground',()=>{
   // the land underneath everything, then the land cover, big areas first so the details paint over them
   // the ground itself: a flat plane where there is no elevation data, otherwise the height grid in cullable chunks
   if(!TER){const base=new THREE.Mesh(new THREE.PlaneGeometry(B.w+400,B.d+400),new THREE.MeshLambertMaterial({color:0x5c5a53}));base.rotation.x=-Math.PI/2;base.position.set(B.cx,-0.02,B.cz);base.receiveShadow=true;scene.add(base);}
-  else{const TC=C.terrainColours||{},terM=new THREE.MeshLambertMaterial({vertexColors:true}),CH=48,   // a city may set its own earth colours
+  else{const TER_RELIEF=(()=>{let lo=1e9,hi=-1e9;for(let i=0;i<TER.h.length;i+=7){const v=TER.h[i];if(v<lo)lo=v;if(v>hi)hi=v;}return hi-lo;})();
+    const TC=C.terrainColours||{},terM=new THREE.MeshLambertMaterial({vertexColors:true}),CH=48,   // a city may set its own earth colours
       low=col(TC.low||'#5c5a53'),high=col(TC.high||'#4a5a42'),steepC=col(TC.steep||'#6a6052'),cc=new THREE.Color();
     for(let cj=0;cj<TER.nz-1;cj+=CH)for(let ci=0;ci<TER.nx-1;ci+=CH){const w=Math.min(CH,TER.nx-1-ci),d=Math.min(CH,TER.nz-1-cj),pos=[],colr=[],idx=[];
       for(let j=0;j<=d;j++)for(let i=0;i<=w;i++){const gi=ci+i,gj=cj+j,x=TER.x0+gi*TER.step,z=TER.z0+gj*TER.step,y=TER.h[gj*TER.nx+gi];
@@ -46,7 +51,7 @@ section('ground',()=>{
         pos.push(x,y,z);cc.copy(low).lerp(high,Math.min(1,y/120)).lerp(steepC,Math.min(1,slope*1.2));colr.push(cc.r,cc.g,cc.b);}
       for(let j=0;j<d;j++)for(let i=0;i<w;i++){const a=j*(w+1)+i;idx.push(a,a+w+1,a+1,a+1,a+w+1,a+w+2);}
       const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(colr,3));g.setIndex(idx);g.computeVertexNormals();g.computeBoundingSphere();
-      const m=new THREE.Mesh(g,terM);m.receiveShadow=true;m.castShadow=true;scene.add(m);}
+      const m=new THREE.Mesh(g,terM);m.receiveShadow=true;m.castShadow=TER_RELIEF>40;scene.add(m);}
     // land beyond the map, so distant hills and mountains have something to stand on
     const far=new THREE.Mesh(new THREE.RingGeometry(Math.hypot(B.w,B.d)/2,42000,72,1),new THREE.MeshLambertMaterial({color:col((C.terrainColours||{}).far||'#76837c'),fog:false}));
     far.rotation.x=-Math.PI/2;far.position.set(B.cx,-1.5,B.cz);far.userData.noShadow=true;far.renderOrder=-1;scene.add(far);}
@@ -67,7 +72,11 @@ section('water',()=>{
   const shape=new THREE.Shape(LAKE.map(clip).map(([x,z])=>new THREE.Vector2(x,-z)));
   for(const r of ISLANDS)shape.holes.push(new THREE.Path(r.map(([x,z])=>new THREE.Vector2(x,-z))));
   const lake=new THREE.Mesh(new THREE.ShapeGeometry(shape),waterM);lake.rotation.x=-Math.PI/2;lake.position.y=0.05;lake.receiveShadow=true;scene.add(lake);}   // cities without a lake shore skip this
-  const wb=tiledBuffer(waterM);for(const w of WATER)wb.poly(w.o,w.i,0.05,col('#2a5f8c'));wb.build('river');
+  const TOX=C.toxicWater?new RegExp(C.toxicWater,'i'):null;
+  const toxM=TOX?new THREE.MeshPhongMaterial({color:new THREE.Color(C.waterColour||'#3a5f52'),specular:0x7fa08c,shininess:40,polygonOffset:true,polygonOffsetFactor:-3,polygonOffsetUnits:-6}):null;
+  const wb=tiledBuffer(waterM),tb=toxM?tiledBuffer(toxM):null;
+  for(const w of WATER)((TOX&&TOX.test(w.name))?tb:wb).poly(w.o,w.i,0.05,col('#2a5f8c'));
+  wb.build('river');if(tb)tb.build('toxic channels');
   animHooks.push(now=>{waterM.shininess=70+25*Math.sin(now*0.0011);});
 });
 // piers and breakwaters: raised slabs with walls down to the water
@@ -116,7 +125,7 @@ section('streets',()=>{
   const rail=tiledBuffer(groundMat(4));for(const r of RAILS)if(!r.elevated&&r.type==='rail')rail.ribbon(TER?resample(r.pts,14):r.pts,5,gY(0.07),col('#5a534a'));
   walk.build('sidewalks');road.build('streets');trail.build('trails');deck.build('bridges');rail.build('rail');
   {const pm=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1).translate(0,0.5,0),new THREE.MeshLambertMaterial({color:0x8a8680}),Math.max(1,PIERS_AT.length)),d=new THREE.Object3D();
-   PIERS_AT.forEach(([x,z,top,a,w,g],i)=>{const foot=Math.min(g,0)-1;d.position.set(x,foot,z);d.rotation.set(0,-a,0);d.scale.set(2,Math.max(1,top-foot),Math.max(3,w*0.45));d.updateMatrix();pm.setMatrixAt(i,d.matrix);});pm.count=PIERS_AT.length;pm.castShadow=true;scene.add(pm);ctx.details=Object.assign(ctx.details||{},{bridgePiers:PIERS_AT.length});}
+   PIERS_AT.forEach(([x,z,top,a,w,g],i)=>{const foot=Math.min(g,0)-1;d.position.set(x,foot,z);d.rotation.set(0,-a,0);d.scale.set(2,Math.max(1,top-foot),Math.max(3,w*0.45));d.updateMatrix();pm.setMatrixAt(i,d.matrix);});pm.count=PIERS_AT.length;scene.add(pm);ctx.details=Object.assign(ctx.details||{},{bridgePiers:PIERS_AT.length});}
   // movable (bascule) bridges get a bridge house at each corner, as the river bridges downtown do
   const houseM=new THREE.MeshLambertMaterial({color:0xc8bca8}),roofM=new THREE.MeshLambertMaterial({color:0x5a6a62});let nh=0;
   for(const r of BRIDGES){if(r.bridge!==2||r.len<30)continue;const a=r.pts[0],b=r.pts[r.pts.length-1],dx=(b[0]-a[0])/r.len,dz=(b[1]-a[1])/r.len,ang=-Math.atan2(dz,dx);

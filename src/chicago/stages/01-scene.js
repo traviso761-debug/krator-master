@@ -3,14 +3,20 @@ const scene=new THREE.Scene();
 const camera=new THREE.PerspectiveCamera(50,innerWidth/innerHeight,1,24000);
 const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});
 renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);
-renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFShadowMap;
+// quality: ?quality=low|medium|high, or the city's own default. Low drops shadows entirely, which on a
+// weak GPU is worth more than everything else put together.
+const QUALITY=(()=>{const v=(new URLSearchParams(location.search).get('quality')||C.quality||'high').toLowerCase();
+  return ['low','medium','high'].includes(v)?v:'high';})();
+ctx.quality=QUALITY;
+renderer.shadowMap.enabled=QUALITY!=='low';renderer.shadowMap.type=THREE.PCFShadowMap;
 document.body.appendChild(renderer.domElement);
 const {ENV,setEnv}=createEnv();   // the shared uniforms; setEnv gives materials world-unit UV tiling
 const updatePx=()=>{ENV.izPx.value=innerHeight*renderer.getPixelRatio()/(2*Math.tan(camera.fov*Math.PI/360));};updatePx();
 const ambient=new THREE.AmbientLight(0x9fb4c8,0.22);scene.add(ambient);
 const hemi=new THREE.HemisphereLight(0xbfd8f0,0x5a5048,0.38);scene.add(hemi);
 const sun=new THREE.DirectionalLight(0xfff2dc,1.1);scene.add(sun);scene.add(sun.target);
-sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);{const sc=sun.shadow.camera;sc.left=-700;sc.right=700;sc.top=700;sc.bottom=-700;sc.near=1;sc.far=6000;sc.updateProjectionMatrix();}
+sun.castShadow=QUALITY!=='low';{const m=QUALITY==='high'?2048:1024;sun.shadow.mapSize.set(m,m);}
+{const r=QUALITY==='high'?700:520,sc=sun.shadow.camera;sc.left=-r;sc.right=r;sc.top=r;sc.bottom=-r;sc.near=1;sc.far=6000;sc.updateProjectionMatrix();}
 sun.shadow.bias=-0.0008;sun.shadow.normalBias=2;
 scene.fog=new THREE.FogExp2(0xb9cbe0,C.fog||0.00013);
 const OVERCAST=C.overcast||0;   // a flat, sunless sky: less sun, more fill (Vashrin)
@@ -41,6 +47,12 @@ function lerpSky(h){const n=nightF(h),dusk=Math.max(0,1-Math.abs(h-18.6)/1.6,1-M
   sun.position.copy(S).multiplyScalar(2500).add(sun.target.position);sun.intensity=0.82*(1-0.72*OVERCAST)*Math.max(0,Math.min(1,S.y*4))*(1-0.85*n);
   sun.color.setHSL(0.09,0.6-0.4*OVERCAST,0.5+0.45*Math.min(1,S.y*3));hemi.intensity=0.38*(1+0.5*OVERCAST)*(1-0.75*n);ambient.intensity=(0.22+0.2*OVERCAST)*(1-0.5*n)+0.1*n;
   ENV.izHour.value=h;ENV.izNight.value=n;ENV.izDay.value=1-n;ENV.izSunDir.value.copy(S);}
+// low-lying industrial haze: broad sheets over the city, so from any height the place sits under its own smog
+if(C.smog){const S=C.smog,base=S.height||90;
+  const smogM=new THREE.MeshBasicMaterial({color:new THREE.Color(S.colour||'#b0aa96'),transparent:true,opacity:0.1,depthWrite:false,side:THREE.DoubleSide,fog:false});
+  for(let k=0;k<(S.layers||2);k++){const pl=new THREE.Mesh(new THREE.PlaneGeometry(B.w*1.6,B.d*1.6),smogM);
+    pl.rotation.x=-Math.PI/2;pl.position.set(B.cx,base*(0.55+k*0.7),B.cz);pl.renderOrder=-1;pl.userData.noShadow=true;scene.add(pl);}
+  animHooks.push(()=>{smogM.opacity=(S.opacity||0.1)*(0.55+0.45*(1-nightF(hourCur)));});}
 let hourCur=HOUR0;
 animHooks.push(now=>{hourCur=hourNow(clockPaused?pausedAt:now-clockOffset);ctx.hour=hourCur;ENV.izTime.value=now/1000;lerpSky(hourCur);});
 lerpSky(HOUR0);

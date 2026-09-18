@@ -25,7 +25,7 @@ section('streetscape',()=>{
   {const n=Math.max(1,lights.length),pole=new THREE.InstancedMesh(new THREE.CylinderGeometry(0.12,0.16,1,6).translate(0,0.5,0),poleM,n),arm=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),poleM,n),head=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),headM,n);
    lights.forEach(([x,z,a],i)=>{const gy=groundH(x,z);d.rotation.set(0,-a,0);d.position.set(x,gy,z);d.scale.set(1,9,1);d.updateMatrix();pole.setMatrixAt(i,d.matrix);const ex=Math.cos(a)*1.6,ez=Math.sin(a)*1.6;
      d.position.set(x+ex,gy+8.8,z+ez);d.scale.set(3.2,0.15,0.15);d.updateMatrix();arm.setMatrixAt(i,d.matrix);d.position.set(x+ex*2,gy+8.5,z+ez*2);d.scale.set(1,0.35,0.5);d.updateMatrix();head.setMatrixAt(i,d.matrix);});
-   pole.count=arm.count=head.count=lights.length;pole.castShadow=true;scene.add(pole,arm,head);animHooks.push(()=>{const w=nightF(hourCur);headM.emissive.setRGB(w,w*0.85,w*0.55);});}
+   pole.count=arm.count=head.count=lights.length;scene.add(pole,arm,head);animHooks.push(()=>{const w=nightF(hourCur);headM.emissive.setRGB(w,w*0.85,w*0.55);});}
   // signals: a mast arm on two corners of each intersection, cycling between the streets
   const sigM=new THREE.MeshLambertMaterial({color:0x2a2c2e}),lampsAll=[],sigPoles=[],sigHeads=[];
   for(const q of xings){const r=q.roads[0].r,i=q.roads[0].i,p2=r.pts[Math.min(r.pts.length-1,i+1)]===r.pts[i]?r.pts[i-1]:r.pts[Math.min(r.pts.length-1,i+1)],L=Math.hypot(p2[0]-q.x,p2[1]-q.z)||1,ux=(p2[0]-q.x)/L,uz=(p2[1]-q.z)/L;
@@ -46,12 +46,12 @@ section('streetscape',()=>{
    all.forEach(([x,z,a],i)=>{const isMed=i<med.length;d.position.set(x,groundH(x,z),z);d.rotation.set(0,-a,0);d.scale.set(isMed?12:3,0.7,isMed?1.8:1.4);d.updateMatrix();box.setMatrixAt(i,d.matrix);
      d.position.set(x,0.7,z);d.scale.set(isMed?11.4:2.6,0.35,isMed?1.4:1.1);d.updateMatrix();fl.setMatrixAt(i,d.matrix);fl.setColorAt(i,c.setHSL([0.95,0.12,0.8,0.02][Math.floor(R()*4)],0.7,0.55));
      d.position.set(x,isMed?3.2:2.6,z);d.scale.setScalar(isMed?2.4:1.3);d.updateMatrix();tree.setMatrixAt(i,d.matrix);});
-   box.count=fl.count=tree.count=all.length;tree.castShadow=true;scene.add(box,fl,tree);ctx.details=Object.assign(ctx.details||{},{michiganPlanters:all.length});}
+   box.count=fl.count=tree.count=all.length;scene.add(box,fl,tree);ctx.details=Object.assign(ctx.details||{},{michiganPlanters:all.length});}
   // parked cars along the curbs (not on Michigan Avenue or the Riverwalk area)
   const parked=[];for(const r of near){if(r.w<13)continue;along(r,6.8,(x,z,dx,dz,f)=>{if(f.parked===false||nearXing(x,z,26))return;for(const sd of [-1,1]){if(R()<0.3)continue;const px=x-dz*sd*(r.w/2-1.3),pz=z+dx*sd*(r.w/2-1.3);if(!inWater(px,pz))parked.push([px,pz,Math.atan2(dz,dx)]);}});}
   {const n=Math.max(1,parked.length),body=new THREE.InstancedMesh(new THREE.BoxGeometry(4.5,1.0,1.9).translate(0,0.75,0),new THREE.MeshLambertMaterial({color:0xffffff}),n),cab=new THREE.InstancedMesh(new THREE.BoxGeometry(2.4,0.7,1.7).translate(-0.2,1.6,0),new THREE.MeshLambertMaterial({color:0x2a3440}),n),c=new THREE.Color();
    parked.forEach(([x,z,a],i)=>{d.position.set(x,groundH(x,z),z);d.rotation.set(0,-a,0);d.scale.set(1,1,1);d.updateMatrix();body.setMatrixAt(i,d.matrix);cab.setMatrixAt(i,d.matrix);body.setColorAt(i,c.setHSL(carHue(R),carSat(R),carLit(R)));});
-   body.count=cab.count=parked.length;body.castShadow=true;scene.add(body,cab);}
+   body.count=cab.count=parked.length;scene.add(body,cab);}
   // people on the sidewalks, busier on Michigan Avenue
   const PEOPLE=C.people===undefined?1:C.people;
   const walkers=[];for(const r of near)along(r,9,(x,z,dx,dz,f)=>{if(R()>(f.planters?0.6:0.3)*PEOPLE)return;const sd=R()<0.5?-1:1;walkers.push({x0:x,z0:z,dx,dz,sd,off:r.w/2+2.2+R()*1.6,v:(R()<0.5?-1:1)*(1.1+R()*0.5),t:0,col:R()});});

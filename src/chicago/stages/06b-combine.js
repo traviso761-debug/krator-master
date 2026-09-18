@@ -32,7 +32,7 @@ section('combine',()=>{
        const thigh=new THREE.Mesh(new THREE.CylinderGeometry(0.78,0.62,1,5).translate(0,0.5,0),cm),
              shin=new THREE.Mesh(new THREE.CylinderGeometry(0.5,0.3,1,5).translate(0,0.5,0),cm);
        g.add(thigh,shin);legs.push({a,thigh,shin,ph:q/3});}
-     g.castShadow=true;scene.add(g);
+     scene.add(g);
      striders.push({g,legs,r,s:CBR()*r.len,v:3.2+CBR()*1.6,dir:CBR()<0.5?-1:1,BODY,REACH,STRIDE,eye});}
    const aim=new THREE.Vector3(),up=new THREE.Vector3(0,1,0),tmp=new THREE.Vector3();
    const limb=(mesh,ax,ay,az,bx,by,bz)=>{aim.set(bx-ax,by-ay,bz-az);const len=aim.length()||1;
@@ -94,7 +94,7 @@ section('combine',()=>{
      for(const sd of [-1,1])for(const wx of [-2.6,0,2.6]){const wheel=new THREE.Mesh(new THREE.CylinderGeometry(1,1,0.7,8).rotateX(Math.PI/2),cdark);
        wheel.position.set(wx,1,sd*1.8);g.add(wheel);}
      const lamp=new THREE.Mesh(new THREE.SphereGeometry(0.4,6,5),lampM);lamp.position.set(-0.6,5.4,0);g.add(lamp);
-     g.castShadow=true;scene.add(g);apcs.push({g,lamp,r,s:CBR()*r.len,v:7+CBR()*5,dir:CBR()<0.5?-1:1,off:rnd2(-3,3)});}
+     scene.add(g);apcs.push({g,lamp,r,s:CBR()*r.len,v:7+CBR()*5,dir:CBR()<0.5?-1:1,off:rnd2(-3,3)});}
    let lastA=performance.now();
    animHooks.push(now=>{const dt=Math.min(0.05,(now-lastA)/1000);lastA=now;
      for(const c of apcs){c.s+=c.v*dt*c.dir;const [px,pz]=polyAt(c.r,c.s,true),[ax,az]=polyAt(c.r,c.s+c.dir*6,true);
@@ -166,7 +166,7 @@ section('combine',()=>{
      const hut=new THREE.Mesh(new THREE.BoxGeometry(3.4,4.4,3.4).translate(0,2.2,0),pm);hut.position.set(x,gy,z);hut.rotation.y=-head;
      const cap=new THREE.Mesh(new THREE.CylinderGeometry(1,2.4,1.6,6).translate(0,0.8,0),pm);cap.position.set(x,gy+4.4,z);
      const lamp=new THREE.Mesh(new THREE.BoxGeometry(1.5,0.5,0.5),lampM);lamp.position.set(x,gy+5.6,z);
-     hut.castShadow=cap.castShadow=true;scene.add(hut,cap,lamp);lamps.push(lamp);posts++;}
+     scene.add(hut,cap,lamp);lamps.push(lamp);posts++;}
    if(lamps.length)animHooks.push(now=>{const a=now*0.0016;for(let i=0;i<lamps.length;i++)lamps[i].rotation.y=a+i;});}
 
   ctx.striderAt=()=>striders.map(s=>[Math.round(s.g.position.x),Math.round(s.g.position.z)]);   // where the patrols are, for the probe

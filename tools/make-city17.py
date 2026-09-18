@@ -283,8 +283,26 @@ def main():
 
     # ---------- buildings ----------
     buildings = []
-    GREY = ["#8a8880", "#79776f", "#96937f", "#6c6a64", "#a09a8c", "#827c6f", "#6a6f6b", "#918d7c"]
+    # the human palette: weathered brick, cracked concrete, peeling plaster, rusted iron, pre-war stone
+    BRICK = ["#7a4a3a", "#8a5545", "#6e4234", "#96604a", "#83503e", "#6a3f33"]
+    PLASTER = ["#a89c86", "#b8ac95", "#94897a", "#c2b8a2", "#9e9280"]
+    CONCRETE = ["#8a8880", "#79776f", "#6c6a64", "#96938a", "#827c6f", "#6a6f6b"]
+    RUST = ["#7a5a44", "#6a4f3c", "#8a6a4e", "#6f5140"]
+    STONE = ["#c0b49a", "#b0a48c", "#cabfa6", "#a99d86"]       # the grand pre-war blocks around the terminal
     ARMOUR = ["#4a4f55", "#41464c", "#53585e", "#3a3f45"]      # the blocks the Combine has plated over
+
+    def palette_at(bx, bz):
+        """Which district a block belongs to decides what it is built of."""
+        if math.hypot(bx - sx, bz - sz) < 520:
+            return STONE + PLASTER                     # District 1: the urban core around the terminal
+        for a in areas:
+            if a["k"] in ("industrial", "railyard"):
+                x0, x1, z0, z1 = area_bbox(a)
+                if x0 - 220 < bx < x1 + 220 and z0 - 220 < bz < z1 + 220:
+                    return RUST + CONCRETE             # District 3: the works along the canals
+        if min(dist_to_polyline(bx, bz, line) for line in CANALS) < 300:
+            return RUST + CONCRETE + BRICK
+        return BRICK + BRICK + PLASTER + CONCRETE      # District 2: the residential blocks
 
     def put(ring, h, kind=None, colour=None, name=None, roof=None, minh=None):
         b = {"p": flat(ring), "h": round(h, 1)}
@@ -306,10 +324,10 @@ def main():
         return min(xs), max(xs), min(zs), max(zs)
 
     def block_free(bx, bz):
-        if math.hypot(bx, bz) > WALL_R * 0.95:
-            return False
-        if math.hypot(bx - cx, bz - cz) < CORDON_R + 50:
-            return False
+        if math.hypot(bx, bz) > WALL_R * 1.02:
+            return False   # the outer wall is driven straight through whatever stood on its line
+        if math.hypot(bx - cx, bz - cz) < CORDON_R - 10:
+            return False   # inside the cordon there is nothing left; right at the wall the blocks are cut through
         if in_water(bx, bz):
             return False
         for a in areas:
@@ -353,6 +371,7 @@ def main():
                 oz = math.sin(ang) * (across / 2 - depth / 2)
                 length = along * (0.74 + R.random() * 0.26)
                 ring = rect(bx + ox, bz + oz, depth if side % 2 == 0 else length, length if side % 2 == 0 else depth)
+                pal = palette_at(bx, bz)
                 if plated and R.random() < 0.55:
                     put(ring, h, "apartments", ARMOUR[R.randrange(len(ARMOUR))], roof="f")
                     if R.random() < 0.5:   # armour grafted over the roof
@@ -360,7 +379,7 @@ def main():
                                  (length if side % 2 == 0 else depth) * 0.7),
                             h + 4 + R.random() * 7, "armour", "#333940", roof="f", minh=h)
                 else:
-                    put(ring, h, "apartments", GREY[R.randrange(len(GREY))], roof="f")
+                    put(ring, h, "apartments", pal[R.randrange(len(pal))], roof="f")
             if R.random() < 0.22:
                 put(rect(bx + R.uniform(-12, 12), bz + R.uniform(-12, 12), 14 + R.random() * 10, 12 + R.random() * 8),
                     5 + R.random() * 4, "shed", "#6c685f", roof="f")
@@ -372,7 +391,7 @@ def main():
         for _ in range(11):
             ax = R.uniform(x0 + 40, x1 - 40)
             az = R.uniform(z0 + 30, z1 - 30)
-            put(rect(ax, az, R.uniform(50, 120), R.uniform(30, 64)), R.uniform(9, 18), "industrial", "#736c62", roof="f")
+            put(rect(ax, az, R.uniform(50, 120), R.uniform(30, 64)), R.uniform(9, 18), "industrial", RUST[R.randrange(len(RUST))], roof="f")
     # the trainstation: a long hall on the plaza, with the concourse beside it
     put(rect(sx + 40, sz - 120, 190, 54), 26, "station", "#8d8878", name="City 17 Trainstation", roof="f")
     put(rect(sx + 40, sz - 165, 190, 30), 15, "station", "#807b6c", roof="f")
