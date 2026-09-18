@@ -1,6 +1,6 @@
 # City of Iziz
 
-Procedural city models served to the local network by a small Python server. Four cities so far:
+Procedural city models served to the local network by a small Python server. Five cities so far:
 **Iziz**, a science-fantasy city with its own language; **Chicago**, **Portland** and **New York**, built
 from OpenStreetMap and real elevation data; and **City 17**, fan work from Half-Life 2.
 They run on the same core modules and the same page shell; each city is a data file plus a set of build stages.
@@ -15,6 +15,7 @@ They run on the same core modules and the same page shell; each city is a data f
 | `/?city=iziz-b` | | `data/cities/iziz-b.json` | A variant Iziz (rounder wall, another seed, more prints) |
 | `/chicago` | `/chicago.html` | `chicago.html` | Chicago: massing model |
 | `/portland` | `/portland.html` | `portland.html` | Portland: massing model |
+| `/nyc` | `/nyc.html`, `/newyork`, `/manhattan` | `nyc.html` | New York: massing model |
 | `/city17` | `/city17.html`, `/halflife` | `city17.html` | City 17: massing model (fan work) |
 | `/tongue` | `/izani-tongue` | `The-Izani-Tongue_2.html` | The Izani Tongue |
 | `/painting.jpg` | | `painting.jpg` | The Iziz painting; `image.png` is the master copy |
@@ -108,6 +109,24 @@ South Waterfront to the Fremont Bridge and from Washington Park to the Lloyd Dis
 
 Data: `python3 tools/fetch-osm.py portland`, `python3 tools/fetch-terrain.py portland`, then `python3 tools/build-osm-city.py portland`.
 
+### `/nyc`: New York
+
+Manhattan from the Battery to the north end of Central Park, on the Chicago engine
+(`src/chicago/stages/`, loaded by `src/nyc/main.js`) with `data/cities/nyc.json` and `nyc-osm.json`.
+76,930 buildings, 14,215 streets, 22,500 trees, over a 7.9 × 11.1 km map.
+
+- **From the map:** every building at its mapped height, including the towers OSM models as stacks of
+  parts — the Empire State's mast, One World Trade's spire, the pencil towers on 57th Street. Central
+  Park with its lakes and reservoir, the avenue grid, the piers, the bridges to Brooklyn and Queens.
+- **Tidal water:** Manhattan's shores are `natural=coastline` in OSM, not water areas, and its land is
+  cut by the map box so it never closes into a ring. The city sets `seaLevelWater`, which floods the
+  whole box at sea level and lets the elevation grid draw the island. The engine's water lookup asks the
+  ground as well as the polygon, so nothing thinks it is standing in the river.
+- **Added on top:** the Chrysler and Woolworth spires, the suspension towers and cables of the Brooklyn,
+  Manhattan and Williamsburg bridges, and the Statue of Liberty out in the harbour.
+
+Data: `python3 tools/fetch-osm.py nyc`, `python3 tools/fetch-terrain.py nyc`, then `python3 tools/build-osm-city.py nyc`.
+
 ### `/city17`: City 17
 
 Fan work: City 17 from Half-Life 2, on the Chicago engine (`src/chicago/stages/`, loaded by
@@ -163,7 +182,8 @@ src/
   portland/ main.js                          Portland: the Chicago engine with defaultCity 'portland'
   city17/ main.js                            City 17: the same engine with defaultCity 'city17'
 vendor/three/three.min.js     three.js r128 (pinned)
-tools/  build-page.py build-tongue.py probe.py fetch-osm.py fetch-terrain.py build-osm-city.py make-city17.py
+tools/  build-page.py build-tongue.py probe.py check-city.py
+        fetch-osm.py fetch-terrain.py build-osm-city.py make-city17.py
 tests/  run.js *.test.js golden/ fixtures/
 server.py  site.toml  sitectl
 ```
@@ -196,13 +216,44 @@ grid spacing (Portland 15 m, Chicago 30 m). A city with no tiles simply stays fl
 
 ### Per-city look
 
+**`python3 tools/check-city.py [city]`** reads a city's config against its map data and reports what will
+go wrong before the page is ever loaded. Every check in it is a bug that actually happened here: viewpoints
+whose camera sits at or below its target (the orbit control clamps elevation, so you get a bird's eye view
+where you asked for a street one — six of Chicago's were broken this way, including its default); height
+fixes that would bury a tower the map already models properly as a stack of parts; landmarks whose position
+misses their footprint so their spire lands on the ground; models and decor the engine does not have. Run it
+after editing a city config.
+
 A city config may set, besides its geography: `sky` (`day`/`dusk`/`night`, each `top` and `hor`), `fog`
 (FogExp2 density), `overcast` (0-1: less sun, more fill light), `terrainColours` (`low`, `high`, `steep`,
 `far`), `litWindows` (how much of the city lights up at night), `streetTrees`, `parkedCars`, `traffic`
 and `people` (0-1 densities), `palette` (`"drab"` puts vehicles and coats in rust, grey and olive),
-`attribution` (the credit line in the corner), `bridgeDeck` and `bridgeHeights`. A `combine` block
-(`striders`, `manhacks`, `dropships`, `apcs`, `barriers`, `sentries`) turns on the occupation stage, which
-every other city skips. Anything left out keeps the Chicago default.
+`attribution` (the credit line in the corner), `bridgeDeck` and `bridgeHeights`, `smog`, `toxicWater` and
+`waterColour`, `seaLevelWater` (see New York), `lowRiseFar` (how far buildings under 30 m are drawn) and
+`quality` (`low` drops shadows entirely, which on a weak GPU is worth more than everything else together;
+`?quality=low` in the URL overrides it). A `combine` block (`striders`, `manhacks`, `scanners`, `dropships`,
+`apcs`, `barriers`, `smartBarriers`, `turrets`, `fires`, `debris`, `sentries`) turns on the occupation stage,
+which every other city skips. Anything left out keeps the Chicago default.
+
+### Performance
+
+The frame is spent on two things: shadows and how far detail is drawn. Only objects worth a shadow cast one
+— buildings, trees and landmarks, not moving vehicles, street lights, rooftop clutter or a flat city's
+terrain — and the shadow map is redrawn when the sun or the view has actually moved rather than on a frame
+counter. Draw distance is adaptive: when the frame rate slips the engine gives up distant clutter *before*
+it gives up resolution, because a kilometre-away parked car costs less to lose than a sharp image. Buildings
+under 30 m carry their own shorter distance so the low-rise thins out while the skyline never does.
+
+Measured on the Snapdragon laptop this runs on, at each city's default view:
+
+| city | before | after |
+|---|---|---|
+| Portland | 26 fps | 61 fps |
+| Chicago | 25 fps at 0.6 resolution | 30 fps at full resolution, 2.7M → 1.9M triangles |
+| New York | — | 58 fps with 76,930 buildings |
+
+`tools/probe.py` reports draw calls, triangles, frame times and the resolution the GPU settled at, so a
+change can be measured rather than guessed at.
 
 ### Adding a city
 

@@ -246,21 +246,13 @@
     -73.98566
    ],
    "height": 381,
-   "decor": [
-    [
-     "mast",
-     0,
-     0,
-     62
-    ]
-   ],
    "info": "350 Fifth Avenue · 1931 · 381 m to the roof, 443 m to the tip. Art deco, built in 410 days, and the tallest building in the world for 40 years."
   },
   {
    "name": "Chrysler Building",
    "at": [
-    40.75163,
-    -73.97552
+    40.7516,
+    -73.97533
    ],
    "height": 282,
    "decor": [
@@ -276,18 +268,10 @@
   {
    "name": "One World Trade Center",
    "at": [
-    40.71274,
-    -74.01337
+    40.713,
+    -74.01319
    ],
    "height": 417,
-   "decor": [
-    [
-     "mast",
-     0,
-     0,
-     124
-    ]
-   ],
    "info": "285 Fulton Street · 2014 · 417 m to the roof, 541 m to the tip — 1,776 feet. Eight tapering triangles on a cube base."
   },
   {
@@ -314,8 +298,8 @@
     "111 West 57th Street"
    ],
    "at": [
-    40.76446,
-    -73.97733
+    40.765,
+    -73.97744
    ],
    "height": 435,
    "info": "2021 · 435 m and only 18 m wide: the most slender skyscraper in the world."
@@ -323,8 +307,8 @@
   {
    "name": "Central Park Tower",
    "at": [
-    40.76648,
-    -73.98094
+    40.76641,
+    -73.98077
    ],
    "height": 472,
    "info": "2020 · 472 m, the tallest residential building in the world, cantilevered east over its neighbour."
@@ -332,18 +316,10 @@
   {
    "name": "30 Hudson Yards",
    "at": [
-    40.75393,
-    -74.00157
+    40.75401,
+    -74.0011
    ],
    "height": 387,
-   "decor": [
-    [
-     "mast",
-     0,
-     0,
-     25
-    ]
-   ],
    "info": "2019 · 387 m, with the Edge observation deck jutting out of its 100th floor."
   },
   {
@@ -361,8 +337,8 @@
     "Comcast Building"
    ],
    "at": [
-    40.75872,
-    -73.97857
+    40.75894,
+    -73.97914
    ],
    "height": 259,
    "info": "30 Rockefeller Plaza · 1933 · 259 m. The slab that taught American cities how to do a plaza."
@@ -448,14 +424,6 @@
    "at": [
     40.73082,
     -73.99733
-   ],
-   "decor": [
-    [
-     "statue",
-     0,
-     0,
-     6
-    ]
    ],
    "info": "Greenwich Village · 1892 · marble, at the foot of Fifth Avenue."
   },
@@ -551,12 +519,12 @@
    [
     40.7605,
     -74.0135,
-    240
+    330
    ],
    [
     40.7549,
     -73.9855,
-    170
+    120
    ]
   ],
   "Downtown from the harbour": [
@@ -585,14 +553,14 @@
   ],
   "Empire State": [
    [
-    40.7455,
-    -73.9895,
-    150
+    40.742,
+    -73.992,
+    220
    ],
    [
     40.74845,
     -73.98566,
-    200
+    120
    ]
   ],
   "Central Park and the towers": [
@@ -633,26 +601,26 @@
   ],
   "Hudson Yards": [
    [
-    40.7495,
-    -74.0075,
-    150
+    40.7478,
+    -74.0095,
+    260
    ],
    [
     40.75393,
     -74.00157,
-    200
+    120
    ]
   ],
   "Fifth Avenue": [
    [
     40.7448,
     -73.9885,
-    60
+    200
    ],
    [
     40.7587,
     -73.9787,
-    90
+    30
    ]
   ],
   "Overview": [
@@ -669,5 +637,11 @@
   ]
  },
  "seaLevelWater": true,
- "_seaLevelWater": "Manhattan's shores are tidal coastline in OSM, so the box is flooded at sea level and the elevation grid draws the island"
+ "_seaLevelWater": "Manhattan's shores are tidal coastline in OSM, so the box is flooded at sea level and the elevation grid draws the island",
+ "terrainColours": {
+  "low": "#6a6a62",
+  "high": "#5f6a52",
+  "steep": "#6a6052",
+  "far": "#2f6490"
+ }
 }

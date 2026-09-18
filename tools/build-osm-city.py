@@ -255,8 +255,11 @@ def terrain_grid():
             xx = BX0 + i * step
             hs.append(elev(LAT0 - zz / M_LAT, LON0 + xx / M_LON))
     water = sorted(hs)[len(hs) // 20]   # the 5th percentile: river or lake level
+    # A tidal city's tiles carry the harbour's bathymetry, which is metres of depth nobody will ever see through
+    # the water plane, and the odd bad sample a long way below that. The bed is clamped just under the surface.
+    floor = -6.0 if CITY.get("seaLevelWater") else -400.0
     return {"step": step, "nx": nx, "nz": nz, "x0": q(BX0), "z0": q(BZ0), "datum": round(water, 1),
-            "h": [int(round((h - water) * 10)) for h in hs],
+            "h": [int(round(max(h - water, floor) * 10)) for h in hs],
             "_": "heights in decimetres above the water level (datum, metres above sea level)"}
 
 
