@@ -96,6 +96,75 @@ const MODELS={
     g.computeVertexNormals();const rock=new THREE.MeshLambertMaterial({color:0x6a7288,fog:false}),snow=new THREE.MeshLambertMaterial({color:0xf4f6fa,fog:false});
     const base=new THREE.Mesh(g,rock);base.position.set(x,h/2-h*0.05,z);const capG=new THREE.ConeGeometry(r*0.38,h*0.38,36,2,true);const cap=new THREE.Mesh(capG,snow);cap.position.set(x,h-h*0.05-h*0.19+(L.crater?-h*0.08:0),z);cap.scale.set(1.02,1,1.02);
     const grp=group(L,[base,cap]);base.castShadow=cap.castShadow=false;return grp;},
+  // ---- Vashrin (data/cities/vashrin.json): the fictional city's own structures ----
+  spiretower(L,x,z){   // the tower over the plaza: a battered shaft that splits into three prongs around a lit aperture
+    const H=L.height||520,g0=gh(x,z),parts=[],R0=68,R1=26;
+    const shellM=new THREE.MeshPhongMaterial({color:0x3c4048,specular:0x9099a8,shininess:26,flatShading:true});
+    const prof=[];for(let k=0;k<=16;k++){const t=k/16,r=R0*(1-Math.pow(t,1.5))+R1*Math.pow(t,1.5)-Math.sin(t*Math.PI)*5;prof.push(new THREE.Vector2(Math.max(6,r),g0+H*0.78*t));}
+    const shaft=new THREE.Mesh(new THREE.LatheGeometry(prof,9),shellM);shaft.position.set(x,0,z);parts.push(shaft);
+    for(let k=0;k<3;k++){   // the prongs, leaning in towards the aperture
+      const a=k/3*Math.PI*2+0.5,pr=new THREE.Mesh(new THREE.CylinderGeometry(5,17,H*0.28,5).translate(0,H*0.14,0),shellM);
+      pr.position.set(x+Math.cos(a)*17,g0+H*0.74,z+Math.sin(a)*17);pr.rotation.set(Math.sin(a)*0.2,0,-Math.cos(a)*0.2);parts.push(pr);}
+    for(let k=0;k<6;k++){   // buttress fins down the lower third
+      const a=k/6*Math.PI*2,hF=H*(0.3+0.06*(k%2)),fin=new THREE.Mesh(new THREE.BoxGeometry(20,hF,7).translate(0,hF/2,0),shellM);
+      fin.position.set(x+Math.cos(a)*(R0-7),g0,z+Math.sin(a)*(R0-7));fin.rotation.y=-a;parts.push(fin);}
+    {const plinth=new THREE.Mesh(new THREE.CylinderGeometry(R0*1.5,R0*1.62,7,9).translate(0,3.5,0),stoneM);plinth.position.set(x,g0-1,z);parts.push(plinth);}   // the plaza steps up to it
+    const glowM=new THREE.MeshBasicMaterial({color:0x9fd8ff,transparent:true,opacity:0.8});
+    const eye=new THREE.Mesh(new THREE.SphereGeometry(16,20,12),glowM);eye.position.set(x,g0+H*0.8,z);parts.push(eye);
+    const halo=new THREE.Mesh(new THREE.TorusGeometry(44,2.2,6,40),glowM);halo.position.set(x,g0+H*0.68,z);halo.rotation.x=Math.PI/2;parts.push(halo);
+    for(let k=0;k<4;k++){   // service bands, each one a little narrower than the shaft it wraps
+      const t=0.16+k*0.16,r=(R0*(1-t)+R1*t-Math.sin(t*Math.PI)*7)*1.16;
+      const b=new THREE.Mesh(new THREE.CylinderGeometry(r,r*1.04,3.2,9).translate(0,1.6,0),shellM);b.position.set(x,g0+H*0.78*t,z);b.rotation.y=k*0.35;parts.push(b);}
+    const stripM=new THREE.MeshBasicMaterial({color:0x6fa8d0,transparent:true,opacity:0.2});   // the seams down the shaft, which only show at night
+    const strips=[];for(let k=0;k<6;k++){const a=k/6*Math.PI*2+0.3,hS=H*0.5,st=new THREE.Mesh(new THREE.BoxGeometry(1.2,hS,1.2).translate(0,hS/2,0),stripM);
+      st.position.set(x+Math.cos(a)*(R1+11),g0+H*0.26,z+Math.sin(a)*(R1+11));strips.push(st);parts.push(st);}
+    const g=group(L,parts);
+    animHooks.push(now=>{const n=nightF(hourCur),p=0.55+0.45*Math.sin(now*0.0011);glowM.opacity=(0.35+0.5*n)*p;halo.rotation.z=now*0.00012;eye.scale.setScalar(0.94+0.1*p);
+      for(const st of strips)st.visible=n>0.2;stripM.opacity=0.42*n*p;});
+    return g;},
+  checkpoint(L,x,z){   // a gate through the ring wall: blockhouses, a beam over the road, a barrier that lifts
+    const a=L.ang||0,ux=-Math.sin(a),uz=Math.cos(a),g0=gh(x,z),parts=[],m=new THREE.MeshLambertMaterial({color:0x60605c}),y=new THREE.MeshLambertMaterial({color:0xc8b038});
+    for(const s of [-1,1]){const bx=x+ux*s*13,bz=z+uz*s*13;parts.push(box(bx,gh(bx,bz),bz,10,16,10,m));
+      const cab=box(bx,gh(bx,bz)+16,bz,11,2,11,steelM);parts.push(cab);}
+    parts.push(box(x,g0+15,z,30,2.6,5,m));
+    const pivot=new THREE.Group();pivot.position.set(x-ux*9,g0+3,z-uz*9);   // the barrier arm, hinged at the kerb
+    const bar=new THREE.Mesh(new THREE.BoxGeometry(0.6,0.6,16).translate(0,0,8),y);bar.rotation.y=-a;pivot.add(bar);parts.push(pivot);
+    const lamp=new THREE.Mesh(new THREE.SphereGeometry(0.7,8,6),new THREE.MeshBasicMaterial({color:0xff4020}));lamp.position.set(x,g0+18,z);parts.push(lamp);
+    const g=group(L,parts);g.rotation.y=0;
+    animHooks.push(now=>{const t=(now/9000)%1,lift=smooth(0.45,0.55,t)-smooth(0.9,0.98,t);pivot.rotation.x=-1.25*lift;lamp.visible=(now%1400)<700;});
+    return g;},
+  watchtower(L,x,z){   // a mast on the wall with a sweeping light
+    const g0=gh(x,z),H=L.height||34,parts=[],m=new THREE.MeshLambertMaterial({color:0x585852});
+    parts.push(box(x,g0,z,3.4,H,3.4,m),box(x,g0+H,z,8,3,8,m));
+    for(const s of [-1,1])parts.push(box(x+s*2.4,g0+H*0.4,z,0.8,H*0.6,0.8,m));
+    const beamM=new THREE.MeshBasicMaterial({color:0xfff0c0,transparent:true,opacity:0.14,side:THREE.DoubleSide,depthWrite:false});
+    const swivel=new THREE.Group();swivel.position.set(x,g0+H+1.5,z);
+    const beam=new THREE.Mesh(new THREE.ConeGeometry(11,150,12,1,true).rotateZ(Math.PI/2).translate(75,0,0),beamM);
+    beam.rotation.z=-0.3;swivel.add(beam);parts.push(swivel);
+    const head=new THREE.Mesh(new THREE.SphereGeometry(1.3,10,8),new THREE.MeshBasicMaterial({color:0xfff4d4}));head.position.set(x,g0+H+1.5,z);parts.push(head);
+    const g=group(L,parts);
+    animHooks.push(now=>{const n=nightF(hourCur);swivel.visible=head.visible=n>0.25;beamM.opacity=0.16*n;swivel.rotation.y=now*0.00035;});
+    return g;},
+  screen(L,x,z){   // a blank public screen on a mast
+    const g0=gh(x,z),parts=[],m=new THREE.MeshLambertMaterial({color:0x4a4a48});
+    const faceM=new THREE.MeshBasicMaterial({color:0x22262b});
+    parts.push(box(x-4,g0,z,1,14,1,m),box(x+4,g0,z,1,14,1,m));
+    const face=box(x,g0+13,z,11,6.5,0.6,faceM);parts.push(face,box(x,g0+12.6,z-0.4,12,7.3,0.5,m));
+    const g=group(L,parts);
+    animHooks.push(now=>{const n=nightF(hourCur),f=0.06+0.5*n*(0.85+0.15*Math.sin(now*0.006));faceM.color.setRGB(f*0.55,f*0.72,f*0.9);});
+    return g;},
+  stacks(L,x,z){   // chimneys and a water tower over an industrial yard, with smoke
+    const n=L.stacks||3,parts=[],m=new THREE.MeshLambertMaterial({color:0x8a7f70}),band=new THREE.MeshLambertMaterial({color:0xb04a3a});
+    const puffs=[],smokeM=new THREE.MeshLambertMaterial({color:0xb8b4ae,transparent:true,opacity:0.32,depthWrite:false});
+    for(let k=0;k<n;k++){const sx=x+(k-(n-1)/2)*26,sz=z+(k%2)*14,g0=gh(sx,sz),H=44+k*9;
+      const st=new THREE.Mesh(new THREE.CylinderGeometry(2.6,4.4,H,12).translate(0,H/2,0),m);st.position.set(sx,g0,sz);parts.push(st);
+      parts.push(box(sx,g0+H-6,sz,6.2,1.6,6.2,band));
+      for(let q=0;q<3;q++){const p=new THREE.Mesh(new THREE.SphereGeometry(5,8,6),smokeM.clone());p.position.set(sx,g0+H,sz);p.userData.b=[sx,g0+H,sz,q/3+k*0.17];puffs.push(p);parts.push(p);}}
+    const wx=x+40,wz=z-26,wg=gh(wx,wz);parts.push(box(wx,wg,wz,2,26,2,steelM));
+    const tank=new THREE.Mesh(new THREE.CylinderGeometry(7,7,9,14).translate(0,4.5,0),m);tank.position.set(wx,wg+26,wz);parts.push(tank);
+    const g=group(L,parts);
+    animHooks.push(now=>{for(const p of puffs){const [bx,by,bz,ph]=p.userData.b,t=((now/9000)+ph)%1;p.position.set(bx+t*46,by+t*34,bz+t*10);p.scale.setScalar(1+t*3.4);p.material.opacity=0.3*(1-t);}});
+    return g;},
   wrigley(L,x,z){   // the red marquee at Clark and Addison, the hand-turned scoreboard over the centre-field bleachers, light towers; ivy on the outfield wall
     const parts=[],field=AREAS.find(a=>a.kind==='pitch'&&Math.hypot((a.bb.x0+a.bb.x1)/2-x,(a.bb.z0+a.bb.z1)/2-z)<150);
     const [mx,mz]=P(L.marquee||[41.94736,-87.65641]),gm=gh(mx,mz);parts.push(box(mx,gm+6,mz,0.6,4,11,redM),box(mx,gm,mz-4,0.5,6,0.5,steelM),box(mx,gm,mz+4,0.5,6,0.5,steelM));

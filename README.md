@@ -1,8 +1,9 @@
 # City of Iziz
 
-Procedural city models served to the local network by a small Python server. Two cities so far:
-**Iziz**, a science-fantasy city with its own language, and **Chicago**. Both run on the same core
-modules and the same page shell; each city is a data file plus a set of build stages.
+Procedural city models served to the local network by a small Python server. Four cities so far:
+**Iziz**, a science-fantasy city with its own language; **Chicago** and **Portland**, built from
+OpenStreetMap and real elevation data; and **Vashrin**, an invented occupied city generated from a seed.
+They run on the same core modules and the same page shell; each city is a data file plus a set of build stages.
 
 **Site:** http://192.168.124.227:8000/
 
@@ -14,6 +15,7 @@ modules and the same page shell; each city is a data file plus a set of build st
 | `/?city=iziz-b` | | `data/cities/iziz-b.json` | A variant Iziz (rounder wall, another seed, more prints) |
 | `/chicago` | `/chicago.html` | `chicago.html` | Chicago: massing model |
 | `/portland` | `/portland.html` | `portland.html` | Portland: massing model |
+| `/vashrin` | `/vashrin.html`, `/city17` | `vashrin.html` | Vashrin: massing model (invented) |
 | `/tongue` | `/izani-tongue` | `The-Izani-Tongue_2.html` | The Izani Tongue |
 | `/painting.jpg` | | `painting.jpg` | The Iziz painting; `image.png` is the master copy |
 | `/css/*`, `/src/*`, `/data/*`, `/vendor/*` | | those folders | stylesheets, modules, content, three.js |
@@ -106,6 +108,28 @@ South Waterfront to the Fremont Bridge and from Washington Park to the Lloyd Dis
 
 Data: `python3 tools/fetch-osm.py portland`, `python3 tools/fetch-terrain.py portland`, then `python3 tools/build-osm-city.py portland`.
 
+### `/vashrin`: Vashrin
+
+An invented city, not a survey: a dystopian occupied town of concrete courtyard blocks in a river valley,
+ringed by a wall, with one enormous tower over the plaza at its centre. It runs on the Chicago engine
+(`src/chicago/stages/`, loaded by `src/vashrin/main.js`), because `tools/make-vashrin.py` writes
+`data/cities/vashrin-osm.json` in exactly the shape `tools/build-osm-city.py` produces for a real city:
+terrain grid, river and canals, streets, land use and 1,950 buildings. `data/cities/vashrin.json` holds the
+rest — districts, landmarks, viewpoints and the weather.
+
+- **Generated:** a river valley cut into an east bluff, a level plaza terrace, a grid of courtyard blocks on a
+  104 m pitch (four bars around a yard, stepped heights, the occasional slab tower), named avenues every fifth
+  street, a ring road, four gate roads, bridges wherever a main street crosses water, industrial yards, a rail
+  spur, two tram lines and an elevated transit line, and the ring wall itself (17 m, with buttresses and towers).
+- **Added on top:** the Spire on its plinth — a battered shaft splitting into three prongs around a lit
+  aperture, with a slow halo and seams that only show at night — four wall checkpoints with barriers that lift,
+  watchtowers whose lights sweep the ring road after dark, two blank public screens, and the works' smoking stacks.
+- **The weather:** a flat overcast sky, heavier fog, few street trees, almost no parked cars, and only a third
+  of the windows lit after dark, so the place reads as occupied rather than busy.
+
+Regenerate with `python3 tools/make-vashrin.py` (deterministic: the same seed gives the same city), then
+`./sitectl build`. Nothing about Vashrin is taken from any published work; it is this project's own invention.
+
 ### `/tongue`: The Izani Tongue
 
 A self-contained reference page (no scripts). Its **City lexicon** tables are generated from
@@ -129,9 +153,11 @@ src/
   core/   diag.js rng.js env.js data.js      error reporting + staged loading, randomness/noise, shader environment, data expressions
   izani/  glyphs.js draw.js atlas.js          the script: strokes/layout/SVG (pure), canvas drawing, the texture atlas
   iziz/   main.js imports.js stages/*.js build.js   the Iziz build: 56 stage files, assembled into build.js
-  chicago/ main.js imports.js stages/*.js build.js  the Chicago build: 8 stage files
+  chicago/ main.js imports.js stages/*.js build.js  the Chicago build: 10 stage files, shared by Portland and Vashrin
+  portland/ main.js                          Portland: the Chicago engine with defaultCity 'portland'
+  vashrin/ main.js                           Vashrin: the same engine with defaultCity 'vashrin'
 vendor/three/three.min.js     three.js r128 (pinned)
-tools/  build-page.py build-tongue.py probe.py
+tools/  build-page.py build-tongue.py probe.py fetch-osm.py fetch-terrain.py build-osm-city.py make-vashrin.py
 tests/  run.js *.test.js golden/ fixtures/
 server.py  site.toml  sitectl
 ```
@@ -161,6 +187,14 @@ After editing the lexicon run `python3 tools/build-tongue.py` to refresh the Ton
 `data/osm/raw/<city>/terrain/`, not committed); `tools/build-osm-city.py` samples them into a height grid in
 the city's `-osm.json`, with y = 0 at the water level. `terrain` in the city config sets the tile zoom and the
 grid spacing (Portland 15 m, Chicago 30 m). A city with no tiles simply stays flat.
+
+### Per-city look
+
+A city config may set, besides its geography: `sky` (`day`/`dusk`/`night`, each `top` and `hor`), `fog`
+(FogExp2 density), `overcast` (0-1: less sun, more fill light), `terrainColours` (`low`, `high`, `steep`,
+`far`), `litWindows` (how much of the city lights up at night), `streetTrees` and `parkedCars` (0-1
+densities), `attribution` (the credit line in the corner), `bridgeDeck` and `bridgeHeights`. Anything left
+out keeps the Chicago default.
 
 ### Adding a city
 

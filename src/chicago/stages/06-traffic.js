@@ -101,5 +101,5 @@ section('boats',()=>{
         m.g.position.set(m.x,0.1+Math.sin(T*2+m.z)*0.08,m.z);m.g.rotation.set(0,-m.a,0);m.wk.material.opacity=0.35+0.15*Math.sin(T*3+m.x);}
       else{m.dir=m.dir||1;m.s+=m.dir*m.v*dt;if(!m.wrap){if(m.s>m.r.len-30){m.s=m.r.len-30;m.dir=-1;}if(m.s<30){m.s=30;m.dir=1;}}
         const [x,z,a]=polyAt(m.r,m.s,m.wrap),o=(m.off||0)*m.dir;m.g.position.set(x-Math.sin(a)*o,0.25+Math.sin(T+x)*0.08,z+Math.cos(a)*o);m.g.rotation.y=-a+(m.dir>0?0:Math.PI);}}});
-  ctx.details=Object.assign(ctx.details||{},{sailboats:60,motorboats:26,moored:moored.length,riverChains:river.length});
+  ctx.details=Object.assign(ctx.details||{},{sailboats:movers.filter(m=>m.kind==='sail').length,motorboats:movers.filter(m=>m.kind==='motor').length,moored:moored.length,riverChains:river.length});
 });
