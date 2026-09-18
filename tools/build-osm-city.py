@@ -284,11 +284,22 @@ def main():
         c = simplify(c, 1.0)
         far = BX1 + 2500
         lake = [(c[0][0], BZ0 - 2500)] + c + [(c[-1][0], BZ1 + 2500), (far, BZ1 + 2500), (far, BZ0 - 2500)]
+    # A city whose water is tidal (New York) has its shores mapped as coastline, not as water areas, and its land
+    # masses are cut by the map box so they never close into rings. Rather than clip and stitch them, such a city
+    # floods the whole box at sea level and lets the elevation grid decide what is land: the engine draws water at
+    # y = 0 and the terrain stands above it, so the shoreline comes out of the DEM at its own resolution.
+    if CITY.get("seaLevelWater"):
+        lake = None
+        out["seaLevelWater"] = True
     out["lake"] = flat(lake or [])
     out["islands"] = [flat(ring_simplify(r, 1.0)) for r in islands if any(in_bounds(p) for p in r)]
 
     # ---- inland water (the river, harbour basins, lagoons), marinas, beaches, breakwaters and piers
     polys = {"water": [], "marina": [], "beach": [], "pier": []}
+    if CITY.get("seaLevelWater"):
+        m = 400
+        polys["water"].append({"o": [(BX0 - m, BZ0 - m), (BX1 + m, BZ0 - m), (BX1 + m, BZ1 + m), (BX0 - m, BZ1 + m)],
+                               "i": [], "n": "Sea level"})
     for e in water:
         t = e.get("tags", {})
         kind = ("marina" if t.get("leisure") == "marina" else "beach" if t.get("natural") == "beach" else

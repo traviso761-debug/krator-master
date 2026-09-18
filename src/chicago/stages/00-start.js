@@ -59,7 +59,10 @@ const WG=20,WNX=Math.ceil(B.w/WG),WNZ=Math.ceil(B.d/WG),WGRID=new Uint8Array(WNX
    for(let q=0;q+1<xs.length;q+=2){const a=Math.max(0,Math.floor((xs[q]-B.x0)/WG)),b=Math.min(WNX-1,Math.floor((xs[q+1]-B.x0)/WG));for(let i=a;i<=b;i++)WGRID[j*WNX+i]=1;}}
  const fillRec=(bb,test,val)=>{for(let j=Math.max(0,Math.floor((bb.z0-B.z0)/WG));j<=Math.min(WNZ-1,Math.floor((bb.z1-B.z0)/WG));j++)for(let i=Math.max(0,Math.floor((bb.x0-B.x0)/WG));i<=Math.min(WNX-1,Math.floor((bb.x1-B.x0)/WG));i++)if(test(B.x0+(i+0.5)*WG,B.z0+(j+0.5)*WG,WGRID[j*WNX+i]))WGRID[j*WNX+i]=val;};
  for(const r of ISLANDS)fillRec(bbox(r),(x,z)=>inPoly(x,z,r),0);
- for(const w of WATER)fillRec(w.bb,(x,z,v)=>!v&&inRec(w,x,z),2);}
+ // A sea-level city floods its whole box and lets the ground decide: a cell is only water where the land is not
+ // standing above the waterline. Without this every tree, car and street light would think it was in the river.
+ const SEA=!!C.seaLevelWater,dry=(x,z)=>SEA&&groundH(x,z)>0.4;
+ for(const w of WATER)fillRec(w.bb,(x,z,v)=>!v&&!dry(x,z)&&inRec(w,x,z),2);}
 const waterCell=(x,z)=>{const i=Math.floor((x-B.x0)/WG),j=Math.floor((z-B.z0)/WG);if(i<0||j<0||i>=WNX||j>=WNZ)return x>B.x1?1:0;return WGRID[j*WNX+i];};
 const inLake=(x,z)=>waterCell(x,z)===1;
 const inRiver=(x,z)=>waterCell(x,z)===2;

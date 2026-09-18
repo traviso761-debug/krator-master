@@ -453,7 +453,12 @@
   "apcs": 16,
   "barriers": 1500,
   "sentries": 26,
-  "_": "the occupation: walking striders, manhacks, dropships with troop pods, armoured carriers, street barriers and sentry posts"
+  "_": "the occupation: walking striders, manhacks, dropships with troop pods, armoured carriers, street barriers and sentry posts",
+  "scanners": 70,
+  "smartBarriers": 26,
+  "turrets": 10,
+  "fires": 34,
+  "debris": 900
  },
  "palette": "drab",
  "smog": {

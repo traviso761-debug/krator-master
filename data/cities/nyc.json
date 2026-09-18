@@ -1,49 +1,219 @@
 {
  "name": "New York",
  "note": "Configuration for nyc.html (the same engine as chicago.html). The geography comes from OpenStreetMap via tools/fetch-osm.py nyc and tools/build-osm-city.py nyc into nyc-osm.json. The map is Manhattan from the Battery to the north end of Central Park, with the Hudson and East Rivers either side. This file holds the districts, landmark decorations, detailed street areas and viewpoints. Positions are [lat, lon].",
- "origin": [40.7549, -73.984],
+ "origin": [
+  40.7549,
+  -73.984
+ ],
  "defaultSeed": 1624,
  "defaultView": "Midtown from the East River",
- "bounds": [40.7, -74.022, 40.8, -73.928],
+ "bounds": [
+  40.7,
+  -74.022,
+  40.8,
+  -73.928
+ ],
  "osm": "data/cities/nyc-osm.json",
  "fetch": {
-  "bbox": [40.697, -74.027, 40.803, -73.924],
+  "bbox": [
+   40.697,
+   -74.027,
+   40.803,
+   -73.924
+  ],
   "tiles": {
-   "buildings": [5, 4],
-   "roads": [2, 2]
+   "buildings": [
+    5,
+    4
+   ],
+   "roads": [
+    2,
+    2
+   ]
   },
   "detailZones": [
-   [40.742, -74.002, 40.768, -73.966],
-   [40.7, -74.019, 40.726, -73.995],
-   [40.726, -74.006, 40.742, -73.978]
+   [
+    40.742,
+    -74.002,
+    40.768,
+    -73.966
+   ],
+   [
+    40.7,
+    -74.019,
+    40.726,
+    -73.995
+   ],
+   [
+    40.726,
+    -74.006,
+    40.742,
+    -73.978
+   ]
   ],
   "_": "bbox and tiles for tools/fetch-osm.py; detailZones for tools/build-osm-city.py. Manhattan's water is tidal, so OSM maps its shores as natural=coastline and the build script takes the land from those rings."
  },
- "coastlineMode": "island",
  "terrain": {
   "zoom": 14,
   "step": 20,
   "_": "elevation grid spacing in metres; tiles from tools/fetch-terrain.py"
  },
- "skylineCentre": [40.7549, -73.984],
+ "skylineCentre": [
+  40.7549,
+  -73.984
+ ],
  "districts": {
   "_": "[name, hex colour, base height, tallest, box as [lat south, lon west, lat north, lon east]]",
-  "midtown": ["Midtown", "#6a7a90", 40, 420, [40.742, -74.002, 40.768, -73.966]],
-  "financial": ["Financial District", "#5f6f84", 35, 400, [40.7, -74.019, 40.722, -73.995]],
-  "soho": ["SoHo and Tribeca", "#8a6a54", 18, 60, [40.716, -74.014, 40.73, -73.994]],
-  "village": ["Greenwich Village", "#8a7058", 16, 55, [40.726, -74.012, 40.742, -73.984]],
-  "chelsea": ["Chelsea and Hudson Yards", "#75798a", 22, 300, [40.74, -74.012, 40.762, -73.99]],
-  "gramercy": ["Gramercy and Murray Hill", "#7a7a80", 22, 120, [40.734, -73.99, 40.755, -73.966]],
-  "upperwest": ["Upper West Side", "#7e8290", 25, 180, [40.768, -73.995, 40.8, -73.958]],
-  "uppereast": ["Upper East Side", "#82808c", 25, 200, [40.762, -73.968, 40.8, -73.938]],
-  "park": ["Central Park", "#4f7a48", 0, 0, [40.764, -73.982, 40.8, -73.949]],
-  "outer": ["Manhattan", "#7c7a78", 15, 90, null]
+  "midtown": [
+   "Midtown",
+   "#6a7a90",
+   40,
+   420,
+   [
+    40.742,
+    -74.002,
+    40.768,
+    -73.966
+   ]
+  ],
+  "financial": [
+   "Financial District",
+   "#5f6f84",
+   35,
+   400,
+   [
+    40.7,
+    -74.019,
+    40.722,
+    -73.995
+   ]
+  ],
+  "soho": [
+   "SoHo and Tribeca",
+   "#8a6a54",
+   18,
+   60,
+   [
+    40.716,
+    -74.014,
+    40.73,
+    -73.994
+   ]
+  ],
+  "village": [
+   "Greenwich Village",
+   "#8a7058",
+   16,
+   55,
+   [
+    40.726,
+    -74.012,
+    40.742,
+    -73.984
+   ]
+  ],
+  "chelsea": [
+   "Chelsea and Hudson Yards",
+   "#75798a",
+   22,
+   300,
+   [
+    40.74,
+    -74.012,
+    40.762,
+    -73.99
+   ]
+  ],
+  "gramercy": [
+   "Gramercy and Murray Hill",
+   "#7a7a80",
+   22,
+   120,
+   [
+    40.734,
+    -73.99,
+    40.755,
+    -73.966
+   ]
+  ],
+  "upperwest": [
+   "Upper West Side",
+   "#7e8290",
+   25,
+   180,
+   [
+    40.768,
+    -73.995,
+    40.8,
+    -73.958
+   ]
+  ],
+  "uppereast": [
+   "Upper East Side",
+   "#82808c",
+   25,
+   200,
+   [
+    40.762,
+    -73.968,
+    40.8,
+    -73.938
+   ]
+  ],
+  "park": [
+   "Central Park",
+   "#4f7a48",
+   0,
+   0,
+   [
+    40.764,
+    -73.982,
+    40.8,
+    -73.949
+   ]
+  ],
+  "outer": [
+   "Manhattan",
+   "#7c7a78",
+   15,
+   90,
+   null
+  ]
  },
  "focus": [
-  {"name": "Times Square", "at": [40.758, -73.9855], "radius": 320, "parked": false},
-  {"name": "Midtown", "at": [40.7549, -73.984], "radius": 520},
-  {"name": "Wall Street", "at": [40.7069, -74.0113], "radius": 300},
-  {"name": "Rockefeller Center", "at": [40.7587, -73.9787], "radius": 260}
+  {
+   "name": "Times Square",
+   "at": [
+    40.758,
+    -73.9855
+   ],
+   "radius": 320,
+   "parked": false
+  },
+  {
+   "name": "Midtown",
+   "at": [
+    40.7549,
+    -73.984
+   ],
+   "radius": 520
+  },
+  {
+   "name": "Wall Street",
+   "at": [
+    40.7069,
+    -74.0113
+   ],
+   "radius": 300
+  },
+  {
+   "name": "Rockefeller Center",
+   "at": [
+    40.7587,
+    -73.9787
+   ],
+   "radius": 260
+  }
  ],
  "el": {
   "height": 9,
@@ -63,186 +233,441 @@
   "Henry Hudson Parkway": 9
  },
  "riverTours": "Hudson|East River",
- "riverBoats": {"sail": 4, "motor": 14, "kayak": 4},
+ "riverBoats": {
+  "sail": 4,
+  "motor": 14,
+  "kayak": 4
+ },
  "landmarks": [
   {
    "name": "Empire State Building",
-   "at": [40.74845, -73.98566],
+   "at": [
+    40.74845,
+    -73.98566
+   ],
    "height": 381,
-   "decor": [["mast", 0, 0, 62]],
+   "decor": [
+    [
+     "mast",
+     0,
+     0,
+     62
+    ]
+   ],
    "info": "350 Fifth Avenue · 1931 · 381 m to the roof, 443 m to the tip. Art deco, built in 410 days, and the tallest building in the world for 40 years."
   },
   {
    "name": "Chrysler Building",
-   "at": [40.75163, -73.97552],
+   "at": [
+    40.75163,
+    -73.97552
+   ],
    "height": 282,
-   "decor": [["spire", 0, 0, 37]],
+   "decor": [
+    [
+     "spire",
+     0,
+     0,
+     37
+    ]
+   ],
    "info": "405 Lexington Avenue · 1930 · 319 m. The stainless steel crown and its arches, and the spire that was assembled in secret inside the building to beat 40 Wall Street."
   },
   {
    "name": "One World Trade Center",
-   "at": [40.71274, -74.01337],
+   "at": [
+    40.71274,
+    -74.01337
+   ],
    "height": 417,
-   "decor": [["mast", 0, 0, 124]],
+   "decor": [
+    [
+     "mast",
+     0,
+     0,
+     124
+    ]
+   ],
    "info": "285 Fulton Street · 2014 · 417 m to the roof, 541 m to the tip — 1,776 feet. Eight tapering triangles on a cube base."
   },
   {
    "name": "432 Park Avenue",
-   "at": [40.76158, -73.97176],
+   "at": [
+    40.76158,
+    -73.97176
+   ],
    "height": 426,
    "info": "2015 · 426 m of square concrete grid, 1:15 slenderness. The one that started the pencil towers."
   },
   {
    "name": "One Vanderbilt",
-   "at": [40.75291, -73.97853],
+   "at": [
+    40.75291,
+    -73.97853
+   ],
    "height": 427,
    "info": "2020 · 427 m, next to Grand Central, with four tapering facets angled to the terminal."
   },
   {
    "name": "Steinway Tower",
-   "aka": ["111 West 57th Street"],
-   "at": [40.76446, -73.97733],
+   "aka": [
+    "111 West 57th Street"
+   ],
+   "at": [
+    40.76446,
+    -73.97733
+   ],
    "height": 435,
    "info": "2021 · 435 m and only 18 m wide: the most slender skyscraper in the world."
   },
   {
    "name": "Central Park Tower",
-   "at": [40.76648, -73.98094],
+   "at": [
+    40.76648,
+    -73.98094
+   ],
    "height": 472,
    "info": "2020 · 472 m, the tallest residential building in the world, cantilevered east over its neighbour."
   },
   {
    "name": "30 Hudson Yards",
-   "at": [40.75393, -74.00157],
+   "at": [
+    40.75393,
+    -74.00157
+   ],
    "height": 387,
-   "decor": [["mast", 0, 0, 25]],
+   "decor": [
+    [
+     "mast",
+     0,
+     0,
+     25
+    ]
+   ],
    "info": "2019 · 387 m, with the Edge observation deck jutting out of its 100th floor."
   },
   {
    "name": "The Vessel",
-   "at": [40.75376, -74.00218],
+   "at": [
+    40.75376,
+    -74.00218
+   ],
    "info": "Hudson Yards · 2019 · Thomas Heatherwick's climbable lattice of 154 flights of stairs."
   },
   {
    "name": "Rockefeller Center",
-   "aka": ["30 Rock", "Comcast Building"],
-   "at": [40.75872, -73.97857],
+   "aka": [
+    "30 Rock",
+    "Comcast Building"
+   ],
+   "at": [
+    40.75872,
+    -73.97857
+   ],
    "height": 259,
    "info": "30 Rockefeller Plaza · 1933 · 259 m. The slab that taught American cities how to do a plaza."
   },
   {
    "name": "Grand Central Terminal",
-   "at": [40.75273, -73.97715],
+   "at": [
+    40.75273,
+    -73.97715
+   ],
    "info": "89 East 42nd Street · 1913 · the Beaux-Arts concourse, the celestial ceiling, and 44 platforms under it."
   },
   {
    "name": "MetLife Building",
-   "at": [40.75432, -73.97621],
+   "at": [
+    40.75432,
+    -73.97621
+   ],
    "height": 246,
    "info": "200 Park Avenue · 1963 · 246 m, built over the tracks and straight across the axis of Park Avenue."
   },
   {
    "name": "Flatiron Building",
-   "at": [40.74106, -73.98972],
+   "at": [
+    40.74106,
+    -73.98972
+   ],
    "height": 87,
    "info": "175 Fifth Avenue · 1902 · 87 m on a triangular lot where Broadway crosses Fifth."
   },
   {
    "name": "Seagram Building",
-   "at": [40.75872, -73.97183],
+   "at": [
+    40.75872,
+    -73.97183
+   ],
    "height": 157,
    "info": "375 Park Avenue · 1958 · Mies van der Rohe's bronze tower set back behind its own plaza."
   },
   {
    "name": "Woolworth Building",
-   "at": [40.71237, -74.00831],
+   "at": [
+    40.71237,
+    -74.00831
+   ],
    "height": 241,
-   "decor": [["spire", 0, 0, 20]],
+   "decor": [
+    [
+     "spire",
+     0,
+     0,
+     20
+    ]
+   ],
    "info": "233 Broadway · 1913 · 241 m. The 'Cathedral of Commerce', tallest in the world until 1930."
   },
   {
    "name": "Times Square",
-   "at": [40.758, -73.9855],
+   "at": [
+    40.758,
+    -73.9855
+   ],
    "info": "Where Broadway cuts Seventh Avenue. The bowtie of light that the rest of the grid does not have."
   },
   {
    "name": "Madison Square Garden",
-   "at": [40.75052, -73.99347],
+   "at": [
+    40.75052,
+    -73.99347
+   ],
    "info": "4 Pennsylvania Plaza · 1968 · the arena built on top of the ruins of Penn Station."
   },
   {
    "name": "Bryant Park",
-   "at": [40.75365, -73.98325],
+   "at": [
+    40.75365,
+    -73.98325
+   ],
    "info": "Behind the New York Public Library, on top of its book stacks."
   },
   {
    "name": "Washington Square Arch",
-   "at": [40.73082, -73.99733],
-   "decor": [["statue", 0, 0, 6]],
+   "at": [
+    40.73082,
+    -73.99733
+   ],
+   "decor": [
+    [
+     "statue",
+     0,
+     0,
+     6
+    ]
+   ],
    "info": "Greenwich Village · 1892 · marble, at the foot of Fifth Avenue."
   },
   {
    "name": "United Nations Headquarters",
-   "at": [40.7489, -73.968],
+   "at": [
+    40.7489,
+    -73.968
+   ],
    "height": 155,
    "info": "First Avenue at 46th · 1952 · the Secretariat slab, on land that is not technically the United States."
   },
   {
    "name": "Brooklyn Bridge",
-   "at": [40.70611, -73.99694],
+   "at": [
+    40.70611,
+    -73.99694
+   ],
    "model": "suspension",
    "towerH": 84,
    "info": "1883 · granite towers and steel cable, and the first way across the East River."
   },
   {
    "name": "Manhattan Bridge",
-   "at": [40.70747, -73.99027],
+   "at": [
+    40.70747,
+    -73.99027
+   ],
    "model": "suspension",
    "towerH": 102,
    "info": "1909 · the one the subway crosses, and the one you photograph from DUMBO."
   },
   {
    "name": "Williamsburg Bridge",
-   "at": [40.71322, -73.97202],
+   "at": [
+    40.71322,
+    -73.97202
+   ],
    "model": "suspension",
    "towerH": 94,
    "info": "1903 · all steel, no masonry, and the longest suspension span in the world when it opened."
   },
   {
    "name": "Ed Koch Queensboro Bridge",
-   "at": [40.75694, -73.95417],
+   "at": [
+    40.75694,
+    -73.95417
+   ],
    "model": "cablestay",
    "towerH": 107,
    "info": "1909 · the cantilever to Queens, over Roosevelt Island."
   },
   {
    "name": "Central Park",
-   "at": [40.7829, -73.9654],
+   "at": [
+    40.7829,
+    -73.9654
+   ],
    "info": "843 acres · 1858 · Olmsted and Vaux, every rock and lake of it built on purpose."
   },
   {
    "name": "The High Line",
-   "at": [40.7479, -74.0048],
+   "at": [
+    40.7479,
+    -74.0048
+   ],
    "info": "A freight viaduct from 1934, planted and reopened as a park in 2009."
   },
   {
    "name": "Statue of Liberty",
-   "at": [40.68925, -74.04451],
+   "at": [
+    40.68925,
+    -74.04451
+   ],
    "model": "liberty",
    "info": "Liberty Island · 1886 · 93 m to the torch, on her pedestal, facing out to the harbour."
   }
  ],
  "views": {
-  "Midtown from the East River": [[40.7515, -73.9555, 260], [40.7549, -73.984, 180]],
-  "Midtown from the Hudson": [[40.7605, -74.0135, 240], [40.7549, -73.9855, 170]],
-  "Downtown from the harbour": [[40.6915, -74.028, 230], [40.7113, -74.0125, 150]],
-  "Times Square": [[40.7566, -73.9872, 70], [40.758, -73.9855, 25]],
-  "Empire State": [[40.7455, -73.9895, 150], [40.74845, -73.98566, 200]],
-  "Central Park and the towers": [[40.7905, -73.9625, 320], [40.7665, -73.9795, 220]],
-  "Brooklyn Bridge": [[40.7035, -73.9925, 90], [40.70611, -73.99694, 45]],
-  "Wall Street": [[40.7052, -74.0135, 70], [40.7069, -74.0113, 30]],
-  "Hudson Yards": [[40.7495, -74.0075, 150], [40.75393, -74.00157, 200]],
-  "Fifth Avenue": [[40.7448, -73.9885, 60], [40.7587, -73.9787, 90]],
-  "Overview": [[40.66, -74.03, 3000], [40.7549, -73.984, 220]]
- }
+  "Midtown from the East River": [
+   [
+    40.7515,
+    -73.9555,
+    260
+   ],
+   [
+    40.7549,
+    -73.984,
+    180
+   ]
+  ],
+  "Midtown from the Hudson": [
+   [
+    40.7605,
+    -74.0135,
+    240
+   ],
+   [
+    40.7549,
+    -73.9855,
+    170
+   ]
+  ],
+  "Downtown from the harbour": [
+   [
+    40.6915,
+    -74.028,
+    230
+   ],
+   [
+    40.7113,
+    -74.0125,
+    150
+   ]
+  ],
+  "Times Square": [
+   [
+    40.7566,
+    -73.9872,
+    70
+   ],
+   [
+    40.758,
+    -73.9855,
+    25
+   ]
+  ],
+  "Empire State": [
+   [
+    40.7455,
+    -73.9895,
+    150
+   ],
+   [
+    40.74845,
+    -73.98566,
+    200
+   ]
+  ],
+  "Central Park and the towers": [
+   [
+    40.7905,
+    -73.9625,
+    320
+   ],
+   [
+    40.7665,
+    -73.9795,
+    220
+   ]
+  ],
+  "Brooklyn Bridge": [
+   [
+    40.7035,
+    -73.9925,
+    90
+   ],
+   [
+    40.70611,
+    -73.99694,
+    45
+   ]
+  ],
+  "Wall Street": [
+   [
+    40.7052,
+    -74.0135,
+    70
+   ],
+   [
+    40.7069,
+    -74.0113,
+    30
+   ]
+  ],
+  "Hudson Yards": [
+   [
+    40.7495,
+    -74.0075,
+    150
+   ],
+   [
+    40.75393,
+    -74.00157,
+    200
+   ]
+  ],
+  "Fifth Avenue": [
+   [
+    40.7448,
+    -73.9885,
+    60
+   ],
+   [
+    40.7587,
+    -73.9787,
+    90
+   ]
+  ],
+  "Overview": [
+   [
+    40.66,
+    -74.03,
+    3000
+   ],
+   [
+    40.7549,
+    -73.984,
+    220
+   ]
+  ]
+ },
+ "seaLevelWater": true,
+ "_seaLevelWater": "Manhattan's shores are tidal coastline in OSM, so the box is flooded at sea level and the elevation grid draws the island"
 }
