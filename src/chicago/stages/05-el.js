@@ -29,7 +29,7 @@ section('el',()=>{
   const winM=new THREE.MeshLambertMaterial({color:0x1e2630});
   const carL=14.6,N=C.el.trainCars||6,carM=new THREE.MeshLambertMaterial({color:0x8e959c,emissive:0x000000}),trains=[];   // brushed steel, not white
   for(const r of lines){const k=r.len>3000?2:1;for(let i=0;i<k;i++)trains.push({r,s:(i+0.3)*r.len/k,dir:i%2?1:-1,v:13});}
-  const tm=new THREE.InstancedMesh(new THREE.BoxGeometry(carL,3.4,3),carM,Math.max(1,trains.length*N)),tw=new THREE.InstancedMesh(new THREE.BoxGeometry(carL-1.2,1.1,3.04).translate(0,0.45,0),winM,Math.max(1,trains.length*N));tm.castShadow=true;tm.frustumCulled=tw.frustumCulled=false;scene.add(tm,tw);
+  const tm=new THREE.InstancedMesh(new THREE.BoxGeometry(carL,3.4,3),carM,Math.max(1,trains.length*N)),tw=new THREE.InstancedMesh(new THREE.BoxGeometry(carL-1.2,1.1,3.04).translate(0,0.45,0),winM,Math.max(1,trains.length*N));tm.frustumCulled=tw.frustumCulled=false;scene.add(tm,tw);
   const stS=lines.map(r=>STATIONS.map(s=>{let bs=-1,bd=60;for(let q=0;q<=r.len;q+=10){const [px,pz]=polyAt(r,q);const dd=Math.hypot(px-s.x,pz-s.z);if(dd<bd){bd=dd;bs=q;}}return bs;}).filter(q=>q>=0));
   let last=performance.now();
   animHooks.push(now=>{const dt=Math.min(0.05,(now-last)/1000);last=now;let i=0;
@@ -45,7 +45,7 @@ section('metra',()=>{
   const carL=26,N=6,m=new THREE.MeshLambertMaterial({color:0x8a9096,emissive:0x000000}),band=new THREE.MeshLambertMaterial({color:0x1e2630});   // stainless double-deckers, dark window bands
   const trains=lines.map((r,i)=>({r,s:r.len*((i*0.37)%1),dir:i%2?1:-1,v:14}));
   const body=new THREE.InstancedMesh(new THREE.BoxGeometry(carL,4.6,3).translate(0,2.9,0),m,Math.max(1,trains.length*N)),stripe=new THREE.InstancedMesh(new THREE.BoxGeometry(carL-1,1.6,3.05).translate(0,3.1,0),band,Math.max(1,trains.length*N)),d=new THREE.Object3D();
-  body.frustumCulled=stripe.frustumCulled=false;body.castShadow=true;scene.add(body,stripe);let last=performance.now();
+  body.frustumCulled=stripe.frustumCulled=false;scene.add(body,stripe);let last=performance.now();
   animHooks.push(now=>{const dt=Math.min(0.05,(now-last)/1000);last=now;let i=0;
     for(const t of trains){t.s+=t.dir*t.v*dt;if(t.s>t.r.len-5)t.dir=-1;if(t.s<N*(carL+1)+5)t.dir=1;
       for(let c=0;c<N;c++){const [x,z,a]=polyAt(t.r,t.s-t.dir*c*(carL+1));d.position.set(x,0.2,z);d.rotation.set(0,-a,0);d.updateMatrix();body.setMatrixAt(i,d.matrix);stripe.setMatrixAt(i,d.matrix);i++;}}
@@ -62,7 +62,7 @@ section('surface-rail',()=>{
     const m=new THREE.MeshLambertMaterial({color:colour,emissive:0x000000}),trains=[],stripeC=type==='tram'?0x1e2228:0x1e2630;for(const r of lines){const k=r.len>2500?2:1;for(let i=0;i<k;i++)trains.push({r,s:(i+0.4)*r.len/k,dir:i%2?1:-1,v});}
     const im=new THREE.InstancedMesh(new THREE.BoxGeometry(carL,3.6,2.65).translate(0,2.2,0),m,Math.max(1,trains.length*N)),win=new THREE.InstancedMesh(new THREE.BoxGeometry(carL-2,1.3,2.7).translate(0,2.7,0),new THREE.MeshLambertMaterial({color:stripeC,emissive:0x000000}),Math.max(1,trains.length*N)),
       band=new THREE.InstancedMesh(new THREE.BoxGeometry(carL+0.02,0.45,2.72).translate(0,1.2,0),new THREE.MeshLambertMaterial({color:type==='tram'?0xd8d0c0:0x2a5aa8}),Math.max(1,trains.length*N)),d=new THREE.Object3D();
-    im.frustumCulled=win.frustumCulled=band.frustumCulled=false;im.castShadow=true;scene.add(im,win,band);let last=performance.now();
+    im.frustumCulled=win.frustumCulled=band.frustumCulled=false;scene.add(im,win,band);let last=performance.now();
     animHooks.push(now=>{const dt=Math.min(0.05,(now-last)/1000);last=now;let i=0;for(const t of trains){t.s+=t.dir*t.v*dt;if(t.s>t.r.len-5)t.dir=-1;if(t.s<N*(carL+0.5)+5)t.dir=1;
         for(let c=0;c<N;c++){const [x,z,a]=polyAt(t.r,t.s-t.dir*c*(carL+0.5));d.position.set(x,deckAt(x,z),z);d.rotation.set(0,-a,0);d.updateMatrix();im.setMatrixAt(i,d.matrix);win.setMatrixAt(i,d.matrix);band.setMatrixAt(i++,d.matrix);}}
       im.count=win.count=band.count=i;im.instanceMatrix.needsUpdate=win.instanceMatrix.needsUpdate=band.instanceMatrix.needsUpdate=true;const w=windowF(hourCur);m.emissive.setRGB(w*0.7,w*0.66,w*0.5);});return trains.length;};

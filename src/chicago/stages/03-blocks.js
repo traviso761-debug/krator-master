@@ -41,7 +41,18 @@ function gableRoof(rf,ring,cx,cz,h,shingle,wall){let sxx=0,szz=0,sxz=0;for(const
   const sl=shingle,sl2=shingle.clone().multiplyScalar(0.8);
   tri(A,Bp,R1,sl);tri(A,R1,R0,sl);tri(D,R0,R1,sl2);tri(D,R1,Cp,sl2);tri(A,R0,D,wall);tri(Bp,Cp,R1,wall);}
 const REPLACED=new Set(C.landmarks.flatMap(l=>l.replace||[]).map(s=>s.toLowerCase()));
-const HEIGHT_FIX=C.landmarks.filter(l=>l.height||l.colour).map(l=>{const [x,z]=P(l.at);return {x,z,h:l.height||0,c:l.colour?col(l.colour):null};});   // known heights and colours for landmarks whose OSM tags are missing or wrong   // known heights for landmarks whose OSM height is missing or wrong
+const HEIGHT_FIX=C.landmarks.filter(l=>l.height||l.colour).map(l=>{const [x,z]=P(l.at);return {x,z,h:l.height||0,c:l.colour?col(l.colour):null,have:0};});   // known heights and colours for landmarks whose OSM tags are missing or wrong
+// A height fix exists for towers the map gets wrong, but many are mapped properly as a stack of parts with a low
+// outline at street level. Raising that outline to the tower's height buries the real massing inside one box
+// (it was doing exactly that to Willis Tower, Aqua, Trump and the Board of Trade), so a fix is dropped wherever
+// the map already carries something near the height it was going to force.
+if(HEIGHT_FIX.length){for(const b of OSM.buildings){const p=b.p;let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9;
+    for(let i=0;i+1<p.length;i+=2){const px=p[i]/10,pz=p[i+1]/10;if(px<x0)x0=px;if(px>x1)x1=px;if(pz<z0)z0=pz;if(pz>z1)z1=pz;}
+    let ring=null;
+    for(const f of HEIGHT_FIX){if(!f.h||f.x<x0||f.x>x1||f.z<z0||f.z>z1||(b.h||0)<=f.have)continue;
+      if(!ring){ring=[];for(let i=0;i+1<p.length;i+=2)ring.push([p[i]/10,p[i+1]/10]);}
+      if(inPoly(f.x,f.z,ring))f.have=b.h||0;}}
+  for(const f of HEIGHT_FIX)f.skip=f.have>=f.h*0.6;}
 const STADIUMS=C.landmarks.filter(l=>l.stadium).map(l=>({...l,xz:P(l.at)}));
 const BUILDINGS=[];   // named buildings {name,h,cx,cz,tile,kind,start,end}, for picking
 const BGRID=new Map();   // every drawn footprint on a 100 m grid: {ring,h,m,x0,x1,z0,z1,name}
@@ -50,7 +61,7 @@ function roofAt(x,z){let h=0;for(const b of buildingsAt(x,z,0))if(inPoly(x,z,b.r
 const PICK_TILES=[];
 section('buildings',()=>{
   const tiles=new Map();
-  const T=(x,z)=>{const k=Math.floor(x/800)+','+Math.floor(z/800);let t=tiles.get(k);if(!t){t={walls:{tower:{p:[],n:[],u:[],c:[],idx:[],own:[]},low:{p:[],n:[],u:[],c:[],idx:[],own:[]},blank:{p:[],n:[],u:[],c:[],idx:[],own:[]}},roof:{p:[],n:[],c:[],idx:[]},shop:{p:[],n:[],idx:[]}};tiles.set(k,t);}return t;};
+  const T=(x,z)=>{const k=Math.floor(x/800)+','+Math.floor(z/800);let t=tiles.get(k);if(!t){t={walls:{tower:{p:[],n:[],u:[],c:[],idx:[],own:[]},low:{p:[],n:[],u:[],c:[],idx:[],own:[]},blank:{p:[],n:[],u:[],c:[],idx:[],own:[]}},roof:{p:[],n:[],c:[],idx:[]},roofLow:{p:[],n:[],c:[],idx:[]},shop:{p:[],n:[],idx:[]}};tiles.set(k,t);}return t;};
   const MAIN=new Set(['primary','secondary','tertiary','pedestrian','trunk']);
   let n=0,stores=0,skippedStadium=0;
   for(const b of OSM.buildings){const ring=dec(b.p);if(ring.length<3)continue;
@@ -60,7 +71,7 @@ section('buildings',()=>{
     // stadiums are drawn as bowls elsewhere; skip their solid outlines
     if(b.t==='stadium'||STADIUMS.some(s=>Math.hypot(s.xz[0]-cx,s.xz[1]-cz)<120&&Math.abs(polyArea(ring))>6000)){skippedStadium++;continue;}
     const g0=groundMin(ring);let h=g0+b.h,fixC=null;const m0=g0+(b.m||0);   // the lowest ground under the footprint: the building stands on it
-    for(const f of HEIGHT_FIX)if(Math.abs(f.x-cx)<120&&Math.abs(f.z-cz)<120&&inPoly(f.x,f.z,ring)){if(h-g0<f.h*0.6)h=g0+f.h;if(f.c)fixC=f.c;}
+    for(const f of HEIGHT_FIX)if(Math.abs(f.x-cx)<120&&Math.abs(f.z-cz)<120&&inPoly(f.x,f.z,ring)){if(!f.skip&&h-g0<f.h*0.6)h=g0+f.h;if(f.c)fixC=f.c;}
     const hsh=hash3(cx,cz,3),c=fixC||colourOf(b,h-g0,hsh),tall=h-g0>30,W=BLANK_T.has(b.t)?'blank':(tall?'tower':'low'),t=T(cx,cz),wb=t.walls[W];
     const start=wb.idx.length;
     {const bb=bbox(ring),rec={ring,h,m:m0,x0:bb.x0,x1:bb.x1,z0:bb.z0,z1:bb.z1,name:b.n||''};for(let gi=Math.floor(bb.x0/100);gi<=Math.floor(bb.x1/100);gi++)for(let gj=Math.floor(bb.z0/100);gj<=Math.floor(bb.z1/100);gj++){const k=gi*100003+gj;let a=BGRID.get(k);if(!a){a=[];BGRID.set(k,a);}a.push(rec);}}
@@ -76,7 +87,7 @@ section('buildings',()=>{
         if(roadsNear(mx+nx*3,mz+nz*3,8,r=>MAIN.has(r.c)).length){const s=t.shop,sb=s.p.length/3,o=0.15,ins=Math.min(1,len*0.1),ax=a[0]+(bb[0]-a[0])/len*ins,az=a[1]+(bb[1]-a[1])/len*ins,bx=bb[0]-(bb[0]-a[0])/len*ins,bz=bb[1]-(bb[1]-a[1])/len*ins;
           s.p.push(ax+nx*o,g0+4.2,az+nz*o,bx+nx*o,g0+4.2,bz+nz*o,bx+nx*o,g0+0.3,bz+nz*o,ax+nx*o,g0+0.3,az+nz*o);for(let k=0;k<4;k++)s.n.push(nx,0,nz);s.idx.push(sb,sb+1,sb+2,sb,sb+2,sb+3);stores++;}}}
     // roof: houses get a pitched roof fitted to their footprint (ridge along the long side), everything else is flat
-    const rf=t.roof,rc=c.clone().multiplyScalar(0.72),area=Math.abs(polyArea(ring));
+    const rf=tall?t.roof:t.roofLow,rc=c.clone().multiplyScalar(0.72),area=Math.abs(polyArea(ring));   // low roofs are culled with their walls; tower roofs never are
     const pitched=(b.r==='g'||b.r==='h'||PITCHED.has(b.t)||(b.t==='residential'&&h-g0<=11&&area<220&&hsh<0.35))&&area<600&&h-g0<=16&&b.r!=='f';
     if(pitched)gableRoof(rf,ring,cx,cz,h,SHINGLE[Math.floor(hash3(cx,cz,9)*SHINGLE.length)],c);
     else{const rb=rf.p.length/3;let faces;try{faces=THREE.ShapeUtils.triangulateShape(ring.map(([x,z])=>new THREE.Vector2(x,z)),[]);}catch(e){faces=[];}
@@ -88,11 +99,15 @@ section('buildings',()=>{
   const mk=(d,mat,withUV)=>{if(!d.idx.length)return null;const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(d.p,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(d.n,3));
     if(d.c)g.setAttribute('color',new THREE.Float32BufferAttribute(d.c,3));if(withUV)g.setAttribute('uv',new THREE.Float32BufferAttribute(d.u,2));g.setIndex(d.idx);g.computeBoundingSphere();const m=new THREE.Mesh(g,mat);m.castShadow=m.receiveShadow=true;scene.add(m);return m;};
   const far=(m,d)=>{if(m){m.userData.far=d;FAR_MESHES.push(m);}};
-  for(const t of tiles.values()){for(const W of ['tower','low','blank']){const m=mk(t.walls[W],bldMats[W],true);if(m){m.userData.pick={tile:t,kind:W};PICK_TILES.push(m);t.walls[W].mesh=m;if(W==='low')far(m,4500);}}
-    far(mk(t.roof,roofM,false),4500);const s=mk(t.shop,shopM,false);if(s){s.castShadow=false;far(s,1500);}}
+  // Anything under 30 m is sprawl: near the camera it is the city, from two kilometres away it is noise that costs
+  // as much as the skyline. Tall buildings carry no distance limit, so the silhouette never changes.
+  const LOW_FAR=C.lowRiseFar||2400;
+  for(const t of tiles.values()){for(const W of ['tower','low','blank']){const m=mk(t.walls[W],bldMats[W],true);if(m){m.userData.pick={tile:t,kind:W};PICK_TILES.push(m);t.walls[W].mesh=m;if(W==='low')far(m,LOW_FAR);}}
+    mk(t.roof,roofM,false);far(mk(t.roofLow,roofM,false),LOW_FAR);   // the skyline is always drawn; the low-rise behind it is not
+    const s=mk(t.shop,shopM,false);if(s){s.castShadow=false;far(s,1500);}}
   ctx.lotList=[];for(const a of BGRID.values())for(const r of a)if(!r._fp){r._fp=1;ctx.lotList.push({x:(r.x0+r.x1)/2,z:(r.z0+r.z1)/2,w:r.x1-r.x0,dpt:r.z1-r.z0,h:r.h,ry:0,kind:'osm',fixed:false});}   // the test fingerprint: every drawn footprint
   ctx.lotList.sort((p,q)=>p.x-q.x||p.z-q.z);ctx.lots=ctx.lotList.length;
-  ctx.details=Object.assign(ctx.details||{},{buildingsDrawn:n,storefronts:stores,stadiumOutlinesSkipped:skippedStadium,tiles:tiles.size});
+  ctx.details=Object.assign(ctx.details||{},{buildingsDrawn:n,storefronts:stores,stadiumOutlinesSkipped:skippedStadium,heightFixesDropped:HEIGHT_FIX.filter(f=>f.skip).length,tiles:tiles.size});
 });
 // which named building a click hit: the wall triangle index maps back to the building that made it
 function buildingAt(hit){const pk=hit.object.userData.pick;if(!pk)return null;const tri=hit.faceIndex*3;return BUILDINGS.find(b=>b.tile===pk.tile&&b.kind===pk.kind&&tri>=b.start&&tri<b.end)||null;}

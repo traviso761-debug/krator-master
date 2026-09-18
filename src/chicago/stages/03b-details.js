@@ -50,7 +50,7 @@ section('trees',()=>{
 });
 section('rooftops',()=>{
   const hvacM=new THREE.MeshLambertMaterial({color:0xb8b6b0}),tankM=new THREE.MeshLambertMaterial({color:0x6a4a34}),roofTankM=new THREE.MeshLambertMaterial({color:0x3a3430});
-  const H=tiledInstances(new THREE.BoxGeometry(1,1,1).translate(0,0.5,0),hvacM,1600,true),K=tiledInstances(new THREE.CylinderGeometry(1,1,1,12).translate(0,0.5,0),tankM,2500,true),
+  const H=tiledInstances(new THREE.BoxGeometry(1,1,1).translate(0,0.5,0),hvacM,1600,false),K=tiledInstances(new THREE.CylinderGeometry(1,1,1,12).translate(0,0.5,0),tankM,2500,false),
         KR=tiledInstances(new THREE.ConeGeometry(1.15,1,12).translate(0,0.5,0),roofTankM,2500,false),KL=tiledInstances(new THREE.BoxGeometry(1,1,1).translate(0,0.5,0),hvacM,1600,false);
   for(const r of ROOFTOP){const n=Math.min(4,1+Math.floor(r.area/900));
     for(let k=0;k<n;k++){const x=r.x+(hash3(r.x,r.z,k)-0.5)*Math.sqrt(r.area)*0.5,z=r.z+(hash3(r.z,r.x,k)-0.5)*Math.sqrt(r.area)*0.5;if(!inPoly(x,z,r.ring))continue;

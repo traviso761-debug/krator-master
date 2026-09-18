@@ -1,9 +1,8 @@
 # City of Iziz
 
-Procedural city models served to the local network by a small Python server. Five cities so far:
-**Iziz**, a science-fantasy city with its own language; **Chicago** and **Portland**, built from
-OpenStreetMap and real elevation data; **Vashrin**, an invented occupied city generated from a seed;
-and **City 17**, fan work from Half-Life 2.
+Procedural city models served to the local network by a small Python server. Four cities so far:
+**Iziz**, a science-fantasy city with its own language; **Chicago**, **Portland** and **New York**, built
+from OpenStreetMap and real elevation data; and **City 17**, fan work from Half-Life 2.
 They run on the same core modules and the same page shell; each city is a data file plus a set of build stages.
 
 **Site:** http://192.168.124.227:8000/
@@ -17,7 +16,6 @@ They run on the same core modules and the same page shell; each city is a data f
 | `/chicago` | `/chicago.html` | `chicago.html` | Chicago: massing model |
 | `/portland` | `/portland.html` | `portland.html` | Portland: massing model |
 | `/city17` | `/city17.html`, `/halflife` | `city17.html` | City 17: massing model (fan work) |
-| `/vashrin` | `/vashrin.html` | `vashrin.html` | Vashrin: massing model (invented) |
 | `/tongue` | `/izani-tongue` | `The-Izani-Tongue_2.html` | The Izani Tongue |
 | `/painting.jpg` | | `painting.jpg` | The Iziz painting; `image.png` is the master copy |
 | `/css/*`, `/src/*`, `/data/*`, `/vendor/*` | | those folders | stylesheets, modules, content, three.js |
@@ -138,28 +136,6 @@ project's own low-poly style. Half-Life 2 and City 17 belong to Valve.
 
 Regenerate with `python3 tools/make-city17.py`, then `./sitectl build`.
 
-### `/vashrin`: Vashrin
-
-An invented city, not a survey: a dystopian occupied town of concrete courtyard blocks in a river valley,
-ringed by a wall, with one enormous tower over the plaza at its centre. It runs on the Chicago engine
-(`src/chicago/stages/`, loaded by `src/vashrin/main.js`), because `tools/make-vashrin.py` writes
-`data/cities/vashrin-osm.json` in exactly the shape `tools/build-osm-city.py` produces for a real city:
-terrain grid, river and canals, streets, land use and 1,950 buildings. `data/cities/vashrin.json` holds the
-rest — districts, landmarks, viewpoints and the weather.
-
-- **Generated:** a river valley cut into an east bluff, a level plaza terrace, a grid of courtyard blocks on a
-  104 m pitch (four bars around a yard, stepped heights, the occasional slab tower), named avenues every fifth
-  street, a ring road, four gate roads, bridges wherever a main street crosses water, industrial yards, a rail
-  spur, two tram lines and an elevated transit line, and the ring wall itself (17 m, with buttresses and towers).
-- **Added on top:** the Spire on its plinth — a battered shaft splitting into three prongs around a lit
-  aperture, with a slow halo and seams that only show at night — four wall checkpoints with barriers that lift,
-  watchtowers whose lights sweep the ring road after dark, two blank public screens, and the works' smoking stacks.
-- **The weather:** a flat overcast sky, heavier fog, few street trees, almost no parked cars, and only a third
-  of the windows lit after dark, so the place reads as occupied rather than busy.
-
-Regenerate with `python3 tools/make-vashrin.py` (deterministic: the same seed gives the same city), then
-`./sitectl build`. Nothing about Vashrin is taken from any published work; it is this project's own invention.
-
 ### `/tongue`: The Izani Tongue
 
 A self-contained reference page (no scripts). Its **City lexicon** tables are generated from
@@ -185,10 +161,9 @@ src/
   iziz/   main.js imports.js stages/*.js build.js   the Iziz build: 56 stage files, assembled into build.js
   chicago/ main.js imports.js stages/*.js build.js  the Chicago build: 10 stage files, shared by Portland and Vashrin
   portland/ main.js                          Portland: the Chicago engine with defaultCity 'portland'
-  vashrin/ main.js                           Vashrin: the same engine with defaultCity 'vashrin'
   city17/ main.js                            City 17: the same engine with defaultCity 'city17'
 vendor/three/three.min.js     three.js r128 (pinned)
-tools/  build-page.py build-tongue.py probe.py fetch-osm.py fetch-terrain.py build-osm-city.py make-vashrin.py make-city17.py
+tools/  build-page.py build-tongue.py probe.py fetch-osm.py fetch-terrain.py build-osm-city.py make-city17.py
 tests/  run.js *.test.js golden/ fixtures/
 server.py  site.toml  sitectl
 ```
