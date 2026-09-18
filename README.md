@@ -17,6 +17,7 @@ They run on the same core modules and the same page shell; each city is a data f
 | `/portland` | `/portland.html` | `portland.html` | Portland: massing model |
 | `/nyc` | `/nyc.html`, `/newyork`, `/manhattan` | `nyc.html` | New York: massing model |
 | `/city17` | `/city17.html`, `/halflife` | `city17.html` | City 17: massing model (fan work) |
+| `/nightcity` | `/nightcity.html`, `/night` | `nightcity.html` | Night City: massing model (fan work) |
 | `/tongue` | `/izani-tongue` | `The-Izani-Tongue_2.html` | The Izani Tongue |
 | `/painting.jpg` | | `painting.jpg` | The Iziz painting; `image.png` is the master copy |
 | `/css/*`, `/src/*`, `/data/*`, `/vendor/*` | | those folders | stylesheets, modules, content, three.js |
@@ -155,6 +156,24 @@ project's own low-poly style. Half-Life 2 and City 17 belong to Valve.
 
 Regenerate with `python3 tools/make-city17.py`, then `./sitectl build`.
 
+### `/nightcity`: Night City
+
+Fan work: a coastal cyberpunk megacity drawing on Blade Runner's Los Angeles and on Cyberpunk's Night
+City, on the Chicago engine. Generated from a seed by `tools/make-nightcity.py`; no game or film assets
+are used. It opens at 21:36 and it is raining.
+
+- **Generated:** the Pacific and its sea wall, a supertall core on a 92 m grid with towers to 500 m,
+  megablock housing a slab to a plot, the retrofitted low city built up in pieces and never cleared, an
+  elevated ring freeway on piers with four radials, the dock yards, and the industrial flats.
+- **The night stage** (`src/chicago/stages/06c-neon.js`, switched on by the `neon` block in the config):
+  2,800 neon signs bolted to whatever wall faces the street, 40 billboards cycling through their own
+  light, holograms hung over the junctions, 280 spinners in five flight lanes, flare stacks burning on
+  the flats, steam off the gratings, and rain.
+- **Added on top:** the twin corporate ziggurats — seven hundred metres of stepped terraces, lit along
+  every lip, with landing decks and beacons at the cap.
+
+Regenerate with `python3 tools/make-nightcity.py`, then `./sitectl build`.
+
 ### `/tongue`: The Izani Tongue
 
 A self-contained reference page (no scripts). Its **City lexicon** tables are generated from
@@ -181,9 +200,10 @@ src/
   chicago/ main.js imports.js stages/*.js build.js  the Chicago build: 10 stage files, shared by Portland and Vashrin
   portland/ main.js                          Portland: the Chicago engine with defaultCity 'portland'
   city17/ main.js                            City 17: the same engine with defaultCity 'city17'
+  nyc/ main.js  nightcity/ main.js           New York and Night City, likewise
 vendor/three/three.min.js     three.js r128 (pinned)
 tools/  build-page.py build-tongue.py probe.py check-city.py
-        fetch-osm.py fetch-terrain.py build-osm-city.py make-city17.py
+        fetch-osm.py fetch-terrain.py build-osm-city.py make-city17.py make-nightcity.py
 tests/  run.js *.test.js golden/ fixtures/
 server.py  site.toml  sitectl
 ```
@@ -230,7 +250,7 @@ A city config may set, besides its geography: `sky` (`day`/`dusk`/`night`, each 
 and `people` (0-1 densities), `palette` (`"drab"` puts vehicles and coats in rust, grey and olive),
 `attribution` (the credit line in the corner), `bridgeDeck` and `bridgeHeights`, `smog`, `toxicWater` and
 `waterColour`, `seaLevelWater` (see New York), `lowRiseFar` (how far buildings under 30 m are drawn) and
-`quality` (`low` drops shadows entirely, which on a weak GPU is worth more than everything else together;
+`defaultHour` (a city only seen after dark opens there), `quality` (`low` drops shadows entirely, which on a weak GPU is worth more than everything else together;
 `?quality=low` in the URL overrides it). A `combine` block (`striders`, `manhacks`, `scanners`, `dropships`,
 `apcs`, `barriers`, `smartBarriers`, `turrets`, `fires`, `debris`, `sentries`) turns on the occupation stage,
 which every other city skips. Anything left out keeps the Chicago default.

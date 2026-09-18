@@ -21,7 +21,9 @@ sun.shadow.bias=-0.0008;sun.shadow.normalBias=2;
 scene.fog=new THREE.FogExp2(0xb9cbe0,C.fog||0.00013);
 const OVERCAST=C.overcast||0;   // a flat, sunless sky: less sun, more fill (Vashrin)
 // the clock: DAY real seconds per city day
-let DAY=240;const HOUR0=10.5;let clockPaused=false,pausedAt=0,clockOffset=0;
+// a city that is only ever seen after dark opens there
+let DAY=240;const HOUR0=(typeof C.defaultHour==='number')?C.defaultHour:10.5;
+let clockPaused=false,pausedAt=0,clockOffset=0;
 function hourNow(now){return ((HOUR0+((now/1000)/(DAY/24)))%24+24)%24;}
 function setHour(h){const now=performance.now(),cur=clockPaused?pausedAt:now-clockOffset,tot=HOUR0+(cur/1000)/(DAY/24);let day=Math.floor(tot/24);if(day*24+h<HOUR0)day+=1;const t=(day*24+h-HOUR0)*(DAY/24)*1000;if(clockPaused)pausedAt=t;else clockOffset=now-t;}
 window.setHour=setHour;

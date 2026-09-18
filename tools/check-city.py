@@ -25,7 +25,7 @@ CITIES = os.path.join(ROOT, "data", "cities")
 # the models src/chicago/stages/04-landmarks.js knows how to build
 MODELS = {"bean", "pavilion", "fountain", "wheel", "liftbridge", "bascule", "arch", "cablestay", "sign", "gate",
           "submarine", "tram", "mountain", "wrigley", "citadel", "nexus", "forcegate", "pylon", "strider",
-          "gunships", "screenmast", "stacks", "suspension", "liberty"}
+          "gunships", "screenmast", "stacks", "suspension", "liberty", "ziggurat"}
 DECOR = {"mast", "spire", "statue", "crown", "floodlit", "cupola", "clocktower", "towers", "dome"}
 ROOF_DECOR = {"mast", "spire", "statue", "crown", "cupola", "dome"}   # these stand on a roof; the rest build from the ground
 
