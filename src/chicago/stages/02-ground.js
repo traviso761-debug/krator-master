@@ -10,6 +10,11 @@ function tiledBuffer(material,opts){const tiles=new Map();opts=opts||{};const TS
     poly(outer,holes,y,cl){if(outer.length<3)return;const t=this.tile(outer[0][0],outer[0][1]);const Y=typeof y==='function'?y:()=>y;
       const V=r=>r.map(([x,z])=>new THREE.Vector2(x,z));let faces;try{faces=THREE.ShapeUtils.triangulateShape(V(outer),(holes||[]).map(V));}catch(e){return;}const all=outer.concat(...(holes||[]));
       const base=t.p.length/3;for(const [x,z] of all){t.p.push(x,Y(x,z),z);t.n.push(0,1,0);t.c.push(cl.r,cl.g,cl.b);}for(const f of faces)t.idx.push(base+f[0],base+f[2],base+f[1]);},
+    // a big area on a hillside: fill it with a grid of quads that follow the ground, instead of one flat outline
+    gridPoly(rec,cell,off,cl){const {x0,x1,z0,z1}=rec.bb;
+      for(let z=z0;z<z1;z+=cell)for(let x=x0;x<x1;x+=cell){const x2=Math.min(x+cell,x1),z2=Math.min(z+cell,z1);
+        if(!inRec(rec,(x+x2)/2,(z+z2)/2))continue;
+        this.quad(this.tile(x,z),[x,groundH(x,z)+off,z],[x2,groundH(x2,z)+off,z],[x2,groundH(x2,z2)+off,z2],[x,groundH(x,z2)+off,z2],cl);}},
     walls(ring,y0,y1,cl){for(let i=0;i<ring.length;i++){const a=ring[i],b=ring[(i+1)%ring.length],nx=b[1]-a[1],nz=-(b[0]-a[0]),nl=Math.hypot(nx,nz)||1;
       this.quad(this.tile(a[0],a[1]),[a[0],y1,a[1]],[b[0],y1,b[1]],[b[0],y0,b[1]],[a[0],y0,a[1]],cl,[nx/nl,0,nz/nl]);}},
     ribbon(pts,w,y,cl,sides){if(pts.length<2)return;const h=w/2,L=[],R=[],Y=i=>Array.isArray(y)?y[i]:typeof y==='function'?y(pts[i][0],pts[i][1]):y;   // y: one height, one per point, or a function of the point
@@ -49,7 +54,8 @@ section('ground',()=>{
   const use=tiledBuffer(groundMat(0.5)),land=tiledBuffer(groundMat(1)),detail=tiledBuffer(groundMat(2),{tile:1000,far:4000});
   // residential blocks get a little variety in their yards so a neighbourhood does not read as one flat sheet
   for(const a of AREAS){let c=col(AREA_COL[a.kind]||'#6a9a52');if(a.kind==='residential'){const h=hash3(a.bb.x0,a.bb.z0,11);c=c.clone().offsetHSL(0,(h-0.5)*0.06,(h-0.5)*0.05);}
-    (USE.has(a.kind)?use:BIG.has(a.kind)?land:detail).poly(a.o,a.i,gY(0.06),c);}
+    const buf=USE.has(a.kind)?use:BIG.has(a.kind)?land:detail,big=(a.bb.x1-a.bb.x0)*(a.bb.z1-a.bb.z0);
+    if(TER&&big>4000)buf.gridPoly(a,big>40000?25:12,0.06,c);else buf.poly(a.o,a.i,gY(0.06),c);}   // anything sizeable follows the ground; small patches stay flat
   for(const b of BEACHES)detail.poly(b.o,b.i,gY(0.07),col('#dccda4'));
   use.build('land use');land.build('land');detail.build('land detail');
 });

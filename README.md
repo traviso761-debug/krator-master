@@ -66,7 +66,7 @@ whole lakefront, in Wrigleyville and in Wicker Park, and only the tall or large 
 - **Detailed areas:** the Magnificent Mile (planted medians and sidewalk planters), the Riverwalk, North &
   Ashland, the six corners, Wrigleyville: crosswalks and cycling signals at the real intersections, street
   lights, storefront glass, parked cars (not on Michigan Avenue), people.
-- **Everywhere:** pitched roofs on houses, rooftop equipment on flat roofs, wooden water tanks on older brick buildings, parkway trees
+- **Everywhere:** trees through every wooded area and park, pitched roofs on houses, rooftop equipment on flat roofs, wooden water tanks on older brick buildings, parkway trees
   along residential streets where none are mapped, cars parked along residential streets and in parking lots, yellow centre lines
   and street lights on the arterials. Small details are hidden with distance.
 - **Moving:** cars on Lake Shore Drive and the arterials (up onto the bridges), L trains on every elevated
@@ -98,6 +98,8 @@ South Waterfront to the Fremont Bridge and from Washington Park to the Lloyd Dis
 - **Detailed areas:** Pioneer Courthouse Square, the Pearl District, Old Town and Chinatown, Waterfront Park.
 - **On the river:** sailboats, motorboats and kayaks that keep to the channel; cyclists on the Eastbank
   Esplanade, Waterfront and bridges.
+- **Woods:** Forest Park, Washington Park and the other wooded slopes carry their own trees (about 34,000), so
+  the West Hills read as forest rather than bare ground.
 - **Terrain:** the ground follows real elevation data (AWS Terrain Tiles, from SRTM/NED), so the West Hills,
   Marquam Hill and the river bluffs are modelled; streets, buildings, trees and traffic sit on the slopes, and
   Mount Hood and Mount St. Helens stand on the horizon.
