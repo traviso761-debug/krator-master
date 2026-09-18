@@ -57,8 +57,9 @@ section('buildings',()=>{
     if(!inMap(cx,cz,0))continue;
     // stadiums are drawn as bowls elsewhere; skip their solid outlines
     if(b.t==='stadium'||STADIUMS.some(s=>Math.hypot(s.xz[0]-cx,s.xz[1]-cz)<120&&Math.abs(polyArea(ring))>6000)){skippedStadium++;continue;}
-    let h=b.h,fixC=null;const m0=b.m||0;for(const f of HEIGHT_FIX)if(Math.abs(f.x-cx)<120&&Math.abs(f.z-cz)<120&&inPoly(f.x,f.z,ring)){if(h<f.h*0.6)h=f.h;if(f.c)fixC=f.c;}
-    const hsh=hash3(cx,cz,3),c=fixC||colourOf(b,h,hsh),tall=h>30,W=tall?'tower':'low',t=T(cx,cz),wb=t.walls[W];
+    const g0=groundMin(ring);let h=g0+b.h,fixC=null;const m0=g0+(b.m||0);   // the lowest ground under the footprint: the building stands on it
+    for(const f of HEIGHT_FIX)if(Math.abs(f.x-cx)<120&&Math.abs(f.z-cz)<120&&inPoly(f.x,f.z,ring)){if(h-g0<f.h*0.6)h=g0+f.h;if(f.c)fixC=f.c;}
+    const hsh=hash3(cx,cz,3),c=fixC||colourOf(b,h-g0,hsh),tall=h-g0>30,W=tall?'tower':'low',t=T(cx,cz),wb=t.walls[W];
     const start=wb.idx.length;
     {const bb=bbox(ring),rec={ring,h,m:m0,x0:bb.x0,x1:bb.x1,z0:bb.z0,z1:bb.z1,name:b.n||''};for(let gi=Math.floor(bb.x0/100);gi<=Math.floor(bb.x1/100);gi++)for(let gj=Math.floor(bb.z0/100);gj<=Math.floor(bb.z1/100);gj++){const k=gi*100003+gj;let a=BGRID.get(k);if(!a){a=[];BGRID.set(k,a);}a.push(rec);}}
     // walls: u runs along the facade (one bay per 3.5 m, towers 3 m), v up the floors (3.6 m)
@@ -67,18 +68,18 @@ section('buildings',()=>{
     for(let i=0;i<ring.length;i++){const a=ring[i],bb=ring[(i+1)%ring.length],len=Math.hypot(bb[0]-a[0],bb[1]-a[1]);if(len<0.05)continue;
       const nx=out*(bb[1]-a[1])/len,nz=-out*(bb[0]-a[0])/len,base=wb.p.length/3,u0=per/bay,u1=(per+len)/bay;per+=len;
       wb.p.push(a[0],h,a[1],bb[0],h,bb[1],bb[0],m0,bb[1],a[0],m0,a[1]);for(let k=0;k<4;k++){wb.n.push(nx,0,nz);wb.c.push(c.r,c.g,c.b);}
-      wb.u.push(u0,h/fl,u1,h/fl,u1,m0/fl,u0,m0/fl);wb.idx.push(base,base+1,base+2,base,base+2,base+3);
+      wb.u.push(u0,(h-g0)/fl,u1,(h-g0)/fl,u1,(m0-g0)/fl,u0,(m0-g0)/fl);wb.idx.push(base,base+1,base+2,base,base+2,base+3);
       // storefront glass: ground-floor walls within a few metres of a main street, in the detailed areas
-      if(m0<1&&len>4&&h>=6&&focusAt(cx,cz)){const mx=(a[0]+bb[0])/2,mz=(a[1]+bb[1])/2;
+      if(m0-g0<1&&len>4&&h-g0>=6&&focusAt(cx,cz)){const mx=(a[0]+bb[0])/2,mz=(a[1]+bb[1])/2;
         if(roadsNear(mx+nx*3,mz+nz*3,8,r=>MAIN.has(r.c)).length){const s=t.shop,sb=s.p.length/3,o=0.15,ins=Math.min(1,len*0.1),ax=a[0]+(bb[0]-a[0])/len*ins,az=a[1]+(bb[1]-a[1])/len*ins,bx=bb[0]-(bb[0]-a[0])/len*ins,bz=bb[1]-(bb[1]-a[1])/len*ins;
-          s.p.push(ax+nx*o,4.2,az+nz*o,bx+nx*o,4.2,bz+nz*o,bx+nx*o,0.3,bz+nz*o,ax+nx*o,0.3,az+nz*o);for(let k=0;k<4;k++)s.n.push(nx,0,nz);s.idx.push(sb,sb+1,sb+2,sb,sb+2,sb+3);stores++;}}}
+          s.p.push(ax+nx*o,g0+4.2,az+nz*o,bx+nx*o,g0+4.2,bz+nz*o,bx+nx*o,g0+0.3,bz+nz*o,ax+nx*o,g0+0.3,az+nz*o);for(let k=0;k<4;k++)s.n.push(nx,0,nz);s.idx.push(sb,sb+1,sb+2,sb,sb+2,sb+3);stores++;}}}
     // roof: houses get a pitched roof fitted to their footprint (ridge along the long side), everything else is flat
     const rf=t.roof,rc=c.clone().multiplyScalar(0.72),area=Math.abs(polyArea(ring));
-    const pitched=(b.r==='g'||b.r==='h'||PITCHED.has(b.t)||(b.t==='residential'&&h<=11&&area<220&&hsh<0.35))&&area<600&&h<=16&&b.r!=='f';
+    const pitched=(b.r==='g'||b.r==='h'||PITCHED.has(b.t)||(b.t==='residential'&&h-g0<=11&&area<220&&hsh<0.35))&&area<600&&h-g0<=16&&b.r!=='f';
     if(pitched)gableRoof(rf,ring,cx,cz,h,SHINGLE[Math.floor(hash3(cx,cz,9)*SHINGLE.length)],c);
     else{const rb=rf.p.length/3;let faces;try{faces=THREE.ShapeUtils.triangulateShape(ring.map(([x,z])=>new THREE.Vector2(x,z)),[]);}catch(e){faces=[];}
       for(const [x,z] of ring){rf.p.push(x,h,z);rf.n.push(0,1,0);rf.c.push(rc.r,rc.g,rc.b);}for(const f of faces)rf.idx.push(rb+f[0],rb+f[2],rb+f[1]);
-      if(area>350&&h>=7&&!tall)ROOFTOP.push({x:cx,z:cz,h,area,ring,brick:PALETTE.brick.includes(c),hsh});}
+      if(area>350&&h-g0>=7&&!tall)ROOFTOP.push({x:cx,z:cz,h,area,ring,brick:PALETTE.brick.includes(c),hsh});}
     if(b.n){BUILDINGS.push({name:b.n,h,cx,cz,tile:t,kind:W,start,end:wb.idx.length});}
     n++;}
   // build the tile meshes

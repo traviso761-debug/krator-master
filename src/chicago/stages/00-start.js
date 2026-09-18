@@ -42,6 +42,15 @@ const RAILS=OSM.rail.map(r=>({type:r.t,elevated:!!r.e,name:r.n||'',pts:dec(r.p)}
 const STATIONS=OSM.stations.map(s=>({name:s.n,x:s.x/10,z:s.z/10}));
 const WATERWAYS=(OSM.waterways||[]).map(w=>({name:w.n||'',pts:dec(w.p)}));
 const POIS=OSM.pois.map(p=>({name:p.n,x:p.x/10,z:p.z/10,kind:p.k,ang:p.ang||0}));
+// the ground: a height grid from the elevation tiles, in metres above the water level (y = 0 is the river or lake)
+const TER=(()=>{const t=OSM.terrain;if(!t)return null;const h=new Float32Array(t.h.length);for(let i=0;i<t.h.length;i++)h[i]=t.h[i]/10;
+  return {step:t.step,nx:t.nx,nz:t.nz,x0:t.x0/10,z0:t.z0/10,datum:t.datum,h};})();
+function groundH(x,z){if(!TER)return 0;const fx=(x-TER.x0)/TER.step,fz=(z-TER.z0)/TER.step;
+  let i=Math.floor(fx),j=Math.floor(fz);i=Math.max(0,Math.min(TER.nx-2,i));j=Math.max(0,Math.min(TER.nz-2,j));
+  const tx=Math.max(0,Math.min(1,fx-i)),tz=Math.max(0,Math.min(1,fz-j)),h=TER.h,n=TER.nx;
+  return (h[j*n+i]*(1-tx)+h[j*n+i+1]*tx)*(1-tz)+(h[(j+1)*n+i]*(1-tx)+h[(j+1)*n+i+1]*tx)*tz;}
+const groundMin=ring=>{let m=1e9;for(const [x,z] of ring)m=Math.min(m,groundH(x,z));return m===1e9?0:m;};
+ctx.groundH=groundH;
 // water lookups on a 20 m grid, worked out once for the whole map: 0 land, 1 lake, 2 inland water
 const WG=20,WNX=Math.ceil(B.w/WG),WNZ=Math.ceil(B.d/WG),WGRID=new Uint8Array(WNX*WNZ);
 {for(let j=0;j<WNZ;j++){const z=B.z0+(j+0.5)*WG;
@@ -69,4 +78,4 @@ function districtAt(x,z){for(const [d,x0,x1,z0,z1] of DIST_BOX)if(x>=x0&&x<=x1&&
 const FOCUS=(C.focus||[]).map(f=>{const [x,z]=P(f.at);return Object.assign({},f,{x,z,r:f.radius});});
 const focusAt=(x,z)=>FOCUS.find(f=>Math.hypot(f.x-x,f.z-z)<f.r)||null;
 ctx.districtAt=districtAt;ctx.inWater=inWater;
-ctx.details={roads:ROADS.length,buildings:OSM.buildings.length,areas:AREAS.length};
+ctx.details={roads:ROADS.length,buildings:OSM.buildings.length,areas:AREAS.length,terrain:TER?TER.nx+'x'+TER.nz+' at '+TER.step+' m':'flat'};

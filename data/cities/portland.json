@@ -758,5 +758,10 @@
   "Morrison Bridge": 19,
   "Hawthorne Bridge": 16,
   "Tilikum Crossing": 23
+ },
+ "terrain": {
+  "zoom": 14,
+  "step": 15,
+  "_": "elevation grid spacing in metres; tiles from tools/fetch-terrain.py"
  }
 }

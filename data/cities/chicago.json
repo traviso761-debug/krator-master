@@ -970,5 +970,10 @@
   ],
   "lakeRelation": "Lake Michigan",
   "_": "bbox and tiles for tools/fetch-osm.py; detailZones and lakeRelation for tools/build-osm-city.py"
+ },
+ "terrain": {
+  "zoom": 14,
+  "step": 30,
+  "_": "elevation grid spacing in metres; tiles from tools/fetch-terrain.py"
  }
 }
