@@ -209,6 +209,57 @@ def height_of(t):
     return max(2.5, h), max(0.0, mh or 0.0)
 
 
+# ---------- elevation ----------
+def terrain_grid():
+    """Sample the cached terrain tiles into a height grid over the map, with the water level as zero."""
+    cfg = CITY.get("terrain")
+    tdir = os.path.join(RAW, "terrain")
+    if not cfg or not os.path.isdir(tdir):
+        return None
+    try:
+        from PIL import Image
+    except ImportError:
+        print("terrain: Pillow not installed, skipping")
+        return None
+    z = cfg.get("zoom", 14)
+    tiles = {}
+    for f in glob.glob(os.path.join(tdir, f"{z}_*.png")):
+        _, x, y = os.path.basename(f)[:-4].split("_")
+        tiles[(int(x), int(y))] = Image.open(f).convert("RGB").load()
+    if not tiles:
+        return None
+    n = 2 ** z * 256
+
+    def elev(lat, lon):   # bilinear over the terrarium pixels: height = R*256 + G + B/256 - 32768
+        la = math.radians(max(-85.0, min(85.0, lat)))
+        px = (lon + 180) / 360 * n - 0.5
+        py = (1 - math.log(math.tan(la) + 1 / math.cos(la)) / math.pi) / 2 * n - 0.5
+        x0, y0 = int(math.floor(px)), int(math.floor(py))
+        fx, fy = px - x0, py - y0
+        tot = 0.0
+        for dx, dy, wgt in ((0, 0, (1 - fx) * (1 - fy)), (1, 0, fx * (1 - fy)), (0, 1, (1 - fx) * fy), (1, 1, fx * fy)):
+            X, Y = x0 + dx, y0 + dy
+            t = tiles.get((X // 256, Y // 256))
+            if t is None:
+                continue
+            r, g, b = t[X % 256, Y % 256]
+            tot += wgt * (r * 256 + g + b / 256 - 32768)
+        return tot
+
+    step = cfg.get("step", 20)
+    nx, nz = int(BX1 - BX0) // step + 2, int(BZ1 - BZ0) // step + 2
+    hs = []
+    for j in range(nz):
+        zz = BZ0 + j * step
+        for i in range(nx):
+            xx = BX0 + i * step
+            hs.append(elev(LAT0 - zz / M_LAT, LON0 + xx / M_LON))
+    water = sorted(hs)[len(hs) // 20]   # the 5th percentile: river or lake level
+    return {"step": step, "nx": nx, "nz": nz, "x0": q(BX0), "z0": q(BZ0), "datum": round(water, 1),
+            "h": [int(round((h - water) * 10)) for h in hs],
+            "_": "heights in decimetres above the water level (datum, metres above sea level)"}
+
+
 def main():
     report = "--report" in sys.argv
     out = {"attribution": "Map data © OpenStreetMap contributors (ODbL)", "units": "decimetres east (x) and south (z) of origin",
@@ -431,6 +482,12 @@ def main():
             rec["lv"] = int(lv)
         buildings.append(rec)
     out["buildings"] = buildings
+    t = terrain_grid()
+    if t:
+        out["terrain"] = t
+        lo, hi = min(t["h"]) / 10, max(t["h"]) / 10
+        print(f"terrain: {t['nx']}x{t['nz']} at {t['step']} m, {lo:.0f}..{hi:.0f} m above the water level "
+              f"(datum {t['datum']} m above sea level)")
     json.dump(out, open(OUT, "w"), separators=(",", ":"), ensure_ascii=False)
     size = os.path.getsize(OUT)
     print(f"wrote {OUT}: {size / 1e6:.1f} MB; buildings {len(buildings)} (skipped {skipped} small outside the detail zones, "

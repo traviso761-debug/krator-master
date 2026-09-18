@@ -98,10 +98,11 @@ South Waterfront to the Fremont Bridge and from Washington Park to the Lloyd Dis
 - **Detailed areas:** Pioneer Courthouse Square, the Pearl District, Old Town and Chinatown, Waterfront Park.
 - **On the river:** sailboats, motorboats and kayaks that keep to the channel; cyclists on the Eastbank
   Esplanade, Waterfront and bridges.
-- **Not modelled:** terrain. The model is flat, so the West Hills and Marquam Hill are not raised (the Aerial
-  Tram's upper station stands on a tower instead).
+- **Terrain:** the ground follows real elevation data (AWS Terrain Tiles, from SRTM/NED), so the West Hills,
+  Marquam Hill and the river bluffs are modelled; streets, buildings, trees and traffic sit on the slopes, and
+  Mount Hood and Mount St. Helens stand on the horizon.
 
-Data: `python3 tools/fetch-osm.py portland` then `python3 tools/build-osm-city.py portland`.
+Data: `python3 tools/fetch-osm.py portland`, `python3 tools/fetch-terrain.py portland`, then `python3 tools/build-osm-city.py portland`.
 
 ### `/tongue`: The Izani Tongue
 
@@ -151,6 +152,13 @@ the landmark positions, wall shape, gates, districts, statues, views, constellat
 settings; `data/lexicon.json` holds every Izani word (`words`, grouped), the carved and painted
 inscriptions (`inscriptions`), the landmark → inscription map (`placeNames`), `lore` and `canon`.
 After editing the lexicon run `python3 tools/build-tongue.py` to refresh the Tongue page's tables.
+
+### Terrain
+
+`python3 tools/fetch-terrain.py <city>` downloads elevation tiles for the city's area (cached under
+`data/osm/raw/<city>/terrain/`, not committed); `tools/build-osm-city.py` samples them into a height grid in
+the city's `-osm.json`, with y = 0 at the water level. `terrain` in the city config sets the tile zoom and the
+grid spacing (Portland 15 m, Chicago 30 m). A city with no tiles simply stays flat.
 
 ### Adding a city
 
