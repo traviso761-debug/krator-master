@@ -34,7 +34,18 @@ section('trees',()=>{
       for(let u=carry;u<L;u+=14){if((u<10&&i===0)||(i===r.pts.length-2&&L-u<10))continue;for(const sd of [-1,1]){if(R()<0.3)continue;const off=r.w/2+2.3,x=ax+dx*u-dz*sd*off,z=az+dz*u+dx*sd*off;
           if(!inMap(x,z,5)||have.has(Math.floor(x/20)+','+Math.floor(z/20))||!clearAt(x,z,1.5))continue;const hs=R(),h=8+hs*8;T.add(x,0,z,hs*6,h,h,h,greens[Math.floor(hs*greens.length)]);parkway++;}}
       carry=Math.max(0,14-((L-carry)%14));}}
-  T.build();ctx.details=Object.assign(ctx.details||{},{mappedTrees:mapped.length/2,parkwayTrees:parkway});
+  // woodland: Forest Park and the other wooded slopes carry their own trees, and parks get a scattering
+  let forest=0;const DENSE={wood:11,reserve:13},OPEN={park:26,cemetery:30,garden:22,zoo:26,golf:34};
+  for(const a of AREAS){const cell=DENSE[a.kind]||OPEN[a.kind];if(!cell)continue;const dense=!!DENSE[a.kind];
+    for(let z=a.bb.z0;z<a.bb.z1;z+=cell)for(let x=a.bb.x0;x<a.bb.x1;x+=cell){
+      const R2=hash3(x,z,31);if(R2>(dense?0.72:0.34))continue;
+      const px=x+(hash3(x,z,32)-0.5)*cell*0.9,pz=z+(hash3(x,z,33)-0.5)*cell*0.9;
+      if(!inRec(a,px,pz)||!inMap(px,pz,5)||inWater(px,pz))continue;
+      if(have.has(Math.floor(px/20)+','+Math.floor(pz/20)))continue;
+      if(buildingsAt(px,pz,2).some(b=>inPoly(px,pz,b.ring))||roadsNear(px,pz,1,r=>r.c!=='trail').length)continue;
+      const hs=hash3(px,pz,34),h=dense?14+hs*16:8+hs*8;   // conifers on the wooded slopes are tall
+      T.add(px,groundH(px,pz),pz,hs*6,h*(dense?0.72:1),h,h*(dense?0.72:1),greens[Math.floor(hs*greens.length)]);forest++;}}
+  T.build();ctx.details=Object.assign(ctx.details||{},{mappedTrees:mapped.length/2,parkwayTrees:parkway,woodlandTrees:forest});
 });
 section('rooftops',()=>{
   const hvacM=new THREE.MeshLambertMaterial({color:0xb8b6b0}),tankM=new THREE.MeshLambertMaterial({color:0x6a4a34}),roofTankM=new THREE.MeshLambertMaterial({color:0x3a3430});
