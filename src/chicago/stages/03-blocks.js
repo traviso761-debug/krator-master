@@ -61,7 +61,7 @@ function roofAt(x,z){let h=0;for(const b of buildingsAt(x,z,0))if(inPoly(x,z,b.r
 const PICK_TILES=[];
 section('buildings',()=>{
   const tiles=new Map();
-  const T=(x,z)=>{const k=Math.floor(x/800)+','+Math.floor(z/800);let t=tiles.get(k);if(!t){t={walls:{tower:{p:[],n:[],u:[],c:[],idx:[],own:[]},low:{p:[],n:[],u:[],c:[],idx:[],own:[]},blank:{p:[],n:[],u:[],c:[],idx:[],own:[]}},roof:{p:[],n:[],c:[],idx:[]},roofLow:{p:[],n:[],c:[],idx:[]},shop:{p:[],n:[],idx:[]}};tiles.set(k,t);}return t;};
+  const TSZ=800*WORLD;const T=(x,z)=>{const k=Math.floor(x/TSZ)+','+Math.floor(z/TSZ);let t=tiles.get(k);if(!t){t={walls:{tower:{p:[],n:[],u:[],c:[],idx:[],own:[]},low:{p:[],n:[],u:[],c:[],idx:[],own:[]},blank:{p:[],n:[],u:[],c:[],idx:[],own:[]}},roof:{p:[],n:[],c:[],idx:[]},roofLow:{p:[],n:[],c:[],idx:[]},shop:{p:[],n:[],idx:[]}};tiles.set(k,t);}return t;};
   const MAIN=new Set(['primary','secondary','tertiary','pedestrian','trunk']);
   let n=0,stores=0,skippedStadium=0;
   for(const b of OSM.buildings){const ring=dec(b.p);if(ring.length<3)continue;
@@ -101,10 +101,10 @@ section('buildings',()=>{
   const far=(m,d)=>{if(m){m.userData.far=d;FAR_MESHES.push(m);}};
   // Anything under 30 m is sprawl: near the camera it is the city, from two kilometres away it is noise that costs
   // as much as the skyline. Tall buildings carry no distance limit, so the silhouette never changes.
-  const LOW_FAR=C.lowRiseFar||2400;
+  const LOW_FAR=(C.lowRiseFar||2400)*WORLD;
   for(const t of tiles.values()){for(const W of ['tower','low','blank']){const m=mk(t.walls[W],bldMats[W],true);if(m){m.userData.pick={tile:t,kind:W};PICK_TILES.push(m);t.walls[W].mesh=m;if(W==='low')far(m,LOW_FAR);}}
     mk(t.roof,roofM,false);far(mk(t.roofLow,roofM,false),LOW_FAR);   // the skyline is always drawn; the low-rise behind it is not
-    const s=mk(t.shop,shopM,false);if(s){s.castShadow=false;far(s,1500);}}
+    const s=mk(t.shop,shopM,false);if(s){s.castShadow=false;far(s,1500*WORLD);}}
   ctx.lotList=[];for(const a of BGRID.values())for(const r of a)if(!r._fp){r._fp=1;ctx.lotList.push({x:(r.x0+r.x1)/2,z:(r.z0+r.z1)/2,w:r.x1-r.x0,dpt:r.z1-r.z0,h:r.h,ry:0,kind:'osm',fixed:false});}   // the test fingerprint: every drawn footprint
   ctx.lotList.sort((p,q)=>p.x-q.x||p.z-q.z);ctx.lots=ctx.lotList.length;
   ctx.details=Object.assign(ctx.details||{},{buildingsDrawn:n,storefronts:stores,stadiumOutlinesSkipped:skippedStadium,heightFixesDropped:HEIGHT_FIX.filter(f=>f.skip).length,tiles:tiles.size});

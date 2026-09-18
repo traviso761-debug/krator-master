@@ -105,8 +105,8 @@ section('combine',()=>{
   let barriers=0,fields=0;
   {const barG=new THREE.BoxGeometry(1.15,1.3,2.7).translate(0,0.65,0);
    const fenceG=new THREE.BoxGeometry(0.28,2.4,3).translate(0,1.2,0);
-   const B1=tiledInstances(barG,new THREE.MeshLambertMaterial({color:0x6e6a60}),1500,true);
-   const B2=tiledInstances(fenceG,new THREE.MeshLambertMaterial({color:0x4e535a}),1500,true);
+   const B1=tiledInstances(barG,new THREE.MeshLambertMaterial({color:0x6e6a60}),1500*WORLD,true);
+   const B2=tiledInstances(fenceG,new THREE.MeshLambertMaterial({color:0x4e535a}),1500*WORLD,true);
    const fieldGeo=new THREE.PlaneGeometry(1,1),F1=[];
    const want=K.barriers||0;
    const row=(cxp,czp,head,w,gap,fence)=>{for(let q=-w/2+0.7;q<w/2-0.3;q+=1.4){if(gap&&Math.abs(q)<1.7)continue;
@@ -226,7 +226,7 @@ section('combine',()=>{
    // trash fires in the courtyards, and the debris nobody clears
    const fireM=[0,1,2].map(()=>new THREE.MeshBasicMaterial({color:0xff8c30,transparent:true,opacity:0.85}));
    const drumM=new THREE.MeshLambertMaterial({color:0x5a4a3c});
-   const DB=tiledInstances(new THREE.BoxGeometry(1,1,1).translate(0,0.5,0),new THREE.MeshLambertMaterial({color:0x6a665e}),900,false);
+   const DB=tiledInstances(new THREE.BoxGeometry(1,1,1).translate(0,0.5,0),new THREE.MeshLambertMaterial({color:0x6a665e}),900*WORLD,false);
    const flames=[];
    const resid=ROADS.filter(r=>r.c==='residential');
    for(let pass=0;pass<6&&(fires<(K.fires||0)||debris<(K.debris||0));pass++)for(const r of resid){

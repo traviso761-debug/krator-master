@@ -9,7 +9,8 @@ function joinChains(lines,tol){const key=p=>Math.round(p[0]/tol)+','+Math.round(
       if(key(d[0])===key(c[c.length-1])){c=c.concat(d.slice(1));}else if(key(d[d.length-1])===key(c[c.length-1])){c=c.concat(d.slice(0,-1).reverse());}
       else if(key(d[d.length-1])===key(c[0])){c=d.slice(0,-1).concat(c);}else if(key(d[0])===key(c[0])){c=d.slice(1).reverse().concat(c);}else continue;left.splice(i,1);grew=true;break;}}out.push(c);}return out;}
 section('el',()=>{
-  const H=C.el.height||8,elev=RAILS.filter(r=>r.type==='L'&&r.elevated);
+  const EL=C.el||{};   // a land with no railway need not configure one
+  const H=EL.height||8,elev=RAILS.filter(r=>r.type==='L'&&r.elevated);
   const deck=tiledBuffer(new THREE.MeshLambertMaterial({vertexColors:true}),{cast:true}),dc=col('#5e6166');
   const cols=[];
   for(const r of elev){deck.ribbon(r.pts,4.2,H,dc,1.2);let carry=0;
@@ -27,7 +28,7 @@ section('el',()=>{
   // trains: the joined elevated lines long enough to run on, a train or two each, slowing at stations
   const lines=joinChains(elev.map(r=>r.pts),3).map(p=>polyLen({pts:p})).filter(r=>r.len>700);
   const winM=new THREE.MeshLambertMaterial({color:0x1e2630});
-  const carL=14.6,N=C.el.trainCars||6,carM=new THREE.MeshLambertMaterial({color:0x8e959c,emissive:0x000000}),trains=[];   // brushed steel, not white
+  const carL=14.6,N=EL.trainCars||6,carM=new THREE.MeshLambertMaterial({color:0x8e959c,emissive:0x000000}),trains=[];   // brushed steel, not white
   for(const r of lines){const k=r.len>3000?2:1;for(let i=0;i<k;i++)trains.push({r,s:(i+0.3)*r.len/k,dir:i%2?1:-1,v:13});}
   const tm=new THREE.InstancedMesh(new THREE.BoxGeometry(carL,3.4,3),carM,Math.max(1,trains.length*N)),tw=new THREE.InstancedMesh(new THREE.BoxGeometry(carL-1.2,1.1,3.04).translate(0,0.45,0),winM,Math.max(1,trains.length*N));tm.frustumCulled=tw.frustumCulled=false;scene.add(tm,tw);
   const stS=lines.map(r=>STATIONS.map(s=>{let bs=-1,bd=60;for(let q=0;q<=r.len;q+=10){const [px,pz]=polyAt(r,q);const dd=Math.hypot(px-s.x,pz-s.z);if(dd<bd){bd=dd;bs=q;}}return bs;}).filter(q=>q>=0));
@@ -55,7 +56,7 @@ section('metra',()=>{
 // light rail and streetcars at street level (MAX, the Portland Streetcar): rails in the pavement and trains running the joined lines
 section('surface-rail',()=>{
   const surf=RAILS.filter(r=>(r.type==='L'&&!r.elevated)||r.type==='tram');if(!surf.length)return;
-  const rb=tiledBuffer(groundMat(6),{tile:1000,far:2500}),steel=col('#8a8a86');
+  const rb=tiledBuffer(groundMat(6),{tile:1000,far:2500*WORLD}),steel=col('#8a8a86');
   const off=(pts,o)=>pts.map((p,i)=>{const a=pts[Math.max(0,i-1)],b=pts[Math.min(pts.length-1,i+1)],dx=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dx,dz)||1;return [p[0]-dz/l*o,p[1]+dx/l*o];});
   for(const r of surf)for(const o of [-0.72,0.72])rb.ribbon(off(r.pts,o),0.12,0.02,steel);rb.build('surface rails');
   const make=(type,carL,N,colour,v)=>{const lines=joinChains(surf.filter(r=>type==='tram'?r.type==='tram':r.type!=='tram').map(r=>r.pts),3).map(p=>polyLen({pts:p})).filter(r=>r.len>600);
@@ -67,6 +68,6 @@ section('surface-rail',()=>{
         for(let c=0;c<N;c++){const [x,z,a]=polyAt(t.r,t.s-t.dir*c*(carL+0.5));d.position.set(x,deckAt(x,z),z);d.rotation.set(0,-a,0);d.updateMatrix();im.setMatrixAt(i,d.matrix);win.setMatrixAt(i,d.matrix);band.setMatrixAt(i++,d.matrix);}}
       im.count=win.count=band.count=i;im.instanceMatrix.needsUpdate=win.instanceMatrix.needsUpdate=band.instanceMatrix.needsUpdate=true;const w=windowF(hourCur);m.emissive.setRGB(w*0.7,w*0.66,w*0.5);});return trains.length;};
   // on a bridge the tracks share the road deck: lift the train to it
-  const nMax=make('L',28,C.el.trainCars||2,0x9ea3a8,11),nCar=make('tram',20,1,0x7a2a5a,7);   // MAX: grey with a blue stripe; the streetcar in its plum livery
+  const nMax=make('L',28,EL.trainCars||2,0x9ea3a8,11),nCar=make('tram',20,1,0x7a2a5a,7);   // MAX: grey with a blue stripe; the streetcar in its plum livery
   ctx.details=Object.assign(ctx.details||{},{lightRailTrains:nMax,streetcars:nCar});
 });

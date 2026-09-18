@@ -20,6 +20,11 @@ const P=([lat,lon])=>[lonX(lon),latZ(lat)];
 const toLatLon=(x,z)=>[LAT0-z/M_LAT,LON0+x/M_LON];
 ctx.project=P;ctx.toLatLon=toLatLon;
 const B=(()=>{const [s,w,n,e]=C.bounds;return {x0:lonX(w),x1:lonX(e),z0:latZ(n),z1:latZ(s)};})();B.w=B.x1-B.x0;B.d=B.z1-B.z0;B.cx=(B.x0+B.x1)/2;B.cz=(B.z0+B.z1)/2;
+// How much bigger than a city this map is. Everything below that is written in metres - the water lookup's
+// cell, the ground grid, the tile sizes, the draw distances, the camera's far plane - is multiplied by it, so
+// a map the size of a country works on the same code as one the size of a downtown. It is 1 for every city.
+const WORLD=Math.max(1,Math.max(B.w,B.d)/20000);
+ctx.world=Math.round(WORLD*100)/100;
 const inMap=(x,z,m)=>x>B.x0+(m||0)&&x<B.x1-(m||0)&&z>B.z0+(m||0)&&z<B.z1-(m||0);
 // geometry helpers
 function segDist(px,pz,ax,az,bx,bz){const dx=bx-ax,dz=bz-az,L=dx*dx+dz*dz;let t=L?((px-ax)*dx+(pz-az)*dz)/L:0;t=Math.max(0,Math.min(1,t));return Math.hypot(px-ax-t*dx,pz-az-t*dz);}
@@ -52,7 +57,7 @@ function groundH(x,z){if(!TER)return 0;const fx=(x-TER.x0)/TER.step,fz=(z-TER.z0
 const groundMin=ring=>{let m=1e9;for(const [x,z] of ring)m=Math.min(m,groundH(x,z));return m===1e9?0:m;};
 ctx.groundH=groundH;
 // water lookups on a 20 m grid, worked out once for the whole map: 0 land, 1 lake, 2 inland water
-const WG=20,WNX=Math.ceil(B.w/WG),WNZ=Math.ceil(B.d/WG),WGRID=new Uint8Array(WNX*WNZ);
+const WG=20*Math.ceil(WORLD),WNX=Math.ceil(B.w/WG),WNZ=Math.ceil(B.d/WG),WGRID=new Uint8Array(WNX*WNZ);
 {for(let j=0;j<WNZ;j++){const z=B.z0+(j+0.5)*WG;
    // the lake: scanline crossings of the shore polygon at this z
    const xs=[];for(let i=0,k=LAKE.length-1;i<LAKE.length;k=i++){const [xi,zi]=LAKE[i],[xk,zk]=LAKE[k];if((zi>z)!==(zk>z))xs.push(xi+(z-zi)*(xk-xi)/(zk-zi));}xs.sort((a,b)=>a-b);
@@ -68,7 +73,7 @@ const inLake=(x,z)=>waterCell(x,z)===1;
 const inRiver=(x,z)=>waterCell(x,z)===2;
 const inWater=(x,z)=>waterCell(x,z)>0;
 // roads on a 50 m grid of segment references, for "what street is this near" questions
-const RG=50,RGRID=new Map();
+const RG=50*Math.ceil(WORLD),RGRID=new Map();
 ROADS.forEach((r,ri)=>{for(let k=0;k+1<r.pts.length;k++){const [ax,az]=r.pts[k],[bx,bz]=r.pts[k+1],pad=r.w/2+10;
   for(let gi=Math.floor((Math.min(ax,bx)-pad)/RG);gi<=Math.floor((Math.max(ax,bx)+pad)/RG);gi++)for(let gj=Math.floor((Math.min(az,bz)-pad)/RG);gj<=Math.floor((Math.max(az,bz)+pad)/RG);gj++){const key=gi*100003+gj;let a=RGRID.get(key);if(!a){a=[];RGRID.set(key,a);}a.push(ri,k);}}});
 function roadsNear(x,z,r,filter){const out=[],seen=new Set(),a=RGRID.get(Math.floor(x/RG)*100003+Math.floor(z/RG))||[];
