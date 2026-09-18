@@ -210,10 +210,21 @@ size and left small.
 
 - **The land:** the Ered Lithui closing the north and turning down the east; the Ephel Dúath closing the
   west and turning along the south; Cirith Gorgor where they nearly meet, with Udûn behind it and the
-  Isenmouthe at its far end; the plateau of Gorgoroth; Orodruin standing out on it with the Sammath Naur
-  sunk into its head and its ash heaped downwind; the spur off the Ash Mountains that Barad-dûr sits on;
-  and the land falling south-east to Nurn and the Sea of Núrnen, the only water in Mordor. A 682 × 562
-  height grid at 1 km, from 0 to 4,600 m.
+  Isenmouthe at its far end; the plateau of Gorgoroth; the spur off the Ash Mountains that Barad-dûr sits
+  on; and the land falling south-east to Nurn and the Sea of Núrnen, the only water in Mordor. A 682 × 562
+  height grid at 1 km, from 0 to 10,600 m.
+- **The ranges are deliberately exaggerated.** At true vertical scale they are swells on the horizon;
+  Tolkien's are walls, and the land only reads as enclosed if they are built as walls. They rise hard out
+  of the plain rather than doming up to it, their crests are serrated into peaks and saddles, and where
+  two ranges meet they join rather than stack.
+- **Orodruin is always erupting:** fountains standing out of the pool in the Sammath Naur, flows running
+  down all seven flanks, and a plume that climbs eleven kilometres and leans thirty kilometres downwind.
+- **The works:** this is what the land is for. Forty-one forge-towns, mine workings cut into both walls,
+  and the slave-camps round Núrnen — furnace halls, barrack rows, slag heaps, a walled muster yard with
+  corner towers, and 157 stacks burning day and night. At any distance the smoke is the only way you know
+  they are there. Ninety fissures burn through the floor of Gorgoroth.
+- **The pall:** a ceiling of cloud and volcanic ash that never lifts, with no sun through it, and ash
+  falling everywhere.
 - **The Eye** is the exception to the scale. The tower is fifteen hundred metres of black iron and from
   a hundred kilometres off it is a splinter — so the Eye on top of it is lit to carry: a flame with a
   wide bloom around it and a beam that sweeps a hundred and seventy kilometres of plain all night. You
@@ -316,6 +327,12 @@ the land's own relief, because a ramp fixed at 120 m paints a mountain range one
 
 Without this a country-sized map tries to allocate a 950 MB water grid and walk 2,800 km of road a metre
 at a time, which is exactly what it did the first time it was asked to.
+
+Two backdrop bugs only a big map exposes, both fixed: the sky dome is centred on the world origin, so the
+camera can be half a map diagonal from its centre before you count altitude — size it by the far plane
+alone and its far side is clipped, showing the clear colour through the sphere's own facets. And the sky
+gradient read an interpolated direction without renormalising it, so it followed the dome's tessellation.
+Order is now horizon ring < sky dome < far plane, and the dome is sized for the whole map.
 
 ### Performance
 

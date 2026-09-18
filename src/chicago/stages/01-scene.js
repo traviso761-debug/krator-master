@@ -37,15 +37,23 @@ const SKY=(()=>{const D={day:{top:0x2f6fd0,hor:0xbcd3ee},dusk:{top:0x2a3a78,hor:
   for(const k in (C.sky||{}))for(const q in C.sky[k])D[k][q]=hx(C.sky[k][q]);return D;})();   // the city's own sky, if its config gives one
 const skyM=new THREE.ShaderMaterial({uniforms:{top:{value:new THREE.Color()},hor:{value:new THREE.Color()},sunDir:{value:new THREE.Vector3(0,1,0)},sunA:{value:1}},side:THREE.BackSide,depthWrite:false,fog:false,
   vertexShader:'varying vec3 vP;void main(){vP=normalize(position);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',
-  fragmentShader:'uniform vec3 top;uniform vec3 hor;uniform vec3 sunDir;uniform float sunA;varying vec3 vP;void main(){float t=clamp(vP.y*1.6,0.0,1.0);vec3 c=mix(hor,top,pow(t,0.6));float d=max(dot(vP,sunDir),0.0);c+=vec3(1.0,0.85,0.6)*(pow(d,600.0)*1.2+pow(d,8.0)*0.18)*sunA;gl_FragColor=vec4(c,1.0);}'});
-const sky=new THREE.Mesh(new THREE.SphereGeometry(11000*WORLD,32,16),skyM);sky.userData.noShadow=true;sky.renderOrder=-1;scene.add(sky);
+  // vP is interpolated across the dome's faces, so it has to be renormalised here: using it raw makes the
+  // gradient follow the sphere's tessellation, which on a country-sized map shows up as a polygon in the sky.
+  fragmentShader:'uniform vec3 top;uniform vec3 hor;uniform vec3 sunDir;uniform float sunA;varying vec3 vP;void main(){vec3 dir=normalize(vP);float t=clamp(dir.y*1.6,0.0,1.0);vec3 c=mix(hor,top,pow(t,0.6));float d=max(dot(dir,sunDir),0.0);c+=vec3(1.0,0.85,0.6)*(pow(d,600.0)*1.2+pow(d,8.0)*0.18)*sunA;gl_FragColor=vec4(c,1.0);}'});
+// The backdrop has to be the outermost thing drawn, and it has to stay inside the far plane from anywhere on
+// the map. The dome is centred on the world origin, so the camera can be half a map diagonal away from its
+// centre before you even count altitude: size it by what is left of the far plane after that, or the far side
+// of the dome is clipped away and the clear colour shows through along the sphere's own facets.
+// Order is: horizon ring < sky dome < far plane.
+const SKY_R=Math.max(2000,(camera.far-Math.hypot(B.w,B.d)/2)*0.92);ctx.skyR=Math.round(SKY_R);
+const sky=new THREE.Mesh(new THREE.SphereGeometry(SKY_R,32,16),skyM);sky.userData.noShadow=true;sky.renderOrder=-1;scene.add(sky);
 const tmpC=new THREE.Color(),tmpC2=new THREE.Color();
 function lerpSky(h){const n=nightF(h),dusk=Math.max(0,1-Math.abs(h-18.6)/1.6,1-Math.abs(h-6.3)/1.4);
   const mixTo=(a,b,k)=>tmpC.set(a).lerp(tmpC2.set(b),k);
   skyM.uniforms.top.value.copy(mixTo(SKY.day.top,SKY.night.top,n)).lerp(tmpC2.set(SKY.dusk.top),dusk*0.7);
   skyM.uniforms.hor.value.copy(mixTo(SKY.day.hor,SKY.night.hor,n)).lerp(tmpC2.set(SKY.dusk.hor),dusk);
   scene.fog.color.copy(skyM.uniforms.hor.value);renderer.setClearColor(skyM.uniforms.hor.value);
-  const S=sunAt(h);skyM.uniforms.sunDir.value.copy(S);skyM.uniforms.sunA.value=S.y>-0.05?1:0;
+  const S=sunAt(h);skyM.uniforms.sunDir.value.copy(S);skyM.uniforms.sunA.value=(S.y>-0.05?1:0)*(C.sunGlare===undefined?1:C.sunGlare);   // a land under cloud never shows its disc
   sun.position.copy(S).multiplyScalar(2500).add(sun.target.position);sun.intensity=0.82*(1-0.72*OVERCAST)*Math.max(0,Math.min(1,S.y*4))*(1-0.85*n);
   sun.color.setHSL(0.09,0.6-0.4*OVERCAST,0.5+0.45*Math.min(1,S.y*3));hemi.intensity=0.38*(1+0.5*OVERCAST)*(1-0.75*n);ambient.intensity=(0.22+0.2*OVERCAST)*(1-0.5*n)+0.1*n;
   ENV.izHour.value=h;ENV.izNight.value=n;ENV.izDay.value=1-n;ENV.izSunDir.value.copy(S);}

@@ -361,6 +361,53 @@ const MODELS={
     const g=group(L,parts);
     animHooks.push(now=>{for(const p of puffs){const [bx,by,bz,ph]=p.userData.b,t=((now/9000)+ph)%1;p.position.set(bx+t*46,by+t*34,bz+t*10);p.scale.setScalar(1+t*3.4);p.material.opacity=0.3*(1-t);}});
     return g;},
+  orodruin(L,x,z){   // Mount Doom, in eruption, which is its normal condition
+    const g0=gh(x,z),parts=[],R0=L.crater||1100,SC=L.scale||1;
+    const rock=new THREE.MeshPhongMaterial({color:0x211e1b,specular:0x3a342c,shininess:6,flatShading:true});
+    const lavaM=new THREE.MeshBasicMaterial({color:0xff6a12,transparent:true,opacity:0.95});
+    const emberM=new THREE.MeshBasicMaterial({color:0xffb03a,transparent:true,opacity:0.85});
+    const ashM=new THREE.MeshLambertMaterial({color:0x2a2622,transparent:true,opacity:0.5,depthWrite:false});
+    // the crater: a broken rim, and the fire sitting in it
+    for(let k=0;k<13;k++){const a=k/13*Math.PI*2,r=R0*(0.92+((k*37)%5)*0.05);
+      const b=new THREE.Mesh(new THREE.BoxGeometry(R0*0.42,R0*(0.24+((k*29)%4)*0.09),R0*0.3),rock);
+      b.position.set(x+Math.cos(a)*r,g0+R0*0.1,z+Math.sin(a)*r);b.rotation.set(0,-a,((k*19)%5-2)*0.08);parts.push(b);}
+    const pool=new THREE.Mesh(new THREE.CircleGeometry(R0*0.82,24).rotateX(-Math.PI/2),lavaM);
+    pool.position.set(x,g0+R0*0.06,z);parts.push(pool);
+    // the fountain standing out of the pool, and the lava running down the flanks
+    const jets=[];for(let k=0;k<7;k++){const a=k/7*Math.PI*2+0.4,r=R0*(0.2+((k*31)%4)*0.13);
+      const j=new THREE.Mesh(new THREE.ConeGeometry(R0*0.13,R0*0.9,6).translate(0,R0*0.45,0),emberM);
+      j.position.set(x+Math.cos(a)*r,g0+R0*0.06,z+Math.sin(a)*r);parts.push(j);jets.push({j,ph:k*0.9});}
+    const flows=[],SLOPE=L.slope||0.33;   // the angle of the cone's flank, in radians
+    for(let k=0;k<7;k++){const a=k/7*Math.PI*2+0.7,len=(L.flow||9000)*(0.6+((k*29)%5)*0.16);
+      const arm=new THREE.Group();arm.position.set(x,g0+R0*0.05,z);arm.rotation.y=-a;
+      const fl=new THREE.Mesh(new THREE.BoxGeometry(len,26,R0*(0.16+((k*17)%3)*0.07)).translate(len/2,0,0),lavaM);
+      fl.position.set(R0*0.9,0,0);fl.rotation.z=-SLOPE;arm.add(fl);
+      scene.add(arm);flows.push({fl,ph:k*1.3});}
+    const g=group(L,parts);
+    // the plume: it does not stop, and it leans downwind
+    const puffs=[],N=L.puffs||44,TOP=(L.plume||9000),DRIFT=(L.drift||26000);
+    for(let k=0;k<N;k++){const p=new THREE.Mesh(new THREE.SphereGeometry(R0*0.55,8,6),ashM);
+      p.userData.t=k/N;scene.add(p);puffs.push(p);}
+    const lamp=new THREE.PointLight(0xff5a10,0,R0*7);lamp.position.set(x,g0+R0*0.9,z);scene.add(lamp);
+    const glow=new THREE.Mesh(new THREE.SphereGeometry(R0*2.4,14,10),new THREE.MeshBasicMaterial({color:0xff5e12,transparent:true,opacity:0.18,depthWrite:false}));
+    glow.position.set(x,g0+R0*0.3,z);glow.userData.noShadow=true;scene.add(glow);
+    animHooks.push(now=>{const n=nightF(hourCur);
+      const surge=0.62+0.38*Math.sin(now*0.00043)+0.16*Math.sin(now*0.0017);
+      lavaM.opacity=Math.min(1,0.8+0.2*surge);emberM.opacity=0.6+0.35*surge;
+      glow.material.opacity=(0.12+0.16*n)*surge;glow.scale.setScalar(0.85+0.3*surge);
+      lamp.intensity=(0.45+0.85*n)*surge;
+      for(const q of jets){const k=0.5+0.6*Math.abs(Math.sin(now*0.0021+q.ph));q.j.scale.set(0.8+0.3*k,k*(0.7+0.9*surge),0.8+0.3*k);}
+      for(const q of flows){const k=0.75+0.25*Math.sin(now*0.0009+q.ph);q.fl.scale.set(1,1,0.8+0.4*k);}
+      // every puff climbs, spreads and leans away, then starts again at the crater
+      for(let i=0;i<puffs.length;i++){const p=puffs[i];
+        const t=((now*0.0000075)+p.userData.t)%1;
+        const rise=Math.pow(t,0.85);
+        p.position.set(x+DRIFT*t*t*0.9+Math.sin(i*2.3+t*5)*R0*1.4,
+                       g0+R0*0.4+TOP*rise,
+                       z+DRIFT*t*t*0.35+Math.cos(i*1.7+t*4)*R0*1.4);
+        p.scale.setScalar(0.5+6.5*t);p.material=ashM;}
+      ashM.opacity=0.46;});
+    return g;},
   baraddur(L,x,z){   // Barad-dur, and the Eye. At the scale of the whole land the tower is a splinter, so the Eye is lit to carry.
     const H=L.height||1500,g0=gh(x,z),parts=[],A=L.turn||0.4;
     const iron=new THREE.MeshPhongMaterial({color:0x20211f,specular:0x44403a,shininess:10,flatShading:true});
