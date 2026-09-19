@@ -964,5 +964,11 @@
   "zoom": 14,
   "step": 30,
   "_": "elevation grid spacing in metres; tiles from tools/fetch-terrain.py"
+ },
+ "terrainColours": {
+  "low": "#6b6a55",
+  "high": "#5d6b45",
+  "steep": "#6a6052",
+  "far": "#76837c"
  }
 }

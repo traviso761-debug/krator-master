@@ -639,8 +639,8 @@
  "seaLevelWater": true,
  "_seaLevelWater": "Manhattan's shores are tidal coastline in OSM, so the box is flooded at sea level and the elevation grid draws the island",
  "terrainColours": {
-  "low": "#6a6a62",
-  "high": "#5f6a52",
+  "low": "#6a6a56",
+  "high": "#5f6c4a",
   "steep": "#6a6052",
   "far": "#2f6490"
  }

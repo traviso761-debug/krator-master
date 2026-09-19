@@ -22,6 +22,7 @@ They run on the same core modules and the same page shell; each city is a data f
 | `/megacity` | `/megacity.html`, `/mc1`, `/dredd` | `megacity.html` | Mega-City One: massing model (fan work) |
 | `/dredd2012` | `/dredd2012.html`, `/peachtrees` | `dredd2012.html` | Mega-City One as the 2012 film has it (fan work) |
 | `/mordor` | `/mordor.html`, `/sauron` | `mordor.html` | Mordor: the whole land (fan work) |
+| `/krator` | `/voth`, `/voth.html`, `/krator.html` | `krator.html` | Krator: A Primer |
 | `/tongue` | `/izani-tongue` | `The-Izani-Tongue_2.html` | The Izani Tongue |
 | `/painting.jpg` | | `painting.jpg` | The Iziz painting; `image.png` is the master copy |
 | `/css/*`, `/src/*`, `/data/*`, `/vendor/*` | | those folders | stylesheets, modules, content, three.js |
@@ -268,6 +269,13 @@ size and left small.
 
 Regenerate with `python3 tools/make-mordor.py`, then `./sitectl build`.
 
+### `/krator`: Krator
+
+A worldbuilding primer: the geography, climate and peoples of a crater world on a tidally locked moon.
+`voth.html` is the source and stays the source — it is plain prose, one line to a paragraph, with the short
+lines being headings — and `tools/build-voth.py` wraps it into the page. Edit the prose, run the builder,
+reload. Same arrangement as the Izani Tongue, where the text is kept as text.
+
 ### `/tongue`: The Izani Tongue
 
 A self-contained reference page (no scripts). Its **City lexicon** tables are generated from
@@ -299,6 +307,7 @@ vendor/three/three.min.js     three.js r128 (pinned)
 tools/  build-page.py build-tongue.py probe.py check-city.py
         fetch-osm.py fetch-terrain.py build-osm-city.py make-city17.py make-nightcity.py
         make-megacity.py make-mordor.py make-dredd2012.py
+        build-voth.py
 tests/  run.js *.test.js golden/ fixtures/
 server.py  site.toml  sitectl
 ```
