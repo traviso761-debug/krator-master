@@ -170,9 +170,20 @@ are used. It opens at 21:36 and it is raining.
   megablock housing a slab to a plot, the retrofitted low city built up in pieces and never cleared, an
   elevated ring freeway on piers with four radials, the dock yards, and the industrial flats.
 - **The night stage** (`src/chicago/stages/06c-neon.js`, switched on by the `neon` block in the config):
-  2,800 neon signs bolted to whatever wall faces the street, 40 billboards cycling through their own
-  light, holograms hung over the junctions, 280 spinners in five flight lanes, flare stacks burning on
-  the flats, steam off the gratings, and rain.
+  2,800 neon signs bolted to whatever wall faces the street, 1,100 blade signs projecting out over it so
+  you read them end-on, 900 lanterns strung across the side streets, 700 market awnings with the light
+  under them, 900 rooftop antennas and dishes, a tangle of cable nobody has taken down in fifty years,
+  holograms hung over the junctions, 280 spinners in five flight lanes, flare stacks burning on the
+  flats, steam off the gratings, and rain.
+- **The billboards only advertise the dead.** *Blade Runner* put Atari, Pan Am and Bell on its skyline in
+  1982 and then watched all three go under, so every name up there is a company that no longer exists:
+  Atari, Enron, Pan Am, Blockbuster, Compaq, Netscape, Polaroid, Woolworth, Lehman Brothers, TWA,
+  Commodore, Borders, Tower Records, Circuit City, RadioShack, Napster, WorldCom, Pets.com, Arthur
+  Andersen, AltaVista, Geocities, Oldsmobile, Braniff and thirty more. The names are drawn to a canvas
+  and used as textures, so they are readable.
+- **The signage is mostly not in English.** Blade signs carry 食堂, 薬局, 電気, ラーメン, 質屋, 電脳, 義体
+  and the rest, stacked down lit panels. If the machine viewing it has no CJK font the stage measures a
+  glyph against one nothing has, notices, and falls back to romaji rather than showing a column of tofu.
 - **Added on top:** the twin corporate ziggurats — seven hundred metres of stepped terraces, lit along
   every lip, with landing decks and beacons at the cap.
 
