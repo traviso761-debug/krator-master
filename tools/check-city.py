@@ -158,7 +158,11 @@ def check(city):
                            f"footprint of {area:,.0f} m2 - check it is the tower and not its podium")
 
     # ---- districts and focus areas ----
-    for k, d in (cfg.get("districts") or {}).items():
+    ds = cfg.get("districts") or {}
+    if ds and "outer" not in ds:
+        r.err("no district called 'outer': the engine falls back to that name for anything outside a box, "
+              "and without it every readout and colour lookup throws")
+    for k, d in ds.items():
         if k == "_" or not isinstance(d, list) or len(d) < 5 or d[4] is None:
             continue
         ds, dw, dn, de = d[4]
