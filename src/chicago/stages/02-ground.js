@@ -88,7 +88,10 @@ section('water',()=>{
   // The elevation tiles put a tidal river's surface at the same level the water plane is drawn at, and across a
   // sheet kilometres wide the depth test stops separating them at grazing angles: the bed shows through as a pale
   // slab. Open water is drawn clear of it.
-  const WY=C.seaLevelWater?0.7:0.05;
+  // A city can put its sea above itself: waterLevel raises the whole sheet, and what holds it back is the
+  // city's own problem. Night City's is 95 m up, which is why there is a wall along the shore.
+  const WY=(typeof C.waterLevel==='number')?C.waterLevel:(C.seaLevelWater?0.7:0.05);
+  ctx.waterLevel=WY;
   for(const w of WATER)((TOX&&TOX.test(w.name))?tb:wb).poly(w.o,w.i,WY,col('#2a5f8c'));
   wb.build('river');if(tb)tb.build('toxic channels');
   animHooks.push(now=>{waterM.shininess=WSHINE*0.78+WSHINE*0.28*Math.sin(now*0.0011);});

@@ -184,6 +184,11 @@ are used. It opens at 21:36 and it is raining.
 - **The signage is mostly not in English.** Blade signs carry 食堂, 薬局, 電気, ラーメン, 質屋, 電脳, 義体
   and the rest, stacked down lit panels. If the machine viewing it has no CJK font the stage measures a
   glyph against one nothing has, notices, and falls back to romaji rather than showing a column of tofu.
+- **The sea wall.** The Pacific stands 95 m above the city, and this is what is between them: 208 m of
+  battered concrete along the whole shore, going up in four stepped courses each set further inland than
+  the one below, pilasters up its landward face, buttresses out into the water, sluice towers along it and
+  a road on top. Nobody who lives here has seen the sea. A city sets `waterLevel` to put its water above
+  itself; every other city leaves it at nought.
 - **Added on top:** the twin corporate ziggurats — seven hundred metres of stepped terraces, lit along
   every lip, with landing decks and beacons at the cap.
 

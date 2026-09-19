@@ -121,7 +121,7 @@ def main():
     edge = [(shore_x(z), z) for z in range(int(-HALF) - 300, int(HALF) + 301, 40)]
     out["lake"] = []
     out["islands"] = []
-    out["water"] = [{"o": flat(edge + [(-HALF - 3000, HALF + 300), (-HALF - 3000, -HALF - 300)]), "i": [], "n": "The Pacific"}]
+    out["water"] = [{"o": flat(edge + [(-HALF - 60000, HALF + 300), (-HALF - 60000, -HALF - 300)]), "i": [], "n": "The Pacific"}]
     out["marina"], out["beach"], out["pier"] = [], [], []
     out["waterways"] = []
 
@@ -308,10 +308,52 @@ def main():
             else:
                 put(rect(ax, az, R.uniform(60, 150), R.uniform(36, 78)), R.uniform(11, 26), "industrial",
                     IRON[R.randrange(len(IRON))])
-    # the sea wall
-    for z in range(int(-HALF), int(HALF), 40):
+    # ---------- the sea wall ----------
+    # The Pacific stands ninety-five metres above the city and this is what is between them. It is battered
+    # seaward, so it goes up as four stepped courses each set a little further inland than the one below, with
+    # buttresses every third bay taking the load out into the water, sluice towers along it, and a road on top.
+    WALL_H = 208.0
+    COURSES = 4
+    BAY = 42
+    b = 0
+    for z in range(int(-HALF) - 200, int(HALF) + 200, BAY):
         sx = shore_x(z)
-        put([(sx, z), (sx + 7, z), (sx + 7, z + 40), (sx, z + 40)], 7, "wall", "#4a4b4f")
+        sx2 = shore_x(z + BAY)
+        for c in range(COURSES):
+            t0 = c / COURSES
+            t1 = (c + 1) / COURSES
+            inset = 26 * t0                       # each course steps back: the face leans into the sea
+            thick = 34 - 6 * t0
+            put([(sx + inset, z), (sx + inset + thick, z),
+                 (sx2 + inset + thick, z + BAY), (sx2 + inset, z + BAY)],
+                WALL_H * t1, "wall", "#4f5055" if c % 2 else "#565760", minh=WALL_H * t0)
+        # the landward face: pilasters the full height of it every bay, and a string course at each step.
+        # Without them 208 m of plain concrete reads as background rather than as a wall.
+        shade = ["#53545a", "#4b4c51", "#5a5b62", "#494a50"][(z // BAY) % 4]
+        put([(sx + 30, z + 5), (sx + 42, z + 5), (sx + 42, z + 17), (sx + 30, z + 17)],
+            WALL_H * 0.96, "pilaster", shade)
+        put([(sx + 30, z + 26), (sx + 42, z + 26), (sx + 42, z + 38), (sx + 30, z + 38)],
+            WALL_H * 0.72, "pilaster", shade)
+        for c in range(1, COURSES):
+            y = WALL_H * c / COURSES
+            put([(sx + 26 * (c / COURSES) - 3, z), (sx + 40, z), (sx2 + 40, z + BAY), (sx2 + 26 * (c / COURSES) - 3, z + BAY)],
+                y + 5, "course", "#404146", minh=y - 4)
+        # the parapet along the top
+        put([(sx + 24, z), (sx + 34, z), (sx2 + 34, z + BAY), (sx2 + 24, z + BAY)],
+            WALL_H + 7, "parapet", "#3c3d42", minh=WALL_H)
+        # the buttresses, out into the water
+        if (z // BAY) % 3 == 0:
+            put([(sx - 58, z + 12), (sx + 6, z + 12), (sx + 6, z + 30), (sx - 58, z + 30)],
+                WALL_H * 0.62, "buttress", "#494a4f")
+            put([(sx - 34, z + 12), (sx + 6, z + 12), (sx + 6, z + 30), (sx - 34, z + 30)],
+                WALL_H * 0.82, "buttress", "#4e4f55")
+        # sluice towers, and the lamp masts along the parapet
+        if (z // BAY) % 11 == 0:
+            put(rect(sx + 14, z + 21, 30, 30), WALL_H * 1.14, "tower", "#3f4045")
+        b += 1
+    # the road along the top of it
+    top = [(shore_x(z) + 22, z) for z in range(int(-HALF) + 40, int(HALF) - 39, 80)]
+    road(top, "trunk", 22, "Sea Wall Road")
     out["buildings"] = buildings
 
     trees = []
