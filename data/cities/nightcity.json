@@ -55,7 +55,7 @@
  },
  "riverBoats": {
   "sail": 0,
-  "motor": 6,
+  "motor": 0,
   "kayak": 0
  },
  "neon": {
@@ -218,6 +218,14 @@
    "info": "A levelled deck of poured concrete at the foot of the core towers, and the only open ground for a kilometre."
   },
   {
+   "name": "The Sea Wall",
+   "at": [
+    34.05,
+    -118.25495
+   ],
+   "info": "Two hundred and eight metres of battered concrete along the whole shore, buttressed out into the water, with a road on top and the sluice towers along it. The Pacific stands ninety-five metres above the city behind it. Nobody who lives here has seen the sea."
+  },
+  {
    "name": "The Stacks",
    "at": [
     34.0344,
@@ -329,14 +337,14 @@
   ],
   "The sea wall": [
    [
-    34.05683,
-    -118.25868,
+    34.05,
+    -118.25193,
     60
    ],
    [
-    34.0581,
-    -118.25446,
-    6
+    34.05,
+    -118.25495,
+    30
    ]
   ],
   "The Flats and the flares": [
@@ -374,6 +382,19 @@
     -118.2372,
     200
    ]
+  ],
+  "The sea above the city": [
+   [
+    34.0437,
+    -118.2465,
+    300
+   ],
+   [
+    34.0482,
+    -118.25626,
+    120
+   ]
   ]
- }
+ },
+ "waterLevel": 95
 }
