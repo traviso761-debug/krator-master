@@ -45,7 +45,7 @@ section('ground',()=>{
     // Colour by height and slope relative to the land's own relief. Fixed at 120 m a mountain range reads as one
     // flat colour, because everything above the first hill is already at the top of the ramp; and a slope measured
     // over kilometre samples is a tenth of what it is over metres.
-    const H_AT=Math.max(120,TER_RELIEF*0.75),SLOPE_K=1.2*Math.max(1,WORLD*0.3);
+    const H_AT=Math.max(120,TER_RELIEF*0.35),SLOPE_K=1.2*Math.max(1,WORLD*0.3);
     const TC=C.terrainColours||{},terM=new THREE.MeshLambertMaterial({vertexColors:true}),CH=48,   // a city may set its own earth colours
       low=col(TC.low||'#5c5a53'),high=col(TC.high||'#4a5a42'),steepC=col(TC.steep||'#6a6052'),cc=new THREE.Color();
     for(let cj=0;cj<TER.nz-1;cj+=CH)for(let ci=0;ci<TER.nx-1;ci+=CH){const w=Math.min(CH,TER.nx-1-ci),d=Math.min(CH,TER.nz-1-cj),pos=[],colr=[],idx=[];

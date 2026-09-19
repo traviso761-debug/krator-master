@@ -31,17 +31,19 @@ STEP = 1000                      # the height grid, in metres
 
 DOOM = (-120000.0, -60000.0)     # Orodruin
 BARAD = (-40000.0, -140000.0)    # Barad-dur, on its spur
-MORANNON = (-268000.0, -232000.0)
-ISENMOUTHE = (-196000.0, -150000.0)
+MORANNON = (-272000.0, -216000.0)   # in the vale between the two ranges' ends
+ISENMOUTHE = (-208000.0, -152000.0)
 NURNEN = (72000.0, 150000.0)     # the Sea of Nurnen
 CIRITH_UNGOL = (-282000.0, -34000.0)
 MINAS_MORGUL = (-310000.0, -14000.0)
 DURTHANG = (-262000.0, -164000.0)
 
 # the two ranges, as coarse polylines; the height field is built from the distance to them
-ERED_LITHUI = [(-286000, -236000), (-200000, -246000), (-90000, -242000), (20000, -234000),
+# The two walls stop short of each other in the north-west. What is between their ends is Cirith Gorgor,
+# and the Black Gate is built across it: a real gap in the geography rather than a notch punched in a ridge.
+ERED_LITHUI = [(-248000, -240000), (-200000, -246000), (-90000, -242000), (20000, -234000),
                (130000, -224000), (230000, -210000), (286000, -178000), (306000, -110000), (312000, -30000)]
-EPHEL_DUATH = [(-292000, -238000), (-296000, -160000), (-292000, -70000), (-286000, 20000),
+EPHEL_DUATH = [(-296000, -192000), (-298000, -150000), (-292000, -70000), (-286000, 20000),
                (-262000, 96000), (-200000, 150000), (-110000, 182000), (0, 196000), (110000, 198000),
                (208000, 186000), (280000, 150000), (308000, 80000)]
 MORGAI = [(-262000, -150000), (-266000, -70000), (-260000, 10000), (-240000, 76000)]
@@ -89,7 +91,7 @@ def path_dist(x, z, path):
     return best
 
 
-def ridge(x, z, path, width, height, rough=0.0, crest=0.42):
+def ridge(x, z, path, width, height, rough=0.0, crest=0.26):
     """A mountain range built as a wall: steep flanks, a broad crest, and a serrated ridgeline.
 
     A smoothstep dome is what a hill looks like. These are the walls of Mordor, so the profile rises hard
@@ -101,7 +103,7 @@ def ridge(x, z, path, width, height, rough=0.0, crest=0.42):
     if d > width:
         return 0.0
     f = 1 - d / width
-    h = height * (f ** crest) * smoothstep(0.0, 0.11, f)
+    h = height * (f ** crest) * smoothstep(0.0, 0.07, f)
     if rough:
         serr = (math.sin(x / 7300.0 + z / 5100.0) * 0.58
                 + math.sin(x / 2600.0 - z / 3100.0) * 0.3
@@ -133,18 +135,18 @@ def terrain_height(x, z):
     h = base
     # Deliberately exaggerated. At true vertical scale these are swells on the horizon; Tolkien's are walls,
     # and the land only reads as enclosed if they are built as walls.
-    rs = [ridge(x, z, ERED_LITHUI, 34000, 6800, 0.26),    # the Ash Mountains
-          ridge(x, z, EPHEL_DUATH, 30000, 8000, 0.26),    # the Mountains of Shadow
-          ridge(x, z, MORGAI, 11000, 3000, 0.34),         # the Morgai, the inner ridge
-          ridge(x, z, SPUR, 13000, 3400, 0.24)]           # the spur Barad-dur stands on
+    rs = [ridge(x, z, ERED_LITHUI, 21000, 7400, 0.30),    # the Ash Mountains
+          ridge(x, z, EPHEL_DUATH, 19000, 8600, 0.30),    # the Mountains of Shadow
+          ridge(x, z, MORGAI, 7000, 3200, 0.38),          # the Morgai, the inner ridge
+          ridge(x, z, SPUR, 9000, 3600, 0.28)]            # the spur Barad-dur stands on
     # where two ranges meet they should join, not add: the tallest wins and the rest only bulk it out,
     # or the north-west corner where both walls run together stacks to twice the height of either
     top = max(rs)
     h += top + 0.25 * (sum(rs) - top)
 
     # Cirith Gorgor: the gap in the north-west corner where the ranges almost meet, and Udun behind it
-    gap = smoothstep(52000, 0, math.hypot(x - MORANNON[0], z - MORANNON[1]))
-    h *= 1 - 0.78 * gap
+    gap = smoothstep(40000, 0, math.hypot(x - MORANNON[0], z - MORANNON[1]))
+    h *= 1 - 0.35 * gap
     udun = smoothstep(62000, 0, math.hypot(x - (MORANNON[0] + 40000), z - (MORANNON[1] + 44000)))
     h = h * (1 - 0.72 * udun) + 430 * udun
     ise = smoothstep(26000, 0, math.hypot(x - ISENMOUTHE[0], z - ISENMOUTHE[1]))
@@ -384,6 +386,40 @@ def main():
         if math.hypot(cx - DOOM[0], cz - DOOM[1]) < 20000 or in_nurnen(cx, cz):
             continue
         camp(cx, cz, R.randint(6, 18), R.uniform(300, 1100))
+    # ---------- crags ----------
+    # A one-kilometre height grid cannot hold a cliff: the steepest profile still comes out as a smooth swell
+    # because the whole rise happens inside a single sample. So the ridgelines carry rock of their own -
+    # angular masses extruded from the ground, vertical by construction, giving the ranges a skyline.
+    def crags(path, spacing, count, hmin, hmax, wmin, wmax, jitter):
+        n = 0
+        for i in range(len(path) - 1):
+            ax, az = path[i]
+            bx, bz = path[i + 1]
+            L = math.hypot(bx - ax, bz - az)
+            steps = max(1, int(L // spacing))
+            for k in range(steps):
+                t = k / steps
+                cx0 = ax + (bx - ax) * t
+                cz0 = az + (bz - az) * t
+                for _ in range(count):
+                    px = cx0 + R.uniform(-jitter, jitter)
+                    pz = cz0 + R.uniform(-jitter, jitter)
+                    if abs(px) > HX - 12000 or abs(pz) > HZ - 12000:
+                        continue
+                    w = R.uniform(wmin, wmax)
+                    d = w * R.uniform(0.5, 1.0)
+                    put(rect(px, pz, w, d, R.uniform(0, math.pi)),
+                        R.uniform(hmin, hmax), "crag",
+                        ["#332f29", "#2b2723", "#3c362e", "#262320"][R.randrange(4)])
+                    n += 1
+        return n
+
+    ncrag = 0
+    ncrag += crags(ERED_LITHUI, 2600, 5, 1400, 4600, 1400, 5200, 5000)
+    ncrag += crags(EPHEL_DUATH, 2600, 5, 1600, 5200, 1400, 5600, 4600)
+    ncrag += crags(MORGAI, 3000, 3, 700, 2200, 900, 2800, 2600)
+    ncrag += crags(SPUR, 3000, 3, 900, 2600, 1000, 3000, 3000)
+
     # Durthang, a fort in the northern Ephel Duath
     put(rect(DURTHANG[0], DURTHANG[1], 260, 200, 0.3), 90, "tower", "#2b2926", name="Durthang")
     for k in range(4):
@@ -399,7 +435,7 @@ def main():
     hi = max(t["h"]) / 10
     print(f"wrote {OUT}: {os.path.getsize(OUT)/1e6:.1f} MB; {2*HX/1000:.0f} x {2*HZ/1000:.0f} km; "
           f"terrain {t['nx']}x{t['nz']} at {t['step']} m, {lo:.0f}..{hi:.0f} m; "
-          f"buildings {len(buildings)}; roads {len(roads)}")
+          f"buildings {len(buildings)}; crags {ncrag}; roads {len(roads)}")
 
 
 if __name__ == "__main__":

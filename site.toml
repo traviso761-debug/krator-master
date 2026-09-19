@@ -85,6 +85,12 @@ file = "city17.html"
 title = "City 17: massing model"
 
 [[route]]
+path = "/krator"           # the Krator primer, built from voth.html by tools/build-voth.py
+aliases = ["/krator.html", "/voth", "/voth.html"]
+file = "krator.html"
+title = "Krator: A Primer"
+
+[[route]]
 path = "/tongue"
 aliases = ["/izani-tongue"]
 file = "The-Izani-Tongue_2.html"

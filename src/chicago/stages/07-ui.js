@@ -31,7 +31,7 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden)keys.clear(
 // a second, so that is what it is now, with the step capped so a stall cannot teleport the camera.
 let keyT=performance.now();
 function applyKeys(){const tNow=performance.now(),dt=Math.min(0.05,(tNow-keyT)/1000);keyT=tNow;
-  if(!keys.size)return;const s=ctl.dist*0.72*dt,fx=Math.cos(ctl.az),fz=Math.sin(ctl.az);let mx=0,mz=0;if(keys.has('w'))mx-=1;if(keys.has('s'))mx+=1;if(keys.has('a'))mz+=1;if(keys.has('d'))mz-=1;
+  if(!keys.size)return;const s=(ctl.dist*0.72+22)*dt,fx=Math.cos(ctl.az),fz=Math.sin(ctl.az);let mx=0,mz=0;if(keys.has('w'))mx-=1;if(keys.has('s'))mx+=1;if(keys.has('a'))mz+=1;if(keys.has('d'))mz-=1;
   ctl.target.x+=(mx*fx-mz*fz)*s;ctl.target.z+=(mx*fz+mz*fx)*s;if(keys.has('q'))ctl.target.y=Math.max(0,ctl.target.y-s);if(keys.has('e'))ctl.target.y+=s;if(mx||mz||keys.has('q')||keys.has('e'))ctl.goal=null;}
 function stepFly(now){const g=ctl.goal;if(!g)return;const u=Math.min(1,(now-g.t0)/1400),k=u*u*(3-2*u);ctl.target.lerpVectors(g.from.target,g.target,k);let da=g.az-g.from.az;da=Math.atan2(Math.sin(da),Math.cos(da));ctl.az=g.from.az+da*k;ctl.el=g.from.el+(g.el-g.from.el)*k;ctl.dist=g.from.dist+(g.dist-g.from.dist)*k;if(u>=1)ctl.goal=null;}
 // the panels: viewpoints, the clock, a card for the landmark you click
