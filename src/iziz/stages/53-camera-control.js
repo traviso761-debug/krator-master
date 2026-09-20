@@ -92,6 +92,9 @@ if(ctx.artPrints&&ctx.artPrints.length){const a=ctx.artPrints[0];VIEWS['Painting
 const ui=document.getElementById('ui'),viewsEl=document.getElementById('views'),dispEl=document.getElementById('display');
 // panels, tips and the legend sit just above the button bar, however many rows it wraps to
 {const setBar=()=>document.documentElement.style.setProperty('--barh',Math.ceil(ui.getBoundingClientRect().height)+'px');setBar();if(window.ResizeObserver)new ResizeObserver(setBar).observe(ui);else addEventListener('resize',setBar);}
+// the way out of this city and into the others (src/core/menagerie.js); it adds nothing unless the server
+// answers with a scene list, so the page opened straight off the disk is unchanged
+installMenagerie({ui}).then(m=>{if(m)ctx.details=Object.assign(ctx.details||{},{menagerie:m.scenes.length+' scenes'});}).catch(e=>report('menagerie',e));
 const vbtn=document.createElement('button');vbtn.textContent='Views';vbtn.setAttribute('aria-haspopup','dialog');vbtn.setAttribute('aria-expanded','false');vbtn.setAttribute('aria-controls','views');ui.prepend(vbtn);
 const dbtn=document.createElement('button');dbtn.textContent='Display';dbtn.setAttribute('aria-haspopup','dialog');dbtn.setAttribute('aria-expanded','false');dbtn.setAttribute('aria-controls','display');vbtn.after(dbtn);
 const lexEl=document.getElementById('lexicon');const PANELS=[[viewsEl,vbtn],[dispEl,dbtn],[lexEl,vbtn]];

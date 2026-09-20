@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Config-driven static server for the City of Iziz pages.
+"""Config-driven static server for the World Menagerie pages.
 
 Usage:
   python3 server.py [--config site.toml] [--host ADDR] [--port N]
@@ -10,6 +10,7 @@ Send SIGHUP (systemctl --user reload iziz) to re-read the config without a resta
 """
 import argparse
 import email.utils
+import json
 import gzip
 import http.server
 import mimetypes
@@ -47,11 +48,17 @@ class Site:
         self.port = int(server.get("port", 8000))
         self.log_requests = bool(server.get("log_requests", True))
         self.health = server.get("health")
+        # The menagerie index: the list of scenes, as JSON, for the front page and for the menu each scene
+        # carries. It is built from this config rather than kept anywhere else, so a scene that is turned off
+        # here disappears from both without anything else being edited.
+        self.scenes_path = server.get("scenes")
         self.headers = {str(k): str(v) for k, v in server.get("headers", {}).items()}
+        self.name = str(server.get("name", "World Menagerie"))
 
         # routes: exact URL path -> (file, headers, title, canonical path)
         self.routes = {}
         self.route_list = []
+        self.scenes = []
         for i, r in enumerate(raw.get("route", [])):
             if not r.get("enabled", True):
                 continue
@@ -62,6 +69,9 @@ class Site:
             headers = {**self.headers, **{str(k): str(v) for k, v in r.get("headers", {}).items()}}
             entry = (file, headers, r.get("title", ""), r["path"])
             self.route_list.append((r["path"], list(r.get("aliases", [])), file, entry[2]))
+            if r.get("scene"):
+                self.scenes.append({"path": r["path"], "title": r.get("title", r["path"]),
+                                    "blurb": r.get("blurb", ""), "kind": r.get("kind", "scene")})
             for p in [r["path"], *r.get("aliases", [])]:
                 p = self._norm(p, where)
                 if p in self.routes:
@@ -116,7 +126,7 @@ SITE = None
 
 
 class Handler(http.server.BaseHTTPRequestHandler):
-    server_version = "Iziz/1.1"
+    server_version = "Menagerie/1.2"
     protocol_version = "HTTP/1.1"   # keep-alive: one connection serves the page and everything it loads
 
     def do_GET(self):
@@ -133,6 +143,17 @@ class Handler(http.server.BaseHTTPRequestHandler):
             body = b"ok\n"
             self.send_response(200)
             self.send_header("Content-Type", "text/plain; charset=utf-8")
+            self.send_header("Content-Length", str(len(body)))
+            self.send_header("Cache-Control", "no-store")
+            self.end_headers()
+            if send_body:
+                self.wfile.write(body)
+            return
+
+        if site.scenes_path and path == site.scenes_path:
+            body = json.dumps({"name": site.name, "scenes": site.scenes}, indent=1).encode()
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
             self.send_header("Content-Length", str(len(body)))
             self.send_header("Cache-Control", "no-store")
             self.end_headers()

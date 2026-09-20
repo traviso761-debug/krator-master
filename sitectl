@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Manage the City of Iziz site server. Run ./sitectl help for commands.
-# Wraps the systemd *user* service "iziz", so never run this with sudo.
+# Manage the World Menagerie site server. Run ./sitectl help for commands.
+# Wraps the systemd *user* service "menagerie", so never run this with sudo.
 set -euo pipefail
 
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-UNIT=iziz
+UNIT=menagerie
 CONFIG="$DIR/site.toml"
 UNIT_FILE="$HOME/.config/systemd/user/$UNIT.service"
 
@@ -29,7 +29,7 @@ install_unit() {
   mkdir -p "$(dirname "$UNIT_FILE")"
   cat > "$UNIT_FILE" <<EOF
 [Unit]
-Description=City of Iziz site server (routes in $CONFIG)
+Description=World Menagerie site server (routes in $CONFIG)
 After=network.target
 
 [Service]

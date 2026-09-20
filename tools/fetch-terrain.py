@@ -17,7 +17,7 @@ import urllib.request
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 URL = "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png"
-UA = "CityofIziz-massing-model/1.0 (personal LAN project)"
+UA = "WorldMenagerie-massing-model/1.0 (personal LAN project)"
 
 
 def tile_xy(lat, lon, z):

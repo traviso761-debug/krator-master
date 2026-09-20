@@ -1,4 +1,4 @@
-// City of Iziz: entry point for iziz.html. Everything the city is made of runs in build() (src/iziz/build.js,
+// Iziz: entry point for iziz.html. Everything the city is made of runs in build() (src/iziz/build.js,
 // assembled from src/iziz/stages/). ctx is the one object the stages share with each other and with the
 // browser console (window._iz).
 import {report,LOAD,configureLoading,installErrorHandlers} from '../core/diag.js';

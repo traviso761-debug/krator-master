@@ -18,7 +18,7 @@ import urllib.request
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RAW_ROOT = os.path.join(ROOT, "data", "osm", "raw")
 URL = "https://overpass-api.de/api/interpreter"
-UA = "CityofIziz-massing-model/1.0 (personal LAN project; contact via OSM)"
+UA = "WorldMenagerie-massing-model/1.0 (personal LAN project; contact via OSM)"
 
 
 QUERIES = {
