@@ -354,7 +354,7 @@ def main():
         return name
 
     # the works of Gorgoroth: strung along the road between the Isenmouthe, Barad-dur and Orodruin
-    for k in range(20):
+    for k in range(52):
         t = R.random()
         cx = -230000 + t * 200000 + R.uniform(-30000, 30000)
         cz = -180000 + R.random() * 170000
@@ -364,7 +364,7 @@ def main():
             continue
         forge_town(cx, cz, R.uniform(0.8, 1.5))
     # the mine workings, cut into the flanks of both walls
-    for k in range(16):
+    for k in range(40):
         path = ERED_LITHUI if k % 2 else EPHEL_DUATH
         i = R.randrange(len(path) - 1)
         ax, az = path[i]
@@ -378,7 +378,7 @@ def main():
             continue
         forge_town(mx, mz, R.uniform(0.5, 0.9), kind="mine")
     # the slave-fields of Nurn: the camps that work them, round the shore
-    for k in range(26):
+    for k in range(64):
         a = R.uniform(0, math.tau)
         r = nurnen_edge(a) + R.uniform(11000, 46000)
         cx, cz = NURNEN[0] + math.cos(a) * r, NURNEN[1] + math.sin(a) * r / 1.45
@@ -399,12 +399,146 @@ def main():
         pois.append({"n": "fissure", "x": q(fx), "z": q(fz), "k": "fissure", "ang": round(R.uniform(0, math.pi), 3)})
 
     # the lesser camps, scattered over the plateau
-    for k in range(26):
+    for k in range(140):
         cx = -250000 + R.random() * 230000
         cz = -190000 + R.random() * 190000
         if math.hypot(cx - DOOM[0], cz - DOOM[1]) < 20000 or in_nurnen(cx, cz):
             continue
-        camp(cx, cz, R.randint(6, 18), R.uniform(300, 1100))
+        camp(cx, cz, R.randint(10, 30), R.uniform(300, 1400))
+    # ---------- what holds the country together ----------
+    # A war economy this size is not forges and camps with empty ground between them. It is the road furniture:
+    # a tower within sight of the last one the whole length of every road, posts at the junctions, quarries and
+    # spoil where the stone came from, pens for the beasts, wain parks, and the muster fields where an army is
+    # put together before it is marched anywhere. All of it is low, black and repetitive, which is the point.
+
+    def watchtower(tx, tz, h=70, name=None):
+        """A tower of the Eye's own: a square base, a taller shaft, and a fire basket on top."""
+        rot = R.uniform(0, math.pi)
+        put(rect(tx, tz, 46, 46, rot), h * 0.42, "tower", "#242220", name=name)
+        put(rect(tx, tz, 30, 30, rot), h, "tower", "#2b2926", minh=h * 0.42)
+        put(rect(tx, tz, 16, 16, rot), h + 14, "beacon", "#3a2a20", minh=h)
+        pois.append({"n": name or "watchtower", "x": q(tx), "z": q(tz), "k": "tower", "ang": round(rot, 3)})
+
+    def stockade(cx, cz, r, n=14, h=11):
+        """A ring of palisade stakes, and a gate gap in it facing the road."""
+        gap = R.uniform(0, math.tau)
+        for k in range(n):
+            a = k / n * math.tau
+            if abs((a - gap + math.pi) % math.tau - math.pi) < 0.28:
+                continue
+            put(rect(cx + math.cos(a) * r, cz + math.sin(a) * r, r * 0.52, 14, a),
+                h * R.uniform(0.85, 1.15), "wall", "#332f2a")
+
+    def quarry(cx, cz, r):
+        """Stepped benches cut down into the rock, and the spoil thrown out beside them."""
+        for k in range(5):
+            rr = r * (1 - k * 0.17)
+            for j in range(10):
+                a = j / 10 * math.tau
+                put(rect(cx + math.cos(a) * rr, cz + math.sin(a) * rr, rr * 0.7, 40, a),
+                    -8 - k * 9, "quarry", "#1f1d1b", minh=-18 - k * 9)
+        for k in range(R.randint(4, 9)):
+            a = R.uniform(0, math.tau)
+            d = r * R.uniform(1.4, 2.4)
+            put(rect(cx + math.cos(a) * d, cz + math.sin(a) * d, R.uniform(80, 220), R.uniform(70, 180),
+                     R.uniform(0, math.pi)), R.uniform(14, 44), "slag", "#37302a")
+
+    def pens(cx, cz, n=6):
+        """Stock pens: what the wains are drawn by, and what the trolls are fed."""
+        rot = R.uniform(0, math.pi)
+        for k in range(n):
+            u = (k - n / 2) * 150
+            px = cx + u * math.cos(rot)
+            pz = cz + u * math.sin(rot)
+            for j in range(4):
+                a = j / 4 * math.tau + rot
+                put(rect(px + math.cos(a) * 60, pz + math.sin(a) * 60, 118, 9, a + math.pi / 2), 7, "wall", "#2e2b27")
+            put(rect(px, pz, 26, 20, rot), 9, "hut", "#292624")
+
+    def wain_park(cx, cz, rows=6, per=12):
+        """Wagons parked up in ranks, waiting for the road to clear."""
+        rot = R.uniform(0, math.pi)
+        c2, s2 = math.cos(rot), math.sin(rot)
+        for r2 in range(rows):
+            for j in range(per):
+                u, v = (j - per / 2) * 26, (r2 - rows / 2) * 34
+                put(rect(cx + u * c2 - v * s2, cz + u * s2 + v * c2, 18, 9, rot), 6, "wain", "#2c2722")
+
+    def muster_field(cx, cz, w=2600, d=1800, name=None):
+        """A field of tents in ranks, a drill ground beaten flat beside it, and a stockade round the lot."""
+        rot = R.uniform(0, math.pi)
+        c2, s2 = math.cos(rot), math.sin(rot)
+        rows = int(d / 120)
+        per = int(w / 130)
+        for r2 in range(rows):
+            for j in range(per):
+                if R.random() < 0.08:
+                    continue
+                u = (j - per / 2) * 130 + R.uniform(-14, 14)
+                v = (r2 - rows / 2) * 120 + R.uniform(-12, 12)
+                put(rect(cx + u * c2 - v * s2, cz + u * s2 + v * c2, R.uniform(50, 90), R.uniform(40, 70), rot),
+                    R.uniform(9, 16), "tent", "#26231f",
+                    name=name if (r2 == 0 and j == 0 and name) else None)
+        stockade(cx, cz, max(w, d) * 0.62, 26, 13)
+        for k in range(4):
+            a = k / 4 * math.tau + 0.4
+            watchtower(cx + math.cos(a) * max(w, d) * 0.62, cz + math.sin(a) * max(w, d) * 0.62, 56)
+        wain_park(cx + math.cos(rot) * w * 0.55, cz + math.sin(rot) * w * 0.55)
+        pens(cx - math.cos(rot) * w * 0.55, cz - math.sin(rot) * w * 0.55)
+
+    # towers the length of every road, one every twenty-five kilometres, which is as far as a fire can be seen
+    for r2 in roads:
+        if not r2.get("n"):
+            continue
+        pts = [(r2["p"][i] / 10.0, r2["p"][i + 1] / 10.0) for i in range(0, len(r2["p"]), 2)]
+        run = 0.0
+        for i in range(len(pts) - 1):
+            seg = math.hypot(pts[i + 1][0] - pts[i][0], pts[i + 1][1] - pts[i][1])
+            run += seg
+            if run < 25000:
+                continue
+            run = 0.0
+            nx, nz2 = pts[i][1] - pts[i + 1][1], pts[i + 1][0] - pts[i][0]
+            nl = math.hypot(nx, nz2) or 1
+            off = R.choice((-1, 1)) * R.uniform(700, 2200)
+            tx, tz = pts[i][0] + nx / nl * off, pts[i][1] + nz2 / nl * off
+            if abs(tx) > HX - 12000 or abs(tz) > HZ - 12000 or in_nurnen(tx, tz):
+                continue
+            watchtower(tx, tz, R.uniform(50, 95))
+            if R.random() < 0.45:
+                stockade(tx, tz, R.uniform(180, 380))
+                camp(tx, tz, R.randint(5, 14), R.uniform(140, 320))
+
+    # the muster fields: behind the Gate, in Udun, on the plateau and at the Isenmouthe
+    muster_field(MORANNON[0] + 26000, MORANNON[1] + 20000, 3400, 2400, "The Muster of the Morannon")
+    muster_field(MORANNON[0] + 62000, MORANNON[1] + 56000, 3000, 2200, "The Muster of Udun")
+    muster_field(ISENMOUTHE[0] + 14000, ISENMOUTHE[1] + 18000, 2600, 1900, "The Isenmouthe Muster")
+    muster_field(BARAD[0] - 26000, BARAD[1] + 22000, 3200, 2200, "The Muster of the Tower")
+    muster_field(DOOM[0] + 34000, DOOM[1] + 30000, 2400, 1700)
+    muster_field(-190000, 30000, 2600, 1800)
+
+    # quarries: where the stone for all of it came out of the ground
+    for k in range(22):
+        qx = -250000 + R.random() * 230000
+        qz = -200000 + R.random() * 200000
+        if in_nurnen(qx, qz) or math.hypot(qx - DOOM[0], qz - DOOM[1]) < 16000:
+            continue
+        if abs(qx) > HX - 30000 or abs(qz) > HZ - 30000:
+            continue
+        quarry(qx, qz, R.uniform(300, 900))
+        camp(qx + R.uniform(-2000, 2000), qz + R.uniform(-2000, 2000), R.randint(8, 20), R.uniform(300, 900))
+
+    # pens and wain parks along the trunk roads, because an army eats and everything has to be carted
+    for k in range(30):
+        px2 = -250000 + R.random() * 230000
+        pz2 = -200000 + R.random() * 200000
+        if in_nurnen(px2, pz2) or abs(px2) > HX - 30000 or abs(pz2) > HZ - 30000:
+            continue
+        if R.random() < 0.5:
+            pens(px2, pz2, R.randint(4, 9))
+        else:
+            wain_park(px2, pz2, R.randint(4, 8), R.randint(8, 16))
+
     # ---------- crags ----------
     # A one-kilometre height grid cannot hold a cliff: the steepest profile still comes out as a smooth swell
     # because the whole rise happens inside a single sample. So the ridgelines carry rock of their own -
