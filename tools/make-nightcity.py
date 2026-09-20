@@ -187,9 +187,11 @@ def main():
 
     # ---------- land ----------
     areas = [{"k": "plaza", "n": "Corporate Plaza", "o": flat(rect(CORE[0], CORE[1], 300, 260)), "i": []},
-             {"k": "industrial", "n": "The Flats", "o": flat(rect(1500, 1500, 1500, 1000)), "i": []},
-             {"k": "industrial", "n": "Dock Yards", "o": flat(rect(-1150, -900, 620, 760)), "i": []},
-             {"k": "park", "n": "Reclamation Park", "o": flat(rect(-500, 1250, 420, 320)), "i": []},
+             {"k": "industrial", "n": "The Flats", "o": flat(rect(1560, 1500, 1900, 1300)), "i": []},
+             {"k": "industrial", "n": "Dock Yards", "o": flat(rect(-1150, -900, 700, 900)), "i": []},
+             {"k": "industrial", "n": "North Works", "o": flat(rect(-260, -2000, 1200, 760)), "i": []},
+             {"k": "industrial", "n": "The Refineries", "o": flat(rect(1900, -900, 900, 900)), "i": []},
+             {"k": "industrial", "n": "South Yards", "o": flat(rect(-900, 2050, 1000, 700)), "i": []},
              {"k": "parking", "n": "Lower Stacks", "o": flat(rect(950, -1150, 380, 300)), "i": []}]
     out["areas"] = areas
 
@@ -234,6 +236,47 @@ def main():
         hi = (i + 1) * BLOCK - line_w(i + 1) / 2 - 1.5
         return (lo + hi) / 2, hi - lo
 
+    # ---------- the slums ----------
+    # Built by hand out of whatever came off the dock, on ground the city had no other use for: up against
+    # the works, under the freeway, along the wall. A slum takes a whole block - it is not a building the
+    # grid put up but the absence of one, so it has to claim the plot before anything else is laid on it.
+    SHACK = ["#6a5a48", "#5a4f42", "#75604a", "#4e463c", "#6f5d46", "#57503f", "#7a6247"]
+    SLUMS = [(-1020, -1560, 460), (1180, 820, 520), (-1700, 640, 420), (760, -1840, 400),
+             (-1480, 1580, 470), (1820, 1700, 400), (-2060, -1400, 380), (300, 2080, 500),
+             (1560, -1500, 360), (-700, 2200, 420)]
+    nslum = [0]
+
+    def slum_at(bx, bz):
+        """How thoroughly the slum has taken this block: 1 at its heart, fading to nothing at the edge."""
+        best = 0.0
+        for sx, sz, rr in SLUMS:
+            t = 1 - math.hypot(bx - sx, bz - sz) / rr
+            if t > best:
+                best = t
+        return best if best > 0.12 else 0.0
+
+    def fill_shacks(bx, bz, wx, wz, dens):
+        """Pack a plot with shacks: nothing square, nothing over three storeys, no two the same colour."""
+        made = 0
+        for _ in range(int(wx * wz / 150 * (0.45 + dens))):
+            w = R.uniform(4.5, 11)
+            px = bx + (R.random() - 0.5) * (wx - w - 3)
+            pz = bz + (R.random() - 0.5) * (wz - w - 3)
+            put(rect(px, pz, w, w * R.uniform(0.6, 1.5), R.uniform(0, math.pi)),
+                R.uniform(2.6, 8), "shack", SHACK[R.randrange(len(SHACK))])
+            made += 1
+            if R.random() < 0.22:                          # a second storey stacked on the first
+                base = R.uniform(2.6, 5)
+                put(rect(px + R.uniform(-1.5, 1.5), pz + R.uniform(-1.5, 1.5), w * 0.75, w * 0.75,
+                         R.uniform(0, math.pi)), base + R.uniform(3.5, 7), "shack",
+                    SHACK[R.randrange(len(SHACK))], minh=base)
+                made += 1
+        if R.random() < 0.5:                               # the standpipe or the aerial mast over the roofs
+            put(rect(bx + (R.random() - 0.5) * wx * 0.5, bz + (R.random() - 0.5) * wz * 0.5, 3, 3),
+                R.uniform(12, 24), "plant", "#3f3c37")
+            made += 1
+        return made
+
     cx, cz = CORE
     for i in range(-n, n + 1):
         for j in range(-n, n + 1):
@@ -248,13 +291,17 @@ def main():
                     skip = True
             if skip:
                 continue
+            sl = slum_at(bx, bz)
+            if sl > 0:
+                nslum[0] += fill_shacks(bx, bz, wx, wz, sl)
+                continue
             d = math.hypot(bx - cx, bz - cz)
             core = max(0.0, 1 - d / CORE_R)
             if d < CORE_R * 0.42 and R.random() < 0.62:
                 # the core: one tower to a block, and they are stacked as high as they will go
-                h = 170 + core * 190 + R.random() * 150
-                if R.random() < 0.10:
-                    h += 150 + R.random() * 190
+                h = 220 + core * 250 + R.random() * 190
+                if R.random() < 0.15:
+                    h += 260 + R.random() * 480
                 w = min(wx, wz) * (0.62 + R.random() * 0.26)
                 put(rect(bx, bz, w, w * (0.8 + R.random() * 0.35), R.random() * 0.25), h,
                     "tower", GLASS[R.randrange(len(GLASS))])
@@ -298,16 +345,34 @@ def main():
         if a["k"] != "industrial":
             continue
         x0, x1, z0, z1 = area_bbox(a)
-        for _ in range(26):
+        for _ in range(64):
             ax = R.uniform(x0 + 50, x1 - 50)
             az = R.uniform(z0 + 40, z1 - 40)
             if in_water(ax, az):
                 continue
-            if R.random() < 0.3:
-                put(rect(ax, az, R.uniform(22, 44), R.uniform(22, 44)), R.uniform(20, 54), "tank", "#4a4741")
-            else:
-                put(rect(ax, az, R.uniform(60, 150), R.uniform(36, 78)), R.uniform(11, 26), "industrial",
-                    IRON[R.randrange(len(IRON))])
+            r = R.random()
+            if r < 0.24:                                   # tank farms, in rows
+                for k in range(R.randint(2, 5)):
+                    d = R.uniform(26, 48)
+                    put(rect(ax + k * (d + 12), az, d, d), R.uniform(18, 42), "tank", "#45423c")
+            elif r < 0.40:                                 # cracking towers and columns
+                for k in range(R.randint(2, 6)):
+                    put(rect(ax + k * 16, az + R.uniform(-8, 8), R.uniform(7, 13), R.uniform(7, 13)),
+                        R.uniform(40, 120), "plant", "#3f3c37")
+            elif r < 0.52:                                 # gantries over the yard
+                L = R.uniform(90, 260)
+                ang = R.uniform(0, math.pi)
+                put(rect(ax, az, L, 7, ang), R.uniform(16, 34), "gantry", "#4a453e")
+                for k in range(4):
+                    put(rect(ax + math.cos(ang) * (k - 1.5) * L / 4,
+                             az + math.sin(ang) * (k - 1.5) * L / 4, 8, 8),
+                        R.uniform(14, 30), "plant", "#3f3c37")
+            else:                                          # the sheds themselves
+                put(rect(ax, az, R.uniform(70, 190), R.uniform(40, 96), R.uniform(0, 0.3)),
+                    R.uniform(12, 30), "industrial", IRON[R.randrange(len(IRON))])
+                if R.random() < 0.35:
+                    put(rect(ax + R.uniform(-30, 30), az + R.uniform(-20, 20), 9, 9),
+                        R.uniform(40, 95), "stack", "#3a3733")
     # ---------- the sea wall ----------
     # The Pacific stands ninety-five metres above the city and this is what is between them. It is battered
     # seaward, so it goes up as four stepped courses each set a little further inland than the one below, with
@@ -356,20 +421,13 @@ def main():
     road(top, "trunk", 22, "Sea Wall Road")
     out["buildings"] = buildings
 
-    trees = []
-    for a in areas:
-        if a["k"] != "park":
-            continue
-        x0, x1, z0, z1 = area_bbox(a)
-        for _ in range(160):
-            trees += [q(R.uniform(x0 + 8, x1 - 8)), q(R.uniform(z0 + 8, z1 - 8))]
-    out["trees"] = trees
+    out["trees"] = []                                      # nothing grows in Night City
     out["pois"] = []
 
     json.dump(out, open(OUT, "w"), separators=(",", ":"))
     t = out["terrain"]
     print(f"wrote {OUT}: {os.path.getsize(OUT)/1e6:.1f} MB; buildings {len(buildings)}; roads {len(roads)}; "
-          f"areas {len(areas)}; terrain {t['nx']}x{t['nz']} at {t['step']} m; trees {len(trees)//2}")
+          f"areas {len(areas)}; shacks {nslum[0]}; terrain {t['nx']}x{t['nz']} at {t['step']} m")
 
 
 if __name__ == "__main__":
