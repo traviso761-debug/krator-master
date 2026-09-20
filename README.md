@@ -289,6 +289,21 @@ size and left small.
   Morgul lit a colour nothing healthy is lit, the tower of Cirith Ungol, Durthang, and about a thousand
   orc camps and slave-farms scattered over the plateau and round the shore of Núrnen.
 
+- **The Black Gate opens.** A gate that never moves is a wall with a pattern on it. Each leaf is hinged on
+  its jamb and swung back against the inside face when a host comes up the road (`ctx.hosts`, which
+  `src/mordor/hosts.js` publishes), and shut behind it; braziers burn along the parapet and on both Teeth.
+- **Orodruin is a cone.** Its profile used to be `(1 - d/R)` raised to a power, which gives a dome with a
+  flat top and a straight skirt — the opposite of a volcano. It is an exponential now: steep at the head
+  where everything that comes out of it lands on itself, flaring at the foot where the flows ran, with
+  barrancos cut down the flanks and the Sammath Naur sunk into the summit.
+- **The Winding Stair and Torech Ungol** (`windingstair`, `shelob`): the Straight Stair driven at the west
+  face of the Ephel Duath so steeply it is nearly a ladder, then switchbacks up it with the drop on the
+  other side, and at the head of it the hole that is the only way through the pass — webbed across, with
+  what is left outside it lying where it was dropped. Nothing of her is modelled: it is a hole you cannot
+  see into, which is the point.
+- **The camped hosts**: six more drawn up in squares on the plain under Barad-dûr, thirty-one thousand of
+  them, not going anywhere until they are sent.
+
 Regenerate with `python3 tools/make-mordor.py`, then `./sitectl build`.
 
 ### `/krator`: Krator
