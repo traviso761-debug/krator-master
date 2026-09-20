@@ -32,6 +32,13 @@ STEP = 1000                      # the height grid, in metres
 DOOM = (-120000.0, -60000.0)     # Orodruin
 BARAD = (-40000.0, -140000.0)    # Barad-dur, on its spur
 MORANNON = (-272000.0, -216000.0)   # in the vale between the two ranges' ends
+# Cirith Gorgor, as a pass: T is the way through it (out to Dagorlad, in to Udun), U runs along the wall
+# the Gate is built in. The ranges' ends lie on the U axis, thirty-four kilometres out either side.
+PASS_T = (0.70711, 0.70711)
+PASS_U = (-0.70711, 0.70711)
+PASS_HALF = 3200.0                  # half the width of the slot the Gate closes
+PASS_RAMP = 2200.0                  # and how fast the rock comes up either side of it
+PASS_FLOOR = 560.0
 ISENMOUTHE = (-208000.0, -152000.0)
 NURNEN = (72000.0, 150000.0)     # the Sea of Nurnen
 CIRITH_UNGOL = (-282000.0, -34000.0)
@@ -144,9 +151,21 @@ def terrain_height(x, z):
     top = max(rs)
     h += top + 0.25 * (sum(rs) - top)
 
-    # Cirith Gorgor: the gap in the north-west corner where the ranges almost meet, and Udun behind it
-    gap = smoothstep(40000, 0, math.hypot(x - MORANNON[0], z - MORANNON[1]))
-    h *= 1 - 0.35 * gap
+    # Cirith Gorgor: the gap in the north-west corner where the ranges almost meet, and Udun behind it.
+    # "Almost" was doing too much work here. The two ranges' ends are sixty-eight kilometres apart and the
+    # floor between them was twenty-eight kilometres of open plain, so the Gate stood in the middle of it
+    # blocking nothing. The vale is filled in to the height of the walls that meet there and one slot is cut
+    # back out of it: the Gate is built across that slot and there is no other way through.
+    gu = (x - MORANNON[0]) * PASS_U[0] + (z - MORANNON[1]) * PASS_U[1]      # across the pass
+    gv = (x - MORANNON[0]) * PASS_T[0] + (z - MORANNON[1]) * PASS_T[1]      # in through it, towards Udun
+    vale = smoothstep(30000, 9000, abs(gv)) * smoothstep(40000, 30000, abs(gu))
+    if vale > 0:
+        h = max(h, (6600 + 900 * math.sin(gu / 5200.0) + 500 * math.sin(gv / 3100.0)) * vale)
+        # the slot is pinched at the Gate and opens out both ways: onto Dagorlad in front, into Udun behind,
+        # so it reads as a pass narrowing to a door rather than fifty kilometres of trench
+        half = PASS_HALF + 0.62 * abs(gv)
+        slot = smoothstep(half + PASS_RAMP, half, abs(gu)) * smoothstep(34000, 24000, abs(gv))
+        h = h * (1 - slot) + PASS_FLOOR * slot
     udun = smoothstep(62000, 0, math.hypot(x - (MORANNON[0] + 40000), z - (MORANNON[1] + 44000)))
     h = h * (1 - 0.72 * udun) + 430 * udun
     ise = smoothstep(26000, 0, math.hypot(x - ISENMOUTHE[0], z - ISENMOUTHE[1]))
@@ -414,7 +433,19 @@ def main():
                     n += 1
         return n
 
+    # the two walls of Cirith Gorgor, which have to be sheer where the Gate meets them: narrow masses set
+    # tight to the edge of the slot, so the rock goes up beside the Gate instead of sloping away from it
+    def pass_wall(side):
+        path = []
+        for v in range(-24000, 24001, 2000):
+            half = PASS_HALF + 0.62 * abs(v) + 1600
+            path.append((MORANNON[0] + PASS_U[0] * side * half + PASS_T[0] * v,
+                         MORANNON[1] + PASS_U[1] * side * half + PASS_T[1] * v))
+        return path
+
     ncrag = 0
+    for side in (-1, 1):
+        ncrag += crags(pass_wall(side), 1500, 3, 2200, 5400, 900, 2600, 600)
     ncrag += crags(ERED_LITHUI, 2600, 5, 1400, 4600, 1400, 5200, 5000)
     ncrag += crags(EPHEL_DUATH, 2600, 5, 1600, 5200, 1400, 5600, 4600)
     ncrag += crags(MORGAI, 3000, 3, 700, 2200, 900, 2800, 2600)
