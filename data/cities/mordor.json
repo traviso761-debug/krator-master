@@ -154,10 +154,10 @@
     -2.4434
    ],
    "model": "blackgate",
-   "height": 380,
-   "width": 9600,
-   "turn": 0.42,
-   "info": "Thrown across the gap of Cirith Gorgor where the two ranges almost meet, with the Towers of the Teeth either side of a gate that is shut. Seven kilometres of wall, and on a map of the whole country it is a scratch."
+   "height": 900,
+   "width": 8200,
+   "turn": -0.7854,
+   "info": "Built across the slot of Cirith Gorgor, where the Ash Mountains and the Mountains of Shadow run together and leave one gap between them. Six kilometres of rock either side of it and the Towers of the Teeth on the shoulders. There is no other road into Mordor."
   },
   {
    "name": "Minas Morgul",
@@ -288,14 +288,14 @@
   ],
   "The Black Gate": [
    [
-    2.0,
-    -2.33,
-    2400
+    2.0009,
+    -2.50057,
+    1400
    ],
    [
-    1.94364,
-    -2.4434,
-    400
+    1.94363,
+    -2.44341,
+    900
    ]
   ],
   "Udun, from the Gate": [
@@ -356,6 +356,30 @@
     0.4,
     -1.1,
     1200
+   ]
+  ],
+  "The Black Gate, from Udun": [
+   [
+    1.8991,
+    -2.39894,
+    1200
+   ],
+   [
+    1.94363,
+    -2.44341,
+    850
+   ]
+  ],
+  "Cirith Gorgor": [
+   [
+    2.10907,
+    -2.60856,
+    7000
+   ],
+   [
+    1.93091,
+    -2.4307,
+    1500
    ]
   ]
  },
