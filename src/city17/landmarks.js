@@ -9,35 +9,82 @@ import { mkRng, smooth } from '../core/rng.js';
 export function landmarks(api){
   const {THREE,animHooks,scene,nightF,hour,box,group,gh,roofAt,mergeParts,stoneM,steelM}=api;
   return {
-  citadel(L,x,z){   // two miles of it: a narrow foot driven into the crust, widening the whole way up into a crown that overhangs the city
+  citadel(L,x,z){   // a blade two miles high: a slab tower on a skirt, plated and finned, tied to the city by its cables
+    // Modelled from the silhouettes: the thing is not a tower in the sense a skyscraper is. It is a slab - half
+    // as deep as it is wide - driven into the middle of a low city and tapering as it goes up, with its corners
+    // chamfered so each face reads as one plane, hull plates hanging off the faces, a stepped spine of fins down
+    // one edge, and the cables. The cables matter more than any of the rest: nothing else says how big it is.
+    // Everything is drawn against its own width, so a city file that changes the height keeps the proportions.
     const H=L.height||3200,g0=gh(x,z),parts=[],A=L.turn||0.22,CR=mkRng(4417);
-    // the alloy absorbs light rather than returning it: almost no specular, and flat faces so the plates read as plates
-    const hull=new THREE.MeshPhongMaterial({color:0x2b313a,specular:0x0a0d12,shininess:2,flatShading:true});
-    const dark=new THREE.MeshPhongMaterial({color:0x222832,specular:0x080a0e,shininess:2,flatShading:true});
-    const plateM=new THREE.MeshPhongMaterial({color:0x262c35,specular:0x0a0d12,shininess:2,flatShading:true});
-    const inner=new THREE.MeshPhongMaterial({color:0x14181e,specular:0x060809,shininess:2,flatShading:true});
-    // width up the tower: a wide base complex, a neck, then it widens the whole way to the crown
-    const wid=t=>t<0.03?620-11000*t:t<0.11?290-90*(t-0.03)/0.08:t<0.45?200+86*(t-0.11)/0.34:
-      t<0.70?286+78*(t-0.45)/0.25:t<0.86?364+70*(t-0.70)/0.16:t<0.94?434+92*(t-0.86)/0.08:
-      Math.max(70,526-5200*(t-0.94));
-    const dep=t=>wid(t)*0.82;
-    const SEG=40;
-    for(let k=0;k<SEG;k++){const t0=k/SEG,t1=(k+1)/SEG,w=(wid(t0)+wid(t1))/2,d=(dep(t0)+dep(t1))/2,hh=H/SEG*1.02;
-      const b=new THREE.Mesh(new THREE.BoxGeometry(w,hh,d).translate(0,hh/2,0),k%3?hull:dark);
-      b.position.set(x,g0+H*t0,z);b.rotation.y=A+Math.sin(k*1.9)*0.022;parts.push(b);}
-    // the base complex: angular masses swallowing the ground it came up through
-    for(let k=0;k<14;k++){const a=k/14*Math.PI*2+0.3,r=250+CR()*170,w=120+CR()*150;
-      const b=new THREE.Mesh(new THREE.BoxGeometry(w,40+CR()*95,90+CR()*80).translate(0,0,0),k%2?dark:hull);
-      b.position.set(x+Math.cos(a)*r,g0-10+CR()*30,z+Math.sin(a)*r);b.rotation.set(0,-a+CR()*0.4,0);parts.push(b);}
-    // the hull is a jigsaw of massive interlocking plates: smooth, no rivets, no two the same
+    // the alloy takes light rather than returning it - almost no specular - and the faces are flat so the plates
+    // read as plates. Blue-grey, not black: at this size a black tower is a hole in the sky.
+    const hull=new THREE.MeshPhongMaterial({color:0x46566a,specular:0x0e141c,shininess:3,flatShading:true});
+    const dark=new THREE.MeshPhongMaterial({color:0x37475a,specular:0x0c1016,shininess:3,flatShading:true});
+    const plateM=new THREE.MeshPhongMaterial({color:0x3e4e62,specular:0x0e141c,shininess:3,flatShading:true});
+    const inner=new THREE.MeshPhongMaterial({color:0x161c24,specular:0x060809,shininess:2,flatShading:true});
+    const cableM=new THREE.MeshPhongMaterial({color:0x20262e,specular:0x0a0c10,shininess:4});
+    // The profile, across the broad face. A wide foot for the first fiftieth, then the shaft proper, which
+    // narrows the whole way up: 260 m across at the shoulder of the skirt, 150 under the crown.
+    const W0=L.width||260;
+    const wid=t=>t<0.012?W0*2.5-(W0*1.45/0.012)*t:t<0.05?W0*1.16-W0*0.16*(t-0.012)/0.038:
+      t<0.86?W0*(1-0.34*smooth(0.05,0.86,t)):t<0.95?W0*0.66-W0*0.10*(t-0.86)/0.09:W0*0.56*(1-(t-0.95)/0.05*0.45);
+    const dep=t=>wid(t)*0.52;                       // a blade: half as deep as it is wide
+    // the shaft: octagonal prisms, so the four corners are chamfered and each face is one plane
+    const SEG=26;
+    const prism=(w,d,h,mat)=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(0.5,0.5,1,8,1).rotateY(Math.PI/8).translate(0,0.5,0),mat);
+      m.scale.set(w/0.9239,h,d/0.9239);return m;};   // the flats of a unit octagon sit at 0.9239 of its radius
+    for(let k=0;k<SEG;k++){const t0=k/SEG,t1=(k+1)/SEG,hh=H*(t1-t0)*1.01;
+      const b=new THREE.Mesh(new THREE.CylinderGeometry(0.5,0.5,1,8,1).rotateY(Math.PI/8).translate(0,0.5,0),k%4?hull:dark);
+      b.scale.set(wid((t0+t1)/2)/0.9239,hh,dep((t0+t1)/2)/0.9239);
+      b.position.set(x,g0+H*t0,z);b.rotation.y=A;parts.push(b);}
+    // the skirt: the mass it stands in, and the angular blocks shouldering out of the ground around it
+    {const sk=prism(W0*2.9,W0*2.9*0.52,H*0.016,dark);sk.position.set(x,g0-6,z);sk.rotation.y=A;parts.push(sk);}
+    for(let k=0;k<16;k++){const a=k/16*Math.PI*2+0.3,r=W0*(0.95+CR()*0.75),w=W0*(0.3+CR()*0.45);
+      const b=new THREE.Mesh(new THREE.BoxGeometry(w,W0*(0.14+CR()*0.3),W0*(0.3+CR()*0.26)),k%2?dark:hull);
+      b.position.set(x+Math.cos(a)*r,g0-8+CR()*22,z+Math.sin(a)*r);b.rotation.set(0,-a+CR()*0.4,0);parts.push(b);}
+    // the hull plates: long vertical panels standing a little proud of the two broad faces, in courses. Long,
+    // because a jigsaw of small ones is noise at two miles; the eye wants to see the height in one run.
     const faceAt=(t,f)=>{const a=A+f*Math.PI/2,w=wid(t),d=dep(t);return {a,half:(f%2?d:w)/2,lat:(f%2?w:d)};};
-    for(let f=0;f<4;f++){let t=0.05;
-      while(t<0.92){const th=0.035+CR()*0.05,tc=t+th/2,{a,half,lat}=faceAt(tc,f);
-        let off=-0.46;while(off<0.46){const pw=(0.16+CR()*0.24);const o=off+pw/2;
-          const pl=new THREE.Mesh(new THREE.BoxGeometry(lat*pw*0.96,H*th*0.95,13+CR()*9).translate(0,H*th*0.475,0),CR()<0.35?plateM:(CR()<0.5?hull:dark));
-          pl.position.set(x+Math.cos(a)*(half+4)-Math.sin(a)*lat*o,g0+H*t,z+Math.sin(a)*(half+4)+Math.cos(a)*lat*o);
+    for(let f=0;f<4;f++){const broad=f%2===0;let t=0.05;
+      while(t<0.93){const th=(broad?0.075:0.10)+CR()*0.05,tc=Math.min(0.93,t+th/2),{a,half,lat}=faceAt(tc,f);
+        let off=-0.45;while(off<0.45){const pw=(broad?0.17:0.26)+CR()*0.14,o=off+pw/2;
+          const pl=new THREE.Mesh(new THREE.BoxGeometry(lat*pw*0.92,H*th*0.97,W0*0.05).translate(0,H*th*0.485,0),CR()<0.4?plateM:(CR()<0.5?hull:dark));
+          pl.position.set(x+Math.cos(a)*(half+W0*0.016)-Math.sin(a)*lat*o,g0+H*t,z+Math.sin(a)*(half+W0*0.016)+Math.cos(a)*lat*o);
           pl.rotation.y=-a;parts.push(pl);off+=pw;}
         t+=th;}}
+    // the ribs: six seams running the whole height of each broad face, which is what gives it its grain
+    for(const f of [0,2])for(let i=0;i<6;i++){const o=-0.42+i*0.168;
+      for(let k=0;k<SEG;k++){const t0=0.05+(0.88*k/SEG),t1=0.05+(0.88*(k+1)/SEG),tc=(t0+t1)/2,{a,half,lat}=faceAt(tc,f);
+        const rib=new THREE.Mesh(new THREE.BoxGeometry(W0*0.035,H*(t1-t0)*1.02,W0*0.07).translate(0,H*(t1-t0)/2,0),dark);
+        rib.position.set(x+Math.cos(a)*(half+W0*0.03)-Math.sin(a)*lat*o,g0+H*t0,z+Math.sin(a)*(half+W0*0.03)+Math.cos(a)*lat*o);
+        rib.rotation.y=-a;parts.push(rib);}}
+    // the fins: blades hanging off the broad faces in the upper half, tapering to a point, some of them long
+    for(const f of [0,2])for(let k=0;k<11;k++){const t=0.44+k*0.043+CR()*0.02,{a,half,lat}=faceAt(t,f);
+      const o=(CR()-0.5)*0.76,len=H*(0.03+CR()*0.075),w=W0*(0.05+CR()*0.06);
+      const fin=new THREE.Mesh(new THREE.CylinderGeometry(0.5,0.06,1,4,1).rotateY(Math.PI/4).translate(0,-0.5,0),CR()<0.5?hull:dark);
+      fin.scale.set(w,len,W0*0.10);
+      fin.position.set(x+Math.cos(a)*(half+W0*0.04)-Math.sin(a)*lat*o,g0+H*t,z+Math.sin(a)*(half+W0*0.04)+Math.cos(a)*lat*o);
+      fin.rotation.y=-a;parts.push(fin);}
+    // the spine: a stepped stack of slabs cantilevered off one narrow edge, stepping further out as it climbs
+    for(let k=0;k<26;k++){const t=0.62+k*0.0125,{a,half}=faceAt(t,1),out=W0*(0.10+0.55*(k/26));
+      const st=new THREE.Mesh(new THREE.BoxGeometry(out,H*0.006,dep(t)*0.5).translate(out/2,0,0),k%2?plateM:dark);
+      st.position.set(x+Math.cos(a)*half,g0+H*t,z+Math.sin(a)*half);st.rotation.y=-a;parts.push(st);}
+    // ---- the cables ----
+    // The one thing that says how big it is. They leave the shaft low down, sag, and come to ground out in the
+    // city, hundreds of metres away; the far ends stand on the land where they land, not at the tower's foot.
+    const NC=L.cables===undefined?16:L.cables,cables=[];
+    for(let k=0;k<NC;k++){const a=A+k/NC*Math.PI*2+CR()*0.2,t=0.12+CR()*0.42;
+      const {half}=faceAt(t,Math.abs(Math.cos(a-A))>0.7?0:1);
+      const ax=x+Math.cos(a)*(half+W0*0.05),ay=g0+H*t,az=z+Math.sin(a)*(half+W0*0.05);
+      const reach=W0*(2.6+CR()*7.5),bx=x+Math.cos(a)*reach,bz=z+Math.sin(a)*reach,by=gh(bx,bz)+4;
+      // the sag: a cable this long hangs, so the middle drops below the straight line between its ends
+      const pts=[];for(let i=0;i<=14;i++){const u=i/14,sx=ax+(bx-ax)*u,sz=az+(bz-az)*u;
+        const straight=ay+(by-ay)*u,sag=Math.sin(Math.PI*u)*(ay-by)*0.26;
+        pts.push(new THREE.Vector3(sx,Math.max(gh(sx,sz)+3,straight-sag),sz));}
+      const curve=new THREE.CatmullRomCurve3(pts);
+      const tube=new THREE.Mesh(new THREE.TubeGeometry(curve,30,W0*0.007,5,false),cableM);parts.push(tube);
+      // the anchor it is tied to, out in the streets
+      parts.push(box(bx,by-4,bz,W0*0.07,W0*0.09,W0*0.07,dark));cables.push([ax,ay,az]);}
     // eight plates that slide: they telescope out over minutes and show the works behind them
     const sliders=[];
     for(let k=0;k<8;k++){const f=k%4,t=0.2+CR()*0.6,{a,half,lat}=faceAt(t,f),o=(CR()-0.5)*0.5;
@@ -58,28 +105,34 @@ export function landmarks(api){
     const plasmaM=new THREE.MeshBasicMaterial({color:0x7fd4ff,transparent:true,opacity:0.5});
     const pulseM=new THREE.MeshBasicMaterial({color:0xe8f8ff,transparent:true,opacity:0.9});
     const pulses=[];
-    for(let c=0;c<8;c++){const a=A+c/8*Math.PI*2+0.19,t0=0.1,t1=0.9;
+    for(let c=0;c<6;c++){const a=A+c/6*Math.PI*2+0.19,t0=0.1,t1=0.9;
       for(let k=0;k<9;k++){const ta=t0+(t1-t0)*k/9,tb=t0+(t1-t0)*(k+1)/9,w=wid((ta+tb)/2),d=dep((ta+tb)/2);
         const r=(Math.abs(Math.cos(a-A))>0.7?w:d)/2;
-        const seg=new THREE.Mesh(new THREE.BoxGeometry(9,H*(tb-ta)*1.02,7).translate(0,H*(tb-ta)/2,0),plasmaM);
-        seg.position.set(x+Math.cos(a)*(r+7),g0+H*ta,z+Math.sin(a)*(r+7));seg.rotation.y=-a;parts.push(seg);}
-      const p=new THREE.Mesh(new THREE.BoxGeometry(13,44,11),pulseM);scene.add(p);
+        const seg=new THREE.Mesh(new THREE.BoxGeometry(7,H*(tb-ta)*1.02,6).translate(0,H*(tb-ta)/2,0),plasmaM);
+        seg.position.set(x+Math.cos(a)*(r+6),g0+H*ta,z+Math.sin(a)*(r+6));seg.rotation.y=-a;parts.push(seg);}
+      const p=new THREE.Mesh(new THREE.BoxGeometry(11,40,9),pulseM);scene.add(p);
       pulses.push({p,a,ph:CR(),sp:0.06+CR()*0.05});}
-    // the crown: slabs and arms thrown out at angles, overhanging the city
-    for(let k=0;k<14;k++){const a=A+k/14*Math.PI*2+0.35,t=0.86+((k*53)%5)*0.017,r=wid(t)*(0.30+((k*31)%4)*0.08);
-      const w=90+((k*29)%4)*48,hh=150+((k*71)%6)*120,d=76+((k*17)%3)*34;
+    // ---- the crown ----
+    // The top is the heaviest part of it, and it overhangs: a shoulder of plate thrown out past the shaft, a
+    // ring of masses standing on that, and the arms reaching out over the city from underneath. A tower this
+    // slender needs the weight up there or it reads as a mast with furniture on it.
+    {const sh=prism(W0*1.55,W0*1.55*0.52,H*0.05,dark);sh.position.set(x,g0+H*0.845,z);sh.rotation.y=A;parts.push(sh);
+     const sh2=prism(W0*1.15,W0*1.15*0.52,H*0.055,hull);sh2.position.set(x,g0+H*0.893,z);sh2.rotation.y=A;parts.push(sh2);}
+    for(let k=0;k<14;k++){const a=A+k/14*Math.PI*2+0.35,t=0.885+((k*53)%5)*0.014,r=W0*(0.34+((k*31)%4)*0.13);
+      const w=W0*(0.3+((k*29)%4)*0.13),hh=H*(0.035+((k*71)%6)*0.016),d=W0*(0.26+((k*17)%3)*0.1);
       const b=new THREE.Mesh(new THREE.BoxGeometry(w,hh,d).translate(0,hh/2,0),k%2?hull:dark);
       b.position.set(x+Math.cos(a)*r,g0+H*t,z+Math.sin(a)*r);b.rotation.set(0.04*Math.sin(a),-a+0.25,0.05*Math.cos(a));parts.push(b);}
-    for(let k=0;k<7;k++){const a=A+k/7*Math.PI*2+0.9,t=0.83+((k*37)%4)*0.026,len=190+((k*53)%4)*96;
-      const arm=new THREE.Mesh(new THREE.BoxGeometry(len,64+((k*29)%3)*30,84).translate(len/2,0,0),k%2?dark:hull);
-      arm.position.set(x+Math.cos(a)*wid(t)*0.44,g0+H*t,z+Math.sin(a)*wid(t)*0.44);
-      arm.rotation.set(0,-a,0.05*(((k*19)%3)-1));parts.push(arm);}
-    parts.push(box(x,g0+H*0.97,z,52,H*0.06,52,dark));
+    // the arms: short, deep and swept down, hanging off the underside of the shoulder
+    for(let k=0;k<8;k++){const a=A+k/8*Math.PI*2+0.9,t=0.845+((k*37)%3)*0.02,len=W0*(0.55+((k*53)%4)*0.22);
+      const arm=new THREE.Mesh(new THREE.BoxGeometry(len,W0*(0.3+((k*29)%3)*0.12),W0*0.42).translate(len/2,0,0),k%2?dark:hull);
+      arm.position.set(x+Math.cos(a)*W0*0.5,g0+H*t,z+Math.sin(a)*W0*0.5);
+      arm.rotation.set(0,-a,-0.12-0.05*(((k*19)%3)));parts.push(arm);}
+    {const cap=prism(W0*0.34,W0*0.34*0.52,H*0.04,dark);cap.position.set(x,g0+H*0.965,z);cap.rotation.y=A;parts.push(cap);}
     // the reactor link at the apex: an aperture that never settles
     const flareM=new THREE.MeshBasicMaterial({color:0xdcf2ff,transparent:true,opacity:0.9});
-    const core=new THREE.Mesh(new THREE.SphereGeometry(78,20,14),flareM);core.position.set(x,g0+H*1.005,z);parts.push(core);
-    const halo=new THREE.Mesh(new THREE.TorusGeometry(210,9,6,44),flareM);halo.position.set(x,g0+H*1.005,z);halo.rotation.x=Math.PI/2;parts.push(halo);
-    const arcs=[];for(let k=0;k<5;k++){const arc=new THREE.Mesh(new THREE.BoxGeometry(150+CR()*130,9,9),flareM);
+    const core=new THREE.Mesh(new THREE.SphereGeometry(W0*0.26,20,14),flareM);core.position.set(x,g0+H*1.005,z);parts.push(core);
+    const halo=new THREE.Mesh(new THREE.TorusGeometry(W0*0.72,W0*0.03,6,44),flareM);halo.position.set(x,g0+H*1.005,z);halo.rotation.x=Math.PI/2;parts.push(halo);
+    const arcs=[];for(let k=0;k<5;k++){const arc=new THREE.Mesh(new THREE.BoxGeometry(W0*(0.5+CR()*0.45),9,9),flareM);
       arc.position.set(x,g0+H*1.005,z);scene.add(arc);arcs.push({arc,ph:CR()*6.28,sp:0.0009+CR()*0.0016});}
     // spotlights off the upper tiers, sweeping the sky and the streets
     const beamM=new THREE.MeshBasicMaterial({color:0xf0f6ff,transparent:true,opacity:0.07,side:THREE.DoubleSide,depthWrite:false});
@@ -87,9 +140,11 @@ export function landmarks(api){
       const bm=new THREE.Mesh(new THREE.ConeGeometry(70,2100,10,1,true).rotateZ(Math.PI/2).translate(1050,0,0),beamM);
       bm.rotation.z=-0.55-k*0.12;sw.add(bm);scene.add(sw);beams.push({sw,sp:0.00013+k*0.00004,ph:k*1.7});}
     // haze banking against the upper tiers
-    const hazeM=new THREE.MeshBasicMaterial({color:0xaebccc,transparent:true,opacity:0.14,depthWrite:false});
-    const hazes=[];for(let k=0;k<4;k++){const hz=new THREE.Mesh(new THREE.SphereGeometry(1,16,10),hazeM);
-      hz.scale.set(560+k*120,52,430+k*110);hz.position.set(x+(CR()-0.5)*160,g0+H*(0.72+k*0.07),z+(CR()-0.5)*160);
+    const hazeM=new THREE.MeshBasicMaterial({color:0xb6c4d2,transparent:true,opacity:0.07,depthWrite:false});
+    const hazes=[];for(let k=0;k<5;k++){const hz=new THREE.Mesh(new THREE.SphereGeometry(1,18,12),hazeM);
+      // cloud banking on it, not plates through it: wide, very flat, and never centred on the shaft
+      hz.scale.set(W0*(3.4+k*0.9),W0*0.16,W0*(2.8+k*0.8));
+      hz.position.set(x+(CR()-0.5)*W0*1.6,g0+H*(0.58+k*0.09),z+(CR()-0.5)*W0*1.6);
       scene.add(hz);hazes.push({hz,ph:CR()*6.28});}
     // merge everything static: ~700 boxes collapse to one mesh per material
     const liveM=new Set([plasmaM,pulseM,flareM,beamM,hazeM]),byMat=new Map(),keep=[];

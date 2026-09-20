@@ -145,9 +145,18 @@
   }
  ],
  "el": {
-  "height": 9,
-  "trainCars": 4,
-  "_": "the razor train runs on a viaduct across the city, east to west"
+  "height": 16,
+  "trainCars": 5,
+  "_": "the razor train runs on a viaduct across the city, east to west",
+  "trainEvery": 1200,
+  "trainSpeed": 16,
+  "livery": 2372159,
+  "stationInfo": "Razor train platform. The line runs east to west on its viaduct, and it is the only way in or out of the city that is not a checkpoint.",
+  "deckWidth": 11,
+  "deckDepth": 3.2,
+  "pierWidth": 3.4,
+  "pierEvery": 34,
+  "colour": "#4a5058"
  },
  "landmarks": [
   {
@@ -409,14 +418,14 @@
   ],
   "The razor train": [
    [
-    47.99424,
-    20.00269,
-    55
+    47.99425,
+    20.01208,
+    62
    ],
    [
-    47.99546,
-    20.0,
-    14
+    47.99556,
+    19.99866,
+    40
    ]
   ],
   "Over the rooftops": [

@@ -271,9 +271,23 @@ def main():
         areas.append({"k": kind, "n": name, "o": flat(rect(ax, az, w, dd)), "i": []})
     out["areas"] = areas
 
+    def razor_z(x):
+        """Where the razor train's alignment crosses this easting."""
+        return 430 + 120 * math.sin((x + 600) / 900.0)
+
+    RAIL_CLEAR = 26.0        # metres either side of the alignment that stay open
+
+    def on_rail(rx, rz, half):
+        """Would a footprint this deep, centred here, foul the corridor?"""
+        return abs(rz - razor_z(rx)) < RAIL_CLEAR + half
+
     # ---------- rail: the razor train line in, and the yard spur ----------
+    # The razor train comes in on a viaduct that was driven through the city rather than fitted into it, so the
+    # blocks it crosses are not there any more: nothing is built within RAIL_CLEAR of the alignment, which leaves
+    # an open corridor with the deck running down the middle of it. Without that the line is laid straight through
+    # the housing and a viaduct thirty metres up is invisible from anywhere in the streets.
     rail = [{"t": "L", "e": 1, "n": "Razor Train", "p": flat(
-                [(x, 430 + 120 * math.sin((x + 600) / 900.0)) for x in range(int(-HALF) + 80, int(HALF) - 79, 50)])},
+                [(x, razor_z(x)) for x in range(int(-HALF) + 80, int(HALF) - 79, 50)])},
             {"t": "rail", "e": 0, "n": "Yard Spur", "p": flat([(-1480 + i * 28, -680 + i * 3) for i in range(42)])},
             {"t": "tram", "e": 0, "n": "Tram", "p": flat([(-HALF + 220, 208), (HALF - 220, 208)])},
             {"t": "tram", "e": 0, "n": "Tram", "p": flat([(-216, -HALF + 220), (-216, 780)])}]
@@ -370,7 +384,10 @@ def main():
                 ox = math.cos(ang) * (across / 2 - depth / 2)
                 oz = math.sin(ang) * (across / 2 - depth / 2)
                 length = along * (0.74 + R.random() * 0.26)
-                ring = rect(bx + ox, bz + oz, depth if side % 2 == 0 else length, length if side % 2 == 0 else depth)
+                rd = length if side % 2 == 0 else depth
+                if on_rail(bx + ox, bz + oz, rd / 2):
+                    continue                           # the razor train came through here
+                ring = rect(bx + ox, bz + oz, depth if side % 2 == 0 else length, rd)
                 pal = palette_at(bx, bz)
                 if plated and R.random() < 0.55:
                     put(ring, h, "apartments", ARMOUR[R.randrange(len(ARMOUR))], roof="f")
@@ -380,7 +397,7 @@ def main():
                             h + 4 + R.random() * 7, "armour", "#333940", roof="f", minh=h)
                 else:
                     put(ring, h, "apartments", pal[R.randrange(len(pal))], roof="f")
-            if R.random() < 0.22:
+            if R.random() < 0.22 and not on_rail(bx, bz, 20):
                 put(rect(bx + R.uniform(-12, 12), bz + R.uniform(-12, 12), 14 + R.random() * 10, 12 + R.random() * 8),
                     5 + R.random() * 4, "shed", "#6c685f", roof="f")
     # the works: long sheds and silos along the canals
