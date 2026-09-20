@@ -412,23 +412,32 @@
  },
  "sunGlare": 0.0,
  "hosts": {
-  "armies": 9,
-  "perArmy": 4200,
+  "armies": 22,
+  "perArmy": 4600,
   "file": 64,
   "step": 1.9,
   "pace": 1.5,
   "roads": "Road|Gate|Sauron|Stair",
-  "nazgul": 7,
-  "wing": 18,
-  "alt": 1100,
-  "spread": 150000,
+  "nazgul": 11,
+  "wing": 22,
+  "alt": 520,
+  "spread": 90000,
   "circle": [
-   -40000,
-   -140000
+   -90000,
+   -95000
   ],
   "lightning": true,
   "lightningGap": 2400,
   "flash": 0.6,
-  "_": "the hosts on the roads, the Nazgul over the plateau, and lightning in the pall"
- }
+  "_": "the hosts marching the roads, and the Nazgul circling between Barad-dur and Orodruin. A fellbeast is twenty metres across on a map six hundred and eighty kilometres wide, so they are grown with distance (grow/growMax) until there is something to see.",
+  "grow": 900,
+  "growMax": 9,
+  "trolls": 90,
+  "engines": 7,
+  "wains": 120,
+  "orbit": 2600,
+  "altSpread": 900,
+  "patrol": 0.7
+ },
+ "streetFurniture": false
 }
