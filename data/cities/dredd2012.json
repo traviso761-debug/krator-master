@@ -103,7 +103,7 @@
     -26.20716,
     28.04109
    ],
-   "info": "Two hundred storeys, seventy-five thousand people, one wall round the lot of it. From the outside there is nothing to say which block this is, and that is the point of the place."
+   "info": "Two hundred storeys, seventy-five thousand people, and a blast shield in a housing on every band of every face. Once they come down the block is sealed: no doors, no windows, nothing in or out. Nobody outside can get in, and nobody inside is going anywhere."
   },
   {
    "name": "Sector House 13",
@@ -214,6 +214,25 @@
     28.0473,
     160
    ]
+  ],
+  "Peach Trees, up close": [
+   [
+    -26.20986,
+    28.0463,
+    210
+   ],
+   [
+    -26.20716,
+    28.04109,
+    190
+   ]
   ]
+ },
+ "warMode": {
+  "block": "Peach Trees",
+  "panel": 26,
+  "band": 92,
+  "speed": 0.075,
+  "_": "blast shields on every mega-block; the toggle drops the ones on this block"
  }
 }

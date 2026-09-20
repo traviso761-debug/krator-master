@@ -234,6 +234,11 @@ planned, on an ordinary street grid with ordinary ground-level traffic. Standing
 apron behind a low perimeter wall, each holding seventy-five thousand people. One of them is Peach Trees,
 and from the outside there is nothing to say which.
 
+- **War mode** (`src/dredd2012/warmode.js`, switched on by the `warMode` block in the config): every
+  block carries blast shields in housings banded up all four faces, and roof doors over its atrium. The
+  button seals one block — Peach Trees, as in the film — and the sections grind down from the apron up
+  until there is no opening left anywhere on it. `#war` in the address seals it on load.
+
 Regenerate with `python3 tools/make-dredd2012.py`, then `./sitectl build`.
 
 ### `/mordor`: Mordor

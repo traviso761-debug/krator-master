@@ -271,10 +271,26 @@ def main():
             w, d, H = 246, 196, 728
         rot = R.uniform(-0.12, 0.12)
         col = MEGA[R.randrange(len(MEGA))]
-        # the slab itself, in three stages, each a little narrower than the last
-        put(rect(cx, cz, w, d, rot), H * 0.62, "megablock", col, name=name + " Block")
-        put(rect(cx, cz, w * 0.9, d * 0.9, rot), H * 0.86, "megablock", col, minh=H * 0.62)
-        put(rect(cx, cz, w * 0.78, d * 0.78, rot), H, "megablock", col, minh=H * 0.86)
+        # The slab, in three stages, each a little narrower than the last - and every stage built as four
+        # walls around a hole rather than as a solid block. The hole is the atrium: it runs the whole two
+        # hundred storeys, the flats look into it, and the only thing over it is the roof doors. A solid
+        # extrusion with a shaft painted on it would not survive anyone flying down to look.
+        sw, sd = w * 0.26, d * 0.26
+
+        def annulus(ow, od, top, minh=None, name=None):
+            """Four slabs around the shaft: left, right, and the two ends between them."""
+            side = (ow - sw) / 2
+            end = (od - sd) / 2
+            for ox, oz, bw, bd in ((-(sw + side) / 2, 0, side, od), ((sw + side) / 2, 0, side, od),
+                                   (0, -(sd + end) / 2, sw, end), (0, (sd + end) / 2, sw, end)):
+                px = cx + ox * math.cos(rot) - oz * math.sin(rot)
+                pz = cz + ox * math.sin(rot) + oz * math.cos(rot)
+                put(rect(px, pz, bw, bd, rot), top, "megablock", col, name=name, minh=minh)
+                name = None                                # only the first slab carries the block's name
+
+        annulus(w, d, H * 0.62, None, name + " Block")
+        annulus(w * 0.9, d * 0.9, H * 0.86, H * 0.62)
+        annulus(w * 0.78, d * 0.78, H, H * 0.86)
         # the service cores standing proud of the two long faces
         for sd in (-1, 1):
             put(rect(cx + math.cos(rot) * 0 - math.sin(rot) * sd * d * 0.5,
@@ -285,19 +301,35 @@ def main():
         for k in range(1, bands):
             y = H * 0.98 * k / bands
             f = 1.03 if y < H * 0.62 else (0.93 if y < H * 0.86 else 0.81)
-            put(rect(cx, cz, w * f, d * f, rot), y + 3.0, "balcony", "#6a6459", minh=y)
+            # the banding goes round the shaft too, or every balcony would floor the atrium over
+            for ox, oz, bw, bd in ((-(sw + (w * f - sw) / 2) / 2, 0, (w * f - sw) / 2, d * f),
+                                   ((sw + (w * f - sw) / 2) / 2, 0, (w * f - sw) / 2, d * f),
+                                   (0, -(sd + (d * f - sd) / 2) / 2, sw, (d * f - sd) / 2),
+                                   (0, (sd + (d * f - sd) / 2) / 2, sw, (d * f - sd) / 2)):
+                px = cx + ox * math.cos(rot) - oz * math.sin(rot)
+                pz = cz + ox * math.sin(rot) + oz * math.cos(rot)
+                put(rect(px, pz, bw, bd, rot), y + 3.0, "balcony", "#6a6459", minh=y)
         # roof plant and the mast
         for k in range(R.randint(3, 6)):
-            put(rect(cx + R.uniform(-w * 0.28, w * 0.28), cz + R.uniform(-d * 0.28, d * 0.28),
-                     R.uniform(14, 30), R.uniform(12, 26), rot), H + R.uniform(8, 26), "plant", "#5f594f", minh=H)
-        put(rect(cx, cz, 7, 7, rot), H + R.uniform(40, 70), "mast", "#4a453e", minh=H)
+            ox = R.choice((-1, 1)) * R.uniform(sw * 0.75, w * 0.33)
+            oz = R.choice((-1, 1)) * R.uniform(sd * 0.75, d * 0.33)
+            px = cx + ox * math.cos(rot) - oz * math.sin(rot)
+            pz = cz + ox * math.sin(rot) + oz * math.cos(rot)
+            put(rect(px, pz, R.uniform(14, 30), R.uniform(12, 26), rot),
+                H + R.uniform(8, 26), "plant", "#5f594f", minh=H)
+        mx = cx + (sw * 0.9) * math.cos(rot)
+        mz = cz + (sw * 0.9) * math.sin(rot)
+        put(rect(mx, mz, 7, 7, rot), H + R.uniform(40, 70), "mast", "#4a453e", minh=H)
         # the apron: a bare concrete forecourt, a low perimeter wall and the ramp in
         for k in range(20):
             a = k / 20 * math.tau
             put(rect(cx + math.cos(a) * APRON * 0.82, cz + math.sin(a) * APRON * 0.82, 34, 5, rot + a),
                 3.2, "wall", "#7b7468")
         put(rect(cx, cz + d * 0.72, w * 0.34, 34, rot), 9, "entry", "#666056")
-        pois.append({"n": name, "x": q(cx), "z": q(cz), "k": "megablock", "ang": round(rot, 3)})
+        # the renderer hangs the blast shields off these: it needs the slab's plan and the three set-backs
+        pois.append({"n": name, "x": q(cx), "z": q(cz), "k": "megablock", "ang": round(rot, 3),
+                     "w": round(w, 1), "d": round(d, 1), "h": round(H, 1),
+                     "sw": round(w * 0.26, 1), "sd": round(d * 0.26, 1)})
 
     # the city wall along the east, and the Yards
     for z in range(int(-HALF), int(HALF), 44):
