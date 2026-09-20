@@ -157,9 +157,15 @@ project's own low-poly style. Half-Life 2 and City 17 belong to Valve.
   the trainstation plaza, the river and the canals running south, the outer Combine wall with its four
   gates, the cordon wall, a rail yard, trams, the razor-train viaduct, rubble in the cleared ground and
   ruins in the wasteland outside the wall.
-- **The Citadel:** a stack of slabs with ribbed faces and corner pilasters, a shoulder ledge with spires
-  hanging beneath it, an irregular crown, a lit socket near the top and seams that only show at night.
-  1,700 m tall, which is the point of it.
+- **The razor train** comes in on a viaduct that was driven through the city rather than fitted into it:
+  the generator keeps every building 26 m clear of the alignment, so the line runs down an open corridor
+  with its deck 16 m over the street, on 3.4 m piers. Four trains of five cars, one every 1,200 m of track.
+- **The Citadel:** a blade rather than a tower. Half as deep as it is wide, chamfered at the corners so each
+  face reads as one plane, tapering the whole way up, with long hull plates standing proud of the faces, six
+  seams running its full height, fins hanging off the upper half, a stepped spine of slabs down one edge, and
+  a crown that overhangs — a shoulder of plate, a ring of masses on it and eight arms swept out over the city.
+  Sixteen cables leave it low down, sag, and come to ground hundreds of metres out in the streets; nothing
+  else on the page says how big it is. A lit socket near the top, and seams that only show at night.
 - **The occupation** (`src/city17/combine.js`, switched on by the `combine` block in the config): nine striders walking the central prospects on a three-legged gait, 200 manhacks holding
   street corners, four dropships carrying troop pods, sixteen armoured carriers on the arterials,
   2,600 barriers across and along the side streets with field gates over the gaps, 26 sentry posts,
