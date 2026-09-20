@@ -44,8 +44,8 @@ section('streetscape',()=>{
    const pl=[],med=[];for(const r of mich)along(r,16,(x,z,dx,dz,f)=>{if(!f.planters||nearXing(x,z,22))return;med.push([x,z,Math.atan2(dz,dx)]);for(const sd of [-1,1])pl.push([x-dz*sd*(r.w/2+2.6),z+dx*sd*(r.w/2+2.6),Math.atan2(dz,dx)]);});
    const all=med.concat(pl),n=Math.max(1,all.length),box=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1).translate(0,0.5,0),plM,n),fl=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1).translate(0,0.5,0),flM,n),tree=new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1,0),trM,n),c=new THREE.Color();
    all.forEach(([x,z,a],i)=>{const isMed=i<med.length;d.position.set(x,groundH(x,z),z);d.rotation.set(0,-a,0);d.scale.set(isMed?12:3,0.7,isMed?1.8:1.4);d.updateMatrix();box.setMatrixAt(i,d.matrix);
-     d.position.set(x,0.7,z);d.scale.set(isMed?11.4:2.6,0.35,isMed?1.4:1.1);d.updateMatrix();fl.setMatrixAt(i,d.matrix);fl.setColorAt(i,c.setHSL([0.95,0.12,0.8,0.02][Math.floor(R()*4)],0.7,0.55));
-     d.position.set(x,isMed?3.2:2.6,z);d.scale.setScalar(isMed?2.4:1.3);d.updateMatrix();tree.setMatrixAt(i,d.matrix);});
+     d.position.set(x,groundH(x,z)+0.7,z);d.scale.set(isMed?11.4:2.6,0.35,isMed?1.4:1.1);d.updateMatrix();fl.setMatrixAt(i,d.matrix);fl.setColorAt(i,c.setHSL([0.95,0.12,0.8,0.02][Math.floor(R()*4)],0.7,0.55));
+     d.position.set(x,groundH(x,z)+(isMed?3.2:2.6),z);d.scale.setScalar(isMed?2.4:1.3);d.updateMatrix();tree.setMatrixAt(i,d.matrix);});
    box.count=fl.count=tree.count=all.length;scene.add(box,fl,tree);ctx.details=Object.assign(ctx.details||{},{michiganPlanters:all.length});}
   // parked cars along the curbs (not on Michigan Avenue or the Riverwalk area)
   const parked=[];for(const r of near){if(r.w<13)continue;along(r,6.8,(x,z,dx,dz,f)=>{if(f.parked===false||nearXing(x,z,26))return;for(const sd of [-1,1]){if(R()<0.3)continue;const px=x-dz*sd*(r.w/2-1.3),pz=z+dx*sd*(r.w/2-1.3);if(!inWater(px,pz))parked.push([px,pz,Math.atan2(dz,dx)]);}});}
