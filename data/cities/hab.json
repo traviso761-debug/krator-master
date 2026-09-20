@@ -1,0 +1,87 @@
+{
+ "name": "Kyrene",
+ "note": "A rotating habitat: a cylinder 6.4 km across and 19 km long, spun once every hundred and fourteen seconds so that what is bolted to the inside of the hull is held against it. Three strips of land and three of window run its length, so there is always sky on two sides and country overhead. Generated from this file by src/hab/world.js; this page does not run on the shared engine, because nothing the engine assumes about ground, gravity or sky is true here.",
+ "hab": {
+  "radius": 3200.0,
+  "length": 19000.0,
+  "valleys": 3,
+  "towns": 9,
+  "seed": 1974,
+  "spin": 114,
+  "day": 240,
+  "sunR": 34,
+  "segA": 168,
+  "segU": 140,
+  "_": "spin is the rotation period in seconds; day is how long the sun tube takes to dim and brighten"
+ },
+ "views": {
+  "On the valley floor": {
+   "mode": "inside",
+   "u": 9500.0,
+   "a": 0.5436,
+   "h": 14,
+   "yaw": 0.0,
+   "pitch": 0.06
+  },
+  "Looking up at the far side": {
+   "mode": "inside",
+   "u": 9500.0,
+   "a": 0.5436,
+   "h": 30,
+   "yaw": 0.0,
+   "pitch": 1.15
+  },
+  "Across to the next valley": {
+   "mode": "inside",
+   "u": 8550.0,
+   "a": 0.5236,
+   "h": 220,
+   "yaw": 1.35,
+   "pitch": 0.55
+  },
+  "At the window": {
+   "mode": "inside",
+   "u": 9500.0,
+   "a": 1.5498536001726655,
+   "h": 90,
+   "yaw": 0.2,
+   "pitch": 0.15
+  },
+  "Under the sun tube": {
+   "mode": "inside",
+   "u": 9500.0,
+   "a": 2.618,
+   "h": 2752.0,
+   "yaw": 0.0,
+   "pitch": 0.0
+  },
+  "The length of it": {
+   "mode": "inside",
+   "u": 1140.0,
+   "a": 4.7623999999999995,
+   "h": 1120.0,
+   "yaw": 0.0,
+   "pitch": 0.02
+  },
+  "Over a town": {
+   "mode": "inside",
+   "u": 5320.000000000001,
+   "a": 2.678,
+   "h": 320,
+   "yaw": 0.6,
+   "pitch": 0.45
+  },
+  "From outside": {
+   "mode": "outside",
+   "out": 18050.0,
+   "orbit": 0.7,
+   "elev": 0.3
+  },
+  "The end cap": {
+   "mode": "outside",
+   "out": 11780.0,
+   "orbit": 3.05,
+   "elev": 0.06
+  }
+ }
+}

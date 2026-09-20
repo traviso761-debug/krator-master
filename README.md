@@ -5,8 +5,8 @@ Procedural models of places, served to the local network by a small Python serve
 from OpenStreetMap and real elevation data; **Voth**, a page of its own; and fan work generated from a seed —
 **City 17**, **Night City**, **Mega-City One** (twice, once as the comics have it and once as the 2012 film
 does), **Mordor**, which is a country rather than a city, **Minas Tirith**, which is the other end of the same
-war, the **Kowloon Walled City**, which is one building, and **Mystery Flesh Pit National Park**, which is a
-hole. They run on the same core modules and the same page shell; each place is a data file plus a set of build
+war, the **Kowloon Walled City**, which is one building, **Kyrene**, which is a rotating habitat with its
+country overhead, and **Mystery Flesh Pit National Park**, which is a hole. They run on the same core modules and the same page shell; each place is a data file plus a set of build
 stages, and anything only one of them needs travels with that one.
 
 The front page at `/` lists whatever the server is serving, and every scene carries a Home button and a menu
@@ -31,6 +31,7 @@ of the others. Both read `/scenes.json`, which the server builds from `site.toml
 | `/mordor` | `/mordor.html`, `/sauron` | `mordor.html` | Mordor: the whole land (fan work) |
 | `/minastirith` | `/minastirith.html`, `/mt`, `/gondor` | `minastirith.html` | Minas Tirith: the seven circles (fan work) |
 | `/fleshpit` | `/fleshpit.html`, `/mfpnp`, `/pit` | `fleshpit.html` | Mystery Flesh Pit National Park (fan work) |
+| `/kyrene` | `/hab.html`, `/habitat`, `/cylinder` | `hab.html` | Kyrene: a rotating habitat |
 | `/krator` | `/voth`, `/voth.html`, `/krator.html` | `krator.html` | Krator: A Primer |
 | `/tongue` | `/izani-tongue` | `The-Izani-Tongue_2.html` | The Izani Tongue |
 | `/painting.jpg` | | `painting.jpg` | The Iziz painting; `image.png` is the master copy |
@@ -309,6 +310,36 @@ size and left small.
 
 Regenerate with `python3 tools/make-mordor.py`, then `./sitectl build`.
 
+### `/kyrene`: a rotating habitat
+
+A cylinder 6.4 km across and 19 km long, spun once every hundred and fourteen seconds so that what is bolted
+to the inside of the hull is held against it at about a tenth of a gravity short of Earth's. Three strips of
+land and three of window run its length, so there is always sky on two sides and country overhead.
+
+**This is the only page on the site that does not run the shared engine.** The engine builds a plane with
+gravity pointing down it — terrain, footprints extruded upwards, a sky dome over the lot — and none of that
+survives here, where the ground is the inside of a tube and "up" is a direction that depends on where you
+are standing. So the page brings its own renderer, camera and controls, the way Voth does, and shares the
+core modules with everything else.
+
+- **One mapping, and everything else is written in cylinder coordinates.** `at(u, a, h)` takes a distance
+  along the axis, a bearing round it and a height above the hull, and returns a point. The land, the water,
+  the towns, the rail and the end caps are all written in `(u, a)` and know nothing about the mapping.
+- **The land** is a height field in `(u, a)`: a few tens of metres of relief on a hull kilometres across,
+  enough to make a valley read as one. The fields are a patchwork on a 420 m grid rather than a colour per
+  vertex, because from three kilometres overhead a colour per vertex is a smear. A river runs down the
+  middle of each valley and widens into lakes.
+- **The sun is a tube down the axis**, because there is nowhere else to put one, and it dims and brightens
+  rather than rising and setting. It is also why the far valleys are lit from underneath. A single point
+  light at the middle of nineteen kilometres leaves both ends black, so it is seven of them in a line.
+- **Which way the hull faces.** Its triangles, wound along `u` and round `a`, already point at the axis, so
+  the hull is front-faced with inward normals. Drawn back-faced — which is what a tube seen from inside
+  usually wants — the entire country is invisible and all you see is the ribs.
+- **The controls** stand you on the hull with up towards the axis: drag to look, WASD to walk it, Q and E to
+  rise, and "Outside" to stand off the whole thing. `#view=<name>` opens at a viewpoint.
+
+Edit `data/cities/hab.json` for the dimensions and the viewpoints; the geometry is `src/hab/world.js`.
+
 ### `/krator`: Krator
 
 A worldbuilding primer: the geography, climate and peoples of a crater world on a tidally locked moon.
@@ -471,6 +502,7 @@ src/
   fleshpit/ main.js landmarks.js organism.js camera.js   the park: the shaft below the rim, and its own camera
   minastirith/ main.js landmarks.js          Minas Tirith: the White Tower, the Court, the Great Gate
   kowloon/  main.js section.js kaitak.js     the Walled City: the clipping-plane section, and the approach
+  hab/      main.js world.js               Kyrene: its own renderer, and a world in cylinder coordinates
 vendor/three/three.min.js     three.js r128 (pinned)
 tools/  build-page.py build-tongue.py probe.py check-city.py
         fetch-osm.py fetch-terrain.py build-osm-city.py make-city17.py make-nightcity.py
