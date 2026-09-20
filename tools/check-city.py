@@ -17,16 +17,27 @@ Exit status is 1 if anything was reported as an error, so it can gate a build.
 """
 import json
 import math
+import re
 import os
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CITIES = os.path.join(ROOT, "data", "cities")
-# the models src/chicago/stages/04-landmarks.js knows how to build
-MODELS = {"bean", "pavilion", "fountain", "wheel", "liftbridge", "bascule", "arch", "cablestay", "sign", "gate",
-          "submarine", "tram", "mountain", "wrigley", "citadel", "nexus", "forcegate", "pylon", "strider",
-          "gunships", "screenmast", "stacks", "suspension", "liberty", "ziggurat", "hallofjustice", "judgement", "baraddur", "orodruin", "blackgate", "morgul", "watchtower2"}
 DECOR = {"mast", "spire", "statue", "crown", "floodlit", "cupola", "clocktower", "towers", "dome"}
+
+
+def models_for(city):
+    """Every model this city may name. The shared engine holds what more than one city uses; the rest live with
+    the city's own page (src/<city>/landmarks.js) and are handed to the engine as ctx.models, so both are read."""
+    found = set()
+    for p in (os.path.join(ROOT, "src", "chicago", "stages", "04-landmarks.js"),
+              os.path.join(ROOT, "src", city, "landmarks.js")):
+        try:
+            src = open(p, encoding="utf-8").read()
+        except OSError:
+            continue
+        found |= set(re.findall(r"^ {2,8}([A-Za-z0-9_]+)\(L[,)]", src, re.M))
+    return found - DECOR
 ROOF_DECOR = {"mast", "spire", "statue", "crown", "cupola", "dome"}   # these stand on a roof; the rest build from the ground
 
 
@@ -111,6 +122,7 @@ def check(city):
         r.err(f"defaultView {cfg['defaultView']!r} is not one of the viewpoints")
 
     # ---- landmarks ----
+    MODELS = models_for(city)
     rings = []
     if osm:
         for b in osm["buildings"]:

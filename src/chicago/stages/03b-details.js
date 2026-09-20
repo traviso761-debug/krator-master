@@ -91,3 +91,4 @@ section('street-lines-lights',()=>{
   Pl.build();Hd.build();animHooks.push(()=>{const w=nightF(hourCur);headM.emissive.setRGB(w,w*0.85,w*0.55);});
   ctx.details=Object.assign(ctx.details||{},{arterialLights:Pl.n});
 });
+Object.assign(API,{tiledInstances});

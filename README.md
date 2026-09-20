@@ -153,8 +153,7 @@ project's own low-poly style. Half-Life 2 and City 17 belong to Valve.
 - **The Citadel:** a stack of slabs with ribbed faces and corner pilasters, a shoulder ledge with spires
   hanging beneath it, an irregular crown, a lit socket near the top and seams that only show at night.
   1,700 m tall, which is the point of it.
-- **The occupation** (`src/chicago/stages/06b-combine.js`, switched on by the `combine` block in the
-  config): nine striders walking the central prospects on a three-legged gait, 200 manhacks holding
+- **The occupation** (`src/city17/combine.js`, switched on by the `combine` block in the config): nine striders walking the central prospects on a three-legged gait, 200 manhacks holding
   street corners, four dropships carrying troop pods, sixteen armoured carriers on the arterials,
   2,600 barriers across and along the side streets with field gates over the gaps, 26 sentry posts,
   and queues of people stood at every checkpoint.
@@ -175,7 +174,7 @@ are used. It opens at 21:36 and it is raining.
 - **Generated:** the Pacific and its sea wall, a supertall core on a 92 m grid with towers to 500 m,
   megablock housing a slab to a plot, the retrofitted low city built up in pieces and never cleared, an
   elevated ring freeway on piers with four radials, the dock yards, and the industrial flats.
-- **The night stage** (`src/chicago/stages/06c-neon.js`, switched on by the `neon` block in the config):
+- **The night stage** (`src/nightcity/neon.js`, switched on by the `neon` block in the config):
   2,800 neon signs bolted to whatever wall faces the street, 1,100 blade signs projecting out over it so
   you read them end-on, 900 lanterns strung across the side streets, 700 market awnings with the light
   under them, 900 rooftop antennas and dishes, a tangle of cable nobody has taken down in fifty years,
@@ -304,10 +303,16 @@ src/
   core/   diag.js rng.js env.js data.js      error reporting + staged loading, randomness/noise, shader environment, data expressions
   izani/  glyphs.js draw.js atlas.js          the script: strokes/layout/SVG (pure), canvas drawing, the texture atlas
   iziz/   main.js imports.js stages/*.js build.js   the Iziz build: 56 stage files, assembled into build.js
-  chicago/ main.js imports.js stages/*.js build.js  the Chicago build: 10 stage files, shared by Portland and Vashrin
-  portland/ main.js                          Portland: the Chicago engine with defaultCity 'portland'
-  city17/ main.js                            City 17: the same engine with defaultCity 'city17'
-  nyc/ main.js  nightcity/ main.js  megacity/ main.js  mordor/ main.js   the rest, likewise
+  chicago/ main.js imports.js stages/*.js build.js  the shared engine: 11 stage files, assembled into build.js
+           landmarks.js                      Chicago's own landmarks; the engine does not import it
+  portland/ main.js landmarks.js             Portland: the shared engine, its own landmarks
+  nyc/      main.js landmarks.js             New York: Liberty, the suspension bridges, One World Trade
+  city17/   main.js landmarks.js combine.js  City 17: the Citadel and the occupation
+  nightcity/ main.js landmarks.js neon.js    Night City: the ziggurat and the night stage
+  megacity/ main.js landmarks.js             Mega-City One: the Hall of Justice, the Statue of Judgement
+  mordor/   main.js landmarks.js forges.js hosts.js   Mordor: the Eye, the works, the hosts
+  dredd2012/ main.js warmode.js              Mega-City One (2012): the blast shields and war mode
+  fleshpit/ main.js landmarks.js organism.js camera.js   the park: the shaft below the rim, and its own camera
 vendor/three/three.min.js     three.js r128 (pinned)
 tools/  build-page.py build-tongue.py probe.py check-city.py
         fetch-osm.py fetch-terrain.py build-osm-city.py make-city17.py make-nightcity.py
@@ -326,6 +331,29 @@ body: `tools/build-page.py` concatenates them in order into `src/<city>/build.js
 loading text. Things one stage hands to a later one, or to the console, go on `ctx` (`window._iz`).
 **Edit the stages, never `build.js`**; `./sitectl build` regenerates it (and `check`, `reload`,
 `restart`, `test` and the probe do so automatically).
+
+### What the engine shares, and what a page owns
+
+The engine in `src/chicago/` is run by every city page, so nothing that belongs to one city is in it.
+A page hands its own work to `build()` on `ctx`:
+
+- `ctx.models` — functions returning landmark models. The engine's own table holds what more than one
+  city uses (fountains, cable-stayed bridges, stadium bowls, the roof furniture); everything else —
+  Cloud Gate, the Citadel, Barad-dûr, One World Trade — lives in `src/<city>/landmarks.js` and is merged
+  in before the landmarks are placed, after which it is indistinguishable from a built-in one.
+- `ctx.extras` — `{name, fn}` stages of a page's own. Night City's neon, Mordor's forges and hosts,
+  City 17's occupation and Mega-City One's blast shields are all extras; they run after the city is
+  built and before the UI, each inside its own `section()`.
+
+- `ctx.camFrame(now, ctl)` — a camera of the page's own. The engine hands it the control state every frame,
+  after its own controller has had its turn, and the page may overwrite any of it. Only the Flesh Pit sets it,
+  because only the Flesh Pit is a hole; every other page leaves it unset and is not affected in any way.
+
+Both are handed `API`, the engine's innards — `THREE`, the city config, the scene, the geometry and
+map lookups, the shared materials, `box`/`group`, `animHooks` and the rest. Each stage adds its own to
+`API` as it runs, so a model sees what the landmarks stage sees and an extra sees everything. An extra
+that wants a control of its own asks with `API.onUI(fn)`, because the panels do not exist yet when it
+runs. The cost of all this is that Chicago, Portland and New York no longer download a line of Mordor.
 
 ### Content files
 

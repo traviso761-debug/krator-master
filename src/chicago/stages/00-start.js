@@ -13,6 +13,9 @@ const LCG=createLcg(SEED0);const rnd=LCG.rnd,rr=LCG.rr,pick=LCG.pick;
 const {vn,fbm}=makeNoise(rnd);
 const xr=mkRng(20261017),xrr=(a,b)=>a+(b-a)*xr();
 const animHooks=[];
+// The address as the page was opened. The view hook rewrites location.hash every second and a half, so a
+// stage that reads it after the build has finished sees whatever the camera has written there since.
+const HASH0=location.hash.slice(1);
 // projection: metres east (x) and south (z) of the origin (the same one tools/build-chicago-osm.py used)
 const [LAT0,LON0]=C.origin,M_LAT=111132,M_LON=111320*Math.cos(LAT0*Math.PI/180);
 const lonX=lon=>(lon-LON0)*M_LON,latZ=lat=>-(lat-LAT0)*M_LAT;
@@ -46,7 +49,7 @@ const ROADS=OSM.roads.map(r=>{const pts=dec(r.p);let len=0;for(let i=0;i+1<pts.l
 const RAILS=OSM.rail.map(r=>({type:r.t,elevated:!!r.e,name:r.n||'',pts:dec(r.p)}));
 const STATIONS=OSM.stations.map(s=>({name:s.n,x:s.x/10,z:s.z/10}));
 const WATERWAYS=(OSM.waterways||[]).map(w=>({name:w.n||'',pts:dec(w.p)}));
-const POIS=OSM.pois.map(p=>({name:p.n,x:p.x/10,z:p.z/10,kind:p.k,ang:p.ang||0}));
+const POIS=OSM.pois.map(p=>({name:p.n,x:p.x/10,z:p.z/10,kind:p.k,ang:p.ang||0,w:p.w||0,d:p.d||0,h:p.h||0,sw:p.sw||0,sd:p.sd||0}));
 // the ground: a height grid from the elevation tiles, in metres above the water level (y = 0 is the river or lake)
 const TER=(()=>{const t=OSM.terrain;if(!t)return null;const h=new Float32Array(t.h.length);for(let i=0;i<t.h.length;i++)h[i]=t.h[i]/10;
   return {step:t.step,nx:t.nx,nz:t.nz,x0:t.x0/10,z0:t.z0/10,datum:t.datum,h};})();
@@ -89,3 +92,14 @@ const DRAB=C.palette==='drab';   // an occupied city has no new paint: vehicles 
 const carHue=r=>DRAB?0.04+r()*0.1:r(),carSat=r=>DRAB?0.03+r()*0.16:(r()<0.4?0.05:0.5),carLit=r=>DRAB?0.12+r()*0.2:0.2+r()*0.55;
 ctx.districtAt=districtAt;ctx.inWater=inWater;
 ctx.details={roads:ROADS.length,buildings:OSM.buildings.length,areas:AREAS.length,terrain:TER?TER.nx+'x'+TER.nz+' at '+TER.step+' m':'flat'};
+// ---- what a page's own code is handed ----
+// This engine is shared by every city on the site, so what belongs to one city only does not live in it: Mordor's
+// hosts, Night City's neon, Mega-City One's blast shields and every landmark that only one city has travel with
+// that city's page instead and reach the engine through ctx.models and ctx.extras. API is what they are given.
+// Each stage adds its own to it as it runs, so a page's landmark model sees what the landmarks stage sees, and a
+// page's extra, which runs after them all, sees the lot.
+const API={THREE,C,ctx,P,toLatLon,B,WORLD,POIS,AREAS,ROADS,RAILS,STATIONS,WATERWAYS,animHooks,HASH0,
+  groundH,groundMin,inMap,inWater,inLake,inRiver,inPoly,polyArea,segDist,pathDist,bbox,dec,
+  roadsNear,districtAt,focusAt,FOCUS,report,section};
+const UI_HOOKS=[];   // an extra that wants a button of its own queues it here; the UI stage runs these once its panels exist
+API.onUI=fn=>UI_HOOKS.push(fn);
