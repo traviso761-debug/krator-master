@@ -235,6 +235,33 @@
     -2.64104
    ],
    "info": "The western wall, and the southern one: it turns east along the bottom of the land and closes it."
+  },
+  {
+   "name": "The Winding Stair",
+   "at": [
+    0.30594,
+    -2.77937
+   ],
+   "model": "windingstair",
+   "turn": 0.0,
+   "top": 900,
+   "width": 34,
+   "flight": 300,
+   "info": "The way over the Ephel Duath that is not the Morannon: the Straight Stair first, driven at the face so steeply it is nearly a ladder, then the Winding Stair switching back up it with the drop on the other side. It comes out at the cleft under the tower."
+  },
+  {
+   "name": "Torech Ungol",
+   "aka": [
+    "Shelob's Lair"
+   ],
+   "at": [
+    0.30234,
+    -2.7641
+   ],
+   "model": "shelob",
+   "turn": 3.14159,
+   "size": 170,
+   "info": "The hole at the head of the stair, and the only way through the pass. Webbed across, and what is left outside it was left by what lives in it. Nothing of her is modelled: it is a hole that you cannot see into, which is the whole of the point."
   }
  ],
  "views": {
@@ -252,14 +279,14 @@
   ],
   "Orodruin": [
    [
-    0.5039,
-    -1.20374,
-    2100
+    0.64788,
+    -0.91628,
+    5400
    ],
    [
-    0.53989,
-    -1.08695,
-    800
+    0.5399,
+    -1.07797,
+    4700
    ]
   ],
   "The Eye across the plain": [
@@ -381,6 +408,42 @@
     -2.4307,
     1500
    ]
+  ],
+  "The Winding Stair": [
+   [
+    0.28255,
+    -2.80093,
+    1600
+   ],
+   [
+    0.30414,
+    -2.77219,
+    1200
+   ]
+  ],
+  "Mount Doom from the ash road": [
+   [
+    0.37793,
+    -1.31153,
+    6200
+   ],
+   [
+    0.5399,
+    -1.07797,
+    3200
+   ]
+  ],
+  "Torech Ungol": [
+   [
+    0.29334,
+    -2.77668,
+    2350
+   ],
+   [
+    0.30234,
+    -2.7641,
+    2150
+   ]
   ]
  },
  "forges": {
@@ -437,7 +500,34 @@
   "wains": 120,
   "orbit": 2600,
   "altSpread": 900,
-  "patrol": 0.7
+  "patrol": 0.7,
+  "camped": [
+   [
+    -46000,
+    -150000
+   ],
+   [
+    -30000,
+    -132000
+   ],
+   [
+    -52000,
+    -124000
+   ],
+   [
+    -24000,
+    -158000
+   ],
+   [
+    -64000,
+    -142000
+   ],
+   [
+    -38000,
+    -166000
+   ]
+  ],
+  "campedPer": 5200
  },
  "streetFurniture": false
 }

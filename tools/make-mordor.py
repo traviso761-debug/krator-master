@@ -177,12 +177,19 @@ def terrain_height(x, z):
     dd = math.hypot(x - DOOM[0], z - DOOM[1])
     # a 26 km skirt for 1.5 km of height is a 1:17 slope, which reads as flat ground from anywhere on the plain.
     # Orodruin is a cone: about nine kilometres across its foot, and steep enough to be a mountain.
-    if dd < 13000:
-        cone = 4400 * (1 - dd / 13000) ** 1.25
-        if dd < 1400:
-            cone -= 620 * (1 - dd / 1400)                  # the Sammath Naur, sunk into the summit
+    if dd < 16000:
+        # A stratovolcano is not a dome. Its profile is concave: the flanks are steep near the head, where
+        # everything that comes out of it lands on itself, and they flare out at the foot where the flows ran.
+        # (1 - d/R) raised to a power gives the opposite - a flat top and a straight skirt - so this is an
+        # exponential, normalised to reach nought at the foot, with gullies cut down it.
+        t = dd / 16000.0
+        cone = 4900 * (math.exp(-3.6 * t) - math.exp(-3.6)) / (1 - math.exp(-3.6))
+        ang = math.atan2(z - DOOM[1], x - DOOM[0])
+        cone *= 1 + 0.075 * math.sin(ang * 9 + 0.6) + 0.04 * math.sin(ang * 21 - 1.2)   # the barrancos
+        if dd < 1500:
+            cone -= 760 * (1 - dd / 1500) ** 1.4           # the Sammath Naur, sunk into the summit
         h += cone
-    h += 420 * smoothstep(30000, 11000, dd)                # the apron of spoil heaped round its foot
+    h += 460 * smoothstep(34000, 14000, dd)                # the apron of spoil heaped round its foot
     # the ash that fell out of it, heaped downwind
     h += 90 * smoothstep(120000, 8000, dd) * (0.5 + 0.5 * math.sin(x / 9000.0 + z / 7000.0))
 

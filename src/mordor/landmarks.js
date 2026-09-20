@@ -6,7 +6,7 @@
 // Each of these is handed (L,x,z) exactly as one of the engine's own models is: L is the landmark's entry in the
 // city file, x and z are where it stands. Everything they draw with comes out of the engine's api.
 export function landmarks(api){
-  const {THREE,animHooks,scene,nightF,hour,box,group,gh,mergeParts}=api;
+  const {ctx,THREE,animHooks,scene,nightF,hour,box,group,gh,mergeParts}=api;
   return {
   orodruin(L,x,z){   // Mount Doom, in eruption, which is its normal condition
     const g0=gh(x,z),parts=[],R0=L.crater||1100,SC=L.scale||1;
@@ -154,14 +154,28 @@ export function landmarks(api){
     for(const f of [0.34,0.62,0.86])trim.push(bx(0,-THK*0.06,GY+H*f,W,H*0.035,THK*1.1,iron));
     trim.push(bx(0,-THK*0.05,GY+H*0.99,W,H*0.05,THK*1.16,dark));        // the parapet
 
-    // ---- the gate: two leaves, ribbed the same way, shut ----
+    // ---- the gate: two leaves, ribbed the same way, and they open ----
+    // The Morannon is a gate, and a gate that never moves is a wall with a pattern on it. Each leaf is built
+    // in its own frame, hinged on its jamb, and swung back against the inside face when a host comes up the
+    // road - which is what the thing is for: nothing gets through except what Barad-dur sends through.
+    const leaves=[];
     for(const sd of [-1,1]){
-      const c=sd*DOOR*0.25;
-      for(let k=0;k<7;k++){
-        const u=c+(k/6-0.5)*DOOR*0.46;
-        hull.push(bx(u,-THK*0.12,GY,DOOR*0.062,H*(1.02+((k*13)%3)*0.02),THK*0.8,k%2?dark:iron));
+      const g=new THREE.Group();
+      const [px,pz]=at(sd*DOOR*0.5,-THK*0.12);
+      g.position.set(px,GY,pz);g.rotation.y=-A;          // local x runs along the wall, local z inward
+      for(let k=0;k<8;k++){
+        const u=-sd*(k+0.5)*(DOOR*0.5/8);
+        const rib=new THREE.Mesh(new THREE.BoxGeometry(DOOR*0.5/8*0.86,H*(1.02+((k*13)%3)*0.02),THK*0.8)
+          .translate(0,H*(1.02+((k*13)%3)*0.02)/2,0),k%2?dark:iron);
+        rib.position.set(u,0,0);g.add(rib);
+        if(k%3===0){const band=new THREE.Mesh(new THREE.BoxGeometry(DOOR*0.5/8,H*0.05,THK*0.9),iron);
+          band.position.set(u,H*0.62,0);g.add(band);}
       }
-      hull.push(bx(sd*DOOR*0.48,-THK*0.12,GY,DOOR*0.05,H*1.14,THK*0.95,dark));   // the jamb
+      // the boss and the pull-ring, so the leaf reads as a door rather than as more wall
+      const boss=new THREE.Mesh(new THREE.CylinderGeometry(DOOR*0.05,DOOR*0.05,THK*0.3,8).rotateX(Math.PI/2),iron);
+      boss.position.set(-sd*DOOR*0.22,H*0.5,-THK*0.5);g.add(boss);
+      scene.add(g);leaves.push({g,sd});
+      hull.push(bx(sd*DOOR*0.52,-THK*0.12,GY,DOOR*0.06,H*1.16,THK*1.05,dark));   // the jamb it hangs on
     }
     trim.push(bx(0,-THK*0.1,GY+H*1.1,DOOR*1.18,H*0.14,THK*1.05,dark));           // the lintel over them
     for(let k=0;k<9;k++){const u=(k/8-0.5)*DOOR*1.1;                             // and its own spikes
@@ -210,7 +224,118 @@ export function landmarks(api){
                             [trim.filter(m=>m.material===rock),rock],[spike,dark],[crag,rock]]){
       if(set.length)parts.push(mergeParts(set,mat));
     }
+    // ---- the braziers, and the gate working ----
+    // Fires on the parapet and on both Teeth, because the only light in this corner of the land is what
+    // somebody lit. They flicker; the gate does not, it grinds.
+    const fireM=new THREE.MeshBasicMaterial({color:0xff7a22,transparent:true,opacity:0.9,depthWrite:false});
+    const fires=[];
+    for(let k=0;k<11;k++){
+      const u=(k/10-0.5)*W*0.86;if(Math.abs(u)<DOOR*0.8)continue;
+      const [fx,fz]=at(u,-THK*0.25);
+      const pan=box(fx,GY+H*1.02,fz,W*0.012,H*0.03,W*0.012,iron);pan.rotation.y=-A;group(L,[pan]);
+      const fl=new THREE.Mesh(new THREE.ConeGeometry(W*0.009,H*0.09,6),fireM);
+      fl.position.set(fx,GY+H*1.08,fz);scene.add(fl);fires.push({fl,ph:k*1.7});
+    }
+    let open=0,last=0;
+    animHooks.push(now=>{
+      const dt=Math.min(0.08,(now-(last||now))/1000);last=now;
+      // what the gate is for: it opens when a host is on the road, and shuts behind it
+      let want=0;const hs=ctx.hosts;
+      if(hs&&hs.length){let best=1e9;
+        for(const a of hs){const d=Math.hypot(a.g.position.x-x,a.g.position.z-z);if(d<best)best=d;}
+        want=best<(L.openAt||14000)?1:0;}
+      else want=((now%120000)<40000)?1:0;    // nothing marching: open on a slow cycle, so it is seen to work
+      open+=(want-open)*Math.min(1,dt*(want>open?0.16:0.22));
+      for(const q of leaves)q.g.rotation.y=-A+q.sd*open*1.62;
+      if(ctx.details)ctx.details.blackGate=open>0.9?'open':open<0.1?'shut':(open>0.5?'opening':'closing');
+      const f=0.7+0.3*Math.sin(now*0.006);
+      fireM.opacity=0.7+0.25*f;
+      for(const q of fires)q.fl.scale.set(0.8+0.3*Math.sin(now*0.005+q.ph),0.75+0.45*Math.sin(now*0.009+q.ph),0.8+0.3*Math.cos(now*0.004+q.ph));
+    });
     return group(L,parts);},
+  windingstair(L,x,z){
+    // The Straight Stair and the Winding Stair, cut into the west face of the Ephel Duath under Cirith Ungol.
+    // It is the only way over the mountains that is not the Morannon, and it is a stair rather than a road:
+    // a first flight so steep it is nearly a ladder, then switchbacks up the face, each turn cut back into
+    // the rock, with the drop on the other side and nothing at all between you and it.
+    const A=L.turn||0,g0=gh(x,z),TOP=L.top||900,parts=[];
+    const step=new THREE.MeshLambertMaterial({color:0x4d4740,flatShading:true});   // cut stone, lighter than the face it is cut into
+    const rock=new THREE.MeshPhongMaterial({color:0x2a2620,specular:0x1c1a17,shininess:3,flatShading:true});
+    const ux=Math.cos(A),uz=Math.sin(A),vx=-uz,vz=ux;      // u: into the mountain, v: along the face
+    const at=(u,v)=>[x+ux*u+vx*v,z+uz*u+vz*v];
+    // the straight stair: one flight driven at the face
+    const SW=L.width||26;
+    {const n=22;for(let k=0;k<n;k++){
+      const u=k*14,v=0,y=g0+(TOP*0.30)*(k/n);
+      const [px,pz]=at(u,v);
+      const b=box(px,y,pz,SW,10,15,step);b.rotation.y=-A;parts.push(b);}}
+    // the winding stair: switchbacks, each one shorter than the last
+    let u0=22*14,y0=g0+TOP*0.30,dir=1;
+    for(let f=0;f<7;f++){
+      const len=(L.flight||210)*(1-f*0.07),n=Math.max(6,Math.round(len/16));
+      for(let k=0;k<n;k++){
+        const v=dir*(k/n)*len-dir*len*0.5,u=u0+f*30,y=y0+(TOP*0.10)*(k/n);
+        const [px,pz]=at(u,v);
+        const b=box(px,y,pz,SW*0.8,10,14,step);b.rotation.y=-A;parts.push(b);
+        if(k%3===0){const [wx,wz]=at(u-SW*0.5,v);          // the wall of rock the stair is cut into
+          const w=box(wx,y-30,wz,16,52,14,rock);w.rotation.y=-A;parts.push(w);}
+      }
+      y0+=TOP*0.10;dir=-dir;
+    }
+    // the cleft at the head of it, and the rock standing over the way in
+    {const [cx2,cz2]=at(u0+7*30+40,0);
+     for(const sd of [-1,1]){const [wx,wz]=at(u0+7*30+40,sd*(SW*1.2));
+       const w=box(wx,gh(wx,wz)-40,wz,60,TOP*0.55,80,rock);w.rotation.y=-A+sd*0.2;parts.push(w);}
+     parts.push(box(cx2,gh(cx2,cz2)+TOP*0.42,cz2,190,70,90,rock));}
+    return group(L,parts);},
+
+  shelob(L,x,z){
+    // Torech Ungol: the mouth of it in the cliff, the webs across the way in, and what is left of what has
+    // come this way before. Nothing is modelled of what lives here - it is a hole that smells, and the point
+    // of it is that you cannot see in.
+    const g0=gh(x,z),A=L.turn||0,parts=[];
+    const rock=new THREE.MeshPhongMaterial({color:0x272420,specular:0x1a1815,shininess:3,flatShading:true});
+    const dark=new THREE.MeshBasicMaterial({color:0x050405});
+    const webM=new THREE.MeshLambertMaterial({color:0xb9b2a4,transparent:true,opacity:0.42,side:THREE.DoubleSide,depthWrite:false});
+    const boneM=new THREE.MeshLambertMaterial({color:0xa9a294});
+    const R0=L.size||120;
+    const ux=Math.cos(A),uz=Math.sin(A);
+    // the cliff it is cut into, and the arch of the mouth
+    for(let k=0;k<9;k++){const a=(k/8)*Math.PI,r=R0*1.25;
+      const b=box(x+Math.cos(A+Math.PI/2)*((k/8-0.5)*R0*2.6),g0-40,z+Math.sin(A+Math.PI/2)*((k/8-0.5)*R0*2.6),
+        R0*0.5,R0*(1.6+0.5*Math.sin(k*1.7)),R0*0.9,rock);
+      b.rotation.y=-A+((k%3)-1)*0.18;parts.push(b);}
+    const mouth=new THREE.Mesh(new THREE.CylinderGeometry(R0*0.52,R0*0.62,R0*0.9,7,1,true).rotateX(Math.PI/2),dark);
+    mouth.position.set(x+ux*R0*0.35,g0+R0*0.45,z+uz*R0*0.35);mouth.rotation.y=-A;parts.push(mouth);
+    const back=new THREE.Mesh(new THREE.CircleGeometry(R0*0.5,10),dark);
+    back.position.set(x+ux*R0*0.78,g0+R0*0.45,z+uz*R0*0.78);back.rotation.y=-A+Math.PI/2;parts.push(back);
+    // the webs: sheets across the opening, and cables of it anchored to the rock either side
+    const webs=[];
+    for(let k=0;k<5;k++){
+      const w=new THREE.Mesh(new THREE.PlaneGeometry(R0*(1.1-k*0.12),R0*(1.0-k*0.1),3,3),webM);
+      w.position.set(x+ux*R0*(0.05+k*0.16),g0+R0*(0.42+0.03*k),z+uz*R0*(0.05+k*0.16));
+      w.rotation.y=-A+Math.PI/2;scene.add(w);webs.push({w,ph:k*1.3});
+    }
+    for(let k=0;k<14;k++){
+      const a=k/14*Math.PI*2,len=R0*(0.8+(k%4)*0.3);
+      const c=new THREE.Mesh(new THREE.CylinderGeometry(R0*0.012,R0*0.006,len,4).translate(0,len/2,0),webM);
+      c.position.set(x+ux*R0*0.2+Math.cos(a)*R0*0.4,g0+R0*0.45+Math.sin(a)*R0*0.4,z+uz*R0*0.2+Math.sin(a)*R0*0.4);
+      c.rotation.set(Math.PI/2+Math.sin(a)*0.5,-A+Math.cos(a)*0.4,0);parts.push(c);
+    }
+    // bones, outside, where they were dropped
+    for(let k=0;k<26;k++){
+      const a=A+(Math.random()-0.5)*2.2,r=R0*(0.9+Math.random()*2.2);
+      const bx2=x+Math.cos(a)*r,bz2=z+Math.sin(a)*r,len=R0*(0.05+Math.random()*0.12);
+      const b=new THREE.Mesh(new THREE.CylinderGeometry(R0*0.012,R0*0.015,len,4),boneM);
+      b.position.set(bx2,gh(bx2,bz2)+R0*0.02,bz2);b.rotation.set(Math.PI/2,Math.random()*3,Math.random()*3);
+      parts.push(b);
+    }
+    const g=group(L,parts);
+    animHooks.push(now=>{const t=now*0.0009;
+      for(const q of webs){q.w.scale.set(1+0.03*Math.sin(t+q.ph),1+0.04*Math.sin(t*1.3+q.ph),1);
+        q.w.material.opacity=0.34+0.1*Math.sin(t*0.7+q.ph);}});
+    return g;},
+
   morgul(L,x,z){   // Minas Morgul: a tower city in its valley, lit the wrong colour
     const H=L.height||420,g0=gh(x,z),parts=[],A=L.turn||0;
     const pale=new THREE.MeshPhongMaterial({color:0x6f7a72,specular:0x9fb0a6,shininess:24,flatShading:true});

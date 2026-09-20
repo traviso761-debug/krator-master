@@ -91,6 +91,32 @@ export function hosts(api){
      const dust=[];for(let d2=0;d2<7;d2++){const p=new THREE.Mesh(new THREE.SphereGeometry(28,7,5),dustM);
        p.userData.t=d2/7;scene.add(p);dust.push(p);}
      armies.push({g,r,s:HR()*r.len,v:(K.pace||1.4)*(0.8+HR()*0.5),dir:HR()<0.5?-1:1,dust,ranks,STEP});}
+   ctx.hosts=armies;   // the Black Gate watches these: it opens when one is on the road and shuts behind it
+   // ---- the hosts that are not going anywhere ----
+   // Round Barad-dur the army is not marching, it is standing: drawn up in squares on the plain under the
+   // tower, waiting to be sent somewhere. Same ranks, same banners, no route - and built once, like the rest.
+   for(const [cx,cz] of (K.camped||[])){
+     const per=K.campedPer||4000,FILE2=K.file||62,STEP2=K.step||1.9;
+     const g=new THREE.Group();
+     const ranks=Math.ceil(per/FILE2);
+     const bodies=new THREE.InstancedMesh(new THREE.BoxGeometry(0.8,1.9,0.6).translate(0,0.95,0),fleshM,per);
+     const spears=new THREE.InstancedMesh(new THREE.BoxGeometry(0.13,3.6,0.13).translate(0,1.8,0),ironM,per);
+     let n=0;
+     for(let rk=0;rk<ranks&&n<per;rk++)for(let f=0;f<FILE2&&n<per;f++){
+       const px=(f-(FILE2-1)/2)*STEP2+(HR()-0.5)*0.6,pz=-rk*STEP2-(HR()-0.5)*0.5;
+       D.position.set(px,0,pz);D.rotation.set(0,(HR()-0.5)*0.12,0);D.scale.set(1,0.9+HR()*0.25,1);D.updateMatrix();
+       bodies.setMatrixAt(n,D.matrix);
+       D.position.set(px+0.35,1.1,pz);D.rotation.set(0,0,(HR()-0.5)*0.3);D.updateMatrix();
+       spears.setMatrixAt(n,D.matrix);n++;}
+     bodies.count=spears.count=n;bodies.frustumCulled=spears.frustumCulled=false;
+     g.add(bodies,spears);
+     for(let b=0;b<8;b++){const bx2=(HR()-0.5)*FILE2*STEP2*0.9,bz2=-HR()*ranks*STEP2;
+       const pole=new THREE.Mesh(new THREE.BoxGeometry(0.22,10,0.22).translate(0,5,0),ironM);pole.position.set(bx2,0,bz2);
+       const flag=new THREE.Mesh(new THREE.PlaneGeometry(3.6,2.4),new THREE.MeshLambertMaterial({color:0x5a1712,side:THREE.DoubleSide}));
+       flag.position.set(bx2+1.8,8.6,bz2);g.add(pole,flag);}
+     g.position.set(cx,groundH(cx,cz),cz);g.rotation.y=HR()*6.28;
+     scene.add(g);
+   }
    let last=performance.now();
    animHooks.push(now=>{const dt=Math.min(0.05,(now-last)/1000);last=now;
      for(const a of armies){a.s+=a.v*dt*a.dir;
@@ -177,6 +203,7 @@ export function hosts(api){
 
   ctx.hostAt=()=>armies.map(a=>[Math.round(a.g.position.x),Math.round(a.g.position.z)]);   // for aiming a camera
   ctx.details=Object.assign(ctx.details||{},{hostAt:armies.slice(0,2).map(a=>Math.round(a.g.position.x)+','+Math.round(a.g.position.z)).join(' | '),hosts:armies.length,
-    hostStrength:armies.reduce((s,a)=>s+(K.perArmy||4000),0),trolls:(K.trolls||0)*armies.length,
+    hostStrength:armies.reduce((s,a)=>s+(K.perArmy||4000),0),camped:(K.camped||[]).length,
+    campedStrength:(K.camped||[]).length*(K.campedPer||4000),trolls:(K.trolls||0)*armies.length,
     engines:(K.engines||0)*armies.length,wains:(K.wains||0)*armies.length,nazgul:riders.length});
 }
