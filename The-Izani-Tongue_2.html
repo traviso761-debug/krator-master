@@ -200,4 +200,9 @@ td.gcell{white-space:nowrap}
 <table class="chart"><tr><th></th><th>Front</th><th>Central</th><th>Back</th></tr><tr><td class="rowh">High</td><td>ee "see"</td><td class="dash">—</td><td>oo "boot"</td></tr><tr><td class="rowh">Mid</td><td>e "bed"</td><td>uh "sofa"</td><td>aw "born"</td></tr><tr><td class="rowh">Low</td><td>a "cat"</td><td>ah "father"</td><td class="dash">—</td></tr></table>
 <p class="note">And that’s the tidied-up version. English really has ~12 vowel sounds (plus diphthongs, like the i in "ride") crammed into 5 written letters, with spelling that rarely matches sound. That mismatch is exactly the headache your clean 5-vowel system sidesteps.</p>
 <div class="callout"><p style="margin:0"><b>To extend it:</b> coin new roots that obey <span class="iz">(C)V(C)</span> and use only the letters above — then let doubling, <span class="iz">-or</span> and <span class="iz">-ren</span> do the derivation. Name any settlement with <span class="iz">[feature] + sa</span>: <span class="iz">Selsa</span> (hill-town), <span class="iz">Vaevaesa</span> → <span class="iz">Vaesa</span> (lake-town), <span class="iz">Lithvaesa</span> (coast-town). <span class="tag">new</span> Name a shop with <span class="iz">[thing] + -eth</span>, a gate with <span class="iz">[feature] + dun</span>.</p></div>
-</div></body></html>
+</div>
+<!-- the way back to the menagerie, and into the other scenes: adds nothing unless a server is answering
+     with /scenes.json (src/core/menagerie.js) -->
+<script type="module">import {installMenagerie} from './src/core/menagerie.js';
+installMenagerie({standalone:true}).catch(()=>{});</script>
+</body></html>

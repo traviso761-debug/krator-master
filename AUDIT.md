@@ -1,4 +1,6 @@
-# City of Iziz: architecture audit
+# World Menagerie: architecture audit
+
+*(Written when the project was called City of Iziz and held one city; the paths below are as they were.)*
 
 > **Outcome (same day).** Everything in §6 and steps 1–5 of §7 is done, plus a second data-driven city
 > (`?city=iziz-b`) and a second engine page (`chicago.html`). See the README for the new layout. What is

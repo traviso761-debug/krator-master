@@ -1,10 +1,15 @@
-# City of Iziz
+# World Menagerie
 
-Procedural city models served to the local network by a small Python server. Eight places so far:
+Procedural models of places, served to the local network by a small Python server. Ten of them so far:
 **Iziz**, a science-fantasy city with its own language; **Chicago**, **Portland** and **New York**, built
-from OpenStreetMap and real elevation data; and four generated from a seed as fan work — **City 17**,
-**Night City**, **Mega-City One**, and **Mordor**, which is a country rather than a city.
-They run on the same core modules and the same page shell; each city is a data file plus a set of build stages.
+from OpenStreetMap and real elevation data; **Voth**, a page of its own; and fan work generated from a seed —
+**City 17**, **Night City**, **Mega-City One** (twice, once as the comics have it and once as the 2012 film
+does), **Mordor**, which is a country rather than a city, and **Mystery Flesh Pit National Park**, which is a
+hole. They run on the same core modules and the same page shell; each place is a data file plus a set of build
+stages, and anything only one of them needs travels with that one.
+
+The front page at `/` lists whatever the server is serving, and every scene carries a Home button and a menu
+of the others. Both read `/scenes.json`, which the server builds from `site.toml`.
 
 **Site:** http://192.168.124.227:8000/
 
@@ -480,9 +485,9 @@ for text when the client accepts it, `ETag`/`Last-Modified` with `304`, `HEAD`, 
 reload, one log line per request in the journal. No `Range` support, no TLS, no authentication:
 fine on the LAN, never port-forward it to the internet.
 
-The systemd **user** service `iziz` (`~/.config/systemd/user/iziz.service`) runs it; the unit runs
-`server.py --check` before starting, so a missing page file stops start-up. Raw commands, without
-`sudo`: `systemctl --user status|start|stop|restart|reload iziz`, `journalctl --user -fu iziz`. With
+The systemd **user** service `menagerie` (`~/.config/systemd/user/menagerie.service`) runs it; the unit
+runs `server.py --check` before starting, so a missing page file stops start-up. Raw commands, without
+`sudo`: `systemctl --user status|start|stop|restart|reload menagerie`, `journalctl --user -fu menagerie`. With
 `sudo` they fail with `Failed to connect to user scope bus`. The service starts at login; for boot
 without a login run `sudo loginctl enable-linger snapwerks` once.
 

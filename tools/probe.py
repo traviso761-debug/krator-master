@@ -102,13 +102,20 @@ def main():
     # the real site config, with "/" pointing at the instrumented copy
     import tomllib
     cfg = tomllib.load(open(os.path.join(ROOT, "site.toml"), "rb"))
+    srv = cfg.get("server", {})
     lines = [f'[server]\nhost="127.0.0.1"\nport={a.port}\nlog_requests=true\n']
+    if srv.get("scenes"):      # the scene list the pages' menagerie menu reads, so the probe exercises it too
+        lines.append(f'scenes={json.dumps(srv["scenes"])}\nname={json.dumps(srv.get("name", "World Menagerie"))}\n')
     for r in cfg.get("route", []):
         if not r.get("enabled", True):
             continue
         f = page if r["path"] == "/" else os.path.join(ROOT, r["file"])
         al = json.dumps(r.get("aliases", []))
-        lines.append(f'[[route]]\npath={json.dumps(r["path"])}\naliases={al}\nfile={json.dumps(f)}\n')
+        extra = ""
+        if r.get("scene"):
+            extra = (f'scene=true\nkind={json.dumps(r.get("kind", "scene"))}\n'
+                     f'blurb={json.dumps(r.get("blurb", ""))}\n')
+        lines.append(f'[[route]]\npath={json.dumps(r["path"])}\naliases={al}\nfile={json.dumps(f)}\n{extra}')
     for m in cfg.get("mount", []):
         if m.get("enabled", True):
             lines.append(f'[[mount]]\nprefix={json.dumps(m["prefix"])}\ndir={json.dumps(os.path.join(ROOT, m["dir"]))}\n')
