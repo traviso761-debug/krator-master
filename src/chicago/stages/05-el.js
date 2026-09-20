@@ -11,39 +11,59 @@ function joinChains(lines,tol){const key=p=>Math.round(p[0]/tol)+','+Math.round(
 const EL=C.el||{};   // a land with no railway need not configure one; every section here reads it
 section('el',()=>{
   // The height is above the street, not above the datum. It used to be absolute, which is the same thing in
-  // Chicago, where the ground along the L is a few metres above the lake - and is nonsense anywhere the land
-  // moves: City 17's viaduct crosses ground at 22 m, so all of it, trains included, was built underneath the
-  // city. Everything here now stands on groundH: the deck, the columns that hold it, the platforms and the
-  // trains themselves.
+  // Chicago, where the ground along the L is a few metres above the lake, and nonsense anywhere the land moves:
+  // City 17's viaduct crosses ground at 22 m, so all of it, trains included, was built underneath the city.
+  //
+  // Following the ground exactly is wrong too. A viaduct is graded: it is built level over the dips and its
+  // columns get longer, it does not ride up and down over every hummock like a road. So the deck is the ground
+  // smoothed along the line, held at least half its height clear of it, and the columns take up the difference -
+  // which is what makes a viaduct read as one thing crossing a city rather than as track laid on the dirt.
   const H=EL.height||8,elev=RAILS.filter(r=>r.type==='L'&&r.elevated);
-  const deck=tiledBuffer(new THREE.MeshLambertMaterial({vertexColors:true}),{cast:true}),dc=col('#5e6166');
+  // the joined lines, resampled fine enough to follow the land, each carrying its own deck profile
+  const chains=joinChains(elev.map(r=>r.pts),3).map(p=>polyLen({pts:TER?resample(p,12*WORLD):p}));
+  for(const r of chains){const g=r.pts.map(([x,z])=>groundH(x,z));let y=g.slice();
+    for(let k=0;k<4;k++){const o=y.slice();for(let i=0;i<y.length;i++){let sum=0,n=0;
+      for(let j=Math.max(0,i-3);j<=Math.min(y.length-1,i+3);j++){sum+=o[j];n++;}y[i]=sum/n;}}
+    r.g=g;r.ys=y.map((v,i)=>Math.max(v,g[i]+H*0.55)+H);}
+  // the height of the deck at arc length s along a line, which is where the trains ride
+  const deckOn=(r,s)=>{s=Math.max(0,Math.min(r.len,s));let lo=0,hi=r.cum.length-1;while(lo<hi){const mid=(lo+hi+1)>>1;if(r.cum[mid]<=s)lo=mid;else hi=mid-1;}
+    const i=lo,j=Math.min(r.cum.length-1,i+1),u=(s-r.cum[i])/((r.cum[j]-r.cum[i])||1);return r.ys[i]+(r.ys[j]-r.ys[i])*u;};
+  // How heavy the structure is. Chicago's L is light steel; something a military occupation drove through a
+  // city is not, so the deck's width and depth, the piers and their spacing all come from the city file.
+  const DW=EL.deckWidth||4.2,PW=EL.pierWidth||0.6,PD=EL.deckDepth||1.2,PE=EL.pierEvery||14;
+  const deck=tiledBuffer(new THREE.MeshLambertMaterial({vertexColors:true}),{cast:true}),dc=col(EL.colour||'#5e6166');
   const cols=[];
-  for(const r of elev){deck.ribbon(r.pts,4.2,gY(H),dc,1.2);let carry=0;
-    for(let i=0;i+1<r.pts.length;i++){const [ax,az]=r.pts[i],[bx,bz]=r.pts[i+1],L=Math.hypot(bx-ax,bz-az);for(let s=carry;s<L;s+=14)cols.push([ax+(bx-ax)*s/L,az+(bz-az)*s/L]);carry=Math.max(0,14-((L-carry)%14));}}
+  for(const r of chains){deck.ribbon(r.pts,DW,r.ys,dc,PD);
+    for(let i=0,run=1e9;i+1<r.pts.length;i++){const L=r.cum[i+1]-r.cum[i];run+=L;if(run<PE)continue;run=0;
+      cols.push([r.pts[i][0],r.pts[i][1],r.g[i],r.ys[i]]);}}
   deck.build('L structure');
-  const cm=new THREE.InstancedMesh(new THREE.BoxGeometry(0.6,1,0.6).translate(0,0.5,0),steelM,Math.max(1,cols.length)),d=new THREE.Object3D();
-  cols.forEach(([x,z],i)=>{d.position.set(x,groundH(x,z),z);d.scale.set(1,H-0.6,1);d.updateMatrix();cm.setMatrixAt(i,d.matrix);});cm.count=cols.length;cm.castShadow=true;scene.add(cm);
-  // stations on the elevated lines: platforms and a canopy along the track
+  const cm=new THREE.InstancedMesh(new THREE.BoxGeometry(PW,1,PW).translate(0,0.5,0),steelM,Math.max(1,cols.length)),d=new THREE.Object3D();
+  cols.forEach(([x,z,g,y],i)=>{d.position.set(x,g,z);d.scale.set(1,Math.max(1,y-PD-g),1);d.updateMatrix();cm.setMatrixAt(i,d.matrix);});cm.count=cols.length;cm.castShadow=true;scene.add(cm);
+  // stations on the elevated lines: platforms and a canopy along the track, at the deck's own height
   const platM=new THREE.MeshLambertMaterial({color:0xa8a49a}),canM=new THREE.MeshLambertMaterial({color:0x2a5aa8});let nst=0;
-  for(const s of STATIONS){let best=null;for(const r of elev)for(let i=0;i+1<r.pts.length;i++){const dd=segDist(s.x,s.z,r.pts[i][0],r.pts[i][1],r.pts[i+1][0],r.pts[i+1][1]);if(dd<45&&(!best||dd<best.d))best={d:dd,a:r.pts[i],b:r.pts[i+1]};}
-    if(!best)continue;const ang=Math.atan2(best.b[1]-best.a[1],best.b[0]-best.a[0]),t=((s.x-best.a[0])*(best.b[0]-best.a[0])+(s.z-best.a[1])*(best.b[1]-best.a[1]))/Math.max(1,(best.b[0]-best.a[0])**2+(best.b[1]-best.a[1])**2),tt=Math.max(0,Math.min(1,t));
-    const x=best.a[0]+(best.b[0]-best.a[0])*tt,z=best.a[1]+(best.b[1]-best.a[1])*tt,g=new THREE.Group();g.position.set(x,groundH(x,z),z);g.rotation.y=-ang;
-    for(const sd of [-1,1]){const pl=new THREE.Mesh(new THREE.BoxGeometry(120,0.8,3.5),platM);pl.position.set(0,H+0.3,sd*4.2);const cn=new THREE.Mesh(new THREE.BoxGeometry(70,0.3,4),canM);cn.position.set(0,H+4,sd*4.2);g.add(pl,cn);}
-    g.userData.info={name:s.name+' station',info:'CTA ’L’ station (elevated).'};g.traverse(o=>o.userData.info=g.userData.info);LANDMARKS.push(g);scene.add(g);nst++;}
-  // trains: the joined elevated lines long enough to run on, a train or two each, slowing at stations
-  const lines=joinChains(elev.map(r=>r.pts),3).map(p=>polyLen({pts:p})).filter(r=>r.len>700);
+  for(const s of STATIONS){let best=null;for(const r of chains)for(let i=0;i+1<r.pts.length;i++){const dd=segDist(s.x,s.z,r.pts[i][0],r.pts[i][1],r.pts[i+1][0],r.pts[i+1][1]);if(dd<45&&(!best||dd<best.d))best={d:dd,r,i};}
+    if(!best)continue;const r=best.r,a=r.pts[best.i],b=r.pts[best.i+1],ang=Math.atan2(b[1]-a[1],b[0]-a[0]);
+    const t=((s.x-a[0])*(b[0]-a[0])+(s.z-a[1])*(b[1]-a[1]))/Math.max(1,(b[0]-a[0])**2+(b[1]-a[1])**2),tt=Math.max(0,Math.min(1,t));
+    const x=a[0]+(b[0]-a[0])*tt,z=a[1]+(b[1]-a[1])*tt,y=r.ys[best.i]+(r.ys[best.i+1]-r.ys[best.i])*tt,g=new THREE.Group();g.position.set(x,y,z);g.rotation.y=-ang;
+    for(const sd of [-1,1]){const pl=new THREE.Mesh(new THREE.BoxGeometry(120,0.8,3.5),platM);pl.position.set(0,0.3,sd*4.2);const cn=new THREE.Mesh(new THREE.BoxGeometry(70,0.3,4),canM);cn.position.set(0,4,sd*4.2);g.add(pl,cn);}
+    g.userData.info={name:s.name+' station',info:EL.stationInfo||'CTA ’L’ station (elevated).'};g.traverse(o=>o.userData.info=g.userData.info);LANDMARKS.push(g);scene.add(g);nst++;}
+  // trains: the lines long enough to run on, one every trainEvery metres so there is usually one in sight,
+  // slowing at stations. Two trains on four kilometres of track is a line nobody ever catches in the act.
+  const lines=chains.filter(r=>r.len>700);
   const winM=new THREE.MeshLambertMaterial({color:0x1e2630});
-  const carL=14.6,N=EL.trainCars||6,carM=new THREE.MeshLambertMaterial({color:0x8e959c,emissive:0x000000}),trains=[];   // brushed steel, not white
-  for(const r of lines){const k=r.len>3000?2:1;for(let i=0;i<k;i++)trains.push({r,s:(i+0.3)*r.len/k,dir:i%2?1:-1,v:13});}
+  const carL=EL.carLength||14.6,N=EL.trainCars||6,carM=new THREE.MeshLambertMaterial({color:EL.livery!==undefined?EL.livery:0x8e959c,emissive:0x000000}),trains=[];   // brushed steel, not white
+  const EVERY=EL.trainEvery||1500;
+  for(const r of lines){const k=Math.max(1,Math.round(r.len/EVERY));for(let i=0;i<k;i++)trains.push({r,s:(i+0.5)*r.len/k,dir:i%2?1:-1,v:EL.trainSpeed||13});}
   const tm=new THREE.InstancedMesh(new THREE.BoxGeometry(carL,3.4,3),carM,Math.max(1,trains.length*N)),tw=new THREE.InstancedMesh(new THREE.BoxGeometry(carL-1.2,1.1,3.04).translate(0,0.45,0),winM,Math.max(1,trains.length*N));tm.frustumCulled=tw.frustumCulled=false;scene.add(tm,tw);
   const stS=lines.map(r=>STATIONS.map(s=>{let bs=-1,bd=60;for(let q=0;q<=r.len;q+=10){const [px,pz]=polyAt(r,q);const dd=Math.hypot(px-s.x,pz-s.z);if(dd<bd){bd=dd;bs=q;}}return bs;}).filter(q=>q>=0));
   let last=performance.now();
   animHooks.push(now=>{const dt=Math.min(0.05,(now-last)/1000);last=now;let i=0;
     for(const tr of trains){const li=lines.indexOf(tr.r),slow=stS[li].some(q=>Math.abs(q-tr.s)<90);tr.s+=tr.dir*(slow?4:tr.v)*dt;
       if(tr.s>tr.r.len-5)tr.dir=-1;if(tr.s<5+N*(carL+1))tr.dir=1;
-      for(let c=0;c<N;c++){const [x,z,a]=polyAt(tr.r,tr.s-tr.dir*c*(carL+1)),o=tr.dir*1.1;d.position.set(x-Math.sin(a)*o,groundH(x,z)+H+2.3,z+Math.cos(a)*o);d.rotation.set(0,-a,0);d.scale.set(1,1,1);d.updateMatrix();tm.setMatrixAt(i,d.matrix);tw.setMatrixAt(i++,d.matrix);}}
+      for(let c=0;c<N;c++){const s=tr.s-tr.dir*c*(carL+1),[x,z,a]=polyAt(tr.r,s),o=tr.dir*1.1;d.position.set(x-Math.sin(a)*o,deckOn(tr.r,s)+2.3,z+Math.cos(a)*o);d.rotation.set(0,-a,0);d.scale.set(1,1,1);d.updateMatrix();tm.setMatrixAt(i,d.matrix);tw.setMatrixAt(i++,d.matrix);}}
     tm.count=tw.count=i;tm.instanceMatrix.needsUpdate=tw.instanceMatrix.needsUpdate=true;const w=windowF(hourCur);carM.emissive.setRGB(w*0.9,w*0.85,w*0.6);});
-  ctx.details=Object.assign(ctx.details||{},{elevatedTrack:elev.length,stations:nst,trainLines:lines.length,trains:trains.length});
+  const deckLo=chains.length?Math.round(Math.min(...chains.map(r=>Math.min(...r.ys)))):0,deckHi=chains.length?Math.round(Math.max(...chains.map(r=>Math.max(...r.ys)))):0;
+  ctx.details=Object.assign(ctx.details||{},{elevatedTrack:elev.length,elevatedDeck:chains.length?deckLo+'–'+deckHi+' m':'none',stations:nst,trainLines:lines.length,trains:trains.length});
 });
 // Metra: double-deck silver trains on the commuter lines at grade and on their embankments
 section('metra',()=>{

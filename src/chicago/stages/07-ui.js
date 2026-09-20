@@ -2,8 +2,11 @@
 await stage('ui');
 const el=renderer.domElement;
 // orbit camera: drag to orbit, right/shift-drag or two fingers to pan, wheel/pinch to zoom, WASD/QE to move the target
-const ctl={target:new THREE.Vector3(0,40,0),az:0.6,el:0.5,dist:1400,goal:null};
-function applyCam(){const e=Math.max(0.03,Math.min(1.5,ctl.el));camera.position.set(ctl.target.x+Math.cos(ctl.az)*Math.cos(e)*ctl.dist,ctl.target.y+Math.sin(e)*ctl.dist,ctl.target.z+Math.sin(ctl.az)*Math.cos(e)*ctl.dist);camera.lookAt(ctl.target);}
+// elMin/elMax are how far the camera may be tipped. A city is looked at from above it, so the floor is just
+// off the horizontal and the ceiling just off vertical; a page whose subject is not a city may widen them -
+// the Flesh Pit sets the floor below nought, because inside a shaft you want to look up it.
+const ctl={target:new THREE.Vector3(0,40,0),az:0.6,el:0.5,dist:1400,goal:null,elMin:0.03,elMax:1.5};
+function applyCam(){const e=Math.max(ctl.elMin,Math.min(ctl.elMax,ctl.el));camera.position.set(ctl.target.x+Math.cos(ctl.az)*Math.cos(e)*ctl.dist,ctl.target.y+Math.sin(e)*ctl.dist,ctl.target.z+Math.sin(ctl.az)*Math.cos(e)*ctl.dist);camera.lookAt(ctl.target);}
 function setView(px,py,pz,tx,ty,tz,fly){const t=new THREE.Vector3(tx,ty,tz),p=new THREE.Vector3(px,py,pz),d=p.clone().sub(t);const goal={target:t,az:Math.atan2(d.z,d.x),el:Math.atan2(d.y,Math.hypot(d.x,d.z)),dist:d.length()};
   if(fly===false||matchMedia('(prefers-reduced-motion: reduce)').matches){Object.assign(ctl,goal);ctl.goal=null;return;}ctl.goal=Object.assign(goal,{t0:performance.now(),from:{target:ctl.target.clone(),az:ctl.az,el:ctl.el,dist:ctl.dist}});}
 // How far out you may pull, and how close you may get. Both used to be fixed at 8 and 9000 metres, which is
@@ -23,7 +26,7 @@ const ptrs=new Map();let pinch0=0,dist0=0;
 el.addEventListener('pointerdown',e=>{el.setPointerCapture(e.pointerId);ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY,b:e.button,sh:e.shiftKey,moved:0});if(ptrs.size===2){const [a,b]=[...ptrs.values()];pinch0=Math.hypot(a.x-b.x,a.y-b.y);dist0=ctl.dist;}});
 el.addEventListener('pointermove',e=>{const p=ptrs.get(e.pointerId);if(!p)return;const dx=e.clientX-p.x,dy=e.clientY-p.y;p.x=e.clientX;p.y=e.clientY;p.moved+=Math.abs(dx)+Math.abs(dy);ctl.goal=null;
   if(ptrs.size===2){const [a,b]=[...ptrs.values()];const pd=Math.hypot(a.x-b.x,a.y-b.y);ctl.dist=clampDist(dist0*pinch0/pd);pan(dx/2,dy/2);return;}
-  if(p.b===2||p.sh)pan(dx,dy);else{ctl.az+=dx*0.005;ctl.el=Math.max(0.03,Math.min(1.5,ctl.el+dy*0.005));}});
+  if(p.b===2||p.sh)pan(dx,dy);else{ctl.az+=dx*0.005;ctl.el=Math.max(ctl.elMin,Math.min(ctl.elMax,ctl.el+dy*0.005));}});
 const endPtr=e=>{const p=ptrs.get(e.pointerId);ptrs.delete(e.pointerId);if(p&&p.moved<6&&e.type==='pointerup'&&p.b===0)clickAt(e.clientX,e.clientY);};
 el.addEventListener('pointerup',endPtr);el.addEventListener('pointercancel',endPtr);el.addEventListener('contextmenu',e=>e.preventDefault());
 function pan(dx,dy){const k=ctl.dist*0.0016,ox=ctl.target.x,oz=ctl.target.z;const fx=Math.cos(ctl.az),fz=Math.sin(ctl.az);ctl.target.x+=(-dx*fz+dy*fx)*k*-1;ctl.target.z+=(dx*fx+dy*fz)*k*-1;followGround(ox,oz);}
@@ -120,6 +123,8 @@ ctx.res=RES;let fpsN=0,fpsT=performance.now(),renderErr=false;
   for(const f of animHooks){try{f(now);}catch(e){if(!f._failed){f._failed=true;report('update',e);}}}stepFly(now);applyKeys();
   // A page may steer the camera itself: the Flesh Pit's descent is not an orbit round a city centre, it rides a
   // shaft two and a half kilometres down. ctx.camFrame is handed the control state after the engine has had its
-  // turn with it and may overwrite any of it; no page that leaves it unset is affected in any way.
+  // turn with it and may overwrite any of it; no page that leaves it unset is affected in any way. It is handed
+  // ctl.goal as the engine left it, so a page that has taken the camera can see that a viewpoint button was just
+  // pressed - a fresh goal object - and hand the camera back rather than sitting there ignoring the panel.
   if(ctx.camFrame){try{ctx.camFrame(now,ctl);}catch(e){if(!ctx.camFrame._failed){ctx.camFrame._failed=true;report('camera',e);}}}
   applyCam();if(shadowsDue())renderer.shadowMap.needsUpdate=true;renderer.render(scene,camera);}catch(e){if(!renderErr){renderErr=true;report('render',e);}}})();

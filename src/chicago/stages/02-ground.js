@@ -28,7 +28,10 @@ function tiledBuffer(material,opts){const tiles=new Map();opts=opts||{};const TS
         L.push([b[0]+nx*h*miter,b[1]+nz*h*miter]);R.push([b[0]-nx*h*miter,b[1]-nz*h*miter]);}
       const dark=sides?cl.clone().multiplyScalar(0.7):null;
       for(let i=0;i+1<pts.length;i++){const t=this.tile(pts[i][0],pts[i][1]);
-        const y0=Y(i),y1=Y(i+1);this.quad(t,[L[i][0],y0,L[i][1]],[R[i][0],y0,R[i][1]],[R[i+1][0],y1,R[i+1][1]],[L[i+1][0],y1,L[i+1][1]],cl);
+        const y0=Y(i),y1=Y(i+1);
+        // wound left-forward-right, so the face is up whichever way round the line was drawn: the other way
+        // round it is a front face pointing at the ground, and the ribbon is invisible from above.
+        this.quad(t,[L[i][0],y0,L[i][1]],[L[i+1][0],y1,L[i+1][1]],[R[i+1][0],y1,R[i+1][1]],[R[i][0],y0,R[i][1]],cl);
         if(sides)for(const [A,sgn] of [[L,1],[R,-1]]){const nx=(A[i+1][1]-A[i][1])*sgn,nz=-(A[i+1][0]-A[i][0])*sgn,nl=Math.hypot(nx,nz)||1;
           this.quad(t,[A[i][0],y0,A[i][1]],[A[i+1][0],y1,A[i+1][1]],[A[i+1][0],y1-sides,A[i+1][1]],[A[i][0],y0-sides,A[i][1]],dark,[nx/nl,0,nz/nl]);}}},
     build(name){const out=[];for(const t of tiles.values()){if(!t.idx.length)continue;const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(t.p,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(t.n,3));
@@ -46,6 +49,7 @@ section('ground',()=>{
     // flat colour, because everything above the first hill is already at the top of the ramp; and a slope measured
     // over kilometre samples is a tenth of what it is over metres.
     const H_AT=Math.max(120,TER_RELIEF*0.35),SLOPE_K=1.2*Math.max(1,WORLD*0.3);
+    const HOLE=C.groundHole?[C.groundHole.at[0],C.groundHole.at[1],C.groundHole.r]:null;   // [x, z, radius]: ground that is not there
     const TC=C.terrainColours||{},terM=new THREE.MeshLambertMaterial({vertexColors:true}),CH=48,   // a city may set its own earth colours
       low=col(TC.low||'#5c5a53'),high=col(TC.high||'#4a5a42'),steepC=col(TC.steep||'#6a6052'),cc=new THREE.Color();
     for(let cj=0;cj<TER.nz-1;cj+=CH)for(let ci=0;ci<TER.nx-1;ci+=CH){const w=Math.min(CH,TER.nx-1-ci),d=Math.min(CH,TER.nz-1-cj),pos=[],colr=[],idx=[];
@@ -53,7 +57,12 @@ section('ground',()=>{
         const gx=(TER.h[gj*TER.nx+Math.min(TER.nx-1,gi+1)]-TER.h[gj*TER.nx+Math.max(0,gi-1)])/(2*TER.step),
               gz=(TER.h[Math.min(TER.nz-1,gj+1)*TER.nx+gi]-TER.h[Math.max(0,gj-1)*TER.nx+gi])/(2*TER.step),slope=Math.hypot(gx,gz);
         pos.push(x,y,z);cc.copy(low).lerp(high,Math.min(1,y/H_AT)).lerp(steepC,Math.min(1,slope*SLOPE_K));colr.push(cc.r,cc.g,cc.b);}
-      for(let j=0;j<d;j++)for(let i=0;i<w;i++){const a=j*(w+1)+i;idx.push(a,a+w+1,a+1,a+1,a+w+1,a+w+2);}
+      // A heightfield cannot have a hole in it, so a city that needs one says where: quads whose middle falls
+      // inside it are simply not drawn. The Flesh Pit's orifice is the only one - without it the funnel floor
+      // is a lid over the shaft, and from the rim you look down at a flat disc rather than into the pit.
+      for(let j=0;j<d;j++)for(let i=0;i<w;i++){const a=j*(w+1)+i;
+        if(HOLE){const hx=TER.x0+(ci+i+0.5)*TER.step,hz=TER.z0+(cj+j+0.5)*TER.step;if(Math.hypot(hx-HOLE[0],hz-HOLE[1])<HOLE[2])continue;}
+        idx.push(a,a+w+1,a+1,a+1,a+w+1,a+w+2);}
       const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(colr,3));g.setIndex(idx);g.computeVertexNormals();g.computeBoundingSphere();
       const m=new THREE.Mesh(g,terM);m.receiveShadow=true;m.castShadow=TER_RELIEF>40;scene.add(m);}
     // land beyond the map, so distant hills and mountains have something to stand on

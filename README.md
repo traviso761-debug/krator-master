@@ -379,6 +379,22 @@ loading text. Things one stage hands to a later one, or to the console, go on `c
 **Edit the stages, never `build.js`**; `./sitectl build` regenerates it (and `check`, `reload`,
 `restart`, `test` and the probe do so automatically).
 
+### Everything stands on the ground
+
+Three things in the engine used to be measured from the datum rather than from the land under them, which is
+the same thing in Chicago and nonsense anywhere the ground moves. Traffic rode at y = 0, so Portland's cars
+drove three hundred metres under the west hills; they now take the greater of the bridge deck and the ground
+at the car's own position, asked there rather than interpolated between road vertices that can be hundreds of
+metres apart. The elevated railway sat at a fixed height above the datum; its deck is now the ground smoothed
+along the line and held clear of it, with the columns taking up the difference, because a viaduct is graded
+and does not ride over every hummock. And Michigan Avenue's planters kept their flowers and trees at a fixed
+height above nothing in particular.
+
+`ribbon()` — which draws every road, sidewalk, trail, bridge deck and railway deck in every city — wound its
+top face downwards, so all of them were front-facing at the ground and only visible from underneath. What you
+saw from above was the darker skirt drawn down each side, which is why Portland's bridge ramps read as black
+spaghetti and City 17's viaduct was invisible from the street. One reversed winding fixes the lot.
+
 ### What the engine shares, and what a page owns
 
 The engine in `src/chicago/` is run by every city page, so nothing that belongs to one city is in it.
@@ -437,7 +453,11 @@ and `people` (0-1 densities), `palette` (`"drab"` puts vehicles and coats in rus
 `defaultHour` (a city only seen after dark opens there), `quality` (`low` drops shadows entirely, which on a weak GPU is worth more than everything else together;
 `?quality=low` in the URL overrides it). A `combine` block (`striders`, `manhacks`, `scanners`, `dropships`,
 `apcs`, `barriers`, `smartBarriers`, `turrets`, `fires`, `debris`, `sentries`) turns on the occupation stage,
-which every other city skips. Anything left out keeps the Chicago default.
+which every other city skips. An `el` block sets the elevated railway: `height` over the street, `deckWidth`,
+`deckDepth`, `pierWidth`, `pierEvery`, `colour`, `trainCars`, `trainEvery` (one train per that many metres of
+line), `trainSpeed` and `livery` — Chicago's L is light steel at the defaults, City 17's viaduct is not.
+`groundHole` (`{at: [x, z], r}`) removes the ground inside a circle, for a city whose subject is a hole.
+Anything left out keeps the Chicago default.
 
 ### Scale
 

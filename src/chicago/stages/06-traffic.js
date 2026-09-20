@@ -14,12 +14,17 @@ section('traffic',()=>{
   const cm=new THREE.InstancedMesh(new THREE.BoxGeometry(4.4,1.4,1.9).translate(0,0.7,0),new THREE.MeshLambertMaterial({color:0xffffff}),Math.max(1,cars.length)),col2=new THREE.Color(),d=new THREE.Object3D();
   const cab=new THREE.InstancedMesh(new THREE.BoxGeometry(2.3,0.75,1.8).translate(-0.3,1.75,0),new THREE.MeshLambertMaterial({color:0x26303a}),Math.max(1,cars.length));
   cars.forEach((c,i)=>cm.setColorAt(i,DRAB?col2.setHSL(0.05+xr()*0.09,0.1+xr()*0.12,0.13+xr()*0.18):col2.setHSL(xr(),0.45,0.3+xr()*0.4)));cm.frustumCulled=cab.frustumCulled=false;scene.add(cm,cab);
-  // the deck height along a route at arc length s (the nearest vertex's height, smoothed over the bridge ends)
+  // The height a car rides at. The deck height along a route is the bridge's, interpolated over the bridge ends,
+  // and nought where there is no bridge - which is the same thing as the street in Chicago, where the land is
+  // flat, and nonsense in Portland, where it put the traffic on the west hills three hundred metres underground.
+  // The ground is asked at the car's own position rather than at the route's vertices, because an arterial that
+  // climbs a hill has its vertices hundreds of metres apart and the line between two of them goes through the
+  // hill, not over it. A deck always wins: that is what being on a bridge means.
   const yAt=(r,s)=>{s=((s%r.len)+r.len)%r.len;let lo=0,hi=r.cum.length-1;while(lo<hi){const mid=(lo+hi+1)>>1;if(r.cum[mid]<=s)lo=mid;else hi=mid-1;}const i=lo,j=Math.min(r.cum.length-1,i+1),u=(s-r.cum[i])/((r.cum[j]-r.cum[i])||1);return r.y[i]+(r.y[j]-r.y[i])*u;};
   let last=performance.now();
   animHooks.push(now=>{const dt=Math.min(0.05,(now-last)/1000);last=now;
     for(let i=0;i<cars.length;i++){const c=cars[i];c.s+=c.dir*c.v*dt;const [x0,z0,a]=polyAt(c.r,c.s,true),x=x0-Math.sin(a)*c.off,z=z0+Math.cos(a)*c.off;
-      d.position.set(x,yAt(c.r,c.s)+0.1,z);d.rotation.set(0,-a+(c.dir<0?Math.PI:0),0);d.scale.set(1,1,1);d.updateMatrix();cm.setMatrixAt(i,d.matrix);cab.setMatrixAt(i,d.matrix);}
+      d.position.set(x,Math.max(yAt(c.r,c.s),groundH(x,z))+0.1,z);d.rotation.set(0,-a+(c.dir<0?Math.PI:0),0);d.scale.set(1,1,1);d.updateMatrix();cm.setMatrixAt(i,d.matrix);cab.setMatrixAt(i,d.matrix);}
     cm.instanceMatrix.needsUpdate=cab.instanceMatrix.needsUpdate=true;});
   // the Lakefront Trail: cyclists and runners both ways
   const trailRe=new RegExp(C.trails||'Lakefront Trail','i');   // which named trails get cyclists and runners
@@ -29,7 +34,7 @@ section('traffic',()=>{
   users.forEach((u,i)=>um.setColorAt(i,col2.setHSL(u.col,0.7,0.5)));um.frustumCulled=bm.frustumCulled=false;scene.add(um,bm);
   let lastU=performance.now();
   animHooks.push(now=>{const dt=Math.min(0.05,(now-lastU)/1000);lastU=now;
-    users.forEach((u,i)=>{u.s+=u.dir*u.v*dt;const [x0,z0,a]=polyAt(u.r,u.s,true),x=x0-Math.sin(a)*u.off,z=z0+Math.cos(a)*u.off;d.position.set(x,u.bike?0:Math.abs(Math.sin(now*0.012+i))*0.08,z);d.rotation.set(0,-a,0);d.scale.set(1,1,1);d.updateMatrix();um.setMatrixAt(i,d.matrix);
+    users.forEach((u,i)=>{u.s+=u.dir*u.v*dt;const [x0,z0,a]=polyAt(u.r,u.s,true),x=x0-Math.sin(a)*u.off,z=z0+Math.cos(a)*u.off;d.position.set(x,groundH(x,z)+(u.bike?0:Math.abs(Math.sin(now*0.012+i))*0.08),z);d.rotation.set(0,-a,0);d.scale.set(1,1,1);d.updateMatrix();um.setMatrixAt(i,d.matrix);
       d.scale.setScalar(u.bike?1:0.001);d.updateMatrix();bm.setMatrixAt(i,d.matrix);});um.instanceMatrix.needsUpdate=bm.instanceMatrix.needsUpdate=true;});
   ctx.details=Object.assign(ctx.details||{},{carRoutes:routes.length,cars:cars.length,trailUsers:users.length});
 });
