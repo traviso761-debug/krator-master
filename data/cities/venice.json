@@ -105,19 +105,233 @@
   ]
  },
  "focus": [],
- "landmarks": [],
+ "landmarks": [
+  {
+   "name": "The Campanile of San Marco",
+   "at": [
+    45.43397,
+    12.33896
+   ],
+   "model": "campanile",
+   "height": 98.6,
+   "info": "Ninety-eight metres of brick with a belfry, a spire and a gilt angel on it. It fell down in 1902 and was rebuilt as it was, and it is the only thing in Venice you can see from everywhere."
+  },
+  {
+   "name": "Basilica di San Marco",
+   "at": [
+    45.43449,
+    12.33967
+   ],
+   "model": "basilica",
+   "height": 43,
+   "info": "Five domes over a Greek cross, and the only cathedral on this site that is not a massing box."
+  },
+  {
+   "name": "Palazzo Ducale",
+   "at": [
+    45.43377,
+    12.34012
+   ],
+   "info": "The Doge's Palace: two storeys of arcade holding up a wall, which is the wrong way round and the point of it."
+  },
+  {
+   "name": "Ponte di Rialto",
+   "at": [
+    45.43803,
+    12.33593
+   ],
+   "model": "rialto",
+   "turn": 0.72,
+   "info": "A single stone arch over the Grand Canal with two rows of shops on it, finished in 1591 after three collapses of the wooden bridges before it."
+  },
+  {
+   "name": "Santa Maria della Salute",
+   "at": [
+    45.43083,
+    12.33463
+   ],
+   "model": "salute",
+   "height": 60,
+   "info": "Put up for the end of the plague of 1630, on a million timber piles driven into the mud at the mouth of the Grand Canal."
+  },
+  {
+   "name": "San Giorgio Maggiore",
+   "at": [
+    45.42931,
+    12.34331
+   ],
+   "model": "campanile",
+   "height": 75,
+   "info": "Across the Bacino on its own island, and the best place to look back at the city from."
+  },
+  {
+   "name": "The Arsenale",
+   "at": [
+    45.43496,
+    12.35169
+   ],
+   "info": "The shipyard that built the fleet, walled off from the city, and at its height turning out a galley a day."
+  },
+  {
+   "name": "Ponte dell'Accademia",
+   "at": [
+    45.43155,
+    12.32893
+   ],
+   "info": "The upstream crossing of the Grand Canal: a timber arch that was meant to be temporary in 1933."
+  },
+  {
+   "name": "Santa Maria Gloriosa dei Frari",
+   "at": [
+    45.43683,
+    12.32664
+   ],
+   "model": "campanile",
+   "height": 70,
+   "info": "The second tallest campanile in the city, and the brick one everybody forgets."
+  },
+  {
+   "name": "Punta della Dogana",
+   "at": [
+    45.43066,
+    12.33682
+   ],
+   "info": "The customs point at the tip, where the Grand Canal and the Giudecca canal meet the Bacino."
+  }
+ ],
  "views": {
   "The Bacino from the water": [
    [
-    45.4277,
-    12.33884,
-    90
+    45.4284,
+    12.3405,
+    95
    ],
    [
-    45.43508,
-    12.33308,
+    45.4339,
+    12.3391,
+    30
+   ]
+  ],
+  "The Piazza": [
+   [
+    45.4331,
+    12.3383,
+    60
+   ],
+   [
+    45.4343,
+    12.3396,
+    22
+   ]
+  ],
+  "The Grand Canal at the Rialto": [
+   [
+    45.4368,
+    12.335,
+    55
+   ],
+   [
+    45.438,
+    12.336,
+    8
+   ]
+  ],
+  "The Salute from San Marco": [
+   [
+    45.4329,
+    12.3379,
+    48
+   ],
+   [
+    45.43083,
+    12.33463,
+    25
+   ]
+  ],
+  "San Giorgio, across the water": [
+   [
+    45.4323,
+    12.3412,
+    70
+   ],
+   [
+    45.42931,
+    12.34331,
+    30
+   ]
+  ],
+  "The calli": [
+   [
+    45.436,
+    12.3326,
+    14
+   ],
+   [
+    45.4366,
+    12.3338,
+    10
+   ]
+  ],
+  "Down a canal": [
+   [
+    45.435,
+    12.331,
+    11
+   ],
+   [
+    45.4356,
+    12.3326,
+    7
+   ]
+  ],
+  "The Arsenale": [
+   [
+    45.4338,
+    12.3484,
+    65
+   ],
+   [
+    45.43496,
+    12.35169,
+    18
+   ]
+  ],
+  "Over the roofs": [
+   [
+    45.431,
+    12.328,
+    240
+   ],
+   [
+    45.435,
+    12.336,
     20
    ]
+  ],
+  "Overview": [
+   [
+    45.422,
+    12.322,
+    900
+   ],
+   [
+    45.435,
+    12.338,
+    10
+   ]
   ]
+ },
+ "camera": {
+  "elMin": -0.35,
+  "elMax": 1.5,
+  "_": "the calli and the canals are the subject, and you cannot look along one from above it"
+ },
+ "streetFurniture": false,
+ "boats": {
+  "gondolas": 90,
+  "vaporetti": 14,
+  "barges": 26,
+  "speed": 2.2,
+  "_": "what moves here: the canals are the street network, so the traffic is on the water"
  }
 }
