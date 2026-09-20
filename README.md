@@ -1,8 +1,8 @@
 # World Menagerie
 
 Procedural models of places, served to the local network by a small Python server. Ten of them so far:
-**Iziz**, a science-fantasy city with its own language; **Chicago**, **Portland** and **New York**, built
-from OpenStreetMap and real elevation data; **Voth**, a page of its own; and fan work generated from a seed —
+**Iziz**, a science-fantasy city with its own language; **Chicago**, **Portland**, **New York** and
+**Venice**, built from OpenStreetMap; **Voth**, a page of its own; and fan work generated from a seed —
 **City 17**, **Night City**, **Mega-City One** (twice, once as the comics have it and once as the 2012 film
 does), **Mordor**, which is a country rather than a city, **Minas Tirith**, which is the other end of the same
 war, the **Kowloon Walled City**, which is one building, **Kyrene**, which is a rotating habitat with its
@@ -23,6 +23,7 @@ of the others. Both read `/scenes.json`, which the server builds from `site.toml
 | `/chicago` | `/chicago.html` | `chicago.html` | Chicago: massing model |
 | `/portland` | `/portland.html` | `portland.html` | Portland: massing model |
 | `/nyc` | `/nyc.html`, `/newyork`, `/manhattan` | `nyc.html` | New York: massing model |
+| `/venice` | `/venice.html`, `/venezia` | `venice.html` | Venice: massing model |
 | `/city17` | `/city17.html`, `/halflife` | `city17.html` | City 17: massing model (fan work) |
 | `/nightcity` | `/nightcity.html`, `/night` | `nightcity.html` | Night City: massing model (fan work) |
 | `/kowloon` | `/kowloon.html`, `/kwc`, `/walledcity` | `kowloon.html` | Kowloon Walled City: massing model |
@@ -148,6 +149,30 @@ Manhattan from the Battery to the north end of Central Park, on the shared engin
   the mapped parts so the model has the site to itself.
 
 Data: `python3 tools/fetch-osm.py nyc`, `python3 tools/fetch-terrain.py nyc`, then `python3 tools/build-osm-city.py nyc`.
+
+### `/venice`: Venice
+
+The historic centre from OpenStreetMap on the shared engine — and the one city here that inverts everything
+the engine assumes. 7,425 buildings, 5,677 ways and 189 water bodies over 5.2 by 3.8 km.
+
+- **The canals are the street network.** Everywhere else the engine's roads carry the traffic and its water
+  is scenery; here it is the other way round. The calli are footpaths between buildings, nothing with wheels
+  has been through the middle of the city since before there were wheels worth having, and the mapped
+  waterways are what the place is organised around. The Grand Canal comes out of the join at 17.6 km of
+  chained centre line.
+- **The boats** (`src/venice/boats.js`): 90 gondolas, 14 vaporetti and 26 barges, following the mapped canal
+  centre lines the way the trains follow the rails. The engine's own boats want open water and keep a margin
+  of clear lake around themselves, which a four-metre canal cannot give them. The gondolas are black, which
+  they have been by law since 1562, and carry the ferro on the bow.
+- **Four things that are shapes rather than heights** (`src/venice/landmarks.js`): the Campanile, with its
+  brick shaft, stone belfry, spire and the gilt angel that turns; the Basilica's five domes over a Greek
+  cross; the Salute, its great dome held down by sixteen scrolls; and the Rialto, one stone arch with two
+  rows of shops standing on it. Everything else is its own mapped footprint.
+- **No terrain.** The city is at sea level and the lagoon is mapped, so the ground is flat by construction
+  and the water polygons do the work. `camera: {elMin: -0.35}` lets you look along a canal instead of down
+  at it.
+
+Data: `python3 tools/fetch-osm.py venice`, then `python3 tools/build-osm-city.py venice`.
 
 ### `/city17`: City 17
 
@@ -494,6 +519,7 @@ src/
   chicago/  main.js landmarks.js             Chicago: Cloud Gate, the Pavilion, the Wheel, Wrigley Field
   portland/ main.js landmarks.js             Portland: the bridges, the sign, the gate, the submarine, the tram
   nyc/      main.js landmarks.js             New York: Liberty, the suspension bridges, One World Trade
+  venice/   main.js landmarks.js boats.js    Venice: the Campanile, the Salute, the Rialto, and the canals
   city17/   main.js landmarks.js combine.js  City 17: the Citadel and the occupation
   nightcity/ main.js landmarks.js neon.js    Night City: the ziggurat and the night stage
   megacity/ main.js landmarks.js             Mega-City One: the Hall of Justice, the Statue of Judgement
