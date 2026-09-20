@@ -1,8 +1,8 @@
 // Night City: entry point for nightcity.html. Fan work — a coastal cyberpunk megacity drawing on Blade Runner's
 // Los Angeles and on Cyberpunk's Night City. The city is generated, not surveyed, and every shape is this project's
-// own low-poly geometry; no game or film assets are used. The engine is the one Chicago and New York share.
+// own low-poly geometry; no game or film assets are used. It runs on the shared engine in src/engine/.
 import {report,LOAD,configureLoading,installErrorHandlers} from '../core/diag.js';
-import {build} from '../chicago/build.js';
+import {build} from '../engine/build.js';
 import {landmarks} from './landmarks.js';
 import {neon} from './neon.js';
 installErrorHandlers();window.LOAD=LOAD;

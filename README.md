@@ -98,7 +98,7 @@ Pier, Lake Michigan, Lakefront Trail, Lincoln Park, Wrigley Field, Montrose Harb
 
 ### `/portland`: Portland
 
-The same engine as Chicago (`src/chicago/stages/`, loaded by `src/portland/main.js`) with Portland's data:
+The shared engine (`src/engine/stages/`, loaded by `src/portland/main.js`) with Portland's data:
 `data/cities/portland.json` and `portland-osm.json`, built from OpenStreetMap the same way. The map runs from
 South Waterfront to the Fremont Bridge and from Washington Park to the Lloyd District; every building is drawn.
 
@@ -123,8 +123,8 @@ Data: `python3 tools/fetch-osm.py portland`, `python3 tools/fetch-terrain.py por
 
 ### `/nyc`: New York
 
-Manhattan from the Battery to the north end of Central Park, on the Chicago engine
-(`src/chicago/stages/`, loaded by `src/nyc/main.js`) with `data/cities/nyc.json` and `nyc-osm.json`.
+Manhattan from the Battery to the north end of Central Park, on the shared engine
+(`src/engine/stages/`, loaded by `src/nyc/main.js`) with `data/cities/nyc.json` and `nyc-osm.json`.
 76,930 buildings, 14,215 streets, 22,500 trees, over a 7.9 × 11.1 km map.
 
 - **From the map:** every building at its mapped height, including the towers OSM models as stacks of
@@ -147,7 +147,7 @@ Data: `python3 tools/fetch-osm.py nyc`, `python3 tools/fetch-terrain.py nyc`, th
 
 ### `/city17`: City 17
 
-Fan work: City 17 from Half-Life 2, on the Chicago engine (`src/chicago/stages/`, loaded by
+Fan work: City 17 from Half-Life 2, on the shared engine (`src/engine/stages/`, loaded by
 `src/city17/main.js`). Nothing is surveyed and **no game assets are used** — `tools/make-city17.py`
 generates `data/cities/city17-osm.json` from a seed and every shape is modelled from scratch here in the
 project's own low-poly style. Half-Life 2 and City 17 belong to Valve.
@@ -181,7 +181,7 @@ Regenerate with `python3 tools/make-city17.py`, then `./sitectl build`.
 ### `/nightcity`: Night City
 
 Fan work: a coastal cyberpunk megacity drawing on Blade Runner's Los Angeles and on Cyberpunk's Night
-City, on the Chicago engine. Generated from a seed by `tools/make-nightcity.py`; no game or film assets
+City, on the shared engine. Generated from a seed by `tools/make-nightcity.py`; no game or film assets
 are used. It opens at 21:36 and it is raining.
 
 - **Generated:** the Pacific and its sea wall, a supertall core on a 92 m grid with towers to 500 m,
@@ -377,9 +377,10 @@ src/
   core/   diag.js rng.js env.js data.js      error reporting + staged loading, randomness/noise, shader environment, data expressions
   izani/  glyphs.js draw.js atlas.js          the script: strokes/layout/SVG (pure), canvas drawing, the texture atlas
   iziz/   main.js imports.js stages/*.js build.js   the Iziz build: 56 stage files, assembled into build.js
-  chicago/ main.js imports.js stages/*.js build.js  the shared engine: 11 stage files, assembled into build.js
-           landmarks.js                      Chicago's own landmarks; the engine does not import it
-  portland/ main.js landmarks.js             Portland: the shared engine, its own landmarks
+  engine/ imports.js stages/*.js build.js    the shared engine: 11 stage files, assembled into build.js.
+                                             It belongs to no city; every page below runs on it.
+  chicago/  main.js landmarks.js             Chicago: Cloud Gate, the Pavilion, the Wheel, Wrigley Field
+  portland/ main.js landmarks.js             Portland: the bridges, the sign, the gate, the submarine, the tram
   nyc/      main.js landmarks.js             New York: Liberty, the suspension bridges, One World Trade
   city17/   main.js landmarks.js combine.js  City 17: the Citadel and the occupation
   nightcity/ main.js landmarks.js neon.js    Night City: the ziggurat and the night stage
@@ -424,7 +425,10 @@ spaghetti and City 17's viaduct was invisible from the street. One reversed wind
 
 ### What the engine shares, and what a page owns
 
-The engine in `src/chicago/` is run by every city page, so nothing that belongs to one city is in it.
+The engine in `src/engine/` is run by every city page, so nothing that belongs to one city is in it.
+It lived in `src/chicago/` until it was shared by eleven places, which made every one of them import
+`../chicago/build.js` to build somewhere that is not Chicago; it is its own folder now and Chicago is a
+page beside the others.
 A page hands its own work to `build()` on `ctx`:
 
 - `ctx.models` — functions returning landmark models. The engine's own table holds what more than one

@@ -1,9 +1,9 @@
 // City 17: entry point for city17.html. Fan work — the city is generated, not surveyed, and every shape is this
 // project's own low-poly geometry modelled from the silhouettes; no game assets are used. Half-Life 2 belongs to Valve.
-// The engine is the one Chicago and Portland share (src/chicago/build.js, assembled from src/chicago/stages/);
+// The engine is the one Chicago and Portland share (src/engine/build.js, assembled from src/engine/stages/);
 // tools/make-city17.py writes data/cities/city17-osm.json and data/cities/city17.json holds the rest.
 import {report,LOAD,configureLoading,installErrorHandlers} from '../core/diag.js';
-import {build} from '../chicago/build.js';
+import {build} from '../engine/build.js';
 import {landmarks} from './landmarks.js';
 import {combine} from './combine.js';
 installErrorHandlers();window.LOAD=LOAD;

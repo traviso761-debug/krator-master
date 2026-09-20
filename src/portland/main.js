@@ -1,7 +1,7 @@
-// Portland: entry point for portland.html. The city engine is shared with Chicago (src/chicago/build.js, assembled from
-// src/chicago/stages/); only the data differ: data/cities/portland.json and portland-osm.json.
+// Portland: entry point for portland.html. The city engine is shared with Chicago (src/engine/build.js, assembled from
+// src/engine/stages/); only the data differ: data/cities/portland.json and portland-osm.json.
 import {report,LOAD,configureLoading,installErrorHandlers} from '../core/diag.js';
-import {build} from '../chicago/build.js';
+import {build} from '../engine/build.js';
 import {landmarks} from './landmarks.js';
 installErrorHandlers();window.LOAD=LOAD;
 configureLoading({prefix:'raising Portland… ',labels:{'map-data':'reading the map',ground:'laying out the streets',buildings:'raising the buildings',details:'planting the trees',landmarks:'placing the landmarks',el:'running the MAX',traffic:'starting the traffic',ui:'opening the windows'}});

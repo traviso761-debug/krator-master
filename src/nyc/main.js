@@ -1,7 +1,7 @@
-// New York: entry point for nyc.html. The city engine is shared with Chicago (src/chicago/build.js, assembled from
-// src/chicago/stages/); only the data differ: data/cities/nyc.json and nyc-osm.json, built from OpenStreetMap.
+// New York: entry point for nyc.html. The city engine is shared with Chicago (src/engine/build.js, assembled from
+// src/engine/stages/); only the data differ: data/cities/nyc.json and nyc-osm.json, built from OpenStreetMap.
 import {report,LOAD,configureLoading,installErrorHandlers} from '../core/diag.js';
-import {build} from '../chicago/build.js';
+import {build} from '../engine/build.js';
 import {landmarks} from './landmarks.js';
 installErrorHandlers();window.LOAD=LOAD;
 configureLoading({prefix:'raising New York… ',labels:{'map-data':'reading the map',ground:'laying out the grid',buildings:'raising the towers',details:'planting the trees',landmarks:'placing the landmarks',el:'running the trains',traffic:'starting the traffic',ui:'opening the windows'}});

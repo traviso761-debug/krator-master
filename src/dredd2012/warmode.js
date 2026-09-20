@@ -4,7 +4,7 @@
 // no windows, no way in and no way out for anyone already inside. In the film that is done to one block, by
 // one person, and the whole story follows from it - so the toggle here seals one block, not the sector.
 // No other city on the site has any of this, so it is not part of the shared engine: dredd2012.html hands it
-// to build() through ctx.extras (see src/chicago/stages/06f-extras.js) and every other page is none the wiser.
+// to build() through ctx.extras (see src/engine/stages/06f-extras.js) and every other page is none the wiser.
 // It still builds nothing unless the city config carries a "warMode" block.
 import { mkRng } from '../core/rng.js';
 

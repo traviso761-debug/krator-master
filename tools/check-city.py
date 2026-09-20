@@ -30,7 +30,7 @@ def models_for(city):
     """Every model this city may name. The shared engine holds what more than one city uses; the rest live with
     the city's own page (src/<city>/landmarks.js) and are handed to the engine as ctx.models, so both are read."""
     found = set()
-    for p in (os.path.join(ROOT, "src", "chicago", "stages", "04-landmarks.js"),
+    for p in (os.path.join(ROOT, "src", "engine", "stages", "04-landmarks.js"),
               os.path.join(ROOT, "src", city, "landmarks.js")):
         try:
             src = open(p, encoding="utf-8").read()
