@@ -128,14 +128,20 @@ Manhattan from the Battery to the north end of Central Park, on the Chicago engi
 76,930 buildings, 14,215 streets, 22,500 trees, over a 7.9 × 11.1 km map.
 
 - **From the map:** every building at its mapped height, including the towers OSM models as stacks of
-  parts — the Empire State's mast, One World Trade's spire, the pencil towers on 57th Street. Central
-  Park with its lakes and reservoir, the avenue grid, the piers, the bridges to Brooklyn and Queens.
+  parts — the Empire State's mast, the pencil towers on 57th Street. Central Park with its lakes and
+  reservoir, the avenue grid, the piers, the bridges to Brooklyn and Queens.
 - **Tidal water:** Manhattan's shores are `natural=coastline` in OSM, not water areas, and its land is
   cut by the map box so it never closes into a ring. The city sets `seaLevelWater`, which floods the
   whole box at sea level and lets the elevation grid draw the island. The engine's water lookup asks the
   ground as well as the polygon, so nothing thinks it is standing in the river.
 - **Added on top:** the Chrysler and Woolworth spires, the suspension towers and cables of the Brooklyn,
   Manhattan and Williamsburg bridges, and the Statue of Liberty out in the harbour.
+- **One World Trade Center** is built rather than extruded. The map has it as a square with a triangle
+  glued to each side, all five run up to 417 m, which is a slab with a pin on top; the building is a
+  windowless cube for its first twenty storeys and then eight tapering triangles, so the section is a
+  square at the foot, a regular octagon at half height and a square again at the parapet, turned 45°
+  from the one it started as, with 124 m of mast above that. The landmark carries `"clear"`, which drops
+  the mapped parts so the model has the site to itself.
 
 Data: `python3 tools/fetch-osm.py nyc`, `python3 tools/fetch-terrain.py nyc`, then `python3 tools/build-osm-city.py nyc`.
 
