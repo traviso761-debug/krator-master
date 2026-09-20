@@ -150,3 +150,4 @@ section('streets',()=>{
       const h=new THREE.Mesh(new THREE.BoxGeometry(8,10,8),houseM);h.position.set(x,groundH(x,z)+5,z);h.rotation.y=ang;h.castShadow=true;const rf=new THREE.Mesh(new THREE.ConeGeometry(6.2,3,4),roofM);rf.position.set(x,groundH(x,z)+11.5,z);rf.rotation.y=ang+Math.PI/4;scene.add(h,rf);nh++;}}
   ctx.details=Object.assign(ctx.details||{},{bridges:BRIDGES.length,bridgeHouses:nh});
 });
+Object.assign(API,{col,stoneM,steelM,gY});

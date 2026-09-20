@@ -3,7 +3,11 @@
 // and every shape is this project's own. It is a country rather than a city — 680 by 560 km — on the same engine.
 import {report,LOAD,configureLoading,installErrorHandlers} from '../core/diag.js';
 import {build} from '../chicago/build.js';
+import {landmarks} from './landmarks.js';
+import {forges} from './forges.js';
+import {hosts} from './hosts.js';
 installErrorHandlers();window.LOAD=LOAD;
 configureLoading({prefix:'raising Mordor… ',labels:{'map-data':'reading the land',ground:'raising the mountains',buildings:'setting the camps',details:'ash and stone',landmarks:'opening the Eye',el:'',traffic:'',ui:'opening the windows'}});
-const ctx=window._iz={defaultCity:'mordor'};
+// the Eye, the Black Gate, the works and the hosts are Mordor's own, and reach the engine only through here
+const ctx=window._iz={defaultCity:'mordor',models:[landmarks],extras:[{name:'forges',fn:forges},{name:'hosts',fn:hosts}]};
 requestAnimationFrame(()=>setTimeout(()=>{build(ctx).catch(e=>{report('build',e);const l=document.getElementById('loading');if(l)l.remove();});},30));

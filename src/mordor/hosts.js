@@ -1,6 +1,11 @@
 // ---------- what moves in Mordor: the hosts marching the roads, the Nazgul over the plateau, and the lightning
-// in the pall. Only a city whose config has a "hosts" block runs any of it. ----------
-section('hosts',()=>{
+// in the pall. Nowhere else on the site marches, so it travels with this page instead of with the shared engine,
+// and nothing is built unless the city config carries a "hosts" block. ----------
+import { mkRng } from '../core/rng.js';
+
+export function hosts(api){
+  const {THREE,C,ctx,B,ROADS,scene,camera,animHooks,groundH,joinChains,polyAt,polyLen}=api;
+
   const K=C.hosts;if(!K)return;
   const HR=mkRng(6626),D=new THREE.Object3D();
   const ironM=new THREE.MeshLambertMaterial({color:0x1e1c1a});
@@ -111,4 +116,4 @@ section('hosts',()=>{
   ctx.hostAt=()=>armies.map(a=>[Math.round(a.g.position.x),Math.round(a.g.position.z)]);   // for aiming a camera
   ctx.details=Object.assign(ctx.details||{},{hostAt:armies.slice(0,2).map(a=>Math.round(a.g.position.x)+','+Math.round(a.g.position.z)).join(' | '),hosts:armies.length,
     hostStrength:armies.reduce((s,a)=>s+(K.perArmy||4000),0),nazgul:riders.length});
-});
+}

@@ -1,11 +1,19 @@
 // ---------- buildings: every OpenStreetMap footprint extruded to its mapped height (or its levels), 3D parts where they are mapped,
 // windows that light at dusk, storefront glass along the shopping streets; merged into 500 m tiles ----------
 await stage('buildings');
-function winTex(glow,cols,rows,seed){const cv=document.createElement('canvas');cv.width=cv.height=128;const g=cv.getContext('2d');g.fillStyle=glow?'#000':'#f4f2ee';g.fillRect(0,0,128,128);
-  const R=mkRng(seed),cw=128/cols,rh=128/rows;for(let j=0;j<rows;j++)for(let i=0;i<cols;i++){const lit=R()<0.5;g.fillStyle=glow?(lit?`rgb(${220+R()*35},${190+R()*50},${130+R()*70})`:'#000'):`rgb(${50+R()*25},${62+R()*25},${78+R()*25})`;g.fillRect(i*cw+cw*0.18,j*rh+rh*0.18,cw*0.64,rh*0.6);}
+// A window pattern, tiled a bay wide and a floor high. The lit ones are not all the same brightness: a face
+// seen from two streets away is the texture's own mip, and if every window on it is the same bright orange
+// that mip is one flat slab of light where a city should be a scatter. Varying them, and lighting rather
+// fewer than half, is what keeps a distant wall reading as windows instead of a lamp.
+function winTex(glow,cols,rows,seed){const N=256,cv=document.createElement('canvas');cv.width=cv.height=N;const g=cv.getContext('2d');g.fillStyle=glow?'#000':'#f4f2ee';g.fillRect(0,0,N,N);
+  const R=mkRng(seed),cw=N/cols,rh=N/rows;for(let j=0;j<rows;j++)for(let i=0;i<cols;i++){
+    const lit=R()<0.38,k=lit?0.35+R()*0.65:0;
+    g.fillStyle=glow?(lit?`rgb(${Math.round((205+R()*45)*k)},${Math.round((172+R()*54)*k)},${Math.round((118+R()*70)*k)})`:'#000')
+                    :`rgb(${50+R()*25},${62+R()*25},${78+R()*25})`;
+    g.fillRect(i*cw+cw*0.2,j*rh+rh*0.2,cw*0.6,rh*0.56);}
   const t=new THREE.CanvasTexture(cv);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=8;return t;}
 // two window rhythms: towers (narrow bays, every floor) and low buildings (wider bays)
-const towerTex=winTex(false,4,4,5),towerGlow=winTex(true,4,4,6),lowTex=winTex(false,2,2,9),lowGlow=winTex(true,2,2,10);
+const towerTex=winTex(false,4,4,5),towerGlow=winTex(true,4,4,6),lowTex=winTex(false,4,4,9),lowGlow=winTex(true,4,4,10);
 // footprints come in either winding, so faces are drawn from both sides and each building's normals are pointed outwards explicitly
 const towerM=new THREE.MeshLambertMaterial({vertexColors:true,map:towerTex,emissiveMap:towerGlow,emissive:0x000000,side:THREE.DoubleSide});
 const lowM=new THREE.MeshLambertMaterial({vertexColors:true,map:lowTex,emissiveMap:lowGlow,emissive:0x000000,side:THREE.DoubleSide});
@@ -41,6 +49,13 @@ function gableRoof(rf,ring,cx,cz,h,shingle,wall){let sxx=0,szz=0,sxz=0;for(const
   const sl=shingle,sl2=shingle.clone().multiplyScalar(0.8);
   tri(A,Bp,R1,sl);tri(A,R1,R0,sl);tri(D,R0,R1,sl2);tri(D,R1,Cp,sl2);tri(A,R0,D,wall);tri(Bp,Cp,R1,wall);}
 const REPLACED=new Set(C.landmarks.flatMap(l=>l.replace||[]).map(s=>s.toLowerCase()));
+// Some landmarks are modelled in the landmarks stage instead of extruded, because their shape is not a
+// footprint pushed upwards: One World Trade is mapped as a square with a triangle glued to each side, all five
+// of them run up to 417 m, which builds a slab. A landmark carrying "clear":[radius, minHeight] drops every
+// mapped footprint whose middle falls inside that circle and which stands taller than minHeight, so the model
+// has the site to itself while the low buildings round its plaza stay where the map put them.
+const CLEARED=C.landmarks.filter(l=>Array.isArray(l.clear)).map(l=>{const [x,z]=P(l.at);return {x,z,r:l.clear[0],h:l.clear[1]||0};});
+const cleared=(cx,cz,h)=>CLEARED.length>0&&CLEARED.some(c=>h>=c.h&&Math.hypot(cx-c.x,cz-c.z)<=c.r);
 const HEIGHT_FIX=C.landmarks.filter(l=>l.height||l.colour).map(l=>{const [x,z]=P(l.at);return {x,z,h:l.height||0,c:l.colour?col(l.colour):null,have:0};});   // known heights and colours for landmarks whose OSM tags are missing or wrong
 // A height fix exists for towers the map gets wrong, but many are mapped properly as a stack of parts with a low
 // outline at street level. Raising that outline to the tower's height buries the real massing inside one box
@@ -48,6 +63,7 @@ const HEIGHT_FIX=C.landmarks.filter(l=>l.height||l.colour).map(l=>{const [x,z]=P
 // the map already carries something near the height it was going to force.
 if(HEIGHT_FIX.length){for(const b of OSM.buildings){const p=b.p;let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9;
     for(let i=0;i+1<p.length;i+=2){const px=p[i]/10,pz=p[i+1]/10;if(px<x0)x0=px;if(px>x1)x1=px;if(pz<z0)z0=pz;if(pz>z1)z1=pz;}
+    if(cleared((x0+x1)/2,(z0+z1)/2,b.h||0))continue;   // a footprint that is not going to be drawn cannot vouch for a height
     let ring=null;
     for(const f of HEIGHT_FIX){if(!f.h||f.x<x0||f.x>x1||f.z<z0||f.z>z1||(b.h||0)<=f.have)continue;
       if(!ring){ring=[];for(let i=0;i+1<p.length;i+=2)ring.push([p[i]/10,p[i+1]/10]);}
@@ -63,13 +79,14 @@ section('buildings',()=>{
   const tiles=new Map();
   const TSZ=800*WORLD;const T=(x,z)=>{const k=Math.floor(x/TSZ)+','+Math.floor(z/TSZ);let t=tiles.get(k);if(!t){t={walls:{tower:{p:[],n:[],u:[],c:[],idx:[],own:[]},low:{p:[],n:[],u:[],c:[],idx:[],own:[]},blank:{p:[],n:[],u:[],c:[],idx:[],own:[]}},roof:{p:[],n:[],c:[],idx:[]},roofLow:{p:[],n:[],c:[],idx:[]},shop:{p:[],n:[],idx:[]}};tiles.set(k,t);}return t;};
   const MAIN=new Set(['primary','secondary','tertiary','pedestrian','trunk']);
-  let n=0,stores=0,skippedStadium=0;
+  let n=0,stores=0,skippedStadium=0,skippedCleared=0;
   for(const b of OSM.buildings){const ring=dec(b.p);if(ring.length<3)continue;
     const name=(b.n||'').toLowerCase();if(name&&REPLACED.has(name))continue;
     let cx=0,cz=0;for(const [x,z] of ring){cx+=x;cz+=z;}cx/=ring.length;cz/=ring.length;
     if(!inMap(cx,cz,0))continue;
     // stadiums are drawn as bowls elsewhere; skip their solid outlines
     if(b.t==='stadium'||STADIUMS.some(s=>Math.hypot(s.xz[0]-cx,s.xz[1]-cz)<120&&Math.abs(polyArea(ring))>6000)){skippedStadium++;continue;}
+    if(cleared(cx,cz,b.h||0)){skippedCleared++;continue;}   // modelled properly in the landmarks stage instead
     const g0=groundMin(ring);let h=g0+b.h,fixC=null;const m0=g0+(b.m||0);   // the lowest ground under the footprint: the building stands on it
     for(const f of HEIGHT_FIX)if(Math.abs(f.x-cx)<120&&Math.abs(f.z-cz)<120&&inPoly(f.x,f.z,ring)){if(!f.skip&&h-g0<f.h*0.6)h=g0+f.h;if(f.c)fixC=f.c;}
     const hsh=hash3(cx,cz,3),c=fixC||colourOf(b,h-g0,hsh),tall=h-g0>30,W=BLANK_T.has(b.t)?'blank':(tall?'tower':'low'),t=T(cx,cz),wb=t.walls[W];
@@ -107,9 +124,10 @@ section('buildings',()=>{
     const s=mk(t.shop,shopM,false);if(s){s.castShadow=false;far(s,1500*WORLD);}}
   ctx.lotList=[];for(const a of BGRID.values())for(const r of a)if(!r._fp){r._fp=1;ctx.lotList.push({x:(r.x0+r.x1)/2,z:(r.z0+r.z1)/2,w:r.x1-r.x0,dpt:r.z1-r.z0,h:r.h,ry:0,kind:'osm',fixed:false});}   // the test fingerprint: every drawn footprint
   ctx.lotList.sort((p,q)=>p.x-q.x||p.z-q.z);ctx.lots=ctx.lotList.length;
-  ctx.details=Object.assign(ctx.details||{},{buildingsDrawn:n,storefronts:stores,stadiumOutlinesSkipped:skippedStadium,heightFixesDropped:HEIGHT_FIX.filter(f=>f.skip).length,tiles:tiles.size});
+  ctx.details=Object.assign(ctx.details||{},{buildingsDrawn:n,storefronts:stores,stadiumOutlinesSkipped:skippedStadium,modelledOutlinesSkipped:skippedCleared,heightFixesDropped:HEIGHT_FIX.filter(f=>f.skip).length,tiles:tiles.size});
 });
 // which named building a click hit: the wall triangle index maps back to the building that made it
 function buildingAt(hit){const pk=hit.object.userData.pick;if(!pk)return null;const tri=hit.faceIndex*3;return BUILDINGS.find(b=>b.tile===pk.tile&&b.kind===pk.kind&&tri>=b.start&&tri<b.end)||null;}
 // windows and storefronts come on at dusk
 animHooks.push(()=>{const w=windowF(hourCur);towerM.emissive.setRGB(w,w*0.92,w*0.8);lowM.emissive.setRGB(w*0.9,w*0.8,w*0.62);shopM.emissive.setRGB(w*0.6,w*0.52,w*0.34);});
+Object.assign(API,{roofAt,buildingsAt,towerM,lowM,blankM,roofM,PALETTE});

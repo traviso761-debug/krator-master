@@ -66,3 +66,4 @@ if(C.smog){const S=C.smog,base=S.height||90;
 let hourCur=HOUR0;
 animHooks.push(now=>{hourCur=hourNow(clockPaused?pausedAt:now-clockOffset);ctx.hour=hourCur;ENV.izTime.value=now/1000;lerpSky(hourCur);});
 lerpSky(HOUR0);
+Object.assign(API,{scene,camera,renderer,sun,ambient,hemi,sky,ENV,nightF,windowF,hour:()=>hourCur});

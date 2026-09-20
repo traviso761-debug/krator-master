@@ -1,7 +1,12 @@
-// ---------- the occupation: striders walking the prospects, manhacks in the streets, dropships carrying troop pods,
-// armoured carriers on the arterials, and the barriers and field gates that close off everything else.
-// Only a city whose config has a "combine" block gets any of this; every other city skips the section. ----------
-section('combine',()=>{
+// ---------- the occupation: striders walking the prospects, manhacks in the streets, dropships carrying troop
+// pods, armoured carriers on the arterials, and the barriers and field gates that close off everything else.
+// City 17 is the only place on the site under occupation, so this travels with its page instead of with the
+// shared engine, and nothing is built unless the city config carries a "combine" block. ----------
+import { mkRng } from '../core/rng.js';
+
+export function combine(api){
+  const {THREE,C,ctx,P,WORLD,scene,animHooks,AREAS,ROADS,FOCUS,box,groundH,inMap,inWater,joinChains,polyAt,polyLen,tiledInstances}=api;
+
   const K=C.combine;if(!K)return;
   const CBR=mkRng(8817),rnd2=(a,b)=>a+(b-a)*CBR();
   const cm=new THREE.MeshPhongMaterial({color:0x3a4048,specular:0x70808f,shininess:16,flatShading:true});
@@ -247,4 +252,4 @@ section('combine',()=>{
 
   ctx.details=Object.assign(ctx.details||{},{scanners:scanners.length,smartBarriers:smart.length,turrets,trashFires:fires,debris,striders:striders.length,manhacks:manhacks.length,dropships:ships.length,
     carriers:apcs.length,barriers,fieldGates:fields,sentryPosts:posts,queueing:queued});
-});
+}

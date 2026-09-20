@@ -1,7 +1,12 @@
 // ---------- the night city: neon on every facade, billboards and holograms over the street, flying traffic in
-// its lanes, flare stacks out on the flats, steam off the gratings, and rain. Only a city whose config has a
-// "neon" block gets any of this; every other city skips the section. ----------
-section('neon',()=>{
+// its lanes, flare stacks out on the flats, steam off the gratings, and rain. Night City is the only city that
+// lives like this, so it travels with its own page instead of with the shared engine, and nothing is built
+// unless the city config carries a "neon" block. ----------
+import { mkRng } from '../core/rng.js';
+
+export function neon(api){
+  const {THREE,C,ctx,B,scene,camera,animHooks,AREAS,ROADS,box,col,groundH,roofAt,inMap,inWater,nightF,hour}=api;
+
   const N=C.neon;if(!N)return;
   const NR=mkRng(7749),D=new THREE.Object3D(),cc=new THREE.Color();
   // the palette: nothing here is white. Signage is sodium, magenta, cyan and a sick green.
@@ -32,14 +37,72 @@ section('neon',()=>{
   ctx.cjk=CJK_OK;
   function texFrom(c){const t=new THREE.CanvasTexture(c);t.anisotropy=8;t.needsUpdate=true;return t;}
   // a wide sign: the name across it, lit from behind, with the tube glow bleeding into the panel
-  function signTex(text,hex){const W=384,H=192,c=cv(W,H),g=c.getContext('2d');
-    g.fillStyle=hex;g.fillRect(0,0,W,H);
-    g.fillStyle='rgba(0,0,0,0.34)';g.fillRect(0,0,W,H);
-    g.strokeStyle='rgba(0,0,0,0.55)';g.lineWidth=10;g.strokeRect(6,6,W-12,H-12);
-    let size=Math.min(92,Math.floor(720/Math.max(4,text.length))+20);
-    g.font='800 '+size+'px "DejaVu Sans","Helvetica Neue",Arial,sans-serif';
+  // A brand's own colour, and for a few of them a simple mark. These are drawn here from primitives - they
+  // are this project's own renditions in the spirit of each sign, not copies of anyone's trademark artwork,
+  // which is not something to reproduce even for a company that no longer trades.
+  const BRAND={
+    'ATARI':['#d8232a','bars'],'ENRON':['#2f6fbf','bars'],'PAN AM':['#1257a8','globe'],
+    'BLOCKBUSTER':['#ffcf1a','ticket'],'COMPAQ':['#e4002b',''],'NETSCAPE':['#1f9e4f','disc'],
+    'POLAROID':['#e04a2f','frame'],'WOOLWORTH':['#c8102e',''],'LEHMAN BROS':['#4a6f9e',''],
+    'TWA':['#d0021b','arrow'],'RCA':['#b8232f','disc'],'COMMODORE':['#3f7fc0','chev'],
+    'SUN MICRO':['#8a4f9e',''],'BORDERS':['#2f8a5e',''],'TOWER RECORDS':['#ffcf1a',''],
+    'PALM':['#ff8a2b','disc'],'WANG':['#4a7fbf',''],'CIRCUIT CITY':['#e4002b','arrow'],
+    'RADIOSHACK':['#d2232a','bars'],'GATEWAY':['#cfcfcf','spots'],'NAPSTER':['#2aa3e0','disc'],
+    'NORTEL':['#8a5fc0','disc'],'WORLDCOM':['#3f6fc0','globe'],'PETS.COM':['#2f8ad0',''],
+    'KODAK':['#ffcf1a','frame'],'BRANIFF':['#ff6a2b','arrow'],'EASTERN AIR':['#3f7fa8','arrow'],
+    'OLDSMOBILE':['#b8b0a0','chev'],'PONTIAC':['#c8302a','arrow'],'STUDEBAKER':['#a8b0bf','chev'],
+    'ZENITH':['#cfcfcf','bars'],'AIWA':['#cfd6e0',''],'MINOLTA':['#2f6fbf',''],'AMPEX':['#cfcfcf','bars'],
+    'ALTAVISTA':['#2f8ad0',''],'GEOCITIES':['#3f9e6f','globe'],'FRIENDSTER':['#3f7fc0','spots'],
+    'SEGWAY':['#cfcfcf',''],'TOYS R US':['#2f8ad0','spots'],'DE LOREAN':['#b8bec8','chev'],
+    'ARTHUR ANDERSEN':['#c8a04a',''],'BEAR STEARNS':['#4a6f9e',''],'SHARPER IMAGE':['#b8b0a0',''],
+    'PULLMAN':['#8a6a4a',''],'TOWER':['#ffcf1a',''],'NORTHERN TELECOM':['#8a5fc0','']};
+  function emblem(g,kind,cx2,cy2,r,col){g.save();g.fillStyle=col;g.strokeStyle=col;g.lineWidth=r*0.17;
+    if(kind==='bars'){for(let i=-1;i<=1;i++){g.beginPath();
+      g.moveTo(cx2+i*r*0.46,cy2+r);g.quadraticCurveTo(cx2+i*r*0.9,cy2,cx2+i*r*0.46,cy2-r);g.stroke();}}
+    else if(kind==='globe'){g.beginPath();g.arc(cx2,cy2,r,0,7);g.stroke();
+      for(let i=-1;i<=1;i++){g.beginPath();g.ellipse(cx2,cy2,r*Math.abs(0.36+i*0.3)||r*0.2,r,0,0,7);g.stroke();}
+      g.beginPath();g.moveTo(cx2-r,cy2);g.lineTo(cx2+r,cy2);g.stroke();}
+    else if(kind==='disc'){g.beginPath();g.arc(cx2,cy2,r,0,7);g.stroke();
+      g.beginPath();g.arc(cx2,cy2,r*0.36,0,7);g.fill();}
+    else if(kind==='arrow'){g.beginPath();g.moveTo(cx2-r,cy2+r*0.5);g.lineTo(cx2+r,cy2-r*0.2);
+      g.lineTo(cx2+r*0.2,cy2-r*0.75);g.closePath();g.fill();}
+    else if(kind==='chev'){for(let i=0;i<2;i++){g.beginPath();g.moveTo(cx2-r,cy2+r*0.5-i*r*0.6);
+      g.lineTo(cx2,cy2-r*0.3-i*r*0.6);g.lineTo(cx2+r,cy2+r*0.5-i*r*0.6);g.stroke();}}
+    else if(kind==='ticket'){g.fillRect(cx2-r,cy2-r*0.62,r*2,r*1.24);
+      g.fillStyle='#0a0a0c';g.fillRect(cx2-r*0.66,cy2-r*0.3,r*1.32,r*0.6);}
+    else if(kind==='frame'){g.lineWidth=r*0.26;g.strokeRect(cx2-r,cy2-r*0.74,r*2,r*1.48);}
+    else if(kind==='spots'){for(let i=0;i<4;i++){g.beginPath();
+      g.arc(cx2-r*0.6+ (i%2)*r*1.2, cy2-r*0.45+Math.floor(i/2)*r*0.9, r*0.32,0,7);g.fill();}}
+    g.restore();}
+  // fit the name to the panel: measure it, drop the size until it fits, and break it over two lines if that
+  // lets it sit bigger. It used to guess the size from the letter count and ran straight off the edge.
+  function fitLines(g,text,maxW,maxH,weight){
+    const tries=[[text]];
+    const sp=text.lastIndexOf(' ');
+    if(sp>0)tries.push([text.slice(0,sp),text.slice(sp+1)]);
+    let best=null;
+    for(const lines of tries){
+      let lo=10,hi=110,fit=10;
+      while(lo<=hi){const mid=(lo+hi)>>1;
+        g.font=weight+' '+mid+'px "DejaVu Sans","Helvetica Neue",Arial,sans-serif';
+        const w=Math.max(...lines.map(l=>g.measureText(l).width)),h=mid*1.16*lines.length;
+        if(w<=maxW&&h<=maxH){fit=mid;lo=mid+1;}else hi=mid-1;}
+      if(!best||fit*(lines.length===1?1.04:1)>best.size)best={lines,size:fit};}
+    return best;}
+  function signTex(text,hex){const W=512,H=256,c=cv(W,H),g=c.getContext('2d');
+    const br=BRAND[text]||[hex,''],col=br[0],mark=br[1];
+    g.fillStyle=col;g.fillRect(0,0,W,H);
+    g.fillStyle='rgba(0,0,0,0.36)';g.fillRect(0,0,W,H);
+    g.strokeStyle='rgba(0,0,0,0.5)';g.lineWidth=12;g.strokeRect(7,7,W-14,H-14);
+    const hasMark=!!mark,textX=hasMark?W*0.60:W/2,maxW=(hasMark?W*0.70:W*0.86);
+    const fit=fitLines(g,text,maxW,H*0.62,'800');
     g.textAlign='center';g.textBaseline='middle';
-    g.shadowColor='#000';g.shadowBlur=14;g.fillStyle='#fffdf6';g.fillText(text,W/2,H/2);
+    g.shadowColor='#000';g.shadowBlur=16;g.fillStyle='#fffdf6';
+    g.font='800 '+fit.size+'px "DejaVu Sans","Helvetica Neue",Arial,sans-serif';
+    const n=fit.lines.length,step=fit.size*1.16;
+    fit.lines.forEach((l,i)=>g.fillText(l,textX,H/2+(i-(n-1)/2)*step));
+    g.shadowBlur=0;
+    if(hasMark)emblem(g,mark,W*0.20,H/2,H*0.26,'#fffdf6');
     return texFrom(c);}
   // a blade sign: characters stacked down a panel that sticks out over the street
   // The whole panel is lit, with the characters knocked out of it. Bright glyphs on a dark panel look right
@@ -168,7 +231,7 @@ section('neon',()=>{
        const sm=[];for(let q=0;q<4;q++){const p=new THREE.Mesh(new THREE.SphereGeometry(7,7,5),smokeM);p.position.set(px,gy+H,pz);scene.add(p);sm.push(p);}
        const lamp=new THREE.PointLight(0xff7a20,0,260);lamp.position.set(px,gy+H+8,pz);scene.add(lamp);
        fires.push({fl,sm,px,pz,gy,H,lamp,ph:NR()*6.28});flares++;}}
-   if(fires.length)animHooks.push(now=>{const n=nightF(hourCur);
+   if(fires.length)animHooks.push(now=>{const n=nightF(hour());
      for(const f of fires){const k=0.65+0.35*Math.sin(now*0.009+f.ph)+0.18*Math.sin(now*0.023+f.ph*2);
        f.fl.scale.set(0.75+0.35*k,k,0.75+0.35*k);f.lamp.intensity=(0.5+0.6*n)*k;
        f.sm.forEach((p,i)=>{const t=((now/6000)+i/4+f.ph)%1;p.position.set(f.px+t*40,f.gy+f.H+8+t*90,f.pz+t*16);p.scale.setScalar(1+t*3.6);});}
@@ -203,7 +266,7 @@ section('neon',()=>{
        pos[i*6+1]=y;pos[i*6+4]=y-len[i];}
      g.attributes.position.needsUpdate=true;
      streaks.position.set(camera.position.x,camera.position.y-TOP*0.5,camera.position.z);
-     rm.opacity=0.12+0.2*nightF(hourCur);});}
+     rm.opacity=0.12+0.2*nightF(hour());});}
 
   // ---- blade signs: the wall of the street is stacked with them, projecting out so you read them end-on ----
   let blades=0;
@@ -315,7 +378,7 @@ section('neon',()=>{
   // everything neon fades back in the daylight it never really gets, scaled from whatever it was built at
   // rather than set outright - a hologram is meant to stay a ghost after dark, not turn into a solid slab
   {const base=lit.map(m=>(m.opacity===undefined?1:m.opacity));
-   animHooks.push(()=>{const n=0.35+0.65*nightF(hourCur);
+   animHooks.push(()=>{const n=0.35+0.65*nightF(hour());
      lit.forEach((m,i)=>{if(m.transparent)m.opacity=base[i]*n;});});}
-  ctx.details=Object.assign(ctx.details||{},{neonSigns:signs,billboards:boards.length,bladeSigns:blades,lanterns,awnings,antennas:masts,spinners:spinners.length,flares,cjkFonts:CJK_OK});
-});
+  ctx.details=Object.assign(ctx.details||{},{neonSigns:signs,billboards:boards.length,billboardAt:boards.slice(0,6).map(b=>b.at.join(',')).join(' | '),bladeSigns:blades,lanterns,awnings,antennas:masts,spinners:spinners.length,flares,cjkFonts:CJK_OK});
+}

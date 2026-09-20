@@ -1,7 +1,12 @@
 // ---------- the works: furnace stacks over every forge-town, mine and camp the map marks, each with its fire and
-// its column of smoke. This is what the land is for, and at a distance the smoke is the only way you know the towns
-// are there at all. Only a city whose config has a "forges" block runs it. ----------
-section('forges',()=>{
+// its column of smoke. This is what the land is for, and at a distance the smoke is the only way you know the
+// towns are there at all. Only Mordor is built this way, so it travels with its own page instead of with the
+// shared engine, and nothing is built unless the city config carries a "forges" block. ----------
+import { hash3, mkRng } from '../core/rng.js';
+
+export function forges(api){
+  const {THREE,C,ctx,POIS,scene,camera,animHooks,box,col,group,groundH,nightF,hour}=api;
+
   const F=C.forges;if(!F)return;
   const FR=mkRng(9931),D=new THREE.Object3D();
   const KINDS=new Set(F.kinds||['forge','mine','camp']);
@@ -41,7 +46,7 @@ section('forges',()=>{
   }
   const RISE=F.rise||1400,DRIFT=F.drift||2600;
   animHooks.push(now=>{
-    const nf=nightF(hourCur),burn=0.7+0.3*Math.sin(now*0.0016);
+    const nf=nightF(hour()),burn=0.7+0.3*Math.sin(now*0.0016);
     fireM.opacity=(0.55+0.4*nf)*burn;mouthM.opacity=(0.45+0.45*nf)*burn;
     for(const q of fires){const k=0.6+0.5*Math.sin(now*0.007+q.ph);q.fl.scale.set(0.8+0.3*k,k,0.8+0.3*k);}
     for(const c of columns)for(let i=0;i<c.col.length;i++){const p=c.col[i];
@@ -64,7 +69,7 @@ section('forges',()=>{
      const gl=new THREE.Mesh(new THREE.SphereGeometry(len*0.45,8,6),glowM);
      gl.scale.set(1,0.3,0.4);gl.position.set(p.x,gy+len*0.06,p.z);gl.userData.noShadow=true;scene.add(gl);
      glows.push({gl,ph:FR()*6.28});fissures++;}
-   if(fissures)animHooks.push(now=>{const n=nightF(hourCur);
+   if(fissures)animHooks.push(now=>{const n=nightF(hour());
      crackM.opacity=0.7+0.25*Math.sin(now*0.0013);
      glowM.opacity=(0.08+0.12*n)*(0.7+0.3*Math.sin(now*0.0009));
      for(const q of glows)q.gl.scale.y=0.26+0.1*Math.sin(now*0.0017+q.ph);});}
@@ -85,4 +90,4 @@ section('forges',()=>{
      pts.position.set(camera.position.x,camera.position.y-TOP*0.5,camera.position.z);});}
 
   ctx.details=Object.assign(ctx.details||{},{forgeTowns:towns.size,forgeStacks:nStack,fissures});
-});
+}
