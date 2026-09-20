@@ -1,0 +1,123 @@
+{
+ "name": "Venice",
+ "note": "The historic centre from OpenStreetMap, on the shared engine. Venice inverts everything the engine assumes: the canals are the street network and the calli are the exception, every building is its own quay, and the ground is at sea level or under it. Data (c) OpenStreetMap contributors, ODbL.",
+ "origin": [
+  45.434,
+  12.335
+ ],
+ "defaultSeed": 1797,
+ "defaultHour": 8.6,
+ "defaultView": "The Bacino from the water",
+ "bounds": [
+  45.418,
+  12.302,
+  45.452,
+  12.368
+ ],
+ "osm": "data/cities/venice-osm.json",
+ "attribution": "Venice: map data (c) OpenStreetMap contributors, ODbL. Built by tools/build-osm-city.py.",
+ "fetch": {
+  "bbox": [
+   45.418,
+   12.302,
+   45.452,
+   12.368
+  ],
+  "tiles": {
+   "buildings": [
+    3,
+    3
+   ],
+   "roads": [
+    2,
+    2
+   ],
+   "water": [
+    2,
+    2
+   ]
+  },
+  "detailZones": [
+   [
+    45.418,
+    12.302,
+    45.452,
+    12.368
+   ]
+  ],
+  "_": "the whole lagoon city is a detail zone: every building is kept, because there are no tall ones"
+ },
+ "sky": {
+  "day": {
+   "top": "#5d84ae",
+   "hor": "#d9cdb2"
+  },
+  "dusk": {
+   "top": "#2f3a58",
+   "hor": "#d08a4a"
+  },
+  "night": {
+   "top": "#080c18",
+   "hor": "#232a3c"
+  }
+ },
+ "fog": 2.2e-05,
+ "overcast": 0.3,
+ "terrainColours": {
+  "low": "#8d8272",
+  "high": "#8d8272",
+  "steep": "#7c7266",
+  "far": "#6f7d86"
+ },
+ "waterColour": "#4a6b74",
+ "litWindows": 0.6,
+ "streetTrees": 0.15,
+ "parkedCars": 0,
+ "traffic": 0,
+ "people": 1.0,
+ "lowRiseFar": 4000,
+ "bridgeDeck": 1.6,
+ "districts": {
+  "_": "[name, hex colour, base height, tallest, box as [lat south, lon west, lat north, lon east]]",
+  "sanmarco": [
+   "San Marco",
+   "#c2a184",
+   12,
+   22,
+   [
+    45.43,
+    12.33,
+    45.438,
+    12.345
+   ]
+  ],
+  "outer": [
+   "Venice",
+   "#b49780",
+   11,
+   20,
+   [
+    45.418,
+    12.302,
+    45.452,
+    12.368
+   ]
+  ]
+ },
+ "focus": [],
+ "landmarks": [],
+ "views": {
+  "The Bacino from the water": [
+   [
+    45.4277,
+    12.33884,
+    90
+   ],
+   [
+    45.43508,
+    12.33308,
+    20
+   ]
+  ]
+ }
+}

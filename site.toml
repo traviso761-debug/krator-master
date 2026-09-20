@@ -136,6 +136,14 @@ scene = true
 blurb = "Fan work: an occupied Eastern-European city under the Citadel."
 
 [[route]]
+path = "/kyrene"          # a rotating habitat: the ground is the inside of a cylinder
+aliases = ["/hab.html", "/kyrene.html", "/habitat", "/cylinder"]
+file = "hab.html"
+title = "Kyrene: a rotating habitat"
+scene = true
+blurb = "Six kilometres across, nineteen long, and the far side of the country is the sky."
+
+[[route]]
 path = "/krator"           # the Krator primer, built from krator-source.html by tools/build-voth.py
 aliases = ["/krator.html"]
 file = "krator.html"
