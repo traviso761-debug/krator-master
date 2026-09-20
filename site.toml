@@ -112,13 +112,21 @@ scene = true
 blurb = "Fan work: an occupied Eastern-European city under the Citadel."
 
 [[route]]
-path = "/krator"           # the Krator primer, built from voth.html by tools/build-voth.py
-aliases = ["/krator.html", "/voth", "/voth.html"]
+path = "/krator"           # the Krator primer, built from krator-source.html by tools/build-voth.py
+aliases = ["/krator.html"]
 file = "krator.html"
 title = "Krator: A Primer"
 scene = true
 kind = "text"
 blurb = "A primer on Krator: prose, not geometry."
+
+[[route]]
+path = "/voth"             # Voth, City of Cantons: a self-contained page, served as it stands
+aliases = ["/voth.html", "/cantons"]
+file = "voth.html"
+title = "Voth: City of Cantons"
+scene = true
+blurb = "Voth, City of Cantons: a self-contained page of its own."
 
 [[route]]
 path = "/tongue"

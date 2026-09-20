@@ -3,17 +3,17 @@
 
     python3 tools/build-voth.py
 
-voth.html is the source and stays the source: it is plain prose, one line to a paragraph, with the short
+krator-source.html is the source and stays the source: it is plain prose, one line to a paragraph, with the short
 lines being headings. Served as it stands a browser collapses the lot into a single run-on block, so this
 reads it and writes krator.html around it - the same arrangement as the Izani Tongue, where the text is
-kept as text and the page is generated from it. Edit voth.html, run this, reload.
+kept as text and the page is generated from it. Edit krator-source.html, run this, reload.
 """
 import html
 import os
 import re
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SRC = os.path.join(ROOT, "voth.html")
+SRC = os.path.join(ROOT, "krator-source.html")
 OUT = os.path.join(ROOT, "krator.html")
 
 CSS = """
@@ -77,8 +77,12 @@ def main():
 {'<p class="by">' + html.escape(by) + '</p>' if by else ''}
 </header>
 {chr(10).join(out)}
-<footer>Generated from <code>voth.html</code> by <code>tools/build-voth.py</code>. Edit the prose there and run it again.</footer>
+<footer>Generated from <code>krator-source.html</code> by <code>tools/build-voth.py</code>. Edit the prose there and run it again.</footer>
 </main>
+<!-- the way back to the menagerie, and into the other scenes: adds nothing unless a server is answering
+     with /scenes.json (src/core/menagerie.js) -->
+<script type="module">import {{installMenagerie}} from './src/core/menagerie.js';
+installMenagerie({{standalone:true}}).catch(()=>{{}});</script>
 </body>
 </html>
 """
