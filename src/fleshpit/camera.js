@@ -31,10 +31,15 @@ export function descent(api){
   const focusOf=L=>L.focus!==undefined?L.focus:(L.top+L.bottom)/2;
 
   // section: outside the shaft, reading it as a drawing. ride: inside it, near the wall.
-  const S={mode:'surface',depth:0,goal:0,az:1.15,el:0.2,out:620,in:70,held:0,t:0};
+  const S={mode:'surface',depth:0,goal:0,az:1.15,el:0.2,out:K.out||760,in:K.dist||210,held:0,t:0,seen:null};
 
   // ---- the frame ----
   ctx.camFrame=(now,ctl)=>{
+    // A viewpoint button in the engine's own panel sets a fresh fly goal. If this went on overwriting the camera
+    // the panel would simply be dead while the descent was on, so a goal we have not seen before is taken as
+    // what it is - someone asking for the surface camera back - and the pit hands it over.
+    if(ctl.goal&&ctl.goal!==S.seen){S.seen=ctl.goal;if(S.mode!=='surface'&&UI.leave)UI.leave();return;}
+    S.seen=ctl.goal;
     if(S.mode==='surface')return;                  // the engine's own camera, untouched
     const dt=Math.min(0.08,(now-(S.t||now))/1000);S.t=now;
     if(S.held)S.goal=clampD(S.goal+S.held*RIDE*dt);           // W/S held: ride, rather than step
@@ -45,7 +50,14 @@ export function descent(api){
     const r=radiusAt(S.depth);
     ctl.target.set(P.axis?P.axis[0]:0,RIM-S.depth,P.axis?P.axis[1]:0);
     ctl.az=S.az;ctl.el=S.el;ctl.goal=null;
-    ctl.dist=S.mode==='section'?Math.max(r*2.2,S.out):Math.min(S.in,r*0.86);
+    // Inside a shaft you look up it as often as down it, so the engine's floor on the camera's tilt - which is
+    // right for a city, where you are always above what you are looking at - is opened right out here.
+    ctl.elMin=-1.45;ctl.elMax=1.45;
+    // How far off the axis to sit. In section, well outside the widest part of the layer; riding, close in to
+    // the wall but never through it, and never so close that the near plane eats the picture.
+    // Riding, stay inside the well the decks leave open: the Lower Visitor Center is a steel doughnut from
+    // half the radius out to the wall, and a camera at four fifths of the radius is inside its floor.
+    ctl.dist=S.mode==='section'?Math.max(r*2.6,S.out):Math.max(12,Math.min(S.in,r*0.42));
     if(ctx.details)ctx.details.depth=Math.round(S.depth)+' m';
     if(UI.tick)UI.tick();
   };
@@ -58,17 +70,20 @@ export function descent(api){
   // well, without the descent being switched on at all.
   const Colour=scene.fog?scene.fog.color.constructor:null;
   const EARTH=Colour?new Colour(0x160c10):null, WARM=Colour?new Colour(0xffb184):null;
-  const fog0=scene.fog?scene.fog.density:0.00013;
+  const fog0=scene.fog?scene.fog.density:0.00013,sun0=sun?sun.intensity:0;
   const amb0=ambient?ambient.intensity:0.22, hem0=hemi?hemi.intensity:0.38;
   const ambC=ambient?ambient.color.clone():null;
   let skyOn=true;
   function dark(depth){
     const u=Math.max(0,Math.min(1,(depth-60)/220));
-    if(sky&&(u<0.99)!==skyOn){skyOn=u<0.99;sky.visible=skyOn;}
+    // the dome goes early: once you are under the plain, a sky on the horizon is a hole in the earth
+    if(sky&&(u<0.35)!==skyOn){skyOn=u<0.35;sky.visible=skyOn;}
     if(scene.fog&&EARTH){scene.fog.color.lerp(EARTH,u);
       scene.fog.density=fog0*(1-u)+0.00034*u;      // enough to bed the far chambers into the dark, not enough
       renderer.setClearColor(scene.fog.color);}    // to swallow a three-kilometre section
-    if(sun)sun.intensity*=(1-u);
+    // set, never scale: scaling it once a frame drives the sun to nothing in a second and it never comes back,
+    // so the park was still dark after climbing out of the hole
+    if(sun)sun.intensity=sun0*(1-u);
     if(ambient){ambient.intensity=amb0*(1-u)+0.72*u;if(ambC&&WARM)ambient.color.copy(ambC).lerp(WARM,u);}
     if(hemi)hemi.intensity=hem0*(1-u)+0.12*u;
   }
@@ -76,7 +91,7 @@ export function descent(api){
 
   // ---- the panel ----
   const UI={};
-  api.onUI(({ui,mkBtn,el,showCard})=>{
+  api.onUI(({ui,mkBtn,el,showCard,ctl:ctl0})=>{
     const panel=document.createElement('div');
     panel.id='pitpanel';panel.setAttribute('role','dialog');panel.setAttribute('aria-label','The pit');
     document.body.appendChild(panel);
@@ -134,11 +149,18 @@ export function descent(api){
         S.t=performance.now();
         S.depth=clampD(Math.max(0,RIM-camera.position.y));
         if(S.goal<40)S.goal=140;
+        S.el=Math.min(0.5,Math.max(-0.2,S.el));
       }
       S.mode=m;
-      if(m==='surface'){S.held=0;S.goal=S.depth=0;dark(0);if(sky)sky.visible=true;}
+      // The polyps and the strands hang off the near wall as much as the far one, and in the section view the
+      // near wall has been culled away on purpose - so they would be the only thing left standing in front of
+      // the cutaway. They belong to the inside of the shaft, and they are shown when you are inside it.
+      if(ctx.pitFine)ctx.pitFine.visible=(m!=='section');
+      if(m==='surface'){S.held=0;S.goal=S.depth=0;dark(0);if(sky)sky.visible=true;
+        ctl0.elMin=0.03;ctl0.elMax=1.5;}
       paint();
     }
+    UI.leave=()=>setMode('surface');
     function go(d,card){
       if(S.mode==='surface')setMode('section');
       S.goal=clampD(d);
@@ -203,9 +225,10 @@ export function descent(api){
     addEventListener('keyup',e=>{const k=e.key.toLowerCase();if(KEYS[k]!==undefined&&S.held===KEYS[k])S.held=0;});
     addEventListener('blur',()=>{S.held=0;drag=null;});   // a key held as focus leaves never sends its keyup
 
-    // #pit=<depth> in the address opens straight into the shaft, the way #war seals the block on the Dredd page
-    const m=/(^|&)pit=(-?\d+)/.exec(api.HASH0||'');
-    if(m){setMode('section');S.depth=S.goal=clampD(+m[2]);paint();}
+    // #pit=<depth> in the address opens straight into the shaft, the way #war seals the block on the Dredd page,
+    // and #ride=<depth> opens inside it rather than outside
+    const m=/(^|&)(pit|ride)=(-?\d+)/.exec(api.HASH0||'');
+    if(m){setMode(m[2]==='ride'?'ride':'section');S.depth=S.goal=clampD(+m[3]);paint();}
     ctx.descend=(d,card)=>go(d,card===undefined?true:card);   // window._iz.descend(1600) from the console
     ctx.details=Object.assign(ctx.details||{},{pitControls:panel.querySelectorAll('button').length+' buttons'});
     paint();
