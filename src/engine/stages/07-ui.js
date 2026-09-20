@@ -5,7 +5,9 @@ const el=renderer.domElement;
 // elMin/elMax are how far the camera may be tipped. A city is looked at from above it, so the floor is just
 // off the horizontal and the ceiling just off vertical; a page whose subject is not a city may widen them -
 // the Flesh Pit sets the floor below nought, because inside a shaft you want to look up it.
-const ctl={target:new THREE.Vector3(0,40,0),az:0.6,el:0.5,dist:1400,goal:null,elMin:0.03,elMax:1.5};
+const CAM=C.camera||{};   // a city whose subject is an interior wants to look level along a lane
+const ctl={target:new THREE.Vector3(0,40,0),az:0.6,el:0.5,dist:1400,goal:null,
+  elMin:CAM.elMin!==undefined?CAM.elMin:0.03,elMax:CAM.elMax!==undefined?CAM.elMax:1.5};
 function applyCam(){const e=Math.max(ctl.elMin,Math.min(ctl.elMax,ctl.el));camera.position.set(ctl.target.x+Math.cos(ctl.az)*Math.cos(e)*ctl.dist,ctl.target.y+Math.sin(e)*ctl.dist,ctl.target.z+Math.sin(ctl.az)*Math.cos(e)*ctl.dist);camera.lookAt(ctl.target);}
 function setView(px,py,pz,tx,ty,tz,fly){const t=new THREE.Vector3(tx,ty,tz),p=new THREE.Vector3(px,py,pz),d=p.clone().sub(t);const goal={target:t,az:Math.atan2(d.z,d.x),el:Math.atan2(d.y,Math.hypot(d.x,d.z)),dist:d.length()};
   if(fly===false||matchMedia('(prefers-reduced-motion: reduce)').matches){Object.assign(ctl,goal);ctl.goal=null;return;}ctl.goal=Object.assign(goal,{t0:performance.now(),from:{target:ctl.target.clone(),az:ctl.az,el:ctl.el,dist:ctl.dist}});}

@@ -104,6 +104,7 @@ def check(city):
     r.note(f"map {abs(bx1-bx0)/1000:.1f} x {abs(bz1-bz0)/1000:.1f} km")
 
     # ---- viewpoints: the orbit camera cannot sit below what it looks at ----
+    el_min = float((cfg.get("camera") or {}).get("elMin", 0.03))   # a city may let its camera look level
     for name, v in (cfg.get("views") or {}).items():
         (fa, fo, fy), (ta, to, ty) = v[0], v[1]
         fx, fz = P([fa, fo])
@@ -113,7 +114,7 @@ def check(city):
             r.err(f"view {name!r}: camera and target are in the same place")
             continue
         el = math.atan2(fy - ty, horiz)
-        if el < 0.03:
+        if el < el_min:
             r.err(f"view {name!r}: camera {fy:.0f} m looks up at a target {ty:.0f} m "
                   f"({math.degrees(el):+.1f} deg) - the control will clamp it and put the camera overhead instead")
         if not (min(bx0, bx1) - 6000 < tx < max(bx0, bx1) + 6000 and min(bz0, bz1) - 6000 < tz < max(bz0, bz1) + 6000):
