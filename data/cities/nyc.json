@@ -272,6 +272,16 @@
     -74.01319
    ],
    "height": 417,
+   "model": "onewtc",
+   "turn": -17.3,
+   "base": 65,
+   "top": 46,
+   "podium": 55,
+   "tip": 541,
+   "clear": [
+    45,
+    150
+   ],
    "info": "285 Fulton Street · 2014 · 417 m to the roof, 541 m to the tip — 1,776 feet. Eight tapering triangles on a cube base."
   },
   {
