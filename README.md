@@ -330,15 +330,36 @@ A cordoned six-kilometre square of West Texas south-east of Odessa, and the hole
   Lower Visitor Center's deck ringing it, the Bronchial Forests and their boardwalks, the ballast pods of the
   Amniotic Thermal Springs, the Lesser and Greater Gastric Seas with the ferry terminal, the Agnich dam and
   the resort shelf, and Little Detroit hanging off the wall above the drain. Sphincter rings between the
-  layers, lamp strings the whole way down, and the whole shaft breathes.
+  layers, and the whole shaft breathes.
+- **The wall is the animal.** Eleven veins stand proud of it and wander as they descend, with a hollow either
+  side of each and a growth ring every few metres; all of it is cut into the tube itself rather than stuck on,
+  because anything stuck on the near wall would still be standing there in the section view. On top of that,
+  1,400 polyps in clusters and 260 strands hanging off the rock — those *are* stuck on, so they are shown
+  only when you are inside the shaft.
+- **What the Park Service left.** Four lamp strings hung from the collar and running the whole way down, a
+  lamp every 40 m; four lift cages riding their guides; handrails on everything anyone was allowed to stand
+  on; interpretive signs, lit; the Lower Visitor Center with its shopfronts, upper floor, three stair towers,
+  radial catwalks and the overlook cantilevered out over the drop; boardwalks and a viewing platform among
+  the bronchial trunks; changing huts and steam over the soaking pools; Anodyne's tap and its pipework on the
+  springs; the ferry terminal, jetty, buoys and lit spillway on the Lesser Sea; the resort's funicular down
+  to the water on the Greater; Little Detroit as 54 containers stacked five levels up a rack, lit, with a
+  slewing crane, catwalks, ladders and a flare; and, at the bottom, the catwalk that came down in 2007 and
+  the wreck of the rig it fell onto.
 - **It is its own cutaway.** The shaft is drawn back-face only: from inside you see the far wall as you
   should, and from outside the near wall is simply not there, so the pit can be read from the side like a
   section. The ground does the same for free — the terrain is single-sided — and the generator digs the
   funnel to exactly where the model takes over so that no ground stands in the way.
+- **The orifice is a hole in the ground, and a heightfield cannot have one.** The funnel used to bottom out
+  in a flat disc at the mouth depth, which from the rim is a lid over the shaft. The city file now carries
+  `groundHole` (`{at, r}`); the engine draws no terrain quad whose middle falls inside it, and the shaft
+  flares at the top to meet the cut edge.
 - **The descent** (`src/fleshpit/camera.js`): this page steers its own camera through `ctx.camFrame`, because
   a hole is not a city and orbiting a point on the ground is the wrong control for it. A depth slider, a
-  button per layer, a section view and a shaft ride; `#pit=1600` in the address opens at that depth. Below
-  the collar the sky goes, the sun goes with it, and what light there is comes off the lamps.
+  button per layer, a section view and a shaft ride; `#pit=1600` in the address opens outside the shaft at that
+  depth and `#ride=1600` inside it. Below the collar the sky goes, the sun goes with it, and what light there
+  is comes off the lamps. The engine's own tilt limits are right for a city and wrong for a shaft, so the
+  descent widens them (`ctl.elMin`/`elMax`) and you can look straight up it; and pressing any viewpoint in the
+  engine's panel hands the camera back rather than being ignored.
 - **Depths are the park's, not the organism's.** The 1979 expedition reached 19,102 m and that was not the
   bottom; what is modelled here is the part the public could buy a ticket to.
 
