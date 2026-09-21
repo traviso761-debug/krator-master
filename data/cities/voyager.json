@@ -42,24 +42,24 @@
    "az": 2.6,
    "el": 0.4,
    "d": 110,
-   "tx": 20,
-   "ty": 24,
+   "tx": 84,
+   "ty": 22,
    "tz": 0
   },
   "A nacelle": {
    "az": 2.0,
    "el": 0.18,
    "d": 180,
-   "tx": -86,
-   "ty": -10,
-   "tz": -70
+   "tx": -76,
+   "ty": -24,
+   "tz": -62
   },
   "The deflector": {
    "az": 0.35,
    "el": 0.02,
    "d": 150,
-   "tx": 100,
-   "ty": -16,
+   "tx": 128,
+   "ty": -14,
    "tz": 0
   },
   "Far off": {
@@ -78,7 +78,8 @@
    "az": 0.9,
    "el": 0.34,
    "intensity": 2.0,
-   "ambient": 0.5
+   "ambient": 0.4,
+   "lamp": 0.3
   },
   "fill": {
    "colour": "#8a5fb0",
@@ -93,7 +94,7 @@
     "el": -0.1,
     "dist": 0.6,
     "deg": 9,
-    "seg": 64,
+    "seg": 176,
     "bands": 11,
     "colours": [
      "#8a6a4a",
@@ -133,18 +134,14 @@
     "az": -0.9,
     "el": 0.3,
     "dist": 0.88,
-    "size": 340000,
-    "puffs": 30,
-    "opacity": 0.05
+    "size": 510000
    },
    {
     "colour": "#2a5a8e",
     "az": -2.1,
     "el": -0.22,
     "dist": 0.9,
-    "size": 260000,
-    "puffs": 20,
-    "opacity": 0.04
+    "size": 390000
    }
   ],
   "_": "the Delta Quadrant: a ringed giant, a dead moon and a great deal of gas nobody has named"

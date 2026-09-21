@@ -627,27 +627,58 @@ star field, and a backdrop of worlds and nebulae read out of the city file - wit
 wireframe and menagerie menu every other page has.
 
 - **The backdrops.** Vertex colours on a sphere, because there are no textures anywhere in this project: a
-  gas giant is bands with a little shear where they meet, a terrestrial world is ocean with continents from
-  three overlapping waves, ice at the poles and a layer of cloud over it. Two things learned building the
-  first one: a cloud has to be flattened *radially* (which after `lookAt` is the local z, not the y - squash
-  the wrong axis and every cloud stands off the planet like a shelf), and it has to be a disc rather than a
-  flattened sphere, because a sphere gets its own light and dark side and reads as a boulder while a disc
-  shades evenly and goes dark on the night side with the ground under it.
+  gas giant is bands blended over the last fifth of each band's width (rounded to a palette index instead,
+  they came out as a staircase where the edge crossed the sphere's triangles); a terrestrial world is
+  octaves of noise thresholded into land and sea, with a continental shelf ramping continuously down into
+  the deeps, an ice edge that wanders instead of following a line of latitude, and weather over the top.
+  Four things learned here, all of them the same lesson about what reads at a distance:
+  - A cloud has to be flattened *radially* — after `lookAt` that is the local z, not the y. Squash the
+    wrong axis and every cloud stands off the planet like a shelf.
+  - It has to be a *disc*, not a flattened sphere: a sphere gets its own light and dark side and reads as
+    a boulder, while a disc shades evenly and goes dark on the night side with the ground under it.
+  - Weather is not scattered. Four hundred discs at random, each up to seven per cent of the planet's
+    radius, read as torn paper stuck to a marble. It comes in *systems*, drawn out east-west, and any one
+    piece of it is small: these are laid down as several dozen curling trails of small stretched discs,
+    thickest either side of the equator.
+  - A nebula built from two dozen big additive spheres is a bag of marbles, because a single additive
+    sphere is one layer of fragments at one opacity — a flat disc with a hard edge. What works is three
+    nested shells per puff (a three-step radial falloff), two thirds of them buried in a dense core and
+    the rest a halo of puffs small enough not to be read as circles. All of it merges per colour, so a
+    three-hundred-puff nebula costs three draw calls, and so do a thousand cloud discs.
 - **The hulls** are tables of cross-sections rather than primitives, because almost nothing on a starship is
-  straight. `src/starship/parts.js` has the lathe (a saucer, a deflector dish, a Bussard collector), the
-  fore-and-aft tube (an engineering hull, a nacelle) and the swept pylon; the tables in each ship's module
-  are the model. There is no lettering anywhere on any of them: a hull number would have to be forty
-  separate extrusions to be legible and would be four pixels tall from anywhere you would actually look.
-- **Galaxy class**, 642.5 m: a double-curved saucer with a rim, an engineering hull that is an egg widest a
-  third of the way back, and pylons swept in two planes at once.
-- **Intrepid class**, 344 m: no neck - the saucer runs back and down into the engineering section as one
-  body - a teardrop saucer in plan, and nacelle pylons that *move*, lying out and down in normal space and
-  swinging up and forward before the ship goes to warp. It is the only animated mechanism on these pages.
+  straight — and, as the second pass found out, almost nothing on one is *round* either. `src/starship/`
+  has the lathe (a deflector dish, a Bussard cowl, a station core), the fore-and-aft tube and the swept
+  pylon, and each of those now takes a **section profile** as well as a table of sizes: a lens with a rim
+  for a saucer, a flat-bottomed slab with a rounded shoulder for a nacelle, an aerofoil with a blunt
+  leading edge for a pylon, a hard-bevelled hexagon for anything Cardassian. The section is as much of the
+  design language as the dimensions are. Stations also carry `ryb`, the half-depth *below* the centreline,
+  because a hull with a domed top and a flat bottom is the normal case and an ellipse is the exception.
+  There is no lettering anywhere on any of them: a hull number would have to be forty separate extrusions
+  to be legible and would be four pixels tall from anywhere you would actually look.
+- **Galaxy class**, 642.5 m: a lens with a rim and a **flat trailing edge** — cut off square where the
+  impulse engines are, which is what stops the saucer reading as a flying saucer; an engineering hull that
+  is an egg widest a third of the way back; and the nacelles held wide, at two-thirds of the saucer's
+  radius outboard with their noses level with the saucer's transom, which is the stance of the class and
+  the thing hardest to get from memory. The phaser strips round the saucer do the work that a set of
+  radiating panel ribs used to do badly: the ribs made it look like a wheel.
+- **Intrepid class**, 344 m: no neck — the saucer runs back and down into the engineering section as one
+  body — a teardrop saucer in plan with a broad transom across the back of it, and nacelle pylons that
+  *move*, lying out and down in normal space and swinging up and forward before the ship goes to warp. It
+  is the only animated mechanism on these pages. Both of its pylons are broad fins about fifty metres of
+  chord across and seven thick; built with the chord and the thickness the wrong way round they came out
+  as knitting needles, which is the same mistake in a different frame as getting the section wrong.
 - **Deep Space 9**, 1,451 m across the docking ring: the opposite design language, and that is the point of
-  drawing it next to the other two. Brown, ribbed, symmetrical in threes rather than about a keel, and not
-  trying to look fast, because it is a building. Six horns off the ring - three up, three down, curving out
-  and back in - are the whole silhouette. Off the port bow, the wormhole opens every half minute or so and
-  then is not there again, which is the only event in this collection.
+  drawing it next to the other two. Dark brown, ribbed, hexagonal in section, symmetrical in threes and
+  sixes rather than about a keel, and not trying to look fast, because it is a building. Core, three
+  crossover bridges, **habitat ring**, six supports, docking ring, six horns — leaving the inner ring out
+  is most of why the first pass read as a spider. The horns are hexagonal blades, not tubes; with the
+  normals smoothed they came out as bent drinking straws, so the whole station is flat-shaded. Off the
+  port bow, the wormhole opens every half minute or so and then is not there again, which is the only
+  event in this collection.
+- **The light.** One hard star, a dim planet-shine fill, and a third light at about a quarter intensity
+  that always comes from wherever the camera is. There is nothing physical about the third one. It is
+  there because with one key and one fill, whichever way you turn the ship some large flat face of it
+  points at neither and a pylon the size of a house goes to pure black.
 
 Each page carries a fingerprint for the test suite the way the cities carry a lot list: every merged mesh,
 where its bounding sphere is, how big it is and how many vertices are in it. Nudge one station in a table of
