@@ -32,6 +32,9 @@ of the others. Both read `/scenes.json`, which the server builds from `site.toml
 | `/mordor` | `/mordor.html`, `/sauron` | `mordor.html` | Mordor: the whole land (fan work) |
 | `/minastirith` | `/minastirith.html`, `/mt`, `/gondor` | `minastirith.html` | Minas Tirith: the seven circles (fan work) |
 | `/fleshpit` | `/fleshpit.html`, `/mfpnp`, `/pit` | `fleshpit.html` | Mystery Flesh Pit National Park (fan work) |
+| `/rivendell` | `/rivendell.html`, `/imladris` | `rivendell.html` | Rivendell: the cleft of the Bruinen (fan work) |
+| `/arrakeen` | `/arrakeen.html`, `/arrakis`, `/dune` | `arrakeen.html` | Arrakeen: the city in the basin (fan work) |
+| `/europa` | `/europa.html`, `/conamara`, `/ice` | `europa.html` | Conamara Station: on the ice of Europa |
 | `/kyrene` | `/hab.html`, `/habitat`, `/cylinder` | `hab.html` | Kyrene: a rotating habitat |
 | `/krator` | `/voth`, `/voth.html`, `/krator.html` | `krator.html` | Krator: A Primer |
 | `/tongue` | `/izani-tongue` | `The-Izani-Tongue_2.html` | The Izani Tongue |
@@ -450,16 +453,23 @@ it literally. Seven walls, each on its own tier, each tier a hundred feet above 
 Citadel stands seven hundred feet over the Pelennor and the White Tower three hundred feet over that.
 
 - **The keel** (`keel`, in `src/minastirith/landmarks.js`). A shoulder of Mindolluin comes out through the
-  city and stands sixty metres over the Citadel's own ground, so the seven circles are horseshoes rather than
-  rings. The terrain carries the mass of it — a heightfield can do a ridge — but not the thing that matters,
-  which is that its sides are sheer and its east end stops dead in mid-air above the first circle: a grid at
-  fifty metres cannot hold a cliff, because the whole drop happens inside one sample. So the faces are built
-  as slabs set flush along the line of it, with the buttresses the tiers run into, the prow and its parapet,
-  the two tunnels the road takes through the rock, and the Citadel's wall running out along the crest.
-  Everything on the seventh circle stands beside the rock, not on it.
-- **The tiers** are absolute heights, not something added to the hill: get that wrong and the Pelennor in
-  front of the Great Gate stands higher than the gate does, and every viewpoint outside the walls is
-  underground looking up through the back of the world.
+  city level with the Citadel, so the seven circles are horseshoes rather than rings, and its east end stops
+  dead in mid-air over the lower circles with the point overhanging. A fifty-metre grid cannot hold a cliff,
+  so the faces are built here — and the thing every picture of the place agrees on is that it is a **blade**:
+  one unbroken sheer face to each side, smooth, fluted vertically, coming to a point. The first two versions
+  were slabs and then crags, and both read as rubble tipped through the middle of the city. It is now a
+  continuous mesh built to exactly the half-width function the terrain uses (`keel_half` in the generator),
+  with thin flutes laid on the faces for scale, scree at the foot, the prow leaning out past its own foot
+  with the parapet on top, and the tunnel mouths where the Way crosses.
+- **The circles are horseshoes**, which is the whole point of the rock: a wall or a ring street that carried
+  straight on across it hangs in mid-air off a cliff. Each ring is cut where it meets the rock (`ring_runs`
+  in the generator), and the Way is cut where it crosses with a tunnel mouth at each end of the gap — draped
+  on the heightfield it climbed the ridge like a ramp and came out forty metres above the roofs.
+- **Heights are relative to the ground under the footprint**, because that is what the engine does with
+  them. The generator wrote absolute heights for a long time — the level a wall's top should reach, measured
+  from the Pelennor — so every wall and house on the hill was built from the tier it stands on *plus* the
+  height of that tier. The seventh circle came out three hundred metres over the Citadel, the White Tower
+  was inside it, and the whole place read as a multi-storey car park.
 - **The city is a kilometre across** and 250 m tall, packed with terraces of white stone under slate: about
   1,700 buildings inside the walls, thinning as they climb, and nothing lived in on the seventh circle.
 - **A city with people in it** (`src/minastirith/life.js`): 190 banners hung from the parapet of every
@@ -474,11 +484,107 @@ Citadel stands seven hundred feet over the Pelennor and the White Tower three hu
 - **A city built before glass.** `windows: false` in the city file turns off the engine's window texture,
   which is a grid of lit offices and turns white stone grey. `streetFurniture: false` does the same for
   painted road markings and lamp standards. Mordor sets both as well.
-- **The Pelennor**: townlands inside the Rammas Echor with the Causeway Forts on the road, farms, the
-  Harlond's quays on the Anduin, and Osgiliath in ruins on both banks at the edge of the map. The hosts come
-  up the Causeway from it (`src/mordor/hosts.js`, imported rather than copied - it is the same war).
+- **The Pelennor**: townlands inside the Rammas Echor with the Causeway Forts on the road, farms, and the
+  Harlond's quays on the Anduin.
+- **Osgiliath**, astride the Anduin. Numenorean cities were laid out in rings round a centre, and the centre
+  of this one was the great bridge: so it is circles of street broken where the river cuts through them,
+  radials out from the bridgehead, a ruined circuit wall, walls standing to every height from a kerb to a
+  gable, the Dome of Stars broken open, and the piers of the bridge still in the water with the Causeway
+  stopping at the gap.
+- **The siege** (`src/mordor/hosts.js`, imported rather than copied — it is the same war, seen from the
+  other end). Blocks of orcs drawn up in formation facing the Great Gate, camps of tents round their fires
+  behind them, trebuchets on both sides — the besiegers' out on the plain throwing in and the city's own up
+  on its circles throwing back — siege towers against the wall, and volleys of arrows going both ways. Two
+  in five of the stones that come over the wall are lit, because that is the point of throwing one into a
+  city roofed in timber and slate; where one lands something burns, and thirty-four houses inside the walls
+  are already burning with ninety more broken open. Grond is built as one object rather than a crowd: a ram
+  of black steel slung in chains under a frame on wheels, with a wolf's head on the end of it and trolls on
+  the drag ropes. Six thousand Rohirrim are drawn up on the north of the field, not yet moved.
+- **War and peace.** The page opens on the siege, and a button takes it away: every module that makes
+  something warlike pushes it onto `ctx.warParts` as it builds, and peace hides that list, stops its
+  animation hooks, and brings the White Tree into flower. `#war=off` opens on the other one. The city's own
+  life — its banners, its cooking smoke, its market stalls — belongs to both and never moves.
 
 Regenerate with `python3 tools/make-minastirith.py`, then `./sitectl build`.
+
+### `/rivendell`: Rivendell
+
+Fan work. Tolkien's world belongs to the Tolkien Estate; every shape is generated by
+`tools/make-rivendell.py` or modelled in `src/rivendell/` in this project's own geometry.
+
+The thing that makes this place is the ground, not the house. You come over open moor and it stops: a gorge
+three hundred metres deep opens under your feet with the river in it, and the buildings are on ledges
+partway down, so you look **down** on the roofs of them. Nothing else here has that shape.
+
+- **The cleft** is sheer — the three hundred metres happens in eighty of horizontal, which is as steep as a
+  ten-metre height grid can carry — and it is benched, because the benches are what everything stands on. It
+  opens into a bowl where the house is and closes again below.
+- **The falls.** Every side stream on the moor arrives over the rim, cutting a notch back into it. Each one
+  is a sheet of white with a plume of mist at the foot, and the noise of them is the reason nobody in the
+  house speaks quietly.
+- **The Ford of Bruinen**, downstream, where the East Road crosses. The valley's defence is not a wall: it
+  is that anything coming in has to stand in the river to do it.
+- **The house** is six halls joined end to end along the ledge, stepping down it, each with its own steep
+  roof and its own gallery hung out over the water on posts. The Hall of Fire is one room with a hearth at
+  each end, lit from inside at every hour. The bridge has no parapet worth the name.
+- **What it taught the engine.** An edge fade that takes the land to nothing cuts a four-hundred-metre cliff
+  round a map whose ground is six hundred metres up, so `farLevel` now puts the horizon plate where the
+  world outside the box actually is. Rock standing on a sheer face has its own foot in mid-air and comes out
+  as a pillar in the valley, so what is built is the boulders along the rim and the scree at the bottom and
+  the face is left to the heightfield. And a water polygon can carry its own `y`: a mountain river is not
+  one sheet, it is a flight of pools with a step between them, and the Bruinen is cut into reaches.
+
+Regenerate with `python3 tools/make-rivendell.py`, then `./sitectl build`.
+
+### `/arrakeen`: Arrakeen
+
+Fan work. Dune belongs to the Herbert estate; every shape is generated by `tools/make-arrakeen.py` or
+modelled in `src/arrakeen/` in this project's own geometry.
+
+A city built for a world where the only water is what you can take out of the air.
+
+- **The Shield Wall** is the reason anything lives here, so it is built as a wall: a serrated rampart of
+  rock standing right across the north and east, steeper on the inner face because that is the side the wind
+  has been scouring, with one gap in it for the road out to the deep desert.
+- **The town** is courtyard houses packed shoulder to shoulder — a detached house on Arrakis is a way of
+  dying, and shade is the only free comfort there is. Thick blind walls, flat roofs, and a windtrap on every
+  one of them turned into the same wind; dew collectors along the parapets, awnings across the slots between
+  the blocks, cisterns that are the most valuable thing on any street, and a water market.
+- **Four models of its own** (`src/arrakeen/landmarks.js`): the Residency, a fortress pretending to be a
+  house with a garden in it that is an obscenity; the great windtrap, the only piece of civic architecture on
+  the planet; a Guild lighter standing on the fused rock of the landing field with its gantry run up to it;
+  and a sietch, which from the outside is a rock with nothing on it, because that is the entire design.
+- **The deep desert** (`src/arrakeen/desert.js`): past the last rock, dunes in ranks running with the wind
+  with a slip face on the lee side of each, a harvester working a spice blow with a carryall holding station
+  over it, spotters quartering the sand upwind, and the sign of what is coming up underneath — a ridge of
+  sand running, with a wake of dust off it. The worm itself is never drawn. The dread is in what the sand is
+  doing, which is the same decision as Shelob's hole in Mordor.
+
+Regenerate with `python3 tools/make-arrakeen.py`, then `./sitectl build`.
+
+### `/europa`: Conamara Station
+
+Original work, and the only place here whose landscape is neither invented nor mapped from a city: Europa is
+real, and what is built is what is actually known about its surface.
+
+- **Double ridges**, two parallel crests with a trough between them, running for hundreds of kilometres and
+  crossing each other at every angle. They are what the ice is made of and nobody is sure how they form.
+- **Chaos terrain**: blocks the size of city blocks, tilted and turned, in a matrix of rubble — the best
+  evidence there is that there is an ocean underneath, and what the station is named for.
+- **Lineae**, the long cracks, stained brown along both sides by whatever comes up through them. The only
+  colour on the whole moon.
+- **The station** is over a bore going twenty kilometres down to that ocean, which is the only reason
+  anybody would come. Six pressurised drums on legs round a hub, bermed up to the windows in ice — the hard
+  part of living here is Jupiter's radiation belt, not the cold — and nothing touches the ground, because a
+  warm thing set on ice at 110 K melts its own hole and falls into it. The plume over the derrick is
+  everything that goes down the hole coming back up and freezing on the way out.
+- **The sky** (`src/europa/sky.js`): no air, so it is black at noon and the stars do not twinkle; the sun a
+  twenty-fifth as bright, small and hard; and Jupiter, twelve degrees across — twenty-four times the width of
+  the Moon from Earth — hanging in exactly the same place in the sky for ever, because Europa is tidally
+  locked. That last fact is the whole reason to build the page. The bands are vertex colours on a sphere;
+  there are no textures anywhere in this project.
+
+Regenerate with `python3 tools/make-europa.py`, then `./sitectl build`.
 
 ### `/fleshpit`: Mystery Flesh Pit National Park
 
@@ -684,7 +790,15 @@ which every other city skips. An `el` block sets the elevated railway: `height` 
 line), `trainSpeed` and `livery` — Chicago's L is light steel at the defaults, City 17's viaduct is not.
 `groundHole` (`{at: [x, z], r}`) removes the ground inside a circle, for a city whose subject is a hole, and
 `camera` (`{elMin, elMax}`) widens how far the camera may be tipped, for one whose subject is an interior.
-Anything left out keeps the Chicago default.
+`areaColours` and `roadColours` retune the land-cover and road palettes by kind — the defaults are a modern
+map's greens and asphalt, and on the Pelennor a bright `#6a9a52` rectangle reads as a carpet rolled out over
+the fields while a graded lane on an ice moon that comes out asphalt-black reads as a canal. `farLevel` puts
+the horizon plate at the height the world outside the box actually sits at, for a map whose ground is
+hundreds of metres up. `beacons: false` turns off the aircraft warning lights, because a place built before
+the wheel does not put a blinking red lamp on its tallest tower. `landFromCity` (`{cell, grow, drop, quay,
+water}`) is for a city with no height grid at all: the sheet under everything becomes open water and the
+land is rasterised out of the city itself, which is how Venice stopped being grey ground with canals cut in
+it. Anything left out keeps the Chicago default.
 
 ### Scale
 
