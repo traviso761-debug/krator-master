@@ -154,6 +154,82 @@ const waterM=new THREE.MeshPhongMaterial({color:0x2c586e,specular:0x22343c,shini
     parts.push(mergeParts(ribs,ribM));
   }
 
+  // ---- the outside of it ----
+  // The land is the inside face of the hull and nothing else was ever built, so from out in space you looked
+  // straight through the near side of the habitat and saw the far valleys through it - which is what a
+  // single-sided tube does and not what a hull does. This is the skin on the other side: a shell over each
+  // strip of land, with the window strips left open, because those are the only places you are meant to be
+  // able to see in. It carries what a hull carries - ring frames, longerons, and the radiator fins that get
+  // rid of the heat, which for a place this size are the biggest thing on the outside of it.
+  {
+    const skinM=new THREE.MeshLambertMaterial({color:0x8d949c,flatShading:true});
+    const plateM=new THREE.MeshLambertMaterial({color:0x7a8188,flatShading:true});
+    const radM=new THREE.MeshLambertMaterial({color:0xd8dce0,flatShading:true});
+    const OUT_R=R+K.skin||R+46;
+    for(let k=0;k<VALLEYS;k++){
+      const a0=k*2*STRIP, a1=a0+STRIP;
+      const pos=[],nor=[],idx=[],rows=[];
+      for(let j=0;j<=44;j++){
+        const u=L*j/44,row=[];
+        for(let i=0;i<=22;i++){
+          const a=a0+(a1-a0)*i/22;
+          // outward normals, front-faced: this is the side you see from outside
+          const r=OUT_R+8*Math.sin(u/L*37+i*0.7);
+          row.push(pos.length/3);
+          pos.push(u-L/2,Math.cos(a)*r,Math.sin(a)*r);
+          nor.push(0,Math.cos(a),Math.sin(a));
+        }
+        rows.push(row);
+      }
+      for(let j=0;j<44;j++)for(let i=0;i<22;i++){
+        const A=rows[j][i],Bv=rows[j][i+1],Cv=rows[j+1][i],D=rows[j+1][i+1];
+        idx.push(A,D,Cv,A,Bv,D);
+      }
+      const g=new THREE.BufferGeometry();
+      g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
+      g.setAttribute('normal',new THREE.Float32BufferAttribute(nor,3));
+      g.setIndex(idx);g.computeBoundingSphere();
+      parts.push(new THREE.Mesh(g,skinM));
+    }
+    // ring frames the whole way round, every eight hundred metres or so
+    const frames=[];
+    for(let j=0;j<=24;j++){
+      const u=L*j/24;
+      const t=new THREE.Mesh(new THREE.TorusGeometry(OUT_R+16,26,6,SEGA/3),plateM);
+      t.position.set(u-L/2,0,0);t.rotation.y=Math.PI/2;frames.push(t);
+    }
+    // longerons down the seams, where the window strips meet the land
+    for(let k=0;k<VALLEYS*2;k++){
+      const a=k*STRIP;
+      for(let j=0;j<44;j++){
+        const u=L*(j+0.5)/44;
+        const m=new THREE.Mesh(new THREE.BoxGeometry(L/44,40,70),plateM);
+        m.position.set(u-L/2,Math.cos(a)*(OUT_R+10),Math.sin(a)*(OUT_R+10));
+        m.lookAt(new THREE.Vector3(m.position.x,0,0));frames.push(m);
+      }
+    }
+    parts.push(mergeParts(frames,plateM));
+    // the radiators: flat panels standing off the hull edge-on to the sun, in pairs down each land strip
+    const rads=[];
+    for(let k=0;k<VALLEYS;k++){
+      const a=k*2*STRIP+STRIP*0.5;
+      for(let j=0;j<16;j++){
+        const u=L*(0.08+0.84*j/15);
+        for(const sd of [-1,1]){
+          const m=new THREE.Mesh(new THREE.BoxGeometry(420,16,600),radM);
+          const rr=OUT_R+380;
+          m.position.set(u-L/2,Math.cos(a+sd*0.16)*rr,Math.sin(a+sd*0.16)*rr);
+          m.lookAt(new THREE.Vector3(m.position.x,0,0));m.rotateZ(sd*0.5);rads.push(m);
+          const arm=new THREE.Mesh(new THREE.BoxGeometry(30,30,360),plateM);
+          arm.position.set(u-L/2,Math.cos(a+sd*0.16)*(OUT_R+180),Math.sin(a+sd*0.16)*(OUT_R+180));
+          arm.lookAt(new THREE.Vector3(arm.position.x,0,0));rads.push(arm);
+        }
+      }
+    }
+    parts.push(mergeParts(rads.filter(m=>m.material===radM),radM));
+    parts.push(mergeParts(rads.filter(m=>m.material===plateM),plateM));
+  }
+
   // ---- the end caps ----
   // Cones closing each end, terraced, with the axle housing at the middle where the docking is done.
   for(const end of [0,1]){
@@ -298,6 +374,53 @@ const waterM=new THREE.MeshPhongMaterial({color:0x2c586e,specular:0x22343c,shini
   }
   parts.push(mergeParts(walls,wallM),mergeParts(roofs,roofM),mergeParts(rails,steelM));
   if(lamps.length)parts.push(mergeParts(lamps,glow));
+
+  // ---- woods, farms and the road ----
+  // A valley of nothing but fields reads as a carpet. Woodland in the corners the plough cannot reach, a
+  // farmstead to every few fields, and one road down each valley joining the towns to each other: the three
+  // things that make farmed country look worked rather than printed.
+  {
+    const leafM=new THREE.MeshLambertMaterial({color:0x2f4a26,flatShading:true});
+    const trunkM=new THREE.MeshLambertMaterial({color:0x3e3226,flatShading:true});
+    const farmM=new THREE.MeshLambertMaterial({color:0xcac2ae,flatShading:true});
+    const barnM=new THREE.MeshLambertMaterial({color:0x6d5340,flatShading:true});
+    const roadM2=new THREE.MeshLambertMaterial({color:0x5a5852,flatShading:true});
+    const leaves=[],trunks=[],farms=[],barns=[],road=[];
+    for(let k=0;k<VALLEYS;k++){
+      const a0=k*2*STRIP;
+      // the woods: clumps against the seams, where the land tips up towards the windows
+      for(let w=0;w<(K.woods||26);w++){
+        const cu=L*(0.05+0.9*RNG()), side=RNG()<0.5?0.1:0.9;
+        const ca=a0+STRIP*(side+(RNG()-0.5)*0.12);
+        for(let t=0;t<70;t++){
+          const u=cu+(RNG()-0.5)*700, a=ca+(RNG()-0.5)*STRIP*0.12;
+          const h=relief(u,a), sz=9+RNG()*10;
+          const c=new THREE.Mesh(new THREE.ConeGeometry(sz*0.6,sz*1.7,6),leafM);
+          put(c,u,a,h+sz*0.85);leaves.push(c);
+          const tr=new THREE.Mesh(new THREE.CylinderGeometry(sz*0.09,sz*0.13,sz*0.8,5),trunkM);
+          put(tr,u,a,h+sz*0.4);trunks.push(tr);
+        }
+      }
+      // a farmstead every few fields: a house, a barn and a yard
+      for(let f=0;f<(K.farms||40);f++){
+        const u=L*(0.05+0.9*RNG()), a=a0+STRIP*(0.16+0.68*RNG());
+        if(Math.abs((a-a0)/STRIP-0.5)<0.09)continue;         // not in the river
+        const h=relief(u,a);
+        const ho=new THREE.Mesh(new THREE.BoxGeometry(16,9,11).translate(0,4.5,0),farmM);
+        put(ho,u,a,h);farms.push(ho);
+        const ba=new THREE.Mesh(new THREE.BoxGeometry(24,11,14).translate(0,5.5,0),barnM);
+        put(ba,u+22+RNG()*14,a+(RNG()-0.5)*0.004,h);barns.push(ba);
+      }
+      // the road: it follows the river, a field's width off it
+      for(let j=0;j<150;j++){
+        const u=L*(0.03+0.94*j/150), a=riverAt(u,k)+STRIP*0.085;
+        const m=new THREE.Mesh(new THREE.BoxGeometry(L*0.94/150,1.4,9),roadM2);
+        put(m,u,a,relief(u,a)+0.7);road.push(m);
+      }
+    }
+    parts.push(mergeParts(leaves,leafM),mergeParts(trunks,trunkM),
+               mergeParts(farms,farmM),mergeParts(barns,barnM),mergeParts(road,roadM2));
+  }
 
   // ---- cloud ----
   // Weather in a cylinder is a ring: the air is held against the hull by the same spin everything else is,
