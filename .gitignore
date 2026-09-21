@@ -4,3 +4,7 @@ __pycache__/
 *.swp
 scratch/
 data/osm/raw/
+
+# reference images: looked at, never redistributed (see refs/README.md)
+refs/*
+!refs/README.md
