@@ -67,7 +67,11 @@ export function createWire(opts){
     scene.traverse(o=>{
       if(!o.isMesh&&!o.isInstancedMesh)return;
       if(o.userData.isWire||o.userData.noWire)return;
-      if(o.material&&o.material.blending===THREE.AdditiveBlending)return;   // glows and beams are not geometry
+      const mm=o.material;
+      // Glows, beams, smoke, cloud and spray are not geometry - they are a way of drawing air - and the
+      // signature they all share is that they do not write depth. Wireframing them fills the drawing
+      // with spheres that are not there.
+      if(mm&&(mm.blending===THREE.AdditiveBlending||(mm.transparent&&mm.depthWrite===false)))return;
       if(o.geometry&&o.geometry.attributes&&o.geometry.attributes.position)list.push(o);
     });
     for(const o of list){
