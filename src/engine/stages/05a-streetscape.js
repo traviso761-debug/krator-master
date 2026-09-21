@@ -61,5 +61,68 @@ section('streetscape',()=>{
      walkers.forEach((w,i)=>{w.t+=w.v*dt;if(Math.abs(w.t)>40){w.v=-w.v;w.t=Math.sign(w.t)*40;}const x=w.x0+w.dx*w.t-w.dz*w.sd*w.off,z=w.z0+w.dz*w.t+w.dx*w.sd*w.off;
        d.position.set(x,groundH(x,z)+Math.abs(Math.sin(now*0.009+i))*0.05,z);d.rotation.set(0,-Math.atan2(w.dz*Math.sign(w.v),w.dx*Math.sign(w.v)),0);d.scale.set(1,1,1);d.updateMatrix();body.setMatrixAt(i,d.matrix);head.setMatrixAt(i,d.matrix);});
      body.instanceMatrix.needsUpdate=head.instanceMatrix.needsUpdate=true;});}
+  // ---- the rest of the street ----
+  // What is actually on a pavement, and what a model without it is missing: hydrants, bins, benches, the
+  // bollards that keep cars off the corner, a shelter at the stops, and the works - because in a real city
+  // there is always a hole in the road somewhere with a fence round it.
+  if(C.streetFurniture!==false){
+    const F=new THREE.Object3D();
+    const redM=new THREE.MeshLambertMaterial({color:0x9c3a2c}),binM=new THREE.MeshLambertMaterial({color:0x33383a}),
+          woodM=new THREE.MeshLambertMaterial({color:0x6a5540}),boll=new THREE.MeshLambertMaterial({color:0x3a3d40}),
+          glassM=new THREE.MeshPhongMaterial({color:0x2e3a42,specular:0xcfe0ea,shininess:80,transparent:true,opacity:0.6}),
+          coneM=new THREE.MeshLambertMaterial({color:0xd2622c}),fenceM=new THREE.MeshLambertMaterial({color:0xc8b44a});
+    const put=(mesh,list)=>{mesh.count=list.length;if(list.length)scene.add(mesh);};
+    const hyd=[],bins=[],bench=[],bolls=[],shelt=[],cones=[],fences=[];
+    for(const r of near){
+      along(r,46,(x,z,dx,dz)=>{
+        if(nearXing(x,z,12))return;
+        const sd=R()<0.5?-1:1, off=r.w/2+1.9;
+        const px=x-dz*sd*off, pz=z+dx*sd*off;
+        if(inWater(px,pz))return;
+        const a=Math.atan2(dz,dx);
+        const w=R();
+        if(w<0.22)hyd.push([px,pz,a]);
+        else if(w<0.5)bins.push([px,pz,a]);
+        else if(w<0.72)bench.push([px,pz,a]);
+        else if(w<0.9)shelt.push([px,pz,a]);
+        else fences.push([px,pz,a]);
+      });
+      // bollards come in runs, at the corners, which is where they are for
+      along(r,22,(x,z,dx,dz)=>{
+        if(!nearXing(x,z,22)||nearXing(x,z,7))return;
+        for(const sd of [-1,1]){
+          const off=r.w/2+1.2;
+          const px=x-dz*sd*off, pz=z+dx*sd*off;
+          if(!inWater(px,pz))bolls.push([px,pz,0]);
+        }
+      });
+    }
+    // and the works: a ring of cones round something being dug up
+    for(let k=0;k<fences.length;k++){
+      const [x,z,a]=fences[k];
+      for(let j=0;j<6;j++){
+        const aa=j/6*Math.PI*2;
+        cones.push([x+Math.cos(aa)*2.6,z+Math.sin(aa)*2.6,0]);
+      }
+    }
+    const mk=(geo,mat,list,fn)=>{const m=new THREE.InstancedMesh(geo,mat,Math.max(1,list.length));
+      list.forEach((q,i)=>{fn(q);F.updateMatrix();m.setMatrixAt(i,F.matrix);});put(m,list);return m;};
+    mk(new THREE.CylinderGeometry(0.18,0.22,0.9,8).translate(0,0.45,0),redM,hyd,
+       ([x,z,a])=>{F.position.set(x,groundH(x,z),z);F.rotation.set(0,-a,0);F.scale.set(1,1,1);});
+    mk(new THREE.CylinderGeometry(0.34,0.3,1.0,8).translate(0,0.5,0),binM,bins,
+       ([x,z,a])=>{F.position.set(x,groundH(x,z),z);F.rotation.set(0,-a,0);F.scale.set(1,1,1);});
+    mk(new THREE.BoxGeometry(1.8,0.12,0.5).translate(0,0.45,0),woodM,bench,
+       ([x,z,a])=>{F.position.set(x,groundH(x,z),z);F.rotation.set(0,-a,0);F.scale.set(1,1,1);});
+    mk(new THREE.CylinderGeometry(0.11,0.13,0.9,7).translate(0,0.45,0),boll,bolls,
+       ([x,z])=>{F.position.set(x,groundH(x,z),z);F.rotation.set(0,0,0);F.scale.set(1,1,1);});
+    mk(new THREE.BoxGeometry(3.6,2.4,1.5).translate(0,1.2,0),glassM,shelt,
+       ([x,z,a])=>{F.position.set(x,groundH(x,z),z);F.rotation.set(0,-a,0);F.scale.set(1,1,1);});
+    mk(new THREE.ConeGeometry(0.22,0.7,6).translate(0,0.35,0),coneM,cones,
+       ([x,z])=>{F.position.set(x,groundH(x,z),z);F.rotation.set(0,0,0);F.scale.set(1,1,1);});
+    mk(new THREE.BoxGeometry(5.2,1.1,0.1).translate(0,0.55,0),fenceM,fences,
+       ([x,z,a])=>{F.position.set(x,groundH(x,z),z);F.rotation.set(0,-a,0);F.scale.set(1,1,1);});
+    ctx.details=Object.assign(ctx.details||{},{hydrants:hyd.length,bins:bins.length,benches:bench.length,
+      bollards:bolls.length,shelters:shelt.length,roadworks:fences.length});
+  }
   ctx.details=Object.assign(ctx.details||{},{intersections:xings.length,streetLights:lights.length,signals:lampsAll.length,parkedCars:parked.length,people:walkers.length});
 });

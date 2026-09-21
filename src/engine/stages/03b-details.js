@@ -57,6 +57,59 @@ section('rooftops',()=>{
       const s=2+hash3(x,z,4)*3;H.add(x,r.h,z,hash3(x,z,5)*3,s,1.2+hash3(x,z,6)*1.5,s*0.7);}
     // a wooden water tank on its steel stand, on about one in six older brick buildings of four storeys or more
     if(r.brick&&r.h>=13&&r.h<=60&&r.hsh<0.16&&inPoly(r.x,r.z,r.ring)){KL.add(r.x,r.h,r.z,0,4.2,3,4.2);K.add(r.x,r.h+3,r.z,0,2.6,5,2.6);KR.add(r.x,r.h+8,r.z,0,1,1.6,1);}}
+  // ---- the rest of what is on a roof ----
+  // A flat roof is never flat and it is never empty: there is a parapet round the edge of it, a bulkhead
+  // where the stair comes up, vents, pipes, aerials and - on anything built since about 1990 - dishes.
+  // From street level none of it shows; from anywhere above forty metres it is most of what you see, and
+  // without it a city read as a field of blank lids.
+  const FURN=C.streetFurniture!==false;
+  if(FURN){
+    const parapetM=new THREE.MeshLambertMaterial({color:0x9a958c}),ventM=new THREE.MeshLambertMaterial({color:0xa8a49c}),
+          pipeM=new THREE.MeshLambertMaterial({color:0x7a756c}),dishM=new THREE.MeshLambertMaterial({color:0xd8d6d0}),
+          mastM=new THREE.MeshLambertMaterial({color:0x5a5650});
+    const PA=tiledInstances(new THREE.BoxGeometry(1,1,1).translate(0,0.5,0),parapetM,1800*WORLD,false),
+          VN=tiledInstances(new THREE.CylinderGeometry(1,1,1,7).translate(0,0.5,0),ventM,1200*WORLD,false),
+          PP=tiledInstances(new THREE.BoxGeometry(1,1,1).translate(0,0.5,0),pipeM,1200*WORLD,false),
+          DS=tiledInstances(new THREE.SphereGeometry(1,8,5,0,Math.PI*2,0,Math.PI*0.45),dishM,900*WORLD,false),
+          MS=tiledInstances(new THREE.BoxGeometry(1,1,1).translate(0,0.5,0),mastM,1500*WORLD,false),
+          BK=tiledInstances(new THREE.BoxGeometry(1,1,1).translate(0,0.5,0),parapetM,1600*WORLD,false);
+    let para=0,kit=0;
+    for(const r of ROOFTOP){
+      // the parapet: one box to each edge of the footprint, set in a little, half a metre proud
+      // Only on roofs big enough to be worth it, and only the first few edges: a parapet to every edge of
+      // every footprint in Chicago is a quarter of a million instances for something nobody can see.
+      if(r.area>700&&r.ring.length<=16){
+        for(let i=0;i<r.ring.length;i++){
+          const a2=r.ring[i],b2=r.ring[(i+1)%r.ring.length];
+          const len=Math.hypot(b2[0]-a2[0],b2[1]-a2[1]);
+          if(len<3)continue;
+          const mx=(a2[0]+b2[0])/2,mz=(a2[1]+b2[1])/2,ang=Math.atan2(b2[1]-a2[1],b2[0]-a2[0]);
+          PA.add(mx,r.h,mz,-ang,len,0.5+hash3(mx,mz,9)*0.6,0.45);para++;
+        }
+      }
+      const s=Math.sqrt(r.area);
+      // the bulkhead over the stair, on anything with more than a ladder
+      if(r.h>=11&&hash3(r.x,r.z,12)<0.7){
+        const bx2=r.x+(hash3(r.x,r.z,13)-0.5)*s*0.4,bz2=r.z+(hash3(r.z,r.x,13)-0.5)*s*0.4;
+        if(inPoly(bx2,bz2,r.ring)){BK.add(bx2,r.h,bz2,hash3(bx2,bz2,14)*3,3.4,2.6+hash3(bx2,bz2,15),3.0);kit++;}
+      }
+      // vents, pipes, a mast, and a dish or two
+      const n=Math.min(4,1+Math.floor(r.area/900));
+      for(let k=0;k<n;k++){
+        const hx=hash3(r.x+k*7,r.z,20),hz=hash3(r.z,r.x+k*11,21);
+        const x=r.x+(hx-0.5)*s*0.7,z=r.z+(hz-0.5)*s*0.7;
+        if(!inPoly(x,z,r.ring))continue;
+        const w=hash3(x,z,22);
+        if(w<0.4)VN.add(x,r.h,z,0,0.35+w*0.5,0.7+w*1.2,0.35+w*0.5);
+        else if(w<0.72)PP.add(x,r.h,z,hash3(x,z,23)*3,0.28,0.9+w*2.2,0.28);
+        else if(w<0.88)MS.add(x,r.h,z,0,0.12,3+w*5,0.12);
+        else DS.add(x,r.h+0.6,z,hash3(x,z,24)*3,1.1+w,0.7,1.1+w);
+        kit++;
+      }
+    }
+    PA.build();VN.build();PP.build();DS.build();MS.build();BK.build();
+    ctx.details=Object.assign(ctx.details||{},{parapets:para,roofKit:kit});
+  }
   H.build();K.build();KR.build();KL.build();ctx.details=Object.assign(ctx.details||{},{rooftopUnits:H.n,waterTanks:K.n});
 });
 section('parked-cars',()=>{

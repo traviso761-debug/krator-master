@@ -12,6 +12,7 @@ import argparse
 import email.utils
 import json
 import gzip
+import threading
 import http.server
 import mimetypes
 import os
@@ -25,6 +26,27 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_CONFIG = os.path.join(ROOT, "site.toml")
 TEXT_TYPES = ("application/javascript", "application/json", "image/svg+xml", "application/toml")
 GZIP_MIN = 1024   # smaller bodies are not worth compressing
+
+# Compressing a fourteen-megabyte city on every request costs the server about a third of a second and it
+# is the same third of a second every time, because the file only changes when somebody regenerates it. So
+# the compressed body is kept, keyed by path and by the file's own mtime and size: a rebuild invalidates it
+# by definition. Bounded, because these are big - a handful of the largest cities is the whole working set.
+GZIP_CACHE = {}
+GZIP_CACHE_MAX = 6
+GZIP_CACHE_LOCK = threading.Lock()
+
+
+def gzipped(path, key, raw):
+    with GZIP_CACHE_LOCK:
+        hit = GZIP_CACHE.get(path)
+        if hit and hit[0] == key:
+            return hit[1]
+    body = gzip.compress(raw, compresslevel=6, mtime=0)
+    with GZIP_CACHE_LOCK:
+        GZIP_CACHE[path] = (key, body)
+        while len(GZIP_CACHE) > GZIP_CACHE_MAX:
+            GZIP_CACHE.pop(next(iter(GZIP_CACHE)))
+    return body
 
 
 class ConfigError(Exception):
@@ -190,7 +212,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
             body = None
             encoding = None
             if text and st.st_size >= GZIP_MIN and "gzip" in self.headers.get("Accept-Encoding", ""):
-                body = gzip.compress(f.read(), compresslevel=6, mtime=0)
+                body = gzipped(file, etag, f.read())
                 encoding = "gzip"
             self.send_response(200)
             self.send_header("Content-Type", ctype)
