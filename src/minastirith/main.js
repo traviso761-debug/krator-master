@@ -6,9 +6,10 @@ import {build} from '../engine/build.js';
 import {landmarks} from './landmarks.js';
 import {hosts} from '../mordor/hosts.js';
 import {life} from './life.js';
+import {warmode} from './war.js';
 installErrorHandlers();window.LOAD=LOAD;
 configureLoading({prefix:'raising Minas Tirith… ',labels:{'map-data':'reading the townlands',ground:'cutting the seven circles',buildings:'building the tiers',details:'planting the Pelennor',landmarks:'raising the White Tower',el:'',traffic:'launching the boats',ui:'opening the windows'}});
 // The Tower, the Court and the Great Gate are this city's own. The hosts are Mordor's, and so is the war:
 // the same module marches them up the Causeway that marches them across Gorgoroth.
-const ctx=window._iz={defaultCity:'minastirith',models:[landmarks],extras:[{name:'life',fn:life},{name:'hosts',fn:hosts}]};
+const ctx=window._iz={defaultCity:'minastirith',models:[landmarks],extras:[{name:'life',fn:life},{name:'hosts',fn:hosts},{name:'war',fn:warmode}]};
 requestAnimationFrame(()=>setTimeout(()=>{build(ctx).catch(e=>{report('build',e);const l=document.getElementById('loading');if(l)l.remove();});},30));

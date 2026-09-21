@@ -162,10 +162,13 @@ const waterM=new THREE.MeshPhongMaterial({color:0x2c586e,specular:0x22343c,shini
   // able to see in. It carries what a hull carries - ring frames, longerons, and the radiator fins that get
   // rid of the heat, which for a place this size are the biggest thing on the outside of it.
   {
-    const skinM=new THREE.MeshLambertMaterial({color:0x8d949c,flatShading:true});
+    // Double-sided, and not because the winding is in doubt: a shell this size seen edge-on across a
+    // kilometre of curvature shows its inside face at the horizon of itself, and a one-sided one goes
+    // transparent exactly there - which is the seam you saw the far valleys through.
+    const skinM=new THREE.MeshLambertMaterial({color:0x8d949c,flatShading:true,side:THREE.DoubleSide});
     const plateM=new THREE.MeshLambertMaterial({color:0x7a8188,flatShading:true});
     const radM=new THREE.MeshLambertMaterial({color:0xd8dce0,flatShading:true});
-    const OUT_R=R+K.skin||R+46;
+    const OUT_R=R+(K.skin||46);
     for(let k=0;k<VALLEYS;k++){
       const a0=k*2*STRIP, a1=a0+STRIP;
       const pos=[],nor=[],idx=[],rows=[];

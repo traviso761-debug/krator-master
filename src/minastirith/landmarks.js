@@ -7,7 +7,7 @@
 import { mkRng } from '../core/rng.js';
 
 export function landmarks(api){
-  const {THREE,animHooks,scene,nightF,hour,box,group,gh,mergeParts}=api;
+  const {THREE,ctx,animHooks,scene,nightF,hour,box,group,gh,mergeParts}=api;
   return {
 
   keel(L,x,z){
@@ -255,17 +255,39 @@ export function landmarks(api){
     // the tree: dead, white, and left standing
     const trunk=new THREE.Mesh(new THREE.CylinderGeometry(0.8,2.1,16,7).translate(0,8,0),bone);
     trunk.position.set(x+13,base+2,z+2);parts.push(trunk);
-    const limbs=[];
+    const limbs=[],tips=[];
     const grow=(px,py,pz,ax,ay,az,len,rad,depth)=>{
       const m=new THREE.Mesh(new THREE.CylinderGeometry(rad*0.45,rad,len,6).translate(0,len/2,0),bone);
       m.position.set(px,py,pz);m.rotation.set(ax,ay,az);limbs.push(m);
-      if(depth<=0)return;
+      if(depth<=0){tips.push([px+Math.sin(az)*len*0.9,py+Math.cos(az)*Math.cos(ax)*len*0.92,pz-Math.sin(ax)*len*0.9]);return;}
       const ex=px+Math.sin(az)*len*0.9,ey=py+Math.cos(az)*Math.cos(ax)*len*0.92,ez=pz-Math.sin(ax)*len*0.9;
       for(let k=0;k<2;k++)grow(ex,ey,ez,ax+(TR()-0.5)*0.9,ay+(TR()-0.5)*1.4,az+(TR()-0.5)*1.0,
         len*(0.62+TR()*0.16),rad*0.6,depth-1);
     };
     for(let k=0;k<4;k++)grow(x+13,base+17,z+2,(TR()-0.5)*0.5,TR()*6.28,(TR()-0.5)*0.7,9,1.1,3);
     parts.push(...limbs);
+    // ---- and what it does when the war is over ----
+    // The tree is dead and left standing because nobody will cut it down; it comes into flower when the
+    // King comes back. The page's peace mode is as close to that as this model gets, so the blossom is
+    // built here and hidden, and src/minastirith/war.js turns it on. Leaves under it, because a tree in
+    // flower with bare wood under the blossom reads as snow on a dead tree.
+    {
+      const blossomM=new THREE.MeshLambertMaterial({color:0xfdf6ee,emissive:0x2a2426,flatShading:true});
+      const leafM=new THREE.MeshLambertMaterial({color:0x6f8f52,flatShading:true});
+      const bl=[];
+      for(const [tx,ty,tz] of tips){
+        for(let k=0;k<7;k++){
+          const r=0.55+TR()*0.8;
+          const m=new THREE.Mesh(new THREE.IcosahedronGeometry(r,0),TR()<0.72?blossomM:leafM);
+          m.position.set(tx+(TR()-0.5)*4.5,ty+(TR()-0.5)*4.2,tz+(TR()-0.5)*4.5);
+          m.rotation.set(TR()*3,TR()*3,TR()*3);bl.push(m);
+        }
+      }
+      const byB=new Map();
+      for(const m of bl){let a=byB.get(m.material);if(!a){a=[];byB.set(m.material,a);}a.push(m);}
+      const P2=ctx.peaceParts=ctx.peaceParts||[];
+      for(const [mat,list] of byB){const g2=mergeParts(list,mat);g2.visible=false;scene.add(g2);P2.push(g2);}
+    }
     // the guard of the Citadel, one at each end of the court
     const mail=new THREE.MeshLambertMaterial({color:0x2a2c33});
     for(const s of [-1,1])for(const q of [-1,1]){
