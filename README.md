@@ -646,27 +646,51 @@ wireframe and menagerie menu every other page has.
     the rest a halo of puffs small enough not to be read as circles. All of it merges per colour, so a
     three-hundred-puff nebula costs three draw calls, and so do a thousand cloud discs.
 - **The hulls** are tables of cross-sections rather than primitives, because almost nothing on a starship is
-  straight — and, as the second pass found out, almost nothing on one is *round* either. `src/starship/`
-  has the lathe (a deflector dish, a Bussard cowl, a station core), the fore-and-aft tube and the swept
-  pylon, and each of those now takes a **section profile** as well as a table of sizes: a lens with a rim
-  for a saucer, a flat-bottomed slab with a rounded shoulder for a nacelle, an aerofoil with a blunt
-  leading edge for a pylon, a hard-bevelled hexagon for anything Cardassian. The section is as much of the
-  design language as the dimensions are. Stations also carry `ryb`, the half-depth *below* the centreline,
-  because a hull with a domed top and a flat bottom is the normal case and an ellipse is the exception.
-  There is no lettering anywhere on any of them: a hull number would have to be forty separate extrusions
-  to be legible and would be four pixels tall from anywhere you would actually look.
-- **Galaxy class**, 642.5 m: a lens with a rim and a **flat trailing edge** — cut off square where the
-  impulse engines are, which is what stops the saucer reading as a flying saucer; an engineering hull that
-  is an egg widest a third of the way back; and the nacelles held wide, at two-thirds of the saucer's
-  radius outboard with their noses level with the saucer's transom, which is the stance of the class and
-  the thing hardest to get from memory. The phaser strips round the saucer do the work that a set of
-  radiating panel ribs used to do badly: the ribs made it look like a wheel.
-- **Intrepid class**, 344 m: no neck — the saucer runs back and down into the engineering section as one
-  body — a teardrop saucer in plan with a broad transom across the back of it, and nacelle pylons that
-  *move*, lying out and down in normal space and swinging up and forward before the ship goes to warp. It
-  is the only animated mechanism on these pages. Both of its pylons are broad fins about fifty metres of
-  chord across and seven thick; built with the chord and the thickness the wrong way round they came out
-  as knitting needles, which is the same mistake in a different frame as getting the section wrong.
+  straight — and almost nothing on one is *round* either. `src/starship/` has the lathe (a deflector dish, a
+  Bussard cowl, a station core), the fore-and-aft tube and the swept pylon, and each takes a **section
+  profile** as well as a table of sizes: a lens with a rim for a saucer, a flat-bottomed slab with a rounded
+  shoulder for a nacelle, an aerofoil with a blunt leading edge for a pylon, a hard-bevelled hexagon for
+  anything Cardassian. The section is as much of the design language as the dimensions are. Stations also
+  carry `ryb`, the half-depth *below* the centreline, because a hull with a domed top and a flat bottom is
+  the normal case and an ellipse is the exception. There is no lettering anywhere on any of them: a hull
+  number would have to be forty separate extrusions to be legible and would be four pixels tall from
+  anywhere you would actually look.
+- **Every hull on these pages was inside out**, and had been since the first one was built. `tube` wound its
+  skin for stations running stern-to-bow and its end caps for bow-to-stern, so the two never agreed, and
+  every table in the project is written bow to stern because that is the order you think a hull in. `lathe`
+  has the same trap from the other direction: three.js winds it from the order of the profile points, and
+  most of these profiles are written top-down because that is how you think about a dome. The result was
+  that back-face culling threw away the near wall of every saucer, engineering hull and nacelle, so you
+  looked *through* it at the inside of the far wall and at anything parked between the two — the captain's
+  yacht was visible from above, through the saucer. It never showed in the silhouette, which is why it
+  survived so long: an inside-out closed hull has exactly the same outline as a solid one.
+
+  The primitives now pick their winding from the direction the input runs (`tube` from the station order,
+  `lathe` by reversing a descending profile, and `sweep`'s end caps were simply the wrong way round), so
+  either ordering gives a solid. `tests/hulls.test.js` holds it there: it builds each primitive against a
+  stub of three.js and, for every triangle, takes the face normal against the vector from the body's
+  centroid out to that face. Before the fix a bow-to-stern hull scored 0 faces out of 64 pointing outward;
+  it now scores 64 out of 64 whichever way the table is written. Put the old winding back and five of the
+  seven checks fail, which is the only evidence worth having that a regression test works.
+- **Galaxy class.** Cut to the published figures: 642.5 m long, 463.7 m across the saucer, 195.3 m from the
+  top of the bridge to the bottom of the engineering hull over 42 decks, and nacelles 248 m long, 57 m wide
+  and 32 m tall at their widest against 38 by 19 at the collector end (Rick Sternbach's blueprints). Three
+  of those corrected the model. The nacelles were 40 m too short, and because their caps have to land on
+  the stern, getting the length right pushes their collector ends *under* the saucer's aft quarter — which
+  is why the class looks so compact from above. A nacelle is wider than it is tall, 57 by 32, not the
+  upright tube it had been. And the engineering hull was 10 m too deep, so the ship stood taller than 195.
+  The saucer is a lens with a rim and a flat trailing edge, cut off square where the impulse engines are:
+  a disc reads as a flying saucer, this reads as a hull. Its rim carries **two** rows of windows with a
+  recessed sensor groove between them — the upper is deck 9, which is Ten Forward and unusually tall, and
+  the lower is deck 10. Three even rows, which is what was there before, is a Constitution refit's rim.
+- **Intrepid class.** 343 m long, 133 m across, 66 m tall over 15 decks. The beam was 5 m over, so the
+  whole plan outline came in; the height falls out of the rest and lands on 66 with the nacelles drooped.
+  No neck — the saucer runs back and down into the engineering section as one body — a teardrop saucer in
+  plan with a broad transom across the back of it, and nacelle pylons that *move*, lying out and down in
+  normal space and swinging up and forward before the ship goes to warp. It is the only animated mechanism
+  on these pages. Both pylons are broad fins about fifty metres of chord across and seven thick; built with
+  the chord and the thickness the wrong way round they came out as knitting needles, which is the same
+  mistake in a different frame as getting the section wrong.
 - **Deep Space 9**, 1,451 m across the docking ring: the opposite design language, and that is the point of
   drawing it next to the other two. Dark brown, ribbed, hexagonal in section, symmetrical in threes and
   sixes rather than about a keel, and not trying to look fast, because it is a building. Core, three

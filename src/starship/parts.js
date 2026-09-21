@@ -15,7 +15,13 @@
 // dish, a Bussard collector, a docking clamp and a station core are all one profile turned round an axis,
 // and a lathe gets the subtle double curve of a saucer section in a way stacked cylinders never do.
 export function lathe(THREE, profile, seg, mat, cap){
-  const pts=profile.map(([r,y])=>new THREE.Vector2(Math.max(0.0001,r),y));
+  // three.js winds a lathe from the order of the profile points, so a profile written DOWN the y axis
+  // comes out inside-out: the faces you can see are the inside of the far wall and everything inside the
+  // shape shows through. Most of the profiles in this project are written top-down, because that is how
+  // you think about a dome, so they are turned round here rather than at forty call sites. The surface of
+  // revolution is identical either way; only the winding changes.
+  const prof=(profile.length>1&&profile[profile.length-1][1]<profile[0][1])?profile.slice().reverse():profile;
+  const pts=prof.map(([r,y])=>new THREE.Vector2(Math.max(0.0001,r),y));
   const g=new THREE.LatheGeometry(pts,seg||48);
   if(cap===false)g.computeVertexNormals();
   const m=new THREE.Mesh(g,mat);
@@ -46,9 +52,17 @@ export function tube(THREE, stations, seg, mat, capFront, capBack, section){
       pos.push(st.x,(st.cy||0)+v*r,(st.cz||0)+u*st.rz);
     }
   }
+  // Which way round the skin has to be wound depends on which way the stations run, and this got it
+  // wrong for two months. Every table in this project is written bow to stern - down x - because that is
+  // the order you think a hull in, and with the skin wound the other way every hull on every one of
+  // these pages was INSIDE OUT: back-face culling threw away the near wall, so you looked straight
+  // through the saucer at the inside of the far one and at anything parked between them. The end caps
+  // were wound for bow-to-stern and the skin for stern-to-bow, so the two never agreed and neither
+  // ordering gave a solid hull.
+  const rev=stations[N-1].x<stations[0].x;
   for(let i=0;i<N-1;i++)for(let j=0;j<S;j++){
     const a=i*S+j, b=i*S+(j+1)%S, c=(i+1)*S+j, d=(i+1)*S+(j+1)%S;
-    idx.push(a,c,b, b,c,d);
+    if(rev)idx.push(a,b,c, b,d,c); else idx.push(a,c,b, b,c,d);
   }
   const cap=(i,flip)=>{
     const st=stations[i], base=pos.length/3;
@@ -58,8 +72,8 @@ export function tube(THREE, stations, seg, mat, capFront, capBack, section){
       if(flip)idx.push(base,b,a); else idx.push(base,a,b);
     }
   };
-  if(capFront!==false)cap(0,true);
-  if(capBack!==false)cap(N-1,false);
+  if(capFront!==false)cap(0,rev);
+  if(capBack!==false)cap(N-1,!rev);
   const g=new THREE.BufferGeometry();
   g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
   g.setIndex(idx);g.computeVertexNormals();g.computeBoundingSphere();
@@ -125,7 +139,7 @@ export function sweep(THREE, path, seg, mat, section){
     pos.push(o[0]/S,o[1]/S,o[2]/S);
     for(let j=0;j<S;j++){const a=i*S+j,b=i*S+(j+1)%S;if(flip)idx.push(base,b,a);else idx.push(base,a,b);}
   };
-  cap(0,true);cap(N-1,false);
+  cap(0,false);cap(N-1,true);   // outward is BACK down the path at the start and on along it at the end
   const g=new THREE.BufferGeometry();
   g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
   g.setIndex(idx);g.computeVertexNormals();g.computeBoundingSphere();
