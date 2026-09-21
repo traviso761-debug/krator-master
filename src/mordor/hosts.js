@@ -9,6 +9,10 @@ export function hosts(api){
   const {THREE,C,ctx,B,ROADS,scene,camera,animHooks,groundH,joinChains,polyAt,polyLen}=api;
 
   const K=C.hosts;if(!K)return;
+  // Everything this module puts in the world is war, and a page can ask for it to go away: the Minas
+  // Tirith page has a peace mode, and what it hides is exactly this list.
+  const WAR=ctx.warParts=ctx.warParts||[];
+  const add=o=>{scene.add(o);WAR.push(o);return o;};
   const HR=mkRng(6626),D=new THREE.Object3D();
   const arrows=[],stones=[],engines=[],fires2=[],smoke2=[];
   const col2=h=>(typeof h==='string')?parseInt(h.replace('#',''),16):h;
@@ -88,10 +92,10 @@ export function hosts(api){
        const pole=new THREE.Mesh(new THREE.BoxGeometry(0.22,9,0.22).translate(0,4.5,0),ironM);pole.position.set(bx,0,bz);
        const flag=new THREE.Mesh(new THREE.PlaneGeometry(3.4,2.2),new THREE.MeshLambertMaterial({color:0x5a1712,side:THREE.DoubleSide}));
        flag.position.set(bx+1.7,8,bz);g.add(pole,flag);}
-     scene.add(g);
+     add(g);
      // the dust it raises, trailing behind
      const dust=[];for(let d2=0;d2<7;d2++){const p=new THREE.Mesh(new THREE.SphereGeometry(17,9,6),dustM);
-       p.userData.t=d2/7;scene.add(p);dust.push(p);}
+       p.userData.t=d2/7;add(p);dust.push(p);}
      armies.push({g,r,s:HR()*r.len,v:(K.pace||1.4)*(0.8+HR()*0.5),dir:HR()<0.5?-1:1,dust,ranks,STEP});}
    ctx.hosts=armies;   // the Black Gate watches these: it opens when one is on the road and shuts behind it
    // ---- the hosts that are not going anywhere ----
@@ -117,10 +121,10 @@ export function hosts(api){
        const flag=new THREE.Mesh(new THREE.PlaneGeometry(3.6,2.4),new THREE.MeshLambertMaterial({color:0x5a1712,side:THREE.DoubleSide}));
        flag.position.set(bx2+1.8,8.6,bz2);g.add(pole,flag);}
      g.position.set(cx,groundH(cx,cz),cz);g.rotation.y=HR()*6.28;
-     scene.add(g);
+     add(g);
    }
    let last=performance.now();
-   animHooks.push(now=>{const dt=Math.min(0.05,(now-last)/1000);last=now;
+   animHooks.push(now=>{if(ctx.war===false)return;const dt=Math.min(0.05,(now-last)/1000);last=now;
      for(const a of armies){a.s+=a.v*dt*a.dir;
        const [px,pz]=polyAt(a.r,a.s,true),[ax,az]=polyAt(a.r,a.s+a.dir*120,true);
        const head=Math.atan2(az-pz,ax-px),gy=groundH(px,pz);
@@ -173,7 +177,7 @@ export function hosts(api){
          const flag=new THREE.Mesh(new THREE.PlaneGeometry(3.4,2.2),new THREE.MeshLambertMaterial({color:S.colour?col2(S.colour):0x5a1712,side:THREE.DoubleSide}));
          flag.position.set(qx+1.7,8,qz);g.add(pole,flag);}
        g.position.set(bx,groundH(bx,bz),bz);g.rotation.y=aim(bx,bz);
-       scene.add(g);flying.blocks++;}}
+       add(g);flying.blocks++;}}
 
     // ---- the camps, behind them ----
     // Tents in clumps round a fire, which is the only thing that makes a plain look occupied.
@@ -193,12 +197,12 @@ export function hosts(api){
            ridge.setMatrixAt(n,D.matrix);n++;}
          const fy=groundH(ox,oz);
          const f=new THREE.Mesh(new THREE.ConeGeometry(2.2,5,6),emberM);f.position.set(ox,fy+2.5,oz);
-         f.userData.noWire=true;scene.add(f);fires2.push({f,ph:HR()*6.28});
+         f.userData.noWire=true;add(f);fires2.push({f,ph:HR()*6.28});
          for(let d2=0;d2<3;d2++){const p=new THREE.Mesh(new THREE.SphereGeometry(5,7,5),dustM);
-           p.userData.noWire=true;scene.add(p);smoke2.push({p,x:ox,y:fy,z:oz,ph:(d2+HR())/3});}
+           p.userData.noWire=true;add(p);smoke2.push({p,x:ox,y:fy,z:oz,ph:(d2+HR())/3});}
          flying.camps++;}
        tent.count=ridge.count=n;tent.frustumCulled=ridge.frustumCulled=false;
-       scene.add(tent,ridge);flying.tents=n;}}
+       add(tent,ridge);flying.tents=n;}}
 
     // ---- the engines ----
     // A counterweight trebuchet: two legs, a beam on a pivot with the weight on the short arm, and a base.
@@ -218,7 +222,7 @@ export function hosts(api){
       const beam=new THREE.Mesh(new THREE.BoxGeometry(1.0*k2,1.0*k2,26*k2).translate(0,0,-7*k2),woodM);pivot.add(beam);
       const wt=new THREE.Mesh(new THREE.BoxGeometry(3.6*k2,3.6*k2,3.6*k2),ironM);wt.position.set(0,-0.6*k2,5.5*k2);pivot.add(wt);
       g.position.set(ex,ey,ez);g.rotation.y=-ang+(outward?Math.PI/2:-Math.PI/2);
-      scene.add(g);
+      add(g);
       engines.push({pivot,x:ex,y:ey,z:ez,a:ang,out:!!outward,k:k2,next:HR()*9000,fired:false});flying.engines++;};
     {const NE=S.engines||0;
      for(let e=0;e<NE;e++){
@@ -269,7 +273,7 @@ export function hosts(api){
        const bridge=new THREE.Mesh(new THREE.BoxGeometry(WD*0.8,0.5,10).translate(0,0,-5),woodM);
        bridge.position.set(0,H2,-WD/2);bridge.rotation.x=-0.5-HR()*0.5;g.add(bridge);
        g.position.set(ex,gy,ez);g.rotation.y=aim(ex,ez);
-       scene.add(g);flying.towers++;}}
+       add(g);flying.towers++;}}
 
     // ---- Grond ----
     // The hammer of the underworld: a ram of black steel a hundred feet long, slung in chains under a frame
@@ -324,11 +328,11 @@ export function hosts(api){
       tb.count=G.trolls||34;tb.frustumCulled=false;g.add(tb);
       g.position.set(gx,gy,gz);
       g.rotation.y=-Math.atan2(ccz-gz,ccx-gx)-Math.PI/2;    // the head points at the gate
-      scene.add(g);
+      add(g);
       const dust=[];for(let d2=0;d2<6;d2++){const p=new THREE.Mesh(new THREE.SphereGeometry(7,7,5),dustM);
-        p.userData.noWire=true;p.visible=false;scene.add(p);dust.push(p);}
+        p.userData.noWire=true;p.visible=false;add(p);dust.push(p);}
       let beat=0;
-      animHooks.push(now=>{
+      animHooks.push(now=>{if(ctx.war===false)return;
         const T2=G.period||5200, u=((now%T2)/T2);
         // back slowly, forward fast, and a shudder through the frame on the stroke
         const sw=u<0.72?-0.5*Math.sin(u/0.72*Math.PI*0.5):-0.5+0.62*Math.sin((u-0.72)/0.28*Math.PI*0.5);
@@ -376,18 +380,18 @@ export function hosts(api){
         g.add(pole,flag);}
       g.position.set(RD.at[0],groundH(RD.at[0],RD.at[1]),RD.at[1]);
       g.rotation.y=RD.facing!==undefined?RD.facing:(-Math.atan2(ccz-RD.at[1],ccx-RD.at[0])+Math.PI/2);
-      scene.add(g);flying.riders=m2;
+      add(g);flying.riders=m2;
     }
 
     // ---- what is in the air ----
     const NA=S.arrows===undefined?700:S.arrows;
     const shafts=new THREE.InstancedMesh(new THREE.CylinderGeometry(0.22,0.22,7,4).rotateX(Math.PI/2),shaftM,NA);
-    shafts.frustumCulled=false;shafts.count=NA;shafts.userData.noWire=true;scene.add(shafts);
+    shafts.frustumCulled=false;shafts.count=NA;shafts.userData.noWire=true;add(shafts);
     for(let i=0;i<NA;i++)arrows.push({t:2});
     const NS=Math.max(1,((S.engines||0)+(S.defenders||0))*2);
     const rockM=new THREE.MeshLambertMaterial({color:0x5b554d,flatShading:true});
     const stoneMesh=new THREE.InstancedMesh(new THREE.IcosahedronGeometry(2.2,0),rockM,NS);
-    stoneMesh.frustumCulled=false;stoneMesh.count=NS;scene.add(stoneMesh);
+    stoneMesh.frustumCulled=false;stoneMesh.count=NS;add(stoneMesh);
     for(let i=0;i<NS;i++)stones.push({t:2});
     // The besiegers shoot fire. A stone wrapped in burning pitch is the whole point of throwing it into a
     // city roofed in timber and slate, and a lit one crossing the sky is the clearest possible signal that
@@ -396,17 +400,17 @@ export function hosts(api){
     const flameM=new THREE.MeshBasicMaterial({color:0xffa23a,transparent:true,opacity:0.92,depthWrite:false,
       blending:THREE.AdditiveBlending});
     const fireMesh=new THREE.InstancedMesh(new THREE.IcosahedronGeometry(3.6,0),flameM,NS);
-    fireMesh.frustumCulled=false;fireMesh.count=NS;fireMesh.userData.noWire=true;scene.add(fireMesh);
+    fireMesh.frustumCulled=false;fireMesh.count=NS;fireMesh.userData.noWire=true;add(fireMesh);
     const trailM=new THREE.MeshBasicMaterial({color:0x201c19,transparent:true,opacity:0.3,depthWrite:false});
     const trails=[];
     for(let i=0;i<Math.min(110,NS*6);i++){const p=new THREE.Mesh(new THREE.SphereGeometry(4,6,5),trailM);
-      p.visible=false;p.userData.noWire=true;scene.add(p);trails.push(p);}
+      p.visible=false;p.userData.noWire=true;add(p);trails.push(p);}
     const burnM=new THREE.MeshBasicMaterial({color:0xff8a2a,transparent:true,opacity:0.9,depthWrite:false});
     const hits=[];
     for(let i=0;i<(S.hits||30);i++){const g=new THREE.Group();
       const f=new THREE.Mesh(new THREE.ConeGeometry(3.4,12,6),burnM);f.position.y=6;g.add(f);
       const sm=new THREE.Mesh(new THREE.SphereGeometry(7,7,5),trailM);sm.position.y=16;g.add(sm);
-      g.visible=false;g.userData.noWire=true;scene.add(g);hits.push({g,f,sm,t:2});}
+      g.visible=false;g.userData.noWire=true;add(g);hits.push({g,f,sm,t:2});}
     let hitN=0;
 
     const WALL=S.wall||560, WY=S.wallY||120;
@@ -424,7 +428,7 @@ export function hosts(api){
         else   launch(arrows,fx+j(),fy,fz+j(),wx+j()*0.4,wy,wz+j()*0.4,2.6+HR()*0.8,120+HR()*60);}};
 
     let nextV=0;
-    animHooks.push(now=>{
+    animHooks.push(now=>{if(ctx.war===false)return;
       const dt=0.016;
       if(NA&&now>nextV){nextV=now+(S.volleyGap||1500)*(0.6+HR());volley(HR()<0.45,S.perVolley||70);}
       for(const q of engines){
@@ -500,7 +504,7 @@ export function hosts(api){
        outer.position.set(-S*0.06,0,sd*S*0.62);w.add(inner,outer);g.add(w);wings.push({w,sd});}
      const rider=new THREE.Mesh(new THREE.CylinderGeometry(S*0.06,S*0.09,S*0.34,6).translate(0,S*0.17,0),ironM);
      rider.position.set(0,S*0.16,0);g.add(rider);
-     scene.add(g);
+     add(g);
      const around=K.circle||[0,0];
      riders.push({g,wings,cx:around[0]+(HR()-0.5)*(K.spread||120000),cz:around[1]+(HR()-0.5)*(K.spread||120000),
        r:(K.orbit||6000)*(0.5+HR()),y:(K.alt||900)+HR()*(K.altSpread||1800),
@@ -512,7 +516,7 @@ export function hosts(api){
    // they hold a few pixels, the same bargain the mountains on the horizon make. minScreen is how many metres
    // of wing a page insists on seeing per kilometre of distance; a city-sized map leaves it at nought.
    const GROW=K.grow===undefined?(B.w>120000?3200:0):K.grow;
-   animHooks.push(now=>{
+   animHooks.push(now=>{if(ctx.war===false)return;
      for(const q of riders){
        // Most of them patrol wherever anyone is standing, because that is the only way to see one. The land is
        // six hundred and eighty kilometres across; a fellbeast circling a fixed point is a pixel from anywhere
@@ -540,10 +544,10 @@ export function hosts(api){
       let x=0,y=0;
       for(let s2=0;s2<9;s2++){const seg=new THREE.Mesh(new THREE.BoxGeometry(90,1400,90),boltM);
         x+=(HR()-0.5)*1400;y-=1400;seg.position.set(x,y,0);seg.rotation.z=(HR()-0.5)*0.4;g.add(seg);}
-      g.visible=false;scene.add(g);bolts.push(g);}
-    const flashLight=new THREE.HemisphereLight(0xcfd8ff,0x40342c,0);scene.add(flashLight);
+      g.visible=false;add(g);bolts.push(g);}
+    const flashLight=new THREE.HemisphereLight(0xcfd8ff,0x40342c,0);add(flashLight);
     let next=0,active=null,t0=0;
-    animHooks.push(now=>{
+    animHooks.push(now=>{if(ctx.war===false)return;
       if(now>next&&!active){next=now+(K.lightningGap||2600)*(0.5+HR()*1.6);
         active=bolts[Math.floor(HR()*bolts.length)];t0=now;
         const bx=B.cx+(HR()-0.5)*B.w*0.8,bz=B.cz+(HR()-0.5)*B.d*0.8;

@@ -25,6 +25,7 @@ export function life(api){
   const iron=new THREE.MeshLambertMaterial({color:0x35322e});
 
   const statics=[],banners=[],smokes=[],fires=[];
+  const warStatics=[];                      // the siege damage, kept apart so peace can hide it
 
   // ---- the banners ----
   // Hung from the parapet of every circle, all the way round, and from the towers: the Steward's plain black
@@ -105,15 +106,15 @@ export function life(api){
     for(let i=0;i<n;i++){
       const rx=x+(R()-0.5)*(big?22:14), rz=z+(R()-0.5)*(big?22:14), g=groundH(rx,rz);
       const b=box(rx,g,rz,1.1+R()*2.8,0.7+R()*1.7,1.1+R()*2.6,R()<0.25?charM:rubbleM);
-      b.rotation.y=R()*6.28;statics.push(b);}};
+      b.rotation.y=R()*6.28;warStatics.push(b);}};
   for(let k=0;k<(K.burning||0);k++){
     const a=R()*Math.PI*2, r=(0.4+R()*0.6)*(R_OUT-40);
     const x=Math.cos(a)*r, z=Math.sin(a)*r;
     const h=roofAt(x,z);if(h<5)continue;
-    statics.push(box(x,h-2.4,z,4+R()*5,3.2,4+R()*5,charM));   // the roof fallen in
+    warStatics.push(box(x,h-2.4,z,4+R()*5,3.2,4+R()*5,charM));   // the roof fallen in
     for(let i=0;i<3;i++){                                      // the rafters left standing
       const b=box(x+(R()-0.5)*5,h-1,z+(R()-0.5)*5,0.4,2.6+R()*2.6,0.4,charM);
-      b.rotation.set((R()-0.5)*0.5,R()*3,(R()-0.5)*0.5);statics.push(b);}
+      b.rotation.set((R()-0.5)*0.5,R()*3,(R()-0.5)*0.5);warStatics.push(b);}
     spill(x,z,5,true);
     const f=new THREE.Mesh(new THREE.ConeGeometry(2.2+R()*2,7+R()*7,6),blazeM);
     f.position.set(x,h+3,z);f.userData.noWire=true;scene.add(f);blazes.push({f,ph:R()*6.28});
@@ -125,13 +126,17 @@ export function life(api){
     const a=R()*Math.PI*2, r=(0.35+R()*0.65)*(R_OUT-30);
     const x=Math.cos(a)*r, z=Math.sin(a)*r;
     const h=roofAt(x,z);if(h<4)continue;
-    statics.push(box(x+(R()-0.5)*4,h-1.8,z+(R()-0.5)*4,3+R()*4,2.4,3+R()*4,charM));
+    warStatics.push(box(x+(R()-0.5)*4,h-1.8,z+(R()-0.5)*4,3+R()*4,2.4,3+R()*4,charM));
     spill(x,z,3,false);
   }
 
-  const byMat=new Map();
-  for(const m of statics){let a=byMat.get(m.material);if(!a){a=[];byMat.set(m.material,a);}a.push(m);}
-  for(const [mat,list] of byMat){const g=mergeParts(list,mat);g.userData.wireCat='life';scene.add(g);}
+  const WAR=ctx.warParts=ctx.warParts||[];
+  const mergeAll=(list,war)=>{const byMat=new Map();
+    for(const m of list){let a=byMat.get(m.material);if(!a){a=[];byMat.set(m.material,a);}a.push(m);}
+    for(const [mat,l] of byMat){const g=mergeParts(l,mat);g.userData.wireCat='life';scene.add(g);if(war)WAR.push(g);}};
+  mergeAll(statics,false);mergeAll(warStatics,true);
+  for(const q of blazes)WAR.push(q.f);
+  for(const q of palls)WAR.push(q.p);
 
   let t0=performance.now();
   animHooks.push(now=>{
