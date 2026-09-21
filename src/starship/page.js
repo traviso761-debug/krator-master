@@ -49,17 +49,52 @@ function buildSky(THREE,scene,K,rnd){
   // overlapping puffs at slightly different distances and left to accumulate.
   for(const nb of (K.nebulae||[])){
     const g=new THREE.Group();
-    const m=new THREE.MeshBasicMaterial({color:new THREE.Color(nb.colour||'#4a2a6e'),transparent:true,
-      opacity:nb.opacity||0.055,depthWrite:false,blending:THREE.AdditiveBlending,fog:false});
+    const base=new THREE.Color(nb.colour||'#4a2a6e');
     const R=nb.size||D*0.35;
-    for(let i=0;i<(nb.puffs||26);i++){
-      const s=new THREE.Mesh(new THREE.SphereGeometry(R*(0.3+rnd()*0.8),10,7),m);
-      s.position.set((rnd()-0.5)*R*2.4,(rnd()-0.5)*R*1.1,(rnd()-0.5)*R*2.4);
-      s.scale.set(1,0.45+rnd()*0.4,1);g.add(s);
+    // The first version of this used two dozen big low-polygon spheres and you could count the facets on
+    // every one of them. A nebula has no edge and no surface, so what works is a great many small puffs,
+    // each almost invisible on its own and each fading out towards its own edge, left to pile up where
+    // they overlap.
+    const n=nb.puffs||300;
+    const mats=[];
+    for(let k=0;k<3;k++){
+      const c=base.clone();
+      c.offsetHSL((k-1)*0.035,0,(k-1)*0.05);
+      mats.push(new THREE.MeshBasicMaterial({color:c,transparent:true,opacity:nb.opacity||0.0072,
+        depthWrite:false,blending:THREE.AdditiveBlending,fog:false}));
     }
+    // A single additive sphere is a flat disc with a hard edge: one layer of fragments, all at the same
+    // opacity, so what you see is a circle. Three nested shells per puff is a three-step radial falloff,
+    // and with enough puffs overlapping that reads as cloud instead of as a bag of marbles. They are all
+    // merged per colour afterwards, so a two-hundred-puff nebula costs three draw calls.
+    const bins=[[],[],[]];
+    for(let i=0;i<n;i++){
+      // Two thirds of them go into a dense core where every puff is buried in its neighbours, and the
+      // rest into a thin halo where they are small enough not to be read as individual circles. A nebula
+      // that is evenly scattered at one size reads as exactly what it is - a few dozen balls - however
+      // faint each one is.
+      const core=i%3!==2;
+      const knot=Math.floor(rnd()*4);
+      const kx=Math.sin(knot*2.7)*R*0.42,ky=Math.sin(knot*5.1)*R*0.16,kz=Math.cos(knot*1.9)*R*0.42;
+      const sp=core?0.34:1.00, rad=core?(0.07+rnd()*0.11):(0.025+rnd()*0.045);
+      const r0=R*rad;
+      const px=kx+(rnd()-0.5)*R*2*sp,py=ky+(rnd()-0.5)*R*0.9*sp,pz=kz+(rnd()-0.5)*R*2*sp;
+      const sx=1+rnd()*0.6,sy=0.40+rnd()*0.35,sz=1+rnd()*0.6;
+      const rot=[rnd()*6.28,rnd()*6.28,rnd()*6.28];
+      for(const shell of [1,0.74,0.48]){
+        const sMesh=new THREE.Mesh(new THREE.SphereGeometry(r0*shell,9,7),mats[i%3]);
+        sMesh.position.set(px,py,pz);sMesh.scale.set(sx,sy,sz);
+        sMesh.rotation.set(rot[0],rot[1],rot[2]);
+        bins[i%3].push(sMesh);
+      }
+    }
+    for(let k=0;k<3;k++)if(bins[k].length)g.add(mergeParts(THREE,bins[k],mats[k]));
     const a=nb.az===undefined?2.2:nb.az,e=nb.el===undefined?0.2:nb.el,d=(nb.dist||0.86)*D;
     g.position.set(Math.cos(a)*Math.cos(e)*d,Math.sin(e)*d,Math.sin(a)*Math.cos(e)*d);
-    g.userData.noWire=true;g.frustumCulled=false;scene.add(g);
+    // the whole sky is excluded from the wireframe and from the geometry fingerprint: what the test
+    // suite is checking is the ship, not the weather behind it
+    g.traverse(o=>{o.userData.noWire=true;o.frustumCulled=false;});
+    scene.add(g);
   }
   // ---- worlds ----
   // Vertex colours on a sphere, because there are no textures anywhere in this project. A gas giant is
@@ -77,20 +112,57 @@ function buildSky(THREE,scene,K,rnd){
     for(let i=0;i<pos.count;i++){
       const x=pos.getX(i)/R,y=pos.getY(i)/R,z=pos.getZ(i)/R;
       if(b.kind==='gas'){
-        // bands, with a little turbulence where they shear against each other
+        // Bands, and the trouble with bands is the join. Rounding a latitude into a palette index gives a
+        // staircase where the band edge crosses the sphere's triangles; what is wanted is a band that is
+        // FLAT across most of its width and blends over the last fifth, with enough wobble along it to
+        // look like weather shearing against the next band along.
         const f=(y*0.5+0.5);
-        const band=Math.floor(f*(b.bands||9)+0.35*Math.sin(y*22+x*3+seedA));
-        c.copy(pal[((band%pal.length)+pal.length)%pal.length]);
-        c.multiplyScalar(0.92+0.08*Math.sin(y*47+seedB));
+        const q=f*(b.bands||9)+0.55*Math.sin(y*8.4+seedA)+0.22*Math.sin(y*21+x*2.2+seedB)
+               +0.12*Math.sin(z*17-y*9+seedC);
+        const i0=Math.floor(q),fr=q-i0,L=pal.length;
+        const A=pal[((i0%L)+L)%L],B=pal[(((i0+1)%L)+L)%L];
+        const w=Math.min(1,Math.max(0,(fr-0.62)/0.34));
+        c.copy(A).lerp(B,w*w*(3-2*w));
+        c.multiplyScalar(0.95+0.05*Math.sin(y*57+seedB*3));
+        c.multiplyScalar(1-0.16*Math.pow(Math.abs(y),3));      // the poles are duller than the equator
       }else{
-        // continents: three overlapping waves, thresholded. It is crude and from a hundred thousand
-        // kilometres it is indistinguishable from anything better.
-        const n=Math.sin(x*3.1+seedA)*Math.cos(z*2.7+seedB)+0.6*Math.sin(y*4.3+seedC)
-               +0.45*Math.sin((x+z)*6.1+seedA*2)+0.3*Math.cos((y-x)*8.3+seedB*2);
-        const ice=Math.abs(y)>(b.ice===undefined?0.82:b.ice);
-        if(ice)c.copy(pal[3]||pal[0]);
-        else if(n>0.35)c.copy(pal[2]||pal[1]).lerp(pal[1],Math.min(1,(n-0.35)*1.6));
-        else c.copy(pal[0]).multiplyScalar(0.86+0.2*Math.max(0,n));
+        // Continents. The first go at this was three low-frequency waves thresholded, and from any
+        // distance it read as three smooth stripes of colour wrapped round a ball: no coastline, no
+        // detail, and a stair-step where the ice threshold crossed the sphere's triangles. What a
+        // planet actually needs is octaves - a few big shapes to place the land masses, a few medium
+        // ones to break the coasts up, and a fine one to keep the interiors from going flat - and a
+        // coastal shelf, because the pale band of shallow water round a coast is most of what says
+        // "ocean" rather than "blue paint".
+        const S1=Math.sin, C1=Math.cos;
+        const n= 1.00*S1(x*2.1+seedA)*C1(z*1.9+seedB)
+               + 0.78*S1(z*3.4+seedC)*C1(y*3.1+seedA*1.7)
+               + 0.52*S1((x+y)*5.3+seedB*2)*C1((z-x)*4.9+seedC*1.3)
+               + 0.34*S1((y-z)*8.9+seedA*2.3)*C1((x+z)*7.7+seedB*1.9)
+               + 0.20*S1(x*15.3+seedC*3)*C1(z*13.9+seedB*3)
+               + 0.12*S1(y*23.1+seedA*4);
+        const grain=0.09*S1(x*29+seedB*5)*C1(z*27+seedA*5);
+        const sstep=(e0,e1,v)=>{const u=Math.min(1,Math.max(0,(v-e0)/(e1-e0)));return u*u*(3-2*u);};
+        // the ice edge wanders instead of being drawn along a line of latitude, and it fades in over a
+        // few degrees rather than switching at one
+        const iceLat=(b.ice===undefined?0.86:b.ice)
+                   -0.06*S1(x*4.3+seedC)-0.05*C1(z*5.9+seedA)-0.03*S1((x+z)*11+seedB);
+        const SEA=0.40;
+        if(n>SEA){
+          // land: greener at the coast, drier towards the middle of a continent
+          const inland=Math.min(1,(n-SEA)*0.85);
+          c.copy(pal[1]).lerp(pal[2]||pal[1],inland*inland);
+          c.multiplyScalar(0.92+grain*1.6+0.10*S1(x*9.1+z*7.3+seedB));
+        }else{
+          // Water, as a continuous ramp from the shelf down to the deeps. This used to be two bands with
+          // a hard step between them, and because a sphere at sixty-four segments cannot resolve a band
+          // that narrow, the step came out as a staircase of rectangles across half the planet. A ramp
+          // has nothing to alias.
+          const deep=pal[0].clone().multiplyScalar(0.74);
+          const shelf=pal[0].clone().lerp(pal[3]||pal[0],0.34).multiplyScalar(1.10);
+          c.copy(shelf).lerp(deep,sstep(0,1,(SEA-n)/0.34));
+          c.multiplyScalar(1+grain*0.5);
+        }
+        c.lerp(pal[3]||pal[0],sstep(iceLat-0.05,iceLat+0.03,Math.abs(y))*0.96);
       }
       cols.push(c.r,c.g,c.b);
     }
@@ -101,22 +173,62 @@ function buildSky(THREE,scene,K,rnd){
       // Patches lying on the surface, not lumps standing on it. A sphere - however flattened - gets its own
       // light and dark side and reads as a boulder; a disc has one normal, shades evenly, and darkens on
       // the night side along with the ground under it, which is what a cloud does.
-      const cm=new THREE.MeshLambertMaterial({color:0xf4f8fa,transparent:true,opacity:0.66,fog:false});
-      for(let i=0;i<(b.cloudPuffs||420);i++){
-        const u=(rnd()*2-1)*0.97,th=rnd()*Math.PI*2,s=Math.sqrt(1-u*u);
-        const p=new THREE.Mesh(new THREE.CircleGeometry(R*(0.02+rnd()*0.055),7),cm);
-        p.position.set(s*Math.cos(th)*R*1.006,u*R*1.006,s*Math.sin(th)*R*1.006);
-        p.lookAt(p.position.clone().multiplyScalar(2));
-        p.rotation.z=rnd()*6.28;p.scale.set(1+rnd()*0.9,0.4+rnd()*0.7,1);
-        g.add(p);
+      //
+      // The version before this one used four hundred discs of up to seven per cent of the planet's radius
+      // scattered at random, and from any distance it read as torn paper stuck to a marble. Weather is not
+      // scattered: it is in SYSTEMS, it is drawn out east-west by the rotation, and any one piece of it is
+      // small. So these are laid down as a few dozen systems of small drawn-out discs, thickest either
+      // side of the equator and thinning towards the poles, which is where the water is.
+      const cm=new THREE.MeshLambertMaterial({color:0xf6fafc,transparent:true,opacity:0.62,fog:false});
+      const systems=b.cloudSystems||46, per=Math.max(4,Math.round((b.cloudPuffs||900)/systems));
+      const puffs=[];
+      for(let sIdx=0;sIdx<systems;sIdx++){
+        // where this system sits: biased to the two mid-latitude storm belts and the equator
+        const belt=[0,0.34,-0.34,0.6,-0.6][sIdx%5];
+        const u0=Math.max(-0.95,Math.min(0.95,belt+(rnd()-0.5)*0.30));
+        const th0=rnd()*Math.PI*2;
+        const spin=rnd()<0.5?-1:1;
+        for(let i=0;i<per;i++){
+          const t=i/per;
+          // a comma-shaped trail: it curls as it goes, which is the whole look of a weather system
+          const u=Math.max(-0.995,Math.min(0.995,u0+(rnd()-0.5)*0.10+spin*t*0.05*Math.sin(t*3)));
+          const th=th0+(rnd()-0.5)*0.34+spin*t*0.26;
+          const s=Math.sqrt(1-u*u);
+          const pf=new THREE.Mesh(new THREE.CircleGeometry(R*(0.008+rnd()*0.017),14),cm);
+          pf.position.set(s*Math.cos(th)*R*1.004,u*R*1.004,s*Math.sin(th)*R*1.004);
+          pf.lookAt(pf.position.clone().multiplyScalar(2));
+          // drawn out along the parallel, because that is the direction everything on a planet gets drawn
+          pf.rotation.z=(rnd()-0.5)*0.5;
+          pf.scale.set(2.2+rnd()*1.8,0.55+rnd()*0.5,1);
+          puffs.push(pf);
+        }
       }
+      // a thousand discs is a thousand draw calls if they are left loose; they all share one material and
+      // none of them ever moves on its own, so they go into the planet as a single mesh
+      g.add(mergeParts(THREE,puffs,cm));
     }
     if(b.ring){
-      const rm=new THREE.MeshLambertMaterial({color:new THREE.Color(b.ring.colour||'#b4a88c'),
-        transparent:true,opacity:b.ring.opacity||0.55,side:THREE.DoubleSide,fog:false});
-      for(let i=0;i<(b.ring.bands||5);i++){
-        const r0=R*(b.ring.inner||1.4)+i*R*0.09;
-        const rg=new THREE.Mesh(new THREE.RingGeometry(r0,r0+R*0.07,72),rm);
+      // Rings are not a disc: they are a great many narrow ringlets with gaps between them, brightest
+      // where the ice is thickest, and they have to be lit from both sides because you see them edge-on
+      // from above the plane and lit from below it.
+      const rc=new THREE.Color(b.ring.colour||'#b4a88c');
+      const n=b.ring.bands||14;
+      const inner=b.ring.inner||1.35, outer=b.ring.outer||2.35;
+      for(let i=0;i<n;i++){
+        const t=i/n, t2=(i+1)/n;
+        const r0=R*(inner+(outer-inner)*t), r1=R*(inner+(outer-inner)*t2)*0.985;
+        // a couple of dark divisions, and the ringlets thinning out at both edges
+        const gap=(i===Math.floor(n*0.62))||(i===Math.floor(n*0.30));
+        if(gap)continue;
+        const fade=Math.min(1,Math.min(t+0.18,1.06-t)*2.1);
+        const c=rc.clone().multiplyScalar(0.72+0.42*((i*7)%5)/4);
+        // Lambert alone leaves a ring system nearly black, because the star is only a few degrees above
+        // the ring plane and that is geometrically correct and visually useless. A little emissive puts
+        // the ice back without flattening the lit side.
+        const rm=new THREE.MeshLambertMaterial({color:c,emissive:c.clone().multiplyScalar(0.42),
+          transparent:true,opacity:(b.ring.opacity||0.62)*fade,side:THREE.DoubleSide,
+          fog:false,depthWrite:false});
+        const rg=new THREE.Mesh(new THREE.RingGeometry(r0,r1,96),rm);
         rg.rotation.x=Math.PI/2;g.add(rg);
       }
       g.rotation.z=b.ring.tilt===undefined?0.38:b.ring.tilt;
@@ -172,6 +284,14 @@ export async function starshipPage(opts){
      const a=FL.az===undefined?2.2:FL.az,e=FL.el===undefined?-0.5:FL.el;
      fill.position.set(Math.cos(a)*Math.cos(e),Math.sin(e),Math.sin(a)*Math.cos(e)).multiplyScalar(10000);
      scene.add(fill);}
+    // A third light, very dim, that always comes from wherever the camera is. There is nothing physical
+    // about it: it is there because with one hard star and one planet-shine fill, whichever way you turn
+    // the ship one big flat face of it ends up pointing at neither, and a pylon the size of a house goes
+    // to pure black. This keeps that face at about six per cent grey, which is enough to read its shape
+    // and not enough to look lit.
+    const lamp=new THREE.DirectionalLight(new THREE.Color((SL.lampColour)||'#9fb4cc'),
+                                          SL.lamp===undefined?0.26:SL.lamp);
+    scene.add(lamp);
 
     await stage('sky');
     let sky=null;
@@ -224,6 +344,7 @@ export async function starshipPage(opts){
                           target.z+Math.sin(V.az)*Math.cos(V.el)*V.d);
       camera.up.set(Math.sin(V.roll),Math.cos(V.roll),0);
       camera.lookAt(target);
+      lamp.position.copy(camera.position);
     }
 
     const el=renderer.domElement;

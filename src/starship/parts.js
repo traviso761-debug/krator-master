@@ -34,13 +34,16 @@ export function ellipsoidLathe(THREE, profile, seg, mat, sx, sz){
 // ellipse with its own size and its own offset, joined up into a skin. An engineering hull, a nacelle, a
 // warp pylon, a docking arm and a neck are all this shape with different numbers in the table, and writing
 // them as tables rather than as stacks of cylinders is the difference between a hull and a pile of tins.
-export function tube(THREE, stations, seg, mat, capFront, capBack){
-  const N=stations.length, S=seg||24;
+export function tube(THREE, stations, seg, mat, capFront, capBack, section){
+  const N=stations.length, sec=section||SECT.ring(seg||24), S=sec.length;
   const pos=[],idx=[];
   for(const st of stations){
     for(let j=0;j<S;j++){
-      const a=j/S*Math.PI*2;
-      pos.push(st.x,(st.cy||0)+Math.sin(a)*st.ry,(st.cz||0)+Math.cos(a)*st.rz);
+      const u=sec[j][0],v=sec[j][1];
+      // ry is the half-depth above the station's centreline and ryb the half-depth below it, so a hull can
+      // have a domed top and a flat bottom - which almost every hull on these three pages does.
+      const r=v>=0?st.ry:(st.ryb===undefined?st.ry:st.ryb);
+      pos.push(st.x,(st.cy||0)+v*r,(st.cz||0)+u*st.rz);
     }
   }
   for(let i=0;i<N-1;i++)for(let j=0;j<S;j++){
@@ -63,10 +66,42 @@ export function tube(THREE, stations, seg, mat, capFront, capBack){
   return new THREE.Mesh(g,mat);
 }
 
+// ---------- the cross-sections themselves ----------
+// The shape of the section is as much of the design language as the table of sizes is. A Starfleet hull is
+// an ellipse or a lens with a rim; a nacelle is a flat-bottomed slab with a rounded shoulder; a pylon is an
+// aerofoil with a blunt leading edge and a sharp trailing one; and everything Cardassian is a hexagon with
+// hard bevels, which is why the station reads as built by somebody else even in silhouette.
+//
+// Each is a list of [u, v] on the unit circle-ish, counter-clockwise, u across the hull and v up it. The
+// station's `rz` scales u and its `ry` (or `ryb` below the centreline) scales v.
+export const SECT={
+  ring(n){const N=n||24,o=[];for(let j=0;j<N;j++){const a=j/N*Math.PI*2;o.push([Math.cos(a),Math.sin(a)]);}return o;},
+  // a rim band at the widest point, a shallow plateau above it and a shallower one below: a saucer
+  saucer:[[1,-0.34],[1,0.34],[0.97,0.58],[0.90,0.77],[0.77,0.91],[0.57,0.98],[0.30,1],[0,1],
+          [-0.30,1],[-0.57,0.98],[-0.77,0.91],[-0.90,0.77],[-0.97,0.58],[-1,0.34],[-1,-0.34],
+          [-0.95,-0.62],[-0.84,-0.83],[-0.64,-0.95],[-0.35,-1],[0,-1],[0.35,-1],[0.64,-0.95],
+          [0.84,-0.83],[0.95,-0.62]],
+  // flat underside, slab sides, rounded shoulder: a nacelle, and the secondary hull of anything modern
+  nacelle:[[1,-0.44],[1,0.24],[0.88,0.70],[0.58,0.94],[0.21,1],[-0.21,1],[-0.58,0.94],[-0.88,0.70],
+           [-1,0.24],[-1,-0.44],[-0.74,-0.86],[-0.35,-1],[0.35,-1],[0.74,-0.86]],
+  // blunt leading edge, sharp trailing edge: a pylon or a neck, thin across and long along the chord
+  aerofoil:[[0,1],[-0.55,0.86],[-0.85,0.55],[-1,0.10],[-0.90,-0.35],[-0.60,-0.72],[-0.25,-0.93],[0,-1],
+            [0.25,-0.93],[0.60,-0.72],[0.90,-0.35],[1,0.10],[0.85,0.55],[0.55,0.86]],
+  // hard bevels on every corner: Cardassian
+  hex:[[1,-0.52],[1,0.52],[0.46,1],[-0.46,1],[-1,0.52],[-1,-0.52],[-0.46,-1],[0.46,-1]],
+  // the same, squarer, for a ring segment or a crossover bridge
+  slab:[[1,-0.78],[1,0.78],[0.78,1],[-0.78,1],[-1,0.78],[-1,-0.78],[-0.78,-1],[0.78,-1]],
+};
+
+// The same section upside down. A neck and a pylon are both aerofoils, but a pylon leans aft going up and
+// a neck leans aft going DOWN, so one of the two wants its blunt edge on the other side of the chord.
+export const flipV=sec=>sec.map(p=>[p[0],-p[1]]).reverse();
+
 // The same thing bent: the stations follow a path in (x, y) rather than a straight line, which is what a
 // warp pylon and a station's docking arm both are.
-export function sweep(THREE, path, seg, mat){
-  const pos=[],idx=[],S=seg||16,N=path.length;
+export function sweep(THREE, path, seg, mat, section){
+  const sec=section||SECT.ring(seg||16), S=sec.length, N=path.length;
+  const pos=[],idx=[];
   for(const st of path){
     // the frame at this station: along the path, and the two axes across it
     const dir=st.dir||[1,0,0];
@@ -76,7 +111,7 @@ export function sweep(THREE, path, seg, mat){
     const R=[rx[0]/rl,rx[1]/rl,rx[2]/rl];
     const U=[R[1]*dir[2]-R[2]*dir[1],R[2]*dir[0]-R[0]*dir[2],R[0]*dir[1]-R[1]*dir[0]];
     for(let j=0;j<S;j++){
-      const a=j/S*Math.PI*2, cx=Math.cos(a)*st.rz, cy=Math.sin(a)*st.ry;
+      const cx=sec[j][0]*st.rz, cy=sec[j][1]*st.ry;
       pos.push(st.p[0]+R[0]*cx+U[0]*cy, st.p[1]+R[1]*cx+U[1]*cy, st.p[2]+R[2]*cx+U[2]*cy);
     }
   }
@@ -84,10 +119,35 @@ export function sweep(THREE, path, seg, mat){
     const a=i*S+j, b=i*S+(j+1)%S, c=(i+1)*S+j, d=(i+1)*S+(j+1)%S;
     idx.push(a,c,b, b,c,d);
   }
+  const cap=(i,flip)=>{
+    const base=pos.length/3,o=[0,0,0];
+    for(let j=0;j<S;j++){o[0]+=pos[(i*S+j)*3];o[1]+=pos[(i*S+j)*3+1];o[2]+=pos[(i*S+j)*3+2];}
+    pos.push(o[0]/S,o[1]/S,o[2]/S);
+    for(let j=0;j<S;j++){const a=i*S+j,b=i*S+(j+1)%S;if(flip)idx.push(base,b,a);else idx.push(base,a,b);}
+  };
+  cap(0,true);cap(N-1,false);
   const g=new THREE.BufferGeometry();
   g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
   g.setIndex(idx);g.computeVertexNormals();g.computeBoundingSphere();
   return new THREE.Mesh(g,mat);
+}
+
+// A Bussard collector. The mistake to make here is a bright sphere stuck on the front of the nacelle: it
+// reads as a ball, because it is one. The real thing is a dome sunk INSIDE a cowl, so what you see is a lit
+// disc in a shadowed ring, and the cowl is what gives the nacelle its nose rather than the glow.
+export function bussard(THREE, parts, m, x, y, z, r, faceX){
+  const f=faceX===undefined?1:faceX;
+  // the cowl: a short flared ring, open towards the bow
+  const cowl=lathe(THREE,[[r*0.80,0],[r*1.00,-r*0.26],[r*1.05,-r*0.62],[r*0.98,-r*1.05],[r*0.74,-r*1.40]],22,m.dark);
+  cowl.rotation.z=-f*Math.PI/2;cowl.position.set(x,y,z);parts.push(cowl);
+  // the dome, set back inside it
+  const dome=lathe(THREE,[[0.0001,0],[r*0.34,-r*0.10],[r*0.58,-r*0.26],[r*0.72,-r*0.48],[r*0.78,-r*0.78]],20,m.bussard);
+  dome.rotation.z=-f*Math.PI/2;dome.position.set(x-f*r*0.30,y,z);parts.push(dome);
+  // the three ribs across the opening, which is the detail that says it is a grille and not a lamp
+  for(let k=0;k<3;k++){
+    const b=new THREE.Mesh(new THREE.BoxGeometry(r*0.20,r*1.9,r*0.16),m.dark);
+    b.position.set(x-f*r*0.05,y,z);b.rotation.x=k/3*Math.PI;parts.push(b);
+  }
 }
 
 // A row of lit windows, as instances, following a line. `n` windows between `a` and `b`, standing off the
@@ -171,20 +231,31 @@ export function fold(THREE, group, parts){
 // panelled rather than painted.
 export function hullPalette(THREE, o){
   const k=o||{};
+  // How shiny the hull is is half of who built it. Starfleet hulls are close to matt with a cool sheen;
+  // Cardassian ones are duller still and what little they reflect is warm. Left on the Starfleet defaults
+  // the station came out the colour of a biscuit however dark its base colour was, because the specular
+  // was doing most of the lighting.
+  const sp=k.specular===undefined?0x3a4048:k.specular, sh=k.shininess===undefined?22:k.shininess;
+  const flat=!!k.flat;
+  const P=(c,s2,h2,f)=>new THREE.MeshPhongMaterial({color:c,specular:s2===undefined?sp:s2,
+    shininess:h2===undefined?sh:h2,flatShading:f===undefined?flat:f});
   return {
-    hull:new THREE.MeshPhongMaterial({color:k.hull||0xc8ccc6,specular:0x3a4048,shininess:22,flatShading:false}),
-    panelA:new THREE.MeshPhongMaterial({color:k.panelA||0xbcc2be,specular:0x343a40,shininess:18,flatShading:true}),
-    panelB:new THREE.MeshPhongMaterial({color:k.panelB||0xd2d6cf,specular:0x30363c,shininess:18,flatShading:true}),
-    dark:new THREE.MeshPhongMaterial({color:k.dark||0x565c62,specular:0x22262a,shininess:14,flatShading:true}),
-    trim:new THREE.MeshPhongMaterial({color:k.trim||0x8e949a,specular:0x40464c,shininess:30,flatShading:true}),
-    glass:new THREE.MeshPhongMaterial({color:k.glass||0x1e2a34,specular:0xbfd4e4,shininess:80}),
+    hull:P(k.hull||0xc8ccc6),
+    panelA:P(k.panelA||0xbcc2be,undefined,sh*0.8,true),
+    panelB:P(k.panelB||0xd2d6cf,undefined,sh*0.8,true),
+    dark:P(k.dark||0x565c62,0x22262a,14,true),
+    trim:P(k.trim||0x8e949a,undefined,sh*1.3,true),
+    glass:P(k.glass||0x1e2a34,0xbfd4e4,80,false),
     lit:new THREE.MeshBasicMaterial({color:k.lit||0xffe9b8}),
-    warp:new THREE.MeshBasicMaterial({color:k.warp||0x7fb8ff}),
+    warp:new THREE.MeshBasicMaterial({color:k.warp||0x6ea6ee}),
     bussard:new THREE.MeshBasicMaterial({color:k.bussard||0xff6a4a,transparent:true,opacity:0.92}),
     impulse:new THREE.MeshBasicMaterial({color:k.impulse||0xff8a3a,transparent:true,opacity:0.9}),
     deflector:new THREE.MeshBasicMaterial({color:k.deflector||0xc8a24a,transparent:true,opacity:0.9}),
     nav:new THREE.MeshBasicMaterial({color:0xff4030}),
     navG:new THREE.MeshBasicMaterial({color:0x40ff70}),
-    pennant:new THREE.MeshPhongMaterial({color:k.pennant||0x9aa2a8,specular:0x30363c,shininess:20,flatShading:true}),
+    pennant:P(k.pennant||0x9aa2a8,undefined,sh*0.9,true),
+    // a phaser strip is not lit: it is a dull copper-amber band let into the hull, and it only shows
+    // because it is darker and warmer than everything round it
+    strip:P(k.strip||0x7a6044,0x463828,22,true),
   };
 }

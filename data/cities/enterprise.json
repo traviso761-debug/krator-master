@@ -86,7 +86,8 @@
    "az": 0.55,
    "el": 0.3,
    "intensity": 2.2,
-   "ambient": 0.5
+   "ambient": 0.38,
+   "lamp": 0.28
   },
   "fill": {
    "colour": "#5a86b8",
@@ -101,7 +102,7 @@
     "el": -0.34,
     "dist": 0.52,
     "deg": 21,
-    "seg": 72,
+    "seg": 176,
     "colours": [
      "#1b4a7a",
      "#2f6a44",
@@ -109,9 +110,10 @@
      "#e8eff4"
     ],
     "clouds": true,
-    "cloudPuffs": 520,
-    "ice": 0.8,
-    "rate": 2e-05
+    "cloudPuffs": 1500,
+    "ice": 0.86,
+    "rate": 2e-05,
+    "cloudSystems": 72
    },
    {
     "kind": "rock",
@@ -135,9 +137,7 @@
     "az": 1.5,
     "el": 0.22,
     "dist": 0.9,
-    "size": 300000,
-    "puffs": 24,
-    "opacity": 0.05
+    "size": 450000
    }
   ],
   "_": "a class-M world below and its moon, with the star off the port bow"
