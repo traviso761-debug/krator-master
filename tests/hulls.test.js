@@ -10,7 +10,7 @@
 // `tube` and `sweep` build their own index buffers, so this tests the real code. `lathe` hands the work to
 // three.js, so what is tested there is our end of the contract: that the profile arrives in ascending y,
 // which is the order three.js winds outward from.
-import {tube,sweep,lathe,SECT,flipV} from '../src/starship/parts.js';
+import {tube,sweep,lathe,discHull,SECT,flipV} from '../src/starship/parts.js';
 import {eq,ok} from './assert.js';
 
 // just enough of three.js for the primitives to build against
@@ -68,7 +68,8 @@ export const tests={
   'every named section profile winds the same way round'(){
     // the sections are interchangeable only if they all have the same handedness; a clockwise one would
     // turn whichever hull used it inside out on its own
-    for(const [name,sec] of Object.entries(SECT)){
+    const all={...SECT, 'ring()':SECT.ring(20), 'lens()':SECT.lens(12), 'slabS()':SECT.slabS(9)};
+    for(const [name,sec] of Object.entries(all)){
       if(typeof sec==='function')continue;
       let a=0;
       for(let i=0;i<sec.length;i++){
@@ -90,6 +91,33 @@ export const tests={
     const f=facing(sweep(THREE,path,16,null,SECT.ring(16)));
     ok(f.out>0,'no faces at all');
     eq(f.inn,0,`${f.inn} of ${f.out+f.inn} faces point into the pylon`);
+  },
+  'a primary hull is a figure of revolution, not a stretched one'(){
+    // the bug this primitive exists to kill: built as stations with a fixed section, the old saucer stood
+    // 14 m tall measured forward and 25 m tall measured abeam at the same radius, and had a flat plateau
+    // across the middle. Sample the built mesh and check the hull is the same depth in both directions.
+    const TOP=[[0,30],[114,27],[194,18.6],[232,8.5]], BOT=[[0,-26],[135,-24.2],[211,-14.8],[232,-8.5]];
+    const d=discHull(THREE,null,{R:232,cut:-197,top:TOP,bot:BOT,seg:64,rings:16});
+    const P=d.mesh.geometry.attributes.position.array;
+    const hi=(wantX,wantZ)=>{        // the tallest vertex near a point on the hull
+      let best=-1e9;
+      for(let i=0;i<P.length;i+=3){
+        if(Math.hypot(P[i]-wantX,P[i+2]-wantZ)<14)best=Math.max(best,P[i+1]);
+      }
+      return best;
+    };
+    for(const r of [80,120,160,200]){
+      const fwd=hi(r,0), abeam=hi(0,r);
+      ok(Math.abs(fwd-abeam)<0.6,`at r=${r} the hull is ${fwd.toFixed(1)} m forward and ${abeam.toFixed(1)} m abeam`);
+    }
+    // and no plateau: the dome must still be falling away 70 m off the centreline
+    ok(hi(0,0)-hi(0,70)>1.2,'the saucer top is flat across the middle');
+  },
+  'a primary hull faces outward, rim included'(){
+    const TOP=[[0,30],[114,27],[194,18.6],[232,8.5]], BOT=[[0,-26],[135,-24.2],[211,-14.8],[232,-8.5]];
+    const f=facing(discHull(THREE,null,{R:232,cut:-197,top:TOP,bot:BOT,seg:48,rings:10}).mesh);
+    ok(f.out>0,'no faces at all');
+    eq(f.inn,0,`${f.inn} of ${f.out+f.inn} faces point into the hull`);
   },
   'a lathe profile reaches three.js ascending, however it was written'(){
     const dome=[[0.001,50],[10,49],[17,46.8],[21,42.6],[22,37],[22,32],[0.001,31.4]];

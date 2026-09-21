@@ -664,14 +664,32 @@ wireframe and menagerie menu every other page has.
   looked *through* it at the inside of the far wall and at anything parked between the two — the captain's
   yacht was visible from above, through the saucer. It never showed in the silhouette, which is why it
   survived so long: an inside-out closed hull has exactly the same outline as a solid one.
+- **And a saucer is not an extrusion.** Even solid, the primary hulls were the wrong shape, because they
+  were built the same way as everything else: a table of stations along x with a fixed cross-section scaled
+  to each one. A Starfleet primary hull is a **figure of revolution** — an oblate lens with its aft end cut
+  off square — and the height of a point on it depends only on how far that point is from the centre. Built
+  as an extrusion it came out stretched: the old Galaxy saucer stood **14 m tall measured 200 m forward
+  along the keel and 25 m tall measured 200 m abeam**, a lens in one axis and a fat lens in the other, so it
+  read wrong from every angle except dead ahead and dead above. And because a fixed section has a flat top,
+  the saucer had a **140-metre plateau** across the middle where the dome should be.
 
-  The primitives now pick their winding from the direction the input runs (`tube` from the station order,
-  `lathe` by reversing a descending profile, and `sweep`'s end caps were simply the wrong way round), so
-  either ordering gives a solid. `tests/hulls.test.js` holds it there: it builds each primitive against a
-  stub of three.js and, for every triangle, takes the face normal against the vector from the body's
-  centroid out to that face. Before the fix a bow-to-stern hull scored 0 faces out of 64 pointing outward;
-  it now scores 64 out of 64 whichever way the table is written. Put the old winding back and five of the
-  seven checks fail, which is the only evidence worth having that a regression test works.
+  `discHull` in `src/starship/parts.js` is the right primitive: profile tables read against the true radius,
+  a plan truncated by a chord, and a rim carried a little proud so the widest point of the ship is the rim
+  and not the shoulder above it. Because the transom is a chord *through* the lens it comes out thicker than
+  the rim, which is exactly where the impulse engines fit. It hands back the outline as well as the mesh —
+  where the rim is at every angle and how tall it is there — so the windows, lifeboat hatches and phaser
+  strips are placed **on** the hull rather than near it.
+
+  The primitives also now pick their winding from the direction the input runs. `tests/hulls.test.js` holds
+  both fixes: it builds each one against a stub of three.js, takes every face normal against the vector from
+  the body's centroid out to that face, and separately samples a built saucer to check it is the same depth
+  forward as abeam and still falling away 70 m off the centreline. Before the fixes a bow-to-stern hull
+  scored 0 faces of 64 outward; it now scores 64 of 64 whichever way the table is written. Put the old
+  winding back and five of the nine checks fail, which is the only evidence worth having that a regression
+  test works.
+- **The sections are generated, not typed.** `SECT.lens` and `SECT.slabS` take a resolution and produce the
+  profile, because a hand-listed one is only as smooth as the patience of whoever typed it — the original
+  had three points across the whole top of a saucer, which is where the plateau came from.
 - **Galaxy class.** Cut to the published figures: 642.5 m long, 463.7 m across the saucer, 195.3 m from the
   top of the bridge to the bottom of the engineering hull over 42 decks, and nacelles 248 m long, 57 m wide
   and 32 m tall at their widest against 38 by 19 at the collector end (Rick Sternbach's blueprints). Three
@@ -679,10 +697,13 @@ wireframe and menagerie menu every other page has.
   the stern, getting the length right pushes their collector ends *under* the saucer's aft quarter — which
   is why the class looks so compact from above. A nacelle is wider than it is tall, 57 by 32, not the
   upright tube it had been. And the engineering hull was 10 m too deep, so the ship stood taller than 195.
-  The saucer is a lens with a rim and a flat trailing edge, cut off square where the impulse engines are:
-  a disc reads as a flying saucer, this reads as a hull. Its rim carries **two** rows of windows with a
+  The saucer is a figure of revolution 464 m across, cut off square at x = -197 where the impulse engines
+  are: a disc reads as a flying saucer, this reads as a hull. Its rim carries **two** rows of windows with a
   recessed sensor groove between them — the upper is deck 9, which is Ten Forward and unusually tall, and
-  the lower is deck 10. Three even rows, which is what was there before, is a Constitution refit's rim.
+  the lower is deck 10. Three even rows, which is what was there before, is a Constitution refit's rim. The
+  engineering hull carries a blunt nose around the deflector, a dorsal spine running aft from the foot of
+  the neck with the upper shuttlebay let into it, three rows of windows and two strakes down each flank —
+  without those it is a featureless white egg, which is what it was.
 - **Intrepid class.** 343 m long, 133 m across, 66 m tall over 15 decks. The beam was 5 m over, so the
   whole plan outline came in; the height falls out of the rest and lands on 66 with the nacelles drooped.
   No neck — the saucer runs back and down into the engineering section as one body — a teardrop saucer in

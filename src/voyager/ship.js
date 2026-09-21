@@ -45,7 +45,7 @@ export function model(api){
     {x: -35, rz: 25.1, ry: 6.8, ryb: 4.8},
   ];
   const topAt=s=>s.ry*0.80, botAt=s=>-s.ryb*0.80, sideAt=s=>s.rz*0.86;
-  parts.push(tube(THREE,SAU,0,m.hull,true,true,SECT.saucer));
+  parts.push(tube(THREE,SAU,0,m.hull,true,true,SECT.lens(13,0.30,0.58,0.74)));
   {
     // two rows of windows in the rim band, following the outline
     for(let i=1;i<SAU.length-1;i++){
@@ -121,7 +121,7 @@ export function model(api){
       {x:-140, ry:10, rz:16, cy:-23, ryb:10},
       {x:-168, ry: 7, rz:10, cy:-22, ryb: 7},
     ];
-    parts.push(tube(THREE,ST,0,m.hull,true,true,SECT.nacelle));
+    parts.push(tube(THREE,ST,0,m.hull,true,true,SECT.slabS(10)));
     for(const sd of [-1,1])
       windowRow(THREE,parts,m.lit,[56,-19,sd*22],[-116,-21,sd*18],14,[2.4,1.2,1.2],[0,0,sd*2.0],true);
     // the deflector, tucked under the saucer's bow overhang
@@ -181,7 +181,7 @@ export function model(api){
       {x:-50, ry: 8.6, rz: 7.6, ryb: 8.0},
       {x:-62, ry: 5.0, rz: 4.6, ryb: 4.4},
     ];
-    const n=tube(THREE,NST,0,m.hull,true,true,SECT.nacelle);
+    const n=tube(THREE,NST,0,m.hull,true,true,SECT.slabS(9));
     n.position.set(NX,NY,NZ);wp.push(n);
     bussard(THREE,wp,m,NX+63,NY+1,NZ,7.2,1);
 
