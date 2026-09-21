@@ -47,7 +47,10 @@ export function landmarks(api){
       const off=sd*span*0.25;
       sl.position.set(x-s*off,y+h/2,z+c*off);
       sl.rotation.set(0,-A,0);
-      sl.rotateX(-sd*Math.atan2(h,span*0.5));
+      // The sign matters and it was wrong twice: with the tilt the other way the outer edge of each slope
+      // goes UP and the inner edge comes DOWN, so the pair makes a valley instead of a ridge and the
+      // building comes out as a heap of boards. Eave low, ridge high.
+      sl.rotateX(sd*Math.atan2(h,span*0.5));
       parts.push(sl);
     }
     return h;
@@ -63,7 +66,7 @@ export function landmarks(api){
       const off=q*span*0.25;
       bd.position.set(x-s*off,y+h/2,z+c*off);
       bd.rotation.set(0,-A,0);
-      bd.rotateX(-q*Math.atan2(h,span*0.5));
+      bd.rotateX(q*Math.atan2(h,span*0.5));
       parts.push(bd);
     }
     if(finial!==false){
@@ -148,7 +151,7 @@ export function landmarks(api){
       // the roof, and the gable at each end of it with its bargeboards and finial
       {
         const [px,py,pz]=at(0,v,y+2+H*0.30+0.5);
-        const h2=roof(parts,roofM,px,py,pz,d*1.02,w*1.1,1.35,A+Math.PI/2);
+        const h2=roof(parts,roofM,px,py,pz,d*1.02,w*1.1,0.92,A+Math.PI/2);
         for(const sd of [-1,1]){
           const [gx,gy,gz]=at(0,v+sd*d*0.51,y+2+H*0.30+0.5);
           gableEnd(parts,m,gx,gy,gz,w*1.1,h2,A+Math.PI/2,sd,true);
@@ -268,7 +271,7 @@ export function landmarks(api){
     parts.push(bx(0,0,g0+2+H*0.46,W*1.1,1.1,D*1.06,m.beam));
     {
       const [px,py,pz]=at(0,0,g0+2+H*0.46+0.7);
-      const h2=roof(parts,m.copper,px,py,pz,D*1.04,W*1.12,1.45,A+Math.PI/2);
+      const h2=roof(parts,m.copper,px,py,pz,D*1.04,W*1.12,1.00,A+Math.PI/2);
       for(const sd of [-1,1]){
         const [gx,gy,gz]=at(0,sd*D*0.52,g0+2+H*0.46+0.7);
         gableEnd(parts,m,gx,gy,gz,W*1.12,h2,A+Math.PI/2,sd,true);
@@ -525,9 +528,14 @@ export function landmarks(api){
         if(drop<7||n<2)break;
         if(drop>150)break;                            // a pitch, not a curtain
         const w=5+((k*53+seg*17)%6);
-        const sheet=new THREE.Mesh(new THREE.PlaneGeometry(w,drop*1.04,1,Math.max(2,Math.round(drop/14))),whiteM);
+        // The sheet lies ALONG the pitch rather than hanging vertically in front of it: a riser at sixty
+        // degrees with a vertical plane drawn from its lip to its foot stands a long way out from the rock,
+        // and reads as a panel leaning on the hill instead of as water on it.
+        const run=Math.hypot(sx-px,sz-pz);
+        const sheet=new THREE.Mesh(new THREE.PlaneGeometry(w,Math.hypot(drop,run)*1.04,1,Math.max(2,Math.round(drop/14))),whiteM);
         sheet.position.set((px+sx)/2,(py+sy)/2,(pz+sz)/2);
         sheet.rotation.set(0,-A+Math.PI/2,0);
+        sheet.rotateX(Math.atan2(run,drop));
         sheet.userData.noWire=true;scene.add(sheet);
         sheets.push({sheet,base:sheet.geometry.attributes.position.array.slice(),ph:k*1.7+seg});
         // the lip it comes over, and the pool it lands in
