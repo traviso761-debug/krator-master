@@ -527,12 +527,31 @@ partway down, so you look **down** on the roofs of them. Nothing else here has t
 - **The house** is six halls joined end to end along the ledge, stepping down it, each with its own steep
   roof and its own gallery hung out over the water on posts. The Hall of Fire is one room with a hearth at
   each end, lit from inside at every hour. The bridge has no parapet worth the name.
+- **The terraces.** The cross-section is a staircase — a floor with the river in it, then risers and treads
+  up to the rim — and the whole settlement stands on the treads, which is what terraces are for. Halls are
+  laid *along* the tread they stand on, because a terrace is not a straight line (the channel bends and the
+  cleft opens and closes) and a fifty-metre hall laid out from a single sample has both its ends off the
+  tread and down the riser, where the engine extrudes it from the lowest ground under it and it comes out
+  standing on a forty-metre pier.
+- **The architecture has rules**, and they are its whole character: everything long and low under a very
+  steep roof; the gable is the decorated part, with deep bargeboards and a gilt finial above the ridge;
+  every opening is *pointed*, never round, at every size from a doorway to a bridge pier; galleries on
+  slender arcades over the drop; timber on masonry; copper gone green and slate gone violet. Besides the
+  house and the Hall of Fire there are pavilions (eight posts, a steep cone, a seat round the inside and
+  nothing in it — the thing this place has that no other settlement here does), stairs switching back down
+  the wall with a newel post at every landing, and standing figures on stepped plinths.
+- **The falls come down in stages**, because the wall they are falling down is a staircase: a pitch, a pool
+  on the tread, a pitch, a pool. Drawn as one sheet from rim to river they were three hundred metres of
+  plane hanging in mid-air over the middle of the wall, and from anywhere in the valley that is a wall of
+  glass with the terraces behind it.
 - **What it taught the engine.** An edge fade that takes the land to nothing cuts a four-hundred-metre cliff
   round a map whose ground is six hundred metres up, so `farLevel` now puts the horizon plate where the
   world outside the box actually is. Rock standing on a sheer face has its own foot in mid-air and comes out
   as a pillar in the valley, so what is built is the boulders along the rim and the scree at the bottom and
-  the face is left to the heightfield. And a water polygon can carry its own `y`: a mountain river is not
-  one sheet, it is a flight of pools with a step between them, and the Bruinen is cut into reaches.
+  the face is left to the heightfield. A water polygon can carry its own `y`: a mountain river is not one
+  sheet, it is a flight of pools with a step between them, and the Bruinen is cut into reaches. And
+  `roofPitch`, `roofRise`, `roofColours` and `treeColours`, because a Chicago three-flat and an elven hall
+  are the same gable at a different pitch, and because this valley is always drawn in autumn.
 
 Regenerate with `python3 tools/make-rivendell.py`, then `./sitectl build`.
 
@@ -795,7 +814,10 @@ map's greens and asphalt, and on the Pelennor a bright `#6a9a52` rectangle reads
 the fields while a graded lane on an ice moon that comes out asphalt-black reads as a canal. `farLevel` puts
 the horizon plate at the height the world outside the box actually sits at, for a map whose ground is
 hundreds of metres up. `beacons: false` turns off the aircraft warning lights, because a place built before
-the wheel does not put a blinking red lamp on its tallest tower. `landFromCity` (`{cell, grow, drop, quay,
+the wheel does not put a blinking red lamp on its tallest tower. `roofPitch`, `roofRise`, `roofMaxArea`,
+`roofMaxHeight`, `roofColours` and `treeColours` set how steep the gables are, how big a footprint still
+gets one, what they are covered in and what the foliage is — all of which are cultural facts rather than
+constants. `landFromCity` (`{cell, grow, drop, quay,
 water}`) is for a city with no height grid at all: the sheet under everything becomes open water and the
 land is rasterised out of the city itself, which is how Venice stopped being grey ground with canals cut in
 it. Anything left out keeps the Chicago default.

@@ -107,12 +107,12 @@ def river_level(z):
 # The first version had the benches the wrong way round: each one added its height where d was *less* than
 # its radius, so they all piled up in the middle and the gorge came out as a broad plateau a hundred metres
 # above a slot with the river in it. It looked like a quarry.
-PROFILE = [(0.00, 0.00), (0.17, 0.00),      # the floor: the river and its shingle
-           (0.33, 0.26), (0.45, 0.28),      # the first terrace, ninety metres up
-           (0.59, 0.52), (0.70, 0.55),      # the second
-           (0.82, 0.78), (0.90, 0.81),      # the third, just under the rim
+PROFILE = [(0.00, 0.00), (0.19, 0.00),      # the floor: the river and its shingle
+           (0.32, 0.26), (0.48, 0.28),      # the first terrace, ninety metres up
+           (0.60, 0.52), (0.74, 0.55),      # the second
+           (0.84, 0.78), (0.94, 0.81),      # the third, just under the rim
            (1.00, 1.00)]
-TREADS = [0.39, 0.645, 0.86]                # where the treads are, for putting buildings on
+TREADS = [0.40, 0.67, 0.89]                 # where the treads are, for putting buildings on
 
 
 def profile(t):
@@ -134,6 +134,21 @@ def cleft_half(z):
     w += 90.0 * math.exp(-((z + 1750.0) / 340.0) ** 2)      # and again at the ford
     w += 26.0 * math.sin(z / 260.0)
     return w
+
+
+def tread_x(z, t, sd):
+    """Where a terrace runs, at this z."""
+    cx, _ = channel_at(z)
+    return cx + sd * cleft_half(z) * t
+
+
+def tread_dir(z, t, sd):
+    """Which way it runs. A terrace is not a straight line - the channel bends and the cleft opens and
+    closes - so a fifty-metre hall laid out from a single sample has both its ends off the tread and down
+    the riser, and the engine extrudes it from the LOWEST ground under it, which is forty metres down. That
+    is where the buildings standing on forty-metre piers came from."""
+    d = (tread_x(z + 12, t, sd) - tread_x(z - 12, t, sd)) / 24.0
+    return -math.atan(d)
 
 
 def terrain_height(x, z):
@@ -275,13 +290,18 @@ def main():
             out.append((cx + math.cos(a) * rx * f, cz + math.sin(a) * rz * f))
         return out
 
-    for k in range(34):
-        z = -2300 + k * 136 + R.uniform(-50, 50)
+    # Stands, with gaps between them. The first version put a wood every hundred and thirty metres down
+    # both rims and came out at twenty-one thousand trees - a hedge round the whole valley, through which
+    # nothing of the valley could be seen.
+    for k in range(18):
+        z = -2300 + k * 258 + R.uniform(-70, 70)
         cx, _ = channel_at(z)
         for sd in (-1, 1):
+            if R.random() < 0.3:
+                continue
             areas.append({"k": "wood", "n": "", "i": [],
-                          "o": flat(blob(cx + sd * (cleft_half(z) + R.uniform(110, 520)), z,
-                                         R.uniform(90, 200), R.uniform(70, 150)))})
+                          "o": flat(blob(cx + sd * (cleft_half(z) + R.uniform(160, 620)), z,
+                                         R.uniform(70, 150), R.uniform(60, 120)))})
     # and a scatter of them out on the moor, thinning with distance from the edge
     for k in range(22):
         z = R.uniform(-HZ + 400, HZ - 400)
@@ -299,7 +319,7 @@ def main():
                 cx, _ = channel_at(z)
                 half = cleft_half(z)
                 areas.append({"k": "garden", "n": "", "i": [],
-                              "o": flat(blob(cx + sd * half * t, z, R.uniform(9, 16), R.uniform(16, 34), 14, 0.18))})
+                              "o": flat(blob(cx + sd * half * t, z, R.uniform(15, 24), R.uniform(30, 58), 14, 0.2))})
     # the sward at the ford, and the moor itself
     areas.append({"k": "grass", "n": "The Ford of Bruinen", "i": [],
                   "o": flat(rect(FORD[0], FORD[1], 620, 420, 0.2))})
@@ -340,23 +360,26 @@ def main():
                 half = cleft_half(z)
                 if R.random() < (0.14 if sd > 0 else 0.4):
                     continue                              # the west wall is the quieter side
-                base = cx + sd * half * t
-                # the long hall, set back a little from the edge of the tread
-                w = R.uniform(30, 54)
-                d = R.uniform(13, 19)
-                x = base - sd * R.uniform(1, 6)
-                rot = 0.02 * sd + R.uniform(-0.06, 0.06)
+                base = tread_x(z, t, sd)
+                # the long hall, set back a little from the edge of the tread and laid along it
+                w = R.uniform(22, 34)
+                d = R.uniform(12, 17)
+                x = base - sd * R.uniform(1, 5)
+                rot = tread_dir(z, t, sd) + R.uniform(-0.03, 0.03)
                 put(rect(x, z, d, w, rot), R.uniform(9, 15), "hall",
                     TIMBER[R.randrange(len(TIMBER))])
                 total += 1
                 # a wing off the end of it, at right angles, making an L round a yard
                 if R.random() < 0.55:
                     put(rect(x - sd * R.uniform(6, 11), z + (1 if R.random() < 0.5 else -1) * w * 0.45,
-                             R.uniform(16, 26), R.uniform(11, 15), rot), R.uniform(8, 13), "hall",
+                             R.uniform(13, 20), R.uniform(10, 14), rot), R.uniform(8, 13), "hall",
                         TIMBER[R.randrange(len(TIMBER))])
                     total += 1
                 # and the veranda out over the drop, which is a deck rather than a building
-                put(rect(base + sd * 5.5, z, 9, w * 0.8, rot), 3.2,
+                # The veranda sits ON the tread, not out past the lip of it: the engine extrudes a
+                # footprint from the LOWEST ground under it, so a deck hung over the drop comes out as a
+                # solid pier forty metres tall instead of a platform on posts.
+                put(rect(base - sd * 5.0, z, 6, w * 0.75, rot), 3.0,
                     "deck", STONE[R.randrange(len(STONE))], roof="f")
                 # a smaller house across the yard, further back into the hill
                 if R.random() < 0.45:
