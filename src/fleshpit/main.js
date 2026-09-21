@@ -10,7 +10,17 @@ import {landmarks} from './landmarks.js';
 import {organism} from './organism.js';
 import {descent} from './camera.js';
 installErrorHandlers();window.LOAD=LOAD;
-configureLoading({prefix:'opening the park… ',labels:{'map-data':'reading the survey',ground:'laying the caliche',buildings:'raising the visitor center',details:'planting the mesquite',landmarks:'railing off the lip',el:'running the monorail',traffic:'opening the road',organism:'descending',ui:'opening the windows'}});
+configureLoading({
+  // What you read while it builds. See src/core/diag.js: these are shuffled and one of them is
+  // shown at a time under the progress line.
+  lines:[
+    'Fan work. Mystery Flesh Pit National Park is Trevor Roberts\'s project.',
+    'A national park over a superorganism, and a shaft driven down through it.',
+    'The visitor centre is built on something that is alive and was not asked.',
+    'The funnel has a hole in the middle of it, because a heightfield cannot have one unless you say so.',
+    'Everything below the rim is lit by what is down there rather than by the sun.',
+  ],
+  prefix:'opening the park… ',labels:{'map-data':'reading the survey',ground:'laying the caliche',buildings:'raising the visitor center',details:'planting the mesquite',landmarks:'railing off the lip',el:'running the monorail',traffic:'opening the road',organism:'descending',ui:'opening the windows'}});
 const ctx=window._iz={defaultCity:'fleshpit',models:[landmarks],
   extras:[{name:'organism',fn:organism},{name:'descent',fn:descent}]};
 requestAnimationFrame(()=>setTimeout(()=>{build(ctx).catch(e=>{report('build',e);const l=document.getElementById('loading');if(l)l.remove();});},30));

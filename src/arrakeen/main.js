@@ -7,7 +7,22 @@ import {landmarks} from './landmarks.js';
 import {life} from './life.js';
 import {desert} from './desert.js';
 installErrorHandlers();window.LOAD=LOAD;
-configureLoading({prefix:'raising Arrakeen… ',labels:{'map-data':'reading the basin',ground:'laying the rock',buildings:'building the town',details:'planting the garden',landmarks:'raising the Residency',el:'',traffic:'',ui:'opening the windtraps'}});
+configureLoading({
+  // What you read while it builds. See src/core/diag.js: these are shuffled and one of them is
+  // shown at a time under the progress line.
+  lines:[
+    'Fan work. Dune belongs to the Herbert estate; every shape here is this project\'s own geometry.',
+    'The only water is what you can take out of the air, so there is a windtrap on every roof and they all face the same way.',
+    'A detached house on Arrakis is a way of dying. Shade is the only free comfort there is.',
+    'The Shield Wall is why anything lives here: it keeps the storms and the worms off the basin.',
+    'The worm is never drawn. What is drawn is a ridge of sand running, with a wake of dust off it.',
+    'The garden inside the Residency is not decoration. It is a statement about who controls the water.',
+    'The dew collectors along the parapets are worth a thimbleful a night each, and everybody has a dozen.',
+    'A sietch from the outside is a rock with nothing on it. That is the entire design.',
+    'The city wall is there to stop the sand, not an army.',
+    'Sunlight is twenty-five times weaker at Jupiter. Here it is the other problem entirely.',
+  ],
+  prefix:'raising Arrakeen… ',labels:{'map-data':'reading the basin',ground:'laying the rock',buildings:'building the town',details:'planting the garden',landmarks:'raising the Residency',el:'',traffic:'',ui:'opening the windtraps'}});
 const ctx=window._iz={defaultCity:'arrakeen',models:[landmarks],
   extras:[{name:'life',fn:life},{name:'desert',fn:desert}]};
 requestAnimationFrame(()=>setTimeout(()=>{build(ctx).catch(e=>{report('build',e);const l=document.getElementById('loading');if(l)l.remove();});},30));

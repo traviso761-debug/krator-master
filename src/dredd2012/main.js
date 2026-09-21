@@ -5,7 +5,16 @@ import {report,LOAD,configureLoading,installErrorHandlers} from '../core/diag.js
 import {build} from '../engine/build.js';
 import {warMode} from './warmode.js';
 installErrorHandlers();window.LOAD=LOAD;
-configureLoading({prefix:'raising the sprawl… ',labels:{'map-data':'reading the sector plan',ground:'laying the streets',buildings:'raising the sprawl',details:'fitting out the roofs',landmarks:'placing the blocks',traffic:'starting the traffic',ui:'opening the windows'}});
+configureLoading({
+  // What you read while it builds. See src/core/diag.js: these are shuffled and one of them is
+  // shown at a time under the progress line.
+  lines:[
+    'Fan work. Judge Dredd belongs to Rebellion; every shape here is this project\'s own.',
+    'The 2012 film\'s Mega-City One is a real city with two-hundred-storey blocks dropped into it.',
+    'Peach Trees is two hundred floors and one way in.',
+    'The blocks stand in a city that was already there, which is why the grid still runs between them.',
+  ],
+  prefix:'raising the sprawl… ',labels:{'map-data':'reading the sector plan',ground:'laying the streets',buildings:'raising the sprawl',details:'fitting out the roofs',landmarks:'placing the blocks',traffic:'starting the traffic',ui:'opening the windows'}});
 // The blast shields are this city's alone, so they travel with this page rather than with the engine.
 const ctx=window._iz={defaultCity:'dredd2012',extras:[{name:'warmode',fn:warMode}]};
 requestAnimationFrame(()=>setTimeout(()=>{build(ctx).catch(e=>{report('build',e);const l=document.getElementById('loading');if(l)l.remove();});},30));

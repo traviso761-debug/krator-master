@@ -7,7 +7,23 @@ import {landmarks} from './landmarks.js';
 import {forges} from './forges.js';
 import {hosts} from './hosts.js';
 installErrorHandlers();window.LOAD=LOAD;
-configureLoading({prefix:'raising Mordor… ',labels:{'map-data':'reading the land',ground:'raising the mountains',buildings:'setting the camps',details:'ash and stone',landmarks:'opening the Eye',el:'',traffic:'',ui:'opening the windows'}});
+configureLoading({
+  // What you read while it builds. See src/core/diag.js: these are shuffled and one of them is
+  // shown at a time under the progress line.
+  lines:[
+    'Fan work. Tolkien\'s world belongs to the Tolkien Estate; nothing from any book, film or game is used.',
+    'Six hundred and eighty kilometres by five hundred and sixty. This is a country, not a city.',
+    'The fires are the only light on the map. Everything else is under the pall.',
+    'Gorgoroth is the forge and it cannot feed itself. The food comes up from Nurn, worked by people who were brought there to do it.',
+    'The Black Gate opens to let a host through and shuts behind it.',
+    'Nothing is modelled of what lives in Torech Ungol. It is a hole you cannot see into, and that is the whole of the point.',
+    'A fellbeast is twenty metres across on a map this size, which is a fraction of a pixel. They are grown with distance until there is something to see.',
+    'The Eye is deliberately out of scale. The tower is a splinter from a hundred miles off; the Eye is not.',
+    'A one-kilometre height grid cannot hold a cliff, so the ridgelines carry rock of their own.',
+    'Every road has a tower within sight of the last one, the whole of its length.',
+    'The map stops east of the Sea of Nurnen. Past that there is nothing but more of the same.',
+  ],
+  prefix:'raising Mordor… ',labels:{'map-data':'reading the land',ground:'raising the mountains',buildings:'setting the camps',details:'ash and stone',landmarks:'opening the Eye',el:'',traffic:'',ui:'opening the windows'}});
 // the Eye, the Black Gate, the works and the hosts are Mordor's own, and reach the engine only through here
 const ctx=window._iz={defaultCity:'mordor',models:[landmarks],extras:[{name:'forges',fn:forges},{name:'hosts',fn:hosts}]};
 requestAnimationFrame(()=>setTimeout(()=>{build(ctx).catch(e=>{report('build',e);const l=document.getElementById('loading');if(l)l.remove();});},30));
