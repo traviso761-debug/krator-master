@@ -16,6 +16,7 @@
  ],
  "osm": "data/cities/venice-osm.json",
  "attribution": "Venice: map data (c) OpenStreetMap contributors, ODbL. Built by tools/build-osm-city.py.",
+ "flight": true,
  "fetch": {
   "bbox": [
    45.418,

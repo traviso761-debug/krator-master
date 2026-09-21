@@ -105,7 +105,10 @@ if(!readHash())setView(...(VIEWS[C.defaultView]||VIEWS['Skyline from the lake']|
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);updatePx();});
 if(SEED0!==SEED_DEFAULT)document.getElementById('seedtag').textContent='seed '+SEED0;
 // the controls a page's extras asked for: the panels exist now, so this is where they get built
-Object.assign(API,{ui,side,card,viewsEl,mkBtn,setView,VIEWS,showCard,closeCard,el,ctl,applyCam,setHour});
+Object.assign(API,{ui,side,card,viewsEl,mkBtn,setView,VIEWS,showCard,closeCard,el,ctl,applyCam,setHour,
+  camera,scene,roofAt});
+// an aeroplane, for the cities that are real places. Does nothing at all unless the city file asks for it.
+section('flight',()=>{ctx.flight=installFlight(API);});
 for(const fn of UI_HOOKS)section('extra ui',()=>fn(API));
 // shadows follow the target; compile everything behind the loading text
 await stage('shaders');

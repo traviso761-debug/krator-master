@@ -4,3 +4,4 @@ import {DATA_FN,dataValue,resolveCity} from '../core/data.js';
 import {createEnv} from '../core/env.js';
 import {installMenagerie} from '../core/menagerie.js';
 import {createWire,installWireUI} from '../core/wire.js';
+import {installFlight} from '../core/flight.js';
