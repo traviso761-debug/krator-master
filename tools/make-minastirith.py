@@ -40,7 +40,7 @@ PLAIN = 40.0                     # the Pelennor, above the river
 RIVER_X = 8600.0                 # the Anduin runs north-south down the east of the map
 TIERS = 7
 R_OUT = 520.0                    # the outer wall: the city is a kilometre across, not two
-R_STEP = 66.0                    # each wall is this much further in
+R_STEP = 60.0                    # each wall is this much further in: the Citadel comes out at r=160
 LIFT = 30.0                      # and its tier this much higher: 100 feet, near enough
 CITY_BASE = PLAIN + 36.0         # the ground the first wall stands on: the spur, above the fields
 CIT = CITY_BASE + TIERS * LIFT   # the Citadel: seven hundred feet over the Pelennor
@@ -49,7 +49,7 @@ MOUNT = (-6200.0, 400.0)         # Mindolluin, west of the city
 KEEL_X = 450.0                   # the point of the rock, just inside the outer wall
 RAMMAS = 6400.0                  # the Rammas Echor, round the townlands
 HARLOND = (7300.0, 3100.0)       # the quays, downstream on the near bank
-OSGILIATH = (10300.0, -300.0)    # the ruin, astride the river at the map's edge
+OSGILIATH = (8600.0, -600.0)     # the ruin, astride the Anduin where the great bridge went
 
 
 def q(v):
@@ -176,15 +176,79 @@ def terrain_height(x, z):
     # the keel: a wall of rock from the mountain out to its point inside the Great Gate, level with the
     # Citadel the whole way and cut off sheer at the end, which is the prow the city is built around
     kz = abs(z)
-    keel = smoothstep(96, 30, kz) * smoothstep(KEEL_X + 40, KEEL_X - 30, x) * smoothstep(-3400, -2600, x)
+    kh = keel_half(x)
+    keel = (smoothstep(kh + 22, kh - 4, kz) * smoothstep(KEEL_X + 24, KEEL_X - 40, x)
+            * smoothstep(-3400, -2600, x)) if kh > 0 else 0.0
     if keel > 0:
-        h = h * (1 - keel) + max(CIT + 6, h) * keel
+        # Level with the Citadel the whole way, so the court at the top of the city and the top of the rock
+        # are one surface, which is what every picture of the place shows.
+        h = h * (1 - keel) + max(CIT, h) * keel
 
     h *= smoothstep(HX, HX - 900, abs(x)) * smoothstep(HZ, HZ - 900, abs(z))
     return h
 
 
 # ---------------------------------------------------------------- the city
+
+def keel_half(x):
+    """Half the width of the rock at this x. It is a blade, not a ridge: eighty metres across where it runs
+    through the city, drawing in to a point at the prow and spreading into the mountain behind. The model in
+    src/minastirith/landmarks.js builds its faces to exactly this line, so the two cannot disagree."""
+    if x > KEEL_X or x < -2600.0:
+        return 0.0
+    t = max(0.0, min(1.0, (x - 120.0) / (KEEL_X - 120.0)))
+    h = 40.0 * (1.0 - 0.62 * t * t)
+    if x < -520.0:
+        h += min(60.0, (-520.0 - x) * 0.09)
+    return h
+
+
+def rock_half(x):
+    """What the city has to keep off: the blade and a few metres either side of it."""
+    h = keel_half(x)
+    return 0.0 if h <= 0.0 else h + 14.0
+
+
+def on_rock(x, z):
+    h = rock_half(x)
+    return h > 0.0 and abs(z) < h
+
+
+def ring_runs(r0, ga, gap):
+    """The lengths of a circle at this radius that are neither the gateway nor inside the rock. This is what
+    makes the circles horseshoes rather than rings: a wall that carried straight on across the rock hung in
+    mid-air off a cliff, which is exactly what the rock is there to stop."""
+    STEPS = 900
+    open_ = []
+    for i in range(STEPS):
+        a = i / STEPS * math.tau
+        d = (a - ga) % math.tau
+        open_.append(not (d < gap or d > math.tau - gap)
+                     and not on_rock(math.cos(a) * r0, math.sin(a) * r0))
+    if all(open_):
+        return [(0.0, math.tau)]
+    start = 0
+    while open_[start]:
+        start += 1
+    runs = []
+    run = None
+    for j in range(STEPS + 1):
+        i = (start + j) % STEPS
+        if open_[i]:
+            if run is None:
+                run = start + j
+        elif run is not None:
+            runs.append((run / STEPS * math.tau, (start + j) / STEPS * math.tau))
+            run = None
+    if run is not None:
+        runs.append((run / STEPS * math.tau, (start + STEPS) / STEPS * math.tau))
+    return [r for r in runs if r[1] - r[0] > 0.06]
+
+
+def river_cx(z):
+    """The middle of the Anduin at this z. The river meanders, and Osgiliath is built on it."""
+    return RIVER_X + 260.0 * math.sin(z / 2600.0)
+
 
 def gate_angle(k):
     """Where the gate through wall k stands. The Great Gate faces east; every gate above it is round the
@@ -237,6 +301,7 @@ def main():
         roads.append(r)
 
     # the road up: a switchback between each pair of gates, round whichever side of the rock is open
+    tunnels = []
     for k in range(TIERS):
         r0 = R_OUT - k * R_STEP
         r1 = R_OUT - (k + 1) * R_STEP
@@ -249,19 +314,43 @@ def main():
             a = a0 + (a1 - a0) * t
             rr = r0 - (r0 - r1) * t
             pts.append((math.cos(a) * rr, math.sin(a) * rr))
-        road(pts, "primary", 9, f"The Way, {k + 1}st Circle" if k == 0 else f"The Way, {k + 1}th Circle")
+        # The Way goes through the rock and not over it. A ribbon draped on the heightfield climbed the
+        # ridge like a ramp and came out forty metres above the roofs; here it is cut where it crosses, and
+        # the keel landmark carries a tunnel mouth at each end of the gap.
+        name = f"The Way, {k + 1}st Circle" if k == 0 else f"The Way, {k + 1}th Circle"
+        runs, cur = [], []
+        for (px, pz) in pts:
+            if on_rock(px, pz):
+                if len(cur) > 1:
+                    runs.append(cur)
+                    tunnels.append((round(cur[-1][0]), round(cur[-1][1]), k))
+                cur = []
+            else:
+                if not cur and runs:
+                    tunnels.append((round(px), round(pz), k))
+                cur.append((px, pz))
+        if len(cur) > 1:
+            runs.append(cur)
+        for r in runs:
+            road(r, "primary", 9, name)
 
     # the ring streets of each tier, and the lanes off them
     for k in range(TIERS):
         r0 = R_OUT - k * R_STEP - 26
-        road(ring_poly(0, 0, r0, 48) + [(r0, 0)], "secondary", 6, f"{k + 1} Circle")
+        for a, end in ring_runs(r0, gate_angle(k), 0.02):
+            n = max(3, int((end - a) * r0 / 14))
+            road([(math.cos(a + (end - a) * i / n) * r0, math.sin(a + (end - a) * i / n) * r0)
+                  for i in range(n + 1)], "secondary", 6, f"{k + 1} Circle")
         for j in range(9):
             a = j / 9 * math.tau + 0.2 * k
+            if on_rock(math.cos(a) * (r0 - 6), math.sin(a) * (r0 - 6)):
+                continue
             road([(math.cos(a) * (r0 - 6), math.sin(a) * (r0 - 6)),
                   (math.cos(a) * (r0 - R_STEP + 30), math.sin(a) * (r0 - R_STEP + 30))], "residential", 4)
 
     # the Great Gate out onto the Pelennor, the causeway to Osgiliath, and the Harlond road
-    road([(R_OUT, 0), (1400, -40), (3000, -120), (RAMMAS + 60, -180), (9000, -240)], "trunk", 14, "The Causeway")
+    # The Causeway stops on the west bank, where the bridge went; what is left of the bridge is built below.
+    road([(R_OUT, 0), (1400, -40), (3000, -120), (RAMMAS + 60, -180), (8050, -400)], "trunk", 14, "The Causeway")
     road([(1200, 60), (3400, 900), (5600, 2100), (HARLOND[0] - 200, HARLOND[1])], "primary", 10, "Harlond Road")
     road([(900, -260), (2600, -2400), (4200, -5200), (5200, -8800)], "primary", 9, "The South Road")
     road([(700, 300), (1800, 2600), (2200, 5600), (2000, 9200)], "primary", 9, "The North Road")
@@ -271,6 +360,7 @@ def main():
         road([(math.cos(a) * 1100, math.sin(a) * 1100), (math.cos(a) * RAMMAS, math.sin(a) * RAMMAS)],
              "residential", 4)
     out["roads"] = roads
+    print("  tunnel mouths (x, z, tier):", tunnels)
 
     # ---------- the ground of the townlands, and the courts of the city ----------
     # The tiers are paved. Without this the ground inside the walls is whatever colour the fields are, and a
@@ -291,6 +381,9 @@ def main():
         d = R.uniform(1800, RAMMAS - 800)
         areas.append({"k": "wood", "n": "", "o": flat(rect(math.cos(a) * d, math.sin(a) * d,
                                                            R.uniform(260, 620), R.uniform(240, 520))), "i": []})
+    for k in range(5):
+        areas.append({"k": "plaza", "n": "", "i": [],
+                      "o": flat(ring_poly(OSGILIATH[0], OSGILIATH[1], 1500 - k * 300, 56))})
     out["areas"] = areas
     out["rail"] = []
     out["stations"] = []
@@ -298,6 +391,10 @@ def main():
     # ---------- buildings ----------
     buildings = []
 
+    # `h` and `minh` are heights ABOVE THE GROUND under the footprint, because that is what the engine
+    # does with them: it takes the lowest terrain sample under the ring and extrudes from there. Writing the
+    # absolute height a wall's top should reach built the whole city twice: the seventh circle came out three
+    # hundred metres over the Citadel it stands on and the White Tower was inside it.
     def put(ring, h, kind=None, colour=None, name=None, roof=None, minh=None):
         b = {"p": flat(ring), "h": round(h, 1)}
         if kind:
@@ -308,7 +405,7 @@ def main():
             b["n"] = name
         if roof:
             b["r"] = roof
-        if minh:
+        if minh is not None:
             b["m"] = round(minh, 1)
         buildings.append(b)
 
@@ -322,27 +419,25 @@ def main():
     # black stone, which is the one thing about the first circle the description insists on.
     for k in range(TIERS):
         r0 = R_OUT - k * R_STEP
-        base = CITY_BASE + k * LIFT
-        top = base + (30 if k == 0 else 21)
+        top = 30 if k == 0 else 22          # over the tier in front of it; the step is in the terrain
         ga = gate_angle(k)
         gap = 0.055 if k == 0 else 0.07
         col = "#3c3b3f" if k == 0 else WALL
-        a = ga + gap
-        end = ga + math.tau - gap
-        # the wall itself, in two lengths so the gateway is a hole in it and not a doorway painted on
-        put(arc(0, 0, r0, a, end, width=9 if k else 13), top, "wall", col, roof="f", minh=base - 4)
-        # towers on it
-        nt = 16 - k
-        for t in range(nt):
-            ta = a + (end - a) * (t + 0.5) / nt
-            put(rect(math.cos(ta) * (r0 - 4), math.sin(ta) * (r0 - 4), 13, 13, ta),
-                top + 7, "tower", col, roof="f", minh=base - 4)
+        for a, end in ring_runs(r0, ga, gap):
+            # the wall itself, one length for each open stretch of the circle
+            put(arc(0, 0, r0, a, end, width=9 if k else 13), top, "wall", col, roof="f", minh=-18)
+            # towers on it, and one on each end where it runs into the rock
+            nt = max(2, int((end - a) / math.tau * (16 - k)))
+            for t in range(nt + 1):
+                ta = a + (end - a) * min(1.0, (t + 0.5) / nt)
+                put(rect(math.cos(ta) * (r0 - 4), math.sin(ta) * (r0 - 4), 12, 12, ta),
+                    top + 8, "tower", col, roof="f", minh=-22)
 
     # ---- the keel of rock, and the prow that stands out of the city ----
     # The rock is terrain, but its point is cut sheer, and the Citadel's wall runs out along the top of it
     # to a buttress overhanging the first circle. That buttress is the one thing everyone remembers.
-    put(rect(KEEL_X - 62, 0, 120, 74), CIT + 26, "rock", "#8d8a84", roof="f", minh=CIT - 40)
-    put(rect(KEEL_X - 30, 0, 44, 40), CIT + 34, "rock", "#96938c", roof="f", minh=CIT + 20)
+    put(rect(KEEL_X - 62, 0, 120, 74), 22, "rock", "#8d8a84", roof="f", minh=-70)
+    put(rect(KEEL_X - 30, 0, 44, 40), 30, "rock", "#96938c", roof="f", minh=16)
 
     # ---- the houses, tier by tier ----
     # Packed tight and low against the wall in front of them, and thinning as they climb: the sixth circle
@@ -351,7 +446,6 @@ def main():
     for k in range(TIERS - 1):
         r0 = R_OUT - k * R_STEP - 17
         r1 = R_OUT - (k + 1) * R_STEP + 7
-        base = CITY_BASE + k * LIFT
         rows = max(4, int((r0 - r1) / 12))
         for row in range(rows):
             rr = r0 - row * 12 - 4
@@ -359,7 +453,7 @@ def main():
             for i in range(n):
                 a = i / n * math.tau + row * 0.11 + k * 0.4
                 x, z = math.cos(a) * rr, math.sin(a) * rr
-                if abs(z) < 118 and -3000 < x < KEEL_X + 40:
+                if on_rock(x, z):
                     continue                       # the rock: nothing is built on it
                 if abs(a - gate_angle(k)) < 0.10 or abs(a - gate_angle(k) - math.tau) < 0.10:
                     continue                       # the gateway and the yard behind it stay clear
@@ -368,47 +462,139 @@ def main():
                 w = R.uniform(12, 17)
                 d = R.uniform(9, 14)
                 h = R.uniform(8, 15) + (2.5 if k < 3 else 0)
-                put(rect(x, z, w, d, a), base + h, "residential", HOUSE[R.randrange(len(HOUSE))], roof="g")
+                put(rect(x, z, w, d, a), h, "residential", HOUSE[R.randrange(len(HOUSE))], roof="g")
                 total += 1
                 if R.random() < 0.18:              # a hall or a guild house, taller and slated
-                    put(rect(x, z, w * 1.2, d * 1.2, a), base + h + R.uniform(4, 9), "civic",
-                        SLATE[R.randrange(len(SLATE))], roof="g", minh=base + h)
+                    put(rect(x, z, w * 1.2, d * 1.2, a), h + R.uniform(4, 9), "civic",
+                        SLATE[R.randrange(len(SLATE))], roof="g", minh=h)
 
     # ---- the seventh circle: the Citadel ----
     # The Tower is a landmark and is built in src/minastirith/landmarks.js; what is here is the ground it
     # stands on - the hall of the kings behind it, the guard houses either side, the Hallows in the rock.
-    # Everything on the Citadel stands beside the rock, not on it: the keel runs down the middle of the
-    # seventh circle at eighty-eight metres wide, and a hall centred on z = 0 is inside a cliff.
-    put(rect(-210, 118, 150, 120), CIT + 26, "civic", "#d8d2c2", name="The Hall of the Kings", roof="f")
-    put(rect(-330, -122, 90, 110), CIT + 18, "civic", "#cdc6b6", roof="f")
+    # Everything here is inside the seventh wall, which is a circle a hundred and sixty metres in the
+    # radius, and everything stands on ground the terrain already put at the Citadel's own height. The rock
+    # runs through the middle of it, but at this level its top is the pavement, so the court is laid over it
+    # and only the Tower stands on the point.
+    put(rect(-104, 0, 128, 96), 26, "civic", "#d8d2c2", name="The Hall of the Kings", roof="f")
     for s in (-1, 1):
-        put(rect(-60, s * 132, 70, 34), CIT + 12, "civic", "#cdc6b6", roof="g")
-        put(rect(-190, s * 168, 46, 30), CIT + 10, "civic", "#cdc6b6", roof="g")
-    put(rect(-520, 104, 60, 80), CIT + 8, "civic", "#b8b2a4", name="The Hallows", roof="f")
+        put(rect(-36, s * 112, 74, 30, 0.2 * s), 12, "civic", "#cdc6b6", roof="g")
+        put(rect(-118, s * 92, 46, 34, -0.3 * s), 10, "civic", "#cdc6b6", roof="g")
+        put(rect(46, s * 118, 34, 26), 9, "civic", "#cdc6b6", roof="g")
+    put(rect(-142, 0, 34, 70), 8, "civic", "#b8b2a4", name="The Hallows", roof="f")
 
     # ---- the Rammas Echor, and the Causeway Forts on the road through it ----
-    put(ring_poly(0, 0, RAMMAS, 128, RAMMAS - 7), PLAIN + 3.5, "wall", "#b6ae9c", roof="f", minh=PLAIN - 6)
+    put(ring_poly(0, 0, RAMMAS, 128, RAMMAS - 7), 9, "wall", "#b6ae9c", roof="f", minh=-14)
     for s in (-1, 1):
-        put(rect(RAMMAS + 10, s * 70, 44, 44), PLAIN - 4 + 22, "tower", "#b6ae9c",
+        put(rect(RAMMAS + 10, s * 70, 44, 44), 24, "tower", "#b6ae9c",
             name="Causeway Fort", roof="f")
 
     # ---- the Harlond ----
     for k in range(4):
-        put(rect(HARLOND[0] - 130, HARLOND[1] + k * 90, 70, 22), PLAIN - 28 + 9, "industrial", "#a49a86", roof="f")
-    put(rect(HARLOND[0] - 210, HARLOND[1] + 140, 90, 60), PLAIN - 28 + 16, "industrial", "#9e9484",
+        put(rect(HARLOND[0] - 130, HARLOND[1] + k * 90, 70, 22), 9, "industrial", "#a49a86", roof="f")
+    put(rect(HARLOND[0] - 210, HARLOND[1] + 140, 90, 60), 16, "industrial", "#9e9484",
         name="The Harlond", roof="f")
 
-    # ---- Osgiliath, in ruins on both banks ----
-    for k in range(120):
-        a = R.uniform(0, math.tau)
-        rr = R.uniform(60, 1500)
-        x = OSGILIATH[0] + math.cos(a) * rr
-        z = OSGILIATH[1] + math.sin(a) * rr * 0.8
-        if x > HX - 400:
+    # ---- Osgiliath, in ruins astride the Anduin ----
+    # The old capital of Gondor, taken and retaken until there was nothing left to hold. Numenorean cities
+    # were laid out in rings round a centre, not in a grid, and the centre of this one was the great bridge:
+    # so it is circles of street broken where the river cuts through them, radials out from the bridgehead,
+    # and a ruined circuit wall round the whole of it. Walls stand to every height from a kerb to a gable,
+    # the Dome of Stars is broken open, and the piers of the bridge are still in the water with the Causeway
+    # stopping at the edge of the gap.
+    OCX, OCZ = OSGILIATH
+    RINGS = [240.0, 370.0, 500.0, 650.0, 810.0, 980.0, 1160.0, 1350.0]
+    CHAN = 250.0                                 # the river, and no building in it
+
+    def dry(x, z):
+        return abs(x - river_cx(z)) >= CHAN
+
+    def ring_road(rr, w, cls="residential"):
+        run = []
+        for k in range(121):
+            a = k / 120.0 * math.tau
+            x, z = OCX + math.cos(a) * rr, OCZ + math.sin(a) * rr
+            if dry(x, z):
+                run.append((x, z))
+            else:
+                if len(run) > 1:
+                    road(run, cls, w)
+                run = []
+        if len(run) > 1:
+            road(run, cls, w)
+
+    for rr in RINGS:
+        ring_road(rr, 7)
+    for k in range(24):
+        a = k / 24.0 * math.tau
+        pts = [(OCX + math.cos(a) * r, OCZ + math.sin(a) * r) for r in range(200, 1400, 110)]
+        run = []
+        for p in pts:
+            if dry(*p):
+                run.append(p)
+            elif len(run) > 1:
+                road(run, "residential", 6)
+                run = []
+        if len(run) > 1:
+            road(run, "residential", 6)
+
+    ORUIN = ["#b4ac9c", "#a9a190", "#beb6a4", "#9e9686", "#b0a897"]
+    ruined = 0
+    for ri in range(len(RINGS) - 1):
+        r0, r1 = RINGS[ri] + 18, RINGS[ri + 1] - 18
+        rows = max(1, int((r1 - r0) / 44))
+        for row in range(rows):
+            rr = r0 + row * 44 + 14
+            n = max(10, int(rr * math.tau / 52))
+            for i in range(n):
+                a = i / n * math.tau + row * 0.13 + ri * 0.21
+                x, z = OCX + math.cos(a) * rr, OCZ + math.sin(a) * rr
+                if not dry(x, z) or R.random() < 0.26:
+                    continue
+                r2 = R.random()
+                h = R.uniform(2, 5) if r2 < 0.44 else (R.uniform(6, 13) if r2 < 0.86 else R.uniform(16, 28))
+                put(rect(x, z, R.uniform(17, 34), R.uniform(14, 26), a), h,
+                    "ruin", ORUIN[R.randrange(len(ORUIN))], roof="f")
+                ruined += 1
+
+    # the circuit wall, broken open in a dozen places
+    for k in range(60):
+        a0 = k / 60.0 * math.tau
+        if R.random() < 0.3:
             continue
-        h = R.uniform(4, 22)
-        put(rect(x, z, R.uniform(8, 26), R.uniform(8, 22), R.uniform(0, math.tau)), -6 + h,
-            "ruin", "#8e887c", roof="f")
+        x, z = OCX + math.cos(a0) * 1470, OCZ + math.sin(a0) * 1470
+        if not dry(x, z):
+            continue
+        put(rect(x, z, 14, 160, a0), R.uniform(3, 13), "wall", "#a7a08f", roof="f")
+        if k % 5 == 0:
+            put(rect(x, z, 28, 28, a0), R.uniform(9, 22), "tower", "#a7a08f", roof="f")
+
+    # the towers still standing, and the Dome of Stars over the old crossing
+    for k in range(16):
+        a = R.uniform(0, math.tau)
+        rr = R.uniform(300, 1300)
+        x, z = OCX + math.cos(a) * rr, OCZ + math.sin(a) * rr
+        if not dry(x, z):
+            continue
+        put(rect(x, z, R.uniform(22, 36), R.uniform(22, 36), a), R.uniform(28, 56),
+            "tower", "#9a9385", roof="f")
+    zd = OCZ + 150
+    put(rect(river_cx(zd) - 380, zd, 150, 150), 40, "civic", "#a49c8c",
+        name="The Dome of Stars", roof="f")
+    put(rect(river_cx(zd) - 380, zd, 104, 104), 56, "civic", "#b0a795", roof="f", minh=36)
+
+    # the road east, to the Morgul Vale
+    road([(OCX + 300, OCZ - 120), (10600, -900), (HX - 700, -1800)], "primary", 10,
+         "The Road to Minas Morgul")
+
+    # the great bridge: the piers are all that is left of the middle of it
+    zb = OCZ + 240
+    for k in range(9):
+        px = river_cx(zb) - 300 + k * 75
+        put(rect(px, zb, 26, 46), 20, "rock", "#7e776c", roof="f", minh=-4)
+        if k < 3 or k > 6:
+            put(rect(px, zb, 70, 30), 25, "wall", "#a39a8a", roof="f", minh=20)
+    put(rect(river_cx(zb) - 430, zb, 120, 54), 26, "wall", "#a39a8a", roof="f", minh=18)
+    put(rect(river_cx(zb) + 400, zb, 120, 54), 26, "wall", "#a39a8a", roof="f", minh=18)
 
     # ---- the farms of the townlands ----
     for k in range(150):
@@ -416,11 +602,11 @@ def main():
         d = R.uniform(1200, RAMMAS - 300)
         x, z = math.cos(a) * d, math.sin(a) * d
         h = R.uniform(5, 9)
-        put(rect(x, z, R.uniform(10, 20), R.uniform(8, 16), R.uniform(0, math.tau)), PLAIN - 26 * (x / RIVER_X) + h,
+        put(rect(x, z, R.uniform(10, 20), R.uniform(8, 16), R.uniform(0, math.tau)), h,
             "residential", HOUSE[R.randrange(len(HOUSE))], roof="g")
         if R.random() < 0.5:
             put(rect(x + R.uniform(-22, 22), z + R.uniform(-22, 22), R.uniform(12, 22), R.uniform(8, 14),
-                     R.uniform(0, math.tau)), PLAIN - 26 * (x / RIVER_X) + R.uniform(4, 7), "barn", "#8d7f68",
+                     R.uniform(0, math.tau)), R.uniform(4, 7), "barn", "#8d7f68",
                 roof="g")
 
     out["buildings"] = buildings
@@ -441,8 +627,9 @@ def main():
     out["trees"] = trees
 
     out["pois"] = [{"n": "The Great Gate", "x": q(R_OUT - 6), "z": 0, "k": "gate", "ang": 0},
-                   {"n": "The White Tower", "x": q(40), "z": 0, "k": "tower", "ang": 0},
-                   {"n": "The Harlond", "x": q(HARLOND[0] - 200), "z": q(HARLOND[1] + 140), "k": "quay", "ang": 0}]
+                   {"n": "The White Tower", "x": q(96), "z": 0, "k": "tower", "ang": 0},
+                   {"n": "The Harlond", "x": q(HARLOND[0] - 200), "z": q(HARLOND[1] + 140), "k": "quay", "ang": 0},
+                   {"n": "Osgiliath", "x": q(OSGILIATH[0]), "z": q(OSGILIATH[1]), "k": "ruin", "ang": 0}]
 
     t = out["terrain"]
     lo = min(t["h"]) / 10.0
