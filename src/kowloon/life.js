@@ -14,7 +14,7 @@
 import { mkRng } from '../core/rng.js';
 
 export function life(api){
-  const {THREE,C,ctx,scene,animHooks,groundH,roofAt,buildingsAt,box,mergeParts,nightF,hour}=api;
+  const {THREE,C,ctx,scene,animHooks,groundH,roofAt,buildingsAt,inPoly,box,mergeParts,nightF,hour}=api;
   const K=C.life;if(!K)return;
   const R=mkRng(K.seed||1993);
   const A=K.angle||0.14, W=K.width||210, D=K.depth||120;
@@ -38,30 +38,67 @@ export function life(api){
   const statics={pipes:[],cages:[],acs:[],lines:[],rails:[]};
   const cloth=[],neons=[],steams=[],folk=[];
 
-  // the top of the block at a point, and nothing if there is no building there
-  const top=(x,z)=>{const h=roofAt(x,z);return h>0?h:null;};
+  // ---- where things are allowed to be ----
+  // Everything here hangs on a wall or stands on a roof, so everything here has to find a real one first.
+  // roofAt() answers with a height for any point within twenty metres of a building, which is what it is for
+  // - a spire needs to know what it is standing near - and using it to place things left washing lines and
+  // neon signs hanging in mid-air over the lanes and the light wells.
+  function onBuilding(){
+    for(let t=0;t<50;t++){
+      const u=(R()-0.5)*W, v=(R()-0.5)*D, [x,z]=BP(u,v);
+      for(const b of buildingsAt(x,z,0))if(inPoly(x,z,b.ring))return {b,x,z,h:b.h};
+    }
+    return null;
+  }
+  // the nearest wall of a footprint, as a point on it and the direction out of it
+  function wallNear(b,x,z){
+    let best=null;
+    for(let i=0,j=b.ring.length-1;i<b.ring.length;j=i++){
+      const [ax,az]=b.ring[j],[bx2,bz2]=b.ring[i];
+      const dx=bx2-ax,dz=bz2-az,L2=dx*dx+dz*dz;if(!L2)continue;
+      const t=Math.max(0,Math.min(1,((x-ax)*dx+(z-az)*dz)/L2));
+      const px=ax+dx*t,pz=az+dz*t,d=Math.hypot(x-px,z-pz);
+      if(!best||d<best.d){
+        let nx=dz/Math.sqrt(L2),nz=-dx/Math.sqrt(L2);
+        // point the normal away from the middle of the footprint
+        let cx=0,cz=0;for(const [rx,rz] of b.ring){cx+=rx;cz+=rz;}cx/=b.ring.length;cz/=b.ring.length;
+        if((px-cx)*nx+(pz-cz)*nz<0){nx=-nx;nz=-nz;}
+        best={d,x:px,z:pz,nx,nz,ang:Math.atan2(nz,nx)};
+      }
+    }
+    return best;
+  }
+  // is there open air this far out from a wall? a sign or a line needs somewhere to hang
+  const clearOut=(w,dist)=>{
+    const x=w.x+w.nx*dist,z=w.z+w.nz*dist;
+    for(const b of buildingsAt(x,z,0))if(inPoly(x,z,b.ring))return false;
+    return true;
+  };
 
   // ---- washing lines ----
   // Strung between whatever is on either side of a gap: across the lanes, across the light wells, and from
   // a window to the building opposite. The sheets hang from them and move, because that is the one thing in
   // a photograph of this place that is never still.
-  for(let k=0;k<K.lines||0;k++){
-    const u=(R()-0.5)*W*0.94, v=(R()-0.5)*D*0.94;
-    const [x,z]=BP(u,v);
-    const h=top(x,z);if(h===null)continue;
-    const y=h-R()*22-4;if(y<10)continue;
-    const ang=A+(R()<0.5?0:Math.PI/2)+(R()-0.5)*0.3, len=7+R()*14;
-    const ax=x-Math.cos(ang)*len/2, az=z-Math.sin(ang)*len/2;
-    const bx=x+Math.cos(ang)*len/2, bz=z+Math.sin(ang)*len/2;
-    const line=new THREE.Mesh(new THREE.BoxGeometry(len,0.08,0.08),lineM);
-    line.position.set(x,y,z);line.rotation.y=-ang;statics.lines.push(line);
-    const n=2+Math.floor(R()*5);
+  for(let k=0;k<(K.lines||0);k++){
+    const hit=onBuilding();if(!hit)continue;
+    const w=wallNear(hit.b,hit.x,hit.z);if(!w)continue;
+    // how far out the gap goes before it hits something again: that is what the line can span
+    let span=0;
+    for(let d=2;d<=16;d+=1){if(!clearOut(w,d)){span=d;break;}}
+    if(span<3)continue;                                // nothing opposite: no line
+    const y=6+R()*Math.max(1,hit.h-9);
+    const ax=w.x+w.nx*1.0, az=w.z+w.nz*1.0;
+    const bx=w.x+w.nx*(span-0.6), bz=w.z+w.nz*(span-0.6);
+    const len=Math.hypot(bx-ax,bz-az);
+    const line=new THREE.Mesh(new THREE.BoxGeometry(len,0.07,0.07),lineM);
+    line.position.set((ax+bx)/2,y,(az+bz)/2);line.rotation.y=-w.ang;statics.lines.push(line);
+    const n=1+Math.floor(R()*4);
     for(let i=0;i<n;i++){
-      const t=(i+0.6)/(n+0.2), px=ax+(bx-ax)*t, pz=az+(bz-az)*t;
-      const w=0.7+R()*1.1, dh=0.8+R()*1.6;
-      const m=new THREE.Mesh(new THREE.PlaneGeometry(w,dh,1,2),laundryM[Math.floor(R()*laundryM.length)]);
-      m.position.set(px,y-dh/2-0.1,pz);m.rotation.y=-ang;scene.add(m);
-      cloth.push({m,ph:R()*6.28,ang});
+      const t=(i+0.7)/(n+0.4), px=ax+(bx-ax)*t, pz=az+(bz-az)*t;
+      const cw=0.6+R()*1.0, dh=0.7+R()*1.5;
+      const m=new THREE.Mesh(new THREE.PlaneGeometry(cw,dh,1,2),laundryM[Math.floor(R()*laundryM.length)]);
+      m.position.set(px,y-dh/2-0.1,pz);m.rotation.y=-w.ang+Math.PI/2;scene.add(m);
+      cloth.push({m,ph:R()*6.28,ang:w.ang});
     }
   }
 
@@ -69,29 +106,25 @@ export function life(api){
   // Cages over the windows, an air conditioner under about one in three of them, and the water pipes: the
   // mains went up the outside of the block in bundles because there was nowhere else to put them.
   for(let k=0;k<(K.facades||0);k++){
-    const u=(R()-0.5)*W, v=(R()-0.5)*D;
-    const [x,z]=BP(u,v);
-    const h=top(x,z);if(h===null)continue;
-    const ang=A+Math.floor(R()*4)*Math.PI/2;
-    const ox=Math.cos(ang)*3.6, oz=Math.sin(ang)*3.6;
-    // a bundle of pipes up the whole face
-    if(R()<0.5){
+    const hit=onBuilding();if(!hit)continue;
+    const w=wallNear(hit.b,hit.x,hit.z);if(!w||!clearOut(w,1.6))continue;
+    const ox=w.nx*0.45, oz=w.nz*0.45;                  // just proud of the wall, not floating off it
+    if(R()<0.5){                                       // a bundle of pipes up the whole face
       const n=2+Math.floor(R()*4);
       for(let i=0;i<n;i++){
         const off=(i-n/2)*0.4;
-        const p=new THREE.Mesh(new THREE.CylinderGeometry(0.1+R()*0.07,0.1+R()*0.07,h-4,5),R()<0.3?rustM:pipeM);
-        p.position.set(x+ox-Math.sin(ang)*off,(h-4)/2+2,z+oz+Math.cos(ang)*off);statics.pipes.push(p);
+        const p=new THREE.Mesh(new THREE.CylinderGeometry(0.1+R()*0.06,0.1+R()*0.06,hit.h-4,5),R()<0.3?rustM:pipeM);
+        p.position.set(w.x+ox-w.nz*off,(hit.h-4)/2+2,w.z+oz+w.nx*off);statics.pipes.push(p);
       }
     }
-    // cages and air conditioners, storey by storey
-    for(let fl=1;fl*2.9<h-3;fl++){
+    for(let fl=1;fl*2.9<hit.h-3;fl++){
       if(R()<0.45)continue;
-      const y=fl*2.9+1.2, off=(R()-0.5)*4.5;
-      const cg=box(x+ox-Math.sin(ang)*off,y,z+oz+Math.cos(ang)*off,1.4,1.3,0.7,cageM);
-      cg.rotation.y=-ang;statics.cages.push(cg);
+      const y=fl*2.9+1.2, off=(R()-0.5)*4.0;
+      const cg=box(w.x+ox-w.nz*off,y,w.z+oz+w.nx*off,1.3,1.2,0.6,cageM);
+      cg.rotation.y=-w.ang;statics.cages.push(cg);
       if(R()<0.3){
-        const ac=box(x+ox*1.1-Math.sin(ang)*(off+1.1),y-0.5,z+oz*1.1+Math.cos(ang)*(off+1.1),0.8,0.6,0.55,acM);
-        ac.rotation.y=-ang;statics.acs.push(ac);
+        const ac=box(w.x+w.nx*0.95-w.nz*(off+1.0),y-0.5,w.z+w.nz*0.95+w.nx*(off+1.0),0.75,0.55,0.5,acM);
+        ac.rotation.y=-w.ang;statics.acs.push(ac);
       }
     }
   }
@@ -100,18 +133,17 @@ export function life(api){
   // Signs out over the lane, at head height and above it, because the only way anyone found anything in
   // here was by reading their way along. They are the only colour in the place.
   for(let k=0;k<(K.signs||0);k++){
-    const u=(R()-0.5)*W*0.98, v=(R()-0.5)*D*0.98;
-    const [x,z]=BP(u,v);
-    const h=top(x,z);if(h===null)continue;
-    const ang=A+Math.floor(R()*4)*Math.PI/2;
-    const y=4+R()*9;
-    const w=1.4+R()*2.6, hh=0.5+R()*1.4;
+    const hit=onBuilding();if(!hit)continue;
+    const w=wallNear(hit.b,hit.x,hit.z);if(!w)continue;
+    const reach=1.6+R()*2.4;
+    if(!clearOut(w,reach+0.8))continue;                // it has to hang over something you can walk down
+    const y=4+R()*Math.min(9,Math.max(1,hit.h-6));
+    const sw=1.2+R()*2.0, hh=0.5+R()*1.2;
     const m=neonM[Math.floor(R()*neonM.length)];
-    const sign=new THREE.Mesh(new THREE.BoxGeometry(0.16,hh,w),m);
-    sign.position.set(x+Math.cos(ang)*(3.4+w*0.4),y,z+Math.sin(ang)*(3.4+w*0.4));
-    sign.rotation.y=-ang;scene.add(sign);
-    const arm=box(x+Math.cos(ang)*3.2,y,z+Math.sin(ang)*3.2,0.9,0.09,0.09,lineM);
-    arm.rotation.y=-ang;statics.rails.push(arm);
+    const sign=new THREE.Mesh(new THREE.BoxGeometry(0.16,hh,sw),m);
+    sign.position.set(w.x+w.nx*reach,y,w.z+w.nz*reach);sign.rotation.y=-w.ang;scene.add(sign);
+    const arm=box(w.x+w.nx*(reach*0.5),y,w.z+w.nz*(reach*0.5),reach,0.09,0.09,lineM);
+    arm.rotation.y=-w.ang;statics.rails.push(arm);
     neons.push({m:sign,mat:m,ph:R()*6.28,flick:R()<0.25});
   }
 
@@ -119,12 +151,14 @@ export function life(api){
   // Off the noodle factories, the dai pai dongs and the extract fans, all day, because the ground floor of
   // the Walled City was mostly food and the ventilation was a hole in the wall.
   for(let k=0;k<(K.steam||0);k++){
-    const u=(R()-0.5)*W*0.9, v=(R()-0.5)*D*0.9;
-    const [x,z]=BP(u,v);
-    const h=top(x,z);if(h===null)continue;
-    const y=R()<0.6?3+R()*6:h+1;
+    const hit=onBuilding();if(!hit)continue;
+    const w=wallNear(hit.b,hit.x,hit.z);if(!w)continue;
+    const roof=R()<0.4;
+    const x=roof?hit.x:w.x+w.nx*0.8, z=roof?hit.z:w.z+w.nz*0.8;
+    const y=roof?hit.h+1:3+R()*5;
+    if(!roof&&!clearOut(w,1.4))continue;
     for(let i=0;i<3;i++){
-      const p=new THREE.Mesh(new THREE.SphereGeometry(1.1+R()*1.4,6,5),steamM);
+      const p=new THREE.Mesh(new THREE.SphereGeometry(0.9+R()*1.2,6,5),steamM);
       p.position.set(x,y,z);scene.add(p);
       steams.push({p,y0:y,ph:(i+R())/3,x,z});
     }
@@ -134,16 +168,14 @@ export function life(api){
   // The one place with daylight. Aerials and tanks are in the generator; what is missing is the people, and
   // the washing, and the fact that the roof of one building is the floor of somebody's afternoon.
   for(let k=0;k<(K.roofFolk||0);k++){
-    const u=(R()-0.5)*W*0.86, v=(R()-0.5)*D*0.86;
-    const [x,z]=BP(u,v);
-    const h=top(x,z);if(h===null)continue;
+    const hit=onBuilding();if(!hit||hit.h<12)continue;
     const g=new THREE.Group();
     const body=new THREE.Mesh(new THREE.BoxGeometry(0.42,1.1,0.3),shirtM[Math.floor(R()*shirtM.length)]);
     body.position.y=0.55;const head=new THREE.Mesh(new THREE.BoxGeometry(0.26,0.28,0.26),skinM);
     head.position.y=1.25;g.add(body,head);
-    g.position.set(x+(R()-0.5)*3,h,z+(R()-0.5)*3);g.rotation.y=R()*6.28;
-    scene.add(g);folk.push({g,ph:R()*6.28,x:g.position.x,z:g.position.z,r:0.6+R()*2.2,a:R()*6.28,
-      sp:(R()<0.5?-1:1)*(0.1+R()*0.25)});
+    g.position.set(hit.x,hit.h,hit.z);g.rotation.y=R()*6.28;
+    scene.add(g);folk.push({g,ph:R()*6.28,x:hit.x,z:hit.z,r:0.5+R()*1.4,a:R()*6.28,
+      sp:(R()<0.5?-1:1)*(0.1+R()*0.25),b:hit.b});
   }
 
   // ---- everything static, merged ----
@@ -168,7 +200,8 @@ export function life(api){
       q.p.position.set(q.x+Math.sin(t*0.7+q.ph)*u*2.2,q.y0+u*7,q.z+Math.cos(t*0.5+q.ph)*u*1.6);
       q.p.scale.setScalar(0.5+u*2.4);q.p.material.opacity=0.16*(1-u);}
     for(const q of folk){q.a+=q.sp*0.016;
-      q.g.position.set(q.x+Math.cos(q.a)*q.r,q.g.position.y,q.z+Math.sin(q.a)*q.r);
+      const nx=q.x+Math.cos(q.a)*q.r,nz=q.z+Math.sin(q.a)*q.r;
+      if(inPoly(nx,nz,q.b.ring))q.g.position.set(nx,q.g.position.y,nz);   // nobody walks off the roof
       q.g.rotation.y=-q.a+Math.PI/2;}
   });
 

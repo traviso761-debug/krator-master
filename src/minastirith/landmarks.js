@@ -110,8 +110,8 @@ export function landmarks(api){
 
   whitetower(L,x,z){   // the Tower of Ecthelion: fifty fathoms of white stone, and the standard on top of it
     const H=L.height||91,base=L.base!==undefined?L.base:gh(x,z),parts=[],TR=mkRng(3019);
-    const white=new THREE.MeshLambertMaterial({color:0xeae4d2});
-    const shade=new THREE.MeshLambertMaterial({color:0xd8d1bd});
+    const white=new THREE.MeshLambertMaterial({color:0xf2ede0});
+    const shade=new THREE.MeshLambertMaterial({color:0xdcd6c4});
     const lead=new THREE.MeshLambertMaterial({color:0x6c7278});
     const dark=new THREE.MeshLambertMaterial({color:0x1b1a1f});
     // the shaft: a slender octagon, tapering, with a buttress up each of its faces so it reads as fluted
