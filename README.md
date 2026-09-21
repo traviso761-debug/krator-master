@@ -168,6 +168,11 @@ the engine assumes. 7,425 buildings, 5,677 ways and 189 water bodies over 5.2 by
   brick shaft, stone belfry, spire and the gilt angel that turns; the Basilica's five domes over a Greek
   cross; the Salute, its great dome held down by sixteen scrolls; and the Rialto, one stone arch with two
   rows of shops standing on it. Everything else is its own mapped footprint.
+- **What is only in Venice** (`src/venice/life.js`): 960 comignoli, the bell-mouthed chimney pots that are
+  that shape because the city is built of wood inside and a spark on a roof took out a sestiere; 1,000
+  bricole, the mooring posts driven into the mud — in threes to mark a channel, singly and striped outside
+  the palazzi, in the house's own colours; 240 gondolas tied to them, rocking; washing across the calli at
+  second-floor height, because there are no gardens and the campi are public; and awnings on the campi.
 - **No terrain.** The city is at sea level and the lagoon is mapped, so the ground is flat by construction
   and the water polygons do the work. `camera: {elMin: -0.35}` lets you look along a canal instead of down
   at it.
@@ -457,6 +462,12 @@ Citadel stands seven hundred feet over the Pelennor and the White Tower three hu
   underground looking up through the back of the world.
 - **The city is a kilometre across** and 250 m tall, packed with terraces of white stone under slate: about
   1,700 buildings inside the walls, thinning as they climb, and nothing lived in on the seventh circle.
+- **A city with people in it** (`src/minastirith/life.js`): 190 banners hung from the parapet of every
+  circle, waving with a wave that runs down each one, black for the Steward and silver on the seventh; the
+  cooking smoke of 420 chimneys, all leaning the same way because it is the same wind, which is the one
+  thing that makes a stone city look inhabited from a mile away; 150 market stalls on the wider stretches of
+  the lower circles, because the Pelennor has been emptied into the city; and fire in 63 braziers on the
+  walls, which comes up as the light goes.
 - **The White Tower, the Court of the Fountain and the Great Gate** are modelled (`src/minastirith/landmarks.js`):
   a slender fluted octagon with slit windows, pinnacles and the Steward's black banner; the court with its
   fountain, the dead White Tree and the guard; and the gate with its towers and the steel doors thrown back.
@@ -542,15 +553,15 @@ src/
   chicago/  main.js landmarks.js             Chicago: Cloud Gate, the Pavilion, the Wheel, Wrigley Field
   portland/ main.js landmarks.js             Portland: the bridges, the sign, the gate, the submarine, the tram
   nyc/      main.js landmarks.js             New York: Liberty, the suspension bridges, One World Trade
-  venice/   main.js landmarks.js boats.js    Venice: the Campanile, the Salute, the Rialto, and the canals
+  venice/   main.js landmarks.js boats.js life.js   Venice: the Campanile, the Salute, the canals, the comignoli
   city17/   main.js landmarks.js combine.js  City 17: the Citadel and the occupation
   nightcity/ main.js landmarks.js neon.js    Night City: the ziggurat and the night stage
   megacity/ main.js landmarks.js             Mega-City One: the Hall of Justice, the Statue of Judgement
   mordor/   main.js landmarks.js forges.js hosts.js   Mordor: the Eye, the works, the hosts
   dredd2012/ main.js warmode.js              Mega-City One (2012): the blast shields and war mode
   fleshpit/ main.js landmarks.js organism.js camera.js   the park: the shaft below the rim, and its own camera
-  minastirith/ main.js landmarks.js          Minas Tirith: the White Tower, the Court, the Great Gate
-  kowloon/  main.js section.js kaitak.js     the Walled City: the clipping-plane section, and the approach
+  minastirith/ main.js landmarks.js life.js  Minas Tirith: the Tower, the Court, the Gate, the rock, the banners
+  kowloon/  main.js section.js kaitak.js life.js   the Walled City: the section, the approach, the washing
   hab/      main.js world.js               Kyrene: its own renderer, and a world in cylinder coordinates
 vendor/three/three.min.js     three.js r128 (pinned)
 tools/  build-page.py build-tongue.py probe.py check-city.py
