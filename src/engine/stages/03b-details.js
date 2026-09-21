@@ -24,7 +24,10 @@ section('trees',()=>{
     g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('normal',new THREE.BufferAttribute(nor,3));g.setAttribute('color',new THREE.BufferAttribute(colr,3));return g;};
   const treeG=merge(trunk,crown),treeM=new THREE.MeshLambertMaterial({vertexColors:true});
   // instance colour multiplies the vertex colour, so trunks stay brown only if the instance colour is light: tint crowns with green, trunks darken slightly
-  const T=tiledInstances(treeG,treeM,2600*WORLD,true),greens=['#3f7a3a','#4f8a3a','#356a30','#5a8a44','#2f5f34','#6a8a3a'].map(col);
+  // A city can set its own foliage. The default is a northern summer; Rivendell is always drawn in autumn and
+// the gold is most of what makes it that place rather than a wooded gorge with sheds in it.
+const T=tiledInstances(treeG,treeM,2600*WORLD,true),
+      greens=(C.treeColours||['#3f7a3a','#4f8a3a','#356a30','#5a8a44','#2f5f34','#6a8a3a']).map(col);
   const mapped=OSM.trees||[];const have=new Set();
   for(let i=0;i+1<mapped.length;i+=2){const x=mapped[i]/10,z=mapped[i+1]/10;if(!inMap(x,z,5)||inWater(x,z))continue;const hs=hash3(x,z,21),h=7+hs*9;T.add(x,groundH(x,z),z,hs*6,h,h,h,greens[Math.floor(hs*greens.length)]);have.add(Math.floor(x/20)+','+Math.floor(z/20));}
   // parkway trees: both sides of residential streets every 14 m where there is room and no mapped tree nearby.

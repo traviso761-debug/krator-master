@@ -34,17 +34,31 @@
  "farLevel": 540,
  "overcast": 0.24,
  "terrainColours": {
-  "low": "#5e6b45",
-  "high": "#6f7a4e",
-  "steep": "#8a8175",
+  "low": "#6b7348",
+  "high": "#7e7a52",
+  "steep": "#877f6c",
   "far": "#7d8a70"
  },
  "areaColours": {
-  "wood": "#4d6b3a",
-  "garden": "#6f8a44",
-  "grass": "#6d8447",
-  "park": "#5d7a42"
+  "wood": "#7a6a2e",
+  "garden": "#5f7a3c",
+  "grass": "#6f7a44",
+  "park": "#6a7a3e"
  },
+ "treeColours": [
+  "#c39a34",
+  "#b4762a",
+  "#d8b447",
+  "#8a7a2e",
+  "#a8561f",
+  "#3e5c38",
+  "#cf9f3a",
+  "#6d7a33"
+ ],
+ "roofPitch": 0.95,
+ "roofRise": 11,
+ "roofMaxArea": 1400,
+ "roofMaxHeight": 22,
  "waterColour": "#4a7d86",
  "litWindows": 0.55,
  "streetTrees": 0,
@@ -308,5 +322,13 @@
   "birds": 40,
   "leaves": 320,
   "_": "lanterns on every gallery, smoke from the hearths, mist off the falls, and leaves coming down the valley"
- }
+ },
+ "roofColours": [
+  "#57586a",
+  "#3f5f57",
+  "#4a4b58",
+  "#365a50",
+  "#5f5a55",
+  "#2f4a46"
+ ]
 }
