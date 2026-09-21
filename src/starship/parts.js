@@ -90,14 +90,27 @@ export function tube(THREE, stations, seg, mat, capFront, capBack, section){
 // station's `rz` scales u and its `ry` (or `ryb` below the centreline) scales v.
 export const SECT={
   ring(n){const N=n||24,o=[];for(let j=0;j<N;j++){const a=j/N*Math.PI*2;o.push([Math.cos(a),Math.sin(a)]);}return o;},
-  // a rim band at the widest point, a shallow plateau above it and a shallower one below: a saucer
-  saucer:[[1,-0.34],[1,0.34],[0.97,0.58],[0.90,0.77],[0.77,0.91],[0.57,0.98],[0.30,1],[0,1],
-          [-0.30,1],[-0.57,0.98],[-0.77,0.91],[-0.90,0.77],[-0.97,0.58],[-1,0.34],[-1,-0.34],
-          [-0.95,-0.62],[-0.84,-0.83],[-0.64,-0.95],[-0.35,-1],[0,-1],[0.35,-1],[0.64,-0.95],
-          [0.84,-0.83],[0.95,-0.62]],
-  // flat underside, slab sides, rounded shoulder: a nacelle, and the secondary hull of anything modern
-  nacelle:[[1,-0.44],[1,0.24],[0.88,0.70],[0.58,0.94],[0.21,1],[-0.21,1],[-0.58,0.94],[-0.88,0.70],
-           [-1,0.24],[-1,-0.44],[-0.74,-0.86],[-0.35,-1],[0.35,-1],[0.74,-0.86]],
+  // A rim band at the widest point and a smooth dome either side of it. Generated rather than listed,
+  // because a listed one is only as smooth as the patience of whoever typed it and the first version had
+  // three points across the whole top - which is where the saucer plateau came from.
+  lens(n,rim,pt,pb){
+    const N=n||14, r=rim===undefined?0.30:rim, a=pt===undefined?0.62:pt, b=pb===undefined?0.78:pb;
+    const o=[[1,-r],[1,r]];
+    for(let i=1;i<N;i++){const u=Math.cos(i/N*Math.PI);o.push([u,r+(1-r)*Math.pow(1-u*u,a)]);}
+    o.push([-1,r],[-1,-r]);
+    for(let i=1;i<N;i++){const u=-Math.cos(i/N*Math.PI);o.push([u,-(r+(1-r)*Math.pow(1-u*u,b))]);}
+    return o;
+  },
+  // Flat underside, slab sides, rounded shoulder: a nacelle, and the secondary hull of anything modern.
+  // `flat` is how much of the side stays vertical before the shoulder starts.
+  slabS(n,flat){
+    const N=n||10, f=flat===undefined?0.26:flat;
+    const o=[[1,-0.44],[1,f]];
+    for(let i=1;i<N;i++){const u=Math.cos(i/N*Math.PI);o.push([u,f+(1-f)*Math.pow(1-u*u,0.46)]);}
+    o.push([-1,f],[-1,-0.44]);
+    for(let i=1;i<N;i++){const u=-Math.cos(i/N*Math.PI);o.push([u,-(0.44+0.56*Math.pow(1-u*u,0.30))]);}
+    return o;
+  },
   // blunt leading edge, sharp trailing edge: a pylon or a neck, thin across and long along the chord
   aerofoil:[[0,1],[-0.55,0.86],[-0.85,0.55],[-1,0.10],[-0.90,-0.35],[-0.60,-0.72],[-0.25,-0.93],[0,-1],
             [0.25,-0.93],[0.60,-0.72],[0.90,-0.35],[1,0.10],[0.85,0.55],[0.55,0.86]],
@@ -162,6 +175,93 @@ export function bussard(THREE, parts, m, x, y, z, r, faceX){
     const b=new THREE.Mesh(new THREE.BoxGeometry(r*0.20,r*1.9,r*0.16),m.dark);
     b.position.set(x-f*r*0.05,y,z);b.rotation.x=k/3*Math.PI;parts.push(b);
   }
+}
+
+// ---------- a primary hull ----------
+// A saucer is NOT a table of cross-sections. It is a figure of revolution - an oblate lens - with its aft
+// end cut off square, and the height of a point on it depends only on how far that point is from the
+// centre. Built the other way, as stations along x with a fixed section scaled to each one, two things go
+// wrong and both of them are why the first three passes at this never looked right:
+//
+//   - The hull comes out STRETCHED. At 200 m from the centre the old saucer stood 14 m tall measured
+//     forward along the keel and 25 m tall measured out abeam. It was a lens in one axis and a fat lens in
+//     the other, so it read wrong from every angle except dead ahead and dead above.
+//   - A fixed section has a flat top, so the saucer got a 140-metre PLATEAU across the middle of it. No
+//     saucer has one; the bridge sits on a continuous dome.
+//
+// So: `top` and `bot` are [radius, y] tables read against the true radius, `R` is the full radius, `k`
+// squashes the z axis, and `cut` is the x of the transom - the aft end is a chord through the lens, which
+// is why the trailing edge is thicker than the rim and why the impulse engines fit in it.
+//
+// Returns the mesh and the outline: one entry per angle giving where the rim is and how tall it is there,
+// so windows, hatches and phaser strips can be put ON the hull instead of near it.
+export function discHull(THREE, mat, o){
+  const R=o.R, k=o.k===undefined?1:o.k, cut=(o.cut===undefined?null:o.cut);
+  const NA=o.seg||96, NR=o.rings||20, bulge=o.bulge===undefined?1.006:o.bulge;
+  const sample=(tbl,r)=>{
+    if(r<=tbl[0][0])return tbl[0][1];
+    for(let i=0;i<tbl.length-1;i++)if(r<=tbl[i+1][0]){
+      const t=(r-tbl[i][0])/((tbl[i+1][0]-tbl[i][0])||1);
+      return tbl[i][1]+(tbl[i+1][1]-tbl[i][1])*t;
+    }
+    return tbl[tbl.length-1][1];
+  };
+  // how far the hull reaches along a ray: the full radius, unless the transom gets in the way first
+  const reach=th=>{
+    const c=Math.cos(th);
+    if(cut===null||c>=-1e-6)return R;
+    return Math.min(R,cut/c);
+  };
+  const pos=[],idx=[];
+  const V=(x,y,z)=>{pos.push(x,y,z);return pos.length/3-1;};
+  const ths=[],rs=[];
+  for(let a=0;a<NA;a++){const th=a/NA*Math.PI*2;ths.push(th);rs.push(reach(th));}
+  const ring=(tbl)=>{
+    const rows=[];
+    for(let i=1;i<=NR;i++){
+      const row=[];
+      for(let a=0;a<NA;a++){
+        const r=rs[a]*i/NR;
+        row.push(V(Math.cos(ths[a])*r,sample(tbl,r),Math.sin(ths[a])*r*k));
+      }
+      rows.push(row);
+    }
+    return rows;
+  };
+  const tApex=V(0,sample(o.top,0),0), topRows=ring(o.top);
+  const bApex=V(0,sample(o.bot,0),0), botRows=ring(o.bot);
+  // the rim, carried a little proud so the widest point of the ship is the rim itself and not the
+  // shoulder just above it
+  const rimMid=[];
+  for(let a=0;a<NA;a++){
+    const r=rs[a]*bulge, yT=sample(o.top,rs[a]), yB=sample(o.bot,rs[a]);
+    rimMid.push(V(Math.cos(ths[a])*r,(yT+yB)/2,Math.sin(ths[a])*r*k));
+  }
+  const NX=a=>(a+1)%NA;
+  for(let a=0;a<NA;a++){
+    idx.push(tApex,topRows[0][NX(a)],topRows[0][a]);
+    idx.push(bApex,botRows[0][a],botRows[0][NX(a)]);
+  }
+  for(let i=0;i<NR-1;i++)for(let a=0;a<NA;a++){
+    const A=topRows[i][a],B=topRows[i][NX(a)],C=topRows[i+1][a],D=topRows[i+1][NX(a)];
+    idx.push(A,B,C, B,D,C);
+    const e=botRows[i][a],f=botRows[i][NX(a)],g=botRows[i+1][a],h=botRows[i+1][NX(a)];
+    idx.push(e,g,f, f,g,h);
+  }
+  for(let a=0;a<NA;a++){
+    const T=topRows[NR-1][a],T2=topRows[NR-1][NX(a)];
+    const M=rimMid[a],M2=rimMid[NX(a)];
+    const B=botRows[NR-1][a],B2=botRows[NR-1][NX(a)];
+    idx.push(T,T2,M, T2,M2,M);
+    idx.push(M,M2,B, M2,B2,B);
+  }
+  const g=new THREE.BufferGeometry();
+  g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
+  g.setIndex(idx);g.computeVertexNormals();g.computeBoundingSphere();
+  const outline=ths.map((th,a)=>({th,r:rs[a],x:Math.cos(th)*rs[a],z:Math.sin(th)*rs[a]*k,
+                                  yT:sample(o.top,rs[a]),yB:sample(o.bot,rs[a]),
+                                  cut:rs[a]<R-0.5}));
+  return {mesh:new THREE.Mesh(g,mat), outline};
 }
 
 // A row of lit windows, as instances, following a line. `n` windows between `a` and `b`, standing off the
