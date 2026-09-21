@@ -723,6 +723,14 @@ wireframe and menagerie menu every other page has.
   engineering hull carries a blunt nose around the deflector, a dorsal spine running aft from the foot of
   the neck with the upper shuttlebay let into it, three rows of windows and two strakes down each flank —
   without those it is a featureless white egg, which is what it was.
+- **The drive sequence** is the only mechanism on any of these pages, and it is on the Intrepid. At cruise
+  the pylons lie out and down and raked aft; for warp they come up level and swing forward, four seconds
+  of travel eased hard at both ends, held either side. The geometry moving on its own does not read as a
+  sequence though — from any distance it is two things quietly changing angle — so everything else answers
+  it: the grilles come up from a cold blue to a hot white-blue as the pylons lock, the collectors flare
+  hardest *through* the swing, the deflector brightens, and the navigation lights stop blinking and go
+  steady, because a ship at warp is not station-keeping. `Drive: auto` on the page cycles to holding at
+  warp, then holding at cruise, then back to the timed cycle.
 - **Intrepid class.** 343 m long, 133 m across, 66 m tall over 15 decks. The beam was 5 m over, so the
   whole plan outline came in; the height falls out of the rest and lands on 66 with the nacelles drooped.
   No neck — the saucer runs back and down into the engineering section as one body — a teardrop saucer in
