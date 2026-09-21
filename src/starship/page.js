@@ -188,6 +188,28 @@ export async function starshipPage(opts){
     let SHIP={radius:400};
     section('hull',()=>{SHIP=opts.model(api)||SHIP;});
 
+    // ---- the fingerprint ----
+    // Every other page on this site is checked by the test suite against a golden: build it, and the layout
+    // has to come out the same. A ship has no lots to count, so what is recorded instead is the model
+    // itself - every merged mesh, where its bounding sphere is, how big it is and how many vertices are in
+    // it. Nudge a station in the table of cross-sections and the hash moves, which is the whole point.
+    section('fingerprint',()=>{
+      const rows=[];
+      scene.traverse(o=>{
+        if(!o.isMesh||!o.geometry||!o.geometry.attributes.position)return;
+        if(o.userData.isWire||o.userData.noWire)return;
+        const g=o.geometry;
+        if(!g.boundingSphere)g.computeBoundingSphere();
+        const b=g.boundingSphere;
+        o.updateWorldMatrix(true,false);
+        const c=b.center.clone().applyMatrix4(o.matrixWorld);
+        rows.push({x:c.x,z:c.z,w:b.radius,dpt:g.attributes.position.count,h:c.y,ry:0,
+                   kind:o.material&&o.material.color?o.material.color.getHexString():'?',fixed:false});
+      });
+      rows.sort((p,q)=>p.x-q.x||p.h-q.h||p.z-q.z||p.dpt-q.dpt);
+      ctx.lotList=rows;
+    });
+
     // ---- the camera: a turntable round one object ----
     await stage('ui');
     const V={az:C.view0&&C.view0.az!==undefined?C.view0.az:0.9,
