@@ -78,7 +78,9 @@ section('landmarks',()=>{
       if(L.decor)group(L,L.decor.flatMap(d=>DECOR[d[0]]?DECOR[d[0]](L,x,z,d.slice(1)):[]));}
     catch(e){report('landmark '+L.name,e);}}
   // aircraft warning beacons on the tallest roofs
-  const beacons=[];for(const {L,x,z} of CARDS){const h=roofAt(x,z);if(h>250){const b=new THREE.Mesh(new THREE.SphereGeometry(2,8,6),new THREE.MeshBasicMaterial({color:0xff2020}));b.position.set(x,h+((L.decor||[]).reduce((m,d)=>Math.max(m,d[3]||0),0))+2,z);scene.add(b);beacons.push(b);}}
+  // A city that has no aircraft has no aircraft warning: a place built before the wheel does not put a
+  // blinking red light on its tallest tower. beacons:false in the config turns them off.
+  const beacons=[];for(const {L,x,z} of CARDS){if(C.beacons===false)break;const h=roofAt(x,z);if(h>250){const b=new THREE.Mesh(new THREE.SphereGeometry(2,8,6),new THREE.MeshBasicMaterial({color:0xff2020}));b.position.set(x,h+((L.decor||[]).reduce((m,d)=>Math.max(m,d[3]||0),0))+2,z);scene.add(b);beacons.push(b);}}
   animHooks.push(now=>{const on=(now%1600)<800;for(const b of beacons)b.visible=on;});
   ctx.details=Object.assign(ctx.details||{},{landmarks:C.landmarks.length,beacons:beacons.length});
 });
