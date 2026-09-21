@@ -5,8 +5,9 @@ import {report,LOAD,configureLoading,installErrorHandlers} from '../core/diag.js
 import {build} from '../engine/build.js';
 import {section} from './section.js';
 import {kaitak} from './kaitak.js';
+import {life} from './life.js';
 installErrorHandlers();window.LOAD=LOAD;
 configureLoading({prefix:'raising the Walled City… ',labels:{'map-data':'reading the block plan',ground:'laying the lanes',buildings:'stacking the block',details:'wiring the roofs',landmarks:'finding the Yamen',el:'',traffic:'opening the streets',ui:'opening the windows'}});
 // The section is this page's alone - no other place here is worth cutting open - and so is the aeroplane.
-const ctx=window._iz={defaultCity:'kowloon',extras:[{name:'kaitak',fn:kaitak},{name:'section',fn:section}]};
+const ctx=window._iz={defaultCity:'kowloon',extras:[{name:'life',fn:life},{name:'kaitak',fn:kaitak},{name:'section',fn:section}]};
 requestAnimationFrame(()=>setTimeout(()=>{build(ctx).catch(e=>{report('build',e);const l=document.getElementById('loading');if(l)l.remove();});},30));

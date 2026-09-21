@@ -43,7 +43,7 @@ const stoneM=new THREE.MeshLambertMaterial({color:0xbdb5a6}),steelM=new THREE.Me
 section('ground',()=>{
   // the land underneath everything, then the land cover, big areas first so the details paint over them
   // the ground itself: a flat plane where there is no elevation data, otherwise the height grid in cullable chunks
-  if(!TER){const base=new THREE.Mesh(new THREE.PlaneGeometry(B.w+400,B.d+400),new THREE.MeshLambertMaterial({color:0x5c5a53}));base.rotation.x=-Math.PI/2;base.position.set(B.cx,-0.02,B.cz);base.receiveShadow=true;scene.add(base);}
+  if(!TER){const base=new THREE.Mesh(new THREE.PlaneGeometry(B.w+400,B.d+400),new THREE.MeshLambertMaterial({color:0x5c5a53}));base.userData.wireCat='ground';base.rotation.x=-Math.PI/2;base.position.set(B.cx,-0.02,B.cz);base.receiveShadow=true;scene.add(base);}
   else{const TER_RELIEF=(()=>{let lo=1e9,hi=-1e9;for(let i=0;i<TER.h.length;i+=7){const v=TER.h[i];if(v<lo)lo=v;if(v>hi)hi=v;}return hi-lo;})();
     // Colour by height and slope relative to the land's own relief. Fixed at 120 m a mountain range reads as one
     // flat colour, because everything above the first hill is already at the top of the ramp; and a slope measured
@@ -64,13 +64,13 @@ section('ground',()=>{
         if(HOLE){const hx=TER.x0+(ci+i+0.5)*TER.step,hz=TER.z0+(cj+j+0.5)*TER.step;if(Math.hypot(hx-HOLE[0],hz-HOLE[1])<HOLE[2])continue;}
         idx.push(a,a+w+1,a+1,a+1,a+w+1,a+w+2);}
       const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(colr,3));g.setIndex(idx);g.computeVertexNormals();g.computeBoundingSphere();
-      const m=new THREE.Mesh(g,terM);m.receiveShadow=true;m.castShadow=TER_RELIEF>40;scene.add(m);}
+      const m=new THREE.Mesh(g,terM);m.name='terrain';m.userData.wireCat='ground';m.receiveShadow=true;m.castShadow=TER_RELIEF>40;scene.add(m);}
     // land beyond the map, so distant hills and mountains have something to stand on
     // The ring used to start at the map's circumscribed radius, which leaves a gap over the middle of each map
     // edge where the background showed through as a pale slab on the horizon. It now starts inside the box and
     // underlaps it: the terrain and the water both sit above it, so the only place it shows is past the edge.
     const far=new THREE.Mesh(new THREE.RingGeometry(Math.min(B.w,B.d)*0.45,Math.min(42000*WORLD,SKY_R*0.8),72,1),new THREE.MeshLambertMaterial({color:col((C.terrainColours||{}).far||'#76837c')}));   // fogged like the land it continues, or it reads as a dark shelf around the map
-    far.rotation.x=-Math.PI/2;far.position.set(B.cx,-1.5,B.cz);far.userData.noShadow=true;far.renderOrder=-1;scene.add(far);}
+    far.rotation.x=-Math.PI/2;far.position.set(B.cx,-1.5,B.cz);far.userData.noShadow=true;far.userData.noWire=true;far.renderOrder=-1;scene.add(far);}
   const AREA_COL={residential:'#5b664e',commercial:'#6c6962',industrial:'#615d56',construction:'#7a6e5a',campus:'#66755a',parking:'#4a4b4f',park:'#5f8a48',golf:'#6a9a50',cemetery:'#5a7a48',railyard:'#6a645a',reserve:'#557a44',wood:'#3f6a38',grass:'#6a9a52',zoo:'#648a4a',garden:'#5a9048',sand:'#dccda4',plaza:'#b8b0a2',pitch:'#4f8a3e',track:'#9a4a36',play:'#b89a6a',stadium:'#707070'};
   const BIG=new Set(['park','golf','cemetery','railyard','reserve','wood','grass','zoo']),USE=new Set(['residential','commercial','industrial','construction','campus']);
   const use=tiledBuffer(groundMat(0.5)),land=tiledBuffer(groundMat(1)),detail=tiledBuffer(groundMat(2),{tile:1000,far:4000*WORLD});
@@ -90,7 +90,7 @@ section('water',()=>{
   if(LAKE.length>2){const clip=([x,z])=>[Math.max(B.x0-200,Math.min(B.x1+3000,x)),Math.max(B.z0-3000,Math.min(B.z1+3000,z))];
   const shape=new THREE.Shape(LAKE.map(clip).map(([x,z])=>new THREE.Vector2(x,-z)));
   for(const r of ISLANDS)shape.holes.push(new THREE.Path(r.map(([x,z])=>new THREE.Vector2(x,-z))));
-  const lake=new THREE.Mesh(new THREE.ShapeGeometry(shape),waterM);lake.rotation.x=-Math.PI/2;lake.position.y=0.05;lake.receiveShadow=true;scene.add(lake);}   // cities without a lake shore skip this
+  const lake=new THREE.Mesh(new THREE.ShapeGeometry(shape),waterM);lake.name='water';lake.userData.wireCat='water';lake.rotation.x=-Math.PI/2;lake.position.y=0.05;lake.receiveShadow=true;scene.add(lake);}   // cities without a lake shore skip this
   const TOX=C.toxicWater?new RegExp(C.toxicWater,'i'):null;
   const toxM=TOX?new THREE.MeshPhongMaterial({color:new THREE.Color(C.waterColour||'#3a5f52'),specular:0x7fa08c,shininess:40,polygonOffset:true,polygonOffsetFactor:-3,polygonOffsetUnits:-6}):null;
   const wb=tiledBuffer(waterM),tb=toxM?tiledBuffer(toxM):null;

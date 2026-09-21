@@ -64,7 +64,8 @@ export function world(api){
 const hullM=new THREE.MeshLambertMaterial({color:0x6e6a62,vertexColors:true});
   const glassM=new THREE.MeshBasicMaterial({color:0x0b1020,side:THREE.DoubleSide,transparent:true,opacity:0.22,depthWrite:false});
   const ribM=new THREE.MeshLambertMaterial({color:0x8a8f96,side:THREE.DoubleSide,flatShading:true});
-  const waterM=new THREE.MeshPhongMaterial({color:0x35637a,specular:0x5a7a88,shininess:28,side:THREE.DoubleSide});
+  // seven point lights on one specular surface is seven suns on the water; this is nearly matt
+const waterM=new THREE.MeshPhongMaterial({color:0x2c586e,specular:0x22343c,shininess:12,side:THREE.DoubleSide});
   const GREEN=[0x4a6b3a,0x55753f,0x3f5f36,0x6a7d42,0x51683a];
   const CROP=[0x8a8a4a,0x9a8f52,0x77803f,0xa39a5e];
 
@@ -200,6 +201,39 @@ const hullM=new THREE.MeshLambertMaterial({color:0x6e6a62,vertexColors:true});
     parts.push(new THREE.Mesh(g,waterM));
   }
 
+  // ---- the field boundaries ----
+  // The colours alone read as a patchwork from three kilometres up and as a smear from the ground. Hedges
+  // and ditches along the same 420 m grid give the land an edge at every distance, and they are what makes
+  // it look farmed rather than painted.
+  {
+    const hedgeM=new THREE.MeshLambertMaterial({color:0x35502c,flatShading:true});
+    const hedges=[];
+    for(let k=0;k<VALLEYS;k++){
+      const a0=k*2*STRIP, a1=a0+STRIP;
+      for(let fu=0;fu<L/420;fu++){                      // the cross-fences, running across the valley
+        const u=fu*420;
+        if(u<L*0.03||u>L*0.97)continue;
+        for(let i=0;i<20;i++){
+          const aa=a0+(a1-a0)*(i+0.5)/20;
+          if(Math.abs((aa-a0)/(a1-a0)-0.5)<0.06)continue;   // not across the river
+          const m=new THREE.Mesh(new THREE.BoxGeometry(2.5,3,(a1-a0)/20*R*0.98),hedgeM);
+          put(m,u,aa,relief(u,aa)+1.5);hedges.push(m);
+        }
+      }
+      for(let i=0;i<=26;i++){                            // and the long ones, up the valley
+        const aa=a0+(a1-a0)*i/26;
+        if(Math.abs(i/26-0.5)<0.07)continue;
+        for(let fu=0;fu<L/500;fu++){
+          const u=fu*500+250;
+          if(u<L*0.03||u>L*0.97)continue;
+          const m=new THREE.Mesh(new THREE.BoxGeometry(500*0.98,3,2.5),hedgeM);
+          put(m,u,aa,relief(u,aa)+1.5);hedges.push(m);
+        }
+      }
+    }
+    parts.push(mergeParts(hedges,hedgeM));
+  }
+
   // ---- what people built ----
   // Towns strung along each valley, the terrace blocks facing the river, and the line that runs the length
   // of the hull past all of them. Everything is small: the hull is the landscape here, and a ten-storey
@@ -215,18 +249,39 @@ const hullM=new THREE.MeshLambertMaterial({color:0x6e6a62,vertexColors:true});
       const u=L*(0.08+0.84*(t+0.5)/TOWNS),a0=riverAt(u,k);
       const side=(t%2)?1:-1;
       const n=26+Math.floor(RNG()*34);
+      // A town here is a grid of blocks on a street plan, not a scatter: land is the one thing this place
+      // has none of - twenty-seven square kilometres for the whole world - so nothing is built loose.
+      const BLK=56,ST=14;
       for(let b=0;b<n;b++){
-        const du=(RNG()-0.5)*620,da=side*(STRIP*0.06+RNG()*STRIP*0.16);
+        const bu=Math.floor(RNG()*7)-3, ba=Math.floor(RNG()*5)-2;
+        const du=bu*(BLK+ST)+(RNG()-0.5)*(BLK-16);
+        const da=side*(STRIP*0.05)+ba*((BLK+ST)/R)+(RNG()-0.5)*(BLK-16)/R;
         const uu=u+du,aa=a0+da;
         const gh=relief(uu,aa);
-        const w=16+RNG()*26,d=12+RNG()*20,hh=9+RNG()*26;
+        const w=14+RNG()*22,d=11+RNG()*16,hh=9+RNG()*26;
         const m=new THREE.Mesh(new THREE.BoxGeometry(w,hh,d).translate(0,hh/2,0),wallM);
         put(m,uu,aa,gh);walls.push(m);
         lots.push({x:uu,z:aa*1000,w:w,dpt:d,h:hh,ry:0,kind:'town'});   // the shape probe.py hashes
         const rf=new THREE.Mesh(new THREE.BoxGeometry(w*1.08,2.4,d*1.08),roofM);
         put(rf,uu,aa,gh+hh);roofs.push(rf);
-        if(RNG()<0.5){const lp=new THREE.Mesh(new THREE.BoxGeometry(3,1.4,3),glow);put(lp,uu,aa,gh+hh+2);lamps.push(lp);}
+        // the windows: what makes a town a town once the tube dims
+        const win=new THREE.Mesh(new THREE.BoxGeometry(w*0.8,hh*0.55,d*0.8),glow);
+        put(win,uu,aa,gh+hh*0.2);lamps.push(win);
+        if(RNG()<0.2){const sp=new THREE.Mesh(new THREE.ConeGeometry(3,18,6),roofM);
+          put(sp,uu,aa,gh+hh+2);roofs.push(sp);}
       }
+      // the streets of it, as a paved grid
+      {const roadM=new THREE.MeshLambertMaterial({color:0x4b4a46,flatShading:true});
+       for(let g2=-3;g2<=3;g2++){
+         const uu=u+g2*(BLK+ST);
+         const strip=new THREE.Mesh(new THREE.BoxGeometry(ST,1.2,(BLK+ST)*5),roadM);
+         put(strip,uu,a0+side*STRIP*0.05,relief(uu,a0)+0.6);rails.push(strip);
+       }
+       for(let g2=-2;g2<=2;g2++){
+         const aa=a0+side*STRIP*0.05+g2*((BLK+ST)/R);
+         const strip=new THREE.Mesh(new THREE.BoxGeometry((BLK+ST)*7,1.2,ST),roadM);
+         put(strip,u,aa,relief(u,aa)+0.6);rails.push(strip);
+       }}
       // the quay and a bridge over the river at every town
       const br=new THREE.Mesh(new THREE.BoxGeometry(70,4,STRIP*R*0.14),steelM);
       put(br,u,a0,relief(u,a0)+12);rails.push(br);
@@ -244,7 +299,77 @@ const hullM=new THREE.MeshLambertMaterial({color:0x6e6a62,vertexColors:true});
   parts.push(mergeParts(walls,wallM),mergeParts(roofs,roofM),mergeParts(rails,steelM));
   if(lamps.length)parts.push(mergeParts(lamps,glow));
 
-  // ---- the trains, which are the only thing that moves ----
+  // ---- cloud ----
+  // Weather in a cylinder is a ring: the air is held against the hull by the same spin everything else is,
+  // so cloud forms in a band at a height and goes round rather than over. These are flat and thin and sit
+  // at about a fifth of the radius, which is where the air stops being useful to breathe.
+  {
+    const cloudM=new THREE.MeshBasicMaterial({color:0xf4f6f8,transparent:true,opacity:0.1,depthWrite:false});
+    const clouds=[];
+    for(let k=0;k<(K.clouds||120);k++){
+      // over the land, not over the windows: cloud on the glass looks like something on the glass
+      const kk=Math.floor(RNG()*VALLEYS),a=kk*2*STRIP+STRIP*(0.12+0.76*RNG());
+      const u=L*(0.04+0.92*RNG()),h=R*(0.13+0.09*RNG());
+      const g=new THREE.Group();
+      for(let q=0;q<3;q++){                            // a few overlapping puffs read better than one lens
+        const m=new THREE.Mesh(new THREE.SphereGeometry(1,7,5),cloudM);
+        m.scale.set(60+RNG()*150,22+RNG()*26,60+RNG()*130);
+        m.position.set((RNG()-0.5)*220,(RNG()-0.5)*18,(RNG()-0.5)*160);g.add(m);
+      }
+      const p=at(u,a,h);g.position.copy(p);g.lookAt(new THREE.Vector3(p.x,0,0));g.rotateX(-Math.PI/2);
+      scene.add(g);clouds.push({m:g,u,a,h,v:(RNG()-0.5)*0.00003});
+    }
+    animHooks.push(now=>{for(const c of clouds){
+      const a=c.a+now*c.v,p=at(c.u,a,c.h);c.m.position.copy(p);
+      c.m.lookAt(new THREE.Vector3(p.x,0,0));c.m.rotateX(-Math.PI/2);}});
+  }
+
+  // ---- the gliders ----
+  // At a tenth of a gravity, a hundred metres under the axis, a person with wings can stay up all afternoon.
+  // Everyone who has ever drawn one of these has drawn somebody flying in it, and they were right to.
+  {
+    const wingM=new THREE.MeshLambertMaterial({color:0xe8e2d0,side:THREE.DoubleSide,flatShading:true});
+    const pilotM=new THREE.MeshLambertMaterial({color:0x40464e});
+    const gliders=[];
+    for(let k=0;k<(K.gliders||7);k++){
+      const g=new THREE.Group();
+      const wing=new THREE.Mesh(new THREE.BoxGeometry(3.2,0.3,17),wingM);g.add(wing);
+      const tail=new THREE.Mesh(new THREE.BoxGeometry(1.6,0.25,5),wingM);tail.position.x=-4.4;g.add(tail);
+      const fin=new THREE.Mesh(new THREE.BoxGeometry(1.4,2.2,0.2),wingM);fin.position.set(-4.4,1,0);g.add(fin);
+      const body=new THREE.Mesh(new THREE.BoxGeometry(6,0.9,0.9),pilotM);g.add(body);
+      scene.add(g);
+      gliders.push({g,u:L*(0.1+0.8*RNG()),a:RNG()*Math.PI*2,h:R*(0.55+0.3*RNG()),
+        va:(RNG()<0.5?-1:1)*(0.00006+RNG()*0.00009),vu:(RNG()-0.5)*0.02,ph:RNG()*6.28});
+    }
+    animHooks.push(now=>{for(const q of gliders){
+      const a=q.a+now*q.va, h=q.h+Math.sin(now*0.0003+q.ph)*R*0.06;
+      const u=q.u+Math.sin(now*0.00012+q.ph)*1400;
+      const p=at(u,a,h);q.g.position.copy(p);
+      q.g.lookAt(new THREE.Vector3(p.x,0,0));q.g.rotateX(-Math.PI/2);
+      q.g.rotateY(q.va>0?Math.PI/2:-Math.PI/2);q.g.rotateZ(q.va>0?0.4:-0.4);
+    }});
+  }
+
+  // ---- the boats on the river ----
+  {
+    const boatM=new THREE.MeshLambertMaterial({color:0xd9d2c0,flatShading:true});
+    const boats=[];
+    for(let k=0;k<(K.boats||18);k++){
+      const kk=Math.floor(RNG()*VALLEYS);
+      const g=new THREE.Group();
+      const hull=new THREE.Mesh(new THREE.BoxGeometry(11,1.6,3.4),boatM);g.add(hull);
+      const cab=new THREE.Mesh(new THREE.BoxGeometry(4,1.8,2.6),boatM);cab.position.set(-1,1.7,0);g.add(cab);
+      scene.add(g);boats.push({g,k:kk,s:RNG(),dir:RNG()<0.5?-1:1});
+    }
+    animHooks.push(now=>{for(const b of boats){
+      b.s=(b.s+b.dir*0.00002+1)%1;
+      const u=L*(0.06+0.88*b.s),a=riverAt(u,b.k),p=at(u,a,-3);
+      b.g.position.copy(p);b.g.lookAt(new THREE.Vector3(p.x,0,0));b.g.rotateX(-Math.PI/2);
+      b.g.rotateY(b.dir>0?Math.PI/2:-Math.PI/2);
+    }});
+  }
+
+  // ---- the trains ----
   const trains=[];
   for(let k=0;k<VALLEYS;k++){
     const g=new THREE.Group();

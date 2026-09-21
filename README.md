@@ -360,6 +360,13 @@ core modules with everything else.
 - **Which way the hull faces.** Its triangles, wound along `u` and round `a`, already point at the axis, so
   the hull is front-faced with inward normals. Drawn back-faced — which is what a tube seen from inside
   usually wants — the entire country is invisible and all you see is the ribs.
+- **What is on it besides fields**: hedges and ditches on the same grid as the fields, because colour alone
+  reads as a patchwork from three kilometres up and as a smear from the ground; towns laid out as blocks on
+  a street grid rather than scattered, since twenty-seven square kilometres is the whole world and nothing
+  is built loose; lit windows, which are what makes a town a town once the tube dims; cloud, which in a
+  cylinder forms in a band at a height and goes round rather than over; boats on the rivers; and gliders,
+  because at a tenth of a gravity a hundred metres under the axis a person with wings can stay up all
+  afternoon.
 - **The controls** stand you on the hull with up towards the axis: drag to look, WASD to walk it, Q and E to
   rise, and "Outside" to stand off the whole thing. `#view=<name>` opens at a viewpoint.
 
@@ -408,6 +415,17 @@ over a quarter of one, and it is modelled at metre scale rather than ten-metre s
   axis. The plane turns to face whichever side you are standing on, so walking round the block turns the
   section round with you. `#section=0.45` (or `#section=0.45,along`) opens with the block already cut.
   Nothing is capped: it is a section the way a survey draws one, not a cutaway.
+- **What made it a place people lived in** (`src/kowloon/life.js`): the massing was right and it was dead —
+  three hundred grey boxes with windows on them. Almost nothing that made the Walled City look like itself
+  was put there by whoever owned the building: 1,600 pieces of washing on 420 lines strung across every gap
+  wide enough to take one; 1,700 window cages and the air conditioners hung under them; the water pipes,
+  which ran up the outside because there was no room inside; 180 shop signs out over the lanes, a quarter of
+  them with a tube on the way out; steam off the noodle factories all day; and seventy people on the roof,
+  which was the only open ground the place had.
+- **The lanes are tunnels.** Once a building had a floor to spare it was built out over the lane, so both
+  named lanes ran under everybody else's flats. The void test also had to allow for half a plot either side
+  of the line: at 2.6 m it fell between two rows of plot centres and the lanes were never cleared at all,
+  which is why Lung Chun Front Road ran straight through the middle of somebody's building.
 - **The aeroplane** (`src/kowloon/kaitak.js`): one aircraft on the approach to runway 13 every half minute,
   over the rooftops and turning at the checkerboard. It is the only planning rule the Walled City obeyed.
 - **Looking down a lane.** The engine clamps the camera to above whatever it is looking at, which is right
@@ -426,9 +444,14 @@ The description is unusually exact, and what it describes is a piece of engineer
 it literally. Seven walls, each on its own tier, each tier a hundred feet above the one below, so the
 Citadel stands seven hundred feet over the Pelennor and the White Tower three hundred feet over that.
 
-- **The keel.** A shoulder of Mindolluin comes out through the city as a wall of rock standing level with the
-  Citadel, and the city is built round it. The road up is cut round it too, so every gate faces the opposite
-  way from the one below and no gate can be seen from the gate under it.
+- **The keel** (`keel`, in `src/minastirith/landmarks.js`). A shoulder of Mindolluin comes out through the
+  city and stands sixty metres over the Citadel's own ground, so the seven circles are horseshoes rather than
+  rings. The terrain carries the mass of it — a heightfield can do a ridge — but not the thing that matters,
+  which is that its sides are sheer and its east end stops dead in mid-air above the first circle: a grid at
+  fifty metres cannot hold a cliff, because the whole drop happens inside one sample. So the faces are built
+  as slabs set flush along the line of it, with the buttresses the tiers run into, the prow and its parapet,
+  the two tunnels the road takes through the rock, and the Citadel's wall running out along the crest.
+  Everything on the seventh circle stands beside the rock, not on it.
 - **The tiers** are absolute heights, not something added to the hill: get that wrong and the Pelennor in
   front of the Great Gate stands higher than the gate does, and every viewpoint outside the walls is
   underground looking up through the back of the world.
@@ -547,6 +570,26 @@ body: `tools/build-page.py` concatenates them in order into `src/<city>/build.js
 loading text. Things one stage hands to a later one, or to the console, go on `ctx` (`window._iz`).
 **Edit the stages, never `build.js`**; `./sitectl build` regenerates it (and `check`, `reload`,
 `restart`, `test` and the probe do so automatically).
+
+### Wireframe
+
+Every page now has what Iziz has always had: the model drawn as its own edges, over the solid or instead of
+it. `src/core/wire.js` is the shared version — the engine uses it, and so does the habitat page, which has no
+engine. Two buttons in the bar, and `#wire=edges&under=xray` in the address.
+
+- **off / edges / triangles** — nothing, the hard edges of each mesh, or every triangle in it.
+- **solid / hidden / xray** — the solid under the wire; the solid drawn invisible but still blocking what is
+  behind it, which is a hidden-line drawing; or no solid at all.
+
+It is built the first time it is switched on, because for Chicago that is two million triangles' worth of
+edges and there is no reason to pay for it unless it is asked for. Edges on a merged tile of more than
+120,000 vertices fall back to the tile's own triangles: at that size the difference is invisible and the
+cost is not. The two flags that do the work are `colorWrite` and `depthWrite` on the solid's material —
+colour off with depth on is exactly a hidden-line view — so no layers and no second render pass.
+
+Meshes are tagged as they are built (`userData.wireCat`: ground, water, road, building, landmark, veg, life)
+and coloured by that; anything untagged is guessed from its name. The sky dome and the land beyond the map
+carry `userData.noWire`, because neither is part of the model.
 
 ### Everything stands on the ground
 

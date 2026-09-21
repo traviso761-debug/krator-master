@@ -137,26 +137,26 @@
   ],
   "The lane": [
    [
-    22.33259,
-    114.18955,
-    8.6
+    22.3327,
+    114.18959,
+    8.4
    ],
    [
-    22.33259,
-    114.19108,
-    8.0
+    22.33249,
+    114.19116,
+    7.6
    ]
   ],
   "The Yamen": [
    [
-    22.33277,
-    114.18995,
-    22
+    22.33283,
+    114.19,
+    22.0
    ],
    [
     22.3325,
     114.1904,
-    10
+    10.0
    ]
   ],
   "The roof": [
@@ -193,6 +193,18 @@
     22.3325,
     114.1904,
     30
+   ]
+  ],
+  "A light well": [
+   [
+    22.33248,
+    114.18985,
+    28.0
+   ],
+   [
+    22.33251,
+    114.18977,
+    8.0
    ]
   ]
  },
@@ -232,5 +244,17 @@
    80
   ],
   "_": "the slider runs over the block itself rather than the whole map"
+ },
+ "life": {
+  "seed": 1993,
+  "angle": 0.14,
+  "width": 210,
+  "depth": 120,
+  "lines": 420,
+  "facades": 260,
+  "signs": 180,
+  "steam": 34,
+  "roofFolk": 70,
+  "_": "washing lines, window cages, water pipes, shop signs, steam and the people on the roof"
  }
 }

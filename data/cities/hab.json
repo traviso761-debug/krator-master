@@ -12,7 +12,10 @@
   "sunR": 34,
   "segA": 168,
   "segU": 140,
-  "_": "spin is the rotation period in seconds; day is how long the sun tube takes to dim and brighten"
+  "_": "spin is the rotation period in seconds; day is how long the sun tube takes to dim and brighten",
+  "clouds": 170,
+  "gliders": 9,
+  "boats": 20
  },
  "views": {
   "On the valley floor": {

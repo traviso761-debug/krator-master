@@ -7,6 +7,7 @@
 // modules - diagnostics, randomness, the menagerie menu - with everything else on the site.
 import {report,LOAD,configureLoading,installErrorHandlers,stage,section} from '../core/diag.js';
 import {installMenagerie} from '../core/menagerie.js';
+import {createWire,installWireUI} from '../core/wire.js';
 import {world} from './world.js';
 
 installErrorHandlers();window.LOAD=LOAD;
@@ -134,6 +135,11 @@ async function build(){
   const mbtn=mkBtn('Outside',ui,()=>{V.mode=V.mode==='outside'?'inside':'outside';
     mbtn.textContent=V.mode==='outside'?'Inside':'Outside';});
   mbtn.title='Stand on the hull, or stand off it';
+  // the same wireframe every other page has (src/core/wire.js): on a hull this size it is the only way to
+  // see that the ground is a tessellation of a cylinder rather than a landscape
+  const wire=createWire({THREE,scene,animHooks});
+  installWireUI({ui,mkBtn,wire,hash:location.hash.slice(1)});
+  ctx.wire=wire;
   installMenagerie({ui,mkBtn}).catch(e=>report('menagerie',e));
 
   // #view=<name> opens at one of the viewpoints, the way #v= does on the engine pages - the camera state
