@@ -91,6 +91,44 @@ export function life(api){
     }
   }
 
+  // ---- what the siege is doing to the city ----
+  // Stones come over the wall all night and the lower circles are roofed in timber and slate: some houses
+  // are broken open, some are burning, and the streets under them are full of what came down. The fires are
+  // the thing you see from the Pelennor, and they are the difference between a city under siege and a model
+  // of a city that happens to have an army outside it.
+  const rubbleM=new THREE.MeshLambertMaterial({color:0x9a9488,flatShading:true});
+  const charM=new THREE.MeshLambertMaterial({color:0x3a332c,flatShading:true});
+  const blazeM=new THREE.MeshBasicMaterial({color:0xff8a2a,transparent:true,opacity:0.92,depthWrite:false});
+  const pallM=new THREE.MeshBasicMaterial({color:0x262220,transparent:true,opacity:0.2,depthWrite:false});
+  const blazes=[],palls=[];
+  const spill=(x,z,n,big)=>{                        // what came off it, in the street
+    for(let i=0;i<n;i++){
+      const rx=x+(R()-0.5)*(big?22:14), rz=z+(R()-0.5)*(big?22:14), g=groundH(rx,rz);
+      const b=box(rx,g,rz,1.1+R()*2.8,0.7+R()*1.7,1.1+R()*2.6,R()<0.25?charM:rubbleM);
+      b.rotation.y=R()*6.28;statics.push(b);}};
+  for(let k=0;k<(K.burning||0);k++){
+    const a=R()*Math.PI*2, r=(0.4+R()*0.6)*(R_OUT-40);
+    const x=Math.cos(a)*r, z=Math.sin(a)*r;
+    const h=roofAt(x,z);if(h<5)continue;
+    statics.push(box(x,h-2.4,z,4+R()*5,3.2,4+R()*5,charM));   // the roof fallen in
+    for(let i=0;i<3;i++){                                      // the rafters left standing
+      const b=box(x+(R()-0.5)*5,h-1,z+(R()-0.5)*5,0.4,2.6+R()*2.6,0.4,charM);
+      b.rotation.set((R()-0.5)*0.5,R()*3,(R()-0.5)*0.5);statics.push(b);}
+    spill(x,z,5,true);
+    const f=new THREE.Mesh(new THREE.ConeGeometry(2.2+R()*2,7+R()*7,6),blazeM);
+    f.position.set(x,h+3,z);f.userData.noWire=true;scene.add(f);blazes.push({f,ph:R()*6.28});
+    for(let i=0;i<4;i++){const p=new THREE.Mesh(new THREE.SphereGeometry(3.4+R()*2.6,7,5),pallM);
+      p.userData.noWire=true;scene.add(p);palls.push({p,x,z,y0:h+6,ph:(i+R())/4,drift:0.9+R()*0.9});}
+  }
+  // and the ones that are only broken
+  for(let k=0;k<(K.damaged||0);k++){
+    const a=R()*Math.PI*2, r=(0.35+R()*0.65)*(R_OUT-30);
+    const x=Math.cos(a)*r, z=Math.sin(a)*r;
+    const h=roofAt(x,z);if(h<4)continue;
+    statics.push(box(x+(R()-0.5)*4,h-1.8,z+(R()-0.5)*4,3+R()*4,2.4,3+R()*4,charM));
+    spill(x,z,3,false);
+  }
+
   const byMat=new Map();
   for(const m of statics){let a=byMat.get(m.material);if(!a){a=[];byMat.set(m.material,a);}a.push(m);}
   for(const [mat,list] of byMat){const g=mergeParts(list,mat);g.userData.wireCat='life';scene.add(g);}
@@ -113,9 +151,14 @@ export function life(api){
       q.p.scale.setScalar(0.6+u*2.6);q.p.material.opacity=0.1*(1-u);
     }
     fireM.opacity=(0.35+0.55*n);
+    for(const q of blazes)q.f.scale.set(0.8+0.25*Math.sin(t*5+q.ph),0.85+0.4*Math.sin(t*7.5+q.ph),0.8+0.25*Math.cos(t*4.3+q.ph));
+    for(const q of palls){const u=((t*0.035)+q.ph)%1;
+      q.p.position.set(q.x+u*44*q.drift,q.y0+u*120,q.z+u*17*q.drift);
+      q.p.scale.setScalar(0.7+u*4.2);q.p.material.opacity=0.22*(1-u*0.85);}
     for(const q of fires)q.f.scale.set(0.8+0.3*Math.sin(t*6+q.ph),0.75+0.5*Math.sin(t*9+q.ph),0.8+0.3*Math.cos(t*5+q.ph));
   });
 
   ctx.details=Object.assign(ctx.details||{},{
-    banners:banners.length,chimneys:Math.round(smokes.length/3),stalls:K.stalls||0,braziers:fires.length});
+    banners:banners.length,chimneys:Math.round(smokes.length/3),stalls:K.stalls||0,braziers:fires.length,
+    burning:blazes.length,damaged:K.damaged||0});
 }
