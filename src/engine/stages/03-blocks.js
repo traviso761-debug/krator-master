@@ -122,7 +122,7 @@ section('buildings',()=>{
   // Anything under 30 m is sprawl: near the camera it is the city, from two kilometres away it is noise that costs
   // as much as the skyline. Tall buildings carry no distance limit, so the silhouette never changes.
   const LOW_FAR=(C.lowRiseFar||2400)*WORLD;
-  for(const t of tiles.values()){for(const W of ['tower','low','blank']){const m=mk(t.walls[W],bldMats[W],true);if(m){m.userData.pick={tile:t,kind:W};PICK_TILES.push(m);t.walls[W].mesh=m;if(W==='low')far(m,LOW_FAR);}}
+  for(const t of tiles.values()){for(const W of ['tower','low','blank']){const m=mk(t.walls[W],bldMats[W],true);if(m){m.userData.pick={tile:t,kind:W};m.userData.wireCat='building';m.name='buildings';PICK_TILES.push(m);t.walls[W].mesh=m;if(W==='low')far(m,LOW_FAR);}}
     mk(t.roof,roofM,false);far(mk(t.roofLow,roofM,false),LOW_FAR);   // the skyline is always drawn; the low-rise behind it is not
     const s=mk(t.shop,shopM,false);if(s){s.castShadow=false;far(s,1500*WORLD);}}
   ctx.lotList=[];for(const a of BGRID.values())for(const r of a)if(!r._fp){r._fp=1;ctx.lotList.push({x:(r.x0+r.x1)/2,z:(r.z0+r.z1)/2,w:r.x1-r.x0,dpt:r.z1-r.z0,h:r.h,ry:0,kind:'osm',fixed:false});}   // the test fingerprint: every drawn footprint

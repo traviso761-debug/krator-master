@@ -46,7 +46,7 @@ const skyM=new THREE.ShaderMaterial({uniforms:{top:{value:new THREE.Color()},hor
 // of the dome is clipped away and the clear colour shows through along the sphere's own facets.
 // Order is: horizon ring < sky dome < far plane.
 const SKY_R=Math.max(2000,(camera.far-Math.hypot(B.w,B.d)/2)*0.92);ctx.skyR=Math.round(SKY_R);
-const sky=new THREE.Mesh(new THREE.SphereGeometry(SKY_R,32,16),skyM);sky.userData.noShadow=true;sky.renderOrder=-1;scene.add(sky);
+const sky=new THREE.Mesh(new THREE.SphereGeometry(SKY_R,32,16),skyM);sky.userData.noShadow=true;sky.userData.noWire=true;sky.renderOrder=-1;scene.add(sky);   // the dome is not part of the model, so the wireframe leaves it alone
 const tmpC=new THREE.Color(),tmpC2=new THREE.Color();
 function lerpSky(h){const n=nightF(h),dusk=Math.max(0,1-Math.abs(h-18.6)/1.6,1-Math.abs(h-6.3)/1.4);
   const mixTo=(a,b,k)=>tmpC.set(a).lerp(tmpC2.set(b),k);

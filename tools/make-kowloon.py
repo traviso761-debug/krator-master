@@ -157,11 +157,15 @@ def main():
     # buildings the same age, and nothing that was ever chosen.
     CONC = ["#8e8a80", "#7f7b72", "#9a958a", "#6f6c66", "#878378", "#928c7e", "#6a6760"]
     STAIN = ["#5f5a50", "#6a6256", "#55514a"]
-    # the light wells and the lanes: plots inside these are not built on
+    # the plots the block is divided into, and the light wells and lanes that are left out of it
+    PW, PD = 7.5, 8.5
     VOIDS = [(-64, 8, 11), (-18, -26, 9), (26, 18, 10), (68, -14, 12), (44, -36, 8), (-40, 34, 9)]
 
     def is_void(u, v):
-        if abs(v + 10) < 1.6 or abs(u + 20) < 1.4:       # the two lanes
+        # The test is against the plot's centre, so the clearance has to allow for half a plot either side:
+        # at 2.6 m the lane fell between two rows of centres and was never cleared at all, and the two named
+        # lanes of the Walled City ran straight through the middle of somebody's building.
+        if abs(v + 10) < 2.6 + PD / 2 or abs(u + 20) < 2.3 + PW / 2:
             return True
         for (vu, vv, vr) in VOIDS:
             if math.hypot(u - vu, v - vv) < vr:
@@ -170,7 +174,6 @@ def main():
 
     # the plots: a grid across the site, each one a building run up on its own
     n = [0]
-    PW, PD = 7.5, 8.5
     nu = int(BLOCK_W / PW)
     nv = int(BLOCK_D / PD)
     for i in range(nu):
@@ -204,6 +207,27 @@ def main():
                 bx, bz = BP(u + (1.4 if i > nu / 2 else -1.4) * PW * 0.5, v)
                 put(rect(bx, bz, 2.2, d * 0.7, BLOCK_A), h - R.uniform(3, 12), "balcony", "#5a5f5a",
                     roof="f", minh=GROUND + 3 * STOREY)
+
+    # The lanes were not open to the sky for long. Once a building had a floor to spare it was built out over
+    # the lane, so the two lanes ran as tunnels under everybody else's flats, lit by strip lights, and what
+    # daylight got in got in at the ends. These are those overbuilds: a floor bridging the lane, starting
+    # three storeys up so the lane itself stays open at head height.
+    for u in range(int(-BLOCK_W / 2) + 12, int(BLOCK_W / 2) - 12, 9):
+        if R.random() < 0.34:
+            continue
+        base = GROUND + R.randint(3, 6) * STOREY
+        top = base + R.randint(2, 6) * STOREY
+        cx, cz = BP(u + R.uniform(-1, 1), -10)
+        put(rect(cx, cz, 8, 7.4, BLOCK_A), top, "overbuild", CONC[R.randrange(len(CONC))],
+            roof="f", minh=base)
+    for v in range(int(-BLOCK_D / 2) + 10, int(BLOCK_D / 2) - 10, 9):
+        if R.random() < 0.4:
+            continue
+        base = GROUND + R.randint(3, 6) * STOREY
+        top = base + R.randint(2, 5) * STOREY
+        cx, cz = BP(-20, v + R.uniform(-1, 1))
+        put(rect(cx, cz, 6.6, 8, BLOCK_A), top, "overbuild", CONC[R.randrange(len(CONC))],
+            roof="f", minh=base)
 
     # ---------- the roof: the only open ground the place had ----------
     # Water tanks, aerials by the thousand, huts, pigeon lofts and the rooftop school. The engine puts its own

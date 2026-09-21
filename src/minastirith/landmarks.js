@@ -10,6 +10,104 @@ export function landmarks(api){
   const {THREE,animHooks,scene,nightF,hour,box,group,gh,mergeParts}=api;
   return {
 
+  keel(L,x,z){
+    // ---- the rock the city is built round ----
+    // "A tall bastion of rock, whose sheer front looks east": a shoulder of Mindolluin that comes out
+    // through the middle of the city standing as high as the Citadel, so that the seven circles are not
+    // rings but horseshoes, cut in half by a wall of stone with the road tunnelled through it twice.
+    //
+    // The terrain carries the mass of it - a heightfield can do a ridge - but not the thing that matters,
+    // which is that its sides are sheer and its east end stops dead in mid-air over the first circle. A
+    // grid at fifty metres cannot hold a cliff: the whole drop happens inside one sample and comes out as
+    // a slope you could walk up. So the faces are built here, as slabs set flush along the line of it.
+    const A=L.turn||0, TOP=L.top||292, W=L.width||74, EAST=L.east||450, WEST=L.west||-2600;
+    const parts=[], KR=mkRng(1447);
+    const rock=new THREE.MeshLambertMaterial({color:0x8e8a82,flatShading:true});
+    const dark=new THREE.MeshLambertMaterial({color:0x76736c,flatShading:true});
+    const pale=new THREE.MeshLambertMaterial({color:0xa9a49a,flatShading:true});
+    const stone=new THREE.MeshLambertMaterial({color:0xe6e0cd,flatShading:true});
+    const shadow=new THREE.MeshLambertMaterial({color:0x3f3d39});
+    const at=(u,v,y)=>[x+u*Math.cos(A)-v*Math.sin(A),y,z+u*Math.sin(A)+v*Math.cos(A)];
+
+    // ---- the two faces ----
+    // Slabs down each side, every one a little different, set flush and vertical. They stand from well
+    // below the lowest tier to the top of the rock, so wherever a circle meets the keel it meets a cliff.
+    const N=34;
+    for(let i=0;i<N;i++){
+      const t=i/(N-1), u=WEST+(EAST-WEST)*t;
+      // it narrows as it comes east, and the last few metres are the prow
+      const w=W*(1.25-0.45*t)*(1+0.06*Math.sin(i*2.1));
+      const top=TOP+14*Math.sin(i*0.9)+9*Math.sin(i*2.7)+(t>0.86?26*(t-0.86)/0.14:0);
+      const foot=40+120*(1-t);
+      for(const sd of [-1,1]){
+        const [px,py,pz]=at(u,sd*w/2,foot);
+        const slab=new THREE.Mesh(new THREE.BoxGeometry((EAST-WEST)/N*1.06,top-foot,14+KR()*10).translate(0,(top-foot)/2,0),
+          i%3?rock:dark);
+        slab.position.set(px,py,pz);slab.rotation.y=-A+(KR()-0.5)*0.05;parts.push(slab);
+        // the buttresses: what the tiers' retaining walls run into
+        if(i%3===1){
+          const b=new THREE.Mesh(new THREE.BoxGeometry((EAST-WEST)/N*0.5,top-foot-30,26).translate(0,(top-foot-30)/2,0),pale);
+          b.position.set(px+Math.cos(A)*8-Math.sin(A)*sd*9,py,pz+Math.sin(A)*8+Math.cos(A)*sd*9);
+          b.rotation.y=-A;parts.push(b);
+        }
+      }
+      // the crest, which is level with the Citadel the whole way
+      const [cx,cy,cz2]=at(u,0,top-18);
+      const crest=new THREE.Mesh(new THREE.BoxGeometry((EAST-WEST)/N*1.04,30,w*0.96),i%2?rock:pale);
+      crest.position.set(cx,cy,cz2);crest.rotation.y=-A;parts.push(crest);
+    }
+
+    // ---- the prow ----
+    // The east end: it stops in mid-air over the first circle, and there is a parapet on the point of it
+    // where the Citadel's wall runs out to the edge. Everyone who has ever described the city describes
+    // standing on this.
+    {
+      const [px,py,pz]=at(EAST-30,0,TOP-56);
+      const nose=new THREE.Mesh(new THREE.CylinderGeometry(W*0.3,W*0.52,96,5,1).rotateY(Math.PI/2).translate(0,48,0),pale);
+      nose.position.set(px,py,pz);nose.rotation.y=-A;parts.push(nose);
+      // the overhang: a lip of rock standing out past the face below it
+      const lip=new THREE.Mesh(new THREE.BoxGeometry(60,18,W*0.9),dark);
+      const [lx,ly,lz]=at(EAST+8,0,TOP+8);lip.position.set(lx,ly,lz);lip.rotation.y=-A;lip.rotation.z=0.05;parts.push(lip);
+      // the parapet on top of it, in the city's own stone rather than rock
+      for(let k=0;k<11;k++){
+        const v=(k/10-0.5)*W*0.8;
+        const [mx,my,mz]=at(EAST+2,v,TOP+20);
+        parts.push(box(mx,my,mz,5,7,5,stone));
+      }
+      const walk=new THREE.Mesh(new THREE.BoxGeometry(34,3,W*0.84),stone);
+      const [wx,wy,wz]=at(EAST-10,0,TOP+17);walk.position.set(wx,wy,wz);walk.rotation.y=-A;parts.push(walk);
+    }
+
+    // ---- the tunnels ----
+    // The road up passes through the rock twice, because there is no way round it: a mouth on each side at
+    // the level of the tier it belongs to, and the dark behind them.
+    for(const [u,tier] of (L.tunnels||[[-120,3],[-520,5]])){
+      const y=(L.base||76)+tier*(L.lift||30);
+      for(const sd of [-1,1]){
+        const [px,py,pz]=at(u,sd*W*0.62,y);
+        const mouth=new THREE.Mesh(new THREE.CylinderGeometry(9,9,16,10,1,true).rotateZ(Math.PI/2),shadow);
+        mouth.position.set(px,py+9,pz);mouth.rotation.y=-A+Math.PI/2;parts.push(mouth);
+        const arch=new THREE.Mesh(new THREE.BoxGeometry(6,26,26),stone);
+        arch.position.set(px,py+13,pz);arch.rotation.y=-A+Math.PI/2;parts.push(arch);
+      }
+    }
+
+    // ---- the wall along the top ----
+    // The Citadel's own wall runs out along the crest of the rock to the prow, which is what makes the
+    // seventh circle a horseshoe rather than a ring.
+    for(let i=0;i<26;i++){
+      const u=EAST-30-i*((EAST-WEST)*0.36/26);
+      for(const sd of [-1,1]){
+        const [px,py,pz]=at(u,sd*W*0.47,TOP+4);
+        const w=box(px,py,pz,(EAST-WEST)*0.36/26*1.05,13,7,stone);w.rotation.y=-A;parts.push(w);
+        if(i%4===0){const t2=box(px,py,pz,12,20,12,stone);t2.rotation.y=-A;parts.push(t2);}
+      }
+    }
+    const byMat=new Map();
+    for(const m of parts){let a=byMat.get(m.material);if(!a){a=[];byMat.set(m.material,a);}a.push(m);}
+    const merged=[];for(const [mat,list] of byMat)merged.push(mergeParts(list,mat));
+    return group(L,merged);},
+
   whitetower(L,x,z){   // the Tower of Ecthelion: fifty fathoms of white stone, and the standard on top of it
     const H=L.height||91,base=L.base!==undefined?L.base:gh(x,z),parts=[],TR=mkRng(3019);
     const white=new THREE.MeshLambertMaterial({color:0xeae4d2});

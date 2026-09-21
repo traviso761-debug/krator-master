@@ -377,12 +377,14 @@ def main():
     # ---- the seventh circle: the Citadel ----
     # The Tower is a landmark and is built in src/minastirith/landmarks.js; what is here is the ground it
     # stands on - the hall of the kings behind it, the guard houses either side, the Hallows in the rock.
-    put(rect(-210, 0, 150, 210), CIT + 26, "civic", "#d8d2c2", name="The Hall of the Kings", roof="f")
-    put(rect(-330, 0, 90, 130), CIT + 18, "civic", "#cdc6b6", roof="f")
+    # Everything on the Citadel stands beside the rock, not on it: the keel runs down the middle of the
+    # seventh circle at eighty-eight metres wide, and a hall centred on z = 0 is inside a cliff.
+    put(rect(-210, 118, 150, 120), CIT + 26, "civic", "#d8d2c2", name="The Hall of the Kings", roof="f")
+    put(rect(-330, -122, 90, 110), CIT + 18, "civic", "#cdc6b6", roof="f")
     for s in (-1, 1):
-        put(rect(-60, s * 150, 70, 34), CIT + 12, "civic", "#cdc6b6", roof="g")
-        put(rect(-190, s * 170, 46, 30), CIT + 10, "civic", "#cdc6b6", roof="g")
-    put(rect(-520, 0, 60, 90), CIT + 8, "civic", "#b8b2a4", name="The Hallows", roof="f")
+        put(rect(-60, s * 132, 70, 34), CIT + 12, "civic", "#cdc6b6", roof="g")
+        put(rect(-190, s * 168, 46, 30), CIT + 10, "civic", "#cdc6b6", roof="g")
+    put(rect(-520, 104, 60, 80), CIT + 8, "civic", "#b8b2a4", name="The Hallows", roof="f")
 
     # ---- the Rammas Echor, and the Causeway Forts on the road through it ----
     put(ring_poly(0, 0, RAMMAS, 128, RAMMAS - 7), PLAIN + 3.5, "wall", "#b6ae9c", roof="f", minh=PLAIN - 6)
