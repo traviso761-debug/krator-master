@@ -1,7 +1,7 @@
 {
- "lots": 2448,
- "lotHash": "7acb5fec9221fa6d4126862d72502a216816c1403221f235cdd113118125da0c",
+ "lots": 3850,
+ "lotHash": "186de60ec1cbe66ec558f06dfd71d551fd5881d7d2a4f81c75486f9ba5ca0cc8",
  "doors": null,
  "doorHash": null,
- "seed": 3019
+ "seed": 1337
 }

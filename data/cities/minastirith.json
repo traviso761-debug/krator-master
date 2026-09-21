@@ -100,13 +100,16 @@
     "The Tower of Ecthelion"
    ],
    "at": [
-    42.99901,
-    5.00049
+    43.0,
+    5.00118
    ],
    "model": "whitetower",
-   "height": 91,
-   "base": 286,
-   "info": "Fifty fathoms of white stone on the Citadel, and the Citadel is seven hundred feet over the Pelennor, so the standard at its top stands a thousand feet above the fields. The banner is black, and there is no king to put a white tree on it."
+   "height": 130,
+   "info": "Fifty fathoms of white stone on the Citadel, and the Citadel is seven hundred feet over the Pelennor, so the standard at its top stands a thousand feet above the fields. The banner is black, and there is no king to put a white tree on it.",
+   "clear": [
+    60,
+    0
+   ]
   },
   {
    "name": "The Rock",
@@ -116,24 +119,36 @@
    ],
    "at": [
     43.0,
-    4.99693
+    5.0
    ],
    "model": "keel",
    "turn": 0.0,
-   "top": 352,
-   "width": 88,
-   "east": 700,
-   "west": -700,
+   "top": 286,
+   "width": 80,
+   "east": 450,
+   "west": -1100,
    "base": 76,
    "lift": 30,
    "tunnels": [
     [
-     120,
+     430,
+     2
+    ],
+    [
+     365,
      3
     ],
     [
-     -330,
+     303,
+     4
+    ],
+    [
+     243,
      5
+    ],
+    [
+     177,
+     6
     ]
    ],
    "info": "A shoulder of Mindolluin that comes out through the middle of the city and stands over the Citadel itself, so the seven circles are horseshoes rather than rings. Its east end stops dead in mid-air above the first circle, and the road up goes through it twice."
@@ -141,11 +156,10 @@
   {
    "name": "The Court of the Fountain",
    "at": [
-    42.99899,
-    4.99951
+    43.0,
+    4.99975
    ],
    "model": "whitetree",
-   "base": 286,
    "info": "The high court behind the Tower: a sward, a fountain, and the White Tree that died and was left standing because no one would cut it down."
   },
   {
@@ -190,6 +204,14 @@
     5.12651
    ],
    "info": "The old capital, astride the river and in ruins on both banks. The bridge went long ago."
+  },
+  {
+   "name": "Osgiliath",
+   "at": [
+    43.00539,
+    5.1057
+   ],
+   "info": "The old capital of Gondor, astride the Anduin, taken and retaken until there was nothing left to hold. The great bridge is broken in the middle and the Causeway from Minas Tirith stops at the water."
   }
  ],
  "views": {
@@ -315,14 +337,14 @@
   ],
   "Osgiliath": [
    [
-    43.0135,
-    5.1044,
-    330
+    43.0148,
+    5.0957,
+    420
    ],
    [
-    43.0027,
-    5.12651,
-    20
+    43.00539,
+    5.1057,
+    10
    ]
   ],
   "The host on the Pelennor": [
@@ -363,7 +385,7 @@
   ]
  },
  "hosts": {
-  "armies": 6,
+  "armies": 10,
   "perArmy": 3200,
   "file": 58,
   "step": 1.9,
@@ -374,19 +396,78 @@
   "wing": 16,
   "alt": 460,
   "spread": 6000,
-  "_": "the siege: hosts coming up the roads from Osgiliath and the south, and the Nazgul over them"
+  "_": "the siege: hosts coming up the roads from Osgiliath and the south, and the Nazgul over them",
+  "siege": {
+   "at": [
+    0,
+    0
+   ],
+   "arc": [
+    -1.55,
+    1.55
+   ],
+   "r0": 1250,
+   "r1": 2200,
+   "blocks": 46,
+   "per": 2300,
+   "file": 46,
+   "camps": 92,
+   "tentsPer": 26,
+   "engines": 46,
+   "arrows": 1800,
+   "perVolley": 110,
+   "volleyGap": 800,
+   "reload": 8000,
+   "wall": 560,
+   "wallY": 70,
+   "_": "the siege of Gondor: blocks drawn up on the Pelennor facing the Great Gate, camps behind them, engines throwing and arrows both ways",
+   "defenders": 34,
+   "rings": 4,
+   "ringY": 1.2,
+   "ringLift": 30,
+   "ringStep": 60,
+   "towers": 14,
+   "firePart": 0.4,
+   "grond": {
+    "at": [
+     660,
+     0
+    ],
+    "length": 40,
+    "radius": 2.4,
+    "trolls": 40,
+    "period": 5200
+   },
+   "riders": {
+    "at": [
+     1500,
+     -4200
+    ],
+    "n": 6000,
+    "file": 150,
+    "step": 3.6
+   }
+  }
  },
  "windows": false,
  "streetFurniture": false,
  "life": {
   "seed": 3019,
   "outer": 520,
-  "step": 66,
+  "step": 60,
   "tiers": 7,
   "base": 76,
   "lift": 30,
   "chimneys": 420,
   "stalls": 150,
-  "_": "banners on every circle, cooking smoke, market stalls and fire on the walls after dark"
+  "_": "banners on every circle, cooking smoke, market stalls and fire on the walls after dark",
+  "burning": 34,
+  "damaged": 90
+ },
+ "beacons": false,
+ "areaColours": {
+  "grass": "#7f8c5c",
+  "wood": "#4c6238",
+  "plaza": "#a79d8c"
  }
 }
