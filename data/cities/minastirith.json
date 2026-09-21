@@ -152,7 +152,7 @@
    "name": "The Great Gate",
    "at": [
     43.0,
-    5.0086
+    5.00634
    ],
    "model": "greatgate",
    "height": 34,
@@ -207,13 +207,13 @@
   ],
   "The Great Gate": [
    [
-    43.00153,
+    43.00135,
     5.01081,
     120
    ],
    [
     43.0,
-    5.00639,
+    5.00634,
     96
    ]
   ],
@@ -377,5 +377,16 @@
   "_": "the siege: hosts coming up the roads from Osgiliath and the south, and the Nazgul over them"
  },
  "windows": false,
- "streetFurniture": false
+ "streetFurniture": false,
+ "life": {
+  "seed": 3019,
+  "outer": 520,
+  "step": 66,
+  "tiers": 7,
+  "base": 76,
+  "lift": 30,
+  "chimneys": 420,
+  "stalls": 150,
+  "_": "banners on every circle, cooking smoke, market stalls and fire on the walls after dark"
+ }
 }
