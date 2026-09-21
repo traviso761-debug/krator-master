@@ -19,6 +19,33 @@ export function forges(api){
   const fireM=new THREE.MeshBasicMaterial({color:0xff7a1e,transparent:true,opacity:0.9});
   const mouthM=new THREE.MeshBasicMaterial({color:0xff5a10,transparent:true,opacity:0.8});
   const smokeM=new THREE.MeshLambertMaterial({color:0x2e2a26,transparent:true,opacity:0.2,depthWrite:false});
+  // ---- the hearths of Nurn ----
+  // Not works: cook fires in the hamlets along the shore and at the granaries, which are the only lights in
+  // the south of the country. A stack here would be a ninety-five metre chimney over a fishing village.
+  {
+    const hs=POIS.filter(p=>p.kind==='hearth');
+    if(hs.length){
+      const hM=new THREE.MeshBasicMaterial({color:0xff8a2e,transparent:true,opacity:0.85});
+      const hSm=new THREE.MeshLambertMaterial({color:0x2e2a26,transparent:true,opacity:0.16,depthWrite:false});
+      const fire=new THREE.InstancedMesh(new THREE.ConeGeometry(26,90,6).translate(0,45,0),hM,hs.length);
+      const sm=new THREE.InstancedMesh(new THREE.SphereGeometry(48,7,5),hSm,hs.length);
+      fire.userData.noWire=sm.userData.noWire=true;
+      hs.forEach((p,i)=>{const gy=groundH(p.x,p.z);
+        D.position.set(p.x,gy+4,p.z);D.rotation.set(0,FR()*6.28,0);D.scale.set(1,1,1);D.updateMatrix();
+        fire.setMatrixAt(i,D.matrix);
+        D.position.set(p.x+40,gy+120,p.z+20);D.scale.set(1,1.6,1);D.updateMatrix();sm.setMatrixAt(i,D.matrix);});
+      fire.count=sm.count=hs.length;fire.frustumCulled=sm.frustumCulled=false;
+      scene.add(fire,sm);
+      ctx.details=Object.assign(ctx.details||{},{hearths:hs.length});
+      let t0=performance.now();
+      animHooks.push(now=>{const t=(now-t0)/1000;
+        hs.forEach((p,i)=>{const gy=groundH(p.x,p.z);
+          D.position.set(p.x,gy+4,p.z);D.rotation.set(0,0,0);
+          D.scale.set(0.8+0.3*Math.sin(t*5+i),0.8+0.4*Math.sin(t*7+i),0.8+0.3*Math.cos(t*4+i));
+          D.updateMatrix();fire.setMatrixAt(i,D.matrix);});
+        fire.instanceMatrix.needsUpdate=true;});
+    }
+  }
   const H=F.stack||95,SC=F.scale||1;
   const stacks=[],fires=[],columns=[];
   let nStack=0;

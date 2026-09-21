@@ -69,6 +69,51 @@ export function landmarks(api){
       t.position.set(x+Math.cos(a)*r,g0,z+Math.sin(a)*r);parts.push(t);
       const sp=new THREE.Mesh(new THREE.ConeGeometry(30,H*0.1,6).translate(0,H*0.05,0),dark);
       sp.position.set(x+Math.cos(a)*r,g0+H*0.34,z+Math.sin(a)*r);parts.push(sp);}
+    // ---- the outworks ----
+    // Barad-dur is not a tower on a hill, it is a tower in the middle of a fortress the size of a town: two
+    // wards of curtain wall round it, a gate on the road side with a barbican in front of it, a causeway up
+    // to that across the ditch, and lesser towers along every wall. The tower on its own read as a spike
+    // someone had pushed into the ground.
+    const WARD=[[baseR*3.4,H*0.10,15],[baseR*2.1,H*0.13,11]];
+    const GATE_A=A+2.3;                                  // the side the road comes in on
+    for(const [rr,wh,nt] of WARD){
+      const n=Math.max(24,Math.round(rr/70));
+      for(let k=0;k<n;k++){
+        const a=A+k/n*Math.PI*2;
+        // the gate: a gap in the outer ward only
+        if(rr===WARD[0][0]&&Math.abs(((a-GATE_A+Math.PI)%(Math.PI*2))-Math.PI)<0.10)continue;
+        const seg=rr*Math.PI*2/n*1.12;
+        const w=new THREE.Mesh(new THREE.BoxGeometry(seg,wh*(0.9+((k*29)%5)*0.05),baseR*0.16).translate(0,wh/2,0),dark);
+        w.position.set(x+Math.cos(a)*rr,g0,z+Math.sin(a)*rr);w.rotation.y=-a+Math.PI/2;parts.push(w);
+      }
+      for(let k=0;k<nt;k++){
+        const a=A+k/nt*Math.PI*2+0.21;
+        const t=new THREE.Mesh(new THREE.CylinderGeometry(baseR*0.11,baseR*0.16,wh*1.9,6).translate(0,wh*0.95,0),iron);
+        t.position.set(x+Math.cos(a)*rr,g0,z+Math.sin(a)*rr);parts.push(t);
+        const sp=new THREE.Mesh(new THREE.ConeGeometry(baseR*0.12,wh*0.5,6).translate(0,wh*0.25,0),dark);
+        sp.position.set(x+Math.cos(a)*rr,g0+wh*1.9,z+Math.sin(a)*rr);parts.push(sp);
+      }
+    }
+    // the gatehouse, the barbican in front of it, and the causeway out across the ditch
+    {
+      const rr=WARD[0][0];
+      for(const sd of [-1,1]){
+        const a=GATE_A+sd*0.12;
+        const t=new THREE.Mesh(new THREE.BoxGeometry(baseR*0.3,H*0.22,baseR*0.34).translate(0,H*0.11,0),iron);
+        t.position.set(x+Math.cos(a)*rr,g0,z+Math.sin(a)*rr);t.rotation.y=-a;parts.push(t);
+        const sp=new THREE.Mesh(new THREE.ConeGeometry(baseR*0.17,H*0.1,5).translate(0,H*0.05,0),dark);
+        sp.position.set(x+Math.cos(a)*rr,g0+H*0.22,z+Math.sin(a)*rr);parts.push(sp);
+      }
+      for(let k=0;k<9;k++){
+        const d=rr+120+k*110;
+        const c=new THREE.Mesh(new THREE.BoxGeometry(baseR*0.44,H*0.03,220),dark);
+        c.position.set(x+Math.cos(GATE_A)*d,g0+H*0.02,z+Math.sin(GATE_A)*d);c.rotation.y=-GATE_A;parts.push(c);
+        if(k%3===0)for(const sd of [-1,1]){
+          const p=new THREE.Mesh(new THREE.BoxGeometry(30,H*0.06,30).translate(0,H*0.03,0),iron);
+          p.position.set(x+Math.cos(GATE_A)*d-Math.sin(GATE_A)*sd*baseR*0.24,g0+H*0.03,
+                         z+Math.sin(GATE_A)*d+Math.cos(GATE_A)*sd*baseR*0.24);parts.push(p);}
+      }
+    }
     // the shaft: black iron, battered, gathering inwards as it climbs
     const wid=t=>t<0.08?180-560*t:t<0.62?135-70*(t-0.08)/0.54:t<0.86?65+28*Math.sin((t-0.62)/0.24*Math.PI):Math.max(16,93-380*(t-0.86));
     const SEG=26;
@@ -89,7 +134,7 @@ export function landmarks(api){
     const EY=g0+H*1.02,SC=L.eyeScale||1;
     const fireM=new THREE.MeshBasicMaterial({color:0xffb23a,transparent:true,opacity:0.95});
     const glowM=new THREE.MeshBasicMaterial({color:0xff8a1e,transparent:true,opacity:0.34,depthWrite:false});
-    const haloM=new THREE.MeshBasicMaterial({color:0xff7a12,transparent:true,opacity:0.14,depthWrite:false});
+    const haloM=new THREE.MeshBasicMaterial({color:0xff7a12,transparent:true,opacity:0.08,depthWrite:false});
     const slitM=new THREE.MeshBasicMaterial({color:0x180a04});
     const eye=new THREE.Group();eye.position.set(x,EY,z);scene.add(eye);
     const ball=new THREE.Mesh(new THREE.SphereGeometry(58*SC,20,14),fireM);ball.scale.set(1.5,0.78,0.5);eye.add(ball);
@@ -100,10 +145,10 @@ export function landmarks(api){
       f.position.set(Math.cos(a)*62*SC,Math.sin(a)*40*SC,0);f.rotation.z=-a+Math.PI/2;eye.add(f);lash.push({f,ph:k*0.7});}
     const glow=new THREE.Mesh(new THREE.SphereGeometry(230*SC,16,12),glowM);glow.scale.set(1.4,1,1);eye.add(glow);
     // the halo is deliberately out of scale: the tower is a splinter from a hundred miles off, the Eye is not
-    const halo=new THREE.Mesh(new THREE.SphereGeometry((L.haloR||3000),16,12),haloM);halo.scale.set(1.3,0.9,1.3);
+    const halo=new THREE.Mesh(new THREE.SphereGeometry((L.haloR||1800),22,16),haloM);halo.scale.set(1.3,0.9,1.3);
     halo.position.set(x,EY,z);halo.userData.noShadow=true;scene.add(halo);
-    const bloomM=new THREE.MeshBasicMaterial({color:0xff6a10,transparent:true,opacity:0.07,depthWrite:false});
-    const bloom=new THREE.Mesh(new THREE.SphereGeometry((L.haloR||3000)*2.6,14,10),bloomM);
+    const bloomM=new THREE.MeshBasicMaterial({color:0xff6a10,transparent:true,opacity:0.035,depthWrite:false});
+    const bloom=new THREE.Mesh(new THREE.SphereGeometry((L.haloR||1800)*2.4,18,12),bloomM);
     bloom.scale.set(1.25,0.8,1.25);bloom.position.set(x,EY,z);bloom.userData.noShadow=true;scene.add(bloom);
     // the searching beam, sweeping the plain
     const beamM=new THREE.MeshBasicMaterial({color:0xffb861,transparent:true,opacity:0.08,side:THREE.DoubleSide,depthWrite:false});
@@ -113,11 +158,11 @@ export function landmarks(api){
     const lamp=new THREE.PointLight(0xff8c22,0,40000);lamp.position.set(x,EY,z);scene.add(lamp);
     animHooks.push(now=>{const n=nightF(hour());
       const fl=0.7+0.3*Math.sin(now*0.0027)+0.16*Math.sin(now*0.0091);
-      fireM.opacity=Math.min(1,0.8+0.2*fl);glowM.opacity=(0.4+0.28*n)*fl;haloM.opacity=(0.2+0.16*n)*fl;
+      fireM.opacity=Math.min(1,0.8+0.2*fl);glowM.opacity=(0.4+0.28*n)*fl;haloM.opacity=(0.08+0.09*n)*fl;
       ball.scale.set(1.5+0.09*fl,0.78+0.05*fl,0.5);
       for(const q of lash){const k=0.6+0.5*Math.sin(now*0.006+q.ph);q.f.scale.set(0.8+0.3*k,k,0.8+0.3*k);}
       const sweep=now*0.000045;eye.rotation.y=sweep;swivel.rotation.y=sweep;
-      lamp.intensity=(1.4+1.6*n)*fl;beamM.opacity=(0.05+0.07*n)*fl;bloomM.opacity=(0.06+0.06*n)*fl;});
+      lamp.intensity=(1.4+1.6*n)*fl;beamM.opacity=(0.05+0.07*n)*fl;bloomM.opacity=(0.03+0.035*n)*fl;});
     return g;},
   blackgate(L,x,z){
     // The Morannon. It closes the slot of Cirith Gorgor and nothing else gets through: rock to the left,
@@ -154,6 +199,41 @@ export function landmarks(api){
     for(const f of [0.34,0.62,0.86])trim.push(bx(0,-THK*0.06,GY+H*f,W,H*0.035,THK*1.1,iron));
     trim.push(bx(0,-THK*0.05,GY+H*0.99,W,H*0.05,THK*1.16,dark));        // the parapet
 
+    // ---- the rampart ----
+    // What a wall this size actually carries: a walk along the top wide enough to move a company on, corbels
+    // and machicolations under it so the ground at the foot can be reached, a stair every few hundred metres
+    // up from the inside, and a brazier between every second pair of teeth.
+    {
+      trim.push(bx(0,-THK*0.62,GY+H*0.9,W,H*0.045,THK*0.5,iron));          // the walk, corbelled out inside
+      for(let k=0;k<Math.round(W/120);k++){
+        const u=(k/(Math.round(W/120)-1)-0.5)*W;
+        if(Math.abs(u)<DOOR/2)continue;
+        trim.push(bx(u,-THK*0.55,GY+H*0.83,60,H*0.07,THK*0.34,dark));      // the corbels under it
+        if(k%2===0)trim.push(bx(u,-THK*0.72,GY+H*0.4,70,H*0.42,THK*0.36,dark));   // buttresses on the inside face
+      }
+      // stairs up the inside face
+      for(let k=0;k<8;k++){
+        const u=(k/7-0.5)*W*0.86;
+        if(Math.abs(u)<DOOR)continue;
+        for(let j=0;j<12;j++)
+          trim.push(bx(u+j*26,-THK*0.75-j*14,GY+H*0.075*j,26,H*0.07,120,iron));
+      }
+    }
+    // ---- the ground in front of it ----
+    // A ditch, the spoil from it thrown up as a bank, and the road brought across on a causeway that can be
+    // seen from the parapet for its whole length. Nothing comes at this wall without being looked at.
+    {
+      for(let k=0;k<Math.round(W/300);k++){
+        const u=(k/(Math.round(W/300)-1)-0.5)*W*1.06;
+        crag.push(bx(u,THK*4.2,GY-40,320,80,520,rock));                    // the bank
+        crag.push(bx(u,THK*2.6,GY-150,320,120,420,dark));                  // and the ditch behind it
+      }
+      for(let k=0;k<7;k++){
+        crag.push(bx(0,THK*(1.4+k*0.9),GY-4,DOOR*0.8,40,THK*0.9,iron));    // the causeway
+        for(const sd of [-1,1])
+          trim.push(bx(sd*DOOR*0.45,THK*(1.4+k*0.9),GY+H*0.04,50,H*0.08,50,dark));
+      }
+    }
     // ---- the gate: two leaves, ribbed the same way, and they open ----
     // The Morannon is a gate, and a gate that never moves is a wall with a pattern on it. Each leaf is built
     // in its own frame, hinged on its jamb, and swung back against the inside face when a host comes up the
@@ -254,39 +334,106 @@ export function landmarks(api){
     });
     return group(L,parts);},
   windingstair(L,x,z){
-    // The Straight Stair and the Winding Stair, cut into the west face of the Ephel Duath under Cirith Ungol.
-    // It is the only way over the mountains that is not the Morannon, and it is a stair rather than a road:
-    // a first flight so steep it is nearly a ladder, then switchbacks up the face, each turn cut back into
-    // the rock, with the drop on the other side and nothing at all between you and it.
+    // ---- the Straight Stair and the Winding Stair ----
+    // The way over the Ephel Duath that is not the Morannon. A one-kilometre height grid draws this range as
+    // a swell, so the face the stair is cut into is built here: a continuous wall of rock a couple of
+    // kilometres long, and the stair a pale ledge zig-zagging up it with nothing at all on the outside edge.
+    // The first version laid steps on the open hillside and came out as a dark clump the size of a house.
     const A=L.turn||0,g0=gh(x,z),TOP=L.top||900,parts=[];
-    const step=new THREE.MeshLambertMaterial({color:0x4d4740,flatShading:true});   // cut stone, lighter than the face it is cut into
-    const rock=new THREE.MeshPhongMaterial({color:0x2a2620,specular:0x1c1a17,shininess:3,flatShading:true});
+    const rock=new THREE.MeshPhongMaterial({color:0x272420,specular:0x1a1815,shininess:3,flatShading:true});
+    const dark=new THREE.MeshLambertMaterial({color:0x1b1916,flatShading:true});
+    const step=new THREE.MeshLambertMaterial({color:0x6a635a,flatShading:true});   // cut stone, pale against the face
+    const worn=new THREE.MeshLambertMaterial({color:0x585149,flatShading:true});
     const ux=Math.cos(A),uz=Math.sin(A),vx=-uz,vz=ux;      // u: into the mountain, v: along the face
-    const at=(u,v)=>[x+ux*u+vx*v,z+uz*u+vz*v];
-    // the straight stair: one flight driven at the face
-    const SW=L.width||26;
-    {const n=22;for(let k=0;k<n;k++){
-      const u=k*14,v=0,y=g0+(TOP*0.30)*(k/n);
-      const [px,pz]=at(u,v);
-      const b=box(px,y,pz,SW,10,15,step);b.rotation.y=-A;parts.push(b);}}
-    // the winding stair: switchbacks, each one shorter than the last
-    let u0=22*14,y0=g0+TOP*0.30,dir=1;
-    for(let f=0;f<7;f++){
-      const len=(L.flight||210)*(1-f*0.07),n=Math.max(6,Math.round(len/16));
-      for(let k=0;k<n;k++){
-        const v=dir*(k/n)*len-dir*len*0.5,u=u0+f*30,y=y0+(TOP*0.10)*(k/n);
-        const [px,pz]=at(u,v);
-        const b=box(px,y,pz,SW*0.8,10,14,step);b.rotation.y=-A;parts.push(b);
-        if(k%3===0){const [wx,wz]=at(u-SW*0.5,v);          // the wall of rock the stair is cut into
-          const w=box(wx,y-30,wz,16,52,14,rock);w.rotation.y=-A;parts.push(w);}
+    const at=(u,v,y)=>[x+ux*u+vx*v,y,z+uz*u+vz*v];
+    const SPAN=L.span||2600, W=L.width||34;
+    // The face is battered: each course of it stands back twenty-six metres on every hundred of height, so
+    // anything cut into the face has to follow the same line or it ends up inside the mountain - which is
+    // where the first version of the stair was.
+    const faceU=y=>0.26*(y-g0)-16;
+
+    // ---- the face ----
+    // Built as a stack of courses rather than one slab, each one standing back a little from the one below,
+    // so the wall has a batter and a skyline instead of being a rectangle.
+    {
+      const CO=9;
+      for(let c=0;c<CO;c++){
+        const hh=TOP/CO, y=g0+c*hh, back=c*26;
+        for(let i=0;i<22;i++){
+          const v=(i/21-0.5)*SPAN, len=SPAN/21*1.25;
+          const d=170+90*Math.sin(i*1.7+c)+40*Math.sin(i*0.6);
+          const m=new THREE.Mesh(new THREE.BoxGeometry(len,hh*1.06,d).translate(0,hh/2,0),
+            (((i*7+c*3)%11)<3)?dark:rock);
+          const [px,py,pz]=at(back+d*0.5+30*Math.sin(i*2.1+c*1.3),v,y);
+          m.position.set(px,py,pz);m.rotation.set(0,-A+Math.PI/2+(i%2?0.03:-0.03),0);parts.push(m);
+        }
       }
-      y0+=TOP*0.10;dir=-dir;
+      // the talus at the foot of it
+      for(let k=0;k<70;k++){
+        const v=(Math.random()-0.5)*SPAN, sz=14+Math.random()*46;
+        const [px,py,pz]=at(-40+Math.random()*90,v,g0+Math.random()*60);
+        const m=new THREE.Mesh(new THREE.BoxGeometry(sz*1.5,sz,sz*1.2),Math.random()<0.5?dark:rock);
+        m.position.set(px,py,pz);m.rotation.set(Math.random()*3,Math.random()*3,Math.random()*3);parts.push(m);
+      }
     }
-    // the cleft at the head of it, and the rock standing over the way in
-    {const [cx2,cz2]=at(u0+7*30+40,0);
-     for(const sd of [-1,1]){const [wx,wz]=at(u0+7*30+40,sd*(SW*1.2));
-       const w=box(wx,gh(wx,wz)-40,wz,60,TOP*0.55,80,rock);w.rotation.y=-A+sd*0.2;parts.push(w);}
-     parts.push(box(cx2,gh(cx2,cz2)+TOP*0.42,cz2,190,70,90,rock));}
+
+    // ---- the Straight Stair ----
+    // Driven at the face, not across it: "so narrow that the climber groped as he climbed, and felt on
+    // either side the sheer bare walls". It goes straight up a cut in the rock for the first third.
+    {
+      const v0=-SPAN*0.42, n=46, rise=TOP*0.34;
+      for(let k=0;k<n;k++){
+        const y=g0+rise*(k/n), u=faceU(y);
+        const [px,py,pz]=at(u,v0,y);
+        const b=box(px,py,pz,W*0.8,rise/n*1.6,W*0.7,k%4===0?worn:step);b.rotation.y=-A;parts.push(b);
+        if(k%6===0){                                   // the walls either side of the cut
+          for(const sd of [-1,1]){
+            const [wx,wy,wz]=at(u,v0+sd*W*0.9,y-40);
+            const w=box(wx,wy,wz,W*0.9,110,W*0.8,rock);w.rotation.y=-A;parts.push(w);}
+        }
+      }
+    }
+
+    // ---- the Winding Stair ----
+    // Switchbacks up the face above it, each flight shorter than the last, each turn cut back into the rock
+    // with the drop on the other side and nothing between.
+    {
+      let y0=g0+TOP*0.34, v0=-SPAN*0.42, dir=1;
+      for(let f=0;f<8;f++){
+        const len=(L.flight||300)*(1-f*0.06), rise=TOP*0.082, n=Math.max(10,Math.round(len/13));
+        for(let k=0;k<n;k++){
+          const v=v0+dir*(k/n)*len, y=y0+rise*(k/n), u=faceU(y);
+          const [px,py,pz]=at(u,v,y);
+          const b=box(px,py,pz,len/n*1.5,rise/n*2.2,W*0.75,k%5===0?worn:step);
+          b.rotation.y=-A;parts.push(b);
+          // the ledge it sits on, standing out of the face
+          if(k%3===0){const [lx,ly,lz]=at(u+16,v,y-14);
+            const l=box(lx,ly,lz,len/n*4,16,W*1.5,rock);l.rotation.y=-A;parts.push(l);}
+          // and a kerb on the outside, worn away in places
+          if(k%2===0&&Math.random()<0.7){const [kx,ky,kz]=at(u+W*0.45,v,y+3);
+            parts.push(box(kx,ky,kz,len/n*1.4,6,4,worn));}
+        }
+        // the turn: a landing cut back into the rock
+        {const [tx,ty,tz]=at(faceU(y0+rise),v0+dir*len,y0+rise);
+         const t2=box(tx,ty,tz,W*1.4,10,W*1.4,worn);t2.rotation.y=-A;parts.push(t2);}
+        v0+=dir*len;y0+=rise;dir=-dir;
+      }
+      // ---- the cleft at the head of it ----
+      // Two horns of rock with the way through between them, and the dark of the tunnel behind.
+      const uTop=faceU(y0);
+      for(const sd of [-1,1]){
+        const [wx,wy,wz]=at(uTop+60,v0+sd*W*2.4,y0-120);
+        const w=new THREE.Mesh(new THREE.BoxGeometry(150,TOP*0.42,190).translate(0,TOP*0.21,0),rock);
+        w.position.set(wx,wy,wz);w.rotation.set(0,-A+sd*0.22,-sd*0.05);parts.push(w);
+        const cap=new THREE.Mesh(new THREE.ConeGeometry(70,180,5),dark);
+        cap.position.set(wx,wy+TOP*0.42,wz);parts.push(cap);
+      }
+      {const [cx2,cy2,cz2]=at(uTop+150,v0,y0);
+       const hole=new THREE.Mesh(new THREE.CylinderGeometry(46,52,90,8,1,true).rotateZ(Math.PI/2),
+         new THREE.MeshBasicMaterial({color:0x050405,side:THREE.DoubleSide}));
+       hole.position.set(cx2,cy2+46,cz2);hole.rotation.y=-A+Math.PI/2;parts.push(hole);
+       const lintel=box(cx2,cy2+92,cz2,150,40,150,rock);lintel.rotation.y=-A;parts.push(lintel);}
+    }
     return group(L,parts);},
 
   shelob(L,x,z){
