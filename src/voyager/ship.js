@@ -15,11 +15,12 @@
 // two broad fins the ship had two knitting needles. Both are in the tables below.
 //
 // The bow towards +x, as with the others.
-import {lathe,tube,sweep,windowRing,windowRow,bussard,SECT} from '../starship/parts.js';
+import {lathe,tube,sweep,ribbon,deflector,windowRing,windowRow,bussard,SECT} from '../starship/parts.js';
 
 export function model(api){
   const {THREE,scene,animHooks,fold,palette}=api;
-  const m=palette({hull:0xcdd1ca,panelA:0xc0c5bf,panelB:0xd6dad2});
+  const m=palette({hull:0xcdd1ca,panelA:0xc0c5bf,panelB:0xd6dad2,
+                   deflector:0x7fb0e8,deflCore:0xeaf4ff});
   const G=new THREE.Group();
   const parts=[];
   const LEN=344;
@@ -71,20 +72,55 @@ export function model(api){
         }
       }
     }
-    // the phaser strips, above and below, round the outline
-    for(let i=1;i<SAU.length-2;i++){
-      const a=SAU[i],b=SAU[i+1];
-      for(const sd of [-1,1]){
-        const ang=-Math.atan2(sd*(b.rz-a.rz),b.x-a.x);
-        const len=Math.hypot(b.x-a.x,b.rz-a.rz);
-        for(const up of [1,-1]){
-          const s=new THREE.Mesh(new THREE.BoxGeometry(len*1.02,0.8,3.0),m.strip);
-          s.position.set((a.x+b.x)/2, up>0?(topAt(a)+topAt(b))/2:(botAt(a)+botAt(b))/2,
-                         sd*(sideAt(a)+sideAt(b))/2);
-          s.rotation.y=ang;parts.push(s);
-        }
+    // The phaser strips, above and below, as continuous bands round the outline. The section the saucer
+    // is cut to is `SECT.lens(13,0.30,0.58,0.74)`, so the same two curves give the height of any point on
+    // the hull at a given fraction of the way out to the rim - which is what a strip has to follow.
+    const vTop=u=>0.30+0.70*Math.pow(Math.max(0,1-u*u),0.58);
+    const vBot=u=>-(0.30+0.70*Math.pow(Math.max(0,1-u*u),0.74));
+    const loop=[];                       // the outline, down one side and back up the other
+    for(let i=0;i<SAU.length;i++)loop.push([SAU[i],1]);
+    for(let i=SAU.length-1;i>=0;i--)loop.push([SAU[i],-1]);
+    const bandRows=(u0,u1,vf,lift)=>loop.map(([st,sd])=>[
+      [st.x,(vf(u0)>=0?st.ry:st.ryb)*vf(u0)+lift,sd*st.rz*u0],
+      [st.x,(vf(u1)>=0?st.ry:st.ryb)*vf(u1)+lift,sd*st.rz*u1]]);
+    parts.push(ribbon(THREE,m.strip,bandRows(0.80,0.90,vTop,0.22),{closed:true,up:true}));
+    parts.push(ribbon(THREE,m.strip,bandRows(0.90,0.80,vBot,-0.22),{closed:true,up:false}));
+
+    // ---------- the ventral ----------
+    // The aeroshuttle: an Intrepid carries its auxiliary craft faired into the underside of the saucer,
+    // nose forward, and the seam round it is the one thing anybody recognises on this ship's belly.
+    {
+      const AS=[
+        {x:  74, rz: 3.0, ry:1.0, ryb:1.6, cy:-27.4},
+        {x:  70, rz: 7.4, ry:1.4, ryb:2.6, cy:-28.2},
+        {x:  48, rz:10.6, ry:1.8, ryb:3.4, cy:-30.8},
+        {x:  20, rz:12.2, ry:2.0, ryb:3.8, cy:-33.2},
+        {x: -10, rz:11.6, ry:2.0, ryb:3.6, cy:-35.0},
+        {x: -34, rz: 9.4, ry:1.6, ryb:2.8, cy:-36.2},
+        {x: -40, rz: 5.8, ry:1.2, ryb:1.8, cy:-36.6},
+      ];
+      const seam=AS.map(a=>Object.assign({},a,{rz:a.rz+2.4,ryb:a.ryb-1.0,ry:a.ry+1.6}));
+      parts.push(tube(THREE,seam,0,m.dark,true,true,SECT.slabS(8)));
+      parts.push(tube(THREE,AS,0,m.panelB,true,true,SECT.slabS(8)));
+      for(let i=0;i<5;i++){
+        const w=new THREE.Mesh(new THREE.BoxGeometry(4,1.0,1.4),m.lit);
+        w.position.set(64-i*14,-30.0-i*1.6,0);parts.push(w);
       }
     }
+    // the ventral sensor cluster, forward of the aeroshuttle under the saucer's bow
+    for(let k=0;k<3;k++){
+      const x=146+k*9, ryb=[6.4,5.6,4.6][k];
+      const pl=new THREE.Mesh(new THREE.BoxGeometry(9,1.2,18-k*4),m.panelA);
+      pl.position.set(x,-ryb-0.3,0);parts.push(pl);
+    }
+    // two docking hatches on the ventral quarters
+    for(const sd of [-1,1]){
+      const h=new THREE.Mesh(new THREE.BoxGeometry(13,1.4,11),m.dark);
+      h.position.set(44,-9.4,sd*38);parts.push(h);
+      const lt=new THREE.Mesh(new THREE.BoxGeometry(3,1.2,3),m.lit);
+      lt.position.set(35,-9.2,sd*38);parts.push(lt);
+    }
+
     // the bridge: low and faired in, set forward of centre, with the dorsal spine running aft from it
     const b=lathe(THREE,[[0.001,20.4],[8,19.8],[13.6,18.2],[15.6,15.8],[15.6,12.6],[0.001,12.2]],28,m.hull);
     b.position.set(84,0,0);parts.push(b);
@@ -111,8 +147,10 @@ export function model(api){
   // the saucer without a step, and it only gathers into a proper hull where it passes the transom.
   {
     const ST=[
-      {x: 126, ry: 5, rz:13, cy: -9, ryb: 6},
-      {x: 100, ry: 8, rz:19, cy:-13, ryb:10},
+      {x: 129, ry: 2.6, rz: 3, cy:-15, ryb: 2.4},  // stops just behind the deflector's apex at x = 130
+      {x: 122, ry: 8, rz: 10, cy:-15.5, ryb: 6},
+      {x: 110, ry: 9.5,rz: 15, cy:-16, ryb: 8},
+      {x:  96, ry:10, rz: 19, cy:-16, ryb:10},
       {x:  66, ry:11, rz:23, cy:-17, ryb:12},
       {x:  26, ry:13, rz:24, cy:-20, ryb:14},
       {x: -16, ry:15, rz:24, cy:-23, ryb:15},
@@ -124,12 +162,10 @@ export function model(api){
     parts.push(tube(THREE,ST,0,m.hull,true,true,SECT.slabS(10)));
     for(const sd of [-1,1])
       windowRow(THREE,parts,m.lit,[56,-19,sd*22],[-116,-21,sd*18],14,[2.4,1.2,1.2],[0,0,sd*2.0],true);
-    // the deflector, tucked under the saucer's bow overhang
-    const ring=lathe(THREE,[[7,0],[14,-1.2],[16,-4.4],[15,-8],[11,-10.6],[7,-11.4]],32,m.dark);
-    ring.rotation.z=-Math.PI/2;ring.position.set(127,-11,0);parts.push(ring);
-    const dish=lathe(THREE,[[0.001,-2.6],[5,-3.4],[9,-5.2],[12,-7.8],[14,-10.2]],32,m.deflector);
-    dish.rotation.z=-Math.PI/2;dish.position.set(130,-11,0);parts.push(dish);
-    const glow=new THREE.PointLight(0x9fd0ff,0.5,300);glow.position.set(156,-11,0);scene.add(glow);
+    // the deflector, tucked under the saucer's bow overhang. An Intrepid's runs colder than a Galaxy's,
+    // so the bowl is blue-white rather than amber.
+    deflector(THREE,parts,m,135,-15,0,7.6,5,{seg:40});
+    const glow=new THREE.PointLight(0x9fd0ff,0.6,340);glow.position.set(158,-15,0);scene.add(glow);
     animHooks.push(now=>{glow.intensity=0.4+0.18*Math.sin(now*0.0015);});
     // the shuttlebay in the stern, and the strake down each flank
     const bay=new THREE.Mesh(new THREE.BoxGeometry(6,12,20),m.dark);

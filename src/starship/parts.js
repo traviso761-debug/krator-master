@@ -264,6 +264,71 @@ export function discHull(THREE, mat, o){
   return {mesh:new THREE.Mesh(g,mat), outline};
 }
 
+// A flat band lying ON a surface: a strip of quads through a list of [inner, outer] vertex pairs.
+//
+// This is what a phaser strip is, and it is why the first version of them came out as a ring of gear
+// teeth round the saucer. A strip was a row of little boxes, each rotated to guess at the local slope; a
+// box is a solid with a thickness, so on a curved hull one edge of it always buries itself and the other
+// always lifts off, and overlapping them to close the gaps turned the lifted edges into a sawtooth. A
+// ribbon has no thickness and follows whatever points it is given exactly.
+export function ribbon(THREE, mat, rows, o){
+  const k=o||{}, N=rows.length, closed=k.closed!==false, up=k.up!==false;
+  const pos=[],idx=[];
+  for(const r of rows){pos.push(r[0][0],r[0][1],r[0][2], r[1][0],r[1][1],r[1][2]);}
+  const lim=closed?N:N-1;
+  for(let i=0;i<lim;i++){
+    const j=(i+1)%N, a=i*2, b=i*2+1, c=j*2, d=j*2+1;
+    if(up)idx.push(a,c,b, b,c,d); else idx.push(a,b,c, b,d,c);
+  }
+  const g=new THREE.BufferGeometry();
+  g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
+  g.setIndex(idx);g.computeVertexNormals();g.computeBoundingSphere();
+  return new THREE.Mesh(g,mat);
+}
+
+// A deflector dish. The thing to get right is that it is CONCAVE and faces forward: the rim is the
+// furthest-forward part of it and the emitter sits at the bottom of the bowl. Built the other way round -
+// which is how this started, as a cone with its apex forward - it reads as a nose cone, and because a
+// lathe's faces point away from its axis you are looking at the back of it anyway, so what actually
+// showed was a blank grey disc.
+//
+// `x` is where the rim sits, the bowl is `depth` deep behind it, and the dish is drawn in two zones
+// because that is what gives it a centre: an amber bowl with a pale core at the bottom of it.
+// NOTE on fitting one of these: the hull it sits in must END just behind the bowl's apex, because there
+// is no boolean subtraction here and a recess cannot be cut into anything. Two passes were lost to that.
+// First the hull's own front cap - a `tube` caps its first station by default - sat straight across the
+// mouth of the housing and read as the dish: a blank lit disc filling the middle two-thirds of it. Then,
+// with the cap taken off, the hull's SKIN pushed through the bowl from behind, because a bowl narrows
+// going aft and the hull does not, and that showed as a pale crescent across the amber. The fix is the
+// obvious one: stop the hull short, and let the housing skirt flare back over the join.
+export function deflector(THREE, parts, m, x, y, z, R, depth, o){
+  const k=o||{}, f=k.faceX===undefined?1:k.faceX, seg=k.seg||56;
+  const bowl=(r0,r1,y0,y1,n)=>{                 // a slice of the bowl, as a lathe profile
+    const p=[];
+    for(let i=0;i<=n;i++){
+      const t=i/n, r=r0+(r1-r0)*t;
+      p.push([Math.max(0.0001,r), y0+(y1-y0)*Math.pow(t,1.7)]);
+    }
+    return p;
+  };
+  // the housing: a skirt that flares from the lip back over whatever hull this is mounted in
+  const house=lathe(THREE,[[R*1.13,depth*0.12],[R*1.13,-depth*0.30],[R*0.86,-depth*1.05],
+                           [R*0.56,-depth*1.75]],seg,m.dark);
+  house.rotation.z=-f*Math.PI/2;house.position.set(x,y,z);parts.push(house);
+  // the collar: a bevelled lip round the mouth
+  const collar=lathe(THREE,[[R*0.99,-depth*0.10],[R*1.09,-depth*0.02],[R*1.10,depth*0.10],
+                            [R*1.01,depth*0.17]],seg,m.trim);
+  collar.rotation.z=-f*Math.PI/2;collar.position.set(x,y,z);parts.push(collar);
+  // the bowl itself, in two zones, closed at the apex so nothing behind it can show through
+  const outer=lathe(THREE,bowl(R*0.28,R*0.99,-depth*0.80,0,9),seg,m.deflector);
+  outer.rotation.z=-f*Math.PI/2;outer.position.set(x,y,z);parts.push(outer);
+  const inner=lathe(THREE,bowl(0.0001,R*0.28,-depth,-depth*0.80,5),seg,m.deflCore);
+  inner.rotation.z=-f*Math.PI/2;inner.position.set(x,y,z);parts.push(inner);
+  // the emitter at the bottom of the bowl
+  const boss=new THREE.Mesh(new THREE.SphereGeometry(R*0.13,18,12),m.lit);
+  boss.position.set(x-f*depth*0.92,y,z);boss.scale.set(0.55,1,1);parts.push(boss);
+}
+
 // A row of lit windows, as instances, following a line. `n` windows between `a` and `b`, standing off the
 // hull along `out`, all of them the same little box. Two decks means calling it twice.
 export function windowRow(THREE, parts, mat, a, b, n, size, out, jitter){
@@ -364,7 +429,10 @@ export function hullPalette(THREE, o){
     warp:new THREE.MeshBasicMaterial({color:k.warp||0x6ea6ee}),
     bussard:new THREE.MeshBasicMaterial({color:k.bussard||0xff6a4a,transparent:true,opacity:0.92}),
     impulse:new THREE.MeshBasicMaterial({color:k.impulse||0xff8a3a,transparent:true,opacity:0.9}),
-    deflector:new THREE.MeshBasicMaterial({color:k.deflector||0xc8a24a,transparent:true,opacity:0.9}),
+    // Opaque, and double-sided because a bowl is an open surface seen from its concave side. At 92 per
+    // cent the open rim of the hull nose showed through the dish as a crescent.
+    deflector:new THREE.MeshBasicMaterial({color:k.deflector||0xc8a24a,side:THREE.DoubleSide}),
+    deflCore:new THREE.MeshBasicMaterial({color:k.deflCore||0xdfeaff,side:THREE.DoubleSide}),
     nav:new THREE.MeshBasicMaterial({color:0xff4030}),
     navG:new THREE.MeshBasicMaterial({color:0x40ff70}),
     pennant:P(k.pennant||0x9aa2a8,undefined,sh*0.9,true),

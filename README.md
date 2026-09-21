@@ -687,6 +687,25 @@ wireframe and menagerie menu every other page has.
   scored 0 faces of 64 outward; it now scores 64 of 64 whichever way the table is written. Put the old
   winding back and five of the nine checks fail, which is the only evidence worth having that a regression
   test works.
+- **The deflector took three goes, and every one of them failed the same way: something was in front of
+  it.** First it was built as a cone with its apex forward — and since a lathe's faces point away from its
+  axis, what you were looking at was the *back* of that cone, so it rendered as a blank grey disc. Turned
+  round into a proper bowl, the hull's own front cap sat straight across the mouth of the housing and read
+  as the dish: a lit disc filling the middle two-thirds, with the amber showing only as a ring round the
+  outside. Cap removed, the hull's *skin* then pushed through the bowl from behind, because a bowl narrows
+  going aft and a hull does not, and that showed as a pale crescent across the amber. There is no boolean
+  subtraction here, so a recess cannot be cut into anything: the hull has to stop short of the bowl's apex
+  and the housing skirt flares back over the join. `deflector()` carries that as a note, because the next
+  hull to want one will hit it again.
+- **Bands have to be geometry, not rows of boxes.** A phaser strip follows a curved hull exactly, and a box
+  is a solid with a thickness, so on a dome one edge of it always buries itself and the other always lifts
+  off — and overlapping them to close the gaps turned the saucer strips into a ring of gear teeth. `ribbon`
+  takes a list of inner/outer vertex pairs and makes a quad strip through them, which is also what the
+  concentric panel joins on the ventral and the keel strip down the engineering hull are now.
+- **The ventral was a blank dish** with two rings of dashes on it. A Galaxy's underside carries the main
+  sensor dome on a raised platform, concentric panel joins, two rings of windows, four docking ports and
+  the captain's yacht clamped flat aft of the dome; Voyager carries the aeroshuttle faired into the keel
+  with a seam round it, which is the one thing anybody recognises on that ship's belly.
 - **The sections are generated, not typed.** `SECT.lens` and `SECT.slabS` take a resolution and produce the
   profile, because a hand-listed one is only as smooth as the patience of whoever typed it — the original
   had three points across the whole top of a saucer, which is where the plateau came from.

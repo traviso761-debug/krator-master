@@ -24,7 +24,8 @@
 //     the grilles on its vertical faces, not an upright tube.
 //
 // Every hull here is a table of cross-sections and a section profile, and the tables are the model.
-import {lathe,tube,sweep,discHull,windowRing,windowRow,bussard,SECT,flipV} from '../starship/parts.js';
+import {lathe,tube,sweep,discHull,ribbon,deflector,windowRing,windowRow,bussard,SECT,flipV}
+  from '../starship/parts.js';
 
 export function model(api){
   const {THREE,scene,animHooks,fold,palette}=api;
@@ -84,36 +85,71 @@ export function model(api){
     }
   }
 
-  // the phaser strips: long shallow arcs let into the upper and lower saucer a little inboard of the rim
-  for(let a=0;a<OUT.length;a++){
-    const p=OUT[a],q=OUT[(a+1)%OUT.length];
-    if(p.cut||q.cut)continue;
-    const f=0.89;
-    const ang=-Math.atan2(q.z-p.z,q.x-p.x);
-    const len=Math.hypot(q.x*f-p.x*f,q.z*f-p.z*f);
-    for(const up of [1,-1]){
-      const y=up>0?sampleAt(TOP,p.r*f):sampleAt(BOT,p.r*f);
-      const st=new THREE.Mesh(new THREE.BoxGeometry(len*1.6,1.1,5.0),m.strip);
-      st.position.set(p.x*f,y,p.z*f);st.rotation.y=ang;
-      st.rotation.z=up>0?-0.30:0.30;parts.push(st);
-    }
+  // A continuous arc from one side of the transom, round the bow, to the other: the order the outline has
+  // to be walked in so that a strip does not try to cross the impulse deck.
+  const ARC=[];
+  for(let k=0;k<OUT.length;k++){
+    const a=(Math.floor(OUT.length/2)+k)%OUT.length;
+    if(!OUT[a].cut)ARC.push(a);
   }
+  const ALL=OUT.map((_,i)=>i);
+  // Bands that lie on the hull. `arcRows` follows the outline in and out by a fraction of its radius and
+  // `ringRows` walks a true circle; both take their height from the same profile the hull was cut to, so
+  // what comes back sits on the surface instead of near it.
+  const arcRows=(list,f0,f1,tbl,lift)=>list.map(a=>{
+    const p=OUT[a];
+    return [[p.x*f0,sampleAt(tbl,p.r*f0)+lift,p.z*f0],[p.x*f1,sampleAt(tbl,p.r*f1)+lift,p.z*f1]];
+  });
+  const ringRows=(r0,r1,tbl,lift,n)=>{
+    const rows=[];
+    for(let i=0;i<(n||120);i++){
+      const th=i/(n||120)*Math.PI*2, c=Math.cos(th), sn=Math.sin(th);
+      rows.push([[c*r0,sampleAt(tbl,r0)+lift,sn*r0],[c*r1,sampleAt(tbl,r1)+lift,sn*r1]]);
+    }
+    return rows;
+  };
 
-  // the underside: two rings of windows well inboard of the rim, and the panel joins between them
-  for(const [f,n,sz] of [[0.62,60,2.6],[0.40,38,2.6]]){
+  // the phaser strips: two long shallow arcs let into the upper saucer and two more underneath
+  parts.push(ribbon(THREE,m.strip,arcRows(ARC,0.874,0.898,TOP,0.35),{closed:false,up:true}));
+  parts.push(ribbon(THREE,m.strip,arcRows(ARC,0.874,0.898,BOT,-0.35),{closed:false,up:false}));
+
+  // ---------- the ventral ----------
+  // The underside of a Galaxy is not a blank dish, and this one was: two rings of dashes and nothing
+  // else. What is down there is the main sensor dome standing on a raised platform, the concentric panel
+  // joins, four docking ports, and the captain's yacht clamped flat aft of the dome.
+  for(const [f0,f1] of [[0.487,0.513],[0.727,0.753]])
+    parts.push(ribbon(THREE,m.panelA,arcRows(ALL,f0,f1,BOT,-0.3),{closed:true,up:false}));
+  parts.push(ribbon(THREE,m.panelB,ringRows(31,53,BOT,-0.5,96),{closed:true,up:false}));
+  parts.push(ribbon(THREE,m.trim,ringRows(53,57,BOT,-0.9,96),{closed:true,up:false}));
+  for(let k=0;k<36;k++){
+    if(k%3===0)continue;
+    const th=k/36*Math.PI*2;
+    const w=new THREE.Mesh(new THREE.BoxGeometry(3.4,1.4,3.4),m.lit);
+    w.position.set(Math.cos(th)*45,sampleAt(BOT,45)-1.2,Math.sin(th)*45);parts.push(w);
+  }
+  for(const [f,n,sz] of [[0.62,96,2.8],[0.40,64,2.8]]){
     for(let k=0;k<n;k++){
       const a=Math.round(k/n*OUT.length)%OUT.length, p=OUT[a];
-      if(((k*53)%9)===0)continue;
-      const w=new THREE.Mesh(new THREE.BoxGeometry(sz,1.3,sz),m.lit);
-      w.position.set(p.x*f,sampleAt(BOT,p.r*f)+0.4,p.z*f);parts.push(w);
+      if(((k*53)%11)===0)continue;
+      const w=new THREE.Mesh(new THREE.BoxGeometry(sz,1.4,sz),m.lit);
+      w.position.set(p.x*f,sampleAt(BOT,p.r*f)+0.5,p.z*f);parts.push(w);
     }
   }
-  for(const f of [0.50,0.74]){
-    for(let k=0;k<52;k++){
-      const a=Math.round(k/52*OUT.length)%OUT.length, p=OUT[a];
-      const pl=new THREE.Mesh(new THREE.BoxGeometry(2.0,0.8,22),m.panelA);
-      pl.position.set(p.x*f,sampleAt(BOT,p.r*f)+0.3,p.z*f);pl.rotation.y=-p.th;parts.push(pl);
-    }
+  // four docking ports, out where the hull is still deep enough to hold one
+  for(const th of [0.72,-0.72,2.42,-2.42]){
+    const r=152, c=Math.cos(th), sn=Math.sin(th);
+    const port=new THREE.Mesh(new THREE.BoxGeometry(26,2.4,20),m.dark);
+    port.position.set(c*r,sampleAt(BOT,r)-0.6,sn*r);port.rotation.y=-th;parts.push(port);
+    const lip=new THREE.Mesh(new THREE.BoxGeometry(34,1.0,28),m.panelA);
+    lip.position.set(c*r,sampleAt(BOT,r)+0.4,sn*r);lip.rotation.y=-th;parts.push(lip);
+    const lt=new THREE.Mesh(new THREE.BoxGeometry(5,1.6,5),m.lit);
+    lt.position.set(c*(r+17),sampleAt(BOT,r+17)-1.0,sn*(r+17));parts.push(lt);
+  }
+  // two rows of ventral sensor pallets either side of the yacht
+  for(const sd of [-1,1])for(let i=0;i<4;i++){
+    const x=-40-i*30, z=sd*(52+i*4), r=Math.hypot(x,z);
+    const pl=new THREE.Mesh(new THREE.BoxGeometry(26,1.4,15),m.panelA);
+    pl.position.set(x,sampleAt(BOT,r)-0.5,z);parts.push(pl);
   }
 
   // the two long pennant panels on the saucer roof, which are structure rather than paint
@@ -184,10 +220,11 @@ export function model(api){
   // +50 is the 195 m the class is quoted at; the first pass had it 10 m too deep and the whole ship came
   // out taller than it should be.
   const ENG=[
-    {x: 124, ry:20, rz:23, cy: -98, ryb:19},
-    {x: 112, ry:26, rz:31, cy: -99, ryb:25},
-    {x:  92, ry:31, rz:38, cy:-100, ryb:30},
-    {x:  56, ry:36, rz:47, cy:-101, ryb:36},
+    {x: 107, ry: 6, rz: 7, cy: -98, ryb: 6},    // stops just behind the deflector's apex at x = 109
+    {x:  99, ry:17, rz:20, cy: -98, ryb:16},
+    {x:  88, ry:25, rz:30, cy: -99, ryb:24},
+    {x:  70, ry:31, rz:38, cy:-100, ryb:30},
+    {x:  46, ry:35, rz:45, cy:-101, ryb:35},
     {x:   8, ry:41, rz:56, cy:-102, ryb:42},
     {x: -56, ry:43, rz:60, cy:-101, ryb:44},
     {x:-126, ry:42, rz:59, cy: -99, ryb:43},
@@ -243,22 +280,25 @@ export function model(api){
         st.position.set(x,g.cy+f*g.ryb,sd*(g.rz+0.8)*Math.sqrt(Math.max(0,1-f*f*0.7)));parts.push(st);
       }
     }
-    for(let i=0;i<13;i++){
-      const x=40-i*30, g=engAt(x);
-      const belly=new THREE.Mesh(new THREE.BoxGeometry(28,1.2,5.0),m.strip);
-      belly.position.set(x,g.cy-g.ryb+0.5,0);parts.push(belly);
+    {
+      const rows=[];
+      for(let i=0;i<=26;i++){
+        const x=70-i*(420/26), g=engAt(x);
+        rows.push([[x,g.cy-g.ryb-0.3,-2.6],[x,g.cy-g.ryb-0.3,2.6]]);
+      }
+      parts.push(ribbon(THREE,m.strip,rows,{closed:false,up:false}));
     }
   }
 
   // ---------- the deflector ----------
+  // It was a cone with its apex pointing forward, and since a lathe's faces point away from its axis you
+  // were looking at the back of that cone through the mouth of its housing: a blank grey disc. A deflector
+  // is a bowl, concave, rim forward, with the emitter at the bottom of it.
   {
-    const ring=lathe(THREE,[[18,0],[32,-2.4],[37,-9],[36,-18],[28,-25],[18,-27]],48,m.dark);
-    ring.rotation.z=-Math.PI/2;ring.position.set(124,-98,0);parts.push(ring);
-    const dish=lathe(THREE,[[0.001,-5],[12,-6.4],[21,-10.4],[28,-16],[33,-23]],48,m.deflector);
-    dish.rotation.z=-Math.PI/2;dish.position.set(129,-98,0);parts.push(dish);
-    const glow=new THREE.PointLight(0xc8a24a,0.9,700);
-    glow.position.set(180,-98,0);scene.add(glow);
-    animHooks.push(now=>{glow.intensity=0.6+0.25*Math.sin(now*0.0013);});
+    deflector(THREE,parts,m,126,-98,0,36,17,{seg:64});
+    const glow=new THREE.PointLight(0xd8b060,0.95,760);
+    glow.position.set(186,-98,0);scene.add(glow);
+    animHooks.push(now=>{glow.intensity=0.72+0.26*Math.sin(now*0.0013);});
   }
 
   // ---------- the pylons and the nacelles ----------
