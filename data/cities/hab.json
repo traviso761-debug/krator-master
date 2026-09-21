@@ -15,7 +15,10 @@
   "_": "spin is the rotation period in seconds; day is how long the sun tube takes to dim and brighten",
   "clouds": 170,
   "gliders": 9,
-  "boats": 20
+  "boats": 20,
+  "woods": 30,
+  "farms": 46,
+  "skin": 46
  },
  "views": {
   "On the valley floor": {
