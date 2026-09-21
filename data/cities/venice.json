@@ -341,5 +341,13 @@
   "washing": 260,
   "awnings": 40,
   "_": "the comignoli, the mooring posts, the washing across the calli, the awnings on the campi"
+ },
+ "landFromCity": {
+  "cell": 8,
+  "grow": 8,
+  "drop": -1.0,
+  "quay": "#a89d8b",
+  "water": -0.5,
+  "_": "no height grid: the sheet is the lagoon and the islands are rasterised from the buildings, calli and campi"
  }
 }
