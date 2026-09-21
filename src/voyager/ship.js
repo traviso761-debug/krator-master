@@ -29,20 +29,20 @@ export function model(api){
   // forward of midships, then a long easy taper to a station that is still 52 m across - and the cap the
   // tube puts on that last station is the transom, with the impulse engines in it.
   const SAU=[
-    {x: 172, rz:  5, ry: 2.2, ryb: 2.0},
-    {x: 169, rz: 17, ry: 3.6, ryb: 3.2},
-    {x: 163, rz: 30, ry: 5.2, ryb: 4.4},
-    {x: 154, rz: 42, ry: 6.8, ryb: 5.6},
-    {x: 140, rz: 53, ry: 8.6, ryb: 7.0},
-    {x: 124, rz: 61, ry:10.2, ryb: 8.4},
-    {x: 104, rz: 67.5,ry:11.4,ryb: 9.4},
-    {x:  81, rz: 69, ry:12.2, ryb:10.0},
-    {x:  56, rz: 68, ry:12.6, ryb:10.4},
-    {x:  30, rz: 64, ry:12.4, ryb:10.2},
-    {x:   6, rz: 57, ry:11.6, ryb: 9.4},
-    {x: -13, rz: 47, ry:10.2, ryb: 8.0},
-    {x: -27, rz: 36, ry: 8.6, ryb: 6.4},
-    {x: -35, rz: 26, ry: 6.8, ryb: 4.8},
+    {x: 172, rz:  4.8, ry: 2.2, ryb: 2.0},
+    {x: 169, rz: 16.4, ry: 3.6, ryb: 3.2},
+    {x: 163, rz: 28.9, ry: 5.2, ryb: 4.4},
+    {x: 154, rz: 40.5, ry: 6.8, ryb: 5.6},
+    {x: 140, rz: 51.1, ry: 8.6, ryb: 7.0},
+    {x: 124, rz: 58.8, ry:10.2, ryb: 8.4},
+    {x: 104, rz: 65.1, ry:11.4, ryb: 9.4},
+    {x:  81, rz: 66.5, ry:12.2, ryb:10.0},
+    {x:  56, rz: 65.5, ry:12.6, ryb:10.4},
+    {x:  30, rz: 61.7, ry:12.4, ryb:10.2},
+    {x:   6, rz: 54.9, ry:11.6, ryb: 9.4},
+    {x: -13, rz: 45.3, ry:10.2, ryb: 8.0},
+    {x: -27, rz: 34.7, ry: 8.6, ryb: 6.4},
+    {x: -35, rz: 25.1, ry: 6.8, ryb: 4.8},
   ];
   const topAt=s=>s.ry*0.80, botAt=s=>-s.ryb*0.80, sideAt=s=>s.rz*0.86;
   parts.push(tube(THREE,SAU,0,m.hull,true,true,SECT.saucer));
@@ -186,15 +186,15 @@ export function model(api){
     bussard(THREE,wp,m,NX+63,NY+1,NZ,7.2,1);
 
     for(const face of [-1,1]){
-      const back=new THREE.Mesh(new THREE.BoxGeometry(84,9,1.4),m.dark);
-      back.position.set(NX-2,NY+1.4,NZ+face*9.7);wp.push(back);
-      for(let i=0;i<12;i++){
-        const s=new THREE.Mesh(new THREE.BoxGeometry(2.8,5.0,1.8),m.warp);
-        s.position.set(NX+36-i*6.6,NY+1.4,NZ+face*10.0);wp.push(s);
+      const back=new THREE.Mesh(new THREE.BoxGeometry(62,7,1.4),m.dark);
+      back.position.set(NX+2,NY+1.4,NZ+face*9.7);wp.push(back);
+      for(let i=0;i<9;i++){
+        const s=new THREE.Mesh(new THREE.BoxGeometry(2.4,4.2,1.8),m.warp);
+        s.position.set(NX+28-i*6.4,NY+1.4,NZ+face*10.0);wp.push(s);
       }
       for(const lip of [1,-1]){
-        const l=new THREE.Mesh(new THREE.BoxGeometry(86,2.4,2.2),m.trim);
-        l.position.set(NX-2,NY+1.4+lip*5.0,NZ+face*9.6);wp.push(l);
+        const l=new THREE.Mesh(new THREE.BoxGeometry(64,1.6,2.2),m.trim);
+        l.position.set(NX+2,NY+1.4+lip*4.0,NZ+face*9.6);wp.push(l);
       }
     }
     const cap=new THREE.Mesh(new THREE.BoxGeometry(3.4,7,9),m.dark);
