@@ -1,0 +1,155 @@
+{
+ "name": "Deep Space 9",
+ "note": "Fan work. Star Trek belongs to Paramount; nothing from any film, series or game is used, and every shape on this page is this project's own geometry, built from the published dimensions and the silhouette. A Cardassian Nor-class ore-processing station, 1,451 m across the docking ring, parked at the mouth of a wormhole. No interior.",
+ "attribution": "Deep Space 9 is fan work: original geometry in src/ds9/. Star Trek belongs to Paramount. No assets used.",
+ "view0": {
+  "az": 2.3,
+  "el": 0.24,
+  "d": 2600
+ },
+ "views": {
+  "Three-quarter": {
+   "az": 2.3,
+   "el": 0.24,
+   "d": 2600
+  },
+  "Side on": {
+   "az": 1.57,
+   "el": 0.02,
+   "d": 2500
+  },
+  "Plan": {
+   "az": 1.57,
+   "el": 1.42,
+   "d": 2800
+  },
+  "From below": {
+   "az": 2.3,
+   "el": -1.1,
+   "d": 2700
+  },
+  "The Promenade": {
+   "az": 2.0,
+   "el": 0.1,
+   "d": 640,
+   "tx": 0,
+   "ty": 40,
+   "tz": 0
+  },
+  "Ops": {
+   "az": 2.4,
+   "el": 0.34,
+   "d": 520,
+   "tx": 0,
+   "ty": 220,
+   "tz": 0
+  },
+  "A docking pylon": {
+   "az": 1.2,
+   "el": 0.3,
+   "d": 900,
+   "tx": 300,
+   "ty": 280,
+   "tz": 520
+  },
+  "The ring": {
+   "az": 2.0,
+   "el": 0.06,
+   "d": 1100,
+   "tx": 0,
+   "ty": 0,
+   "tz": 0
+  },
+  "Toward the wormhole": {
+   "az": 2.09,
+   "el": 0.06,
+   "d": 3000
+  },
+  "Far off": {
+   "az": 2.3,
+   "el": 0.18,
+   "d": 9000
+  },
+  "Bajor below": {
+   "az": 2.3,
+   "el": -0.34,
+   "d": 2400
+  }
+ },
+ "space": {
+  "seed": 9,
+  "stars": 3400,
+  "starSize": 2000,
+  "far": 1400000,
+  "starLight": {
+   "colour": "#ffeedd",
+   "az": 1.45,
+   "el": 0.34,
+   "intensity": 1.9,
+   "ambient": 0.44
+  },
+  "fill": {
+   "colour": "#6a7fa8",
+   "az": -0.84,
+   "el": -0.45,
+   "intensity": 0.55
+  },
+  "bodies": [
+   {
+    "kind": "rock",
+    "az": -0.84,
+    "el": -0.4,
+    "dist": 0.55,
+    "deg": 18,
+    "seg": 64,
+    "colours": [
+     "#1f4f6e",
+     "#4a6a3a",
+     "#8a7448",
+     "#e6eef4"
+    ],
+    "clouds": true,
+    "cloudPuffs": 460,
+    "ice": 0.84,
+    "rate": 1.8e-05
+   },
+   {
+    "kind": "rock",
+    "az": -1.9,
+    "el": 0.26,
+    "dist": 0.8,
+    "deg": 1.6,
+    "seg": 24,
+    "colours": [
+     "#6b6660",
+     "#7a736a",
+     "#8d857a",
+     "#b9b4ac"
+    ],
+    "ice": 1.1
+   }
+  ],
+  "nebulae": [
+   {
+    "colour": "#2a4a7e",
+    "az": -1.1,
+    "el": 0.1,
+    "dist": 0.86,
+    "size": 380000,
+    "puffs": 26,
+    "opacity": 0.04
+   }
+  ],
+  "wormhole": {
+   "at": [
+    -1.05,
+    0.05,
+    9000
+   ],
+   "size": 1500,
+   "period": 34000,
+   "open": 7000
+  },
+  "_": "Bajor below, its moon, and the wormhole off the port bow - which is not there most of the time"
+ }
+}
