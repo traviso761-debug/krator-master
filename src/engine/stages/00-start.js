@@ -39,7 +39,10 @@ const polyArea=r=>{let a=0;for(let i=0,j=r.length-1;i<r.length;j=i++)a+=r[j][0]*
 // decode the OSM file: flat decimetre integers -> [[x,z],...] in metres, with a bounding box for quick rejection
 const dec=f=>{const o=[];for(let i=0;i+1<f.length;i+=2)o.push([f[i]/10,f[i+1]/10]);return o;};
 const bbox=r=>{let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9;for(const [x,z] of r){if(x<x0)x0=x;if(x>x1)x1=x;if(z<z0)z0=z;if(z>z1)z1=z;}return {x0,x1,z0,z1};};
-const polyRec=p=>{const o=dec(p.o);return {name:p.n||'',kind:p.k,o,i:(p.i||[]).map(dec),bb:bbox(o)};};
+// `y`, where a polygon carries one, is the level to draw it at: a mountain river is not one sheet, it is a
+// flight of pools with a step between them, and each reach is its own polygon at its own height.
+const polyRec=p=>{const o=dec(p.o);return {name:p.n||'',kind:p.k,o,i:(p.i||[]).map(dec),bb:bbox(o),
+  y:(typeof p.y==='number')?p.y:undefined};};
 const inRec=(rec,x,z)=>x>=rec.bb.x0&&x<=rec.bb.x1&&z>=rec.bb.z0&&z<=rec.bb.z1&&inPoly(x,z,rec.o)&&!rec.i.some(h=>inPoly(x,z,h));
 const LAKE=dec(OSM.lake),ISLANDS=OSM.islands.map(dec);
 const WATER=OSM.water.map(polyRec),MARINAS=OSM.marina.map(polyRec),BEACHES=OSM.beach.map(polyRec);

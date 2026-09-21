@@ -215,10 +215,13 @@ def main():
             rr = 120 + t * (CITY_R - 200)
             aa = a + 0.16 * math.sin(t * 3.4 + k)
             pts.append((math.cos(aa) * rr, math.sin(aa) * rr))
-        road(pts, "residential", 7)
+        road(pts, "residential", 7, ["Sietch Way", "Cistern Row", "The Shade", "Harkonnen Steps",
+                                     "Water Lane", "Stilgar Way", "The Slot", "Dune Gate Way",
+                                     "Pan Row", "The Crossing", "Spice Row", "Thumper Lane",
+                                     "The Narrows"][k])
     for k in range(7):
         rr = 260 + k * 190
-        road(ring_poly(0, 0, rr, 40) + [(rr, 0)], "residential", 6)
+        road(ring_poly(0, 0, rr, 40) + [(rr, 0)], "residential", 6, f"{k + 1} Circle Way")
     # the lanes: a great many, all short
     for k in range(120):
         a = R.uniform(0, math.tau)

@@ -113,7 +113,9 @@ section('ground',()=>{
     // edge where the background showed through as a pale slab on the horizon. It now starts inside the box and
     // underlaps it: the terrain and the water both sit above it, so the only place it shows is past the edge.
     const far=new THREE.Mesh(new THREE.RingGeometry(Math.min(B.w,B.d)*0.45,Math.min(42000*WORLD,SKY_R*0.8),72,1),new THREE.MeshLambertMaterial({color:col((C.terrainColours||{}).far||'#76837c')}));   // fogged like the land it continues, or it reads as a dark shelf around the map
-    far.rotation.x=-Math.PI/2;far.position.set(B.cx,-1.5,B.cz);far.userData.noShadow=true;far.userData.noWire=true;far.renderOrder=-1;scene.add(far);}
+    // A map whose ground is six hundred metres up needs its horizon plate up there too, or the land ends in a
+  // cliff with a pale sheet a long way below it. farLevel is where the world outside the box sits.
+  far.rotation.x=-Math.PI/2;far.position.set(B.cx,(typeof C.farLevel==='number')?C.farLevel:-1.5,B.cz);far.userData.noShadow=true;far.userData.noWire=true;far.renderOrder=-1;scene.add(far);}
   // A city can retune the land-cover palette: the defaults are a modern map's greens, and on the Pelennor
   // they read as lawns rolled out over the fields.
   const AREA_COL=Object.assign({},{residential:'#5b664e',commercial:'#6c6962',industrial:'#615d56',construction:'#7a6e5a',campus:'#66755a',parking:'#4a4b4f',park:'#5f8a48',golf:'#6a9a50',cemetery:'#5a7a48',railyard:'#6a645a',reserve:'#557a44',wood:'#3f6a38',grass:'#6a9a52',zoo:'#648a4a',garden:'#5a9048',sand:'#dccda4',plaza:'#b8b0a2',pitch:'#4f8a3e',track:'#9a4a36',play:'#b89a6a',stadium:'#707070'},C.areaColours||{});
@@ -150,7 +152,7 @@ section('water',()=>{
   // city's own problem. Night City's is 95 m up, which is why there is a wall along the shore.
   const WY=(typeof C.waterLevel==='number')?C.waterLevel:(C.seaLevelWater?0.7:0.05);
   ctx.waterLevel=WY;
-  for(const w of WATER)((TOX&&TOX.test(w.name))?tb:wb).poly(w.o,w.i,WY,col('#2a5f8c'));
+  for(const w of WATER)((TOX&&TOX.test(w.name))?tb:wb).poly(w.o,w.i,(w.y===undefined?WY:w.y),col('#2a5f8c'));
   wb.build('river');if(tb)tb.build('toxic channels');
   animHooks.push(now=>{waterM.shininess=WSHINE*0.78+WSHINE*0.28*Math.sin(now*0.0011);});
 });
