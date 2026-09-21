@@ -83,4 +83,7 @@ body.bare #modebar{display:none!important}
 #timebar input{width:min(220px,38vw);accent-color:#e07a2a}
 #timebar select{background:rgba(10,8,34,.9);color:#e8c98a;border:1px solid #6a5a8a;font:12px monospace;padding:2px}
 @media (max-width:700px){#title{font-size:18px}#hud{font-size:10px}#hint{top:auto;bottom:calc(var(--barh,56px) + 6px);left:10px;right:10px;max-width:none;text-align:center}#legend{bottom:calc(var(--barh,56px) + 56px)}body.panel-open #legend{display:none}#ui{gap:5px;padding:8px}#ui button{padding:8px 9px;font-size:13px}}
-#loading{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;font-size:16px;letter-spacing:.2em;background:#0d0b2e;z-index:9}
+#loading{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:0 24px;text-align:center;font-size:16px;letter-spacing:.2em;background:#0d0b2e;z-index:9}
+#loading .load-stage{letter-spacing:.2em}
+#loading .load-line{max-width:46em;font-size:13px;letter-spacing:.015em;line-height:1.55;opacity:.6;transition:opacity .24s ease}
+@media (max-width:600px){#loading .load-line{font-size:12px;max-width:30em}}

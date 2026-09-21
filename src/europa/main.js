@@ -7,7 +7,23 @@ import {landmarks} from './landmarks.js';
 import {sky} from './sky.js';
 import {life} from './life.js';
 installErrorHandlers();window.LOAD=LOAD;
-configureLoading({prefix:'making orbit… ',labels:{'map-data':'reading the ice',ground:'laying the plains',buildings:'breaking the chaos',details:'',landmarks:'raising the derrick',el:'',traffic:'',ui:'lighting the site'}});
+configureLoading({
+  // What you read while it builds. See src/core/diag.js: these are shuffled and one of them is
+  // shown at a time under the progress line.
+  lines:[
+    'Europa is real, and so is this landscape: it is built from what is actually known of the surface.',
+    'Jupiter is twelve degrees across and never moves, because the moon is tidally locked to it.',
+    'No air, so the sky is black at noon and the stars do not twinkle.',
+    'A hundred kilometres of ocean under twenty of ice. That is the only reason anybody is here.',
+    'Nothing touches the ground. A warm thing set on ice at a hundred and ten kelvin melts its own hole and falls in.',
+    'The double ridges run for hundreds of kilometres, cross each other at every angle, and nobody is sure how they form.',
+    'Chaos terrain is blocks the size of city blocks, tilted and re-frozen. It is the best evidence there is for the ocean.',
+    'The lineae are stained brown by whatever comes up through them. It is the only colour on the moon.',
+    'The hard part of living here is the radiation belt, not the cold.',
+    'Sunlight is a twenty-fifth of what it is at Earth, and the shadows have nothing in them at all.',
+    'Every wheel track ever left on this ice is still there. There is no weather to take it away.',
+  ],
+  prefix:'making orbit… ',labels:{'map-data':'reading the ice',ground:'laying the plains',buildings:'breaking the chaos',details:'',landmarks:'raising the derrick',el:'',traffic:'',ui:'lighting the site'}});
 const ctx=window._iz={defaultCity:'europa',models:[landmarks],
   extras:[{name:'sky',fn:sky},{name:'life',fn:life}]};
 requestAnimationFrame(()=>setTimeout(()=>{build(ctx).catch(e=>{report('build',e);const l=document.getElementById('loading');if(l)l.remove();});},30));

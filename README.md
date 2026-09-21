@@ -702,6 +702,27 @@ tests/  run.js *.test.js golden/ fixtures/
 server.py  site.toml  sitectl
 ```
 
+### The loading screen
+
+Two lines. The top one says what the build is doing right now and comes from the page's `labels`; the
+bottom one is a note about the place, and it changes every couple of seconds while you wait and again
+whenever a stage finishes. Kerbal Space Program is the obvious ancestor and it is a better idea than it
+looks: a progress line tells you the machine is working, and a line about the place tells you why you are
+waiting for it.
+
+A page passes them to `configureLoading` in its `main.js`:
+
+```js
+configureLoading({prefix:'raising Arrakeen… ',
+  labels:{ground:'laying the rock',landmarks:'raising the Residency',el:''},
+  lines:['The only water is what you can take out of the air, so there is a windtrap on every roof.', …]});
+```
+
+They are shuffled and drawn without replacement, so the same one does not come up twice running and a
+different one greets you each time the page is opened. A label set to `''` means *say nothing about this
+stage* rather than *print the stage's internal name*, which is what the old fallback did. `lineMs` (how
+long a note stays up) and `lineMinMs` (how soon a stage change may move it on) are both overridable.
+
 ### Stages and `build.js`
 
 A city's code is a set of numbered files in `src/<city>/stages/`. They are fragments of one function

@@ -11,7 +11,19 @@ import {createWire,installWireUI} from '../core/wire.js';
 import {world} from './world.js';
 
 installErrorHandlers();window.LOAD=LOAD;
-configureLoading({prefix:'spinning up… ',labels:{config:'reading the specification',hull:'rolling the hull',
+configureLoading({
+  // What you read while it builds. See src/core/diag.js: these are shuffled and one of them is
+  // shown at a time under the progress line.
+  lines:[
+    'A cylinder 6.4 km across and 19 km long, turning once every hundred and fourteen seconds.',
+    'Up is towards the axis. The horizon curves the wrong way and there is country overhead.',
+    'Three strips of land and three of window, so there is always sky on two sides.',
+    'Nothing on this page runs on the shared engine: none of what it assumes about ground, gravity or sky is true here.',
+    'The spin gives about one g at the hull and rather less on a hilltop.',
+    'The weather is a ring. Cloud here is held against the hull by the same spin everything else is.',
+    'The outside carries ring frames, longerons and radiators, because a hull this size is mostly a way of getting rid of heat.',
+  ],
+  prefix:'spinning up… ',labels:{config:'reading the specification',hull:'rolling the hull',
   world:'laying the valleys',sky:'hanging the stars',ui:'opening the windows'}});
 
 const ctx=window._iz={};

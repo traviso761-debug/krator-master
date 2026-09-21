@@ -8,7 +8,23 @@ import {hosts} from '../mordor/hosts.js';
 import {life} from './life.js';
 import {warmode} from './war.js';
 installErrorHandlers();window.LOAD=LOAD;
-configureLoading({prefix:'raising Minas Tirith… ',labels:{'map-data':'reading the townlands',ground:'cutting the seven circles',buildings:'building the tiers',details:'planting the Pelennor',landmarks:'raising the White Tower',el:'',traffic:'launching the boats',ui:'opening the windows'}});
+configureLoading({
+  // What you read while it builds. See src/core/diag.js: these are shuffled and one of them is
+  // shown at a time under the progress line.
+  lines:[
+    'Fan work. Tolkien\'s world belongs to the Tolkien Estate; every shape here is this project\'s own geometry.',
+    'Seven walls, each on its own tier, each tier a hundred feet above the one below.',
+    'The circles are horseshoes rather than rings, because a blade of rock comes up through the middle of the city.',
+    'The Way goes through that rock twice. There is no way round it.',
+    'Two in five of the stones coming over the wall are lit. That is the point of throwing one into a city roofed in timber and slate.',
+    'Press War to take the siege away. The White Tree comes into flower when you do.',
+    'Grond is built as one object rather than as a crowd, because it is one object.',
+    'Six thousand Rohirrim are drawn up on the north of the field and have not moved yet.',
+    'The engines throw from both sides. A ring of them round a silent city leaves out half of a siege.',
+    'The rock is a blade: one sheer face to each side, fluted, coming to a point that hangs over the lower circles.',
+    'Osgiliath is downstream, in rings, with the piers of the great bridge still in the water.',
+  ],
+  prefix:'raising Minas Tirith… ',labels:{'map-data':'reading the townlands',ground:'cutting the seven circles',buildings:'building the tiers',details:'planting the Pelennor',landmarks:'raising the White Tower',el:'',traffic:'launching the boats',ui:'opening the windows'}});
 // The Tower, the Court and the Great Gate are this city's own. The hosts are Mordor's, and so is the war:
 // the same module marches them up the Causeway that marches them across Gorgoroth.
 const ctx=window._iz={defaultCity:'minastirith',models:[landmarks],extras:[{name:'life',fn:life},{name:'hosts',fn:hosts},{name:'war',fn:warmode}]};

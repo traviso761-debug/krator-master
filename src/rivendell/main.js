@@ -6,6 +6,21 @@ import {build} from '../engine/build.js';
 import {landmarks} from './landmarks.js';
 import {life} from './life.js';
 installErrorHandlers();window.LOAD=LOAD;
-configureLoading({prefix:'finding Rivendell… ',labels:{'map-data':'reading the moor',ground:'cutting the cleft',buildings:'raising the halls',details:'planting the valley',landmarks:'opening the Hall of Fire',el:'',traffic:'',ui:'lighting the lanterns'}});
+configureLoading({
+  // What you read while it builds. See src/core/diag.js: these are shuffled and one of them is
+  // shown at a time under the progress line.
+  lines:[
+    'Fan work. Tolkien\'s world belongs to the Tolkien Estate; every shape here is this project\'s own geometry.',
+    'You come over open moor and the ground stops. The valley is three hundred metres under your feet.',
+    'The house is on ledges partway down, so you look down on the roofs of it.',
+    'Every stream on the moor arrives over the rim, and there are a great many streams.',
+    'The ford is the valley\'s only defence: anything coming in has to stand in the river to do it.',
+    'Every opening in this architecture is pointed. There is no round arch anywhere in it.',
+    'The gable is the decorated part - deep bargeboards, and a finial standing above the ridge.',
+    'The falls come down in stages, because the wall they are falling down is a staircase.',
+    'It is always drawn in autumn, and the gold is most of what makes it this place.',
+    'A terrace is not a straight line, so every hall is laid along the one it stands on.',
+  ],
+  prefix:'finding Rivendell… ',labels:{'map-data':'reading the moor',ground:'cutting the cleft',buildings:'raising the halls',details:'planting the valley',landmarks:'opening the Hall of Fire',el:'',traffic:'',ui:'lighting the lanterns'}});
 const ctx=window._iz={defaultCity:'rivendell',models:[landmarks],extras:[{name:'life',fn:life}]};
 requestAnimationFrame(()=>setTimeout(()=>{build(ctx).catch(e=>{report('build',e);const l=document.getElementById('loading');if(l)l.remove();});},30));
