@@ -141,6 +141,8 @@ export function model(api){
     }
   }
 
+  let deflGlow=null;
+
   // ---------- the secondary hull ----------
   // No neck. The underside of the saucer runs back and down into the engineering section as one continuous
   // body: the forward stations are wide and shallow because at that end this is a FAIRING and has to leave
@@ -165,8 +167,7 @@ export function model(api){
     // the deflector, tucked under the saucer's bow overhang. An Intrepid's runs colder than a Galaxy's,
     // so the bowl is blue-white rather than amber.
     deflector(THREE,parts,m,135,-15,0,7.6,5,{seg:40});
-    const glow=new THREE.PointLight(0x9fd0ff,0.6,340);glow.position.set(158,-15,0);scene.add(glow);
-    animHooks.push(now=>{glow.intensity=0.4+0.18*Math.sin(now*0.0015);});
+    deflGlow=new THREE.PointLight(0x9fd0ff,0.6,340);deflGlow.position.set(158,-15,0);scene.add(deflGlow);
     // the shuttlebay in the stern, and the strake down each flank
     const bay=new THREE.Mesh(new THREE.BoxGeometry(6,12,20),m.dark);
     bay.position.set(-169,-23,0);parts.push(bay);
@@ -242,12 +243,24 @@ export function model(api){
     wings.push({pivot,sd});
   }
 
-  // At rest the pylons are down and out; at warp they come up and forward. The ship spends most of its time
-  // in one or the other and about four seconds in between, so the motion is eased hard at both ends.
-  const W={t:0,want:0};
+  // ---------- the drive sequence ----------
+  // The one mechanism on any of these three pages. At cruise the pylons lie out and DOWN and raked aft;
+  // for warp they come up level and swing forward, and the ship holds each attitude for a while with
+  // about four seconds in between, so the motion is eased hard at both ends.
+  //
+  // The geometry moving on its own is not enough to read as a sequence, though - from any distance it is
+  // just two things quietly changing angle. What sells it is everything else answering: the grilles come
+  // up from a cold blue to a hot white-blue as the pylons lock, the collectors flare through the swing
+  // and settle, the deflector brightens, and the navigation lights stop blinking and go steady, because
+  // a ship at warp is not station-keeping any more.
+  const W={t:0,want:0,mode:'auto'};
+  const warpCool=m.warp.color.clone(), warpHot=new THREE.Color(0xd6e8ff);
+  const busCool=m.bussard.color.clone(), busHot=new THREE.Color(0xffd0a0);
   animHooks.push(now=>{
-    const cycle=(now%26000)/26000;
-    W.want=(cycle>0.45&&cycle<0.93)?1:0;
+    if(W.mode==='auto'){
+      const cycle=(now%26000)/26000;
+      W.want=(cycle>0.45&&cycle<0.93)?1:0;
+    }else W.want=(W.mode==='warp')?1:0;
     W.t+=(W.want-W.t)*0.012;
     const e=W.t*W.t*(3-2*W.t);
     for(const w of wings){
@@ -257,7 +270,19 @@ export function model(api){
       w.pivot.rotation.x=w.sd*(0.46-e*0.46);           // down at cruise, level for warp
       w.pivot.rotation.y=w.sd*(-0.20+e*0.20);          // aft at cruise, forward for warp
     }
+    // the grille, cold and slow at cruise, hot and quick once the pylons are locked
+    const flick=0.06*Math.sin(now*(0.004+0.010*e))+0.04*Math.sin(now*0.017+1.7);
+    m.warp.color.copy(warpCool).lerp(warpHot,e*0.85).multiplyScalar(1+flick*(0.4+0.6*e));
+    // the collectors flare hardest THROUGH the swing, which is when the intakes are being repointed
+    const swing=4*W.t*(1-W.t);
+    m.bussard.color.copy(busCool).lerp(busHot,Math.min(1,swing*0.9+e*0.25));
+    if(deflGlow)deflGlow.intensity=0.40+0.30*e+0.16*Math.sin(now*0.0015);
+    W.e=e;
   });
+  const setMode=(mode,el)=>{
+    W.mode=mode;
+    if(el)el.textContent=mode==='auto'?'Drive: auto':mode==='warp'?'Drive: warp':'Drive: cruise';
+  };
 
   // ---------- running lights ----------
   const blinkers=[];
@@ -265,9 +290,15 @@ export function model(api){
     const b=new THREE.Mesh(new THREE.SphereGeometry(1.0,8,6),mat);
     b.position.set(x,y,z);b.userData.noWire=true;scene.add(b);blinkers.push(b);
   }
-  animHooks.push(now=>{const on=(now%1900)<950;for(const b of blinkers)b.visible=on;});
+  animHooks.push(now=>{const on=(W.e>0.9)||((now%1900)<950);for(const b of blinkers)b.visible=on;});
 
   fold(G,parts);
   scene.add(G);
-  return {radius:LEN*0.5, group:G};
+  return {radius:LEN*0.5, group:G, buttons:{
+    // auto -> hold at warp -> hold at cruise -> auto
+    'Drive: auto':ev=>{
+      const el=ev&&ev.currentTarget;
+      setMode(W.mode==='auto'?'warp':W.mode==='warp'?'cruise':'auto',el);
+    },
+  }};
 }
