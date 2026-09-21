@@ -107,13 +107,13 @@ export function windowRow(THREE, parts, mat, a, b, n, size, out, jitter){
 
 // Windows round an ellipse: the saucer rim, the station's promenade, the docking ring. `phase` skips the
 // stretch where the hull is doing something else.
-export function windowRing(THREE, parts, mat, y, rx, rz, n, size, from, to){
-  const a0=from===undefined?0:from, a1=to===undefined?Math.PI*2:to;
+export function windowRing(THREE, parts, mat, y, rx, rz, n, size, from, to, cx){
+  const a0=from===undefined?0:from, a1=to===undefined?Math.PI*2:to, x0=cx||0;
   for(let i=0;i<n;i++){
     const a=a0+(a1-a0)*(i/n);
     if(((i*53)%11)===0)continue;
     const w=new THREE.Mesh(new THREE.BoxGeometry(size[0],size[1],size[2]),mat);
-    w.position.set(Math.cos(a)*rx,y,Math.sin(a)*rz);
+    w.position.set(x0+Math.cos(a)*rx,y,Math.sin(a)*rz);
     w.rotation.y=-a;
     parts.push(w);
   }
