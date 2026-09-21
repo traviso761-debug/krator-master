@@ -28,9 +28,27 @@ export function kaitak(api){
   if(K.checker){
     const [cx,cz]=K.checker;
     const red=new THREE.MeshLambertMaterial({color:0xb4322a}),cream=new THREE.MeshLambertMaterial({color:0xe8dfc8});
+    const rock=new THREE.MeshLambertMaterial({color:0x5f6a54,flatShading:true});
+    const gy=groundH(cx,cz), turn=K.checkerTurn||0;
+    // ---- the hill it is painted on ----
+    // The board was not a sign on a post, it was paint on the side of a hill at Kowloon Tsai, and this map
+    // has no hill there: without one the thing hangs in the air over the rooftops with nothing holding it
+    // up, which was the single most obviously wrong object on the page.
+    for(let k=0;k<9;k++){
+      const w=120-k*10, h=14, d=54-k*4;
+      const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),rock);
+      m.position.set(cx+(Math.sin(k*2.1))*5,gy+k*8,cz+16+k*3.4);
+      m.rotation.y=turn+(k%2?0.05:-0.05);scene.add(m);
+    }
+    for(let k=0;k<16;k++){                              // scrub on it, so it is a hill and not a ramp
+      const m=new THREE.Mesh(new THREE.IcosahedronGeometry(3+(k%4)*1.6,0),
+        new THREE.MeshLambertMaterial({color:k%3?0x4c6a3e:0x56724a,flatShading:true}));
+      m.position.set(cx+((k*37)%90)-45,gy+8+((k*53)%60),cz+22+((k*29)%26));scene.add(m);
+    }
+    // the board, standing just proud of the face
     for(let i=0;i<6;i++)for(let j=0;j<6;j++){
       const p=new THREE.Mesh(new THREE.BoxGeometry(6,6,0.6),(i+j)%2?red:cream);
-      p.position.set(cx+(i-2.5)*6,groundH(cx,cz)+30+(5-j)*6,cz);p.rotation.y=K.checkerTurn||0;scene.add(p);
+      p.position.set(cx+(i-2.5)*6,gy+30+(5-j)*6,cz);p.rotation.y=turn;scene.add(p);
     }
   }
   const A=K.from||[-1400,-900,420],Bp=K.to||[900,700,20],period=K.period||34000;

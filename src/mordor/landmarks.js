@@ -477,10 +477,55 @@ export function landmarks(api){
       b.position.set(bx2,gh(bx2,bz2)+R0*0.02,bz2);b.rotation.set(Math.PI/2,Math.random()*3,Math.random()*3);
       parts.push(b);
     }
+    // ---- the way in ----
+    // You do not walk up to this in the open: the stair comes out into a ravine with walls on both sides,
+    // and the hole is at the end of it. The webs are strung across the gap overhead as much as over the
+    // mouth, and there are things hanging in them that were carried in and not eaten yet.
+    for(let k=0;k<12;k++){
+      const d=-R0*(0.6+k*0.42);
+      for(const sd of [-1,1]){
+        const w=R0*(0.5+0.24*Math.sin(k*1.3));
+        const px=x+ux*d-Math.sin(A)*0+Math.cos(A+Math.PI/2)*sd*(R0*0.85+w*0.4);
+        const pz=z+uz*d+Math.sin(A+Math.PI/2)*sd*(R0*0.85+w*0.4);
+        const h2=R0*(1.1+0.5*Math.sin(k*2.1+sd));
+        const m=new THREE.Mesh(new THREE.BoxGeometry(R0*0.5,h2,R0*0.55).translate(0,h2/2,0),rock);
+        m.position.set(px,gh(px,pz)-R0*0.2,pz);
+        m.rotation.set(0,-A+((k%3)-1)*0.2,sd*0.05);parts.push(m);
+      }
+      // a cable of web across the ravine every second bay
+      if(k%2===0){
+        const px=x+ux*d, pz=z+uz*d;
+        const c=new THREE.Mesh(new THREE.CylinderGeometry(R0*0.008,R0*0.008,R0*1.7,4).rotateZ(Math.PI/2),webM);
+        c.position.set(px,gh(px,pz)+R0*(0.7+0.2*Math.sin(k)),pz);c.rotation.y=-A;parts.push(c);
+      }
+    }
+    // what is hanging in them
+    for(let k=0;k<9;k++){
+      const d=-R0*(0.8+k*0.5), off=((k*37)%7-3)/3*R0*0.6;
+      const px=x+ux*d+Math.cos(A+Math.PI/2)*off, pz=z+uz*d+Math.sin(A+Math.PI/2)*off;
+      const gy=gh(px,pz)+R0*(0.55+0.1*Math.sin(k*1.7));
+      const len=R0*(0.12+((k*53)%5)*0.03);
+      const c=new THREE.Mesh(new THREE.CylinderGeometry(R0*0.05,R0*0.028,len,6),webM);
+      c.position.set(px,gy-len*0.6,pz);c.rotation.set((k%3-1)*0.12,0,(k%2?1:-1)*0.08);parts.push(c);
+      const thread=new THREE.Mesh(new THREE.CylinderGeometry(R0*0.006,R0*0.006,R0*0.22,4),webM);
+      thread.position.set(px,gy+R0*0.11,pz);parts.push(thread);
+    }
+    // the reek: not smoke, just air that is wrong, sitting in the mouth and not going anywhere
+    const reekM=new THREE.MeshBasicMaterial({color:0x2a2e24,transparent:true,opacity:0.22,depthWrite:false});
+    const reek=[];
+    for(let k=0;k<5;k++){
+      const p=new THREE.Mesh(new THREE.SphereGeometry(R0*(0.18+k*0.06),8,6),reekM);
+      p.userData.noWire=true;scene.add(p);reek.push({p,ph:k/5});
+    }
     const g=group(L,parts);
     animHooks.push(now=>{const t=now*0.0009;
       for(const q of webs){q.w.scale.set(1+0.03*Math.sin(t+q.ph),1+0.04*Math.sin(t*1.3+q.ph),1);
-        q.w.material.opacity=0.34+0.1*Math.sin(t*0.7+q.ph);}});
+        q.w.material.opacity=0.34+0.1*Math.sin(t*0.7+q.ph);}
+      for(const q of reek){
+        const u=((t*0.06)+q.ph)%1;
+        q.p.position.set(x+ux*R0*(0.3-u*1.4),g0+R0*(0.4+u*0.25),z+uz*R0*(0.3-u*1.4));
+        q.p.scale.setScalar(0.7+u*1.4);q.p.material.opacity=0.2*(1-u*0.7);
+      }});
     return g;},
 
   morgul(L,x,z){   // Minas Morgul: a tower city in its valley, lit the wrong colour
