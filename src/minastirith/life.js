@@ -116,10 +116,10 @@ export function life(api){
       const b=box(x+(R()-0.5)*5,h-1,z+(R()-0.5)*5,0.4,2.6+R()*2.6,0.4,charM);
       b.rotation.set((R()-0.5)*0.5,R()*3,(R()-0.5)*0.5);warStatics.push(b);}
     spill(x,z,5,true);
-    const f=new THREE.Mesh(new THREE.ConeGeometry(2.2+R()*2,7+R()*7,6),blazeM);
-    f.position.set(x,h+3,z);f.userData.noWire=true;scene.add(f);blazes.push({f,ph:R()*6.28});
-    for(let i=0;i<4;i++){const p=new THREE.Mesh(new THREE.SphereGeometry(3.4+R()*2.6,7,5),pallM);
-      p.userData.noWire=true;scene.add(p);palls.push({p,x,z,y0:h+6,ph:(i+R())/4,drift:0.9+R()*0.9});}
+    // A fire and four puffs of smoke to a burning house, instanced: thirty-four of them loose is a hundred
+    // and seventy draw calls for something that is four triangles wide on screen.
+    blazes.push({x,y:h+3,z,s:0.8+R()*0.9,ph:R()*6.28});
+    for(let i=0;i<4;i++)palls.push({x,z,y0:h+6,ph:(i+R())/4,drift:0.9+R()*0.9});
   }
   // and the ones that are only broken
   for(let k=0;k<(K.damaged||0);k++){
@@ -130,13 +130,20 @@ export function life(api){
     spill(x,z,3,false);
   }
 
+  const D=new THREE.Object3D();
+  let blazeInst=null,pallInst=null;
+  if(blazes.length){
+    blazeInst=new THREE.InstancedMesh(new THREE.ConeGeometry(3,10,6).translate(0,5,0),blazeM,blazes.length);
+    blazeInst.count=blazes.length;blazeInst.frustumCulled=false;blazeInst.userData.noWire=true;scene.add(blazeInst);
+    pallInst=new THREE.InstancedMesh(new THREE.SphereGeometry(4.6,7,5),pallM,palls.length);
+    pallInst.count=palls.length;pallInst.frustumCulled=false;pallInst.userData.noWire=true;scene.add(pallInst);
+  }
   const WAR=ctx.warParts=ctx.warParts||[];
   const mergeAll=(list,war)=>{const byMat=new Map();
     for(const m of list){let a=byMat.get(m.material);if(!a){a=[];byMat.set(m.material,a);}a.push(m);}
     for(const [mat,l] of byMat){const g=mergeParts(l,mat);g.userData.wireCat='life';scene.add(g);if(war)WAR.push(g);}};
   mergeAll(statics,false);mergeAll(warStatics,true);
-  for(const q of blazes)WAR.push(q.f);
-  for(const q of palls)WAR.push(q.p);
+  if(blazeInst)WAR.push(blazeInst,pallInst);
 
   let t0=performance.now();
   animHooks.push(now=>{
@@ -156,10 +163,16 @@ export function life(api){
       q.p.scale.setScalar(0.6+u*2.6);q.p.material.opacity=0.1*(1-u);
     }
     fireM.opacity=(0.35+0.55*n);
-    for(const q of blazes)q.f.scale.set(0.8+0.25*Math.sin(t*5+q.ph),0.85+0.4*Math.sin(t*7.5+q.ph),0.8+0.25*Math.cos(t*4.3+q.ph));
-    for(const q of palls){const u=((t*0.035)+q.ph)%1;
-      q.p.position.set(q.x+u*44*q.drift,q.y0+u*120,q.z+u*17*q.drift);
-      q.p.scale.setScalar(0.7+u*4.2);q.p.material.opacity=0.22*(1-u*0.85);}
+    if(blazeInst){
+      blazes.forEach((q,i)=>{D.position.set(q.x,q.y,q.z);D.rotation.set(0,0,0);
+        D.scale.set(q.s*(0.8+0.25*Math.sin(t*5+q.ph)),q.s*(0.85+0.4*Math.sin(t*7.5+q.ph)),q.s*(0.8+0.25*Math.cos(t*4.3+q.ph)));
+        D.updateMatrix();blazeInst.setMatrixAt(i,D.matrix);});
+      blazeInst.instanceMatrix.needsUpdate=true;
+      palls.forEach((q,i)=>{const u=((t*0.035)+q.ph)%1;
+        D.position.set(q.x+u*44*q.drift,q.y0+u*120,q.z+u*17*q.drift);D.rotation.set(0,0,0);
+        D.scale.setScalar(0.7+u*4.2);D.updateMatrix();pallInst.setMatrixAt(i,D.matrix);});
+      pallInst.instanceMatrix.needsUpdate=true;
+    }
     for(const q of fires)q.f.scale.set(0.8+0.3*Math.sin(t*6+q.ph),0.75+0.5*Math.sin(t*9+q.ph),0.8+0.3*Math.cos(t*5+q.ph));
   });
 
