@@ -161,7 +161,9 @@ section('piers',()=>{const pb=tiledBuffer(new THREE.MeshLambertMaterial({vertexC
   for(const p of PIERS){if(p.line)pb.ribbon(p.line,p.w,2.2,c,2.4);else{pb.poly(p.o,p.i,2.2,c);pb.walls(p.o,-1.2,2.2,side);}}
   pb.build('piers');});
 // streets: sidewalks under the carriageway, alleys, trails; bridges lifted as decks; Metra at grade
-const ROAD_COL={motorway:'#3a3b3f',trunk:'#3a3b3f',primary:'#3c3d41',secondary:'#404145',tertiary:'#44454a',residential:'#48494d',unclassified:'#48494d',living_street:'#4f5054',pedestrian:'#b3ab9c',alley:'#56575a',trail:'#8e8a80'};
+// A city can retune these: an ice road is not asphalt, and a graded lane on Europa that comes out black
+// reads as a canal. roadColours in the config overrides any of them.
+const ROAD_COL=Object.assign({},{motorway:'#3a3b3f',trunk:'#3a3b3f',primary:'#3c3d41',secondary:'#404145',tertiary:'#44454a',residential:'#48494d',unclassified:'#48494d',living_street:'#4f5054',pedestrian:'#b3ab9c',alley:'#56575a',trail:'#8e8a80'},C.roadColours||{});
 const WALKED=new Set(['primary','secondary','tertiary','residential','unclassified','living_street']);
 // bridge decks: a height per bridge (named in the config, e.g. the Fremont Bridge at 52 m, or the city's default over water),
 // held at full height over the water and wherever another bridge way continues, ramping down to the street over land
