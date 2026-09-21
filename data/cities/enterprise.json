@@ -1,0 +1,145 @@
+{
+ "name": "Enterprise",
+ "note": "Fan work. Star Trek belongs to Paramount; nothing from any film, series or game is used, and every shape on this page is this project's own geometry, built from the published dimensions and the silhouette. USS Enterprise NCC-1701-D, Galaxy class: 642.5 m long, 463.7 across the saucer. There is no interior. The page does not run on the shared engine - there is no ground out here, no down, and the sky is the whole sphere.",
+ "attribution": "Enterprise is fan work: original geometry in src/enterprise/. Star Trek belongs to Paramount. No assets used.",
+ "view0": {
+  "az": 2.35,
+  "el": 0.2,
+  "d": 1080
+ },
+ "views": {
+  "Three-quarter, from above": {
+   "az": 2.35,
+   "el": 0.3,
+   "d": 1080
+  },
+  "Alongside": {
+   "az": 1.57,
+   "el": 0.04,
+   "d": 1080
+  },
+  "Head on": {
+   "az": 0.0,
+   "el": 0.05,
+   "d": 1080
+  },
+  "From astern": {
+   "az": 3.1416,
+   "el": 0.1,
+   "d": 1080
+  },
+  "Plan": {
+   "az": 1.57,
+   "el": 1.4,
+   "d": 1080
+  },
+  "From below": {
+   "az": 2.2,
+   "el": -1.05,
+   "d": 1080
+  },
+  "The bridge": {
+   "az": 2.6,
+   "el": 0.45,
+   "d": 260,
+   "tx": 0,
+   "ty": 40,
+   "tz": 0
+  },
+  "The deflector": {
+   "az": 0.35,
+   "el": 0.06,
+   "d": 300,
+   "tx": 110,
+   "ty": -104,
+   "tz": 0
+  },
+  "A nacelle": {
+   "az": 2.0,
+   "el": 0.16,
+   "d": 420,
+   "tx": -186,
+   "ty": 34,
+   "tz": -104
+  },
+  "The shuttlebay": {
+   "az": 3.0,
+   "el": 0.12,
+   "d": 340,
+   "tx": -280,
+   "ty": -96,
+   "tz": 0
+  },
+  "Far off": {
+   "az": 2.35,
+   "el": 0.18,
+   "d": 5200
+  }
+ },
+ "space": {
+  "seed": 1701,
+  "stars": 3400,
+  "starSize": 2200,
+  "far": 900000,
+  "starLight": {
+   "colour": "#fff4e2",
+   "az": 0.55,
+   "el": 0.3,
+   "intensity": 2.2,
+   "ambient": 0.5
+  },
+  "fill": {
+   "colour": "#5a86b8",
+   "az": -1.2,
+   "el": -0.35,
+   "intensity": 0.7
+  },
+  "bodies": [
+   {
+    "kind": "rock",
+    "az": -0.85,
+    "el": -0.34,
+    "dist": 0.52,
+    "deg": 21,
+    "seg": 72,
+    "colours": [
+     "#1b4a7a",
+     "#2f6a44",
+     "#8f7c54",
+     "#e8eff4"
+    ],
+    "clouds": true,
+    "cloudPuffs": 520,
+    "ice": 0.8,
+    "rate": 2e-05
+   },
+   {
+    "kind": "rock",
+    "az": -2.0,
+    "el": 0.34,
+    "dist": 0.86,
+    "deg": 1.8,
+    "seg": 28,
+    "colours": [
+     "#6b6660",
+     "#7a736a",
+     "#8d857a",
+     "#b9b4ac"
+    ],
+    "ice": 1.1
+   }
+  ],
+  "nebulae": [
+   {
+    "colour": "#3a2a6e",
+    "az": 1.5,
+    "el": 0.22,
+    "dist": 0.9,
+    "size": 300000,
+    "puffs": 24,
+    "opacity": 0.05
+   }
+  ],
+  "_": "a class-M world below and its moon, with the star off the port bow"
+ }
+}
