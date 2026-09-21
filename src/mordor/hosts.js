@@ -10,9 +10,11 @@ export function hosts(api){
 
   const K=C.hosts;if(!K)return;
   const HR=mkRng(6626),D=new THREE.Object3D();
+  const arrows=[],stones=[],engines=[],fires2=[],smoke2=[];
+  const col2=h=>(typeof h==='string')?parseInt(h.replace('#',''),16):h;
   const ironM=new THREE.MeshLambertMaterial({color:0x1e1c1a});
   const fleshM=new THREE.MeshLambertMaterial({color:0x2b2621});
-  const dustM=new THREE.MeshLambertMaterial({color:0x3a332b,transparent:true,opacity:0.3,depthWrite:false});
+  const dustM=new THREE.MeshLambertMaterial({color:0x3a332b,transparent:true,opacity:0.16,depthWrite:false});
   // The fellbeasts are the same black as everything else in Mordor, which on a plain of black ash means
   // they cannot be seen at all. This is a shade lighter, and it is the difference between a Nazgul and
   // a missing feature.
@@ -88,7 +90,7 @@ export function hosts(api){
        flag.position.set(bx+1.7,8,bz);g.add(pole,flag);}
      scene.add(g);
      // the dust it raises, trailing behind
-     const dust=[];for(let d2=0;d2<7;d2++){const p=new THREE.Mesh(new THREE.SphereGeometry(28,7,5),dustM);
+     const dust=[];for(let d2=0;d2<7;d2++){const p=new THREE.Mesh(new THREE.SphereGeometry(17,9,6),dustM);
        p.userData.t=d2/7;scene.add(p);dust.push(p);}
      armies.push({g,r,s:HR()*r.len,v:(K.pace||1.4)*(0.8+HR()*0.5),dir:HR()<0.5?-1:1,dust,ranks,STEP});}
    ctx.hosts=armies;   // the Black Gate watches these: it opens when one is on the road and shuts behind it
@@ -128,6 +130,356 @@ export function hosts(api){
          p.scale.setScalar(0.7+t*3.2);});}
      if(ctx.details&&now-(ctx._hT||0)>1000){ctx._hT=now;
        ctx.details.hostAt=armies.slice(0,3).map(a=>Math.round(a.g.position.x)+','+Math.round(a.g.position.z)).join(' | ');}});}
+
+
+  // ---- the siege ----
+  // A war is not a column on a road. It is a ring of camps outside bowshot, blocks of troops drawn up
+  // between the camps and the wall, engines behind them throwing, and arrows going both ways - and the
+  // thing that makes it read as a siege rather than as a lot of scenery is that something is always in
+  // the air. Everything here is built once, in local frames; the only per-frame work is what is flying.
+  //
+  // The arrows are drawn several times life size, for the same reason the fellbeasts are: a real arrow two
+  // kilometres away is nothing at all, and a volley you cannot see is a volley that is not happening.
+  const flying={blocks:0,camps:0,tents:0,engines:0,towers:0,riders:0,grond:0};
+  if(K.siege){
+    const S=K.siege,[ccx,ccz]=S.at||[0,0];
+    const A0=S.arc?S.arc[0]:-1.2, A1=S.arc?S.arc[1]:1.2;
+    const R0=S.r0||1300, R1=S.r1||2300;
+    const canvasM=new THREE.MeshLambertMaterial({color:0x4a4136,flatShading:true});
+    const woodM=new THREE.MeshLambertMaterial({color:0x332c25,flatShading:true});
+    const emberM=new THREE.MeshBasicMaterial({color:0xff9a3c,transparent:true,opacity:0.85,depthWrite:false});
+    const shaftM=new THREE.MeshLambertMaterial({color:0xcfc4a6});
+    const aim=(x,z)=>-Math.atan2(ccz-z,ccx-x)+Math.PI/2;      // face whatever is being besieged
+
+    // ---- the blocks, drawn up facing the wall ----
+    {const NB=S.blocks||0,PER=S.per||1000,FL=S.file||42,ST=K.step||1.9;
+     for(let b=0;b<NB;b++){
+       const a=A0+(A1-A0)*((b+0.5)/NB)+(HR()-0.5)*0.06;
+       const rr=R0+HR()*(R1-R0)*0.45;
+       const bx=ccx+Math.cos(a)*rr, bz=ccz+Math.sin(a)*rr;
+       const g=new THREE.Group(),ranks=Math.ceil(PER/FL);
+       const bodies=new THREE.InstancedMesh(new THREE.BoxGeometry(0.8,1.9,0.6).translate(0,0.95,0),fleshM,PER);
+       const spears=new THREE.InstancedMesh(new THREE.BoxGeometry(0.13,3.6,0.13).translate(0,1.8,0),ironM,PER);
+       let n=0;
+       for(let rk=0;rk<ranks&&n<PER;rk++)for(let f=0;f<FL&&n<PER;f++){
+         const px=(f-(FL-1)/2)*ST+(HR()-0.5)*0.5,pz=-rk*ST-(HR()-0.5)*0.4;
+         D.position.set(px,0,pz);D.rotation.set(0,(HR()-0.5)*0.1,0);D.scale.set(1,0.9+HR()*0.25,1);D.updateMatrix();
+         bodies.setMatrixAt(n,D.matrix);
+         D.position.set(px+0.35,1.1,pz);D.rotation.set(0,0,(HR()-0.5)*0.26);D.updateMatrix();
+         spears.setMatrixAt(n,D.matrix);n++;}
+       bodies.count=spears.count=n;bodies.frustumCulled=spears.frustumCulled=false;g.add(bodies,spears);
+       for(let q=0;q<5;q++){const qx=(HR()-0.5)*FL*ST*0.8,qz=-HR()*ranks*ST;
+         const pole=new THREE.Mesh(new THREE.BoxGeometry(0.22,9,0.22).translate(0,4.5,0),ironM);pole.position.set(qx,0,qz);
+         const flag=new THREE.Mesh(new THREE.PlaneGeometry(3.4,2.2),new THREE.MeshLambertMaterial({color:S.colour?col2(S.colour):0x5a1712,side:THREE.DoubleSide}));
+         flag.position.set(qx+1.7,8,qz);g.add(pole,flag);}
+       g.position.set(bx,groundH(bx,bz),bz);g.rotation.y=aim(bx,bz);
+       scene.add(g);flying.blocks++;}}
+
+    // ---- the camps, behind them ----
+    // Tents in clumps round a fire, which is the only thing that makes a plain look occupied.
+    {const NC=S.camps||0,TP=S.tentsPer||22;
+     if(NC){
+       const tent=new THREE.InstancedMesh(new THREE.ConeGeometry(3.6,4.4,5),canvasM,NC*TP);
+       const ridge=new THREE.InstancedMesh(new THREE.BoxGeometry(0.2,0.2,9),woodM,NC*TP);
+       let n=0;
+       for(let c=0;c<NC;c++){
+         const a=A0+(A1-A0)*HR(), rr=R1*(0.92+HR()*0.5);
+         const ox=ccx+Math.cos(a)*rr, oz=ccz+Math.sin(a)*rr, oa=HR()*6.28;
+         for(let t2=0;t2<TP;t2++){
+           const tx=ox+(HR()-0.5)*190, tz=oz+(HR()-0.5)*190, gy=groundH(tx,tz);
+           D.position.set(tx,gy+2.2,tz);D.rotation.set(0,oa+(HR()-0.5)*0.5,0);D.scale.set(1,0.8+HR()*0.5,1);
+           D.updateMatrix();tent.setMatrixAt(n,D.matrix);
+           D.position.set(tx,gy+0.1,tz);D.rotation.set(0,oa,0);D.scale.set(1,1,1);D.updateMatrix();
+           ridge.setMatrixAt(n,D.matrix);n++;}
+         const fy=groundH(ox,oz);
+         const f=new THREE.Mesh(new THREE.ConeGeometry(2.2,5,6),emberM);f.position.set(ox,fy+2.5,oz);
+         f.userData.noWire=true;scene.add(f);fires2.push({f,ph:HR()*6.28});
+         for(let d2=0;d2<3;d2++){const p=new THREE.Mesh(new THREE.SphereGeometry(5,7,5),dustM);
+           p.userData.noWire=true;scene.add(p);smoke2.push({p,x:ox,y:fy,z:oz,ph:(d2+HR())/3});}
+         flying.camps++;}
+       tent.count=ridge.count=n;tent.frustumCulled=ridge.frustumCulled=false;
+       scene.add(tent,ridge);flying.tents=n;}}
+
+    // ---- the engines ----
+    // A counterweight trebuchet: two legs, a beam on a pivot with the weight on the short arm, and a base.
+    // It winds down, hangs a moment, and throws; the stone leaves the sling at the top of the swing.
+    //
+    // They stand on both sides. The besiegers' are out on the plain throwing in; the city's own are up on
+    // its circles throwing back, which is the half of a siege that a ring of engines round a silent city
+    // leaves out. A defending engine is smaller - it has a wall to stand on, not a field - and it aims out
+    // at whatever is in front of it.
+    const mkEngine=(ex,ez,ey,ang,outward,scl)=>{
+      const g=new THREE.Group(),k2=scl||1;
+      const base=new THREE.Mesh(new THREE.BoxGeometry(7*k2,1.6*k2,16*k2).translate(0,0.8*k2,0),woodM);g.add(base);
+      for(const sd of [-1,1]){
+        const leg=new THREE.Mesh(new THREE.BoxGeometry(1.1*k2,15*k2,1.1*k2).translate(0,7.5*k2,0),woodM);
+        leg.position.set(sd*2.6*k2,1.2*k2,0);leg.rotation.z=-sd*0.16;g.add(leg);}
+      const pivot=new THREE.Group();pivot.position.set(0,15*k2,0);g.add(pivot);
+      const beam=new THREE.Mesh(new THREE.BoxGeometry(1.0*k2,1.0*k2,26*k2).translate(0,0,-7*k2),woodM);pivot.add(beam);
+      const wt=new THREE.Mesh(new THREE.BoxGeometry(3.6*k2,3.6*k2,3.6*k2),ironM);wt.position.set(0,-0.6*k2,5.5*k2);pivot.add(wt);
+      g.position.set(ex,ey,ez);g.rotation.y=-ang+(outward?Math.PI/2:-Math.PI/2);
+      scene.add(g);
+      engines.push({pivot,x:ex,y:ey,z:ez,a:ang,out:!!outward,k:k2,next:HR()*9000,fired:false});flying.engines++;};
+    {const NE=S.engines||0;
+     for(let e=0;e<NE;e++){
+       const a=A0+(A1-A0)*((e+0.5)/NE)+(HR()-0.5)*0.05;
+       const rr=R0*(0.78+HR()*0.18);
+       const ex=ccx+Math.cos(a)*rr, ez=ccz+Math.sin(a)*rr;
+       mkEngine(ex,ez,groundH(ex,ez),a,false,1);}
+     // the city's own, on the circles, throwing back
+     const DF=S.defenders||0;
+     for(let e=0;e<DF;e++){
+       const a=A0+(A1-A0)*((e+0.5)/DF)+(HR()-0.5)*0.08;
+       // on whichever circle it belongs to. The ground under a tier is already at that tier's height -
+       // adding the lift again put the city's engines a hundred metres over their own walls.
+       const ring=Math.floor(HR()*(S.rings||3));
+       const rr=(S.wall||560)-40-ring*(S.ringStep||66);
+       const ex=ccx+Math.cos(a)*rr, ez=ccz+Math.sin(a)*rr;
+       mkEngine(ex,ez,groundH(ex,ez)+(S.ringY||0),a,true,0.62);}}
+
+
+    // ---- the siege towers ----
+    // Timber, four storeys, hides nailed over the face that is going to be shot at, and a drawbridge at the
+    // top waiting to come down on the parapet. They do not move: a tower that trundled would need the whole
+    // ground to be right, and standing ones drawn up against the wall are what the pictures show anyway.
+    {const NT=S.towers||0;
+     const hideM=new THREE.MeshLambertMaterial({color:0x53463a,flatShading:true});
+     for(let k=0;k<NT;k++){
+       const a=A0+(A1-A0)*((k+0.5)/NT)+(HR()-0.5)*0.09;
+       const rr=(S.wall||560)+50+HR()*90;
+       const ex=ccx+Math.cos(a)*rr, ez=ccz+Math.sin(a)*rr, gy=groundH(ex,ez);
+       const g=new THREE.Group(), H2=30+HR()*14, WD=13;
+       // four storeys of open timber with a floor between each, so it reads as a frame and not an obelisk
+       for(let f=0;f<4;f++){
+         const w2=WD*(1-f*0.05), hh=H2/4;
+         const floor=new THREE.Mesh(new THREE.BoxGeometry(w2,1.1,w2),woodM);floor.position.y=f*hh;g.add(floor);
+         for(const sd of [-1,1])for(const fr of [-1,1]){
+           const post=new THREE.Mesh(new THREE.BoxGeometry(1.3,hh,1.3).translate(0,hh/2,0),woodM);
+           post.position.set(sd*w2*0.44,f*hh,fr*w2*0.44);g.add(post);}
+         for(const sd of [-1,1]){
+           const br=new THREE.Mesh(new THREE.BoxGeometry(0.7,Math.hypot(hh,w2*0.88),0.7).translate(0,hh/2,0),woodM);
+           br.position.set(sd*w2*0.44,f*hh,-w2*0.44);br.rotation.x=Math.atan2(w2*0.88,hh)*(f%2?1:-1);g.add(br);}
+         const side=new THREE.Mesh(new THREE.BoxGeometry(0.4,hh*0.9,w2*0.96),f<3?woodM:hideM);
+         side.position.set(WD*0.5,f*hh+hh*0.45,0);g.add(side);}
+       for(const sd of [-1,1])for(const fr of [-1,1]){
+         const wh=new THREE.Mesh(new THREE.CylinderGeometry(2.2,2.2,1.2,10).rotateZ(Math.PI/2),woodM);
+         wh.position.set(sd*(WD/2+0.4),2.2,fr*(WD/2-1.2));g.add(wh);}
+       const face=new THREE.Mesh(new THREE.BoxGeometry(WD*1.04,H2*0.96,0.6),hideM);
+       face.position.set(0,H2*0.46,-WD/2-0.3);g.add(face);
+       const bridge=new THREE.Mesh(new THREE.BoxGeometry(WD*0.8,0.5,10).translate(0,0,-5),woodM);
+       bridge.position.set(0,H2,-WD/2);bridge.rotation.x=-0.5-HR()*0.5;g.add(bridge);
+       g.position.set(ex,gy,ez);g.rotation.y=aim(ex,ez);
+       scene.add(g);flying.towers++;}}
+
+    // ---- Grond ----
+    // The hammer of the underworld: a ram of black steel a hundred feet long, slung in chains under a frame
+    // on wheels, with a wolf's head on the end of it, drawn up to the Great Gate. It swings back, comes
+    // forward, and the whole thing shudders. Everything else in this scene is a crowd; this is one object,
+    // and it gets built properly.
+    if(S.grond){
+      const G=S.grond, gx=G.at?G.at[0]:ccx+((S.wall||560)+110), gz=G.at?G.at[1]:ccz;
+      const gy=groundH(gx,gz);
+      const g=new THREE.Group();
+      const steelM=new THREE.MeshLambertMaterial({color:0x17161a,flatShading:true});
+      const emberM2=new THREE.MeshBasicMaterial({color:0xff5a1e,transparent:true,opacity:0.9,depthWrite:false});
+      const L2=G.length||34, RAD=G.radius||2.4;
+      // the carriage
+      const bed=new THREE.Mesh(new THREE.BoxGeometry(11,2.2,L2*1.15).translate(0,1.1,0),woodM);g.add(bed);
+      for(let w2=0;w2<8;w2++){const sd=w2%2?1:-1;
+        const wh=new THREE.Mesh(new THREE.CylinderGeometry(3.4,3.4,1.8,12).rotateZ(Math.PI/2),woodM);
+        wh.position.set(sd*5.6,3.4,(Math.floor(w2/2)-1.5)*L2*0.26);g.add(wh);}
+      // the gantry it hangs from
+      for(const fr of [-1,1])for(const sd of [-1,1]){
+        const leg=new THREE.Mesh(new THREE.BoxGeometry(1.6,17,1.6).translate(0,8.5,0),woodM);
+        leg.position.set(sd*4.6,2.2,fr*L2*0.3);leg.rotation.z=-sd*0.12;g.add(leg);}
+      for(const fr of [-1,1]){
+        const beam=new THREE.Mesh(new THREE.BoxGeometry(11,1.4,1.4),woodM);beam.position.set(0,19,fr*L2*0.3);g.add(beam);}
+      // the ram itself, on its own pivot so it can swing
+      const swing=new THREE.Group();swing.position.set(0,19,0);g.add(swing);
+      for(const fr of [-1,1]){const ch=new THREE.Mesh(new THREE.BoxGeometry(0.4,8,0.4).translate(0,-4,0),ironM);
+        ch.position.set(0,0,fr*L2*0.3);swing.add(ch);}
+      const ram=new THREE.Group();ram.position.y=-8;swing.add(ram);
+      const shaft=new THREE.Mesh(new THREE.CylinderGeometry(RAD,RAD*1.1,L2,12).rotateX(Math.PI/2),steelM);
+      ram.add(shaft);
+      for(let b2=0;b2<7;b2++){const band=new THREE.Mesh(new THREE.CylinderGeometry(RAD*1.14,RAD*1.14,0.7,12).rotateX(Math.PI/2),ironM);
+        band.position.z=-L2/2+3+b2*(L2-6)/6;ram.add(band);}
+      // the wolf's head
+      const head=new THREE.Group();head.position.z=-L2/2-1.6;ram.add(head);
+      const skull=new THREE.Mesh(new THREE.BoxGeometry(RAD*2.2,RAD*2.1,RAD*2.6),steelM);skull.position.z=-RAD*1.1;head.add(skull);
+      const snout=new THREE.Mesh(new THREE.BoxGeometry(RAD*1.3,RAD*1.1,RAD*2.4).translate(0,0,-RAD*1.2),steelM);
+      snout.position.set(0,-RAD*0.4,-RAD*2.2);head.add(snout);
+      for(const sd of [-1,1]){
+        const ear=new THREE.Mesh(new THREE.ConeGeometry(RAD*0.45,RAD*1.3,4),steelM);
+        ear.position.set(sd*RAD*0.7,RAD*1.3,-RAD*0.6);head.add(ear);
+        const eye=new THREE.Mesh(new THREE.SphereGeometry(RAD*0.26,7,5),emberM2);
+        eye.position.set(sd*RAD*0.72,RAD*0.45,-RAD*2.1);eye.userData.noWire=true;head.add(eye);}
+      for(let t2=0;t2<9;t2++){const tooth=new THREE.Mesh(new THREE.ConeGeometry(RAD*0.15,RAD*0.6,4),ironM);
+        tooth.rotation.x=Math.PI;tooth.position.set((t2%5-2)*RAD*0.3,t2<5?-RAD*0.55:-RAD*1.0,-RAD*3.2);head.add(tooth);}
+      // the trolls on the drag ropes
+      const tb=new THREE.InstancedMesh(new THREE.BoxGeometry(2.6,5.6,2.1).translate(0,2.8,0),fleshM,G.trolls||34);
+      for(let t2=0;t2<(G.trolls||34);t2++){
+        const side=t2%2?1:-1;
+        D.position.set(side*(7+HR()*5),0,L2*0.6+HR()*46);D.rotation.set(0,(HR()-0.5)*0.4,0);
+        D.scale.set(1,0.9+HR()*0.3,1);D.updateMatrix();tb.setMatrixAt(t2,D.matrix);}
+      tb.count=G.trolls||34;tb.frustumCulled=false;g.add(tb);
+      g.position.set(gx,gy,gz);
+      g.rotation.y=-Math.atan2(ccz-gz,ccx-gx)-Math.PI/2;    // the head points at the gate
+      scene.add(g);
+      const dust=[];for(let d2=0;d2<6;d2++){const p=new THREE.Mesh(new THREE.SphereGeometry(7,7,5),dustM);
+        p.userData.noWire=true;p.visible=false;scene.add(p);dust.push(p);}
+      let beat=0;
+      animHooks.push(now=>{
+        const T2=G.period||5200, u=((now%T2)/T2);
+        // back slowly, forward fast, and a shudder through the frame on the stroke
+        const sw=u<0.72?-0.5*Math.sin(u/0.72*Math.PI*0.5):-0.5+0.62*Math.sin((u-0.72)/0.28*Math.PI*0.5);
+        swing.rotation.x=sw;
+        const hitU=(u>0.96)?(u-0.96)/0.04:0;
+        g.position.set(gx+(hitU?(HR()-0.5)*1.4:0),gy,gz);
+        if(u>0.96&&beat!==Math.floor(now/T2)){beat=Math.floor(now/T2);
+          dust.forEach((p,i)=>{p.visible=true;p.userData.t0=now+i*90;});}
+        for(const p of dust){if(!p.visible)continue;const t3=(now-(p.userData.t0||0))/2600;
+          if(t3<0)continue;if(t3>1){p.visible=false;continue;}
+          const a2=Math.atan2(ccz-gz,ccx-gx);
+          p.position.set(gx+Math.cos(a2)*(60+t3*40),gy+6+t3*26,gz+Math.sin(a2)*(60+t3*40));
+          p.scale.setScalar(0.6+t3*3.4);}
+      });
+      flying.grond=1;
+    }
+
+    // ---- the Rohirrim ----
+    // Six thousand riders drawn up on the north of the field, before the charge: still in their eoreds, a
+    // wall of horses across the grass, with the host between them and the city. They are the one thing on
+    // this field that is not Sauron's and the only reason the scene has a second colour in it.
+    if(S.riders){
+      const RD=S.riders, n=RD.n||6000, FL=RD.file||150, ST2=RD.step||3.6;
+      const horseM=new THREE.MeshLambertMaterial({color:0x5a4434,flatShading:true});
+      const mailM=new THREE.MeshLambertMaterial({color:0x8d8a84,flatShading:true});
+      const g=new THREE.Group(), ranks=Math.ceil(n/FL);
+      const horse=new THREE.InstancedMesh(new THREE.BoxGeometry(0.95,1.5,2.7).translate(0,1.15,0),horseM,n);
+      const man=new THREE.InstancedMesh(new THREE.BoxGeometry(0.7,1.5,0.6).translate(0,0.75,0),mailM,n);
+      const lance=new THREE.InstancedMesh(new THREE.BoxGeometry(0.11,4.4,0.11).translate(0,2.2,0),ironM,n);
+      let m2=0;
+      for(let rk=0;rk<ranks&&m2<n;rk++)for(let f=0;f<FL&&m2<n;f++){
+        const px=(f-(FL-1)/2)*ST2+(HR()-0.5)*0.7, pz=-rk*ST2*1.5-(HR()-0.5)*0.6;
+        D.position.set(px,0,pz);D.rotation.set(0,(HR()-0.5)*0.14,0);D.scale.set(1,1,1);D.updateMatrix();
+        horse.setMatrixAt(m2,D.matrix);
+        D.position.set(px,1.55,pz-0.2);D.updateMatrix();man.setMatrixAt(m2,D.matrix);
+        D.position.set(px+0.42,1.9,pz-0.2);D.rotation.set(0,0,(HR()-0.5)*0.3-0.12);D.updateMatrix();
+        lance.setMatrixAt(m2,D.matrix);m2++;}
+      horse.count=man.count=lance.count=m2;
+      horse.frustumCulled=man.frustumCulled=lance.frustumCulled=false;
+      g.add(horse,man,lance);
+      const rohanM=new THREE.MeshLambertMaterial({color:0x2e6a3a,side:THREE.DoubleSide});
+      for(let b2=0;b2<14;b2++){const bx=(HR()-0.5)*FL*ST2*0.9,bz=-HR()*ranks*ST2*1.5;
+        const pole=new THREE.Mesh(new THREE.BoxGeometry(0.2,10,0.2).translate(0,5,0),ironM);pole.position.set(bx,1.6,bz);
+        const flag=new THREE.Mesh(new THREE.PlaneGeometry(3.6,2.4),rohanM);flag.position.set(bx+1.8,10.2,bz);
+        g.add(pole,flag);}
+      g.position.set(RD.at[0],groundH(RD.at[0],RD.at[1]),RD.at[1]);
+      g.rotation.y=RD.facing!==undefined?RD.facing:(-Math.atan2(ccz-RD.at[1],ccx-RD.at[0])+Math.PI/2);
+      scene.add(g);flying.riders=m2;
+    }
+
+    // ---- what is in the air ----
+    const NA=S.arrows===undefined?700:S.arrows;
+    const shafts=new THREE.InstancedMesh(new THREE.CylinderGeometry(0.22,0.22,7,4).rotateX(Math.PI/2),shaftM,NA);
+    shafts.frustumCulled=false;shafts.count=NA;shafts.userData.noWire=true;scene.add(shafts);
+    for(let i=0;i<NA;i++)arrows.push({t:2});
+    const NS=Math.max(1,((S.engines||0)+(S.defenders||0))*2);
+    const rockM=new THREE.MeshLambertMaterial({color:0x5b554d,flatShading:true});
+    const stoneMesh=new THREE.InstancedMesh(new THREE.IcosahedronGeometry(2.2,0),rockM,NS);
+    stoneMesh.frustumCulled=false;stoneMesh.count=NS;scene.add(stoneMesh);
+    for(let i=0;i<NS;i++)stones.push({t:2});
+    // The besiegers shoot fire. A stone wrapped in burning pitch is the whole point of throwing it into a
+    // city roofed in timber and slate, and a lit one crossing the sky is the clearest possible signal that
+    // the war is happening now rather than having happened. The flame rides the stone's own arc, a trail of
+    // smoke comes off it, and where it lands something burns for a while.
+    const flameM=new THREE.MeshBasicMaterial({color:0xffa23a,transparent:true,opacity:0.92,depthWrite:false,
+      blending:THREE.AdditiveBlending});
+    const fireMesh=new THREE.InstancedMesh(new THREE.IcosahedronGeometry(3.6,0),flameM,NS);
+    fireMesh.frustumCulled=false;fireMesh.count=NS;fireMesh.userData.noWire=true;scene.add(fireMesh);
+    const trailM=new THREE.MeshBasicMaterial({color:0x201c19,transparent:true,opacity:0.3,depthWrite:false});
+    const trails=[];
+    for(let i=0;i<Math.min(110,NS*6);i++){const p=new THREE.Mesh(new THREE.SphereGeometry(4,6,5),trailM);
+      p.visible=false;p.userData.noWire=true;scene.add(p);trails.push(p);}
+    const burnM=new THREE.MeshBasicMaterial({color:0xff8a2a,transparent:true,opacity:0.9,depthWrite:false});
+    const hits=[];
+    for(let i=0;i<(S.hits||30);i++){const g=new THREE.Group();
+      const f=new THREE.Mesh(new THREE.ConeGeometry(3.4,12,6),burnM);f.position.y=6;g.add(f);
+      const sm=new THREE.Mesh(new THREE.SphereGeometry(7,7,5),trailM);sm.position.y=16;g.add(sm);
+      g.visible=false;g.userData.noWire=true;scene.add(g);hits.push({g,f,sm,t:2});}
+    let hitN=0;
+
+    const WALL=S.wall||560, WY=S.wallY||120;
+    const launch=(pool,ax,ay,az,bx,by,bz,T,apex)=>{
+      for(const q of pool)if(q.t>1){q.t=0;q.T=T;q.ax=ax;q.ay=ay;q.az=az;q.bx=bx;q.by=by;q.bz=bz;q.h=apex;
+        q.fire=false;q.landed=false;return q;}
+      return null;};
+    const volley=(out,n)=>{
+      const a=A0+(A1-A0)*HR();
+      const wx=ccx+Math.cos(a)*WALL, wz=ccz+Math.sin(a)*WALL, wy=groundH(wx,wz)+WY;
+      const r2=R0*(0.8+HR()*0.3), fx=ccx+Math.cos(a)*r2, fz=ccz+Math.sin(a)*r2, fy=groundH(fx,fz)+2;
+      const j=()=>(HR()-0.5)*90;
+      for(let i=0;i<n;i++){
+        if(out)launch(arrows,wx+j()*0.3,wy,wz+j()*0.3,fx+j(),fy,fz+j(),2.6+HR()*0.8,120+HR()*60);
+        else   launch(arrows,fx+j(),fy,fz+j(),wx+j()*0.4,wy,wz+j()*0.4,2.6+HR()*0.8,120+HR()*60);}};
+
+    let nextV=0;
+    animHooks.push(now=>{
+      const dt=0.016;
+      if(NA&&now>nextV){nextV=now+(S.volleyGap||1500)*(0.6+HR());volley(HR()<0.45,S.perVolley||70);}
+      for(const q of engines){
+        if(now>q.next){q.next=now+(S.reload||9000)*(0.7+HR()*0.8);q.t0=now;q.fired=false;}
+        const u=q.t0===undefined?-1:(now-q.t0)/900;
+        if(u>=0&&u<=1){q.pivot.rotation.x=-1.0+2.1*u*u;
+          if(!q.fired&&u>0.72){q.fired=true;
+            // out at the host on the plain, or in at the wall, depending which side it belongs to
+            const rr=q.out?R0*(0.85+HR()*0.45):(WALL-30);
+            const tx=ccx+Math.cos(q.a)*rr+(HR()-0.5)*190, tz=ccz+Math.sin(q.a)*rr+(HR()-0.5)*190;
+            const st=launch(stones,q.x,q.y+18*q.k,q.z,tx,groundH(tx,tz)+(q.out?4:WY*0.8),tz,3.4+HR(),200+HR()*90);
+            if(st)st.fire=!q.out&&HR()<(S.firePart===undefined?0.4:S.firePart);}}
+        else q.pivot.rotation.x=-1.0;}
+      const step=(pool,mesh,spin)=>{
+        let i=0;
+        for(const q of pool){
+          if(q.t>1){D.position.set(0,-9999,0);D.scale.setScalar(0.0001);D.rotation.set(0,0,0);D.updateMatrix();mesh.setMatrixAt(i++,D.matrix);continue;}
+          q.t+=dt/q.T;const u=Math.min(1,q.t);
+          const x=q.ax+(q.bx-q.ax)*u, z=q.az+(q.bz-q.az)*u;
+          const y=q.ay+(q.by-q.ay)*u+q.h*4*u*(1-u);
+          const u2=Math.min(1,u+0.03);
+          const x2=q.ax+(q.bx-q.ax)*u2, z2=q.az+(q.bz-q.az)*u2, y2=q.ay+(q.by-q.ay)*u2+q.h*4*u2*(1-u2);
+          D.position.set(x,y,z);D.scale.setScalar(1);
+          if(spin)D.rotation.set(q.t*9,q.t*7,0);else{D.rotation.set(0,0,0);D.lookAt(x2,y2,z2);}
+          D.updateMatrix();mesh.setMatrixAt(i++,D.matrix);}
+        mesh.instanceMatrix.needsUpdate=true;};
+      step(arrows,shafts,false);step(stones,stoneMesh,true);
+      {let i=0,ti=0;
+       for(const q of stones){
+         if(q.fire&&q.t>1&&!q.landed){q.landed=true;
+           const h2=hits[hitN++%hits.length];h2.t=0;h2.g.position.set(q.bx,q.by,q.bz);h2.g.visible=true;}
+         if(q.t>1||!q.fire){D.position.set(0,-9999,0);D.scale.setScalar(0.0001);D.rotation.set(0,0,0);}
+         else{const u=Math.min(1,q.t),x=q.ax+(q.bx-q.ax)*u,z=q.az+(q.bz-q.az)*u,
+                y=q.ay+(q.by-q.ay)*u+q.h*4*u*(1-u);
+           D.position.set(x,y,z);D.rotation.set(now*0.004,now*0.003,0);
+           D.scale.setScalar(0.8+0.35*Math.sin(now*0.02+q.t*9));
+           if(ti<trails.length){const tr=trails[ti++];tr.visible=true;
+             tr.position.set(x-(q.bx-q.ax)*0.014,y+4,z-(q.bz-q.az)*0.014);
+             tr.scale.setScalar(0.7+q.t*2.4);}}
+         D.updateMatrix();fireMesh.setMatrixAt(i++,D.matrix);}
+       for(;ti<trails.length;ti++)trails[ti].visible=false;
+       fireMesh.instanceMatrix.needsUpdate=true;}
+      for(const q of hits){
+        if(q.t>1)continue;
+        q.t+=dt/(S.burnFor||22);
+        if(q.t>1){q.g.visible=false;continue;}
+        const f=1-q.t;
+        q.f.scale.set(f*(0.8+0.3*Math.sin(now*0.01)),f*(0.9+0.4*Math.sin(now*0.013)),f);
+        q.sm.scale.setScalar(0.8+q.t*3.4);q.sm.position.y=16+q.t*44;}
+      const t=now/1000;
+      for(const q of fires2)q.f.scale.set(0.8+0.3*Math.sin(t*6+q.ph),0.8+0.5*Math.sin(t*9+q.ph),0.8+0.3*Math.cos(t*5+q.ph));
+      for(const q of smoke2){const u=((t*0.05)+q.ph)%1;
+        q.p.position.set(q.x+u*26,q.y+4+u*40,q.z+u*9);q.p.scale.setScalar(0.4+u*2.2);}
+    });
+  }
 
   // ---- the Nazgul, on their fellbeasts ----
   const riders=[];
@@ -205,5 +557,7 @@ export function hosts(api){
   ctx.details=Object.assign(ctx.details||{},{hostAt:armies.slice(0,2).map(a=>Math.round(a.g.position.x)+','+Math.round(a.g.position.z)).join(' | '),hosts:armies.length,
     hostStrength:armies.reduce((s,a)=>s+(K.perArmy||4000),0),camped:(K.camped||[]).length,
     campedStrength:(K.camped||[]).length*(K.campedPer||4000),trolls:(K.trolls||0)*armies.length,
-    engines:(K.engines||0)*armies.length,wains:(K.wains||0)*armies.length,nazgul:riders.length});
+    engines:(K.engines||0)*armies.length,wains:(K.wains||0)*armies.length,nazgul:riders.length,
+    siegeBlocks:flying.blocks,siegeCamps:flying.camps,tents:flying.tents,siegeEngines:flying.engines,
+    siegeTowers:flying.towers,rohirrim:flying.riders,grond:flying.grond});
 }

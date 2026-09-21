@@ -525,9 +525,61 @@
    [
     -38000,
     -166000
+   ],
+   [
+    -56000,
+    -160000
+   ],
+   [
+    -18000,
+    -140000
+   ],
+   [
+    -70000,
+    -128000
+   ],
+   [
+    -34000,
+    -118000
+   ],
+   [
+    -60000,
+    -176000
+   ],
+   [
+    -22000,
+    -176000
+   ],
+   [
+    -78000,
+    -152000
+   ],
+   [
+    -8000,
+    -152000
    ]
   ],
-  "campedPer": 5200
+  "campedPer": 5200,
+  "siege": {
+   "at": [
+    -44000,
+    -146000
+   ],
+   "arc": [
+    -3.14,
+    3.14
+   ],
+   "r0": 7000,
+   "r1": 15000,
+   "blocks": 18,
+   "per": 3600,
+   "file": 64,
+   "camps": 70,
+   "tentsPer": 26,
+   "engines": 0,
+   "arrows": 0,
+   "_": "the muster under Barad-dur: blocks drawn up on the plain of Gorgoroth and the camps behind them"
+  }
  },
  "streetFurniture": false
 }
