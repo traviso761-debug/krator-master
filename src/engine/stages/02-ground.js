@@ -7,13 +7,23 @@ const FAR_MESHES=[];
 const DETAIL={k:QUALITY==='high'?1:QUALITY==='medium'?0.7:0.5,max:QUALITY==='high'?1:QUALITY==='medium'?0.7:0.5,min:0.35};
 ctx.detail=DETAIL;
 {let t=0;const c=new THREE.Vector3();animHooks.push(now=>{if(now-t<300)return;t=now;for(const m of FAR_MESHES){c.copy(m.geometry.boundingSphere.center);m.visible=camera.position.distanceTo(c)-m.geometry.boundingSphere.radius<m.userData.far*DETAIL.k;}});}
+const UP=[0,1,0];
 function tiledBuffer(material,opts){const tiles=new Map();opts=opts||{};const TS=(opts.tile||2000)*WORLD;
   return {
     tile(x,z){const k=Math.floor(x/TS)+','+Math.floor(z/TS);let t=tiles.get(k);if(!t){t={p:[],n:[],c:[],idx:[]};tiles.set(k,t);}return t;},
-    quad(t,a,b,c,d,cl,nrm){const base=t.p.length/3;t.p.push(...a,...b,...c,...d);const n=nrm||[0,1,0];t.n.push(...n,...n,...n,...n);for(let k=0;k<4;k++)t.c.push(cl.r,cl.g,cl.b);t.idx.push(base,base+1,base+2,base,base+2,base+3);},
+    // Written out rather than spread. `push(...a,...b,...c,...d)` is the same twelve numbers, but every
+    // call builds four argument lists and hands a variadic call twelve arguments, and this runs once per
+    // quad for every road, roof, field and river in the city - a couple of million times on Chicago. The
+    // arithmetic is identical; only the allocation is gone.
+    quad(t,a,b,c,d,cl,nrm){const base=t.p.length/3,p=t.p,nn=t.n,cc=t.c;
+      p.push(a[0],a[1],a[2],b[0],b[1],b[2],c[0],c[1],c[2],d[0],d[1],d[2]);
+      const n=nrm||UP,n0=n[0],n1=n[1],n2=n[2];
+      nn.push(n0,n1,n2,n0,n1,n2,n0,n1,n2,n0,n1,n2);
+      const r=cl.r,g=cl.g,b2=cl.b;cc.push(r,g,b2,r,g,b2,r,g,b2,r,g,b2);
+      t.idx.push(base,base+1,base+2,base,base+2,base+3);},
     poly(outer,holes,y,cl){if(outer.length<3)return;const t=this.tile(outer[0][0],outer[0][1]);const Y=typeof y==='function'?y:()=>y;
       const V=r=>r.map(([x,z])=>new THREE.Vector2(x,z));let faces;try{faces=THREE.ShapeUtils.triangulateShape(V(outer),(holes||[]).map(V));}catch(e){return;}const all=outer.concat(...(holes||[]));
-      const base=t.p.length/3;for(const [x,z] of all){t.p.push(x,Y(x,z),z);t.n.push(0,1,0);t.c.push(cl.r,cl.g,cl.b);}for(const f of faces)t.idx.push(base+f[0],base+f[2],base+f[1]);},
+      const base=t.p.length/3;for(let i=0;i<all.length;i++){const x=all[i][0],z=all[i][1];t.p.push(x,Y(x,z),z);t.n.push(0,1,0);t.c.push(cl.r,cl.g,cl.b);}for(const f of faces)t.idx.push(base+f[0],base+f[2],base+f[1]);},
     // a big area on a hillside: fill it with a grid of quads that follow the ground, instead of one flat outline
     gridPoly(rec,cell,off,cl){const {x0,x1,z0,z1}=rec.bb;
       for(let z=z0;z<z1;z+=cell)for(let x=x0;x<x1;x+=cell){const x2=Math.min(x+cell,x1),z2=Math.min(z+cell,z1);

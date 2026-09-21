@@ -1028,8 +1028,58 @@ Measured on the Snapdragon laptop this runs on, at each city's default view:
 | Chicago | 25 fps at 0.6 resolution | 30 fps at full resolution, 2.7M → 1.9M triangles |
 | New York | — | 58 fps with 76,930 buildings |
 
+**Build time** is the other half, and it is nearly all spent turning the map file into geometry. Two
+patterns were costing most of it, both of them the kind that reads fine and runs badly:
+
+- `quad()` in the ground stage pushed its twelve numbers as `push(...a,...b,...c,...d)`. That is the same
+  twelve numbers, but every call builds four argument lists and makes a variadic call — and it runs once
+  per quad for every road, roof, field and river in the city, a couple of million times on Chicago. Written
+  out longhand it is identical arithmetic with none of the allocation. The same applied to the roof buffer
+  in the buildings stage.
+- `inPoly`, `bbox` and `dec` destructured every vertex (`const [x,z]=poly[i]`). Destructuring an array is
+  an iterator-protocol call and two property reads; these three are the hottest functions on the site,
+  called per edge, per point, per ground cell. Indexed access is the same arithmetic in the same order.
+
+| city | build before | build after | ground stage |
+|---|---|---|---|
+| Chicago | 7,242 ms | 5,217 ms | 1,995 ms → 1,008 ms |
+| Portland | 8,561 ms | 4,938 ms | — |
+| New York | — | 4,487 ms | 792 ms → 643 ms |
+
+Because every one of those changes is arithmetically identical, **every golden fingerprint is unchanged** —
+which is the point of having them. An optimisation that moves a hash has changed the city, whatever it did
+to the clock.
+
 `tools/probe.py` reports draw calls, triangles, frame times and the resolution the GPU settled at, so a
 change can be measured rather than guessed at.
+
+### Flight mode
+
+The cities that are real places — Chicago, Portland, New York, Venice, the Walled City — have real terrain
+and a real street layout under them, and the only way to get a feel for either is to go and look. Those
+pages carry `"flight": true` in their city file and gain a **Fly** button; `#fly` in the address opens
+straight into it.
+
+    W / S     pitch (nose down / up, like a stick)
+    A / D     bank left / right — banking is what turns her
+    Q / E     throttle down / up
+    space     level out
+    Esc       land
+
+It is not a simulator: no stall, no spin, no fuel. The throttle sets a speed and she holds it, and the
+ground and the rooftops push her up rather than ending the flight. Speed scales with the map, because
+Chicago is sixteen kilometres corner to corner and the Walled City is one and a half.
+
+This does not replace the camera. The engine's loop hands `ctx.camFrame` the control state after it has
+had its own turn with it, so flying is a matter of working out where the aeroplane is and then telling the
+orbit camera to sit behind it — target on the aeroplane, azimuth its heading reversed, elevation off its
+pitch, and a short leash. Pressing a viewpoint button lands her, because the engine queues a camera move of
+its own and the two would fight.
+
+Fly off the edge of the map and, after a couple of seconds of grace with the readout counting it down, she
+lands herself and the camera goes home to the page's opening view. There is no terrain out there and no
+buildings; the alternative was either stopping dead at an invisible wall or leaving you over blank water
+with nothing to look at, and it turned out to be the latter for 1,365 metres before the margin was cut.
 
 ### Adding a city
 

@@ -32,13 +32,19 @@ const inMap=(x,z,m)=>x>B.x0+(m||0)&&x<B.x1-(m||0)&&z>B.z0+(m||0)&&z<B.z1-(m||0);
 // geometry helpers
 function segDist(px,pz,ax,az,bx,bz){const dx=bx-ax,dz=bz-az,L=dx*dx+dz*dz;let t=L?((px-ax)*dx+(pz-az)*dz)/L:0;t=Math.max(0,Math.min(1,t));return Math.hypot(px-ax-t*dx,pz-az-t*dz);}
 function pathDist(x,z,pts){let d=Infinity;for(let i=0;i+1<pts.length;i++)d=Math.min(d,segDist(x,z,pts[i][0],pts[i][1],pts[i+1][0],pts[i+1][1]));return d;}
-function inPoly(x,z,poly){let c=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const [xi,zi]=poly[i],[xj,zj]=poly[j];if((zi>z)!==(zj>z)&&x<(xj-xi)*(z-zi)/(zj-zi)+xi)c=!c;}return c;}
+// Indexed rather than destructured. Every `const [xi,zi]=poly[i]` is an iterator protocol call and two
+// property reads; this runs per edge, per point, per ground cell, and is one of the hottest functions on
+// the site. Same arithmetic in the same order, so the city that comes out is bit-for-bit the one that
+// came out before - which is what the golden fingerprints are there to prove.
+function inPoly(x,z,poly){let c=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const a=poly[i],b=poly[j],zi=a[1],zj=b[1];
+  if((zi>z)!==(zj>z)&&x<(b[0]-a[0])*(z-zi)/(zj-zi)+a[0])c=!c;}return c;}
 function segHit(a,b,c,d){const r=[b[0]-a[0],b[1]-a[1]],s=[d[0]-c[0],d[1]-c[1]],den=r[0]*s[1]-r[1]*s[0];if(Math.abs(den)<1e-9)return null;
   const t=((c[0]-a[0])*s[1]-(c[1]-a[1])*s[0])/den,u=((c[0]-a[0])*r[1]-(c[1]-a[1])*r[0])/den;if(t<0||t>1||u<0||u>1)return null;return {x:a[0]+t*r[0],z:a[1]+t*r[1],r,s};}
 const polyArea=r=>{let a=0;for(let i=0,j=r.length-1;i<r.length;j=i++)a+=r[j][0]*r[i][1]-r[i][0]*r[j][1];return a/2;};
 // decode the OSM file: flat decimetre integers -> [[x,z],...] in metres, with a bounding box for quick rejection
-const dec=f=>{const o=[];for(let i=0;i+1<f.length;i+=2)o.push([f[i]/10,f[i+1]/10]);return o;};
-const bbox=r=>{let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9;for(const [x,z] of r){if(x<x0)x0=x;if(x>x1)x1=x;if(z<z0)z0=z;if(z>z1)z1=z;}return {x0,x1,z0,z1};};
+// preallocated: the array's final length is known, so it does not have to be grown a dozen times
+const dec=f=>{const n=f.length>>1,o=new Array(n);for(let i=0;i<n;i++)o[i]=[f[i*2]/10,f[i*2+1]/10];return o;};
+const bbox=r=>{let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9;for(let i=0;i<r.length;i++){const x=r[i][0],z=r[i][1];if(x<x0)x0=x;if(x>x1)x1=x;if(z<z0)z0=z;if(z>z1)z1=z;}return {x0,x1,z0,z1};};
 // `y`, where a polygon carries one, is the level to draw it at: a mountain river is not one sheet, it is a
 // flight of pools with a step between them, and each reach is its own polygon at its own height.
 const polyRec=p=>{const o=dec(p.o);return {name:p.n||'',kind:p.k,o,i:(p.i||[]).map(dec),bb:bbox(o),

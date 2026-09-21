@@ -57,7 +57,9 @@ function gableRoof(rf,ring,cx,cz,h,shingle,wall){let sxx=0,szz=0,sxz=0;for(const
   const W=(u,v,y)=>[cx+u*ux-v*uz,y,cz+u*uz+v*ux],rh=Math.min(ROOF_RISE,(v1-v0)*ROOF_PITCH),vm=(v0+v1)/2;
   const A=W(u0,v0,h),Bp=W(u1,v0,h),Cp=W(u1,v1,h),D=W(u0,v1,h),R0=W(u0,vm,h+rh),R1=W(u1,vm,h+rh);
   const tri=(p,q,r,cl)=>{const e1=[q[0]-p[0],q[1]-p[1],q[2]-p[2]],e2=[r[0]-p[0],r[1]-p[1],r[2]-p[2]];let n=[e1[1]*e2[2]-e1[2]*e2[1],e1[2]*e2[0]-e1[0]*e2[2],e1[0]*e2[1]-e1[1]*e2[0]];const l=Math.hypot(...n)||1;n=n.map(v=>v/l);if(n[1]<0)n=n.map(v=>-v);
-    const base=rf.p.length/3;rf.p.push(...p,...q,...r);for(let k=0;k<3;k++){rf.n.push(...n);rf.c.push(cl.r,cl.g,cl.b);}rf.idx.push(base,base+1,base+2);};
+    const base=rf.p.length/3;rf.p.push(p[0],p[1],p[2],q[0],q[1],q[2],r[0],r[1],r[2]);
+    const n0=n[0],n1=n[1],n2=n[2];rf.n.push(n0,n1,n2,n0,n1,n2,n0,n1,n2);
+    const cr=cl.r,cg=cl.g,cb=cl.b;rf.c.push(cr,cg,cb,cr,cg,cb,cr,cg,cb);rf.idx.push(base,base+1,base+2);};
   const sl=shingle,sl2=shingle.clone().multiplyScalar(0.8);
   tri(A,Bp,R1,sl);tri(A,R1,R0,sl);tri(D,R0,R1,sl2);tri(D,R1,Cp,sl2);tri(A,R0,D,wall);tri(Bp,Cp,R1,wall);}
 const REPLACED=new Set(C.landmarks.flatMap(l=>l.replace||[]).map(s=>s.toLowerCase()));
