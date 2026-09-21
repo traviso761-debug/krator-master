@@ -250,11 +250,11 @@
   "angle": 0.14,
   "width": 210,
   "depth": 120,
-  "lines": 420,
-  "facades": 260,
-  "signs": 180,
-  "steam": 34,
-  "roofFolk": 70,
-  "_": "washing lines, window cages, water pipes, shop signs, steam and the people on the roof"
+  "lines": 2600,
+  "facades": 1500,
+  "signs": 1100,
+  "steam": 220,
+  "roofFolk": 260,
+  "_": "attempts, not counts: each one has to find a real wall with real air in front of it, and most do not"
  }
 }

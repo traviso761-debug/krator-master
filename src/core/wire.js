@@ -35,7 +35,7 @@ export function createWire(opts){
     let out=null;
     // Edges on a merged tile of a million triangles cost more than they are worth, and at that size the
     // difference between edges and triangles is invisible anyway - so those fall back to their own geometry.
-    const heavy=(g.attributes.position?g.attributes.position.count:0)>120000;
+    const heavy=(g.attributes.position?g.attributes.position.count:0)>40000;
     if(!heavy){
       const eg=new THREE.EdgesGeometry(g,22),a=eg.attributes.position.array;
       if(a.length){const arr=new Float32Array(a.length/6*9);
@@ -125,8 +125,25 @@ export function createWire(opts){
 // The two buttons, in whatever button bar the page has. The second only appears once the wire is on,
 // because "what is behind it" means nothing until there is a wire in front of something.
 export function installWireUI({ui,mkBtn,wire,hash}){
-  const b=mkBtn('Wire',ui,()=>{const m=wire.cycle();
-    b.textContent=m==='off'?'Wire':m==='edges'?'Wire: edges':'Wire: triangles';
+  // The first press has to build the thing - every mesh in the city gets a twin made of its own edges - and
+  // on a page the size of Mega-City One that is a second or two with the frame stopped. So the button says
+  // what it is doing and the work waits two frames, which is long enough for the label to be painted.
+  const label=m=>m==='off'?'Wire':m==='edges'?'Wire: edges':'Wire: triangles';
+  let busy=false;
+  const b=mkBtn('Wire',ui,()=>{
+    if(busy)return;
+    const next=wire.state.mode==='off'?'edges':wire.state.mode==='edges'?'triangles':'off';
+    if(next!=='off'&&!wire.state.built){
+      busy=true;b.textContent='Wire: building…';b.disabled=true;
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{
+        wire.set(next);
+        b.textContent=label(next)+' ('+wire.state.n+')';b.disabled=false;busy=false;
+        b.setAttribute('aria-pressed','true');u.style.display='';
+      }));
+      return;
+    }
+    const m=wire.set(next);
+    b.textContent=label(m);
     b.setAttribute('aria-pressed',String(m!=='off'));
     u.style.display=m==='off'?'none':'';});
   b.setAttribute('aria-pressed','false');

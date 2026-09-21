@@ -110,7 +110,12 @@ async function build(){
   let drag=null;
   el.addEventListener('pointerdown',e=>{el.setPointerCapture(e.pointerId);drag={x:e.clientX,y:e.clientY};});
   addEventListener('pointerup',()=>{drag=null;});
-  el.addEventListener('pointermove',e=>{if(!drag)return;
+  addEventListener('pointercancel',()=>{drag=null;});
+  el.addEventListener('lostpointercapture',()=>{drag=null;});
+  addEventListener('blur',()=>{drag=null;keys.clear();});
+  el.addEventListener('pointermove',e=>{
+    if(drag&&e.buttons===0&&e.pointerType!=='touch'){drag=null;return;}   // a pointerup we never got
+    if(!drag)return;
     const dx=e.clientX-drag.x,dy=e.clientY-drag.y;drag.x=e.clientX;drag.y=e.clientY;
     if(V.mode==='outside'){V.orbit-=dx*0.004;V.elev=Math.max(-1.3,Math.min(1.3,V.elev+dy*0.004));}
     else{V.yaw-=dx*0.004;V.pitch=Math.max(-1.3,Math.min(1.3,V.pitch-dy*0.003));}});
