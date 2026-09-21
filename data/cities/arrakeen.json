@@ -31,6 +31,7 @@
   }
  },
  "fog": 1.6e-05,
+ "farLevel": 186,
  "overcast": 0.06,
  "terrainColours": {
   "low": "#c3a878",
@@ -84,7 +85,7 @@
     0.0513
    ]
   ],
-  "basin": [
+  "outer": [
    "The Basin",
    "#a89272",
    4,
