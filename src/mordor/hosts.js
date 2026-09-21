@@ -6,7 +6,17 @@
 import { mkRng } from '../core/rng.js';
 
 export function hosts(api){
-  const {THREE,C,ctx,B,ROADS,scene,camera,animHooks,groundH,joinChains,polyAt,polyLen}=api;
+  const {THREE,C,ctx,B,ROADS,scene,camera,animHooks,groundH,joinChains,polyAt,polyLen,mergeParts}=api;
+  // Eighty trebuchets and fourteen siege towers built as groups of loose boxes came to three thousand draw
+  // calls on their own. Everything static in one of these is merged, by material, the moment it is built:
+  // the parts are positioned in the object's own local frame, so the merge bakes that frame and the object
+  // still moves as one thing. Only what actually animates - a throwing arm, a ram on its chains - stays
+  // separate.
+  const fold=(g,parts)=>{
+    const by=new Map();
+    for(const m of parts){let a=by.get(m.material);if(!a){a=[];by.set(m.material,a);}a.push(m);}
+    for(const [mat,list] of by)g.add(mergeParts(list,mat));
+    return g;};
 
   const K=C.hosts;if(!K)return;
   // Everything this module puts in the world is war, and a page can ask for it to go away: the Minas
@@ -15,6 +25,7 @@ export function hosts(api){
   const add=o=>{scene.add(o);WAR.push(o);return o;};
   const HR=mkRng(6626),D=new THREE.Object3D();
   const arrows=[],stones=[],engines=[],fires2=[],smoke2=[];
+  let fireInst=null,smokeInst=null;
   const col2=h=>(typeof h==='string')?parseInt(h.replace('#',''),16):h;
   const ironM=new THREE.MeshLambertMaterial({color:0x1e1c1a});
   const fleshM=new THREE.MeshLambertMaterial({color:0x2b2621});
@@ -88,10 +99,12 @@ export function hosts(api){
         const beast=new THREE.Mesh(new THREE.BoxGeometry(2.6,2.2,1.4).translate(0,1.1,0),fleshM);
         beast.position.set(x,0,z+3.6);beast.rotation.copy(bed.rotation);g.add(beast);}}
      // banners over the column
-     for(let b=0;b<6;b++){const bx=(HR()-0.5)*FILE*STEP*0.8,bz=-HR()*ranks*STEP;
-       const pole=new THREE.Mesh(new THREE.BoxGeometry(0.22,9,0.22).translate(0,4.5,0),ironM);pole.position.set(bx,0,bz);
-       const flag=new THREE.Mesh(new THREE.PlaneGeometry(3.4,2.2),new THREE.MeshLambertMaterial({color:0x5a1712,side:THREE.DoubleSide}));
-       flag.position.set(bx+1.7,8,bz);g.add(pole,flag);}
+     {const bits=[],flagM=new THREE.MeshLambertMaterial({color:0x5a1712,side:THREE.DoubleSide});
+      for(let b=0;b<6;b++){const bx=(HR()-0.5)*FILE*STEP*0.8,bz=-HR()*ranks*STEP;
+        const pole=new THREE.Mesh(new THREE.BoxGeometry(0.22,9,0.22).translate(0,4.5,0),ironM);pole.position.set(bx,0,bz);
+        const flag=new THREE.Mesh(new THREE.PlaneGeometry(3.4,2.2),flagM);
+        flag.position.set(bx+1.7,8,bz);bits.push(pole,flag);}
+      fold(g,bits);}
      add(g);
      // the dust it raises, trailing behind
      const dust=[];for(let d2=0;d2<7;d2++){const p=new THREE.Mesh(new THREE.SphereGeometry(17,9,6),dustM);
@@ -116,10 +129,12 @@ export function hosts(api){
        spears.setMatrixAt(n,D.matrix);n++;}
      bodies.count=spears.count=n;bodies.frustumCulled=spears.frustumCulled=false;
      g.add(bodies,spears);
-     for(let b=0;b<8;b++){const bx2=(HR()-0.5)*FILE2*STEP2*0.9,bz2=-HR()*ranks*STEP2;
-       const pole=new THREE.Mesh(new THREE.BoxGeometry(0.22,10,0.22).translate(0,5,0),ironM);pole.position.set(bx2,0,bz2);
-       const flag=new THREE.Mesh(new THREE.PlaneGeometry(3.6,2.4),new THREE.MeshLambertMaterial({color:0x5a1712,side:THREE.DoubleSide}));
-       flag.position.set(bx2+1.8,8.6,bz2);g.add(pole,flag);}
+     {const bits=[],flagM=new THREE.MeshLambertMaterial({color:0x5a1712,side:THREE.DoubleSide});
+      for(let b=0;b<8;b++){const bx2=(HR()-0.5)*FILE2*STEP2*0.9,bz2=-HR()*ranks*STEP2;
+        const pole=new THREE.Mesh(new THREE.BoxGeometry(0.22,10,0.22).translate(0,5,0),ironM);pole.position.set(bx2,0,bz2);
+        const flag=new THREE.Mesh(new THREE.PlaneGeometry(3.6,2.4),flagM);
+        flag.position.set(bx2+1.8,8.6,bz2);bits.push(pole,flag);}
+      fold(g,bits);}
      g.position.set(cx,groundH(cx,cz),cz);g.rotation.y=HR()*6.28;
      add(g);
    }
@@ -172,10 +187,12 @@ export function hosts(api){
          D.position.set(px+0.35,1.1,pz);D.rotation.set(0,0,(HR()-0.5)*0.26);D.updateMatrix();
          spears.setMatrixAt(n,D.matrix);n++;}
        bodies.count=spears.count=n;bodies.frustumCulled=spears.frustumCulled=false;g.add(bodies,spears);
-       for(let q=0;q<5;q++){const qx=(HR()-0.5)*FL*ST*0.8,qz=-HR()*ranks*ST;
-         const pole=new THREE.Mesh(new THREE.BoxGeometry(0.22,9,0.22).translate(0,4.5,0),ironM);pole.position.set(qx,0,qz);
-         const flag=new THREE.Mesh(new THREE.PlaneGeometry(3.4,2.2),new THREE.MeshLambertMaterial({color:S.colour?col2(S.colour):0x5a1712,side:THREE.DoubleSide}));
-         flag.position.set(qx+1.7,8,qz);g.add(pole,flag);}
+       {const bits=[],flagM=new THREE.MeshLambertMaterial({color:S.colour?col2(S.colour):0x5a1712,side:THREE.DoubleSide});
+        for(let q=0;q<5;q++){const qx=(HR()-0.5)*FL*ST*0.8,qz=-HR()*ranks*ST;
+          const pole=new THREE.Mesh(new THREE.BoxGeometry(0.22,9,0.22).translate(0,4.5,0),ironM);pole.position.set(qx,0,qz);
+          const flag=new THREE.Mesh(new THREE.PlaneGeometry(3.4,2.2),flagM);
+          flag.position.set(qx+1.7,8,qz);bits.push(pole,flag);}
+        fold(g,bits);}
        g.position.set(bx,groundH(bx,bz),bz);g.rotation.y=aim(bx,bz);
        add(g);flying.blocks++;}}
 
@@ -195,14 +212,19 @@ export function hosts(api){
            D.updateMatrix();tent.setMatrixAt(n,D.matrix);
            D.position.set(tx,gy+0.1,tz);D.rotation.set(0,oa,0);D.scale.set(1,1,1);D.updateMatrix();
            ridge.setMatrixAt(n,D.matrix);n++;}
-         const fy=groundH(ox,oz);
-         const f=new THREE.Mesh(new THREE.ConeGeometry(2.2,5,6),emberM);f.position.set(ox,fy+2.5,oz);
-         f.userData.noWire=true;add(f);fires2.push({f,ph:HR()*6.28});
-         for(let d2=0;d2<3;d2++){const p=new THREE.Mesh(new THREE.SphereGeometry(5,7,5),dustM);
-           p.userData.noWire=true;add(p);smoke2.push({p,x:ox,y:fy,z:oz,ph:(d2+HR())/3});}
+         // A fire and three puffs of smoke to a camp, and ninety camps is three hundred and sixty separate
+         // meshes for something the size of a tent. They are instances: the animation writes matrices.
+         fires2.push({x:ox,y:groundH(ox,oz),z:oz,ph:HR()*6.28});
+         for(let d2=0;d2<3;d2++)smoke2.push({x:ox,y:groundH(ox,oz),z:oz,ph:(d2+HR())/3});
          flying.camps++;}
        tent.count=ridge.count=n;tent.frustumCulled=ridge.frustumCulled=false;
-       add(tent,ridge);flying.tents=n;}}
+       add(tent,ridge);flying.tents=n;
+       if(fires2.length){
+         fireInst=new THREE.InstancedMesh(new THREE.ConeGeometry(2.2,5,6).translate(0,2.5,0),emberM,fires2.length);
+         fireInst.count=fires2.length;fireInst.frustumCulled=false;fireInst.userData.noWire=true;add(fireInst);
+         smokeInst=new THREE.InstancedMesh(new THREE.SphereGeometry(5,7,5),dustM,smoke2.length);
+         smokeInst.count=smoke2.length;smokeInst.frustumCulled=false;smokeInst.userData.noWire=true;add(smokeInst);
+       }}}
 
     // ---- the engines ----
     // A counterweight trebuchet: two legs, a beam on a pivot with the weight on the short arm, and a base.
@@ -213,14 +235,17 @@ export function hosts(api){
     // leaves out. A defending engine is smaller - it has a wall to stand on, not a field - and it aims out
     // at whatever is in front of it.
     const mkEngine=(ex,ez,ey,ang,outward,scl)=>{
-      const g=new THREE.Group(),k2=scl||1;
-      const base=new THREE.Mesh(new THREE.BoxGeometry(7*k2,1.6*k2,16*k2).translate(0,0.8*k2,0),woodM);g.add(base);
+      const g=new THREE.Group(),k2=scl||1,bits=[];
+      const base=new THREE.Mesh(new THREE.BoxGeometry(7*k2,1.6*k2,16*k2).translate(0,0.8*k2,0),woodM);bits.push(base);
       for(const sd of [-1,1]){
         const leg=new THREE.Mesh(new THREE.BoxGeometry(1.1*k2,15*k2,1.1*k2).translate(0,7.5*k2,0),woodM);
-        leg.position.set(sd*2.6*k2,1.2*k2,0);leg.rotation.z=-sd*0.16;g.add(leg);}
+        leg.position.set(sd*2.6*k2,1.2*k2,0);leg.rotation.z=-sd*0.16;bits.push(leg);}
+      fold(g,bits);
       const pivot=new THREE.Group();pivot.position.set(0,15*k2,0);g.add(pivot);
-      const beam=new THREE.Mesh(new THREE.BoxGeometry(1.0*k2,1.0*k2,26*k2).translate(0,0,-7*k2),woodM);pivot.add(beam);
-      const wt=new THREE.Mesh(new THREE.BoxGeometry(3.6*k2,3.6*k2,3.6*k2),ironM);wt.position.set(0,-0.6*k2,5.5*k2);pivot.add(wt);
+      const arm=[];
+      const beam=new THREE.Mesh(new THREE.BoxGeometry(1.0*k2,1.0*k2,26*k2).translate(0,0,-7*k2),woodM);arm.push(beam);
+      const wt=new THREE.Mesh(new THREE.BoxGeometry(3.6*k2,3.6*k2,3.6*k2),ironM);wt.position.set(0,-0.6*k2,5.5*k2);arm.push(wt);
+      fold(pivot,arm);
       g.position.set(ex,ey,ez);g.rotation.y=-ang+(outward?Math.PI/2:-Math.PI/2);
       add(g);
       engines.push({pivot,x:ex,y:ey,z:ez,a:ang,out:!!outward,k:k2,next:HR()*9000,fired:false});flying.engines++;};
@@ -252,26 +277,27 @@ export function hosts(api){
        const a=A0+(A1-A0)*((k+0.5)/NT)+(HR()-0.5)*0.09;
        const rr=(S.wall||560)+50+HR()*90;
        const ex=ccx+Math.cos(a)*rr, ez=ccz+Math.sin(a)*rr, gy=groundH(ex,ez);
-       const g=new THREE.Group(), H2=30+HR()*14, WD=13;
+       const g=new THREE.Group(), bits=[], H2=30+HR()*14, WD=13;
        // four storeys of open timber with a floor between each, so it reads as a frame and not an obelisk
        for(let f=0;f<4;f++){
          const w2=WD*(1-f*0.05), hh=H2/4;
-         const floor=new THREE.Mesh(new THREE.BoxGeometry(w2,1.1,w2),woodM);floor.position.y=f*hh;g.add(floor);
+         const floor=new THREE.Mesh(new THREE.BoxGeometry(w2,1.1,w2),woodM);floor.position.y=f*hh;bits.push(floor);
          for(const sd of [-1,1])for(const fr of [-1,1]){
            const post=new THREE.Mesh(new THREE.BoxGeometry(1.3,hh,1.3).translate(0,hh/2,0),woodM);
-           post.position.set(sd*w2*0.44,f*hh,fr*w2*0.44);g.add(post);}
+           post.position.set(sd*w2*0.44,f*hh,fr*w2*0.44);bits.push(post);}
          for(const sd of [-1,1]){
            const br=new THREE.Mesh(new THREE.BoxGeometry(0.7,Math.hypot(hh,w2*0.88),0.7).translate(0,hh/2,0),woodM);
-           br.position.set(sd*w2*0.44,f*hh,-w2*0.44);br.rotation.x=Math.atan2(w2*0.88,hh)*(f%2?1:-1);g.add(br);}
+           br.position.set(sd*w2*0.44,f*hh,-w2*0.44);br.rotation.x=Math.atan2(w2*0.88,hh)*(f%2?1:-1);bits.push(br);}
          const side=new THREE.Mesh(new THREE.BoxGeometry(0.4,hh*0.9,w2*0.96),f<3?woodM:hideM);
-         side.position.set(WD*0.5,f*hh+hh*0.45,0);g.add(side);}
+         side.position.set(WD*0.5,f*hh+hh*0.45,0);bits.push(side);}
        for(const sd of [-1,1])for(const fr of [-1,1]){
          const wh=new THREE.Mesh(new THREE.CylinderGeometry(2.2,2.2,1.2,10).rotateZ(Math.PI/2),woodM);
-         wh.position.set(sd*(WD/2+0.4),2.2,fr*(WD/2-1.2));g.add(wh);}
+         wh.position.set(sd*(WD/2+0.4),2.2,fr*(WD/2-1.2));bits.push(wh);}
        const face=new THREE.Mesh(new THREE.BoxGeometry(WD*1.04,H2*0.96,0.6),hideM);
-       face.position.set(0,H2*0.46,-WD/2-0.3);g.add(face);
+       face.position.set(0,H2*0.46,-WD/2-0.3);bits.push(face);
        const bridge=new THREE.Mesh(new THREE.BoxGeometry(WD*0.8,0.5,10).translate(0,0,-5),woodM);
-       bridge.position.set(0,H2,-WD/2);bridge.rotation.x=-0.5-HR()*0.5;g.add(bridge);
+       bridge.position.set(0,H2,-WD/2);bridge.rotation.x=-0.5-HR()*0.5;bits.push(bridge);
+       fold(g,bits);
        g.position.set(ex,gy,ez);g.rotation.y=aim(ex,ez);
        add(g);flying.towers++;}}
 
@@ -479,9 +505,16 @@ export function hosts(api){
         q.f.scale.set(f*(0.8+0.3*Math.sin(now*0.01)),f*(0.9+0.4*Math.sin(now*0.013)),f);
         q.sm.scale.setScalar(0.8+q.t*3.4);q.sm.position.y=16+q.t*44;}
       const t=now/1000;
-      for(const q of fires2)q.f.scale.set(0.8+0.3*Math.sin(t*6+q.ph),0.8+0.5*Math.sin(t*9+q.ph),0.8+0.3*Math.cos(t*5+q.ph));
-      for(const q of smoke2){const u=((t*0.05)+q.ph)%1;
-        q.p.position.set(q.x+u*26,q.y+4+u*40,q.z+u*9);q.p.scale.setScalar(0.4+u*2.2);}
+      if(fireInst){
+        fires2.forEach((q,i)=>{D.position.set(q.x,q.y,q.z);D.rotation.set(0,0,0);
+          D.scale.set(0.8+0.3*Math.sin(t*6+q.ph),0.8+0.5*Math.sin(t*9+q.ph),0.8+0.3*Math.cos(t*5+q.ph));
+          D.updateMatrix();fireInst.setMatrixAt(i,D.matrix);});
+        fireInst.instanceMatrix.needsUpdate=true;
+        smoke2.forEach((q,i)=>{const u=((t*0.05)+q.ph)%1;
+          D.position.set(q.x+u*26,q.y+4+u*40,q.z+u*9);D.rotation.set(0,0,0);D.scale.setScalar(0.4+u*2.2);
+          D.updateMatrix();smokeInst.setMatrixAt(i,D.matrix);});
+        smokeInst.instanceMatrix.needsUpdate=true;
+      }
     });
   }
 
