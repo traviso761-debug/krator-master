@@ -495,35 +495,54 @@ export function landmarks(api){
 
   falls(L,x,z){
     // ---- the falls ----
-    // The streams come over the rim and do not touch the wall again until the bottom. Each one is a sheet of
-    // white with a plume of mist at the foot of it and a slower veil where the wind takes it sideways. The
-    // noise of them is the reason nobody in the house speaks quietly.
-    const g0=gh(x,z), A=L.turn||0, parts=[];
-    const whiteM=new THREE.MeshLambertMaterial({color:0xe8f0f2,transparent:true,opacity:0.82,side:THREE.DoubleSide});
-    const mistM=new THREE.MeshLambertMaterial({color:0xdce8ea,transparent:true,opacity:0.16,depthWrite:false});
+    // The streams come over the rim and arrive at the river in stages, because the wall they are coming
+    // down is a staircase: a pitch, a pool on the tread, a pitch, a pool. So each fall is a CHAIN - the
+    // sheet hugs the riser it is falling down, there is a pool and a plume of mist at the foot of it, and
+    // then it runs across the tread and goes over again.
+    //
+    // The first version drew one sheet from the rim to the river, three hundred metres of plane hanging in
+    // mid-air over the middle of the wall, which from anywhere in the valley was a wall of glass with the
+    // terraces behind it.
+    const A=L.turn||0, parts=[];
+    const whiteM=new THREE.MeshLambertMaterial({color:0xeef4f6,transparent:true,opacity:0.86,side:THREE.DoubleSide});
+    const foamM=new THREE.MeshLambertMaterial({color:0xdfeaee,transparent:true,opacity:0.7});
+    const mistM=new THREE.MeshLambertMaterial({color:0xdce8ea,transparent:true,opacity:0.15,depthWrite:false});
     const sheets=[],mists=[];
-    const N=L.count||6;
+    const N=L.count||3, STEP=5;
+    const dx=-Math.sin(A), dz=Math.cos(A);            // downhill
     for(let k=0;k<N;k++){
-      const u=(k-(N-1)/2)*((L.spread||900)/N)+((k*37)%11-5)*8;
-      const px=x+u*Math.cos(A), pz=z+u*Math.sin(A);
-      const top=gh(px,pz);
-      let fx=px,fz=pz,foot=top;
-      for(let i=1;i<=26;i++){
-        const qx=px-Math.sin(A)*i*14, qz=pz+Math.cos(A)*i*14;
-        const h=gh(qx,qz);
-        if(h<foot){foot=h;fx=qx;fz=qz;}
-      }
-      const drop=Math.max(30,top-foot);
-      const w=6+((k*53)%7);
-      const sheet=new THREE.Mesh(new THREE.PlaneGeometry(w,drop,1,6),whiteM);
-      sheet.position.set((px+fx)/2,top-drop/2,(pz+fz)/2);
-      sheet.rotation.set(0,-A+Math.PI/2,0);
-      sheet.userData.noWire=true;scene.add(sheet);
-      sheets.push({sheet,base:sheet.geometry.attributes.position.array.slice(),ph:k*1.7});
-      for(let i=0;i<4;i++){
-        const p=new THREE.Mesh(new THREE.SphereGeometry(7+i*4,8,6),mistM);
-        p.position.set(fx,foot+6+i*7,fz);p.userData.noWire=true;scene.add(p);
-        mists.push({p,x:fx,y:foot,z:fz,ph:(i+k)/4});
+      const u=(k-(N-1)/2)*((L.spread||300)/Math.max(1,N))+((k*37)%9-4)*4;
+      let px=x+u*Math.cos(A), pz=z+u*Math.sin(A), py=gh(px,pz);
+      for(let seg=0;seg<4;seg++){
+        // walk out from the lip until the ground stops falling away: that is the foot of this pitch
+        let sx=px, sz=pz, sy=py, n=0;
+        while(n<14){
+          const nx=sx+dx*STEP, nz=sz+dz*STEP, ny=gh(nx,nz);
+          if(sy-ny<0.9&&n>1)break;
+          sx=nx;sz=nz;sy=ny;n++;
+        }
+        const drop=py-sy;
+        if(drop<7||n<2)break;
+        if(drop>150)break;                            // a pitch, not a curtain
+        const w=5+((k*53+seg*17)%6);
+        const sheet=new THREE.Mesh(new THREE.PlaneGeometry(w,drop*1.04,1,Math.max(2,Math.round(drop/14))),whiteM);
+        sheet.position.set((px+sx)/2,(py+sy)/2,(pz+sz)/2);
+        sheet.rotation.set(0,-A+Math.PI/2,0);
+        sheet.userData.noWire=true;scene.add(sheet);
+        sheets.push({sheet,base:sheet.geometry.attributes.position.array.slice(),ph:k*1.7+seg});
+        // the lip it comes over, and the pool it lands in
+        parts.push(box(px+dx*2,py-0.6,pz+dz*2,w*1.5,1.2,5,foamM));
+        const pool=new THREE.Mesh(new THREE.CylinderGeometry(w*1.2,w*0.9,1.4,12),foamM);
+        pool.position.set(sx+dx*4,sy+0.5,sz+dz*4);parts.push(pool);
+        for(let i=0;i<3;i++){
+          const p=new THREE.Mesh(new THREE.SphereGeometry(4+i*3,8,6),mistM);
+          p.position.set(sx,sy+4,sz);p.userData.noWire=true;scene.add(p);
+          mists.push({p,x:sx,y:sy,z:sz,ph:(i+seg)/3});
+        }
+        // and it runs on across the tread to the next lip
+        px=sx;pz=sz;py=sy;
+        for(let i=0;i<7;i++){const nx=px+dx*STEP,nz=pz+dz*STEP,ny=gh(nx,nz);
+          if(py-ny>2.5)break;px=nx;pz=nz;py=ny;}
       }
     }
     animHooks.push(now=>{
@@ -531,19 +550,22 @@ export function landmarks(api){
       for(const q of sheets){
         const pos=q.sheet.geometry.attributes.position,b=q.base;
         for(let i=0;i<pos.count;i++){
-          const py=b[i*3+1];
-          pos.array[i*3+2]=b[i*3+2]+Math.sin(t*3.4+q.ph+py*0.12)*0.9;
+          const py2=b[i*3+1];
+          pos.array[i*3+2]=b[i*3+2]+Math.sin(t*3.8+q.ph+py2*0.2)*0.7;
         }
         pos.needsUpdate=true;
       }
       for(const q of mists){
-        const u=((t*0.12)+q.ph)%1;
-        q.p.position.set(q.x+u*10,q.y+6+u*44,q.z+u*6);
-        q.p.scale.setScalar(0.6+u*2.4);
-        q.p.material.opacity=0.18*(1-u*0.8);
+        const u=((t*0.14)+q.ph)%1;
+        q.p.position.set(q.x+u*7,q.y+3+u*26,q.z+u*5);
+        q.p.scale.setScalar(0.6+u*2.2);
+        q.p.material.opacity=0.17*(1-u*0.8);
       }
     });
-    return group(L,parts.length?parts:[box(x,g0,z,1,1,1,whiteM)]);},
+    const byMat=new Map();
+    for(const q of parts){let a=byMat.get(q.material);if(!a){a=[];byMat.set(q.material,a);}a.push(q);}
+    const merged=[];for(const [mat,list] of byMat)merged.push(mergeParts(list,mat));
+    return group(L,merged.length?merged:[box(x,gh(x,z),z,1,1,1,whiteM)]);},
 
   };
 }

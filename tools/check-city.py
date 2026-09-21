@@ -29,15 +29,17 @@ DECOR = {"mast", "spire", "statue", "crown", "floodlit", "cupola", "clocktower",
 def models_for(city):
     """Every model this city may name. The shared engine holds what more than one city uses; the rest live with
     the city's own page (src/<city>/landmarks.js) and are handed to the engine as ctx.models, so both are read."""
-    found = set()
-    for p in (os.path.join(ROOT, "src", "engine", "stages", "04-landmarks.js"),
-              os.path.join(ROOT, "src", city, "landmarks.js")):
+    def names(p):
         try:
-            src = open(p, encoding="utf-8").read()
+            return set(re.findall(r"^ {2,8}([A-Za-z0-9_]+)\(L[,)]", open(p, encoding="utf-8").read(), re.M))
         except OSError:
-            continue
-        found |= set(re.findall(r"^ {2,8}([A-Za-z0-9_]+)\(L[,)]", src, re.M))
-    return found - DECOR
+            return set()
+    # The engine's file defines the roof decor in the same shape as its models, so those names are taken out
+    # of it. A page's own file does not: Rivendell has a model called `statue` - a figure on a plinth at the
+    # end of a terrace - and it is nothing to do with the decor of the same name that stands on a roof.
+    engine = names(os.path.join(ROOT, "src", "engine", "stages", "04-landmarks.js")) - DECOR
+    page = names(os.path.join(ROOT, "src", city, "landmarks.js"))
+    return engine | page
 ROOF_DECOR = {"mast", "spire", "statue", "crown", "cupola", "dome"}   # these stand on a roof; the rest build from the ground
 
 
