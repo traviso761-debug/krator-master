@@ -543,7 +543,12 @@ partway down, so you look **down** on the roofs of them. Nothing else here has t
 - **The falls come down in stages**, because the wall they are falling down is a staircase: a pitch, a pool
   on the tread, a pitch, a pool. Drawn as one sheet from rim to river they were three hundred metres of
   plane hanging in mid-air over the middle of the wall, and from anywhere in the valley that is a wall of
-  glass with the terraces behind it.
+  glass with the terraces behind it. Each sheet lies *along* its pitch rather than hanging vertically in
+  front of it, for the same reason.
+- **Shadow acne.** On a city of flat roofs and vertical walls a two-metre normal bias is plenty; a valley
+  six hundred metres deep is nearly all steeply sloped ground, and at a low sun the terrain self-shadows
+  into a set of contour stripes down every wall that look exactly like terracing. `shadowNormalBias` and
+  `shadowBias` in the city file; Rivendell sets 7.
 - **What it taught the engine.** An edge fade that takes the land to nothing cuts a four-hundred-metre cliff
   round a map whose ground is six hundred metres up, so `farLevel` now puts the horizon plate where the
   world outside the box actually is. Rock standing on a sheer face has its own foot in mid-air and comes out

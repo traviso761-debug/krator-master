@@ -17,7 +17,11 @@ const hemi=new THREE.HemisphereLight(0xbfd8f0,0x5a5048,0.38);scene.add(hemi);
 const sun=new THREE.DirectionalLight(0xfff2dc,1.1);scene.add(sun);scene.add(sun.target);
 sun.castShadow=QUALITY!=='low';{const m=QUALITY==='high'?2048:1024;sun.shadow.mapSize.set(m,m);}
 {const r=QUALITY==='high'?700:520,sc=sun.shadow.camera;sc.left=-r;sc.right=r;sc.top=r;sc.bottom=-r;sc.near=1;sc.far=6000;sc.updateProjectionMatrix();}
-sun.shadow.bias=-0.0008;sun.shadow.normalBias=2;
+// Shadow acne: on a city of flat roofs and vertical walls a two-metre normal bias is plenty, but a valley
+// six hundred metres deep is nearly all steeply sloped ground, and at a low sun the terrain self-shadows
+// into a set of contour stripes down every wall. A city with that much relief says so.
+sun.shadow.bias=(C.shadowBias===undefined?-0.0008:C.shadowBias);
+sun.shadow.normalBias=(C.shadowNormalBias===undefined?2:C.shadowNormalBias);
 scene.fog=new THREE.FogExp2(0xb9cbe0,C.fog||0.00013);
 const OVERCAST=C.overcast||0;   // a flat, sunless sky: less sun, more fill (Vashrin)
 // the clock: DAY real seconds per city day

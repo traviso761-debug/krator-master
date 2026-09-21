@@ -416,9 +416,11 @@ def main():
         g = terrain_height(x, z)
         if g < MOOR - 90:
             continue
-        hh = R.uniform(3, 11)
-        put(rect(x, z, R.uniform(7, 22), R.uniform(6, 17), R.uniform(0, math.pi)), hh, "rock",
-            "#9a9184" if R.random() < 0.55 else "#8a8175", minh=-hh, roof="f")
+        # Boulders, not blocks. At seven to twenty-two metres across they read as poured concrete standing
+        # on a lawn, which is not what is wanted at the edge of a cliff.
+        hh = R.uniform(1.6, 5.5)
+        put(rect(x, z, R.uniform(3, 9), R.uniform(2.5, 7), R.uniform(0, math.pi)), hh, "rock",
+            "#8d8477" if R.random() < 0.55 else "#7c7568", minh=-hh, roof="f")
         ncrag += 1
     for k in range(420):
         z = R.uniform(-HZ + 300, HZ - 300)
