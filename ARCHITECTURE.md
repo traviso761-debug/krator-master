@@ -226,7 +226,7 @@ src/core/
   controllers/   orbit.js walk.js cylinder.js fly.js aircraft.js (flight.js moves here); stack.js
   geom.js        mergeParts, ribbon, box/group helpers
   agents.js      polyline sampler, instanced movers
-  fingerprint.js one lotList schema; every runtime calls it
+  layout.js      one lotList schema; every runtime calls it (never name a script "fingerprint": content blockers drop it)
 src/engine/     explicit stage modules (export function ground(api) → named outputs) on core/shell;
                 Chicago specifics move to data/cities/chicago.json or src/chicago/
 src/iziz/       keeps its world-generation stages; its renderer, loop, wire, hash and controls come from core
