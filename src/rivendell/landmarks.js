@@ -1,579 +1,242 @@
-// What is built in the cleft. Fan work — every shape is this project's own low-poly geometry, modelled from
-// the description, and no assets from any book, film or game are used. Tolkien's world belongs to the
-// Tolkien Estate.
+// What is built in Rivendell. Fan work — every shape is this project's own low-poly geometry, and no assets
+// from any book, film or game are used. Tolkien's world belongs to the Tolkien Estate.
 //
-// The architecture has a small number of rules and they are the whole of its character:
+// Tolkien drew the house more than once, and it is not a castle or a palace: it is a house, "unfortified in
+// its valley" - a long range of two storeys under a steep red roof, a square tower with a hipped roof at one
+// end of it, a loggia of columns and gently curved arches along the front, outbuildings, all standing in trees
+// on a green shelf above the river. The text adds the rest: a porch on the east side onto the gardens, where
+// the Council met; the Hall of Fire, "a fire in it year-round with carven pillars on either side of the
+// hearth"; terraces above the loud-flowing Bruinen; stables, and a forge.
 //
-//   everything is LONG and LOW and has a very steep roof, because the valley is narrow and wet
-//   nothing is symmetrical about a front door - the building grew along a ledge and has no front
-//   every room that can have a gallery over the drop has one, on slender posts, with the drop under it
-//   the structure is timber on stone: the ground floor is masonry and everything above it is frame
-//   the openings are POINTED - a pair of leaning members meeting at a peak, never a semicircle
-//   the gable is the decorated part: deep bargeboards, a finial standing above the ridge, carved ends
-//   the roofs are copper gone green and slate gone grey-violet, over honey-coloured wood
+// The film's design (Alan Lee's) is later and its own, but two things of its spirit are used here because the
+// valley reads better with them: pavilions on slender columns at the edges of things, with domed roofs gone
+// green; and curves - the brackets under the eaves, the arches - where a plain house would have straight lines.
 //
-// A massing model cannot carve anything, so the carving is geometry: the finials, the bargeboards, the
-// posts and the arches are all built out of boxes, and at the size they are on screen that is enough.
-import { mkRng } from '../core/rng.js';
+// Everything is built in the house's own frame: u along the valley (east), w towards the river (south). The
+// plan (data/cities/rivendell-valley.json, from tools/make-rivendell.py) says where the house, the bridge,
+// the stair and the pavilions are; the landmarks in the city file say what each is called.
 
 export function landmarks(api){
-  const {THREE,ctx,animHooks,scene,nightF,hour,box,group,gh,mergeParts}=api;
+  const {THREE,ctx,box,group,gh}=api;
+  const V=ctx.valley;
 
-  // the palette the whole valley is built from
-  const M=()=>({
-    beam:new THREE.MeshLambertMaterial({color:0x8a7450,flatShading:true}),       // honey timber
-    dark:new THREE.MeshLambertMaterial({color:0x5f5138,flatShading:true}),       // the shadowed side of it
-    wall:new THREE.MeshLambertMaterial({color:0xd8d0bb,flatShading:true}),       // lime plaster
-    stone:new THREE.MeshLambertMaterial({color:0xa8a293,flatShading:true}),      // the masonry under it
-    pale:new THREE.MeshLambertMaterial({color:0xc4bda9,flatShading:true}),       // dressed stone
-    slate:new THREE.MeshLambertMaterial({color:0x6e6a76,flatShading:true}),      // grey gone violet
-    copper:new THREE.MeshLambertMaterial({color:0x5f9080,flatShading:true}),     // verdigris
-    gilt:new THREE.MeshPhongMaterial({color:0xbfa055,specular:0xfff0c0,shininess:70,flatShading:true}),
-    glass:new THREE.MeshPhongMaterial({color:0x3a4a44,specular:0xdfeee8,shininess:80,transparent:true,opacity:0.7}),
-    leaf:new THREE.MeshLambertMaterial({color:0xb08a34,flatShading:true}),
-  });
+  const mat=(c,o)=>new THREE.MeshLambertMaterial(Object.assign({color:c,flatShading:true},o||{}));
+  const M={
+    stone:mat(0xd4ccbb),       // pale dressed stone, the ground storey and the terraces
+    stone2:mat(0xbdb4a2),      // the plinths and copings
+    plaster:mat(0xebe2cc),     // the upper storey between the timbers
+    timber:mat(0x5e4633),      // dark oak framing
+    roof:mat(0xa9472f),        // Tolkien's red roofs
+    roof2:mat(0x94402c),
+    copper:mat(0x6a9a86),      // the pavilions' domes, gone green
+    gilt:new THREE.MeshPhongMaterial({color:0xc9a652,specular:0xfff0c0,shininess:60,flatShading:true}),
+    glass:mat(0x2c3336),       // an opening, seen from outside in daylight
+    lamp:new THREE.MeshBasicMaterial({color:0xffd58a}),
+    hedge:mat(0x3f6130),
+    flower:[mat(0xc8506a),mat(0xe8c85a),mat(0x9a6ac8),mat(0xf0f0e8)],
+    water:mat(0x7fa8b0),
+  };
 
-  // ---- the pieces the whole valley is made of ----
+  // ---- the house's frame ----
+  function frame(ox,oz,oy,A){
+    const c=Math.cos(A),s=Math.sin(A);
+    // local (u, w) to world (x, z): u along the valley, w towards the river
+    const P=(u,w)=>[ox+c*u-s*w,oz+s*u+c*w];
+    const parts=[];
+    const add=(m)=>{parts.push(m);return m;};
+    // a box in the frame: centre (u, y, w) above oy, size (lu, h, lw), turned with the house
+    const B=(u,y,w,lu,h,lw,m,rot)=>{const [x,z]=P(u,w);const b=new THREE.Mesh(new THREE.BoxGeometry(lu,h,lw),m);b.position.set(x,oy+y+h/2,z);b.rotation.y=-A+(rot||0);return add(b);};
+    const G=(geo,m,u,y,w,ry)=>{const [x,z]=P(u,w);const o=new THREE.Mesh(geo,m);o.position.set(x,oy+y,z);o.rotation.y=-A+(ry||0);return add(o);};
+    return {P,B,G,parts,A};
+  }
 
-  // A steep gabled roof over a rectangle. The ridge runs along the local u axis; `A` turns the whole thing.
-  // Built by rotating each slope in its OWN frame after the turn, because offsetting in world axes and then
-  // spinning is how the first version came out as a pair of butterfly wings.
-  function roof(parts,mat,x,y,z,len,span,pitch,A,eave){
-    const h=span*0.5*pitch, E=eave===undefined?1.14:eave;
-    const c=Math.cos(A), s=Math.sin(A);
-    const slopeLen=Math.hypot(span*0.5,h);
-    for(const sd of [-1,1]){
-      const sl=new THREE.Mesh(new THREE.BoxGeometry(len*E,0.55,slopeLen*1.06),mat);
-      const off=sd*span*0.25;
-      sl.position.set(x-s*off,y+h/2,z+c*off);
-      sl.rotation.set(0,-A,0);
-      // The sign matters and it was wrong twice: with the tilt the other way the outer edge of each slope
-      // goes UP and the inner edge comes DOWN, so the pair makes a valley instead of a ridge and the
-      // building comes out as a heap of boards. Eave low, ridge high.
-      sl.rotateX(sd*Math.atan2(h,span*0.5));
-      parts.push(sl);
-    }
+  // A steep gabled roof: ridge along u, over a rectangle lu x lw, eaves at height y. Built as one prism.
+  function gable(F,m,u,y,w,lu,lw,pitch,over){
+    const o=over===undefined?0.9:over,h=(lw/2+o)*pitch;
+    const sh=new THREE.Shape();sh.moveTo(-(lw/2+o),0);sh.lineTo(lw/2+o,0);sh.lineTo(0,h);sh.lineTo(-(lw/2+o),0);
+    const g=new THREE.ExtrudeGeometry(sh,{depth:lu+o*2,bevelEnabled:false});g.translate(0,0,-(lu+o*2)/2);g.rotateY(Math.PI/2);
+    F.G(g,m,u,y-0.2,w);
     return h;
   }
-
-  // The gable end: a deep bargeboard down each slope and a finial standing above the ridge. This is where
-  // the decoration is on a building like this, and it is what reads at two hundred metres.
-  function gableEnd(parts,m,x,y,z,span,h,A,sd,finial){
-    const c=Math.cos(A), s=Math.sin(A);
-    const slopeLen=Math.hypot(span*0.5,h);
-    for(const q of [-1,1]){
-      const bd=new THREE.Mesh(new THREE.BoxGeometry(0.8,0.9,slopeLen*1.04),m.dark);
-      const off=q*span*0.25;
-      bd.position.set(x-s*off,y+h/2,z+c*off);
-      bd.rotation.set(0,-A,0);
-      bd.rotateX(q*Math.atan2(h,span*0.5));
-      parts.push(bd);
-    }
-    if(finial!==false){
-      const f=new THREE.Mesh(new THREE.ConeGeometry(0.42,h*0.55,5),m.gilt);
-      f.position.set(x,y+h+h*0.27,z);parts.push(f);
-      const stem=box(x,y+h-0.4,z,0.3,h*0.4,0.3,m.dark);parts.push(stem);
-    }
+  // A hipped roof: four slopes to a point (or a short ridge), over lu x lw.
+  function hipped(F,m,u,y,w,lu,lw,h){
+    const g=new THREE.ConeGeometry(Math.SQRT2/2,1,4,1).rotateY(Math.PI/4);g.scale(lu+1.6,h,lw+1.6);g.translate(0,h/2,0);F.G(g,m,u,y,w);
   }
-
-  // A pointed arch: two leaning members meeting at a peak, on two jambs. Elven building has no round arch
-  // anywhere in it, and this one shape - repeated at every size from a doorway to a bridge - is most of
-  // what makes the style legible.
-  function arch(parts,mat,x,y,z,w,h,A,thick){
-    const t=thick||0.34, c=Math.cos(A), s=Math.sin(A);
-    for(const sd of [-1,1]){
-      const jamb=new THREE.Mesh(new THREE.BoxGeometry(t,h*0.58,t*1.3).translate(0,h*0.29,0),mat);
-      jamb.position.set(x-s*sd*w*0.5,y,z+c*sd*w*0.5);jamb.rotation.y=-A;parts.push(jamb);
-      const lean=Math.hypot(w*0.5,h*0.42);
-      const lm=new THREE.Mesh(new THREE.BoxGeometry(t,lean,t*1.3),mat);
-      lm.position.set(x-s*sd*w*0.25,y+h*0.58+h*0.21,z+c*sd*w*0.25);
-      lm.rotation.set(0,-A,0);lm.rotateZ(0);
-      lm.rotateX(sd*Math.atan2(w*0.5,h*0.42));
-      parts.push(lm);
-    }
+  // A bell dome, for the pavilions: a lathe with a flare at the eave and a waist below the top.
+  function bell(r,h){const pts=[];for(let i=0;i<=12;i++){const t=i/12;pts.push(new THREE.Vector2(Math.max(0.02,r*(1.08-0.12*t-0.96*Math.pow(t,2.2))+r*0.12*Math.sin(t*Math.PI)),h*t));}
+    return new THREE.LatheGeometry(pts,12);}
+  // A gently curved arch between two columns: the spandrel as a flat plate with an elliptic soffit.
+  function archPlate(span,rise,depth,thick){
+    const s=new THREE.Shape();s.moveTo(-span/2,0);s.lineTo(-span/2,rise+thick);s.lineTo(span/2,rise+thick);s.lineTo(span/2,0);
+    s.absellipse(0,0,span/2,rise,0,Math.PI,false);
+    const g=new THREE.ExtrudeGeometry(s,{depth,bevelEnabled:false,curveSegments:10});g.translate(0,0,-depth/2);return g;
   }
-
-  // A run of slender posts with a moulded head and foot: the arcade that carries every gallery here.
-  function colonnade(parts,m,x,y,z,len,n,h,A){
-    const c=Math.cos(A), s=Math.sin(A);
-    for(let i=0;i<n;i++){
-      const u=(i/(n-1)-0.5)*len;
-      const px=x+c*u, pz=z+s*u;
-      parts.push(box(px,y,pz,0.34,h,0.34,m.beam));
-      parts.push(box(px,y+h-0.3,pz,0.62,0.34,0.62,m.pale));     // the capital
-      parts.push(box(px,y,pz,0.6,0.28,0.6,m.pale));             // and the base
-    }
+  // The gable end's dress: a king post and a tie beam in the triangle, and a gilt finial above the ridge -
+  // the decoration is on the gable, and it is what reads at two hundred metres. (u, w) is the middle of the
+  // gable face; the face is square to u.
+  function gableDress(F,u,y,w,lw,h){
+    F.B(u,y,w,0.3,h*0.92,0.34,M.timber);
+    F.B(u,y+h*0.32,w,0.3,0.34,lw*0.66,M.timber);
+    F.G(new THREE.ConeGeometry(0.28,2.4,6),M.gilt,u,y+h+1.1,w);F.G(new THREE.SphereGeometry(0.34,8,6),M.gilt,u,y+h+0.2,w);
   }
-
-  // A balustrade: a rail on little turned posts, which is what makes a ledge read as somewhere people stand
-  // rather than as the edge of a slab.
-  function rail(parts,m,x,y,z,len,A,h){
-    const c=Math.cos(A), s=Math.sin(A), H=h||1.05;
-    const n=Math.max(2,Math.round(len/1.6));
-    for(let i=0;i<=n;i++){
-      const u=(i/n-0.5)*len;
-      parts.push(box(x+c*u,y,z+s*u,0.16,H,0.16,m.pale));
-    }
-    const top=new THREE.Mesh(new THREE.BoxGeometry(len,0.18,0.3),m.pale);
-    top.position.set(x,y+H,z);top.rotation.y=-A;parts.push(top);
-  }
+  // a timber-framed wall face: posts every `bay` metres and a rail at mid-height, on the face at w (or u)
+  function framing(F,u0,u1,y,h,w,out){for(let u=u0;u<=u1+0.01;u+=3.2)F.B(u,y,w+out*0.12,0.34,h,0.25,M.timber);F.B((u0+u1)/2,y+h*0.52,w+out*0.12,u1-u0,0.3,0.25,M.timber);F.B((u0+u1)/2,y+h-0.2,w+out*0.12,u1-u0,0.35,0.28,M.timber);}
+  function windows(F,u0,u1,y,h,w,out,every,tall){for(let u=u0;u<=u1+0.01;u+=every)F.B(u,y,w+out*0.06,1.1,tall?h:h*0.55,0.2,M.glass);}
 
   return {
 
+  // ================================================================ the Last Homely House
   house(L,x,z){
-    // ---- the Last Homely House ----
-    // Not one building: a row of halls of different sizes joined end to end along the ledge and stepping
-    // down it, with a court at the upper end, a tower where the ledge widens, and a gallery on the valley
-    // side of every single one of them. The plan is a corridor with rooms off it and a view on one side,
-    // which is what a house built on a shelf has to be.
-    const H=L.height||34, g0=gh(x,z), A=L.turn||0, parts=[], RR=mkRng(3441);
-    const m=M();
-    const at=(u,v,y)=>[x+u*Math.cos(A)-v*Math.sin(A),y,z+u*Math.sin(A)+v*Math.cos(A)];
-    const bx=(u,v,y,w,h,d,mat)=>{const [px,py,pz]=at(u,v,y);const b=box(px,py,pz,w,h,d,mat);b.rotation.y=-A;return b;};
+    const S=V.sites.house,y0=S.y,A=S.turn;
+    const F=frame(S.x,S.z,y0,A),B=F.B;
+    // ---- the long range: 70 m of it, two storeys, the loggia along the river side ----
+    const LU=70,LW=16;
+    B(0,-2,0,LU+1,2.2,LW+1,M.stone2);                                   // plinth, down into the slope
+    B(0,0,0,LU,5.4,LW,M.stone);                                         // the ground storey: stone
+    B(0,5.4,0,LU,4.8,LW,M.plaster);                                     // the upper: plaster between timbers
+    framing(F,-LU/2+1,LU/2-1,5.4,4.8,LW/2,1);framing(F,-LU/2+1,LU/2-1,5.4,4.8,-LW/2,-1);
+    windows(F,-LU/2+3,LU/2-3,6.4,2.8,LW/2,1,3.2,false);windows(F,-LU/2+3,LU/2-3,6.4,2.8,-LW/2,-1,3.2,false);
+    windows(F,-LU/2+4,LU/2-4,1.0,3.6,-LW/2,-1,4.8,true);
+    const rh=gable(F,M.roof,0,10.2,0,LU,LW,1.15);
+    gableDress(F,-LU/2-0.9,10.2,0,LW,rh,true);gableDress(F,LU/2+0.9,10.2,0,LW,rh,true);
+    // dormers on the river slope, and chimneys along the ridge
+    for(const du of [-18,-4,10,24]){B(du,10.2,LW/2-2.4,4,3.4,3.2,M.plaster);windows(F,du,du,10.8,2.2,LW/2-0.8,1,5,false);
+      gable(F,M.roof2,du,13.4,LW/2-2.4,3.2,4.2,1.1,0.4);}
+    for(const cu of [-26,-6,16,30])B(cu,10.2,-2.5,2.2,rh+3.2,2.2,M.stone2);
+    // ---- the loggia: slender columns and gently curved arches along the river front ----
+    const bays=14,span=LU/bays;
+    B(0,-0.2,LW/2+3.2,LU,0.5,6.4,M.stone2);                              // its floor
+    for(let i=0;i<=bays;i++){const u=-LU/2+i*span;
+      F.G(new THREE.CylinderGeometry(0.26,0.3,5,8).translate(0,2.5,0),M.stone,u,0.3,LW/2+6);
+      F.G(new THREE.CylinderGeometry(0.45,0.45,0.35,8),M.stone2,u,5.2,LW/2+6);}
+    for(let i=0;i<bays;i++){const u=-LU/2+(i+0.5)*span;F.G(archPlate(span-0.52,1.3,0.5,0.6).translate(0,3.8,0),M.stone,u,0.3,LW/2+6);}
+    B(0,5.45,LW/2+3.2,LU+0.6,0.4,6.8,M.stone2);
+    {const g=new THREE.BoxGeometry(LU+1.2,0.35,7.6);const m=F.G(g,M.roof2,0,6.5,LW/2+3.6);m.rotateX(0.22);}   // its lean-to roof
+    // curved brackets under the eaves of the upper storey (the film's curve, Tolkien's house)
+    for(let u=-LU/2+2;u<=LU/2-2;u+=3.2){const t=new THREE.TorusGeometry(0.9,0.14,4,8,Math.PI/2);F.G(t,M.timber,u,9.4,LW/2+0.1,Math.PI/2).rotateZ(Math.PI);}
+    // ---- the tower, at the west end: square, taller than anything, a hipped roof ----
+    const TU=-LU/2-2.5,TW=0,TS=9.5,TH=25;
+    B(TU,-2,TW,TS+1,2.2,TS+1,M.stone2);B(TU,0,TW,TS,15,TS,M.stone);B(TU,15,TW,TS,TH-15,TS,M.plaster);
+    framing(F,TU-TS/2+0.5,TU+TS/2-0.5,15,TH-15,TW+TS/2,1);
+    for(const [du,dw] of [[0,TS/2],[0,-TS/2]]){F.B(TU+du,5,TW+dw+(dw>0?0.08:-0.08),1.2,3.4,0.2,M.glass);F.B(TU+du,11,TW+dw+(dw>0?0.08:-0.08),1.2,3.2,0.2,M.glass);F.B(TU+du,18.5,TW+dw+(dw>0?0.08:-0.08),1.6,3.4,0.2,M.glass);}
+    B(TU,TH-0.2,TW,TS+1.2,0.6,TS+1.2,M.timber);
+    hipped(F,M.roof,TU,TH+0.3,TW,TS,TS,8.5);
+    F.G(new THREE.ConeGeometry(0.3,3,6),M.gilt,TU,TH+8.6,TW);F.G(new THREE.SphereGeometry(0.4,8,6),M.gilt,TU,TH+8.3,TW);
+    B(TU,17.5,TW+TS/2+1.2,TS-1,0.35,2.4,M.stone2);                        // its balcony over the valley
+    for(let i=0;i<5;i++)B(TU-(TS-1)/2+i*(TS-1)/4,17.8,TW+TS/2+2.3,0.14,1,0.14,M.stone2);
+    // ---- the Hall of Fire: a wing to the north, one tall room, a hearth at each end ----
+    const HU=20,HW=-LW/2-8,HL=26,HWd=15;
+    B(HU,-1,HW,HL+1,1.2,HWd+1,M.stone2);B(HU,0,HW,HL,9,HWd,M.stone);
+    windows(F,HU-HL/2+3,HU+HL/2-3,1.5,6.5,HW-HWd/2,-1,4.4,true);
+    const hh=gable(F,M.roof,HU,9,HW,HL,HWd,1.1);
+    gableDress(F,HU-HL/2-0.9,9,HW,HWd,hh,true);gableDress(F,HU+HL/2+0.9,9,HW,HWd,hh,true);
+    for(const e of [-1,1]){B(HU+e*(HL/2+0.9),0,HW,2.2,9+hh+4,4.2,M.stone2);B(HU+e*(HL/2+0.9),9+hh+4,HW,2.8,0.6,4.8,M.stone);}
+    // ---- the porch on the east side, onto the gardens: four columns and a gable ----
+    const EU=LU/2+5;
+    B(EU,-0.2,0,8,0.5,11,M.stone2);
+    for(const dw of [-4.2,-1.4,1.4,4.2])F.G(new THREE.CylinderGeometry(0.28,0.32,6,8).translate(0,3,0),M.stone,EU+3,0.3,dw);
+    B(EU+1.5,6.3,0,5,0.5,11,M.stone2);
+    {const ph=gable(F,M.roof2,EU+1.5,6.8,0,5,10.6,0.95,0.5);gableDress(F,EU+4.4,6.8,0,10.6,ph,true);}
+    F.G(archPlate(4.4,1.2,0.5,0.5).rotateY(Math.PI/2).translate(0,4.2,0),M.stone,EU+3,0.3,0);
+    // ---- the terrace in front, to the edge of the shelf, and the stair down the bluff to the river ----
+    B(0,-0.3,LW/2+14,LU+10,0.45,16,M.stone2);
+    for(let u=-LU/2-4;u<=LU/2+4;u+=2.4)B(u,0.15,LW/2+21.8,0.24,1.0,0.24,M.stone);   // a balustrade along the edge
+    B(0,1.05,LW/2+21.8,LU+8,0.22,0.4,M.stone);
+    // the stair: flights down the face of the bluff to the river walk
+    {const top=0,drop=V.sites.house.y-V.river.reduce((b,q)=>Math.abs(q[0]-S.x)<Math.abs(b[0]-S.x)?q:b,V.river[0])[2]-3;
+     let yy=top,uu=-LU/2+6,dir=1,w0=LW/2+22.4;
+     for(let f=0;f<4&&yy>-drop;f++){for(let k=0;k<14&&yy>-drop;k++){B(uu,yy-0.45,w0+1.4,1.7,0.45,2.2,M.stone2);uu+=0.42*dir;yy-=0.45;}
+       B(uu+dir*0.9,yy-0.4,w0+1.4,2.2,0.4,2.4,M.stone2);dir=-dir;w0+=0;}}
+    // ---- the east garden: lawns in beds, hedges, flowers, a fountain ----
+    const GU=EU+26;
+    for(let i=0;i<4;i++)for(let j=0;j<3;j++){const u=GU-12+i*8,w=-9+j*9;
+      B(u,0,w,6.6,0.9,0.7,M.hedge);B(u,0,w+6,6.6,0.9,0.7,M.hedge);
+      for(let k=0;k<5;k++)B(u-2.6+k*1.3,0,w+3,1.1,0.35,4.4,M.flower[(i+j+k)%4]);}
+    F.G(new THREE.CylinderGeometry(3.2,3.4,0.8,16),M.stone2,GU,0,0);F.G(new THREE.CylinderGeometry(2.8,2.8,0.12,16),M.water,GU,0.75,0);
+    F.G(new THREE.CylinderGeometry(0.3,0.5,2.4,8).translate(0,1.2,0),M.stone,GU,0.6,0);F.G(new THREE.SphereGeometry(0.7,10,6),M.stone,GU,3.2,0);
+    // ---- the stables and the forge, behind the house to the north-east ----
+    const SU=55,SW=-26;
+    B(SU,-0.5,SW,34,0.8,10,M.stone2);B(SU,0,SW,34,4.2,9,M.plaster);framing(F,SU-16,SU+16,0,4.2,SW+4.5,1);
+    for(let u=SU-14;u<=SU+14;u+=4)F.B(u,0.5,SW+4.62,2.4,2.8,0.2,M.timber);
+    const sh=gable(F,M.roof2,SU,4.2,SW,34,9,1.0);gableDress(F,SU+17.9,4.2,SW,9,sh,true);
+    const FU=SU+26,FW=SW+4;B(FU,0,FW,10,4.6,8,M.stone);gable(F,M.roof,FU,4.6,FW,10,8,1.0);B(FU+3,4.6,FW-1.5,1.6,6.5,1.6,M.stone2);
+    // ---- statues in the garden: tall robed figures on stepped plinths ----
+    for(const [u,w] of [[GU-18,12],[GU+16,12],[-LU/2-12,14]]){
+      F.B(u,0,w,2.6,0.6,2.6,M.stone2);F.B(u,0.6,w,1.8,0.6,1.8,M.stone2);
+      const fig=new THREE.LatheGeometry([0.02,0.45,0.42,0.3,0.22,0.26,0.2,0.02].map((r,i)=>new THREE.Vector2(r,[0,0.2,1.2,2.4,2.8,3.0,3.3,3.45][i])),8);
+      F.G(fig,M.stone,u,1.2,w);}
+    // where the smoke comes from: the chimneys on the ridge, the two hearths of the Hall of Fire, the forge
+    const top=(u,w,y)=>{const [x,z]=F.P(u,w);return [x,y0+y,z];};
+    ctx.rivSmoke=[...[-26,-6,16,30].map(cu=>top(cu,-2.5,10.2+rh+3.2)),top(HU-HL/2-0.9,HW,9+hh+4.6),top(HU+HL/2+0.9,HW,9+hh+4.6),top(FU+3,FW-1.5,11.1)];
+    ctx.rivHouse=F;
+    return group(L,F.parts);
+  },
 
-    let v=-170;
-    for(let k=0;k<7;k++){
-      const w=24+RR()*14, d=40+RR()*30, drop=k*3.4;
-      const y=g0-drop;
-      const roofM=k%3===1?m.copper:m.slate;
-      // the undercroft: the ground under this is falling away, so the downhill side is all masonry
-      parts.push(bx(0,v,y-16,w*1.04,18,d*1.02,m.stone));
-      for(let i=0;i<Math.round(d/9);i++)                        // and it is buttressed
-        parts.push(bx(-w*0.52,v-d/2+5+i*9,y-14,1.6,14,2.4,m.stone));
-      // the hall
-      parts.push(bx(0,v,y+2,w,H*0.30,d,m.wall));
-      // the frame: posts to the eaves and a bressumer across them
-      for(let i=0;i<Math.round(d/6);i++){
-        const vv=v-d/2+3+i*6;
-        for(const sd of [-1,1])parts.push(bx(sd*w*0.5,vv,y+2,0.44,H*0.30,0.44,m.beam));
-      }
-      parts.push(bx(0,v,y+2+H*0.30,w*1.08,0.8,d*1.04,m.beam));
-      // the roof, and the gable at each end of it with its bargeboards and finial
-      {
-        const [px,py,pz]=at(0,v,y+2+H*0.30+0.5);
-        const h2=roof(parts,roofM,px,py,pz,d*1.02,w*1.1,0.92,A+Math.PI/2);
-        for(const sd of [-1,1]){
-          const [gx,gy,gz]=at(0,v+sd*d*0.51,y+2+H*0.30+0.5);
-          gableEnd(parts,m,gx,gy,gz,w*1.1,h2,A+Math.PI/2,sd,true);
-          // the tympanum: the triangle of wall under the gable, boarded
-          parts.push(bx(0,v+sd*d*0.5,y+2+H*0.30+h2*0.35,w*0.5,h2*0.5,0.4,m.beam));
-        }
-        // dormers on the uphill slope, because the roof is steep enough to live in
-        for(let i=0;i<2;i++){
-          const vv=v+(i-0.5)*d*0.42;
-          parts.push(bx(w*0.22,vv,y+2+H*0.30+h2*0.22,2.6,2.4,2.2,m.wall));
-          const [dx2,dy2,dz2]=at(w*0.22,vv,y+2+H*0.30+h2*0.22+2.4);
-          roof(parts,roofM,dx2,dy2,dz2,3.0,2.8,1.3,A+Math.PI/2);
-        }
-      }
-      // the gallery over the drop: a deck on posts, an arcade carrying the eaves, and a rail
-      parts.push(bx(-w*0.5-5,v,y+1,11,0.7,d*0.9,m.beam));
-      {
-        const [cx2,cy2,cz2]=at(-w*0.5-9.4,v,y+1.7);
-        colonnade(parts,m,cx2,cy2,cz2,d*0.86,Math.max(4,Math.round(d/7)),H*0.30,A+Math.PI/2);
-        const [rx,ry,rz]=at(-w*0.5-10.4,v,y+1.7);
-        rail(parts,m,rx,ry,rz,d*0.88,A+Math.PI/2);
-      }
-      // the posts that hold the gallery out of nothing
-      for(let i=0;i<Math.round(d/10);i++){
-        const vv=v-d*0.42+i*10;
-        const [px,py,pz]=at(-w*0.5-9.4,vv,y-17);
-        const p=new THREE.Mesh(new THREE.BoxGeometry(0.8,19,0.8).translate(0,9.5,0),m.beam);
-        p.position.set(px,py,pz);p.rotation.set(0,-A,0.05);parts.push(p);
-        if(i%2===0){                                            // and the braces back to the undercroft
-          const br=new THREE.Mesh(new THREE.BoxGeometry(0.5,9,0.5).translate(0,4.5,0),m.beam);
-          const [qx,qy,qz]=at(-w*0.5-9.4,vv,y-9);
-          br.position.set(qx,qy,qz);br.rotation.set(0,-A,0.6);parts.push(br);
-        }
-      }
-      // the openings: tall pointed lights on the valley side, a door at one end
-      for(let i=0;i<Math.round(d/6.5);i++){
-        const vv=v-d*0.42+i*6.5;
-        const [ax,ay,az]=at(-w*0.5+0.3,vv,y+2.4);
-        arch(parts,m.pale,ax,ay,az,2.0,H*0.26,A+Math.PI/2,0.22);
-        parts.push(bx(-w*0.5+0.5,vv,y+2.6,0.3,H*0.2,1.5,m.glass));
-      }
-      v+=d+7;
-    }
-
-    // ---- the tower ----
-    // Not tall. Taller than the rest, with a steep cone on it and a light at the top, and it is how you find
-    // the house from the rim.
-    {
-      const tx=12, tz=-214, TH=H*1.05;
-      parts.push(bx(tx,tz,g0-16,18,18,18,m.stone));
-      parts.push(bx(tx,tz,g0,15,TH,15,m.wall));
-      for(const sd of [-1,1])for(const q of [-1,1])
-        parts.push(bx(tx+sd*7.2,tz+q*7.2,g0,0.7,TH,0.7,m.beam));
-      for(let i=0;i<4;i++){                                     // a band of lights at each floor
-        const [ax,ay,az]=at(tx-7.6,tz,g0+6+i*7);
-        arch(parts,m.pale,ax,ay,az,2.2,4.6,A+Math.PI/2,0.2);
-      }
-      parts.push(bx(tx,tz,g0+TH,17.5,1.1,17.5,m.beam));
-      {const [cx2,cy2,cz2]=at(tx,tz,g0+TH+1.1);
-       const cone=new THREE.Mesh(new THREE.ConeGeometry(13,TH*0.62,8),m.copper);
-       cone.position.set(cx2,cy2+TH*0.31,cz2);cone.rotation.y=Math.PI/8;parts.push(cone);
-       const f=new THREE.Mesh(new THREE.ConeGeometry(0.7,7,5),m.gilt);
-       f.position.set(cx2,cy2+TH*0.62+3.2,cz2);parts.push(f);}
-    }
-
-    // ---- the court ----
-    // At the upper end, walled on three sides and open to the valley, with a fountain in it and the arch
-    // you come in by. This is the only piece of the house that is symmetrical about anything.
-    {
-      const cxp=26, czp=-250;
-      const [fx,fy,fz]=at(cxp,czp,g0);
-      const floor=new THREE.Mesh(new THREE.CylinderGeometry(24,24,0.8,24),m.pale);
-      floor.position.set(fx,fy+0.4,fz);parts.push(floor);
-      for(let k=0;k<11;k++){
-        const a=Math.PI*0.18+k/10*Math.PI*1.3;
-        const px=cxp+Math.cos(a)*22, pz=czp+Math.sin(a)*22;
-        parts.push(bx(px,pz,g0+0.8,1.5,6.5,1.5,m.pale));
-        if(k<10){
-          const a2=Math.PI*0.18+(k+0.5)/10*Math.PI*1.3;
-          const [ax,ay,az]=at(cxp+Math.cos(a2)*22,czp+Math.sin(a2)*22,g0+0.8);
-          arch(parts,m.pale,ax,ay,az,3.4,7.4,A-a2,0.26);
-        }
-      }
-      // the fountain: a basin, a stem and the water standing in it
-      const basin=new THREE.Mesh(new THREE.CylinderGeometry(4.4,5,1.7,16),m.pale);
-      basin.position.set(fx,fy+1.6,fz);parts.push(basin);
-      const waterM=new THREE.MeshPhongMaterial({color:0x6fa0ac,specular:0xffffff,shininess:90,transparent:true,opacity:0.85});
-      const water=new THREE.Mesh(new THREE.CylinderGeometry(4.0,4.0,0.4,16),waterM);
-      water.position.set(fx,fy+2.4,fz);parts.push(water);
-      parts.push(box(fx,fy+2.4,fz,1.1,3.4,1.1,m.pale));
-      const jet=new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.6,4.4,8),waterM);
-      jet.position.set(fx,fy+6.6,fz);jet.userData.noWire=true;scene.add(jet);
-      animHooks.push(now=>{const t=now*0.002;jet.scale.y=0.9+0.14*Math.sin(t);jet.position.y=fy+6.6+0.35*Math.sin(t);});
-    }
-
-    const byMat=new Map();
-    for(const q of parts){let a=byMat.get(q.material);if(!a){a=[];byMat.set(q.material,a);}a.push(q);}
-    const merged=[];for(const [mat,list] of byMat)merged.push(mergeParts(list,mat));
-    return group(L,merged);},
-
-  hallfire(L,x,z){
-    // ---- the Hall of Fire ----
-    // One room, and the largest roof in the valley: a hearth at each end, the span carried on two rows of
-    // posts, and the whole of the valley side open onto a gallery. Lit from inside at every hour, which is
-    // most of what it contributes to the view from anywhere else.
-    const H=L.height||22, g0=gh(x,z), A=L.turn||0, parts=[];
-    const m=M();
-    const at=(u,v,y)=>[x+u*Math.cos(A)-v*Math.sin(A),y,z+u*Math.sin(A)+v*Math.cos(A)];
-    const bx=(u,v,y,w,h,d,mat)=>{const [px,py,pz]=at(u,v,y);const b=box(px,py,pz,w,h,d,mat);b.rotation.y=-A;return b;};
-    const W=32,D=62;
-    parts.push(bx(0,0,g0-15,W*1.06,17,D*1.04,m.stone));
-    parts.push(bx(0,0,g0+2,W,H*0.46,D,m.wall));
-    for(let i=0;i<12;i++){
-      const vv=-D/2+3+i*(D-6)/11;
-      for(const sd of [-1,1])parts.push(bx(sd*W*0.47,vv,g0+2,0.8,H*0.46,0.8,m.beam));
-    }
-    parts.push(bx(0,0,g0+2+H*0.46,W*1.1,1.1,D*1.06,m.beam));
-    {
-      const [px,py,pz]=at(0,0,g0+2+H*0.46+0.7);
-      const h2=roof(parts,m.copper,px,py,pz,D*1.04,W*1.12,1.00,A+Math.PI/2);
-      for(const sd of [-1,1]){
-        const [gx,gy,gz]=at(0,sd*D*0.52,g0+2+H*0.46+0.7);
-        gableEnd(parts,m,gx,gy,gz,W*1.12,h2,A+Math.PI/2,sd,true);
-        parts.push(bx(0,sd*D*0.51,g0+2+H*0.46+h2*0.34,W*0.52,h2*0.5,0.4,m.beam));
-        // a great pointed light in each gable, which is what you see lit from across the valley
-        const [ax,ay,az]=at(0,sd*D*0.5,g0+2+H*0.46+1.2);
-        arch(parts,m.pale,ax,ay,az,W*0.34,h2*0.62,A+Math.PI/2,0.3);
-        parts.push(bx(0,sd*D*0.49,g0+2+H*0.46+1.6,W*0.3,h2*0.5,0.3,m.glass));
-      }
-      // a louvre over the ridge, because there are two open fires under it
-      parts.push(bx(0,0,g0+2+H*0.46+h2*0.92,4.4,2.4,10,m.copper));
-      const [lx,ly,lz]=at(0,0,g0+2+H*0.46+h2*0.92+2.4);
-      roof(parts,m.copper,lx,ly,lz,11,5,1.2,A+Math.PI/2);
-    }
-    // the two hearths, and the light out of them
-    const fireM=new THREE.MeshBasicMaterial({color:0xffa844,transparent:true,opacity:0.92,depthWrite:false});
-    const fires=[];
-    for(const sd of [-1,1]){
-      parts.push(bx(W*0.3,sd*D*0.34,g0+2,6.5,H*0.4,6.5,m.stone));
-      parts.push(bx(W*0.3,sd*D*0.34,g0+2+H*0.4,2.6,H*0.75,2.6,m.stone));
-      const [px,py,pz]=at(W*0.24,sd*D*0.34,g0+4);
-      const f=new THREE.Mesh(new THREE.ConeGeometry(2.1,4.6,6),fireM);
-      f.position.set(px,py,pz);f.userData.noWire=true;scene.add(f);
-      const lamp=new THREE.PointLight(0xffa040,0,80);lamp.position.set(px,py+4,pz);scene.add(lamp);
-      fires.push({f,lamp,ph:sd});
-    }
-    // the gallery, out over the water, on its arcade
-    parts.push(bx(-W*0.5-7,0,g0+1,15,0.9,D*0.92,m.beam));
-    {
-      const [cx2,cy2,cz2]=at(-W*0.5-12,0,g0+1.9);
-      colonnade(parts,m,cx2,cy2,cz2,D*0.88,10,H*0.46,A+Math.PI/2);
-      const [rx,ry,rz]=at(-W*0.5-13.2,0,g0+1.9);
-      rail(parts,m,rx,ry,rz,D*0.9,A+Math.PI/2);
-    }
-    for(let i=0;i<7;i++){
-      const vv=-D*0.42+i*(D*0.84/6);
-      const [px,py,pz]=at(-W*0.5-12,vv,g0-16);
-      const p=new THREE.Mesh(new THREE.BoxGeometry(0.9,18,0.9).translate(0,9,0),m.beam);
-      p.position.set(px,py,pz);p.rotation.set(0,-A,0.05);parts.push(p);
-    }
-    const g=group(L,(()=>{const byMat=new Map();
-      for(const q of parts){let a=byMat.get(q.material);if(!a){a=[];byMat.set(q.material,a);}a.push(q);}
-      const merged=[];for(const [mat,list] of byMat)merged.push(mergeParts(list,mat));return merged;})());
-    animHooks.push(now=>{const n=nightF(hour());
-      const fl=0.75+0.25*Math.sin(now*0.004);
-      fireM.opacity=0.7+0.3*fl;
-      for(const q of fires){q.f.scale.set(0.9+0.2*Math.sin(now*0.006+q.ph),0.8+0.4*Math.sin(now*0.009+q.ph),1);
-        q.lamp.intensity=(1.6+2.0*n)*fl;}});
-    return g;},
-
-  pavilion(L,x,z){
-    // ---- a pavilion ----
-    // The thing this place has that no other settlement here does: a roof on posts, standing on its own at
-    // the end of a spur or over a pool, with nothing in it. Eight sides, a steep cone, a finial, and a seat
-    // round the inside. There are a number of them and they are what make the valley read as built for
-    // pleasure rather than for shelter.
-    const g0=gh(x,z), A=L.turn||0, parts=[], R0=L.size||9, H=L.height||9;
-    const m=M();
-    const floor=new THREE.Mesh(new THREE.CylinderGeometry(R0,R0*1.06,0.9,8),m.pale);
-    floor.position.set(x,g0+0.45,z);floor.rotation.y=A;parts.push(floor);
-    const step=new THREE.Mesh(new THREE.CylinderGeometry(R0*1.2,R0*1.26,0.5,8),m.pale);
-    step.position.set(x,g0+0.1,z);step.rotation.y=A;parts.push(step);
-    for(let k=0;k<8;k++){
-      const a=A+k/8*Math.PI*2;
-      const px=x+Math.cos(a)*R0*0.86, pz=z+Math.sin(a)*R0*0.86;
-      parts.push(box(px,g0+0.9,pz,0.38,H,0.38,m.beam));
-      parts.push(box(px,g0+0.9+H-0.35,pz,0.66,0.35,0.66,m.pale));
-      // a pointed arch between each pair of posts, and a seat under it
-      const a2=A+(k+0.5)/8*Math.PI*2;
-      const [ax,az]=[x+Math.cos(a2)*R0*0.86,z+Math.sin(a2)*R0*0.86];
-      arch(parts,m.beam,ax,g0+0.9,az,R0*0.72,H*0.92,-a2+Math.PI/2,0.22);
-      const seat=new THREE.Mesh(new THREE.BoxGeometry(R0*0.66,0.22,0.9),m.beam);
-      seat.position.set(x+Math.cos(a2)*R0*0.66,g0+1.4,z+Math.sin(a2)*R0*0.66);
-      seat.rotation.y=-a2+Math.PI/2;parts.push(seat);
-    }
-    const eave=new THREE.Mesh(new THREE.CylinderGeometry(R0*1.18,R0*1.18,0.5,8),m.beam);
-    eave.position.set(x,g0+0.9+H,z);eave.rotation.y=A;parts.push(eave);
-    const cone=new THREE.Mesh(new THREE.ConeGeometry(R0*1.2,H*1.25,8),L.copper===false?m.slate:m.copper);
-    cone.position.set(x,g0+0.9+H+H*0.625,z);cone.rotation.y=A+Math.PI/8;parts.push(cone);
-    const fin=new THREE.Mesh(new THREE.ConeGeometry(0.42,H*0.5,5),m.gilt);
-    fin.position.set(x,g0+0.9+H+H*1.25+H*0.2,z);parts.push(fin);
-    const byMat=new Map();
-    for(const q of parts){let a=byMat.get(q.material);if(!a){a=[];byMat.set(q.material,a);}a.push(q);}
-    const merged=[];for(const [mat,list] of byMat)merged.push(mergeParts(list,mat));
-    return group(L,merged);},
-
-  stair(L,x,z){
-    // ---- a stair ----
-    // The valley is vertical and the only way anybody gets about in it is on foot, so the stairs are
-    // architecture rather than plumbing: flights of dressed stone switching back down the wall, a landing
-    // at every turn with a newel post on it, and a balustrade on the outside the whole way.
-    const A=L.turn||0, parts=[], m=M();
-    const flights=L.flights||5, rise=L.rise||9, run=L.run||13, wide=L.wide||3.4;
-    const at=(u,v,y)=>[x+u*Math.cos(A)-v*Math.sin(A),y,z+u*Math.sin(A)+v*Math.cos(A)];
-    let y=gh(x,z), u=0, dir=1;
-    for(let f=0;f<flights;f++){
-      const n=Math.max(6,Math.round(rise/0.42));
-      for(let k=0;k<n;k++){
-        const v=dir*((k/n)*run-run*0.5), yy=y-rise*(k/n);
-        const [px,py,pz]=at(u,v,yy);
-        const s=box(px,py,pz,wide,0.42,run/n*1.5,m.pale);s.rotation.y=-A;parts.push(s);
-        if(k%3===0){                                          // the balustrade on the drop side
-          const [rx,ry,rz]=at(u-wide*0.5,v,yy);
-          parts.push(box(rx,ry,rz,0.16,1.0,0.16,m.pale));
-          const [tx,ty,tz]=at(u-wide*0.5,v,yy+1.0);
-          const t2=box(tx,ty,tz,0.24,0.16,run/n*4.5,m.pale);t2.rotation.set(0,-A,0);
-          t2.rotateX(-dir*Math.atan2(rise/n*3,run/n*3));parts.push(t2);
-        }
-      }
-      // the landing, and the newel post on the corner of it
-      y-=rise;
-      const [lx,ly,lz]=at(u+wide*0.5,dir*run*0.5+dir*wide*0.5,y);
-      const land=box(lx,ly,lz,wide*2.2,0.5,wide*1.6,m.pale);land.rotation.y=-A;parts.push(land);
-      const [nx,ny,nz]=at(u+wide*1.2,dir*run*0.5+dir*wide*0.7,y);
-      parts.push(box(nx,ny,nz,0.5,2.4,0.5,m.pale));
-      const nf=new THREE.Mesh(new THREE.ConeGeometry(0.42,1.3,5),m.gilt);
-      nf.position.set(nx,ny+2.6,nz);parts.push(nf);
-      u+=wide*1.8;dir=-dir;
-    }
-    const byMat=new Map();
-    for(const q of parts){let a=byMat.get(q.material);if(!a){a=[];byMat.set(q.material,a);}a.push(q);}
-    const merged=[];for(const [mat,list] of byMat)merged.push(mergeParts(list,mat));
-    return group(L,merged);},
-
-  statue(L,x,z){
-    // ---- a figure on a plinth ----
-    // Nothing here has a face - a massing model cannot carve one and a bad one is worse than none. What it
-    // has is the silhouette: a tall standing figure, robed, on a stepped plinth, at the head of a stair or
-    // the end of a terrace. Half of them are holding something up.
-    const g0=gh(x,z), A=L.turn||0, parts=[], m=M(), S=L.size||1;
-    for(let k=0;k<3;k++){
-      const w=(3.4-k*0.5)*S;
-      parts.push(box(x,g0+k*0.5*S,z,w,0.55*S,w,m.pale));
-    }
-    const body=new THREE.Mesh(new THREE.CylinderGeometry(0.62*S,1.05*S,5.2*S,8).translate(0,2.6*S,0),m.pale);
-    body.position.set(x,g0+1.5*S,z);body.rotation.y=A;parts.push(body);
-    const head=new THREE.Mesh(new THREE.SphereGeometry(0.55*S,8,6),m.pale);
-    head.position.set(x,g0+7.2*S,z);parts.push(head);
-    for(const sd of [-1,1]){                                   // the arms, one of them raised
-      const up=sd>0&&(L.raised!==false);
-      const arm=new THREE.Mesh(new THREE.BoxGeometry(0.34*S,up?3.4*S:2.8*S,0.34*S).translate(0,up?1.7*S:-1.4*S,0),m.pale);
-      arm.position.set(x+Math.cos(A)*sd*0.8*S,g0+6.2*S,z+Math.sin(A)*sd*0.8*S);
-      arm.rotation.set(0,A,sd*0.18);parts.push(arm);
-    }
-    if(L.raised!==false){                                      // and what it is holding up
-      const st=new THREE.Mesh(new THREE.ConeGeometry(0.5*S,1.6*S,5),m.gilt);
-      st.position.set(x+Math.cos(A)*0.8*S,g0+9.6*S,z+Math.sin(A)*0.8*S);parts.push(st);
-    }
-    const byMat=new Map();
-    for(const q of parts){let a=byMat.get(q.material);if(!a){a=[];byMat.set(q.material,a);}a.push(q);}
-    const merged=[];for(const [mat,list] of byMat)merged.push(mergeParts(list,mat));
-    return group(L,merged);},
-
+  // ================================================================ the bridge
+  // "a narrow bridge of stone without a parapet, as narrow as a pony could well walk on": one arch.
   bridge(L,x,z){
-    // ---- a bridge ----
-    // A single span on two piers, the deck a shallow arch, a balustrade down each side and a lamp standard
-    // at each end. No parapet worth the name in the middle of it, because it was built by people who are
-    // not worried about falling off things.
-    const g0=gh(x,z), A=L.turn||0, parts=[];
-    const m=M();
-    const at=(u,v,y)=>[x+u*Math.cos(A)-v*Math.sin(A),y,z+u*Math.sin(A)+v*Math.cos(A)];
-    const SPAN=L.span||110, W=L.wide||5.5;
-    for(const sd of [-1,1]){
-      const [px,py,pz]=at(sd*SPAN*0.46,0,g0-34);
-      const p=new THREE.Mesh(new THREE.BoxGeometry(9,46,W*2.2).translate(0,23,0),m.stone);
-      p.position.set(px,py,pz);p.rotation.y=-A;parts.push(p);
-      // the pier is buttressed and it has a pointed relieving arch in it
-      const [ax,ay,az]=at(sd*SPAN*0.46,0,g0-2);
-      arch(parts,m.pale,ax,ay,az,W*1.6,9,A+Math.PI/2,0.5);
-    }
-    const RISE=9;
-    for(let k=0;k<19;k++){
-      const t=k/18, u=(t-0.5)*SPAN;
-      const y=g0+4+RISE*Math.sin(t*Math.PI);
-      const [px,py,pz]=at(u,0,y);
-      const d=box(px,py,pz,SPAN/18*1.12,0.7,W,m.pale);
-      d.rotation.set(0,-A,0);d.rotateZ(Math.cos(t*Math.PI)*0.2);parts.push(d);
-    }
-    for(const sd of [-1,1]){
-      for(let k=0;k<19;k++){
-        const t=k/18, u=(t-0.5)*SPAN;
-        const y=g0+4+RISE*Math.sin(t*Math.PI);
-        const [px,py,pz]=at(u,sd*W*0.46,y);
-        if(k%2===0)parts.push(box(px,py,pz,0.18,1.0,0.18,m.pale));
-        const [tx,ty,tz]=at(u,sd*W*0.46,y+1.0);
-        const r=box(tx,ty,tz,SPAN/18*1.1,0.2,0.3,m.pale);
-        r.rotation.set(0,-A,0);r.rotateZ(Math.cos(t*Math.PI)*0.2);parts.push(r);
-      }
-      // the lamp standards at the ends
-      for(const fr of [-1,1]){
-        const [lx,ly,lz]=at(fr*SPAN*0.44,sd*W*0.46,g0+4+RISE*Math.sin(0.06*Math.PI));
-        parts.push(box(lx,ly,lz,0.3,4.2,0.3,m.beam));
-        const cap=new THREE.Mesh(new THREE.ConeGeometry(0.62,1.2,5),m.gilt);
-        cap.position.set(lx,ly+4.8,lz);parts.push(cap);
-      }
-    }
-    const byMat=new Map();
-    for(const q of parts){let a=byMat.get(q.material);if(!a){a=[];byMat.set(q.material,a);}a.push(q);}
-    const merged=[];for(const [mat,list] of byMat)merged.push(mergeParts(list,mat));
-    return group(L,merged);},
+    const S=V.sites.bridge,parts=[];
+    const zS=S.zS,zN=S.zN,span=Math.abs(zS-zN),mid=(zS+zN)/2,wl=S.y;
+    const yS=gh(S.x,zS),yN=gh(S.x,zN),crown=Math.max(yS,yN)+2.4;
+    // the deck: an arc from bank to bank, and the arch under it
+    const s=new THREE.Shape(),n=16,half=span/2+4;
+    const deck=t=>{const u=-half+t*2*half;const a=Math.min(yS,yN),b=crown;return a+(b-a)*(1-Math.pow(u/half,2))+(u<0?(yS-a):(yN-a))*Math.pow(Math.abs(u)/half,4);};
+    s.moveTo(-half,wl-2);
+    for(let i=0;i<=n;i++){const t=i/n;s.lineTo(-half+t*2*half,deck(t));}
+    s.lineTo(half,wl-2);
+    s.absellipse(0,wl-0.6,span/2*0.92,Math.max(2.5,crown-wl-2.4),0,Math.PI,false);
+    s.lineTo(-half,wl-2);
+    const g=new THREE.ExtrudeGeometry(s,{depth:1.7,bevelEnabled:false,curveSegments:14});g.translate(0,0,-0.85);g.rotateY(-Math.PI/2);
+    // after the turn the shape's x runs along +z: across the river, south to north
+    // mirrored so that its south end is at the south bank: double-sided, since a mirror turns every face inside out
+    const m=new THREE.Mesh(g,new THREE.MeshLambertMaterial({color:0xb9b0a0,flatShading:true,side:THREE.DoubleSide}));
+    m.position.set(S.x,0,mid);if(zN<zS)m.scale.z=-1;
+    parts.push(m);
+    return group(L,parts);
+  },
 
+  // ================================================================ the stair cut into the rock
+  // On the way in from the Ford the path goes over a rock "by means of stairs carved into the stone".
+  stair(L,x,z){
+    const parts=[],road=(api.ROADS||[]).find(r=>/Ford/.test(r.name));if(!road)return group(L,parts);
+    const cm=new THREE.MeshLambertMaterial({color:0xa9a294,flatShading:true});
+    const p=road.pts;
+    for(let i=0;i+1<p.length;i++){const [ax,az]=p[i],[bx,bz]=p[i+1];if(Math.max(ax,bx)<-760||Math.min(ax,bx)>-430)continue;
+      const L2=Math.hypot(bx-ax,bz-az),ang=Math.atan2(bz-az,bx-ax);
+      for(let s=0;s<L2;s+=0.9){const t=s/L2,x2=ax+(bx-ax)*t,z2=az+(bz-az)*t,y=gh(x2,z2),y2=gh(x2+(bx-ax)/L2*0.9,z2+(bz-az)/L2*0.9);
+        if(Math.abs(y2-y)<0.18)continue;
+        const st=new THREE.Mesh(new THREE.BoxGeometry(0.95,0.5,3.2),cm);st.position.set(x2,Math.max(y,y2)-0.2,z2);st.rotation.y=-ang;parts.push(st);}}
+    return group(L,parts);
+  },
+
+  // ================================================================ a pavilion
+  // Eight slender columns on a round base, a ring beam, a bell dome gone green, a gilt finial, and a seat
+  // round the inside. Where the shelf ends over the bluff, for looking at the water from.
+  pavilion(L,x,z){
+    const idx=(L.index|0),S=V.sites.pavilions[idx]||{x,z,y:gh(x,z)},parts=[],y=S.y;
+    const r=3.6;
+    const add=(g,m,px,py,pz)=>{const o=new THREE.Mesh(g,m);o.position.set(px,py,pz);parts.push(o);return o;};
+    add(new THREE.CylinderGeometry(r+0.8,r+1.1,1.6,16),M.stone2,S.x,y-0.4,S.z);
+    for(let i=0;i<8;i++){const a=i/8*Math.PI*2;add(new THREE.CylinderGeometry(0.16,0.2,4.6,8).translate(0,2.3,0),M.stone,S.x+Math.cos(a)*r,y+0.4,S.z+Math.sin(a)*r);
+      const ag=archPlate(2.6,0.7,0.26,0.28);const o=add(ag,M.stone,S.x+Math.cos(a+Math.PI/8)*r*0.93,y+4.1,S.z+Math.sin(a+Math.PI/8)*r*0.93);o.rotation.y=-(a+Math.PI/8)+Math.PI/2;}
+    add(new THREE.TorusGeometry(r,0.28,5,16).rotateX(Math.PI/2),M.stone2,S.x,y+5.2,S.z);
+    add(bell(r+0.6,4.4),M.copper,S.x,y+5.3,S.z);
+    add(new THREE.ConeGeometry(0.16,1.8,6),M.gilt,S.x,y+10.3,S.z);add(new THREE.SphereGeometry(0.3,8,6),M.gilt,S.x,y+9.5,S.z);
+    add(new THREE.TorusGeometry(r-0.8,0.3,4,16,Math.PI*1.6).rotateX(Math.PI/2),M.timber,S.x,y+0.9,S.z);
+    return group(L,parts);
+  },
+
+  // ================================================================ the Ford of Bruinen
+  // The road goes through the water here. Low stones mark the crossing, and a pair of standing stones the
+  // edge of Elrond's country on the far side.
   ford(L,x,z){
-    // ---- the Ford of Bruinen ----
-    // Gravel, shallow water going fast over it, and a line of worn stones either side where the road comes
-    // down and goes up again. The valley's defence is that you have to stand in this to get in.
-    const parts=[], FR=mkRng(1417), m=M();
-    const gravel=new THREE.MeshLambertMaterial({color:0x8e8878,flatShading:true});
-    for(let k=0;k<180;k++){
-      const px=x+(FR()-0.5)*440, pz=z+(FR()-0.5)*240;
-      const s=1.2+FR()*4.4;
-      const b=box(px,gh(px,pz)-0.4,pz,s*1.6,s*0.5,s*1.3,FR()<0.4?m.stone:gravel);
-      b.rotation.y=FR()*3;parts.push(b);
-    }
-    for(const sd of [-1,1])for(let k=0;k<4;k++){
-      const px=x+sd*(140+k*30), pz=z+(k-1.5)*46;
-      const h=3.4+FR()*3.4;
-      const s=new THREE.Mesh(new THREE.BoxGeometry(2.4,h,1.7).translate(0,h/2,0),m.pale);
-      s.position.set(px,gh(px,pz),pz);s.rotation.set((FR()-0.5)*0.1,FR()*3,(FR()-0.5)*0.12);parts.push(s);
-    }
-    const byMat=new Map();
-    for(const q of parts){let a=byMat.get(q.material);if(!a){a=[];byMat.set(q.material,a);}a.push(q);}
-    const merged=[];for(const [mat,list] of byMat)merged.push(mergeParts(list,mat));
-    return group(L,merged);},
-
-  falls(L,x,z){
-    // ---- the falls ----
-    // The streams come over the rim and arrive at the river in stages, because the wall they are coming
-    // down is a staircase: a pitch, a pool on the tread, a pitch, a pool. So each fall is a CHAIN - the
-    // sheet hugs the riser it is falling down, there is a pool and a plume of mist at the foot of it, and
-    // then it runs across the tread and goes over again.
-    //
-    // The first version drew one sheet from the rim to the river, three hundred metres of plane hanging in
-    // mid-air over the middle of the wall, which from anywhere in the valley was a wall of glass with the
-    // terraces behind it.
-    const A=L.turn||0, parts=[];
-    const whiteM=new THREE.MeshLambertMaterial({color:0xeef4f6,transparent:true,opacity:0.86,side:THREE.DoubleSide});
-    const foamM=new THREE.MeshLambertMaterial({color:0xdfeaee,transparent:true,opacity:0.7});
-    const mistM=new THREE.MeshLambertMaterial({color:0xdce8ea,transparent:true,opacity:0.15,depthWrite:false});
-    const sheets=[],mists=[];
-    const N=L.count||3, STEP=5;
-    const dx=-Math.sin(A), dz=Math.cos(A);            // downhill
-    for(let k=0;k<N;k++){
-      const u=(k-(N-1)/2)*((L.spread||300)/Math.max(1,N))+((k*37)%9-4)*4;
-      let px=x+u*Math.cos(A), pz=z+u*Math.sin(A), py=gh(px,pz);
-      for(let seg=0;seg<4;seg++){
-        // walk out from the lip until the ground stops falling away: that is the foot of this pitch
-        let sx=px, sz=pz, sy=py, n=0;
-        while(n<14){
-          const nx=sx+dx*STEP, nz=sz+dz*STEP, ny=gh(nx,nz);
-          if(sy-ny<0.9&&n>1)break;
-          sx=nx;sz=nz;sy=ny;n++;
-        }
-        const drop=py-sy;
-        if(drop<7||n<2)break;
-        if(drop>150)break;                            // a pitch, not a curtain
-        const w=5+((k*53+seg*17)%6);
-        // The sheet lies ALONG the pitch rather than hanging vertically in front of it: a riser at sixty
-        // degrees with a vertical plane drawn from its lip to its foot stands a long way out from the rock,
-        // and reads as a panel leaning on the hill instead of as water on it.
-        const run=Math.hypot(sx-px,sz-pz);
-        const sheet=new THREE.Mesh(new THREE.PlaneGeometry(w,Math.hypot(drop,run)*1.04,1,Math.max(2,Math.round(drop/14))),whiteM);
-        sheet.position.set((px+sx)/2,(py+sy)/2,(pz+sz)/2);
-        sheet.rotation.set(0,-A+Math.PI/2,0);
-        sheet.rotateX(Math.atan2(run,drop));
-        sheet.userData.noWire=true;scene.add(sheet);
-        sheets.push({sheet,base:sheet.geometry.attributes.position.array.slice(),ph:k*1.7+seg});
-        // the lip it comes over, and the pool it lands in
-        parts.push(box(px+dx*2,py-0.6,pz+dz*2,w*1.5,1.2,5,foamM));
-        const pool=new THREE.Mesh(new THREE.CylinderGeometry(w*1.2,w*0.9,1.4,12),foamM);
-        pool.position.set(sx+dx*4,sy+0.5,sz+dz*4);parts.push(pool);
-        for(let i=0;i<3;i++){
-          const p=new THREE.Mesh(new THREE.SphereGeometry(4+i*3,8,6),mistM);
-          p.position.set(sx,sy+4,sz);p.userData.noWire=true;scene.add(p);
-          mists.push({p,x:sx,y:sy,z:sz,ph:(i+seg)/3});
-        }
-        // and it runs on across the tread to the next lip
-        px=sx;pz=sz;py=sy;
-        for(let i=0;i<7;i++){const nx=px+dx*STEP,nz=pz+dz*STEP,ny=gh(nx,nz);
-          if(py-ny>2.5)break;px=nx;pz=nz;py=ny;}
-      }
-    }
-    animHooks.push(now=>{
-      const t=now*0.001;
-      for(const q of sheets){
-        const pos=q.sheet.geometry.attributes.position,b=q.base;
-        for(let i=0;i<pos.count;i++){
-          const py2=b[i*3+1];
-          pos.array[i*3+2]=b[i*3+2]+Math.sin(t*3.8+q.ph+py2*0.2)*0.7;
-        }
-        pos.needsUpdate=true;
-      }
-      for(const q of mists){
-        const u=((t*0.14)+q.ph)%1;
-        q.p.position.set(q.x+u*7,q.y+3+u*26,q.z+u*5);
-        q.p.scale.setScalar(0.6+u*2.2);
-        q.p.material.opacity=0.17*(1-u*0.8);
-      }
-    });
-    const byMat=new Map();
-    for(const q of parts){let a=byMat.get(q.material);if(!a){a=[];byMat.set(q.material,a);}a.push(q);}
-    const merged=[];for(const [mat,list] of byMat)merged.push(mergeParts(list,mat));
-    return group(L,merged.length?merged:[box(x,gh(x,z),z,1,1,1,whiteM)]);},
-
+    const S=V.sites.ford,parts=[],sm=new THREE.MeshLambertMaterial({color:0x9a9385,flatShading:true});
+    const road=(api.ROADS||[]).find(r=>/East Road/.test(r.name));
+    if(road){const p=road.pts;for(let i=0;i+1<p.length;i++){const [ax,az]=p[i],[bx,bz]=p[i+1];if(Math.hypot((ax+bx)/2-S.x,(az+bz)/2-S.z)>260)continue;
+      const L2=Math.hypot(bx-ax,bz-az);for(let s=0;s<L2;s+=5){const t=s/L2,px=ax+(bx-ax)*t,pz=az+(bz-az)*t;if(Math.hypot(px-S.x,pz-S.z)>60)continue;
+        for(const sd of [-1,1]){const nx=-(bz-az)/L2,nz=(bx-ax)/L2;const st=new THREE.Mesh(new THREE.DodecahedronGeometry(0.7,0),sm);st.position.set(px+nx*sd*5,Math.max(gh(px,pz),S.y)+0.1,pz+nz*sd*5);parts.push(st);}}}}
+    for(const sd of [-1,1]){const st=new THREE.Mesh(new THREE.BoxGeometry(1.4,4.2,0.9),sm);st.position.set(S.x+60,gh(S.x+60,S.z+sd*14)+2,S.z+sd*14);st.rotation.set(0.04*sd,0.3,0);parts.push(st);}
+    return group(L,parts);
+  },
   };
 }
