@@ -44,7 +44,8 @@ of the others. Both read `/scenes.json`, which the server builds from `site.toml
 | `/ds9` | `/ds9.html`, `/deepspace9`, `/terok-nor` | `ds9.html` | Deep Space 9 (fan work) |
 | `/babylon5` | `/babylon5.html`, `/b5`, `/babylon` | `babylon5.html` | Babylon 5 (fan work) |
 | `/kyrene` | `/hab.html`, `/habitat`, `/cylinder` | `hab.html` | Kyrene: a rotating habitat |
-| `/krator` | `/voth`, `/voth.html`, `/krator.html` | `krator.html` | Krator: A Primer |
+| `/krator` | `/krator.html` | `krator.html` | Krator: A Primer |
+| `/voth` | `/voth.html`, `/cantons` | `voth.html` | Voth: City of Cantons (built from `src/voth/`) |
 | `/tongue` | `/izani-tongue` | `The-Izani-Tongue_2.html` | The Izani Tongue |
 | `/painting.jpg` | | `painting.jpg` | The Iziz painting; `image.png` is the master copy |
 | `/css/*`, `/src/*`, `/data/*`, `/vendor/*` | | those folders | stylesheets, modules, content, three.js |
@@ -420,9 +421,23 @@ Edit `data/cities/hab.json` for the dimensions, the day, the haze, the caps and 
 ### `/krator`: Krator
 
 A worldbuilding primer: the geography, climate and peoples of a crater world on a tidally locked moon.
-`voth.html` is the source and stays the source — it is plain prose, one line to a paragraph, with the short
-lines being headings — and `tools/build-voth.py` wraps it into the page. Edit the prose, run the builder,
+`krator-source.html` is the source and stays the source — it is plain prose, one line to a paragraph, with the
+short lines being headings — and `tools/build-krator.py` wraps it into the page. Edit the prose, run the builder,
 reload. Same arrangement as the Izani Tongue, where the text is kept as text.
+
+### `/voth`: Voth, City of Cantons
+
+A procedural city of stone cantons on water, on the same world as the Krator primer (its sky is Krator's gas
+giant). It was written elsewhere and arrived as one 1.8 MB page: a single `BUILD()` function stitched together
+from about thirty fragment files by a build script that never came with it. That source is recovered: the
+page is now a shell, `css/voth.css` is its look, and the city is `src/voth/stages/` (51 files, split along the
+original section banners, in the original order and sharing one scope as they always did), assembled into
+`src/voth/build.js` by `tools/build-page.py` like the engine and Iziz. The build process's notes to itself
+(632 KB of comments about files that do not exist) were dropped; short explanations stayed.
+
+Nothing it does has changed: `tests/golden/voth-default.json` was taken from the old page and the new one
+matches it, with the same draw calls and triangles. It still has its own camera, UI and render loops; bringing
+it onto the shared shell is ARCHITECTURE.md §6 steps 3-4.
 
 ### `/tongue`: The Izani Tongue
 
@@ -1124,11 +1139,12 @@ src/
   starship/ page.js parts.js                 the page the ships and Babylon 5 share: renderer, sky, turntable, cards; the hull pieces
   babylon5/ main.js station.js               Babylon 5: the sphere, the Cobra bays, the drum and the Garden, the arrays, the traffic, the gate
   hab/      main.js world.js               Kyrene: its own renderer, and a world in cylinder coordinates
+  voth/     imports.js stages/*.js build.js   Voth: 51 recovered stages, assembled into build.js (voth.html runs it)
 vendor/three/three.min.js     three.js r128 (pinned)
 tools/  build-page.py build-tongue.py probe.py check-city.py
         fetch-osm.py fetch-terrain.py build-osm-city.py make-city17.py make-nightcity.py
         make-megacity.py make-mordor.py make-dredd2012.py make-yellowstone.py
-        build-voth.py
+        build-krator.py test-pages.py
 tests/  run.js *.test.js golden/ fixtures/
 server.py  site.toml  sitectl
 ```

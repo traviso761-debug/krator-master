@@ -232,7 +232,7 @@ scene = true
 blurb = "Six kilometres across, nineteen long, and the far side of the country is the sky."
 
 [[route]]
-path = "/krator"           # the Krator primer, built from krator-source.html by tools/build-voth.py
+path = "/krator"           # the Krator primer, built from krator-source.html by tools/build-krator.py
 aliases = ["/krator.html"]
 file = "krator.html"
 title = "Krator: A Primer"
@@ -241,7 +241,7 @@ kind = "text"
 blurb = "A primer on Krator: prose, not geometry."
 
 [[route]]
-path = "/voth"             # Voth, City of Cantons: a self-contained page, served as it stands
+path = "/voth"             # Voth, City of Cantons: a shell over src/voth/ (recovered stages, assembled by tools/build-page.py)
 aliases = ["/voth.html", "/cantons"]
 file = "voth.html"
 title = "Voth: City of Cantons"

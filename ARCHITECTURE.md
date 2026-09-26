@@ -4,6 +4,11 @@ Date: 2026-09-26. Covers every scene page, the shared engine, the other runtimes
 and the server. Follows `AUDIT.md` (2026-09-16), which covered Iziz alone; items from it that are still open
 are listed in §7. File:line references are as of this date.
 
+> **Progress.** Phase 0 is done: tests wait for the page and run three at a time (about 1.5 min for the whole
+> site), and every page has a golden or a load check. Phase 1 is done: Voth is a shell over `src/voth/stages/`
+> built by `tools/build-page.py`, and matches the golden taken from the old page. `tools/build-voth.py` is now
+> `tools/build-krator.py`. The later phases are not started.
+
 There is no physics engine as such. The nearest things are the flight model (`src/core/flight.js`, kinematic,
 no stall), the Backrooms' circle-against-walls collision (`src/backrooms/level.js:409`), the City's
 solid-volume test and camera un-burying (`src/blame/main.js:120-139`), and the camera controllers. They are
