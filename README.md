@@ -1406,16 +1406,30 @@ server sends `304 Not Modified` when the browser's copy is current. Editing a st
 ### Testing
 
 ```
-./sitectl test          # everything
-gjs -m tests/run.js     # only the module tests (rng, noise, data expressions, Izani glyphs)
-python3 tools/probe.py --page chicago.html --wait 20                          # metrics for one load
+./sitectl test                  # everything: module tests, then every page against its golden (about 1.5 min)
+./sitectl test blame iziz       # only the pages whose name starts with these
+python3 tools/test-pages.py -j 1   # one page at a time, for a slow machine
+gjs -m tests/run.js             # only the module tests (rng, noise, data expressions, Izani glyphs, wire)
+python3 tools/probe.py --page chicago.html                                    # metrics for one load
 python3 tools/probe.py --seed 42 --expect tests/golden/iziz-42.json           # did the layout move?
 python3 tools/probe.py --page chicago.html --hash 'v=-100,12,-620,-600,30,-690&t=21' --shot night.jpg
 ```
 
-The probe runs the page in headless Firefox against a copy of the site config and reports errors,
-build timings, draw calls, triangles, programs, frame times, the adaptive resolution and a SHA-256
-fingerprint of the building layout. `--shot` saves the rendered canvas as a JPEG.
+The probe runs a page in headless Firefox against a copy of the site config and reports errors, build
+timings, draw calls, triangles, programs, frame times, the adaptive resolution and a SHA-256 fingerprint of
+the layout. It reports as soon as the page has finished building - its loading overlay is gone and it has drawn
+30 frames - so `--wait` is only a ceiling; a page that never gets there is reported as timed out. It picks free
+ports for itself. `--shot` saves the rendered canvas as a JPEG.
+
+`tools/test-pages.py` runs every golden in `tests/golden/` three at a time. A golden's file name is
+`<page>-<seed>.json`; it may also carry the `page`, `query` and `hash` it was made with (`iziz-b-7.json` is
+`iziz.html?city=iziz-b`; `voth-default.json` has no seed). Pages with nothing to fingerprint - the front page,
+Krator, the Tongue - only have to load without an error. Before any of it, `src/*/build.js` must be current with
+its stages (`tools/build-page.py --check`): a stale one fails the run rather than being rebuilt behind your back.
+
+Pages that are not built from lots hand the probe a fingerprint of their scene through `src/core/fingerprint.js`
+(the Backrooms: the rooms round where you arrive; Voth: its scene straight after `BUILD()`, before anything
+moves). To make a golden: `python3 tools/probe.py --page <page>.html --seed N --save-golden tests/golden/<page>-N.json`.
 
 ## Configuration (`site.toml`)
 

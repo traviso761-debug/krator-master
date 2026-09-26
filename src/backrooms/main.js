@@ -14,6 +14,7 @@ import {createWire,installWireUI} from '../core/wire.js';
 import {createWorld,LEVELS,ORDER,C} from './level.js';
 import {makeTextures} from './textures.js';
 import {createSound} from './sound.js';
+import {sceneRows} from '../core/fingerprint.js';
 
 installErrorHandlers();window.LOAD=LOAD;
 configureLoading({
@@ -38,7 +39,7 @@ async function build(){
   const THREE=window.THREE;
   await stage('config');
   const HASH=new URLSearchParams(location.hash.slice(1));
-  const S={seed:+HASH.get('seed')||1+Math.floor(Math.random()*999998),level:+(HASH.get('level')||0)};
+  const S={seed:+HASH.get('seed')||+new URLSearchParams(location.search).get('seed')||1+Math.floor(Math.random()*999998),level:+(HASH.get('level')||0)};
   if(!LEVELS[S.level])S.level=0;
 
   // ---- the scene ----
@@ -96,6 +97,9 @@ async function build(){
    if(at.length===3&&at.every(Number.isFinite)){P.x=at[0];P.z=at[1];P.yaw=at[2];W.collide(P,0.3);P.y=W.floorAt(P.x,P.z)+1.6;}}
   // everything in view before the first frame, so nothing is seen being built
   W.update(P.x,P.z,1e9);
+  // the fingerprint the tests check: the rooms round where you arrive, as they are before anything flickers
+  {const rows=[];for(const c of W.live.values())rows.push(...sceneRows(THREE,c.g));
+   rows.sort((p,q)=>p.x-q.x||p.h-q.h||p.z-q.z||p.dpt-q.dpt);ctx.lotList=rows;}
 
   // ---- looking and walking ----
   await stage('ui');
