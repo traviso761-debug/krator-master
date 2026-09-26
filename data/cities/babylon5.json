@@ -1,0 +1,193 @@
+{
+ "name": "Babylon 5",
+ "note": "Fan work. Babylon 5 belongs to Warner Bros. and J. Michael Straczynski; nothing from the series, its models or its art is used, and every shape on this page is this project's own geometry, built from the silhouette and the published size: eight kilometres (five miles) from the docking bay to the stern. The station lies along x, bow to +x. Built by src/babylon5/station.js on the starship page (src/starship/page.js); 'station' holds its numbers.",
+ "attribution": "Babylon 5 is fan work: original geometry in src/babylon5/. Babylon 5 belongs to Warner Bros. No assets used.",
+ "view0": {
+  "az": 2.25,
+  "el": 0.28,
+  "d": 13500
+ },
+ "views": {
+  "Three-quarter": {
+   "az": 2.25,
+   "el": 0.28,
+   "d": 13500
+  },
+  "Side on": {
+   "az": 1.5708,
+   "el": 0.04,
+   "d": 12500
+  },
+  "Head on: the docking bay": {
+   "az": 0.22,
+   "el": 0.16,
+   "d": 3000,
+   "tx": 3960,
+   "ty": 0,
+   "tz": 0
+  },
+  "The approach lane": {
+   "az": 0.32,
+   "el": 0.14,
+   "d": 3000,
+   "tx": 4700,
+   "ty": 0,
+   "tz": 0
+  },
+  "The Cobra bays": {
+   "az": 0.9,
+   "el": 0.42,
+   "d": 3200,
+   "tx": 3300,
+   "ty": 0,
+   "tz": 0
+  },
+  "The drum": {
+   "az": 1.9,
+   "el": 0.35,
+   "d": 4200,
+   "tx": 500,
+   "ty": 0,
+   "tz": 0
+  },
+  "The Garden (press Cutaway)": {
+   "az": 1.5708,
+   "el": 0.5,
+   "d": 2300,
+   "tx": 600,
+   "ty": 0,
+   "tz": 0
+  },
+  "The reactor": {
+   "az": 2.1,
+   "el": 0.12,
+   "d": 2600,
+   "tx": -2200,
+   "ty": 0,
+   "tz": 0
+  },
+  "The solar arrays": {
+   "az": 2.7,
+   "el": 0.35,
+   "d": 5200,
+   "tx": -3000,
+   "ty": 0,
+   "tz": 0
+  },
+  "The jump gate": {
+   "az": 0.9,
+   "el": 0.2,
+   "d": 7000,
+   "tx": 9000,
+   "ty": 1600,
+   "tz": -12000
+  },
+  "Epsilon III below": {
+   "az": 2.4,
+   "el": -0.32,
+   "d": 15000
+  },
+  "Far off": {
+   "az": 2.25,
+   "el": 0.2,
+   "d": 42000
+  }
+ },
+ "station": {
+  "seed": 2258,
+  "drumR": 500,
+  "drumAft": -1650,
+  "drumFore": 2650,
+  "sphereY": 3380,
+  "sphereR": 520,
+  "sternLen": 4100,
+  "arrayReach": 1750,
+  "modules": 520,
+  "gardenAft": -200,
+  "gardenFore": 1400,
+  "gardenTrees": 1400,
+  "period": 45,
+  "radius": 4200,
+  "minD": 220,
+  "traffic": {
+   "queue": 9,
+   "queueTime": 240,
+   "flights": 5,
+   "launchEvery": 22
+  },
+  "gate": {
+   "at": [
+    9000,
+    1600,
+    -12000
+   ],
+   "size": 1400,
+   "period": 40,
+   "open": 9
+  },
+  "_": "the drum is the rotating section (radius, and its aft and fore ends along the axis, in metres); the sphere is Command and Control and the docking bay; period is one turn of the drum in seconds"
+ },
+ "space": {
+  "seed": 5,
+  "stars": 3800,
+  "starSize": 2000,
+  "far": 1400000,
+  "starLight": {
+   "colour": "#fff1dc",
+   "az": 2.9,
+   "el": 0.42,
+   "intensity": 1.5,
+   "ambient": 0.32,
+   "lamp": 0.3
+  },
+  "fill": {
+   "colour": "#b07a4a",
+   "az": -1.2,
+   "el": -0.6,
+   "intensity": 0.3
+  },
+  "bodies": [
+   {
+    "kind": "rock",
+    "az": -1.2,
+    "el": -0.55,
+    "dist": 0.5,
+    "deg": 24,
+    "seg": 176,
+    "colours": [
+     "#6a4a34",
+     "#7e5c40",
+     "#94704c",
+     "#c8b090"
+    ],
+    "ice": 0.93,
+    "rate": 1.2e-05
+   },
+   {
+    "kind": "rock",
+    "az": 1.1,
+    "el": 0.35,
+    "dist": 0.85,
+    "deg": 1.2,
+    "seg": 24,
+    "colours": [
+     "#6b6660",
+     "#7a736a",
+     "#8d857a",
+     "#b9b4ac"
+    ],
+    "ice": 1.1
+   }
+  ],
+  "nebulae": [
+   {
+    "colour": "#5a2a4e",
+    "az": 2.0,
+    "el": 0.25,
+    "dist": 0.86,
+    "size": 520000
+   }
+  ],
+  "_": "Epsilon III below, a moon of it, and the Epsilon system's star behind the station"
+ }
+}
