@@ -1,0 +1,39 @@
+127.0.0.1 - - [21/Sep/2026 10:39:56] "GET /canyon.html HTTP/1.1" 200 -
+ERROR PANEL: clean
+draw calls: 33 triangles: 281130
+counters: {"_instances": 3340, "_ready": true, "_registered": 3}
+
+--- invariants ---
+  PASS  registered-volumes-non-empty : 3 volumes; thinnest: Canyon works — the Span (intact) (510), Canyon works — the Span (ruined) (1242), Canyon works — the Span (fallen) (1305)
+  PASS  no-nan-geometry : clean
+  PASS  per-type-triangle-budget : 3 type/decay pairs, heaviest canyon/1 132808/250000
+  PASS  showcase-triangle-budget : 345228 / 6000000 scene triangles
+  PASS  showcase-draw-calls : 33 / 900 draw calls at this camera
+  PASS  registry-and-bake-ran : 3 registered volumes, 3340 baked instances
+
+--- per type (scene triangles, instances, meshes) ---
+  canyon/1        132808 /  250000  medium  inst    1346  meshes    12
+  canyon/2        123160 /  250000  medium  inst    1439  meshes    16
+  canyon/0         89260 /  250000  medium  inst     555  meshes    12
+shot: ./shots/can2\view_The_Span.png   calls 33  tris 0.28M
+shot: ./shots/can2\view_Down_the_gorge.png   calls 33  tris 0.28M
+shot: ./shots/can2\view_The_prison.png   calls 30  tris 0.28M
+shot: ./shots/can2\view_Prison_beneath.png   calls 30  tris 0.28M
+shot: ./shots/can2\view_Pod_cluster.png   calls 30  tris 0.28M
+shot: ./shots/can2\view_The_lift.png   calls 31  tris 0.28M
+shot: ./shots/can2\view_Canyon_floor.png   calls 31  tris 0.28M
+shot: ./shots/can2\view_Rusted_span.png   calls 34  tris 0.28M
+shot: ./shots/can2\view_Rusted_close.png   calls 39  tris 0.32M
+shot: ./shots/can2\view_Fallen.png   calls 38  tris 0.27M
+shot: ./shots/can2\view_Fallen_floor.png   calls 35  tris 0.27M
+shot: ./shots/can2\view_Both.png   calls 42  tris 0.32M
+
+--- worst draw calls over 12 views ---
+  Both                         calls    42  tris 0.32M
+  Rusted close                 calls    39  tris 0.32M
+  Fallen                       calls    38  tris 0.27M
+  Fallen floor                 calls    35  tris 0.27M
+  Rusted span                  calls    34  tris 0.28M
+  The Span                     calls    33  tris 0.28M
+
+OK
