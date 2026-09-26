@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Wrap the Krator primer into a page that can be read.
 
-    python3 tools/build-voth.py
+    python3 tools/build-krator.py
 
 krator-source.html is the source and stays the source: it is plain prose, one line to a paragraph, with the short
 lines being headings. Served as it stands a browser collapses the lot into a single run-on block, so this
@@ -45,7 +45,7 @@ def main():
     lines = [l.strip() for l in open(SRC, encoding="utf-8").read().splitlines()]
     lines = [l for l in lines if l]
     if not lines:
-        raise SystemExit("voth.html is empty")
+        raise SystemExit("krator-source.html is empty")
     title, by, body = lines[0], "", lines[1:]
     if body and body[0].startswith(("Sep ", "Oct ", "Nov ", "Dec ", "Jan ", "Feb ", "Mar ", "Apr ",
                                     "May ", "Jun ", "Jul ", "Aug ")) or (body and "@" in body[0] and len(body[0]) < 80):
@@ -77,7 +77,7 @@ def main():
 {'<p class="by">' + html.escape(by) + '</p>' if by else ''}
 </header>
 {chr(10).join(out)}
-<footer>Generated from <code>krator-source.html</code> by <code>tools/build-voth.py</code>. Edit the prose there and run it again.</footer>
+<footer>Generated from <code>krator-source.html</code> by <code>tools/build-krator.py</code>. Edit the prose there and run it again.</footer>
 </main>
 <!-- the way back to the menagerie, and into the other scenes: adds nothing unless a server is answering
      with /scenes.json (src/core/menagerie.js) -->
