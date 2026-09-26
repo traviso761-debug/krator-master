@@ -36,6 +36,9 @@ MOUTH_DEPTH = 146.0              # how far below the plain the ground stops; src
                                  # (data/cities/fleshpit.json, "pit": {"mouthDepth"}) must agree with this
 WORKS = (980.0, -880.0)          # the Anodyne extraction works, north-east of the rim
 CAMP = (-1180.0, 760.0)          # the campground, south-west, out of sight of the orifice
+# the parking lots, x, z, w, d: west of the visitor center, the overflow south of that, and the works lot out past
+# the rim loop. They used to straddle the loop road and have the campground road running through them.
+LOTS = [(-640.0, 240.0, 200.0, 120.0), (-660.0, 385.0, 180.0, 90.0), (560.0, -420.0, 160.0, 100.0)]
 GATE = (-2760.0, 240.0)          # the entrance station, where the road comes in from Gumption
 
 
@@ -132,6 +135,97 @@ def terrain_height(x, z):
     return h
 
 
+# ---------- building pads ----------
+# The engine stands a building on the lowest ground at its corners, which is right for a city on gentle ground.
+# Out here the ground is not gentle: the spoil ring climbs thirty metres in a couple of hundred, so a building
+# straddling it had the slope coming up through its floor - the Upper Visitor Center was buried twice its own
+# height on the uphill side. So the terrain is graded the way a site is. Buildings that stand within a grid cell
+# of each other (the visitor center and its wings and terminal, the collar segments and the headframes on them,
+# the amphitheatre's rows) are one site, and a site gets one level pad at the average of the ground it replaces
+# - half cut, half fill - carried a grid cell past its walls so that the interpolated ground cannot lift a corner,
+# with a bank round it back to the natural slope. Every point of ground answers only to its nearest site, so one
+# building's bank never re-slopes another's pad. The funnel is left alone; only its lip is touched, under the
+# collar.
+PAD_BANK = 30.0
+
+
+def point_poly_distance(x, z, ring):
+    inside = False
+    n = len(ring)
+    for k in range(n):
+        (x1, z1), (x2, z2) = ring[k], ring[k - 1]
+        if (z1 > z) != (z2 > z) and x < (x2 - x1) * (z - z1) / (z2 - z1) + x1:
+            inside = not inside
+    if inside:
+        return 0.0
+    return dist_to_polyline(x, z, list(ring) + [ring[0]])
+
+
+def grade_pads(hs, nx, nz, step, rings):
+    orig = list(hs)
+
+    def height(x, z):
+        fx, fz = (x + HALF) / step, (z + HALF) / step
+        i = max(0, min(nx - 2, int(math.floor(fx))))
+        j = max(0, min(nz - 2, int(math.floor(fz))))
+        tx, tz = max(0.0, min(1.0, fx - i)), max(0.0, min(1.0, fz - j))
+        a, b = orig[j * nx + i], orig[j * nx + i + 1]
+        c, d = orig[(j + 1) * nx + i], orig[(j + 1) * nx + i + 1]
+        return (a * (1 - tx) + b * tx) * (1 - tz) + (c * (1 - tx) + d * tx) * tz
+
+    boxes = [(min(p[0] for p in r), max(p[0] for p in r), min(p[1] for p in r), max(p[1] for p in r)) for r in rings]
+    # the sites: footprints closer than a grid cell are joined
+    parent = list(range(len(rings)))
+
+    def find(a):
+        while parent[a] != a:
+            parent[a] = parent[parent[a]]
+            a = parent[a]
+        return a
+    for a in range(len(rings)):
+        for b in range(a + 1, len(rings)):
+            A, B = boxes[a], boxes[b]
+            if A[0] - step > B[1] or B[0] - step > A[1] or A[2] - step > B[3] or B[2] - step > A[3]:
+                continue
+            close = min(min(point_poly_distance(x, z, rings[b]) for x, z in rings[a]),
+                        min(point_poly_distance(x, z, rings[a]) for x, z in rings[b]))
+            if close < step:
+                parent[find(a)] = find(b)
+    # each site's level: the average of the ground under all its footprints
+    sums = {}
+    for k, r in enumerate(rings):
+        x0, x1, z0, z1 = boxes[k]
+        for a in range(9):
+            for b in range(9):
+                x, z = x0 + (x1 - x0) * (a + 0.5) / 9, z0 + (z1 - z0) * (b + 0.5) / 9
+                if point_poly_distance(x, z, r) == 0.0:
+                    t = sums.setdefault(find(k), [0.0, 0])
+                    t[0] += height(x, z)
+                    t[1] += 1
+    level = {c: t[0] / t[1] for c, t in sums.items()}
+    # every grid point near a footprint follows its nearest one
+    reach = step + PAD_BANK
+    best = {}
+    for k, r in enumerate(rings):
+        c = find(k)
+        if c not in level:
+            continue
+        x0, x1, z0, z1 = boxes[k]
+        i0, i1 = max(0, int((x0 - reach + HALF) // step)), min(nx - 1, int((x1 + reach + HALF) // step) + 1)
+        j0, j1 = max(0, int((z0 - reach + HALF) // step)), min(nz - 1, int((z1 + reach + HALF) // step) + 1)
+        for j in range(j0, j1 + 1):
+            for i in range(i0, i1 + 1):
+                x, z = -HALF + i * step, -HALF + j * step
+                if math.hypot(x, z) < RIM - 15 - step:          # the funnel, bar one cell of lip under the collar
+                    continue
+                d = point_poly_distance(x, z, r)
+                if d < reach and (j * nx + i not in best or d < best[j * nx + i][0]):
+                    best[j * nx + i] = (d, c)
+    for k, (d, c) in best.items():
+        w = 1.0 if d <= step else 1.0 - smoothstep(step, reach, d)
+        hs[k] = orig[k] + (level[c] - orig[k]) * w
+
+
 def main():
     out = {"attribution": "Mystery Flesh Pit National Park: fan geometry generated by tools/make-fleshpit.py; "
                           "no assets from the original project are used",
@@ -176,6 +270,9 @@ def main():
     # the spurs off it
     road([(-520, -40), (-420, 60), (-395, 180)], "secondary", 9, "Visitor Center Road")
     road([(-330, 300), (-700, 560), (-1000, 690), CAMP], "tertiary", 7.5, "Campground Road")
+    road([(-470, 10), (-600, 90), (-640, 176)], "tertiary", 8, "Parking Drive")
+    road([(-742, 240), (-760, 300), (-752, 385), (-756, 392)], "residential", 6.5, "Overflow Drive")
+    road([(620, -600), (600, -472)], "residential", 6.5, "Works Lot Drive")
     road([(300, -390), (620, -600), WORKS], "tertiary", 8, "Extraction Works Road")
     road([(150, 420), (330, 700), (520, 980)], "tertiary", 7, "Monorail Yard Road")
     # service roads round the works
@@ -186,13 +283,29 @@ def main():
     for k, rr in enumerate((110, 170)):
         lp = ring_poly(CAMP[0], CAMP[1], rr, 20, rr * 0.7)
         road(lp + [lp[0]], "residential", 5.5, f"Loop {chr(65 + k)}")
-    # the walking trails: the rim trail all the way round, and the paths out to the overlooks
-    rim = ring_poly(0, 0, RIM + 34, 72)
-    road(rim + [rim[0]], "trail", 2.4, "Rim Trail")
+    # The walking network. The rim trail runs round the apron outside the headframes (at RIM + 30 they stand
+    # right where it used to go), the three overlook trails come in to it from the plain and end at the
+    # overlook decks src/fleshpit/promenade.js builds out over the lip, and footways join everything a visitor
+    # arrives at - the parking, the visitor center, the monorail terminal, the works platform, the amphitheatre
+    # and each headframe's lift entrance - to the rim trail.
+    TRAIL_R = RIM + 62
+    rim = ring_poly(0, 0, TRAIL_R, 96)
+    road(rim + [rim[0]], "trail", 3.2, "Rim Trail")
     for a, nm in ((0.35, "North Overlook Trail"), (2.5, "West Overlook Trail"), (4.4, "South Overlook Trail")):
-        road([(math.cos(a) * (RIM + 150), math.sin(a) * (RIM + 150)), (math.cos(a) * (RIM + 40), math.sin(a) * (RIM + 40))],
-             "trail", 2.2, nm)
+        road([(math.cos(a) * (RIM + 190), math.sin(a) * (RIM + 190)), (math.cos(a) * TRAIL_R, math.sin(a) * TRAIL_R)],
+             "trail", 2.6, nm)
     road([(-395, 180), (-330, 300), (-180, 360), (-40, 330), (120, 300), (260, 250)], "footway", 3, "Visitor Center Walk")
+    road([(-538, 232), (-490, 222), (-472, 212), (-440, 196)], "footway", 3.4, "Parking Walk")
+    road([(-652, 336), (-652, 302)], "footway", 3, "Overflow Walk")
+    road([(480, -400), (380, -330), (300, -262)], "footway", 3, "Works Lot Walk")
+    road([(-340, 196), (-300, 176), (math.cos(2.62) * TRAIL_R, math.sin(2.62) * TRAIL_R)], "footway", 3.4, "Visitor Center Rim Walk")
+    road([(-355, 236), (-300, 222), (math.cos(2.56) * TRAIL_R, math.sin(2.56) * TRAIL_R)], "footway", 3, "Monorail Walk")
+    road([(300, -262), (math.cos(-0.72) * TRAIL_R, math.sin(-0.72) * TRAIL_R)], "footway", 3, "Works Platform Walk")
+    road([(-150, 470), (math.cos(1.95) * TRAIL_R, math.sin(1.95) * TRAIL_R)], "footway", 3, "Amphitheatre Walk")
+    for k in range(4):
+        a = 0.5 + k * math.tau / 4
+        road([(math.cos(a) * (RIM + 47), math.sin(a) * (RIM + 47)), (math.cos(a) * TRAIL_R, math.sin(a) * TRAIL_R)],
+             "footway", 4, f"Shaft {k + 1} Entrance Walk")
     out["roads"] = roads
     out["rail"] = [{"t": "monorail", "e": 1, "n": "Pit Rim Monorail",
                     "p": flat([(520, 980), (330, 700), (150, 420), (0, 330), (-180, 360), (-395, 200),
@@ -209,10 +322,14 @@ def main():
             a["n"] = name
         areas.append(a)
 
-    area(ring_poly(0, 0, RIM + 96, 56), "brownfield", "The Apron")
-    area(rect(-395, 300, 300, 150), "parking", "Visitor Center Parking")
-    area(rect(-660, 250, 210, 120), "parking", "Overflow Parking")
-    area(rect(330, -250, 180, 110), "parking", "Works Platform Parking")
+    # The funnel is not an area. It used to be one "brownfield" disc over the whole orifice, a kind the engine has
+    # no colour for, so the lip of the pit came out lawn-green; and banded areas come out saw-toothed, because the
+    # engine lays a big area as a grid of cells. The funnel is lined instead by the "orifice" model in
+    # src/fleshpit/landmarks.js, which grades from the paved apron through the stained lip to the animal.
+    # The parking lots are not areas either. As areas they were laid over the ground as it was, and on the spoil
+    # ring's slope the ground came up through them in islands; the engine then lined their edges with cars and
+    # left the middles empty. They are graded as pads here (LOTS, below) and drawn by the "parkinglot" model in
+    # src/fleshpit/surface.js: striped stalls, planted islands, light standards, and cars in the stalls.
     area(ring_poly(CAMP[0], CAMP[1], 230, 28, 170), "park", "Gumption Flat Campground")
     area(rect(WORKS[0], WORKS[1], 700, 520), "industrial", "Anodyne Extraction Works")
     area(rect(WORKS[0] - 20, WORKS[1] + 330, 520, 160), "railyard", "Tank Farm")
@@ -221,8 +338,10 @@ def main():
 
     # ---------- buildings ----------
     buildings = []
+    pads = []                                                            # every footprint, for grade_pads()
 
     def put(ring, h, kind, colour, name="", roof="f", minh=None, mat=None):
+        pads.append(list(ring))
         b = {"p": flat(ring), "h": round(h, 1), "c": colour, "t": kind, "r": roof}
         if name:
             b["n"] = name
@@ -294,6 +413,12 @@ def main():
         rr = 110 if k % 2 else 170
         put(rect(CAMP[0] + math.cos(a) * rr * 1.06, CAMP[1] + math.sin(a) * rr * 0.72, 7, 5, a), 2.6, "shed", ROOFED, roof="f")
     out["buildings"] = buildings
+    # the parking lots are graded like buildings: level, a grid cell past the kerb, banked back to the slope
+    # (src/fleshpit/surface.js draws them; data/cities/fleshpit.json gives each its rectangle)
+    for cx, cz, w, d in LOTS:
+        pads.append(rect(cx, cz, w + 8, d + 8))
+    grade_pads(hs, nx, nz, step, pads)
+    out["terrain"]["h"] = [int(round(h * 10)) for h in hs]
 
     # ---------- what grows out here: mesquite and creosote, thin on the ground ----------
     trees = []
@@ -302,6 +427,8 @@ def main():
         z = R.uniform(-HALF + 60, HALF - 60)
         if math.hypot(x, z) < RIM + 200:
             continue
+        if any(abs(x - cx) < w / 2 + 12 and abs(z - cz) < d / 2 + 12 for cx, cz, w, d in LOTS):
+            continue                                                     # the lots plant their own islands
         if R.random() < 0.55 and min(dist_to_polyline(x, z, a) for a in ARROYOS) > 140:
             continue                                                     # they cluster in the arroyos
         trees += [q(x), q(z)]

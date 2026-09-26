@@ -28,7 +28,7 @@ DECOR = {"mast", "spire", "statue", "crown", "floodlit", "cupola", "clocktower",
 
 def models_for(city):
     """Every model this city may name. The shared engine holds what more than one city uses; the rest live with
-    the city's own page (src/<city>/landmarks.js) and are handed to the engine as ctx.models, so both are read."""
+    the city's own page (src/<city>/*.js) and are handed to the engine as ctx.models, so both are read."""
     def names(p):
         try:
             return set(re.findall(r"^ {2,8}([A-Za-z0-9_]+)\(L[,)]", open(p, encoding="utf-8").read(), re.M))
@@ -38,7 +38,13 @@ def models_for(city):
     # of it. A page's own file does not: Rivendell has a model called `statue` - a figure on a plinth at the
     # end of a terrace - and it is nothing to do with the decor of the same name that stands on a roof.
     engine = names(os.path.join(ROOT, "src", "engine", "stages", "04-landmarks.js")) - DECOR
-    page = names(os.path.join(ROOT, "src", city, "landmarks.js"))
+    # A page may split its models across several modules (the Flesh Pit's surface.js beside its landmarks.js),
+    # so every module in the page's folder is read.
+    folder = os.path.join(ROOT, "src", city)
+    page = set()
+    for f in (sorted(os.listdir(folder)) if os.path.isdir(folder) else []):
+        if f.endswith(".js"):
+            page |= names(os.path.join(folder, f))
     return engine | page
 ROOF_DECOR = {"mast", "spire", "statue", "crown", "cupola", "dome"}   # these stand on a roof; the rest build from the ground
 

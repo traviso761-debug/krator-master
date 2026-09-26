@@ -131,7 +131,7 @@
     -102.6
    ],
    "model": "orifice",
-   "info": "The way in. A natural vent 40 m across when the Loomis No. 3 well broke into it in 1962; the Anodyne Corporation widened it to 520 m over the following decade, poured the collar round the lip and hung the first stairs down the inside. Everything the park ever sold - the tours, the ballast, the resort - came out of this hole."
+   "info": "The way in. A vent forty metres across when a Jackson Surveying crew drilling for oil broke into it in 1973; the Anodyne Corporation widened it to 520 m, poured the collar round the lip and opened it to the public in 1976. The pink at the bottom of the funnel is not stained rock. Everything the park ever sold - the tours, the ballast, the resort - came out of this hole."
   },
   {
    "name": "Upper Visitor Center",
@@ -196,6 +196,161 @@
     -102.60158
    ],
    "info": "Ranger talks at dusk, with the orifice behind the stage. 'Everything you can see from this seat is alive' was the opening line of the standard programme."
+  },
+  {
+   "name": "Permian Basin pumpjacks",
+   "at": [
+    31.5,
+    -102.6
+   ],
+   "model": "pumpjacks",
+   "count": 46,
+   "info": "The oil field the pit was found in. Most of these wells were drilled before 1973 and most were still nodding in 2007; the leases round the park paid better than the park did. The ones nearest the rim were capped in 1981 when the crews noticed they were pumping something warm."
+  },
+  {
+   "name": "Anodyne billboards",
+   "at": [
+    31.4978,
+    -102.615
+   ],
+   "model": "billboards",
+   "boards": [
+    [
+     "SEE IT FROM THE INSIDE",
+     "MYSTERY FLESH PIT  ·  12 MI",
+     "#c8431f",
+     "#f4ead2"
+    ],
+    [
+     "ANODYNE",
+     "WE GO DEEPER",
+     "#f4ead2",
+     "#b3261e"
+    ],
+    [
+     "GUMPTION, TX",
+     "GATEWAY TO THE PIT",
+     "#2f4a5a",
+     "#f1d9a2"
+    ],
+    [
+     "THE GASTRIC FERRY",
+     "NOW DAILY  ·  ASK AT THE DESK",
+     "#6a2f3a",
+     "#f4ead2"
+    ],
+    [
+     "AMNIOTIC THERMAL SPRINGS",
+     "39°C  ·  ALL YEAR",
+     "#d9a441",
+     "#3a2418"
+    ],
+    [
+     "KIDS GO FREE IN JULY",
+     "HOLD THE RAIL",
+     "#3f6a8a",
+     "#fff3d8"
+    ]
+   ],
+   "info": "Anodyne's billboards on the park road. The company sold the pit the way the county sold everything else: loud, early and in capital letters. The Park Service took over the signs in 1981 and kept the billboards, because the billboards worked."
+  },
+  {
+   "name": "Caver Coop",
+   "at": [
+    31.49758,
+    -102.6274
+   ],
+   "model": "mascot",
+   "info": "The mascot, drawn in 1976 to sell a hole in the ground to families with small children. He wears a hard hat, holds the rail and smiles about it. The Park Service retired him in 1983 and put him back in 1991 because attendance had fallen."
+  },
+  {
+   "name": "Park entrance sign",
+   "at": [
+    31.49758,
+    -102.624
+   ],
+   "model": "entrance",
+   "info": "The sign every family photograph starts with. Poured stone and routed cedar, to the Park Service's standard drawings, 1981."
+  },
+  {
+   "name": "Visitor Center Parking",
+   "at": [
+    31.49784,
+    -102.606743
+   ],
+   "model": "parkinglot",
+   "rect": [
+    -640,
+    240,
+    200,
+    120
+   ],
+   "fill": 0.75,
+   "walk": 92,
+   "disabled": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "booth": [
+    10,
+    -54
+   ],
+   "title": "VISITOR PARKING",
+   "info": "Four hundred and twelve stalls, full by ten on any summer Saturday. The rangers' rule of thumb was that a car still here after closing was a search, not a ticket."
+  },
+  {
+   "name": "Overflow Parking",
+   "at": [
+    31.496535,
+    -102.606954
+   ],
+   "model": "parkinglot",
+   "rect": [
+    -660,
+    385,
+    180,
+    90
+   ],
+   "fill": 0.3,
+   "walk": 8,
+   "rvs": 6,
+   "info": "The overflow, and the only place the RVs fit. On 4 July 2007 it was full for the first time since 1994."
+  },
+  {
+   "name": "Works Lot",
+   "at": [
+    31.50378,
+    -102.5941
+   ],
+   "model": "parkinglot",
+   "rect": [
+    560,
+    -420,
+    160,
+    100
+   ],
+   "fill": 0.6,
+   "walk": -76,
+   "trucks": true,
+   "booth": [
+    60,
+    -46
+   ],
+   "title": "ANODYNE PERSONNEL",
+   "info": "Anodyne's shift lot: pickups, mostly, and the crew bus. Shift change at six, two and ten, when the lot empties and fills again in a quarter of an hour."
+  },
+  {
+   "name": "Upper Visitor Center plaza",
+   "at": [
+    31.498092,
+    -102.604162
+   ],
+   "model": "visitorcenter",
+   "info": "The plaza between the wings: the flags, the planters, the map board, the gift shop on one side and the ticket windows on the other, and the doors in under the canopy. Everybody who went down went through here first."
   }
  ],
  "views": {
@@ -304,7 +459,29 @@
     "kind": "collar",
     "colour": "#9a8f7e",
     "info": "Poured concrete for the first 160 m, ring-bolted into the orifice wall, with the switchback ramp and the four elevator shafts inside it. This much of the park is engineering; below it, nothing is.",
-    "focus": 90
+    "focus": 90,
+    "signs": [
+     [
+      "MYSTERY FLESH PIT",
+      "LOWER VISITOR CENTER ▼ 420 m"
+     ],
+     [
+      "DO NOT TOUCH THE WALL",
+      "Report any contact to a ranger"
+     ],
+     [
+      "HOLD THE HANDRAIL",
+      "during the breathing cycle"
+     ],
+     [
+      "NO FOOD OR DRINK",
+      "below this point"
+     ],
+     [
+      "ELEVATORS",
+      "60 persons · 4½ min"
+     ]
+    ]
    },
    {
     "name": "The Throat",
@@ -314,8 +491,36 @@
     "r1": 74,
     "kind": "throat",
     "colour": "#9c5a58",
-    "info": "The Lower Visitor Center and mall stood on a steel deck at 420 m, ringed all the way round the shaft, with the trailheads opening off it. Shops, a cafeteria, a first-aid post and 1,100 people on a July afternoon. The deck is what the pit swallowed first on 4 July 2007.",
-    "focus": 420
+    "info": "The entry tube: 360 m of muscle held open by steel stent hoops cleated into the wall, with tension cables run between them. Below the last hoop it opens into the Nexial Cavity, and the Lower Visitor Center hangs in the middle of that on a gantry and eight hydraulic rams that move all day to keep the deck level while the wall breathes round it. Shops, a cafeteria, a first-aid post and 1,100 people on a July afternoon. It is what the pit swallowed first on 4 July 2007.",
+    "focus": 420,
+    "cavity": {
+     "at": 405,
+     "r": 178,
+     "h": 220
+    },
+    "stents": [
+     168,
+     290,
+     24
+    ],
+    "signs": [
+     [
+      "LOWER VISITOR CENTER",
+      "Elevation −420 m · Gift shop · Cafeteria"
+     ],
+     [
+      "STAY BEHIND THE RAIL",
+      "The cavity is 230 m deep"
+     ],
+     [
+      "BRONCHIAL FORESTS ▼",
+      "Trailheads by the ramps · Lifts to −1,100 m"
+     ],
+     [
+      "SAND GULLET",
+      "Anodyne personnel only"
+     ]
+    ]
    },
    {
     "name": "The Bronchial Forests",
@@ -326,7 +531,17 @@
     "kind": "bronchial",
     "colour": "#a2685f",
     "info": "The lungs. Two chambers off the shaft, north and south, filled floor to ceiling with bronchial growth that the surveys insisted on calling trees. Boardwalk trails, primitive and unlit past the first loop, and Septum Falls dropping 90 m through the north chamber. The air moves through here on a twenty-two minute cycle: you can hear it coming.",
-    "focus": 760
+    "focus": 760,
+    "signs": [
+     [
+      "STAY ON BOARDWALK",
+      "The floor is not a floor"
+     ],
+     [
+      "SEPTUM FALLS  ·  90 m",
+      "Spray is irritant: do not look up"
+     ]
+    ]
    },
    {
     "name": "Amniotic Thermal Springs",
@@ -336,8 +551,155 @@
     "r1": 78,
     "kind": "springs",
     "colour": "#b07a63",
-    "info": "The ballast pods: hot, slack-walled and faintly luminous, holding the amniotic fluid Anodyne came for. The Park Service ran three of them as soaking pools at 39 degrees and sold the rest of the output upstairs. The 1988 advisory about the aphrodisiac effect was never withdrawn.",
-    "focus": 1220
+    "info": "The springs are a cluster of ballast bulbs off the south-west of the shaft, fitted out as baths: eight of them open, graded by potency from the Main Bath, where children are welcome, down to the Libido Bath at the bottom, where they are not. Lockers at the Bath House, towels when there are towels, and the enclosed trail down from the lifts. The Commercial Extraction Lease Area on the far side is Anodyne's, and off-limits. The Gift Gardens on the east wall are Anodyne's too.",
+    "focus": 1220,
+    "signs": [
+     [
+      "AMNIOTIC THERMAL SPRINGS",
+      "39°C · 20 minute limit"
+     ],
+     [
+      "NO GLASS IN THE POOL AREA",
+      ""
+     ],
+     [
+      "GIFT GARDENS",
+      "Harvest crew only · Hard hats"
+     ]
+    ],
+    "mainBath": {
+     "o": 300,
+     "s": -40,
+     "d": 1250,
+     "R": 105,
+     "n": 80,
+     "info": "The big one, and the only bath open to children: a chamber tented up into six points round a ring of fresh-air ducts, the water the palest in the springs, two red walkways looping across it and loungers round the edge. The Bath House stands on the near side. The leaflet asks bathers not to reserve the loungers, and to keep displays of affection within reason."
+    },
+    "spine": {
+     "o": 200,
+     "s": 30,
+     "top": 1062,
+     "bottom": 1262
+    },
+    "trailFrom": 1100,
+    "baths": [
+     {
+      "key": "regia",
+      "name": "Regia Bath",
+      "o": 232,
+      "s": 152,
+      "d": 1098,
+      "R": 42,
+      "p": 0.3,
+      "via": "spine",
+      "n": 16,
+      "sign": "Adults only · Mild",
+      "info": "The highest of the baths and the mildest after the Main Bath: blue water, a view back down over the cluster, and the queue for it."
+     },
+     {
+      "key": "gratia",
+      "name": "Gratia Bath",
+      "o": 205,
+      "s": 52,
+      "d": 1112,
+      "R": 30,
+      "p": 0.42,
+      "via": "spine",
+      "n": 10,
+      "sign": "Adults only",
+      "info": "A small bath close in to the long passage, and the one below which the leaflet advises consulting a physician first."
+     },
+     {
+      "key": "placito",
+      "name": "Placito Bath",
+      "o": 262,
+      "s": 232,
+      "d": 1124,
+      "R": 38,
+      "p": 0.52,
+      "via": "regia",
+      "n": 10,
+      "sign": "Adults only",
+      "info": "Out on the far edge past Regia. Take care diving: the ballast crops round it are not all mapped."
+     },
+     {
+      "key": "laetis",
+      "name": "Laetis Bath",
+      "o": 232,
+      "s": 112,
+      "d": 1192,
+      "R": 34,
+      "p": 0.36,
+      "via": "spine",
+      "n": 14,
+      "sign": "Adults only · Mild",
+      "info": "Blue, warm and quiet, halfway down the long passage."
+     },
+     {
+      "key": "viribus",
+      "name": "Viribus Bath",
+      "o": 282,
+      "s": 196,
+      "d": 1186,
+      "R": 30,
+      "p": 0.78,
+      "via": "laetis",
+      "n": 8,
+      "sign": "Adults only · Strong",
+      "info": "The first of the red baths. The leaflet suggests a religious, mystic or sexual wellness counsellor before going in past the yellow line."
+     },
+     {
+      "key": "cupido",
+      "name": "Cupido Bath",
+      "o": 262,
+      "s": 196,
+      "d": 1254,
+      "R": 24,
+      "p": 0.66,
+      "via": "salus",
+      "n": 6,
+      "sign": "Adults only",
+      "info": "The smallest of the open baths, and the one people went to in twos."
+     },
+     {
+      "key": "salus",
+      "name": "Salus Bath",
+      "o": 252,
+      "s": 112,
+      "d": 1278,
+      "R": 38,
+      "p": 0.56,
+      "via": "main",
+      "n": 14,
+      "sign": "Adults only",
+      "info": "Next to the Main Bath and down a step in potency from Placito. The Lovers Squeeze leaves from its far side."
+     },
+     {
+      "key": "libido",
+      "name": "Libido Bath",
+      "o": 302,
+      "s": 72,
+      "d": 1362,
+      "R": 36,
+      "p": 1.0,
+      "via": "salus",
+      "squeeze": true,
+      "n": 8,
+      "sign": "Adults only · See the Conduct & Consent leaflet",
+      "info": "The lowest bath in the springs and the strongest water in the park, reached through the Lovers Squeeze. The Conduct & Consent leaflet at the Bath House applies."
+     },
+     {
+      "key": "bulb",
+      "name": "Undeveloped Ballast Bulb",
+      "o": 332,
+      "s": 252,
+      "d": 1160,
+      "R": 11,
+      "sealed": true,
+      "via": "placito",
+      "info": "A bulb the park never fitted out. The leaflet encourages visitors to try the traditional bathing process by crawling into the orifice. The rangers did not."
+     }
+    ]
    },
    {
     "name": "The Lesser Gastric Sea",
@@ -347,9 +709,19 @@
     "r1": 128,
     "kind": "sea",
     "colour": "#7d4a50",
-    "water": "#c8d24a",
+    "water": "#c49a3a",
     "info": "The first of the two digestive lakes, 1,600 m down and 900 m across. The gastric ferry ran from the terminal on the north shore; the Fredrick J. Agnich Memorial Dam holds the level where the sea would otherwise drain into the lower chamber. The water is not water and touching it is fatal.",
-    "focus": 1830
+    "focus": 1830,
+    "signs": [
+     [
+      "GASTRIC FERRY",
+      "Next sailing on the hour"
+     ],
+     [
+      "NO SWIMMING NO WADING",
+      "No hands in the water"
+     ]
+    ]
    },
    {
     "name": "The Greater Gastric Sea",
@@ -359,9 +731,15 @@
     "r1": 150,
     "kind": "sea",
     "colour": "#6e3f4a",
-    "water": "#b7c23f",
-    "info": "Four times the size of the Lesser, and warmer. The Hilton Intrapark Thermal Wellness Resort stood on the shelf above the south shore: 180 rooms, none with a window, all of them booked through 2008.",
-    "focus": 2400
+    "water": "#b0843a",
+    "info": "Four times the size of the Lesser, and warmer. The Intrapark Thermal Wellness Resort stood on the shelf above the south shore: 180 rooms, none with a window, all of them booked through 2008. The Prime Labiod Junction, where the two seas meet, is the fold that opened on the night.",
+    "focus": 2400,
+    "signs": [
+     [
+      "INTRAPARK THERMAL WELLNESS RESORT",
+      "Guests only beyond this point"
+     ]
+    ]
    },
    {
     "name": "The Grand Drainage Pit",
@@ -372,11 +750,278 @@
     "kind": "works",
     "colour": "#5a3038",
     "info": "Where both seas drain. Anodyne's lower works - Little Detroit to the crews who worked it - hangs off the wall above the drain: pumps, a pipe stack running the full height of the shaft, and the last lit thing in the park. Below this the shaft goes on. The deepest anyone has been is 19,102 m, on the 1979 expedition, and that is not the bottom.",
-    "focus": 2720
+    "focus": 2720,
+    "signs": [
+     [
+      "ANODYNE DEEP EARTH MINING",
+      "Hard hat area"
+     ],
+     [
+      "LITTLE DETROIT",
+      "Pop. 212 · Shift change 06:00"
+     ]
+    ]
    }
   ],
   "rim": 26,
-  "mouthDepth": 146
+  "mouthDepth": 146,
+  "features": {
+   "_": "the named places below the rim, each a card: src/fleshpit/organism.js places them",
+   "gullet": {
+    "name": "The Sand Gullet",
+    "depth": 300,
+    "info": "The drain at the bottom of the entry tube, where the grit and the rain that came down the orifice collected. Three Anodyne pumps kept it dry. On 4 July 2007 the first two lost power in a relay fault and the backup had seized with corrosion; the gullet filled, and the water ran on into the lungs."
+   },
+   "bulbules": {
+    "name": "Bronchial bulbules",
+    "info": "The glossy clusters on the bronchial trunks. The surveys never settled what they do; they swell on the in-breath, and the boardwalk rail was set back from them in 1986 after a visitor put her hand on one."
+   },
+   "labiod": {
+    "name": "The Prime Labiod Junction",
+    "depth": 1960,
+    "info": "The lipped fold where the Lesser Gastric Sea gives on to the Greater. It is normally shut. On the night it flexed open and let the lower sea up the shaft."
+   },
+   "oyster": {
+    "name": "Oyster's Shame",
+    "depth": 1560,
+    "info": "A fold in the chamber wall above the Lesser Sea, named by the survey crews and never renamed. A ranger's truck went into it in 2007 and is still there; the fold closed on it and did not open again."
+   },
+   "gardens": {
+    "name": "The Gift Gardens",
+    "depth": 1300,
+    "info": "Retrocognitive material gestation organs, in the company's paperwork. They grow things - bone, mostly, and sometimes objects - and Anodyne harvested them on a rota from the rigs on the east wall. The harvest crews set an extraction record on the evening of 4 July 2007."
+   },
+   "falls": {
+    "name": "Septum Falls",
+    "info": "Ninety metres of what the north bronchial chamber drains, into a plunge pool the Park Service fenced and lit. The spray is irritant; the viewing platform is upwind of it most of the cycle."
+   }
+  },
+  "incident": {
+   "_": "src/fleshpit/incident.js: #2007 opens the page on the night",
+   "title": "4 July 2007",
+   "info": "Fireworks rained off, and the park kept open to midnight. At 21:16 the harvest crews' load tripped a relay; the gullet pumps stopped and the backup had seized. Water ran into the lungs and the organism began to choke. The failsafe - twenty thousand litres of aconitine - made it worse. The rams could not hold the Lower Visitor Center; at 22:12 it tore loose and fell into the Nexial Cavity, the labiod junction opened, and gastric fluid came up the orifice in columns several hundred metres high. By 23:13 it was quiet. More than 750 people died. The park did not reopen."
+  },
+  "breath": 0.016,
+  "shops": [
+   [
+    "GIFT SHOP",
+    "Souvenirs · Postcards · Film",
+    9054756,
+    15260864
+   ],
+   [
+    "THROAT CAFETERIA",
+    "Hot meals 11 to 7",
+    3037754,
+    15261896,
+    "food"
+   ],
+   [
+    "FIRST AID",
+    "Rangers on duty",
+    12068906,
+    15789284
+   ],
+   [
+    "BALLAST BAR",
+    "Tonics · Cordials · 21 and over",
+    5909066,
+    15127232,
+    "food"
+   ],
+   [
+    "FILM & PHOTO",
+    "One-hour developing",
+    14196768,
+    2763310
+   ],
+   [
+    "CAVER COOP CANDY",
+    "Fudge · Taffy · Rock candy",
+    14182954,
+    16050376,
+    "food"
+   ],
+   [
+    "T-SHIRTS & CAPS",
+    "I WENT DOWN THE PIT",
+    2771578,
+    15262940
+   ],
+   [
+    "POST OFFICE",
+    "Mailed from 420 m down",
+    2767466,
+    14209216
+   ],
+   [
+    "ROCK & BONE",
+    "Specimens · Certified by Anodyne",
+    6969914,
+    14207144
+   ],
+   [
+    "PIZZA PIT",
+    "By the slice",
+    12073514,
+    15786176,
+    "food"
+   ],
+   [
+    "BOOKS & MAPS",
+    "Field guides · Trail maps",
+    3824202,
+    14735560
+   ],
+   [
+    "RESTROOMS",
+    "",
+    4872810,
+    14212312
+   ],
+   [
+    "ICE CREAM",
+    "Cones · Sundaes · Floats",
+    14174842,
+    16313584,
+    "food"
+   ],
+   [
+    "LOCKERS",
+    "Day rental · Keys at desk",
+    5921370,
+    13684940
+   ],
+   [
+    "OUTFITTERS",
+    "Boots · Rain shells · Lamps",
+    4864554,
+    14208180
+   ],
+   [
+    "PHOTO WITH COOP",
+    "Souvenir portraits",
+    14725152,
+    3811866
+   ],
+   [
+    "SNACK BAR",
+    "Hot dogs · Pretzels",
+    13125674,
+    16049348,
+    "food"
+   ],
+   [
+    "WESTERN WEAR",
+    "Hats · Belts · Buckles",
+    8014378,
+    15258800
+   ]
+  ],
+  "tunnels": [
+   {
+    "name": "Passage U-1",
+    "d": 250,
+    "a": 1.0,
+    "r": 5,
+    "len": 260,
+    "drift": 0.1,
+    "state": "surveyed",
+    "info": "Found in 1978 by the crew fitting the stents. Surveyed to 140 m; the survey line is still pinned to the floor. Past the end of the line it forks, and the survey stops."
+   },
+   {
+    "name": "Passage U-2",
+    "d": 340,
+    "a": 5.2,
+    "r": 4,
+    "len": 200,
+    "drift": -0.2,
+    "state": "gated",
+    "info": "A low passage off the entry tube that fills with condensation on the out-breath. The grille was put in after a tour group's child went through the gap in the first one."
+   },
+   {
+    "name": "Passage U-3",
+    "d": 470,
+    "a": 4.1,
+    "r": 6,
+    "len": 380,
+    "drift": 0.3,
+    "state": "gated",
+    "info": "Opens off the floor of the Nexial Cavity below the deck. Air moves through it on the breath, in and out; the rangers used it to tell the time of the cycle."
+   },
+   {
+    "name": "Passage U-4",
+    "d": 880,
+    "a": 1.6,
+    "r": 5,
+    "len": 300,
+    "drift": 0.05,
+    "state": "sealed",
+    "info": "Between the lungs. Sealed with a bolted bulkhead in 1986 after two surveys a year apart found it had got longer."
+   },
+   {
+    "name": "Kellogg's Drift (W-2)",
+    "d": 1180,
+    "a": 5.4,
+    "r": 6,
+    "len": 520,
+    "drift": 0.15,
+    "state": "worked",
+    "worked": 0.35,
+    "info": "Anodyne's exploratory drift towards the heart, driven with a rail and a winch through 1983 and 1984. It was abandoned when the walls began to close on the rail at night; the cart is still where the last shift left it."
+   },
+   {
+    "name": "Passage U-7",
+    "d": 1520,
+    "a": 0.9,
+    "r": 5,
+    "len": 450,
+    "drift": 0.4,
+    "state": "gated",
+    "info": "Entered twice. The second crew came back after nine hours and would not say how far they had got. It has not been entered since 1994."
+   },
+   {
+    "name": "Passage U-8",
+    "d": 1800,
+    "a": 2.8,
+    "r": 4,
+    "len": 340,
+    "drift": -0.2,
+    "state": "surveyed",
+    "info": "Climbs away from the Lesser Gastric Sea towards the springs. The survey line runs 50 m and ends at a bootprint."
+   },
+   {
+    "name": "Passage U-9",
+    "d": 2200,
+    "a": 4.0,
+    "r": 7,
+    "len": 400,
+    "drift": 0.25,
+    "state": "gated",
+    "info": "The widest of them. Warm air comes out of it with a smell the crews compared to a hospital laundry."
+   },
+   {
+    "name": "Little Detroit adit (W-5)",
+    "d": 2660,
+    "a": 0.8,
+    "r": 5,
+    "len": 360,
+    "drift": 0.1,
+    "state": "worked",
+    "worked": 0.25,
+    "info": "Driven from the lower works in 1991 to find somewhere else for the drain to go. It did not find anywhere. The crews at Little Detroit hang their washing in front of the grille, where it dries in an hour."
+   },
+   {
+    "name": "Passage U-11",
+    "d": 2900,
+    "a": 5.6,
+    "r": 5,
+    "len": 280,
+    "drift": -0.3,
+    "state": "sealed",
+    "info": "The deepest passage the park recorded, and the only one that was sealed from the inside. The bulkhead was fitted by a crew who went in through the drain to do it."
+   }
+  ]
  },
  "descent": {
   "_": "the page's own camera (src/fleshpit/camera.js): a shaft-following descent rather than an orbit round a city centre",
@@ -392,5 +1037,24 @@
   ],
   "r": 96,
   "_": "the orifice: inside this the plain has no floor at all, because the shaft takes over (see tools/make-fleshpit.py, MOUTH)"
- }
+ },
+ "areaColours": {
+  "_": "the land cover here is caliche, not lawn: the engine's defaults are a city's greens",
+  "apron": "#b3a68c",
+  "stain": "#9a7466",
+  "flesh": "#8a4c50",
+  "brownfield": "#b09a74",
+  "park": "#a59c74",
+  "parking": "#55524e",
+  "industrial": "#7d7262",
+  "railyard": "#8a7f6e"
+ },
+ "treeColours": [
+  "#6b6f45",
+  "#7a784a",
+  "#5f663e",
+  "#858052",
+  "#6e6a44",
+  "#77734c"
+ ]
 }
