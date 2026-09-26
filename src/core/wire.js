@@ -67,11 +67,12 @@ export function createWire(opts){
     scene.traverse(o=>{
       if(!o.isMesh&&!o.isInstancedMesh)return;
       if(o.userData.isWire||o.userData.noWire)return;
-      const mm=o.material;
+      // A mesh with geometry groups carries an array of materials (a sign: one face printed, five plain).
+      const mm=Array.isArray(o.material)?o.material:[o.material];
       // Glows, beams, smoke, cloud and spray are not geometry - they are a way of drawing air - and the
       // signature they all share is that they do not write depth. Wireframing them fills the drawing
       // with spheres that are not there.
-      if(mm&&(mm.blending===THREE.AdditiveBlending||(mm.transparent&&mm.depthWrite===false)))return;
+      if(mm.every(m=>m&&(m.blending===THREE.AdditiveBlending||(m.transparent&&m.depthWrite===false))))return;
       if(o.geometry&&o.geometry.attributes&&o.geometry.attributes.position)list.push(o);
     });
     for(const o of list){
@@ -86,7 +87,7 @@ export function createWire(opts){
       w.userData.isWire=true;w.userData.geo={edges:eg,tris:o.geometry};
       w.castShadow=w.receiveShadow=false;w.visible=false;
       o.add(w);S.items.push(w);
-      if(o.material)S.solids.add(o.material);
+      for(const m of Array.isArray(o.material)?o.material:[o.material])if(m&&m.isMaterial)S.solids.add(m);
     }
     S.built=true;S.n=S.items.length;
     // an instanced mesh whose count changes - traffic, people, trains - has to carry its wire with it
@@ -136,9 +137,14 @@ export function installWireUI({ui,mkBtn,wire,hash}){
     if(next!=='off'&&!wire.state.built){
       busy=true;b.textContent='Wire: building…';b.disabled=true;
       requestAnimationFrame(()=>requestAnimationFrame(()=>{
-        wire.set(next);
-        b.textContent=label(next)+' ('+wire.state.n+')';b.disabled=false;busy=false;
-        b.setAttribute('aria-pressed','true');u.style.display='';
+        try{
+          wire.set(next);
+          b.textContent=label(next)+' ('+wire.state.n+')';
+          b.setAttribute('aria-pressed','true');u.style.display='';
+        }catch(e){
+          // a failed build must not leave the button stuck on "building" with the frame's error unexplained
+          b.textContent='Wire: failed';b.title=String(e&&e.message||e);throw e;
+        }finally{b.disabled=false;busy=false;}
       }));
       return;
     }
