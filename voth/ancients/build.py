@@ -75,6 +75,9 @@ TARGET_OUT = {
     'wing': 'wing.html',                     # memorial group: the Wing
     'drum': 'drum.html',                     # memorial group: the Drum
     'blades': 'blades.html',                 # memorial group: the Blades
+    'trigon': 'trigon.html',                 # the triangular pyramid, 3:1
+    'monolith': 'monolith.html',             # the slab with the arch and the oculi
+    'crescent': 'crescent.html',             # the terraced crescent moon
     'arcbeam': 'arcbeam.html',                 # the canyon-spanning beam arcology
     'ring': 'ring.html',                       # the barrel arcology, circular toruses
     'arcoindian': 'arcoindian.html',           # the cliff-topography arcology
