@@ -1,0 +1,28 @@
+127.0.0.1 - - [21/Sep/2026 13:49:04] "GET /theodiga.html HTTP/1.1" 200 -
+ERROR PANEL: clean
+draw calls: 42 triangles: 312262
+counters: {"_instances": 13034, "_ready": true, "_registered": 2}
+
+--- invariants ---
+  PASS  registered-volumes-non-empty : 2 volumes; thinnest: Dam arcology — Theodiga (intact) (6408), Dam arcology — Theodiga (ruined) (6604)
+  PASS  no-nan-geometry : clean
+  PASS  per-type-triangle-budget : 2 type/decay pairs, heaviest dam/1 196156/700000
+  PASS  showcase-triangle-budget : 355528 / 6000000 scene triangles
+  PASS  showcase-draw-calls : 42 / 900 draw calls at this camera
+  PASS  registry-and-bake-ran : 2 registered volumes, 13034 baked instances
+
+--- per type (scene triangles, instances, meshes) ---
+  dam/1           196156 /  700000  mega    inst    6673  meshes    16
+  dam/0           159372 /  700000  mega    inst    6361  meshes    16
+shot: ./shots/th5\view_Theodiga_face.png   calls 43  tris 0.31M
+shot: ./shots/th5\view_Theodiga.png   calls 42  tris 0.31M
+shot: ./shots/th5\view_Theodiga_ruin_face.png   calls 43  tris 0.31M
+shot: ./shots/th5\view_Theodiga_crest.png   calls 42  tris 0.31M
+
+--- worst draw calls over 4 views ---
+  Theodiga face                calls    43  tris 0.31M
+  Theodiga ruin face           calls    43  tris 0.31M
+  Theodiga                     calls    42  tris 0.31M
+  Theodiga crest               calls    42  tris 0.31M
+
+OK

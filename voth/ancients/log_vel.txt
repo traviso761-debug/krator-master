@@ -1,0 +1,40 @@
+127.0.0.1 - - [21/Sep/2026 14:14:45] "GET /veladiga.html HTTP/1.1" 200 -
+ERROR PANEL: clean
+draw calls: 39 triangles: 330382
+counters: {"_instances": 12343, "_ready": true, "_registered": 4}
+
+--- invariants ---
+  PASS  registered-volumes-non-empty : 4 volumes; thinnest: Veladiga — the city centre (300), Veladiga — the city centre (467), Veladiga — dam arcology (breached) (6170)
+  PASS  no-nan-geometry : clean
+  PASS  per-type-triangle-budget : 2 type/decay pairs, heaviest veladiga/2 207796/250000
+  PASS  showcase-triangle-budget : 387716 / 6000000 scene triangles
+  PASS  showcase-draw-calls : 39 / 900 draw calls at this camera
+  PASS  registry-and-bake-ran : 4 registered volumes, 12343 baked instances
+
+--- per type (scene triangles, instances, meshes) ---
+  veladiga/2      207796 /  250000  medium  inst    6119  meshes    14
+  veladiga/0      179920 /  250000  medium  inst    6224  meshes    14
+shot: ./shots/vel\view_Veladiga.png   calls 39  tris 0.33M
+shot: ./shots/vel\view_The_face.png   calls 39  tris 0.33M
+shot: ./shots/vel\view_One_bay.png   calls 36  tris 0.33M
+shot: ./shots/vel\view_Bay_mouth.png   calls 36  tris 0.33M
+shot: ./shots/vel\view_The_piers.png   calls 37  tris 0.33M
+shot: ./shots/vel\view_From_the_park.png   calls 39  tris 0.33M
+shot: ./shots/vel\view_City_centre.png   calls 39  tris 0.33M
+shot: ./shots/vel\view_The_crest.png   calls 37  tris 0.33M
+shot: ./shots/vel\view_The_pads.png   calls 36  tris 0.33M
+shot: ./shots/vel\view_Breached.png   calls 39  tris 0.33M
+shot: ./shots/vel\view_The_breach.png   calls 37  tris 0.33M
+shot: ./shots/vel\view_Breach_section.png   calls 39  tris 0.33M
+shot: ./shots/vel\view_Breached_park.png   calls 39  tris 0.33M
+shot: ./shots/vel\view_Both.png   calls 31  tris 0.29M
+
+--- worst draw calls over 14 views ---
+  Veladiga                     calls    39  tris 0.33M
+  The face                     calls    39  tris 0.33M
+  From the park                calls    39  tris 0.33M
+  City centre                  calls    39  tris 0.33M
+  Breached                     calls    39  tris 0.33M
+  Breach section               calls    39  tris 0.33M
+
+OK

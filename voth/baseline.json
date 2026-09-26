@@ -1,0 +1,935 @@
+{
+ "calls": 73,
+ "counters": {
+  "_adHocInfill": {
+   "slumB": 6
+  },
+  "_api": "(large)",
+  "_arena": "(large)",
+  "_arenaBuilt": {
+   "benches": 284,
+   "crowd": 258,
+   "gate": [
+    543,
+    1216
+   ],
+   "pit": [
+    543,
+    1206
+   ],
+   "pitH": 16.5,
+   "seats": 264,
+   "staticInstances": 366,
+   "vipY": 48.089999999999996
+  },
+  "_arenaCrowd": {
+   "beastTrisEach": 488,
+   "drawCalls": 1,
+   "gladParts": 22,
+   "gladTrisEach": 520,
+   "seats": 264,
+   "staticInstancesFreed": 528,
+   "triangles": 22176,
+   "trisEach": 84
+  },
+  "_avoidDebug": "(large)",
+  "_barges": {
+   "count": 8
+  },
+  "_bridgeBanners": "(large)",
+  "_buildings": 942,
+  "_cantonBridgeDoors": "(large)",
+  "_cantonCausewayDoors": "(large)",
+  "_caravanDests": "(large)",
+  "_caravans": "(large)",
+  "_causewayTone": "(large)",
+  "_cguardDock": {
+   "berths": [
+    {
+     "beam": 11,
+     "face": "north",
+     "len": 44,
+     "ry": 1.5707963267948966,
+     "x": -240,
+     "z": -1025
+    },
+    {
+     "beam": 10,
+     "face": "west",
+     "len": 36,
+     "ry": 0,
+     "x": -269.5,
+     "z": -1011.5
+    }
+   ],
+   "dock": {
+    "deckY": 3.55,
+    "headDepth": 14,
+    "headHalf": 23,
+    "rootX": -240,
+    "rootZ": -937.5,
+    "tipX": -240,
+    "tipZ": -1011.5,
+    "w": 12.5
+   }
+  },
+  "_cguardShip": {
+   "attrsOK": true,
+   "berth": {
+    "beam": 11,
+    "face": "north",
+    "len": 44,
+    "ry": 1.5707963267948966,
+    "x": -240,
+    "z": -1025
+   },
+   "diag": {
+    "berthFits": true,
+    "built": true,
+    "patrolPts": 12,
+    "patrolRejected": 0,
+    "why": null
+   },
+   "hullBeam": 12.98,
+   "hullLen": 39.72,
+   "patrolLen": null,
+   "ship": null,
+   "spanWithSprit": 55.16,
+   "spritTipY": 4.88,
+   "spritTipZ": 36.7
+  },
+  "_chinCanalCheck": {
+   "dropped": 81,
+   "fixed": 474,
+   "found": 555
+  },
+  "_chinDebug": "(large)",
+  "_chinampaHutCount": 273,
+  "_chinampaHuts": "(large)",
+  "_chinampas": 3049,
+  "_chinp": {
+   "bedL": 27,
+   "bedW": 14,
+   "cantonPad": 22,
+   "causewayClear": 34,
+   "causewayClearSolid": 50,
+   "cropChance": 0.88,
+   "depthMax": 17.5,
+   "depthMin": 1.1,
+   "hutChance": 0.1,
+   "isleClear": [
+    1.4,
+    12
+   ],
+   "marshRiverD": 380,
+   "marshRiverT": 0.14,
+   "matureChance": 0.36,
+   "pierClear": 40,
+   "riverClear": 30,
+   "rowSpacing": 20,
+   "spanClear": 22,
+   "willowsPer": [
+    1,
+    3
+   ]
+  },
+  "_clanVillage": {
+   "ry": 1.0608509648006788,
+   "slum": 5,
+   "stone": 2,
+   "x": -1650,
+   "z": -870
+  },
+  "_clergy": {
+   "altar": {
+    "doorX": 172.46108537378643,
+    "doorZ": 139.61135482639855,
+    "ry": 0.8902751021276822,
+    "x": 210,
+    "y": 159.42000000000002,
+    "z": 170
+   },
+   "goatIdx": 20,
+   "posts": 19,
+   "total": 21
+  },
+  "_compoundWorkers": {
+   "base": 1314,
+   "gardens": 19,
+   "n": 57,
+   "per": 3,
+   "sunrise": 6,
+   "sunset": 18
+  },
+  "_compounds": 16,
+  "_cpiers": "(large)",
+  "_crossings": {
+   "core": 211,
+   "coreSub35": 0,
+   "culledParallel": 206,
+   "culledShallow": 44,
+   "warren": 90,
+   "warrenSub28": 0
+  },
+  "_dayNight": {
+   "brazierLit": null,
+   "dayOfYear": null,
+   "hour": null,
+   "keyLight": null,
+   "litWindows": null,
+   "nightK": null,
+   "nightLights": 751,
+   "paused": null,
+   "secPerHour": 5,
+   "setDay": null,
+   "setHour": null,
+   "setPaused": null
+  },
+  "_dbg": "(large)",
+  "_deadEndStitch": 120,
+  "_debugRoadGraph": "(large)",
+  "_debugSetView": "(large)",
+  "_deck": {
+   "bridgeY": null,
+   "causewayY": null,
+   "groundY": null,
+   "on": null
+  },
+  "_districtContent": {
+   "cpiers": 4,
+   "graves": 1734,
+   "marketStalls": 492,
+   "monuments": 24,
+   "shops": 10,
+   "stalls": 492,
+   "tombs": 75,
+   "warehouses": 3
+  },
+  "_districtIntrusions": 1,
+  "_doors": "(large)",
+  "_errN": 0,
+  "_exotic": {
+   "baobab": 101,
+   "cherryBlossom": 81,
+   "dragonTree": 63,
+   "emperorMushroom": 3
+  },
+  "_facade": {
+   "compound": 506,
+   "instances": 9934,
+   "other": 4,
+   "town": 9424
+  },
+  "_facadeExtraDoors": 73,
+  "_facadeExtraWindows": 235,
+  "_farmFields": 44,
+  "_farms": 62,
+  "_fauna": {
+   "gullFlocks": [
+    {
+     "r": 64,
+     "x": 271,
+     "y": 16,
+     "z": 395
+    },
+    {
+     "r": 50,
+     "x": 281,
+     "y": 25,
+     "z": 492
+    },
+    {
+     "r": 63,
+     "x": -607,
+     "y": 24,
+     "z": 942
+    },
+    {
+     "r": 65,
+     "x": -325,
+     "y": 17,
+     "z": 452
+    },
+    {
+     "r": 41,
+     "x": -681,
+     "y": 27,
+     "z": 696
+    }
+   ],
+   "gulls": 20,
+   "racerFlocks": [
+    {
+     "r": 104,
+     "x": -1512,
+     "y": 301,
+     "z": 1478
+    },
+    {
+     "r": 105,
+     "x": 3647,
+     "y": 365,
+     "z": 1141
+    },
+    {
+     "r": 120,
+     "x": -1285,
+     "y": 218,
+     "z": 1720
+    }
+   ],
+   "racers": 12
+  },
+  "_ferries": {
+   "count": 12,
+   "shrineStops": 5,
+   "stops": 14
+  },
+  "_ferryStops": "(large)",
+  "_fishBoats": "(large)",
+  "_fishCartStops": "(large)",
+  "_fishDocks": "(large)",
+  "_flora": {
+   "birch": 43,
+   "groundsel": 35,
+   "instances": 7890,
+   "monkeyPuzzle": 12,
+   "plants": 833,
+   "shrub": 286,
+   "succulent": 399,
+   "treeFern": 58
+  },
+  "_floraCtx": {
+   "garden": 200,
+   "park": 83,
+   "wild": 550
+  },
+  "_floraSample": "(large)",
+  "_guildRow": {
+   "placed": [
+    {
+     "name": "Fisher",
+     "ry": 2.96,
+     "x": 726,
+     "z": -202
+    },
+    {
+     "name": "Miner",
+     "ry": 0.26,
+     "x": 776,
+     "z": -98
+    },
+    {
+     "name": "Brewer",
+     "ry": -2.94,
+     "x": 726,
+     "z": -122
+    },
+    {
+     "name": "Scribe",
+     "ry": -2.79,
+     "x": 750,
+     "z": -40
+    }
+   ],
+   "skipped": [
+    {
+     "name": "Tanner",
+     "why": "no claim() within search spiral of (780,-96)"
+    }
+   ]
+  },
+  "_guildWorkers": {
+   "roles": {
+    "artificer": 1,
+    "brewer": 1,
+    "carpenter": 2,
+    "fisher": 1,
+    "glassblower": 1,
+    "merchant": 2,
+    "miner": 1,
+    "potter": 1,
+    "scribe": 1,
+    "smith": 2,
+    "tender": 1,
+    "warrior": 4,
+    "weaver": 1
+   },
+   "total": 19
+  },
+  "_highpriest": {
+   "riseFor": 6,
+   "sacrificedToday": false,
+   "state": "resting",
+   "stateT": 0.36
+  },
+  "_hohSite": {
+   "fx": 60,
+   "fz": 60,
+   "ry": 1.1627898692876204,
+   "x": -621.125,
+   "z": 2036.6499999999999
+  },
+  "_houseOfHealing": {
+   "fx": 60,
+   "fz": 60,
+   "gardenCx": -621.125,
+   "gardenCz": 2036.6499999999999,
+   "ry": 1.1627898692876204,
+   "x": -621.125,
+   "z": 2036.6499999999999
+  },
+  "_industry": {
+   "mine": 6,
+   "mushroomFarm": 20,
+   "quarry": 3
+  },
+  "_industryCartStops": "(large)",
+  "_infillD": {
+   "buildings": 9,
+   "farmPlaced": true
+  },
+  "_infillE": {
+   "buildings": 3
+  },
+  "_infillF": {
+   "buildings": 22
+  },
+  "_infillG": {
+   "placed": 35,
+   "tried": 110
+  },
+  "_inspect": {
+   "describeHit": null,
+   "footprints": 177,
+   "get": null,
+   "instanceAt": null,
+   "namedInstances": 1,
+   "nearestNamedSite": null,
+   "placedTagAt": null,
+   "set": null
+  },
+  "_inspectFP": "(large)",
+  "_inspectInst": "(large)",
+  "_landingStairs": "(large)",
+  "_layout": {
+   "cantons": 11,
+   "farms": 62,
+   "roads": 549,
+   "rpiers": 4,
+   "spans": 10,
+   "wall": 17
+  },
+  "_legs": "(large)",
+  "_legsFerry": [
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null
+  ],
+  "_life": {
+   "canoes": 100
+  },
+  "_lifeBarges": "(large)",
+  "_lifeShips": "(large)",
+  "_lifeTick": "(large)",
+  "_mills": {
+   "built": null,
+   "clusters": null,
+   "instances": null
+  },
+  "_monastery": 1,
+  "_monasteryCoops": {
+   "placed": 3,
+   "tried": 3,
+   "wanted": 3
+  },
+  "_monasterySites": "(large)",
+  "_monks": {
+   "base": 1371,
+   "coops": 3,
+   "dorms": 2,
+   "fields": 10,
+   "hours": {
+    "chapel": 18,
+    "dorm": 22,
+    "work": 6
+   },
+   "n": 56,
+   "perCoop": 2,
+   "perField": 5,
+   "robe": "#969992",
+   "tinted": true
+  },
+  "_mushroomFillAbbey": {
+   "placed": 0,
+   "tried": 3
+  },
+  "_mushroomFillH": {
+   "placed": 4,
+   "tried": 41
+  },
+  "_mushroomFillI": {
+   "placed": 10,
+   "tried": 50
+  },
+  "_mushroomFillJ": {
+   "placed": 6,
+   "tried": 14
+  },
+  "_nav": "(large)",
+  "_newGates": "(large)",
+  "_newTowers": "(large)",
+  "_newWall": {
+   "chainClean": true,
+   "edgesFinal": 25,
+   "endpointCount": 2,
+   "gates": 10,
+   "genericGates": 7,
+   "namedGates": [
+    "HarborGate",
+    "SpiritGate",
+    "RiverGate"
+   ],
+   "nodesLive": 26,
+   "segHealthCounts": {
+    "0": 0,
+    "1": 14,
+    "2": 10
+   },
+   "segs": 24,
+   "siteDrift": {
+    "max": 16.000000000000103,
+    "mean": 3.0769230769230846,
+    "n": 26
+   },
+   "towerHealthCounts": {
+    "0": 3,
+    "1": 3,
+    "2": 11
+   },
+   "towerPerches": 11,
+   "towers": 17
+  },
+  "_nightGlow": {
+   "allNightFrac": 0.05178529203121305,
+   "fortFlames": null,
+   "green": 4,
+   "greenAmp": null,
+   "greenList": null,
+   "greenUniform": null,
+   "lampList": null,
+   "lamps": 316,
+   "litFrac": null,
+   "litNow": null,
+   "peakLampPool": 11.32,
+   "peakWinPool": 4.47,
+   "res": 1024,
+   "winList": null,
+   "windows": 4229
+  },
+  "_orchard": 4505,
+  "_ordinators": "(large)",
+  "_palace": {
+   "atria": 8,
+   "buttresses": 64,
+   "gardenBays": 12,
+   "gardenPlants": 711,
+   "gateInstances": 760,
+   "gates": 4,
+   "instances": 11461,
+   "kiosks": 8,
+   "movedBays": 2,
+   "porphyry": "PAL.stone.porphyry (promoted from the local literal this pass asked about)",
+   "skylights": 143,
+   "triangles": 260140
+  },
+  "_palaceBays": [
+   {
+    "from": "Foreign",
+    "lat": 82,
+    "moved": true,
+    "obliqueDeg": 39,
+    "wasLat": 103,
+    "x": -412,
+    "z": 893
+   },
+   {
+    "from": "Temple",
+    "lat": -82,
+    "moved": true,
+    "obliqueDeg": 56,
+    "wasLat": -135,
+    "x": -137,
+    "z": 618
+   },
+   {
+    "from": "Ancestry",
+    "lat": 3,
+    "moved": false,
+    "obliqueDeg": 1,
+    "wasLat": 3,
+    "x": -523,
+    "z": 697
+   },
+   {
+    "from": "Granary",
+    "lat": -14,
+    "moved": false,
+    "obliqueDeg": 4,
+    "wasLat": -14,
+    "x": -316,
+    "z": 892
+   }
+  ],
+  "_pathviz": {
+   "discover": null,
+   "get": null,
+   "hide": null,
+   "register": null,
+   "show": null,
+   "types": null
+  },
+  "_pathvizReg": "(large)",
+  "_pbarge": "(large)",
+  "_pedTransit": {
+   "audit": null,
+   "closed": [
+    {
+     "n": "Palace",
+     "r": 205,
+     "x": -330,
+     "z": 700
+    },
+    {
+     "n": "Temple",
+     "r": 188,
+     "x": 210,
+     "z": 170
+    }
+   ],
+   "closedAt": null,
+   "stats": null,
+   "walkable": null
+  },
+  "_peds": "(large)",
+  "_penitents": {
+   "groups": 5,
+   "stops": 7,
+   "total": 15
+  },
+  "_placedCheck": "(large)",
+  "_plasterFacade": {
+   "buildings": 676,
+   "canopy": 460,
+   "secondStorey": 68,
+   "smoking": 160
+  },
+  "_plinthDoors": "(large)",
+  "_portShips": [
+   [
+    1408,
+    -1362
+   ],
+   [
+    936,
+    -1236
+   ],
+   [
+    901,
+    -1324
+   ],
+   [
+    1099,
+    -1545
+   ],
+   [
+    1187,
+    -1526
+   ]
+  ],
+  "_props": "(large)",
+  "_quarryExempt": "(large)",
+  "_quarryLaborerLife": {
+   "base": 1266,
+   "n": 48,
+   "sunrise": 6,
+   "sunset": 18
+  },
+  "_quarryLaborers": {
+   "exemptDiscs": 15,
+   "sites": [
+    {
+     "built": true,
+     "housesPlaced": 4,
+     "x": 2758.5,
+     "z": -715.3
+    },
+    {
+     "built": true,
+     "housesPlaced": 4,
+     "x": 2547.4,
+     "z": -840.9
+    },
+    {
+     "built": true,
+     "housesPlaced": 4,
+     "x": 2728.4,
+     "z": -925.8
+    }
+   ],
+   "totalHouses": 12
+  },
+  "_rbargeDocks": "(large)",
+  "_rejCompound": {
+   "cand": 3600,
+   "clash": 14,
+   "dist": 2584,
+   "district": 108,
+   "low": 28,
+   "mask": 219,
+   "ring": 48,
+   "slope": 3,
+   "thin": 34,
+   "wall": 546
+  },
+  "_rejTown": {
+   "cand": 88576,
+   "clash": 1264,
+   "dist": 51002,
+   "district": 2925,
+   "mask": 6539,
+   "slope": 30,
+   "thin": 842,
+   "wall": 23934
+  },
+  "_revetChinSkips": 78,
+  "_roadGraph": {
+   "componentSizes": [
+    2254,
+    6,
+    4,
+    3,
+    3,
+    3,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2
+   ],
+   "components": 74,
+   "crossings": {
+    "core": 211,
+    "coreSub35": 0,
+    "culledParallel": 206,
+    "culledShallow": 44,
+    "warren": 90,
+    "warrenSub28": 0
+   },
+   "decks": 21,
+   "edges": 2616,
+   "largestComponent": 2254,
+   "nodes": 2357,
+   "stitches": 96,
+   "warrenBlocks": {
+    "median": 2432,
+    "min": 64,
+    "n": 110,
+    "p90": 3904,
+    "under700": 16
+   },
+   "warrenDeadEnds": 146
+  },
+  "_ships": {
+   "count": 9,
+   "inlet": [
+    835.9255201288938,
+    -5128.026869776642
+   ],
+   "mobileDocks": 7,
+   "mobileN": 5,
+   "stationaryN": 4
+  },
+  "_shopkeepers": {
+   "n": 246,
+   "sunrise": 6,
+   "sunset": 18
+  },
+  "_shore": {
+   "len": 20393,
+   "n": 852
+  },
+  "_shrineStops": "(large)",
+  "_silhouetteShrines": [
+   [
+    2248.5,
+    -4448.5
+   ]
+  ],
+  "_sky": "(large)",
+  "_skySignCheck": "ok",
+  "_smoke": {
+   "byKind": {
+    "brew": {
+     "n": 1,
+     "puffs": 5
+    },
+    "chimney": {
+     "n": 160,
+     "puffs": 800
+    },
+    "forge": {
+     "n": 1,
+     "puffs": 21
+    },
+    "furnace": {
+     "n": 1,
+     "puffs": 15
+    },
+    "kiln": {
+     "n": 1,
+     "puffs": 14
+    },
+    "tavern": {
+     "n": 15,
+     "puffs": 120
+    }
+   },
+   "drawCalls": 1,
+   "emitters": 179,
+   "particles": 975,
+   "triangles": 78000
+  },
+  "_standaloneShrineDebug": [
+   {
+    "name": "ShrineEast",
+    "ok": true,
+    "x": 2450,
+    "z": -360
+   },
+   {
+    "name": "ShrineCentral",
+    "ok": true,
+    "x": 1204.8854751970712,
+    "z": -37.837482681813185
+   },
+   {
+    "name": "ShrineWest",
+    "ok": true,
+    "x": -1360,
+    "z": 661
+   }
+  ],
+  "_staticLanterns": 131,
+  "_stats": {
+   "instances": 117849,
+   "meshes": 27
+  },
+  "_striderManorRelocated": 5,
+  "_striderModel": {
+   "bodyPartCount": 54,
+   "bodySlots": 60,
+   "bodyTrisEach": 1638,
+   "drawCalls": 2,
+   "height": 24.9,
+   "hipY": 12.6,
+   "instances": 780,
+   "legBars": 720,
+   "legTrisEach": 24,
+   "legs": 6,
+   "length": 40.7,
+   "triangles": 115560
+  },
+  "_striderStations": "(large)",
+  "_striders": "(large)",
+  "_tavernCantonDbg": [
+   {
+    "canton": "Foreign",
+    "deckFootprints": 19,
+    "hallFx": 18,
+    "hallFz": 12.5,
+    "placed": true,
+    "topHw": 78.97271296,
+    "topY": 36.36
+   },
+   {
+    "canton": "Market",
+    "deckFootprints": 16,
+    "hallFx": 18,
+    "hallFz": 12.5,
+    "placed": true,
+    "topHw": 82.67455887999999,
+    "topY": 40.36
+   },
+   {
+    "canton": "Granary",
+    "deckFootprints": 20,
+    "hallFx": 18,
+    "hallFz": 12.5,
+    "placed": true,
+    "topHw": 87.524264,
+    "topY": 32.24
+   }
+  ],
+  "_taverns": "(large)",
+  "_taxis": "(large)",
+  "_tex": {
+   "families": 9,
+   "size": 128
+  },
+  "_veg": 6257,
+  "_wallAudit": {
+   "checked": 970,
+   "clipSample": [],
+   "clips": 0,
+   "shapes": 50
+  },
+  "_warehouseDistrict": [
+   {
+    "name": "Warehouse District",
+    "poly": [
+     [
+      1189.2769918945357,
+      1348.5214104428205
+     ],
+     [
+      1527.9946677825658,
+      1418.450176910772
+     ],
+     [
+      1493.2468624888036,
+      1635.6887324833654
+     ],
+     [
+      1125.472629146797,
+      1559.065950372867
+     ]
+    ],
+    "type": "warehouse"
+   }
+  ],
+  "_warrenBlocks": {
+   "median": 2432,
+   "min": 64,
+   "n": 110,
+   "p90": 3904,
+   "under700": 16
+  },
+  "_warrenDeadEnds": 146,
+  "_weather": {
+   "get": null,
+   "set": null
+  }
+ },
+ "tris": 4265206
+}
