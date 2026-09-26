@@ -351,7 +351,10 @@ function buildInterior(api,O){
       wat.geometry.setIndex(keep);IN.add(wat);}
     // the trees: woods where the parcels are wood, orchards in rows along the edges, single trees on the lawns
     {const N=K.trees||5200,treeG=bake(new THREE.ConeGeometry(4.2,13,7).translate(0,10.5,0),col('#3b6230'),0.55),trunkG=bake(new THREE.CylinderGeometry(0.5,0.7,4.5,5).translate(0,2.25,0),col('#5a4632'),0.6);
-      const tM=vM(),im=new THREE.InstancedMesh(treeG,tM,N),it=new THREE.InstancedMesh(trunkG,tM,N),o=new THREE.Object3D(),cc=new THREE.Color();let n=0;
+      // Crowns and trunks have a material each: in three.js r128 an instanced mesh with per-instance colours (the crowns)
+      // and one without (the trunks) must not share one, or whichever draws second gets a program that reads a colour
+      // buffer it does not have (render: "isInterleavedBufferAttribute" of null).
+      const tM=vM(),im=new THREE.InstancedMesh(treeG,tM,N),it=new THREE.InstancedMesh(trunkG,vM(),N),o=new THREE.Object3D(),cc=new THREE.Color();let n=0;
       for(let k=0;k<N*4&&n<N;k++){const a=rnd()*Math.PI*2,y=GA+15+rnd()*(GF-GA-30),P=parcel(a,y);
         const woodHere=P.h<0.22&&y>GA+120&&y<GF-120,lawnHere=y<GA+120||y>GF-120;if(LAKE(a,y)||isPath(a,y))continue;
         if(!woodHere&&!(lawnHere&&rnd()<0.08)&&!(rnd()<0.012))continue;
