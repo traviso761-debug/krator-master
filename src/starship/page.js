@@ -359,7 +359,7 @@ export async function starshipPage(opts){
     document.addEventListener('visibilitychange',()=>{drag=null;});
     el.addEventListener('pointermove',e=>{
       if(drag&&e.buttons===0&&e.pointerType!=='touch'){drag=null;return;}
-      if(!drag)return;
+      if(!drag||(SHIP.ownsInput&&SHIP.ownsInput()))return;
       const dx=e.clientX-drag.x,dy=e.clientY-drag.y;drag.x=e.clientX;drag.y=e.clientY;
       if(drag.pan){
         const s=V.d*0.0013;
@@ -369,8 +369,11 @@ export async function starshipPage(opts){
       }else{
         V.az-=dx*0.005;V.el=Math.max(-1.45,Math.min(1.45,V.el+dy*0.004));
       }});
-    el.addEventListener('wheel',e=>{e.preventDefault();
-      V.d=Math.max(SHIP.radius*0.35,Math.min(SHIP.radius*160,V.d*Math.exp(e.deltaY*0.0011)));},{passive:false});
+    // how close you may get: a third of the ship's radius by default, which for an eight-kilometre station is
+    // a kilometre and a half off the hull and nowhere near its docking bay, so a model may say for itself
+    const DMIN=SHIP.minD||SHIP.radius*0.35;
+    el.addEventListener('wheel',e=>{e.preventDefault();if(SHIP.ownsInput&&SHIP.ownsInput())return;
+      V.d=Math.max(DMIN,Math.min(SHIP.radius*160,V.d*Math.exp(e.deltaY*0.0011)));},{passive:false});
     // pinch, for the pages people actually look at these on
     {let pinch=null;const pts=new Map();
      el.addEventListener('pointerdown',e=>{if(e.pointerType==='touch')pts.set(e.pointerId,e);});
@@ -378,10 +381,29 @@ export async function starshipPage(opts){
        pts.set(e.pointerId,e);
        if(pts.size===2){const [a,b]=[...pts.values()];
          const d=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);
-         if(pinch)V.d=Math.max(SHIP.radius*0.35,Math.min(SHIP.radius*160,V.d*pinch/d));
+         if(pinch)V.d=Math.max(DMIN,Math.min(SHIP.radius*160,V.d*pinch/d));
          pinch=d;drag=null;}});
      const drop=e=>{pts.delete(e.pointerId);if(pts.size<2)pinch=null;};
      addEventListener('pointerup',drop);addEventListener('pointercancel',drop);}
+
+    // ---- the cards ----
+    // A model that hangs {name, info} on the userData of a part gets a card for it when it is clicked, the
+    // way a landmark does in a city. A click is a press and release that did not move: a drag is the camera.
+    {const card=document.getElementById('card'),ray=new THREE.Raycaster(),m2=new THREE.Vector2();let down=null;
+     const close=()=>{if(card){card.classList.remove('open');card.style.display='';}};
+     const show=L=>{if(!card)return;card.innerHTML='';const h=document.createElement('h2');h.textContent=L.name;
+       const p=document.createElement('p');p.textContent=L.info||'';const b=document.createElement('button');b.type='button';
+       b.textContent='Close';b.onclick=close;card.append(h,p,b);card.classList.add('open');card.style.display='block';};
+     el.addEventListener('pointerdown',e=>{down={x:e.clientX,y:e.clientY};});
+     el.addEventListener('pointerup',e=>{if(!down||Math.hypot(e.clientX-down.x,e.clientY-down.y)>5){down=null;return;}down=null;
+       const picks=SHIP.pick||[];if(!picks.length)return;
+       m2.set(e.clientX/innerWidth*2-1,-(e.clientY/innerHeight)*2+1);ray.setFromCamera(m2,camera);
+       for(const h of ray.intersectObjects(picks,true)){let o=h.object;
+         // a part cut away by a clipping plane is not there to be clicked
+         const cp=o.material&&o.material.clippingPlanes;if(cp&&cp.some(pl=>pl.distanceToPoint(h.point)<0))continue;
+         while(o&&!o.userData.info)o=o.parent;if(o){show(o.userData.info);return;}}
+       close();});
+     addEventListener('keydown',e=>{if(e.key==='Escape')close();});}
 
     // ---- the panels ----
     const ui=document.getElementById('ui'),viewsEl=document.getElementById('views');
@@ -411,7 +433,8 @@ export async function starshipPage(opts){
          if(n.length>=6){V.tx=n[3];V.ty=n[4];V.tz=n[5];}}}}
     {let t=0;setInterval(()=>{const now=Date.now();if(now-t<1400)return;t=now;
       const r=x=>Math.round(x*1000)/1000;
-      try{history.replaceState(null,'','#v='+[r(V.az),r(V.el),Math.round(V.d)].join(','));}catch(e){}},1500);}
+      // a model that has a mode of its own (a cutaway, an interior) keeps it in the address too
+      try{history.replaceState(null,'','#v='+[r(V.az),r(V.el),Math.round(V.d)].join(',')+(SHIP.hashExtra?SHIP.hashExtra():''));}catch(e){}},1500);}
 
     addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();
       renderer.setSize(innerWidth,innerHeight);});
@@ -430,8 +453,12 @@ export async function starshipPage(opts){
         const now=performance.now();
         for(const f of animHooks){try{f(now);}catch(e){if(!f._failed){f._failed=true;report('update',e);}}}
         if(sky)for(const q of sky.bodies)if(q.b.rate)q.g.rotation.y+=q.b.rate;
-        frame();
-        hud.textContent=(V.d>=1000?(V.d/1000).toFixed(1)+' km':Math.round(V.d)+' m')+' off';
+        // a model may take the camera over - Babylon 5's interior rides the drum - and then the turntable waits
+        if(!(SHIP.camFrame&&SHIP.camFrame(now)))frame();
+        // A station kilometres long seen from kilometres off wants the near plane out of the way, or its
+        // panelling fights itself in the depth buffer; one looked at from a hundred metres wants it close.
+        if(SHIP.adaptiveNear){const n=Math.max(0.6,Math.min(40,V.d*0.004));if(Math.abs(n-camera.near)>n*0.2){camera.near=n;camera.updateProjectionMatrix();}}
+        hud.textContent=SHIP.hudOnly?SHIP.hudOnly(now)||'':(V.d>=1000?(V.d/1000).toFixed(1)+' km':Math.round(V.d)+' m')+' off'+(SHIP.hud?' · '+SHIP.hud(now):'');
         renderer.render(scene,camera);
       }catch(e){report('render',e);}
     })();
