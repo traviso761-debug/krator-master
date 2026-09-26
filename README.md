@@ -1443,7 +1443,7 @@ ports for itself. `--shot` saves the rendered canvas as a JPEG.
 Krator, the Tongue - only have to load without an error. Before any of it, `src/*/build.js` must be current with
 its stages (`tools/build-page.py --check`): a stale one fails the run rather than being rebuilt behind your back.
 
-Pages that are not built from lots hand the probe a fingerprint of their scene through `src/core/fingerprint.js`
+Pages that are not built from lots hand the probe a fingerprint of their scene through `src/core/layout.js`
 (the Backrooms: the rooms round where you arrive; Voth: its scene straight after `BUILD()`, before anything
 moves). To make a golden: `python3 tools/probe.py --page <page>.html --seed N --save-golden tests/golden/<page>-N.json`.
 
