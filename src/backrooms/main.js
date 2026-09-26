@@ -14,7 +14,7 @@ import {createWire,installWireUI} from '../core/wire.js';
 import {createWorld,LEVELS,ORDER,C} from './level.js';
 import {makeTextures} from './textures.js';
 import {createSound} from './sound.js';
-import {sceneRows} from '../core/fingerprint.js';
+import {sceneRows} from '../core/layout.js';
 
 installErrorHandlers();window.LOAD=LOAD;
 configureLoading({

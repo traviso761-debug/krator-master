@@ -1,4 +1,6 @@
 // ---------- the layout fingerprint, for pages that have no lots ----------
+// (This file used to be called fingerprint.js, and content blockers will not load a script by that name - they
+// take it for browser fingerprinting - so every page that imported it failed silently in a browser with one.)
 // The test suite checks every page against a golden: build it, and the layout must come out the same
 // (tools/probe.py hashes ctx.lotList). The engine's cities have lots to list. A page built some other way
 // hands this its scene - or the part of it that is layout - and gets rows in the same schema, one per mesh:

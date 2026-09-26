@@ -48,9 +48,11 @@ window.addEventListener('unhandledrejection',function(e){ ERR('promise: '+(e.rea
 <!-- The city itself: src/voth/stages/, assembled into src/voth/build.js by tools/build-page.py. It is run here and
      not by a main.js, because the fingerprint the tests check has to be taken in the same task, before the first
      frame moves anything. -->
-<script type="module">
+<!-- A module that cannot be loaded (a content blocker, a missing file) fails the whole script before a line of
+     it runs and says nothing to window.onerror: the error event goes to this element. -->
+<script type="module" onerror="ERR('Could not load the city\'s scripts (src/voth/build.js or one of its imports). A content blocker?')">
 import {build} from './src/voth/build.js';
-import {sceneRows} from './src/core/fingerprint.js';
+import {sceneRows} from './src/core/layout.js';
 import {installMenagerie} from './src/core/menagerie.js';
 if(!window.THREE)ERR('Could not load vendor/three/three.min.js.');
 else{
