@@ -67,12 +67,11 @@ case "$cmd" in
   health)   curl -fsS "http://127.0.0.1:$(port)/healthz" ;;
   boot)     echo "Starting at boot needs root once:"; echo "  sudo loginctl enable-linger $USER"
             loginctl show-user "$USER" -p Linger ;;
-  test)     # 1. pure modules under gjs; 2. headless Firefox: the page must build without errors and lay out the same city as the golden files
+  test)     # 1. pure modules under gjs; 2. every page in headless Firefox against its golden (tools/test-pages.py)
             rc=0; if command -v gjs >/dev/null; then gjs -m "$DIR/tests/run.js" || rc=1; else echo "gjs not installed: skipping module tests"; fi
-            check >/dev/null || exit 1
-            for g in "$DIR"/tests/golden/*-*.json; do f="${g##*/}"; f="${f%.json}"; page="${f%-*}"; seed="${f##*-}"
-              echo "== $page seed $seed"; python3 "$DIR/tools/probe.py" --page "$DIR/$page.html" --seed "$seed" --wait "${1:-12}" --port $((8400 + seed % 100)) --expect "$g" | grep -E '^(errors|layout|LAYOUT|loadMs)' || rc=1
-            done; exit $rc ;;
+            python3 "$DIR/server.py" --config "$CONFIG" --check >/dev/null || exit 1   # not check(): that would rebuild a stale build.js instead of failing on it
+            python3 "$DIR/tools/test-pages.py" "$@" || rc=1
+            exit $rc ;;
   probe)    python3 "$DIR/tools/probe.py" "$@" ;;
   help|-h|--help)
     cat <<EOF
@@ -92,7 +91,8 @@ Usage: ./sitectl <command>
   url        print the site URLs
   health     ask the running server if it's up
   boot       how to start the site at boot without a login
-  test [S]   headless check: page builds with no errors and the city layout matches tests/golden (S = seconds to wait)
+  test [P..] headless check: every page builds with no errors and its layout matches tests/golden (P: only pages
+             whose name starts with P; -j N pages at a time)
   probe ...  run tools/probe.py with the given arguments (metrics for one page load)
 
 Editing an HTML page or image needs no command: files are read on every request.

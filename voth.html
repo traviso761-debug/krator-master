@@ -847,6 +847,7 @@ reseed(200001);   /* fragment head seed — build.py enforces this. Each fragmen
 var FAST = !!(navigator.webdriver) || /[?&]fast/.test(location.search);
 
 var scene = new THREE.Scene();
+window._vothScene = scene;   /* for the layout fingerprint the tests check, taken right after BUILD() */
 window.scene = scene;
 
 var HAZE = new THREE.Color(PAL.haze);                    /* palette: 05-palette.js */
@@ -33176,6 +33177,24 @@ window._pathviz = { get:function(){ return PATHVIZ_ON; }, show:pathvizShow, hide
 // three.js and BUILD are both parsed by now, so this is the last thing the page does
 if(!window.THREE) ERR('Could not load vendor/three/three.min.js.');
 else try{ BUILD(); }catch(e){ ERR('build: '+(e&&e.stack||e)); }
+// The layout fingerprint the test suite checks (tools/probe.py hashes window._iz.lotList), in the schema of
+// src/core/fingerprint.js. It is inline because it has to run now, before the first frame moves anything; a
+// module would load too late.
+try{(function(){
+  var sc=window._vothScene;if(!sc)return;var rows=[],v=new THREE.Vector3(),m=new THREE.Matrix4();
+  sc.updateMatrixWorld(true);
+  sc.traverse(function(o){
+    if(!(o.isMesh||o.isPoints||o.isLine))return;var g=o.geometry;if(!g||!g.attributes||!g.attributes.position)return;
+    if(!g.boundingSphere)g.computeBoundingSphere();v.setFromMatrixPosition(o.matrixWorld);
+    var mat=Array.isArray(o.material)?o.material[0]:o.material;
+    var kind=(mat&&mat.color?mat.color.getHexString():'?')+(o.isPoints?':pts':o.isLine?':line':'');
+    if(o.isInstancedMesh){var a=0,b=0;for(var i=0;i<o.count;i++){o.getMatrixAt(i,m);var e=m.elements;
+      var x=Math.round(e[12]*10),y=Math.round(e[13]*10),z=Math.round(e[14]*10);
+      a=(a+((x*73856093)^(y*19349663)^(z*83492791)))|0;b=(b+x+3*y+7*z)|0;}
+      kind+=':'+o.count+':'+(a>>>0).toString(16)+':'+(b>>>0).toString(16);}
+    rows.push({x:v.x,z:v.z,h:v.y,w:g.boundingSphere.radius,dpt:g.attributes.position.count,ry:0,kind:kind,fixed:false});});
+  rows.sort(function(p,q){return p.x-q.x||p.h-q.h||p.z-q.z||p.dpt-q.dpt||(p.kind<q.kind?-1:p.kind>q.kind?1:0);});
+  window._iz=window._iz||{};window._iz.lotList=rows;})();}catch(e){ERR('fingerprint: '+(e&&e.message||e));}
 </script>
 <!-- the way back to the menagerie, and into the other scenes: adds nothing unless a server is answering
      with /scenes.json (src/core/menagerie.js) -->
