@@ -1,0 +1,39 @@
+127.0.0.1 - - [21/Sep/2026 20:24:15] "GET /hexahedron.html HTTP/1.1" 200 -
+ERROR PANEL: clean
+draw calls: 22 triangles: 422806
+counters: {"_instances": 11734, "_ready": true, "_registered": 10}
+
+--- invariants ---
+  PASS  registered-volumes-non-empty : 10 volumes; thinnest: Hexahedron — the vertical structure (346), Hexahedron — automated industries (557), Hexahedron — the vertical structure (646)
+  PASS  no-nan-geometry : clean
+  PASS  per-type-triangle-budget : 2 type/decay pairs, heaviest hex/2 237506/700000
+  PASS  showcase-triangle-budget : 453758 / 6000000 scene triangles
+  PASS  showcase-draw-calls : 22 / 900 draw calls at this camera
+  PASS  registry-and-bake-ran : 10 registered volumes, 11734 baked instances
+
+--- per type (scene triangles, instances, meshes) ---
+  hex/2           237506 /  700000  mega    inst    6238  meshes     3
+  hex/0           216252 /  700000  mega    inst    5496  meshes     2
+shot: ./shots/hex9\view_Hexahedron.png   calls 22  tris 0.42M
+shot: ./shots/hex9\view_From_below.png   calls 22  tris 0.42M
+shot: ./shots/hex9\view_The_waist.png   calls 22  tris 0.42M
+shot: ./shots/hex9\view_The_upper_city.png   calls 22  tris 0.42M
+shot: ./shots/hex9\view_The_vertical_structure.png   calls 22  tris 0.42M
+shot: ./shots/hex9\view_A_tip.png   calls 22  tris 0.42M
+shot: ./shots/hex9\view_Summit.png   calls 22  tris 0.42M
+shot: ./shots/hex9\view_Industries.png   calls 22  tris 0.42M
+shot: ./shots/hex9\view_Sheared.png   calls 23  tris 0.42M
+shot: ./shots/hex9\view_The_shear.png   calls 23  tris 0.42M
+shot: ./shots/hex9\view_The_failed_cluster.png   calls 23  tris 0.42M
+shot: ./shots/hex9\view_Crater_soffit.png   calls 23  tris 0.42M
+shot: ./shots/hex9\view_Both.png   calls 25  tris 0.45M
+
+--- worst draw calls over 13 views ---
+  Both                         calls    25  tris 0.45M
+  Sheared                      calls    23  tris 0.42M
+  The shear                    calls    23  tris 0.42M
+  The failed cluster           calls    23  tris 0.42M
+  Crater soffit                calls    23  tris 0.42M
+  Hexahedron                   calls    22  tris 0.42M
+
+OK
