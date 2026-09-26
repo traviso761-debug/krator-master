@@ -9,6 +9,7 @@ import {report,LOAD,configureLoading,installErrorHandlers,stage,section} from '.
 import {installMenagerie} from '../core/menagerie.js';
 import {createWire,installWireUI} from '../core/wire.js';
 import {world} from './world.js';
+import {mkRng as mkR} from '../core/rng.js';
 
 installErrorHandlers();window.LOAD=LOAD;
 configureLoading({
@@ -22,6 +23,9 @@ configureLoading({
     'The spin gives about one g at the hull and rather less on a hilltop.',
     'The weather is a ring. Cloud here is held against the hull by the same spin everything else is.',
     'The outside carries ring frames, longerons and radiators, because a hull this size is mostly a way of getting rid of heat.',
+    'The ends are terraced domes, farmed to the hub. Nobody builds a pressure vessel with a flat end.',
+    'You turn with it. From inside it is the stars and the planet that go past the windows, once every two minutes.',
+    'The dock does not turn. Ships tie up to a bearing the spindle turns inside.',
   ],
   prefix:'spinning up… ',labels:{config:'reading the specification',hull:'rolling the hull',
   world:'laying the valleys',sky:'hanging the stars',ui:'opening the windows'}});
@@ -62,31 +66,51 @@ async function build(){
   renderer.setSize(innerWidth,innerHeight);
   renderer.setClearColor(0x05060a);
   document.body.appendChild(renderer.domElement);
-  // Inside a spun cylinder every surface faces the same lamp down the middle, so a single directional sun
-  // is useless: the light here is the tube itself, and the fill is what bounces off the far valleys.
-  scene.add(new THREE.AmbientLight(0xdfe4ea,0.74));
-  // The sun here is a tube nineteen kilometres long, and one point light at the middle of it lights the
-  // middle and leaves both ends black. Seven of them down the axis is near enough a line of light.
-  const axisLights=[];
-  for(let i=0;i<7;i++){
-    const p=new THREE.PointLight(0xfff0cf,0.42,0,0);
-    p.position.set((i/6-0.5)*(19000*0.9),0,0);scene.add(p);axisLights.push(p);
-  }
-  const hemi=new THREE.HemisphereLight(0xcfe0ff,0x3a3f36,0.3);scene.add(hemi);
+  // The light inside is the habitat's own (world.js): the tube, and what bounces off the far valleys. This one
+  // is the star it orbits, and it only matters from outside - inside, every surface faces the tube.
+  const SUN_DIR=new THREE.Vector3(-0.62,0.34,-0.71).normalize();
+  const starLight=new THREE.DirectionalLight(0xfff4e4,0);starLight.position.copy(SUN_DIR);scene.add(starLight);
   const animHooks=[];
 
-  // ---- the stars, seen through the windows ----
+  // ---- the stars, the star and the planet, seen through the windows ----
+  // None of this turns: the habitat does. From inside, standing still, you watch the planet come up past the
+  // window and go over, once every two minutes, which is what living on the inside of a spun cylinder is.
   await stage('sky');
   {
-    const n=2600,pos=new Float32Array(n*3);
-    for(let i=0;i<n;i++){
-      const a=Math.random()*Math.PI*2,b=Math.acos(2*Math.random()-1),r=90000;
-      pos[i*3]=Math.sin(b)*Math.cos(a)*r;pos[i*3+1]=Math.sin(b)*Math.sin(a)*r;pos[i*3+2]=Math.cos(b)*r;
+    const R0=mkR(20260926);
+    for(const [n,size,c] of [[3600,150,0xc9d2e2],[420,330,0xfff4e0],[90,520,0xdfe8ff]]){
+      const pos=new Float32Array(n*3);
+      for(let i=0;i<n;i++){const a=R0()*Math.PI*2,b=Math.acos(2*R0()-1),r=95000;
+        pos[i*3]=Math.sin(b)*Math.cos(a)*r;pos[i*3+1]=Math.sin(b)*Math.sin(a)*r;pos[i*3+2]=Math.cos(b)*r;}
+      const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));
+      const st=new THREE.Points(g,new THREE.PointsMaterial({color:c,size,sizeAttenuation:true,fog:false}));st.userData.noWire=true;scene.add(st);
     }
-    const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));
-    scene.add(new THREE.Points(g,new THREE.PointsMaterial({color:0xdfe6f2,size:170,sizeAttenuation:true})));
+    // the star: a disc, and the glare round it
+    const glowTex=(()=>{const c=document.createElement('canvas');c.width=c.height=256;const g=c.getContext('2d');
+      const gr=g.createRadialGradient(128,128,0,128,128,128);gr.addColorStop(0,'rgba(255,250,235,1)');gr.addColorStop(0.12,'rgba(255,240,210,0.9)');
+      gr.addColorStop(0.35,'rgba(255,220,170,0.25)');gr.addColorStop(1,'rgba(255,200,150,0)');g.fillStyle=gr;g.fillRect(0,0,256,256);return new THREE.CanvasTexture(c);})();
+    const sun=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex,fog:false,depthWrite:false,transparent:true,blending:THREE.AdditiveBlending}));
+    sun.scale.setScalar(26000);sun.position.copy(SUN_DIR).multiplyScalar(120000);sun.userData.noWire=true;scene.add(sun);
+    // the planet: oceans, land, ice at the poles and weather, lit from the star, with its air at the limb
+    const planet=new THREE.Mesh(new THREE.SphereGeometry(26000,64,48),new THREE.ShaderMaterial({fog:false,
+      uniforms:{uSun:{value:SUN_DIR.clone()},uT:{value:0}},
+      vertexShader:'varying vec3 vN;varying vec3 vP;varying vec3 vV;void main(){vN=normalize(mat3(modelMatrix)*normal);vP=position/26000.0;vec4 w=modelMatrix*vec4(position,1.0);vV=normalize(cameraPosition-w.xyz);gl_Position=projectionMatrix*viewMatrix*w;}',
+      fragmentShader:`uniform vec3 uSun;uniform float uT;varying vec3 vN;varying vec3 vP;varying vec3 vV;
+float h(vec3 p){return fract(sin(dot(p,vec3(127.1,311.7,74.7)))*43758.5453);}
+float n(vec3 p){vec3 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(mix(h(i),h(i+vec3(1,0,0)),f.x),mix(h(i+vec3(0,1,0)),h(i+vec3(1,1,0)),f.x),f.y),mix(mix(h(i+vec3(0,0,1)),h(i+vec3(1,0,1)),f.x),mix(h(i+vec3(0,1,1)),h(i+vec3(1,1,1)),f.x),f.y),f.z);}
+float fb(vec3 p){return 0.5*n(p)+0.25*n(p*2.1)+0.125*n(p*4.3)+0.0625*n(p*8.7);}
+void main(){float land=fb(vP*2.2+3.0);vec3 c=mix(vec3(0.05,0.16,0.34),vec3(0.08,0.26,0.44),fb(vP*6.0));
+ if(land>0.53){float m=fb(vP*9.0);c=mix(vec3(0.25,0.36,0.17),vec3(0.55,0.46,0.3),smoothstep(0.45,0.7,m));}
+ c=mix(c,vec3(0.92,0.95,0.98),smoothstep(0.72,0.86,abs(vP.y)));
+ float cl=smoothstep(0.5,0.72,fb(vP*4.0+vec3(uT*0.01,0.0,0.0)));c=mix(c,vec3(0.95),cl*0.85);
+ float d=dot(normalize(vN),uSun),lit=smoothstep(-0.08,0.25,d);
+ float rim=pow(1.0-max(0.0,dot(normalize(vN),vV)),3.0);
+ vec3 col=c*(0.03+0.97*lit)+vec3(0.35,0.55,1.0)*rim*(0.15+0.85*smoothstep(-0.3,0.4,d));
+ col+=vec3(1.0,0.75,0.4)*0.04*(1.0-lit)*step(0.53,land)*step(0.2,n(vP*60.0));   // the cities on the night side
+ gl_FragColor=vec4(col,1.0);}`}));
+    planet.position.set(0.52,-0.3,0.8).normalize().multiplyScalar(118000);planet.rotation.z=0.4;planet.userData.noWire=true;scene.add(planet);
+    ctx.planet=planet;
   }
-
   // ---- the world ----
   await stage('world');
   const api={THREE,C,ctx,scene,camera,renderer,animHooks,mergeParts};
@@ -106,15 +130,17 @@ async function build(){
       camera.position.set(Math.cos(V.orbit)*V.out,Math.sin(V.elev)*V.out*0.55,Math.sin(V.orbit)*V.out);
       camera.up.set(0,1,0);camera.lookAt(0,0,0);return;
     }
+    // Worked out in the habitat's own frame, then turned with it: you are standing on the hull, and the hull
+    // is going round. The only things that move past you are the stars, the star and the planet.
     const p=H.at(V.u,V.a,V.h);
-    camera.position.copy(p);
-    // up is towards the axis; the horizon is the way the hull curves
-    const up=tmp.set(-p.x*0+0,-p.y,-p.z).normalize();
-    camera.up.copy(up);
+    const up=tmp.set(0,-p.y,-p.z).normalize();
     const along=new THREE.Vector3(1,0,0);
     const across=new THREE.Vector3().crossVectors(up,along).normalize();
-    const dir=along.clone().multiplyScalar(Math.cos(V.yaw)).add(across.multiplyScalar(Math.sin(V.yaw)))
+    const dir=along.clone().multiplyScalar(Math.cos(V.yaw)*Math.cos(V.pitch)).add(across.multiplyScalar(Math.sin(V.yaw)*Math.cos(V.pitch)))
       .add(up.clone().multiplyScalar(Math.sin(V.pitch))).normalize();
+    const X=new THREE.Vector3(1,0,0);
+    for(const v of [p,up,dir])v.applyAxisAngle(X,H.spin);
+    camera.position.copy(p);camera.up.copy(up);
     camera.lookAt(p.clone().add(dir.multiplyScalar(1000)));
   }
 
@@ -148,10 +174,15 @@ async function build(){
   vbtn.setAttribute('aria-expanded','false');
   {const h=document.createElement('div');h.className='sub';h.textContent='Viewpoints';viewsEl.appendChild(h);}
   for(const [name,v] of Object.entries(C.views||{}))mkBtn(name,viewsEl,()=>{
-    Object.assign(V,v);viewsEl.classList.remove('open');vbtn.setAttribute('aria-expanded','false');});
+    Object.assign(V,v);if(v.tube!==undefined)H.shift=(v.tube-(K.dayStart||0.3)+1)%1;viewsEl.classList.remove('open');vbtn.setAttribute('aria-expanded','false');});
   const mbtn=mkBtn('Outside',ui,()=>{V.mode=V.mode==='outside'?'inside':'outside';
     mbtn.textContent=V.mode==='outside'?'Inside':'Outside';});
   mbtn.title='Stand on the hull, or stand off it';
+  // The tube's day is four minutes long, and nobody arriving should have to wait two of them to see the towns
+  // light up. This moves the clock on by a quarter; #tube=0.75 in the address opens at that point of the day
+  // (0.25 is noon, 0.75 midnight).
+  const tbtn=mkBtn('Later',ui,()=>{H.shift=(H.shift+0.25)%1;});tbtn.title='Move the tube on a quarter of a day';
+  {const m=/(^|&)tube=([\d.]+)/.exec(location.hash.slice(1));if(m)H.shift=((+m[2])-((K.dayStart||0.3)))%1;}
   // the same wireframe every other page has (src/core/wire.js): on a hull this size it is the only way to
   // see that the ground is a tessellation of a cylinder rather than a landscape
   const wire=createWire({THREE,scene,animHooks});
@@ -163,7 +194,7 @@ async function build(){
   // here is (u, a, h, yaw, pitch) rather than a position and a target, so it cannot use the same hash.
   {const m=/(^|&)view=([^&]+)/.exec(location.hash.slice(1));
    if(m){const want=decodeURIComponent(m[2]).toLowerCase();
-     for(const [name,v] of Object.entries(C.views||{}))if(name.toLowerCase()===want)Object.assign(V,v);}}
+     for(const [name,v] of Object.entries(C.views||{}))if(name.toLowerCase()===want){Object.assign(V,v);if(v.tube!==undefined)H.shift=(v.tube-(K.dayStart||0.3)+1)%1;}}}
 
   const hud=document.createElement('div');hud.id='timebar';hud.style.cssText='font:12px Georgia,serif;color:#e8c98a';
   document.getElementById('side').appendChild(hud);
@@ -191,9 +222,17 @@ async function build(){
         V.u=Math.max(200,Math.min(H.L-200,V.u));
       }
       for(const f of animHooks){try{f(now);}catch(e){if(!f._failed){f._failed=true;report('update',e);}}}
+      // outside, the air is behind the glass and the light is the star's
+      const outside=V.mode==='outside';
+      scene.fog.density=outside?0:H.fog;starLight.intensity=outside?1.1:0;
+      if(outside)H.ambient.intensity=Math.max(H.ambient.intensity,0.18);   // the planet's light on the night side of the hull
+      if(ctx.planet){ctx.planet.rotation.y=now*0.000004;ctx.planet.material.uniforms.uT.value=now/1000;}
       frame();
-      hud.textContent=V.mode==='outside'?'outside the hull'
-        :(Math.round(V.h)+' m over the valley floor · '+(V.u/1000).toFixed(1)+' km along');
+      // the hour, from the tube: it is brightest at noon and dimmest at midnight
+      const hr=((H.day*24+6)%24),hh=Math.floor(hr),mm=Math.floor((hr-hh)*60);
+      const clock=String(hh).padStart(2,'0')+':'+String(mm).padStart(2,'0');
+      hud.textContent=(V.mode==='outside'?'outside the hull, turning once every '+(K.spin||114)+' s'
+        :(Math.round(V.h)+' m over the valley floor · '+(V.u/1000).toFixed(1)+' km along'))+' · '+clock;
       renderer.render(scene,camera);
     }catch(e){report('render',e);}
   })();

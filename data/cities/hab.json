@@ -12,13 +12,17 @@
   "sunR": 34,
   "segA": 168,
   "segU": 140,
-  "_": "spin is the rotation period in seconds; day is how long the sun tube takes to dim and brighten",
+  "_": "spin is the rotation period in seconds; day is how long the sun tube takes to dim and brighten; dayStart is where in its day the tube is when the page opens (0.25 noon, 0.75 midnight); haze is the air's fog density; capDepth is how far each end cap bulges, as a fraction of the radius, and terraces how many steps it has. A view's tube sets the hour it opens at.",
   "clouds": 170,
   "gliders": 9,
   "boats": 20,
   "woods": 30,
   "farms": 46,
-  "skin": 46
+  "skin": 46,
+  "dayStart": 0.3,
+  "haze": 5.5e-05,
+  "capDepth": 0.42,
+  "terraces": 11
  },
  "views": {
   "On the valley floor": {
@@ -85,9 +89,38 @@
   },
   "The end cap": {
    "mode": "outside",
-   "out": 11780.0,
+   "out": 17500.0,
    "orbit": 3.05,
    "elev": 0.06
+  },
+  "The north end": {
+   "mode": "inside",
+   "u": 16200.0,
+   "a": 0.5436,
+   "h": 260,
+   "yaw": 0.0,
+   "pitch": 0.18
+  },
+  "A town at night": {
+   "mode": "inside",
+   "u": 5320.000000000001,
+   "a": 2.678,
+   "h": 320,
+   "yaw": 0.6,
+   "pitch": 0.45,
+   "tube": 0.8
+  },
+  "From outside, with the planet": {
+   "mode": "outside",
+   "out": 30000.0,
+   "orbit": 4.13,
+   "elev": 0.5
+  },
+  "The dock": {
+   "mode": "outside",
+   "out": 16500.0,
+   "orbit": 0.25,
+   "elev": 0.12
   }
  }
 }
