@@ -1,122 +1,67 @@
 // ---------- what the valley is doing while you look at it ----------
-// The massing gets the shape of the place, which is the important half. What it does not get is that this
-// is a valley full of noise and movement: water coming off the rim on every side, smoke standing up out of
-// the trees, lanterns along the galleries from dusk, and leaves going down the river all year because the
-// woods here are famously never quite done turning.
-//
 // Fan work; Tolkien's world belongs to the Tolkien Estate and every shape here is this project's own.
+//
+// The water moves on its own (water.js). This is the rest: lanterns along the paths and the terrace edge,
+// lit at dusk ("the elves had brought bright lanterns to the shore"); smoke standing up out of the chimneys
+// and the two hearths of the Hall of Fire, which are never out; leaves going down the river when it is
+// autumn; and birds over the valley.
 import { mkRng } from '../core/rng.js';
 
 export function life(api){
-  const {THREE,C,ctx,scene,animHooks,groundH,roofAt,box,mergeParts,nightF,hour,B}=api;
-  const K=C.life;if(!K)return;
+  const {THREE,C,ctx,scene,animHooks,groundH}=api;
+  const K=C.life||{},V=ctx.valley;if(!V)return;
   const R=mkRng(K.seed||3021);
-
-  const brass=new THREE.MeshLambertMaterial({color:0x8a7a4a,flatShading:true});
-  const glowM=new THREE.MeshBasicMaterial({color:0xffd27a,transparent:true,opacity:0.9,depthWrite:false});
-  const smokeM=new THREE.MeshBasicMaterial({color:0xcfd4cc,transparent:true,opacity:0.1,depthWrite:false});
-  const clothM=[0x8c4a3a,0x3f5f74,0x6a7a42,0x8a7a4a].map(h=>
-    new THREE.MeshLambertMaterial({color:h,side:THREE.DoubleSide}));
-  const leafM=[0xc8a13a,0xb4772c,0x8a9a42,0xd8b558].map(h=>
-    new THREE.MeshLambertMaterial({color:h,side:THREE.DoubleSide}));
-  const birdM=new THREE.MeshLambertMaterial({color:0x2e2a26,side:THREE.DoubleSide});
-
-  const statics=[],lamps=[],smokes=[],flags=[],leaves=[],birds=[];
+  const hour=()=>api.hour?api.hour():12,nightF=()=>api.nightF?api.nightF(hour()):0;
+  const house=V.sites.house;
 
   // ---- the lanterns ----
-  // Along every gallery and every path, close enough together that the whole valley is outlined after dark.
-  for(let k=0;k<(K.lanterns||0);k++){
-    const x=B.x0+R()*B.w, z=B.z0+R()*B.d;
-    const h=roofAt(x,z);
-    const y=h>2?h:groundH(x,z);
-    if(Math.abs(x)>900)continue;                        // the valley only
-    statics.push(box(x,y,z,0.24,2.6+R()*1.4,0.24,brass));
-    const g=new THREE.Mesh(new THREE.IcosahedronGeometry(0.62,0),glowM);
-    g.position.set(x,y+3.2,z);g.userData.noWire=true;scene.add(g);
-    lamps.push({g,ph:R()*6.28});
-  }
+  const post=new THREE.MeshLambertMaterial({color:0x6a5a3a,flatShading:true});
+  const glowM=new THREE.MeshBasicMaterial({color:0xffd27a,transparent:true,opacity:0.9,depthWrite:false});
+  const posts=[],lamps=[];
+  const roads=(api.ROADS||[]).filter(r=>r.c!=='primary');
+  let n=0;
+  for(const r of roads){const p=r.pts;for(let i=0;i+1<p.length&&n<(K.lanterns||120);i++){const [ax,az]=p[i],[bx,bz]=p[i+1],L=Math.hypot(bx-ax,bz-az);
+    for(let s=R()*14;s<L&&n<(K.lanterns||120);s+=16+R()*10){const t=s/L,x=ax+(bx-ax)*t,z=az+(bz-az)*t;
+      if(Math.hypot(x-house.x,z-house.z)>1100)continue;
+      const nx=-(bz-az)/L,nz=(bx-ax)/L,side=R()<0.5?-1:1,px=x+nx*side*2.4,pz=z+nz*side*2.4,y=groundH(px,pz);
+      const m=new THREE.Mesh(new THREE.BoxGeometry(0.16,2.6,0.16).translate(0,1.3,0),post);m.position.set(px,y,pz);posts.push(m);
+      const g=new THREE.Mesh(new THREE.IcosahedronGeometry(0.34,0),glowM);g.position.set(px,y+2.75,pz);g.userData.noWire=true;scene.add(g);lamps.push({g,ph:R()*6.28});n++;}}}
+  if(posts.length){const g=api.mergeParts?api.mergeParts(posts,post):null;if(g&&g.isObject3D)scene.add(g);else for(const m of posts)scene.add(m);}
 
-  // ---- the hearths ----
-  for(let k=0;k<(K.chimneys||0);k++){
-    const x=B.x0+R()*B.w, z=B.z0+R()*B.d;
-    const h=roofAt(x,z);if(h<4)continue;
-    for(let i=0;i<3;i++){
-      const p=new THREE.Mesh(new THREE.SphereGeometry(1.4+R()*1.2,7,5),smokeM);
-      p.position.set(x,h+2,z);p.userData.noWire=true;scene.add(p);
-      smokes.push({p,x,z,y0:h+2,ph:(i+R())/3,drift:0.5+R()*0.6});
-    }
-  }
+  // ---- smoke from the hearths ----
+  const smokeTex=(()=>{const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d');const gr=g.createRadialGradient(32,32,0,32,32,32);
+    gr.addColorStop(0,'rgba(220,222,218,0.55)');gr.addColorStop(1,'rgba(220,222,218,0)');g.fillStyle=gr;g.fillRect(0,0,64,64);return new THREE.CanvasTexture(c);})();
+  const smokeM=new THREE.SpriteMaterial({map:smokeTex,transparent:true,depthWrite:false,opacity:0.5});
+  const puffs=[];
+  for(const [x,y,z] of (ctx.rivSmoke||[]))for(let k=0;k<8;k++){const sp=new THREE.Sprite(smokeM);sp.userData.noWire=true;scene.add(sp);puffs.push({sp,x,y,z,ph:k/8});}
 
-  // ---- the banners on the galleries ----
-  for(let k=0;k<(K.banners||0);k++){
-    const x=B.x0+R()*B.w, z=B.z0+R()*B.d;
-    const h=roofAt(x,z);if(h<5)continue;
-    const w=1.1+R()*0.9, d=2.4+R()*2;
-    const m=new THREE.Mesh(new THREE.PlaneGeometry(w,d,1,3),clothM[Math.floor(R()*clothM.length)]);
-    m.position.set(x,h-d/2-0.4,z);m.rotation.y=R()*3;
-    m.userData.noWire=true;scene.add(m);
-    flags.push({m,base:m.geometry.attributes.position.array.slice(),ph:R()*6.28});
-  }
+  // ---- leaves on the river ----
+  const leafM=[0xc8a13a,0xb4772c,0xd8b558,0x9a5a24].map(h=>new THREE.MeshLambertMaterial({color:h,side:THREE.DoubleSide}));
+  const leaves=[],rv=V.river,Ltot=rv.length;
+  for(let i=0;i<(K.leaves||0);i++){const m=new THREE.Mesh(new THREE.PlaneGeometry(0.5,0.35).rotateX(-Math.PI/2),leafM[i%4]);m.userData.noWire=true;m.userData.noFingerprint=true;scene.add(m);
+    leaves.push({m,s:R()*Ltot,off:(R()*2-1),sp:0.7+R()*0.6});}
 
-  // ---- what is in the air ----
-  // Leaves coming down the valley on the wind, and birds over the rim. Both are single quads and both are
-  // doing the same job: making a still model move at a scale you can see from anywhere in it.
-  for(let k=0;k<(K.leaves||0);k++){
-    const m=new THREE.Mesh(new THREE.PlaneGeometry(0.5,0.34),leafM[Math.floor(R()*leafM.length)]);
-    m.userData.noWire=true;scene.add(m);
-    leaves.push({m,x:(R()-0.5)*1400,z:B.z0+R()*B.d,y:320+R()*260,
-      v:8+R()*14,spin:(R()-0.5)*4,ph:R()*6.28,fall:2+R()*4});
-  }
-  for(let k=0;k<(K.birds||0);k++){
-    const g=new THREE.Group();
-    for(const sd of [-1,1]){
-      const w=new THREE.Mesh(new THREE.PlaneGeometry(1.8,0.5),birdM);
-      w.position.z=sd*0.9;w.rotation.x=-Math.PI/2;g.add(w);
-    }
-    g.userData.noWire=true;scene.add(g);
-    birds.push({g,cx:(R()-0.5)*2000,cz:(R()-0.5)*3000,r:120+R()*420,
-      y:560+R()*160,a:R()*6.28,v:(0.0004+R()*0.0005)*(R()<0.5?-1:1),ph:R()*6.28});
-  }
+  // ---- birds ----
+  const birdM=new THREE.MeshLambertMaterial({color:0x2e2a26,side:THREE.DoubleSide});
+  const birdG=new THREE.BufferGeometry();birdG.setAttribute('position',new THREE.Float32BufferAttribute([-1,0,0.2, 0,0,-0.3, 0,0,0.3, 1,0,0.2, 0,0,-0.3, 0,0,0.3],3));birdG.computeVertexNormals();
+  const birds=[];for(let i=0;i<(K.birds||0);i++){const m=new THREE.Mesh(birdG,birdM);m.scale.setScalar(0.6);m.userData.noWire=true;m.userData.noFingerprint=true;scene.add(m);
+    birds.push({m,cx:house.x+(R()-0.5)*1600,cz:house.z+(R()-0.5)*500,cy:house.y+60+R()*260,r:40+R()*160,w:(R()<0.5?-1:1)*(0.08+R()*0.12),ph:R()*6.28});}
 
-  const byMat=new Map();
-  for(const m of statics){let a=byMat.get(m.material);if(!a){a=[];byMat.set(m.material,a);}a.push(m);}
-  for(const [mat,list] of byMat){const g=mergeParts(list,mat);g.userData.wireCat='life';scene.add(g);}
-
-  let t0=performance.now();
   animHooks.push(now=>{
-    const t=(now-t0)/1000, n=nightF(hour());
-    glowM.opacity=0.35+0.6*n;
-    for(const q of lamps)q.g.scale.setScalar(0.85+0.2*Math.sin(t*2.2+q.ph));
-    for(const q of smokes){
-      const u=((t*0.06)+q.ph)%1;
-      q.p.position.set(q.x+u*16*q.drift,q.y0+u*42,q.z+u*9*q.drift);
-      q.p.scale.setScalar(0.7+u*3.2);q.p.material.opacity=0.12*(1-u);
-    }
-    for(const q of flags){
-      const pos=q.m.geometry.attributes.position,b=q.base;
-      for(let i=0;i<pos.count;i++){
-        const py=b[i*3+1];
-        pos.array[i*3+2]=b[i*3+2]+Math.sin(t*1.9+q.ph+py*0.6)*0.14;
-      }
-      pos.needsUpdate=true;
-    }
-    for(const q of leaves){
-      q.z-=q.v*0.016;q.y-=q.fall*0.016;
-      if(q.y<250||q.z<B.z0){q.z=B.z0+B.d;q.y=320+Math.random()*260;q.x=(Math.random()-0.5)*1400;}
-      q.m.position.set(q.x+Math.sin(t*1.4+q.ph)*6,q.y,q.z);
-      q.m.rotation.set(t*q.spin,t*q.spin*0.7,t*q.spin*1.3);
-    }
-    for(const q of birds){
-      const a=q.a+now*q.v;
-      q.g.position.set(q.cx+Math.cos(a)*q.r,q.y+9*Math.sin(t*0.6+q.ph),q.cz+Math.sin(a)*q.r);
-      q.g.rotation.set(0,-a,0.2*Math.sin(t*2+q.ph));
-      const beat=Math.sin(t*9+q.ph)*0.5;
-      q.g.children[0].rotation.x=-Math.PI/2+beat;
-      q.g.children[1].rotation.x=-Math.PI/2-beat;
-    }
+    const t=now/1000,nf=nightF();
+    // lanterns: on from dusk, flickering a little
+    for(const l of lamps){l.g.visible=nf>0.25;l.g.scale.setScalar(0.9+0.12*Math.sin(t*3+l.ph));}
+    // smoke: puffs rising and spreading, leaning downstream on the valley's air
+    for(const p of puffs){const a=(t*0.06+p.ph)%1;p.sp.position.set(p.x-a*14,p.y+a*26,p.z+a*4);p.sp.scale.setScalar(2+a*9);p.sp.material.opacity=0.5*(1-a);}
+    // leaves: carried down the river at its speed, only when there are leaves to fall
+    const season=ctx.rivSeason||0;
+    for(const l of leaves){l.m.visible=season>0.3;if(!l.m.visible)continue;
+      l.s=(l.s+l.sp*0.016*2.6/8)%(Ltot-1);const i=Math.floor(l.s),f=l.s-i,a=rv[i],b=rv[i+1];
+      const x=a[0]+(b[0]-a[0])*f,z=a[1]+(b[1]-a[1])*f,y=a[2]+(b[2]-a[2])*f,hw=a[3]*0.8;
+      l.m.position.set(x,y+0.12,z+l.off*hw);l.m.rotation.y=t*0.5+l.off*3;}
+    // birds: wheeling over the valley
+    for(const b of birds){const a=b.ph+t*b.w;b.m.position.set(b.cx+Math.cos(a)*b.r,b.cy+Math.sin(t*0.3+b.ph)*8,b.cz+Math.sin(a)*b.r);
+      b.m.rotation.y=-a+(b.w>0?0:Math.PI);b.m.scale.y=1;b.m.rotation.z=Math.sin(t*6+b.ph)*0.5;}
   });
-
-  ctx.details=Object.assign(ctx.details||{},{
-    lanterns:lamps.length,hearths:Math.round(smokes.length/3),banners:flags.length,
-    leaves:leaves.length,birds:birds.length});
+  ctx.details=Object.assign(ctx.details||{},{lanterns:lamps.length,chimneys:(ctx.rivSmoke||[]).length});
 }
