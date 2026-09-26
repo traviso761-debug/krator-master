@@ -6,7 +6,8 @@ Procedural models of places, served to the local network by a small Python serve
 **City 17**, **Night City**, **Mega-City One** (twice, once as the comics have it and once as the 2012 film
 does), **Mordor**, which is a country rather than a city, **Minas Tirith**, which is the other end of the same
 war, the **Kowloon Walled City**, which is one building, **Kyrene**, which is a rotating habitat with its
-country overhead, and **Mystery Flesh Pit National Park**, which is a hole. They run on the same core modules and the same page shell; each place is a data file plus a set of build
+country overhead, **Mystery Flesh Pit National Park**, which is a hole, **Yellowstone**, which is a real national park
+on top of a real one, **the Backrooms**, which go on forever, and **the City** from *Blame!*, which very nearly does. They run on the same core modules and the same page shell; each place is a data file plus a set of build
 stages, and anything only one of them needs travels with that one.
 
 The front page at `/` lists whatever the server is serving, and every scene carries a Home button and a menu
@@ -32,12 +33,16 @@ of the others. Both read `/scenes.json`, which the server builds from `site.toml
 | `/mordor` | `/mordor.html`, `/sauron` | `mordor.html` | Mordor: the whole land (fan work) |
 | `/minastirith` | `/minastirith.html`, `/mt`, `/gondor` | `minastirith.html` | Minas Tirith: the seven circles (fan work) |
 | `/fleshpit` | `/fleshpit.html`, `/mfpnp`, `/pit` | `fleshpit.html` | Mystery Flesh Pit National Park (fan work) |
+| `/yellowstone` | `/yellowstone.html`, `/ynp`, `/caldera` | `yellowstone.html` | Yellowstone National Park: the real ground and the caldera |
+| `/backrooms` | `/backrooms.html`, `/level0`, `/noclip` | `backrooms.html` | The Backrooms (fan work) |
+| `/city` | `/blame.html`, `/blame`, `/megastructure`, `/killy` | `blame.html` | The City, after *Blame!* (fan work) |
 | `/rivendell` | `/rivendell.html`, `/imladris` | `rivendell.html` | Rivendell: the cleft of the Bruinen (fan work) |
 | `/arrakeen` | `/arrakeen.html`, `/arrakis`, `/dune` | `arrakeen.html` | Arrakeen: the city in the basin (fan work) |
 | `/europa` | `/europa.html`, `/conamara`, `/ice` | `europa.html` | Conamara Station: on the ice of Europa |
 | `/enterprise` | `/enterprise.html`, `/ncc1701d`, `/galaxy` | `enterprise.html` | Enterprise: Galaxy class (fan work) |
 | `/voyager` | `/voyager.html`, `/ncc74656`, `/intrepid` | `voyager.html` | Voyager: Intrepid class (fan work) |
 | `/ds9` | `/ds9.html`, `/deepspace9`, `/terok-nor` | `ds9.html` | Deep Space 9 (fan work) |
+| `/babylon5` | `/babylon5.html`, `/b5`, `/babylon` | `babylon5.html` | Babylon 5 (fan work) |
 | `/kyrene` | `/hab.html`, `/habitat`, `/cylinder` | `hab.html` | Kyrene: a rotating habitat |
 | `/krator` | `/voth`, `/voth.html`, `/krator.html` | `krator.html` | Krator: A Primer |
 | `/tongue` | `/izani-tongue` | `The-Izani-Tongue_2.html` | The Izani Tongue |
@@ -362,26 +367,55 @@ core modules with everything else.
   along the axis, a bearing round it and a height above the hull, and returns a point. The land, the water,
   the towns, the rail and the end caps are all written in `(u, a)` and know nothing about the mapping.
 - **The land** is a height field in `(u, a)`: a few tens of metres of relief on a hull kilometres across,
-  enough to make a valley read as one. The fields are a patchwork on a 420 m grid rather than a colour per
-  vertex, because from three kilometres overhead a colour per vertex is a smear. A river runs down the
-  middle of each valley and widens into lakes.
+  enough to make a valley read as one. Each valley is **painted** onto a canvas the size of the strip (1024 ×
+  4096, three metres a pixel across and five along): the fields on their 420 m grid with plough lines and
+  mowing stripes in them, the hedges and the hedgerow trees, the river's banks, the road, the viaduct's shadow,
+  the towns' streets and gardens, the woods and the farmyards. It used to be a colour per hull vertex, one every
+  hundred and thirty metres, which was a patchwork from a distance and a smear of jagged stairs close to. The
+  hull's normals follow the relief, so the valleys are shaded, and retaining walls stand along the edges where
+  the land meets the glass.
+- **The windows show space.** Under the glass there is nothing: the stars, the star the habitat orbits and the
+  planet it orbits it with. They used to be painted dark grey, which read as tarmac, and their white ribs as the
+  dashes down a road; the frame is dark metal now, mullions the length and transoms across.
+- **The ends are closed.** Each end cap bulges outwards and is terraced from the rim to the hub - an amphitheatre
+  of farmed steps with rock on the risers, in patches round the ring - under a smooth, ribbed, plated dome. They
+  used to be cones pointing *into* the habitat, drawn back-faced, so from inside both ends were black discs full
+  of stars. The sun tube is anchored in both hubs, and the spindle stands out of each.
+- **It turns.** Everything that belongs to the habitat hangs off one group, spun once every 114 seconds. From
+  outside you see it go round; from inside you go round with it, and the stars and the planet wheel past the
+  windows instead. The camera is worked out in the habitat's frame and turned with it; moving things (boats,
+  trains, gliders, trees) are oriented from the habitat's own axes rather than with `lookAt`, which works in
+  world space and would have them roll as the hull turned.
 - **The sun is a tube down the axis**, because there is nowhere else to put one, and it dims and brightens
-  rather than rising and setting. It is also why the far valleys are lit from underneath. A single point
-  light at the middle of nineteen kilometres leaves both ends black, so it is seven of them in a line.
+  rather than rising and setting. It is also why the far valleys are lit from underneath. The light is nine
+  point lights down its length, an ambient and a sky/ground fill - and all of it now follows the tube, so
+  night is night: the country goes dark, the towns' windows light floor by floor, the trains' windows glow and
+  the haze goes from blue to the colour of the dark. **Later** moves the tube on a quarter of a day;
+  `#tube=0.75` opens at that point of it (0.25 is noon, 0.75 midnight), and a view can carry a `tube` too.
+- **Air.** Nineteen kilometres of it end to end, as haze, so the far cap is pale and the place has a size. It
+  is switched off outside, where the air is behind the glass.
 - **Which way the hull faces.** Its triangles, wound along `u` and round `a`, already point at the axis, so
   the hull is front-faced with inward normals. Drawn back-faced — which is what a tube seen from inside
   usually wants — the entire country is invisible and all you see is the ribs.
-- **What is on it besides fields**: hedges and ditches on the same grid as the fields, because colour alone
-  reads as a patchwork from three kilometres up and as a smear from the ground; towns laid out as blocks on
-  a street grid rather than scattered, since twenty-seven square kilometres is the whole world and nothing
-  is built loose; lit windows, which are what makes a town a town once the tube dims; cloud, which in a
-  cylinder forms in a band at a height and goes round rather than over; boats on the rivers; and gliders,
-  because at a tenth of a gravity a hundred metres under the axis a person with wings can stay up all
-  afternoon.
+- **What is on it besides fields**: hedges on the same grid as the painted ones; towns laid out as blocks on a
+  street grid, in five colours of render, pitched roofs on the low buildings and plant on the flat roofs of the
+  tall, and lit windows on every floor; woods and a line of trees down each river, instanced (the old merged
+  cones were the heaviest thing on the page); farmsteads; cloud as soft billboards in a ring that turns a little
+  faster than the hull, because the air is not quite keeping up with it; boats on the rivers, some under sail;
+  trains on the viaducts; and gliders, because at a tenth of a gravity a hundred metres under the axis a person
+  with wings can stay up all afternoon.
+- **Outside:** the plated skin over the land strips, ring frames, longerons and radiators; the ribbed domes;
+  the spindles; and at the north end a **dock** that does not turn - a bearing ring with ships alongside and
+  red lamps - with ferries coming and going along the axis. The star lights the hull from outside, and the
+  planet is there behind it, with oceans, land, ice, weather, its air at the limb and its cities on the night side.
 - **The controls** stand you on the hull with up towards the axis: drag to look, WASD to walk it, Q and E to
-  rise, and "Outside" to stand off the whole thing. `#view=<name>` opens at a viewpoint.
+  rise, and "Outside" to stand off the whole thing. `#view=<name>` opens at a viewpoint - including the north
+  end, a town at night, the dock and the habitat with the planet behind it.
+- **The layout is unchanged:** the towns draw on the same random stream in the same order as before, and
+  everything added since draws on its own, so `tests/golden/hab-1974.json` still matches.
 
-Edit `data/cities/hab.json` for the dimensions and the viewpoints; the geometry is `src/hab/world.js`.
+Edit `data/cities/hab.json` for the dimensions, the day, the haze, the caps and the viewpoints; the geometry is
+`src/hab/world.js`, the sky outside and the camera `src/hab/main.js`.
 
 ### `/krator`: Krator
 
@@ -756,6 +790,49 @@ Each page carries a fingerprint for the test suite the way the cities carry a lo
 where its bounding sphere is, how big it is and how many vertices are in it. Nudge one station in a table of
 cross-sections and the hash moves.
 
+### `/babylon5`: Babylon 5
+
+Fan work. Babylon 5 belongs to Warner Bros. and J. Michael Straczynski; nothing from the series, its models or
+its art is used, and every shape is this project's own geometry (`src/babylon5/station.js`), built from the
+silhouette and the published size. It runs on the same page the three starships do (`src/starship/page.js`),
+with its numbers in `data/cities/babylon5.json` under `station`.
+
+**Eight kilometres from the docking bay to the stern,** at true size, lying along x with the bow at +x. It is
+not a ship and does not look like one: a grey cylinder with things bolted to it, panelled and crowded with
+modules, built by the lowest bidder.
+
+- **Command and Control:** the sphere at the bow, its forward face cut into a dish with the docking bay mouth
+  sunk in the middle - a lit slot with guide lights round it and lane markers either side, **turning with the
+  drum**, so a ship coming in has to roll to match it.
+- **The Cobra bays:** four long arms reaching forward along the sphere's flanks, launch slots at their heads.
+  Every twenty-odd seconds a Starfury drops out of one, falls clear on the spin and then lights up and goes.
+- **The rotating section:** a kilometre across and four long, **turning once every forty-five seconds** (a
+  gravity a little under Earth's at the skin), on a bearing at either end. Collars every few hundred metres,
+  stringers down its length, window bands, and five hundred modules of every size standing off the skin.
+  Only the drum and the bay mouth turn; the sphere, the Cobra bays and everything aft stay still.
+- **The Garden: press Cutaway** (or open `#cutaway`). A plane through the axis, turned to face the camera
+  every frame, cuts away the near half of the drum wherever you stand, and inside it is the Garden: fields and
+  a lake and fourteen hundred trees rolled into a tube, the sky over it being the other side of the same
+  landscape, and a line of light down the axis for a sun. Either side of it, decks every forty metres.
+- **Aft:** the fusion reactor behind the drum's aft bearing with its glow ports, the spine out to the stern,
+  **four solar array wings** in planes through the axis, the thruster cluster and the aft antenna.
+- **The traffic:** transports queued down the approach lane off the bow, closing on the bay and rolling to
+  match its spin before they go in; five flights of four Starfuries on patrol loops round the station; and a
+  launch out of the Cobra bays. At this scale a Starfury is fifteen metres on a station of eight thousand, so
+  every ship carries an engine light drawn at a fixed size on screen, and the hull is there for close up.
+- **The jump gate** a few kilometres off the bow: four trusses in a square with the corners open, and every
+  forty seconds a vortex tears open in it - orange at the rim, blue and white at the throat - and a transport
+  comes through.
+- **Epsilon III** below, dusty and brown, with a moon, and the system's star behind the station.
+- **Click any part** for its card: the sphere, the bay, the Cobra bays, the drum, the bearings, the Garden, the
+  reactor, the arrays, the stern, the gate. (Cards are new on the ship page; the three starships do not hang
+  any, so nothing changes for them.)
+
+Views: three-quarter, side on, head on at the docking bay, the approach lane, the Cobra bays, the drum, the
+Garden, the reactor, the solar arrays, the jump gate, Epsilon III below, far off. The page also takes a closer
+minimum distance than the ships (`minD`) and moves its near plane out with the camera distance, so the
+panelling does not fight itself in the depth buffer from twenty kilometres off.
+
 ### `/fleshpit`: Mystery Flesh Pit National Park
 
 Fan work. Mystery Flesh Pit National Park is Trevor Roberts's project
@@ -766,51 +843,254 @@ in `src/fleshpit/`, in this project's own low-poly geometry, from the published 
 
 A cordoned six-kilometre square of West Texas south-east of Odessa, and the hole in the middle of it.
 
-- **The surface:** a caliche plain at 880 m with mesas north-west and arroyos draining east; the orifice, a
-  funnel 520 m across at the rim with the Park Service's poured collar round the lip and four elevator
-  headframes on it; the Upper Visitor Center, park store, ranger station and amphitheatre on the west rim;
-  the rim loop road and the Rim Trail; Gumption Flat Campground; the monorail that opened nine months before
-  the incident; and the Anodyne extraction works — tanks, sheds, the ballast refinery and the flare stack —
-  north-east, because the lease was there before the park was.
+- **The surface:** a caliche plain at 880 m with mesas north-west and arroyos draining east, olive mesquite on
+  it, and 46 pumpjacks nodding across it, because this is the oil field the pit was found in. The orifice, a
+  funnel 520 m across at the rim, lined from the paved apron through the stained lip to the animal
+  (`landmarks.js`, not a land-use area: areas come out saw-toothed, and the old one had no colour and came out
+  lawn-green); the Park Service's collar round the lip, four elevator headframes, and lettered signs at the
+  three overlooks. The Upper Visitor Center, park store, ranger station and amphitheatre on the west rim; the
+  rim loop and the Rim Trail; Gumption Flat Campground; the monorail; the Anodyne extraction works north-east.
+  On the park road in: the entrance sign, Caver Coop (the mascot, a plywood cut-out drawn on canvas in this
+  project's own hand) and six Anodyne billboards, lit at night.
+- **The parking lots and the plaza** (`src/fleshpit/surface.js`): three lots - visitor parking west of the
+  visitor center, the overflow south of it with the RVs along the back, and Anodyne's works lot out past the
+  rim loop - each on a graded pad with its own drive in. Striped stalls in double rows, a drive lane round the
+  edge with arrows, kerbed islands with shrubs and trees, twin-headed light standards lit at night, disabled
+  bays by the walk in, a pay booth, and cars in the stalls (instanced; pickups in the works lot), thicker near
+  the walk and thinning to the far corner. The Upper Visitor Center's plaza between its wings: the entrance
+  canopy with the name on it, glass doors, three flags, planters with benches, the map board, the gift shop's
+  lit windows and awning on one side and the ticket windows opposite, café tables, and on the rim side a
+  lettered lobby and a terrace with coin telescopes; the park store and the ranger station are signed too.
 - **The pit** (`src/fleshpit/organism.js`, from the `pit` block in the city file): a shaft with seven named
-  layers opening off it, from the collar at the top to the drainage pit 3,100 m down — the Throat with the
-  Lower Visitor Center's deck ringing it, the Bronchial Forests and their boardwalks, the ballast pods of the
-  Amniotic Thermal Springs, the Lesser and Greater Gastric Seas with the ferry terminal, the Agnich dam and
-  the resort shelf, and Little Detroit hanging off the wall above the drain. Sphincter rings between the
-  layers, and the whole shaft breathes.
-- **The wall is the animal.** Eleven veins stand proud of it and wander as they descend, with a hollow either
-  side of each and a growth ring every few metres; all of it is cut into the tube itself rather than stuck on,
-  because anything stuck on the near wall would still be standing there in the section view. On top of that,
-  1,400 polyps in clusters and 260 strands hanging off the rock — those *are* stuck on, so they are shown
-  only when you are inside the shaft.
-- **What the Park Service left.** Four lamp strings hung from the collar and running the whole way down, a
-  lamp every 40 m; four lift cages riding their guides; handrails on everything anyone was allowed to stand
-  on; interpretive signs, lit; the Lower Visitor Center with its shopfronts, upper floor, three stair towers,
-  radial catwalks and the overlook cantilevered out over the drop; boardwalks and a viewing platform among
-  the bronchial trunks; changing huts and steam over the soaking pools; Anodyne's tap and its pipework on the
-  springs; the ferry terminal, jetty, buoys and lit spillway on the Lesser Sea; the resort's funicular down
-  to the water on the Greater; Little Detroit as 54 containers stacked five levels up a rack, lit, with a
-  slewing crane, catwalks, ladders and a flare; and, at the bottom, the catwalk that came down in 2007 and
-  the wreck of the rig it fell onto.
-- **It is its own cutaway.** The shaft is drawn back-face only: from inside you see the far wall as you
-  should, and from outside the near wall is simply not there, so the pit can be read from the side like a
-  section. The ground does the same for free — the terrain is single-sided — and the generator digs the
-  funnel to exactly where the model takes over so that no ground stands in the way.
-- **The orifice is a hole in the ground, and a heightfield cannot have one.** The funnel used to bottom out
-  in a flat disc at the mouth depth, which from the rim is a lid over the shaft. The city file now carries
-  `groundHole` (`{at, r}`); the engine draws no terrain quad whose middle falls inside it, and the shaft
-  flares at the top to meet the cut edge.
+  layers, from the collar to the drainage pit 3,100 m down.
+  - **The entry tube** is held open by steel stent hoops every 24 m, cleated into the wall with tension cables
+    between them; the wall is pulled in to each hoop, bulges between, and is pale where the steel presses.
+  - **The Sand Gullet** at the foot of the stents: the ledge, the three pumps and their discharge up the wall.
+  - **The Nexial Cavity** opens out below it, and the **Lower Visitor Center** hangs in the middle: a ring deck
+    of two-storey shops with an overlook, hung by eight cables from a ring gantry braced into the dome, and held
+    off the wall by eight hydraulic rams. The shops are named (`pit.shops` in the data): lit storefronts and
+    striped awnings on the outer concourse, a sign on each side, café tables outside the food places, carts,
+    planters, benches and lamp posts, coin telescopes along the inner rail looking down the well, blue
+    emergency phones on the outer rail and an information kiosk. Four lifts come down from the rim to the deck, two more go on down to
+    the forests; ramps run out to the trailheads.
+  - **The Bronchial Forests**, built as what they are: the organism's two lungs (`src/fleshpit/lungs.js`).
+    Lobed tissue with fissures, a domed base and the cardiac notch, drawn back-face only like the shaft, under
+    a nearly clear pleura so the outline reads from outside; inside, a bronchial tree off the shaft wall (each
+    airway splitting unequally, the branching plane turning a quarter turn each generation, cartilage rings on
+    the big airways, the pulmonary artery and vein alongside) ending in the glossy air-sac clusters the park
+    called bulbules. Both lungs fill and empty about the hilum on the breath. The boardwalks, and Septum Falls
+    into its fenced plunge pool; **the Amniotic Thermal Springs** (below), and **the Gift Gardens**, a chamber of gestation organs with the harvest rigs over them; **the Lesser Gastric Sea** with the
+    ferry, the terminal, the dam and **Oyster's Shame** in the wall above; **the Prime Labiod Junction**, a pair
+    of lips where the seas meet; **the Greater Gastric Sea** and the resort; **Little Detroit** over the drain.
+- **The Amniotic Thermal Springs** (`src/fleshpit/springs.js`), laid out after the park's own leaflet for them
+  (`AmnioticThrmalSprings.png`): a cluster of ballast bulbs off the south-west of the shaft, each with its wall
+  folded like a brain turned inside out, a pool in its lower third, a Geodesic Retaining Frame pressed into the
+  wall, and a deck, ladder, hut, lamp, blue emergency phone and name board. Eight are open - Regia, Gratia,
+  Placito, Laetis, Viribus, Cupido, Salus and Libido - and their water is coloured by potency, from the pale blue
+  of the Main Bath through the blues to the reds of Viribus and Libido at the bottom. The Main Bath is tented up
+  into six points round a yellow ring of fresh-air ducts, with two red walkways looping across the pool,
+  loungers round it, and the round, blue-windowed Bath House on its near side. The long passage runs up the
+  middle with a lift in it, stalks run out to each bath, the Lovers Squeeze is a crawl between Salus and
+  Libido, the Complementary Readiness Vestibule waits under Libido, and a glazed truss stair - the enclosed trail
+  - comes down to the Bath House from the lift landing in the shaft. On the far side, Anodyne's Commercial
+  Extraction Lease Area: its own bulbs full of yellow scaffold and white tanks, off-limits, with the pipe to
+  the surface. Unmapped ballast crops lie between the baths. Bathers in every pool. The bath list and its
+  potencies are in the data (the springs layer's `baths`).
+- **The passages nobody mapped** (`src/fleshpit/tunnels.js`, `pit.tunnels` in the data): ten passages off the
+  shaft wall from the entry tube to the drain, each gated at the wall with a bulkhead frame, a grille and a
+  padlock (or, for the sealed ones, a bolted plate), a hazard band, a PARK WORKS ONLY board, a flashing red lamp,
+  and a ledge and ladder for the crews. Past the grille each wanders off into the animal and the light stops;
+  the surveyed ones have a survey line pinned to the floor, and the worked ones a rail, work lamps, a crate and
+  an abandoned cart. Each has a card.
+- **The section** (`src/fleshpit/section.js`): in the section view the renderer clips away everything on your
+  side of a plane through the axis - surface, rim, the near half of every chamber - and a face on the plane,
+  the whole width of the map, is coloured like the park's block diagram (`flest_strata.png`): a thin cap of
+  grey laminated rock under the ground, a lumpy seam of yellow fat, a pale membrane, and below that the
+  organism laid down in beds like sediment - salmon and rose, streaked with pale fibre, with lavender lenses,
+  dark slit cavities and vessels winding through - following the land and sagging round the shaft. The voids
+  (the shaft, the lungs, the seas, the baths and their passages, the tunnels) are cut open, and where one holds
+  fluid the fluid is drawn in the cut to its level. The cut turns with the camera, and the clipping plane is
+  installed once and parked when the section is off, so switching never recompiles a shader.
+- **The free camera** (`src/fleshpit/camera.js`): press F, or Free in the pit panel, and the camera flies
+  anywhere - over the park, down the shaft, out through its wall and through the ground. Drag to look; W, A, S,
+  D fly along the look and sideways; Q and E (or C and Space) go straight down and up; Shift is four times
+  faster; the wheel sets the speed. The readout gives the depth or height, the layer and the speed, and the gauge
+  on the right jumps the camera to a depth. The chambers are drawn back-face only, so from outside them in the
+  ground you see into them. `#free` in the address opens in it (with the engine's `v=` it takes off from there);
+  F again, Surface, or any viewpoint lands it.
+- **Back faces.** The shaft, the collar, the stents and the chambers are drawn back-face only, so from inside
+  you see the far wall and never the near one. (The shaft's triangles used to be wound the wrong way for this,
+  so the ride showed no wall at all.) The section view no longer depends on it: see the section, above.
+- **Everything static is merged by material** at the end of the build, card by card, so the pit is a few
+  hundred draw calls rather than a few thousand.
+- **Going down** needs no panel: from the surface, zoom in on the hole, double-click it, press Page Down, or use
+  the depth gauge down the right edge of the screen - the seven layers to scale, a marker where you are, and ▲/▼
+  - which drops the camera in at the rim and rides it down. Ride back up past the rim to come out.
 - **The descent** (`src/fleshpit/camera.js`): this page steers its own camera through `ctx.camFrame`, because
   a hole is not a city and orbiting a point on the ground is the wrong control for it. A depth slider, a
   button per layer, a section view and a shaft ride; `#pit=1600` in the address opens outside the shaft at that
-  depth and `#ride=1600` inside it. Below the collar the sky goes, the sun goes with it, and what light there
-  is comes off the lamps. The engine's own tilt limits are right for a city and wrong for a shaft, so the
-  descent widens them (`ctl.elMin`/`elMax`) and you can look straight up it; and pressing any viewpoint in the
-  engine's panel hands the camera back rather than being ignored.
+  depth and `#ride=1600` inside it (`#2007&pit=420` for the night). Below the collar the sky goes, the sun with
+  it, and what light there is comes off the lamps.
 - **Depths are the park's, not the organism's.** The 1979 expedition reached 19,102 m and that was not the
   bottom; what is modelled here is the part the public could buy a ticket to.
 
 Regenerate with `python3 tools/make-fleshpit.py`, then `./sitectl build`.
+
+### `/yellowstone`: Yellowstone National Park
+
+A real place, on the shared engine, at the size of a small country: **106 by 110 km**, the whole park and a
+little round it. Built by `tools/make-yellowstone.py`, which writes three files: the city file, the map
+(`yellowstone-osm.json`) and the land (`yellowstone-land.json`, which the engine does not read and the page
+does).
+
+- **The ground is the real ground:** AWS Terrain Tiles on a 150 m grid, 709 × 735, with y = 0 at the lowest
+  point on the map (1,550 m, down the Yellowstone at Gardiner) and 2,048 m of relief above it. Where 150 m is
+  not enough the ground is sampled again finer: the **Grand Canyon of the Yellowstone** is a 25 m patch from
+  zoom-14 tiles, laid into the coarse grid with its edge matched to it, so the canyon is three hundred metres
+  deep rather than a shallow V. The roads through the patch are handed to the page and laid on it, because the
+  engine would have laid them on the coarse grid and they would have floated over the canyon.
+- **From OpenStreetMap:** 391 lakes, each at its own level (Yellowstone Lake is 2,357 m up and the Yellowstone
+  at Gardiner is 1,600, and one water sheet cannot hold both), 1,242 rivers and streams drawn as ribbons at
+  their own width, the Grand Loop and every road, the boardwalks through the basins, 3,600 buildings, the park
+  boundary, and **3,300 mapped geysers and hot springs**, every one of which is a coloured pool and steams.
+- **The land cover** (`src/yellowstone/nature.js`): the engine colours ground by height and slope, which paints
+  a plateau one flat green. The page recolours it from a grid the generator writes: lodgepole forest, meadow in
+  the valley floors (Hayden, Lamar, Pelican), sage in the dry north, wetland, rock and snow on the Absarokas and
+  Gallatins, the bare sinter of the thermal basins, and the 1988 burn as a patchwork of young pine and grey
+  snags. The walls of the Grand Canyon are yellow, pink and white in bands, which is what hot water did to them.
+- **The forest** is grown in 800 m tiles round the camera as it moves, thinned with distance and dropped when
+  the camera has gone: eighty per cent of the park is lodgepole, which is a hundred million trees. From high up
+  the ground's colour carries it, with the crowns speckled in by the ground's shader.
+- **The geysers erupt** (`src/yellowstone/landmarks.js`): Old Faithful, Castle, Grand, Beehive, Riverside,
+  Daisy, Great Fountain, Steamboat, Echinus, Clepsydra and Lone Star, each with its own height, interval and
+  duration - compressed, because Old Faithful's ninety minutes would mean nobody saw it, but in proportion, so
+  Old Faithful still goes more often than Grand and Steamboat hardly ever. The water is thrown and falls back on
+  the GPU; a fountain geyser throws it in bursts. They splash for a minute before they go and steam after.
+- **The pools are painted rather than modelled**, because what they are is colour: Grand Prismatic's blue
+  centre and the rings of bacteria outward, green, yellow, orange, rust, with the mats fanning away in fine
+  ridges; Excelsior's crater; Morning Glory, Sapphire, Emerald, Opal, Abyss. Mammoth's travertine terraces step
+  down the hill, live and orange at the top and dry and white below; Liberty Cap; the mud pots boil.
+- **The steam** is every basin, every mapped spring and every landmark that asked for it, in one set of points
+  animated on the GPU. It is heavy on a cold morning and thin on a hot afternoon.
+- **The falls:** the Lower and Upper Falls of the Yellowstone, Tower, Gibbon, Lewis, Kepler Cascades, Firehole
+  and Fairy, each facing the way its river runs (OSM draws waterways downstream), with mist at the foot.
+- **The buildings the map does not do justice to:** the Old Faithful Inn (the Old House under its great roof,
+  the dormers, the widow's walk, the wings), the Lake Yellowstone Hotel (lemon yellow, the porticos facing the
+  water, whichever way that is), the Roosevelt Arch at the North Entrance, and the lookout on Mount Washburn.
+- **The herds:** bison in Hayden and Lamar valleys, in loose groups, grazing and walking on. They are grown with
+  distance, up to four times, so a herd across the valley reads as a herd.
+- **The caldera.** Press **Caldera** in the bar (or open `#caldera`): the rim of the 631,000-year-old
+  Yellowstone Caldera glows round its seventy kilometres, a curtain stands up off it, the two resurgent domes
+  (Sour Creek and Mallard Lake) are ringed, the ground turns to glass and the fog thins, and underneath you see
+  the magma reservoir the seismologists have mapped, five to seventeen kilometres down and longer than the
+  caldera, with the bigger, fainter lower-crust body far under it. Without the button, the rim is still there
+  from high enough up to read as a line, and not from the ground. The outline is after the USGS, simplified.
+- **Flight:** it is a real place, so it has the aeroplane (`#fly`).
+
+Views include Old Faithful, the Upper Geyser Basin, Grand Prismatic (from the air and from the Fairy Falls
+trail), the Lower Falls, the Grand Canyon, Mammoth, Norris, Hayden and Lamar valleys, the lake, the Inn, the
+Lake Hotel, the arch, Washburn, West Thumb, Tower Fall, the caldera from above and the whole park.
+
+Regenerate with `python3 tools/make-yellowstone.py` (add `--fetch` to download the elevation tiles and the OSM
+extracts into `data/osm/raw/yellowstone/`, which is not committed). Map data © OpenStreetMap contributors, ODbL.
+
+### `/backrooms`: the Backrooms
+
+Fan work. The Backrooms began as one anonymous photograph of an empty yellow office and a caption under it,
+and grew into a collaborative fiction, a wiki's worth of numbered levels and Kane Parsons's films. Nothing of
+theirs is used: every surface is painted on a canvas when the page opens (`src/backrooms/textures.js`) and the
+rooms come out of a seeded generator (`src/backrooms/level.js`) that knows a grid and some numbers.
+
+Like Kyrene, this page does not run on the shared engine: there is no ground, no sky and no map, only the room
+you are in and the ones you can see from it. It brings its own renderer and a camera that walks.
+
+- **Endless, and the same every time.** Walls stand on a 2.4 m grid; ten cells by ten make a chunk, and a chunk
+  is a pure function of the seed and its coordinates. Chunks are built as you come within two of them and
+  dropped when you are three away, so coming back finds the same rooms. Each is laid out like a floor plate:
+  cut in two by a wall with at least one way through it, then each half again, stopping at room size or
+  sooner. A chunk's west and south edges are its own with a forced opening in each, so the whole plan is
+  connected however far it goes. Then the rules are broken on purpose: cuts with no wall and a row of columns
+  where it would have been, walls that stop short, doorways one door wide and doorways the width of the cell,
+  low-ceilinged halls with a soffit where they meet a taller room, columns through the big rooms.
+- **The light is baked.** There are hundreds of panels in view, so none of them is a real light. Every surface
+  is cut into a grid and each vertex is lit when its chunk is built, from every panel within 7.2 m that it can
+  see round the walls (a walk along the grid lines between them), with an indirect term so the ceiling glows
+  round each lamp. Some panels are dead; a few flicker, and the walls and carpet round them flicker with them,
+  in the shader, at no cost. Damp stains on the carpet and up the walls come from noise over the world, not
+  the textures, so they never repeat.
+- **Walking:** click to look (Esc lets the mouse go; dragging works too), W A S D, Shift to run. On a touch
+  screen the left third is a stick and the rest is for looking. Walls, doorways and columns stop you.
+- **The hum** (`src/backrooms/sound.js`): mains buzz off the ballasts from two oscillators and some noise,
+  breathing slowly; it starts the first time you touch the page, and M or the button mutes it.
+- **Noclip** (N, or the button): the screen goes to static and you arrive in the next level - **Level 1**, a
+  concrete car park with the cars gone, painted bands and hazard kerbs, colder light and more of it dead; the
+  **Poolrooms** (Level 37), white tile on every surface, high ceilings and pools of pale water, with a slap of
+  water in place of the hum; then back to **Level 0**.
+- **God's eye** (G, or the button): the ceiling comes off and the camera goes straight overhead, north up,
+  through a 40-degree lens so the walls stand up and it reads as a plan. The tops of the walls are drawn dark,
+  the headers over the doors and the soffits where the ceiling steps are left off with the ceiling, and you are
+  the red marker - W A S D still walk you, screen-wise, and the walls still stop you. The wheel, or + and -,
+  takes the eye from 14 to 110 m up, and the rooms are kept further out the higher it goes. `#god=50` in the
+  address opens in it.
+- **In the address:** `#seed=1337&level=0&at=x,z,heading` - the page keeps it current, so a link takes someone
+  to the same corridor. R, or Start again, goes back to the room you arrived in; Another seed is somewhere else.
+  The wireframe is here too, rebuilt as chunks come and go.
+
+### `/city`: the City, after *Blame!*
+
+Fan work after Tsutomu Nihei's *Blame!* (Kodansha, 1997-2003). Nothing from the manga or the 2017 film is used:
+every shape comes out of a seeded generator (`src/blame/city.js`) and the numbers in `data/cities/blame.json`.
+The page is about one thing, which is how big the City is, and it runs on its own renderer and camera, like
+Kyrene and the Backrooms, because nothing here stands on terrain under a sky.
+
+- **The block.** 48 km square and 24.8 km high: four layers of the City with Megastructure slabs between them,
+  bottom to top - **the Arcade** (3.2 km: walls of arched windows copied upwards, bridges across the canyons),
+  **the Works** (2.6 km: machine towers floor to ceiling, girders, pipes kilometres long), **the Plain** (9 km:
+  a ruled floor, towers clustered on its seams, cumulus, a spire hung from the ceiling) and **the Hanging**
+  (3.6 km: structure grown down from the ceiling). A shaft 900 m across drops through two slabs, with a stair
+  down its wall. Everything is instanced (about 50,000 pieces); what makes a box a wall of windows or a
+  machine is a pattern in its material (`src/blame/mats.js`) that fades to its own average tone before it can
+  shimmer, so a 7 m window and a 48 km floor share a shader. Each layer has its own fog, eased as you cross.
+- **The Megastructure** (`src/blame/detail.js`) is more than slabs: three **trunks** of it a couple of
+  kilometres across go through every layer and slab and on past both ends of the block, with plinths, haunches
+  and ribs; **beams** tens to hundreds of metres deep run under every ceiling on the 1,600 m seams; the floors
+  are plated along the seams; every hole has a collar above and below, and the great shaft has ribs out from its
+  rim. In section the fill has an inside: laminations every 60 m, galleries, and rows of round conduits, drawn
+  where the cut plane actually passes (the shader follows each pixel's ray back to the plane).
+- **More in every layer:** domes, bell towers, colonnades, ledges and an older town along the canyon floors of
+  the Arcade; tanks, risers, chimneys and catwalks in the Works; two causeways on piers to the horizon, a lattice
+  mast four kilometres high and a monolith on the Plain; dwellings clinging to the stalactites of the Hanging.
+- **The Builders** (`src/blame/builders.js`): six-legged machines from 7 m to 120 m long, each putting up a
+  wall a course at a time - walking its length laying the next course, turning at the end, stepping up - with
+  sparks at the arm. One works a tower across from Killy's platform ("A Builder at work"); the others are in
+  every layer. Lifts run up and down the column, the Plain's pylons and the machine towers. None of it is in the
+  fingerprint, since it moves.
+- **The stack goes on.** From outside the block, copies of it continue above and below - the next block each
+  way in full, dimmed, then slabs and air for eight blocks each way, fading - sharing the block's geometry and
+  instance buffers ("The stack" view: 400 km of it).
+- **Killy** (`src/blame/figures.js`): on a platform 1,450 m up in the Hanging, with Cibo at the edge: the only
+  thing in the City whose size you already know, and the only place modelled at human scale. Both are rigged
+  figures - armoured plates, jacket, shaggy hair, the GBE in his hand; Cibo's long hair - and breathe, shift
+  and look along the void. **Find Killy** (K) rings him from
+  anywhere and says how many pixels tall he is from there - 0.2 px from the column, 0.03 px from outside.
+- **The section** (X). A plane through the block, everything on your side of it taken away, turning round
+  as you walk round. What the cut passes through is drawn as an architect's poché: every material is
+  double-sided and a back face - which you only see inside a solid, where the plane has opened it - is drawn
+  flat, hatched and unfogged, the Megastructure near-black. The heights are ruled up the left, and a
+  slider and "Cut: across/along" move it. The kept half is chosen when the cut is made and stays put - **Flip**
+  (F) swaps it - and a camera on the cut-away side is outside the block, so crossing the plane changes nothing.
+- **The City** (the button, or the last two views): the whole thing as Nihei sized it, a shell about as wide as
+  Jupiter's orbit (1.6 billion km) round the Sun, in a scene of its own with a unit of a million km
+  (`src/blame/sphere.js`). In section it is layers from where the Earth was out to the skin. The diameter is
+  Nihei's; how deep it goes the manga never says, and the page says so.
+- **Fly** (G): drag to look without moving, W A S D along where you are looking, Q/E down and up, the wheel for
+  speed (0.5 m/s to 300 km/s), Shift for five times that. Otherwise the camera orbits a point.
+- **Pull back** (P): from Killy's shoulder to the solar system in nine moves, a power of ten or so at a time,
+  with a line at each. `#tour` in the address starts it.
+- **Views** for the platform, the void, the column, the great shaft, the Plain, the Works, the Arcade, the
+  block and the City. The HUD always says which layer you are in, how wide the frame is and how big Killy
+  is. `#view=N` opens view N; the page keeps `#at=mode,x,y,z,distance,yaw,pitch` and `#cut=axis,0-1,side`
+  current, so a link goes to the same place. `?seed=` builds another City.
 
 ## Layout
 
@@ -835,14 +1115,19 @@ src/
   megacity/ main.js landmarks.js             Mega-City One: the Hall of Justice, the Statue of Judgement
   mordor/   main.js landmarks.js forges.js hosts.js   Mordor: the Eye, the works, the hosts
   dredd2012/ main.js warmode.js              Mega-City One (2012): the blast shields and war mode
-  fleshpit/ main.js landmarks.js organism.js camera.js   the park: the shaft below the rim, and its own camera
+  fleshpit/ main.js landmarks.js surface.js organism.js springs.js lungs.js tunnels.js section.js anatomy.js promenade.js visitors.js fauna.js incident.js signs.js camera.js   the park: the surface and its lots, the shaft, the springs, the lungs, the tunnels, the section, the heart and vessels, the people, its animals, the night, its lettering, and its own camera
+  yellowstone/ main.js landmarks.js nature.js   Yellowstone: the geysers, pools, falls, lodges, herds and caldera; the land cover, forest, rivers and steam
+  backrooms/ main.js level.js textures.js sound.js   the Backrooms: its own renderer, the generator and baked light, the canvases, the hum
+  blame/    main.js city.js detail.js builders.js figures.js mats.js sphere.js   the City: its own renderer, camera, section and tour; the 25 km block; the Megastructure's structure and the layers' furniture; the Builders and the lifts; Killy and Cibo; the patterns and the poché; the whole of it round the Sun
   minastirith/ main.js landmarks.js life.js  Minas Tirith: the Tower, the Court, the Gate, the rock, the banners
   kowloon/  main.js section.js kaitak.js life.js   the Walled City: the section, the approach, the washing
+  starship/ page.js parts.js                 the page the ships and Babylon 5 share: renderer, sky, turntable, cards; the hull pieces
+  babylon5/ main.js station.js               Babylon 5: the sphere, the Cobra bays, the drum and the Garden, the arrays, the traffic, the gate
   hab/      main.js world.js               Kyrene: its own renderer, and a world in cylinder coordinates
 vendor/three/three.min.js     three.js r128 (pinned)
 tools/  build-page.py build-tongue.py probe.py check-city.py
         fetch-osm.py fetch-terrain.py build-osm-city.py make-city17.py make-nightcity.py
-        make-megacity.py make-mordor.py make-dredd2012.py
+        make-megacity.py make-mordor.py make-dredd2012.py make-yellowstone.py
         build-voth.py
 tests/  run.js *.test.js golden/ fixtures/
 server.py  site.toml  sitectl
