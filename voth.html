@@ -38,7 +38,10 @@
 <script src="vendor/three/three.min.js"></script>
 <script>
 var _errBox=document.getElementById('errs'), _errN=0;
-function ERR(m){ if(_errN++>14) return; _errBox.textContent += (_errBox.textContent?'\n':'')+m; }
+// an error takes the loading screen away with it: it used to go into a box drawn underneath the loading screen,
+// so a page that failed to build just said 'Raising the cantons' for ever
+function ERR(m){ var l=document.getElementById('load'); if(l) l.style.display='none';
+  if(_errN++>14) return; _errBox.textContent += (_errBox.textContent?'\n':'')+m; }
 window.onerror=function(m,u,l,c,e){ ERR('error: '+m+' @'+l+':'+c+(e&&e.stack?'\n'+e.stack:'')); };
 window.addEventListener('unhandledrejection',function(e){ ERR('promise: '+(e.reason&&e.reason.stack||e.reason)); });
 </script>
