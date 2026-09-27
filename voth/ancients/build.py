@@ -78,6 +78,7 @@ TARGET_OUT = {
     'trigon': 'trigon.html',                 # the triangular pyramid, 3:1
     'monolith': 'monolith.html',             # the slab with the arch and the oculi
     'crescent': 'crescent.html',             # the terraced crescent moon
+    'ledge': 'ledge.html',                   # terraced slabs cantilevered off a cliff
     'arcbeam': 'arcbeam.html',                 # the canyon-spanning beam arcology
     'ring': 'ring.html',                       # the barrel arcology, circular toruses
     'arcoindian': 'arcoindian.html',           # the cliff-topography arcology
