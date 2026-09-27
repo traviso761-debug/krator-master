@@ -14,6 +14,7 @@ import {installMenagerie} from '../core/menagerie.js';
 import {createWire,installWireUI} from '../core/wire.js';
 import {createRenderer,trackResize,installContextLoss,mkBtn,runHooks,runLoop,finishLoading,boot} from '../core/shell.js';
 import {readHash,writeHash} from '../core/hash.js';
+import {ORBIT_RATE,FAST,BIND,trackKeys,trackPointers} from '../core/input.js';
 import {mergeParts,fold,hullPalette} from './parts.js';
 
 const getJSON=u=>fetch(u).then(r=>{if(!r.ok)throw new Error(u+': HTTP '+r.status);return r.json();});
@@ -346,43 +347,29 @@ export async function starshipPage(opts){
     }
 
     const el=renderer.domElement;
-    let drag=null;
-    el.addEventListener('pointerdown',e=>{el.setPointerCapture(e.pointerId);
-      drag={x:e.clientX,y:e.clientY,pan:e.button===2||e.shiftKey};});
-    el.addEventListener('contextmenu',e=>e.preventDefault());
-    addEventListener('pointerup',()=>{drag=null;});
-    addEventListener('pointercancel',()=>{drag=null;});
-    el.addEventListener('lostpointercapture',()=>{drag=null;});
-    addEventListener('blur',()=>{drag=null;});
-    document.addEventListener('visibilitychange',()=>{drag=null;});
-    el.addEventListener('pointermove',e=>{
-      if(drag&&e.buttons===0&&e.pointerType!=='touch'){drag=null;return;}
-      if(!drag||(SHIP.ownsInput&&SHIP.ownsInput()))return;
-      const dx=e.clientX-drag.x,dy=e.clientY-drag.y;drag.x=e.clientX;drag.y=e.clientY;
-      if(drag.pan){
-        const s=V.d*0.0013;
-        const right=new THREE.Vector3().subVectors(camera.position,target).cross(camera.up).normalize();
-        const up=camera.up.clone();
-        V.tx-=right.x*dx*s+up.x*-dy*s;V.ty-=right.y*dx*s+up.y*-dy*s;V.tz-=right.z*dx*s+up.z*-dy*s;
-      }else{
-        V.az-=dx*0.005;V.el=Math.max(-1.45,Math.min(1.45,V.el+dy*0.004));
-      }});
+    // the site's controls (src/core/input.js): drag to orbit, right or Shift-drag to pan, wheel or pinch to zoom
     // how close you may get: a third of the ship's radius by default, which for an eight-kilometre station is
     // a kilometre and a half off the hull and nowhere near its docking bay, so a model may say for itself
-    const DMIN=SHIP.minD||SHIP.radius*0.35;
-    el.addEventListener('wheel',e=>{e.preventDefault();if(SHIP.ownsInput&&SHIP.ownsInput())return;
-      V.d=Math.max(DMIN,Math.min(SHIP.radius*160,V.d*Math.exp(e.deltaY*0.0011)));},{passive:false});
-    // pinch, for the pages people actually look at these on
-    {let pinch=null;const pts=new Map();
-     el.addEventListener('pointerdown',e=>{if(e.pointerType==='touch')pts.set(e.pointerId,e);});
-     el.addEventListener('pointermove',e=>{if(e.pointerType!=='touch'||!pts.has(e.pointerId))return;
-       pts.set(e.pointerId,e);
-       if(pts.size===2){const [a,b]=[...pts.values()];
-         const d=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);
-         if(pinch)V.d=Math.max(DMIN,Math.min(SHIP.radius*160,V.d*pinch/d));
-         pinch=d;drag=null;}});
-     const drop=e=>{pts.delete(e.pointerId);if(pts.size<2)pinch=null;};
-     addEventListener('pointerup',drop);addEventListener('pointercancel',drop);}
+    const DMIN=SHIP.minD||SHIP.radius*0.35,zoom=f=>{V.d=Math.max(DMIN,Math.min(SHIP.radius*160,V.d*f));};
+    const owned=()=>SHIP.ownsInput&&SHIP.ownsInput();
+    trackPointers(el,{
+      drag:(dx,dy,{pan})=>{if(owned())return;
+        if(pan){
+          const s=V.d*0.0013;
+          const right=new THREE.Vector3().subVectors(camera.position,target).cross(camera.up).normalize();
+          const up=camera.up.clone();
+          V.tx-=right.x*dx*s+up.x*-dy*s;V.ty-=right.y*dx*s+up.y*-dy*s;V.tz-=right.z*dx*s+up.z*-dy*s;
+        }else{
+          V.az+=dx*ORBIT_RATE;V.el=Math.max(-1.45,Math.min(1.45,V.el+dy*ORBIT_RATE));
+        }},
+      pinch:ratio=>{if(!owned())zoom(ratio);},
+      wheel:dy=>{if(!owned())zoom(Math.exp(dy*0.0011));}});
+    // WASD slides the point you orbit (along the view, flattened, and across it), Q and E lower and raise it,
+    // Shift five times as fast; a model that has taken the controls (B5's interior) keeps its own keys
+    const keys=trackKeys();
+    const slide=dt=>{if(!keys.size||owned())return;const s=V.d*0.6*dt*(keys.has(BIND.fast)?FAST:1),fx=-Math.cos(V.az),fz=-Math.sin(V.az);
+      let f=0,r=0,u=0;if(keys.has('w'))f+=1;if(keys.has('s'))f-=1;if(keys.has('d'))r+=1;if(keys.has('a'))r-=1;if(keys.has('e'))u+=1;if(keys.has('q'))u-=1;
+      V.tx+=(fx*f-fz*r)*s;V.tz+=(fz*f+fx*r)*s;V.ty+=u*s;};
 
     // ---- the cards ----
     // A model that hangs {name, info} on the userData of a part gets a card for it when it is clicked, the
@@ -444,8 +431,8 @@ export async function starshipPage(opts){
 
     finishLoading({hintMs:14000});
 
-    runLoop(now=>{
-      runHooks(animHooks,now);
+    runLoop((now,dt)=>{
+      slide(dt);runHooks(animHooks,now);
       if(sky)for(const q of sky.bodies)if(q.b.rate)q.g.rotation.y+=q.b.rate;
       // a model may take the camera over - Babylon 5's interior rides the drum - and then the turntable waits
       if(!(SHIP.camFrame&&SHIP.camFrame(now)))frame();

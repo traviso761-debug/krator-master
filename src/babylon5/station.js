@@ -42,6 +42,8 @@
 // The colours are warm grey-beige, not silver, with blue-grey plates among them and the radiators blue.
 import {lathe} from '../starship/parts.js';
 import {mkRng} from '../core/rng.js';
+import {trackKeys,trackPointers} from '../core/input.js';
+import {createCylinderWalker} from '../core/cylinder.js';
 
 export function model(api){
   const {THREE,C,scene,camera,renderer,animHooks,fold}=api;
@@ -440,14 +442,15 @@ function buildInterior(api,O){
     zocalo:{r:ZR,y0:ZA+10,y1:ZF-10,label:'The Zocalo',fog:[0x5a3a28,0.0028],start:{a:0,y:ZA+115,yaw:Math.PI/2,pitch:0.08}},
     below:{r:BR,y0:BA+10,y1:BF-10,label:'Down Below',fog:[0x14110c,0.0065],start:{a:0,y:(BA+BF)/2,yaw:Math.PI/2,pitch:0.02}},
   };
-  const keys=new Set();let drag=null,fog0=null,bg0=null;
+  let fog0=null,bg0=null;
   const el=renderer.domElement;
-  el.addEventListener('pointerdown',e=>{if(W.on)drag={x:e.clientX,y:e.clientY};});
-  addEventListener('pointerup',()=>{drag=null;});
-  el.addEventListener('pointermove',e=>{if(!W.on||!drag)return;W.yaw-=(e.clientX-drag.x)*0.004;W.pitch=Math.max(-1.5,Math.min(1.5,W.pitch+(e.clientY-drag.y)*0.004));drag.x=e.clientX;drag.y=e.clientY;});
-  addEventListener('keydown',e=>{if(!W.on)return;const k=e.key.toLowerCase();if('wasdqe'.includes(k)||k==='shift'){keys.add(k);e.preventDefault();}if(k==='escape')exit();});
-  addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));
-  addEventListener('blur',()=>keys.clear());
+  // The site's controls (src/core/input.js) and the drum walker Kyrene uses too (src/core/cylinder.js): drag to
+  // look (right is right, down is down), WASD to walk, Shift to hurry, Esc to go back outside. The page's own
+  // orbit stands aside while this is on (ownsInput).
+  const drum=createCylinderWalker(THREE,{axis:new THREE.Vector3(0,1,0),along:'y',
+    at:(y,a)=>new THREE.Vector3(Math.cos(a),0,Math.sin(a)).multiplyScalar(W.where==='axis'?1:PLACES[W.where].r-W.eye).setY(y)});
+  trackPointers(el,{drag:(dx,dy)=>{if(W.on)drum.look(W,dx,dy,0.004,1.5);}});
+  const keys=trackKeys({onKey:k=>{if(W.on&&k==='escape')exit();}});
   // the panel of places, shown while inside
   const panel=document.createElement('div');panel.id='b5inside';
   panel.style.cssText='position:fixed;right:10px;top:46px;display:none;flex-direction:column;gap:4px;z-index:6;font:12px Helvetica,Arial,sans-serif';
@@ -478,8 +481,7 @@ function buildInterior(api,O){
       W.y+=(fw*cy*cp)*sp;W.fly=Math.max(-(GR-40),Math.min(GR-40,(W.fly||0)+(fw*spp+st*0.0)*sp));W.a+=st*sp/Math.max(20,Math.abs(W.fly)+20);
     }else{
       // walking on the floor: forward along the ground, which is along the axis and round the drum
-      const cy=Math.cos(W.yaw),sy=Math.sin(W.yaw);
-      W.y+=(fw*cy-st*sy)*sp;W.a+=(fw*sy+st*cy)*sp/PL.r;}
+      drum.walk(W,fw,st,sp);}
     W.y=Math.max(PL.y0,Math.min(PL.y1,W.y));
     // where the eye is, in the drum's frame
     const a=W.a;out.set(Math.cos(a),0,Math.sin(a));circ.set(-Math.sin(a),0,Math.cos(a));

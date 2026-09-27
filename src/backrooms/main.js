@@ -13,6 +13,7 @@ import {installMenagerie} from '../core/menagerie.js';
 import {createWire,installWireUI} from '../core/wire.js';
 import {createRenderer,trackResize,installContextLoss,mkBtn as mkBtn0,runHooks,runLoop,finishLoading,boot} from '../core/shell.js';
 import {readHash,writeHash as mergeHash} from '../core/hash.js';
+import {BIND,trackKeys} from '../core/input.js';
 import {createWorld,LEVELS,ORDER,C} from './level.js';
 import {makeTextures} from './textures.js';
 import {createSound} from './sound.js';
@@ -100,7 +101,7 @@ async function build(){
 
   // ---- looking and walking ----
   await stage('ui');
-  const el=renderer.domElement,keys=new Set();
+  const el=renderer.domElement;
   const sound=createSound();
   const wake=()=>sound.start(S.level);
   let drag=null,stick=null;
@@ -122,19 +123,17 @@ async function build(){
     if(!drag||e.pointerId!==drag.id||locked())return;
     if(e.buttons===0&&e.pointerType!=='touch'){drag=null;return;}
     look(e.clientX-drag.x,e.clientY-drag.y,0.004);drag.x=e.clientX;drag.y=e.clientY;});
-  const MOVE=new Set(['w','a','s','d','arrowup','arrowdown','arrowleft','arrowright','shift']);
-  addEventListener('keydown',e=>{if(e.ctrlKey||e.metaKey||e.altKey)return;
-    const t=e.target;if(t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'))return;
-    const k=e.key.toLowerCase();wake();
-    if(MOVE.has(k)){keys.add(k);if(k!=='shift')e.preventDefault();return;}
+  // the keys are the site's (src/core/input.js): WASD or the arrows walk, Shift runs, G is the overhead view;
+  // N, M and R are this page's own
+  const keys=trackKeys({held:['w','a','s','d','shift'],arrows:true,onKey:(k,e,held)=>{wake();
+    if(held){e.preventDefault();return;}
     if(k==='n'){noclip();return;}
     if(k==='m'){toggleSound();return;}
     if(k==='r'){reset();return;}
-    if(k==='g'){toggleGod();return;}
-    if(GOD.on&&(k==='+'||k==='='||k==='-'||k==='_')){zoomGod(k==='-'||k==='_'?1.15:1/1.15);e.preventDefault();return;}});
+    if(k===BIND.overhead){toggleGod();return;}
+    if(GOD.on&&(k==='+'||k==='='||k==='-'||k==='_')){zoomGod(k==='-'||k==='_'?1.15:1/1.15);e.preventDefault();return;}}});
   el.addEventListener('wheel',e=>{if(!GOD.on)return;e.preventDefault();zoomGod(Math.exp(e.deltaY*0.0012));},{passive:false});
-  addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));
-  addEventListener('blur',()=>{keys.clear();drag=null;stick=null;});
+  addEventListener('blur',()=>{drag=null;stick=null;});
 
   // ---- the panels ----
   const ui=document.getElementById('ui');

@@ -30,7 +30,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROBE = r"""<script>window.__probeErrs=[];addEventListener('error',e=>window.__probeErrs.push((e.message||String(e))+' @'+(e.filename||'').split('/').pop()+':'+e.lineno));</script>
 <script>(function(){let rd=null,sc=null,frames=[],last=0;
 let wantShot=false,shotTaken=false;
-if(window.THREE){const W=THREE.WebGLRenderer;THREE.WebGLRenderer=function(o){const r=new W(o);rd=r;const R0=r.render;r.render=function(scene,cam){sc=scene;const t=performance.now();if(last)frames.push(t-last);last=t;const out=R0.call(r,scene,cam);if(wantShot){wantShot=false;shotTaken=true;try{const u=r.domElement.toDataURL('image/jpeg',0.8);fetch('http://127.0.0.1:SHOTPORT/shot',{method:'POST',mode:'no-cors',body:u});}catch(e){}}return out;};return r;};}
+if(window.THREE){const W=THREE.WebGLRenderer;THREE.WebGLRenderer=function(o){const r=new W(o);rd=r;const R0=r.render;r.render=function(scene,cam){sc=scene;window.__probeCam=cam;const t=performance.now();if(last)frames.push(t-last);last=t;const out=R0.call(r,scene,cam);if(wantShot){wantShot=false;shotTaken=true;try{const u=r.domElement.toDataURL('image/jpeg',0.8);fetch('http://127.0.0.1:SHOTPORT/shot',{method:'POST',mode:'no-cors',body:u});}catch(e){}}return out;};return r;};}
 // Ready: the loading overlay is gone (#loading removed, or Voth's #load hidden) and, on a 3D page, 30 frames have
 // been drawn since and 1.2 s has passed. WAIT is only the ceiling; a page that never gets there is reported as timed out.
 const t0=performance.now();let readyAt=0,framesAt=0;
@@ -43,11 +43,29 @@ setTimeout(tick,150);
 const rep=o=>{new Image().src='/__probe?'+encodeURIComponent(JSON.stringify(o));};
 const sha=async s=>{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');};
 const r2=x=>Math.round(x*100)/100;
-async function finish(timedOut){if(SHOTPORT&&rd){wantShot=true;await new Promise(r=>{const w=()=>shotTaken?r():setTimeout(w,40);w();setTimeout(r,2000);});}
+// --input: a drag to the right across the middle of the canvas, then W held for half a second. Reports which way
+// the view turned (+1: to the right, which is the site's convention: the world follows the pointer) and how far
+// the camera moved while W was down.
+async function inputTest(){const cv=rd&&rd.domElement,cam=window.__probeCam;if(!cv||!cam)return null;
+ const V=THREE.Vector3,fwd=()=>{const f=new V();cam.getWorldDirection(f);return f;},pos=()=>cam.getWorldPosition(new V());
+ const frames2=n=>new Promise(r=>{let k=0;const f=()=>{if(++k>=n)r();else requestAnimationFrame(f);};requestAnimationFrame(f);});
+ const x0=cv.clientWidth/2,y0=cv.clientHeight/2,o={bubbles:true,cancelable:true,pointerId:7,pointerType:'mouse',isPrimary:true};
+ const yaw=(a,b)=>-new V().crossVectors(a,b).dot(cam.up);   // + when the view has turned right, about the camera's own up
+ // first how far it turns by itself over the same number of frames (a spinning habitat turns with you)
+ const b0=fwd();await frames2(12);const drift=yaw(b0,fwd());
+ const f0=fwd();cv.dispatchEvent(new PointerEvent('pointerdown',{...o,clientX:x0,clientY:y0,button:0,buttons:1}));
+ for(let i=1;i<=8;i++){cv.dispatchEvent(new PointerEvent('pointermove',{...o,clientX:x0+i*10,clientY:y0,button:-1,buttons:1}));await frames2(1);}
+ cv.dispatchEvent(new PointerEvent('pointerup',{...o,clientX:x0+80,clientY:y0,button:0,buttons:0}));await frames2(4);
+ const turn=yaw(f0,fwd())-drift;
+ const p0=pos();dispatchEvent(new KeyboardEvent('keydown',{key:'w',bubbles:true}));await new Promise(r=>setTimeout(r,500));
+ dispatchEvent(new KeyboardEvent('keyup',{key:'w',bubbles:true}));await frames2(3);
+ return {turn:Math.abs(turn)<1e-4?0:Math.sign(turn),wMoved:Math.round(pos().distanceTo(p0)*10)/10};}
+async function finish(timedOut){if(INPUT&&!timedOut){try{window.__probeInput=await inputTest();}catch(e){window.__probeInput={error:String(e)};}}
+ if(SHOTPORT&&rd){wantShot=true;await new Promise(r=>{const w=()=>shotTaken?r():setTimeout(w,40);w();setTimeout(r,2000);});}
 try{const out={timedOut,readyMs:readyAt?Math.round(readyAt-t0):null};const IZ=window._iz||{};for(const k of ['details','cull','res','fps','IZ','loadMs','lotList','doorList','artPrints'])if(window['_'+k]===undefined&&IZ[k]!==undefined)window['_'+k]=IZ[k];
  out.errors=((document.getElementById('errs')||{}).textContent||'')+(window.__probeErrs.length?' | early: '+window.__probeErrs.join('; '):'');out.three=window.THREE&&THREE.REVISION;
  out.load=(window.LOAD||(typeof LOAD!=='undefined'?LOAD:null)||{}).times||null;out.loadMs=window._loadMs||null;
- out.details=window._details||null;out.hash=location.hash;out.cull=window._cull||null;out.res=window._res&&window._res.cur;out.fps=window._fps;
+ out.details=window._details||null;out.hash=location.hash;out.input=window.__probeInput||null;out.cull=window._cull||null;out.res=window._res&&window._res.cur;out.fps=window._fps;
  if(window._IZ&&window._IZ.REG){const B=Object.values(window._IZ.REG).map(r=>r.box);out.atlasRegions=B.length;out.atlasMaxY=Math.max(...B.map(b=>b[1]+b[3]));out.atlasMaxX=Math.max(...B.map(b=>b[0]+b[2]));}
  if(rd&&sc){const inf=rd.info;let n=0,inst=0,cap=0,used=0,pts=0,meshes=0,nocull=0;const mats=new Set();sc.traverse(o=>{n++;if(o.isInstancedMesh){inst++;cap+=o.instanceMatrix.count;used+=o.count;}else if(o.isPoints)pts++;else if(o.isMesh)meshes++;if(o.material)mats.add(o.material);if(o.frustumCulled===false)nocull++;});
   frames=frames.slice(-120);const srt=[...frames].sort((a,b)=>a-b);
@@ -96,6 +114,7 @@ def main():
     ap.add_argument("--shot", help="save a JPEG of the rendered canvas here (taken just before the report)")
     ap.add_argument("--size", default="1600,900", help="browser window size")
     ap.add_argument("--quiet", action="store_true")
+    ap.add_argument("--input", action="store_true", help="after it settles, drag right and hold W; report which way the view turned and how far W moved it")
     ap.add_argument("--no-build", action="store_true", help="do not regenerate src/*/build.js first (the test runner checks it instead)")
     ap.add_argument("--expect", help="golden JSON (tests/golden/iziz-<seed>.json): exit 2 if the layout fingerprint differs")
     ap.add_argument("--save-golden", help="write the layout fingerprint to this golden JSON")
@@ -115,7 +134,7 @@ def main():
     if not a.port:
         a.port = free_port()
     shot_port = free_port() if a.shot else 0
-    src = src[:cut] + PROBE.replace("WAIT", str(a.wait * 1000)).replace("SHOTPORT", str(shot_port)) + src[cut:]
+    src = src[:cut] + PROBE.replace("WAIT", str(a.wait * 1000)).replace("INPUT", "true" if a.input else "false").replace("SHOTPORT", str(shot_port)) + src[cut:]
 
     ff, snap = firefox_cmd()
     home = os.path.expanduser("~")
@@ -215,6 +234,8 @@ def main():
             print("cull:", json.dumps(report["cull"]))
         if report.get("details"):
             print("details:", json.dumps(report["details"]))
+        if report.get("input"):
+            print("input:", json.dumps(report["input"]))
         if report.get("hash"):
             print("hash:", report["hash"])
     fp = {k: report.get(k) for k in ("lots", "lotHash", "doors", "doorHash")}

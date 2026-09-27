@@ -17,7 +17,11 @@ are listed in §7. File:line references are as of this date.
 > extras talk through one documented bus (`src/fleshpit/bus.js`), and the war both Middle-earth pages share lives
 > in `src/middleearth/`. Turning the engine's stages into modules with named outputs is not done: they share
 > 244 names across stage boundaries, several of them mutable (`hourCur`, `clockPaused`, the camera state), so
-> it needs its own pass. Phase 3 waits on the binding table (§9.2). The later phases are not started.
+> it needs its own pass. Phase 3 is done: `src/core/input.js` holds the
+> binding table signed off on 2026-09-26 (README, Controls) and the key and pointer trackers with their guards;
+> the engine, the starship page, Kyrene, the Backrooms, the City and Babylon 5's interior use them, and every one
+> turns the same way (`tools/probe.py --input` drags and checks). `src/core/cylinder.js` is the drum walker
+> Kyrene and Babylon 5 share. `ctx.camFrame` is a stack (`ctx.pushCam`). The later phases are not started.
 
 There is no physics engine as such. The nearest things are the flight model (`src/core/flight.js`, kinematic,
 no stall), the Backrooms' circle-against-walls collision (`src/backrooms/level.js:409`), the City's

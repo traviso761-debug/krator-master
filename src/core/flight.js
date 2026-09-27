@@ -3,7 +3,7 @@
 // terrain and a real street layout under them, and the only way to get a feel for either is to go and
 // look. The rest of the site is looked at from outside, which is what the orbit camera is for.
 //
-// This does not replace the camera. The engine's render loop hands `ctx.camFrame` the control state after
+// This does not replace the camera. The engine's render loop hands the top of its camera stack the control state after
 // it has had its own turn with it, so flying is a matter of working out where the aeroplane is and then
 // telling the orbit camera to sit behind it: target on the aeroplane, azimuth its heading reversed,
 // elevation off its pitch, and a short leash. Leaving flight mode puts the hook back and the camera is
@@ -94,11 +94,10 @@ export function installFlight(A){
     const g=groundH(S.pos.x,S.pos.z)||0, r=roofAt?(roofAt(S.pos.x,S.pos.z)||0):0;
     S.pos.y=Math.max(S.pos.y,g+r+90);
     S.head=ctl.az+Math.PI;S.pitch=0;S.roll=0;S.v=VMAX*S.thr;
-    S.prevCam=ctx.camFrame||null;
+    S.popCam=ctx.pushCam(frame);          // on top of whatever else is steering (the stack is the engine's)
     S.prevUp.copy(camera.up);
     S.goalSeen=ctl.goal;
     plane.visible=true;hud.style.display='';
-    ctx.camFrame=frame;
     label();
   }
   // `home` puts the camera back where the page opens rather than leaving it wherever the aeroplane got
@@ -110,7 +109,7 @@ export function installFlight(A){
     plane.visible=false;hud.style.display='none';
     ctx.details=Object.assign(ctx.details||{},{flight:'landed'+(home?' (left the map)':'')});
     camera.up.copy(S.prevUp);
-    ctx.camFrame=S.prevCam;
+    if(S.popCam){S.popCam();S.popCam=null;}
     if(home&&setView&&VIEWS){
       const v=VIEWS[C.defaultView]||Object.values(VIEWS)[0];
       if(v){setView(...v);label();return;}

@@ -4,7 +4,7 @@
 // pick a depth, hold the axis, turn round it - and to be able to stand outside and read the seven layers off
 // it like a cross-section, which is what the back-face trick in organism.js is for.
 //
-// So this page steers its own camera. The engine offers exactly one hook for it, ctx.camFrame: it is handed the
+// So this page steers its own camera. The engine offers a hook for it, its camera stack (ctx.pushCam): the frame on top is handed the
 // control state once the engine has had its turn, every frame, and may overwrite any of it. A page that never
 // sets it - which is every other page on the site - is not affected in any way. On the surface this module
 // hands every frame straight back, so up top the park behaves exactly like Chicago.
@@ -62,7 +62,7 @@ export function descent(api){
   }
 
   // ---- the frame ----
-  ctx.camFrame=(now,ctl)=>{
+  ctx.pushCam((now,ctl)=>{
     // A viewpoint button in the engine's own panel sets a fresh fly goal. If this went on overwriting the camera
     // the panel would simply be dead while the descent was on, so a goal we have not seen before is taken as
     // what it is - someone asking for the surface camera back - and the pit hands it over.
@@ -91,7 +91,7 @@ export function descent(api){
     ctl.dist=S.mode==='section'?Math.max(r*2.6,S.out):Math.max(12,Math.min(S.in,r*0.42));
     if(ctx.details)ctx.details.depth=Math.round(S.depth)+' m';
     if(UI.tick)UI.tick();
-  };
+  });
 
   // ---- what it is like in there ----
   // Below the collar there is no sky, and the engine's daylight has no business being visible: the dome goes,
