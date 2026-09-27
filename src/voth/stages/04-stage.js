@@ -12,15 +12,13 @@ scene.fog = new THREE.FogExp2(HAZE.getHex(), PAL.fogDensity);
 scene.background = HAZE.clone();
 
 var camera = new THREE.PerspectiveCamera(52, innerWidth/innerHeight, 0.9, 26000);
-var renderer = new THREE.WebGLRenderer({ antialias:!FAST, powerPreference:'high-performance' });
-renderer.setPixelRatio(Math.min(devicePixelRatio||1, FAST?1:1.75));
-renderer.setSize(innerWidth, innerHeight);
+var renderer = createRenderer(THREE, { antialias:!FAST, pixelCap:FAST?1:1.75 });   /* the page shell, src/core/shell.js */
+installContextLoss(renderer);
 renderer.outputEncoding = THREE.sRGBEncoding;
 if(!FAST){
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 }
-document.body.appendChild(renderer.domElement);
 window.renderer = renderer;
 
 /* --- light: ashen Vvardenfell daylight, sun high in the south-east --- */

@@ -1,4 +1,5 @@
 /* ==== 21. LIFE LAYER ==== */
+await stage('life');   /* the loading screen (src/core/diag.js) gets a frame to say so */
 reseed(780001);
 
 var LIFE_SKIN = 0x8c8394;

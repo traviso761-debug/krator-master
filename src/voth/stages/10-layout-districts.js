@@ -1,4 +1,5 @@
 /* ==== 5. CITY LAYOUT ==== */
+await stage('layout');   /* the loading screen (src/core/diag.js) gets a frame to say so */
 reseed(300001);
 
 var BAYC = { x:-150, z:600 };

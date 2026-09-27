@@ -1,4 +1,5 @@
 /* ==== 15. LAND PLACEMENT ==== */
+await stage('land');   /* the loading screen (src/core/diag.js) gets a frame to say so */
 reseed(600001);
 
 var GRIDC = 48, GRID = {};

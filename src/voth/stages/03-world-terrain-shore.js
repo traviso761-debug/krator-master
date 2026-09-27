@@ -1,4 +1,5 @@
 /* ==== 2. WORLD CONSTANTS ==== */
+await stage('world');   /* the loading screen (src/core/diag.js) gets a frame to say so */
 
 var WORLD = 10800, HW = WORLD/2;   /* terrain extent — land runs to the horizon */
 

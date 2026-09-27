@@ -1,4 +1,5 @@
 /* ==== 25. CAMERA & CONTROLS ==== */
+await stage('camera');   /* the loading screen (src/core/diag.js) gets a frame to say so */
 
 var ctl = { tx:0, ty:50, tz:300, theta:-Math.PI*0.5, phi:1.06, radius:1400 };
 function applyCam(){
@@ -107,55 +108,38 @@ var VIEWS = [
   var host=document.getElementById('views');
   VIEWS.forEach(function(v){
     var b=document.createElement('button'); b.textContent=v[0];
-    b.onclick=function(){ try{ v[1](); }catch(e){ ERR('view '+v[0]+': '+e); } };
+    b.onclick=function(){ try{ v[1](); }catch(e){ report('view '+v[0], e); } };
     host.appendChild(b);
   });
 })();
 
-/* --- pointer orbit / pinch --- */
-var ptrs = {}, lastPinch = 0, dragged = false;
+/* --- the site's controls (src/core/input.js): drag to orbit (the world follows the pointer), right or
+       Shift-drag to pan the way the engine's cities do, the wheel or a pinch to zoom, WASD/QE to move the target, Shift five times as fast --- */
 var el = renderer.domElement;
 el.style.touchAction = 'none';
-el.addEventListener('pointerdown', function(e){
-  el.setPointerCapture(e.pointerId);
-  ptrs[e.pointerId] = { x:e.clientX, y:e.clientY }; dragged = false;
+function panBy(dx, dy){
+  var k = ctl.radius*0.0016, fx = Math.cos(ctl.theta), fz = Math.sin(ctl.theta);
+  ctl.tx += (dx*fz - dy*fx)*k;
+  ctl.tz += (-dx*fx - dy*fz)*k;
+  ctl.tx = clamp(ctl.tx, -HW+60, HW-60);
+  ctl.tz = clamp(ctl.tz, -HW+60, HW-60);
+}
+var PTR = trackPointers(el, {
+  drag: function(dx, dy, o){
+    if(o.pan) panBy(dx, dy);
+    else{ ctl.theta += dx*ORBIT_RATE; ctl.phi = clamp(ctl.phi - dy*ORBIT_RATE, 0.05, 1.545); }
+    applyCam(); },
+  pinch: function(ratio, dx, dy){ ctl.radius = clamp(ctl.radius*ratio, 3, 9000); panBy(dx, dy); applyCam(); },
+  wheel: function(dy){ ctl.radius = clamp(ctl.radius*(dy > 0 ? 1.11 : 0.90), 3, 9000); applyCam(); },
+  click: function(x, y){ probeAt(x, y); }
 });
-el.addEventListener('pointermove', function(e){
-  var p = ptrs[e.pointerId]; if(!p) return;
-  var dx = e.clientX - p.x, dy = e.clientY - p.y;
-  p.x = e.clientX; p.y = e.clientY;
-  var ids = Object.keys(ptrs);
-  if(Math.abs(dx)+Math.abs(dy) > 2) dragged = true;
-  if(ids.length === 1){
-    ctl.theta -= dx*0.0042;
-    ctl.phi = clamp(ctl.phi - dy*0.0042, 0.05, 1.545);
-  }else if(ids.length === 2){
-    var a=ptrs[ids[0]], b=ptrs[ids[1]];
-    var d = Math.hypot(a.x-b.x, a.y-b.y);
-    if(lastPinch) ctl.radius = clamp(ctl.radius * (lastPinch/d), 3, 9000);
-    lastPinch = d;
-  }
-  applyCam();
-});
-function up(e){ delete ptrs[e.pointerId]; lastPinch = 0; }
-el.addEventListener('pointerup', up);
-el.addEventListener('pointercancel', up);
-el.addEventListener('wheel', function(e){
-  e.preventDefault();
-  ctl.radius = clamp(ctl.radius * (e.deltaY > 0 ? 1.11 : 0.90), 3, 9000);
-  applyCam();
-}, { passive:false });
-
-/* --- keyboard pan --- */
-var keys = {};
-addEventListener('keydown', function(e){ keys[e.key.toLowerCase()] = true; });
-addEventListener('keyup',   function(e){ keys[e.key.toLowerCase()] = false; });
+var keys = trackKeys();
 function panStep(dt){
-  var sp = (keys['shift'] ? 620 : 190) * dt * (0.35 + ctl.radius/900);
+  var sp = 190 * (keys.has('shift') ? SPEEDUP : 1) * dt * (0.35 + ctl.radius/900);
   var f = 0, s = 0, u = 0;
-  if(keys['w']) f += 1; if(keys['s']) f -= 1;
-  if(keys['a']) s -= 1; if(keys['d']) s += 1;
-  if(keys['q']) u -= 1; if(keys['e']) u += 1;
+  if(keys.has('w')) f += 1; if(keys.has('s')) f -= 1;
+  if(keys.has('a')) s -= 1; if(keys.has('d')) s += 1;
+  if(keys.has('q')) u -= 1; if(keys.has('e')) u += 1;
   if(!f && !s && !u) return;
   var fx = Math.cos(ctl.theta+Math.PI), fz = Math.sin(ctl.theta+Math.PI);
   ctl.tx += (fx*f - fz*s)*sp;
@@ -164,6 +148,22 @@ function panStep(dt){
   ctl.tx = clamp(ctl.tx, -HW+60, HW-60);
   ctl.tz = clamp(ctl.tz, -HW+60, HW-60);
   applyCam();
+}
+
+/* --- the address: #v=cx,cy,cz,tx,ty,tz keeps the view, #view=<name> opens at one (src/core/hash.js) --- */
+function readVothHash(){
+  var q = readHash(), v = (q.get('v')||'').split(',').map(Number);
+  if(v.length === 6 && v.every(isFinite)){ setView(v[0],v[1],v[2],v[3],v[4],v[5]); return true; }
+  var vn = q.get('view');
+  if(vn !== null) for(var i=0;i<VIEWS.length;i++) if(VIEWS[i][0].toLowerCase() === vn.toLowerCase()){ VIEWS[i][1](); return true; }
+  return false;
+}
+var hashAt = 0;
+function keepHash(now){
+  if(now - hashAt < 1500 || PTR.active()) return;
+  hashAt = now;
+  var r1 = function(x){ return Math.round(x*10)/10; }, p = camera.position;
+  writeHash({ v:[p.x,p.y,p.z,ctl.tx,ctl.ty,ctl.tz].map(r1).join(','), view:null }, ['v']);
 }
 
 /* --- click to probe world coordinates --- */
@@ -206,10 +206,9 @@ document.getElementById('polyToggle').onclick = function(){
 document.getElementById('polyUndo').onclick = function(){ polyPts.pop(); polyRedraw(); };
 document.getElementById('polyClear').onclick = function(){ polyPts.length = 0; polyRedraw(); };
 
-el.addEventListener('click', function(e){
-  if(dragged) return;
-  ndc.x = (e.clientX/innerWidth)*2 - 1;
-  ndc.y = -(e.clientY/innerHeight)*2 + 1;
+function probeAt(cx, cy){
+  ndc.x = (cx/innerWidth)*2 - 1;
+  ndc.y = -(cy/innerHeight)*2 + 1;
   ray.setFromCamera(ndc, camera);
   var hit = ray.intersectObjects([terrain, water], false)[0];
   if(!hit) hit = ray.intersectObjects(scene.children.filter(function(o){return o.isInstancedMesh;}), false)[0];
@@ -220,4 +219,4 @@ el.addEventListener('click', function(e){
   }else{
     probe = 'probe  ' + (hit.point.x|0) + ', ' + (hit.point.z|0) + '   (y ' + (hit.point.y|0) + ')';
   }
-});
+}

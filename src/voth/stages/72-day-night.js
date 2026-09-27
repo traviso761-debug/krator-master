@@ -416,7 +416,6 @@ function dnFormatHour(h){
 (function dayNightLoop(){
   var last = performance.now();
   function tick(now){
-    requestAnimationFrame(tick);
     var dt = Math.min(0.06, (now-last)/1000); last = now;
     updateDayNight();
     if(typeof updateWeather === 'function') updateWeather(dt);
@@ -465,7 +464,7 @@ function dnFormatHour(h){
       dnHourOut.textContent = dnFormatHour(parseFloat(dnSlider.value));
     }
   }
-  requestAnimationFrame(tick);
+  animHooks.push(tick);
 })();
 
 window._dayNight = { hour: dayNightHour, nightLights: NIGHT_LIGHTS.length, secPerHour: DAYNIGHT_SEC_PER_HOUR,

@@ -193,12 +193,10 @@ function updateSmoke(dt){
 
 (function smokeLoop(){
   var last = performance.now();
-  function tick(now){
-    requestAnimationFrame(tick);
+  animHooks.push(function(now){
     var dt = Math.min(0.06, (now-last)/1000); last = now;
     updateSmoke(dt);
-  }
-  requestAnimationFrame(tick);
+  });
 })();
 
 var _smokeStat = { emitters:0, particles:0, triangles:0, drawCalls:0, byKind:{} };

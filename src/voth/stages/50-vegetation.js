@@ -1,4 +1,5 @@
 /* ==== 18. VEGETATION ==== */
+await stage('vegetation');   /* the loading screen (src/core/diag.js) gets a frame to say so */
 reseed(700001);
 
 /* Ashland scrub and trees, with roughly a third of the cover fungoid. */

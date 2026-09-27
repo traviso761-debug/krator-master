@@ -1,4 +1,5 @@
 /* ==== TAVERN + BEER GARDEN ==== */
+await stage('amenities');   /* the loading screen (src/core/diag.js) gets a frame to say so */
 reseed(657001);
 
 function tavernBarrel(x,y,z,col){
@@ -447,12 +448,10 @@ function updateMills(dt){
 
 (function millLoop(){
   var last = performance.now();
-  function tick(now){
-    requestAnimationFrame(tick);
+  animHooks.push(function(now){
     var dt = Math.min(0.06, (now-last)/1000); last = now;
     updateMills(dt);
-  }
-  requestAnimationFrame(tick);
+  });
 })();
 
 window._mills = { clusters: function(){ return MILL_CLUSTERS.length; },

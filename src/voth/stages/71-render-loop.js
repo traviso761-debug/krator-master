@@ -1,12 +1,16 @@
 /* ==== 26. RENDER LOOP ==== */
 
 var hud = document.getElementById('hud');
-var clock = new THREE.Clock(), fps = 60, acc = 0, frames = 0;
+var fps = 60, acc = 0, frames = 0;
 var tmpV = new THREE.Vector3();
 
-function frame(){
-  requestAnimationFrame(frame);
-  var dt = Math.min(0.06, clock.getDelta());
+/* one loop for everything (src/core/shell.js): the hooks the stages pushed, then the camera, the sky and the city.
+   The first frame is drawn inside the build and the layout fingerprint is taken straight after it, so the hooks
+   (the mills, the smoke, the fauna, the day) start on the second, as their own loops always did. */
+var firstFrame = true;
+function frame(now, dt){
+  if(!firstFrame) runHooks(animHooks, now);
+  firstFrame = false;
   panStep(dt);
 
   waterUni.uTime.value += dt;
@@ -38,7 +42,7 @@ function frame(){
     renderer.render(scene, camera);
     renderer.autoClear = true;
   }
-  catch(err){ ERR('render: ' + (err && err.stack || err)); }
+  catch(err){ report('render', err); }
 
   window._sky.refreshPanel();
 
@@ -48,19 +52,16 @@ function frame(){
     (probe ? probe + '\n' : '') +
     (polyMode ? 'poly  ' + polyPts.length + ' corner' + (polyPts.length===1?'':'s') + ' marked\n' : '') +
     (fps|0) + ' fps   ' + renderer.info.render.calls + ' calls';
+  keepHash(now);
 }
 
-addEventListener('resize', function(){
-  camera.aspect = innerWidth/innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(innerWidth, innerHeight);
-});
+trackResize(renderer, camera);
 
 scene.add(sun.target);
 window._dbg = { setView:setView, ctl:ctl, camera:camera, applyCam:applyCam,
                 sky:skyMesh, skyScene:skyScene, skyCam:skyCam,
                 water:water, terrain:terrain, cantons:CANTONS, shore:SHORE,
                 polyPts:polyPts };
-VIEWS[0][1]();
-frame();
-document.getElementById('load').style.display = 'none';
+if(!readVothHash()) VIEWS[0][1]();
+runLoop(frame, { maxDt:0.06 });
+finishLoading();

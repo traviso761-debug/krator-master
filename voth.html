@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="css/voth.css">
 </head>
 <body>
-<div id="load">Raising the cantons…</div>
+<div id="loading">Raising the cantons…</div>
 <div id="ui">
   <h1>Voth</h1>
   <div id="views"></div>
@@ -36,33 +36,12 @@
 <div id="errs"></div>
 <!-- the vendored copy, like every other page here: this is served over a LAN that need not have a route out -->
 <script src="vendor/three/three.min.js"></script>
-<script>
-var _errBox=document.getElementById('errs'), _errN=0;
-// an error takes the loading screen away with it: it used to go into a box drawn underneath the loading screen,
-// so a page that failed to build just said 'Raising the cantons' for ever
-function ERR(m){ var l=document.getElementById('load'); if(l) l.style.display='none';
-  if(_errN++>14) return; _errBox.textContent += (_errBox.textContent?'\n':'')+m; }
-window.onerror=function(m,u,l,c,e){ ERR('error: '+m+' @'+l+':'+c+(e&&e.stack?'\n'+e.stack:'')); };
-window.addEventListener('unhandledrejection',function(e){ ERR('promise: '+(e.reason&&e.reason.stack||e.reason)); });
-</script>
+
 <!-- The city itself: src/voth/stages/, assembled into src/voth/build.js by tools/build-page.py. It is run here and
      not by a main.js, because the fingerprint the tests check has to be taken in the same task, before the first
      frame moves anything. -->
 <!-- A module that cannot be loaded (a content blocker, a missing file) fails the whole script before a line of
      it runs and says nothing to window.onerror: the error event goes to this element. -->
-<script type="module" onerror="ERR('Could not load the city\'s scripts (src/voth/build.js or one of its imports). A content blocker?')">
-import {build} from './src/voth/build.js';
-import {sceneRows} from './src/core/layout.js';
-import {installMenagerie} from './src/core/menagerie.js';
-if(!window.THREE)ERR('Could not load vendor/three/three.min.js.');
-else{
-  // build() is async but awaits nothing, so the whole city is built before the next line runs
-  const done=build({}).catch(e=>ERR('build: '+(e&&e.stack||e)));
-  try{if(window._vothScene)(window._iz=window._iz||{}).lotList=sceneRows(THREE,window._vothScene);}catch(e){ERR('fingerprint: '+(e&&e.message||e));}
-  void done;
-}
-// the way back to the menagerie, and into the other scenes: adds nothing unless a server answers /scenes.json
-installMenagerie({standalone:true}).catch(()=>{});
-</script>
+<script type="module" onerror="document.getElementById('loading').textContent='Could not load the city\'s scripts (src/voth/main.js or one of its imports). A content blocker?'" src="src/voth/main.js"></script>
 </body>
 </html>
