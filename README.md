@@ -15,6 +15,23 @@ of the others. Both read `/scenes.json`, which the server builds from `site.toml
 
 **Site:** http://192.168.124.227:8000/
 
+## Controls
+
+The same on every page (`src/core/input.js`), except Iziz until it moves onto the shared core:
+
+| | |
+|---|---|
+| drag | orbit: the world follows the pointer (drag right, it turns right). Standing on a floor: look round, right is right, down is down |
+| right-drag, Shift-drag | pan; two fingers: pinch to zoom and pan together |
+| wheel, pinch | nearer and further |
+| W A S D, Q E | move; down and up. Shift: five times as fast (the Backrooms run instead) |
+| F | fly: the aeroplane over the real cities, the free camera in the City and the Flesh Pit |
+| G | the overhead view (the Backrooms) |
+| X, C | the cutaway on and off, and which half you keep (the City) |
+| Esc | close the panels (and leave Babylon 5's interior) |
+
+Page-only keys: the Backrooms' N (noclip), M (sound), R (start again); the City's K (find Killy), P (pull back).
+
 ## Site map
 
 | URL | Also at | File | Page |
@@ -1138,12 +1155,12 @@ Kyrene and the Backrooms, because nothing here stands on terrain under a sky.
   double-sided and a back face - which you only see inside a solid, where the plane has opened it - is drawn
   flat, hatched and unfogged, the Megastructure near-black. The heights are ruled up the left, and a
   slider and "Cut: across/along" move it. The kept half is chosen when the cut is made and stays put - **Flip**
-  (F) swaps it - and a camera on the cut-away side is outside the block, so crossing the plane changes nothing.
+  (C) swaps it - and a camera on the cut-away side is outside the block, so crossing the plane changes nothing.
 - **The City** (the button, or the last two views): the whole thing as Nihei sized it, a shell about as wide as
   Jupiter's orbit (1.6 billion km) round the Sun, in a scene of its own with a unit of a million km
   (`src/blame/sphere.js`). In section it is layers from where the Earth was out to the skin. The diameter is
   Nihei's; how deep it goes the manga never says, and the page says so.
-- **Fly** (G): drag to look without moving, W A S D along where you are looking, Q/E down and up, the wheel for
+- **Fly** (F): drag to look without moving, W A S D along where you are looking, Q/E down and up, the wheel for
   speed (0.5 m/s to 300 km/s), Shift for five times that. Otherwise the camera orbits a point.
 - **Pull back** (P): from Killy's shoulder to the solar system in nine moves, a power of ten or so at a time,
   with a line at each. `#tour` in the address starts it.

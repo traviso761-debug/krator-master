@@ -12,6 +12,8 @@ import {world} from './world.js';
 import {mkRng as mkR} from '../core/rng.js';
 import {createRenderer,trackResize,installContextLoss,mkBtn,runHooks,runLoop,finishLoading,boot} from '../core/shell.js';
 import {readHash} from '../core/hash.js';
+import {ORBIT_RATE,FAST,BIND,trackKeys,trackPointers} from '../core/input.js';
+import {createCylinderWalker} from '../core/cylinder.js';
 
 installErrorHandlers();window.LOAD=LOAD;
 configureLoading({
@@ -122,47 +124,37 @@ void main(){float land=fb(vP*2.2+3.0);vec3 c=mix(vec3(0.05,0.16,0.34),vec3(0.08,
   // only way to understand that the country goes over your head.
   await stage('ui');
   const V={mode:'inside',u:H.L*0.5,a:H.landMid(0)+0.02,h:60,yaw:0,pitch:0.02,
-           out:H.L*0.9,orbit:0.6,elev:0.32};
-  const tmp=new THREE.Vector3();
+           out:H.L*0.9,orbit:0.6,elev:0.32,px:0,py:0,pz:0};
+  const walker=createCylinderWalker(THREE,{axis:new THREE.Vector3(1,0,0),at:(u,a)=>H.at(u,a,V.h)});
   function frame(){
     if(V.mode==='outside'){
-      camera.position.set(Math.cos(V.orbit)*V.out,Math.sin(V.elev)*V.out*0.55,Math.sin(V.orbit)*V.out);
-      camera.up.set(0,1,0);camera.lookAt(0,0,0);return;
+      camera.position.set(V.px+Math.cos(V.orbit)*V.out,V.py+Math.sin(V.elev)*V.out*0.55,V.pz+Math.sin(V.orbit)*V.out);
+      camera.up.set(0,1,0);camera.lookAt(V.px,V.py,V.pz);return;
     }
     // Worked out in the habitat's own frame, then turned with it: you are standing on the hull, and the hull
     // is going round. The only things that move past you are the stars, the star and the planet.
-    const p=H.at(V.u,V.a,V.h);
-    const up=tmp.set(0,-p.y,-p.z).normalize();
-    const along=new THREE.Vector3(1,0,0);
-    const across=new THREE.Vector3().crossVectors(up,along).normalize();
-    const dir=along.clone().multiplyScalar(Math.cos(V.yaw)*Math.cos(V.pitch)).add(across.multiplyScalar(Math.sin(V.yaw)*Math.cos(V.pitch)))
-      .add(up.clone().multiplyScalar(Math.sin(V.pitch))).normalize();
+    const {pos:p,dir,up}=walker.view(V);          // the shared drum walker (src/core/cylinder.js)
     const X=new THREE.Vector3(1,0,0);
     for(const v of [p,up,dir])v.applyAxisAngle(X,H.spin);
     camera.position.copy(p);camera.up.copy(up);
     camera.lookAt(p.clone().add(dir.multiplyScalar(1000)));
   }
 
-  const el=renderer.domElement,keys=new Set();
-  let drag=null;
-  el.addEventListener('pointerdown',e=>{el.setPointerCapture(e.pointerId);drag={x:e.clientX,y:e.clientY};});
-  addEventListener('pointerup',()=>{drag=null;});
-  addEventListener('pointercancel',()=>{drag=null;});
-  el.addEventListener('lostpointercapture',()=>{drag=null;});
-  addEventListener('blur',()=>{drag=null;keys.clear();});
-  el.addEventListener('pointermove',e=>{
-    if(drag&&e.buttons===0&&e.pointerType!=='touch'){drag=null;return;}   // a pointerup we never got
-    if(!drag)return;
-    const dx=e.clientX-drag.x,dy=e.clientY-drag.y;drag.x=e.clientX;drag.y=e.clientY;
-    if(V.mode==='outside'){V.orbit-=dx*0.004;V.elev=Math.max(-1.3,Math.min(1.3,V.elev+dy*0.004));}
-    else{V.yaw-=dx*0.004;V.pitch=Math.max(-1.3,Math.min(1.3,V.pitch-dy*0.003));}});
-  el.addEventListener('wheel',e=>{e.preventDefault();
-    if(V.mode==='outside')V.out=Math.max(H.R*1.6,Math.min(160000,V.out*Math.exp(e.deltaY*0.0012)));
-    else V.h=Math.max(6,Math.min(H.R*0.98,V.h*Math.exp(e.deltaY*0.0012)));},{passive:false});
-  addEventListener('keydown',e=>{if(e.ctrlKey||e.metaKey||e.altKey)return;
-    const k=e.key.toLowerCase();if('wasdqe'.includes(k)){keys.add(k);e.preventDefault();}});
-  addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));
-  addEventListener('blur',()=>keys.clear());
+  // the site's controls (src/core/input.js). Outside: drag orbits the cylinder, right or Shift-drag pans, wheel
+  // or pinch zooms. Inside: drag looks round (right is right), the wheel or a pinch is height over the floor,
+  // WASD walks, Q and E sink and climb, Shift is five times as fast.
+  const el=renderer.domElement,keys=trackKeys();
+  const zoom=f=>{if(V.mode==='outside')V.out=Math.max(H.R*1.6,Math.min(160000,V.out*f));
+    else V.h=Math.max(6,Math.min(H.R*0.98,V.h*f));};
+  trackPointers(el,{
+    drag:(dx,dy,{pan})=>{
+      if(V.mode==='outside'){
+        if(pan){const k=V.out*0.0012;V.px-=dx*k*Math.sin(V.orbit);V.pz+=dx*k*Math.cos(V.orbit);V.py+=dy*k;
+          V.px=Math.max(-H.L*0.6,Math.min(H.L*0.6,V.px));V.py=Math.max(-H.R*2,Math.min(H.R*2,V.py));}
+        else{V.orbit+=dx*ORBIT_RATE;V.elev=Math.max(-1.3,Math.min(1.3,V.elev+dy*ORBIT_RATE));}}
+      else walker.look(V,dx,dy,0.004,1.3);},
+    pinch:ratio=>zoom(ratio),
+    wheel:dy=>zoom(Math.exp(dy*0.0012))});
 
   // the panels: the same furniture every other page has, built here because there is no engine to build it
   const ui=document.getElementById('ui'),viewsEl=document.getElementById('views');
@@ -171,7 +163,7 @@ void main(){float land=fb(vP*2.2+3.0);vec3 c=mix(vec3(0.05,0.16,0.34),vec3(0.08,
   vbtn.setAttribute('aria-expanded','false');
   {const h=document.createElement('div');h.className='sub';h.textContent='Viewpoints';viewsEl.appendChild(h);}
   for(const [name,v] of Object.entries(C.views||{}))mkBtn(name,viewsEl,()=>{
-    Object.assign(V,v);if(v.tube!==undefined)H.shift=(v.tube-(K.dayStart||0.3)+1)%1;viewsEl.classList.remove('open');vbtn.setAttribute('aria-expanded','false');});
+    Object.assign(V,{px:0,py:0,pz:0},v);if(v.tube!==undefined)H.shift=(v.tube-(K.dayStart||0.3)+1)%1;viewsEl.classList.remove('open');vbtn.setAttribute('aria-expanded','false');});
   const mbtn=mkBtn('Outside',ui,()=>{V.mode=V.mode==='outside'?'inside':'outside';
     mbtn.textContent=V.mode==='outside'?'Inside':'Outside';});
   mbtn.title='Stand on the hull, or stand off it';
@@ -192,7 +184,7 @@ void main(){float land=fb(vP*2.2+3.0);vec3 c=mix(vec3(0.05,0.16,0.34),vec3(0.08,
   // here is (u, a, h, yaw, pitch) rather than a position and a target, so it cannot use the same hash.
   {const vn=HASH.get('view');
    if(vn!==null){const want=vn.toLowerCase();
-     for(const [name,v] of Object.entries(C.views||{}))if(name.toLowerCase()===want){Object.assign(V,v);if(v.tube!==undefined)H.shift=(v.tube-(K.dayStart||0.3)+1)%1;}}}
+     for(const [name,v] of Object.entries(C.views||{}))if(name.toLowerCase()===want){Object.assign(V,{px:0,py:0,pz:0},v);if(v.tube!==undefined)H.shift=(v.tube-(K.dayStart||0.3)+1)%1;}}}
 
   const hud=document.createElement('div');hud.id='timebar';hud.style.cssText='font:12px Georgia,serif;color:#e8c98a';
   document.getElementById('side').appendChild(hud);
@@ -202,11 +194,8 @@ void main(){float land=fb(vP*2.2+3.0);vec3 c=mix(vec3(0.05,0.16,0.34),vec3(0.08,
 
   runLoop((now,dt)=>{
     if(V.mode==='inside'&&keys.size){
-      const s=(260+V.h*1.4)*dt;
-      if(keys.has('w'))V.u+=Math.cos(V.yaw)*s, V.a+=Math.sin(V.yaw)*s/H.R;
-      if(keys.has('s'))V.u-=Math.cos(V.yaw)*s, V.a-=Math.sin(V.yaw)*s/H.R;
-      if(keys.has('a'))V.a-=Math.cos(V.yaw)*s/H.R;
-      if(keys.has('d'))V.a+=Math.cos(V.yaw)*s/H.R;
+      const s=(260+V.h*1.4)*dt*(keys.has(BIND.fast)?FAST:1);
+      walker.walk(V,(keys.has('w')?1:0)-(keys.has('s')?1:0),(keys.has('d')?1:0)-(keys.has('a')?1:0),s);
       if(keys.has('q'))V.h=Math.max(6,V.h-s*0.6);
       if(keys.has('e'))V.h=Math.min(H.R*0.98,V.h+s*0.6);
       V.u=Math.max(200,Math.min(H.L-200,V.u));

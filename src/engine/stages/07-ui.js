@@ -24,42 +24,24 @@ const clampDist=d=>Math.max(DIST_MIN,Math.min(DIST_MAX,d));
 // instead, which is a no-op anywhere the ground is level.
 function followGround(ox,oz){const g0=groundH(ox,oz),g1=groundH(ctl.target.x,ctl.target.z);
   if(Number.isFinite(g0)&&Number.isFinite(g1))ctl.target.y+=g1-g0;}
-const ptrs=new Map();let pinch0=0,dist0=0;
-el.addEventListener('pointerdown',e=>{el.setPointerCapture(e.pointerId);ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY,b:e.button,sh:e.shiftKey,moved:0});if(ptrs.size===2){const [a,b]=[...ptrs.values()];pinch0=Math.hypot(a.x-b.x,a.y-b.y);dist0=ctl.dist;}});
-el.addEventListener('pointermove',e=>{const p=ptrs.get(e.pointerId);if(!p)return;
-  // A pointerup that never arrives - the frame was busy, the pointer left the window, the tab lost focus
-  // mid-drag - leaves a pointer in the map that is not on the screen any more. From then on every drag is
-  // treated as the second finger of a pinch and the camera appears to have stopped responding. The browser
-  // tells us on every move which buttons are actually down, so a move with none down ends the drag.
-  if(e.buttons===0&&e.pointerType!=='touch'){ptrs.delete(e.pointerId);return;}
-  const dx=e.clientX-p.x,dy=e.clientY-p.y;p.x=e.clientX;p.y=e.clientY;p.moved+=Math.abs(dx)+Math.abs(dy);ctl.goal=null;
-  if(ptrs.size===2){const [a,b]=[...ptrs.values()];const pd=Math.hypot(a.x-b.x,a.y-b.y);ctl.dist=clampDist(dist0*pinch0/pd);pan(dx/2,dy/2);return;}
-  if(p.b===2||p.sh)pan(dx,dy);else{ctl.az+=dx*0.005;ctl.el=Math.max(ctl.elMin,Math.min(ctl.elMax,ctl.el+dy*0.005));}});
-const endPtr=e=>{const p=ptrs.get(e.pointerId);ptrs.delete(e.pointerId);if(p&&p.moved<6&&e.type==='pointerup'&&p.b===0)clickAt(e.clientX,e.clientY);};
-el.addEventListener('pointerup',endPtr);el.addEventListener('pointercancel',endPtr);
-el.addEventListener('lostpointercapture',endPtr);el.addEventListener('contextmenu',e=>e.preventDefault());
-// and whatever happens to the window, nothing is still being dragged afterwards
-addEventListener('blur',()=>ptrs.clear());
-document.addEventListener('visibilitychange',()=>{if(document.hidden)ptrs.clear();});
+// The controls are the site's (src/core/input.js): the gestures and their guards live there, what they do to
+// this camera lives here.
 function pan(dx,dy){const k=ctl.dist*0.0016,ox=ctl.target.x,oz=ctl.target.z;const fx=Math.cos(ctl.az),fz=Math.sin(ctl.az);ctl.target.x+=(-dx*fz+dy*fx)*k*-1;ctl.target.z+=(dx*fx+dy*fz)*k*-1;followGround(ox,oz);}
-el.addEventListener('wheel',e=>{e.preventDefault();ctl.goal=null;ctl.dist=clampDist(ctl.dist*Math.exp(e.deltaY*0.0012));},{passive:false});
-// Only the six movement keys, and only unmodified: a shortcut like ctrl+shift+S belongs to the browser, not the camera.
-// Keys are also dropped when the window loses focus, because a key held as focus leaves never sends its keyup and the
-// camera would go on moving on its own (which is what a screenshot tool taking focus used to do).
-const keys=new Set(),MOVE=new Set(['w','a','s','d','q','e']);
-const typingIn=t=>!!t&&(t.tagName==='INPUT'||t.tagName==='SELECT'||t.tagName==='TEXTAREA'||t.isContentEditable);
-addEventListener('keydown',e=>{if(typingIn(e.target))return;if(e.key==='Escape'){closeCard();return;}
-  if(e.ctrlKey||e.metaKey||e.altKey)return;const k=e.key.toLowerCase();if(MOVE.has(k))keys.add(k);});
-addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));
-addEventListener('blur',()=>keys.clear());
-document.addEventListener('visibilitychange',()=>{if(document.hidden)keys.clear();});
+const PTR=trackPointers(el,{
+  drag:(dx,dy,{pan:p})=>{ctl.goal=null;if(p)pan(dx,dy);else{ctl.az+=dx*ORBIT_RATE;ctl.el=Math.max(ctl.elMin,Math.min(ctl.elMax,ctl.el+dy*ORBIT_RATE));}},
+  pinch:(ratio,dx,dy)=>{ctl.goal=null;ctl.dist=clampDist(ctl.dist*ratio);pan(dx,dy);},
+  wheel:dy=>{ctl.goal=null;ctl.dist=clampDist(ctl.dist*Math.exp(dy*0.0012));},
+  click:(x,y)=>clickAt(x,y)});
+// the movement keys are held (Shift is five times as fast); F takes off, where the city has an aeroplane
+const keys=trackKeys({onKey:(k,e,held)=>{if(held)return;if(k===BIND.close){closeCard();return;}
+  if(k===BIND.fly&&ctx.flight){ctx.flight.state.on?ctx.flight.leave():ctx.flight.enter();}}});
 // Movement is per second, not per frame. It used to add a fixed step each frame, so how fast the camera
 // panned depended on the frame rate: the same key felt quick on a light city and slow on a heavy one, and it
 // slowed everywhere the adaptive renderer started trading frames for pixels. 0.012 a frame at 60 fps is 0.72
 // a second, so that is what it is now, with the step capped so a stall cannot teleport the camera.
 let keyT=performance.now();
 function applyKeys(){const tNow=performance.now(),dt=Math.min(0.05,(tNow-keyT)/1000);keyT=tNow;
-  if(!keys.size)return;const s=(ctl.dist*0.72+22)*dt,fx=Math.cos(ctl.az),fz=Math.sin(ctl.az);let mx=0,mz=0;if(keys.has('w'))mx-=1;if(keys.has('s'))mx+=1;if(keys.has('a'))mz+=1;if(keys.has('d'))mz-=1;
+  if(!keys.size)return;const s=(ctl.dist*0.72+22)*dt*(keys.has(BIND.fast)?FAST:1),fx=Math.cos(ctl.az),fz=Math.sin(ctl.az);let mx=0,mz=0;if(keys.has('w'))mx-=1;if(keys.has('s'))mx+=1;if(keys.has('a'))mz+=1;if(keys.has('d'))mz-=1;
   const ox=ctl.target.x,oz=ctl.target.z;
   ctl.target.x+=(mx*fx-mz*fz)*s;ctl.target.z+=(mx*fz+mz*fx)*s;if(mx||mz)followGround(ox,oz);
   if(keys.has('q'))ctl.target.y=Math.max(groundH(ctl.target.x,ctl.target.z)||0,ctl.target.y-s);if(keys.has('e'))ctl.target.y+=s;if(mx||mz||keys.has('q')||keys.has('e'))ctl.goal=null;}
@@ -104,7 +86,7 @@ function readHash(){let q;try{q=new URLSearchParams(location.hash.slice(1));}cat
     const t=parseFloat(q.get('t'));if(Number.isFinite(t))setHour(((t%24)+24)%24);return true;}
   const v=(q.get('v')||'').split(',').map(Number);if(v.length===6&&v.every(Number.isFinite))setView(...v,false);
   const t=parseFloat(q.get('t'));if(Number.isFinite(t))setHour(((t%24)+24)%24);if(q.has('paused')&&!clockPaused)pauseBtn.click();return true;}
-let hashT=0;animHooks.push(now=>{if(now-hashT<1500||ctl.goal||ptrs.size)return;hashT=now;writeHash(hashState(),HASH_ORDER);});
+let hashT=0;animHooks.push(now=>{if(now-hashT<1500||ctl.goal||PTR.active())return;hashT=now;writeHash(hashState(),HASH_ORDER);});
 if(!readHash())setView(...(VIEWS[C.defaultView]||Object.values(VIEWS)[0]),false);
 {const at=document.createElement('div');at.id='attribution';at.innerHTML=C.attribution||('Map data \u00a9 <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'+(TER?' \u00b7 elevation: AWS Terrain Tiles (SRTM/NED)':''));   // an invented city credits its generator instead
  document.body.appendChild(at);}
@@ -144,9 +126,10 @@ ctx.res=RES;let fpsN=0,fpsT=performance.now();
 runLoop(now=>{adaptRes(now);fpsN++;if(now-fpsT>1000){ctx.fps=fpsN;fpsN=0;fpsT=now;}
   runHooks(animHooks,now);stepFly(now);applyKeys();
   // A page may steer the camera itself: the Flesh Pit's descent is not an orbit round a city centre, it rides a
-  // shaft two and a half kilometres down. ctx.camFrame is handed the control state after the engine has had its
-  // turn with it and may overwrite any of it; no page that leaves it unset is affected in any way. It is handed
+  // shaft two and a half kilometres down. The frame on top of the camera stack (ctx.pushCam, 00-start) is handed
+  // the control state after the engine has had its turn with it and may overwrite any of it: the aeroplane
+  // pushes over the pit's descent and pops when it lands. A page that pushes nothing is not affected. It is handed
   // ctl.goal as the engine left it, so a page that has taken the camera can see that a viewpoint button was just
   // pressed - a fresh goal object - and hand the camera back rather than sitting there ignoring the panel.
-  if(ctx.camFrame){try{ctx.camFrame(now,ctl);}catch(e){if(!ctx.camFrame._failed){ctx.camFrame._failed=true;report('camera',e);}}}
+  {const cf=camStack[camStack.length-1];if(cf){try{cf(now,ctl);}catch(e){if(!cf._failed){cf._failed=true;report('camera',e);}}}}
   applyCam();if(shadowsDue())renderer.shadowMap.needsUpdate=true;renderer.render(scene,camera);});

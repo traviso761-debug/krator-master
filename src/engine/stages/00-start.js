@@ -112,6 +112,10 @@ ctx.details={roads:ROADS.length,buildings:OSM.buildings.length,areas:AREAS.lengt
 // that city's page instead and reach the engine through ctx.models and ctx.extras. API is what they are given.
 // Each stage adds its own to it as it runs, so a page's landmark model sees what the landmarks stage sees, and a
 // page's extra, which runs after them all, sees the lot.
+// The camera stack: a page that steers the camera itself pushes a frame function, and the one on top runs each
+// frame after the orbit controls (07-ui). pushCam returns the function that takes it off again.
+const camStack=[];
+ctx.pushCam=fn=>{camStack.push(fn);return ()=>{const i=camStack.lastIndexOf(fn);if(i>=0)camStack.splice(i,1);};};
 const API={THREE,C,ctx,P,toLatLon,B,WORLD,POIS,AREAS,ROADS,RAILS,STATIONS,WATERWAYS,animHooks,HASH0,
   groundH,groundMin,inMap,inWater,inLake,inRiver,inPoly,polyArea,segDist,pathDist,bbox,dec,
   roadsNear,districtAt,focusAt,FOCUS,report,section};

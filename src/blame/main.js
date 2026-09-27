@@ -24,6 +24,7 @@ import {installMenagerie} from '../core/menagerie.js';
 import {createWire,installWireUI} from '../core/wire.js';
 import {createRenderer,trackResize,installContextLoss,mkBtn as mkBtn0,runHooks,runLoop,finishLoading,boot} from '../core/shell.js';
 import {readHash,writeHash as mergeHash} from '../core/hash.js';
+import {BIND,FAST,trackKeys,trackPointers} from '../core/input.js';
 import {makeMats,cloudTexture,dotTexture,ribTexture} from './mats.js';
 import {buildCity} from './city.js';
 import {createSphere} from './sphere.js';
@@ -226,43 +227,35 @@ async function build(){
   }
 
   // ---- the input ----
-  const el=renderer.domElement,keys=new Set(),ptrs=new Map();
-  let pinch=null;
+  // the site's controls (src/core/input.js): drag to orbit (in flight, to turn the head), right or Shift-drag to
+  // pan, the wheel or a pinch to zoom (in flight, the wheel is speed); F flies, X cuts, C flips the cut, K finds
+  // Killy, P pulls back
+  const el=renderer.domElement;
   const stopTour=()=>{if(tour)endTour();};
-  el.addEventListener('contextmenu',e=>e.preventDefault());
-  el.addEventListener('pointerdown',e=>{stopTour();anim=null;try{el.setPointerCapture(e.pointerId);}catch(_){}
-    ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY,b:e.button,shift:e.shiftKey});
-    if(ptrs.size===2){const [p,q]=[...ptrs.values()];pinch={d:Math.hypot(p.x-q.x,p.y-q.y),x:(p.x+q.x)/2,y:(p.y+q.y)/2};}});
-  const up=e=>{ptrs.delete(e.pointerId);if(ptrs.size<2)pinch=null;};
-  addEventListener('pointerup',up);addEventListener('pointercancel',up);
   const tv=new V3(),rv=new V3(),uv=new V3();
   function pan(dx,dy){const s=cur(),c=cam();const k=2*s.d*Math.tan(c.fov*Math.PI/360)/innerHeight;
     rv.setFromMatrixColumn(c.matrix,0);uv.setFromMatrixColumn(c.matrix,1);
     s.t.addScaledVector(rv,-dx*k).addScaledVector(uv,dy*k);}
-  el.addEventListener('pointermove',e=>{const p=ptrs.get(e.pointerId);if(!p)return;
-    const dx=e.clientX-p.x,dy=e.clientY-p.y;p.x=e.clientX;p.y=e.clientY;const s=cur();
-    if(ptrs.size===2&&pinch){const [a,b]=[...ptrs.values()];const d=Math.hypot(a.x-b.x,a.y-b.y),mx=(a.x+b.x)/2,my=(a.y+b.y)/2;
-      s.d=clamp(s.d*pinch.d/Math.max(1,d),s.dmin,s.dmax);pan(mx-pinch.x,my-pinch.y);pinch={d,x:mx,y:my};return;}
-    if(p.b===2||p.shift||e.shiftKey)pan(dx,dy);
-    else if(S.fly&&S.mode==='city'){
-      // flying: turn the head, not the world - the camera stays where it is and the point it looks at moves
-      const P0=s.t.clone().add(offs(s,ov3));s.yaw-=dx*0.004;s.pitch=clamp(s.pitch+dy*0.004,-1.52,1.52);s.t.copy(P0).sub(offs(s,ov3));}
-    else{s.yaw-=dx*0.005;s.pitch=clamp(s.pitch+dy*0.005,-1.52,1.52);}});
-  el.addEventListener('wheel',e=>{e.preventDefault();stopTour();anim=null;const s=cur();
-    if(S.fly&&S.mode==='city'){S.flySpeed=clamp(S.flySpeed*Math.exp(-e.deltaY*0.0015),0.5,300000);return;}
-    s.d=clamp(s.d*Math.exp(e.deltaY*0.0014),s.dmin,s.dmax);},{passive:false});
-  addEventListener('keydown',e=>{if(e.ctrlKey||e.metaKey||e.altKey)return;
-    const t=e.target;if(t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'))return;
-    const k=e.key.toLowerCase();
-    if('wasdqe'.includes(k)&&k.length===1||k==='shift'){keys.add(k);stopTour();anim=null;return;}
-    if(k==='x'){setSection(!S.section);return;}
-    if(k==='f'){if(S.section)S.side=-S.side;return;}
-    if(k==='g'){S.fly=!S.fly;syncUI();return;}
+  trackPointers(el,{
+    down:()=>{stopTour();anim=null;},
+    drag:(dx,dy,{pan:p})=>{const s=cur();
+      if(p)pan(dx,dy);
+      else if(S.fly&&S.mode==='city'){
+        // flying: turn the head, not the world - the camera stays where it is and the point it looks at moves
+        const P0=s.t.clone().add(offs(s,ov3));s.yaw-=dx*0.004;s.pitch=clamp(s.pitch+dy*0.004,-1.52,1.52);s.t.copy(P0).sub(offs(s,ov3));}
+      else{s.yaw-=dx*0.005;s.pitch=clamp(s.pitch+dy*0.005,-1.52,1.52);}},
+    pinch:(ratio,dx,dy)=>{const s=cur();s.d=clamp(s.d*ratio,s.dmin,s.dmax);pan(dx,dy);},
+    wheel:(dy)=>{stopTour();anim=null;const s=cur();
+      if(S.fly&&S.mode==='city'){S.flySpeed=clamp(S.flySpeed*Math.exp(-dy*0.0015),0.5,300000);return;}
+      s.d=clamp(s.d*Math.exp(dy*0.0014),s.dmin,s.dmax);}});
+  const keys=trackKeys({onKey:(k,e,held)=>{
+    if(held){stopTour();anim=null;return;}
+    if(k===BIND.cut){setSection(!S.section);return;}
+    if(k===BIND.cutSide){if(S.section)S.side=-S.side;return;}
+    if(k===BIND.fly){S.fly=!S.fly;syncUI();return;}
     if(k==='k'){toggleFind();return;}
     if(k==='p'){tour?endTour():startTour();return;}
-    if(k==='escape'){views.classList.remove('open');vb.setAttribute('aria-expanded','false');}});
-  addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));
-  addEventListener('blur',()=>{keys.clear();ptrs.clear();pinch=null;});
+    if(k===BIND.close){views.classList.remove('open');vb.setAttribute('aria-expanded','false');}}});
 
   // ---- the panels ----
   await stage('ui');
@@ -286,11 +279,11 @@ async function build(){
 
   const secB=mkBtn('Section',ui,()=>setSection(!S.section));secB.title='Cut it open (X): the solid is filled in and hatched, the Megastructure black';
   const axB=mkBtn('Cut: across',ui,()=>{S.axis=S.axis==='z'?'x':'z';chooseSide(camera.position);syncUI();});axB.title='Which way the cut runs';
-  const flipB=mkBtn('Flip',ui,()=>{S.side=-S.side;});flipB.title='Keep the other half (F)';
+  const flipB=mkBtn('Flip',ui,()=>{S.side=-S.side;});flipB.title='Keep the other half (C)';
   const slider=document.createElement('input');slider.type='range';slider.min='0';slider.max='1000';slider.value='500';
   slider.setAttribute('aria-label','Where the cut is');slider.style.cssText='pointer-events:auto;width:min(220px,40vw);align-self:center;accent-color:#c8321f';
   slider.addEventListener('input',()=>{S.at=+slider.value/1000;});ui.appendChild(slider);
-  const flyB=mkBtn('Fly',ui,()=>{S.fly=!S.fly;syncUI();});flyB.title='Fly (G): drag to look, WASD along where you look, Q/E down and up, the wheel for speed';
+  const flyB=mkBtn('Fly',ui,()=>{S.fly=!S.fly;syncUI();});flyB.title='Fly (F): drag to look, WASD along where you look, Q/E down and up, the wheel for speed';
   const findB=mkBtn('Find Killy',ui,()=>toggleFind());findB.title='Ring Killy wherever he is, and say how big he is on screen (K)';
   const tourB=mkBtn('Pull back',ui,()=>tour?endTour():startTour());tourB.title='From Killy\'s shoulder to the whole City, a power of ten at a time (P)';
   const cityB=mkBtn('The City',ui,()=>{stopTour();go(S.mode==='city'?VIEWS[CITYV]:VIEWS[0]);});
@@ -451,7 +444,7 @@ async function build(){
       if(keys.has('e'))s.t.y+=sp;if(keys.has('q'))s.t.y-=sp;
       // flying does not go through the Megastructure: a move that would end inside it is not made
       if(!solidAt(c0)&&solidAt(s.t.clone().add(offs(s,new V3()))))s.t.copy(t0);}
-    else if(keys.size){const s=cur(),sp=s.d*(keys.has('shift')?2.4:0.7)*dt;
+    else if(keys.size){const s=cur(),sp=s.d*0.7*(keys.has(BIND.fast)?FAST:1)*dt;
       const fx=-Math.sin(s.yaw),fz=-Math.cos(s.yaw);
       if(keys.has('w')){s.t.x+=fx*sp;s.t.z+=fz*sp;}if(keys.has('s')){s.t.x-=fx*sp;s.t.z-=fz*sp;}
       if(keys.has('a')){s.t.x+=fz*sp;s.t.z-=fx*sp;}if(keys.has('d')){s.t.x-=fz*sp;s.t.z+=fx*sp;}
