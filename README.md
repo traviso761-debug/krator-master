@@ -631,8 +631,19 @@ Warwickshire village of about the period of Queen Victoria's Diamond Jubilee", T
   hedges traced by the generator along the same lines the fields were cut on, with trees standing in them;
   orchards in blossom, copses, poplars by the farms, sheep and cows in the pastures, sandy lanes with a grass
   crown between the ruts. Past the edge of the box the country goes on, the shader making up its own fields.
-- **What moves**: hobbits walking the lanes, smoke from every chimney, the mill wheel, round windows lit after
-  dark, birds.
+- **What moves**: hobbits walking the lanes, smoke from every chimney, the mill wheel, round windows and the
+  gate lamps lit after dark, birds, and Gandalf's cart - pony, pointed grey hat, crates of fireworks - going up
+  the Hill lane to Bag End and back.
+- **From the films**, where they add to Tolkien rather than contradict him: the big oak over Bag End; the Party
+  Tree as a great flat-topped pine with a pond and willows beside it; Sam's yellow door at No. 3 Bagshot Row;
+  a ring of dressed stone round every door and little porches over some; each hole dressed for whoever lives
+  there (washing on a line, a barrow of produce, beehives, cheeses, a giant pumpkin, a woodpile) with a
+  vegetable garden, a letterbox and a lamp; the double-arched stone bridge at the mill; the Green Dragon's sign,
+  lanterns, ivy and outdoor tables; haystacks in the hay fields.
+- **The Party** (the button, or `#party`): Bilbo's eleventy-first birthday in the Party Field - a three-peaked
+  marquee with long tables, pavilions, the book's new gate, bunting and strings of lanterns from the Party Tree,
+  a dance floor and a band stand, a crowd of guests; after dark, Gandalf's fireworks, and every so often the
+  dragon, flying in low over the Water to burst above the tree.
 
 The views are worked out from the plan when the page loads (`src/shire/main.js`), so regenerating never strands
 a camera inside the Hill. Regenerate with `python3 tools/make-shire.py`: it writes the ground
@@ -1166,7 +1177,7 @@ src/
   starship/ page.js parts.js                 the page the ships and Babylon 5 share: renderer, sky, turntable, cards; the hull pieces
   babylon5/ main.js station.js               Babylon 5: the sphere, the Cobra bays, the drum and the Garden, the arrays, the traffic, the gate
   hab/      main.js world.js               Kyrene: its own renderer, and a world in cylinder coordinates
-  shire/    main.js ground.js water.js country.js holes.js buildings.js life.js   the Shire: fields and lanes, the Water, hedges and trees, the holes, the mill and the rest, what moves
+  shire/    main.js ground.js water.js country.js holes.js buildings.js life.js party.js   the Shire: fields and lanes, the Water, hedges and trees, the holes, the mill and the rest, what moves, Bilbo's party
   voth/     imports.js stages/*.js build.js   Voth: 51 recovered stages, assembled into build.js (voth.html runs it)
 vendor/three/three.min.js     three.js r128 (pinned)
 tools/  build-page.py build-tongue.py probe.py check-city.py

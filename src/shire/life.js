@@ -41,8 +41,44 @@ export function life(api){
   for(let i=0;i<(K.birds||30);i++){const m=new THREE.Mesh(birdG,birdM);m.scale.setScalar(0.4);m.userData.noWire=true;m.userData.noFingerprint=true;scene.add(m);
     birds.push({m,cx:H.x+(R()-0.5)*1800,cz:H.z+400+(R()-0.5)*1200,cy:H.y+20+R()*80,r:30+R()*120,w:(R()<0.5?-1:1)*(0.1+R()*0.15),ph:R()*6.28});}
 
+  // ---- the lamps by the gates and the inn door, lit at dusk ----
+  const glowTex=(()=>{const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d');const gr=g.createRadialGradient(32,32,0,32,32,32);
+    gr.addColorStop(0,'rgba(255,220,150,1)');gr.addColorStop(0.25,'rgba(255,190,110,0.5)');gr.addColorStop(1,'rgba(255,170,90,0)');g.fillStyle=gr;g.fillRect(0,0,64,64);return new THREE.CanvasTexture(c);})();
+  const glowM=new THREE.SpriteMaterial({map:glowTex,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0});
+  for(const [x,y,z] of (ctx.shireLamps||[])){const sp=new THREE.Sprite(glowM);sp.position.set(x,y,z);sp.scale.setScalar(2.2);sp.userData.noWire=true;scene.add(sp);}
+
+  // ---- Gandalf's cart: the grey pointed hat on a little cart with a pony, coming up the Hill lane to Bag End,
+  //      and back down it again, as in the first shots of the first film ----
+  const cart=new THREE.Group();{const M=c=>new THREE.MeshLambertMaterial({color:c,flatShading:true});
+    const box=(w,h,d,c,x,y,z)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),M(c));m.position.set(x,y,z);m.castShadow=true;cart.add(m);return m;};
+    box(1.4,0.35,2.2,0x7a5a3a,0,0.75,0);for(const sd of [-1,1]){box(0.06,0.35,2.2,0x6a4a2a,sd*0.7,1.05,0);
+      const w=new THREE.Mesh(new THREE.CylinderGeometry(0.5,0.5,0.1,12).rotateZ(Math.PI/2),M(0x4a3a2a));w.position.set(sd*0.8,0.5,-0.2);cart.add(w);}
+    box(0.9,0.3,0.4,0x8a6a4a,0,1.05,-0.6);                                                     // the seat
+    const robe=new THREE.Mesh(new THREE.ConeGeometry(0.42,1.3,8),M(0x8c8c8a));robe.position.set(0,1.75,-0.6);cart.add(robe);
+    const head=new THREE.Mesh(new THREE.SphereGeometry(0.16,8,6),M(0xe0c0a0));head.position.set(0,2.45,-0.6);cart.add(head);
+    const beard=new THREE.Mesh(new THREE.ConeGeometry(0.14,0.6,6).rotateX(Math.PI),M(0xdcdcd8));beard.position.set(0,2.15,-0.5);cart.add(beard);
+    const brim=new THREE.Mesh(new THREE.CylinderGeometry(0.42,0.42,0.03,14),M(0x6e6e70));brim.position.set(0,2.58,-0.6);cart.add(brim);
+    const hat=new THREE.Mesh(new THREE.ConeGeometry(0.2,0.95,10),M(0x6e6e70));hat.position.set(0.05,3.05,-0.62);hat.rotation.z=-0.18;cart.add(hat);
+    box(0.5,0.4,0.4,0x9a7a4a,0.3,1.1,0.6);box(0.35,0.3,0.35,0x8a6a3a,-0.3,1.05,0.5);                // the fireworks, in crates
+    const pony=new THREE.Group();pony.position.set(0,0,-2.4);cart.add(pony);
+    const pb=new THREE.Mesh(new THREE.BoxGeometry(0.55,0.6,1.3),M(0x8a6a4a));pb.position.y=1.0;pony.add(pb);
+    const pn=new THREE.Mesh(new THREE.BoxGeometry(0.3,0.6,0.35),M(0x8a6a4a));pn.position.set(0,1.45,-0.7);pn.rotation.x=0.5;pony.add(pn);
+    const pm=new THREE.Mesh(new THREE.BoxGeometry(0.1,0.35,0.5),M(0x3a2a1a));pm.position.set(0,1.6,-0.6);pony.add(pm);
+    const legs=[];for(const [lx,lz] of [[-0.18,-0.5],[0.18,-0.5],[-0.18,0.5],[0.18,0.5]]){const l=new THREE.Mesh(new THREE.BoxGeometry(0.12,0.7,0.12).translate(0,-0.35,0),M(0x6a4a3a));l.position.set(lx,0.72,lz);pony.add(l);legs.push(l);}
+    cart.userData.legs=legs;}
+  cart.traverse(m=>{m.userData.noFingerprint=true;m.userData.noWire=true;});scene.add(cart);
+  const hl=V.lanes.find(l=>l.n==='The Hill lane');
+  const cq=hl?(()=>{const p=hl.p,cum=[0];for(let i=1;i<p.length;i++)cum.push(cum[i-1]+Math.hypot(p[i][0]-p[i-1][0],p[i][1]-p[i-1][1]));return {p,cum,L:cum[cum.length-1]};})():null;
+  ctx.shireCart=cart;
+
   animHooks.push(now=>{
     const t=now/1000,n=nf();
+    glowM.opacity=Math.min(1,n*1.3);
+    if(cq){const per=cq.L/1.6,ph=(t/per)%2,s=(ph<1?ph:2-ph)*cq.L,dir=ph<1?1:-1;
+      const c=cq.cum;let k=0;while(k<c.length-2&&c[k+1]<s)k++;const a=cq.p[k],b=cq.p[k+1],f=(s-c[k])/Math.max(0.01,c[k+1]-c[k]);
+      const dx=b[0]-a[0],dz=b[1]-a[1],x=a[0]+dx*f,z=a[1]+dz*f;
+      cart.position.set(x,groundH(x,z),z);cart.rotation.y=Math.atan2(-dx*dir,-dz*dir);
+      cart.userData.legs.forEach((l,i)=>{l.rotation.x=Math.sin(t*7+(i%2?Math.PI:0)+(i>1?Math.PI:0))*0.4;});}
     walkers.forEach((w,i)=>{w.s+=w.v*0.016;if(w.s<0){w.s=0;w.v=-w.v;}if(w.s>w.q.L){w.s=w.q.L;w.v=-w.v;}
       const c=w.q.cum;let k=0;while(k<c.length-2&&c[k+1]<w.s)k++;const a=w.q.p[k],b=w.q.p[k+1],f=(w.s-c[k])/Math.max(0.01,c[k+1]-c[k]);
       const dx=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dx,dz)||1,x=a[0]+dx*f-dz/l*w.off,z=a[1]+dz*f+dx/l*w.off;
