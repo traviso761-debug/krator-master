@@ -10,6 +10,7 @@
 //
 // Fan work; Dune belongs to the Herbert estate and every shape here is this project's own.
 import { mkRng } from '../core/rng.js';
+import { makeHarvester, makeCarryall, makeThopter } from './machines.js';
 
 export function desert(api){
   const {THREE,C,ctx,scene,animHooks,groundH,box,mergeParts}=api;
@@ -46,41 +47,8 @@ export function desert(api){
   // top, and lifting points on the roof because the only way it ever leaves is hanging from one.
   for(let k=0;k<(K.harvesters||0);k++){
     const x=AT[0]+(R()-0.5)*SP, z=AT[1]+(R()-0.5)*SP, gy=groundH(x,z), rot=R()*6.28;
-    const g=new THREE.Group();
-    const L=64,W=34,H=16;
-    g.add(new THREE.Mesh(new THREE.BoxGeometry(L,H,W).translate(0,H/2+5,0),steel));
-    // the intake: a wide low mouth at the front, and the ground in front of it chewed up
-    const mouth=new THREE.Mesh(new THREE.BoxGeometry(12,9,W*1.05).translate(0,4.5,0),dark);
-    mouth.position.set(L*0.52,3,0);g.add(mouth);
-    for(let i=0;i<9;i++){
-      const t=new THREE.Mesh(new THREE.BoxGeometry(5,2.4,2.2),rust);
-      t.position.set(L*0.56,2.6,(i-4)*(W/9));g.add(t);
-    }
-    // the separators and the stack
-    for(let i=0;i<4;i++){
-      const c=new THREE.Mesh(new THREE.CylinderGeometry(4.6,5.4,10,9),steel);
-      c.position.set(-L*0.2+i*11,H+10,0);g.add(c);
-    }
-    const stack=new THREE.Mesh(new THREE.CylinderGeometry(2.4,3,12,8),dark);
-    stack.position.set(-L*0.38,H+12,0);g.add(stack);
-    // the cab, up front and high, because you are watching the sand not the work
-    const cab=new THREE.Mesh(new THREE.BoxGeometry(10,7,12).translate(0,3.5,0),dark);
-    cab.position.set(L*0.32,H+5,0);g.add(cab);
-    // the tracks
-    for(const sd of [-1,1]){
-      const tr=new THREE.Mesh(new THREE.BoxGeometry(L*0.9,10,7).translate(0,5,0),dark);
-      tr.position.set(0,0,sd*(W/2+2));g.add(tr);
-      for(let i=0;i<7;i++){
-        const w=new THREE.Mesh(new THREE.CylinderGeometry(4,4,6,9).rotateX(Math.PI/2),rust);
-        w.position.set(-L*0.4+i*(L*0.8/6),5,sd*(W/2+2));g.add(w);
-      }
-    }
-    // lifting points
-    for(const sd of [-1,1])for(const fr of [-1,1]){
-      const lp=new THREE.Mesh(new THREE.CylinderGeometry(1.2,1.2,5,7),steel);
-      lp.position.set(fr*L*0.34,H+7,sd*W*0.34);g.add(lp);
-    }
-    g.position.set(x,gy,z);g.rotation.y=rot;scene.add(g);
+    const g=makeHarvester(THREE,{scale:0.8});
+    g.position.set(x,gy,z);g.rotation.y=-rot;scene.add(g);   // its nose (+x) the way it creeps
     const plume=new THREE.Mesh(new THREE.SphereGeometry(16,8,6),dustM);
     plume.userData.noWire=true;scene.add(plume);
     const smoke=new THREE.Mesh(new THREE.SphereGeometry(7,8,6),exhaust);
@@ -89,29 +57,11 @@ export function desert(api){
   }
 
   // ---- the carryalls ----
-  // A flying gantry: two hulls, a spine between them, and the grabs hanging under it. It holds station
-  // over the harvester with everything running, because that is the whole job.
+  // A wedge of silver-grey with jet pods at the corners, suspensor bags along the sides and the grapples
+  // under it (src/arrakeen/machines.js). It holds station over the harvester with everything running,
+  // because that is the whole job.
   for(let k=0;k<(K.carryalls||0);k++){
-    const g=new THREE.Group(), S=1.0;
-    for(const sd of [-1,1]){
-      const hull=new THREE.Mesh(new THREE.BoxGeometry(86*S,11*S,14*S),steel);
-      hull.position.set(0,0,sd*26*S);g.add(hull);
-      const nose=new THREE.Mesh(new THREE.ConeGeometry(7*S,16*S,7).rotateZ(-Math.PI/2),steel);
-      nose.position.set(51*S,0,sd*26*S);g.add(nose);
-      for(let i=0;i<4;i++){
-        const n=new THREE.Mesh(new THREE.CylinderGeometry(5*S,4*S,9*S,9).rotateZ(Math.PI/2),dark);
-        n.position.set(-34*S+i*22*S,-7*S,sd*26*S);g.add(n);
-      }
-    }
-    const spine=new THREE.Mesh(new THREE.BoxGeometry(70*S,7*S,44*S),dark);g.add(spine);
-    for(const fr of [-1,1])for(const sd of [-1,1]){
-      const cab=new THREE.Mesh(new THREE.BoxGeometry(10*S,7*S,9*S),dark);
-      cab.position.set(fr*30*S,6*S,sd*26*S);g.add(cab);
-      const grab=new THREE.Mesh(new THREE.BoxGeometry(3*S,22*S,3*S),steel);
-      grab.position.set(fr*24*S,-18*S,sd*16*S);g.add(grab);
-      const claw=new THREE.Mesh(new THREE.BoxGeometry(9*S,3*S,9*S),rust);
-      claw.position.set(fr*24*S,-30*S,sd*16*S);g.add(claw);
-    }
+    const g=makeCarryall(THREE,{scale:1});
     scene.add(g);
     flyers.push({g,over:k%Math.max(1,rigs.length),y:150+R()*90,a:R()*6.28,r:120+R()*180,v:0.00022+R()*0.0002,big:true});
   }
@@ -121,16 +71,7 @@ export function desert(api){
   // think about.
   const wingM=new THREE.MeshLambertMaterial({color:0x8e8a7e,side:THREE.DoubleSide,flatShading:true});
   for(let k=0;k<(K.spotters||0);k++){
-    const g=new THREE.Group(), S=8;
-    g.add(new THREE.Mesh(new THREE.CylinderGeometry(S*0.16,S*0.1,S*1.5,7).rotateZ(Math.PI/2),dark));
-    const nose=new THREE.Mesh(new THREE.ConeGeometry(S*0.17,S*0.5,7).rotateZ(-Math.PI/2),dark);
-    nose.position.x=S*0.95;g.add(nose);
-    const wings=[];
-    for(const sd of [-1,1])for(const fr of [0.3,-0.2]){
-      const w=new THREE.Group();
-      w.add(new THREE.Mesh(new THREE.BoxGeometry(S*0.26,0.12,S*1.1).translate(0,0,sd*S*0.55),wingM));
-      w.position.set(S*fr,S*0.1,0);g.add(w);wings.push({w,sd});
-    }
+    const g=makeThopter(THREE,{scale:0.9}),wings=null;
     scene.add(g);
     flyers.push({g,wings,over:-1,cx:AT[0]+(R()-0.5)*SP,cz:AT[1]+(R()-0.5)*SP,
       y:90+R()*160,a:R()*6.28,r:700+R()*1600,v:(0.00016+R()*0.0002)*(R()<0.5?-1:1)});
@@ -165,17 +106,21 @@ export function desert(api){
   animHooks.push(now=>{
     const t=(now-t0)/1000;
     for(const q of rigs){
+      q.g.userData.update(now);
+      if(q.held)continue;                        // a carryall has it (events.js)
       // it creeps forward along the blow, and the dust off the intake goes with it
       const d=(t*0.5)%180;
       const x=q.x+Math.cos(q.rot)*d, z=q.z+Math.sin(q.rot)*d;
       q.g.position.set(x,groundH(x,z),z);
-      q.plume.position.set(x+Math.cos(q.rot)*34,groundH(x,z)+10,z+Math.sin(q.rot)*34);
+      q.plume.position.set(x+Math.cos(q.rot)*50,groundH(x,z)+10,z+Math.sin(q.rot)*34);
       q.plume.scale.setScalar(0.9+0.35*Math.sin(t*1.7+q.ph));
-      q.smoke.position.set(x-Math.cos(q.rot)*24,groundH(x,z)+34+6*Math.sin(t+q.ph),z-Math.sin(q.rot)*24);
+      q.smoke.position.set(x-Math.cos(q.rot)*28,groundH(x,z)+52+6*Math.sin(t+q.ph),z-Math.sin(q.rot)*28);
       q.smoke.scale.setScalar(1+0.6*((t*0.3+q.ph)%1));
       q.cur=[x,z];
     }
     for(const q of flyers){
+      if(q.held)continue;
+      q.g.userData.update(now,q.big?{drop:4,fill:0.3,thrust:0.6}:1);
       let cx,cz;
       if(q.over>=0&&rigs[q.over]&&rigs[q.over].cur){cx=rigs[q.over].cur[0];cz=rigs[q.over].cur[1];}
       else{cx=q.cx;cz=q.cz;}
@@ -183,7 +128,6 @@ export function desert(api){
       const x=cx+Math.cos(a)*q.r, z=cz+Math.sin(a)*q.r;
       q.g.position.set(x,groundH(x,z)+q.y+(q.big?4:16)*Math.sin(now*0.0006+q.a),z);
       q.g.rotation.set(0,-a-(q.v>0?Math.PI/2:-Math.PI/2),q.big?0.05:0.18*(q.v>0?1:-1));
-      if(q.wings){const beat=Math.sin(now*0.02+q.a);for(const w of q.wings)w.w.rotation.x=w.sd*beat*0.7;}
     }
     for(const q of worms){
       q.t+=1/(q.T*60);
@@ -202,6 +146,7 @@ export function desert(api){
     }
   });
 
+  ctx.arrakeenDesert={rigs,flyers,worms};   // the events (events.js) take these over now and then
   ctx.details=Object.assign(ctx.details||{},{
     harvesters:rigs.length,carryalls:K.carryalls||0,spotters:K.spotters||0,
     wormSign:worms.length,spiceBlows:K.blows||0});

@@ -14,32 +14,20 @@
 //   radiation  a surge in Io's plasma torus: the site lights go red and everybody outside goes in
 import { mkRng } from '../core/rng.js';
 import { G, createGrains, jet } from './grains.js';
+import { createHappenings } from '../core/happenings.js';
 
 export function events(api){
-  const {THREE,ctx,scene,animHooks,groundH,HASH0}=api;
+  const {THREE,ctx,scene,groundH}=api;
   const I=ctx.europaIce;if(!I)return;
   const R=mkRng(Date.now()%100000);                         // what happens, and where, is different every visit
 
   const spray=createGrains(api,{max:7000,size:1.3,color:0xe8f2fa});
   const vent=createGrains(api,{max:30000,size:14,color:0xdfeefa,opacity:0.8,additive:true});
   const dust=createGrains(api,{max:8000,size:3.2,color:0xdfe6ea});
-  const hooks=[];                                              // the running events' own per-frame work
-  let last=performance.now();
-  animHooks.push(now=>{const dt=Math.min(0.05,(now-last)/1000);last=now;for(let i=hooks.length-1;i>=0;i--)if(hooks[i](now,dt)===false)hooks.splice(i,1);});
-  const run=fn=>hooks.push(fn);
+  // the notice, the per-frame runner, the scheduler and the Events panel are src/core/happenings.js's
+  let H=null;const run=fn=>H.run(fn),notice=(...a)=>H.notice(...a);
   const at=(x,z,up)=>[x,groundH(x,z)+up,z];
 
-  // ---- the notice ----
-  const box=document.createElement('div');
-  box.style.cssText='position:fixed;left:50%;top:12px;transform:translateX(-50%);z-index:12;max-width:min(560px,92vw);display:none;'+
-    'background:rgba(8,14,22,.86);color:#dfe8ef;border:1px solid #4f6a80;padding:9px 12px;font:13px/1.45 Georgia,serif;text-align:center';
-  document.body.appendChild(box);
-  let boxT=0,lastView=null;
-  function notice(title,text,view){lastView=view;box.innerHTML='';const h=document.createElement('b');h.textContent=title;box.append(h,document.createTextNode(' — '+text+' '));
-    if(view&&api.setView){const b=document.createElement('button');b.type='button';b.textContent='Go and look';
-      b.style.cssText='margin-left:6px;background:rgba(30,50,70,.9);color:#dfe8ef;border:1px solid #6f8ca4;padding:2px 8px;cursor:pointer;font:12px Georgia,serif';
-      b.onclick=()=>{api.setView(...view());box.style.display='none';};box.appendChild(b);}
-    box.style.display='';clearTimeout(boxT);boxT=setTimeout(()=>{box.style.display='none';},16000);}
   const look=(x,z,dist,h,ty)=>()=>{const a=Math.atan2(z,x)+0.5;return [x+Math.cos(a)*dist,groundH(x,z)+h,z+Math.sin(a)*dist,x,groundH(x,z)+(ty||10),z];};
 
   // ---- a lander, down and back up ----
@@ -143,25 +131,7 @@ export function events(api){
       if(!on){if(crew)crew.recall(false);notice('All clear','- the crew go back out.',null);return false;}});}
 
   const EVENTS={lander:['A lander',lander],icequake:['Icequake',icequake],surge:['The bore surges',surge],linea:['A linea vents',linea],impact:['A meteorite',impact],radiation:['Radiation alert',radiation]};
-  const ORDER=['lander','icequake','surge','linea','lander','impact','surge','radiation'];
-  const fire=k=>{try{EVENTS[k][1]();ctx.europaEvents.log.push(k);}catch(e){api.report&&api.report('event '+k,e);}};
-  ctx.europaEvents={fire,log:[]};
-
-  // ---- on their own: every minute or two, in an order that does not repeat itself too soon ----
-  const auto={on:true,next:performance.now()+25000,i:Math.floor(R()*ORDER.length)};
-  animHooks.push(now=>{if(!auto.on||now<auto.next)return;auto.next=now+60000+R()*60000;fire(ORDER[auto.i++%ORDER.length]);});
-  // #event=lander fires one on arrival; &eventlook goes straight to where it is happening
-  {const m=/(^|&)event=([a-z]+)/.exec(HASH0||'');if(m&&EVENTS[m[2]])setTimeout(()=>{fire(m[2]);if(/(^|&)eventlook(&|$)/.test(HASH0)&&lastView&&api.setView)api.setView(...lastView(),false);},800);}
-
-  // ---- the panel ----
-  api.onUI(({ui,mkBtn})=>{
-    const panel=document.createElement('div');
-    panel.style.cssText='position:fixed;left:10px;bottom:calc(var(--barh,44px) + 14px);z-index:11;display:none;flex-direction:column;gap:4px;background:rgba(8,14,22,.86);border:1px solid #4f6a80;padding:8px;font:12px Georgia,serif;color:#dfe8ef';
-    const head=document.createElement('div');head.textContent='Make something happen';panel.appendChild(head);
-    for(const [k,[label]] of Object.entries(EVENTS))mkBtn(label,panel,()=>{fire(k);panel.style.display='none';});
-    const ab=mkBtn('On their own: on',panel,()=>{auto.on=!auto.on;ab.textContent='On their own: '+(auto.on?'on':'off');if(auto.on)auto.next=performance.now()+20000;});
-    document.body.appendChild(panel);
-    const b=mkBtn('Events',ui,()=>{const o=panel.style.display==='none';panel.style.display=o?'flex':'none';b.setAttribute('aria-expanded',String(o));});
-    b.setAttribute('aria-expanded','false');b.title='A lander, an icequake, a surge, a venting linea, an impact, a radiation alert';});
+  H=createHappenings(api,{events:EVENTS,order:['lander','icequake','surge','linea','lander','impact','surge','radiation']});
+  ctx.europaEvents={fire:H.fire,log:H.log};
   ctx.details=Object.assign(ctx.details||{},{events:Object.keys(EVENTS).length});
 }

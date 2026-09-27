@@ -5,6 +5,7 @@
 // None of this appears in any other city, so it travels with this page rather than living in the shared
 // engine, and src/arrakeen/main.js hands it to build() as ctx.models.
 import { mkRng } from '../core/rng.js';
+import { stoneKit } from './stone.js';
 
 export function landmarks(api){
   const {THREE,ctx,animHooks,scene,nightF,hour,box,group,gh,mergeParts}=api;
@@ -12,61 +13,46 @@ export function landmarks(api){
 
   residency(L,x,z){
     // ---- the Arrakeen Residency ----
-    // A fortress that is pretending to be a house. Everything faces inward: a blank battered curtain wall
-    // to the street, a single gate, and inside it the courts, the hall, and the garden - which is the
-    // point of the whole building. Water is what power looks like here, so the one thing anybody is meant
-    // to see is that somebody can afford to pour it on the ground.
-    const H=L.height||96, g0=gh(x,z), A=L.turn||0, parts=[], RR=mkRng(1965);
-    const wall=new THREE.MeshLambertMaterial({color:0xb09571,flatShading:true});
-    const shade=new THREE.MeshLambertMaterial({color:0x8e7758,flatShading:true});
+    // A fortress pretending to be a house, and the biggest thing anybody has built on the planet: stone masses
+    // round a sealed court, the north range stepped up like a ziggurat, every face leaning back from the wind,
+    // no windows but slits. The films' designer called it a show of force; it is also a very good way to keep
+    // a building cool. To the city it shows a low blind wall with one gate between two pylons. The court is the
+    // garden - the obscenity, water and green on a world that would drink a man dry - and there is a landing
+    // platform for the thopters on the east wing, because nobody who lives here walks through the town.
+    const g0=gh(x,z), A=L.turn||0, parts=[], RR=mkRng(1965);
+    const W=420, D=340, CW=160, CD=120;          // (the city file's width and depth were for the old, smaller house)
+    const ST=stoneKit(api),c=Math.cos(A),s=Math.sin(A);
+    const at=(u,v,y)=>[x+u*c-v*s,y,z+u*s+v*c];
+    const m=(u,v,w,d,h,bat,rgb,y0)=>{const [px,,pz]=at(u,v,0);return ST.mass(px,pz,w,d,A,h,bat,rgb,y0===undefined?g0:y0);};
+    const S1=[0.72,0.60,0.45],S2=[0.66,0.55,0.42],S3=[0.60,0.50,0.38];
+    // the north range: four tiers, each stepped back from the one below
+    {let y=g0,dw=W,dd=D/2-CD/2;for(const [h,col] of [[40,S1],[34,S2],[30,S1],[36,S3]]){const r=m(0,-CD/2-dd/2,dw,dd,h,0.18,col,y);y=r.top;dw*=0.78;dd*=0.72;}}
+    // the east and west wings, battered, and the landing platform on the east one
+    for(const sd of [-1,1]){const wu=(W/2+CW/2)/2*sd,ww=(W-CW)/2;const r=m(wu,0,ww,CD+10,56,0.16,S2);
+      if(sd>0){const [px,,pz]=at(wu,10,0);const pad=new THREE.Mesh(new THREE.CylinderGeometry(34,36,2,24),new THREE.MeshLambertMaterial({color:0x3e3a34}));
+        pad.position.set(px,r.top+1,pz);parts.push(pad);
+        const ring=new THREE.Mesh(new THREE.TorusGeometry(28,0.6,4,32).rotateX(Math.PI/2),new THREE.MeshBasicMaterial({color:0xd8a850}));ring.position.set(px,r.top+2.1,pz);parts.push(ring);
+        ctx.residencyPad=[px,r.top+2,pz];}}
+    // the front: a low blind wall, one gate, and a pylon either side of it taller than anything else in the town
+    for(const sd of [-1,1])m(sd*(W/4+14),CD/2+(D/2-CD/2)/2,W/2-28,D/2-CD/2,30,0.22,S1);
+    for(const sd of [-1,1])m(sd*30,CD/2+(D/2-CD/2)/2,26,D/2-CD/2+14,112,0.1,S3);
+    m(0,CD/2+(D/2-CD/2)/2,86,D/2-CD/2+20,14,0.02,S2,g0+62);                              // the lintel over the gate
+    ST.finish('residency');
+    const water=new THREE.MeshPhongMaterial({color:0x2f6a78,specular:0xffffff,shininess:90,transparent:true,opacity:0.86});
     const stone=new THREE.MeshLambertMaterial({color:0xc6ab83,flatShading:true});
     const dark=new THREE.MeshLambertMaterial({color:0x4e4335,flatShading:true});
-    const glass=new THREE.MeshPhongMaterial({color:0x2b3a44,specular:0xa8c0cc,shininess:70});
     const green=new THREE.MeshLambertMaterial({color:0x4f6b39,flatShading:true});
-    const water=new THREE.MeshPhongMaterial({color:0x2f6a78,specular:0xffffff,shininess:90,transparent:true,opacity:0.86});
-    const at=(u,v,y)=>[x+u*Math.cos(A)-v*Math.sin(A),y,z+u*Math.sin(A)+v*Math.cos(A)];
-    const bx=(u,v,y,w,h,d,m)=>{const [px,py,pz]=at(u,v,y);const b=box(px,py,pz,w,h,d,m);b.rotation.y=-A;return b;};
-
-    const W=L.width||300, D=L.depth||230;
-    // the curtain: battered, blind, and thick, with a walk along the top
-    for(const [u,v,w,d] of [[0,-D/2,W,22],[0,D/2,W,22],[-W/2,0,22,D],[W/2,0,22,D]]){
-      parts.push(bx(u,v,g0,w,H*0.42,d,wall));
-      parts.push(bx(u,v,g0+H*0.42,w*1.03,H*0.05,d*1.3,shade));
-    }
-    for(const sd of [-1,1])for(const q of [-1,1])
-      parts.push(bx(sd*W/2,q*D/2,g0,42,H*0.62,42,shade));
-    // the gate: a deep arch in the south wall with a pylon either side
-    for(const sd of [-1,1])parts.push(bx(sd*34,D/2,g0,26,H*0.58,30,shade));
-    parts.push(bx(0,D/2,g0+H*0.44,90,H*0.14,34,stone));
-    parts.push(bx(0,D/2+2,g0,54,H*0.36,8,dark));
-
-    // the hall: the one big roof in the building, stepped and with a clerestory
-    parts.push(bx(-W*0.16,-D*0.14,g0,W*0.44,H*0.7,D*0.44,wall));
-    parts.push(bx(-W*0.16,-D*0.14,g0+H*0.7,W*0.34,H*0.1,D*0.34,shade));
-    parts.push(bx(-W*0.16,-D*0.14,g0+H*0.8,W*0.2,H*0.12,D*0.2,stone));
-    for(let k=0;k<9;k++)parts.push(bx(-W*0.16-W*0.12+k*W*0.03,-D*0.14-D*0.1,g0+H*0.72,W*0.012,H*0.07,D*0.22,glass));
-    // the tower: the only thing in Arrakeen that looks at the horizon on purpose
-    parts.push(bx(W*0.24,-D*0.3,g0,52,H,52,wall));
-    parts.push(bx(W*0.24,-D*0.3,g0+H,64,H*0.08,64,shade));
-    for(let k=0;k<4;k++){const a=k/4*Math.PI*2;
-      parts.push(bx(W*0.24+Math.cos(a)*26,-D*0.3+Math.sin(a)*26,g0+H*1.08,16,H*0.1,16,stone));}
-    // the wings: rooms round two courts, all of them looking in
-    for(const sd of [-1,1]){
-      parts.push(bx(sd*W*0.3,D*0.22,g0,W*0.3,H*0.38,D*0.3,wall));
-      parts.push(bx(sd*W*0.3,D*0.22,g0+H*0.38,W*0.31,H*0.03,D*0.31,shade));
-      for(let k=0;k<5;k++)
-        parts.push(bx(sd*W*0.3+(k-2)*W*0.05,D*0.22-D*0.15,g0+H*0.18,W*0.02,H*0.12,4,dark));
-    }
+    const bx=(u,v,y,w,h,d,mm)=>{const [px,py,pz]=at(u,v,y);const b=box(px,py,pz,w,h,d,mm);b.rotation.y=-A;return b;};
 
     // ---- the garden ----
     // The obscenity: open water and things growing in it, under a roof of palm fronds, inside the only
     // walls on the planet nobody is allowed to look over.
     {
-      const pool=new THREE.Mesh(new THREE.BoxGeometry(W*0.2,1.4,D*0.14),water);
-      const [px,py,pz]=at(0,-D*0.02,g0+2.6);pool.position.set(px,py,pz);pool.rotation.y=-A;parts.push(pool);
-      const rim=bx(0,-D*0.02,g0+1.6,W*0.22,1.6,D*0.16,stone);parts.push(rim);
+      const pool=new THREE.Mesh(new THREE.BoxGeometry(CW*0.5,1.4,CD*0.35),water);
+      const [px,py,pz]=at(0,0,g0+2.6);pool.position.set(px,py,pz);pool.rotation.y=-A;parts.push(pool);
+      const rim=bx(0,0,g0+1.6,CW*0.55,1.6,CD*0.4,stone);parts.push(rim);
       for(let k=0;k<18;k++){
-        const u=(RR()-0.5)*W*0.5, v=-D*0.02+(RR()-0.5)*D*0.3;
+        const u=(RR()-0.5)*CW*0.85, v=(RR()-0.5)*CD*0.85;if(Math.abs(u)<CW*0.3&&Math.abs(v)<CD*0.22)continue;
         const h=9+RR()*9;
         parts.push(bx(u,v,g0+1.8,1.5,h,1.5,dark));
         const crown=new THREE.Mesh(new THREE.IcosahedronGeometry(3.4+RR()*2.4,0),green);
@@ -74,7 +60,7 @@ export function landmarks(api){
         crown.scale.set(1.5,0.6,1.5);parts.push(crown);
       }
       for(let k=0;k<26;k++){
-        const u=(RR()-0.5)*W*0.56, v=-D*0.02+(RR()-0.5)*D*0.34;
+        const u=(RR()-0.5)*CW*0.9, v=(RR()-0.5)*CD*0.9;
         const b2=new THREE.Mesh(new THREE.IcosahedronGeometry(1.4+RR()*2,0),green);
         const [cx2,cy2,cz2]=at(u,v,g0+2.4);b2.position.set(cx2,cy2,cz2);b2.scale.set(1,0.7,1);parts.push(b2);
       }
@@ -86,42 +72,29 @@ export function landmarks(api){
 
   windtrap(L,x,z){
     // ---- the great windtrap ----
-    // The city's lung, and the only piece of civic architecture on the planet: a scoop standing into the
-    // prevailing wind, ribbed like a shell, with the precipitator stack behind it and the cistern under
-    // that. The air over Arrakis carries almost no water; this is how you get the almost.
-    const H=L.height||120, g0=gh(x,z), A=L.turn||0, parts=[];
-    const metal=new THREE.MeshPhongMaterial({color:0x8d8c86,specular:0x4a4a46,shininess:24,flatShading:true});
-    const rib=new THREE.MeshPhongMaterial({color:0x6f6e68,specular:0x3a3a36,shininess:18,flatShading:true});
-    const wall=new THREE.MeshLambertMaterial({color:0xa89070,flatShading:true});
-    const dark=new THREE.MeshLambertMaterial({color:0x3d3730,flatShading:true});
-    const at=(u,v,y)=>[x+u*Math.cos(A)-v*Math.sin(A),y,z+u*Math.sin(A)+v*Math.cos(A)];
-
-    // the base: a blockhouse, because the working parts are all underground
-    {const [px,py,pz]=at(0,0,g0);const b=box(px,py,pz,110,H*0.2,90,wall);b.rotation.y=-A;parts.push(b);}
-    for(const sd of [-1,1]){const [px,py,pz]=at(sd*52,0,g0);
-      const b=box(px,py,pz,20,H*0.3,100,wall);b.rotation.y=-A;parts.push(b);}
-    // the scoop: an arc of curved vanes on a frame, opening downwind
-    const RAD=H*0.62;
-    for(let k=0;k<13;k++){
-      const t=k/12, a=-1.05+t*2.1;
-      const w=RAD*0.14;
-      const v=new THREE.Mesh(new THREE.BoxGeometry(w,H*0.66,5),metal);
-      const [px,py,pz]=at(Math.sin(a)*RAD*0.9,-Math.cos(a)*RAD*0.5-10,g0+H*0.2);
-      v.position.set(px,py+H*0.33,pz);v.rotation.set(0,-A-a*0.7,0.08*Math.sin(a));parts.push(v);
-    }
-    for(let k=0;k<4;k++){
-      const y=g0+H*0.2+k*H*0.2;
-      const r=new THREE.Mesh(new THREE.TorusGeometry(RAD*0.8,3.4,5,20,2.2),rib);
-      const [px,py,pz]=at(0,-14,y);r.position.set(px,py,pz);
-      r.rotation.set(Math.PI/2,0,-A+Math.PI/2+1.1);parts.push(r);
-    }
-    // the stack behind it, and the vent at the top of it
-    {const [px,py,pz]=at(0,44,g0);const s=box(px,py,pz,44,H*0.92,44,wall);s.rotation.y=-A;parts.push(s);
-     const [cx,cy,cz]=at(0,44,g0+H*0.92);const c=box(cx,cy,cz,58,H*0.06,58,dark);c.rotation.y=-A;parts.push(c);}
-    for(let k=0;k<6;k++){const [px,py,pz]=at((k-2.5)*8,44,g0+H*0.98);
-      const f=new THREE.Mesh(new THREE.BoxGeometry(5,H*0.1,40),rib);f.position.set(px,py+H*0.05,pz);
-      f.rotation.y=-A;parts.push(f);}
-
+    // The city's lung, and the only civic monument on the planet: a stone tower on a blockhouse, battered like
+    // everything else, ribbed up its faces with the metal fins the dew forms on, and crowned with a collar of
+    // vanes that turn the wind down into it; a scoop at the top stands into the prevailing wind. The air over
+    // Arrakis carries almost no water; this is how you get the almost.
+    const H=L.height||150, g0=gh(x,z), A=L.turn||0, parts=[];
+    const ST=stoneKit(api),c=Math.cos(A),s=Math.sin(A),at=(u,v)=>[x+u*c-v*s,z+u*s+v*c];
+    const metal=new THREE.MeshPhongMaterial({color:0x7c7870,specular:0x9a958a,shininess:30,flatShading:true});
+    const dark=new THREE.MeshLambertMaterial({color:0x3a3530,flatShading:true});
+    // the blockhouse, and the tower out of it
+    ST.mass(x,z,120,96,A,26,0.25,[0.62,0.52,0.40],g0);
+    const tw=ST.mass(x,z,56,56,A,H,0.1,[0.66,0.56,0.43],g0+20);
+    ST.finish('great-windtrap');
+    // the fins: sixteen, up the four faces
+    for(let k=0;k<16;k++){const side=Math.floor(k/4),q=(k%4-1.5)*11,off=28-0.1*H*0.5;
+      const [u,v]=side===0?[q,off+2]:side===1?[off+2,q]:side===2?[q,-off-2]:[-off-2,q];const [px,pz]=at(u,v);
+      const fin=new THREE.Mesh(new THREE.BoxGeometry(side%2?1.2:3,H*0.8,side%2?3:1.2).translate(0,H*0.4,0),metal);fin.position.set(px,g0+24,pz);fin.rotation.set(side===0?-0.05:side===2?0.05:0,-A,side===1?0.05:side===3?-0.05:0);parts.push(fin);}
+    // the collar: a ring of angled vanes round the top
+    {const [cx,cz]=at(0,0),y=tw.top;
+     for(let k=0;k<24;k++){const a=k/24*Math.PI*2;const v=new THREE.Mesh(new THREE.BoxGeometry(14,18,1.2),metal);v.position.set(cx+Math.cos(a)*26,y+6,cz+Math.sin(a)*26);v.rotation.set(0,-a+Math.PI/2+0.45,0.25);parts.push(v);}
+     const cap=new THREE.Mesh(new THREE.CylinderGeometry(22,30,6,24),dark);cap.position.set(cx,y+17,cz);parts.push(cap);
+     // the scoop, into the wind
+     const sc=new THREE.Mesh(new THREE.CylinderGeometry(14,20,26,16,1,true,0,Math.PI).rotateX(Math.PI/2),metal);sc.material=metal.clone();sc.material.side=THREE.DoubleSide;
+     const [sx,sz]=at(0,-22);sc.position.set(sx,y+34,sz);sc.rotation.y=-A;parts.push(sc);}
     const byMat=new Map();
     for(const m of parts){let a=byMat.get(m.material);if(!a){a=[];byMat.set(m.material,a);}a.push(m);}
     const merged=[];for(const [mat,list] of byMat)merged.push(mergeParts(list,mat));
