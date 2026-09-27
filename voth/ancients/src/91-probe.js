@@ -15,7 +15,7 @@ const BUDGET={
  cls:{small:60000,medium:250000,sky:400000,mega:700000},
  type:{house:'small',house2:'small',fuel:'small',radar:'small',dish:'small',police:'small',
        skyA:'sky',skyB:'sky',skyC:'sky',skyD:'sky',skyE:'sky',skyF:'sky',skyG:'sky',skyH:'sky',
-       mega:'mega',arc:'mega',dam:'mega',campus:'mega',spire:'mega',dalab:'mega',canyon:'mega',veladiga:'mega',hex:'mega',hexlush:'mega',biome:'mega',forest:'mega',darco:'mega',ring:'mega',launch:'mega',launchpad:'mega',plymouth:'mega',arcbeam:'mega',arcoindian:'mega',arcoindian2:'mega',hill:'mega',arcube:'mega',wing:'mega',drum:'mega',blades:'mega',trigon:'mega',monolith:'mega',crescent:'mega',
+       mega:'mega',arc:'mega',dam:'mega',campus:'mega',spire:'mega',dalab:'mega',canyon:'mega',veladiga:'mega',hex:'mega',hexlush:'mega',biome:'mega',forest:'mega',darco:'mega',ring:'mega',launch:'mega',launchpad:'mega',plymouth:'mega',arcbeam:'mega',arcoindian:'mega',arcoindian2:'mega',hill:'mega',arcube:'mega',wing:'mega',drum:'mega',blades:'mega',trigon:'mega',monolith:'mega',crescent:'mega',ledge:'mega',
        fac:'medium',port:'medium',gov:'medium',lib:'medium',bunk:'medium',off:'medium',
        apt:'medium',amph:'medium',lab:'medium',robo:'medium',dc:'medium',hosp:'medium',hotel:'medium'},
 };
