@@ -1,0 +1,12 @@
+# Files written by tools/: regenerate them, do not edit them (README, "Generated files").
+# The big map files are single-line JSON, so a text diff of one is a wall of noise: -diff shows "binary differs".
+data/cities/*-osm.json         linguist-generated=true -diff
+data/cities/shire-plan.json    linguist-generated=true -diff
+data/cities/rivendell-valley.json linguist-generated=true -diff
+data/cities/yellowstone-land.json linguist-generated=true -diff
+data/cities/yellowstone.json   linguist-generated=true
+data/cities/shire-fields.png   linguist-generated=true binary
+src/engine/build.js            linguist-generated=true
+src/iziz/build.js              linguist-generated=true
+src/voth/build.js              linguist-generated=true
+krator.html                    linguist-generated=true

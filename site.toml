@@ -280,6 +280,7 @@ dir = "src"
 [[mount]]
 prefix = "/data"        # JSON content: lexicon, city parameters, views
 dir = "data"
+exclude = ["osm"]       # the raw OpenStreetMap cache the OSM cities are built from: 561 MB nobody's browser needs
 
 [[mount]]
 prefix = "/vendor"      # third-party libraries (three.js), kept local so the LAN works offline

@@ -29,6 +29,7 @@ import json
 import math
 import os
 import random
+from lib.geo import q, flat, rect, smoothstep
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "data", "cities", "kowloon-osm.json")
@@ -41,28 +42,6 @@ GROUND = 6.0                     # the site is a few metres above the harbour
 BLOCK_W, BLOCK_D = 210.0, 120.0  # the Walled City itself
 BLOCK_A = 0.14                   # and the angle it sits at
 STOREY = 2.9
-
-
-def q(v):
-    return int(round(v * 10))
-
-
-def flat(pts):
-    out = []
-    for x, z in pts:
-        out += [q(x), q(z)]
-    return out
-
-
-def rect(cx, cz, w, d, rot=0.0):
-    c, s = math.cos(rot), math.sin(rot)
-    return [(cx + x * c - z * s, cz + x * s + z * c) for x, z in
-            ((-w / 2, -d / 2), (w / 2, -d / 2), (w / 2, d / 2), (-w / 2, d / 2))]
-
-
-def smoothstep(a, b, v):
-    t = max(0.0, min(1.0, (v - a) / (b - a)))
-    return t * t * (3 - 2 * t)
 
 
 def terrain_height(x, z):

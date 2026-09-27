@@ -32,6 +32,11 @@ import sys
 import time
 import urllib.parse
 import urllib.request
+from lib.geo import q, flat, simplify as _simplify
+
+
+def simplify(pts, eps):
+    return _simplify(pts, eps, closed="drop")   # this map was made with rings simplified to their ends
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RAW = os.path.join(ROOT, "data", "osm", "raw", "yellowstone")
@@ -49,10 +54,6 @@ TZ = 12                                             # terrain tile zoom: about 2
 
 def xz(lat, lon):
     return ((lon - LON0) * M_LON, -(lat - LAT0) * M_LAT)
-
-
-def q(v):   # metres -> integer decimetres
-    return int(round(v * 10))
 
 
 BX0, BZ0 = xz(N, W)
@@ -129,29 +130,6 @@ def centroid(r):
     return (sum(p[0] for p in r) / len(r), sum(p[1] for p in r) / len(r))
 
 
-def simplify(pts, eps):
-    """Douglas-Peucker, iteratively: a lake shore can be ten thousand points and recursion runs out first."""
-    if len(pts) < 3:
-        return pts
-    keep = [False] * len(pts)
-    keep[0] = keep[-1] = True
-    stack = [(0, len(pts) - 1)]
-    while stack:
-        i0, i1 = stack.pop()
-        a, b = pts[i0], pts[i1]
-        dx, dz = b[0] - a[0], b[1] - a[1]
-        L = math.hypot(dx, dz) or 1e-9
-        dmax, idx = 0.0, 0
-        for i in range(i0 + 1, i1):
-            d = abs((pts[i][0] - a[0]) * dz - (pts[i][1] - a[1]) * dx) / L
-            if d > dmax:
-                dmax, idx = d, i
-        if dmax > eps:
-            keep[idx] = True
-            stack += [(i0, idx), (idx, i1)]
-    return [p for p, k in zip(pts, keep) if k]
-
-
 def ring_simplify(r, eps):
     if len(r) > 3 and r[0] == r[-1]:
         r = r[:-1]
@@ -211,13 +189,6 @@ def polys_of(e):
         i = [r for r in join_rings(inners) if len(r) >= 4 and r[0] == r[-1]]
         return [(r, [h for h in i if inside(centroid(h), r)]) for r in o]
     return []
-
-
-def flat(pts):
-    out = []
-    for x, z in pts:
-        out += [q(x), q(z)]
-    return out
 
 
 def in_bounds(p, pad=0):
