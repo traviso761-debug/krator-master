@@ -98,7 +98,7 @@ float rows(float s,float w,float fw){float d=abs(fract(s/w)-0.5)*2.0;return smoo
     for(let i=0;i<dense.length;i++){const a=dense[Math.max(0,i-1)],b=dense[Math.min(dense.length-1,i+1)],[x,z]=dense[i];
       let dx=b[0]-a[0],dz=b[1]-a[1];const l=Math.hypot(dx,dz)||1;dx/=l;dz/=l;if(i>0)u+=Math.hypot(x-dense[i-1][0],z-dense[i-1][1]);
       for(const v of [-1,0,1]){const px=x-dz*v*L.w/2,pz=z+dx*v*L.w/2;pos.push(px,groundH(px,pz)+0.12,pz);uv.push(u,v);}}
-    for(let i=0;i<dense.length-1;i++)for(let k=0;k<2;k++){const a=i*3+k;idx.push(a,a+3,a+1,a+1,a+3,a+4);}
+    for(let i=0;i<dense.length-1;i++)for(let k=0;k<2;k++){const a=i*3+k;idx.push(a,a+1,a+3,a+1,a+4,a+3);}   // wound to face up
     const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('aUV',new THREE.Float32BufferAttribute(uv,2));
     g.setIndex(idx);g.computeVertexNormals();
     const m=new THREE.Mesh(g,(L.k==='lane'||L.k==='track')?laneCrownM:laneM);m.receiveShadow=true;m.userData.wireCat='road';scene.add(m);

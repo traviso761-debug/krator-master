@@ -46,7 +46,7 @@ void main(){
    for(let i=0;i<st.length;i++){const a=st[Math.max(0,i-1)],b=st[Math.min(st.length-1,i+1)],p=st[i];let dx=b[0]-a[0],dz=b[1]-a[1];const l=Math.hypot(dx,dz)||1;dx/=l;dz/=l;
      if(i>0)u+=Math.hypot(p[0]-st[i-1][0],p[1]-st[i-1][1]);
      for(const v of [-1,-0.5,0,0.5,1]){pos.push(p[0]-dz*v*p[3],p[2]+0.1,p[1]+dx*v*p[3]);uv.push(u,v);}}
-   for(let i=0;i<st.length-1;i++)for(let k=0;k<4;k++){const a=i*5+k;idx.push(a,a+5,a+1,a+1,a+5,a+6);}
+   for(let i=0;i<st.length-1;i++)for(let k=0;k<4;k++){const a=i*5+k;idx.push(a,a+1,a+5,a+1,a+6,a+5);}   // wound to face up
    const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('aUV',new THREE.Float32BufferAttribute(uv,2));g.setIndex(idx);
    const m=new THREE.Mesh(g,riverM);m.userData.wireCat='water';m.userData.noWire=true;scene.add(m);}
   // the Pool
@@ -54,6 +54,11 @@ void main(){
    const p=g.attributes.position,uv=[];for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i);uv.push(x*P.rx,Math.min(1,Math.hypot(x,z)));}
    g.setAttribute('aUV',new THREE.Float32BufferAttribute(uv,2));
    const m=new THREE.Mesh(g,poolM);m.scale.set(P.rx*1.02,1,P.rz*1.02);m.position.set(P.x,P.y+0.1,P.z);m.userData.noWire=true;scene.add(m);}
+  // the pond by the Party Tree, from the films: small, still, with willows over it (country.js)
+  {const P=V.sites.pond;if(P){const g=new THREE.CircleGeometry(1,40);g.rotateX(-Math.PI/2);
+   const p=g.attributes.position,uv=[];for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i);uv.push(x*P.rx,Math.min(1,Math.hypot(x,z)));}
+   g.setAttribute('aUV',new THREE.Float32BufferAttribute(uv,2));
+   const m=new THREE.Mesh(g,poolM);m.scale.set(P.rx,1,P.rz);m.position.set(P.x,P.y+0.1,P.z);m.userData.noWire=true;scene.add(m);}}
   const nf=()=>api.nightF?api.nightF(api.hour()):0;
   animHooks.push(now=>{U.uT.value=now/1000;const n=nf();U.uLight.value=1-0.8*n;U.uSky.value.setRGB(0.7-0.6*n,0.8-0.65*n,0.88-0.65*n);});
   ctx.shireWater={stations:st};

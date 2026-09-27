@@ -75,10 +75,24 @@ export function country(api){
 
   // ---- the named trees ----
   const S=V.sites;
-  // on top of the Hill: one tree, alone, as Tolkien painted it
-  tree(S.hill.x,S.hill.z+6,16,1.0,'round',0x4f7f34);
-  // the Party Tree: great, spreading, in the middle of the field below the Hill
-  {const x=S.partyTree.x,z=S.partyTree.z;tree(x,z,24,1.35,'broad',0x4e7a32);for(let k=0;k<6;k++){const a=k/6*6.28;tree(x+Math.cos(a)*7,z+Math.sin(a)*7,19,0.9,'broad',0x55803a);}}
+  // Over Bag End: the great oak. Tolkien paints one tree on top of the Hill; the films put a great oak right above
+  // the door (on the set it was cut down near Matamata and rebuilt there with artificial leaves). It is both.
+  const special=[];
+  {const be=V.holes.find(h=>h.bagEnd);const fx=Math.sin(be.face),fz=Math.cos(be.face);
+   const x=be.x-fx*16,z=be.z-fz*16,y=groundH(x,z);
+   special.push({g:new THREE.CylinderGeometry(0.9,1.5,9,8).translate(0,4.5,0),c:0x5a4636,x,y:y-0.5,z});
+   for(let k=0;k<5;k++){const a=k/5*6.28+0.4;special.push({g:new THREE.CylinderGeometry(0.35,0.7,8,6).translate(0,4,0).rotateZ(0.9).rotateY(a),c:0x5a4636,x,y:y+6,z});}
+   for(let k=0;k<11;k++){const a=k/11*6.28,r=k<3?2:7+R()*4;special.push({g:new THREE.IcosahedronGeometry(1,1).scale(6+R()*2,3.6+R(),6+R()*2),c:[0x4a7430,0x557f36,0x3f6a2c][k%3],x:x+Math.cos(a)*r,y:y+12+R()*3+(k<3?4:0),z:z+Math.sin(a)*r});}}
+  // The Party Tree: in the films a great Monterey pine in the open field below the Hill, by a little lake - a tall
+  // bare trunk and a broad flat crown in layers, dark.
+  {const x=S.partyTree.x,z=S.partyTree.z,y=groundH(x,z);
+   special.push({g:new THREE.CylinderGeometry(1.0,1.6,16,8).translate(0,8,0),c:0x6a4a36,x,y:y-0.5,z});
+   for(let k=0;k<4;k++){const a=k*1.7;special.push({g:new THREE.CylinderGeometry(0.3,0.55,10,6).translate(0,5,0).rotateZ(1.05).rotateY(a),c:0x6a4a36,x,y:y+12,z});}
+   for(let k=0;k<14;k++){const a=k/14*6.28*1.7,r=3+R()*10;special.push({g:new THREE.IcosahedronGeometry(1,1).scale(7+R()*3,2.2+R(),7+R()*3),c:[0x2f5a2a,0x355f2c,0x2a5226][k%3],x:x+Math.cos(a)*r,y:y+17+R()*6,z:z+Math.sin(a)*r});}}
+  // willows round the pond
+  {const P=S.pond;for(let k=0;k<5;k++){const a=k/5*6.28+0.5;tree(P.x+Math.cos(a)*(P.rx+5),P.z+Math.sin(a)*(P.rz+5),9+R()*3,1.1,'round',0x8aa050,[Math.cos(a)*-0.12,Math.sin(a)*0.12]);}}
+  {const byC=new Map();for(const sp of special){const m=new THREE.Mesh(sp.g,null);m.position.set(sp.x,sp.y,sp.z);if(!byC.has(sp.c))byC.set(sp.c,[]);byC.get(sp.c).push(m);}
+   for(const [c,list] of byC){const g=api.mergeParts(list,new THREE.MeshLambertMaterial({color:c,flatShading:true}));if(g){g.castShadow=true;g.receiveShadow=true;g.userData.wireCat='veg';scene.add(g);}}}
   // the chestnut by the Grange, in flower
   {const x=S.grange.x+26,z=S.grange.z+22;tree(x,z,15,1.1,'round',0xdfe8d0);tree(x+4,z-3,13,0.9,'round',0x6f9a4a);}
 
@@ -105,6 +119,12 @@ export function country(api){
     const head=new THREE.BoxGeometry(0.34,0.36,0.3).translate(0.62,0.95,0);
     const beast=merge([body,head]);
     instanced(beast,0xe8e4d8,sheep,'sheep',false);instanced(beast,0x5a3a28,cows,'cows',false);
+    // haystacks, in the hay fields: rounded ricks in rows across the field
+    const hayAt=(x,z)=>{const i=Math.floor((x-F.x0)/F.w*c.width),j=Math.floor((z-F.z0)/F.d*c.height);if(i<0||j<0||i>=c.width||j>=c.height)return false;
+      const k=(j*c.width+i)*4,r=d[k],g=d[k+1],b=d[k+2];return d[k+3]!==255&&Math.abs(r-150)<22&&Math.abs(g-162)<22&&Math.abs(b-84)<22;};
+    const stacks=[];for(let k=0;k<9000&&stacks.length<500;k++){const x=F.x0+R2()*F.w,z=F.z0+R2()*F.d;if(!hayAt(x,z))continue;
+      stacks.push({x,y:groundH(x,z)-0.2,z,sx:2+R2()*0.6,sy:3+R2()*0.8,sz:2+R2()*0.6,ry:R2()*6,c:0xd4b460});}
+    instanced(new THREE.SphereGeometry(0.5,10,7,0,Math.PI*2,0,Math.PI*0.62).translate(0,0.18,0).scale(1,1.1,1),0xd4b460,stacks,'haystacks',true);
     ctx.details=Object.assign(ctx.details||{},{sheep:sheep.length,cows:cows.length});
   }catch(e){api.report&&api.report('livestock',e);}};
   ctx.details=Object.assign(ctx.details||{},{hedgeBlocks:hedges.length,trees:canopies.length+roundC.length+pops.length});

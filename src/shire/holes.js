@@ -59,6 +59,39 @@ export function holes(api){
       put(new THREE.BoxGeometry(wr*2,0.05,0.06),frame,x,wy,z,wa);put(new THREE.BoxGeometry(0.05,wr*2,0.06),frame,x,wy,z,wa);
       if(R()<0.6){const [bx,bz]=at(u,wf(u)+0.3);put(new THREE.BoxGeometry(wr*2.2,0.25,0.4),0x7a5a3a,bx,wy-wr-0.1,bz,wa);   // a window box, and what is in it
         for(let f=0;f<4;f++){const [px,pz]=at(u-wr+f*wr*0.66,wf(u)+0.36);put(new THREE.IcosahedronGeometry(0.08,0),FLOW[(f+k)%FLOW.length],px,wy-wr+0.1,pz,0);}}}
+    // ---- the films' dressing: a ring of dressed stone round the door, and on some a little roof over it ----
+    {const [x,z]=at(0,-0.04);put(new THREE.TorusGeometry(dr+0.32,0.24,5,16),0xbcb09a,x,dy,z,ry);}
+    if(h.porch&&!h.bagEnd){for(const sd of [-1,1]){const [px,pz]=at(sd*(dr+0.5),0.9);put(new THREE.BoxGeometry(0.14,2.1,0.14).translate(0,1.05,0),frame,px,y0,pz,ry);}
+      const [cx,cz]=at(0,0.55);const L=2*(dr+0.8),D=1.3,sh=new THREE.Shape();sh.moveTo(-L/2,0);sh.lineTo(L/2,0);sh.lineTo(0,0.8);sh.lineTo(-L/2,0);
+      const g=new THREE.ExtrudeGeometry(sh,{depth:D,bevelEnabled:false});g.translate(0,0,-D/2);put(g,0x6a4a3a,cx,y0+2.1,cz,ry);}
+    // ---- a letterbox by the gate, and a lamp on a post (lit after dark: life.js) ----
+    const GD0=(h.bagEnd?9:6)*s;
+    {const [x,z]=at(1.3,GD0+0.4);const g=groundH(x,z);put(new THREE.BoxGeometry(0.1,1.1,0.1).translate(0,0.55,0),frame,x,g,z,ry);put(new THREE.BoxGeometry(0.4,0.3,0.28),[0xb8423a,0x2f5f8a,0x2f6a34][Math.floor(R()*3)],x,g+1.2,z,ry);}
+    {const [x,z]=at(-1.3,GD0+0.3);const g=groundH(x,z);put(new THREE.BoxGeometry(0.1,1.7,0.1).translate(0,0.85,0),0x3a3a36,x,g,z,ry);
+     put(new THREE.BoxGeometry(0.3,0.36,0.3),0xf0d890,x,g+1.9,z,ry);(ctx.shireLamps=ctx.shireLamps||[]).push([x,g+1.9,z]);}
+    // ---- the vegetable garden: cabbages in rows, and pumpkins ----
+    if(h.veg){const side=R()<0.5?-1:1;for(let r2=0;r2<3;r2++)for(let c2=0;c2<5;c2++){const [x,z]=at(side*(1.6+c2*0.62),1.6+r2*0.9);
+      const pk=(c2+r2)%4===0;put(new THREE.SphereGeometry(pk?0.28:0.2,8,6).scale(1,pk?0.75:0.85,1),pk?0xe07a24:0x5f9a3a,x,groundH(x,z)+0.15,z,0);}}
+    // ---- and outside the door, something of whoever lives there ----
+    const P=(u,w)=>{const [x,z]=at(u,w);return [x,groundH(x,z),z];};
+    switch(h.prop){
+      case 'washing':{const [ax,ay,az]=P(-2.2,3.2),[bx,by,bz]=P(2.2,3.2);put(new THREE.BoxGeometry(0.08,1.9,0.08).translate(0,0.95,0),frame,ax,ay,az,ry);put(new THREE.BoxGeometry(0.08,1.9,0.08).translate(0,0.95,0),frame,bx,by,bz,ry);
+        const [mx,mz]=at(0,3.2);put(new THREE.BoxGeometry(4.4,0.02,0.02),0xdddddd,mx,(ay+by)/2+1.8,mz,ry);
+        for(let k=0;k<5;k++){const [cx,cz]=at(-1.7+k*0.85,3.2);put(new THREE.BoxGeometry(0.55,0.7,0.03).translate(0,-0.35,0),[0xe8e0d0,0x9ab0d0,0xd8b840,0xc05a4a,0x7aa05a][k],cx,(ay+by)/2+1.78,cz,ry);}break;}
+      case 'barrow':{const [x,y,z]=P(1.8,1.6);put(new THREE.BoxGeometry(0.7,0.35,1.0).translate(0,0.45,0),0x7a5a3a,x,y,z,ry+0.4);
+        for(let k=0;k<6;k++)put(new THREE.SphereGeometry(0.13,6,5),[0xe07a24,0xc8384a,0x7a9a3a][k%3],x+(R()-0.5)*0.4,y+0.72,z+(R()-0.5)*0.6,0);break;}
+      case 'beehives':for(let k=0;k<3;k++){const [x,y,z]=P(-2+k*0.9,2.2);put(new THREE.BoxGeometry(0.5,0.9,0.5).translate(0,0.45,0),0xf0ece0,x,y,z,ry);put(new THREE.BoxGeometry(0.6,0.08,0.6),0xa89a80,x,y+0.95,z,ry);}break;
+      case 'flour':for(let k=0;k<3;k++){const [x,y,z]=P(1.5+k*0.5,1.2);put(new THREE.SphereGeometry(0.28,8,6).scale(1,1.3,0.8),0xe8e0cc,x,y+0.3,z,ry);}break;
+      case 'cheese':{const [x,y,z]=P(-1.8,1.4);put(new THREE.BoxGeometry(1.1,0.7,0.6).translate(0,0.35,0),0x7a5a3a,x,y,z,ry);for(let k=0;k<3;k++)put(new THREE.CylinderGeometry(0.22,0.22,0.16,12),0xe8c860,x+(k-1)*0.34,y+0.8,z,0);break;}
+      case 'pumpkin':{const [x,y,z]=P(2,2);put(new THREE.SphereGeometry(0.9,12,8).scale(1,0.72,1),0xe0761c,x,y+0.55,z,0);break;}
+      case 'bench':{const [x,y,z]=P(-2.4,1.2);put(new THREE.BoxGeometry(1.5,0.1,0.45).translate(0,0.45,0),frame,x,y,z,ry);break;}
+      case 'easel':{const [x,y,z]=P(2,1.8);put(new THREE.BoxGeometry(0.06,1.6,0.06).translate(0,0.8,0),frame,x,y,z,ry+0.3);put(new THREE.BoxGeometry(0.7,0.55,0.04),0xf0ece0,x,y+1.2,z,ry+0.3);break;}
+      case 'woodpile':for(let k=0;k<9;k++){const [x,y,z]=P(-2.2+(k%3)*0.32,0.8);put(new THREE.CylinderGeometry(0.14,0.14,1.2,6).rotateX(Math.PI/2),0x8a6a48,x,y+0.15+Math.floor(k/3)*0.27,z,ry);}break;
+      case 'chess':{const [x,y,z]=P(1.9,1.4);put(new THREE.BoxGeometry(0.7,0.6,0.7).translate(0,0.3,0),0x7a5a3a,x,y,z,ry);put(new THREE.BoxGeometry(0.5,0.03,0.5),0xe8e0cc,x,y+0.62,z,ry);break;}
+      case 'flowers':for(let k=0;k<18;k++){const [x,y,z]=P((R()-0.5)*4,1+R()*3);put(new THREE.IcosahedronGeometry(0.1,0),FLOW[k%FLOW.length],x,y+0.25,z,0);}break;
+    }
+    if(h.sam)info.push({name:'No. 3 Bagshot Row',x:h.x,z:h.z,info:'The Gamgees\': Samwise\'s, and his Gaffer\'s before him. A yellow door, below Bag End on the Hill, and the best-kept flowers on the Row - Sam is a gardener.'});
+
     // ---- the chimneys, up the hill ----
     for(let k=0;k<(h.bagEnd?3:1);k++){const [x,z]=at((k-(h.bagEnd?1:0))*3.5*s,-4.5*s-k%2*1.5);const g=groundH(x,z);
       put(new THREE.BoxGeometry(0.55,1.5,0.55).translate(0,0.75,0),brick,x,g-0.2,z,ry);put(new THREE.CylinderGeometry(0.16,0.2,0.5,8).translate(0,1.55,0),0x8a4a36,x,g-0.2,z,0);

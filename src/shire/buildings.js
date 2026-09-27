@@ -69,13 +69,13 @@ export function buildings(api){
    roundWin(F,7,3.2,4.22,0.45,0);roundWin(F,11.5,3.2,4.22,0.45,0);
    // the wheel: on the river side, turning
    wheel=new THREE.Group();const wm=matOf(0x6a5038);
-   const rim=new THREE.Mesh(new THREE.TorusGeometry(2.6,0.14,6,24),wm);wheel.add(rim);
+   const rim=new THREE.Mesh(new THREE.TorusGeometry(3.3,0.16,6,28),wm);wheel.add(rim);
    const rim2=rim.clone();rim2.position.z=1.1;wheel.add(rim2);
    for(let k=0;k<12;k++){const a=k/12*Math.PI*2;
-     const sp=new THREE.Mesh(new THREE.BoxGeometry(0.12,2.6,0.12).translate(0,1.3,0),wm);sp.rotation.z=a;wheel.add(sp);
-     const pd=new THREE.Mesh(new THREE.BoxGeometry(0.7,0.08,1.2),wm);pd.position.set(Math.cos(a+Math.PI/2)*2.7,Math.sin(a+Math.PI/2)*2.7,0.55);pd.rotation.z=a;wheel.add(pd);}
+     const sp=new THREE.Mesh(new THREE.BoxGeometry(0.14,3.3,0.14).translate(0,1.65,0),wm);sp.rotation.z=a;wheel.add(sp);
+     const pd=new THREE.Mesh(new THREE.BoxGeometry(0.7,0.08,1.2),wm);pd.position.set(Math.cos(a+Math.PI/2)*3.4,Math.sin(a+Math.PI/2)*3.4,0.55);pd.rotation.z=a;wheel.add(pd);}
    wheel.add(new THREE.Mesh(new THREE.CylinderGeometry(0.28,0.28,1.8,10).rotateX(Math.PI/2).translate(0,0,0.55),matOf(0x3a3a3a)));
-   const [wx,wz]=F.P(-1.2,4.9);wheel.position.set(wx,S.y+1.9,wz);wheel.rotation.y=-S.turn;
+   const [wx,wz]=F.P(-1.2,4.9);wheel.position.set(wx,S.y+2.5,wz);wheel.rotation.y=-S.turn;
    scene.add(wheel);
    pick.push({x:S.x,z:S.z,r:14,info:{name:'The Mill',info:'The old mill on the Water at the foot of the Hill, with its wheel turning: a square tower of yellow stone under a red roof, round windows, and a lower wing beside it. Tolkien put it in the foreground of his painting of Hobbiton; it is the mill at Sarehole, where he lived as a boy.'}});}
 
@@ -97,7 +97,13 @@ export function buildings(api){
    for(const u of [-6,-2,2,6])roundWin(F,u,4.6,6.04,0.42,0);
    F.G(new THREE.CylinderGeometry(0.9,0.9,0.12,20).rotateX(Math.PI/2),0x2f6a34,0,1.1,6.05,0);
    // the sign: a green board on a bracket
-   F.B(0,4.6,7.2,0.12,0.12,2.4,TIMBER);F.B(0,3.4,8.2,1.5,1.1,0.1,0x2f7a3a);F.B(0,3.95,8.2,0.08,0.3,0.08,TIMBER);
+   // the sign: a board hung from a bracket, and on it a green dragon, rampant
+   F.B(0,4.6,7.2,0.12,0.12,2.4,TIMBER);F.B(0,3.2,8.2,1.7,1.3,0.1,0xe8dcc0);F.B(0,3.95,8.2,0.08,0.3,0.08,TIMBER);
+   for(const [du,dy,lu,lh] of [[0,3.55,0.9,0.28],[-0.3,3.85,0.3,0.4],[0.42,3.4,0.32,0.18],[-0.1,3.35,0.18,0.26],[0.22,3.33,0.18,0.24],[0.1,3.9,0.5,0.12]])F.B(du,dy,8.14,lu,lh,0.06,0x2f7a3a);
+   // lanterns either side of the door, and ivy up the walls
+   for(const u of [-1.6,1.6]){F.B(u,2.3,6.3,0.3,0.4,0.3,0xf0d890);const [lx,lz]=F.P(u,6.3);(ctx.shireLamps=ctx.shireLamps||[]).push([lx,S.y+2.5,lz]);}
+   for(let k=0;k<9;k++){const u=-10+R()*20;F.B(u,0,6.08,1.2+R()*1.6,2+R()*3,0.12,0x3f6a30);}
+   for(let k=0;k<3;k++){const u=-7+k*7;F.B(u,0,12,2.2,0.8,1.1,TIMBER);F.B(u,0,13.2,2.2,0.45,0.4,TIMBER);F.B(u,0,10.8,2.2,0.45,0.4,TIMBER);}
    for(const u of [-4,4])F.B(u,0,8.5,2.6,0.5,0.6,TIMBER);                                    // benches outside
    F.B(10.6,3.4,-2,1.2,6,1.2,0x9a5a42);{const [x,z]=F.P(10.6,-2);(ctx.shireSmoke=ctx.shireSmoke||[]).push([x,S.y+9.6,z]);}
    pick.push({x:S.x,z:S.z,r:16,info:{name:'The Green Dragon',info:'The inn at Bywater, on the Bywater Road a mile south-east of the bridge: the building nearest to Hobbiton, where the talk is of what happened to other people.'}});}
@@ -111,7 +117,17 @@ export function buildings(api){
    // across the river where it is: square to the line of the water there
    let k=0,best=1e9;for(let i=0;i<W.length;i++){const d=Math.hypot(W[i][0]-S.x,W[i][1]-S.z);if(d<best){best=d;k=i;}}
    const a=W[Math.max(0,k-1)],b=W[Math.min(W.length-1,k+1)],ang=Math.atan2(b[1]-a[1],b[0]-a[0])+Math.PI/2;
-   plankBridge(S.x,S.z,S.y+1.4,ang,16);
+   // the films' double-arched stone bridge: two arches and a pier in the stream, low walls for parapets
+   {const len=22,wid=3.6,deck=S.y+3.2,F=frame(S.x,S.z,deck,ang);
+    // the side elevation, with the two arch openings cut in it as holes, extruded the width of the bridge
+    const holeShape=cx=>{const hs=new THREE.Path();hs.moveTo(cx-4.2,-5);hs.lineTo(cx-4.2,-2.8);hs.absellipse(cx,-2.8,4.2,2.6,Math.PI,0,true);hs.lineTo(cx+4.2,-5);hs.lineTo(cx-4.2,-5);return hs;};
+    const sh2=new THREE.Shape();sh2.moveTo(-len/2,-5);sh2.lineTo(-len/2,0.6);sh2.quadraticCurveTo(0,1.6,len/2,0.6);sh2.lineTo(len/2,-5);sh2.lineTo(-len/2,-5);
+    sh2.holes.push(holeShape(-len/4-0.2),holeShape(len/4+0.2));
+    const g=new THREE.ExtrudeGeometry(sh2,{depth:wid,bevelEnabled:false,curveSegments:10});g.translate(0,0,-wid/2);
+    F.G(g,0xb8ae98,0,0,0);
+    // the parapets: a low wall along each side
+    for(const w of [-wid/2+0.2,wid/2-0.2]){const p2=new THREE.Shape();p2.moveTo(-len/2,0.6);p2.quadraticCurveTo(0,1.6,len/2,0.6);p2.lineTo(len/2,1.4);p2.quadraticCurveTo(0,2.4,-len/2,1.4);p2.lineTo(-len/2,0.6);
+      const pg=new THREE.ExtrudeGeometry(p2,{depth:0.4,bevelEnabled:false});pg.translate(0,0,-0.2);F.G(pg,0xa89e88,0,0,w);}}
    const F=frame(S.x,S.z,groundH(S.x+Math.cos(ang)*-10,S.z+Math.sin(ang)*-10),ang);
    F.B(-10,0,-2.2,0.18,2.4,0.18,TIMBER);F.B(-10.4,1.9,-2.2,1.2,0.3,0.08,0xe8e0c8);            // WEST
    pick.push({x:S.x,z:S.z,r:10,info:{name:'The bridge',info:'Over the Water at the foot of the Hill, by the mill: the way from Hobbiton to Bywater and the Road. A sign at the end of it points WEST.'}});}
