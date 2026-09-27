@@ -45,6 +45,11 @@ POOL = (1480.0, 640.0)
 PARTY = (-330.0, -250.0)                         # the Party Field, and the Party Tree in it
 POND = (-300.0, -205.0)                          # the little lake beside the Party Tree (from the films)
 PARTY_Y = 0.0                                    # set in main(), from the ground before levelling
+# The mill stands on the north bank a little below the bridge, its river wall in the water and its wheel in the
+# stream: 28 m down the reach from the bridge, and 7.9 m out from the middle of the river (the half-width there,
+# 4.6 m, plus 3.3 m: the 7 m tower stands 0.7 m into the water on its footing, and the wheel is in the current).
+_RL = math.hypot(380, 60)
+MILL = (28 * 380 / _RL + 7.9 * 60 / _RL, 28 * 60 / _RL - 7.9 * 380 / _RL)
 ROAD_Z = 1500.0                                  # the East Road, roughly
 
 # The Water, west to east: under the Hill, through Hobbiton by the bridge, round to Bywater Pool and on.
@@ -122,6 +127,10 @@ def terrain_height(x, z):
     wl = water_level(x)
     trough = wl + 2.2 + (h - wl - 2.2) * smooth(18, 180, d)
     h = min(h, trough) if d < 180 else h
+    # the mill yard: a level pad on the bank, a metre above the water
+    dm = math.hypot(x - MILL[0], z - MILL[1])
+    if dm < 28 and d > 4.0:
+        h = h + (wl + 0.9 - h) * smooth(28, 15, dm)
     if d < 5.5:
         h = min(h, wl - 1.4 * (1 - (d / 5.5) ** 2))
     # the party field is levelled, and the pond beside the Party Tree (the films have one) sunk into it
@@ -185,10 +194,12 @@ def cell(x, z):
     return _idx(UB, u), _idx(VB, v)
 
 
-KINDS = [("pasture", 0.4), ("pasture2", 0.12), ("hay", 0.14), ("wheat", 0.1), ("barley", 0.07), ("plough", 0.05),
-         ("roots", 0.06), ("fallow", 0.06)]
+# A working country: half of it under the plough or the scythe, the rest grazed. "veg" is a market garden,
+# strips of vegetables side by side, as on the Hill.
+KINDS = [("pasture", 0.26), ("pasture2", 0.08), ("hay", 0.14), ("wheat", 0.15), ("barley", 0.1), ("plough", 0.08),
+         ("roots", 0.08), ("veg", 0.06), ("fallow", 0.05)]
 COL = {"pasture": (106, 148, 64), "pasture2": (122, 158, 72), "hay": (150, 162, 84), "wheat": (196, 176, 96),
-       "barley": (176, 172, 108), "plough": (128, 102, 76), "roots": (90, 128, 60), "fallow": (138, 146, 90),
+       "barley": (176, 172, 108), "plough": (128, 102, 76), "roots": (90, 128, 60), "fallow": (138, 146, 90), "veg": (96, 140, 60),
        "meadow": (116, 156, 70),
        "garden": (96, 140, 60), "green": (112, 164, 72), "village": (120, 150, 80), "orchard": (110, 150, 66)}
 _kind = {}
@@ -351,7 +362,8 @@ def main():
 
     # ---------------------------------------------------------------- what stands above ground
     sites = {"hill": {"x": HILL[0], "z": HILL[1], "y": round(top, 1)}, "bridge": {"x": 0, "z": 0, "y": round(water_level(0), 2)},
-             "mill": {"x": 26, "z": -16, "y": round(water_level(26), 2), "turn": round(math.atan2(60, 380), 3)},
+             "mill": {"x": round(MILL[0], 2), "z": round(MILL[1], 2), "y": round(water_level(MILL[0]), 2),
+                      "turn": round(math.atan2(60, 380), 3)},
              "grange": {"x": -70, "z": -150, "y": round(H(-70, -150), 1)},
              "partyTree": {"x": PARTY[0], "z": PARTY[1], "y": round(PARTY_Y, 1)},
              "pond": {"x": POND[0], "z": POND[1], "rx": 26, "rz": 17, "y": round(PARTY_Y - 0.3, 2)},
@@ -380,18 +392,28 @@ def main():
         x = 1180 + t * 560
         z = 730 + 70 * math.sin(t * 3) + R.choice([-1, 1]) * R.uniform(24, 60)
         house(x, z, "house")
-    # farms out in the fields
+    # farms out in the fields: three close enough to Hobbiton to be seen from it, and the rest scattered. Each
+    # is a farmhouse and a barn at right angles to it round a yard (dressed in src/shire/buildings.js).
     farms = []
-    for k in range(9):
-        for _ in range(80):
-            x, z = R.uniform(-2300, 2300), R.uniform(-1800, 1800)
-            if zone(x, z) or any(math.hypot(x - f[0], z - f[1]) < 500 for f in farms) or abs(z - ROAD_Z) < 60:
+
+    def farm(x, z, rot):
+        n = len(houses)
+        house(x, z, "farmhouse", rot, 16, 8)
+        if len(houses) == n:
+            return False
+        house(x + math.cos(rot) * 26, z + math.sin(rot) * 26, "barn", rot + math.pi / 2, 22, 10)
+        farms.append((x, z, rot))
+        return True
+    for x, z in ((470, -400), (-600, 130), (560, 250)):
+        if not zone(x, z):
+            farm(x, z, ROT + R.choice([0, math.pi / 2]))
+    for k in range(22):
+        for _ in range(120):
+            x, z = R.uniform(-2350, 2350), R.uniform(-1850, 1850)
+            if zone(x, z) or any(math.hypot(x - f[0], z - f[1]) < 330 for f in farms) or abs(z - ROAD_Z) < 60:
                 continue
-            farms.append((x, z))
-            rot = R.uniform(0, math.tau)
-            house(x, z, "farmhouse", rot, 16, 8)
-            house(x + math.cos(rot) * 26, z + math.sin(rot) * 26, "barn", rot + math.pi / 2, 22, 10)
-            break
+            if farm(x, z, ROT + R.choice([0, math.pi / 2, math.pi, -math.pi / 2]) + R.uniform(-0.15, 0.15)):
+                break
 
     # ---------------------------------------------------------------- lanes and roads
     lanes = []
@@ -425,7 +447,7 @@ def main():
     lane([BRIDGE, (-200, -10), (-500, -20), (-800, -60), (-1000, -140), (-1100, -60), (-1300, 150), (-1500, 500),
           (-1700, 900), (-1900, ROAD_Z)], 3, "The lane west")
     # farm tracks
-    for fx, fz in farms:
+    for fx, fz, _ in farms:
         d, i, t = line_dist(fx, fz, er)
         tx = er[i][0] + (er[i + 1][0] - er[i][0]) * t
         tz = er[i][1] + (er[i + 1][1] - er[i][1]) * t
@@ -442,6 +464,7 @@ def main():
     img = Image.new("RGBA", (W, Hh))
     px = img.load()
     lane_near = lambda x, z: min(line_dist(x, z, L["p"])[0] - L["w"] for L in lanes) if lanes else 1e9
+    cells = {}                                   # every field in the box: [sum x, sum z, pixels, kind, row angle]
     for j in range(Hh):
         z = -HZ + (j + 0.5) * PX
         for i in range(W):
@@ -476,8 +499,77 @@ def main():
                 a = ang if k in ("wheat", "barley", "plough", "roots", "hay") else 0
                 shade = 0.9 + 0.2 * r2.random()
                 c = tuple(max(0, min(255, int(v * shade))) for v in c)
+                if k == "veg":                   # a market garden: strips, each its own crop
+                    st = int((uv(x, z)[0] + 5000) // 6) % 6
+                    c = [(90, 150, 60), (120, 100, 70), (140, 170, 80), (100, 130, 150), (80, 120, 50), (170, 150, 80)][st]
+                    a = 40
+                cc = cells.get(ci)
+                if cc is None:
+                    cc = cells[ci] = [0.0, 0.0, 0, k, ang]
+                cc[0] += x
+                cc[1] += z
+                cc[2] += 1
             px[i, j] = (c[0], c[1], c[2], a if a else 255)
     img.save(FIELDS, optimize=True)
+
+    # ---------------------------------------------------------------- the work in the fields
+    # What is being done in each field, placed here where the field's outline is known, so that nothing stands
+    # in a hedge or strays into the next field: stooks of sheaves on the wheat being harvested, and hobbits
+    # reaping; a plough team working up and down its field; a hay cart and hobbits pitching; scarecrows in the
+    # barley and the roots; hobbits hoeing the market gardens.
+    RW = random.Random(3019)
+    work = {"stooks": [], "teams": [], "carts": [], "scarecrows": [], "workers": []}
+
+    def inside(ci, x, z, m):
+        if abs(x) > HX - 20 or abs(z) > HZ - 20 or zone(x, z):
+            return False
+        return all(cell(x + dx, z + dz) == ci for dx, dz in ((0, 0), (m, 0), (-m, 0), (0, m), (0, -m)))
+    for ci in sorted(cells):
+        sx, sz, n, k, ang = cells[ci]
+        area = n * PX * PX
+        if area < 9000:
+            continue
+        cx, cz = sx / n, sz / n
+        if not inside(ci, cx, cz, 10) or lane_near(cx, cz) < 12:
+            continue
+        th = (ang - 50) / 200.0 * math.pi
+        rx, rz = -math.sin(th), math.cos(th)          # along the rows
+        ax, az = math.cos(th), math.sin(th)           # across them
+        rad = math.sqrt(area) * 0.42
+        if k == "wheat" and RW.random() < 0.6:
+            got = 0
+            for i in range(-12, 13):
+                for j in range(-8, 9):
+                    x, z = cx + rx * i * 9 + ax * j * 11, cz + rz * i * 9 + az * j * 11
+                    if math.hypot(x - cx, z - cz) < rad and inside(ci, x, z, 7) and got < 90:
+                        work["stooks"] += [round(x, 1), round(z, 1), round(th, 2)]
+                        got += 1
+            for w in range(RW.randint(2, 4)):
+                x, z = cx + ax * (rad * 0.5 + w * 2.5) + rx * RW.uniform(-20, 20), cz + az * (rad * 0.5 + w * 2.5) + rz * RW.uniform(-20, 20)
+                if inside(ci, x, z, 4):
+                    work["workers"] += [round(x, 1), round(z, 1), round(th, 2), 0]      # 0: reaping
+        elif k == "plough" or (k == "roots" and RW.random() < 0.25):
+            for L in (rad, rad * 0.8, rad * 0.6, rad * 0.45):
+                W2 = L * 0.6
+                if all(inside(ci, cx + rx * p * L + ax * q2 * W2, cz + rz * p * L + az * q2 * W2, 5)
+                       for p in (-1, 0, 1) for q2 in (-1, 0, 1)):
+                    work["teams"].append([round(cx, 1), round(cz, 1), round(th, 3), round(L, 1), round(W2, 1)])
+                    break
+        elif k == "hay" and RW.random() < 0.7:
+            x, z = cx + ax * rad * 0.3, cz + az * rad * 0.3
+            if inside(ci, x, z, 8):
+                work["carts"] += [round(x, 1), round(z, 1), round(th, 2)]
+                for w in range(2):
+                    work["workers"] += [round(x + ax * (3 + w * 2.2), 1), round(z + az * (3 + w * 2.2), 1), round(th, 2), 1]   # 1: pitching
+        elif k in ("barley", "roots") and RW.random() < 0.5:
+            x, z = cx + rx * RW.uniform(-20, 20), cz + rz * RW.uniform(-20, 20)
+            if inside(ci, x, z, 4):
+                work["scarecrows"] += [round(x, 1), round(z, 1), round(RW.uniform(0, 6.28), 2)]
+        elif k == "veg":
+            for w in range(RW.randint(2, 5)):
+                x, z = cx + RW.uniform(-rad, rad) * 0.6, cz + RW.uniform(-rad, rad) * 0.6
+                if inside(ci, x, z, 3):
+                    work["workers"] += [round(x, 1), round(z, 1), round(RW.uniform(0, 6.28), 2), 2]   # 2: hoeing
 
     # the hedges: every line of constant u and v, in pieces, with some pieces left out so fields join up
     hedges = []
@@ -562,7 +654,7 @@ def main():
     water = [[round(x, 1), round(z, 1), round(water_level(x), 2), round(4.5 + 2 * math.sin(x / 400.0), 1)] for x, z in WATER]
     plan = {"_": "the plan of Hobbiton and Bywater, written by tools/make-shire.py: read by src/shire/",
             "water": water, "sites": sites, "holes": holes, "houses": houses, "lanes": lanes, "hedges": hedges,
-            "orchards": orchards, "copses": copses, "farms": [[round(x, 1), round(z, 1)] for x, z in farms],
+            "orchards": orchards, "copses": copses, "farms": [[round(x, 1), round(z, 1), round(r, 3)] for x, z, r in farms], "work": work,
             "fields": {"image": "data/cities/shire-fields.png", "x0": -HX, "z0": -HZ, "w": 2 * HX, "d": 2 * HZ}}
     for k in ("water", "lake", "islands", "marina", "beach", "pier", "waterways", "areas", "rail", "stations",
               "buildings", "trees", "roads"):
@@ -574,7 +666,9 @@ def main():
     print(f"wrote {OUT}: {os.path.getsize(OUT)/1e6:.1f} MB; terrain {t['nx']}x{t['nz']} at {STEP} m, "
           f"{min(t['h'])/10:.0f} to {max(t['h'])/10:.0f} m")
     print(f"wrote {PLAN}: {os.path.getsize(PLAN)/1e3:.0f} KB; {len(holes)} holes, {len(houses)} houses, "
-          f"{len(lanes)} lanes, {len(hedges)} hedges, {len(orchards)} orchards, {len(copses)} copses")
+          f"{len(lanes)} lanes, {len(hedges)} hedges, {len(orchards)} orchards, {len(copses)} copses, {len(farms)} farms")
+    print(f"  work: {len(work['stooks']) // 3} stooks, {len(work['teams'])} plough teams, {len(work['carts']) // 3} hay carts, "
+          f"{len(work['scarecrows']) // 3} scarecrows, {len(work['workers']) // 4} hobbits at work")
     print(f"wrote {FIELDS}: {os.path.getsize(FIELDS)/1e3:.0f} KB, {W}x{Hh}")
 
 

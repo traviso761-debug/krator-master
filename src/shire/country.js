@@ -33,7 +33,9 @@ export function country(api){
 
   const TREE=[0x4e7a34,0x5a8438,0x466f30,0x68903e,0x3f6a2c,0x6f8f3a,0x557f36];
   const canopies=[],trunks=[],roundC=[],pops=[],hedges=[],hedgeLumps=[];
-  const tree=(x,z,h,wk,kind,c,lean)=>{const y=groundH(x,z),w=h*wk;const ry=R()*6.28,rx=lean?lean[0]:0,rz=lean?lean[1]:0;
+  // nothing grows in the Pool or the pond: the alders along the Water would otherwise march straight through it
+  const wet=(x,z,m)=>[V.sites.pool,V.sites.pond].some(P=>P&&((x-P.x)/(P.rx+m))**2+((z-P.z)/(P.rz+m))**2<1);
+  const tree=(x,z,h,wk,kind,c,lean)=>{if(wet(x,z,2))return;const y=groundH(x,z),w=h*wk;const ry=R()*6.28,rx=lean?lean[0]:0,rz=lean?lean[1]:0;
     const t={x,y:y-0.2,z,sx:w,sy:h,sz:w,ry,rx,rz,c:c!==undefined?c:TREE[Math.floor(R()*TREE.length)]};
     (kind==='round'?roundC:kind==='poplar'?pops:canopies).push(t);trunks.push({x,y:y-0.2,z,sx:w,sy:h,sz:w,ry,rx,rz,c:0x5a4a38});};
 
@@ -42,7 +44,7 @@ export function country(api){
   for(const h of V.hedges){
     for(let i=0;i+1<h.length;i++){const [ax,az]=h[i],[bx,bz]=h[i+1],L=Math.hypot(bx-ax,bz-az);if(L<0.5)continue;
       const n=Math.max(1,Math.round(L/6)),ang=Math.atan2(bz-az,bx-ax);
-      for(let k=0;k<n;k++){const t=(k+0.5)/n,x=ax+(bx-ax)*t,z=az+(bz-az)*t,y=groundH(x,z);
+      for(let k=0;k<n;k++){const t=(k+0.5)/n,x=ax+(bx-ax)*t,z=az+(bz-az)*t,y=groundH(x,z);if(wet(x,z,1))continue;
         const hh=1.9+R()*0.9,c=HEDGE[Math.floor(R()*4)];
         hedges.push({x,y:y-0.3,z,sx:L/n+0.8,sy:hh,sz:1.8+R()*0.5,ry:-ang,c});
         if(R()<0.35)hedgeLumps.push({x:x+(R()-0.5)*3,y:y+hh-0.6,z:z+(R()-0.5)*1.2,sx:2.4+R()*1.6,sy:1.6+R()*1,sz:2+R(),ry:R()*6,c});
@@ -60,7 +62,7 @@ export function country(api){
   // ---- along the Water: alders and willows, leaning out over it ----
   const W=V.water;
   for(let i=0;i+1<W.length;i++){const a=W[i],b=W[i+1],L=Math.hypot(b[0]-a[0],b[1]-a[1]);let dx=(b[0]-a[0])/L,dz=(b[1]-a[1])/L;
-    for(let s=R()*10;s<L;s+=7+R()*12){const t=s/L,x=a[0]+(b[0]-a[0])*t,z=a[1]+(b[1]-a[1])*t;if(Math.hypot(x-V.sites.bridge.x,z-V.sites.bridge.z)<30)continue;
+    for(let s=R()*10;s<L;s+=7+R()*12){const t=s/L,x=a[0]+(b[0]-a[0])*t,z=a[1]+(b[1]-a[1])*t;if(Math.hypot(x-V.sites.bridge.x,z-V.sites.bridge.z)<30||Math.hypot(x-V.sites.mill.x,z-V.sites.mill.z)<34)continue;
       const sd=R()<0.5?-1:1,off=a[3]+3+R()*4,px=x-dz*sd*off,pz=z+dx*sd*off;
       // lean towards the water: tip about the axis along the bank
       const lean=0.12+R()*0.18;tree(px,pz,8+R()*6,0.7,R()<0.3?'round':'broad',R()<0.4?0x6f8a48:0x5a7a3a,[dx*sd*lean,-dz*sd*lean]);}}
@@ -68,7 +70,7 @@ export function country(api){
   // ---- the avenue along the Bywater Road ----
   const bw=V.lanes.find(l=>l.n==='The Bywater Road');
   if(bw){const p=bw.p;for(let i=0;i+1<p.length;i++){const [ax,az]=p[i],[bx,bz]=p[i+1],L=Math.hypot(bx-ax,bz-az);if(ax>1150)break;
-    for(let s=10;s<L;s+=16){const t=s/L,x=ax+(bx-ax)*t,z=az+(bz-az)*t,nx=-(bz-az)/L,nz=(bx-ax)/L;for(const sd of [-1,1])tree(x+nx*sd*7,z+nz*sd*7,13+R()*3,0.62,'round',0x55803a);}}}
+    for(let s=10;s<L;s+=16){const t=s/L,x=ax+(bx-ax)*t,z=az+(bz-az)*t,nx=-(bz-az)/L,nz=(bx-ax)/L;for(const sd of [-1,1]){const tx=x+nx*sd*7,tz=z+nz*sd*7;if(Math.hypot(tx-V.sites.mill.x,tz-V.sites.mill.z)>30)tree(tx,tz,13+R()*3,0.62,'round',0x55803a);}}}}
 
   // ---- poplars by the farms ----
   for(const [fx,fz] of V.farms)for(let k=0;k<5;k++){const a=R()*6.28;tree(fx+Math.cos(a)*(30+R()*25),fz+Math.sin(a)*(30+R()*25),16+R()*6,0.3,'poplar',0x4a7434);}
