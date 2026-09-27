@@ -1,5 +1,8 @@
 /* ==== 1. CORE ==== */
 
+/* what moves: each stage that animates pushes a function of the time here, and the one render loop (71) runs them */
+var animHooks = [];
+
 var SEED = 20260914;
 var seed = SEED;
 function rnd(){ seed = (seed*16807) % 2147483647; return (seed-1)/2147483646; }

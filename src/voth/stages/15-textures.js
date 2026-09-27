@@ -1,4 +1,5 @@
 /* ==== 12b. TEXTURES ==== */
+await stage('textures');   /* the loading screen (src/core/diag.js) gets a frame to say so */
 reseed(470001);
 
 var TEXSZ = FAST ? 128 : 256;

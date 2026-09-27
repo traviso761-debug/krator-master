@@ -27,7 +27,12 @@ are listed in §7. File:line references are as of this date.
 > core, and its townsfolk draw on a stream of their own. Two things stay: Iziz's wireframe, which does more than
 > `core/wire.js` (life on its own layers, clay and district colours, a terrain lattice) and would need those
 > added to core first; and `section()` round the UI tail, which needs the render loop started before the UI
-> stages rather than at the end of them. Phases 6-8 are not started.
+> stages rather than at the end of them. Phase 6 is done: Voth boots through
+> `src/voth/main.js` with `core/diag`'s error box and staged loading (the build yields at nine stages), its five
+> loops are one (`runLoop`, the stages push hooks), and it uses the shell, the controls, the address and the
+> wireframe; its golden holds. §6 step 4 (the palette and budgets to a JSON file) is deliberately not done: they
+> are commented tables of hex colours, and JSON would lose both the comments and the hex. Phases 7-8 are not
+> started.
 
 There is no physics engine as such. The nearest things are the flight model (`src/core/flight.js`, kinematic,
 no stall), the Backrooms' circle-against-walls collision (`src/backrooms/level.js:409`), the City's

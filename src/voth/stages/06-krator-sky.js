@@ -740,6 +740,6 @@ window._sky = {
     SKY.subPlanetLonDeg = keepLon; SKY.giantAzOverride = keepAz; SKY.giantAltOverride = keepAlt;
     skyGiantGeometry();
   })();
-  if(bad.length && typeof ERR === 'function') ERR('SKY SIGN CHECK FAILED:\n  ' + bad.join('\n  '));
+  if(bad.length) report('sky sign check', new Error(bad.join('\n  ')));
   window._skySignCheck = bad.length ? bad : 'ok';
 })();

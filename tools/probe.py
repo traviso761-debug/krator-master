@@ -28,9 +28,11 @@ import urllib.parse
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 PROBE = r"""<script>window.__probeErrs=[];addEventListener('error',e=>window.__probeErrs.push((e.message||String(e))+' @'+(e.filename||'').split('/').pop()+':'+e.lineno));</script>
-<script>(function(){let rd=null,sc=null,frames=[],last=0;
+<script>// a page may draw a frame in more than one render call (Voth: the sky, then the city), so the shot is taken
+// once the task that drew it is over, still before the buffer is cleared
+(function(){let rd=null,sc=null,frames=[],last=0;
 let wantShot=false,shotTaken=false;
-if(window.THREE){const W=THREE.WebGLRenderer;THREE.WebGLRenderer=function(o){const r=new W(o);rd=r;const R0=r.render;r.render=function(scene,cam){sc=scene;window.__probeCam=cam;const t=performance.now();if(last)frames.push(t-last);last=t;const out=R0.call(r,scene,cam);if(wantShot){wantShot=false;shotTaken=true;try{const u=r.domElement.toDataURL('image/jpeg',0.8);fetch('http://127.0.0.1:SHOTPORT/shot',{method:'POST',mode:'no-cors',body:u});}catch(e){}}return out;};return r;};}
+if(window.THREE){const W=THREE.WebGLRenderer;THREE.WebGLRenderer=function(o){const r=new W(o);rd=r;const R0=r.render;r.render=function(scene,cam){sc=scene;window.__probeCam=cam;const t=performance.now();if(last)frames.push(t-last);last=t;const out=R0.call(r,scene,cam);if(wantShot){wantShot=false;shotTaken=true;queueMicrotask(()=>{try{const u=r.domElement.toDataURL('image/jpeg',0.8);fetch('http://127.0.0.1:SHOTPORT/shot',{method:'POST',mode:'no-cors',body:u});}catch(e){}});}return out;};return r;};}
 // Ready: the loading overlay is gone (#loading removed, or Voth's #load hidden) and, on a 3D page, 30 frames have
 // been drawn since and 1.2 s has passed. WAIT is only the ceiling; a page that never gets there is reported as timed out.
 const t0=performance.now();let readyAt=0,framesAt=0;

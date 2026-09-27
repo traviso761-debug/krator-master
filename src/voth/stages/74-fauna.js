@@ -153,10 +153,8 @@ updateAmbientFauna(0);
 
 (function faunaLoop(){
   var last = performance.now();
-  function tick(now){
-    requestAnimationFrame(tick);
+  animHooks.push(function(now){
     var dt = Math.min(0.06, (now-last)/1000); last = now;
     updateAmbientFauna(dt);
-  }
-  requestAnimationFrame(tick);
+  });
 })();

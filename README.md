@@ -453,9 +453,12 @@ original section banners, in the original order and sharing one scope as they al
 `src/voth/build.js` by `tools/build-page.py` like the engine and Iziz. The build process's notes to itself
 (632 KB of comments about files that do not exist) were dropped; short explanations stayed.
 
-Nothing it does has changed: `tests/golden/voth-default.json` was taken from the old page and the new one
-matches it, with the same draw calls and triangles. It still has its own camera, UI and render loops; bringing
-it onto the shared shell is ARCHITECTURE.md §6 steps 3-4.
+Nothing it builds has changed: `tests/golden/voth-default.json` was taken from the old page and the new one
+matches it, with the same draw calls and triangles. It now runs on the site's shared core like the other pages
+(`src/voth/main.js`): the loading screen that says what it is doing while it builds (it used to sit on one
+line for the whole of it), the error box, one render loop instead of five, the site's controls, an address
+that keeps the view (`#v=`, `#view=<name>`), context loss, and the wireframe. Its look (`css/voth.css`) and
+its panel of tools - the day slider, weather, the inspector, the path viewer, the polygon marker - are its own.
 
 ### `/tongue`: The Izani Tongue
 

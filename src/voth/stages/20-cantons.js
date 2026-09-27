@@ -1,4 +1,5 @@
 /* ==== 11. CANTONS ==== */
+await stage('cantons');   /* the loading screen (src/core/diag.js) gets a frame to say so */
 reseed(500001);
 
 var CANTON_TOPS = {};
