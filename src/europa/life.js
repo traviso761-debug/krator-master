@@ -14,6 +14,7 @@ export function life(api){
   const gold=new THREE.MeshPhongMaterial({color:0xd8b45a,specular:0xfff0c0,shininess:80,flatShading:true});
   const warm=new THREE.MeshBasicMaterial({color:0xffca7a});
   const cold=new THREE.MeshBasicMaterial({color:0x9fd4ff});
+  ctx.europaLights={warm,cold};          // the radiation alert turns them red (events.js)
   const trackM=new THREE.MeshLambertMaterial({color:0xb4c2cc,flatShading:true});
   
   const statics=[],rovers=[],lights=[],vents=[];

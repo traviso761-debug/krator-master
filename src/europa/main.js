@@ -9,6 +9,8 @@ import {landmarks} from './landmarks.js';
 import {sky} from './sky.js';
 import {life} from './life.js';
 import {ice} from './ice.js';
+import {details} from './details.js';
+import {events} from './events.js';
 installErrorHandlers();window.LOAD=LOAD;
 configureLoading({
   // What you read while it builds. See src/core/diag.js: these are shuffled and one of them is
@@ -28,10 +30,13 @@ configureLoading({
     'A plume in a vacuum does not billow. Every grain goes up on its own arc and falls back as frost.',
     'Gravity here is an eighth of Earth\'s. What the bore throws up takes most of a minute to come down.',
     'Jupiter has phases. It is full at local midnight and new at noon, and its light on the ice goes with it.',
+    'Nobody walks at an eighth of a gravity. They lope, in long low bounds.',
+    'The dishes follow Earth, which from here is never more than twelve degrees from the sun.',
+    'Jupiter\'s tide flexes the ice every three and a half days, and it cracks.',
   ],
-  prefix:'making orbit… ',labels:{'map-data':'reading the ice',ground:'laying the plains',buildings:'breaking the chaos',details:'',landmarks:'raising the derrick',el:'',traffic:'',ice:'breaking the chaos',ui:'lighting the site'}});
+  prefix:'making orbit… ',labels:{'map-data':'reading the ice',ground:'laying the plains',buildings:'breaking the chaos',details:'',landmarks:'raising the derrick',el:'',traffic:'',ice:'breaking the chaos',details:'suiting up',events:'waiting for something to happen',ui:'lighting the site'}});
 const ctx=window._iz={defaultCity:'europa',models:[landmarks],
-  extras:[{name:'sky',fn:sky},{name:'life',fn:life},{name:'ice',fn:ice}]};
+  extras:[{name:'sky',fn:sky},{name:'life',fn:life},{name:'ice',fn:ice},{name:'details',fn:details},{name:'events',fn:events}]};
 // the ice's features (the lineae, the rafts of the chaos, the aprons) come in their own file, fetched before the
 // build so that the extras can use them synchronously
 boot(()=>fetch('data/cities/europa-ice.json').then(r=>{if(!r.ok)throw new Error('europa-ice.json: HTTP '+r.status);return r.json();})

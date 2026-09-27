@@ -219,24 +219,24 @@ def main():
     nblock = len(rafts) + len(rubble) + len(shards)
 
     # ---- the station's own lesser buildings ----
-    # Everything that is not the habitat, the derrick, the pads or the array: stores, the shop, the tank
-    # farm, the garage. All of it low, all of it on legs to keep it off the ice, all of it the same grey.
+    # Everything that is not the habitat, the derrick, the pads or the array: pressurised modules (the stores,
+    # the shop, the labs), the tank farm, the garage. All of it on legs to keep it off the ice. They are built
+    # by src/europa/details.js from this list, [x, z, length, width, turn, kind], not as buildings.
+    station = []
     built = 0
     for k in range(26):
         a = k / 26 * math.tau + 0.2
         d = 150 + (k % 4) * 46
         x, z = math.cos(a) * d, math.sin(a) * d
-        w = R.uniform(14, 34)
-        put(rect(x, z, w, R.uniform(10, 20), a), R.uniform(5, 11), "industrial", "#7f8890", minh=1.6)
+        station.append([round(x, 1), round(z, 1), round(R.uniform(14, 34), 1), round(R.uniform(8, 12), 1), round(a, 3),
+                        "lab" if k % 5 == 0 else "store"])
         built += 1
     for k in range(9):                                  # the tank farm
         a = k / 9 * math.tau
-        x, z = -260 + math.cos(a) * 70, -80 + math.sin(a) * 70
-        put(ring_poly(x, z, 11, 14), R.uniform(10, 16), "industrial", "#98a2aa")
+        station.append([round(-260 + math.cos(a) * 70, 1), round(-80 + math.sin(a) * 70, 1), 11.0, round(R.uniform(10, 16), 1), 0, "tank"])
         built += 1
-    for k in range(7):                                  # the garage, and the rovers parked outside it
-        put(rect(240 + k * 22, 190, 18, 11, 0.2), 6, "industrial", "#6f7880")
-        built += 1
+    station.append([240 + 3 * 22, 190, 150, 22, 0.2, "garage"])   # the garage, and the rovers parked outside it
+    built += 1
     out["buildings"] = buildings
 
     out["trees"] = []
@@ -249,7 +249,7 @@ def main():
            "sites": {"station": [0.0, 0.0, 700.0], "pads": [PADS[0], PADS[1], 620.0], "bore": [BORE[0], BORE[1], 360.0],
                      "array": [ARRAY[0], ARRAY[1], 400.0], "chaos": [CHAOS[0], CHAOS[1], 2600.0]},
            "aprons": [[0.0, 0.0, 320.0], [PADS[0], PADS[1], 500.0], [BORE[0], BORE[1], 260.0], [ARRAY[0], ARRAY[1], 320.0]],
-           "rafts": rafts, "rubble": rubble, "shards": shards}
+           "rafts": rafts, "rubble": rubble, "shards": shards, "station": station}
     with open(ICEF, "w") as f:
         json.dump(ice, f, separators=(",", ":"))
     t = out["terrain"]
