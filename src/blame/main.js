@@ -22,6 +22,8 @@
 import {report,LOAD,configureLoading,installErrorHandlers,stage,section} from '../core/diag.js';
 import {installMenagerie} from '../core/menagerie.js';
 import {createWire,installWireUI} from '../core/wire.js';
+import {createRenderer,trackResize,installContextLoss,mkBtn as mkBtn0,runHooks,runLoop,finishLoading,boot} from '../core/shell.js';
+import {readHash,writeHash as mergeHash} from '../core/hash.js';
 import {makeMats,cloudTexture,dotTexture,ribTexture} from './mats.js';
 import {buildCity} from './city.js';
 import {createSphere} from './sphere.js';
@@ -65,18 +67,16 @@ async function build(){
   const THREE=window.THREE,V3=THREE.Vector3;
   await stage('config');
   const C=await getJSON('data/cities/blame.json');
-  const Q=new URLSearchParams(location.search),HASH=new URLSearchParams(location.hash.slice(1));
+  const Q=new URLSearchParams(location.search),HASH=readHash();
   if(+Q.get('seed'))C.seed=+Q.get('seed');
   if(C.seed!==1997)document.getElementById('seedtag').textContent='seed '+C.seed;
 
   // ---- the renderer ----
   // A logarithmic depth buffer, because the same frame can hold Killy's hand at 30 cm and the far wall of the
   // Plain at 40 km; a linear one runs out of precision about a million times too early.
-  const renderer=new THREE.WebGLRenderer({antialias:true,logarithmicDepthBuffer:true,powerPreference:'high-performance'});
-  renderer.setPixelRatio(Math.min(devicePixelRatio,1.75));
-  renderer.setSize(innerWidth,innerHeight);
+  const renderer=createRenderer(THREE,{pixelCap:1.75,logDepth:true});
   renderer.localClippingEnabled=true;
-  document.body.appendChild(renderer.domElement);
+  installContextLoss(renderer);
   const scene=new THREE.Scene();
   scene.fog=new THREE.FogExp2(0x9a9ea3,0.0001);
   // light from above, grey from below: inside the City there is no sun, only the glow of the ceiling and what
@@ -267,8 +267,7 @@ async function build(){
   // ---- the panels ----
   await stage('ui');
   const ui=document.getElementById('ui'),views=document.getElementById('views'),card=document.getElementById('card');
-  const mkBtn=(label,parent,fn)=>{const b=document.createElement('button');b.type='button';b.textContent=label;
-    b.onclick=e=>{e.stopPropagation();fn();};parent.appendChild(b);return b;};
+  const mkBtn=(label,parent,fn)=>mkBtn0(label,parent,()=>fn(),{stop:true});
   const vb=mkBtn('Views',ui,()=>{const o=!views.classList.contains('open');views.classList.toggle('open',o);vb.setAttribute('aria-expanded',String(o));
     const m=document.getElementById('menagerie');if(o&&m)m.classList.remove('open');});
   vb.setAttribute('aria-expanded','false');
@@ -421,11 +420,10 @@ async function build(){
 
   // ---- the address ----
   function writeHash(){
-    const s=cur(),h=new URLSearchParams();
-    h.set('at',[S.mode,s.t.x.toFixed(1),s.t.y.toFixed(1),s.t.z.toFixed(1),s.d.toPrecision(5),s.yaw.toFixed(3),s.pitch.toFixed(3)].join(','));
-    if(S.section)h.set('cut',S.axis+','+S.at.toFixed(4)+','+S.side);
-    if(!S.find)h.set('find','0');
-    history.replaceState(null,'','#'+h.toString().replace(/%2C/g,','));
+    // #view= and #tour only say how the page was opened: once the camera has moved they would take it back
+    const s=cur();
+    mergeHash({at:[S.mode,s.t.x.toFixed(1),s.t.y.toFixed(1),s.t.z.toFixed(1),s.d.toPrecision(5),s.yaw.toFixed(3),s.pitch.toFixed(3)].join(','),
+      cut:S.section?S.axis+','+S.at.toFixed(4)+','+S.side:null,find:S.find?null:'0',view:null,tour:null},['at','cut','find']);
   }
   {const at=(HASH.get('at')||'').split(',');
    const n=at.slice(1).map(Number);
@@ -438,75 +436,68 @@ async function build(){
    if(HASH.has('tour'))setTimeout(startTour,600);}
   syncUI();
 
-  addEventListener('resize',()=>{for(const c of [camera,scam]){c.aspect=innerWidth/innerHeight;c.updateProjectionMatrix();}
-    renderer.setSize(innerWidth,innerHeight);sizeOverlay();});
-  const loading=document.getElementById('loading');if(loading)loading.remove();
-  const hint=document.getElementById('hint');hint.classList.remove('gone');setTimeout(()=>hint.classList.add('gone'),15000);
+  trackResize(renderer,[camera,scam],sizeOverlay);
+  finishLoading({hintMs:15000});
 
   // ---- the frame ----
   const fogC=new THREE.Color(),fogT=new THREE.Color(),OUT=new THREE.Color(0x0c0d0f),SLAB=new THREE.Color(0x1b1c1e);
-  let fogD=0.0001,last=performance.now(),hashAt=0;
-  (function frame(){
-    requestAnimationFrame(frame);
-    try{
-      const now=performance.now(),dt=Math.min(0.05,(now-last)/1000);last=now;
-      if(anim)step(now);
-      else if(keys.size&&S.fly&&S.mode==='city'){const s=cur(),sp=S.flySpeed*(keys.has('shift')?5:1)*dt,t0=s.t.clone(),c0=s.t.clone().add(offs(s,new V3())),f3=offs(s,ov3).normalize().negate();
-        const rx=-f3.z,rz=f3.x,rl=Math.hypot(rx,rz)||1;
-        if(keys.has('w'))s.t.addScaledVector(f3,sp);if(keys.has('s'))s.t.addScaledVector(f3,-sp);
-        if(keys.has('d')){s.t.x+=rx/rl*sp;s.t.z+=rz/rl*sp;}if(keys.has('a')){s.t.x-=rx/rl*sp;s.t.z-=rz/rl*sp;}
-        if(keys.has('e'))s.t.y+=sp;if(keys.has('q'))s.t.y-=sp;
-        // flying does not go through the Megastructure: a move that would end inside it is not made
-        if(!solidAt(c0)&&solidAt(s.t.clone().add(offs(s,new V3()))))s.t.copy(t0);}
-      else if(keys.size){const s=cur(),sp=s.d*(keys.has('shift')?2.4:0.7)*dt;
-        const fx=-Math.sin(s.yaw),fz=-Math.cos(s.yaw);
-        if(keys.has('w')){s.t.x+=fx*sp;s.t.z+=fz*sp;}if(keys.has('s')){s.t.x-=fx*sp;s.t.z-=fz*sp;}
-        if(keys.has('a')){s.t.x+=fz*sp;s.t.z-=fx*sp;}if(keys.has('d')){s.t.x-=fz*sp;s.t.z+=fx*sp;}
-        if(keys.has('e'))s.t.y+=sp;if(keys.has('q'))s.t.y-=sp;}
-      g2.clearRect(0,0,ow,oh);
-      if(S.mode==='city'){
-        place(camera,ctl.city);
-        if(S.section)sectionPlane();
-        if(!S.fly)unbury(camera,ctl.city);
-        camera.updateMatrixWorld();
-        // the air: the fog of whichever layer the camera is in, eased so that crossing a slab is not a cut
-        const p=camera.position;
-        if(S.section)sectionPlane();
-        // inside the block, unless the section has taken away the half you are in - then you are outside it
-        const inBox=Math.abs(p.x)<HALF&&Math.abs(p.z)<HALF&&p.y>0&&p.y<TOP,inB=inBox&&(!S.section||plane.distanceToPoint(p)>=0);
-        let tgt=0.0000035;fogT.copy(OUT);
-        if(inB){const l=city.layerAt(p.y);if(l&&l.kind==='layer'){fogT.set(l.fog[0]);tgt=l.fog[1];}
-          else if(l&&holeAt(p)){
-            // in a hole through a slab - the great shaft, or a light well: the air of whichever layer is nearer
-            const i=city.stack.indexOf(l),n=city.stack[p.y>(l.y0+l.y1)/2?i+1:i-1]||city.stack[i-1];fogT.set(n.fog[0]);tgt=n.fog[1];}
-          else{fogT.copy(SLAB);tgt=0.0004;}}
-        if(S.section)tgt*=0.3;
-        const k=1-Math.exp(-dt*5);fogC.lerp(fogT,k);fogD+=(tgt-fogD)*k;
-        scene.fog.color.copy(fogC);scene.fog.density=fogD;renderer.setClearColor(fogC);
-        city.air.visible=!inB;city.ghosts.visible=!inB;for(const m of city.air.children)if(m.userData.veil)m.visible=!S.section;
-        mats.U.uCutOn.value=S.section?1:0;mats.U.uCut.value.set(plane.normal.x,plane.normal.y,plane.normal.z,plane.constant);
-        renderer.clippingPlanes=S.section?[plane]:[];
-        city.builders.update(now);city.figures.userData.update(now/1000);
-        for(const fn of animHooks){try{fn(now);}catch(e){if(!fn._failed){fn._failed=true;report('update',e);}}}
-        drawCity();
-        renderer.render(scene,camera);
-        const l=inB?city.layerAt(p.y):null,d=p.distanceTo(new V3(K.x,K.y+0.9,K.z)),kh=1.75/(2*d*Math.tan(camera.fov*Math.PI/360))*oh;
-        const blockOff=Math.round((p.y-TOP/2)/city.STEP);
-        const inShaft=inB&&city.layerAt(p.y)&&city.layerAt(p.y).kind==='slab'&&holeAt(p);
-        const where=inShaft?(Math.hypot(p.x-C.shaft.x,p.z-C.shaft.z)<C.shaft.r?'IN THE GREAT SHAFT':'IN A LIGHT WELL')+' · '+len(city.stack.find(t=>t.kind==='layer'&&t.y0>=p.y).y0-p.y)+' below the floor above':!inB?(inBox?'IN THE CUT-AWAY HALF':Math.abs(p.x)<HALF&&Math.abs(p.z)<HALF&&blockOff?(Math.abs(blockOff)+(Math.abs(blockOff)===1?' BLOCK ':' BLOCKS ')+(blockOff>0?'ABOVE':'BELOW')+' THE SAMPLE'):'OUTSIDE THE BLOCK'):l.kind==='slab'?'INSIDE THE MEGASTRUCTURE':l.name.toUpperCase()+' · '+len(p.y-l.y0)+' over the floor';
-        hud.textContent=(S.fly?'FLYING '+len(S.flySpeed*(keys.has('shift')?5:1))+'/s · ':'')+where+' · frame '+len(2*ctl.city.d*Math.tan(camera.fov*Math.PI/360)*camera.aspect)+' across · Killy '+px(kh);
-      }else{
-        place(scam,ctl.sphere);scam.updateMatrixWorld();
-        renderer.clippingPlanes=[];sph.update(scam,S.section);
-        drawSphere();
-        renderer.setClearColor(0x030305);renderer.render(sph.scene,scam);
-        const w=2*ctl.sphere.d*Math.tan(scam.fov*Math.PI/360)*scam.aspect*1e9;
-        hud.textContent='THE CITY · 1.6 billion km across · frame '+len(w)+' across ('+nf(w/1.496e11,1)+' AU)';
-      }
-      if(now-hashAt>1200){hashAt=now;writeHash();}
-    }catch(e){report('render',e);}
-  })();
+  let fogD=0.0001,hashAt=0;
+  runLoop((now,dt)=>{
+    if(anim)step(now);
+    else if(keys.size&&S.fly&&S.mode==='city'){const s=cur(),sp=S.flySpeed*(keys.has('shift')?5:1)*dt,t0=s.t.clone(),c0=s.t.clone().add(offs(s,new V3())),f3=offs(s,ov3).normalize().negate();
+      const rx=-f3.z,rz=f3.x,rl=Math.hypot(rx,rz)||1;
+      if(keys.has('w'))s.t.addScaledVector(f3,sp);if(keys.has('s'))s.t.addScaledVector(f3,-sp);
+      if(keys.has('d')){s.t.x+=rx/rl*sp;s.t.z+=rz/rl*sp;}if(keys.has('a')){s.t.x-=rx/rl*sp;s.t.z-=rz/rl*sp;}
+      if(keys.has('e'))s.t.y+=sp;if(keys.has('q'))s.t.y-=sp;
+      // flying does not go through the Megastructure: a move that would end inside it is not made
+      if(!solidAt(c0)&&solidAt(s.t.clone().add(offs(s,new V3()))))s.t.copy(t0);}
+    else if(keys.size){const s=cur(),sp=s.d*(keys.has('shift')?2.4:0.7)*dt;
+      const fx=-Math.sin(s.yaw),fz=-Math.cos(s.yaw);
+      if(keys.has('w')){s.t.x+=fx*sp;s.t.z+=fz*sp;}if(keys.has('s')){s.t.x-=fx*sp;s.t.z-=fz*sp;}
+      if(keys.has('a')){s.t.x+=fz*sp;s.t.z-=fx*sp;}if(keys.has('d')){s.t.x-=fz*sp;s.t.z+=fx*sp;}
+      if(keys.has('e'))s.t.y+=sp;if(keys.has('q'))s.t.y-=sp;}
+    g2.clearRect(0,0,ow,oh);
+    if(S.mode==='city'){
+      place(camera,ctl.city);
+      if(S.section)sectionPlane();
+      if(!S.fly)unbury(camera,ctl.city);
+      camera.updateMatrixWorld();
+      // the air: the fog of whichever layer the camera is in, eased so that crossing a slab is not a cut
+      const p=camera.position;
+      if(S.section)sectionPlane();
+      // inside the block, unless the section has taken away the half you are in - then you are outside it
+      const inBox=Math.abs(p.x)<HALF&&Math.abs(p.z)<HALF&&p.y>0&&p.y<TOP,inB=inBox&&(!S.section||plane.distanceToPoint(p)>=0);
+      let tgt=0.0000035;fogT.copy(OUT);
+      if(inB){const l=city.layerAt(p.y);if(l&&l.kind==='layer'){fogT.set(l.fog[0]);tgt=l.fog[1];}
+        else if(l&&holeAt(p)){
+          // in a hole through a slab - the great shaft, or a light well: the air of whichever layer is nearer
+          const i=city.stack.indexOf(l),n=city.stack[p.y>(l.y0+l.y1)/2?i+1:i-1]||city.stack[i-1];fogT.set(n.fog[0]);tgt=n.fog[1];}
+        else{fogT.copy(SLAB);tgt=0.0004;}}
+      if(S.section)tgt*=0.3;
+      const k=1-Math.exp(-dt*5);fogC.lerp(fogT,k);fogD+=(tgt-fogD)*k;
+      scene.fog.color.copy(fogC);scene.fog.density=fogD;renderer.setClearColor(fogC);
+      city.air.visible=!inB;city.ghosts.visible=!inB;for(const m of city.air.children)if(m.userData.veil)m.visible=!S.section;
+      mats.U.uCutOn.value=S.section?1:0;mats.U.uCut.value.set(plane.normal.x,plane.normal.y,plane.normal.z,plane.constant);
+      renderer.clippingPlanes=S.section?[plane]:[];
+      city.builders.update(now);city.figures.userData.update(now/1000);
+      runHooks(animHooks,now);
+      drawCity();
+      renderer.render(scene,camera);
+      const l=inB?city.layerAt(p.y):null,d=p.distanceTo(new V3(K.x,K.y+0.9,K.z)),kh=1.75/(2*d*Math.tan(camera.fov*Math.PI/360))*oh;
+      const blockOff=Math.round((p.y-TOP/2)/city.STEP);
+      const inShaft=inB&&city.layerAt(p.y)&&city.layerAt(p.y).kind==='slab'&&holeAt(p);
+      const where=inShaft?(Math.hypot(p.x-C.shaft.x,p.z-C.shaft.z)<C.shaft.r?'IN THE GREAT SHAFT':'IN A LIGHT WELL')+' · '+len(city.stack.find(t=>t.kind==='layer'&&t.y0>=p.y).y0-p.y)+' below the floor above':!inB?(inBox?'IN THE CUT-AWAY HALF':Math.abs(p.x)<HALF&&Math.abs(p.z)<HALF&&blockOff?(Math.abs(blockOff)+(Math.abs(blockOff)===1?' BLOCK ':' BLOCKS ')+(blockOff>0?'ABOVE':'BELOW')+' THE SAMPLE'):'OUTSIDE THE BLOCK'):l.kind==='slab'?'INSIDE THE MEGASTRUCTURE':l.name.toUpperCase()+' · '+len(p.y-l.y0)+' over the floor';
+      hud.textContent=(S.fly?'FLYING '+len(S.flySpeed*(keys.has('shift')?5:1))+'/s · ':'')+where+' · frame '+len(2*ctl.city.d*Math.tan(camera.fov*Math.PI/360)*camera.aspect)+' across · Killy '+px(kh);
+    }else{
+      place(scam,ctl.sphere);scam.updateMatrixWorld();
+      renderer.clippingPlanes=[];sph.update(scam,S.section);
+      drawSphere();
+      renderer.setClearColor(0x030305);renderer.render(sph.scene,scam);
+      const w=2*ctl.sphere.d*Math.tan(scam.fov*Math.PI/360)*scam.aspect*1e9;
+      hud.textContent='THE CITY · 1.6 billion km across · frame '+len(w)+' across ('+nf(w/1.496e11,1)+' AU)';
+    }
+    if(now-hashAt>1200){hashAt=now;writeHash();}
+  });
 }
 
-requestAnimationFrame(()=>setTimeout(()=>{build().catch(e=>{report('build',e);
-  const l=document.getElementById('loading');if(l)l.remove();});},30));
+boot(build);

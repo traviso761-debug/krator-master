@@ -5,6 +5,7 @@
 // here: the look of the ground (ground.js), the river and the falls (water.js), the woods (woods.js), the house
 // and everything else built (landmarks.js), and what moves (life.js).
 import {report,LOAD,configureLoading,installErrorHandlers} from '../core/diag.js';
+import {boot} from '../core/shell.js';
 import {build} from '../engine/build.js';
 import {sceneRows} from '../core/layout.js';
 import {landmarks} from './landmarks.js';
@@ -50,5 +51,5 @@ function fingerprint(api){
   const valley=await fetch(C0.valley||'data/cities/rivendell-valley.json').then(r=>r.json()).catch(e=>{report('valley plan',e);return null;});
   const ctx=window._iz={defaultCity:'rivendell',valley,models:[landmarks],
     extras:[{name:'rivground',fn:ground},{name:'rivwater',fn:water},{name:'rivwoods',fn:woods},{name:'life',fn:life},{name:'season',fn:season},{name:'fingerprint',fn:fingerprint}]};
-  requestAnimationFrame(()=>setTimeout(()=>{build(ctx).catch(e=>{report('build',e);const l=document.getElementById('loading');if(l)l.remove();});},30));
+  boot(()=>build(ctx));
 })();

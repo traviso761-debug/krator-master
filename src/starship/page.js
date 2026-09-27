@@ -12,6 +12,8 @@
 import {report,LOAD,configureLoading,installErrorHandlers,stage,section} from '../core/diag.js';
 import {installMenagerie} from '../core/menagerie.js';
 import {createWire,installWireUI} from '../core/wire.js';
+import {createRenderer,trackResize,installContextLoss,mkBtn,runHooks,runLoop,finishLoading,boot} from '../core/shell.js';
+import {readHash,writeHash} from '../core/hash.js';
 import {mergeParts,fold,hullPalette} from './parts.js';
 
 const getJSON=u=>fetch(u).then(r=>{if(!r.ok)throw new Error(u+': HTTP '+r.status);return r.json();});
@@ -246,8 +248,7 @@ export async function starshipPage(opts){
   installErrorHandlers();window.LOAD=LOAD;
   configureLoading({prefix:opts.prefix||'loading… ',labels:opts.labels||{},lines:opts.lines||[]});
   const ctx=window._iz={};
-  requestAnimationFrame(()=>setTimeout(()=>{run().catch(e=>{report('build',e);
-    const l=document.getElementById('loading');if(l)l.remove();});},30));
+  boot(run);
 
   async function run(){
     if(!window.THREE){document.getElementById('loading').textContent=
@@ -261,11 +262,8 @@ export async function starshipPage(opts){
 
     const scene=new THREE.Scene();
     const camera=new THREE.PerspectiveCamera(48,innerWidth/innerHeight,0.6,2400000);
-    const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});
-    renderer.setPixelRatio(Math.min(devicePixelRatio,1.8));
-    renderer.setSize(innerWidth,innerHeight);
-    renderer.setClearColor(0x020306);
-    document.body.appendChild(renderer.domElement);
+    const renderer=createRenderer(THREE,{pixelCap:1.8,clear:0x020306});
+    installContextLoss(renderer);
     const animHooks=[];
 
     // ---- light ----
@@ -407,8 +405,6 @@ export async function starshipPage(opts){
 
     // ---- the panels ----
     const ui=document.getElementById('ui'),viewsEl=document.getElementById('views');
-    const mkBtn=(label,parent,fn)=>{const b=document.createElement('button');b.type='button';
-      b.textContent=label;b.onclick=fn;parent.appendChild(b);return b;};
     const vbtn=mkBtn('Views',ui,()=>{const o=!viewsEl.classList.contains('open');
       viewsEl.classList.toggle('open',o);vbtn.setAttribute('aria-expanded',String(o));});
     vbtn.setAttribute('aria-expanded','false');
@@ -423,45 +419,42 @@ export async function starshipPage(opts){
     installMenagerie({ui,mkBtn}).catch(e=>report('menagerie',e));
 
     // #view=<name> opens at one of them, and #v=az,el,d is what the camera writes back
-    {const h=location.hash.slice(1);
-     const m=/(^|&)view=([^&]+)/.exec(h);
-     if(m){const want=decodeURIComponent(m[2]).toLowerCase();
+    {const h=readHash(),vn=h.get('view');
+     if(vn!==null){const want=vn.toLowerCase();
        for(const [name,v] of Object.entries(C.views||{}))if(name.toLowerCase()===want)goto(v);}
-     const q=/(^|&)v=([-\d.,]+)/.exec(h);
-     if(q){const n=q[2].split(',').map(Number);
+     const q=/^[-\d.,]+$/.exec(h.get('v')||'');
+     if(q){const n=q[0].split(',').map(Number);
        if(n.length>=3&&n.every(Number.isFinite)){V.az=n[0];V.el=n[1];V.d=n[2];
          if(n.length>=6){V.tx=n[3];V.ty=n[4];V.tz=n[5];}}}}
-    {let t=0;setInterval(()=>{const now=Date.now();if(now-t<1400)return;t=now;
+    {let t=0,extraKeys=[];setInterval(()=>{const now=Date.now();if(now-t<1400)return;t=now;
       const r=x=>Math.round(x*1000)/1000;
-      // a model that has a mode of its own (a cutaway, an interior) keeps it in the address too
-      try{history.replaceState(null,'','#v='+[r(V.az),r(V.el),Math.round(V.d)].join(',')+(SHIP.hashExtra?SHIP.hashExtra():''));}catch(e){}},1500);}
+      // a model that has a mode of its own (a cutaway, an interior) keeps it in the address too; the keys it
+      // wrote last time and has not written now are taken out, and #view= goes once the camera has its own
+      const set={v:[r(V.az),r(V.el),Math.round(V.d)].join(','),view:null};
+      for(const k of extraKeys)set[k]=null;
+      const ex=new URLSearchParams((SHIP.hashExtra?SHIP.hashExtra():'').replace(/^&/,''));
+      extraKeys=[];for(const [k,v] of ex){set[k]=v===''?true:v;extraKeys.push(k);}
+      writeHash(set,['v']);},1500);}
 
-    addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();
-      renderer.setSize(innerWidth,innerHeight);});
+    trackResize(renderer,camera);
 
     const hud=document.createElement('div');hud.id='timebar';
     hud.style.cssText='font:12px Georgia,serif;color:#9fc4e0';
     const side=document.getElementById('side');if(side)side.appendChild(hud);
 
-    const loading=document.getElementById('loading');if(loading)loading.remove();
-    const hint=document.getElementById('hint');
-    if(hint){hint.classList.remove('gone');setTimeout(()=>hint.classList.add('gone'),14000);}
+    finishLoading({hintMs:14000});
 
-    (function animate(){
-      requestAnimationFrame(animate);
-      try{
-        const now=performance.now();
-        for(const f of animHooks){try{f(now);}catch(e){if(!f._failed){f._failed=true;report('update',e);}}}
-        if(sky)for(const q of sky.bodies)if(q.b.rate)q.g.rotation.y+=q.b.rate;
-        // a model may take the camera over - Babylon 5's interior rides the drum - and then the turntable waits
-        if(!(SHIP.camFrame&&SHIP.camFrame(now)))frame();
-        // A station kilometres long seen from kilometres off wants the near plane out of the way, or its
-        // panelling fights itself in the depth buffer; one looked at from a hundred metres wants it close.
-        if(SHIP.adaptiveNear){const n=Math.max(0.6,Math.min(40,V.d*0.004));if(Math.abs(n-camera.near)>n*0.2){camera.near=n;camera.updateProjectionMatrix();}}
-        hud.textContent=SHIP.hudOnly?SHIP.hudOnly(now)||'':(V.d>=1000?(V.d/1000).toFixed(1)+' km':Math.round(V.d)+' m')+' off'+(SHIP.hud?' · '+SHIP.hud(now):'');
-        renderer.render(scene,camera);
-      }catch(e){report('render',e);}
-    })();
+    runLoop(now=>{
+      runHooks(animHooks,now);
+      if(sky)for(const q of sky.bodies)if(q.b.rate)q.g.rotation.y+=q.b.rate;
+      // a model may take the camera over - Babylon 5's interior rides the drum - and then the turntable waits
+      if(!(SHIP.camFrame&&SHIP.camFrame(now)))frame();
+      // A station kilometres long seen from kilometres off wants the near plane out of the way, or its
+      // panelling fights itself in the depth buffer; one looked at from a hundred metres wants it close.
+      if(SHIP.adaptiveNear){const n=Math.max(0.6,Math.min(40,V.d*0.004));if(Math.abs(n-camera.near)>n*0.2){camera.near=n;camera.updateProjectionMatrix();}}
+      hud.textContent=SHIP.hudOnly?SHIP.hudOnly(now)||'':(V.d>=1000?(V.d/1000).toFixed(1)+' km':Math.round(V.d)+' m')+' off'+(SHIP.hud?' · '+SHIP.hud(now):'');
+      renderer.render(scene,camera);
+    });
     ctx.details=Object.assign(ctx.details||{},{ship:C.name});
   }
 }

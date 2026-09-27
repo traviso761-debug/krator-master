@@ -7,7 +7,12 @@ are listed in §7. File:line references are as of this date.
 > **Progress.** Phase 0 is done: tests wait for the page and run three at a time (about 1.5 min for the whole
 > site), and every page has a golden or a load check. Phase 1 is done: Voth is a shell over `src/voth/stages/`
 > built by `tools/build-page.py`, and matches the golden taken from the old page. `tools/build-voth.py` is now
-> `tools/build-krator.py`. The later phases are not started.
+> `tools/build-krator.py`. Phase 2 is done: `src/core/shell.js` (renderer, resize, context loss, buttons, the
+> loop and its hooks, loading and hint, boot) and `src/core/hash.js` (merge-writes that keep other keys) are used
+> by the engine, the starship page, Kyrene, the Backrooms and the City, and every city's `main.js` boots through
+> `boot()`. Every page but Iziz now handles context loss, and no page's camera wipes `wire=`, `under=` or a
+> page's own keys (the wire toggle now writes them). Iziz moves onto the shell in phase 5. The later phases are
+> not started.
 
 There is no physics engine as such. The nearest things are the flight model (`src/core/flight.js`, kinematic,
 no stall), the Backrooms' circle-against-walls collision (`src/backrooms/level.js:409`), the City's

@@ -2,6 +2,7 @@
 // assembled from src/engine/stages/) - Chicago is one of the places that runs on it, not the owner of it.
 // ctx is what the stages share with each other and with the console (window._iz).
 import {report,LOAD,configureLoading,installErrorHandlers} from '../core/diag.js';
+import {boot} from '../core/shell.js';
 import {build} from '../engine/build.js';
 import {landmarks} from './landmarks.js';
 installErrorHandlers();window.LOAD=LOAD;
@@ -27,4 +28,4 @@ configureLoading({
   prefix:'raising Chicago… ',labels:{ground:'filling the lake',blocks:'raising the towers',landmarks:'placing the landmarks',el:'building the L',traffic:'starting the traffic',ui:'opening the windows'}});
 // Cloud Gate, the Pritzker Pavilion, the Wheel and Wrigley Field are Chicago's own, so the page brings them.
 const ctx=window._iz={models:[landmarks]};
-requestAnimationFrame(()=>setTimeout(()=>{build(ctx).catch(e=>{report('build',e);const l=document.getElementById('loading');if(l)l.remove();});},30));
+boot(()=>build(ctx));

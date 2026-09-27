@@ -1,15 +1,13 @@
 // ---------- scene: renderer, camera, the sun's day, sky ----------
 const scene=new THREE.Scene();
 const camera=new THREE.PerspectiveCamera(50,innerWidth/innerHeight,Math.max(1,WORLD*0.5),24000*WORLD);
-const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});
-renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);
+const renderer=createRenderer(THREE,{pixelCap:1.5});installContextLoss(renderer);
 // quality: ?quality=low|medium|high, or the city's own default. Low drops shadows entirely, which on a
 // weak GPU is worth more than everything else put together.
 const QUALITY=(()=>{const v=(new URLSearchParams(location.search).get('quality')||C.quality||'high').toLowerCase();
   return ['low','medium','high'].includes(v)?v:'high';})();
 ctx.quality=QUALITY;
 renderer.shadowMap.enabled=QUALITY!=='low';renderer.shadowMap.type=THREE.PCFShadowMap;
-document.body.appendChild(renderer.domElement);
 const {ENV,setEnv}=createEnv();   // the shared uniforms; setEnv gives materials world-unit UV tiling
 const updatePx=()=>{ENV.izPx.value=innerHeight*renderer.getPixelRatio()/(2*Math.tan(camera.fov*Math.PI/360));};updatePx();
 const ambient=new THREE.AmbientLight(0x9fb4c8,0.22);scene.add(ambient);
