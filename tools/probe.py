@@ -27,7 +27,9 @@ import urllib.parse
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-PROBE = r"""<script>window.__probeErrs=[];addEventListener('error',e=>window.__probeErrs.push((e.message||String(e))+' @'+(e.filename||'').split('/').pop()+':'+e.lineno));</script>
+PROBE = r"""<script>window.__probeErrs=[];addEventListener('error',e=>window.__probeErrs.push((e.message||String(e))+' @'+(e.filename||'').split('/').pop()+':'+e.lineno));
+// a shader that does not compile is only ever a console.error from three.js, and the mesh silently is not drawn
+{const ce=console.error.bind(console);console.error=(...a)=>{const m=a.map(String).join(' ');if(/WebGLProgram|shader error|ERROR: 0:/i.test(m))window.__probeErrs.push('shader: '+m.slice(0,300));ce(...a);};}</script>
 <script>// a page may draw a frame in more than one render call (Voth: the sky, then the city), so the shot is taken
 // once the task that drew it is over, still before the buffer is cleared
 (function(){let rd=null,sc=null,frames=[],last=0;

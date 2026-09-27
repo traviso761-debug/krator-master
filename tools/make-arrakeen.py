@@ -32,6 +32,7 @@ from lib.geo import q, flat, rect, smoothstep
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "data", "cities", "arrakeen-osm.json")
+CITYF = os.path.join(ROOT, "data", "cities", "arrakeen-city.json")   # the town, the rock and the works, for src/arrakeen/
 R = random.Random(10191)
 
 HX, HZ = 12000.0, 10000.0        # half-extents: 24 x 20 km
@@ -73,6 +74,38 @@ def arc(cx, cz, r, a0, a1, n=None, width=None):
 
 # ---------------------------------------------------------------- the land
 
+def _h(i, j):
+    n = (i * 374761393 + j * 668265263) & 0xffffffff
+    n = ((n ^ (n >> 13)) * 1274126177) & 0xffffffff
+    return ((n ^ (n >> 16)) & 0xffff) / 65535.0
+
+
+def vnoise(x, y):
+    i, j = math.floor(x), math.floor(y)
+    fx, fy = x - i, y - j
+    fx, fy = fx * fx * (3 - 2 * fx), fy * fy * (3 - 2 * fy)
+    a, b, c, d = _h(i, j), _h(i + 1, j), _h(i, j + 1), _h(i + 1, j + 1)
+    return a + (b - a) * fx + (c - a) * fy + (a - b - c + d) * fx * fy
+
+
+def fbm(x, y, n=4):
+    s, a, f = 0.0, 0.5, 1.0
+    for _ in range(n):
+        s += a * vnoise(x * f, y * f)
+        a *= 0.5
+        f *= 2.03
+    return s
+
+
+def ridged(x, y, n=4):
+    """Sharp crests and cut gullies: the noise folded about its middle."""
+    s, a, f = 0.0, 0.5, 1.0
+    for _ in range(n):
+        s += a * (1 - abs(vnoise(x * f, y * f) * 2 - 1))
+        a *= 0.5
+        f *= 2.1
+    return s
+
 def shield_wall(x, z):
     """The rampart, standing across the north and east on a great arc centred south-west of the city."""
     a = math.atan2(z + 3400.0, x + 2200.0)
@@ -88,12 +121,23 @@ def shield_wall(x, z):
     # face - the one Arrakeen looks at - is the steep one, because that is the side the wind has been
     # scouring for as long as there has been a wind.
     inner = r < WALL_R
-    prof = smoothstep(1500.0 if inner else 2600.0, 300.0, d)
-    crest = 1150.0 + 260.0 * math.sin(a * 7.0) + 140.0 * math.sin(a * 17.0 + 1.1)
-    # and it is rock, so it is serrated: gullies down the face and towers left standing between them
-    serr = (0.66 * math.sin(a * 61.0) + 0.24 * math.sin(a * 137.0 + 2.1)
-            + 0.14 * math.sin(x / 260.0 + z / 310.0))
-    return crest * prof * span * (1 + 0.20 * serr)
+    # the profile is steep-sided and flat-topped - mesas and fins, not hills - and how far the face stands in
+    # from the line wanders, so the front is bays and buttresses rather than a curve
+    d = abs(r - WALL_R + 420 * (fbm(a * 5.0, 3.1) - 0.5) * 2)
+    prof = smoothstep(1500.0 if inner else 2600.0, 380.0, d) ** 0.55
+    crest = 1100.0 + 520.0 * (fbm(a * 3.0, 7.7) - 0.5) * 2
+    # and it is rock, so it is cut: gullies down the face, towers left standing between them, and flat caps
+    serr = ridged(a * 34.0, r / 900.0) - 0.45 + 0.25 * (fbm(x / 700.0, z / 700.0) - 0.5)
+    h = crest * prof * span * (1 + 0.45 * serr)
+    return min(h, crest * (0.92 + 0.1 * fbm(a * 9.0, 1.3)))
+
+
+def terrace(h, step, k):
+    """Sandstone weathers into benches: a hard bed stands as a cliff, the soft one under it slopes back to the
+    next. Wadi Rum is made of this. k is how much of the slope is taken up into the risers."""
+    t = h / step
+    f = t - math.floor(t)
+    return (math.floor(t) + (1 - k) * f + k * smoothstep(0.55, 0.95, f)) * step
 
 
 def terrain_height(x, z):
@@ -106,11 +150,11 @@ def terrain_height(x, z):
     # the Shield Wall, and the gap the road comes through
     w = shield_wall(x, z)
     gap = smoothstep(1400.0, 500.0, abs(math.atan2(z + 3400.0, x + 2200.0) - 0.30) * WALL_R)
-    h += w * (1 - 0.86 * gap)
+    h += terrace(w * (1 - 0.86 * gap), 85.0, 0.75)
 
     # the massif the sietch is in: an outcrop of the same rock, standing alone out in the basin
     sd = math.hypot((x - SIETCH[0]) * 1.0, (z - SIETCH[1]) * 1.5)
-    h += 420 * smoothstep(1500.0, 520.0, sd) * (1 + 0.22 * math.sin(sd / 90.0) + 0.1 * math.sin(x / 130.0))
+    h += terrace(420 * smoothstep(1500.0, 520.0, sd) * (1 + 0.22 * math.sin(sd / 90.0) + 0.1 * math.sin(x / 130.0)), 70.0, 0.8)
     h += 120 * smoothstep(4200.0, 2000.0, sd) * (0.5 + 0.5 * math.sin(x / 400.0 + z / 330.0))
 
     # the landing field: fused flat, and a good deal of it
@@ -134,8 +178,10 @@ def terrain_height(x, z):
     cd = math.hypot(x, z)
     h = h * (1 - smoothstep(CITY_R + 900, CITY_R + 120, cd)) + (BASIN + 14) * smoothstep(CITY_R + 900, CITY_R + 120, cd)
 
-    h *= smoothstep(HX, HX - 700, abs(x)) * smoothstep(HZ, HZ - 700, abs(z))
-    return h
+    # at the edge of the map the ground settles to the level of the open sand, which src/arrakeen/ground.js
+    # carries on past it; it used to fall to nought and leave a two-hundred-metre cliff round the world
+    e = smoothstep(HX, HX - 700, abs(x)) * smoothstep(HZ, HZ - 700, abs(z))
+    return h * e + (BASIN - 40) * (1 - e)
 
 
 # ---------------------------------------------------------------- the city
@@ -195,29 +241,14 @@ def main():
                                      "Water Lane", "Stilgar Way", "The Slot", "Dune Gate Way",
                                      "Pan Row", "The Crossing", "Spice Row", "Thumper Lane",
                                      "The Narrows"][k])
-    for k in range(7):
-        rr = 260 + k * 190
-        road(ring_poly(0, 0, rr, 40) + [(rr, 0)], "residential", 6, f"{k + 1} Circle Way")
-    # the lanes: a great many, all short
-    for k in range(120):
-        a = R.uniform(0, math.tau)
-        rr = R.uniform(200, CITY_R - 220)
-        a2 = a + R.uniform(-0.22, 0.22)
-        road([(math.cos(a) * rr, math.sin(a) * rr),
-              (math.cos(a2) * (rr + R.uniform(90, 230)), math.sin(a2) * (rr + R.uniform(90, 230)))],
-             "alley", 4)
+    # (the slots between the blocks are the rest of the street plan: src/arrakeen/city.js leaves them)
     out["roads"] = roads
 
     # ---------- land cover ----------
-    areas = [
-        {"k": "plaza", "n": "", "i": [], "o": flat(ring_poly(0, 0, CITY_R - 40, 72))},
-        {"k": "railyard", "n": "The Landing Field", "i": [],
-         "o": flat(rect(FIELD[0], FIELD[1], 3600, 2600))},
-        {"k": "sand", "n": "The Funeral Plain", "i": [],
-         "o": flat(ring_poly(-4200, 5200, 5200, 40))},
-        {"k": "park", "n": "The Residency Garden", "i": [], "o": flat(rect(-430, -560, 300, 220, 0.2))},
-        {"k": "plaza", "n": "The Water Market", "i": [], "o": flat(rect(320, 300, 260, 200, 0.4))},
-    ]
+    # The city's paving, the fused field and the plantations are drawn by the ground shader
+    # (src/arrakeen/ground.js), smooth-edged; painted into a forty-metre grid they were staircases.
+    areas = []
+    plantations = []
     # the plantations: strips of ground the qanats feed, and the only cultivated land on the planet
     for k in range(4):
         a = 0.10 + k * 0.30
@@ -231,25 +262,21 @@ def main():
             v = (190 if i < 15 else -190) * (0.55 + 0.45 * math.sin(t * 5.1 + k))
             ring.append((cx + u * math.cos(rot) - v * math.sin(rot),
                          cz + u * math.sin(rot) + v * math.cos(rot)))
-        areas.append({"k": "grass", "n": "Plantation", "i": [], "o": flat(ring)})
+        plantations.append([round(cx, 1), round(cz, 1), round(rot, 3)])
     out["areas"] = areas
     out["rail"] = []
     out["stations"] = []
 
     # ---------- what is built ----------
+    # Nothing here is an engine building: the town, the wall, the works and the rock are all drawn by
+    # src/arrakeen/city.js from arrakeen-city.json, as battered stone masses rather than extruded footprints.
+    # Every piece is [x, z, width, depth, turn, height, ...], and `city` sorts them by what they are.
     buildings = []
+    city = {"blocks": [], "courts": [], "walls": [], "towers": [], "gates": [], "cisterns": [], "market": [],
+            "stalls": [], "field": [], "pads": [], "huts": [], "masts": [], "crags": [], "sietch": []}
 
-    def put(ring, h, kind=None, colour=None, name=None, minh=None):
-        b = {"p": flat(ring), "h": round(h, 1), "r": "f"}
-        if kind:
-            b["t"] = kind
-        if colour:
-            b["c"] = colour
-        if name:
-            b["n"] = name
-        if minh is not None:
-            b["m"] = round(minh, 1)
-        buildings.append(b)
+    def keep(kind, x, z, w, d, a, h, *extra):
+        city[kind].append([round(x, 1), round(z, 1), round(w, 1), round(d, 1), round(a, 3), round(h, 1)] + list(extra))
 
     SAND = ["#c9ab7f", "#bfa073", "#d3b68c", "#b4966b", "#c0a478", "#caae85"]
     SHADE = ["#a88d66", "#9c825f", "#b39871"]
@@ -257,7 +284,8 @@ def main():
 
     # ---- the city wall ----
     # Thick, battered, and unbroken except at the four gates: it is not there to stop an army, it is there
-    # to stop the sand.
+    # to stop the sand. Drawn as arcs [a0, a1, radius, thickness, height], with a tower every eleven and a
+    # quarter degrees and a pair either side of each gate.
     GATES = [0.0, 0.62 * math.pi, math.pi, 1.45 * math.pi]
     seg = 0
     for k in range(96):
@@ -265,103 +293,99 @@ def main():
         a1 = (k + 1) / 96 * math.tau
         if any(abs(((a0 + a1) / 2 - g + math.pi) % math.tau - math.pi) < 0.045 for g in GATES):
             continue
-        put(arc(0, 0, CITY_R, a0, a1, 3, width=46), 24 + 3 * math.sin(k * 0.7), "wall", "#a89273", minh=-12)
+        city["walls"].append([round(a0, 4), round(a1, 4), CITY_R, 46.0, round(26 + 3 * math.sin(k * 0.7), 1)])
         seg += 1
     for k in range(32):
         a = k / 32 * math.tau
-        put(rect(math.cos(a) * CITY_R, math.sin(a) * CITY_R, 54, 54, a), 34, "tower", "#9e8969", minh=-12)
+        if any(abs((a - g + math.pi) % math.tau - math.pi) < 0.08 for g in GATES):
+            continue
+        keep("towers", math.cos(a) * CITY_R, math.sin(a) * CITY_R, 58, 58, a, 38)
     for g in GATES:
+        city["gates"].append(round(g, 4))
         for sd in (-1, 1):
-            put(rect(math.cos(g + sd * 0.05) * CITY_R, math.sin(g + sd * 0.05) * CITY_R, 70, 70, g),
-                52, "tower", "#8f7b5d", minh=-12)
+            keep("towers", math.cos(g + sd * 0.05) * CITY_R, math.sin(g + sd * 0.05) * CITY_R, 76, 76, g, 58)
 
     # ---- the town ----
-    # Courtyard houses packed shoulder to shoulder: one or two storeys, flat roofs, a hole in the middle for
-    # air and shade, and no windows worth speaking of on the outside. They get taller towards the middle
-    # because that is where the water is.
-    # Packed shoulder to shoulder, because shade is the only comfort there is and a detached house on
-    # Arrakis is a way of dying: the rings are forty-six metres apart and the blocks nearly touch, so what
-    # is between them is a slot rather than a street. Every seventh ring is left as a proper street.
+    # Blocks packed shoulder to shoulder, battered walls, flat roofs: one or two storeys, a courtyard in most,
+    # taller towards the middle where the water is. The rings are forty-six metres apart and the blocks nearly
+    # touch, so what is between them is a slot rather than a street; every seventh ring is a way through.
+    # [x, z, width, depth, turn, height, courtyard 0/1, windtraps 0-2]
     total = 0
     for ring_i in range(30):
         rr = 170 + ring_i * 46
         if rr > CITY_R - 150:
             break
         if ring_i % 7 == 6:
-            continue                                       # a way through, wide enough for a cart
+            continue
         n = max(14, int(rr * math.tau / 40))
-        for i in range(n):
-            a = i / n * math.tau + ring_i * 0.09
+        for i2 in range(n):
+            a = i2 / n * math.tau + ring_i * 0.09
             x, z = math.cos(a) * rr, math.sin(a) * rr
-            if abs(x + 430) < 260 and abs(z + 560) < 220:
+            if abs(x + 430) < 330 and abs(z + 560) < 290:
                 continue                                   # the Residency stands here
+            if abs(x - 320) < 150 and abs(z - 300) < 130:
+                continue                                   # the water market
             if R.random() < 0.05:
                 continue
+            if abs(rr - CITY_R * 0.62) < 34 or abs(rr - (CITY_R - 130)) < 34:
+                continue                                   # the two ring ways
+            on_street = False
+            for k2 in range(13):
+                t = (rr - 120) / (CITY_R - 200)
+                sa = k2 / 13 * math.tau + 0.16 * math.sin(t * 3.4 + k2)
+                if abs((a - sa + math.pi) % math.tau - math.pi) * rr < 26:
+                    on_street = True
+                    break
+            if on_street:
+                continue                                   # one of the thirteen streets out from the middle
             w = R.uniform(30, 42)
             d = R.uniform(28, 38)
-            h = R.uniform(6, 12) + (6 if rr < 700 else 0) + (4 if R.random() < 0.12 else 0)
-            col = SAND[R.randrange(len(SAND))]
-            put(rect(x, z, w, d, a), h, "residential", col)
+            h = R.uniform(7, 13) + (7 if rr < 700 else 0) + (6 if R.random() < 0.12 else 0)
+            keep("blocks", x, z, w, d, a, h, 1 if R.random() < 0.6 else 0, R.choice((0, 1, 1, 2)))
             total += 1
-            # the courtyard: a well of shade cut down through the middle of the block
-            if R.random() < 0.55:
-                put(rect(x, z, w * 0.4, d * 0.4, a), h - R.uniform(3, 6), "court", "#6f5f48", minh=0)
-            # the parapet that makes the roof usable, and the stair box up to it
-            if R.random() < 0.7:
-                put(rect(x, z, w * 1.02, d * 1.02, a), h + 1.4, "wall", SHADE[R.randrange(len(SHADE))], minh=h)
-            if R.random() < 0.3:
-                put(rect(x + R.uniform(-w, w) * 0.3, z + R.uniform(-d, d) * 0.3, 6, 6, a), h + 3.4,
-                    "hut", SHADE[R.randrange(len(SHADE))], minh=h)
 
     # ---- the works ----
-    # The cisterns, which are the most heavily guarded things in the city; the water market beside them; and
-    # the wind-catchers of the public conservatory.
+    # The cisterns, the most heavily guarded things in the city: a squat vault inside a wall of its own. The
+    # water market beside the Residency, and its stalls.
     for k in range(9):
         a = k / 9 * math.tau + 0.3
-        cx, cz = math.cos(a) * 820, math.sin(a) * 820
-        put(rect(cx, cz, 96, 70, a), 16, "industrial", "#8a7a62", name="Cistern" if k == 0 else None)
-        for j in range(4):
-            aa = j / 4 * math.tau
-            put(rect(cx + math.cos(aa) * 58, cz + math.sin(aa) * 44, 100, 8, aa + 1.57), 22, "wall", STONE)
-    put(rect(320, 300, 190, 140, 0.4), 12, "commercial", "#b8a17c", name="The Water Market")
-    for k in range(14):
-        put(rect(320 + R.uniform(-80, 80), 300 + R.uniform(-60, 60), R.uniform(10, 20), R.uniform(8, 16),
-                 R.uniform(0, math.pi)), R.uniform(4, 7), "stall", "#9d8a6c")
+        keep("cisterns", math.cos(a) * 820, math.sin(a) * 820, 96, 70, a, 18)
+    keep("market", 320, 300, 190, 140, 0.4, 14)
+    for k in range(40):
+        keep("stalls", 320 + R.uniform(-110, 110), 300 + R.uniform(-80, 80), R.uniform(5, 9), R.uniform(4, 7),
+             R.uniform(0, math.pi), R.uniform(3, 4.5))
 
     # ---- the landing field ----
-    put(rect(FIELD[0] - 1500, FIELD[1] - 1000, 220, 180, 0.0), 70, "tower", "#7f7565", name="Field Control")
+    keep("field", FIELD[0] - 1500, FIELD[1] - 1000, 220, 180, 0.0, 90, "control")
     for k in range(6):
-        px = FIELD[0] - 1200 + k * 480
-        put(rect(px, FIELD[1] + 900, 380, 190, 0.0), 26, "industrial", "#7a7263")
+        keep("field", FIELD[0] - 1200 + k * 480, FIELD[1] + 900, 380, 190, 0.0, 30, "hangar")
     for k in range(4):
         a = k / 4 * math.tau
-        put(ring_poly(FIELD[0] + math.cos(a) * 900, FIELD[1] + math.sin(a) * 700, 210, 24), 1.6,
-            "pad", "#6e675b")
+        city["pads"].append([round(FIELD[0] + math.cos(a) * 900, 1), round(FIELD[1] + math.sin(a) * 700, 1), 210.0])
+    city["fieldRect"] = [FIELD[0], FIELD[1], 3600.0, 2600.0]
 
     # ---- the sietch, which from the outside is nothing at all ----
-    for k in range(7):
+    for k in range(9):
         a = R.uniform(0, math.tau)
         d = R.uniform(200, 1100)
-        put(rect(SIETCH[0] + math.cos(a) * d, SIETCH[1] + math.sin(a) * d, R.uniform(30, 90),
-                 R.uniform(26, 70), R.uniform(0, math.pi)), R.uniform(8, 26), "rock", "#6d6355")
+        keep("sietch", SIETCH[0] + math.cos(a) * d, SIETCH[1] + math.sin(a) * d, R.uniform(40, 110),
+             R.uniform(30, 90), R.uniform(0, math.pi), R.uniform(14, 40))
 
-    # ---- the wind traps out in the basin, and the testing stations ----
+    # ---- the windtrap huts out in the basin, and the testing stations ----
     for k in range(40):
         a = R.uniform(0, math.tau)
         d = R.uniform(CITY_R + 400, 5200)
         px, pz = math.cos(a) * d, math.sin(a) * d
         if abs(px - FIELD[0]) < 2200 and abs(pz - FIELD[1]) < 1700:
             continue
-        put(rect(px, pz, R.uniform(18, 40), R.uniform(14, 30), R.uniform(0, math.pi)),
-            R.uniform(6, 14), "hut", "#a08a68")
+        keep("huts", px, pz, R.uniform(18, 40), R.uniform(14, 30), R.uniform(0, math.pi), R.uniform(6, 14))
         if R.random() < 0.4:
-            put(rect(px + 30, pz, 10, 26, R.uniform(0, math.pi)), R.uniform(14, 26), "tower", "#8c7a5e")
+            keep("masts", px + 30, pz, 8, 8, 0, R.uniform(18, 32))
 
     # ---- crags ----
-    # A forty-metre height grid cannot hold a cliff, and the Shield Wall is nothing but cliff: the whole
-    # rise happens inside a couple of samples and comes out as a swell. So the face carries rock of its own,
-    # built as slabs along the line of it - the same bargain Mordor's ridges make - and the basin floor gets
-    # the outcrops and wind-cut stacks that a swept rock plain actually has.
+    # A forty-metre height grid cannot hold a cliff, and the Shield Wall is nothing but cliff. So its face and
+    # the basin floor carry rock of their own: buttes and fins, drawn as stratified stone masses standing in
+    # the ground, the way the stacks of Wadi Rum stand in the sand.
     ncrag = 0
     for k in range(420):
         a = -0.4 + R.random() * 3.0
@@ -372,10 +396,8 @@ def main():
             continue
         g = terrain_height(cx, cz)
         if g < BASIN + 160 or g > BASIN + 760:
-            continue                                       # the skyline is the heightfield's, not ours
-        hh = R.uniform(30, 120)
-        put(rect(cx, cz, R.uniform(120, 330), R.uniform(90, 260), R.uniform(0, math.pi)), hh,
-            "rock", "#a1916f" if R.random() < 0.6 else "#8d7f63", minh=-hh * 2.2)
+            continue
+        keep("crags", cx, cz, R.uniform(120, 330), R.uniform(90, 260), R.uniform(0, math.pi), R.uniform(40, 150))
         ncrag += 1
     for k in range(120):
         cx = R.uniform(-HX + 900, HX - 900)
@@ -387,11 +409,15 @@ def main():
         if terrain_height(cx, cz) > BASIN + 260:
             continue
         if math.hypot(cx + 1500.0, (cz - 2400.0) * 0.8) > 4600:
-            continue                                       # out in the sand there is nothing to stand on
-        hh = R.uniform(10, 46)
-        put(rect(cx, cz, R.uniform(70, 220), R.uniform(50, 170), R.uniform(0, math.pi)), hh,
-            "rock", "#ab9a78", minh=-hh)
+            continue
+        keep("crags", cx, cz, R.uniform(70, 220), R.uniform(50, 170), R.uniform(0, math.pi), R.uniform(18, 80))
         ncrag += 1
+    city["plantations"] = plantations
+    city["sites"] = {"city": [0.0, 0.0, CITY_R], "field": list(FIELD), "sietch": list(SIETCH), "residency": [-430.0, -560.0],
+                     "wall": [-2200.0, -3400.0, WALL_R], "desert": [-3500.0, 8000.0]}
+    with open(CITYF, "w") as f:
+        json.dump(city, f, separators=(",", ":"))
+    print(f"wrote {CITYF}: {os.path.getsize(CITYF)/1e3:.0f} KB; {total} blocks, {ncrag} crags")
 
     out["buildings"] = buildings
 

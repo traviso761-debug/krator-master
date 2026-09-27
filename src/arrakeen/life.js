@@ -12,6 +12,7 @@
 // All of it is small and all of it is merged. Fan work; Dune belongs to the Herbert estate and the geometry
 // is this project's own.
 import { mkRng } from '../core/rng.js';
+import { makeThopter } from './machines.js';
 
 export function life(api){
   const {THREE,C,ctx,scene,animHooks,groundH,roofAt,box,mergeParts,nightF,hour,B}=api;
@@ -119,27 +120,13 @@ export function life(api){
     devils.push({g,x,z,a:R()*6.28,v:0.00004+R()*0.00007,r:300+R()*2600,ph:R()*6.28});
   }
 
-  // an ornithopter: a body, a tail, and four wings that beat. At the size they are on this map they read as
-  // a dragonfly, which is exactly right.
-  const thopterM=new THREE.MeshLambertMaterial({color:0x6e6a60,flatShading:true});
-  const wingM=new THREE.MeshLambertMaterial({color:0x8e8a7e,side:THREE.DoubleSide,flatShading:true});
+  // the ornithopters (src/arrakeen/machines.js): dragonflies over the basin, each on its own long circuit
+  const thopterTraffic=[];
   for(let k=0;k<(K.thopters||0);k++){
-    const g=new THREE.Group(), S=7;
-    const body=new THREE.Mesh(new THREE.CylinderGeometry(S*0.16,S*0.1,S*1.5,7).rotateZ(Math.PI/2),thopterM);
-    g.add(body);
-    const nose=new THREE.Mesh(new THREE.ConeGeometry(S*0.17,S*0.5,7).rotateZ(-Math.PI/2),thopterM);
-    nose.position.x=S*0.95;g.add(nose);
-    const tail=new THREE.Mesh(new THREE.BoxGeometry(S*0.5,S*0.3,0.2),thopterM);tail.position.x=-S*0.85;g.add(tail);
-    const fin=new THREE.Mesh(new THREE.BoxGeometry(S*0.4,0.2,S*0.35),thopterM);fin.position.set(-S*0.85,S*0.14,0);g.add(fin);
-    const wings=[];
-    for(const sd of [-1,1])for(const fr of [0.3,-0.2]){
-      const w=new THREE.Group();
-      const blade=new THREE.Mesh(new THREE.BoxGeometry(S*0.26,0.12,S*1.1).translate(0,0,sd*S*0.55),wingM);
-      w.add(blade);w.position.set(S*fr,S*0.1,0);g.add(w);wings.push({w,sd});
-    }
+    const g=makeThopter(THREE,{scale:1,livery:[0x6e6a60,0x7a7468,0x5f5c56][k%3]});
     const x=(R()-0.5)*B.w*0.5, z=(R()-0.5)*B.d*0.5;
     g.position.set(x,groundH(x,z)+120+R()*260,z);scene.add(g);
-    thopters.push({g,wings,cx:x,cz:z,r:600+R()*2400,a:R()*6.28,
+    thopterTraffic.push({g,cx:x,cz:z,r:600+R()*2400,a:R()*6.28,
       v:(0.00011+R()*0.00016)*(R()<0.5?-1:1),y:120+R()*300,ph:R()*6.28});
   }
 
@@ -156,17 +143,16 @@ export function life(api){
       q.g.rotation.y=now*0.001+q.ph;
       q.g.scale.set(0.7+0.4*Math.sin(t*0.3+q.ph),0.8+0.5*Math.sin(t*0.21+q.ph),0.7+0.4*Math.cos(t*0.27+q.ph));
     }
-    for(const q of thopters){
+    for(const q of thopterTraffic){
       const a=q.a+now*q.v;
       const x=q.cx+Math.cos(a)*q.r, z=q.cz+Math.sin(a)*q.r;
       q.g.position.set(x,groundH(x,z)+q.y+22*Math.sin(now*0.0005+q.ph),z);
-      q.g.rotation.set(0,-a-(q.v>0?Math.PI/2:-Math.PI/2),0.2*(q.v>0?1:-1));
-      const beat=Math.sin(now*0.02+q.ph);
-      for(const w of q.wings)w.w.rotation.x=w.sd*beat*0.7;
+      q.g.rotation.set(0,-a-(q.v>0?Math.PI/2:-Math.PI/2),0.2*(q.v>0?1:-1));    // nose (+x) along the direction of travel
+      q.g.userData.update(now,1);
     }
   });
 
   ctx.details=Object.assign(ctx.details||{},{
     windtraps:traps,dewCollectors:K.collectors||0,awnings:K.awnings||0,
-    cisterns:K.cisterns||0,dustDevils:devils.length,thopters:thopters.length});
+    cisterns:K.cisterns||0,dustDevils:devils.length,thopters:thopterTraffic.length});
 }

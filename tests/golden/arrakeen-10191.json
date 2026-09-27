@@ -1,7 +1,8 @@
 {
- "lots": 6523,
- "lotHash": "a851343653fb4d754d490fa0452efc3641dc113c3ae11149e362cc2fb6b636cb",
+ "lots": 0,
+ "lotHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
  "doors": null,
  "doorHash": null,
- "seed": 1337
+ "page": "arrakeen.html",
+ "seed": 10191
 }
