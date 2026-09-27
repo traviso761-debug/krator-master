@@ -39,7 +39,7 @@ const t0=performance.now();let readyAt=0,framesAt=0;
 const loadingGone=()=>{if(document.readyState==='loading')return false;for(const id of ['loading','load']){const e=document.getElementById(id);
  if(e&&e.isConnected){const cs=getComputedStyle(e);if(cs.display!=='none'&&cs.visibility!=='hidden')return false;}}return true;};
 const tick=()=>{const now=performance.now();if(!readyAt&&loadingGone()){readyAt=now;framesAt=frames.length;}
- const settled=readyAt&&now-readyAt>1200&&(!rd||frames.length-framesAt>=30);
+ const settled=readyAt&&now-readyAt>1200+SETTLE&&(!rd||frames.length-framesAt>=30);
  if(settled||now-t0>WAIT){finish(!settled);return;}setTimeout(tick,150);};
 setTimeout(tick,150);
 const rep=o=>{new Image().src='/__probe?'+encodeURIComponent(JSON.stringify(o));};
@@ -116,6 +116,7 @@ def main():
     ap.add_argument("--shot", help="save a JPEG of the rendered canvas here (taken just before the report)")
     ap.add_argument("--size", default="1600,900", help="browser window size")
     ap.add_argument("--quiet", action="store_true")
+    ap.add_argument("--settle", type=float, default=0, help="seconds more to let it run once it is ready (to catch something part-way through)")
     ap.add_argument("--input", action="store_true", help="after it settles, drag right and hold W; report which way the view turned and how far W moved it")
     ap.add_argument("--no-build", action="store_true", help="do not regenerate src/*/build.js first (the test runner checks it instead)")
     ap.add_argument("--expect", help="golden JSON (tests/golden/iziz-<seed>.json): exit 2 if the layout fingerprint differs")
@@ -136,7 +137,7 @@ def main():
     if not a.port:
         a.port = free_port()
     shot_port = free_port() if a.shot else 0
-    src = src[:cut] + PROBE.replace("WAIT", str(a.wait * 1000)).replace("INPUT", "true" if a.input else "false").replace("SHOTPORT", str(shot_port)) + src[cut:]
+    src = src[:cut] + PROBE.replace("WAIT", str(a.wait * 1000)).replace("INPUT", "true" if a.input else "false").replace("SETTLE", str(int(a.settle * 1000))).replace("SHOTPORT", str(shot_port)) + src[cut:]
 
     ff, snap = firefox_cmd()
     home = os.path.expanduser("~")

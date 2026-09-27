@@ -22,12 +22,12 @@
 // (1.31 m/s², an eighth of Earth's) turns it, and falls back as frost. No billowing, no drift, no cloud: a
 // fountain with a sharp umbrella top and a sharp edge where it lands.
 import { mkRng } from '../core/rng.js';
+import { G, createGrains, jet } from './grains.js';
 
 export function ice(api){
   const {THREE,C,ctx,scene,animHooks,groundH,sun,ambient,hemi,mergeParts,ENV}=api;
   const I=ctx.europaIce;if(!I)return;
   const R=mkRng(1610);
-  const G=1.315;                                                  // m/s² at Europa's surface
 
   // ---- the ground ----
   const vec3s=(list,n)=>{const a=[];for(let i=0;i<n;i++){const v=list[i]||[0,0,-1];a.push(new THREE.Vector3(v[0],v[1],v[2]));}return a;};
@@ -161,36 +161,24 @@ vec3 iceAt(vec2 q,float fw,float slope){
     ambient.intensity=0.05+0.06*u;});
 
   // ---- plumes ----
-  // Every grain is its own projectile: v up, a little sideways, g down, until it lands. The bore's plume is the
-  // tall one; the vents round the station are low jets. Points, bright where the sun catches them.
-  const jets=[];
-  {const [bx,bz]=I.sites.bore;jets.push({x:bx,y:groundH(bx,bz)+6,z:bz,v0:24,v1:34,side:2.4,rate:150});}
-  for(const [x,y,z] of (ctx.europaVents||[]))jets.push({x,y,z,v0:5,v1:9,side:1.2,rate:10});
-  // a grain is a soft round dot; the bore's are drawn bigger, because it is seen from kilometres away and the
-  // vents only close to
-  const dot=(()=>{const c=document.createElement('canvas');c.width=c.height=32;const g=c.getContext('2d');const gr=g.createRadialGradient(16,16,0,16,16,16);
-    gr.addColorStop(0,'rgba(255,255,255,1)');gr.addColorStop(0.4,'rgba(240,248,255,0.7)');gr.addColorStop(1,'rgba(230,242,255,0)');g.fillStyle=gr;g.fillRect(0,0,32,32);return new THREE.CanvasTexture(c);})();
-  const sets=[[jets.slice(0,1),3.2],[jets.slice(1),1.4]].filter(([js])=>js.length).map(([js,size])=>{
-    const N=js.reduce((s,j)=>s+Math.ceil(j.rate*(2*j.v1/G)*1.05),0);
-    const pos=new Float32Array(N*3),vel=new Float32Array(N*3),floorY=new Float32Array(N),alive=new Uint8Array(N);
-    const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.BufferAttribute(pos,3).setUsage(THREE.DynamicDrawUsage));
-    const pts=new THREE.Points(geo,new THREE.PointsMaterial({color:0xf2f8ff,map:dot,size,sizeAttenuation:true,transparent:true,opacity:0.9,depthWrite:false,alphaTest:0.02}));
-    pts.frustumCulled=false;pts.userData.noWire=true;pts.userData.noFingerprint=true;scene.add(pts);
-    return {js,N,pos,vel,floorY,alive,geo,next:0,acc:js.map(()=>0)};});
-  function emit(S,j){const i=S.next;S.next=(S.next+1)%S.N;const a=R()*Math.PI*2,sd=j.side*Math.sqrt(R());
-    S.pos[i*3]=j.x;S.pos[i*3+1]=j.y;S.pos[i*3+2]=j.z;S.vel[i*3]=Math.cos(a)*sd;S.vel[i*3+1]=j.v0+(j.v1-j.v0)*R();S.vel[i*3+2]=Math.sin(a)*sd;
-    S.alive[i]=1;S.floorY[i]=j.y-6;return i;}
-  function step(S,i,t){const p=S.pos,v=S.vel;v[i*3+1]-=G*t;p[i*3]+=v[i*3]*t;p[i*3+1]+=v[i*3+1]*t;p[i*3+2]+=v[i*3+2]*t;
-    if(v[i*3+1]<0&&p[i*3+1]<S.floorY[i]){S.alive[i]=0;p[i*3+1]=-1e5;}}
+  // Every grain is its own projectile (src/europa/grains.js): v up, a little sideways, g down, until it lands.
+  // The bore's plume is the tall one; the vents round the station are low jets. The events can make the bore
+  // surge (ctx.europaPlume.surge).
+  const bore={x:I.sites.bore[0],y:groundH(I.sites.bore[0],I.sites.bore[1])+6,z:I.sites.bore[1],v0:24,v1:34,side:2.4,rate:150};
+  const vents=(ctx.europaVents||[]).map(([x,y,z])=>({x,y,z,v0:5,v1:9,side:1.2,rate:10}));
+  const cap=(js,k)=>js.reduce((s,j)=>s+Math.ceil(j.rate*k*(2*j.v1*1.6/G)),0);
+  const plumeS=createGrains(api,{max:cap([bore],2.2),size:3.2}),ventS=vents.length?createGrains(api,{max:cap(vents,1.1),size:1.4}):null;
+  const runs=[[plumeS,[bore]],[ventS,vents]].filter(r=>r[0]);
   // start them full: a plume that has been running for months, not one that switched on as you arrived
-  for(const S of sets)for(let k=0;k<S.N;k++){const i=emit(S,S.js[k%S.js.length]);const t=R()*(2*S.vel[i*3+1]/G);
-    S.pos[i*3]+=S.vel[i*3]*t;S.pos[i*3+1]+=S.vel[i*3+1]*t-0.5*G*t*t;S.pos[i*3+2]+=S.vel[i*3+2]*t;S.vel[i*3+1]-=G*t;}
-  let last=performance.now();
-  animHooks.push(now=>{const dt=Math.min(0.05,(now-last)/1000);last=now;
-    for(const S of sets){S.js.forEach((j,k)=>{S.acc[k]+=j.rate*dt;while(S.acc[k]>=1){S.acc[k]-=1;emit(S,j);}});
-      for(let i=0;i<S.N;i++)if(S.alive[i])step(S,i,dt);
-      S.geo.attributes.position.needsUpdate=true;}});
-  const N=sets.reduce((s,S)=>s+S.N,0);
+  for(const [S,js] of runs)for(const j of js)for(let k=0,n=Math.floor(j.rate*2*j.v1/G);k<n;k++){const i=jet(S,R,j);S.advance(i,R()*2*S.vy(i)/G);}
+  const surge={k:1,until:0};
+  let last=performance.now();const acc=new Map();
+  animHooks.push(now=>{const dt=Math.min(0.05,(now-last)/1000);last=now;const boost=now<surge.until?surge.k:1;
+    for(const [S,js] of runs)for(const j of js){const b=j===bore?boost:1;let a=(acc.get(j)||0)+j.rate*b*dt;
+      const jj=b>1?Object.assign({},j,{v0:j.v0*Math.sqrt(b),v1:j.v1*Math.sqrt(b)}):j;
+      while(a>=1){a-=1;jet(S,R,jj);}acc.set(j,a);}});
+  ctx.europaPlume={bore,surge:(k,sec)=>{surge.k=k;surge.until=performance.now()+sec*1000;}};
+  const N=plumeS.count()+(ventS?ventS.count():0);
 
   ctx.details=Object.assign(ctx.details||{},{rafts:I.rafts.length,rubble:I.rubble.length,ridgeSlabs:I.shards.length,plumeGrains:N,iceTiles:nT});
 }

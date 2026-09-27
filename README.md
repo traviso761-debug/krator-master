@@ -738,6 +738,21 @@ real, and what is built is what is actually known about its surface.
   shadow are lit from below. Jupiter and the moons are lit by the sun and have phases - Jupiter is full at local
   midnight and new at noon - and the light Jupiter throws on the ice follows its phase.
 
+- **The working station** (`src/europa/details.js`): the lesser buildings are pressurised modules on legs -
+  domed ends, bands, an airlock, a strip of lit windows, a whip antenna, radiators on the labs - with a tank
+  farm on legs and an arched garage; an insulated steam line on trestles from the bore; three dishes following
+  Earth (never more than twelve degrees from the sun, from here) and stowing at night; the derrick's travelling
+  block riding its cable; seismometers out on the ice that blink when they report; survey stakes round the
+  chaos; beacons chasing round the pads; and the crew in suits, loping between the buildings in long low bounds.
+- **Events** (`src/europa/events.js`), every minute or two on their own, or from the **Events** button, each
+  with a line saying what it is and a button to go and look: a **lander** coming down on the field and going
+  again, its exhaust throwing the ice out in flat sheets; an **icequake**, the tide cracking the shell - the
+  view shakes and a new crack opens near the station and stays; the **bore surging**; a **linea venting**, a row
+  of jets a kilometre high; a **meteorite**, with its flash, a cone of ejecta a minute in the falling and a
+  crater that stays; a **radiation alert**, the site lights red and the crew going in. `#event=lander` in the
+  address fires one on arrival (`&eventlook` goes to it). All of them throw grains on ballistic arcs
+  (`src/europa/grains.js`).
+
 Regenerate with `python3 tools/make-europa.py` (it writes `europa-osm.json` and `europa-ice.json`), then
 `./sitectl build`.
 

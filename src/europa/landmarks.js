@@ -116,8 +116,7 @@ export function landmarks(api){
     }
     // the crown block and the travelling block on its cable
     parts.push(box(x,g0+4+H,z,W*1.7,3.4,W*1.7,m.dark));
-    parts.push(box(x,g0+4+H*0.6,z,4,5,4,m.dark));
-    parts.push(box(x,g0+4+H*0.6,z,0.5,H*0.4,0.5,m.steel));
+    // (the travelling block on its cable moves, so it is src/europa/details.js's)
     // the collar at the top of the hole, and the hole
     {const c=new THREE.Mesh(new THREE.CylinderGeometry(7,8,5,14),m.dark);
      c.position.set(x,g0+2.5,z);parts.push(c);
@@ -205,16 +204,7 @@ export function landmarks(api){
         panel.position.set(px,gy+7.6,pz);panel.rotation.set(-0.7,-A,0);parts.push(panel);
       }
     }
-    // the dishes
-    for(let k=0;k<3;k++){
-      const px=x-180+k*70, pz=z-160;
-      const gy=gh(px,pz);
-      parts.push(box(px,gy,pz,4,16,4,m.steel));
-      const dish=new THREE.Mesh(new THREE.SphereGeometry(16,16,10,0,Math.PI*2,0,Math.PI*0.42),m.hull);
-      dish.position.set(px,gy+18,pz);dish.rotation.set(-0.9,0,0.3-k*0.3);parts.push(dish);
-      const horn=new THREE.Mesh(new THREE.ConeGeometry(2,8,8),m.steel);
-      horn.position.set(px,gy+24,pz+5);horn.rotation.x=1.2;parts.push(horn);
-    }
+    // the dishes track Earth, so they are src/europa/details.js's
     // the radiators for the reactor: the biggest thing on the site and nobody ever mentions them
     for(let k=0;k<6;k++){
       const px=x+120, pz=z+40+(k-2.5)*22;
