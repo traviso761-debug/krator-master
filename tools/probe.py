@@ -47,7 +47,7 @@ async function finish(timedOut){if(SHOTPORT&&rd){wantShot=true;await new Promise
 try{const out={timedOut,readyMs:readyAt?Math.round(readyAt-t0):null};const IZ=window._iz||{};for(const k of ['details','cull','res','fps','IZ','loadMs','lotList','doorList','artPrints'])if(window['_'+k]===undefined&&IZ[k]!==undefined)window['_'+k]=IZ[k];
  out.errors=((document.getElementById('errs')||{}).textContent||'')+(window.__probeErrs.length?' | early: '+window.__probeErrs.join('; '):'');out.three=window.THREE&&THREE.REVISION;
  out.load=(window.LOAD||(typeof LOAD!=='undefined'?LOAD:null)||{}).times||null;out.loadMs=window._loadMs||null;
- out.details=window._details||null;out.cull=window._cull||null;out.res=window._res&&window._res.cur;out.fps=window._fps;
+ out.details=window._details||null;out.hash=location.hash;out.cull=window._cull||null;out.res=window._res&&window._res.cur;out.fps=window._fps;
  if(window._IZ&&window._IZ.REG){const B=Object.values(window._IZ.REG).map(r=>r.box);out.atlasRegions=B.length;out.atlasMaxY=Math.max(...B.map(b=>b[1]+b[3]));out.atlasMaxX=Math.max(...B.map(b=>b[0]+b[2]));}
  if(rd&&sc){const inf=rd.info;let n=0,inst=0,cap=0,used=0,pts=0,meshes=0,nocull=0;const mats=new Set();sc.traverse(o=>{n++;if(o.isInstancedMesh){inst++;cap+=o.instanceMatrix.count;used+=o.count;}else if(o.isPoints)pts++;else if(o.isMesh)meshes++;if(o.material)mats.add(o.material);if(o.frustumCulled===false)nocull++;});
   frames=frames.slice(-120);const srt=[...frames].sort((a,b)=>a-b);
@@ -215,6 +215,8 @@ def main():
             print("cull:", json.dumps(report["cull"]))
         if report.get("details"):
             print("details:", json.dumps(report["details"]))
+        if report.get("hash"):
+            print("hash:", report["hash"])
     fp = {k: report.get(k) for k in ("lots", "lotHash", "doors", "doorHash")}
     if report.get("timedOut"):
         print(f"timed out: the page had not finished building after {a.wait}s")

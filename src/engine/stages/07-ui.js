@@ -67,7 +67,6 @@ function stepFly(now){const g=ctl.goal;if(!g)return;const u=Math.min(1,(now-g.t0
 // the panels: viewpoints, the clock, a card for the landmark you click
 const ui=document.getElementById('ui'),viewsEl=document.getElementById('views'),card=document.getElementById('card'),side=document.getElementById('side');
 const VIEWS={};for(const k in C.views){const [f,t]=C.views[k],[fx,fz]=P(f),[tx,tz]=P(t);VIEWS[k]=[fx,f[2],fz,tx,t[2],tz];}   // [lat,lon,height] from and to
-const mkBtn=(label,parent,fn)=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.onclick=fn;parent.appendChild(b);return b;};
 const viewsBtn=mkBtn('Views',ui,()=>{const open=!viewsEl.classList.contains('open');viewsEl.classList.toggle('open',open);viewsBtn.setAttribute('aria-expanded',String(open));});viewsBtn.setAttribute('aria-expanded','false');
 {const h=document.createElement('div');h.className='sub';h.textContent='Viewpoints';viewsEl.appendChild(h);for(const k in VIEWS)mkBtn(k,viewsEl,()=>{setView(...VIEWS[k]);viewsEl.classList.remove('open');viewsBtn.setAttribute('aria-expanded','false');});}
 // the way out: a Home button and a menu of everything else the server is serving (src/core/menagerie.js).
@@ -93,20 +92,24 @@ function clickAt(cx,cy){ndc.set(cx/innerWidth*2-1,-(cy/innerHeight)*2+1);ray.set
   const h=roofAt(px,pz);if(h)showCard({name:'Building',info:`About ${Math.round(h)} m tall. ${districtAt(px,pz).name}.`});else closeCard();}
 function showCard(L){card.innerHTML='';const h=document.createElement('h2');h.textContent=L.name;const p=document.createElement('p');p.textContent=L.info||'';const b=document.createElement('button');b.type='button';b.textContent='Close';b.onclick=closeCard;card.append(h,p,b);card.classList.add('open');card.style.display='block';b.focus();}
 function closeCard(){card.classList.remove('open');card.style.display='';}
-// the address keeps the view and the hour, like the Iziz page: #v=px,py,pz,tx,ty,tz&t=hour
-function stateToHash(){const r1=x=>Math.round(x*10)/10,p=camera.position,t=ctl.target;return '#'+(SEED0!==SEED_DEFAULT?'seed='+SEED0+'&':'')+'v='+[p.x,p.y,p.z,t.x,t.y,t.z].map(r1).join(',')+'&t='+(Math.round(hourCur*20)/20)+(clockPaused?'&paused':'');}
+// the address keeps the view and the hour, like the Iziz page: #v=px,py,pz,tx,ty,tz&t=hour. It is merged into
+// whatever else is there (src/core/hash.js), so the wireframe and a page's own keys survive; #view= only says
+// where the page opened, and goes once the camera has written where it is.
+function hashState(){const r1=x=>Math.round(x*10)/10,p=camera.position,t=ctl.target;return {seed:SEED0!==SEED_DEFAULT?SEED0:null,
+  v:[p.x,p.y,p.z,t.x,t.y,t.z].map(r1).join(','),t:Math.round(hourCur*20)/20,paused:clockPaused,view:null};}
+const HASH_ORDER=['seed','v','t','paused'];
 // #view=<name> opens at one of the city's viewpoints by name, as the starship pages do; #v= wins if both are given
 function readHash(){let q;try{q=new URLSearchParams(location.hash.slice(1));}catch(e){return false;}
   if(!q.has('v')){const vn=q.get('view');if(vn===null)return false;const k=Object.keys(VIEWS).find(n=>n.toLowerCase()===vn.toLowerCase());if(!k)return false;setView(...VIEWS[k],false);
     const t=parseFloat(q.get('t'));if(Number.isFinite(t))setHour(((t%24)+24)%24);return true;}
   const v=(q.get('v')||'').split(',').map(Number);if(v.length===6&&v.every(Number.isFinite))setView(...v,false);
   const t=parseFloat(q.get('t'));if(Number.isFinite(t))setHour(((t%24)+24)%24);if(q.has('paused')&&!clockPaused)pauseBtn.click();return true;}
-let lastHash='',hashT=0;animHooks.push(now=>{if(now-hashT<1500||ctl.goal||ptrs.size)return;hashT=now;const h=stateToHash();if(h!==lastHash){lastHash=h;try{history.replaceState(null,'',h);}catch(e){}}});
+let hashT=0;animHooks.push(now=>{if(now-hashT<1500||ctl.goal||ptrs.size)return;hashT=now;writeHash(hashState(),HASH_ORDER);});
 if(!readHash())setView(...(VIEWS[C.defaultView]||VIEWS['Skyline from the lake']||Object.values(VIEWS)[0]),false);
 {const at=document.createElement('div');at.id='attribution';at.innerHTML=C.attribution||('Map data \u00a9 <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'+(TER?' \u00b7 elevation: AWS Terrain Tiles (SRTM/NED)':''));   // an invented city credits its generator instead
  document.body.appendChild(at);}
 {const hint=document.getElementById('hint');const hide=()=>hint.classList.add('gone');setTimeout(hide,12000);el.addEventListener('pointerdown',hide,{once:true});el.addEventListener('wheel',hide,{once:true,passive:true});}
-addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);updatePx();});
+trackResize(renderer,camera,updatePx);
 if(SEED0!==SEED_DEFAULT)document.getElementById('seedtag').textContent='seed '+SEED0;
 // the controls a page's extras asked for: the panels exist now, so this is where they get built
 Object.assign(API,{ui,side,card,viewsEl,mkBtn,setView,VIEWS,showCard,closeCard,el,ctl,applyCam,setHour,
@@ -137,13 +140,13 @@ function adaptRes(now){const dt=(now-RES.prev)/1000;RES.prev=now;if(dt>0.5||docu
   else if(RES.bad>=2){next=Math.max(RES.min,RES.cur-0.15);RES.bad=0;}
   else if(RES.good>=8){if(RES.cur<RES.max)next=Math.min(RES.max,RES.cur+0.1);else if(DETAIL.k<DETAIL.max)DETAIL.k=Math.min(DETAIL.max,DETAIL.k+0.06);RES.good=0;}
   if(Math.abs(next-RES.cur)>1e-3){RES.cur=+next.toFixed(2);renderer.setPixelRatio(RES.cur);renderer.setSize(innerWidth,innerHeight);updatePx();}}
-ctx.res=RES;let fpsN=0,fpsT=performance.now(),renderErr=false;
-(function animate(){requestAnimationFrame(animate);try{const now=performance.now();adaptRes(now);fpsN++;if(now-fpsT>1000){ctx.fps=fpsN;fpsN=0;fpsT=now;}
-  for(const f of animHooks){try{f(now);}catch(e){if(!f._failed){f._failed=true;report('update',e);}}}stepFly(now);applyKeys();
+ctx.res=RES;let fpsN=0,fpsT=performance.now();
+runLoop(now=>{adaptRes(now);fpsN++;if(now-fpsT>1000){ctx.fps=fpsN;fpsN=0;fpsT=now;}
+  runHooks(animHooks,now);stepFly(now);applyKeys();
   // A page may steer the camera itself: the Flesh Pit's descent is not an orbit round a city centre, it rides a
   // shaft two and a half kilometres down. ctx.camFrame is handed the control state after the engine has had its
   // turn with it and may overwrite any of it; no page that leaves it unset is affected in any way. It is handed
   // ctl.goal as the engine left it, so a page that has taken the camera can see that a viewpoint button was just
   // pressed - a fresh goal object - and hand the camera back rather than sitting there ignoring the panel.
   if(ctx.camFrame){try{ctx.camFrame(now,ctl);}catch(e){if(!ctx.camFrame._failed){ctx.camFrame._failed=true;report('camera',e);}}}
-  applyCam();if(shadowsDue())renderer.shadowMap.needsUpdate=true;renderer.render(scene,camera);}catch(e){if(!renderErr){renderErr=true;report('render',e);}}})();
+  applyCam();if(shadowsDue())renderer.shadowMap.needsUpdate=true;renderer.render(scene,camera);});

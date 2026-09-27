@@ -10,6 +10,8 @@ import {installMenagerie} from '../core/menagerie.js';
 import {createWire,installWireUI} from '../core/wire.js';
 import {world} from './world.js';
 import {mkRng as mkR} from '../core/rng.js';
+import {createRenderer,trackResize,installContextLoss,mkBtn,runHooks,runLoop,finishLoading,boot} from '../core/shell.js';
+import {readHash} from '../core/hash.js';
 
 installErrorHandlers();window.LOAD=LOAD;
 configureLoading({
@@ -61,11 +63,8 @@ async function build(){
   await stage('hull');
   const scene=new THREE.Scene();
   const camera=new THREE.PerspectiveCamera(62,innerWidth/innerHeight,1.5,140000);
-  const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});
-  renderer.setPixelRatio(Math.min(devicePixelRatio,1.8));
-  renderer.setSize(innerWidth,innerHeight);
-  renderer.setClearColor(0x05060a);
-  document.body.appendChild(renderer.domElement);
+  const renderer=createRenderer(THREE,{pixelCap:1.8,clear:0x05060a});
+  installContextLoss(renderer);
   // The light inside is the habitat's own (world.js): the tube, and what bounces off the far valleys. This one
   // is the star it orbits, and it only matters from outside - inside, every surface faces the tube.
   const SUN_DIR=new THREE.Vector3(-0.62,0.34,-0.71).normalize();
@@ -167,8 +166,6 @@ void main(){float land=fb(vP*2.2+3.0);vec3 c=mix(vec3(0.05,0.16,0.34),vec3(0.08,
 
   // the panels: the same furniture every other page has, built here because there is no engine to build it
   const ui=document.getElementById('ui'),viewsEl=document.getElementById('views');
-  const mkBtn=(label,parent,fn)=>{const b=document.createElement('button');b.type='button';b.textContent=label;
-    b.onclick=fn;parent.appendChild(b);return b;};
   const vbtn=mkBtn('Views',ui,()=>{const o=!viewsEl.classList.contains('open');
     viewsEl.classList.toggle('open',o);vbtn.setAttribute('aria-expanded',String(o));});
   vbtn.setAttribute('aria-expanded','false');
@@ -182,7 +179,8 @@ void main(){float land=fb(vP*2.2+3.0);vec3 c=mix(vec3(0.05,0.16,0.34),vec3(0.08,
   // light up. This moves the clock on by a quarter; #tube=0.75 in the address opens at that point of the day
   // (0.25 is noon, 0.75 midnight).
   const tbtn=mkBtn('Later',ui,()=>{H.shift=(H.shift+0.25)%1;});tbtn.title='Move the tube on a quarter of a day';
-  {const m=/(^|&)tube=([\d.]+)/.exec(location.hash.slice(1));if(m)H.shift=((+m[2])-((K.dayStart||0.3)))%1;}
+  const HASH=readHash();
+  {const t=parseFloat(HASH.get('tube'));if(Number.isFinite(t))H.shift=(t-((K.dayStart||0.3)))%1;}
   // the same wireframe every other page has (src/core/wire.js): on a hull this size it is the only way to
   // see that the ground is a tessellation of a cylinder rather than a landscape
   const wire=createWire({THREE,scene,animHooks});
@@ -192,52 +190,42 @@ void main(){float land=fb(vP*2.2+3.0);vec3 c=mix(vec3(0.05,0.16,0.34),vec3(0.08,
 
   // #view=<name> opens at one of the viewpoints, the way #v= does on the engine pages - the camera state
   // here is (u, a, h, yaw, pitch) rather than a position and a target, so it cannot use the same hash.
-  {const m=/(^|&)view=([^&]+)/.exec(location.hash.slice(1));
-   if(m){const want=decodeURIComponent(m[2]).toLowerCase();
+  {const vn=HASH.get('view');
+   if(vn!==null){const want=vn.toLowerCase();
      for(const [name,v] of Object.entries(C.views||{}))if(name.toLowerCase()===want){Object.assign(V,v);if(v.tube!==undefined)H.shift=(v.tube-(K.dayStart||0.3)+1)%1;}}}
 
   const hud=document.createElement('div');hud.id='timebar';hud.style.cssText='font:12px Georgia,serif;color:#e8c98a';
   document.getElementById('side').appendChild(hud);
 
-  addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();
-    renderer.setSize(innerWidth,innerHeight);});
+  trackResize(renderer,camera);
+  finishLoading({hintMs:14000});
 
-  const loading=document.getElementById('loading');if(loading)loading.remove();
-  document.getElementById('hint').classList.remove('gone');
-  setTimeout(()=>document.getElementById('hint').classList.add('gone'),14000);
-
-  let last=performance.now();
-  (function animate(){
-    requestAnimationFrame(animate);
-    try{
-      const now=performance.now(),dt=Math.min(0.05,(now-last)/1000);last=now;
-      if(V.mode==='inside'&&keys.size){
-        const s=(260+V.h*1.4)*dt;
-        if(keys.has('w'))V.u+=Math.cos(V.yaw)*s, V.a+=Math.sin(V.yaw)*s/H.R;
-        if(keys.has('s'))V.u-=Math.cos(V.yaw)*s, V.a-=Math.sin(V.yaw)*s/H.R;
-        if(keys.has('a'))V.a-=Math.cos(V.yaw)*s/H.R;
-        if(keys.has('d'))V.a+=Math.cos(V.yaw)*s/H.R;
-        if(keys.has('q'))V.h=Math.max(6,V.h-s*0.6);
-        if(keys.has('e'))V.h=Math.min(H.R*0.98,V.h+s*0.6);
-        V.u=Math.max(200,Math.min(H.L-200,V.u));
-      }
-      for(const f of animHooks){try{f(now);}catch(e){if(!f._failed){f._failed=true;report('update',e);}}}
-      // outside, the air is behind the glass and the light is the star's
-      const outside=V.mode==='outside';
-      scene.fog.density=outside?0:H.fog;starLight.intensity=outside?1.1:0;
-      if(outside)H.ambient.intensity=Math.max(H.ambient.intensity,0.18);   // the planet's light on the night side of the hull
-      if(ctx.planet){ctx.planet.rotation.y=now*0.000004;ctx.planet.material.uniforms.uT.value=now/1000;}
-      frame();
-      // the hour, from the tube: it is brightest at noon and dimmest at midnight
-      const hr=((H.day*24+6)%24),hh=Math.floor(hr),mm=Math.floor((hr-hh)*60);
-      const clock=String(hh).padStart(2,'0')+':'+String(mm).padStart(2,'0');
-      hud.textContent=(V.mode==='outside'?'outside the hull, turning once every '+(K.spin||114)+' s'
-        :(Math.round(V.h)+' m over the valley floor · '+(V.u/1000).toFixed(1)+' km along'))+' · '+clock;
-      renderer.render(scene,camera);
-    }catch(e){report('render',e);}
-  })();
+  runLoop((now,dt)=>{
+    if(V.mode==='inside'&&keys.size){
+      const s=(260+V.h*1.4)*dt;
+      if(keys.has('w'))V.u+=Math.cos(V.yaw)*s, V.a+=Math.sin(V.yaw)*s/H.R;
+      if(keys.has('s'))V.u-=Math.cos(V.yaw)*s, V.a-=Math.sin(V.yaw)*s/H.R;
+      if(keys.has('a'))V.a-=Math.cos(V.yaw)*s/H.R;
+      if(keys.has('d'))V.a+=Math.cos(V.yaw)*s/H.R;
+      if(keys.has('q'))V.h=Math.max(6,V.h-s*0.6);
+      if(keys.has('e'))V.h=Math.min(H.R*0.98,V.h+s*0.6);
+      V.u=Math.max(200,Math.min(H.L-200,V.u));
+    }
+    runHooks(animHooks,now);
+    // outside, the air is behind the glass and the light is the star's
+    const outside=V.mode==='outside';
+    scene.fog.density=outside?0:H.fog;starLight.intensity=outside?1.1:0;
+    if(outside)H.ambient.intensity=Math.max(H.ambient.intensity,0.18);   // the planet's light on the night side of the hull
+    if(ctx.planet){ctx.planet.rotation.y=now*0.000004;ctx.planet.material.uniforms.uT.value=now/1000;}
+    frame();
+    // the hour, from the tube: it is brightest at noon and dimmest at midnight
+    const hr=((H.day*24+6)%24),hh=Math.floor(hr),mm=Math.floor((hr-hh)*60);
+    const clock=String(hh).padStart(2,'0')+':'+String(mm).padStart(2,'0');
+    hud.textContent=(V.mode==='outside'?'outside the hull, turning once every '+(K.spin||114)+' s'
+      :(Math.round(V.h)+' m over the valley floor · '+(V.u/1000).toFixed(1)+' km along'))+' · '+clock;
+    renderer.render(scene,camera);
+  });
   ctx.details=Object.assign(ctx.details||{},{habitat:C.name});
 }
 
-requestAnimationFrame(()=>setTimeout(()=>{build().catch(e=>{report('build',e);
-  const l=document.getElementById('loading');if(l)l.remove();});},30));
+boot(build);

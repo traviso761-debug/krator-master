@@ -5,6 +5,7 @@
 // and a half kilometres deep is not a footprint pushed upwards — it is built by organism.js, and the page rides
 // it with a camera of its own (camera.js) that no other city loads or is affected by.
 import {report,LOAD,configureLoading,installErrorHandlers} from '../core/diag.js';
+import {boot} from '../core/shell.js';
 import {build} from '../engine/build.js';
 import {landmarks} from './landmarks.js';
 import {surface} from './surface.js';
@@ -33,4 +34,4 @@ configureLoading({
   prefix:'opening the park… ',labels:{tunnels:'gating the passages',section:'cutting the section',anatomy:'finding the heart',promenade:'laying the paths',visitors:'opening the gates',fauna:'counting the copepods',incident:'filing the report','map-data':'reading the survey',ground:'laying the caliche',buildings:'raising the visitor center',details:'planting the mesquite',landmarks:'railing off the lip',el:'running the monorail',traffic:'opening the road',organism:'descending',ui:'opening the windows'}});
 const ctx=window._iz={defaultCity:'fleshpit',models:[landmarks,surface],
   extras:[{name:'organism',fn:organism},{name:'tunnels',fn:tunnels},{name:'anatomy',fn:anatomy},{name:'promenade',fn:promenade},{name:'visitors',fn:visitors},{name:'fauna',fn:fauna},{name:'incident',fn:incident},{name:'section',fn:section},{name:'descent',fn:descent}]};
-requestAnimationFrame(()=>setTimeout(()=>{build(ctx).catch(e=>{report('build',e);const l=document.getElementById('loading');if(l)l.remove();});},30));
+boot(()=>build(ctx));

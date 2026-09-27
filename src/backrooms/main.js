@@ -11,6 +11,8 @@
 import {report,LOAD,configureLoading,installErrorHandlers,stage} from '../core/diag.js';
 import {installMenagerie} from '../core/menagerie.js';
 import {createWire,installWireUI} from '../core/wire.js';
+import {createRenderer,trackResize,installContextLoss,mkBtn as mkBtn0,runHooks,runLoop,finishLoading,boot} from '../core/shell.js';
+import {readHash,writeHash as mergeHash} from '../core/hash.js';
 import {createWorld,LEVELS,ORDER,C} from './level.js';
 import {makeTextures} from './textures.js';
 import {createSound} from './sound.js';
@@ -38,7 +40,7 @@ async function build(){
     'three.js did not load (vendor/three/three.min.js). Check the site mounts and reload.';return;}
   const THREE=window.THREE;
   await stage('config');
-  const HASH=new URLSearchParams(location.hash.slice(1));
+  const HASH=readHash();
   const S={seed:+HASH.get('seed')||+new URLSearchParams(location.search).get('seed')||1+Math.floor(Math.random()*999998),level:+(HASH.get('level')||0)};
   if(!LEVELS[S.level])S.level=0;
 
@@ -46,10 +48,8 @@ async function build(){
   const scene=new THREE.Scene();
   const camera=new THREE.PerspectiveCamera(72,innerWidth/innerHeight,0.05,90);
   camera.rotation.order='YXZ';
-  const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});
-  renderer.setPixelRatio(Math.min(devicePixelRatio,1.6));
-  renderer.setSize(innerWidth,innerHeight);
-  document.body.appendChild(renderer.domElement);
+  const renderer=createRenderer(THREE,{pixelCap:1.6});
+  installContextLoss(renderer);
   const animHooks=[];
 
   await stage('textures');
@@ -85,10 +85,7 @@ async function build(){
       if(W.floorAt((4+a+0.5)*C,(4+b+0.5)*C)>=0){gx=4+a;gz=4+b;break search;}
     P.x=C*(gx+0.5);P.z=C*(gz+0.5);P.yaw=W.openHeading(gx,gz);P.pitch=0;P.walked=0;P.y=W.floorAt(P.x,P.z)+1.6;}
   function writeHash(){
-    const h=new URLSearchParams(location.hash.slice(1));
-    h.set('seed',S.seed);h.set('level',S.level);h.set('at',[P.x.toFixed(1),P.z.toFixed(1),P.yaw.toFixed(2)].join(','));
-    if(GOD.on)h.set('god',Math.round(GOD.H));else h.delete('god');
-    history.replaceState(null,'','#'+h.toString().replace(/%2C/g,','));
+    mergeHash({seed:S.seed,level:S.level,at:[P.x.toFixed(1),P.z.toFixed(1),P.yaw.toFixed(2)].join(','),god:GOD.on?Math.round(GOD.H):null});
   }
 
   await stage('rooms');
@@ -141,8 +138,7 @@ async function build(){
 
   // ---- the panels ----
   const ui=document.getElementById('ui');
-  const mkBtn=(label,parent,fn)=>{const b=document.createElement('button');b.type='button';b.textContent=label;
-    b.onclick=e=>{e.stopPropagation();fn();};parent.appendChild(b);return b;};
+  const mkBtn=(label,parent,fn)=>mkBtn0(label,parent,()=>fn(),{stop:true});
   const flash=document.getElementById('noclip');
   let busy=false;
   // Falling out of the level: the screen goes to static for a moment, and when it comes back you are
@@ -196,53 +192,47 @@ async function build(){
 
   const hud=document.createElement('div');hud.id='timebar';document.getElementById('side').appendChild(hud);
 
-  addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();
-    renderer.setSize(innerWidth,innerHeight);});
-  const loading=document.getElementById('loading');if(loading)loading.remove();
-  const hint=document.getElementById('hint');hint.classList.remove('gone');setTimeout(()=>hint.classList.add('gone'),16000);
+  trackResize(renderer,camera);
+  finishLoading({hintMs:16000});
 
-  let last=performance.now(),hashAt=0;
+  let hashAt=0;
   const f=new THREE.Vector3();
-  (function animate(){
-    requestAnimationFrame(animate);
-    try{
-      const now=performance.now(),dt=Math.min(0.05,(now-last)/1000);last=now;uT.value=now/1000;
-      // walking
-      let fw=0,st=0;
-      if(keys.has('w')||keys.has('arrowup'))fw+=1;if(keys.has('s')||keys.has('arrowdown'))fw-=1;
-      if(keys.has('d'))st+=1;if(keys.has('a'))st-=1;
-      if(keys.has('arrowleft'))P.yaw+=1.8*dt;if(keys.has('arrowright'))P.yaw-=1.8*dt;
-      if(stick){fw-=Math.max(-1,Math.min(1,stick.dy/60));st+=Math.max(-1,Math.min(1,stick.dx/60));}
-      const len=Math.hypot(fw,st);
-      if(len>0.05){
-        // from above, the keys go the way the screen does (W is up it, north) and the walker turns to face the way they go
-        if(GOD.on){P.yaw=Math.atan2(-st,fw);}
-        const sp=(keys.has('shift')?4.0:1.5)*(GOD.on?1.6:1)*dt/Math.max(1,len)*(GOD.on?len:1),sy=Math.sin(P.yaw),cy=Math.cos(P.yaw);
-        const ox=P.x,oz=P.z;
-        if(GOD.on){P.x+=-sy*sp;P.z+=-cy*sp;}else{P.x+=(-sy*fw+cy*st)*sp;P.z+=(-cy*fw-sy*st)*sp;}
-        W.collide(P,0.3);
-        const d=Math.hypot(P.x-ox,P.z-oz);P.walked+=d;P.bob+=d*3.6;
-      }
-      // the floor under you: the step down into a pool is a drop, the step out is a climb
-      const eye=W.floorAt(P.x,P.z)+1.6;P.y+=(eye-P.y)*Math.min(1,dt*(eye<P.y?6:9));
-      const ceil=W.ceilAt(P.x,P.z);
-      if(GOD.on){camera.position.set(P.x,P.y-1.6+GOD.H,P.z);camera.rotation.set(-Math.PI/2,0,0);
-        marker.position.set(P.x,P.y-1.55,P.z);marker.rotation.y=P.yaw;marker.scale.setScalar(Math.max(1,GOD.H/25));}
-      else{camera.position.set(P.x,Math.min(P.y+Math.sin(P.bob)*0.025,ceil-0.15),P.z);
-        camera.rotation.set(P.pitch,P.yaw,0);}
-      const added=W.update(P.x,P.z,6,!GOD.on||GOD.H<=60?2:GOD.H<=90?3:4);if(added)refreshWire();
-      if(wireDirty&&!W.pending)rebuildWire();
-      for(const fn of animHooks){try{fn(now);}catch(e){if(!fn._failed){fn._failed=true;report('update',e);}}}
-      if(now-hashAt>1500){hashAt=now;writeHash();}
-      const L=W.L;
-      hud.textContent=`${L.name.toUpperCase()} · ${L.sub} · ${P.walked<1000?Math.round(P.walked)+' m':(P.walked/1000).toFixed(2)+' km'} wandered`;
-      sound.tick(dt,P);
-      renderer.render(scene,camera);
-    }catch(e){report('render',e);}
-  })();
+  runLoop((now,dt)=>{
+    uT.value=now/1000;
+    // walking
+    let fw=0,st=0;
+    if(keys.has('w')||keys.has('arrowup'))fw+=1;if(keys.has('s')||keys.has('arrowdown'))fw-=1;
+    if(keys.has('d'))st+=1;if(keys.has('a'))st-=1;
+    if(keys.has('arrowleft'))P.yaw+=1.8*dt;if(keys.has('arrowright'))P.yaw-=1.8*dt;
+    if(stick){fw-=Math.max(-1,Math.min(1,stick.dy/60));st+=Math.max(-1,Math.min(1,stick.dx/60));}
+    const len=Math.hypot(fw,st);
+    if(len>0.05){
+      // from above, the keys go the way the screen does (W is up it, north) and the walker turns to face the way they go
+      if(GOD.on){P.yaw=Math.atan2(-st,fw);}
+      const sp=(keys.has('shift')?4.0:1.5)*(GOD.on?1.6:1)*dt/Math.max(1,len)*(GOD.on?len:1),sy=Math.sin(P.yaw),cy=Math.cos(P.yaw);
+      const ox=P.x,oz=P.z;
+      if(GOD.on){P.x+=-sy*sp;P.z+=-cy*sp;}else{P.x+=(-sy*fw+cy*st)*sp;P.z+=(-cy*fw-sy*st)*sp;}
+      W.collide(P,0.3);
+      const d=Math.hypot(P.x-ox,P.z-oz);P.walked+=d;P.bob+=d*3.6;
+    }
+    // the floor under you: the step down into a pool is a drop, the step out is a climb
+    const eye=W.floorAt(P.x,P.z)+1.6;P.y+=(eye-P.y)*Math.min(1,dt*(eye<P.y?6:9));
+    const ceil=W.ceilAt(P.x,P.z);
+    if(GOD.on){camera.position.set(P.x,P.y-1.6+GOD.H,P.z);camera.rotation.set(-Math.PI/2,0,0);
+      marker.position.set(P.x,P.y-1.55,P.z);marker.rotation.y=P.yaw;marker.scale.setScalar(Math.max(1,GOD.H/25));}
+    else{camera.position.set(P.x,Math.min(P.y+Math.sin(P.bob)*0.025,ceil-0.15),P.z);
+      camera.rotation.set(P.pitch,P.yaw,0);}
+    const added=W.update(P.x,P.z,6,!GOD.on||GOD.H<=60?2:GOD.H<=90?3:4);if(added)refreshWire();
+    if(wireDirty&&!W.pending)rebuildWire();
+    runHooks(animHooks,now);
+    if(now-hashAt>1500){hashAt=now;writeHash();}
+    const L=W.L;
+    hud.textContent=`${L.name.toUpperCase()} · ${L.sub} · ${P.walked<1000?Math.round(P.walked)+' m':(P.walked/1000).toFixed(2)+' km'} wandered`;
+    sound.tick(dt,P);
+    renderer.render(scene,camera);
+  });
   ctx.details=Object.assign(ctx.details||{},{chunks:W.live.size});
   ctx.walker=P;ctx.world=()=>W;
 }
 
-requestAnimationFrame(()=>setTimeout(()=>{build().catch(e=>{report('build',e);
-  const l=document.getElementById('loading');if(l)l.remove();});},30));
+boot(build);

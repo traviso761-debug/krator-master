@@ -16,6 +16,7 @@
 //
 // The trick for "hidden" and "xray" is one pair of material flags rather than layers: colorWrite off with
 // depthWrite on gives a solid that occludes and does not draw, which is exactly a hidden-line view.
+import {writeHash} from './hash.js';
 
 const CAT={ground:0x6f8f5a,water:0x3d8fd0,road:0xb0a894,building:0xe8a85a,
            landmark:0xf2d9a8,veg:0x62d68a,life:0xff7ab8,light:0xffe36a,structure:0xcfd4da};
@@ -126,6 +127,9 @@ export function createWire(opts){
 // The two buttons, in whatever button bar the page has. The second only appears once the wire is on,
 // because "what is behind it" means nothing until there is a wire in front of something.
 export function installWireUI({ui,mkBtn,wire,hash}){
+  // what the wire shows is kept in the address with everything else (#wire=edges&under=xray), merged in so
+  // it neither wipes nor is wiped by the camera's own keys
+  const keep=()=>writeHash(wire.state.mode==='off'?{wire:null,under:null}:{wire:wire.state.mode,under:wire.state.under==='solid'?null:wire.state.under});
   // The first press has to build the thing - every mesh in the city gets a twin made of its own edges - and
   // on a page the size of Mega-City One that is a second or two with the frame stopped. So the button says
   // what it is doing and the work waits two frames, which is long enough for the label to be painted.
@@ -140,7 +144,7 @@ export function installWireUI({ui,mkBtn,wire,hash}){
         try{
           wire.set(next);
           b.textContent=label(next)+' ('+wire.state.n+')';
-          b.setAttribute('aria-pressed','true');u.style.display='';
+          b.setAttribute('aria-pressed','true');u.style.display='';keep();
         }catch(e){
           // a failed build must not leave the button stuck on "building" with the frame's error unexplained
           b.textContent='Wire: failed';b.title=String(e&&e.message||e);throw e;
@@ -151,11 +155,11 @@ export function installWireUI({ui,mkBtn,wire,hash}){
     const m=wire.set(next);
     b.textContent=label(m);
     b.setAttribute('aria-pressed',String(m!=='off'));
-    u.style.display=m==='off'?'none':'';});
+    u.style.display=m==='off'?'none':'';keep();});
   b.setAttribute('aria-pressed','false');
   b.title='Draw the model as its own edges, or as every triangle in it';
   const u=mkBtn('Under: solid',ui,()=>{const s=wire.cycleUnder();
-    u.textContent='Under: '+s;});
+    u.textContent='Under: '+s;keep();});
   u.style.display='none';
   u.title='The solid under the wire: draw it, hide it but let it block what is behind, or drop it entirely';
   // #wire=edges&under=xray opens straight into it

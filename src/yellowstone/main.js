@@ -4,6 +4,7 @@
 // springs, the falls and the lodges (landmarks.js), and the forest, the steam, the rivers, the herds and the
 // caldera (nature.js), which read the land file the generator writes beside the map.
 import {report,LOAD,configureLoading,installErrorHandlers} from '../core/diag.js';
+import {boot} from '../core/shell.js';
 import {build} from '../engine/build.js';
 import {landmarks} from './landmarks.js';
 import {nature} from './nature.js';
@@ -26,7 +27,6 @@ configureLoading({
 const ctx=window._iz={defaultCity:'yellowstone',models:[landmarks],extras:[{name:'nature',fn:nature}]};
 // the land cover, the caldera and the basins are not map data the engine reads, so they come in their own file,
 // fetched before the build so that the extras can use them synchronously like everything else they are handed
-requestAnimationFrame(()=>setTimeout(()=>{
-  fetch('data/cities/yellowstone-land.json').then(r=>{if(!r.ok)throw new Error('yellowstone-land.json: HTTP '+r.status);return r.json();})
-    .then(land=>{ctx.ysLand=land;},e=>report('land',e))
-    .then(()=>build(ctx)).catch(e=>{report('build',e);const l=document.getElementById('loading');if(l)l.remove();});},30));
+boot(()=>fetch('data/cities/yellowstone-land.json').then(r=>{if(!r.ok)throw new Error('yellowstone-land.json: HTTP '+r.status);return r.json();})
+  .then(land=>{ctx.ysLand=land;},e=>report('land',e))
+  .then(()=>build(ctx)));

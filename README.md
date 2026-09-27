@@ -1162,6 +1162,7 @@ data/
   lexicon.json                Izani words, inscriptions, place names, lore, canon
 src/
   core/   diag.js rng.js env.js data.js      error reporting + staged loading, randomness/noise, shader environment, data expressions
+          shell.js hash.js                  the page shell (renderer, resize, context loss, buttons, loop, boot) and the address (merged, never wiped)
   izani/  glyphs.js draw.js atlas.js          the script: strokes/layout/SVG (pure), canvas drawing, the texture atlas
   iziz/   main.js imports.js stages/*.js build.js   the Iziz build: 56 stage files, assembled into build.js
   engine/ imports.js stages/*.js build.js    the shared engine: 11 stage files, assembled into build.js.

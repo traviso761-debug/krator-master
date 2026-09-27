@@ -6,6 +6,7 @@
 // (buildings.js), the work in the fields (fields.js), what moves (life.js), and Bilbo's party (party.js). Film
 // details - the Party Tree and its pond, Sam's yellow door, the double-arched bridge, Gandalf's cart - sit beside Tolkien's where both exist.
 import {report,LOAD,configureLoading,installErrorHandlers} from '../core/diag.js';
+import {boot} from '../core/shell.js';
 import {build} from '../engine/build.js';
 import {sceneRows} from '../core/layout.js';
 import {ground} from './ground.js';
@@ -85,5 +86,5 @@ let ctx0=null;
   const ctx=ctx0=window._iz={defaultCity:'shire',plan,
     extras:[{name:'shireground',fn:ground},{name:'shirewater',fn:water},{name:'country',fn:country},{name:'holes',fn:holes},
       {name:'shirebuildings',fn:buildings},{name:'fields',fn:fields},{name:'life',fn:life},{name:'party',fn:party},{name:'views',fn:views},{name:'fingerprint',fn:fingerprint},{name:'cards',fn:a=>a.onUI(()=>cards(a))}]};
-  requestAnimationFrame(()=>setTimeout(()=>{build(ctx).catch(e=>{report('build',e);const l=document.getElementById('loading');if(l)l.remove();});},30));
+  boot(()=>build(ctx));
 })();
