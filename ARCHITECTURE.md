@@ -21,7 +21,13 @@ are listed in §7. File:line references are as of this date.
 > binding table signed off on 2026-09-26 (README, Controls) and the key and pointer trackers with their guards;
 > the engine, the starship page, Kyrene, the Backrooms, the City and Babylon 5's interior use them, and every one
 > turns the same way (`tools/probe.py --input` drags and checks). `src/core/cylinder.js` is the drum walker
-> Kyrene and Babylon 5 share. `ctx.camFrame` is a stack (`ctx.pushCam`). The later phases are not started.
+> Kyrene and Babylon 5 share. `ctx.camFrame` is a stack (`ctx.pushCam`). Phase 5 is done in part: Iziz's renderer,
+> context loss, resize, loop, adaptive resolution (now one helper with the engine's, `createAdaptiveRes`, which
+> gives up detail before pixels and remembers a ratio that proved too much), pointers, keys and address come from
+> core, and its townsfolk draw on a stream of their own. Two things stay: Iziz's wireframe, which does more than
+> `core/wire.js` (life on its own layers, clay and district colours, a terrain lattice) and would need those
+> added to core first; and `section()` round the UI tail, which needs the render loop started before the UI
+> stages rather than at the end of them. Phases 6-8 are not started.
 
 There is no physics engine as such. The nearest things are the flight model (`src/core/flight.js`, kinematic,
 no stall), the Backrooms' circle-against-walls collision (`src/backrooms/level.js:409`), the City's
@@ -280,8 +286,8 @@ Alongside: rename `tools/build-voth.py` → `tools/build-krator.py`, and fix REA
 
 - three.js is still r128. The bump needs a visual re-tune of every page and should come after the core
   extraction, so that it is done once.
-- The UI tail of Iziz is still outside `section()`, so an exception there means no frame renders.
-- Named RNG streams for Iziz. Townsfolk still draw from the layout stream every frame.
+- The UI tail of Iziz is still outside `section()`, so an exception there means no frame renders. (Still open after phase 5.)
+- ~~Named RNG streams for Iziz. Townsfolk still draw from the layout stream every frame.~~ Done in phase 5: the townsfolk have their own stream.
 - Streets rasterised to a typed array (two `getImageData` calls remain).
 - The light-count reduction and the atlas shrink.
 

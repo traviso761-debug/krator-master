@@ -79,3 +79,21 @@ export function boot(build){
   requestAnimationFrame(()=>setTimeout(()=>{Promise.resolve().then(build).catch(e=>{report('build',e);
     const l=document.getElementById('loading');if(l)l.remove();});},30));
 }
+
+// Adaptive resolution: when frames run slow (under 45 a second for two seconds) drop the pixel ratio, and
+// creep back up when there is headroom (over 56 for eight). A level that proved too much within twelve seconds
+// of being tried becomes the ceiling, so it does not see-saw. `shed()` is offered the chance first to give up
+// something cheaper than pixels (the engine's distant detail) and returns true if it did; `regain()` gets it
+// back once the resolution is at its ceiling. `after()` runs whenever the ratio changes.
+export function createAdaptiveRes(renderer,{cap=1.5,min=0.6,shed,regain,after}={}){
+  const RES={max:Math.min(devicePixelRatio,cap),cur:Math.min(devicePixelRatio,cap),min,acc:0,n:0,good:0,bad:0,prev:performance.now(),raisedAt:0,raisedFrom:0};
+  RES.tick=now=>{const dt=(now-RES.prev)/1000;RES.prev=now;if(dt>0.5||document.hidden)return;RES.acc+=dt;RES.n++;if(RES.acc<1)return;
+    const fps=RES.n/RES.acc;RES.acc=0;RES.n=0;
+    if(fps<45){RES.bad++;RES.good=0;}else if(fps>56){RES.good++;RES.bad=0;}else{RES.good=0;RES.bad=0;}
+    let next=RES.cur;
+    if(RES.bad>=2&&shed&&shed()){RES.bad=0;}
+    else if(RES.bad>=2){next=Math.max(RES.min,RES.cur-0.15);RES.bad=0;if(now-RES.raisedAt<12000)RES.max=Math.max(RES.min,RES.raisedFrom);}
+    else if(RES.good>=8){if(RES.cur<RES.max){next=Math.min(RES.max,RES.cur+0.1);RES.raisedAt=now;RES.raisedFrom=RES.cur;}else if(regain)regain();RES.good=0;}
+    if(Math.abs(next-RES.cur)>1e-3){RES.cur=+next.toFixed(2);renderer.setPixelRatio(RES.cur);renderer.setSize(innerWidth,innerHeight);if(after)after();}};
+  return RES;
+}

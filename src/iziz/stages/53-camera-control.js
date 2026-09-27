@@ -15,7 +15,7 @@ function stepFly(now){if(!fly||WALK.on)return;const u=clamp((now-fly.t0)/fly.dur
 const WALK={on:false,x:0,z:0,y:0,yaw:0,pitch:0,bob:0,last:0};
 function walkOpen(x,z){return ctx.walkBlocked?!ctx.walkBlocked(x,z):true;}
 function stepWalk(now){const dt=Math.min(0.05,(now-(WALK.last||now))/1000);WALK.last=now;
-  const f=(keys.has('w')?1:0)-(keys.has('s')?1:0)+(WALK.hold||0),st=(keys.has('d')?1:0)-(keys.has('a')?1:0);if(!f&&!st)return;
+  const K=(k,ar)=>keys.has(k)||keys.has(ar),f=(K('w','arrowup')?1:0)-(K('s','arrowdown')?1:0)+(WALK.hold||0),st=(K('d','arrowright')?1:0)-(K('a','arrowleft')?1:0);if(!f&&!st)return;
   const sp=(keys.has('shift')?12:5.5)*dt,sy=Math.sin(WALK.yaw),cy=Math.cos(WALK.yaw),len=Math.hypot(f,st)||1;
   const dx=(sy*f-cy*st)/len*sp,dz=(cy*f+sy*st)/len*sp;
   if(walkOpen(WALK.x+dx,WALK.z+dz)){WALK.x+=dx;WALK.z+=dz;}else if(walkOpen(WALK.x+dx,WALK.z)){WALK.x+=dx;}else if(walkOpen(WALK.x,WALK.z+dz)){WALK.z+=dz;}
@@ -54,28 +54,28 @@ function updateCam(){
    ENV.izHour.value=h;ENV.izDay.value=day;ENV.izNight.value=nightF(h);ENV.izSunDir.value.copy(d);ENV.izLight.value=(0.42+0.58*day)*(1-0.3*rain);
    ctx.hour=h;}
 }
-const el=renderer.domElement,ptrs=new Map();let pinchD=0,pinchMid=null;
-function mid(){const a=[...ptrs.values()];return {x:(a[0].x+a[1].x)/2,y:(a[0].y+a[1].y)/2,d:Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y)};}
-el.addEventListener('pointerdown',e=>{if(ctx.stopTour)ctx.stopTour();fly=null;closePanels();ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY,pan:e.pointerType==='mouse'&&(e.button===1||e.button===2||e.shiftKey)});el.setPointerCapture(e.pointerId);if(ptrs.size===2){const q=mid();pinchD=q.d;pinchMid=q;}});
-el.addEventListener('pointermove',e=>{
-  if(!ptrs.has(e.pointerId))return;const prev=ptrs.get(e.pointerId);
-  if(WALK.on){if(ptrs.size===1){WALK.yaw-=(e.clientX-prev.x)*0.0045;WALK.pitch=clamp(WALK.pitch-(e.clientY-prev.y)*0.0045,-1.2,1.2);}ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY,pan:prev.pan});return;}
-  if(ptrs.size===1){if(prev.pan)pan(e.clientX-prev.x,e.clientY-prev.y);else{ctl.theta-=(e.clientX-prev.x)*0.005;ctl.phi=clamp(ctl.phi-(e.clientY-prev.y)*0.005,0.05,2.6);}}
-  ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY,pan:prev.pan});
-  if(ptrs.size===2){const q=mid();ctl.radius=clamp(ctl.radius*pinchD/q.d,4,1800);pan(q.x-pinchMid.x,q.y-pinchMid.y);pinchD=q.d;pinchMid=q;}
-});
-const endP=e=>{ptrs.delete(e.pointerId);};el.addEventListener('pointerup',endP);el.addEventListener('pointercancel',endP);
-el.addEventListener('wheel',e=>{e.preventDefault();if(ctx.stopTour)ctx.stopTour();if(WALK.on)return;fly=null;const px=e.deltaMode===1?e.deltaY*16:e.deltaMode===2?e.deltaY*innerHeight:e.deltaY;   // proportional: a mouse notch is ~15%, a trackpad glides
-  ctl.radius=clamp(ctl.radius*Math.exp(clamp(px*(e.ctrlKey?4:1),-240,240)*0.0015),4,1800);},{passive:false});
-el.addEventListener('contextmenu',e=>e.preventDefault());
+// the site's controls (src/core/input.js): drag to orbit (walking: to look), right, middle or Shift-drag to pan,
+// the wheel or a pinch to zoom
+const el=renderer.domElement;
+const PTR=trackPointers(el,{
+  down:()=>{if(ctx.stopTour)ctx.stopTour();fly=null;closePanels();},
+  drag:(dx,dy,{pan:p})=>{
+    if(WALK.on){WALK.yaw-=dx*0.0045;WALK.pitch=clamp(WALK.pitch-dy*0.0045,-1.2,1.2);return;}
+    if(p)pan(dx,dy);else{ctl.theta-=dx*ORBIT_RATE;ctl.phi=clamp(ctl.phi-dy*ORBIT_RATE,0.05,2.6);}},
+  pinch:(ratio,dx,dy)=>{if(WALK.on)return;ctl.radius=clamp(ctl.radius*ratio,4,1800);pan(dx,dy);},
+  wheel:(dy0,e)=>{if(ctx.stopTour)ctx.stopTour();if(WALK.on)return;fly=null;const px=e.deltaMode===1?dy0*16:e.deltaMode===2?dy0*innerHeight:dy0;   // proportional: a mouse notch is ~15%, a trackpad glides
+    ctl.radius=clamp(ctl.radius*Math.exp(clamp(px*(e.ctrlKey?4:1),-240,240)*0.0015),4,1800);}});
 function pan(dx,dy){if(ctx.stopFollow)ctx.stopFollow();const k=2*ctl.radius*Math.tan(camera.fov*Math.PI/360)/innerHeight;const fwd=new THREE.Vector3(Math.sin(ctl.theta),0,Math.cos(ctl.theta));const right=new THREE.Vector3(-fwd.z,0,fwd.x);ctl.target.addScaledVector(right,-dx*k).addScaledVector(fwd,dy*k);}
-const typing=e=>{const t=e.target;return !!t&&(t.tagName==='INPUT'&&t.type!=='range'||t.tagName==='TEXTAREA');};
-const ARROWS={ArrowUp:'w',ArrowDown:'s',ArrowLeft:'a',ArrowRight:'d'};
-const keys=new Set();addEventListener('keydown',e=>{if(WALK.on&&ARROWS[e.key]&&!typing(e)){e.preventDefault();keys.add(ARROWS[e.key]);return;}if(e.key==='Escape'){closePanels();if(ctx.closeCard)ctx.closeCard();if(ctx.stopTour)ctx.stopTour();if(WALK.on&&ctx.exitWalk)ctx.exitWalk();return;}if(typing(e)||e.ctrlKey||e.metaKey||e.altKey)return;const k=e.key.toLowerCase();if(k==='h'&&!e.repeat){toggleBare();return;}if(k==='shift')keys.add('shift');if('wasdqe'.includes(k)&&k.length===1&&ctx.stopTour)ctx.stopTour();if('wasdqe'.includes(k)&&k.length===1){keys.add(k);fly=null;}});addEventListener('keyup',e=>{keys.delete(ARROWS[e.key]||e.key.toLowerCase());});addEventListener('blur',()=>keys.clear());
+// the keys: W A S D (walking, the arrows too) and Q E, Shift five times as fast (walking: to run), H hides the
+// interface, Esc closes whatever is open
+const keys=trackKeys({arrows:true,onKey:(k,e,held)=>{
+  if(held){if(WALK.on&&k.startsWith('arrow'))e.preventDefault();if(!k.startsWith('arrow')){if(ctx.stopTour)ctx.stopTour();fly=null;}return;}
+  if(k==='escape'){closePanels();if(ctx.closeCard)ctx.closeCard();if(ctx.stopTour)ctx.stopTour();if(WALK.on&&ctx.exitWalk)ctx.exitWalk();return;}
+  if(k==='h'&&!e.repeat){toggleBare();return;}}});
 // per second, not per frame: see the note in the engine's 07-ui.js
 let keyT=performance.now();
 function applyKeys(){const tNow=performance.now(),dt=Math.min(0.05,(tNow-keyT)/1000);keyT=tNow;
-  if(WALK.on)return stepWalk(performance.now());if(['w','a','s','d','q','e'].some(x=>keys.has(x))&&ctx.stopFollow)ctx.stopFollow();const k=(ctl.radius*0.012+0.4)*60*dt;const fwd=new THREE.Vector3(Math.sin(ctl.theta),0,Math.cos(ctl.theta));const right=new THREE.Vector3(-fwd.z,0,fwd.x);
+  if(WALK.on)return stepWalk(performance.now());if(['w','a','s','d','q','e'].some(x=>keys.has(x))&&ctx.stopFollow)ctx.stopFollow();const k=(ctl.radius*0.012+0.4)*60*dt*(keys.has('shift')?FAST:1);const fwd=new THREE.Vector3(Math.sin(ctl.theta),0,Math.cos(ctl.theta));const right=new THREE.Vector3(-fwd.z,0,fwd.x);
   if(keys.has('w'))ctl.target.addScaledVector(fwd,-k);if(keys.has('s'))ctl.target.addScaledVector(fwd,k);
   if(keys.has('a'))ctl.target.addScaledVector(right,k);if(keys.has('d'))ctl.target.addScaledVector(right,-k);
   if(keys.has('q'))ctl.target.y-=k;if(keys.has('e'))ctl.target.y+=k;ctl.target.y=Math.max(ctl.target.y,CHASM);}
@@ -145,27 +145,30 @@ function saveView(){let name=svName.value.trim()||('View '+(savedViews.length+1)
 svBtn.onclick=saveView;
 // the address keeps the view, the hour, the display and the weather, so a link reopens exactly this
 const HASH_OK={wire:['off','edges','triangles'],under:['solid','hidden','xray'],colour:['textured','clay','districts'],weather:['auto','clear','rain','fog','dust','windy'],day:['120','360','720','1440']};
-function stateToHash(){const seedPart=SEED0!==SEED_DEFAULT?'seed='+SEED0+'&':'';const r1=x=>Math.round(x*10)/10,p=camera.position,t=ctl.target,h=hourNow(clockPaused?pausedAt:performance.now()-clockOffset);
-  const parts=['v='+[p.x,p.y,p.z,t.x,t.y,t.z].map(r1).join(','),'t='+(Math.round(h*20)/20)];
-  if(clockPaused)parts.push('paused');
-  if(DISPLAY.wire!=='off')parts.push('wire='+DISPLAY.wire,'under='+DISPLAY.under);
-  if(DISPLAY.colour!=='textured')parts.push('colour='+DISPLAY.colour);
-  if(!DISPLAY.life)parts.push('life=0');
-  if(WEATHER.mode!=='auto')parts.push('weather='+WEATHER.mode);
-  if(DAY!==120)parts.push('day='+DAY);
-  return '#'+seedPart+parts.join('&');}
-function readHash(){let q;try{q=new URLSearchParams(location.hash.slice(1));}catch(e){return false;}if(!q.has('v')&&!q.has('t'))return false;
-  if(HASH_OK.day.includes(q.get('day')))ctx.setDayLen(+q.get('day'));
+// Merged into the address (src/core/hash.js): a key at its default is taken out, anything else a visitor or
+// another page left there is kept.
+const HASH_ORDER=['seed','v','t','paused','wire','under','colour','life','weather','day'];
+function hashState(){const r1=x=>Math.round(x*10)/10,p=camera.position,t=ctl.target,h=hourNow(clockPaused?pausedAt:performance.now()-clockOffset),wire=DISPLAY.wire!=='off';
+  return {seed:SEED0!==SEED_DEFAULT?SEED0:null,v:[p.x,p.y,p.z,t.x,t.y,t.z].map(r1).join(','),t:Math.round(h*20)/20,paused:clockPaused,
+    wire:wire?DISPLAY.wire:null,under:wire?DISPLAY.under:null,colour:DISPLAY.colour!=='textured'?DISPLAY.colour:null,life:DISPLAY.life?null:'0',
+    weather:WEATHER.mode!=='auto'?WEATHER.mode:null,day:DAY!==120?DAY:null,view:null};}
+// The display, the weather and the day length apply whenever they are in the address; true only when it also
+// gives a view or an hour (the caller then leaves the camera alone).
+function readHash(){let q;try{q=new URLSearchParams(location.hash.slice(1));}catch(e){return false;}
+  let any=false;
+  if(HASH_OK.day.includes(q.get('day'))){ctx.setDayLen(+q.get('day'));any=true;}
+  for(const k of ['wire','under','colour'])if(HASH_OK[k].includes(q.get(k))){DISPLAY[k]=q.get(k);any=true;}
+  if(q.get('life')==='0'){DISPLAY.life=false;any=true;}
+  if(HASH_OK.weather.includes(q.get('weather'))){WEATHER.mode=q.get('weather');any=true;}
+  if(any){applyDisplay();refreshDisplay();}
+  if(!q.has('v')&&!q.has('t'))return false;
   const v=(q.get('v')||'').split(',').map(Number);if(v.length===6&&v.every(Number.isFinite))setView(...v,true);
   const tt=parseFloat(q.get('t'));if(Number.isFinite(tt))window.setHour(((tt%24)+24)%24);
   if(q.has('paused')&&!clockPaused&&ctx.pauseBtn)ctx.pauseBtn.click();
-  for(const k of ['wire','under','colour'])if(HASH_OK[k].includes(q.get(k)))DISPLAY[k]=q.get(k);
-  if(q.get('life')==='0')DISPLAY.life=false;
-  if(HASH_OK.weather.includes(q.get('weather')))WEATHER.mode=q.get('weather');
-  applyDisplay();refreshDisplay();return true;}
+  return true;}
 let lastHash='',hashT=0;
-animHooks.push(now=>{if(ctx.leaving||now-hashT<1500||fly||ptrs.size||WALK.on||(ctx.touring&&ctx.touring()))return;hashT=now;const h=stateToHash();if(h!==lastHash){lastHash=h;try{history.replaceState(null,'',h);}catch(e){}}});
-lkBtn.onclick=()=>{const h=stateToHash();lastHash=h;try{history.replaceState(null,'',h);}catch(e){}copyText(location.href.split('#')[0]+h,'Link copied. Opening it brings back this view, hour and display.');};
+animHooks.push(now=>{if(ctx.leaving||now-hashT<1500||fly||PTR.active()||WALK.on||(ctx.touring&&ctx.touring()))return;hashT=now;lastHash=writeHash(hashState(),HASH_ORDER);});
+lkBtn.onclick=()=>{const h=writeHash(hashState(),HASH_ORDER);lastHash=h;copyText(location.href.split('#')[0]+h,'Link copied. Opening it brings back this view, hour and display.');};
 // ---- walking ----
 const modebar=document.getElementById('modebar');
 function holdBtn(label,v){const b=document.createElement('button');b.textContent=label;const on=e=>{e.preventDefault();WALK.hold=v;},off=()=>{WALK.hold=0;};

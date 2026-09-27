@@ -113,15 +113,12 @@ function shadowsDue(){if(sun.intensity<=0.02)return false;
   if(moved||turned){shadowAt.copy(ctl.target);shadowSun.copy(ENV.izSunDir.value);
     sun.target.position.copy(ctl.target);sun.position.copy(ENV.izSunDir.value).multiplyScalar(2500).add(ctl.target);return true;}
   return (++shadowTick%30)===0;}
-// adaptive resolution, as on the Iziz page
-const RES={max:Math.min(devicePixelRatio,1.5),cur:Math.min(devicePixelRatio,1.5),min:0.6,acc:0,n:0,good:0,bad:0,prev:performance.now()};
-function adaptRes(now){const dt=(now-RES.prev)/1000;RES.prev=now;if(dt>0.5||document.hidden)return;RES.acc+=dt;RES.n++;if(RES.acc<1)return;const fps=RES.n/RES.acc;RES.acc=0;RES.n=0;
-  if(fps<45){RES.bad++;RES.good=0;}else if(fps>56){RES.good++;RES.bad=0;}let next=RES.cur;
-  // give up distant detail before giving up pixels: clutter a kilometre off is barely visible, a soft image is not
-  if(RES.bad>=2&&DETAIL.k>DETAIL.min){DETAIL.k=Math.max(DETAIL.min,DETAIL.k-0.12);RES.bad=0;}
-  else if(RES.bad>=2){next=Math.max(RES.min,RES.cur-0.15);RES.bad=0;}
-  else if(RES.good>=8){if(RES.cur<RES.max)next=Math.min(RES.max,RES.cur+0.1);else if(DETAIL.k<DETAIL.max)DETAIL.k=Math.min(DETAIL.max,DETAIL.k+0.06);RES.good=0;}
-  if(Math.abs(next-RES.cur)>1e-3){RES.cur=+next.toFixed(2);renderer.setPixelRatio(RES.cur);renderer.setSize(innerWidth,innerHeight);updatePx();}}
+// adaptive resolution (src/core/shell.js): give up distant detail before giving up pixels - clutter a kilometre
+// off is barely visible, a soft image is not - and take it back once the pixels are all there again
+const RES=createAdaptiveRes(renderer,{cap:1.5,after:updatePx,
+  shed:()=>{if(DETAIL.k<=DETAIL.min)return false;DETAIL.k=Math.max(DETAIL.min,DETAIL.k-0.12);return true;},
+  regain:()=>{if(DETAIL.k<DETAIL.max)DETAIL.k=Math.min(DETAIL.max,DETAIL.k+0.06);}});
+const adaptRes=RES.tick;
 ctx.res=RES;let fpsN=0,fpsT=performance.now();
 runLoop(now=>{adaptRes(now);fpsN++;if(now-fpsT>1000){ctx.fps=fpsN;fpsN=0;fpsT=now;}
   runHooks(animHooks,now);stepFly(now);applyKeys();
