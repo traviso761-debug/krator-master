@@ -1,23 +1,4 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>Trigon — the three-faced pyramid</title>
-<style>
-html,body{margin:0;height:100%;overflow:hidden;background:#3a2a24;font:13px/1.4 system-ui,sans-serif;color:#eee}
-canvas{display:block}
-#ui{position:fixed;left:10px;top:10px;display:flex;flex-wrap:wrap;gap:6px;max-width:70vw;z-index:5}
-#ui button{background:rgba(20,16,14,.75);color:#f0e6d8;border:1px solid #8a6a50;border-radius:4px;padding:5px 9px;cursor:pointer}
-#ui button:hover{background:#6a4a38}
-#hud{position:fixed;right:10px;bottom:10px;background:rgba(0,0,0,.5);padding:6px 9px;border-radius:4px;font-family:ui-monospace,monospace;font-size:12px;white-space:pre;z-index:5}
-#errs{position:fixed;left:10px;bottom:10px;max-width:60vw;max-height:30vh;overflow:auto;background:rgba(120,0,0,.85);color:#fff;padding:6px 9px;border-radius:4px;font-family:ui-monospace,monospace;font-size:12px;white-space:pre-wrap;display:none;z-index:9}
-#insp{position:fixed;left:10px;top:78px;background:rgba(0,0,0,.55);color:#9fe8ff;padding:5px 9px;border-radius:4px;font:12px ui-monospace,monospace;white-space:pre;z-index:5;margin:0}
-#viewsel{background:rgba(20,16,14,.85);color:#f0e6d8;border:1px solid #8a6a50;border-radius:4px;padding:5px 9px;font-size:13px}
-#cap{position:fixed;left:10px;top:44px;background:rgba(0,0,0,.45);padding:4px 8px;border-radius:4px;font-size:12px;color:#e8d8c8;z-index:5;max-width:60vw}
-</style><div id="ui"></div>
-<div id="cap">Krator Ancients kit — click any structure to inspect · drag to orbit · wheel to zoom · right-drag / WASD to move</div>
-<pre id="insp">inspector: click a structure</pre>
-<div id="hud"></div>
-<pre id="errs"></pre>
-<script>document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"'+(location.protocol==='file:'?'':' crossorigin="anonymous"')+'><\/script>');</script>
-<script>
+
 // ---------------------------------------------------------------- error panel
 const ERRS=document.getElementById('errs');
 function reportErr(m){ERRS.style.display='block';ERRS.textContent+=m+'\n';}
@@ -16355,27 +16336,25 @@ function buildCrescent(scene,gx,gz,d){reseed(9730+d);KOFF=[gx,0,gz];
  meshMerged(PAVE,pvM,G);
  meshMerged(WATER,wtM,G);
  KOFF=[0,0,0];return G;}
-// TARGET: trigon — the Trigon, a pyramid on an equilateral base three times as
-// tall as it is wide, intact and ruined.
+// TARGET: monolith — the Monolith, a slab arcology with a through-arch at its
+// foot and three circular oculi, intact and ruined.
 //
-// 1 100 m to the apex on a 367 m base edge. Three faces, three cities: a
-// ziggurat of planted terraces (WNW), a sheer grid of balconies (S) and an ochre
-// face pierced by five nested triangular portals over lit atria (ENE).
-//
-// Its own target because it is a 700 k-triangle megastructure on its own and a
-// kilometre-tall spike needs its own stand-off.
-const TITLE='Trigon — the three-faced pyramid';
+// Its own target because it is 1 100 m tall — Hexahedron scale — and a
+// 700 k-triangle megastructure on its own.
+const TITLE='The Monolith — the slab with the arch';
 const GROUND_C=0;
 const DECAYS=[0,1];
-// The mass is 424 m across its corners and the plinth 530; the ruin throws its
-// apex 700 m south-east. s = 2 400 puts 4 800 m between the two axes, so the
-// hero camera 1 750 m off one pyramid has the other only as a far silhouette.
+// The slab is 380 m across its foot, the outliers stand 560 m off its axis and
+// the ruin's fallen corner lies up to 800 m east of it. s = 2 400 puts 4 800 m
+// between the two axes, so a hero camera 1 500 m off one slab does not have
+// the other in frame, and edge-on views along x look away from the other site.
 const ROWS={
- trigon:{z:0,s:2400,r:950},
+ monolith:{z:0,s:2400,r:1100},
 };
-const RUINS=[[-ROWS.trigon.s,0,ROWS.trigon.r*.7],
-             [ROWS.trigon.s,0,ROWS.trigon.r*1.05]];
-const EXTRA_BUILDERS={trigon:buildTrigon};
+// A desert type: only a little greening under each site. Intact at -s, ruin at +s.
+const RUINS=[[-ROWS.monolith.s,0,ROWS.monolith.r*.45],
+             [ROWS.monolith.s,0,ROWS.monolith.r*.32]];
+const EXTRA_BUILDERS={monolith:buildMonolith};
 // ---------------------------------------------------------------- scene
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);
 renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;document.body.appendChild(renderer.domElement);
@@ -16522,57 +16501,55 @@ window._api={
  setView:(cx,cy,cz,tx,ty,tz)=>setView(cx,cy,cz,tx,ty,tz),
  views:()=>Object.keys(VIEWS),
 };
-// Presets, DERIVED from TG_SITE, which buildTrigon fills before this runs. The
-// face normals are at 214 (terrace), 334 (portal) and 94 (balcony) degrees,
-// measured from +x toward +z; the portal/balcony arris is at 34.
+// Presets, DERIVED. 89z-rows.js loads before 90-scene.js and this file after it,
+// so both builders have run and left their dimensions in MN_SITE. MNDEF is the
+// fallback only if a builder threw.
 //
-// The camera is 50 degrees vertical, so a frame is 0.933 x the sight line tall:
-// nothing that holds all 1 100 m of the spike can stand closer than ~1 250 m.
-const TGDEF={x:0,z:0,RI:105.94,PL:18,YA:1100,YP:1030,HP:1082,RP:143.94,FALL:48*Math.PI/180,LAND:null,
- SPY0:300,SPY1:690,PORT:[{yb:18,yt:258,wb:82.6,db:-26.5}],
- DY:y=>105.94*(1100-y)/1082};
-const TGA=Object.assign({},TGDEF,{x:-2400},TG_SITE[0]||{});
-const TGB=Object.assign({},TGDEF,{x:2400},TG_SITE[1]||{});
-const TGAZ=a=>a*Math.PI/180;
-// a world point at azimuth a (degrees), horizontal radius r, height y, on site S
-const TGP=(S,a,r,y)=>[S.x+Math.cos(TGAZ(a))*r,y,S.z+Math.sin(TGAZ(a))*r];
-// a point ON face k (r from the axis, s along the face) — the builder's own map
-const TGF=(S,k,r,s,y)=>[S.x+Math.cos(TGAZ([214,334,94][k]))*r-Math.sin(TGAZ([214,334,94][k]))*s,y,
- S.z+Math.sin(TGAZ([214,334,94][k]))*r+Math.cos(TGAZ([214,334,94][k]))*s];
-const TGHERO=S=>TGP(S,28,1750,380).concat([S.x,540,S.z]);
+// The camera is 50 degrees vertical, so a frame is 0.933 x the sight line tall.
+// The slab is 1 100 m: a whole-height shot stands 1 450-1 500 m off.
+const MNDEF={x:0,z:0,d:0,H:1100,AX:-40,AW:88,AS:200,AT:288,YC:1070,EBY:735,PLY:140,DZ0:74,HW0:190,
+ OC:[{x:-5,y:905,r:84},{x:72,y:640,r:46},{x:-88,y:470,r:30}]};
+const MNA=Object.assign({},MNDEF,{x:-2400},MN_SITE[0]||{});
+const MNB=Object.assign({},MNDEF,{x:2400},MN_SITE[1]||{});
+const MNW=(S,x,y,z)=>[S.x+x,y,S.z+z];
+// THE HERO: three-quarter from the south-west, where the sun is. Both drawings
+// at once — the broad south face with its arch and three oculi, and the carved
+// west end, edge-on enough to show the slab is a slab.
+const MNHERO=S=>MNW(S,-820,430,1260).concat(MNW(S,-10,540,0));
 const VIEWS={
- // THE HERO: between the balcony face (lit, the grid of balconies and its
- // chevrons) and the portal face (in its own shade, five lit triangles), with
- // the chamfered arris between them running from the plinth to the beacon.
- 'Trigon':                TGHERO(TGA),
- // each face square on, from 1 500 m
- 'The terrace face':      TGP(TGA,214,1500,420).concat([TGA.x,520,TGA.z]),
- 'The balcony face':      TGP(TGA,94,1500,420).concat([TGA.x,520,TGA.z]),
- 'The portal face':       TGP(TGA,334,1500,420).concat([TGA.x,520,TGA.z]),
- // the terraces raking: standing off the face at mid-height and looking back
- // along the treads so their planting and the stair read as steps
- 'The terraces':          TGF(TGA,0,330,-190,640).concat(TGF(TGA,0,TGA.DY(470),40,470)),
- // UP THE ARRIS: at the foot of the portal/balcony corner, looking up it
- 'Up the arris':          TGP(TGA,34,360,3).concat(TGP(TGA,34,2*TGA.DY(520),520)),
- // the pyramidion and beacon, 1 030-1 100 m up
- 'The apex':              TGP(TGA,70,175,1085).concat([TGA.x,1045,TGA.z]),
- // people on the portal-side stair and the great gate over them
- 'The plinth':            TGF(TGA,1,300,-40,1.7).concat(TGF(TGA,1,120,0,55)),
- // through the glass of the great portal into its atrium
- 'The portal atrium':     TGF(TGA,1,175,0,62).concat(TGF(TGA,1,-10,0,120)),
- 'Trigon at night':       TGHERO(TGA).concat([1]),
- 'Ruined':                TGHERO(TGB),
- // THE SHEAR, from above and behind the high side
- 'The shear':             TGP(TGB,140,300,1000).concat([TGB.x,780,TGB.z]),
- // THE FALLEN APEX, from across its length
- 'The fallen apex':       (function(S){const f=S.FALL,cx=S.x+Math.cos(f)*560,cz=S.z+Math.sin(f)*560;
-                            return[cx-Math.sin(f)*430,110,cz+Math.cos(f)*430,cx,25,cz];})(TGB),
- // THE SPALLED ARRIS, 300-690 m, floor plates laid open
- 'The spalled arris':     TGP(TGB,30,480,470).concat(TGP(TGB,34,2*TGB.DY(500),500)),
- // the portal face ruined: glazing gone, five black caves
- 'The dark portals':      TGP(TGB,334,1300,380).concat([TGB.x,430,TGB.z]),
- // the terraces slumped and overgrown
- 'Slumped terraces':      TGF(TGB,0,640,-150,420).concat(TGF(TGB,0,TGB.DY(380),20,360)),
+ 'Monolith':               MNHERO(MNA),
+ // THE BROAD FACE square on from the south, 1 450 m off.
+ 'The broad face':         MNW(MNA,-20,560,1450).concat(MNW(MNA,-20,560,0)),
+ // EDGE-ON from the east (the other site is behind the camera): 1 100 m tall
+ // and 148 m thick.
+ 'Edge-on':                MNW(MNA,1450,520,230).concat(MNW(MNA,0,540,0)),
+ // THROUGH THE ARCH at eye height, on the road, 420 m out from the face.
+ 'Through the arch':       MNW(MNA,MNA.AX+6,1.8,MNA.DZ0+490).concat(MNW(MNA,MNA.AX,112,-300)),
+ // UNDER THE VAULT, looking up: the coffers, the galleries on both jambs.
+ 'The arch soffit':        MNW(MNA,MNA.AX+22,6,44).concat(MNW(MNA,MNA.AX-6,MNA.AT,-34)),
+ // THE GREAT OCULUS, oblique from the south-east so the bore and rosette show.
+ 'The great oculus':       (function(S){const o=S.OC[0];return MNW(S,o.x+240,o.y+60,420).concat(MNW(S,o.x,o.y,0));})(MNA),
+ // ...and THROUGH it, on its axis: the rim, the bore, the bridge, the sky.
+ 'Through the oculus':     (function(S){const o=S.OC[0];return MNW(S,o.x+22,o.y+12,300).concat(MNW(S,o.x,o.y-4,-600));})(MNA),
+ // THE LOWER OCULI together, the middle one to the east and the low one west.
+ 'The lower oculi':        (function(S){const a=S.OC[1],b=S.OC[2];const cx=(a.x+b.x)/2,cy=(a.y+b.y)/2;
+                             return MNW(S,cx+120,cy+10,430).concat(MNW(S,cx,cy,0));})(MNA),
+ // THE CARVED FLANK: the unclad west end, raking up it from the south-west.
+ 'The carved flank':       MNW(MNA,-560,170,330).concat(MNW(MNA,-195,420,0)),
+ // THE TOP EDGE: the stepped crown, from above and to the south-west.
+ 'The top edge':           MNW(MNA,-300,1260,420).concat(MNW(MNA,0,1080,0)),
+ // NIGHT: the windows of 1 100 m of city.
+ 'Night':                  MNW(MNA,-660,340,1000).concat(MNW(MNA,-20,500,0)).concat([1]),
+ 'Ruined':                 MNHERO(MNB),
+ // THE BROKEN CROWN: the east quarter gone, the great ring open to the sky.
+ 'The broken crown':       MNW(MNB,420,1010,760).concat(MNW(MNB,30,880,0)),
+ // THE STRIPPED FACE: the orange skin peeled off the south face, the carved
+ // white city under it.
+ 'The stripped face':      MNW(MNB,-330,480,760).concat(MNW(MNB,-60,470,0)),
+ // THE FALLEN CORNER lying on the plain to the east, the stump behind it.
+ 'The fallen corner':      MNW(MNB,800,190,720).concat(MNW(MNB,420,40,40)),
+ // THE SPALLED ARCH at eye height: rubble in the passage, coffers down.
+ 'The spalled arch':       MNW(MNB,MNB.AX+14,5,MNB.DZ0+110).concat(MNW(MNB,MNB.AX,95,-200)),
 };
 // ---------------------------------------------------------------- camera control
 // ---------------------------------------------------------------- DAY / NIGHT
@@ -16633,6 +16610,3 @@ function frame(){const now=performance.now(),dt=Math.min(.1,(now-last)/1000);las
  hud.textContent=`cam ${camera.position.x|0},${camera.position.y|0},${camera.position.z|0}  tgt ${ctl.target.x|0},${ctl.target.y|0},${ctl.target.z|0}\ncalls ${renderer.info.render.calls}  tris ${(renderer.info.render.triangles/1e6).toFixed(2)}M  inst ${window._instances}`;
  requestAnimationFrame(frame);}
 frame();window._ready=true;
-</script>
-
-</body></html>
