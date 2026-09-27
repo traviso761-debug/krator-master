@@ -21,6 +21,7 @@ import json
 import math
 import os
 import random
+from lib.geo import q, flat, rect, smoothstep
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "data", "cities", "mordor-osm.json")
@@ -60,28 +61,6 @@ EPHEL_DUATH = [(-296000, -192000), (-298000, -150000), (-292000, -70000), (-2860
 MORGAI = [(-262000, -150000), (-266000, -70000), (-260000, 10000), (-240000, 76000)]
 # the spur Barad-dur stands at the end of, running south out of the Ash Mountains
 SPUR = [(-34000, -238000), (-36000, -190000), (-40000, -150000)]
-
-
-def q(v):
-    return int(round(v * 10))
-
-
-def flat(pts):
-    out = []
-    for x, z in pts:
-        out += [q(x), q(z)]
-    return out
-
-
-def rect(cx, cz, w, d, rot=0.0):
-    c, s = math.cos(rot), math.sin(rot)
-    return [(cx + x * c - z * s, cz + x * s + z * c) for x, z in
-            ((-w / 2, -d / 2), (w / 2, -d / 2), (w / 2, d / 2), (-w / 2, d / 2))]
-
-
-def smoothstep(a, b, v):
-    t = max(0.0, min(1.0, (v - a) / (b - a)))
-    return t * t * (3 - 2 * t)
 
 
 def seg_dist(px, pz, ax, az, bx, bz):

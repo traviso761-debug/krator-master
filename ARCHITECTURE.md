@@ -31,8 +31,11 @@ are listed in §7. File:line references are as of this date.
 > `src/voth/main.js` with `core/diag`'s error box and staged loading (the build yields at nine stages), its five
 > loops are one (`runLoop`, the stages push hooks), and it uses the shell, the controls, the address and the
 > wireframe; its golden holds. §6 step 4 (the palette and budgets to a JSON file) is deliberately not done: they
-> are commented tables of hex colours, and JSON would lose both the comments and the hex. Phases 7-8 are not
-> started.
+> are commented tables of hex colours, and JSON would lose both the comments and the hex. Phase 7 is done: the
+> generators share `tools/lib/geo.py` (all sixteen regenerate byte-identical data), generated files are marked in
+> `.gitattributes` and listed in the README, the `/data` mount no longer serves `data/osm/`, and the server's gzip
+> cache reads a file only on a miss, evicts the least recently used, and gzip and plain bodies have their own ETags.
+> The generated data stays committed (§9.3). Phase 8 (three.js) is not started.
 
 There is no physics engine as such. The nearest things are the flight model (`src/core/flight.js`, kinematic,
 no stall), the Backrooms' circle-against-walls collision (`src/backrooms/level.js:409`), the City's

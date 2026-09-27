@@ -30,18 +30,21 @@ GZIP_MIN = 1024   # smaller bodies are not worth compressing
 # Compressing a fourteen-megabyte city on every request costs the server about a third of a second and it
 # is the same third of a second every time, because the file only changes when somebody regenerates it. So
 # the compressed body is kept, keyed by path and by the file's own mtime and size: a rebuild invalidates it
-# by definition. Bounded, because these are big - a handful of the largest cities is the whole working set.
+# by definition. Bounded, because these are big - a handful of the largest cities is the whole working set -
+# and least-recently-used first out, so the city everybody is looking at stays. `read` is only called on a
+# miss: a hit does not read the file at all.
 GZIP_CACHE = {}
 GZIP_CACHE_MAX = 6
 GZIP_CACHE_LOCK = threading.Lock()
 
 
-def gzipped(path, key, raw):
+def gzipped(path, key, read):
     with GZIP_CACHE_LOCK:
-        hit = GZIP_CACHE.get(path)
+        hit = GZIP_CACHE.pop(path, None)
         if hit and hit[0] == key:
+            GZIP_CACHE[path] = hit          # back to the young end
             return hit[1]
-    body = gzip.compress(raw, compresslevel=6, mtime=0)
+    body = gzip.compress(read(), compresslevel=6, mtime=0)
     with GZIP_CACHE_LOCK:
         GZIP_CACHE[path] = (key, body)
         while len(GZIP_CACHE) > GZIP_CACHE_MAX:
@@ -110,7 +113,10 @@ class Site:
                 raise ConfigError(f"{where}: needs both 'prefix' and 'dir'")
             prefix = self._norm(m["prefix"], where)
             headers = {**self.headers, **{str(k): str(v) for k, v in m.get("headers", {}).items()}}
-            self.mounts.append((prefix, os.path.realpath(os.path.join(base, m["dir"])), headers))
+            # `exclude`: sub-folders of the mount that are not served (the raw OpenStreetMap cache under /data)
+            d = os.path.realpath(os.path.join(base, m["dir"]))
+            excl = [os.path.realpath(os.path.join(d, x)) for x in m.get("exclude", [])]
+            self.mounts.append((prefix, d, headers, excl))
         self.mounts.sort(key=lambda m: len(m[0]), reverse=True)
 
     @staticmethod
@@ -125,7 +131,7 @@ class Site:
         for path, _, file, _ in self.route_list:
             if not os.path.isfile(file):
                 out.append(f"route {path}: file not found: {file}")
-        for prefix, d, _ in self.mounts:
+        for prefix, d, _, _ in self.mounts:
             if not os.path.isdir(d):
                 out.append(f"mount {prefix}: directory not found: {d}")
         return out
@@ -136,9 +142,11 @@ class Site:
         if key in self.routes:
             file, headers, _, _ = self.routes[key]
             return file, headers
-        for prefix, d, headers in self.mounts:
+        for prefix, d, headers, excl in self.mounts:
             if key.startswith(prefix + "/"):
                 target = os.path.realpath(os.path.join(d, key[len(prefix) + 1:]))
+                if any(os.path.commonpath([x, target]) == x for x in excl):
+                    return None, None
                 if os.path.commonpath([d, target]) == d and os.path.isfile(target):
                     return target, headers
         return None, None
@@ -195,24 +203,28 @@ class Handler(http.server.BaseHTTPRequestHandler):
             return
         with f:
             st = os.fstat(f.fileno())
-            etag = f'"{st.st_mtime_ns:x}-{st.st_size:x}"'
+            ctype = mimetypes.guess_type(file)[0] or "application/octet-stream"
+            text = ctype.startswith("text/") or ctype in TEXT_TYPES
+            gz = text and st.st_size >= GZIP_MIN and "gzip" in self.headers.get("Accept-Encoding", "")
+            # the compressed and the plain body are different representations, so they carry different ETags
+            etag = f'"{st.st_mtime_ns:x}-{st.st_size:x}{"-gz" if gz else ""}"'
             modified = email.utils.formatdate(st.st_mtime, usegmt=True)
             if self.not_modified(etag, st.st_mtime):
                 self.send_response(304)
                 self.send_header("ETag", etag)
                 self.send_header("Last-Modified", modified)
+                if text:
+                    self.send_header("Vary", "Accept-Encoding")
                 for k, v in headers.items():
                     self.send_header(k, v)
                 self.end_headers()
                 return
-            ctype = mimetypes.guess_type(file)[0] or "application/octet-stream"
-            text = ctype.startswith("text/") or ctype in TEXT_TYPES
             if text:
                 ctype += "; charset=utf-8"
             body = None
             encoding = None
-            if text and st.st_size >= GZIP_MIN and "gzip" in self.headers.get("Accept-Encoding", ""):
-                body = gzipped(file, etag, f.read())
+            if gz:
+                body = gzipped(file, etag, f.read)
                 encoding = "gzip"
             self.send_response(200)
             self.send_header("Content-Type", ctype)
@@ -266,7 +278,7 @@ def print_routes(site):
         state = "ok" if os.path.isfile(file) else "MISSING"
         extra = f"  (also {', '.join(aliases)})" if aliases else ""
         print(f"route  {path:<12} -> {os.path.relpath(file, ROOT)} [{state}] {title}{extra}")
-    for prefix, d, _ in site.mounts:
+    for prefix, d, _, _ in site.mounts:
         state = "ok" if os.path.isdir(d) else "MISSING"
         print(f"mount  {prefix + '/*':<12} -> {os.path.relpath(d, ROOT)}/ [{state}]")
 

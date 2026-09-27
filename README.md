@@ -1319,6 +1319,23 @@ settings; `data/lexicon.json` holds every Izani word (`words`, grouped), the car
 inscriptions (`inscriptions`), the landmark → inscription map (`placeNames`), `lore` and `canon`.
 After editing the lexicon run `python3 tools/build-tongue.py` to refresh the Tongue page's tables.
 
+### Generated files
+
+Written by a script in `tools/` and committed, so the site runs without a build; regenerate them, never edit
+them (`.gitattributes` marks them). The generators share `tools/lib/geo.py`.
+
+| File | Written by |
+|---|---|
+| `data/cities/<city>-osm.json` for chicago, nyc, portland, venice | `tools/build-osm-city.py <city>`, from the raw cache in `data/osm/raw/` (not committed, not served) |
+| `data/cities/<city>-osm.json` for the invented places | `tools/make-<city>.py` |
+| `data/cities/rivendell-valley.json` | `tools/make-rivendell.py` |
+| `data/cities/shire-plan.json`, `shire-fields.png` | `tools/make-shire.py` |
+| `data/cities/yellowstone.json`, `yellowstone-land.json` | `tools/make-yellowstone.py` (the config too: edit the script) |
+| `src/engine/build.js`, `src/iziz/build.js`, `src/voth/build.js` | `tools/build-page.py` (`./sitectl build`) from each `stages/` |
+| `krator.html` | `tools/build-krator.py` |
+
+Every other `data/cities/<city>.json` is hand-written, and no generator reads or writes it.
+
 ### Terrain
 
 `python3 tools/fetch-terrain.py <city>` downloads elevation tiles for the city's area (cached under

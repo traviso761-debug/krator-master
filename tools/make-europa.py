@@ -29,6 +29,7 @@ import json
 import math
 import os
 import random
+from lib.geo import q, flat, rect, smoothstep
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "data", "cities", "europa-osm.json")
@@ -51,33 +52,8 @@ RIDGES = [(0.42, -3100.0, 46.0, 260.0), (0.42, 900.0, 62.0, 300.0), (0.42, 4200.
 LINEAE = [(0.72, -1800.0, 150.0), (-0.35, 2400.0, 190.0), (1.85, -4200.0, 120.0)]
 
 
-def q(v):
-    return int(round(v * 10))
-
-
-def flat(pts):
-    out = []
-    for x, z in pts:
-        out.append(q(x))
-        out.append(q(z))
-    return out
-
-
-def rect(cx, cz, w, d, rot=0.0):
-    c, s = math.cos(rot), math.sin(rot)
-    return [(cx + u * c - v * s, cz + u * s + v * c)
-            for u, v in ((-w / 2, -d / 2), (w / 2, -d / 2), (w / 2, d / 2), (-w / 2, d / 2))]
-
-
 def ring_poly(cx, cz, r, n=48):
     return [(cx + math.cos(i / n * math.tau) * r, cz + math.sin(i / n * math.tau) * r) for i in range(n)]
-
-
-def smoothstep(a, b, v):
-    if a == b:
-        return 0.0
-    t = max(0.0, min(1.0, (v - a) / (b - a)))
-    return t * t * (3 - 2 * t)
 
 
 def along(x, z, ang, off):

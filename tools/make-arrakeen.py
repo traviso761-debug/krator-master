@@ -28,6 +28,7 @@ import json
 import math
 import os
 import random
+from lib.geo import q, flat, rect, smoothstep
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "data", "cities", "arrakeen-osm.json")
@@ -41,24 +42,6 @@ CITY_R = 1500.0                  # the wall of Arrakeen
 FIELD = (4200.0, 900.0)          # the landing field, east of the city
 SIETCH = (-6400.0, 2600.0)       # the rock the Fremen are in, west
 WALL_R = 7600.0                  # how far out the Shield Wall stands
-
-
-def q(v):
-    return int(round(v * 10))
-
-
-def flat(pts):
-    out = []
-    for x, z in pts:
-        out.append(q(x))
-        out.append(q(z))
-    return out
-
-
-def rect(cx, cz, w, d, rot=0.0):
-    c, s = math.cos(rot), math.sin(rot)
-    return [(cx + u * c - v * s, cz + u * s + v * c)
-            for u, v in ((-w / 2, -d / 2), (w / 2, -d / 2), (w / 2, d / 2), (-w / 2, d / 2))]
 
 
 def ring_poly(cx, cz, r, n=64, r2=None):
@@ -86,13 +69,6 @@ def arc(cx, cz, r, a0, a1, n=None, width=None):
         a = a0 + (a1 - a0) * i / n
         out.append((cx + math.cos(a) * (r - width / 2), cz + math.sin(a) * (r - width / 2)))
     return out
-
-
-def smoothstep(a, b, v):
-    if a == b:
-        return 0.0
-    t = max(0.0, min(1.0, (v - a) / (b - a)))
-    return t * t * (3 - 2 * t)
 
 
 # ---------------------------------------------------------------- the land

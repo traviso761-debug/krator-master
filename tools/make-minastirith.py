@@ -28,6 +28,7 @@ import json
 import math
 import os
 import random
+from lib.geo import q, flat, rect, smoothstep
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "data", "cities", "minastirith-osm.json")
@@ -52,23 +53,6 @@ HARLOND = (7300.0, 3100.0)       # the quays, downstream on the near bank
 OSGILIATH = (8600.0, -600.0)     # the ruin, astride the Anduin where the great bridge went
 
 
-def q(v):
-    return int(round(v * 10))
-
-
-def flat(pts):
-    out = []
-    for x, z in pts:
-        out += [q(x), q(z)]
-    return out
-
-
-def rect(cx, cz, w, d, rot=0.0):
-    c, s = math.cos(rot), math.sin(rot)
-    return [(cx + x * c - z * s, cz + x * s + z * c) for x, z in
-            ((-w / 2, -d / 2), (w / 2, -d / 2), (w / 2, d / 2), (-w / 2, d / 2))]
-
-
 def ring_poly(cx, cz, r, n=64, r2=None):
     """A circle, or an annulus drawn as one closed ring: out along the far edge and back along the near one."""
     out = [(cx + math.cos(k / n * math.tau) * r, cz + math.sin(k / n * math.tau) * r) for k in range(n)]
@@ -90,11 +74,6 @@ def arc(cx, cz, r, a0, a1, n=None, width=None):
     inner = [(cx + math.cos(a0 + (a1 - a0) * k / n) * (r - width),
               cz + math.sin(a0 + (a1 - a0) * k / n) * (r - width)) for k in range(n, -1, -1)]
     return outer + inner
-
-
-def smoothstep(a, b, v):
-    t = max(0.0, min(1.0, (v - a) / (b - a)))
-    return t * t * (3 - 2 * t)
 
 
 def seg_dist(px, pz, ax, az, bx, bz):

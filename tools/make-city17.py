@@ -17,6 +17,7 @@ import json
 import math
 import os
 import random
+from lib.geo import q, flat, rect, smoothstep, simplify
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "data", "cities", "city17-osm.json")
@@ -34,47 +35,6 @@ CANAL_W = 52.0
 PLAZA_LEVEL = 28.0
 GATES = [0.45, 1.95, 3.55, 5.05]   # gaps in the outer wall
 STATION = (-620.0, 430.0)          # trainstation plaza
-
-
-def q(v):
-    return int(round(v * 10))
-
-
-def flat(pts):
-    out = []
-    for x, z in pts:
-        out += [q(x), q(z)]
-    return out
-
-
-def rect(cx, cz, w, d, rot=0.0):
-    c, s = math.cos(rot), math.sin(rot)
-    return [(cx + x * c - z * s, cz + x * s + z * c) for x, z in
-            ((-w / 2, -d / 2), (w / 2, -d / 2), (w / 2, d / 2), (-w / 2, d / 2))]
-
-
-def smoothstep(a, b, v):
-    t = max(0.0, min(1.0, (v - a) / (b - a)))
-    return t * t * (3 - 2 * t)
-
-
-def simplify(pts, eps=1.0):
-    """Douglas-Peucker: drop the points the walk added along a straight run."""
-    if len(pts) < 3:
-        return pts
-    ax, az = pts[0]
-    bx, bz = pts[-1]
-    dx, dz = bx - ax, bz - az
-    L = math.hypot(dx, dz)
-    worst, wi = 0.0, 0
-    for i in range(1, len(pts) - 1):
-        px, pz = pts[i]
-        d = abs(dx * (az - pz) - dz * (ax - px)) / L if L else math.hypot(px - ax, pz - az)
-        if d > worst:
-            worst, wi = d, i
-    if worst <= eps:
-        return [pts[0], pts[-1]]
-    return simplify(pts[:wi + 1], eps)[:-1] + simplify(pts[wi:], eps)
 
 
 def dist_to_polyline(x, z, pts):

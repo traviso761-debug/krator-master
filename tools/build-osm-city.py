@@ -14,6 +14,11 @@ import math
 import os
 import re
 import sys
+from lib.geo import q, flat, simplify as _simplify
+
+
+def simplify(pts, eps):
+    return _simplify(pts, eps, closed="drop")   # this map was made with rings simplified to their ends
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 _ARGS = [a for a in sys.argv[1:] if not a.startswith("--")]
@@ -31,10 +36,6 @@ S, W, N, E = CITY["bounds"]
 
 def xz(lat, lon):
     return ((lon - LON0) * M_LON, -(lat - LAT0) * M_LAT)
-
-
-def q(v):   # metres -> integer decimetres
-    return int(round(v * 10))
 
 
 def load(prefix):
@@ -59,22 +60,6 @@ def area(r):
 
 def centroid(r):
     return (sum(p[0] for p in r) / len(r), sum(p[1] for p in r) / len(r))
-
-
-def simplify(pts, eps):
-    if len(pts) < 3:
-        return pts
-    a, b = pts[0], pts[-1]
-    dx, dz = b[0] - a[0], b[1] - a[1]
-    L = math.hypot(dx, dz) or 1e-9
-    dmax, idx = 0, 0
-    for i in range(1, len(pts) - 1):
-        d = abs((pts[i][0] - a[0]) * dz - (pts[i][1] - a[1]) * dx) / L
-        if d > dmax:
-            dmax, idx = d, i
-    if dmax > eps:
-        return simplify(pts[:idx + 1], eps)[:-1] + simplify(pts[idx:], eps)
-    return [a, b]
 
 
 def ring_simplify(r, eps):
@@ -111,13 +96,6 @@ def join_rings(ways):
                 break
         rings.append(c)
     return rings
-
-
-def flat(pts, eps=0.0):
-    out = []
-    for x, z in pts:
-        out += [q(x), q(z)]
-    return out
 
 
 def polys_of(e):
