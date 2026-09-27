@@ -14,7 +14,7 @@
 //                        and a nerve out of each ganglion to whatever organ is nearest. Signals run down it.
 //
 // None of this is in the park's published anatomy. It is this model's reading of what the animal needs, and
-// the cards say so. The incident (incident.js) drives it through ctx.pitHeart and ctx.pitNerve.
+// the cards say so. The incident (incident.js) drives it through the bus's heart and nerve signals (bus.js).
 import { mkRng } from '../core/rng.js';
 
 export function anatomy(api){
@@ -193,7 +193,7 @@ totalEmissiveRadiance+=uPulseCol*uAmp*pow(max(0.0,sin(uPhase+vFpY*${k.toFixed(4)
   const gc=new THREE.Color(),dim=new THREE.Color(0x3a3020),hot=new THREE.Color(0xfff2c8),fire=new THREE.Color(0xff5a3a);
   animHooks.push(now=>{
     const dt=Math.min(0.1,(now-last)/1000);last=now;
-    const HS=ctx.pitHeart||{rate:1,amp:1,fib:0};
+    const HS=ctx.pitBus.signal.heart;
     H.phase+=dt*(40/60)*HS.rate;
     const f=H.phase%1;
     const lub=Math.exp(-(((f-0.08)/0.045)**2)),dub=0.6*Math.exp(-(((f-0.3)/0.045)**2));
@@ -203,7 +203,7 @@ totalEmissiveRadiance+=uPulseCol*uAmp*pow(max(0.0,sin(uPhase+vFpY*${k.toFixed(4)
     // the pulse down the vessels follows the beat; it fades with the heart
     PU.uPhase.value=H.phase*Math.PI*2;PU.uAmp.value=0.9*HS.amp*(1-0.7*(HS.fib||0));
     // the nerve cord: a signal every few seconds, or everything at once
-    const act=ctx.pitNerve===undefined?1:ctx.pitNerve;
+    const act=ctx.pitBus.signal.nerve;
     const t=now/1000;
     for(let i=0;i<gangl.length;i++){
       const wave=Math.max(0,Math.sin(t*1.6-i*0.55));
@@ -215,6 +215,6 @@ totalEmissiveRadiance+=uPulseCol*uAmp*pow(max(0.0,sin(uPhase+vFpY*${k.toFixed(4)
     gI.instanceColor.needsUpdate=true;
   });
 
-  ctx.pitAnatomy={heart,vessels,gangl};
+  ctx.pitBus.parts.anatomy={heart,vessels,gangl};
   ctx.details=Object.assign(ctx.details||{},{pitVessels:vessels.length,pitGanglia:gangl.length});
 }

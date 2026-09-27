@@ -338,7 +338,7 @@ size and left small.
 
 - **The Black Gate opens.** A gate that never moves is a wall with a pattern on it. Each leaf is hinged on
   its jamb and swung back against the inside face when a host comes up the road (`ctx.hosts`, which
-  `src/mordor/hosts.js` publishes), and shut behind it; braziers burn along the parapet and on both Teeth.
+  `src/middleearth/hosts.js` publishes), and shut behind it; braziers burn along the parapet and on both Teeth.
 - **Orodruin is a cone.** Its profile used to be `(1 - d/R)` raised to a power, which gives a dome with a
   flat top and a straight skirt — the opposite of a volcano. It is an exponential now: steep at the head
   where everything that comes out of it lands on itself, flaring at the foot where the flows ran, with
@@ -544,7 +544,7 @@ Citadel stands seven hundred feet over the Pelennor and the White Tower three hu
   radials out from the bridgehead, a ruined circuit wall, walls standing to every height from a kerb to a
   gable, the Dome of Stars broken open, and the piers of the bridge still in the water with the Causeway
   stopping at the gap.
-- **The siege** (`src/mordor/hosts.js`, imported rather than copied — it is the same war, seen from the
+- **The siege** (`src/middleearth/hosts.js`, imported rather than copied — it is the same war, seen from the
   other end). Blocks of orcs drawn up in formation facing the Great Gate, camps of tents round their fires
   behind them, trebuchets on both sides — the besiegers' out on the plain throwing in and the city's own up
   on its circles throwing back — siege towers against the wall, and volleys of arrows going both ways. Two
@@ -1174,7 +1174,8 @@ src/
   city17/   main.js landmarks.js combine.js  City 17: the Citadel and the occupation
   nightcity/ main.js landmarks.js neon.js    Night City: the ziggurat and the night stage
   megacity/ main.js landmarks.js             Mega-City One: the Hall of Justice, the Statue of Judgement
-  mordor/   main.js landmarks.js forges.js hosts.js   Mordor: the Eye, the works, the hosts
+  mordor/   main.js landmarks.js forges.js   Mordor: the Eye, the works
+  middleearth/ hosts.js                      the war, shared by Mordor and Minas Tirith: the hosts, the Nazgul, the lightning
   dredd2012/ main.js warmode.js              Mega-City One (2012): the blast shields and war mode
   fleshpit/ main.js landmarks.js surface.js organism.js springs.js lungs.js tunnels.js section.js anatomy.js promenade.js visitors.js fauna.js incident.js signs.js camera.js   the park: the surface and its lots, the shaft, the springs, the lungs, the tunnels, the section, the heart and vessels, the people, its animals, the night, its lettering, and its own camera
   yellowstone/ main.js landmarks.js nature.js   Yellowstone: the geysers, pools, falls, lodges, herds and caldera; the land cover, forest, rivers and steam

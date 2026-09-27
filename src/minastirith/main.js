@@ -5,7 +5,7 @@ import {report,LOAD,configureLoading,installErrorHandlers} from '../core/diag.js
 import {boot} from '../core/shell.js';
 import {build} from '../engine/build.js';
 import {landmarks} from './landmarks.js';
-import {hosts} from '../mordor/hosts.js';
+import {hosts} from '../middleearth/hosts.js';
 import {life} from './life.js';
 import {warmode} from './war.js';
 installErrorHandlers();window.LOAD=LOAD;

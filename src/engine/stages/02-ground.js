@@ -170,7 +170,7 @@ section('water',()=>{
 section('piers',()=>{const pb=tiledBuffer(new THREE.MeshLambertMaterial({vertexColors:true}),{cast:true}),c=col('#b8b2a6'),side=col('#8a857a');
   for(const p of PIERS){if(p.line)pb.ribbon(p.line,p.w,2.2,c,2.4);else{pb.poly(p.o,p.i,2.2,c);pb.walls(p.o,-1.2,2.2,side);}}
   pb.build('piers');});
-// streets: sidewalks under the carriageway, alleys, trails; bridges lifted as decks; Metra at grade
+// streets: sidewalks under the carriageway, alleys, trails; bridges lifted as decks; commuter rail at grade
 // A city can retune these: an ice road is not asphalt, and a graded lane on Europa that comes out black
 // reads as a canal. roadColours in the config overrides any of them.
 const ROAD_COL=Object.assign({},{motorway:'#3a3b3f',trunk:'#3a3b3f',primary:'#3c3d41',secondary:'#404145',tertiary:'#44454a',residential:'#48494d',unclassified:'#48494d',living_street:'#4f5054',pedestrian:'#b3ab9c',alley:'#56575a',trail:'#8e8a80'},C.roadColours||{});
@@ -199,7 +199,7 @@ const BRIDGES=[],PIERS_AT=[];
 function resample(pts,step){const out=[];for(let i=0;i+1<pts.length;i++){const [ax,az]=pts[i],[bx,bz]=pts[i+1],L=Math.hypot(bx-ax,bz-az),n=Math.max(1,Math.ceil(L/step));for(let k=0;k<n;k++){const u=k/n;out.push([ax+(bx-ax)*u,az+(bz-az)*u]);}}out.push(pts[pts.length-1]);return out;}
 section('streets',()=>{
   const walk=tiledBuffer(groundMat(4),{tile:1000,far:3000*WORLD}),road=tiledBuffer(groundMat(5)),trail=tiledBuffer(groundMat(6),{tile:1000,far:5000*WORLD}),deck=tiledBuffer(new THREE.MeshLambertMaterial({vertexColors:true}),{cast:true});
-  const walkC=col('#a39f95'),lakefront=col('#7f8a8c');
+  const walkC=col('#a39f95'),namedTrail=col('#7f8a8c'),TRAIL_PALE=nameRe(C.trails);   // the city's named trails are paler
   for(const r of ROADS){const y=deckY(r),c=col(ROAD_COL[r.c]||'#48494d');
     if(y>0){// resample every 8 m so the ramps are smooth, then the deck with a parapet-deep side, and piers every 45 m
       const pts=[],ys=[];for(let i=0;i+1<r.pts.length;i++){const [ax,az]=r.pts[i],[bx,bz]=r.pts[i+1],L2=Math.hypot(bx-ax,bz-az),n=Math.max(1,Math.ceil(L2/(8*WORLD)));for(let k=0;k<n;k++){const u=k/n;pts.push([ax+(bx-ax)*u,az+(bz-az)*u]);ys.push(r.ys[i]+(r.ys[i+1]-r.ys[i])*u);}}
@@ -208,7 +208,7 @@ section('streets',()=>{
       for(let k=0,run=0;k+1<pts.length;k++){run+=Math.hypot(pts[k+1][0]-pts[k][0],pts[k+1][1]-pts[k][1]);if(run<45||ys[k]<7)continue;run=0;PIERS_AT.push([pts[k][0],pts[k][1],ys[k]-(y>12?2.4:1.6),Math.atan2(pts[k+1][1]-pts[k][1],pts[k+1][0]-pts[k][0]),r.w,groundH(pts[k][0],pts[k][1])]);}
       continue;}
     const pts=TER?resample(r.pts,14*WORLD):r.pts;   // follow the ground, at a step that suits the size of the map
-    if(r.c==='trail'){trail.ribbon(pts,r.w,gY(0.09),/Lakefront/i.test(r.name)?lakefront:c);continue;}
+    if(r.c==='trail'){trail.ribbon(pts,r.w,gY(0.09),TRAIL_PALE.test(r.name)?namedTrail:c);continue;}
     if(WALKED.has(r.c))walk.ribbon(pts,r.w+5,gY(0.06),walkC);
     (r.c==='alley'?walk:road).ribbon(pts,r.w,gY(0.08),c);}
   const rail=tiledBuffer(groundMat(4));for(const r of RAILS)if(!r.elevated&&r.type==='rail')rail.ribbon(TER?resample(r.pts,14):r.pts,5,gY(0.07),col('#5a534a'));

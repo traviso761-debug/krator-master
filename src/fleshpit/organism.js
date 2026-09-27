@@ -25,6 +25,7 @@ import { buildLungs } from './lungs.js';
 
 export function organism(api){
   const {THREE,C,ctx,scene,animHooks,groundH,mergeParts,LANDMARKS}=api;
+  const SIG=ctx.pitBus.signal;          // what the incident is doing (src/fleshpit/bus.js)
   const K=C.pit; if(!K) return;
   const RNG=mkRng(1976);
   const [AX,AZ]=K.axis||[0,0];
@@ -848,7 +849,7 @@ vec4 mvPosition=viewMatrix*fpW;gl_Position=projectionMatrix*mvPosition;`);
       t.rotation.x=Math.PI/2;t.position.set(AX,Y(LABIOD)+sd*r*0.2,AZ);t.scale.set(1,1,0.8);J.push(t);
     }
     parts.push(...card(F.labiod,J));
-    ctx.pitLabiod={lips:J,r};
+    ctx.pitBus.parts.labiod={lips:J,r};
   }
 
   // ---- merge what does not move ----
@@ -857,7 +858,7 @@ vec4 mvPosition=viewMatrix*fpW;gl_Position=projectionMatrix*mvPosition;`);
   // carry colours per vertex is merged down by material - within each card's group, within the deck, and
   // across the rest - and the lamps still flicker, because the flicker is on the material they share.
   const keep=new Set(movers.map(m=>m.m).filter(Boolean));
-  if(ctx.pitLabiod)for(const l of ctx.pitLabiod.lips)keep.add(l);
+  if(ctx.pitBus.parts.labiod)for(const l of ctx.pitBus.parts.labiod.lips)keep.add(l);
   function consolidate(list){
     const by=new Map(),out=[];
     for(const m of list){
@@ -883,7 +884,7 @@ vec4 mvPosition=viewMatrix*fpW;gl_Position=projectionMatrix*mvPosition;`);
   // section view: it hangs off the near wall as much as the far one, and the near wall is what was cut away.
   const fineG=new THREE.Group();
   for(const p of fine){p.castShadow=false;p.receiveShadow=false;fineG.add(p);}
-  grp.add(fineG);ctx.pitFine=fineG;
+  grp.add(fineG);ctx.pitBus.parts.fine=fineG;
   scene.add(grp);
 
   // ---- it is alive ----
@@ -897,18 +898,18 @@ vec4 mvPosition=viewMatrix*fpW;gl_Position=projectionMatrix*mvPosition;`);
     BR.t+=dt*BR.rate;const t=BR.t;
     U.uT.value=t;U.uAmp.value=BR.amp;
     const flick=0.86+0.14*Math.sin(now*0.0073)*Math.sin(now*0.0021);
-    const pow=ctx.pitPower===undefined?1:ctx.pitPower;         // the incident cuts the power
+    const pow=SIG.power;         // the incident cuts the power
     sodiumM.color.copy(BASE.sodium).multiplyScalar(flick*pow);
     mercM.color.copy(BASE.merc).multiplyScalar((0.9+0.1*Math.sin(now*0.013))*pow);
     fluorM.color.copy(BASE.fluor).multiplyScalar((0.97+0.03*Math.sin(now*0.05))*pow);
     glowM.opacity=(0.22+0.08*Math.sin(now*0.0017))*pow;
     for(const m of movers){
-      const churn=ctx.pitSeaChurn||0;
+      const churn=SIG.seaChurn;
       if(m.kind==='sea'){m.m.position.y=m.y+0.8*Math.sin(t*0.6)+churn*(2.5*Math.sin(t*2.3)+1.2*Math.sin(t*5.1));
         m.m.rotation.x=-Math.PI/2+churn*0.02*Math.sin(t*1.7);m.m.rotation.y=churn*0.02*Math.cos(t*1.3);}
       else if(m.kind==='fall')m.m.material.opacity=0.45+0.15*Math.sin(t*3.1);
       else if(m.kind==='ferry'){
-        const wreck=ctx.pitFerryWreck||0;
+        const wreck=SIG.ferryWreck;
         if(wreck>0){   // on the night it stops where it is, heels over and goes down
           m.m.rotation.z=wreck*1.9+churn*0.1*Math.sin(t*2);m.m.position.y=m.y-wreck*6+churn*1.5*Math.sin(t*2.3);}
         else{const u=(t*0.02)%1,s=u<0.5?u*2:2-u*2,a=m.a+Math.PI*s*0.5;
@@ -920,7 +921,7 @@ vec4 mvPosition=viewMatrix*fpW;gl_Position=projectionMatrix*mvPosition;`);
       else if(m.kind==='flame'){const f=0.6+0.4*Math.abs(Math.sin(t*5.1)+0.4*Math.sin(t*13));
         m.m.scale.set(0.8+0.3*f,f,0.8+0.3*f);m.m.material.opacity=0.55+0.35*f;}
       else if(m.kind==='lung'){   // the lung fills and empties about its hilum; on the night it gasps
-        const lu=m.lu,fit=ctx.pitLungFit||0;
+        const lu=m.lu,fit=SIG.lungFit;
         const k=1+2.4*breathAt(TOP-lu.hilum.y)+fit*(0.05*Math.abs(Math.sin(t*5.3+lu.side))+0.025*Math.sin(t*13.1+lu.side*2));
         lu.g.scale.setScalar(k);}
       else if(m.kind==='foam'){const a=m.a+t*(0.004+churn*0.05);m.m.position.x=m.cx+Math.cos(a)*m.r;m.m.position.z=m.cz+Math.sin(a)*m.r;}
@@ -929,12 +930,12 @@ vec4 mvPosition=viewMatrix*fpW;gl_Position=projectionMatrix*mvPosition;`);
     }
     // the rams: the barrel rides the wall, the rod stays with the deck
     for(const r of rams){
-      const k=1+breathAt(r.d)+(ctx.pitRamKick||0)*Math.sin(now*0.004+r.a*3);
+      const k=1+breathAt(r.d)+SIG.ramKick*Math.sin(now*0.004+r.a*3);
       const rr=r.r0*k;r.g.position.set(AX+Math.cos(r.a)*rr,Y(r.d)-2,AZ+Math.sin(r.a)*rr);
     }
     // the cages, running their guides: each one takes its own time about it
     // (the incident stops them where they are when the power goes, and takes one of them down itself)
-    if(!ctx.pitCageHalt)for(const c of cages){
+    if(!SIG.cageHalt)for(const c of cages){
       const u=0.5-0.5*Math.cos(t*0.05+c.ph),d=c.hi+(c.lo-c.hi)*u;
       c.g.position.set(AX+Math.cos(c.a)*c.r,Y(d),AZ+Math.sin(c.a)*c.r);
     }
@@ -945,6 +946,6 @@ vec4 mvPosition=viewMatrix*fpW;gl_Position=projectionMatrix*mvPosition;`);
   ctx.pit={THREE,AX,AZ,TOP,Y,D0,DEEP,LAYERS,radiusAt,wallAt,breathAt,BR,U,breathe,card:tag,polar,
     group:grp,fine:fineG,lvc:LVC_PIVOT,deck:DECK,deckR:[DI,DO],rams,lamps:LAMPS,seas,chambers:chambersOut,pods,cav:CAV,
     lungs:lungsOut,lungFluid,stands,cages,groundH,mouthR:MOUTH_R,cavities};
-  ctx.pitLayers=CARDS;
+  ctx.pitBus.parts.layers=CARDS;
   ctx.details=Object.assign(ctx.details||{},{pitLayers:CARDS.length,pitDepth:DEEP,pitParts:parts.length,pitMeshes:merged.length,pitLamps:lamps.length});
 }

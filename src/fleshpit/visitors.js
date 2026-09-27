@@ -11,7 +11,7 @@
 //
 // The paths come from promenade.js (ctx.parkWalks, parkLooks, parkQueues: the surface) and organism.js
 // (ctx.pit.stands: below it). Figures are instanced - a body and a head, two draw calls for everybody - and the
-// deck's people go in the deck's own group, so they list and fall with it. On the night (ctx.pitEvac) the
+// deck's people go in the deck's own group, so they list and fall with it. On the night (the bus's evac signal) the
 // crowd on the surface backs away from the orifice, and the people below make for the stair towers and lifts.
 import { mkRng } from '../core/rng.js';
 
@@ -132,7 +132,7 @@ export function visitors(api){
   animHooks.push(now=>{
     const dt=Math.min(0.1,(now-last)/1000);last=now;
     if((frame++)&1)return;                          // every other frame is plenty for a crowd
-    const t=now/1000,evac=ctx.pitEvac||0,step=dt*2;
+    const t=now/1000,evac=ctx.pitBus.signal.evac,step=dt*2;
     for(const g of groups){if(!g)continue;
       g.list.forEach((p,i)=>{
         let x,y,z,face;

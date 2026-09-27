@@ -10,6 +10,7 @@
 export function incident(api){
   const {THREE,C,ctx,scene,animHooks,HASH0}=api;
   const P=ctx.pit,K=(C.pit||{}).incident;if(!P||!K)return;
+  const SIG=ctx.pitBus.signal;          // what this module drives (src/fleshpit/bus.js)
   const {Y,AX,AZ,BR,lvc,lamps}=P;
 
   // ---- the columns over the orifice ----
@@ -53,7 +54,7 @@ export function incident(api){
      g.add(new THREE.Mesh(new THREE.SphereGeometry(2,8,6),bm));
      const beam=new THREE.Mesh(beamG,beamM);g.add(beam);NG.add(g);beacons.push({g,beam,ph:rnd()*6.28});}}
 
-  // The lungs: the flood level, and the lungs themselves heaving (organism.js reads ctx.pitLungFit).
+  // The lungs: the flood level, and the lungs themselves heaving (organism.js reads signal.lungFit, src/fleshpit/bus.js).
   const lungs=(P.lungs||[]).map(l=>({l,base:l.base,apex:l.apex}));
 
   // Debris off the deck as it goes, and sparks off the rams.
@@ -162,7 +163,7 @@ export function incident(api){
     transition:`opacity ${FADE}s ease`,zIndex:19});
   document.body.appendChild(veil);
   const base={amp:BR.amp,rate:BR.rate,glow:lamps.glow.color.clone()};
-  const lips=ctx.pitLabiod?ctx.pitLabiod.lips.map(l=>({m:l,y:l.position.y})):[];
+  const lips=ctx.pitBus.parts.labiod?ctx.pitBus.parts.labiod.lips.map(l=>({m:l,y:l.position.y})):[];
   const lipMid=lips.length?lips.reduce((s,q)=>s+q.y,0)/lips.length:0;
   const smooth=(a,b,x)=>{const u=Math.max(0,Math.min(1,(x-a)/(b-a)));return u*u*(3-2*u);};
   let btn=null;
@@ -171,9 +172,7 @@ export function incident(api){
     if(btn){btn.setAttribute('aria-pressed',String(on));btn.textContent=on?'Back to 2006':'4 July 2007';}
     NG.visible=SG.visible=on;
     if(!on){
-      BR.amp=base.amp;BR.rate=base.rate;ctx.pitPower=1;ctx.pitRamKick=0;lamps.glow.color.copy(base.glow);
-      ctx.pitHeart={rate:1,amp:1,fib:0};ctx.pitNerve=1;ctx.pitLungFit=0;ctx.pitEvac=0;
-      ctx.pitCageHalt=false;ctx.pitSeaChurn=0;ctx.pitFerryWreck=0;
+      BR.amp=base.amp;BR.rate=base.rate;lamps.glow.color.copy(base.glow);ctx.pitBus.rest();
       for(const L of lungs){L.l.fluid.visible=false;}
       if(P.lungFluid)P.lungFluid.uLevel.value=-1e4;
       if(cage&&cageY0!==null){cage.g.rotation.set(0,-cage.a+Math.PI/2,0);cageY0=null;}
@@ -193,8 +192,8 @@ export function incident(api){
     const fit=smooth(3,12,t)*(1-0.7*smooth(30,40,t));
     BR.amp=base.amp+0.05*fit;BR.rate=1+5*fit;
     // the power: flickering, then out, then the emergency circuit
-    ctx.pitPower=t<10?(Math.sin(t*23)>-0.2?0.8:0.1):t<11?0.02:0.22;
-    ctx.pitRamKick=0.02*smooth(8,14,t)*(1-smooth(20,21,t));
+    SIG.power=t<10?(Math.sin(t*23)>-0.2?0.8:0.1):t<11?0.02:0.22;
+    SIG.ramKick=0.02*smooth(8,14,t)*(1-smooth(20,21,t));
     // the deck: lists twenty degrees on the gantry, then goes
     if(lvc){
       const list=0.35*smooth(14,19,t)+0.3*smooth(20,26,t);
@@ -219,15 +218,15 @@ export function incident(api){
     boil.scale.set(1,Math.max(1,P.D0*boiling*(0.9+0.1*Math.sin(t*2))),1);boil.visible=boiling>0.01;
     // the body: the heart races, loses its rhythm and stops; the nerve cord fires and goes dark; the lungs fill
     const quiet=smooth(33,39,t);
-    ctx.pitHeart={rate:(1+1.9*smooth(3,14,t))*(1-0.85*quiet),amp:1-quiet,fib:smooth(29,31,t)*(1-smooth(35,38,t))};
-    ctx.pitNerve=(1+1.6*fit+1.2*smooth(29,31,t))*(1-quiet);
-    ctx.pitLungFit=smooth(6,12,t)*(1-0.85*quiet);
+    SIG.heart={rate:(1+1.9*smooth(3,14,t))*(1-0.85*quiet),amp:1-quiet,fib:smooth(29,31,t)*(1-smooth(35,38,t))};
+    SIG.nerve=(1+1.6*fit+1.2*smooth(29,31,t))*(1-quiet);
+    SIG.lungFit=smooth(6,12,t)*(1-0.85*quiet);
     for(const L of lungs){L.l.fluid.visible=t>5;}
     if(P.lungFluid&&lungs.length)P.lungFluid.uLevel.value=lungs[0].base+(lungs[0].apex-lungs[0].base)*0.6*smooth(5,15,t);
     // the people: towards the stair towers once the emergency circuit is on
-    ctx.pitEvac=smooth(12,26,t);
+    SIG.evac=smooth(12,26,t);
     // the lifts: stopped where they were when the power went, and the one that went with the deck
-    ctx.pitCageHalt=t>=10;
+    SIG.cageHalt=t>=10;
     if(cage){
       if(t>=20.6){if(cageY0===null)cageY0=cage.g.position.y;
         const ft=t-20.6,y=Math.max(FLOOR+4,cageY0-0.5*38*ft*ft);
@@ -259,8 +258,8 @@ export function incident(api){
         m.m.position.set(m.x-Math.cos(m.a)*R*0.6,m.y-ft*3,m.z-Math.sin(m.a)*R*0.6);}}
     mistM.opacity=0.16*(1-smooth(30,40,t));
     // the seas and the ferry
-    ctx.pitSeaChurn=smooth(25,29,t)*(1-0.5*smooth(34,40,t));
-    ctx.pitFerryWreck=smooth(27,31,t);
+    SIG.seaChurn=smooth(25,29,t)*(1-0.5*smooth(34,40,t));
+    SIG.ferryWreck=smooth(27,31,t);
     // over the rim: helicopters in, circling, lights on the orifice; trucks along the roads in to the rim
     for(const h of helis){
       const leave=smooth(44+h.ph*0.4,49+h.ph*0.4,t);       // and away, once it is over

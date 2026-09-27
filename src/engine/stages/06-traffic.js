@@ -1,5 +1,5 @@
-// ---------- traffic on the real streets and water: cars on Lake Shore Drive and the arterials (up onto the bridges), cyclists and runners on the
-// Lakefront Trail, tour boats on the river's own course, and a working lake: sailboats, motorboats, the cruise ship and water taxis from Navy Pier,
+// ---------- traffic on the real streets and water: cars on the expressway (Lake Shore Drive) and the arterials (up onto the bridges), cyclists and
+// runners on the named trails, tour boats on the river's own course, and, where there is a lake, a working one: sailboats, motorboats, a cruise ship and water taxis,
 // boats moored in every mapped marina (Montrose, Belmont, Diversey, DuSable, Monroe, Burnham), a freighter ----------
 await stage('traffic');
 section('traffic',()=>{
@@ -10,7 +10,8 @@ section('traffic',()=>{
   for(const [name,rs] of groups){const chains=joinChains(rs.map(r=>r.pts.map((p,i)=>[p[0],p[1],r.ys?r.ys[i]:0])),2);
     for(const pts of chains){const r=polyLen({pts});if(r.len<250)continue;r.w=rs[0].w;r.y=pts.map(p=>p[2]||0);r.name=name;routes.push(r);}}
   const TRAF=C.traffic===undefined?1:C.traffic;
-  const cars=[];for(const r of routes){const n=Math.floor(r.len/(/Lake Shore/i.test(r.name)?60:140)*TRAF);for(const dir of [-1,1])for(let k=0;k<n;k++)cars.push({r,dir,s:xr()*r.len,v:(/Lake Shore/i.test(r.name)?17:10)+xr()*6,off:dir*Math.min(r.w/4,5)});}
+  const EXPRESS=nameRe(C.expressway);   // the city's expressway (Lake Shore Drive) carries more cars, faster
+  const cars=[];for(const r of routes){const n=Math.floor(r.len/(EXPRESS.test(r.name)?60:140)*TRAF);for(const dir of [-1,1])for(let k=0;k<n;k++)cars.push({r,dir,s:xr()*r.len,v:(EXPRESS.test(r.name)?17:10)+xr()*6,off:dir*Math.min(r.w/4,5)});}
   const cm=new THREE.InstancedMesh(new THREE.BoxGeometry(4.4,1.4,1.9).translate(0,0.7,0),new THREE.MeshLambertMaterial({color:0xffffff}),Math.max(1,cars.length)),col2=new THREE.Color(),d=new THREE.Object3D();
   const cab=new THREE.InstancedMesh(new THREE.BoxGeometry(2.3,0.75,1.8).translate(-0.3,1.75,0),new THREE.MeshLambertMaterial({color:0x26303a}),Math.max(1,cars.length));
   cars.forEach((c,i)=>cm.setColorAt(i,DRAB?col2.setHSL(0.05+xr()*0.09,0.1+xr()*0.12,0.13+xr()*0.18):col2.setHSL(xr(),0.45,0.3+xr()*0.4)));cm.frustumCulled=cab.frustumCulled=false;scene.add(cm,cab);
@@ -26,8 +27,8 @@ section('traffic',()=>{
     for(let i=0;i<cars.length;i++){const c=cars[i];c.s+=c.dir*c.v*dt;const [x0,z0,a]=polyAt(c.r,c.s,true),x=x0-Math.sin(a)*c.off,z=z0+Math.cos(a)*c.off;
       d.position.set(x,Math.max(yAt(c.r,c.s),groundH(x,z))+0.1,z);d.rotation.set(0,-a+(c.dir<0?Math.PI:0),0);d.scale.set(1,1,1);d.updateMatrix();cm.setMatrixAt(i,d.matrix);cab.setMatrixAt(i,d.matrix);}
     cm.instanceMatrix.needsUpdate=cab.instanceMatrix.needsUpdate=true;});
-  // the Lakefront Trail: cyclists and runners both ways
-  const trailRe=new RegExp(C.trails||'Lakefront Trail','i');   // which named trails get cyclists and runners
+  // the named trails: cyclists and runners both ways
+  const trailRe=nameRe(C.trails);
   const trail=joinChains(ROADS.filter(r=>(r.c==='trail'||r.c==='pedestrian')&&trailRe.test(r.name)).map(r=>r.pts),3).map(p=>polyLen({pts:p})).filter(r=>r.len>300);
   const users=[];for(const r of trail){const n=Math.floor(r.len/90);for(let k=0;k<n;k++){const bike=xr()<0.6;users.push({r,s:xr()*r.len,dir:xr()<0.5?-1:1,v:bike?5+xr()*3:2.4+xr()*1.2,bike,off:(xr()-0.5)*2.5,col:xr()});}}
   const um=new THREE.InstancedMesh(new THREE.CylinderGeometry(0.25,0.3,1.4,6).translate(0,0.95,0),new THREE.MeshLambertMaterial({color:0xffffff}),Math.max(1,users.length)),bm=new THREE.InstancedMesh(new THREE.BoxGeometry(1.7,0.6,0.15).translate(0,0.35,0),new THREE.MeshLambertMaterial({color:0x222222}),Math.max(1,users.length));
@@ -78,7 +79,7 @@ section('boats',()=>{
    const put=now=>{moored.forEach(([x,z,a,sail],i)=>{dd.position.set(x,Math.sin(now*0.0012+x*0.3)*0.15,z);dd.rotation.set(Math.sin(now*0.001+z)*0.03,a,Math.sin(now*0.0013+x)*0.04);dd.scale.set(1,1,1);dd.updateMatrix();hulls.setMatrixAt(i,dd.matrix);dd.scale.set(1,sail?1:0.001,1);dd.updateMatrix();masts.setMatrixAt(i,dd.matrix);});hulls.instanceMatrix.needsUpdate=masts.instanceMatrix.needsUpdate=true;};
    put(0);hulls.count=masts.count=moored.length;hulls.frustumCulled=masts.frustumCulled=false;scene.add(hulls,masts);let t0=0;animHooks.push(now=>{if(now-t0<150)return;t0=now;put(now);});}
   // river tour boats along the Chicago River's mapped centre line
-  const riverRe=new RegExp(C.riverTours||'Chicago River','i');
+  const riverRe=nameRe(C.riverTours);
   const river=joinChains(WATERWAYS.filter(w=>riverRe.test(w.name)).map(w=>w.pts),3).map(p=>polyLen({pts:p})).filter(r=>r.len>400);
   for(const r of river){const n=Math.min(4,Math.max(1,Math.round(r.len/1500)));for(let k=0;k<n;k++){const g=new THREE.Group();g.add(new THREE.Mesh(hullG(26,7,1.4),white));const top=new THREE.Mesh(new THREE.BoxGeometry(18,1.8,5.6),navy);top.position.set(-2,2.3,0);g.add(top);scene.add(g);
     movers.push({kind:'path',g,r,s:(k+0.5)/n*r.len,v:3.5+R()*2,dir:k%2?1:-1,off:7});}}

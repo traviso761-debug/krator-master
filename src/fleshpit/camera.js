@@ -246,8 +246,9 @@ export function descent(api){
       // the cutaway. They belong to the inside of the shaft, and they are shown when you are inside it.
       // In the section the renderer clips away everything on the near side of the cut (section.js), growth and
       // all, so what hangs on the far wall can stay.
-      if(ctx.pitSection)ctx.pitSection(m==='section');
-      else if(ctx.pitFine)ctx.pitFine.visible=(m!=='section');
+      const parts=ctx.pitBus.parts;
+      if(parts.setSection)parts.setSection(m==='section');
+      else if(parts.fine)parts.fine.visible=(m!=='section');
       if(m==='surface'){S.held=0;S.goal=S.depth=0;dark(0);if(sky)sky.visible=true;
         ctl0.elMin=0.03;ctl0.elMax=1.5;}
       paint();

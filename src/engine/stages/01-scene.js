@@ -29,10 +29,13 @@ let clockPaused=false,pausedAt=0,clockOffset=0;
 function hourNow(now){return ((HOUR0+((now/1000)/(DAY/24)))%24+24)%24;}
 function setHour(h){const now=performance.now(),cur=clockPaused?pausedAt:now-clockOffset,tot=HOUR0+(cur/1000)/(DAY/24);let day=Math.floor(tot/24);if(day*24+h<HOUR0)day+=1;const t=(day*24+h-HOUR0)*(DAY/24)*1000;if(clockPaused)pausedAt=t;else clockOffset=now-t;}
 window.setHour=setHour;
-const nightF=h=>1-smooth(5.6,7.4,h)+smooth(17.6,19.6,h);   // ~1 at night, 0 by day (Chicago, spring)
+// ~1 at night, 0 by day. `day` in the city file moves dawn and dusk (hours the light comes and goes over); the
+// default is a mid-latitude spring, which is what Chicago was built with.
+const DAYC=Object.assign({dawn:[5.6,7.4],dusk:[17.6,19.6]},C.day||{});
+const nightF=h=>1-smooth(DAYC.dawn[0],DAYC.dawn[1],h)+smooth(DAYC.dusk[0],DAYC.dusk[1],h);
 const LIT=C.litWindows===undefined?1:C.litWindows;   // how much of the city keeps its lights on after dark
 const windowF=h=>LIT*(smooth(16.5,18.5,h)*(1-smooth(23,25,h))+0.12*nightF(h));
-// the sun: rises in the east over the lake (+x), sets in the west
+// the sun: rises in the east (+x), sets in the west
 function sunAt(h){const f=(h-6)/12,E=Math.sin(Math.PI*f)*0.95,az=Math.PI*(1-f);return new THREE.Vector3(Math.cos(az)*Math.cos(E),Math.sin(E),Math.sin(az)*0.35*Math.cos(E)).normalize();}
 // sky: a gradient dome, coloured by the hour
 const SKY=(()=>{const D={day:{top:0x2f6fd0,hor:0xbcd3ee},dusk:{top:0x2a3a78,hor:0xf0a060},night:{top:0x050a1c,hor:0x16243c}},hx=v=>typeof v==='string'?parseInt(v.slice(1),16):v;
