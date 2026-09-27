@@ -1,6 +1,6 @@
 // ---------- what moves in Mordor: the hosts marching the roads, the Nazgul over the plateau, and the lightning
-// in the pall. Two pages march - this one and Minas Tirith, which is the same war seen from the other end, and
-// which imports this module rather than copying it - and nothing is built unless the city config carries a
+// in the pall. Two pages march - Mordor and Minas Tirith, which is the same war seen from the other end - so it
+// lives here, shared by both, rather than in either city's folder; and nothing is built unless the city config carries a
 // "hosts" block. A host needs a road long enough to be on: minRoad, because Mordor's are ninety kilometres
 // and the Causeway is nine. ----------
 import { mkRng } from '../core/rng.js';

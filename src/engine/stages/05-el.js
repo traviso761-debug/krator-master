@@ -65,8 +65,8 @@ section('el',()=>{
   const deckLo=chains.length?Math.round(Math.min(...chains.map(r=>Math.min(...r.ys)))):0,deckHi=chains.length?Math.round(Math.max(...chains.map(r=>Math.max(...r.ys)))):0;
   ctx.details=Object.assign(ctx.details||{},{elevatedTrack:elev.length,elevatedDeck:chains.length?deckLo+'–'+deckHi+' m':'none',stations:nst,trainLines:lines.length,trains:trains.length});
 });
-// Metra: double-deck silver trains on the commuter lines at grade and on their embankments
-section('metra',()=>{
+// commuter rail: double-deck silver trains (Chicago's Metra) on the mapped heavy-rail lines, at grade and on their embankments
+section('commuter-rail',()=>{
   const lines=joinChains(RAILS.filter(r=>r.type==='rail').map(r=>r.pts),3).map(p=>polyLen({pts:p})).filter(r=>r.len>1500).sort((a,b)=>b.len-a.len).slice(0,8);
   const carL=26,N=6,m=new THREE.MeshLambertMaterial({color:0x8a9096,emissive:0x000000}),band=new THREE.MeshLambertMaterial({color:0x1e2630});   // stainless double-deckers, dark window bands
   const trains=lines.map((r,i)=>({r,s:r.len*((i*0.37)%1),dir:i%2?1:-1,v:14}));
@@ -76,7 +76,7 @@ section('metra',()=>{
     for(const t of trains){t.s+=t.dir*t.v*dt;if(t.s>t.r.len-5)t.dir=-1;if(t.s<N*(carL+1)+5)t.dir=1;
       for(let c=0;c<N;c++){const [x,z,a]=polyAt(t.r,t.s-t.dir*c*(carL+1));d.position.set(x,0.2,z);d.rotation.set(0,-a,0);d.updateMatrix();body.setMatrixAt(i,d.matrix);stripe.setMatrixAt(i,d.matrix);i++;}}
     body.count=stripe.count=i;body.instanceMatrix.needsUpdate=stripe.instanceMatrix.needsUpdate=true;const w=windowF(hourCur);m.emissive.setRGB(w*0.5,w*0.48,w*0.35);});
-  ctx.details=Object.assign(ctx.details||{},{metraTrains:trains.length});
+  ctx.details=Object.assign(ctx.details||{},{commuterTrains:trains.length});
 });
 // light rail and streetcars at street level (MAX, the Portland Streetcar): rails in the pavement and trains running the joined lines
 section('surface-rail',()=>{

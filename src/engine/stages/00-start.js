@@ -1,8 +1,13 @@
 // ---------- start: three.js check, the config and the OpenStreetMap geography, projection, randomness, lookups ----------
 if(!window.THREE){document.getElementById('loading').textContent='three.js did not load (vendor/three/three.min.js). Check the site mounts and reload.';return;}
 const THREE=window.THREE;
-const CITY_ID=(()=>{const v=new URLSearchParams(location.search).get('city')||'';return /^[a-z0-9-]{1,40}$/.test(v)?v:(ctx.defaultCity||'chicago');})();   // each page sets its own city
+const CITY_ID=(()=>{const v=new URLSearchParams(location.search).get('city')||'';return /^[a-z0-9-]{1,40}$/.test(v)?v:ctx.defaultCity;})();   // each page sets its own city
+if(!CITY_ID)throw new Error('no city: the page sets ctx.defaultCity, or the address gives ?city=');
 ctx.cityId=CITY_ID;
+// A city names its own special streets in its file, as patterns: `boulevard` (the grand avenue with planters and
+// tall lamps, busier sidewalks, no parking), `expressway` (denser traffic), `trails` (cyclists and runners, and
+// a paler surface), `riverTours` (tour boats). A city that names none has none of them.
+const nameRe=s=>s?new RegExp(s,'i'):/(?!)/;
 const getJSON=u=>fetch(u).then(r=>{if(!r.ok)throw new Error(u+': HTTP '+r.status);return r.json();});
 const C=await getJSON('data/cities/'+CITY_ID+'.json');
 await stage('map-data');

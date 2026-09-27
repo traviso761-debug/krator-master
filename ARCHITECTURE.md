@@ -11,8 +11,13 @@ are listed in §7. File:line references are as of this date.
 > loop and its hooks, loading and hint, boot) and `src/core/hash.js` (merge-writes that keep other keys) are used
 > by the engine, the starship page, Kyrene, the Backrooms and the City, and every city's `main.js` boots through
 > `boot()`. Every page but Iziz now handles context loss, and no page's camera wipes `wire=`, `under=` or a
-> page's own keys (the wire toggle now writes them). Iziz moves onto the shell in phase 5. The later phases are
-> not started.
+> page's own keys (the wire toggle now writes them). Iziz moves onto the shell in phase 5. Phase 4 is done
+> except the stage modules: the engine names no city (Chicago's boulevard, expressway, trails, river tours,
+> default view and day length are keys in its city file; the commuter-rail section is generic), the Flesh Pit's
+> extras talk through one documented bus (`src/fleshpit/bus.js`), and the war both Middle-earth pages share lives
+> in `src/middleearth/`. Turning the engine's stages into modules with named outputs is not done: they share
+> 244 names across stage boundaries, several of them mutable (`hourCur`, `clockPaused`, the camera state), so
+> it needs its own pass. Phase 3 waits on the binding table (§9.2). The later phases are not started.
 
 There is no physics engine as such. The nearest things are the flight model (`src/core/flight.js`, kinematic,
 no stall), the Backrooms' circle-against-walls collision (`src/backrooms/level.js:409`), the City's

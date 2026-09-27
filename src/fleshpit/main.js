@@ -18,6 +18,7 @@ import {fauna} from './fauna.js';
 import {incident} from './incident.js';
 import {tunnels} from './tunnels.js';
 import {section} from './section.js';
+import {createPitBus} from './bus.js';
 installErrorHandlers();window.LOAD=LOAD;
 configureLoading({
   // What you read while it builds. See src/core/diag.js: these are shuffled and one of them is
@@ -32,6 +33,6 @@ configureLoading({
     'Press 4 July 2007 to see the night, and again to put it back.',
   ],
   prefix:'opening the park… ',labels:{tunnels:'gating the passages',section:'cutting the section',anatomy:'finding the heart',promenade:'laying the paths',visitors:'opening the gates',fauna:'counting the copepods',incident:'filing the report','map-data':'reading the survey',ground:'laying the caliche',buildings:'raising the visitor center',details:'planting the mesquite',landmarks:'railing off the lip',el:'running the monorail',traffic:'opening the road',organism:'descending',ui:'opening the windows'}});
-const ctx=window._iz={defaultCity:'fleshpit',models:[landmarks,surface],
+const ctx=window._iz={defaultCity:'fleshpit',pitBus:createPitBus(),models:[landmarks,surface],
   extras:[{name:'organism',fn:organism},{name:'tunnels',fn:tunnels},{name:'anatomy',fn:anatomy},{name:'promenade',fn:promenade},{name:'visitors',fn:visitors},{name:'fauna',fn:fauna},{name:'incident',fn:incident},{name:'section',fn:section},{name:'descent',fn:descent}]};
 boot(()=>build(ctx));

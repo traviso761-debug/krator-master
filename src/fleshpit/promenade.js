@@ -151,7 +151,7 @@ export function promenade(api){
     ctx.parkTrams=trams;
     animHooks.push(((last)=>now=>{
       const dt=Math.min(0.1,(now-last)/1000);last=now;
-      const halt=ctx.pitEvac?ctx.pitEvac>0.05:false;          // on the night the trams stop and wait
+      const halt=ctx.pitBus.signal.evac>0.05;          // on the night the trams stop and wait
       for(const tr of trams){
         if(!halt)tr.s+=tr.v*dt;
         tr.cars.forEach((c,i)=>{const [x,z,h]=posAt(tr.s-i*(i?7:5.8));c.position.set(x,gh(x,z)+0.1,z);c.rotation.y=-h;});

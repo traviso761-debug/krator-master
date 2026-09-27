@@ -1,5 +1,5 @@
 // ---------- streetscape in the detailed areas (Magnificent Mile, Riverwalk, North & Ashland, the six corners, Wrigleyville), on the OSM streets:
-// crosswalks and signals where streets really meet, street lights, Michigan Avenue's planters and median gardens, parked cars, people ----------
+// crosswalks and signals where streets really meet, street lights, the boulevard's planters and median gardens, parked cars, people ----------
 await stage('streetscape');
 section('streetscape',()=>{
   if(!FOCUS.length)return;
@@ -19,7 +19,7 @@ section('streetscape',()=>{
       const dx=(x2-q.x)/L,dz=(z2-q.z)/L,off=Math.max(9,r.w*0.7),cx=q.x+dx*off,cz=q.z+dz*off;for(let k=-r.w/2+1;k<r.w/2;k+=1.6)zebra.push([cx-dz*k,cz+dx*k,Math.atan2(dz,dx)]);}
    const zm=new THREE.InstancedMesh(new THREE.BoxGeometry(3.2,0.05,0.6),new THREE.MeshLambertMaterial({color:0xe8e6dc,polygonOffset:true,polygonOffsetFactor:-8,polygonOffsetUnits:-16}),Math.max(1,zebra.length));
    zebra.forEach(([x,z,a],i)=>{d.position.set(x,groundH(x,z)+0.03,z);d.rotation.set(0,-a,0);d.scale.set(1,1,1);d.updateMatrix();zm.setMatrixAt(i,d.matrix);});zm.count=zebra.length;zm.receiveShadow=true;scene.add(zm);}
-  // street lights every 30 m both sides; Michigan Avenue gets the tall double-armed poles
+  // street lights every 30 m both sides
   const lights=[];for(const r of near)along(r,30,(x,z,dx,dz)=>{if(nearXing(x,z,14))return;for(const sd of [-1,1]){const lx=x-dz*sd*(r.w/2+1.3),lz=z+dx*sd*(r.w/2+1.3);if(!inWater(lx,lz))lights.push([lx,lz,Math.atan2(dz,dx)+(sd>0?Math.PI/2:-Math.PI/2)]);}});
   const poleM=new THREE.MeshLambertMaterial({color:0x2e3134}),headM=new THREE.MeshLambertMaterial({color:0xe8e4d8,emissive:0x000000});
   {const n=Math.max(1,lights.length),pole=new THREE.InstancedMesh(new THREE.CylinderGeometry(0.12,0.16,1,6).translate(0,0.5,0),poleM,n),arm=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),poleM,n),head=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),headM,n);
@@ -39,20 +39,20 @@ section('streetscape',()=>{
    poles.count=sigPoles.length;heads.count=lamps.count=sigHeads.length;lamps.count=sigHeads.length*3;scene.add(poles,heads,lamps);
    let lastS=-1;animHooks.push(now=>{const sec=Math.floor(now/1000);if(sec===lastS)return;lastS=sec;const t=sec%44;sigHeads.forEach(([,,,ph],i)=>{const tt=(t+(ph?22:0))%44,state=tt<18?2:tt<21?1:0;for(let li=0;li<3;li++)lamps.setColorAt(i*3+li,li===state?ON[li]:OFF);});if(lamps.instanceColor)lamps.instanceColor.needsUpdate=true;});
    lampsAll.length=sigHeads.length;}
-  // Michigan Avenue's median gardens and sidewalk planters, on the Magnificent Mile only
-  {const mich=near.filter(r=>/Michigan Avenue/i.test(r.name));const plM=new THREE.MeshLambertMaterial({color:0x6a6258}),flM=new THREE.MeshLambertMaterial({color:0xffffff}),trM=new THREE.MeshLambertMaterial({color:0x3f7a3a});
+  // the boulevard's median gardens and sidewalk planters (C.boulevard: Michigan Avenue's Magnificent Mile), where the focus areas ask for planters
+  {const BOUL=nameRe(C.boulevard),mich=near.filter(r=>BOUL.test(r.name));const plM=new THREE.MeshLambertMaterial({color:0x6a6258}),flM=new THREE.MeshLambertMaterial({color:0xffffff}),trM=new THREE.MeshLambertMaterial({color:0x3f7a3a});
    const pl=[],med=[];for(const r of mich)along(r,16,(x,z,dx,dz,f)=>{if(!f.planters||nearXing(x,z,22))return;med.push([x,z,Math.atan2(dz,dx)]);for(const sd of [-1,1])pl.push([x-dz*sd*(r.w/2+2.6),z+dx*sd*(r.w/2+2.6),Math.atan2(dz,dx)]);});
    const all=med.concat(pl),n=Math.max(1,all.length),box=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1).translate(0,0.5,0),plM,n),fl=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1).translate(0,0.5,0),flM,n),tree=new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1,0),trM,n),c=new THREE.Color();
    all.forEach(([x,z,a],i)=>{const isMed=i<med.length;d.position.set(x,groundH(x,z),z);d.rotation.set(0,-a,0);d.scale.set(isMed?12:3,0.7,isMed?1.8:1.4);d.updateMatrix();box.setMatrixAt(i,d.matrix);
      d.position.set(x,groundH(x,z)+0.7,z);d.scale.set(isMed?11.4:2.6,0.35,isMed?1.4:1.1);d.updateMatrix();fl.setMatrixAt(i,d.matrix);fl.setColorAt(i,c.setHSL([0.95,0.12,0.8,0.02][Math.floor(R()*4)],0.7,0.55));
      d.position.set(x,groundH(x,z)+(isMed?3.2:2.6),z);d.scale.setScalar(isMed?2.4:1.3);d.updateMatrix();tree.setMatrixAt(i,d.matrix);});
-   box.count=fl.count=tree.count=all.length;scene.add(box,fl,tree);ctx.details=Object.assign(ctx.details||{},{michiganPlanters:all.length});}
-  // parked cars along the curbs (not on Michigan Avenue or the Riverwalk area)
+   box.count=fl.count=tree.count=all.length;scene.add(box,fl,tree);ctx.details=Object.assign(ctx.details||{},{boulevardPlanters:all.length});}
+  // parked cars along the curbs (not where a focus area says there is no parking)
   const parked=[];for(const r of near){if(r.w<13)continue;along(r,6.8,(x,z,dx,dz,f)=>{if(f.parked===false||nearXing(x,z,26))return;for(const sd of [-1,1]){if(R()<0.3)continue;const px=x-dz*sd*(r.w/2-1.3),pz=z+dx*sd*(r.w/2-1.3);if(!inWater(px,pz))parked.push([px,pz,Math.atan2(dz,dx)]);}});}
   {const n=Math.max(1,parked.length),body=new THREE.InstancedMesh(new THREE.BoxGeometry(4.5,1.0,1.9).translate(0,0.75,0),new THREE.MeshLambertMaterial({color:0xffffff}),n),cab=new THREE.InstancedMesh(new THREE.BoxGeometry(2.4,0.7,1.7).translate(-0.2,1.6,0),new THREE.MeshLambertMaterial({color:0x2a3440}),n),c=new THREE.Color();
    parked.forEach(([x,z,a],i)=>{d.position.set(x,groundH(x,z),z);d.rotation.set(0,-a,0);d.scale.set(1,1,1);d.updateMatrix();body.setMatrixAt(i,d.matrix);cab.setMatrixAt(i,d.matrix);body.setColorAt(i,c.setHSL(carHue(R),carSat(R),carLit(R)));});
    body.count=cab.count=parked.length;scene.add(body,cab);}
-  // people on the sidewalks, busier on Michigan Avenue
+  // people on the sidewalks, busier where there are planters
   const PEOPLE=C.people===undefined?1:C.people;
   const walkers=[];for(const r of near)along(r,9,(x,z,dx,dz,f)=>{if(R()>(f.planters?0.6:0.3)*PEOPLE)return;const sd=R()<0.5?-1:1;walkers.push({x0:x,z0:z,dx,dz,sd,off:r.w/2+2.2+R()*1.6,v:(R()<0.5?-1:1)*(1.1+R()*0.5),t:0,col:R()});});
   {const n=Math.max(1,walkers.length),body=new THREE.InstancedMesh(new THREE.CylinderGeometry(0.22,0.26,1.35,6).translate(0,0.68,0),new THREE.MeshLambertMaterial({color:0xffffff}),n),head=new THREE.InstancedMesh(new THREE.SphereGeometry(0.13,6,5).translate(0,1.52,0),new THREE.MeshLambertMaterial({color:0xc8a080}),n),c=new THREE.Color();

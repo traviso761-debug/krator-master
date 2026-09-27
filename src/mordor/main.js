@@ -6,7 +6,7 @@ import {boot} from '../core/shell.js';
 import {build} from '../engine/build.js';
 import {landmarks} from './landmarks.js';
 import {forges} from './forges.js';
-import {hosts} from './hosts.js';
+import {hosts} from '../middleearth/hosts.js';
 installErrorHandlers();window.LOAD=LOAD;
 configureLoading({
   // What you read while it builds. See src/core/diag.js: these are shuffled and one of them is

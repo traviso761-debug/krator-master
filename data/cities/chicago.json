@@ -6,6 +6,11 @@
   -87.6278
  ],
  "defaultSeed": 1871,
+ "defaultView": "Skyline from the lake",
+ "boulevard": "Michigan Avenue",
+ "expressway": "Lake Shore",
+ "trails": "Lakefront Trail",
+ "riverTours": "Chicago River",
  "districts": {
   "_": "[name, hex colour, base height, tallest, box as [lat south, lon west, lat north, lon east]]; the first box that contains a block wins",
   "loop": [

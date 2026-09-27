@@ -21,7 +21,7 @@
 //
 // The voids come from ctx.pit.cavities (organism.js, springs.js, tunnels.js) and the shaft's radius from
 // wallAt. Only this page does any of it, and only while the camera is in section (camera.js calls
-// ctx.pitSection). The clipping plane is installed once, parked out of the way when the section is off, so
+// the bus's setSection). The clipping plane is installed once, parked out of the way when the section is off, so
 // turning the section on and off never recompiles a shader.
 export function section(api){
   const {THREE,ctx,scene,camera,renderer,animHooks}=api;
@@ -212,7 +212,7 @@ void main(){
   key.innerHTML='<div style="font-weight:600;margin-bottom:2px">Section</div>'+KEY.map(k=>k?`<div><span style="display:inline-block;width:10px;height:10px;margin-right:6px;background:${k[0]};vertical-align:-1px"></span>${k[1]}</div>`:'<div style="height:6px"></div>').join('');
   document.body.appendChild(key);
 
-  ctx.pitSection=on=>{
+  ctx.pitBus.parts.setSection=on=>{
     S0.on=!!on;face.visible=S0.on;key.style.display=S0.on?'block':'none';
     if(S0.on){S0.th=NaN;orient();}else{clip.normal.set(0,1,0);clip.constant=1e7;}
   };
