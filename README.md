@@ -621,8 +621,9 @@ Warwickshire village of about the period of Queen Victoria's Diamond Jubilee", T
   generator (level ground in front, a bank over the face) so it is dug in, not set down. The doors are every
   colour, as Tolkien paints them. Bag End is the biggest, with the best garden and the notice on its gate.
 - **The Water**, "no more than a winding black ribbon, bordered with leaning alder-trees"; **the mill** on it at
-  the foot of the Hill - a square tower of yellow stone under a red hipped roof, round windows, a wing beside it
-  and a wheel that turns (it is Sarehole Mill, where Tolkien lived as a boy); the bridge with the sign at the
+  the foot of the Hill - a square tower of yellow stone under a red hipped roof, round windows, a wing beside it,
+  standing on the bank with its river wall on a footing in the water and its wheel turning in the stream, a
+  sluice gate beside the wheel and a weir upstream (it is Sarehole Mill, where Tolkien lived as a boy); the bridge with the sign at the
   end pointing WEST; **the Old Grange** with its thatched ricks; **the Party Field** and the Party Tree.
 - **Bywater** round its Pool, a mile south-east of the bridge by the Bywater Road and "the avenue of trees going
   from Hobbiton to Bywater"; **the Green Dragon** at the Hobbiton end of it; **the Great East Road** to the south.
@@ -631,6 +632,12 @@ Warwickshire village of about the period of Queen Victoria's Diamond Jubilee", T
   hedges traced by the generator along the same lines the fields were cut on, with trees standing in them;
   orchards in blossom, copses, poplars by the farms, sheep and cows in the pastures, sandy lanes with a grass
   crown between the ruts. Past the edge of the box the country goes on, the shader making up its own fields.
+- **A working country**: half the land under the plough or the scythe, and market gardens in strips. Twenty-five
+  farms, three of them in sight of Hobbiton, each a farmhouse and a barn round a fenced yard with a well, a
+  granary on staddle stones, ricks, a cart, a pigsty, a hen house and hens, and a kitchen garden behind. The
+  generator decides the work in each field and places it inside the field's own outline (`plan.work`): stooks
+  on the wheat being harvested and hobbits reaping, plough teams working up and down a furrow at a time, hay
+  carts with hobbits pitching, scarecrows, hobbits hoeing (`src/shire/fields.js`). They all go home at dusk.
 - **What moves**: hobbits walking the lanes, smoke from every chimney, the mill wheel, round windows and the
   gate lamps lit after dark, birds, and Gandalf's cart - pony, pointed grey hat, crates of fireworks - going up
   the Hill lane to Bag End and back.
@@ -1177,7 +1184,7 @@ src/
   starship/ page.js parts.js                 the page the ships and Babylon 5 share: renderer, sky, turntable, cards; the hull pieces
   babylon5/ main.js station.js               Babylon 5: the sphere, the Cobra bays, the drum and the Garden, the arrays, the traffic, the gate
   hab/      main.js world.js               Kyrene: its own renderer, and a world in cylinder coordinates
-  shire/    main.js ground.js water.js country.js holes.js buildings.js life.js party.js   the Shire: fields and lanes, the Water, hedges and trees, the holes, the mill and the rest, what moves, Bilbo's party
+  shire/    main.js ground.js water.js country.js holes.js buildings.js fields.js life.js party.js   the Shire: fields and lanes, the Water, hedges and trees, the holes, the mill, farms and the rest, the work in the fields, what moves, Bilbo's party
   voth/     imports.js stages/*.js build.js   Voth: 51 recovered stages, assembled into build.js (voth.html runs it)
 vendor/three/three.min.js     three.js r128 (pinned)
 tools/  build-page.py build-tongue.py probe.py check-city.py

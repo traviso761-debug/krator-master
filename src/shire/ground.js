@@ -16,6 +16,7 @@ export function ground(api){
   const V=ctx.plan;if(!V)return;
   const F=V.fields;
   const tex=new THREE.TextureLoader().load(F.image);
+  tex.flipY=false;   // row 0 of the image is the north edge, z0: unflipped, or the patchwork is mirrored and misses its hedges
   tex.magFilter=THREE.NearestFilter;tex.minFilter=THREE.NearestFilter;tex.generateMipmaps=false;
   const U={uFields:{value:tex},uF:{value:new THREE.Vector4(F.x0,F.z0,F.w,F.d)}};
   const mat=new THREE.MeshLambertMaterial({color:0xffffff});

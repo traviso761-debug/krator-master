@@ -55,11 +55,55 @@ export function buildings(api){
     ctx.shireSmoke=(ctx.shireSmoke||[]);{const [x,z]=F.P(w/2-1.2,-0.6);ctx.shireSmoke.push([x,h.y+tall+(fs?3.4:d*0.5)+1.4,z]);}
   }
 
+  // ---- the farmyards: between the farmhouse and its barn (at 26 m along the house, turned square to it), in
+  //      front of the house - a fenced yard with a well, a granary on staddle stones, ricks, a cart, a pigsty,
+  //      a hen house and hens; behind the house the kitchen garden in rows. Each piece sits on its own ground.
+  const at=(F0,u,w)=>{const [x,z]=F0.P(u,w);return frame(x,z,groundH(x,z),F0.rot);};
+  for(const fm of (V.farms||[])){const [fx,fz,frot]=fm;if(frot===undefined)continue;const F0=frame(fx,fz,0,frot);
+    // the fence: posts and rails round three sides of the yard
+    const fence=(u0,w0,u1,w1)=>{const L=Math.hypot(u1-u0,w1-w0),n=Math.max(1,Math.round(L/2.5));
+      for(let i=0;i<=n;i++){const t=i/n,F=at(F0,u0+(u1-u0)*t,w0+(w1-w0)*t);F.B(0,0,0,0.14,1.2,0.14,TIMBER);
+        if(i<n){const um=u0+(u1-u0)*(t+0.5/n),wm=w0+(w1-w0)*(t+0.5/n),G=at(F0,um,wm);
+          const ang=Math.atan2(w1-w0,u1-u0);for(const hh of [0.5,0.95])G.G(new THREE.BoxGeometry(L/n+0.1,0.1,0.07),0x7a5a3a,0,hh,0,-ang);}}};
+    fence(-11,7,-11,25);fence(-11,25,20,25);fence(20,25,20,7);
+    {const F=at(F0,8,9);F.G(new THREE.CylinderGeometry(0.9,1,0.9,10).translate(0,0.45,0),STONE,0,0,0);          // the well
+     for(const d of [-0.8,0.8])F.B(d,0,0,0.12,2.1,0.12,TIMBER);gable(F,TILE2,0,2.1,0,1.6,1.8,0.8,0.2);}
+    {const F=at(F0,-4,17);for(let i=0;i<3;i++)for(let j=0;j<3;j++){const u=-1.6+i*1.6,w=-1.2+j*1.2;          // the granary on staddle stones
+       F.G(new THREE.CylinderGeometry(0.12,0.22,0.8,6).translate(0,0.4,0),STONE,u,0,w);F.G(new THREE.CylinderGeometry(0.4,0.4,0.12,8),STONE,u,0.86,w);}
+     F.B(0,0.92,0,4.2,2.4,3.2,0x7a5a3a);gable(F,TILE,0,3.32,0,4.2,3.2,0.9,0.3);}
+    for(const [u,w] of [[13,20],[17.5,15]]){const F=at(F0,u,w);F.G(new THREE.CylinderGeometry(2.2,2.4,2.4,12).translate(0,1.2,0),THATCH,0,0,0);   // ricks
+      F.G(new THREE.SphereGeometry(2.5,12,8,0,Math.PI*2,0,Math.PI/2).scale(1,1.3,1),0xd8b860,0,2.3,0);}
+    {const F=at(F0,4,15);F.B(0,0.9,0,1.6,0.5,2.8,0x8a6a48);                                              // a cart, shafts down
+     for(const d of [-0.95,0.95])F.G(new THREE.CylinderGeometry(0.7,0.7,0.1,12).rotateZ(Math.PI/2),0x4a3a2a,d,0.7,0.2);
+     for(const d of [-0.45,0.45])F.G(new THREE.BoxGeometry(0.08,0.08,2.4),0x6a4a2a,d,0.45,-2.3,0,0.35);}
+    {const F=at(F0,-15,3);F.B(0,0,-2,5,0.9,0.3,STONE);F.B(0,0,2,5,0.9,0.3,STONE);F.B(-2.5,0,0,0.3,0.9,4,STONE);F.B(2.5,0,0,0.3,0.9,4,STONE);  // the sty
+     F.B(-1.4,0,0.6,2,1.4,2.6,0x7a5a3a);gable(F,TILE2,-1.4,1.4,0.6,2,2.6,0.6,0.2);
+     for(let k=0;k<3;k++)F.B(0.6+k*0.5,0,-1.2+k*0.9,1.0,0.55,0.55,0xe0a090,k);}
+    {const F=at(F0,2,21);for(const [u,w] of [[-0.7,-0.5],[0.7,-0.5],[-0.7,0.5],[0.7,0.5]])F.B(u,0,w,0.1,0.7,0.1,TIMBER);   // hen house
+     F.B(0,0.7,0,1.8,1.1,1.4,0x8a6a48);gable(F,TILE2,0,1.8,0,1.8,1.4,0.7,0.15);
+     for(let k=0;k<8;k++)F.B(-3+R()*6,0,-3+R()*6,0.3,0.28,0.2,R()<0.7?0xf0ece0:0xa8683a,R()*6);}
+    for(let r=0;r<5;r++)for(let c=0;c<9;c++){const F=at(F0,-8+c*2,-8-r*1.6);                               // the kitchen garden
+      F.G(new THREE.SphereGeometry(r%2?0.32:0.26,6,5).scale(1,0.8,1),[0x5f9a3a,0x4a8a34,0x7aa040,0x6a9a4a,0x5a8a3a][r],0,0.12,0);}
+  }
+
   // ---- the Mill ----
   let wheel=null;
-  {const S=V.sites.mill,y=S.y+0.4,F=frame(S.x,S.z,y,S.turn);
-   const g=new THREE.Group();
-   F.B(0,-1.5,0,7.6,1.8,7.6,STONE);F.B(0,0,0,7,12.5,7,YELLOW);
+  // It stands on the bank with its river wall in the water, on a stone footing, and the wheel in the stream. The
+  // generator levels a yard for it; here it is set against the river as water.js actually drew it (with its
+  // meander), so the wheel is always in the water: `w` in the mill's frame points across the river.
+  {const S=V.sites.mill,st=(ctx.shireWater&&ctx.shireWater.stations)||[];
+   let k0=0,bd=1e9;st.forEach((p,i)=>{const d=Math.hypot(p[0]-S.x,p[1]-S.z);if(d<bd){bd=d;k0=i;}});
+   let cx=S.x,cz=S.z,rot=S.turn,hw=4.6;
+   if(st.length>2){const p=st[k0],a0=st[Math.max(0,k0-2)],b0=st[Math.min(st.length-1,k0+2)];let dx=b0[0]-a0[0],dz=b0[1]-a0[1];const l=Math.hypot(dx,dz)||1;dx/=l;dz/=l;
+     let nx=-dz,nz=dx;if(nx*(S.x-p[0])+nz*(S.z-p[1])<0){nx=-nx;nz=-nz;}                    // the normal, towards the bank the mill is on
+     hw=p[3];cx=p[0]+nx*(hw+2.8);cz=p[1]+nz*(hw+2.8);rot=Math.atan2(nx,-nz);}
+   const y=S.y+0.8,F=frame(cx,cz,y,rot);
+   F.B(0,-2.6,0,7.8,3.0,7.8,STONE);F.B(0,0,0,7,12.5,7,YELLOW);
+   F.B(9.4,-2.6,0.4,12.2,3.0,8.0,STONE);                                                     // the wing's footing
+   // the weir upstream, a low stone sill across the stream, and the white water coming over it
+   F.B(-17,-2.6,hw+2.8,1.4,2.05,2*hw+5,STONE);F.B(-15.6,-0.72,hw+2.8,1.6,0.06,2*hw+1,0xdfe8e6);
+   // and a sluice gate beside the wheel, on its own posts
+   for(const w of [3.9,6.6])F.B(-4.6,-1.6,w,0.3,4.6,0.3,TIMBER);F.B(-4.6,1.2,5.25,0.2,1.2,2.7,TIMBER);
    // the hipped roof, red
    {const c=new THREE.ConeGeometry(Math.SQRT2/2,1,4,1).rotateY(Math.PI/4);c.scale(8.4,4.4,8.4);c.translate(0,2.2,0);F.G(c,TILE,0,12.5,0);}
    for(const yy of [4.2,8.4])roundWin(F,0,yy,3.53,0.5,0);
@@ -75,9 +119,9 @@ export function buildings(api){
      const sp=new THREE.Mesh(new THREE.BoxGeometry(0.14,3.3,0.14).translate(0,1.65,0),wm);sp.rotation.z=a;wheel.add(sp);
      const pd=new THREE.Mesh(new THREE.BoxGeometry(0.7,0.08,1.2),wm);pd.position.set(Math.cos(a+Math.PI/2)*3.4,Math.sin(a+Math.PI/2)*3.4,0.55);pd.rotation.z=a;wheel.add(pd);}
    wheel.add(new THREE.Mesh(new THREE.CylinderGeometry(0.28,0.28,1.8,10).rotateX(Math.PI/2).translate(0,0,0.55),matOf(0x3a3a3a)));
-   const [wx,wz]=F.P(-1.2,4.9);wheel.position.set(wx,S.y+2.5,wz);wheel.rotation.y=-S.turn;
+   const [wx,wz]=F.P(-1.2,4.9);wheel.position.set(wx,S.y+2.5,wz);wheel.rotation.y=-rot;
    scene.add(wheel);
-   pick.push({x:S.x,z:S.z,r:14,info:{name:'The Mill',info:'The old mill on the Water at the foot of the Hill, with its wheel turning: a square tower of yellow stone under a red roof, round windows, and a lower wing beside it. Tolkien put it in the foreground of his painting of Hobbiton; it is the mill at Sarehole, where he lived as a boy.'}});}
+   pick.push({x:cx,z:cz,r:14,info:{name:'The Mill',info:'The old mill on the Water at the foot of the Hill, with its wheel turning: a square tower of yellow stone under a red roof, round windows, and a lower wing beside it. Tolkien put it in the foreground of his painting of Hobbiton; it is the mill at Sarehole, where he lived as a boy.'}});}
 
   // ---- the Old Grange, and its ricks ----
   {const S=V.sites.grange,F=frame(S.x,S.z,S.y,0.22);
