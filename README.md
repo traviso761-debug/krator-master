@@ -725,7 +725,21 @@ real, and what is built is what is actually known about its surface.
   locked. That last fact is the whole reason to build the page. The bands are vertex colours on a sphere;
   there are no textures anywhere in this project.
 
-Regenerate with `python3 tools/make-europa.py`, then `./sitectl build`.
+- **The ice** (`src/europa/ice.js`): the plains drawn by a shader, white with a cold blue cast and scored by
+  families of fine cracks at their own angles and spacings; the lineae with a dark crack down the middle and the
+  reddish-brown stain either side; the chaos as rafts of the old surface - irregular slabs, tilted and frozen
+  back in, their tops still cracked like the plains they came from, their sides blue fracture - in a darker,
+  browner matrix of rubble; fresh frost round the bore; the aprons with smooth edges.
+- **Plumes**: in a vacuum nothing billows. The bore and the vent stacks throw grains on ballistic arcs under a
+  gravity an eighth of Earth's - the bore's rise a few hundred metres and take most of a minute to come down -
+  and they fall back as frost.
+- **The light**: a small hard white sun with only a tight glare (the soft halo is air, and there is none), as
+  bright five degrees up as at noon; no sky light, but the ice sends two thirds of the sun back up, so walls in
+  shadow are lit from below. Jupiter and the moons are lit by the sun and have phases - Jupiter is full at local
+  midnight and new at noon - and the light Jupiter throws on the ice follows its phase.
+
+Regenerate with `python3 tools/make-europa.py` (it writes `europa-osm.json` and `europa-ice.json`), then
+`./sitectl build`.
 
 ### `/enterprise`, `/voyager`, `/ds9`: three ships
 
@@ -1328,6 +1342,7 @@ them (`.gitattributes` marks them). The generators share `tools/lib/geo.py`.
 |---|---|
 | `data/cities/<city>-osm.json` for chicago, nyc, portland, venice | `tools/build-osm-city.py <city>`, from the raw cache in `data/osm/raw/` (not committed, not served) |
 | `data/cities/<city>-osm.json` for the invented places | `tools/make-<city>.py` |
+| `data/cities/europa-ice.json` | `tools/make-europa.py` |
 | `data/cities/rivendell-valley.json` | `tools/make-rivendell.py` |
 | `data/cities/shire-plan.json`, `shire-fields.png` | `tools/make-shire.py` |
 | `data/cities/yellowstone.json`, `yellowstone-land.json` | `tools/make-yellowstone.py` (the config too: edit the script) |

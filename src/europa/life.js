@@ -15,8 +15,7 @@ export function life(api){
   const warm=new THREE.MeshBasicMaterial({color:0xffca7a});
   const cold=new THREE.MeshBasicMaterial({color:0x9fd4ff});
   const trackM=new THREE.MeshLambertMaterial({color:0xb4c2cc,flatShading:true});
-  const vapM=new THREE.MeshBasicMaterial({color:0xdfeef6,transparent:true,opacity:0.16,depthWrite:false});
-
+  
   const statics=[],rovers=[],lights=[],vents=[];
 
   // ---- the lanes, and what has been up and down them ----
@@ -69,18 +68,15 @@ export function life(api){
   }
 
   // ---- the vents ----
-  // Every warm thing on this moon is losing water to the vacuum somewhere, and every bit of it freezes on
-  // the way out: the station is surrounded by small permanent plumes of its own exhaust.
+  // Every warm thing on this moon is losing water to the vacuum somewhere: a squat stack on the ice, and what
+  // comes out of it is src/europa/ice.js's (a jet on ballistic arcs, falling back as frost).
   for(let k=0;k<(K.vents||0);k++){
     const a=R()*Math.PI*2, d=90+R()*420;
-    const x=Math.cos(a)*d, z=Math.sin(a)*d, g=groundH(x,z);
-    statics.push(box(x,g,z,1.6,3+R()*3,1.6,steel));
-    for(let i=0;i<3;i++){
-      const p=new THREE.Mesh(new THREE.SphereGeometry(2+i*1.4,7,5),vapM);
-      p.userData.noWire=true;scene.add(p);
-      vents.push({p,x,y:g+4,z,ph:(i+R())/3});
-    }
+    const x=Math.cos(a)*d, z=Math.sin(a)*d, g=groundH(x,z),h=3+R()*3;
+    statics.push(box(x,g,z,1.6,h,1.6,steel));
+    vents.push([x,g+h,z]);
   }
+  ctx.europaVents=vents;
 
   const byMat=new Map();
   for(const m of statics){let a=byMat.get(m.material);if(!a){a=[];byMat.set(m.material,a);}a.push(m);}
@@ -98,14 +94,8 @@ export function life(api){
       q.g.rotation.y=-a+(q.v<0?Math.PI:0);
     }
     for(const q of lights)q.m.scale.setScalar(0.9+0.12*Math.sin(t*3+q.ph));
-    for(const q of vents){
-      const u=((t*0.13)+q.ph)%1;
-      q.p.position.set(q.x+u*4,q.y+u*34,q.z+u*2);
-      q.p.scale.setScalar(0.5+u*2.6);
-      q.p.material.opacity=0.2*(1-u);
-    }
   });
 
   ctx.details=Object.assign(ctx.details||{},{
-    rovers:rovers.length,siteLights:lights.length,vents:Math.round(vents.length/3),tracks:K.tracks||0});
+    rovers:rovers.length,siteLights:lights.length,vents:vents.length,tracks:K.tracks||0});
 }

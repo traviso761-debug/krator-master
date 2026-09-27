@@ -33,6 +33,7 @@ from lib.geo import q, flat, rect, smoothstep
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "data", "cities", "europa-osm.json")
+ICEF = os.path.join(ROOT, "data", "cities", "europa-ice.json")   # the ice's own features, for src/europa/ice.js
 R = random.Random(1610)                # the year Galileo found the moons
 
 HX, HZ = 8000.0, 7000.0          # half-extents: 16 x 14 km
@@ -151,23 +152,10 @@ def main():
     out["roads"] = roads
 
     # ---------- the ground ----------
-    areas = [
-        {"k": "plaza", "n": "", "i": [], "o": flat(ring_poly(0, 0, 320, 40))},
-        {"k": "plaza", "n": "The Landing Field", "i": [], "o": flat(ring_poly(PADS[0], PADS[1], 500, 40))},
-        {"k": "plaza", "n": "", "i": [], "o": flat(ring_poly(BORE[0], BORE[1], 260, 32))},
-        {"k": "plaza", "n": "", "i": [], "o": flat(ring_poly(ARRAY[0], ARRAY[1], 320, 32))},
-    ]
-    # the stain along the lineae: the only colour on the moon, and the reason anybody looked twice at it
-    for ang, off, w in LINEAE:
-        c, s = math.cos(ang), math.sin(ang)
-        ring = []
-        for i in range(24):
-            u = (i / 23 - 0.5) * 19000
-            ring.append((u * c - (off + w * 0.9) * s, u * s + (off + w * 0.9) * c))
-        for i in range(23, -1, -1):
-            u = (i / 23 - 0.5) * 19000
-            ring.append((u * c - (off - w * 0.9) * s, u * s + (off - w * 0.9) * c))
-        areas.append({"k": "construction", "n": "Linea", "i": [], "o": flat(ring)})
+    # The aprons and the stain along the lineae are drawn by the ice shader (src/europa/ice.js) from the lines
+    # and circles themselves, so their edges are smooth at any distance; painted into the terrain grid they
+    # came out as staircases twenty-five metres to the step.
+    areas = []
     out["areas"] = areas
     out["rail"] = []
     out["stations"] = []
@@ -187,13 +175,12 @@ def main():
             b["m"] = round(minh, 1)
         buildings.append(b)
 
-    ICE_C = ["#c9d6df", "#bccad4", "#d4e0e8", "#b2c0cb"]
-    SHADOW = ["#8fa0ad", "#9aabb7"]
-
     # ---- the chaos ----
-    # Blocks of the old surface, tilted and turned, standing in a matrix of rubble. They are the size of city
-    # blocks and they are the most dramatic thing on the moon.
-    nblock = 0
+    # Rafts of the old surface, broken off, turned and tilted and frozen back in, standing in a matrix of
+    # rubble: they are the size of city blocks, and their tops still carry the old ridges. Built by
+    # src/europa/ice.js as irregular slabs, not as buildings. Each raft is [x, z, width, depth, turn, height
+    # above the matrix, tilt about x, tilt about z, sides]; each piece of rubble [x, z, size, turn].
+    rafts, rubble, shards = [], [], []
     for k in range(320):
         a = R.uniform(0, math.tau)
         d = R.uniform(0, 2400)
@@ -206,34 +193,30 @@ def main():
         hh = R.uniform(14, 70) * (1 - d / 3200)
         if hh < 5:
             continue
-        put(rect(x, z, w, dd, R.uniform(0, math.pi)), hh, "rock",
-            ICE_C[R.randrange(len(ICE_C))], minh=-hh * 1.2)
-        nblock += 1
-    # the rubble between them
-    for k in range(700):
+        rafts.append([round(x, 1), round(z, 1), round(w, 1), round(dd, 1), round(R.uniform(0, math.pi), 3), round(hh, 1),
+                      round(R.uniform(-0.09, 0.09), 3), round(R.uniform(-0.09, 0.09), 3), R.randrange(5, 9)])
+    for k in range(2600):
         a = R.uniform(0, math.tau)
-        d = R.uniform(0, 2600)
+        d = R.uniform(0, 2700) ** 1.0
         x = CHAOS[0] + math.cos(a) * d * 1.25
         z = CHAOS[1] + math.sin(a) * d
         if abs(x) > HX - 400 or abs(z) > HZ - 400:
             continue
-        s = R.uniform(8, 40)
-        put(rect(x, z, s, s * R.uniform(0.5, 1.0), R.uniform(0, math.pi)), R.uniform(2, 11), "rock",
-            SHADOW[R.randrange(len(SHADOW))], minh=-6)
-        nblock += 1
-    # and a scatter of blocks along the ridges, where the ice has shouldered up and broken
-    for k in range(260):
+        rubble.append([round(x, 1), round(z, 1), round(R.uniform(3, 26) * (1.2 - d / 3000), 1), round(R.uniform(0, math.tau), 2)])
+    # and the ridges' own debris: slabs shouldered up and broken along the crests
+    for k in range(420):
         ang, off, ht, sp = RIDGES[R.randrange(len(RIDGES))]
         u = R.uniform(-9000, 9000)
         d = (R.choice((-1, 1)) * sp * 0.5) + R.uniform(-40, 40)
-        c, s = math.cos(ang), math.sin(ang)
-        x = u * c - (off + d) * s
-        z = u * s + (off + d) * c
+        c, s2 = math.cos(ang), math.sin(ang)
+        x = u * c - (off + d) * s2
+        z = u * s2 + (off + d) * c
         if abs(x) > HX - 400 or abs(z) > HZ - 400:
             continue
-        put(rect(x, z, R.uniform(10, 48), R.uniform(8, 34), R.uniform(0, math.pi)), R.uniform(3, 16),
-            "rock", ICE_C[R.randrange(len(ICE_C))], minh=-10)
-        nblock += 1
+        shards.append([round(x, 1), round(z, 1), round(R.uniform(10, 48), 1), round(R.uniform(8, 34), 1),
+                       round(ang + R.uniform(-0.3, 0.3), 3), round(R.uniform(3, 16), 1),
+                       round(R.uniform(-0.25, 0.25), 3), round(R.uniform(-0.25, 0.25), 3), R.randrange(4, 7)])
+    nblock = len(rafts) + len(rubble) + len(shards)
 
     # ---- the station's own lesser buildings ----
     # Everything that is not the habitat, the derrick, the pads or the array: stores, the shop, the tank
@@ -261,6 +244,14 @@ def main():
                    {"n": "The bore", "x": q(BORE[0]), "z": q(BORE[1]), "k": "bore", "ang": 0},
                    {"n": "The landing field", "x": q(PADS[0]), "z": q(PADS[1]), "k": "pad", "ang": 0}]
 
+    ice = {"_": "written by tools/make-europa.py: the ice's own features, drawn by src/europa/ice.js",
+           "ridges": [list(r) for r in RIDGES], "lineae": [list(l) for l in LINEAE],
+           "sites": {"station": [0.0, 0.0, 700.0], "pads": [PADS[0], PADS[1], 620.0], "bore": [BORE[0], BORE[1], 360.0],
+                     "array": [ARRAY[0], ARRAY[1], 400.0], "chaos": [CHAOS[0], CHAOS[1], 2600.0]},
+           "aprons": [[0.0, 0.0, 320.0], [PADS[0], PADS[1], 500.0], [BORE[0], BORE[1], 260.0], [ARRAY[0], ARRAY[1], 320.0]],
+           "rafts": rafts, "rubble": rubble, "shards": shards}
+    with open(ICEF, "w") as f:
+        json.dump(ice, f, separators=(",", ":"))
     t = out["terrain"]
     lo = min(t["h"]) / 10.0
     hi = max(t["h"]) / 10.0

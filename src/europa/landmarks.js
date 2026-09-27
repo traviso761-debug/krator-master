@@ -93,7 +93,8 @@ export function landmarks(api){
     // ---- the bore ----
     // A hot-water drill running a string down through twenty kilometres of ice to the ocean. What you see is
     // the tower, the winch house, the reactor that boils the water, and the plume - because everything you
-    // put down the hole comes back up as vapour and freezes in the vacuum before it has got anywhere.
+    // put down the hole comes back up as vapour and freezes in the vacuum before it has got anywhere (the
+    // plume itself is in ice.js).
     const H=L.height||70, g0=gh(x,z), A=L.turn||0, parts=[];
     const m=P();
     // the tower: a square lattice, four legs and cross-bracing, because that is what a derrick is
@@ -130,25 +131,10 @@ export function landmarks(api){
       const f=new THREE.Mesh(new THREE.BoxGeometry(1.2,16,26),m.dark);
       f.position.set(x+36,g0+18,z-12+(k-2)*5);parts.push(f);
     }
-    // the plume: vapour out of the hole, freezing as it goes
-    const plumeM=new THREE.MeshBasicMaterial({color:0xdfeef6,transparent:true,opacity:0.2,depthWrite:false});
-    const puffs=[];
-    for(let k=0;k<9;k++){
-      const p=new THREE.Mesh(new THREE.SphereGeometry(5+k*1.6,8,6),plumeM);
-      p.userData.noWire=true;scene.add(p);puffs.push({p,ph:k/9});
-    }
+    // the plume is src/europa/ice.js: particles on ballistic arcs, because in a vacuum nothing billows
     const g=group(L,(()=>{const byMat=new Map();
       for(const q of parts){let a=byMat.get(q.material);if(!a){a=[];byMat.set(q.material,a);}a.push(q);}
       const merged=[];for(const [mat,list] of byMat)merged.push(mergeParts(list,mat));return merged;})());
-    let t0=performance.now();
-    animHooks.push(now=>{const t=(now-t0)/1000;
-      for(const q of puffs){
-        const u=((t*0.09)+q.ph)%1;
-        // it goes straight up: there is no air to bend it, and it spreads because there is no pressure
-        q.p.position.set(x+u*12,g0+6+u*150,z+u*5);
-        q.p.scale.setScalar(0.4+u*3.6);
-        q.p.material.opacity=0.24*(1-u);
-      }});
     return g;},
 
   pads(L,x,z){
