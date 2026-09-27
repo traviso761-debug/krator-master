@@ -47,33 +47,37 @@ function cabin(now){const t=(now/1000)%14;const e=u=>u*u*(3-2*u);if(t<3)return {
 let riders=0;
 let last=performance.now();
 let walkFrame=0;
+// What the townsfolk decide from moment to moment draws on a stream of its own. It used to come from the layout
+// stream, so how the crowd moved depended on how many frames had been drawn, and anything that drew on that
+// stream after the build would have depended on it too.
+const lr=mkRng(20261101),lrr=(a,b)=>a+(b-a)*lr(),lpick=a=>a[Math.floor(lr()*a.length)];
 animHooks.push(now=>{const dt0=Math.min(0.05,(now-last)/1000);last=now;walkFrame++;const camP=camera.position;
   const cb=cabin(now);const cabY=ND.y+cb.f*(ND.H+7);if(ctx.needleCab)ctx.needleCab.position.y=cb.f*(ND.H+7);
   for(let i=0;i<ag.length;i++){const a=ag[i];
     if(a.st===0&&Math.abs(a.x-camP.x)+Math.abs(a.z-camP.z)>340&&(i+walkFrame)%3){a.acc=(a.acc||0)+dt0;continue;}   // far away: every third frame
     const dt=dt0+(a.acc||0);a.acc=0;
-    if(a.st===0){if(rnd()<0.012)a.h+=rr(-0.6,0.6);
+    if(a.st===0){if(lr()<0.012)a.h+=lrr(-0.6,0.6);
       if(a.goal&&Math.hypot(a.goal[0]-a.x,a.goal[1]-a.z)<a.goal[2])a.goal=null;
       if(!a.goal&&Math.random()<0.004*dt*60)a.goal=pickGoal(a,ctx.hour||0);
       if(NAVW&&NAVW.domain(a.x,a.z))walkNav(a,dt);
       else{const ax=a.x+Math.sin(a.h)*1.5,az=a.z+Math.cos(a.h)*1.5;
       if(walkable(ax,az)){a.x+=Math.sin(a.h)*a.v*dt;a.z+=Math.cos(a.h)*a.v*dt;}
       else{let ok=false;for(const d of [0.5,-0.5,1,-1,1.6,-1.6,2.4,-2.4]){const hh=a.h+d;if(walkable(a.x+Math.sin(hh)*1.5,a.z+Math.cos(hh)*1.5)){a.h=hh;ok=true;break;}}if(!ok)a.h+=Math.PI;}}
-      if(rnd()<0.002&&Math.hypot(a.x-TEMPLE.x,a.z-TEMPLE.z)<50&&ctx.templeStair){a.st=3;a.tx=TEMPLE.x;a.tz=TEMPLE.z+ctx.templeStair.foot[2];}
-      else if(rnd()<0.003&&Math.hypot(a.x-ND.x,a.z-ND.z)<40&&riders<6){a.st=7;a.tx=NDOOR[0]+rr(-1.5,1.5);a.tz=NDOOR[1]+2;riders++;}
-      else if(rnd()<0.0035*(1+4*smooth(17.5,19,ctx.hour||0)*(1-smooth(22.5,23.5,ctx.hour||0))*(1-(ctx.totalHours?festF(ctx.totalHours):0)))){const di=nearDoor(a.x,a.z);if(di!==null){a.st=1;a.tx=doors[di]+Math.sin(doors[di+3])*1.1;a.tz=doors[di+2]+Math.cos(doors[di+3])*1.1;a.dry=doors[di+3];}}}
-    else if(a.st===1){const dx=a.tx-a.x,dz=a.tz-a.z,d=Math.hypot(dx,dz);if(d<0.35){a.st=2;a.goal=null;a.t=rr(5,16)*(nightF(ctx.hour||0)>0.6&&!(ctx.totalHours&&festF(ctx.totalHours)>0.5)?4:1);}else{a.h=Math.atan2(dx,dz);a.x+=dx/d*a.v*dt;a.z+=dz/d*a.v*dt;}}
-    else if(a.st===2){a.t-=dt;if(a.t<=0){a.st=0;a.h=a.dry+rr(-0.7,0.7);}}
+      if(lr()<0.002&&Math.hypot(a.x-TEMPLE.x,a.z-TEMPLE.z)<50&&ctx.templeStair){a.st=3;a.tx=TEMPLE.x;a.tz=TEMPLE.z+ctx.templeStair.foot[2];}
+      else if(lr()<0.003&&Math.hypot(a.x-ND.x,a.z-ND.z)<40&&riders<6){a.st=7;a.tx=NDOOR[0]+lrr(-1.5,1.5);a.tz=NDOOR[1]+2;riders++;}
+      else if(lr()<0.0035*(1+4*smooth(17.5,19,ctx.hour||0)*(1-smooth(22.5,23.5,ctx.hour||0))*(1-(ctx.totalHours?festF(ctx.totalHours):0)))){const di=nearDoor(a.x,a.z);if(di!==null){a.st=1;a.tx=doors[di]+Math.sin(doors[di+3])*1.1;a.tz=doors[di+2]+Math.cos(doors[di+3])*1.1;a.dry=doors[di+3];}}}
+    else if(a.st===1){const dx=a.tx-a.x,dz=a.tz-a.z,d=Math.hypot(dx,dz);if(d<0.35){a.st=2;a.goal=null;a.t=lrr(5,16)*(nightF(ctx.hour||0)>0.6&&!(ctx.totalHours&&festF(ctx.totalHours)>0.5)?4:1);}else{a.h=Math.atan2(dx,dz);a.x+=dx/d*a.v*dt;a.z+=dz/d*a.v*dt;}}
+    else if(a.st===2){a.t-=dt;if(a.t<=0){a.st=0;a.h=a.dry+lrr(-0.7,0.7);}}
     else if(a.st===3){const dx=a.tx-a.x,dz=a.tz-a.z,d=Math.hypot(dx,dz);if(d<0.5){a.st=4;a.u=0;}else{a.h=Math.atan2(dx,dz);a.x+=dx/d*a.v*dt;a.z+=dz/d*a.v*dt;}}
     else if(a.st===4||a.st===6){a.u+=(a.st===4?1:-1)*dt*0.05;const TS=ctx.templeStair;if(TS){const u=Math.max(0,Math.min(1,a.u));a.x=TEMPLE.x;a.z=TEMPLE.z+TS.foot[2]+(TS.top[2]-TS.foot[2])*u;a.yo=TS.y0+TS.foot[1]+(TS.top[1]-TS.foot[1])*u+0.6;a.h=a.st===4?Math.PI:0;}
-      if(a.st===4&&a.u>=1){a.st=5;a.t=rr(3,5);a.h=Math.PI;}if(a.st===6&&a.u<=0){a.st=0;a.yo=undefined;a.h=rr(0,6.28);}}
+      if(a.st===4&&a.u>=1){a.st=5;a.t=lrr(3,5);a.h=Math.PI;}if(a.st===6&&a.u<=0){a.st=0;a.yo=undefined;a.h=lrr(0,6.28);}}
     else if(a.st===5){a.t-=dt;if(a.t<=0){a.st=6;}}
     else if(a.st===7){const dx=a.tx-a.x,dz=a.tz-a.z,d=Math.hypot(dx,dz);if(d<0.5){a.st=8;}else{a.h=Math.atan2(dx,dz);a.x+=dx/d*a.v*dt;a.z+=dz/d*a.v*dt;}}   // to the elevator door
-    else if(a.st===8){a.h=Math.PI;if(cb.ph===0){a.st=9;a.ox=rr(-0.7,0.7);a.oz=rr(-0.6,0.6);}}                                                   // wait for the cabin at the foot
-    else if(a.st===9){a.x=ND.x+a.ox;a.z=ND.z+5.2+a.oz;a.yo=cabY+0.2;if(cb.ph===2){a.st=10;a.ang=Math.PI/2+rr(-0.4,0.4);a.t=rr(10,24);a.dir=rnd()<0.5?1:-1;}}   // riding up
+    else if(a.st===8){a.h=Math.PI;if(cb.ph===0){a.st=9;a.ox=lrr(-0.7,0.7);a.oz=lrr(-0.6,0.6);}}                                                   // wait for the cabin at the foot
+    else if(a.st===9){a.x=ND.x+a.ox;a.z=ND.z+5.2+a.oz;a.yo=cabY+0.2;if(cb.ph===2){a.st=10;a.ang=Math.PI/2+lrr(-0.4,0.4);a.t=lrr(10,24);a.dir=lr()<0.5?1:-1;}}   // riding up
     else if(a.st===10){a.ang+=a.dir*dt*0.12;a.t-=dt;a.x=ND.x+16*Math.cos(a.ang);a.z=ND.z+16*Math.sin(a.ang);a.yo=DECK;a.h=a.ang+a.dir*Math.PI/2;if(a.t<=0)a.st=11;}   // strolling the balcony
-    else if(a.st===11){const tx=ND.x,tz=ND.z+7.5;const dx=tx-a.x,dz=tz-a.z,d=Math.hypot(dx,dz);a.yo=DECK;if(d<0.6){if(cb.ph===2){a.st=12;a.ox=rr(-0.7,0.7);a.oz=rr(-0.6,0.6);}}else{a.h=Math.atan2(dx,dz);a.x+=dx/d*a.v*dt;a.z+=dz/d*a.v*dt;}}   // back to the cabin
-    else if(a.st===12){a.x=ND.x+a.ox;a.z=ND.z+5.2+a.oz;a.yo=cabY+0.2;if(cb.ph===0){a.st=0;a.yo=undefined;a.x=NDOOR[0];a.z=NDOOR[1]+3;a.h=rr(0,6.28);riders--;}}   // riding down
+    else if(a.st===11){const tx=ND.x,tz=ND.z+7.5;const dx=tx-a.x,dz=tz-a.z,d=Math.hypot(dx,dz);a.yo=DECK;if(d<0.6){if(cb.ph===2){a.st=12;a.ox=lrr(-0.7,0.7);a.oz=lrr(-0.6,0.6);}}else{a.h=Math.atan2(dx,dz);a.x+=dx/d*a.v*dt;a.z+=dz/d*a.v*dt;}}   // back to the cabin
+    else if(a.st===12){a.x=ND.x+a.ox;a.z=ND.z+5.2+a.oz;a.yo=cabY+0.2;if(cb.ph===0){a.st=0;a.yo=undefined;a.x=NDOOR[0];a.z=NDOOR[1]+3;a.h=lrr(0,6.28);riders--;}}   // riding down
     const vis=a.st!==2,y=(a.yo!==undefined?a.yo:walkerGround(a.x,a.z))-0.3,bob=vis?Math.abs(Math.sin(now*0.011+i*1.7))*0.09:0,sc=vis?1:0.0001;
     dm.position.set(a.x,y+bob,a.z);dm.scale.set(sc,sc*1.55,sc);dm.rotation.set(0,a.h,0);dm.updateMatrix();bodies.setMatrixAt(i,dm.matrix);
     dm.position.set(a.x,y+bob+1.78,a.z);dm.scale.set(sc,sc,sc);dm.updateMatrix();heads.setMatrixAt(i,dm.matrix);}

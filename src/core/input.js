@@ -18,8 +18,9 @@ export const BIND={fly:'f',overhead:'g',cut:'x',cutSide:'c',close:'escape',fast:
 export const ORBIT_RATE=0.005;          // radians of orbit per pixel dragged
 export const FAST=5;                    // what Shift multiplies movement by
 
-// a key typed into a field belongs to the field
-export const typingIn=t=>!!t&&(t.tagName==='INPUT'||t.tagName==='SELECT'||t.tagName==='TEXTAREA'||t.isContentEditable);
+// a key typed into a field belongs to the field (a slider, a checkbox or a button with focus is not a field)
+const NOT_TYPED=new Set(['range','checkbox','radio','button','submit','reset','color']);
+export const typingIn=t=>!!t&&((t.tagName==='INPUT'&&!NOT_TYPED.has(t.type))||t.tagName==='SELECT'||t.tagName==='TEXTAREA'||t.isContentEditable);
 
 // The held keys, as a Set of lower-case key names (the movement keys and Shift). Any other key goes to
 // onKey(k, event) once when pressed; Escape always does, even with a modifier. Keys are ignored while typing,
@@ -43,7 +44,7 @@ export function trackKeys({onKey,held=['w','a','s','d','q','e','shift'],arrows=f
 
 // Pointers on the canvas. Callbacks, all optional:
 //   down(e)                         a pointer went down (a page stops a tour, an animation)
-//   drag(dx, dy, {pan, e})          one pointer moved; pan is true for the right button or with Shift
+//   drag(dx, dy, {pan, e})          one pointer moved; pan is true for the right or middle button, or with Shift
 //   pinch(ratio, dx, dy)            two pointers: ratio is old spread / new (above 1 is pinching in: zoom out
 //                                   by it), dx/dy how far their midpoint moved
 //   wheel(deltaY, e)
@@ -63,7 +64,7 @@ export function trackPointers(el,{down,drag,pinch,wheel,click}={}){
     const dx=e.clientX-p.x,dy=e.clientY-p.y;p.x=e.clientX;p.y=e.clientY;p.moved+=Math.abs(dx)+Math.abs(dy);
     if(ptrs.size===2){const s=spread();if(two&&pinch)pinch(two.d/Math.max(1,s.d),s.x-two.x,s.y-two.y);two=s;return;}
     if(ptrs.size>2)return;
-    if(drag)drag(dx,dy,{pan:p.b===2||p.sh||e.shiftKey,e});});
+    if(drag)drag(dx,dy,{pan:p.b===2||p.b===1||p.sh||e.shiftKey,e});});
   const end=e=>{const p=ptrs.get(e.pointerId);ptrs.delete(e.pointerId);if(ptrs.size<2)two=null;
     if(p&&click&&p.moved<6&&e.type==='pointerup'&&p.b===0)click(e.clientX,e.clientY,e);};
   el.addEventListener('pointerup',end);el.addEventListener('pointercancel',end);el.addEventListener('lostpointercapture',end);

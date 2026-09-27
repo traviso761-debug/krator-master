@@ -134,7 +134,7 @@ refreshDisplay();
 // hide the interface entirely (H); on touch screens a faint button brings it back
 function toggleBare(){const bare=document.body.classList.toggle('bare');if(bare)closePanels();else dbtn.focus();}
 document.getElementById('showui').onclick=()=>toggleBare();
-el.addEventListener('pointerdown',()=>markView(''));el.addEventListener('wheel',()=>markView(''),{passive:true});addEventListener('keydown',e=>{if(!typing(e)&&'wasdqe'.includes(e.key.toLowerCase())&&e.key.length===1)markView('');});
+el.addEventListener('pointerdown',()=>markView(''));el.addEventListener('wheel',()=>markView(''),{passive:true});addEventListener('keydown',e=>{if(!typingIn(e.target)&&'wasdqe'.includes(e.key.toLowerCase())&&e.key.length===1)markView('');});
 setView(...VIEWS['Painting view'],true);markView('Painting view');applyDisplay();
 // settings from the last visit (a link's own settings, read next, take precedence)
 ctx.saveSettings=saveSettings;
@@ -148,10 +148,7 @@ addEventListener('hashchange',()=>{if(location.hash!==lastHash&&readHash())markV
 // the hint steps aside after a while, or as soon as someone starts moving around
 {const hint=document.getElementById('hint');const hide=()=>hint.classList.add('gone');setTimeout(hide,12000);el.addEventListener('pointerdown',hide,{once:true});el.addEventListener('wheel',hide,{once:true,passive:true});addEventListener('keydown',hide,{once:true});}
 
-{const lost=document.getElementById('lost'),rl=document.getElementById('lostreload');let timer=0;rl.onclick=()=>location.reload();
- el.addEventListener('webglcontextlost',e=>{e.preventDefault();lost.classList.add('on');rl.hidden=true;clearTimeout(timer);timer=setTimeout(()=>{rl.hidden=false;lost.firstChild.textContent='The graphics card was reset and has not come back yet.';},6000);},false);
- el.addEventListener('webglcontextrestored',()=>{clearTimeout(timer);lost.classList.remove('on');renderer.shadowMap.needsUpdate=true;},false);}
-addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);updatePx();});
+installContextLoss(renderer);trackResize(renderer,camera,updatePx);   // the page shell (src/core/shell.js)
 await stage('wire');
 section('wire',()=>{if(!WIRE.built)buildWire();});   // the wireframe overlay is built now rather than on the first toggle
 await stage('shaders');
@@ -164,15 +161,8 @@ document.getElementById('loading').remove();
 // shadow map: redraw only when the sun is up, and then when the view target moves or every other frame (casters that move are few and slow)
 renderer.shadowMap.autoUpdate=false;const shadowAt=new THREE.Vector3(1e9,0,0);let shadowTick=0;
 function shadowsDue(){if(sun.intensity<=0)return false;if(ctl.target.distanceToSquared(shadowAt)>0.25){shadowAt.copy(ctl.target);return true;}return (++shadowTick%3)===0;}
-let renderErr=false;
 const DEBUG_HUD=/debug/.test(location.search);let fpsN=0,fpsT=performance.now();
-// adaptive resolution: drop the pixel ratio when frames run slow, creep back up when there is headroom (and remember a level that proved too much)
-const RES={max:Math.min(devicePixelRatio,1.5),cur:Math.min(devicePixelRatio,1.5),min:0.6,acc:0,n:0,good:0,bad:0,prev:performance.now(),raisedAt:0,raisedFrom:0};
-function adaptRes(now){const dt=(now-RES.prev)/1000;RES.prev=now;if(dt>0.5||document.hidden)return;RES.acc+=dt;RES.n++;if(RES.acc<1)return;
-  const fps=RES.n/RES.acc;RES.acc=0;RES.n=0;if(fps<45){RES.bad++;RES.good=0;}else if(fps>56){RES.good++;RES.bad=0;}else{RES.good=0;RES.bad=0;}
-  let next=RES.cur;
-  if(RES.bad>=2){next=Math.max(RES.min,RES.cur-0.15);RES.bad=0;if(now-RES.raisedAt<12000)RES.max=Math.max(RES.min,RES.raisedFrom);}
-  else if(RES.good>=8&&RES.cur<RES.max){next=Math.min(RES.max,RES.cur+0.1);RES.good=0;RES.raisedAt=now;RES.raisedFrom=RES.cur;}
-  if(Math.abs(next-RES.cur)>1e-3){RES.cur=+next.toFixed(2);renderer.setPixelRatio(RES.cur);renderer.setSize(innerWidth,innerHeight);updatePx();}}
+// adaptive resolution (src/core/shell.js): drop the pixel ratio when frames run slow, creep back up when there is headroom
+const RES=createAdaptiveRes(renderer,{cap:1.5,after:updatePx}),adaptRes=RES.tick;
 ctx.res=RES;
-(function animate(){requestAnimationFrame(animate);try{const now=performance.now();adaptRes(now);fpsN++;if(now-fpsT>1000){ctx.fps=fpsN;fpsN=0;fpsT=now;}for(const f of animHooks){try{f(now);}catch(e){if(!f._failed){f._failed=true;report('update',e);}}}stepFly(now);applyKeys();updateCam();if(shadowsDue())renderer.shadowMap.needsUpdate=true;renderer.render(scene,camera);}catch(e){if(!renderErr){renderErr=true;report('render',e);}}})();
+runLoop(now=>{adaptRes(now);fpsN++;if(now-fpsT>1000){ctx.fps=fpsN;fpsN=0;fpsT=now;}runHooks(animHooks,now);stepFly(now);applyKeys();updateCam();if(shadowsDue())renderer.shadowMap.needsUpdate=true;renderer.render(scene,camera);});

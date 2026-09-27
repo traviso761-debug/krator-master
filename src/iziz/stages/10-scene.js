@@ -2,12 +2,9 @@
 const scene=new THREE.Scene();
 scene.fog=new THREE.FogExp2(0x2a2878,0.00105);
 const camera=new THREE.PerspectiveCamera(55,innerWidth/innerHeight,1,7000);
-const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});
-renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
+const renderer=createRenderer(THREE,{pixelCap:1.5});   // the page shell (src/core/shell.js)
 const updatePx=()=>{ENV.izPx.value=innerHeight*renderer.getPixelRatio()/(2*Math.tan(camera.fov*Math.PI/360));};updatePx();
-renderer.setSize(innerWidth,innerHeight);
 renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFShadowMap;
-document.body.appendChild(renderer.domElement);
 
 const ambient=new THREE.AmbientLight(0x5d5cb8,0.85);scene.add(ambient);
 const hemi=new THREE.HemisphereLight(0x4a48c0,0x5a3a1a,0.45);scene.add(hemi);
