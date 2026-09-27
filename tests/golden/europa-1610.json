@@ -1,7 +1,8 @@
 {
- "lots": 1270,
- "lotHash": "db6abeec9d12997b2854cc94991a49b0e6f231394ec8fdf6103a3cecaf51341f",
+ "lots": 42,
+ "lotHash": "46a69489a109d0dd3b4383e63be3b867f946bb1f3f3d04ccaded0be645634964",
  "doors": null,
  "doorHash": null,
- "seed": 1337
+ "page": "europa.html",
+ "seed": 1610
 }
