@@ -17679,7 +17679,15 @@ window._api={
  setView:(cx,cy,cz,tx,ty,tz)=>setView(cx,cy,cz,tx,ty,tz),
  views:()=>Object.keys(VIEWS),
 };
-const ROWV=(k,dist,h,ty,dx)=>{const R=ROWS[k];return[dx||0,h,R.z+dist,dx||0,ty,R.z];};
+// A row shot stands on the row's centre line, `dist` down +z. Since decay 3 was
+// folded in, that centre line is where every rehabilitated building stands, so a
+// camera deeper than the row spacing stood inside the NEXT row's building: the
+// Skyscraper A shot was a wall of rusted drums 100 m off the lens. The distance
+// is capped to stop 90 m short of the next row, which leaves it behind the camera.
+const ROWV=(k,dist,h,ty,dx)=>{const R=ROWS[k];
+ const nz=Math.min(...Object.values(ROWS).map(o=>o.z).filter(z=>z>R.z),Infinity);
+ const d=Math.min(dist,nz-R.z-90);
+ return[dx||0,h,R.z+d,dx||0,ty,R.z];};
 const VIEWS={
  'Overview':[0,1400,ROWS.lab.z+2600,0,150,5000],
  'Skyscraper A':ROWV('skyA',900,300,210),'Skyscraper B':ROWV('skyB',800,260,160),'Skyscraper C':ROWV('skyC',900,300,200),
