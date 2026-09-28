@@ -56,13 +56,13 @@ Seed blocks: dwellings 8100–8399, trade 8400–8499, civic 8500–8599, sacred
 
 ### Kit items — `69d-dalab-mat.js` (prefix `d`)
 
-Boxes: `dEarth dEarthBat(batter) dRelief dReliefBat dMuralB dTurf dTile dMosaic
+Boxes: `dEarth dEarthBat(batter) dRelief dReliefTq(colour) dChecker dReliefBat dMuralB dTurf dTile dMosaic
 dGilt dGlow(night pane) dGlowDay(day glass)`. Drums (base y=0): `dEarthDrum
 dEarthDrumB(batter) dReliefDrum dStoneDrum dStoneDrumB dWoodDrum dStaveDrum
 dTurfDrum dPanelDrum dRustDrum`. Domes: `dEarthDome dStoneDome dTurfDome
 dGiltDome dPanelDome dRustDome`. Cones (base y=0): `dConeSh dConeT dConeTile
 dConeCu dConeScrap dTurfCone`. Wedges: `dStonePyr dGableTile dHipTile dPyrTile`.
-Planes: `dMural` (one whole tile, plain UV) `dBanner` `dGodHalo`. Balls:
+Planes: `dMural` (one whole tile, plain UV) `dDecoPanel` `dBanner` `dGodHalo`. Balls:
 `dGiltBall dGodBall(night) dGlassBall(day)`. `dGodStrip`, `dRing`, `dRopeRing`.
 
 Palette `DPAL` (`earth earthDark stone stoneWarm wood woodGrey thatch shingle
@@ -91,6 +91,8 @@ dnStall(x,z,ry,o)  dnGranary(x,y,z,r,h,o)  dnJar  dnWoodpile
 dnTemple(x,y,z,ry,s,o) -> {top,plat}   (73)  the priests' temple at scale s;  dnPriestHouse(x,y,z,ry,r)
 ```
 
+dnFretBand(x,y,z,ry,w,h)  dnDecoPanel(x,y,z,ry,w,h)  dnCrest(x,y,z,w,ry,wallC) -> top y  dnTrimBand(x,y,z,w,d,ry,h)  dnChecker(x,y,z,w,d,ry)
+dnCornice(...,steps,trimC)  dnGate(...,c,trimC)  dnStele(...,c,tq)      the sacred deco (round 4): pass the trim colour / flag for the coloured version
 dnFlight(ax,ay,az,bx,by,bz,W,c,floorY)   a straight stone flight A→B on a solid wall down to floorY; treads every .3 m rise
 dnBalustrade(ax,ay,az,bx,by,bz,c)  dnCable(a,b,sag,w,c)
 dnTree(species,lx,ly,lz,{scale})  dnPlant(kind,lx,ly,lz,{set,k})   (86-bio-45) the lowlands biome at a LOCAL point; see below

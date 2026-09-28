@@ -51,6 +51,14 @@ Materials, as the kit renders them (`69d-dalab-mat.js`):
 | turf | cropped grass with mole-hills | mounds, platforms, ring banks |
 | pantile, blue-and-white mosaic, gilt | short re-descriptions of the Iziz ported kit | the Vothic and Historians' embassy halls |
 
+**The sacred deco (round 4).** Temples, priests' houses, the compound chapels
+and the palace are terracotta (`DPAL.sacred`) with cream trim (`DPAL.trim`):
+cream cornice steps and string courses, fret bands of cream over turquoise
+inlay (`dReliefTq`), tall turquoise panels carrying the cream avatar on the
+piers (`dDecoPanel`), a stepped ziggurat crest over the door (`dnCrest`), and
+diamond-checker tile on the thresholds and landings (`dChecker`). The mounds,
+stairs and civic compounds stay grey stone, so the red marks what is holy.
+
 Colour: green skin (`DPAL.skin`) on every figure; robes in cream, red ochre,
 turquoise, gold; the priests in white with gold head-dresses.
 
