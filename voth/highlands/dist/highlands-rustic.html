@@ -2494,17 +2494,127 @@ HL.def({key:'hl_rus_pens',name:'Animal pens',branch:'rustic',family:'Farms and m
 // ================================================================= HIGHLANDS / TRIBAL — dwellings and the cliff settlement
 // The Painted Men and the other raider tribes of the high country. Raw logs, bamboo and thatch; everything that
 // can carry paint carries it — whole house-fronts in formline on white, totems at every door, thunderbirds on
-// the gables. No electric light. Every tribal dwelling can be built on the ground (stilts) or HUNG ON A CLIFF:
-// pass o.cliff = true and the house stands on raking struts driven back into a rock face behind it (-z), its
-// floor at the placement y. Seeds 23000–23199.
+// the gables. No electric light (fire only). Every tribal dwelling can be built on the ground (stilts) or HUNG ON
+// A CLIFF: pass o.cliff = true and the house stands on cantilever beams and raking struts driven back into a rock
+// face behind it (-z), its floor at the placement y; o.gap = the distance from the back wall to the rock (default
+// 1.2). Seeds 23000–23199 (this file), 23200–23499 (85-tri-village.js).
 
-// shared: the stilts or the cliff cantilever under a floor of W x D at height FL
-function hnTriBase(W,D,FL,c,cliff){if(!cliff){vnStilts(0,0,0,W-.6,D-.6,FL,0,c);return;}
- // cantilever: two log beams out of the rock (-z) under the floor, raking struts from the front edge back and
- // down into the rock, a rubble packing where the beams bite
- for(const s of[-1,1]){const x=s*(W/2-.5);kput('hLogX',[x,FL-.35,-1.5],qEuler(0,Math.PI/2,0),[D+4.4,.2,.2],c);
-  beam('vWood',[x,FL-.5,D/2-.3],[x,FL-4.6,-D/2-4],.18,.18,c);beam('vWood',[x*.2,FL-.5,D/2-.3],[x*.2,FL-4,-D/2-3.6],.14,.14,c);}
- kput('vRock',[0,FL-.4,-D/2-.6],null,[W*.55,.6,.8],hC(vPick(HPAL.rubble)));}
+// ---------------------------------------------------------------- package kit (prefix hTR / hnTR)
+// Painted maps, drawn with the formline primitives of 70-hl-tex.js (ovoids, U-forms, split-Us, trigons, swooping
+// primary lines). Naturalistic ANIMALS and plain formline only — no human faces anywhere in the branch.
+// Colour-carrying: never tint them strongly.
+// a formline salmon, drawn in canvas units: head at (hx,hy), body sweeping to the tail at (tx,ty), s = scale
+function hTRSalmon(g,hx,hy,tx,ty,s,body,accent){const mx=(hx+tx)/2,my=(hy+ty)/2;const nx=-(ty-hy),ny=tx-hx;const L=Math.hypot(nx,ny)||1;const ox=nx/L*s*.32,oy=ny/L*s*.32;
+ g.beginPath();g.moveTo(hx,hy);g.quadraticCurveTo(mx+ox*2.2,my+oy*2.2,tx,ty);g.quadraticCurveTo(mx-ox*.6,my-oy*.6,hx,hy);g.fillStyle=body;g.fill();
+ g.lineWidth=s*.05;g.strokeStyle=HFORM.black;g.stroke();
+ g.beginPath();g.moveTo(hx+(tx-hx)*.22,hy+(ty-hy)*.22);g.quadraticCurveTo(mx+ox*1.1,my+oy*1.1,hx+(tx-hx)*.86,hy+(ty-hy)*.86);g.lineWidth=s*.05;g.strokeStyle=accent;g.stroke();   // lateral line
+ hlOvoid(g,hx+(tx-hx)*.12+ox*.5,hy+(ty-hy)*.12+oy*.5,s*.26,s*.2,HFORM.black,HFORM.white,s*.035);hlOvoid(g,hx+(tx-hx)*.12+ox*.5,hy+(ty-hy)*.12+oy*.5+s*.02,s*.11,s*.09,null,HFORM.black);  // eye
+ hlUForm(g,mx+ox*1.9,my+oy*1.9,s*.16,s*.16,accent,s*.045);hlUForm(g,mx+ox*.4,my+oy*.4,s*.12,s*.12,HFORM.black,s*.035);                      // fins
+ for(const k of[-1,1]){g.beginPath();g.moveTo(tx,ty);g.lineTo(tx+(tx-hx)*.12+ox*k*.9,ty+(ty-hy)*.12+oy*k*.9);g.lineWidth=s*.09;g.strokeStyle=HFORM.black;g.lineCap='round';g.stroke();g.lineCap='butt';}}
+// TR_FRONT: a whole house-front (2:1) on white — the THUNDERBIRD with wings spread across the front, feathers
+// stepping out along each wing, a head in profile with a hooked beak on the axis, a fan tail over the door
+TEX.trFront=canvasTex(512,256,(g,w,h)=>{g.fillStyle=HFORM.white;g.fillRect(0,0,w,h);
+ hlMirror(g,w,h,w/2,g=>{
+  hlSwoop(g,[[w*.44,h*.36],[w*.3,h*.12],[w*.12,h*.06],[w*.02,h*.2]],HFORM.black,h*.07);                              // leading edge of the wing
+  for(let k=0;k<7;k++)hlUForm(g,w*(.05+k*.052),h*(.38-k*.012),w*.046,h*.34,k%2?HFORM.red:HFORM.black,w*.012);        // flight feathers
+  hlOvoid(g,w*.33,h*.3,w*.1,h*.16,HFORM.black,HFORM.teal,w*.012);hlOvoid(g,w*.33,h*.31,w*.05,h*.08,null,HFORM.black);   // wing joint
+  hlUForm(g,w*.42,h*.84,w*.05,h*.16,HFORM.black,w*.014);hlTrigon(g,w*.38,h*.9,w*.03,HFORM.red);                        // talons
+  hlTrigon(g,w*.1,h*.8,w*.05,HFORM.teal);hlSplitU(g,w*.22,h*.78,w*.07,h*.14,HFORM.red,w*.016);});
+ hlOvoid(g,w/2,h*.6,w*.13,h*.5,HFORM.black,HFORM.red,w*.014);hlOvoid(g,w/2,h*.6,w*.07,h*.24,HFORM.black,HFORM.white,w*.01);   // body
+ hlSplitU(g,w/2,h*.62,w*.04,h*.1,HFORM.black,w*.01);
+ for(let k=-2;k<=2;k++)hlUForm(g,w/2+k*w*.028,h*.92,w*.024,h*.12,k%2?HFORM.red:HFORM.black,w*.008);                     // fan tail
+ hlOvoid(g,w/2,h*.2,w*.11,h*.26,HFORM.black,HFORM.white,w*.013);hlOvoid(g,w*.505,h*.17,w*.04,h*.08,HFORM.black,HFORM.teal,w*.006);   // head + eye
+ hlOvoid(g,w*.505,h*.175,w*.018,h*.035,null,HFORM.black);
+ g.beginPath();g.moveTo(w*.545,h*.12);g.quadraticCurveTo(w*.63,h*.12,w*.615,h*.3);g.quadraticCurveTo(w*.6,h*.24,w*.545,h*.25);g.closePath();g.fillStyle=HFORM.black;g.fill();   // hooked beak
+ g.beginPath();g.moveTo(w*.55,h*.19);g.quadraticCurveTo(w*.59,h*.19,w*.598,h*.24);g.lineWidth=w*.005;g.strokeStyle=HFORM.red;g.stroke();
+ for(const s of[-1,1])hlUForm(g,w/2+s*w*.03,h*.05,w*.03,h*.07,HFORM.red,w*.008);                                       // crest feathers
+ g.fillStyle=HFORM.black;g.fillRect(0,h*.965,w,h*.035);});
+// TR_FRONT_K: a pair of leaping SALMON on bare cedar, heads meeting under the apex — 1:1, for gable-ends
+TEX.trFrontK=canvasTex(256,256,(g,w,h)=>{hlCedar(g,w,h,HFORM.cedar,true);
+ hlMirror(g,w,h,w/2,g=>{hTRSalmon(g,w*.44,h*.3,w*.12,h*.88,w*.5,HFORM.red,HFORM.teal);hlTrigon(g,w*.06,h*.2,w*.08,HFORM.teal);hlUForm(g,w*.36,h*.9,w*.1,h*.08,HFORM.black,w*.02);});
+ hlOvoid(g,w/2,h*.14,w*.14,h*.1,HFORM.black,HFORM.teal,w*.02);
+ g.fillStyle=HFORM.black;g.fillRect(0,h*.95,w,h*.05);});
+// TR_SHIELD: a round war shield — black rim, red ring, a coiled salmon in plain formline; the field takes the tint
+TEX.trShield=canvasTex(128,128,(g,w,h)=>{g.fillStyle=HFORM.white;g.fillRect(0,0,w,h);
+ g.beginPath();g.arc(w/2,h/2,w*.47,0,TAU);g.lineWidth=w*.07;g.strokeStyle=HFORM.black;g.stroke();
+ g.beginPath();g.arc(w/2,h/2,w*.38,0,TAU);g.lineWidth=w*.03;g.strokeStyle=HFORM.red;g.stroke();
+ hTRSalmon(g,w*.66,h*.28,w*.3,h*.74,w*.62,HFORM.black,HFORM.red);hlTrigon(g,w*.3,h*.26,w*.12,HFORM.teal);});
+// TR_CONE: painted bands for a conical roof (u round the cone, v up) — a red band of U-forms, a cedar band of
+// salmon swimming round, a black band of teal trigons, black toward the smoke hole
+TEX.trCone=canvasTex(256,256,(g,w,h)=>{g.fillStyle=HFORM.black;g.fillRect(0,0,w,h);
+ g.fillStyle=HFORM.red;g.fillRect(0,h*.78,w,h*.22);for(let k=0;k<4;k++)hlUForm(g,w*(k+.5)/4,h*.87,w*.16,h*.12,HFORM.white,w*.03);
+ g.fillStyle=HFORM.cedar;g.fillRect(0,h*.5,w,h*.26);for(let k=0;k<2;k++)hTRSalmon(g,w*(k*.5+.42),h*.6,w*(k*.5+.06),h*.66,w*.36,HFORM.black,HFORM.red);
+ for(let k=0;k<6;k++)hlTrigon(g,w*(k+.2)/6,h*.38,w*.08,HFORM.teal);
+ g.fillStyle=HFORM.white;g.fillRect(0,h*.47,w,h*.02);g.fillRect(0,h*.76,w,h*.015);});
+MAT.trFront=hStd({map:TEX.trFront,roughness:.8});MAT.trFrontK=hStd({map:TEX.trFrontK,roughness:.8});
+MAT.trShield=hStd({map:TEX.trShield,roughness:.75});
+MAT.trCone=hStd({map:TEX.trCone,roughness:.85});MAT.trIron=hStd({color:0x3a3430,roughness:.6,metalness:.5});
+// geometry: a woven-mat cylinder (u scaled by 2π so the instanced world-UV hook tiles it per metre of
+// circumference), a painted band cylinder, a painted cone with a smoke hole, a disc, a bowl
+function hTRCylGeo(seg,rTop,open,uK){const g=new THREE.CylinderGeometry(rTop,1,1,seg,1,open).translate(0,.5,0);const uv=g.attributes.uv;
+ for(let i=0;i<uv.count;i++)uv.setX(i,uv.getX(i)*uK);return g;}
+kdef('hTRMatCyl',hTRCylGeo(14,1,true,TAU),MAT.bmat);kdef('hTRBandCyl',hTRCylGeo(14,1,true,TAU),MAT.formF);
+kdef('hTRConeP',hTRCylGeo(10,.06,true,3),MAT.trCone);kdef('hTRDisc',new THREE.CylinderGeometry(1,1,1,14).translate(0,.5,0),MAT.woodV);
+kdef('hTRShield',new THREE.CircleGeometry(1,16),MAT.trShield);
+kdef('hTRBowl',new THREE.SphereGeometry(1,12,5,0,TAU,Math.PI/2,Math.PI/2),MAT.trIron);kdef('hTRFlame',VCONE,MAT.ember);
+kdef('hTRVoid',VBALL,MAT.void);kdef('hTRLeafB',VBOX,MAT.moss);
+
+// ---------------------------------------------------------------- package helpers
+// A plain mesh from fn(u,v) -> [x,y,z,U,V] (own UVs — for painted lenses and gables mapped to their bounding box)
+function hnTRGrid(G,fn,nu,nv,mat){const pos=[],uv=[],idx=[];for(let j=0;j<=nv;j++)for(let i=0;i<=nu;i++){const p=fn(i/nu,j/nv);pos.push(p[0],p[1],p[2]);uv.push(p[3],p[4]);}
+ for(let j=0;j<nv;j++)for(let i=0;i<nu;i++){const a=j*(nu+1)+i,b=a+1,c=a+nu+1,d=c+1;idx.push(a,c,b,b,c,d);}
+ const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));
+ geo.setIndex(idx);geo.computeVertexNormals();return mesh(geo,mat,G);}
+// A painted gable-end front: the pentagon of a wall W x H plus its gable (rise), in one painting, standing on
+// (x,y,z) facing ry. The whole house-front of the tribes.
+function hnTRPent(G,x,y,z,ry,W,H,rise,mat){const P=[[-W/2,0],[W/2,0],[W/2,H],[0,H+rise],[-W/2,H]];const pos=[],uv=[];
+ for(const [u,yy] of P){const p=loc(x,z,u,0,ry);pos.push(p[0],y+yy,p[1]);uv.push(u/W+.5,yy/(H+rise));}
+ const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));
+ geo.setIndex([0,1,2,0,2,4,4,2,3]);geo.computeVertexNormals();return mesh(geo,mat||MAT.trFront,G);}
+// Iron brazier on a tripod with a fire in the bowl (s = scale, ~1 m tall bowl rim at s=1)
+function hnTRBrazier(x,y,z,s){s=s||1;const ic=hC(0x3a3430);for(let k=0;k<3;k++){const a=k/3*TAU;beam('vIron',[x+Math.cos(a)*.42*s,y,z+Math.sin(a)*.42*s],[x+Math.cos(a)*.12*s,y+.95*s,z+Math.sin(a)*.12*s],.05*s,.05*s,ic);}
+ kput('hTRBowl',[x,y+1.25*s,z],null,[.42*s,.36*s,.42*s],null);vBall('vEmber',x,y+1.2*s,z,.34*s,null,.1*s);
+ for(let k=0;k<3;k++)kput('hTRFlame',[x+rr(-.12,.12)*s,y+1.2*s,z+rr(-.12,.12)*s],null,[.13*s,rr(.4,.7)*s,.13*s],null);}
+// Trophy horns: a pair of curved horns on a painted boss block, on a gable apex or a gate post; ry = the way they face
+function hnTRHorns(x,y,z,ry,s){s=s||1;const bone=hC(0xe6dcc4);for(const sd of[-1,1]){let p=[x,y,z];let d=[sd*.9,.25,0];let w=.2*s;
+  for(let k=0;k<5;k++){d=[d[0]*.82,d[1]+.35,0];const L=.34*s;const r=hRot(ry,hNorm(d));const q=[p[0]+r[0]*L,p[1]+r[1]*L,p[2]+r[2]*L];beam('hPaint',p,q,w,w,bone.clone().multiplyScalar(1-k*.06));p=q;w*=.78;}}
+ kput('hPaint',[x,y-.1*s,z],qEuler(0,ry,0),[.3*s,.3*s,.22*s],hC(HPAL.red));kput('hPaint',[x,y-.1*s,z],qEuler(0,ry,0),[.18*s,.18*s,.26*s],hC(HPAL.black));}
+// Antlers (elk/deer) on a pole top: two beams sweeping up and back, three tines each
+function hnTRAntlers(x,y,z,ry,s){s=s||1;const c=hC(0xd8ccb0);for(const sd of[-1,1]){let p=[x,y,z];for(let k=0;k<4;k++){const d=hRot(ry,[sd*(.5-k*.08),.55+k*.1,-.25]);const q=hAdd(p,hNorm(d),.32*s);
+  beam('hPaint',p,q,.06*s*(1-k*.15),.06*s*(1-k*.15),c);if(k>0){const t=hAdd(q,hNorm(hRot(ry,[sd*.1,.8,.4])),.28*s);beam('hPaint',q,t,.04*s,.04*s,c);}p=q;}}}
+// A few people standing at height y (on a deck, platform or terrace) — vnFolk always stands them on y=0
+function hnTRFolk(x,y,z,n,spread){for(let i=0;i<n;i++){const px=x+rr(-spread,spread),pz=z+rr(-spread,spread);kput('figB',[px,y,pz],qEuler(0,rng()*TAU,0),1,hC(vPick([0xe8d9b8,0xc9442a,0x2f8f8a,0xe0a030,0x3b4a8a,0x8a6a3a])));kput('figH',[px,y,pz],null,1,hC(0xc9a17e));}}
+// Hanging things along eaves and walkways: a gourd, or a lantern cage (a bamboo cage with a fire-pot, not electric)
+function hnTRGourd(x,y,z,c){vPst('vRope',x,y-.35,z,.01,.35,hC(0x9a8a6a));vBall('vGourd',x,y-.5,z,.15,c||hC(vPick([0xb08a4a,0x9a8a3a,0xc0a060])),.2);}
+function hnTRCage(x,y,z){vPst('vRope',x,y-.3,z,.01,.3,hC(0x9a8a6a));const bm=hC(vPick(HPAL.bamboo));vB('hPaint',x,y-.34,z,.3,.05,.3,0,hC(HPAL.black));vB('hPaint',x,y-.8,z,.3,.05,.3,0,hC(HPAL.black));
+ for(const [a,b] of[[-1,-1],[1,-1],[1,1],[-1,1]])vPst('hBamboo',x+a*.13,y-.78,z+b*.13,.016,.44,bm);vBall('vEmber',x,y-.62,z,.08,null,.1);}
+// A box-built beast for pens and byres: 'cow' (shaggy highland), 'goat', 'pig'
+function hnTRBeast(x,y,z,ry,kind,c){const K={cow:[1.7,.8,.62,.72],goat:[.9,.42,.32,.5],pig:[1.05,.5,.46,.28]}[kind]||[1,.5,.4,.5];const [L,Hb,Wb,Lg]=K;
+ c=c||hC(kind==='cow'?vPick([0x8a4a2a,0x6a3a22,0xa0602e]):kind==='goat'?vPick([0xd8d0c0,0x6a5a4a,0xe8e0d0]):vPick([0xc89a8a,0x5a4a44]));
+ const P=(u,yy,v)=>{const p=loc(x,z,v,u,ry);return[p[0],y+yy,p[1]];};const q=qEuler(0,ry,0);
+ kput('vWood',P(0,Lg+Hb/2,0),q,[Wb,Hb,L],c);                                                         // body (along the beast's +z)
+ for(const a of[-1,1])for(const b of[-1,1])kput('vWood',P(a*L*.36,Lg/2,b*Wb*.32),q,[.1,Lg,.1],c.clone().multiplyScalar(.8));
+ const hy=Lg+Hb*(kind==='pig'?.45:.9),hz=L/2+.12;kput('vWood',P(hz,hy,0),q.clone().multiply(qEuler(kind==='pig'?0:.5,0,0)),[Wb*.7,Hb*.55,Hb*.8],c);
+ if(kind!=='pig')for(const s of[-1,1]){const h=P(hz-.05,hy+Hb*.3,s*Wb*.3);beam('hPaint',h,[h[0]+s*Math.cos(ry)*.25*(kind==='cow'?1.6:.6),h[1]+.18,h[2]-s*Math.sin(ry)*.25*(kind==='cow'?1.6:.6)],.05,.05,hC(0xd8ccb0));}
+ kput('vWood',P(-L/2-.05,Lg+Hb*.7,0),q.clone().multiply(qEuler(-.6,0,0)),[.06,.06,.3],c);}
+
+// ---------------------------------------------------------------- the base: stilts, or the cliff cantilever
+// Under a floor of W x D at height FL (the floor's front edge may run on to `front` for a deck or veranda).
+// Cliff: log joists from the deck edge back INTO the rock (gap + 1.4 m past the back wall), raking struts from
+// the front edge down and back into the rock, a cross log at the front, rubble packing where the joists bite.
+function hnTriBase(W,D,FL,c,cliff,o,front){front=front===undefined?D/2:front;
+ if(!cliff){vnStilts(0,0,0,W-.6,D-.6,FL,0,c);return;}
+ const gap=(o&&o.gap!==undefined)?o.gap:1.2,back=-D/2-gap;const n=Math.max(2,Math.round(W/2.4)+1);
+ for(let i=0;i<n;i++){const x=-W/2+.35+(W-.7)*i/(n-1);
+  kput('hLogX',[x,-.34,(front+back-1.4)/2],qEuler(0,Math.PI/2,0),[front-back+1.4,.17,.17],c);
+  const sh=(front-back)*1.05;beam('vWood',[x,-.45,front-.35],[x,-.45-sh,back-.4],.17,.17,c);
+  if(i%2===0)beam('vWood',[x,-.45-sh*.5,(front+back)/2-.2],[x,-.5,back-.2],.12,.12,c);}
+ kput('hLogX',[0,-.6,front-.35],null,[W+.3,.18,.18],c);kput('hLogX',[0,-.45-(front-back)*.5,(front+back)/2],null,[W-.4,.14,.14],c);
+ for(let i=0;i<3;i++)kput('vRock',[rr(-W/2,W/2),-.3,back-.1],qEuler(rng(),rng(),0),[rr(.4,.8),.35,.5],hC(vPick(HPAL.rubble)));}
+// the dwellings' footprints, for anyone hanging them on a cliff (back wall at -D/2, deck front at `front`,
+// height of the roof tip): the settlement builder spaces houses and walkways with these
+const HN_TR_FOOT={hl_tri_small_a:{W:6,D:5,front:4.1,H:6.4},hl_tri_small_b:{W:6.4,D:6.4,front:4.8,H:8.2},hl_tri_small_c:{W:6,D:5.6,front:4.6,H:6.6},
+ hl_tri_large_a:{W:13,D:11,front:8,H:13},hl_tri_large_b:{W:18,D:6.5,front:5.6,H:7.4}};
 
 // ---------------------------------------------------------------- SMALL
 // A — painted hut: a board-and-bamboo hut on stilts, its whole front painted in formline on white, a thatch gable
@@ -2512,37 +2622,502 @@ function hnTriBase(W,D,FL,c,cliff){if(!cliff){vnStilts(0,0,0,W-.6,D-.6,FL,0,c);r
 function buildHlTriSmallA(G,o){reseed(23001+(o.v|0));const W=6,D=5,FL=o.cliff?0:1.6,H=2.4,Y=FL;
  const log=hC(vPick(HPAL.aged)),th=hC(vPick(VPAL.thatch)),bam=hC(vPick(HPAL.bamboo));
  vnReg('Painted hut (small)',0,0,5,FL+H+3.6);
- hnTriBase(W,D,FL,log,o.cliff);
+ hnTriBase(W,D,FL,log,o.cliff,o,D/2+1.6);
  vB('vWood',0,Y-.2,0,W,.2,D,0,log);hnBambooBox(0,Y,0,W,H,D,0,bam);
  hnForm('hFormW',0,Y+.1,D/2+.04,0,W-.4,H-.2);                                            // the painted house-front
- vnDoor(0,Y,D/2+.08,0,.9,1.7,'hBamboo',bam,hC(0x5a4a3a),false);
+ vnDoor(0,Y,D/2+.08,0,.9,1.8,'vWood',bam,hC(0x5a4a3a),false);
  hnGable(0,Y+H,0,W,D,1.2,0,'vGableT',th,.9,'hGableBM',bam);hnBarge(0,Y+H,0,W,D,1.2*D/2,0,.9,hC(HPAL.black),'bird');
  vB('vWood',0,Y-.2,D/2+.8,2.4,.18,1.6,0,log);
  if(!o.cliff){vnLadder(1,0,D/2+1.8,0,FL+.3,log);hnTotem(-1.8,0,D/2+1.4,.3,5.2,0,{wings:1.4});}
- else hnTotem(-W/2-.3,Y,D/2-.2,.24,3.4,0,{});
- for(let k=0;k<3;k++)vBall('vGourd',-W/2+1+k*1.2,Y+H-.3,D/2+.7,.16,hC(vPick([0xb08a4a,0x9a8a3a])),.22);
+ else{hnTotem(-W/2-.3,Y,D/2-.2,.24,3.4,0,{});hnBambooRail([-1.2,Y,D/2+1.55],[1.2,Y,D/2+1.55],bam,1);}
+ for(let k=0;k<3;k++)hnTRGourd(-W/2+1+k*1.2,Y+H-.1,D/2+.7);
  if(!o.cliff){hnFirepit(2.4,0,D/2+3,.6);vnFolk(0,D/2+4,2,1.5);}}
 
+// B — round bamboo hut: a drum of woven mat between bamboo culms on low stilts, a painted band round it at eye
+// height, a steep thatch cone with a carved bird on the peak; a little deck and steps.
+function buildHlTriSmallB(G,o){reseed(23011+(o.v|0));const R=2.7,FL=o.cliff?0:.9,H=2.3,Y=FL;
+ const bam=hC(vPick(HPAL.bamboo)),th=hC(vPick(VPAL.thatch)),log=hC(vPick(HPAL.aged));
+ vnReg('Round bamboo hut (small)',0,0,4.2,Y+H+5.6);
+ hnTriBase(2*R+.6,2*R+.6,FL,log,o.cliff,o,R+1.9);
+ vPst('hTRDisc',0,Y-.22,0,R+.35,.22,log);
+ kput('hTRMatCyl',[0,Y,0],null,[R,H,R],bam);
+ const n=16;for(let k=0;k<n;k++){const a=k/n*TAU+.1;vPst('hBamboo',Math.sin(a)*(R+.05),Y,Math.cos(a)*(R+.05),.07,H-.05,bam);}
+ kput('hTRBandCyl',[0,Y+1.25,0],null,[R+.1,.55,R+.1],null);
+ for(const yy of[Y+.12,Y+H-.1])kput('vHoop',[0,yy,0],qEuler(Math.PI/2,0,0),[R+.12,R+.12,1.4],bam);
+ vnDoor(0,Y,R+.12,0,.9,1.8,'vWood',bam,hC(0x5a4a3a),false);
+ vnThatchCone(0,Y+H,0,R+.35,4.6,th);
+ vPst('vPost',0,Y+H+4.2,0,.07,1.1,log);kput('hPaintBall',[0,Y+H+5.3,0],null,[.18,.22,.18],hC(HPAL.black));   // the peak: a carved bird
+ for(const s of[-1,1])kput('hWing',[s*.55,Y+H+5.35,0],qEuler(0,0,s*-.2),[s*1.1,.55,1],null);
+ kput('vConeI',[0,Y+H+5.3,.2],vQ(0,Math.PI/2,0),[.06,.28,.06],hC(HPAL.red));
+ vB('vWood',0,Y-.2,R+.9,2.2,.18,1.8,0,log);                                                          // deck
+ hnForm('hFormV',-1.25,Y+.2,R-.25,.35,.55,1.5);hnForm('hFormV',1.25,Y+.2,R-.25,-.35,.55,1.5);      // painted boards beside the door
+ if(!o.cliff){vnStairs(0,0,R+2.3,0,1.1,FL,3,'vWood',log);hnTotemPost(-1.6,0,R+1.6,.16,2.8,0,true);vnDryingRack(R+1.8,0,0,Math.PI/2,2.4);vnFolk(1.5,R+3.5,1,1);}
+ else{hnBambooRail([-1.1,Y,R+1.75],[1.1,Y,R+1.75],bam,1);hnTotemPost(-1.3,Y,R+1.5,.14,2.4,0,true);}
+ for(let k=0;k<4;k++){const a=(k+.5)/4*Math.PI-Math.PI/2+Math.PI*.1;hnTRGourd(Math.sin(a)*(R+.25),Y+H+.05,Math.cos(a)*(R+.25));}}
+
+// C — painted earth-lodge: a low log hut on a fieldstone footing, gable to the front and the whole gable-end
+// painted in formline on cedar (a pair of leaping salmon); a steep turf roof with crossed horns and trophy horns.
+function buildHlTriSmallC(G,o){reseed(23021+(o.v|0));const W=5.6,D=5.2,H=2.15,F=o.cliff?.2:.35,Y=o.cliff?0:0;
+ const log=hC(vPick(HPAL.tar)).multiplyScalar(rr(1.1,1.4)),turf=hC(vPick(HPAL.turf));
+ vnReg('Painted earth-lodge (small)',0,0,4.6,F+H+4.2);
+ if(o.cliff){hnTriBase(W,D,0,log,true,o,D/2+1.8);vB('vWood',0,-.2,.9,W+.3,.2,D+1.8,0,log);}
+ else vB('hRubB',0,0,0,W+.3,F,D+.3,0,hC(vPick(HPAL.rubble)));
+ hnLogBox(0,Y+F,0,W,H,D,0,log,.3);
+ const pitch=1.35,rise=pitch*W/2;hnGable(0,Y+F+H,0,D,W,pitch,Math.PI/2,'hGableTurf',turf,.55,'hGableLog',log);
+ hnBarge(0,Y+F+H,0,D,W,rise,Math.PI/2,.55,hC(0x3a2a20),'horns');
+ hnTRPent(G,0,Y+F,D/2+.06,0,W-.1,H,rise-.1,MAT.trFrontK);                                      // the painted gable-end
+ hnTRHorns(0,Y+F+H+rise+.2,D/2+.7,0,.8);
+ vnDoor(0,Y+F,D/2+.1,0,.9,1.75,'vWood',log,hC(0x3a2a20),false);
+ for(const s of[-1,1])vnWin(s*W/2,Y+F+.9,0,s*Math.PI/2,.5,.5,'open','vWood',log);
+ vPst('vPost',1.2,Y+F+H+rise*.3,-.8,.12,rise*.7+.6,hC(0x5a4a3a));                                    // smoke hole chimney-post
+ if(!o.cliff){vB('vStone',0,0,D/2+.6,1.6,.2,1,0,hC(vPick(HPAL.rubble)));hnWoodpile(-W/2-.7,0,-.4,Math.PI/2,3,1.2);hnTotemPost(W/2+.6,0,D/2+.5,.17,2.6,0,true);
+  vnDryingRack(W/2+2,0,-1,Math.PI/2,2.2);hnFirepit(-1.8,0,D/2+2.6,.5);vnFolk(1,D/2+3.2,1,1);}
+ else{hnBambooRail([-W/2,0,D/2+1.72],[W/2,0,D/2+1.72],null,1);hnTotemPost(W/2-.3,0,D/2+1.2,.15,2.4,0,true);hnTRCage(-W/2+.6,Y+F+H,D/2+.8);}}
+
+// ---------------------------------------------------------------- LARGE
+// A — great plank-house (after the NW-coast house): a wide, low-pitched plank gable with the gable end to the
+// front, the ENTIRE front painted in formline on white, and a tall entrance pole before it whose base is the
+// door (an oval opening through the lowest figure). Corner posts, a plank deck across the front.
+function buildHlTriLargeA(G,o){reseed(23031+(o.v|0));const W=13,D=11,H=3.4,F=o.cliff?0:.55,Y=F;
+ const tar=hC(vPick(HPAL.tar)).multiplyScalar(rr(1.2,1.5)),aged=hC(vPick(HPAL.aged)),bam=hC(vPick(HPAL.bamboo));
+ vnReg('Great plank-house (large)',0,0,8.5,Y+H+10);
+ if(o.cliff)hnTriBase(W,D,0,aged,true,o,D/2+2.6);
+ else vB('hRubB',0,0,0,W+.4,F,D+.4,0,hC(vPick(HPAL.rubble)));
+ vB('vWood',0,Y,0,W,H,D,0,tar);                                                               // plank walls
+ for(const sx of[-1,1])for(const sz of[-1,1])vPst('vPostB',sx*(W/2+.05),Y,sz*(D/2+.05),.26,H+.3,aged);
+ for(const sx of[-1,1])kput('hLogX',[sx*(W/2+.15),Y+H+.1,0],qEuler(0,Math.PI/2,0),[D+1.6,.24,.24],aged);   // eave plates
+ const pitch=.44,rise=pitch*W/2;hnGable(0,Y+H,0,D,W,pitch,Math.PI/2,'vWood',aged.clone().multiplyScalar(.9),.8,'vGableW',tar);
+ kput('hLogX',[0,Y+H+rise+.25,0],qEuler(0,Math.PI/2,0),[D+2,.28,.28],aged);                             // ridge log
+ vB('vWood',0,Y+H+rise+.3,-1,2.2,.6,2.4,0,aged);vnGableRoof(0,Y+H+rise+.9,-1,2.6,2.8,.6,0,'vWood',aged,.15);   // smoke-hole louvre
+ hnTRPent(G,0,Y,D/2+.07,0,W,H,rise,MAT.trFront);                                                          // the painted front
+ for(const s of[-1,1]){hnMember('hPaint',[s*W/2,Y+H,D/2+.12],[0,Y+H+rise,D/2+.12],.26,.08,[0,0,1],hC(HPAL.black));}
+ // the entrance pole: its lowest figure's mouth is the door
+ const pz=D/2+.62;hnTotem(0,Y,pz,.62,o.cliff?8:11.5,0,{wings:2.6,wingAt:.84});kput('hTRVoid',[0,Y+.95,pz+.42],null,[.46,.95,.3]);
+ vB('vDarkB',0,Y,D/2+.02,1.1,1.9,.1,0);
+ // deck across the front, carved corner posts, steps
+ vB('vWood',0,Y-.2,D/2+1.35,W+.6,.2,2.7,0,aged);for(const s of[-1,1])hnTotemPost(s*(W/2-.1),Y,D/2+2.4,.2,2.6,0,s>0);
+ hnFrieze(0,Y-.4,D/2+2.72,0,W+.6,.35);
+ for(const s of[-1,1]){vnWin(s*W/2,Y+1.2,-1.5,s*Math.PI/2,.8,.7,'open','vWood',aged);vnWin(s*W/2,Y+1.2,2.5,s*Math.PI/2,.8,.7,'open','vWood',aged);
+  hnForm('hFormV',s*(W/2+.04),Y+.2,D/2-.8,s*Math.PI/2,.8,2.8);}
+ for(let k=0;k<5;k++)hnTRGourd(-W/2+1.2+k*1.3,Y+H-.1,D/2+1);
+ if(!o.cliff){vnStairs(-3.6,0,D/2+3.2,0,2.4,F,2,'vWood',aged);vnStairs(3.6,0,D/2+3.2,0,2.4,F,2,'vWood',aged);
+  vnDryingRack(W/2+2,0,0,Math.PI/2,5);vnDryingRack(-W/2-2,0,1,Math.PI/2,4);hnWoodpile(-W/2-1,0,-3.4,Math.PI/2,3,1.4);
+  hnFirepit(4.5,0,D/2+6,.7);hnTotem(-5.5,0,D/2+4.5,.3,5,0,{painted:true,wings:1.3});vnFolk(0,D/2+6,3,2.5);}
+ else{hnBambooRail([-W/2-.3,0,D/2+2.62],[-1,0,D/2+2.62],bam,1);hnBambooRail([1,0,D/2+2.62],[W/2+.3,0,D/2+2.62],bam,1);}}
+
+// B — long-dwelling on stilts: a bamboo house for several families under one long, steep thatch gable, a
+// veranda the whole length of the front under a lean-to, three doors between painted panels, ladders up from
+// the ground, racks of drying fish and herbs, firewood stacked between the stilts.
+function buildHlTriLargeB(G,o){reseed(23041+(o.v|0));const W=18,D=6.5,FL=o.cliff?0:2.4,H=2.8,Y=FL,V=2.4;
+ const bam=hC(vPick(HPAL.bamboo)),th=hC(vPick(VPAL.thatch)),log=hC(vPick(HPAL.aged)),blk=hC(HPAL.black);
+ vnReg('Long-dwelling (large)',0,.8,10,Y+H+5);
+ if(o.cliff)hnTriBase(W,D,0,log,true,o,D/2+V);
+ else{vnStilts(0,0,0,W-.6,D-.6,FL,0,log);vnStilts(0,0,D/2+V/2,W-.6,V-.5,FL,0,log);}
+ vB('vWood',0,Y-.2,.0,W+.2,.2,D,0,log);vB('vWood',0,Y-.2,D/2+V/2,W+.2,.2,V,0,log);
+ hnBambooBox(0,Y,0,W,H,D,0,bam);
+ for(const u of[-6,0,6]){vnDoor(u,Y,D/2+.08,0,.9,1.9,'vWood',bam,hC(0x5a4a3a),false);}
+ for(const u of[-3,3,-8.2,8.2])hnForm('hFormW',u,Y+.35,D/2+.05,0,u*u>40?1.3:3.8,1.9);
+ const pitch=1.15,rise=pitch*D/2;hnGable(0,Y+H,0,W,D,pitch,0,'vGableT',th,.7,'hGableBM',bam);hnBarge(0,Y+H,0,W,D,rise,0,.7,blk,'bird');
+ // veranda lean-to on bamboo posts, front edge at 2.2 m
+ for(let k=0;k<=6;k++){const x=-W/2+.2+(W-.4)*k/6;vPst('hBamboo',x,Y,D/2+V-.15,.09,2.3,bam);}
+ kput('hLogX',[0,Y+2.25,D/2+V-.15],null,[W+.2,.1,.1],bam);vnShedRoof(0,Y+2.3,D/2+V/2-.1,W,V+.3,.5,0,'vThatchB',th,.4,.22);
+ const gaps=o.cliff?[[-1.2,1.2]]:[[-6.8,-5.2],[5.2,6.8]];let x0=-W/2;for(const [a,b] of gaps){hnBambooRail([x0,Y,D/2+V-.15],[a,Y,D/2+V-.15],bam,.95);x0=b;}hnBambooRail([x0,Y,D/2+V-.15],[W/2,Y,D/2+V-.15],bam,.95);
+ for(const u of[-8,-3.5,2.5,7.5]){const a=[u-.9,Y+2.05,D/2+.9],b=[u+.9,Y+2.05,D/2+.9];beam('hBambooC',a,b,.05,.05,bam);   // drying poles under the lean-to
+  for(let k=0;k<4;k++)kput('vLeaf',[u-.7+k*.47,Y+1.8,D/2+.9],null,[.1,.28,.08],hC(vPick([0x8a7a44,0x6a7a3a,0xa08850])));}
+ for(let k=0;k<6;k++)hnTRGourd(-W/2+1.5+k*3,Y+2.2,D/2+V-.05);
+ if(!o.cliff){vnLadder(-6,0,D/2+V+.55,0,FL+.3,log);vnLadder(6,0,D/2+V+.55,0,FL+.3,log);
+  hnWoodpile(-3,0,-.5,0,6,1.3);vnDryingRack(0,0,D/2+V+3,0,6);vnDryingRack(W/2+2.2,0,-.5,Math.PI/2,4);
+  hnTotem(0,0,D/2+V+1.4,.28,5.6,0,{wings:1.5,painted:true});hnFirepit(-4,0,D/2+V+4,.6);vnFolk(3,D/2+V+4,3,3);}}
+
 // ---------------------------------------------------------------- the CLIFF SETTLEMENT (showcase + reusable)
-// A rock face with dwellings hung on it in tiers, joined by walkways and flights of stairs, like the high
-// villages of the Painted Men. In a settlement the rock is the terrain: the same houses are placed with
-// o.cliff=true and the same hnCliffWalk() joins them; this def draws its own rock face so it can stand alone.
-function buildHlTriCliffVillage(G,o){reseed(23101+(o.v|0));const X0=-34,X1=34,ZC=-2,TOP=38;
- vnReg('Cliff settlement (tribal)',0,-2,34,TOP);
- hnCliffFace(G,X0-6,X1+6,ZC-5.5,-1,TOP+4,3.7);
- // tiers of houses: (x, floor y) on the face; each hangs forward of the rock at z = ZC + D/2 + a little
- const tiers=[[-22,6],[-8,9],[8,5],[22,8],[-16,17],[2,19],[18,16],[-6,28],[12,27]];
- const walk=[];for(const [x,y] of tiers){hnSub('hl_tri_small_a',x,y,ZC+2.3,0,{cliff:true,v:(x*7+y)|0});walk.push([x,y,ZC+5.4]);}
- // walkways along each tier and flights between them (sorted so the path zig-zags up the face)
- const rows=[tiers.slice(0,4),tiers.slice(4,7),tiers.slice(7)];const c=hC(vPick(HPAL.aged));
- for(const R of rows){const pts=R.map(([x,y])=>[x,y,ZC+5.3]);hnCliffWalk(pts,1.3,[0,0,-1],c);}
- hnCliffWalk([[-30,0.2,ZC+5.3],[-22,6,ZC+5.3]],1.3,[0,0,-1],c);                            // up from the valley floor
- hnCliffWalk([[22,8,ZC+5.3],[28,12,ZC+5.3],[18,16,ZC+5.3]],1.3,[0,0,-1],c);
- hnCliffWalk([[-16,17,ZC+5.3],[-24,22,ZC+5.3],[-6,28,ZC+5.3]],1.3,[0,0,-1],c);
- for(let k=0;k<8;k++)vnFolk(rr(-26,26),ZC+8+rr(0,6),1,1);}
+// A rock face (the showcase draws its own; in a settlement the rock is the terrain) with dwellings hung on it at
+// irregular heights, some pairs sharing a platform, joined by walkways that run along each tier and zig-zag
+// flights of stairs between tiers; ladders, a cliff-hung shrine, a warrior lookout on the top ledge, gourds and
+// fire-cages hanging along the walks.
+// The rock: z of the face at (x,y) — the face leans back with height and bulges. Returns zf(x,y).
+function hnTRRock(G,x0,x1,y0,y1,zc,seed,lean){const W=x1-x0,H=y1-y0;
+ const zf=(x,y)=>{const u=(x-x0)/W,v=(y-y0)/H;return zc+(1-v)*lean+(fbm(u*3+seed,v*2.2,seed*.3,4)-.5)*3.2+(fbm(u*11,v*8,seed,2)-.5)*1.2;};
+ const geo=gridSurface((u,v)=>{const X=x0+u*W,Y=y0+v*H;return[X,Y,zf(X,Y)];},Math.round(W/1.5),Math.round(H/1.5),{uS:W/8,vS:H/8});
+ const m=mesh(geo,MAT.rock,G);m.material=MAT.rock.clone();m.material.color=hC(0x8a8680);
+ // the rock's top: a ledge running back, and the scree at the foot
+ const top=gridSurface((u,v)=>{const X=x0+u*W;return[X,y1+(fbm(u*6,v,seed,2)-.5)*1.2,zf(X,y1)-v*14];},Math.round(W/3),4,{uS:W/8,vS:2});
+ const t=mesh(top,MAT.rock,G);t.material=m.material;
+ for(let k=0;k<Math.round(W/3);k++){const x=rr(x0+2,x1-2);kput('vRock',[x,0,zf(x,0)+rr(.4,1.8)],qEuler(rng(),rng(),0),[rr(.6,1.8),rr(.4,1),rr(.6,1.4)],hC(vPick(HPAL.rubble)));}
+ return zf;}
+// A walkway along points [x,y,z] (deck level) against the rock zf: plank deck (steps where it climbs), bamboo
+// rail on the open (+z) side, joists and raking struts from the outer edge back into the rock. `skip(p)` says
+// whether a strut foot would land inside a house (then it is left out).
+function hnTRWalk(pts,w,zf,c,skip){for(let i=0;i+1<pts.length;i++){const a=pts[i],b=pts[i+1];const dx=b[0]-a[0],dy=b[1]-a[1],dz=b[2]-a[2];const L=Math.hypot(dx,dz);const yaw=Math.atan2(dx,dz);
+  if(L<.05)continue;
+  if(Math.abs(dy)<.25)beam('vWood',[a[0],a[1]-.08,a[2]],[b[0],b[1]-.08,b[2]],w,.14,c);
+  else{const n=Math.max(2,Math.round(Math.abs(dy)/.2));for(let k=0;k<n;k++){const t=(k+.5)/n;kput('vWood',[lerp(a[0],b[0],t),lerp(a[1],b[1],t)-.05,lerp(a[2],b[2],t)],qEuler(0,yaw,0),[w,.07,L/n+.05],c);}
+   for(const s of[-1,1]){const o=[Math.cos(yaw)*w/2*s,0,-Math.sin(yaw)*w/2*s];beam('vWood',hAdd([a[0],a[1]-.2,a[2]],o),hAdd([b[0],b[1]-.2,b[2]],o),.07,.22,c);}}
+  hnBambooRail([a[0],a[1],a[2]+w/2-.05],[b[0],b[1],b[2]+w/2-.05],null,1.05);
+  const ns=Math.max(1,Math.round(L/2.6));for(let k=(i===0?0:1);k<=ns;k++){const t=k/ns;const p=[lerp(a[0],b[0],t),lerp(a[1],b[1],t)-.16,lerp(a[2],b[2],t)];
+   const edge=[p[0],p[1],p[2]+w/2-.1];const fy=p[1]-2.8;const foot=[p[0],fy,zf(p[0],fy)-.35];
+   if(fy>-.5&&!(skip&&skip(foot))&&!(skip&&skip([p[0],p[1]-1.4,(p[2]+foot[2])/2])))beam('vWood',edge,foot,.12,.12,c);
+   beam('vWood',[p[0],p[1]-.08,p[2]+w/2-.1],[p[0],p[1]-.08,zf(p[0],p[1])-.4],.1,.1,c);}}}
+function buildHlTriCliffVillage(G,o){reseed(23101+(o.v|0));const X0=-40,X1=40,TOP=42,ZC=-9;
+ vnReg('Cliff settlement (tribal)',0,-2,40,TOP+6);
+ const zf=hnTRRock(G,X0-4,X1+4,-1,TOP,ZC,3.7,4.5);
+ // the houses: [key, x, floor y] — staggered like brickwork so no house hangs over another's roof; the pair
+ // (6, 7) shares one platform
+ const H=[['hl_tri_small_a',-34,5],['hl_tri_large_b',-12,4],['hl_tri_small_b',7,6],['hl_tri_large_a',28,4],
+  ['hl_tri_small_c',-24,15],['hl_tri_small_a',-1,15],['hl_tri_small_a',5.5,15],['hl_tri_small_b',22,16],
+  ['hl_tri_large_a',-14,25],['hl_tri_small_a',14,27],['hl_tri_small_c',30,26],['hl_tri_small_b',-33,31]];
+ const houses=[];const gapR=.9;
+ for(const [key,x,y] of H){const F=HN_TR_FOOT[key];let zr=-99;for(let xx=x-F.W/2;xx<=x+F.W/2+.01;xx+=F.W/4)for(const yy of[y-5,y-2.5,y,y+3,y+F.H*.8])zr=Math.max(zr,zf(xx,yy));
+  houses.push({key,x,y,W:F.W,D:F.D,H:F.H,zb:zr+gapR,zc:zr+gapR+F.D/2,zfr:zr+gapR+F.D/2+F.front});}
+ const p1=houses[5],p2=houses[6];const pz=Math.max(p1.zc,p2.zc);for(const h of[p1,p2]){h.zc=pz;h.zb=pz-h.D/2;h.zfr=pz+HN_TR_FOOT[h.key].front;}
+ houses.forEach((h,i)=>hnSub(h.key,h.x,h.y,h.zc,0,{cliff:true,gap:Math.max(.4,h.zb-zf(h.x,h.y-1))+.2,v:i}));
+ const c=hC(vPick(HPAL.aged));
+ vB('vWood',(p1.x+p2.x)/2,p1.y-.2,pz+1.2,1.4,.2,4.4,0,c);                                          // the shared platform
+ const inHouse=(p)=>houses.some(h=>Math.abs(p[0]-h.x)<h.W/2+.2&&p[1]>h.y-4.5&&p[1]<h.y+h.H&&p[2]>h.zb-1.8&&p[2]<h.zfr+.2);
+ // a walk z at (x,y): clear of the rock, and in front of any house (deck, or the struts under it) at that height
+ const WW=1.5;const walkZ=(x,y)=>{let z=Math.max(zf(x,y),zf(x,y+1.4),zf(x,y-1))+WW/2+.25;
+  for(const h of houses)if(Math.abs(x-h.x)<h.W/2+WW&&y>h.y-6.5&&y<h.y+h.H)z=Math.max(z,h.zfr+WW/2-.15);return z;};
+ // route: control points [x, y, dz] (dz pushes a switchback's second flight out past the first); climbing
+ // segments are laid out with at least 1.25 m of run per metre of rise
+ const route=(ctl)=>{const P=[];for(let i=0;i+1<ctl.length;i++){const [x0,y0,d0]=ctl[i],[x1,y1,d1]=ctl[i+1];const n=Math.max(1,Math.ceil(Math.abs(x1-x0)/2.6));
+   for(let k=0;k<(i+2===ctl.length?n+1:n);k++){const t=k/n;const x=lerp(x0,x1,t),y=lerp(y0,y1,t);P.push([x,y,walkZ(x,y)+lerp(d0||0,d1||0,t)]);}}
+  for(let i=0;i+1<P.length;i++)if(Math.abs(P[i+1][1]-P[i][1])>.25){const z=Math.max(P[i][2],P[i+1][2]);P[i][2]=P[i+1][2]=z;}
+  hnTRWalk(P,WW,zf,c,inHouse);WALKS.push(P.filter((q,i)=>i+1<P.length&&Math.abs(P[i+1][1]-q[1])<.25));return P;};const WALKS=[];
+ const L=(h,dx,dz)=>[h.x+(dx||0),h.y,dz||0];const O=WW+.1;
+ const [A1,A2,A3,A4,B1,B2a,B2b,B3,C1,C2,C3,D1]=houses;
+ // tier A, up from the valley floor and along
+ route([[-44,0],[-37.5,5],L(A1,0),L(A1,3.5),[-24,4],L(A2,-9.5),L(A2,9.5),[0,4],[3,6],L(A3,0),L(A3,4),[15,4],L(A4,-7),L(A4,-2)]);
+ // A -> B: long flights across the face, alternating direction (the zig-zag), switchbacks where the gap is tight
+ route([L(A2,-10),[-33.5,14],[-32,15],L(B1,0)]);
+ route([L(A3,-4),[-7,14],[-5.5,15],L(B2a,0),L(B2b,0),L(B2b,3.4)]);
+ route([L(A4,-7),[13,10.5],[13,10.5,O],[19,15.5,O],[20.5,16,O],L(B3,0,O)]);
+ // B -> C
+ route([L(B2b,3.6),[16,20.5],[16,20.5,O],[9.5,26,O],[10.5,27,O],L(C2,0,O),L(C2,3.6),[23,27],[26,26],L(C3,0)]);
+ route([L(B1,3.5),[-13,21],[-6.5,25],L(C1,4)]);
+ // C -> the top: the high hut, the shrine, the lookout
+ route([L(C1,-6.5),[-28,31],L(D1,0)]);
+ const SH=[-3,35],LK=[22,36.5];
+ route([L(C2,-3.6),[3.5,32.5],[.5,35],[SH[0]+1.6,SH[1]]]);
+ route([L(C3,-3.5),[20,31],[20,31,O],[26,36.5,O],[LK[0]+3.2,LK[1],O]]);
+ // ladders: from the valley floor up to the first walk
+ vnLadder(-2,0,walkZ(-2,4)+1.4,0,4.3,c);vnLadder(16,0,walkZ(16,4)+1.3,0,4.3,c);
+ // the cliff-hung shrine: a painted spirit house on a bracketed platform, masks and a thunderbird crest
+ {const [x,y]=SH;const z=Math.max(zf(x,y),zf(x,y+3),zf(x-2,y),zf(x+2,y))+2.2;const blk=hC(HPAL.black);
+  kput('hLogX',[x,y-.3,z-1],qEuler(0,Math.PI/2,0),[5,.2,.2],c);for(const s of[-1,1])beam('vWood',[x+s*1.4,y-.4,z+1.4],[x+s*1.4,y-4,zf(x,y-4)-.3],.15,.15,c);
+  vB('vWood',x,y-.2,z,3.6,.2,3.4,0,c);vB('vWood',x,y,z-.5,2.4,2,2,0,hC(vPick(HPAL.tar)).multiplyScalar(1.3));
+  hnForm('hFormA',x,y+.2,z+.52,0,2.2,1.1);hnGable(x,y+2,z-.5,2.4,2,1.3,0,'vGableT',hC(vPick(VPAL.thatch)),.5,'hGablePaint',hC(HPAL.red));hnBarge(x,y+2,z-.5,2.4,2,1.3,0,.5,blk,'bird');
+  for(const s of[-1,1]){hnTotemPost(x+s*1.5,y,z+1.2,.13,2.2,0,true);hnForm('hFormV',x+s*.8,y+.3,z+.52,0,.45,1.5);}
+  for(let k=0;k<3;k++)vBall('vGourd',x-.6+k*.6,y+.12,z+1.1,.12,hC(0xa08040));hnTRCage(x,y+2.2,z+1.4);}
+ // the warrior lookout on the top ledge: a palisaded platform, a war totem, a horned shelter, a brazier
+ {const [x,y]=LK;const z=Math.max(zf(x,y),zf(x-3,y),zf(x+3,y),zf(x,y+2))+2.8;
+  for(const s of[-1,1])beam('vWood',[x+s*2.4,y-.4,z+2.2],[x+s*2.4,y-5,zf(x,y-5)-.3],.18,.18,c);
+  kput('hLogX',[x,y-.35,z-1],qEuler(0,Math.PI/2,0),[7,.22,.22],c);vB('vWood',x,y-.2,z,6,.2,5,0,c);
+  for(let k=0;k<=14;k++){const u=-3+6*k/14;if(u>1.6)continue;vPst('vPostB',x+u,y-.2,z+2.5,.13,1.5+rr(-.1,.2),c);}
+  for(let k=0;k<=8;k++)vPst('vPostB',x-3,y-.2,z-2.5+5*k/8,.13,1.4,c);
+  hnTotem(x+1.8,y,z-1.2,.28,6.5,0,{wings:1.8,painted:true});
+  for(const s of[-1,1])for(const t of[-1,1])vPst('vPost',x-.8+s*1.3,y,z-.6+t*1.1,.08,2.4,c);vnGableRoof(x-.8,y+2.4,z-.6,3,2.6,1.4,0,'vGableT',hC(vPick(VPAL.thatch)),.3);
+  hnTRHorns(x-.8,y+3.9,z+.8,0,.9);hnTRBrazier(x-2.2,y,z+1.6,.8);}
+ // shrubs and grass tufts on the ledges of the rock
+ for(let k=0;k<45;k++){const x=rr(X0,X1),y=rr(1,TOP-1);if(inHouse([x,y,zf(x,y)+1]))continue;const z=Math.min(zf(x-.6,y),zf(x+.6,y),zf(x,y-.4),zf(x,y+.4));kput('vLeaf',[x,y,z],qEuler(0,rng()*3,0),[rr(.5,1.1),rr(.4,.7),rr(.3,.5)],hC(vPick([0x4a6a34,0x5a7a3a,0x6a7a44,0x7a7a4a])));}
+ // people on the walks
+ for(const P of WALKS)for(let k=0;k<2;k++){const p=P[(rng()*P.length)|0];kput('figB',[p[0]+rr(-.4,.4),p[1],p[2]+rr(-.3,.3)],qEuler(0,rng()*TAU,0),1,hC(vPick([0xe8d9b8,0xc9442a,0x2f8f8a,0xe0a030,0x8a6a3a])));kput('figH',[p[0],p[1],p[2]],null,1,hC(0xc9a17e));}
+ // gourds and fire-cages along the walks, folk at the foot
+ for(let k=0;k<houses.length;k++){const h=houses[k];for(const s of[-1,1])(k%2?hnTRGourd:hnTRCage)(h.x+s*(h.W/2+.4),h.y+2.4,h.zfr+.5);}
+ for(let k=0;k<7;k++)vnFolk(rr(-30,30),ZC+14+rr(0,5),1,1);}
 
 HL.def({key:'hl_tri_small_a',name:'Painted hut',branch:'tribal',family:'Dwellings',tags:{type:['single-family dwelling'],wealth:'poor',lit:false},w:9,d:10,h:8,build:buildHlTriSmallA});
-HL.def({key:'hl_tri_cliff_village',name:'Cliff settlement',branch:'tribal',family:'Cliff settlement',cls:'building',tags:{type:['multi-family dwelling'],wealth:'poor',lit:false,landmark:true},w:80,d:24,h:40,build:buildHlTriCliffVillage});
+HL.def({key:'hl_tri_small_b',name:'Round bamboo hut',branch:'tribal',family:'Dwellings',tags:{type:['single-family dwelling'],wealth:'poor',lit:false},w:9,d:11,h:9,build:buildHlTriSmallB});
+HL.def({key:'hl_tri_small_c',name:'Painted earth-lodge',branch:'tribal',family:'Dwellings',tags:{type:['single-family dwelling'],wealth:'poor',lit:false},w:11,d:11,h:7,build:buildHlTriSmallC});
+HL.def({key:'hl_tri_large_a',name:'Great plank-house',branch:'tribal',family:'Dwellings',tags:{type:['multi-family dwelling'],wealth:'middle',lit:false},w:18,d:20,h:15,build:buildHlTriLargeA});
+HL.def({key:'hl_tri_large_b',name:'Long-dwelling on stilts',branch:'tribal',family:'Dwellings',tags:{type:['multi-family dwelling'],wealth:'middle',lit:false},w:23,d:17,h:9,build:buildHlTriLargeB});
+// ================================================================= HIGHLANDS / TRIBAL — halls, sacred sites, farms, crafts
+// The communal buildings of the Painted Men: the village longhouse (after the Skarðavik sketch: a great arched
+// roof on crossing ribs, flared horn-wings, a broad stair to a raised door, a cupola), the warrior's hall in its
+// palisade, the shaman's house under a painted cone, the stone circle; and the farms and the scrap smithy that
+// feed and arm them. Raw logs, bamboo, thatch and turf, fire only (no electric light). Seeds 23200–23499.
+
+// ---------------------------------------------------------------- the arched vault (longhouse roofs)
+// A shell roof over a hall whose long axis is local x: s (-1..1) runs along the ridge, t (-1..1) across it.
+// Its cross-section is a tall arch that flattens toward the eaves and then curls up (F); the eaves run out
+// further than the ridge (Cx) and lift at the corners into horns (Hc); B raises the front eave over a centred
+// entrance into a tall arched brow. V = {x0,z0,X,Cx,Z,yE,A,F,Hc,B,Bs, mat, c (rib colour), trans:[s…], diag:[c…],
+// legs, nu, nv}. Returns {P(s,t), y(x,z)} for fitting walls, lenses and posts under it.
+function hnTRVault(G,V){
+ const Y=(s,t)=>V.yE+V.A*Math.pow(Math.max(0,1-t*t),1.3)+V.F*Math.pow(Math.max(0,(Math.abs(t)-.8)/.2),2)
+  +V.Hc*Math.pow(Math.max(0,(Math.abs(s)-.72)/.28),2)*(.35+.65*t*t)+(V.B||0)*Math.exp(-Math.pow(s/(V.Bs||.3),2))*Math.pow(Math.max(0,t),1.5);
+ const P=(s,t)=>[V.x0+s*(V.X+V.Cx*t*t),Y(s,t),V.z0+t*V.Z];
+ const N=(s,t)=>{const e=.01;const a=P(s+e,t),b=P(s-e,t),c=P(s,t+e),d=P(s,t-e);const ds=[a[0]-b[0],a[1]-b[1],a[2]-b[2]],dt=[c[0]-d[0],c[1]-d[1],c[2]-d[2]];return hNorm(hCross(dt,ds));};
+ const yAt=(x,z)=>{const t=clamp((z-V.z0)/V.Z,-1,1);return Y((x-V.x0)/(V.X+V.Cx*t*t),t);};
+ const m=mesh(gridSurface((u,v)=>P(u*2-1,v*2-1),V.nu||48,V.nv||32,{uS:(2*V.X+V.Cx)/2,vS:V.Z*1.5}),V.mat,G);
+ const c=V.c||hC(vPick(HPAL.tar));const off=(s,t,k)=>{const p=P(s,t),n=N(s,t);return[p[0]+n[0]*k,p[1]+n[1]*k,p[2]+n[2]*k];};
+ const chain=(fn,n,w,k,cc)=>{let a=fn(0);for(let i=1;i<=n;i++){const b=fn(i/n);beam('vWood',a,b,w,w,cc||c);a=b;}};
+ // eave and end fascias give the shell its thickness
+ for(const t of[-1,1])chain(q=>off(q*2-1,t,-.1),24,.34,0);for(const s of[-1,1])chain(q=>off(s,q*2-1,-.1),16,.34,0);
+ // transverse ribs over the shell, running on down to the ground as curved legs on carved stone feet
+ for(const s of V.trans||[]){chain(q=>off(s,q*2-1,.28),18,.42,0);
+  if(V.legs)for(const t of[-1,1]){const E=off(s,t,.28);const F=[E[0],.9,V.z0+t*(V.Z+2.3)],C=[E[0],E[1]*.55+.4,V.z0+t*(V.Z+2.2)];
+   chain(q=>[(1-q)*(1-q)*E[0]+2*(1-q)*q*C[0]+q*q*F[0],(1-q)*(1-q)*E[1]+2*(1-q)*q*C[1]+q*q*F[1],(1-q)*(1-q)*E[2]+2*(1-q)*q*C[2]+q*q*F[2]],7,.42,0);
+   vB('hRubB',F[0],0,F[2],1.1,1,1.1,0,hC(vPick(HPAL.rubble)));hnForm('hFormV',F[0],.08,F[2]+t*.55,t>0?0:Math.PI,.55,.84);}}
+ // diagonal ribs crossing between them (the lattice of the sketch)
+ for(const c0 of V.diag||[])for(const d of[-1,1])chain(q=>{const t=q*2-1;return off(c0+d*.42*t,t,.24);},18,.3,0);
+ return{P,y:yAt,mesh:m};}
+function hnTRRoofMat(item,c){const m=(item==='thatch'?MAT.thatch:item==='wood'?MAT.wood:MAT.shingle).clone();m.color=c;return m;}
+
+// ---------------------------------------------------------------- HALLS
+// Village longhouse — the branch showpiece. A log hall of two storeys on a fieldstone platform under a great
+// arched shingle vault; transverse ribs run down to carved feet, diagonal ribs cross over the shell, the front
+// eave lifts into an arched brow over the entrance, a broad stair climbs to it between braziers and winged
+// totems; the gable ends are painted crest-lenses; a lantern cupola with green banners crowns the ridge; two
+// lower wing-halls under their own flared vaults sweep out at the ends.
+function buildHlTriLonghouse(G,o){reseed(23201+(o.v|0));const P=3.2,Xw=12,Zw=8.5,Z=12,run=16*.32;
+ const tar=hC(vPick(HPAL.tar)).multiplyScalar(1.35),rib=hC(vPick(HPAL.redwood)).multiplyScalar(1.1),roofC=hC(0xa06a44),blk=hC(HPAL.black),ash=hC(vPick(HPAL.rubble));
+ vnReg('Village longhouse',0,1,20,24);
+ hnSocle(0,0,0,2*(Xw+3.6),P,2*Z,0,ash,hC(vPick(HPAL.ashlar)));
+ const V=hnTRVault(G,{x0:0,z0:0,X:14,Cx:4,Z,yE:P+2.9,A:11.5,F:1.4,Hc:3,B:4.5,Bs:.28,mat:hnTRRoofMat('shingle',roofC),c:rib,
+  trans:[-1,-.66,-.36,.36,.66,1],diag:[-.52,.52],legs:true,nu:64,nv:40});
+ // the hall: log walls up to the vault's springing line, a frieze under it
+ let wt=99;for(let x=-Xw;x<=Xw;x+=1)wt=Math.min(wt,V.y(x,Zw+.2),V.y(x,-Zw-.2));wt-=.15;
+ hnLogBox(0,P,0,2*Xw,wt-P,2*Zw,0,tar);
+ for(const s of[-1,1])hnFrieze(0,wt-.55,s*(Zw+.06),s>0?0:Math.PI,2*Xw,.5);
+ for(const s of[-1,1])for(const u of[-10,-6.5,6.5,10,-3,3]){const f=u*u<10;const zz=s*Zw;if(s>0&&f)continue;
+  vnWin(u,P+1.2,zz,s>0?0:Math.PI,1,1.5,'shut','hPaint',hC(HPAL.red));vnWin(u,P+4.6,zz,s>0?0:Math.PI,.9,1.2,'open','hPaint',blk);}
+ for(const u of[-8.25,8.25,-4.75,4.75])hnForm('hFormA',u,P+2.95,Zw+.02,0,2.4,1.2);
+ // painted lenses: the front brow over the door and both gable ends
+ const lw=7.5;let lt=0;for(let x=-lw;x<=lw;x+=.5)lt=Math.max(lt,V.y(x,Zw+.3)-wt);
+ hnTRGrid(G,(u,v)=>{const x=(u*2-1)*lw;const top=Math.max(wt+.02,V.y(x,Zw+.3)-.12);const y=lerp(wt-.05,top,v);return[x,y,Zw+.1,u,(y-wt+.05)/lt];},30,8,MAT.trFront);
+ for(const s of[-1,1]){let gt=0;for(let z=-Zw;z<=Zw;z+=.5)gt=Math.max(gt,V.y(s*Xw,z)-wt);
+  hnTRGrid(G,(u,v)=>{const z=(u*2-1)*Zw;const top=Math.max(wt+.02,V.y(s*Xw,z)-.12);const y=lerp(wt-.05,top,v);return[s*(Xw+.1),y,z*-s,u,(y-wt+.05)/gt];},30,8,MAT.formA);
+  vnDoor(s*Xw,P,0,s*Math.PI/2,1.6,2.6,'hPaint',blk,tar,false);hnForm('hFormA',s*(Xw+.02),P+3,0,s*Math.PI/2,5,2.5);}
+ // the entrance: great doors between tall totem posts, a crest lintel
+ vB('vDarkB',0,P,Zw+.02,3.2,4.4,.1,0);for(const s of[-1,1])kput('vWood',[s*1.95,P+2.2,Zw+.7],qEuler(0,s*.5,0),[1.5,4.3,.14],tar);
+ for(const s of[-1,1]){hnTotemPost(s*2.3,P,Zw+.35,.36,5.2,0,true);hnForm('hFormV',s*3.2,P+.1,Zw+.02,0,.8,4.4);}
+ hnForm('hFormA',0,P+4.6,Zw+.04,0,4.6,2.1);
+ // the gallery under the eaves: totem posts carrying the shell, a carved rail along the platform edge
+ const gz=Z-1.3;for(const s of[-1,1])for(let x=-14;x<=14.01;x+=4){if(s>0&&Math.abs(x)<4.5)continue;const h=V.y(x,s*gz)-P-.1;hnTotemPost(x,P,s*gz,.3,h,s>0?0:Math.PI,Math.abs(x)%8<1);}
+ for(const s of[-1,1]){const zr=s*(Z-.35);const segs=s>0?[[-15.4,-4.3],[4.3,15.4]]:[[-15.4,15.4]];for(const [a,b] of segs)hnDeckRail([a,P+.05,zr],[b,P+.05,zr],P+.05,tar,1);}
+ for(const s of[-1,1])hnDeckRail([s*15.4,P+.05,-Z+.4],[s*15.4,P+.05,Z-.4],P+.05,tar,1);
+ // the broad stair: solid stone steps, parapets ending in carved newels, braziers, winged totems
+ for(let k=0;k<16;k++)vB('vStone',0,0,Z+run-(k+.5)*.32,8,P*(k+1)/16,.34,0,hC(vPick(HPAL.ashlar)));
+ for(const s of[-1,1]){hnMember('hRubB',[s*4.3,P+.5,Z],[s*4.3,.5,Z+run],1.1,.6,[1,0,0],ash);vB('hRubB',s*4.3,0,Z+run/2,.6,.4,run,0,ash);
+  hnTotemPost(s*4.3,.05,Z+run+.25,.3,2.6,0,true);hnTRBrazier(s*5.6,0,Z+run+.8,1.1);hnTRBrazier(s*4.9,P,Z-.8,.9);
+  hnTotem(s*8.6,0,Z+run+1.4,.45,9,0,{wings:2.4,painted:true});for(const t of[-1,1])hnTRBrazier(s*14.8,P,t*(Z-1),.8);}
+ // the cupola: a log drum with windows, a gallery, a shingle helm, the thunderbird, green banners
+ const yc=V.y(0,0);kput('hOctL',[0,yc-1.2,0],null,[2.6,3.4,2.6],tar);for(let k=0;k<8;k++){const a=k/8*TAU;vnWin(Math.sin(a)*2.42,yc+.5,Math.cos(a)*2.42,a,.7,1.1,'open','hPaint',blk);}
+ vPst('hTRDisc',0,yc+2.2,0,3.4,.22,rib);for(let k=0;k<20;k++){const a=k/20*TAU;vPst('vPost',Math.sin(a)*3.25,yc+2.4,Math.cos(a)*3.25,.05,.9,tar);}
+ for(let k=0;k<20;k++){const a=k/20*TAU,b=(k+1)/20*TAU;beam('vWood',[Math.sin(a)*3.25,yc+3.3,Math.cos(a)*3.25],[Math.sin(b)*3.25,yc+3.3,Math.cos(b)*3.25],.09,.09,tar);}
+ kput('hOctW',[0,yc+2.4,0],null,[2,1.5,2],rib);kput('hBulbSh',[0,yc+3.8,0],null,[2.3,2.5,2.3],roofC.clone().multiplyScalar(.85));
+ vPst('vPost',0,yc+5.9,0,.08,1.6,tar);kput('hPaintBall',[0,yc+7.5,0],null,[.3,.36,.3],blk);for(const s of[-1,1])kput('hWing',[s*.9,yc+7.6,0],qEuler(0,0,s*-.15),[s*1.8,.9,1],null);
+ kput('vConeI',[0,yc+7.5,.3],vQ(0,Math.PI/2,0),[.09,.4,.09],hC(HPAL.red));
+ for(let k=0;k<4;k++){const a=k/4*TAU+Math.PI/4;kput('vCloth',[Math.sin(a)*3.45,yc+.8,Math.cos(a)*3.45],qEuler(0,a,0),[1,2.8,1],hC(0x4a7a3a));}
+ // the wing-halls
+ for(const s of[-1,1]){const x0=s*22.5;vB('hRubB',x0,0,0,12,.5,10,0,ash);
+  const W2=hnTRVault(G,{x0,z0:0,X:6.5,Cx:2.5,Z:6.5,yE:3,A:5.4,F:.8,Hc:2.2,mat:hnTRRoofMat('shingle',roofC.clone().multiplyScalar(.92)),c:rib,trans:[-1,0,1],diag:[],legs:true,nu:36,nv:24});
+  let w2=99;for(let x=-5.5;x<=5.5;x+=1)w2=Math.min(w2,W2.y(x0+x,4.7),W2.y(x0+x,-4.7));w2-=.12;
+  hnLogBox(x0,.5,0,11,w2-.5,9,0,tar);hnFrieze(x0,w2-.5,4.56,0,11,.45);
+  vnDoor(x0,.5,4.5,0,1.2,2.2,'hPaint',blk,tar,false);for(const u of[-3.5,3.5])vnWin(x0+u,1.5,4.5,0,.9,1.1,'shut','hPaint',hC(HPAL.red));
+  let gt=0;for(let z=-4.5;z<=4.5;z+=.5)gt=Math.max(gt,W2.y(x0+s*5.5,z)-w2);
+  hnTRGrid(G,(u,v)=>{const z=(u*2-1)*4.5;const top=Math.max(w2+.02,W2.y(x0+s*5.5,z)-.1);const y=lerp(w2-.05,top,v);return[x0+s*5.6,y,z*-s,u,(y-w2+.05)/gt];},20,6,MAT.formA);
+  hnForm('hFormW',x0+s*5.58,1.1,0,s*Math.PI/2,5,2.5);hnTRBrazier(x0,0,7.2,.8);}
+ vnFolk(0,Z+run+4,4,4);hnTRFolk(-9,P,Z-2.5,2,1.5);hnTRFolk(9,P,Z-2.5,2,1.5);}
+
+// Warrior's hall — a long log hall inside a palisade: turf gable with thunderbirds and trophy horns, both
+// gable-ends painted, a cross-gabled porch on totem posts, round shields racked along the front, war totems at
+// the gate and the corners, a sanded sparring ring with spear racks, a trophy pole.
+function buildHlTriWarriorHall(G,o){reseed(23211+(o.v|0));const W=24,D=10,F=.5,H=3.4,hz=-9,PW=36,PD=34;
+ const tar=hC(vPick(HPAL.tar)).multiplyScalar(1.25),aged=hC(vPick(HPAL.aged)),turf=hC(vPick(HPAL.turf)),blk=hC(HPAL.black),red=hC(HPAL.red);
+ vnReg("Warrior's hall",0,hz,13,F+H+8);vnReg("Warrior's hall — yard",0,5,12,3);
+ vnPalisade(0,0,0,PW,PD,0,3.6,7);
+ for(const s of[-1,1]){vPst('vPostB',s*3.6,0,PD/2,.3,4.6,tar);hnTotem(s*5,0,PD/2+.8,.42,8.5,0,{wings:2.2,painted:true});}
+ kput('hLogX',[0,4.4,PD/2],null,[8,.24,.24],tar);hnTRHorns(0,4.75,PD/2+.2,0,1.3);for(const s of[-1,1])hnTRHorns(s*1.8,4.6,PD/2+.2,0,.7);
+ // the hall
+ vB('hRubB',0,0,hz,W+.4,F,D+.4,0,hC(vPick(HPAL.rubble)));hnLogBox(0,F,hz,W,H,D,0,tar);
+ const pitch=1.25,rise=pitch*D/2;hnGable(0,F+H,hz,W,D,pitch,0,'hGableTurf',turf,.8,'hGableLog',tar);hnBarge(0,F+H,hz,W,D,rise,0,.8,blk,'bird');
+ for(const s of[-1,1]){hnTRPent(G,s*(W/2+.06),F,hz,s*Math.PI/2,D,H,rise-.05,MAT.trFront);hnTRHorns(s*(W/2+.5),F+H+rise-1.2,hz,s*Math.PI/2,1.4);
+  vnDoor(s*(W/2+.1),F,hz+2.6,s*Math.PI/2,.9,1.9,'hPaint',blk,tar,false);}
+ for(const u of[-6,6]){vB('vWood',u,F+H+rise-.3,hz,1.4,.8,1.4,0,aged);vnGableRoof(u,F+H+rise+.5,hz,1.8,1.8,.5,0,'vWood',aged,.1);}   // smoke louvres
+ const fz=hz+D/2;
+ for(const u of[-9.5,-5.2,5.2,9.5])hnForm('hFormA',u,F+2.1,fz+.02,0,2.6,1.3);
+ // shields racked along the front, spears leaning
+ for(const s of[-1,1]){kput('hLogX',[s*7.35,F+1.85,fz+.3],null,[8.2,.07,.07],aged);
+  for(let k=0;k<7;k++){const x=s*(3.8+k*1.15);kput('hTRShield',[x,F+1.45,fz+.36],qEuler(-.08,0,0),[.47,.47,1],hC(vPick([0xffffff,0xe8c0a0,0xa0d0c8,0xf0d890,0xe0a098])));}}
+ for(let k=0;k<6;k++){const x=rr(-11,11);if(Math.abs(x)<3)continue;kput('vPost',[x,0,fz+.55],qEuler(-.2,0,rr(-.1,.1)),[.03,2.8,.03],aged);}
+ // the porch: a cross gable on four painted totem posts, horns on its gable
+ for(const sx of[-1,1])for(const z of[fz+.4,fz+3.4])hnTotemPost(sx*1.9,F,z,.22,2.9,0,true);
+ vB('vWood',0,F-.18,fz+1.9,4.4,.18,3.6,0,aged);vnStairs(0,0,fz+4.1,0,2.4,F,2,'vWood',aged);
+ hnGable(0,F+3,fz+1.9,4.4,4.6,1.2,Math.PI/2,'hGableTurf',turf,.4,'hGablePaint',red);hnForm('hFormT',0,F+3.2,fz+4.13,0,2.8,1.4);hnTRHorns(0,F+3+2.9,fz+4.3,0,1);
+ vnDoor(0,F,fz+.02,0,1.5,2.3,'hPaint',blk,tar,false);hnForm('hFormA',0,F+2.5,fz+.04,0,2.4,.8);
+ // war totems at the hall corners
+ for(const s of[-1,1])hnTotem(s*(W/2+1.6),0,fz+1.4,.34,6.5,0,{wings:1.6});
+ // the sparring ring, weapon racks, trophy pole, braziers
+ const rz=6.5,R=5.4;vPst('hTRDisc',0,-.02,rz,R,.06,hC(0xc8b088));
+ for(let k=0;k<24;k++){const a=k/24*TAU,b=(k+1)/24*TAU;vPst('vPostB',Math.sin(a)*R,0,rz+Math.cos(a)*R,.12,.75,aged);beam('hBambooC',[Math.sin(a)*R,.68,rz+Math.cos(a)*R],[Math.sin(b)*R,.68,rz+Math.cos(b)*R],.05,.05,hC(0xa89070));}
+ vnFolk(0,rz,2,1.2);vnFolk(0,rz+6.5,4,5);
+ for(const s of[-1,1]){const x=s*9.5;for(const z of[rz-1.4,rz+1.4])vPst('vPost',x,0,z,.08,1.8,aged);kput('hLogX',[x,1.7,rz],qEuler(0,Math.PI/2,0),[3,.06,.06],aged);
+  for(let k=0;k<6;k++){const z=rz-1.2+k*.48;kput('vPost',[x+.25,0,z],qEuler(0,0,s*-.14),[.025,2.7,.025],aged);kput('vConeI',[x+.25-s*.37,2.68,z],qEuler(0,0,s*-.14),[.05,.26,.05],hC(0x5a5650));}}
+ {const x=-13,z=9;vPst('vPost',x,0,z,.14,6.5,aged);for(let k=0;k<4;k++)hnTRHorns(x,2.6+k*1.1,z+.1,k*.9,.7);}
+ for(const s of[-1,1]){hnTRBrazier(s*3.4,0,fz+4.6,.9);hnTRBrazier(s*4,0,PD/2-2,.9);}
+ hnWoodpile(PW/2-1.5,0,-8,Math.PI/2,6,1.6);hnFirepit(12,0,6,.7);}
+
+// Shaman's house — an octagonal log house under a tall painted cone with a smoke hole and poles through it;
+// spirit masks on every face; a ring of spirit poles with masks, horns and ribbons; herbs drying on a rack;
+// a fire with a tripod pot at the door.
+function buildHlTriShaman(G,o){reseed(23221+(o.v|0));const R=4.2,S=.45,H=2.5,ap=R*Math.cos(Math.PI/8);
+ const tar=hC(vPick(HPAL.tar)).multiplyScalar(1.3),aged=hC(vPick(HPAL.aged)),blk=hC(HPAL.black);
+ vnReg("Shaman's house",0,0,6,12.6);
+ kput('hOctS',[0,0,0],null,[R+.35,S,R+.35],hC(vPick(HPAL.rubble)));kput('hOctL',[0,S,0],null,[R,H,R],tar);
+ kput('hTRConeP',[0,S+H-.15,0],null,[R+1.35,8.6,R+1.35],null);                                            // the painted cone
+ const top=S+H-.15+8.6;for(let k=0;k<6;k++){const a=k/6*TAU+.3;beam('vWood',[Math.sin(a)*.12,top-1.5,Math.cos(a)*.12],[Math.sin(a)*.75,top+1.4,Math.cos(a)*.75],.1,.1,aged);}
+ for(let k=0;k<3;k++){const a=k/3*TAU;vPst('vPost',Math.sin(a)*.3,top-.2,Math.cos(a)*.3,.03,.55,aged);}kput('vConeT',[0,top+.3,0],null,[.75,.55,.75],hC(vPick(VPAL.thatch)));
+ kput('hTRBandCyl',[0,S+H-.55,0],qEuler(0,Math.PI/8,0),[ap+.02,.4,ap+.02],null);
+ for(let k=1;k<8;k++){const a=k/8*TAU;hnForm('hFormV',Math.sin(a)*(ap+.02),S+.35,Math.cos(a)*(ap+.02),a,.62,1.9);}
+ vnDoor(0,S,ap+.02,0,1,1.9,'hPaint',blk,hC(0x6a4a30),false);hnForm('hFormA',0,S+2,ap+.06,0,1.8,.5);hnTRHorns(0,S+2.55,ap+.12,0,.55);
+ for(const s of[-1,1])hnTotemPost(s*1.05,0,ap+.6,.15,2.7,0,true);
+ vB('vStone',0,0,ap+.9,1.6,S,1,0,hC(vPick(HPAL.rubble)));
+ // spirit poles round the house
+ for(let k=0;k<9;k++){const a=(k+.5)/9*TAU*(10/11)+TAU/22+Math.PI*.09;const x=Math.sin(a)*8.2,z=Math.cos(a)*8.2;if(z>6)continue;const h=rr(3,4.8);
+  hnTotem(x,0,z,.2,h,a,{painted:k%2===0,wings:k%3===0?.9:0});
+  if(k%3)hnTRAntlers(x,h+.05,z,a,.7);for(let f=0;f<3;f++)kput('hWing',[x+Math.sin(a)*.21,h*.62-f*.05,z+Math.cos(a)*.21],vQ(a,0,-Math.PI/2+(f-1)*.35),[.55,.2,1],null);kput('vCloth',[x+Math.sin(a+1.57)*.3,h-.7,z+Math.cos(a+1.57)*.3],qEuler(0,a,0),[.18,1.2,1],hC(vPick([0xb3322a,0x2e9488,0xefe7d6,0xd19a3a])));}
+ // herbs drying, the fire and pot, cairns
+ const hx=-6,hzz=4.5;for(const s of[-1,1])vPst('vPost',hx+s*1.6,0,hzz,.07,2.2,aged);beam('vWood',[hx-1.8,2.1,hzz],[hx+1.8,2.1,hzz],.07,.07,aged);
+ for(let k=0;k<9;k++){const x=hx-1.4+k*.35;vPst('vRope',x,1.75,hzz,.01,.35,hC(0x9a8a6a));kput('vLeaf',[x,1.55,hzz],null,[.12,.3,.12],hC(vPick([0x6a7a3a,0x8a7a44,0x5a6a34,0x9a8050])));}
+ for(let k=0;k<5;k++){const a=-.9+k*.45;vPst('vRope',Math.sin(a)*(R+.9),S+H-.4,Math.cos(a)*(R+.9),.01,.3,hC(0x9a8a6a));kput('vLeaf',[Math.sin(a)*(R+.9),S+H-.6,Math.cos(a)*(R+.9)],null,[.1,.26,.1],hC(vPick([0x6a7a3a,0x8a7a44])));}
+ hnFirepit(2.2,0,ap+3.2,.55);for(let k=0;k<3;k++){const a=k/3*TAU;beam('vIron',[2.2+Math.sin(a)*.7,0,ap+3.2+Math.cos(a)*.7],[2.2,1.5,ap+3.2],.04,.04,hC(0x2e2a26));}
+ vBall('vBall',2.2,.75,ap+3.2,.28,hC(0x2e2a26),.24);
+ for(const [x,z] of[[6.5,5],[-7,-3],[4,-7]])for(let k=0;k<4;k++)kput('vRock',[x+rr(-.3,.3),.2+k*.25,z+rr(-.3,.3)],qEuler(rng(),rng(),0),[.35-k*.06,.2,.3-k*.05],hC(vPick(HPAL.rubble)));
+ vnFolk(0,ap+4.5,2,1.5);}
+
+// ---------------------------------------------------------------- SACRED
+// Stone circle — a ring of standing stones, several carved with crest faces, round a table altar and a
+// firepit; a gap at the front flanked by two painted winged totems and an avenue of low stones leading in.
+function buildHlTriStoneCircle(G,o){reseed(23231+(o.v|0));const R=9;
+ vnReg('Stone circle',0,0,R+1.5,6.5);
+ vPst('hTRDisc',0,-.03,0,R+1.6,.06,hC(0x8a7a5c));
+ let k=0;for(let a=.62;a<TAU-.6;a+=(TAU-1.24)/12){const x=Math.sin(a)*R,z=Math.cos(a)*R;hnMenhir(x,0,z,a+Math.PI,rr(2.5,3.7),hC(vPick(HPAL.rubble)).multiplyScalar(rr(.75,1)),k%3===1);k++;}
+ for(const s of[-1,1]){hnTotem(s*4.6,0,R*.9,.36,6.4,0,{wings:1.9,painted:true});for(let j=0;j<3;j++)hnMenhir(s*2.4,0,R+2+j*2,s*Math.PI/2,rr(1,1.4),null,false);}
+ for(const s of[-1,1])vB('hRubB',s*.85,0,-1,.55,.85,.9,0,hC(vPick(HPAL.rubble)));vB('vStone',0,.85,-1,2.6,.28,1.3,0,hC(vPick(HPAL.rubble)));
+ hnForm('hFormA',0,.02,-.52,0,1.4,.7);hnTRHorns(0,1.35,-1.3,0,.7);for(let j=0;j<3;j++)vBall('vGourd',-.8+j*.4,1.25,-.8,.12,hC(0xa08040));
+ hnFirepit(0,0,2.4,.8);hnTRBrazier(-2.8,0,-3,.8);hnTRBrazier(2.8,0,-3,.8);vnFolk(0,4.5,3,3);}
+
+// ---------------------------------------------------------------- FARMS AND CRAFTS
+// Farmhouse — a log dwelling with a painted front and a thatch gable, a bamboo byre under a lean-to at its side
+// with a cow and goats in it, a fenced kitchen plot, hay, a woodpile.
+function buildHlTriFarmhouse(G,o){reseed(23241+(o.v|0));const W=8,D=6,F=.4,H=2.5;
+ const log=hC(vPick(HPAL.aged)),th=hC(vPick(VPAL.thatch)),bam=hC(vPick(HPAL.bamboo)),blk=hC(HPAL.black);
+ vnReg('Farmhouse (tribal)',-1,0,6,F+H+5);vnReg('Farmhouse — byre',W/2+2.3,0,3,3);
+ vB('hRubB',0,0,0,W+.3,F,D+.3,0,hC(vPick(HPAL.rubble)));hnLogBox(0,F,0,W,H,D,0,log);
+ hnGable(0,F+H,0,W,D,1.15,0,'vGableT',th,.8,'hGableBM',bam);hnBarge(0,F+H,0,W,D,1.15*D/2,0,.8,blk,'bird');
+ hnForm('hFormW',-1.2,F+.3,D/2+.06,0,4.4,2);vnDoor(2.2,F,D/2+.02,0,.95,1.85,'vWood',log,hC(0x5a4a3a),false);
+ vnWin(-W/2,F+1,0,-Math.PI/2,.6,.6,'shut','vWood',log);vB('vStone',2.2,0,D/2+.5,1.4,.2,.8,0,hC(vPick(HPAL.rubble)));
+ hnTotem(3.6,0,D/2+1.2,.26,4.4,0,{wings:1.1,painted:true});
+ // the byre: bamboo frame, mat walls at the back and end, a thatch lean-to, a rail at the front
+ const bx=W/2+2.3,BW=4.4;for(const s of[-1,1])for(const z of[-D/2+.2,D/2-.2])vPst('hBamboo',bx+s*(BW/2-.1),0,z,.09,s>0?2:2.6,bam);
+ vB('hBMatB',bx,0,-D/2+.15,BW,1.9,.08,0,bam);vB('hBMatB',bx+BW/2-.1,0,0,.08,1.9,D-.4,0,bam);
+ vnShedRoof(bx,1.95,0,D-.2,BW+.2,.55,Math.PI/2,'vThatchB',th,.35,.2);
+ hnBambooRail([bx-BW/2+.2,0,D/2-.2],[bx+BW/2-.2,0,D/2-.2],bam,1.1);
+ hnTRBeast(bx-.4,0,-.6,Math.PI/2,'cow');hnTRBeast(bx+.8,0,1.6,-.3,'goat');hnTRBeast(bx+1.2,0,-1.9,2.6,'goat');
+ kput('vConeT',[bx+1.2,0,.4],null,[.9,1.1,.9],hC(0xc4a86a));
+ // kitchen plot, woodpile, rack, fire
+ const gx=-W/2-3.6;vnFence(gx,0,0,5,6,0,bam,1.2,1);for(let r=0;r<5;r++)for(let k=0;k<6;k++)vBall('vLeaf',gx-1.6+r*.8,.12,-2+k*.8,rr(.18,.26),hC(vPick([0x4f7a34,0x5f8a3a,0x3f6a2a])),.16);
+ hnWoodpile(-1,0,-D/2-.8,0,5,1.3);vnDryingRack(1.5,0,D/2+3.4,0,3);hnFirepit(-2.4,0,D/2+2.6,.5);vnFolk(0,D/2+3,2,1.5);}
+
+// Farm — three dry-stone terraces (about 35 x 25 m) stepping up the hillside: greens in rows at the foot,
+// tall grain in the middle, fresh-turned ridges with squash above; a painted scarecrow totem with its arms
+// spread, a field shelter, bamboo fencing, steps between the terraces.
+function buildHlTriFarm(G,o){reseed(23251+(o.v|0));const FW=34,TD=7.8;
+ const bam=hC(vPick(HPAL.bamboo)),rub=hC(vPick(HPAL.rubble)),soil=hC(0x9a8a70),th=hC(vPick(VPAL.thatch));
+ vnReg('Terraced farm',0,0,18,3);
+ for(let t=0;t<3;t++){const y=t*.9,zc=TD-t*TD;const top=y+(t?0:.08);
+  vB('vClayB',0,0,zc,FW,top,TD,0,soil);
+  if(t)vB('hRubB',0,0,zc+TD/2-.2,FW+.3,top+.25,.5,0,rub);                                     // the retaining wall
+  const rows=Math.floor((TD-1.2)/.9);
+  for(let r=0;r<rows;r++){const z=zc-TD/2+.9+r*.9;
+   if(t===0){for(let x=-FW/2+1.6;x<FW/2-1;x+=1.5)vB('hTRLeafB',x,top,z,1.2,rr(.22,.4),.42,0,hC(vPick([0x4f7a34,0x5f8a3a,0x6a9a44])));}
+   else if(t===1){for(let x=-FW/2+1.5;x<FW/2-1;x+=.95)vB('hTRLeafB',x,top,z,.78,rr(1.1,1.8),.3,rr(-.12,.12),hC(vPick([0x9a9a44,0xa8a04a,0x8a8a3a,0xb8a850])));}
+   else{vB('vClayB',0,top,z,FW-2,.22,.45,0,soil.clone().multiplyScalar(.85));if(r%2===0)for(let k=0;k<6;k++)vBall('vGourd',rr(-FW/2+2,FW/2-2),top+.3,z,.2,hC(vPick([0xd08a2a,0xc07a24,0x9a8a3a])),.17);}}}
+ // steps between terraces at the west end, the scarecrow, the shelter
+ for(let t=1;t<3;t++)for(let k=0;k<3;k++)vB('vStone',-FW/2+.9,0,TD-t*TD+TD/2+.35-k*.3,1.2,t*.9-(2-k)*.3,.34,0,rub);
+ {const x=3,z=0,y=.9;hnTotemPost(x,y,z,.16,2.6,0,true);kput('hLogX',[x,y+2.1,z],null,[2.2,.06,.06],hC(0x6a5a44));
+  for(const s of[-1,1])kput('hWing',[x+s*.9,y+2.1,z+.05],qEuler(0,0,s*.1),[s*1.4,.6,1],null);kput('vCloth',[x,y+1.3,z+.2],null,[.8,1,1],hC(HPAL.red));hnTRHorns(x,y+2.75,z+.1,0,.5);}
+ {const x=FW/2-2.5,z=-TD,y=1.8;for(const s of[-1,1])for(const t of[-1,1])vPst('hBamboo',x+s*1.3,y,z+t*1.1,.08,2.2,bam);vnGableRoof(x,y+2.2,z,2.8,2.4,1.2,0,'vGableT',th,.3);
+  vnSacks(x,y,z,3);vB('vWood',x-.5,y,z-.4,1.2,.45,.45,0,hC(0x7a6a50));}
+ for(const [a,b] of[[[-FW/2-.3,0,TD*1.5+.3],[FW/2+.3,0,TD*1.5+.3]],[[FW/2+.3,0,TD*1.5+.3],[FW/2+.3,0,TD/2-.1]],[[-FW/2-.3,0,TD*1.5+.3],[-FW/2-.3,0,TD/2-.1]]])hnBambooRail(a,b,bam,1.1);
+ vnFolk(-5,TD,2,3);hnTRFolk(8,.9,0,1,1.5);}
+
+// Animal pen — woven-mat wattle panels between posts, a gate, a thatched shelter along the back, a hollow-log
+// trough, hay, goats, pigs and a shaggy cow; trophy horns on the gate post.
+function buildHlTriPen(G,o){reseed(23261+(o.v|0));const PW=14,PD=10;
+ const log=hC(vPick(HPAL.aged)),bam=hC(vPick(HPAL.bamboo)),th=hC(vPick(VPAL.thatch));
+ vnReg('Animal pen (tribal)',0,0,8.5,3.2);
+ const segs=[[[-PW/2,-PD/2],[PW/2,-PD/2]],[[PW/2,-PD/2],[PW/2,PD/2]],[[-PW/2,PD/2],[-PW/2,-PD/2]],[[-PW/2,PD/2],[-1.2,PD/2]],[[1.2,PD/2],[PW/2,PD/2]]];
+ for(const [a,b] of segs){const L=Math.hypot(b[0]-a[0],b[1]-a[1]);const n=Math.max(1,Math.round(L/1.6));const yaw=Math.atan2(b[0]-a[0],b[1]-a[1]);
+  for(let i=0;i<=n;i++){const t=i/n;vPst('vPost',lerp(a[0],b[0],t),0,lerp(a[1],b[1],t),.07,1.45,log);}
+  for(let i=0;i<n;i++){const t=(i+.5)/n;kput('hBMatB',[lerp(a[0],b[0],t),.62,lerp(a[1],b[1],t)],qEuler(0,yaw+Math.PI/2,0),[L/n-.12,1.05,.07],bam);}}
+ kput('vWood',[1.9,.7,PD/2+.9],qEuler(0,-1.1,0),[2.2,1.1,.06],log);                                        // the gate leaf, swung open
+ hnTotemPost(-1.4,0,PD/2,.14,2.2,0,true);hnTRHorns(-1.4,2.3,PD/2+.15,0,.6);vPst('vPost',1.3,0,PD/2,.1,1.7,log);
+ // shelter along the back
+ for(const x of[-PW/2+.3,-2.3,2.3,PW/2-.3])vPst('hBamboo',x,0,-PD/2+3.2,.1,1.9,bam);
+ vnShedRoof(0,1.9,-PD/2+1.6,PW-.2,3.4,.7,0,'vThatchB',th,.35,.2);
+ kput('vConeT',[-4,0,-PD/2+1.5],null,[1.2,1.4,1.2],hC(0xc4a86a));
+ kput('hLogX',[2,.25,1.2],null,[3,.25,.25],log);vB('vDarkB',2,.36,1.2,2.7,.16,.3,0);
+ hnTRBeast(-3,0,1,.6,'cow');hnTRBeast(3,0,-1.4,2.2,'goat');hnTRBeast(4.2,0,2.4,-.8,'goat');hnTRBeast(-1,0,-2.6,1.4,'goat');
+ hnTRBeast(0,0,3,3,'pig');hnTRBeast(5.2,0,-3,1,'pig');vnFolk(3,PD/2+2,1,1);}
+
+// Granary — a round bamboo-mat bin on stilts, each stilt capped by a wide rat-guard disc, lashed with hoops,
+// a painted band, a steep thatch cone with a carved bird; a notched ladder to the hatch; a threshing floor.
+function buildHlTriGranary(G,o){reseed(23271+(o.v|0));const R=2.1,FL=1.9,H=2.4;
+ const log=hC(vPick(HPAL.aged)),bam=hC(vPick(HPAL.bamboo)),th=hC(vPick(VPAL.thatch));
+ vnReg('Granary (tribal)',0,0,3.2,FL+H+4.6);
+ for(let k=0;k<6;k++){const a=k/6*TAU;const x=Math.sin(a)*1.5,z=Math.cos(a)*1.5;vB('vStone',x,0,z,.5,.2,.5,0,hC(vPick(HPAL.rubble)));vPst('vPostB',x,.2,z,.14,FL-.45,log);
+  vPst('hTRDisc',x,FL-.75,z,.58,.06,hC(0xb8a888));}
+ for(const x of[-1,1])kput('hLogX',[x*.8,FL-.2,0],qEuler(0,Math.PI/2,0),[3.8,.15,.15],log);
+ vPst('hTRDisc',0,FL-.06,0,R+.3,.22,log);kput('hTRMatCyl',[0,FL+.16,0],null,[R,H,R],bam);
+ kput('hTRBandCyl',[0,FL+1.2,0],null,[R+.06,.5,R+.06],null);
+ for(const yy of[FL+.4,FL+2.2])kput('vHoop',[0,yy,0],qEuler(Math.PI/2,0,0),[R+.08,R+.08,1.4],bam);
+ vnThatchCone(0,FL+.16+H,0,R+.35,3.9,th);vPst('vPost',0,FL+H+3.6,0,.06,.8,log);kput('hPaintBall',[0,FL+H+4.45,0],null,[.15,.18,.15],hC(HPAL.black));
+ for(const s of[-1,1])kput('hWing',[s*.45,FL+H+4.5,0],qEuler(0,0,s*-.2),[s*.9,.45,1],null);
+ vB('vWood',0,FL+.9,R+.02,.8,.9,.08,0,log);                                                              // hatch
+ vnLadder(0,0,R+1,0,FL+1,log);
+ vPst('hTRDisc',4.2,-.02,1.5,2.2,.06,hC(0xb89a70));vnSacks(4,0,.6,4);kput('vPost',[5,.5,2.6],qEuler(0,0,.8),[.05,1.6,.05],log);
+ vPst('vStave',-3.2,0,2,.3,.6,log);kput('vPost',[-3.2,.6,2],qEuler(.3,0,0),[.05,1.2,.05],log);vnFolk(3,4,1,1);}
+
+// Scrap smithy — a crude open forge under a thatch shelter patched with salvaged sheet: a fieldstone hearth
+// with a bed of embers under a hood of rusted plate and a salvage-pipe flue, bamboo piston bellows, an anvil of
+// scrap iron on a stump, a quench trough, a pile of salvaged sheet, pipe and plate.
+function buildHlTriSmithy(G,o){reseed(23281+(o.v|0));const W=7,D=5.4,PH=2.6;
+ const log=hC(vPick(HPAL.aged)),bam=hC(vPick(HPAL.bamboo)),th=hC(vPick(VPAL.thatch)),rub=hC(vPick(HPAL.rubble));
+ vnReg('Scrap smithy (tribal)',0,0,5.5,PH+3.4);
+ for(const sx of[-1,1])for(const sz of[-1,1])vPst('vPostB',sx*W/2,0,sz*D/2,.16,PH,log);
+ for(const sz of[-1,1])kput('hLogX',[0,PH,sz*D/2],null,[W+.6,.16,.16],log);
+ hnGable(0,PH+.05,0,W,D,1.05,0,'vGableT',th,.6,null);
+ kput('vSheet',[-1.6,PH+1.5,1.4],vQ(0,-Math.atan(1.05),0),[2.4,1.8,1],null);kput('vPlate',[1.8,PH+.9,-2.2],vQ(Math.PI,-Math.atan(1.05),0),[1.6,1.2,1],null);   // salvage patches
+ vB('hBMatB',0,0,-D/2,W,2.2,.08,0,bam);
+ // hearth, embers, hood and flue
+ vB('hRubB',-1.2,0,-1.6,2,.95,1.5,0,rub);vB('vDarkB',-1.2,.95,-1.6,1.4,.04,1,0);for(let k=0;k<6;k++)vBall('vEmber',-1.2+rr(-.5,.5),.98,-1.6+rr(-.35,.35),rr(.1,.18),null,.06);
+ kput('hTRFlame',[-1.2,.95,-1.6],null,[.2,.5,.2],null);
+ kput('vRustB',[-1.2,2.05,-1.7],null,[1.7,.7,1.2],null);vPst('vPipeR',-1.2,2.4,-1.8,.2,2.8,null);
+ // bellows: two bamboo piston tubes with handles, a pipe into the hearth
+ for(const s of[-.25,.25]){vPst('hBamboo',.4+s,0,-1.5,.16,1.3,bam);vPst('vPost',.4+s,1.3,-1.5,.03,.5,log);}
+ kput('hLogX',[.4,1.82,-1.5],null,[.7,.04,.04],log);beam('vPipeR',[.4,.25,-1.5],[-.3,.5,-1.6],.08,.08,null);
+ // anvil, quench, tools, the scrap pile
+ vPst('vPostB',.6,0,.6,.3,.55,log);vB('vRustB',.6,.55,.6,.6,.3,.3,0,null);vB('vRustB',.6,.85,.6,.8,.12,.34,0,null);
+ kput('vStave',[-2.2,0,.6],null,[.45,.5,.45],log);vB('vDarkB',-2.2,.44,.6,.7,.08,.7,0);
+ for(let k=0;k<4;k++)kput('vPost',[1.6+k*.18,.5,-2.5],qEuler(.1,0,0),[.025,1.1,.025],hC(0x3a3430));
+ {const x=W/2+2,z=.5;for(let k=0;k<7;k++)kput(vPick(['vSheet','vPlate','vPlate']),[x+rr(-1,1),.3+k*.08,z+rr(-1.2,1.2)],qEuler(-Math.PI/2+rr(-.3,.3),rng()*TAU,0),[rr(1,1.8),rr(.8,1.4),1],null);
+  for(let k=0;k<4;k++)kput('vPipeR',[x+rr(-1.2,1.2),.12,z+rr(-1,1)],qEuler(0,rng()*TAU,Math.PI/2),[.1,rr(1.2,2.4),.1],null);
+  for(let k=0;k<5;k++)vB('vRustB',x+rr(-1.3,1.3),0,z+rr(-1.4,1.4),rr(.2,.6),rr(.15,.4),rr(.2,.5),rng()*3,null);
+  kput('vHoop',[x-1.6,.5,z+1.5],qEuler(0,.4,0),[.5,.5,4],null);}
+ hnTotemPost(-W/2-.6,0,D/2+.4,.16,2.8,0,true);hnWoodpile(-W/2-1,0,-.6,Math.PI/2,3,1.1);vnFolk(0,2,1,.6);vnFolk(2,D/2+1.5,1,1);}
+
+HL.def({key:'hl_tri_longhouse',name:'Village longhouse',branch:'tribal',family:'Halls',tags:{type:['civic'],wealth:'civic',lit:false,landmark:true},w:66,d:40,h:26,build:buildHlTriLonghouse});
+HL.def({key:'hl_tri_warrior_hall',name:"Warrior's hall",branch:'tribal',family:'Halls',tags:{type:['military'],wealth:'civic',lit:false},w:40,d:38,h:13,build:buildHlTriWarriorHall});
+HL.def({key:'hl_tri_shaman',name:"Shaman's house",branch:'tribal',family:'Halls',tags:{type:['religious'],wealth:'middle',lit:false},w:20,d:20,h:13,build:buildHlTriShaman});
+HL.def({key:'hl_tri_stone_circle',name:'Stone circle',branch:'tribal',family:'Sacred',tags:{type:['religious'],wealth:'civic',lit:false},w:24,d:30,h:7,build:buildHlTriStoneCircle});
+HL.def({key:'hl_tri_farmhouse',name:'Tribal farmhouse',branch:'tribal',family:'Farms and crafts',tags:{type:['farm','single-family dwelling'],wealth:'poor',lit:false},w:24,d:16,h:9,build:buildHlTriFarmhouse});
+HL.def({key:'hl_tri_farm',name:'Terraced farm',branch:'tribal',family:'Farms and crafts',tags:{type:['farm'],wealth:'poor',lit:false},w:36,d:26,h:5,build:buildHlTriFarm});
+HL.def({key:'hl_tri_pen',name:'Animal pen',branch:'tribal',family:'Farms and crafts',tags:{type:['farm'],wealth:'poor',lit:false},w:16,d:14,h:4,build:buildHlTriPen});
+HL.def({key:'hl_tri_granary',name:'Stilted granary',branch:'tribal',family:'Farms and crafts',tags:{type:['farm'],wealth:'poor',lit:false},w:12,d:10,h:9,build:buildHlTriGranary});
+HL.def({key:'hl_tri_smithy',name:'Scrap smithy',branch:'tribal',family:'Farms and crafts',tags:{type:['industry'],wealth:'poor',lit:false},w:16,d:10,h:7,build:buildHlTriSmithy});
+// the cliff settlement (built in 84-tri-dwell.js) is defined last so its row closes the branch
+HL.def({key:'hl_tri_cliff_village',name:'Cliff settlement',branch:'tribal',family:'Cliff settlement',cls:'building',tags:{type:['multi-family dwelling'],wealth:'poor',lit:false,landmark:true},w:88,d:30,h:48,build:buildHlTriCliffVillage});
 // TARGET: rustic — rows by branch and family (laid out by hlLayout in 90-scene.js), front (+z) toward the camera.
 const TITLE='Highlands Kit — Rustic';
 const HL_BRANCHES=['rustic'];
@@ -2552,10 +3127,16 @@ const SITES=[];
 // Rows by branch and family, front (+z) toward the camera. A target names the branches it shows (HL_BRANCHES) and
 // may list extra SITES (a cliff village, a compound at a given scale) in its 89z-rows.js.
 const HL_ROWS=[];   // {branch, family, z, d, keys}
-(function hlLayout(){let z=0;for(const b of HL_BRANCHES){for(const F of HL.families(b)){const ws=F.keys.map(k=>VERN.defs[k].w+9);const total=ws.reduce((a,c)=>a+c,0);
-  const dmax=Math.max(...F.keys.map(k=>VERN.defs[k].d||VERN.defs[k].w));z+=dmax/2;let x=-total/2;
+// A row's camera stands rowCamDist() in front of it (+z), i.e. between it and the next row; when the next row is
+// tall (a cliff, a hall, a fortress) the gap is widened so the previous row's camera is not behind a 40 m wall.
+const rowCamDist=w=>Math.max(40,Math.min(w*.55,260));
+(function hlLayout(){let z=0;const fams=[];for(const b of HL_BRANCHES)HL.families(b).forEach((F,i,a)=>fams.push({b,F,last:i===a.length-1}));
+ let prev=null;fams.forEach(({b,F,last})=>{const ws=F.keys.map(k=>VERN.defs[k].w+9);const total=ws.reduce((a,c)=>a+c,0);
+  const dmax=Math.max(...F.keys.map(k=>VERN.defs[k].d||VERN.defs[k].w)),hmax=Math.max(...F.keys.map(k=>VERN.defs[k].h||0));
+  if(prev&&hmax>22)z+=Math.max(0,Math.max(rowCamDist(prev.w),prev.h*1.7)+8-22);
+  z+=dmax/2;let x=-total/2;
   F.keys.forEach((k,i)=>{SITES.push({key:k,x:x+ws[i]/2,z,ry:0,o:{v:0}});x+=ws[i];});
-  HL_ROWS.push({branch:b,family:F.family,z,d:dmax,w:total,keys:F.keys});z+=dmax/2+22;}z+=40;}
+  prev={branch:b,family:F.family,z,d:dmax,w:total,h:hmax,keys:F.keys};HL_ROWS.push(prev);z+=dmax/2+22+(last?40:0);});
  for(const S of HL_EXTRA){S.z=z+S.depth/2;SITES.push(S);HL_ROWS.push({branch:S.branch||'extra',family:S.family||S.key,z:S.z,d:S.depth,w:S.depth,keys:[S.key]});z+=S.depth+30;}})();
 const GROUND_C=(HL_ROWS.length?HL_ROWS[HL_ROWS.length-1].z:0)/2;
 // views: an opening, an overview per branch, one per row, and an eye-level shot per building
@@ -2565,7 +3146,7 @@ function hlAutoViews(extra){const V={};const R=HL_ROWS;if(!R.length)return V;con
  V['Overview']=[-900,520,mid.z+80,0,10,mid.z];
  for(const b of HL_BRANCHES){const rs=R.filter(r=>r.branch===b);if(!rs.length)continue;const zc=(rs[0].z+rs[rs.length-1].z)/2;const span=rs[rs.length-1].z-rs[0].z+80;
   V[HL.branches[b]+' — overview']=[-span*.7,span*.55,zc+span*.35,0,5,zc];}
- for(const r of R){const dist=Math.max(40,Math.min(r.w*.55,260));V[fam(r)]=[0,Math.max(18,dist*.45),r.z+r.d/2+dist,0,4,r.z];}
+ for(const r of R){const dist=Math.max(rowCamDist(r.w),(r.h||0)*1.7);V[fam(r)]=[0,Math.max(18,dist*.45),r.z+r.d/2+dist,0,Math.min(4+(r.h||0)*.35,20),r.z];}
  for(const S of SITES){const D=VERN.defs[S.key];if(!D)continue;const dist=Math.max(10,Math.max(D.w,D.h||0)*.9+D.d*.5);
   V[D.name+' — eye level']=[S.x+D.w*.18,1.7,S.z+dist,S.x,Math.min(D.h||6,14)*.4,S.z];}
  return Object.assign(V,extra||{});}
