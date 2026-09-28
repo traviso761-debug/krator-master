@@ -234,3 +234,15 @@ calls. `--assert` green.
   the plaza is reserved ground so the market and shrine are let onto it by
   name; the outlying towns' streets shortened (140 m) so 18 houses read as a
   town; two presets that stood inside geometry.
+* Second pass on the settlement (same round): the oak vault runs along every
+  road out of the main settlement to the circuit as well as the lab avenue
+  (`OAK_ROADS`; 284 avenue oaks); the outlying plaza ring is clipped round the
+  mound's foot and the mound lane round the plaza (they cut through each
+  other's ground); farm lanes never run at the mound and stop at a precinct;
+  connectivity links avoid precincts; the market and shrine are placed onto
+  the reserved plaza by name; outlying towns tightened (r 170, ring 74,
+  radials 118 m, house pitch 16 m) so 18 houses read as a town; the main
+  settlement's count raised to ~84 houses with more trade and granaries.
+  Audit: 0 overlaps; the remaining on-road corners are the mounds' own foot
+  lanes and the plaza market, both by design. 6.1 M triangles, ~213 draw
+  calls, one road network.
