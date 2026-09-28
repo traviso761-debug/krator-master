@@ -41,7 +41,7 @@ a column, which is the brief's named risk. 836/344 = 2.4:1.
   in the core.
 - Ruin: `route(x,y,z)` classifies every quad and kit item against two jagged
   azimuthal cut surfaces: stump / leaning section / gone. The leaning section
-  is carried through one matrix (10 degrees about a hinge on the core rim at
+  is carried through one matrix (12 degrees about a hinge on the core rim at
   20 degrees) as it is written, so the lean costs no draw calls. Gone blocks
   become fallen pieces in the court.
 
