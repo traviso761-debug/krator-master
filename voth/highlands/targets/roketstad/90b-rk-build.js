@@ -48,6 +48,7 @@ function simplifyPath(P,tol){if(P.length<3)return P.slice();let best=-1,bi=0;con
  for(let i=1;i<P.length-1;i++){const d=Math.abs((P[i][0]-a[0])*dz-(P[i][1]-a[1])*dx)/L;if(d>best){best=d;bi=i;}}
  if(best<=tol)return[a,b];const l=simplifyPath(P.slice(0,bi+1),tol),r=simplifyPath(P.slice(bi),tol);return l.slice(0,-1).concat(r);}
 const ROW_STAT={rows:0,runs:0};const ROWFRONTS=[];
+let ROW_FALLBACK=null;   // the small houses and workshops, shallowest first (filled once the defs are known, below)
 // why a footprint failed groundOK (for the frontage statistics)
 function groundWhy(o){for(const p of obbCorners(o,0).concat([[o.x,o.z]])){if(!insideWall(p[0],p[1],14))return'wall';if(inPrecinct(p[0],p[1],0))return'prec';if(!canBuild(p[0],p[1]))return'k'+klass(p[0],p[1]);}return'other';}
 function frontageAlong(pts,roadW,pick,test,st,opt){opt=typeof opt==='number'?{gapK:opt}:(opt||{});const gapK=opt.gapK||1,sides=opt.sides||[-1,1];
@@ -59,12 +60,18 @@ function frontageAlong(pts,roadW,pick,test,st,opt){opt=typeof opt==='number'?{ga
    while(s<L-3){if(!run||run.left<=0){const cx=ax+ux*(s+6)+nx*side*(line+6),cz=az+uz*(s+6)+nz*side*(line+6);run={pk:pick(cx,cz),left:rki(2,5)};ROW_STAT.runs++;}
     const key=kitKey(run.pk.key);const D=VERN.defs[key];if(!D){run=null;s+=4;continue;}
     if(s+D.w>L+.5*gapK){if(run.tried){break;}run={pk:pick(ax+ux*s,az+uz*s),left:1,tried:1};continue;}   // does not fit what is left of the run: one narrower try, then the corner
-    const along=s+D.w/2,off=line+D.d/2;const o={x:ax+ux*along+nx*side*off,z:az+uz*along+nz*side*off,hx:D.w/2,hz:D.d/2,ry,pad:.15};
-    if(!test(o)){st.ground++;const why=groundWhy(o);st[why]=(st[why]||0)+1;s+=2.5;run=null;}
-    else if(!occFree(o,.15)){st.occ++;s+=2.5;run=null;}
-    else{const v=run.pk.v==null?undefined:(run.pk.v+run.left)%6;placeVern(key,o,{v});o.row=opt.back!==false;ROWFRONTS.push(o);st.placed++;run.left--;
+    const mk=D=>{const along=s+D.w/2,off=line+D.d/2;return{x:ax+ux*along+nx*side*off,z:az+uz*along+nz*side*off,hx:D.w/2,hz:D.d/2,ry,pad:.15};};
+    const fits=o=>{if(!test(o)){st.ground++;const why=groundWhy(o);st[why]=(st[why]||0)+1;return false;}if(!occFree(o,.15)){st.occ++;return false;}return true;};
+    let o=mk(D),k2=key;
+    // does not fit: a smaller house on the same spot before the row gives up here (shallowest first — the usual
+    // obstacle is the street or the building behind)
+    if(!fits(o)){o=null;if(opt.fallback!==false)for(const alt of ROW_FALLBACK){const kk=kitKey(alt),DD=VERN.defs[kk];if(!DD||s+DD.w>L+.5)continue;const q=mk(DD);if(fits(q)){o=q;k2=kk;break;}}}
+    if(!o){s+=2;run=null;}
+    else{const key=k2,D=VERN.defs[k2];const v=run.pk.v==null?undefined:(run.pk.v+run.left)%6;placeVern(key,o,{v});o.row=opt.back!==false;ROWFRONTS.push(o);st.placed++;run.left--;
      // a row closes up (party walls), a lane or a yard opens now and then; out in the suburbs the rows loosen
      s+=D.w+(rng()<.12*gapK?rr(3,7):rr(.2,.7)*gapK);}}}}}
+ROW_FALLBACK=['hl_rep_house_poor_a','hl_rep_house_poor_b','hl_rep_house_poor_c','hl_rep_house_mid_a','hl_rep_house_mid_b','hl_rep_house_mid_c','hl_rep_workshop_a','hl_rep_workshop_b','hl_rep_shops']
+ .filter(k=>VERN.defs[k]).sort((a,b)=>VERN.defs[a].d-VERN.defs[b].d).slice(0,4);
 (function frontage(){reseed(SEED_RK+11);const F={placed:0,ground:0,occ:0};
  const test=o=>groundOK(o,{town:true,margin:11});
  // 1. the squares first: a closed ring of the best houses and shops round each, fronts on the square
@@ -200,7 +207,7 @@ function sowField(o){const cs=obbCorners(o,0);cpoly(cg,cs,vPick(FIELDCOL));cpoly
     const key=kitKey(rng()<.6?'hl_rep_farmhouse':'hl_rep_farm');const D=VERN.defs[key];if(!D){acc=20;continue;}
     const off=Ln.w/2+D.d/2+rr(3,8);const o={x:fx+nx*side*off,z:fz+nz*side*off,hx:D.w/2,hz:D.d/2,ry:Math.atan2(-nx*side,-nz*side),pad:3};
     if(!farmOK(o)||!occFree(o,3)){acc=8;continue;}
-    placeVern(key,o,{v:Math.floor(rng()*4)});steads++;acc=Ln.hw?rr(160,260):rr(110,190);
+    placeVern(key,o,{v:Math.floor(rng()*4)});steads++;acc=Ln.hw?rr(220,320):rr(150,240);
     // outbuildings behind the steading
     for(const ok of[rng()<.6?'hl_rep_pens':null,rng()<.4?'hl_rep_granary':null]){if(!ok)continue;const k2=kitKey(ok);const D2=VERN.defs[k2];if(!D2)continue;
      const p=loc(o.x,o.z,rr(-1,1)*(D.w/2+D2.w/2+3),-(D.d/2+D2.d/2+rr(4,9)),o.ry);const o2={x:p[0],z:p[1],hx:D2.w/2,hz:D2.d/2,ry:o.ry+rr(-.15,.15),pad:2};
@@ -217,6 +224,28 @@ function sowField(o){const cs=obbCorners(o,0);cpoly(cg,cs,vPick(FIELDCOL));cpoly
   let o=null;for(let r=0;r<260&&!o;r+=12)for(let i=0;i<12&&!o;i++){const a=i/12*TAU;const t={x:tx+r*Math.cos(a),z:tz+r*Math.sin(a),hx:D.w/2,hz:D.d/2,ry:rng()*TAU,pad:3};if(groundOK(t,{outside:true})&&occFree(t,3))o=t;}
   if(!o){reportErr('no room for '+key);continue;}const n=nearestRoadPt(o.x,o.z);if(n){o.ry=Math.atan2(n.x-o.x,n.z-o.z);road([[o.x,o.z],[n.x,n.z]],4.5,KL.lane,{zone:'works',col:'#8a7a5c'});}
   placeVern(key,o,{landmark:name,level:true});}})();
+// ---------------------------------------------------------------- 7b. gardens and orchards: the open ground left inside the wall
+// A walled town kept its kitchen gardens, orchards and drying greens behind the houses and along the wall. Whatever
+// the rows left open becomes a fenced plot on the heading of its nearest street: painted beds, a few rows of greens,
+// a fruit tree or two. Almost free in triangles.
+kdef('rkBed',VBOX,cropMat);kdef('rkPost',VBOX,MAT.wood);
+kdef('rkFruit',new THREE.IcosahedronGeometry(1,0),new THREE.MeshLambertMaterial({color:0xffffff}));kdef('rkStem',new THREE.CylinderGeometry(.5,.7,1,5),MAT.wood);
+(function gardens(){reseed(SEED_RK+50);let n=0,trees=0;
+ for(let x=TC.x-TC.R-20;x<=TC.x+TC.R+20;x+=13)for(let z=TC.z-TC.R-20;z<=TC.z+TC.R+20;z+=13){const jx=x+rr(-2,2),jz=z+rr(-2,2);if(!insideWall(jx,jz,13))continue;
+  const nr=nearestRoadPt(jx,jz,null,80);const ry=nr?Math.atan2(nr.x-jx,nr.z-jz):0;let o=null;
+  for(const H of[8,6,4.5]){const t={x:jx,z:jz,hx:H,hz:H*rr(.8,1.2),ry,pad:.6};if(groundOK(t,{town:true,margin:12})&&occFree(t,.6)){o=t;break;}}
+  if(!o)continue;occAdd(o);o.built='garden';n++;
+  const cs=obbCorners(o,0);const orchard=rng()<.3;cpoly(cg,cs,orchard?vPick(['#5a6a3a','#4e6034']):vPick(['#5e5234','#6a5a38','#54603a']));cpoly(kg,cs,KLCOL(KL.field));
+  if(!orchard){const rows=Math.floor(o.hz*2/1.6);const green=new THREE.Color().setHSL(rr(.18,.32),rr(.35,.6),rr(.2,.32));
+   for(let k=0;k<rows;k++){if(rng()<.2)continue;const p=loc(o.x,o.z,0,-o.hz+.8+k*1.6,o.ry);kput('rkBed',[p[0],terrainH(p[0],p[1])+.15,p[1]],qEuler(0,o.ry,0),[o.hx*2-1.2,rr(.25,.5),.7],green.clone().offsetHSL(rr(-.03,.03),0,rr(-.05,.05)));}}
+  else{for(let k=0;k<rki(2,5);k++){const p=loc(o.x,o.z,rr(-o.hx+2,o.hx-2),rr(-o.hz+2,o.hz-2),o.ry);const y=terrainH(p[0],p[1]),h=rr(2.2,3.4),r=rr(1.6,2.4);
+    kput('rkStem',[p[0],y+h/2,p[1]],null,[.22,h,.22],hC(0x5a4632));kput('rkFruit',[p[0],y+h+r*.6,p[1]],qEuler(0,rng()*TAU,0),[r,r*.8,r],new THREE.Color().setHSL(rr(.22,.3),rr(.35,.5),rr(.2,.28)));trees++;}}
+  // a wattle fence: posts round the plot and a rail per side
+  for(let e=0;e<4;e++){const A=cs[e],B=cs[(e+1)%4];const L=Math.hypot(B[0]-A[0],B[1]-A[1]);const m=Math.max(2,Math.round(L/3));
+   for(let i=0;i<m;i++){const t=i/m;const px_=A[0]+(B[0]-A[0])*t,pz=A[1]+(B[1]-A[1])*t;kput('rkPost',[px_,terrainH(px_,pz)+.5,pz],null,[.12,1,.12],hC(0x5a4a38));}
+   const mx=(A[0]+B[0])/2,mz=(A[1]+B[1])/2;kput('rkPost',[mx,terrainH(mx,mz)+.75,mz],qEuler(0,Math.atan2(B[0]-A[0],B[1]-A[1])+Math.PI/2,0),[L,.08,.08],hC(0x6a5a44));}
+  REG.push({name:orchard?'Orchard':'Kitchen garden',x:o.x,y:terrainH(o.x,o.z),z:o.z,r:Math.hypot(o.hx,o.hz),h:orchard?5:1.5,cls:'farm',key:orchard?'rk_orchard':'rk_garden',tags:{culture:'highland-republican',type:['garden'],wealth:'poor',lit:false}});}
+ window._gardens={n,trees};})();
 // ---------------------------------------------------------------- 8. footprints into the mask, the terrain mesh, then the forest
 for(const o of OCC.list)footprint(obbCorners(o,.6));
 for(const o of PORTX.pads)cdisc(mg,o.x,o.z,PAD_R,'#000');
