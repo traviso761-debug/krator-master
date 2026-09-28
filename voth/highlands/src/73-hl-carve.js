@@ -100,7 +100,7 @@ function hnBarge(x,y,z,w,d,rise,ry,over,c,style,endOver){over=over===undefined?.
   const apex=[...loc(x,z,gx,0,ry)];const A=[apex[0],y+rise+.05,apex[1]];
   for(const sz of[-1,1]){const e=loc(x,z,gx,sz*run,ry);const E=[e[0],y-drop,e[1]];
    const mid=[(A[0]+E[0])/2,(A[1]+E[1])/2-.26,(A[2]+E[2])/2];const L=Math.hypot(E[0]-A[0],E[1]-A[1],E[2]-A[2]);
-   if(style==='lace'||style==='bird')hnOri('hLaceV',mid,[E[0]-A[0],E[1]-A[1],E[2]-A[2]],N,[L,.55,1],c);
+   if(style==='lace'||style==='bird'){let X=[E[0]-A[0],E[1]-A[1],E[2]-A[2]];if(hCross(N,hNorm(X))[1]<0)X=X.map(v=>-v);hnOri('hLaceV',mid,X,N,[L,.55,1],c);}   // keep the scallops hanging DOWN on both rakes
    else hnMember('hPaint',[A[0],A[1]-.12,A[2]],[E[0],E[1]-.12,E[2]],.34,.08,N,c);
    if(style==='horns'||style==='dragon'){   // the board carries on past the apex, crossing its twin
     const dir=hNorm([A[0]-E[0],A[1]-E[1],A[2]-E[2]]);const T=hAdd(A,dir,1.1);hnMember('hPaint',[A[0],A[1]-.12,A[2]],T,.3,.08,N,c);
