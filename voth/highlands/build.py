@@ -61,6 +61,7 @@ TARGET_OUT = {
     'republican': 'highlands-republican.html',
     'rustic': 'highlands-rustic.html',
     'tribal': 'highlands-tribal.html',
+    'roketstad': 'roketstad.html',            # the town: Roketstad and its spaceport (reclaimed East Highland Republican)
 }
 _OLD_TARGETS = {
     'kit': 'ancients-kit.html',            # the 32-type showcase
@@ -89,6 +90,7 @@ DETERMINISTIC = {
     '70-hl-tex.js', '71-hl-mat.js', '71b-hl-motif.js', '72-hl-helpers.js', '73-hl-carve.js',   # the Highlands vocabulary
     '88-hl-dress.js', '90-scene.js', '91-probe.js', '92-camera.js', '93-labels.js', '94-hl-anim.js', '99-tail.html',
     '89z-rows.js', '91z-views.js',        # per-target site table and view list
+    '81-rk-sky.js', '84-rk-geo.js', '93-rk-ui.js',   # roketstad: the vendored Krator sky, the geometry (noise only), the dev tools
 }
 
 # Seed ranges known to collide, kept here so the build stays green while the
