@@ -23,7 +23,9 @@ sharing one vocabulary:
   kokoshniki (`hnKokoshnik`) and bochka roofs (`hnBochka`), stacked roof tiers.
 * **Carved and painted wood is the main decoration.** The *style and palette* of the carving is NW-coast
   formline: black primary lines, red secondary, teal tertiary, on cedar or white — ovoids, U-forms, split-Us,
-  crest faces. It appears as: formline boards (`hnForm` with `hFormA/W/V/T`), friezes (`hnFrieze`), totem
+  and **naturalistic animals by default** (Travis, round 1: the crest faces read as creepy): salmon, orca,
+  thunderbird and bear on the boards; eagle, bear and frog on the poles. A human/spirit face (`hlFace`) is kept
+  in the kit for specific buildings that later ask for one; nothing uses it by default. It appears as: formline boards (`hnForm` with `hFormA/W/V/T`), friezes (`hnFrieze`), totem
   poles and totem porch posts (`hnTotem`, `hnTotemPost`), thunderbird gable finials (`hnBarge … 'bird'`).
   The *kind* of carving varies by branch (below).
 * **East-Asian note**: painted dougong bracket sets (teal arms, red blocks) under civic and rich eaves

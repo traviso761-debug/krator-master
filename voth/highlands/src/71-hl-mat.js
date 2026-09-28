@@ -45,7 +45,7 @@ MAT.turf=hStd({map:TEX.turf,roughness:1});MAT.bamboo=hStd({map:TEX.bambooV,rough
 MAT.paint=hStd({roughness:.72});                         // painted timber: trims, brackets, shutters — no grain, the colour is the point
 MAT.gold=hStd({color:0xffffff,roughness:.38,metalness:.35,side:THREE.FrontSide});
 MAT.formA=hStd({map:TEX.formA,roughness:.8});MAT.formW=hStd({map:TEX.formW,roughness:.8});MAT.formV=hStd({map:TEX.formV,roughness:.8});
-MAT.formT=hStd({map:TEX.formT,roughness:.8});MAT.formF=hStd({map:TEX.formF,roughness:.8});
+MAT.formT=hStd({map:TEX.formT,roughness:.8});MAT.formB=hStd({map:TEX.formB,roughness:.8});MAT.formF=hStd({map:TEX.formF,roughness:.8});
 MAT.totem=hStd({map:TEX.totem,roughness:.82,side:THREE.FrontSide});MAT.totemP=hStd({map:TEX.totemP,roughness:.82,side:THREE.FrontSide});
 MAT.wing=hStd({map:TEX.wing,alphaTest:.5,roughness:.85});
 MAT.laceV=hStd({map:TEX.laceV,alphaTest:.5,roughness:.75});MAT.laceB=hStd({map:TEX.laceB,alphaTest:.5,roughness:.8});
@@ -80,7 +80,7 @@ const HARM=new THREE.ExtrudeGeometry(hArmShape(),{depth:1,bevelEnabled:false,cur
 // ---------------------------------------------------------------- kit items
 kdef('hLogB',VBOX,MAT.logs);kdef('hScaleB',VBOX,MAT.scale);kdef('hRubB',VBOX,MAT.rubbleW);kdef('hTurfB',VBOX,MAT.turf);kdef('hBMatB',VBOX,MAT.bmat);
 kdef('hPaint',VBOX,MAT.paint);kdef('hGoldB',VBOX,MAT.gold);kdef('hGold',VBALL,MAT.gold);kdef('hPaintBall',VBALL,MAT.paint);
-kdef('hFormA',VPLANE,MAT.formA);kdef('hFormW',VPLANE,MAT.formW);kdef('hFormV',VPLANE,MAT.formV);kdef('hFormT',VPLANE,MAT.formT);kdef('hFormF',VBOX,MAT.formF);
+kdef('hFormA',VPLANE,MAT.formA);kdef('hFormW',VPLANE,MAT.formW);kdef('hFormV',VPLANE,MAT.formV);kdef('hFormT',VPLANE,MAT.formT);kdef('hFormB',VPLANE,MAT.formB);kdef('hFormF',VBOX,MAT.formF);
 kdef('hLaceV',VPLANE,MAT.laceV);kdef('hLaceB',VPLANE,MAT.laceB);kdef('hWing',VPLANE,MAT.wing);kdef('hClock',VPLANE,MAT.clock);
 kdef('hTotem',HPOLE,MAT.totem);kdef('hTotemP',HPOLE,MAT.totemP);
 kdef('hBamboo',new THREE.CylinderGeometry(1,1,1,7).translate(0,.5,0),MAT.bamboo);kdef('hBambooC',new THREE.CylinderGeometry(.5,.5,1,7),MAT.bamboo);   // hBambooC is CENTRED (for beam(): w = diameter)
