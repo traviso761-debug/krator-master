@@ -9,17 +9,9 @@
 // ---------------------------------------------------------------- R-A trade furniture (prefix hnRA)
 // Painted signboard flat on a wall (y = bottom): a dark frame, a coloured board, a formline crest in the middle and
 // blocky painted lettering either side.
-function hnRASignboard(x,y,z,ry,w,h,bgC,frameC){const f=loc(x,z,0,.04,ry);vB('hPaint',f[0],y,f[1],w+.14,h+.14,.08,ry,frameC||hC(HPAL.black));
- const b=loc(x,z,0,.09,ry);vB('hPaint',b[0],y+.07,b[1],w,h,.03,ry,bgC);
- const cw=Math.min(h*1.8,w*.42),c=loc(x,z,0,.112,ry);kput('hFormA',[c[0],y+.07+h/2,c[1]],qEuler(0,ry,0),[cw,cw/2,1]);
- const lw=(w-cw)/2-.25,ink=hC(vPick([HPAL.black,HPAL.red,HPAL.black]));
- if(lw>.3)for(const s of[-1,1]){let u=cw/2+.14;while(u<cw/2+.14+lw-.12){const gw=rr(.07,.2);const p=loc(x,z,s*(u+gw/2),.11,ry);vB('hPaint',p[0],y+.07+h*.28,p[1],gw,h*(rng()<.2?.55:.42),.02,ry,ink);u+=gw+rr(.04,.09);}}}
+function hnRASignboard(x,y,z,ry,w,h,bgC,frameC){hnSignBoard(x,y,z,ry,w,Math.max(h,.6),null,bgC);}   // round 2: the trade's symbol between knot panels
 // Hanging sign on an iron bracket out of a wall (the board hangs across the street, crest on both faces).
-function hnRAHangSign(x,y,z,ry,c,s){s=s||1;const I=hC(0x2e2a26);const a=loc(x,z,0,.04,ry),b=loc(x,z,0,1.3*s,ry),m=loc(x,z,0,.7*s,ry);
- beam('vIron',[a[0],y,a[1]],[b[0],y,b[1]],.06,.06,I);beam('vIron',[a[0],y-.7*s,a[1]],[m[0],y,m[1]],.04,.04,I);
- const bw=.95*s,bh=.7*s,p=loc(x,z,0,.78*s,ry);for(const u of[-.3,.3]){const q=loc(x,z,0,(.78+u)*s,ry);vB('vIron',q[0],y-.16,q[1],.02,.16,.02,0,I);}
- kput('hPaint',[p[0],y-.16-bh/2,p[1]],qEuler(0,ry,0),[.05,bh+.08,bw+.08],c);const X=hRot(ry,[1,0,0]);
- for(const k of[-1,1])kput('hFormA',[p[0]+X[0]*.03*k,y-.16-bh/2,p[1]+X[2]*.03*k],qEuler(0,ry+k*Math.PI/2,0),[bw*.9,bw*.45,1]);}
+function hnRAHangSign(x,y,z,ry,c,s){hnSign(x,y,z,ry,null,s||1);}   // round 2: the trade's symbol roundel
 // A trestle table with two benches (length along local x of ry) and a few mugs.
 function hnRATable(x,z,ry,L,c){vB('vWood',x,.7,z,L,.07,.85,ry,c);for(const s of[-1,1]){const p=loc(x,z,s*(L/2-.35),0,ry);vB('vWood',p[0],0,p[1],.1,.7,.7,ry,c);
   const b=loc(x,z,0,s*.75,ry);vB('vWood',b[0],.4,b[1],L,.06,.3,ry,c);for(const t of[-1,1]){const q=loc(x,z,t*(L/2-.35),s*.75,ry);vB('vWood',q[0],0,q[1],.08,.4,.26,ry,c);}}

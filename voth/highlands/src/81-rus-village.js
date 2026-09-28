@@ -137,7 +137,7 @@ function buildHlRusShops(G,o){reseed(22221+(o.v|0));const W=7.2,D=6,F=.4,H=2.7,Z
  vB('vWood',cx,F+.82,cz+.45,cw+.1,.08,.9,0,trim);for(const s of[-1,1])beam('vWood',[cx+s*1.2,F+.3,cz+.05],[cx+s*1.2,F+.8,cz+.85],.05,.05,dk);
  for(let k=0;k<6;k++)vPst('vClayPot',cx-1.1+k*.45,F+.9,cz+.5,.12,rr(.18,.3),hC(vPick([0xb86a3a,0xa85a30,0xc88a5a,0xe0c060])));
  vnDoor(1.9,F,cz,0,.95,2,'vWood',log,trim,false);vnStairs(1.9,0,cz+.45,0,1.2,F,2,'vWood',dk);
- vB('vWood',1.9,F+2.35,cz+.7,.12,.12,1.3,0,dk);hnForm('hFormA',1.9,F+1.75,cz+1.3,Math.PI/2,1.1,.5);    // hanging sign across the street
+ hnSign(2.75,F+2.5,cz,0,null,.85);    // hanging sign across the street (the trade's symbol)
  vnWin(-W/2,F+1,Z,-Math.PI/2,.7,.8,'shut','hPaint',trim);hnStoneChimney(1.6,top-1.6,Z-.8,2,.6);
  // stalls
  const kinds=['pots','cloth','cheese','fish'];[[-6.3,1.6,.5],[6.4,1.6,-.5],[3.6,6.4,-.15]].forEach(([x,z,r],i)=>hnRUStall(x,z,r,2.8,1.9,kinds[(i+(o.v|0))%4]));
@@ -163,8 +163,7 @@ function buildHlRusTavern(G,o){reseed(22231+(o.v|0));const W=14,D=11,H1=3,H2=2.8
  for(let i=0;i<=4;i++){const x=-W/2+.5+i*(W-1)/4;vPst('vPost',x,0,D/2+1.3,.1,y2-1.1,log);}
  for(const s of[-1,1]){vB('vWood',s*3.8,0,D/2+.35,4.4,.45,.4,0,dk);vB('vWood',s*3.8,0,D/2+1.8,1.8,.75,.8,0,dk);vB('vWood',s*3.8,0,D/2+2.6,1.8,.45,.35,0,dk);}
  // painted sign on an iron bracket at the corner
- beam('vIron',[W/2-.2,y2-.4,D/2+.1],[W/2+1.2,y2-.4,D/2+.1],.06,.06,hC(0x2e2a26));kput('hFormA',[W/2+.75,y2-1.05,D/2+.12],qEuler(0,Math.PI/2,0),[1.2,.7,1],null);
- kput('hFormA',[W/2+.75,y2-1.05,D/2+.08],qEuler(0,-Math.PI/2,0),[1.2,.7,1],null);
+ hnSign(W/2-.4,y2-.35,D/2,0,null,1);
  for(let k=0;k<5;k++)vnBarrel(-W/2-.6+(k%2)*.1,0,D/2-1-k*.8,.34,.9,dk);vnBarrel(-W/2-.62,.9,D/2-1.4,.34,.9,dk);
  // stable lean-to at +x: board back wall, posts, shed roof, a horse and hay
  const sx=W/2+2;vB('hRUBoardV',W/2+.05,0,-1,.1,2.8,D-2,0,dk);for(const z of[-5,-1,3])vPst('vPost',sx+1.4,0,z,.1,2.3,log);
