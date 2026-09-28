@@ -45,6 +45,55 @@ a column, which is the brief's named risk. 836/344 = 2.4:1.
   20 degrees) as it is written, so the lean costs no draw calls. Gone blocks
   become fallen pieces in the court.
 
-## Status
+## Numbers (final `verify.py --assert --all-views`, 16 views)
 
-Round in progress — see the hand-back for final numbers.
+All six invariants PASS; error panel clean.
+
+| | triangles | instances | meshes | draw calls (16 views) |
+|---|---|---|---|---|
+| drum/0 intact | 241 620 | 9 241 | 8 | 22-32 for the whole scene |
+| drum/1 ruined | 329 692 | 14 323 | 9 | |
+
+Scene total 571 312 triangles; 17 registered volumes. Budget headroom (~370-460 k
+per decay) deliberately unspent rather than spent on filler.
+
+## Ruin (d = 1)
+
+- Break surface `cutS` ~526-570 m (lower on the lean side), second break `cutT`
+  ~612-636 m: the leaning section is tier 7 (the widest, r 172) plus fin
+  stubs, rotated 12 degrees toward 20 degrees about a hinge on the core rim.
+  Ruin height ~650 m vs 836 m intact; the coronet, lantern and tiers 8-9 are gone.
+- The wedge under the lean (tiers 5-6 within 42 degrees of the fall) lost 80%
+  of its blocks and most of its fins; elsewhere 8% of blocks fell, 22% of the
+  remaining faces are stripped to the floors (section texture + slab ends),
+  16% of fins are snapped in each gap, gates 30% wider with blocks torn from
+  the tiers round them, architraves broken.
+- 32 fallen blocks (tipped on their broadest face, 8-22% buried, mossed, some
+  with a tree), 14 fin slabs, 7 coronet arcs and the lantern lie in the court
+  toward the fall, with rubble heaps; walls under them are not built, others
+  toppled/leaning/missing; wild grass, 520 trees in the court, forest closing in.
+- Fracture rims carry rebar and slab ends; broken floor plates inside the core
+  only where its wall still stands; crushed storeys under the hinge.
+
+## Views
+
+The Drum (hero) · Up the shaft · Through the sky gate · A tier close · The crown ·
+A sky terrace · The court walls · The allée · From above · By night (intact) ·
+Ruined · The lean · The fracture · The fallen top · The ruined court (eye point
+computed by the builder, clear of debris and trees) · Ruin from above.
+
+## Known issues / weaknesses
+
+- Intact concrete still reads pale/beige under this kit's warm sun and haze,
+  not as dark as Darco; the ruin is clearly darker.
+- From the hero the ruined top reads as a tilted mass with dark block
+  undersides; the lean is unambiguous only in 'The lean' and 'The fracture'.
+- Fin side faces are plain board-marked concrete (no openings) — large blank
+  planes close up.
+- Lit windows are texture (one room in five); by day they read as a fine
+  speckle on the blocks.
+- The inside faces of the ruined core's ragged rim show the window texture
+  (DoubleSide) rather than a proper section.
+- 'The ruined court' stands just outside the kerb on bare soil.
+- Fallen pieces are boxes laid down, not broken shapes; they do not crush the
+  lawn under them.

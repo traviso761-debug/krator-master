@@ -64,7 +64,7 @@ function drWallTex(kind,dec,emis){const S=emis?256:512;
     if(kind===1&&((x/bp)%1.5)<.07){r*=.45;gg*=.45;b*=.45;}
    }else{
     const n=fbm(x/34,y/34,kind+61.3,3),sp=fbm(x/3,y/3,kind+62.9,1);
-    let v=(kind===1?104:136)+(n-.5)*38+(sp-.5)*16;
+    let v=(kind===1?96:122)+(n-.5)*38+(sp-.5)*16;
     if(y%14<1)v-=16;                                                                // form-board joints
     if(kind===0&&bx<.14)v+=12;                                                      // the pier catches the light
     if(kind===0&&bx>.92)v-=26;                                                      // and shades the glass beside it
@@ -97,11 +97,11 @@ MAT.drCore =drStd({map:TEX.drCore,emissive:0xffffff,emissiveMap:TEX.drCoreE,emis
 MAT.drCoreR=drStd({map:TEX.drCoreR});
 MAT.drSlot =drStd({map:TEX.drSlot,emissive:0xffffff,emissiveMap:TEX.drSlotE,emissiveIntensity:.8});
 MAT.drSlotR=drStd({map:TEX.drSlotR});
-MAT.drConc =drStd({map:TEX.concrete,color:0x858179});
+MAT.drConc =drStd({map:TEX.concrete,color:0x75716a});
 MAT.drConcR=drStd({map:TEX.concrete,color:0x5f5d56});
 // SHADE IS PAINTED: nothing here casts a shadow, so a block's underside seen
 // from the terrace below comes back sunlit unless it is on a dark material.
-MAT.drDeck =drStd({map:TEX.concrete,color:0xa9a397});
+MAT.drDeck =drStd({map:TEX.concrete,color:0x8d887e});
 MAT.drDeckR=drStd({map:TEX.concrete,color:0x5f6150});
 MAT.drShade=drStd({map:TEX.concrete,color:0x3d3b38});
 MAT.drShadeR=drStd({map:TEX.concrete,color:0x2b2c27});
@@ -195,7 +195,7 @@ function buildDrum(scene,gx,gz,d){reseed(9630+d);KOFF=[gx,0,gz];
  const AF=20*D2R,LEAN=12*D2R;
  const nz=(th,s)=>fbm(Math.cos(th)*2.3+5.1,Math.sin(th)*2.3+5.7,s,3)-.5;
  const cutS=th=>548-22*Math.cos(th-AF)+30*nz(th,9633.1);
- const cutT=th=>708+12*Math.cos(th-AF-1.3)+22*nz(th,9634.7);
+ const cutT=th=>624+8*Math.cos(th-AF-1.3)+12*nz(th,9634.7);
  const HP=new THREE.Vector3(RW*Math.cos(AF),cutS(AF),RW*Math.sin(AF));
  const qM=qAxis(-Math.sin(AF),0,Math.cos(AF),-LEAN);
  const M=new THREE.Matrix4().makeTranslation(HP.x,HP.y,HP.z)
@@ -253,7 +253,8 @@ function buildDrum(scene,gx,gz,d){reseed(9630+d);KOFF=[gx,0,gz];
  const person=(x,y,z,force)=>{if(dd&&!force)return;
   put('figB',[x,y,z],qEuler(0,rng()*TAU,0),1,new THREE.Color().setHSL(rr(0,.1),rr(.2,.5),rr(.25,.5)));
   put('figH',[x,y,z],null,1,new THREE.Color(0xc9a17e));};
- const plant=(x,y,z,h,conifer)=>{put('trunk',[x,y,z],qEuler(rr(-.04,.04),rng()*TAU,rr(-.04,.04)),
+ const TREES=[];                          // ground trees, so a preset can stand clear of them
+ const plant=(x,y,z,h,conifer)=>{if(y<1)TREES.push([x,z]);put('trunk',[x,y,z],qEuler(rr(-.04,.04),rng()*TAU,rr(-.04,.04)),
    [h*.13,h*(conifer?.9:.72),h*.13],new THREE.Color().setHSL(rr(.05,.10),rr(.2,.4),rr(.12,.24)));
   if(conifer){const c=leafC();c.offsetHSL(.04,0,-.05);
    put('leafCard',[x,y+h*.42,z],qEuler(0,rng()*TAU,0),[h*.26,h*.34,h*.26],c);
@@ -531,7 +532,7 @@ function buildDrum(scene,gx,gz,d){reseed(9630+d);KOFF=[gx,0,gz];
    const R=Math.max(w,h,dp)*.5;DEB.push({x:x,z:z,r:R*.9});
    // five thousand years on it: moss on whatever faces up, a tree or two
    const tp=ymax-ymin-bury;
-   for(let i=0;i<Math.round(R/4);i++)moss(x+rr(-.3,.3)*R,Math.max(.2,tp*rr(.3,1)),z+rr(-.3,.3)*R,rr(1.5,5));
+   for(let i=0;i<Math.round(R/4);i++)moss(x+rr(-.3,.3)*R,Math.max(.2,tp*rr(.3,1)),z+rr(-.3,.3)*R,rr(1,3));
    if(tp>6&&rng()<.6)plant(x+rr(-.2,.2)*R,tp*rr(.5,.9),z+rr(-.2,.2)*R,rr(5,11));
    return R;};
   const free=(x,z,r)=>!DEB.some(q=>Math.hypot(x-q.x,z-q.z)<(q.r+r)*.8)&&Math.hypot(x,z)>RPOD+r*.5;
@@ -604,7 +605,7 @@ function buildDrum(scene,gx,gz,d){reseed(9630+d);KOFF=[gx,0,gz];
   const f=C3(RPOD+60,AX,0,0);figures(f[0],f[2],30,14);}
  else{const f=C3(RPOD+40,AF+.3,0,0);figures(f[0],f[2],6,5);                     // explorers under the fracture
   for(let i=0;i<700;i++){const a=rng()*TAU,r=rr(RW+8,RC),x=r*Math.cos(a),z=r*Math.sin(a);
-   if(onDeb(x,z)&&rng()<.5)continue;moss(x,r<RPOD?2.4:.1,z,rr(2,8));}}
+   if(onDeb(x,z)&&rng()<.5)continue;moss(x,r<RPOD?2.4:.1,z,rr(1,3.2));}}
 
  // ============================================================ THE FRACTURE (ruin)
  let LEANC=null;
@@ -640,12 +641,22 @@ function buildDrum(scene,gx,gz,d){reseed(9630+d);KOFF=[gx,0,gz];
   REGISTER({name:'The Drum — the leaning section',x:c.x,z:c.z,r:RMAX+20,y:mnS-10,h:mnT-mnS+60});
   DR_SITE['cut'+d]={mnS:mnS,mxS:mxS,mnT:mnT};}
 
+ // ---- a clear place to stand in the fallen field, for the people-scale preset:
+ // out on the edge of it, 25 m from any piece, looking back at the stump with as
+ // many pieces as possible between
+ let EYE=null;
+ if(DEB){let best=-1;
+  for(let i=0;i<900;i++){const a=AF+rr(-.8,.8),r=rr(400,700),x=r*Math.cos(a),z=r*Math.sin(a);
+   if(DEB.some(q=>Math.hypot(x-q.x,z-q.z)<q.r*1.9+10)||onWall(x,z)||TREES.some(t=>Math.hypot(x-t[0],z-t[1])<14))continue;
+   let sc=0;for(const q of DEB){const t=(q.x*x+q.z*z)/(r*r),ox=q.x-t*x,oz=q.z-t*z;
+    if(t>.25&&t<.85&&Math.hypot(ox,oz)<40+q.r)sc++;}
+   if(sc>best){best=sc;EYE={x:x,z:z,tx:0,tz:0};}}}
  // ---- what the presets are derived from ---------------------------------------------
  DR_SITE[d]={x:gx,z:gz,d:d,dd:dd,RW:RW,RMAX:RMAX,F0:F0,BAY:BAY,YBASE:YBASE,YT:YT,YK:YK,YC:YC,RC:RC,AX:AX,AF:AF,
   RFOOT:RFOOT,RPOD:RPOD,TIERS:TIERS.map(T=>({yb:T.yb,yt:T.yt,ro:T.ro,w:T.w})),
   VOIDS:VOIDS.map(V=>({a:V.a,vy0:V.vy0,vy1:V.vy1,W:V.W})),LEANC:LEANC,
   CUT:dd?{s:cutS(AF+Math.PI),t:cutT(AF),hinge:[HP.x,HP.y,HP.z]}:null,
-  DEB:DEB?DEB.slice(0,12):null,nBlk:nBlk};
+  DEB:DEB?DEB.slice(0,12):null,EYE:EYE,nBlk:nBlk};
 
  // ---- merge ---------------------------------------------------------------------------
  for(const key in ACC){const A=ACC[key];if(!A.n)continue;
