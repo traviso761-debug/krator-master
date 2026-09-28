@@ -14,9 +14,8 @@ function dnTemple(x,y,z,ry,s,o){o=o||{};const deco=o.deco!==false;const st=o.sto
  if(deco){const p=L(0,D/2+1.0*s);dnChecker(p[0],yy+.02,p[1],W+1.6*s,2.0*s,ry);}
  vB('vStone',x,yy,z,W,H,D,ry,st);
  // bands: a fret plinth band (colour when deco), the mural frieze, a cream string course under it
- {const f=L(0,D/2);if(deco)dnFretBand(f[0],yy+.3*s,f[1],ry,W-3.2*s,1.0*s);else dnReliefBand(f[0],yy+.3*s,f[1],ry,W-1.2*s,1.0*s,st);dnMuralBand(f[0],yy+H-2.0*s,f[1],ry,W-4.2*s,1.5*s);}
- for(const sd of[-1,1]){const f=L(sd*W/2,0);if(deco)dnFretBand(f[0],yy+.3*s,f[1],ry+sd*Math.PI/2,D-3.2*s,1.0*s);else dnReliefBand(f[0],yy+.3*s,f[1],ry+sd*Math.PI/2,D-1.2*s,1.0*s,st);dnMuralBand(f[0],yy+H-2.0*s,f[1],ry+sd*Math.PI/2,D-4.2*s,1.5*s);}
- if(deco)dnTrimBand(x,yy+H-2.15*s,z,W,D,ry,.14*s);
+ {const f=L(0,D/2);if(deco)dnFretBand(f[0],yy+.3*s,f[1],ry,W-3.2*s,1.0*s);else dnReliefBand(f[0],yy+.3*s,f[1],ry,W-1.2*s,1.0*s,st);dnMuralBand(f[0],yy+H-1.7*s,f[1],ry,W-4.2*s,1.5*s,o.mural);}
+ for(const sd of[-1,1]){const f=L(sd*W/2,0);if(deco)dnFretBand(f[0],yy+.3*s,f[1],ry+sd*Math.PI/2,D-3.2*s,1.0*s);else dnReliefBand(f[0],yy+.3*s,f[1],ry+sd*Math.PI/2,D-1.2*s,1.0*s,st);dnMuralBand(f[0],yy+H-1.7*s,f[1],ry+sd*Math.PI/2,D-4.2*s,1.5*s,o.mural);}
  // deco piers with avatar panels flanking the door and at the corners
  // (piers sit at the corners, outside the window jambs and the plinth band; windows sit below the frieze)
  if(deco){for(const lx of[-W/2+.55*s,W/2-.55*s]){const f=L(lx,D/2);dnDecoPanel(f[0],yy+.5*s,f[1],ry,.9*s,H-.9*s);}
@@ -26,8 +25,8 @@ function dnTemple(x,y,z,ry,s,o){o=o||{};const deco=o.deco!==false;const st=o.sto
  if(deco){const c=L(0,D/2-1.0*s);dnCrest(c[0],c1+.5*s,c[1],W*.6,ry,st);}
  kput('vPyrSh',[x,c1+.5*s,z],ry?qEuler(0,ry,0):null,[W-1.4*s,3.2*s,D-1.4*s],sh);vPst('vPost',x,c1+3.4*s,z,.1*s,1.6*s,vC(0x5a4632));vBall('dGiltBall',x,c1+5.0*s,z,.32*s);
  {const g=L(0,D/2+.1);dnGate(g[0],yy,g[1],ry,2.0*s,3.2*s,st,tr);const d=L(0,D/2);vnDoor(d[0],yy,d[1],ry,1.8*s,3.0*s,'vStone',tr||st,vC(0x2a2a30),false);
-  for(const lx of[-3.0*s,3.0*s]){const w=L(lx,D/2);if(o.lit!==false)dnGodWin(w[0],yy+1.0*s,w[1],ry,1.0*s,1.4*s,'vStone',tr||st);else vnWin(w[0],yy+1.0*s,w[1],ry,1.0*s,1.4*s,'open','vStone',st);}
-  for(const sd of[-1,1])for(const lz of[-2*s,2*s]){const w=L(sd*W/2,lz);if(o.lit!==false)dnGodWin(w[0],yy+1.0*s,w[1],ry+sd*Math.PI/2,1.0*s,1.4*s,'vStone',tr||st);}
+  for(const lx of[-3.0*s,3.0*s]){const w=L(lx,D/2);if(o.lit!==false)dnGodWin(w[0],yy+1.4*s,w[1],ry,1.0*s,1.4*s,'vStone',tr||st);else vnWin(w[0],yy+1.4*s,w[1],ry,1.0*s,1.4*s,'open','vStone',st);}
+  for(const sd of[-1,1])for(const lz of[-2*s,2*s]){const w=L(sd*W/2,lz);if(o.lit!==false)dnGodWin(w[0],yy+1.4*s,w[1],ry+sd*Math.PI/2,1.0*s,1.4*s,'vStone',tr||st);}
   for(const lx of[-2.3*s,2.3*s]){const l=L(lx,D/2);if(o.lit!==false)dnGodLamp(l[0],yy+3.9*s,l[1],ry);}}
  // banners at the platform corners, the altar, the giant guards, the priest
  for(const sd of[-1,1]){const p=L(sd*(W/2+2.6*s),D/2+2.6*s);dnBannerPole(p[0],y,p[1],ry,6.5*s,dCol(sd<0?DPAL.gold:DPAL.turq));}
