@@ -65,27 +65,47 @@ function buildDalabEmbassyVoth(G,o){reseed(8521+(o.v|0));const CW=30,CD=26;const
  vB('vStone',-5.5,0,hz+D/2+4.5,1.0,3.2,1.0,0,st);kput('dStonePyr',[-5.5,3.2,hz+D/2+4.5],null,[1.2,.9,1.2],stL);   // shrine obelisk
  dnDrum('dStoneDrum',5.2,0,hz+D/2+4.2,1.2,.9,st);dnDrum('vDarkB',5.2,.9,hz+D/2+4.2,.9,.1,null);                      // well
  vnFolk(0,hz+D/2+6.5,2,1.2);}
-// Historians' embassy: the Order's Djenne manners — a battered laterite hall with pilaster buttresses and pinnacles,
-// toron rows, a mosaic string course, a great drum under a tile cone with a lantern; blue banners
-function buildDalabEmbassyHist(G,o){reseed(8531+(o.v|0));const CW=30,CD=26;const lat=dCol(DPAL.laterite),latD=lat.clone().multiplyScalar(.8),wood=vC(0x4a3626);
- vnReg("Historians' embassy",0,0,12,18);dnEmbassyCompound(CW,CD,"Historians' embassy");
- const W=13,D=10,H=4.6,Y0=.5,hz=-2;
- vB('vStone',0,-.05,hz,W+1,Y0+.05,D+1,0,latD);
- kput('dEarthBat',[0,Y0,hz],null,[W,H,D],lat);
- for(const s of[-1,1])for(const x of[-W/2+.8,-W/6,W/6,W/2-.8]){vB('dEarth',x,Y0,hz+s*(D/2*.93),.8,H+.9,.5,0,lat);kput('dStonePyr',[x,Y0+H+.9,hz+s*(D/2*.93)],null,[1.0,.8,1.0],latD);}   // pilasters + pinnacles
- for(const s of[-1,1])for(let k=0;k<8;k++)kput('vPost',[-W/2+1.2+k*(W-2.4)/7,Y0+2.6,hz+s*(D/2*.93+.3)],qEuler(Math.PI/2,0,0),[.08,.9,.08],wood);   // toron
- vB('dMosaic',0,Y0+H-.9,hz,W*.87+.2,.6,D*.87+.2,0,null);vB('dEarth',0,Y0+H,hz,W*.87+.4,.4,D*.87+.4,0,latD);
- // the drum, tile cone and lantern
- dnDrum('dEarthDrum',0,Y0+H+.4,hz,4.6,3.2,lat);vB('dMosaic',0,Y0+H+3.3,hz,9.6,.4,9.6,0,null);for(let k=0;k<8;k++){const a=k/8*TAU;const p=dnOnRing(0,hz,4.6,a);dnDrum('dRelief',p[0],Y0+H+1.4,p[1],.9,.9,latD);const q=dnOnRing(0,hz,4.66,a);vB('vDarkB',q[0],Y0+H+1.55,q[1],.5,.6,.1,a);}
- kput('dConeTile',[0,Y0+H+3.5,hz],null,[5.6,4.4,5.6],vC(0x8a5a3a));dnDrum('dEarthDrum',0,Y0+H+7.4,hz,1.2,1.6,lat);for(let k=0;k<6;k++){const a=k/6*TAU;const p=dnOnRing(0,hz,1.2,a);dnGodWin(p[0],Y0+H+7.7,p[1],a,.5,.9,'vWood',wood);}
- kput('dConeTile',[0,Y0+H+9.0,hz],null,[1.7,1.4,1.7],vC(0x8a5a3a));
- // the porch: nested archivolts of earth, a God-lit door
- vB('dEarth',0,Y0,hz+D/2*.93+.6,4.4,H-.6,1.2,0,lat);vB('dEarth',0,Y0,hz+D/2*.93+1.0,3.2,H-1.4,1.0,0,latD);
- vnDoor(0,Y0,hz+D/2*.93+1.5,0,1.5,2.6,'vWood',wood,vC(0x3a2a1c));vnStairs(0,0,hz+D/2*.93+2.4,0,3,Y0,3,'vStone',latD);
- for(const x of[-4.2,4.2])dnGodWin(x,Y0+1.6,hz+D/2*.93,0,1.0,1.4,'vWood',wood);for(const s of[-1,1])for(const z of[-2.6,2.6])dnGodWin(s*W/2*.93,Y0+1.6,hz+z,s*Math.PI/2,1.0,1.3,'vWood',wood);
- for(const s of[-1,1])dnBannerPole(s*(W/2+2),0,hz+D/2+2,0,6,vC(0x2a5aa8));
- vB('dEarth',5.5,0,hz+D/2+5,2.4,1.0,2.4,0,lat);vB('dMosaic',5.5,1.0,hz+D/2+5,2.6,.3,2.6,0,null);   // a mosaic dais
- vnFolk(0,hz+D/2+7,2,1.2);}
+// Yuni embassy: the Yuni set's manners as the Iziz chapterhouse port describes them — laterite drum halls under tile
+// cones with lanterns, round relief-ringed windows, a curved arcaded gallery wing, a carved forecourt wall with a
+// parabolic gate; deep-red banners. Built from the vp* kit (75/76), inside a Dalab compound.
+function buildDalabEmbassyYuni(G,o){reseed(8531+(o.v|0));const CW=30,CD=26;const lat=vC(0x9a5a34),dk=vC(0x5a3620),tile=vC(0x8a5a3a),wood=vC(0x4a3626);
+ vnReg('Yuni embassy',0,0,12,18);dnEmbassyCompound(CW,CD,'Yuni embassy');
+ const hz=-3;
+ // the great drum hall at the back, two lesser drums at the front corners of the court, a curved arcade between
+ vpDrumHall(0,0,hz-2,6.2,7,lat,dk,tile);for(let k=0;k<6;k++){const a=k/6*TAU+.5;if(k===1)continue;const p=dnOnRing(0,hz-2,6.2,a);vpRoundWin(p[0],3.6,p[1],a,.8,dk,vLit());}
+ const dp=dnOnRing(0,hz-2,6.2,0);vnDoor(dp[0],0,dp[1],0,1.5,2.7,'vStone',dk,vC(0x3a2a1c),false);dnGodLamp(dp[0],3.3,dp[1],0);
+ for(const sd of[-1,1]){const px=sd*9.5,pz=hz+6;vpDrumHall(px,0,pz,3.2,4.6,lat,dk,tile);const w=dnOnRing(px,pz,3.2,sd*Math.PI/2+.4);vpRoundWin(w[0],2.4,w[1],sd*Math.PI/2+.4,.6,dk,vLit());
+  const d=dnOnRing(px,pz,3.2,Math.PI);vnDoor(d[0],0,d[1],Math.PI,1.1,2.1,'vStone',dk,vC(0x3a2a1c),false);}
+ // the arcade: a curved gallery of banco arches on a plinth, from drum to drum behind the court
+ {const n=7;for(let k=0;k<=n;k++){const t=k/n;const x=-9.5+19*t,z=hz+6-Math.sin(t*Math.PI)*2.6;vPst('vpBancoPost',x,0,z,.32,3.2,lat);if(k<n){const x2=-9.5+19*(t+1/n),z2=hz+6-Math.sin((t+1/n)*Math.PI)*2.6;
+   const mx=(x+x2)/2,mz=(z+z2)/2,ry=Math.atan2(x2-x,z2-z)+Math.PI/2;kput('vpBayArchB',[mx,0,mz],qEuler(0,ry,0),[1,1,1],lat);vB('vpTileB',mx,3.4,mz,Math.hypot(x2-x,z2-z)+.3,.3,1.6,ry,tile);}}
+  vpTorons(-8,hz+6.3,8,hz+6.3,2.9,9,0,1,.8);}
+ // relief-ringed forecourt: a mosaic dais, gilt finials on the wall corners, banners
+ vB('dEarth',0,0,CD/2-5,3.4,.9,3.4,0,lat);vB('dMosaic',0,.9,CD/2-5,3.6,.3,3.6,0,null);
+ for(const sd of[-1,1])vpBannerPole(sd*(CW/2-3),0,CD/2-3,0,6.5,vC(0x7a1e22));
+ vnFolk(0,CD/2+6.5,2,1.2);}
+// Republican embassy — PLACEHOLDER. The Republic's highlands style is being built in another session and is not in
+// this repo yet; this stands in with a plain highland reading (dry-stone walls, slate-dark shingle, a jettied timber
+// gallery, a square watch tower, a flag) and is tagged placeholder:true so the layout can swap it when the real set
+// lands. Same footprint and compound as the other embassies.
+function buildDalabEmbassyRepublic(G,o){reseed(8536+(o.v|0));const CW=30,CD=26;const st=vC(0x8a8478),stD=vC(0x6e6a62),wood=vC(0x5a4632),sl=vC(0x4a4e56);
+ vnReg('Republican embassy (placeholder)',0,0,12,18,{placeholder:true});dnEmbassyCompound(CW,CD,'Republican embassy');
+ const W=13,D=10,H1=3.8,Y0=.5,hz=-2;
+ vB('vStone',0,-.05,hz,W+1,Y0+.05,D+1,0,stD);vB('vStone',0,Y0,hz,W,H1,D,0,st);
+ // the jettied timber upper storey on brackets, shingle gable
+ vB('vWood',0,Y0+H1,hz,W+1.4,.3,D+1.4,0,wood);for(let k=-3;k<=3;k++)for(const sd of[-1,1])vBeam([k*1.8,Y0+H1-.6,hz+sd*D/2],[k*1.8,Y0+H1,hz+sd*(D/2+.7)],.18,wood);
+ vnFrame(0,Y0+H1+.3,hz,W+1.2,3.0,D+1.2,0,wood,.16);vB('vPlaster',0,Y0+H1+.3,hz,W+1.0,3.0,D+1.0,0,vC(0xd8d0c0));
+ vnGableRoof(0,Y0+H1+3.3,hz,W+1.2,D+1.2,3.0,0,'vGableS',sl,1.0,'vGableW',wood,.3);
+ for(const x of[-4.5,-1.5,1.5,4.5])vnWin(x,Y0+H1+1.2,hz+D/2+.6,0,1.0,1.2,'lit','vWood',wood);
+ for(const x of[-4,4])vnWin(x,Y0+1.4,hz+D/2,0,.6,1.4,'glass','vStone',st);for(const s of[-1,1])for(const z of[-2.5,2.5])vnWin(s*W/2,Y0+1.4,hz+z,s*Math.PI/2,.6,1.4,'glass','vStone',st);
+ vnDoor(0,Y0,hz+D/2,0,1.5,2.5,'vStone',st,vC(0x3a2a1c));vnStairs(0,0,hz+D/2+1.1,0,3,Y0,3,'vStone',st);
+ // the watch tower
+ {const tx=W/2+2.2,tz=hz-D/2+2.0,TH=11;vB('vStone',tx,0,tz,3.6,TH,3.6,0,st);vB('vStone',tx,TH,tz,4.2,.4,4.2,0,stD);for(let k=0;k<8;k++){const a=k/8*TAU;const p=loc(tx,tz,Math.cos(a)*1.9,Math.sin(a)*1.9,0);vB('vStone',p[0],TH+.4,p[1],.5,.8,.5,0,st);}
+  kput('vPyrSh',[tx,TH+.4,tz],null,[3.0,2.2,3.0],sl);for(let k=0;k<4;k++){const a=k*Math.PI/2;const p=loc(tx,tz,0,1.8,a);vnWin(p[0],TH-3,p[1],a,.4,1.2,'lit','vStone',st);}
+  vnBannerPole(tx,TH+.4,tz+1.4,0,4,vC(0x2a4a8a));}
+ vnLampPost(-3,0,hz+D/2+4.6,3.2);vnLampPost(3,0,hz+D/2+4.6,3.2);vnFolk(0,hz+D/2+6.5,2,1.2);}
+// the Order of Historians' chapterhouse, ported from the Yuni set through Iziz (76-port-chapterhouse.js, vendored)
+function buildDalabChapterhouse(G,o){reseed(8538+(o.v|0));buildVpChapterhouse(G,o);}
 
 // the Halls of Reformation: a circular stone wall (r 68, the Voth Monastery's half); inside, the genepriests' halls —
 // the great drum under an Ancient panel dome at the centre, four wing halls with rust and panel domes, the cell
@@ -113,7 +133,7 @@ function buildDalabHalls(G,o){reseed(8541+(o.v|0));const R=68;const st=dCol(DPAL
   for(let k=0;k<16;k++){const a=(k+.5)/16*TAU;const p=dnOnRing(0,0,HR-.3,a);kput('dEarthBat',[p[0],Y0,p[1]],qEuler(0,-a,0),[1.6,HH+1.4,2.2],st);
    vB('vStone',p[0],Y0+HH+1.4,p[1],1.9,.3,2.5,-a,stD);kput('dStonePyr',[p[0],Y0+HH+1.7,p[1]],qEuler(0,-a,0),[1.7,1.3,1.7],st);
    const q=dnOnRing(0,0,HR-.3+1.15,a);dnReliefBand(q[0],Y0+1.9,q[1],a,1.1,HH-2.4,st);
-   const b=(k+1)/16*TAU;if(k===7||k===8)continue;const w=dnOnRing(0,0,HR,b);dnGodWin(w[0],Y0+3.0,w[1],b,1.1,2.2,'vStone',st);}
+   const b=(k+1)/16*TAU;if(k%4===3)continue;/* the door and the three apses */const w=dnOnRing(0,0,HR,b);dnGodWin(w[0],Y0+3.0,w[1],b,1.1,2.2,'vStone',st);}
   for(let k=0;k<32;k++){const a=(k+.5)/32*TAU;const p=dnOnRing(0,0,HR,a);dnGodStrip(p[0],Y0+HH-.6,p[1],a,TAU*HR/32-.5);}
   // cornice, the clerestory drum, its cornice
   vB('vStone',0,Y0+HH,0,HR*2+1.2,.9,HR*2+1.2,0,stD);dnDrum('dStoneDrum',0,Y0+HH+.9,0,CR,CH,st);dnDrum('dReliefDrum',0,Y0+HH+1.1,0,CR+.05,.9,st);
@@ -127,15 +147,15 @@ function buildDalabHalls(G,o){reseed(8541+(o.v|0));const R=68;const st=dCol(DPAL
   vBall('dGodBall',0,AP+3.6,0,.8);vBall('dGlassBall',0,AP+3.6,0,.8);vPst('vPipe',0,AP+2.7,0,.12,7,iron);vBall('dGodBall',0,AP+9.8,0,.35);vBall('dGlassBall',0,AP+9.8,0,.35);
   window._hallsApex=AP+3.6;
   // the portico: eight stone columns carrying a relief-fronted entablature and a stepped crest, over a checker floor
-  {const PZ=HR+3.6,PW=13;vB('vStone',0,Y0-.4,PZ,PW+2,.4,7,0,stD);dnChecker(0,Y0+.02,PZ,PW,6,0);
-   for(let i=0;i<4;i++)for(const sd of[-1,1]){const x=sd*(1.9+i*3.0);vPst('vPostS',x,Y0,PZ+2.6,.36,HH-1.4,st);vB('vStone',x,Y0+HH-1.4,PZ+2.6,1.0,.3,1.0,0,stD);}
+  {const PZ=HR+3.6,PW=17;vB('vStone',0,Y0-.4,PZ,PW+2,.48,7,0,stD);dnChecker(0,Y0+.10,PZ,PW,6,0);
+   for(let i=0;i<3;i++)for(const sd of[-1,1]){const x=sd*(2.3+i*3.2);vPst('vPostS',x,Y0,PZ+2.6,.36,HH-1.4,st);vB('vStone',x,Y0+HH-1.4,PZ+2.6,1.0,.3,1.0,0,stD);}
    vB('vStone',0,Y0+HH-1.1,PZ,PW+2,1.4,7,0,st);dnReliefBand(0,Y0+HH-.9,PZ+3.5,0,PW,1.0,st);vB('vStone',0,Y0+HH+.3,PZ,PW+2.4,.4,7.4,0,stD);
    const tr=dCol(DPAL.trim);let yy=Y0+HH+.7;for(const w of[PW*.7,PW*.42,PW*.2]){vB('vStone',0,yy,PZ+2.2,w,.8,1.6,0,st);vB('vStone',0,yy+.66,PZ+2.2,w+.2,.14,1.8,0,tr);yy+=.8;}vBall('dGiltBall',0,yy+.2,PZ+2.2,.25);}
   dnGate(0,Y0,HR+.4,0,3.2,4.8,st);vnDoor(0,Y0,HR,0,3.0,4.6,'vStone',st,vC(0x2a2a30),false);for(const x of[-2.6,2.6])dnGodLamp(x,Y0+5.4,HR,0);
   // the three apses
   for(const a of[Math.PI/2,-Math.PI/2,Math.PI]){const p=dnOnRing(0,0,HR-1.5,a);dnDrum('dStoneDrumB',p[0],Y0,p[1],4.2,6.4,st);dnDrum('dReliefDrum',p[0],Y0+.4,p[1],4.24,.9,st);
    kput('dStoneDome',[p[0],Y0+6.4,p[1]],null,[4.0,2.4,4.0],stD);vBall('dGiltBall',p[0],Y0+8.9,p[1],.3);for(const d of[-.5,.5]){const w=dnOnRing(p[0],p[1],4.2,a+d);dnGodWin(w[0],Y0+2.6,w[1],a+d,.8,1.4,'vStone',st);}}
-  dnGiant(-4.2,Y0,HR+7.5,.25,4,{spear:true});dnGiant(4.2,Y0,HR+7.5,-.25,4,{spear:true});dnPriest(-1.6,Y0,HR+5,Math.PI);}
+  dnGiant(-4.2,Y0+.08,HR+7.5,.25,4,{spear:true});dnGiant(4.2,Y0+.08,HR+7.5,-.25,4,{spear:true});dnPriest(-1.6,Y0+.08,HR+5,Math.PI);}
  // four wing halls on the diagonals, pipe to the centre
  [[1,1,'dRustDome'],[-1,1,'dPanelDome'],[1,-1,'dPanelDome'],[-1,-1,'dRustDome']].forEach((w,i)=>{const wx=w[0]*30,wz=w[1]*26,WR=7,WH=5.5;
   dnDrum('dStoneDrumB',wx,0,wz,WR,WH,st);dnDrum('dReliefDrum',wx,.4,wz,WR+.05,1.0,st);vB('vStone',wx,WH,wz,WR*2+.8,.5,WR*2+.8,0,stD);
@@ -175,5 +195,7 @@ function dnGodPostAt(x,z,r,a,h){const p=dnOnRing(x,z,r,a);dnGodPost(p[0],0,p[1],
 dDef({key:'dalab_barracks',name:"Guard's barracks",family:'civic',tags:{type:['civic','military'],wealth:'civic',lit:true},w:36,d:30,h:12,build:buildDalabBarracks});
 dDef({key:'dalab_embassy_iziz',name:'Izizian embassy',family:'civic',tags:{type:['civic'],wealth:'civic',lit:true,role:'embassy',guest:'iziz'},w:34,d:32,h:15,build:buildDalabEmbassyIziz});
 dDef({key:'dalab_embassy_voth',name:'Vothic embassy',family:'civic',tags:{type:['civic'],wealth:'civic',lit:true,role:'embassy',guest:'voth'},w:34,d:32,h:17,build:buildDalabEmbassyVoth});
-dDef({key:'dalab_embassy_hist',name:"Historians' embassy",family:'civic',tags:{type:['civic'],wealth:'civic',lit:true,role:'embassy',guest:'yuni-order'},w:34,d:32,h:18,build:buildDalabEmbassyHist});
+dDef({key:'dalab_embassy_yuni',name:'Yuni embassy',family:'civic',tags:{type:['civic'],wealth:'civic',lit:true,role:'embassy',guest:'yuni'},w:34,d:32,h:18,build:buildDalabEmbassyYuni});
+dDef({key:'dalab_embassy_republic',name:'Republican embassy',family:'civic',tags:{type:['civic'],wealth:'civic',lit:true,role:'embassy',guest:'republic',placeholder:true},w:34,d:32,h:19,build:buildDalabEmbassyRepublic});
+dDef({key:'dalab_chapterhouse',name:"Historians' chapterhouse",family:'civic',tags:{culture:'yuni-order',type:['civic','religious'],wealth:'civic',lit:true,role:'chapterhouse'},w:40,d:38,h:22,build:buildDalabChapterhouse});
 dDef({key:'dalab_halls',name:'Halls of Reformation',family:'civic',tags:{type:['civic','religious','industry'],wealth:'civic',lit:true,role:'halls',landmark:true},w:146,d:146,h:32,build:buildDalabHalls});
