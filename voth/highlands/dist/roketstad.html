@@ -6764,7 +6764,7 @@ function cstroke(ctx,pts,w,col){if(pts.length<2)return;ctx.lineWidth=Math.max(1,
 function cdisc(ctx,x,z,r,col){ctx.beginPath();ctx.arc(px(x),px(z),r*PXS,0,7);ctx.fillStyle=col;ctx.fill();}
 function cpoly(ctx,pts,col){ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(px(p[0]),px(p[1])):ctx.moveTo(px(p[0]),px(p[1])));ctx.closePath();ctx.fillStyle=col;ctx.fill();}
 const ROADCOL={3:'#6c6256',4:'#7a6e60',5:'#86796a',6:'#8e8070'};   // cobbled highways darker, lanes packed earth
-function road(pts,w,cls,opt){opt=opt||{};cstroke(cg,pts,w,opt.col||ROADCOL[cls]||'#7a6e60');cstroke(mg,pts,w+2.5,'#000');cstroke(kg,pts,w+1.5,KLCOL(cls));
+function road(pts,w,cls,opt){opt=opt||{};cstroke(cg,pts,w,opt.col||ROADCOL[cls]||'#7a6e60');cstroke(mg,pts,w+.9,'#000');cstroke(kg,pts,w+.5,KLCOL(cls));   // the mask hugs the road: house fronts stand right on the street
  const r={pts,w,cls,id:ROADS.length,zone:opt.zone||null};ROADS.push(r);return r;}
 function disc(x,z,r,type,col){cdisc(cg,x,z,r,col||(type==='park'?'#4a6b3a':'#9a8a72'));cdisc(mg,x,z,r,type==='park'?'#00ff00':'#000');cdisc(kg,x,z,r,KLCOL(type==='park'?KL.park:type==='port'?KL.port:KL.plaza));}
 function precinct(x,z,r,name){PRECINCTS.push({x,z,r,name});}
@@ -9066,10 +9066,10 @@ cityBakeMasks();
 const STREETS={made:0,tries:0};
 (function growStreets(){reseed(SEED_RK+5);const G=10;const pts=[];
  for(let x=TC.x-TC.R-40;x<=TC.x+TC.R+40;x+=G)for(let z=TC.z-TC.R-40;z<=TC.z+TC.R+40;z+=G){const jx=x+rr(-3,3),jz=z+rr(-3,3);if(!insideWall(jx,jz,26)||!canBuild(jx,jz)||inPrecinct(jx,jz,2))continue;pts.push([jx,jz]);}
- const served=p=>{const n=nearestRoadPt(p[0],p[1],null,40);return n&&n.d<28;};
+ const served=p=>{const n=nearestRoadPt(p[0],p[1],null,40);return n&&n.d<23;};   // blocks ~45 m deep: a row each side and a yard between
  const blockedAt=(x,z)=>!insideWall(x,z,22)||inPrecinct(x,z,1)||!occFree({x,z,hx:3.5,hz:3.5,ry:0},0);
  let pool=pts.filter(p=>!served(p));
- for(let it=0;it<900&&pool.length;it++){const p=pool[Math.floor(rng()*pool.length)];STREETS.tries++;
+ for(let it=0;it<1400&&pool.length;it++){const p=pool[Math.floor(rng()*pool.length)];STREETS.tries++;
   const n=nearestRoadPt(p[0],p[1],null,400);if(!n){pool=pool.filter(q=>q!==p);continue;}
   let hd=Math.atan2(p[1]-n.z,p[0]-n.x);const path=[[n.x,n.z]];let x=n.x,z=n.z,len=0;const L=Math.hypot(p[0]-n.x,p[1]-n.z)+rr(30,110);let joined=false;
   // long straight-ish runs with bends between them: room for continuous rows of houses
@@ -9279,23 +9279,25 @@ function simplifyPath(P,tol){if(P.length<3)return P.slice();let best=-1,bi=0;con
  for(let i=1;i<P.length-1;i++){const d=Math.abs((P[i][0]-a[0])*dz-(P[i][1]-a[1])*dx)/L;if(d>best){best=d;bi=i;}}
  if(best<=tol)return[a,b];const l=simplifyPath(P.slice(0,bi+1),tol),r=simplifyPath(P.slice(bi),tol);return l.slice(0,-1).concat(r);}
 const ROW_STAT={rows:0,runs:0};
+// why a footprint failed groundOK (for the frontage statistics)
+function groundWhy(o){for(const p of obbCorners(o,0).concat([[o.x,o.z]])){if(!insideWall(p[0],p[1],14))return'wall';if(inPrecinct(p[0],p[1],0))return'prec';if(!canBuild(p[0],p[1]))return'k'+klass(p[0],p[1]);}return'other';}
 function frontageAlong(pts,roadW,pick,test,st,opt){opt=typeof opt==='number'?{gapK:opt}:(opt||{});const gapK=opt.gapK||1,sides=opt.sides||[-1,1];
  const P=simplifyPath(pts,opt.tol==null?2.2:opt.tol);
  for(let sg=0;sg<P.length-1;sg++){const ax=P[sg][0],az=P[sg][1],bx=P[sg+1][0],bz=P[sg+1][1];const L=Math.hypot(bx-ax,bz-az);if(L<9)continue;
   const ux=(bx-ax)/L,uz=(bz-az)/L,nx=-uz,nz=ux;
-  for(const side of sides){let s=rr(.3,2.5),run=null;const line=roadW/2+(opt.setback==null?1.45:opt.setback);ROW_STAT.rows++;
+  for(const side of sides){let s=rr(.3,2.5),run=null;const line=roadW/2+(opt.setback==null?1.1:opt.setback);ROW_STAT.rows++;
    const ry=Math.atan2(-nx*side,-nz*side);   // front (+z) to the street
    while(s<L-3){if(!run||run.left<=0){const cx=ax+ux*(s+6)+nx*side*(line+6),cz=az+uz*(s+6)+nz*side*(line+6);run={pk:pick(cx,cz),left:rki(2,5)};ROW_STAT.runs++;}
     const key=kitKey(run.pk.key);const D=VERN.defs[key];if(!D){run=null;s+=4;continue;}
     if(s+D.w>L+.5*gapK){if(run.tried){break;}run={pk:pick(ax+ux*s,az+uz*s),left:1,tried:1};continue;}   // does not fit what is left of the run: one narrower try, then the corner
     const along=s+D.w/2,off=line+D.d/2;const o={x:ax+ux*along+nx*side*off,z:az+uz*along+nz*side*off,hx:D.w/2,hz:D.d/2,ry,pad:.15};
-    if(!test(o)){st.ground++;s+=2.5;run=null;}
+    if(!test(o)){st.ground++;const why=groundWhy(o);st[why]=(st[why]||0)+1;s+=2.5;run=null;}
     else if(!occFree(o,.15)){st.occ++;s+=2.5;run=null;}
     else{const v=run.pk.v==null?undefined:(run.pk.v+run.left)%6;placeVern(key,o,{v});st.placed++;run.left--;
      // a row closes up (party walls), a lane or a yard opens now and then; out in the suburbs the rows loosen
      s+=D.w+(rng()<.12*gapK?rr(3,7):rr(.2,.7)*gapK);}}}}}
 (function frontage(){reseed(SEED_RK+11);const F={placed:0,ground:0,occ:0};
- const test=o=>groundOK(o,{town:true,margin:14});
+ const test=o=>groundOK(o,{town:true,margin:11});
  // 1. the squares first: a closed ring of the best houses and shops round each, fronts on the square
  for(const k in SQUARES){const S=SQUARES[k];const n=Math.max(8,Math.round(TAU*(S.r+2)/24));const ring=[];for(let i=0;i<=n;i++){const t=i/n*TAU;ring.push([S.x+(S.r+.5)*Math.cos(t),S.z+(S.r+.5)*Math.sin(t)]);}
   frontageAlong(ring,0,(x,z)=>{const w=rng();return w<.4?{key:'hl_rep_shops'}:w<.55?{key:vPick(TAVERNS)}:{key:vPick(HOUSES[w<.8?2:1]),v:Math.floor(rng()*6)};},test,F,{sides:[-1],tol:0,setback:1.2});}

@@ -48,23 +48,25 @@ function simplifyPath(P,tol){if(P.length<3)return P.slice();let best=-1,bi=0;con
  for(let i=1;i<P.length-1;i++){const d=Math.abs((P[i][0]-a[0])*dz-(P[i][1]-a[1])*dx)/L;if(d>best){best=d;bi=i;}}
  if(best<=tol)return[a,b];const l=simplifyPath(P.slice(0,bi+1),tol),r=simplifyPath(P.slice(bi),tol);return l.slice(0,-1).concat(r);}
 const ROW_STAT={rows:0,runs:0};
+// why a footprint failed groundOK (for the frontage statistics)
+function groundWhy(o){for(const p of obbCorners(o,0).concat([[o.x,o.z]])){if(!insideWall(p[0],p[1],14))return'wall';if(inPrecinct(p[0],p[1],0))return'prec';if(!canBuild(p[0],p[1]))return'k'+klass(p[0],p[1]);}return'other';}
 function frontageAlong(pts,roadW,pick,test,st,opt){opt=typeof opt==='number'?{gapK:opt}:(opt||{});const gapK=opt.gapK||1,sides=opt.sides||[-1,1];
  const P=simplifyPath(pts,opt.tol==null?2.2:opt.tol);
  for(let sg=0;sg<P.length-1;sg++){const ax=P[sg][0],az=P[sg][1],bx=P[sg+1][0],bz=P[sg+1][1];const L=Math.hypot(bx-ax,bz-az);if(L<9)continue;
   const ux=(bx-ax)/L,uz=(bz-az)/L,nx=-uz,nz=ux;
-  for(const side of sides){let s=rr(.3,2.5),run=null;const line=roadW/2+(opt.setback==null?1.45:opt.setback);ROW_STAT.rows++;
+  for(const side of sides){let s=rr(.3,2.5),run=null;const line=roadW/2+(opt.setback==null?1.1:opt.setback);ROW_STAT.rows++;
    const ry=Math.atan2(-nx*side,-nz*side);   // front (+z) to the street
    while(s<L-3){if(!run||run.left<=0){const cx=ax+ux*(s+6)+nx*side*(line+6),cz=az+uz*(s+6)+nz*side*(line+6);run={pk:pick(cx,cz),left:rki(2,5)};ROW_STAT.runs++;}
     const key=kitKey(run.pk.key);const D=VERN.defs[key];if(!D){run=null;s+=4;continue;}
     if(s+D.w>L+.5*gapK){if(run.tried){break;}run={pk:pick(ax+ux*s,az+uz*s),left:1,tried:1};continue;}   // does not fit what is left of the run: one narrower try, then the corner
     const along=s+D.w/2,off=line+D.d/2;const o={x:ax+ux*along+nx*side*off,z:az+uz*along+nz*side*off,hx:D.w/2,hz:D.d/2,ry,pad:.15};
-    if(!test(o)){st.ground++;s+=2.5;run=null;}
+    if(!test(o)){st.ground++;const why=groundWhy(o);st[why]=(st[why]||0)+1;s+=2.5;run=null;}
     else if(!occFree(o,.15)){st.occ++;s+=2.5;run=null;}
     else{const v=run.pk.v==null?undefined:(run.pk.v+run.left)%6;placeVern(key,o,{v});st.placed++;run.left--;
      // a row closes up (party walls), a lane or a yard opens now and then; out in the suburbs the rows loosen
      s+=D.w+(rng()<.12*gapK?rr(3,7):rr(.2,.7)*gapK);}}}}}
 (function frontage(){reseed(SEED_RK+11);const F={placed:0,ground:0,occ:0};
- const test=o=>groundOK(o,{town:true,margin:14});
+ const test=o=>groundOK(o,{town:true,margin:11});
  // 1. the squares first: a closed ring of the best houses and shops round each, fronts on the square
  for(const k in SQUARES){const S=SQUARES[k];const n=Math.max(8,Math.round(TAU*(S.r+2)/24));const ring=[];for(let i=0;i<=n;i++){const t=i/n*TAU;ring.push([S.x+(S.r+.5)*Math.cos(t),S.z+(S.r+.5)*Math.sin(t)]);}
   frontageAlong(ring,0,(x,z)=>{const w=rng();return w<.4?{key:'hl_rep_shops'}:w<.55?{key:vPick(TAVERNS)}:{key:vPick(HOUSES[w<.8?2:1]),v:Math.floor(rng()*6)};},test,F,{sides:[-1],tol:0,setback:1.2});}

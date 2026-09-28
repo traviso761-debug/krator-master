@@ -13,7 +13,7 @@ function cstroke(ctx,pts,w,col){if(pts.length<2)return;ctx.lineWidth=Math.max(1,
 function cdisc(ctx,x,z,r,col){ctx.beginPath();ctx.arc(px(x),px(z),r*PXS,0,7);ctx.fillStyle=col;ctx.fill();}
 function cpoly(ctx,pts,col){ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(px(p[0]),px(p[1])):ctx.moveTo(px(p[0]),px(p[1])));ctx.closePath();ctx.fillStyle=col;ctx.fill();}
 const ROADCOL={3:'#6c6256',4:'#7a6e60',5:'#86796a',6:'#8e8070'};   // cobbled highways darker, lanes packed earth
-function road(pts,w,cls,opt){opt=opt||{};cstroke(cg,pts,w,opt.col||ROADCOL[cls]||'#7a6e60');cstroke(mg,pts,w+2.5,'#000');cstroke(kg,pts,w+1.5,KLCOL(cls));
+function road(pts,w,cls,opt){opt=opt||{};cstroke(cg,pts,w,opt.col||ROADCOL[cls]||'#7a6e60');cstroke(mg,pts,w+.9,'#000');cstroke(kg,pts,w+.5,KLCOL(cls));   // the mask hugs the road: house fronts stand right on the street
  const r={pts,w,cls,id:ROADS.length,zone:opt.zone||null};ROADS.push(r);return r;}
 function disc(x,z,r,type,col){cdisc(cg,x,z,r,col||(type==='park'?'#4a6b3a':'#9a8a72'));cdisc(mg,x,z,r,type==='park'?'#00ff00':'#000');cdisc(kg,x,z,r,KLCOL(type==='park'?KL.park:type==='port'?KL.port:KL.plaza));}
 function precinct(x,z,r,name){PRECINCTS.push({x,z,r,name});}
