@@ -87,7 +87,7 @@ DETERMINISTIC = {
     '50-registry.js', '54-mat-concrete.js', '68-mat-v5.js', '69-mat-salvage.js',
     '69b-vern-mat.js', '69c-vern-helpers.js',          # vendored from ../iziz/src (Iziz Vernacular helpers)
     '70-hl-tex.js', '71-hl-mat.js', '71b-hl-motif.js', '72-hl-helpers.js', '73-hl-carve.js',   # the Highlands vocabulary
-    '88-hl-dress.js', '90-scene.js', '91-probe.js', '92-camera.js', '93-labels.js', '99-tail.html',
+    '88-hl-dress.js', '90-scene.js', '91-probe.js', '92-camera.js', '93-labels.js', '94-hl-anim.js', '99-tail.html',
     '89z-rows.js', '91z-views.js',        # per-target site table and view list
 }
 

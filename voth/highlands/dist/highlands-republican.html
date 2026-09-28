@@ -1377,8 +1377,6 @@ TEX.laceB=canvasTex(128,64,(g,w,h)=>{g.clearRect(0,0,w,h);const n=4,bw=w/n;
 TEX.clock=canvasTex(256,256,(g,w,h)=>{const c=w/2;g.fillStyle='#1c1a1c';g.fillRect(0,0,w,h);
  g.beginPath();g.arc(c,c,c*.96,0,TAU);g.fillStyle='#c9a043';g.fill();g.beginPath();g.arc(c,c,c*.84,0,TAU);g.fillStyle='#f1e8d2';g.fill();
  g.strokeStyle='#1c1a1c';for(let k=0;k<60;k++){const a=k/60*TAU,L=k%5?c*.05:c*.13;g.lineWidth=k%5?2:6;g.beginPath();g.moveTo(c+Math.sin(a)*c*.8,c-Math.cos(a)*c*.8);g.lineTo(c+Math.sin(a)*(c*.8-L),c-Math.cos(a)*(c*.8-L));g.stroke();}
- g.lineCap='round';g.lineWidth=10;g.beginPath();g.moveTo(c,c);g.lineTo(c+Math.sin(5.2)*c*.42,c-Math.cos(5.2)*c*.42);g.stroke();
- g.lineWidth=6;g.beginPath();g.moveTo(c,c);g.lineTo(c+Math.sin(2.1)*c*.66,c-Math.cos(2.1)*c*.66);g.stroke();
  g.beginPath();g.arc(c,c,c*.06,0,TAU);g.fillStyle='#b3322a';g.fill();});
 // ---------------------------------------------------------------- cliff rock (fractured grey granite, strata and streaks): 8 m tile
 TEX.rock=canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
@@ -2137,11 +2135,17 @@ function hlFlush(){const C=VERN.cur;if(!C)return;const inst=C.inst||[];C.flushin
  let owed=false;const wide=it=>/^hM_[wg]_|^hForm[AWBT]$/.test(it);
  for(const m of C.murals||[]){if(owed&&wide(m.item)){m.item=HMOTIF.emblemWide;}const U=new THREE.Vector3(...hRot(m.ry,[1,0,0])),N=new THREE.Vector3(...hRot(m.ry,[0,0,1])),V=new THREE.Vector3(0,1,0);
   const candR=near(m.x,m.y+m.h/2,m.z,Math.max(m.w,m.h)+3),cand=candR.map(hlOBB);let placed=false;
-  // search: biggest first, then nearest to where the builder put it — slide down (off a jetty/lintel) or sideways
-  const tries=[];for(const k of[1,.86,.74,.62,.52])for(const fy of[0,-.25,.25,-.5,-.75,-1])for(const fx of[0,-.3,.3,-.6,.6])tries.push([k,fx,fy]);
-  for(const [k,fx,fy] of tries){const w=m.w*k,h=m.h*k,cy=m.y+m.h/2+fy*m.h*.8,cu=fx*m.w*.8;const c=loc(m.x,m.z,cu,0,m.ry);
-   const slab={c:new THREE.Vector3(c[0],cy,c[1]).addScaledVector(N,.18),a:[U,V,N],e:[w/2,h/2,.075]};   // n .105–.255: clears beams, quoins, friezes on the wall
-   if(cand.some(B=>hlSAT(slab,B)))continue;const p=loc(m.x,m.z,cu,.095,m.ry);kput(m.item,[p[0],cy,p[1]],qEuler(0,m.ry,0),[w,h,1],null);placed=true;break;}
+  // search (Travis: keep it symmetric): first the mural centred where the builder put it, shrinking and sliding only
+  // vertically; failing that, a mirrored PAIR either side of the axis (flanking a door lintel), same motif;
+  // never a lone off-centre board.
+  const fits=(cu,cy,w,h)=>{const c=loc(m.x,m.z,cu,0,m.ry);const slab={c:new THREE.Vector3(c[0],cy,c[1]).addScaledVector(N,.18),a:[U,V,N],e:[w/2,h/2,.075]};   // n .105–.255: clears beams, quoins, friezes on the wall
+   return !cand.some(B=>hlSAT(slab,B));};
+  const put=(cu,cy,w,h)=>{const p=loc(m.x,m.z,cu,.095,m.ry);kput(m.item,[p[0],cy,p[1]],qEuler(0,m.ry,0),[w,h,1],null);};
+  const centred=ks=>{for(const k of ks){for(const fy of[0,-.25,.25,-.5,-.75,-1]){const w=m.w*k,h=m.h*k,cy=m.y+m.h/2+fy*m.h*.8;if(fits(0,cy,w,h)){put(0,cy,w,h);return true;}}}return false;};
+  placed=centred([1,.86,.74]);   // a big centred board, else a full-size PAIR flanking the axis, else a small centred one
+  if(!placed)for(const k of[.86,.74,.62]){for(const fy of[0,-.25,.25,-.5]){for(const fx of[.45,.6,.75,.9,1.05,1.2]){const w=m.w*k,h=m.h*k,cy=m.y+m.h/2+fy*m.h*.8,cu=fx*m.w;
+    if(fits(cu,cy,w,h)&&fits(-cu,cy,w,h)){put(cu,cy,w,h);put(-cu,cy,w,h);placed=true;break;}}if(placed)break;}if(placed)break;}
+  if(!placed)placed=centred([.62,.52]);
   const st=window._muralStats||(window._muralStats={placed:0,dropped:[]});if(placed){st.placed++;if(m.item===HMOTIF.emblemWide)owed=false;}else{st.dropped.push(C.D.key);if(m.item===HMOTIF.emblemWide)owed=true;}}   // a crowded emblem moves to the next wide mural
  C.flushing=false;C.inst=null;C.murals=null;C.brows=null;}
 // VERN.place with the flush before the group transform closes (the vendored body, plus hlFlush()).
@@ -3614,18 +3618,34 @@ HL.def({key:'hl_rep_guild_mech',name:"Mechanics' Guild",branch:'republican',fami
 // a mural of a GIVEN motif (not a random pick), fitted like hnForm's (hlFlush)
 function hnMural(item,x,y,z,ry,w,h){const C=VERN.cur;(C.murals||(C.murals=[])).push({item,x,y,z,ry,w,h});}
 // the sky of Krator in brass, centred at (x,y,z); `R` = the great ring radius. Reach: R + 1.45.
-function hnRBOrrery(x,y,z,R){const brass=hC(0x9a7a3a),gold=hC(HPAL.gold[0]);vPst('vPipeC',x,y-1.9,z,.08,1.5,brass);vBall('hGold',x,y,z,.45,gold);
- const gph=.7,gq=qEuler(Math.PI/2+.08,0,.05);kput('hRBHoop',[x,y,z],gq,[R,R,1]);
- const gv=new THREE.Vector3(Math.cos(gph)*R,Math.sin(gph)*R,0).applyQuaternion(gq),G=[x+gv.x,y+gv.y,z+gv.z];
- beam('vPipeC',[x,y,z],[G[0]-gv.x*.18,G[1]-gv.y*.18,G[2]-gv.z*.18],.04,.04,brass);
- vBall('hPaintBall',G[0],G[1],G[2],.44,hC(0x7aa888));
- for(const [dy,c] of[[.2,0x5f927a],[-.05,0xb4d0a4],[-.22,0x4f7e68]]){const r=.45*Math.sqrt(1-dy*dy/.1936);kput('hPaintBall',[G[0],G[1]+dy,G[2]],null,[r,.05,r],hC(c));}
- kput('hRBHoop',G,qEuler(Math.PI/2-.35,0,.2),[.64,.64,1]);
- [[1,.3,2.4,.21,0x4f86a8,true],[.72,-.25,.9,.1,0xb8b0a0],[1.3,.15,4.4,.13,0xd19a3a]].forEach(([r,tilt,ph,rad,col,krator])=>{
-  const q=qEuler(Math.PI/2+tilt,0,tilt*.6);kput('hRBHoop',G,q,[r,r,1]);const v=new THREE.Vector3(Math.cos(ph)*r,Math.sin(ph)*r,0).applyQuaternion(q);
-  vBall('hPaintBall',G[0]+v.x,G[1]+v.y,G[2]+v.z,rad,hC(col));beam('vPipeC',G,[G[0]+v.x*.9,G[1]+v.y*.9,G[2]+v.z*.9],.024,.024,brass);
-  if(krator)vBall('hPaintBall',G[0]+v.x*1.02,G[1]+v.y*1.02+rad*.3,G[2]+v.z*1.02,rad*.55,hC(0x5f9a4a));});}
-
+// Travis: the orrery TURNS. It is built of real meshes (not kit instances) in nested groups — the giant's arm turns
+// about the great ring's axis, each moon's arm about its own ring's axis, the sun and the giant spin — and every
+// turning group is registered in HLANIM (rad/s about its local z), which the frame hook in 94-hl-anim.js drives.
+const HLANIM=[];
+const HORR={};
+function hlOrreryMats(){if(HORR.brass)return HORR;HORR.brass=MAT.rbBronze;HORR.sun=MAT.gold;
+ HORR.giant=new THREE.MeshStandardMaterial({roughness:.55,map:canvasTex(64,128,(g,w,h)=>{const B=['#4f7e68','#8fb896','#c3dcb8','#5f927a','#9cc4a4','#2e9488','#b4d0a4','#7aa888','#4f7e68'];
+  B.forEach((c,i)=>{g.fillStyle=c;g.fillRect(0,i*h/B.length,w,h/B.length+1);});})});
+ HORR.krator=new THREE.MeshStandardMaterial({color:0x4f86a8,roughness:.6});HORR.land=new THREE.MeshStandardMaterial({color:0x5f9a4a,roughness:.8});
+ HORR.moonA=new THREE.MeshStandardMaterial({color:0xb8b0a0,roughness:.8});HORR.moonB=new THREE.MeshStandardMaterial({color:0xd19a3a,roughness:.7});return HORR;}
+function hnRBOrrery(x,y,z,R){const M=hlOrreryMats(),P=VERN.cur.G;const O=new THREE.Group();O.position.set(x,y,z);P.add(O);
+ const ball=(r,mat,par,px,py,pz)=>mesh(new THREE.SphereGeometry(r,20,14),mat,par,px||0,py||0,pz||0);
+ const hoop=(r,par)=>mesh(new THREE.TorusGeometry(r,.035,6,48),M.brass,par);
+ const rod=(len,par,r)=>{const m=mesh(new THREE.CylinderGeometry(r||.035,r||.035,len,6).rotateZ(Math.PI/2).translate(len/2,0,0),M.brass,par);return m;};
+ mesh(new THREE.CylinderGeometry(.08,.08,1.5,8).translate(0,-1.15,0),M.brass,O);                      // the column
+ const sun=ball(.45,M.sun,O);HLANIM.push({o:sun,w:.25,axis:'y'});
+ // the great ring and the giant's arm
+ const plane=new THREE.Group();plane.quaternion.copy(qEuler(Math.PI/2+.08,0,.05));O.add(plane);hoop(R,plane);
+ const arm=new THREE.Group();arm.rotation.z=.7;plane.add(arm);HLANIM.push({o:arm,w:.16});rod(R*.82,arm,.04);
+ const GG=new THREE.Group();GG.position.set(R,0,0);arm.add(GG);
+ const giant=ball(.44,M.giant,GG);giant.rotation.x=Math.PI/2;HLANIM.push({o:giant,w:.9,axis:'y'});
+ const gr=new THREE.Group();gr.quaternion.copy(qEuler(-.35,0,.2));GG.add(gr);hoop(.64,gr);
+ // the three moons about the giant: Krator (blue, green land) and two lesser moons
+ [[1,.3,2.4,.21,M.krator,true,.55],[.72,-.25,.9,.1,M.moonA,false,.9],[1.3,.15,4.4,.13,M.moonB,false,.38]].forEach(([r,tilt,ph,rad,mat,krator,w])=>{
+  const mp=new THREE.Group();mp.quaternion.copy(qEuler(tilt,0,tilt*.6));GG.add(mp);hoop(r,mp);
+  const ma=new THREE.Group();ma.rotation.z=ph;mp.add(ma);HLANIM.push({o:ma,w});rod(r*.9,ma,.024);
+  const m=ball(rad,mat,ma,r,0,0);if(krator)ball(rad*.55,M.land,ma,r*1.02,rad*.3,0);});
+ return O;}
 function buildHlRepGuildAstro(G,o){reseed(21101+(o.v|0));const HX=-4,HZ=-1,W=16,D=10,S=.6,H1=4,H2=3.2,TX=10,TZ=-1;
  const cream=hC(vPick(HPAL.stucco)),beamC=hC(vPick(HPAL.redwood)),slate=hC(vPick(HPAL.slate)),ash=hC(vPick(HPAL.ashlar)),tar=hC(vPick(HPAL.tar)).multiplyScalar(1.25),
   cu=hC(0x5f9a88),iron=hC(hRBIRON),lit=vLit()?'lit':'glass';
@@ -3690,10 +3710,11 @@ function buildHlRepGuildScav(G,o){reseed(21111+(o.v|0));const HX=-7,HZ=-2,W=15,D
   for(let i=0;i<=n;i++)vPst('vPipeR',ax+(bx-ax)*i/n,0,az+(bz-az)*i/n,.06,2.3,null);
   for(let i=0;i<n;i++){const t=(i+.5)/n;kput(vPick(['vPlate','vSheet','vPlate','vPlateW']),[ax+(bx-ax)*t,1.05+rr(-.08,.08),az+(bz-az)*t],qEuler(0,ry,rr(-.05,.05)),[L/n+.1,2+rr(-.2,.1),1],null);}}
  // sorted heaps
- const heap=(x,z,items,n,r)=>{for(let i=0;i<n;i++){const a=rng()*TAU,d=Math.sqrt(rng())*r,h=(1-d/r)*rr(.6,1.4);const it=vPick(items);
-  if(it==='vPipeR')kput('vPipeR',[x+Math.cos(a)*d,.15+h*.5,z+Math.sin(a)*d],qEuler(Math.PI/2+rr(-.3,.3),rng()*TAU,0),[rr(.08,.2),rr(1.5,3),rr(.08,.2)],null);
-  else if(it==='vTankR')kput('vTankR',[x+Math.cos(a)*d,.1,z+Math.sin(a)*d],qEuler(Math.PI/2,rng()*TAU,0),[rr(.4,.7),rr(1,2),rr(.4,.7)],null);
-  else kput(it,[x+Math.cos(a)*d,.1+h*.6,z+Math.sin(a)*d],qEuler(-Math.PI/2+rr(-.6,.6),rng()*TAU,rr(-.4,.4)),[rr(1,2.2),rr(.8,1.6),1],null);}};
+ const heap=(x,z,items,n,r)=>{const MH=r*.42;hnRCHeap(x,0,z,r*1.05,MH,hC(vPick([0x5a4a3e,0x6a5040,0x4a4038])),0);   // a mound of mixed scrap and earth
+  for(let i=0;i<n;i++){const a=rng()*TAU,d=Math.sqrt(rng())*r*.9,sy=Math.max(0,MH*(1-d/(r*1.05))-.12);const it=vPick(items);   // sy: just under the mound's (conical) surface there
+  if(it==='vPipeR')kput('vPipeR',[x+Math.cos(a)*d,sy+.05,z+Math.sin(a)*d],qEuler(Math.PI/2+rr(-.3,.3),rng()*TAU,0),[rr(.08,.2),rr(1.5,3),rr(.08,.2)],null);
+  else if(it==='vTankR'){const tr=rr(.4,.7);kput('vTankR',[x+Math.cos(a)*d,sy+tr*.5,z+Math.sin(a)*d],qEuler(0,rng()*TAU,Math.PI/2).multiply(qEuler(0,0,0)),[tr,rr(1,2),tr],null);}
+  else kput(it,[x+Math.cos(a)*d,sy+.04,z+Math.sin(a)*d],qEuler(0,rng()*TAU,0).multiply(qEuler(-Math.PI/2+rr(-.25,.25),0,0)),[rr(1,2.2),rr(.8,1.6),1],null);}};
  heap(YX-4.5,YZ-3.5,['vPlateW','vPlateW','vPlate'],26,2.6);heap(YX+.5,YZ-4,['vSheet','vPlate'],22,2.4);heap(YX+5,YZ-3.5,['vPipeR'],24,2.3);heap(YX+5,YZ+2.5,['vTankR','vPipeR'],8,2);
  // the gantry: two pipe A-frames, a beam, a chain and a panel on the hook
  const CX=YX-2.5,CZ=YZ+1.5,CH=5.2;for(const s of[-1,1]){beam('vPipeR',[CX+s*3.4,0,CZ-1.3],[CX+s*3.4,CH,CZ],.18,.18);beam('vPipeR',[CX+s*3.4,0,CZ+1.3],[CX+s*3.4,CH,CZ],.18,.18);}
@@ -5811,6 +5832,16 @@ for(const k of VERN.order.slice()){const D=VERN.defs[k];if(!D.branch||k.endsWith
  HL.def({key:k+'_reclaimed',baseKey:k,name:D.name+' (reclaimed)',branch:D.branch,family:D.family,tags:T,w:D.w,d:D.d,h:D.h,
   build:function buildHlReclaimed(G,o){reseed(24051+(o.v|0));o.salvage=true;D.build(G,o);if(!defence)hnSalvDress(D);
    for(let i=VERN.cur.r0;i<REG.length;i++)if(!/reclaimed/.test(REG[i].name))REG[i].name+=' — reclaimed';}});}
+
+// ---------------------------------------------------------------- clocks (round 5)
+// Every clock face (hClock, hRBClock) records its WORLD pose as it is placed; 94-hl-anim.js gives each a pair of
+// real hands (two instanced meshes) that show the time of day: window.HL_HOUR (0–24, a sky/day-night system sets it)
+// or, failing that, the viewer's local time.
+const HLCLOCKS=[];
+const _hlKputClock=kput;
+kput=function(name,p,q,s,c){if(name==='hClock'||name==='hRBClock'){const S=typeof s==='number'?s:s[0];let P=new THREE.Vector3(p[0],p[1],p[2]),Q=(q?q.clone():new THREE.Quaternion()),k=S;
+  if(KXF){P.applyMatrix4(KXF.m);Q.premultiply(KXF.q);if(KXF.s)k*=KXF.s;}P.x+=KOFF[0];P.y+=KOFF[1];P.z+=KOFF[2];HLCLOCKS.push({p:P,q:Q,r:.42*k});}
+ return _hlKputClock(name,p,q,s,c);};
 // TARGET: republican — rows by branch and family (laid out by hlLayout in 90-scene.js), front (+z) toward the camera.
 const TITLE='Highlands Kit — Republican';
 const HL_BRANCHES=['republican'];
@@ -6032,6 +6063,23 @@ function labelsBuild(){
  FRAME_HOOKS.push(()=>{mat.uniforms.uPxToWorld.value=2*Math.tan(camera.fov*Math.PI/360)/innerHeight;});
  window._labels=list.length;return m;}
 labelsBuild();
+// ---------------------------------------------------------------- animation: orreries turn, clocks keep time (round 5)
+// Runs after the scene is built. HLANIM (77b) lists groups that turn at w rad/s about their local z (or y);
+// HLCLOCKS (88) lists every clock face in world space.
+const HLHANDS=(function(){const n=HLCLOCKS.length;if(!n)return null;const geo=new THREE.BoxGeometry(1,1,1).translate(0,.5,0),mat=new THREE.MeshStandardMaterial({color:0x1c1a1c,roughness:.5,metalness:.3});
+ const hr=new THREE.InstancedMesh(geo,mat,n),mn=new THREE.InstancedMesh(geo,mat,n);hr.frustumCulled=mn.frustumCulled=false;hr.userData.probeSkip=mn.userData.probeSkip=true;scene.add(hr);scene.add(mn);
+ return{hr,mn};})();
+function hlHour(){if(typeof window.HL_HOUR==='number')return((window.HL_HOUR%24)+24)%24;const d=new Date();return d.getHours()+d.getMinutes()/60+d.getSeconds()/3600;}
+const _hlM=new THREE.Matrix4(),_hlQ=new THREE.Quaternion(),_hlZ=new THREE.Vector3(0,0,1),_hlP=new THREE.Vector3(),_hlS=new THREE.Vector3();
+function hlSetHands(){if(!HLHANDS)return;const h=hlHour(),am=(h%1)*TAU,ah=(h%12)/12*TAU;
+ HLCLOCKS.forEach((c,i)=>{const n=_hlZ.clone().applyQuaternion(c.q);
+  for(const [im,a,len,wd,off] of[[HLHANDS.hr,ah,.55,.075,.03],[HLHANDS.mn,am,.82,.045,.05]]){_hlQ.copy(c.q).multiply(new THREE.Quaternion().setFromAxisAngle(_hlZ,-a));
+   _hlP.copy(c.p).addScaledVector(n,off*c.r+.02);_hlS.set(wd*c.r,len*c.r,.03*c.r+.01);_hlM.compose(_hlP,_hlQ,_hlS);im.setMatrixAt(i,_hlM);}});
+ HLHANDS.hr.instanceMatrix.needsUpdate=HLHANDS.mn.instanceMatrix.needsUpdate=true;}
+hlSetHands();let _hlClockT=0;
+FRAME_HOOKS.push((dt)=>{for(const a of HLANIM){if(a.axis==='y')a.o.rotation.y+=a.w*dt;else a.o.rotation.z+=a.w*dt;}
+ _hlClockT+=dt;if(_hlClockT>1){_hlClockT=0;hlSetHands();}});
+window._clocks=HLCLOCKS.length;window._orreryParts=HLANIM.length;
 </script>
 
 </body></html>
