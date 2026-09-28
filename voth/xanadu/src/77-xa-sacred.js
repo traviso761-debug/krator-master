@@ -28,13 +28,13 @@ function xnXDSanctum(x,z,w,d,hs,rw,rd,rh,o){o=o||{};const wash=o.wash||xC(xPick(
  return{top:rt,base:S,red:R,ry0};}
 
 // ---------------------------------------------------------------- the temple
-function buildXaTemple(G,o){reseed(30801+(o.v|0));const W=19,D=14,P=1.2;
- const stone=xC(xPick(XPAL.stone)),wash=xC(xPick(XPAL.wash)),red=xC(xPick(XPAL.redwall));
+function buildXaTemple(G,o){reseed(30801+(o.v|0));const V=xV(o),W=19,D=14,P=1.2;
+ const stone=xC(xPick(XPAL.stone)),wash=xC(xPick(XPAL.wash)),red=xC(xPick(V===1?XPAL.ochre:XPAL.redwall));
  vnReg('Temple',0,0,12,P+8.2+3.8+4.5);
  xnWall(0,0,0,W+1.2,P,D+1.2,0,stone,'dressed');vB('vStone',0,P-.14,0,W+1.5,.14,D+1.5,0,stone.clone().multiplyScalar(1.08));
  const K=xnXDSanctum(0,0,W,D,[4.4,3.8],12,8.5,3.8,{y:P,wash,red,doorGap:4.2});
  // the portico and the great door with its mosaic panels and the sun-and-moon
- xnPortico(0,P,D/2,0,9,3.2,4.2,wash,{band:true,valC:xC(XPAL.saffron)});vnDoor(0,P,D/2+.02,0,2.2,3.0,'xPaint',xC(XPAL.red),xC(xPick(XPAL.dark)),false);
+ xnPortico(0,P,D/2,0,V===2?13:9,3.2,4.2,wash,{band:true,valC:xC(XPAL.saffron)});vnDoor(0,P,D/2+.02,0,2.2,3.0,'xPaint',xC(XPAL.red),xC(xPick(XPAL.dark)),false);
  for(const s of[-1,1])xnMural('xMosA',s*3.1,P+.6,D/2+.02,0,1.6,2.4);xnRoundel(0,P+3.55,D/2+.02,0,.9);
  xnFlight(0,0,D/2+3.2+2.4,0,5,P,'vStone',stone);
  // the drums along the base, shrines flanking the stair, pennant lines from the roof corners

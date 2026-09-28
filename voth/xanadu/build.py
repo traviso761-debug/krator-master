@@ -49,6 +49,7 @@ DIST = os.path.join(HERE, 'dist')
 # table and view list, merged into the one sorted filename order.
 TARGET_OUT = {
     'xanadu': 'xanadu.html',            # the whole kit in rows by family
+    'variants': 'xanadu-variants.html', # every def at variants 1 and 2, side by side
 }
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell.

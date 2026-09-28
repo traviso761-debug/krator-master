@@ -6,12 +6,13 @@ const XA_ROWS=[];   // {family, z, d, keys}
 // tall (a temple, the palace) the gap is widened so the previous row's camera is not behind a 40 m wall.
 const rowCamDist=w=>Math.max(40,Math.min(w*.55,260));
 const eyeCamDist=D=>Math.max(10,Math.max(D.w,D.h||0)*.9+D.d*.5);   // an eye-level camera stands this far in front of the plot centre
+const XA_VS=(typeof XA_VARIANTS==='undefined')?[0]:XA_VARIANTS;   // a target may show every def at several variants (o.v)
 (function xaLayout(){let z=0;const fams=XA.families();
- let prev=null;fams.forEach((F,fi)=>{const ws=F.keys.map(k=>VERN.defs[k].w+9);const total=ws.reduce((a,c)=>a+c,0);
+ let prev=null;fams.forEach((F,fi)=>{const ws=F.keys.map(k=>(VERN.defs[k].w+9)*XA_VS.length);const total=ws.reduce((a,c)=>a+c,0);
   const dmax=Math.max(...F.keys.map(k=>VERN.defs[k].d||VERN.defs[k].w)),hmax=Math.max(...F.keys.map(k=>VERN.defs[k].h||0));
   if(prev)z+=Math.max(0,Math.max(rowCamDist(prev.w),prev.h*1.7)+10-22);   // every row: keep the previous row's camera out of this row's plots
   z+=dmax/2;let x=-total/2;
-  F.keys.forEach((k,i)=>{SITES.push({key:k,x:x+ws[i]/2,z,ry:0,o:{v:0}});x+=ws[i];});
+  F.keys.forEach((k,i)=>{const u=ws[i]/XA_VS.length;XA_VS.forEach((v,j)=>SITES.push({key:k,x:x+u*(j+.5),z,ry:0,o:{v}}));x+=ws[i];});
   prev={family:F.family,z,d:dmax,w:total,h:hmax,keys:F.keys};XA_ROWS.push(prev);
   const eyeNeed=Math.max(...F.keys.map(k=>eyeCamDist(VERN.defs[k])))-dmax/2+6;   // keep eye-level cameras clear of the next row
   z+=dmax/2+Math.max(22,eyeNeed);});
@@ -23,7 +24,7 @@ function xaAutoViews(extra){const V={};const R=XA_ROWS;if(!R.length)return V;con
  V['Overview']=[-900,520,mid.z+80,0,10,mid.z];
  for(const r of R){const dist=Math.max(rowCamDist(r.w),(r.h||0)*1.7);V[r.family]=[0,Math.max(18,dist*.45),r.z+r.d/2+dist,0,Math.min(4+(r.h||0)*.35,20),r.z];}
  for(const S of SITES){const D=VERN.defs[S.key];if(!D)continue;const dist=eyeCamDist(D);
-  V[D.name+' — eye level']=[S.x+D.w*.18,1.7,S.z+dist,S.x,Math.min(D.h||6,14)*.4,S.z];}
+  V[D.name+(S.o.v?' v'+S.o.v:'')+' — eye level']=[S.x+D.w*.18,1.7,S.z+dist,S.x,Math.min(D.h||6,14)*.4,S.z];}
  return Object.assign(V,extra||{});}
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);
 renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;document.body.appendChild(renderer.domElement);
