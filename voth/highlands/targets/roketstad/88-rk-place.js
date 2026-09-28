@@ -83,10 +83,10 @@ cityBakeMasks();
 const STREETS={made:0,tries:0};
 (function growStreets(){reseed(SEED_RK+5);const G=10;const pts=[];
  for(let x=TC.x-TC.R-40;x<=TC.x+TC.R+40;x+=G)for(let z=TC.z-TC.R-40;z<=TC.z+TC.R+40;z+=G){const jx=x+rr(-3,3),jz=z+rr(-3,3);if(!insideWall(jx,jz,26)||!canBuild(jx,jz)||inPrecinct(jx,jz,2))continue;pts.push([jx,jz]);}
- const served=p=>{const n=nearestRoadPt(p[0],p[1],null,40);return n&&n.d<28;};
+ const served=p=>{const n=nearestRoadPt(p[0],p[1],null,40);return n&&n.d<23;};   // blocks ~45 m deep: a row each side and a yard between
  const blockedAt=(x,z)=>!insideWall(x,z,22)||inPrecinct(x,z,1)||!occFree({x,z,hx:3.5,hz:3.5,ry:0},0);
  let pool=pts.filter(p=>!served(p));
- for(let it=0;it<900&&pool.length;it++){const p=pool[Math.floor(rng()*pool.length)];STREETS.tries++;
+ for(let it=0;it<1400&&pool.length;it++){const p=pool[Math.floor(rng()*pool.length)];STREETS.tries++;
   const n=nearestRoadPt(p[0],p[1],null,400);if(!n){pool=pool.filter(q=>q!==p);continue;}
   let hd=Math.atan2(p[1]-n.z,p[0]-n.x);const path=[[n.x,n.z]];let x=n.x,z=n.z,len=0;const L=Math.hypot(p[0]-n.x,p[1]-n.z)+rr(30,110);let joined=false;
   // long straight-ish runs with bends between them: room for continuous rows of houses
