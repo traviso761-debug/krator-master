@@ -45,8 +45,20 @@ Hotel overhang fixes were already done before this session.
 blades) instead of aborting a full build at the first one, and its seed check
 expands `N+d` over decays 0-4.
 
-Still open from the older queue: the dockyard pair, the Wing / Drum / Blades
-(seeds 9620/9630/9640 still unclaimed), overgrown (biome) variants for every
+**In flight (dispatched 2026-09-28):** the Wing (`8ae-wing.js`, 9620), the
+Drum (`8af-drum.js`, 9630), the Blades (`8ag-blades.js`, 9640, with its skyI
+fallback) from the memorial-group briefs below, and a NEW type, **the Wheel**
+(`89j-wheel.js`, target `wheel`, seed 9750, registered): a raised ring band of
+forested parkland and buildings, ~2.4-3.2 km across, carried on eight towers,
+with a tallest central tower and eight elevated parkland spokes from it to the
+rim towers, many light wells through band and spokes lighting an inhabited lower
+city; the idea of a raised plate city on towers (the user cited Midgar) but
+lighter, greener, and not a copy. Its ruin drops one band sector onto the city.
+Each agent works in its own worktree and commits as it goes; if one is stopped,
+look for its files under .claude/worktrees/ and recover them before
+re-dispatching.
+
+Still open from the older queue: the dockyard pair, overgrown (biome) variants for every
 type except the Hexahedron, and the kit-wide detail pass (Gaudi mouldings,
 interiors behind openings, glass shards).
 
