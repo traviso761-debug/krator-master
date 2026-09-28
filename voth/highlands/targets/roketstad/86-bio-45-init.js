@@ -24,5 +24,5 @@ const RK_FIELD={
  flow:(x,z)=>0,
  upland:(x,z)=>clamp((terrainH(x,z)-20)/60,0,1)};
 BIO.init({THREE:THREE,scene:null,terrainH:(x,z)=>terrainH(x,z),mask:bioMaskFn,obstacles:BIO_OBSTACLES,
- ticks:fn=>FRAME_HOOKS_PRE.push(fn),seed:SEED_RK,origin:[[TC.x,TC.z],[PC.x,PC.z],[0,-900],[0,900]],center:[0,0],fields:RK_FIELD,err:m=>reportErr('biome: '+m),
+ ticks:fn=>FRAME_HOOKS_PRE.push(fn),seed:SEED_RK,origin:[[TC.x,TC.z],[PC.x,PC.z]],center:[0,0],fields:RK_FIELD,err:m=>reportErr('biome: '+m),
  stat:(k,tris,inst)=>{const key='biome/'+k.replace('nwlow/','');const t=TSTAT.by[key]||(TSTAT.by[key]={tris:0,inst:0,meshes:0});t.tris+=tris;t.inst+=inst;}});
