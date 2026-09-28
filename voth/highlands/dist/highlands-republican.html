@@ -5610,6 +5610,7 @@ const HSALV={
  roofGable:new Set(['vGableS','vGableT','hGableSc','hGableTurf','vGableCu']),roofHip:new Set(['vHipS','vHipT','hHipSc','hHipTurf','hHipSh','vHipCu']),
  roofPyr:new Set(['vPyrS','vPyrT','vPyrSh','hPyrSc','vPyrCu']),gableEnd:new Set(['vGableW','hGableLog','vGablePl','hGableBM']),
  wall:new Set(['hLogB','vWood','vPlaster','hBMatB','hRUBoardV']),post:new Set(['vPost','vPostB']),
+ roofMats:new Set([MAT.scale,MAT.shingle,MAT.thatch,MAT.turf]),
  share:{poor:.85,middle:.65,rich:.35,civic:.35},
 };
 let _hlSalvBusy=false;
@@ -5630,11 +5631,11 @@ kput=function(name,p,q,s,c){const C=VERN.cur;if(_hlSalvBusy||!C||!C.o.salvage)re
  // Travis, round 3b: no metal WALLS (they did not work on the houses); roofs go FULLY metal — every roof piece of the
  // building, one metal chosen per building — except on wealthy buildings, which keep their roofs.
  if(C.D.tags.wealth==='rich')return _hlKputSalv(name,p,q,s,c);
- const rust=h3(C.x*.37,C.z*.51,7.7)<.4;
- if(HSALV.roofBox.has(name)&&!(name==='vThatchB'&&big<2)){put(rust?'vRustB':'vCorr',p,q,s,null);if(big>2.4)patch(true,1+Math.floor(h2*3));return;}
- if(HSALV.roofGable.has(name)){put(rust?'hGableR':'vGableC',p,q,s,null);return;}
- if(HSALV.roofHip.has(name)){put(rust?'hHipR':'vHipC',p,q,s,null);return;}
- if(HSALV.roofPyr.has(name)){put(rust?'hPyrR':'vPyrC',p,q,s,null);return;}
+ const rust=h3(C.x*.37,C.z*.51,7.7)<.4,def=KIT.defs[name];
+ // any item skinned in a ROOF material — whatever its shape: slab, gable, hip, keel, tent, eyelid, cone — gets a
+ // metal twin of the same geometry (made on first use). Thatch only when big (hay stays hay).
+ if(def&&HSALV.roofMats.has(def.mat)&&!(def.mat===MAT.thatch&&big<2.2)){const mk=name+(rust?'_mR':'_mC');if(!KIT.defs[mk])kdef(mk,def.geo,rust?MAT.rust:MAT.corrugate);
+  put(mk,p,q,s,null);if(def.geo===VBOX&&big>2.4)patch(true,1+Math.floor(h2*3));return;}
  if(HSALV.post.has(name)&&S[1]>1.2&&hh<sh*.4){put('vPipeR',p,q,s,null);return;}
  return _hlKputSalv(name,p,q,s,c);};
 // a stovepipe and a scrap pile at the back corner of the plot, after the building
@@ -5647,11 +5648,12 @@ function hnSalvDress(D){
  for(let k=0;k<7;k++){const a=h3(k,D.w,1),b=h3(k,D.d,2);kput(['vPlate','vSheet','vPlateW'][k%3],[x+(a-.5)*1.8,.25+k*.04,z+(b-.5)*1.4],qEuler(-Math.PI/2+(a-.5)*.5,a*3,(b-.5)*.4),[rr(1,1.8),rr(.8,1.4),1],null);}
  vPst('vPipeR',x+.9,0,z+.6,.12,.8,null);vPst('vTankR',x-.6,0,z-.3,.35,.9,null);}
 const HSALV_TYPES=['single-family dwelling','multi-family dwelling','market/shop','farm','tavern/inn'];
-for(const k of VERN.order.slice()){const D=VERN.defs[k];if(!D.branch||k.endsWith('_reclaimed'))continue;const ty=D.tags.type||[];
- const ok=(ty.some(t=>HSALV_TYPES.includes(t))||/smithy|warehouse/.test(k))&&D.tags.wealth!=='civic'&&!D.tags.landmark;if(!ok)continue;
+const HSALV_DEFENCE=['hl_rep_wall','hl_rep_wall_tower','hl_rep_gate'];   // Travis: the town wall, towers and gate get a reclaimed-roof variant too
+for(const k of VERN.order.slice()){const D=VERN.defs[k];if(!D.branch||k.endsWith('_reclaimed'))continue;const ty=D.tags.type||[];const defence=HSALV_DEFENCE.includes(k);
+ const ok=defence||((ty.some(t=>HSALV_TYPES.includes(t))||/smithy|warehouse/.test(k))&&D.tags.wealth!=='civic'&&!D.tags.landmark);if(!ok)continue;
  const T=Object.assign({},D.tags,{salvage:true});delete T.culture;delete T.kit;
  HL.def({key:k+'_reclaimed',baseKey:k,name:D.name+' (reclaimed)',branch:D.branch,family:D.family,tags:T,w:D.w,d:D.d,h:D.h,
-  build:function buildHlReclaimed(G,o){reseed(24051+(o.v|0));o.salvage=true;D.build(G,o);hnSalvDress(D);
+  build:function buildHlReclaimed(G,o){reseed(24051+(o.v|0));o.salvage=true;D.build(G,o);if(!defence)hnSalvDress(D);
    for(let i=VERN.cur.r0;i<REG.length;i++)if(!/reclaimed/.test(REG[i].name))REG[i].name+=' — reclaimed';}});}
 // TARGET: republican — rows by branch and family (laid out by hlLayout in 90-scene.js), front (+z) toward the camera.
 const TITLE='Highlands Kit — Republican';

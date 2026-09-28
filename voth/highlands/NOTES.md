@@ -64,3 +64,16 @@ Franconian and Tudor references).
   Every half-timbered building picks this up through the shared helpers.
 * `88-hl-dress.js` — a post-build pass: signposts for trade/guild defs that had no sign; carved two-pillar portals
   round the main door of nine buildings (door found by recording `vnDoor` calls).
+
+## Round 3 (Sep 28 2026) — reclaimed variants
+
+Travis: a variant of the residential, shop, farm, smithy, warehouse and tavern buildings with more reclaimed metal;
+then: no metal walls (they did not suit the houses), keep the lean-tos, roofs FULLY metal, wealthy buildings get no
+metal roofing; and the town wall, wall tower and gate get a reclaimed-roof variant too. Travis also caught the
+bargeboard lace hanging upside-down on one rake of every gable (fixed in `hnBarge`).
+
+`88-hl-dress.js`: every qualifying def gets a twin `<key>_reclaimed` in the same family row, running the SAME builder
+and seed under a salvage filter on `kput`: any item skinned in a roof material (scale, shingle, thatch, turf) — slab,
+gable, hip, keel, tent, eyelid — is re-issued as a metal twin of the same geometry (corrugate or rusted plate, one
+per building), with sheets patched over the big slabs; walls are untouched; some posts become rusted pipe. Then a
+corrugate lean-to with a stove and a scrap pile (not on the wall pieces). Rich defs keep their roofs. ~55 twins.
