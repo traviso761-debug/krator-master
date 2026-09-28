@@ -3,6 +3,16 @@ const ctl={target:new THREE.Vector3(0,0,0),theta:0,phi:1.1,radius:600};
 function setView(cx,cy,cz,tx,ty,tz){ctl.target.set(tx,ty,tz);const dx=cx-tx,dy=cy-ty,dz=cz-tz;ctl.radius=Math.sqrt(dx*dx+dy*dy+dz*dz);ctl.theta=Math.atan2(dx,dz);ctl.phi=Math.acos(clamp(dy/ctl.radius,-1,1));}
 function applyCam(){const r=ctl.radius,sp=Math.sin(ctl.phi);camera.position.set(ctl.target.x+r*sp*Math.sin(ctl.theta),ctl.target.y+r*Math.cos(ctl.phi),ctl.target.z+r*sp*Math.cos(ctl.theta));
  const g=terrainH(camera.position.x,camera.position.z)+1.8;if(camera.position.y<g)camera.position.y=g;camera.lookAt(ctl.target);}
+// a view that finds its subject at build time: the hero (lv 2) of species `sp`
+// nearest `anchor`, framed from `dist` m away and `h` m up, looking at a third of
+// its height -- so the preset survives a reseed or a rezoning
+function viewOfSpecies(sp,anchor,dist,h,az){return()=>{let best=null,bd=1e9;
+ for(const T of (EASTABYSS.TREES||[])){if(T.sp!==sp||T.lv!==2)continue;const d=Math.hypot(T.x-anchor[0],T.z-anchor[1]);if(d<bd){bd=d;best=T;}}
+ if(!best)return[anchor[0]+dist,h,anchor[1],anchor[0],4,anchor[1]];
+ const a=az==null?.7:az,ty=best.y0+Math.min(best.H*.35,14);return[best.x+Math.cos(a)*dist,Math.max(terrainH(best.x+Math.cos(a)*dist,best.z+Math.sin(a)*dist)+2,best.y0+h),best.z+Math.sin(a)*dist,best.x,ty,best.z];};}
+function viewOfBed(anchor,dist,h){return()=>{let best=null,bd=1e9;
+ for(const B of (EASTABYSS.REEDBEDS||[])){if(B.n<120)continue;const d=Math.hypot(B.x-anchor[0],B.z-anchor[1]);if(d<bd){bd=d;best=B;}}
+ if(!best)return[anchor[0]+dist,h,anchor[1],anchor[0],2,anchor[1]];return[best.x+dist*.7,h,best.z+dist*.7,best.x,1.5,best.z];};}
 const VIEWS={
  'The salt lake':[1180,42,-260,-300,0,120],
  'Shore lycopsids':[690,9,-380,900,2,-300],
@@ -13,6 +23,12 @@ const VIEWS={
  'The marsh':[1250,8,-120,1520,14,-330],
  'Marsh pools':[1180,5,70,1270,-.5,-5],
  'The east delta':[1110,22,540,800,4,300],
+ 'Beard oaks':viewOfSpecies(18,[1700,0],42,7,.9),
+ 'Mat-reed beds':viewOfBed([1000,0],34,5),
+ 'Cordaites at the shore':viewOfSpecies(15,[900,-300],60,12,-.6),
+ 'Seal-trees':viewOfSpecies(14,[1400,100],55,12,2.4),
+ 'Rope araucarias':viewOfSpecies(17,[2950,200],60,16,.4),
+ 'Water palms':viewOfSpecies(19,[900,-150],26,5,-1.2),
  'Into the jungle':[2190,12,-80,2480,60,-180],
  'Under the scale-trees':[2560,10,160,2760,70,20],
  'The tower':[2130,30,-640,2560,110,-420],
@@ -22,9 +38,9 @@ const VIEWS={
  'From afar':[-3000,260,-2300,0,40,0],
  'Krator rising':[-600,30,600,1900,900,-2100],
 };
-const ui=document.getElementById('ui');const sel=document.createElement('select');sel.id='viewsel';for(const k in VIEWS){const o=document.createElement('option');o.textContent=k;sel.appendChild(o);}sel.onchange=()=>setView(...VIEWS[sel.value]);ui.appendChild(sel);
+const ui=document.getElementById('ui');const sel=document.createElement('select');sel.id='viewsel';for(const k in VIEWS){const o=document.createElement('option');o.textContent=k;sel.appendChild(o);}sel.onchange=()=>setView(...viewArgs(sel.value));ui.appendChild(sel);
 // hidden buttons, one per preset: verify.py drives the views through these
-const _hb=document.createElement('div');_hb.style.display='none';ui.appendChild(_hb);for(const k in VIEWS){const b=document.createElement('button');b.textContent=k;b.onclick=()=>setView(...VIEWS[k]);_hb.appendChild(b);}
+const _hb=document.createElement('div');_hb.style.display='none';ui.appendChild(_hb);for(const k in VIEWS){const b=document.createElement('button');b.textContent=k;b.onclick=()=>setView(...viewArgs(k));_hb.appendChild(b);}
 const insp=document.getElementById('insp');const ray=new THREE.Raycaster();
 function inspectAt(cx,cy){const v=new THREE.Vector2(cx/innerWidth*2-1,-(cy/innerHeight)*2+1);ray.setFromCamera(v,camera);
  const hits=ray.intersectObjects(scene.children,true).filter(h=>!h.object.userData.probeSkip||h.object.userData.inspectLabel);
@@ -35,7 +51,8 @@ function inspectAt(cx,cy){const v=new THREE.Vector2(cx/innerWidth*2-1,-(cy/inner
  const lab=o.userData.inspectLabel||o.name||'mesh',isItem=o.isInstancedMesh&&o.userData.biome;
  let name=isItem?lab+(best?'  (under '+best.name+')':''):(best?best.name+'  ·  '+lab:lab);
  insp.textContent=name+'\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m';}
-setView(...VIEWS[Object.keys(VIEWS)[0]]);
+function viewArgs(k){const V=VIEWS[k];return typeof V==='function'?V():V;}
+setView(...viewArgs(Object.keys(VIEWS)[0]));
 const cv=renderer.domElement;let drag=null;const keys={};
 cv.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,sx:e.clientX,sy:e.clientY,b:e.button};cv.setPointerCapture(e.pointerId);});
 cv.addEventListener('pointerup',e=>{if(drag&&drag.b===0&&Math.abs(e.clientX-drag.sx)<4&&Math.abs(e.clientY-drag.sy)<4)inspectAt(e.clientX,e.clientY);drag=null;});cv.addEventListener('contextmenu',e=>e.preventDefault());

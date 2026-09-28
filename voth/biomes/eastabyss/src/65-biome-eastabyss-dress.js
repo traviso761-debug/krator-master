@@ -11,7 +11,6 @@
 // the soffits with roots and curtains hanging out of them, brackets on the
 // arrises, and density falling off into the dark middle of an underside.
 (function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm,qEuler,qFacing,qUp}=BIO.fn;
-
 const PAL=EASTABYSS.PAL;PAL.vine=PAL.vine||[0x3d5a2a,0x2f4a24,0x4a6a30];
 const C=hex=>new BIO.host.THREE.Color(hex);
 const vcol=()=>C(pick(PAL.vine)).offsetHSL(rr(-.03,.03),rr(-.08,.08),rr(-.05,.05));

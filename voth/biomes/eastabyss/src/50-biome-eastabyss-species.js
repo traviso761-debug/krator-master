@@ -3,14 +3,16 @@
 // flats and salt marsh round it, and on the slope up to the shelf a
 // hypertropic jungle of the old kind -- scale-trees, tree ferns, cycads, giant
 // horsetails, club-mosses -- but flowering, most of it straight off the trunk
-// (cauliflory), fading into savannah under the wall. Everything here is DATA
+// (cauliflory), fading into savannah under the wall. The second pass added the
+// coal-swamp set from the reference plates: seal-trees (Sigillaria), strap
+// cordaites, seed ferns, rope araucarias on the slope, beard oaks on the marsh
+// hummocks and water palms in the shallows. Everything here is DATA
 // and kit definitions; no placement. Tags follow the project rule: climate /
 // aridity / abyssal / riparian. Every aridity tag is honoured by the placement
 // passes: an 'arid' plant is never put on wet ground and a 'humid' one never
 // on the flats.
 var EASTABYSS={};
 (function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm,qEuler,qFacing,qUp}=BIO.fn;
-
 const T3=BIO.host.THREE,C=h=>new T3.Color(h);
 EASTABYSS.TAGS={climate:'hypertropic',aridity:'arid..humid',abyssal:true,riparian:'both'};
 
@@ -53,6 +55,9 @@ Object.assign(PAL,{
  litter:[0x3a2c1c,0x4a3824,0x2e2416],
  fungus:[0xa08464,0x8d6a5e,0xb89a70,0xd8b878],
  deadwood:[0x5a4a3a,0x4a3c30,0x6a5846,0x5e4638],
+ cordgrass:[0x9aa050,0xa8b058,0x8a9a48,0xb8b860,0x7a8a3c],                             // the marsh meadow: a gold-green sea of tall grass
+ floatleaf:[0x4a7a3a,0x5a8a44,0x3e6a32,0x6a9a4e,0x7a8a3a],                             // floating leaf rafts on the still water
+ hyacinth:[0x7aa060,0x8ab070,0x6a9058],
 });
 
 // ---------------------------------------------------------------- the tree species
@@ -101,6 +106,35 @@ EASTABYSS.SPECIES=[
  /*13*/{key:'sanfordacaulis',name:'Sanfordacaulis',H:[8,16],rb:[.2,.42],crownR:[2.5,4.5],barkK:1,bark:[0x4a4034,0x3e3628,0x564a3c],
   leaf:[0x7ac8a0,0x8ad0b0,0x6ab890,0x9ad8c0,0xb090d0],
   tags:{climate:'tropic',aridity:'humid',abyssal:true,riparian:'both'}},
+ // ---- the coal-swamp set (second pass)
+ /*14*/{key:'sigillaria',name:'Seal-tree',/* Sigillaria: an unbranched fluted pole, leaf scars in vertical rows, a pompom of grass-leaves on top, cones hung under it */
+  H:[20,36],rb:[1.2,2.0],crownR:[6,10],barkK:5,bark:[0x4e5646,0x444c3c,0x585f4e],
+  leaf:[0x3a7a3c,0x2e6a34,0x4a8a48,0x2a6a5a],bloomOn:'trunk',
+  tags:{climate:'hypertropic',aridity:'humid',abyssal:true,riparian:'yes'}},
+ /*15*/{key:'cordaite',name:'Strap cordaite',/* Cordaites: a slender trunk, a few rising boughs each ending in a tuft of metre-long strap leaves, catkins hanging; prop roots at the water */
+  H:[24,44],rb:[1.0,1.7],crownR:[9,15],barkK:2,bark:[0x5a5248,0x4e463c,0x665e54],
+  leaf:[0x3e8a4a,0x4a9a52,0x2e7a40,0x5aa860],boughs:[3,5],bloomOn:'boughs',
+  tags:{climate:'tropic',aridity:'humid',abyssal:true,riparian:'both'}},
+ /*16*/{key:'seedfern',name:'Seed fern',/* Medullosa: a stout fibrous trunk, a handful of huge round-pinnuled fronds, fat seeds hanging under them */
+  H:[3,8],rb:[.5,.9],crownR:[4,7],barkK:1,bark:[0x463a2c,0x3c3226,0x52443a],
+  leaf:[0x3f7a3a,0x4a8a40,0x356a32,0x5a9a48,0x7a8a30],fronds:[5,9],
+  tags:{climate:'hypertropic',aridity:'humid',abyssal:true,riparian:'both'}},
+ /*17*/{key:'araucaria',name:'Rope araucaria',/* the monkey-puzzle habit: tiers of rope-like branches sheathed in scale leaves, drooping then turning up at the tips */
+  H:[18,40],rb:[.8,1.6],crownR:[7,12],barkK:2,bark:[0x4a4842,0x3e3c38,0x56544e],
+  leaf:[0x2e5a34,0x3a6a3c,0x264c2c,0x467a44],tiers:[5,9],
+  tags:{climate:'temperate',aridity:'semiarid',abyssal:true,riparian:'no'}},
+ /*18*/{key:'beardoak',name:'Beard oak',/* the marsh live oak: a short leaning bole, huge sprawling boughs, small dark leaves, beards of moss and ferns on every limb */
+  H:[9,18],rb:[1.0,1.9],crownR:[12,22],barkK:3,bark:[0x4e4a44,0x44403a,0x5a564e],
+  leaf:[0x2f5a2c,0x3a6a34,0x274c26,0x46783a],boughs:[3,5],beards:true,
+  tags:{climate:'tropic',aridity:'subhumid',abyssal:true,riparian:'both'}},
+ /*19*/{key:'waterpalm',name:'Water palm',/* a stemless feather palm rooted at the water line, fronds rising from a rhizome (the Nypa habit) */
+  H:[5,9],rb:[.6,1.0],crownR:[5,8],barkK:1,bark:[0x4e4232,0x443a2c,0x5a4e3c],
+  leaf:[0x3a8a44,0x4a9a4c,0x2e7a3a,0x6aaa58],fronds:[9,15],
+  tags:{climate:'tropic',aridity:'humid',abyssal:true,riparian:'yes'}},
+ /*20*/{key:'matreed',name:'Mat reed',/* a totora-type bulrush: stems 3-5 m, straight, round, pithy and uniform, in dense pure beds along still water -- the reed one cuts for mats, thatch and boats. Not built by a tree builder: EASTABYSS.buildReedBeds lays the beds and exports them */
+  H:[2.8,5.2],rb:[.02,.03],crownR:[.3,.5],barkK:4,bark:[0x7a8a4a,0x6a7a3c,0x8a9a52],
+  leaf:[0x6a8a3a,0x7a9a44,0x8a9a50,0x9aa058,0x5a7a34],use:'reed mats, thatch, cordage, reed boats',bed:{R:[7,18],spacing:1.35},
+  tags:{climate:'tropic',aridity:'humid',abyssal:true,riparian:'yes'}},
 ];
 
 // ---------------------------------------------------------------- leaf textures
@@ -215,6 +249,36 @@ TX.sanford=BIO.alphaTex(512,(g,S)=>{g.lineCap='round';const cx=S/2,cy=S/2;
  for(let i=0;i<140;i++){const a=rr(0,TAU),L=S*.44*rr(.5,1),lum=lerp(110,230,rng());let x=cx,y=cy,aa=a;g.strokeStyle=BIO.tex.grey(lum);g.lineWidth=rr(2,3.5);
   g.beginPath();g.moveTo(x,y);for(let k=0;k<5;k++){aa+=rr(-.25,.25);x+=Math.cos(aa)*L/5;y+=Math.sin(aa)*L/5;g.lineTo(x,y);}g.stroke();
   g.fillStyle=BIO.tex.grey(Math.min(255,lum*1.1));for(let k=0;k<4;k++){g.beginPath();g.ellipse(x+rr(-8,8),y+rr(-8,8),5,2.5,rr(0,TAU),0,TAU);g.fill();}}},[160,160,160]);
+/* blades: the cordaite's metre-long strap leaves -- fewer, longer, wider than the scale-trees' straps, radiating from a few cushions */
+TX.blade=BIO.alphaTex(512,(g,S)=>{g.lineCap='round';BIO.tex.clusters(S,5,.45);
+ for(let i=0;i<40;i++){const p=BIO.tex.clPt(S,.06,.40),lum=lerp(110,232,i/40)+rr(-18,18),n=ri(5,8),a0=rr(0,TAU);
+  for(let k=0;k<n;k++){const a=a0+k/n*TAU+rr(-.25,.25),L=rr(110,170),w=rr(7,11);g.strokeStyle=BIO.tex.grey(lum*rr(.85,1.08));g.lineWidth=w;
+   g.beginPath();g.moveTo(p[0],p[1]);g.quadraticCurveTo(p[0]+Math.cos(a)*L*.5,p[1]+Math.sin(a)*L*.5+rr(-10,10),p[0]+Math.cos(a)*L,p[1]+Math.sin(a)*L);g.stroke();
+   g.strokeStyle=BIO.tex.grey(lum*.7);g.lineWidth=1.2;g.beginPath();g.moveTo(p[0],p[1]);g.lineTo(p[0]+Math.cos(a)*L*.9,p[1]+Math.sin(a)*L*.9);g.stroke();}}},[130,130,130]);
+/* the seed fern's frond: a stout midrib with big round tongue-shaped pinnules, alternate, along +x */
+TX.seedfrond=BIO.alphaTex(256,(g,S)=>{g.lineCap='round';
+ for(let f=0;f<3;f++){const y=S*(.19+.31*f);g.strokeStyle=BIO.tex.grey(80);g.lineWidth=4;g.beginPath();g.moveTo(3,y);g.lineTo(S-3,y+rr(-3,3));g.stroke();
+  for(let x=10;x<S-6;x+=9){const t=x/S,L=lerp(30,9,Math.pow(t,1.2))*rr(.9,1.1);for(let sd=-1;sd<=1;sd+=2){const lum=lerp(120,225,rng());
+   g.fillStyle=BIO.tex.grey(lum);g.beginPath();g.ellipse(x+L*.3+(sd>0?4:0),y+sd*L*.55,L*.55,L*.28,sd*.9,0,TAU);g.fill();
+   g.strokeStyle=BIO.tex.grey(lum*.72);g.lineWidth=1;g.beginPath();g.moveTo(x,y);g.lineTo(x+L*.5,y+sd*L*.9);g.stroke();}}}},[145,145,145]);
+/* a feather-palm frond: a midrib with long straight narrow pinnae, along +x (the water palm) */
+TX.palmfrond=BIO.alphaTex(256,(g,S)=>{g.lineCap='round';
+ for(let f=0;f<3;f++){const y=S*(.19+.31*f);g.strokeStyle=BIO.tex.grey(95);g.lineWidth=3.2;g.beginPath();g.moveTo(3,y);g.lineTo(S-3,y);g.stroke();
+  for(let x=8;x<S-3;x+=3.6){const t=x/S,L=lerp(34,10,Math.pow(t,1.15))*rr(.9,1.08);for(let sd=-1;sd<=1;sd+=2){
+   g.strokeStyle=BIO.tex.grey(lerp(125,235,rng()));g.lineWidth=2.2;g.beginPath();g.moveTo(x,y);g.lineTo(x+L*.45,y+sd*L);g.stroke();}}}},[150,150,150]);
+/* the mat reed: straight uniform round stems, a few narrow leaves low down, a dark cigar head or a brown plume at the top (vertical tuft card) */
+TX.matreed=BIO.alphaTex(256,(g,S)=>{g.lineCap='round';
+ for(let k=0;k<9;k++){const x0=S/2+rr(-26,26),a=-Math.PI/2+rr(-.07,.07),L=S*rr(.8,.99),lum=lerp(120,225,rng()),ex=x0+Math.cos(a)*L,ey=S+Math.sin(a)*L;
+  g.strokeStyle=BIO.tex.grey(lum);g.lineWidth=rr(3.2,4.6);g.beginPath();g.moveTo(x0,S);g.lineTo(ex,ey);g.stroke();
+  for(let j=0;j<2;j++){const t=rr(.1,.4),bx=x0+Math.cos(a)*L*t,by=S+Math.sin(a)*L*t,sd=rng()<.5?-1:1;g.strokeStyle=BIO.tex.grey(lum*.9);g.lineWidth=2;g.beginPath();g.moveTo(bx,by);g.quadraticCurveTo(bx+sd*14,by-30,bx+sd*22,by-70);g.stroke();}   // a leaf or two, sheathing low
+  if(rng()<.55){g.fillStyle=BIO.tex.grey(lum*.55);g.beginPath();g.ellipse(ex,ey+14,3.8,17,a+Math.PI/2,0,TAU);g.fill();}                   // the cigar head
+  else{g.strokeStyle=BIO.tex.grey(lum*.8);g.lineWidth=1.4;for(let j=0;j<7;j++){g.beginPath();g.moveTo(ex,ey+6);g.lineTo(ex+rr(-9,9),ey+rr(-14,4));g.stroke();}}}},[140,140,140]);
+/* small dark elliptical leaves, dense -- the beard oak */
+TX.oak=BIO.alphaTex(512,(g,S)=>{g.strokeStyle=BIO.tex.grey(70);g.lineWidth=2.2;
+ for(let k=0;k<12;k++){const p=BIO.tex.discPt(S,.4),q=BIO.tex.discPt(S,.92);g.beginPath();g.moveTo(p[0],p[1]);g.quadraticCurveTo(S/2+rr(-80,80),S/2+rr(-80,80),q[0],q[1]);g.stroke();}
+ BIO.tex.clusters(S,11,.72);
+ for(let i=0;i<420;i++){const c=BIO.tex.clPt(S,.11,.94),lum=lerp(105,240,i/420)+rr(-20,12);
+  g.fillStyle=BIO.tex.grey(lum);g.beginPath();g.ellipse(c[0],c[1],rr(12,17),rr(5,7),rr(0,TAU),0,TAU);g.fill();}},[160,160,160]);
 EASTABYSS.TEX=TX;
 // ---------------------------------------------------------------- an iridescent bark
 // The sky scale-tree's cushions shimmer red-green with the view angle (and
@@ -235,7 +299,8 @@ BIO.iridBarkMat=function(tex){const m=BIO.barkMat(tex);
 // which is the lesson the hyperjungle kit's KNOWN_ISSUES asked for. Kinds:
 // 0 scale-tree cushions (diamond leaf scars), 1 fibrous (tree fern, cycad,
 // palmetto), 2 smooth pale with lenticels (bell-bark, stilt-wood, umbrella),
-// 3 stringy vertical (knee-tree), 4 ribbed + jointed (pipe reed).
+// 3 stringy vertical (knee-tree), 4 ribbed + jointed (pipe reed), 5 fluted with
+// leaf scars in vertical rows (the seal-tree).
 EASTABYSS.barkTex=function(kind){return BIO.canvasTex(256,512,(g,w,h)=>{
  g.fillStyle='#8c8c8c';g.fillRect(0,0,w,h);
  if(kind===0){const dx=22,dy=34;
@@ -255,11 +320,22 @@ EASTABYSS.barkTex=function(kind){return BIO.canvasTex(256,512,(g,w,h)=>{
   for(let i=0;i<300;i++){const x=rng()*w,d=rng();g.strokeStyle='rgba('+(d<.5?'55,55,55':'170,170,170')+','+(.3+rng()*.5).toFixed(2)+')';
    g.lineWidth=d<.5?rr(2,5):rr(1,2);g.beginPath();g.moveTo(x,-10);g.bezierCurveTo(x+rr(-10,10),h*.33,x+rr(-10,10),h*.66,x+rr(-8,8),h+10);g.stroke();}
   for(let i=0;i<30;i++){g.fillStyle='rgba(40,40,40,.5)';const x=rng()*w,y=rng()*h;g.fillRect(x,y,rr(2,5),rr(30,110));}}
- else{
+ else if(kind===4){
   for(let i=0;i<100;i++){const x=rng()*w;g.strokeStyle='rgba('+(rng()<.5?'70,70,70':'160,160,160')+',.45)';g.lineWidth=rr(1.5,3);g.beginPath();g.moveTo(x,-4);g.lineTo(x,h+4);g.stroke();}
   for(let y=20;y<h;y+=64){g.fillStyle='rgba(50,50,50,.75)';g.fillRect(0,y,w,5);g.fillStyle='rgba(190,190,190,.6)';g.fillRect(0,y+5,w,3);}}
+ else{const rw=32;   // 5: the seal-tree. Flutes (a dark groove between pale ribs) and a vertical row of hexagonal leaf scars down every rib
+  for(let x=0;x<w;x+=rw){g.fillStyle='rgba(165,165,165,.5)';g.fillRect(x+3,0,rw-8,h);g.fillStyle='rgba(55,55,55,.7)';g.fillRect(x,0,4,h);g.fillStyle='rgba(120,120,120,.35)';g.fillRect(x+rw-5,0,3,h);
+   for(let y=(x/rw%2)*11;y<h;y+=22){const cx=x+rw/2+rr(-1,1),cy=y+rr(-1,1);
+    g.fillStyle='rgba(70,70,70,.7)';g.beginPath();for(let k=0;k<6;k++){const a=k/6*TAU+Math.PI/6;g.lineTo(cx+Math.cos(a)*7,cy+Math.sin(a)*8);}g.closePath();g.fill();
+    g.fillStyle='rgba(190,190,190,.7)';g.beginPath();g.ellipse(cx,cy-1,3.2,2.2,0,0,TAU);g.fill();}}
+  for(let i=0;i<120;i++){g.fillStyle='rgba(90,90,90,'+(.15+rng()*.25).toFixed(2)+')';g.fillRect(rng()*w,rng()*h,rr(3,9),rr(1,3));}}
 });};
-EASTABYSS.BARKTEX=[0,1,2,3,4].map(k=>EASTABYSS.barkTex(k));
+EASTABYSS.BARKTEX=[0,1,2,3,4,5].map(k=>EASTABYSS.barkTex(k));
+// the rope araucaria's branches: overlapping scale leaves, near-grey, tinted per instance
+EASTABYSS.ROPETEX=BIO.canvasTex(256,128,(g,w,h)=>{g.fillStyle='#8a8a8a';g.fillRect(0,0,w,h);
+ for(let x=-8;x<w+8;x+=9)for(let j=-1;j<h/8+1;j++){const y=j*8+(Math.floor(x/9)%2?4:0),l=rr(0,1);
+  g.fillStyle='rgba('+(l<.5?'95,95,95':'150,150,150')+',.85)';g.beginPath();g.moveTo(x,y);g.lineTo(x+11,y-3);g.lineTo(x+11,y+3);g.closePath();g.fill();
+  g.strokeStyle='rgba(40,40,40,.55)';g.lineWidth=1;g.beginPath();g.moveTo(x,y);g.lineTo(x+11,y-3);g.stroke();}});
 EASTABYSS.WOODTEX=BIO.canvasTex(256,256,(g,w,h)=>{g.fillStyle='#5a4634';g.fillRect(0,0,w,h);
  for(let i=0;i<220;i++){const y=rng()*h;g.strokeStyle='rgba('+(rng()<.5?'40,30,22':'120,100,80')+','+(.2+rng()*.4).toFixed(2)+')';g.lineWidth=1+rng()*2;
   g.beginPath();g.moveTo(-4,y);g.lineTo(w+4,y+rr(-5,5));g.stroke();}});
@@ -304,6 +380,23 @@ G.whorl=function(){const pos=[],nor=[],uv=[];const n=7;
   const A=[ca*.08,0,sa*.08],B=[ca*1,-.16,sa*1];
   [[A[0]-px,A[1],A[2]-pz],[A[0]+px,A[1],A[2]+pz],[B[0]+px*.4,B[1],B[2]+pz*.4],[A[0]-px,A[1],A[2]-pz],[B[0]+px*.4,B[1],B[2]+pz*.4],[B[0]-px*.4,B[1],B[2]-pz*.4]].forEach(p=>{pos.push(p[0],p[1],p[2]);nor.push(0,1,0);uv.push(0,0);});}
  return BIO.geo._make(pos,nor,uv);};
+// a ROPE: a tapering 6-sided tube along +x from 0 to 1, sagging in the middle and
+// turning up at the tip (the araucaria branch), textured round its girth
+G.rope=function(){const pos=[],nor=[],uv=[];const N=7,seg=5,rings=[];
+ for(let i=0;i<=N;i++){const t=i/N,y=-.42*t+.52*t*t,r=.048*(1-.55*t)+.006,ring=[];
+  const dy=-.42+1.04*t,tl=Math.hypot(1,dy),tx=1/tl,ty=dy/tl;   // tangent; the frame's normal is (-ty,tx,0), binormal z
+  for(let s=0;s<=seg;s++){const a=s/seg*TAU,c=Math.cos(a),sn=Math.sin(a),nx=-ty*c,ny=tx*c,nz=sn;ring.push({p:[t+nx*r,y+ny*r,nz*r],n:[nx,ny,nz],u:s/seg*2,v:t*6});}
+  rings.push(ring);}
+ const pv=q=>{pos.push(q.p[0],q.p[1],q.p[2]);nor.push(q.n[0],q.n[1],q.n[2]);uv.push(q.u,q.v);};
+ for(let i=0;i<N;i++)for(let s=0;s<seg;s++){const a0=rings[i][s],a1=rings[i][s+1],b0=rings[i+1][s],b1=rings[i+1][s+1];pv(a0);pv(b1);pv(a1);pv(a0);pv(b0);pv(b1);}
+ [[0,1,2],[2,3,4],[4,0,2]].forEach(tr=>{tr.forEach(s=>{const q=rings[N][s];pos.push(q.p[0],q.p[1],q.p[2]);nor.push(1,0,0);uv.push(q.u,q.v);});});   // a tip cap
+ return BIO.geo._make(pos,nor,uv);};
+// a FLOATING LEAF: a pointed ellipse lying in the xz plane, unit long along x, vertex-coloured (paler along the midrib)
+G.floatleaf=function(){const pos=[],nor=[],uv=[],col=[];const n=8;
+ for(let k=0;k<n;k++){const a0=k/n*TAU,a1=(k+1)/n*TAU;
+  const P=a=>{const c=Math.cos(a),s=Math.sin(a);return[c*.5,0,s*.19*(1-.35*c*c)];};
+  [[0,0,0,1.14],P(a1).concat([.9]),P(a0).concat([.9])].forEach(p=>{pos.push(p[0],p[1],p[2]);nor.push(0,1,0);uv.push(0,0);col.push(p[3],p[3],p[3]);});}
+ return BIO.geo._make(pos,nor,uv,col);};
 // a CONE: a squat cone on its base, origin at the base (cycad cones, knee-tree knees)
 G.cone=function(){const g=new T3.ConeGeometry(.5,1,7,1);g.translate(0,.5,0);return g;};
 EASTABYSS.G=G;
@@ -315,6 +408,12 @@ EASTABYSS.MAT={
  rock:BIO.barkMat(EASTABYSS.ROCKTEX),
  barkIrid:BIO.iridBarkMat(EASTABYSS.BARKTEX[0]),
  strapfrond:BIO.leafMat(TX.strapfrond,'strapfrond',{swayW:'(position.x)',swayA:.10}),
+ blade:BIO.leafMat(TX.blade,'blade',{aN:true,swayW:'1.0',swayA:.14}),
+ seedfrond:BIO.leafMat(TX.seedfrond,'seedfrond',{swayW:'(position.x)',swayA:.08}),
+ palmfrond:BIO.leafMat(TX.palmfrond,'palmfrond',{swayW:'(position.x)',swayA:.10}),
+ oak:BIO.leafMat(TX.oak,'oak',{aN:true,swayW:'1.0',swayA:.08}),
+ floatleaf:BIO.leafMat(null,'floatleaf',{swayW:'1.0',swayA:.015,alphaTest:0,vertexColors:true}),
+ matreed:BIO.leafMat(TX.matreed,'matreed',{swayW:'(position.y*position.y)',swayA:.10,alphaTest:.4}),
  calam:BIO.leafMat(TX.calam,'calam',{swayW:'(position.x)',swayA:.05}),
  sanford:BIO.leafMat(TX.sanford,'sanford',{aN:true,swayW:'1.0',swayA:.07,alphaTest:.38}),
  strap:BIO.leafMat(TX.strap,'strap',{aN:true,swayW:'1.0',swayA:.16}),
@@ -343,7 +442,7 @@ EASTABYSS.MAT={
  solid:BIO.solidMat(null,0xffffff),
 };
 const M=EASTABYSS.MAT;
-['Scale-tree bark','Fibrous bark','Pale bark','Knee-tree bark','Pipe-reed stems'].forEach((lab,i)=>BIO.bucket('bark'+i,M.bark[i],{label:lab,uvScale:[i===0?6:4,i===0?9:6]}));
+['Scale-tree bark','Fibrous bark','Pale bark','Knee-tree bark','Pipe-reed stems','Seal-tree bark'].forEach((lab,i)=>BIO.bucket('bark'+i,M.bark[i],{label:lab,uvScale:[i===0?6:i===5?5:4,i===0?9:i===5?8:6]}));
 BIO.bucket('bark0i',M.barkIrid,{label:'Sky scale-tree bark (iridescent)',uvScale:[6,9]});
 BIO.bucket('wood',M.wood,{label:'Dead wood',uvScale:[3,4]});
 BIO.bucket('rock',M.rock,{label:'Boulders',uvScale:[6,6]});
@@ -352,6 +451,13 @@ BIO.bucket('far',BIO.barkMat(null),{label:'Far trees (impostors)'});
 // ---------------------------------------------------------------- instanced items
 BIO.def('strap',BIO.geo.clump(),M.strap,{attrs:['aN'],label:'Scale-tree tufts'});
 BIO.def('strapfrond',BIO.geo.frond(4),M.strapfrond,{label:'Tide lycopsid fronds'});
+BIO.def('blade',BIO.geo.clump(),M.blade,{attrs:['aN'],label:'Cordaite strap leaves'});
+BIO.def('seedfrond',BIO.geo.frond(4),M.seedfrond,{label:'Seed-fern fronds'});
+BIO.def('palmfrond',BIO.geo.frond(4),M.palmfrond,{label:'Water-palm fronds'});
+BIO.def('oak',BIO.geo.clump(),M.oak,{attrs:['aN'],label:'Beard-oak foliage'});
+BIO.def('rope',G.rope(),BIO.solidMat(EASTABYSS.ROPETEX),{label:'Araucaria branches'});
+BIO.def('floatleaf',G.floatleaf(),M.floatleaf,{label:'Floating leaves'});
+BIO.def('matreed',G.tuft(),M.matreed,{label:'Mat reeds'});
 BIO.def('calam',BIO.geo.frond(3),M.calam,{label:'Calamophyton fronds'});
 BIO.def('sanford',BIO.geo.clump(),M.sanford,{attrs:['aN'],label:'Sanfordacaulis crowns'});
 BIO.def('broad',BIO.geo.clump(),M.broad,{attrs:['aN'],label:'Bell-bark foliage'});

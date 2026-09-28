@@ -1,5 +1,5 @@
 #!/bin/bash
-cd /home/claude/biome
+cd "$(dirname "$0")"
 L=$1; shift
 rm -f $L.done
 python3 -u verify.py dist/hyperjungle.html "$@" > $L.txt 2>&1
