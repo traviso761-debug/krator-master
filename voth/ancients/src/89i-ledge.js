@@ -120,8 +120,15 @@ MAT.ldFasc =new THREE.MeshStandardMaterial({map:TEX.ldStone,roughnessMap:TEX.con
 MAT.ldFascR=new THREE.MeshStandardMaterial({map:TEX.ldStoneR,roughnessMap:TEX.concreteRM,color:0xb0a592,roughness:1,metalness:0,side:DS});
 MAT.ldDeck =new THREE.MeshStandardMaterial({map:TEX.ldStone,roughnessMap:TEX.concreteRM,color:0xa99c86,roughness:1,metalness:0,side:DS});
 MAT.ldDeckR=new THREE.MeshStandardMaterial({map:TEX.ldStoneR,roughnessMap:TEX.concreteRM,color:0x877b67,roughness:1,metalness:0,side:DS});
-MAT.ldSoff =new THREE.MeshStandardMaterial({map:TEX.ldSoff,roughnessMap:TEX.concreteRM,color:0x9c9a95,roughness:1,metalness:0,side:DS});
-MAT.ldSoffR=new THREE.MeshStandardMaterial({map:TEX.ldSoffR,roughnessMap:TEX.concreteRM,color:0x686660,roughness:1,metalness:0,side:DS});
+// BOUNCE LIGHT IS PAINTED TOO. A downward face here sees only the hemisphere's
+// ground colour (0x6a3a2a), and no albedo can turn that neutral: at white the
+// best a soffit reaches is (.31,.17,.12), which is brown. The reference photo's
+// undersides are pale limestone lit by light bounced off the sand, so the soffit
+// carries a little emissive through its own texture. ldNightDim() pulls it down
+// at night, or 30 km of soffit would glow in the dark.
+MAT.ldSoff =new THREE.MeshStandardMaterial({map:TEX.ldSoff,roughnessMap:TEX.concreteRM,color:0x9c9a95,emissive:0x8c8984,emissiveMap:TEX.ldSoff,roughness:1,metalness:0,side:DS});
+MAT.ldSoffR=new THREE.MeshStandardMaterial({map:TEX.ldSoffR,roughnessMap:TEX.concreteRM,color:0x686660,emissive:0x55534f,emissiveMap:TEX.ldSoffR,roughness:1,metalness:0,side:DS});
+function ldNightDim(o,m){o.onBeforeRender=()=>{m.emissiveIntensity=NIGHT?.06:1;};}
 MAT.ldWin  =new THREE.MeshStandardMaterial({map:TEX.ldWin,color:0xffffff,emissive:0xffffff,emissiveMap:TEX.ldWinE,emissiveIntensity:1,roughness:.7,metalness:.05,side:DS});
 MAT.ldWinR =new THREE.MeshStandardMaterial({map:TEX.ldWinR,color:0xffffff,roughness:1,metalness:0,side:DS});
 MAT.ldSect =new THREE.MeshStandardMaterial({map:TEX.ldSect,color:0xd2c7b4,roughness:1,metalness:0,side:DS});
@@ -675,4 +682,5 @@ function buildLedge(scene,gx,gz,d){reseed(9740+d);KOFF=[gx,0,gz];
  // ---- merge ---------------------------------------------------------------------
  finish(A_FASC,fascM);finish(A_DECK,deckM);finish(A_SOFF,soffM);finish(A_WIN,winM);
  finish(A_SECT,MAT.ldSect);finish(A_VOID,MAT.ldVoid);
+ G.traverse(o=>{if(o.isMesh&&o.material===soffM)ldNightDim(o,soffM);});
  KOFF=[0,0,0];return G;}
