@@ -116,6 +116,7 @@ function buildDalabHalls(G,o){reseed(8541+(o.v|0));const R=68;const st=dCol(DPAL
   for(let k=0;k<7;k++){const a=k/7*TAU+.2;const p=dnOnRing(wx,wz,WR,a);let d=Math.abs(((a-toC)%TAU+TAU)%TAU);if(d>Math.PI)d=TAU-d;if(d<.5)continue;dnGodWin(p[0],2.4,p[1],a,.9,1.4,'vStone',st);}
   const dp=dnOnRing(wx,wz,WR,toC);vnDoor(dp[0],0,dp[1],toC,1.5,2.8,'vStone',st,vC(0x2a2a30),false);const lp=dnOnRing(wx,wz,WR,toC);dnGodLamp(lp[0],3.4,lp[1],toC);
   const ep=dnOnRing(wx,wz,WR-.2,toC);const cp=dnOnRing(0,0,12.8,Math.atan2(wx,wz));vBeam([ep[0],WH-.5,ep[1]],[cp[0],6.5,cp[1]],.35,null,'vPipeR');vBeam([ep[0],WH-1.6,ep[1]],[cp[0],4.8,cp[1]],.22,null,'vPipe');
+  for(const t of[.3,.62]){const px=ep[0]+(cp[0]-ep[0])*t,pz=ep[1]+(cp[1]-ep[1])*t,py=(WH-.5)+(6.5-(WH-.5))*t;vPst('vPipe',px,0,pz,.12,py-.1,iron);vB('vIron',px,py-.35,pz,.7,.12,.7,0,iron);}   // pipe trestles
   vPst(i%2?'vTankW':'vTankR',wx+w[0]*4,0,wz+w[1]*10,2.0,4.6,null);vB('vIron',wx+w[0]*4,4.6,wz+w[1]*10,4.4,.1,4.4,0,iron);vPst('vTankR',wx+w[0]*9,0,wz+w[1]*8,1.4,3.2,null);
   for(let k=0;k<3;k++)kput('vPipe',[wx+w[0]*(6-k*.7),0,wz+w[1]*(9+k*.5)],null,[.12,rr(2,4),.12],iron);});
  // the cell blocks: two long stone ranges of small cells on the east and west, God-lit doors along a colonnade
@@ -135,7 +136,7 @@ function buildDalabHalls(G,o){reseed(8541+(o.v|0));const R=68;const st=dCol(DPAL
  for(const s of[-1,1]){const px=s*40,pz=40;for(const sx of[-1,1])for(const sz of[-1,1])vBeam([px+sx*1.6,0,pz+sz*1.6],[px+sx*.3,26,pz+sz*.3],.18,iron,'vIron');
   for(let y=3;y<26;y+=3.5){const w=1.6-(1.3*y/26);vB('vIron',px,y,pz,w*2+.3,.12,.12,0,iron);vB('vIron',px,y,pz,.12,.12,w*2+.3,0,iron);}
   vB('vIron',px,26,pz,2.4,.2,2.4,0,iron);vBall('dGodBall',px,27,pz,.4);vBall('dGlassBall',px,27,pz,.4);kput('dGodHalo',[px,27,pz],vQ(0,0,0),[3,3,1],null);
-  vBeam([px,25.5,pz],[0,8+1.4+13*.7+2.8,0],.05,vC(0x3a3a3a),'vRope');vBeam([px,25.5,pz],[s*30,6,26],.05,vC(0x3a3a3a),'vRope');vBeam([px,25.5,pz],[s*30,6,-26],.05,vC(0x3a3a3a),'vRope');
+  dnCable([px,25.5,pz],[0,8+1.4+13*.7+2.8,0],2.6);dnCable([px,25.5,pz],[s*30,6,26],3.2);dnCable([px,25.5,pz],[s*30,6,-26],4.5);
   vB('vStone',px,0,pz,4.4,1.2,4.4,0,stD);}
  // steles round the court, God-posts along the axis, priests, supplicants
  for(let k=0;k<12;k++){const a=k/12*TAU+Math.PI/12;const p=dnOnRing(0,0,R-5,a);dnStele(p[0],0,p[1],a+Math.PI,3.6,st);}

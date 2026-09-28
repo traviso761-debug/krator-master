@@ -147,13 +147,17 @@ function buildDalabWindmill(G,o){reseed(8491+(o.v|0));const R=3.0,H=9;const wood
  // the cap: a thatch cone with a tail pole down the back
  kput('dConeT',[0,.9+H-.4,0],null,[R*.93*1.25,3.4,R*.93*1.25],th);kput('vRock',[0,.9+H+2.6,0],null,[.5,.5,.5],wood);
  vBeam([0,.9+H+.4,-R*.6],[0,1.2,-R-5],.14,wood);vPst('vPostB',0,0,-R-5,.12,1.4,wood);
- // axle, hub and four sails, tilted back 12 degrees
+ // axle, hub and four sails, tilted back 12 degrees. The sails are two merged meshes in their own group (DWIND) so the
+ // frame loop can turn them: two draw calls per windmill, the price of a moving part in an instanced kit.
  {const hy=.9+H+.5,tilt=-.2;const q=vQ(0,tilt,0);const ax=new THREE.Vector3(0,0,1).applyQuaternion(q);
   const hub=[ax.x*(R+.8),hy+ax.y*(R+.8),ax.z*(R+.8)];kput('vPost',[0,hy,0],vQ(0,tilt+Math.PI/2,0),[.16,R+1.6,.16],wood);vBall('vBall',hub[0],hub[1],hub[2],.32,vC(0x2e2a26));
-  for(let k=0;k<4;k++){const a=k*Math.PI/2+.4;const qs=q.clone().multiply(qEuler(0,0,a));const up=new THREE.Vector3(0,1,0).applyQuaternion(qs);const L=7.5;
-   kput('vWood',[hub[0]+up.x*L/2,hub[1]+up.y*L/2,hub[2]+up.z*L/2],qs,[.16,L,.16],wood);   // the stock
-   const side=new THREE.Vector3(1,0,0).applyQuaternion(qs);const c=[hub[0]+up.x*4.6+side.x*.7,hub[1]+up.y*4.6+side.y*.7,hub[2]+up.z*4.6+side.z*.7];
-   kput('vWood',c,qs,[1.5,5.2,.06],wood.clone().multiplyScalar(.85));kput('vClothB',[c[0]+ax.x*.05,c[1]+ax.y*.05,c[2]+ax.z*.05],qs,[1.3,4.8,.03],dCol([0xe8dcc0,0xd8a838,0xa8382a]));}}
+  const SG=new THREE.Group();SG.position.set(hub[0],hub[1],hub[2]);SG.quaternion.copy(q);G.add(SG);
+  const stocks=[],cloths=[];const L=7.5;
+  for(let k=0;k<4;k++){const a=k*Math.PI/2+.4;stocks.push(new THREE.BoxGeometry(.16,L,.16).translate(0,L/2,0).rotateZ(a));stocks.push(new THREE.BoxGeometry(1.5,5.2,.06).translate(.7,4.6,0).rotateZ(a));
+   cloths.push(new THREE.BoxGeometry(1.3,4.8,.03).translate(.7,4.6,.05).rotateZ(a));}
+  meshMerged(stocks,new THREE.MeshStandardMaterial({map:TEX.wood,color:wood,roughness:.92,side:DS}),SG,0,0,0);
+  meshMerged(cloths,new THREE.MeshStandardMaterial({map:TEX.stripes,color:dCol([0xe8dcc0,0xd8a838,0xa8382a]),roughness:.9,side:DS}),SG,0,0,0);
+  DWIND.push({grp:SG,rate:.45+rng()*.3});}
  // millstone shed, sacks, a cart of grain
  vB('vStone',R+3.5,-.05,1.5,5,.35,4,0,vC(0x9a8a78));for(const p of[[R+1.5,-.2],[R+5.5,-.2],[R+1.5,3.2],[R+5.5,3.2]])vPst('vPost',p[0],0,p[1],.09,2.6,wood);vnShedRoof(R+3.5,2.4,1.5,5.2,4.2,.7,0,'vThatchB',th,.5,.26);
  dnDrum('vStone',R+3.5,.3,1.5,1.0,.35,dCol(DPAL.stone));dnDrum('vStone',R+3.5,.65,1.5,1.0,.3,dCol(DPAL.stone));vnSacks(R+4.8,.3,.4,5);vnSacks(R+2.2,.3,2.6,3);

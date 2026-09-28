@@ -17,7 +17,7 @@ const VIEWS={
  "Priests' compound":RV(9,70,40,6),"Priests' compound — gate":EYE('dalab_priest_compound',30,3),"Priests' compound — court":EYE('dalab_priest_compound',-4,8),
  'Halls of Reformation':RV(10,190,110,12),'Halls — gate':EYE('dalab_halls',80,4),'Halls — court':EYE('dalab_halls',30,-12),'Halls — cells':EYE('dalab_halls',-10,-36),
  'Ceremonial mound':RV(11,120,60,12),'Mound — foot of the stair':EYE('dalab_mound',44,4),'Mound — on the stair':[6,7.5,ROWZ[11]+27,0,14,ROWZ[11]],'Mound — top':[-14,13+1.7,ROWZ[11]+18,0,13+4,ROWZ[11]-4],
- 'Palace mound':RV(12,150,70,14),'Palace mound — gate':EYE('dalab_palace_mound',56,6),'Palace mound — terraces':[22,12,ROWZ[12]+62,0,14,ROWZ[12]+10],'Palace mound — top':[-18,17+1.7,ROWZ[12]+20,0,17+5,ROWZ[12]-6],
+ 'Palace mound':RV(12,150,70,14),'Palace mound — gate':EYE('dalab_palace_mound',56,6),'Palace mound — terraces':[22,12,ROWZ[12]+62,0,14,ROWZ[12]+10],'Palace mound — top':[-9,17+1.7,ROWZ[12]+13,0,17+5,ROWZ[12]-7],'Palace mound — gardens':[SITES.find(s=>s.key==='dalab_palace_mound').x+52,9,ROWZ[12]+18,SITES.find(s=>s.key==='dalab_palace_mound').x+20,11,ROWZ[12]-4],
  "High Priest's mound":RV(13,200,100,18),'High mound — entrance':EYE('dalab_high_mound',82,5),'High mound — top':[-20,20+1.7,ROWZ[13]+22,0,20+5,ROWZ[13]-6],
  'Night — noble houses':RV(2,70,36,6,21.5),'Night — temple (eye level)':EYE('dalab_temple',26,7,22),'Night — Halls of Reformation':RV(10,190,110,12,22.5),'Night — palace mound':RV(12,150,70,14,22),'Night — peasant huts':EYE('dalab_hut_a',14,5,21),'Dusk — mound':RV(11,120,60,12,18.4),
 };
