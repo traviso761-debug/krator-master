@@ -6,36 +6,38 @@
 // face of the drum.
 //
 //   THE DRUM       284 m across, its axis north-south, both faces a shallow lens
-//                  covered in recessed coffers laid on a DOUBLE logarithmic
-//                  spiral (48 arms each way, conformal diamonds that shrink from
-//                  17 m at the rim to 2.5 m at an 18 m oculus). Two spiral
-//                  families of equal count keep the face mirror-symmetric about
-//                  the one vertical plane, which a single spiral would not. The
-//                  coffer backs are glazed: 1 296 lanterns a face.
+//                  covered in recessed, stepped coffers laid on a DOUBLE
+//                  logarithmic spiral (56 arms each way, conformal diamonds that
+//                  shrink from 15 m at the rim to 2 m at a 19 m oculus). Two
+//                  spiral families of equal count keep the face mirror-symmetric
+//                  about the one vertical plane, which a single spiral would not.
+//                  The coffer backs are glazed: 1 848 lanterns a face.
 //   THE YOKE       the lever. It sits on the pedestal, wraps the lower half of
 //                  the drum, springs out on two deep concave haunches and rises
 //                  on a curved back to the top slab. The drum's upper 70 m stand
 //                  clear of its saddle.
-//   THE SLABS      seven a side, 21.6 m (six storeys) thick with 14.4 m (four
+//   THE SLABS      five a side, 28.8 m (eight storeys) thick with 18 m (five
 //                  storey) gaps, 100 m deep tapering to 68, and in ECHELON: each
-//                  starts 40 m further out and ends 40 m further out than the one
+//                  starts 55 m further out and ends 55 m further out than the one
 //                  below, so the wing's end leans out like a raised hand and each
-//                  slab cantilevers 160 m past its root. The soffits taper up 8 m
+//                  slab cantilevers 170 m past its root. The soffits taper up 10 m
 //                  toward the tips. The slabs are the dwelling decks — ribbon
-//                  windows and balconies on the faces, houses, trees and lit
-//                  soffits in the gaps; the gaps are where the light gets in.
+//                  windows and balconies on the faces, houses, trees, hedges and
+//                  lit soffits in the gaps; the gaps are where the light gets in,
+//                  and they carry on across the yoke as recessed shadow bands.
 //   THE PLINTH     three 10.8 m tiers of shops and dwellings, stretched octagons
 //                  900 x 500 m, with grand stairs north and south.
 //
-// 468 m to the top slab, 1 400 m tip to tip. Strictly bilateral about x = 0.
+// 468 m to the top slab, 1 380 m tip to tip. Strictly bilateral about x = 0.
 //
 // RUINED: the east wing has broken off at the root — a jagged stump beside the
 // drum, floors hanging out of it — and lies in three pieces on the plain to the
-// east. The west wing sags, its outer slabs pancaked onto one another and three
-// tips snapped off onto the ground beneath. Coffers have fallen out of the
-// spiral in clusters (worst on the east), exposing the drum's gutted interior;
-// the concrete is weathered darker and streaked, windows dead, holes punched
-// through the yoke, and the gaps are full of trees and hanging vines.
+// east, on their backs. The west wing sags, its outer slabs pancaked onto one
+// another and stripped to their floors, two tips snapped off onto the ground
+// beneath. Coffers have fallen out of the spiral in clusters (worst on the
+// east), exposing the drum's gutted interior; the concrete is weathered darker
+// and streaked, windows dead, holes punched through the yoke, and the gaps are
+// full of trees and hanging vines.
 //
 // The sun in this kit is WSW and high, so the south face of the drum is lit and
 // the hero stands south-south-east of it.
@@ -139,9 +141,12 @@ MAT.wgLens =WGM({map:TEX.concrete,color:0xd8d1c4});
 MAT.wgLensR=WGM({map:TEX.concrete,color:0x7f786d});
 MAT.wgWall =WGM({map:TEX.concrete,color:0x7a746c});
 MAT.wgWallR=WGM({map:TEX.concrete,color:0x57524c});
-MAT.wgSoff =WGM({map:TEX.concrete,color:0x7a766f,emissive:0x2c2b28});
-MAT.wgSoffR=WGM({map:TEX.concrete,color:0x48443f,emissive:0x161513});
-MAT.wgDeck =WGM({map:TEX.concrete,color:0x7a7469});
+// Soffits are lit almost entirely by the hemisphere's brown ground colour, so
+// they are tinted cool to come back as grey concrete in shade rather than as
+// brown. NOT emissive: an emissive soffit glows white at night.
+MAT.wgSoff =WGM({map:TEX.concrete,color:0x8a95a6,roughnessMap:null});
+MAT.wgSoffR=WGM({map:TEX.concrete,color:0x5a6270,roughnessMap:null});
+MAT.wgDeck =WGM({map:TEX.concrete,color:0x57524b});
 MAT.wgDeckR=WGM({map:TEX.concrete,color:0x524d46});
 MAT.wgLawn =WGM({map:TEX.wgLawn});
 MAT.wgLawnR=WGM({map:TEX.wgLawn,color:0x8e8c66});
@@ -189,7 +194,7 @@ function buildWing(scene,gx,gz,d){reseed(9620+d);KOFF=[gx,0,gz];
  const TH=10.8,PL=3*TH;                          // plinth tiers, plinth top 32.4
  const PX=100,PZ=66,PY=100;                      // the pedestal: half-extents, top
  const R=142,YC=PY+R,RC=130,ZR=55,BUL=30;        // drum radius, centre, coffer field, rim face, lens bulge
- const NL=48,KR=28,AL=TAU/NL;                    // spiral arms each way, rings to the oculus
+ const NL=56,KR=34,AL=TAU/NL;                    // spiral arms each way, rings to the oculus
  const Y0=252,SP=46.8,TS=28.8,GP=18,K=5;          // slab 0 soffit, pitch, slab, gap, count
  const YS=k=>Y0+k*SP,YT=k=>YS(k)+TS,YTOP=YT(K-1);   // 468
  const XR=k=>300+55*k,XT=k=>470+55*k,XG=k=>XR(k)-20,TAP=10;
@@ -219,8 +224,10 @@ function buildWing(scene,gx,gz,d){reseed(9620+d);KOFF=[gx,0,gz];
   const f=(ax-SAG0)/(SAG1-SAG0),s=pan(ax);
   return[p[0],p[1]-GP*s*gapsBelow(p[1])-SAGT*f*f,p[2]+(p[1]-Y0)*.05*s];};
  const BRK={2:50,4:80};                     // west slab tips snapped off
- const hf=holeFn(d*.45,9625,null,1.3);
- const HOLE=(sx,zs,x,y)=>!!hf&&!inDrum(x,y)&&hf(sx*x/216+(zs>0?0:3.3),y);
+ const hf=holeFn(d*.62,9625,null,1.3);
+ // the pancaked end of the west wing has lost most of its skin: crushed floors show
+ const HOLE=(sx,zs,x,y)=>!!hf&&!inDrum(x,y)&&(hf(sx*x/216+(zs>0?0:3.3),y)||
+  (sx<0&&y>Y0&&h3(Math.floor(x/12),Math.floor(y/7),zs+4.4)<1.4*pan(x)));
 
  // ---- palette ------------------------------------------------------------------------
  const CONC=()=>new THREE.Color().setHSL(rr(.07,.10),rr(.03,.07),dd?rr(.16,.22):rr(.46,.54));
@@ -358,7 +365,7 @@ function buildWing(scene,gx,gz,d){reseed(9620+d);KOFF=[gx,0,gz];
   for(let k=0;k<K;k++){const rw={t:'s',k};
    for(let j=0;j<8;j++){const yf=YS(k)+j*3.6+.3;
     for(let x=Math.max(Uinv(yf)+10,12)+3.6;x<XT(k)-3;x+=7.2){
-     const onYoke=x<XR(k);if(onYoke&&j%2)continue;
+     const onYoke=x<XR(k);if(onYoke&&j%2&&dd)continue;
      if(yf<ybot(k,x)+.5||inDrum(x,yf)||!inClip(x,yf,rw))continue;
      for(const zs of [1,-1]){
       if(dd&&(rng()<.42||HOLE(sx,zs,x,yf)))continue;
@@ -381,6 +388,7 @@ function buildWing(scene,gx,gz,d){reseed(9620+d);KOFF=[gx,0,gz];
       KP(dd?'wgHutR':'wgHut',[X(x),yy,z],q,[rr(13,17),7.2,rr(9,12)],null);}
      // the rail along the open edge
      if(!(dd&&rng()<.5))KP('wgBox',[X(x+4),y+.6,zs*(W(x)-.5)],null,[24,1.2,.35],PALE());
+     if(full&&!(dd&&rng()<.5))KP('hedge',[X(x+4),y+.6,zs*(W(x)-1.6)],null,[22,dd?rr(1.4,2.6):1.1,1.3],LEAF());
      if(full&&!dd)for(let p=0;p<2;p++)person([X(x+rr(-10,10)),y,zs*rr(W(x)*.7,W(x)-2)]);}
     if(full&&rng()<(dd?.95:.8))plant([X(x+12+rr(-3,3)),y,rr(-6,6)],dd?rr(8,12.5):rr(6,9));
     if(full&&dd){KP('moss',[X(x+rr(0,20)),y+.3,rr(-30,30)],qEuler(0,rng()*TAU,0),[rr(4,9),rr(.6,1.6),rr(3,7)],MOSS());
@@ -452,11 +460,17 @@ function buildWing(scene,gx,gz,d){reseed(9620+d);KOFF=[gx,0,gz];
    if(dd){const n=fbm(ctr[0]/46+3,(ctr[1]-YC)/46,9629+(zs>0?0:5),3);
     miss=n<.36+.16*sm(-40,120,xc);frameGone=miss&&n<.30+.12*sm(-40,120,xc);}
    const IR=P4.map(p=>L3(p,ctr,.13));
-   const Dp=.5*size+.6;
-   const BK=IR.map(p=>{const q=L3(p,ctr,.24);q[2]-=zs*Dp;return q;});
+   // stepped, as a coffer should be: a first reveal, a ledge, a deeper reveal, the lantern
+   const Dp=.5*size+.6,D1=Dp*.42;
+   const S1=IR.map(p=>{const q=L3(p,ctr,.08);q[2]-=zs*D1;return q;});
+   const S2=S1.map(p=>L3(p,ctr,.13));
+   const BK=S2.map(p=>{const q=L3(p,ctr,.12);q[2]-=zs*(Dp-D1);return q;});
    if(!frameGone)for(let m=0;m<4;m++){const n2=(m+1)%4;Q(SS,'lens',P4[m],P4[n2],IR[n2],IR[m],0);}
    if(miss){coffersLost++;continue;}
-   for(let m=0;m<4;m++){const n2=(m+1)%4;Q(SS,'wall',IR[m],IR[n2],BK[n2],BK[m],0,.85,.85,.3,.3);}
+   for(let m=0;m<4;m++){const n2=(m+1)%4;
+    Q(SS,'wall',IR[m],IR[n2],S1[n2],S1[m],0,.9,.9,.66,.66);
+    Q(SS,'lens',S1[m],S1[n2],S2[n2],S2[m],0,.78,.78,.7,.7);
+    Q(SS,'wall',S2[m],S2[n2],BK[n2],BK[m],0,.6,.6,.26,.26);}
    const lit=!dd&&h3(i*1.7,dI*3.1,zs+9.9)<.42;
    Q(SS,lit?'lantL':'lantD',BK[0],BK[1],BK[2],BK[3],[0,0,1,0,1,1,0,1]);}
   // the zigzag at each edge of the field, filled flush
@@ -481,15 +495,15 @@ function buildWing(scene,gx,gz,d){reseed(9620+d);KOFF=[gx,0,gz];
  // ---- the pedestal ---------------------------------------------------------------------
  {const PW=14,PH=PL+44;
   for(const zs of [1,-1]){const z=zs*PZ,z2=zs*(PZ-14);
-   Q(SS,'conc',[-PX,PL,z],[-PW,PL,z],[-PW,PY,z],[-PX,PY,z],0);
-   Q(SS,'conc',[PW,PL,z],[PX,PL,z],[PX,PY,z],[PW,PY,z],0);
-   Q(SS,'conc',[-PW,PH,z],[PW,PH,z],[PW,PY,z],[-PW,PY,z],0);
+   Q(SS,'mass',[-PX,PL,z],[-PW,PL,z],[-PW,PY,z],[-PX,PY,z],0);
+   Q(SS,'mass',[PW,PL,z],[PX,PL,z],[PX,PY,z],[PW,PY,z],0);
+   Q(SS,'mass',[-PW,PH,z],[PW,PH,z],[PW,PY,z],[-PW,PY,z],0);
    Q(SS,'wall',[-PW,PL,z],[-PW,PL,z2],[-PW,PH,z2],[-PW,PH,z],1,.8,.4,.4,.8);
    Q(SS,'wall',[PW,PL,z],[PW,PL,z2],[PW,PH,z2],[PW,PH,z],1,.8,.4,.4,.8);
    Q(SS,'wall',[-PW,PH,z],[PW,PH,z],[PW,PH,z2],[-PW,PH,z2],2,.8,.8,.4,.4);
    Q(SS,dd?'guts':'hall',[-PW,PL,z2],[PW,PL,z2],[PW,PH,z2],[-PW,PH,z2],dd?0:[0,0,1,0,1,1,0,1]);
    if(!dd)kput('strip',[0,PH+2,z+zs*.6],null,[2*PW+4,5,5],WARMC);}
-  for(const xs of [1,-1])Q(SS,'conc',[xs*PX,PL,-PZ],[xs*PX,PL,PZ],[xs*PX,PY,PZ],[xs*PX,PY,-PZ],1);
+  for(const xs of [1,-1])Q(SS,'mass',[xs*PX,PL,-PZ],[xs*PX,PL,PZ],[xs*PX,PY,PZ],[xs*PX,PY,-PZ],1);
   Q(SS,'conc',[-PX,PY,-PZ],[PX,PY,-PZ],[PX,PY,PZ],[-PX,PY,PZ],2);
   // the capital and base courses
   kput('wgBox',[0,PY-2.5,0],null,[2*PX+8,5,2*PZ+8],new THREE.Color(dd?0x5e5953:0xa29d94));
@@ -509,7 +523,11 @@ function buildWing(scene,gx,gz,d){reseed(9620+d);KOFF=[gx,0,gz];
      const s0=(s+u0*L)/TILE,s1=(s+u1*L)/TILE;
      Q(PS,'rib',[p0[0],y0,p0[1]],[p1[0],y0,p1[1]],[p1[0],y1,p1[1]],[p0[0],y1,p0[1]],[s0,y0/TILE,s1,y0/TILE,s1,y1/TILE,s0,y1/TILE]);}
     s+=L;
-    T3(PS,'deck',[0,y1,0],[a[0],y1,a[1]],[b[0],y1,b[1]],2);}
+    T3(PS,'deck',[0,y1,0],[a[0],y1,a[1]],[b[0],y1,b[1]],2);
+    // a lit coping along every tread edge
+    {const o=[(a[0]+b[0])*.5,(a[1]+b[1])*.5],ln=Math.hypot(o[0],o[1]),q=qFacing([o[0]/ln,0,o[1]/ln]);
+     kput('wgBox',[o[0]+o[0]/ln*.6,y1-.7,o[1]+o[1]/ln*.6],q,[L,1.4,1.4],new THREE.Color(dd?0x5a554e:0x9a948a));
+     if(!dd)kput('strip',[o[0]+o[0]/ln*1.4,y1-2.2,o[1]+o[1]/ln*1.4],q,[L*.94,5,5],WARMC);}}
    // a planted band round the tread
    if(t<2){const Vo=OCT(t,7),Vi=OCT(t,27);
     for(let m=0;m<8;m++){const n2=(m+1)%8;
@@ -531,7 +549,7 @@ function buildWing(scene,gx,gz,d){reseed(9620+d);KOFF=[gx,0,gz];
    for(let z=z0+10;z<z1;z+=26)for(const s of [1,-1])plant([s*rr(46,50),0,zs*z],dd?rr(9,17):rr(8,12));
    for(let j=0;j<(dd?0:70);j++)person([rr(-34,34),.15,zs*rr(z0,z1)]);}}
  // ---- life on the plinth
- for(let j=0;j<(dd?260:380);j++){const x=rr(-450,450),z=rr(-250,250);
+ for(let j=0;j<(dd?260:900);j++){const x=rr(-450,450),z=rr(-250,250);
   if(!inOct(0,x,z,3))continue;
   if(Math.abs(x)<PX+4&&Math.abs(z)<PZ+4)continue;
   if(Math.abs(x)<40&&Math.abs(z)>170)continue;

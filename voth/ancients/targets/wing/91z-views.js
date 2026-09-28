@@ -21,18 +21,18 @@ const VIEWS={
  // THE WHOLE GESTURE, square on from the south: pedestal, drum, yoke, and the
  // two stepped wings as one silhouette.
  'The whole gesture':      WGFRONT(WGA),
- // THE SPIRAL: the south lens, 1 296 coffers on two families of spirals
+ // THE SPIRAL: the south lens, 1 848 stepped coffers on two families of spirals
  // closing on the oculus.
  'The spiral':             WGSPIRAL(WGA),
  // ALONG THE SLAB GAPS: from beyond the east tips, looking back along the
- // stack — seven slabs, six dark gaps, each slab 40 m longer than the last.
+ // stack — five slabs, four dark gaps, each slab 55 m longer than the last.
  'Along the slab gaps':    WGV(WGA,[WGA.XT[4]+150,390,WGA.W(700)+120],[WGA.XG[3]-40,WGA.Y0+3*WGA.SP+WGA.TS,0]),
  // UNDER THE CANTILEVER: standing on the plain under the east wing, looking up
  // the tapering soffits to the tips 470 m up.
  'Under the cantilever':   WGV(WGA,[390,3,262],[500,290,-10]),
  // THE HAUNCH: from the lowest tier, the concave spring of the lever off the
  // pedestal's capital.
- 'The haunch':             WGV(WGA,[340,14,190],[170,170,0]),
+ 'The haunch':             WGV(WGA,[300,34.1,160],[170,175,0]),
  // THE PLINTH, at a person's height: people on the top tier, the portal of the
  // pedestal, and the drum over it.
  'The plinth':             WGV(WGA,[96,34.1,172],[0,64,20]),
@@ -42,7 +42,8 @@ const VIEWS={
  // FROM ABOVE: the plan, to check every lid is on.
  'From above':             WGV(WGA,[380,1500,760],[0,240,0]),
  'The Wing at night':      WGHERO(WGA,1),
- 'Ruined':                 WGHERO(WGB),
+ // THE RUIN, turned a little east so the fallen wing is in the frame with its stump.
+ 'Ruined':                 WGV(WGB,[820,360,1380],[280,215,0]),
  // THE RUIN SQUARE ON: the symmetry broken — one wing gone at the root, the
  // other sagging.
  'The broken gesture':     WGFRONT(WGB),
