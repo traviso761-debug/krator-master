@@ -9311,19 +9311,20 @@ function frontageAlong(pts,roadW,pick,test,st,opt){opt=typeof opt==='number'?{ga
 // Behind every street-front building, on its own alignment, a back house or workshop sharing its rear wall (a .5 m
 // gap), and behind that a third where the block is deep enough — so a block reads as two rows back to back with the
 // odd yard, not a ring of houses round an empty field.
-(function backRows(){reseed(SEED_RK+14);let n=0,tries=0;
- const BACK=x=>{const w=rng(),f=inForge(x[0],x[1]);if(f&&w<.45)return vPick(['hl_rep_workshop_a','hl_rep_workshop_b','hl_rep_smithy_small','hl_rep_warehouse_a']);
-  if(w<.14)return vPick(['hl_rep_workshop_a','hl_rep_workshop_b']);const d=squareD(x[0],x[1]);return vPick(HOUSES[d<80?1:(rng()<.7?0:1)]);};
+(function backRows(){reseed(SEED_RK+14);let n=0,tries=0;const why={};
+ const POOL=f=>f?['hl_rep_workshop_a','hl_rep_workshop_b','hl_rep_smithy_small','hl_rep_house_poor_a','hl_rep_house_poor_b','hl_rep_house_poor_c']
+  :['hl_rep_house_poor_a','hl_rep_house_poor_b','hl_rep_house_poor_c','hl_rep_house_mid_a','hl_rep_house_mid_b','hl_rep_house_mid_c','hl_rep_workshop_a','hl_rep_workshop_b'];
  const test=o=>groundOK(o,{town:true,margin:11});
- const fronts=ROWFRONTS.filter(o=>o.row);
- for(const F of fronts){let cur=F;
-  for(let depth=0;depth<2;depth++){if(depth===1&&rng()<.45)break;tries++;
-   const key=kitKey(BACK([cur.x,cur.z]));const D=VERN.defs[key];if(!D)break;
-   // flush to the front building's rear wall, centred on it, the same heading (sideways slide if it does not fit)
-   let placed=null;for(const slide of[0,-1.5,1.5,-3,3]){const p=loc(cur.x,cur.z,slide,-(cur.hz+.5+D.d/2),cur.ry);const o={x:p[0],z:p[1],hx:D.w/2,hz:D.d/2,ry:cur.ry,pad:.15};
-    if(test(o)&&occFree(o,.15)){placeVern(key,o,{v:Math.floor(rng()*6)});placed=o;break;}}
+ for(const F of ROWFRONTS.filter(o=>o.row)){let cur=F;
+  for(let depth=0;depth<2;depth++){if(depth===1&&rng()<.4)break;tries++;
+   // candidates no wider than the building in front (a wider one pokes into the deeper neighbours), in random order
+   const W=cur.hx*2+.6;const keys=POOL(inForge(cur.x,cur.z)).map(k=>kitKey(k)).filter(k=>VERN.defs[k]&&VERN.defs[k].w<=W).sort(()=>rng()-.5).slice(0,4);
+   let placed=null;
+   for(const key of keys){const D=VERN.defs[key];for(const slide of[0,-(W-D.w)/2,(W-D.w)/2]){const p=loc(cur.x,cur.z,slide,-(cur.hz+.5+D.d/2),cur.ry);const o={x:p[0],z:p[1],hx:D.w/2,hz:D.d/2,ry:cur.ry,pad:.15};
+     if(!test(o)){const w=groundWhy(o);why[w]=(why[w]||0)+1;continue;}if(!occFree(o,.12)){why.occ=(why.occ||0)+1;continue;}placeVern(key,o,{v:Math.floor(rng()*6)});placed=o;break;}
+    if(placed)break;}
    if(!placed)break;n++;cur=placed;}}
- window._backRows={n,tries};})();
+ window._backRows={n,tries,why};})();
 // ---------------------------------------------------------------- 3. the infill: yards and back-lot houses on a footpath to their street
 (function infill(){reseed(SEED_RK+12);let n=0;
  for(let x=TC.x-TC.R-30;x<=TC.x+TC.R+30;x+=9)for(let z=TC.z-TC.R-30;z<=TC.z+TC.R+30;z+=9){const jx=x+rr(-3,3),jz=z+rr(-3,3);if(!insideWall(jx,jz,20))continue;if(!canBuild(jx,jz)||inPrecinct(jx,jz,2))continue;
