@@ -22,7 +22,7 @@ function angDiff(a,b){let d=Math.abs(a-b)%TAU;return d>Math.PI?TAU-d:d;}
 const SETTLE=[];
 (function(){const L=CITY.LAB;
  for(let k=0;k<6;k++){const a=k/6*TAU+Math.PI/6;const x=CITY.RING_C[0]+Math.cos(a)*CITY.RING,z=CITY.RING_C[1]+Math.sin(a)*CITY.RING;
-  SETTLE.push({key:'town'+(k+1),name:['Ashfold','Greenmarch','Reedholm','Oakhaven','Cornwell','Stonebrook'][k],x,z,r:170,main:false,face:Math.atan2(L.x-x,L.z-z),plazaR:30,moundR:30,streets:6,ringR:74});}
+  SETTLE.push({key:'town'+(k+1),name:['Ashfold','Greenmarch','Reedholm','Oakhaven','Cornwell','Stonebrook'][k],x,z,r:170,main:false,face:Math.atan2(L.x-x,L.z-z),plazaR:30,moundR:30,streets:8,ringR:74,ringR2:118});}
  // the main settlement: 3x; its mound faces the lab (north); the palace mound is the High Priest's seat here
  SETTLE.push({key:'main',name:'Dalab',x:CITY.MAIN.x,z:CITY.MAIN.z,r:CITY.MAIN.r,main:true,face:Math.atan2(L.x-CITY.MAIN.x,L.z-CITY.MAIN.z),plazaR:64,moundR:42,streets:8,ringR:210,ringR2:360});
 })();
@@ -36,6 +36,14 @@ const CHANNELS=[];   // [{pts,w}] painted as water and carved into the terrain
   if(S.x<-600)CHANNELS.push({pts:[[rx,S.z+30],[(rx+S.x)/2,S.z+50],[S.x-S.r-20,S.z+30]],w:7});
   else{const mc=CHANNELS[0];const from=[-700,M.z-58];CHANNELS.push({pts:[from,[(from[0]+S.x)/2,(from[1]+S.z)/2+60],[S.x-(S.x>0?S.r+20:-(S.r+20)),S.z+40]],w:6});}}
 })();
+// meander: every channel polyline is resampled every ~25 m with a sinuous offset across its line
+(function(){for(const C of CHANNELS){const out=[];for(let i=0;i<C.pts.length-1;i++){const a=C.pts[i],b=C.pts[i+1];const L=Math.hypot(b[0]-a[0],b[1]-a[1]),n=Math.max(2,Math.round(L/25));const nx=-(b[1]-a[1])/L,nz=(b[0]-a[0])/L;
+  for(let k=0;k<n;k++){const t=k/n;const w=Math.sin(t*Math.PI*(2+i))*(C.main?18:10)*Math.sin(t*Math.PI)+Math.sin(t*37+i)*3;out.push([a[0]+(b[0]-a[0])*t+nx*w,a[1]+(b[1]-a[1])*t+nz*w]);}}
+ out.push(C.pts[C.pts.length-1]);C.pts=out;}})();
+// the lab's domes as biome obstacles (nothing roots inside them; the compound's ground is the biome's to dress)
+const LAB_WALL_GAP={a:Math.PI/2,w:.075};   // the ruined wall's south gate, where the oak avenue enters (a 75 m gap)
+const LAB_OBST=(function(){const K=4.105*CITY.LAB.scale;const o=[{x:CITY.LAB.x,z:CITY.LAB.z,r:118*K}];
+ for(const q of[[178,-52,46],[126,152,34],[-86,176,40],[-192,26,29],[-138,-148,37],[54,-186,24],[205,88,31]])o.push({x:CITY.LAB.x+q[0]*K,z:CITY.LAB.z+q[1]*K,r:q[2]*K+6});return o;})();
 function segD(x,z,a,b){const dx=b[0]-a[0],dz=b[1]-a[1],l2=dx*dx+dz*dz||1;const t=clamp(((x-a[0])*dx+(z-a[1])*dz)/l2,0,1);return Math.hypot(x-a[0]-dx*t,z-a[1]-dz*t);}
 function channelD(x,z){let best=1e9,w=0;for(const C of CHANNELS){for(let i=0;i<C.pts.length-1;i++){const d=segD(x,z,C.pts[i],C.pts[i+1]);if(d<best){best=d;w=C.w;}}}return{d:best,w};}
 function riverD(x,z){return Math.abs(x-riverX(z));}
