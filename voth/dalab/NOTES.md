@@ -149,3 +149,25 @@ avatar panels on the piers, diamond-checker tile).
 
 72 registered volumes, 10.7 k kit instances + 8.4 k biome, 400 k scene
 triangles, ~112 draw calls. `--assert` green.
+
+## Round 5 (Sep 28 2026) — the mound temple's facade, the great hall
+
+From Travis: z-fight on the ceremonial mound's upper facade; the Halls'
+central building larger and more elaborate.
+
+* **Temple facade** (`dnTemple`, and so every mound): at scale .72 the corner
+  avatar panels crossed the window jambs and the plinth fret band, and the
+  mural frieze crossed the window heads. The panels now stand at the very
+  corners, the plinth band stops 1.6 s short of each corner, the windows sit
+  0.6 s lower (below the frieze), the string course no longer reaches into it.
+* **The great hall**: r 13 → 18, on a two-course base with a stair; sixteen
+  battered buttress piers with relief fronts and pyramid pinnacles, God
+  windows between; a fret plinth, the mural frieze and a 32-strip light ring
+  under the cornice; a clerestory drum with sixteen God windows; the panel
+  dome on inward-leaning iron ribs with a rust lantern, a God ball and a
+  mast; an eight-column portico with a relief entablature and a cream-trimmed
+  stepped crest over a checker floor; three domed apses on the other axes.
+  Pipes and pylon cables re-aimed; God-posts moved past the portico.
+
+72 registered volumes, 11.2 k kit instances, 400 k scene triangles, ~115 draw
+calls. `--assert` green.
