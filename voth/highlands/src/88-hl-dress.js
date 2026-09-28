@@ -83,3 +83,13 @@ for(const k of VERN.order.slice()){const D=VERN.defs[k];if(!D.branch||k.endsWith
  HL.def({key:k+'_reclaimed',baseKey:k,name:D.name+' (reclaimed)',branch:D.branch,family:D.family,tags:T,w:D.w,d:D.d,h:D.h,
   build:function buildHlReclaimed(G,o){reseed(24051+(o.v|0));o.salvage=true;D.build(G,o);if(!defence)hnSalvDress(D);
    for(let i=VERN.cur.r0;i<REG.length;i++)if(!/reclaimed/.test(REG[i].name))REG[i].name+=' — reclaimed';}});}
+
+// ---------------------------------------------------------------- clocks (round 5)
+// Every clock face (hClock, hRBClock) records its WORLD pose as it is placed; 94-hl-anim.js gives each a pair of
+// real hands (two instanced meshes) that show the time of day: window.HL_HOUR (0–24, a sky/day-night system sets it)
+// or, failing that, the viewer's local time.
+const HLCLOCKS=[];
+const _hlKputClock=kput;
+kput=function(name,p,q,s,c){if(name==='hClock'||name==='hRBClock'){const S=typeof s==='number'?s:s[0];let P=new THREE.Vector3(p[0],p[1],p[2]),Q=(q?q.clone():new THREE.Quaternion()),k=S;
+  if(KXF){P.applyMatrix4(KXF.m);Q.premultiply(KXF.q);if(KXF.s)k*=KXF.s;}P.x+=KOFF[0];P.y+=KOFF[1];P.z+=KOFF[2];HLCLOCKS.push({p:P,q:Q,r:.42*k});}
+ return _hlKputClock(name,p,q,s,c);};

@@ -253,11 +253,17 @@ function hlFlush(){const C=VERN.cur;if(!C)return;const inst=C.inst||[];C.flushin
  let owed=false;const wide=it=>/^hM_[wg]_|^hForm[AWBT]$/.test(it);
  for(const m of C.murals||[]){if(owed&&wide(m.item)){m.item=HMOTIF.emblemWide;}const U=new THREE.Vector3(...hRot(m.ry,[1,0,0])),N=new THREE.Vector3(...hRot(m.ry,[0,0,1])),V=new THREE.Vector3(0,1,0);
   const candR=near(m.x,m.y+m.h/2,m.z,Math.max(m.w,m.h)+3),cand=candR.map(hlOBB);let placed=false;
-  // search: biggest first, then nearest to where the builder put it — slide down (off a jetty/lintel) or sideways
-  const tries=[];for(const k of[1,.86,.74,.62,.52])for(const fy of[0,-.25,.25,-.5,-.75,-1])for(const fx of[0,-.3,.3,-.6,.6])tries.push([k,fx,fy]);
-  for(const [k,fx,fy] of tries){const w=m.w*k,h=m.h*k,cy=m.y+m.h/2+fy*m.h*.8,cu=fx*m.w*.8;const c=loc(m.x,m.z,cu,0,m.ry);
-   const slab={c:new THREE.Vector3(c[0],cy,c[1]).addScaledVector(N,.18),a:[U,V,N],e:[w/2,h/2,.075]};   // n .105–.255: clears beams, quoins, friezes on the wall
-   if(cand.some(B=>hlSAT(slab,B)))continue;const p=loc(m.x,m.z,cu,.095,m.ry);kput(m.item,[p[0],cy,p[1]],qEuler(0,m.ry,0),[w,h,1],null);placed=true;break;}
+  // search (Travis: keep it symmetric): first the mural centred where the builder put it, shrinking and sliding only
+  // vertically; failing that, a mirrored PAIR either side of the axis (flanking a door lintel), same motif;
+  // never a lone off-centre board.
+  const fits=(cu,cy,w,h)=>{const c=loc(m.x,m.z,cu,0,m.ry);const slab={c:new THREE.Vector3(c[0],cy,c[1]).addScaledVector(N,.18),a:[U,V,N],e:[w/2,h/2,.075]};   // n .105–.255: clears beams, quoins, friezes on the wall
+   return !cand.some(B=>hlSAT(slab,B));};
+  const put=(cu,cy,w,h)=>{const p=loc(m.x,m.z,cu,.095,m.ry);kput(m.item,[p[0],cy,p[1]],qEuler(0,m.ry,0),[w,h,1],null);};
+  const centred=ks=>{for(const k of ks){for(const fy of[0,-.25,.25,-.5,-.75,-1]){const w=m.w*k,h=m.h*k,cy=m.y+m.h/2+fy*m.h*.8;if(fits(0,cy,w,h)){put(0,cy,w,h);return true;}}}return false;};
+  placed=centred([1,.86,.74]);   // a big centred board, else a full-size PAIR flanking the axis, else a small centred one
+  if(!placed)for(const k of[.86,.74,.62]){for(const fy of[0,-.25,.25,-.5]){for(const fx of[.45,.6,.75,.9,1.05,1.2]){const w=m.w*k,h=m.h*k,cy=m.y+m.h/2+fy*m.h*.8,cu=fx*m.w;
+    if(fits(cu,cy,w,h)&&fits(-cu,cy,w,h)){put(cu,cy,w,h);put(-cu,cy,w,h);placed=true;break;}}if(placed)break;}if(placed)break;}
+  if(!placed)placed=centred([.62,.52]);
   const st=window._muralStats||(window._muralStats={placed:0,dropped:[]});if(placed){st.placed++;if(m.item===HMOTIF.emblemWide)owed=false;}else{st.dropped.push(C.D.key);if(m.item===HMOTIF.emblemWide)owed=true;}}   // a crowded emblem moves to the next wide mural
  C.flushing=false;C.inst=null;C.murals=null;C.brows=null;}
 // VERN.place with the flush before the group transform closes (the vendored body, plus hlFlush()).
