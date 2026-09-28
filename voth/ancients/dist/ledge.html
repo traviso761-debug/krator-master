@@ -829,10 +829,10 @@ function skyPlinth(G,d,R){mesh(lathe({rFn:()=>R,H:5,nu:96,nv:1}),SHELL(d),G);kpu
  apron(G,0,0,R*1.02,R*1.5,d,1.4);   // graded skirt: the plinth met the ground on a hard line
  if(d>0){mossOnRing(0,5.3,0,R*.85,120,3);vinesOnRing(0,17.3,0,R*.94,40,14);scatterMoss(0,0,0,R+2,R+100,220,3.5);rubbleRing(0,0,0,R+2,R+80,120,3);trees(0,0,R+30,R+160,30);}}
 // --- A: the Conocylinder (Soleri Babel IID) ---------------------------------------------------
-// DECAY 4 IS "PROJECT A": rehabilitated and STILL STANDING. Levels 2 and 3 both
-// end up as stumps — 2 because the upper body is laid on its side, 3 because
-// `d<2` in the standing test excludes it — so the kit had no example of a tower
-// a later people reoccupied WHOLE rather than camped in the base of. Level 4 is
+// DECAY 4 IS "PROJECT A": rehabilitated and STILL STANDING. It was written when
+// level 3 was built as a stump (the standing test was `d<2`; it is `d!==2` now,
+// so level 3 stands at full height too), and it remains the one tower a later
+// people reoccupied WHOLE and lit with their own fires. Level 4 is
 // that building: the same ancient fabric at level 3's reduced hole density (the
 // scene loop sets HOLES for it), dressed by the same repairPass, full height
 // with its crown frame, and lit at night by fires rather than by the Ancients'
@@ -907,7 +907,7 @@ function buildSkyA(scene,gx,gz,d){reseed(9100+d);KOFF=[gx,0,gz];const G=new THRE
    if(dx===0){mesh(lathe({rFn:y=>rFn(H)*(1+.35*y/40)*(1-.15*Math.pow(y/40,3)),H:40,nu:64,nv:12}),MAT.glass,P,0,L-4,0);mesh(lathe({rFn:y=>12*Math.sqrt(clamp(1-Math.pow(y/16,2),0,1)),H:16,nu:32,nv:8}),SHELL(dx),P,0,L+34,0);kput('finial',[0,L+56,0],null,[5,9,5],null);}}
   else if(!upper){for(let k=0;k<32;k++){const th=k/32*TAU;if(rng()<.5)continue;beam('strutR',[Math.cos(th)*rFn(cut)*1.02,L-6,Math.sin(th)*rFn(cut)*1.02],[Math.cos(th)*rFn(cut)*1.3,L-6+rr(8,26),Math.sin(th)*rFn(cut)*1.3],3.2,2.4);}}};
  const P=new THREE.Group();P.position.set(0,Y0,0);G.add(P);useGroupXF(P);
- if(d<2||PROJ)body(P,dd,Y0,null,false);else body(P,1,Y0,Y0+70,false);endGroupXF();
+ if(d!==2)body(P,dd,Y0,null,false);else body(P,1,Y0,Y0+70,false);endGroupXF();
  if(d===2)toppledUpper(G,0,0,Y0+70,rFn(Y0+70),(U,dx,y0)=>body(U,1,Y0+70,null,true),d);
  if(dd>0)vinesOnRing(0,Y0,0,rFn(Y0)*.98,60,40);
  // Project A's open fires: the transfer deck at the head of the base cone, the
@@ -946,7 +946,7 @@ function buildSkyB(scene,gx,gz,d){reseed(9110+d);KOFF=[gx,0,gz];const G=new THRE
   if(cut==null){const Q=new THREE.Group();Q.position.set(0,L,0);P.add(Q);kput('slab',[0,L,0],null,[rFn(H)*1.1,1,rFn(H)*1.1],new THREE.Color(dx>0?0x5a4a40:0xd8d4cc));
    const CX=KXF;useGroupXF(Q);KXF={m:CX.m.clone().multiply(Q.matrix),q:CX.q.clone().multiply(Q.quaternion)};petalRing(Q,NL,rFn(H)*.75,42,16,6,1,0,dx,19,SHELL(dx),dx>0?(i=>i%4===1):null);KXF=CX;
    if(dx===0){mesh(lathe({rFn:y=>rFn(H)*.72*Math.pow(clamp(1-Math.pow(y/30,2),0,1),.6),H:30,nu:48,nv:14}),MAT.glass,P,0,L+1,0);kput('finial',[0,L+38,0],null,[4,7,4],null);}}};
- const P=new THREE.Group();P.position.set(0,32,0);G.add(P);useGroupXF(P);if(d<2)body(P,dd,32,null,false);else body(P,1,32,32+55,false);endGroupXF();
+ const P=new THREE.Group();P.position.set(0,32,0);G.add(P);useGroupXF(P);if(d!==2)body(P,dd,32,null,false);else body(P,1,32,32+55,false);endGroupXF();
  if(d===2)toppledUpper(G,0,0,87,rFn(87)*1.3,(U,dx,y0)=>body(U,1,87,null,true),d);
  figures(-PR,PR*1.28,6,6);KOFF=[0,0,0];return G;}
 // --- C: the Tripod (three hyperboloid legs fusing into one fluted shaft) ---------------------------
@@ -976,7 +976,7 @@ function buildSkyC(scene,gx,gz,d){reseed(9120+d);KOFF=[gx,0,gz];const G=new THRE
   if(cut==null){mesh(lathe({rFn:y=>rFn(H)*(1+.5*y/26)*Math.sqrt(clamp(1-Math.pow(y/26,2),0,1)),H:26,nu:48,nv:12,hole:(u,y)=>Math.cos(u*TAU*15)<.2&&y>3}),SHELL(dx),P,0,L-1,0);
    if(dx===0){mesh(lathe({rFn:y=>rFn(H)*.95*(1+.5*y/26)*Math.sqrt(clamp(1-Math.pow(y/26,2),0,1)),H:26,nu:48,nv:12}),MAT.glass,P,0,L-1,0);kput('finial',[0,L+30,0],null,[4,8,4],null);}}};
  kput('slab',[0,YM+4,0],null,[42,4,42],new THREE.Color(dd>0?0x4a3f38:0xcfcac2));kput(dd>0?'ringR':'ringW',[0,YM+6,0],qEuler(Math.PI/2,0,0),[42,42,10],null);
- const P=new THREE.Group();P.position.set(0,YM+6,0);G.add(P);useGroupXF(P);if(d<2)body(P,dd,YM+6,null,false);else body(P,1,YM+6,YM+40,false);endGroupXF();
+ const P=new THREE.Group();P.position.set(0,YM+6,0);G.add(P);useGroupXF(P);if(d!==2)body(P,dd,YM+6,null,false);else body(P,1,YM+6,YM+40,false);endGroupXF();
  if(d===2)toppledUpper(G,0,0,YM+40,rFn(YM+40),(U,dx,y0)=>body(U,1,YM+40,null,true),d);
  figures(-PR,PR*1.28,6,6);KOFF=[0,0,0];return G;}
 
@@ -1028,13 +1028,12 @@ kdef('pane',new THREE.BoxGeometry(1,1,.12),MAT.glass);kdef('paneD',new THREE.Box
 kdef('slabC',new THREE.CylinderGeometry(1,1,1,48),MAT.concrete);kdef('slabCR',new THREE.CylinderGeometry(1,1,1,48),MAT.concreteR);
 const BOXC=d=>d>0?'boxCR':'boxC', SLABC=d=>d>0?'slabCR':'slabC';
 function se(th,n){return 1/Math.pow(Math.pow(Math.abs(Math.cos(th)),n)+Math.pow(Math.abs(Math.sin(th)),n),1/n);}
-// `stand` forces the full-height branch whatever `d` is. The test is `d<2`,
-// which is right for 0 and 1 and wrong for everything above 2: decay 3 falls
-// into the TOPPLED branch and is built cut off at cutY, without the fallen
-// upper body that is the only reason to cut it. That is why a rehabilitated
-// tower is a stump in --target repaired, and why the Projects (decay 4) pass
-// stand=true. Every existing caller omits it and is unchanged.
-function bodyGroup(G,y0,d,dd,build,cutY,topR,stand){const P=new THREE.Group();P.position.set(0,y0,0);G.add(P);useGroupXF(P);if(d<2||stand)build(P,dd,y0,null,false);else build(P,1,y0,cutY,false);endGroupXF();
+// Only a TOPPLED tower (d===2) is cut at cutY; every other level stands at full
+// height. The test used to be `d<2`, which sent decay 3 down the toppled branch
+// without the fallen upper body that is the only reason to cut it, so every
+// rehabilitated tower was a three-storey stump. `stand` predates the fix (the
+// Projects, decay 4, pass it) and is now redundant but harmless.
+function bodyGroup(G,y0,d,dd,build,cutY,topR,stand){const P=new THREE.Group();P.position.set(0,y0,0);G.add(P);useGroupXF(P);if(d!==2||stand)build(P,dd,y0,null,false);else build(P,1,y0,cutY,false);endGroupXF();
  if(d===2)toppledUpper(G,0,0,cutY,topR,(U)=>build(U,1,cutY,null,true),d);}
 
 // ================================================================= SKYSCRAPER D — "the Monolith" (bare concrete, Torre Velasca head)
@@ -3004,7 +3003,7 @@ function buildSkyG(scene,gx,gz,d){reseed(9160+d);KOFF=[gx,0,gz];const G=new THRE
   for(let y=6;y<L-4;y+=8)for(let k=0;k<18;k++){const th=(k+.5)/18*TAU;if(hole&&hole(th/TAU,y))continue;if(rng()<.55)continue;const lit=dx>0?rng()<.04:true;kput('cell',[R*1.01*Math.cos(th),y,R*1.01*Math.sin(th)],qFacing([Math.cos(th),0,Math.sin(th)]),[3,2.2,.5],lit?WARM.clone().multiplyScalar(rr(.4,.9)):DEAD);}
   for(let y=0;y<L;y+=4)kput(dx>0?'ringR':'ringW',[0,y,0],qEuler(Math.PI/2,0,0),[R+.2,R+.2,1.5],null);
   if(cut==null){mesh(lathe({rFn:()=>R+1.5,H:8,nu:64,nv:1}),CONC(dx),P,0,L,0);kput(SLABC(dx),[0,L+8,0],null,[R+1.6,.8,R+1.6],null);kput(BOXC(dx),[0,L+11,0],null,[10,6,10],null);}};
- const CX=-70;const D=new THREE.Group();D.position.set(CX,Y0,0);G.add(D);useGroupXF(D);if(d<2)build(D,dd,Y0,null,false);else build(D,1,Y0,Y0+60,false);endGroupXF();
+ const CX=-70;const D=new THREE.Group();D.position.set(CX,Y0,0);G.add(D);useGroupXF(D);if(d!==2)build(D,dd,Y0,null,false);else build(D,1,Y0,Y0+60,false);endGroupXF();
  // The drum falls WEST, away from its own block stack. Toppling it east dropped
  // 200 m of tower straight through the stack it is meant to stand beside.
  if(d===2)toppledUpper(G,CX,0,Y0+60,R,(U)=>build(U,1,Y0+60,null,true),d,-1);
