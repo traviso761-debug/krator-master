@@ -1,10 +1,12 @@
 // ================================================================= HOST — probe (window._api)
 // What verify.py --assert measures. Budgets per biome pass come from
 // BIO.stats (charged by BIO.cur inside the biome).
+// Raised from 5M / 1.4M per pass when the belt grew to six hypertree species,
+// a 2 km hero disc, the extra understorey and the fauna (Sep 2026).
 const BUDGET={
- showcase:{tris:5000000,calls:120},
- cls:{pass:1400000,host:600000},
- type:{'jungle/hyper':'pass','jungle/trees':'pass','jungle/floor':'pass','jungle/far':'pass','jungle/dress':'pass','host':'host'},
+ showcase:{tris:11000000,calls:140},
+ cls:{pass:6500000,host:600000},
+ type:{'jungle/hyper':'pass','jungle/trees':'pass','jungle/floor':'pass','jungle/far':'pass','jungle/dress':'pass','jungle/fauna':'pass','host':'host'},
 };
 function _probePoints(){
  const pts=[],m=new THREE.Matrix4(),pos=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3(),bb=new THREE.Box3();

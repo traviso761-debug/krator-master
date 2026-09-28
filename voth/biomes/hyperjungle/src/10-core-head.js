@@ -2,11 +2,7 @@
 // The engine-independent kit every Krator biome fragment is written against.
 // Nothing below names a world's kit. The host hands in what a biome needs
 // through BIO.init(...) (see BIOME-API.md) and everything else lives here.
-var BIO={host:null,stats:{},cur:null,version:'hyperjungle-1'};
-// EVERYTHING BELOW IS LOCAL. The core declares no generic global (rng, clamp,
-// TAU...): a world that already has those would be clobbered. Biome fragments
-// pull what they need from BIO.fn at the top of their own closure.
-(function(){
+const BIO={host:null,stats:{},cur:null,version:'hyperjungle-1'};
 const TAU=Math.PI*2;
 const clamp=(v,a,b)=>v<a?a:v>b?b:v, lerp=(a,b,t)=>a+(b-a)*t, mix=lerp;
 const smooth=(a,b,x)=>{const t=clamp((x-a)/(b-a),0,1);return t*t*(3-2*t);};
@@ -33,11 +29,9 @@ function fbm(x,y,z,o){o=o||3;let a=0,f=1,s=0;for(let i=0;i<o;i++){a+=vnoise(x*f,
 // host = { THREE, scene, terrainH(x,z), mask(x,z), obstacles[], ticks(fn), seed,
 //          origin[x,z], err(msg), stat(key,tris,inst) }
 BIO.init=function(h){
- if(!h||!h.THREE)throw new Error('BIO.init: host needs THREE');
- // scene may arrive later (a world that creates its scene after its kit loads
- // calls BIO.setScene before build); it is only needed at bake
+ if(!h||!h.THREE||!h.scene)throw new Error('BIO.init: host needs THREE and scene');
  BIO.host={
-  THREE:h.THREE,scene:h.scene||null,
+  THREE:h.THREE,scene:h.scene,
   terrainH:h.terrainH||((x,z)=>0),
   mask:h.mask||((x,z)=>1),
   obstacles:h.obstacles||[],
@@ -48,7 +42,6 @@ BIO.init=function(h){
   stat:h.stat||null};
  reseed(BIO.host.seed*7919+11);
  return BIO;};
-BIO.setScene=function(s){BIO.host.scene=s;};
 BIO.err=function(m){if(BIO.host)BIO.host.err(m);else console.error(m);};
 BIO.terrainH=function(x,z){return BIO.host?BIO.host.terrainH(x,z):0;};
 BIO.mask=function(x,z){return BIO.host?BIO.host.mask(x,z):1;};
@@ -65,6 +58,3 @@ BIO.tally=function(tris,inst,meshes){const k=BIO.cur||'biome';
  t.tris+=tris||0;t.inst+=inst||0;t.meshes+=meshes||0;
  if(BIO.host&&BIO.host.stat)BIO.host.stat(k,tris||0,inst||0);};
 BIO.totals=function(){let tris=0,inst=0,meshes=0;for(const k in BIO.stats){tris+=BIO.stats[k].tris;inst+=BIO.stats[k].inst;meshes+=BIO.stats[k].meshes;}return{tris,inst,meshes};};
-
-BIO.fn={TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm};
-})();
