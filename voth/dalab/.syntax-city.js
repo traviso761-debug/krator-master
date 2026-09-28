@@ -704,6 +704,172 @@ function se(th,n){return 1/Math.pow(Math.pow(Math.abs(Math.cos(th)),n)+Math.pow(
 function bodyGroup(G,y0,d,dd,build,cutY,topR,stand){const P=new THREE.Group();P.position.set(0,y0,0);G.add(P);useGroupXF(P);if(d<2||stand)build(P,dd,y0,null,false);else build(P,1,y0,cutY,false);endGroupXF();
  if(d===2)toppledUpper(G,0,0,cutY,topR,(U)=>build(U,1,cutY,null,true),d);}
 
+// ================================================================= DALAB — the ancient lab domes
+// The genetic-engineering compound at the centre of Dalab: one great dome with
+// a ring of smaller ones round it, joined by part-buried passageways, inside a
+// low ruined wall. Heavily rusted and overgrown — this complex is never shown
+// intact, because nobody alive built it.
+//
+// SCOPE: the ancient domes ONLY. No settlement, no mounds, no streets, no life
+// layer. Those are laid out around this later.
+//
+// The domes are OPAQUE. Everywhere else in the kit an ancient shell reaches for
+// blue glass; here it does not, and that is what makes the complex read as a
+// facility rather than a temple. Gaudi ribs and a lantern at the apex, with the
+// hard deliberate geometry of a 1999 arcology rather than a cathedral.
+//
+// OPEN: the great dome must be "wider and taller than the Voth palace" and that
+// project's dimensions are not to hand. Built at DR=110 / DH=95, larger than
+// anything in this kit but the megastructures. Rescale by DR/DH alone.
+function dalabDome(C,R,H,d,sd,broken){
+ const {SH,DK,G}=C;
+ const prof=y=>R*Math.pow(clamp(1-Math.pow(y/H,2),0,1),.58);   // a dome, slightly shouldered
+ // Where a dome is broken the hole predicate is not noise: it is one great bite
+ // taken out of a quadrant, so the opening has an edge you can read a section
+ // against instead of dissolving into lace.
+ const bite=broken?(u,v)=>{const du=Math.abs(((u-broken.u+1.5)%1)-.5);
+  return du<broken.w*(.35+.65*v)&&v>broken.y0;}:null;
+ const hole=(u,y)=>{const v=y/H;
+  return(bite&&bite(u,v))||(holeFn(d*.75,sd,null,1.25)||(()=>false))(u,y);};
+ SH.push(lathe({rFn:prof,H,flutes:R>70?28:16,amp:.055,sharp:2,nu:R>70?128:72,nv:R>70?40:24,hole}).translate(C.x,0,C.z));
+ // the inner skin: what you see across the void when a dome is opened up
+ DK.push(lathe({rFn:y=>prof(y)*.93,H:H*.985,nu:48,nv:18,hole:(u,y)=>bite?bite(u,y/H):false}).translate(C.x,0,C.z));
+ // ribs picked out along the meridians, and hoops round it
+ for(let k=0;k<(R>70?28:16);k++){const th=k/(R>70?28:16)*TAU;
+  if(broken&&bite(th/TAU,.6)&&rng()<.7)continue;
+  const pts=[];for(let i=0;i<=9;i++){const y=H*i/9*.985;pts.push([prof(y)*1.02,y]);}
+  for(let i=0;i<9;i++)beam(PLATE(d),[C.x+Math.cos(th)*pts[i][0],pts[i][1],C.z+Math.sin(th)*pts[i][0]],
+   [C.x+Math.cos(th)*pts[i+1][0],pts[i+1][1],C.z+Math.sin(th)*pts[i+1][0]],R*.022,R*.030);}
+ for(const t of [.22,.52,.80]){const r=prof(H*t)*1.03;
+  kput(d>0?'ringR':'ringW',[C.x,H*t,C.z],qEuler(Math.PI/2,0,0),[r,r,R*.03],null);}
+ // apex lantern — the one place light was meant to get in
+ kput(SLABC(d),[C.x,H*.995,C.z],null,[R*.17,R*.03,R*.17],null);
+ for(let k=0;k<10;k++){const th=k/10*TAU;
+  kput(d>0?'colR':'colW',[C.x+Math.cos(th)*R*.14,H*.99,C.z+Math.sin(th)*R*.14],null,[R*.012,R*.09,R*.012],null);}
+ kput(SLABC(d),[C.x,H*.99+R*.09,C.z],null,[R*.19,R*.025,R*.19],null);
+ // overgrowth: this complex has stood open for a very long time
+ // these counts are linear in R, so at 4x the dome they were 4x the scatter;
+ // held back to roughly the density the 110 m dome had
+ mossOnRing(C.x,H*.06,C.z,R*.97,Math.round(R*.20),R*.035);
+ vinesOnRing(C.x,H*.45,C.z,prof(H*.45)*1.02,Math.round(R*.11),R*.5);
+ rubbleRing(C.x,0,C.z,R*1.0,R*1.5,Math.round(R*.22),R*.035);
+ return prof;}
+
+// A cross-section of what was inside: floor plates cut off at the break, a
+// double-loaded corridor, ward rooms and lab rooms, and service cores running
+// the full height. This is the kit's first real interior — the original brief
+// has wanted one behind every opening since the start, and this is the same
+// machinery, so it is written to be reusable rather than fitted to one dome.
+// `broken` is the same spec dalabDome() got. FLOOR HEIGHT IS NOT A SCALE
+// FACTOR: FH stays at a real 4.6 m whatever the dome measures, so enlarging the
+// dome ADDS STOREYS rather than stretching the ones that were there — 17 floors
+// at the original 95 m, 72 at 390 m.
+//
+// That is also why the fit-out has to be gated. At the new radius the room ring
+// wants ~106 rooms a floor, and 72 floors of that is ~38 000 instances for an
+// interior you can only see through one bite out of one quadrant. The rooms are
+// now laid only across the arc the break actually exposes (widened 1.6x, so the
+// section does not visibly stop at the tear), which is a fifth of the ring.
+function sectionInterior(C,R,H,d,sd,broken){
+ const {SH,DK,G}=C;const FH=4.6;
+ const seen=(u,v)=>{if(!broken)return true;
+  const du=Math.abs(((u-broken.u+1.5)%1)-.5);
+  return du<broken.w*(.35+.65*v)*1.6;};
+ for(let f=1;f*FH<H*.86;f++){const y=f*FH,rr0=R*Math.pow(clamp(1-Math.pow(y/H,2),0,1),.58)*.9;
+  if(rr0<R*.16)break;
+  // THE PLATE IS PALE AND ITS SOFFIT IS DARK. Both used to go into DK, and a
+  // dark plate seen edge-on across the void against the far inner skin — which
+  // MAT.guts renders as mid-grey under this lighting, not black — read as a
+  // pencil line. Pale concrete over a dark shadow band is what makes a stack of
+  // floors legible in section; the Forest Tower's shear and Plymouth's slumped
+  // flank both needed exactly this and neither worked without it.
+  SH.push(gridSurface((u,v)=>{const th=u*TAU,r=rr0*v;return[C.x+r*Math.cos(th),y,C.z+r*Math.sin(th)];},40,5,{uS:R/6,vS:3}));
+  DK.push(gridSurface((u,v)=>{const th=u*TAU,r=rr0*v;return[C.x+r*Math.cos(th),y-1.4,C.z+r*Math.sin(th)];},40,3,{uS:R/6,vS:3}));
+  // a double-loaded corridor: rooms, gangway, rooms
+  for(const ring of [.42,.80]){
+   DK.push(lathe({rFn:()=>rr0*ring,H:FH*.82,nu:36,nv:2,
+    hole:(u,y2)=>((u*22)%1)<.34}).translate(C.x,y,C.z));}
+  // room fit-out, alternating wards and labs by floor
+  const ward=(f%2)===0,n=Math.max(6,Math.round(rr0*.26));
+  for(let k=0;k<n;k++){const th=(k+.5)/n*TAU,r=rr0*.61;
+   if(!seen(th/TAU,y/H))continue;
+   const px=C.x+r*Math.cos(th),pz=C.z+r*Math.sin(th),q=qEuler(0,-th,0);
+   if(ward){ // beds in rows, a curtain rail over each
+    for(const sg of [-1,1])kput('boxD',[px+Math.cos(th+1.57)*sg*rr0*.09,y+.5,pz+Math.sin(th+1.57)*sg*rr0*.09],q,[2.0,.9,.9],null);
+    kput(d>0?'pipeR':'pipe',[px,y+2.4,pz],qEuler(0,-th,Math.PI/2),[.09,rr0*.26,.09],null);}
+   else{     // benches, and a bank of specimen tanks against the corridor wall
+    kput('boxD',[px,y+.9,pz],q,[rr0*.20,.22,1.1],null);
+    for(let j=-1;j<=1;j++)kput(d>0?'postR':'postW',[px+Math.cos(th+1.57)*j*1.5,y+1.5,pz+Math.sin(th+1.57)*j*1.5],null,[.42,2.2,.42],null);}
+   const lit=rng()<(d>0?.05:.5);
+   kput('strip',[px,y+FH-.7,pz],q,[rr0*.18,1,1],lit?CYAN:DEAD);}
+  // conduit bundles dropping through every floor
+  for(let k=0;k<5;k++){const th=rng()*TAU,r=rr0*rr(.2,.9);
+   kput(d>0?'pipeR':'pipe',[C.x+r*Math.cos(th),y+FH*.5,C.z+r*Math.sin(th)],null,[.28,FH,.28],null);}}
+ // service cores: lift shafts and stairs, full height, the spine of the section
+ for(let k=0;k<3;k++){const th=k/3*TAU+.7,r=R*.30;
+  kput(BOXC(d),[C.x+r*Math.cos(th),H*.42,C.z+r*Math.sin(th)],qEuler(0,-th,0),[R*.12,H*.84,R*.12],null);
+  kput('boxD',[C.x+r*Math.cos(th),H*.42,C.z+r*Math.sin(th)],qEuler(0,-th,0),[R*.10,H*.83,R*.10],null);}}
+
+function buildDalab(scene,gx,gz,d){reseed(9330+d);KOFF=[gx,0,gz];
+ const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const skin=SHELL(d);
+// THE SCALE. The great dome was DR=110 / DH=95 — a guess, logged in
+ // KNOWN_ISSUES as "wider and taller than the Voth palace" with no dimensions to
+ // hand. It is now sized against the kit itself: the Forest Ring's lantern tops
+ // out at 780 m and the great dome is half that. 390/95 = 4.105, and every
+ // layout dimension in the compound goes through K, so the place keeps its
+ // proportions instead of becoming one huge dome standing among small ones.
+ const K=4.105;
+ const DR=Math.round(110*K),DH=Math.round(95*K);       // 452 x 390
+ REGISTER({name:'Dalab — the ancient lab ('+STATE(d)+')',x:0,z:0,r:300*K,h:DH+30*K});
+ REGISTER({name:'Dalab — the great dome',x:0,z:0,r:DR+8*K,h:DH+22*K});
+ const C={SH:[],DK:[],G,x:0,z:0};
+ // the great dome, broken open on its south-east quarter
+ // The bite is WIDER than it was, and starts lower. w=.115/y0=.10 was sized
+ // against a 95 m dome with 17 floors in it; on a 390 m dome with 72 the same
+ // proportions left the inner skin standing as a pale wall across four fifths
+ // of the section, so the storeys the rescale exists to show were hidden
+ // behind it. .20 opens 72 degrees at the crown and 29 at the springing.
+ const BITE={u:.16,w:.20,y0:.04};
+ dalabDome(C,DR,DH,d,9331,BITE);
+ sectionInterior(C,DR,DH,d,9332,BITE);
+ // the sunken chamber on the axis: cabinet banks and cable trunking converging
+ // on a circle of floor. A plant room to a stranger, a shrine to a priest.
+ kput(SLABC(d),[0,1.2,0],null,[DR*.30,2.4,DR*.30],null);
+ for(let k=0;k<16;k++){const th=k/16*TAU;
+  kput(BOXC(d),[Math.cos(th)*DR*.235,4.4,Math.sin(th)*DR*.235],qEuler(0,-th,0),[5.5,6.4,3.2],null);
+  kput(d>0?'pipeR':'pipe',[Math.cos(th)*DR*.30,8.6,Math.sin(th)*DR*.30],qEuler(0,-th,Math.PI/2),[.5,DR*.14,.5],null);
+  const lit=d>0?rng()<.06:true;
+  kput('strip',[Math.cos(th)*DR*.218,7.4,Math.sin(th)*DR*.218],qEuler(0,-th,0),[4,1,1],lit?CYAN:DEAD);}
+ kput(d>0?'ringR':'ringW',[0,2.6,0],qEuler(Math.PI/2,0,0),[DR*.19,DR*.19,1.6],null);
+ // the satellite domes, no two the same, two of them also broken open
+ const SAT=[[178,-52,46,42,1],[126,152,34,31,0],[-86,176,40,36,1],
+            [-192,26,29,27,0],[-138,-148,37,33,0],[54,-186,24,23,0],[205,88,31,28,0]]
+            .map(q=>[q[0]*K,q[1]*K,q[2]*K,q[3]*K,q[4]]);
+ SAT.forEach((s,i)=>{const [sx,sz,sr,sh,brk]=s;
+  const SC={SH:C.SH,DK:C.DK,G,x:sx,z:sz};
+  REGISTER({name:'Dalab — dome '+(i+2),x:sx,z:sz,r:sr+6*K,h:sh+14*K});
+  dalabDome(SC,sr,sh,d,9340+i*7,brk?{u:rr(0,1),w:.10,y0:.12}:null);
+  if(brk)sectionInterior(SC,sr,sh,d,9350+i*5,{u:.5,w:.10,y0:.12});
+  // the passageway in: part buried, ribbed, with a clerestory along the top
+  const a=Math.atan2(sz,sx),L=Math.hypot(sx,sz)-sr*.9-DR*.9;
+  if(L>10){const mx=Math.cos(a)*(DR*.9+L/2),mz=Math.sin(a)*(DR*.9+L/2);
+   C.SH.push(lathe({rFn:()=>7.5*K,H:L,nu:14,nv:Math.round(L/(6*K)),hole:holeFn(d*.8,9360+i,null,1.6)})
+    .rotateZ(Math.PI/2).rotateY(-a).translate(mx,5.5*K,mz));
+   for(let k=0;k<Math.round(L/(9*K));k++){const t=(k+.5)/Math.round(L/(9*K));
+    const px=Math.cos(a)*(DR*.9+L*t),pz=Math.sin(a)*(DR*.9+L*t);
+    kput(d>0?'ringR':'ringW',[px,5.5*K,pz],qEuler(0,-a,Math.PI/2),[8.2*K,8.2*K,1.1*K],null);
+    if(rng()<.5)kput(d>0?'winSmD':'winSmI',[px,12.4*K,pz],qFacing([0,1,0]),[2.4*K,2.4*K,1],null);}
+   mossOnRing(mx,11.5*K,mz,L*.38,Math.round(L*.22/K),1.5*K);}});
+ // the low ruined wall round the compound, breached in places
+ for(let k=0;k<200;k++){const th=k/200*TAU,r=(292+12*fbm(k*.14,2.2,9370,2))*K;
+  if(fbm(k*.09,1.1,9371,2)<.30)continue;                     // breaches
+  kput(BOXC(d),[Math.cos(th)*r,rr(1.4,3.4)*K,Math.sin(th)*r],qEuler(0,-th,0),[rr(6,13)*K,rr(2.8,6.8)*K,rr(2.6,4.4)*K],null);}
+ apron(G,0,0,300*K,352*K,d,1.6*K);
+ scatterMoss(0,0,0,0,330*K,220,3.2*K);trees(0,0,150*K,420*K,150);
+ rubbleRing(0,0,0,150*K,330*K,170,2.8*K);
+ figures(0,260*K,14,60*K);figures(-210*K,-80*K,8,40*K);
+ meshMerged(C.SH,skin,G);meshMerged(C.DK,MAT.guts,G);
+ KOFF=[0,0,0];return G;}
 // ---------------------------------------------------------------- v5 materials
 MAT.rock=new THREE.MeshStandardMaterial({map:TEX.concrete,color:0x8a5a42,roughness:1,side:DS});
 MAT.lawn=new THREE.MeshStandardMaterial({color:0x4f7a30,roughness:1,side:DS});
@@ -4239,6 +4405,103 @@ const KratorSky=(function(){
   return{sunDir:s.clone(),sunIntensity:1.7*dayF*(1-0.85*e),sunColor:sunCol,ambient:0.18+0.55*dayF*(1-0.6*e)+0.08*(1-dayF),fog,giantDir:giantDir.clone(),eclipse:e,isNight:dayF<0.05,dayF,dusk};}
  return{attach,update,lighting,sunDir,altAz,giantDir,state,GIANT_ANG};})();
 window.KratorSky=KratorSky;
+// ================================================================= DALAB CITY — geometry (target: city)
+// WHERE things are: the world, the Ancient lab, the settlements, the river, the terrain function. Metres; x east,
+// z south. The lab stands north of centre; the main settlement south of it; six outlying settlements on a ring
+// round both, joined by the highway circuit; the river down the west edge with a channel to the main settlement.
+window.CITY=true;
+const CITY={
+ WORLD:4400,                 // side of the terrain plane (the clearing; the forest closes in at the edge)
+ LAB:{x:0,z:-720,scale:.4},  // the Ancient lab: 64-dalab.js at K=4.105 is 2.4 km across; .4 gives a 180 m dome and a 480 m compound
+ MAIN:{x:0,z:420,r:520},     // the main settlement: its mound (the palace mound) sits at the south of the plaza and faces the lab
+ RING:1560,                  // radius of the outlying ring (from the point between lab and main)
+ RING_C:[0,-120],
+ HIGHWAY_W:14,STREET_W:8,LANE_W:5.5,
+ RIVER_X:-1980,              // the river runs N-S near the west edge
+ FOREST_R:2050,              // beyond this the forest is dense
+ QUALITY:1,
+};
+const SEED_CITY=515151;
+const FRAME_HOOKS_PRE=[];
+function smoothstep(e0,e1,x){const t=clamp((x-e0)/(e1-e0),0,1);return t*t*(3-2*t);}
+function angDiff(a,b){let d=Math.abs(a-b)%TAU;return d>Math.PI?TAU-d:d;}
+// the six outlying settlements, on the ring at 60-degree spacing (offset so none sits on the lab's axis), each facing the lab
+const SETTLE=[];
+(function(){const L=CITY.LAB;
+ for(let k=0;k<6;k++){const a=k/6*TAU+Math.PI/6;const x=CITY.RING_C[0]+Math.cos(a)*CITY.RING,z=CITY.RING_C[1]+Math.sin(a)*CITY.RING;
+  SETTLE.push({key:'town'+(k+1),name:['Ashfold','Greenmarch','Reedholm','Oakhaven','Cornwell','Stonebrook'][k],x,z,r:190,main:false,face:Math.atan2(L.x-x,L.z-z),plazaR:34,moundR:30,streets:6,ringR:96});}
+ // the main settlement: 3x; its mound faces the lab (north); the palace mound is the High Priest's seat here
+ SETTLE.push({key:'main',name:'Dalab',x:CITY.MAIN.x,z:CITY.MAIN.z,r:CITY.MAIN.r,main:true,face:Math.atan2(L.x-CITY.MAIN.x,L.z-CITY.MAIN.z),plazaR:64,moundR:42,streets:8,ringR:210,ringR2:360});
+})();
+// the river: a gentle meander down the west edge; the main channel east to the main settlement; irrigation channels to
+// the western towns and from the main channel to the eastern ones
+function riverX(z){return CITY.RIVER_X+60*Math.sin(z*.0021+1.3)+24*Math.sin(z*.0067);}
+const CHANNELS=[];   // [{pts,w}] painted as water and carved into the terrain
+(function(){const M=CITY.MAIN;
+ CHANNELS.push({pts:[[riverX(M.z-40),M.z-40],[-900,M.z-60],[M.x-M.r-30,M.z-40]],w:10,main:true});
+ for(const S of SETTLE){if(S.main)continue;const rx=riverX(S.z);
+  if(S.x<-600)CHANNELS.push({pts:[[rx,S.z+30],[(rx+S.x)/2,S.z+50],[S.x-S.r-20,S.z+30]],w:7});
+  else{const mc=CHANNELS[0];const from=[-700,M.z-58];CHANNELS.push({pts:[from,[(from[0]+S.x)/2,(from[1]+S.z)/2+60],[S.x-(S.x>0?S.r+20:-(S.r+20)),S.z+40]],w:6});}}
+})();
+function segD(x,z,a,b){const dx=b[0]-a[0],dz=b[1]-a[1],l2=dx*dx+dz*dz||1;const t=clamp(((x-a[0])*dx+(z-a[1])*dz)/l2,0,1);return Math.hypot(x-a[0]-dx*t,z-a[1]-dz*t);}
+function channelD(x,z){let best=1e9,w=0;for(const C of CHANNELS){for(let i=0;i<C.pts.length-1;i++){const d=segD(x,z,C.pts[i],C.pts[i+1]);if(d<best){best=d;w=C.w;}}}return{d:best,w};}
+function riverD(x,z){return Math.abs(x-riverX(z));}
+// the terrain: flat lowland with a metre of roll, the river cut 3.5 m deep and 70 m wide, the channels 1.4 m deep
+// the ground sits ~2.2 m above the datum: the biome reads anything under 0.3 m as water
+terrainH=function(x,z){let h=2.2+.9*fbm(x*.0016+3,z*.0016-7,17,3)+.35*fbm(x*.009,z*.009,5,2)-.5;
+ const rd=riverD(x,z);if(rd<60){const t=1-smoothstep(28,60,rd);h-=3.5*t;}
+ const c=channelD(x,z);if(c.d<c.w){const t=1-smoothstep(c.w*.45,c.w,c.d);h-=1.4*t;}
+ return h;};
+const WATER_Y=1.25;
+function isWater(x,z){return terrainH(x,z)<WATER_Y+.1;}
+function nearestSettle(x,z){let best=null,bd=1e9;for(const S of SETTLE){const d=Math.hypot(x-S.x,z-S.z);if(d<bd){bd=d;best=S;}}return{S:best,d:bd};}
+// ================================================================= DALAB CITY — the painted ground: albedo, buildable mask, classes, the road list
+// Everything the layout decides is painted here first (the Iziz city's scheme); placement then READS these canvases
+// and the ROADS list, and the terrain mesh wears the albedo. 2048 px over WORLD m ≈ 0.47 px/m.
+const CS=2048,PXS=CS/CITY.WORLD,px=v=>(v+CITY.WORLD/2)*PXS;
+const gcv=document.createElement('canvas');gcv.width=gcv.height=CS;const cg=gcv.getContext('2d');
+const mv=document.createElement('canvas');mv.width=mv.height=CS;const mg=mv.getContext('2d');
+const kv=document.createElement('canvas');kv.width=kv.height=CS;const kg=kv.getContext('2d');
+const KL={none:0,plaza:1,park:2,highway:3,street:4,lane:5,avenue:6,farm:7,water:8,court:9,building:10,rock:11,field:12,mound:13};
+const KLCOL=k=>'rgb('+k+','+k+','+k+')';
+const ROADS=[];const PRECINCTS=[];
+function cstroke(ctx,pts,w,col){if(pts.length<2)return;ctx.lineWidth=Math.max(1,w*PXS);ctx.strokeStyle=col;ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(px(p[0]),px(p[1])):ctx.moveTo(px(p[0]),px(p[1])));ctx.stroke();}
+function cdisc(ctx,x,z,r,col){ctx.beginPath();ctx.arc(px(x),px(z),r*PXS,0,7);ctx.fillStyle=col;ctx.fill();}
+function cpoly(ctx,pts,col){ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(px(p[0]),px(p[1])):ctx.moveTo(px(p[0]),px(p[1])));ctx.closePath();ctx.fillStyle=col;ctx.fill();}
+const ROADCOL={3:'#8a7a62',4:'#8f8068',5:'#8a8070',6:'#7a6a56'};   // packed earth; the highway a shade darker
+// a road: albedo, blocked in the mask (a little wider), classed, and remembered
+function road(pts,w,cls,opt){opt=opt||{};cstroke(cg,pts,w,opt.col||ROADCOL[cls]||'#8a7a62');cstroke(mg,pts,w+3,'#000');cstroke(kg,pts,w+1.5,KLCOL(cls));
+ const r={pts,w,cls,id:ROADS.length,zone:opt.zone||null};ROADS.push(r);return r;}
+function disc(x,z,r,type,col){cdisc(cg,x,z,r,col||(type==='park'?'#5f8a3a':type==='court'?'#8a7a66':'#a89474'));cdisc(mg,x,z,r,type==='park'?'#00ff00':'#000');cdisc(kg,x,z,r,KLCOL(type==='park'?KL.park:type==='court'?KL.court:type==='mound'?KL.mound:KL.plaza));}
+function precinct(x,z,r,name){PRECINCTS.push({x,z,r,name});}
+function footprint(pts,col){cpoly(cg,pts,col||'rgba(70,52,34,.5)');cpoly(mg,pts,'#000');cpoly(kg,pts,KLCOL(KL.building));}
+function inPrecinct(x,z,pad){for(const p of PRECINCTS)if(Math.hypot(x-p.x,z-p.z)<p.r+(pad||0))return p;return null;}
+// a farm field: a quad polygon, painted in a crop colour with furrows, blocked, classed field (nothing builds or roots)
+const CROPCOL=['#a08a3c','#8a9a38','#b89a48','#6f8a30','#c4a050','#7f9a44','#9a7a34'];
+function field(pts,ci,ry){const col=CROPCOL[ci%CROPCOL.length];cpoly(cg,pts,col);cpoly(mg,pts,'#000');cpoly(kg,pts,KLCOL(KL.field));
+ // furrows: stripes across the quad along its ry
+ cg.save();cg.beginPath();pts.forEach((p,i)=>i?cg.lineTo(px(p[0]),px(p[1])):cg.moveTo(px(p[0]),px(p[1])));cg.closePath();cg.clip();
+ const cx=pts.reduce((a,p)=>a+p[0],0)/pts.length,cz=pts.reduce((a,p)=>a+p[1],0)/pts.length;const R=Math.max(...pts.map(p=>Math.hypot(p[0]-cx,p[1]-cz)))+4;
+ cg.strokeStyle='rgba(60,45,25,.28)';cg.lineWidth=Math.max(1,2.2*PXS);for(let d=-R;d<R;d+=7){const a=[cx+Math.cos(ry)*d-Math.sin(ry)*R,cz+Math.sin(ry)*d+Math.cos(ry)*R],b=[cx+Math.cos(ry)*d+Math.sin(ry)*R,cz+Math.sin(ry)*d-Math.cos(ry)*R];
+  cg.beginPath();cg.moveTo(px(a[0]),px(a[1]));cg.lineTo(px(b[0]),px(b[1]));cg.stroke();}
+ cg.restore();}
+function water(pts,w){cstroke(cg,pts,w,'#2a4a44');cstroke(mg,pts,w+6,'#000');cstroke(kg,pts,w+4,KLCOL(KL.water));}
+// ---- base paint: lowland grass and earth, a darker forest floor beyond the clearing ----
+(function paintBase(){reseed(SEED_CITY+1);
+ cg.fillStyle='#7f9a4c';cg.fillRect(0,0,CS,CS);mg.fillStyle='#fff';mg.fillRect(0,0,CS,CS);kg.fillStyle='#000';kg.fillRect(0,0,CS,CS);
+ for(let i=0;i<5000;i++){cg.beginPath();cg.arc(rng()*CS,rng()*CS,rr(6,50),0,7);cg.fillStyle=vPick(['rgba(110,140,60,.35)','rgba(140,150,70,.3)','rgba(90,120,50,.35)','rgba(150,120,70,.22)','rgba(120,100,60,.2)']);cg.fill();}
+ // the forest floor beyond the clearing: dark litter under the trees
+ cg.save();cg.beginPath();cg.rect(0,0,CS,CS);cg.arc(px(0),px(-120),CITY.FOREST_R*PXS,0,7,true);cg.fillStyle='#3a4a26';cg.fill();cg.restore();
+ // the river and the channels: water, blocked
+ {const pts=[];for(let z=-CITY.WORLD/2;z<=CITY.WORLD/2;z+=40)pts.push([riverX(z),z]);water(pts,52);for(const C of CHANNELS)water(C.pts,C.w-1);}
+})();
+let mData=null,kData=null,cData=null;
+function cityBakeMasks(){mData=mg.getImageData(0,0,CS,CS).data;kData=kg.getImageData(0,0,CS,CS).data;cData=cg.getImageData(0,0,CS,CS).data;}
+function maskAt(x,z){const ix=Math.floor(px(x)),iz=Math.floor(px(z));if(ix<0||iz<0||ix>=CS||iz>=CS)return[0,0];const i=(iz*CS+ix)*4;return[mData[i],mData[i+1]];}
+function klass(x,z){const ix=Math.floor(px(x)),iz=Math.floor(px(z));if(ix<0||iz<0||ix>=CS||iz>=CS)return 0;return kData[(iz*CS+ix)*4];}
+function canBuild(x,z){return maskAt(x,z)[0]>200;}
+function isRoad(x,z){const k=klass(x,z);return k>=3&&k<=6;}
+function walkable(x,z){const k=klass(x,z);return k===1||k===2||(k>=3&&k<=6)||k===9;}
 // ================================================================= BIOME CORE — head
 // The engine-independent kit every Krator biome fragment is written against.
 // Nothing below names a world's kit. The host hands in what a biome needs
@@ -6218,30 +6481,148 @@ SWLOW.build=function(opt){opt=opt||{};const R=opt.R||2850,q=opt.quality==null?1:
  BIO.cur=null;return out;};
 SWLOW.dress=function(geos,opt){if(SWLOW.dressGeos){BIO.cur='lowlands/dress';SWLOW.dressGeos(geos,opt||{});BIO.cur=null;}};
 SWLOW.canopyH=function(x,z){return SWLOW._canopyH?SWLOW._canopyH(x,z):10;};
-// TARGET: set — the Dalab building kit laid out in rows by family, front (+z) toward the camera.
-const TITLE='Dalab Building Kit';
-const GROUND_C=700;          // z centre of the ground plane
-const ROWDEF=[
- ['dalab_hut_a','dalab_hut_b','dalab_hut_c'],
- ['dalab_compound','dalab_granaries','dalab_shrine'],
- ['dalab_noble_a','dalab_noble_b','dalab_noble_c'],
- ['dalab_tavern','dalab_market_small','dalab_shops'],
- ['dalab_warehouse','dalab_smithy','dalab_workshop'],
- ['dalab_potter','dalab_weaver','dalab_dyer','dalab_windmill'],
- ['dalab_market_large'],
- ['dalab_barracks','dalab_priest_house','dalab_temple','dalab_healers'],
- ['dalab_embassy_iziz','dalab_embassy_voth','dalab_embassy_yuni','dalab_embassy_republic'],
- ['dalab_chapterhouse','dalab_priest_compound'],
- ['dalab_ranch'],
- ['dalab_halls'],
- ['dalab_mound'],
- ['dalab_palace_mound'],
- ['dalab_high_mound'],
-];
-const ROWZ=[0,40,90,150,210,270,350,430,500,580,700,880,1060,1240,1480];
+// ================================================================= DALAB CITY — the layout: settlements, streets, the highway, the avenue, farms
+// Streets are radial from each settlement's plaza (the plaza sits in front of the mound); a ring street ties the
+// radials; the highway circuit joins the six outlying towns and leaves the map in the four cardinal directions; the
+// live-oak avenue runs from the lab gate to the main plaza. A connectivity pass afterwards guarantees one network.
+reseed(SEED_CITY+2);
+function nearestRoadPt(x,z,filter){let best=null;for(const r of ROADS){if(filter&&!filter(r))continue;const P=r.pts;
+ for(let i=0;i<P.length-1;i++){const ax=P[i][0],az=P[i][1],bx=P[i+1][0],bz=P[i+1][1];const dx=bx-ax,dz=bz-az,l2=dx*dx+dz*dz||1;const t=clamp(((x-ax)*dx+(z-az)*dz)/l2,0,1);
+  const qx=ax+dx*t,qz=az+dz*t,d=Math.hypot(x-qx,z-qz);if(!best||d<best.d)best={x:qx,z:qz,d,road:r,seg:i,t};}}return best;}
+function connectRoad(x,z,w,cls,filter,zone){const n=nearestRoadPt(x,z,filter);if(!n||n.d<2)return n;road([[x,z],[n.x,n.z]],w,cls,{zone:zone||'link'});return n;}
+// a road may not cross water except where a bridge is laid: split at the channel and lay a plank bridge (painted)
+const BRIDGES=[];
+function bridgeAt(x,z,ry,w){BRIDGES.push({x,z,ry,w});}
+// ---- 1. the settlements: mound disc, plaza, radials, ring street(s) ----
+for(const S of SETTLE){
+ const f=S.face;const fd=[Math.sin(f),Math.cos(f)];                         // the mound's front direction (local +z rotated by face)
+ S.mound={x:S.x,z:S.z,ry:f};
+ const pc=[S.x+fd[0]*(S.moundR+10+S.plazaR),S.z+fd[1]*(S.moundR+10+S.plazaR)];S.plaza={x:pc[0],z:pc[1],r:S.plazaR};
+ disc(S.x,S.z,S.moundR+6,'mound');precinct(S.x,S.z,S.moundR+8,S.name+' mound');
+ disc(pc[0],pc[1],S.plazaR,'plaza');precinct(pc[0],pc[1],S.plazaR-2,S.name+' plaza');
+ // radials from the plaza centre, skipping the mound's bearing; the first pair frame the mound
+ S.radials=[];const n=S.streets;const back=Math.atan2(S.x-pc[0],S.z-pc[1]);   // bearing toward the mound (as ry: dir = sin,cos)
+ for(let k=0;k<n;k++){const a=back+Math.PI+(k/n)*TAU;if(angDiff(a,back)<.45)continue;const L=S.main?420:140;
+  const pts=[[pc[0]+Math.sin(a)*(S.plazaR-2),pc[1]+Math.cos(a)*(S.plazaR-2)],[pc[0]+Math.sin(a)*L,pc[1]+Math.cos(a)*L]];
+  road(pts,S.main?CITY.STREET_W+2:CITY.STREET_W,KL.street,{zone:S.key+':radial'});S.radials.push({a,L,pts});}
+ // ring street(s) round the plaza
+ const ring=(R,w)=>{const pts=[];for(let i=0;i<=48;i++){const a=i/48*TAU;pts.push([pc[0]+Math.sin(a)*R,pc[1]+Math.cos(a)*R]);}road(pts,w,KL.lane,{zone:S.key+':ring'});};
+ ring(S.ringR,CITY.LANE_W);if(S.ringR2)ring(S.ringR2,CITY.LANE_W);
+ // a lane round the back of the mound so the houses behind it connect
+ {const R=S.moundR+22;const pts=[];for(let i=0;i<=24;i++){const a=back+Math.PI/2+i/24*Math.PI;pts.push([S.x+Math.sin(a)*R,S.z+Math.cos(a)*R]);}road(pts,CITY.LANE_W,KL.lane,{zone:S.key+':moundlane'});
+  connectRoad(pts[0][0],pts[0][1],CITY.LANE_W,KL.lane,r=>r.zone&&r.zone.indexOf(S.key)===0&&r.zone.indexOf('moundlane')<0);connectRoad(pts[24][0],pts[24][1],CITY.LANE_W,KL.lane,r=>r.zone&&r.zone.indexOf(S.key)===0&&r.zone.indexOf('moundlane')<0);}
+}
+// ---- 2. the highway circuit through the outlying plazas, and the four spurs off the map ----
+{const T=SETTLE.filter(S=>!S.main);const pts=T.map(S=>[S.plaza.x,S.plaza.z]);pts.push(pts[0]);
+ // round the corners: a point outside each plaza on the way in and out, so the highway skirts the plaza edge rather than crossing the mound
+ const P=[];for(let i=0;i<T.length;i++){const a=T[i],b=T[(i+1)%T.length];const A=[a.plaza.x,a.plaza.z],B=[b.plaza.x,b.plaza.z];P.push(A);const mx=(A[0]+B[0])/2,mz=(A[1]+B[1])/2;const ox=mx-CITY.RING_C[0],oz=mz-CITY.RING_C[1],m=Math.hypot(ox,oz);P.push([CITY.RING_C[0]+ox/m*(CITY.RING+40),CITY.RING_C[1]+oz/m*(CITY.RING+40)]);}
+ P.push(P[0]);road(P,CITY.HIGHWAY_W,KL.highway,{zone:'highway'});
+ // spurs: from the circuit's nearest point to each map edge
+ const E=CITY.WORLD/2+80;for(const dir of[[0,-1],[1,0],[0,1],[-1,0]]){const far=[CITY.RING_C[0]+dir[0]*E,CITY.RING_C[1]+dir[1]*E];const n=nearestRoadPt(far[0],far[1],r=>r.zone==='highway');road([[n.x,n.z],far],CITY.HIGHWAY_W,KL.highway,{zone:'spur'});}
+ // the main settlement joins the circuit by its three outward radials, extended
+ const M=SETTLE.find(S=>S.main);for(const R of M.radials){if(angDiff(R.a,M.face)<1.2)continue;const e=R.pts[1];const n=nearestRoadPt(e[0],e[1],r=>r.zone==='highway');if(n&&n.d<900)road([e,[n.x,n.z]],CITY.STREET_W+2,KL.street,{zone:'main:link'});}
+ window._highwayPts=P.length;}
+// ---- 3. the avenue: lab gate to the main plaza, a live-oak vault (the biome plants the oaks along AVENUE) ----
+const M0=SETTLE.find(S=>S.main);
+const LAB_GATE=[CITY.LAB.x,CITY.LAB.z+292*4.105*CITY.LAB.scale];   // the compound wall's south point
+const AVENUE=[[LAB_GATE[0],LAB_GATE[1]-30],[LAB_GATE[0],LAB_GATE[1]+40],[M0.plaza.x,M0.plaza.z-M0.plazaR-2]];
+road(AVENUE,16,KL.avenue,{zone:'avenue'});disc(LAB_GATE[0],LAB_GATE[1]+10,26,'plaza');
+// the High Priest's mound, right outside the lab's main entrance, ringed, facing AWAY from the lab (south)
+const HIGH_MOUND={x:-190,z:LAB_GATE[1]+120,ry:0};disc(HIGH_MOUND.x,HIGH_MOUND.z,76,'mound');precinct(HIGH_MOUND.x,HIGH_MOUND.z,80,"High Priest's mound");
+road([[HIGH_MOUND.x,HIGH_MOUND.z+82],[HIGH_MOUND.x,HIGH_MOUND.z+140],[AVENUE[1][0]-20,AVENUE[1][1]+120]],CITY.STREET_W,KL.street,{zone:'highmound'});
+// ---- 4. the farms: wedges of field between the radials, from the settlement's edge outward; a ring of them ----
+const FIELDS=[];
+(function farms(){reseed(SEED_CITY+3);
+ for(const S of SETTLE){const R0=S.main?S.r-20:S.r-30,R1=S.main?S.r+330:S.r+240;const n=S.main?18:12;
+  for(let i=0;i<n;i++){const a0=i/n*TAU,a1=(i+1)/n*TAU;const ci=Math.floor(rng()*CROPCOL.length);if(rng()<.18)continue;   // some fallow
+   for(let r=R0;r<R1;r+=rr(60,95)){const r2=Math.min(R1,r+rr(55,90));const g=.028;const pts=[[S.plaza.x+Math.sin(a0+g)*r,S.plaza.z+Math.cos(a0+g)*r],[S.plaza.x+Math.sin(a1-g)*r,S.plaza.z+Math.cos(a1-g)*r],[S.plaza.x+Math.sin(a1-g)*r2,S.plaza.z+Math.cos(a1-g)*r2],[S.plaza.x+Math.sin(a0+g)*r2,S.plaza.z+Math.cos(a0+g)*r2]];
+    // no fields on water, the avenue, the lab or the highway's line
+    let ok=true;for(const p of pts){if(isWater(p[0],p[1])||Math.hypot(p[0]-CITY.LAB.x,p[1]-CITY.LAB.z)<292*4.105*CITY.LAB.scale+60||riverD(p[0],p[1])<50||channelD(p[0],p[1]).d<8)ok=false;}
+    if(!ok)continue;field(pts,(ci+Math.round(r/80))%CROPCOL.length,(a0+a1)/2);FIELDS.push({pts,S:S.key,cx:pts.reduce((s,p)=>s+p[0],0)/4,cz:pts.reduce((s,p)=>s+p[1],0)/4});}}}
+ window._fields=FIELDS.length;})();
+// farm lanes: every other wedge boundary gets a lane from the ring street out to the fields' edge (the farm workers' way)
+for(const S of SETTLE){const n=S.main?18:12;for(let i=0;i<n;i+=2){const a=i/n*TAU;const R0=S.ringR+4,R1=(S.main?S.r+300:S.r+210);
+ road([[S.plaza.x+Math.sin(a)*R0,S.plaza.z+Math.cos(a)*R0],[S.plaza.x+Math.sin(a)*R1,S.plaza.z+Math.cos(a)*R1]],CITY.LANE_W,KL.lane,{zone:S.key+':farmlane'});}}
+// ---- 5. the connectivity pass: one network. Components by endpoint proximity; each minor component gets a link to the largest ----
+function roadComponents(){const N=ROADS.length,par=[];for(let i=0;i<N;i++)par[i]=i;const find=i=>par[i]===i?i:(par[i]=find(par[i]));const uni=(a,b)=>{par[find(a)]=find(b);};
+ for(let i=0;i<N;i++){const A=ROADS[i];for(const e of[A.pts[0],A.pts[A.pts.length-1]]){for(let j=0;j<N;j++){if(i===j)continue;const B=ROADS[j];for(let k=0;k<B.pts.length-1;k++){if(segD(e[0],e[1],B.pts[k],B.pts[k+1])<(A.w+B.w)/2+1.5){uni(i,j);break;}}}}}
+ const comp={};for(let i=0;i<N;i++){const c=find(i);(comp[c]||(comp[c]=[])).push(i);}return Object.values(comp);}
+(function connectAll(){let guard=0;while(guard++<12){const C=roadComponents();if(C.length<=1){window._roadComponents=1;return;}C.sort((a,b)=>b.length-a.length);const main=new Set(C[0]);
+ for(let ci=1;ci<C.length;ci++){let best=null;for(const ri of C[ci]){for(const p of ROADS[ri].pts){const n=nearestRoadPt(p[0],p[1],r=>main.has(r.id));if(n&&(!best||n.d<best.d))best={p,n};}}
+  if(best)road([best.p,[best.n.x,best.n.z]],CITY.LANE_W,KL.lane,{zone:'connect'});}}
+ window._roadComponents=roadComponents().length;})();
+// bridges wherever a road crosses a channel (painted as planks over the water)
+(function bridges(){for(const R of ROADS){for(let i=0;i<R.pts.length-1;i++){const a=R.pts[i],b=R.pts[i+1];const L=Math.hypot(b[0]-a[0],b[1]-a[1]);const n=Math.max(2,Math.ceil(L/6));
+  for(let k=0;k<=n;k++){const t=k/n;const x=a[0]+(b[0]-a[0])*t,z=a[1]+(b[1]-a[1])*t;const c=channelD(x,z);if(c.d<c.w*.5){bridgeAt(x,z,Math.atan2(b[0]-a[0],b[1]-a[1]),R.w);k+=Math.ceil(c.w*2/(L/n));}}}}
+ // one bridge per crossing: thin the list
+ const B=[];for(const b of BRIDGES){if(!B.some(q=>Math.hypot(q.x-b.x,q.z-b.z)<18))B.push(b);}BRIDGES.length=0;B.forEach(b=>BRIDGES.push(b));window._bridges=BRIDGES.length;})();
+cityBakeMasks();
+// ================================================================= DALAB CITY — the placement engine
+// Occupancy (rotated footprints in a spatial hash), ground tests against the painted mask (roads, plazas, fields
+// and water are all blocked, so a building can never sit on a street), street-facing alignment (the front of every
+// def is +z; ry is the outward normal of the nearest road), and the frontage walker that fills the streets.
+reseed(SEED_CITY+4);
+const OCC={cell:40,hash:{},list:[]};
+function occKey(ix,iz){return ix+','+iz;}
+function occCells(o){const R=Math.hypot(o.hx,o.hz)+(o.pad||0);const out=[];for(let iz=Math.floor((o.z-R)/OCC.cell);iz<=Math.floor((o.z+R)/OCC.cell);iz++)for(let ix=Math.floor((o.x-R)/OCC.cell);ix<=Math.floor((o.x+R)/OCC.cell);ix++)out.push(occKey(ix,iz));return out;}
+function obbOverlap(a,b,pad){pad=pad||0;const axes=[[Math.cos(a.ry),-Math.sin(a.ry)],[Math.sin(a.ry),Math.cos(a.ry)],[Math.cos(b.ry),-Math.sin(b.ry)],[Math.sin(b.ry),Math.cos(b.ry)]];
+ const dx=b.x-a.x,dz=b.z-a.z;
+ for(const ax of axes){const proj=dx*ax[0]+dz*ax[1];
+  const ra=Math.abs((Math.cos(a.ry)*ax[0]-Math.sin(a.ry)*ax[1]))*a.hx+Math.abs((Math.sin(a.ry)*ax[0]+Math.cos(a.ry)*ax[1]))*a.hz;
+  const rb=Math.abs((Math.cos(b.ry)*ax[0]-Math.sin(b.ry)*ax[1]))*b.hx+Math.abs((Math.sin(b.ry)*ax[0]+Math.cos(b.ry)*ax[1]))*b.hz;
+  if(Math.abs(proj)>ra+rb+pad)return false;}return true;}
+function occFree(o,pad){const seen={};for(const k of occCells(o)){const L=OCC.hash[k];if(!L)continue;for(const q of L){if(seen[q.id])continue;seen[q.id]=1;if(obbOverlap(o,q,pad||0))return false;}}return true;}
+function occAdd(o){o.id=OCC.list.length;OCC.list.push(o);for(const k of occCells(o))(OCC.hash[k]||(OCC.hash[k]=[])).push(o);return o;}
+function obbCorners(o,grow){const g=grow||0;const c=Math.cos(o.ry),s=Math.sin(o.ry);return[[-1,-1],[1,-1],[1,1],[-1,1]].map(k=>[o.x+k[0]*(o.hx+g)*c+k[1]*(o.hz+g)*s,o.z-k[0]*(o.hx+g)*s+k[1]*(o.hz+g)*c]);}
+// ground test: buildable at the corners, edge midpoints and centre (a 3x3 inside too for big plots); not in a precinct; not water
+function groundOK(o,opt){opt=opt||{};const pts=obbCorners(o,opt.grow||0);pts.push([o.x,o.z]);for(let i=0;i<4;i++)pts.push([(pts[i][0]+pts[(i+1)%4][0])/2,(pts[i][1]+pts[(i+1)%4][1])/2]);
+ if(o.hx>14||o.hz>14){for(let i=-1;i<=1;i++)for(let j=-1;j<=1;j++){const p=loc(o.x,o.z,i*o.hx*.6,j*o.hz*.6,o.ry);pts.push(p);}}
+ const W=CITY.WORLD/2-30;for(const p of pts){if(Math.abs(p[0])>W||Math.abs(p[1])>W)return false;if(!opt.ignoreMask&&!canBuild(p[0],p[1]))return false;if(!opt.ignorePrecinct&&inPrecinct(p[0],p[1],opt.ppad||0))return false;if(isWater(p[0],p[1]))return false;}
+ return true;}
+function groundY(o){let y=1e9;for(const p of obbCorners(o,-.5))y=Math.min(y,terrainH(p[0],p[1]));y=Math.min(y,terrainH(o.x,o.z));return y-.06;}
+// STREET ALIGNMENT: the outward normal of the nearest road at the plot, so the door faces the street
+function faceRoadRy(x,z,filter){const n=nearestRoadPt(x,z,filter);if(!n)return 0;return Math.atan2(n.x-x,n.z-z);}
+function findSpot(hx,hz,tx,tz,opt){opt=opt||{};const R=opt.R||90,step=opt.step||8;const tries=[[tx,tz]];
+ for(let r=step;r<=R;r+=step){const n=Math.max(6,Math.round(TAU*r/step));for(let i=0;i<n;i++){const a=i/n*TAU+r*.37;tries.push([tx+r*Math.cos(a),tz+r*Math.sin(a)]);}}
+ for(const t of tries){const ry=opt.ry!=null?opt.ry:faceRoadRy(t[0],t[1],opt.filter);const o={x:t[0],z:t[1],hx,hz,ry,pad:opt.pad==null?1.5:opt.pad};
+  if(groundOK(o,opt)&&occFree(o,o.pad))return o;}return null;}
+// ---------------------------------------------------------------- placing a def
+const PLACED=[];const LANDMARKS=[];
+function placeDef(key,o,opt){opt=opt||{};const D=VERN.defs[key];if(!D){reportErr('placeDef: no def '+key);return null;}const sc=opt.scale||1;o.hx=D.w/2*sc;o.hz=D.d/2*sc;const y=opt.y!=null?opt.y:groundY(o);
+ TSTAT.cur=key+'/'+(opt.v|0);const r0=REG.length;const G=VERN.place(scene,key,o.x,o.z,o.ry,{v:opt.v|0,scale:sc,y,lit:opt.lit});TSTAT.cur=null;
+ o.built=key;o.settle=opt.settle||null;occAdd(o);PLACED.push({key,o});footprint(obbCorners(o,.6));
+ if(opt.landmark){LANDMARKS.push({name:opt.landmark,x:o.x,z:o.z});let best=null;for(let i=r0;i<REG.length;i++){const r=REG[i];if(!best||r.r>best.r)best=r;}if(best){best.tags=Object.assign({},best.tags,{landmark:true});best.name=opt.landmark;}}
+ return G;}
+// place near a target, facing the nearest street (ANTI-OVERLAP: spiral out until free); returns the OBB or null
+function placeNear(key,tx,tz,opt){opt=opt||{};const D=VERN.defs[key];if(!D)return null;const sc=opt.scale||1;const o=findSpot(D.w/2*sc+(opt.grow||1),D.d/2*sc+(opt.grow||1),tx,tz,{R:opt.R||120,step:opt.step||9,ry:opt.ry,filter:opt.filter,pad:opt.pad,ppad:opt.ppad});
+ if(!o)return null;o.hx=D.w/2*sc;o.hz=D.d/2*sc;placeDef(key,o,opt);return o;}
+// the FRONTAGE WALKER: along a road, every `pitch` metres, a lot on each side set back `setback` from the edge; the
+// plot faces the road; picks a key from `pick(t,side)`; stops when `max` placed. Returns the count.
+function frontage(R,pitch,setback,pick,max,opt){opt=opt||{};let n=0;const P=R.pts;let carry=pitch*rng();
+ for(let i=0;i<P.length-1&&n<max;i++){const a=P[i],b=P[i+1];const L=Math.hypot(b[0]-a[0],b[1]-a[1]);if(L<1)continue;const ux=(b[0]-a[0])/L,uz=(b[1]-a[1])/L;
+  for(let d=carry;d<L&&n<max;d+=pitch){for(const side of[-1,1]){if(n>=max)break;const key=pick(d/L,side);if(!key)continue;const D=VERN.defs[key];if(!D)continue;
+   const hx=D.w/2,hz=D.d/2;const off=R.w/2+setback+hz;const cx=a[0]+ux*d+(-uz)*side*off,cz=a[1]+uz*d+ux*side*off;
+   const ry=Math.atan2((a[0]+ux*d)-cx,(a[1]+uz*d)-cz);   // face the road: the door toward the road's centreline
+   const o={x:cx,z:cz,hx:hx+1,hz:hz+1,ry,pad:1.5};if(!groundOK(o,{ppad:2})||!occFree(o,1.5))continue;
+   o.hx=hx;o.hz=hz;placeDef(key,o,Object.assign({settle:opt.settle},opt.each?opt.each(key):{}));n++;}}
+  carry=(carry+Math.ceil((L-carry)/pitch)*pitch)-L;}
+ return n;}
+// a bridge: planks over the channel where a road crosses it
+function dnBridge(b){const c=vC(0x6a5a44);const L=(channelD(b.x,b.z).w||8)+6;const y=terrainH(b.x+Math.sin(b.ry)*L,b.z+Math.cos(b.ry)*L);
+ kput('vWood',[b.x,WATER_Y+.9,b.z],qEuler(0,b.ry,0),[Math.min(b.w,10),.3,L],c);for(const sd of[-1,1]){const p=loc(b.x,b.z,sd*Math.min(b.w,10)/2,0,b.ry);kput('vWood',[p[0],WATER_Y+1.5,p[1]],qEuler(0,b.ry,0),[.12,.9,L],c);}
+ for(let k=-1;k<=1;k++){const p=loc(b.x,b.z,0,k*L*.4,b.ry);for(const sd of[-1,1]){const q=loc(p[0],p[1],sd*Math.min(b.w,10)*.45,0,b.ry);kput('vPostB',[q[0],WATER_Y-1,q[1]],null,[.16,2.2,.16],c);}}}
+// ---------------------------------------------------------------- the Ancient lab, through a VERN wrapper (as Iziz wraps its Ancient guilds)
+function buildDalabLab(G,o){reseed(8901);const r0=VERN.cur.r0;let H=null;const lush=BIOME.lush;BIOME.lush=.55;
+ try{H=withFlatGround(()=>buildDalab(G,0,0,1));}catch(e){reportErr('lab: '+e.stack);}finally{BIOME.lush=lush;KOFF=[0,0,0];}
+ vnAdoptREG(r0,n=>n,{type:['civic','religious'],wealth:'civic',lit:true,ancient:true});
+ // the great dome's registration becomes the landmark
+ for(let i=r0;i<REG.length;i++)if(/great dome/.test(REG[i].name)){REG[i].tags.landmark=true;REG[i].name='The God — the Ancient lab';}
+ return H;}
+dDef({key:'dalab_lab',name:'The Ancient lab',family:'ancient',tags:{type:['civic','religious'],wealth:'civic',lit:true,landmark:true,ancient:true},w:600*4.105*.4/1,d:600*4.105*.4,h:390*4.105*.4,build:buildDalabLab});
+// TARGET: city — the settlement. The showcase's SITES loop is skipped (window.CITY); 90b builds the world.
+const TITLE='Dalab';
+const GROUND_C=0;
 const SITES=[];
-ROWDEF.forEach((row,ri)=>{const ws=row.map(k=>VERN.defs[k].w+10);const total=ws.reduce((a,b)=>a+b,0);let x=-total/2;
- row.forEach((k,i)=>{SITES.push({key:k,x:x+ws[i]/2,z:ROWZ[ri],ry:0,o:{v:0}});x+=ws[i];});});
 // ---------------------------------------------------------------- scene
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);
 renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.0;document.body.appendChild(renderer.domElement);
@@ -6283,6 +6664,111 @@ kbake(scene);
 // site labels come from src/93-labels.js (the atlas over REG)
 LABELS=new THREE.Group();LABELS.userData.probeSkip=true;scene.add(LABELS);
 }   // end showcase-only block
+// ================================================================= DALAB CITY — the world: terrain, water, the lab, the mounds
+// Runs after 90-scene (renderer/scene/camera/lights exist; the showcase block was skipped because window.CITY).
+reseed(SEED_CITY+5);
+const CITY_T0=performance.now();
+scene.fog.density=.00013;
+// the terrain: one plane, 8 m cells, the painted albedo (made at the END of 90b so the footprints are on it)
+function cityTerrainMesh(){const N=Math.round(CITY.WORLD/8);const g=new THREE.PlaneGeometry(CITY.WORLD,CITY.WORLD,N,N);const p=g.attributes.position;
+ for(let i=0;i<p.count;i++){const lx=p.getX(i),ly=p.getY(i);p.setZ(i,terrainH(lx,-ly));}
+ g.computeVertexNormals();
+ const tex=new THREE.CanvasTexture(gcv);tex.encoding=THREE.sRGBEncoding;tex.anisotropy=4;tex.minFilter=THREE.LinearMipmapLinearFilter;
+ const m=new THREE.MeshStandardMaterial({map:tex,roughness:.96,metalness:0});
+ groundM=new THREE.Mesh(g,m);groundM.rotation.x=-Math.PI/2;groundM.userData.isGround=true;groundM.userData.probeSkip=true;groundM.name='terrain';scene.add(groundM);
+ window._terrainTex=tex;
+ // the water: a strip down the river's course and a quad per channel segment, at WATER_Y (a world-wide plane just
+ // under the ground z-fought the terrain at a distance)
+ const geos=[];{const pts=[];for(let z=-CITY.WORLD/2;z<=CITY.WORLD/2;z+=60)pts.push([riverX(z),z]);for(let i=0;i<pts.length-1;i++){const a=pts[i],b=pts[i+1];const g=new THREE.PlaneGeometry(150,Math.hypot(b[0]-a[0],b[1]-a[1])+2);g.rotateX(-Math.PI/2);g.rotateY(-Math.atan2(b[0]-a[0],b[1]-a[1]));g.translate((a[0]+b[0])/2,0,(a[1]+b[1])/2);geos.push(g);}
+  for(const C of CHANNELS)for(let i=0;i<C.pts.length-1;i++){const a=C.pts[i],b=C.pts[i+1];const g=new THREE.PlaneGeometry(C.w*1.6,Math.hypot(b[0]-a[0],b[1]-a[1])+C.w);g.rotateX(-Math.PI/2);g.rotateY(-Math.atan2(b[0]-a[0],b[1]-a[1]));g.translate((a[0]+b[0])/2,0,(a[1]+b[1])/2);geos.push(g);}}
+ const w=meshMerged(geos,new THREE.MeshStandardMaterial({color:0x2a5a52,roughness:.15,metalness:.2,transparent:true,opacity:.86,side:DS}),scene,0,WATER_Y,0);if(w){w.userData.probeSkip=true;w.name='water';}}
+// ---------------------------------------------------------------- the Ancient lab, the High Priest's mound, the settlements' mounds
+TSTAT.cur='dalab_lab/0';
+placeDef('dalab_lab',{x:CITY.LAB.x,z:CITY.LAB.z,ry:0},{scale:CITY.LAB.scale,y:terrainH(CITY.LAB.x,CITY.LAB.z)-.4,landmark:'The Ancient lab',ignoreMask:true});
+TSTAT.cur=null;
+precinct(CITY.LAB.x,CITY.LAB.z,292*4.105*CITY.LAB.scale+30,'the lab');
+placeDef('dalab_high_mound',{x:HIGH_MOUND.x,z:HIGH_MOUND.z,ry:HIGH_MOUND.ry},{y:terrainH(HIGH_MOUND.x,HIGH_MOUND.z),landmark:"High Priest's mound",ignoreMask:true,ignorePrecinct:true});
+for(const S of SETTLE){const key=S.main?'dalab_palace_mound':'dalab_mound';const o={x:S.x,z:S.z,ry:S.face};
+ placeDef(key,o,{y:terrainH(S.x,S.z),landmark:S.main?"High Priest's palace":S.name+' mound',ignoreMask:true,ignorePrecinct:true,settle:S.key});S.moundOBB=o;}
+// ================================================================= DALAB CITY — the build: markets and civic on the plazas, nobles, the streets' frontage, farms, the biome, bakes
+// Order per settlement: the market on the plaza; the civic set round the plaza (tavern, barracks, granaries,
+// warehouse...); 2-3 noble houses on the radials nearest the mound; then the frontage walker fills every street with
+// peasant houses, workshops and shops until the settlement's count is met. The main settlement gets 3x of all of it,
+// the large market, the Halls, the ranch, the embassies, the chapterhouse, the healers, the priests' compounds, the
+// windmills. Everything is placed facing its street and tested against the mask and the occupancy hash, so no
+// building stands on a street or on another building. A final audit counts what slipped through (none should).
+reseed(SEED_CITY+6);
+const HUTS=['dalab_hut_a','dalab_hut_a','dalab_hut_b','dalab_hut_c','dalab_hut_c','dalab_compound'];
+const TRADE=['dalab_shops','dalab_workshop','dalab_potter','dalab_weaver','dalab_dyer','dalab_smithy','dalab_warehouse','dalab_granaries'];
+const NOBLE=['dalab_noble_a','dalab_noble_b','dalab_noble_c'];
+function placeSettlement(S){reseed(SEED_CITY+10+SETTLE.indexOf(S));const P=S.plaza;const k=S.main?3:1;const own=r=>r.zone&&r.zone.indexOf(S.key+':')===0;
+ // the market on the plaza (the large one for the main settlement), a shrine beside it
+ // (the plaza is reserved ground in the mask, so these two are let onto it by name)
+ placeNear(S.main?'dalab_market_large':'dalab_market_small',P.x,P.z,{ry:S.face+Math.PI,R:20,step:6,ignorePrecinct:true,ignoreMask:true,settle:S.key,landmark:S.main?'The great market':null});
+ placeNear('dalab_shrine',P.x+Math.cos(S.face)*(P.r-6),P.z-Math.sin(S.face)*(P.r-6),{R:30,step:5,settle:S.key,ppad:-3,ignoreMask:true,ignorePrecinct:true});
+ // the civic set round the plaza's rim
+ const rim=(key,a,opt)=>placeNear(key,P.x+Math.sin(a)*(P.r+22),P.z+Math.cos(a)*(P.r+22),Object.assign({R:110,step:9,settle:S.key,filter:own},opt||{}));
+ const back=Math.atan2(S.x-P.x,S.z-P.z);
+ for(let i=0;i<k;i++)rim('dalab_tavern',back+Math.PI+.5+i*.9,{landmark:i===0?(S.main?'The great tavern':null):null});
+ rim('dalab_barracks',back+Math.PI-.9,{landmark:S.main?"The guard's barracks":null});
+ for(let i=0;i<2*k;i++)rim('dalab_granaries',back+Math.PI+1.8+i*.45);
+ for(let i=0;i<k;i++)rim('dalab_warehouse',back+Math.PI-1.7-i*.5);
+ for(let i=0;i<k;i++)rim('dalab_smithy',back-2.3-i*.4,{R:160});
+ rim('dalab_priest_house',back+.9,{R:60});rim('dalab_priest_house',back-.9,{R:60});
+ // nobles on the radials nearest the mound, then the rest of the nobles further out
+ const rads=S.radials.slice().sort((a,b)=>angDiff(a.a,back)-angDiff(b.a,back));
+ for(let i=0;i<(S.main?8:2+Math.floor(rng()*2));i++){const R=rads[i%rads.length];const t=rr(.35,.8);const x=P.x+Math.sin(R.a)*(P.r+R.L*t),z=P.z+Math.cos(R.a)*(P.r+R.L*t);
+  placeNear(NOBLE[i%3],x,z,{R:90,step:9,settle:S.key,filter:own});}
+ // the main settlement's own: the Halls, the ranch, the embassies and the chapterhouse, the healers, the priests' compound, windmills
+ if(S.main){
+  const at=(key,a,d,opt)=>placeNear(key,P.x+Math.sin(a)*d,P.z+Math.cos(a)*d,Object.assign({R:160,step:12,settle:S.key},opt||{}));
+  at('dalab_halls',back+Math.PI-.75,330,{landmark:'The Halls of Reformation',grow:6});
+  at('dalab_ranch',back+Math.PI+.85,400,{landmark:'The ranch',grow:6});
+  at('dalab_priest_compound',back+.55,150,{landmark:"The priests' compound"});
+  at('dalab_priest_compound',back-.55,150);
+  at('dalab_healers',back+Math.PI+.1,120,{landmark:"The healers' hall"});
+  const EMB=['dalab_embassy_iziz','dalab_embassy_voth','dalab_embassy_yuni','dalab_embassy_republic','dalab_chapterhouse'];
+  EMB.forEach((key,i)=>at(key,back+Math.PI+1.35+i*.16,250,{landmark:VERN.defs[key].name}));
+  for(let i=0;i<4;i++)at('dalab_windmill',back+Math.PI+(i-1.5)*.9,S.r+40,{R:200,ignorePrecinct:true});
+  for(let i=0;i<3;i++)at('dalab_market_small',back+Math.PI+(i-1)*1.6,300,{R:120});
+  for(let i=0;i<4;i++)at('dalab_workshop',back+Math.PI+(i-1.5)*.5,200,{R:120});for(let i=0;i<3;i++)at(TRADE[i+2],back+Math.PI+(i-1)*.7,340,{R:140});for(let i=0;i<3;i++)at('dalab_granaries',back+(i-1)*.6,260,{R:120});}
+ // the frontage: peasant houses, with trade along the radials near the plaza; count target 15-20 (x3)
+ const target=(S.main?66:18)+Math.floor(rng()*3);let n=0;
+ const streets=ROADS.filter(own).sort((a,b)=>(a.zone.indexOf('radial')>=0?0:1)-(b.zone.indexOf('radial')>=0?0:1));
+ const pick=(t,side)=>{const r=rng();if(t<.35&&r<.28)return vPick(TRADE);if(r<.08)return 'dalab_compound';return vPick(HUTS);};
+ for(const R of streets){if(n>=target)break;n+=frontage(R,S.main?26:19,3,pick,target-n,{settle:S.key});}
+ // if the streets are full and the count is short, the lanes and the mound lane take the rest
+ if(n<target)for(const R of ROADS.filter(r=>r.zone&&(r.zone===S.key+':farmlane'||r.zone===S.key+':moundlane'))){if(n>=target)break;n+=frontage(R,22,3,()=>vPick(HUTS),target-n,{settle:S.key});}
+ S.houses=n;return n;}
+for(const S of SETTLE)placeSettlement(S);
+// the highway and the avenue frontage: a few wayside shrines and the odd hut
+{reseed(SEED_CITY+20);for(const R of ROADS.filter(r=>r.zone==='highway'))frontage(R,260,6,()=>rng()<.5?'dalab_shrine':null,10,{});
+ for(const R of ROADS.filter(r=>r.zone==='avenue'))frontage(R,120,9,(t,side)=>rng()<.6?'dalab_shrine':null,6,{});}
+// bridges
+for(const b of BRIDGES)dnBridge(b);
+// ---------------------------------------------------------------- the audit: anything on a street or overlapping another (should be 0)
+(function audit(){let onRoad=0,overlap=0;const who=[];for(const P of PLACED){const o=P.o;if(o.built==='dalab_lab')continue;if(/mound/.test(o.built)){const r=VERN.defs[o.built].w/2-8;for(let k=0;k<16;k++){const a=k/16*TAU;if(isRoad(o.x+Math.cos(a)*r,o.z+Math.sin(a)*r)){onRoad++;who.push(o.built+'@'+Math.round(o.x)+','+Math.round(o.z));break;}}continue;}const c=obbCorners(o,-1);for(const p of c)if(isRoad(p[0],p[1])){onRoad++;who.push(o.built+'@'+Math.round(o.x)+','+Math.round(o.z));break;}
+  for(const Q of PLACED){if(Q===P||Q.o.built==='dalab_lab')continue;if(obbOverlap(o,Q.o,-1)){overlap++;break;}}}
+ window._audit={placed:PLACED.length,onRoad,overlap,who:who.slice(0,8)};})();
+window._registered=REG.length;
+// ---------------------------------------------------------------- the biome: the clearing, the residual stands, the forest, the avenue's live oaks, the river's willows
+const ORIGINS=SETTLE.map(S=>[S.plaza.x,S.plaza.z]);ORIGINS.push([CITY.LAB.x,CITY.LAB.z+400]);
+function standK(x,z){return smoothstep(.56,.68,fbm(x*.0019+11,z*.0019-4,9,3));}
+function bioMaskFn(x,z){const W=CITY.WORLD/2-10;if(Math.abs(x)>W||Math.abs(z)>W)return 0;if(maskAt(x,z)[0]<200)return 0;
+ const d=Math.hypot(x-0,z+120);const forest=smoothstep(CITY.FOREST_R-140,CITY.FOREST_R+60,d);
+ const ns=nearestSettle(x,z);const town=1-smoothstep(ns.S.r-40,ns.S.r+30,ns.d);
+ const lab=1-smoothstep(292*4.105*CITY.LAB.scale-20,292*4.105*CITY.LAB.scale+30,Math.hypot(x-CITY.LAB.x,z-CITY.LAB.z));
+ return Math.max(forest,standK(x,z)*(1-town*.9)*(1-lab)*.9,town*.06);}
+function bioTreeMaskFn(x,z){const m=bioMaskFn(x,z);return m;}
+BIO.host.mask=bioMaskFn;BIO.host.origin=ORIGINS;BIO.host.center=[0,-120];
+BIO.host.fields={wet:(x,z)=>riverD(x,z)<120?.9:.58,tropic:(x,z)=>.32,dry:(x,z)=>.22,salt:(x,z)=>0,flow:(x,z)=>riverD(x,z)<70?1-riverD(x,z)/70:(channelD(x,z).d<14?.5:0),upland:(x,z)=>.15};
+BIO.setScene(scene);
+(function lowlands(){const q=CITY.QUALITY;const t0=performance.now();let T={};
+ BIO.cur='lowlands/trees';try{T=SWLOW.build({R:CITY.WORLD*.72,quality:q,avenues:[{path:AVENUE,spacing:24,offset:13,species:'sprawloak'}],groves:[{center:[SETTLE[0].x+300,SETTLE[0].z],r:70,spacing:16,species:'corkoak',stripped:true}]});}catch(e){reportErr('lowlands: '+e.stack);}
+ BIO.cur=null;window._biome={trees:T.trees,avenue:T.avenue,grove:T.grove,heroes:T.heroes,far:T.far,ms:Math.round(performance.now()-t0)};})();
+cityTerrainMesh();
+kbake(scene);
+window._cityMs=Math.round(performance.now()-CITY_T0);
 // ---------------------------------------------------------------- probe (window._api) — same contract as the Ancients kit's, so verify.py runs unchanged
 const BUDGET={
  showcase:{tris:3000000,calls:400},
@@ -6310,29 +6796,30 @@ window._api={BUDGET,REG,
  typeStats,regOccupancy,nanSweep,tagAudit,
  setView:(cx,cy,cz,tx,ty,tz)=>setView(cx,cy,cz,tx,ty,tz),views:()=>Object.keys(VIEWS),
  defs:()=>VERN.order.map(k=>{const D=VERN.defs[k];return{key:k,name:D.name,family:D.family,tags:D.tags,w:D.w,d:D.d,h:D.h};})};
-// TARGET: set — camera presets. [cx,cy,cz,tx,ty,tz] and an optional SEVENTH element: the hour of day (see 94-dalab-light.js)
-const RV=(ri,dist,h,ty,hour)=>{const v=[0,h,ROWZ[ri]+dist,0,ty,ROWZ[ri]];if(hour!=null)v.push(hour);return v;};
-const SITEV=(key,dist,h,ty,dx,hour)=>{const S=SITES.find(s=>s.key===key);const v=[S.x+(dx||0),h,S.z+dist,S.x,ty,S.z];if(hour!=null)v.push(hour);return v;};
-const EYE=(key,dist,dx,hour)=>{const S=SITES.find(s=>s.key===key);const v=[S.x+(dx||0),1.7,S.z+dist,S.x,3,S.z];if(hour!=null)v.push(hour);return v;};
+// TARGET: city — camera presets [cx,cy,cz,tx,ty,tz, hour?]
+const M_=SETTLE.find(S=>S.main),T1=SETTLE[0],T4=SETTLE[3];
 const VIEWS={
- 'Opening':[-110,44,170,-4,8,60],
- 'Overview':[-1100,520,ROWZ[8]+60,0,10,ROWZ[8]],
- 'Peasant huts':RV(0,40,20,3),'Earth hut — eye level':EYE('dalab_hut_a',14,5),'Scrap hut — eye level':EYE('dalab_hut_b',14,-5),'Post house — eye level':EYE('dalab_hut_c',16,5),
- 'Compound, granaries, shrine':RV(1,46,24,4),'Compound — inside':EYE('dalab_compound',5.5,-1.5),'Granaries — eye level':EYE('dalab_granaries',14,4),
- 'Noble houses':RV(2,70,36,6),'Stone hall — eye level':EYE('dalab_noble_a',26,7),'Great roundhouse — eye level':EYE('dalab_noble_b',30,-8),'Manor — gate':EYE('dalab_noble_c',24,3),
- 'Tavern, market, shops':RV(3,64,32,5),'Tavern — eye level':EYE('dalab_tavern',22,6),'Market — inside':EYE('dalab_market_small',4,2),'Shop row — eye level':EYE('dalab_shops',16,4),
- 'Warehouse, smithy, workshop':RV(4,52,26,5),'Smithy — eye level':EYE('dalab_smithy',16,6),
- 'Potter, weaver, dyer, windmill':RV(5,60,30,5),'Potter — eye level':EYE('dalab_potter',14,5),'Weaver — eye level':EYE('dalab_weaver',18,4),'Dyer — eye level':EYE('dalab_dyer',14,4),'Windmill — eye level':EYE('dalab_windmill',22,8),
- 'Large market':RV(6,80,44,6),'Large market — inside':EYE('dalab_market_large',8,3),
- 'Barracks, priest house, temple, healers':RV(7,80,40,6),'Barracks — gate':EYE('dalab_barracks',26,3),'Temple — eye level':EYE('dalab_temple',26,7),"Healers' hall — eye level":EYE('dalab_healers',24,6),
- 'Embassies':RV(8,80,42,8),'Izizian embassy — gate':EYE('dalab_embassy_iziz',24,4),'Vothic embassy — gate':EYE('dalab_embassy_voth',24,4),'Yuni embassy — gate':EYE('dalab_embassy_yuni',24,4),'Republican embassy — gate':EYE('dalab_embassy_republic',24,4),
- "Chapterhouse and priests' compound":RV(9,80,44,8),"Historians' chapterhouse — gate":EYE('dalab_chapterhouse',30,4),"Priests' compound — gate":EYE('dalab_priest_compound',30,3),"Priests' compound — court":EYE('dalab_priest_compound',-4,8),
- 'Ranch':RV(10,150,80,10),'Ranch — gate':EYE('dalab_ranch',66,3),'Ranch — paddock':EYE('dalab_ranch',20,30),'Ranch — monster pen':[SITES.find(s=>s.key==='dalab_ranch').x+38,6,ROWZ[10]+20,SITES.find(s=>s.key==='dalab_ranch').x+38,2,ROWZ[10]-2],
- 'Halls of Reformation':RV(11,190,110,12),'Halls — gate':EYE('dalab_halls',80,4),'Halls — court':EYE('dalab_halls',34,-14),'Halls — great hall':[SITES.find(s=>s.key==='dalab_halls').x+40,26,ROWZ[11]+50,SITES.find(s=>s.key==='dalab_halls').x,16,ROWZ[11]],'Halls — entrance':EYE('dalab_halls',46,9),'Halls — cells':EYE('dalab_halls',-10,-36),
- 'Ceremonial mound':RV(12,120,60,12),'Mound — foot of the stair':EYE('dalab_mound',44,4),'Mound — on the stair':[6,7.5,ROWZ[12]+27,0,14,ROWZ[12]],'Mound — top':[-14,13+1.7,ROWZ[12]+18,0,13+4,ROWZ[12]-4],
- 'Palace mound':RV(13,150,70,14),'Palace mound — gate':EYE('dalab_palace_mound',56,6),'Palace mound — terraces':[22,12,ROWZ[13]+62,0,14,ROWZ[13]+10],'Palace mound — top':[-9,17+1.7,ROWZ[13]+13,0,17+5,ROWZ[13]-7],'Palace mound — back gardens':[SITES.find(s=>s.key==='dalab_palace_mound').x-10,14,ROWZ[13]-60,SITES.find(s=>s.key==='dalab_palace_mound').x,12,ROWZ[13]-20],'Palace mound — gardens':[SITES.find(s=>s.key==='dalab_palace_mound').x+52,9,ROWZ[13]+18,SITES.find(s=>s.key==='dalab_palace_mound').x+20,11,ROWZ[13]-4],
- "High Priest's mound":RV(14,200,100,18),'High mound — entrance':EYE('dalab_high_mound',82,5),'High mound — top':[-20,20+1.7,ROWZ[14]+22,0,20+5,ROWZ[14]-6],
- 'Night — noble houses':RV(2,70,36,6,21.5),'Night — temple (eye level)':EYE('dalab_temple',26,7,22),'Night — Halls of Reformation':RV(11,190,110,12,22.5),'Night — palace mound':RV(13,150,70,14,22),'Night — peasant huts':EYE('dalab_hut_a',14,5,21),'Dusk — mound':RV(12,120,60,12,18.4),
+ 'Opening — the avenue':[AVENUE[2][0]-40,26,AVENUE[2][1]+70,AVENUE[1][0],40,AVENUE[1][1]-200],
+ 'Overview':[0,2400,1900,0,0,-100],
+ 'The lab from the avenue':[AVENUE[2][0]+60,44,AVENUE[2][1]-20,LAB_GATE[0],90,LAB_GATE[1]-260],
+ 'The lab gate':[LAB_GATE[0]-30,8,LAB_GATE[1]+120,LAB_GATE[0],40,LAB_GATE[1]-100],
+ "High Priest's mound":[HIGH_MOUND.x+60,40,HIGH_MOUND.z+220,HIGH_MOUND.x,20,HIGH_MOUND.z],
+ 'Main plaza':[M_.plaza.x-90,50,M_.plaza.z+160,M_.plaza.x,6,M_.plaza.z],
+ 'Main plaza — eye level':[M_.plaza.x+20,1.7,M_.plaza.z+58,M_.plaza.x,4,M_.plaza.z-40],
+ 'The palace from the plaza':[M_.plaza.x,4,M_.plaza.z+10,M_.x,22,M_.z],
+ 'Main settlement — overview':[M_.x-500,380,M_.z+700,M_.x,0,M_.z],
+ 'Main settlement — a street':(()=>{const R=M_.radials[2];const a=R.a;return[M_.plaza.x+Math.sin(a)*(M_.plazaR+30),1.7,M_.plaza.z+Math.cos(a)*(M_.plazaR+30),M_.plaza.x+Math.sin(a)*(M_.plazaR+180),3,M_.plaza.z+Math.cos(a)*(M_.plazaR+180)];})(),
+ 'The Halls and the ranch':[M_.x+300,260,M_.z+700,M_.x+100,0,M_.z+250],
+ 'Ashfold — overview':[T1.x-260,200,T1.z+380,T1.x,0,T1.z],
+ 'Ashfold — the plaza':[T1.plaza.x-Math.sin(T1.face)*20,1.7,T1.plaza.z-Math.cos(T1.face)*20,T1.x,14,T1.z],
+ 'Ashfold — a street':(()=>{const R=T1.radials[1];const a=R.a;return[T1.plaza.x+Math.sin(a)*(T1.plazaR+10),1.7,T1.plaza.z+Math.cos(a)*(T1.plazaR+10),T1.plaza.x+Math.sin(a)*(T1.plazaR+120),3,T1.plaza.z+Math.cos(a)*(T1.plazaR+120)];})(),
+ 'Oakhaven — overview':[T4.x+260,200,T4.z+380,T4.x,0,T4.z],
+ 'The highway':[T1.x+200,30,T1.z+300,T1.x+600,8,T1.z+500],
+ 'The river':[riverX(400)+120,60,600,riverX(0),0,0],
+ 'Fields':[M_.x+500,120,M_.z+450,M_.x+800,0,M_.z+700],
+ 'Night — main plaza':[M_.plaza.x-90,50,M_.plaza.z+160,M_.plaza.x,6,M_.plaza.z,22],
+ 'Night — the avenue':[AVENUE[2][0]-40,26,AVENUE[2][1]+70,AVENUE[1][0],40,AVENUE[1][1]-200,21.5],
+ 'Dusk — Ashfold':[T1.x-260,200,T1.z+380,T1.x,0,T1.z,18.6],
 };
 // ---------------------------------------------------------------- camera, inspector, polygon tool, walk mode
 const ctl={target:new THREE.Vector3(0,10,0),theta:0,phi:1.1,radius:120};
@@ -6413,6 +6900,21 @@ function frame(){const now=performance.now(),dt=Math.min(.1,(now-last)/1000);las
  hud.textContent=`cam ${camera.position.x|0},${camera.position.y|0},${camera.position.z|0}  tgt ${ctl.target.x|0},${ctl.target.y|0},${ctl.target.z|0}${WALK.on?'  WALK':''}\ncalls ${renderer.info.render.calls}  tris ${(renderer.info.render.triangles/1e6).toFixed(2)}M  inst ${window._instances}  reg ${REG.length}`;
  requestAnimationFrame(frame);}
 frame();window._ready=true;
+// ================================================================= DALAB CITY — dev tools: the Paths overlay, the budgets, window._api.city
+BUDGET.showcase={tris:16000000,calls:900};
+BUDGET.cls.city=20000000;for(const k in TSTAT.by){BUDGET.type[k.split('/')[0]]='city';}
+const PATHS={on:false,tex:null};
+function pathsTexture(){if(PATHS.tex)return PATHS.tex;const c=document.createElement('canvas');c.width=c.height=CS;const g=c.getContext('2d');
+ const COL={0:'#26221e',1:'#c8a860',2:'#2e7a3a',3:'#e8e0d0',4:'#c8c0b0',5:'#b8a890',6:'#d8b880',7:'#6a6a3a',8:'#1a3a3a',9:'#a08868',10:'#4a2a2a',11:'#3a3430',12:'#6a5a2a',13:'#3a6a2a'};
+ const img=g.createImageData(CS,CS);const d=img.data;
+ for(let i=0;i<CS*CS;i++){const k=kData[i*4];const col=COL[k]||'#000';const r=parseInt(col.slice(1,3),16),gg=parseInt(col.slice(3,5),16),b=parseInt(col.slice(5,7),16);d[i*4]=r;d[i*4+1]=gg;d[i*4+2]=b;d[i*4+3]=255;}
+ g.putImageData(img,0,0);
+ if(window.DOORS){g.fillStyle='#ff4040';for(const D of window.DOORS){g.fillRect(px(D.x)-1.5,px(D.z)-1.5,3,3);}}
+ const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;PATHS.tex=t;return t;}
+uiButton('Paths',false,()=>{PATHS.on=!PATHS.on;groundM.material.map=PATHS.on?pathsTexture():window._terrainTex;groundM.material.needsUpdate=true;return PATHS.on;});
+uiButton('Trees',true,()=>{const v=!(BIO.baked[0]&&BIO.baked[0].visible);for(const m of BIO.baked)m.visible=v;return v;});
+window._api.city={CITY,settlements:()=>SETTLE.map(S=>({key:S.key,name:S.name,x:Math.round(S.x),z:Math.round(S.z),houses:S.houses})),roads:()=>ROADS.length,components:()=>window._roadComponents,
+ audit:()=>window._audit,placed:()=>{const by={};for(const p of PLACED)by[p.key]=(by[p.key]||0)+1;return by;},fields:()=>FIELDS.length,biome:()=>window._biome,life:()=>window._life,ms:()=>window._cityMs};
 // ---------------------------------------------------------------- floating building labels (standard new-world package)
 // One label per registered volume (REG), drawn once into a texture atlas and rendered as ONE mesh of camera-facing
 // quads: a thousand labels cost one draw call. Labels keep a constant size on screen (150 px; landmarks 260 px)
@@ -6496,3 +6998,78 @@ window._api.setHour=h=>{DSKY.hour=h;dalabSkyTick();dalabHourUI();};window._api.n
  // every mound and ring bank in one mesh
  if(DMOUND_GEOS.length){const m=meshMerged(DMOUND_GEOS,MAT.dTurfMesh,scene,0,0,0);m.name='mounds';window._mounds=DMOUND_GEOS.length;DMOUND_GEOS.length=0;}}
 FRAME_HOOKS.push(dt=>{for(const w of DWIND)w.grp.rotateZ(w.rate*dt);});
+// ================================================================= DALAB CITY — the life layer
+// Everything that moves, in two draw calls (bodies, heads: one InstancedMesh each, rewritten per frame).
+//   townsfolk     wander the road network: pick a node, walk the shortest path, idle, pick another (green-skinned)
+//   farm workers  work their field: walk between points in the field, stop, hoe, move on
+//   priests       by the hour: 8-17 on the mound top before the temple (the ceremony), else at the mound foot;
+//                 they climb the stair (a straight line up the mound profile, not the road graph)
+//   the High Priest  cycles the High Priest's mound top, the lab gate and the Halls of Reformation
+//   giants        the city watch: threes on the streets of every settlement, two-armed
+// Roads are a graph: every polyline vertex a node, endpoints snapped to the segments they end on, Dijkstra for paths.
+reseed(SEED_CITY+30);
+(function(){
+ // ---- the road graph ----
+ const NODES=[],EDGES=[];const nkey=(x,z)=>Math.round(x/3)+','+Math.round(z/3);const NMAP={};
+ function node(x,z){const k=nkey(x,z);if(NMAP[k]!=null)return NMAP[k];const i=NODES.length;NODES.push({x,z,adj:[]});NMAP[k]=i;return i;}
+ function edge(a,b){if(a===b)return;const L=Math.hypot(NODES[a].x-NODES[b].x,NODES[a].z-NODES[b].z);NODES[a].adj.push([b,L]);NODES[b].adj.push([a,L]);EDGES.push([a,b]);}
+ // split every segment at the endpoints of other roads that land on it
+ const ends=[];for(const R of ROADS){ends.push(R.pts[0],R.pts[R.pts.length-1]);}
+ for(const R of ROADS){for(let i=0;i<R.pts.length-1;i++){const a=R.pts[i],b=R.pts[i+1];const dx=b[0]-a[0],dz=b[1]-a[1],l2=dx*dx+dz*dz||1;const cuts=[];
+  for(const e of ends){const t=((e[0]-a[0])*dx+(e[1]-a[1])*dz)/l2;if(t<=.01||t>=.99)continue;if(Math.hypot(e[0]-a[0]-dx*t,e[1]-a[1]-dz*t)<R.w/2+2)cuts.push(t);}
+  cuts.sort((p,q)=>p-q);let prev=node(a[0],a[1]);for(const t of cuts){const n=node(a[0]+dx*t,a[1]+dz*t);edge(prev,n);prev=n;}edge(prev,node(b[0],b[1]));}}
+ function dijkstra(s,t){const D=new Float64Array(NODES.length).fill(1e18),P=new Int32Array(NODES.length).fill(-1);D[s]=0;const Q=[[0,s]];
+  while(Q.length){let bi=0;for(let i=1;i<Q.length;i++)if(Q[i][0]<Q[bi][0])bi=i;const [d,u]=Q[bi];Q[bi]=Q[Q.length-1];Q.pop();if(d>D[u])continue;if(u===t)break;
+   for(const [v,L] of NODES[u].adj){const nd=d+L;if(nd<D[v]){D[v]=nd;P[v]=u;Q.push([nd,v]);}}}
+  if(D[t]>=1e17)return null;const path=[];let u=t;while(u!==-1){path.push(u);u=P[u];}return path.reverse();}
+ const nearNode=(x,z)=>{let b=-1,bd=1e9;for(let i=0;i<NODES.length;i++){const d=Math.hypot(NODES[i].x-x,NODES[i].z-z);if(d<bd){bd=d;b=i;}}return b;};
+ const settleNodes={};for(const S of SETTLE)settleNodes[S.key]=NODES.map((n,i)=>i).filter(i=>Math.hypot(NODES[i].x-S.plaza.x,NODES[i].z-S.plaza.z)<S.r+60);
+ const Y=(x,z)=>Math.max(terrainH(x,z),WATER_Y+.9)+.05;
+ // ---- agents ----
+ const A=[];const add=o=>{o.bob=rng()*TAU;o.hd=rng()*TAU;A.push(o);return o;};
+ const walker=(kind,nodes,tint,s,sp)=>add({kind,nodes,tint,s:s||1,sp:sp||rr(1.1,1.7),path:null,pi:0,t:0,wait:rr(0,6),x:0,z:0,at:nodes[Math.floor(rng()*nodes.length)]});
+ const Q=CITY.QUALITY;
+ for(const S of SETTLE){const N=settleNodes[S.key];if(!N.length)continue;const n=Math.round((S.main?70:16)*Q);
+  for(let i=0;i<n;i++){const w=walker('folk',N,0);w.x=NODES[w.at].x;w.z=NODES[w.at].z;}
+  // giants: threes
+  for(let g=0;g<(S.main?4:1);g++){const lead=walker('giant',N,3,2.2,rr(1.6,2.0));lead.x=NODES[lead.at].x;lead.z=NODES[lead.at].z;for(let k=1;k<3;k++)add({kind:'follow',lead,off:[(k===1?-1:1)*2.6,-2.4*k],tint:3,s:2.2,x:lead.x,z:lead.z});}
+  // farm workers in this settlement's fields
+  const F=FIELDS.filter(f=>f.S===S.key);for(let i=0;i<Math.round((S.main?36:12)*Q)&&F.length;i++){const f=F[Math.floor(rng()*F.length)];add({kind:'farmer',f,tint:1,s:1,x:f.cx,z:f.cz,tx:f.cx,tz:f.cz,wait:rng()*5,sp:rr(.8,1.2)});}
+  // priests: two per mound; home at the mound foot on the plaza side, the ceremony spot on the plateau in front of the temple
+  const M=S.moundOBB;const top=S.main?17:13,rt=S.main?18:13;const f=S.face;const fd=[Math.sin(f),Math.cos(f)];const R=S.main?42:30;
+  const home=[S.x+fd[0]*(R+6),S.z+fd[1]*(R+6)],up=[S.x+fd[0]*(rt-3),S.z+fd[1]*(rt-3)],prof=dnMoundProfile(R,rt,top);
+  for(let i=0;i<(S.main?4:2);i++)add({kind:'priest',home:[home[0]+rr(-3,3),home[1]+rr(-2,2)],up:[up[0]+rr(-4,4),up[1]],c:[S.x,S.z],R,prof,tint:2,s:1.02,x:home[0],z:home[1],t:0,sp:rr(.9,1.2)});}
+ // the High Priest: the high mound top → the lab gate → the Halls → the high mound
+ {const H=HIGH_MOUND;const halls=PLACED.find(p=>p.key==='dalab_halls');const stops=[[H.x,H.z+26,20],[H.x,H.z+50,0],[LAB_GATE[0],LAB_GATE[1]+8,0]];if(halls)stops.push([halls.o.x,halls.o.z+72,0]);
+  add({kind:'high',stops,i:0,t:0,wait:20,tint:4,s:1.05,x:stops[0][0],z:stops[0][1],prof:dnMoundProfile(46,20,20),c:[H.x,H.z]});
+  for(let k=0;k<2;k++)add({kind:'follow',lead:A[A.length-1-k],off:[(k?-1:1)*2.4,-2.6],tint:3,s:2.2,x:H.x,z:H.z});}
+ const N=A.length;window._life={agents:N,nodes:NODES.length,edges:EDGES.length};if(!N)return;
+ // ---- two instanced meshes ----
+ const bg=new THREE.CylinderGeometry(.24,.2,1.5,6);bg.translate(0,.75,0);
+ const bIM=new THREE.InstancedMesh(bg,new THREE.MeshStandardMaterial({color:0xffffff,roughness:.94,metalness:0}),N);
+ const hIM=new THREE.InstancedMesh(new THREE.SphereGeometry(.13,6,5),new THREE.MeshStandardMaterial({color:0xffffff,roughness:.9,metalness:0}),N);
+ [bIM,hIM].forEach(m=>{m.instanceMatrix.setUsage(THREE.DynamicDrawUsage);m.frustumCulled=false;m.userData.probeSkip=true;scene.add(m);});
+ const col=new THREE.Color();A.forEach((ag,i)=>{if(ag.tint===2||ag.tint===4)col.copy(dCol(DPAL.priest));else if(ag.tint===3)col.copy(dCol(DPAL.red));else col.copy(dCol(DPAL.robe));bIM.setColorAt(i,col);hIM.setColorAt(i,ag.tint===3?dCol(DPAL.skin,.8):dCol(DPAL.skin));});
+ bIM.instanceColor.needsUpdate=true;hIM.instanceColor.needsUpdate=true;
+ REG.push({name:'Dalab — the living ('+N+' on the move)',x:0,y:0,z:-120,r:2300,h:60,cls:'life',key:'life',tags:{culture:'dalab',type:['life'],wealth:'peasant'}});
+ // ---- the tick ----
+ const M4=new THREE.Matrix4(),QQ=new THREE.Quaternion(),PP=new THREE.Vector3(),SS=new THREE.Vector3(),UP=new THREE.Vector3(0,1,0);
+ function stepPath(ag,dt){if(!ag.path){const goal=ag.nodes[Math.floor(rng()*ag.nodes.length)];const p=dijkstra(ag.at,goal);if(!p||p.length<2){ag.wait=rr(2,6);ag.path=null;return false;}ag.path=p;ag.pi=0;ag.t=0;}
+  const a=NODES[ag.path[ag.pi]],b=NODES[ag.path[ag.pi+1]];const L=Math.hypot(b.x-a.x,b.z-a.z)||1;ag.t+=ag.sp*dt/L;
+  if(ag.t>=1){ag.pi++;ag.t=0;ag.at=ag.path[ag.pi];if(ag.pi>=ag.path.length-1){ag.path=null;ag.wait=rr(3,14);ag.x=b.x;ag.z=b.z;return false;}}
+  const a2=NODES[ag.path[ag.pi]],b2=NODES[ag.path[ag.pi+1]];ag.x=a2.x+(b2.x-a2.x)*ag.t;ag.z=a2.z+(b2.z-a2.z)*ag.t;ag.hd=Math.atan2(b2.x-a2.x,b2.z-a2.z);return true;}
+ function toward(ag,tx,tz,dt){const dx=tx-ag.x,dz=tz-ag.z,d=Math.hypot(dx,dz);if(d<.3)return false;const s=Math.min(d,ag.sp*dt);ag.x+=dx/d*s;ag.z+=dz/d*s;ag.hd=Math.atan2(dx,dz);return true;}
+ FRAME_HOOKS.push((dt,now)=>{dt=Math.min(dt,.1);const hour=DSKY.hour;const day=hour>=8&&hour<17;
+  for(let i=0;i<N;i++){const ag=A[i];let moving=false,y=null;
+   if(ag.kind==='folk'||ag.kind==='giant'){if(ag.wait>0){ag.wait-=dt;}else moving=stepPath(ag,dt);}
+   else if(ag.kind==='follow'){const L=ag.lead;const tx=L.x+Math.cos(L.hd)*ag.off[0]+Math.sin(L.hd)*ag.off[1],tz=L.z-Math.sin(L.hd)*ag.off[0]+Math.cos(L.hd)*ag.off[1];ag.sp=2.4;moving=toward(ag,tx,tz,dt);if(!moving)ag.hd=L.hd;}
+   else if(ag.kind==='farmer'){if(ag.wait>0){ag.wait-=dt;ag.hd+=Math.sin(now*3)*.02;}else{moving=toward(ag,ag.tx,ag.tz,dt);if(!moving){const f=ag.f;const p=f.pts;const u=rng(),v=rng();ag.tx=p[0][0]+(p[1][0]-p[0][0])*u+(p[3][0]-p[0][0])*v;ag.tz=p[0][1]+(p[1][1]-p[0][1])*u+(p[3][1]-p[0][1])*v;ag.wait=rr(3,9);}}}
+   else if(ag.kind==='priest'){const goal=day?ag.up:ag.home;moving=toward(ag,goal[0],goal[1],dt);const rho=Math.hypot(ag.x-ag.c[0],ag.z-ag.c[1]);y=ag.prof(rho)+.05;if(!moving&&day){ag.hd=Math.atan2(ag.c[0]-ag.x,ag.c[1]-ag.z)+Math.PI;ag.arms=Math.sin(now*.8);}}
+   else if(ag.kind==='high'){if(ag.wait>0)ag.wait-=dt;else{const s=ag.stops[(ag.i+1)%ag.stops.length];moving=toward(ag,s[0],s[1],dt);if(!moving){ag.i=(ag.i+1)%ag.stops.length;ag.wait=rr(25,60);}}
+    const rho=Math.hypot(ag.x-ag.c[0],ag.z-ag.c[1]);y=rho<48?ag.prof(rho)+.05:null;}
+   if(y==null)y=Y(ag.x,ag.z);
+   const bob=moving?Math.abs(Math.sin(now*.006+ag.bob))*.08:0;QQ.setFromAxisAngle(UP,ag.hd);SS.set(ag.s,ag.s,ag.s);
+   PP.set(ag.x,y+bob,ag.z);M4.compose(PP,QQ,SS);bIM.setMatrixAt(i,M4);
+   PP.set(ag.x,y+bob+1.62*ag.s,ag.z);M4.compose(PP,QQ,SS);hIM.setMatrixAt(i,M4);}
+  bIM.instanceMatrix.needsUpdate=true;hIM.instanceMatrix.needsUpdate=true;});
+})();
