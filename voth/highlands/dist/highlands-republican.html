@@ -4651,7 +4651,7 @@ frame();window._ready=true;
 const LABEL_ATLAS={W:4096,H:4096,cw:409,ch:48};
 function labelsBuild(){
  if(!LABELS){LABELS=new THREE.Group();LABELS.userData.probeSkip=true;scene.add(LABELS);}
- const cols=LABEL_ATLAS.W/LABEL_ATLAS.cw,rows=LABEL_ATLAS.H/LABEL_ATLAS.ch,max=cols*rows;
+ const cols=Math.floor(LABEL_ATLAS.W/LABEL_ATLAS.cw),rows=Math.floor(LABEL_ATLAS.H/LABEL_ATLAS.ch),max=cols*rows;   // whole cells: 4096/409 is not an integer, and a fractional column count misaddressed every label past the first row
  // which volumes get a label: buildings, farms and furniture; not repeated wall segments (a name seen 8+ times)
  const count={};for(const r of REG)count[r.name]=(count[r.name]||0)+1;
  let list=REG.filter(r=>r.name&&count[r.name]<8&&(!r.cls||r.cls==='building'||r.cls==='farm'||r.cls==='furniture')&&!(r.tags&&r.tags.part==='wall'));
