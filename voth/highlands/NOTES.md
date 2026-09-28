@@ -77,3 +77,16 @@ and seed under a salvage filter on `kput`: any item skinned in a roof material (
 gable, hip, keel, tent, eyelid — is re-issued as a metal twin of the same geometry (corrugate or rusted plate, one
 per building), with sheets patched over the big slabs; walls are untouched; some posts become rusted pipe. Then a
 corrugate lean-to with a stove and a scrap pile (not on the wall pieces). Rich defs keep their roofs. ~55 twins.
+
+## Round 4 (Sep 28 2026) — fitting pass, orrery
+
+Travis: murals over entrances cut into the architecture (Saxon buildings worst); the orrery should be the sun, the
+gas giant orbiting it and Krator + two moons orbiting the giant; dougong lines ran across windows (Hall of the Republic).
+
+`73-hl-carve.js` records every instance a builder places (local frame), and `VERN.place` now calls `hlFlush()` after
+the build: bracket rows (`hnBracketRow`) keep their sets only between windows and break their wall-plate at each
+opening; Rustic/Republican murals (`hnForm`) are tested (oriented-box SAT) against everything crossing a thin slab in
+front of the wall and shrink/slide (down off jetties and lintels, or sideways) until clear, else are left out
+(`window._muralStats`: 159 placed, 13 dropped kit-wide). A crowded Republic emblem passes to the building's next
+crest. Orrery (`77-rep-guild.js`): gilt sun; banded green gas giant with its own ring on the great ring; Krator (blue
+with green land) and two lesser moons on small rings round the giant, all on brass arms.
