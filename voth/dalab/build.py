@@ -67,7 +67,7 @@ DETERMINISTIC = {
     '50-registry.js', '54-mat-concrete.js', '68-mat-v5.js', '69-mat-salvage.js',
     '69b-vern-mat.js', '69c-vern-helpers.js',            # vendored from ../iziz/src (the Vernacular kit + helpers)
     '69d-dalab-mat.js', '69e-dalab-helpers.js',          # Dalab materials, kit items, building blocks
-    '81-sky.js', '90-scene.js', '91-probe.js', '92-camera.js', '93-labels.js', '94-dalab-light.js', '99-tail.html',
+    '81-sky.js', '86-bio-45-init.js', '90-scene.js', '91-probe.js', '92-camera.js', '93-labels.js', '94-dalab-light.js', '99-tail.html',
     '89z-rows.js', '91z-views.js',        # per-target site table and view list
 }
 
@@ -219,12 +219,15 @@ VENDORED = ['10-core.js', '12-stats.js', '20-textures.js', '22-materials.js', '3
             '54-mat-concrete.js', '68-mat-v5.js', '69-mat-salvage.js']          # ../ancients/src
 VENDORED_IZIZ = ['69b-vern-mat.js', '69c-vern-helpers.js', '81-sky.js', '90-scene.js', '91-probe.js',
                  '92-camera.js', '93-labels.js', '99-tail.html', '00-head.html']   # ../iziz/src
+BIO_VENDORED = ['10-core-head', '20-core-kit', '30-core-foliage', '40-core-place',
+                '50-biome-swlowlands-species', '55-biome-swlowlands-trees', '60-biome-swlowlands-floor',
+                '65-biome-swlowlands-dress', '70-biome-swlowlands']   # ../biomes/swlowlands/src -> src/86-bio-*.js
 
 
 def vendor_manifest():
     """VENDOR.json: sha1 of every fragment vendored from ../ancients/src and ../iziz/src, so drift is visible."""
     out = {}
-    for f in VENDORED + VENDORED_IZIZ:
+    for f in VENDORED + VENDORED_IZIZ + ['86-bio-%s.js' % b for b in BIO_VENDORED]:
         with open(os.path.join(SRC, f), 'rb') as fh:
             out[f] = hashlib.sha1(fh.read()).hexdigest()[:12]
     with open(os.path.join(HERE, 'VENDOR.json'), 'w', encoding='utf-8') as fh:
@@ -235,14 +238,17 @@ def vendor_manifest():
 def vendor_check():
     """Compare the vendored fragments with ../ancients/src and ../iziz/src when those repos are beside this one."""
     for label, files, up in (('ancients', VENDORED, os.path.join(os.path.dirname(HERE), 'ancients', 'src')),
-                             ('iziz', VENDORED_IZIZ, os.path.join(os.path.dirname(HERE), 'iziz', 'src'))):
+                             ('iziz', VENDORED_IZIZ, os.path.join(os.path.dirname(HERE), 'iziz', 'src')),
+                             ('biomes/swlowlands', [('86-bio-%s.js' % b, b + '.js') for b in BIO_VENDORED],
+                              os.path.join(os.path.dirname(HERE), 'biomes', 'swlowlands', 'src'))):
         if not os.path.isdir(up):
             print('vendor-check: ../%s/src not found; skipped' % label)
             continue
         drift = []
         for f in files:
+            f, upf = (f if isinstance(f, tuple) else (f, f))
             a = open(os.path.join(SRC, f), 'rb').read()
-            p = os.path.join(up, f)
+            p = os.path.join(up, upf)
             if not os.path.exists(p):
                 drift.append(f + ' (missing upstream)')
             elif open(p, 'rb').read() != a:
