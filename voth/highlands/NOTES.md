@@ -21,3 +21,6 @@ Decisions:
 * Non-square world-UV tiling (`hWorldUV(mat,Ku,Kv)`) for the lace and frieze maps.
 * Cliff settlements: every tribal dwelling takes `o.cliff` (cantilever beams + raking struts into rock at −z);
   `hnCliffWalk` joins houses with walkways and flights of stairs; `hnSub` places a def inside another builder.
+* Travis's ruling mid-round: the carved **faces** were too creepy. The formline maps were redrawn as animals —
+  `hFormA` salmon pair, `hFormW` orca over waves, `hFormT` thunderbird, new `hFormB` bear; totems stack eagle,
+  bear, frog. `hlFace` is kept (unused) for specific depictions later. Package agents were told: no new faces.
