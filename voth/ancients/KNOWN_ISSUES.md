@@ -114,6 +114,11 @@ and ticking it, not by deleting it.
       "lit windows cannot out-shine a sunlit wall" complaint, from the other end.
 - [ ] **The fires do not flicker and never will without an animation hook.**
       Nothing in this kit animates.
+- [x] ~~Projects D and H had builder code but no rows or presets.~~ Rows at
+      `j=-1150` with `ds:[0,1,2,3,4]`; presets `Project D`/`Project H`, each with
+      `at night` and `close`. Fire coverage (`window._projectFire`): A 1 111 of
+      2 284 cells (49%), D 430 of 727 (59%), H 376 of 560 (67%). D and H burn
+      hotter than the 50% the brief asked for.
 - [ ] The Project's plinth can only come in to 110 because the 24 splayed
       struts land at r=98 (see below). It is still the loosest podium of the
       eight.
@@ -263,31 +268,26 @@ exceeded ceiling as `OVER`; `--strict-budget` makes it fail.
       derived from the cable — fine at these angles, wrong if a cable ever
       snaps on one side only.
 
-## Rehabilitated (`--target repaired`)
+## Rehabilitated (decay 3, folded into `--target kit`)
 
-- [ ] **Folding decay 3 into the kit does not fit, and that is the only thing
-      stopping it.** The mechanism is finished and switched off by one word:
-      `DECAYS=[0,1,2,3]` in `targets/kit/89z-rows.js` collapses this whole
-      target into the showcase. `SITEX` already puts level 3 at x=0, which is
-      the empty middle of every row view; `RUINS` already greens that site; and
-      the placement was rendered at every row width down to `s=120` (the
-      houses) with no collision. **Measured, not estimated:** kit as shipped
-      **5 346 054** (74 type/decay pairs), kit with decay 3 folded in
-      **7 212 766** (107 pairs) — **1 212 766 over the 6 000 000 ceiling**, or
-      20% over. This target on its own is 1 774 956 for 31 types; perch, flat
-      and cult make up the rest. Nothing was dropped or thinned to make it fit:
-      which types lose what is the user's call, not an agent's.
-      (Note the number the brief quoted, 4 351 238, is
-      `renderer.info.render.triangles` at the opening camera — what is drawn
-      from one viewpoint — not the scene content `--assert` budgets.)
-- [ ] **Every type at decay 3 is a STUMP, and probably should not be.**
-      `bodyGroup` and `buildSkyA` both test `d<2` to decide whether a tower
-      stands, so level 3 falls into the toppled branch and is built cut off at
-      `cutY` — three storeys of a 420 m building — without the fallen upper
-      body that justifies the cut on level 2. That is why the brief had to ask
-      for The Project as a separate variant. Fixing `d<2` to `d<2||d>2` would
-      give all eight towers their full height back at level 3, and would cost
-      roughly another 400 k triangles on a fold that is already over.
+- [x] ~~**Folding decay 3 into the kit does not fit.**~~ Folded on 2026-09-28
+      by the user's choice to accept the overage: `DECAYS=[0,1,2,3]` in
+      `targets/kit/89z-rows.js`, and the `repaired` target is retired. Measured
+      with the fold, the stump fix below and Projects D and H: **8 362 742**
+      scene triangles against the 6 000 000 ceiling (110 type/decay pairs, 185
+      registered volumes, 152 795 instances); `--assert` reports it as OVER,
+      which is expected. Every other invariant passes; worst draw calls
+      measured so far 886 of 900 (Rehabilitated D).
+- [x] ~~**Every type at decay 3 is a STUMP.**~~ The standing test is `d!==2` in
+      `bodyGroup` and in Skyscrapers A, B, C and G, so only a toppled tower is
+      cut. A rehabilitated tower now stands at full height, dressed by the same
+      `repairPass`.
+- [ ] **The row presets had to be pulled in.** With a building at x=0 in every
+      row, a row shot deeper than the row spacing stood inside the next row's
+      rehabilitated building. `ROWV` now caps the distance 90 m short of the
+      next row, so nine row shots (skyscrapers A, B, D, E, G, H, Megastructure,
+      Starport, Lab) are tighter than they were designed. They frame the
+      intact, rehabilitated and ruined sites; the toppled one sits off frame.
 - [ ] The repaired pass dresses **every** type identically. A police station and
       a cathedral-scale laboratory get the same vocabulary of lean-tos and water
       butts; some types would read better with their own accretion (a factory
