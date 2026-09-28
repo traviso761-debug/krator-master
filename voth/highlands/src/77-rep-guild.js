@@ -194,9 +194,17 @@ function buildHlRepGuildMech(G,o){reseed(21041+(o.v|0));const HX=-1,HZ=-2,W=18,D
  kput('hOctS',[TX,16,TZ],null,[3.35,.4,3.35],ash);const BY=16.4;
  for(let k=0;k<8;k++){const a=k*Math.PI/4+Math.PI/8;vPst('vPost',TX+Math.sin(a)*3,BY,TZ+Math.cos(a)*3,.12,3.6,tar);const p=loc(TX,TZ,0,2.85,k*Math.PI/4);kput('hLaceB',[p[0],BY+.5,p[1]],qEuler(0,k*Math.PI/4,0),[2.2,.9,1],beamC);}
  const OY=BY+1.9;vPst('vPipeC',TX,BY,TZ,.07,1.4,hC(0x9a7a3a));vBall('hGold',TX,OY,TZ,.42,gold);
- [[1.05,.25,.6,0xb8b0a0],[1.6,-.2,2.1,0x5a8ab8],[2.2,.12,4,0xc0503a]].forEach(([r,tilt,ph,col])=>{const q=qEuler(Math.PI/2+tilt,0,tilt*.5);kput('hRBHoop',[TX,OY,TZ],q,[r,r,1]);
-  const v=new THREE.Vector3(Math.cos(ph)*r,Math.sin(ph)*r,0).applyQuaternion(q);vBall('hPaintBall',TX+v.x,OY+v.y,TZ+v.z,.16+r*.04,hC(col));
-  beam('vPipeC',[TX,OY,TZ],[TX+v.x*.92,OY+v.y*.92,TZ+v.z*.92],.03,.03,hC(0x9a7a3a));});
+ // Travis: the orrery shows OUR sky — the gilt sun, the green gas giant on its great ring, and about the giant three
+ // moons on their own small rings: Krator (the largest, blue and green) and two lesser moons. Brass arms carry each.
+ {const brass=hC(0x9a7a3a),GR=2.25,gph=.7,gq=qEuler(Math.PI/2+.08,0,.05);kput('hRBHoop',[TX,OY,TZ],gq,[GR,GR,1]);
+  const gv=new THREE.Vector3(Math.cos(gph)*GR,Math.sin(gph)*GR,0).applyQuaternion(gq),G=[TX+gv.x,OY+gv.y,TZ+gv.z];
+  beam('vPipeC',[TX,OY,TZ],[G[0]-gv.x*.2,G[1]-gv.y*.2,G[2]-gv.z*.2],.035,.035,brass);
+  vBall('hPaintBall',G[0],G[1],G[2],.42,hC(0x7aa888));for(const [dy,c] of[[.2,0x5f927a],[-.05,0xb4d0a4],[-.22,0x4f7e68]]){const r=.43*Math.sqrt(1-dy*dy/.1764);kput('hPaintBall',[G[0],G[1]+dy,G[2]],null,[r,.05,r],hC(c));}   // banded
+  kput('hRBHoop',G,qEuler(Math.PI/2-.35,0,.2),[.62,.62,1]);                                                     // the giant's own ring
+  [[.95,.3,2.4,.2,0x4f86a8,'Krator'],[.7,-.25,.9,.1,0xb8b0a0],[1.25,.15,4.4,.13,0xd19a3a]].forEach(([r,tilt,ph,rad,col,nm])=>{
+   const q=qEuler(Math.PI/2+tilt,0,tilt*.6);kput('hRBHoop',G,q,[r,r,1]);const v=new THREE.Vector3(Math.cos(ph)*r,Math.sin(ph)*r,0).applyQuaternion(q);
+   vBall('hPaintBall',G[0]+v.x,G[1]+v.y,G[2]+v.z,rad,hC(col));beam('vPipeC',G,[G[0]+v.x*.9,G[1]+v.y*.9,G[2]+v.z*.9],.022,.022,brass);
+   if(nm)vBall('hPaintBall',G[0]+v.x*1.02,G[1]+v.y*1.02+rad*.3,G[2]+v.z*1.02,rad*.55,hC(0x5f9a4a));});}      // Krator's green land
  kput('hOctW',[TX,BY+3.6,TZ],null,[3.3,.35,3.3],tar);
  kput('hBulbSc',[TX,BY+3.9,TZ],null,[2.7,3.6,2.7],grn);const tp=BY+7.5;vPst('vIron',TX,tp-.2,TZ,.05,1.3,iron);hnRBGear(TX,tp+1.35,TZ,0,.42,.08,false,0,gold);
  // yard

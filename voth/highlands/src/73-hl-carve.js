@@ -22,7 +22,8 @@ function hnTotemPost(x,y,z,r,h,ry,painted){if(hlNonTribal())return hnPillar(x,y,
 // Republican and Rustic builders get the wider repertoire (round 2): the item is swapped for a pick from HMOTIF of the
 // same shape — formline animals stay in the pool — and the first wide crest on a Republican CIVIC building is the
 // Republic's emblem.
-function hnForm(item,x,y,z,ry,w,h){if(hlNonTribal())item=hnMotifPick(item);const p=loc(x,z,0,.07,ry);kput(item,[p[0],y+h/2,p[1]],qEuler(0,ry,0),[w,h,1],null);}
+function hnForm(item,x,y,z,ry,w,h){if(hlNonTribal()){const C=VERN.cur;(C.murals||(C.murals=[])).push({item:hnMotifPick(item),x,y,z,ry,w,h});return;}   // fitted after the building (hlFlush)
+ const p=loc(x,z,0,.07,ry);kput(item,[p[0],y+h/2,p[1]],qEuler(0,ry,0),[w,h,1],null);}
 // Frieze band (hFormF) along a face — eave boards, lintels, the belt between storeys.
 function hnFrieze(x,y,z,ry,w,h){const p=loc(x,z,0,.05,ry);vB('hFormF',p[0],y,p[1],w,h||.5,.1,ry);}
 
@@ -84,8 +85,11 @@ function hnDougong(x,y,z,ry,s,armC,blockC){s=s||1;armC=armC||hC(HPAL.teal);block
  p=P(0,.72,.55);kput('hArm',p,qo,[.2*s,.2*s,1.3*s],armC);
  kput('hPaint',P(0,.9,.4),q,[1.8*s,.16*s,1.2*s],blockC);}
 // A row of sets along a face (between x0..x1 in the face frame), each on a painted post head / wall plate.
-function hnBracketRow(x,y,z,ry,w,n,s,armC,blockC){for(let i=0;i<n;i++){const u=-w/2+w*(i+.5)/n;const p=loc(x,z,u,0,ry);hnDougong(p[0],y,p[1],ry,s,armC,blockC);}
- const p=loc(x,z,0,.08,ry);vB('hPaint',p[0],y-.18,p[1],w,.18,.3,ry,armC||hC(HPAL.teal));}                                  // painted wall plate
+function hnBracketRow(x,y,z,ry,w,n,s,armC,blockC){const C=VERN.cur;if(C&&!C.flushing){(C.brows||(C.brows=[])).push([x,y,z,ry,w,n,s,armC,blockC]);return;}   // laid out round the windows after the building (hlFlush)
+ hnBracketRowNow(x,y,z,ry,w,n,s,armC,blockC,[]);}
+function hnBracketRowNow(x,y,z,ry,w,n,s,armC,blockC,gaps){const inGap=u=>gaps.some(g=>u>g[0]&&u<g[1]);for(let i=0;i<n;i++){const u=-w/2+w*(i+.5)/n;if(inGap(u))continue;const p=loc(x,z,u,0,ry);hnDougong(p[0],y,p[1],ry,s,armC,blockC);}
+ const cuts=[-w/2];for(const g of gaps.slice().sort((a,b)=>a[0]-b[0])){cuts.push(Math.max(-w/2,g[0]),Math.min(w/2,g[1]));}cuts.push(w/2);
+ for(let i=0;i+1<cuts.length;i+=2){const a=cuts[i],b=cuts[i+1];if(b-a<.25)continue;const p=loc(x,z,(a+b)/2,.08,ry);vB('hPaint',p[0],y-.18,p[1],b-a,.18,.3,ry,armC||hC(HPAL.teal));}}                                  // painted wall plate
 
 // ---------------------------------------------------------------- bargeboards, gable finials, horns
 // For a gable roof laid with vnGableRoof/hnGable at (x,y,z,w,d,rise,ry,over): carved lace bargeboards down both
@@ -220,3 +224,45 @@ function hnFirepit(x,y,z,r){for(let k=0;k<9;k++){const a=k/9*TAU;kput('vRock',[x
 // A standing stone (circles, boundary marks, the tribal sacred sites); `carved` paints a face on it.
 function hnMenhir(x,y,z,ry,h,c,carved){kput('vRock',[x,y+h*.45,z],qEuler(rr(-.06,.06),ry,rr(-.06,.06)),[h*.24,h*.55,h*.16],c||hC(vPick(HPAL.rubble)));
  if(carved){const p=loc(x,z,0,h*.15,ry);kput('hFormV',[p[0],y+h*.55,p[1]],qEuler(0,ry,0),[h*.26,h*.6,1],null);}}
+
+// ---------------------------------------------------------------- round 4: fitting murals and bracket rows (hlFlush)
+// Travis: murals over entrances cut into the architecture (jetties, consoles, lintels — the Saxon buildings worst)
+// and dougong wall-plates ran across windows (the Hall of the Republic). Both are now placed AFTER the building is
+// complete, against a record of every instance it placed:
+//   * a bracket row keeps its sets only between windows, and its painted wall-plate breaks at each opening;
+//   * a Rustic/Republican mural is fitted into the clear space in front of its wall: it is tested (oriented-box
+//     SAT) against everything that pokes through a thin slab just in front of the wall, and shrinks / slides
+//     within its original rectangle until it is clear — or is left out.
+const _hlKputRec=kput;
+kput=function(name,p,q,s,c){const C=VERN.cur;if(C&&!C.noRec)(C.inst||(C.inst=[])).push([name,[p[0],p[1],p[2]],q?q.clone():null,s]);return _hlKputRec(name,p,q,s,c);};
+const _HLBB={};function hlItemBB(name){let b=_HLBB[name];if(!b){const g=KIT.defs[name].geo;if(!g.boundingBox)g.computeBoundingBox();b=_HLBB[name]={c:g.boundingBox.getCenter(new THREE.Vector3()),e:g.boundingBox.getSize(new THREE.Vector3()).multiplyScalar(.5)};}return b;}
+function hlOBB(rec){const [name,p,q,s]=rec,b=hlItemBB(name),S=typeof s==='number'?[s,s,s]:s,Q=q||new THREE.Quaternion();
+ const c=new THREE.Vector3(b.c.x*S[0],b.c.y*S[1],b.c.z*S[2]).applyQuaternion(Q).add(new THREE.Vector3(p[0],p[1],p[2]));
+ return{c,a:[new THREE.Vector3(1,0,0).applyQuaternion(Q),new THREE.Vector3(0,1,0).applyQuaternion(Q),new THREE.Vector3(0,0,1).applyQuaternion(Q)],e:[Math.abs(b.e.x*S[0]),Math.abs(b.e.y*S[1]),Math.abs(b.e.z*S[2])]};}
+function hlSAT(A,B){const T=B.c.clone().sub(A.c);const ax=[...A.a,...B.a];for(const u of A.a)for(const v of B.a){const w=u.clone().cross(v);if(w.lengthSq()>1e-8)ax.push(w.normalize());}
+ for(const L of ax){const rA=A.e[0]*Math.abs(A.a[0].dot(L))+A.e[1]*Math.abs(A.a[1].dot(L))+A.e[2]*Math.abs(A.a[2].dot(L));
+  const rB=B.e[0]*Math.abs(B.a[0].dot(L))+B.e[1]*Math.abs(B.a[1].dot(L))+B.e[2]*Math.abs(B.a[2].dot(L));if(Math.abs(T.dot(L))>rA+rB)return false;}return true;}
+const HLWINS=new Set(['vWinGlass','vWinLit','vDarkB','winSmD','hRAVoid']);
+function hlFlush(){const C=VERN.cur;if(!C)return;const inst=C.inst||[];C.flushing=true;
+ const near=(x,y,z,R)=>inst.filter(r=>{const p=r[1];return Math.abs(p[0]-x)<R&&Math.abs(p[2]-z)<R&&Math.abs(p[1]-y)<R+6;});
+ for(const [x,y,z,ry,w,n,s,armC,blockC] of C.brows||[]){const U=hRot(ry,[1,0,0]),N=hRot(ry,[0,0,1]),gaps=[];
+  for(const r of near(x,y,z,w/2+2)){if(!HLWINS.has(r[0]))continue;const B=hlOBB(r);const d=[B.c.x-x,B.c.y-y,B.c.z-z];
+   const nd=d[0]*N[0]+d[2]*N[2],vd=d[1];if(Math.abs(nd)>1.2)continue;let hu=0,hv=0;for(let k=0;k<3;k++){hu+=B.e[k]*Math.abs(B.a[k].x*U[0]+B.a[k].z*U[2]);hv+=B.e[k]*Math.abs(B.a[k].y);}
+   if(vd+hv<-.4||vd-hv>(s||1)*1.0)continue;const ud=d[0]*U[0]+d[2]*U[2];gaps.push([ud-hu-.14,ud+hu+.14]);}
+  hnBracketRowNow(x,y,z,ry,w,n,s,armC,blockC,gaps);}
+ let owed=false;const wide=it=>/^hM_[wg]_|^hForm[AWBT]$/.test(it);
+ for(const m of C.murals||[]){if(owed&&wide(m.item)){m.item=HMOTIF.emblemWide;}const U=new THREE.Vector3(...hRot(m.ry,[1,0,0])),N=new THREE.Vector3(...hRot(m.ry,[0,0,1])),V=new THREE.Vector3(0,1,0);
+  const candR=near(m.x,m.y+m.h/2,m.z,Math.max(m.w,m.h)+3),cand=candR.map(hlOBB);let placed=false;
+  // search: biggest first, then nearest to where the builder put it — slide down (off a jetty/lintel) or sideways
+  const tries=[];for(const k of[1,.86,.74,.62,.52])for(const fy of[0,-.25,.25,-.5,-.75,-1])for(const fx of[0,-.3,.3,-.6,.6])tries.push([k,fx,fy]);
+  for(const [k,fx,fy] of tries){const w=m.w*k,h=m.h*k,cy=m.y+m.h/2+fy*m.h*.8,cu=fx*m.w*.8;const c=loc(m.x,m.z,cu,0,m.ry);
+   const slab={c:new THREE.Vector3(c[0],cy,c[1]).addScaledVector(N,.18),a:[U,V,N],e:[w/2,h/2,.075]};   // n .105–.255: clears beams, quoins, friezes on the wall
+   if(cand.some(B=>hlSAT(slab,B)))continue;const p=loc(m.x,m.z,cu,.095,m.ry);kput(m.item,[p[0],cy,p[1]],qEuler(0,m.ry,0),[w,h,1],null);placed=true;break;}
+  const st=window._muralStats||(window._muralStats={placed:0,dropped:[]});if(placed){st.placed++;if(m.item===HMOTIF.emblemWide)owed=false;}else{st.dropped.push(C.D.key);if(m.item===HMOTIF.emblemWide)owed=true;}}   // a crowded emblem moves to the next wide mural
+ C.flushing=false;C.inst=null;C.murals=null;C.brows=null;}
+// VERN.place with the flush before the group transform closes (the vendored body, plus hlFlush()).
+VERN.place=function(scene,key,x,z,ry,o){const D=VERN.defs[key];if(!D){reportErr('VERN.place: no such key '+key);return null;}
+ o=Object.assign({w:1,v:0,scale:1,y:0},o||{});const G=new THREE.Group();G.position.set(x,o.y,z);G.rotation.y=ry||0;if(o.scale!==1)G.scale.setScalar(o.scale);scene.add(G);G.updateMatrix();
+ KOFF=[0,0,0];useGroupXF(G);if(o.scale!==1)KXF.s=o.scale;VERN.cur={D,G,x,z,ry:ry||0,o,r0:REG.length};
+ try{D.build(G,o);hlFlush();}catch(e){reportErr(key+' '+e.stack);}
+ endGroupXF();VERN.cur=null;return G;};
