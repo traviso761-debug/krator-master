@@ -59,7 +59,7 @@ const HTRADE={hl_rep_tavern_a:'tankard',hl_rep_tavern_b:'tankard',hl_rep_tavern_
  hl_rep_warehouse_a:'sack',hl_rep_warehouse_b:'sack',hl_rep_guild_merc:'swords',hl_rep_guild_alch:'flask',hl_rep_guild_farm:'sheaf',hl_rep_guild_smith:'hammer',
  hl_rep_guild_mech:'gear',hl_rep_hospital:'mortar',hl_rep_school:'book',hl_rep_forgehouse:'anvil',hl_rep_granary:'sheaf',hl_rep_windmill:'sheaf',hl_rep_watermill:'sheaf',
  hl_rus_shops:['bread','scales','fish'],hl_rus_tavern:'tankard',hl_rus_smithy:'anvil',hl_rus_mill:'sheaf',hl_rus_granary:'sheaf'};
-function hlTradeSym(sym){if(sym)return sym;const c=VERN.cur;const t=c&&HTRADE[c.D.key];if(!t)return 'scales';if(!Array.isArray(t))return t;c.signN=(c.signN||0);return t[c.signN++%t.length];}
+function hlTradeSym(sym){if(sym)return sym;const c=VERN.cur;const t=c&&HTRADE[c.D.baseKey||c.D.key];if(!t)return 'scales';if(!Array.isArray(t))return t;c.signN=(c.signN||0);return t[c.signN++%t.length];}
 // Hanging sign: an iron bracket out of the wall at (x,y,z) (ry = outward), a painted roundel hung across it.
 function hnSign(x,y,z,ry,sym,s){s=s||1;const I=hC(0x2e2a26),k=HMOTIF.sign[hlTradeSym(sym)]||HMOTIF.sign.scales;const a=loc(x,z,0,.04,ry),b=loc(x,z,0,1.25*s,ry),m=loc(x,z,0,.62*s,ry);
  beam('vIron',[a[0],y,a[1]],[b[0],y,b[1]],.06,.06,I);beam('vIron',[a[0],y-.62*s,a[1]],[m[0],y,m[1]],.04,.04,I);vBall('hGold',b[0],y,b[1],.06,hC(HPAL.gold[0]));
