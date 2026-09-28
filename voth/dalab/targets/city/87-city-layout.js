@@ -36,19 +36,19 @@ for(const S of SETTLE){
 {const T=SETTLE.filter(S=>!S.main);const pts=T.map(S=>[S.plaza.x,S.plaza.z]);pts.push(pts[0]);
  // round the corners: a point outside each plaza on the way in and out, so the highway skirts the plaza edge rather than crossing the mound
  const P=[];for(let i=0;i<T.length;i++){const a=T[i],b=T[(i+1)%T.length];const A=[a.plaza.x,a.plaza.z],B=[b.plaza.x,b.plaza.z];P.push(A);const mx=(A[0]+B[0])/2,mz=(A[1]+B[1])/2;const ox=mx-CITY.RING_C[0],oz=mz-CITY.RING_C[1],m=Math.hypot(ox,oz);P.push([CITY.RING_C[0]+ox/m*(CITY.RING+40),CITY.RING_C[1]+oz/m*(CITY.RING+40)]);}
- P.push(P[0]);road(P,CITY.HIGHWAY_W,KL.highway,{zone:'highway'});
+ P.push(P[0]);const HW=road(P,CITY.HIGHWAY_W,KL.highway,{zone:'highway'});HW.oak=true;   // the circuit is a live-oak vault, mound to mound
  // spurs: from the circuit's nearest point to each map edge
  const E=CITY.WORLD/2+80;for(const dir of[[0,-1],[1,0],[0,1],[-1,0]]){const far=[CITY.RING_C[0]+dir[0]*E,CITY.RING_C[1]+dir[1]*E];const n=nearestRoadPt(far[0],far[1],r=>r.zone==='highway');road([[n.x,n.z],far],CITY.HIGHWAY_W,KL.highway,{zone:'spur'});}
  // the main settlement joins the circuit by its three outward radials, extended
- const M=SETTLE.find(S=>S.main);for(const R of M.radials){if(angDiff(R.a,M.face)<1.2)continue;const e=R.pts[1];const n=nearestRoadPt(e[0],e[1],r=>r.zone==='highway');if(n&&n.d<900)road([e,[n.x,n.z]],CITY.STREET_W+4,KL.avenue,{zone:'main:link'});}
+ const M=SETTLE.find(S=>S.main);for(const R of M.radials){if(angDiff(R.a,M.face)<1.2)continue;const e=R.pts[1];const n=nearestRoadPt(e[0],e[1],r=>r.zone==='highway');if(n&&n.d<900){R.oak=true;const OR=road([[M.plaza.x+Math.sin(R.a)*(M.plazaR-6),M.plaza.z+Math.cos(R.a)*(M.plazaR-6)],e,[n.x,n.z]],16,KL.avenue,{zone:'main:oak'});OR.oak=true;}}   // an oak avenue from the market out to the circuit
  window._highwayPts=P.length;}
 // the oak vaults (Travis, round 7): the lab avenue and every road out of the main settlement to the circuit, planted by the biome
-const OAK_ROADS=()=>ROADS.filter(r=>r.zone==='main:link').map(r=>r.pts).concat([AVENUE]);
+const OAK_ROADS=()=>ROADS.filter(r=>r.oak).map(r=>r.pts).concat([AVENUE]);
 // ---- 3. the avenue: lab gate to the main plaza, a live-oak vault (the biome plants the oaks along AVENUE) ----
 const M0=SETTLE.find(S=>S.main);
 const LAB_GATE=[CITY.LAB.x,CITY.LAB.z+292*4.105*CITY.LAB.scale];   // the compound wall's south point
-const AVENUE=[[LAB_GATE[0],LAB_GATE[1]-30],[LAB_GATE[0],LAB_GATE[1]+40],[M0.plaza.x,M0.plaza.z-M0.plazaR-2]];
-road(AVENUE,16,KL.avenue,{zone:'avenue'});disc(LAB_GATE[0],LAB_GATE[1]+10,26,'plaza');
+const AVENUE=[[LAB_GATE[0],LAB_GATE[1]-30],[LAB_GATE[0],LAB_GATE[1]+40],[M0.plaza.x,M0.plaza.z-M0.plazaR+8]];   // into the plaza, to the market's edge
+{const AV=road(AVENUE,16,KL.avenue,{zone:'avenue'});AV.oak=true;}disc(LAB_GATE[0],LAB_GATE[1]+10,26,'plaza');
 // the High Priest's mound, right outside the lab's main entrance, ringed, facing AWAY from the lab (south)
 const HIGH_MOUND={x:-190,z:LAB_GATE[1]+120,ry:0};disc(HIGH_MOUND.x,HIGH_MOUND.z,76,'mound');precinct(HIGH_MOUND.x,HIGH_MOUND.z,80,"High Priest's mound");
 road([[HIGH_MOUND.x,HIGH_MOUND.z+82],[HIGH_MOUND.x,HIGH_MOUND.z+140],[AVENUE[1][0]-20,AVENUE[1][1]+120]],CITY.STREET_W,KL.street,{zone:'highmound'});
@@ -60,6 +60,8 @@ const FIELDS=[];
    for(let r=R0;r<R1;r+=rr(60,95)){const r2=Math.min(R1,r+rr(55,90));const g=.028;const pts=[[S.plaza.x+Math.sin(a0+g)*r,S.plaza.z+Math.cos(a0+g)*r],[S.plaza.x+Math.sin(a1-g)*r,S.plaza.z+Math.cos(a1-g)*r],[S.plaza.x+Math.sin(a1-g)*r2,S.plaza.z+Math.cos(a1-g)*r2],[S.plaza.x+Math.sin(a0+g)*r2,S.plaza.z+Math.cos(a0+g)*r2]];
     // no fields on water, the avenue, the lab or the highway's line
     let ok=true;for(const p of pts){if(isWater(p[0],p[1])||Math.hypot(p[0]-CITY.LAB.x,p[1]-CITY.LAB.z)<292*4.105*CITY.LAB.scale+60||riverD(p[0],p[1])<50||channelD(p[0],p[1]).d<8)ok=false;}
+    // a field is never bisected by a road: nine samples across the wedge must all be clear of the streets, avenues and the highway
+    if(ok)for(let u=.12;u<1&&ok;u+=.38)for(let v=.12;v<1&&ok;v+=.38){const x=pts[0][0]+(pts[1][0]-pts[0][0])*u+(pts[3][0]-pts[0][0])*v,z=pts[0][1]+(pts[1][1]-pts[0][1])*u+(pts[3][1]-pts[0][1])*v;const n=nearestRoadPt(x,z,r=>r.cls!==KL.lane);if(n&&n.d<n.road.w/2+(n.road.oak?16:4))ok=false;}
     if(!ok)continue;field(pts,(ci+Math.round(r/80))%CROPCOL.length,(a0+a1)/2);FIELDS.push({pts,S:S.key,cx:pts.reduce((s,p)=>s+p[0],0)/4,cz:pts.reduce((s,p)=>s+p[1],0)/4});}}}
  window._fields=FIELDS.length;})();
 // farm lanes: every other wedge boundary gets a lane from the ring street out to the fields' edge (the farm workers' way)

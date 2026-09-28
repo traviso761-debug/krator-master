@@ -44,19 +44,29 @@ saying what fixed it.
       page whether one palace or a whole settlement is planted.
 
 ## Round 7 — the settlement
-- [ ] The lab's own jungle trees (the Ancients kit's `trees()` in the builder) are
-      the hypertree items, not the lowlands species; they read as the overgrowth
-      the brief asks for but are the wrong flora. The lab wrapper could mask
-      them out and let the biome dress the compound instead.
-- [ ] Roads are painted on the albedo only: no kerbs or wear geometry. The
-      highway and the avenue could take a surface pass.
-- [ ] Irrigation channels are straight three-point polylines; a meander would
-      read better. The river has no banks beyond the terrain cut.
-- [ ] Agents walk through buildings placed after the road they follow; they stay
-      on the road graph, but a house whose footprint clips a road edge (the
-      mask blocks it, so this should not happen) would be walked through.
-- [ ] Night in the city: the settlement's God-lit buildings show, but the
-      biome's floor and the fields do not darken beyond the hemisphere light.
-- [ ] Off-map: the spurs stop at the world edge; the skybox does not yet carry
-      the forests and fields to the horizon (the brief) — the KratorSky dome is
-      the plain sky.
+- [x] The lab's own hypertree overgrowth. **Round 8:** the wrapper sets
+      `BIOME.lush=0` (no kit trees or moss) and the biome mask lets the lowlands
+      species root inside the ruined wall at .55, with the domes as obstacles
+      (`LAB_OBST`).
+- [x] Roads paint-only. **Round 8:** a centre-wear stripe and a rut line on the
+      highway and avenues, a wear stripe on streets. Still paint: no kerb
+      geometry (the roads are packed earth, so none is wanted).
+- [x] Channels straight. **Round 8:** every channel is resampled every 25 m with
+      a sinuous offset (the main channel up to 18 m).
+- [x] Agents through buildings. **Round 8:** verified — footprints are painted
+      into the mask after placement and the audit reports 0 overlaps and no
+      house corner on a street; agents stay on the road graph.
+- [x] Night. **Round 8:** verified from the night plaza shot — the terrain and
+      the biome's floor are lit materials and go dark with the hemisphere.
+- [x] The horizon. **Round 8:** an annulus from the map edge to 9 km painted with
+      clearings of strip fields in forest, and ~1 900 far-tree blobs in one
+      mesh; the KratorSky dome above it (giant, rings, sun, stars, moon).
+
+## Round 8
+- [ ] `targets/city/63-anc-dalab.js` deliberately drifts from
+      `../ancients/src/64-dalab.js`: a wall gap where the oak avenue enters
+      (`LAB_WALL_GAP`) and a narrower, higher bite in the great dome (w .11,
+      y0 .10). Both lines are marked DALAB; `--vendor-check` says so.
+- [ ] The oak corridor rule keeps plots 22.5 m off every oak road's line, so
+      a town the highway passes through loses its highway frontage; the second
+      ring street and the extra radials make up the count.

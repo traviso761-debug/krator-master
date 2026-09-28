@@ -246,3 +246,31 @@ calls. `--assert` green.
   Audit: 0 overlaps; the remaining on-road corners are the mounds' own foot
   lanes and the plaza market, both by design. 6.1 M triangles, ~213 draw
   calls, one road network.
+
+## Round 8 (Sep 28 2026) — the vaults into town, the 10 M settlement, the known issues
+
+From Travis: oak avenues into the city to the great market; the ancient wall
+cut where the vault enters; fields never bisected by an avenue; vaults to
+every mound's square and along the highway between the outlying mounds; the
+settlement's budget to 10 M with more flora and buildings; towns less sparse
+with understorey; buildings out of the avenues, facing a side street; a
+smaller gash in the great dome; the standard Krator skybox; the known issues.
+
+* **Vaults**: the lab avenue runs into the plaza to the market's edge; every
+  main radial that reaches the circuit is repainted as a 16 m oak avenue from
+  the market out; the highway circuit itself is a vault (oaks 38 m apart; the
+  town avenues 24 m). `OAK_ROADS` collects every road flagged `oak`.
+* **Out of the avenues**: `inOakCorridor` (22.5 m either side of an oak road)
+  is part of `groundOK`; frontage on an oak road stands back 15 m past the
+  oaks; `faceRoadRy` prefers a side street within 45 m. The market and the
+  shrine are let onto the plaza by name (`ignoreOak`).
+* **Fields**: a wedge is dropped when any of nine samples lies within a
+  street's, avenue's or highway's width (+16 m on an oak road).
+* **The lab**: `LAB_WALL_GAP` (75 m at the south) in the vendored builder; the
+  bite w .20 → .11, y0 .04 → .10; the compound is the biome's to dress.
+* **Density**: towns are green in the mask (.42) so trees and understorey root
+  between the houses; buildings are biome obstacles; outlying towns have eight
+  radials and a second ring; frontage pitch 18 / 13; targets 130 / 32; every
+  town gets a shop row, a workshop, a windmill and a potter. The biome's
+  stocking is q 1.0 with the circuit's oaks wide — 9.7 M of the 10 M.
+* **Horizon** and the rest of the known-issues pass: see KNOWN_ISSUES.md.
