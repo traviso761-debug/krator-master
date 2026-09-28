@@ -58,7 +58,7 @@ vnBannerPole=function(x,y,z,ry,h,c){if(!hlRepCivic())return _hlBannerPole(x,y,z,
 const HTRADE={hl_rep_tavern_a:'tankard',hl_rep_tavern_b:'tankard',hl_rep_tavern_c:'tankard',hl_rep_inn:'bed',hl_rep_shops:['bread','boot','shears','candle'],
  hl_rep_market_hall:'scales',hl_rep_workshop_a:'wheel',hl_rep_workshop_b:'barrel',hl_rep_smithy_small:'anvil',hl_rep_smithy_large:'anvil',hl_rep_stables:'horse',
  hl_rep_warehouse_a:'sack',hl_rep_warehouse_b:'sack',hl_rep_guild_merc:'swords',hl_rep_guild_alch:'flask',hl_rep_guild_farm:'sheaf',hl_rep_guild_smith:'hammer',
- hl_rep_guild_mech:'gear',hl_rep_hospital:'mortar',hl_rep_school:'book',hl_rep_forgehouse:'anvil',hl_rep_granary:'sheaf',hl_rep_windmill:'sheaf',hl_rep_watermill:'sheaf',
+ hl_rep_guild_mech:'gear',hl_rep_guild_astro:'star',hl_rep_guild_scav:'salvage',hl_rep_hospital:'mortar',hl_rep_school:'book',hl_rep_forgehouse:'anvil',hl_rep_granary:'sheaf',hl_rep_windmill:'sheaf',hl_rep_watermill:'sheaf',
  hl_rus_shops:['bread','scales','fish'],hl_rus_tavern:'tankard',hl_rus_smithy:'anvil',hl_rus_mill:'sheaf',hl_rus_granary:'sheaf'};
 function hlTradeSym(sym){if(sym)return sym;const c=VERN.cur;const t=c&&HTRADE[c.D.baseKey||c.D.key];if(!t)return 'scales';if(!Array.isArray(t))return t;c.signN=(c.signN||0);return t[c.signN++%t.length];}
 // Hanging sign: an iron bracket out of the wall at (x,y,z) (ry = outward), a painted roundel hung across it.

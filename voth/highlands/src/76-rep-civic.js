@@ -142,6 +142,46 @@ function buildHlRepTemple(G,o){reseed(20701+(o.v|0));const S=1.4,C=7,H=11,AW=8,A
  vnPaving(0,0,20,7,5,0,ash,8);hnRBLamps([[-4.6,18.6],[4.6,18.6],[-12,17],[12,17]],3.6);
  vnFolk(2,21,3,2.5);vnFolk(-9,15.5,2,1.5);}
 
+// The timber bell-and-clock tower (after Travis's clocktower reference): an arched rubble base with a great bell,
+// three levels of braced oak framing hung with bells, clock faces on all four sides, exposed gearing, a skirt, an
+// open lantern with a bell and a tented spire. Shared by the town hall and the Mechanics' Guild.
+// o: {B base height, TH belfry height, roof, oak, tar, rub, ash, bigGear (a great wheel across the front, the
+// Mechanics' version), gears (extra gear trains)}. Local frame; returns the spire tip y.
+function hnRBClockTower(TX,TZ,o){const {B,TH,roof,oak,tar,rub,ash}=o;
+ hnRBArch(TX,0,TZ+3.1,0,7,B,.8,'hRBArchR',rub);hnRBArch(TX,0,TZ-3.1,0,7,B,.8,'hRBArchR',rub);
+ for(const s of[-1,1])hnRBArch(TX+s*3.1,0,TZ,Math.PI/2,5.4,B,.8,'hRBArchR',rub);
+ for(const sx of[-1,1])for(const sz of[-1,1])vB('vStone',TX+sx*3.08,0,TZ+sz*3.08,1,B,1,0,ash);
+ vB('vStone',TX,B,TZ,7.5,.45,7.5,0,ash);const y0=B+.45;vB('vStone',TX,0,TZ,5.4,.1,5.4,0,rub);
+ for(const s of[-1,1]){vPst('vPost',TX+s*1.4,0,TZ,.14,3.1,oak);}vB('vWood',TX,3,TZ,3.2,.25,.3,0,oak);hnRBBell(TX,3,TZ,1.05);
+ vnLadder(TX-2,0,TZ-1.8,Math.PI/2,B,oak);
+ // the timber belfry: a core, corner and middle posts, level beams, braced bays
+ vB('vWood',TX,y0,TZ,5,TH,5,0,tar);const LV=[0,3.6,7.3,TH];
+ for(const sx of[-1,1])for(const sz of[-1,1])vB('vWood',TX+sx*3,y0,TZ+sz*3,.5,TH,.5,0,oak);
+ for(let k=0;k<4;k++){const a=k*Math.PI/2,N=hRot(a,[0,0,1]);
+  for(const u of[-1,1]){const p=loc(TX,TZ,u,3,a);vB('vWood',p[0],y0,p[1],.32,TH,.32,a,oak);}
+  for(const l of LV){const p=loc(TX,TZ,0,3.05,a);vB('vWood',p[0],y0+l-(l?.3:0),p[1],6.7,.3,.4,a,oak);}
+  for(let j=0;j<3;j++){const ya=y0+LV[j]+.3,yb=y0+LV[j+1]-.3;
+   for(const [u0,u1] of[[-3,-1],[1,3]]){if(k===0&&j===1)continue;const A=hnOn(TX,ya,TZ,a,u0,3.2),Bp=hnOn(TX,yb,TZ,a,u1,3.2),C2=hnOn(TX,ya,TZ,a,u1,3.2),D2=hnOn(TX,yb,TZ,a,u0,3.2);
+    hnMember('vWood',A,Bp,.2,.12,N,oak);hnMember('vWood',C2,D2,.2,.12,N,oak);}}
+  // the clock: a timber back-plate, the face, a hood
+  const c=loc(TX,TZ,0,3.32,a);kput('hRBDiscW',[c[0],y0+5.45,c[1]],qEuler(0,a,0),[1.85,1.85,.18],oak);
+  const cf=loc(TX,TZ,0,3.43,a);kput('hRBClock',[cf[0],y0+5.45,cf[1]],qEuler(0,a,0),[3.2,3.2,1]);
+  // bells on outriggers from the corner posts at the top level, and on the middle level off the side faces
+  for(const s of[-1,1]){const r0=loc(TX,TZ,s*3,3.2,a),r1=loc(TX,TZ,s*3,4.5,a);vBeam([r0[0],y0+TH-.6,r0[1]],[r1[0],y0+TH-.6,r1[1]],.22,oak);
+   hnRBBell(r1[0]-.0,y0+TH-.72,r1[1],rr(.34,.5),a);vB('vWood',r1[0],y0+TH-1.4,r1[1],.2,.8,.2,a,oak);}
+  if(k>0)for(const s of[-1,1]){const r0=loc(TX,TZ,s*2,3.2,a),r1=loc(TX,TZ,s*2,4.1,a);vBeam([r0[0],y0+3.4,r0[1]],[r1[0],y0+3.4,r1[1]],.18,oak);hnRBBell(r1[0],y0+3.3,r1[1],rr(.28,.4),a);}}
+ // exposed gearing on the front, a weight on a rope
+ if(o.bigGear){hnRBGear(TX-.6,y0+2.1,TZ+3.45,0,1.9,.26,false,.15);hnRBGear(TX+1.95,y0+2.95,TZ+3.52,0,.85,.22,true,.4);hnRBGear(TX+2.05,y0+1.1,TZ+3.5,0,.55,.2,false,.2);
+  for(let k=1;k<4;k++){const a=k*Math.PI/2;hnRBGear(...(p=>[p[0],y0+1.8,p[1]])(loc(TX,TZ,-1.3,3.42,a)),a,1.05,.22,k%2===0,.3*k);hnRBGear(...(p=>[p[0],y0+2.6,p[1]])(loc(TX,TZ,1.4,3.46,a)),a,.6,.2,k%2===1,.2);}}
+ else{hnRBGear(TX-1.7,y0+2,TZ+3.38,0,.95,.22,false,.1);hnRBGear(TX-.2,y0+1.3,TZ+3.42,0,.62,.2,true,.3);hnRBGear(TX+1.7,y0+2.3,TZ+3.38,0,.8,.22,false,.5);}
+ vPst('vRope',TX+2.6,y0+1.2,TZ+3.6,.025,TH-1.8,hC(0xb8a888));kput('vBarrel',[TX+2.6,y0+.55,TZ+3.6],null,[.18,.7,.18],hC(0x6a5a48));
+ // skirt, lantern with a bell, spire
+ const TOP=y0+TH;vnPyrRoof('hPyrSc',TX,TOP,TZ,6.6,6.6,3.6,0,roof,1.1);
+ kput('hOctW',[TX,TOP+1.85,TZ],null,[2,.25,2],oak);for(let k=0;k<8;k++){const a=k*Math.PI/4+Math.PI/8;vPst('vPost',TX+Math.sin(a)*1.75,TOP+2.1,TZ+Math.cos(a)*1.75,.1,2.4,oak);}
+ for(let k=0;k<8;k++){const a=k*Math.PI/4,p=loc(TX,TZ,0,1.68,a);kput('hLaceB',[p[0],TOP+2.55,p[1]],qEuler(0,a,0),[1.25,.8,1],oak);}
+ hnRBBell(TX,TOP+4.35,TZ,.5);kput('hOctW',[TX,TOP+4.5,TZ],null,[2.15,.3,2.15],oak);
+ const tip=hnTent(TX,TOP+4.8,TZ,2.25,7.8,'hTentSc',roof);vPst('vIron',TX,tip-.4,TZ,.05,1.6,hC(hRBIRON));vBall('hGold',TX,tip+.35,TZ,.2,hC(HPAL.gold[0]));return tip+1;}
+
 // ================================================================= CIVIC
 // Town hall: a stucco-and-half-timber hall on a rubble socle, the council chamber opening onto a timber loggia
 // over a stone arcade under a lace-barged cross gable, dougong under the loggia; beside it the clocktower after
@@ -171,38 +211,7 @@ function buildHlRepTownHall(G,o){reseed(20711+(o.v|0));const HX=-4,W=22,D=13,S=.
  // dormers and chimneys
  for(const x of[HX-7.6,HX+7.6]){vB('vPlaster',x,y3+2.3,3.2,1.6,1.9,1.6,0,cream);vnWin(x,y3+2.8,4,0,.7,.8,lit,'vWood',beamC);vnGableRoof(x,y3+4.2,3.2,1.6,1.8,.9,Math.PI/2,'hGableSc',roof,.15);}
  hnStoneChimney(HX-8,y3+3,-2.5,5.8,.8);hnStoneChimney(HX+3,y3+3,-2.5,5.8,.8);
- // ---- the clocktower: arched stone base
- hnRBArch(TX,0,TZ+3.1,0,7,B,.8,'hRBArchR',rub);hnRBArch(TX,0,TZ-3.1,0,7,B,.8,'hRBArchR',rub);
- for(const s of[-1,1])hnRBArch(TX+s*3.1,0,TZ,Math.PI/2,5.4,B,.8,'hRBArchR',rub);
- for(const sx of[-1,1])for(const sz of[-1,1])vB('vStone',TX+sx*3.08,0,TZ+sz*3.08,1,B,1,0,ash);
- vB('vStone',TX,B,TZ,7.5,.45,7.5,0,ash);const y0=B+.45;vB('vStone',TX,0,TZ,5.4,.1,5.4,0,rub);
- for(const s of[-1,1]){vPst('vPost',TX+s*1.4,0,TZ,.14,3.1,oak);}vB('vWood',TX,3,TZ,3.2,.25,.3,0,oak);hnRBBell(TX,3,TZ,1.05);
- vnLadder(TX-2,0,TZ-1.8,Math.PI/2,B,oak);
- // the timber belfry: a core, corner and middle posts, level beams, braced bays
- vB('vWood',TX,y0,TZ,5,TH,5,0,tar);const LV=[0,3.6,7.3,TH];
- for(const sx of[-1,1])for(const sz of[-1,1])vB('vWood',TX+sx*3,y0,TZ+sz*3,.5,TH,.5,0,oak);
- for(let k=0;k<4;k++){const a=k*Math.PI/2,N=hRot(a,[0,0,1]);
-  for(const u of[-1,1]){const p=loc(TX,TZ,u,3,a);vB('vWood',p[0],y0,p[1],.32,TH,.32,a,oak);}
-  for(const l of LV){const p=loc(TX,TZ,0,3.05,a);vB('vWood',p[0],y0+l-(l?.3:0),p[1],6.7,.3,.4,a,oak);}
-  for(let j=0;j<3;j++){const ya=y0+LV[j]+.3,yb=y0+LV[j+1]-.3;
-   for(const [u0,u1] of[[-3,-1],[1,3]]){if(k===0&&j===1)continue;const A=hnOn(TX,ya,TZ,a,u0,3.2),Bp=hnOn(TX,yb,TZ,a,u1,3.2),C2=hnOn(TX,ya,TZ,a,u1,3.2),D2=hnOn(TX,yb,TZ,a,u0,3.2);
-    hnMember('vWood',A,Bp,.2,.12,N,oak);hnMember('vWood',C2,D2,.2,.12,N,oak);}}
-  // the clock: a timber back-plate, the face, a hood
-  const c=loc(TX,TZ,0,3.32,a);kput('hRBDiscW',[c[0],y0+5.45,c[1]],qEuler(0,a,0),[1.85,1.85,.18],oak);
-  const cf=loc(TX,TZ,0,3.43,a);kput('hRBClock',[cf[0],y0+5.45,cf[1]],qEuler(0,a,0),[3.2,3.2,1]);
-  // bells on outriggers from the corner posts at the top level, and on the middle level off the side faces
-  for(const s of[-1,1]){const r0=loc(TX,TZ,s*3,3.2,a),r1=loc(TX,TZ,s*3,4.5,a);vBeam([r0[0],y0+TH-.6,r0[1]],[r1[0],y0+TH-.6,r1[1]],.22,oak);
-   hnRBBell(r1[0]-.0,y0+TH-.72,r1[1],rr(.34,.5),a);vB('vWood',r1[0],y0+TH-1.4,r1[1],.2,.8,.2,a,oak);}
-  if(k>0)for(const s of[-1,1]){const r0=loc(TX,TZ,s*2,3.2,a),r1=loc(TX,TZ,s*2,4.1,a);vBeam([r0[0],y0+3.4,r0[1]],[r1[0],y0+3.4,r1[1]],.18,oak);hnRBBell(r1[0],y0+3.3,r1[1],rr(.28,.4),a);}}
- // exposed gearing on the front, a weight on a rope
- hnRBGear(TX-1.7,y0+2,TZ+3.38,0,.95,.22,false,.1);hnRBGear(TX-.2,y0+1.3,TZ+3.42,0,.62,.2,true,.3);hnRBGear(TX+1.7,y0+2.3,TZ+3.38,0,.8,.22,false,.5);
- vPst('vRope',TX+2.6,y0+1.2,TZ+3.6,.025,TH-1.8,hC(0xb8a888));kput('vBarrel',[TX+2.6,y0+.55,TZ+3.6],null,[.18,.7,.18],hC(0x6a5a48));
- // skirt, lantern with a bell, spire
- const TOP=y0+TH;vnPyrRoof('hPyrSc',TX,TOP,TZ,6.6,6.6,3.6,0,roof,1.1);
- kput('hOctW',[TX,TOP+1.85,TZ],null,[2,.25,2],oak);for(let k=0;k<8;k++){const a=k*Math.PI/4+Math.PI/8;vPst('vPost',TX+Math.sin(a)*1.75,TOP+2.1,TZ+Math.cos(a)*1.75,.1,2.4,oak);}
- for(let k=0;k<8;k++){const a=k*Math.PI/4,p=loc(TX,TZ,0,1.68,a);kput('hLaceB',[p[0],TOP+2.55,p[1]],qEuler(0,a,0),[1.25,.8,1],oak);}
- hnRBBell(TX,TOP+4.35,TZ,.5);kput('hOctW',[TX,TOP+4.5,TZ],null,[2.15,.3,2.15],oak);
- const tip=hnTent(TX,TOP+4.8,TZ,2.25,7.8,'hTentSc',roof);vPst('vIron',TX,tip-.4,TZ,.05,1.6,hC(hRBIRON));vBall('hGold',TX,tip+.35,TZ,.2,hC(HPAL.gold[0]));
+ hnRBClockTower(TX,TZ,{B,TH,roof,oak,tar,rub,ash});
  // the square: paving, a fountain, flags of the Republic, lamps
  vnPaving(HX+2,0,14,20,6,0,ash,14);
  kput('hOctS',[HX+2,0,14.2],null,[2,.7,2],ash);kput('hOctS',[HX+2,.7,14.2],null,[.35,1.2,.35],ash);vBall('hGold',HX+2,2.1,14.2,.3,hC(HPAL.gold[0]));kput('vTankW',[HX+2,.66,14.2],null,[1.75,.06,1.75],hC(0x5a7a88));

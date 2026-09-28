@@ -167,10 +167,10 @@ function buildHlRepGuildSmith(G,o){reseed(21031+(o.v|0));const HZ=-3,W=18,D=11,H
 // exposed gear wheels in brass and iron; a sawtooth-roofed glazed workshop on the west; and the octagonal clock
 // and orrery tower — clock faces, an open belvedere in which the planets turn on brass rings about a gilt sun,
 // a green helm dome and a gear on the finial.
-function buildHlRepGuildMech(G,o){reseed(21041+(o.v|0));const HX=-1,HZ=-2,W=18,D=10,S=.6,H1=4.4,H2=3.4,TX=12.4,TZ=-1.4;
+function buildHlRepGuildMech(G,o){reseed(21041+(o.v|0));const HX=-1,HZ=-2,W=18,D=10,S=.6,H1=4.4,H2=3.4,TX=13.6,TZ=-1.4;
  const cream=hC(vPick(HPAL.stucco)),beamC=hC(vPick(HPAL.redwood)),slate=hC(vPick(HPAL.slate)),ash=hC(vPick(HPAL.ashlar)),grn=hC(vPick(HPAL.roofGreen)),
   tar=hC(vPick(HPAL.tar)).multiplyScalar(1.3),gold=hC(HPAL.gold[0]),iron=hC(hRBIRON),lit=vLit()?'lit':'glass';
- vnReg("Mechanics' Guild",HX,HZ,10,15);vnReg("Mechanics' orrery tower",TX,TZ,3.3,25);
+ vnReg("Mechanics' Guild",HX,HZ,10,15);vnReg("Mechanics' clock tower",TX,TZ,4.6,30);
  hnSocle(HX,0,HZ,W,S,D);hnStucco(HX,S,HZ,W,H1,D,0,cream,ash);const FZ=HZ+D/2,y2=S+H1,y3=y2+H2;
  for(const u of[-7,-3.6,3.6,7]){vnWin(HX+u,S+.5,FZ,0,2.4,3,lit,'vIron',iron);for(const d of[-.4,.4]){const p=loc(HX+u,FZ,d,.1,0);vB('vIron',p[0],S+.5,p[1],.05,3,.1,0,iron);}}
  vnDoor(HX,S,FZ,0,1.8,3.2,'vStone',ash,tar,false);vB('vStone',HX,0,FZ+.6,3,S,1.2,0,ash);hnForm('hFormA',HX,S+3.45,FZ,0,2.6,.85);
@@ -186,35 +186,16 @@ function buildHlRepGuildMech(G,o){reseed(21041+(o.v|0));const HX=-1,HZ=-2,W=18,D
  const AX=HX-W/2-3.2;vB('vPlaster',AX,0,HZ,6.4,4,D,0,cream);hnRBWins(AX,.9,HZ+D/2,0,5,2,2,2.4,lit,'vIron',iron);hnRBWins(AX-3.2,.9,HZ,-Math.PI/2,D-2,3,1.6,2.2,lit,'vIron',iron);
  for(let i=0;i<3;i++){const z0=HZ-D/2+i*D/3;vnShedRoof(AX,4,z0+D/6,6.4,D/3,1.4,Math.PI,'hGableSc',slate,.15,.14);vB('vWinGlass',AX,4,z0+D/3-.08,6.2,1.36,.1,0);
   for(let k=0;k<6;k++)vB('vIron',AX-2.6+k*1.05,4,z0+D/3-.02,.05,1.36,.06,0,iron);}
- // the orrery tower
- kput('hOctS',[TX,0,TZ],null,[3.3,.9,3.3],ash);kput('hOctP',[TX,.9,TZ],null,[3,15.1,3],cream);for(const y of[5.2,10.5])kput('hOctS',[TX,y,TZ],null,[3.12,.28,3.12],ash);
- for(let k=0;k<8;k++){const a=k*Math.PI/4,p=loc(TX,TZ,0,2.77,a);if(k!==6){vnWin(p[0],2.2,p[1],a,.75,1.8,lit,'vStone',ash);vnWin(p[0],7.4,p[1],a,.75,1.8,lit,'vStone',ash);}
-  if(k%2===0){const c=loc(TX,TZ,0,2.8,a);kput('hRBDisc',[c[0],13.3,c[1]],qEuler(0,a,0),[1.05,1.05,.08],gold);const f=loc(TX,TZ,0,2.86,a);kput('hRBClock',[f[0],13.3,f[1]],qEuler(0,a,0),[1.9,1.9,1]);}}
- vnDoor(TX,.9,TZ+2.77,0,1.2,2.4,'vStone',ash,tar);vnStairs(TX,0,TZ+3.1+.48,0,1.6,.9,3,'vStone',ash);
- kput('hOctS',[TX,16,TZ],null,[3.35,.4,3.35],ash);const BY=16.4;
- for(let k=0;k<8;k++){const a=k*Math.PI/4+Math.PI/8;vPst('vPost',TX+Math.sin(a)*3,BY,TZ+Math.cos(a)*3,.12,3.6,tar);const p=loc(TX,TZ,0,2.85,k*Math.PI/4);kput('hLaceB',[p[0],BY+.5,p[1]],qEuler(0,k*Math.PI/4,0),[2.2,.9,1],beamC);}
- const OY=BY+1.9;vPst('vPipeC',TX,BY,TZ,.07,1.4,hC(0x9a7a3a));vBall('hGold',TX,OY,TZ,.42,gold);
- // Travis: the orrery shows OUR sky — the gilt sun, the green gas giant on its great ring, and about the giant three
- // moons on their own small rings: Krator (the largest, blue and green) and two lesser moons. Brass arms carry each.
- {const brass=hC(0x9a7a3a),GR=2.25,gph=.7,gq=qEuler(Math.PI/2+.08,0,.05);kput('hRBHoop',[TX,OY,TZ],gq,[GR,GR,1]);
-  const gv=new THREE.Vector3(Math.cos(gph)*GR,Math.sin(gph)*GR,0).applyQuaternion(gq),G=[TX+gv.x,OY+gv.y,TZ+gv.z];
-  beam('vPipeC',[TX,OY,TZ],[G[0]-gv.x*.2,G[1]-gv.y*.2,G[2]-gv.z*.2],.035,.035,brass);
-  vBall('hPaintBall',G[0],G[1],G[2],.42,hC(0x7aa888));for(const [dy,c] of[[.2,0x5f927a],[-.05,0xb4d0a4],[-.22,0x4f7e68]]){const r=.43*Math.sqrt(1-dy*dy/.1764);kput('hPaintBall',[G[0],G[1]+dy,G[2]],null,[r,.05,r],hC(c));}   // banded
-  kput('hRBHoop',G,qEuler(Math.PI/2-.35,0,.2),[.62,.62,1]);                                                     // the giant's own ring
-  [[.95,.3,2.4,.2,0x4f86a8,'Krator'],[.7,-.25,.9,.1,0xb8b0a0],[1.25,.15,4.4,.13,0xd19a3a]].forEach(([r,tilt,ph,rad,col,nm])=>{
-   const q=qEuler(Math.PI/2+tilt,0,tilt*.6);kput('hRBHoop',G,q,[r,r,1]);const v=new THREE.Vector3(Math.cos(ph)*r,Math.sin(ph)*r,0).applyQuaternion(q);
-   vBall('hPaintBall',G[0]+v.x,G[1]+v.y,G[2]+v.z,rad,hC(col));beam('vPipeC',G,[G[0]+v.x*.9,G[1]+v.y*.9,G[2]+v.z*.9],.022,.022,brass);
-   if(nm)vBall('hPaintBall',G[0]+v.x*1.02,G[1]+v.y*1.02+rad*.3,G[2]+v.z*1.02,rad*.55,hC(0x5f9a4a));});}      // Krator's green land
- kput('hOctW',[TX,BY+3.6,TZ],null,[3.3,.35,3.3],tar);
- kput('hBulbSc',[TX,BY+3.9,TZ],null,[2.7,3.6,2.7],grn);const tp=BY+7.5;vPst('vIron',TX,tp-.2,TZ,.05,1.3,iron);hnRBGear(TX,tp+1.35,TZ,0,.42,.08,false,0,gold);
+ // the clock tower (Travis: after the clocktower reference) — the guild's own, a great clockwork wheel across its face
+ hnRBClockTower(TX,TZ,{B:6.5,TH:9.5,roof:grn,oak:tar.clone().multiplyScalar(1.15),tar,rub:hC(vPick(HPAL.rubble)),ash,bigGear:true});
  // yard
  vnPaving(HX,0,FZ+2.6,5,3,0,ash,5);hnTotem(HX-4,0,FZ+2.2,.34,6,0,{painted:true,hat:true});
  vB('vWood',HX+5.5,0,FZ+1.6,2.2,.9,.9,0,tar);hnRBGear(HX+5.5,1.6,FZ+1.6,Math.PI/2,.62,.12,true,.3);vnCrate(HX+7.2,0,FZ+1.4,.8,.3);
- hnRBLamps([[HX-2.6,FZ+4],[HX+2.6,FZ+4],[TX-1.5,TZ+5]],3.4);vnFolk(HX,FZ+4,3,3);}
+ hnRBLamps([[HX-2.6,FZ+4],[HX+2.6,FZ+4],[TX-1.5,TZ+5.6]],3.4);vnFolk(HX,FZ+4,3,3);}
 
 const HRB_GUILD={wealth:'civic',lit:true};
 HL.def({key:'hl_rep_guild_merc',name:"Mercenary Guild",branch:'republican',family:'Guilds',tags:Object.assign({type:['civic']},HRB_GUILD),w:30,d:24,h:17,build:buildHlRepGuildMerc});
 HL.def({key:'hl_rep_guild_alch',name:"Alchemists' Guild",branch:'republican',family:'Guilds',tags:Object.assign({type:['civic','industry']},HRB_GUILD),w:52,d:34,h:18,build:buildHlRepGuildAlch});
 HL.def({key:'hl_rep_guild_farm',name:"Farmers' Guild",branch:'republican',family:'Guilds',tags:Object.assign({type:['civic']},HRB_GUILD),w:34,d:24,h:17,build:buildHlRepGuildFarm});
 HL.def({key:'hl_rep_guild_smith',name:"Guild of Smiths",branch:'republican',family:'Guilds',tags:Object.assign({type:['civic','industry']},HRB_GUILD),w:30,d:26,h:17,build:buildHlRepGuildSmith});
-HL.def({key:'hl_rep_guild_mech',name:"Mechanics' Guild",branch:'republican',family:'Guilds',tags:Object.assign({type:['civic','industry']},HRB_GUILD),w:36,d:22,h:26,build:buildHlRepGuildMech});
+HL.def({key:'hl_rep_guild_mech',name:"Mechanics' Guild",branch:'republican',family:'Guilds',tags:Object.assign({type:['civic','industry']},HRB_GUILD),w:40,d:22,h:31,build:buildHlRepGuildMech});

@@ -90,3 +90,17 @@ front of the wall and shrink/slide (down off jetties and lintels, or sideways) u
 (`window._muralStats`: 159 placed, 13 dropped kit-wide). A crowded Republic emblem passes to the building's next
 crest. Orrery (`77-rep-guild.js`): gilt sun; banded green gas giant with its own ring on the great ring; Krator (blue
 with green land) and two lesser moons on small rings round the giant, all on brass arms.
+
+## Round 5 (Sep 28 2026) — Astronomers, Scavengers, the Mechanics' clock tower
+
+Travis: the orrery clipped through the belvedere posts; give it to a new Astronomers' Guild; the Mechanics' Guild gets
+a clock tower after the clocktower reference instead; add a Scavengers' Guild.
+
+* `76-rep-civic.js`: the town hall's timber bell-and-clock tower is now `hnRBClockTower(TX,TZ,o)` (o.bigGear = a
+  great clockwork wheel and gear trains on every face), used by the town hall and the Mechanics' Guild.
+* `77b-rep-guild2.js` (seeds 21101–21129): `hl_rep_guild_astro` — hall painted with the heavens, copper observatory
+  dome with slit and brass telescope, and the orrery tower (belvedere posts at r 4.9; the orrery reaches 3.9 —
+  `hnRBOrrery`), sundial and armillary sphere; `hl_rep_guild_scav` — rubble-and-log hall under a salvaged metal roof
+  with Ancient panels on the gables, a gate of two Ancient tank sections, a plate-fenced yard of sorted heaps, a pipe
+  gantry crane, a weighbridge. `hnMural(item,…)` places a chosen motif through the fitting pass. New sign symbols
+  `star` and `salvage`.
