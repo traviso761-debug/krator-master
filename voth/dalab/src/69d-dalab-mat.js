@@ -67,43 +67,52 @@ TEX.dRelief=canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.dat
   if(z&&!up)v+=34;if(z&&!lf)v+=12;if(!z&&up)v-=30;if(!z&&dn)v+=6;     // lit top arris, shadow under a ledge
   d[i]=v;d[i+1]=v*.96;d[i+2]=v*.9;d[i+3]=255;}
  g.putImageData(id,0,0);});
-// Mural: a COLOUR frieze, one 2 x 2 m tile. Stepped-fret borders top and bottom, and between them a procession of
-// avatars of The God — square heads with one great eye, rayed headdresses (Sun Gate), staffs in each hand —
-// alternating with heroes of Dalab (smaller, in profile, spear and shield). Red ochre, turquoise, gold, black
-// on a cream lime wash; the paint is worn at the foot.
-TEX.dMural=canvasTex(256,256,(g,w,h)=>{
+// Murals: COLOUR friezes, 2 x 2 m tiles, four variants (dMuralTex(v)). Stepped-fret borders top and bottom; between them
+//   0  an avatar of The God (rayed head, one great eye, staffs) and a hero in profile (spear, shield)
+//   1  a procession of three heroes with spears and banners, walking left
+//   2  two avatars flanking the eye-in-the-sun, rays to the border — His watchful benevolence
+//   3  the beasts of the fields: two lizards under a fret sky, a sheaf of maize between them — the peasant mural
+// Red ochre, turquoise, gold, black on a cream lime wash; the paint worn at the foot.
+function dMuralTex(v){return canvasTex(256,256,(g,w,h)=>{
  g.fillStyle='#e6d8b8';g.fillRect(0,0,w,h);
  const RED='#a8382a',TQ='#2f9a8a',GOLD='#d8a838',BLK='#2a2420',CREAM='#efe6cc';
- const fret=(y0,hh,col)=>{g.fillStyle=col;const s=hh/4;for(let x=0;x<w;x+=s*6){   // stepped key meander
+ const fret=(y0,hh,col)=>{g.fillStyle=col;const s=hh/4;for(let x=0;x<w;x+=s*6){
   g.fillRect(x,y0,s*5,s);g.fillRect(x,y0+hh-s,s*5,s);g.fillRect(x,y0,s,hh);g.fillRect(x+s*2,y0+s,s*3,s);g.fillRect(x+s*4,y0+s,s,hh-s*2);g.fillRect(x+s*2,y0+s,s,hh-s*2-s);}};
  g.fillStyle=RED;g.fillRect(0,0,w,10);g.fillRect(0,h-10,w,10);fret(12,28,BLK);fret(h-40,28,BLK);
  g.fillStyle=TQ;g.fillRect(0,42,w,3);g.fillRect(0,h-45,w,3);
- const god=(cx,cy,s)=>{ // the avatar: rayed head, one eye, staffs
-  g.fillStyle=GOLD;for(let k=0;k<9;k++){const a=Math.PI*(k/8);const rx=cx+Math.cos(a)*s*.95,ry=cy-s*.55-Math.sin(a)*s*.9;g.fillRect(rx-s*.06,ry-s*.14,s*.12,s*.28);g.fillStyle=k%2?RED:GOLD;}
-  g.fillStyle=RED;g.fillRect(cx-s*.5,cy-s*.95,s,s*.8);                          // head
+ const god=(cx,cy,s)=>{
+  for(let k=0;k<9;k++){const a=Math.PI*(k/8);const rx=cx+Math.cos(a)*s*.95,ry=cy-s*.55-Math.sin(a)*s*.9;g.fillStyle=k%2?RED:GOLD;g.fillRect(rx-s*.06,ry-s*.14,s*.12,s*.28);}
+  g.fillStyle=RED;g.fillRect(cx-s*.5,cy-s*.95,s,s*.8);
   g.fillStyle=BLK;g.fillRect(cx-s*.5,cy-s*.95,s,s*.08);g.fillRect(cx-s*.5,cy-s*.15,s,s*.05);
-  g.fillStyle=CREAM;g.beginPath();g.arc(cx,cy-s*.55,s*.26,0,TAU);g.fill();      // the eye
-  g.fillStyle=BLK;g.beginPath();g.arc(cx,cy-s*.55,s*.12,0,TAU);g.fill();
-  g.fillStyle=TQ;g.fillRect(cx-s*.42,cy-s*.15,s*.84,s*.9);                       // tunic
-  g.fillStyle=GOLD;for(let k=0;k<3;k++)g.fillRect(cx-s*.34,cy+s*(.05+k*.25),s*.68,s*.08);
-  g.fillStyle=BLK;g.fillRect(cx-s*.72,cy-s*.7,s*.08,s*1.5);g.fillRect(cx+s*.64,cy-s*.7,s*.08,s*1.5);   // staffs
+  g.fillStyle=CREAM;g.beginPath();g.arc(cx,cy-s*.55,s*.26,0,TAU);g.fill();g.fillStyle=BLK;g.beginPath();g.arc(cx,cy-s*.55,s*.12,0,TAU);g.fill();
+  g.fillStyle=TQ;g.fillRect(cx-s*.42,cy-s*.15,s*.84,s*.9);g.fillStyle=GOLD;for(let k=0;k<3;k++)g.fillRect(cx-s*.34,cy+s*(.05+k*.25),s*.68,s*.08);
+  g.fillStyle=BLK;g.fillRect(cx-s*.72,cy-s*.7,s*.08,s*1.5);g.fillRect(cx+s*.64,cy-s*.7,s*.08,s*1.5);
   g.fillStyle=RED;g.fillRect(cx-s*.78,cy-s*.78,s*.2,s*.14);g.fillRect(cx+s*.58,cy-s*.78,s*.2,s*.14);
-  g.fillStyle=BLK;g.fillRect(cx-s*.36,cy+s*.75,s*.26,s*.22);g.fillRect(cx+s*.1,cy+s*.75,s*.26,s*.22);};  // feet
- const hero=(cx,cy,s,flip)=>{const f=flip?-1:1;
-  g.fillStyle=BLK;g.fillRect(cx-s*.28,cy-s*.7,s*.56,s*.5);                        // head in profile
-  g.fillStyle=RED;g.fillRect(cx-s*.28,cy-s*.86,s*.56,s*.16);g.fillRect(cx+f*s*.2,cy-s*.55,f*s*.22,s*.16);   // headband, nose
-  g.fillStyle=GOLD;g.fillRect(cx-s*.36,cy-s*.2,s*.72,s*.8);                        // body
-  g.fillStyle=TQ;g.fillRect(cx-s*.36,cy+s*.2,s*.72,s*.14);
-  g.fillStyle=BLK;g.fillRect(cx+f*s*.5,cy-s*1.0,s*.07,s*1.9);                     // spear
-  g.fillStyle=RED;g.beginPath();g.arc(cx-f*s*.62,cy+s*.1,s*.3,0,TAU);g.fill();g.fillStyle=CREAM;g.beginPath();g.arc(cx-f*s*.62,cy+s*.1,s*.12,0,TAU);g.fill();   // shield
+  g.fillStyle=BLK;g.fillRect(cx-s*.36,cy+s*.75,s*.26,s*.22);g.fillRect(cx+s*.1,cy+s*.75,s*.26,s*.22);};
+ const hero=(cx,cy,s,flip,banner)=>{const f=flip?-1:1;
+  g.fillStyle=BLK;g.fillRect(cx-s*.28,cy-s*.7,s*.56,s*.5);
+  g.fillStyle=RED;g.fillRect(cx-s*.28,cy-s*.86,s*.56,s*.16);g.fillRect(cx+f*s*.2,cy-s*.55,f*s*.22,s*.16);
+  g.fillStyle=GOLD;g.fillRect(cx-s*.36,cy-s*.2,s*.72,s*.8);g.fillStyle=TQ;g.fillRect(cx-s*.36,cy+s*.2,s*.72,s*.14);
+  g.fillStyle=BLK;g.fillRect(cx+f*s*.5,cy-s*1.0,s*.07,s*1.9);
+  if(banner){g.fillStyle=banner;g.fillRect(cx+f*s*.5+(f>0?s*.07:-s*.5),cy-s*1.0,s*.5,s*.36);}
+  else{g.fillStyle=RED;g.beginPath();g.arc(cx-f*s*.62,cy+s*.1,s*.3,0,TAU);g.fill();g.fillStyle=CREAM;g.beginPath();g.arc(cx-f*s*.62,cy+s*.1,s*.12,0,TAU);g.fill();}
   g.fillStyle=BLK;g.fillRect(cx-s*.3,cy+s*.6,s*.22,s*.34);g.fillRect(cx+s*.08,cy+s*.6,s*.22,s*.34);};
- god(64,132,34);hero(192,138,30,false);   // one 2 x 2 m tile: an avatar and a hero
- // worn lime wash: lighten with age, scuff the foot
+ const sun=(cx,cy,r)=>{for(let k=0;k<16;k++){const a=k/16*TAU;g.fillStyle=k%2?RED:GOLD;g.beginPath();g.moveTo(cx+Math.cos(a-.08)*r*1.05,cy+Math.sin(a-.08)*r*1.05);g.lineTo(cx+Math.cos(a)*r*1.8,cy+Math.sin(a)*r*1.8);g.lineTo(cx+Math.cos(a+.08)*r*1.05,cy+Math.sin(a+.08)*r*1.05);g.fill();}
+  g.fillStyle=GOLD;g.beginPath();g.arc(cx,cy,r,0,TAU);g.fill();g.fillStyle=CREAM;g.beginPath();g.ellipse(cx,cy,r*.62,r*.36,0,0,TAU);g.fill();g.fillStyle=BLK;g.beginPath();g.arc(cx,cy,r*.26,0,TAU);g.fill();};
+ const liz=(cx,cy,s,f)=>{g.fillStyle=TQ;g.beginPath();g.ellipse(cx,cy,s*.9,s*.32,0,0,TAU);g.fill();   // body
+  g.beginPath();g.moveTo(cx-f*s*.85,cy-s*.12);g.lineTo(cx-f*s*2.0,cy+s*.05);g.lineTo(cx-f*s*.85,cy+s*.2);g.fill();   // tail
+  g.fillStyle=GOLD;for(let k=0;k<5;k++)g.fillRect(cx-s*.6+k*s*.3,cy-s*.16,s*.12,s*.32);                             // stripes
+  g.fillStyle=TQ;g.fillRect(cx+f*s*.8,cy-s*.28,f*s*.55,s*.36);g.fillStyle=BLK;g.fillRect(cx+f*s*1.15,cy-s*.2,f*s*.1,s*.1);   // head, eye
+  g.fillStyle=BLK;for(const lx of[-.45,.45]){g.fillRect(cx+lx*s-s*.06,cy+s*.2,s*.12,s*.5);g.fillRect(cx+lx*s-s*.18,cy+s*.62,s*.36,s*.08);}};
+ if(v===0){god(64,132,34);hero(192,138,30,false);}
+ else if(v===1){hero(48,138,28,true,GOLD);hero(128,138,28,true,TQ);hero(208,138,28,true,RED);}
+ else if(v===2){god(40,136,26);sun(128,124,26);god(216,136,26);}
+ else{liz(64,130,24,1);liz(196,130,24,-1);g.fillStyle=GOLD;for(let k=0;k<5;k++)g.fillRect(122+k*3,96+Math.abs(k-2)*8,3,60);g.fillStyle=TQ;g.fillRect(118,150,22,8);}
  const id=g.getImageData(0,0,w,h),d=id.data;
- for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;const wear=clamp((fbm(x/40,y/40,6.6,3)-.42)*2.2,0,1)*.45+clamp((y/h-.7)*1.6,0,1)*.5*fbm(x/9,y/9,2.2,2);
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;const wear=clamp((fbm(x/40,y/40,6.6+v,3)-.42)*2.2,0,1)*.45+clamp((y/h-.7)*1.6,0,1)*.5*fbm(x/9,y/9,2.2,2);
   for(let c=0;c<3;c++)d[i+c]=d[i+c]+(214-d[i+c])*wear*.8;const gr=(fbm(x/5,y/5,1.7,1)-.5)*14;d[i]+=gr;d[i+1]+=gr;d[i+2]+=gr;}
- g.putImageData(id,0,0);});
-
+ g.putImageData(id,0,0);});}
+TEX.dMural=dMuralTex(0);TEX.dMural1=dMuralTex(1);TEX.dMural2=dMuralTex(2);TEX.dMural3=dMuralTex(3);
 // The same stepped-fret height field, in COLOUR: cream faces over turquoise recesses (the inlay of the deco temples).
 TEX.dReliefTq=canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;const CELL=64;
  const hf=(x,y)=>{const cx=x%CELL,cy=y%CELL;const bx=Math.floor(x/CELL),by=Math.floor(y/CELL);
@@ -170,6 +179,7 @@ MAT.dRammed=new THREE.MeshStandardMaterial({map:TEX.dRammed,color:0xffffff,rough
 MAT.dRelief=new THREE.MeshStandardMaterial({map:TEX.dRelief,color:0xffffff,roughness:.95,metalness:0,side:DS});vWorldUV(MAT.dRelief,.25);
 MAT.dMural=new THREE.MeshStandardMaterial({map:TEX.dMural,color:0xffffff,roughness:.94,metalness:0,side:DS});vWorldUV(MAT.dMural,.5);   // boxes: a 2 m band shows the whole frieze and tiles along the wall
 MAT.dMuralP=new THREE.MeshStandardMaterial({map:TEX.dMural,color:0xffffff,roughness:.94,metalness:0,side:DS});                          // planes: one whole tile stretched to the plane (round-house facets)
+for(const v of[1,2,3]){MAT['dMural'+v]=new THREE.MeshStandardMaterial({map:TEX['dMural'+v],color:0xffffff,roughness:.94,metalness:0,side:DS});vWorldUV(MAT['dMural'+v],.5);MAT['dMuralP'+v]=new THREE.MeshStandardMaterial({map:TEX['dMural'+v],color:0xffffff,roughness:.94,metalness:0,side:DS});}
 MAT.dReliefTq=new THREE.MeshStandardMaterial({map:TEX.dReliefTq,color:0xffffff,roughness:.9,metalness:0,side:DS});vWorldUV(MAT.dReliefTq,.25);
 MAT.dDecoPanel=new THREE.MeshStandardMaterial({map:TEX.dDecoPanel,color:0xffffff,roughness:.9,metalness:0,side:DS});
 MAT.dChecker=new THREE.MeshStandardMaterial({map:TEX.dChecker,color:0xffffff,roughness:.7,metalness:0,side:DS});vWorldUV(MAT.dChecker,.5);
@@ -200,7 +210,8 @@ const DDOMELOW=new THREE.SphereGeometry(1,24,8,0,TAU,0,Math.PI/2);
 kdef('dEarth',VBOX,MAT.dRammed);kdef('dEarthBat',VBATTER,MAT.dRammed);kdef('dEarthDrum',DDRUM,MAT.dRammed);kdef('dEarthDrumB',DDRUMB,MAT.dRammed);kdef('dEarthDome',DDOMELOW,MAT.dRammed);
 kdef('dRelief',VBOX,MAT.dRelief);kdef('dReliefTq',VBOX,MAT.dReliefTq);kdef('dDecoPanel',VPLANE,MAT.dDecoPanel);kdef('dChecker',VBOX,MAT.dChecker);kdef('dReliefBat',VBATTER,MAT.dRelief);kdef('dReliefDrum',DDRUM,MAT.dRelief);
 kdef('dStoneDrum',DDRUM,MAT.stone);kdef('dStoneDrumB',DDRUMB,MAT.stone);kdef('dStoneDome',DDOMELOW,MAT.stone);kdef('dStonePyr',VPYR,MAT.stone);
-kdef('dMural',VPLANE,MAT.dMuralP);kdef('dMuralB',VBOX,MAT.dMural);
+kdef('dMural',VPLANE,MAT.dMuralP);kdef('dMuralB',VBOX,MAT.dMural);for(const v of[1,2,3]){kdef('dMural'+v,VPLANE,MAT['dMuralP'+v]);kdef('dMuralB'+v,VBOX,MAT['dMural'+v]);}
+const DMURALS=['dMural','dMural1','dMural2','dMural3'],DMURALBS=['dMuralB','dMuralB1','dMuralB2','dMuralB3'];
 kdef('dBanner',VPLANE,MAT.dBanner);
 kdef('dTurf',VBOX,MAT.dTurf);kdef('dTurfDome',DDOMELOW,MAT.dTurf);kdef('dTurfDrum',DDRUMB,MAT.dTurf);kdef('dTurfCone',DCONESH,MAT.dTurf);
 kdef('dWoodDrum',DDRUM,MAT.woodV);kdef('dStaveDrum',new THREE.CylinderGeometry(1,1,1,18).translate(0,.5,0),MAT.woodV);
@@ -209,6 +220,8 @@ kdef('dTile',VBOX,MAT.dTile);kdef('dGableTile',VGABLE,MAT.dTile);kdef('dHipTile'
 kdef('dMosaic',VBOX,MAT.dMosaic);kdef('dGilt',VBOX,MAT.dGilt);kdef('dGiltDome',VDOME,MAT.dGilt);kdef('dGiltBall',VBALL,MAT.dGilt);
 kdef('dPanelDome',VDOME,MAT.white);kdef('dRustDome',VDOME,MAT.rust);kdef('dPanelDrum',DDRUM,MAT.white);kdef('dRustDrum',DDRUM,MAT.rust);
 kdef('dGlow',VBOX,MAT.dGod);kdef('dGlowDay',VBOX,MAT.dGodDay);kdef('dGodBall',VBALL,MAT.dGod);kdef('dGlassBall',VBALL,MAT.darkGlass);kdef('dGodStrip',new THREE.BoxGeometry(1,.14,.14),MAT.dGod);kdef('dGodHalo',VPLANE,MAT.dGodGlow);
+MAT.dHide=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.85,metalness:0});   // animal hide: tinted per instance
+kdef('dHideBall',VBALL,MAT.dHide);kdef('dHideCone',VCONE,MAT.dHide);kdef('dHideBox',VBOX,MAT.dHide);kdef('dHideDrum',DDRUM,MAT.dHide);
 kdef('dRing',DRING,MAT.iron);kdef('dRopeRing',DRING,MAT.tarp);
 // what the hour toggles (see 94-dalab-light.js): The God's light and the hearth fires by night, dark glass by day
 const DNIGHT_ITEMS=['dGlow','dGodBall','dGodStrip','dGodHalo','fireWin','ember','emberB'];

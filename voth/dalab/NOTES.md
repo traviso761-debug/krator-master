@@ -171,3 +171,37 @@ central building larger and more elaborate.
 
 72 registered volumes, 11.2 k kit instances, 400 k scene triangles, ~115 draw
 calls. `--assert` green.
+
+## Round 6 (Sep 28 2026) — fixes, embassies, the chapterhouse, murals, the ranch
+
+* **Great hall entrance**: the portico slab's top lay on the base drum's top
+  (z-fight); the slab is 8 cm taller and the checker floor sits on it. Six
+  columns in two ranks of three, symmetric about the door (was four per side
+  at a pitch that missed the axis).
+* **Healers' hall**: the mural frieze moved above the window heads (variant 2,
+  the sun); the platform is 3 m wider so the dispensary drum stands on it.
+* **Temple**: the cream string course ran through the window heads; gone. The
+  windows sit 0.4 s higher, the frieze 0.3 s higher, no overlap.
+* **Murals**: four variants (`dMuralTex(v)`; items `dMural[1-3]`, `dMuralB[1-3]`;
+  `dnMuralBand`/`dnMuralRing` take a variant or pick one): the avatar and the
+  hero; a procession of three heroes with banners; two avatars flanking the
+  eye-in-the-sun; the beasts of the fields (lizards and a maize sheaf — the
+  peasant mural).
+* **Embassies**: the Historians' embassy is gone; the **Yuni embassy** (drum
+  halls under tile cones with lanterns, round windows, a curved banco arcade,
+  toron, a mosaic dais — the vp* kit from Iziz's ported fragments, now
+  vendored: `75-port-embassy.js`, `76-port-chapterhouse.js`) and the
+  **Republican embassy**, a PLACEHOLDER (dry-stone, jettied timber gallery,
+  slate shingle, a watch tower; tagged `placeholder:true`) until the Republic's
+  highlands set lands from the other session. The **Historians' chapterhouse**
+  is the Yuni-set port from Iziz, placed as `dalab_chapterhouse`.
+* **Fauna registry** (`DFAUNA.def(kind,fn,meta)`, `dnAnimal`): the Dalab
+  lizard (a fat striped ground lizard, 2.4 m; `frill` for a crested bull).
+  Monsters register the same way when they exist.
+* **Ranch** (`dalab_ranch`, 120 m square, the Halls' area): rail fence, ranch
+  house on a plinth, a great thatch barn, granaries, a well, four paddocks with
+  troughs and hay, a shade roof, a stone-walled **monster pen** (crested
+  lizards in it for now), a skirt-palm windbreak.
+
+86 registered volumes, 13.7 k kit instances, 505 k scene triangles, ~140 draw
+calls. `--assert` green.

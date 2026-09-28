@@ -35,9 +35,9 @@ function dnFirePit(x,y,z,s){for(let k=0;k<7;k++){const a=k/7*TAU;kput('vRock',[x
 // Carved band proud of a face; (x,z) ON the face, ry outward. dRelief tiles 1 m cells.
 function dnReliefBand(x,y,z,ry,w,h,c){const f=loc(x,z,0,.1,ry);vB('dRelief',f[0],y,f[1],w,h,.16,ry,c);}
 // Painted frieze on a flat face (2 m tile of avatars and heroes).
-function dnMuralBand(x,y,z,ry,w,h){const f=loc(x,z,0,.04,ry);vB('dMuralB',f[0],y,f[1],w,h,.06,ry);}
+function dnMuralBand(x,y,z,ry,w,h,v){const f=loc(x,z,0,.04,ry);vB(DMURALBS[v==null?dRi(0,3):v],f[0],y,f[1],w,h,.06,ry);}
 // The same frieze round a drum: flat facets tangent to the wall, one whole tile each.
-function dnMuralRing(x,y,z,r,h,c){const n=Math.max(8,Math.round(TAU*r/1.5));for(let k=0;k<n;k++){const a=k/n*TAU;const p=dnOnRing(x,z,r+.035,a);vPl('dMural',p[0],y+h/2,p[1],TAU*(r+.035)/n+.02,h,a,c||null);}}
+function dnMuralRing(x,y,z,r,h,c,v){const n=Math.max(8,Math.round(TAU*r/1.5));const it=DMURALS[v==null?dRi(0,3):v];for(let k=0;k<n;k++){const a=k/n*TAU;const p=dnOnRing(x,z,r+.035,a);vPl(it,p[0],y+h/2,p[1],TAU*(r+.035)/n+.02,h,a,c||null);}}
 // A rammed-earth wall band painted in two colours (poor houses: no mural, just a red foot and a turquoise line).
 function dnPaintRing(x,y,z,r,h,c){dnDrum('dEarthDrum',x,y,z,r+.03,h,c);}
 // Banner hung from a crossbar at (x,y,z); the top is fixed, the foot free. ry = the direction it faces.
@@ -218,3 +218,21 @@ function dnGranary(x,y,z,r,h,o){o=o||{};const wood=dCol(DPAL.woodGrey);const FL=
 function dnJar(x,y,z,r){vPst('vClayPot',x,y,z,r,r*2.2,dCol([0x9a5a38,0xa86a44,0x7a4a2a]));vBall('vGourd',x,y+r*2.2,z,r*.7,vC(0x6a4a30),r*.3);}
 function dnWoodpile(x,y,z,ry,L){for(let k=0;k<3;k++)for(let j=0;j<4-k;j++){const p=loc(x,z,0,-.45+j*.3+k*.15,ry);kput('vPost',[p[0],y+.15+k*.28,p[1]],vQ(ry,0,Math.PI/2),[.14,L,.14],dCol(DPAL.wood));}}
 // Live-oak vault trees are the biome's job; the kit has none.
+
+// ---------------------------------------------------------------- fauna (round 6)
+// A registry of animal builders so a ranch, a farm or the life layer can ask for a kind by name and get whatever
+// model the kit has for it today: DFAUNA.def('lizard',fn). fn(x,y,z,ry,s,opt) builds in the local frame, standing
+// on y, facing ry, at scale s (1 = the species' normal size). Monsters register the same way when they exist.
+const DFAUNA={defs:{},def(k,fn,meta){DFAUNA.defs[k]={fn,meta:meta||{}};},kinds:()=>Object.keys(DFAUNA.defs)};
+function dnAnimal(kind,x,y,z,ry,s,opt){const D=DFAUNA.defs[kind];if(!D){reportErr('dnAnimal: no such kind '+kind);return;}D.fn(x,y,z,ry||0,s==null?1:s,opt||{});}
+// the Dalab lizard: a fat-bodied, striped ground lizard the farms keep for meat and hide — 2.4 m nose to tail at s=1
+DFAUNA.def('lizard',function(x,y,z,ry,s,opt){const hide=opt.c||dCol([0x6a8a3a,0x7a9a44,0x8a8a3a,0x5f7f36,0x9a8a4a]),st=dCol([0xd8a838,0xa8382a,0x3f9a88]);const L=(lx,lz)=>loc(x,z,lx,lz,ry);
+ const B=.62*s;const b=L(0,0);kput('dHideBall',[b[0],y+B*.55,b[1]],vQ(ry,0,0),[B*.75,B*.55,B*1.2],hide);                                  // body
+ for(let k=0;k<4;k++){const p=L(0,-B*.6+k*B*.4);kput('dHideBox',[p[0],y+B*1.05,p[1]],vQ(ry,0,0),[B*.7,B*.08,B*.14],st);}          // stripes
+ const t1=L(0,-B*1.4),t2=L(0,-B*2.6);kput('dHideCone',[t1[0],y+B*.5,t1[1]],vQ(ry+Math.PI,Math.PI/2,0),[B*.4,B*1.3,B*.4],hide);   // tail
+ kput('dHideCone',[t2[0],y+B*.4,t2[1]],vQ(ry+Math.PI,Math.PI/2,0),[B*.2,B*1.2,B*.2],hide.clone().multiplyScalar(.9));
+ const hd=L(0,B*1.35);kput('dHideBall',[hd[0],y+B*.62,hd[1]],vQ(ry,0,0),[B*.42,B*.34,B*.6],hide);                                 // head
+ for(const sd of[-1,1]){const e=L(sd*B*.3,B*1.5);vBall('vBall',e[0],y+B*.78,e[1],B*.07,vC(0x1a1a10));}                          // eyes
+ for(const sd of[-1,1])for(const lz of[-B*.7,B*.7]){const p=L(sd*B*.85,lz);kput('dHideBox',[p[0],y+B*.28,p[1]],vQ(ry,0,sd*.9),[B*.16,B*.7,B*.16],hide);const f=L(sd*B*1.1,lz+B*.1);kput('dHideBox',[f[0],y+B*.05,f[1]],vQ(ry,0,0),[B*.34,B*.1,B*.3],hide.clone().multiplyScalar(.85));}   // legs, feet
+ if(opt.frill){for(let k=0;k<5;k++){const p=L(0,B*.9-k*B*.12);kput('dHideCone',[p[0],y+B*.9,p[1]],null,[B*.06,B*.35,B*.06],st);}}},
+ {name:'Dalab lizard',size:2.4,tags:{type:['livestock']}});

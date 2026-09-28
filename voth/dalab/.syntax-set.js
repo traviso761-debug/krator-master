@@ -1323,43 +1323,52 @@ TEX.dRelief=canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.dat
   if(z&&!up)v+=34;if(z&&!lf)v+=12;if(!z&&up)v-=30;if(!z&&dn)v+=6;     // lit top arris, shadow under a ledge
   d[i]=v;d[i+1]=v*.96;d[i+2]=v*.9;d[i+3]=255;}
  g.putImageData(id,0,0);});
-// Mural: a COLOUR frieze, one 2 x 2 m tile. Stepped-fret borders top and bottom, and between them a procession of
-// avatars of The God — square heads with one great eye, rayed headdresses (Sun Gate), staffs in each hand —
-// alternating with heroes of Dalab (smaller, in profile, spear and shield). Red ochre, turquoise, gold, black
-// on a cream lime wash; the paint is worn at the foot.
-TEX.dMural=canvasTex(256,256,(g,w,h)=>{
+// Murals: COLOUR friezes, 2 x 2 m tiles, four variants (dMuralTex(v)). Stepped-fret borders top and bottom; between them
+//   0  an avatar of The God (rayed head, one great eye, staffs) and a hero in profile (spear, shield)
+//   1  a procession of three heroes with spears and banners, walking left
+//   2  two avatars flanking the eye-in-the-sun, rays to the border — His watchful benevolence
+//   3  the beasts of the fields: two lizards under a fret sky, a sheaf of maize between them — the peasant mural
+// Red ochre, turquoise, gold, black on a cream lime wash; the paint worn at the foot.
+function dMuralTex(v){return canvasTex(256,256,(g,w,h)=>{
  g.fillStyle='#e6d8b8';g.fillRect(0,0,w,h);
  const RED='#a8382a',TQ='#2f9a8a',GOLD='#d8a838',BLK='#2a2420',CREAM='#efe6cc';
- const fret=(y0,hh,col)=>{g.fillStyle=col;const s=hh/4;for(let x=0;x<w;x+=s*6){   // stepped key meander
+ const fret=(y0,hh,col)=>{g.fillStyle=col;const s=hh/4;for(let x=0;x<w;x+=s*6){
   g.fillRect(x,y0,s*5,s);g.fillRect(x,y0+hh-s,s*5,s);g.fillRect(x,y0,s,hh);g.fillRect(x+s*2,y0+s,s*3,s);g.fillRect(x+s*4,y0+s,s,hh-s*2);g.fillRect(x+s*2,y0+s,s,hh-s*2-s);}};
  g.fillStyle=RED;g.fillRect(0,0,w,10);g.fillRect(0,h-10,w,10);fret(12,28,BLK);fret(h-40,28,BLK);
  g.fillStyle=TQ;g.fillRect(0,42,w,3);g.fillRect(0,h-45,w,3);
- const god=(cx,cy,s)=>{ // the avatar: rayed head, one eye, staffs
-  g.fillStyle=GOLD;for(let k=0;k<9;k++){const a=Math.PI*(k/8);const rx=cx+Math.cos(a)*s*.95,ry=cy-s*.55-Math.sin(a)*s*.9;g.fillRect(rx-s*.06,ry-s*.14,s*.12,s*.28);g.fillStyle=k%2?RED:GOLD;}
-  g.fillStyle=RED;g.fillRect(cx-s*.5,cy-s*.95,s,s*.8);                          // head
+ const god=(cx,cy,s)=>{
+  for(let k=0;k<9;k++){const a=Math.PI*(k/8);const rx=cx+Math.cos(a)*s*.95,ry=cy-s*.55-Math.sin(a)*s*.9;g.fillStyle=k%2?RED:GOLD;g.fillRect(rx-s*.06,ry-s*.14,s*.12,s*.28);}
+  g.fillStyle=RED;g.fillRect(cx-s*.5,cy-s*.95,s,s*.8);
   g.fillStyle=BLK;g.fillRect(cx-s*.5,cy-s*.95,s,s*.08);g.fillRect(cx-s*.5,cy-s*.15,s,s*.05);
-  g.fillStyle=CREAM;g.beginPath();g.arc(cx,cy-s*.55,s*.26,0,TAU);g.fill();      // the eye
-  g.fillStyle=BLK;g.beginPath();g.arc(cx,cy-s*.55,s*.12,0,TAU);g.fill();
-  g.fillStyle=TQ;g.fillRect(cx-s*.42,cy-s*.15,s*.84,s*.9);                       // tunic
-  g.fillStyle=GOLD;for(let k=0;k<3;k++)g.fillRect(cx-s*.34,cy+s*(.05+k*.25),s*.68,s*.08);
-  g.fillStyle=BLK;g.fillRect(cx-s*.72,cy-s*.7,s*.08,s*1.5);g.fillRect(cx+s*.64,cy-s*.7,s*.08,s*1.5);   // staffs
+  g.fillStyle=CREAM;g.beginPath();g.arc(cx,cy-s*.55,s*.26,0,TAU);g.fill();g.fillStyle=BLK;g.beginPath();g.arc(cx,cy-s*.55,s*.12,0,TAU);g.fill();
+  g.fillStyle=TQ;g.fillRect(cx-s*.42,cy-s*.15,s*.84,s*.9);g.fillStyle=GOLD;for(let k=0;k<3;k++)g.fillRect(cx-s*.34,cy+s*(.05+k*.25),s*.68,s*.08);
+  g.fillStyle=BLK;g.fillRect(cx-s*.72,cy-s*.7,s*.08,s*1.5);g.fillRect(cx+s*.64,cy-s*.7,s*.08,s*1.5);
   g.fillStyle=RED;g.fillRect(cx-s*.78,cy-s*.78,s*.2,s*.14);g.fillRect(cx+s*.58,cy-s*.78,s*.2,s*.14);
-  g.fillStyle=BLK;g.fillRect(cx-s*.36,cy+s*.75,s*.26,s*.22);g.fillRect(cx+s*.1,cy+s*.75,s*.26,s*.22);};  // feet
- const hero=(cx,cy,s,flip)=>{const f=flip?-1:1;
-  g.fillStyle=BLK;g.fillRect(cx-s*.28,cy-s*.7,s*.56,s*.5);                        // head in profile
-  g.fillStyle=RED;g.fillRect(cx-s*.28,cy-s*.86,s*.56,s*.16);g.fillRect(cx+f*s*.2,cy-s*.55,f*s*.22,s*.16);   // headband, nose
-  g.fillStyle=GOLD;g.fillRect(cx-s*.36,cy-s*.2,s*.72,s*.8);                        // body
-  g.fillStyle=TQ;g.fillRect(cx-s*.36,cy+s*.2,s*.72,s*.14);
-  g.fillStyle=BLK;g.fillRect(cx+f*s*.5,cy-s*1.0,s*.07,s*1.9);                     // spear
-  g.fillStyle=RED;g.beginPath();g.arc(cx-f*s*.62,cy+s*.1,s*.3,0,TAU);g.fill();g.fillStyle=CREAM;g.beginPath();g.arc(cx-f*s*.62,cy+s*.1,s*.12,0,TAU);g.fill();   // shield
+  g.fillStyle=BLK;g.fillRect(cx-s*.36,cy+s*.75,s*.26,s*.22);g.fillRect(cx+s*.1,cy+s*.75,s*.26,s*.22);};
+ const hero=(cx,cy,s,flip,banner)=>{const f=flip?-1:1;
+  g.fillStyle=BLK;g.fillRect(cx-s*.28,cy-s*.7,s*.56,s*.5);
+  g.fillStyle=RED;g.fillRect(cx-s*.28,cy-s*.86,s*.56,s*.16);g.fillRect(cx+f*s*.2,cy-s*.55,f*s*.22,s*.16);
+  g.fillStyle=GOLD;g.fillRect(cx-s*.36,cy-s*.2,s*.72,s*.8);g.fillStyle=TQ;g.fillRect(cx-s*.36,cy+s*.2,s*.72,s*.14);
+  g.fillStyle=BLK;g.fillRect(cx+f*s*.5,cy-s*1.0,s*.07,s*1.9);
+  if(banner){g.fillStyle=banner;g.fillRect(cx+f*s*.5+(f>0?s*.07:-s*.5),cy-s*1.0,s*.5,s*.36);}
+  else{g.fillStyle=RED;g.beginPath();g.arc(cx-f*s*.62,cy+s*.1,s*.3,0,TAU);g.fill();g.fillStyle=CREAM;g.beginPath();g.arc(cx-f*s*.62,cy+s*.1,s*.12,0,TAU);g.fill();}
   g.fillStyle=BLK;g.fillRect(cx-s*.3,cy+s*.6,s*.22,s*.34);g.fillRect(cx+s*.08,cy+s*.6,s*.22,s*.34);};
- god(64,132,34);hero(192,138,30,false);   // one 2 x 2 m tile: an avatar and a hero
- // worn lime wash: lighten with age, scuff the foot
+ const sun=(cx,cy,r)=>{for(let k=0;k<16;k++){const a=k/16*TAU;g.fillStyle=k%2?RED:GOLD;g.beginPath();g.moveTo(cx+Math.cos(a-.08)*r*1.05,cy+Math.sin(a-.08)*r*1.05);g.lineTo(cx+Math.cos(a)*r*1.8,cy+Math.sin(a)*r*1.8);g.lineTo(cx+Math.cos(a+.08)*r*1.05,cy+Math.sin(a+.08)*r*1.05);g.fill();}
+  g.fillStyle=GOLD;g.beginPath();g.arc(cx,cy,r,0,TAU);g.fill();g.fillStyle=CREAM;g.beginPath();g.ellipse(cx,cy,r*.62,r*.36,0,0,TAU);g.fill();g.fillStyle=BLK;g.beginPath();g.arc(cx,cy,r*.26,0,TAU);g.fill();};
+ const liz=(cx,cy,s,f)=>{g.fillStyle=TQ;g.beginPath();g.ellipse(cx,cy,s*.9,s*.32,0,0,TAU);g.fill();   // body
+  g.beginPath();g.moveTo(cx-f*s*.85,cy-s*.12);g.lineTo(cx-f*s*2.0,cy+s*.05);g.lineTo(cx-f*s*.85,cy+s*.2);g.fill();   // tail
+  g.fillStyle=GOLD;for(let k=0;k<5;k++)g.fillRect(cx-s*.6+k*s*.3,cy-s*.16,s*.12,s*.32);                             // stripes
+  g.fillStyle=TQ;g.fillRect(cx+f*s*.8,cy-s*.28,f*s*.55,s*.36);g.fillStyle=BLK;g.fillRect(cx+f*s*1.15,cy-s*.2,f*s*.1,s*.1);   // head, eye
+  g.fillStyle=BLK;for(const lx of[-.45,.45]){g.fillRect(cx+lx*s-s*.06,cy+s*.2,s*.12,s*.5);g.fillRect(cx+lx*s-s*.18,cy+s*.62,s*.36,s*.08);}};
+ if(v===0){god(64,132,34);hero(192,138,30,false);}
+ else if(v===1){hero(48,138,28,true,GOLD);hero(128,138,28,true,TQ);hero(208,138,28,true,RED);}
+ else if(v===2){god(40,136,26);sun(128,124,26);god(216,136,26);}
+ else{liz(64,130,24,1);liz(196,130,24,-1);g.fillStyle=GOLD;for(let k=0;k<5;k++)g.fillRect(122+k*3,96+Math.abs(k-2)*8,3,60);g.fillStyle=TQ;g.fillRect(118,150,22,8);}
  const id=g.getImageData(0,0,w,h),d=id.data;
- for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;const wear=clamp((fbm(x/40,y/40,6.6,3)-.42)*2.2,0,1)*.45+clamp((y/h-.7)*1.6,0,1)*.5*fbm(x/9,y/9,2.2,2);
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;const wear=clamp((fbm(x/40,y/40,6.6+v,3)-.42)*2.2,0,1)*.45+clamp((y/h-.7)*1.6,0,1)*.5*fbm(x/9,y/9,2.2,2);
   for(let c=0;c<3;c++)d[i+c]=d[i+c]+(214-d[i+c])*wear*.8;const gr=(fbm(x/5,y/5,1.7,1)-.5)*14;d[i]+=gr;d[i+1]+=gr;d[i+2]+=gr;}
- g.putImageData(id,0,0);});
-
+ g.putImageData(id,0,0);});}
+TEX.dMural=dMuralTex(0);TEX.dMural1=dMuralTex(1);TEX.dMural2=dMuralTex(2);TEX.dMural3=dMuralTex(3);
 // The same stepped-fret height field, in COLOUR: cream faces over turquoise recesses (the inlay of the deco temples).
 TEX.dReliefTq=canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;const CELL=64;
  const hf=(x,y)=>{const cx=x%CELL,cy=y%CELL;const bx=Math.floor(x/CELL),by=Math.floor(y/CELL);
@@ -1426,6 +1435,7 @@ MAT.dRammed=new THREE.MeshStandardMaterial({map:TEX.dRammed,color:0xffffff,rough
 MAT.dRelief=new THREE.MeshStandardMaterial({map:TEX.dRelief,color:0xffffff,roughness:.95,metalness:0,side:DS});vWorldUV(MAT.dRelief,.25);
 MAT.dMural=new THREE.MeshStandardMaterial({map:TEX.dMural,color:0xffffff,roughness:.94,metalness:0,side:DS});vWorldUV(MAT.dMural,.5);   // boxes: a 2 m band shows the whole frieze and tiles along the wall
 MAT.dMuralP=new THREE.MeshStandardMaterial({map:TEX.dMural,color:0xffffff,roughness:.94,metalness:0,side:DS});                          // planes: one whole tile stretched to the plane (round-house facets)
+for(const v of[1,2,3]){MAT['dMural'+v]=new THREE.MeshStandardMaterial({map:TEX['dMural'+v],color:0xffffff,roughness:.94,metalness:0,side:DS});vWorldUV(MAT['dMural'+v],.5);MAT['dMuralP'+v]=new THREE.MeshStandardMaterial({map:TEX['dMural'+v],color:0xffffff,roughness:.94,metalness:0,side:DS});}
 MAT.dReliefTq=new THREE.MeshStandardMaterial({map:TEX.dReliefTq,color:0xffffff,roughness:.9,metalness:0,side:DS});vWorldUV(MAT.dReliefTq,.25);
 MAT.dDecoPanel=new THREE.MeshStandardMaterial({map:TEX.dDecoPanel,color:0xffffff,roughness:.9,metalness:0,side:DS});
 MAT.dChecker=new THREE.MeshStandardMaterial({map:TEX.dChecker,color:0xffffff,roughness:.7,metalness:0,side:DS});vWorldUV(MAT.dChecker,.5);
@@ -1456,7 +1466,8 @@ const DDOMELOW=new THREE.SphereGeometry(1,24,8,0,TAU,0,Math.PI/2);
 kdef('dEarth',VBOX,MAT.dRammed);kdef('dEarthBat',VBATTER,MAT.dRammed);kdef('dEarthDrum',DDRUM,MAT.dRammed);kdef('dEarthDrumB',DDRUMB,MAT.dRammed);kdef('dEarthDome',DDOMELOW,MAT.dRammed);
 kdef('dRelief',VBOX,MAT.dRelief);kdef('dReliefTq',VBOX,MAT.dReliefTq);kdef('dDecoPanel',VPLANE,MAT.dDecoPanel);kdef('dChecker',VBOX,MAT.dChecker);kdef('dReliefBat',VBATTER,MAT.dRelief);kdef('dReliefDrum',DDRUM,MAT.dRelief);
 kdef('dStoneDrum',DDRUM,MAT.stone);kdef('dStoneDrumB',DDRUMB,MAT.stone);kdef('dStoneDome',DDOMELOW,MAT.stone);kdef('dStonePyr',VPYR,MAT.stone);
-kdef('dMural',VPLANE,MAT.dMuralP);kdef('dMuralB',VBOX,MAT.dMural);
+kdef('dMural',VPLANE,MAT.dMuralP);kdef('dMuralB',VBOX,MAT.dMural);for(const v of[1,2,3]){kdef('dMural'+v,VPLANE,MAT['dMuralP'+v]);kdef('dMuralB'+v,VBOX,MAT['dMural'+v]);}
+const DMURALS=['dMural','dMural1','dMural2','dMural3'],DMURALBS=['dMuralB','dMuralB1','dMuralB2','dMuralB3'];
 kdef('dBanner',VPLANE,MAT.dBanner);
 kdef('dTurf',VBOX,MAT.dTurf);kdef('dTurfDome',DDOMELOW,MAT.dTurf);kdef('dTurfDrum',DDRUMB,MAT.dTurf);kdef('dTurfCone',DCONESH,MAT.dTurf);
 kdef('dWoodDrum',DDRUM,MAT.woodV);kdef('dStaveDrum',new THREE.CylinderGeometry(1,1,1,18).translate(0,.5,0),MAT.woodV);
@@ -1465,6 +1476,8 @@ kdef('dTile',VBOX,MAT.dTile);kdef('dGableTile',VGABLE,MAT.dTile);kdef('dHipTile'
 kdef('dMosaic',VBOX,MAT.dMosaic);kdef('dGilt',VBOX,MAT.dGilt);kdef('dGiltDome',VDOME,MAT.dGilt);kdef('dGiltBall',VBALL,MAT.dGilt);
 kdef('dPanelDome',VDOME,MAT.white);kdef('dRustDome',VDOME,MAT.rust);kdef('dPanelDrum',DDRUM,MAT.white);kdef('dRustDrum',DDRUM,MAT.rust);
 kdef('dGlow',VBOX,MAT.dGod);kdef('dGlowDay',VBOX,MAT.dGodDay);kdef('dGodBall',VBALL,MAT.dGod);kdef('dGlassBall',VBALL,MAT.darkGlass);kdef('dGodStrip',new THREE.BoxGeometry(1,.14,.14),MAT.dGod);kdef('dGodHalo',VPLANE,MAT.dGodGlow);
+MAT.dHide=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.85,metalness:0});   // animal hide: tinted per instance
+kdef('dHideBall',VBALL,MAT.dHide);kdef('dHideCone',VCONE,MAT.dHide);kdef('dHideBox',VBOX,MAT.dHide);kdef('dHideDrum',DDRUM,MAT.dHide);
 kdef('dRing',DRING,MAT.iron);kdef('dRopeRing',DRING,MAT.tarp);
 // what the hour toggles (see 94-dalab-light.js): The God's light and the hearth fires by night, dark glass by day
 const DNIGHT_ITEMS=['dGlow','dGodBall','dGodStrip','dGodHalo','fireWin','ember','emberB'];
@@ -1506,9 +1519,9 @@ function dnFirePit(x,y,z,s){for(let k=0;k<7;k++){const a=k/7*TAU;kput('vRock',[x
 // Carved band proud of a face; (x,z) ON the face, ry outward. dRelief tiles 1 m cells.
 function dnReliefBand(x,y,z,ry,w,h,c){const f=loc(x,z,0,.1,ry);vB('dRelief',f[0],y,f[1],w,h,.16,ry,c);}
 // Painted frieze on a flat face (2 m tile of avatars and heroes).
-function dnMuralBand(x,y,z,ry,w,h){const f=loc(x,z,0,.04,ry);vB('dMuralB',f[0],y,f[1],w,h,.06,ry);}
+function dnMuralBand(x,y,z,ry,w,h,v){const f=loc(x,z,0,.04,ry);vB(DMURALBS[v==null?dRi(0,3):v],f[0],y,f[1],w,h,.06,ry);}
 // The same frieze round a drum: flat facets tangent to the wall, one whole tile each.
-function dnMuralRing(x,y,z,r,h,c){const n=Math.max(8,Math.round(TAU*r/1.5));for(let k=0;k<n;k++){const a=k/n*TAU;const p=dnOnRing(x,z,r+.035,a);vPl('dMural',p[0],y+h/2,p[1],TAU*(r+.035)/n+.02,h,a,c||null);}}
+function dnMuralRing(x,y,z,r,h,c,v){const n=Math.max(8,Math.round(TAU*r/1.5));const it=DMURALS[v==null?dRi(0,3):v];for(let k=0;k<n;k++){const a=k/n*TAU;const p=dnOnRing(x,z,r+.035,a);vPl(it,p[0],y+h/2,p[1],TAU*(r+.035)/n+.02,h,a,c||null);}}
 // A rammed-earth wall band painted in two colours (poor houses: no mural, just a red foot and a turquoise line).
 function dnPaintRing(x,y,z,r,h,c){dnDrum('dEarthDrum',x,y,z,r+.03,h,c);}
 // Banner hung from a crossbar at (x,y,z); the top is fixed, the foot free. ry = the direction it faces.
@@ -1689,6 +1702,24 @@ function dnGranary(x,y,z,r,h,o){o=o||{};const wood=dCol(DPAL.woodGrey);const FL=
 function dnJar(x,y,z,r){vPst('vClayPot',x,y,z,r,r*2.2,dCol([0x9a5a38,0xa86a44,0x7a4a2a]));vBall('vGourd',x,y+r*2.2,z,r*.7,vC(0x6a4a30),r*.3);}
 function dnWoodpile(x,y,z,ry,L){for(let k=0;k<3;k++)for(let j=0;j<4-k;j++){const p=loc(x,z,0,-.45+j*.3+k*.15,ry);kput('vPost',[p[0],y+.15+k*.28,p[1]],vQ(ry,0,Math.PI/2),[.14,L,.14],dCol(DPAL.wood));}}
 // Live-oak vault trees are the biome's job; the kit has none.
+
+// ---------------------------------------------------------------- fauna (round 6)
+// A registry of animal builders so a ranch, a farm or the life layer can ask for a kind by name and get whatever
+// model the kit has for it today: DFAUNA.def('lizard',fn). fn(x,y,z,ry,s,opt) builds in the local frame, standing
+// on y, facing ry, at scale s (1 = the species' normal size). Monsters register the same way when they exist.
+const DFAUNA={defs:{},def(k,fn,meta){DFAUNA.defs[k]={fn,meta:meta||{}};},kinds:()=>Object.keys(DFAUNA.defs)};
+function dnAnimal(kind,x,y,z,ry,s,opt){const D=DFAUNA.defs[kind];if(!D){reportErr('dnAnimal: no such kind '+kind);return;}D.fn(x,y,z,ry||0,s==null?1:s,opt||{});}
+// the Dalab lizard: a fat-bodied, striped ground lizard the farms keep for meat and hide — 2.4 m nose to tail at s=1
+DFAUNA.def('lizard',function(x,y,z,ry,s,opt){const hide=opt.c||dCol([0x6a8a3a,0x7a9a44,0x8a8a3a,0x5f7f36,0x9a8a4a]),st=dCol([0xd8a838,0xa8382a,0x3f9a88]);const L=(lx,lz)=>loc(x,z,lx,lz,ry);
+ const B=.62*s;const b=L(0,0);kput('dHideBall',[b[0],y+B*.55,b[1]],vQ(ry,0,0),[B*.75,B*.55,B*1.2],hide);                                  // body
+ for(let k=0;k<4;k++){const p=L(0,-B*.6+k*B*.4);kput('dHideBox',[p[0],y+B*1.05,p[1]],vQ(ry,0,0),[B*.7,B*.08,B*.14],st);}          // stripes
+ const t1=L(0,-B*1.4),t2=L(0,-B*2.6);kput('dHideCone',[t1[0],y+B*.5,t1[1]],vQ(ry+Math.PI,Math.PI/2,0),[B*.4,B*1.3,B*.4],hide);   // tail
+ kput('dHideCone',[t2[0],y+B*.4,t2[1]],vQ(ry+Math.PI,Math.PI/2,0),[B*.2,B*1.2,B*.2],hide.clone().multiplyScalar(.9));
+ const hd=L(0,B*1.35);kput('dHideBall',[hd[0],y+B*.62,hd[1]],vQ(ry,0,0),[B*.42,B*.34,B*.6],hide);                                 // head
+ for(const sd of[-1,1]){const e=L(sd*B*.3,B*1.5);vBall('vBall',e[0],y+B*.78,e[1],B*.07,vC(0x1a1a10));}                          // eyes
+ for(const sd of[-1,1])for(const lz of[-B*.7,B*.7]){const p=L(sd*B*.85,lz);kput('dHideBox',[p[0],y+B*.28,p[1]],vQ(ry,0,sd*.9),[B*.16,B*.7,B*.16],hide);const f=L(sd*B*1.1,lz+B*.1);kput('dHideBox',[f[0],y+B*.05,f[1]],vQ(ry,0,0),[B*.34,B*.1,B*.3],hide.clone().multiplyScalar(.85));}   // legs, feet
+ if(opt.frill){for(let k=0;k<5;k++){const p=L(0,B*.9-k*B*.12);kput('dHideCone',[p[0],y+B*.9,p[1]],null,[B*.06,B*.35,B*.06],st);}}},
+ {name:'Dalab lizard',size:2.4,tags:{type:['livestock']}});
 // ================================================================= DALAB — dwellings
 // Peasants build ROUND: a rammed-earth or scrap drum under a thatch cone, a painted band, one door, a hearth
 // window that glows at night. Nobles (the priest-caste's kin) build in grey megalithic stone with relief bands,
@@ -2060,27 +2091,47 @@ function buildDalabEmbassyVoth(G,o){reseed(8521+(o.v|0));const CW=30,CD=26;const
  vB('vStone',-5.5,0,hz+D/2+4.5,1.0,3.2,1.0,0,st);kput('dStonePyr',[-5.5,3.2,hz+D/2+4.5],null,[1.2,.9,1.2],stL);   // shrine obelisk
  dnDrum('dStoneDrum',5.2,0,hz+D/2+4.2,1.2,.9,st);dnDrum('vDarkB',5.2,.9,hz+D/2+4.2,.9,.1,null);                      // well
  vnFolk(0,hz+D/2+6.5,2,1.2);}
-// Historians' embassy: the Order's Djenne manners — a battered laterite hall with pilaster buttresses and pinnacles,
-// toron rows, a mosaic string course, a great drum under a tile cone with a lantern; blue banners
-function buildDalabEmbassyHist(G,o){reseed(8531+(o.v|0));const CW=30,CD=26;const lat=dCol(DPAL.laterite),latD=lat.clone().multiplyScalar(.8),wood=vC(0x4a3626);
- vnReg("Historians' embassy",0,0,12,18);dnEmbassyCompound(CW,CD,"Historians' embassy");
- const W=13,D=10,H=4.6,Y0=.5,hz=-2;
- vB('vStone',0,-.05,hz,W+1,Y0+.05,D+1,0,latD);
- kput('dEarthBat',[0,Y0,hz],null,[W,H,D],lat);
- for(const s of[-1,1])for(const x of[-W/2+.8,-W/6,W/6,W/2-.8]){vB('dEarth',x,Y0,hz+s*(D/2*.93),.8,H+.9,.5,0,lat);kput('dStonePyr',[x,Y0+H+.9,hz+s*(D/2*.93)],null,[1.0,.8,1.0],latD);}   // pilasters + pinnacles
- for(const s of[-1,1])for(let k=0;k<8;k++)kput('vPost',[-W/2+1.2+k*(W-2.4)/7,Y0+2.6,hz+s*(D/2*.93+.3)],qEuler(Math.PI/2,0,0),[.08,.9,.08],wood);   // toron
- vB('dMosaic',0,Y0+H-.9,hz,W*.87+.2,.6,D*.87+.2,0,null);vB('dEarth',0,Y0+H,hz,W*.87+.4,.4,D*.87+.4,0,latD);
- // the drum, tile cone and lantern
- dnDrum('dEarthDrum',0,Y0+H+.4,hz,4.6,3.2,lat);vB('dMosaic',0,Y0+H+3.3,hz,9.6,.4,9.6,0,null);for(let k=0;k<8;k++){const a=k/8*TAU;const p=dnOnRing(0,hz,4.6,a);dnDrum('dRelief',p[0],Y0+H+1.4,p[1],.9,.9,latD);const q=dnOnRing(0,hz,4.66,a);vB('vDarkB',q[0],Y0+H+1.55,q[1],.5,.6,.1,a);}
- kput('dConeTile',[0,Y0+H+3.5,hz],null,[5.6,4.4,5.6],vC(0x8a5a3a));dnDrum('dEarthDrum',0,Y0+H+7.4,hz,1.2,1.6,lat);for(let k=0;k<6;k++){const a=k/6*TAU;const p=dnOnRing(0,hz,1.2,a);dnGodWin(p[0],Y0+H+7.7,p[1],a,.5,.9,'vWood',wood);}
- kput('dConeTile',[0,Y0+H+9.0,hz],null,[1.7,1.4,1.7],vC(0x8a5a3a));
- // the porch: nested archivolts of earth, a God-lit door
- vB('dEarth',0,Y0,hz+D/2*.93+.6,4.4,H-.6,1.2,0,lat);vB('dEarth',0,Y0,hz+D/2*.93+1.0,3.2,H-1.4,1.0,0,latD);
- vnDoor(0,Y0,hz+D/2*.93+1.5,0,1.5,2.6,'vWood',wood,vC(0x3a2a1c));vnStairs(0,0,hz+D/2*.93+2.4,0,3,Y0,3,'vStone',latD);
- for(const x of[-4.2,4.2])dnGodWin(x,Y0+1.6,hz+D/2*.93,0,1.0,1.4,'vWood',wood);for(const s of[-1,1])for(const z of[-2.6,2.6])dnGodWin(s*W/2*.93,Y0+1.6,hz+z,s*Math.PI/2,1.0,1.3,'vWood',wood);
- for(const s of[-1,1])dnBannerPole(s*(W/2+2),0,hz+D/2+2,0,6,vC(0x2a5aa8));
- vB('dEarth',5.5,0,hz+D/2+5,2.4,1.0,2.4,0,lat);vB('dMosaic',5.5,1.0,hz+D/2+5,2.6,.3,2.6,0,null);   // a mosaic dais
- vnFolk(0,hz+D/2+7,2,1.2);}
+// Yuni embassy: the Yuni set's manners as the Iziz chapterhouse port describes them — laterite drum halls under tile
+// cones with lanterns, round relief-ringed windows, a curved arcaded gallery wing, a carved forecourt wall with a
+// parabolic gate; deep-red banners. Built from the vp* kit (75/76), inside a Dalab compound.
+function buildDalabEmbassyYuni(G,o){reseed(8531+(o.v|0));const CW=30,CD=26;const lat=vC(0x9a5a34),dk=vC(0x5a3620),tile=vC(0x8a5a3a),wood=vC(0x4a3626);
+ vnReg('Yuni embassy',0,0,12,18);dnEmbassyCompound(CW,CD,'Yuni embassy');
+ const hz=-3;
+ // the great drum hall at the back, two lesser drums at the front corners of the court, a curved arcade between
+ vpDrumHall(0,0,hz-2,6.2,7,lat,dk,tile);for(let k=0;k<6;k++){const a=k/6*TAU+.5;if(k===1)continue;const p=dnOnRing(0,hz-2,6.2,a);vpRoundWin(p[0],3.6,p[1],a,.8,dk,vLit());}
+ const dp=dnOnRing(0,hz-2,6.2,0);vnDoor(dp[0],0,dp[1],0,1.5,2.7,'vStone',dk,vC(0x3a2a1c),false);dnGodLamp(dp[0],3.3,dp[1],0);
+ for(const sd of[-1,1]){const px=sd*9.5,pz=hz+6;vpDrumHall(px,0,pz,3.2,4.6,lat,dk,tile);const w=dnOnRing(px,pz,3.2,sd*Math.PI/2+.4);vpRoundWin(w[0],2.4,w[1],sd*Math.PI/2+.4,.6,dk,vLit());
+  const d=dnOnRing(px,pz,3.2,Math.PI);vnDoor(d[0],0,d[1],Math.PI,1.1,2.1,'vStone',dk,vC(0x3a2a1c),false);}
+ // the arcade: a curved gallery of banco arches on a plinth, from drum to drum behind the court
+ {const n=7;for(let k=0;k<=n;k++){const t=k/n;const x=-9.5+19*t,z=hz+6-Math.sin(t*Math.PI)*2.6;vPst('vpBancoPost',x,0,z,.32,3.2,lat);if(k<n){const x2=-9.5+19*(t+1/n),z2=hz+6-Math.sin((t+1/n)*Math.PI)*2.6;
+   const mx=(x+x2)/2,mz=(z+z2)/2,ry=Math.atan2(x2-x,z2-z)+Math.PI/2;kput('vpBayArchB',[mx,0,mz],qEuler(0,ry,0),[1,1,1],lat);vB('vpTileB',mx,3.4,mz,Math.hypot(x2-x,z2-z)+.3,.3,1.6,ry,tile);}}
+  vpTorons(-8,hz+6.3,8,hz+6.3,2.9,9,0,1,.8);}
+ // relief-ringed forecourt: a mosaic dais, gilt finials on the wall corners, banners
+ vB('dEarth',0,0,CD/2-5,3.4,.9,3.4,0,lat);vB('dMosaic',0,.9,CD/2-5,3.6,.3,3.6,0,null);
+ for(const sd of[-1,1])vpBannerPole(sd*(CW/2-3),0,CD/2-3,0,6.5,vC(0x7a1e22));
+ vnFolk(0,CD/2+6.5,2,1.2);}
+// Republican embassy — PLACEHOLDER. The Republic's highlands style is being built in another session and is not in
+// this repo yet; this stands in with a plain highland reading (dry-stone walls, slate-dark shingle, a jettied timber
+// gallery, a square watch tower, a flag) and is tagged placeholder:true so the layout can swap it when the real set
+// lands. Same footprint and compound as the other embassies.
+function buildDalabEmbassyRepublic(G,o){reseed(8536+(o.v|0));const CW=30,CD=26;const st=vC(0x8a8478),stD=vC(0x6e6a62),wood=vC(0x5a4632),sl=vC(0x4a4e56);
+ vnReg('Republican embassy (placeholder)',0,0,12,18,{placeholder:true});dnEmbassyCompound(CW,CD,'Republican embassy');
+ const W=13,D=10,H1=3.8,Y0=.5,hz=-2;
+ vB('vStone',0,-.05,hz,W+1,Y0+.05,D+1,0,stD);vB('vStone',0,Y0,hz,W,H1,D,0,st);
+ // the jettied timber upper storey on brackets, shingle gable
+ vB('vWood',0,Y0+H1,hz,W+1.4,.3,D+1.4,0,wood);for(let k=-3;k<=3;k++)for(const sd of[-1,1])vBeam([k*1.8,Y0+H1-.6,hz+sd*D/2],[k*1.8,Y0+H1,hz+sd*(D/2+.7)],.18,wood);
+ vnFrame(0,Y0+H1+.3,hz,W+1.2,3.0,D+1.2,0,wood,.16);vB('vPlaster',0,Y0+H1+.3,hz,W+1.0,3.0,D+1.0,0,vC(0xd8d0c0));
+ vnGableRoof(0,Y0+H1+3.3,hz,W+1.2,D+1.2,3.0,0,'vGableS',sl,1.0,'vGableW',wood,.3);
+ for(const x of[-4.5,-1.5,1.5,4.5])vnWin(x,Y0+H1+1.2,hz+D/2+.6,0,1.0,1.2,'lit','vWood',wood);
+ for(const x of[-4,4])vnWin(x,Y0+1.4,hz+D/2,0,.6,1.4,'glass','vStone',st);for(const s of[-1,1])for(const z of[-2.5,2.5])vnWin(s*W/2,Y0+1.4,hz+z,s*Math.PI/2,.6,1.4,'glass','vStone',st);
+ vnDoor(0,Y0,hz+D/2,0,1.5,2.5,'vStone',st,vC(0x3a2a1c));vnStairs(0,0,hz+D/2+1.1,0,3,Y0,3,'vStone',st);
+ // the watch tower
+ {const tx=W/2+2.2,tz=hz-D/2+2.0,TH=11;vB('vStone',tx,0,tz,3.6,TH,3.6,0,st);vB('vStone',tx,TH,tz,4.2,.4,4.2,0,stD);for(let k=0;k<8;k++){const a=k/8*TAU;const p=loc(tx,tz,Math.cos(a)*1.9,Math.sin(a)*1.9,0);vB('vStone',p[0],TH+.4,p[1],.5,.8,.5,0,st);}
+  kput('vPyrSh',[tx,TH+.4,tz],null,[3.0,2.2,3.0],sl);for(let k=0;k<4;k++){const a=k*Math.PI/2;const p=loc(tx,tz,0,1.8,a);vnWin(p[0],TH-3,p[1],a,.4,1.2,'lit','vStone',st);}
+  vnBannerPole(tx,TH+.4,tz+1.4,0,4,vC(0x2a4a8a));}
+ vnLampPost(-3,0,hz+D/2+4.6,3.2);vnLampPost(3,0,hz+D/2+4.6,3.2);vnFolk(0,hz+D/2+6.5,2,1.2);}
+// the Order of Historians' chapterhouse, ported from the Yuni set through Iziz (76-port-chapterhouse.js, vendored)
+function buildDalabChapterhouse(G,o){reseed(8538+(o.v|0));buildVpChapterhouse(G,o);}
 
 // the Halls of Reformation: a circular stone wall (r 68, the Voth Monastery's half); inside, the genepriests' halls —
 // the great drum under an Ancient panel dome at the centre, four wing halls with rust and panel domes, the cell
@@ -2108,7 +2159,7 @@ function buildDalabHalls(G,o){reseed(8541+(o.v|0));const R=68;const st=dCol(DPAL
   for(let k=0;k<16;k++){const a=(k+.5)/16*TAU;const p=dnOnRing(0,0,HR-.3,a);kput('dEarthBat',[p[0],Y0,p[1]],qEuler(0,-a,0),[1.6,HH+1.4,2.2],st);
    vB('vStone',p[0],Y0+HH+1.4,p[1],1.9,.3,2.5,-a,stD);kput('dStonePyr',[p[0],Y0+HH+1.7,p[1]],qEuler(0,-a,0),[1.7,1.3,1.7],st);
    const q=dnOnRing(0,0,HR-.3+1.15,a);dnReliefBand(q[0],Y0+1.9,q[1],a,1.1,HH-2.4,st);
-   const b=(k+1)/16*TAU;if(k===7||k===8)continue;const w=dnOnRing(0,0,HR,b);dnGodWin(w[0],Y0+3.0,w[1],b,1.1,2.2,'vStone',st);}
+   const b=(k+1)/16*TAU;if(k%4===3)continue;/* the door and the three apses */const w=dnOnRing(0,0,HR,b);dnGodWin(w[0],Y0+3.0,w[1],b,1.1,2.2,'vStone',st);}
   for(let k=0;k<32;k++){const a=(k+.5)/32*TAU;const p=dnOnRing(0,0,HR,a);dnGodStrip(p[0],Y0+HH-.6,p[1],a,TAU*HR/32-.5);}
   // cornice, the clerestory drum, its cornice
   vB('vStone',0,Y0+HH,0,HR*2+1.2,.9,HR*2+1.2,0,stD);dnDrum('dStoneDrum',0,Y0+HH+.9,0,CR,CH,st);dnDrum('dReliefDrum',0,Y0+HH+1.1,0,CR+.05,.9,st);
@@ -2122,15 +2173,15 @@ function buildDalabHalls(G,o){reseed(8541+(o.v|0));const R=68;const st=dCol(DPAL
   vBall('dGodBall',0,AP+3.6,0,.8);vBall('dGlassBall',0,AP+3.6,0,.8);vPst('vPipe',0,AP+2.7,0,.12,7,iron);vBall('dGodBall',0,AP+9.8,0,.35);vBall('dGlassBall',0,AP+9.8,0,.35);
   window._hallsApex=AP+3.6;
   // the portico: eight stone columns carrying a relief-fronted entablature and a stepped crest, over a checker floor
-  {const PZ=HR+3.6,PW=13;vB('vStone',0,Y0-.4,PZ,PW+2,.4,7,0,stD);dnChecker(0,Y0+.02,PZ,PW,6,0);
-   for(let i=0;i<4;i++)for(const sd of[-1,1]){const x=sd*(1.9+i*3.0);vPst('vPostS',x,Y0,PZ+2.6,.36,HH-1.4,st);vB('vStone',x,Y0+HH-1.4,PZ+2.6,1.0,.3,1.0,0,stD);}
+  {const PZ=HR+3.6,PW=17;vB('vStone',0,Y0-.4,PZ,PW+2,.48,7,0,stD);dnChecker(0,Y0+.10,PZ,PW,6,0);
+   for(let i=0;i<3;i++)for(const sd of[-1,1]){const x=sd*(2.3+i*3.2);vPst('vPostS',x,Y0,PZ+2.6,.36,HH-1.4,st);vB('vStone',x,Y0+HH-1.4,PZ+2.6,1.0,.3,1.0,0,stD);}
    vB('vStone',0,Y0+HH-1.1,PZ,PW+2,1.4,7,0,st);dnReliefBand(0,Y0+HH-.9,PZ+3.5,0,PW,1.0,st);vB('vStone',0,Y0+HH+.3,PZ,PW+2.4,.4,7.4,0,stD);
    const tr=dCol(DPAL.trim);let yy=Y0+HH+.7;for(const w of[PW*.7,PW*.42,PW*.2]){vB('vStone',0,yy,PZ+2.2,w,.8,1.6,0,st);vB('vStone',0,yy+.66,PZ+2.2,w+.2,.14,1.8,0,tr);yy+=.8;}vBall('dGiltBall',0,yy+.2,PZ+2.2,.25);}
   dnGate(0,Y0,HR+.4,0,3.2,4.8,st);vnDoor(0,Y0,HR,0,3.0,4.6,'vStone',st,vC(0x2a2a30),false);for(const x of[-2.6,2.6])dnGodLamp(x,Y0+5.4,HR,0);
   // the three apses
   for(const a of[Math.PI/2,-Math.PI/2,Math.PI]){const p=dnOnRing(0,0,HR-1.5,a);dnDrum('dStoneDrumB',p[0],Y0,p[1],4.2,6.4,st);dnDrum('dReliefDrum',p[0],Y0+.4,p[1],4.24,.9,st);
    kput('dStoneDome',[p[0],Y0+6.4,p[1]],null,[4.0,2.4,4.0],stD);vBall('dGiltBall',p[0],Y0+8.9,p[1],.3);for(const d of[-.5,.5]){const w=dnOnRing(p[0],p[1],4.2,a+d);dnGodWin(w[0],Y0+2.6,w[1],a+d,.8,1.4,'vStone',st);}}
-  dnGiant(-4.2,Y0,HR+7.5,.25,4,{spear:true});dnGiant(4.2,Y0,HR+7.5,-.25,4,{spear:true});dnPriest(-1.6,Y0,HR+5,Math.PI);}
+  dnGiant(-4.2,Y0+.08,HR+7.5,.25,4,{spear:true});dnGiant(4.2,Y0+.08,HR+7.5,-.25,4,{spear:true});dnPriest(-1.6,Y0+.08,HR+5,Math.PI);}
  // four wing halls on the diagonals, pipe to the centre
  [[1,1,'dRustDome'],[-1,1,'dPanelDome'],[1,-1,'dPanelDome'],[-1,-1,'dRustDome']].forEach((w,i)=>{const wx=w[0]*30,wz=w[1]*26,WR=7,WH=5.5;
   dnDrum('dStoneDrumB',wx,0,wz,WR,WH,st);dnDrum('dReliefDrum',wx,.4,wz,WR+.05,1.0,st);vB('vStone',wx,WH,wz,WR*2+.8,.5,WR*2+.8,0,stD);
@@ -2170,7 +2221,9 @@ function dnGodPostAt(x,z,r,a,h){const p=dnOnRing(x,z,r,a);dnGodPost(p[0],0,p[1],
 dDef({key:'dalab_barracks',name:"Guard's barracks",family:'civic',tags:{type:['civic','military'],wealth:'civic',lit:true},w:36,d:30,h:12,build:buildDalabBarracks});
 dDef({key:'dalab_embassy_iziz',name:'Izizian embassy',family:'civic',tags:{type:['civic'],wealth:'civic',lit:true,role:'embassy',guest:'iziz'},w:34,d:32,h:15,build:buildDalabEmbassyIziz});
 dDef({key:'dalab_embassy_voth',name:'Vothic embassy',family:'civic',tags:{type:['civic'],wealth:'civic',lit:true,role:'embassy',guest:'voth'},w:34,d:32,h:17,build:buildDalabEmbassyVoth});
-dDef({key:'dalab_embassy_hist',name:"Historians' embassy",family:'civic',tags:{type:['civic'],wealth:'civic',lit:true,role:'embassy',guest:'yuni-order'},w:34,d:32,h:18,build:buildDalabEmbassyHist});
+dDef({key:'dalab_embassy_yuni',name:'Yuni embassy',family:'civic',tags:{type:['civic'],wealth:'civic',lit:true,role:'embassy',guest:'yuni'},w:34,d:32,h:18,build:buildDalabEmbassyYuni});
+dDef({key:'dalab_embassy_republic',name:'Republican embassy',family:'civic',tags:{type:['civic'],wealth:'civic',lit:true,role:'embassy',guest:'republic',placeholder:true},w:34,d:32,h:19,build:buildDalabEmbassyRepublic});
+dDef({key:'dalab_chapterhouse',name:"Historians' chapterhouse",family:'civic',tags:{culture:'yuni-order',type:['civic','religious'],wealth:'civic',lit:true,role:'chapterhouse'},w:40,d:38,h:22,build:buildDalabChapterhouse});
 dDef({key:'dalab_halls',name:'Halls of Reformation',family:'civic',tags:{type:['civic','religious','industry'],wealth:'civic',lit:true,role:'halls',landmark:true},w:146,d:146,h:32,build:buildDalabHalls});
 // ================================================================= DALAB — the sacred: temples, priests' houses, the mounds, a shrine
 // The priests commune with The God from the tops of dome-shaped earth mounds built in imitation of the Ancient
@@ -2188,9 +2241,8 @@ function dnTemple(x,y,z,ry,s,o){o=o||{};const deco=o.deco!==false;const st=o.sto
  if(deco){const p=L(0,D/2+1.0*s);dnChecker(p[0],yy+.02,p[1],W+1.6*s,2.0*s,ry);}
  vB('vStone',x,yy,z,W,H,D,ry,st);
  // bands: a fret plinth band (colour when deco), the mural frieze, a cream string course under it
- {const f=L(0,D/2);if(deco)dnFretBand(f[0],yy+.3*s,f[1],ry,W-3.2*s,1.0*s);else dnReliefBand(f[0],yy+.3*s,f[1],ry,W-1.2*s,1.0*s,st);dnMuralBand(f[0],yy+H-2.0*s,f[1],ry,W-4.2*s,1.5*s);}
- for(const sd of[-1,1]){const f=L(sd*W/2,0);if(deco)dnFretBand(f[0],yy+.3*s,f[1],ry+sd*Math.PI/2,D-3.2*s,1.0*s);else dnReliefBand(f[0],yy+.3*s,f[1],ry+sd*Math.PI/2,D-1.2*s,1.0*s,st);dnMuralBand(f[0],yy+H-2.0*s,f[1],ry+sd*Math.PI/2,D-4.2*s,1.5*s);}
- if(deco)dnTrimBand(x,yy+H-2.15*s,z,W,D,ry,.14*s);
+ {const f=L(0,D/2);if(deco)dnFretBand(f[0],yy+.3*s,f[1],ry,W-3.2*s,1.0*s);else dnReliefBand(f[0],yy+.3*s,f[1],ry,W-1.2*s,1.0*s,st);dnMuralBand(f[0],yy+H-1.7*s,f[1],ry,W-4.2*s,1.5*s,o.mural);}
+ for(const sd of[-1,1]){const f=L(sd*W/2,0);if(deco)dnFretBand(f[0],yy+.3*s,f[1],ry+sd*Math.PI/2,D-3.2*s,1.0*s);else dnReliefBand(f[0],yy+.3*s,f[1],ry+sd*Math.PI/2,D-1.2*s,1.0*s,st);dnMuralBand(f[0],yy+H-1.7*s,f[1],ry+sd*Math.PI/2,D-4.2*s,1.5*s,o.mural);}
  // deco piers with avatar panels flanking the door and at the corners
  // (piers sit at the corners, outside the window jambs and the plinth band; windows sit below the frieze)
  if(deco){for(const lx of[-W/2+.55*s,W/2-.55*s]){const f=L(lx,D/2);dnDecoPanel(f[0],yy+.5*s,f[1],ry,.9*s,H-.9*s);}
@@ -2200,8 +2252,8 @@ function dnTemple(x,y,z,ry,s,o){o=o||{};const deco=o.deco!==false;const st=o.sto
  if(deco){const c=L(0,D/2-1.0*s);dnCrest(c[0],c1+.5*s,c[1],W*.6,ry,st);}
  kput('vPyrSh',[x,c1+.5*s,z],ry?qEuler(0,ry,0):null,[W-1.4*s,3.2*s,D-1.4*s],sh);vPst('vPost',x,c1+3.4*s,z,.1*s,1.6*s,vC(0x5a4632));vBall('dGiltBall',x,c1+5.0*s,z,.32*s);
  {const g=L(0,D/2+.1);dnGate(g[0],yy,g[1],ry,2.0*s,3.2*s,st,tr);const d=L(0,D/2);vnDoor(d[0],yy,d[1],ry,1.8*s,3.0*s,'vStone',tr||st,vC(0x2a2a30),false);
-  for(const lx of[-3.0*s,3.0*s]){const w=L(lx,D/2);if(o.lit!==false)dnGodWin(w[0],yy+1.0*s,w[1],ry,1.0*s,1.4*s,'vStone',tr||st);else vnWin(w[0],yy+1.0*s,w[1],ry,1.0*s,1.4*s,'open','vStone',st);}
-  for(const sd of[-1,1])for(const lz of[-2*s,2*s]){const w=L(sd*W/2,lz);if(o.lit!==false)dnGodWin(w[0],yy+1.0*s,w[1],ry+sd*Math.PI/2,1.0*s,1.4*s,'vStone',tr||st);}
+  for(const lx of[-3.0*s,3.0*s]){const w=L(lx,D/2);if(o.lit!==false)dnGodWin(w[0],yy+1.4*s,w[1],ry,1.0*s,1.4*s,'vStone',tr||st);else vnWin(w[0],yy+1.4*s,w[1],ry,1.0*s,1.4*s,'open','vStone',st);}
+  for(const sd of[-1,1])for(const lz of[-2*s,2*s]){const w=L(sd*W/2,lz);if(o.lit!==false)dnGodWin(w[0],yy+1.4*s,w[1],ry+sd*Math.PI/2,1.0*s,1.4*s,'vStone',tr||st);}
   for(const lx of[-2.3*s,2.3*s]){const l=L(lx,D/2);if(o.lit!==false)dnGodLamp(l[0],yy+3.9*s,l[1],ry);}}
  // banners at the platform corners, the altar, the giant guards, the priest
  for(const sd of[-1,1]){const p=L(sd*(W/2+2.6*s),D/2+2.6*s);dnBannerPole(p[0],y,p[1],ry,6.5*s,dCol(sd<0?DPAL.gold:DPAL.turq));}
@@ -2351,6 +2403,385 @@ dDef({key:'dalab_high_mound',name:"High Priest's mound",family:'sacred',tags:{ty
 dDef({key:'dalab_palace_mound',name:"High Priest's palace mound",family:'sacred',tags:{type:['religious','civic'],wealth:'priest',lit:true,landmark:true,role:'palace'},w:100,d:110,h:36,build:buildDalabPalaceMound});
 dDef({key:'dalab_priest_compound',name:"Priests' compound",family:'sacred',tags:{type:['religious','single-family dwelling'],wealth:'priest',lit:true},w:52,d:52,h:12,build:buildDalabPriestCompound});
 dDef({key:'dalab_healers',name:"Healers' hall",family:'civic',tags:{type:['civic','religious'],wealth:'civic',lit:true,role:'healers'},w:36,d:28,h:13,build:buildDalabHealers});
+// ================================================================= DALAB — the ranch
+// A livestock ranch the area of the Halls of Reformation (~120 m square): a rail fence round the whole, a ranch house
+// (a post house on a rammed-earth plinth), a great thatch barn, a granary, four paddocks with troughs and hay, a
+// stone-walled pen with a shade roof, a well, a windbreak of skirt palms, and the stock: whatever the fauna registry
+// (DFAUNA, 69e) holds — Dalab lizards today, the monsters when they exist (the monster pen is the stone one).
+function dnRailFence(x,z,w,d,ry,c,gate){vnFence(x,0,z,w,d,ry,c,gate,1.3);}
+function dnTrough(x,y,z,ry){vB('vWood',x,y,z,2.4,.6,.8,ry,dCol(DPAL.woodGrey));vB('vDarkB',x,y+.5,z,2.2,.1,.6,ry);}
+function dnHaystack(x,y,z,r){kput('dConeT',[x,y-.2,z],null,[r,r*1.6,r],dCol(DPAL.thatch));vPst('vPost',x,y,z,.06,r*1.9,vC(0x5a4632));}
+function dnHerd(kind,x,z,w,d,n,s,opt){for(let i=0;i<n;i++){const px=x+rr(-w/2+1.5,w/2-1.5),pz=z+rr(-d/2+1.5,d/2-1.5);dnAnimal(kind,px,0,pz,rng()*TAU,(s||1)*rr(.7,1.15),opt);}}
+function buildDalabRanch(G,o){reseed(8701+(o.v|0));const S=120;const wood=dCol(DPAL.woodGrey),earth=dCol(DPAL.earth),th=dCol(DPAL.thatch),st=dCol(DPAL.stone);
+ vnReg('Ranch',0,0,S*.72,10,{type:['farm']});vnReg('Ranch fence',0,0,S*.72,1.5,{part:'wall',type:['farm']});
+ dnRailFence(0,0,S,S,0,wood,6);
+ vnPaving(0,.02,S/2-8,10,14,0,dCol(DPAL.earthDark),10);
+ // the ranch house on its plinth, front of the yard; the barn behind; the granary; the well
+ {const hx=-30,hz=34;vB('dEarth',hx,-.05,hz,14,.7,11,0,earth);const W=9.5,D=7,H=2.8,FL=.7;vnFrame(hx,FL,hz,W,H,D,0,wood,.15);vB('vWood',hx,FL,hz,W-.1,H,D-.1,0,wood.clone().multiplyScalar(.92));
+  vnHipRoof('vHipT',hx,FL+H,hz,W,D,2.6,0,th,1.2);vnVeranda(hx,0,hz+D/2+1.0,W-1.2,2.0,0,FL,2.4,wood);vnShedRoof(hx,FL+2.4,hz+D/2+1.0,W-1.2,2.0,.5,0,'vThatchB',th,.4,.26);
+  vnDoor(hx-1,FL,hz+D/2-.05,0,.95,1.9,'vWood',wood,vC(0x6a5a48),false);vnWin(hx+2.4,FL+1.2,hz+D/2-.05,0,.9,.7,'open','vWood',wood,true);dnHearth(hx+2.4,FL+1.2,hz+D/2-.05,0,.9,.7);
+  dnMuralBand(hx,FL+H-.5,hz-D/2+.05,Math.PI,W-2,.45,3);dnJar(hx+6.2,0,hz+2,.3);dnWoodpile(hx-6.4,0,hz-1,Math.PI/2,1.4);vnDryingRack(hx+1,0,hz+6.5,0,3);}
+ {const bx=-30,bz=8;const W=22,D=12,H=4.2;vB('vStone',bx,-.05,bz,W+.6,.35,D+.6,0,vC(0x9a8a78));for(let i=0;i<=5;i++)for(const sd of[-1,1])vPst('vPostB',bx-W/2+W*i/5,0,bz+sd*(D/2-.2),.2,H,wood);
+  vB('dEarth',bx,.3,bz-D/2+.5,W,H-.6,1.0,0,earth);vnGableRoof(bx,H,bz,W,D,3.6,0,'vGableT',th,1.3,'vGableW',wood,.5);
+  vB('vWood',bx,.3,bz,W-.4,H-.6,.14,0,wood);for(const sd of[-1,1])vB('vWood',bx+sd*(W/2-.1),.3,bz,.14,H-.6,D-.6,0,wood);   // board partitions
+  vnSacks(bx-6,.3,bz+3,5);dnHaystack(bx+5,.3,bz+2,2.2);dnHaystack(bx+8.5,.3,bz-1,1.8);vnCrate(bx-8,.3,bz-2,.9,.2,wood);vnBarrel(bx+9,.3,bz+4,.42,1,wood);
+  dnHerd('lizard',bx-2,bz-2,8,6,3,.9);}
+ dnGranary(-12,0,44,1.5,2.0,{door:Math.PI});dnGranary(-8,0,40,1.3,1.8,{door:Math.PI*.8});
+ dnDrum('dStoneDrum',-14,0,32,1.1,.9,st);dnDrum('vDarkB',-14,.9,32,.85,.1,null);vB('vWood',-14,0,32,.12,2.4,.12,0,wood);vB('vWood',-14,2.3,32,1.2,.1,.1,0,wood);
+ // the paddocks: four rail-fenced fields on the east half and the south, each with a trough, a hay stack, a herd
+ const PADS=[[30,30,50,44],[30,-12,50,36],[-25,-30,60,44],[30,-40,50,16]];
+ PADS.forEach((P,i)=>{const[px,pz,pw,pd]=P;dnRailFence(px,pz,pw,pd,0,wood,3);dnTrough(px-pw/2+3,0,pz+pd/2-2.5,0);if(i<3)dnHaystack(px+pw/2-4,0,pz-pd/2+4,2.4);
+  dnHerd('lizard',px,pz,pw-6,pd-6,i===3?4:7,1,{frill:i===1});});
+ // the shade roof in the big paddock
+ for(const p of[[-8,-18],[8,-18],[-8,-8],[8,-8]])vPst('vPostB',p[0],0,p[1],.16,2.8,wood);vnShedRoof(0,2.6,-13,18,12,.6,0,'vThatchB',th,.6,.3);
+ // THE MONSTER PEN: a stone-walled ring pen with a heavy gate and a watch post — lizards for now
+ {const mx=38,mz=-2,MR=13;dnRingWall(mx,0,mz,MR,3.2,-Math.PI/2,4,'vStone',st,1.0);for(const sd of[-1,1]){const p=dnOnRing(mx,mz,MR,-Math.PI/2+sd*.16);vB('vStone',p[0],0,p[1],1.2,4.2,1.2,-Math.PI/2,st);}
+  const g=dnOnRing(mx,mz,MR,-Math.PI/2);vB('vWood',g[0],0,g[1],3.6,3.0,.2,-Math.PI/2,wood);for(let k=0;k<4;k++){const q=loc(g[0],g[1],-1.5+k,0,-Math.PI/2);vB('vIron',q[0],0,q[1],.08,3.0,.08,0,vC(0x2e2a26));}
+  vPst('vPostB',mx,0,mz-MR-2.5,.2,5,wood);vB('vWood',mx,5,mz-MR-2.5,2,.15,2,0,wood);vnLadder(mx+1.2,0,mz-MR-2.5,Math.PI/2,5,wood);kput('figB',[mx,5.15,mz-MR-2.5],null,1,dCol(DPAL.robe));kput('figH',[mx,5.15,mz-MR-2.5],null,1,dCol(DPAL.skin));
+  for(let i=0;i<5;i++){const a=rng()*TAU,r=rr(2,MR-3);dnAnimal('lizard',mx+Math.cos(a)*r,0,mz+Math.sin(a)*r,rng()*TAU,rr(1.2,1.7),{frill:true,c:dCol([0x8a4a2a,0x6a5a2a,0x4f4f36])});}
+  dnFirePit(mx,0,mz+MR+4,.7);vnReg('Monster pen (lizards for now)',mx,mz,MR+1,5,{type:['farm'],part:'pen'});}
+ // windbreak: skirt palms along the north fence; a few ranch hands and a rider's hitching rail
+ BIO.cur='lowlands/ranch';for(let k=0;k<7;k++)dnTree('skirtpalm',-S/2+8+k*10,0,-S/2+6,{scale:rr(.8,1.1)});for(let k=0;k<4;k++)dnTree('manzanita',S/2-6,0,-S/2+12+k*16,{scale:.8});BIO.cur=null;
+ dnFolk(-20,50,3,2);dnFolk(10,8,2,2);dnFolk(0,S/2+4,2,1.5);
+ vB('vWood',8,0,S/2-6,.12,1.1,.12,0,wood);vB('vWood',12,0,S/2-6,.12,1.1,.12,0,wood);vB('vWood',10,1.0,S/2-6,4.2,.1,.1,0,wood);}
+
+dDef({key:'dalab_ranch',name:'Ranch',family:'farm',tags:{type:['farm'],wealth:'middle',lit:false},w:126,d:126,h:12,build:buildDalabRanch});
+// ================================================================= PORTED — the Voth Embassy (a Voth clan compound in Iziz)
+// Re-description of Voth's `voth_bldg_clan_compound` + the townhouse kinds (hlaalu / velothi / domed) against the
+// Iziz kit. Voth is a Venice/Vivec-like Dunmer city: grey-brown ashlar (cooler than Iziz's orange sandstone), pale
+// plaster upper walls, dark pantile roofs, gilded domes and finials, deep-red and dark-blue clan banners. The
+// compound: a curtain wall with pilaster buttresses, four tapered corner bastions, a gatehouse; inside a Velothi
+// tower (tapering octagonal drums, banded, domed), a hlaalu house (stacked, shrinking, corniced flat blocks), a
+// domed hall, a paved court with a shrine obelisk, a well and an emperor-mushroom sapling in a stone planter.
+// Shared `vp*` textures / materials / kit items for both ported buildings (75 + 76) live at the top of this file.
+
+// ---------------------------------------------------------------- textures (near-grey, tinted per instance; 128 px = 2 m unless noted)
+TEX.vpTile=canvasTex(128,128,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;   // pantile: courses 0.3 m, tiles 0.25 m, each tile rounded across
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;const row=Math.floor(y/19),fy=y%19,off=(row%2)*8,fx=(x+off)%16,tx=Math.floor((x+off)/16);
+  const curve=Math.sin(fx/16*Math.PI);let v=150+curve*46+(h3(tx*1.7,row*2.3,3.1)-.5)*30+(fbm(x/9,y/9,4.4,2)-.5)*14;
+  if(fy>16)v-=55;else if(fy<1)v+=8;if(fx<1)v-=30;d[i]=v;d[i+1]=v*.92;d[i+2]=v*.86;d[i+3]=255;}
+ g.putImageData(id,0,0);});
+TEX.vpBanco=canvasTex(128,128,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;   // hand-smoothed mud plaster: sweeping horizontal trowel strokes, fine grit
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;let v=200+(fbm(x/40,y/9,5.1,3)-.5)*30+(fbm(x/6,y/6,2.7,2)-.5)*16+(fbm(x/2,y/2,8.8,1)-.5)*8;
+  const band=Math.sin(y/128*Math.PI*7+fbm(x/30,0,1.3,2)*3);v+=band*5;const crack=fbm(x/14,y/14,6.2,2);if(Math.abs(crack-.5)<.005)v-=50;
+  d[i]=v;d[i+1]=v*.95;d[i+2]=v*.88;d[i+3]=255;}
+ g.putImageData(id,0,0);});
+TEX.vpMosaic=canvasTex(128,128,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;   // COLOUR texture: blue-and-white tesserae, 1 m per tile; a diamond lattice in the Order's blue
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;const tx=Math.floor(x/8),ty=Math.floor(y/8),grout=(x%8<1)||(y%8<1);
+  const u=(x/128)%.5,vv=(y/128);const diamond=Math.abs(u-.25)+Math.abs(vv-.5)<.24;const blue=diamond?(Math.abs(u-.25)+Math.abs(vv-.5)>.12):false;
+  let r,gg,b;if(blue){r=42+h3(tx,ty,1)*30;gg=106+h3(tx,ty,2)*40;b=176+h3(tx,ty,3)*40;}else{r=236+h3(tx,ty,4)*14;gg=232+h3(tx,ty,5)*12;b=218+h3(tx,ty,6)*14;}
+  if(diamond&&!blue){r=216;gg=150+h3(tx,ty,7)*30;b=48;}   // a warm gold heart in each diamond
+  if(grout){r*=.55;gg*=.55;b*=.55;}d[i]=r;d[i+1]=gg;d[i+2]=b;d[i+3]=255;}
+ g.putImageData(id,0,0);});
+TEX.vpBanner=canvasTex(64,160,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;   // a hung banner: dark field (takes the tint), a pale device, a fringed foot
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;const u=x/w-.5,v=y/h;let val=118+(fbm(x/6,y/6,2.2,2)-.5)*18+((x%3<1)?-6:0);
+  const r=Math.hypot(u*1.9,(v-.42)*1.9);if(r<.36&&r>.28)val=240;if(Math.abs(u)<.03&&v>.2&&v<.64)val=240;if(Math.abs(v-.42)<.02&&Math.abs(u)<.22)val=240;   // ring + cross device
+  if(v>.93&&((x%6)<3))val=0;if(v<.03)val=200;if(Math.abs(u)>.47)val*=.7;
+  d[i]=val;d[i+1]=val;d[i+2]=val;d[i+3]=255;}
+ g.putImageData(id,0,0);});
+
+// ---------------------------------------------------------------- materials
+MAT.vpTile=new THREE.MeshStandardMaterial({map:TEX.vpTile,color:0xffffff,roughness:.9,metalness:0,side:DS});vWorldUV(MAT.vpTile,.5);
+MAT.vpBanco=new THREE.MeshStandardMaterial({map:TEX.vpBanco,color:0xffffff,roughness:.98,metalness:0,side:DS});vWorldUV(MAT.vpBanco,.5);
+MAT.vpMosaic=new THREE.MeshStandardMaterial({map:TEX.vpMosaic,color:0xffffff,roughness:.45,metalness:.05,side:DS});vWorldUV(MAT.vpMosaic,1);
+MAT.vpGilt=new THREE.MeshStandardMaterial({color:0xd0a53c,roughness:.32,metalness:.75});
+MAT.vpBanner=new THREE.MeshStandardMaterial({map:TEX.vpBanner,color:0xffffff,roughness:.9,metalness:0,side:DS});   // plain 0..1 UVs: the device must not tile
+MAT.vpBrass=new THREE.MeshStandardMaterial({color:0xb08a3a,roughness:.4,metalness:.7});
+
+// ---------------------------------------------------------------- geometry
+const VPOCT=new THREE.CylinderGeometry(.86,1,1,8).translate(0,.5,0).rotateY(Math.PI/8);      // tapering octagonal drum, a FACE to the front
+const VPOCTS=new THREE.CylinderGeometry(1,1,1,8).translate(0,.5,0).rotateY(Math.PI/8);       // straight octagonal band
+const VPDRUM=new THREE.CylinderGeometry(1,1,1,28).translate(0,.5,0);
+const VPDISC=new THREE.CylinderGeometry(1,1,1,24).rotateX(Math.PI/2);                        // a disc facing ±z, thickness = scale z
+const VPBANCO7=vnWedgeGeo(.93,.93), VPBANCO5=vnWedgeGeo(.55,.55), VPOBELISK=vnWedgeGeo(.42,.42);
+// a wall slab W x H x T with a PARABOLIC opening ow x oh (Yuni's arch), base at y=0, centred in x and z
+function vpArchGeo(W,H,T,ow,oh){const s=new THREE.Shape();s.moveTo(-W/2,0);s.lineTo(W/2,0);s.lineTo(W/2,H);s.lineTo(-W/2,H);s.lineTo(-W/2,0);
+ const p=new THREE.Path();const n=18;p.moveTo(-ow/2,0);for(let i=1;i<n;i++){const x=-ow/2+ow*i/n;p.lineTo(x,oh*(1-Math.pow(2*x/ow,2)));}p.lineTo(ow/2,0);p.lineTo(-ow/2,0);s.holes.push(p);
+ const g=new THREE.ExtrudeGeometry(s,{depth:T,bevelEnabled:false,curveSegments:8});g.translate(0,0,-T/2);g.computeVertexNormals();return g;}
+// an ARCHIVOLT: the parabolic ring `t` thick round an opening ow x oh (a horseshoe polygon, so no hole touches the outline), extruded T
+function vpArchRingGeo(ow,oh,t,T){const s=new THREE.Shape();const n=22,OW=ow+2*t,OH=oh+t;s.moveTo(-OW/2,0);for(let i=1;i<n;i++){const x=-OW/2+OW*i/n;s.lineTo(x,OH*(1-Math.pow(2*x/OW,2)));}s.lineTo(OW/2,0);s.lineTo(ow/2,0);
+ for(let i=n-1;i>0;i--){const x=-ow/2+ow*i/n;s.lineTo(x,oh*(1-Math.pow(2*x/ow,2)));}s.lineTo(-ow/2,0);s.lineTo(-OW/2,0);
+ const g=new THREE.ExtrudeGeometry(s,{depth:T,bevelEnabled:false,curveSegments:8});g.translate(0,0,-T/2);g.computeVertexNormals();return g;}
+
+// ---------------------------------------------------------------- kit items
+kdef('vpTileB',VBOX,MAT.vpTile);kdef('vpTilePyr',VPYR,MAT.vpTile);kdef('vpTileHip',VHIP,MAT.vpTile);kdef('vpTileCone',VCONE,MAT.vpTile);
+kdef('vpBancoB',VBOX,MAT.vpBanco);kdef('vpBanco7',VPBANCO7,MAT.vpBanco);kdef('vpBanco5',VPBANCO5,MAT.vpBanco);kdef('vpBancoCone',VCONE,MAT.vpBanco);
+kdef('vpBancoPost',VPOST,MAT.vpBanco);kdef('vpDrumB',VPDRUM,MAT.vpBanco);kdef('vpDrumS',VPDRUM,MAT.stone);kdef('vpRingB',new THREE.TorusGeometry(1,.13,7,26),MAT.vpBanco);
+kdef('vpDiscDark',VPDISC,MAT.void);kdef('vpDiscP',VPDISC,MAT.plaster);kdef('vpArchRingM',vpArchRingGeo(3.4,5.0,.55,.36),MAT.vpMosaic);kdef('vpArchRingB',vpArchRingGeo(3.4,5.0,.5,.3),MAT.vpBanco);kdef('vpDiscLit',VPDISC,MAT.warmPane);kdef('vpMosaicB',VBOX,MAT.vpMosaic);
+kdef('vpGateArchB',vpArchGeo(7,6.5,1.6,3.4,5.0),MAT.vpBanco);kdef('vpBayArchB',vpArchGeo(3.2,4.0,.7,2.3,3.4),MAT.vpBanco);kdef('vpBayArchM',vpArchGeo(3.2,4.0,.7,2.3,3.4),MAT.vpMosaic);
+kdef('vpOctS',VPOCT,MAT.stone);kdef('vpOctBand',VPOCTS,MAT.stone);kdef('vpObelisk',VPOBELISK,MAT.stone);
+kdef('vpGilt',VBALL,MAT.vpGilt);kdef('vpGiltCone',VCONE,MAT.vpGilt);kdef('vpGiltDome',VDOME,MAT.vpGilt);kdef('vpBrassBell',new THREE.SphereGeometry(1,10,7,0,TAU,0,Math.PI*.62),MAT.vpBrass);
+kdef('vpBanner',VPLANE,MAT.vpBanner);
+
+// ---------------------------------------------------------------- local helpers (vp prefix)
+// a hung banner: pole-less cloth `w` x `h` whose top edge is at y, facing `ry`, tinted
+function vpHang(x,y,z,ry,w,h,c){kput('vpBanner',[x,y-h/2,z],vQ(ry,0,0),[w,h,1],c||null);}
+// a banner on a pole: post, cross-arm, hung cloth turned across the arm
+function vpBannerPole(x,y,z,ry,h,c){vPst('vPipe',x,y,z,.07,h,vC(0x3a2f22));const p=loc(x,z,.5,0,ry);vB('vIron',p[0],y+h-.25,p[1],1.0,.07,.07,ry,vC(0x3a2f22));vpHang(p[0],y+h-.3,p[1],ry+Math.PI/2,.85,2.6,c);}
+// Voth window: a dark recess with a stone sill and a lintel; `lit` swaps the recess for a warm pane (electric)
+function vpVWin(x,y,z,ry,w,h,c,lit){const f=loc(x,z,0,.04,ry);vB(lit?'vWinLit':'vDarkB',f[0],y,f[1],w,h,.12,ry);
+ const s=loc(x,z,0,.16,ry);vB('vStone',s[0],y-.24,s[1],w+.55,.24,.42,ry,c);vB('vStone',s[0],y+h,s[1],w+.4,.2,.3,ry,c);
+ if(lit){vB('vStone',f[0],y,f[1],.07,h,.14,ry,c);}}
+// Voth door: recessed dark surround, leaf, stone lintel, one or two threshold steps, lamp if lit
+function vpVDoor(x,y,z,ry,w,h,c,steps){const a=loc(x,z,0,.22,ry);vB('vStone',a[0],y,a[1],w+1.1,h+.8,.5,ry,c.clone().multiplyScalar(.82));
+ const f=loc(x,z,0,.4,ry);vB('vDarkB',f[0],y,f[1],w,h,.2,ry);const l=loc(x,z,-w*.06,.5,ry);kput('vWood',[l[0],y+h/2,l[1]],vQ(ry,0,0).multiply(qEuler(0,.2,0)),[w*.9,h-.05,.07],vC(0x1c1a16));
+ const t=loc(x,z,0,.3,ry);vB('vStone',t[0],y+h+.8,t[1],w+1.5,.35,.7,ry,c.clone().multiplyScalar(.8));
+ for(let k=0;k<(steps||2);k++){const s=loc(x,z,0,.7+k*.4,ry);vB('vStone',s[0],y-(k+1)*.2,s[1],w+1.0-k*.2,.2,.8,ry,c.clone().multiplyScalar(.75));}
+ if(vLit()){const q=loc(x,z,-(w/2+.9),0,ry);vnLamp(q[0],y+h+.3,q[1],ry);}}
+
+// ---------------------------------------------------------------- the embassy
+function buildVpEmbassy(G,o){reseed(7801+(o.v|0));
+ const st=vC(vPick([0x8c8579,0x958e80,0x8b8069])),stD=st.clone().multiplyScalar(.78),cop=st.clone().multiplyScalar(.86),pl=vC(0xb8b0a2),tile=vC(vPick([0x5a4a48,0x4e4a52,0x6b5a58])),dome=vC(0xb08d3c),red=vC(0xa8241c),blue=vC(0x2f5a86),timber=vC(0x4a3a28),iron=vC(0x3a2f22);
+ const CW=34,CD=30,WT=1.0,WH=4.8,Y0=.35;
+ vnReg('Voth Embassy',0,0,25.5,24,{role:'embassy'});
+ // raised stone pad the whole compound stands on
+ vB('vStone',0,0,0,CW+1.2,Y0,CD+1.2,0,stD);
+ // ---- curtain wall: back, sides, front halves; coping; pilaster buttresses outside; a walkway ledge inside
+ const hx=CW/2-WT/2,hz=CD/2-WT/2,GAP=5.2;
+ vB('vStone',0,Y0,-hz,CW-2*WT,WH,WT,0,st);vB('vStone',0,Y0+WH-.1,-hz,CW-2*WT+.3,.3,WT+.3,0,cop);
+ for(const s of[-1,1]){vB('vStone',s*hx,Y0,0,WT,WH,CD-2*WT,0,st);vB('vStone',s*hx,Y0+WH-.1,0,WT+.3,.3,CD-2*WT+.3,0,cop);
+  const L=(CW-2*WT-GAP)/2,cx=s*(GAP/2+L/2);vB('vStone',cx,Y0,hz,L,WH,WT,0,st);vB('vStone',cx,Y0+WH-.1,hz,L+.3,.3,WT+.3,0,cop);}
+ for(const s of[-1,1]){vB('vStone',0,Y0+2.5,s*(hz+.06),CW-2*WT,.22,WT+.12,0,cop);vB('vStone',s*(hx+.06),Y0+2.5,0,WT+.12,.22,CD-2*WT,0,cop);}   // string course
+ for(const px of[-11,-5.5,0,5.5,11])for(const s of[-1,1]){if(s>0&&Math.abs(px)<8)continue;vB('vStone',px,Y0,s*(hz+.5),1.3,WH-.5,1.0,0,st.clone().multiplyScalar(.93));vB('vStone',px,Y0+WH-.5,s*(hz+.5),1.5,.25,1.2,0,cop);}
+ for(const pz of[-9,-3,3,9])for(const s of[-1,1]){vB('vStone',s*(hx+.5),Y0,pz,1.0,WH-.5,1.3,0,st.clone().multiplyScalar(.93));vB('vStone',s*(hx+.5),Y0+WH-.5,pz,1.2,.25,1.5,0,cop);}
+ // wall-walk inside: a corbelled ledge along the inner faces and a stone stair up to it beside the gate
+ for(const s of[-1,1]){vB('vStone',s*(hx-WT/2-.45),Y0+3.5,0,.9,.3,CD-2*WT-1,0,cop);for(let k=0;k<5;k++)vB('vStone',s*(hx-WT/2-.45),Y0+3.1,-CD/2+4+k*5.5,.6,.4,.5,0,stD);}
+ vB('vStone',0,Y0+3.5,-(hz-WT/2-.45),CW-2*WT-1,.3,.9,0,cop);for(let k=0;k<6;k++)vB('vStone',-CW/2+4+k*5.2,Y0+3.1,-(hz-WT/2-.45),.5,.4,.6,0,stD);
+ for(let i=0;i<8;i++)vB('vStone',-(hx-WT/2-.7),Y0+i*.44,hz-WT/2-2.2-i*.75,1.4,.44,.8,0,st.clone().multiplyScalar(.9));
+ // ---- corner bastions: tapered square towers oversailing the wall, cornice, cap, slits, a red clan banner on each
+ for(const p of[[-1,-1],[1,-1],[-1,1],[1,1]]){const tx=p[0]*hx,tz=p[1]*hz,BH=9.4;kput('vBatterS',[tx,Y0,tz],null,[4.6,BH,4.6],st.clone().multiplyScalar(.96));
+  vB('vStone',tx,Y0+BH-.05,tz,4.5,.4,4.5,0,cop);vB('vStone',tx,Y0+BH+.35,tz,3.9,.8,3.9,0,st);
+  for(const s of[-1,1]){vB('vDarkB',tx+s*1.98,Y0+5.6,tz,.24,1.3,.5,0);vB('vDarkB',tx,Y0+5.6,tz+s*1.98,.5,1.3,.24,0);vB('vDarkB',tx+s*1.7,Y0+BH+.5,tz+p[1]*1.98,.5,.55,.2,0);}
+  vpBannerPole(tx,Y0+BH+1.15,tz,p[0]>0?-Math.PI/2:Math.PI/2,3.6,red);}
+ // ---- gatehouse: a block across the wall line, dark arched-lintel passage, iron-studded leaves half open, lamps, banners red + blue
+ {const gz=hz,GW=9.2,GD=4.2,GH=8.2;for(const s of[-1,1])vB('vStone',s*(GW/4+.9),Y0,gz,GW/2-1.8,4.6,GD,0,st);vB('vStone',0,Y0+4.6,gz,GW,GH-4.6,GD,0,st);   // piers + the storey over the passage: a REAL opening
+  vB('vFlag',0,Y0-.02,gz,3.6,.06,GD+.4,0,cop);vB('vStone',0,Y0+GH-.1,gz,GW+.4,.4,GD+.4,0,cop);vB('vStone',0,Y0+GH+.3,gz,GW-1.4,.9,GD-1.2,0,st.clone().multiplyScalar(.95));
+  for(let k=-2;k<=2;k++)vB('vStone',k*2.0,Y0+GH+1.2,gz+GD/2-.4,1.0,.7,.6,0,st);   // merlons on the front parapet
+  vB('vStone',0,Y0+4.6,gz+GD/2+.1,5.2,.55,.9,0,cop);vB('vStone',0,Y0+4.6,gz-GD/2-.1,5.2,.55,.9,0,cop);vB('vStone',0,Y0+5.15,gz+GD/2+.05,4.4,.25,.5,0,st);
+  for(const s of[-1,1]){vB('vStone',s*2.25,Y0,gz+GD/2+.1,.9,4.8,.7,0,st.clone().multiplyScalar(.9));vB('vStone',s*2.25,Y0,gz-GD/2-.1,.9,4.8,.7,0,st.clone().multiplyScalar(.9));
+   kput('vWood',[s*1.2,Y0+2.2,gz+GD/2-1.1],vQ(0,0,0).multiply(qEuler(0,s*.95,0)),[1.85,4.3,.12],vC(0x2a221a));   // gate leaves, swung inward, seen from the street
+   for(const yy of[1.0,2.3,3.6])kput('vIron',[s*1.2,Y0+yy,gz+GD/2-1.1],vQ(0,0,0).multiply(qEuler(0,s*.95,0)),[1.7,.1,.16],iron);
+   vpVWin(s*3.0,Y0+5.6,gz+GD/2,0,.8,1.4,st,false);vpVWin(s*3.0,Y0+5.6,gz-GD/2,Math.PI,.8,1.4,st,vLit());
+   vpBannerPole(s*3.6,Y0+GH+1.2,gz-.6,0,4.2,s<0?red:blue);
+   if(vLit()){vnLamp(s*2.9,Y0+4.3,gz+GD/2,0);vnLamp(s*2.9,Y0+4.3,gz-GD/2,Math.PI);}}
+  vpHang(0,Y0+GH-.4,gz+GD/2+.12,0,2.2,3.0,blue);vpHang(0,Y0+GH-.4,gz-GD/2-.12,Math.PI,2.2,3.0,red);          // the embassy's colours on the gate itself
+  vB('vStone',0,0,gz+GD/2+.5,4.6,.175,1.1,0,stD);                                                               // a step down to the street
+  for(const s of[-1,1])vnLampPost(s*3.6,0,gz+GD/2+.8,3.6);}
+ // ---- Velothi tower, back-left: base, three tapering octagonal drums with bands, a gilt dome; porch, slits, bracketed balcony
+ {const tx=-10,tz=-8.5;let y=Y0;const apo=Math.cos(Math.PI/8);const drums=[[3.6,8.0],[3.0,6.4],[2.35,3.6]];
+  kput('vpOctBand',[tx,y,tz],null,[3.9,1.0,3.9],stD);y+=1.0;
+  const faceAt=(r,h,t)=>(r*(1-.14*t/h))*apo;const face0=[];
+  drums.forEach((d,i)=>{kput('vpOctS',[tx,y,tz],null,[d[0],d[1],d[0]],st.clone().multiplyScalar(1+i*.03));face0.push(y);
+   const rt=d[0]*.86;y+=d[1];kput('vpOctBand',[tx,y,tz],null,[rt+.12,.45,rt+.12],cop);y+=.45;});
+  kput('vpOctBand',[tx,y,tz],null,[2.15,.5,2.15],st);y+=.5;kput('vDomeP',[tx,y,tz],null,[2.0,1.7,2.0],dome);vBall('vpGilt',tx,y+1.85,tz,.4);vPst('vPipe',tx,y+1.6,tz,.05,1.4,iron);vpHang(tx+.35,y+2.9,tz,Math.PI/2,.6,1.4,red);
+  // slit windows round the drums on the flats (k*45°, face 0 = +z front)
+  drums.forEach((d,i)=>{const yb=face0[i];const rows=i===0?[2.6,5.6]:[d[1]*.5];for(const yy of rows)for(let k=0;k<8;k++){if(i===0&&k===0)continue;if(i===2&&k%2===0)continue;const a=k*Math.PI/4;const r=faceAt(d[0],d[1],yy)+.02;
+    const p=[tx+Math.sin(a)*r,tz+Math.cos(a)*r];vpVWin(p[0],yb+yy-.7,p[1],a,k%2?.6:.95,1.4,st,vLit()&&i<2&&k%2===0);}});
+  // porch on the front flat of the first drum
+  {const g0=faceAt(drums[0][0],drums[0][1],1.6);const pz=tz+g0;vpVDoor(tx,Y0+1.0,pz,0,1.7,2.7,st,2);
+   for(const s of[-1,1]){vPst('vpDrumS',tx+s*1.75,Y0+1.0,pz+.9,.28,3.9,st.clone().multiplyScalar(.9));vB('vStone',tx+s*1.75,Y0+4.9,pz+.9,.8,.3,.8,0,cop);}
+   vB('vStone',tx,Y0+5.2,pz+.45,4.4,.4,1.6,0,cop);}
+  // bracketed balcony over the porch on the second drum's front flat
+  {const yb=face0[1]+1.3;const b0=tz+faceAt(drums[1][0],drums[1][1],1.3);vB('vStone',tx,yb,b0+.8,4.6,.3,1.7,0,cop);
+   for(const ox of[-1.7,1.7])vBeam([tx+ox,yb,b0],[tx+ox,yb-1.1,b0+1.4],.3,timber);
+   vB('vWood',tx,yb+.3,b0+1.55,4.6,.8,.14,0,timber);for(const ox of[-2.25,2.25])vB('vWood',tx+ox,yb+.3,b0+.8,.14,.8,1.6,0,timber);}
+  // external stair up the left flank to a first-floor door, and a stone buttress at the back
+  {const sx=tx-faceAt(drums[0][0],drums[0][1],2)-.5;for(let i=0;i<7;i++)vB('vStone',sx+.08*i,Y0+i*.6,tz-3.2+i*.9,1.5,.6,1.0,0,st.clone().multiplyScalar(.9));
+   const fx=tx-faceAt(drums[0][0],drums[0][1],4.5);vB('vStone',(sx+fx)/2,Y0+4.2,tz-5.3,fx-sx+.6,.3,2.0,0,cop);vB('vDarkB',fx-.1,Y0+4.5,tz-5.3,.3,2.2,1.3,0);vB('vStone',fx-.15,Y0+6.7,tz-5.3,.4,.3,1.9,0,cop);vBeam([sx-.2,Y0+.9,tz-3.2],[sx+.5,Y0+5.4,tz+3.8],.08,timber,'vIron');
+   kput('vBatterS',[tx,Y0,tz-4.4],null,[1.5,6.4,1.5],st.clone().multiplyScalar(.95));vB('vStone',tx,Y0+6.4,tz-4.4,1.7,.4,1.7,0,cop);}}
+ // ---- hlaalu house, back-right: stacked shrinking flat blocks (stone below, pale plaster above), cornices, balcony, chimney
+ {const lev=[];let jx=7.2,jz=-8.6,y=Y0,fw=12.5,fd=9.2;const hs=[6.0,4.8,3.6];
+  vB('vStone',jx,Y0,jz,fw+.8,.4,fd+.8,0,stD);y+=.4;
+  hs.forEach((fh,i)=>{if(i>0){jx+=rr(-.5,.5);jz+=rr(-.4,.2);}const item=i===0?'vStone':'vPlaster',c=i===0?st:pl;vB(item,jx,y,jz,fw,fh,fd,0,c);
+   if(i>0)for(const sx of[-1,1])for(const sz of[-1,1])vB('vStone',jx+sx*(fw/2-.35),y,jz+sz*(fd/2-.35),.7,fh,.7,0,st.clone().multiplyScalar(.9));   // stone quoins on the plaster storeys
+   vB('vStone',jx,y+fh-.28,jz,fw+.4,.36,fd+.4,0,cop);lev.push({x:jx,z:jz,y,w:fw,d:fd,h:fh});y+=fh;fw*=.8;fd*=.8;});
+  const L0=lev[0],L1=lev[1],L2=lev[2];vB('vStone',L2.x,y,L2.z,L2.w*.9,.7,L2.d*.9,0,cop);
+  // openings on every elevation
+  const row=(L,side,ys,n,spread,ww,wh,lit)=>{for(let i=0;i<n;i++){const u=n===1?0:-spread+2*spread*i/(n-1);
+   if(side===0)vpVWin(L.x+u,L.y+ys,L.z+L.d/2,0,ww,wh,st,lit);else if(side===1)vpVWin(L.x+u,L.y+ys,L.z-L.d/2,Math.PI,ww,wh,st,lit);
+   else if(side===2)vpVWin(L.x+L.w/2,L.y+ys,L.z+u,Math.PI/2,ww,wh,st,lit);else vpVWin(L.x-L.w/2,L.y+ys,L.z+u,-Math.PI/2,ww,wh,st,lit);}};
+  const lit=vLit();row(L0,0,1.5,2,3.9,1.3,1.8,lit);row(L0,0,4.2,3,4.2,1.1,1.3,false);row(L0,2,1.6,2,2.6,1.2,1.7,lit);row(L0,3,1.6,2,2.6,1.2,1.7,lit);row(L0,1,1.6,3,3.6,1.1,1.6,false);
+  row(L1,0,1.4,3,3.4,1.2,1.7,lit);row(L1,2,1.4,2,2.2,1.1,1.5,lit);row(L1,3,1.4,2,2.2,1.1,1.5,false);row(L1,1,1.4,2,2.6,1.0,1.4,false);
+  row(L2,0,1.1,2,2.0,1.0,1.4,lit);row(L2,1,1.1,1,0,1.0,1.3,false);row(L2,2,1.1,1,0,.9,1.3,false);
+  vpVDoor(L0.x-2.4,L0.y,L0.z+L0.d/2,0,1.7,2.8,st,2);
+  // first-floor balcony on timber brackets across the front
+  {const by=L0.y+L0.h-.1,bz=L0.z+L0.d/2;vB('vStone',L0.x,by,bz+.7,6.6,.3,1.5,0,cop);for(const ox of[-2.6,2.6])vBeam([L0.x+ox,by,bz],[L0.x+ox,by-1.2,bz+1.3],.32,timber);
+   vB('vWood',L0.x,by+.3,bz+1.38,6.6,.8,.14,0,timber);for(const ox of[-3.25,3.25])vB('vWood',L0.x+ox,by+.3,bz+.7,.14,.8,1.5,0,timber);for(let k=-5;k<=5;k++)vB('vWood',L0.x+k*.6,by+.3,bz+1.38,.07,.8,.07,0,timber);}
+  // roof furniture: chimney, a drain pipe, a small dome-capped stair turret on the top block
+  {const cx=L1.x+L1.w/2-1.1,cz=L1.z-L1.d/2+1.1;vB('vStone',cx,L1.y+L1.h,cz,.85,2.8,.85,0,stD);vB('vStone',cx,L1.y+L1.h+2.8,cz,1.15,.5,1.15,0,cop);vPst('vPipe',cx,L1.y+L1.h+3.3,cz,.22,.5,iron);}
+  vPst('vPipe',L0.x+L0.w/2+.2,Y0+.4,L0.z+L0.d/2-.6,.11,L0.h+L1.h-.3,st.clone().multiplyScalar(.7));
+  vPst('vpDrumS',L2.x-L2.w/2+1.3,y+.7,L2.z,1.0,1.2,st);kput('vDomeP',[L2.x-L2.w/2+1.3,y+1.9,L2.z],null,[1.05,.8,1.05],dome);vBall('vpGilt',L2.x-L2.w/2+1.3,y+2.8,L2.z,.18);
+  }
+ // ---- service range (kitchen / stable) against the right wall: stone, dark pantile hip roof, chimney, stable door
+ {const rx=13,rz=4,RW=5.6,RD=6.4,RH=3.4;vB('vStone',rx,Y0,rz,RW,RH,RD,0,st.clone().multiplyScalar(.95));vB('vStone',rx,Y0+RH-.1,rz,RW+.3,.28,RD+.3,0,cop);
+  vnHipRoof('vpTileHip',rx,Y0+RH+.55,rz,RW,RD,2.0,0,tile,.8);vB('vStone',rx-1.8,Y0+RH,rz-2.2,.7,2.4,.7,0,stD);vB('vStone',rx-1.8,Y0+RH+2.4,rz-2.2,.95,.4,.95,0,cop);
+  vB('vDarkB',rx-RW/2-.02,Y0,rz+1.2,.2,2.4,1.8,0);kput('vWood',[rx-RW/2-.1,Y0+1.2,rz+1.2],qEuler(0,Math.PI/2,0),[1.7,2.3,.08],vC(0x2a221a));vpVWin(rx-RW/2,Y0+1.6,rz-1.6,-Math.PI/2,.9,1.0,st,false);vpVWin(rx,Y0+1.6,rz+RD/2,0,.9,1.0,st,false);
+  vnBarrel(rx-RW/2-1.0,Y0,rz-2.4,.38,.9,timber);vnCrate(rx-RW/2-1.2,Y0,rz+2.8,.8,.3,timber);} // ---- domed hall (the embassy's audience room), left of the court: corniced stone block, ribbed drum, gilt-ochre dome, lucarnes, corner urns
+ {const hx2=-11,hz2=4.5,HW=8.4,HD=7.0,HH=5.6;vB('vStone',hx2,Y0,hz2,HW+.6,.4,HD+.6,0,stD);vB('vStone',hx2,Y0+.4,hz2,HW,HH,HD,0,st);
+  vB('vStone',hx2,Y0+.4+HH*.5,hz2,HW+.3,.26,HD+.3,0,cop);vB('vStone',hx2,Y0+.4+HH-.2,hz2,HW+.4,.4,HD+.4,0,cop);vB('vStone',hx2,Y0+.4+HH+.2,hz2,HW-.8,.5,HD-.8,0,st.clone().multiplyScalar(.95));
+  const dy=Y0+.4+HH+.7;vPst('vpDrumS',hx2,dy,hz2,2.7,2.4,st.clone().multiplyScalar(1.04));
+  for(let i=0;i<8;i++){const a=i/8*TAU;vB('vStone',hx2+Math.sin(a)*2.7,dy,hz2+Math.cos(a)*2.7,.3,2.4,.3,-a,cop);if(i%2===0)vB(vLit()?'vWinLit':'vDarkB',hx2+Math.sin(a)*2.68,dy+.7,hz2+Math.cos(a)*2.68,.9,1.2,.3,-a);}
+  vB('vStone',hx2,dy+2.4,hz2,5.9,.3,5.9,0,cop);kput('vDomeP',[hx2,dy+2.7,hz2],null,[2.85,2.5,2.85],dome);vBall('vpGilt',hx2,dy+5.3,hz2,.36);
+  for(const p of[[-1,-1],[1,-1],[-1,1],[1,1]]){const ux=hx2+p[0]*(HW/2-.6),uz=hz2+p[1]*(HD/2-.6);vB('vStone',ux,Y0+.4+HH+.2,uz,.9,.9,.9,0,cop);vBall('vpGilt',ux,Y0+.4+HH+1.4,uz,.32);}
+  vpVDoor(hx2+HW/2,Y0+.4,hz2,Math.PI/2,1.6,2.6,st,1);   // door faces the court
+  vpVWin(hx2+HW/2,Y0+1.9,hz2-2.4,Math.PI/2,1.2,1.7,st,vLit());vpVWin(hx2+HW/2,Y0+1.9,hz2+2.4,Math.PI/2,1.2,1.7,st,vLit());
+  for(const z of[-2.2,0,2.2])vpVWin(hx2-HW/2,Y0+1.9,hz2+z,-Math.PI/2,1.1,1.6,st,false);for(const x of[-2.4,0,2.4]){vpVWin(hx2+x,Y0+1.9,hz2+HD/2,0,1.1,1.6,st,vLit());vpVWin(hx2+x,Y0+1.9,hz2-HD/2,Math.PI,1.1,1.6,st,false);}
+  // a corbelled projecting bay on the front, as the domed townhouse has
+  vB('vStone',hx2+2.4,Y0+3.2,hz2+HD/2+.7,2.8,2.4,1.4,0,st.clone().multiplyScalar(1.03));vB('vStone',hx2+2.4,Y0+5.6,hz2+HD/2+.7,3.1,.3,1.7,0,cop);vBeam([hx2+2.4,Y0+3.2,hz2+HD/2],[hx2+2.4,Y0+2.0,hz2+HD/2+1.2],.45,timber);
+  vB('vDarkB',hx2+2.4,Y0+3.8,hz2+HD/2+1.42,1.7,1.4,.1,0);}
+ // ---- the court: paving, a paved way from the gate to the house, a shrine obelisk on a stepped base, a well, the emperor-mushroom sapling in a stone planter, lamps
+ vnPaving(0,Y0+.02,2,26,22,0,st.clone().multiplyScalar(.9),40);
+ vB('vFlag',0,Y0+.03,8.4,3.4,.1,9.6,0,cop);vB('vFlag',2.6,Y0+.03,-1.6,7.6,.1,2.6,0,cop);
+ {const ox=0,oz=1.5;for(let k=0;k<3;k++)vB('vStone',ox,Y0+k*.3,oz,3.6-k*.8,.3,3.6-k*.8,0,k%2?st:stD);kput('vpObelisk',[ox,Y0+.9,oz],null,[1.15,6.2,1.15],st.clone().multiplyScalar(1.05));
+  kput('vPyrS',[ox,Y0+7.1,oz],null,[.5,.5,.5],cop);vBall('vpGilt',ox,Y0+7.7,oz,.16);for(let k=0;k<4;k++){const a=k*Math.PI/2;vB('vDarkB',ox+Math.sin(a)*.55,Y0+2.2,oz+Math.cos(a)*.55,.3,1.4,.06,-a);}
+  if(vLit())for(const s of[-1,1]){vPst('vPipe',ox+s*1.35,Y0+.6,oz,.04,.5,iron);vBall('vBulb',ox+s*1.35,Y0+1.2,oz,.1);}}
+ {const wx=8.5,wz=6.5;vPst('vpDrumS',wx,Y0,wz,1.5,.9,stD);vPst('vpDrumS',wx,Y0+.9,wz,1.3,.2,cop);vB('vDarkB',wx,Y0+1.1,wz,1.8,.06,1.8,0);
+  for(const s of[-1,1])vPst('vPipe',wx+s*1.35,Y0+.9,wz,.09,2.4,iron);vB('vIron',wx,Y0+3.2,wz,2.9,.1,.1,0,iron);vPst('vRope',wx,Y0+1.3,wz,.02,1.9,vC(0x8a7a5a));vnBarrel(wx+.5,Y0+1.1,wz+.4,.2,.32,timber);}
+ {const px=-4,pz=8.5;vB('vStone',px,Y0,pz,3.2,.9,3.2,0,st);vB('vStone',px,Y0+.9,pz,3.5,.2,3.5,0,cop);vB('vClayB',px,Y0+1.0,pz,2.7,.12,2.7,0,vC(0x4a3a2c));
+  const fungus=vC(0x9a8aa2),gill=vC(0xe8dce4,1.4);vPst('vPostB',px,Y0+1.0,pz,.42,4.6,vC(0xc8c0c8));kput('vDomeP',[px,Y0+5.4,pz],null,[3.4,1.5,3.4],fungus);kput('vpDiscP',[px,Y0+5.36,pz],qEuler(Math.PI/2,0,0),[3.25,3.25,.14],gill);
+  kput('vDomeP',[px,Y0+6.9,pz],null,[1.3,.7,1.3],fungus.clone().multiplyScalar(1.1));vPst('vPostB',px+.9,Y0+1.0,pz-.6,.14,1.6,vC(0xc8c0c8));kput('vDomeP',[px+.9,Y0+2.55,pz-.6],null,[.9,.45,.9],fungus);
+  vPst('vPostB',px-1.0,Y0+1.0,pz+.7,.1,1.1,vC(0xc8c0c8));kput('vDomeP',[px-1.0,Y0+2.05,pz+.7],null,[.6,.3,.6],fungus);}
+ for(const s of[-1,1])vnLampPost(s*6,Y0,11.5,3.4);vnLampPost(-3,Y0,-2,3.4);
+ for(const x of[-13,13])vB('vWood',x,Y0,11.5,.5,.45,3.0,0,timber);   // benches along the front wall
+ vnFolk(1,6,4,3);vnFolk(0,CD/2+4,3,2);}
+
+VERN.def({key:'port_voth_embassy',name:'Voth Embassy',family:'ported',tags:{culture:'voth',type:['civic'],wealth:'rich',lit:true,role:'embassy'},w:36,d:34,h:24,build:buildVpEmbassy});
+// ================================================================= PORTED — the Order of Historians' chapterhouse (from the Yuni set)
+// Re-description of Yuni's `civic_chapter_house` ("Chapter house of the Historians": laterite drum halls under tile
+// cones with lanterns, round relief-ringed windows, curved arcaded gallery wings, a carved forecourt wall with a
+// parabolic gate) crossed with the Order's Djenne-type civic vocabulary (`civic_hall_records`, `civic_sankore_spire`:
+// battered banco walls, pilaster-buttresses with pinnacles, toron rows, blue-and-white mosaic string courses) and the
+// Locus Geomancers' chapterhouse's nested-archivolt porch. Ochre / laterite / dark-umber earth palette; the only
+// saturated colour is the Order's blue in the mosaic bands and the electric light. Uses the shared vp* kit from 75.
+//
+// Programme, local frame (+z front): a walled forecourt with a parabolic gate between two pylons; two arcaded
+// wings (the archive stacks, the scriptorium) with a drum pavilion at each front corner; the READING HALL across
+// the back — a battered block whose great drum carries a tile cone and a lantern; the Order's bell tower (a
+// Sankore-style pyramid bristling with toron) at the back corner. Electric lamps: the Order runs the Vault's cable.
+
+// battered face: half-depth of a `vpBanco7` block (7 % taper) at height y above its base
+const vpBat7=(D,H,y)=>D/2*(1-.07*clamp(y/H,0,1));
+// Yuni window on a battered banco face: dark reveal + pane (lit if electric), a small banco sill; (x,z) ON the face
+function vpYWin(x,y,z,ry,w,h,c,lit){const f=loc(x,z,0,.03,ry);vB('vDarkB',f[0],y-.06,f[1],w+.24,h+.12,.14,ry);const p=loc(x,z,0,.06,ry);vB(lit?'vWinLit':'vDarkB',p[0],y,p[1],w,h,.12,ry);
+ const s=loc(x,z,0,.16,ry);vB('vpBancoB',s[0],y-.2,s[1],w+.5,.2,.36,ry,c);}
+// round Order window: banco relief ring, dark socket, a pane that glows if electric. r = pane radius. Faces `ry`.
+function vpRoundWin(x,y,z,ry,r,c,lit){const q=vQ(ry,0,0);const a=loc(x,z,0,.14,ry),b=loc(x,z,0,.02,ry),d=loc(x,z,0,-.04,ry);
+ kput('vpRingB',[a[0],y,a[1]],q,[r*1.25,r*1.25,r*1.25],c);kput('vpDiscDark',[b[0],y,b[1]],q,[r*1.15,r*1.15,.16],null);kput(lit?'vpDiscLit':'vpDiscDark',[d[0],y,d[1]],q,[r,r,.3],null);}
+// a row of toron (projecting timber posts) along a face: from (x0,z0) to (x1,z1) at height y, n posts, outward (nx,nz)
+function vpTorons(x0,z0,x1,z1,y,n,nx,nz,len){const c=vC(0x4a3624);for(let i=0;i<n;i++){const t=(i+.5)/n;const x=x0+(x1-x0)*t,z=z0+(z1-z0)*t;vBeam([x-nx*.3,y,z-nz*.3],[x+nx*(len||.95),y-.06,z+nz*(len||.95)],.17,c);}}
+// pilaster-buttress with a pinnacle cone and a gilt ball: a battered post proud of a wall, base at (x,z)
+function vpPinnacle(x,y,z,w,h,c,ry){kput('vpBanco7',[x,y,z],ry?qEuler(0,ry,0):null,[w,h,w],c);kput('vpBancoCone',[x,y+h-.05,z],null,[w*.42,w*1.1,w*.42],c);vBall('vpGilt',x,y+h+w*1.1+.12,z,.17);}
+// drum pavilion: laterite drum, dark relief band, tile cone, 8-post lantern with a dark core, small cone, gilt ball. Returns the top.
+function vpDrumHall(x,y,z,R,H,lat,dk,tile){vPst('vpDrumB',x,y,z,R,H,lat);vPst('vpDrumB',x,y+H-1.3,z,R+.08,.7,dk);vPst('vpDrumB',x,y+H-.3,z,R*1.04,.3,lat);
+ const rb=R+.85,rt=R*.42,rh=R*.36;kput('vpTileCone',[x,y+H,z],null,[rb,rh+rt*.0+R*.02,rb],tile);   // the cone is a frustum in the source; a cone whose tip is buried under the lantern floor reads the same
+ vPst('vpDrumB',x,y+H+rh*.7,z,rt+.3,.35,dk);const lr=rt*.82,lh=R*.3+.9;for(let i=0;i<8;i++){const a=i/8*TAU;vPst('vpBancoPost',x+Math.cos(a)*lr,y+H+rh*.7+.35,z+Math.sin(a)*lr,.16,lh,lat);}
+ kput('vpDiscDark',[x,y+H+rh*.7+.35+lh/2,z],qEuler(Math.PI/2,0,0),[lr*.5,lr*.5,lh],null);kput('vpTileCone',[x,y+H+rh*.7+.35+lh,z],null,[rt+.9,R*.28+.6,rt+.9],tile.clone().multiplyScalar(.9));
+ const top=y+H+rh*.7+.35+lh+R*.28+.6;vBall('vpGilt',x,top+.2,z,.24);return top;}
+
+function buildVpChapterhouse(G,o){reseed(7811+(o.v|0));
+ const och=vC(vPick([0xc89a62,0xbc8e58,0xd4a66e])),och2=och.clone().multiplyScalar(.9),dk=vC(0x8a6a48),lat=vC(vPick([0xb4683e,0xa85c36,0xc07448])),lat2=lat.clone().multiplyScalar(.8),tile=vC(vPick([0xb8633a,0xa85832,0xc47044])),pave=vC(0xd8cdb4),plank=vC(0x8a6c48),white=vC(0xf2eee2);
+ const lit=vLit();const Y0=.45;
+ vnReg('Chapterhouse of the Order of Historians',0,0,24.5,21,{role:'chapterhouse'});
+ // plinth: a low battered banco platform the whole compound stands on, with a mosaic dado along its front
+ kput('vpBanco7',[0,0,0],null,[36,Y0,30],dk);
+ for(let k=0;k<12;k++){const x=-13.2+k*2.4;if(Math.abs(x)<3.6)continue;vB('vpMosaicB',x,.06,14.85,2.3,.32,.16,0,null);}
+ // ================================================================ the reading hall (back), battered block with parapet, pilasters, toron, mosaic string course
+ const HW=22,HD=11,HH=8.6,hz=-8.5;
+ kput('vpBanco7',[0,Y0,hz],null,[HW,HH,HD],och);
+ {const tw=vpBat7(HW,HH,HH)*2,td=vpBat7(HD,HH,HH)*2;vB('vpBancoB',0,Y0+HH-.05,hz,tw+.3,.5,td+.3,0,dk);                     // dark eaves band
+  vB('vpBancoB',0,Y0+HH+.45,hz,tw+.1,.9,.6,0,och);vB('vpBancoB',0,Y0+HH+.45,hz-td/2+.3,tw+.1,.9,.6,0,och);              // parapet: front + back
+  for(const s of[-1,1])vB('vpBancoB',s*(tw/2-.25),Y0+HH+.45,hz,.6,.9,td-.4,0,och);vB('vpBancoB',0,Y0+HH+.45,hz+td/2-.3,tw+.1,.9,.6,0,och);
+  vB('vpBancoB',0,Y0+HH+.45,hz,tw-1.4,.12,td-1.4,0,vC(0xb89a6e));                                                             // roof deck
+  for(let vx=0;vx<5;vx++)for(let vz=0;vz<2;vz++)vBall('vLeaf',-8+vx*4,Y0+HH+.95,hz-3+vz*6,.42,vC((vx+vz)%2?0xb8633a:0x98764e),.5);   // pots along the roof terrace
+  // mosaic string course below the eaves and a whitewash band at the floor line: the Order's blue-and-white
+  const my=Y0+HH-1.6,mw=vpBat7(HW,HH,HH-1.6)*2,md=vpBat7(HD,HH,HH-1.6)*2;vB('vpMosaicB',0,my,hz+md/2-.1,mw+.2,.5,.3,0,null);vB('vpMosaicB',0,my,hz-md/2+.1,mw+.2,.5,.3,0,null);
+  for(const s of[-1,1])vB('vpMosaicB',s*(mw/2-.1),my,hz,.3,.5,md+.2,0,null);
+  vB('vpBancoB',0,Y0+.02,hz,HW+.3,.9,HD+.3,0,white);}
+ // pilaster-buttresses with pinnacles: 7 across the front (the middle three frame the porch), 7 behind, 3 each side, corners heavier
+ {const zf=hz+HD/2,zb=hz-HD/2;for(let i=0;i<=6;i++){const x=-HW/2+HW*i/6,k=(i===0||i===6)?1.5:1.15;if(Math.abs(x)<4)continue;vpPinnacle(x,Y0,zf+.35,k,HH+1.4,och2);vpPinnacle(x,Y0,zb-.35,k,HH+1.4,och2);}
+  for(let j=1;j<3;j++){const z=zb+HD*j/3;vpPinnacle(-HW/2-.35,Y0,z,1.15,HH+1.4,och2);vpPinnacle(HW/2+.35,Y0,z,1.15,HH+1.4,och2);}
+  // toron rows between the pilasters, two heights, all four faces (the face recedes with height)
+  for(const yy of[4.9,7.9]){const zf2=hz+vpBat7(HD,HH,yy),zb2=hz-vpBat7(HD,HH,yy),xw=vpBat7(HW,HH,yy);
+   for(let i=0;i<6;i++){const x0=-HW/2+HW*i/6+.9,x1=-HW/2+HW*(i+1)/6-.9;if(Math.abs((x0+x1)/2)<4&&yy<6)continue;vpTorons(x0,zf2,x1,zf2,Y0+yy,3,0,1);vpTorons(x0,zb2,x1,zb2,Y0+yy,3,0,-1);}
+   for(let j=0;j<3;j++){const z0=zb2+HD*j/3+.7,z1=zb2+HD*(j+1)/3-.7;vpTorons(xw,z0,xw,z1,Y0+yy,3,1,0);vpTorons(-xw,z0,-xw,z1,Y0+yy,3,-1,0);}}
+  // the porch: three nested parabolic archivolts (banco · mosaic · banco) stepping in to the doors, between the two middle pilasters
+  const pz=zf+vpBat7(HD,HH,0)-HD/2;   // = face at the base
+  kput('vpBayArchB',[0,Y0,pz+1.9],null,[1.7,1.6,2.0],och2);kput('vpBayArchM',[0,Y0,pz+1.15],null,[1.45,1.42,1.2],null);kput('vpBayArchB',[0,Y0,pz+.45],null,[1.25,1.27,.9],och);
+  vB('vpBancoB',0,Y0+6.4,pz+1.1,6.0,.5,2.8,0,dk);vB('vpBancoB',0,Y0+6.9,pz+1.1,5.4,.6,2.2,0,och2);vpRoundWin(0,Y0+7.5,pz+2.52,0,.5,och2,lit);
+  for(const s of[-1,1])vpPinnacle(s*3.1,Y0,pz+2.6,1.1,7.3,och2);
+  vB('vDarkB',0,Y0,pz-.3,2.9,3.9,.8,0);for(const s of[-1,1])kput('vWood',[s*.72,Y0+1.95,pz-.1],vQ(0,0,0).multiply(qEuler(0,s*.25,0)),[1.4,3.8,.08],plank);
+  for(let i=0;i<3;i++)for(let j=0;j<5;j++)for(const s of[-1,1])vB('vIron',s*(.3+i*.42),Y0+.5+j*.75,pz+.02,.09,.09,.08,0,vC(0xb08a3a));   // brass studs
+  vB('vpBancoB',0,Y0,pz+2.9,5.6,.14,1.4,0,dk);   // threshold slab
+  if(lit){vnLamp(-2.5,Y0+4.4,pz+2.9,0);vnLamp(2.5,Y0+4.4,pz+2.9,0);}
+  // windows: tall paired reading-hall windows either side of the porch, round windows above; sides and back likewise
+  for(const s of[-1,1])for(const x of[5.4,9.2]){vpYWin(s*x,Y0+1.6,hz+vpBat7(HD,HH,1.6),0,1.0,2.6,och2,lit);vpRoundWin(s*x,Y0+6.2,hz+vpBat7(HD,HH,6.2),0,.5,och2,lit);}
+  for(const s of[-1,1])for(const z of[-2.6,0,2.6]){vpYWin(s*vpBat7(HW,HH,1.6),Y0+1.6,hz+z,s*Math.PI/2,1.0,2.4,och2,lit);vpRoundWin(s*vpBat7(HW,HH,5.6),Y0+5.6,hz+z,s*Math.PI/2,.45,och2,lit);}
+  for(const x of[-8,-4,0,4,8])vpYWin(x,Y0+1.8,hz-vpBat7(HD,HH,1.8),Math.PI,1.0,2.2,och2,false);for(const x of[-6,0,6])vpRoundWin(x,Y0+5.8,hz-vpBat7(HD,HH,5.8),Math.PI,.5,och2,lit);}
+ // the great drum over the hall: laterite, round windows, tile cone, lantern
+ {const top=vpDrumHall(0,Y0+HH+.5,hz,4.8,3.6,lat,dk,tile);
+  for(let k=0;k<6;k++){const a=k/6*TAU+Math.PI/6;vpRoundWin(Math.sin(a)*4.8,Y0+HH+2.3,hz+Math.cos(a)*4.8,a,.5,lat2,lit);}
+  for(let k=0;k<12;k++){const a=k/12*TAU;vBeam([Math.sin(a)*4.6,Y0+HH+3.0,hz+Math.cos(a)*4.6],[Math.sin(a)*5.5,Y0+HH+2.95,hz+Math.cos(a)*5.5],.16,vC(0x4a3624));}   // toron ring under the eaves
+  void top;}
+ // stair up to the roof terrace on the right flank, as a Yuni roof is living space
+ {const sx=HW/2+1.2;for(let i=0;i<12;i++)vB('vpBancoB',sx,Y0+i*.7,hz+4.2-i*.72,1.3,.7,.75,0,och2);vB('vpBancoB',sx+.75,Y0,hz+.2,.25,HH+.9,9.0,0,och2);}
+ // ================================================================ the wings: archive stacks (left), scriptorium (right) — battered ranges with parabolic arcades to the court
+ for(const s of[-1,1]){const wx=s*15.3,WW=5.2,WD=11,wz=1.5,WH=4.6;kput('vpBanco7',[wx,Y0,wz],null,[WW,WH,WD],och);
+  const tw=vpBat7(WW,WH,WH)*2,td=vpBat7(WD,WH,WH)*2;vB('vpBancoB',wx,Y0+WH-.05,wz,tw+.25,.4,td+.25,0,dk);vB('vpBancoB',wx,Y0+WH+.35,wz,tw,.6,td,0,och);vB('vpBancoB',wx,Y0+WH+.35,wz,tw-1.0,.7,td-1.0,0,vC(0xb89a6e));
+  for(let j=0;j<=3;j++)vpPinnacle(wx+s*(WW/2+.3),Y0,wz-WD/2+WD*j/3,.95,WH+1.1,och2);
+  for(const yy of[3.5]){const xo=wx+s*vpBat7(WW,WH,yy);for(let j=0;j<3;j++)vpTorons(xo,wz-WD/2+WD*j/3+.6,xo,wz-WD/2+WD*(j+1)/3-.6,Y0+yy,3,s,0);}
+  for(const z of[-3.5,0,3.5])vpYWin(wx+s*vpBat7(WW,WH,2.0),Y0+1.3,wz+z,s*Math.PI/2,.8,1.5,och2,lit);   // outer face: small windows
+  vB('vpMosaicB',wx+s*(vpBat7(WW,WH,WH-.3)),Y0+WH-.5,wz,.26,.4,td-.6,0,null);
+  // arcade: 3 parabolic bays on the court side carrying a flat roof back to the wing; lit doors behind
+  const ax=wx-s*(WW/2+1.6);for(let j=0;j<3;j++){const z=wz-WD/2+WD*(j+.5)/3;kput('vpBayArchB',[ax,Y0,z],qEuler(0,s*Math.PI/2,0),[WD/3/3.2*1.02,1.0,1.0],och2);
+   const bx=wx-s*vpBat7(WW,WH,1.2);if(j===1){vB('vDarkB',bx,Y0,z,.3,2.5,1.6,0);kput('vWood',[bx+s*.02,Y0+1.25,z],qEuler(0,Math.PI/2,0),[1.5,2.4,.08],plank);if(lit)vnLamp(bx,Y0+3.0,z,-s*Math.PI/2);}
+   else vpYWin(bx,Y0+1.5,z,-s*Math.PI/2,1.0,1.6,och2,lit);}
+  vB('vpBancoB',(ax+wx)/2,Y0+4.0,wz,Math.abs(wx-ax)+.6,.45,WD+.2,0,och2);vB('vpBancoB',(ax+wx)/2,Y0+4.45,wz,Math.abs(wx-ax)+.2,.35,WD-.2,0,dk);
+  for(let j=0;j<=3;j++)vpTorons(ax-s*.2,wz-WD/2+WD*j/3,ax-s*.2,wz-WD/2+WD*j/3,Y0+3.5,1,-s,0,.7);
+  // drum pavilion at the wing's front end (the chapter house's paired drums flank the gate)
+  const dz=wz+WD/2+3.0,dx=s*14.6;vpDrumHall(dx,Y0,dz,3.1,6.4,lat,dk,tile);
+  for(const a of[0.55,1.2].map(v=>s<0?Math.PI-v:v))vpRoundWin(dx+Math.cos(a)*3.1,Y0+4.4,dz+Math.sin(a)*3.1,Math.PI/2-a,.55,lat2,lit);
+  {const a=s<0?-.4:Math.PI+.4;vB('vDarkB',dx+Math.cos(a)*3.05,Y0,dz+Math.sin(a)*3.05,1.3,2.3,.3,Math.PI/2-a);kput('vWood',[dx+Math.cos(a)*2.98,Y0+1.15,dz+Math.sin(a)*2.98],qEuler(0,Math.PI/2-a,0),[1.2,2.2,.08],plank);}
+  for(let k=0;k<10;k++){const a=k/10*TAU+.15;vBeam([dx+Math.cos(a)*2.95,Y0+2.6,dz+Math.sin(a)*2.95],[dx+Math.cos(a)*3.85,Y0+2.55,dz+Math.sin(a)*3.85],.15,vC(0x4a3624));}}
+ // ================================================================ the forecourt wall and the gate
+ {const gz=13.4,GW=7.0;for(const s of[-1,1]){const x0=s*(GW/2+.2),x1=s*11.4,L=Math.abs(x1-x0),cx=(x0+x1)/2;vB('vpBancoB',cx,Y0,gz,L,3.4,.7,0,och);vB('vpBancoB',cx,Y0+3.3,gz,L+.2,.35,.95,0,dk);
+   // carved glyph panels with mosaic diamonds along the wall, as the source's forecourt wall carries
+   for(let g=0;g<3;g++){const x=x0+(x1-x0)*(g+.5)/3;vB('vpBancoB',x,Y0+.5,gz+.4,1.9,2.3,.16,0,och2);kput('vpMosaicB',[x,Y0+1.65,gz+.52],vQ(0,0,Math.PI/4),[.9,.9,.1],null);vB('vpBancoB',x,Y0+.5,gz-.4,1.9,2.3,.16,0,och2);}}
+  // gate: a parabolic arch slab between two pylons with pinnacles, a relief band and a round window above the arch; lamps
+  kput('vpGateArchB',[0,Y0,gz],null,[1,1,1],och2);vB('vpBancoB',0,Y0+6.5,gz,7.4,.4,2.0,0,dk);vB('vpBancoB',0,Y0+6.9,gz,6.6,.7,1.6,0,och);
+  kput('vpArchRingM',[0,Y0,gz+.95],null,[1,1,1],null);kput('vpArchRingB',[0,Y0,gz-.9],null,[1,1,1],dk);   // archivolts: mosaic to the street, dark banco to the court
+  for(const s of[-1,1]){vpPinnacle(s*4.1,Y0,gz,1.7,7.6,och2);if(lit){vnLamp(s*2.6,Y0+4.2,gz+.8,0);}}
+  for(let k=0;k<3;k++)vB('vpBancoB',0,Y0-(k+1)*.15,gz+1.2+k*.5,6.4-k*.4,.15,.6,0,dk);   // steps down to the street
+  for(const s of[-1,1])vnLampPost(s*5.6,0,gz+2.4,3.6);
+  vpHang(-4.1,Y0+6.2,gz+.92,0,1.1,2.6,vC(0x2a6ab0));vpHang(4.1,Y0+6.2,gz+.92,0,1.1,2.6,vC(0xffffff,1.6));}   // the Order's blue and white on the pylons
+ // ================================================================ the court: paving, reflecting pool, a gnomon, planters, lamps, a bench, folk
+ vnPaving(0,Y0+.02,4,20,16,0,pave,40);vB('vFlag',0,Y0+.03,6.5,3.6,.1,13,0,pave.clone().multiplyScalar(.92));
+ {const px=-6,pz=5;vB('vpBancoB',px,Y0,pz,5.2,.55,5.2,0,lat);vB('vpBancoB',px,Y0+.55,pz,5.6,.15,5.6,0,dk);vB('vpMosaicB',px,Y0+.2,pz,4.4,.4,4.4,0,null);
+  mesh(new THREE.BoxGeometry(4.3,.06,4.3),MAT.glass,G,px,Y0+.62,pz);}
+ {const gx=6.5,gz2=5.5;vB('vpBancoB',gx,Y0,gz2,2.6,.5,2.6,0,och2);vB('vpBancoB',gx,Y0+.5,gz2,2.0,.4,2.0,0,dk);vBeam([gx,Y0+.9,gz2],[gx+1.1,Y0+3.6,gz2-.3],.1,vC(0xb08a3a),'vIron');
+  for(let k=0;k<7;k++)vB('vpMosaicB',gx-1.2+k*.4,Y0+.5,gz2+1.3,.3,.06,.3,0,null);}
+ for(const x of[-9,9]){vB('vpBancoB',x,Y0,10.5,2.6,.6,1.2,0,lat);for(let k=0;k<3;k++)kput('vLeaf',[x+rr(-.8,.8),Y0+.75,10.5+rr(-.3,.3)],null,[rr(.3,.5),rr(.3,.45),rr(.3,.5)],vC(vPick([0x5e7444,0x6a7e4c,0x7a8a58])));}
+ for(const x of[-4,4])vB('vpBancoB',x,Y0,-1.6,3.0,.5,.8,0,och2);   // benches before the porch
+ for(const s of[-1,1])vnLampPost(s*8.5,Y0,1,3.4);
+ // ================================================================ the bell tower: Sankore-type pyramid bristling with toron, a second stage, cone and gilt ball, the bell in an opening
+ {const tx=-15.2,tz=-11.2,TW=5.6,TH=13.5;kput('vpBanco5',[tx,Y0,tz],null,[TW,TH,TW],och);const hw=y=>TW/2*(1-.45*y/TH);
+  kput('vpBanco5',[tx,Y0+TH,tz],null,[TW*.55,4.4,TW*.55],och2);const hw2=y=>TW*.55/2*(1-.45*y/4.4);
+  kput('vpBancoCone',[tx,Y0+TH+4.3,tz],null,[.95,2.2,.95],och2);vBall('vpGilt',tx,Y0+TH+6.7,tz,.3);
+  for(const q of[[-1,-1],[1,-1],[-1,1],[1,1]])kput('vpBancoCone',[tx+q[0]*(TW*.55/2+.35),Y0+TH-.1,tz+q[1]*(TW*.55/2+.35)],null,[.3,.9,.3],och2);
+  for(let r=0;r<7;r++){const y=2.6+r*1.6,h=hw(y),n=Math.max(1,Math.floor(2*h/1.25));for(let i=0;i<n;i++){const o=(i-(n-1)/2)*1.15+((r%2)?.25:0)*(n>1?1:0);
+   const c=vC(0x4a3624);vBeam([tx+o,Y0+y,tz+h-.3],[tx+o,Y0+y-.05,tz+h+.85],.16,c);vBeam([tx+o,Y0+y,tz-h+.3],[tx+o,Y0+y-.05,tz-h-.85],.16,c);vBeam([tx+h-.3,Y0+y,tz+o],[tx+h+.85,Y0+y-.05,tz+o],.16,c);vBeam([tx-h+.3,Y0+y,tz+o],[tx-h-.85,Y0+y-.05,tz+o],.16,c);}}
+  for(let r=0;r<2;r++){const y=TH+1.2+r*1.5,h=hw2(y-TH);for(const nn of[[0,1],[0,-1],[1,0],[-1,0]])vBeam([tx+nn[0]*(h-.3),Y0+y,tz+nn[1]*(h-.3)],[tx+nn[0]*(h+.75),Y0+y-.05,tz+nn[1]*(h+.75)],.14,vC(0x4a3624));}
+  // bell opening on the front face of the upper stage, with the bell
+  {const y=TH+1.6,h=hw2(y-TH);vB('vDarkB',tx,Y0+y,tz+h-.2,1.1,1.5,.5,0);kput('vpBrassBell',[tx,Y0+y+.95,tz+h-.1],null,[.4,.5,.4],null);vB('vIron',tx,Y0+y+1.36,tz+h-.1,1.2,.08,.08,0,vC(0x3a2f22));}
+  vB('vDarkB',tx,Y0+7.6,tz+hw(7.6)-.15,.5,1.1,.4,0);vB('vDarkB',tx+hw(4.5)-.15,Y0+4.5,tz,.4,1.1,.5,0);
+  vB('vDarkB',tx,Y0,tz+hw(0)-.3,1.2,2.2,.8,0);kput('vWood',[tx,Y0+1.1,tz+hw(0)+.1],null,[1.1,2.1,.08],plank);vB('vpBancoB',tx,Y0+2.2,tz+hw(0)+.1,1.9,.3,.5,0,dk);
+  if(lit)vnLamp(tx+1.1,Y0+2.7,tz+hw(0)+.02,0);}
+ // a low archive annex behind the hall on the right (the stacks overflow), flat-roofed with pinnacles and a hatch
+ {const ax=15.6,az=-9,AW=5.2,AD=7.4,AH=3.4;kput('vpBanco7',[ax,Y0,az],null,[AW,AH,AD],och2);vB('vpBancoB',ax,Y0+AH-.05,az,AW*.94,.4,AD*.94,0,dk);vB('vpBancoB',ax,Y0+AH+.3,az,AW*.9,.5,AD*.9,0,och2);
+  for(const s of[-1,1])vpPinnacle(ax+AW/2+.2,Y0,az+s*(AD/2-.2),.9,AH+1.0,och2);vpTorons(ax+vpBat7(AW,AH,2.4),az-3.0,ax+vpBat7(AW,AH,2.4),az+3.0,Y0+2.4,5,1,0,.8);
+  for(const z of[-2.2,2.2])vpYWin(ax+vpBat7(AW,AH,1.6),Y0+1.6,az+z,Math.PI/2,.8,1.0,och2,false);vB('vDarkB',ax-vpBat7(AW,AH,1.1)+.1,Y0,az+2.6,.3,2.2,1.1,0);}
+ vnFolk(0,7,4,3);vnFolk(0,17.5,3,2);}
+
+VERN.def({key:'port_order_chapterhouse',name:'Order Chapterhouse',family:'ported',tags:{culture:'yuni-order',type:['civic','religious'],wealth:'civic',lit:true,role:'chapterhouse'},w:38,d:34,h:21,build:buildVpChapterhouse});
 // ================================================================= KratorSky — the Krator skybox module (from claude/krator-sky.html, verbatim logic)
 // Canon (krator-notes): tidally-locked moon of a Neptune–Saturn-class giant, 24 h day, ~40° S, giant fixed at
 // altitude 25° azimuth 66° (NE, over Korona), obliquity ~23°, eclipse seasons round each equinox.
@@ -4432,14 +4863,15 @@ const ROWDEF=[
  ['dalab_potter','dalab_weaver','dalab_dyer','dalab_windmill'],
  ['dalab_market_large'],
  ['dalab_barracks','dalab_priest_house','dalab_temple','dalab_healers'],
- ['dalab_embassy_iziz','dalab_embassy_voth','dalab_embassy_hist'],
- ['dalab_priest_compound'],
+ ['dalab_embassy_iziz','dalab_embassy_voth','dalab_embassy_yuni','dalab_embassy_republic'],
+ ['dalab_chapterhouse','dalab_priest_compound'],
+ ['dalab_ranch'],
  ['dalab_halls'],
  ['dalab_mound'],
  ['dalab_palace_mound'],
  ['dalab_high_mound'],
 ];
-const ROWZ=[0,40,90,150,210,270,350,430,500,580,700,880,1040,1300];
+const ROWZ=[0,40,90,150,210,270,350,430,500,580,700,880,1060,1240,1480];
 const SITES=[];
 ROWDEF.forEach((row,ri)=>{const ws=row.map(k=>VERN.defs[k].w+10);const total=ws.reduce((a,b)=>a+b,0);let x=-total/2;
  row.forEach((k,i)=>{SITES.push({key:k,x:x+ws[i]/2,z:ROWZ[ri],ry:0,o:{v:0}});x+=ws[i];});});
@@ -4526,13 +4958,14 @@ const VIEWS={
  'Potter, weaver, dyer, windmill':RV(5,60,30,5),'Potter — eye level':EYE('dalab_potter',14,5),'Weaver — eye level':EYE('dalab_weaver',18,4),'Dyer — eye level':EYE('dalab_dyer',14,4),'Windmill — eye level':EYE('dalab_windmill',22,8),
  'Large market':RV(6,80,44,6),'Large market — inside':EYE('dalab_market_large',8,3),
  'Barracks, priest house, temple, healers':RV(7,80,40,6),'Barracks — gate':EYE('dalab_barracks',26,3),'Temple — eye level':EYE('dalab_temple',26,7),"Healers' hall — eye level":EYE('dalab_healers',24,6),
- 'Embassies':RV(8,74,38,8),'Izizian embassy — gate':EYE('dalab_embassy_iziz',24,4),'Vothic embassy — gate':EYE('dalab_embassy_voth',24,4),"Historians' embassy — gate":EYE('dalab_embassy_hist',24,4),
- "Priests' compound":RV(9,70,40,6),"Priests' compound — gate":EYE('dalab_priest_compound',30,3),"Priests' compound — court":EYE('dalab_priest_compound',-4,8),
- 'Halls of Reformation':RV(10,190,110,12),'Halls — gate':EYE('dalab_halls',80,4),'Halls — court':EYE('dalab_halls',34,-14),'Halls — great hall':[SITES.find(s=>s.key==='dalab_halls').x+40,26,ROWZ[10]+50,SITES.find(s=>s.key==='dalab_halls').x,16,ROWZ[10]],'Halls — cells':EYE('dalab_halls',-10,-36),
- 'Ceremonial mound':RV(11,120,60,12),'Mound — foot of the stair':EYE('dalab_mound',44,4),'Mound — on the stair':[6,7.5,ROWZ[11]+27,0,14,ROWZ[11]],'Mound — top':[-14,13+1.7,ROWZ[11]+18,0,13+4,ROWZ[11]-4],
- 'Palace mound':RV(12,150,70,14),'Palace mound — gate':EYE('dalab_palace_mound',56,6),'Palace mound — terraces':[22,12,ROWZ[12]+62,0,14,ROWZ[12]+10],'Palace mound — top':[-9,17+1.7,ROWZ[12]+13,0,17+5,ROWZ[12]-7],'Palace mound — back gardens':[SITES.find(s=>s.key==='dalab_palace_mound').x-10,14,ROWZ[12]-60,SITES.find(s=>s.key==='dalab_palace_mound').x,12,ROWZ[12]-20],'Palace mound — gardens':[SITES.find(s=>s.key==='dalab_palace_mound').x+52,9,ROWZ[12]+18,SITES.find(s=>s.key==='dalab_palace_mound').x+20,11,ROWZ[12]-4],
- "High Priest's mound":RV(13,200,100,18),'High mound — entrance':EYE('dalab_high_mound',82,5),'High mound — top':[-20,20+1.7,ROWZ[13]+22,0,20+5,ROWZ[13]-6],
- 'Night — noble houses':RV(2,70,36,6,21.5),'Night — temple (eye level)':EYE('dalab_temple',26,7,22),'Night — Halls of Reformation':RV(10,190,110,12,22.5),'Night — palace mound':RV(12,150,70,14,22),'Night — peasant huts':EYE('dalab_hut_a',14,5,21),'Dusk — mound':RV(11,120,60,12,18.4),
+ 'Embassies':RV(8,80,42,8),'Izizian embassy — gate':EYE('dalab_embassy_iziz',24,4),'Vothic embassy — gate':EYE('dalab_embassy_voth',24,4),'Yuni embassy — gate':EYE('dalab_embassy_yuni',24,4),'Republican embassy — gate':EYE('dalab_embassy_republic',24,4),
+ "Chapterhouse and priests' compound":RV(9,80,44,8),"Historians' chapterhouse — gate":EYE('dalab_chapterhouse',30,4),"Priests' compound — gate":EYE('dalab_priest_compound',30,3),"Priests' compound — court":EYE('dalab_priest_compound',-4,8),
+ 'Ranch':RV(10,150,80,10),'Ranch — gate':EYE('dalab_ranch',66,3),'Ranch — paddock':EYE('dalab_ranch',20,30),'Ranch — monster pen':[SITES.find(s=>s.key==='dalab_ranch').x+38,6,ROWZ[10]+20,SITES.find(s=>s.key==='dalab_ranch').x+38,2,ROWZ[10]-2],
+ 'Halls of Reformation':RV(11,190,110,12),'Halls — gate':EYE('dalab_halls',80,4),'Halls — court':EYE('dalab_halls',34,-14),'Halls — great hall':[SITES.find(s=>s.key==='dalab_halls').x+40,26,ROWZ[11]+50,SITES.find(s=>s.key==='dalab_halls').x,16,ROWZ[11]],'Halls — entrance':EYE('dalab_halls',46,9),'Halls — cells':EYE('dalab_halls',-10,-36),
+ 'Ceremonial mound':RV(12,120,60,12),'Mound — foot of the stair':EYE('dalab_mound',44,4),'Mound — on the stair':[6,7.5,ROWZ[12]+27,0,14,ROWZ[12]],'Mound — top':[-14,13+1.7,ROWZ[12]+18,0,13+4,ROWZ[12]-4],
+ 'Palace mound':RV(13,150,70,14),'Palace mound — gate':EYE('dalab_palace_mound',56,6),'Palace mound — terraces':[22,12,ROWZ[13]+62,0,14,ROWZ[13]+10],'Palace mound — top':[-9,17+1.7,ROWZ[13]+13,0,17+5,ROWZ[13]-7],'Palace mound — back gardens':[SITES.find(s=>s.key==='dalab_palace_mound').x-10,14,ROWZ[13]-60,SITES.find(s=>s.key==='dalab_palace_mound').x,12,ROWZ[13]-20],'Palace mound — gardens':[SITES.find(s=>s.key==='dalab_palace_mound').x+52,9,ROWZ[13]+18,SITES.find(s=>s.key==='dalab_palace_mound').x+20,11,ROWZ[13]-4],
+ "High Priest's mound":RV(14,200,100,18),'High mound — entrance':EYE('dalab_high_mound',82,5),'High mound — top':[-20,20+1.7,ROWZ[14]+22,0,20+5,ROWZ[14]-6],
+ 'Night — noble houses':RV(2,70,36,6,21.5),'Night — temple (eye level)':EYE('dalab_temple',26,7,22),'Night — Halls of Reformation':RV(11,190,110,12,22.5),'Night — palace mound':RV(13,150,70,14,22),'Night — peasant huts':EYE('dalab_hut_a',14,5,21),'Dusk — mound':RV(12,120,60,12,18.4),
 };
 // ---------------------------------------------------------------- camera, inspector, polygon tool, walk mode
 const ctl={target:new THREE.Vector3(0,10,0),theta:0,phi:1.1,radius:120};

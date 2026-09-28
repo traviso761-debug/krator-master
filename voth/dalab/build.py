@@ -218,7 +218,8 @@ VENDORED = ['10-core.js', '12-stats.js', '20-textures.js', '22-materials.js', '3
             '32-surfaces.js', '34-kitdefs.js', '36-decor.js', '38-helpers2.js', '50-registry.js',
             '54-mat-concrete.js', '68-mat-v5.js', '69-mat-salvage.js']          # ../ancients/src
 VENDORED_IZIZ = ['69b-vern-mat.js', '69c-vern-helpers.js', '81-sky.js', '90-scene.js', '91-probe.js',
-                 '92-camera.js', '93-labels.js', '99-tail.html', '00-head.html']   # ../iziz/src
+                 '92-camera.js', '93-labels.js', '99-tail.html', '00-head.html',
+                 '75-port-embassy.js', '76-port-chapterhouse.js']   # ../iziz/src (the vp* kit, the Voth embassy, the Historians' chapterhouse from the Yuni set)
 BIO_VENDORED = ['10-core-head', '20-core-kit', '30-core-foliage', '40-core-place',
                 '50-biome-swlowlands-species', '55-biome-swlowlands-trees', '60-biome-swlowlands-floor',
                 '65-biome-swlowlands-dress', '70-biome-swlowlands']   # ../biomes/swlowlands/src -> src/86-bio-*.js
