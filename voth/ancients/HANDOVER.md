@@ -1,5 +1,39 @@
 # Krator Ancients — handover
 
+## UPDATE 2026-09-28 — read this first; the sections below it are older
+Branch `claude/laughing-bohr-1zdca5`. Every item here was verified with
+`build.py` + `jscheck.py` + `verify.py --assert --all-views`, and the shots
+were read.
+
+**Tooling note.** This container needed `pip install playwright==1.56.0` (to
+match the pre-installed Chromium 1194 in /opt/pw-browsers) and `pip install
+pillow`. Do not `playwright install`.
+
+| target | state | tris d0 / d1 | notes |
+|---|---|---|---|
+| `trigon` (89f, seed 9710) | NEW, done | 242 517 / 281 731 | `targets/trigon/NOTES.md` |
+| `monolith` (89g, seed 9720) | NEW, done | 385 304 / 374 108 | agent hit the usage limit after finishing; notes written by the coordinator |
+| `crescent` (89h, seed 9730) | NEW, done | 232 400 / 321 048 | `targets/crescent/NOTES.md` |
+| `ledge` (89i, seed 9740) | NEW, done | 604 154 / 484 272 | soffits given painted bounce light (were brown) |
+| `arcube` (89d, seed 9610) | COMPLETED | 403 694 / 323 792 | sheet features added: friezes, oval wells, spine, heliport tower, broad piers; new ruin |
+| `hill` (89e, seed 9660) | FIXED | 533 256 / 486 016 | see below |
+
+**The Hill was burying its own city.** `hillCorr` carved the notch along the
+band of the one level whose back wall stands at each radius; plates are up to
+100 m deep and the meander moves the band ~50 m a level, so away from the
+hairpins most plate fronts lay under the natural hill. Now the notch follows
+`hillEnv(r)`, the union of every plate that reaches r (cached per metre); the
+flank walls follow its edges; a rock floor closes gaps between shallow lips; the
+cut walls are bedded rock (`TEX.hillRock`) instead of pale concrete. The
+facade-height bug the older notes below name as "first task" was already fixed
+in the code. Hero and "A garden terrace" presets re-aimed. Still open: a dark
+band where the hill surface is seen from below at the lip of the cut, in the
+low "The cut wall" shot.
+
+Still open from the older queue: kit surgery (Projects D and H), the dockyard
+pair, the Wing / Drum / Blades (seeds 9620/9630/9640 still unclaimed), and the
+quality passes.
+
 ## STOPPED: weekly API limit, resets **Sep 27, 8pm** (America/Chicago)
 Written 2026-09-23. Both running agents were killed mid-task by the weekly
 limit, not by any fault of their own. Nothing is broken; everything below was
