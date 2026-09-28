@@ -89,7 +89,7 @@ function blSlitPix(X,Y){const st=Math.floor(Y/128),wy=127-(Y%128),bay=Math.floor
  const a=h3(bay*2.9+.1,st*4.3+.7,5.5),l=h3(bay*1.3+.4,st*3.1+.2,6.2),f=h3(bay*.9,st*1.7,2.2);
  if(a<.16||bx<56||bx>=72||wy<22||wy>=112)return{c:(st%4===0&&wy<3)?1:0,f:f};
  if(bx<58||bx>=70||wy<25||wy>=109)return{c:2,f:f};
- return{c:l<.22?4:3,f:f};}
+ return{c:l<.30?4:3,f:f};}
 function blSlitTex(dec){
  return canvasTex(1024,1024,(g,w,h)=>{
   for(let i=0;i<4;i++)for(let j=0;j<4;j++)g.drawImage(TEX.concrete.image,i*256,j*256,256,256);
@@ -158,17 +158,17 @@ TEX.blSlit=blSlitTex(0);TEX.blSlitR=blSlitTex(1);TEX.blSlitE=blSlitLit();
 TEX.blSect=blSectTex();TEX.blConcR=blConcRTex();TEX.blPave=blPaveTex(0);TEX.blPaveR=blPaveTex(1);TEX.blKit=blKitTex();
 // Heavier and greyer than the white Ancient stone, lighter than Darco: raw
 // concrete intact, dark weathered concrete ruined.
-MAT.blWin  =new THREE.MeshStandardMaterial({map:TEX.blWin,roughnessMap:TEX.concreteRM,color:0xd4d1cb,emissive:0xffffff,emissiveMap:TEX.blWinE,emissiveIntensity:1,roughness:1,metalness:0,side:DS});
-MAT.blWinR =new THREE.MeshStandardMaterial({map:TEX.blWinR,roughnessMap:TEX.concreteRM,color:0x9a948a,roughness:1,metalness:0,side:DS});
-MAT.blSlit =new THREE.MeshStandardMaterial({map:TEX.blSlit,roughnessMap:TEX.concreteRM,color:0xc9c5be,emissive:0xffffff,emissiveMap:TEX.blSlitE,emissiveIntensity:1,roughness:1,metalness:0,side:DS});
-MAT.blSlitR=new THREE.MeshStandardMaterial({map:TEX.blSlitR,roughnessMap:TEX.concreteRM,color:0x938d83,roughness:1,metalness:0,side:DS});
-MAT.blConc =new THREE.MeshStandardMaterial({map:TEX.concrete,roughnessMap:TEX.concreteRM,color:0xbdb9b2,roughness:1,metalness:0,side:DS});
-MAT.blConcR=new THREE.MeshStandardMaterial({map:TEX.blConcR,roughnessMap:TEX.concreteRM,color:0xa39c91,roughness:1,metalness:0,side:DS});
-MAT.blShade=new THREE.MeshStandardMaterial({map:TEX.concrete,roughnessMap:TEX.concreteRM,color:0x5c5853,roughness:1,metalness:0,side:DS});
-MAT.blShadeR=new THREE.MeshStandardMaterial({map:TEX.blConcR,roughnessMap:TEX.concreteRM,color:0x423d37,roughness:1,metalness:0,side:DS});
-MAT.blSect =new THREE.MeshStandardMaterial({map:TEX.blSect,roughnessMap:TEX.concreteRM,color:0xcfc9bf,roughness:1,metalness:0,side:DS});
-MAT.blPave =new THREE.MeshStandardMaterial({map:TEX.blPave,roughnessMap:TEX.concreteRM,color:0xd8d4cc,roughness:1,metalness:0,side:DS});
-MAT.blPaveR=new THREE.MeshStandardMaterial({map:TEX.blPaveR,roughnessMap:TEX.concreteRM,color:0xb0a898,roughness:1,metalness:0,side:DS});
+MAT.blWin  =new THREE.MeshStandardMaterial({map:TEX.blWin,roughnessMap:TEX.concreteRM,color:0x66625c,emissive:0xffffff,emissiveMap:TEX.blWinE,emissiveIntensity:1.3,roughness:1,metalness:0,side:DS});
+MAT.blWinR =new THREE.MeshStandardMaterial({map:TEX.blWinR,roughnessMap:TEX.concreteRM,color:0x4c4740,roughness:1,metalness:0,side:DS});
+MAT.blSlit =new THREE.MeshStandardMaterial({map:TEX.blSlit,roughnessMap:TEX.concreteRM,color:0x57534e,emissive:0xffffff,emissiveMap:TEX.blSlitE,emissiveIntensity:1.5,roughness:1,metalness:0,side:DS});
+MAT.blSlitR=new THREE.MeshStandardMaterial({map:TEX.blSlitR,roughnessMap:TEX.concreteRM,color:0x47433c,roughness:1,metalness:0,side:DS});
+MAT.blConc =new THREE.MeshStandardMaterial({map:TEX.concrete,roughnessMap:TEX.concreteRM,color:0x605c56,roughness:1,metalness:0,side:DS});
+MAT.blConcR=new THREE.MeshStandardMaterial({map:TEX.blConcR,roughnessMap:TEX.concreteRM,color:0x57524a,roughness:1,metalness:0,side:DS});
+MAT.blShade=new THREE.MeshStandardMaterial({map:TEX.concrete,roughnessMap:TEX.concreteRM,color:0x3a3733,roughness:1,metalness:0,side:DS});
+MAT.blShadeR=new THREE.MeshStandardMaterial({map:TEX.blConcR,roughnessMap:TEX.concreteRM,color:0x2a2622,roughness:1,metalness:0,side:DS});
+MAT.blSect =new THREE.MeshStandardMaterial({map:TEX.blSect,roughnessMap:TEX.concreteRM,color:0xa8a298,roughness:1,metalness:0,side:DS});
+MAT.blPave =new THREE.MeshStandardMaterial({map:TEX.blPave,roughnessMap:TEX.concreteRM,color:0x75716a,roughness:1,metalness:0,side:DS});
+MAT.blPaveR=new THREE.MeshStandardMaterial({map:TEX.blPaveR,roughnessMap:TEX.concreteRM,color:0x676154,roughness:1,metalness:0,side:DS});
 MAT.blPool =new THREE.MeshStandardMaterial({color:0x33434c,roughness:.12,metalness:.35,side:DS});
 MAT.blPoolR=new THREE.MeshStandardMaterial({color:0x2c3320,roughness:.8,metalness:0,side:DS});
 MAT.blKit  =new THREE.MeshStandardMaterial({map:TEX.blKit,roughnessMap:TEX.concreteRM,color:0xffffff,roughness:1,metalness:0,side:DS});
@@ -196,12 +196,12 @@ function buildBlades(scene,gx,gz,d){reseed(9640+d);KOFF=[gx,0,gz];
  // south entrance takes whatever angle is left, which the gaps are tuned to put
  // on the south axis; the portal gap is centred on north by construction.
  const BT=[
-  {k:'north-east',w:170,t:42,L:790,R:196,lean:6,curl:64,xk:.62,sl:.22,sg:-1,dr:1.5,gap:66},
-  {k:'east',      w:150,t:40,L:640,R:206,lean:4,curl:58,xk:.64,sl:.26,sg:1,dr:-2,gap:50},
-  {k:'south-east',w:130,t:36,L:480,R:212,lean:3,curl:80,xk:.58,sl:.30,sg:-1,dr:2.5,gap:0},
-  {k:'south-west',w:140,t:38,L:560,R:208,lean:4,curl:76,xk:.60,sl:.20,sg:1,dr:-2.5,gap:21},
-  {k:'west',      w:165,t:42,L:720,R:202,lean:7,curl:60,xk:.63,sl:.16,sg:-1,dr:2,gap:31},
-  {k:'north-west',w:205,t:46,L:900,R:198,lean:5,curl:72,xk:.61,sl:.18,sg:1,dr:-1.5,gap:16}];
+  {k:'north-east',ku:.15,w:170,t:42,L:790,R:196,lean:6,curl:64,xk:.62,sl:.22,sg:-1,dr:1.5,gap:66},
+  {k:'east',      ku:-.22,w:150,t:40,L:640,R:206,lean:4,curl:58,xk:.64,sl:.26,sg:1,dr:-2,gap:50},
+  {k:'south-east',ku:.02,w:130,t:36,L:480,R:212,lean:3,curl:80,xk:.58,sl:.30,sg:-1,dr:2.5,gap:0},
+  {k:'south-west',ku:.24,w:140,t:38,L:560,R:208,lean:4,curl:76,xk:.60,sl:.20,sg:1,dr:-2.5,gap:21},
+  {k:'west',      ku:-.1,w:165,t:42,L:720,R:202,lean:7,curl:60,xk:.63,sl:.16,sg:-1,dr:2,gap:31},
+  {k:'north-west',ku:.06,w:205,t:46,L:900,R:198,lean:5,curl:72,xk:.61,sl:.18,sg:1,dr:-1.5,gap:16}];
  const PGAP=BT[5].gap/200;
  let TH_F=0;
  {let fixed=PGAP;for(let i=0;i<6;i++){fixed+=BT[i].w/BT[i].R;if(i!==2&&i!==5)fixed+=BT[i].gap/BT[i].R;}
@@ -223,7 +223,11 @@ function buildBlades(scene,gx,gz,d){reseed(9640+d);KOFF=[gx,0,gz];
    return{r:lerp(B.r[k],B.r[k+1],t),y:lerp(B.y[k],B.y[k+1],t),b:lerp(B.b[k],B.b[k+1],t)};};
   B.thc=s=>B.phi+B.dr*DEG*Math.pow(clamp(s/B.L,0,1),2);
   B.th=(u,s)=>B.thc(s)+u*B.W(s)/(2*B.pf(s).r);
-  B.P=(u,s,o)=>{const q=B.pf(s),th=B.thc(s)+u*B.W(s)/(2*q.r),h=o*B.T(s)/2,r=q.r+h*Math.cos(q.b);
+  // THE KEEL: the convex face folds along one line, standing ~40% of the
+  // thickness proud, so the sun draws a hard light/shade edge up every blade.
+  B.P=(u,s,o)=>{const q=B.pf(s),th=B.thc(s)+u*B.W(s)/(2*q.r),T=B.T(s);
+   let h=o*T/2;if(o>0)h+=o*.42*T*Math.max(0,1-Math.abs(u-B.ku)/.15);
+   const r=q.r+h*Math.cos(q.b);
    return[r*Math.cos(th),q.y-h*Math.sin(q.b),r*Math.sin(th)];};
   B.Ltop=u=>B.L*(1-B.sl*(1-B.sg*u)/2);
   B.sAtY=yy=>{for(let k=0;k<B.n;k++)if(B.y[k+1]>=yy)return(k+(yy-B.y[k])/(B.y[k+1]-B.y[k]))*B.ds;return B.L;};}
@@ -235,13 +239,13 @@ function buildBlades(scene,gx,gz,d){reseed(9640+d);KOFF=[gx,0,gz];
 
  // ---- palette and small helpers -----------------------------------------------
  const WARMW=new THREE.Color(0xffb870);
- const stone=()=>new THREE.Color().setHSL(rr(.07,.11),rr(.02,.07),dd?rr(.40,.52):rr(.68,.78));
- const stoneD=()=>new THREE.Color().setHSL(rr(.07,.11),rr(.02,.06),dd?rr(.26,.36):rr(.44,.54));
- const shadeC=()=>new THREE.Color().setHSL(rr(.07,.10),rr(.02,.06),dd?rr(.12,.18):rr(.22,.30));
+ const stone=()=>new THREE.Color().setHSL(rr(.07,.11),rr(.02,.07),dd?rr(.17,.23):rr(.26,.32));
+ const stoneD=()=>new THREE.Color().setHSL(rr(.07,.11),rr(.02,.06),dd?rr(.10,.15):rr(.17,.22));
+ const shadeC=()=>new THREE.Color().setHSL(rr(.07,.10),rr(.02,.06),dd?rr(.06,.10):rr(.11,.16));
  const litC=()=>WARMW.clone().multiplyScalar(rr(.6,1));
  const leafC=()=>new THREE.Color().setHSL(rr(.18,.32),rr(.18,.42),dd?rr(.14,.26):rr(.22,.36));
- const mossC=()=>new THREE.Color().setHSL(rr(.22,.32),rr(.3,.5),rr(.05,.12));
- const rubC=()=>new THREE.Color().setHSL(rr(.07,.1),rr(.02,.08),rr(.28,.46));
+ const mossC=()=>new THREE.Color().setHSL(rr(.22,.30),rr(.25,.45),rr(.025,.06));
+ const rubC=()=>new THREE.Color().setHSL(rr(.07,.1),rr(.02,.08),rr(.06,.13));
  const person=(x,y,z)=>{kput('figB',[x,y,z],qEuler(0,rng()*TAU,0),1,new THREE.Color().setHSL(rr(0,.1),rr(.2,.5),rr(.25,.5)));
   kput('figH',[x,y,z],null,1,new THREE.Color(0xc9a17e));};
  const plant=(x,y,z,h)=>{kput('trunk',[x,y,z],qEuler(rr(-.05,.05),rng()*TAU,rr(-.05,.05)),
@@ -275,6 +279,11 @@ function buildBlades(scene,gx,gz,d){reseed(9640+d);KOFF=[gx,0,gz];
   for(const [sx,sy,sz] of [[-1,-1,-1],[1,-1,-1],[1,-1,1],[-1,-1,1],[-1,1,-1],[1,1,-1],[1,1,1],[-1,1,1]]){
    const v=new THREE.Vector3(sx*S[0]/2,sy*S[1]/2,sz*S[2]/2).applyQuaternion(Q);c.push([C[0]+v.x,C[1]+v.y,C[2]+v.z]);}
   return hexa(c,list);};
+ // rubble banked against whatever it fell from, in the concrete's own greys
+ const talus=(x0,y0,z0,rMin,rMax,n,sMax)=>{for(let i=0;i<n;i++){const a=rng()*TAU,q=Math.pow(rng(),2.4);
+   const r=rMin+(rMax-rMin)*q,sz=rr(.6,sMax)*(1.25-.55*q),bank=(1-q)*(1-q)*sMax*.55;
+   kput('rubble',[x0+r*Math.cos(a),y0+bank+sz*.4,z0+r*Math.sin(a)],qEuler(rng()*3,rng()*3,rng()*3),
+    [sz*rr(.7,1.5),sz*rr(.5,1),sz*rr(.7,1.5)],rubC());}};
  const jag=(sd,amp,fr)=>u=>amp*(fbm(u*fr+sd*1.7,sd*.37,sd*.11+3.3,3)-.5)*2.4;
 
  // ============================================================ A BLADE, OR A PIECE OF ONE
@@ -457,7 +466,7 @@ function buildBlades(scene,gx,gz,d){reseed(9640+d);KOFF=[gx,0,gz];
   const gy=rm<200?PY:rm<260?PY:12;
   const L=Math.hypot(pb[0]-pa[0],pb[2]-pa[2])*(1-f)*.9;
   rotBox([mx,gy+4,mz],[L,11,12],qEuler(rr(-.12,.12),-Math.atan2(pb[2]-pa[2],pb[0]-pa[0])+rr(-.5,.5),rr(-.25,.25)),LC);
-  rubbleRing(mx,gy,mz,4,40,40,4);}
+  talus(mx,gy,mz,4,40,40,4);}
 
  // ============================================================ THE CANOPY
  // A coffered ring at 118-125 m spanning blade to blade and across every gap,
@@ -533,7 +542,7 @@ function buildBlades(scene,gx,gz,d){reseed(9640+d);KOFF=[gx,0,gz];
     at(F,RS-4,t0,PY+1.4),at(F,R1+3,t0,1.4),at(F,R1+3,t1,1.4),at(F,RS-4,t1,PY+1.4)],LC);
    for(let j=0;j<8;j++){const rho=lerp(RS+4,R1-4,j/7),y=lerp(PY+1.4,1.4,(rho-RS+4)/(R1-RS+7));
     kput('blBox',at(F,rho,sx*(HW+3.5),y+2),F.q,[.6,4,.6],stoneD());
-    if(!dd)kput('strip',at(F,rho,sx*(HW+3.5),y+4.2),null,[4,6,6],WARMW);}}
+    if(!dd)kput('strip',at(F,rho,sx*(HW+3.5),y+4.3),null,[1.1,5,5],WARMW);}}
   // the avenue
   const AL=dd?380:640;
   LP.push(gridSurface((a,b)=>at(F,lerp(R1,R1+AL,b),lerp(-36,36,a),.25),4,20,
@@ -544,7 +553,7 @@ function buildBlades(scene,gx,gz,d){reseed(9640+d);KOFF=[gx,0,gz];
   if(!dd){for(let j=0;j<90;j++)person(...at(F,rr(R1,R1+AL*.8),rr(-32,32),.25));
    for(let j=0;j<60;j++){const k=Math.floor(rng()*N);person(...at(F,RS-2+(k+.5)*RUN,rr(-HW+2,HW-2),PY-k*.3));}}
   else{for(let j=0;j<5;j++)person(...at(F,rr(R1,R1+200),rr(-30,30),.25));
-   const pr=at(F,R1+8,0,0);rubbleRing(pr[0],0,pr[2],6,70,90,5);}}
+   const pr=at(F,R1+8,0,0);talus(pr[0],0,pr[2],6,70,90,5);}}
 
  // ============================================================ THE PORTAL STAIR, THE PORTAL, THE BASTION
  // On the north axis: 120 steps in three flights, narrowing from 44 m to 13 m,
@@ -577,7 +586,7 @@ function buildBlades(scene,gx,gz,d){reseed(9640+d);KOFF=[gx,0,gz];
    for(let j=0;j<50;j++){const k=Math.floor(rng()*120),r=66+k*.78+(k>39?6:0)+(k>79?6:0);
     person(...at(F,r+.4,rr(-1,1)*lerp(20,5,(r-66)/106),PY+(k+1)*.3));}
    for(let j=0;j<10;j++)person(...at(F,rr(rho+2,232),rr(-5,5),PT.y));}
-  else{rubbleRing(...[F.e[0]*(rho-20),PY,F.e[2]*(rho-20)],4,40,70,4);
+  else{talus(...[F.e[0]*(rho-20),PY,F.e[2]*(rho-20)],4,40,70,4);
    for(let j=0;j<18;j++)kput('moss',at(F,rr(240,280),rr(-22,22),PT.y+.3),null,[rr(2,5),.6,rr(2,5)],mossC());
    plant(...at(F,262,-12,PT.y),rr(7,11));plant(...at(F,250,15,PT.y),rr(5,9));}
   PT.F=F;}
@@ -622,23 +631,23 @@ function buildBlades(scene,gx,gz,d){reseed(9640+d);KOFF=[gx,0,gz];
   // off their edges, rubble along both sides
   for(const f of FALL){const B=f.B,up=f.up;
    for(let j=0;j<70;j++){const u=rr(-.9,.9),t=rng(),s=lerp(f.s0(u),f.s1(u),t),p=xf(f.M,B.P(u,s,up));
-    kput('moss',[p[0],p[1]+.3,p[2]],qEuler(0,rng()*TAU,0),[rr(2,6),rr(.5,1.1),rr(2,6)],mossC());
+    kput('moss',[p[0],p[1]+.3,p[2]],qEuler(0,rng()*TAU,0),[rr(1.2,3.5),rr(.4,.8),rr(1.2,3.5)],mossC());
     if(rng()<.18)plant(p[0],p[1],p[2],rr(4,10));}
    for(let j=0;j<16;j++){const e=rng()<.5?-1:1,s=lerp(f.s0(e),f.s1(e),rng()),p=xf(f.M,B.P(e,s,up));
     kput('vine',p,null,[1.5,Math.max(3,p[1]-(f.dir>0?0:PY)),1.5],null);}
    const c=f.box.getCenter(new THREE.Vector3()),sz=f.box.getSize(new THREE.Vector3());
-   rubbleRing(c.x,f.dir>0?0:PY,c.z,Math.min(sz.x,sz.z)*.35,Math.max(sz.x,sz.z)*.62,f.dir>0?220:120,9);}
+   talus(c.x,f.dir>0?0:PY,c.z,Math.min(sz.x,sz.z)*.35,Math.max(sz.x,sz.z)*.62,f.dir>0?300:160,5.5);}
   // the stumps' own talus, outside and in
   for(const B of BT){const bo=B.P(0,4,1),bi=B.P(0,PY+2,-1),ro=Rp1(B.phi)+6;
-   rubbleRing(ro*Math.cos(B.phi),0,ro*Math.sin(B.phi),4,B.brk?160:90,B.brk?160:60,B.brk?10:7);
-   rubbleRing(bi[0],PY,bi[2],3,B.brk?90:55,B.brk?150:80,B.brk?9:6);}
+   talus(ro*Math.cos(B.phi),0,ro*Math.sin(B.phi),4,B.brk?160:90,B.brk?220:80,B.brk?7:5);
+   talus(bi[0],PY,bi[2],3,B.brk?90:55,B.brk?200:100,B.brk?6:4.5);}
   // ---- the plaza, choked: the canopy down in slabs, blocks, rubble, moss, trees
   for(let j=0;j<46;j++){const th=rng()*TAU,r=rr(RO+4,Rout(th)-10);if(!cHole(th,r))continue;
    const x=r*Math.cos(th),z=r*Math.sin(th);
    rotBox([x,PY+rr(1,4),z],[rr(16,38),7,rr(10,26)],qEuler(rr(-.35,.35),rng()*TAU,rr(-.35,.35)),LC);}
   for(let j=0;j<120;j++){const th=rng()*TAU,r=rr(10,160);
    kput('blBox',[r*Math.cos(th),PY+rr(.5,3),r*Math.sin(th)],qEuler(rr(-.6,.6),rng()*TAU,rr(-.6,.6)),[rr(3,12),rr(2,7),rr(3,10)],stoneD());}
-  rubbleRing(0,PY,0,40,170,420,7);
+  talus(0,PY,0,40,170,700,3.6);
   scatterMoss(0,PY,0,5,175,260,5);
   for(let j=0;j<90;j++){const th=rng()*TAU,r=rr(15,170);plant(r*Math.cos(th),PY,r*Math.sin(th),rr(5,14));}
   for(let j=0;j<60;j++){const th=rng()*TAU;const r=lerp(Rp2(th),Rp1(th),rr(.1,.9));
