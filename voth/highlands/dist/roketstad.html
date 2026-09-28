@@ -9358,13 +9358,16 @@ ROW_FALLBACK=['hl_rep_house_poor_a','hl_rep_house_poor_b','hl_rep_house_poor_c',
 // space). Four launch sites stand EMPTY (the arcologies went); the fifth never launched and lies in ruin. The Starport
 // in the middle of the pentagon, fuel centres between the pads, tanks, helipads, scrapyards and scrap smithies.
 function placeAnc(fn,name,x,z,y,s,ry,args,tags){const G=new THREE.Group();G.position.set(x,y,z);G.rotation.y=ry;G.scale.setScalar(s);scene.add(G);G.updateMatrix();
- const r0=REG.length;KOFF=[0,0,0];useGroupXF(G);TSTAT.cur='anc_'+name;HOLES=1;
- try{withFlatGround(()=>fn.apply(null,[G,0,0].concat(args)));}catch(e){reportErr(name+' '+e.stack);}endGroupXF();KOFF=[0,0,0];TSTAT.cur=null;
+ const r0=REG.length,xfDepth=_XFSTACK.length,xf0=KXF;KOFF=[0,0,0];useGroupXF(G);TSTAT.cur='anc_'+name;HOLES=1;
+ try{withFlatGround(()=>fn.apply(null,[G,0,0].concat(args)));}catch(e){reportErr(name+' '+e.stack);}
+ // unwind to where we started: a vendored builder that opens a body group without closing it left this site's
+ // transform on the stack, and every kput after the spaceport (tanks, yards, farms, gardens) landed inside a launch pad
+ const leak=_XFSTACK.length-xfDepth-1;if(leak>0)window._xfLeaks=(window._xfLeaks||0)+leak;_XFSTACK.length=xfDepth;KXF=xf0;KOFF=[0,0,0];TSTAT.cur=null;
  for(const n of['trunk','leafCard'])if(KIT.items[n]){}   // (the builders' own flora stays: the forest has taken the port back)
  for(let i=r0;i<REG.length;i++){const r=REG[i];const p=loc(x,z,r.x*s,r.z*s,ry);r.x=p[0];r.z=p[1];r.y=y+(r.y||0)*s;r.r*=s;r.h*=s;r.cls='building';r.key='anc_'+name;
   r.tags=Object.assign({culture:'ancients',state:'ruined',wealth:'poor',lit:false},r.tags||{},tags||{});}
- // one label per Ancient site: its parts stay inspectable but are not labelled
- let big=null;for(let i=r0;i<REG.length;i++)if(!big||REG[i].r>big.r)big=REG[i];for(let i=r0;i<REG.length;i++)if(REG[i]!==big)REG[i].cls='part';
+ // one registered volume per Ancient site
+ let big=null;for(let i=r0;i<REG.length;i++)if(!big||REG[i].r>big.r)big=REG[i];for(let i=REG.length-1;i>=r0;i--)if(REG[i]!==big)REG.splice(i,1);   // the site's sub-volumes (trenches, pits, rings) mostly enclose nothing at this scale
  return G;}
 kdef('rkTank',new THREE.CylinderGeometry(1,1,1,20,1),MAT.iron);kdef('rkTankCap',new THREE.SphereGeometry(1,16,6,0,TAU,0,Math.PI/2),MAT.iron);
 kdef('rkSlab',VBOX,MAT.concrete);
