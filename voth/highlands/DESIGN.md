@@ -80,3 +80,15 @@ Seed blocks and fragment files are owned per work package so packages can be bui
 | **R-C** Republican grand + land | `78-rep-grand.js` `79-rep-land.js` | 21200–21799 | Hall of the Republic; fortress/castle; wall segment, wall towers, gate (Peles); Forgehouse; generator; granary, farmhouse, farm, animal pens, windmill, watermill; mine, quarry |
 | **RU** Rustic | `80-rus-dwell.js` `81-rus-village.js` | 22000–22499 | poor/middle/rich houses; temple; village hall; shops; mustering ground; small scrap smithy; granary/mill; farmhouse, farm, animal pens; tavern/inn |
 | **TR** Tribal | `84-tri-dwell.js` `85-tri-village.js` | 23000–23499 | small + large dwellings (all cliff-capable); village longhouse; warrior's hall; shaman's house; stone circle; farmhouse, farm, animal pen, granary; small scrap smithy; the cliff settlement |
+
+## Round 2 rulings (Travis)
+
+* **Totems are tribal only.** Republican and Rustic buildings carry carved **pillars** (square shafts whose faces
+  stack motifs like a totem) — porch posts, portals, free-standing columns with painted roundel finials.
+* **Murals by branch.** Tribal: formline only. Rustic + Republican: formline animals plus Norse/Celtic motifs
+  (knots, braids, triskele, tree of life, cats, wolves, Mjölnir, grain, moths, warriors, sun/moon/star, the green
+  gas giant; rockets in the Republic), same black/red/teal/ochre palette.
+* **The Republic's emblem** — three arms in a triskelion, each fist holding a sword at 90° to the forearm — on
+  Republican civic crests and banners.
+* **Every shop has a sign** showing its trade's symbol (`HTRADE`).
+* **Half-timbering** in four styles (Alemannic, Franconian, Tudor, plain Saxon).
