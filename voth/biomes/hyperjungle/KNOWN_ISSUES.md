@@ -7,14 +7,11 @@ Read before changing anything here. `build.py` prints the open count.
 - [ ] PUBLISH AFTER EVERY PASS. The claude.ai artifact is a separate copy of
       `dist/hyperjungle.html`; strip everything before `<title>` and the trailing
       `</body></html>` before publishing (00-head.html carries the page wrapper).
-- [ ] `BIO.stand/standAt` was skewed (fbm is bell-shaped); the core now stretches
-      the value through the bell, but 55-trees still carries its own `standSp`
-      quantile split from before the fix. Reconcile: drop `standSp` and re-check
-      the species mix (target ~30/25/30/15 ironbark/ghostwood/prism gum/baobab).
-- [ ] The species bark textures are pre-coloured, so 55-trees normalises each
-      texture's mean before tinting (`texMean`). Cleaner: paint the bark canvases
-      greyscale-ish and tint from SPECIES.bark only. Until then, changing a bark
-      canvas changes the rendered bole colour twice.
+- [ ] The four older species' bark textures are pre-coloured, so 55-trees
+      normalises each texture's mean before tinting (`texMean`). The mahogany
+      and kapok canvases are painted near-grey and tinted from SPECIES.bark only;
+      repaint the older four the same way. Until then, changing one of those
+      canvases changes the rendered bole colour twice.
 - [ ] Ghostwood limbs are slightly warmer than its near-white bole (the pale limb
       texture cannot be brightened past white).
 - [ ] Faint horizontal seams where a bole's lathe sections change texture repeat
@@ -23,14 +20,19 @@ Read before changing anything here. `build.py` prints the open count.
       bough geometry; fine at that range, wrong if the LOD origin moves.
 - [ ] The far impostor ring starts at heroR+30: a host preset that stands inside
       it sees blob crowns at close range. A host should keep cameras inside heroR
-      or raise heroR (cost: ~20k tris per hero tree).
+      or raise heroR (cost: ~12k tris per hero tree; this host runs 2000 m).
 - [ ] The host's floor mesh is Lambert-lit with no shadow maps, so open floor
       between plants reads a shade too bright; the litter colour is painted dark
       to compensate. A world with shadows should lighten `MAT_GROUND`.
 - [ ] `dress()` samples by triangle area: a structure with one huge roof plate
       and many small ledges puts most of its moss on the roof. Pass per-shell
       geometry lists (roof, floors, walls) with their own counts if that matters.
-- [ ] No fauna yet (flyers, insects, herds are a second pass against this contract).
+- [ ] Fauna: the herds' waypoints avoid boles, saplings, the host mask and its
+      obstacles, but not logs or boulders (a strider can walk through a fallen
+      trunk). The flyers' paths are tested against boles at their centre only:
+      a wide orbit can clip a crown. No predators, nothing lands.
+- [ ] Wings and legs move in the vertex shader but their lighting normals do not
+      follow the hinge, so a flapping wing does not brighten and darken.
 - [ ] Only the hyperjungle is built; the abyssal savannah, Yuni Valley, highlands
       and arctic biomes are to be written against the same core.
 
@@ -40,3 +42,7 @@ Read before changing anything here. `build.py` prints the open count.
       normal and distance-boosted alpha — no white-out from below, no lace at range.
 - [x] Colours are sRGB in / linear out at BIO.put and every bucket write.
 - [x] Every biome fragment is grep-checked against the world kits' identifiers.
+- [x] `standSp`'s hand-measured quantiles are gone: the stand field is sampled at
+      build time and split at the quantiles for the target shares (six species).
+- [x] Fauna (flocks, flitters, butterflies, motes, herds, sloths) as fragment 58
+      on the same contract, with 35-core-anim as the one core extension.

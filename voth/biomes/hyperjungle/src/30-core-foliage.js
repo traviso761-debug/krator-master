@@ -8,7 +8,6 @@
 //   - low-alpha texels carry the species' MID colour, or mipmapping bleeds a
 //     black fringe round every leaf at distance; and alpha is boosted with
 //     distance, or the far canopy thins to lace.
-(function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm,qEuler,qFacing,qUp}=BIO.fn;
 BIO.WIND={t:{value:0}};
 BIO.SUN={value:null};                 // set by BIO.setSun([x,y,z]); defaults at first use
 BIO.setSun=function(v){const T=BIO.host.THREE;if(!BIO.SUN.value)BIO.SUN.value=new T.Vector3();BIO.SUN.value.set(v[0],v[1],v[2]).normalize();};
@@ -171,5 +170,3 @@ BIO.leafMat=function(tex,key,o){const T=BIO.host.THREE;o=o||{};
 BIO.barkMat=function(tex,col){const T=BIO.host.THREE;return new T.MeshLambertMaterial({color:col==null?0xffffff:col,map:tex||null,vertexColors:true,side:T.DoubleSide});};
 // a plain material for instanced solids (rods, lobes, boulders)
 BIO.solidMat=function(tex,col){const T=BIO.host.THREE;return new T.MeshLambertMaterial({color:col==null?0xffffff:col,map:tex||null,side:T.DoubleSide});};
-
-})();

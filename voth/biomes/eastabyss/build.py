@@ -32,20 +32,10 @@ html=''.join(out); open(os.path.join(DIST,OUT),'w',encoding='utf8').write(html)
 m=re.search(r'<script>\n(?!document)(.*)</script>\s*</body>',html,re.S)
 js=m.group(1) if m else ''
 chk=os.path.join(HERE,'.syntax.js'); open(chk,'w',encoding='utf8').write(js)
-# node is absent on some machines this tree is built on, and subprocess.run
-# RAISES FileNotFoundError rather than returning non-zero, so build.py died
-# with a traceback instead of building. Say it was not checked rather than
-# crashing or claiming it is fine; ../../ancients/jscheck.py parses the
-# emitted .syntax.js with headless Chromium when a real check is wanted.
-try:
-    r=subprocess.run(['node','--check',chk],capture_output=True,text=True)
-    rc=r.returncode; err=r.stderr
-except FileNotFoundError:
-    rc=0; err=None
-note=('syntax NOT CHECKED (no node)' if err is None else ('syntax OK' if rc==0 else 'SYNTAX ERROR: '+err[:800]))
-print(f'built dist/{OUT}  ({len(frags)} fragments, {len(html)//1024} KB)  '+note)
+r=subprocess.run(['node','--check',chk],capture_output=True,text=True)
+print(f'built dist/{OUT}  ({len(frags)} fragments, {len(html)//1024} KB)  '+('syntax OK' if r.returncode==0 else 'SYNTAX ERROR\n'+r.stderr[:800]))
 ki=os.path.join(HERE,'KNOWN_ISSUES.md')
 if os.path.exists(ki):
     op=[l for l in open(ki,encoding='utf8') if l.startswith('- [ ]')]
     if op: print(f'KNOWN_ISSUES.md: {len(op)} open item(s) -- read it before changing this kit')
-sys.exit(rc)
+sys.exit(r.returncode)

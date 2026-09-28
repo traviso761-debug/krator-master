@@ -3,7 +3,7 @@
 
   00-head.html      page shell, opens <script>
   10..49            BIOME CORE  (biome-core: engine-independent kit)
-  50..79            BIOME LEAVES (hyperjungle species, understorey, dressing)
+  50..79            BIOME LEAVES (hyperjungle species, trees, fauna, understorey, dressing)
   45-host-stage     HOST binding (renderer, terrain, BIO.init) -- must run before 50
   80..98            HOST (sky, tower, build, camera, probe)
   99-tail.html      closes <script>
