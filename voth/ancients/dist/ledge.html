@@ -1,5 +1,5 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>Arcube — the Apollonian cube</title>
+<title>The Ledge — the cantilevered cliff city</title>
 <style>
 html,body{margin:0;height:100%;overflow:hidden;background:#3a2a24;font:13px/1.4 system-ui,sans-serif;color:#eee}
 canvas{display:block}
@@ -17451,36 +17451,26 @@ function buildLedge(scene,gx,gz,d){reseed(9740+d);KOFF=[gx,0,gz];
  finish(A_FASC,fascM);finish(A_DECK,deckM);finish(A_SOFF,soffM);finish(A_WIN,winM);
  finish(A_SECT,MAT.ldSect);finish(A_VOID,MAT.ldVoid);
  KOFF=[0,0,0];return G;}
-// TARGET: arcube — Arcube, the Apollonian cube, intact and ruined.
+// TARGET: ledge — the Ledge, an arcology of terraced slab layers cantilevered
+// off a sandstone cliff, intact and ruined.
 //
-// Soleri's cube: a kilometre on a side, stood on a horizontal diagonal so the
-// front elevation is a DIAMOND and the side elevation a RECTANGLE, carried clear
-// of the ground on vertical-structure legs, with concentric diamond bands of
-// living-working, living, cultural centre and city centre wrapped round a void
-// bored straight through the middle of it, a heliport on the top vertex and
-// seven slot light wells cut down both long flanks.
-//
-// Its own target because it is 1 500 m tall and 2 414 m across its plan, which
-// nothing in the kit's row layout can hold, and because it is a 700 k-triangle
-// megastructure on its own.
-const TITLE='Arcube — the Apollonian cube';
+// Its own target because the cliff it hangs off is 2 km of escarpment and
+// 850 m tall, and the city is a 700 k-triangle megastructure on its own.
+const TITLE='The Ledge — the cantilevered cliff city';
 const GROUND_C=0;
 const DECAYS=[0,1];
-// The mass is 1 000 m along x and the ground works reach 1 080 m west of the
-// axis for the arrival plaza, so a site is about 2 200 m wide in x and is NOT
-// centred on itself. s = 2 600 puts 5 200 m between the two axes, which leaves
-// roughly 3 000 m of open plain between the intact site's plaza and the ruined
-// site's west face — enough that a hero camera 1 950 m off one cube does not
-// have the other in frame, and enough that neither ground-paint disc touches.
+// The cliff faces WEST (-x), toward the sun, and runs along z. Each site is a
+// massif 1 500 m deep behind its face with a 2 000 m town-and-plain apron in
+// front of it, so a site spans about x = -2 600 .. +1 500 about its own axis.
+// s = 3 600 puts the intact massif's back 3 900 m clear of the ruin's plain,
+// and every preset looks either along z or into +x, away from the other site.
 const ROWS={
- arcube:{z:0,s:2600,r:1500},
+ ledge:{z:0,s:3600,r:1500},
 };
-// The intact site stands at -s and the ruined one at +s (SITEX in 90-scene.js).
-// The ruin takes the wider greening: its fallen corner leg throws debris 700 m
-// south-east of the footprint and the plain has had five thousand years at it.
-const RUINS=[[-ROWS.arcube.s,0,ROWS.arcube.r*.78],
-             [ROWS.arcube.s,0,ROWS.arcube.r*1.05]];
-const EXTRA_BUILDERS={arcube:buildArcube};
+// Desert: a little green round the foot of each. Intact at -s, ruin at +s.
+const RUINS=[[-ROWS.ledge.s-450,0,ROWS.ledge.r*.40],
+             [ROWS.ledge.s-450,0,ROWS.ledge.r*.30]];
+const EXTRA_BUILDERS={ledge:buildLedge};
 // ---------------------------------------------------------------- scene
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);
 renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;document.body.appendChild(renderer.domElement);
@@ -17628,135 +17618,63 @@ window._api={
  views:()=>Object.keys(VIEWS),
 };
 // Presets, DERIVED. 89z-rows.js loads before 90-scene.js and this file after it,
-// so by the time this runs both builders have been and gone and each has left its
-// dimensions — and its own diamond function — in ARC_SITE. Nothing below is a
-// coordinate read off a render.
+// so both builders have run and left their dimensions in LD_SITE. LDDEF is the
+// fallback only if a builder threw.
 //
-//   ACW(S,x,y,z)   a world point in builder coordinates on site S
-//   S.ZY(q,t)      [z,y] ON THE DIAMOND of L1 radius q at profile parameter t
-//                  (0 ridge, .5 equator, 1 keel) — the builder's own function,
-//                  so a camera aimed at a face follows the face if the cube is
-//                  ever resized instead of going stale.
-//   S.TWR          the heliport tower: x, z, half-sections hx/hz, top, deck
-//   S.PIER         the thirteen piers: x, z, hx, hz, c (keel row), top
-//   S.BITE, S.FALL the ruin's broken corner and the pier that failed
-//
-// THE ONE PIECE OF ARITHMETIC BEHIND HALF OF THESE SHOTS. The camera is 50
-// degrees vertical, so a frame is 0.933 x the sight line tall and 1.49 x wide.
-// This composition is 1 500 m tall: nothing that has to contain the whole of it
-// can stand closer than 1 610 m, and FogExp2 at 0.00022 leaves 0.70 of the
-// contrast at 1 600. Every full-height view here is therefore hazy by design and
-// there is no camera position that is not — the alternative is to crop the cube,
-// which for an APOLLONIAN type whose whole subject is its outline would be worse.
-const ACDEF={x:0,z:0,d:0,dd:0,SIDE:1000,RD:707.1067811865476,HT:1500,
- KY:85.78643762690485,CY:792.8932188134525,HX:500,BR:[707.1,560,430,300,152],
- DPX:[0,24,52,86],APY:1494,KEY:91.79,VX:414,NWL:7,WWX:40,WDEP:55,WQ:629.3,
- WT0:.036,WT1:.964,TA:.00424,TK:.99576,LEGY:500,area:1414000,FTA:.036,FTE:.465,FTD:.56,
- WX:k=>-420+k*140,
- ZY:(q,t)=>[q*(1-Math.abs(2*t-1)),792.8932188134525+q*(1-2*t)],
- TOFY:y=>(1-(y-792.8932188134525)/707.1067811865476)*.5,
- SP:{x:175,w:135,t:.225,th:.12,y0:1012,y1:1351},
- TWR:{x:-420,z:-380,hx:52,hz:90,top:1262,deck:1293},
- BITE:{x0:-150,r:365},FALL:{x:420,z:380,h:150},SAG:0,
- PIER:[{x:0,z:380,hx:52,hz:90,c:0,top:466}],
- LEG:[{x:0,z:380,w:52,c:0,top:466}]};
-const ACA=Object.assign({},ACDEF,{x:-2600},ARC_SITE[0]||{});
-const ACB=Object.assign({},ACDEF,{x:2600},ARC_SITE[1]||{});
-const ACW=(S,x,y,z)=>[S.x+x,y,S.z+z];
-// THE HERO: three-quarter from the south-east at equator height, standing off
-// 1 950 m, which frames 1 819 x 2 906 against a composition 1 500 tall and
-// 2 414 across its plan diagonal. Both drawings are in it at once — the DIAMOND
-// on the east end face and the RECTANGLE of the south flank with its friezes,
-// ovals and slots over the five piers — which is the only shot that says what
-// this form is.
-const ACHERO=S=>ACW(S,1240,830,1500).concat(ACW(S,-30,700,0));
+// Builder frame: the cliff face is at x ~ 0 facing -x (west, into the sun), the
+// rock at +x, the plain and the town at -x; the cliff runs along z. The camera
+// is 50 degrees vertical, so a frame is 0.933 x the sight line tall: the whole
+// 850 m composition wants 1 300 m or more of stand-off.
+const LDDEF={x:0,z:0,d:0,NL:34,Y0:150,TOPD:840,TOPB:852,GC:-95,topR:450,lay:[],cores:[],
+ reachAt:()=>200,faceX:()=>0,cake:null};
+const LDA=Object.assign({},LDDEF,{x:-3600},LD_SITE[0]||{});
+const LDB=Object.assign({},LDDEF,{x:3600},LD_SITE[1]||{});
+const LDW=(S,x,y,z)=>[S.x+x,y,S.z+z];
+// a layer, safely
+const LDL=(S,i)=>S.lay[i]||{y:150+i*20,deck:154+i*20,top:170+i*20,za:-300,zb:300,R:200};
+// THE HERO: three-quarter from below and to the south-west, the reference's own
+// angle — the cliff on the right, the stack reaching out to the left, the great
+// prow overhead, the soffits stepping up like an inverted ziggurat, the town at
+// the foot for scale.
+const LDHERO=S=>LDW(S,-990,36,1400).concat(LDW(S,-250,445,-40));
 const VIEWS={
- 'Arcube':                ACHERO(ACA),
- // THE FRONT ELEVATION, square on to the west end from 1 850 m, which frames the
- // whole 1 500 m: the white outer frame, the lattice band, the second frame, the
- // darkening bands and their rings of light round the ribbed bore, the three
- // broad piers underneath, and the heliport tower beside the upper LEFT face,
- // which is where both of Soleri's front elevations put it.
- 'The diamond elevation': ACW(ACA,-2350,760,0)
-                           .concat(ACW(ACA,-450,760,0)),
- // THE SIDE ELEVATION, square on from the south. The same cube, and it is a
- // RECTANGLE 1 000 x 1 414 — the triangle frieze under the ridge, residential
- // with its rows of ovals, the equator frieze, living-working in slot bays, the
- // central spine top to bottom and five piers standing on arched feet. The two
- // elevations disagreeing is the whole form.
- 'The side elevation':    ACW(ACA,0,ACA.CY-30,ACA.RD+1760)
-                           .concat(ACW(ACA,0,ACA.CY-30,0)),
- // THE MIDLEVEL PLAN: 72 degrees of depression, as near a plan as a 50 degree
- // lens can stand off a 1 500 m object. City centre at the west end and cultural
- // centre at the east (the two craters), residential and public between them,
- // light wells notching both long sides, the spine down the middle.
- 'The midlevel plan':     ACW(ACA,0,2560,150)
-                           .concat(ACW(ACA,0,820,0)),
- // THE FRIEZES. Raking along the south flank from its west end, 450 m off the
- // face: the equator frieze's downward triangles in the foreground, the rows of
- // oval light wells in their dark panels climbing away to the frieze under the
- // ridge, and the spine crossing all of it.
- 'The friezes':           (function(S){const e=S.ZY(S.RD,.5),r=S.ZY(S.RD,.2);
-                            return[S.x-760,e[1]+120,S.z+e[0]+420,
-                                   S.x+60,(e[1]+r[1])*.5,S.z+(e[0]+r[0])*.5];})(ACA),
- // A LIGHT WELL IN SECTION, looked DOWN the slot from just under the ridge.
- 'A light well':          (function(S){const p=S.ZY(S.WQ+9,.13),f=S.ZY(S.WQ,.45);
-                            return[S.x+S.WX(2),p[1],S.z+p[0],
-                                   S.x+S.WX(2),f[1],S.z+f[0]];})(ACA),
- // THE PIERS, FROM BELOW. Standing in the court between the south row and the
- // keel piers, looking up past the pier heads mitred into the lower faces, with
- // the keel spine and the daylight under it running away west.
- 'The piers from below':  ACW(ACA,300,26,190)
-                           .concat(ACW(ACA,-260,360,-60)),
- // A PIER, at a person's height: the arched portal at its foot, people going
- // in, and 460 m of slotted wall going up into the underside of the cube.
- 'A pier':                (function(S){const L=S.PIER.find(p=>p.x===0&&p.z>0)||S.PIER[0];
-                            return[S.x+L.x+150,3,S.z+L.z+L.hz+230,
-                                   S.x+L.x,150,S.z+L.z+L.hz];})(ACA),
- // INSIDE THE VOID: on the axis of the bore, looking the length of it. 304 m of
- // diamond section, the ribs receding, eight terraces in the floor, five bridges
- // across, and daylight at the far end 830 m away.
- 'The void':              ACW(ACA,330,900,0)
-                           .concat(ACW(ACA,-380,700,0)),
- // THE CITY CENTRE, the west crater, oblique so the frames, the four steps of
- // the crater, the colonnade and the ring of halls on the innermost boundary all
- // read, with the stepped mouth of the bore.
- 'The city centre':       ACW(ACA,-980,1000,420)
-                           .concat(ACW(ACA,-470,800,60)),
- // THE HELIPORT on the top vertex, looked ALONG from 40 m over one end.
- 'The heliport':          ACW(ACA,560,1546,10)
-                           .concat(ACW(ACA,-340,1499,0)),
- // THE HELIPORT TOWER, from the north-west and above the crown: the tower
- // coming up out of the upper north face, the three corbel steps, the deck and
- // its pads, and the ridge deck beyond.
- 'The heliport tower':    (function(S){const T=S.TWR;
-                            return[S.x+T.x-640,T.deck+170,S.z+T.z-520,
-                                   S.x+T.x+60,T.top-70,S.z+T.z+40];})(ACA),
- // THE RINGS AT NIGHT: the front elevation after dark, four diamonds of light
- // round the ribbed bore, the lit piers and the tower's crown.
- 'The rings at night':    ACW(ACA,-2350,760,0)
-                           .concat(ACW(ACA,-450,760,0),[1]),
- 'Ruined':                ACHERO(ACB),
- // THE BROKEN CORNER. The failure that changes the outline: the south vertex of
- // the east end sheared away 365 m deep, the floors of the city sticking out of
- // the fracture, the stacked-floor blocks it came down as, and the whole mass
- // settled three degrees toward the pier that went.
- 'The broken corner':     (function(S){const r=S.BITE.r;
-                            return[S.x+1250,S.CY+80,S.z+S.RD+980,
-                                   S.x+300,S.CY-90,S.z+S.RD-r*.3];})(ACB),
- // THE SPALL, the cutaway high on the south face.
- 'The spall':             (function(S){const P=S.SP;
-                            return[S.x+P.x+520,P.y1+60,S.z+S.RD-((P.y0+P.y1)*.5-S.CY)+660,
-                                   S.x+P.x,(P.y0+P.y1)*.5,S.z+S.RD-((P.y0+P.y1)*.5-S.CY)-40];})(ACB),
- // THE FALLEN PIER, looked ACROSS: four pieces of a 104 x 180 m pier lying on
- // the plain south-east of its stump.
- 'The fallen pier':       ACW(ACB,1500,430,250)
-                           .concat(ACW(ACB,620,150,880)),
- // THE FALLEN TOWER: the heliport tower on its side 700 m out on the north-west
- // plain, its crown upside down at the far end, and the stump on the face above.
- 'The fallen tower':      (function(S){const T=S.TWR;
-                            return[S.x+T.x-1500,640,S.z-2350,
-                                   S.x+T.x+40,470,S.z-700];})(ACB),
+ 'The Ledge':              LDHERO(LDA),
+ // THE ELEVATION, square on to the cliff from the west, 1 750 m out.
+ 'The cliff face':         LDW(LDA,-1750,440,0).concat(LDW(LDA,0,440,0)),
+ // THE SECTION: looking north along the cliff from 1 700 m south, so the stack
+ // is in profile against the sky — an inverted ziggurat 830 m tall, the
+ // escarpment turning away behind it.
+ 'The section':            LDW(LDA,-430,480,1560).concat(LDW(LDA,-430,480,0)),
+ // THE SOFFITS, from the foot of the stack looking straight up its underside.
+ 'The soffits from below': LDW(LDA,-120,12,210).concat(LDW(LDA,-300,600,-60)),
+ // A GALLERY at people scale: standing on the edge of layer 24, looking along it.
+ 'A gallery':              (function(S){const L=LDL(S,24),z0=60,R=S.reachAt(24,z0);
+                             return LDW(S,-(R-2.4),L.deck+1.7,z0).concat(LDW(S,-(S.reachAt(24,-150)-10),L.deck+4,-150));})(LDA),
+ // THE GREAT PROW, from out in the air to the south-west and above.
+ 'The great prow':         LDW(LDA,-800,610,360).concat(LDW(LDA,-360,775,LDA.GC)),
+ // THE PLATEAU: the top deck's gardens running out of the plateau scrub, from
+ // above and behind the cliff edge, the plain 840 m down beyond them.
+ 'The plateau':            LDW(LDA,560,1010,560).concat(LDW(LDA,-160,830,-40)),
+ // THE TOWN at the foot, from the approach road: houses, the plaza, the lobby,
+ // and the stack climbing out of the top of the frame.
+ 'The foot':               LDW(LDA,-780,22,-190).concat(LDW(LDA,-160,110,20)),
+ // A LIFT CORE in its slot, and the bridges it throws to the layer ends.
+ 'A lift core':            (function(S){const C=S.cores[2]||{z:303,xf:-20};
+                             return LDW(S,C.xf-300,260,C.z+260).concat(LDW(S,C.xf,300,C.z));})(LDA),
+ // NIGHT: the hero, lit windows.
+ 'Night':                  LDW(LDA,-760,190,860).concat(LDW(LDA,-230,500,-40)).concat([1]),
+ 'Ruined':                 LDHERO(LDB),
+ // THE RUIN IN SECTION: the prow gone, the top of the ziggurat cut back.
+ 'Ruined section':         LDW(LDB,-430,480,1560).concat(LDW(LDB,-430,480,0)),
+ // THE FALLEN PROW, on the town under the gash it tore.
+ 'The fallen prow':        LDW(LDB,-1050,160,420).concat(LDW(LDB,-380,140,-110)),
+ // THE SHEARED LAYERS: stubs at the rock line with the reinforcement out.
+ 'The sheared layers':     LDW(LDB,-420,300,520).concat(LDW(LDB,-10,340,285)),
+ // THE PANCAKE: seven layers down on the eighth at the north end.
+ 'The pancaked wing':      (function(S){const c=S.cake||{z0:-450,z1:-262,y0:560,y1:590,R:180};
+                             return LDW(S,-(c.R+260),(c.y0+c.y1)/2+40,c.z0-260).concat(LDW(S,-(c.R*.6),(c.y0+c.y1)/2,(c.z0+c.z1)/2));})(LDB),
+ // THE ELEVATION of the ruin, with the rockfall scar south of the city.
+ 'Ruined cliff face':      LDW(LDB,-1750,440,120).concat(LDW(LDB,0,440,120)),
 };
 // ---------------------------------------------------------------- camera control
 // ---------------------------------------------------------------- DAY / NIGHT
