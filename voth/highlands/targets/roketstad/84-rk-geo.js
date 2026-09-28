@@ -16,13 +16,14 @@ window.CITY=true;
 const RK={
  WORLD:3400,                        // side of the terrain square
  TOWN:{x:-620,z:0,H:34,R:350},      // hill summit above the shelf; mean wall radius
- PORT:{x:640,z:-30,H:20,top:480,P:285,s:.24,starS:.3},   // the spaceport rise: flat top radius, pentagon radius, arcology + starport scales
+ PORT:{x:640,z:-30,H:20,top:480,P:268,s:.17,starS:.3},   // the spaceport rise: flat top radius, pentagon radius, arcology + starport scales
  GATES:{N:-Math.PI/2+.08,E:.04,S:Math.PI/2-.1},          // bearings (rad, atan2(z,x)) from the town centre
  SQUARE_R:48,                       // the main square
  MARKET:{a:-2.35,r:175,R:30},       // market square (NW of centre), temple square (SW)
  TEMPLE:{a:2.45,r:170,R:32},
  FORGE:{a0:-.62,a1:.62,r0:150},     // the forge district: the east sector of the town past r0
  QUALITY:1,
+ FOREST:2.2,FOREST_LOD:1.7,        // forest stocking (x the biome showcase) and the LOD stretch it is paid for with
 };
 const FRAME_HOOKS_PRE=[];
 const SEED_RK=7331;

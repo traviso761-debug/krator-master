@@ -38,26 +38,48 @@ function pickTown(x,z,r){const d=squareD(x,z),gd=gateD(x,z),forge=inForge(x,z),w
   if(gd<90&&c<.35)return{key:rng()<.5?vPick(['hl_rep_warehouse_a','hl_rep_warehouse_b']):vPick(TAVERNS)};
   if(c<.52)return{key:'hl_rep_shops'};if(c<.68)return{key:vPick(TAVERNS)};if(c<.88)return{key:vPick(['hl_rep_workshop_a','hl_rep_workshop_b'])};return{key:'hl_rep_smithy_small'};}
  return{key:vPick(HOUSES[wealth]),v:Math.floor(rng()*6)};}
-function frontageAlong(pts,roadW,pick,test,st,gapK){for(let sg=0;sg<pts.length-1;sg++){const ax=pts[sg][0],az=pts[sg][1],bx=pts[sg+1][0],bz=pts[sg+1][1];const L=Math.hypot(bx-ax,bz-az);if(L<6)continue;
+// ---- the row builder (Travis: "align walls and rooflines like an organically grown medieval city")
+// A street is walked as a few long straight RUNS (its polyline simplified), and each side of a run is filled with a
+// continuous row: every front wall flush on one building line just behind the street's edge, every building square to
+// the run (no jitter), neighbours all but touching (a party-wall gap of .2–.7 m), and the row made of short RUNS of one
+// house type (2–5 in a row, varied only by variant) so the eaves and ridges carry through. Where the street bends the
+// row breaks and a new one starts on the next run — the way a medieval street front steps round a curve.
+function simplifyPath(P,tol){if(P.length<3)return P.slice();let best=-1,bi=0;const a=P[0],b=P[P.length-1],dx=b[0]-a[0],dz=b[1]-a[1],L=Math.hypot(dx,dz)||1;
+ for(let i=1;i<P.length-1;i++){const d=Math.abs((P[i][0]-a[0])*dz-(P[i][1]-a[1])*dx)/L;if(d>best){best=d;bi=i;}}
+ if(best<=tol)return[a,b];const l=simplifyPath(P.slice(0,bi+1),tol),r=simplifyPath(P.slice(bi),tol);return l.slice(0,-1).concat(r);}
+const ROW_STAT={rows:0,runs:0};
+function frontageAlong(pts,roadW,pick,test,st,opt){opt=typeof opt==='number'?{gapK:opt}:(opt||{});const gapK=opt.gapK||1,sides=opt.sides||[-1,1];
+ const P=simplifyPath(pts,opt.tol==null?2.2:opt.tol);
+ for(let sg=0;sg<P.length-1;sg++){const ax=P[sg][0],az=P[sg][1],bx=P[sg+1][0],bz=P[sg+1][1];const L=Math.hypot(bx-ax,bz-az);if(L<9)continue;
   const ux=(bx-ax)/L,uz=(bz-az)/L,nx=-uz,nz=ux;
-  for(const side of[-1,1]){let s=rr(1,6);
-   while(s<L-3){const fx=ax+ux*s,fz=az+uz*s;const pk=pick(fx+nx*side*12,fz+nz*side*12);const key=kitKey(pk.key);const D=VERN.defs[key];if(!D){s+=6;continue;}
-    const hx=D.w/2,hz=D.d/2;const off=roadW/2+hz+rr(.8,2);const o={x:fx+nx*side*off,z:fz+nz*side*off,hx,hz,ry:Math.atan2(-nx*side,-nz*side)+rr(-.05,.05),pad:1.1};
-    if(!test(o)){st.ground++;s+=3.5;}else if(!occFree(o,1.1)){st.occ++;s+=3.5;}else{placeVern(key,o,{v:pk.v});st.placed++;s+=hx*2+rr(1.2,4)*(gapK||1);}}}}}
+  for(const side of sides){let s=rr(.3,2.5),run=null;const line=roadW/2+(opt.setback==null?1.45:opt.setback);ROW_STAT.rows++;
+   const ry=Math.atan2(-nx*side,-nz*side);   // front (+z) to the street
+   while(s<L-3){if(!run||run.left<=0){const cx=ax+ux*(s+6)+nx*side*(line+6),cz=az+uz*(s+6)+nz*side*(line+6);run={pk:pick(cx,cz),left:rki(2,5)};ROW_STAT.runs++;}
+    const key=kitKey(run.pk.key);const D=VERN.defs[key];if(!D){run=null;s+=4;continue;}
+    if(s+D.w>L+.5*gapK){if(run.tried){break;}run={pk:pick(ax+ux*s,az+uz*s),left:1,tried:1};continue;}   // does not fit what is left of the run: one narrower try, then the corner
+    const along=s+D.w/2,off=line+D.d/2;const o={x:ax+ux*along+nx*side*off,z:az+uz*along+nz*side*off,hx:D.w/2,hz:D.d/2,ry,pad:.15};
+    if(!test(o)){st.ground++;s+=2.5;run=null;}
+    else if(!occFree(o,.15)){st.occ++;s+=2.5;run=null;}
+    else{const v=run.pk.v==null?undefined:(run.pk.v+run.left)%6;placeVern(key,o,{v});st.placed++;run.left--;
+     // a row closes up (party walls), a lane or a yard opens now and then; out in the suburbs the rows loosen
+     s+=D.w+(rng()<.12*gapK?rr(3,7):rr(.2,.7)*gapK);}}}}}
 (function frontage(){reseed(SEED_RK+11);const F={placed:0,ground:0,occ:0};
  const test=o=>groundOK(o,{town:true,margin:14});
- // the main roads and the highways inside the wall first (their frontages are the town's best), then the fabric
+ // 1. the squares first: a closed ring of the best houses and shops round each, fronts on the square
+ for(const k in SQUARES){const S=SQUARES[k];const n=Math.max(8,Math.round(TAU*(S.r+2)/24));const ring=[];for(let i=0;i<=n;i++){const t=i/n*TAU;ring.push([S.x+(S.r+.5)*Math.cos(t),S.z+(S.r+.5)*Math.sin(t)]);}
+  frontageAlong(ring,0,(x,z)=>{const w=rng();return w<.4?{key:'hl_rep_shops'}:w<.55?{key:vPick(TAVERNS)}:{key:vPick(HOUSES[w<.8?2:1]),v:Math.floor(rng()*6)};},test,F,{sides:[-1],tol:0,setback:1.2});}
+ // 2. the main roads and the highways inside the wall (their frontages are the town's best), then the fabric
  const order=ROADS.filter(r=>insideWall(r.pts[0][0],r.pts[0][1],-4)||insideWall(r.pts[r.pts.length-1][0],r.pts[r.pts.length-1][1],-4))
   .filter(r=>r.zone!=='farmlane'&&!(r.zone||'').startsWith('port')&&!/-out$/.test(r.zone||''))
   .sort((a,b)=>(a.cls-b.cls));
  for(const r of order)frontageAlong(r.pts,r.w,(x,z)=>pickTown(x,z,r),test,F);
- window._frontage=F;})();
+ window._frontage=Object.assign(F,ROW_STAT);})();
 // ---------------------------------------------------------------- 3. the infill: yards and back-lot houses on a footpath to their street
 (function infill(){reseed(SEED_RK+12);let n=0;
  for(let x=TC.x-TC.R-30;x<=TC.x+TC.R+30;x+=9)for(let z=TC.z-TC.R-30;z<=TC.z+TC.R+30;z+=9){const jx=x+rr(-3,3),jz=z+rr(-3,3);if(!insideWall(jx,jz,20))continue;if(!canBuild(jx,jz)||inPrecinct(jx,jz,2))continue;
   const nr=nearestRoadPt(jx,jz,null,60);if(!nr||nr.d>40)continue;
   const pk=pickTown(jx,jz,null);if(pk.key==='hl_rep_shops')pk.key=vPick(HOUSES[0]);const key=kitKey(pk.key);const D=VERN.defs[key];if(!D)continue;
-  const ry=Math.atan2(nr.x-jx,nr.z-jz)+rr(-.25,.25);const o={x:jx,z:jz,hx:D.w/2,hz:D.d/2,ry,pad:1.3};
+  const ry=Math.atan2(nr.x-jx,nr.z-jz)+rr(-.06,.06);const o={x:jx,z:jz,hx:D.w/2,hz:D.d/2,ry,pad:1.3};
   if(groundOK(o,{town:true,margin:14})&&occFree(o,1.5)){placeVern(key,o,{v:pk.v});n++;
    if(nr.d>o.hz+3){const f=loc(jx,jz,0,o.hz+.5,ry);cstroke(cg,[[f[0],f[1]],[nr.x,nr.z]],2,'#7e6e58');cstroke(kg,[[f[0],f[1]],[nr.x,nr.z]],2,KLCOL(KL.lane));}}}
  window._infill=n;})();
@@ -71,7 +93,7 @@ function frontageAlong(pts,roadW,pick,test,st,gapK){for(let sg=0;sg<pts.length-1
    if(shops<(east?4:2)&&w<.5){shops++;return{key:rng()<.7?'hl_rep_shops':vPick(TAVERNS)};}
    if(w<.56)return{key:vPick(['hl_rep_workshop_a','hl_rep_workshop_b'])};
    return{key:vPick(HOUSES[0]),v:Math.floor(rng()*6)};};
-  frontageAlong(pts,10,pick,o=>groundOK(o,{outside:true}),st,east?1.3:2.2);S[name]=st.placed;}
+  frontageAlong(pts,10,pick,o=>groundOK(o,{outside:true}),st,{gapK:east?2.2:4,setback:2.5});S[name]=st.placed;}
  window._suburbs=S;})();
 // ---------------------------------------------------------------- 5. the spaceport rise
 // The Ancients' builders run at a scaled group on the port table (flat ground inside the builder, REG adopted to world
@@ -83,6 +105,8 @@ function placeAnc(fn,name,x,z,y,s,ry,args,tags){const G=new THREE.Group();G.posi
  for(const n of['trunk','leafCard'])if(KIT.items[n]){}   // (the builders' own flora stays: the forest has taken the port back)
  for(let i=r0;i<REG.length;i++){const r=REG[i];const p=loc(x,z,r.x*s,r.z*s,ry);r.x=p[0];r.z=p[1];r.y=y+(r.y||0)*s;r.r*=s;r.h*=s;r.cls='building';r.key='anc_'+name;
   r.tags=Object.assign({culture:'ancients',state:'ruined',wealth:'poor',lit:false},r.tags||{},tags||{});}
+ // one label per Ancient site: its parts stay inspectable but are not labelled
+ let big=null;for(let i=r0;i<REG.length;i++)if(!big||REG[i].r>big.r)big=REG[i];for(let i=r0;i<REG.length;i++)if(REG[i]!==big)REG[i].cls='part';
  return G;}
 kdef('rkTank',new THREE.CylinderGeometry(1,1,1,20,1),MAT.iron);kdef('rkTankCap',new THREE.SphereGeometry(1,16,6,0,TAU,0,Math.PI/2),MAT.iron);
 kdef('rkSlab',VBOX,MAT.concrete);
@@ -95,11 +119,11 @@ function portSpot(hx,hz,tx,tz,R){for(let r=0;r<=R;r+=8){const n=Math.max(1,Math.
  // the pentagon: vertex 0 (east, against the mountains) is the one that never launched
  for(const P of PENT){const ruined=P.k===0;const ry=P.a+Math.PI/2;
   placeAnc(buildLaunch,ruined?'launch_ruined':'launch_pad',P.x,P.z,y,PC.s,ry,ruined?[1]:[1,true],{landmark:true,type:['spaceport']});
-  const R=REG.slice().reverse().find(r=>r.key&&r.key.startsWith('anc_launch'));if(R){R.name=ruined?'Launch Arcology — the one that never flew':'Launch site '+'VWXYZ'[P.k]+' — empty pad';R.tags.landmark=true;}
+  const R=REG.slice().reverse().find(r=>r.cls==='building'&&r.key&&r.key.startsWith('anc_launch'));if(R){R.name=ruined?'Launch Arcology — the one that never flew':'Launch site '+'VWXYZ'[P.k]+' — empty pad';R.tags.landmark=true;}
   occAdd({x:P.x,z:P.z,hx:PAD_R*.8,hz:PAD_R*.8,ry:0,pad:0});BIO_OBSTACLES.push({x:P.x,z:P.z,r:PAD_R*(ruined?.9:.7)});PORTX.pads.push(P);}
  // the Starport in the middle
  placeAnc(buildStarport,'starport',PC.x,PC.z,y,PC.starS,Math.PI,[1],{landmark:true,type:['spaceport']});
- {const R=REG.slice().reverse().find(r=>r.key==='anc_starport');if(R){R.name='The Starport (ruined)';R.tags.landmark=true;}}
+ {const R=REG.slice().reverse().find(r=>r.cls==='building'&&r.key==='anc_starport');if(R){R.name='The Starport (ruined)';R.tags.landmark=true;}}
  occAdd({x:PC.x,z:PC.z,hx:PORTR.star*.72,hz:PORTR.star*.72,ry:0,pad:0});BIO_OBSTACLES.push({x:PC.x,z:PC.z,r:PORTR.star*.8});
  // fuel centres: between pads 1-2 and 4-0 and 0-1 (the far side of the pentagon)
  for(const [i,j] of[[0,1],[4,0],[1,2]]){const A=PENT[i],B=PENT[j];const mx=(A.x+B.x)/2,mz=(A.z+B.z)/2,a=Math.atan2(mz-PC.z,mx-PC.x);const x=PC.x+(PC.P+30)*Math.cos(a),z=PC.z+(PC.P+30)*Math.sin(a);
@@ -161,7 +185,7 @@ function sowField(o){const cs=obbCorners(o,0);cpoly(cg,cs,vPick(FIELDCOL));cpoly
     for(const ok of[rng()<.6?'hl_rep_pens':null,rng()<.4?'hl_rep_granary':null]){if(!ok)continue;const k2=kitKey(ok);const D2=VERN.defs[k2];if(!D2)continue;
      const p=loc(o.x,o.z,rr(-1,1)*(D.w/2+D2.w/2+3),-(D.d/2+D2.d/2+rr(4,9)),o.ry);const o2={x:p[0],z:p[1],hx:D2.w/2,hz:D2.d/2,ry:o.ry+rr(-.15,.15),pad:2};
      if(farmOK(o2)&&occFree(o2,2))placeVern(k2,o2,{});}
-    if(rng()<.12&&mills<5){const mk=kitKey('hl_rep_windmill');const DM=VERN.defs[mk];const p=loc(o.x,o.z,(rng()<.5?-1:1)*(D.w/2+14),-8,o.ry);const om={x:p[0],z:p[1],hx:DM.w/2,hz:DM.d/2,ry:o.ry,pad:3};if(farmOK(om)&&occFree(om,3)){placeVern(mk,om,{});mills++;}}
+    if(rng()<.3&&mills<5){const mk=kitKey('hl_rep_windmill');const DM=VERN.defs[mk];const p=loc(o.x,o.z,(rng()<.5?-1:1)*(D.w/2+14),-8,o.ry);const om={x:p[0],z:p[1],hx:DM.w/2,hz:DM.d/2,ry:o.ry,pad:3};if(farmOK(om)&&occFree(om,3)){placeVern(mk,om,{});mills++;}}
     // the fields: a patchwork on both sides of the lane round the steading
     for(let f=0;f<rki(3,6);f++){const fw=rr(22,44),fd=rr(30,70);const along=rr(-90,90),out=rr(8,40)+fd/2;const sd=rng()<.7?side:-side;
      const cx=fx+ux*along+nx*sd*(Ln.w/2+out),cz=fz+uz*along+nz*sd*(Ln.w/2+out);const fo={x:cx,z:cz,hx:fw/2,hz:fd/2,ry:Math.atan2(-nx*sd,-nz*sd)+rr(-.08,.08),pad:2};
@@ -179,7 +203,12 @@ for(const o of PORTX.pads)cdisc(mg,o.x,o.z,PAD_R,'#000');
 cityBakeMasks();
 cityTerrainMesh();
 (function forest(){BIO.setScene(scene);const q=RK.QUALITY;const t0=performance.now();let T={};
- BIO.host.mask=bioTreeMaskFn;try{T=NWLOW.buildTrees?(BIO.cur='nwlow/trees',NWLOW.buildTrees(2450,q,{})):{};}catch(e){reportErr('forest trees: '+e.stack);}
+ BIO.host.mask=bioTreeMaskFn;
+ // a denser forest than the biome's showcase stocking, paid for with detail: the tree passes see every distance stretched
+ // (hero detail inside ~650 m of the town or the port instead of 1100), and stock at RK.FOREST x the showcase density
+ const lodD0=BIO.lodD;BIO.lodD=(x,z)=>lodD0(x,z)*RK.FOREST_LOD;
+ try{T=NWLOW.buildTrees?(BIO.cur='nwlow/trees',NWLOW.buildTrees(2450,q*RK.FOREST,{})):{};}catch(e){reportErr('forest trees: '+e.stack);}
+ BIO.lodD=lodD0;
  BIO.host.mask=bioMaskFn;let F={};try{if(NWLOW.buildFloor){BIO.cur='nwlow/floor';F=NWLOW.buildFloor(2450,q);}}catch(e){reportErr('forest floor: '+e.stack);}
  BIO.cur=null;const b=BIO.bake();window._biome={trees:T.trees,heroes:T.heroes,far:T.far,calls:b&&b.calls,inst:b&&b.inst,ms:Math.round(performance.now()-t0)};
  BIO._tickWind&&BIO._tickWind();})();

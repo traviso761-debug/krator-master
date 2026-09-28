@@ -6,7 +6,7 @@ camera.far=26000;camera.updateProjectionMatrix();
 // ---------------------------------------------------------------- the Krator sky, its lighting, and the clocks' hour
 const CITYSKY={hour:15.2,day:200,dens:1.4};
 KratorSky.attach(scene,19000);
-scene.fog.density=.00026;
+scene.fog.density=.00013;
 const cityHemi=scene.children.find(o=>o.isHemisphereLight);
 function citySkyTick(){KratorSky.update(camera.position,CITYSKY.hour,CITYSKY.day,CITYSKY.dens);const L=KratorSky.lighting();
  sun.position.copy(L.sunDir).multiplyScalar(1500).add(camera.position);sun.target.position.copy(camera.position);sun.target.updateMatrixWorld();sun.intensity=L.sunIntensity;sun.color.copy(L.sunColor);
@@ -26,8 +26,10 @@ let RK_MTN=null;
    const ridge=fbm(a*3.1+R.seed,R.seed,1.1,4),pk=Math.pow(fbm(a*9+R.seed*2,1.7,R.seed,3),2.2);
    const h=(R.H[0]+(R.H[1]-R.H[0])*(ridge*.8+pk*R.jag*.9))*fall;const D=R.D*(1+.08*Math.sin(a*5+R.seed));
    const x=TC.x+D*Math.cos(a),z=TC.z+D*Math.sin(a);
-   pos.push(x,-400,z, x,h,z);const snow=h>R.H[0]*1.15?1:0;col.push(.36,.37,.4, snow?.93:.46,snow?.94:.47,snow?.97:.5);}
-  for(let i=0;i<R.n;i++){const b=base+i*2;idx.push(b,b+2,b+1,b+1,b+2,b+3);}}
+   // three rows per column: the foot (forest-dark), the snow line (bare rock), the crest (snow above the line)
+   const sl=Math.min(h*.98,R.H[0]*1.05+180*fbm(a*20,R.seed,3.3,2)),snow=h>sl+60;
+   pos.push(x,-400,z, x,snow?sl:h*.7,z, x,h,z);col.push(.2,.26,.2, .42,.42,.44, snow?.92:.47,snow?.93:.47,snow?.96:.5);}
+  for(let i=0;i<R.n;i++){const b=base+i*3;idx.push(b,b+3,b+1,b+1,b+3,b+4, b+1,b+4,b+2,b+2,b+4,b+5);}}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));g.setIndex(idx);
  const m=new THREE.ShaderMaterial({fog:false,side:THREE.DoubleSide,vertexColors:true,uniforms:{fogC:{value:new THREE.Color(0xb8c4c8)},dayF:{value:1}},
   vertexShader:'varying vec3 vC;varying float vD;varying float vY;void main(){vC=color;vec4 w=modelMatrix*vec4(position,1.);vD=length(w.xz-cameraPosition.xz);vY=position.y;gl_Position=projectionMatrix*viewMatrix*w;}',
@@ -43,7 +45,7 @@ function cityTerrainMesh(){const N=Math.round(RK.WORLD/5);const g=new THREE.Plan
  const m=new THREE.MeshStandardMaterial({map:tex,roughness:.97,metalness:0});
  groundM=new THREE.Mesh(g,m);groundM.rotation.x=-Math.PI/2;groundM.userData.isGround=true;groundM.userData.probeSkip=true;groundM.name='terrain';scene.add(groundM);
  // a skirt of shelf beyond the square, so the world does not end at a cliff edge: a coarse ring out to 9 km
- const sk=new THREE.RingGeometry(RK.WORLD*.7,9000,64,6);const sp=sk.attributes.position;for(let i=0;i<sp.count;i++){const x=sp.getX(i),y=sp.getY(i);sp.setZ(i,shelfH(x,-y)-6);}sk.computeVertexNormals();
+ const sk=new THREE.RingGeometry(RK.WORLD*.485,9000,96,8);const sp=sk.attributes.position;for(let i=0;i<sp.count;i++){const x=sp.getX(i),y=sp.getY(i);sp.setZ(i,shelfH(x,-y)-6);}sk.computeVertexNormals();
  const skirt=new THREE.Mesh(sk,new THREE.MeshStandardMaterial({color:0x3e5a2e,roughness:1}));skirt.rotation.x=-Math.PI/2;skirt.userData.probeSkip=true;skirt.name='skirt';scene.add(skirt);
  window._terrainTex=tex;}
 // ---------------------------------------------------------------- the town wall: gates at the three highways, towers, runs of wall between
