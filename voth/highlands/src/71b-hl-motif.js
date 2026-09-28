@@ -183,6 +183,10 @@ const HSIGN={
   for(const s of[-1,1]){g.beginPath();g.ellipse(50+s*16,32,8,4,s*.5,0,TAU);hlFill(g,'#5f9a4a');hlLine(g,HFORM.black,1.4);}},
  hammer:g=>hlHammer(g),
  rocket:g=>hlRocket(g),
+ star:g=>hlStar8(g),
+ salvage:g=>{g.beginPath();g.moveTo(22,24);g.lineTo(70,18);g.lineTo(78,64);g.lineTo(30,74);g.closePath();hlFill(g,HFORM.white);hlLine(g,HFORM.black,3);   // an Ancient panel, a crowbar across it
+  for(const [x,y] of[[28,30],[64,25],[71,58],[34,66]])hlCircle(g,x,y,2.2,HFORM.teal,HFORM.black,1);g.beginPath();g.moveTo(40,34);g.lineTo(62,31);g.moveTo(42,48);g.lineTo(66,44);hlLine(g,'#9aa6a8',2);
+  g.save();g.translate(50,56);g.rotate(-.7);g.fillStyle=HFORM.red;g.fillRect(-36,-3.5,64,7);g.lineWidth=2;g.strokeStyle=HFORM.black;g.strokeRect(-36,-3.5,64,7);g.beginPath();g.moveTo(28,-3.5);g.quadraticCurveTo(40,-6,38,8);g.lineTo(32,6);g.quadraticCurveTo(33,2,28,3.5);hlFill(g,HFORM.red);hlLine(g,HFORM.black,2);g.restore();},
  bed:g=>{g.fillStyle=HFORM.cedarD;g.fillRect(14,52,72,18);g.fillRect(14,36,8,44);g.fillRect(78,46,8,34);g.fillStyle=HFORM.white;g.fillRect(24,44,20,10);g.fillStyle=HFORM.red;g.fillRect(40,46,38,8);hlStar4(g,70,22,8,HFORM.ochre);g.beginPath();g.arc(32,20,9,.5,5.5);g.arc(36,17,8,5.2,.9,true);hlFill(g,HFORM.white);},
 };
 
