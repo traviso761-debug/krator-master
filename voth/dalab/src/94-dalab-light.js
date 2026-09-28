@@ -20,6 +20,7 @@ function dalabSkyTick(){KratorSky.update(camera.position,DSKY.hour,DSKY.day,DSKY
  sun.position.copy(L.sunDir).multiplyScalar(1500).add(camera.position);sun.target.position.copy(camera.position);sun.target.updateMatrixWorld();sun.intensity=L.sunIntensity;sun.color.copy(L.sunColor);
  fill.intensity=.22*L.dayF+.05;if(dHemi){dHemi.intensity=L.ambient;dHemi.color.setHex(L.dayF>.5?0xffe8d0:0x3c4c6a);}
  scene.fog.color.copy(L.fog);renderer.setClearColor(L.fog);renderer.toneMappingExposure=1.0+.12*(1-L.dayF);
+ if(typeof BIO!=='undefined'&&BIO.host)BIO.setSun([L.sunDir.x,L.sunDir.y,L.sunDir.z]);
  dalabNight(L.dayF<.45);}
 FRAME_HOOKS.push(dalabSkyTick);
 if(sun.target&&!sun.target.parent)scene.add(sun.target);
@@ -34,3 +35,11 @@ let dalabHourUI=()=>{};
  sl.oninput=()=>{DSKY.hour=parseFloat(sl.value);dalabSkyTick();dalabHourUI();};wrap.appendChild(lab);wrap.appendChild(sl);ui.appendChild(wrap);dalabHourUI();}
 addEventListener('keydown',e=>{if(e.target.tagName==='TEXTAREA')return;if(e.key.toLowerCase()==='n'){DSKY.hour=DNIGHT?12:22;dalabSkyTick();dalabHourUI();}});
 window._api.setHour=h=>{DSKY.hour=h;dalabSkyTick();dalabHourUI();};window._api.night=()=>DNIGHT;
+// ---------------------------------------------------------------- the biome (gardens), the mounds, the windmills
+// The builders planted through SWLOW.treeAt / plantAt into BIO's items during the SITES loop (90-scene); the scene
+// is bound and baked here, after kbake, and the wind tick joins the frame loop.
+if(!window.CITY){BIO.setScene(scene);try{const b=BIO.bake();window._biome={calls:b.calls,inst:b.inst};}catch(e){reportErr('biome bake: '+e.stack);}
+ BIO._tickWind&&BIO._tickWind();for(const f of BIO_TICKS)FRAME_HOOKS.push(f);BIO_TICKS.length=0;
+ // every mound and ring bank in one mesh
+ if(DMOUND_GEOS.length){const m=meshMerged(DMOUND_GEOS,MAT.dTurfMesh,scene,0,0,0);m.name='mounds';window._mounds=DMOUND_GEOS.length;DMOUND_GEOS.length=0;}}
+FRAME_HOOKS.push(dt=>{for(const w of DWIND)w.grp.rotateZ(w.rate*dt);});

@@ -21,9 +21,9 @@ function dnGodWin(x,y,z,ry,w,h,frameItem,c){vnWin(x,y,z,ry,w,h,'glass',frameItem
  const g=loc(x,z,0,.5,ry);kput('dGodHalo',[g[0],y+h/2,g[1]],vQ(ry,0,0),[w*2.4,h*2.2,1],null);}
 function dnGodLamp(x,y,z,ry){const a=loc(x,z,0,.05,ry),b=loc(x,z,0,.6,ry);vBeam([a[0],y,a[1]],[b[0],y+.05,b[1]],.05,vC(0x2e2a26),'vIron');
  vB('vIron',b[0],y-.02,b[1],.3,.05,.3,ry,vC(0x2e2a26));vBall('dGodBall',b[0],y-.2,b[1],.14);vBall('dGlassBall',b[0],y-.2,b[1],.14);
- kput('dGodHalo',[b[0],y-.2,b[1]],vQ(ry,0,0),[1.6,1.6,1],null);}
+ kput('dGodHalo',[b[0],y-.2,b[1]],vQ(ry,0,0),[1.6,1.6,1],null);const g=loc(x,z,0,1.2,ry);kput('dGodHalo',[g[0],.06,g[1]],qEuler(-Math.PI/2,0,0),[y*1.2,y*1.2,1],null);}
 function dnGodPost(x,y,z,h){vPst('vPipe',x,y,z,.07,h,vC(0x2e2a26));vB('vIron',x,y+h,z,.5,.06,.5,0,vC(0x2e2a26));vBall('dGodBall',x,y+h-.2,z,.16);vBall('dGlassBall',x,y+h-.2,z,.16);
- kput('dGodHalo',[x,y+h-.2,z],vQ(0,0,0),[2,2,1],null);kput('dGodHalo',[x,y+h-.2,z],vQ(Math.PI/2,0,0),[2,2,1],null);}
+ kput('dGodHalo',[x,y+h-.2,z],vQ(0,0,0),[2,2,1],null);kput('dGodHalo',[x,y+h-.2,z],vQ(Math.PI/2,0,0),[2,2,1],null);kput('dGodHalo',[x,y+.06,z],qEuler(-Math.PI/2,0,0),[h*1.4,h*1.4,1],null);}
 function dnGodStrip(x,y,z,ry,L){const f=loc(x,z,0,.08,ry);kput('dGodStrip',[f[0],y,f[1]],vQ(ry,0,0),[L,1,1],null);kput('dGodHalo',[f[0],y,f[1]],vQ(ry,0,0),[L*1.1,.9,1],null);}
 // Firelight in an opening: the kit's own flame + ember cards (69-mat-salvage). Night only. (x,z) ON the face.
 function dnHearth(x,y,z,ry,w,h){const f=loc(x,z,0,.08,ry),g=loc(x,z,0,.4,ry);kput('fireWin',[f[0],y+h/2,f[1]],vQ(ry,0,0),[w,h,1],null);
@@ -37,7 +37,7 @@ function dnReliefBand(x,y,z,ry,w,h,c){const f=loc(x,z,0,.1,ry);vB('dRelief',f[0]
 // Painted frieze on a flat face (2 m tile of avatars and heroes).
 function dnMuralBand(x,y,z,ry,w,h){const f=loc(x,z,0,.04,ry);vB('dMuralB',f[0],y,f[1],w,h,.06,ry);}
 // The same frieze round a drum: flat facets tangent to the wall, one whole tile each.
-function dnMuralRing(x,y,z,r,h,c){const n=Math.max(6,Math.round(TAU*r/2.1));for(let k=0;k<n;k++){const a=k/n*TAU;const p=dnOnRing(x,z,r+.05,a);vPl('dMural',p[0],y+h/2,p[1],TAU*(r+.05)/n-.04,h,a,c||null);}}
+function dnMuralRing(x,y,z,r,h,c){const n=Math.max(8,Math.round(TAU*r/1.5));for(let k=0;k<n;k++){const a=k/n*TAU;const p=dnOnRing(x,z,r+.035,a);vPl('dMural',p[0],y+h/2,p[1],TAU*(r+.035)/n+.02,h,a,c||null);}}
 // A rammed-earth wall band painted in two colours (poor houses: no mural, just a red foot and a turquoise line).
 function dnPaintRing(x,y,z,r,h,c){dnDrum('dEarthDrum',x,y,z,r+.03,h,c);}
 // Banner hung from a crossbar at (x,y,z); the top is fixed, the foot free. ry = the direction it faces.
@@ -74,8 +74,8 @@ function dnRoundHouse(x,y,z,r,h,o){o=o||{};const wall=o.wall||'dEarthDrum',wc=o.
  if(o.band==='mural')dnMuralRing(x,y+h-1.55,z,r,1.2);
  else if(o.band==='relief'){dnDrum('dReliefDrum',x,y+h-1.25,z,r+.06,.9,wc);}
  else if(o.band==='paint'){dnDrum('dEarthDrum',x,y+h-.5,z,r+.03,.22,dCol(DPAL.turq));dnDrum('dEarthDrum',x,y+.4,z,r+.03,.5,dCol(DPAL.red));}
- const dr=o.door!==undefined?o.door:0;const dp=dnOnRing(x,z,r,dr);vnDoor(dp[0],y,dp[1],dr,o.doorW||.95,o.doorH||1.9,o.frame||'vWood',wood,o.leafC||vC(0x6a5a48),false);
- (o.win||[]).forEach((wr,i)=>{const p=dnOnRing(x,z,r,wr);if(o.lit)dnGodWin(p[0],y+1.25,p[1],wr,.8,.7,o.frame||'vWood',wood);else vnWin(p[0],y+1.25,p[1],wr,.8,.7,o.winKind||'open',o.frame||'vWood',wood);
+ const dr=o.door!==undefined?o.door:0;const dp=dnOnRing(x,z,r+.06,dr);vnDoor(dp[0],y,dp[1],dr,o.doorW||.95,o.doorH||1.9,o.frame||'vWood',wood,o.leafC||vC(0x6a5a48),false);
+ (o.win||[]).forEach((wr,i)=>{const p=dnOnRing(x,z,r+.06,wr);if(o.lit)dnGodWin(p[0],y+1.25,p[1],wr,.8,.7,o.frame||'vWood',wood);else vnWin(p[0],y+1.25,p[1],wr,.8,.7,o.winKind||'open',o.frame||'vWood',wood);
   if(o.hearth&&i===0)dnHearth(p[0],y+1.25,p[1],wr,.8,.7);});
  return y+h+rise;}
 
@@ -85,11 +85,16 @@ function dnRoundHouse(x,y,z,r,h,o){o=o||{};const wall=o.wall||'dEarthDrum',wc=o.
 // stair with kerbs climbs the front (bearing ry) from an apron to the plateau. Optional o.terrace={r,h}: a lower,
 // broader terrace ring round the foot. Returns {top:h, prof(rho)}.
 function dnMoundProfile(r,rt,h){return rho=>{if(rho<=rt)return h;if(rho>=r)return 0;const t=1-(rho-rt)/(r-rt);return h*t*t*(3-2*t);};}
-function dnMound(x,z,r,rt,h,ry,o){o=o||{};const G=VERN.cur.G;const prof=dnMoundProfile(r,rt,h);
+// Every mound and ring bank goes into DMOUND_GEOS in WORLD space and 94-dalab-light merges them into one mesh
+// (one draw call however many mounds a settlement has). Triangles are charged to the site through TSTAT here.
+const DMOUND_GEOS=[];
+function dnMoundGeo(geo,x,z){const c=VERN.cur;geo.translate(x,-.05,z);if(c)geo.applyMatrix4(c.G.matrix);DMOUND_GEOS.push(geo);const t=tcur();if(t){t.meshes++;t.tris+=triOf(geo);}}
+function dnMound(x,z,r,rt,h,ry,o){o=o||{};const prof=dnMoundProfile(r,rt,h);
  const mk=(R,RT,H,pf)=>{const pts=[];const N=22;for(let k=0;k<=N;k++){const rho=R-(R-RT)*k/N;pts.push(new THREE.Vector2(rho*(1+(fbm(k*.7,R,3.3,2)-.5)*.02),pf(rho)));}
   pts.push(new THREE.Vector2(RT*.6,H),new THREE.Vector2(0,H));const g=new THREE.LatheGeometry(pts,72);g.computeVertexNormals();return g;};
- mesh(mk(r,rt,h,prof),MAT.dTurfMesh,G,x,-.05,z);
- if(o.terrace){const T=o.terrace;const pf=dnMoundProfile(T.r,r-2,T.h);mesh(mk(T.r,r-2,T.h,pf),MAT.dTurfMesh,G,x,-.06,z);}
+ dnMoundGeo(mk(r,rt,h,prof),x,z);
+ if(o.terrace){const T=o.terrace;const pf=dnMoundProfile(T.r,r-2,T.h);dnMoundGeo(mk(T.r,r-2,T.h,pf),x,z);}
+ if(o.noStair){const stC0=o.stoneC||dCol(DPAL.stone);return{top:h,prof,stoneC:stC0};}
  const stC=o.stoneC||dCol(DPAL.stone);
  // the stair: a continuous ramp of tilted slabs following the profile (so no gaps where the slope is steep), kerb
  // stringers both sides, treads laid on the ramp every 0.3 m of rise, a landing every ~4 m of rise, steles at foot and top
@@ -107,12 +112,27 @@ function dnMound(x,z,r,rt,h,ry,o){o=o||{};const G=VERN.cur.G;const prof=dnMoundP
   for(const sd of[-1,1]){const q=loc(x,z,sd*2.8,r0+.8,ry);dnStele(q[0],0,q[1],ry,3.2,stC);const t=loc(x,z,sd*2.8,r1-.6,ry);dnStele(t[0],h,t[1],ry,2.6,stC);}
   const ap=loc(x,z,0,r0+3.2,ry);vnPaving(ap[0],.02,ap[1],7,4,ry,stC,10);}
  return{top:h,prof};}
+// A straight stone flight from A to B (local frame, y = the walking surface): a tilted ramp slab with kerb stringers,
+// treads every 0.3 m of rise, and a solid stone wall beneath it down to `floorY` (so a flight up a hillside never floats).
+function dnFlight(ax,ay,az,bx,by,bz,W,c,floorY){c=c||dCol(DPAL.stone);const dx=bx-ax,dz=bz-az,run=Math.hypot(dx,dz),rise=by-ay;const ry=Math.atan2(dx,dz);const a=Math.atan2(rise,run),L=Math.hypot(run,rise);
+ const mx=(ax+bx)/2,mz=(az+bz)/2,my=(ay+by)/2;const q=vQ(ry,-a,0);
+ kput('vStone',[mx,my-.12,mz],q,[W,.4,L+.1],c);
+ for(const sd of[-1,1]){const kp=loc(mx,mz,sd*(W/2+.2),0,ry);kput('vStone',[kp[0],my+.18,kp[1]],q,[.42,.6,L+.1],c.clone().multiplyScalar(.9));}
+ const n=Math.max(1,Math.round(rise/.3));for(let k=0;k<=n;k++){const t=k/n;const p=loc(ax,az,0,run*t,ry);vB('vStone',p[0],ay+rise*t-.08,p[1],W-.1,.12,.5,ry,c.clone().multiplyScalar(1.05));}
+ if(floorY!=null){const depth=Math.max(0,my-.3-floorY);if(depth>.3)vB('vStone',mx,floorY,mz,W+.2,depth,run+.4,ry,c.clone().multiplyScalar(.85));}
+ return{ry,L};}
+// A balustrade of stone posts and a rail along a local line from A to B.
+function dnBalustrade(ax,ay,az,bx,by,bz,c){const L=Math.hypot(bx-ax,bz-az),n=Math.max(1,Math.round(L/1.6));for(let k=0;k<=n;k++){const t=k/n;vPst('vPostS',ax+(bx-ax)*t,ay+(by-ay)*t,az+(bz-az)*t,.12,1.0,c);}vBeam([ax,ay+1.0,az],[bx,by+1.0,bz],.16,c,'vStone');}
+// A cable with sag between two points (six segments of a parabola).
+function dnCable(a,b,sag,w,c){const n=6;let prev=a;for(let k=1;k<=n;k++){const t=k/n;const p=[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t-sag*4*t*(1-t),a[2]+(b[2]-a[2])*t];vBeam(prev,p,w||.05,c||vC(0x3a3a3a),'vRope');prev=p;}}
+// Windmill sails live in their own small group (two merged meshes) so 94-dalab-light can turn them: DWIND holds {grp,rate}.
+const DWIND=[];
 // A ring earthwork (the High Priest's wall): a turf bank of width w and height h at radius r, open for gapW at gapRy;
 // the bank ends are faced with rammed earth. A shallow ditch band outside it.
-function dnRingBank(x,z,r,h,w,gapRy,gapW,o){const G=VERN.cur.G;const ga=gapW/(2*r);
+function dnRingBank(x,z,r,h,w,gapRy,gapW,o){const ga=gapW/(2*r);
  const pts=[new THREE.Vector2(r-w/2,0),new THREE.Vector2(r-w*.3,h*.85),new THREE.Vector2(r-w*.12,h),new THREE.Vector2(r+w*.12,h),new THREE.Vector2(r+w*.3,h*.85),new THREE.Vector2(r+w/2,0)];
- const g=new THREE.LatheGeometry(pts,140,gapRy+ga,TAU-2*ga);g.computeVertexNormals();mesh(g,MAT.dTurfMesh,G,x,-.05,z);
- for(const s of[-1,1]){const a=gapRy+s*ga;const p=dnOnRing(x,z,r,a);kput('dEarthBat',[p[0],0,p[1]],qEuler(0,-a+Math.PI/2,0),[1.4,h+.2,w*.9],dCol(DPAL.earth));
+ const g=new THREE.LatheGeometry(pts,140,gapRy+ga,TAU-2*ga);g.computeVertexNormals();dnMoundGeo(g,x,z);
+ for(const s of[-1,1]){const a=gapRy+s*ga;const p=dnOnRing(x,z,r,a);kput('dEarthBat',[p[0],0,p[1]],qEuler(0,-a+Math.PI/2,0),[2.2,h+.3,w*1.06],dCol(DPAL.earth));
   const q=dnOnRing(x,z,r,a+s*ga*.06);vB('dEarth',q[0],h-.1,q[1],3,.5,w*.9,a+Math.PI/2,dCol(DPAL.earthDark));}
  if(o&&o.palisade){const n=Math.round(TAU*r/.45);const c=vC(0x7a5a3e);for(let k=0;k<n;k++){const a=k/n*TAU;let d=Math.abs(((a-gapRy)%TAU+TAU)%TAU);if(d>Math.PI)d=TAU-d;if(d<ga+.02)continue;
   const p=dnOnRing(x,z,r,a);vPst('vPostB',p[0],h-.3,p[1],.16,2.4+rr(-.2,.2),c.clone().multiplyScalar(rr(.85,1.1)));}}}
@@ -151,8 +171,9 @@ function dnGiant(x,y,z,ry,arms,o){o=o||{};const skin=o.skin||dCol(DPAL.skin,.8);
  // arms: the figure cylinder rolled past the vertical so it hangs from the shoulder, splayed a little; the lower
  // pair of a four-armed guard reaches forward
  const arm=(lx,ly,tilt,roll)=>{const p=loc(x,z,lx,0,ry);kput('figB',[p[0],y+ly,p[1]],vQ(ry,tilt,roll),[S*.26,S*.62,S*.26],skin);};
- arm(-S*.30,S*1.42,0,Math.PI-.28);arm(S*.30,S*1.42,0,-(Math.PI-.28));
- if(arms>=4){arm(-S*.30,S*1.18,-1.2,Math.PI-.5);arm(S*.30,S*1.18,-1.2,-(Math.PI-.5));}
+ const hand=(lx,ly,lz)=>{const p=loc(x,z,lx,lz,ry);kput('figH',[p[0],y+ly-1.62*S*.16,p[1]],null,[S*.16,S*.16,S*.16],skin);};
+ arm(-S*.30,S*1.42,0,Math.PI-.28);arm(S*.30,S*1.42,0,-(Math.PI-.28));hand(-S*.47,S*.82,0);hand(S*.47,S*.82,0);
+ if(arms>=4){arm(-S*.30,S*1.18,-1.2,Math.PI-.5);arm(S*.30,S*1.18,-1.2,-(Math.PI-.5));hand(-S*.58,S*.98,S*.55);hand(S*.58,S*.98,S*.55);}
  if(o.spear!==false){const p=loc(x,z,S*.5,S*.18,ry);vPst('vPost',p[0],y,p[1],.045,S*2.3,vC(0x4a3a2a));kput('vConeI',[p[0],y+S*2.3,p[1]],null,[.14,.6,.14],vC(0x3a3a3a));}
  if(o.shield){const p=loc(x,z,-S*.5,S*.1,ry);kput('vStone',[p[0],y+S*1.0,p[1]],vQ(ry,0,0),[S*.6,S*.8,.08],dCol(DPAL.red));}}
 
