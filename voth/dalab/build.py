@@ -58,6 +58,7 @@ ORIGIN = os.path.join(HERE, '.origin.html')
 # in every target that shows it and the two cannot drift.
 TARGET_OUT = {
     'set': 'dalab-set.html',            # the Dalab building kit showcase
+    'city': 'dalab.html',               # the settlement
 }
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
@@ -67,8 +68,10 @@ DETERMINISTIC = {
     '50-registry.js', '54-mat-concrete.js', '68-mat-v5.js', '69-mat-salvage.js',
     '69b-vern-mat.js', '69c-vern-helpers.js',            # vendored from ../iziz/src (the Vernacular kit + helpers)
     '69d-dalab-mat.js', '69e-dalab-helpers.js',          # Dalab materials, kit items, building blocks
+    '70-hl-tex.js', '71-hl-mat.js', '71b-hl-motif.js', '72-hl-helpers.js', '73-hl-carve.js',   # vendored from ../highlands/src
     '81-sky.js', '86-bio-45-init.js', '90-scene.js', '91-probe.js', '92-camera.js', '93-labels.js', '94-dalab-light.js', '99-tail.html',
     '89z-rows.js', '91z-views.js',        # per-target site table and view list
+    '84-city-geo.js', '85-city-paint.js', '93-city-ui.js',   # city target: geometry, the painted ground, dev-tool UI
 }
 
 # Seed ranges known to collide, kept here so the build stays green while the
@@ -220,6 +223,7 @@ VENDORED = ['10-core.js', '12-stats.js', '20-textures.js', '22-materials.js', '3
 VENDORED_IZIZ = ['69b-vern-mat.js', '69c-vern-helpers.js', '81-sky.js', '90-scene.js', '91-probe.js',
                  '92-camera.js', '93-labels.js', '99-tail.html', '00-head.html',
                  '75-port-embassy.js', '76-port-chapterhouse.js']   # ../iziz/src (the vp* kit, the Voth embassy, the Historians' chapterhouse from the Yuni set)
+VENDORED_HL = ['70-hl-tex.js', '71-hl-mat.js', '71b-hl-motif.js', '72-hl-helpers.js', '73-hl-carve.js', '74-rep-dwell.js']   # ../highlands/src (the Republican dwellings, for the embassy)
 BIO_VENDORED = ['10-core-head', '20-core-kit', '30-core-foliage', '40-core-place',
                 '50-biome-swlowlands-species', '55-biome-swlowlands-trees', '60-biome-swlowlands-floor',
                 '65-biome-swlowlands-dress', '70-biome-swlowlands']   # ../biomes/swlowlands/src -> src/86-bio-*.js
@@ -228,7 +232,7 @@ BIO_VENDORED = ['10-core-head', '20-core-kit', '30-core-foliage', '40-core-place
 def vendor_manifest():
     """VENDOR.json: sha1 of every fragment vendored from ../ancients/src and ../iziz/src, so drift is visible."""
     out = {}
-    for f in VENDORED + VENDORED_IZIZ + ['86-bio-%s.js' % b for b in BIO_VENDORED]:
+    for f in VENDORED + VENDORED_IZIZ + VENDORED_HL + ['86-bio-%s.js' % b for b in BIO_VENDORED]:
         with open(os.path.join(SRC, f), 'rb') as fh:
             out[f] = hashlib.sha1(fh.read()).hexdigest()[:12]
     with open(os.path.join(HERE, 'VENDOR.json'), 'w', encoding='utf-8') as fh:
@@ -238,8 +242,12 @@ def vendor_manifest():
 
 def vendor_check():
     """Compare the vendored fragments with ../ancients/src and ../iziz/src when those repos are beside this one."""
+    lab = os.path.join(TARGETS, 'city', '63-anc-dalab.js'); up = os.path.join(os.path.dirname(HERE), 'ancients', 'src', '64-dalab.js')
+    if os.path.exists(lab) and os.path.exists(up):
+        print('vendor-check: targets/city/63-anc-dalab.js %s ../ancients/src/64-dalab.js' % ('identical to' if open(lab,'rb').read()==open(up,'rb').read() else 'DRIFTS from'))
     for label, files, up in (('ancients', VENDORED, os.path.join(os.path.dirname(HERE), 'ancients', 'src')),
                              ('iziz', VENDORED_IZIZ, os.path.join(os.path.dirname(HERE), 'iziz', 'src')),
+                             ('highlands', VENDORED_HL, os.path.join(os.path.dirname(HERE), 'highlands', 'src')),
                              ('biomes/swlowlands', [('86-bio-%s.js' % b, b + '.js') for b in BIO_VENDORED],
                               os.path.join(os.path.dirname(HERE), 'biomes', 'swlowlands', 'src'))):
         if not os.path.isdir(up):
