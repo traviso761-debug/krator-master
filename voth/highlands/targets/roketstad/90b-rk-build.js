@@ -47,7 +47,7 @@ function pickTown(x,z,r){const d=squareD(x,z),gd=gateD(x,z),forge=inForge(x,z),w
 function simplifyPath(P,tol){if(P.length<3)return P.slice();let best=-1,bi=0;const a=P[0],b=P[P.length-1],dx=b[0]-a[0],dz=b[1]-a[1],L=Math.hypot(dx,dz)||1;
  for(let i=1;i<P.length-1;i++){const d=Math.abs((P[i][0]-a[0])*dz-(P[i][1]-a[1])*dx)/L;if(d>best){best=d;bi=i;}}
  if(best<=tol)return[a,b];const l=simplifyPath(P.slice(0,bi+1),tol),r=simplifyPath(P.slice(bi),tol);return l.slice(0,-1).concat(r);}
-const ROW_STAT={rows:0,runs:0};
+const ROW_STAT={rows:0,runs:0};const ROWFRONTS=[];
 // why a footprint failed groundOK (for the frontage statistics)
 function groundWhy(o){for(const p of obbCorners(o,0).concat([[o.x,o.z]])){if(!insideWall(p[0],p[1],14))return'wall';if(inPrecinct(p[0],p[1],0))return'prec';if(!canBuild(p[0],p[1]))return'k'+klass(p[0],p[1]);}return'other';}
 function frontageAlong(pts,roadW,pick,test,st,opt){opt=typeof opt==='number'?{gapK:opt}:(opt||{});const gapK=opt.gapK||1,sides=opt.sides||[-1,1];
@@ -62,7 +62,7 @@ function frontageAlong(pts,roadW,pick,test,st,opt){opt=typeof opt==='number'?{ga
     const along=s+D.w/2,off=line+D.d/2;const o={x:ax+ux*along+nx*side*off,z:az+uz*along+nz*side*off,hx:D.w/2,hz:D.d/2,ry,pad:.15};
     if(!test(o)){st.ground++;const why=groundWhy(o);st[why]=(st[why]||0)+1;s+=2.5;run=null;}
     else if(!occFree(o,.15)){st.occ++;s+=2.5;run=null;}
-    else{const v=run.pk.v==null?undefined:(run.pk.v+run.left)%6;placeVern(key,o,{v});st.placed++;run.left--;
+    else{const v=run.pk.v==null?undefined:(run.pk.v+run.left)%6;placeVern(key,o,{v});o.row=opt.back!==false;ROWFRONTS.push(o);st.placed++;run.left--;
      // a row closes up (party walls), a lane or a yard opens now and then; out in the suburbs the rows loosen
      s+=D.w+(rng()<.12*gapK?rr(3,7):rr(.2,.7)*gapK);}}}}}
 (function frontage(){reseed(SEED_RK+11);const F={placed:0,ground:0,occ:0};
@@ -76,6 +76,23 @@ function frontageAlong(pts,roadW,pick,test,st,opt){opt=typeof opt==='number'?{ga
   .sort((a,b)=>(a.cls-b.cls));
  for(const r of order)frontageAlong(r.pts,r.w,(x,z)=>pickTown(x,z,r),test,F);
  window._frontage=Object.assign(F,ROW_STAT);})();
+// ---------------------------------------------------------------- 2b. the back rows: the block built through
+// Behind every street-front building, on its own alignment, a back house or workshop sharing its rear wall (a .5 m
+// gap), and behind that a third where the block is deep enough — so a block reads as two rows back to back with the
+// odd yard, not a ring of houses round an empty field.
+(function backRows(){reseed(SEED_RK+14);let n=0,tries=0;
+ const BACK=x=>{const w=rng(),f=inForge(x[0],x[1]);if(f&&w<.45)return vPick(['hl_rep_workshop_a','hl_rep_workshop_b','hl_rep_smithy_small','hl_rep_warehouse_a']);
+  if(w<.14)return vPick(['hl_rep_workshop_a','hl_rep_workshop_b']);const d=squareD(x[0],x[1]);return vPick(HOUSES[d<80?1:(rng()<.7?0:1)]);};
+ const test=o=>groundOK(o,{town:true,margin:11});
+ const fronts=ROWFRONTS.filter(o=>o.row);
+ for(const F of fronts){let cur=F;
+  for(let depth=0;depth<2;depth++){if(depth===1&&rng()<.45)break;tries++;
+   const key=kitKey(BACK([cur.x,cur.z]));const D=VERN.defs[key];if(!D)break;
+   // flush to the front building's rear wall, centred on it, the same heading (sideways slide if it does not fit)
+   let placed=null;for(const slide of[0,-1.5,1.5,-3,3]){const p=loc(cur.x,cur.z,slide,-(cur.hz+.5+D.d/2),cur.ry);const o={x:p[0],z:p[1],hx:D.w/2,hz:D.d/2,ry:cur.ry,pad:.15};
+    if(test(o)&&occFree(o,.15)){placeVern(key,o,{v:Math.floor(rng()*6)});placed=o;break;}}
+   if(!placed)break;n++;cur=placed;}}
+ window._backRows={n,tries};})();
 // ---------------------------------------------------------------- 3. the infill: yards and back-lot houses on a footpath to their street
 (function infill(){reseed(SEED_RK+12);let n=0;
  for(let x=TC.x-TC.R-30;x<=TC.x+TC.R+30;x+=9)for(let z=TC.z-TC.R-30;z<=TC.z+TC.R+30;z+=9){const jx=x+rr(-3,3),jz=z+rr(-3,3);if(!insideWall(jx,jz,20))continue;if(!canBuild(jx,jz)||inPrecinct(jx,jz,2))continue;
