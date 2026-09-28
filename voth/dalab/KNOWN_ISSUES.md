@@ -20,8 +20,8 @@ saying what fixed it.
 - [x] Night: The God's light and the fires do not light the ground. **Round 3:**
       every God-post and God-lamp lays a radial glow card on the ground (the
       fire pits already did); the hemisphere light is blue at night.
-- [ ] The Ancient lab dome (`../ancients/src/64-dalab.js`) is not in this repo;
-      the settlement pass vendors it. (Deliberate: this kit is the buildings.)
+- [x] The Ancient lab dome is not in this repo. **Round 7:** vendored into the city
+      target as `63-anc-dalab.js` and placed at scale .4.
 
 ## Round 2
 - [x] Palace mound stair ran through the terraces. **Round 3:** rebuilt — each
@@ -42,3 +42,21 @@ saying what fixed it.
       would need its own retaining depth.
 - [ ] Biome draw calls: +22 for the lowlands items and buckets, paid once per
       page whether one palace or a whole settlement is planted.
+
+## Round 7 — the settlement
+- [ ] The lab's own jungle trees (the Ancients kit's `trees()` in the builder) are
+      the hypertree items, not the lowlands species; they read as the overgrowth
+      the brief asks for but are the wrong flora. The lab wrapper could mask
+      them out and let the biome dress the compound instead.
+- [ ] Roads are painted on the albedo only: no kerbs or wear geometry. The
+      highway and the avenue could take a surface pass.
+- [ ] Irrigation channels are straight three-point polylines; a meander would
+      read better. The river has no banks beyond the terrain cut.
+- [ ] Agents walk through buildings placed after the road they follow; they stay
+      on the road graph, but a house whose footprint clips a road edge (the
+      mask blocks it, so this should not happen) would be walked through.
+- [ ] Night in the city: the settlement's God-lit buildings show, but the
+      biome's floor and the fields do not darken beyond the hemisphere light.
+- [ ] Off-map: the spurs stop at the world edge; the skybox does not yet carry
+      the forests and fields to the horizon (the brief) — the KratorSky dome is
+      the plain sky.

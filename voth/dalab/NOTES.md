@@ -205,3 +205,32 @@ calls. `--assert` green.
 
 86 registered volumes, 13.7 k kit instances, 505 k scene triangles, ~140 draw
 calls. `--assert` green.
+
+## Round 7 (Sep 28 2026) — the settlement, the Republican embassy, the 10 M ceiling
+
+* **The Republican embassy** is real: the Highlands kit landed on main
+  (`../highlands/`), so `70-hl-tex 71-hl-mat 71b-hl-motif 72-hl-helpers
+  73-hl-carve 74-rep-dwell` are vendored (no name collisions with Dalab, seeds
+  in the 20000s) and the embassy places a Peles villa inside the Dalab compound
+  through the Highlands' own `hnSub`. The placeholder is gone.
+* **The set's ceiling** is 10 M triangles (Travis), for level of detail later.
+* **The settlement** (`targets/city/`, `dist/dalab.html`): see README. World
+  4.4 km; the Ancient lab north of centre at scale .4 inside its precinct; the
+  main settlement south of it on the live-oak avenue, its palace mound facing
+  the lab; the High Priest's ringed mound outside the lab gate facing away; six
+  outlying towns on a 1.56 km ring, each mound facing the lab, joined by the
+  highway circuit with spurs off the map N/S/E/W; the river down the west edge
+  with a channel to the main settlement and irrigation channels to the towns;
+  farm wedges round every settlement with farm lanes; residual oak stands in
+  the clearing and the forest closing in at the edge. Every building faces its
+  street and is tested against the mask and the occupancy hash; the audit
+  reports on-road corners and overlaps (0 overlaps; the on-road count is the
+  mounds' lanes and is checked by disc). The life layer moves ~320 agents in
+  two draw calls. First run: 294 buildings, 1 870 trees (42 avenue oaks), one
+  road network, 5.1 M triangles, ~195 draw calls, 12 s to build.
+* Fixes from the first shots: the biome reads ground under 0.3 m as water, so
+  the terrain now sits 2.2 m up (the oaks planted); the world-wide water plane
+  z-fought the ground at a distance (now strips along the river and channels);
+  the plaza is reserved ground so the market and shrine are let onto it by
+  name; the outlying towns' streets shortened (140 m) so 18 houses read as a
+  town; two presets that stood inside geometry.

@@ -1,0 +1,25 @@
+// TARGET: city — camera presets [cx,cy,cz,tx,ty,tz, hour?]
+const M_=SETTLE.find(S=>S.main),T1=SETTLE[0],T4=SETTLE[3];
+const VIEWS={
+ 'Opening — the avenue':[AVENUE[2][0]-40,26,AVENUE[2][1]+70,AVENUE[1][0],40,AVENUE[1][1]-200],
+ 'Overview':[0,2400,1900,0,0,-100],
+ 'The lab from the avenue':[AVENUE[2][0]+60,44,AVENUE[2][1]-20,LAB_GATE[0],90,LAB_GATE[1]-260],
+ 'The lab gate':[LAB_GATE[0]-30,8,LAB_GATE[1]+120,LAB_GATE[0],40,LAB_GATE[1]-100],
+ "High Priest's mound":[HIGH_MOUND.x+60,40,HIGH_MOUND.z+220,HIGH_MOUND.x,20,HIGH_MOUND.z],
+ 'Main plaza':[M_.plaza.x-90,50,M_.plaza.z+160,M_.plaza.x,6,M_.plaza.z],
+ 'Main plaza — eye level':[M_.plaza.x+20,1.7,M_.plaza.z+58,M_.plaza.x,4,M_.plaza.z-40],
+ 'The palace from the plaza':[M_.plaza.x,4,M_.plaza.z+10,M_.x,22,M_.z],
+ 'Main settlement — overview':[M_.x-500,380,M_.z+700,M_.x,0,M_.z],
+ 'Main settlement — a street':(()=>{const R=M_.radials[2];const a=R.a;return[M_.plaza.x+Math.sin(a)*(M_.plazaR+30),1.7,M_.plaza.z+Math.cos(a)*(M_.plazaR+30),M_.plaza.x+Math.sin(a)*(M_.plazaR+180),3,M_.plaza.z+Math.cos(a)*(M_.plazaR+180)];})(),
+ 'The Halls and the ranch':[M_.x+300,260,M_.z+700,M_.x+100,0,M_.z+250],
+ 'Ashfold — overview':[T1.x-260,200,T1.z+380,T1.x,0,T1.z],
+ 'Ashfold — the plaza':[T1.plaza.x-Math.sin(T1.face)*20,1.7,T1.plaza.z-Math.cos(T1.face)*20,T1.x,14,T1.z],
+ 'Ashfold — a street':(()=>{const R=T1.radials[1];const a=R.a;return[T1.plaza.x+Math.sin(a)*(T1.plazaR+10),1.7,T1.plaza.z+Math.cos(a)*(T1.plazaR+10),T1.plaza.x+Math.sin(a)*(T1.plazaR+120),3,T1.plaza.z+Math.cos(a)*(T1.plazaR+120)];})(),
+ 'Oakhaven — overview':[T4.x+260,200,T4.z+380,T4.x,0,T4.z],
+ 'The highway':[T1.x+200,30,T1.z+300,T1.x+600,8,T1.z+500],
+ 'The river':[riverX(400)+120,60,600,riverX(0),0,0],
+ 'Fields':[M_.x+500,120,M_.z+450,M_.x+800,0,M_.z+700],
+ 'Night — main plaza':[M_.plaza.x-90,50,M_.plaza.z+160,M_.plaza.x,6,M_.plaza.z,22],
+ 'Night — the avenue':[AVENUE[2][0]-40,26,AVENUE[2][1]+70,AVENUE[1][0],40,AVENUE[1][1]-200,21.5],
+ 'Dusk — Ashfold':[T1.x-260,200,T1.z+380,T1.x,0,T1.z,18.6],
+};
