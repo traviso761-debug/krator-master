@@ -19,15 +19,18 @@ for(const S of SETTLE){
  disc(pc[0],pc[1],S.plazaR,'plaza');precinct(pc[0],pc[1],S.plazaR-2,S.name+' plaza');
  // radials from the plaza centre, skipping the mound's bearing; the first pair frame the mound
  S.radials=[];const n=S.streets;const back=Math.atan2(S.x-pc[0],S.z-pc[1]);   // bearing toward the mound (as ry: dir = sin,cos)
- for(let k=0;k<n;k++){const a=back+Math.PI+(k/n)*TAU;if(angDiff(a,back)<.45)continue;const L=S.main?420:140;
+ for(let k=0;k<n;k++){const a=back+Math.PI+(k/n)*TAU;if(angDiff(a,back)<.45)continue;const L=S.main?420:118;
   const pts=[[pc[0]+Math.sin(a)*(S.plazaR-2),pc[1]+Math.cos(a)*(S.plazaR-2)],[pc[0]+Math.sin(a)*L,pc[1]+Math.cos(a)*L]];
   road(pts,S.main?CITY.STREET_W+2:CITY.STREET_W,KL.street,{zone:S.key+':radial'});S.radials.push({a,L,pts});}
  // ring street(s) round the plaza
- const ring=(R,w)=>{const pts=[];for(let i=0;i<=48;i++){const a=i/48*TAU;pts.push([pc[0]+Math.sin(a)*R,pc[1]+Math.cos(a)*R]);}road(pts,w,KL.lane,{zone:S.key+':ring'});};
+ // a ring is painted in runs that skip a precinct (the outlying plaza ring would otherwise cut through the mound's foot)
+ const ringClipped=(cx,cz,R,w,zone,skip)=>{let run=[];const flush=()=>{if(run.length>1)road(run,w,KL.lane,{zone});run=[];};
+  for(let i=0;i<=72;i++){const a=i/72*TAU;const p=[cx+Math.sin(a)*R,cz+Math.cos(a)*R];if(skip(p[0],p[1]))flush();else run.push(p);}flush();};
+ const ring=(R,w)=>ringClipped(pc[0],pc[1],R,w,S.key+':ring',(x,z)=>Math.hypot(x-S.x,z-S.z)<S.moundR+12);
  ring(S.ringR,CITY.LANE_W);if(S.ringR2)ring(S.ringR2,CITY.LANE_W);
  // a lane round the back of the mound so the houses behind it connect
- {const R=S.moundR+22;const pts=[];for(let i=0;i<=24;i++){const a=back+Math.PI/2+i/24*Math.PI;pts.push([S.x+Math.sin(a)*R,S.z+Math.cos(a)*R]);}road(pts,CITY.LANE_W,KL.lane,{zone:S.key+':moundlane'});
-  connectRoad(pts[0][0],pts[0][1],CITY.LANE_W,KL.lane,r=>r.zone&&r.zone.indexOf(S.key)===0&&r.zone.indexOf('moundlane')<0);connectRoad(pts[24][0],pts[24][1],CITY.LANE_W,KL.lane,r=>r.zone&&r.zone.indexOf(S.key)===0&&r.zone.indexOf('moundlane')<0);}
+ // (a full ring: it meets the plaza in front of the mound, so it needs no connectors that could cut the mound's foot)
+ ringClipped(S.x,S.z,S.moundR+22,CITY.LANE_W,S.key+':moundlane',(x,z)=>Math.hypot(x-pc[0],z-pc[1])<S.plazaR+2);
 }
 // ---- 2. the highway circuit through the outlying plazas, and the four spurs off the map ----
 {const T=SETTLE.filter(S=>!S.main);const pts=T.map(S=>[S.plaza.x,S.plaza.z]);pts.push(pts[0]);
@@ -37,8 +40,10 @@ for(const S of SETTLE){
  // spurs: from the circuit's nearest point to each map edge
  const E=CITY.WORLD/2+80;for(const dir of[[0,-1],[1,0],[0,1],[-1,0]]){const far=[CITY.RING_C[0]+dir[0]*E,CITY.RING_C[1]+dir[1]*E];const n=nearestRoadPt(far[0],far[1],r=>r.zone==='highway');road([[n.x,n.z],far],CITY.HIGHWAY_W,KL.highway,{zone:'spur'});}
  // the main settlement joins the circuit by its three outward radials, extended
- const M=SETTLE.find(S=>S.main);for(const R of M.radials){if(angDiff(R.a,M.face)<1.2)continue;const e=R.pts[1];const n=nearestRoadPt(e[0],e[1],r=>r.zone==='highway');if(n&&n.d<900)road([e,[n.x,n.z]],CITY.STREET_W+2,KL.street,{zone:'main:link'});}
+ const M=SETTLE.find(S=>S.main);for(const R of M.radials){if(angDiff(R.a,M.face)<1.2)continue;const e=R.pts[1];const n=nearestRoadPt(e[0],e[1],r=>r.zone==='highway');if(n&&n.d<900)road([e,[n.x,n.z]],CITY.STREET_W+4,KL.avenue,{zone:'main:link'});}
  window._highwayPts=P.length;}
+// the oak vaults (Travis, round 7): the lab avenue and every road out of the main settlement to the circuit, planted by the biome
+const OAK_ROADS=()=>ROADS.filter(r=>r.zone==='main:link').map(r=>r.pts).concat([AVENUE]);
 // ---- 3. the avenue: lab gate to the main plaza, a live-oak vault (the biome plants the oaks along AVENUE) ----
 const M0=SETTLE.find(S=>S.main);
 const LAB_GATE=[CITY.LAB.x,CITY.LAB.z+292*4.105*CITY.LAB.scale];   // the compound wall's south point
@@ -58,15 +63,17 @@ const FIELDS=[];
     if(!ok)continue;field(pts,(ci+Math.round(r/80))%CROPCOL.length,(a0+a1)/2);FIELDS.push({pts,S:S.key,cx:pts.reduce((s,p)=>s+p[0],0)/4,cz:pts.reduce((s,p)=>s+p[1],0)/4});}}}
  window._fields=FIELDS.length;})();
 // farm lanes: every other wedge boundary gets a lane from the ring street out to the fields' edge (the farm workers' way)
-for(const S of SETTLE){const n=S.main?18:12;for(let i=0;i<n;i+=2){const a=i/n*TAU;const R0=S.ringR+4,R1=(S.main?S.r+300:S.r+210);
+// (a lane never runs at the mound, and stops at the first precinct — another mound, the lab — it would enter)
+for(const S of SETTLE){const n=S.main?18:12;const back=Math.atan2(S.x-S.plaza.x,S.z-S.plaza.z);for(let i=0;i<n;i+=2){const a=i/n*TAU;if(angDiff(a,back)<.55)continue;const R0=S.ringR+4;let R1=(S.main?S.r+300:S.r+210);
+ for(let r=R0;r<R1;r+=6){if(inPrecinct(S.plaza.x+Math.sin(a)*r,S.plaza.z+Math.cos(a)*r,10)){R1=r-6;break;}}if(R1-R0<30)continue;
  road([[S.plaza.x+Math.sin(a)*R0,S.plaza.z+Math.cos(a)*R0],[S.plaza.x+Math.sin(a)*R1,S.plaza.z+Math.cos(a)*R1]],CITY.LANE_W,KL.lane,{zone:S.key+':farmlane'});}}
 // ---- 5. the connectivity pass: one network. Components by endpoint proximity; each minor component gets a link to the largest ----
 function roadComponents(){const N=ROADS.length,par=[];for(let i=0;i<N;i++)par[i]=i;const find=i=>par[i]===i?i:(par[i]=find(par[i]));const uni=(a,b)=>{par[find(a)]=find(b);};
  for(let i=0;i<N;i++){const A=ROADS[i];for(const e of[A.pts[0],A.pts[A.pts.length-1]]){for(let j=0;j<N;j++){if(i===j)continue;const B=ROADS[j];for(let k=0;k<B.pts.length-1;k++){if(segD(e[0],e[1],B.pts[k],B.pts[k+1])<(A.w+B.w)/2+1.5){uni(i,j);break;}}}}}
  const comp={};for(let i=0;i<N;i++){const c=find(i);(comp[c]||(comp[c]=[])).push(i);}return Object.values(comp);}
 (function connectAll(){let guard=0;while(guard++<12){const C=roadComponents();if(C.length<=1){window._roadComponents=1;return;}C.sort((a,b)=>b.length-a.length);const main=new Set(C[0]);
- for(let ci=1;ci<C.length;ci++){let best=null;for(const ri of C[ci]){for(const p of ROADS[ri].pts){const n=nearestRoadPt(p[0],p[1],r=>main.has(r.id));if(n&&(!best||n.d<best.d))best={p,n};}}
-  if(best)road([best.p,[best.n.x,best.n.z]],CITY.LANE_W,KL.lane,{zone:'connect'});}}
+ for(let ci=1;ci<C.length;ci++){let best=null;for(const ri of C[ci]){for(const p of ROADS[ri].pts){const n=nearestRoadPt(p[0],p[1],r=>main.has(r.id));if(!n)continue;let clear=true;for(let t=0;t<=1;t+=.05){if(inPrecinct(p[0]+(n.x-p[0])*t,p[1]+(n.z-p[1])*t,4)){clear=false;break;}}if(clear&&(!best||n.d<best.d))best={p,n};}}
+  if(best)road([best.p,[best.n.x,best.n.z]],CITY.LANE_W,KL.lane,{zone:'connect'});else{const ri=C[ci][0];const p=ROADS[ri].pts[0];const n=nearestRoadPt(p[0],p[1],r=>main.has(r.id));if(n)road([p,[n.x,n.z]],CITY.LANE_W,KL.lane,{zone:'connect'});}}}
  window._roadComponents=roadComponents().length;})();
 // bridges wherever a road crosses a channel (painted as planks over the water)
 (function bridges(){for(const R of ROADS){for(let i=0;i<R.pts.length-1;i++){const a=R.pts[i],b=R.pts[i+1];const L=Math.hypot(b[0]-a[0],b[1]-a[1]);const n=Math.max(2,Math.ceil(L/6));
