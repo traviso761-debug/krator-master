@@ -257,8 +257,6 @@ TEX.laceB=canvasTex(128,64,(g,w,h)=>{g.clearRect(0,0,w,h);const n=4,bw=w/n;
 TEX.clock=canvasTex(256,256,(g,w,h)=>{const c=w/2;g.fillStyle='#1c1a1c';g.fillRect(0,0,w,h);
  g.beginPath();g.arc(c,c,c*.96,0,TAU);g.fillStyle='#c9a043';g.fill();g.beginPath();g.arc(c,c,c*.84,0,TAU);g.fillStyle='#f1e8d2';g.fill();
  g.strokeStyle='#1c1a1c';for(let k=0;k<60;k++){const a=k/60*TAU,L=k%5?c*.05:c*.13;g.lineWidth=k%5?2:6;g.beginPath();g.moveTo(c+Math.sin(a)*c*.8,c-Math.cos(a)*c*.8);g.lineTo(c+Math.sin(a)*(c*.8-L),c-Math.cos(a)*(c*.8-L));g.stroke();}
- g.lineCap='round';g.lineWidth=10;g.beginPath();g.moveTo(c,c);g.lineTo(c+Math.sin(5.2)*c*.42,c-Math.cos(5.2)*c*.42);g.stroke();
- g.lineWidth=6;g.beginPath();g.moveTo(c,c);g.lineTo(c+Math.sin(2.1)*c*.66,c-Math.cos(2.1)*c*.66);g.stroke();
  g.beginPath();g.arc(c,c,c*.06,0,TAU);g.fillStyle='#b3322a';g.fill();});
 // ---------------------------------------------------------------- cliff rock (fractured grey granite, strata and streaks): 8 m tile
 TEX.rock=canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;

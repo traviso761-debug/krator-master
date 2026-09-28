@@ -15,18 +15,34 @@
 // a mural of a GIVEN motif (not a random pick), fitted like hnForm's (hlFlush)
 function hnMural(item,x,y,z,ry,w,h){const C=VERN.cur;(C.murals||(C.murals=[])).push({item,x,y,z,ry,w,h});}
 // the sky of Krator in brass, centred at (x,y,z); `R` = the great ring radius. Reach: R + 1.45.
-function hnRBOrrery(x,y,z,R){const brass=hC(0x9a7a3a),gold=hC(HPAL.gold[0]);vPst('vPipeC',x,y-1.9,z,.08,1.5,brass);vBall('hGold',x,y,z,.45,gold);
- const gph=.7,gq=qEuler(Math.PI/2+.08,0,.05);kput('hRBHoop',[x,y,z],gq,[R,R,1]);
- const gv=new THREE.Vector3(Math.cos(gph)*R,Math.sin(gph)*R,0).applyQuaternion(gq),G=[x+gv.x,y+gv.y,z+gv.z];
- beam('vPipeC',[x,y,z],[G[0]-gv.x*.18,G[1]-gv.y*.18,G[2]-gv.z*.18],.04,.04,brass);
- vBall('hPaintBall',G[0],G[1],G[2],.44,hC(0x7aa888));
- for(const [dy,c] of[[.2,0x5f927a],[-.05,0xb4d0a4],[-.22,0x4f7e68]]){const r=.45*Math.sqrt(1-dy*dy/.1936);kput('hPaintBall',[G[0],G[1]+dy,G[2]],null,[r,.05,r],hC(c));}
- kput('hRBHoop',G,qEuler(Math.PI/2-.35,0,.2),[.64,.64,1]);
- [[1,.3,2.4,.21,0x4f86a8,true],[.72,-.25,.9,.1,0xb8b0a0],[1.3,.15,4.4,.13,0xd19a3a]].forEach(([r,tilt,ph,rad,col,krator])=>{
-  const q=qEuler(Math.PI/2+tilt,0,tilt*.6);kput('hRBHoop',G,q,[r,r,1]);const v=new THREE.Vector3(Math.cos(ph)*r,Math.sin(ph)*r,0).applyQuaternion(q);
-  vBall('hPaintBall',G[0]+v.x,G[1]+v.y,G[2]+v.z,rad,hC(col));beam('vPipeC',G,[G[0]+v.x*.9,G[1]+v.y*.9,G[2]+v.z*.9],.024,.024,brass);
-  if(krator)vBall('hPaintBall',G[0]+v.x*1.02,G[1]+v.y*1.02+rad*.3,G[2]+v.z*1.02,rad*.55,hC(0x5f9a4a));});}
-
+// Travis: the orrery TURNS. It is built of real meshes (not kit instances) in nested groups — the giant's arm turns
+// about the great ring's axis, each moon's arm about its own ring's axis, the sun and the giant spin — and every
+// turning group is registered in HLANIM (rad/s about its local z), which the frame hook in 94-hl-anim.js drives.
+const HLANIM=[];
+const HORR={};
+function hlOrreryMats(){if(HORR.brass)return HORR;HORR.brass=MAT.rbBronze;HORR.sun=MAT.gold;
+ HORR.giant=new THREE.MeshStandardMaterial({roughness:.55,map:canvasTex(64,128,(g,w,h)=>{const B=['#4f7e68','#8fb896','#c3dcb8','#5f927a','#9cc4a4','#2e9488','#b4d0a4','#7aa888','#4f7e68'];
+  B.forEach((c,i)=>{g.fillStyle=c;g.fillRect(0,i*h/B.length,w,h/B.length+1);});})});
+ HORR.krator=new THREE.MeshStandardMaterial({color:0x4f86a8,roughness:.6});HORR.land=new THREE.MeshStandardMaterial({color:0x5f9a4a,roughness:.8});
+ HORR.moonA=new THREE.MeshStandardMaterial({color:0xb8b0a0,roughness:.8});HORR.moonB=new THREE.MeshStandardMaterial({color:0xd19a3a,roughness:.7});return HORR;}
+function hnRBOrrery(x,y,z,R){const M=hlOrreryMats(),P=VERN.cur.G;const O=new THREE.Group();O.position.set(x,y,z);P.add(O);
+ const ball=(r,mat,par,px,py,pz)=>mesh(new THREE.SphereGeometry(r,20,14),mat,par,px||0,py||0,pz||0);
+ const hoop=(r,par)=>mesh(new THREE.TorusGeometry(r,.035,6,48),M.brass,par);
+ const rod=(len,par,r)=>{const m=mesh(new THREE.CylinderGeometry(r||.035,r||.035,len,6).rotateZ(Math.PI/2).translate(len/2,0,0),M.brass,par);return m;};
+ mesh(new THREE.CylinderGeometry(.08,.08,1.5,8).translate(0,-1.15,0),M.brass,O);                      // the column
+ const sun=ball(.45,M.sun,O);HLANIM.push({o:sun,w:.25,axis:'y'});
+ // the great ring and the giant's arm
+ const plane=new THREE.Group();plane.quaternion.copy(qEuler(Math.PI/2+.08,0,.05));O.add(plane);hoop(R,plane);
+ const arm=new THREE.Group();arm.rotation.z=.7;plane.add(arm);HLANIM.push({o:arm,w:.16});rod(R*.82,arm,.04);
+ const GG=new THREE.Group();GG.position.set(R,0,0);arm.add(GG);
+ const giant=ball(.44,M.giant,GG);giant.rotation.x=Math.PI/2;HLANIM.push({o:giant,w:.9,axis:'y'});
+ const gr=new THREE.Group();gr.quaternion.copy(qEuler(-.35,0,.2));GG.add(gr);hoop(.64,gr);
+ // the three moons about the giant: Krator (blue, green land) and two lesser moons
+ [[1,.3,2.4,.21,M.krator,true,.55],[.72,-.25,.9,.1,M.moonA,false,.9],[1.3,.15,4.4,.13,M.moonB,false,.38]].forEach(([r,tilt,ph,rad,mat,krator,w])=>{
+  const mp=new THREE.Group();mp.quaternion.copy(qEuler(tilt,0,tilt*.6));GG.add(mp);hoop(r,mp);
+  const ma=new THREE.Group();ma.rotation.z=ph;mp.add(ma);HLANIM.push({o:ma,w});rod(r*.9,ma,.024);
+  const m=ball(rad,mat,ma,r,0,0);if(krator)ball(rad*.55,M.land,ma,r*1.02,rad*.3,0);});
+ return O;}
 function buildHlRepGuildAstro(G,o){reseed(21101+(o.v|0));const HX=-4,HZ=-1,W=16,D=10,S=.6,H1=4,H2=3.2,TX=10,TZ=-1;
  const cream=hC(vPick(HPAL.stucco)),beamC=hC(vPick(HPAL.redwood)),slate=hC(vPick(HPAL.slate)),ash=hC(vPick(HPAL.ashlar)),tar=hC(vPick(HPAL.tar)).multiplyScalar(1.25),
   cu=hC(0x5f9a88),iron=hC(hRBIRON),lit=vLit()?'lit':'glass';
@@ -91,10 +107,11 @@ function buildHlRepGuildScav(G,o){reseed(21111+(o.v|0));const HX=-7,HZ=-2,W=15,D
   for(let i=0;i<=n;i++)vPst('vPipeR',ax+(bx-ax)*i/n,0,az+(bz-az)*i/n,.06,2.3,null);
   for(let i=0;i<n;i++){const t=(i+.5)/n;kput(vPick(['vPlate','vSheet','vPlate','vPlateW']),[ax+(bx-ax)*t,1.05+rr(-.08,.08),az+(bz-az)*t],qEuler(0,ry,rr(-.05,.05)),[L/n+.1,2+rr(-.2,.1),1],null);}}
  // sorted heaps
- const heap=(x,z,items,n,r)=>{for(let i=0;i<n;i++){const a=rng()*TAU,d=Math.sqrt(rng())*r,h=(1-d/r)*rr(.6,1.4);const it=vPick(items);
-  if(it==='vPipeR')kput('vPipeR',[x+Math.cos(a)*d,.15+h*.5,z+Math.sin(a)*d],qEuler(Math.PI/2+rr(-.3,.3),rng()*TAU,0),[rr(.08,.2),rr(1.5,3),rr(.08,.2)],null);
-  else if(it==='vTankR')kput('vTankR',[x+Math.cos(a)*d,.1,z+Math.sin(a)*d],qEuler(Math.PI/2,rng()*TAU,0),[rr(.4,.7),rr(1,2),rr(.4,.7)],null);
-  else kput(it,[x+Math.cos(a)*d,.1+h*.6,z+Math.sin(a)*d],qEuler(-Math.PI/2+rr(-.6,.6),rng()*TAU,rr(-.4,.4)),[rr(1,2.2),rr(.8,1.6),1],null);}};
+ const heap=(x,z,items,n,r)=>{const MH=r*.42;hnRCHeap(x,0,z,r*1.05,MH,hC(vPick([0x5a4a3e,0x6a5040,0x4a4038])),0);   // a mound of mixed scrap and earth
+  for(let i=0;i<n;i++){const a=rng()*TAU,d=Math.sqrt(rng())*r*.9,sy=Math.max(0,MH*(1-d/(r*1.05))-.12);const it=vPick(items);   // sy: just under the mound's (conical) surface there
+  if(it==='vPipeR')kput('vPipeR',[x+Math.cos(a)*d,sy+.05,z+Math.sin(a)*d],qEuler(Math.PI/2+rr(-.3,.3),rng()*TAU,0),[rr(.08,.2),rr(1.5,3),rr(.08,.2)],null);
+  else if(it==='vTankR'){const tr=rr(.4,.7);kput('vTankR',[x+Math.cos(a)*d,sy+tr*.5,z+Math.sin(a)*d],qEuler(0,rng()*TAU,Math.PI/2).multiply(qEuler(0,0,0)),[tr,rr(1,2),tr],null);}
+  else kput(it,[x+Math.cos(a)*d,sy+.04,z+Math.sin(a)*d],qEuler(0,rng()*TAU,0).multiply(qEuler(-Math.PI/2+rr(-.25,.25),0,0)),[rr(1,2.2),rr(.8,1.6),1],null);}};
  heap(YX-4.5,YZ-3.5,['vPlateW','vPlateW','vPlate'],26,2.6);heap(YX+.5,YZ-4,['vSheet','vPlate'],22,2.4);heap(YX+5,YZ-3.5,['vPipeR'],24,2.3);heap(YX+5,YZ+2.5,['vTankR','vPipeR'],8,2);
  // the gantry: two pipe A-frames, a beam, a chain and a panel on the hook
  const CX=YX-2.5,CZ=YZ+1.5,CH=5.2;for(const s of[-1,1]){beam('vPipeR',[CX+s*3.4,0,CZ-1.3],[CX+s*3.4,CH,CZ],.18,.18);beam('vPipeR',[CX+s*3.4,0,CZ+1.3],[CX+s*3.4,CH,CZ],.18,.18);}

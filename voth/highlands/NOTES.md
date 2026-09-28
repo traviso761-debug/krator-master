@@ -104,3 +104,14 @@ a clock tower after the clocktower reference instead; add a Scavengers' Guild.
   with Ancient panels on the gables, a gate of two Ancient tank sections, a plate-fenced yard of sorted heaps, a pipe
   gantry crane, a weighbridge. `hnMural(item,…)` places a chosen motif through the fitting pass. New sign symbols
   `star` and `salvage`.
+
+### Round 5b
+* Scavengers' Guild keeps its metal roof (Travis). Its yard heaps now rest on scrap mounds (items were floating).
+  **Raketstad placement: the Scavengers' Guild goes by the ruined spaceport.**
+* The orrery turns: built from real meshes in nested groups (`hnRBOrrery`), the turning groups listed in `HLANIM`
+  and driven by `94-hl-anim.js` (giant ~40 s a circuit, moons faster, sun and giant spin).
+* Clocks keep time: every `hClock`/`hRBClock` face records its world pose (`HLCLOCKS`, 88); `94-hl-anim.js` adds
+  hour and minute hands (two instanced meshes, updated each second) showing `window.HL_HOUR` if a sky/day-night
+  system sets it, else the viewer's local time. The painted hands were removed from the clock-face texture.
+* Mural fitting keeps symmetry: a big centred board if it fits, else a mirrored PAIR flanking the axis (either side
+  of a door lintel), else a small centred one — never a lone off-centre board.
