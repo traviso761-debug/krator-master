@@ -53,28 +53,60 @@ function hnStucco(x,y,z,w,h,d,ry,c,qC){vB('vPlaster',x,y,z,w,h,d,ry,c||hC(vPick(
   const p=loc(x,z,sx*(w/2-(big?.28:.2)+.03),sz*(d/2+.03),ry);vB('vStone',p[0],y+k*.6,p[1],big?.62:.46,.56,.08,ry,qc);
   const q=loc(x,z,sx*(w/2+.03),sz*(d/2-(big?.2:.28)+.03),ry);vB('vStone',q[0],y+k*.6,q[1],.08,.56,big?.46:.62,ry,qc);}}}
 // Half-timbering (Fachwerk) on ONE face: (x,z,ry) the face centre and outward direction, w the face width, h the
-// storey. Posts every ~1.1 m, sill + head beams, braces in the solid bays (the "Mann" figure: a K of braces on the
-// posts either side), windows in the bays listed in `wins` (bay indices; -1 = auto: every other bay).
-// kind: window kind for vnWin ('lit' | 'glass' | 'shut' | 'open').
-function hnFachFace(x,y,z,ry,w,h,c,wins,kind,winC){c=c||hC(vPick(HPAL.redwood));const nb=Math.max(2,Math.round(w/1.15)),bw=w/nb,T=.07,N=hRot(ry,[0,0,1]);
+// storey. Posts every ~1.1 m, sill + head beams, windows in the bays listed in `wins` (bay indices; -1 = auto: every
+// other bay). kind: window kind for vnWin ('lit' | 'glass' | 'shut' | 'open').
+//
+// Round 2 (Travis: "more elaborate", after Alemannic/Franconian and Tudor references): every building picks a STYLE
+// once (VERN.cur.fach), and each bay draws a pattern from that style's pool, mirrored about the face centre:
+//   alemannic  — the "Mann" (K-braces off both posts), curved crosses, lozenges; curved Feuerböcke and gilded
+//                rosettes in the window aprons; red or brown timber on white (the Black Forest / Hessian house)
+//   franconian — ogee (curved) St Andrew's crosses, stars (lozenge + cross), lozenges, crosses in every apron
+//   tudor      — black timber on white: close studding, herringbone chevrons, quatrefoil rings and star panels
+//   saxon      — the plain round-1 pattern (alternating straight braces), for the modest houses
+const HFACH={alemannic:['mann','curvedX','raute','mann'],franconian:['curvedX','star','raute','X'],tudor:['close','herring','star','quatre'],saxon:['K','K','X']};
+function hlFachStyle(){const c=VERN.cur;if(!c)return 'saxon';if(!c.fach){const b=c.D.branch,w=c.D.tags.wealth;
+  c.fach=vPick(b==='rustic'?['alemannic','alemannic','saxon']:w==='poor'?['saxon','alemannic']:['alemannic','franconian','tudor','franconian','alemannic','tudor']);}return c.fach;}
+kdef('hDisc',new THREE.CylinderGeometry(1,1,1,16),MAT.paint);kdef('hDiscG',new THREE.CylinderGeometry(1,1,1,16),MAT.gold);   // centred discs: rosettes, bosses
+function hnFachFace(x,y,z,ry,w,h,c,wins,kind,winC){const st=hlFachStyle();if(st==='tudor')c=hC(vPick([0x2a221e,0x322822,0x3a2a22]));else c=c||hC(vPick(HPAL.redwood));
+ const nb=Math.max(2,Math.round(w/1.15)),bw=w/nb,T=.07,N=hRot(ry,[0,0,1]),pool=HFACH[st];
  const isWin=i=>wins===-1?(i%2===1&&i<nb-1):(wins||[]).indexOf(i)>=0;
- const P=(u,yy)=>hnOn(x,yy,z,ry,u,T/2);
- hnMember('vWood',P(-w/2,y+.1),P(w/2,y+.1),.2,T,N,c);hnMember('vWood',P(-w/2,y+h-.1),P(w/2,y+h-.1),.2,T,N,c);   // sill, head
- for(let i=0;i<=nb;i++){const u=-w/2+i*bw;hnMember('vWood',P(u,y),P(u,y+h),.18,T,N,c);}                              // posts
- for(let i=0;i<nb;i++){const u0=-w/2+i*bw,u1=u0+bw,um=(u0+u1)/2;
-  if(isWin(i)){const wy=y+h*.36,wh=h*.42;hnMember('vWood',P(u0,wy-.08),P(u1,wy-.08),.14,T,N,c);hnMember('vWood',P(u0,wy+wh+.1),P(u1,wy+wh+.1),.14,T,N,c);
+ const P=(u,yy)=>hnOn(x,yy,z,ry,u,T/2);const M=(a,b,wd)=>hnMember('vWood',P(a[0],a[1]),P(b[0],b[1]),wd||.13,T,N,c);
+ const C=(a,b,k,wd,n)=>{n=n||4;let pv=a;for(let i=1;i<=n;i++){const t=i/n;const q=[(1-t)*(1-t)*a[0]+2*(1-t)*t*k[0]+t*t*b[0],(1-t)*(1-t)*a[1]+2*(1-t)*t*k[1]+t*t*b[1]];M(pv,q,wd);pv=q;}};
+ const rosette=(u,yy,r)=>{const p=hnOn(x,yy,z,ry,u,T+.02);kput('hDiscG',p,qEuler(0,ry,0).multiply(qEuler(Math.PI/2,0,0)),[r,.04,r],hC(HPAL.gold[0]));
+  const q=hnOn(x,yy,z,ry,u,T+.05);kput('hDisc',q,qEuler(0,ry,0).multiply(qEuler(Math.PI/2,0,0)),[r*.45,.03,r*.45],hC(HPAL.red));};
+ // a pattern inside the rectangle u0..u1 x ya..yb
+ const pat=(p,u0,u1,ya,yb,mir)=>{const um=(u0+u1)/2,ym=(ya+yb)/2,W=u1-u0,H=yb-ya;
+  if(p==='X'){M([u0,ya],[u1,yb]);M([u1,ya],[u0,yb]);}
+  else if(p==='K'){if(mir){M([u0,ya+.1],[u1,ym]);M([u0,ym],[u1,yb-.1]);}else{M([u1,ya+.1],[u0,ym]);M([u1,ym],[u0,yb-.1]);}M([u0,ym],[u1,ym],.12);}
+  else if(p==='mann'){const cu=mir?u1:u0,ou=mir?u0:u1;M([ou,ya+.1],[cu,ym+H*.12]);M([cu,ym-H*.05],[ou,yb-.1]);C([ou,ya+.1],[um,yb-.1],[ou,ym],.1,4);M([u0,ya+H*.3],[u1,ya+H*.3],.1);}
+  else if(p==='curvedX'){C([u0,ya],[u1,yb],[u0+W*.2,ya+H*.75],.14,5);C([u1,ya],[u0,yb],[u1-W*.2,ya+H*.75],.14,5);}
+  else if(p==='raute'){const iu=W*.12,iy=H*.1;M([um,ya+iy],[u1-iu,ym]);M([u1-iu,ym],[um,yb-iy]);M([um,yb-iy],[u0+iu,ym]);M([u0+iu,ym],[um,ya+iy]);M([u0,ym],[u1,ym],.1);}
+  else if(p==='star'){pat('raute',u0,u1,ya,yb);M([u0,ya],[u1,yb],.1);M([u1,ya],[u0,yb],.1);}
+  else if(p==='close'){M([u0,ym],[u1,ym],.12);const n=Math.max(2,Math.round(W/.36));for(let k=1;k<n;k++){const u=u0+W*k/n;M([u,ya],[u,yb],.1);}}
+  else if(p==='herring'){const n=Math.max(2,Math.round(H/.55));for(let k=0;k<n;k++){const y0=ya+H*k/n+.08,y1=y0+H/n*.8;M([u0,y0],[um,y1],.1);M([um,y1],[u1,y0],.1);}}
+  else if(p==='quatre'){const r=Math.min(W,H)*.36;let pv=null;for(let k=0;k<=8;k++){const a=k/8*TAU,rr2=r*(1-.22*Math.abs(Math.cos(2*a)));const q=[um+Math.cos(a)*rr2,ym+Math.sin(a)*rr2];if(pv)M(pv,q,.09);pv=q;}
+   M([u0,ya],[um-r*.6,ym-r*.6],.1);M([u1,ya],[um+r*.6,ym-r*.6],.1);M([u0,yb],[um-r*.6,ym+r*.6],.1);M([u1,yb],[um+r*.6,ym+r*.6],.1);rosette(um,ym,r*.35);}};
+ const apron=(u0,u1,ya,yb)=>{const um=(u0+u1)/2,H=yb-ya;
+  if(st==='alemannic'){C([u0,ya],[um,yb],[u0,yb],.1,4);C([u1,ya],[um,yb],[u1,yb],.1,4);rosette(um,ya+H*.4,Math.min(.18,H*.25));}
+  else if(st==='franconian'){pat('X',u0,u1,ya,yb);}
+  else if(st==='tudor'){pat(rng()<.5?'quatre':'star',u0,u1,ya,yb);}
+  else{M([u0,ya+.05],[um,yb],.1);M([u1,ya+.05],[um,yb],.1);}};
+ M([-w/2,y+.1],[w/2,y+.1],.22);M([-w/2,y+h-.1],[w/2,y+h-.1],.2);                                       // sill, head
+ for(let i=0;i<=nb;i++){const u=-w/2+i*bw;M([u,y],[u,y+h],.18);}                                             // posts
+ for(let i=0;i<nb;i++){const u0=-w/2+i*bw,u1=u0+bw,um=(u0+u1)/2;const k=Math.min(i,nb-1-i),mir=i>=nb/2;
+  if(isWin(i)){const wy=y+h*.36,wh=h*.42;M([u0,wy-.08],[u1,wy-.08],.14);M([u0,wy+wh+.1],[u1,wy+wh+.1],.14);
    const wp=loc(x,z,um,0,ry);vnWin(wp[0],wy,wp[1],ry,bw*.62,wh,kind||'glass','vWood',winC||c,false);
-   // short braces under the sill (the Saxon "Andreaskreuz" in miniature)
-   hnMember('vWood',P(u0,y+.15),P(um,wy-.12),.1,T,N,c);hnMember('vWood',P(u1,y+.15),P(um,wy-.12),.1,T,N,c);}
-  else{const mid=y+h*.5;hnMember('vWood',P(u0,mid),P(u1,mid),.14,T,N,c);                                             // mid rail
-   if(i%2===0){hnMember('vWood',P(u0,y+.15),P(u1,mid),.14,T,N,c);hnMember('vWood',P(u0,mid),P(u1,y+h-.15),.14,T,N,c);}
-   else{hnMember('vWood',P(u1,y+.15),P(u0,mid),.14,T,N,c);hnMember('vWood',P(u1,mid),P(u0,y+h-.15),.14,T,N,c);}}}}
+   apron(u0,u1,y+.2,wy-.14);if(st==='tudor'||st==='franconian')pat('X',u0,u1,wy+wh+.16,y+h-.18);}                // lintel panel over the window
+  else pat(pool[k%pool.length],u0,u1,y+.2,y+h-.2,mir);}
+ if(st!=='saxon')for(let i=0;i<=nb;i+=2){rosette(-w/2+i*bw,y+.1,.1);}}                                        // gilded bosses along the carved sill
 // All four faces of a half-timbered storey on a plaster box. Front and back get windows every other bay.
-function hnFachBox(x,y,z,w,h,d,ry,wallC,beamC,kind){vB('vPlaster',x,y,z,w,h,d,ry,wallC||hC(vPick(HPAL.stucco)));beamC=beamC||hC(vPick(HPAL.redwood));
+function hnFachBox(x,y,z,w,h,d,ry,wallC,beamC,kind){const st=hlFachStyle();vB('vPlaster',x,y,z,w,h,d,ry,st==='tudor'?hC(0xf2eee4):(wallC||hC(vPick(HPAL.stucco))));beamC=beamC||hC(vPick(HPAL.redwood));
  for(const s of[1,-1]){const p=loc(x,z,0,s*d/2,ry);hnFachFace(p[0],y,p[1],ry+(s>0?0:Math.PI),w,h,beamC,-1,kind);}
  for(const s of[1,-1]){const p=loc(x,z,s*w/2,0,ry);hnFachFace(p[0],y,p[1],ry+s*Math.PI/2,d,h,beamC,d>5?-1:[],kind);}}
 // A jettied upper storey: the floor above oversails the one below on carved joist ends.
-function hnJetty(x,y,z,w,d,ry,c,out){out=out||.45;const n=Math.round(w/.6);for(let i=0;i<=n;i++){for(const s of[-1,1]){const p=loc(x,z,-w/2+w*i/n,s*(d/2+out/2-.1),ry);
+function hnJetty(x,y,z,w,d,ry,c,out){out=out||.45;
+ for(const sx of[-1,1])for(const sz of[-1,1]){const p=loc(x,z,sx*(w/2-.1),sz*(d/2+out*.4),ry);kput('hArmW',[p[0],y-.55,p[1]],qEuler(0,ry+(sz>0?0:Math.PI),0).multiply(qEuler(0,Math.PI/2,0)),[.22,.7,out+.25],c);}   // carved corner consoles (Knaggen)
+ const n=Math.round(w/.6);for(let i=0;i<=n;i++){for(const s of[-1,1]){const p=loc(x,z,-w/2+w*i/n,s*(d/2+out/2-.1),ry);
  vB('vWood',p[0],y-.26,p[1],.16,.24,out+.2,ry,c);}}
  vB('vWood',x,y-.06,z,w+.1,.12,d+2*out,ry,c);}
 
