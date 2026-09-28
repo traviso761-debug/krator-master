@@ -8,7 +8,7 @@
 // made an arcology read as overgrown: moss on every ledge, mats rolled over on
 // the soffits with roots and curtains hanging out of them, brackets on the
 // arrises, and density falling off into the dark middle of an underside.
-(function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm,qEuler,qFacing,qUp}=BIO.fn;
+(function(){
 const PAL=HYPERJUNGLE.PAL;
 const C=hex=>new BIO.host.THREE.Color(hex);
 const vcol=()=>C(pick(PAL.vine)).offsetHSL(rr(-.03,.03),rr(-.08,.08),rr(-.05,.05));
@@ -56,7 +56,7 @@ function smallTree(p,h,sp){const S=HYPERJUNGLE.SPECIES[sp],bc=C(pick(S.bark));
 HYPERJUNGLE.dressLedges=function(geos,opt){opt=opt||{};
  const nM=opt.moss||400,nP=opt.plants||300,nE=opt.edges||140;
  BIO.upFaces(geos,nM,.6).forEach(f=>moss(f.p,f.n,rr(1.2,opt.mossR||3.5)));
- BIO.upFaces(geos,nP,.6).forEach(f=>{if(rng()<.12)smallTree(f.p,rr(4,opt.treeH||12),BIO.stand(f.p[0],f.p[2],4));else plant(f.p,rr(1,opt.size||3));});
+ BIO.upFaces(geos,nP,.6).forEach(f=>{if(rng()<.12)smallTree(f.p,rr(4,opt.treeH||12),BIO.stand(f.p[0],f.p[2],HYPERJUNGLE.SPECIES.length));else plant(f.p,rr(1,opt.size||3));});
  BIO.ledgePoints(geos,nE,2.5).forEach(l=>{const p=[l.p[0]+l.n[0]*.3,l.p[1]-.1,l.p[2]+l.n[2]*.3];
   moss([l.p[0],l.p[1],l.p[2]],[0,1,0],rr(1,2.2));
   if(rng()<.7)curtain(p,l.n[0],l.n[2],rr(4,opt.hang||16),rr(2,5),{flowers:rng()<.4});});};

@@ -45,11 +45,11 @@ How the biome zones itself from those four (55-trees, `EASTABYSS.zones`):
 | zone     | reads                                   | flora                                                      |
 |----------|-----------------------------------------|------------------------------------------------------------|
 | flat     | wet<.28, salt>.3, upland<.15            | samphire, salt grass, rosettes + jade shrubs + Calamophyton palms where flow>0 |
-| marsh    | upland<.22, wet>.5, low salt            | knee-trees with beard moss, palmettos, reeds, sedge, marsh shrub, samphire |
-| shore    | terrainH<1.6, wet>.6, basin             | stilt-woods and tide lycopsids (in the shallows), Sanfordacaulis, reeds, samphire |
-| water    | terrainH<0, flow small                  | lily pads, emergent reeds                                  |
-| jungle   | upland .05..86, wet>.45                 | scale-trees, bell-bark, tree ferns, cycads, pipe reeds, the club-moss carpet |
-| savannah | upland>.62                              | umbrella trees (thinning up), Vain fronds, dry grass, rosettes |
+| marsh    | upland<.22, wet>.5, low salt            | knee-trees with beard moss, seal-trees, palmettos, reeds, cordgrass meadows, sedge, marsh shrub, samphire; beard oaks on the hummocks |
+| shore    | terrainH<1.6, wet>.6, basin             | stilt-woods, tide lycopsids and water palms (in the shallows), strap cordaites on prop roots, Sanfordacaulis, reeds, samphire |
+| water    | terrainH<0, flow small                  | lily pads, leaf rafts + water hyacinth, emergent reeds; mat-reed beds on the still margins |
+| jungle   | upland .05..86, wet>.45                 | scale-trees, bell-bark, seal-trees, cordaites, tree ferns, seed ferns, cycads, pipe reeds, the club-moss carpet; rope araucarias toward the top |
+| savannah | upland>.62                              | umbrella trees (thinning up), rope araucarias, Vain fronds, dry grass, rosettes |
 
 An `arid`-tagged species only reads the flat weight; a `humid` one never does. Deltas and
 river banks are lush because `wet` and `flow` are both high there.
@@ -66,14 +66,16 @@ the lake). The Vain fronds stay purple (canon).
 ## What the biome exports
 
 ```js
-EASTABYSS.build({R:3250, quality:1, lakeHue:0}) -> {trees, heroes, far, bySpecies, ..., under, tris}
+EASTABYSS.build({R:3250, quality:1, lakeHue:0}) -> {trees, heroes, far, bySpecies, ..., beds, stems, under, tris}
 EASTABYSS.dress(geometries, opt)     // growth on a structure (the hyperjungle pass, in this palette)
 EASTABYSS.canopyH(x,z)               // approximate canopy top
-EASTABYSS.SPECIES                    // the 14 tree species (tagged), EASTABYSS.PAL the palettes
+EASTABYSS.SPECIES                    // the 21 species (tagged; the mat reed carries `use` and `bed`), EASTABYSS.PAL the palettes
+EASTABYSS.REEDBEDS                   // after build: the mat-reed beds [{x,z,r,n,depth,h}] -- a resource a world can harvest
+EASTABYSS.hummock(x,z)               // the marsh's drier hummocks (beard oaks), a noise field
 EASTABYSS.zones(x,z)                 // the zone weights a world can reuse for its own placement
 ```
 
-Then `BIO.bake()` once. Draw calls: one per instanced item + one per merged family (~46).
+Then `BIO.bake()` once. Draw calls: one per instanced item + one per merged family (~55).
 
 ## Tags (project rule)
 
@@ -88,8 +90,8 @@ A plant is never part of a building: `dress()` places plants ON geometry the hos
 20-core-kit.js      instanced items (def/put), merged vertex-coloured buckets
 30-core-foliage.js  leaf cards, alpha textures, Lambert foliage hook, wind
 40-core-place.js    stands, jittered grids (+ box, noMask), keep-clear, face sampling
-50-biome-eastabyss-species.js   lake-hue palettes, 14 species, the iridescent bark, textures, materials, items (data only)
-55-biome-eastabyss-trees.js     zones from the fields; one builder per species; impostors
+50-biome-eastabyss-species.js   lake-hue palettes, 21 species, the iridescent bark, textures, materials, items (data only)
+55-biome-eastabyss-trees.js     zones from the fields; one builder per tree species; the reed-bed pass; impostors
 60-biome-eastabyss-floor.js     the floor by zone; lily pads on still water; fallen scale-trees
 65-biome-eastabyss-dress.js     growth on structures (soffits, ledges, walls)
 70-biome-eastabyss.js           EASTABYSS.build / dress / canopyH
