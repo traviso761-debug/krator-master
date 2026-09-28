@@ -26,6 +26,8 @@ function xnSub(key,lx,ly,lz,lry,o){const P=VERN.cur;const s=P.o.scale||1;const p
  KXF=saveK;KOFF=saveO;VERN.cur=P;return G;}
 const xLit=()=>vLit();
 const xPick=vPick;
+// the variant index of the running build (0, 1, 2): reseed(N+v) changes every pick; builders also switch structure on it
+const xV=o=>((o&&o.v)|0)%3;
 
 // ---------------------------------------------------------------- vectors in the local frame
 const xRot=(ry,v)=>[v[0]*Math.cos(ry)+v[2]*Math.sin(ry),v[1],-v[0]*Math.sin(ry)+v[2]*Math.cos(ry)];

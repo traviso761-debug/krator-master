@@ -13,12 +13,12 @@ function xnXBGoods(x,z,ry,kind){const P=(u,v)=>loc(x,z,u,v,ry);vB('vStone',x,0,z
   else kput('xGoldB',[p[0],.85,p[1]],qEuler(0,ry+rng(),0),[.3,.12,.3],xC(xPick([0xd4a030,0xb8b0a0,0x8a6a48])));}}
 
 // ---------------------------------------------------------------- the bazaar row: three shops under arches, rooms above in a cumba
-function buildXaShops(G,o){reseed(30401+(o.v|0));const W=15.6,D=8,H1=3.4,H2=2.9,N=3;
+function buildXaShops(G,o){reseed(30401+(o.v|0));const V=xV(o),N=V===1?4:3,W=N*5.2,D=8,H1=3.4,H2=2.9;
  const wash=xC(xPick(XPAL.wash)),ochre=xC(xPick(XPAL.ochre)),trim=xC(xPick(XPAL.trim)),tim=xC(xPick(XPAL.timber)),stone=xC(xPick(XPAL.stone));
  vnReg('Bazaar row (shops)',0,0,9.5,H1+H2+2.5);
  xnWall(0,0,0,W,H1,D,0,ochre,'wash');vB('vStone',0,0,0,W+.3,.4,D+.3,0,stone);
  const bw=(W-.8)/N;for(let i=0;i<N;i++){const x=-(W-.8)/2+bw*(i+.5);xnArch('xArchS',x,.4,D/2*.985,0,bw-.3,H1-.5,.6,stone,{});
-  vnAwning(x,H1-.55,D/2+.28,0,bw-.9,1.7,xC(xPick(XPAL.cloth)));xnXBGoods(x,D/2+1.3,0,['cloth','pots','fruit'][i]);
+  vnAwning(x,H1-.55,D/2+.28,0,bw-.9,1.7,xC(xPick(XPAL.cloth)));xnXBGoods(x,D/2+1.3,0,['cloth','pots','fruit','metal'][(i+V)%4]);
   xnMural('xMosB',x,H1-.45,D/2*.985-.02,0,1.6,.5);}
  // the rooms above: one long cumba the width of the row, shutters on the backs
  // the rooms above: the storey is set back and one long cumba the width of the row hangs out over the arches
@@ -26,7 +26,7 @@ function buildXaShops(G,o){reseed(30401+(o.v|0));const W=15.6,D=8,H1=3.4,H2=2.9,
  xnCumba(0,H1+.15,D/2-2.6,0,W-1.4,H2,1.5,{c:wash,beamC:tim,winC:trim,n:7,valC:xC(xPick(XPAL.cloth))});for(const z of[-2.4,.6])for(const s of[-1,1])xnTibWin(s*(W/2-.14),H1+.9,z,s*Math.PI/2,.8,1.1,'shut',trim,{noVal:true});
  for(const u of[-5,-2,1,4])vnWin(u,H1+.9,-D/2,Math.PI,.8,1.0,'shut','xPaint',trim);
  const top=xnFlatRoof(0,H1+H2,-1.3,S.w,S.d,0,wash,{eave:true,eaveC:tim,parapet:.6,corner:'flag'});
- xnPennants([-S.w/2+.3,top+.3,S.d/2-1.6],[S.w/2-.3,top+.3,S.d/2-1.6],14);
+ xnPennants([-S.w/2+.3,top+.3,S.d/2-1.6],[S.w/2-.3,top+.3,S.d/2-1.6],14);if(V===2)xnPavilion(0,top-.6,-1.3,3.2,2.6,2.4,0,{c:xC(XPAL.red)});
  for(let k=0;k<3;k++)vPst('vClayPot',-W/2-.8,0,-2+k*1.2,.3,.6,xC(0x9a5a38));vnBarrel(W/2+.8,0,-1,.35,.9,tim);vnFolk(0,D/2+3.5,5,4);}
 // ---------------------------------------------------------------- the workshop: dyer and potter round a yard
 function buildXaWorkshop(G,o){reseed(30411+(o.v|0));const W=10,D=7,X=-4,Z=-4;

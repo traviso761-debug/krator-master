@@ -40,7 +40,7 @@ const xStd=(o)=>new THREE.MeshStandardMaterial(Object.assign({color:0xffffff,rou
 MAT.xEarth=xStd({map:TEX.xEarth,roughness:1});MAT.xWash=xStd({map:TEX.xWash,roughness:.96});MAT.xTiles=xStd({map:TEX.xTiles,roughness:.42});
 MAT.xPenbey=xStd({map:TEX.xPenbey,roughness:1});MAT.xRubble=xStd({map:TEX.xRubble,roughness:.97});MAT.xRock=xStd({map:TEX.xRock,roughness:1});
 MAT.xPaint=xStd({roughness:.72});                                              // painted timber and plaster: the colour is the point
-MAT.xGold=xStd({roughness:.36,metalness:.45,side:THREE.FrontSide});           // gilt: tinted XPAL.gold per instance
+MAT.xGold=xStd({roughness:.36,metalness:.45});                                // gilt: tinted XPAL.gold per instance (double-sided: the wedge and lathe windings differ)
 MAT.xGoldDS=xStd({roughness:.36,metalness:.45});                              // gilt planes/boxes seen from both sides
 MAT.xMosA=xStd({map:TEX.xMosA,roughness:.5});MAT.xMosB=xStd({map:TEX.xMosB,roughness:.5});MAT.xBand=xStd({map:TEX.xBand,roughness:.6});
 MAT.xJali=xStd({map:TEX.xJali,alphaTest:.5,roughness:.9});MAT.xValance=xStd({map:TEX.xValance,alphaTest:.5,roughness:.9});

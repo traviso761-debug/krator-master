@@ -37,3 +37,21 @@ every gap by the previous row's camera distance.
 
 Next: the settlement target (the capital on its hillsides with Iziz's terrain/painted-ground/occupancy
 machinery), the Krator sky, reclaimed variants if wanted, and a second variant (`o.v`) pass on the housing.
+
+## Round 2 (Sep 28 2026) — inverted roofs, closed courts, the variant pass
+
+Travis: inverted polygons on the roofs of the sacred, guild, fortress, gate, mustering-ground, palace and manor
+buildings; a variant phase; courtyard fences to run all the way round; a z conflict on the tenement.
+
+* Every listed building carries a gilt roof, and `MAT.xGold` was FrontSide on the vernacular wedge geometry, whose
+  winding faces inward — the roofs showed their backs. Gold is double-sided now (`71-xa-mat.js`).
+* Courts close: the courtyard house's wall runs behind the house, the manor's court walls reach the house with
+  short returns, the konak's garden wall runs back to the house.
+* Tenement: the shop arcade sat inside the battered ground face and the storeys above started at the full plan,
+  past the block's top; the arcade is on the face and the storeys start on the block's top (`W*.96`), windows and
+  cumbas on the real storey faces.
+* Variants: `xV(o)` gives every builder its variant index (0–2; the seed already moves every pick). Structural
+  switches on it in the housing (storeys, cumba side, jharokha caps, pavilion vs dome, tiled hip vs gilt flat roof,
+  lean-to side), the bazaar (four shops, a rooftop pavilion) and the temple (ochre sanctum, wider portico). A
+  second target, `dist/xanadu-variants.html`, places every def at v1 and v2 side by side (`XA_VARIANTS` in its
+  rows file); 156 volumes, 1.24 M tris, verify clean.

@@ -1,5 +1,5 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>Xanadu Building Kit</title>
+<title>Xanadu Building Kit — variants</title>
 <style>
 html,body{margin:0;height:100%;overflow:hidden;background:#2a2620;font:13px/1.4 system-ui,sans-serif;color:#eee}
 canvas{display:block}
@@ -2586,9 +2586,10 @@ function buildXaHillside(G,o){reseed(31801+(o.v|0));const STEP=3.2,TW=46;
  xnYak(-16,-14,0,STEP*3);xnYak(16,-15,2.4,STEP*3);for(const s of[-1,1])xnTree(s*20,-4,4,null,STEP*2);
  vnFolk(0,19,3,2);xnFolk(3,STEP*2,-3,2,1);}
 XA.def({key:'xa_hillside',name:'Hillside quarter',family:'Hillside',tags:{type:['multi-family dwelling','single-family dwelling'],wealth:'poor',lit:false},w:50,d:44,h:22,build:buildXaHillside});
-// TARGET: xanadu — rows by family (laid out by xaLayout in 90-scene.js), front (+z) toward the camera.
-const TITLE='Xanadu Building Kit';
-const XA_EXTRA=[].filter(S=>VERN.defs[S.key]);   // whole-settlement pieces shown after the rows
+// TARGET: variants — every def at o.v = 1 and 2, side by side, rows by family (laid out by xaLayout in 90-scene.js).
+const TITLE='Xanadu Building Kit — variants';
+const XA_VARIANTS=[1,2];
+const XA_EXTRA=[].filter(S=>VERN.defs[S.key]);
 const SITES=[];
 // ---------------------------------------------------------------- scene (Xanadu showcase)
 // Rows by family, front (+z) toward the camera. A target may list extra SITES (a compound at a given scale) in its
@@ -2685,7 +2686,7 @@ window._api={BUDGET,REG,
  typeStats,regOccupancy,nanSweep,tagAudit,
  setView:(cx,cy,cz,tx,ty,tz)=>setView(cx,cy,cz,tx,ty,tz),views:()=>Object.keys(VIEWS),
  defs:()=>VERN.order.map(k=>{const D=VERN.defs[k];return{key:k,name:D.name,family:D.family,tags:D.tags,w:D.w,d:D.d,h:D.h};})};
-// TARGET: xanadu — preset views (generated per row and per building; the first entry is the opening shot)
+// TARGET: variants — preset views (generated per row and per building)
 const VIEWS=xaAutoViews();
 // ---------------------------------------------------------------- camera, inspector, polygon tool, walk mode
 const ctl={target:new THREE.Vector3(0,10,0),theta:0,phi:1.1,radius:120};
