@@ -123,7 +123,7 @@ function buildDalab(scene,gx,gz,d){reseed(9330+d);KOFF=[gx,0,gz];
  // proportions left the inner skin standing as a pale wall across four fifths
  // of the section, so the storeys the rescale exists to show were hidden
  // behind it. .20 opens 72 degrees at the crown and 29 at the springing.
- const BITE={u:.16,w:.20,y0:.04};
+ const BITE={u:.16,w:.11,y0:.10};   // DALAB: a narrower, higher gash (was .20/.04)
  dalabDome(C,DR,DH,d,9331,BITE);
  sectionInterior(C,DR,DH,d,9332,BITE);
  // the sunken chamber on the axis: cabinet banks and cable trunking converging
@@ -157,6 +157,7 @@ function buildDalab(scene,gx,gz,d){reseed(9330+d);KOFF=[gx,0,gz];
  // the low ruined wall round the compound, breached in places
  for(let k=0;k<200;k++){const th=k/200*TAU,r=(292+12*fbm(k*.14,2.2,9370,2))*K;
   if(fbm(k*.09,1.1,9371,2)<.30)continue;                     // breaches
+  if(typeof LAB_WALL_GAP!=='undefined'&&Math.abs(th-LAB_WALL_GAP.a)<LAB_WALL_GAP.w)continue;   // DALAB: the gate where the oak avenue enters
   kput(BOXC(d),[Math.cos(th)*r,rr(1.4,3.4)*K,Math.sin(th)*r],qEuler(0,-th,0),[rr(6,13)*K,rr(2.8,6.8)*K,rr(2.6,4.4)*K],null);}
  apron(G,0,0,300*K,352*K,d,1.6*K);
  scatterMoss(0,0,0,0,330*K,220,3.2*K);trees(0,0,150*K,420*K,150);

@@ -18,11 +18,14 @@ function obbCorners(o,grow){const g=grow||0;const c=Math.cos(o.ry),s=Math.sin(o.
 // ground test: buildable at the corners, edge midpoints and centre (a 3x3 inside too for big plots); not in a precinct; not water
 function groundOK(o,opt){opt=opt||{};const pts=obbCorners(o,opt.grow||0);pts.push([o.x,o.z]);for(let i=0;i<4;i++)pts.push([(pts[i][0]+pts[(i+1)%4][0])/2,(pts[i][1]+pts[(i+1)%4][1])/2]);
  if(o.hx>14||o.hz>14){for(let i=-1;i<=1;i++)for(let j=-1;j<=1;j++){const p=loc(o.x,o.z,i*o.hx*.6,j*o.hz*.6,o.ry);pts.push(p);}}
- const W=CITY.WORLD/2-30;for(const p of pts){if(Math.abs(p[0])>W||Math.abs(p[1])>W)return false;if(!opt.ignoreMask&&!canBuild(p[0],p[1]))return false;if(!opt.ignorePrecinct&&inPrecinct(p[0],p[1],opt.ppad||0))return false;if(isWater(p[0],p[1]))return false;}
+ const W=CITY.WORLD/2-30;for(const p of pts){if(Math.abs(p[0])>W||Math.abs(p[1])>W)return false;if(!opt.ignoreMask&&!canBuild(p[0],p[1]))return false;if(!opt.ignoreOak&&inOakCorridor(p[0],p[1]))return false;if(!opt.ignorePrecinct&&inPrecinct(p[0],p[1],opt.ppad||0))return false;if(isWater(p[0],p[1]))return false;}
  return true;}
 function groundY(o){let y=1e9;for(const p of obbCorners(o,-.5))y=Math.min(y,terrainH(p[0],p[1]));y=Math.min(y,terrainH(o.x,o.z));return y-.06;}
 // STREET ALIGNMENT: the outward normal of the nearest road at the plot, so the door faces the street
-function faceRoadRy(x,z,filter){const n=nearestRoadPt(x,z,filter);if(!n)return 0;return Math.atan2(n.x-x,n.z-z);}
+// a plot under an oak vault is no plot: the corridor either side of every oak road (the oaks stand 12.5 m off the line)
+function inOakCorridor(x,z,pad){const n=nearestRoadPt(x,z,r=>r.oak);return !!(n&&n.d<n.road.w/2+12.5+2+(pad||0));}
+// the door faces a side street when one is near, the avenue only when nothing else is
+function faceRoadRy(x,z,filter){let n=nearestRoadPt(x,z,r=>!r.oak&&(!filter||filter(r)));if(!n||n.d>45)n=nearestRoadPt(x,z,filter);if(!n)return 0;return Math.atan2(n.x-x,n.z-z);}
 function findSpot(hx,hz,tx,tz,opt){opt=opt||{};const R=opt.R||90,step=opt.step||8;const tries=[[tx,tz]];
  for(let r=step;r<=R;r+=step){const n=Math.max(6,Math.round(TAU*r/step));for(let i=0;i<n;i++){const a=i/n*TAU+r*.37;tries.push([tx+r*Math.cos(a),tz+r*Math.sin(a)]);}}
  for(const t of tries){const ry=opt.ry!=null?opt.ry:faceRoadRy(t[0],t[1],opt.filter);const o={x:t[0],z:t[1],hx,hz,ry,pad:opt.pad==null?1.5:opt.pad};
@@ -35,14 +38,14 @@ function placeDef(key,o,opt){opt=opt||{};const D=VERN.defs[key];if(!D){reportErr
  if(opt.landmark){LANDMARKS.push({name:opt.landmark,x:o.x,z:o.z});let best=null;for(let i=r0;i<REG.length;i++){const r=REG[i];if(!best||r.r>best.r)best=r;}if(best){best.tags=Object.assign({},best.tags,{landmark:true});best.name=opt.landmark;}}
  return G;}
 // place near a target, facing the nearest street (ANTI-OVERLAP: spiral out until free); returns the OBB or null
-function placeNear(key,tx,tz,opt){opt=opt||{};const D=VERN.defs[key];if(!D)return null;const sc=opt.scale||1;const o=findSpot(D.w/2*sc+(opt.grow||1),D.d/2*sc+(opt.grow||1),tx,tz,{R:opt.R||120,step:opt.step||9,ry:opt.ry,filter:opt.filter,pad:opt.pad,ppad:opt.ppad,ignoreMask:opt.ignoreMask,ignorePrecinct:opt.ignorePrecinct});
+function placeNear(key,tx,tz,opt){opt=opt||{};const D=VERN.defs[key];if(!D)return null;const sc=opt.scale||1;const o=findSpot(D.w/2*sc+(opt.grow||1),D.d/2*sc+(opt.grow||1),tx,tz,{R:opt.R||120,step:opt.step||9,ry:opt.ry,filter:opt.filter,pad:opt.pad,ppad:opt.ppad,ignoreMask:opt.ignoreMask,ignorePrecinct:opt.ignorePrecinct,ignoreOak:opt.ignoreOak});
  if(!o)return null;o.hx=D.w/2*sc;o.hz=D.d/2*sc;placeDef(key,o,opt);return o;}
 // the FRONTAGE WALKER: along a road, every `pitch` metres, a lot on each side set back `setback` from the edge; the
 // plot faces the road; picks a key from `pick(t,side)`; stops when `max` placed. Returns the count.
 function frontage(R,pitch,setback,pick,max,opt){opt=opt||{};let n=0;const P=R.pts;let carry=pitch*rng();
  for(let i=0;i<P.length-1&&n<max;i++){const a=P[i],b=P[i+1];const L=Math.hypot(b[0]-a[0],b[1]-a[1]);if(L<1)continue;const ux=(b[0]-a[0])/L,uz=(b[1]-a[1])/L;
   for(let d=carry;d<L&&n<max;d+=pitch){for(const side of[-1,1]){if(n>=max)break;const key=pick(d/L,side);if(!key)continue;const D=VERN.defs[key];if(!D)continue;
-   const hx=D.w/2,hz=D.d/2;const off=R.w/2+setback+hz;const cx=a[0]+ux*d+(-uz)*side*off,cz=a[1]+uz*d+ux*side*off;
+   const hx=D.w/2,hz=D.d/2;const off=R.w/2+(R.oak?Math.max(setback,15):setback)+hz;/* an avenue's houses stand back past the oaks */const cx=a[0]+ux*d+(-uz)*side*off,cz=a[1]+uz*d+ux*side*off;
    const ry=Math.atan2((a[0]+ux*d)-cx,(a[1]+uz*d)-cz);   // face the road: the door toward the road's centreline
    const o={x:cx,z:cz,hx:hx+1,hz:hz+1,ry,pad:1.5};if(!groundOK(o,{ppad:2})||!occFree(o,1.5))continue;
    o.hx=hx;o.hz=hz;placeDef(key,o,Object.assign({settle:opt.settle},opt.each?opt.each(key):{}));n++;}}
@@ -53,7 +56,7 @@ function dnBridge(b){const c=vC(0x6a5a44);const L=(channelD(b.x,b.z).w||8)+6;con
  kput('vWood',[b.x,WATER_Y+.9,b.z],qEuler(0,b.ry,0),[Math.min(b.w,10),.3,L],c);for(const sd of[-1,1]){const p=loc(b.x,b.z,sd*Math.min(b.w,10)/2,0,b.ry);kput('vWood',[p[0],WATER_Y+1.5,p[1]],qEuler(0,b.ry,0),[.12,.9,L],c);}
  for(let k=-1;k<=1;k++){const p=loc(b.x,b.z,0,k*L*.4,b.ry);for(const sd of[-1,1]){const q=loc(p[0],p[1],sd*Math.min(b.w,10)*.45,0,b.ry);kput('vPostB',[q[0],WATER_Y-1,q[1]],null,[.16,2.2,.16],c);}}}
 // ---------------------------------------------------------------- the Ancient lab, through a VERN wrapper (as Iziz wraps its Ancient guilds)
-function buildDalabLab(G,o){reseed(8901);const r0=VERN.cur.r0;let H=null;const lush=BIOME.lush;BIOME.lush=.55;
+function buildDalabLab(G,o){reseed(8901);const r0=VERN.cur.r0;let H=null;const lush=BIOME.lush;BIOME.lush=0;   // no hypertree overgrowth: the lowlands biome dresses the compound
  try{H=withFlatGround(()=>buildDalab(G,0,0,1));}catch(e){reportErr('lab: '+e.stack);}finally{BIOME.lush=lush;KOFF=[0,0,0];}
  vnAdoptREG(r0,n=>n,{type:['civic','religious'],wealth:'civic',lit:true,ancient:true});
  // the great dome's registration becomes the landmark

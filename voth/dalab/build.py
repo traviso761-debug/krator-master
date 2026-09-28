@@ -244,7 +244,7 @@ def vendor_check():
     """Compare the vendored fragments with ../ancients/src and ../iziz/src when those repos are beside this one."""
     lab = os.path.join(TARGETS, 'city', '63-anc-dalab.js'); up = os.path.join(os.path.dirname(HERE), 'ancients', 'src', '64-dalab.js')
     if os.path.exists(lab) and os.path.exists(up):
-        print('vendor-check: targets/city/63-anc-dalab.js %s ../ancients/src/64-dalab.js' % ('identical to' if open(lab,'rb').read()==open(up,'rb').read() else 'DRIFTS from'))
+        print('vendor-check: targets/city/63-anc-dalab.js %s ../ancients/src/64-dalab.js' % ('identical to' if open(lab,'rb').read()==open(up,'rb').read() else 'drifts from (deliberate: the wall gap LAB_WALL_GAP and the narrower BITE, marked DALAB in the file)'))
     for label, files, up in (('ancients', VENDORED, os.path.join(os.path.dirname(HERE), 'ancients', 'src')),
                              ('iziz', VENDORED_IZIZ, os.path.join(os.path.dirname(HERE), 'iziz', 'src')),
                              ('highlands', VENDORED_HL, os.path.join(os.path.dirname(HERE), 'highlands', 'src')),
