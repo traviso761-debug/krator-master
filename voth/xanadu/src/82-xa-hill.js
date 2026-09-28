@@ -4,14 +4,14 @@
 // front half hanging over the drop — placed through xnSub with o.drop, so every one grows the battered rubble
 // footing that XA.def gives any building sited on a slope. Stairs climb between the terraces, a shrine and pennant
 // lines crown the top. In a settlement the terrain does what the terraces do here. Seeds 31800–31899.
-function buildXaHillside(G,o){reseed(31801+(o.v|0));const STEP=3.2,TW=46;
+function buildXaHillside(G,o){reseed(31801+(o.v|0));const V=xV(o),STEP=V===3?2.4:V===4?4:3.2,TW=46;
  const rub=xC(xPick(XPAL.rubble)),stone=xC(xPick(XPAL.stone)),aged=xC(xPick(XPAL.aged));
  vnReg('Hillside quarter',0,0,24,STEP*3+12);
  // the terraces: step k has its top at k*STEP and its front edge at z = 10 - 10k (k = 1..3); the ground is step 0
  for(let k=1;k<=3;k++){const zf=10-10*k;xnTerrace(0,0,zf-5-(k===3?4:0),TW,10+(k===3?8:0),0,k*STEP,rub);}
  // the houses, each astride its terrace's front edge, front toward the valley (+z), footing dropped one step
  const H=[[3,'xa_mid_a',-9,0],[3,'xa_poor_a',8.5,0],[2,'xa_poor_b',-9,0],[2,'xa_poor_c',9.5,0],[1,'xa_poor_a',-9.5,0],[1,'xa_mid_a',9,0]];
- for(const [k,key,x,ry] of H){const zf=10-10*k;xnSub(key,x,k*STEP,zf,ry,{drop:STEP,v:(k+x>0?1:0)});}
+ for(const [k,key,x,ry] of H){const zf=10-10*k;xnSub(key,x,k*STEP,zf,ry,{drop:STEP,v:((k+(x>0?1:0)+V)%5)});}
  // the ground row: a shrine, a well, a tree and the lane
  xnShrine(-14,0,17,1.2);xnTree(12,17,4.5);vPst('vPostS',4,0,17,.8,.8,rub);vB('vDarkB',4,.8,17,1,.03,1,0);
  xnPave(0,18.5,TW-6,4,0,stone,2.4);

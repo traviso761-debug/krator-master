@@ -55,3 +55,31 @@ buildings; a variant phase; courtyard fences to run all the way round; a z confl
   lean-to side), the bazaar (four shops, a rooftop pavilion) and the temple (ochre sanctum, wider portico). A
   second target, `dist/xanadu-variants.html`, places every def at v1 and v2 side by side (`XA_VARIANTS` in its
   rows file); 156 volumes, 1.24 M tris, verify clean.
+
+## Round 3 (Sep 28 2026) — five variants for the town, distinct civic variants
+
+Travis: another variant run ×2 on the residential and other non-civic buildings; make the civic variants more
+distinct.
+
+* `xV(o)` is the raw variant index now and every def carries `nv` (5 for residential and non-civic defs, 3 for
+  civic); the variants target (`XA_VARIANTS=true`) places each def at v = 1 … nv-1. Whole variants page: 224
+  volumes, 1.6 M tris, 116 draw calls, verify clean.
+* v3/v4 on the town: stone ground storey + shrine / mirrored stair + byre (earth block); all-low or all-tall
+  tenement row; earth gable roof / stilts (shack); two storeys + jharokha / four storeys (town house); a side wing /
+  a gate tower (courtyard house); four storeys / plain ground floor with doors (tenement); a loggia / a fourth
+  storey with twin gilt roofs (manor); gilt roof instead of the dome tower / the plan mirrored (hillside manor);
+  a cumba on three sides / a corner dome (konak); five shops / an arcaded loggia (bazaar); storeys and kiln size
+  (workshop); tiled roof, flat roof, a second forge (smithy); flat valley fields, two tall terraces, low steps
+  (fields); three storeys, a pole hay barn, stone walls, the house mirrored (farmstead); round, twin, tall,
+  timber-topped (granary); low, tall, stone, twin rotors (asbad); earth, two storeys, stone, tiled gable
+  (watermill); the hillside's houses rotate through their own variants.
+* Civic v1/v2 are structural now: temple (gold dome crown / three storeys, drums on the flanks); monastery (one
+  cell block + great shrine / dome crown + open arcade gate); Grand Temple (ochre with turquoise domes / four
+  storeys, big gilt roofs, no dome); palace (white with twin domes / three gilt roofs and square gilt-roofed
+  towers); Pleasure Dome (gold dome, tall turrets / mosaic dome over one great pool); every guild (storeys, wall
+  kind, gold corners; taller headframe, more tubs; taller strong room or a gold dome; taller tower or tiled dome;
+  finished gilded hall; twin chimneys or a flat roof); barracks (three storeys / a second wing); wall (a tower /
+  an earth wall); gate (square gilt towers / taller towers under a dome); fortress (dome crown / taller tower and
+  square towers); watch (taller tower on the other corner / a bell cote); mustering ground (tiled stand / a
+  colonnaded stand and barrack sheds); arena (smaller single-tier / four mosaic gates); amphitheatre (five or nine
+  tiers, gilt stage roof); baths (gold lesser domes / three tiled domes); garden (long pool / chhatri).

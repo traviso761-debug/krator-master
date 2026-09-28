@@ -16,14 +16,15 @@ function xnXECurtain(a,b,h,c,side){const dx=b[0]-a[0],dz=b[1]-a[1],L=Math.hypot(
  const q=loc(m[0],m[1],0,side*1.35,ry);vB('vStone',q[0],h,q[1],L*.98,.5,.5,ry,c);}
 
 // ---------------------------------------------------------------- the Sultan's Palace
-function buildXaPalace(G,o){reseed(31001+(o.v|0));const CW=52,CD=42,CH=7,lit=xLit()?'lit':'glass';
+function buildXaPalace(G,o){reseed(31001+(o.v|0));const V=xV(o),CW=52,CD=42,CH=7,lit=xLit()?'lit':'glass';
  const stone=xC(xPick(XPAL.stone)),wash=xC(xPick(XPAL.wash)),ochre=xC(xPick(XPAL.ochre)),trim=xC(xPick(XPAL.trim)),tim=xC(xPick(XPAL.dark)),gold=xC(xPick(XPAL.gold)),tile=xC(xPick(XPAL.tile));
  vnReg("Sultan's Palace",0,-4,17,36);vnReg("Sultan's Palace — curtain wall",0,CD/2,8,10,{part:'wall'});vnReg("Sultan's Palace — court",0,10,9,3);
  // the curtain: four walls, four corner towers, the gate iwan in the front wall
  const cx=CW/2-3,cz=CD/2-3;
  xnXECurtain([-cx+3,cz],[-6,cz],CH,stone,1);xnXECurtain([6,cz],[cx-3,cz],CH,stone,1);xnXECurtain([cx-3,-cz],[-cx+3,-cz],CH,stone,1);
  xnXECurtain([-cx,-cz+3],[-cx,cz-3],CH,stone,1);xnXECurtain([cx,cz-3],[cx,-cz+3],CH,stone,1);
- for(const sx of[-1,1])for(const sz of[-1,1])xnXETower(sx*cx,0,sz*cz,3.4,CH+2,stone,tile);
+ for(const sx of[-1,1])for(const sz of[-1,1]){if(V===2){xnWall(sx*cx,0,sz*cz,6.8,CH+2,6.8,0,stone,'dressed');xnCrenel(sx*cx,CH+2,sz*cz,6.2,6.2,0,1.2,stone,{item:'vStone',pointed:true});xnGiltRoof(sx*cx,CH+2.6,sz*cz,3.4,3.4,0,{frame:1.2,over:.7});}   // v2: square towers under gilt roofs
+  else xnXETower(sx*cx,0,sz*cz,3.4,CH+2,stone,tile);}
  // the gate: a tall iwan block through the front wall, guldasta turrets, a gilt pavilion on top, the Sultan's roundel
  xnWall(0,0,cz,13,CH+4,6,0,wash,'wash');xnIwan(0,0,cz+3,0,9,CH+2.5,1.4,wash,{guldasta:true});xnFlatRoof(0,CH+4,cz,12.4,5.7,0,wash,{band:true,gold:true,parapet:.6});
  xnGiltRoof(0,CH+4.9,cz,6,3.6,0,{frame:1.6,over:.9});xnRoundel(0,CH+2.2,cz+4.42,0,1.6);
@@ -38,20 +39,21 @@ function buildXaPalace(G,o){reseed(31001+(o.v|0));const CW=52,CD=42,CH=7,lit=xLi
  for(const s of[-1,1])for(const z of[-6,-2,2,6]){xnTibWin(s*(W/2-.06),1.4+1.4,PZ+z,s*Math.PI/2,.9,1.6,lit,trim,{shutters:true});xnTibWin(s*(W/2*.96-.06),1.4+4.6+1.3,PZ+z,s*Math.PI/2,.9,1.5,lit,trim);}
  const t1=xnFlatRoof(0,1.4+8.8,PZ,S.w,S.d,0,wash,{eave:true,eaveC:tim,parapet:.6,corner:'gold'});
  // the upper block: ochre, the band with gold roundels, an arcaded loggia along its front, two gilt roofs and the dome
- const UW=20,UD=13,UY=t1-.6+.3;const U=xnStack(0,UY,PZ-1,UW,UD,0,[4.2,3.8],ochre,'wash');
+ const UW=20,UD=13,UY=t1-.6+.3;const U=xnStack(0,UY,PZ-1,UW,UD,0,[4.2,3.8],V===1?wash:ochre,'wash');
  xnArcade(0,UY,PZ-1+UD/2*.995,0,UW-2,3.4,5,'xArchM',null,.7,{open:false});
  for(const u of[-7,-3.5,0,3.5,7])xnTibWin(u,UY+4.2+1.1,PZ-1+UD/2*.96-.06,0,.9,1.5,lit,xC(XPAL.saffron));
  for(const s of[-1,1])for(const z of[-3.5,0,3.5]){xnTibWin(s*(UW/2-.06),UY+1.2,PZ-1+z,s*Math.PI/2,.9,1.6,lit,trim);xnTibWin(s*(UW/2*.96-.06),UY+4.2+1.1,PZ-1+z,s*Math.PI/2,.9,1.5,lit,trim);}
- const t2=xnFlatRoof(0,UY+8,PZ-1,U.w,U.d,0,ochre,{band:true,gold:true,eave:true,eaveC:tim,parapet:.6,corner:'gold'});
- xnDome(0,t2-.6,PZ-1,4.2,'T',{drum:2.6,drumItem:'xDrumM',drumC:null,c:tile,fin:2.2});
- for(const s of[-1,1])xnGiltRoof(s*7,t2-.6,PZ-1,4.4,3.6,0,{frame:1.5,over:.9});
+ const t2=xnFlatRoof(0,UY+8,PZ-1,U.w,U.d,0,V===1?wash:ochre,{band:true,gold:true,eave:true,eaveC:tim,parapet:.6,corner:'gold'});
+ if(V===1){for(const s of[-1,1])xnDome(s*6,t2-.6,PZ-1,3.4,'T',{drum:2.2,drumItem:'xDrumM',drumC:null,c:tile,fin:1.8});xnGiltRoof(0,t2-.6,PZ-1,5,4,0,{frame:1.6,over:.9});}   // v1: a white palace under twin turquoise domes
+ else if(V===2){for(const x of[-7,0,7])xnGiltRoof(x,t2-.6,PZ-1,4.8,3.8,0,{frame:1.6,over:.9});}                                                                // v2: three gilt roofs, no dome
+ else{xnDome(0,t2-.6,PZ-1,4.2,'T',{drum:2.6,drumItem:'xDrumM',drumC:null,c:tile,fin:2.2});for(const s of[-1,1])xnGiltRoof(s*7,t2-.6,PZ-1,4.4,3.6,0,{frame:1.5,over:.9});}
  // the court between the gate and the palace: paving, a long pool, cypresses, lamps; guard huts inside the gate
  xnPave(0,10,CW-10,14,0,stone,2.4);xnPool(0,.02,10,14,3.2,0,stone);for(const s of[-1,1]){xnCypress(s*10,6,7);xnCypress(s*10,14,7);xnCypress(s*17,10,6);}
  for(const s of[-1,1]){vB('xWashB',s*10,0,cz-5,5,3.2,4,0,wash);xnFlatRoof(s*10,3.2,cz-5,5,4,0,wash,{parapet:.4});vnDoor(s*10,0,cz-3,0,1,2,'vWood',tim,tim,true);}
  if(xLit()){for(const s of[-1,1]){vnLampPost(s*4,0,PZ+D/2+5,3.6);vnLampPost(s*6,0,cz-7,3.6);vnLampPost(s*4,0,cz+5,3.8);}}
  vnFolk(0,10,4,5);vnFolk(0,cz+6,4,3);}
 // ---------------------------------------------------------------- the Pleasure Dome and its grounds
-function buildXaPleasureDome(G,o){reseed(31011+(o.v|0));const GW=88,GD=88,lit=xLit()?'lit':'glass';
+function buildXaPleasureDome(G,o){reseed(31011+(o.v|0));const V=xV(o),GW=88,GD=88,lit=xLit()?'lit':'glass';
  const stone=xC(xPick(XPAL.stone)),wash=xC(xPick(XPAL.wash)),tim=xC(xPick(XPAL.dark)),gold=xC(xPick(XPAL.gold)),tile=xC(XPAL.turquoise),trim=xC(xPick(XPAL.trim));
  vnReg('Pleasure Dome',0,-12,15,30);vnReg('Pleasure Dome — gardens',0,20,20,3);vnReg('Pleasure Dome — baths',-30,-24,9,9);vnReg('Pleasure Dome — gate',0,GD/2-2,4,6);
  // the garden wall: whitewash with a tiled coping, an arched gate in the front, kiosks at the corners
@@ -65,13 +67,15 @@ function buildXaPleasureDome(G,o){reseed(31011+(o.v|0));const GW=88,GD=88,lit=xL
   const f=loc(0,HZ,0,HW/2+.9,a);vB('xFriezeB',f[0],1.2+7.6,f[1],HW-1.6,.8,.14,a);}
  xnFlight(0,0,HZ+HW/2+1.5+1.4,0,10,1.2,'vStone',stone);
  xnFlatRoof(0,10.2,HZ,HW,HW,0,wash,{band:true,gold:true,eave:true,eaveC:tim,parapet:.6,corner:'gold'});
- const top=xnDome(0,10.5,HZ,9.2,'T',{drum:4.2,drumItem:'xDrumM',drumC:null,c:tile,fin:3.2});
+ const top=xnDome(0,10.5,HZ,9.2,['T','G','M'][V],{drum:4.2,drumItem:'xDrumM',drumC:null,c:V?null:tile,fin:3.2});
  vB('xGoldB',0,10.5+4.2-.3,HZ,17.6,.3,17.6,0,gold);
- for(const sx of[-1,1])for(const sz of[-1,1]){const tx=sx*(HW/2-1.6),tz=HZ+sz*(HW/2-1.6);vPst('xColS',tx,10.2,tz,1.1,5,stone);kput('xDrumW',[tx,15.2,tz],null,[1.3,1.2,1.3],wash);kput('xBulbT',[tx,16.4,tz],null,[1.5,1.8,1.5],tile);vBall('xGold',tx,18.3,tz,.16,gold);}
+ for(const sx of[-1,1])for(const sz of[-1,1]){const tx=sx*(HW/2-1.6),tz=HZ+sz*(HW/2-1.6),th=V===1?9:5;vPst('xColS',tx,10.2,tz,1.1,th,stone);kput('xDrumW',[tx,10.2+th,tz],null,[1.3,1.2,1.3],wash);kput('xBulbT',[tx,11.4+th,tz],null,[1.5,1.8,1.5],V===1?gold:tile);vBall('xGold',tx,13.3+th,tz,.16,gold);}
  // the chahar bagh in front: a long reflecting pool on the axis between two parterre gardens, fountains at the ends
- xnPool(0,.02,17,7,22,0,stone);xnFountain(0,0,32,2.8,stone);xnChannel([0,2.1],[0,5.7],1.1,stone);
+ if(V===2){xnPool(0,.02,17,34,22,0,stone);for(const s of[-1,1])for(let k=0;k<7;k++)xnCypress(s*19,4+k*3.8,rr(6,8));for(const s of[-1,1])xnChhatri(s*21,0,17,1.6,3.6,stone,tile,6);}   // v2: one great reflecting pool
+ else{xnPool(0,.02,17,7,22,0,stone);xnChannel([0,2.1],[0,5.7],1.1,stone);
  for(const s of[-1,1])xnCharBagh(s*24,0,14,32,30,0,{channel:1.1,r:2.0});
- for(const s of[-1,1])for(let k=0;k<7;k++)xnCypress(s*5.2,2+k*4.2,rr(6,8));
+ for(const s of[-1,1])for(let k=0;k<7;k++)xnCypress(s*5.2,2+k*4.2,rr(6,8));}
+ xnFountain(0,0,32,2.8,stone);
  xnPave(0,37,18,8,0,stone,2.2);
  // the baths at the back-left: a hall under one large and four small domes with oculus bosses, a boiler house
  {const BX=-30,BZ=-24,BW=16,BD=13;vB('xWashB',BX,0,BZ,BW,5.2,BD,0,wash);vB('vStone',BX,0,BZ,BW+.4,.5,BD+.4,0,stone);
