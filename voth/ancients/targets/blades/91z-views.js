@@ -42,7 +42,9 @@ const VIEWS={
  'A concave face':           (function(S){const f=BLP(S,'north-east').face300;
                                return BLW(S,f[0]*.05-70,f[1]-30,f[2]*.05+80).concat(BLW(S,f[0],f[1],f[2]));})(BLA),
  // THE CROWNS: high off the south-west, level with the curls.
- 'The crowns':               BLW(BLA,-700,960,640).concat(BLW(BLA,0,660,-40)),
+ 'The crowns':               (function(S){const T=['north-west','west','north-east'].map(k=>BLP(S,k).tip);
+                               const cy=(T[0][1]+T[1][1]+T[2][1])/3,cx=(T[0][0]+T[1][0]+T[2][0])/3,cz=(T[0][2]+T[1][2]+T[2][2])/3;
+                               return BLW(S,-560,cy+70,460).concat(BLW(S,cx,cy-40,cz));})(BLA),
  // FROM ABOVE: nearly a plan — the ring, the gaps, the canopy and oculus.
  'From above':               BLW(BLA,0,1900,260).concat(BLW(BLA,0,0,0)),
  // NIGHT: the hero after dark.
@@ -56,12 +58,13 @@ const VIEWS={
  'The fallen blade':         (function(S){const f=S.fall.find(q=>q.dir>0)||S.fall[0];
                                const mx=(f.a[0]+f.b[0])/2,mz=(f.a[2]+f.b[2])/2,dx=f.b[0]-f.a[0],dz=f.b[2]-f.a[2],L=Math.hypot(dx,dz);
                                return BLW(S,mx-dz/L*620+dx/L*120,260,mz+dx/L*620+dz/L*120).concat(BLW(S,mx-dx/L*60,80,mz-dz/L*60));})(BLB),
- // THE BLADE ACROSS THE PLAZA: from high over the south entrance, looking down
- // on the south-west blade lying through the smashed canopy.
+ // THE BLADE ACROSS THE PLAZA: from 260 m up inside the ring, looking down on
+ // the south-west blade lying where it came through the canopy.
  'Across the plaza':         (function(S){const f=S.fall.find(q=>q.dir<0)||S.fall[0];
-                               return BLW(S,90,380,420).concat(BLW(S,(f.a[0]+f.b[0])/2,S.PY,(f.a[2]+f.b[2])/2));})(BLB),
- // THE CHOKED PLAZA at a person's height, through the south entrance.
- 'The choked plaza':         (function(S){return BLR(S,S.THF,165,S.PY+1.8).concat(BLR(S,S.THP,120,60));})(BLB),
+                               return BLW(S,40,260,120).concat(BLW(S,(f.a[0]+f.b[0])/2,S.PY+16,(f.a[2]+f.b[2])/2));})(BLB),
+ // THE CHOKED PLAZA from a person standing on a rubble heap in its south-east
+ // quarter: the fallen blade, the talus, the canopy's slabs, the dead walls.
+ 'The choked plaza':         BLW(BLB,70,BLB.PY+9,105).concat(BLW(BLB,-80,62,-60)),
  // THE BROKEN CROWNS: high off the south-east, the stumps and the lost curls.
  'The broken crowns':        BLW(BLB,640,900,700).concat(BLW(BLB,-20,520,-40)),
  // THE RUIN FROM ABOVE.
