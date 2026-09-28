@@ -13832,8 +13832,20 @@ MAT.hillSlopeR=new THREE.MeshStandardMaterial({map:TEX.hillGround,color:0x74905a
 // at close range and this one stands right beside every terrace preset. Kept a
 // good deal darker than the city so 990 m of contact between the two reads as a
 // join rather than as more of the same material.
-MAT.hillCut   =new THREE.MeshStandardMaterial({map:TEX.concrete,roughnessMap:TEX.concreteRM,color:0x7b6d5b,roughness:1,metalness:0,side:DS});
-MAT.hillCutR  =new THREE.MeshStandardMaterial({map:TEX.concrete,roughnessMap:TEX.concreteRM,color:0x6a5f51,roughness:1,metalness:0,side:DS});
+// SECOND CUT, after the renders: on TEX.concrete, the pale board-formed map, the
+// walls came out as light grey bands wherever they faced the sun, and along the
+// whole climb they read as a road running beside the terraces. The first thing
+// the eye followed up the hill was the excavation, not the city. They are now
+// bedded rock, mottled and warm, a few steps darker than the slope above them.
+TEX.hillRock=canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;
+  const bed=fbm(x/90,y/7,4.9,3), blk=fbm(x/19,y/16,6.2,2), grit=fbm(x/2.2,y/2.2,3.7,1);
+  let v=.55+(bed-.5)*.55+(blk-.5)*.35+(grit-.5)*.22;
+  if(blk>.66)v-=.18;                                          // joints and shadowed blocks
+  d[i]=clamp(v*196,0,255);d[i+1]=clamp(v*158,0,255);d[i+2]=clamp(v*118,0,255);d[i+3]=255;}
+ g.putImageData(id,0,0);});
+MAT.hillCut   =new THREE.MeshStandardMaterial({map:TEX.hillRock,color:0x8f7a62,roughness:1,metalness:0,side:DS});
+MAT.hillCutR  =new THREE.MeshStandardMaterial({map:TEX.hillRock,color:0x74664f,roughness:1,metalness:0,side:DS});
 // THE AWNING SOFFIT is the pale one, and it is the one material in this type
 // that carries an EMISSIVE term. Nothing casts a shadow here and the hemisphere
 // light's ground colour is 0x6a3a2a, so a downward-facing surface is lit by warm
@@ -13943,14 +13955,37 @@ function hillFloorR(r){const C=HILLC;
  if(r<=hillRad(0))return hillTLr(r);
  if(r<=C.COURTR)return C.CFY;
  return C.CFY*clamp((C.RAMPR-r)/(C.RAMPR-C.COURTR),0,1);}
-// Is a plan point in the ribbon, and how far across it? Returns the angular
-// offset from the band's centre line divided by the band's half-width, so 1 is
-// the edge of the terraces whatever the radius. Beyond the foot the band keeps
-// level 0's bearing, which is what makes the court and the ramp part of the same
-// corridor and lets one hole predicate serve all three.
-function hillCorr(r,th){const l=clamp(hillLev(r),0,HILLC.NL-1);
- let dt=th-hillAng(l);while(dt>Math.PI)dt-=TAU;while(dt<-Math.PI)dt+=TAU;
- return dt*Math.max(r,1)/(HILLC.TW*.5);}
+// Is a plan point in the ribbon, and how far across it? Signed: 0 on the
+// centre line of the city's footprint at this radius, +-1 on its edges, and
+// beyond the edges it grows by one per half-frontage (140 m) of ground, so the
+// callers' margins (1.1, 1.25, 1.35, 1.6) still mean 14, 35, 49 and 84 m.
+//
+// SECOND CUT. The first version took the band of the ONE level whose back wall
+// stands at this radius. But a plate is up to 100 m deep, so up to eleven higher
+// levels reach out over the same radius, and the meander carries the band up to
+// ~50 m sideways a level. Away from the hairpins the fronts of most plates lay
+// several hundred metres off that one band, and the natural hill -- carved only
+// along it -- buried them: the renders showed a pale strip with terraces along
+// one edge of it, and a station on level 48 whose lawn was under 40 m of
+// hillside. The footprint is now the union of every plate that actually reaches
+// this radius at the depth it actually has. It depends on r alone, so it is
+// cached per metre.
+const HILL_ENVC=new Map();
+function hillEnv(r){const C=HILLC,k=Math.round(r);
+ if(HILL_ENVC.has(k))return HILL_ENVC.get(k);
+ let lo,hi;
+ if(k>=hillRad(0)||k<=C.RSUM){const l=k>=hillRad(0)?0:C.NL-1,a=hillAng(l),h=C.TW*.5/Math.max(k,1);lo=a-h;hi=a+h;}
+ else{const lev=hillLev(k),l0=Math.max(0,Math.ceil(lev-1e-6)),l1=Math.min(C.NL-1,Math.floor(lev+C.DP1/C.SET));
+  lo=1e9;hi=-1e9;
+  for(let l=l0;l<=l1;l++){const rl=hillRad(l),a=hillAng(l),need=k-rl;
+   for(let i=0;i<=16;i++){const sl=(i/16-.5)*C.TW;
+    if(l===l0||hillDep(l,sl)>=need){const t=a+sl/rl;if(t<lo)lo=t;if(t>hi)hi=t;}}}}
+ const e=[lo,hi];HILL_ENVC.set(k,e);return e;}
+function hillCorr(r,th){const e=hillEnv(r),mid=(e[0]+e[1])*.5,half=Math.max(1e-6,(e[1]-e[0])*.5);
+ let dt=th-mid;while(dt>Math.PI)dt-=TAU;while(dt<-Math.PI)dt+=TAU;
+ const a=Math.abs(dt);
+ if(a<=half)return dt/half;
+ return Math.sign(dt)*(1+(a-half)*Math.max(r,1)/(HILLC.TW*.5));}
 // The section of one awning: v runs 0 at the back to 1 at the lip. The plate is
 // flat over its inner 42% and then curves down, and the whole shell undulates
 // gently along its length so no two lips are parallel.
@@ -14172,12 +14207,21 @@ function buildHill(scene,gx,gz,d){reseed(9660+d);KOFF=[gx,0,gz];
  // third is the cut face and is rock; the rest is the shoulder of the hill and is
  // hillside, like the ground it joins.
  const flankP=(sg,u0,u1)=>(u,v)=>{const r=lerp(C.RSUM,1760,Math.pow(v,.9));
-   const l=clamp(hillLev(r),0,NL-1),fl=hillFloorR(r),uu=lerp(u0,u1,u);
-   const th=hillAng(l)+sg*(.97+uu*.93)*(TW*.5)/r;
+   const fl=hillFloorR(r),uu=lerp(u0,u1,u),e=hillEnv(r);
+   // from the EDGE of the city's footprint at this radius, not from one
+   // level's band: see hillEnv
+   const th=(sg<0?e[0]:e[1])+sg*(uu*.93-.03)*(TW*.5)/r;
    return pol(r,th,Math.max(fl-2,lerp(fl-2,hillNat(r,th)+.4,Math.pow(uu,.5))));};
  for(let sg=-1;sg<=1;sg+=2){
   RK.push(gridSurface(flankP(sg,0,.34),8,54,{uS:10,vS:190}));
   GR.push(gridSurface(flankP(sg,.34,1),12,54,{uS:20,vS:190}));}
+ // THE FLOOR OF THE CUT. The stack of overlapping plates closes the section only
+ // where each plate is as deep as its neighbours; the footprint above is the
+ // union of the DEEPEST, so here and there the ground between two shallow lips
+ // would be a hole into nothing. A rock floor 2.5 m under the terrace line, across
+ // the whole footprint, is under every plate and is only seen through the gaps.
+ RK.push(gridSurface((u,v)=>{const r=lerp(C.RSUM+2,R0-1,v),e=hillEnv(r);
+   return pol(r,lerp(e[0],e[1],u),hillTLr(r)-2.5);},24,110,{uS:20,vS:60}));
 
  // ============================================================ 111 TERRACES
  let dpLo=1e9,dpHi=-1e9,varLo=1e9,varHi=-1e9,opLo=1e9,opHi=-1e9,area=0,nplant=0;
@@ -16876,8 +16920,15 @@ MAT.ldFasc =new THREE.MeshStandardMaterial({map:TEX.ldStone,roughnessMap:TEX.con
 MAT.ldFascR=new THREE.MeshStandardMaterial({map:TEX.ldStoneR,roughnessMap:TEX.concreteRM,color:0xb0a592,roughness:1,metalness:0,side:DS});
 MAT.ldDeck =new THREE.MeshStandardMaterial({map:TEX.ldStone,roughnessMap:TEX.concreteRM,color:0xa99c86,roughness:1,metalness:0,side:DS});
 MAT.ldDeckR=new THREE.MeshStandardMaterial({map:TEX.ldStoneR,roughnessMap:TEX.concreteRM,color:0x877b67,roughness:1,metalness:0,side:DS});
-MAT.ldSoff =new THREE.MeshStandardMaterial({map:TEX.ldSoff,roughnessMap:TEX.concreteRM,color:0x9c9a95,roughness:1,metalness:0,side:DS});
-MAT.ldSoffR=new THREE.MeshStandardMaterial({map:TEX.ldSoffR,roughnessMap:TEX.concreteRM,color:0x686660,roughness:1,metalness:0,side:DS});
+// BOUNCE LIGHT IS PAINTED TOO. A downward face here sees only the hemisphere's
+// ground colour (0x6a3a2a), and no albedo can turn that neutral: at white the
+// best a soffit reaches is (.31,.17,.12), which is brown. The reference photo's
+// undersides are pale limestone lit by light bounced off the sand, so the soffit
+// carries a little emissive through its own texture. ldNightDim() pulls it down
+// at night, or 30 km of soffit would glow in the dark.
+MAT.ldSoff =new THREE.MeshStandardMaterial({map:TEX.ldSoff,roughnessMap:TEX.concreteRM,color:0x9c9a95,emissive:0x8c8984,emissiveMap:TEX.ldSoff,roughness:1,metalness:0,side:DS});
+MAT.ldSoffR=new THREE.MeshStandardMaterial({map:TEX.ldSoffR,roughnessMap:TEX.concreteRM,color:0x686660,emissive:0x55534f,emissiveMap:TEX.ldSoffR,roughness:1,metalness:0,side:DS});
+function ldNightDim(o,m){o.onBeforeRender=()=>{m.emissiveIntensity=NIGHT?.06:1;};}
 MAT.ldWin  =new THREE.MeshStandardMaterial({map:TEX.ldWin,color:0xffffff,emissive:0xffffff,emissiveMap:TEX.ldWinE,emissiveIntensity:1,roughness:.7,metalness:.05,side:DS});
 MAT.ldWinR =new THREE.MeshStandardMaterial({map:TEX.ldWinR,color:0xffffff,roughness:1,metalness:0,side:DS});
 MAT.ldSect =new THREE.MeshStandardMaterial({map:TEX.ldSect,color:0xd2c7b4,roughness:1,metalness:0,side:DS});
@@ -17431,6 +17482,7 @@ function buildLedge(scene,gx,gz,d){reseed(9740+d);KOFF=[gx,0,gz];
  // ---- merge ---------------------------------------------------------------------
  finish(A_FASC,fascM);finish(A_DECK,deckM);finish(A_SOFF,soffM);finish(A_WIN,winM);
  finish(A_SECT,MAT.ldSect);finish(A_VOID,MAT.ldVoid);
+ G.traverse(o=>{if(o.isMesh&&o.material===soffM)ldNightDim(o,soffM);});
  KOFF=[0,0,0];return G;}
 // TARGET: hill — the Hill Arcology, intact and ruined. A city built INTO a
 // slope, climbing sinuously: 111 garden terraces, one per level, each 280 m of
@@ -17672,7 +17724,13 @@ const HCOREAT=(S,i,dy)=>{const K=S.core[Math.min(i,S.core.length-1)];
 // and came back as a bald dune with a white thread on it: the terrace band is
 // 280 m wide against a hill 3.8 km across, and there is no distance at which
 // both read.
-const HHERO=S=>HPOL(S,2550,HMID(S)-.35,130).concat(HPOL(S,1250,HMID(S)+.05,330));
+// SECOND CUT, after the renders: from 130 m up the hill's own shoulder hides a
+// ribbon that sits in a trench 5-90 m deep, and the frame came back as bare
+// slope. The hero now stands 760 m up over the plain, off the downhill side of
+// the sweep, so it looks DOWN into the cut: the snake of terraces reads as a
+// band of dwellings and planting, with the summit towers on the skyline. It is
+// the same station logic as 'A hairpin', widened to hold the whole climb.
+const HHERO=S=>HPOL(S,2750,HMID(S)-.22,760).concat(HPOL(S,1150,HMID(S)+.02,300));
 // The landslip, from out over the plain at the scar's own bearing.
 const HSLIP=S=>HPOL(S,S.slip.r1+820,S.slip.th-.13,S.slip.y1+150)
  .concat(HPOL(S,(S.slip.r0+S.slip.r1)*.5,S.slip.th,(S.slip.y0+S.slip.y1)*.5));
@@ -17703,8 +17761,22 @@ const VIEWS={
  // planting, looking 130 m along the band: the trough at the lip, the planting
  // spilling over it, the dwelling fronts on the right and the awning of the
  // level above closing the top of the frame.
- 'A garden terrace':     hillOpenP(HA,HA.sta[1].l,HA.sta[1].s,.62,1.75)
-                          .concat(hillOpenP(HA,HA.sta[1].l,HA.sta[1].s+135,.86,1.2)),
+ // STANDING ON A TERRACE, at one of the stations the builder kept clear of
+ // planting, looking OUT over the lip and down the flight of terraces below to
+ // the plain. The first cut looked 135 m along the band, which on a curving,
+ // side-stepping ribbon ended in the cut wall at eye level.
+ // The station's open deck is 96 m of lawn, so the camera stands near the lip,
+ // at the trough, where a 12 degree look down clears the parapet 14 m ahead.
+ // A GARDEN TERRACE, from just off its lip: 60 m out over the fall and level
+ // with the deck of the terrace above, looking back in at the lawn, the trough
+ // and planting at the lip, the dwelling fronts, and the awnings stacked over
+ // them. Earlier cuts STOOD on the terrace, and every one failed the same way:
+ // looking along the band ended at the cut wall, and looking out met the deeper
+ // plate of the level above, which roofs this whole terrace.
+ 'A garden terrace':     (function(S){const st=S.sta[1];
+                           const th=hillAng(st.l)+st.s/hillRad(st.l);
+                           return HPOL(S,st.lip+60,th-.035,hillDeckY(st.l)+14)
+                            .concat(hillOpenP(S,st.l,st.s,.45,4));})(HA),
  // AN AWNING FROM BENEATH. Aimed at the deepest overhang the depth field
  // actually produced (HILL_SITE.awn, measured over all 111 terraces x 25
  // stations): where the plate above reaches further out than this one does, the
