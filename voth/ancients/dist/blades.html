@@ -17681,9 +17681,9 @@ TEX.blSlit=blSlitTex(0);TEX.blSlitR=blSlitTex(1);TEX.blSlitE=blSlitLit();
 TEX.blSect=blSectTex();TEX.blConcR=blConcRTex();TEX.blPave=blPaveTex(0);TEX.blPaveR=blPaveTex(1);TEX.blKit=blKitTex();
 // Heavier and greyer than the white Ancient stone, lighter than Darco: raw
 // concrete intact, dark weathered concrete ruined.
-MAT.blWin  =new THREE.MeshStandardMaterial({map:TEX.blWin,roughnessMap:TEX.concreteRM,color:0x66625c,emissive:0xffffff,emissiveMap:TEX.blWinE,emissiveIntensity:1.3,roughness:1,metalness:0,side:DS});
+MAT.blWin  =new THREE.MeshStandardMaterial({map:TEX.blWin,roughnessMap:TEX.concreteRM,color:0x66625c,emissive:0xffffff,emissiveMap:TEX.blWinE,emissiveIntensity:1.9,roughness:1,metalness:0,side:DS});
 MAT.blWinR =new THREE.MeshStandardMaterial({map:TEX.blWinR,roughnessMap:TEX.concreteRM,color:0x4c4740,roughness:1,metalness:0,side:DS});
-MAT.blSlit =new THREE.MeshStandardMaterial({map:TEX.blSlit,roughnessMap:TEX.concreteRM,color:0x57534e,emissive:0xffffff,emissiveMap:TEX.blSlitE,emissiveIntensity:1.5,roughness:1,metalness:0,side:DS});
+MAT.blSlit =new THREE.MeshStandardMaterial({map:TEX.blSlit,roughnessMap:TEX.concreteRM,color:0x57534e,emissive:0xffffff,emissiveMap:TEX.blSlitE,emissiveIntensity:2.2,roughness:1,metalness:0,side:DS});
 MAT.blSlitR=new THREE.MeshStandardMaterial({map:TEX.blSlitR,roughnessMap:TEX.concreteRM,color:0x47433c,roughness:1,metalness:0,side:DS});
 MAT.blConc =new THREE.MeshStandardMaterial({map:TEX.concrete,roughnessMap:TEX.concreteRM,color:0x605c56,roughness:1,metalness:0,side:DS});
 MAT.blConcR=new THREE.MeshStandardMaterial({map:TEX.blConcR,roughnessMap:TEX.concreteRM,color:0x57524a,roughness:1,metalness:0,side:DS});
@@ -17954,6 +17954,25 @@ function buildBlades(scene,gx,gz,d){reseed(9640+d);KOFF=[gx,0,gz];
     if(rng()<.25){const u=rr(-.7,.7),p=Pf(u,3,-rr(4,10));
      kput('blBox',p,qEuler(rr(-.9,.9),-B.th(u,s),rr(-.3,.3)),[rr(10,24),1.2,5],stoneD());}}}}
 
+ // ============================================================ THE BALCONY STACKS
+ // Real depth in the window wall: columns of projecting balconies, one per
+ // storey, on fixed 4 m bays so they sit on the texture's own bays and floors
+ // (bay centres at 4k+2 m from the blade's centre line, floors every 4 m of s).
+ // Every blade gets its own set of columns; the gallery storeys are skipped.
+ let NBAL=0;
+ for(const B of BT){const sMax=Math.min(B.topMin-14,B.L*.80),cols=[];
+  for(let k=-24;k<24;k++)if(h3(k*1.37+B.sd,B.sd*.71,8.8)<.30)cols.push(4*k+2);
+  for(let s=40;s<sMax;s+=4){if((s-36)%24===0)continue;const q=B.pf(s);if(q.b>.26)continue;
+   const hw=B.W(s)/2;
+   for(const m of cols){const u=m/hw;if(Math.abs(u)>.9)continue;
+    if(dd&&rng()<.55)continue;
+    const th=B.th(u,s),n=[-Math.cos(th),0,-Math.sin(th)],p=B.P(u,s,-1),qf=qFacing(n);NBAL++;
+    if(dd&&rng()<.15){kput('blBox',[p[0]+n[0]*1.2,p[1]-rr(1,5),p[2]+n[2]*1.2],qf.clone().multiply(qEuler(rr(-.9,.9),0,rr(-.5,.5))),[3.4,.35,1.9],stoneD());continue;}
+    kput('blBox',[p[0]+n[0]*.9,p[1]-.17,p[2]+n[2]*.9],qf,[3.5,.35,2.0],stoneD());
+    kput('blBox',[p[0]+n[0]*1.84,p[1]+.5,p[2]+n[2]*1.84],qf,[3.5,1.0,.14],stone());
+    if(dd&&rng()<.2)kput('moss',[p[0]+n[0]*1,p[1]+.2,p[2]+n[2]*1],null,[1.4,.4,.9],mossC());
+    else if(!dd&&rng()<.06)kput('leafCard',[p[0]+n[0]*1.2,p[1]+.9,p[2]+n[2]*1.2],qEuler(0,rng()*TAU,0),[.9,.8,.9],leafC());}}}
+
  // gardens in the upturned face of each curl
  if(!dd)for(const B of BT){const s0=B.L*(B.xk+.12);
   for(let j=0;j<46;j++){const u=rr(-.85,.85),s=rr(s0,B.topMin-10);if(s<=s0)continue;const q=B.pf(s);if(q.b<.35)continue;
@@ -18171,7 +18190,8 @@ function buildBlades(scene,gx,gz,d){reseed(9640+d);KOFF=[gx,0,gz];
   for(let j=0;j<120;j++){const th=rng()*TAU,r=rr(10,160);
    kput('blBox',[r*Math.cos(th),PY+rr(.5,3),r*Math.sin(th)],qEuler(rr(-.6,.6),rng()*TAU,rr(-.6,.6)),[rr(3,12),rr(2,7),rr(3,10)],stoneD());}
   talus(0,PY,0,40,170,700,3.6);
-  scatterMoss(0,PY,0,5,175,260,5);
+  for(let j=0;j<260;j++){const th=rng()*TAU,r=rr(5,175),m=rr(1,3.2);
+   kput('moss',[r*Math.cos(th),PY+m*.2,r*Math.sin(th)],qEuler(0,rng()*TAU,0),[m*rr(.8,1.4),m*.35,m*rr(.8,1.4)],mossC());}
   for(let j=0;j<90;j++){const th=rng()*TAU,r=rr(15,170);plant(r*Math.cos(th),PY,r*Math.sin(th),rr(5,14));}
   for(let j=0;j<60;j++){const th=rng()*TAU;const r=lerp(Rp2(th),Rp1(th),rr(.1,.9));
    if(rng()<.5)plant(r*Math.cos(th),12,r*Math.sin(th),rr(6,13));
@@ -18201,7 +18221,7 @@ function buildBlades(scene,gx,gz,d){reseed(9640+d);KOFF=[gx,0,gz];
   blades:BT.map(B=>({k:B.k,phi:B.phi,R:B.R,w:B.w,t:B.t,L:B.L,top:topY(B),
    tip:B.P(B.sg,B.s1(B.sg),0),face300:B.P(0,B.sAtY(Math.min(300,topY(B)*.5)),-1),brk:!!B.brk})),
   fall:FOOT.map(F=>({k:F.B.k,dir:F.B.brk.dir,a:F.a,b:F.b})),
-  galleries:NGAL};
+  galleries:NGAL,balconies:NBAL};
 
  // ---- merge ---------------------------------------------------------------------
  meshMerged(LW,mW,G);
