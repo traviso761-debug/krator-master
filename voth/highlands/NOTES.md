@@ -40,3 +40,27 @@ that stand people on raised floors, box-built animals (`hnRUBeast`, `hnRCBeast`)
 
 Next: **Raketstad** (city target) — Iziz's city machinery (terrain, painted ground, occupancy, placers),
 the Ancients spaceport + launch arcologies, the NW-lowlands biome.
+
+## Round 2 (Sep 28 2026) — motifs, pillars, signs, half-timber
+
+Travis: keep the formline murals for the Tribes; give Rustic and Republican a wider repertoire in the same palette —
+Celtic cats, knots, tree of life, triskelions, Norse hammers, wolves, grain, rockets, moths, warriors, sun, moon,
+star, gas giant (greenish, as it hangs in the skybox); every shop a sign with a relevant symbol; Republican civic
+buildings carry the Republic's emblem (three arms, swords held at 90° to the forearm); no totems outside the tribal
+set — carved pillars instead, added where architecturally sensible; more elaborate half-timbering (Alemannic /
+Franconian and Tudor references).
+
+* `71b-hl-motif.js` — Celtic drawing kit (`hlPlait` billiard-strand knotwork with alternating over/under,
+  `hlBraidRing`, `hlSpiral`, `hlCrescent`), the motifs, the emblem, 26 sign symbols (`HSIGN`), and the kit items
+  `hM_w_* hM_g_* hM_t_* hM_d_* hM_sign_* hM_p_0..3` (carved pillar boxes) `hM_b_republic` (banner). Pick lists in `HMOTIF`.
+* `73-hl-carve.js` — branch rules: `hnForm` swaps Rustic/Republican crests for a same-shape pick from `HMOTIF`
+  (formline animals stay in the pool; rockets Republican only; the first wide crest on a Republican civic building
+  is the emblem); `hnTotem`/`hnTotemPost` become `hnPillar` outside the tribes (free-standing ones carry a painted
+  roundel finial); `vnBannerPole` flies the Republic's banner on civic buildings; `hnSign`, `hnSignBoard`,
+  `hnEmblem`; `HTRADE` maps each trade def to its sign symbol.
+* `72-hl-helpers.js` — `hnFachFace`/`hnFachBox` rewritten: a style per building (`alemannic franconian tudor
+  saxon`), bay patterns mirrored about the façade (Mann, curved/ogee crosses, lozenge, star, close studding,
+  herringbone, quatrefoil), patterned window aprons, gilded rosettes on the sill; carved corner consoles on jetties.
+  Every half-timbered building picks this up through the shared helpers.
+* `88-hl-dress.js` — a post-build pass: signposts for trade/guild defs that had no sign; carved two-pillar portals
+  round the main door of nine buildings (door found by recording `vnDoor` calls).
