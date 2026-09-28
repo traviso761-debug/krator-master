@@ -30,9 +30,25 @@ in the code. Hero and "A garden terrace" presets re-aimed. Still open: a dark
 band where the hill surface is seen from below at the lip of the cut, in the
 low "The cut wall" shot.
 
-Still open from the older queue: kit surgery (Projects D and H), the dockyard
-pair, the Wing / Drum / Blades (seeds 9620/9630/9640 still unclaimed), and the
-quality passes.
+**Kit surgery: DONE (2026-09-28).** Decay 3 is folded into the kit
+(`DECAYS=[0,1,2,3]`) and the `repaired` target is retired; the user chose to
+accept the overage: **8 362 742** scene triangles against the 6M soft ceiling,
+reported OVER by `--assert`, every other invariant passing. The decay-3 stump
+bug is fixed (standing test `d!==2`), so rehabilitated towers stand full height.
+Projects D and H have rows (`j=-1150`) and day/night/close presets; their builder
+code was already written. `ROWV` row shots are capped 90 m short of the next row
+so they no longer stand inside its rehabilitated building. Worst draw calls seen:
+886 of 900 (Rehabilitated D). Plinth shrinking, Project A's firelight and the
+Hotel overhang fixes were already done before this session.
+
+`build.py` now skips registered targets that have no directory (wing, drum,
+blades) instead of aborting a full build at the first one, and its seed check
+expands `N+d` over decays 0-4.
+
+Still open from the older queue: the dockyard pair, the Wing / Drum / Blades
+(seeds 9620/9630/9640 still unclaimed), overgrown (biome) variants for every
+type except the Hexahedron, and the kit-wide detail pass (Gaudi mouldings,
+interiors behind openings, glass shards).
 
 ## STOPPED: weekly API limit, resets **Sep 27, 8pm** (America/Chicago)
 Written 2026-09-23. Both running agents were killed mid-task by the weekly
