@@ -46,19 +46,35 @@ function dnBanner(x,y,z,ry,w,h,c){const q=vQ(ry,0,0);kput('dBanner',[x,y-h/2,z],
 function dnBannerPole(x,y,z,ry,h,c){vPst('vPost',x,y,z,.09,h,vC(0x5a4632));const p=loc(x,z,.75,0,ry);vB('vWood',p[0],y+h-.3,p[1],1.5,.08,.08,ry,vC(0x5a4632));
  kput('dBanner',[p[0],y+h-.35-h*.2,p[1]],vQ(ry,0,0),[1.0,h*.4,1],c||dCol(DPAL.red));vBall('dGiltBall',x,y+h+.15,z,.14);}
 // Tiwanaku cornice: a relief band, then stepped stone courses each further out, then a cap. Returns the top y.
-function dnCornice(x,y,z,w,d,ry,c,steps){dnReliefBand(x,y,z+0,0,w,.9,c);   // front only is carved; the sides get the plain courses
- vB('vStone',x,y,z,w+.16,.9,d+.16,ry,c);let yy=y+.9;steps=steps||2;for(let k=0;k<steps;k++){const o=.22+.26*k;vB('vStone',x,yy,z,w+2*o,.36,d+2*o,ry,c);yy+=.36;}
- vB('vStone',x,yy,z,w+.2,.3,d+.2,ry,c.clone().multiplyScalar(1.06));return yy+.3;}
+function dnCornice(x,y,z,w,d,ry,c,steps,tr){if(tr){const f=loc(x,z,0,d/2,ry);dnFretBand(f[0],y+.1,f[1],ry,w-.4,.7);}else dnReliefBand(x,y,z+0,0,w,.9,c);   // front only is carved; the sides get the plain courses
+ vB('vStone',x,y,z,w+.16,.9,d+.16,ry,c);let yy=y+.9;steps=steps||2;for(let k=0;k<steps;k++){const o=.22+.26*k;vB('vStone',x,yy,z,w+2*o,.36,d+2*o,ry,tr||c);yy+=.36;}
+ vB('vStone',x,yy,z,w+.2,.3,d+.2,ry,(tr||c).clone().multiplyScalar(1.06));return yy+.3;}
 // Trilithon gate (the Gate of the Sun): two monolithic piers, a lintel carrying a relief frieze, a stepped crest.
-function dnGate(x,y,z,ry,w,h,c){for(const s of[-1,1]){const p=loc(x,z,s*(w/2+.5),0,ry);vB('vStone',p[0],y,p[1],1.0,h,1.3,ry,c);dnReliefBand(p[0]+0,y+.6,p[1],ry,.7,h-1.2,c);}
- vB('vStone',x,y+h,z,w+2.2,1.1,1.4,ry,c);const f=loc(x,z,0,.7,ry);dnReliefBand(f[0],y+h+.1,f[1],ry,w+1.6,.9,c);
+function dnGate(x,y,z,ry,w,h,c,tr){for(const s of[-1,1]){const p=loc(x,z,s*(w/2+.5),0,ry);vB('vStone',p[0],y,p[1],1.0,h,1.3,ry,c);const q=loc(p[0],p[1],0,.65,ry);if(tr)dnDecoPanel(q[0],y+.5,q[1],ry,.7,h-1.0);else dnReliefBand(p[0]+0,y+.6,p[1],ry,.7,h-1.2,c);}
+ vB('vStone',x,y+h,z,w+2.2,1.1,1.4,ry,tr||c);const f=loc(x,z,0,.7,ry);if(tr)dnFretBand(f[0],y+h+.1,f[1],ry,w+1.6,.9);else dnReliefBand(f[0],y+h+.1,f[1],ry,w+1.6,.9,c);
  vB('vStone',x,y+h+1.1,z,w+1.4,.3,1.2,ry,c);vB('vStone',x,y+h+1.4,z,w*.5,.35,1.0,ry,c);vB('vStone',x,y+h+1.75,z,w*.22,.35,.9,ry,c);}
 // A carved stele (Ponce monolith): a battered shaft with a relief front and a squared head.
-function dnStele(x,y,z,ry,h,c){vB('vStone',x,y,z,1.0,h,.7,ry,c);const f=loc(x,z,0,.35,ry);dnReliefBand(f[0],y+.4,f[1],ry,.7,h-.9,c);vB('vStone',x,y+h,z,1.1,.3,.8,ry,c);
+function dnStele(x,y,z,ry,h,c,tq){vB('vStone',x,y,z,1.0,h,.7,ry,c);const f=loc(x,z,0,.35,ry);if(tq)dnFretBand(f[0],y+.4,f[1],ry,.7,h-.9);else dnReliefBand(f[0],y+.4,f[1],ry,.7,h-.9,c);vB('vStone',x,y+h,z,1.1,.3,.8,ry,c);
  const g=loc(x,z,0,.4,ry);vB('vDarkB',g[0],y+h-.55,g[1],.5,.25,.05,ry);}
 // Altar: a stone table with a brazier (fire by night) in front of a temple door.
 function dnAltar(x,y,z,ry,c){vB('vStone',x,y,z,2.2,1.0,1.2,ry,c);dnReliefBand(x,y+.15,z,ry,2.0,.7,c);vB('vStone',x,y+1.0,z,2.5,.2,1.5,ry,c);vPst('vPipe',x,y+1.2,z,.35,.6,vC(0x2e2a26));firePit('dalab',x,y+1.55,z,.7);}
 
+
+// ---------------------------------------------------------------- the sacred deco (round 4)
+// Fret band in colour (cream over turquoise inlay), proud of a face; (x,z) ON the face, ry outward.
+function dnFretBand(x,y,z,ry,w,h){const f=loc(x,z,0,.1,ry);vB('dReliefTq',f[0],y,f[1],w,h,.16,ry);}
+// A tall deco panel of the avatar on a pier: turquoise field, cream figure, a cream frame; (x,z) ON the face.
+function dnDecoPanel(x,y,z,ry,w,h){const f=loc(x,z,0,.06,ry);kput('dDecoPanel',[f[0],y+h/2,f[1]],vQ(ry,0,0),[w,h,1],null);const tr=dCol(DPAL.trim);
+ for(const s of[-1,1]){const p=loc(x,z,s*(w/2+.07),.1,ry);vB('vStone',p[0],y-.1,p[1],.14,h+.2,.18,ry,tr);}const p=loc(x,z,0,.1,ry);vB('vStone',p[0],y+h,p[1],w+.28,.14,.2,ry,tr);vB('vStone',p[0],y-.14,p[1],w+.28,.14,.2,ry,tr);}
+// Stepped parapet crest (the ziggurat top of the reference facades): three cream-trimmed steps over a fret band,
+// centred on (x,z), width w, ry the facing.
+function dnCrest(x,y,z,w,ry,wallC){const tr=dCol(DPAL.trim);const W=[w,w*.62,w*.3],H=[.9,.8,.7];let yy=y;
+ for(let k=0;k<3;k++){vB('vStone',x,yy,z,W[k],H[k],1.2,ry,wallC);vB('vStone',x,yy+H[k]-.16,z,W[k]+.24,.16,1.44,ry,tr);const f=loc(x,z,0,.6,ry);if(k<2)dnFretBand(f[0],yy+.2,f[1],ry,W[k]-.6,.5);yy+=H[k];}
+ vBall('dGiltBall',x,yy+.2,z,.22);return yy;}
+// Cream string course round a box (a horizontal band of trim).
+function dnTrimBand(x,y,z,w,d,ry,h){vB('vStone',x,y,z,w+.2,h||.3,d+.2,ry,dCol(DPAL.trim));}
+// Diamond-checker paving.
+function dnChecker(x,y,z,w,d,ry){vB('dChecker',x,y-.06,z,w,.08,d,ry);}
 // ---------------------------------------------------------------- the round house
 // o: {wall:item, wallC, roof:'thatch'|'shingle'|'scrap'|'tile', rise, roofC, door:ry, win:[ry...], winKind, band:'mural'|'paint'|'relief'|null,
 //     hearth:bool, finial:bool, wood:colour, foot:bool}
