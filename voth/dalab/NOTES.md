@@ -93,3 +93,34 @@ quality pass on the mound stairs; more shops and workshops; a windmill.
 
 41 registered volumes, 9.1 k instances, 257 k scene triangles, ~85 draw calls.
 `--assert` green.
+
+## Round 3 (Sep 28 2026) — palace stairs and gardens, the known-issues pass
+
+From Travis: each palace terrace gets its own landing; the palace doors
+overlapped the relief; terraced gardens on the palace hillsides from the
+SW-lowlands biome; a quality pass on the known issues.
+
+* **The lowlands biome is vendored** (`src/86-bio-*.js`, byte-identical to
+  `../biomes/swlowlands/src`, checked by `build.py --vendor-check`). It gained
+  two exports upstream, additive: `SWLOW.treeAt(species,x,y,z,{scale})` and
+  `SWLOW.plantAt(kind,x,y,z,{set,k})` — one tree or one small plant at an
+  explicit point, no zone, no mask. `86-bio-45-init.js` binds BIO with constant
+  fields and a queue for the wind tick; `dnTree` / `dnPlant` convert a builder's
+  local frame to world and adopt the biome's registry entries as `cls:'flora'`
+  of the site. `94-dalab-light.js` binds the scene, bakes the biome after
+  `kbake`, and feeds the sun into `BIO.setSun`.
+* **Palace mound** rebuilt: three terraces at rho 33.5 / 29 / 25 with landings
+  (a stone platform faced down to the slope, paved, balustraded), the axial
+  flight to the first, paired side flights on solid walls past the ends of the
+  ranges above, a last pair to the plateau with a rim balustrade. Relief bands
+  stop clear of the doors; the gate stands 45 cm proud. Gardens: five contour
+  beds per flank (bearings 42°–142° off the front) behind retaining walls,
+  with garden flights up each flank; skirt palms, ember manzanita, pompom
+  cycads, young jacarandas and ringbarks, and shrubs, azaleas, agaves, aloes,
+  yuccas, golden grass, toyon, ferns, blooms.
+* **Known issues pass**: see KNOWN_ISSUES.md — mounds merged into one mesh,
+  drum openings proud, finer mural facets, giant hands, cable sag, ring bank
+  caps, ground glow under The God's light, pipe trestles, turning sails.
+
+65 registered volumes (24 flora), 10.2 k kit instances + 7.2 k biome, 370 k
+scene triangles, ~110 draw calls. `--assert` green.

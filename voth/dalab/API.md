@@ -91,6 +91,12 @@ dnStall(x,z,ry,o)  dnGranary(x,y,z,r,h,o)  dnJar  dnWoodpile
 dnTemple(x,y,z,ry,s,o) -> {top,plat}   (73)  the priests' temple at scale s;  dnPriestHouse(x,y,z,ry,r)
 ```
 
+dnFlight(ax,ay,az,bx,by,bz,W,c,floorY)   a straight stone flight A→B on a solid wall down to floorY; treads every .3 m rise
+dnBalustrade(ax,ay,az,bx,by,bz,c)  dnCable(a,b,sag,w,c)
+dnTree(species,lx,ly,lz,{scale})  dnPlant(kind,lx,ly,lz,{set,k})   (86-bio-45) the lowlands biome at a LOCAL point; see below
+DMOUND_GEOS (mounds merge into one mesh in 94)   DWIND (sail groups the frame loop turns)
+```
+
 The Vernacular helpers (`vnDoor vnWin vnFrame vnGableRoof vnHipRoof
 vnThatchCone vnStairs vnVeranda vnPalisade vnPaving vnPlanter vnBarrel …`) are
 all available and used throughout; see `../iziz/API.md`.
@@ -104,6 +110,21 @@ all available and used throughout; see `../iziz/API.md`.
 3. Add the key to a row in `targets/set/89z-rows.js` and a view or two in
    `91z-views.js` (an eye-level one, and a night one if it is lit).
 4. `python build.py && python verify.py … --assert` — then read the shots.
+
+## The biome — `86-bio-*.js`
+
+The south-western lowlands kit, vendored byte-identical (`BIO_VENDORED` in
+build.py; IIFE-scoped, so the shared-scope rules skip it). `86-bio-45-init.js`
+is Dalab's binding: `BIO.init` with constant climate fields, a queued wind
+tick, TSTAT accounting under `biome/<pass>`. Two upstream exports serve the
+gardens: `SWLOW.treeAt(species,x,y,z,{scale,bias,seed})` builds one hero tree
+of a species (by key or index) at a world point; `SWLOW.plantAt(kind,x,y,z,
+{set,k,lv,seed})` one small plant (`fern forkfern giantfern shrub azalea
+palmetto ears heliconia brom iris reed sedge grass grassgold yucca mullein aloe
+agave pincushion chaparral toyon sapling moss blooms boulder`). Builders call
+`dnTree` / `dnPlant` in their local frame; `94-dalab-light.js` does
+`BIO.setScene` + `BIO.bake` after `kbake`. A world that runs the biome's own
+zone passes (`SWLOW.build`) does so in its own target before the bake.
 
 ## The lighting package — `94-dalab-light.js`
 
