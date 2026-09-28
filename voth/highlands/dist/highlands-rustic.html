@@ -1,0 +1,2120 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Highlands Kit — Rustic</title>
+<style>
+html,body{margin:0;height:100%;overflow:hidden;background:#2a2620;font:13px/1.4 system-ui,sans-serif;color:#eee}
+canvas{display:block}
+#ui{position:fixed;left:10px;top:10px;display:flex;flex-wrap:wrap;gap:6px;max-width:72vw;z-index:5}
+#ui button,#poly button{background:rgba(20,16,14,.78);color:#f0e6d8;border:1px solid #8a6a50;border-radius:4px;padding:5px 9px;cursor:pointer;font-size:12px}
+#ui button:hover,#poly button:hover{background:#6a4a38}
+#ui button.on{background:#c9773a;color:#1a1008;border-color:#e8b070}
+#hud{position:fixed;right:10px;bottom:10px;background:rgba(0,0,0,.5);padding:6px 9px;border-radius:4px;font-family:ui-monospace,monospace;font-size:12px;white-space:pre;z-index:5}
+#errs{position:fixed;left:10px;bottom:10px;max-width:60vw;max-height:30vh;overflow:auto;background:rgba(120,0,0,.85);color:#fff;padding:6px 9px;border-radius:4px;font-family:ui-monospace,monospace;font-size:12px;white-space:pre-wrap;display:none;z-index:9}
+#insp{position:fixed;left:10px;top:78px;background:rgba(0,0,0,.6);color:#ffe2b0;padding:6px 10px;border-radius:4px;font:12px/1.45 ui-monospace,monospace;white-space:pre;z-index:5;margin:0;display:none;pointer-events:none;max-width:46vw}
+#insp b{color:#fff;font-size:13px}
+#insp .cls{color:#9fe8ff}
+#insp .tag{color:#b8e8a0}
+#viewsel{background:rgba(20,16,14,.85);color:#f0e6d8;border:1px solid #8a6a50;border-radius:4px;padding:5px 9px;font-size:13px}
+#cap{position:fixed;left:10px;top:44px;background:rgba(0,0,0,.45);padding:4px 8px;border-radius:4px;font-size:12px;color:#e8d8c8;z-index:5;max-width:70vw}
+#poly{position:fixed;right:10px;top:10px;width:300px;background:rgba(0,0,0,.62);color:#e8d8c8;padding:8px 10px;border-radius:4px;font:12px ui-monospace,monospace;z-index:6;display:none}
+#poly textarea{width:100%;height:110px;background:#111;color:#cfe;border:1px solid #555;font:11px ui-monospace,monospace;margin-top:6px;resize:vertical}
+#poly .row{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
+</style><div id="ui"></div>
+<div id="cap">Iziz Vernacular Set</div>
+<pre id="insp"></pre>
+<div id="poly"><b>Polygon tool</b> — click ground to add a vertex · right-click removes last · coordinates are world x,z (metres)<textarea id="polyout" readonly></textarea><div class="row"><button id="polycopy">Copy</button><button id="polyclose">Close loop</button><button id="polyundo">Undo</button><button id="polyclear">Clear</button><button id="polyfmt">Format: [x,z]</button></div></div>
+<div id="hud"></div>
+<pre id="errs"></pre>
+<script>document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"'+(location.protocol==='file:'?'':' crossorigin="anonymous"')+'><\/script>');</script>
+<script>
+// ---------------------------------------------------------------- error panel
+const ERRS=document.getElementById('errs');
+function reportErr(m){ERRS.style.display='block';ERRS.textContent+=m+'\n';}
+window.onerror=(m,s,l,c,e)=>reportErr((e&&e.stack)||(m+' @'+l+':'+c));
+window.addEventListener('unhandledrejection',e=>reportErr('promise: '+(e.reason&&e.reason.stack||e.reason)));
+
+// ---------------------------------------------------------------- rng + noise
+let _seed=1234567;
+function reseed(s){_seed=s>>>0;}
+function rng(){_seed|=0;_seed=_seed+0x6D2B79F5|0;let t=Math.imul(_seed^_seed>>>15,1|_seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;}
+function rr(a,b){return a+(b-a)*rng();}
+function h3(x,y,z){const s=Math.sin(x*12.9898+y*78.233+z*37.719)*43758.5453;return s-Math.floor(s);}
+function vnoise(x,y,z){const xi=Math.floor(x),yi=Math.floor(y),zi=Math.floor(z),xf=x-xi,yf=y-yi,zf=z-zi;
+ const sm=t=>t*t*(3-2*t);const u=sm(xf),v=sm(yf),w=sm(zf);const l=(a,b,t)=>a+(b-a)*t;
+ return l(l(l(h3(xi,yi,zi),h3(xi+1,yi,zi),u),l(h3(xi,yi+1,zi),h3(xi+1,yi+1,zi),u),v),
+          l(l(h3(xi,yi,zi+1),h3(xi+1,yi,zi+1),u),l(h3(xi,yi+1,zi+1),h3(xi+1,yi+1,zi+1),u),v),w);}
+function fbm(x,y,z,o){o=o||3;let a=0,f=1,s=0;for(let i=0;i<o;i++){a+=vnoise(x*f,y*f,z*f)/f;s+=1/f;f*=2.03;}return a/s;}
+const clamp=(v,a,b)=>v<a?a:v>b?b:v, lerp=(a,b,t)=>a+(b-a)*t, TAU=Math.PI*2;
+
+// GROUND HEIGHT HOOK. Flat everywhere for now — the whole kit stands on y=0 —
+// but every piece of code that meets the ground asks here instead of assuming
+// zero, so the Krator terrain pass replaces this one function and the aprons,
+// the trees and the fallen fragments all follow the ground without a builder
+// being touched. Keep it cheap: it is called per tree and per rubble block.
+function terrainH(x,z){return 0;}
+
+// ---------------------------------------------------------------- per-type accounting
+// One global tally, filled while the builders run. 90-scene.js sets TSTAT.cur
+// to the site key ('skyA/1' = Skyscraper A, ruined) before each builder call
+// and clears it after, so every mesh and every instanced item is charged to the
+// type that made it. This is what makes the per-type triangle budgets in
+// verify.py --assert measurable at all: the kit shares one InstancedMesh per
+// item across all 33 types, so after kbake() there is no way to tell whose
+// triangles are whose.
+//
+// Nothing here emits geometry or draws from the PRNG, so switching it on does
+// not move a single rock. Keep it that way.
+const TSTAT={cur:null,by:{},bad:[]};
+function tcur(){const k=TSTAT.cur;if(k==null)return null;return TSTAT.by[k]||(TSTAT.by[k]={tris:0,inst:0,meshes:0});}
+function triOf(g){if(!g)return 0;if(g.index)return g.index.count/3;const p=g.attributes&&g.attributes.position;return p?p.count/3:0;}
+const _KTRI={};
+function ktri(name){if(_KTRI[name]===undefined){const def=KIT.defs[name];_KTRI[name]=def?triOf(def.geo):0;}return _KTRI[name];}
+function finite3(a){return !!a&&isFinite(a[0])&&isFinite(a[1])&&isFinite(a[2]);}
+// ---------------------------------------------------------------- textures
+// All procedural, all generated once at load, all in world-ish units: a texture
+// tile is about 8 m across, because `lathe` sets uS = rFn(0)*TAU/8 and vS = cut/8.
+// At 512 px that is 64 px per metre, which is what the panel and board sizes
+// below are picked against — change the tile size and they stop meaning anything.
+function canvasTex(w,h,fn,rep){const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');fn(g,w,h);
+ const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=8;t.encoding=THREE.sRGBEncoding;if(rep)t.repeat.set(rep,rep);return t;}
+// A roughness/metalness map is DATA, not colour. Leaving it sRGB-encoded (which
+// canvasTex does, correctly, for albedo) bends every value through a gamma curve
+// and the surface comes back wrong.
+//
+// r128's MeshStandardMaterial reads roughnessMap from the GREEN channel and
+// metalnessMap from the BLUE, so one texture assigned to both slots carries
+// both. Both MULTIPLY the material's scalar `roughness`/`metalness`, so those
+// are set to 1 and the map does all the work.
+//
+// This is the single biggest thing missing from the first-pass materials: with
+// one flat roughness value, every panel on a 420 m tower has an identical
+// highlight and the whole thing reads as moulded plastic. Breaking roughness up
+// per panel and along the seams is what makes it read as metal.
+function rmTex(w,h,fn){const t=canvasTex(w,h,(g,W,H)=>{const id=g.createImageData(W,H),d=id.data;
+ for(let y=0;y<H;y++)for(let x=0;x<W;x++){const i=(y*W+x)*4;const v=fn(x,y);
+  d[i]=0;d[i+1]=clamp(v[0],0,1)*255|0;d[i+2]=clamp(v[1],0,1)*255|0;d[i+3]=255;}
+ g.putImageData(id,0,0);});
+ t.encoding=THREE.LinearEncoding;return t;}
+
+// Panel grid: 2 m x 1 m sheets at 64 px/m.
+const PANW=128,PANH=64;
+function panTone(x,y){return h3(Math.floor(x/PANW)*1.7,Math.floor(y/PANH)*2.3,5.1);}
+function panSeam(x,y){const fx=x%PANW,fy=y%PANH;return Math.min(fx,PANW-1-fx,fy,PANH-1-fy);}
+function panBolt(x,y){const fx=x%PANW,fy=y%PANH;
+ return Math.hypot(Math.min(fx,PANW-1-fx)-7,Math.min(fy,PANH-1-fy)-7);}
+
+const TEX={};
+TEX.panel=canvasTex(512,512,(g,w,h)=>{ // white metal: panel sheets, recessed seams, fasteners
+ const id=g.createImageData(w,h),d=id.data;
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;
+  let v=228+(panTone(x,y)-.5)*13;                       // sheet-to-sheet tone
+  v+=(fbm(x/70,y/70,1.7,3)-.5)*15;                      // slow weathering drift
+  v+=(fbm(x/3,y/30,4.4,2)-.5)*7;                        // brushed grain, running vertically
+  const sd=panSeam(x,y);
+  if(sd<1)v-=54; else if(sd<2)v-=25; else if(sd<4)v+=7; // groove, then its lit lip
+  const bd=panBolt(x,y);
+  if(bd<1.7)v-=28; else if(bd<2.7)v+=11;                // fastener at each sheet corner
+  d[i]=v;d[i+1]=v-1;d[i+2]=v-7;d[i+3]=255;}
+ g.putImageData(id,0,0);});
+TEX.panelRM=rmTex(512,512,(x,y)=>{
+ const t=panTone(x,y),sd=panSeam(x,y);
+ let r=.30+(t-.5)*.11+(fbm(x/60,y/60,9.2,2)-.5)*.14;
+ let m=.38+(t-.5)*.10;                                  // NOTE: modest. There is no
+ if(sd<2){r+=.40;m-=.22;}                               // envMap in this scene, so a
+ r+=(fbm(x/8,y/42,3.3,2)-.5)*.10;                       // near-1 metalness renders
+ return[r,m];});                                        // almost black.
+
+TEX.rust=canvasTex(512,512,(g,w,h)=>{ // tarnished steel, rust running down from every ledge
+ const id=g.createImageData(w,h),d=id.data;
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;
+  // t is 0 at the top of the tile and 1 at the bottom. With world-unit UVs a
+  // tile is roughly a storey, so the bottom of the tile is the underside of a
+  // ledge: where water collects and where the staining is always worst. That is
+  // how "keyed to overhangs" is approximated without knowing the geometry.
+  const t=y/h;
+  const base=fbm(x/70,y/70,4.2,3), streak=fbm(x/10,y/190,9.1,3);
+  const run=clamp((streak-.40)*3,0,1)*clamp(t*1.7,0,1); // runs widen downward
+  const ledge=clamp((t-.74)/.26,0,1);                   // the dark band under the ledge
+  let r=126+(base-.5)*52,gg=118+(base-.5)*48,b=108+(base-.5)*44;   // dull tarnished silver
+  const ru=clamp(run+ledge*.75,0,1);
+  r=lerp(r,114+streak*52,ru);gg=lerp(gg,60+streak*30,ru);b=lerp(b,38+streak*16,ru);
+  const dark=ledge*.42+clamp((fbm(x/40,y/150,2.2,2)-.62)*3,0,1)*.22;
+  r*=1-dark;gg*=1-dark;b*=1-dark;
+  if(panSeam(x,y)<1){r*=.74;gg*=.74;b*=.74;}            // the panel grid still ghosts through
+  d[i]=r;d[i+1]=gg;d[i+2]=b;d[i+3]=255;}
+ g.putImageData(id,0,0);});
+TEX.rustRM=rmTex(512,512,(x,y)=>{const t=y/512;
+ const ru=clamp(clamp((fbm(x/10,y/190,9.1,2)-.40)*3,0,1)*clamp(t*1.7,0,1)+clamp((t-.74)/.26,0,1)*.75,0,1);
+ return[lerp(.55,.97,ru)+(fbm(x/25,y/25,6.6,2)-.5)*.12,lerp(.30,.04,ru)];});
+
+// Verdigris is its own material now. It used to be blended into the rust map,
+// which put copper patina on rusting STEEL everywhere in the kit — two metals
+// that do not weather alike. Use MAT.verdigris only on parts meant to read as
+// copper or bronze.
+TEX.verdigris=canvasTex(256,256,(g,w,h)=>{
+ const id=g.createImageData(w,h),d=id.data;
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;
+  const p=fbm(x/34,y/34,3.7,3),run=fbm(x/8,y/90,6.1,2),t=y/h;
+  const a=clamp(clamp((p-.34)*2.4,0,1)*.72+clamp((run-.45)*2.6,0,1)*clamp(t*1.4,0,1)*.5,0,1);
+  const sh=clamp((fbm(x/12,y/12,8.8,2)-.5)*.42,-.2,.2);
+  d[i]=lerp(150,68,a)*(1+sh);d[i+1]=lerp(98,152,a)*(1+sh);d[i+2]=lerp(62,130,a)*(1+sh);d[i+3]=255;}
+ g.putImageData(id,0,0);});
+TEX.verdigrisRM=rmTex(256,256,(x,y)=>{const t=y/256;
+ const a=clamp(clamp((fbm(x/34,y/34,3.7,2)-.34)*2.4,0,1)*.72+clamp((fbm(x/8,y/90,6.1,2)-.45)*2.6,0,1)*clamp(t*1.4,0,1)*.5,0,1);
+ return[lerp(.32,.90,a),lerp(.34,.05,a)];});
+
+// Water-staining decal. Grayscale and MULTIPLY-blended, so it darkens whatever
+// wall it lands on rather than painting a grey rectangle over it — the same
+// streak has to work on white metal, rust, concrete and brick.
+TEX.stain=canvasTex(64,128,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;
+  const t=y/h;                                     // 0 at the ledge, 1 at the bottom
+  const run=fbm(x/7,y/40,5.3,3);
+  const edge=1-Math.abs(x/w*2-1);                  // fade out at the sides
+  const a=clamp(edge*1.6,0,1)*clamp(1.25-t,0,1)*clamp((run-.30)*2.2,0,1);
+  const v=255-a*118;
+  d[i]=v;d[i+1]=v-3;d[i+2]=v-8;d[i+3]=255;}
+ g.putImageData(id,0,0);});
+TEX.ground=canvasTex(1024,1024,(g,w,h)=>{ // painted later, once the sites are known
+ g.fillStyle='#8a4a34';g.fillRect(0,0,w,h);});
+// ---------------------------------------------------------------- materials
+const DS=THREE.DoubleSide;
+const MAT={
+ // metalness/roughness come from the packed map (G=rough, B=metal); the scalars
+ // are 1 so the map is not scaled down. See rmTex in 20-textures.js.
+ white:new THREE.MeshStandardMaterial({map:TEX.panel,roughnessMap:TEX.panelRM,metalnessMap:TEX.panelRM,color:0xffffff,metalness:1,roughness:1,side:DS}),
+ rust:new THREE.MeshStandardMaterial({map:TEX.rust,roughnessMap:TEX.rustRM,metalnessMap:TEX.rustRM,color:0xffffff,metalness:1,roughness:1,side:DS}),
+ verdigris:new THREE.MeshStandardMaterial({map:TEX.verdigris,roughnessMap:TEX.verdigrisRM,metalnessMap:TEX.verdigrisRM,color:0xffffff,metalness:1,roughness:1,side:DS}),
+ glass:new THREE.MeshStandardMaterial({color:0x3f9fe6,transparent:true,opacity:.48,metalness:.2,roughness:.08,emissive:0x0b2c4e,emissiveIntensity:.6,side:DS,depthWrite:false}),
+ winIntact:new THREE.MeshStandardMaterial({color:0x143a5c,metalness:.6,roughness:.15,emissive:0x0a2238,emissiveIntensity:.8}),
+ winDead:new THREE.MeshStandardMaterial({color:0x07090c,roughness:1}),
+ dark:new THREE.MeshStandardMaterial({color:0x1a1d22,roughness:.95,side:DS}),
+ guts:new THREE.MeshStandardMaterial({color:0x2a2622,roughness:.9,metalness:.4,side:DS}),
+ pipe:new THREE.MeshStandardMaterial({color:0x7a4a2a,roughness:.55,metalness:.7}),
+ pipeRust:new THREE.MeshStandardMaterial({color:0x4e3324,roughness:.9,metalness:.3}),
+ strip:new THREE.MeshBasicMaterial({color:0xffffff}),
+ dot:new THREE.MeshBasicMaterial({color:0xffffff}),
+ moss:new THREE.MeshStandardMaterial({color:0xffffff,roughness:1}),
+ vine:new THREE.MeshStandardMaterial({color:0x2c4a22,roughness:1}),
+ rubble:new THREE.MeshStandardMaterial({color:0xffffff,roughness:.95}),
+ fig:new THREE.MeshStandardMaterial({color:0xffffff,roughness:.9}),
+ ground:new THREE.MeshStandardMaterial({map:TEX.ground,roughness:1}),
+ slab:new THREE.MeshStandardMaterial({color:0xffffff,roughness:.9}),
+ stain:new THREE.MeshBasicMaterial({map:TEX.stain,transparent:true,blending:THREE.MultiplyBlending,depthWrite:false,side:DS}),
+};
+// GLASS FRESNEL. Real glass turns reflective and pale at grazing angles; a flat
+// transparent colour reads as blue plastic, which is what these curtain walls
+// were doing. Injected into the stock standard-material shader rather than
+// replacing it, so lights, fog and tone mapping all still apply.
+//
+// r128 has no <output_fragment> chunk — that arrived later — so the anchor is
+// the literal final assignment. Verified against the pinned three.min.js.
+//
+// The cube is written out rather than pow(): a negative base in pow() yields NaN,
+// and SwiftShader silently swallows it, so it would look perfect in verify.py
+// and blow up on a real GPU. Everything feeding it is clamped anyway.
+MAT.glass.onBeforeCompile=sh=>{
+ sh.fragmentShader=sh.fragmentShader.replace(
+  'gl_FragColor = vec4( outgoingLight, diffuseColor.a );',
+  ['float _fr = 1.0 - clamp( abs( dot( normalize( normal ), normalize( vViewPosition ) ) ), 0.0, 1.0 );',
+   '_fr = clamp( _fr, 0.0, 1.0 );',
+   '_fr = _fr * _fr * _fr;',
+   'vec3 _lit = outgoingLight + vec3( 0.30, 0.44, 0.58 ) * _fr * 0.85;',
+   'gl_FragColor = vec4( _lit, clamp( diffuseColor.a + _fr * 0.42, 0.0, 1.0 ) );'].join('\n'));};
+const SHELL=d=>d>0?MAT.rust:MAT.white;      // exterior skin by decay
+const WIN=d=>d>0?MAT.winDead:MAT.winIntact;
+const CYAN=new THREE.Color(0x7ff4ff), WARM=new THREE.Color(0xffd28a), DEAD=new THREE.Color(0x0a0c0e);
+
+// ---------------------------------------------------------------- instancing kit
+const KIT={defs:{},items:{},order:[]};
+function kdef(name,geo,mat){KIT.defs[name]={geo,mat};KIT.items[name]=[];KIT.order.push(name);}
+let KOFF=[0,0,0],KXF=null; // builder offset; optional {m,q} transform (leaning spire)
+function kput(name,p,q,s,c){let P=p,Q=q;if(KXF){const v=new THREE.Vector3(p[0],p[1],p[2]).applyMatrix4(KXF.m);P=[v.x,v.y,v.z];Q=(q?q.clone():new THREE.Quaternion()).premultiply(KXF.q);}
+ const w=[P[0]+KOFF[0],P[1]+KOFF[1],P[2]+KOFF[2]];
+ const t=tcur();if(t){t.inst++;t.tris+=ktri(name);}
+ // A NaN here is invisible: the instance renders nowhere and takes the whole
+ // InstancedMesh's bounding sphere with it. Catch it at the source, where we
+ // still know which type and which kit item produced it.
+ if(!finite3(w)||!(typeof s==='number'?isFinite(s):finite3(s)))TSTAT.bad.push({type:TSTAT.cur,item:name,p:w,s:s});
+ KIT.items[name].push({p:w,q:Q,s,c});}
+let KIT_BAKED=false;
+function kbake(parent){KIT_BAKED=true;const m=new THREE.Matrix4(),pos=new THREE.Vector3(),sc=new THREE.Vector3(),q0=new THREE.Quaternion();let tot=0;
+ for(const name of KIT.order){const it=KIT.items[name];if(!it.length)continue;const def=KIT.defs[name];
+  // one material clone per InstancedMesh (r128 needs it for instanceColor), but
+  // Material.copy() does NOT carry onBeforeCompile, so the glass fresnel has to
+  // be re-attached by hand or every instanced pane and finial loses it.
+  const _m=def.mat.clone();if(def.mat.onBeforeCompile)_m.onBeforeCompile=def.mat.onBeforeCompile;
+  const im=new THREE.InstancedMesh(def.geo,_m,it.length);
+  it.forEach((o,i)=>{pos.set(o.p[0],o.p[1],o.p[2]);const s=typeof o.s==='number'?sc.set(o.s,o.s,o.s):sc.set(o.s[0],o.s[1],o.s[2]);
+   m.compose(pos,o.q||q0,s);im.setMatrixAt(i,m);if(o.c)im.setColorAt(i,o.c);});
+  if(im.instanceColor){const W=new THREE.Color(0xffffff);it.forEach((o,i)=>{if(!o.c)im.setColorAt(i,W);});}
+  if(im.instanceColor)im.instanceColor.needsUpdate=true;im.instanceMatrix.needsUpdate=true;im.frustumCulled=false;parent.add(im);tot+=it.length;}
+ window._instances=tot;}
+// orientation helpers
+const _M=new THREE.Matrix4(),_V0=new THREE.Vector3(),_UP=new THREE.Vector3(0,1,0),_X=new THREE.Vector3(1,0,0);
+function qFacing(dir){ // quaternion whose local +z points along dir (dir horizontal-ish)
+ const d=new THREE.Vector3(dir[0],dir[1],dir[2]).normalize();const up=Math.abs(d.y)>.95?_X:_UP;
+ _M.lookAt(d,_V0,up);return new THREE.Quaternion().setFromRotationMatrix(_M);}
+function qEuler(x,y,z){return new THREE.Quaternion().setFromEuler(new THREE.Euler(x,y,z));}
+function qAxis(ax,ay,az,a){return new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(ax,ay,az).normalize(),a);}
+
+// ---------------------------------------------------------------- surfaces
+// fn(u,v)->[x,y,z]; opt.hole(u,v)->bool drops that quad. UVs scaled by opt.uS/vS (world-ish units).
+function gridSurface(fn,nu,nv,opt){opt=opt||{};const pos=[],uv=[],idx=[];const cols=nu+1;
+ for(let j=0;j<=nv;j++)for(let i=0;i<=nu;i++){const u=i/nu,v=j/nv;const p=fn(u,v);pos.push(p[0],p[1],p[2]);uv.push(u*(opt.uS||1),v*(opt.vS||1));}
+ for(let j=0;j<nv;j++)for(let i=0;i<nu;i++){if(opt.hole&&opt.hole((i+.5)/nu,(j+.5)/nv))continue;const a=j*cols+i,b=a+1,c=a+cols,d=c+1;idx.push(a,c,b,b,c,d);}
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));
+ g.setIndex(idx);g.computeVertexNormals();return g;}
+// Lathe with flutes, twist, jagged cut and holes.  o:{rFn(y),H,cut,jag,flutes,amp,sharp,twist,nu,nv,hole(u,y),seed}
+function lathe(o){const H=o.H,cut=o.cut!=null?o.cut:H,seed=o.seed||0,nu=o.nu||64,nv=o.nv||48;
+ const fn=(u,v)=>{const th=u*TAU;let top=cut;if(o.cut!=null&&o.jag)top=cut+o.jag*(fbm(u*7+seed,2.3,seed*.7,3)*2-1);
+  const yy=v*top;let r=o.rFn(Math.min(yy,H));if(o.flutes)r*=1+(o.amp||.08)*Math.pow(.5+.5*Math.cos(th*o.flutes+(o.twist||0)*yy),o.sharp||2);
+  return[r*Math.cos(th),yy,r*Math.sin(th)];};
+ const opt={uS:o.rFn(0)*TAU/8,vS:cut/8};if(o.hole)opt.hole=(u,v)=>o.hole(u,v*cut);return gridSurface(fn,nu,nv,opt);}
+// generic decay hole: more holes near a cut, controlled by d (0..1)
+// HOLES scales every decay hole in the kit at once. Decay level 3 (repaired)
+// wants the same builders with the same rusted materials but a fabric that is
+// only part-eaten, and threading that through 33 builders would be 33 edits
+// and 33 chances to miss one. The scene loop sets it per decay level.
+let HOLES=1;
+function holeFn(d,seed,cut,scale){d*=HOLES;if(!(d>0))return null;scale=scale||1;
+ return(u,y)=>{const n=fbm(u*4.5*scale+seed*.31,y*.028*scale,seed,3);const near=cut!=null?clamp((y-(cut-45))/45,0,1):0;return n<.34*d+.4*near*d;};}
+function mesh(geo,mat,parent,x,y,z){const m=new THREE.Mesh(geo,mat);if(x!==undefined)m.position.set(x,y,z);if(parent)parent.add(m);
+ const t=tcur();if(t){t.meshes++;t.tris+=triOf(geo);}
+ return m;}
+// Merge geometries that share a material and a parent into one mesh.
+//
+// Draw calls are per mesh, and the close-up views are dominated by towers built
+// one storey at a time - a 60-storey tower emitting two bands per floor is 120
+// draw calls on its own. Merging is triangle-neutral and, because the per-vertex
+// normals are copied rather than recomputed, pixel-neutral too.
+//
+// Only for OPAQUE materials: transparent meshes are depth-sorted per mesh, so
+// merging glass would change the order things blend in.
+function meshMerged(geos,mat,parent,x,y,z){
+ const keep=geos.filter(g=>g&&g.attributes&&g.attributes.position&&g.attributes.position.count);
+ if(!keep.length)return null;
+ if(keep.length===1)return mesh(keep[0],mat,parent,x,y,z);
+ let nv=0,ni=0;
+ for(const g of keep){nv+=g.attributes.position.count;ni+=g.index?g.index.count:g.attributes.position.count;}
+ const P=new Float32Array(nv*3),N=new Float32Array(nv*3),U=new Float32Array(nv*2);
+ const I=nv>65535?new Uint32Array(ni):new Uint16Array(ni);
+ let vo=0,io=0;
+ for(const g of keep){const A=g.attributes,c=A.position.count;
+  P.set(A.position.array,vo*3);
+  if(A.normal)N.set(A.normal.array,vo*3);
+  if(A.uv)U.set(A.uv.array,vo*2);
+  if(g.index){const ix=g.index.array;for(let i=0;i<ix.length;i++)I[io+i]=ix[i]+vo;io+=ix.length;}
+  else{for(let i=0;i<c;i++)I[io+i]=vo+i;io+=c;}
+  vo+=c;}
+ const G=new THREE.BufferGeometry();
+ G.setAttribute('position',new THREE.BufferAttribute(P,3));
+ G.setAttribute('normal',new THREE.BufferAttribute(N,3));
+ G.setAttribute('uv',new THREE.BufferAttribute(U,2));
+ G.setIndex(new THREE.BufferAttribute(I,1));
+ return mesh(G,mat,parent,x,y,z);}
+// Bounding box of an object and its children, measured in its PARENT's frame.
+function fragBox(o,acc,bb){o.updateMatrix();const m=acc.clone().multiply(o.matrix);
+ if(o.isMesh&&o.geometry){const g=o.geometry;if(!g.boundingBox)g.computeBoundingBox();
+  if(g.boundingBox&&isFinite(g.boundingBox.min.x))bb.union(g.boundingBox.clone().applyMatrix4(m));}
+ for(const c of o.children)fragBox(c,m,bb);
+ return bb;}
+// Drop a broken-off fragment so it rests where it actually fell.
+//
+// These geometries almost never have their origin at their own centre. The
+// satellite dish's fallen panel is a patch of a paraboloid whose origin is the
+// dish axis — 25 m to one side and 30 m below the panel itself — so no
+// hand-picked y could put it on the ground, and it hung in the air. The fuel
+// lobes, the government petal and the lab's broken spire had the same trap.
+//
+// Call it AFTER setting rotation. It measures the rotated piece, centres its
+// footprint on the position the builder asked for, and sets the height so its
+// lowest point sits just under `groundY` (default 0, the world floor).
+function dropFragment(o,groundY,bury){const gy=groundY||0,b=bury===undefined?.4:bury;
+ const bb=fragBox(o,new THREE.Matrix4(),new THREE.Box3());
+ if(!isFinite(bb.min.y)||!isFinite(bb.min.x))return o;
+ o.position.x+=o.position.x-(bb.min.x+bb.max.x)/2;
+ o.position.z+=o.position.z-(bb.min.z+bb.max.z)/2;
+ o.position.y+=gy-b-bb.min.y;
+ return o;}
+function arcShape(W,Hh,t,D){ // parabolic (catenary-ish) arch, origin at centre bottom, +z depth centred
+ const s=new THREE.Shape();const N=24;const outer=[],inner=[];
+ for(let i=0;i<=N;i++){const x=-W/2+W*i/N;outer.push([x,Hh*(1-Math.pow(2*x/W,2))]);}
+ const Wi=W-2*t,Hi=Hh-t;for(let i=0;i<=N;i++){const x=-Wi/2+Wi*i/N;inner.push([x,Hi*(1-Math.pow(2*x/Wi,2))]);}
+ s.moveTo(outer[0][0],0);outer.forEach(p=>s.lineTo(p[0],p[1]));s.lineTo(W/2,0);s.lineTo(Wi/2,0);
+ for(let i=N;i>=0;i--)s.lineTo(inner[i][0],inner[i][1]);s.lineTo(-Wi/2,0);s.lineTo(-W/2,0);
+ const g=new THREE.ExtrudeGeometry(s,{depth:D,bevelEnabled:false});g.translate(0,0,-D/2);return g;}
+function paraFill(W,Hh,holeW,holeH){ // parabolic wall with an arched opening (ShapeGeometry, in xy plane)
+ const s=new THREE.Shape();const N=24;s.moveTo(-W/2,0);for(let i=0;i<=N;i++){const x=-W/2+W*i/N;s.lineTo(x,Hh*(1-Math.pow(2*x/W,2)));}s.lineTo(W/2,0);
+ if(holeW){const h=new THREE.Path();h.moveTo(-holeW/2,0);for(let i=0;i<=N;i++){const x=-holeW/2+holeW*i/N;h.lineTo(x,holeH*(1-Math.pow(2*x/holeW,2)));}h.lineTo(holeW/2,0);s.holes.push(h);}
+ return new THREE.ShapeGeometry(s);}
+function arcWindowGeo(w,h,dep){const s=new THREE.Shape();s.moveTo(-w/2,-h/2);s.lineTo(w/2,-h/2);s.lineTo(w/2,h/2-w/2);s.absarc(0,h/2-w/2,w/2,0,Math.PI,false);s.lineTo(-w/2,-h/2);
+ const g=new THREE.ExtrudeGeometry(s,{depth:dep,bevelEnabled:false});g.translate(0,0,-dep/2);return g;}
+function hyperGeo(r0,h,k){return lathe({rFn:y=>r0*Math.sqrt(1+k*Math.pow((y-h/2)/(h/2),2)),H:h,nu:24,nv:10});}
+
+// ---------------------------------------------------------------- kit definitions (shared geometry)
+kdef('winI',arcWindowGeo(2.2,4.2,.7),MAT.winIntact); kdef('winD',arcWindowGeo(2.2,4.2,.7),MAT.winDead);
+kdef('winBigI',arcWindowGeo(3,3.6,.7),MAT.winIntact); kdef('winBigD',arcWindowGeo(3,3.6,.7),MAT.winDead);
+kdef('ovalI',new THREE.CylinderGeometry(1,1,.6,14).rotateX(Math.PI/2),MAT.winIntact); kdef('ovalD',new THREE.CylinderGeometry(1,1,.6,14).rotateX(Math.PI/2),MAT.winDead);
+kdef('archOpen',arcWindowGeo(6,9,1.2),MAT.dark);
+kdef('mullW',new THREE.BoxGeometry(.5,1,.5),MAT.white); kdef('mullR',new THREE.BoxGeometry(.5,1,.5),MAT.rust);
+kdef('finW',new THREE.BoxGeometry(1,1,1),MAT.dark);kdef('pierW',new THREE.BoxGeometry(1,1,1),MAT.white);kdef('pierR',new THREE.BoxGeometry(1,1,1),MAT.rust);
+kdef('dot',new THREE.BoxGeometry(1.4,.7,.4),MAT.dot);
+kdef('strip',new THREE.BoxGeometry(1,.18,.18),MAT.strip);
+kdef('colW',hyperGeo(1,1,1.6),MAT.white); kdef('colR',hyperGeo(1,1,1.6),MAT.rust);
+// A PLAIN POST. `colW`/`colR` are 480-triangle fluted lathes, which is right
+// for a monumental column and ruinous for a stanchion, a railing upright or a
+// specimen tank. The Forest Tower already carried a private 32-triangle post
+// for exactly this reason, and Dalab's lab fit-out was spending 1.4M triangles
+// on three colW per room. Eight sides, 32 triangles, same materials.
+kdef('postW',new THREE.CylinderGeometry(1,1,1,8),MAT.white); kdef('postR',new THREE.CylinderGeometry(1,1,1,8),MAT.rust);
+kdef('arch',arcShape(16,27,2.2,4),MAT.white); kdef('archR',arcShape(16,27,2.2,4),MAT.rust);
+kdef('vaultRib',arcShape(92,56,2.6,3),MAT.white); kdef('vaultRibR',arcShape(92,56,2.6,3),MAT.rust);
+kdef('pipe',new THREE.CylinderGeometry(1,1,1,10),MAT.pipe); kdef('pipeR',new THREE.CylinderGeometry(1,1,1,10),MAT.pipeRust);
+kdef('slab',new THREE.CylinderGeometry(1,1,1,48),MAT.slab);
+// The decorative bands read as a copper/bronze alloy, so their ruined form is
+// the one part of the kit that goes verdigris. Everything else rusts. Keeping
+// patina off the steel is the whole reason verdigris became its own material.
+kdef('ringW',new THREE.TorusGeometry(1,.09,6,40),MAT.white); kdef('ringR',new THREE.TorusGeometry(1,.09,6,40),MAT.verdigris);
+kdef('stain',new THREE.PlaneGeometry(1,1),MAT.stain);
+// detail 0, not 1: 20 triangles instead of 80. A moss blob is ground cover a
+// metre or two across, it is always squashed flat by its instance scale, and
+// nothing in the kit ever gets close enough to count its facets. At detail 1
+// it was the single heaviest line item in two types.
+kdef('moss',new THREE.IcosahedronGeometry(1,0),MAT.moss);
+
+// ---------------------------------------------------------------- THE LEAF CARD
+// One shared tree, because four types independently failed to make one.
+//
+// The kit's canopy has always been a displaced icosahedron — `moss` at detail 1,
+// which is EIGHTY triangles for one blob, and `VEG.tree` hangs three or four of
+// them off a trunk. That is 240-320 triangles a tree, it is the top budget line
+// in two types, and at ten metres it still reads as a bag of marbles, because a
+// faceted ball is a faceted ball however you texture it. The Forest Tower and
+// the Forest Ring each wrote their own displaced icosahedron and each logged the
+// same complaint against it; Arcbeam duplicated the kit default rather than
+// reach into a neighbour's fragment. Raising the displacement amplitude was
+// tried twice and is not the answer.
+//
+// The answer is to stop making the silhouette out of geometry. Three quads
+// crossed about the vertical axis, plus one laid near-flat for the view from
+// above, carry an alpha-mapped leaf mass: EIGHT triangles
+// instead of eighty, and the outline comes from the texture's alpha, which can
+// be as ragged as a real canopy for free. `alphaTest`, never `transparent` —
+// transparent would put every clump into the sorted pass and cost more in draw
+// order than it ever saved in triangles.
+//
+// Normals point OUT FROM THE CENTRE, not along each quad's own face. Face
+// normals light the three cards independently and the clump reads as three flat
+// sheets; radial normals light it as one soft volume, which is the whole trick.
+TEX.leafCard=canvasTex(128,128,(g,w,h)=>{
+ g.clearRect(0,0,w,h);                       // alpha 0 outside the leaf mass
+ const cx=w/2,cy=h/2;
+ for(let i=0;i<150;i++){
+  // biased toward the middle so the card has a dense heart and a ragged edge
+  const a=Math.random()*TAU,rad=Math.pow(Math.random(),.62)*w*.47;
+  const x=cx+Math.cos(a)*rad,y=cy+Math.sin(a)*rad;
+  const L=w*(.10-.045*rad/(w*.47));          // leaves shrink toward the fringe
+  g.save();g.translate(x,y);g.rotate(Math.random()*TAU);
+  const lit=.55+.45*(1-rad/(w*.5));          // a crude self-shading gradient
+  g.fillStyle='rgb('+Math.round(48*lit+26)+','+Math.round(104*lit+30)+','+Math.round(38*lit+18)+')';
+  g.beginPath();g.ellipse(0,0,L,L*.52,0,0,TAU);g.fill();g.restore();}});
+MAT.leafCard=new THREE.MeshStandardMaterial({map:TEX.leafCard,alphaTest:.45,
+ roughness:1,metalness:0,side:DS});
+function leafCardGeo(){
+ const P=[],N=[],U=[],v=new THREE.Vector3();
+ // unit RADIUS, matching IcosahedronGeometry(1,n), so this is a drop-in
+ // replacement anywhere the kit used to place a `moss` blob
+ for(let q=0;q<3;q++){const a=q*Math.PI/3,c=Math.cos(a),s=Math.sin(a);
+  const V=[[-c,-1,-s],[c,-1,s],[c,1,s],[-c,-1,-s],[c,1,s],[-c,1,-s]];
+  const T=[[0,0],[1,0],[1,1],[0,0],[1,1],[0,1]];
+  for(let i=0;i<6;i++){P.push(V[i][0],V[i][1],V[i][2]);
+   v.set(V[i][0],V[i][1]*.55,V[i][2]).normalize();N.push(v.x,v.y,v.z);
+   U.push(T[i][0],T[i][1]);}}
+ // A fourth quad, laid near-flat. Three vertical cards are fine in elevation
+ // but from above — off a terrace, or anywhere the camera looks down into a
+ // canopy — they present edge-on and the clump reads as a three-pointed star.
+ // This one is what the viewer sees from overhead. Two more triangles.
+ {const V=[[-1,.34,-1],[1,.34,-1],[1,.1,1],[-1,.34,-1],[1,.1,1],[-1,.1,1]];
+  const T=[[0,0],[1,0],[1,1],[0,0],[1,1],[0,1]];
+  for(let i=0;i<6;i++){P.push(V[i][0],V[i][1],V[i][2]);
+   v.set(V[i][0]*.25,1,V[i][2]*.25).normalize();N.push(v.x,v.y,v.z);
+   U.push(T[i][0],T[i][1]);}}
+ const g=new THREE.BufferGeometry();
+ g.setAttribute('position',new THREE.Float32BufferAttribute(P,3));
+ g.setAttribute('normal',new THREE.Float32BufferAttribute(N,3));
+ g.setAttribute('uv',new THREE.Float32BufferAttribute(U,2));
+ return g;}
+kdef('leafCard',leafCardGeo(),MAT.leafCard);
+kdef('vine',new THREE.CylinderGeometry(.05,.16,1,5).translate(0,-.5,0),MAT.vine);
+kdef('rubble',new THREE.DodecahedronGeometry(1,0),MAT.rubble);
+kdef('trunk',new THREE.CylinderGeometry(.18,.4,1,6).translate(0,.5,0),MAT.vine);
+kdef('figB',new THREE.CylinderGeometry(.24,.2,1.5,6).translate(0,.75,0),MAT.fig);
+kdef('figH',new THREE.SphereGeometry(.13,6,5).translate(0,1.62,0),MAT.fig);
+kdef('finial',new THREE.IcosahedronGeometry(1,0),MAT.glass);
+
+// ---------------------------------------------------------------- decoration helpers
+function windowsOnLathe(o,d,yFrom,yTo,step,n,gx,gy,gz,big){ // arched windows in flute troughs
+ const name=(big?'winBig':'win')+(d>0?'D':'I');
+ for(let y=yFrom;y<yTo;y+=step)for(let k=0;k<n;k++){const u=(k+.5)/n;if(o.hole&&o.hole(u,y))continue;if(o.cut!=null&&y>o.cut-4)continue;
+  const th=u*TAU,r=o.rFn(y)+.05;kput(name,[gx+r*Math.cos(th),gy+y,gz+r*Math.sin(th)],qFacing([Math.cos(th),0,Math.sin(th)]),1,null);}}
+// Ring of light-strip segments (all lit intact; few lit in ruin).
+//
+// TANGENT, not radial. `strip` is a BoxGeometry(1,.18,.18) scaled to [L,1,1],
+// so its long axis is local +X — and qEuler(0,-th,0), which every other ring
+// helper in this kit uses, points local +X straight OUT along the radius. Each
+// segment is `L = arc length per bay` long, so a ring of them laid radially
+// renders as a comb of spokes pointing at the camera rather than a line
+// following the ring. The tangent is -th-PI/2.
+//
+// This was found independently by two builders, each of which wrote its own
+// private tangential copy rather than touch the shared function (the Forest
+// Tower's `TAN`/`lring`, Plymouth's `lring`). Fixing it here changes all 47
+// call sites across 32 fragments, which is the point: they were all wrong.
+function stripRing(gx,gy,gz,r,d,n){
+ n=n||28;const L=TAU*r/n*.92;for(let k=0;k<n;k++){const th=(k+.5)/n*TAU;const lit=d>0?(rng()<.10):true;
+  kput('strip',[gx+r*Math.cos(th),gy,gz+r*Math.sin(th)],qEuler(0,-th-Math.PI/2,0),[L,1,1],lit?(d>0&&rng()<.5?CYAN.clone().multiplyScalar(.5):CYAN):DEAD);}}
+function mullions(gx,gy,gz,r,h,n,d){for(let k=0;k<n;k++){const th=k/n*TAU;kput(d>0?'mullR':'mullW',[gx+r*Math.cos(th),gy+h/2,gz+r*Math.sin(th)],qEuler(0,-th,0),[1,h,1],null);}}
+function glassBand(parent,rFn,y0,h,d,gx,gy,gz,n){ // gallery ring: glass drum (intact) or bare mullions round a dark drum (ruin)
+ const o={rFn:y=>rFn(y0+y)*(1.09+.05*Math.sin(Math.PI*y/h)),H:h,nu:48,nv:6};
+ if(d===0){mesh(lathe(o),MAT.glass,parent,0,y0,0);}
+ mesh(lathe({rFn:y=>rFn(y0+y)*.97,H:h,nu:32,nv:2}),MAT.dark,parent,0,y0,0);
+ mullions(gx,gy+y0,gz,rFn(y0+h/2)*1.1,h,n||36,d);
+ stripRing(gx,gy+y0+h*.55,gz,rFn(y0+h/2)*.95,d,n||28);
+ // ledge slab under the band
+ kput('slab',[gx,gy+y0-.4,gz],null,[rFn(y0)*1.16,.8,rFn(y0)*1.16],new THREE.Color(d>0?0x5a4a40:0xd8d4cc));}
+function floorSlabs(gx,gy,gz,rFn,y0,y1,step,d,cut){for(let y=y0;y<y1;y+=step){if(cut!=null&&y>cut+3)break;kput('slab',[gx,gy+y,gz],null,[rFn(y)*.93,.5,rFn(y)*.93],new THREE.Color(0x2a2c30));}}
+function scatterMoss(gx,gy,gz,rMin,rMax,n,sMax){for(let i=0;i<n;i++){const a=rng()*TAU,r=rr(rMin,rMax);const s=rr(.5,sMax);
+ kput('moss',[gx+r*Math.cos(a),gy+s*.25,gz+r*Math.sin(a)],qEuler(0,rng()*TAU,0),[s*rr(.8,1.4),s*.38,s*rr(.8,1.4)],new THREE.Color().setHSL(rr(.22,.32),rr(.3,.5),rr(.05,.12)));}}
+function mossOnRing(gx,gy,gz,r,n,sMax){for(let i=0;i<n;i++){const a=rng()*TAU,s=rr(.6,sMax);kput('moss',[gx+r*Math.cos(a)*rr(.85,1.02),gy+s*.2,gz+r*Math.sin(a)*rr(.85,1.02)],null,[s*1.3,s*.4,s*1.3],new THREE.Color().setHSL(rr(.2,.3),rr(.3,.5),rr(.05,.12)));}}
+function vinesOnRing(gx,gy,gz,r,n,lMax){for(let i=0;i<n;i++){const a=rng()*TAU,L=rr(4,lMax);kput('vine',[gx+r*Math.cos(a),gy,gz+r*Math.sin(a)],qEuler(rr(-.12,.12),0,rr(-.12,.12)),[rr(.8,1.6),L,rr(.8,1.6)],null);}}
+// Rubble piles AGAINST the wall it fell from. The radius is biased hard toward
+// rMin, blocks are largest there, and they bank up into a talus slope that
+// thins to a scatter at the outer edge. A uniform annulus reads as a decorative
+// ring laid round the building, which is exactly what this used to be.
+function rubbleRing(gx,gy,gz,rMin,rMax,n,sMax){for(let i=0;i<n;i++){const a=rng()*TAU;
+ const q=Math.pow(rng(),2.4);                       // 0 at the wall, 1 at the outer edge
+ const r=rMin+(rMax-rMin)*q, s=rr(.6,sMax)*(1.25-.55*q);
+ const bank=(1-q)*(1-q)*sMax*.55;
+ kput('rubble',[gx+r*Math.cos(a),gy+bank+s*.4,gz+r*Math.sin(a)],qEuler(rng()*3,rng()*3,rng()*3),[s*rr(.7,1.5),s*rr(.5,1),s*rr(.7,1.5)],new THREE.Color().setHSL(rr(.05,.09),rr(.1,.35),rr(.3,.55)));}}
+
+// --- sampling a structure's own surfaces -------------------------------------
+// Moss belongs on what faces the sky and vines hang off real ledges, so both
+// need to know where a structure's horizontal surfaces actually are. This walks
+// the triangles of geometries the builder has already made, keeps the ones
+// lying flat, and samples points on them weighted by area.
+//
+// It tests |ny| rather than ny: these shells are DoubleSide and their winding is
+// not reliably outward, so a balcony floor can come back with a downward normal
+// while being visibly a floor. The cost is that a true soffit can be sampled
+// too, which is rare in these shapes and cheaper than missing every ledge.
+// `src` may be a geometry, an array of them, or a whole Object3D — in which
+// case it is traversed and each mesh's transform is baked relative to the root,
+// so a finished structure can be sampled without the builder handing anything
+// over. That is what lets the repaired pass dress all 33 types from one place.
+// Keeps faces whose |normal.y| lands in [lo,hi]; returns points and normals.
+function faceSamples(src,count,lo,hi){
+ const tri=[],cum=[],v=new THREE.Vector3();let tot=0;
+ const add=(g,M)=>{const A=g&&g.attributes&&g.attributes.position;if(!A)return;
+  const P=A.array,I=g.index?g.index.array:null,nT=I?I.length/3:A.count/3;
+  for(let f=0;f<nT;f++){
+   const a=(I?I[f*3]:f*3)*3,b=(I?I[f*3+1]:f*3+1)*3,c=(I?I[f*3+2]:f*3+2)*3;
+   let ax=P[a],ay=P[a+1],az=P[a+2],bx=P[b],by=P[b+1],bz=P[b+2],cx=P[c],cy=P[c+1],cz=P[c+2];
+   if(M){v.set(ax,ay,az).applyMatrix4(M);ax=v.x;ay=v.y;az=v.z;
+         v.set(bx,by,bz).applyMatrix4(M);bx=v.x;by=v.y;bz=v.z;
+         v.set(cx,cy,cz).applyMatrix4(M);cx=v.x;cy=v.y;cz=v.z;}
+   const ux=bx-ax,uy=by-ay,uz=bz-az,vx=cx-ax,vy=cy-ay,vz=cz-az;
+   const nx=uy*vz-uz*vy,ny=uz*vx-ux*vz,nz=ux*vy-uy*vx,L=Math.hypot(nx,ny,nz);
+   if(!(L>1e-9))continue;const up=Math.abs(ny/L);
+   if(up<lo||up>hi)continue;
+   tot+=L*.5;tri.push([ax,ay,az,bx,by,bz,cx,cy,cz,nx/L,ny/L,nz/L]);cum.push(tot);}};
+ if(src&&src.isObject3D){src.updateMatrixWorld(true);
+  const inv=new THREE.Matrix4().copy(src.matrixWorld).invert();
+  src.traverse(o=>{if(o.isMesh&&!o.isInstancedMesh)add(o.geometry,new THREE.Matrix4().multiplyMatrices(inv,o.matrixWorld));});}
+ else for(const g of (Array.isArray(src)?src:[src]))add(g,null);
+ const out=[];if(!(tot>0))return out;
+ for(let i=0;i<count;i++){const t=rng()*tot;let a=0,b=cum.length-1;
+  while(a<b){const m=(a+b)>>1;if(cum[m]<t)a=m+1;else b=m;}
+  const T=tri[a];let u=rng(),w=rng();if(u+w>1){u=1-u;w=1-w;}
+  const x=T[0]+u*(T[3]-T[0])+w*(T[6]-T[0]),y=T[1]+u*(T[4]-T[1])+w*(T[7]-T[1]),z=T[2]+u*(T[5]-T[2])+w*(T[8]-T[2]);
+  out.push({p:[x,y,z],n:[T[9],T[10],T[11]],r:Math.hypot(x,z)});}
+ return out;}
+function upFaces(src,count,minNY){return faceSamples(src,count,minNY,1.01);}
+// The near-vertical faces: walls. Where patches get riveted on.
+function sideFaces(src,count){return faceSamples(src,count,0,.34);}
+// The outer band of the flat surfaces is where a ledge is: water leaves the
+// building there, so that is where vines root and where stains start.
+function ledgePoints(geos,n,frac){const s=upFaces(geos,n*4,.5);if(!s.length)return[];
+ s.sort((a,b)=>b.r-a.r);return s.slice(0,Math.max(1,Math.round(s.length*(frac||.3))));}
+function mossOnSurface(geos,gx,gy,gz,n,sMax){for(const f of upFaces(geos,n,.55)){const s=rr(.5,sMax);
+ kput('moss',[gx+f.p[0],gy+f.p[1]+s*.15,gz+f.p[2]],qEuler(0,rng()*TAU,0),[s*rr(.8,1.5),s*rr(.22,.42),s*rr(.8,1.5)],new THREE.Color().setHSL(rr(.22,.32),rr(.3,.5),rr(.05,.12)));}}
+function vinesFromLedge(geos,gx,gy,gz,n,lMax){for(const f of ledgePoints(geos,n,.3)){const L=rr(4,lMax);
+ kput('vine',[gx+f.p[0],gy+f.p[1],gz+f.p[2]],qEuler(rr(-.14,.14),rng()*TAU,rr(-.14,.14)),[rr(.8,1.7),L,rr(.8,1.7)],null);}}
+// Water-staining below each ledge: a multiply-blended streak, so it darkens
+// whatever wall it lands on instead of painting a grey rectangle over it.
+function stainsFromLedge(geos,gx,gy,gz,n,lMax){for(const f of ledgePoints(geos,n,.45)){
+ const L=rr(5,lMax),a=Math.atan2(f.p[2],f.p[0]),o=1.004;
+ kput('stain',[gx+f.p[0]*o,gy+f.p[1]-L*.5,gz+f.p[2]*o],qFacing([Math.cos(a),0,Math.sin(a)]),[rr(1.4,4.5),L,1],null);}}
+
+// VEGETATION HAND-OFF. The Krator flora pass is a separate project and will
+// replace VEG.tree wholesale; everything in this kit that plants anything goes
+// through it, so that swap is one assignment and touches no builder.
+// y is the ground height at (x,z) — ask terrainH, do not assume 0.
+// The hand-off point for flora. Every planting call in the kit goes through
+// this, so changing it changes the forest everywhere at once — which is the
+// point: see the LEAF CARD note in 34-kitdefs.js for why the four-icosahedra
+// version had to go. Trunk + two or three crossed leaf cards is 36-42 triangles
+// against the old 240-320, and it reads as foliage at eye level instead of as a
+// bag of marbles. `species` picks the habit: odd is a narrow spire, even a
+// broad dome, so a scatter of `i%3` gives a mixed stand rather than one tree
+// repeated.
+const VEG={
+ tree(x,y,z,species,h){
+  const spire=!!(species%2);
+  kput('trunk',[x,y,z],null,[h*.20,h*(spire?.74:.62),h*.20],null);
+  const n=spire?2:3;
+  for(let k=0;k<n;k++){
+   const s=h*(spire?rr(.22,.32):rr(.30,.44))*(1-k*.13);
+   kput('leafCard',[x+rr(-.13,.13)*h,y+h*((spire?.66:.58)+k*.15),z+rr(-.13,.13)*h],
+    qEuler(rr(-.07,.07),rng()*TAU,rr(-.07,.07)),
+    [s,s*(spire?rr(1.0,1.35):rr(.70,.95)),s],
+    // The instance colour MULTIPLIES an already mid-green sRGB map, so the two
+   // compound: .15-.30 lightness — the value the old icosahedra used against
+   // no texture at all — came back as near-black shrubs.
+   new THREE.Color().setHSL(rr(.22,.34),rr(.30,.52),rr(.40,.68)));}},
+};
+function trees(gx,gz,rMin,rMax,n){for(let i=0;i<n;i++){const a=rng()*TAU,r=rr(rMin,rMax),h=rr(6,14);
+ const x=gx+r*Math.cos(a),z=gz+r*Math.sin(a);VEG.tree(x,terrainH(x,z),z,i%3,h);}}
+// APRON. Every structure meets the ground on a hard line without one. This lays
+// a graded skirt from the foot of the mass out to the ground, so the two blend.
+// cx,cz are local to the builder's group, like everything else a builder does.
+function apron(parent,cx,cz,rIn,rOut,d,hIn){
+ const wx=KOFF[0]+cx,wz=KOFF[2]+cz;
+ mesh(gridSurface((u,v)=>{const th=u*TAU,r=lerp(rIn,rOut,v)*(1+.07*fbm(u*7,1.3,17,2));
+  const x=r*Math.cos(th),z=r*Math.sin(th);
+  return[x,lerp(hIn,0,Math.pow(v,.6))+terrainH(wx+x,wz+z),z];},64,6,{uS:rIn/6,vS:3}),
+  d>0?MAT.mud:MAT.rock,parent,cx,0,cz);}
+function figures(gx,gz,n,spread){for(let i=0;i<n;i++){const x=gx+rr(-spread,spread),z=gz+rr(-spread,spread);const c=new THREE.Color().setHSL(rr(0,.1),rr(.2,.5),rr(.25,.5));
+ kput('figB',[x,0,z],qEuler(0,rng()*TAU,0),1,c);kput('figH',[x,0,z],null,1,new THREE.Color(0xc9a17e));}}
+function stats(){}
+
+// ---------------------------------------------------------------- v2 helpers
+kdef('strutW',new THREE.BoxGeometry(1,1,1),MAT.white); kdef('strutR',new THREE.BoxGeometry(1,1,1),MAT.rust);
+kdef('cell',new THREE.BoxGeometry(1,1,.5),MAT.dot);
+kdef('winSmI',arcWindowGeo(1.1,2,.4),MAT.winIntact); kdef('winSmD',arcWindowGeo(1.1,2,.4),MAT.winDead);
+function beam(name,a,b,w,dp,color){const dx=b[0]-a[0],dy=b[1]-a[1],dz=b[2]-a[2];const L=Math.sqrt(dx*dx+dy*dy+dz*dz);
+ const q=new THREE.Quaternion().setFromUnitVectors(_UP,new THREE.Vector3(dx,dy,dz).normalize());kput(name,[(a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2],q,[w,L,dp],color||null);}
+function hexR(R,th){const a=R*Math.cos(Math.PI/6);const f=((th%(Math.PI/3))+Math.PI/3)%(Math.PI/3);return a/Math.cos(f-Math.PI/6);}
+// petal shell: base on +x at radius Rb, rises Hp, tip leans outward by `lean`, cupped by `curl`
+function petalGeo(Rb,Hp,W,lean,curl,hole){return gridSurface((u,v)=>{const s=u*2-1;const w=W*(.3+.7*Math.sin(Math.PI*Math.pow(v,.9)))*.5;
+ const x=Rb+lean*v-curl*s*s*w;return[x,Hp*v,s*w];},14,22,{uS:2,vS:4,hole});}
+function petalRing(parent,n,Rb,Hp,W,lean,curl,y,d,seed,mat,skipFn){for(let i=0;i<n;i++){if(skipFn&&skipFn(i))continue;const g=petalGeo(Rb,Hp,W,lean,curl,d>0?(u,v)=>fbm(u*3+i,v*5,seed+i,2)<.3*d:null);
+ const m=mesh(g,mat,parent,0,y,0);m.rotation.y=-i/n*TAU;}}
+// Luce-style hypar shell pair: two warped sheets leaning together over a glass gable
+function luceShells(parent,xc,zc,Wb,Hs,Dd,d,seed,skin){[-1,1].forEach(side=>{const g=gridSurface((u,v)=>{const x=xc+(u-.5)*Wb*(1-.55*v);const z=zc+side*(Dd*(1-v)*(1-.35*Math.pow(u-.5,2)*4)+.6*(1-v)+.5*v);return[x,Hs*v*(1-.15*Math.pow((u-.5)*2,2)),z];},20,16,{uS:4,vS:3,hole:holeFn(d*.7,seed+side,null,2)});
+ mesh(g,skin,parent);});
+ if(d===0){const s=new THREE.Shape();s.moveTo(-Wb/2,0);s.lineTo(Wb/2,0);s.lineTo(0,Hs*.98);s.lineTo(-Wb/2,0);const gl=mesh(new THREE.ShapeGeometry(s),MAT.glass,parent,xc,0,zc+.2);}
+ kput('archOpen',[xc,3,zc-Dd*.05],qFacing([0,0,1]),[.45,.45,1],null);}
+function ribCurveGeo(pts,r){return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts.map(p=>new THREE.Vector3(p[0],p[1],0))),28,r,8,false);}
+
+// ---------------------------------------------------------------- v3: inspector registry + group transforms
+const REG=[];function REGISTER(o){REG.push({name:o.name,x:o.x+KOFF[0],y:o.y||0,z:o.z+KOFF[2],r:o.r,h:o.h});}
+function useGroupXF(P){P.updateMatrix();KXF={m:P.matrix.clone(),q:P.quaternion.clone()};}
+function endGroupXF(){KXF=null;}
+kdef('tube',new THREE.CylinderGeometry(1,1,1,8),MAT.dark);
+kdef('boxD',new THREE.BoxGeometry(1,1,1),MAT.dark);
+kdef('boxW',new THREE.BoxGeometry(1,1,1),MAT.white);kdef('boxR',new THREE.BoxGeometry(1,1,1),MAT.rust);
+const STATE=d=>d===3?'repaired':d>0?'ruined':'intact';
+
+// ---------------------------------------------------------------- v4: concrete, brick, glass panes
+// Board-formed concrete: horizontal boards ~0.65 m deep, each poured a shade
+// different, with the joint standing proud, a form-tie hole grid, a rust weep
+// below each tie, and damp running down from every joint.
+const BOARD=42;
+TEX.concrete=canvasTex(512,512,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;const bi=Math.floor(y/BOARD),fy=y%BOARD;
+  let v=186+(h3(bi*3.1,0,2.2)-.5)*13;                       // board-to-board pour variation
+  v+=(fbm(x/40,y/40,5.5,3)-.5)*24;                          // slow blotching
+  v+=(fbm(x/4,y/4,8.1,1)-.5)*13;                            // aggregate speckle
+  v+=Math.sin(x/9+bi*2.1)*2.2;                              // grain of the board itself
+  if(fy<2)v-=46; else if(fy<4)v-=15; else if(fy>BOARD-3)v+=9;   // joint groove + lit lip
+  const tx=(x+28)%128,ty=y%(BOARD*2),td=Math.hypot(tx-64,ty-BOARD);
+  if(td<3.4)v-=44; else if(td<5)v-=16;                      // recessed form-tie hole
+  if(td<10&&ty>BOARD)v-=clamp((10-td)/10,0,1)*15;           // rust weep below it
+  v-=clamp((fbm(x/26,y/200,2.2,2)-.52)*4,0,1)*clamp(fy/BOARD*1.3,0,1)*30;   // damp under the joint
+  d[i]=v;d[i+1]=v-2;d[i+2]=v-7;d[i+3]=255;}
+ g.putImageData(id,0,0);});
+TEX.concreteRM=rmTex(256,256,(x,y)=>{const B=BOARD/2,fy=y%B;
+ let r=.90+(fbm(x/20,y/20,4.1,2)-.5)*.10;
+ if(fy<1)r=.97;                                             // the joint holds dirt
+ return[clamp(r-clamp((fbm(x/13,y/100,2.2,2)-.52)*4,0,1)*clamp(fy/B*1.3,0,1)*.24,0,1),0];});
+// Brick in common bond: five stretcher courses, then a header course. The old
+// map was a plain running bond of randomly-toned rectangles with the background
+// showing through as "mortar".
+TEX.brick=canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
+ const CH=16,MJ=2.5;
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;
+  const course=Math.floor(y/CH),header=(course%6)===5,BW=header?16:32;
+  const off=header?((course%2)?8:0):((course%2)*BW/2);
+  const bx=(x+off)%BW,by=y%CH,grain=(fbm(x/3,y/3,9.9,1)-.5);
+  let r,gg,b;
+  if(bx<MJ||by<MJ){const m=176+(fbm(x/5,y/5,7.7,1)-.5)*16;r=m;gg=m-4;b=m-10;}   // mortar
+  else{const t=h3(Math.floor((x+off)/BW)*1.3,course*2.7,4.4);
+   r=118+t*46+grain*16;gg=70+t*28+grain*10;b=54+t*22+grain*8;
+   if(Math.min(bx-MJ,BW-1-bx,by-MJ,CH-1-by)<1.5){r*=.9;gg*=.9;b*=.9;}}          // arris shadow
+  d[i]=r;d[i+1]=gg;d[i+2]=b;d[i+3]=255;}
+ g.putImageData(id,0,0);});
+MAT.concrete=new THREE.MeshStandardMaterial({map:TEX.concrete,roughnessMap:TEX.concreteRM,color:0xd2cec6,roughness:1,metalness:0,side:DS});
+MAT.concreteR=new THREE.MeshStandardMaterial({map:TEX.concrete,roughnessMap:TEX.concreteRM,color:0x7c746c,roughness:1,metalness:0,side:DS});
+MAT.brick=new THREE.MeshStandardMaterial({map:TEX.brick,color:0xffffff,roughness:.95,metalness:0,side:DS});
+const CONC=d=>d>0?MAT.concreteR:MAT.concrete;
+kdef('boxC',new THREE.BoxGeometry(1,1,1),MAT.concrete);kdef('boxCR',new THREE.BoxGeometry(1,1,1),MAT.concreteR);
+kdef('brick',new THREE.BoxGeometry(1,1,1),MAT.brick);
+kdef('pane',new THREE.BoxGeometry(1,1,.12),MAT.glass);kdef('paneD',new THREE.BoxGeometry(1,1,.12),MAT.winDead);
+kdef('slabC',new THREE.CylinderGeometry(1,1,1,48),MAT.concrete);kdef('slabCR',new THREE.CylinderGeometry(1,1,1,48),MAT.concreteR);
+const BOXC=d=>d>0?'boxCR':'boxC', SLABC=d=>d>0?'slabCR':'slabC';
+function se(th,n){return 1/Math.pow(Math.pow(Math.abs(Math.cos(th)),n)+Math.pow(Math.abs(Math.sin(th)),n),1/n);}
+function bodyGroup(G,y0,d,dd,build,cutY,topR){const P=new THREE.Group();P.position.set(0,y0,0);G.add(P);useGroupXF(P);if(d<2)build(P,dd,y0,null,false);else build(P,1,y0,cutY,false);endGroupXF();
+ if(d===2)toppledUpper(G,0,0,cutY,topR,(U)=>build(U,1,cutY,null,true),d);}
+
+// ---------------------------------------------------------------- v5 materials
+MAT.rock=new THREE.MeshStandardMaterial({map:TEX.concrete,color:0x8a5a42,roughness:1,side:DS});
+MAT.lawn=new THREE.MeshStandardMaterial({color:0x4f7a30,roughness:1,side:DS});
+MAT.water=new THREE.MeshStandardMaterial({color:0x2a6a8a,roughness:.15,metalness:.3,transparent:true,opacity:.85,side:DS});
+MAT.mud=new THREE.MeshStandardMaterial({map:TEX.concrete,color:0x6a4a34,roughness:1,side:DS});
+MAT.turf=new THREE.MeshStandardMaterial({map:TEX.concrete,color:0x3a5a2a,roughness:1,side:DS});
+MAT.turfR=new THREE.MeshStandardMaterial({map:TEX.concrete,color:0x2c4a24,roughness:1,side:DS});
+MAT.spray=new THREE.MeshStandardMaterial({color:0xdaf0ff,transparent:true,opacity:.75,roughness:.2,side:DS});
+MAT.darkGlass=new THREE.MeshStandardMaterial({color:0x0c1418,metalness:.7,roughness:.25,side:DS});
+kdef('plateW',new THREE.BoxGeometry(1,1,1),MAT.white);kdef('plateR',new THREE.BoxGeometry(1,1,1),MAT.rust);
+kdef('darkPane',new THREE.BoxGeometry(1,1,.3),MAT.darkGlass);
+kdef('hedge',new THREE.BoxGeometry(1,1,1),MAT.vine);
+const PLATE=d=>d>0?'plateR':'plateW';
+
+// ---------------------------------------------------------------- salvage (decay level 3)
+// Everything a later people could cut, carry and nail up. It must never be
+// mistaken for ancient fabric: the ancients built in panelled white metal,
+// board-formed concrete and shaped glass, so salvage is corrugated sheet, sawn
+// timber, torn tarpaulin and flat scrap — cruder, warmer, and visibly newer
+// than the thing it is bolted to.
+TEX.corrugate=canvasTex(128,128,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;
+  const rib=Math.cos(x/128*TAU*10);                     // ~0.8 m corrugations
+  let v=150+rib*34;                                     // the profile's own shading
+  v+=(fbm(x/9,y/9,3.3,2)-.5)*22;                        // galvanising mottle
+  const dent=clamp((fbm(x/17,y/13,7.1,2)-.60)*4,0,1);v-=dent*26;
+  const rust=clamp((fbm(x/6,y/40,5.5,3)-.42)*2.6,0,1)*clamp(y/h*1.5,0,1);
+  d[i]=lerp(v,116+rust*40,rust);d[i+1]=lerp(v-2,62+rust*20,rust);d[i+2]=lerp(v-6,44,rust);d[i+3]=255;}
+ g.putImageData(id,0,0);});
+TEX.timber=canvasTex(128,128,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;
+  const bd=Math.floor(y/16);                            // 0.25 m sawn boards
+  let v=132+(h3(bd*2.7,0,1.9)-.5)*26;
+  v+=(fbm(x/26,y/3,4.8,2)-.5)*30;                       // grain, running along the board
+  if(y%16<1)v-=34;                                      // the gap between boards
+  d[i]=v;d[i+1]=v*.78;d[i+2]=v*.56;d[i+3]=255;}
+ g.putImageData(id,0,0);});
+TEX.tarp=canvasTex(128,128,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;
+  const weave=((x%3)<1?-1:0)+((y%3)<1?-1:0);
+  let v=158+weave*9+(fbm(x/21,y/21,6.4,2)-.5)*38;       // sun-bleached in patches
+  d[i]=v*1.02;d[i+1]=v*.86;d[i+2]=v*.66;d[i+3]=255;}
+ g.putImageData(id,0,0);});
+MAT.corrugate=new THREE.MeshStandardMaterial({map:TEX.corrugate,color:0xffffff,roughness:.72,metalness:.30,side:DS});
+MAT.timber=new THREE.MeshStandardMaterial({map:TEX.timber,color:0xffffff,roughness:.94,metalness:0,side:DS});
+MAT.tarp=new THREE.MeshStandardMaterial({map:TEX.tarp,color:0xc8b08a,roughness:.88,metalness:0,side:DS});
+kdef('patchSheet',new THREE.PlaneGeometry(1,1),MAT.corrugate);
+kdef('patchPlate',new THREE.PlaneGeometry(1,1),MAT.rust);
+kdef('patchBoard',new THREE.PlaneGeometry(1,1),MAT.timber);
+kdef('patchTarp',new THREE.PlaneGeometry(1,1),MAT.tarp);
+kdef('shantyBox',new THREE.BoxGeometry(1,1,1),MAT.corrugate);
+kdef('shantyRoof',new THREE.BoxGeometry(1,.09,1),MAT.tarp);
+kdef('spipe',new THREE.CylinderGeometry(1,1,1,7),MAT.rust);
+kdef('waterButt',new THREE.CylinderGeometry(1,1,1,10),MAT.corrugate);
+kdef('planter',new THREE.BoxGeometry(1,1,1),MAT.timber);
+kdef('plank',new THREE.BoxGeometry(1,1,1),MAT.timber);
+
+// THE REPAIRED PASS.
+//
+// Runs over a FINISHED structure — the group the builder returned — rather than
+// inside the builder, so all 33 types get rehabilitated from one function and
+// not one edit each. `faceSamples` walks the group and bakes each mesh's
+// transform, so nothing has to be handed over.
+//
+// Two populations: patches riveted onto the near-vertical faces, and accretion
+// standing on anything flat. Every piece goes through the kit, so the whole
+// pass costs draw calls in the low tens rather than thousands.
+function repairPass(G,d){
+ // Scale the dressing to the structure. A fixed count buries a 12 m house under
+ // the same amount of salvage it takes to read on a 420 m tower, and the brief
+ // is "slightly worn": the ancient form has to stay the thing you see first.
+ const bb=new THREE.Box3().setFromObject(G);
+ if(!isFinite(bb.min.x))return;
+ const sz=clamp(bb.max.distanceTo(bb.min),18,620);
+ const nSide=Math.round(clamp(sz*.62,16,340)),nUp=Math.round(clamp(sz*.40,12,240));
+ const PATCH=['patchSheet','patchPlate','patchBoard','patchTarp'];
+ for(const f of sideFaces(G,nSide)){
+  if(rng()<.42)continue;
+  const n=f.n,w=rr(2,7.5),h=rr(1.6,5);
+  // proud of the shell and a few degrees off the panel grid: salvage is never
+  // flush and never square with what it is covering
+  const q=qFacing(n).multiply(qEuler(0,0,rr(-.24,.24)));
+  kput(PATCH[(rng()*4)|0],[f.p[0]+n[0]*.25,f.p[1]+n[1]*.25,f.p[2]+n[2]*.25],q,[w,h,1],null);
+  // a warm lamp by one patch in ten. The ancient cyan strips stay dead — that
+  // contrast is the whole point: new light, old building.
+  if(rng()<.09)kput('dot',[f.p[0]+n[0]*.6,f.p[1]+n[1]*.6+h*.35,f.p[2]+n[2]*.6],q,[1.2,1.2,1],WARM);}
+ for(const f of upFaces(G,nUp,.62)){
+  const p=f.p,r=rng();
+  if(r<.32){const w=rr(2.5,6.5),hh=rr(2,3.8),dp=rr(2.5,6);const yaw=rng()*TAU;
+   kput('shantyBox',[p[0],p[1]+hh/2,p[2]],qEuler(0,yaw,0),[w,hh,dp],null);
+   kput('shantyRoof',[p[0],p[1]+hh+.2,p[2]],qEuler(rr(.08,.26),yaw,0),[w*1.3,1,dp*1.3],null);
+   if(rng()<.45)kput('spipe',[p[0]+w*.28,p[1]+hh+1.4,p[2]],null,[.28,3,.28],null);}
+  else if(r<.50)kput('waterButt',[p[0],p[1]+1.15,p[2]],null,[1.15,2.3,1.15],null);
+  else if(r<.73){kput('planter',[p[0],p[1]+.35,p[2]],qEuler(0,rng()*TAU,0),[rr(1.6,4.2),.7,rr(1,2.2)],null);
+   for(let k=0;k<3;k++)kput('moss',[p[0]+rr(-1.3,1.3),p[1]+.95,p[2]+rr(-.9,.9)],null,[.75,.5,.75],new THREE.Color().setHSL(rr(.26,.34),.55,.28));}
+  else if(r<.87)kput('plank',[p[0],p[1]+.12,p[2]],qEuler(0,rng()*TAU,0),[rr(2,6),.22,rr(.5,1.3)],null);
+  else if(rng()<.5)kput('dot',[p[0],p[1]+1.7,p[2]],qEuler(0,rng()*TAU,0),[1.2,1.2,1],WARM);}}
+// ================================================================= IZIZ VERNACULAR — materials + kit items
+// What the Izani build today, in timber, reclaimed metal and (for the rich)
+// stone. Every texture here is painted NEAR-GREY and WARM so that the per-
+// instance colour does the tinting — one wood map serves grey driftwood and
+// oiled dark hardwood alike, one stone map serves sand and orange ashlar. The
+// exceptions are the salvage maps (corrugate/panel/rust), which come from the
+// Ancients kit and carry their own colour: salvage is not tinted, it is what it is.
+//
+// Instance colours: hex values below are sRGB as a painter would pick them, and
+// vC() converts once to linear at the write — r128 does not convert instance
+// colours (lesson from the biome kit), so without this every tint renders pale.
+function vC(hex,k){const c=new THREE.Color(hex).convertSRGBToLinear();if(k!==undefined)c.multiplyScalar(k);return c;}
+
+// The old Iziz palette (sands and oranges) and the timber/adobe tones of the set.
+const VPAL={
+ sand:[0xe9cb8c,0xdcb474,0xcf9d5b,0xe2ab5e,0xf1dba6,0xe6bd7e,0xd4a05a,0xc8a26a],   // plaster, stone tints
+ orange:[0xe07a2a,0xc4641e,0xf2a24a,0xd8893c],                                     // the wall colour of Iziz; stone accents, banners
+ adobe:[0xc98f5c,0xd6a06a,0xb87d4c,0xe0b07a,0xa9713f],
+ woodPoor:[0x9a8c78,0x8a7a66,0xa89a86,0x7c6e5e],                                   // grey, weathered
+ woodMid:[0x9a6a42,0x8a5a36,0xa87a4e,0x7a4e30],                                    // sawn, some oil
+ woodRich:[0x5a3a24,0x6a4630,0x4a2e1c,0x7a4e34],                                   // dark hardwood
+ awning:[0xe07a2a,0xe07a2a,0xf2a24a,0xd8893c,0xc9442a,0xe0a030,0x2f8f8a,0xb8552a,0xe07a2a],   // orange-led (Travis): 5 of 9 draws are Iziz orange, teal is the accent
+ trim:[0xe07a2a,0xd8893c,0xc4641e,0xb8552a],                                                   // painted timber trim: fascias, shutters, doors on middle/rich houses
+ thatch:[0xb89a5a,0xa88a4e,0xc4a66a,0x9a7e46],
+ stone:[0xd8b58a,0xcfa872,0xe0c096,0xc89a62],                                      // rich house ashlar (sandstone)
+ stoneDark:[0xb07a48,0xa86e3e,0xc0885a],                                           // string courses / plinths
+};
+const vPick=a=>a[(rng()*a.length)|0];
+
+// ---------------------------------------------------------------- textures (world units: a 128px tile = 2 m)
+TEX.wood=canvasTex(128,128,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;
+  const bd=Math.floor(y/16);                                  // 0.25 m boards
+  let v=178+(h3(bd*2.7,0,1.9)-.5)*34;                         // board-to-board tone
+  v+=(fbm(x/22,y/2.5,4.8,2)-.5)*34;                           // grain along the board
+  v+=(fbm(x/5,y/5,7.7,1)-.5)*8;
+  if(y%16<1)v-=60;else if(y%16<2)v-=22;                       // shadow gap between boards
+  if(((x+bd*37)%128)<2&&y%16>2)v-=30;                         // butt joints, staggered
+  const knot=fbm(x/9,y/9,bd*1.3,2);if(knot>.72)v-=(knot-.72)*160;
+  d[i]=v;d[i+1]=v*.93;d[i+2]=v*.84;d[i+3]=255;}
+ g.putImageData(id,0,0);});
+// the same boards turned upright, for posts, staves and barrels (grain must run along the member)
+TEX.woodV=canvasTex(128,128,(g,w,h)=>{g.save();g.translate(w/2,h/2);g.rotate(Math.PI/2);g.drawImage(TEX.wood.image,-w/2,-h/2);g.restore();});
+TEX.stone=canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;   // ashlar: 4 m tile, blocks 1.2 x 0.6 m, coursed
+ const CH=38,BW=76,MJ=3;
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;
+  const course=Math.floor(y/CH),off=(course%2)*BW/2,bx=Math.floor((x+off)/BW);
+  const fx=(x+off)%BW,fy=y%CH;
+  const joint=fx<MJ||fy<MJ;
+  let v=196+(h3(bx*1.7,course*2.3,4.4)-.5)*30;                // block-to-block tone
+  v+=(fbm(x/18,y/18,2.2,3)-.5)*22;                            // weathering mottle
+  v+=(fbm(x/3,y/3,9.1,1)-.5)*10;                              // grit
+  if(joint)v=118+(fbm(x/4,y/4,1.1,1)-.5)*20;                  // recessed mortar
+  else if(fx<MJ+2||fy<MJ+2)v+=10;                             // lit arris
+  const damp=clamp((fbm(x/20,y/120,5.5,2)-.5)*3,0,1)*clamp(fy/CH*1.2,0,1);v-=damp*18;
+  d[i]=v;d[i+1]=v*.95;d[i+2]=v*.87;d[i+3]=255;}
+ g.putImageData(id,0,0);});
+TEX.plaster=canvasTex(128,128,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;
+  let v=208+(fbm(x/30,y/30,3.3,3)-.5)*26+(fbm(x/4,y/4,6.6,1)-.5)*12;   // trowelled render
+  const crack=fbm(x/12,y/12,2.1,2);if(Math.abs(crack-.5)<.006)v-=70;    // hairline cracks
+  const patch=fbm(x/40,y/40,8.8,2);if(patch>.68)v-=14;                  // repaired patches a shade off
+  d[i]=v;d[i+1]=v*.96;d[i+2]=v*.9;d[i+3]=255;}
+ g.putImageData(id,0,0);});
+TEX.thatch=canvasTex(128,128,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;
+  const row=Math.floor(y/43),fy=y%43;                          // ~0.67 m courses of frond
+  let v=172+(h3(Math.floor(x/2)*1.3,row,2.2)-.5)*52;           // strand to strand
+  v+=(fbm(x/1.6,y/18,3.1,2)-.5)*36;                            // fibres running down
+  v+=(fbm(x/20,y/20,7.7,2)-.5)*18;                             // patchy fading
+  v-=clamp((fy-30)/13,0,1)*34;                                 // soft shadow under each course
+  if(fy<2)v+=10;                                               // the lit edge of the course above
+  d[i]=v;d[i+1]=v*.9;d[i+2]=v*.7;d[i+3]=255;}
+ g.putImageData(id,0,0);});
+TEX.shingle=canvasTex(128,128,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;   // split timber shingles, 0.25 x 0.5 m
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;
+  const row=Math.floor(y/16),off=(row%2)*16,sx=Math.floor((x+off)/32),fx=(x+off)%32,fy=y%16;
+  let v=170+(h3(sx*2.1,row*1.7,3.3)-.5)*46+(fbm(x/3,y/9,5.2,1)-.5)*16;
+  if(fx<2)v-=40;if(fy>13)v-=50;else if(fy<1)v+=14;
+  d[i]=v;d[i+1]=v*.92;d[i+2]=v*.8;d[i+3]=255;}
+ g.putImageData(id,0,0);});
+TEX.stripes=canvasTex(128,64,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;   // awning cloth: 6 stripes, tinted colour alternates with off-white
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;const on=Math.floor(x/(w/6))%2;
+  const weave=((x%3)<1?-1:0)+((y%3)<1?-1:0);const v=(on?250:120)+weave*8+(fbm(x/20,y/20,4,2)-.5)*16;
+  d[i]=v;d[i+1]=v;d[i+2]=v;d[i+3]=255;}
+ g.putImageData(id,0,0);});
+TEX.dirt=canvasTex(512,512,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;   // ground: packed red-brown earth with grass, for the showcase
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;const n=fbm(x/60,y/60,.7,3),n2=fbm(x/7,y/7,3.2,2),gr=clamp((fbm(x/40,y/40,5.5,2)-.5)*3,0,1);
+  let r=118+(n-.5)*50+(n2-.5)*22,gg=82+(n-.5)*36+(n2-.5)*14,b=58+(n-.5)*26;
+  r=lerp(r,70+n2*30,gr);gg=lerp(gg,98+n2*36,gr);b=lerp(b,40,gr);d[i]=r;d[i+1]=gg;d[i+2]=b;d[i+3]=255;}
+ g.putImageData(id,0,0);});
+
+// ---------------------------------------------------------------- world-unit UVs
+// Instances share one geometry, so a box's 0..1 UVs would stretch one texture
+// tile over a 20 m wall and squash it on a 0.2 m beam. This hook reads the
+// instance scale in the vertex shader and picks, per face normal, the two axes
+// that face spans, so every map tiles in metres whatever the instance size.
+// K = 1 / (metres per texture tile). kbake() carries onBeforeCompile across
+// its material clone.
+function vWorldUV(mat,K){mat.userData.uvK=K;mat.onBeforeCompile=sh=>{sh.vertexShader=sh.vertexShader.replace('#include <uv_vertex>',
+`#ifdef USE_UV
+#ifdef USE_INSTANCING
+mat4 _im=instanceMatrix;
+vec3 _sc=vec3(length(_im[0].xyz),length(_im[1].xyz),length(_im[2].xyz));
+vec3 _an=abs(normal);
+vec2 _sw=(_an.y>0.5)?vec2(_sc.x,_sc.z):((_an.x>0.5)?vec2(_sc.z,_sc.y):vec2(_sc.x,_sc.y));
+vUv=uv*_sw*${K.toFixed(4)};
+#else
+vUv=uv;
+#endif
+#endif`);};return mat;}
+// A plain mesh keeps the UVs its geometry carries (the kit's lathes and grids are drawn in 8 m tile units, the
+// vernacular ones in the material's own tile); only INSTANCES are re-tiled by their scale. Before this the hook
+// re-scaled the kit's skyscraper shells by K too, so their panels tiled every 64 m and read as untextured.
+
+// ---------------------------------------------------------------- materials
+MAT.wood=new THREE.MeshStandardMaterial({map:TEX.wood,color:0xffffff,roughness:.92,metalness:0,side:DS});
+MAT.woodV=new THREE.MeshStandardMaterial({map:TEX.woodV,color:0xffffff,roughness:.92,metalness:0,side:DS});
+MAT.void=new THREE.MeshBasicMaterial({color:0x0b0907});   // openings: unlit so a doorway reads as a doorway in any light
+MAT.stone=new THREE.MeshStandardMaterial({map:TEX.stone,color:0xffffff,roughness:.96,metalness:0,side:DS});
+MAT.plaster=new THREE.MeshStandardMaterial({map:TEX.plaster,color:0xffffff,roughness:.97,metalness:0,side:DS});
+MAT.thatch=new THREE.MeshStandardMaterial({map:TEX.thatch,color:0xffffff,roughness:1,metalness:0,side:DS});
+MAT.shingle=new THREE.MeshStandardMaterial({map:TEX.shingle,color:0xffffff,roughness:.95,metalness:0,side:DS});
+MAT.cloth=new THREE.MeshStandardMaterial({map:TEX.stripes,color:0xffffff,roughness:.9,metalness:0,side:DS});
+MAT.iron=new THREE.MeshStandardMaterial({color:0x2e2a26,roughness:.62,metalness:.55});
+MAT.clay=new THREE.MeshStandardMaterial({color:0x9a5a38,roughness:.9,metalness:0});
+MAT.warmPane=new THREE.MeshBasicMaterial({color:0xffcf8a});          // an electrically lit window: rich + civic only
+MAT.bulb=new THREE.MeshBasicMaterial({color:0xfff3d6});
+MAT.dirt=new THREE.MeshStandardMaterial({map:TEX.dirt,roughness:1});
+vWorldUV(MAT.wood,.5);vWorldUV(MAT.woodV,.5);vWorldUV(MAT.stone,.25);vWorldUV(MAT.plaster,.5);vWorldUV(MAT.thatch,.5);vWorldUV(MAT.shingle,.5);vWorldUV(MAT.cloth,.5);
+vWorldUV(MAT.corrugate,.5);vWorldUV(MAT.tarp,.5);vWorldUV(MAT.timber,.5);vWorldUV(MAT.white,.125);vWorldUV(MAT.rust,.125);vWorldUV(MAT.verdigris,.25);vWorldUV(MAT.clay,.5);
+
+// ---------------------------------------------------------------- geometry
+// Wedge: base 1x1 at y=0, top (tx x tz) at y=1. tz≈0 gives a gable roof with
+// its ridge along local x; tx=tz≈0 gives a pyramid; 0.6/0.6 a battered block.
+function vnWedgeGeo(tx,tz){const p=[],uv=[],idx=[];const c=[[-.5,0,-.5],[.5,0,-.5],[.5,0,.5],[-.5,0,.5],[-tx/2,1,-tz/2],[tx/2,1,-tz/2],[tx/2,1,tz/2],[-tx/2,1,tz/2]];
+ const faces=[[0,1,5,4],[1,2,6,5],[2,3,7,6],[3,0,4,7],[4,5,6,7],[3,2,1,0]];
+ faces.forEach(f=>{const b=p.length/3;f.forEach((vi,i)=>{p.push(...c[vi]);uv.push(i===1||i===2?1:0,i>=2?1:0);});idx.push(b,b+1,b+2,b,b+2,b+3);});
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(p,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setIndex(idx);g.computeVertexNormals();return g;}
+// A roof SLAB with world-ish UVs so the shingle/thatch courses run across it:
+// 1 x 1 x 1 box whose uv is scaled by the caller through the instance? No —
+// instances share one geometry, so the texture tiles per unit of scale; the
+// maps are drawn at 2 m per tile so a 6 m slab shows 3 courses. Good enough.
+const VBOX=new THREE.BoxGeometry(1,1,1);
+const VPOST=new THREE.CylinderGeometry(1,1,1,8).translate(0,.5,0);           // base at y=0
+const VPOSTB=new THREE.CylinderGeometry(.85,1,1,8).translate(0,.5,0);        // tapering
+const VDOME=new THREE.SphereGeometry(1,20,10,0,TAU,0,Math.PI/2);
+const VBALL=new THREE.SphereGeometry(1,10,7);
+const VCONE=new THREE.ConeGeometry(1,1,10).translate(0,.5,0);
+const VPLANE=new THREE.PlaneGeometry(1,1);
+const VGABLE=vnWedgeGeo(1,.02), VPYR=vnWedgeGeo(.04,.04), VBATTER=vnWedgeGeo(.86,.86), VHIP=vnWedgeGeo(.5,.04);
+
+// ---------------------------------------------------------------- kit items
+kdef('vWood',VBOX,MAT.wood);kdef('vStone',VBOX,MAT.stone);kdef('vPlaster',VBOX,MAT.plaster);kdef('vCorr',VBOX,MAT.corrugate);
+kdef('vIron',VBOX,MAT.iron);kdef('vThatchB',VBOX,MAT.thatch);kdef('vShingleB',VBOX,MAT.shingle);kdef('vCopperB',VBOX,MAT.verdigris);
+kdef('vPanelB',VBOX,MAT.white);kdef('vRustB',VBOX,MAT.rust);kdef('vClothB',VBOX,MAT.cloth);kdef('vTarpB',VBOX,MAT.tarp);kdef('vClayB',VBOX,MAT.clay);kdef('vDarkB',VBOX,MAT.void);
+kdef('vSheet',VPLANE,MAT.corrugate);kdef('vBoard',VPLANE,MAT.wood);kdef('vPlate',VPLANE,MAT.rust);kdef('vPlateW',VPLANE,MAT.white);kdef('vTarp',VPLANE,MAT.tarp);kdef('vCloth',VPLANE,MAT.cloth);
+kdef('vPost',VPOST,MAT.woodV);kdef('vPostB',VPOSTB,MAT.woodV);kdef('vPostS',VPOST,MAT.stone);kdef('vPipe',VPOST,MAT.iron);kdef('vPipeR',VPOST,MAT.rust);kdef('vPipeC',VPOST,MAT.verdigris);kdef('vClayPot',VPOSTB,MAT.clay);kdef('vBarrel',new THREE.CylinderGeometry(1,.9,1,10).translate(0,.5,0),MAT.woodV);kdef('vTank',VPOST,MAT.corrugate);kdef('vTankW',new THREE.CylinderGeometry(1,1,1,24).translate(0,.5,0),MAT.white);kdef('vTankR',new THREE.CylinderGeometry(1,1,1,24).translate(0,.5,0),MAT.rust);kdef('vStave',new THREE.CylinderGeometry(1,1,1,14).translate(0,.5,0),MAT.woodV);
+kdef('vDomeS',VDOME,MAT.stone);kdef('vDomeC',VDOME,MAT.verdigris);kdef('vDomeP',VDOME,MAT.plaster);kdef('vBall',VBALL,MAT.iron);kdef('vGourd',VBALL,MAT.clay);kdef('vSack',VBALL,MAT.tarp);kdef('vLeaf',VBALL,MAT.moss);
+kdef('vConeT',VCONE,MAT.thatch);kdef('vConeC',VCONE,MAT.verdigris);kdef('vConeI',VCONE,MAT.iron);
+kdef('vGableS',VGABLE,MAT.shingle);kdef('vGableT',VGABLE,MAT.thatch);kdef('vGableC',VGABLE,MAT.corrugate);kdef('vGableCu',VGABLE,MAT.verdigris);kdef('vGableP',VGABLE,MAT.white);kdef('vGableW',VGABLE,MAT.wood);kdef('vGableSt',VGABLE,MAT.stone);kdef('vGablePl',VGABLE,MAT.plaster);
+kdef('vPyrS',VPYR,MAT.stone);kdef('vPyrCu',VPYR,MAT.verdigris);kdef('vPyrT',VPYR,MAT.thatch);kdef('vPyrSh',VPYR,MAT.shingle);kdef('vPyrC',VPYR,MAT.corrugate);
+kdef('vBatterS',VBATTER,MAT.stone);kdef('vBatterP',VBATTER,MAT.plaster);kdef('vBatterW',VBATTER,MAT.wood);
+kdef('vHipS',VHIP,MAT.shingle);kdef('vHipT',VHIP,MAT.thatch);kdef('vHipCu',VHIP,MAT.verdigris);kdef('vHipC',VHIP,MAT.corrugate);
+MAT.ember=new THREE.MeshBasicMaterial({color:0xff7a2a});               // forge/kiln fire — not electric, so allowed anywhere
+kdef('vEmber',VBALL,MAT.ember);
+kdef('vWinLit',VBOX,MAT.warmPane);kdef('vWinGlass',VBOX,MAT.darkGlass);kdef('vBulb',VBALL,MAT.bulb);kdef('vHoop',new THREE.TorusGeometry(1,.06,5,16),MAT.iron);
+kdef('vRope',new THREE.CylinderGeometry(1,1,1,5).translate(0,.5,0),MAT.tarp);
+kdef('vFlag',VBOX,MAT.stone);   // paving slabs, tinted
+kdef('vRock',VBALL,MAT.stone);kdef('vFinial',VBALL,MAT.verdigris);kdef('vBallW',VBALL,MAT.slab);
+// ================================================================= IZIZ VERNACULAR — registry + building blocks
+// Every vernacular building is a named function build*(G,o) registered with
+// VERN.def(). It builds in a LOCAL frame: origin at the plot centre on the
+// ground, +z is the front (door side), y up, metres. VERN.place() sets up the
+// group transform (position + yaw) and the kit transform (useGroupXF), so a
+// builder never sees world coordinates and the same function serves a
+// showcase row and a city lot.
+//
+// o = {w: 0 poor | 1 middle | 2 rich, v: variant index, lit: override}
+const VERN={defs:{},order:[],cur:null,
+ def(D){if(!D.key||!D.build)throw new Error('VERN.def needs key+build');D.tags=Object.assign({culture:'iziz-vernacular'},D.tags||{});D.cls=D.cls||'building';VERN.defs[D.key]=D;VERN.order.push(D.key);return D;},
+ // key, world x/z, yaw, options. Returns the group. Registers nothing itself:
+ // the builder calls vnReg() for its inspector volume(s).
+ place(scene,key,x,z,ry,o){const D=VERN.defs[key];if(!D){reportErr('VERN.place: no such key '+key);return null;}
+  o=Object.assign({w:1,v:0,scale:1,y:0},o||{});const G=new THREE.Group();G.position.set(x,o.y,z);G.rotation.y=ry||0;if(o.scale!==1)G.scale.setScalar(o.scale);scene.add(G);G.updateMatrix();
+  KOFF=[0,0,0];useGroupXF(G);if(o.scale!==1)KXF.s=o.scale;VERN.cur={D,G,x,z,ry:ry||0,o,r0:REG.length};
+  try{D.build(G,o);}catch(e){reportErr(key+' '+e.stack);}
+  endGroupXF();VERN.cur=null;return G;},
+ wealthName:w=>['poor','middle','rich','civic'][w]||'poor',
+};
+// Inspector volume in the building's local frame (x,z = centre, r radius, h height). Honours o.scale.
+function vnReg(name,lx,lz,r,h,tags){const c=VERN.cur;const s=c.o.scale||1;const p=loc(c.x,c.z,lx*s,lz*s,c.ry);
+ REG.push({name,x:p[0],y:c.o.y||0,z:p[1],r:r*s,h:h*s,cls:c.D.cls,key:c.D.key,tags:Object.assign({},c.D.tags,tags||{})});}
+// A builder that wraps an Ancients-kit builder (which calls REGISTER in its own local frame with KOFF) hands the
+// REG entries it produced to this, which moves them into the world frame and stamps the project tags on them.
+function vnAdoptREG(r0,nameFn,tags){const c=VERN.cur;const s=c.o.scale||1;for(let i=r0;i<REG.length;i++){const r=REG[i];const p=loc(c.x,c.z,r.x*s,r.z*s,c.ry);
+ r.x=p[0];r.z=p[1];r.y=(r.y||0)*s+(c.o.y||0);r.r*=s;r.h*=s;r.cls=c.D.cls;r.key=c.D.key;r.tags=Object.assign({},c.D.tags,tags||{});if(nameFn)r.name=nameFn(r.name);}}
+// kput with a uniform scale in the group transform (KXF.s): the vendored kit scales positions through the matrix
+// but not the per-instance size, so the size is scaled here. Assignment, not redeclaration — build.py's rule.
+// Nested group transforms. The vendored kit's useGroupXF/endGroupXF assume one level: several kit builders open a
+// body group of their own (bodyGroup, the sky builders), which REPLACED the placer's transform and then nulled it,
+// so a skyscraper placed at a plot rebuilt itself at the world origin at full size. Assignment, not redeclaration:
+// the same functions, now a stack that composes the child's local matrix onto the parent's.
+const _XFSTACK=[];
+useGroupXF=function(P){P.updateMatrix();const parent=KXF;_XFSTACK.push(parent);
+ if(parent){KXF={m:parent.m.clone().multiply(P.matrix),q:parent.q.clone().multiply(P.quaternion),s:(parent.s||1)*P.scale.x};if(KXF.s===1)delete KXF.s;}
+ else{KXF={m:P.matrix.clone(),q:P.quaternion.clone()};if(P.scale.x!==1)KXF.s=P.scale.x;}};
+endGroupXF=function(){KXF=_XFSTACK.length?_XFSTACK.pop():null;};
+// Run a kit builder as if the ground were flat at the group's origin. Kit builders ask terrainH() for their aprons and
+// fallen fragments in THEIR local frame; in a world with real terrain that returned the ground at the world origin
+// (the city plateau, 18 m up) and floated every apron that far above the building.
+function withFlatGround(fn){const t=terrainH;terrainH=function(){return 0;};try{return fn();}finally{terrainH=t;}}
+const _kputBase=kput;
+kput=function(name,p,q,s,c){if(KXF&&KXF.s&&KXF.s!==1){s=typeof s==='number'?s*KXF.s:[s[0]*KXF.s,s[1]*KXF.s,s[2]*KXF.s];}return _kputBase(name,p,q,s,c);};
+// local (lx,lz) rotated by ry about Y, then translated — same convention as THREE's rotation.y
+function loc(x,z,lx,lz,ry){return[x+lx*Math.cos(ry)+lz*Math.sin(ry),z-lx*Math.sin(ry)+lz*Math.cos(ry)];}
+// yaw, then a tilt about the piece's own x, then a roll about its own z
+function vQ(ry,tx,rz){const q=qEuler(0,ry||0,0);if(tx)q.multiply(qEuler(tx,0,0));if(rz)q.multiply(qEuler(0,0,rz));return q;}
+const vLit=()=>{const c=VERN.cur;return !!(c&&(c.o.lit!==undefined?c.o.lit:c.D.tags.lit));};   // the lighting rule: a def is tagged lit:true only if rich or civic
+
+// ---------------------------------------------------------------- primitives (local frame; y = BASE of the piece)
+function vB(item,x,y,z,w,h,d,ry,c){kput(item,[x,y+h/2,z],ry?qEuler(0,ry,0):null,[w,h,d],c||null);}          // box standing on y
+function vBq(item,x,y,z,w,h,d,q,c){kput(item,[x,y,z],q||null,[w,h,d],c||null);}                                // box centred at y, any quaternion
+function vPst(item,x,y,z,r,h,c,q){kput(item,[x,y,z],q||null,[r,h,r],c||null);}                                 // post/cylinder, base at y
+function vPl(item,x,y,z,w,h,ry,c,tilt){kput(item,[x,y,z],vQ(ry,tilt||0,0),[w,h,1],c||null);}                   // plane centred at y, facing local +z
+function vBall(item,x,y,z,r,c,sy){kput(item,[x,y,z],null,[r,sy||r,r],c||null);}
+// a beam from a to b (local), timber unless another item is named
+function vBeam(a,b,w,c,item){beam(item||'vWood',a,b,w,w,c||null);}
+
+// ---------------------------------------------------------------- walls, frames, plinths
+// Timber frame: corner posts, intermediate posts every ~2.4 m, sill and head rails on all four faces.
+function vnFrame(x,y,z,w,h,d,ry,c,pr){pr=pr||.14;const nx=Math.max(1,Math.round(w/2.4)),nz=Math.max(1,Math.round(d/2.4));
+ for(let i=0;i<=nx;i++){const lx=-w/2+w*i/nx;for(const s of[-1,1]){const p=loc(x,z,lx,s*d/2,ry);vPst('vPost',p[0],y,p[1],pr,h,c);}}
+ for(let j=1;j<nz;j++){const lz=-d/2+d*j/nz;for(const s of[-1,1]){const p=loc(x,z,s*w/2,lz,ry);vPst('vPost',p[0],y,p[1],pr,h,c);}}
+ for(const yy of[y+.12,y+h-.12]){   // sill and head rails on all four faces
+  for(const s of[-1,1]){const p=loc(x,z,0,s*d/2,ry);vB('vWood',p[0],yy-.1,p[1],w+pr*2,.2,pr*2.2,ry,c);const q=loc(x,z,s*w/2,0,ry);vB('vWood',q[0],yy-.1,q[1],pr*2.2,.2,d+pr*2,ry,c);}}}
+// Stilts under a raised floor: posts at the corners and along the long sides, with a diagonal brace on each face.
+function vnStilts(x,y,z,w,d,h,ry,c,pr){pr=pr||.18;const nx=Math.max(1,Math.round(w/2.6)),nz=Math.max(1,Math.round(d/2.6));const pts=[];
+ for(let i=0;i<=nx;i++)for(let j=0;j<=nz;j++){if(i>0&&i<nx&&j>0&&j<nz&&rng()<.5)continue;const p=loc(x,z,-w/2+w*i/nx,-d/2+d*j/nz,ry);vPst('vPostB',p[0],y-.3,p[1],pr,h+.3,c);pts.push(p);}
+ for(const s of[-1,1]){const a=loc(x,z,-w/2,s*d/2,ry),b=loc(x,z,w/2*.6,s*d/2,ry);vBeam([a[0],y+.2,a[1]],[b[0],y+h-.2,b[1]],.1,c);}
+ // pad stones under the posts
+ for(const p of pts)vB('vStone',p[0],y-.35,p[1],pr*3.2,.35,pr*3.2,ry,vC(0x9a8a78));}
+// Battered stone/plaster plinth the wealthy build on (item vBatterS / vBatterP).
+function vnPlinth(item,x,y,z,w,h,d,ry,c){kput(item,[x,y,z],ry?qEuler(0,ry,0):null,[w,h,d],c||null);vB(item==='vBatterS'?'vStone':'vPlaster',x,y+h-.05,z,w*.86+.3,.28,d*.86+.3,ry,c);}
+// Mayan stepped cornice in the set's materials: `steps` overhanging bands, each further out, then a cap band set back.
+function vnCornice(item,x,y,z,w,d,ry,c,steps,cap){steps=steps||2;let yy=y;for(let k=0;k<steps;k++){const o=.18+.22*k;vB(item,x,yy,z,w+2*o,.32,d+2*o,ry,c);yy+=.32;}
+ if(cap!==false)vB(item,x,yy,z,w+.1,.26,d+.1,ry,c&&c.clone().multiplyScalar(1.08));return yy+.26;}
+// deco vertical strip: a tall narrow recess with horizontal fins, the old Iziz motif carried into stone or timber
+function vnStrip(x,y,z,ry,w,h,frameItem,c){const f=loc(x,z,0,.06,ry);vB('vDarkB',f[0],y,f[1],w,h,.12,ry);
+ for(const s of[-1,1]){const p=loc(x,z,s*(w/2+.08),.1,ry);vB(frameItem,p[0],y-.1,p[1],.16,h+.2,.22,ry,c);}
+ const n=Math.max(2,Math.round(h/.9));for(let k=1;k<n;k++){const p=loc(x,z,0,.12,ry);vB(frameItem,p[0],y+h*k/n-.05,p[1],w+.1,.1,.26,ry,c);}}
+// Salvage patchwork over a face: n mismatched sheets, proud of the wall and a few degrees off square.
+function vnPatch(x,y,z,ry,w,h,n){const ITEMS=['vSheet','vSheet','vPlate','vPlateW','vBoard'];
+ for(let i=0;i<n;i++){const lx=rr(-w/2+.8,w/2-.8),ly=y+rr(.6,h-.6),pw=rr(1.2,2.8),ph=rr(.9,2.2);const p=loc(x,z,lx,.09+i*.012,ry);
+  kput(vPick(ITEMS),[p[0],ly,p[1]],vQ(ry,0,rr(-.09,.09)),[pw,ph,1],null);}}
+
+// ---------------------------------------------------------------- roofs (ridge along local x unless noted)
+// Gable: a wall-material wedge closes the gable ends flush with the walls; two roof slabs sit on it and overhang.
+function vnGableRoof(x,y,z,w,d,rise,ry,slabItem,slabC,over,endItem,endC,thick){over=over===undefined?.9:over;thick=thick||.24;
+ if(endItem)kput(endItem,[x,y,z],ry?qEuler(0,ry,0):null,[w,rise,d],endC||null);
+ const a=Math.atan2(rise,d/2),ext=d/2+over,S=Math.hypot(ext,rise*ext/(d/2))+.15;
+ for(const s of[-1,1]){const zc=s*ext/2,yc=y+(rise-over*rise/(d/2))/2;const p=loc(x,z,0,zc,ry);
+  const q=vQ(ry,s*a,0);const n=new THREE.Vector3(0,1,0).applyQuaternion(q).multiplyScalar(thick*.5);
+  kput(slabItem,[p[0]+n.x,yc+n.y,p[1]+n.z],q,[w+2*over,thick,S],slabC||null);}
+ vB('vWood',x,y+rise+thick*.35,z,w+2*over+.1,.22,.5,ry,slabC?slabC.clone().multiplyScalar(.8):vC(0x6a4a30));     // ridge cap
+ for(const s of[-1,1]){const p=loc(x,z,0,s*(ext+.02),ry);vB('vWood',p[0],y-over*rise/(d/2)-.32+thick*.2,p[1],w+2*over,.28,.12,ry,vC(0x6a4a30));}}   // fascia
+// Shed: one slab, high at the back (-z), low at the front (+z).
+function vnShedRoof(x,y,z,w,d,rise,ry,item,c,over,thick){over=over===undefined?.7:over;thick=thick||.2;const a=Math.atan2(rise,d);const ext=d+2*over,S=ext/Math.cos(a);
+ const p=loc(x,z,0,0,ry);const q=vQ(ry,a,0);const n=new THREE.Vector3(0,1,0).applyQuaternion(q).multiplyScalar(thick*.5);
+ kput(item,[p[0]+n.x,y+rise/2+n.y,p[1]+n.z],q,[w+2*over,thick,S],c||null);}
+// Solid hipped / pyramidal roofs (the wedge items). `over` widens the base; the base drops a little so the wall top is buried.
+function vnHipRoof(item,x,y,z,w,d,rise,ry,c,over){over=over===undefined?.8:over;kput(item,[x,y-.35,z],ry?qEuler(0,ry,0):null,[w+2*over,rise+.35,d+2*over],c||null);
+ vB('vWood',x,y-.62,z,w+2*over+.06,.28,d+2*over+.06,ry,c?c.clone().multiplyScalar(.75):vC(0x5a3e2a));}   // eaves board
+function vnPyrRoof(item,x,y,z,w,d,rise,ry,c,over){vnHipRoof(item,x,y,z,w,d,rise,ry,c,over);}
+// A thatch cone on a round building; ragged eave by a second slightly larger, shorter cone.
+function vnThatchCone(x,y,z,r,rise,c){kput('vConeT',[x,y-.3,z],null,[r*1.18,rise+.3,r*1.18],c||null);kput('vConeT',[x,y-.55,z],null,[r*1.28,.9,r*1.28],c?c.clone().multiplyScalar(.85):null);}
+
+// ---------------------------------------------------------------- openings
+// Window on a wall face. (x,z) is the point ON the face, ry the outward direction of the face.
+// kind: 'lit' (electric, rich/civic only), 'glass' (dark glazing), 'open' (unglazed dark), 'shut' (boarded)
+function vnWin(x,y,z,ry,w,h,kind,frameItem,c,shutters){const f=loc(x,z,0,.05,ry);
+ if(kind==='lit')vB('vWinLit',f[0],y,f[1],w,h,.1,ry);else if(kind==='glass')vB('vWinGlass',f[0],y,f[1],w,h,.1,ry);else vB('vDarkB',f[0],y,f[1],w,h,.1,ry);
+ if(kind==='shut'){const p=loc(x,z,0,.12,ry);for(let k=0;k<Math.round(h/.3);k++)vB('vWood',p[0],y+k*.3,p[1],w+.1,.26,.08,ry,c);}
+ frameItem=frameItem||'vWood';const p=loc(x,z,0,.14,ry);
+ for(const s of[-1,1]){const q=loc(x,z,s*(w/2+.07),.14,ry);vB(frameItem,q[0],y-.08,q[1],.14,h+.16,.16,ry,c);}
+ vB(frameItem,p[0],y+h,p[1],w+.3,.14,.18,ry,c);vB(frameItem,p[0],y-.12,p[1],w+.34,.12,.28,ry,c);   // head, sill
+ if(kind==='glass'||kind==='lit'){vB(frameItem,p[0],y,p[1],.06,h,.1,ry,c);vB(frameItem,p[0],y+h*.5,p[1],w,.06,.1,ry,c);}   // glazing bars
+ if(shutters){for(const s of[-1,1]){const q=loc(x,z,s*(w/2+.15+w*.22),.2,ry);kput('vWood',[q[0],y+h/2,q[1]],vQ(ry,0,0).multiply(qEuler(0,-s*.55,0)),[w*.48,h,.05],c||null);}}}
+// Door: dark recess, board leaf, jambs + lintel, a threshold step. Optional electric lamp above (lit rule applies).
+function vnDoor(x,y,z,ry,w,h,frameItem,c,leafC,step){frameItem=frameItem||'vWood';const f=loc(x,z,0,.03,ry);vB('vDarkB',f[0],y,f[1],w,h,.1,ry);
+ const l=loc(x,z,-w*.06,.1,ry);kput('vWood',[l[0],y+h/2,l[1]],vQ(ry,0,0).multiply(qEuler(0,.22,0)),[w*.92,h-.05,.06],leafC||c||null);   // leaf, slightly ajar
+ for(const s of[-1,1]){const q=loc(x,z,s*(w/2+.09),.12,ry);vB(frameItem,q[0],y,q[1],.18,h+.18,.2,ry,c);}
+ const p=loc(x,z,0,.12,ry);vB(frameItem,p[0],y+h+.06,p[1],w+.5,.2,.26,ry,c);
+ if(step!==false){const s=loc(x,z,0,.5,ry);vB(frameItem==='vStone'?'vStone':'vWood',s[0],y-.18,s[1],w+.6,.18,.8,ry,c);}
+ if(vLit()){vnLamp(x,y+h+.5,z,ry);}
+ // pathing layer: every door is an agent target. World frame, recorded for the city's Paths overlay / life layer.
+ if(window.DOORS&&VERN.cur){const c=VERN.cur,sc=c.o.scale||1;const wp=loc(c.x,c.z,x*sc,z*sc,c.ry);DOORS.push({x:wp[0],z:wp[1],ry:ry+c.ry,y:(c.o.y||0)+y*sc,key:c.D.key});}}
+// Electric lamp: an iron bracket out of the wall and a bulb under a small hood. Only ever placed through vLit().
+function vnLamp(x,y,z,ry){const a=loc(x,z,0,.05,ry),b=loc(x,z,0,.55,ry);vBeam([a[0],y,a[1]],[b[0],y+.02,b[1]],.05,vC(0x2e2a26),'vIron');
+ vB('vIron',b[0],y-.02,b[1],.32,.06,.32,ry,vC(0x2e2a26));vBall('vBulb',b[0],y-.16,b[1],.11);}
+// A lamp on a post (yards, drill grounds, gates) — electric.
+function vnLampPost(x,y,z,h){vPst('vPipe',x,y,z,.07,h,vC(0x2e2a26));vB('vIron',x,y+h,z,.5,.08,.5,0,vC(0x2e2a26));vBall('vBulb',x,y+h-.16,z,.13);}
+
+// ---------------------------------------------------------------- porches, stairs, yards
+// Veranda deck on posts along the front; rail with balusters; posts carry up to `postH` for the roof above.
+function vnVeranda(x,y,z,w,d,ry,deckH,postH,c,railC){const zc=d/2;vB('vWood',x,y+deckH-.22,z,w,.22,d,ry,c);
+ const n=Math.max(2,Math.round(w/2.6));for(let i=0;i<=n;i++){const p=loc(x,z,-w/2+w*i/n,zc-.15,ry);vPst('vPost',p[0],y,p[1],.12,postH,c);
+  if(i<n&&deckH>.3){const q=loc(x,z,-w/2+w*(i+.5)/n,zc-.15,ry);vB('vWood',q[0],y+deckH+.85,q[1],w/n-.28,.1,.1,ry,railC||c);   // rail
+   for(let k=1;k<4;k++){const b=loc(x,z,-w/2+w*(i+k/4)/n,zc-.15,ry);vB('vWood',b[0],y+deckH,b[1],.06,.85,.06,ry,railC||c);}}}
+ if(deckH>.3)for(let k=0;k<Math.round(w/2.6);k++){const p=loc(x,z,-w/2+.2,-d/2+d*(k+.5)/Math.round(w/2.6),ry);vPst('vPostB',p[0],y-.2,p[1],.13,deckH,c);}}
+// Straight stair up to a deck: treads and two stringers. Rises `rise` over `steps` treads toward -z (into the building).
+function vnStairs(x,y,z,ry,w,rise,steps,item,c){const run=steps*.32;for(let k=0;k<steps;k++){const t=(k+.5)/steps;const p=loc(x,z,0,run/2-run*t,ry);vB(item||'vWood',p[0],y+rise*k/steps,p[1],w,.08,.34,ry,c);}
+ for(const s of[-1,1]){const a=loc(x,z,s*w/2,run/2,ry),b=loc(x,z,s*w/2,-run/2,ry);vBeam([a[0],y-.05,a[1]],[b[0],y+rise-.1,b[1]],.12,c);}}
+function vnLadder(x,y,z,ry,h,c){const lean=.25;for(const s of[-1,1]){const p=loc(x,z,s*.3,0,ry);kput('vWood',[p[0],y+h/2,p[1]],vQ(ry,lean,0),[.08,h,.08],c||null);}
+ for(let k=1;k<h/.36;k++){const t=k*.36;const p=loc(x,z,0,-Math.sin(lean)*(t-h/2),ry);vB('vWood',p[0],y+t*Math.cos(lean)-.03,p[1],.7,.06,.06,ry,c);}}
+function vnBarrel(x,y,z,r,h,c){vPst('vBarrel',x,y,z,r,h,c);vBq('vHoop',x,y+h*.25,z,r*1.02,r*1.02,1,qEuler(Math.PI/2,0,0),vC(0x2e2a26));vBq('vHoop',x,y+h*.78,z,r*1.02,r*1.02,1,qEuler(Math.PI/2,0,0),vC(0x2e2a26));}
+function vnWaterButt(x,y,z,r,h){vPst('vTank',x,y,z,r,h,null);vB('vIron',x,y+h,z,r*1.9,.08,r*1.9,0,vC(0x2e2a26));}
+function vnCrate(x,y,z,s,ry,c){vB('vWood',x,y,z,s,s*.8,s*.9,ry,c||vC(vPick(VPAL.woodMid)));}
+function vnSacks(x,y,z,n){for(let i=0;i<n;i++)kput('vSack',[x+rr(-.6,.6),y+.32+((i>2)?.45:0),z+rr(-.5,.5)],qEuler(0,rng()*TAU,0),[.42,.32,.36],vC(vPick([0xb8a080,0xa89070,0xc8b898])));}
+function vnPlanter(x,y,z,w,d,ry,c){vB('vWood',x,y,z,w,.55,d,ry,c);for(let k=0;k<Math.max(1,Math.round(w*d/1.2));k++)kput('vLeaf',[x+rr(-w*.35,w*.35),y+.62,z+rr(-d*.3,d*.3)],null,[rr(.28,.5),rr(.22,.42),rr(.28,.5)],vC(vPick([0x3f7a34,0x4f9a3a,0x2f6a2a,0x6aa04a])));}
+function vnDryingRack(x,y,z,ry,L){for(const s of[-1,1]){const p=loc(x,z,s*L/2,0,ry);vPst('vPost',p[0],y,p[1],.06,2.2,vC(0x8a7a66));}
+ const a=loc(x,z,-L/2,0,ry),b=loc(x,z,L/2,0,ry);vBeam([a[0],y+2.1,a[1]],[b[0],y+2.1,b[1]],.03,vC(0xb8a888),'vRope');
+ for(let k=0;k<Math.round(L/.9);k++){const p=loc(x,z,-L/2+.5+k*.9,0,ry);kput('vCloth',[p[0],y+1.55,p[1]],vQ(ry,0,0),[.6,1.05,1],vC(vPick(VPAL.awning)));}}
+// Striped awning on two poles, sloping down and out from the wall at (x,z,ry-face).
+function vnAwning(x,y,z,ry,w,out,c){const q=vQ(ry,.42,0);const p=loc(x,z,0,out/2,ry);const n=new THREE.Vector3(0,1,0).applyQuaternion(q);
+ kput('vClothB',[p[0]+n.x*.03,y-Math.tan(.42)*out/2+.35,p[1]+n.z*.03],q,[w,.06,out/Math.cos(.42)],c||vC(vPick(VPAL.awning)));
+ for(const s of[-1,1]){const pp=loc(x,z,s*(w/2-.1),out-.1,ry);vPst('vPost',pp[0],y-3,pp[1],.05,y-Math.tan(.42)*out+.3-(y-3),vC(0x6a5a48));}}
+function vnBannerPole(x,y,z,ry,h,c){vPst('vPost',x,y,z,.08,h,vC(0x5a4632));const p=loc(x,z,.55,0,ry);vB('vWood',p[0],y+h-.2,p[1],1.1,.08,.08,ry,vC(0x5a4632));
+ kput('vCloth',[p[0],y+h-1.6,p[1]],vQ(ry+Math.PI/2,0,0),[.7,2.7,1],c||vC(vPick(VPAL.orange)));}
+function vnChimney(x,y,z,h,r,rusty){vPst(rusty?'vPipeR':'vPipe',x,y,z,r,h,null);vB('vIron',x,y+h+.1,z,r*3,.08,r*3,0,vC(0x2e2a26));for(const s of[-1,1])vB('vIron',x+s*r*1.1,y+h-.05,z,.06,.2,.06,0,vC(0x2e2a26));}
+// Fence of posts and two rails around a rectangle (gap at the front centre of width `gate`).
+function vnFence(x,y,z,w,d,ry,c,gate,h){h=h||1.3;const segs=[[[-w/2,-d/2],[w/2,-d/2]],[[w/2,-d/2],[w/2,d/2]],[[-w/2,d/2],[-w/2,-d/2]]];
+ if(gate){segs.push([[-w/2,d/2],[-gate/2,d/2]],[[gate/2,d/2],[w/2,d/2]]);}else segs.push([[w/2,d/2],[-w/2,d/2]]);
+ for(const s of segs){const L=Math.hypot(s[1][0]-s[0][0],s[1][1]-s[0][1]);const n=Math.max(1,Math.round(L/2.2));
+  for(let i=0;i<=n;i++){const p=loc(x,z,s[0][0]+(s[1][0]-s[0][0])*i/n,s[0][1]+(s[1][1]-s[0][1])*i/n,ry);vPst('vPost',p[0],y,p[1],.07,h,c);}
+  const a=loc(x,z,s[0][0],s[0][1],ry),b=loc(x,z,s[1][0],s[1][1],ry);for(const yy of[.5,1.1])vBeam([a[0],y+yy*h/1.3,a[1]],[b[0],y+yy*h/1.3,b[1]],.07,c);}}
+// Palisade: close-set sharpened logs on a low earth bank, with a walkway rail behind.
+function vnPalisade(x,y,z,w,d,ry,h,gate){const c=vC(0x7a5a3e);const segs=[[[-w/2,-d/2],[w/2,-d/2]],[[w/2,-d/2],[w/2,d/2]],[[-w/2,d/2],[-w/2,-d/2]],[[-w/2,d/2],[-gate/2,d/2]],[[gate/2,d/2],[w/2,d/2]]];
+ for(const s of segs){const L=Math.hypot(s[1][0]-s[0][0],s[1][1]-s[0][1]);const n=Math.round(L/.42);
+  for(let i=0;i<=n;i++){const p=loc(x,z,s[0][0]+(s[1][0]-s[0][0])*i/n,s[0][1]+(s[1][1]-s[0][1])*i/n,ry);vPst('vPostB',p[0],y-.2,p[1],.2,h+rr(-.25,.25),c.clone().multiplyScalar(rr(.85,1.1)));kput('vConeI',[p[0],y+h-.15,p[1]],null,[.2,.5,.2],c);}
+  const a=loc(x,z,s[0][0],s[0][1],ry),b=loc(x,z,s[1][0],s[1][1],ry);vBeam([a[0],y+h*.55,a[1]],[b[0],y+h*.55,b[1]],.14,c);}}
+// A few townsfolk for scale (the kit's own figure items), tinted like Iziz robes.
+function vnFolk(x,z,n,spread){for(let i=0;i<n;i++){const px=x+rr(-spread,spread),pz=z+rr(-spread,spread);kput('figB',[px,0,pz],qEuler(0,rng()*TAU,0),1,vC(vPick([0xe8d9b8,0xc9442a,0x2f8f8a,0x7a3d8a,0xe0a030,0x3b4a8a,0x8a6a3a])));kput('figH',[px,0,pz],null,1,vC(0xc9a17e));}}
+// paved yard / threshold slabs
+function vnPaving(x,y,z,w,d,ry,c,n){n=n||Math.round(w*d/4);for(let i=0;i<n;i++){const p=loc(x,z,rr(-w/2,w/2),rr(-d/2,d/2),ry);vB('vFlag',p[0],y-.06,p[1],rr(1.1,2.2),.1,rr(.9,1.8),ry+rr(-.1,.1),c||vC(vPick(VPAL.stoneDark)));}}
+// ================================================================= HIGHLANDS — textures
+// The Highlands kit sits on top of the Iziz Vernacular helpers (69b/69c, vendored) and adds the materials of a
+// temperate, wooden, mountain culture: round logs, split shingle and fish-scale slate, fieldstone socles, turf,
+// bamboo, and — the signature of the style — PAINTED CARVING: formline crests, totem columns and fretwork lace.
+//
+// Two kinds of map, as in the vernacular set:
+//  * near-grey + warm maps (logs, scale, rubble, turf, bamboo, lace) that the per-instance colour tints — one
+//    log map serves raw pine, tarred spruce and red-painted boards;
+//  * COLOUR-CARRYING maps (formline, totem, clock, wing) painted in their final palette and never tinted: the
+//    black / red / teal of the carving is what it is, like salvage in the vernacular set.
+// Canvas sizes are chosen at 64 px per metre for the world-UV maps (vWorldUV K = tiles per metre).
+
+// ---------------------------------------------------------------- formline palette (NW-coast inspired)
+const HFORM={black:'#171311',red:'#b3322a',teal:'#2e9488',tealD:'#1f6f68',white:'#efe7d6',cedar:'#b27a4c',cedarD:'#8a5634',ochre:'#d19a3a'};
+
+// ---------------------------------------------------------------- wood: round logs (horizontal), 2 m tile, 6 courses
+TEX.logs=canvasTex(128,128,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;const LH=w/6;   // ~0.33 m logs
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;const row=Math.floor(y/LH),fy=(y%LH)/LH;
+  const round=Math.sin(Math.PI*fy);                                        // rounded log: lit crown, dark top/bottom
+  let v=112+round*92+(h3(row*3.1,0,2.2)-.5)*30;
+  v+=(fbm(x/26,y/2.2,row*1.7,2)-.5)*30;                                    // grain along the log
+  if(fy<.08||fy>.94)v=58+(fbm(x/4,y/4,1,1)-.5)*16;                          // chinking (moss/clay) between courses
+  const check=fbm(x/40,y/1.2,row*3.3,2);if(check>.7&&fy>.3&&fy<.6)v-=(check-.7)*140;   // drying checks
+  d[i]=v;d[i+1]=v*.9;d[i+2]=v*.78;d[i+3]=255;}
+ g.putImageData(id,0,0);});
+// ---------------------------------------------------------------- fish-scale shingle / slate: 2 m tile, 0.25 m scales
+TEX.scale=canvasTex(128,128,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;const S=16;
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;const row=Math.floor(y/S),off=(row%2)*S/2;const sx=Math.floor((x+off)/S);
+  const fx=((x+off)%S)/S-.5,fy=(y%S)/S;const r=Math.hypot(fx,(fy-.35)*1.1);   // round bottom of each scale
+  let v=176+(h3(sx*2.3,row*1.9,4.1)-.5)*48+(fbm(x/4,y/4,2.2,1)-.5)*14;
+  if(r>.46&&fy>.45)v-=70;else if(r>.4&&fy>.4)v-=26;                          // the shadowed rim of the scale above
+  if(fy<.08)v-=30;
+  d[i]=v;d[i+1]=v;d[i+2]=v*1.02;d[i+3]=255;}
+ g.putImageData(id,0,0);});
+// ---------------------------------------------------------------- fieldstone (rubble) socle: 4 m tile
+TEX.rubble=canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
+ const pts=[];for(let k=0;k<70;k++){const px=h3(k,1.3,2.7)*w,py=h3(k,4.1,.7)*h;for(const ox of[-w,0,w])for(const oy of[-h,0,h])pts.push([px+ox,py+oy,k]);}
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;let d1=1e9,d2=1e9,id1=0;
+  for(const p of pts){const dx=(x-p[0])*.8,dy=y-p[1];const dd=dx*dx+dy*dy;if(dd<d1){d2=d1;d1=dd;id1=p[2];}else if(dd<d2)d2=dd;}
+  const edge=Math.sqrt(d2)-Math.sqrt(d1);let v;
+  if(edge<3.2)v=92+(fbm(x/3,y/3,2,1)-.5)*20;                                 // deep mortar
+  else{v=150+(h3(id1,7.7,1.1)-.5)*70+Math.min(20,edge*2)+(fbm(x/9,y/9,id1,2)-.5)*26;}
+  const tint=h3(id1,2.2,9.9);d[i]=v*(1+(tint-.5)*.12);d[i+1]=v*.97;d[i+2]=v*(.92-(tint-.5)*.08);d[i+3]=255;}
+ g.putImageData(id,0,0);});
+// ---------------------------------------------------------------- turf (sod roofs): 2 m tile
+TEX.turf=canvasTex(128,128,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;const n=fbm(x/14,y/14,3.3,3),n2=fbm(x/2,y/5,7.1,2);
+  const bare=clamp((fbm(x/30,y/30,9.1,2)-.58)*5,0,1);
+  let r=90+n*50+n2*30,gg=120+n*60+n2*40,b=60+n*20;
+  r=lerp(r,120+n2*30,bare);gg=lerp(gg,100+n2*20,bare);b=lerp(b,70,bare);
+  d[i]=r;d[i+1]=gg;d[i+2]=b;d[i+3]=255;}
+ g.putImageData(id,0,0);});
+// ---------------------------------------------------------------- bamboo: culm (vertical, nodes every ~0.45 m) and woven mat
+TEX.bambooV=canvasTex(64,128,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;const fy=(y%29)/29;
+  let v=196+(fbm(x/2,y/30,1.3,2)-.5)*30+Math.sin(x/w*TAU*4)*6;
+  if(fy<.07)v=120;else if(fy<.14)v=222;                                      // node ring + its lit swelling
+  d[i]=v*.96;d[i+1]=v*.93;d[i+2]=v*.66;d[i+3]=255;}
+ g.putImageData(id,0,0);});
+TEX.bmat=canvasTex(128,128,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;const S=16;   // 0.25 m weave
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;const cx=Math.floor(x/S),cy=Math.floor(y/S);const over=(cx+cy)%2;
+  const f=over?(x%S)/S:(y%S)/S;let v=180+Math.sin(f*Math.PI)*40+(fbm(x/3,y/3,5,1)-.5)*20;
+  const e=over?(y%S):(x%S);if(e<1||e>S-2)v-=60;
+  d[i]=v;d[i+1]=v*.9;d[i+2]=v*.66;d[i+3]=255;}
+ g.putImageData(id,0,0);});
+
+// ---------------------------------------------------------------- the painted carving: formline primitives
+// A formline design is built from a few units — OVOID, U-FORM, SPLIT-U, TRIGON negative spaces — joined by a
+// heavy black primary line that swells and tapers, with red secondary and teal tertiary fills. These helpers draw
+// them on a 2D canvas in canvas units (y down). Everything is symmetric: draw the left half, then hlMirror().
+function hlOvoidPath(g,cx,cy,w,h){g.beginPath();
+ g.moveTo(cx-w/2,cy+h*.1);
+ g.bezierCurveTo(cx-w/2,cy-h*.62,cx+w/2,cy-h*.62,cx+w/2,cy+h*.1);             // domed top
+ g.bezierCurveTo(cx+w/2,cy+h*.55,cx+w*.22,cy+h*.52,cx,cy+h*.36);             // concave underside rises to the centre
+ g.bezierCurveTo(cx-w*.22,cy+h*.52,cx-w/2,cy+h*.55,cx-w/2,cy+h*.1);g.closePath();}
+function hlOvoid(g,cx,cy,w,h,line,fill,lw){hlOvoidPath(g,cx,cy,w,h);if(fill){g.fillStyle=fill;g.fill();}if(line){g.lineWidth=lw||Math.max(2,w*.14);g.strokeStyle=line;g.stroke();}}
+function hlUForm(g,cx,cy,w,h,col,lw){g.beginPath();g.moveTo(cx-w/2,cy-h/2);g.bezierCurveTo(cx-w/2,cy+h*.7,cx+w/2,cy+h*.7,cx+w/2,cy-h/2);
+ g.lineWidth=lw||w*.22;g.strokeStyle=col;g.lineCap='round';g.stroke();g.lineCap='butt';}
+function hlSplitU(g,cx,cy,w,h,col,lw){hlUForm(g,cx,cy,w,h,col,lw);g.beginPath();g.moveTo(cx,cy-h/2);g.lineTo(cx,cy+h*.12);g.lineWidth=(lw||w*.22)*.7;g.strokeStyle=HFORM.white;g.stroke();}
+function hlEye(g,cx,cy,w,h,socket){   // eye socket (teal or red), lid ovoid in black, white eyeball, black pupil ovoid
+ hlOvoid(g,cx,cy,w,h,HFORM.black,socket||HFORM.teal,w*.12);
+ hlOvoid(g,cx,cy+h*.06,w*.64,h*.5,HFORM.black,HFORM.white,w*.07);
+ hlOvoid(g,cx,cy+h*.08,w*.34,h*.3,null,HFORM.black);}
+function hlSwoop(g,pts,col,lw){g.beginPath();g.moveTo(pts[0][0],pts[0][1]);for(let i=1;i+2<pts.length+1;i+=3)g.bezierCurveTo(pts[i][0],pts[i][1],pts[i+1][0],pts[i+1][1],pts[i+2][0],pts[i+2][1]);
+ g.lineWidth=lw;g.strokeStyle=col;g.lineCap='round';g.stroke();g.lineCap='butt';}
+function hlTrigon(g,x,y,s,col){g.beginPath();g.moveTo(x,y);g.quadraticCurveTo(x+s*.5,y+s*.1,x+s,y);g.quadraticCurveTo(x+s*.6,y+s*.4,x+s*.5,y+s);g.quadraticCurveTo(x+s*.4,y+s*.4,x,y);g.fillStyle=col;g.fill();}
+// draw fn(g) on the left half, then mirror it onto the right half
+function hlMirror(g,w,h,cx,fn){g.save();fn(g);g.restore();g.save();g.translate(2*cx,0);g.scale(-1,1);fn(g);g.restore();}
+// wood grain under a painted design (cedar), vertical or horizontal
+function hlCedar(g,w,h,base,vert){g.fillStyle=base||HFORM.cedar;g.fillRect(0,0,w,h);const id=g.getImageData(0,0,w,h),d=id.data;
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;const n=vert?fbm(x/2.5,y/40,3.3,2):fbm(x/40,y/2.5,3.3,2);const k=.82+n*.34;d[i]*=k;d[i+1]*=k;d[i+2]*=k;}
+ g.putImageData(id,0,0);}
+// A crest face: the core of every panel, pole and mask. o: {beak, teeth, ears, tongue, socket, brow, cheek}
+function hlFace(g,cx,cy,W,H,o){o=o||{};const S=W/2;
+ hlMirror(g,W,H,cx,g=>{
+  // head outline: heavy black formline around the face, open at the chin
+  hlSwoop(g,[[cx,cy-H*.5],[cx-S*.55,cy-H*.52],[cx-S*.98,cy-H*.36],[cx-S*.96,cy-H*.02],[cx-S*.95,cy+H*.25],[cx-S*.78,cy+H*.44],[cx-S*.5,cy+H*.48]],HFORM.black,W*.05);
+  if(o.ears!==false){hlUForm(g,cx-S*.7,cy-H*.46,S*.36,H*.18,HFORM.red,S*.08);hlOvoid(g,cx-S*.7,cy-H*.5,S*.16,H*.08,null,HFORM.black);}
+  // brow: a thick black arch over the eye
+  hlSwoop(g,[[cx-S*.08,cy-H*.2],[cx-S*.22,cy-H*.34],[cx-S*.62,cy-H*.36],[cx-S*.8,cy-H*.18]],HFORM.black,H*.06);
+  hlEye(g,cx-S*.43,cy-H*.1,S*.56,H*.2,o.socket);
+  // cheek: red U-form under the eye, teal trigon in the cheek
+  hlUForm(g,cx-S*.46,cy+H*.08,S*.5,H*.12,o.cheek||HFORM.red,S*.08);
+  hlTrigon(g,cx-S*.82,cy+H*.02,S*.18,HFORM.teal);
+  // flank: a small ovoid joint in the outer cheek
+  hlOvoid(g,cx-S*.8,cy+H*.24,S*.2,H*.12,HFORM.black,HFORM.red,S*.04);
+ });
+ // nose / beak (on the axis)
+ if(o.beak){g.beginPath();g.moveTo(cx-S*.16,cy-H*.12);g.quadraticCurveTo(cx+S*.02,cy+H*.02,cx+S*.02,cy+H*.4);g.quadraticCurveTo(cx-S*.02,cy+H*.46,cx-S*.08,cy+H*.38);
+  g.quadraticCurveTo(cx,cy+H*.1,cx-S*.16,cy-H*.12);g.fillStyle=HFORM.black;g.fill();
+  g.beginPath();g.moveTo(cx+S*.16,cy-H*.12);g.quadraticCurveTo(cx+S*.02,cy+H*.02,cx+S*.02,cy+H*.4);g.lineWidth=S*.05;g.strokeStyle=HFORM.black;g.stroke();
+  hlSplitU(g,cx,cy-H*.02,S*.22,H*.14,HFORM.red,S*.06);}
+ else{hlSplitU(g,cx,cy+H*.02,S*.3,H*.16,HFORM.red,S*.09);
+  hlOvoid(g,cx-S*.1,cy+H*.14,S*.12,H*.07,null,HFORM.black);hlOvoid(g,cx+S*.1,cy+H*.14,S*.12,H*.07,null,HFORM.black);}
+ // mouth: red lips around a black mouth, white teeth
+ const mw=S*(o.beak?.6:.95),my=cy+H*.32;
+ g.beginPath();g.ellipse(cx,my,mw*.62,H*.09,0,0,TAU);g.fillStyle=HFORM.red;g.fill();
+ g.beginPath();g.ellipse(cx,my,mw*.5,H*.055,0,0,TAU);g.fillStyle=HFORM.black;g.fill();
+ if(o.teeth!==false){g.fillStyle=HFORM.white;const n=6;for(let k=0;k<n;k++){const tx=cx-mw*.42+mw*.84*(k+.5)/n;g.fillRect(tx-mw*.05,my-H*.045,mw*.1,H*.03);g.fillRect(tx-mw*.05,my+H*.015,mw*.1,H*.03);}}
+ if(o.tongue){g.beginPath();g.moveTo(cx-S*.06,my);g.quadraticCurveTo(cx,my+H*.22,cx+S*.06,my);g.fillStyle=HFORM.red;g.fill();}}
+
+// ---------------------------------------------------------------- crest panels (colour-carrying, plane UV 0..1)
+// FORM_A: a wide crest (2:1) — central face flanked by profile heads, on cedar. Façades, gables, lintels.
+TEX.formA=canvasTex(512,256,(g,w,h)=>{hlCedar(g,w,h,HFORM.cedar,false);
+ hlFace(g,w/2,h*.52,h*.95,h*.92,{});
+ hlMirror(g,w,h,w/2,g=>{   // flanking profile creature: an ovoid head with one eye, a long formline body sweeping out
+  hlSwoop(g,[[w*.33,h*.2],[w*.2,h*.02],[w*.04,h*.1],[w*.04,h*.42],[w*.04,h*.78],[w*.2,h*.94],[w*.33,h*.84]],HFORM.black,h*.05);
+  hlEye(g,w*.14,h*.36,h*.3,h*.2,HFORM.teal);
+  hlUForm(g,w*.2,h*.66,h*.24,h*.16,HFORM.red,h*.045);hlUForm(g,w*.11,h*.72,h*.12,h*.1,HFORM.black,h*.03);
+  hlSplitU(g,w*.27,h*.2,h*.12,h*.1,HFORM.red,h*.03);hlTrigon(g,w*.06,h*.84,h*.08,HFORM.teal);});
+ g.lineWidth=h*.03;g.strokeStyle=HFORM.black;g.strokeRect(h*.015,h*.015,w-h*.03,h-h*.03);});
+// FORM_W: the same crest on white — the bold painted house-fronts of the tribes and the Republic's guild boards
+TEX.formW=canvasTex(512,256,(g,w,h)=>{g.fillStyle=HFORM.white;g.fillRect(0,0,w,h);
+ hlFace(g,w/2,h*.52,h*.95,h*.92,{socket:HFORM.teal,tongue:true});
+ hlMirror(g,w,h,w/2,g=>{hlSwoop(g,[[w*.34,h*.12],[w*.18,h*.0],[w*.02,h*.2],[w*.05,h*.52],[w*.08,h*.86],[w*.24,h*.96],[w*.34,h*.86]],HFORM.red,h*.06);
+  hlEye(g,w*.15,h*.4,h*.32,h*.22,HFORM.red);hlUForm(g,w*.16,h*.72,h*.26,h*.16,HFORM.black,h*.05);hlTrigon(g,w*.26,h*.62,h*.1,HFORM.teal);});});
+// FORM_V: a tall board (1:4) — a stack of ovoids and U-forms, for pilasters, door jambs, columns-as-boards
+TEX.formV=canvasTex(128,512,(g,w,h)=>{hlCedar(g,w,h,HFORM.cedarD,true);
+ for(let k=0;k<4;k++){const cy=h*(k+.5)/4;
+  hlOvoid(g,w/2,cy-h*.03,w*.78,h*.12,HFORM.black,k%2?HFORM.teal:HFORM.red,w*.08);
+  hlOvoid(g,w/2,cy-h*.02,w*.4,h*.06,HFORM.black,HFORM.white,w*.05);
+  hlUForm(g,w/2,cy+h*.075,w*.7,h*.05,k%2?HFORM.red:HFORM.black,w*.08);}});
+// FORM_T: a gable crest (triangle-ready, 2:1) — the thunderbird, wings spread across the gable, head on the axis
+TEX.formT=canvasTex(512,256,(g,w,h)=>{hlCedar(g,w,h,HFORM.cedar,false);
+ hlMirror(g,w,h,w/2,g=>{for(let k=0;k<5;k++){const x=w*.08+k*w*.075,y=h*.55+k*h*.05;   // feathers: U-forms stepping up the wing
+   hlUForm(g,x,y,w*.07,h*.28,k%2?HFORM.red:HFORM.black,w*.018);}
+  hlSwoop(g,[[w*.02,h*.9],[w*.12,h*.3],[w*.3,h*.25],[w*.44,h*.38]],HFORM.black,h*.05);
+  hlEye(g,w*.3,h*.45,w*.1,h*.16,HFORM.teal);});
+ hlFace(g,w/2,h*.46,h*.62,h*.66,{beak:true,ears:false,teeth:false});});
+// FORM_F: frieze (4:1, repeats along x) — alternating ovoid and split-U, for eave boards and lintels
+TEX.formF=canvasTex(256,64,(g,w,h)=>{hlCedar(g,w,h,HFORM.cedarD,false);
+ for(let k=0;k<4;k++){const cx=w*(k+.5)/4;if(k%2){hlOvoid(g,cx,h*.52,w*.18,h*.6,HFORM.black,HFORM.teal,w*.02);hlOvoid(g,cx,h*.55,w*.08,h*.26,null,HFORM.black);}
+  else{hlSplitU(g,cx,h*.4,w*.16,h*.52,HFORM.red,w*.035);}}
+ g.fillStyle=HFORM.black;g.fillRect(0,0,w,h*.08);g.fillRect(0,h*.92,w,h*.08);});
+
+// ---------------------------------------------------------------- totem column (colour-carrying, wraps a cylinder)
+// u runs round the pole with u=0.5 at the FRONT (hTotem instances are yawed so this faces the street), v up.
+// Three crest figures stacked: bird (beak) at the top, bear (teeth, tongue) in the middle, frog/man at the foot.
+function hlTotemTex(seed,cols){return canvasTex(256,1024,(g,w,h)=>{hlCedar(g,w,h,cols.base,true);
+ // back of the pole: shallow adze-carved grooves only
+ const figs=[{beak:true,ears:false,teeth:false},{teeth:true,tongue:true},{ears:false,teeth:true}];
+ for(let k=0;k<3;k++){const cy=h*(1-(k+.5)/3);   // v=1 top (canvas y 0): figure 0 at the top
+  hlFace(g,w/2,h*(k+.5)/3,w*.5,h*.3,Object.assign({socket:k===1?HFORM.red:cols.socket},figs[(k+seed)%3]));
+  // wings / arms: a pair of U-forms at the sides of each figure, wrapping round the pole
+  hlMirror(g,w,h,w/2,g=>{hlUForm(g,w*.2,h*(k+.62)/3,w*.1,h*.07,HFORM.black,w*.025);hlOvoid(g,w*.2,h*(k+.44)/3,w*.08,h*.04,HFORM.black,cols.socket,w*.012);});
+  g.fillStyle=HFORM.black;g.fillRect(0,h*(k+1)/3-h*.006,w,h*.012);}});}
+TEX.totem=hlTotemTex(0,{base:HFORM.cedar,socket:HFORM.teal});
+TEX.totemP=hlTotemTex(1,{base:'#d8cdb4',socket:HFORM.teal});   // painted ground (the Painted Men)
+// a spread wing (thunderbird) with alpha, for crossarms and gable finials
+TEX.wing=canvasTex(256,128,(g,w,h)=>{g.clearRect(0,0,w,h);
+ g.beginPath();g.moveTo(0,h*.2);g.quadraticCurveTo(w*.5,-h*.1,w,h*.35);g.lineTo(w,h*.6);for(let k=0;k<6;k++){const x=w-(k+1)*w/6;g.quadraticCurveTo(x+w/12,h*(.95-k*.04),x,h*(.62-k*.03));}g.closePath();
+ g.fillStyle=HFORM.white;g.fill();g.save();g.clip();
+ for(let k=0;k<6;k++){const x=w-(k+.5)*w/6;hlUForm(g,x,h*.62,w*.13,h*.46,k%2?HFORM.red:HFORM.black,w*.03);}
+ hlSwoop(g,[[0,h*.3],[w*.3,h*.05],[w*.7,h*.1],[w,h*.4]],HFORM.black,h*.1);hlEye(g,w*.16,h*.32,w*.14,h*.24,HFORM.teal);g.restore();});
+
+// ---------------------------------------------------------------- fretwork lace (alpha-tested, tinted)
+// LACE_V: carved valance — the Russian prichelina / nalichnik: a band with pierced holes and scalloped drops.
+TEX.laceV=canvasTex(256,64,(g,w,h)=>{g.clearRect(0,0,w,h);g.fillStyle='#fff';g.fillRect(0,0,w,h*.42);
+ for(let k=0;k<8;k++){const cx=w*(k+.5)/8;g.beginPath();g.arc(cx,h*.42,w/16,0,Math.PI);g.fill();                    // scallops
+  g.beginPath();g.moveTo(cx-3,h*.5);g.lineTo(cx,h*.98);g.lineTo(cx+3,h*.5);g.fill();}                                 // drops
+ g.globalCompositeOperation='destination-out';
+ for(let k=0;k<8;k++){const cx=w*(k+.5)/8;g.beginPath();g.arc(cx,h*.22,h*.09,0,TAU);g.fill();g.beginPath();g.arc(cx,h*.5,h*.06,0,TAU);g.fill();
+  g.beginPath();g.moveTo(cx+w/16,h*.08);g.lineTo(cx+w/16+5,h*.22);g.lineTo(cx+w/16,h*.36);g.lineTo(cx+w/16-5,h*.22);g.closePath();g.fill();}
+ g.globalCompositeOperation='source-over';g.fillStyle='rgba(0,0,0,.25)';g.fillRect(0,h*.02,w,2);});
+// LACE_B: alpine cut-out balustrade boards — each 0.2 m board carries a tulip/heart cut-out; repeats along x.
+TEX.laceB=canvasTex(128,64,(g,w,h)=>{g.clearRect(0,0,w,h);const n=4,bw=w/n;
+ for(let k=0;k<n;k++){const x0=k*bw;g.fillStyle='#fff';g.beginPath();g.moveTo(x0+1,0);g.lineTo(x0+bw-1,0);g.lineTo(x0+bw-1,h);g.lineTo(x0+1,h);g.fill();
+  g.fillStyle='rgba(0,0,0,.18)';g.fillRect(x0+bw-2,0,1,h);}
+ g.globalCompositeOperation='destination-out';
+ for(let k=0;k<n;k++){const cx=k*bw+bw;   // cut-outs straddle the joint, so two boards make one shape
+  g.beginPath();g.moveTo(cx,h*.22);g.bezierCurveTo(cx-bw*.5,h*.1,cx-bw*.5,h*.5,cx,h*.78);g.bezierCurveTo(cx+bw*.5,h*.5,cx+bw*.5,h*.1,cx,h*.22);g.fill();}
+ g.globalCompositeOperation='source-over';});
+// ---------------------------------------------------------------- clock face (colour-carrying)
+TEX.clock=canvasTex(256,256,(g,w,h)=>{const c=w/2;g.fillStyle='#1c1a1c';g.fillRect(0,0,w,h);
+ g.beginPath();g.arc(c,c,c*.96,0,TAU);g.fillStyle='#c9a043';g.fill();g.beginPath();g.arc(c,c,c*.84,0,TAU);g.fillStyle='#f1e8d2';g.fill();
+ g.strokeStyle='#1c1a1c';for(let k=0;k<60;k++){const a=k/60*TAU,L=k%5?c*.05:c*.13;g.lineWidth=k%5?2:6;g.beginPath();g.moveTo(c+Math.sin(a)*c*.8,c-Math.cos(a)*c*.8);g.lineTo(c+Math.sin(a)*(c*.8-L),c-Math.cos(a)*(c*.8-L));g.stroke();}
+ g.lineCap='round';g.lineWidth=10;g.beginPath();g.moveTo(c,c);g.lineTo(c+Math.sin(5.2)*c*.42,c-Math.cos(5.2)*c*.42);g.stroke();
+ g.lineWidth=6;g.beginPath();g.moveTo(c,c);g.lineTo(c+Math.sin(2.1)*c*.66,c-Math.cos(2.1)*c*.66);g.stroke();
+ g.beginPath();g.arc(c,c,c*.06,0,TAU);g.fillStyle='#b3322a';g.fill();});
+// ---------------------------------------------------------------- cliff rock (fractured grey granite, strata and streaks): 8 m tile
+TEX.rock=canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;const n=fbm(x/40,y/22,1.7,4),n2=fbm(x/6,y/6,4.4,2);
+  let v=128+(n-.5)*90+(n2-.5)*30;
+  const crack=Math.abs(fbm(x/30,y/90,8.1,3)-.5);if(crack<.02)v-=60*(1-crack/.02);                        // vertical joints
+  const strat=Math.abs(Math.sin((y/h*5+fbm(x/50,y/50,2,2)*1.4)*Math.PI));if(strat<.06)v-=40;               // bedding planes
+  const streak=clamp((fbm(x/5,y/70,6.6,2)-.55)*3,0,1);v-=streak*30;                                          // water streaks
+  const lichen=clamp((fbm(x/12,y/12,3.9,2)-.62)*4,0,1);
+  d[i]=v*(1-lichen*.1);d[i+1]=v*(1+lichen*.12);d[i+2]=v*(.98-lichen*.2);d[i+3]=255;}
+ g.putImageData(id,0,0);});
+// ---------------------------------------------------------------- meadow ground for the showcase: 8 m tile
+TEX.meadow=canvasTex(512,512,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;const n=fbm(x/50,y/50,.7,3),n2=fbm(x/5,y/5,3.2,2),bare=clamp((fbm(x/36,y/36,5.5,2)-.62)*4,0,1);
+  let r=86+(n-.5)*40+(n2-.5)*26,gg=112+(n-.5)*46+(n2-.5)*30,b=58+(n-.5)*20;
+  r=lerp(r,112+n2*30,bare);gg=lerp(gg,94+n2*24,bare);b=lerp(b,68,bare);d[i]=r;d[i+1]=gg;d[i+2]=b;d[i+3]=255;}
+ g.putImageData(id,0,0);});
+// ================================================================= HIGHLANDS — materials, geometry, kit items (prefix h)
+// Palette. sRGB hex as a painter picks them; hC() = vC() (sRGB -> linear once, see 69b).
+const hC=vC;
+const HPAL={
+ pine:[0xc08850,0xb07a44,0xc89a60,0xa87040],            // fresh-hewn logs and boards (Rustic, Republican poor/middle)
+ aged:[0x8a7e70,0x7a6e60,0x958878,0x847462],            // silver-grey weathered timber (poor, tribal)
+ tar:[0x4a3426,0x3a2a20,0x55392a,0x42302a],             // tarred / oiled dark timber (Norse halls, Republican rich)
+ redwood:[0x5e2a1c,0x6a3020,0x542418,0x6e3624],         // the Peles red-brown of half-timber and loggias
+ falu:[0x8a2e22,0x9a3a28,0x7e2a20],                     // red-painted boards (Rustic)
+ stucco:[0xeee3c8,0xe8dcc0,0xf2ead6,0xe4d4b0],          // cream render (Republican middle/rich/civic)
+ saxon:[0xe0b870,0xd8c0a0,0xc8d0b0,0xe4c89a,0xd8a888], // painted Transylvanian-Saxon render: ochre, sand, sage, apricot, rose
+ ashlar:[0xd8d0bc,0xc8c0ac,0xe0d8c4,0xcfc4a8],          // limestone quoins, towers, civic fronts
+ rubble:[0x9a948a,0x8a8478,0xa8a296,0x958d80],          // fieldstone socles
+ slate:[0x565c66,0x4c525c,0x60666e,0x5a5a62],           // Peles slate
+ roofGreen:[0x3f7f5f,0x2f7a6a,0x4a8a5a,0x357060],       // painted iron / glazed scale roofs (civic)
+ roofRed:[0xa0402a,0x8a3424,0xb04a30],
+ shingle:[0x9a8a78,0x8a7a68,0xa8987e,0xb0a28c],         // aspen / larch shingle, silvered
+ bamboo:[0xc8b870,0xb8a860,0xa89850,0xd0c080],
+ turf:[0xa0b080,0x90a070,0xb0b888],
+ gold:[0xd4a03a,0xc89030,0xe0b048],
+ // painted trim — the carving colours, NW-coast led: teal and red on black and white, with ochre and a Russian blue
+ trim:[0x2e9488,0xb3322a,0xefe7d6,0x2e9488,0xb3322a,0x3a6aa8,0xd19a3a],
+ teal:0x2e9488,red:0xb3322a,white:0xefe7d6,black:0x201a18,blue:0x3a6aa8,green:0x3f7a4a,ochre:0xd19a3a,
+};
+
+// ---------------------------------------------------------------- world UV with separate u/v tile sizes
+// vWorldUV (69b) uses one K for both axes; the lace and frieze maps are not square, so they need Ku != Kv.
+function hWorldUV(mat,Ku,Kv){mat.onBeforeCompile=sh=>{sh.vertexShader=sh.vertexShader.replace('#include <uv_vertex>',
+`#ifdef USE_UV
+#ifdef USE_INSTANCING
+mat4 _im=instanceMatrix;
+vec3 _sc=vec3(length(_im[0].xyz),length(_im[1].xyz),length(_im[2].xyz));
+vec3 _an=abs(normal);
+vec2 _sw=(_an.y>0.5)?vec2(_sc.x,_sc.z):((_an.x>0.5)?vec2(_sc.z,_sc.y):vec2(_sc.x,_sc.y));
+vUv=uv*_sw*vec2(${Ku.toFixed(4)},${Kv.toFixed(4)});
+#else
+vUv=uv;
+#endif
+#endif`);};return mat;}
+
+// ---------------------------------------------------------------- materials
+const hStd=(o)=>new THREE.MeshStandardMaterial(Object.assign({color:0xffffff,roughness:.92,metalness:0,side:DS},o));
+MAT.logs=hStd({map:TEX.logs});MAT.scale=hStd({map:TEX.scale,roughness:.78});MAT.rubbleW=hStd({map:TEX.rubble,roughness:.97});
+MAT.turf=hStd({map:TEX.turf,roughness:1});MAT.bamboo=hStd({map:TEX.bambooV,roughness:.7});MAT.bmat=hStd({map:TEX.bmat,roughness:.95});
+MAT.paint=hStd({roughness:.72});                         // painted timber: trims, brackets, shutters — no grain, the colour is the point
+MAT.gold=hStd({color:0xffffff,roughness:.38,metalness:.35,side:THREE.FrontSide});
+MAT.formA=hStd({map:TEX.formA,roughness:.8});MAT.formW=hStd({map:TEX.formW,roughness:.8});MAT.formV=hStd({map:TEX.formV,roughness:.8});
+MAT.formT=hStd({map:TEX.formT,roughness:.8});MAT.formF=hStd({map:TEX.formF,roughness:.8});
+MAT.totem=hStd({map:TEX.totem,roughness:.82,side:THREE.FrontSide});MAT.totemP=hStd({map:TEX.totemP,roughness:.82,side:THREE.FrontSide});
+MAT.wing=hStd({map:TEX.wing,alphaTest:.5,roughness:.85});
+MAT.laceV=hStd({map:TEX.laceV,alphaTest:.5,roughness:.75});MAT.laceB=hStd({map:TEX.laceB,alphaTest:.5,roughness:.8});
+MAT.clock=hStd({map:TEX.clock,roughness:.6});
+MAT.meadow=new THREE.MeshStandardMaterial({map:TEX.meadow,roughness:1});
+MAT.rock=hStd({map:TEX.rock,roughness:1});                // cliff faces (plain mesh, UVs from the geometry)
+vWorldUV(MAT.logs,.5);vWorldUV(MAT.scale,.5);vWorldUV(MAT.rubbleW,.25);vWorldUV(MAT.turf,.5);vWorldUV(MAT.bamboo,.5);vWorldUV(MAT.bmat,.5);
+hWorldUV(MAT.formF,.5,2);          // frieze: 2 m x 0.5 m tile (boards 0.5 m tall show one band)
+hWorldUV(MAT.laceV,.5,2);          // valance: 2 m x 0.5 m tile
+hWorldUV(MAT.laceB,1.25,1);        // balustrade: 0.8 m x 1 m tile (four 0.2 m boards)
+
+// ---------------------------------------------------------------- geometry
+// onion dome: lathe, base radius 1 at y=0, tip at y=1 (instances scale [r,h,r])
+const HONION=new THREE.LatheGeometry([[0,0],[1,0],[1.1,.1],[1.2,.24],[1.18,.36],[1.02,.5],[.72,.66],[.4,.8],[.16,.9],[.05,.97],[.02,1.0],[0,1.0]].map(p=>new THREE.Vector2(p[0],p[1])),16);
+// helm / bulb for small cupolas: a squatter, fatter onion
+const HBULB=new THREE.LatheGeometry([[0,0],[1,0],[1.25,.2],[1.3,.4],[1.1,.62],[.6,.82],[.2,.94],[0,1]].map(p=>new THREE.Vector2(p[0],p[1])),14);
+// tented (shatior) roof and octagonal drum: 8 sides, a face (not a corner) toward +z
+const HTENT=new THREE.CylinderGeometry(.015,1,1,8,1).translate(0,.5,0).rotateY(Math.PI/8);
+const HOCT=new THREE.CylinderGeometry(1,1,1,8,1).translate(0,.5,0).rotateY(Math.PI/8);
+// keel arch (kokoshnik / bochka): the Russian ogee, width 1 (x -.5..+.5), height 1 (y 0..1), extruded 1 along z (centred)
+function hKeelShape(){const s=new THREE.Shape();s.moveTo(-.5,0);s.lineTo(-.5,.3);s.bezierCurveTo(-.5,.66,-.16,.62,-.04,.86);s.quadraticCurveTo(0,.94,0,1);
+ s.quadraticCurveTo(0,.94,.04,.86);s.bezierCurveTo(.16,.62,.5,.66,.5,.3);s.lineTo(.5,0);s.lineTo(-.5,0);return s;}
+const HKEEL=new THREE.ExtrudeGeometry(hKeelShape(),{depth:1,bevelEnabled:false,curveSegments:10}).translate(0,0,-.5);
+// log end: a short horizontal cylinder along local x (instances scale [length, r, r])
+const HLOG=new THREE.CylinderGeometry(1,1,1,8).rotateZ(Math.PI/2);
+// a pole (totem) — more sides than a post, so the carving reads
+const HPOLE=new THREE.CylinderGeometry(1,1,1,16).translate(0,.5,0);
+// curved roof tile for the "swept" eave corners and dougong arms: a quarter-round bracket profile, extruded (1 x 1 x 1)
+function hArmShape(){const s=new THREE.Shape();s.moveTo(0,0);s.lineTo(1,0);s.lineTo(1,.55);s.quadraticCurveTo(.9,.95,.55,1);s.lineTo(0,1);s.lineTo(0,0);return s;}
+const HARM=new THREE.ExtrudeGeometry(hArmShape(),{depth:1,bevelEnabled:false,curveSegments:5}).translate(-.5,-.5,-.5);
+
+// ---------------------------------------------------------------- kit items
+kdef('hLogB',VBOX,MAT.logs);kdef('hScaleB',VBOX,MAT.scale);kdef('hRubB',VBOX,MAT.rubbleW);kdef('hTurfB',VBOX,MAT.turf);kdef('hBMatB',VBOX,MAT.bmat);
+kdef('hPaint',VBOX,MAT.paint);kdef('hGoldB',VBOX,MAT.gold);kdef('hGold',VBALL,MAT.gold);kdef('hPaintBall',VBALL,MAT.paint);
+kdef('hFormA',VPLANE,MAT.formA);kdef('hFormW',VPLANE,MAT.formW);kdef('hFormV',VPLANE,MAT.formV);kdef('hFormT',VPLANE,MAT.formT);kdef('hFormF',VBOX,MAT.formF);
+kdef('hLaceV',VPLANE,MAT.laceV);kdef('hLaceB',VPLANE,MAT.laceB);kdef('hWing',VPLANE,MAT.wing);kdef('hClock',VPLANE,MAT.clock);
+kdef('hTotem',HPOLE,MAT.totem);kdef('hTotemP',HPOLE,MAT.totemP);
+kdef('hBamboo',new THREE.CylinderGeometry(1,1,1,7).translate(0,.5,0),MAT.bamboo);kdef('hBambooC',new THREE.CylinderGeometry(.5,.5,1,7),MAT.bamboo);   // hBambooC is CENTRED (for beam(): w = diameter)
+kdef('hLogEnd',HLOG,MAT.woodV);kdef('hLogX',HLOG,MAT.logs);   // log ends at notched corners; whole logs lying along x (beams, woodpiles, cliff struts)
+kdef('hOnionG',HONION,MAT.gold);kdef('hOnionSc',HONION,MAT.scale);kdef('hOnionSh',HONION,MAT.shingle);
+kdef('hBulbG',HBULB,MAT.gold);kdef('hBulbSc',HBULB,MAT.scale);kdef('hBulbSh',HBULB,MAT.shingle);
+kdef('hTentSc',HTENT,MAT.scale);kdef('hTentSh',HTENT,MAT.shingle);kdef('hTentT',HTENT,MAT.thatch);
+kdef('hOctP',HOCT,MAT.plaster);kdef('hOctL',HOCT,MAT.logs);kdef('hOctW',HOCT,MAT.wood);kdef('hOctS',HOCT,MAT.stone);kdef('hOctSh',HOCT,MAT.shingle);
+kdef('hKeelSc',HKEEL,MAT.scale);kdef('hKeelW',HKEEL,MAT.wood);kdef('hKeelP',HKEEL,MAT.plaster);kdef('hKeelSh',HKEEL,MAT.shingle);kdef('hKeelG',HKEEL,MAT.gold);kdef('hKeelDark',HKEEL,MAT.void);
+kdef('hGableSc',VGABLE,MAT.scale);kdef('hGableTurf',VGABLE,MAT.turf);kdef('hGableLog',VGABLE,MAT.logs);kdef('hGableBM',VGABLE,MAT.bmat);kdef('hGableRub',VGABLE,MAT.rubbleW);kdef('hGablePaint',VGABLE,MAT.paint);
+kdef('hPyrSc',VPYR,MAT.scale);kdef('hHipSc',VHIP,MAT.scale);kdef('hHipTurf',VHIP,MAT.turf);kdef('hHipSh',VHIP,MAT.shingle);
+kdef('hBatterRub',VBATTER,MAT.rubbleW);
+kdef('hArm',HARM,MAT.paint);kdef('hArmW',HARM,MAT.wood);
+kdef('hConeG',VCONE,MAT.gold);kdef('hConeSc',VCONE,MAT.scale);kdef('hConeSh',VCONE,MAT.shingle);
+// ================================================================= HIGHLANDS — registry + structural helpers (prefix hn)
+// The Highlands kit reuses the Iziz Vernacular registry (VERN, 69c) so that one placer (VERN.place), one inspector
+// and one set of building blocks (vB vPst vnWin vnDoor vnGableRoof …) serve both kits. HL.def adds the kit's own
+// fields: BRANCH (republican | rustic | tribal) and FAMILY (the showcase row it belongs to).
+//
+// Local frame as in the vernacular set: origin at the plot centre on the ground, +z is the FRONT (the door side),
+// y up, metres; a builder never touches world coordinates.
+const HL={branches:{republican:'Republican',rustic:'Rustic',tribal:'Tribal'},
+ def(D){if(!HL.branches[D.branch])throw new Error('HL.def '+D.key+': branch must be republican|rustic|tribal');
+  D.tags=Object.assign({culture:'highland-'+D.branch,kit:'highlands'},D.tags||{});D.family=D.family||'misc';return VERN.def(D);},
+ keys(branch){return VERN.order.filter(k=>VERN.defs[k].branch===branch);},
+ // families in definition order for one branch: [{family, keys:[…]}]
+ families(branch){const out=[],idx={};for(const k of HL.keys(branch)){const f=VERN.defs[k].family;if(idx[f]===undefined){idx[f]=out.length;out.push({family:f,keys:[]});}out[idx[f]].keys.push(k);}return out;},
+};
+// Place a whole sub-building (another def) inside the builder that is running — a compound, a cliff village, a
+// farm with its farmhouse. (lx,ly,lz,lry) are in the CURRENT builder's local frame. The child is placed in world
+// space through VERN.place with the parent's transform composed by hand, then the parent's state is restored.
+function hnSub(key,lx,ly,lz,lry,o){const P=VERN.cur;const s=P.o.scale||1;const p=loc(P.x,P.z,lx*s,lz*s,P.ry);
+ const saveK=KXF,saveO=KOFF.slice();KXF=null;
+ const G=VERN.place(P.G.parent||scene,key,p[0],p[1],P.ry+(lry||0),Object.assign({},o||{},{y:(P.o.y||0)+ly*s,scale:s*((o&&o.scale)||1)}));
+ KXF=saveK;KOFF=saveO;VERN.cur=P;return G;}
+
+// ---------------------------------------------------------------- vectors in the local frame
+// rotate a local direction by yaw ry (the same convention as loc())
+const hRot=(ry,v)=>[v[0]*Math.cos(ry)+v[2]*Math.sin(ry),v[1],-v[0]*Math.sin(ry)+v[2]*Math.cos(ry)];
+const hAdd=(a,b,k)=>[a[0]+b[0]*(k===undefined?1:k),a[1]+b[1]*(k===undefined?1:k),a[2]+b[2]*(k===undefined?1:k)];
+const hNorm=v=>{const L=Math.hypot(v[0],v[1],v[2])||1;return[v[0]/L,v[1]/L,v[2]/L];};
+const hCross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+// An item placed with a full basis: its local x along X, its local z (a plane's face) toward Z. Z is
+// re-orthogonalised against X. Use for braces that must lie flat on a wall, bargeboards along a rake, struts.
+function hnOri(item,P,X,Z,s,c){const x=hNorm(X);let y=hNorm(hCross(Z,x));const z=hCross(x,y);
+ const m=new THREE.Matrix4().makeBasis(new THREE.Vector3(...x),new THREE.Vector3(...y),new THREE.Vector3(...z));
+ kput(item,P,new THREE.Quaternion().setFromRotationMatrix(m),s,c||null);}
+// a member from a to b (local points), section w x t, lying flat against a surface whose normal is N
+function hnMember(item,a,b,w,t,N,c){const X=[b[0]-a[0],b[1]-a[1],b[2]-a[2]];const L=Math.hypot(...X);hnOri(item,[(a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2],X,N,[L,w,t],c);}
+// local point on a face: (x,z,ry) is the face frame (ry = outward direction), u along the face, y up, o out
+const hnOn=(x,y,z,ry,u,o)=>{const p=loc(x,z,u,o||0,ry);return[p[0],y,p[1]];};
+
+// ---------------------------------------------------------------- walls
+// Log walls (izba / Norse): a box of round-log courses and, at each corner, the crossed log ends of the saddle
+// notch sticking out `ext` metres, alternating direction course by course.
+function hnLogBox(x,y,z,w,h,d,ry,c,ext){ext=ext===undefined?.32:ext;vB('hLogB',x,y,z,w,h,d,ry,c);if(!ext)return;
+ const LH=1/3,n=Math.floor(h/LH);const ce=c?c.clone().multiplyScalar(1.08):null;
+ for(let k=0;k<n;k++){const yy=y+(k+.5)*LH;const alongX=k%2===0;
+  for(const sx of[-1,1])for(const sz of[-1,1]){
+   if(alongX){const p=loc(x,z,sx*(w/2+ext/2-.02),sz*(d/2-.12),ry);kput('hLogEnd',[p[0],yy,p[1]],qEuler(0,ry,0),[ext+.2,.16,.16],ce);}
+   else{const p=loc(x,z,sx*(w/2-.12),sz*(d/2+ext/2-.02),ry);kput('hLogEnd',[p[0],yy,p[1]],qEuler(0,ry+Math.PI/2,0),[ext+.2,.16,.16],ce);}}}}
+// Fieldstone socle with a dressed cap (the Peles base, the chalet ground storey, the Norse hall platform).
+function hnSocle(x,y,z,w,h,d,ry,c,capC){vB('hRubB',x,y,z,w,h,d,ry,c||hC(vPick(HPAL.rubble)));vB('vStone',x,y+h-.12,z,w+.16,.16,d+.16,ry,capC||hC(vPick(HPAL.ashlar)));}
+// Rendered masonry block with ashlar quoins at the four corners (cream stucco, limestone corners).
+function hnStucco(x,y,z,w,h,d,ry,c,qC){vB('vPlaster',x,y,z,w,h,d,ry,c||hC(vPick(HPAL.stucco)));if(qC===false)return;const qc=qC||hC(vPick(HPAL.ashlar));
+ const n=Math.floor(h/.6);for(let k=0;k<n;k++){const big=k%2===0;for(const sx of[-1,1])for(const sz of[-1,1]){
+  const p=loc(x,z,sx*(w/2-(big?.28:.2)+.03),sz*(d/2+.03),ry);vB('vStone',p[0],y+k*.6,p[1],big?.62:.46,.56,.08,ry,qc);
+  const q=loc(x,z,sx*(w/2+.03),sz*(d/2-(big?.2:.28)+.03),ry);vB('vStone',q[0],y+k*.6,q[1],.08,.56,big?.46:.62,ry,qc);}}}
+// Half-timbering (Fachwerk) on ONE face: (x,z,ry) the face centre and outward direction, w the face width, h the
+// storey. Posts every ~1.1 m, sill + head beams, braces in the solid bays (the "Mann" figure: a K of braces on the
+// posts either side), windows in the bays listed in `wins` (bay indices; -1 = auto: every other bay).
+// kind: window kind for vnWin ('lit' | 'glass' | 'shut' | 'open').
+function hnFachFace(x,y,z,ry,w,h,c,wins,kind,winC){c=c||hC(vPick(HPAL.redwood));const nb=Math.max(2,Math.round(w/1.15)),bw=w/nb,T=.07,N=hRot(ry,[0,0,1]);
+ const isWin=i=>wins===-1?(i%2===1&&i<nb-1):(wins||[]).indexOf(i)>=0;
+ const P=(u,yy)=>hnOn(x,yy,z,ry,u,T/2);
+ hnMember('vWood',P(-w/2,y+.1),P(w/2,y+.1),.2,T,N,c);hnMember('vWood',P(-w/2,y+h-.1),P(w/2,y+h-.1),.2,T,N,c);   // sill, head
+ for(let i=0;i<=nb;i++){const u=-w/2+i*bw;hnMember('vWood',P(u,y),P(u,y+h),.18,T,N,c);}                              // posts
+ for(let i=0;i<nb;i++){const u0=-w/2+i*bw,u1=u0+bw,um=(u0+u1)/2;
+  if(isWin(i)){const wy=y+h*.36,wh=h*.42;hnMember('vWood',P(u0,wy-.08),P(u1,wy-.08),.14,T,N,c);hnMember('vWood',P(u0,wy+wh+.1),P(u1,wy+wh+.1),.14,T,N,c);
+   const wp=loc(x,z,um,0,ry);vnWin(wp[0],wy,wp[1],ry,bw*.62,wh,kind||'glass','vWood',winC||c,false);
+   // short braces under the sill (the Saxon "Andreaskreuz" in miniature)
+   hnMember('vWood',P(u0,y+.15),P(um,wy-.12),.1,T,N,c);hnMember('vWood',P(u1,y+.15),P(um,wy-.12),.1,T,N,c);}
+  else{const mid=y+h*.5;hnMember('vWood',P(u0,mid),P(u1,mid),.14,T,N,c);                                             // mid rail
+   if(i%2===0){hnMember('vWood',P(u0,y+.15),P(u1,mid),.14,T,N,c);hnMember('vWood',P(u0,mid),P(u1,y+h-.15),.14,T,N,c);}
+   else{hnMember('vWood',P(u1,y+.15),P(u0,mid),.14,T,N,c);hnMember('vWood',P(u1,mid),P(u0,y+h-.15),.14,T,N,c);}}}}
+// All four faces of a half-timbered storey on a plaster box. Front and back get windows every other bay.
+function hnFachBox(x,y,z,w,h,d,ry,wallC,beamC,kind){vB('vPlaster',x,y,z,w,h,d,ry,wallC||hC(vPick(HPAL.stucco)));beamC=beamC||hC(vPick(HPAL.redwood));
+ for(const s of[1,-1]){const p=loc(x,z,0,s*d/2,ry);hnFachFace(p[0],y,p[1],ry+(s>0?0:Math.PI),w,h,beamC,-1,kind);}
+ for(const s of[1,-1]){const p=loc(x,z,s*w/2,0,ry);hnFachFace(p[0],y,p[1],ry+s*Math.PI/2,d,h,beamC,d>5?-1:[],kind);}}
+// A jettied upper storey: the floor above oversails the one below on carved joist ends.
+function hnJetty(x,y,z,w,d,ry,c,out){out=out||.45;const n=Math.round(w/.6);for(let i=0;i<=n;i++){for(const s of[-1,1]){const p=loc(x,z,-w/2+w*i/n,s*(d/2+out/2-.1),ry);
+ vB('vWood',p[0],y-.26,p[1],.16,.24,out+.2,ry,c);}}
+ vB('vWood',x,y-.06,z,w+.1,.12,d+2*out,ry,c);}
+
+// ---------------------------------------------------------------- roofs
+// Steep gable in any of the kit's slab items (ridge along local x). A thin wrapper so every branch pitches alike:
+// `pitch` is rise/half-depth (1.2 ≈ 50°, the Norse/Russian norm; 0.55 the Alpine chalet).
+function hnGable(x,y,z,w,d,pitch,ry,slabItem,slabC,over,endItem,endC){const rise=pitch*d/2;vnGableRoof(x,y,z,w,d,rise,ry,slabItem,slabC,over,endItem,endC);return y+rise;}
+// Tented roof (shatior) on an octagonal or square plan: 8-sided cone, optional lucarne band.
+function hnTent(x,y,z,r,h,item,c){kput(item||'hTentSc',[x,y-.05,z],null,[r,h,r],c||null);return y+h;}
+// Onion dome on a drum: drum (octagonal), a little neck, the onion, a gold ball and cross-less finial spike.
+// kind: 'G' gold | 'Sc' scale (tinted) | 'Sh' aspen shingle
+function hnOnion(x,y,z,r,kind,c,drumH,drumItem,drumC){let yy=y;if(drumH){kput(drumItem||'hOctP',[x,yy,z],null,[r*.8,drumH,r*.8],drumC||null);
+  for(let k=0;k<8;k++){const a=k/8*TAU+Math.PI/8;vnWin(x+Math.sin(a)*r*.8,yy+drumH*.3,z+Math.cos(a)*r*.8,a,r*.22,drumH*.42,'open','hPaint',hC(HPAL.white));}
+  vB('hPaint',x,yy+drumH,z,r*1.72,.16,r*1.72,0,hC(HPAL.white));yy+=drumH+.16;}
+ kput('hOnion'+(kind||'G'),[x,yy,z],null,[r,r*2.1,r],c||null);yy+=r*2.1;
+ vPst('vIron',x,yy-.05,z,.04,r*.9,hC(0x2e2a26));vBall('hGold',x,yy+r*.15,z,r*.12,hC(HPAL.gold[0]));return yy+r*.9;}
+// Keel-arch gable (kokoshnik) stood on a wall top, facing +z of (ry): a keel-shaped board with a darker recess.
+function hnKokoshnik(x,y,z,ry,w,h,item,c,recess){kput(item||'hKeelSc',[x,y,z],qEuler(0,ry,0),[w,h,.3],c||null);
+ if(recess!==false){const p=loc(x,z,0,.16,ry);kput('hKeelP',[p[0],y+h*.06,p[1]],qEuler(0,ry,0),[w*.72,h*.72,.06],hC(HPAL.white));
+  const q=loc(x,z,0,.2,ry);kput('hKeelDark',[q[0],y+h*.12,q[1]],qEuler(0,ry,0),[w*.36,h*.46,.04]);}}
+// Bochka ("barrel") roof: the keel profile run along local x (ridge along x, like hnGable) — the Russian civic
+// roof, often over a porch. w = ridge length, d = span, h = rise.
+function hnBochka(x,y,z,w,d,h,ry,item,c){kput(item||'hKeelSc',[x,y-.1,z],qEuler(0,ry+Math.PI/2,0),[d,h,w],c||null);return y+h;}
+// Pagoda tier: a hip roof whose eaves flare — the lower slab of a low wide hip plus upturned corner horns.
+function hnTier(x,y,z,w,d,rise,ry,item,c,over,hornC){over=over===undefined?1.4:over;vnHipRoof(item||'hHipSc',x,y,z,w,d,rise,ry,c,over);
+ for(const sx of[-1,1])for(const sz of[-1,1]){const p=loc(x,z,sx*(w/2+over-.2),sz*(d/2+over-.2),ry);
+  kput('hArm',[p[0],y-.25,p[1]],qEuler(0,ry+Math.atan2(sx,sz)+Math.PI/2,0),[.9,.6,.3],hornC||hC(HPAL.red));}}
+// ================================================================= HIGHLANDS — the carved and painted vocabulary (prefix hn)
+// Shared by all three branches; what varies is how much of it a building carries and in which material:
+//   Republican — nalichnik window surrounds, keel gables, onion/tent/spire roofs, dougong under civic eaves,
+//                formline boards at doors and gables, guild totems at the entrance;
+//   Rustic     — carved bargeboards with crossed horns/dragon heads, alpine balconies with cut-out boards,
+//                painted gable crests, a totem or two at the hall;
+//   Tribal     — totems everywhere, whole painted house-fronts, wings, bamboo, raw logs.
+
+// ---------------------------------------------------------------- totems and painted posts
+// Totem pole: carved column (the crest map faces the building's front when ry is the front direction), an
+// optional pair of spread wings (thunderbird crossarm) and a carved beak at the top figure.
+function hnTotem(x,y,z,r,h,ry,o){o=o||{};kput(o.painted?'hTotemP':'hTotem',[x,y,z],qEuler(0,ry+Math.PI,0),[r,h,r],null);
+ const f=loc(x,z,0,r*.9,ry);kput('vConeI',[f[0],y+h*.86,f[1]],vQ(ry,Math.PI/2,0),[r*.34,r*1.3,r*.34],hC(HPAL.black));   // the top figure's beak
+ if(o.wings){const wy=y+h*(o.wingAt||.8);for(const s of[-1,1]){const p=loc(x,z,s*(r+o.wings*.5),r*.2,ry);kput('hWing',[p[0],wy,p[1]],vQ(ry,0,s*-.12),[s*o.wings,o.wings*.5,1],null);}}
+ if(o.hat){for(let k=0;k<3;k++)vPst('hPaint',x,y+h+k*.16,z,r*(1-.12*k),.14,hC(k%2?HPAL.red:HPAL.black));}}
+// A porch post carved as a short totem (the colonnades of civic fronts, the tribal houses).
+function hnTotemPost(x,y,z,r,h,ry,painted){kput(painted?'hTotemP':'hTotem',[x,y,z],qEuler(0,ry+Math.PI,0),[r,h,r],null);
+ vB('hPaint',x,y+h-.02,z,r*2.6,.2,r*2.6,ry,hC(HPAL.black));vB('vStone',x,y-.1,z,r*2.4,.22,r*2.4,ry,hC(vPick(HPAL.rubble)));}
+// Formline board on a face: item hFormA (crest, 2:1) | hFormW (on white) | hFormV (tall board) | hFormT (gable bird)
+function hnForm(item,x,y,z,ry,w,h){const p=loc(x,z,0,.07,ry);kput(item,[p[0],y+h/2,p[1]],qEuler(0,ry,0),[w,h,1],null);}
+// Frieze band (hFormF) along a face — eave boards, lintels, the belt between storeys.
+function hnFrieze(x,y,z,ry,w,h){const p=loc(x,z,0,.05,ry);vB('hFormF',p[0],y,p[1],w,h||.5,.1,ry);}
+
+// ---------------------------------------------------------------- dougong (painted bracket sets under eaves)
+// One set on a post head at (x,y,z): a dou block, a crossed pair of arms (one along the face, one projecting
+// out toward ry), smaller blocks at the arm ends, a second longer arm and a purlin block. `s` scales the set
+// (1 ≈ a 1.6 m-wide set for a civic eave). Teal arms, red blocks, white arrises — the East-Asian note in the kit.
+function hnDougong(x,y,z,ry,s,armC,blockC){s=s||1;armC=armC||hC(HPAL.teal);blockC=blockC||hC(HPAL.red);const W=hC(HPAL.white);
+ const P=(u,yy,o)=>{const p=loc(x,z,u*s,o*s,ry);return[p[0],y+yy*s,p[1]];};const q=qEuler(0,ry,0),qo=qEuler(0,ry+Math.PI/2,0);
+ let p=P(0,.13,0);kput('hPaint',p,q,[.38*s,.26*s,.38*s],blockC);
+ p=P(0,.36,0);kput('hPaint',p,q,[1.0*s,.2*s,.22*s],armC);kput('hPaint',P(0,.36,.12),q,[1.0*s,.03*s,.02*s],W);           // arm along the face
+ p=P(0,.36,.3);kput('hArm',p,qo,[.2*s,.2*s,.95*s],armC);                                                                // projecting arm, curved nose
+ for(const u of[-.44,.44,0])kput('hPaint',P(u,.54,0),q,[.22*s,.16*s,.24*s],blockC);kput('hPaint',P(0,.54,.66),q,[.22*s,.16*s,.24*s],blockC);
+ kput('hPaint',P(0,.72,0),q,[1.6*s,.2*s,.22*s],armC);kput('hPaint',P(0,.72,.12),q,[1.6*s,.03*s,.02*s],W);
+ p=P(0,.72,.55);kput('hArm',p,qo,[.2*s,.2*s,1.3*s],armC);
+ kput('hPaint',P(0,.9,.4),q,[1.8*s,.16*s,1.2*s],blockC);}
+// A row of sets along a face (between x0..x1 in the face frame), each on a painted post head / wall plate.
+function hnBracketRow(x,y,z,ry,w,n,s,armC,blockC){for(let i=0;i<n;i++){const u=-w/2+w*(i+.5)/n;const p=loc(x,z,u,0,ry);hnDougong(p[0],y,p[1],ry,s,armC,blockC);}
+ const p=loc(x,z,0,.08,ry);vB('hPaint',p[0],y-.18,p[1],w,.18,.3,ry,armC||hC(HPAL.teal));}                                  // painted wall plate
+
+// ---------------------------------------------------------------- bargeboards, gable finials, horns
+// For a gable roof laid with vnGableRoof/hnGable at (x,y,z,w,d,rise,ry,over): carved lace bargeboards down both
+// rakes at both gable ends, a hanging "towel" board at the apex, and a finial by style:
+//   'lace'   Russian: lace bargeboards + towel + small spike
+//   'horns'  Norse: the rake boards run on past the ridge and cross, ending in curled horns
+//   'dragon' Norse, grander: crossed boards ending in carved heads with open jaws
+//   'bird'   Tribal: a thunderbird (wing plane + beak) standing on the apex
+function hnBarge(x,y,z,w,d,rise,ry,over,c,style,endOver){over=over===undefined?.9:over;c=c||hC(HPAL.white);style=style||'lace';const eo=endOver===undefined?over:endOver;
+ const run=d/2+over,drop=over*rise/(d/2);
+ for(const sx of[-1,1]){const gx=sx*(w/2+eo+.04);const N=hRot(ry,[sx,0,0]);
+  const apex=[...loc(x,z,gx,0,ry)];const A=[apex[0],y+rise+.05,apex[1]];
+  for(const sz of[-1,1]){const e=loc(x,z,gx,sz*run,ry);const E=[e[0],y-drop,e[1]];
+   const mid=[(A[0]+E[0])/2,(A[1]+E[1])/2-.26,(A[2]+E[2])/2];const L=Math.hypot(E[0]-A[0],E[1]-A[1],E[2]-A[2]);
+   if(style==='lace'||style==='bird')hnOri('hLaceV',mid,[E[0]-A[0],E[1]-A[1],E[2]-A[2]],N,[L,.55,1],c);
+   else hnMember('hPaint',[A[0],A[1]-.12,A[2]],[E[0],E[1]-.12,E[2]],.34,.08,N,c);
+   if(style==='horns'||style==='dragon'){   // the board carries on past the apex, crossing its twin
+    const dir=hNorm([A[0]-E[0],A[1]-E[1],A[2]-E[2]]);const T=hAdd(A,dir,1.1);hnMember('hPaint',[A[0],A[1]-.12,A[2]],T,.3,.08,N,c);
+    const up=hAdd(T,[dir[0]*.25,.6,dir[2]*.25]);hnMember('hPaint',T,up,.24,.08,N,c);
+    if(style==='dragon'){const H=hAdd(up,[dir[0]*.3,.1,dir[2]*.3]);hnOri('hPaint',H,[dir[0],.3,dir[2]],N,[.7,.34,.14],c);
+     kput('vConeI',hAdd(H,[dir[0]*.35,-.04,dir[2]*.35]),qFacing([dir[0],0,dir[2]]).multiply(qEuler(Math.PI/2,0,0)),[.1,.3,.1],hC(HPAL.red));}}}
+  if(style==='lace'){hnOri('hPaint',[A[0],A[1]-.7,A[2]],hRot(ry,[0,0,1]),N,[.28,1.2,.08],c);hnOri('hLaceV',[A[0],A[1]-1.45,A[2]],hRot(ry,[0,0,1]),N,[.5,.3,1],c);
+   vPst('vIron',A[0],A[1],A[2],.03,.9,hC(0x2e2a26));vBall('hGold',A[0],A[1]+.9,A[2],.1,hC(HPAL.gold[0]));}
+  if(style==='bird'){const p=[A[0],A[1]+.55,A[2]];for(const s of[-1,1]){const q=loc(A[0],A[2],0,s*.8,ry);kput('hWing',[q[0],A[1]+.6,q[1]],qEuler(0,ry+sx*Math.PI/2,0),[s*1.6,.8,1],null);}
+   kput('hPaintBall',p,null,[.22,.26,.22],hC(HPAL.black));kput('vConeI',hAdd(p,N,.28),qFacing(N).multiply(qEuler(Math.PI/2,0,0)),[.07,.3,.07],hC(HPAL.red));}}}
+
+// ---------------------------------------------------------------- windows, porches, balconies
+// Nalichnik: a window in a wide painted surround — side boards, a pediment (keel or small gable), a lace
+// valance under the sill and painted shutters. The Russian/Republican window; the Rustic uses it plainer.
+function hnNal(x,y,z,ry,w,h,kind,trimC,o){o=o||{};trimC=trimC||hC(HPAL.white);vnWin(x,y,z,ry,w,h,kind||'glass','hPaint',trimC,o.shutters?true:false);
+ const f=(u,oo)=>loc(x,z,u,oo,ry);
+ for(const s of[-1,1]){const p=f(s*(w/2+.2),.12);vB('hPaint',p[0],y-.2,p[1],.22,h+.45,.06,ry,trimC);}
+ const pe=f(0,.14);if(o.keel)kput('hKeelW',[pe[0],y+h+.1,pe[1]],qEuler(0,ry,0),[w+.7,.7,.12],trimC);
+ else{for(const s of[-1,1]){const a=hnOn(x,y+h+.12,z,ry,s*(w/2+.35),.14),b=hnOn(x,y+h+.52,z,ry,0,.14);hnMember('hPaint',a,b,.16,.08,hRot(ry,[0,0,1]),trimC);}
+  vB('hPaint',pe[0],y+h+.08,pe[1],w+.7,.1,.14,ry,trimC);}
+ const v=f(0,.12);kput('hLaceV',[v[0],y-.42,v[1]],qEuler(0,ry,0),[w+.4,.4,1],trimC);
+ if(o.accent){const a=f(0,.16);vB('hPaint',a[0],y+h+.2,a[1],.3,.18,.04,ry,o.accent);}}
+// Russian porch (kryltso): a stair to a raised door under a bochka roof on bulbous posts.
+function hnKryltso(x,y,z,ry,w,rise,roofItem,roofC,postC){const run=Math.max(1.6,rise*1.3);const steps=Math.max(3,Math.round(rise/.2));
+ const s=loc(x,z,0,run/2,ry);vnStairs(s[0],y,s[1],ry,w,rise,steps,'vWood',postC);
+ const pl=loc(x,z,0,.5,ry);vB('vWood',pl[0],y+rise-.18,pl[1],w+.6,.18,1.2,ry,postC);
+ for(const sx of[-1,1])for(const sz of[0,1]){const p=loc(x,z,sx*(w/2+.15),.1+sz*(run+.6),ry);const base=sz?y:y+rise;const H=(y+rise+2.4)-base;
+  vPst('vPostB',p[0],base,p[1],.1,H,postC);kput('hPaintBall',[p[0],base+H*.45,p[1]],null,[.2,.3,.2],postC);}
+ const rc=loc(x,z,0,(run+.6)/2+.1,ry);hnBochka(rc[0],y+rise+2.4,rc[1],run+1.3,w+.9,1.7,ry+Math.PI/2,roofItem||'hKeelSc',roofC);   // ridge runs down the stair
+ vB('vWood',rc[0],y+rise+2.3,rc[1],w+.9,.14,run+1.3,ry,postC);}
+// Alpine balcony: deck on angled brackets, cut-out-board balustrade on three sides, top rail, flower boxes.
+function hnBalcony(x,y,z,ry,w,d,c,railC,flowers){c=c||hC(vPick(HPAL.tar));railC=railC||c;const N=hRot(ry,[0,0,1]);
+ const dc=loc(x,z,0,d/2,ry);vB('vWood',dc[0],y-.14,dc[1],w,.14,d,ry,c);
+ const n=Math.max(2,Math.round(w/1.4));for(let i=0;i<=n;i++){const u=-w/2+w*i/n;hnMember('vWood',hnOn(x,y-1.1,z,ry,u,.05),hnOn(x,y-.16,z,ry,u,d*.9),.14,.12,hRot(ry,[1,0,0]),c);}
+ const fr=loc(x,z,0,d-.03,ry);kput('hLaceB',[fr[0],y+.5,fr[1]],qEuler(0,ry,0),[w-.1,.95,1],railC);vB('vWood',fr[0],y+.98,fr[1],w+.06,.1,.14,ry,c);
+ for(const s of[-1,1]){const p=loc(x,z,s*(w/2-.03),d/2,ry);kput('hLaceB',[p[0],y+.5,p[1]],qEuler(0,ry+Math.PI/2,0),[d,.95,1],railC);vB('vWood',p[0],y+.98,p[1],.14,.1,d,ry,c);}
+ if(flowers!==false){const fb=loc(x,z,0,d+.12,ry);vB('vWood',fb[0],y+.9,fb[1],w-.4,.22,.22,ry,c);
+  for(let k=0;k<Math.round(w*2.2);k++){const p=loc(x,z,rr(-w/2+.3,w/2-.3),d+.14,ry);kput('vLeaf',[p[0],y+1.14,p[1]],null,[rr(.14,.22),.14,.16],hC(0x3f7a34));
+   kput('hPaintBall',[p[0]+rr(-.08,.08),y+1.24,p[1]+rr(-.05,.05)],null,[.08,.07,.08],hC(vPick([0xd0302a,0xe04a3a,0xc02848,0xf0f0f0])));}}}
+// A plain wooden gallery (external stair landing / walkway): plank deck with post-and-rail balustrade.
+function hnDeckRail(a,b,y,c,railH){railH=railH||1;const L=Math.hypot(b[0]-a[0],b[2]-a[2]);const n=Math.max(1,Math.round(L/1.4));
+ for(let i=0;i<=n;i++){const t=i/n;vPst('vPost',lerp(a[0],b[0],t),lerp(a[1],b[1],t),lerp(a[2],b[2],t),.05,railH,c);}
+ beam('vWood',[a[0],a[1]+railH,a[2]],[b[0],b[1]+railH,b[2]],.07,.07,c);beam('vWood',[a[0],a[1]+railH*.5,a[2]],[b[0],b[1]+railH*.5,b[2]],.05,.05,c);}
+
+// ---------------------------------------------------------------- towers (Peles, clocktowers, wall towers)
+// o: {shaft:'stucco'|'rubble'|'logs'|'oct', roof:'spire'|'tent'|'onion'|'helm'|'pyr', loggia:true, clock:true,
+//     c (shaft colour), roofC, trimC, beamC, lit}
+// Returns the y of the roof tip. The loggia is the Peles signature: a timber belt of arched openings and
+// balustrade under the roof, in red-brown timber, on a stone shaft.
+function hnTower(x,y,z,w,h,ry,o){o=o||{};const trimC=o.trimC||hC(HPAL.white),beamC=o.beamC||hC(vPick(HPAL.redwood));let top=y+h;
+ if(o.shaft==='oct'){kput('hOctP',[x,y,z],qEuler(0,ry,0),[w*.54,h,w*.54],o.c||hC(vPick(HPAL.stucco)));}
+ else if(o.shaft==='rubble')vB('hRubB',x,y,z,w,h,w,ry,o.c||hC(vPick(HPAL.rubble)));
+ else if(o.shaft==='logs')hnLogBox(x,y,z,w,h,w,ry,o.c||hC(vPick(HPAL.pine)));
+ else hnStucco(x,y,z,w,h,w,ry,o.c,o.qC);
+ // string courses and a window per face per ~4 m
+ for(let yy=y+4;yy<y+h-1;yy+=4)vB('vStone',x,yy,z,w+.14,.16,w+.14,ry,hC(vPick(HPAL.ashlar)));
+ for(let k=0;k<4;k++){const a=ry+k*Math.PI/2;for(let yy=y+2;yy<y+h-2.5;yy+=4){const p=loc(x,z,0,w/2,a);vnWin(p[0],yy,p[1],a,.7,1.5,o.lit?'lit':'glass','vStone',hC(vPick(HPAL.ashlar)));}}
+ if(o.clock){for(let k=0;k<4;k++){const a=ry+k*Math.PI/2;const p=loc(x,z,0,w/2+.08,a);kput('hClock',[p[0],y+h-w*.42,p[1]],qEuler(0,a,0),[w*.62,w*.62,1],null);}}
+ if(o.loggia){const LH=2.6;vB('vWood',x,top,z,w+.8,.25,w+.8,ry,beamC);
+  for(let k=0;k<4;k++){const a=ry+k*Math.PI/2;const f=loc(x,z,0,(w+.8)/2,a);kput('hLaceB',[f[0],top+.7,f[1]],qEuler(0,a,0),[w+.7,.9,1],beamC);
+   const n=Math.max(2,Math.round(w/1.4));for(let i=0;i<=n;i++){const p=loc(x,z,-(w+.8)/2+(w+.8)*i/n,(w+.8)/2-.08,a);vPst('vPost',p[0],top+.25,p[1],.09,LH,beamC);}
+   for(let i=0;i<n;i++){const p=loc(x,z,-(w+.8)/2+(w+.8)*(i+.5)/n,(w+.8)/2-.08,a);kput('hKeelW',[p[0],top+LH-.55,p[1]],qEuler(0,a,0),[(w+.8)/n-.18,.6,.1],beamC);}}
+  vB('vDarkB',x,top+.25,z,w-.3,LH,w-.3,ry);top+=LH+.25;vB('vWood',x,top,z,w+1.1,.2,w+1.1,ry,beamC);top+=.2;}
+ const roof=o.roof||'spire',rc=o.roofC||hC(vPick(HPAL.slate));
+ if(roof==='spire'){kput('hPyrSc',[x,top-.2,z],qEuler(0,ry,0),[w+1.2,w*2.1,w+1.2],rc);
+  for(let k=0;k<4;k++){const a=ry+k*Math.PI/2;const p=loc(x,z,0,w*.42,a);vB('vPlaster',p[0],top+w*.35,p[1],w*.28,w*.3,.5,a,trimC);vnGableRoof(p[0],top+w*.35+w*.3,p[1],w*.28,.5,w*.22,a+Math.PI/2,'hGableSc',rc,.08);}
+  const t=top-.2+w*2.1;vPst('vIron',x,t-.4,z,.07,w*.9,hC(0x2e2a26));vBall('hGold',x,t+w*.3,z,.16,hC(HPAL.gold[0]));top=t+w*.9;}
+ else if(roof==='tent'){top=hnTent(x,top,z,w*.78,w*1.9,'hTentSc',rc);vPst('vIron',x,top-.3,z,.05,1.2,hC(0x2e2a26));vBall('hGold',x,top+.3,z,.14,hC(HPAL.gold[0]));top+=1;}
+ else if(roof==='onion'){top=hnOnion(x,top,z,w*.4,o.onion||'G',o.onionC,w*.5,'hOctP',hC(vPick(HPAL.stucco)));}
+ else if(roof==='helm'){kput('hBulbSc',[x,top-.1,z],null,[w*.62,w*.9,w*.62],rc);top+=w*.9;vPst('vIron',x,top-.1,z,.05,1.4,hC(0x2e2a26));top+=1.3;}
+ else{vnPyrRoof('hPyrSc',x,top,z,w,w,w*.8,ry,rc,.5);top+=w*.8;}
+ return top;}
+
+// ---------------------------------------------------------------- bamboo (tribal and the poorest Republican/Rustic)
+// Bamboo-frame wall: woven mat panels between culm posts and rails.
+function hnBambooBox(x,y,z,w,h,d,ry,c,matC){vB('hBMatB',x,y,z,w,h,d,ry,matC||hC(vPick(HPAL.bamboo)));c=c||hC(vPick(HPAL.bamboo));
+ const nx=Math.max(1,Math.round(w/1.2)),nz=Math.max(1,Math.round(d/1.2));
+ for(let i=0;i<=nx;i++)for(const s of[-1,1]){const p=loc(x,z,-w/2+w*i/nx,s*(d/2+.04),ry);vPst('hBamboo',p[0],y,p[1],.07,h+.25,c);}
+ for(let j=1;j<nz;j++)for(const s of[-1,1]){const p=loc(x,z,s*(w/2+.04),-d/2+d*j/nz,ry);vPst('hBamboo',p[0],y,p[1],.07,h+.25,c);}
+ for(const yy of[y+.1,y+h*.55,y+h-.1])for(const s of[-1,1]){const a=loc(x,z,-w/2-.1,s*(d/2+.1),ry),b=loc(x,z,w/2+.1,s*(d/2+.1),ry);beam('hBambooC',[a[0],yy,a[1]],[b[0],yy,b[1]],.12,.12,c);
+  const e=loc(x,z,s*(w/2+.1),-d/2-.1,ry),f=loc(x,z,s*(w/2+.1),d/2+.1,ry);beam('hBambooC',[e[0],yy,e[1]],[f[0],yy,f[1]],.12,.12,c);}}
+// Bamboo lashed railing between two points.
+function hnBambooRail(a,b,c,h){h=h||1;const L=Math.hypot(b[0]-a[0],b[2]-a[2]);const n=Math.max(1,Math.round(L/1.1));c=c||hC(vPick(HPAL.bamboo));
+ for(let i=0;i<=n;i++){const t=i/n;vPst('hBamboo',lerp(a[0],b[0],t),lerp(a[1],b[1],t),lerp(a[2],b[2],t),.045,h,c);}
+ for(const yy of[h,h*.55])beam('hBambooC',[a[0],a[1]+yy,a[2]],[b[0],b[1]+yy,b[2]],.1,.1,c);}
+
+// ---------------------------------------------------------------- cliff walkways (tribal cliff settlements)
+// A walkway along a polyline of local points [x,y,z] (deck level) with the cliff face toward `back` (a local unit
+// vector, usually [0,0,-1]): plank deck, bamboo rail on the open side, and raking struts from under the deck
+// back and down into the rock. Consecutive points at different heights become flights of steps.
+function hnCliffWalk(pts,w,back,c,railC){c=c||hC(vPick(HPAL.aged));back=back||[0,0,-1];
+ for(let i=0;i+1<pts.length;i++){const a=pts[i],b=pts[i+1];const dx=b[0]-a[0],dy=b[1]-a[1],dz=b[2]-a[2];const L=Math.hypot(dx,dz);const yaw=Math.atan2(dx,dz);
+  const out=[-back[0],0,-back[2]];const side=(dx*out[2]-dz*out[0])>0?1:-1;
+  if(Math.abs(dy)<.3){beam('vWood',[a[0],a[1]-.08,a[2]],[b[0],b[1]-.08,b[2]],w,.14,c);}
+  else{const n=Math.max(2,Math.round(Math.abs(dy)/.22));for(let k=0;k<n;k++){const t=(k+.5)/n;kput('vWood',[lerp(a[0],b[0],t),lerp(a[1],b[1],t)-.05,lerp(a[2],b[2],t)],qEuler(0,yaw,0),[w,.08,L/n+.06],c);}
+   for(const s of[-1,1]){const o=[Math.cos(yaw)*w/2*s,0,-Math.sin(yaw)*w/2*s];beam('vWood',hAdd([a[0],a[1]-.2,a[2]],o),hAdd([b[0],b[1]-.2,b[2]],o),.08,.2,c);}}
+  // rail on the open side
+  const o=[out[0]*w/2,0,out[2]*w/2];hnBambooRail(hAdd(a,o),hAdd(b,o),railC,1.05);
+  // struts: every ~2.5 m, from the deck's outer edge back and down to the rock
+  const ns=Math.max(1,Math.round(L/2.5));for(let k=0;k<=ns;k++){const t=k/ns;const p=[lerp(a[0],b[0],t),lerp(a[1],b[1],t)-.14,lerp(a[2],b[2],t)];
+   const edge=hAdd(p,o,.9);const foot=hAdd(hAdd(p,back,1.6),[0,-2.4,0]);beam('vWood',edge,foot,.12,.12,c);
+   const under=hAdd(p,back,.1);beam('vWood',edge,hAdd(under,back,.6),.1,.1,c);}}}
+// A plain rock face for the showcase cliff (a real settlement uses the terrain): a gridSurface with fbm relief,
+// standing along local x at z=zc, facing +z, from y0 up to y1.
+function hnCliffFace(G,x0,x1,zc,y0,y1,seed){const W=x1-x0,H=y1-y0;const geo=gridSurface((u,v)=>{const X=x0+u*W,Y=y0+v*H;
+  const bulge=(fbm(u*3+seed,v*2.2,seed*.3,4)-.5)*6+(fbm(u*12,v*9,seed,2)-.5)*2.2;
+  const ledge=Math.pow(Math.abs(Math.sin((v*H/9.5+fbm(u*2,v,seed,2)*1.5)*Math.PI)),6)*2.2;   // strata: shelves every ~9 m
+  return[X,Y,zc+bulge+ledge-(1-v)*2.5];},Math.round(W/1.2),Math.round(H/1.2),{uS:W/8,vS:H/8});
+ const m=mesh(geo,MAT.rock,G);m.material=MAT.rock.clone();m.material.color=hC(0x8a8680);return m;}
+
+// ---------------------------------------------------------------- yard furniture of the highlands
+function hnWoodpile(x,y,z,ry,w,h){const n=Math.round(h/.2);for(let k=0;k<n;k++)for(let i=0;i<Math.round(w/.2);i++){const p=loc(x,z,-w/2+.1+i*.2,0,ry);kput('hLogEnd',[p[0],y+.1+k*.19,p[1]],qEuler(0,ry+Math.PI/2,0),[.9,.09,.09],hC(vPick(HPAL.pine)));}
+ vnShedRoof(x,y+h+.1,z,w+.2,1.1,.25,ry,'vShingleB',hC(vPick(HPAL.shingle)),.2,.08);}
+function hnStoneChimney(x,y,z,h,w){vB('hRubB',x,y,z,w,h,w,0,hC(vPick(HPAL.rubble)));vB('vStone',x,y+h,z,w+.16,.14,w+.16,0,hC(vPick(HPAL.ashlar)));vB('vDarkB',x,y+h+.12,z,w*.5,.04,w*.5,0);}
+function hnFirepit(x,y,z,r){for(let k=0;k<9;k++){const a=k/9*TAU;kput('vRock',[x+Math.cos(a)*r,y+.1,z+Math.sin(a)*r],null,[.25,.18,.22],hC(vPick(HPAL.rubble)));}
+ for(let k=0;k<4;k++)kput('hLogEnd',[x,y+.12,z],qEuler(0,k*.8,0),[r*1.4,.07,.07],hC(0x3a2a20));vBall('vEmber',x,y+.14,z,r*.3,null,.12);}
+// A standing stone (circles, boundary marks, the tribal sacred sites); `carved` paints a face on it.
+function hnMenhir(x,y,z,ry,h,c,carved){kput('vRock',[x,y+h*.45,z],qEuler(rr(-.06,.06),ry,rr(-.06,.06)),[h*.24,h*.55,h*.16],c||hC(vPick(HPAL.rubble)));
+ if(carved){const p=loc(x,z,0,h*.15,ry);kput('hFormV',[p[0],y+h*.55,p[1]],qEuler(0,ry,0),[h*.26,h*.6,1],null);}}
+// ================================================================= HIGHLANDS / REPUBLICAN — dwellings
+// The Iron Republic's houses, three wealth tiers. Poor: the log izba of the hill towns — round logs, a steep
+// shingle gable to the street, white-painted nalichniki, salvage sheet where the shingle has failed (the Iziz
+// note). Middle: the Transylvanian-Saxon townhouse — fieldstone socle, rendered ground storey in a painted
+// colour, a jettied half-timbered upper storey, steep scale roof gable-end to the street. Rich: the Peles villa —
+// rubble socle, cream stucco with quoins, red-brown half-timber above, slate roofs and a loggia tower; electric.
+// Seeds 20100–20399.
+
+// ---------------------------------------------------------------- POOR
+// A — log izba: gable to the street, two nalichnik windows on the gable wall, door and a small porch on the side
+function buildHlRepPoorA(G,o){reseed(20101+(o.v|0));const W=6.4,D=6.8,H=2.7,F=.45;
+ const log=hC(vPick(HPAL.pine)).multiplyScalar(rr(.82,.95)),trim=hC(vPick([HPAL.white,HPAL.white,HPAL.blue,HPAL.teal])),sh=hC(vPick(HPAL.shingle));
+ vnReg('Log izba (poor)',0,0,5.4,F+H+4.2);
+ vB('hRubB',0,0,0,W+.3,F,D+.3,0,hC(vPick(HPAL.rubble)));
+ hnLogBox(0,F,0,W,H,D,0,log);
+ const top=hnGable(0,F+H,0,D,W,1.25,Math.PI/2,'vShingleB',sh,.7,'vGableW',log.clone().multiplyScalar(.9));
+ hnBarge(0,F+H,0,D,W,1.25*W/2,Math.PI/2,.7,trim,'lace');
+ for(const s of[-1,1])hnNal(s*1.45,F+.95,D/2,0,.8,1.05,'shut',trim,{shutters:false});
+ vnWin(0,F+H+.9,D/2+.02,0,.55,.6,'open','hPaint',trim);                                      // attic window in the gable
+ vnDoor(W/2,F,1.3,Math.PI/2,.95,1.9,'vWood',log,hC(0x6a5040),false);
+ vB('vWood',W/2+.8,F-.2,1.3,1.6,.2,1.9,0,log);vnStairs(W/2+1.9,0,1.3,Math.PI/2,1.1,F,3,'vWood',log);   // porch deck + steps
+ for(const s of[-1,1])vPst('vPost',W/2+1.45,F,1.3+s*.85,.08,2.2,log);vnShedRoof(W/2+.9,F+2.2,1.3,1.8,2,.35,-Math.PI/2,'vShingleB',sh,.2,.1);
+ if(rng()<.6){kput('vSheet',[-1.2,F+H+1.3,-1.1],vQ(Math.PI,-Math.atan(1.25),0),[2.2,1.6,1],null);}   // a salvage sheet over a leak (the Iziz note)
+ hnStoneChimney(-1.2,F+H+.6,-.9,2.1,.6);
+ hnWoodpile(-W/2-.8,0,-.6,Math.PI/2,2.6,1.4);vnBarrel(W/2+.9,0,-1.9,.35,.9,log);
+ vnFence(0,0,1.2,W+6,D+6.5,0,hC(vPick(HPAL.aged)),2.2,1.1);vnFolk(1.5,D/2+2.2,1,1);}
+// B — two-room log house with a lean-to workshop and a plank roof held by poles: the poorest urban housing
+function buildHlRepPoorB(G,o){reseed(20111+(o.v|0));const W=8.2,D=5.4,H=2.6,F=.35;
+ const log=hC(vPick(HPAL.aged)),trim=hC(vPick([HPAL.white,HPAL.teal,HPAL.red])),sh=hC(vPick(HPAL.shingle)).multiplyScalar(.9);
+ vnReg('Two-room log house (poor)',0,0,6,F+H+3.6);
+ vB('hRubB',0,0,0,W+.3,F,D+.3,0,hC(vPick(HPAL.rubble)));hnLogBox(0,F,0,W,H,D,0,log);
+ hnGable(0,F+H,0,W,D,1.1,0,'vShingleB',sh,.6,'vGableW',log);
+ for(let k=0;k<4;k++)beam('vWood',[-W/2-.4+k*(W+.8)/3,F+H+.35,-D/2-.5],[-W/2-.4+k*(W+.8)/3,F+H+.35,D/2+.5],.08,.08,log);   // roof poles laid over the plank
+ vnDoor(-1.2,F,D/2,0,.95,1.9,'vWood',log,hC(0x5a4a3a),false);hnNal(1.4,F+.95,D/2,0,.75,.95,'shut',trim);hnNal(-3.1,F+.95,D/2,0,.7,.9,'open',trim);
+ // lean-to workshop: board walls, salvage roof
+ vnFrame(W/2+1.4,0,0,2.6,2.3,D-.6,0,log,.1);vB('vWood',W/2+1.4,0,-D/2+.4,2.6,2.2,.1,0,log);vnShedRoof(W/2+1.4,2.3,0,2.8,D-.2,.6,Math.PI/2,'vCorr',null,.3,.1);
+ vnPatch(W/2+2.7,0,0,Math.PI/2,D-.8,2.1,2);vnCrate(W/2+1.2,0,1,.8,.2);vnBarrel(W/2+2,0,-.8,.3,.8,log);
+ hnStoneChimney(2.6,F+H+.3,-.6,2.2,.55);vnDryingRack(-W/2-1.3,0,1.2,Math.PI/2,2.6);vnFolk(0,D/2+2.4,2,1.5);}
+
+// ---------------------------------------------------------------- MIDDLE
+// A — Saxon townhouse: gable to the street, painted render below, jettied half-timber above, scale roof
+function buildHlRepMidA(G,o){reseed(20201+(o.v|0));const W=8,D=11,S=.7,H1=3.3,H2=2.9;
+ const wall=hC(vPick(HPAL.saxon)),beamC=hC(vPick(HPAL.redwood)),roof=hC(vPick([...HPAL.roofRed,...HPAL.slate])),trim=hC(vPick([HPAL.white,HPAL.teal,HPAL.ochre]));
+ vnReg('Saxon townhouse (middle)',0,0,7.5,S+H1+H2+6.5);
+ hnSocle(0,0,0,W,S,D,0);
+ hnStucco(0,S,0,W,H1,D,0,wall,hC(vPick(HPAL.ashlar)));
+ // the carriage gate: a tall arched opening with a boarded leaf, stone surround
+ kput('winSmD',[1.6,S+1.35,D/2+.02],null,[1.9/1.1,2.7/2,.25]);vB('vStone',1.6,S,D/2+.05,2.4,.2,.25,0,hC(vPick(HPAL.ashlar)));
+ kput('vWood',[1.6,S+1.1,D/2+.06],null,[1.7,2.2,.06],hC(vPick(HPAL.tar)));
+ for(const u of[-2.3,-.6]){vnWin(u,S+1.1,D/2,0,.8,1.3,'glass','vStone',hC(vPick(HPAL.ashlar)),true);}
+ hnForm('hFormA',1.6,S+2.75,D/2+.02,0,1.8,.9);                                                   // the painted crest over the gate
+ for(const z of[-3,0,3])vnWin(W/2,S+1.1,z,Math.PI/2,.8,1.3,'glass','vStone',hC(vPick(HPAL.ashlar)),false);
+ // jettied upper storey
+ const y2=S+H1+.12;hnJetty(0,y2,0,W,D,0,beamC,.35);hnFachBox(0,y2,0,W+.1,H2,D+.7,0,hC(vPick(HPAL.stucco)),beamC,'glass');
+ const y3=y2+H2;const top=hnGable(0,y3,0,D+.7,W+.1,1.55,Math.PI/2,'hGableSc',roof,.55,'vGablePl',hC(vPick(HPAL.stucco)));
+ hnBarge(0,y3,0,D+.7,W+.1,1.55*(W+.1)/2,Math.PI/2,.55,trim,'lace');
+ // gable: a hoist beam and loft door (the Saxon storage attic), a small crest board
+ vnWin(0,y3+.5,(D+.7)/2+.02,0,1,1.4,'shut','vWood',beamC);vB('vWood',0,y3+2.1,(D+.7)/2+.5,.2,.2,1.2,0,beamC);
+ hnForm('hFormT',0,y3+2.5,(D+.7)/2+.02,0,1.6,.8);
+ // a dormer on the long side, a stone chimney through the ridge
+ vB('vPlaster',W/2-.9,y3+.6,-1.5,1.6,1.2,1.6,0,hC(vPick(HPAL.stucco)));vnWin(W/2-.1,y3+.8,-1.5,Math.PI/2,.6,.7,'glass','vWood',trim);vnGableRoof(W/2-.9,y3+1.8,-1.5,1.6,1.8,.8,Math.PI/2,'hGableSc',roof,.15);
+ hnStoneChimney(-.8,top-1.2,-2.8,1.9,.7);
+ vnBarrel(-W/2-.6,0,D/2-1,.35,.9);vnFolk(0,D/2+2.5,2,2);}
+// B — merchant's log house: a two-storey log house on a stone ground floor, a carved gallery (gulbishche) along
+// the front and a kryltso porch; the Russian side of the Republic's middle class
+function buildHlRepMidB(G,o){reseed(20211+(o.v|0));const W=10,D=8,S=2.6,H=3;
+ const log=hC(vPick(HPAL.pine)),trim=hC(vPick([HPAL.white,HPAL.teal,HPAL.blue])),roof=hC(vPick(HPAL.roofGreen)),stone=hC(vPick(HPAL.stucco));
+ vnReg("Merchant's log house (middle)",0,0,8,S+H+5.5);
+ hnStucco(0,0,0,W,S,D,0,stone);for(const u of[-3,0,3])vnWin(u,.9,D/2,0,.8,1,'shut','vStone',hC(vPick(HPAL.ashlar)));   // storerooms below
+ hnLogBox(0,S,0,W,H,D,0,log);
+ for(const u of[-3.1,-1,1.1,3.2])hnNal(u,S+.95,D/2,0,.8,1.15,'glass',trim,{shutters:u<0,keel:true});
+ for(const z of[-1.6,1.6])hnNal(W/2,S+.95,z,Math.PI/2,.8,1.15,'glass',trim);
+ hnGable(0,S+H,0,W,D,1.0,0,'hGableSc',roof,.7,'hGableLog',log);
+ // side gallery on posts with a keel-arch kryltso porch at the +x end
+ hnKryltso(W/2+1.3,0,.4,Math.PI/2,1.3,S,'hKeelSc',roof,log);
+ hnFrieze(0,S+H-.4,D/2+.02,0,W,.4);
+ vnFence(0,0,.8,W+5,D+6,0,log,2.4,1.4);hnWoodpile(-W/2-1.2,0,-1,Math.PI/2,3,1.5);vnFolk(-1,D/2+2,2,2);}
+
+// ---------------------------------------------------------------- RICH
+// A — Peles villa: rubble socle, stucco ground storey with quoins, half-timber upper storey, an oriel bay under a
+// cross gable, slate roofs, a loggia tower with a spire, a porch on carved posts with dougong. Electric.
+function buildHlRepRichA(G,o){reseed(20301+(o.v|0));const W=16,D=11,S=1.2,H1=3.8,H2=3.2;
+ const cream=hC(vPick(HPAL.stucco)),beamC=hC(vPick(HPAL.redwood)),slate=hC(vPick(HPAL.slate)),ash=hC(vPick(HPAL.ashlar)),lit=vLit()?'lit':'glass';
+ vnReg('Villa (rich)',0,0,11,S+H1+H2+14);
+ hnSocle(0,0,0,W,S,D,0);hnStucco(0,S,0,W,H1,D,0,cream,ash);
+ vB('vStone',0,S+H1-.25,0,W+.3,.3,D+.3,0,ash);                                                    // cornice band
+ for(const u of[-6,-3.5,3.5,6])vnWin(u,S+1.1,D/2,0,1,1.9,lit,'vStone',ash,false);
+ for(const z of[-3,0,3])for(const s of[-1,1])vnWin(s*W/2,S+1.1,z,s*Math.PI/2,1,1.9,lit,'vStone',ash,false);
+ // upper storey: half-timber
+ const y2=S+H1;hnFachBox(0,y2,0,W,H2,D,0,cream,beamC,lit);
+ const y3=y2+H2;hnGable(0,y3,0,W,D,1.3,0,'hGableSc',slate,.7,'vGablePl',cream);
+ // oriel bay + cross gable over the entrance
+ const oz=D/2+.6;vB('vWood',0,y2-.4,oz,5,.4,1.3,0,beamC);for(const s of[-1,0,1])hnMember('vWood',[s*2,y2-1.6,D/2+.05],[s*2,y2-.4,oz+.4],.2,.2,[0,0,1],beamC);
+ hnFachBox(0,y2,oz-.6,5,H2+.4,2.6,0,cream,beamC,lit);
+ hnGable(0,y2+H2+.4,oz-.6,2.6,5,1.4,Math.PI/2,'hGableSc',slate,.4,'vGablePl',cream);hnBarge(0,y2+H2+.4,oz-.6,2.6,5,3.5,Math.PI/2,.4,beamC,'lace');
+ hnForm('hFormT',0,y2+H2+1.1,oz+.72,0,2.2,1.1);
+ // entrance porch: carved totem posts, dougong under a small hip, crest board over the door
+ vnDoor(0,S,D/2,0,1.5,2.5,'vStone',ash,hC(vPick(HPAL.tar)),false);hnForm('hFormA',0,S+2.65,D/2+.02,0,2.2,1.1);
+ vB('vStone',0,0,D/2+1.6,4.2,S,3.2,0,ash);vnStairs(0,0,D/2+3.8,0,2.6,S,5,'vStone',ash);
+ for(const s of[-1,1])hnTotemPost(s*1.8,S,D/2+2.8,.2,2.7,0);
+ hnBracketRow(0,S+2.7,D/2+2.8,0,4.2,2,.7);vnHipRoof('hHipSc',0,S+3.35,D/2+1.8,4.4,2.6,1.1,0,slate,.35);
+ // the corner tower (Peles): loggia and spire
+ hnTower(-W/2+.6,0,D/2-1.2,4.4,S+H1+H2+2.4,0,{loggia:true,roof:'spire',roofC:slate,beamC,c:cream,lit:vLit()});
+ hnStoneChimney(4.5,y3+1.4,-1.8,2.8,.9);hnStoneChimney(-3,y3+1.4,-1.8,2.8,.9);
+ // garden wall with gate piers, lamps
+ for(const s of[-1,1]){vB('hRubB',s*(W/2+2.5),0,D/2+5.5,.6,1.3,.6,0);vB('hRubB',s*(W/2+2.5)/2+s*2.1,0,D/2+5.5,(W/2+2.5)-2.6,.9,.45,0);}
+ if(vLit())for(const s of[-1,1])vnLampPost(s*2.4,0,D/2+5.2,3.2);
+ vnFolk(1,D/2+7,2,2);}
+
+const HTAG_SF={type:['single-family dwelling']},HTAG_MF={type:['multi-family dwelling']};
+HL.def({key:'hl_rep_house_poor_a',name:'Log izba',branch:'republican',family:'Dwellings',tags:Object.assign({wealth:'poor',lit:false},HTAG_SF),w:13,d:14,h:8,build:buildHlRepPoorA});
+HL.def({key:'hl_rep_house_poor_b',name:'Two-room log house',branch:'republican',family:'Dwellings',tags:Object.assign({wealth:'poor',lit:false},HTAG_MF),w:14,d:9,h:7,build:buildHlRepPoorB});
+HL.def({key:'hl_rep_house_mid_a',name:'Saxon townhouse',branch:'republican',family:'Dwellings',tags:Object.assign({wealth:'middle',lit:false},HTAG_SF),w:9,d:13,h:13,build:buildHlRepMidA});
+HL.def({key:'hl_rep_house_mid_b',name:"Merchant's log house",branch:'republican',family:'Dwellings',tags:Object.assign({wealth:'middle',lit:false},HTAG_SF),w:15,d:14,h:10,build:buildHlRepMidB});
+HL.def({key:'hl_rep_house_rich_a',name:'Peles villa',branch:'republican',family:'Dwellings',tags:Object.assign({wealth:'rich',lit:true},HTAG_SF),w:22,d:20,h:24,build:buildHlRepRichA});
+// ================================================================= HIGHLANDS / RUSTIC — dwellings
+// The villages south of the Republic: Norse and Alpine. Stone is only a footing or a ground storey; above it
+// everything is log and board under wide, low shingle gables weighted with stones (Alpine) or steep turf and
+// shingle gables with crossed horns (Norse). Balconies with cut-out boards and geraniums; the gable carries a
+// painted crest. No electric light anywhere in the branch. Seeds 22000–22199.
+
+// ---------------------------------------------------------------- MIDDLE
+// A — Alpine chalet: whitewashed stone ground storey, log upper storey, a wide low gable to the front with two
+// tiers of balcony, stones on the shingle, the thunderbird crest in the gable.
+function buildHlRusMidA(G,o){reseed(22101+(o.v|0));const W=11,D=10,H1=2.8,H2=2.8;
+ const log=hC(vPick(HPAL.tar)).multiplyScalar(rr(1,1.25)),white=hC(vPick(HPAL.stucco)),sh=hC(vPick(HPAL.shingle)),trim=hC(vPick([HPAL.red,HPAL.teal,HPAL.white]));
+ vnReg('Alpine chalet (middle)',0,0,8.5,H1+H2+5.5);
+ vB('hRubB',0,0,0,W+.2,.5,D+.2,0,hC(vPick(HPAL.rubble)));vB('vPlaster',0,.5,0,W,H1-.5,D,0,white);
+ for(const u of[-3.2,3.2])vnWin(u,1.1,D/2,0,.9,1.1,'glass','hPaint',trim,true);vnDoor(0,.5,D/2,0,1.1,2.1,'vWood',log,log,false);
+ for(const z of[-2.5,2.5])vnWin(W/2,1.1,z,Math.PI/2,.8,1,'glass','hPaint',trim,true);
+ hnLogBox(0,H1,0,W,H2,D,0,log);
+ for(const u of[-3.4,-1.2,1.2,3.4])vnWin(u,H1+.8,D/2,0,.8,1.1,'glass','hPaint',trim,true);
+ const pitch=.58,top=hnGable(0,H1+H2,0,D,W,pitch,Math.PI/2,'vShingleB',sh,1.5,'hGableLog',log);
+ for(let k=0;k<12;k++){const zz=rr(-D/2,D/2),xx=rr(.8,W/2);for(const s of[-1,1])kput('vRock',[s*xx,H1+H2+pitch*(W/2-xx)+.28,zz],qEuler(rng(),rng(),0),[.24,.16,.22],hC(vPick(HPAL.rubble)));}   // stones on the shingle
+ hnBarge(0,H1+H2,0,D,W,pitch*W/2,Math.PI/2,1.5,log.clone().multiplyScalar(1.2),'horns');
+ hnForm('hFormT',0,H1+H2+1.2,D/2+.02,0,2.8,1.3);
+ // balconies: across the upper storey front and a small one in the gable
+ const rail=log.clone().multiplyScalar(1.5);hnBalcony(0,H1+.05,D/2,0,W-.6,1.3,log,rail);hnBalcony(0,H1+H2+.05,D/2,0,3.4,.9,log,rail,false);
+ // purlin ends under the eaves, carved
+ for(const u of[-4.5,-1.5,1.5,4.5])vB('vWood',u,H1+H2+pitch*(W/2-Math.abs(u))-.2,D/2+.9,.24,.3,1.8,0,log);
+ hnWoodpile(W/2+.9,0,0,Math.PI/2,D-2,1.8);vB('vWood',-2.2,0,D/2+.9,2,.45,.4,0,log);                    // woodpile under the eave, bench
+ vnWaterButt(-W/2-.7,0,D/2-1,.4,1);vnFolk(1,D/2+3,2,1.8);}
+
+HL.def({key:'hl_rus_house_mid_a',name:'Alpine chalet',branch:'rustic',family:'Dwellings',tags:{type:['single-family dwelling'],wealth:'middle',lit:false},w:15,d:14,h:10,build:buildHlRusMidA});
+// ================================================================= HIGHLANDS / TRIBAL — dwellings and the cliff settlement
+// The Painted Men and the other raider tribes of the high country. Raw logs, bamboo and thatch; everything that
+// can carry paint carries it — whole house-fronts in formline on white, totems at every door, thunderbirds on
+// the gables. No electric light. Every tribal dwelling can be built on the ground (stilts) or HUNG ON A CLIFF:
+// pass o.cliff = true and the house stands on raking struts driven back into a rock face behind it (-z), its
+// floor at the placement y. Seeds 23000–23199.
+
+// shared: the stilts or the cliff cantilever under a floor of W x D at height FL
+function hnTriBase(W,D,FL,c,cliff){if(!cliff){vnStilts(0,0,0,W-.6,D-.6,FL,0,c);return;}
+ // cantilever: two log beams out of the rock (-z) under the floor, raking struts from the front edge back and
+ // down into the rock, a rubble packing where the beams bite
+ for(const s of[-1,1]){const x=s*(W/2-.5);kput('hLogX',[x,FL-.35,-1.5],qEuler(0,Math.PI/2,0),[D+4.4,.2,.2],c);
+  beam('vWood',[x,FL-.5,D/2-.3],[x,FL-4.6,-D/2-4],.18,.18,c);beam('vWood',[x*.2,FL-.5,D/2-.3],[x*.2,FL-4,-D/2-3.6],.14,.14,c);}
+ kput('vRock',[0,FL-.4,-D/2-.6],null,[W*.55,.6,.8],hC(vPick(HPAL.rubble)));}
+
+// ---------------------------------------------------------------- SMALL
+// A — painted hut: a board-and-bamboo hut on stilts, its whole front painted in formline on white, a thatch gable
+// with a thunderbird on the apex, a winged totem by the ladder.
+function buildHlTriSmallA(G,o){reseed(23001+(o.v|0));const W=6,D=5,FL=o.cliff?0:1.6,H=2.4,Y=FL;
+ const log=hC(vPick(HPAL.aged)),th=hC(vPick(VPAL.thatch)),bam=hC(vPick(HPAL.bamboo));
+ vnReg('Painted hut (small)',0,0,5,FL+H+3.6);
+ hnTriBase(W,D,FL,log,o.cliff);
+ vB('vWood',0,Y-.2,0,W,.2,D,0,log);hnBambooBox(0,Y,0,W,H,D,0,bam);
+ hnForm('hFormW',0,Y+.1,D/2+.04,0,W-.4,H-.2);                                            // the painted house-front
+ vnDoor(0,Y,D/2+.08,0,.9,1.7,'hBamboo',bam,hC(0x5a4a3a),false);
+ hnGable(0,Y+H,0,W,D,1.2,0,'vGableT',th,.9,'hGableBM',bam);hnBarge(0,Y+H,0,W,D,1.2*D/2,0,.9,hC(HPAL.black),'bird');
+ vB('vWood',0,Y-.2,D/2+.8,2.4,.18,1.6,0,log);
+ if(!o.cliff){vnLadder(1,0,D/2+1.8,0,FL+.3,log);hnTotem(-1.8,0,D/2+1.4,.3,5.2,0,{wings:1.4});}
+ else hnTotem(-W/2-.3,Y,D/2-.2,.24,3.4,0,{});
+ for(let k=0;k<3;k++)vBall('vGourd',-W/2+1+k*1.2,Y+H-.3,D/2+.7,.16,hC(vPick([0xb08a4a,0x9a8a3a])),.22);
+ if(!o.cliff){hnFirepit(2.4,0,D/2+3,.6);vnFolk(0,D/2+4,2,1.5);}}
+
+// ---------------------------------------------------------------- the CLIFF SETTLEMENT (showcase + reusable)
+// A rock face with dwellings hung on it in tiers, joined by walkways and flights of stairs, like the high
+// villages of the Painted Men. In a settlement the rock is the terrain: the same houses are placed with
+// o.cliff=true and the same hnCliffWalk() joins them; this def draws its own rock face so it can stand alone.
+function buildHlTriCliffVillage(G,o){reseed(23101+(o.v|0));const X0=-34,X1=34,ZC=-2,TOP=38;
+ vnReg('Cliff settlement (tribal)',0,-2,34,TOP);
+ hnCliffFace(G,X0-6,X1+6,ZC-5.5,-1,TOP+4,3.7);
+ // tiers of houses: (x, floor y) on the face; each hangs forward of the rock at z = ZC + D/2 + a little
+ const tiers=[[-22,6],[-8,9],[8,5],[22,8],[-16,17],[2,19],[18,16],[-6,28],[12,27]];
+ const walk=[];for(const [x,y] of tiers){hnSub('hl_tri_small_a',x,y,ZC+2.3,0,{cliff:true,v:(x*7+y)|0});walk.push([x,y,ZC+5.4]);}
+ // walkways along each tier and flights between them (sorted so the path zig-zags up the face)
+ const rows=[tiers.slice(0,4),tiers.slice(4,7),tiers.slice(7)];const c=hC(vPick(HPAL.aged));
+ for(const R of rows){const pts=R.map(([x,y])=>[x,y,ZC+5.3]);hnCliffWalk(pts,1.3,[0,0,-1],c);}
+ hnCliffWalk([[-30,0.2,ZC+5.3],[-22,6,ZC+5.3]],1.3,[0,0,-1],c);                            // up from the valley floor
+ hnCliffWalk([[22,8,ZC+5.3],[28,12,ZC+5.3],[18,16,ZC+5.3]],1.3,[0,0,-1],c);
+ hnCliffWalk([[-16,17,ZC+5.3],[-24,22,ZC+5.3],[-6,28,ZC+5.3]],1.3,[0,0,-1],c);
+ for(let k=0;k<8;k++)vnFolk(rr(-26,26),ZC+8+rr(0,6),1,1);}
+
+HL.def({key:'hl_tri_small_a',name:'Painted hut',branch:'tribal',family:'Dwellings',tags:{type:['single-family dwelling'],wealth:'poor',lit:false},w:9,d:10,h:8,build:buildHlTriSmallA});
+HL.def({key:'hl_tri_cliff_village',name:'Cliff settlement',branch:'tribal',family:'Cliff settlement',cls:'building',tags:{type:['multi-family dwelling'],wealth:'poor',lit:false,landmark:true},w:80,d:24,h:40,build:buildHlTriCliffVillage});
+// TARGET: rustic — rows by branch and family (laid out by hlLayout in 90-scene.js), front (+z) toward the camera.
+const TITLE='Highlands Kit — Rustic';
+const HL_BRANCHES=['rustic'];
+const HL_EXTRA=[].filter(S=>VERN.defs[S.key]);   // whole-settlement pieces shown after the rows
+const SITES=[];
+// ---------------------------------------------------------------- scene (Highlands showcase)
+// Rows by branch and family, front (+z) toward the camera. A target names the branches it shows (HL_BRANCHES) and
+// may list extra SITES (a cliff village, a compound at a given scale) in its 89z-rows.js.
+const HL_ROWS=[];   // {branch, family, z, d, keys}
+(function hlLayout(){let z=0;for(const b of HL_BRANCHES){for(const F of HL.families(b)){const ws=F.keys.map(k=>VERN.defs[k].w+9);const total=ws.reduce((a,c)=>a+c,0);
+  const dmax=Math.max(...F.keys.map(k=>VERN.defs[k].d||VERN.defs[k].w));z+=dmax/2;let x=-total/2;
+  F.keys.forEach((k,i)=>{SITES.push({key:k,x:x+ws[i]/2,z,ry:0,o:{v:0}});x+=ws[i];});
+  HL_ROWS.push({branch:b,family:F.family,z,d:dmax,w:total,keys:F.keys});z+=dmax/2+22;}z+=40;}
+ for(const S of HL_EXTRA){S.z=z+S.depth/2;SITES.push(S);HL_ROWS.push({branch:S.branch||'extra',family:S.family||S.key,z:S.z,d:S.depth,w:S.depth,keys:[S.key]});z+=S.depth+30;}})();
+const GROUND_C=(HL_ROWS.length?HL_ROWS[HL_ROWS.length-1].z:0)/2;
+// views: an opening, an overview per branch, one per row, and an eye-level shot per building
+function hlAutoViews(extra){const V={};const R=HL_ROWS;if(!R.length)return V;const mid=R[Math.floor(R.length/2)];
+ const fam=r=>HL.branches[r.branch]?HL.branches[r.branch]+' — '+r.family:r.family;
+ V['Opening']=[R[0].w*.25,Math.max(24,R[0].d*.9),R[0].z+R[0].d*.5+44,0,5,R[0].z];
+ V['Overview']=[-900,520,mid.z+80,0,10,mid.z];
+ for(const b of HL_BRANCHES){const rs=R.filter(r=>r.branch===b);if(!rs.length)continue;const zc=(rs[0].z+rs[rs.length-1].z)/2;const span=rs[rs.length-1].z-rs[0].z+80;
+  V[HL.branches[b]+' — overview']=[-span*.7,span*.55,zc+span*.35,0,5,zc];}
+ for(const r of R){const dist=Math.max(40,Math.min(r.w*.55,260));V[fam(r)]=[0,Math.max(18,dist*.45),r.z+r.d/2+dist,0,4,r.z];}
+ for(const S of SITES){const D=VERN.defs[S.key];if(!D)continue;const dist=Math.max(10,Math.max(D.w,D.h||0)*.9+D.d*.5);
+  V[D.name+' — eye level']=[S.x+D.w*.18,1.7,S.z+dist,S.x,Math.min(D.h||6,14)*.4,S.z];}
+ return Object.assign(V,extra||{});}
+const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);
+renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.0;document.body.appendChild(renderer.domElement);
+const scene=new THREE.Scene();const HAZE=new THREE.Color(0xb8c4c8);scene.fog=new THREE.FogExp2(HAZE.getHex(),.0005);   // cool highland haze
+const camera=new THREE.PerspectiveCamera(50,innerWidth/innerHeight,.3,6000);
+scene.add(new THREE.HemisphereLight(0xe0ecff,0x4a4a32,.72));
+const sun=new THREE.DirectionalLight(0xfff4e4,1.55);sun.position.set(-600,700,400);scene.add(sun);
+const fill=new THREE.DirectionalLight(0xb8c8ff,.32);fill.position.set(500,300,-600);scene.add(fill);
+// hooks the frame loop runs (city: sky/lighting update); the showcase adds none
+const FRAME_HOOKS=[];
+// sky dome (the Ancients kit's warm haze sky; the city target swaps in KratorSky and skips this block)
+let sky,giant,groundM,LABELS;const SITE_GROUPS=[];
+const giantDir=new THREE.Vector3(Math.sin(66*Math.PI/180)*Math.cos(25*Math.PI/180),Math.sin(25*Math.PI/180),-Math.cos(66*Math.PI/180)*Math.cos(25*Math.PI/180));
+
+if(!window.CITY){
+const skyMat=new THREE.ShaderMaterial({side:THREE.BackSide,fog:false,depthWrite:false,uniforms:{},
+ vertexShader:'varying vec3 vP;void main(){vP=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
+ fragmentShader:'varying vec3 vP;void main(){float h=clamp(normalize(vP).y,-.05,1.);vec3 hz=vec3(.78,.82,.84);vec3 zen=vec3(.26,.44,.72);vec3 c=mix(hz,zen,pow(h,.5));gl_FragColor=vec4(c,1.);}'});
+sky=new THREE.Mesh(new THREE.SphereGeometry(5000,32,16),skyMat);sky.userData.probeSkip=true;scene.add(sky);
+const giantTex=canvasTex(512,512,(g,w,h)=>{g.clearRect(0,0,w,h);const grd=g.createRadialGradient(256,256,0,256,256,256);
+ for(let i=0;i<=20;i++){const t=i/20;const b=.8+.2*Math.sin(i*2.1);grd.addColorStop(t*.96,`rgba(${220*b|0},${180*b|0},${150*b|0},${.85*(1-Math.pow(t,6))})`);}
+ grd.addColorStop(1,'rgba(220,180,150,0)');g.fillStyle=grd;g.beginPath();g.arc(256,256,250,0,TAU);g.fill();
+ g.globalCompositeOperation='source-atop';for(let y=0;y<h;y+=9){g.fillStyle=`rgba(${120+(y*7)%80},${90+(y*3)%50},${70},${.10+.10*Math.sin(y*.3)})`;g.fillRect(0,y,w,5);}});
+giantTex.wrapS=giantTex.wrapT=THREE.ClampToEdgeWrapping;
+giant=new THREE.Sprite(new THREE.SpriteMaterial({map:giantTex,fog:false,transparent:true,depthWrite:false}));giant.scale.set(1400,1400,1);giant.userData.probeSkip=true;scene.add(giant);
+
+// ground: packed earth, tiled in world units
+TEX.meadow.repeat.set(400,400);
+groundM=new THREE.Mesh(new THREE.PlaneGeometry(3200,3200),MAT.meadow);groundM.rotation.x=-Math.PI/2;groundM.position.set(0,-.05,GROUND_C);groundM.userData.probeSkip=true;scene.add(groundM);
+
+// ---------------------------------------------------------------- build every site the target lists
+// SITES = [{key, x, z, ry, o, label}] laid out by hlLayout() from the target's HL_BRANCHES (89z-rows.js)
+for(const S of SITES){const k=S.key+'/'+((S.o&&S.o.v)||0);TSTAT.cur=k;const r0=REG.length;
+ const G=VERN.place(scene,S.key,S.x,S.z,S.ry||0,S.o);if(G)SITE_GROUPS.push({S,G});
+ for(let i=r0;i<REG.length;i++)REG[i].type=S.key;TSTAT.cur=null;}
+window._registered=REG.length;
+kbake(scene);
+
+// site labels come from src/93-labels.js (the atlas over REG)
+LABELS=new THREE.Group();LABELS.userData.probeSkip=true;scene.add(LABELS);
+}   // end showcase-only block
+// ---------------------------------------------------------------- probe (window._api) — same contract as the Ancients kit's, so verify.py runs unchanged
+const BUDGET={
+ showcase:{tris:3000000,calls:400},
+ cls:{small:60000,medium:250000,sky:400000,mega:700000},
+ type:{},   // every vernacular key defaults to 'medium'
+};
+function _probePoints(){
+ const pts=[],m=new THREE.Matrix4(),pos=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3();const bb=new THREE.Box3();
+ scene.traverse(o=>{if(o.userData&&o.userData.probeSkip)return;
+  if(o.isInstancedMesh){for(let i=0;i<o.count;i++){o.getMatrixAt(i,m);m.decompose(pos,q,sc);pts.push([pos.x,pos.y,pos.z]);}return;}
+  if(!o.isMesh)return;bb.setFromObject(o);if(!isFinite(bb.min.x)||!isFinite(bb.max.x))return;
+  pts.push([(bb.min.x+bb.max.x)/2,(bb.min.y+bb.max.y)/2,(bb.min.z+bb.max.z)/2]);
+  for(const x of[bb.min.x,bb.max.x])for(const y of[bb.min.y,bb.max.y])for(const z of[bb.min.z,bb.max.z])pts.push([x,y,z]);});
+ return pts;}
+function regOccupancy(){const BK=100,by={};REG.forEach((r,i)=>{const z0=Math.floor((r.z-r.r)/BK),z1=Math.floor((r.z+r.r)/BK);for(let b=z0;b<=z1;b++)(by[b]||(by[b]=[])).push(i);});
+ const n=new Array(REG.length).fill(0);for(const p of _probePoints()){const cand=by[Math.floor(p[2]/BK)];if(!cand)continue;for(const i of cand){const r=REG[i];const dx=p[0]-r.x,dz=p[2]-r.z;if(dx*dx+dz*dz<=r.r*r.r&&p[1]>=r.y-2&&p[1]<=r.y+r.h+5)n[i]++;}}
+ return REG.map((r,i)=>({name:r.name,type:r.type,n:n[i]}));}
+function nanSweep(){const bad=[];scene.traverse(o=>{if(!o.isMesh||(o.userData&&o.userData.probeSkip))return;const p=o.geometry&&o.geometry.attributes&&o.geometry.attributes.position;if(!p)return;const a=p.array;for(let i=0;i<a.length;i++)if(!isFinite(a[i])){bad.push({geo:o.geometry.type,at:i,n:a.length});break;}});
+ return{meshes:bad.length,first:bad.slice(0,8),instances:TSTAT.bad.length,firstInstances:TSTAT.bad.slice(0,8)};}
+function typeStats(){const out={};for(const k in TSTAT.by){const t=TSTAT.by[k],base=k.split('/')[0];const cls=BUDGET.type[base]||'medium';out[k]={tris:t.tris,inst:t.inst,meshes:t.meshes,cls,limit:BUDGET.cls[cls],over:t.tris>BUDGET.cls[cls]};}return out;}
+// tag audit: every registered volume must carry a classification and the project tags
+function tagAudit(){const bad=REG.filter(r=>!r.cls||!r.tags||!r.tags.culture||!r.tags.type||!r.tags.wealth);return{bad:bad.length,first:bad.slice(0,6).map(r=>r.name)};}
+window._api={BUDGET,REG,
+ get totals(){let tris=0,inst=0,meshes=0;for(const k in TSTAT.by){tris+=TSTAT.by[k].tris;inst+=TSTAT.by[k].inst;meshes+=TSTAT.by[k].meshes;}return{tris,inst,meshes,registered:REG.length,types:Object.keys(TSTAT.by).length};},
+ typeStats,regOccupancy,nanSweep,tagAudit,
+ setView:(cx,cy,cz,tx,ty,tz)=>setView(cx,cy,cz,tx,ty,tz),views:()=>Object.keys(VIEWS),
+ defs:()=>VERN.order.map(k=>{const D=VERN.defs[k];return{key:k,name:D.name,family:D.family,tags:D.tags,w:D.w,d:D.d,h:D.h};})};
+// TARGET: rustic — preset views (generated per row and per building; the first entry is the opening shot)
+const VIEWS=hlAutoViews();
+// ---------------------------------------------------------------- camera, inspector, polygon tool, walk mode
+const ctl={target:new THREE.Vector3(0,10,0),theta:0,phi:1.1,radius:120};
+function setView(cx,cy,cz,tx,ty,tz){WALK.on=false;ctl.target.set(tx,ty,tz);const dx=cx-tx,dy=cy-ty,dz=cz-tz;ctl.radius=Math.sqrt(dx*dx+dy*dy+dz*dz);ctl.theta=Math.atan2(dx,dz);ctl.phi=Math.acos(clamp(dy/ctl.radius,-1,1));}
+function applyCam(){if(WALK.on){camera.position.set(WALK.x,WALK.y,WALK.z);camera.rotation.set(0,0,0);camera.rotation.order='YXZ';camera.rotation.y=WALK.yaw;camera.rotation.x=WALK.pitch;return;}
+ const r=ctl.radius,sp=Math.sin(ctl.phi);camera.position.set(ctl.target.x+r*sp*Math.sin(ctl.theta),ctl.target.y+r*Math.cos(ctl.phi),ctl.target.z+r*sp*Math.cos(ctl.theta));
+ const gy=terrainH(camera.position.x,camera.position.z)+1.2;if(camera.position.y<gy)camera.position.y=gy;camera.lookAt(ctl.target);}
+const ui=document.getElementById('ui');
+const sel=document.createElement('select');sel.id='viewsel';for(const k in VIEWS){const o=document.createElement('option');o.textContent=k;sel.appendChild(o);}sel.onchange=()=>setView(...VIEWS[sel.value]);ui.appendChild(sel);
+// hidden one-button-per-view list: verify.py drives the camera by clicking these
+const hb=document.createElement('div');hb.style.display='none';ui.appendChild(hb);for(const k in VIEWS){const b=document.createElement('button');b.textContent=k;b.onclick=()=>setView(...VIEWS[k]);hb.appendChild(b);}
+function uiButton(label,on,fn){const b=document.createElement('button');b.textContent=label;if(on)b.classList.add('on');b.onclick=()=>{const v=fn();if(v!==undefined)b.classList.toggle('on',v);};ui.appendChild(b);return b;}
+
+// ---- inspector: hover shows name · classification · tags (project rule); toggleable, on by default
+const INSP={on:true,last:0};const insp=document.getElementById('insp');const ray=new THREE.Raycaster();
+function regAt(p){let best=null;for(const r of REG){const dx=p.x-r.x,dz=p.z-r.z;if(dx*dx+dz*dz<=r.r*r.r&&p.y>=r.y-2&&p.y<=r.y+r.h+5){if(!best||r.r<best.r)best=r;}}return best;}
+function inspectAt(cx,cy){const v=new THREE.Vector2(cx/innerWidth*2-1,-(cy/innerHeight)*2+1);ray.setFromCamera(v,camera);
+ const hits=ray.intersectObjects(scene.children,true).filter(h=>!(h.object.userData&&h.object.userData.probeSkip)&&h.object!==groundM&&!(h.object.userData&&h.object.userData.isGround));
+ if(!hits.length){insp.style.display='none';return;}const p=hits[0].point;const r=regAt(p);
+ if(!r){insp.style.display='block';insp.innerHTML='<b>unregistered '+(hits[0].object.isInstancedMesh?'instance':'mesh')+'</b>\n'+p.x.toFixed(1)+', '+p.y.toFixed(1)+', '+p.z.toFixed(1);return;}
+ const t=r.tags||{};const tagLines=Object.keys(t).map(k=>'<span class="tag">'+k+'</span>: '+(Array.isArray(t[k])?t[k].join(', '):t[k])).join('\n');
+ insp.style.display='block';insp.innerHTML='<b>'+r.name+'</b>\n<span class="cls">'+(r.cls||'?')+'</span>'+(r.key?'  ·  '+r.key:'')+'\n'+tagLines+'\n<span style="opacity:.6">'+p.x.toFixed(1)+', '+p.y.toFixed(1)+', '+p.z.toFixed(1)+'</span>';}
+uiButton('Inspector',true,()=>{INSP.on=!INSP.on;if(!INSP.on)insp.style.display='none';return INSP.on;});
+uiButton('Labels',true,()=>{if(LABELS)LABELS.visible=!LABELS.visible;return LABELS?LABELS.visible:false;});
+
+// ---- polygon tool: click the ground to lay out a polygon; copy-pasteable world coordinates
+const POLY={on:false,pts:[],fmt:0,grp:new THREE.Group(),line:null};POLY.grp.userData.probeSkip=true;scene.add(POLY.grp);
+const polyEl=document.getElementById('poly'),polyOut=document.getElementById('polyout');
+const polyMat=new THREE.MeshBasicMaterial({color:0xff5060}),polyLineMat=new THREE.LineBasicMaterial({color:0xffe060});
+function polyRedraw(){while(POLY.grp.children.length)POLY.grp.remove(POLY.grp.children[0]);
+ for(const p of POLY.pts){const m=new THREE.Mesh(new THREE.CylinderGeometry(.25,.25,3,8),polyMat);m.position.set(p[0],terrainH(p[0],p[1])+1.5,p[1]);m.userData.probeSkip=true;POLY.grp.add(m);}
+ if(POLY.pts.length>1){const g=new THREE.BufferGeometry().setFromPoints(POLY.pts.map(p=>new THREE.Vector3(p[0],terrainH(p[0],p[1])+.4,p[1])));const l=new THREE.Line(g,polyLineMat);l.userData.probeSkip=true;POLY.grp.add(l);}
+ const f=p=>POLY.fmt?'{x:'+p[0].toFixed(1)+',z:'+p[1].toFixed(1)+'}':'['+p[0].toFixed(1)+','+p[1].toFixed(1)+']';
+ polyOut.value='['+POLY.pts.map(f).join(',')+']';window._poly=POLY.pts.slice();}
+function polyAdd(cx,cy){const v=new THREE.Vector2(cx/innerWidth*2-1,-(cy/innerHeight)*2+1);ray.setFromCamera(v,camera);const pl=new THREE.Plane(new THREE.Vector3(0,1,0),0);const hit=new THREE.Vector3();
+ const gh=ray.intersectObjects(scene.children,true).find(h=>h.object===groundM||(h.object.userData&&h.object.userData.isGround));if(gh){POLY.pts.push([gh.point.x,gh.point.z]);polyRedraw();}else if(ray.ray.intersectPlane(pl,hit)){POLY.pts.push([hit.x,hit.z]);polyRedraw();}}
+uiButton('Polygon',false,()=>{POLY.on=!POLY.on;polyEl.style.display=POLY.on?'block':'none';return POLY.on;});
+document.getElementById('polyundo').onclick=()=>{POLY.pts.pop();polyRedraw();};
+document.getElementById('polyclear').onclick=()=>{POLY.pts=[];polyRedraw();};
+document.getElementById('polyclose').onclick=()=>{if(POLY.pts.length>2){POLY.pts.push(POLY.pts[0].slice());polyRedraw();}};
+document.getElementById('polyfmt').onclick=e=>{POLY.fmt^=1;e.target.textContent=POLY.fmt?'Format: {x,z}':'Format: [x,z]';polyRedraw();};
+document.getElementById('polycopy').onclick=()=>{polyOut.select();try{navigator.clipboard.writeText(polyOut.value);}catch(e){document.execCommand('copy');}};
+
+// ---- walk mode (F): eye height 1.7 m, WASD, drag to look. The set is meant to be judged from here.
+const WALK={on:false,x:0,y:1.7,z:40,yaw:0,pitch:0};
+uiButton('Walk (F)',false,()=>{toggleWalk();return WALK.on;});
+function toggleWalk(){WALK.on=!WALK.on;if(WALK.on){const d=new THREE.Vector3();camera.getWorldDirection(d);WALK.yaw=Math.atan2(-d.x,-d.z);WALK.pitch=0;
+ WALK.x=camera.position.x;WALK.z=camera.position.z;WALK.y=terrainH(WALK.x,WALK.z)+1.7;}else{setView(WALK.x-Math.sin(WALK.yaw)*-30,20,WALK.z-Math.cos(WALK.yaw)*-30,WALK.x-Math.sin(WALK.yaw)*10,4,WALK.z-Math.cos(WALK.yaw)*10);}
+ for(const b of ui.querySelectorAll('button'))if(b.textContent.startsWith('Walk'))b.classList.toggle('on',WALK.on);}
+
+setView(...VIEWS[Object.keys(VIEWS)[0]]);
+document.title=TITLE;
+document.getElementById('cap').textContent=TITLE+' — hover to inspect · drag to orbit · wheel to zoom · right-drag / WASD to move · F walk at eye height · Polygon to mark coordinates';
+// input
+const cv=renderer.domElement;let drag=null;const keys={};
+cv.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,sx:e.clientX,sy:e.clientY,b:e.button};cv.setPointerCapture(e.pointerId);});
+cv.addEventListener('pointerup',e=>{if(drag&&Math.abs(e.clientX-drag.sx)<4&&Math.abs(e.clientY-drag.sy)<4){if(drag.b===0&&POLY.on)polyAdd(e.clientX,e.clientY);else if(drag.b===2&&POLY.on){POLY.pts.pop();polyRedraw();}else if(drag.b===0&&!INSP.on)inspectAt(e.clientX,e.clientY);}drag=null;});
+cv.addEventListener('contextmenu',e=>e.preventDefault());
+cv.addEventListener('pointermove',e=>{if(!drag){if(INSP.on&&performance.now()-INSP.last>90){INSP.last=performance.now();inspectAt(e.clientX,e.clientY);}return;}
+ const dx=e.clientX-drag.x,dy=e.clientY-drag.y;drag.x=e.clientX;drag.y=e.clientY;
+ if(WALK.on){WALK.yaw-=dx*.004;WALK.pitch=clamp(WALK.pitch-dy*.004,-1.4,1.4);return;}
+ if(drag.b===0){ctl.theta-=dx*.005;ctl.phi=clamp(ctl.phi-dy*.005,.05,Math.PI-.05);}
+ else{const f=ctl.radius*.0015;const rt=new THREE.Vector3(Math.cos(ctl.theta),0,-Math.sin(ctl.theta));const fw=new THREE.Vector3(-Math.sin(ctl.theta),0,-Math.cos(ctl.theta));ctl.target.addScaledVector(rt,-dx*f).addScaledVector(fw,-dy*f);}});
+cv.addEventListener('wheel',e=>{if(WALK.on){WALK.speed=clamp((WALK.speed||6)*(e.deltaY>0?.85:1.18),1,40);}else ctl.radius=clamp(ctl.radius*(e.deltaY>0?1.1:.9),2,3000);e.preventDefault();},{passive:false});
+addEventListener('keydown',e=>{if(e.target.tagName==='TEXTAREA')return;keys[e.key.toLowerCase()]=true;if(e.key.toLowerCase()==='f')toggleWalk();});addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
+addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
+const hud=document.getElementById('hud');let last=performance.now(),renderErr=false;
+function frame(){const now=performance.now(),dt=Math.min(.1,(now-last)/1000);last=now;
+ if(WALK.on){const sp=(WALK.speed||6)*(keys.shift?2.5:1)*dt;const fw=new THREE.Vector3(-Math.sin(WALK.yaw),0,-Math.cos(WALK.yaw)),rt=new THREE.Vector3(Math.cos(WALK.yaw),0,-Math.sin(WALK.yaw));
+  if(keys.w){WALK.x+=fw.x*sp;WALK.z+=fw.z*sp;}if(keys.s){WALK.x-=fw.x*sp;WALK.z-=fw.z*sp;}if(keys.d){WALK.x+=rt.x*sp;WALK.z+=rt.z*sp;}if(keys.a){WALK.x-=rt.x*sp;WALK.z-=rt.z*sp;}
+  if(keys.e)WALK.y+=sp;if(keys.q)WALK.y-=sp;const ge=terrainH(WALK.x,WALK.z)+1.7;if(!keys.e&&!keys.q)WALK.y=ge;else WALK.y=Math.max(ge,WALK.y);}
+ else{const sp=ctl.radius*.6*dt;const fw=new THREE.Vector3(-Math.sin(ctl.theta),0,-Math.cos(ctl.theta)),rt=new THREE.Vector3(Math.cos(ctl.theta),0,-Math.sin(ctl.theta));
+  if(keys.w)ctl.target.addScaledVector(fw,sp);if(keys.s)ctl.target.addScaledVector(fw,-sp);if(keys.d)ctl.target.addScaledVector(rt,sp);if(keys.a)ctl.target.addScaledVector(rt,-sp);
+  if(keys.q)ctl.target.y-=sp;if(keys.e)ctl.target.y+=sp;}
+ for(const f of FRAME_HOOKS)f(dt,now);
+ applyCam();if(sky)sky.position.copy(camera.position);if(giant)giant.position.copy(camera.position).addScaledVector(giantDir,4000);
+ try{renderer.render(scene,camera);}catch(e){if(!renderErr){renderErr=true;reportErr('render: '+e.stack);}}
+ hud.textContent=`cam ${camera.position.x|0},${camera.position.y|0},${camera.position.z|0}  tgt ${ctl.target.x|0},${ctl.target.y|0},${ctl.target.z|0}${WALK.on?'  WALK':''}\ncalls ${renderer.info.render.calls}  tris ${(renderer.info.render.triangles/1e6).toFixed(2)}M  inst ${window._instances}  reg ${REG.length}`;
+ requestAnimationFrame(frame);}
+frame();window._ready=true;
+// ---------------------------------------------------------------- floating building labels (standard new-world package)
+// One label per registered volume (REG), drawn once into a texture atlas and rendered as ONE mesh of camera-facing
+// quads: a thousand labels cost one draw call. Labels keep a constant size on screen (150 px; landmarks 260 px)
+// and fade out past 300 m, landmarks never. Toggled with the Labels button (they live in the LABELS group).
+// A world that already made LABELS (the city) gets the atlas added to it; one that did not gets the group made here.
+const LABEL_ATLAS={W:4096,H:4096,cw:409,ch:48};
+function labelsBuild(){
+ if(!LABELS){LABELS=new THREE.Group();LABELS.userData.probeSkip=true;scene.add(LABELS);}
+ const cols=LABEL_ATLAS.W/LABEL_ATLAS.cw,rows=LABEL_ATLAS.H/LABEL_ATLAS.ch,max=cols*rows;
+ // which volumes get a label: buildings, farms and furniture; not repeated wall segments (a name seen 8+ times)
+ const count={};for(const r of REG)count[r.name]=(count[r.name]||0)+1;
+ let list=REG.filter(r=>r.name&&count[r.name]<8&&(!r.cls||r.cls==='building'||r.cls==='farm'||r.cls==='furniture')&&!(r.tags&&r.tags.part==='wall'));
+ const isBig=r=>!!(r.tags&&(r.tags.role||r.tags.landmark));
+ list.sort((a,b)=>(isBig(b)-isBig(a))||(b.r-a.r));if(list.length>max)list=list.slice(0,max);
+ const cv=document.createElement('canvas');cv.width=LABEL_ATLAS.W;cv.height=LABEL_ATLAS.H;const g=cv.getContext('2d');g.clearRect(0,0,cv.width,cv.height);
+ const pos=[],apos=[],uv=[],cell=[],big=[],idx=[];
+ list.forEach((r,i)=>{const cx=(i%cols)*LABEL_ATLAS.cw,cy=Math.floor(i/cols)*LABEL_ATLAS.ch;const B=isBig(r);
+  g.fillStyle=B?'rgba(20,12,6,.72)':'rgba(0,0,0,.55)';g.fillRect(cx+1,cy+1,LABEL_ATLAS.cw-2,LABEL_ATLAS.ch-2);
+  g.font=(B?'bold 34px':'bold 28px')+' system-ui,sans-serif';g.fillStyle=B?'#ffe2b0':'#f4e8d4';g.textAlign='center';g.textBaseline='middle';
+  let t=r.name;while(g.measureText(t).width>LABEL_ATLAS.cw-10&&t.length>4)t=t.slice(0,-2);if(t!==r.name)t=t.slice(0,-1)+'…';g.fillText(t,cx+LABEL_ATLAS.cw/2,cy+LABEL_ATLAS.ch/2+1);
+  const y=(r.y||0)+r.h+3,b=i*4;
+  for(const c of[[-.5,-.5],[.5,-.5],[.5,.5],[-.5,.5]]){pos.push(c[0],c[1],0);apos.push(r.x,y,r.z);uv.push((cx+(c[0]+.5)*LABEL_ATLAS.cw)/LABEL_ATLAS.W,1-(cy+(0.5-c[1])*LABEL_ATLAS.ch)/LABEL_ATLAS.H);cell.push(0,0);big.push(B?1:0);}
+  idx.push(b,b+1,b+2,b,b+2,b+3);});
+ if(!list.length)return null;
+ const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setAttribute('aPos',new THREE.Float32BufferAttribute(apos,3));
+ geo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));geo.setAttribute('aBig',new THREE.Float32BufferAttribute(big,1));geo.setIndex(idx);
+ // the uv above already addresses the cell, so the shader only flips nothing: cell offsets are baked in
+ const tex=new THREE.CanvasTexture(cv);tex.minFilter=THREE.LinearFilter;tex.generateMipmaps=false;
+ const mat=new THREE.ShaderMaterial({transparent:true,depthWrite:false,depthTest:true,fog:false,
+  uniforms:{map:{value:tex},uPxToWorld:{value:1}},
+  vertexShader:`attribute vec3 aPos;attribute float aBig;uniform float uPxToWorld;varying vec2 vUv;varying float vA;
+   void main(){vec4 mv=modelViewMatrix*vec4(aPos,1.0);float dist=-mv.z;float w=aBig>0.5?240.0:170.0;float k=dist*uPxToWorld;
+    mv.xy+=position.xy*vec2(w*k,w*k*48.0/409.0);vA=aBig>0.5?1.0:(1.0-smoothstep(320.0,560.0,dist));vUv=uv;gl_Position=projectionMatrix*mv;}`,
+  fragmentShader:`uniform sampler2D map;varying vec2 vUv;varying float vA;void main(){vec4 c=texture2D(map,vUv);c.a*=vA;if(c.a<0.02)discard;gl_FragColor=c;}`});
+ const m=new THREE.Mesh(geo,mat);m.frustumCulled=false;m.userData.probeSkip=true;m.name='labels';m.renderOrder=10;LABELS.add(m);
+ FRAME_HOOKS.push(()=>{mat.uniforms.uPxToWorld.value=2*Math.tan(camera.fov*Math.PI/360)/innerHeight;});
+ window._labels=list.length;return m;}
+labelsBuild();
+</script>
+
+</body></html>
