@@ -248,7 +248,19 @@ def main():
     if '--target' in sys.argv:
         wanted.append(sys.argv[sys.argv.index('--target') + 1])
     if not wanted:
-        wanted = list(TARGET_OUT)
+        # A target is registered here BEFORE its directory exists, so an agent
+        # can be dispatched without touching this shared file (the memorial
+        # group went in that way). Building "everything" must not die on the
+        # first of those: it used to stop at `wing` and silently leave every
+        # target after it in this dict unbuilt. Skip them loudly instead. An
+        # explicit --target for a missing directory is still a hard error.
+        wanted = []
+        for t in TARGET_OUT:
+            if os.path.isdir(os.path.join(TARGETS, t)):
+                wanted.append(t)
+            else:
+                print('skipped %-14s registered in TARGET_OUT, but targets/%s/ does not exist yet'
+                      % (t, t))
 
     for target in wanted:
         order, html, out = build_one(target, do_checks, assert_origin)
