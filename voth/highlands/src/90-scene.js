@@ -5,13 +5,16 @@ const HL_ROWS=[];   // {branch, family, z, d, keys}
 // A row's camera stands rowCamDist() in front of it (+z), i.e. between it and the next row; when the next row is
 // tall (a cliff, a hall, a fortress) the gap is widened so the previous row's camera is not behind a 40 m wall.
 const rowCamDist=w=>Math.max(40,Math.min(w*.55,260));
+const eyeCamDist=D=>Math.max(10,Math.max(D.w,D.h||0)*.9+D.d*.5);   // an eye-level camera stands this far in front of the plot centre
 (function hlLayout(){let z=0;const fams=[];for(const b of HL_BRANCHES)HL.families(b).forEach((F,i,a)=>fams.push({b,F,last:i===a.length-1}));
  let prev=null;fams.forEach(({b,F,last})=>{const ws=F.keys.map(k=>VERN.defs[k].w+9);const total=ws.reduce((a,c)=>a+c,0);
   const dmax=Math.max(...F.keys.map(k=>VERN.defs[k].d||VERN.defs[k].w)),hmax=Math.max(...F.keys.map(k=>VERN.defs[k].h||0));
   if(prev&&hmax>22)z+=Math.max(0,Math.max(rowCamDist(prev.w),prev.h*1.7)+8-22);
   z+=dmax/2;let x=-total/2;
   F.keys.forEach((k,i)=>{SITES.push({key:k,x:x+ws[i]/2,z,ry:0,o:{v:0}});x+=ws[i];});
-  prev={branch:b,family:F.family,z,d:dmax,w:total,h:hmax,keys:F.keys};HL_ROWS.push(prev);z+=dmax/2+22+(last?40:0);});
+  prev={branch:b,family:F.family,z,d:dmax,w:total,h:hmax,keys:F.keys};HL_ROWS.push(prev);
+  const eyeNeed=Math.max(...F.keys.map(k=>eyeCamDist(VERN.defs[k])))-dmax/2+6;   // keep eye-level cameras clear of the next row
+  z+=dmax/2+Math.max(22,eyeNeed)+(last?40:0);});
  for(const S of HL_EXTRA){S.z=z+S.depth/2;SITES.push(S);HL_ROWS.push({branch:S.branch||'extra',family:S.family||S.key,z:S.z,d:S.depth,w:S.depth,keys:[S.key]});z+=S.depth+30;}})();
 const GROUND_C=(HL_ROWS.length?HL_ROWS[HL_ROWS.length-1].z:0)/2;
 // views: an opening, an overview per branch, one per row, and an eye-level shot per building
@@ -22,7 +25,7 @@ function hlAutoViews(extra){const V={};const R=HL_ROWS;if(!R.length)return V;con
  for(const b of HL_BRANCHES){const rs=R.filter(r=>r.branch===b);if(!rs.length)continue;const zc=(rs[0].z+rs[rs.length-1].z)/2;const span=rs[rs.length-1].z-rs[0].z+80;
   V[HL.branches[b]+' — overview']=[-span*.7,span*.55,zc+span*.35,0,5,zc];}
  for(const r of R){const dist=Math.max(rowCamDist(r.w),(r.h||0)*1.7);V[fam(r)]=[0,Math.max(18,dist*.45),r.z+r.d/2+dist,0,Math.min(4+(r.h||0)*.35,20),r.z];}
- for(const S of SITES){const D=VERN.defs[S.key];if(!D)continue;const dist=Math.max(10,Math.max(D.w,D.h||0)*.9+D.d*.5);
+ for(const S of SITES){const D=VERN.defs[S.key];if(!D)continue;const dist=eyeCamDist(D);
   V[D.name+' — eye level']=[S.x+D.w*.18,1.7,S.z+dist,S.x,Math.min(D.h||6,14)*.4,S.z];}
  return Object.assign(V,extra||{});}
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);
