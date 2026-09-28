@@ -12,7 +12,7 @@
 // leaning stone base on the downhill side instead of a floating slab. A def may give its own footing footprint as
 // fw/fd (default 92% of w/d). The hillside row in the showcase (82-xa-hill.js) uses this on every house.
 const XA={
- def(D){D.tags=Object.assign({culture:'xanadu',kit:'xanadu'},D.tags||{});D.family=D.family||'misc';D.kit='xanadu';
+ def(D){D.tags=Object.assign({culture:'xanadu',kit:'xanadu'},D.tags||{});D.family=D.family||'misc';D.kit='xanadu';D.nv=D.nv||(D.tags.wealth==='civic'?3:5);   // variants a def offers (o.v)
   const inner=D.build;D.build=function(G,o){if(o&&o.drop>0){xnFooting(0,0,D.fw||D.w*.92,D.fd||D.d*.92,0,o.drop);}inner(G,o);};return VERN.def(D);},
  keys(){return VERN.order.filter(k=>VERN.defs[k].kit==='xanadu');},
  // families in definition order: [{family, keys:[…]}]
@@ -27,7 +27,7 @@ function xnSub(key,lx,ly,lz,lry,o){const P=VERN.cur;const s=P.o.scale||1;const p
 const xLit=()=>vLit();
 const xPick=vPick;
 // the variant index of the running build (0, 1, 2): reseed(N+v) changes every pick; builders also switch structure on it
-const xV=o=>((o&&o.v)|0)%3;
+const xV=o=>(o&&o.v)|0;
 
 // ---------------------------------------------------------------- vectors in the local frame
 const xRot=(ry,v)=>[v[0]*Math.cos(ry)+v[2]*Math.sin(ry),v[1],-v[0]*Math.sin(ry)+v[2]*Math.cos(ry)];

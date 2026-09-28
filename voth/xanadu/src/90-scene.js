@@ -6,13 +6,14 @@ const XA_ROWS=[];   // {family, z, d, keys}
 // tall (a temple, the palace) the gap is widened so the previous row's camera is not behind a 40 m wall.
 const rowCamDist=w=>Math.max(40,Math.min(w*.55,260));
 const eyeCamDist=D=>Math.max(10,Math.max(D.w,D.h||0)*.9+D.d*.5);   // an eye-level camera stands this far in front of the plot centre
-const XA_VS=(typeof XA_VARIANTS==='undefined')?[0]:XA_VARIANTS;   // a target may show every def at several variants (o.v)
+const XA_ALLV=(typeof XA_VARIANTS!=='undefined')&&XA_VARIANTS;   // a target may show every def at all its variants (o.v = 1 … nv-1)
+const xaVs=k=>{if(!XA_ALLV)return[0];const n=VERN.defs[k].nv||3,out=[];for(let v=1;v<n;v++)out.push(v);return out;};
 (function xaLayout(){let z=0;const fams=XA.families();
- let prev=null;fams.forEach((F,fi)=>{const ws=F.keys.map(k=>(VERN.defs[k].w+9)*XA_VS.length);const total=ws.reduce((a,c)=>a+c,0);
+ let prev=null;fams.forEach((F,fi)=>{const ws=F.keys.map(k=>(VERN.defs[k].w+9)*xaVs(k).length);const total=ws.reduce((a,c)=>a+c,0);
   const dmax=Math.max(...F.keys.map(k=>VERN.defs[k].d||VERN.defs[k].w)),hmax=Math.max(...F.keys.map(k=>VERN.defs[k].h||0));
   if(prev)z+=Math.max(0,Math.max(rowCamDist(prev.w),prev.h*1.7)+10-22);   // every row: keep the previous row's camera out of this row's plots
   z+=dmax/2;let x=-total/2;
-  F.keys.forEach((k,i)=>{const u=ws[i]/XA_VS.length;XA_VS.forEach((v,j)=>SITES.push({key:k,x:x+u*(j+.5),z,ry:0,o:{v}}));x+=ws[i];});
+  F.keys.forEach((k,i)=>{const vs=xaVs(k),u=ws[i]/vs.length;vs.forEach((v,j)=>SITES.push({key:k,x:x+u*(j+.5),z,ry:0,o:{v}}));x+=ws[i];});
   prev={family:F.family,z,d:dmax,w:total,h:hmax,keys:F.keys};XA_ROWS.push(prev);
   const eyeNeed=Math.max(...F.keys.map(k=>eyeCamDist(VERN.defs[k])))-dmax/2+6;   // keep eye-level cameras clear of the next row
   z+=dmax/2+Math.max(22,eyeNeed);});

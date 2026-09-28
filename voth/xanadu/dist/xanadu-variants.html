@@ -1341,7 +1341,7 @@ kdef('xConeG',VCONE,MAT.xGold);kdef('xConeT',VCONE,MAT.xTiles);kdef('xConeW',VCO
 // leaning stone base on the downhill side instead of a floating slab. A def may give its own footing footprint as
 // fw/fd (default 92% of w/d). The hillside row in the showcase (82-xa-hill.js) uses this on every house.
 const XA={
- def(D){D.tags=Object.assign({culture:'xanadu',kit:'xanadu'},D.tags||{});D.family=D.family||'misc';D.kit='xanadu';
+ def(D){D.tags=Object.assign({culture:'xanadu',kit:'xanadu'},D.tags||{});D.family=D.family||'misc';D.kit='xanadu';D.nv=D.nv||(D.tags.wealth==='civic'?3:5);   // variants a def offers (o.v)
   const inner=D.build;D.build=function(G,o){if(o&&o.drop>0){xnFooting(0,0,D.fw||D.w*.92,D.fd||D.d*.92,0,o.drop);}inner(G,o);};return VERN.def(D);},
  keys(){return VERN.order.filter(k=>VERN.defs[k].kit==='xanadu');},
  // families in definition order: [{family, keys:[…]}]
@@ -1356,7 +1356,7 @@ function xnSub(key,lx,ly,lz,lry,o){const P=VERN.cur;const s=P.o.scale||1;const p
 const xLit=()=>vLit();
 const xPick=vPick;
 // the variant index of the running build (0, 1, 2): reseed(N+v) changes every pick; builders also switch structure on it
-const xV=o=>((o&&o.v)|0)%3;
+const xV=o=>(o&&o.v)|0;
 
 // ---------------------------------------------------------------- vectors in the local frame
 const xRot=(ry,v)=>[v[0]*Math.cos(ry)+v[2]*Math.sin(ry),v[1],-v[0]*Math.sin(ry)+v[2]*Math.cos(ry)];
@@ -1612,21 +1612,24 @@ function buildXaPoorA(G,o){reseed(30101+(o.v|0));const V=xV(o),W=8.4,D=7.2,H1=2.
  const earth=xC(xPick(XPAL.earth)).multiplyScalar(rr(.9,1.05)),trim=xC(xPick([XPAL.blue,XPAL.red,XPAL.white])),aged=xC(xPick(XPAL.aged));
  vnReg('Earth farmhouse (poor)',0,0,6.5,H1+H2+2.4);
  vB('xRubB',0,0,0,W+.4,.5,D+.4,0,xC(xPick(XPAL.rubble)));
- const S=xnStack(0,.5,0,W,D,0,V===2?[H1,H2,2.4]:[H1,H2],earth,'earth',xC(0x5a4a3a));const H3=V===2?2.4:0;
+ if(V===3)xnWall(0,.5,0,W,H1,D,0,xC(xPick(XPAL.rubble)),'stone');
+ const S=xnStack(0,.5,0,W,D,0,V===2?[H1,H2,2.4]:[H1,H2],earth,'earth',xC(0x5a4a3a));const H3=V===2?2.4:0,SS=V===4?-1:1;
  // stable door and a slit window below; the family's windows above, small and black-framed
  vnDoor(-1.6,.5,D/2,0,1.6,1.9,'vWood',aged,aged,true);vnWin(2.4,1.5,D/2,0,.5,.5,'open','xPaint',trim);
  for(const u of[-2.2,2.2])xnTibWin(u,.5+H1+.9,D/2-.2,0,.8,.9,'shut',trim,{valC:xC(XPAL.white)});
  xnTibWin(W/2-.25,.5+H1+.9,-1,Math.PI/2,.7,.8,'open',trim,{noVal:true});
  // the outside stair to the upper door on the +x side, a small landing on posts
- vB('vWood',W/2+.9,.5+H1-.2,2.2,1.8,.2,2.2,0,aged);for(const z of[1.2,3.2])vPst('vPost',W/2+1.7,.5,z,.1,H1-.2,aged);
- xnFlight(W/2+.9,.5,3.3+5.1,0,1.2,H1-.2,'vStone',xC(xPick(XPAL.rubble)));vnDoor(W/2-.2,.5+H1,2.2,Math.PI/2,.9,1.8,'vWood',aged,aged,false);
+ vB('vWood',SS*(W/2+.9),.5+H1-.2,2.2,1.8,.2,2.2,0,aged);for(const z of[1.2,3.2])vPst('vPost',SS*(W/2+1.7),.5,z,.1,H1-.2,aged);
+ xnFlight(SS*(W/2+.9),.5,3.3+5.1,0,1.2,H1-.2,'vStone',xC(xPick(XPAL.rubble)));vnDoor(SS*(W/2-.2),.5+H1,2.2,SS*Math.PI/2,.9,1.8,'vWood',aged,aged,false);
+ if(V===4){vB('xRubB',W/2+1.6,0,-1.8,3,1.9,4,0,xC(xPick(XPAL.rubble)));vnShedRoof(W/2+1.6,1.9,-1.8,3.4,4.4,.5,Math.PI/2,'xEarthB',earth,.3,.3);vB('vDarkB',W/2+3.1,0,-1.8,.06,1.5,1.4,0);}
+ if(V===3)xnShrine(-W/2-2.4,0,D/2+1.2,.8);
  if(V===2)for(const u of[-2.2,2.2])xnTibWin(u,.5+H1+H2+.9,S.d/2/.96-.2,0,.8,.9,'open',trim,{noVal:true});
  const top=xnFlatRoof(0,.5+H1+H2+H3,0,S.w,S.d,0,earth,{parapet:.7,corner:V===1?'pinnacle':'flag'});
  xnFodder(0,top-.7+.05,S.d/2-.3,S.w-1.2,0);xnFodder(-S.w/2+.3,top-.7+.05,0,.6,0);
  xnPennants([S.w/2-.2,top+2.6,S.d/2-.2],[S.w/2+4,2.8,S.d/2+3.5],9);vPst('vPost',S.w/2+4,0,S.d/2+3.5,.06,2.8,aged);
  xnYak(-3.5,D/2+2.6,.6);vnSacks(2.6,0,D/2+1.4,3);vnFolk(0,D/2+3.4,2,1.5);}
 // B — the hill tenement: three narrow earth units of different heights, raw-timber cumbas over the lane, one stair
-function buildXaPoorB(G,o){reseed(30111+(o.v|0));const V=xV(o),U=[[-5,5,6.2,V===1?3:2],[0,5,6.6,V===2?2:3],[5.2,5.4,6.4,V===2?3:2]];   // [x, w, d, storeys] — the tall unit moves with the variant
+function buildXaPoorB(G,o){reseed(30111+(o.v|0));const V=xV(o),U=V===3?[[-5,5,6.2,2],[0,5,6.6,2],[5.2,5.4,6.4,2]]:V===4?[[-5,5,6.2,3],[0,5,6.6,3],[5.2,5.4,6.4,3]]:[[-5,5,6.2,V===1?3:2],[0,5,6.6,V===2?2:3],[5.2,5.4,6.4,V===2?3:2]];   // [x, w, d, storeys] — the tall unit moves with the variant
  const aged=xC(xPick(XPAL.aged)),trim=xC(xPick([XPAL.red,XPAL.blue,XPAL.turquoise]));
  vnReg('Hill tenement row (poor)',0,0,8.6,10);
  vB('xRubB',0,0,0,16.4,.4,7.2,0,xC(xPick(XPAL.rubble)));
@@ -1635,7 +1638,8 @@ function buildXaPoorB(G,o){reseed(30111+(o.v|0));const V=xV(o),U=[[-5,5,6.2,V===
   vnDoor(x-w/2+1.1,.4,d/2,0,.9,1.8,'vWood',aged,aged,true);
   xnTibWin(x+w/2-1.3,1.5,d/2,0,.6,.7,'shut',trim,{noVal:true});
   // the cumba on the top storey, boards and raw struts
-  const cy=.4+2.5*(n-1);xnCumba(x,cy+.2,d/2*.96,0,w-1.2,2.2,1.1,{item:'vWood',c:aged.clone().multiplyScalar(rr(.9,1.1)),beamC:aged,winC:trim,kind:i===1?'glass':'shut',valC:i===1?null:false});
+  const cy=.4+2.5*(n-1);if(V!==3||i===1)xnCumba(x,cy+.2,d/2*.96,0,w-1.2,2.2,1.1,{item:V===4?'vPlaster':'vWood',c:V===4?xC(xPick(XPAL.wash)):aged.clone().multiplyScalar(rr(.9,1.1)),beamC:aged,winC:trim,kind:i===1?'glass':'shut',valC:i===1?null:false});
+  else for(const u of[-1.3,1.3])xnTibWin(x+u,cy+.9,d/2-.1,0,.7,.9,'shut',trim,{noVal:true});
   const top=xnFlatRoof(x,.4+2.5*n,0,S.w,S.d,0,earth,{parapet:.55,corner:i===1?'flag':null});
   if(i!==1)xnFodder(x,top-.5,-S.d/2+.3,S.w-1,0);});
  // a shared stair up the side of the tallest unit to its roof, sheets and a stovepipe
@@ -1643,18 +1647,20 @@ function buildXaPoorB(G,o){reseed(30111+(o.v|0));const V=xV(o),U=[[-5,5,6.2,V===
  vnChimney(1.2,7.9,-1.5,1.6,.12,true);vnPatch(0,.4,3.4,0,4.4,4.5,2);
  xnPennants([-2.5,7.9,3.2],[2.5,10.2,3.3],8);vnDryingRack(-6,0,5.6,0,3.6);vnWaterButt(3.4,0,4.6,.4,.9);vnFolk(0,5.8,3,2);}
 // C — the timber shack on a stone footing: board walls in a pole frame, a lean-to, a cloth awning, a rooftop shelter
-function buildXaPoorC(G,o){reseed(30121+(o.v|0));const V=xV(o),W=6.4,D=5.2,F=.6,H=2.5,LS=V===1?-1:1;
+function buildXaPoorC(G,o){reseed(30121+(o.v|0));const V=xV(o),W=6.4,D=5.2,F=V===4?1.6:.6,H=2.5,LS=V===1?-1:1;
  const aged=xC(xPick(XPAL.aged)).multiplyScalar(rr(.9,1.1)),cloth=xC(xPick(XPAL.cloth)),rub=xC(xPick(XPAL.rubble));
  vnReg('Timber shack (poor)',0,0,5.2,F+H+3.2);
- vB('xRubB',0,0,0,W+.4,F,D+.4,0,rub);vB('vWood',0,F,0,W,H,D,0,aged);vnFrame(0,F,0,W,H,D,0,aged.clone().multiplyScalar(.85),.1);
+ if(V===4)vnStilts(0,0,0,W,D,F,0,aged,.16);else vB('xRubB',0,0,0,W+.4,F,D+.4,0,rub);vB('vWood',0,F,0,W,H,D,0,aged);vnFrame(0,F,0,W,H,D,0,aged.clone().multiplyScalar(.85),.1);
  vnDoor(-1.3,F,D/2,0,.9,1.8,'vWood',aged,aged,false);vB('vWood',-1.3,0,D/2+.5,1.4,F,.8,0,aged);
  vnWin(1.6,F+1,D/2,0,.7,.7,'open','vWood',aged,true);vnWin(-W/2,F+1,-1,-Math.PI/2,.6,.6,'shut','vWood',aged);
  vnAwning(1.6,F+1.95,D/2,0,3,1.4,cloth);
  // a flat plank roof held by stones, a low board parapet, a pole-and-cloth shelter on it
- vB('vWood',0,F+H,0,W+.5,.16,D+.5,0,aged);for(let k=0;k<7;k++)kput('vRock',[rr(-W/2+.4,W/2-.4),F+H+.22,rr(-D/2+.4,D/2-.4)],qEuler(rng(),rng(),0),[.3,.2,.28],rub);
+ if(V===3){vnGableRoof(0,F+H,0,W+.6,D+.6,1.4,0,'xEarthB',xC(xPick(XPAL.earth)),.5,'vGableW',aged);vnChimney(1.8,F+H+.6,-.8,1.6,.12,true);}
+ else{vB('vWood',0,F+H,0,W+.5,.16,D+.5,0,aged);for(let k=0;k<7;k++)kput('vRock',[rr(-W/2+.4,W/2-.4),F+H+.22,rr(-D/2+.4,D/2-.4)],qEuler(rng(),rng(),0),[.3,.2,.28],rub);}
  for(const s of[-1,1]){vB('vWood',0,F+H,s*(D/2+.15),W+.5,.4,.08,0,aged);vB('vWood',s*(W/2+.2),F+H,0,.08,.4,D+.5,0,aged);}
- if(V!==2){for(const sx of[-1,1])for(const sz of[-1,1])vPst('vPost',sx*1.6,F+H+.16,sz*1.4+(-.4),.05,1.9+sz*.2,aged);
- kput('vClothB',[0,F+H+2.0,-.4],qEuler(.1,0,0),[3.8,.05,3.4],cloth.clone().multiplyScalar(.9));}else vnDryingRack(0,F+H+.16,-.4,0,4);
+ if(V!==2&&V!==3){for(const sx of[-1,1])for(const sz of[-1,1])vPst('vPost',sx*1.6,F+H+.16,sz*1.4+(-.4),.05,1.9+sz*.2,aged);
+ kput('vClothB',[0,F+H+2.0,-.4],qEuler(.1,0,0),[3.8,.05,3.4],cloth.clone().multiplyScalar(.9));}else if(V===2)vnDryingRack(0,F+H+.16,-.4,0,4);
+ if(V===4)vnStairs(-1.3,0,D/2+1.3,0,1.2,F,6,'vWood',aged);
  // lean-to store on the +x side under a salvage sheet, the poorest note
  vnFrame(LS*(W/2+1.1),0,-.4,2,2.1,D-1,0,aged,.08);vB('vWood',LS*(W/2+2.1),0,-.4,.06,2.0,D-1.2,0,aged);vnShedRoof(LS*(W/2+1.1),2.1,-.4,2.2,D-.6,.5,LS*Math.PI/2,'vCorr',null,.25,.08);
  vnWaterButt(-W/2-.6,0,D/2-.6,.36,.9);vnCrate(2.6,0,D/2+1.3,.8,.3);vnDryingRack(-2,0,D/2+2.6,0,3.2);vnFolk(1,D/2+3,2,1.2);}
@@ -1666,7 +1672,7 @@ function buildXaMidA(G,o){reseed(30201+(o.v|0));const V=xV(o),W=9.4,D=8.8,P=.6;
  const wash=xC(xPick(XPAL.wash)),trim=xC(xPick(XPAL.trim)),trim2=xC(xPick(XPAL.trim)),tim=xC(xPick(XPAL.timber)),stone=xC(xPick(XPAL.stone));
  vnReg('Town house (middle)',0,0,7,P+9.4+3.6);
  xnWall(0,0,0,W+.4,P,D+.4,0,stone,'dressed');
- const S=xnStack(0,P,0,W,D,0,[3.2,3.0,2.9],wash,'wash');
+ const HS=V===3?[3.2,3.0]:V===4?[3.2,3.0,2.9,2.8]:[3.2,3.0,2.9],NS=HS.length,YT=P+HS.reduce((a,c)=>a+c,0);const S=xnStack(0,P,0,W,D,0,HS,wash,'wash');
  // door up a short flight, its lintel on corbels and a valance; windows in rows, the ground row barred (shut)
  vnDoor(-1.4,P,D/2,0,1.2,2.2,'vWood',tim,xC(xPick(XPAL.dark)),false);xnFlight(-1.4,0,D/2+1.0,0,1.8,P,'vStone',stone);
  vB('vWood',-1.4,P+2.4,D/2+.12,2.0,.18,.3,0,tim);xnCorbels(-1.4,P+2.4,D/2,0,1.6,4,tim,.6);kput('xValance',[-1.4,P+2.15,D/2+.3],null,[1.9,.5,1],xC(xPick(XPAL.cloth)));
@@ -1674,10 +1680,13 @@ function buildXaMidA(G,o){reseed(30201+(o.v|0));const V=xV(o),W=9.4,D=8.8,P=.6;
  for(const u of[-2.6,0,2.6])xnTibWin(u,P+3.2+1.0,D/2-.28,0,.85,1.15,'glass',trim2);
  for(const z of[-2.4,1.2])for(const s of[-1,1])xnTibWin(s*(W/2-.14),P+3.2+1.0,z,s*Math.PI/2,.8,1.1,'glass',trim);
  // the cumba on the top storey, over the street
- if(V===1){xnCumba(S.w/2*1.03,P+6.2+.15,-.6,Math.PI/2,D-2.6,2.6,1.3,{c:wash,beamC:tim,winC:trim2,valC:xC(xPick(XPAL.cloth))});for(const u of[-2.6,0,2.6])xnTibWin(u,P+6.2+1.0,S.d/2*1.03-.08,0,.85,1.15,'glass',trim2);xnTibWin(-S.w/2-.08+.08,P+6.2+1.0,-1.5,-Math.PI/2,.8,1.1,'glass',trim);}
- else{xnCumba(0,P+6.2+.15,S.d/2*1.03,0,W-2.2,2.6,1.3,{c:wash,beamC:tim,winC:trim2,valC:xC(xPick(XPAL.cloth))});
- for(const s of[-1,1])xnTibWin(s*(S.w/2-.08),P+6.2+1.0,-1.5,s*Math.PI/2,.8,1.1,'glass',trim);}
- const top=xnFlatRoof(0,P+9.1,0,S.w,S.d,0,wash,{eave:true,eaveC:tim,parapet:.6,corner:'pinnacle'});
+ const CY=YT-2.9,CZ=D/2*Math.pow(.96,NS-1);   // the top storey's base and face
+ if(V===3)xnJharokha(0,P+3.2+.5,D/2*.96,0,3.2,2.4,xC(xPick(XPAL.stone)),{dome:'T',jaliC:wash});
+ else if(V===1){xnCumba(S.w/2*1.03,CY+.15,-.6,Math.PI/2,D-2.6,2.6,1.3,{c:wash,beamC:tim,winC:trim2,valC:xC(xPick(XPAL.cloth))});for(const u of[-2.6,0,2.6])xnTibWin(u,CY+1.0,CZ-.08,0,.85,1.15,'glass',trim2);xnTibWin(-S.w/2,CY+1.0,-1.5,-Math.PI/2,.8,1.1,'glass',trim);}
+ else{xnCumba(0,CY+.15,CZ,0,W-2.2,2.6,1.3,{c:wash,beamC:tim,winC:trim2,valC:xC(xPick(XPAL.cloth))});
+ for(const s of[-1,1])xnTibWin(s*(S.w/2-.08),CY+1.0,-1.5,s*Math.PI/2,.8,1.1,'glass',trim);}
+ if(V===4)for(const u of[-2.6,0,2.6])xnTibWin(u,P+3.2+3.0+1.0,D/2*.96*.96-.06,0,.85,1.15,'glass',trim);
+ const top=xnFlatRoof(0,YT,0,S.w,S.d,0,wash,{eave:true,eaveC:tim,parapet:.6,corner:V===4?'gold':'pinnacle'});
  if(V!==2)xnPavilion(-S.w/2+2.4,top-.6,-S.d/2+2.2,3,2.6,2.4,0,{c:xC(XPAL.red)});else xnFodder(0,top-.6,-S.d/2+.4,S.w-1.4,0);
  xnPennants([S.w/2-.3,top+.2,S.d/2-.3],[-S.w/2+.3,top+1.6,S.d/2-.3],10);
  vnPlanter(W/2+1,0,D/2-1.2,1.6,.6,0,tim);vnBarrel(-W/2-.7,0,D/2-1,.35,.9,tim);vnFolk(1.5,D/2+3,2,1.6);}
@@ -1692,7 +1701,9 @@ function buildXaMidB(G,o){reseed(30211+(o.v|0));const V=xV(o),CW=17,CD=15,HW=11,
  vB('xEarthB',0,0,-CD/2+.3,CW,WH,.6,0,ochre.clone().multiplyScalar(.95));vB('xTilesB',0,WH,-CD/2+.3,CW+.3,.22,.9,0,tile);   // the wall closes behind the house too
  for(const s of[-1,1])vB('vStone',s*2.2,0,CD/2-.3,.7,WH+.9,.9,0,stone);
  xnArch('xArchS',0,0,CD/2,0,4.4,WH+.6,.7,stone,{open:true});kput('vWood',[-.2,1.4,CD/2-.1],qEuler(0,.3,0),[1.6,2.7,.08],xC(xPick(XPAL.dark)));kput('vWood',[1.1,1.4,CD/2-.15],null,[1.5,2.7,.08],xC(xPick(XPAL.dark)));
- vnGableRoof(0,WH+.9,CD/2-.3,5.8,1.8,.7,0,'xTilesB',tile,.4,'vGableSt',stone);
+ if(V===4){xnWall(0,WH+.9,CD/2-.3,5.4,4.2,3,0,ochre,'wash');for(const s of[-1,1])xnTibWin(s*1.4,WH+2.2,CD/2+1.15,0,.7,.9,'glass',trim,{noVal:true});xnFlatRoof(0,WH+5.1,CD/2-.3,5.2,2.9,0,ochre,{parapet:.4,corner:'pinnacle'});}
+ else vnGableRoof(0,WH+.9,CD/2-.3,5.8,1.8,.7,0,'xTilesB',tile,.4,'vGableSt',stone);
+ if(V===3){const WX=-CW/2+2.6;xnStack(WX,0,2,4.6,10,0,[3.0],ochre,'wash');for(const z of[-1.5,2,5.5])xnTibWin(WX+2.3,1.0,2+z,Math.PI/2,.7,.9,'glass',trim,{noVal:true});vnDoor(WX+2.3,0,-1.2,Math.PI/2,.9,1.9,'vWood',tim,tim,true);xnFlatRoof(WX,3,2,4.4,9.6,0,ochre,{parapet:.5});}
  // the house: two battered storeys, jharokha over the court, painted windows, a corbel eave
  const S=xnStack(0,0,HZ,HW,HD,0,[3.1,3.0],ochre,'wash');
  vnDoor(0,0,HZ+HD/2,0,1.3,2.3,'vWood',tim,xC(xPick(XPAL.dark)),true);kput('xValance',[0,2.35,HZ+HD/2+.28],null,[2.2,.5,1],xC(xPick(XPAL.cloth)));
@@ -1711,21 +1722,23 @@ function buildXaMidC(G,o){reseed(30221+(o.v|0));const V=xV(o),W=13,D=10,H1=3.6;
  const wash=xC(xPick(XPAL.wash)),trim=xC(xPick(XPAL.trim)),trim2=xC(xPick(XPAL.trim)),tim=xC(xPick(XPAL.timber)),stone=xC(xPick(XPAL.stone)),tile=xC(xPick(XPAL.tile));
  vnReg('Tenement (middle)',0,0,9,H1+9+4);
  // ground: dressed stone with three shop arches, awnings and goods
- xnWall(0,0,0,W,H1,D,0,stone,'dressed');xnArcade(0,0,D/2,0,W-1.6,H1-.5,3,'xArchS',stone,.6);
- for(let i=0;i<3;i++){const x=-(W-1.6)/2+(W-1.6)*(i+.5)/3;vnAwning(x,H1-.7,D/2+.3,0,3,1.6,xC(xPick(XPAL.cloth)));if(i!==1)vnSacks(x,0,D/2+1,3);else vnCrate(x,0,D/2+1,.8,.2);}
+ xnWall(0,0,0,W,H1,D,0,stone,'dressed');
+ if(V===4){for(const u of[-4,4])vnDoor(u,0,D/2,0,1.2,2.3,'vStone',stone,xC(xPick(XPAL.dark)),true);xnJharokha(0,1.4,D/2*.99,0,3,2.2,stone,{dome:'W',jaliC:wash});for(const u of[-1.8,1.8])xnTibWin(u,1.2,D/2,0,.7,1.1,'shut',trim,{noVal:true});}
+ else{xnArcade(0,0,D/2,0,W-1.6,H1-.5,3,'xArchS',stone,.6);
+ for(let i=0;i<3;i++){const x=-(W-1.6)/2+(W-1.6)*(i+.5)/3;vnAwning(x,H1-.7,D/2+.3,0,3,1.6,xC(xPick(XPAL.cloth)));if(i!==1)vnSacks(x,0,D/2+1,3);else vnCrate(x,0,D/2+1,.8,.2);}}
  vnDoor(-W/2,0,-2,-Math.PI/2,1.1,2.2,'vStone',stone,xC(xPick(XPAL.dark)),true);
  // three storeys above, the batter carried through, rows of trapezoid windows
- const W1=W*.96,D1=D*.96,S=xnStack(0,H1,0,W1,D1,0,[3,3,3],wash,'wash');   // the storeys start on the ground block's top, not past it
+ const NS=V===3?4:3,HS=[3,3,3,3].slice(0,NS),W1=W*.96,D1=D*.96,S=xnStack(0,H1,0,W1,D1,0,HS,wash,'wash');   // the storeys start on the ground block's top, not past it
  const fz=k=>D1/2*Math.pow(.96,k)-.04,fx=k=>W1/2*Math.pow(.96,k)-.04;
- for(let k=0;k<3;k++){const y=H1+3*k+1.0;for(const u of[-4.2,-1.4,1.4,4.2])if(k!==1||Math.abs(u)>3)xnTibWin(u,y,fz(k),0,.8,1.1,'glass',k%2?trim:trim2);
+ for(let k=0;k<NS;k++){const y=H1+3*k+1.0;for(const u of[-4.2,-1.4,1.4,4.2])if(k!==1||Math.abs(u)>3)xnTibWin(u,y,fz(k),0,.8,1.1,'glass',k%2?trim:trim2);
   for(const z of[-3,0,3])if(!(k===2&&V===2))xnTibWin(fx(k),y,z,Math.PI/2,.8,1.1,'glass',trim);}
  xnCumba(0,H1+3.15,fz(1)+.04,0,5.6,2.7,1.3,{c:wash,beamC:tim,winC:trim2,valC:xC(xPick(XPAL.cloth))});
  xnCumba(-fx(2)-.04,H1+6.15,-1.5,-Math.PI/2,5,2.7,1.2,{c:wash,beamC:tim,winC:trim});
  if(V===2)xnCumba(fx(2)+.04,H1+6.15,.5,Math.PI/2,5,2.7,1.2,{c:wash,beamC:tim,winC:trim2});
- const top=xnFlatRoof(0,H1+9,0,S.w,S.d,0,wash,{eave:true,eaveC:tim,parapet:.7});
+ const RY=H1+3*NS,top=xnFlatRoof(0,RY,0,S.w,S.d,0,wash,{eave:true,eaveC:tim,parapet:.7});
  // stair turret at the back corner, a tiled bulb on it; washing lines; pennants
- const tx=S.w/2-1.6,tz=-S.d/2+1.6;xnWall(tx,H1+9,tz,2.8,3.2,2.8,0,wash,'wash');vnDoor(tx,H1+9.3,tz+1.4,0,.8,1.8,'vWood',tim,tim,false);
- kput('xBulbT',[tx,H1+12.2,tz],null,[1.7,1.9,1.7],tile);vBall('xGold',tx,H1+14.2,tz,.14,xC(XPAL.gold[0]));
+ const tx=S.w/2-1.6,tz=-S.d/2+1.6;xnWall(tx,RY,tz,2.8,3.2,2.8,0,wash,'wash');vnDoor(tx,RY+.3,tz+1.4,0,.8,1.8,'vWood',tim,tim,false);
+ kput('xBulbT',[tx,RY+3.2,tz],null,[1.7,1.9,1.7],tile);vBall('xGold',tx,RY+5.2,tz,.14,xC(XPAL.gold[0]));
  vnDryingRack(-2,top-.7,-1,0,5);vnDryingRack(1,top-.7,2,Math.PI/2,4);
  xnPennants([S.w/2-.4,top+.1,S.d/2-.4],[-S.w/2+.4,top+1.8,S.d/2-.4],12);vnFolk(0,D/2+3.4,4,3);}
 
@@ -1736,17 +1749,19 @@ function buildXaRichA(G,o){reseed(30301+(o.v|0));const V=xV(o),W=18,D=13,P=1.3,l
  const wash=xC(xPick(XPAL.wash)),trim=xC(xPick(XPAL.trim)),tim=xC(xPick(XPAL.dark)),stone=xC(xPick(XPAL.stone)),gold=xC(xPick(XPAL.gold));
  vnReg('Manor (rich)',0,0,12,P+11.2+6);vnReg('Manor — fountain court',0,D/2+6.5,7,3);
  xnWall(0,0,0,W+.6,P,D+.6,0,stone,'dressed');vB('vStone',0,P-.14,0,W+.9,.14,D+.9,0,stone.clone().multiplyScalar(1.08));
- const S=xnStack(0,P,0,W,D,0,[3.8,3.6,3.4],wash,'wash');
+ const HS=V===4?[3.8,3.6,3.4,3.2]:[3.8,3.6,3.4],YT=P+HS.reduce((a,c)=>a+c,0),S=xnStack(0,P,0,W,D,0,HS,wash,'wash');
  // the iwan door, a flight to it
  xnIwan(0,P,D/2*.99,0,5.2,6.2,1.1,wash,{guldasta:true});xnFlight(0,0,D/2+2.2,0,3.2,P,'vStone',stone);
  // windows: tall on the piano nobile, the top row small; jharokhas either side of the iwan on the first floor
  for(const u of[-6.6,-4.2,4.2,6.6])xnTibWin(u,P+1.3,D/2-.06,0,.9,1.6,lit,trim,{shutters:true});
- for(const u of[-6.4,6.4])xnJharokha(u,P+3.8+.4,D/2*.955,0,2.6,2.3,stone,{dome:['G','T','G'][V],jaliC:xC(XPAL.white)});
+ if(V===3){for(const s of[-1,1])xnArcade(s*5.4,P+3.8,D/2*.96,0,6.4,3.0,3,'xArchS',stone,.6,{open:false});}
+ else for(const u of[-6.4,6.4])xnJharokha(u,P+3.8+.4,D/2*.955,0,2.6,2.3,stone,{dome:['G','T','G','T','G'][V],jaliC:xC(XPAL.white)});
  for(const u of[-2.4,2.4])xnTibWin(u,P+3.8+1.2,D/2*.96-.06,0,.9,1.5,lit,trim);
  for(const u of[-6,-3,0,3,6])xnTibWin(u,P+7.4+.9,D/2*.92-.06,0,.8,1.1,lit,trim);
  for(const z of[-4,-1,2,5])for(const s of[-1,1]){xnTibWin(s*(W/2-.14),P+1.3,z,s*Math.PI/2,.9,1.5,lit,trim,{shutters:true});xnTibWin(s*(W/2*.96-.14),P+3.8+1.2,z,s*Math.PI/2,.85,1.4,lit,trim);}
- const top=xnFlatRoof(0,P+10.8,0,S.w,S.d,0,wash,{band:true,gold:true,eave:true,eaveC:tim,parapet:.7,corner:'gold'});
- if(V===2)xnDome(0,top-.7,-1,3.2,'G',{drum:2,drumItem:'xDrumM',fin:1.6});else xnGiltRoof(0,top-.7,-1,V===1?6:8,V===1?4.4:5.6,0,{frame:2.2,over:1.1});
+ if(V===4)for(const u of[-6,-3,0,3,6])xnTibWin(u,P+10.8+.9,D/2*Math.pow(.96,3)-.06,0,.8,1.1,lit,trim);
+ const top=xnFlatRoof(0,YT,0,S.w,S.d,0,wash,{band:true,gold:true,eave:true,eaveC:tim,parapet:.7,corner:'gold'});
+ if(V===2)xnDome(0,top-.7,-1,3.2,'G',{drum:2,drumItem:'xDrumM',fin:1.6});else if(V===4)for(const s of[-1,1])xnGiltRoof(s*4.6,top-.7,-1,5,4.4,0,{frame:2,over:1});else xnGiltRoof(0,top-.7,-1,V===1?6:8,V===1?4.4:5.6,0,{frame:2.2,over:1.1});
  for(const s of[-1,1])xnFlagpole(s*(S.w/2-1.2),top-.6,S.d/2-1.2,4,xC(XPAL.saffron));
  // the fountain court: a low wall with gate piers, paving, a fountain, cypresses, lamps
  const CZ=D/2+6.5;xnPave(0,CZ,22,9,0,stone,2.2);xnFountain(0,0,CZ,2.4,stone);
@@ -1756,29 +1771,30 @@ function buildXaRichA(G,o){reseed(30301+(o.v|0));const V=xV(o),W=18,D=13,P=1.3,l
  vnFolk(0,CZ+1.5,3,2.5);}
 // B — the hillside manor: a lower front hall and a taller block behind it raised on a terrace, a loggia of pointed
 // arches, a corner tower under a tiled Persian dome, a terraced garden and the stair between the levels. Electric.
-function buildXaRichB(G,o){reseed(30311+(o.v|0));const V=xV(o),T=3.2,lit=xLit()?'lit':'glass';
+function buildXaRichB(G,o){reseed(30311+(o.v|0));const V=xV(o),T=3.2,lit=xLit()?'lit':'glass',M=V===4?-1:1;   // M mirrors the plan
  const wash=xC(xPick(XPAL.wash)),ochre=xC(xPick(XPAL.ochre)),trim=xC(xPick(XPAL.trim)),tim=xC(xPick(XPAL.dark)),stone=xC(xPick(XPAL.stone)),rub=xC(xPick(XPAL.rubble)),tile=xC(xPick(XPAL.tile));
  vnReg('Hillside manor (rich)',0,-3,13,T+11+6);vnReg('Hillside manor — garden',-7,6,6,3);
  // the terrace the upper block stands on (in a settlement the hill itself does this), its retaining wall and stair
- xnTerrace(0,0,-5.5,28,15,0,T,rub);xnFlight(4,0,2.3,0,3,T,'vStone',stone);
+ xnTerrace(0,0,-5.5,28,15,0,T,rub);xnFlight(M*4,0,2.3,0,3,T,'vStone',stone);
  // the lower hall in front, on the ground: ochre, two storeys, a mosaic over its door
- {const X=5.5,Z=4.5,W=11,D=7;const S=xnStack(X,0,Z,W,D,0,[3.4,3],ochre,'wash');vnDoor(X-2,0,Z+D/2,0,1.4,2.4,'vWood',tim,tim,true);xnMural('xMosB',X-2,2.55,Z+D/2,0,2.4,1.1);
-  for(const u of[1.6,3.8])xnTibWin(X+u,1.2,Z+D/2-.05,0,.9,1.4,lit,trim,{shutters:true});for(const u of[-3.5,-1,1.5,4])xnTibWin(X+u,4.4,Z+D/2-.25,0,.85,1.3,lit,trim);
-  xnFlatRoof(X,6.4,Z,S.w,S.d,0,ochre,{eave:true,eaveC:tim,parapet:.6,corner:'gold'});xnPavilion(X+2,6.4+.6-.3,Z-.5,3.2,2.8,2.5,0,{gilt:true,rise:1.2,over:.9});}
+ {const X=M*5.5,Z=4.5,W=11,D=7;const S=xnStack(X,0,Z,W,D,0,[3.4,3],ochre,'wash');vnDoor(X-M*2,0,Z+D/2,0,1.4,2.4,'vWood',tim,tim,true);xnMural('xMosB',X-M*2,2.55,Z+D/2,0,2.4,1.1);
+  for(const u of[1.6,3.8])xnTibWin(X+M*u,1.2,Z+D/2-.05,0,.9,1.4,lit,trim,{shutters:true});for(const u of[-3.5,-1,1.5,4])xnTibWin(X+u,4.4,Z+D/2-.25,0,.85,1.3,lit,trim);
+  xnFlatRoof(X,6.4,Z,S.w,S.d,0,ochre,{eave:true,eaveC:tim,parapet:.6,corner:'gold'});xnPavilion(X+M*2,6.4+.6-.3,Z-.5,3.2,2.8,2.5,0,{gilt:true,rise:1.2,over:.9});}
  // the upper block on the terrace: three storeys, a loggia of pointed arches along its front, the dome tower
- {const X=-2,Z=-6,W=16,D=10;const S=xnStack(X,T,Z,W,D,0,[3.6,3.4,3.2],wash,'wash');
+ {const X=-M*2,Z=-6,W=16,D=10;const S=xnStack(X,T,Z,W,D,0,[3.6,3.4,3.2],wash,'wash');
   xnArcade(X,T,Z+D/2*.99,0,W-2,3.2,5,'xArchS',stone,.7,{open:false});
   for(const u of[-5.6,-2.8,0,2.8,5.6])xnTibWin(X+u,T+3.6+1.1,Z+D/2*.96-.05,0,.9,1.5,lit,trim);
   for(const u of[-6,-3,0,3,6])xnTibWin(X+u,T+7+.9,Z+D/2*.92-.05,0,.8,1.1,lit,trim);
-  for(const z of[-3,0,3])xnTibWin(X-W/2*.96+.14,T+3.6+1.1,Z+z,-Math.PI/2,.85,1.4,lit,trim);
+  for(const z of[-3,0,3])xnTibWin(X-M*(W/2*.96-.14),T+3.6+1.1,Z+z,-M*Math.PI/2,.85,1.4,lit,trim);
   const top=xnFlatRoof(X,T+10.2,Z,S.w,S.d,0,wash,{band:true,gold:true,eave:true,eaveC:tim,parapet:.7,corner:'gold'});
-  const tx=X+W/2*.93-2.4,tz=Z-D/2*.93+2.4;xnWall(tx,T+10.2,tz,4.6,3.4,4.6,0,wash,'wash');vB('xFriezeB',tx,T+13.2,tz,4.9,.55,4.9,0);
-  xnDome(tx,T+13.8,tz,2.6,['T','M','G'][V],{drum:1.8,c:V?null:tile,fin:1.6});
-  for(const u of[-4,0])xnFlagpole(X+u,top-.6,Z+S.d/2-1.1,3.6,xC(XPAL.red));}
- // the terraced garden west of the hall: cypresses along the terrace edge, a pool, a chhatri on the terrace corner
- xnPave(-7,6,10,8,0,stone,2);xnPool(-7,.02,6,4,3,0,stone);for(const x of[-12.5,-9,-5.5,-2])xnCypress(x,2.2,rr(5,7));
- xnChhatri(-11,T,-1.5,1.4,3.2,stone,tile,6);for(const x of[-13,-8])xnTree(x,-12,4,null,T);
- if(xLit()){vnLampPost(1.5,0,7.5,3.2);vnLampPost(-1,T,2.2,3.2);}vnFolk(0,9.5,3,2.5);}
+  const tx=X+M*(W/2*.93-2.4),tz=Z-D/2*.93+2.4;
+  if(V===3)xnGiltRoof(X,top-.7,Z-1,7,4.8,0,{frame:2,over:1});
+  else{xnWall(tx,T+10.2,tz,4.6,3.4,4.6,0,wash,'wash');vB('xFriezeB',tx,T+13.2,tz,4.9,.55,4.9,0);xnDome(tx,T+13.8,tz,2.6,['T','M','G','T','M'][V],{drum:1.8,c:V%3?null:tile,fin:1.6});}
+  for(const u of[-4,0])xnFlagpole(X+M*u,top-.6,Z+S.d/2-1.1,3.6,xC(XPAL.red));}
+ // the terraced garden beside the hall: cypresses along the terrace edge, a pool, a chhatri on the terrace corner
+ xnPave(-M*7,6,10,8,0,stone,2);xnPool(-M*7,.02,6,4,3,0,stone);for(const x of[-12.5,-9,-5.5,-2])xnCypress(M*x,2.2,rr(5,7));
+ xnChhatri(-M*11,T,-1.5,1.4,3.2,stone,tile,6);for(const x of[-13,-8])xnTree(M*x,-12,4,null,T);
+ if(xLit()){vnLampPost(M*1.5,0,7.5,3.2);vnLampPost(-M,T,2.2,3.2);}vnFolk(0,9.5,3,2.5);}
 // C — the merchant's konak: a stone ground storey with a carriage arch, whitewash above, the top storey wrapped in a
 // dark timber cumba on two sides under a wide-eaved turquoise-tiled hip roof; a jharokha on the third side, a
 // walled garden with a pool. Electric.
@@ -1794,10 +1810,12 @@ function buildXaRichC(G,o){reseed(30321+(o.v|0));const V=xV(o),W=15,D=11,H1=3.6,
  // the cumba wraps the front and the +x side of the top storey
  xnCumba(0,H1+H2+.15,S.d/2*1.02,0,W-1.6,H3-.3,1.4,{c:wash,beamC:tim,winC:trim,valC:xC(xPick(XPAL.cloth)),kind:lit});
  xnCumba(S.w/2*1.02,H1+H2+.15,-.5,Math.PI/2,D-3,H3-.3,1.3,{c:wash,beamC:tim,winC:trim,valC:xC(xPick(XPAL.cloth)),kind:lit});
- xnJharokha(-S.w/2*.98,H1+H2+.6,-1,-Math.PI/2,2.6,2.2,stone,{dome:'G',jaliC:xC(XPAL.white)});
+ if(V===3)xnCumba(-S.w/2*1.02,H1+H2+.15,-.5,-Math.PI/2,D-3,H3-.3,1.3,{c:wash,beamC:tim,winC:trim,valC:xC(xPick(XPAL.cloth)),kind:lit});
+ else xnJharokha(-S.w/2*.98,H1+H2+.6,-1,-Math.PI/2,2.6,2.2,stone,{dome:'G',jaliC:xC(XPAL.white)});
  // the roof: corbel eave, a wide tiled hip with gilt horns, a gold finial
  const y3=H1+H2+H3;
  if(V===1){const top=xnFlatRoof(0,y3,0,S.w,S.d,0,wash,{band:true,gold:true,eave:true,eaveC:tim,parapet:.6,corner:'gold'});xnGiltRoof(0,top-.6,-1,6.5,4.6,0,{frame:1.8,over:1});}
+ else if(V===4){const top=xnFlatRoof(0,y3,0,S.w,S.d,0,wash,{band:true,gold:true,eave:true,eaveC:tim,parapet:.6,corner:'gold'});xnDome(-S.w/2+3.2,top-.6,-S.d/2+3.2,2.6,'T',{drum:1.6,c:tile,fin:1.4});xnPavilion(2.5,top-.6,0,4,3.4,2.6,0,{c:xC(XPAL.red),tileC:tile});}
  else{xnEave(0,y3-.65,0,S.w,S.d,0,tim,.9);vnHipRoof('xHipT',0,y3+.4,0,S.w,S.d,3.4,0,tile,1.5);
  for(const sx of[-1,1])for(const sz of[-1,1]){const p=loc(0,0,sx*(S.w/2+1.1),sz*(S.d/2+1.1),0);kput('xArmG',[p[0],y3+.25,p[1]],qEuler(0,xnCornerYaw(0,sx,sz),0),[1.2,.8,.34],gold);}
  vB('xGoldB',0,y3+3.7,0,S.w-S.d+1,.24,.4,0,gold);for(const x of[-2,0,2])kput('xBulbG',[x,y3+3.9,0],null,[.32,.5,.32],gold);}
@@ -1833,7 +1851,7 @@ function xnXBGoods(x,z,ry,kind){const P=(u,v)=>loc(x,z,u,v,ry);vB('vStone',x,0,z
   else kput('xGoldB',[p[0],.85,p[1]],qEuler(0,ry+rng(),0),[.3,.12,.3],xC(xPick([0xd4a030,0xb8b0a0,0x8a6a48])));}}
 
 // ---------------------------------------------------------------- the bazaar row: three shops under arches, rooms above in a cumba
-function buildXaShops(G,o){reseed(30401+(o.v|0));const V=xV(o),N=V===1?4:3,W=N*5.2,D=8,H1=3.4,H2=2.9;
+function buildXaShops(G,o){reseed(30401+(o.v|0));const V=xV(o),N=V===1?4:V===3?5:3,W=N*5.2,D=8,H1=3.4,H2=2.9;
  const wash=xC(xPick(XPAL.wash)),ochre=xC(xPick(XPAL.ochre)),trim=xC(xPick(XPAL.trim)),tim=xC(xPick(XPAL.timber)),stone=xC(xPick(XPAL.stone));
  vnReg('Bazaar row (shops)',0,0,9.5,H1+H2+2.5);
  xnWall(0,0,0,W,H1,D,0,ochre,'wash');vB('vStone',0,0,0,W+.3,.4,D+.3,0,stone);
@@ -1843,20 +1861,21 @@ function buildXaShops(G,o){reseed(30401+(o.v|0));const V=xV(o),N=V===1?4:3,W=N*5
  // the rooms above: one long cumba the width of the row, shutters on the backs
  // the rooms above: the storey is set back and one long cumba the width of the row hangs out over the arches
  const S=xnStack(0,H1,-1.3,W,D-2.6,0,[H2],wash,'wash');
- xnCumba(0,H1+.15,D/2-2.6,0,W-1.4,H2,1.5,{c:wash,beamC:tim,winC:trim,n:7,valC:xC(xPick(XPAL.cloth))});for(const z of[-2.4,.6])for(const s of[-1,1])xnTibWin(s*(W/2-.14),H1+.9,z,s*Math.PI/2,.8,1.1,'shut',trim,{noVal:true});
+ if(V===4)xnArcade(0,H1,D/2-2.6,0,W-1.4,H2-.2,N*2,'xArchW',wash,.5,{open:false});   // an arcaded loggia instead of the cumba
+ else xnCumba(0,H1+.15,D/2-2.6,0,W-1.4,H2,1.5,{c:wash,beamC:tim,winC:trim,n:N*2+1,valC:xC(xPick(XPAL.cloth))});for(const z of[-2.4,.6])for(const s of[-1,1])xnTibWin(s*(W/2-.14),H1+.9,z,s*Math.PI/2,.8,1.1,'shut',trim,{noVal:true});
  for(const u of[-5,-2,1,4])vnWin(u,H1+.9,-D/2,Math.PI,.8,1.0,'shut','xPaint',trim);
  const top=xnFlatRoof(0,H1+H2,-1.3,S.w,S.d,0,wash,{eave:true,eaveC:tim,parapet:.6,corner:'flag'});
  xnPennants([-S.w/2+.3,top+.3,S.d/2-1.6],[S.w/2-.3,top+.3,S.d/2-1.6],14);if(V===2)xnPavilion(0,top-.6,-1.3,3.2,2.6,2.4,0,{c:xC(XPAL.red)});
  for(let k=0;k<3;k++)vPst('vClayPot',-W/2-.8,0,-2+k*1.2,.3,.6,xC(0x9a5a38));vnBarrel(W/2+.8,0,-1,.35,.9,tim);vnFolk(0,D/2+3.5,5,4);}
 // ---------------------------------------------------------------- the workshop: dyer and potter round a yard
-function buildXaWorkshop(G,o){reseed(30411+(o.v|0));const W=10,D=7,X=-4,Z=-4;
+function buildXaWorkshop(G,o){reseed(30411+(o.v|0));const V=xV(o),W=10,D=7,X=-4,Z=-4;
  const earth=xC(xPick(XPAL.earth)),wash=xC(xPick(XPAL.wash)),trim=xC(xPick(XPAL.trim)),tim=xC(xPick(XPAL.timber)),stone=xC(xPick(XPAL.stone)),rub=xC(xPick(XPAL.rubble));
  vnReg('Workshop (dyer and potter)',X,Z,7,8.5);vnReg('Workshop — yard',3,3,6,3);
  // the house: two earth storeys, a workroom open to the yard under a shed roof on posts
- const S=xnStack(X,0,Z,W,D,0,[3,2.6],earth,'earth',xC(0x5a4a3a));
+ const S=xnStack(X,0,Z,W,D,0,V===1||V===4?[3]:V===3?[3,2.6,2.4]:[3,2.6],earth,V===2?'wash':'earth',xC(0x5a4a3a));const HT=S.y;
  vnDoor(X+2,0,Z+D/2,0,1.1,2,'vWood',tim,tim,true);xnTibWin(X-2,1,Z+D/2-.04,0,.8,.9,'open',trim,{noVal:true});
- for(const u of[-3,0,3])xnTibWin(X+u,3.9,Z+D/2-.2,0,.8,1,'shut',trim);
- xnFlatRoof(X,5.6,Z,S.w,S.d,0,earth,{parapet:.6,corner:'flag'});
+ if(HT>4)for(const u of[-3,0,3])xnTibWin(X+u,3.9,Z+D/2-.2,0,.8,1,'shut',trim);if(HT>7)for(const u of[-2,2])xnTibWin(X+u,6.4,Z+D/2-.4,0,.8,1,'open',trim,{noVal:true});
+ xnFlatRoof(X,HT,Z,S.w,S.d,0,earth,{parapet:.6,corner:V===3?'pinnacle':'flag'});
  // the open workroom on the +x side: posts, a shed roof, the potter's wheel and the shelves of pots
  for(const z of[-6.5,-3.5,-.5])vPst('vPost',6,0,z,.12,2.8,tim);vnShedRoof(3.6,2.8,-3.5,5,6.4,.6,-Math.PI/2,'vShingleB',xC(0x9a8a78),.4);
  vB('vWood',3,0,-6.4,4,1.6,.4,0,tim);for(let k=0;k<8;k++)vPst('vClayPot',1.4+k*.45,1.6,-6.4,.14,rr(.25,.45),xC(xPick([0x9a5a38,0xb87050,0x2aa5a0,0xe8d0b0])));
@@ -1864,23 +1883,26 @@ function buildXaWorkshop(G,o){reseed(30411+(o.v|0));const W=10,D=7,X=-4,Z=-4;
  // the yard: dye vats, a kiln, drying racks hung with coloured cloth, a well
  xnPave(2,3,12,8,0,stone,2.2);
  for(let k=0;k<3;k++){vPst('vClayPot',-3+k*1.6,0,4.5,.55,.8,xC(0x8a5a40));kput('xDisc',[-3+k*1.6,.78,4.5],null,[.46,.06,.46],xC(xPick([XPAL.lapis,XPAL.red,XPAL.saffron])));}
- {const kx=7,kz=5;vB('xRubB',kx,0,kz,2.6,1.4,2.6,0,rub);kput('xDomeS',[kx,1.4,kz],null,[1.3,1.3,1.3],rub);vB('vDarkB',kx,.3,kz+1.3,.8,.7,.06,0);vBall('vEmber',kx,.6,kz+1.2,.24,null,.14);vnChimney(kx,2.6,kz-.5,1.4,.14,true);}
+ {const kx=7,kz=5,ks=V===4?1.6:1;vB('xRubB',kx,0,kz,2.6*ks,1.4*ks,2.6*ks,0,rub);kput('xDomeS',[kx,1.4*ks,kz],null,[1.3*ks,1.3*ks,1.3*ks],rub);vB('vDarkB',kx,.3,kz+1.3,.8,.7,.06,0);vBall('vEmber',kx,.6,kz+1.2,.24,null,.14);vnChimney(kx,2.6,kz-.5,1.4,.14,true);}
  for(const z of[1.4,8])vnDryingRack(1,0,z,0,7);for(let k=0;k<6;k++)kput('vCloth',[-2+k*1.2,1.5,1.4],null,[.7,1.1,1],xC(xPick(XPAL.cloth)));for(let k=0;k<6;k++)kput('vCloth',[-2+k*1.2,1.5,8],null,[.7,1.1,1],xC(xPick(XPAL.cloth)));
  vPst('vPostS',-6,0,4,.7,.8,rub);vB('vDarkB',-6,.8,4,.9,.03,.9,0);vnCrate(6.5,0,1,.8,.3);vnFolk(2,6,2,1.5);}
 // ---------------------------------------------------------------- the scrap smithy
-function buildXaSmithy(G,o){reseed(30421+(o.v|0));const W=9,D=7,H=3.2;
+function buildXaSmithy(G,o){reseed(30421+(o.v|0));const V=xV(o),W=V===4?12:9,D=7,H=3.2;
  const rub=xC(xPick(XPAL.rubble)),earth=xC(xPick(XPAL.earth)),aged=xC(xPick(XPAL.aged)),iron=xC(0x2e2a26),trim=xC(XPAL.red);
  vnReg('Scrap smithy',0,0,7.5,H+4);vnReg('Scrap smithy — yard',6,3,4.5,2.5);
  // the forge house: rubble walls, the front open between two piers, a salvaged sheet roof on a timber ridge
  vB('xRubB',0,0,-D/2+.3,W,H,.6,0,rub);for(const s of[-1,1])vB('xRubB',s*(W/2-.3),0,0,.6,H,D,0,rub);for(const s of[-1,1])vB('xRubB',s*(W/2-1.1),0,D/2-.3,1.6,H,.6,0,rub);
- vB('vWood',0,H-.05,0,W+.6,.24,.3,0,aged);vnGableRoof(0,H+.2,0,W+.6,D+.6,1.6,0,'vCorr',null,.5,'vGableSt',rub);
- vnPatch(0,H+.2,D/2+1.3,0,W,1.4,2);kput('vPlate',[2,H+1.4,D/2+.5],qEuler(-.45,0,0),[1.8,1.4,1],null);
+ vB('vWood',0,H-.05,0,W+.6,.24,.3,0,aged);
+ if(V===3){vnGableRoof(0,H+.2,0,W+.6,D+.6,1.6,0,'xTilesB',xC(xPick(XPAL.tile)),.5,'vGableSt',rub);}   // a tiled roof: the smith who has done well
+ else if(V===1){xnFlatRoof(0,H,0,W,D,0,xC(xPick(XPAL.earth)),{parapet:.5});vnPatch(0,H+.3,D/2+.5,0,W,.6,3);}
+ else{vnGableRoof(0,H+.2,0,W+.6,D+.6,1.6,0,'vCorr',null,.5,'vGableSt',rub);vnPatch(0,H+.2,D/2+1.3,0,W,1.4,2);kput('vPlate',[2,H+1.4,D/2+.5],qEuler(-.45,0,0),[1.8,1.4,1],null);}
  // the forge, the chimney, the anvil, the bellows, tools
  vB('xRubB',-2.2,0,-1.2,2.4,1.1,2,0,rub);vB('vDarkB',-2.2,1.1,-1.2,1.6,.05,1.4,0);vBall('vEmber',-2.2,1.2,-1.2,.42,null,.2);vB('xRubB',-2.2,1.1,-2.3,1.2,H+2,1.2,0,rub);vnChimney(-2.2,H+3.1,-2.3,1.4,.2,true);
  vPst('vPostB',1.2,0,-.4,.3,.6,aged);vB('vIron',1.2,.6,-.4,.9,.28,.34,0,iron);vB('vIron',1.5,.66,-.4,.5,.16,.16,0,iron);
  vB('vWood',-.3,.5,-2.2,1.4,.6,.8,.2,aged);vBeam([.2,.8,-2.4],[-2,1.3,-1.6],.06,aged);
  vB('vWood',2.9,0,-2.4,.6,1,2.2,0,aged);for(let k=0;k<5;k++)vB('vIron',2.9,1+k*.02,-3.2+k*.4,.06,.9,.06,0,iron);
  vB('vWood',3.4,0,1.6,.9,.6,.9,0,aged);vB('xWaterB',3.4,.55,1.6,.7,.08,.7,0,xC(XPAL.water));
+ if(V===4){vB('xRubB',4.4,0,-1.2,2.2,1.1,1.8,0,rub);vBall('vEmber',4.4,1.2,-1.2,.36,null,.18);vB('xRubB',4.4,1.1,-2.2,1.1,H+1.6,1.1,0,rub);vnChimney(4.4,H+2.7,-2.2,1.2,.18,true);}   // a second forge
  // the yard: scrap heaps of sheet and plate, a pile of cut bar, a cart, pennants of rag
  const hx=6,hz=3;for(let k=0;k<9;k++){const a=h3(k,1,2),b=h3(k,3,4);kput(['vPlate','vSheet','vPlateW'][k%3],[hx+(a-.5)*3,.3+k*.06,hz+(b-.5)*2.4],qEuler(-Math.PI/2+(a-.5)*.7,a*3,(b-.5)*.5),[rr(1,1.9),rr(.8,1.5),1],null);}
  vPst('vTankR',hx+1.6,0,hz-1.6,.4,1,null);vPst('vPipeR',hx-1.8,0,hz+1.4,.14,1.2,null);for(let k=0;k<6;k++)kput('vIron',[-4.2+k*.12,.06+k*.05,3.6],qEuler(0,.1*k,0),[.08,.08,2.6],iron);
@@ -1903,45 +1925,47 @@ function xnXCBarley(x,y,z,w,d,ry,cut){const soil=xC(0x7a6242),th=xC(xPick(VPAL.t
 function xnXCDitch(a,b,y){xnChannel(a,b,.6,xC(xPick(XPAL.rubble)),y);}
 
 // ---------------------------------------------------------------- the terraced farm: four terraces down a slope
-function buildXaFarm(G,o){reseed(30601+(o.v|0));const T=[[-13.5,9,3.0,50],[-4,9,2.2,46],[5,8,1.5,42],[13,7,0,38]];   // [z, depth, height, width]
+function buildXaFarm(G,o){reseed(30601+(o.v|0));const V=xV(o);
+ const T=V===4?[[-13.5,9,0,50],[-4,9,0,50],[5,8,0,50],[13,7,0,50]]:V===3?[[-12,12,4.2,50],[0,12,2.0,46],[12,10,0,42]]:V===1?[[-13.5,9,2.0,50],[-4,9,1.4,46],[5,8,.8,42],[13,7,0,38]]:[[-13.5,9,3.0,50],[-4,9,2.2,46],[5,8,1.5,42],[13,7,0,38]];   // [z, depth, height, width]: v4 flat valley fields, v3 two tall terraces, v1 low steps
  const rub=xC(xPick(XPAL.rubble)),aged=xC(xPick(XPAL.aged));
  vnReg('Terraced fields',0,0,26,6);vnReg('Terraced fields — threshing floor',18,13,4,2);
  let yTop=0;for(const t of T)yTop=Math.max(yTop,t[2]);
  // the terraces: each a retaining wall of rubble holding an earth shelf; the highest at the back
  for(let i=0;i<T.length;i++){const [z,d,h,w]=T[i];if(h>0)xnTerrace(0,0,z,w,d,0,h,rub);
-  const y=h;const cut=i===3;for(const s of[-1,1])xnXCBarley(s*(w/4-.5),y,z,w/2-2.4,d-1.6,0,cut);   // two plots per terrace with a path between
+  const y=h;const cut=i===T.length-1||(V===2&&i===1);for(const s of[-1,1])xnXCBarley(s*(w/4-.5),y,z,w/2-2.4,d-1.6,0,cut);   // two plots per terrace with a path between
   // the path along the front edge, the ditch along the back (uphill) edge, a stair down to the next terrace
   vB('xEarthB',0,y-.01,z+d/2-.55,w-1,.08,.9,0,xC(0x9a8462));
   xnXCDitch([-w/2+.5,z-d/2+.5],[w/2-.5,z-d/2+.5],y);
   if(i<T.length-1){const h2=T[i+1][2],rise=h-h2,run=Math.max(2,Math.round(rise/.17))*.34;xnFlight(-w/2+3,h2,z+d/2+run+.01,0,1.4,rise,'vStone',rub);}}
  // a raised channel feeding the top terrace from the back, a sluice gate
- xnXCDitch([-8,-19],[8,-19],3);for(const s of[-1,1])vPst('vPost',s*.6,3,-19,.08,1.6,aged);vB('vWood',0,3.3,-19,1.0,.9,.08,0,aged);
+ {const yt=T[0][2];xnXCDitch([-8,-19],[8,-19],yt);for(const s of[-1,1])vPst('vPost',s*.6,yt,-19,.08,1.6,aged);vB('vWood',0,yt+.3,-19,1.0,.9,.08,0,aged);}
  // the threshing floor at the bottom corner, a stone roller, stooks and a hay stack, yaks at work
  vPst('xDiscS',18,0,13,3.6,.15,rub);kput('vPostS',[17.4,.5,13.4],qEuler(0,.4,Math.PI/2),[.45,1.6,.45],rub);vBeam([17.4,.5,13.4],[19.6,.9,12.4],.08,aged);xnYak(20.4,12,-.4);
  for(let k=0;k<5;k++){const x=-16+k*3.4,z=15.5;kput('vConeT',[x,0,z],null,[.7,1.4,.7],xC(xPick(VPAL.thatch)));}
- kput('xPaintBall',[-6,4.1,-14],null,[1.6,1.2,1.6],xC(xPick(VPAL.thatch)));kput('vConeT',[-6,4.4,-14],null,[1.7,1.6,1.7],xC(xPick(VPAL.thatch)));
- xnYak(8,-13,2.2,3);xnShrine(-21,3,-16,.7);xnPennants([-21,6.2,-16],[-16,4.5,-19],7);vPst('vPost',-16,3,-19,.05,1.5,aged);
- xnFolk(-2,3,-13,2,3);xnFolk(10,1.5,4,2,2.5);vnFolk(0,16,1,1);}
+ {const yt=T[0][2],y1=T[1][2];kput('xPaintBall',[-6,yt+1.1,-14],null,[1.6,1.2,1.6],xC(xPick(VPAL.thatch)));kput('vConeT',[-6,yt+1.4,-14],null,[1.7,1.6,1.7],xC(xPick(VPAL.thatch)));
+ xnYak(8,-13,2.2,yt);xnShrine(-21,yt,-16,.7);xnPennants([-21,yt+3.2,-16],[-16,yt+1.5,-19],7);vPst('vPost',-16,yt,-19,.05,1.5,aged);
+ xnFolk(-2,yt,-13,2,3);xnFolk(10,y1,4,2,2.5);vnFolk(0,16,1,1);}}
 // ---------------------------------------------------------------- the farmstead: house, yard wall, byre, hay on the roofs
-function buildXaFarmhouse(G,o){reseed(30611+(o.v|0));const YW=24,YD=20,HX=-5,HZ=-4,W=11,D=8;
+function buildXaFarmhouse(G,o){reseed(30611+(o.v|0));const V=xV(o),YW=24,YD=20,M=V===4?-1:1,HX=-5*M,HZ=-4,W=11,D=8;
  const earth=xC(xPick(XPAL.earth)),wash=xC(xPick(XPAL.wash)),trim=xC(xPick(XPAL.trim)),aged=xC(xPick(XPAL.aged)),rub=xC(xPick(XPAL.rubble)),tim=xC(xPick(XPAL.timber));
  vnReg('Farmstead — house',HX,HZ,7.5,9.5);vnReg('Farmstead — yard',4,5,8,3);vnReg('Farmstead — byre',7,-6,5,4);
  // the yard wall: earth with a stone base, the gate on the front with a timber lintel and a pennant pole
- const wallSeg=(x,z,w,d)=>{vB('xRubB',x,0,z,w,.5,d,0,rub);vB('xEarthB',x,.5,z,w,1.9,d,0,earth);vB('vThatchB',x,2.4,z,w+.16,.16,d+.16,0,xC(xPick(VPAL.thatch)));};
+ const wallSeg=(x,z,w,d)=>{vB('xRubB',x,0,z,w,.5,d,0,rub);vB(V===3?'xRubB':'xEarthB',x,.5,z,w,1.9,d,0,V===3?rub:earth);vB('vThatchB',x,2.4,z,w+.16,.16,d+.16,0,xC(xPick(VPAL.thatch)));};
  wallSeg(0,-YD/2,YW,.6);for(const s of[-1,1])wallSeg(s*YW/2,0,.6,YD);wallSeg(-YW/4-1.5,YD/2,YW/2-3,.6);wallSeg(YW/4+1.5,YD/2,YW/2-3,.6);
  for(const s of[-1,1])vB('xRubB',s*3,0,YD/2,.9,3.0,.9,0,rub);vB('vWood',0,2.9,YD/2,7.2,.3,.6,0,tim);kput('xValance',[0,2.8,YD/2+.32],null,[5.4,.5,1],xC(XPAL.white));
  kput('vWood',[-1.6,1.2,YD/2-.1],qEuler(0,.5,0),[2.4,2.4,.08],aged);
  // the house: rubble base, whitewashed lower storey, earth upper storey, the family's window row, hay on the roof
- vB('xRubB',HX,0,HZ,W+.3,.6,D+.3,0,rub);const S=xnStack(HX,.6,HZ,W,D,0,[2.9,2.7],wash,'wash',xC(0x5a4a3a));
- vB('xEarthB',HX,3.5,HZ,S.w+.02,2.6,S.d+.02,0,earth);
+ vB('xRubB',HX,0,HZ,W+.3,.6,D+.3,0,rub);const S=xnStack(HX,.6,HZ,W,D,0,V===1?[2.9,2.7,2.5]:[2.9,2.7],wash,'wash',xC(0x5a4a3a));const HT=S.y;
+ vB('xEarthB',HX,3.5,HZ,S.w+.02,HT-3.6,S.d+.02,0,earth);
  vnDoor(HX+1.5,.6,HZ+D/2,0,1.5,2,'vWood',aged,aged,true);vnWin(HX-2.5,1.8,HZ+D/2,0,.5,.5,'open','xPaint',trim);
  for(const u of[-3.6,-1.2,1.2,3.6])xnTibWin(HX+u,4.3,HZ+D/2-.2,0,.75,.95,'glass',trim,{valC:xC(XPAL.white)});
  xnTibWin(HX-W/2+.14,4.3,HZ+1,-Math.PI/2,.7,.9,'shut',trim,{noVal:true});
- const top=xnFlatRoof(HX,6.2,HZ,S.w,S.d,0,earth,{parapet:.7,corner:'flag'});xnFodder(HX,top-.65,HZ-S.d/2+.35,S.w-1.4,0);xnFodder(HX-S.w/2+.35,top-.65,HZ,.6,0);
- xnFlight(HX+W/2+.8,.6,HZ+3.6+3.4,0,1.2,2.9,'vStone',rub);vB('vWood',HX+W/2+.8,3.3,HZ+2.2,1.6,.2,2.4,0,aged);vnDoor(HX+W/2-.2,3.5,HZ+2.2,Math.PI/2,.9,1.8,'vWood',aged,aged,false);
+ const top=xnFlatRoof(HX,HT,HZ,S.w,S.d,0,earth,{parapet:.7,corner:'flag'});xnFodder(HX,top-.65,HZ-S.d/2+.35,S.w-1.4,0);xnFodder(HX-M*(S.w/2-.35),top-.65,HZ,.6,0);
+ xnFlight(HX+M*(W/2+.8),.6,HZ+3.6+3.4,0,1.2,2.9,'vStone',rub);vB('vWood',HX+M*(W/2+.8),3.3,HZ+2.2,1.6,.2,2.4,0,aged);vnDoor(HX+M*(W/2-.2),3.5,HZ+2.2,M*Math.PI/2,.9,1.8,'vWood',aged,aged,false);
  // the byre against the east wall: rubble, a shed roof of poles and earth, a rack of fodder
- vB('xRubB',7,0,-6,9,2.2,5,0,rub);vnShedRoof(7,2.2,-6,9.4,5.4,.5,0,'xEarthB',earth,.35,.3);for(let k=0;k<7;k++)beam('vWood',[3.2+k*1.2,2.6,-8.9],[3.2+k*1.2,2.15,-3.1],.1,.1,aged);
- vB('vDarkB',5,0,-3.5,1.6,1.8,.04,0);vB('vDarkB',9,0,-3.5,1.6,1.8,.04,0);vB('vWood',7,0,-2.6,8,.9,.08,0,aged);
+ if(V===2){for(const sx of[-1,1])for(const sz of[-1,1])vPst('vPostB',7*M+sx*4,0,-6+sz*2.2,.15,3.6,aged);vnGableRoof(7*M,3.6,-6,8.6,5,1.4,0,'vThatchB',xC(xPick(VPAL.thatch)),.5,'vGableW',aged);vB('vThatchB',7*M,0,-6,7.4,2.8,3.8,0,xC(xPick(VPAL.thatch)));}   // a pole hay barn instead of the byre
+ else{vB('xRubB',7*M,0,-6,9,2.2,5,0,rub);vnShedRoof(7*M,2.2,-6,9.4,5.4,.5,0,'xEarthB',earth,.35,.3);for(let k=0;k<7;k++)beam('vWood',[M*(3.2+k*1.2),2.6,-8.9],[M*(3.2+k*1.2),2.15,-3.1],.1,.1,aged);
+ vB('vDarkB',5*M,0,-3.5,1.6,1.8,.04,0);vB('vDarkB',9*M,0,-3.5,1.6,1.8,.04,0);vB('vWood',7*M,0,-2.6,8,.9,.08,0,aged);}
  // the yard: dung cakes drying on the wall, a hay stack, the well, yaks, sacks, a cart
  for(let k=0;k<14;k++)kput('xDisc',[-YW/2+.36,1.2+(k%2)*.5,-8+k*1.2],qEuler(0,0,Math.PI/2),[.3,.06,.3],xC(0x5a4a34));
  kput('xPaintBall',[8,1.2,4],null,[2,1.4,2],xC(xPick(VPAL.thatch)));kput('vConeT',[8,1.6,4],null,[2.1,1.8,2.1],xC(xPick(VPAL.thatch)));vPst('vPost',8,3,4,.05,.8,aged);
@@ -1950,11 +1974,13 @@ function buildXaFarmhouse(G,o){reseed(30611+(o.v|0));const YW=24,YD=20,HX=-5,HZ=
  xnPennants([HX+S.w/2-.3,top+2.4,HZ+S.d/2-.3],[YW/2-.6,3.2,YD/2-.6],10);vPst('vPost',HX+S.w/2-.3,top-.7,HZ+S.d/2-.3,.05,3.2,aged);
  vnFolk(0,YD/2+2.6,2,1.5);vnFolk(2,3,2,2);}
 // ---------------------------------------------------------------- the granary: a stone store on a plinth, slit vents, a ladder
-function buildXaGranary(G,o){reseed(30621+(o.v|0));const W=7,D=9,P=1.4,H=4.2;
+function buildXaGranary(G,o){reseed(30621+(o.v|0));const V=xV(o),W=V===2?11:7,D=9,P=V===3?2.4:1.4,H=V===3?5.2:4.2;
  const rub=xC(xPick(XPAL.rubble)),stone=xC(xPick(XPAL.stone)),wash=xC(xPick(XPAL.wash)),aged=xC(xPick(XPAL.aged)),trim=xC(xPick([XPAL.red,XPAL.blue]));
  vnReg('Granary',0,0,6.5,P+H+2);
  xnWall(0,0,0,W+1,P,D+1,0,rub,'stone');vB('vStone',0,P-.14,0,W+1.3,.14,D+1.3,0,stone);
- const S=xnStack(0,P,0,W,D,0,[H],wash,'wash');
+ if(V===1){kput('xDrumE',[0,P,0],null,[W/2,H,W/2],xC(xPick(XPAL.earth)));kput('vConeT',[0,P+H-.1,0],null,[W/2+.5,3,W/2+.5],xC(xPick(VPAL.thatch)));vnDoor(0,P,W/2*.99,0,1,1.8,'vWood',aged,aged,false);vnLadder(0,0,W/2+1.2,0,P+.4,aged);vnSacks(-3.5,0,D/2+2,5);vnFolk(1,D/2+4,2,1.2);return;}   // the round granary
+ const S=xnStack(0,P,0,W,D,0,[H],V===4?xC(xPick(XPAL.timber)):wash,'wash');if(V===4)vnFrame(0,P,0,W,H,D,0,xC(xPick(XPAL.dark)),.12);
+ if(V===2)vB('xWashB',0,P,0,.3,H,D+.02,0,wash);
  for(const s of[-1,1])for(const z of[-3,-1,1,3])vB('vDarkB',s*(W/2*.99),P+1.2,z,.06,1.0,.22,0);
  for(const z of[-2.6,-.8,1,2.8])for(const s of[-1,1])vB('xPaint',s*(W/2*.99+.02),P+2.4,z,.06,.5,.5,0,trim);           // painted marks over the vents
  vnDoor(0,P,D/2*.99,0,1.1,1.9,'vWood',aged,aged,false);vB('vWood',0,P+2.1,D/2*.99+.15,1.9,.16,.3,0,aged);xnCorbels(0,P+2.1,D/2*.99,0,1.5,3,aged,.5);
@@ -1965,25 +1991,26 @@ function buildXaGranary(G,o){reseed(30621+(o.v|0));const W=7,D=9,P=1.4,H=4.2;
  vnSacks(-3.5,0,D/2+2,5);vnSacks(3,0,D/2+1.6,3);kput('vThatchB',[4.5,.5,-1],qEuler(0,.3,0),[2.4,1,1.8],xC(xPick(VPAL.thatch)));
  for(let k=0;k<4;k++)vPst('vClayPot',-5.5,0,-3+k*1.4,.5,.8,xC(0x9a5a38));vnFolk(1,D/2+4,2,1.2);}
 // ---------------------------------------------------------------- the windmill (asbad): a vertical rotor between two funnel walls
-function buildXaWindmill(G,o){reseed(30631+(o.v|0));const PW=10,PD=8,PH=4.2,WH=7.5;
+function buildXaWindmill(G,o){reseed(30631+(o.v|0));const V=xV(o),PW=V===4?15:10,PD=8,PH=V===1?2.6:4.2,WH=V===2?10:7.5,KIND=V===3?'stone':'earth';
  const earth=xC(xPick(XPAL.earth)),rub=xC(xPick(XPAL.rubble)),aged=xC(xPick(XPAL.aged)),reed=xC(xPick(VPAL.thatch));
  vnReg('Windmill (asbad)',0,0,7.5,PH+WH+1.5);
  // the mill room below: an earth block with the door and the meal room; the millstone floor at PH
- xnWall(0,0,0,PW,PH,PD,0,earth,'earth');vB('xRubB',0,0,0,PW+.4,.5,PD+.4,0,rub);
+ xnWall(0,0,0,PW,PH,PD,0,KIND==='stone'?rub:earth,KIND);vB('xRubB',0,0,0,PW+.4,.5,PD+.4,0,rub);
  vnDoor(-2.4,.5,PD/2,0,1.1,2,'vWood',aged,aged,true);vnWin(2.6,1.8,PD/2,0,.6,.6,'open','xPaint',aged);vnLadder(PW/2+.3,0,-1.5,Math.PI/2,PH+.4,aged);
  // the wind chamber: two thick earth walls with the slot between them open to the valley wind (+z), a lighter
  // wall closing the back, the rotor in the slot
- const gap=2.6,tw=(PW-gap)/2;for(const s of[-1,1])xnWall(s*(gap/2+tw/2),PH,0,tw,WH,PD*.9,0,earth,'earth');
- vB('xEarthB',0,PH,-PD*.45+.2,gap+.4,WH*.55,.5,0,earth);
+ const gap=2.6,NR=V===4?2:1,tw=(PW-gap*NR)/(NR+1);const walls=[];for(let i=0;i<=NR;i++)walls.push(-PW/2+tw/2+i*(tw+gap));
+ for(const wx of walls)xnWall(wx,PH,0,tw,WH,PD*.9,0,KIND==='stone'?rub:earth,KIND);
+ const slots=[];for(let i=0;i<NR;i++)slots.push(-PW/2+tw+gap/2+i*(tw+gap));for(const sx of slots)vB('xEarthB',sx,PH,-PD*.45+.2,gap+.4,WH*.55,.5,0,earth);
  // the rotor: a vertical shaft on the millstone, eight arms with reed-mat sails, a top bearing beam
- {const cx=0,cz=.6,R=2.0;vPst('vPostB',cx,PH-.6,cz,.2,WH+.5,aged);vB('vWood',cx,PH+WH-.3,cz,gap+.8,.3,.3,0,aged);
+ for(const cx of slots){const cz=.6,R=2.0;vPst('vPostB',cx,PH-.6,cz,.2,WH+.5,aged);vB('vWood',cx,PH+WH-.3,cz,gap+.8,.3,.3,0,aged);
   for(let k=0;k<8;k++){const a=k/8*TAU+.3,dx=Math.sin(a),dz=Math.cos(a);for(const yy of[PH+.8,PH+WH-1.2])beam('vWood',[cx,yy,cz],[cx+dx*R,yy,cz+dz*R],.08,.08,aged);
    const mx=cx+dx*R*.55,mz=cz+dz*R*.55;kput('vThatchB',[mx,PH+WH/2-.2,mz],qEuler(0,a,0),[.06,WH-2.4,R*.85],reed.clone().multiplyScalar(rr(.85,1.05)));}}
  vB('vWood',0,PH+WH,0,PW+.6,.24,PD*.9+.6,0,aged);for(let k=0;k<6;k++)kput('vRock',[rr(-4,4),PH+WH+.3,rr(-3,3)],qEuler(rng(),rng(),0),[.3,.2,.3],rub);
  // the meal: sacks, a cart, a low wall round the yard
  vnSacks(3,0,PD/2+2,5);vnSacks(-4,0,PD/2+3,3);vnFence(0,0,0,PW+8,PD+8,0,aged,3,1);vnFolk(0,PD/2+4,2,1.5);}
 // ---------------------------------------------------------------- the watermill: a horizontal wheel under a stone mill on its flume
-function buildXaWatermill(G,o){reseed(30641+(o.v|0));const W=7,D=8,P=2.4,H=3.2;
+function buildXaWatermill(G,o){reseed(30641+(o.v|0));const V=xV(o),W=7,D=8,P=2.4,H=V===2?3.2:3.2,HS=V===2?[3.2,2.8]:[3.2],HK=V===3?'stone':V===1?'earth':'wash';
  const rub=xC(xPick(XPAL.rubble)),wash=xC(xPick(XPAL.wash)),aged=xC(xPick(XPAL.aged)),trim=xC(xPick(XPAL.trim)),water=xC(XPAL.water),earth=xC(xPick(XPAL.earth));
  vnReg('Watermill',0,0,7,P+H+2);vnReg('Watermill — flume',-3,-9,3,5);
  // the stream: a stone-lined channel running -z to +z under the mill, the tail race spilling out in front
@@ -1997,10 +2024,11 @@ function buildXaWatermill(G,o){reseed(30641+(o.v|0));const W=7,D=8,P=2.4,H=3.2;
  {const R=1.3;vPst('vPostB',0,.2,-1,.16,P+H+.4,aged);for(let k=0;k<10;k++){const a=k/10*TAU;kput('vWood',[Math.sin(a)*R*.55,.7,-1+Math.cos(a)*R*.55],qEuler(0,a+.5,0),[.06,.5,R*.7],aged);}
   vBeam([0,.45,-1],[Math.sin(0)*R,.45,-1+R],.05,aged);}
  // the mill house on top: whitewash, a painted door, the meal window, a flat roof with hay
- const S=xnStack(0,P,0,W,H,D,0,[H],wash,'wash');vB('vStone',0,P-.14,0,W+.3,.14,D+.3,0,xC(xPick(XPAL.stone)));
+ const S=xnStack(0,P,0,W,D,0,HS,HK==='stone'?rub:HK==='earth'?earth:wash,HK);const HT=S.y;vB('vStone',0,P-.14,0,W+.3,.14,D+.3,0,xC(xPick(XPAL.stone)));
  vnDoor(1.5,P,D/2*.99,0,1.1,2,'vWood',aged,aged,false);xnTibWin(-1.8,P+1.1,D/2*.99-.05,0,.7,.9,'shut',trim);
  vnWin(-W/2*.99,P+1.2,1.5,-Math.PI/2,.6,.7,'open','xPaint',trim);
- const top=xnFlatRoof(0,P+H,0,S.w,S.d,0,wash,{parapet:.55,corner:'flag'});xnFodder(0,top-.5,-S.d/2+.3,S.w-1,0);
+ if(V===2)for(const u of[-2,1.5])xnTibWin(u,P+3.2+1,S.d/2/.96-.2,0,.7,.9,'shut',trim,{noVal:true});
+ const top=V===4?(vnGableRoof(0,HT,0,S.w+.4,S.d+.4,1.6,0,'xTilesB',xC(xPick(XPAL.tile)),.5,'vGablePl',wash),HT+1.6):xnFlatRoof(0,HT,0,S.w,S.d,0,wash,{parapet:.55,corner:'flag'});if(V!==4)xnFodder(0,top-.5,-S.d/2+.3,S.w-1,0);
  // the stair and the yard: a footbridge over the tail race, millstones, sacks
  xnFlight(W/2+1.2,0,D/2-.4,0,1.2,P,'vStone',rub);
  vB('vWood',0,1.0,7,4.2,.14,1.2,0,aged);for(const s of[-1,1])beam('vWood',[-2.1,1.9,7+s*.55],[2.1,1.9,7+s*.55],.06,.06,aged);
@@ -2039,7 +2067,8 @@ function xnXDSanctum(x,z,w,d,hs,rw,rd,rh,o){o=o||{};const wash=o.wash||xC(xPick(
  const ry0=S.y+.3;const R=xnStack(x,ry0,z,rw,rd,0,[rh],red,'wash');
  const nx=Math.max(2,Math.round(rw/3));for(let i=0;i<nx;i++)for(const s of[-1,1]){const u=-rw/2+rw*(i+.5)/nx;xnTibWin(x+u,ry0+rh*.4,z+s*(rd/2-.06),s>0?0:Math.PI,.85,1.2,lit,xC(XPAL.saffron),{valC:xC(XPAL.saffron)});}
  const rt=xnFlatRoof(x,ry0+rh,z,R.w,R.d,0,red,{band:true,gold:true,eave:true,eaveC:tim,parapet:.5,corner:'gold'});
- const gw=o.gw||Math.min(rw*.55,10),gd=o.gd||Math.min(rd*.55,8);xnGiltRoof(x,rt-.5,z,gw,gd,0,{frame:o.frame||1.8,over:1.1});
+ const gw=o.gw||Math.min(rw*.55,10),gd=o.gd||Math.min(rd*.55,8);
+ if(o.crown==='dome')xnDome(x,rt-.5,z,Math.min(rw,rd)*.32,'G',{drum:1.6,drumItem:'xDrumM',fin:1.4});else xnGiltRoof(x,rt-.5,z,gw,gd,0,{frame:o.frame||1.8,over:1.1});
  return{top:rt,base:S,red:R,ry0};}
 
 // ---------------------------------------------------------------- the temple
@@ -2047,33 +2076,35 @@ function buildXaTemple(G,o){reseed(30801+(o.v|0));const V=xV(o),W=19,D=14,P=1.2;
  const stone=xC(xPick(XPAL.stone)),wash=xC(xPick(XPAL.wash)),red=xC(xPick(V===1?XPAL.ochre:XPAL.redwall));
  vnReg('Temple',0,0,12,P+8.2+3.8+4.5);
  xnWall(0,0,0,W+1.2,P,D+1.2,0,stone,'dressed');vB('vStone',0,P-.14,0,W+1.5,.14,D+1.5,0,stone.clone().multiplyScalar(1.08));
- const K=xnXDSanctum(0,0,W,D,[4.4,3.8],12,8.5,3.8,{y:P,wash,red,doorGap:4.2});
+ const K=xnXDSanctum(0,0,W,D,V===2?[4.4,3.8,3.4]:[4.4,3.8],12,8.5,3.8,{y:P,wash,red,doorGap:4.2,crown:V===1?'dome':null});
  // the portico and the great door with its mosaic panels and the sun-and-moon
  xnPortico(0,P,D/2,0,V===2?13:9,3.2,4.2,wash,{band:true,valC:xC(XPAL.saffron)});vnDoor(0,P,D/2+.02,0,2.2,3.0,'xPaint',xC(XPAL.red),xC(xPick(XPAL.dark)),false);
  for(const s of[-1,1])xnMural('xMosA',s*3.1,P+.6,D/2+.02,0,1.6,2.4);xnRoundel(0,P+3.55,D/2+.02,0,.9);
  xnFlight(0,0,D/2+3.2+2.4,0,5,P,'vStone',stone);
  // the drums along the base, shrines flanking the stair, pennant lines from the roof corners
- for(const s of[-1,1])xnXDDrums(s*(W/2*.5+.5),P,D/2+.02,0,W/2-6,5);
+ for(const s of[-1,1])xnXDDrums(s*(W/2*.5+.5),P,D/2+.02,0,W/2-6,5);if(V===2)for(const s of[-1,1])xnXDDrums(s*(W/2+.02),P,0,s*Math.PI/2,D-3,6);
  for(const s of[-1,1])xnShrine(s*8.5,0,D/2+5,1.1);
  for(const s of[-1,1]){xnPennants([s*(K.base.w/2-.5),K.top+.4,K.base.d/2-.5],[s*(W/2+7),3,D/2+8],11);vPst('vPost',s*(W/2+7),0,D/2+8,.06,3,xC(0x5a4632));}
  if(xLit())for(const s of[-1,1])vnLampPost(s*4.5,0,D/2+6.5,3.4);
  vnFolk(0,D/2+8,4,3);}
 // ---------------------------------------------------------------- the monastery on its terrace
-function buildXaMonastery(G,o){reseed(30811+(o.v|0));const T=4.5,TW=44,TD=26,TZ=-8;
+function buildXaMonastery(G,o){reseed(30811+(o.v|0));const V=xV(o),T=4.5,TW=44,TD=26,TZ=-8;
  const rub=xC(xPick(XPAL.rubble)),stone=xC(xPick(XPAL.stone)),wash=xC(xPick(XPAL.wash)),red=xC(xPick(XPAL.redwall)),trim=xC(xPick(XPAL.trim)),tim=xC(xPick(XPAL.dark)),lit=xLit()?'lit':'glass';
  vnReg('Monastery — assembly hall',0,TZ,12,T+15);vnReg('Monastery — cells',0,10,16,8);vnReg('Monastery — gate',0,20,4,7);
  // the terrace and its great stair; the hall on top
  xnTerrace(0,0,TZ,TW,TD,0,T,rub);xnFlight(0,0,TZ+TD/2+9.2,0,6,T,'vStone',stone);for(const s of[-1,1])vB('xRubB',s*3.4,0,TZ+TD/2+4.6,.7,T*.55+1,9.2,0,rub);
- const K=xnXDSanctum(0,TZ-2,16,12,[4.2,3.6],10,7.5,3.6,{y:T,wash,red,doorGap:3.6});
+ const K=xnXDSanctum(0,TZ-2,16,12,[4.2,3.6],10,7.5,3.6,{y:T,wash,red,doorGap:3.6,crown:V===2?'dome':null});
  xnPortico(0,T,TZ-2+6,0,7,3,4,wash,{band:true,valC:xC(XPAL.saffron)});vnDoor(0,T,TZ-2+6.02,0,2,2.8,'xPaint',xC(XPAL.red),tim,false);xnRoundel(0,T+3.3,TZ-2+6.02,0,.8);
  for(const s of[-1,1])xnShrine(s*12,T,TZ+6,1.0);xnShrine(0,T,TZ-12,1.4);
  // the monks' cells: two long low blocks flanking the court below the terrace, one door and window per cell
- for(const s of[-1,1]){const X=s*13.5,Z=10,W=13,D=7;const S=xnStack(X,0,Z,W,D,0,[2.8,2.6],wash,'wash');
+ if(V===1)xnShrine(13.5,0,10,2.6);
+ for(const s of(V===1?[-1]:[-1,1])){const X=s*13.5,Z=10,W=13,D=7;const S=xnStack(X,0,Z,W,D,0,V===2?[2.8,2.6,2.4]:[2.8,2.6],wash,'wash');
   for(let k=0;k<3;k++){const v=-D/2+D*(k+.5)/3,fx=X-s*W/2;vnDoor(fx,0,Z+v-.9,-s*Math.PI/2,.8,1.8,'vWood',tim,tim,true);xnTibWin(fx,1.1,Z+v+.9,-s*Math.PI/2,.6,.8,lit,trim,{noVal:true});}   // cells open on the court
   for(let k=0;k<6;k++){const u=-W/2+W*(k+.5)/6;xnTibWin(X+u,3.9,Z+D/2*.96-.04,0,.7,.9,lit,trim);xnTibWin(X+u,3.9,Z-D/2*.96+.04,Math.PI,.7,.9,lit,trim,{noVal:true});}
-  xnFlatRoof(X,5.4,Z,S.w,S.d,0,wash,{eave:true,eaveC:tim,parapet:.6,corner:'pinnacle'});}
- // the gate house with a small iwan, the court between the cells with a stupa and a well
- xnWall(0,0,20,9,5,4,0,wash,'wash');xnIwan(0,0,22,0,4.4,4.6,.7,wash,{guldasta:true});xnFlatRoof(0,5,20,8.6,3.8,0,wash,{parapet:.5,corner:'gold'});
+  xnFlatRoof(X,S.y,Z,S.w,S.d,0,wash,{eave:true,eaveC:tim,parapet:.6,corner:'pinnacle'});}
+ // the gate house with a small iwan (v2: an open arcade instead), the court between the cells with a stupa and a well
+ if(V===2){xnArcade(0,0,21.6,0,12,3.4,5,'xArchW',wash,.8,{open:true});vB('xTilesB',0,3.6,21.6,12.4,.2,1.2,0,xC(xPick(XPAL.tile)));}
+ else{xnWall(0,0,20,9,5,4,0,wash,'wash');xnIwan(0,0,22,0,4.4,4.6,.7,wash,{guldasta:true});xnFlatRoof(0,5,20,8.6,3.8,0,wash,{parapet:.5,corner:'gold'});}
  for(const s of[-1,1]){vB('xWashB',s*(4.5+3.5),0,21.5,7,2.6,.6,0,wash);vB('xTilesB',s*8,2.6,21.5,7.3,.2,.9,0,xC(xPick(XPAL.tile)));}
  xnPave(0,11,12,14,0,stone,2.2);xnShrine(0,0,8,1.6);vPst('vPostS',-3.5,0,15,.8,.8,rub);vB('vDarkB',-3.5,.8,15,1,.03,1,0);xnTree(4,15,4.5);
  // pennant lines everywhere, the pilgrims' drums along the terrace wall
@@ -2085,7 +2116,7 @@ function buildXaMonastery(G,o){reseed(30811+(o.v|0));const T=4.5,TW=44,TD=26,TZ=
 // ---------------------------------------------------------------- the Grand Temple of the capital
 // A podium (the lower town's height) carries a forecourt; the great stair climbs its front; the tiered white
 // sanctum with the red palace and the gold dome stands at the back of the podium.
-function buildXaGrandTemple(G,o){reseed(30821+(o.v|0));const W=44,D=26,SZ=-6,PH=6,P=1.2,Y0=PH+P;
+function buildXaGrandTemple(G,o){reseed(30821+(o.v|0));const V=xV(o),W=44,D=26,SZ=-6,PH=6,P=1.2,Y0=PH+P;
  const stone=xC(xPick(XPAL.stone)),wash=xC(xPick(XPAL.wash)),red=xC(xPick(XPAL.redwall)),tim=xC(xPick(XPAL.dark)),gold=xC(xPick(XPAL.gold)),tile=xC(xPick(XPAL.tile));
  vnReg('Grand Temple',0,SZ,25,Y0+15+8+12);vnReg('Grand Temple — forecourt',0,14,12,3);vnReg('Grand Temple — great stair',0,26,5,7);
  // the podium: a battered dressed-stone mass, the forecourt on it in front of the sanctum, drums and murals on its face
@@ -2096,14 +2127,14 @@ function buildXaGrandTemple(G,o){reseed(30821+(o.v|0));const W=44,D=26,SZ=-6,PH=
   for(const s of[-1,1]){vB('vStone',s*4.4,0,pf+run/2+.1,.8,PH*.5+.6,run,0,stone);xnShrine(s*6.6,0,pf+run+2.6,1.4);xnCypress(s*10,pf+run+1,7);}}
  // the sanctum: plinth, three white storeys, the red palace, the gilt roof — on the podium
  xnWall(0,PH,SZ,W+2,P,D+2,0,stone,'dressed');vB('vStone',0,Y0-.14,SZ,W+2.4,.14,D+2.4,0,stone.clone().multiplyScalar(1.08));
- const K=xnXDSanctum(0,SZ,W,D,[5.4,4.8,4.4],24,15,4.6,{y:Y0,wash,red,doorGap:4.5,frontSkip:[[-17.5,-10.5],[10.5,17.5]],gw:12,gd:9,frame:2.2});
+ const K=xnXDSanctum(0,SZ,W,D,V===2?[5.4,4.8,4.4,4.0]:[5.4,4.8,4.4],24,15,4.6,{y:Y0,wash,red:V===1?xC(xPick(XPAL.ochre)):red,doorGap:4.5,frontSkip:[[-17.5,-10.5],[10.5,17.5]],gw:V===2?16:12,gd:V===2?11:9,frame:2.2});
  const zf=SZ+D/2*.995;xnPortico(0,Y0,zf,0,9,3.2,4.4,wash,{band:true,valC:xC(XPAL.saffron)});vnDoor(0,Y0,zf+.02,0,2.4,3.2,'xPaint',xC(XPAL.red),tim,false);xnRoundel(0,Y0+3.8,zf+.02,0,1.0);
  for(const s of[-1,1])xnIwan(s*14,Y0,zf,0,6,8.5,1.2,wash,{guldasta:true});
  for(const s of[-1,1])xnXDDrums(s*8,Y0,zf+.02,0,6,4);
  xnFlight(0,PH,zf+3.2+2.6,0,W-6,P,'vStone',stone);
  // the crown: the gold dome over the red palace, two lesser gilt roofs, tiled bulbs on the corner turrets
- xnDome(0,K.top-.5,SZ-1,5.2,'G',{drum:3.2,drumItem:'xDrumM',drumC:null,fin:2.4});
- for(const s of[-1,1])xnGiltRoof(s*8.5,K.top-.5,SZ-3,5,4,0,{frame:1.6,over:.9});
+ if(V!==2)xnDome(0,K.top-.5,SZ-1,5.2,V===1?'T':'G',{drum:3.2,drumItem:'xDrumM',drumC:null,fin:2.4});
+ if(V===1)for(const s of[-1,1])xnDome(s*8.5,K.top-.5,SZ-3,2.6,'T',{drum:1.4,fin:1.2});else for(const s of[-1,1])xnGiltRoof(s*8.5,K.top-.5,SZ-3,V===2?6:5,V===2?4.8:4,0,{frame:1.6,over:.9});
  for(const s of[-1,1]){const tx=s*(K.base.w/2-3.2),tz=SZ-K.base.d/2+3.2;xnWall(tx,K.base.y+.3,tz,4.2,4,4.2,0,wash,'wash');kput('xBulbT',[tx,K.base.y+4.4,tz],null,[2.2,2.6,2.2],tile);vBall('xGold',tx,K.base.y+7.2,tz,.2,gold);}
  // the forecourt on the podium: paving, a fountain, flag poles, lamps; pennant lines down to the stair foot
  const CZ=zf+6;xnPave(0,CZ+.5,30,8,0,stone,2.4);xnFountain(0,PH,CZ+.5,2.6,stone);
@@ -2134,14 +2165,15 @@ function xnXECurtain(a,b,h,c,side){const dx=b[0]-a[0],dz=b[1]-a[1],L=Math.hypot(
  const q=loc(m[0],m[1],0,side*1.35,ry);vB('vStone',q[0],h,q[1],L*.98,.5,.5,ry,c);}
 
 // ---------------------------------------------------------------- the Sultan's Palace
-function buildXaPalace(G,o){reseed(31001+(o.v|0));const CW=52,CD=42,CH=7,lit=xLit()?'lit':'glass';
+function buildXaPalace(G,o){reseed(31001+(o.v|0));const V=xV(o),CW=52,CD=42,CH=7,lit=xLit()?'lit':'glass';
  const stone=xC(xPick(XPAL.stone)),wash=xC(xPick(XPAL.wash)),ochre=xC(xPick(XPAL.ochre)),trim=xC(xPick(XPAL.trim)),tim=xC(xPick(XPAL.dark)),gold=xC(xPick(XPAL.gold)),tile=xC(xPick(XPAL.tile));
  vnReg("Sultan's Palace",0,-4,17,36);vnReg("Sultan's Palace — curtain wall",0,CD/2,8,10,{part:'wall'});vnReg("Sultan's Palace — court",0,10,9,3);
  // the curtain: four walls, four corner towers, the gate iwan in the front wall
  const cx=CW/2-3,cz=CD/2-3;
  xnXECurtain([-cx+3,cz],[-6,cz],CH,stone,1);xnXECurtain([6,cz],[cx-3,cz],CH,stone,1);xnXECurtain([cx-3,-cz],[-cx+3,-cz],CH,stone,1);
  xnXECurtain([-cx,-cz+3],[-cx,cz-3],CH,stone,1);xnXECurtain([cx,cz-3],[cx,-cz+3],CH,stone,1);
- for(const sx of[-1,1])for(const sz of[-1,1])xnXETower(sx*cx,0,sz*cz,3.4,CH+2,stone,tile);
+ for(const sx of[-1,1])for(const sz of[-1,1]){if(V===2){xnWall(sx*cx,0,sz*cz,6.8,CH+2,6.8,0,stone,'dressed');xnCrenel(sx*cx,CH+2,sz*cz,6.2,6.2,0,1.2,stone,{item:'vStone',pointed:true});xnGiltRoof(sx*cx,CH+2.6,sz*cz,3.4,3.4,0,{frame:1.2,over:.7});}   // v2: square towers under gilt roofs
+  else xnXETower(sx*cx,0,sz*cz,3.4,CH+2,stone,tile);}
  // the gate: a tall iwan block through the front wall, guldasta turrets, a gilt pavilion on top, the Sultan's roundel
  xnWall(0,0,cz,13,CH+4,6,0,wash,'wash');xnIwan(0,0,cz+3,0,9,CH+2.5,1.4,wash,{guldasta:true});xnFlatRoof(0,CH+4,cz,12.4,5.7,0,wash,{band:true,gold:true,parapet:.6});
  xnGiltRoof(0,CH+4.9,cz,6,3.6,0,{frame:1.6,over:.9});xnRoundel(0,CH+2.2,cz+4.42,0,1.6);
@@ -2156,20 +2188,21 @@ function buildXaPalace(G,o){reseed(31001+(o.v|0));const CW=52,CD=42,CH=7,lit=xLi
  for(const s of[-1,1])for(const z of[-6,-2,2,6]){xnTibWin(s*(W/2-.06),1.4+1.4,PZ+z,s*Math.PI/2,.9,1.6,lit,trim,{shutters:true});xnTibWin(s*(W/2*.96-.06),1.4+4.6+1.3,PZ+z,s*Math.PI/2,.9,1.5,lit,trim);}
  const t1=xnFlatRoof(0,1.4+8.8,PZ,S.w,S.d,0,wash,{eave:true,eaveC:tim,parapet:.6,corner:'gold'});
  // the upper block: ochre, the band with gold roundels, an arcaded loggia along its front, two gilt roofs and the dome
- const UW=20,UD=13,UY=t1-.6+.3;const U=xnStack(0,UY,PZ-1,UW,UD,0,[4.2,3.8],ochre,'wash');
+ const UW=20,UD=13,UY=t1-.6+.3;const U=xnStack(0,UY,PZ-1,UW,UD,0,[4.2,3.8],V===1?wash:ochre,'wash');
  xnArcade(0,UY,PZ-1+UD/2*.995,0,UW-2,3.4,5,'xArchM',null,.7,{open:false});
  for(const u of[-7,-3.5,0,3.5,7])xnTibWin(u,UY+4.2+1.1,PZ-1+UD/2*.96-.06,0,.9,1.5,lit,xC(XPAL.saffron));
  for(const s of[-1,1])for(const z of[-3.5,0,3.5]){xnTibWin(s*(UW/2-.06),UY+1.2,PZ-1+z,s*Math.PI/2,.9,1.6,lit,trim);xnTibWin(s*(UW/2*.96-.06),UY+4.2+1.1,PZ-1+z,s*Math.PI/2,.9,1.5,lit,trim);}
- const t2=xnFlatRoof(0,UY+8,PZ-1,U.w,U.d,0,ochre,{band:true,gold:true,eave:true,eaveC:tim,parapet:.6,corner:'gold'});
- xnDome(0,t2-.6,PZ-1,4.2,'T',{drum:2.6,drumItem:'xDrumM',drumC:null,c:tile,fin:2.2});
- for(const s of[-1,1])xnGiltRoof(s*7,t2-.6,PZ-1,4.4,3.6,0,{frame:1.5,over:.9});
+ const t2=xnFlatRoof(0,UY+8,PZ-1,U.w,U.d,0,V===1?wash:ochre,{band:true,gold:true,eave:true,eaveC:tim,parapet:.6,corner:'gold'});
+ if(V===1){for(const s of[-1,1])xnDome(s*6,t2-.6,PZ-1,3.4,'T',{drum:2.2,drumItem:'xDrumM',drumC:null,c:tile,fin:1.8});xnGiltRoof(0,t2-.6,PZ-1,5,4,0,{frame:1.6,over:.9});}   // v1: a white palace under twin turquoise domes
+ else if(V===2){for(const x of[-7,0,7])xnGiltRoof(x,t2-.6,PZ-1,4.8,3.8,0,{frame:1.6,over:.9});}                                                                // v2: three gilt roofs, no dome
+ else{xnDome(0,t2-.6,PZ-1,4.2,'T',{drum:2.6,drumItem:'xDrumM',drumC:null,c:tile,fin:2.2});for(const s of[-1,1])xnGiltRoof(s*7,t2-.6,PZ-1,4.4,3.6,0,{frame:1.5,over:.9});}
  // the court between the gate and the palace: paving, a long pool, cypresses, lamps; guard huts inside the gate
  xnPave(0,10,CW-10,14,0,stone,2.4);xnPool(0,.02,10,14,3.2,0,stone);for(const s of[-1,1]){xnCypress(s*10,6,7);xnCypress(s*10,14,7);xnCypress(s*17,10,6);}
  for(const s of[-1,1]){vB('xWashB',s*10,0,cz-5,5,3.2,4,0,wash);xnFlatRoof(s*10,3.2,cz-5,5,4,0,wash,{parapet:.4});vnDoor(s*10,0,cz-3,0,1,2,'vWood',tim,tim,true);}
  if(xLit()){for(const s of[-1,1]){vnLampPost(s*4,0,PZ+D/2+5,3.6);vnLampPost(s*6,0,cz-7,3.6);vnLampPost(s*4,0,cz+5,3.8);}}
  vnFolk(0,10,4,5);vnFolk(0,cz+6,4,3);}
 // ---------------------------------------------------------------- the Pleasure Dome and its grounds
-function buildXaPleasureDome(G,o){reseed(31011+(o.v|0));const GW=88,GD=88,lit=xLit()?'lit':'glass';
+function buildXaPleasureDome(G,o){reseed(31011+(o.v|0));const V=xV(o),GW=88,GD=88,lit=xLit()?'lit':'glass';
  const stone=xC(xPick(XPAL.stone)),wash=xC(xPick(XPAL.wash)),tim=xC(xPick(XPAL.dark)),gold=xC(xPick(XPAL.gold)),tile=xC(XPAL.turquoise),trim=xC(xPick(XPAL.trim));
  vnReg('Pleasure Dome',0,-12,15,30);vnReg('Pleasure Dome — gardens',0,20,20,3);vnReg('Pleasure Dome — baths',-30,-24,9,9);vnReg('Pleasure Dome — gate',0,GD/2-2,4,6);
  // the garden wall: whitewash with a tiled coping, an arched gate in the front, kiosks at the corners
@@ -2183,13 +2216,15 @@ function buildXaPleasureDome(G,o){reseed(31011+(o.v|0));const GW=88,GD=88,lit=xL
   const f=loc(0,HZ,0,HW/2+.9,a);vB('xFriezeB',f[0],1.2+7.6,f[1],HW-1.6,.8,.14,a);}
  xnFlight(0,0,HZ+HW/2+1.5+1.4,0,10,1.2,'vStone',stone);
  xnFlatRoof(0,10.2,HZ,HW,HW,0,wash,{band:true,gold:true,eave:true,eaveC:tim,parapet:.6,corner:'gold'});
- const top=xnDome(0,10.5,HZ,9.2,'T',{drum:4.2,drumItem:'xDrumM',drumC:null,c:tile,fin:3.2});
+ const top=xnDome(0,10.5,HZ,9.2,['T','G','M'][V],{drum:4.2,drumItem:'xDrumM',drumC:null,c:V?null:tile,fin:3.2});
  vB('xGoldB',0,10.5+4.2-.3,HZ,17.6,.3,17.6,0,gold);
- for(const sx of[-1,1])for(const sz of[-1,1]){const tx=sx*(HW/2-1.6),tz=HZ+sz*(HW/2-1.6);vPst('xColS',tx,10.2,tz,1.1,5,stone);kput('xDrumW',[tx,15.2,tz],null,[1.3,1.2,1.3],wash);kput('xBulbT',[tx,16.4,tz],null,[1.5,1.8,1.5],tile);vBall('xGold',tx,18.3,tz,.16,gold);}
+ for(const sx of[-1,1])for(const sz of[-1,1]){const tx=sx*(HW/2-1.6),tz=HZ+sz*(HW/2-1.6),th=V===1?9:5;vPst('xColS',tx,10.2,tz,1.1,th,stone);kput('xDrumW',[tx,10.2+th,tz],null,[1.3,1.2,1.3],wash);kput('xBulbT',[tx,11.4+th,tz],null,[1.5,1.8,1.5],V===1?gold:tile);vBall('xGold',tx,13.3+th,tz,.16,gold);}
  // the chahar bagh in front: a long reflecting pool on the axis between two parterre gardens, fountains at the ends
- xnPool(0,.02,17,7,22,0,stone);xnFountain(0,0,32,2.8,stone);xnChannel([0,2.1],[0,5.7],1.1,stone);
+ if(V===2){xnPool(0,.02,17,34,22,0,stone);for(const s of[-1,1])for(let k=0;k<7;k++)xnCypress(s*19,4+k*3.8,rr(6,8));for(const s of[-1,1])xnChhatri(s*21,0,17,1.6,3.6,stone,tile,6);}   // v2: one great reflecting pool
+ else{xnPool(0,.02,17,7,22,0,stone);xnChannel([0,2.1],[0,5.7],1.1,stone);
  for(const s of[-1,1])xnCharBagh(s*24,0,14,32,30,0,{channel:1.1,r:2.0});
- for(const s of[-1,1])for(let k=0;k<7;k++)xnCypress(s*5.2,2+k*4.2,rr(6,8));
+ for(const s of[-1,1])for(let k=0;k<7;k++)xnCypress(s*5.2,2+k*4.2,rr(6,8));}
+ xnFountain(0,0,32,2.8,stone);
  xnPave(0,37,18,8,0,stone,2.2);
  // the baths at the back-left: a hall under one large and four small domes with oculus bosses, a boiler house
  {const BX=-30,BZ=-24,BW=16,BD=13;vB('xWashB',BX,0,BZ,BW,5.2,BD,0,wash);vB('vStone',BX,0,BZ,BW+.4,.5,BD+.4,0,stone);
@@ -2227,13 +2262,13 @@ function xnXFDoor(x,z,c){xnPortico(x,.8,z,0,5.6,2.6,3.6,c,{band:true});vnDoor(x,
  vB('xPaint',x,.8+2.75+2.1,z+.05,2.6,1.8,.08,0,xC(xPick(XPAL.maroon)));return[x,.8+2.75+3.0,z+.12];}
 
 // ---------------------------------------------------------------- Farmers' Guild
-function buildXaGuildFarm(G,o){reseed(31201+(o.v|0));const W=16,D=11;
+function buildXaGuildFarm(G,o){reseed(31201+(o.v|0));const V=xV(o),W=16,D=11;
  const ochre=xC(xPick(XPAL.ochre)),earth=xC(xPick(XPAL.earth)),aged=xC(xPick(XPAL.aged)),gold=xC(xPick(XPAL.gold));
  vnReg("Farmers' Guild",0,0,10,12);vnReg("Farmers' Guild — granary",-13,-2,4,10);
- const H=xnXFHall(0,0,W,D,[3.6,3.2],ochre,{});const E=xnXFDoor(0,D/2,ochre);
+ const H=xnXFHall(0,0,W,D,V===2?[3.6,3.2,3]:[3.6,3.2],V===1?xC(xPick(XPAL.wash)):ochre,{corner:V===1?'gold':'pinnacle',band:V===1});const E=xnXFDoor(0,D/2,ochre);
  for(let k=-2;k<=2;k++)kput('xConeG',[E[0]+k*.22,E[1]-.9,E[2]],qEuler(0,0,-k*.22),[.09,1.5,.09],gold);vBall('xGold',E[0],E[1]-.85,E[2],.2,gold);   // the gold sheaf
  // the granary drum joined to the hall by a bridge, a thatch cone on it, a ladder
- kput('xDrumE',[-13,0,-2],null,[3.4,7.5,3.4],earth);kput('vConeT',[-13,7.4,-2],null,[3.9,2.8,3.9],xC(xPick(VPAL.thatch)));vPst('vPost',-13,10.1,-2,.05,.8,aged);
+ const GH=V===2?10:7.5;kput('xDrumE',[-13,0,-2],null,[3.4,GH,3.4],earth);if(V===1)kput('xConeT',[-13,GH-.1,-2],null,[3.9,2.8,3.9],xC(xPick(XPAL.tile)));else kput('vConeT',[-13,GH-.1,-2],null,[3.9,2.8,3.9],xC(xPick(VPAL.thatch)));vPst('vPost',-13,GH+2.6,-2,.05,.8,aged);
  for(let k=0;k<4;k++)vB('vDarkB',-13+Math.sin(k*1.6)*3.42,2+k*1.2,-2+Math.cos(k*1.6)*3.42,.3,.5,.3,k*1.6);
  vB('vWood',-10.4,H.S.y-1.2,-2,3.2,.2,1.6,0,aged);for(const s of[-1,1])beam('vWood',[-11.9,H.S.y-1.1,-2+s*.7],[-8.8,H.S.y-1.1,-2+s*.7],.06,.06,aged);vnLadder(-13,0,1.6,0,7.2,aged);
  // the yard: stooks and a stack, sacks on the threshing floor, the yak, a well
@@ -2241,13 +2276,13 @@ function buildXaGuildFarm(G,o){reseed(31201+(o.v|0));const W=16,D=11;
  vPst('xDiscS',-8,0,D/2+4,3,.12,xC(xPick(XPAL.stone)));vnSacks(-8,.12,D/2+4,5);xnYak(3,D/2+4.5,2.2);
  xnPennants([-H.S.w/2+.3,H.top+.2,H.S.d/2-.3],[H.S.w/2-.3,H.top+.2,H.S.d/2-.3],12);vnFolk(-3,D/2+6,3,2);}
 // ---------------------------------------------------------------- Miners' Guild
-function buildXaGuildMine(G,o){reseed(31211+(o.v|0));const W=15,D=11;
+function buildXaGuildMine(G,o){reseed(31211+(o.v|0));const V=xV(o),W=15,D=11;
  const stone=xC(xPick(XPAL.stone)),aged=xC(xPick(XPAL.aged)),iron=xC(0x2e2a26),gold=xC(xPick(XPAL.gold)),rock=xC(0xa89880);
  vnReg("Miners' Guild",0,0,9.5,12);vnReg("Miners' Guild — headframe",12,-3,4,13);
- const H=xnXFHall(0,0,W,D,[3.8,3.4],stone,{kind:'dressed',trim:xC(XPAL.red)});const E=xnXFDoor(0,D/2,stone);
+ const H=xnXFHall(0,0,W,D,V===2?[3.8,3.4,3.2]:[3.8,3.4],V===1?xC(xPick(XPAL.wash)):stone,{kind:V===1?'wash':'dressed',trim:xC(XPAL.red),corner:V===1?'gold':'pinnacle'});const E=xnXFDoor(0,D/2,stone);
  kput('xGoldB',[E[0],E[1]-.9,E[2]],qEuler(0,0,.7),[.16,1.5,.12],gold);kput('xGoldB',[E[0],E[1]-.9,E[2]],qEuler(0,0,-.7),[.16,1.5,.12],gold);kput('xGoldB',[E[0]-.45,E[1]-.35,E[2]],qEuler(0,0,.7),[.5,.22,.14],gold);   // crossed pick and hammer
  // the headframe over the shaft: four raked legs, girts, the sheave wheel, the winding rope down the shaft
- {const hx=12,hz=-3,HH=12;vB('vStone',hx,0,hz,3.4,.5,3.4,0,stone);vB('vDarkB',hx,.5,hz,2.2,.02,2.2,0);
+ {const hx=12,hz=-3,HH=V===1?16:12;vB('vStone',hx,0,hz,3.4,.5,3.4,0,stone);vB('vDarkB',hx,.5,hz,2.2,.02,2.2,0);
   const leg=(sx,sz,t)=>[hx+sx*lerp(2.1,.9,t),HH*t,hz+sz*lerp(2.1,.9,t)];
   for(const sx of[-1,1])for(const sz of[-1,1])vBeam(leg(sx,sz,0),leg(sx,sz,1),.26,aged);
   for(const t of[.33,.66,1])for(const s of[-1,1]){vBeam(leg(-1,s,t),leg(1,s,t),.16,aged);vBeam(leg(s,-1,t),leg(s,1,t),.16,aged);}
@@ -2257,18 +2292,18 @@ function buildXaGuildMine(G,o){reseed(31211+(o.v|0));const W=15,D=11;
  for(let k=0;k<5;k++)kput('xBoulder',[-6+k*3.2+rr(-.6,.6),1.2+rr(0,1.2),-D/2-6+rr(-1.5,1)],qEuler(rr(-.3,.3),rng()*TAU,rr(-.3,.3)),[rr(2.6,4),rr(2,3.2),rr(2.6,3.6)],rock.clone().multiplyScalar(rr(.9,1.05)));
  vB('vDarkB',2,0,-D/2-5,2.2,2.6,3,0);for(const s of[-1,1])vPst('vPostB',2+s*1.2,0,-D/2-3.5,.18,2.7,aged);vB('vWood',2,2.7,-D/2-3.5,3,.3,.4,0,aged);
  for(const s of[-1,1])vB('vIron',W/2+3.6+s*.5,.1,-D/2-1,.08,.1,10,0,iron);for(let k=0;k<12;k++)vB('vWood',W/2+3.6,0,-D/2-5.5+k*.85,1.6,.1,.22,0,aged);
- for(const z of[-2,1.2]){vB('vRustB',W/2+3.6,.45,z,1,.8,1.5,0,null);kput('xBoulder',[W/2+3.6,1.1,z],null,[.5,.35,.6],xC(0x7a5a48));}
+ for(const z of(V===2?[-4.4,-2,1.2,3.6]:[-2,1.2])){vB('vRustB',W/2+3.6,.45,z,1,.8,1.5,0,null);kput('xBoulder',[W/2+3.6,1.1,z],null,[.5,.35,.6],xC(0x7a5a48));}
  vnFolk(-4,D/2+5,3,2);vnFolk(10,3,2,1.5);}
 // ---------------------------------------------------------------- Goldsmiths' Guild
-function buildXaGuildGold(G,o){reseed(31221+(o.v|0));const W=14,D=11;
+function buildXaGuildGold(G,o){reseed(31221+(o.v|0));const V=xV(o),W=14,D=11;
  const wash=xC(xPick(XPAL.wash)),stone=xC(xPick(XPAL.stone)),gold=xC(xPick(XPAL.gold)),tim=xC(xPick(XPAL.dark));
  vnReg("Goldsmiths' Guild",0,0,9,20);vnReg("Goldsmiths' Guild — strong room",-11,-2,3.5,14);
- const H=xnXFHall(0,0,W,D,[4,3.6],wash,{band:true,gold:true,corner:'gold',trim:xC(XPAL.lapis),doorGap:3.4});
+ const H=xnXFHall(0,0,W,D,V===2?[4,3.6,3.4]:[4,3.6],wash,{band:true,gold:true,corner:'gold',trim:xC(XPAL.lapis),doorGap:3.4});
  xnIwan(0,.8,D/2*.995,0,5.6,6.4,1.1,wash,{guldasta:true});xnFlight(0,0,D/2+1.1+1.6,0,4,.8,'vStone',stone);xnRoundel(0,.8+6.9,D/2*.995+.02,0,1.5);
- xnGiltRoof(0,H.top-.6,0,7.5,5.5,0,{frame:1.8,over:1.0});
- // the strong room: a blind dressed-stone tower with one barred slit and a gold bulb
- xnWall(-11,0,-2,5,12,5,0,stone,'dressed');vB('vDarkB',-8.55,6,-2,.06,1.2,.3,0);for(let k=0;k<3;k++)vB('vIron',-8.52,6,-2-.1+k*.1,.04,1.2,.03,0,xC(0x2e2a26));
- vB('xFriezeB',-11,11.2,-2,4.6,.6,4.6,0);kput('xBulbG',[-11,12.2,-2],null,[2.2,2.6,2.2],gold);vBall('xGold',-11,15,-2,.22,gold);
+ if(V===2)xnDome(0,H.top-.6,0,3.6,'G',{drum:2.2,drumItem:'xDrumM',fin:1.8});else xnGiltRoof(0,H.top-.6,0,V===1?9:7.5,V===1?6.5:5.5,0,{frame:V===1?2.4:1.8,over:1.0});
+ // the strong room: a blind dressed-stone tower with one barred slit and a gold bulb (v1: twice as tall)
+ const SH=V===1?18:12;xnWall(-11,0,-2,5,SH,5,0,stone,'dressed');vB('vDarkB',-8.55,6,-2,.06,1.2,.3,0);for(let k=0;k<3;k++)vB('vIron',-8.52,6,-2-.1+k*.1,.04,1.2,.03,0,xC(0x2e2a26));
+ vB('xFriezeB',-11,SH-.8,-2,4.6,.6,4.6,0);kput('xBulbG',[-11,SH+.2,-2],null,[2.2,2.6,2.2],gold);vBall('xGold',-11,SH+3,-2,.22,gold);
  vB('vWood',-8.6,H.S.y-1.4,-2,2.6,.2,1.6,0,tim);
  // the assay furnace and the display of ingots in the yard, lamps
  {const fx=7,fz=D/2+3;vB('xRubB',fx,0,fz,2.2,1.4,2.2,0,xC(xPick(XPAL.rubble)));kput('xDomeS',[fx,1.4,fz],null,[1.1,1.0,1.1],xC(xPick(XPAL.rubble)));vB('vDarkB',fx,.3,fz+1.1,.7,.6,.06,0);vBall('vEmber',fx,.55,fz+1.05,.22,null,.12);vnChimney(fx,2.4,fz-.4,1.6,.14,true);}
@@ -2276,17 +2311,17 @@ function buildXaGuildGold(G,o){reseed(31221+(o.v|0));const W=14,D=11;
  vnAwning(-5,2.8,D/2+2.6,0,3.6,1.8,xC(XPAL.lapis));for(const s of[-1,1])vPst('xColG',-5+s*1.9,0,D/2+4.4,.06,2.4,gold);
  if(xLit())for(const s of[-1,1])vnLampPost(s*3.5,0,D/2+4,3.4);vnFolk(0,D/2+6,3,2);}
 // ---------------------------------------------------------------- Alchemists' Guild
-function buildXaGuildAlch(G,o){reseed(31231+(o.v|0));const W=12,D=9,TX=-12,TZ=-1;
+function buildXaGuildAlch(G,o){reseed(31231+(o.v|0));const V=xV(o),W=12,D=9,TX=-12,TZ=-1,TH=V===1?17:12;
  const wash=xC(xPick(XPAL.wash)),stone=xC(xPick(XPAL.stone)),gold=xC(xPick(XPAL.gold)),copper=xC(0xb87333),iron=xC(0x2e2a26);
  vnReg("Alchemists' Guild",0,0,8,11);vnReg("Alchemists' Guild — tower",TX,TZ,5.5,20);
- const H=xnXFHall(0,0,W,D,[3.6,3.2],wash,{trim:xC(XPAL.turquoise)});const E=xnXFDoor(0,D/2,wash);
+ const H=xnXFHall(0,0,W,D,V===2?[3.6,3.2,3]:[3.6,3.2],wash,{trim:xC(XPAL.turquoise),kind:V===2?'dressed':'wash'});const E=xnXFDoor(0,D/2,wash);
  kput('xPaintBall',[E[0],E[1]-1.05,E[2]],null,[.5,.4,.2],xC(XPAL.turquoise));vB('xGoldB',E[0],E[1]-.7,E[2],.2,.7,.14,0,gold);vB('xGoldB',E[0],E[1]+.02,E[2],.34,.08,.16,0,gold);   // the flask
  // the octagonal tower: whitewash, stained windows in coloured panes, a mosaic dome, a copper vent
- kput('xOctW',[TX,0,TZ],null,[4.6,12,4.6],wash);kput('xOctS',[TX,0,TZ],null,[4.9,.8,4.9],stone);
- for(let k=0;k<8;k++){const a=k/8*TAU;if(k===0)continue;for(const y of[3,7.2]){const p=loc(TX,TZ,0,4.25,a);vB('vDarkB',p[0],y,p[1],1.0,1.8,.08,a);
+ kput('xOctW',[TX,0,TZ],null,[4.6,TH,4.6],wash);kput('xOctS',[TX,0,TZ],null,[4.9,.8,4.9],stone);
+ for(let k=0;k<8;k++){const a=k/8*TAU;if(k===0)continue;for(const y of(TH>14?[3,7.2,11.6]:[3,7.2])){const p=loc(TX,TZ,0,4.25,a);vB('vDarkB',p[0],y,p[1],1.0,1.8,.08,a);
   for(let r=0;r<3;r++)vB('xPaint',p[0],y+.1+r*.58,p[1],.8,.5,.06,a,xC(xPick([XPAL.turquoise,XPAL.red,XPAL.saffron,XPAL.lapis,XPAL.green])));vB('vStone',p[0],y-.1,p[1],1.2,.1,.2,a,stone);vB('vStone',p[0],y+1.8,p[1],1.2,.1,.2,a,stone);}}
- vB('xFriezeB',TX,11.2,TZ,9.4,.7,9.4,0);xnDome(TX,12,TZ,4.2,'M',{drum:1.4,drumItem:'xDrumM',fin:1.8});
- vPst('vPipeC',TX+2.4,10,TZ+2.4,.22,4.5,copper);kput('xBulbG',[TX+2.4,14.5,TZ+2.4],null,[.4,.5,.4],copper);
+ vB('xFriezeB',TX,TH-.8,TZ,9.4,.7,9.4,0);xnDome(TX,TH,TZ,4.2,V===2?'T':'M',{drum:1.4,drumItem:'xDrumM',fin:1.8});
+ vPst('vPipeC',TX+2.4,TH-2,TZ+2.4,.22,4.5,copper);kput('xBulbG',[TX+2.4,TH+2.5,TZ+2.4],null,[.4,.5,.4],copper);
  vB('vWood',TX+5.3,H.S.y-1.2,TZ,1.8,.2,1.6,0,xC(xPick(XPAL.dark)));vnDoor(TX,.8,TZ+4.28,0,.9,2.1,'vStone',stone,xC(XPAL.turquoise),true);
  // the laboratory yard: retorts on iron stands, the copper still, a coal heap, a kiln
  {const yx=8,yz=D/2+2;vB('vStone',yx,0,yz,5,.9,1.6,0,stone);for(let k=0;k<4;k++){const x=yx-1.8+k*1.2;vPst('vIron',x,.9,yz,.05,.6,iron);vBall('vBallW',x,1.75,yz,.28,xC(xPick([0xd8f0e8,0xf0e8c0,0xe8d0f0,0xc8f0f8])));if(k<3)beam('vPipeC',[x,1.95,yz],[x+1.2,1.75,yz],.05,.05,copper);}
@@ -2294,15 +2329,17 @@ function buildXaGuildAlch(G,o){reseed(31231+(o.v|0));const W=12,D=9,TX=-12,TZ=-1
  vnBarrel(-5,0,D/2+2.6,.34,.9);vnCrate(-6.4,0,D/2+2.2,.7,.2);xnPennants([TX,16.5,TZ],[H.S.w/2,H.top+.2,H.S.d/2],9,[0x2aa5a0,0x1e3f8a,0xf4efe4,0xe8a030]);
  if(xLit())vnLampPost(4,0,D/2+5,3.2);vnFolk(0,D/2+5.5,3,2);}
 // ---------------------------------------------------------------- Masons' Guild
-function buildXaGuildMason(G,o){reseed(31241+(o.v|0));const W=16,D=11;
+function buildXaGuildMason(G,o){reseed(31241+(o.v|0));const V=xV(o),W=16,D=11;
  const stone=xC(xPick(XPAL.stone)),wash=xC(xPick(XPAL.wash)),aged=xC(xPick(XPAL.aged)),gold=xC(xPick(XPAL.gold)),iron=xC(0x2e2a26);
  vnReg("Masons' Guild",0,0,10,14);vnReg("Masons' Guild — derrick",11,4,4,14);
- const H=xnXFHall(0,0,W,D,[3.6,3.2],stone,{kind:'dressed',trim:xC(XPAL.saffron),corner:null});const E=xnXFDoor(0,D/2,wash);
+ const H=xnXFHall(0,0,W,D,V===2?[3.6,3.2,3]:[3.6,3.2],stone,{kind:'dressed',trim:xC(XPAL.saffron),corner:V===1?'gold':null,band:V===1});const E=xnXFDoor(0,D/2,wash);
  vB('xGoldB',E[0]-.5,E[1]-1.0,E[2],.16,1.3,.12,0,gold);vB('xGoldB',E[0]+.1,E[1]-1.0,E[2],1.1,.16,.12,0,gold);vBeam([E[0]+.4,E[1]+.5,E[2]],[E[0]+.4,E[1]-.4,E[2]],.03,gold,'vRope');vBall('xGold',E[0]+.4,E[1]-.5,E[2],.12,gold);   // square and plumb
  // the unfinished top storey: dressed blocks laid part way, a ladder, tools, the scaffold
- const y3=H.top-.6,tw=H.S.w*.96,td=H.S.d*.96;for(const s of[-1,1])vB('vStone',0,y3,s*(td/2-.4),tw*.75,1.6,.8,0,stone);vB('vStone',-tw/2+.4,y3,0,.8,2.2,td,0,stone);
+ const y3=H.top-.6,tw=H.S.w*.96,td=H.S.d*.96;
+ if(V===1)xnGiltRoof(0,y3,0,6,4.4,0,{frame:1.6,over:.9});   // v1: the hall is finished, and gilded
+ else{for(const s of[-1,1])vB('vStone',0,y3,s*(td/2-.4),tw*.75,1.6,.8,0,stone);vB('vStone',-tw/2+.4,y3,0,.8,2.2,td,0,stone);
  for(let k=0;k<4;k++)vB('vStone',tw/2-.4-k*.02,y3,-td/2+1+k*2.2,.8,.7+k*.45,1.8,0,stone.clone().multiplyScalar(rr(.95,1.05)));
- for(const z of[-3,0,3])vPst('vPost',tw/2+1.2,y3-3,z,.1,5,aged);vB('vWood',tw/2+.7,y3+.5,0,1.4,.12,8,0,aged);vnLadder(tw/2+1.6,0,3.5,Math.PI/2,y3+.7,aged);
+ for(const z of[-3,0,3])vPst('vPost',tw/2+1.2,y3-3,z,.1,5,aged);vB('vWood',tw/2+.7,y3+.5,0,1.4,.12,8,0,aged);vnLadder(tw/2+1.6,0,3.5,Math.PI/2,y3+.7,aged);}
  // the derrick over the stone yard: mast, boom, guys, a block on the hook; cut blocks and an arch template
  {const dx=11,dz=4,MH=12;vB('vStone',dx,0,dz,1.6,.5,1.6,0,stone);vPst('vPostB',dx,.5,dz,.28,MH,aged);
   for(const g of[[-6,-4],[6,-3],[-5,7],[5,7]]){vBeam([dx,MH+.4,dz],[dx+g[0],.2,dz+g[1]],.04,xC(0x6a5a48),'vRope');vPst('vPost',dx+g[0],0,dz+g[1],.1,.6,aged);}
@@ -2312,12 +2349,13 @@ function buildXaGuildMason(G,o){reseed(31241+(o.v|0));const W=16,D=11;
  vB('vWood',-3,0,D/2+6,1.4,.3,2.6,.3,aged);vB('vPlaster',-3,.3,D/2+6,1.1,.7,1.5,.3,stone);
  vnFolk(0,D/2+8,3,2);xnFolk(tw/2+1,y3+.6,-2,1,.4);}
 // ---------------------------------------------------------------- the generator
-function buildXaGenerator(G,o){reseed(31251+(o.v|0));const W=14,D=10,H=6;
+function buildXaGenerator(G,o){reseed(31251+(o.v|0));const V=xV(o),W=14,D=10,H=6;
  const rub=xC(xPick(XPAL.rubble)),aged=xC(xPick(XPAL.aged)),iron=xC(0x2e2a26),wash=xC(xPick(XPAL.wash));
  vnReg('Generator',0,0,8.5,H+9);vnReg('Generator — yard',10,3,5,6);
  // the hall: rubble walls, the front open round the turbine, a corrugate gable roof, salvage patches
  vB('xRubB',0,0,-D/2+.4,W,H,.8,0,rub);for(const s of[-1,1])vB('xRubB',s*(W/2-.4),0,0,.8,H,D,0,rub);for(const s of[-1,1])vB('xRubB',s*(W/2-2),0,D/2-.4,4,H,.8,0,rub);
- vB('vWood',0,H-.1,0,W+.8,.3,.3,0,aged);vnGableRoof(0,H+.2,0,W+.8,D+.8,2.2,0,'vCorr',null,.6,'vGableSt',rub);vnPatch(0,H+.3,D/2+1.5,0,W,1.8,2);
+ if(V===2){xnFlatRoof(0,H,0,W,D,0,xC(xPick(XPAL.earth)),{parapet:.5});vnPatch(0,H+.3,D/2-.2,0,W,.5,3);for(let k=0;k<5;k++)kput('vSheet',[rr(-5,5),H+.36,rr(-3,3)],qEuler(-Math.PI/2,0,rng()),[rr(1.5,2.6),rr(1.2,2),1],null);}   // v2: a flat mud roof patched with sheet
+ else{vB('vWood',0,H-.1,0,W+.8,.3,.3,0,aged);vnGableRoof(0,H+.2,0,W+.8,D+.8,2.2,0,'vCorr',null,.6,'vGableSt',rub);vnPatch(0,H+.3,D/2+1.5,0,W,1.8,2);}
  vnWin(-W/2,2.6,-2,-Math.PI/2,1.4,1.2,'open','vIron',iron);vnWin(-W/2,2.6,2,-Math.PI/2,1.4,1.2,'open','vIron',iron);
  // the turbine: a great salvaged cylinder on plinths with its flywheel, pipes out through the wall to the tanks
  kput('vTankW',[0,2.2,-1],qEuler(0,0,Math.PI/2),[1.6,8,1.6],null);for(const x of[-3,3])vB('vStone',x,0,-1,1.8,1.4,3.6,0,rub);
@@ -2325,7 +2363,7 @@ function buildXaGenerator(G,o){reseed(31251+(o.v|0));const W=14,D=10,H=6;
  for(let k=0;k<3;k++)beam('vPipe',[-2+k*2,3.0,-1],[-2+k*2,H-.3,-D/2-.6],.16,.16,iron);beam('vPipe',[-4,2.2,-1],[-W/2-2.4,1.2,2],.28,.28,iron);
  vPst('vTankW',-W/2-3.6,0,2.4,1.6,3.4,null);vPst('vTankR',-W/2-3.2,0,-1.4,1.1,2.6,null);beam('vPipe',[-W/2-3.6,3.4,2.4],[-W/2-3.2,2.6,-1.4],.16,.16,iron);
  // the chimney with its lamp ring, the transformer yard: poles, crossarms, wires to the lamps
- vPst('vPipeR',W/2+2.4,0,-D/2+1,.7,15,null);vB('vIron',W/2+2.4,14.6,-D/2+1,2.2,.16,2.2,0,iron);for(let k=0;k<4;k++){const a=k/4*TAU;vBall('vBulb',W/2+2.4+Math.sin(a)*1,14.4,-D/2+1+Math.cos(a)*1,.14);}
+ for(const cx of(V===1?[W/2+2.4,W/2+5.2]:[W/2+2.4])){vPst('vPipeR',cx,0,-D/2+1,.7,15,null);vB('vIron',cx,14.6,-D/2+1,2.2,.16,2.2,0,iron);for(let k=0;k<4;k++){const a=k/4*TAU;vBall('vBulb',cx+Math.sin(a)*1,14.4,-D/2+1+Math.cos(a)*1,.14);}}
  for(const [x,z] of[[10,4],[10,-2],[16,4]]){vPst('vPost',x,0,z,.12,7,aged);vB('vWood',x,6.4,z,1.6,.1,.1,0,aged);for(const s of[-1,1])vBall('vBall',x+s*.7,6.5,z,.08,xC(0xd8d8d0));}
  vBeam([9.3,6.5,4],[9.3,6.5,-2],.02,iron,'vRope');vBeam([10.7,6.5,4],[16.7,6.5,4],.02,iron,'vRope');vBeam([10.7,6.5,-2],[W/2+2.4,7.2,-D/2+1],.02,iron,'vRope');
  vB('vIron',10,2.2,1,1.4,1.8,1,0,iron);for(let k=0;k<5;k++)vB('vIron',10,2.3+k*.3,1,1.6,.06,1.2,0,xC(0x4a4640));
@@ -2354,10 +2392,10 @@ function xnXGSpears(x,z,ry,n){const aged=xC(xPick(XPAL.aged)),iron=xC(0x2e2a26);
 function xnXGTent(x,z,r,c){kput('xConeP',[x,0,z],null,[r,r*1.3,r],c||xC(xPick([0xe8e0cc,0xd8d0b8,XPAL.red])));vPst('vPost',x,r*1.3,z,.04,.4,xC(0x5a4632));vB('vDarkB',x,0,z+r*.7,.6,1.1,.3,0);}
 
 // ---------------------------------------------------------------- the barracks
-function buildXaBarracks(G,o){reseed(31401+(o.v|0));const W=28,D=10,lit=xLit()?'lit':'glass';
+function buildXaBarracks(G,o){reseed(31401+(o.v|0));const V=xV(o),W=28,D=10,lit=xLit()?'lit':'glass';
  const wash=xC(xPick(XPAL.wash)),stone=xC(xPick(XPAL.stone)),trim=xC(XPAL.red),tim=xC(xPick(XPAL.dark));
  vnReg('Barracks',0,0,15,10);vnReg('Barracks — drill yard',0,10,10,3);
- xnWall(0,0,0,W+.6,.7,D+.6,0,stone,'dressed');const S=xnStack(0,.7,0,W,D,0,[3.4,3.2],wash,'wash');
+ xnWall(0,0,0,W+.6,.7,D+.6,0,stone,'dressed');const S=xnStack(0,.7,0,W,D,0,V===1?[3.4,3.2,3.0]:[3.4,3.2],wash,'wash');
  // the colonnade along the front at ground: painted columns, corbel eave, a walkway; the doors of the messes behind it
  for(let i=0;i<=10;i++)xnCol(-W/2+.6+ (W-1.2)*i/10,.7,D/2+2.6,3.1,.17,0,trim);
  vB('vWood',0,3.6,D/2+1.4,W+.4,.2,3,0,tim);xnCorbels(0,3.8,D/2+2.9,0,W-1,20,tim,.6);vB('xWashB',0,3.8,D/2+1.4,W+.6,.4,3.2,0,wash);vB('xTilesB',0,4.2,D/2+1.4,W+.8,.16,3.4,0,xC(xPick(XPAL.tile)));
@@ -2366,7 +2404,9 @@ function buildXaBarracks(G,o){reseed(31401+(o.v|0));const W=28,D=10,lit=xLit()?'
  for(let i=0;i<9;i++)xnTibWin(-W/2*.96+W*.96*(i+.5)/9,4.1+1.0,D/2*.96-.06,0,.8,1.1,lit,trim,{noVal:true});
  for(let i=0;i<9;i++)xnTibWin(-W/2*.96+W*.96*(i+.5)/9,4.1+1.0,-D/2*.96+.06,Math.PI,.8,1.1,lit,trim,{noVal:true});
  for(const s of[-1,1])for(const z of[-2.5,2.5])xnTibWin(s*(W/2*.96-.06),4.1+1.0,z,s*Math.PI/2,.8,1.1,lit,trim,{noVal:true});
- const top=xnFlatRoof(0,.7+6.6,0,S.w,S.d,0,wash,{parapet:.7,corner:'flag'});
+ if(V===1)for(let i=0;i<9;i++)xnTibWin(-W/2*.92+W*.92*(i+.5)/9,7.3+1.0,D/2*.92-.06,0,.8,1.1,lit,trim,{noVal:true});
+ const top=xnFlatRoof(0,S.y,0,S.w,S.d,0,wash,{parapet:.7,corner:'flag'});
+ if(V===2){const WX=W/2-4,WZ=-D/2-8;const S2=xnStack(WX,.7,WZ,8,16,0,[3.4,3.2],wash,'wash');xnWall(WX,0,WZ,8.6,.7,16.6,0,stone,'dressed');for(const z of[-6,-3,0,3,6]){xnTibWin(WX-4*.98+.06,1.7,WZ+z,-Math.PI/2,.8,1.1,lit,trim,{noVal:true});xnTibWin(WX-4*.96+.06,4.9,WZ+z,-Math.PI/2,.8,1.1,lit,trim,{noVal:true});}xnFlatRoof(WX,S2.y,WZ,S2.w,S2.d,0,wash,{parapet:.7,corner:'flag'});}   // v2: a second wing behind
  // the drill yard: paving, spear racks, a well, tents, the Sultan's banner, straw dummies
  xnPave(0,11,W-4,10,0,stone,2.4);for(const s of[-1,1])xnXGSpears(s*9,D/2+3.5,0,8);
  xnFlagpole(0,0,15.5,7,xC(XPAL.saffron));for(const s of[-1,1])xnXGTent(s*11.5,14,2.2);
@@ -2374,24 +2414,26 @@ function buildXaBarracks(G,o){reseed(31401+(o.v|0));const W=28,D=10,lit=xLit()?'
  if(xLit())for(const s of[-1,1])vnLampPost(s*6,0,D/2+4,3.4);
  vnFolk(-6,10,4,1.5);vnFolk(6,10,4,1.5);}
 // ---------------------------------------------------------------- a length of the city wall
-function buildXaWall(G,o){reseed(31411+(o.v|0));const L=24,H=8;
+function buildXaWall(G,o){reseed(31411+(o.v|0));const V=xV(o),L=24,H=V===2?5.5:8;
  const stone=xC(xPick(XPAL.stone)),aged=xC(xPick(XPAL.aged));
  vnReg('City wall',0,0,13,H+2,{part:'wall'});
- xnXECurtain([-L/2,0],[L/2,0],H,stone,1);
+ if(V===2){kput('xWallE',[0,0,0],null,[L,H,3.2],xC(xPick(XPAL.earth)));vB('xRubB',0,0,0,L,.6,3.4,0,xC(xPick(XPAL.rubble)));xnCrenel(0,H,0,L,2.6,0,1.1,xC(xPick(XPAL.earth)),{item:'xEarthB'});}   // v2: the earth wall of a lesser town
+ else xnXECurtain([-L/2,0],[L/2,0],H,stone,1);if(V===1)xnXETower(-L/2+1,0,0,3.2,H+2,stone,xC(xPick(XPAL.tile)));
  // the walk behind the merlons: a stair up from the inside, a guard's hut on the walk, a torch bracket
  xnFlight(8,0,-2.3,Math.PI/2,1.4,H-.1,'vStone',stone);
  vB('xWashB',6,H,-.6,3,2.4,2,0,xC(xPick(XPAL.wash)));xnFlatRoof(6,H+2.4,-.6,3,2,0,xC(xPick(XPAL.wash)),{parapet:.3});vnDoor(6,H,.4,0,.8,1.8,'vWood',aged,aged,false);
  xnFlagpole(-6,H+.2,-.6,3.2,xC(XPAL.red));vnFolk(0,-4,2,2);}
 // ---------------------------------------------------------------- the gate
-function buildXaGate(G,o){reseed(31421+(o.v|0));const TH=13,GW=11,GH=10,GD=7;
+function buildXaGate(G,o){reseed(31421+(o.v|0));const V=xV(o),TH=V===2?17:13,GW=11,GH=10,GD=7;
  const stone=xC(xPick(XPAL.stone)),wash=xC(xPick(XPAL.wash)),tile=xC(xPick(XPAL.tile)),tim=xC(xPick(XPAL.dark)),gold=xC(xPick(XPAL.gold));
  vnReg('City gate',0,0,12,TH+6);
- for(const s of[-1,1])xnXETower(s*(GW/2+3.4),0,0,3.8,TH,stone,tile);
+ for(const s of[-1,1]){if(V===1){xnWall(s*(GW/2+3.6),0,0,7,TH,7,0,stone,'dressed');xnCrenel(s*(GW/2+3.6),TH,0,6.2,6.2,0,1.2,stone,{item:'vStone',pointed:true});xnGiltRoof(s*(GW/2+3.6),TH+.5,0,3.6,3.6,0,{frame:1.2,over:.7});}   // v1: square towers with gilt roofs
+  else xnXETower(s*(GW/2+3.4),0,0,3.8,TH,stone,tile);}
  xnWall(0,0,0,GW,GH,GD,0,wash,'wash');xnIwan(0,0,GD/2,0,8.4,GH-.6,1.5,wash,{guldasta:true});
  vB('vDarkB',0,0,-GD/2-.02,5.4,7,.06,0);kput('xArchS',[0,0,-GD/2-.2],qEuler(0,Math.PI,0),[7.4,8.4,.4],stone);
  for(const s of[-1,1])kput('vWood',[s*1.5,0+3.2,GD/2+1.0],qEuler(0,s*.5,0),[2.6,6.2,.14],tim);for(let k=0;k<4;k++)vB('vIron',0,1+k*1.6,GD/2+1.1,5.2,.08,.04,0,xC(0x2e2a26));
  xnFlatRoof(0,GH,0,GW,GD,0,wash,{band:true,gold:true,parapet:false});xnCrenel(0,GH+.3,0,GW+.2,GD+.2,0,1.2,wash,{pointed:true});
- xnGiltRoof(0,GH+.5,0,5.6,3.6,0,{frame:1.8,over:.9});xnRoundel(0,GH-1.0,GD/2+1.52,0,1.4);
+ if(V===2)xnDome(0,GH+.5,0,2.8,'T',{drum:1.6,c:tile,fin:1.4});else xnGiltRoof(0,GH+.5,0,5.6,3.6,0,{frame:1.8,over:.9});xnRoundel(0,GH-1.0,GD/2+1.52,0,1.4);
  for(const s of[-1,1])xnFlagpole(s*4.6,GH+.4,-1.6,4,xC(XPAL.saffron));
  xnPennants([-(GW/2+3.4),TH+3.6,0],[GW/2+3.4,TH+3.6,0],10);
  // a stub of wall each side, the road through, lamps on the towers
@@ -2399,7 +2441,7 @@ function buildXaGate(G,o){reseed(31421+(o.v|0));const TH=13,GW=11,GH=10,GD=7;
  xnPave(0,GD/2+6,9,10,0,stone,2.6);if(xLit())for(const s of[-1,1])vnLamp(s*(GW/2+3.4),4.6,3.8,0);
  vnFolk(0,GD/2+7,4,2.5);}
 // ---------------------------------------------------------------- the fortress (dzong)
-function buildXaFortress(G,o){reseed(31431+(o.v|0));const RH=4,CW=42,CD=34,CH=6.5,lit=xLit()?'lit':'glass';
+function buildXaFortress(G,o){reseed(31431+(o.v|0));const V=xV(o),RH=4,CW=42,CD=34,CH=6.5,lit=xLit()?'lit':'glass',UT=V===2?26:20;
  const stone=xC(xPick(XPAL.stone)),wash=xC(xPick(XPAL.wash)),red=xC(xPick(XPAL.redwall)),tile=xC(xPick(XPAL.tile)),rock=xC(0xa89880),tim=xC(xPick(XPAL.dark)),gold=xC(xPick(XPAL.gold));
  vnReg('Fortress — keep',0,-4,15,RH+30);vnReg('Fortress — curtain wall',0,CD/2,10,RH+CH+3,{part:'wall'});vnReg('Fortress — tower',0,-12,5,RH+36);
  // the rock: a battered rubble mass with boulders round its foot; the ramp up its front
@@ -2411,20 +2453,20 @@ function buildXaFortress(G,o){reseed(31431+(o.v|0));const RH=4,CW=42,CD=34,CH=6.
   kput('xWallD',[m[0],RH,m[1]],qEuler(0,ry,0),[L,CH,3.2],stone);vB('vStone',m[0],RH+CH-.1,m[1],L*.98,.12,3,ry,stone.clone().multiplyScalar(1.06));
   const n=Math.max(1,Math.round(L/1.4));for(let i=0;i<=n;i++){const p=loc(m[0],m[1],-L*.98/2+L*.98*i/n,1.35,ry);vB('vStone',p[0],RH+CH,p[1],.6,1.3,.5,ry,stone);kput('xArcS',[p[0],RH+CH+1.3,p[1]],qEuler(0,ry,0),[.6,.4,.5],stone);}
   const q=loc(m[0],m[1],0,1.35,ry);vB('vStone',q[0],RH+CH,q[1],L*.98,.5,.5,ry,stone);}
- for(const sx of[-1,1])for(const sz of[-1,1])xnXETower(sx*cx,RH,sz*cz,3.2,CH+2,stone,tile);
+ for(const sx of[-1,1])for(const sz of[-1,1]){if(V===2){xnWall(sx*cx,RH,sz*cz,6.4,CH+2.5,6.4,0,stone,'dressed');xnCrenel(sx*cx,RH+CH+2.5,sz*cz,5.8,5.8,0,1.2,stone,{item:'vStone',pointed:true});}else xnXETower(sx*cx,RH,sz*cz,3.2,CH+2,stone,tile);}
  xnWall(0,RH,cz,11,CH+3,6,0,wash,'wash');xnIwan(0,RH,cz+3,0,7.6,CH+1.8,1.3,wash,{guldasta:true});xnFlatRoof(0,RH+CH+3,cz,10.4,5.7,0,wash,{band:true,parapet:.5,corner:'gold'});
  // the keep: a white battered mass of two storeys, the red sanctum on it with a gilt roof (as the temples), the tower
- const K=xnXDSanctum(0,-4,24,17,[5.6,5.0],13,9,4.4,{y:RH,wash,red,doorGap:3.4,gw:7,gd:5.5,frame:1.6});
+ const K=xnXDSanctum(0,-4,24,17,[5.6,5.0],13,9,4.4,{y:RH,wash,red,doorGap:3.4,gw:7,gd:5.5,frame:1.6,crown:V===1?'dome':null});
  xnPortico(0,RH,-4+17/2*.995,0,7,2.8,4,wash,{band:true,valC:xC(XPAL.red)});vnDoor(0,RH,-4+17/2*.995+.02,0,2,2.8,'xPaint',xC(XPAL.red),tim,false);
- xnWall(0,RH,-12.5,8,20,8,0,stone,'dressed');for(let k=0;k<4;k++)for(const a of[0,Math.PI/2,Math.PI,-Math.PI/2]){const yr=3+k*4.2,hw=4-.8*yr/20;const p=loc(0,-12.5,0,hw-.05,a);xnTibWin(p[0],RH+yr,p[1],a,.7,1.2,lit,xC(XPAL.red),{noVal:true});}
- xnCrenel(0,RH+20,-12.5,7.2,7.2,0,1.3,stone,{item:'vStone',pointed:true});xnGiltRoof(0,RH+20.4,-12.5,4.4,4.4,0,{frame:1.4,over:.8});
+ xnWall(0,RH,-12.5,8,UT,8,0,stone,'dressed');for(let k=0;k<UT/4.2-.5;k++)for(const a of[0,Math.PI/2,Math.PI,-Math.PI/2]){const yr=3+k*4.2,hw=4-.8*yr/UT;const p=loc(0,-12.5,0,hw-.05,a);xnTibWin(p[0],RH+yr,p[1],a,.7,1.2,lit,xC(XPAL.red),{noVal:true});}
+ xnCrenel(0,RH+UT,-12.5,7.2,7.2,0,1.3,stone,{item:'vStone',pointed:true});xnGiltRoof(0,RH+UT+.4,-12.5,4.4,4.4,0,{frame:1.4,over:.8});
  // the bailey: a well, stables against the wall, spear racks, pennants from the tower
  xnPave(0,RH,8,20,10,0,stone,2.4);vPst('vPostS',-8,RH,6,.8,.8,stone);vB('vDarkB',-8,RH+.8,6,1,.03,1,0);
  vB('xWashB',-14,RH,-4,6,3.2,14,0,wash);vnShedRoof(-14,RH+3.2,-4,6.4,14.4,1,-Math.PI/2,'xTilesB',tile,.4);for(const z of[-8,-4,0])vnDoor(-11,RH,-4+z,Math.PI/2,1.4,2.2,'vWood',tim,tim,false);
- for(const s of[-1,1])xnXGSpears(s*5,RH,10,0,7);for(const s of[-1,1]){xnPennants([0,RH+22,-12.5],[s*(cx-1),RH+CH+2.6,cz-1.6],14);}
+ for(const s of[-1,1])xnXGSpears(s*5,RH,10,0,7);for(const s of[-1,1]){xnPennants([0,RH+UT+2,-12.5],[s*(cx-1),RH+CH+2.6,cz-1.6],14);}
  if(xLit()){for(const s of[-1,1])vnLampPost(s*4,RH,cz-4,3.4);}xnFolk(0,RH,8,4,3);vnFolk(0,CD/2+6,3,2);}
 // ---------------------------------------------------------------- the city watch
-function buildXaWatch(G,o){reseed(31441+(o.v|0));const W=10,D=10,lit=xLit()?'lit':'glass';
+function buildXaWatch(G,o){reseed(31441+(o.v|0));const V=xV(o),W=10,D=10,lit=xLit()?'lit':'glass';
  const wash=xC(xPick(XPAL.wash)),stone=xC(xPick(XPAL.stone)),trim=xC(XPAL.red),tim=xC(xPick(XPAL.dark)),tile=xC(xPick(XPAL.tile)),iron=xC(0x2e2a26);
  vnReg('City watch',0,0,7.5,10);vnReg('City watch — tower',W/2+1.5,-D/2+1.5,3,22);
  xnWall(0,0,0,W+.6,.9,D+.6,0,stone,'dressed');const S=xnStack(0,.9,0,W,D,0,[3.4,3.2],wash,'wash');
@@ -2433,25 +2475,29 @@ function buildXaWatch(G,o){reseed(31441+(o.v|0));const W=10,D=10,lit=xLit()?'lit
  for(const u of[-3,0,3])xnTibWin(u,4.3+1.0,D/2*.96-.05,0,.8,1.1,lit,trim);for(const s of[-1,1])for(const z of[-2.5,2.5])xnTibWin(s*(W/2*.96-.06),4.3+1.0,z,s*Math.PI/2,.8,1.1,lit,trim,{noVal:true});
  const top=xnFlatRoof(0,.9+6.6,0,S.w,S.d,0,wash,{eave:true,eaveC:tim,parapet:.6,corner:'flag'});
  // the lantern tower: dressed stone shaft, an open lantern on columns under a tiled roof, the alarm bell, a lamp
- const tx=W/2+1.5,tz=-D/2+1.5;xnWall(tx,0,tz,4.6,15,4.6,0,stone,'dressed');for(let k=0;k<3;k++)vB('vDarkB',tx,3+k*4,tz+2.3*.94,.4,1.1,.1,0);
- xnPavilion(tx,15,tz,3.4,3.4,3.2,0,{c:trim,tileC:tile,over:.7});kput('xBulbG',[tx,16.4,tz],null,[.5,.7,.5],xC(xPick(XPAL.gold)));vBeam([tx,17.9,tz],[tx,17.1,tz],.03,iron,'vRope');
+ const tx=V===1?-(W/2+1.5):W/2+1.5,tz=-D/2+1.5,TT=V===1?20:15;
+ if(V===2){for(const s of[-1,1])vPst('vPostS',s*.9,top,-2,.18,2.6,stone);vB('vStone',0,top+2.6,-2,2.4,.3,.5,0,stone);kput('xBulbG',[0,top+1.4,-2],null,[.5,.7,.5],xC(xPick(XPAL.gold)));vnGableRoof(0,top+2.9,-2,2.6,1.2,.6,0,'xTilesB',tile,.2);}   // v2: a bell cote on the roof instead of a tower
+ else{xnWall(tx,0,tz,4.6,TT,4.6,0,stone,'dressed');for(let k=0;k<TT/4-1;k++)vB('vDarkB',tx,3+k*4,tz+2.3*.94,.4,1.1,.1,0);
+ xnPavilion(tx,TT,tz,3.4,3.4,3.2,0,{c:trim,tileC:tile,over:.7});kput('xBulbG',[tx,TT+1.4,tz],null,[.5,.7,.5],xC(xPick(XPAL.gold)));vBeam([tx,TT+2.9,tz],[tx,TT+2.1,tz],.03,iron,'vRope');}
  // the cells: a low barred block at the side; stocks in front; the watch's banner
  vB('xWashB',-W/2-3.2,0,-1,5.4,2.8,7,0,wash);xnFlatRoof(-W/2-3.2,2.8,-1,5.4,7,0,wash,{parapet:.4});for(const z of[-3,-1,1])for(let k=0;k<3;k++)vB('vIron',-W/2-5.92,1.4,z-.25+k*.25,.04,.9,.03,0,iron);
  for(const z of[-3,-1,1])vB('vDarkB',-W/2-5.9,1.4,z,.06,.9,.7,0);vnDoor(-W/2-3.2,0,2.5,0,1,2,'vIron',iron,iron,true);
  vB('vWood',3.5,.9,D/2+3,1.8,.24,.3,0,tim);for(const s of[-1,1])vPst('vPost',3.5+s*.7,0,D/2+3,.08,.9,tim);vnFolk(3.5,D/2+3.4,1,.2);
  xnFlagpole(-2,top-.6,-2,3.6,xC(XPAL.red));if(xLit()){vnLampPost(3,0,D/2+2,3.4);}vnFolk(-1,D/2+4,2,1.5);}
 // ---------------------------------------------------------------- the mustering ground
-function buildXaMuster(G,o){reseed(31451+(o.v|0));const W=40,D=30;
+function buildXaMuster(G,o){reseed(31451+(o.v|0));const V=xV(o),W=40,D=30;
  const stone=xC(xPick(XPAL.stone)),wash=xC(xPick(XPAL.wash)),gold=xC(xPick(XPAL.gold));
  vnReg('Mustering ground',0,0,21,8);vnReg('Mustering ground — reviewing stand',0,-D/2+3,7,8);
  xnPave(0,0,W,D,0,stone,3);vB('vStone',0,0,0,W+1,.2,D+1,0,stone.clone().multiplyScalar(.8));
  // the reviewing stand: a stone platform with a gilt pavilion, the Sultan's roundel, banners
- {const z=-D/2+3;vB('vStone',0,.2,z,14,1.6,6,0,stone);xnFlight(0,.2,z+3+2.7,0,6,1.6,'vStone',stone);xnPavilion(0,1.8,z,9,4,4,0,{gilt:true,rise:1.6,over:1.0});
-  xnRoundel(0,1.2,z+3.02,0,1.2);for(const s of[-1,1]){xnFlagpole(s*6.4,1.8,z-1.8,5,xC(XPAL.saffron));xnFolk(s*2.5,1.8,z,2,1.2);}}
+ {const z=-D/2+3;vB('vStone',0,.2,z,V===2?22:14,1.6,6,0,stone);xnFlight(0,.2,z+3+2.7,0,6,1.6,'vStone',stone);
+  if(V===1)xnPavilion(0,1.8,z,9,4,4,0,{c:xC(XPAL.red),tileC:xC(xPick(XPAL.tile)),over:1.0});else if(V===2){xnPortico(0,1.8,z-2,0,18,4,4.6,wash,{band:true,valC:xC(XPAL.saffron)});}else xnPavilion(0,1.8,z,9,4,4,0,{gilt:true,rise:1.6,over:1.0});
+  xnRoundel(0,1.2,z+3.02,0,1.2);for(const s of[-1,1]){xnFlagpole(s*(V===2?10.4:6.4),1.8,z-1.8,5,xC(XPAL.saffron));xnFolk(s*2.5,1.8,z,2,1.2);}}
  // the ring of flag poles, the drill posts, spear racks, tents and the troops in their ranks
  for(let k=0;k<10;k++){const t=k/10;xnFlagpole(-W/2+1+ (W-2)*t,0,D/2-1,5.5+rng(),xC(xPick([XPAL.red,XPAL.saffron,XPAL.lapis])));}
  for(let k=0;k<5;k++){const x=-12+k*6;vPst('vPost',x,0,-6,.12,2.2,xC(xPick(XPAL.aged)));kput('vThatchB',[x,1.3,-6],null,[.55,1.0,.45],xC(xPick(VPAL.thatch)));kput('xPaintBall',[x,2.15,-6],null,[.2,.22,.2],xC(0xd8c8a0));}
- for(const s of[-1,1])xnXGSpears(s*(W/2-2),0,0,Math.PI/2,10);for(const s of[-1,1])for(const z of[4,9])xnXGTent(s*(W/2-3.5),z,2.4);
+ for(const s of[-1,1])xnXGSpears(s*(W/2-2),0,0,Math.PI/2,10);if(V!==2)for(const s of[-1,1])for(const z of[4,9])xnXGTent(s*(W/2-3.5),z,2.4);
+ if(V===2)for(const s of[-1,1]){vB('xWashB',s*(W/2-4),0,8,6,3,9,0,wash);xnFlatRoof(s*(W/2-4),3,8,6,9,0,wash,{parapet:.4});}   // v2: stone barrack sheds instead of tents
  for(let r=0;r<3;r++)for(let c=0;c<8;c++){const x=-8+c*2.2,z=4+r*2.4;kput('figB',[x,0,z],qEuler(0,Math.PI,0),1,xC(xPick([0xa8382a,0xa8382a,0x1e3f8a])));kput('figH',[x,0,z],null,1,xC(0xc9a17e));}
  vPst('vPostS',-W/2+4,0,-10,.8,.8,stone);vB('vDarkB',-W/2+4,.8,-10,1,.03,1,0);
  if(xLit())for(const s of[-1,1]){vnLampPost(s*(W/2-1),0,-D/2+1,4);vnLampPost(s*(W/2-1),0,D/2-1,4);}vnFolk(4,12,3,2);}
@@ -2475,20 +2521,21 @@ XA.def({key:'xa_muster',name:'Mustering ground',family:'Military',tags:XTAG_MIL(
 function xnXHOct(r,sides,fn){const L=2*r*Math.tan(Math.PI/8);for(let k=0;k<8;k++){if(sides&&!sides.includes(k))continue;const a=k*Math.PI/4;fn(r*Math.sin(a),r*Math.cos(a),a,L,k);}}
 
 // ---------------------------------------------------------------- the arena
-function buildXaArena(G,o){reseed(31601+(o.v|0));const R=22,H=9.5,T=3.6;
+function buildXaArena(G,o){reseed(31601+(o.v|0));const V=xV(o),R=V===1?18:22,H=V===1?6.8:9.5,T=3.6;
  const stone=xC(xPick(XPAL.stone)),wash=xC(xPick(XPAL.wash)),sand=xC(0xd8c090),tim=xC(xPick(XPAL.dark)),gold=xC(xPick(XPAL.gold));
  vnReg('Arena',0,0,25,H+5);
  // the outer wall: eight battered segments, two tiers of arcades on the outside, merlons on top; the gate on side 0
  xnXHOct(R,null,(cx,cz,a,L,k)=>{kput('xWallD',[cx,0,cz],qEuler(0,a,0),[L+.2,H,T],stone);if(k===0)return;
-  const f=loc(cx,cz,0,T/2*.99,a);xnArcade(f[0],.7,f[1],a,L-2,3.4,4,'xArchS',stone,.5,{open:false});xnArcade(f[0],5.0,f[1],a,L*.9-2,3.0,4,'xArchS',stone,.5,{open:false});
+  const f=loc(cx,cz,0,T/2*.99,a);xnArcade(f[0],.7,f[1],a,L-2,3.4,4,'xArchS',stone,.5,{open:false});if(H>8)xnArcade(f[0],5.0,f[1],a,L*.9-2,3.0,4,'xArchS',stone,.5,{open:false});
   const n=Math.round(L/1.4);for(let i=0;i<=n;i++){const p=loc(cx,cz,-L*.9/2+L*.9*i/n,T*.8/2-.3,a);vB('vStone',p[0],H,p[1],.6,1.2,.5,a,stone);kput('xArcS',[p[0],H+1.2,p[1]],qEuler(0,a,0),[.6,.4,.5],stone);}
   const q=loc(cx,cz,0,T*.8/2-.3,a);vB('vStone',q[0],H,q[1],L*.9,.5,.5,a,stone);});
  // the gate: an iwan block in the front side, a gilt pavilion over it, the Sultan's roundel
- xnWall(0,0,R,12,H+2.5,T+2,0,wash,'wash');xnIwan(0,0,R+T/2+1,0,9,H+.5,1.4,wash,{guldasta:true});xnFlatRoof(0,H+2.5,R,11.4,T+1.7,0,wash,{band:true,gold:true,parapet:.5});
- xnGiltRoof(0,H+3.0,R,5.4,3.4,0,{frame:1.6,over:.9});xnRoundel(0,H+1.0,R+T/2+1+1.42,0,1.4);
+ if(V===2){xnXHOct(R,[0,2,4,6],(cx,cz,a,L)=>{const f=loc(cx,cz,0,T/2,a);xnArch('xArchM',f[0],0,f[1],a,6,7.4,.6,null,{});});}   // v2: four mosaic gates round the ring, no gate block
+ else{xnWall(0,0,R,12,H+2.5,T+2,0,wash,'wash');xnIwan(0,0,R+T/2+1,0,9,H+.5,1.4,wash,{guldasta:true});xnFlatRoof(0,H+2.5,R,11.4,T+1.7,0,wash,{band:true,gold:true,parapet:.5});
+ xnGiltRoof(0,H+3.0,R,5.4,3.4,0,{frame:1.6,over:.9});xnRoundel(0,H+1.0,R+T/2+1+1.42,0,1.4);}
  vB('vDarkB',0,0,R-2.85,5,6.5,.1,0);kput('xArchS',[0,0,R-3.1],qEuler(0,Math.PI,0),[7,8,.5],stone);
  // the seating: four rings of solid tiers stepping down to the sand; entrances through the lower tier
- for(let t=0;t<4;t++){const r=R-T/2-1.1-t*2.2,h=6.2-t*1.55;xnXHOct(r,null,(cx,cz,a,L,k)=>{vB('vStone',cx,0,cz,L-.1,h,2.2,a,stone.clone().multiplyScalar(t%2?1:.94));
+ for(let t=0;t<(V===1?3:4);t++){const r=R-T/2-1.1-t*2.2,h=(V===1?4.5:6.2)-t*1.55;xnXHOct(r,null,(cx,cz,a,L,k)=>{vB('vStone',cx,0,cz,L-.1,h,2.2,a,stone.clone().multiplyScalar(t%2?1:.94));
   if(t===0&&(k===2||k===4||k===6)){const p=loc(cx,cz,0,-1.1,a);vB('vDarkB',p[0],0,p[1],2.4,2.6,.1,a);}});}
  kput('xDisc',[0,0,0],null,[R-T/2-9.9,.16,R-T/2-9.9],sand);
  // the masts and the awnings: a mast on the wall at each corner and mid-side, cloth strips over the upper seats
@@ -2499,7 +2546,7 @@ function buildXaArena(G,o){reseed(31601+(o.v|0));const R=22,H=9.5,T=3.6;
  xnPave(0,R+T/2+7,16,8,0,stone,2.4);for(const s of[-1,1]){vB('vWood',s*7,0,R+T/2+5,2.4,.9,1,0,tim);vnAwning(s*7,2.6,R+T/2+4.5,0,2.8,1.4,xC(xPick(XPAL.cloth)));for(const u of[-1,1])vPst('vPost',s*7+u*1.3,0,R+T/2+5.9,.06,2.6,tim);}
  if(xLit())for(const s of[-1,1])vnLampPost(s*4.5,0,R+T/2+7,3.6);vnFolk(0,R+T/2+8,6,4);}
 // ---------------------------------------------------------------- the amphitheatre
-function buildXaAmphitheatre(G,o){reseed(31611+(o.v|0));const N=7;
+function buildXaAmphitheatre(G,o){reseed(31611+(o.v|0));const V=xV(o),N=V===1?5:V===2?9:7;
  const stone=xC(xPick(XPAL.stone)),wash=xC(xPick(XPAL.wash)),rub=xC(xPick(XPAL.rubble)),trim=xC(XPAL.red),tim=xC(xPick(XPAL.dark)),lit=xLit()?'lit':'glass';
  vnReg('Amphitheatre — tiers',0,-8,20,7);vnReg('Amphitheatre — stage',0,6,10,10);
  // the tiers: seven rings of three octagon sides (bearings 135°–225°) rising toward the back (-z); a hillside
@@ -2514,11 +2561,11 @@ function buildXaAmphitheatre(G,o){reseed(31611+(o.v|0));const N=7;
  {const z=9.5,W=20,H=7.5;xnWall(0,1.2,z,W,H,3.2,0,wash,'wash');xnArcade(0,1.2,z-1.6,Math.PI,W-4,4.6,3,'xArchM',null,.6,{open:false});
   for(let i=0;i<=6;i++)xnCol(-W/2+1.2+(W-2.4)*i/6,1.2,z-2.6,H-1.4,.2,Math.PI,trim);vB('vWood',0,1.2+H-1.4,z-2.4,W-1.2,.24,3.2,0,tim);xnCorbels(0,1.2+H-1.2,z-3.9,Math.PI,W-2,14,tim,.7);
   for(const u of[-7,7])xnTibWin(u,1.2+5.4,z-1.6,Math.PI,.9,1.3,lit,trim,{noVal:true});
-  xnFlatRoof(0,1.2+H,z,W,3.2,0,wash,{band:true,gold:true,parapet:.5,corner:'gold'});for(const s of[-1,1])xnFlagpole(s*(W/2-1),1.2+H+.5,z,4,xC(XPAL.saffron));
+  xnFlatRoof(0,1.2+H,z,W,3.2,0,wash,{band:true,gold:true,parapet:.5,corner:'gold'});if(V===2)xnGiltRoof(0,1.2+H+.3,z,8,2.6,0,{frame:1.4,over:.8});for(const s of[-1,1])xnFlagpole(s*(W/2-1),1.2+H+.5,z,4,xC(XPAL.saffron));
   for(const s of[-1,1]){vB('xWashB',s*(W/2+2.5),0,z-1,5,4.5,7,0,wash);xnFlatRoof(s*(W/2+2.5),4.5,z-1,5,7,0,wash,{parapet:.4});vnDoor(s*(W/2+2.5),0,z-4.5,Math.PI,1.2,2.2,'vWood',tim,tim,false);}}
  if(xLit())for(const s of[-1,1])vnLampPost(s*9,0,-2,3.4);vnFolk(0,0,4,2.5);xnFolk(0,1.2,5,2,2);}
 // ---------------------------------------------------------------- the public baths
-function buildXaBath(G,o){reseed(31621+(o.v|0));const W=24,D=16,H=5.6;
+function buildXaBath(G,o){reseed(31621+(o.v|0));const V=xV(o),W=24,D=16,H=5.6;
  const wash=xC(xPick(XPAL.wash)),stone=xC(xPick(XPAL.stone)),tile=xC(xPick(XPAL.tile)),gold=xC(xPick(XPAL.gold)),tim=xC(xPick(XPAL.dark)),rub=xC(xPick(XPAL.rubble));
  vnReg('Public baths',0,0,14,H+9);vnReg('Public baths — court',0,D/2+6,8,3);
  xnWall(0,0,0,W+.6,.8,D+.6,0,stone,'dressed');vB('xWashB',0,.8,0,W,H,D,0,wash);
@@ -2528,9 +2575,10 @@ function buildXaBath(G,o){reseed(31621+(o.v|0));const W=24,D=16,H=5.6;
  vB('xFriezeB',0,.8+H-.7,0,W+.2,.7,D+.2,0);
  const top=xnFlatRoof(0,.8+H,0,W,D,0,wash,{parapet:.5,corner:'gold'});
  // the domes: the great mosaic dome over the hot room on its lit drum, four lesser white domes with gold oculus bosses
- xnDome(0,top-.5+.3,-1,5.4,'M',{drum:1.8,drumItem:'xDrumM',fin:1.6});
- for(const sx of[-1,1])for(const sz of[-1,1]){const dx=sx*7.6,dz=-1+sz*4.4;kput('xDrumW',[dx,top-.5+.3,dz],null,[2.5,.6,2.5],wash);kput('xDomeW',[dx,top-.5+.9,dz],null,[2.6,2.8,2.6],wash);
-  for(let k=0;k<6;k++){const a=k/6*TAU;vBall('xGold',dx+Math.sin(a)*1.4,top+.4+2.0,dz+Math.cos(a)*1.4,.14,gold);}vBall('xGold',dx,top+.4+2.9,dz,.2,gold);}
+ if(V===2){for(const x of[-7.5,0,7.5])xnDome(x,top-.5+.3,-1,3.6,'T',{drum:1.4,fin:1.2});}   // v2: three tiled domes in a row
+ else{xnDome(0,top-.5+.3,-1,5.4,V===1?'T':'M',{drum:1.8,drumItem:'xDrumM',fin:1.6});
+ for(const sx of[-1,1])for(const sz of[-1,1]){const dx=sx*7.6,dz=-1+sz*4.4;kput('xDrumW',[dx,top-.5+.3,dz],null,[2.5,.6,2.5],wash);kput(V===1?'xDomeG':'xDomeW',[dx,top-.5+.9,dz],null,[2.6,2.8,2.6],V===1?gold:wash);
+  for(let k=0;k<6;k++){const a=k/6*TAU;vBall('xGold',dx+Math.sin(a)*1.4,top+.4+2.0,dz+Math.cos(a)*1.4,.14,gold);}vBall('xGold',dx,top+.4+2.9,dz,.2,gold);}}
  // the boiler house and cistern behind, the woodpile; the fountain court in front
  vB('xRubB',-6,0,-D/2-3,7,3.4,5,0,rub);vnShedRoof(-6,3.4,-D/2-3,7.4,5.4,.7,Math.PI,'vCorr',null,.3,.1);vnChimney(-6,4.1,-D/2-4,4.5,.28,true);vB('vDarkB',-6,0,-D/2-.5,1.4,1.6,.06,0);
  kput('xDrumS',[6,0,-D/2-3.2],null,[2.6,4.6,2.6],stone);vB('xWaterB',6,4.4,-D/2-3.2,3.6,.1,3.6,0,xC(XPAL.water));beam('vPipe',[6,3.8,-D/2-3.2],[3,3.8,-D/2],.12,.12,xC(0x2e2a26));
@@ -2538,7 +2586,7 @@ function buildXaBath(G,o){reseed(31621+(o.v|0));const W=24,D=16,H=5.6;
  xnPave(0,D/2+6,W-4,8,0,stone,2.4);xnFountain(0,0,D/2+6,2.4,stone);for(const s of[-1,1]){xnCypress(s*8,D/2+3.5,6);xnTree(s*8,D/2+8.5,4);vB('vStone',s*4.5,0,D/2+9,2.4,.5,.6,0,stone);}
  if(xLit())for(const s of[-1,1])vnLampPost(s*3.6,0,D/2+3.2,3.4);vnFolk(0,D/2+7,4,3);}
 // ---------------------------------------------------------------- the public garden
-function buildXaGarden(G,o){reseed(31631+(o.v|0));const W=38,D=30;
+function buildXaGarden(G,o){reseed(31631+(o.v|0));const V=xV(o),W=38,D=30;
  const stone=xC(xPick(XPAL.stone)),wash=xC(xPick(XPAL.wash)),tile=xC(xPick(XPAL.tile)),tim=xC(xPick(XPAL.dark));
  vnReg('Public garden',0,0,20,6);vnReg('Public garden — tea pavilion',0,-D/2+4,4,6);
  // the low wall with its tiled coping, arched openings on the front, corner posts with gold balls
@@ -2546,8 +2594,9 @@ function buildXaGarden(G,o){reseed(31631+(o.v|0));const W=38,D=30;
  for(const s of[-1,1]){vB('vDarkB',s*6,0,D/2-.25,3.2,1.3,.6,0);xnArch('xArchS',s*6,0,D/2+.05,0,4.4,3.0,.6,stone,{open:true});}vB('vDarkB',0,0,D/2-.25,3.6,1.3,.6,0);xnArch('xArchS',0,0,D/2+.05,0,5,3.4,.6,stone,{open:true});
  for(const sx of[-1,1])for(const sz of[-1,1]){vB('vStone',sx*(W/2-.4),0,sz*(D/2-.4),.9,2,.9,0,stone);vBall('xGold',sx*(W/2-.4),2.3,sz*(D/2-.4),.24,xC(xPick(XPAL.gold)));}
  // the chahar bagh, a cypress walk down the axis, the tea pavilion at the back, benches, a shrine
- xnCharBagh(0,0,2,W-6,D-10,0,{channel:1.2,r:2.4});
- for(const s of[-1,1])for(let k=0;k<4;k++)xnCypress(s*3.2,D/2-3-k*3.4,rr(5,7));
+ if(V===1){xnPool(0,.02,2,6,D-12,0,stone);for(const s of[-1,1])for(let k=0;k<6;k++){xnCypress(s*5,D/2-4-k*3.6,rr(5,7));xnTree(s*11,D/2-5-k*3.6,rr(3.5,4.5));}}   // v1: a long pool between cypress walks
+ else{xnCharBagh(0,0,2,W-6,D-10,0,{channel:1.2,r:2.4,fountain:V!==2});if(V===2)xnChhatri(0,0,2,2.2,4.2,stone,tile,8);
+ for(const s of[-1,1])for(let k=0;k<4;k++)xnCypress(s*3.2,D/2-3-k*3.4,rr(5,7));}
  xnPavilion(0,0,-D/2+4,6,4.4,3.4,0,{c:xC(XPAL.red),tileC:tile,over:1.0});vB('vStone',0,.3,-D/2+4,5,.4,3.4,0,stone);
  for(const s of[-1,1]){vB('vStone',s*10,0,-D/2+4,2.6,.5,.7,0,stone);vB('vStone',s*10,.5,-D/2+3.75,2.6,.4,.15,0,stone);}
  xnShrine(-W/2+4,0,-D/2+4,.9);xnPool(W/2-5,.02,-D/2+5,4,3,0,stone);
@@ -2564,14 +2613,14 @@ XA.def({key:'xa_garden',name:'Public garden',family:'Public',tags:XTAG_PUB(),w:4
 // front half hanging over the drop — placed through xnSub with o.drop, so every one grows the battered rubble
 // footing that XA.def gives any building sited on a slope. Stairs climb between the terraces, a shrine and pennant
 // lines crown the top. In a settlement the terrain does what the terraces do here. Seeds 31800–31899.
-function buildXaHillside(G,o){reseed(31801+(o.v|0));const STEP=3.2,TW=46;
+function buildXaHillside(G,o){reseed(31801+(o.v|0));const V=xV(o),STEP=V===3?2.4:V===4?4:3.2,TW=46;
  const rub=xC(xPick(XPAL.rubble)),stone=xC(xPick(XPAL.stone)),aged=xC(xPick(XPAL.aged));
  vnReg('Hillside quarter',0,0,24,STEP*3+12);
  // the terraces: step k has its top at k*STEP and its front edge at z = 10 - 10k (k = 1..3); the ground is step 0
  for(let k=1;k<=3;k++){const zf=10-10*k;xnTerrace(0,0,zf-5-(k===3?4:0),TW,10+(k===3?8:0),0,k*STEP,rub);}
  // the houses, each astride its terrace's front edge, front toward the valley (+z), footing dropped one step
  const H=[[3,'xa_mid_a',-9,0],[3,'xa_poor_a',8.5,0],[2,'xa_poor_b',-9,0],[2,'xa_poor_c',9.5,0],[1,'xa_poor_a',-9.5,0],[1,'xa_mid_a',9,0]];
- for(const [k,key,x,ry] of H){const zf=10-10*k;xnSub(key,x,k*STEP,zf,ry,{drop:STEP,v:(k+x>0?1:0)});}
+ for(const [k,key,x,ry] of H){const zf=10-10*k;xnSub(key,x,k*STEP,zf,ry,{drop:STEP,v:((k+(x>0?1:0)+V)%5)});}
  // the ground row: a shrine, a well, a tree and the lane
  xnShrine(-14,0,17,1.2);xnTree(12,17,4.5);vPst('vPostS',4,0,17,.8,.8,rub);vB('vDarkB',4,.8,17,1,.03,1,0);
  xnPave(0,18.5,TW-6,4,0,stone,2.4);
@@ -2588,7 +2637,7 @@ function buildXaHillside(G,o){reseed(31801+(o.v|0));const STEP=3.2,TW=46;
 XA.def({key:'xa_hillside',name:'Hillside quarter',family:'Hillside',tags:{type:['multi-family dwelling','single-family dwelling'],wealth:'poor',lit:false},w:50,d:44,h:22,build:buildXaHillside});
 // TARGET: variants — every def at o.v = 1 and 2, side by side, rows by family (laid out by xaLayout in 90-scene.js).
 const TITLE='Xanadu Building Kit — variants';
-const XA_VARIANTS=[1,2];
+const XA_VARIANTS=true;   // every def at v = 1 … nv-1 (5 variants for residential and other non-civic defs, 3 for civic)
 const XA_EXTRA=[].filter(S=>VERN.defs[S.key]);
 const SITES=[];
 // ---------------------------------------------------------------- scene (Xanadu showcase)
@@ -2599,13 +2648,14 @@ const XA_ROWS=[];   // {family, z, d, keys}
 // tall (a temple, the palace) the gap is widened so the previous row's camera is not behind a 40 m wall.
 const rowCamDist=w=>Math.max(40,Math.min(w*.55,260));
 const eyeCamDist=D=>Math.max(10,Math.max(D.w,D.h||0)*.9+D.d*.5);   // an eye-level camera stands this far in front of the plot centre
-const XA_VS=(typeof XA_VARIANTS==='undefined')?[0]:XA_VARIANTS;   // a target may show every def at several variants (o.v)
+const XA_ALLV=(typeof XA_VARIANTS!=='undefined')&&XA_VARIANTS;   // a target may show every def at all its variants (o.v = 1 … nv-1)
+const xaVs=k=>{if(!XA_ALLV)return[0];const n=VERN.defs[k].nv||3,out=[];for(let v=1;v<n;v++)out.push(v);return out;};
 (function xaLayout(){let z=0;const fams=XA.families();
- let prev=null;fams.forEach((F,fi)=>{const ws=F.keys.map(k=>(VERN.defs[k].w+9)*XA_VS.length);const total=ws.reduce((a,c)=>a+c,0);
+ let prev=null;fams.forEach((F,fi)=>{const ws=F.keys.map(k=>(VERN.defs[k].w+9)*xaVs(k).length);const total=ws.reduce((a,c)=>a+c,0);
   const dmax=Math.max(...F.keys.map(k=>VERN.defs[k].d||VERN.defs[k].w)),hmax=Math.max(...F.keys.map(k=>VERN.defs[k].h||0));
   if(prev)z+=Math.max(0,Math.max(rowCamDist(prev.w),prev.h*1.7)+10-22);   // every row: keep the previous row's camera out of this row's plots
   z+=dmax/2;let x=-total/2;
-  F.keys.forEach((k,i)=>{const u=ws[i]/XA_VS.length;XA_VS.forEach((v,j)=>SITES.push({key:k,x:x+u*(j+.5),z,ry:0,o:{v}}));x+=ws[i];});
+  F.keys.forEach((k,i)=>{const vs=xaVs(k),u=ws[i]/vs.length;vs.forEach((v,j)=>SITES.push({key:k,x:x+u*(j+.5),z,ry:0,o:{v}}));x+=ws[i];});
   prev={family:F.family,z,d:dmax,w:total,h:hmax,keys:F.keys};XA_ROWS.push(prev);
   const eyeNeed=Math.max(...F.keys.map(k=>eyeCamDist(VERN.defs[k])))-dmax/2+6;   // keep eye-level cameras clear of the next row
   z+=dmax/2+Math.max(22,eyeNeed);});
