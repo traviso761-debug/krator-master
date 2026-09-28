@@ -9,17 +9,66 @@
 // ---------------------------------------------------------------- totems and painted posts
 // Totem pole: carved column (the crest map faces the building's front when ry is the front direction), an
 // optional pair of spread wings (thunderbird crossarm) and a carved beak at the top figure.
-function hnTotem(x,y,z,r,h,ry,o){o=o||{};kput(o.painted?'hTotemP':'hTotem',[x,y,z],qEuler(0,ry+Math.PI,0),[r,h,r],null);
+function hnTotem(x,y,z,r,h,ry,o){o=o||{};if(hlNonTribal())return hnPillar(x,y,z,Math.max(.2,r*1.1),h,ry,{free:true});   // outside the tribes: a carved column
+ kput(o.painted?'hTotemP':'hTotem',[x,y,z],qEuler(0,ry+Math.PI,0),[r,h,r],null);
  const f=loc(x,z,0,r*.9,ry);kput('vConeI',[f[0],y+h*.86,f[1]],vQ(ry,Math.PI/2,0),[r*.34,r*1.3,r*.34],hC(HPAL.black));   // the top figure's beak
  if(o.wings){const wy=y+h*(o.wingAt||.8);for(const s of[-1,1]){const p=loc(x,z,s*(r+o.wings*.5),r*.2,ry);kput('hWing',[p[0],wy,p[1]],vQ(ry,0,s*-.12),[s*o.wings,o.wings*.5,1],null);}}
  if(o.hat){for(let k=0;k<3;k++)vPst('hPaint',x,y+h+k*.16,z,r*(1-.12*k),.14,hC(k%2?HPAL.red:HPAL.black));}}
 // A porch post carved as a short totem (the colonnades of civic fronts, the tribal houses).
-function hnTotemPost(x,y,z,r,h,ry,painted){kput(painted?'hTotemP':'hTotem',[x,y,z],qEuler(0,ry+Math.PI,0),[r,h,r],null);
+function hnTotemPost(x,y,z,r,h,ry,painted){if(hlNonTribal())return hnPillar(x,y,z,Math.max(.16,r),h,ry,{});
+ kput(painted?'hTotemP':'hTotem',[x,y,z],qEuler(0,ry+Math.PI,0),[r,h,r],null);
  vB('hPaint',x,y+h-.02,z,r*2.6,.2,r*2.6,ry,hC(HPAL.black));vB('vStone',x,y-.1,z,r*2.4,.22,r*2.4,ry,hC(vPick(HPAL.rubble)));}
-// Formline board on a face: item hFormA (crest, 2:1) | hFormW (on white) | hFormV (tall board) | hFormT (gable bird)
-function hnForm(item,x,y,z,ry,w,h){const p=loc(x,z,0,.07,ry);kput(item,[p[0],y+h/2,p[1]],qEuler(0,ry,0),[w,h,1],null);}
+// Formline board on a face: item hFormA (crest, 2:1) | hFormW (on white) | hFormV (tall board) | hFormT (gable bird).
+// Republican and Rustic builders get the wider repertoire (round 2): the item is swapped for a pick from HMOTIF of the
+// same shape — formline animals stay in the pool — and the first wide crest on a Republican CIVIC building is the
+// Republic's emblem.
+function hnForm(item,x,y,z,ry,w,h){if(hlNonTribal())item=hnMotifPick(item);const p=loc(x,z,0,.07,ry);kput(item,[p[0],y+h/2,p[1]],qEuler(0,ry,0),[w,h,1],null);}
 // Frieze band (hFormF) along a face — eave boards, lintels, the belt between storeys.
 function hnFrieze(x,y,z,ry,w,h){const p=loc(x,z,0,.05,ry);vB('hFormF',p[0],y,p[1],w,h||.5,.1,ry);}
+
+// ---------------------------------------------------------------- round 2: branch rules, pillars, signs, emblem
+// Totems belong to the tribes only; the Republic and the Rustic villages carve PILLARS with the same stacked motifs.
+const hlNonTribal=()=>{const c=VERN.cur;return !!(c&&c.D.branch&&c.D.branch!=='tribal');};
+const hlRepCivic=()=>{const c=VERN.cur;return !!(c&&c.D.branch==='republican'&&c.D.tags.wealth==='civic');};
+function hnMotifPick(item){const c=VERN.cur,rus=c.D.branch==='rustic';
+ if(item==='hFormT')return vPick(HMOTIF.gable.concat(['hFormT']));
+ if(item==='hFormV')return vPick(HMOTIF.tall.concat(['hFormV']));
+ if(hlRepCivic()&&!c.emblemDone){c.emblemDone=true;return HMOTIF.emblemWide;}
+ return vPick(HMOTIF.wide.filter(k=>!(rus&&k==='hM_w_rocket')).concat(['hFormA','hFormW','hFormB']));}
+// Carved pillar: a square timber shaft whose four faces carry a stacked motif column (like a totem, but a column),
+// on a stone plinth, under a painted capital (necking, echinus, abacus). {free:true} stands it alone with a painted
+// roundel as finial; {item} forces a pillar map (hM_p_0..3). r = half the shaft width.
+function hnPillar(x,y,z,r,h,ry,o){o=o||{};const s=r*2,stone=hC(vPick(HPAL.ashlar)),wood=hC(vPick(HPAL.tar));
+ const bh=Math.min(.42,h*.1),ch=Math.min(.55,h*.13),sh=h-bh-.1-ch;
+ vB('vStone',x,y,z,s*1.55,bh,s*1.55,ry,stone);vB('vStone',x,y+bh,z,s*1.25,.1,s*1.25,ry,stone);
+ kput(o.item||vPick(HMOTIF.pillar),[x,y+bh+.1+sh/2,z],qEuler(0,ry,0),[s,sh,s],null);
+ const cy=y+h-ch;vB('hPaint',x,cy,z,s*1.08,ch*.28,s*1.08,ry,hC(HPAL.black));vB('hPaint',x,cy+ch*.28,z,s*1.3,ch*.34,s*1.3,ry,hC(vPick([HPAL.red,HPAL.teal])));
+ vB('vWood',x,cy+ch*.62,z,s*1.6,ch*.38,s*1.6,ry,wood);
+ if(o.free){const k=o.disc||vPick(HMOTIF.disc),R=Math.max(.7,s*1.6);vPst('vIron',x,y+h,z,.04,R*.35,hC(0x2e2a26));
+  kput(k,[x,y+h+R*.35+R/2,z],qEuler(0,ry,0),[R,R,1],null);vB('hGoldB',x,y+h+R*.35-.04,z,R*.36,.08,.12,ry,hC(HPAL.gold[0]));}}
+// The Republic's emblem (three arms, three swords) as a painted roundel on a face, d across.
+function hnEmblem(x,y,z,ry,d){const p=loc(x,z,0,.09,ry);kput(HMOTIF.emblem,[p[0],y,p[1]],qEuler(0,ry,0),[d,d,1],null);}
+// Banners: on a Republican civic building every banner pole flies the Republic's banner.
+const _hlBannerPole=vnBannerPole;
+vnBannerPole=function(x,y,z,ry,h,c){if(!hlRepCivic())return _hlBannerPole(x,y,z,ry,h,c);
+ vPst('vPost',x,y,z,.08,h,hC(0x5a4632));const p=loc(x,z,.55,0,ry);vB('vWood',p[0],y+h-.2,p[1],1.1,.08,.08,ry,hC(0x5a4632));vBall('hGold',x,y+h+.08,z,.12,hC(HPAL.gold[0]));
+ kput(HMOTIF.banner,[p[0],y+h-1.62,p[1]],vQ(ry+Math.PI/2,0,0),[.9,2.7,1]);};
+// Trade signs. Each shop-like def names its symbol here (a list = one per call, in order: a row of shops).
+const HTRADE={hl_rep_tavern_a:'tankard',hl_rep_tavern_b:'tankard',hl_rep_tavern_c:'tankard',hl_rep_inn:'bed',hl_rep_shops:['bread','boot','shears','candle'],
+ hl_rep_market_hall:'scales',hl_rep_workshop_a:'wheel',hl_rep_workshop_b:'barrel',hl_rep_smithy_small:'anvil',hl_rep_smithy_large:'anvil',hl_rep_stables:'horse',
+ hl_rep_warehouse_a:'sack',hl_rep_warehouse_b:'sack',hl_rep_guild_merc:'swords',hl_rep_guild_alch:'flask',hl_rep_guild_farm:'sheaf',hl_rep_guild_smith:'hammer',
+ hl_rep_guild_mech:'gear',hl_rep_hospital:'mortar',hl_rep_school:'book',hl_rep_forgehouse:'anvil',hl_rep_granary:'sheaf',hl_rep_windmill:'sheaf',hl_rep_watermill:'sheaf',
+ hl_rus_shops:['bread','scales','fish'],hl_rus_tavern:'tankard',hl_rus_smithy:'anvil',hl_rus_mill:'sheaf',hl_rus_granary:'sheaf'};
+function hlTradeSym(sym){if(sym)return sym;const c=VERN.cur;const t=c&&HTRADE[c.D.key];if(!t)return 'scales';if(!Array.isArray(t))return t;c.signN=(c.signN||0);return t[c.signN++%t.length];}
+// Hanging sign: an iron bracket out of the wall at (x,y,z) (ry = outward), a painted roundel hung across it.
+function hnSign(x,y,z,ry,sym,s){s=s||1;const I=hC(0x2e2a26),k=HMOTIF.sign[hlTradeSym(sym)]||HMOTIF.sign.scales;const a=loc(x,z,0,.04,ry),b=loc(x,z,0,1.25*s,ry),m=loc(x,z,0,.62*s,ry);
+ beam('vIron',[a[0],y,a[1]],[b[0],y,b[1]],.06,.06,I);beam('vIron',[a[0],y-.62*s,a[1]],[m[0],y,m[1]],.04,.04,I);vBall('hGold',b[0],y,b[1],.06,hC(HPAL.gold[0]));
+ const p=loc(x,z,0,.72*s,ry),R=.9*s;for(const u of[-.25,.25]){const q=loc(x,z,0,(.72+u)*s,ry);vB('vIron',q[0],y-.14,q[1],.02,.14,.02,0,I);}
+ kput(k,[p[0],y-.14-R/2,p[1]],qEuler(0,ry+Math.PI/2,0),[R,R,1],null);}
+// Flat sign on a wall: a painted board with the trade roundel between two knotwork panels (y = bottom).
+function hnSignBoard(x,y,z,ry,w,h,sym,bgC){const f=loc(x,z,0,.04,ry);vB('hPaint',f[0],y,f[1],w+.14,h+.14,.08,ry,hC(HPAL.black));const b=loc(x,z,0,.09,ry);vB('hPaint',b[0],y+.07,b[1],w,h,.03,ry,bgC||hC(HPAL.ochre));
+ const d=Math.min(h*1.35,w*.5),c=loc(x,z,0,.12,ry);kput(HMOTIF.sign[hlTradeSym(sym)]||HMOTIF.sign.scales,[c[0],y+.07+h/2,c[1]],qEuler(0,ry,0),[d,d,1],null);
+ const kw=(w-d)/2-.12;if(kw>.25)for(const s2 of[-1,1]){const p=loc(x,z,s2*(d/2+.06+kw/2),.115,ry);kput(vPick(['hM_w_knot','hM_w_knotRed']),[p[0],y+.07+h/2,p[1]],qEuler(0,ry,0),[kw,Math.min(h*.8,kw/2),1],null);}}
 
 // ---------------------------------------------------------------- dougong (painted bracket sets under eaves)
 // One set on a post head at (x,y,z): a dou block, a crossed pair of arms (one along the face, one projecting
