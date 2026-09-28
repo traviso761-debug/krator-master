@@ -14,7 +14,7 @@ function hnPortal(d){const u=d.w/2+.42,top=d.h+.55,rot=d.ry;const P=(lu,lo)=>loc
  const l=P(0,.32);vB('vWood',l[0],d.y+top,l[1],2*u+.7,.26,.5,rot,hC(vPick(HPAL.tar)));hnFrieze(l[0],d.y+top+.03,l[1]+0,rot,2*u+.5,.22);}
 const HDRESS={
  sign:['hl_rep_market_hall','hl_rep_smithy_small','hl_rep_smithy_large','hl_rep_stables','hl_rep_warehouse_b','hl_rep_hospital','hl_rep_school',
-  'hl_rep_guild_merc','hl_rep_guild_alch','hl_rep_guild_farm','hl_rep_guild_smith','hl_rep_guild_mech','hl_rep_forgehouse','hl_rus_smithy'],
+  'hl_rep_guild_merc','hl_rep_guild_alch','hl_rep_guild_farm','hl_rep_guild_smith','hl_rep_guild_mech','hl_rep_guild_astro','hl_rep_forgehouse','hl_rus_smithy'],
  portal:['hl_rep_tavern_b','hl_rep_inn','hl_rep_school','hl_rep_hospital','hl_rep_guild_farm','hl_rep_house_rich_c','hl_rus_tavern','hl_rus_house_mid_a','hl_rus_farmhouse'],
 };
 for(const k of new Set([...HDRESS.sign,...HDRESS.portal])){const D=VERN.defs[k];if(!D)continue;const inner=D.build;
