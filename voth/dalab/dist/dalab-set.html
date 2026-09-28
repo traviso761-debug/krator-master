@@ -2114,31 +2114,58 @@ function buildDalabEmbassyHist(G,o){reseed(8531+(o.v|0));const CW=30,CD=26;const
 // blocks where the reformed convalesce, the archive drum, the vats under their sheds, tanks and pipe, two cable
 // pylons, a gatehouse with a giant guard pair, steles, God's-light strips and posts.
 function buildDalabHalls(G,o){reseed(8541+(o.v|0));const R=68;const st=dCol(DPAL.stone),stD=st.clone().multiplyScalar(.85),iron=vC(0x2e2a26),wood=dCol(DPAL.wood),sh=dCol(DPAL.shingle);
- vnReg('Halls of Reformation',0,0,R+2,30,{landmark:true});vnReg('Halls wall',0,0,R+1,5,{part:'wall'});
+ vnReg('Halls of Reformation',0,0,R+2,44,{landmark:true});vnReg('Halls wall',0,0,R+1,5,{part:'wall'});
  dnRingWall(0,0,0,R,4.8,0,8,'vStone',st,1.3);
  // gatehouse: two stone drums flanking the gate, a lintel bridge with a relief, giants
  for(const s of[-1,1]){dnDrum('dStoneDrumB',s*5.6,0,R,2.6,8,st);dnDrum('dReliefDrum',s*5.6,6.4,R,2.62,1.0,st);kput('dConeSh',[s*5.6,7.8,R],null,[3.2,2.6,3.2],sh);}
  vB('vStone',0,5.6,R,9,1.4,2.4,0,st);dnReliefBand(0,5.8,R+1.2,0,7.5,1.0,st);vB('vStone',0,7.0,R,9.4,.3,2.8,0,stD);
  dnGiant(-3.4,0,R+3.2,.25,4,{spear:true});dnGiant(3.4,0,R+3.2,-.25,4,{spear:true});
  vnPaving(0,.02,0,R*1.7,R*1.7,0,st.clone().multiplyScalar(.92),260);
- // the central hall
- {const HR=13,HH=8;dnDrum('dStoneDrumB',0,0,0,HR,HH,st);dnDrum('dReliefDrum',0,.5,0,HR+.05,1.3,st);dnMuralRing(0,HH-2.6,0,HR-.3,1.8);
-  vB('vStone',0,HH,0,HR*2+1,.7,HR*2+1,0,stD);dnDrum('dStoneDrum',0,HH+.7,0,HR-.4,.7,st);
-  kput('dPanelDome',[0,HH+1.4,0],null,[HR-.6,HR*.7,HR-.6],null);
-  for(let k=0;k<12;k++){const a=k/12*TAU;const p=dnOnRing(0,0,HR-1.0,a);kput('vIron',[p[0],HH+1.4+HR*.35,p[1]],vQ(a,0,0),[.3,HR*.7,.3],iron);}
-  for(let k=0;k<20;k++){const a=(k+.5)/20*TAU;const p=dnOnRing(0,0,HR,a);dnGodStrip(p[0],HH-.5,p[1],a,TAU*HR/20-.6);}
-  dnDrum('dRustDrum',0,HH+1.4+HR*.7-.4,0,1.6,2.6,null);vBall('dGodBall',0,HH+1.4+HR*.7+2.4,0,.6);vBall('dGlassBall',0,HH+1.4+HR*.7+2.4,0,.6);
-  dnGate(0,0,HR+.2,0,2.8,4.2,st);vnDoor(0,0,HR,0,2.6,4.0,'vStone',st,vC(0x2a2a30),false);vnStairs(0,0,HR+2.2,0,4.6,0,1,'vStone',st);
-  for(let k=0;k<10;k++){const a=(k+.5)/10*TAU;if(k===4||k===5)continue;const p=dnOnRing(0,0,HR,a);dnGodWin(p[0],3.4,p[1],a,1.0,1.8,'vStone',st);}
-  dnGiant(-3.6,0,HR+3.8,.25,4,{spear:true});dnGiant(3.6,0,HR+3.8,-.25,4,{spear:true});}
+ // THE GREAT HALL OF REFORMATION: a two-course stepped base with a stair; the lower drum (r 18) ringed by sixteen
+ // buttress piers with pyramid pinnacles, God windows between them, a fret plinth, a mural frieze and a light ring
+ // under its cornice; a clerestory drum above with sixteen God windows; the Ancient panel dome on iron ribs with a
+ // rust lantern and a mast; a colonnaded portico on the front axis with a trilithon door, and an apse on each of
+ // the other three axes. Grey stone: the Halls are civic, not sacred — the priests work here, they do not pray.
+ {const HR=18,HH=9.5,CR=HR-4.2,CH=4.2;const DY=HH+.9+CH+.9;   // DY: the dome springs here
+  const tq=dCol(DPAL.sacred);
+  dnDrum('dStoneDrum',0,-.05,0,HR+5,.7,stD);dnDrum('dStoneDrum',0,.65,0,HR+3,.7,stD);const Y0=1.35;
+  vnStairs(0,0,HR+5+1.0,0,6,Y0,3,'vStone',st);
+  dnDrum('dStoneDrumB',0,Y0,0,HR,HH,st);dnDrum('dReliefDrum',0,Y0+.5,0,HR+.05,1.3,st);dnMuralRing(0,Y0+HH-3.0,0,HR-.28,1.8);
+  // the sixteen piers, each a battered stone block with a relief front and a pyramid pinnacle; God windows between
+  for(let k=0;k<16;k++){const a=(k+.5)/16*TAU;const p=dnOnRing(0,0,HR-.3,a);kput('dEarthBat',[p[0],Y0,p[1]],qEuler(0,-a,0),[1.6,HH+1.4,2.2],st);
+   vB('vStone',p[0],Y0+HH+1.4,p[1],1.9,.3,2.5,-a,stD);kput('dStonePyr',[p[0],Y0+HH+1.7,p[1]],qEuler(0,-a,0),[1.7,1.3,1.7],st);
+   const q=dnOnRing(0,0,HR-.3+1.15,a);dnReliefBand(q[0],Y0+1.9,q[1],a,1.1,HH-2.4,st);
+   const b=(k+1)/16*TAU;if(k===7||k===8)continue;const w=dnOnRing(0,0,HR,b);dnGodWin(w[0],Y0+3.0,w[1],b,1.1,2.2,'vStone',st);}
+  for(let k=0;k<32;k++){const a=(k+.5)/32*TAU;const p=dnOnRing(0,0,HR,a);dnGodStrip(p[0],Y0+HH-.6,p[1],a,TAU*HR/32-.5);}
+  // cornice, the clerestory drum, its cornice
+  vB('vStone',0,Y0+HH,0,HR*2+1.2,.9,HR*2+1.2,0,stD);dnDrum('dStoneDrum',0,Y0+HH+.9,0,CR,CH,st);dnDrum('dReliefDrum',0,Y0+HH+1.1,0,CR+.05,.9,st);
+  for(let k=0;k<16;k++){const a=(k+.5)/16*TAU;const p=dnOnRing(0,0,CR,a);dnGodWin(p[0],Y0+HH+2.3,p[1],a,.9,1.5,'vStone',st);}
+  vB('vStone',0,Y0+HH+.9+CH,0,CR*2+1.0,.9,CR*2+1.0,0,stD);
+  // the dome: Ancient panel over iron ribs, a rust seam, the lantern and the mast
+  kput('dPanelDome',[0,Y0+DY,0],null,[CR-.3,CR*.72,CR-.3],null);
+  {const t=.5,L=CR*.6;for(let k=0;k<16;k++){const a=k/16*TAU;const p=dnOnRing(0,0,CR-.9-L/2*Math.sin(t),a);kput('vIron',[p[0],Y0+DY+L/2*Math.cos(t),p[1]],vQ(a,-t,0),[.32,L,.32],iron);}}   // ribs lean in and lie on the dome
+  kput('dRing',[0,Y0+DY+CR*.5,0],qEuler(Math.PI/2,0,0),[CR*.72,CR*.72,1],iron);
+  const AP=Y0+DY+CR*.72;dnDrum('dRustDrum',0,AP-.5,0,2.2,3.2,null);for(let k=0;k<6;k++){const a=k/6*TAU;const p=dnOnRing(0,0,2.2,a);vB('vDarkB',p[0],AP+.4,p[1],.7,1.4,.1,a);}
+  vBall('dGodBall',0,AP+3.6,0,.8);vBall('dGlassBall',0,AP+3.6,0,.8);vPst('vPipe',0,AP+2.7,0,.12,7,iron);vBall('dGodBall',0,AP+9.8,0,.35);vBall('dGlassBall',0,AP+9.8,0,.35);
+  window._hallsApex=AP+3.6;
+  // the portico: eight stone columns carrying a relief-fronted entablature and a stepped crest, over a checker floor
+  {const PZ=HR+3.6,PW=13;vB('vStone',0,Y0-.4,PZ,PW+2,.4,7,0,stD);dnChecker(0,Y0+.02,PZ,PW,6,0);
+   for(let i=0;i<4;i++)for(const sd of[-1,1]){const x=sd*(1.9+i*3.0);vPst('vPostS',x,Y0,PZ+2.6,.36,HH-1.4,st);vB('vStone',x,Y0+HH-1.4,PZ+2.6,1.0,.3,1.0,0,stD);}
+   vB('vStone',0,Y0+HH-1.1,PZ,PW+2,1.4,7,0,st);dnReliefBand(0,Y0+HH-.9,PZ+3.5,0,PW,1.0,st);vB('vStone',0,Y0+HH+.3,PZ,PW+2.4,.4,7.4,0,stD);
+   const tr=dCol(DPAL.trim);let yy=Y0+HH+.7;for(const w of[PW*.7,PW*.42,PW*.2]){vB('vStone',0,yy,PZ+2.2,w,.8,1.6,0,st);vB('vStone',0,yy+.66,PZ+2.2,w+.2,.14,1.8,0,tr);yy+=.8;}vBall('dGiltBall',0,yy+.2,PZ+2.2,.25);}
+  dnGate(0,Y0,HR+.4,0,3.2,4.8,st);vnDoor(0,Y0,HR,0,3.0,4.6,'vStone',st,vC(0x2a2a30),false);for(const x of[-2.6,2.6])dnGodLamp(x,Y0+5.4,HR,0);
+  // the three apses
+  for(const a of[Math.PI/2,-Math.PI/2,Math.PI]){const p=dnOnRing(0,0,HR-1.5,a);dnDrum('dStoneDrumB',p[0],Y0,p[1],4.2,6.4,st);dnDrum('dReliefDrum',p[0],Y0+.4,p[1],4.24,.9,st);
+   kput('dStoneDome',[p[0],Y0+6.4,p[1]],null,[4.0,2.4,4.0],stD);vBall('dGiltBall',p[0],Y0+8.9,p[1],.3);for(const d of[-.5,.5]){const w=dnOnRing(p[0],p[1],4.2,a+d);dnGodWin(w[0],Y0+2.6,w[1],a+d,.8,1.4,'vStone',st);}}
+  dnGiant(-4.2,Y0,HR+7.5,.25,4,{spear:true});dnGiant(4.2,Y0,HR+7.5,-.25,4,{spear:true});dnPriest(-1.6,Y0,HR+5,Math.PI);}
  // four wing halls on the diagonals, pipe to the centre
  [[1,1,'dRustDome'],[-1,1,'dPanelDome'],[1,-1,'dPanelDome'],[-1,-1,'dRustDome']].forEach((w,i)=>{const wx=w[0]*30,wz=w[1]*26,WR=7,WH=5.5;
   dnDrum('dStoneDrumB',wx,0,wz,WR,WH,st);dnDrum('dReliefDrum',wx,.4,wz,WR+.05,1.0,st);vB('vStone',wx,WH,wz,WR*2+.8,.5,WR*2+.8,0,stD);
   kput(w[2],[wx,WH+.5,wz],null,[WR-.3,WR*.6,WR-.3],null);const toC=Math.atan2(-wx,-wz);
   for(let k=0;k<7;k++){const a=k/7*TAU+.2;const p=dnOnRing(wx,wz,WR,a);let d=Math.abs(((a-toC)%TAU+TAU)%TAU);if(d>Math.PI)d=TAU-d;if(d<.5)continue;dnGodWin(p[0],2.4,p[1],a,.9,1.4,'vStone',st);}
   const dp=dnOnRing(wx,wz,WR,toC);vnDoor(dp[0],0,dp[1],toC,1.5,2.8,'vStone',st,vC(0x2a2a30),false);const lp=dnOnRing(wx,wz,WR,toC);dnGodLamp(lp[0],3.4,lp[1],toC);
-  const ep=dnOnRing(wx,wz,WR-.2,toC);const cp=dnOnRing(0,0,12.8,Math.atan2(wx,wz));vBeam([ep[0],WH-.5,ep[1]],[cp[0],6.5,cp[1]],.35,null,'vPipeR');vBeam([ep[0],WH-1.6,ep[1]],[cp[0],4.8,cp[1]],.22,null,'vPipe');
-  for(const t of[.3,.62]){const px=ep[0]+(cp[0]-ep[0])*t,pz=ep[1]+(cp[1]-ep[1])*t,py=(WH-.5)+(6.5-(WH-.5))*t;vPst('vPipe',px,0,pz,.12,py-.1,iron);vB('vIron',px,py-.35,pz,.7,.12,.7,0,iron);}   // pipe trestles
+  const ep=dnOnRing(wx,wz,WR-.2,toC);const cp=dnOnRing(0,0,17.6,Math.atan2(wx,wz));vBeam([ep[0],WH-.5,ep[1]],[cp[0],7.5,cp[1]],.35,null,'vPipeR');vBeam([ep[0],WH-1.6,ep[1]],[cp[0],5.8,cp[1]],.22,null,'vPipe');
+  for(const t of[.3,.62]){const px=ep[0]+(cp[0]-ep[0])*t,pz=ep[1]+(cp[1]-ep[1])*t,py=(WH-.5)+(7.5-(WH-.5))*t;vPst('vPipe',px,0,pz,.12,py-.1,iron);vB('vIron',px,py-.35,pz,.7,.12,.7,0,iron);}   // pipe trestles
   vPst(i%2?'vTankW':'vTankR',wx+w[0]*4,0,wz+w[1]*10,2.0,4.6,null);vB('vIron',wx+w[0]*4,4.6,wz+w[1]*10,4.4,.1,4.4,0,iron);vPst('vTankR',wx+w[0]*9,0,wz+w[1]*8,1.4,3.2,null);
   for(let k=0;k<3;k++)kput('vPipe',[wx+w[0]*(6-k*.7),0,wz+w[1]*(9+k*.5)],null,[.12,rr(2,4),.12],iron);});
  // the cell blocks: two long stone ranges of small cells on the east and west, God-lit doors along a colonnade
@@ -2158,13 +2185,13 @@ function buildDalabHalls(G,o){reseed(8541+(o.v|0));const R=68;const st=dCol(DPAL
  for(const s of[-1,1]){const px=s*40,pz=40;for(const sx of[-1,1])for(const sz of[-1,1])vBeam([px+sx*1.6,0,pz+sz*1.6],[px+sx*.3,26,pz+sz*.3],.18,iron,'vIron');
   for(let y=3;y<26;y+=3.5){const w=1.6-(1.3*y/26);vB('vIron',px,y,pz,w*2+.3,.12,.12,0,iron);vB('vIron',px,y,pz,.12,.12,w*2+.3,0,iron);}
   vB('vIron',px,26,pz,2.4,.2,2.4,0,iron);vBall('dGodBall',px,27,pz,.4);vBall('dGlassBall',px,27,pz,.4);kput('dGodHalo',[px,27,pz],vQ(0,0,0),[3,3,1],null);
-  dnCable([px,25.5,pz],[0,8+1.4+13*.7+2.8,0],2.6);dnCable([px,25.5,pz],[s*30,6,26],3.2);dnCable([px,25.5,pz],[s*30,6,-26],4.5);
+  dnCable([px,25.5,pz],[0,window._hallsApex||30,0],2.6);dnCable([px,25.5,pz],[s*30,6,26],3.2);dnCable([px,25.5,pz],[s*30,6,-26],4.5);
   vB('vStone',px,0,pz,4.4,1.2,4.4,0,stD);}
  // steles round the court, God-posts along the axis, priests, supplicants
  for(let k=0;k<12;k++){const a=k/12*TAU+Math.PI/12;const p=dnOnRing(0,0,R-5,a);dnStele(p[0],0,p[1],a+Math.PI,3.6,st);}
- for(const z of[22,32,42,52])for(const s of[-1,1])dnGodPost(s*4.5,0,z,4.4);
+ for(const z of[32,40,48,56])for(const s of[-1,1])dnGodPost(s*5.5,0,z,4.4);
  for(const a of[Math.PI*.5,-Math.PI*.5,Math.PI])dnGodPostAt(0,0,R-10,a,4.4);
- dnPriest(-4,0,18,.4);dnPriest(4,0,18,-.4);dnPriest(-26,0,-2,1.2);dnFolk(0,30,6,5);dnFolk(0,R+6,4,3);dnFolk(-50,0,3,2);dnFolk(50,0,3,2);}
+ dnPriest(-7,0,30,.4);dnPriest(7,0,30,-.4);dnPriest(-26,0,-2,1.2);dnFolk(0,30,6,5);dnFolk(0,R+6,4,3);dnFolk(-50,0,3,2);dnFolk(50,0,3,2);}
 function dnGodPostAt(x,z,r,a,h){const p=dnOnRing(x,z,r,a);dnGodPost(p[0],0,p[1],h);}
 
 dDef({key:'dalab_barracks',name:"Guard's barracks",family:'civic',tags:{type:['civic','military'],wealth:'civic',lit:true},w:36,d:30,h:12,build:buildDalabBarracks});
@@ -2188,19 +2215,20 @@ function dnTemple(x,y,z,ry,s,o){o=o||{};const deco=o.deco!==false;const st=o.sto
  if(deco){const p=L(0,D/2+1.0*s);dnChecker(p[0],yy+.02,p[1],W+1.6*s,2.0*s,ry);}
  vB('vStone',x,yy,z,W,H,D,ry,st);
  // bands: a fret plinth band (colour when deco), the mural frieze, a cream string course under it
- {const f=L(0,D/2);if(deco)dnFretBand(f[0],yy+.3*s,f[1],ry,W-1.2*s,1.0*s);else dnReliefBand(f[0],yy+.3*s,f[1],ry,W-1.2*s,1.0*s,st);dnMuralBand(f[0],yy+H-2.0*s,f[1],ry,W-4.2*s,1.5*s);}
- for(const sd of[-1,1]){const f=L(sd*W/2,0);if(deco)dnFretBand(f[0],yy+.3*s,f[1],ry+sd*Math.PI/2,D-1.2*s,1.0*s);else dnReliefBand(f[0],yy+.3*s,f[1],ry+sd*Math.PI/2,D-1.2*s,1.0*s,st);dnMuralBand(f[0],yy+H-2.0*s,f[1],ry+sd*Math.PI/2,D-4.2*s,1.5*s);}
- if(deco)dnTrimBand(x,yy+H-2.15*s,z,W,D,ry,.18*s);
+ {const f=L(0,D/2);if(deco)dnFretBand(f[0],yy+.3*s,f[1],ry,W-3.2*s,1.0*s);else dnReliefBand(f[0],yy+.3*s,f[1],ry,W-1.2*s,1.0*s,st);dnMuralBand(f[0],yy+H-2.0*s,f[1],ry,W-4.2*s,1.5*s);}
+ for(const sd of[-1,1]){const f=L(sd*W/2,0);if(deco)dnFretBand(f[0],yy+.3*s,f[1],ry+sd*Math.PI/2,D-3.2*s,1.0*s);else dnReliefBand(f[0],yy+.3*s,f[1],ry+sd*Math.PI/2,D-1.2*s,1.0*s,st);dnMuralBand(f[0],yy+H-2.0*s,f[1],ry+sd*Math.PI/2,D-4.2*s,1.5*s);}
+ if(deco)dnTrimBand(x,yy+H-2.15*s,z,W,D,ry,.14*s);
  // deco piers with avatar panels flanking the door and at the corners
- if(deco){for(const lx of[-W/2+1.0*s,W/2-1.0*s]){const f=L(lx,D/2);dnDecoPanel(f[0],yy+.5*s,f[1],ry,.9*s,H-.9*s);}
-  for(const sd of[-1,1])for(const lz of[-D/2+1.0*s,D/2-1.0*s]){const f=L(sd*W/2,lz);dnDecoPanel(f[0],yy+.5*s,f[1],ry+sd*Math.PI/2,.9*s,H-.9*s);}}
+ // (piers sit at the corners, outside the window jambs and the plinth band; windows sit below the frieze)
+ if(deco){for(const lx of[-W/2+.55*s,W/2-.55*s]){const f=L(lx,D/2);dnDecoPanel(f[0],yy+.5*s,f[1],ry,.9*s,H-.9*s);}
+  for(const sd of[-1,1])for(const lz of[-D/2+.55*s,D/2-.55*s]){const f=L(sd*W/2,lz);dnDecoPanel(f[0],yy+.5*s,f[1],ry+sd*Math.PI/2,.9*s,H-.9*s);}}
  const c1=dnCornice(x,yy+H,z,W,D,ry,st,2,tr);vB('vStone',x,c1,z,W-.6*s,.5*s,D-.6*s,ry,tr||st.clone().multiplyScalar(.85));
  // the stepped crest on the front parapet (deco), then the shingle pyramid and its finial
  if(deco){const c=L(0,D/2-1.0*s);dnCrest(c[0],c1+.5*s,c[1],W*.6,ry,st);}
  kput('vPyrSh',[x,c1+.5*s,z],ry?qEuler(0,ry,0):null,[W-1.4*s,3.2*s,D-1.4*s],sh);vPst('vPost',x,c1+3.4*s,z,.1*s,1.6*s,vC(0x5a4632));vBall('dGiltBall',x,c1+5.0*s,z,.32*s);
  {const g=L(0,D/2+.1);dnGate(g[0],yy,g[1],ry,2.0*s,3.2*s,st,tr);const d=L(0,D/2);vnDoor(d[0],yy,d[1],ry,1.8*s,3.0*s,'vStone',tr||st,vC(0x2a2a30),false);
-  for(const lx of[-3.2*s,3.2*s]){const w=L(lx,D/2);if(o.lit!==false)dnGodWin(w[0],yy+1.6*s,w[1],ry,1.0*s,1.4*s,'vStone',tr||st);else vnWin(w[0],yy+1.6*s,w[1],ry,1.0*s,1.4*s,'open','vStone',st);}
-  for(const sd of[-1,1])for(const lz of[-2*s,2*s]){const w=L(sd*W/2,lz);if(o.lit!==false)dnGodWin(w[0],yy+1.6*s,w[1],ry+sd*Math.PI/2,1.0*s,1.4*s,'vStone',tr||st);}
+  for(const lx of[-3.0*s,3.0*s]){const w=L(lx,D/2);if(o.lit!==false)dnGodWin(w[0],yy+1.0*s,w[1],ry,1.0*s,1.4*s,'vStone',tr||st);else vnWin(w[0],yy+1.0*s,w[1],ry,1.0*s,1.4*s,'open','vStone',st);}
+  for(const sd of[-1,1])for(const lz of[-2*s,2*s]){const w=L(sd*W/2,lz);if(o.lit!==false)dnGodWin(w[0],yy+1.0*s,w[1],ry+sd*Math.PI/2,1.0*s,1.4*s,'vStone',tr||st);}
   for(const lx of[-2.3*s,2.3*s]){const l=L(lx,D/2);if(o.lit!==false)dnGodLamp(l[0],yy+3.9*s,l[1],ry);}}
  // banners at the platform corners, the altar, the giant guards, the priest
  for(const sd of[-1,1]){const p=L(sd*(W/2+2.6*s),D/2+2.6*s);dnBannerPole(p[0],y,p[1],ry,6.5*s,dCol(sd<0?DPAL.gold:DPAL.turq));}
@@ -4527,7 +4555,7 @@ const VIEWS={
  'Barracks, priest house, temple, healers':RV(7,80,40,6),'Barracks — gate':EYE('dalab_barracks',26,3),'Temple — eye level':EYE('dalab_temple',26,7),"Healers' hall — eye level":EYE('dalab_healers',24,6),
  'Embassies':RV(8,74,38,8),'Izizian embassy — gate':EYE('dalab_embassy_iziz',24,4),'Vothic embassy — gate':EYE('dalab_embassy_voth',24,4),"Historians' embassy — gate":EYE('dalab_embassy_hist',24,4),
  "Priests' compound":RV(9,70,40,6),"Priests' compound — gate":EYE('dalab_priest_compound',30,3),"Priests' compound — court":EYE('dalab_priest_compound',-4,8),
- 'Halls of Reformation':RV(10,190,110,12),'Halls — gate':EYE('dalab_halls',80,4),'Halls — court':EYE('dalab_halls',30,-12),'Halls — cells':EYE('dalab_halls',-10,-36),
+ 'Halls of Reformation':RV(10,190,110,12),'Halls — gate':EYE('dalab_halls',80,4),'Halls — court':EYE('dalab_halls',34,-14),'Halls — great hall':[SITES.find(s=>s.key==='dalab_halls').x+40,26,ROWZ[10]+50,SITES.find(s=>s.key==='dalab_halls').x,16,ROWZ[10]],'Halls — cells':EYE('dalab_halls',-10,-36),
  'Ceremonial mound':RV(11,120,60,12),'Mound — foot of the stair':EYE('dalab_mound',44,4),'Mound — on the stair':[6,7.5,ROWZ[11]+27,0,14,ROWZ[11]],'Mound — top':[-14,13+1.7,ROWZ[11]+18,0,13+4,ROWZ[11]-4],
  'Palace mound':RV(12,150,70,14),'Palace mound — gate':EYE('dalab_palace_mound',56,6),'Palace mound — terraces':[22,12,ROWZ[12]+62,0,14,ROWZ[12]+10],'Palace mound — top':[-9,17+1.7,ROWZ[12]+13,0,17+5,ROWZ[12]-7],'Palace mound — back gardens':[SITES.find(s=>s.key==='dalab_palace_mound').x-10,14,ROWZ[12]-60,SITES.find(s=>s.key==='dalab_palace_mound').x,12,ROWZ[12]-20],'Palace mound — gardens':[SITES.find(s=>s.key==='dalab_palace_mound').x+52,9,ROWZ[12]+18,SITES.find(s=>s.key==='dalab_palace_mound').x+20,11,ROWZ[12]-4],
  "High Priest's mound":RV(13,200,100,18),'High mound — entrance':EYE('dalab_high_mound',82,5),'High mound — top':[-20,20+1.7,ROWZ[13]+22,0,20+5,ROWZ[13]-6],
