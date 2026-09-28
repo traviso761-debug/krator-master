@@ -9,6 +9,25 @@ const VIEWS={
  'The Project at night':[ROWS.skyA.j,300,ROWS.skyA.z+780,ROWS.skyA.j,210,ROWS.skyA.z,1],
  'The Project close':[ROWS.skyA.j+150,120,ROWS.skyA.z+260,ROWS.skyA.j,150,ROWS.skyA.z,1],
  'The Project foot':[ROWS.skyA.j+130,14,ROWS.skyA.z+150,ROWS.skyA.j,70,ROWS.skyA.z,1],
+ // PROJECTS D AND H, the Monolith and the Warden reoccupied whole, lit by fire.
+ // Same stations as The Project, off each row's own j.
+ 'Project D':[ROWS.skyD.j,300,ROWS.skyD.z+780,ROWS.skyD.j,180,ROWS.skyD.z],
+ 'Project D at night':[ROWS.skyD.j,300,ROWS.skyD.z+780,ROWS.skyD.j,180,ROWS.skyD.z,1],
+ 'Project D close':[ROWS.skyD.j+150,120,ROWS.skyD.z+260,ROWS.skyD.j,150,ROWS.skyD.z,1],
+ 'Project H':[ROWS.skyH.j,300,ROWS.skyH.z+780,ROWS.skyH.j,170,ROWS.skyH.z],
+ 'Project H at night':[ROWS.skyH.j,300,ROWS.skyH.z+780,ROWS.skyH.j,170,ROWS.skyH.z,1],
+ 'Project H close':[ROWS.skyH.j+150,120,ROWS.skyH.z+260,ROWS.skyH.j,150,ROWS.skyH.z,1],
+ // REHABILITATED (decay 3), folded in from the retired `repaired` target. It
+ // stands at x=0, the middle of each row, so the row shots above already frame
+ // it; these are the close stations that used to be that target's own.
+ 'Rehabilitated A':[0-150,140,ROWS.skyA.z+420,0,160,ROWS.skyA.z],
+ 'Rehabilitated D':[0-150,140,ROWS.skyD.z+420,0,160,ROWS.skyD.z],
+ 'Rehabilitated factory':[0+330,8,ROWS.fac.z+120,0+110,60,ROWS.fac.z-60],
+ 'Rehabilitated government':[0-140,5,ROWS.gov.z+240,0,40,ROWS.gov.z],
+ 'Rehabilitated apartments':[0+170,150,ROWS.apt.z+480,0+170,25,ROWS.apt.z],
+ 'Rehabilitated lab':[0+110,30,ROWS.lab.z+170,0,45,ROWS.lab.z],
+ 'Rehabilitated data center':[0+260,150,ROWS.dc.z+420,0,30,ROWS.dc.z],
+ 'Rehabilitated hotel':[0+120,60,ROWS.hotel.z+260,0,30,ROWS.hotel.z],
  'Toppled A':[ROWS.skyA.t-200,120,ROWS.skyA.z+420,ROWS.skyA.t+120,40,ROWS.skyA.z],'Toppled B':[ROWS.skyB.t-200,110,ROWS.skyB.z+380,ROWS.skyB.t+100,30,ROWS.skyB.z],'Toppled C':[ROWS.skyC.t-200,120,ROWS.skyC.z+420,ROWS.skyC.t+120,40,ROWS.skyC.z],
  'Megastructure':ROWV('mega',1300,330,140),'Megastructure foot':[ROWS.mega.s-320,4,ROWS.mega.z+330,ROWS.mega.s+40,120,ROWS.mega.z],
  'Factory':ROWV('fac',760,280,40),'Factory silo':[ROWS.fac.s+330,8,ROWS.fac.z+120,ROWS.fac.s+110,60,ROWS.fac.z-60],
