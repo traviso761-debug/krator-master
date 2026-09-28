@@ -8,9 +8,9 @@
 // def's `lit` tag or the placer's o.lit — and it is COLD teal-white. Peasant and trade buildings have no light but
 // their hearths and yard fires, which are fire, not power, and allowed anywhere.
 const DSKY={hour:15.8,day:200,dens:1.35};const DSKY_DAY=15.8;   // a preset without an hour is a DAY preset (as an Ancients preset without the night flag)
-if(!window.CITY){
- if(sky){scene.remove(sky);sky=null;}if(giant){scene.remove(giant);giant=null;}     // the showcase's static sky goes; KratorSky replaces it
- KratorSky.attach(scene,5000);scene.fog.density=.00045;}
+{if(sky){scene.remove(sky);sky=null;}if(giant){scene.remove(giant);giant=null;}     // the showcase's static sky goes; KratorSky replaces it
+ KratorSky.attach(scene,5000);scene.fog.density=window.CITY?.00013:.00045;}
+if(!window.CITY)BUDGET.showcase.tris=10000000;   // the set's ceiling (Travis, round 7): room for level of detail
 const dHemi=scene.children.find(o=>o.isHemisphereLight);
 let DNIGHT=null;
 function dalabNight(on){on=!!on;if(DNIGHT===on)return;DNIGHT=on;
@@ -38,7 +38,7 @@ window._api.setHour=h=>{DSKY.hour=h;dalabSkyTick();dalabHourUI();};window._api.n
 // ---------------------------------------------------------------- the biome (gardens), the mounds, the windmills
 // The builders planted through SWLOW.treeAt / plantAt into BIO's items during the SITES loop (90-scene); the scene
 // is bound and baked here, after kbake, and the wind tick joins the frame loop.
-if(!window.CITY){BIO.setScene(scene);try{const b=BIO.bake();window._biome={calls:b.calls,inst:b.inst};}catch(e){reportErr('biome bake: '+e.stack);}
+{BIO.setScene(scene);try{const b=BIO.bake();window._biome=Object.assign(window._biome||{},{calls:b.calls,inst:b.inst});}catch(e){reportErr('biome bake: '+e.stack);}
  BIO._tickWind&&BIO._tickWind();for(const f of BIO_TICKS)FRAME_HOOKS.push(f);BIO_TICKS.length=0;
  // every mound and ring bank in one mesh
  if(DMOUND_GEOS.length){const m=meshMerged(DMOUND_GEOS,MAT.dTurfMesh,scene,0,0,0);m.name='mounds';window._mounds=DMOUND_GEOS.length;DMOUND_GEOS.length=0;}}

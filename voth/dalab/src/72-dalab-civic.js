@@ -84,26 +84,13 @@ function buildDalabEmbassyYuni(G,o){reseed(8531+(o.v|0));const CW=30,CD=26;const
  vB('dEarth',0,0,CD/2-5,3.4,.9,3.4,0,lat);vB('dMosaic',0,.9,CD/2-5,3.6,.3,3.6,0,null);
  for(const sd of[-1,1])vpBannerPole(sd*(CW/2-3),0,CD/2-3,0,6.5,vC(0x7a1e22));
  vnFolk(0,CD/2+6.5,2,1.2);}
-// Republican embassy — PLACEHOLDER. The Republic's highlands style is being built in another session and is not in
-// this repo yet; this stands in with a plain highland reading (dry-stone walls, slate-dark shingle, a jettied timber
-// gallery, a square watch tower, a flag) and is tagged placeholder:true so the layout can swap it when the real set
-// lands. Same footprint and compound as the other embassies.
-function buildDalabEmbassyRepublic(G,o){reseed(8536+(o.v|0));const CW=30,CD=26;const st=vC(0x8a8478),stD=vC(0x6e6a62),wood=vC(0x5a4632),sl=vC(0x4a4e56);
- vnReg('Republican embassy (placeholder)',0,0,12,18,{placeholder:true});dnEmbassyCompound(CW,CD,'Republican embassy');
- const W=13,D=10,H1=3.8,Y0=.5,hz=-2;
- vB('vStone',0,-.05,hz,W+1,Y0+.05,D+1,0,stD);vB('vStone',0,Y0,hz,W,H1,D,0,st);
- // the jettied timber upper storey on brackets, shingle gable
- vB('vWood',0,Y0+H1,hz,W+1.4,.3,D+1.4,0,wood);for(let k=-3;k<=3;k++)for(const sd of[-1,1])vBeam([k*1.8,Y0+H1-.6,hz+sd*D/2],[k*1.8,Y0+H1,hz+sd*(D/2+.7)],.18,wood);
- vnFrame(0,Y0+H1+.3,hz,W+1.2,3.0,D+1.2,0,wood,.16);vB('vPlaster',0,Y0+H1+.3,hz,W+1.0,3.0,D+1.0,0,vC(0xd8d0c0));
- vnGableRoof(0,Y0+H1+3.3,hz,W+1.2,D+1.2,3.0,0,'vGableS',sl,1.0,'vGableW',wood,.3);
- for(const x of[-4.5,-1.5,1.5,4.5])vnWin(x,Y0+H1+1.2,hz+D/2+.6,0,1.0,1.2,'lit','vWood',wood);
- for(const x of[-4,4])vnWin(x,Y0+1.4,hz+D/2,0,.6,1.4,'glass','vStone',st);for(const s of[-1,1])for(const z of[-2.5,2.5])vnWin(s*W/2,Y0+1.4,hz+z,s*Math.PI/2,.6,1.4,'glass','vStone',st);
- vnDoor(0,Y0,hz+D/2,0,1.5,2.5,'vStone',st,vC(0x3a2a1c));vnStairs(0,0,hz+D/2+1.1,0,3,Y0,3,'vStone',st);
- // the watch tower
- {const tx=W/2+2.2,tz=hz-D/2+2.0,TH=11;vB('vStone',tx,0,tz,3.6,TH,3.6,0,st);vB('vStone',tx,TH,tz,4.2,.4,4.2,0,stD);for(let k=0;k<8;k++){const a=k/8*TAU;const p=loc(tx,tz,Math.cos(a)*1.9,Math.sin(a)*1.9,0);vB('vStone',p[0],TH+.4,p[1],.5,.8,.5,0,st);}
-  kput('vPyrSh',[tx,TH+.4,tz],null,[3.0,2.2,3.0],sl);for(let k=0;k<4;k++){const a=k*Math.PI/2;const p=loc(tx,tz,0,1.8,a);vnWin(p[0],TH-3,p[1],a,.4,1.2,'lit','vStone',st);}
-  vnBannerPole(tx,TH+.4,tz+1.4,0,4,vC(0x2a4a8a));}
- vnLampPost(-3,0,hz+D/2+4.6,3.2);vnLampPost(3,0,hz+D/2+4.6,3.2);vnFolk(0,hz+D/2+6.5,2,1.2);}
+// Republican embassy: a Peles villa from the Highlands kit's Republican set (74-rep-dwell.js, vendored), placed inside
+// a Dalab compound through the Highlands' own sub-placer (hnSub), with a Republican flag on the compound's gate posts.
+function buildDalabEmbassyRepublic(G,o){reseed(8536+(o.v|0));const CW=30,CD=26;
+ vnReg('Republican embassy',0,0,12,24);dnEmbassyCompound(CW,CD,'Republican embassy');
+ hnSub('hl_rep_house_rich_a',0,0,-2,0,{v:o.v|0,lit:true});
+ for(const s of[-1,1])vnBannerPole(s*(CW/2-3),0,CD/2-3,0,6.5,vC(0x2a4a8a));
+ vnFolk(0,CD/2+6.5,2,1.2);}
 // the Order of Historians' chapterhouse, ported from the Yuni set through Iziz (76-port-chapterhouse.js, vendored)
 function buildDalabChapterhouse(G,o){reseed(8538+(o.v|0));buildVpChapterhouse(G,o);}
 
@@ -196,6 +183,6 @@ dDef({key:'dalab_barracks',name:"Guard's barracks",family:'civic',tags:{type:['c
 dDef({key:'dalab_embassy_iziz',name:'Izizian embassy',family:'civic',tags:{type:['civic'],wealth:'civic',lit:true,role:'embassy',guest:'iziz'},w:34,d:32,h:15,build:buildDalabEmbassyIziz});
 dDef({key:'dalab_embassy_voth',name:'Vothic embassy',family:'civic',tags:{type:['civic'],wealth:'civic',lit:true,role:'embassy',guest:'voth'},w:34,d:32,h:17,build:buildDalabEmbassyVoth});
 dDef({key:'dalab_embassy_yuni',name:'Yuni embassy',family:'civic',tags:{type:['civic'],wealth:'civic',lit:true,role:'embassy',guest:'yuni'},w:34,d:32,h:18,build:buildDalabEmbassyYuni});
-dDef({key:'dalab_embassy_republic',name:'Republican embassy',family:'civic',tags:{type:['civic'],wealth:'civic',lit:true,role:'embassy',guest:'republic',placeholder:true},w:34,d:32,h:19,build:buildDalabEmbassyRepublic});
+dDef({key:'dalab_embassy_republic',name:'Republican embassy',family:'civic',tags:{type:['civic'],wealth:'civic',lit:true,role:'embassy',guest:'republic'},w:34,d:32,h:25,build:buildDalabEmbassyRepublic});
 dDef({key:'dalab_chapterhouse',name:"Historians' chapterhouse",family:'civic',tags:{culture:'yuni-order',type:['civic','religious'],wealth:'civic',lit:true,role:'chapterhouse'},w:40,d:38,h:22,build:buildDalabChapterhouse});
 dDef({key:'dalab_halls',name:'Halls of Reformation',family:'civic',tags:{type:['civic','religious','industry'],wealth:'civic',lit:true,role:'halls',landmark:true},w:146,d:146,h:32,build:buildDalabHalls});
