@@ -44,7 +44,7 @@ const VIEWS={
  // A SKY TERRACE: on the roofs of the lowest tier, under the overhang of the
  // second, looking along the street in the air to the next fin's trumpet.
  'A sky terrace':         (function(S){const T=S.TIERS[0];
-                            return DRP(S,118,S.F0+1.28*S.BAY,T.yt+1.8).concat(DRP(S,160,S.F0+2.05*S.BAY,T.yt+18));})(DRA),
+                            return DRP(S,98,S.F0+1.25*S.BAY,T.yt+1.8).concat(DRP(S,170,S.F0+1.55*S.BAY,T.yt+22));})(DRA),
  // THE WALLS at a person's height: along a radiating line of monoliths toward
  // the foot, the tower going up out of frame.
  'The court walls':       DRO(DRA,420,DRA.F0+.5*DRA.BAY,11,1.7).concat(DRO(DRA,200,DRA.F0+.5*DRA.BAY,6,40)),
@@ -65,6 +65,7 @@ const VIEWS={
  // where they landed, walls crushed under them.
  'The fallen top':        DRP(DRB,960,DRB.AF-40*DRD,140).concat(DRP(DRB,380,DRB.AF,10)),
  // THE RUINED COURT at a person's height, among the fallen blocks.
- 'The ruined court':      DRP(DRB,430,DRB.AF-.62,1.7).concat(DRP(DRB,300,DRB.AF,20)),
+ 'The ruined court':      (function(S){const E=S.EYE;if(!E)return DRP(S,340,S.AF-.95,1.7).concat(DRP(S,300,S.AF,30));
+                            return[S.x+E.x,1.7,S.z+E.z,S.x+E.tx,140,S.z+E.tz];})(DRB),
  'Ruin from above':       [DRB.x,2700,DRB.z+260,DRB.x,0,DRB.z],
 };
