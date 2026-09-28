@@ -86,7 +86,7 @@ function buildDalabNobleB(G,o){reseed(8211+(o.v|0));const R=8,H=5,Y0=.9;const st
  dnDrum('dReliefDrum',0,Y0+.3,0,R+.08,1.0,st);
  // ring veranda: stone posts carrying a shingle skirt
  {const n=18;for(let k=0;k<n;k++){const a=k/n*TAU;const p=dnOnRing(0,0,R+2.2,a);vPst('vPostS',p[0],Y0,p[1],.22,3.0,st);}
-  kput('dConeSh',[0,Y0+3.0-2.0,0],null,[R+2.9,4.5,R+2.9],sh.clone().multiplyScalar(.9));dnDrum('dStoneDrum',0,Y0+2.9,0,R+2.4,.25,st);}
+  kput('dConeSh',[0,Y0+2.95,0],null,[R+3.0,3.4,R+3.0],sh.clone().multiplyScalar(.9));dnDrum('vWood',0,Y0+2.8,0,R+2.5,.22,wood);}
  for(const a of[.35,-.35]){const p=dnOnRing(0,0,R,a);dnGodLamp(p[0],Y0+3.4,p[1],a);}
  for(const a of[Math.PI*.5,-Math.PI*.5]){const p=dnOnRing(0,0,R+4.4,a);dnBannerPole(p[0],Y0,p[1],a,6.5,dCol(a>0?DPAL.gold:DPAL.red));}
  dnRoundHouse(R+5.6,0,-3.5,2.4,2.3,{roof:'thatch',rise:2.6,door:-.9,band:'paint',wood:dCol(DPAL.woodGrey)});   // the kitchen

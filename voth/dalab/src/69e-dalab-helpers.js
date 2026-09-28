@@ -33,7 +33,7 @@ function dnFirePit(x,y,z,s){for(let k=0;k<7;k++){const a=k/7*TAU;kput('vRock',[x
 
 // ---------------------------------------------------------------- relief, murals, banners, gates, steles
 // Carved band proud of a face; (x,z) ON the face, ry outward. dRelief tiles 1 m cells.
-function dnReliefBand(x,y,z,ry,w,h,c){const f=loc(x,z,0,.07,ry);vB('dRelief',f[0],y,f[1],w,h,.16,ry,c);}
+function dnReliefBand(x,y,z,ry,w,h,c){const f=loc(x,z,0,.1,ry);vB('dRelief',f[0],y,f[1],w,h,.16,ry,c);}
 // Painted frieze on a flat face (2 m tile of avatars and heroes).
 function dnMuralBand(x,y,z,ry,w,h){const f=loc(x,z,0,.04,ry);vB('dMuralB',f[0],y,f[1],w,h,.06,ry);}
 // The same frieze round a drum: flat facets tangent to the wall, one whole tile each.
@@ -91,12 +91,20 @@ function dnMound(x,z,r,rt,h,ry,o){o=o||{};const G=VERN.cur.G;const prof=dnMoundP
  mesh(mk(r,rt,h,prof),MAT.dTurfMesh,G,x,-.05,z);
  if(o.terrace){const T=o.terrace;const pf=dnMoundProfile(T.r,r-2,T.h);mesh(mk(T.r,r-2,T.h,pf),MAT.dTurfMesh,G,x,-.06,z);}
  const stC=o.stoneC||dCol(DPAL.stone);
- // the stair: treads every ~0.85 m of radius from an apron outside the foot to the plateau lip
- {const r0=r+2.5,r1=rt-1.0;const n=Math.round((r0-r1)/.85);const base=o.terrace?0:0;
-  for(let k=0;k<=n;k++){const rho=r0-(r0-r1)*k/n;const yy=(o.terrace&&rho>r?dnMoundProfile(o.terrace.r,r-2,o.terrace.h)(rho):prof(rho))+(o.terrace&&rho<=r?0:0);
-   const p=dnOnRing(x,z,rho,ry);vB('vStone',p[0],Math.max(0,yy-.2),p[1],3.6,.5,1.1,ry,stC);
-   if(k%2===0)for(const s of[-1,1]){const q=loc(x,z,s*2.05,rho,ry);vB('vStone',q[0],Math.max(0,yy-.1),q[1],.5,.7,1.0,ry,stC.clone().multiplyScalar(.9));}}
-  for(const s of[-1,1]){const q=loc(x,z,s*2.6,r0+.8,ry);dnStele(q[0],0,q[1],ry,3.2,stC);const t=loc(x,z,s*2.6,r1-.6,ry);dnStele(t[0],h,t[1],ry,2.6,stC);}
+ // the stair: a continuous ramp of tilted slabs following the profile (so no gaps where the slope is steep), kerb
+ // stringers both sides, treads laid on the ramp every 0.3 m of rise, a landing every ~4 m of rise, steles at foot and top
+ {const r0=r+3.0,r1=rt-1.2;const pf=rho=>(o.terrace&&rho>r?dnMoundProfile(o.terrace.r,r-2,o.terrace.h)(rho):prof(rho));
+  const n=Math.round((r0-r1)/1.2);const W=3.6;
+  for(let k=0;k<n;k++){const ra=r0-(r0-r1)*k/n,rb=r0-(r0-r1)*(k+1)/n;const ya=pf(ra),yb=pf(rb);const L=Math.hypot(ra-rb,yb-ya),a=Math.atan2(yb-ya,ra-rb);
+   const p=dnOnRing(x,z,(ra+rb)/2,ry);const q=vQ(ry,a,0);
+   kput('vStone',[p[0],(ya+yb)/2-.12,p[1]],q,[W,.4,L+.08],stC);
+   for(const sd of[-1,1]){const kp=loc(x,z,sd*(W/2+.2),(ra+rb)/2,ry);kput('vStone',[kp[0],(ya+yb)/2+.18,kp[1]],q,[.42,.6,L+.08],stC.clone().multiplyScalar(.9));}}
+  // treads: horizontal slabs on the ramp surface at every 0.3 m of rise
+  {let yy=.3;let rho=r0;while(yy<h-.05&&rho>r1){while(rho>r1&&pf(rho)<yy)rho-=.05;const p=dnOnRing(x,z,rho,ry);vB('vStone',p[0],yy-.08,p[1],W-.1,.12,.5,ry,stC.clone().multiplyScalar(1.05));yy+=.3;}}
+  // landings every ~4 m of rise
+  for(let yl=4;yl<h-1;yl+=4){let rho=r0;while(rho>r1&&pf(rho)<yl)rho-=.05;const p=dnOnRing(x,z,rho-.6,ry);vB('vStone',p[0],yl-.1,p[1],W+.6,.3,2.0,ry,stC);
+   for(const sd of[-1,1]){const q=loc(x,z,sd*(W/2+.6),rho-.6,ry);vB('vStone',q[0],yl,q[1],.6,1.0,.6,ry,stC);vBall('dGiltBall',q[0],yl+1.1,q[1],.14);}}
+  for(const sd of[-1,1]){const q=loc(x,z,sd*2.8,r0+.8,ry);dnStele(q[0],0,q[1],ry,3.2,stC);const t=loc(x,z,sd*2.8,r1-.6,ry);dnStele(t[0],h,t[1],ry,2.6,stC);}
   const ap=loc(x,z,0,r0+3.2,ry);vnPaving(ap[0],.02,ap[1],7,4,ry,stC,10);}
  return{top:h,prof};}
 // A ring earthwork (the High Priest's wall): a turf bank of width w and height h at radius r, open for gapW at gapRy;
@@ -118,7 +126,7 @@ function dnEarthWall(x,y,z,w,d,ry,h,gate,o){o=o||{};const c=o.c||dCol(DPAL.earth
  if(gate){const L=(w-gate)/2-1.2;seg(-(gate/2+1.2+L/2),d/2,L,0);seg(gate/2+1.2+L/2,d/2,L,0);
   for(const s of[-1,1]){const p=loc(x,z,s*(gate/2+.7),d/2,ry);vB(o.stoneGate?'vStone':'dEarth',p[0],y,p[1],1.4,h+1.3,t+.8,ry,o.stoneGate?dCol(DPAL.stone):c);
    const f=loc(x,z,s*(gate/2+.7),d/2+t/2+.4,ry);dnReliefBand(f[0],y+.5,f[1],ry,1.0,h+.3,o.stoneGate?dCol(DPAL.stone):c);}
-  if(o.lintel!==false){const p=loc(x,z,0,d/2,ry);vB('vWood',p[0],y+h+.9,p[1],gate+2.8,.4,t+.6,ry,dCol(DPAL.wood));}
+  if(o.lintel!==false){const p=loc(x,z,0,d/2,ry);vB('vWood',p[0],y+h+.6,p[1],gate+1.4,.4,t+.3,ry,dCol(DPAL.wood));}
   if(o.relief){for(const s of[-1,1]){const f=loc(x,z,s*(gate/2+1.2+L/2),d/2+t/2+.02,ry);dnReliefBand(f[0],y+h*.45,f[1],ry,L-.6,1.0,c);}}
   if(o.mural){for(const s of[-1,1]){const f=loc(x,z,s*(gate/2+1.2+L/2),d/2+t/2+.02,ry);dnMuralBand(f[0],y+h*.3,f[1],ry,L-.6,Math.min(2,h-.8));}}}
  else seg(0,d/2,w,0);

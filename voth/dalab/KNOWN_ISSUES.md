@@ -24,3 +24,12 @@ saying what fixed it.
       the ground round them (the Ancients kit's standing complaint).
 - [ ] The Ancient lab dome (`../ancients/src/64-dalab.js`) is not in this repo;
       the settlement pass vendors it.
+
+## Round 2
+- [ ] Palace mound: the mound's own stair runs on through the three terrace
+      ranges (they are built over it), so between terraces a short ramp shows
+      and inside them it is buried. Reads as the stair continuing indoors;
+      a proper cut-and-landing per terrace is the fix.
+- [ ] Halls wing pipes cross the court at 6.5 m in straight runs; no supports.
+- [ ] Windmill sails do not turn (the kit has no animation; the life layer's
+      clock can rotate the four sail instances).
