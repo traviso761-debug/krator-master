@@ -115,3 +115,43 @@ a clock tower after the clocktower reference instead; add a Scavengers' Guild.
   system sets it, else the viewer's local time. The painted hands were removed from the clock-face texture.
 * Mural fitting keeps symmetry: a big centred board if it fits, else a mirrored PAIR flanking the axis (either side
   of a door lintel), else a small centred one — never a lone off-centre board.
+
+## Round 6 (Sep 28 2026) — Roketstad, the town (target `roketstad`)
+The first town built from the kit: `python build.py --target roketstad` → `dist/roketstad.html`. Everything lives in
+`targets/roketstad/`; the kit's `src/` is unchanged. Machinery adapted from the Iziz city target (painted canvases for
+albedo / buildable mask / class, the road list and its spatial hash, OBB occupancy, `cityFlat` levelling, the biome host).
+
+- **Place** (`84-rk-geo.js`, `RK`). A 3.4 km square of hilly shelf rising east to the Inner Wall. The town is a walled dome
+  hill (R ≈ 350 m, a lumpy wall with gatehouses N, S and E). The spaceport is a level table 1.3 km east. The far ranges are
+  a shader curtain at 7, 10 and 14 km to the E/NE/SE (`90a`), with rock below a snow line and their own haze.
+- **Layout** (`87`, `88`). Three squares: main (town hall, barracks, mustering ground, watch, Mercenary Guild, inn), market
+  and temple. Main roads join them, and highways run square → gate → country (N, S) or the port (E). A pomerium runs
+  inside the wall. The civic and forge-district plots are reserved first. Then the side streets grow toward unserved
+  ground in long, slightly bent runs until every point is within ~23 m of a street (blocks ≈ 45 m deep).
+- **Rows** (`90b`, Travis: "align walls and rooflines like an organically grown medieval city"). Each street is simplified
+  into straight runs, and each side of a run is built as one row:
+  - front walls on one line 1.1 m behind the kerb, every building square to the street;
+  - party-wall gaps of .2–.7 m, and runs of 2–5 of one house type so eaves and ridges carry through;
+  - where a house will not fit, the smallest houses are tried on the same spot before the row breaks.
+  - Each square gets a closed polygonal ring of shops, taverns and the best houses facing in.
+  - A back-row pass puts a narrower building behind each street front on the same heading (sometimes a third), so
+    blocks read built-through.
+  - Open ground left inside the wall becomes fenced kitchen gardens and orchards.
+- **Reclaimed** (Travis: "predominately reclaimed"). `kitKey()` takes a def's `_reclaimed` twin 78% of the time where
+  the kit has one. Wealthy houses never do (no metal roofs).
+- **Outside the gates.** A straggle along each highway: an inn, shops, workshops and poor houses. The port road is longer
+  and has up to six scrap smithies.
+- **Spaceport.** A pentagon of five Launch Arcology sites at scale .17 (Ancients `buildLaunch`, vendored as
+  `82c-anc-launch.js`). Four are empty pads; vertex 0 (east, against the mountains) is the arcology that never flew,
+  ruined. The Starport (.3) stands in the middle and the fuel centres (.55) in the outer gaps. Also custom tank farms,
+  painted helipads, fenced scrapyards with small scrap smithies, and the Scavengers' Guild where the town road enters.
+  Each Ancient site keeps one label; its parts are `cls:'part'`.
+- **Country.** Farmsteads (farmhouse or farm, pens, granary, the odd windmill) on lanes off the N and S highways, with
+  patchwork fields. A quarry and a mine sit on the eastern hills. The NW-lowlands biome (humid-subtropical fields)
+  forests everything else, at 2.2× the showcase stocking. To pay for that density, tree detail is traded away:
+  hero LOD applies only within ~650 m of the town or the port (`RK.FOREST`, `RK.FOREST_LOD`).
+- **Budget.** ~13 M triangles, ~300 draw calls. Travis allowed up to 15 M. The biggest costs are the forest (~2.5 M), the
+  houses, and the farmsteads. Houses cost ~8–11 k each, which is what caps the density of the blocks.
+- **UI.** An hour slider drives the Krator sky, and through `window.HL_HOUR` every clock in town. There is a Paths overlay
+  (walkable classes) and a Forest toggle. `window._api.town` exposes the statistics (including why frontage placements
+  failed).

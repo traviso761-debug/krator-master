@@ -9296,7 +9296,7 @@ function frontageAlong(pts,roadW,pick,test,st,opt){opt=typeof opt==='number'?{ga
     let o=mk(D),k2=key;
     // does not fit: a smaller house on the same spot before the row gives up here (shallowest first — the usual
     // obstacle is the street or the building behind)
-    if(!fits(o)){o=null;if(opt.fallback!==false)for(const alt of ROW_FALLBACK){const kk=kitKey(alt),DD=VERN.defs[kk];if(!DD||s+DD.w>L+.5)continue;const q=mk(DD);if(fits(q)){o=q;k2=kk;break;}}}
+    if(!fits(o)){o=null;if(opt.fallback!==false)for(const alt of ROW_FALLBACK.slice().sort(()=>rng()-.5)){const kk=kitKey(alt),DD=VERN.defs[kk];if(!DD||s+DD.w>L+.5)continue;const q=mk(DD);if(fits(q)){o=q;k2=kk;break;}}}
     if(!o){s+=2;run=null;}
     else{const key=k2,D=VERN.defs[k2];const v=run.pk.v==null?undefined:(run.pk.v+run.left)%6;placeVern(key,o,{v});o.row=opt.back!==false;ROWFRONTS.push(o);st.placed++;run.left--;
      // a row closes up (party walls), a lane or a yard opens now and then; out in the suburbs the rows loosen
