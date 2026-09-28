@@ -41,10 +41,10 @@ function placeSettlement(S){reseed(SEED_CITY+10+SETTLE.indexOf(S));const P=S.pla
   for(let i=0;i<3;i++)at('dalab_market_small',back+Math.PI+(i-1)*1.6,300,{R:120});
   for(let i=0;i<4;i++)at('dalab_workshop',back+Math.PI+(i-1.5)*.5,200,{R:120});for(let i=0;i<3;i++)at(TRADE[i+2],back+Math.PI+(i-1)*.7,340,{R:140});for(let i=0;i<3;i++)at('dalab_granaries',back+(i-1)*.6,260,{R:120});}
  // the frontage: peasant houses, with trade along the radials near the plaza; count target 15-20 (x3)
- const target=(S.main?66:18)+Math.floor(rng()*3);let n=0;
+ const target=(S.main?84:18)+Math.floor(rng()*3);let n=0;
  const streets=ROADS.filter(own).sort((a,b)=>(a.zone.indexOf('radial')>=0?0:1)-(b.zone.indexOf('radial')>=0?0:1));
  const pick=(t,side)=>{const r=rng();if(t<.35&&r<.28)return vPick(TRADE);if(r<.08)return 'dalab_compound';return vPick(HUTS);};
- for(const R of streets){if(n>=target)break;n+=frontage(R,S.main?26:19,3,pick,target-n,{settle:S.key});}
+ for(const R of streets){if(n>=target)break;n+=frontage(R,S.main?21:16,3,pick,target-n,{settle:S.key});}
  // if the streets are full and the count is short, the lanes and the mound lane take the rest
  if(n<target)for(const R of ROADS.filter(r=>r.zone&&(r.zone===S.key+':farmlane'||r.zone===S.key+':moundlane'))){if(n>=target)break;n+=frontage(R,22,3,()=>vPick(HUTS),target-n,{settle:S.key});}
  S.houses=n;return n;}
@@ -55,7 +55,7 @@ for(const S of SETTLE)placeSettlement(S);
 // bridges
 for(const b of BRIDGES)dnBridge(b);
 // ---------------------------------------------------------------- the audit: anything on a street or overlapping another (should be 0)
-(function audit(){let onRoad=0,overlap=0;const who=[];for(const P of PLACED){const o=P.o;if(o.built==='dalab_lab')continue;if(/mound/.test(o.built)){const r=VERN.defs[o.built].w/2-8;for(let k=0;k<16;k++){const a=k/16*TAU;if(isRoad(o.x+Math.cos(a)*r,o.z+Math.sin(a)*r)){onRoad++;who.push(o.built+'@'+Math.round(o.x)+','+Math.round(o.z));break;}}continue;}const c=obbCorners(o,-1);for(const p of c)if(isRoad(p[0],p[1])){onRoad++;who.push(o.built+'@'+Math.round(o.x)+','+Math.round(o.z));break;}
+(function audit(){let onRoad=0,overlap=0;const who=[];for(const P of PLACED){const o=P.o;if(o.built==='dalab_lab')continue;const ROUND={dalab_halls:66,dalab_priest_compound:21,dalab_market_small:12,dalab_market_large:30};if(/mound/.test(o.built)||ROUND[o.built]){const r=ROUND[o.built]||VERN.defs[o.built].w/2-8;for(let k=0;k<16;k++){const a=k/16*TAU;if(isRoad(o.x+Math.cos(a)*r,o.z+Math.sin(a)*r)){onRoad++;who.push(o.built+'@'+Math.round(o.x)+','+Math.round(o.z));break;}}continue;}const c=obbCorners(o,-1);for(const p of c)if(isRoad(p[0],p[1])){onRoad++;who.push(o.built+'@'+Math.round(o.x)+','+Math.round(o.z));break;}
   for(const Q of PLACED){if(Q===P||Q.o.built==='dalab_lab')continue;if(obbOverlap(o,Q.o,-1)){overlap++;break;}}}
  window._audit={placed:PLACED.length,onRoad,overlap,who:who.slice(0,8)};})();
 window._registered=REG.length;
@@ -72,7 +72,7 @@ BIO.host.mask=bioMaskFn;BIO.host.origin=ORIGINS;BIO.host.center=[0,-120];
 BIO.host.fields={wet:(x,z)=>riverD(x,z)<120?.9:.58,tropic:(x,z)=>.32,dry:(x,z)=>.22,salt:(x,z)=>0,flow:(x,z)=>riverD(x,z)<70?1-riverD(x,z)/70:(channelD(x,z).d<14?.5:0),upland:(x,z)=>.15};
 BIO.setScene(scene);
 (function lowlands(){const q=CITY.QUALITY;const t0=performance.now();let T={};
- BIO.cur='lowlands/trees';try{T=SWLOW.build({R:CITY.WORLD*.72,quality:q,avenues:[{path:AVENUE,spacing:24,offset:13,species:'sprawloak'}],groves:[{center:[SETTLE[0].x+300,SETTLE[0].z],r:70,spacing:16,species:'corkoak',stripped:true}]});}catch(e){reportErr('lowlands: '+e.stack);}
+ BIO.cur='lowlands/trees';try{T=SWLOW.build({R:CITY.WORLD*.72,quality:q,avenues:OAK_ROADS().map(P=>({path:P,spacing:24,offset:P===AVENUE?13:11,species:'sprawloak'})),groves:[{center:[SETTLE[0].x+300,SETTLE[0].z],r:70,spacing:16,species:'corkoak',stripped:true}]});}catch(e){reportErr('lowlands: '+e.stack);}
  BIO.cur=null;window._biome={trees:T.trees,avenue:T.avenue,grove:T.grove,heroes:T.heroes,far:T.far,ms:Math.round(performance.now()-t0)};})();
 cityTerrainMesh();
 kbake(scene);

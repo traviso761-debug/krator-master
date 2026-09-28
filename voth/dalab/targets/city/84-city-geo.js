@@ -22,7 +22,7 @@ function angDiff(a,b){let d=Math.abs(a-b)%TAU;return d>Math.PI?TAU-d:d;}
 const SETTLE=[];
 (function(){const L=CITY.LAB;
  for(let k=0;k<6;k++){const a=k/6*TAU+Math.PI/6;const x=CITY.RING_C[0]+Math.cos(a)*CITY.RING,z=CITY.RING_C[1]+Math.sin(a)*CITY.RING;
-  SETTLE.push({key:'town'+(k+1),name:['Ashfold','Greenmarch','Reedholm','Oakhaven','Cornwell','Stonebrook'][k],x,z,r:190,main:false,face:Math.atan2(L.x-x,L.z-z),plazaR:34,moundR:30,streets:6,ringR:96});}
+  SETTLE.push({key:'town'+(k+1),name:['Ashfold','Greenmarch','Reedholm','Oakhaven','Cornwell','Stonebrook'][k],x,z,r:170,main:false,face:Math.atan2(L.x-x,L.z-z),plazaR:30,moundR:30,streets:6,ringR:74});}
  // the main settlement: 3x; its mound faces the lab (north); the palace mound is the High Priest's seat here
  SETTLE.push({key:'main',name:'Dalab',x:CITY.MAIN.x,z:CITY.MAIN.z,r:CITY.MAIN.r,main:true,face:Math.atan2(L.x-CITY.MAIN.x,L.z-CITY.MAIN.z),plazaR:64,moundR:42,streets:8,ringR:210,ringR2:360});
 })();

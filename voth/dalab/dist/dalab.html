@@ -4456,7 +4456,7 @@ function angDiff(a,b){let d=Math.abs(a-b)%TAU;return d>Math.PI?TAU-d:d;}
 const SETTLE=[];
 (function(){const L=CITY.LAB;
  for(let k=0;k<6;k++){const a=k/6*TAU+Math.PI/6;const x=CITY.RING_C[0]+Math.cos(a)*CITY.RING,z=CITY.RING_C[1]+Math.sin(a)*CITY.RING;
-  SETTLE.push({key:'town'+(k+1),name:['Ashfold','Greenmarch','Reedholm','Oakhaven','Cornwell','Stonebrook'][k],x,z,r:190,main:false,face:Math.atan2(L.x-x,L.z-z),plazaR:34,moundR:30,streets:6,ringR:96});}
+  SETTLE.push({key:'town'+(k+1),name:['Ashfold','Greenmarch','Reedholm','Oakhaven','Cornwell','Stonebrook'][k],x,z,r:170,main:false,face:Math.atan2(L.x-x,L.z-z),plazaR:30,moundR:30,streets:6,ringR:74});}
  // the main settlement: 3x; its mound faces the lab (north); the palace mound is the High Priest's seat here
  SETTLE.push({key:'main',name:'Dalab',x:CITY.MAIN.x,z:CITY.MAIN.z,r:CITY.MAIN.r,main:true,face:Math.atan2(L.x-CITY.MAIN.x,L.z-CITY.MAIN.z),plazaR:64,moundR:42,streets:8,ringR:210,ringR2:360});
 })();
@@ -6529,15 +6529,18 @@ for(const S of SETTLE){
  disc(pc[0],pc[1],S.plazaR,'plaza');precinct(pc[0],pc[1],S.plazaR-2,S.name+' plaza');
  // radials from the plaza centre, skipping the mound's bearing; the first pair frame the mound
  S.radials=[];const n=S.streets;const back=Math.atan2(S.x-pc[0],S.z-pc[1]);   // bearing toward the mound (as ry: dir = sin,cos)
- for(let k=0;k<n;k++){const a=back+Math.PI+(k/n)*TAU;if(angDiff(a,back)<.45)continue;const L=S.main?420:140;
+ for(let k=0;k<n;k++){const a=back+Math.PI+(k/n)*TAU;if(angDiff(a,back)<.45)continue;const L=S.main?420:118;
   const pts=[[pc[0]+Math.sin(a)*(S.plazaR-2),pc[1]+Math.cos(a)*(S.plazaR-2)],[pc[0]+Math.sin(a)*L,pc[1]+Math.cos(a)*L]];
   road(pts,S.main?CITY.STREET_W+2:CITY.STREET_W,KL.street,{zone:S.key+':radial'});S.radials.push({a,L,pts});}
  // ring street(s) round the plaza
- const ring=(R,w)=>{const pts=[];for(let i=0;i<=48;i++){const a=i/48*TAU;pts.push([pc[0]+Math.sin(a)*R,pc[1]+Math.cos(a)*R]);}road(pts,w,KL.lane,{zone:S.key+':ring'});};
+ // a ring is painted in runs that skip a precinct (the outlying plaza ring would otherwise cut through the mound's foot)
+ const ringClipped=(cx,cz,R,w,zone,skip)=>{let run=[];const flush=()=>{if(run.length>1)road(run,w,KL.lane,{zone});run=[];};
+  for(let i=0;i<=72;i++){const a=i/72*TAU;const p=[cx+Math.sin(a)*R,cz+Math.cos(a)*R];if(skip(p[0],p[1]))flush();else run.push(p);}flush();};
+ const ring=(R,w)=>ringClipped(pc[0],pc[1],R,w,S.key+':ring',(x,z)=>Math.hypot(x-S.x,z-S.z)<S.moundR+12);
  ring(S.ringR,CITY.LANE_W);if(S.ringR2)ring(S.ringR2,CITY.LANE_W);
  // a lane round the back of the mound so the houses behind it connect
- {const R=S.moundR+22;const pts=[];for(let i=0;i<=24;i++){const a=back+Math.PI/2+i/24*Math.PI;pts.push([S.x+Math.sin(a)*R,S.z+Math.cos(a)*R]);}road(pts,CITY.LANE_W,KL.lane,{zone:S.key+':moundlane'});
-  connectRoad(pts[0][0],pts[0][1],CITY.LANE_W,KL.lane,r=>r.zone&&r.zone.indexOf(S.key)===0&&r.zone.indexOf('moundlane')<0);connectRoad(pts[24][0],pts[24][1],CITY.LANE_W,KL.lane,r=>r.zone&&r.zone.indexOf(S.key)===0&&r.zone.indexOf('moundlane')<0);}
+ // (a full ring: it meets the plaza in front of the mound, so it needs no connectors that could cut the mound's foot)
+ ringClipped(S.x,S.z,S.moundR+22,CITY.LANE_W,S.key+':moundlane',(x,z)=>Math.hypot(x-pc[0],z-pc[1])<S.plazaR+2);
 }
 // ---- 2. the highway circuit through the outlying plazas, and the four spurs off the map ----
 {const T=SETTLE.filter(S=>!S.main);const pts=T.map(S=>[S.plaza.x,S.plaza.z]);pts.push(pts[0]);
@@ -6547,8 +6550,10 @@ for(const S of SETTLE){
  // spurs: from the circuit's nearest point to each map edge
  const E=CITY.WORLD/2+80;for(const dir of[[0,-1],[1,0],[0,1],[-1,0]]){const far=[CITY.RING_C[0]+dir[0]*E,CITY.RING_C[1]+dir[1]*E];const n=nearestRoadPt(far[0],far[1],r=>r.zone==='highway');road([[n.x,n.z],far],CITY.HIGHWAY_W,KL.highway,{zone:'spur'});}
  // the main settlement joins the circuit by its three outward radials, extended
- const M=SETTLE.find(S=>S.main);for(const R of M.radials){if(angDiff(R.a,M.face)<1.2)continue;const e=R.pts[1];const n=nearestRoadPt(e[0],e[1],r=>r.zone==='highway');if(n&&n.d<900)road([e,[n.x,n.z]],CITY.STREET_W+2,KL.street,{zone:'main:link'});}
+ const M=SETTLE.find(S=>S.main);for(const R of M.radials){if(angDiff(R.a,M.face)<1.2)continue;const e=R.pts[1];const n=nearestRoadPt(e[0],e[1],r=>r.zone==='highway');if(n&&n.d<900)road([e,[n.x,n.z]],CITY.STREET_W+4,KL.avenue,{zone:'main:link'});}
  window._highwayPts=P.length;}
+// the oak vaults (Travis, round 7): the lab avenue and every road out of the main settlement to the circuit, planted by the biome
+const OAK_ROADS=()=>ROADS.filter(r=>r.zone==='main:link').map(r=>r.pts).concat([AVENUE]);
 // ---- 3. the avenue: lab gate to the main plaza, a live-oak vault (the biome plants the oaks along AVENUE) ----
 const M0=SETTLE.find(S=>S.main);
 const LAB_GATE=[CITY.LAB.x,CITY.LAB.z+292*4.105*CITY.LAB.scale];   // the compound wall's south point
@@ -6568,15 +6573,17 @@ const FIELDS=[];
     if(!ok)continue;field(pts,(ci+Math.round(r/80))%CROPCOL.length,(a0+a1)/2);FIELDS.push({pts,S:S.key,cx:pts.reduce((s,p)=>s+p[0],0)/4,cz:pts.reduce((s,p)=>s+p[1],0)/4});}}}
  window._fields=FIELDS.length;})();
 // farm lanes: every other wedge boundary gets a lane from the ring street out to the fields' edge (the farm workers' way)
-for(const S of SETTLE){const n=S.main?18:12;for(let i=0;i<n;i+=2){const a=i/n*TAU;const R0=S.ringR+4,R1=(S.main?S.r+300:S.r+210);
+// (a lane never runs at the mound, and stops at the first precinct — another mound, the lab — it would enter)
+for(const S of SETTLE){const n=S.main?18:12;const back=Math.atan2(S.x-S.plaza.x,S.z-S.plaza.z);for(let i=0;i<n;i+=2){const a=i/n*TAU;if(angDiff(a,back)<.55)continue;const R0=S.ringR+4;let R1=(S.main?S.r+300:S.r+210);
+ for(let r=R0;r<R1;r+=6){if(inPrecinct(S.plaza.x+Math.sin(a)*r,S.plaza.z+Math.cos(a)*r,10)){R1=r-6;break;}}if(R1-R0<30)continue;
  road([[S.plaza.x+Math.sin(a)*R0,S.plaza.z+Math.cos(a)*R0],[S.plaza.x+Math.sin(a)*R1,S.plaza.z+Math.cos(a)*R1]],CITY.LANE_W,KL.lane,{zone:S.key+':farmlane'});}}
 // ---- 5. the connectivity pass: one network. Components by endpoint proximity; each minor component gets a link to the largest ----
 function roadComponents(){const N=ROADS.length,par=[];for(let i=0;i<N;i++)par[i]=i;const find=i=>par[i]===i?i:(par[i]=find(par[i]));const uni=(a,b)=>{par[find(a)]=find(b);};
  for(let i=0;i<N;i++){const A=ROADS[i];for(const e of[A.pts[0],A.pts[A.pts.length-1]]){for(let j=0;j<N;j++){if(i===j)continue;const B=ROADS[j];for(let k=0;k<B.pts.length-1;k++){if(segD(e[0],e[1],B.pts[k],B.pts[k+1])<(A.w+B.w)/2+1.5){uni(i,j);break;}}}}}
  const comp={};for(let i=0;i<N;i++){const c=find(i);(comp[c]||(comp[c]=[])).push(i);}return Object.values(comp);}
 (function connectAll(){let guard=0;while(guard++<12){const C=roadComponents();if(C.length<=1){window._roadComponents=1;return;}C.sort((a,b)=>b.length-a.length);const main=new Set(C[0]);
- for(let ci=1;ci<C.length;ci++){let best=null;for(const ri of C[ci]){for(const p of ROADS[ri].pts){const n=nearestRoadPt(p[0],p[1],r=>main.has(r.id));if(n&&(!best||n.d<best.d))best={p,n};}}
-  if(best)road([best.p,[best.n.x,best.n.z]],CITY.LANE_W,KL.lane,{zone:'connect'});}}
+ for(let ci=1;ci<C.length;ci++){let best=null;for(const ri of C[ci]){for(const p of ROADS[ri].pts){const n=nearestRoadPt(p[0],p[1],r=>main.has(r.id));if(!n)continue;let clear=true;for(let t=0;t<=1;t+=.05){if(inPrecinct(p[0]+(n.x-p[0])*t,p[1]+(n.z-p[1])*t,4)){clear=false;break;}}if(clear&&(!best||n.d<best.d))best={p,n};}}
+  if(best)road([best.p,[best.n.x,best.n.z]],CITY.LANE_W,KL.lane,{zone:'connect'});else{const ri=C[ci][0];const p=ROADS[ri].pts[0];const n=nearestRoadPt(p[0],p[1],r=>main.has(r.id));if(n)road([p,[n.x,n.z]],CITY.LANE_W,KL.lane,{zone:'connect'});}}}
  window._roadComponents=roadComponents().length;})();
 // bridges wherever a road crosses a channel (painted as planks over the water)
 (function bridges(){for(const R of ROADS){for(let i=0;i<R.pts.length-1;i++){const a=R.pts[i],b=R.pts[i+1];const L=Math.hypot(b[0]-a[0],b[1]-a[1]);const n=Math.max(2,Math.ceil(L/6));
@@ -6621,7 +6628,7 @@ function placeDef(key,o,opt){opt=opt||{};const D=VERN.defs[key];if(!D){reportErr
  if(opt.landmark){LANDMARKS.push({name:opt.landmark,x:o.x,z:o.z});let best=null;for(let i=r0;i<REG.length;i++){const r=REG[i];if(!best||r.r>best.r)best=r;}if(best){best.tags=Object.assign({},best.tags,{landmark:true});best.name=opt.landmark;}}
  return G;}
 // place near a target, facing the nearest street (ANTI-OVERLAP: spiral out until free); returns the OBB or null
-function placeNear(key,tx,tz,opt){opt=opt||{};const D=VERN.defs[key];if(!D)return null;const sc=opt.scale||1;const o=findSpot(D.w/2*sc+(opt.grow||1),D.d/2*sc+(opt.grow||1),tx,tz,{R:opt.R||120,step:opt.step||9,ry:opt.ry,filter:opt.filter,pad:opt.pad,ppad:opt.ppad});
+function placeNear(key,tx,tz,opt){opt=opt||{};const D=VERN.defs[key];if(!D)return null;const sc=opt.scale||1;const o=findSpot(D.w/2*sc+(opt.grow||1),D.d/2*sc+(opt.grow||1),tx,tz,{R:opt.R||120,step:opt.step||9,ry:opt.ry,filter:opt.filter,pad:opt.pad,ppad:opt.ppad,ignoreMask:opt.ignoreMask,ignorePrecinct:opt.ignorePrecinct});
  if(!o)return null;o.hx=D.w/2*sc;o.hz=D.d/2*sc;placeDef(key,o,opt);return o;}
 // the FRONTAGE WALKER: along a road, every `pitch` metres, a lot on each side set back `setback` from the edge; the
 // plot faces the road; picks a key from `pick(t,side)`; stops when `max` placed. Returns the count.
@@ -6760,10 +6767,10 @@ function placeSettlement(S){reseed(SEED_CITY+10+SETTLE.indexOf(S));const P=S.pla
   for(let i=0;i<3;i++)at('dalab_market_small',back+Math.PI+(i-1)*1.6,300,{R:120});
   for(let i=0;i<4;i++)at('dalab_workshop',back+Math.PI+(i-1.5)*.5,200,{R:120});for(let i=0;i<3;i++)at(TRADE[i+2],back+Math.PI+(i-1)*.7,340,{R:140});for(let i=0;i<3;i++)at('dalab_granaries',back+(i-1)*.6,260,{R:120});}
  // the frontage: peasant houses, with trade along the radials near the plaza; count target 15-20 (x3)
- const target=(S.main?66:18)+Math.floor(rng()*3);let n=0;
+ const target=(S.main?84:18)+Math.floor(rng()*3);let n=0;
  const streets=ROADS.filter(own).sort((a,b)=>(a.zone.indexOf('radial')>=0?0:1)-(b.zone.indexOf('radial')>=0?0:1));
  const pick=(t,side)=>{const r=rng();if(t<.35&&r<.28)return vPick(TRADE);if(r<.08)return 'dalab_compound';return vPick(HUTS);};
- for(const R of streets){if(n>=target)break;n+=frontage(R,S.main?26:19,3,pick,target-n,{settle:S.key});}
+ for(const R of streets){if(n>=target)break;n+=frontage(R,S.main?21:16,3,pick,target-n,{settle:S.key});}
  // if the streets are full and the count is short, the lanes and the mound lane take the rest
  if(n<target)for(const R of ROADS.filter(r=>r.zone&&(r.zone===S.key+':farmlane'||r.zone===S.key+':moundlane'))){if(n>=target)break;n+=frontage(R,22,3,()=>vPick(HUTS),target-n,{settle:S.key});}
  S.houses=n;return n;}
@@ -6774,7 +6781,7 @@ for(const S of SETTLE)placeSettlement(S);
 // bridges
 for(const b of BRIDGES)dnBridge(b);
 // ---------------------------------------------------------------- the audit: anything on a street or overlapping another (should be 0)
-(function audit(){let onRoad=0,overlap=0;const who=[];for(const P of PLACED){const o=P.o;if(o.built==='dalab_lab')continue;if(/mound/.test(o.built)){const r=VERN.defs[o.built].w/2-8;for(let k=0;k<16;k++){const a=k/16*TAU;if(isRoad(o.x+Math.cos(a)*r,o.z+Math.sin(a)*r)){onRoad++;who.push(o.built+'@'+Math.round(o.x)+','+Math.round(o.z));break;}}continue;}const c=obbCorners(o,-1);for(const p of c)if(isRoad(p[0],p[1])){onRoad++;who.push(o.built+'@'+Math.round(o.x)+','+Math.round(o.z));break;}
+(function audit(){let onRoad=0,overlap=0;const who=[];for(const P of PLACED){const o=P.o;if(o.built==='dalab_lab')continue;const ROUND={dalab_halls:66,dalab_priest_compound:21,dalab_market_small:12,dalab_market_large:30};if(/mound/.test(o.built)||ROUND[o.built]){const r=ROUND[o.built]||VERN.defs[o.built].w/2-8;for(let k=0;k<16;k++){const a=k/16*TAU;if(isRoad(o.x+Math.cos(a)*r,o.z+Math.sin(a)*r)){onRoad++;who.push(o.built+'@'+Math.round(o.x)+','+Math.round(o.z));break;}}continue;}const c=obbCorners(o,-1);for(const p of c)if(isRoad(p[0],p[1])){onRoad++;who.push(o.built+'@'+Math.round(o.x)+','+Math.round(o.z));break;}
   for(const Q of PLACED){if(Q===P||Q.o.built==='dalab_lab')continue;if(obbOverlap(o,Q.o,-1)){overlap++;break;}}}
  window._audit={placed:PLACED.length,onRoad,overlap,who:who.slice(0,8)};})();
 window._registered=REG.length;
@@ -6791,7 +6798,7 @@ BIO.host.mask=bioMaskFn;BIO.host.origin=ORIGINS;BIO.host.center=[0,-120];
 BIO.host.fields={wet:(x,z)=>riverD(x,z)<120?.9:.58,tropic:(x,z)=>.32,dry:(x,z)=>.22,salt:(x,z)=>0,flow:(x,z)=>riverD(x,z)<70?1-riverD(x,z)/70:(channelD(x,z).d<14?.5:0),upland:(x,z)=>.15};
 BIO.setScene(scene);
 (function lowlands(){const q=CITY.QUALITY;const t0=performance.now();let T={};
- BIO.cur='lowlands/trees';try{T=SWLOW.build({R:CITY.WORLD*.72,quality:q,avenues:[{path:AVENUE,spacing:24,offset:13,species:'sprawloak'}],groves:[{center:[SETTLE[0].x+300,SETTLE[0].z],r:70,spacing:16,species:'corkoak',stripped:true}]});}catch(e){reportErr('lowlands: '+e.stack);}
+ BIO.cur='lowlands/trees';try{T=SWLOW.build({R:CITY.WORLD*.72,quality:q,avenues:OAK_ROADS().map(P=>({path:P,spacing:24,offset:P===AVENUE?13:11,species:'sprawloak'})),groves:[{center:[SETTLE[0].x+300,SETTLE[0].z],r:70,spacing:16,species:'corkoak',stripped:true}]});}catch(e){reportErr('lowlands: '+e.stack);}
  BIO.cur=null;window._biome={trees:T.trees,avenue:T.avenue,grove:T.grove,heroes:T.heroes,far:T.far,ms:Math.round(performance.now()-t0)};})();
 cityTerrainMesh();
 kbake(scene);
@@ -6829,7 +6836,7 @@ const VIEWS={
  'Opening — the avenue':[AVENUE[2][0]-40,26,AVENUE[2][1]+70,AVENUE[1][0],40,AVENUE[1][1]-200],
  'Overview':[0,2400,1900,0,0,-100],
  'The lab from the avenue':[AVENUE[2][0]+60,44,AVENUE[2][1]-20,LAB_GATE[0],90,LAB_GATE[1]-260],
- 'The lab gate':[LAB_GATE[0]-30,8,LAB_GATE[1]+120,LAB_GATE[0],40,LAB_GATE[1]-100],
+ 'The lab gate':[LAB_GATE[0]+2,2.6,LAB_GATE[1]+230,LAB_GATE[0],36,LAB_GATE[1]-120],
  "High Priest's mound":[HIGH_MOUND.x+60,40,HIGH_MOUND.z+220,HIGH_MOUND.x,20,HIGH_MOUND.z],
  'Main plaza':[M_.plaza.x-90,50,M_.plaza.z+160,M_.plaza.x,6,M_.plaza.z],
  'Main plaza — eye level':[M_.plaza.x+20,1.7,M_.plaza.z+58,M_.plaza.x,4,M_.plaza.z-40],
@@ -6838,7 +6845,7 @@ const VIEWS={
  'Main settlement — a street':(()=>{const R=M_.radials[2];const a=R.a;return[M_.plaza.x+Math.sin(a)*(M_.plazaR+30),1.7,M_.plaza.z+Math.cos(a)*(M_.plazaR+30),M_.plaza.x+Math.sin(a)*(M_.plazaR+180),3,M_.plaza.z+Math.cos(a)*(M_.plazaR+180)];})(),
  'The Halls and the ranch':[M_.x+300,260,M_.z+700,M_.x+100,0,M_.z+250],
  'Ashfold — overview':[T1.x-260,200,T1.z+380,T1.x,0,T1.z],
- 'Ashfold — the plaza':[T1.plaza.x-Math.sin(T1.face)*20,1.7,T1.plaza.z-Math.cos(T1.face)*20,T1.x,14,T1.z],
+ 'Ashfold — the plaza':[T1.plaza.x-Math.sin(T1.face)*22+Math.cos(T1.face)*6,1.7,T1.plaza.z-Math.cos(T1.face)*22-Math.sin(T1.face)*6,T1.x,14,T1.z],
  'Ashfold — a street':(()=>{const R=T1.radials[1];const a=R.a;return[T1.plaza.x+Math.sin(a)*(T1.plazaR+10),1.7,T1.plaza.z+Math.cos(a)*(T1.plazaR+10),T1.plaza.x+Math.sin(a)*(T1.plazaR+120),3,T1.plaza.z+Math.cos(a)*(T1.plazaR+120)];})(),
  'Oakhaven — overview':[T4.x+260,200,T4.z+380,T4.x,0,T4.z],
  'The highway':[T1.x+200,30,T1.z+300,T1.x+600,8,T1.z+500],
