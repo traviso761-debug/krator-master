@@ -90,7 +90,7 @@ function hlMirror(g,w,h,cx,fn){g.save();fn(g);g.restore();g.save();g.translate(2
 function hlCedar(g,w,h,base,vert){g.fillStyle=base||HFORM.cedar;g.fillRect(0,0,w,h);const id=g.getImageData(0,0,w,h),d=id.data;
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;const n=vert?fbm(x/2.5,y/40,3.3,2):fbm(x/40,y/2.5,3.3,2);const k=.82+n*.34;d[i]*=k;d[i+1]*=k;d[i+2]*=k;}
  g.putImageData(id,0,0);}
-// A crest face: the core of every panel, pole and mask. o: {beak, teeth, ears, tongue, socket, brow, cheek}
+// A crest face (human/spirit). NOT used by default (Travis: too creepy) — kept for specific buildings later. o: {beak, teeth, ears, tongue, socket, brow, cheek}
 function hlFace(g,cx,cy,W,H,o){o=o||{};const S=W/2;
  hlMirror(g,W,H,cx,g=>{
   // head outline: heavy black formline around the face, open at the chin
@@ -119,34 +119,72 @@ function hlFace(g,cx,cy,W,H,o){o=o||{};const S=W/2;
  if(o.teeth!==false){g.fillStyle=HFORM.white;const n=6;for(let k=0;k<n;k++){const tx=cx-mw*.42+mw*.84*(k+.5)/n;g.fillRect(tx-mw*.05,my-H*.045,mw*.1,H*.03);g.fillRect(tx-mw*.05,my+H*.015,mw*.1,H*.03);}}
  if(o.tongue){g.beginPath();g.moveTo(cx-S*.06,my);g.quadraticCurveTo(cx,my+H*.22,cx+S*.06,my);g.fillStyle=HFORM.red;g.fill();}}
 
+// ---------------------------------------------------------------- the animals (the kit's default subjects)
+// Travis, round 1: the crest FACE (hlFace) read as creepy; the default carving is naturalistic animals in
+// formline — salmon, orca, thunderbird, and on the poles eagle, bear and frog. hlFace stays in the kit for
+// buildings that later ask for a specific (human/spirit) depiction; nothing uses it by default.
+// Each animal draws in its own unit box (the numbers below), placed with hlIn(g,x,y,w,h, fn).
+function hlIn(g,x,y,w,h,uw,uh,fn){g.save();g.translate(x,y);g.scale(w/uw,h/uh);fn(g);g.restore();}
+function hlFill(g,col){g.fillStyle=col;g.fill();}
+function hlLine(g,col,lw){g.lineWidth=lw;g.strokeStyle=col;g.lineJoin='round';g.stroke();}
+// SALMON in profile facing +x, box 200 x 80: red body, black formline, teal gill ovoid
+function hlSalmon(g){g.beginPath();g.moveTo(192,40);g.bezierCurveTo(172,14,96,8,44,28);g.lineTo(10,12);g.quadraticCurveTo(20,40,10,68);g.lineTo(44,52);g.bezierCurveTo(96,72,172,66,192,40);g.closePath();
+ hlFill(g,HFORM.red);hlLine(g,HFORM.black,5);
+ g.beginPath();g.moveTo(96,16);g.quadraticCurveTo(104,2,122,6);g.quadraticCurveTo(116,12,118,17);hlFill(g,HFORM.black);          // dorsal fin
+ g.beginPath();g.moveTo(104,62);g.quadraticCurveTo(110,76,126,74);g.quadraticCurveTo(120,68,122,61);hlFill(g,HFORM.black);        // ventral fin
+ hlOvoid(g,160,40,34,34,HFORM.black,HFORM.teal,5);hlOvoid(g,168,34,14,11,HFORM.black,HFORM.white,3);hlOvoid(g,169,35,6,5,null,HFORM.black);   // gill + eye
+ g.beginPath();g.moveTo(192,40);g.lineTo(178,44);hlLine(g,HFORM.black,3);                                                          // mouth
+ hlUForm(g,120,34,22,22,HFORM.black,5);hlUForm(g,90,36,20,20,HFORM.black,5);hlOvoid(g,62,40,16,12,HFORM.black,HFORM.teal,3);    // body formline
+ hlSplitU(g,26,40,14,30,HFORM.black,5);}                                                                                           // tail
+// ORCA in profile facing +x, box 200 x 100: black body, white belly and eye patch, tall dorsal fin, red formline
+function hlOrca(g){g.beginPath();g.moveTo(196,58);g.bezierCurveTo(186,36,150,30,110,32);g.bezierCurveTo(76,34,46,40,30,50);
+ g.quadraticCurveTo(16,40,4,30);g.quadraticCurveTo(12,52,6,74);g.quadraticCurveTo(18,64,32,58);g.bezierCurveTo(62,72,120,80,160,72);g.bezierCurveTo(180,68,192,64,196,58);g.closePath();hlFill(g,HFORM.black);
+ g.beginPath();g.moveTo(98,34);g.quadraticCurveTo(90,16,84,2);g.quadraticCurveTo(108,12,122,32);hlFill(g,HFORM.black);          // dorsal fin
+ g.beginPath();g.ellipse(142,68,32,6,.05,0,TAU);hlFill(g,HFORM.white);g.beginPath();g.ellipse(160,45,10,4,-.1,0,TAU);hlFill(g,HFORM.white);
+ hlOvoid(g,176,49,10,8,null,HFORM.white);hlOvoid(g,177,50,5,4,null,HFORM.black);                                                   // eye
+ g.beginPath();g.moveTo(196,58);g.quadraticCurveTo(186,62,172,60);hlLine(g,HFORM.red,3);                                          // mouth
+ g.beginPath();g.moveTo(140,68);g.quadraticCurveTo(128,84,122,96);g.quadraticCurveTo(142,90,152,70);hlFill(g,HFORM.black);       // pectoral fin
+ hlUForm(g,137,82,10,12,HFORM.red,3);hlOvoid(g,146,62,16,12,HFORM.red,HFORM.teal,3);                                                // fin joint
+ hlUForm(g,100,48,22,18,HFORM.red,4);hlUForm(g,70,50,18,16,HFORM.red,4);hlSplitU(g,97,26,8,12,HFORM.red,3);hlSplitU(g,16,52,8,24,HFORM.red,3);}
+// THUNDERBIRD, frontal with wings spread and the head turned in profile, box 200 x 100
+function hlThunderbird(g){
+ hlMirror(g,200,100,100,g=>{for(let k=0;k<5;k++){const x=12+k*15,y=64-k*5;hlUForm(g,x,y,13,34,k%2?HFORM.red:HFORM.black,3.6);}   // wing feathers
+  hlSwoop(g,[[4,82],[16,34],[52,22],[86,38]],HFORM.black,7);hlOvoid(g,62,40,16,12,HFORM.black,HFORM.teal,3);                       // wing edge + shoulder joint
+  hlUForm(g,90,90,8,16,HFORM.black,3);});                                                                                          // tail feathers
+ hlOvoid(g,100,58,30,52,HFORM.black,HFORM.red,5);hlUForm(g,100,52,14,12,HFORM.black,4);hlUForm(g,100,68,12,10,HFORM.black,4);      // body
+ for(const s of[-1,1]){g.beginPath();g.moveTo(100+s*6,82);g.lineTo(100+s*12,96);hlLine(g,HFORM.black,3);}                          // legs
+ hlOvoid(g,100,22,26,22,HFORM.black,HFORM.white,4);hlOvoid(g,96,21,9,7,null,HFORM.black);                                          // head
+ g.beginPath();g.moveTo(90,18);g.quadraticCurveTo(70,16,66,28);g.quadraticCurveTo(74,24,80,30);g.quadraticCurveTo(84,26,90,27);hlFill(g,HFORM.black);   // hooked beak (profile, to -x)
+ g.beginPath();g.moveTo(104,12);g.quadraticCurveTo(112,0,122,4);g.quadraticCurveTo(114,8,110,14);hlFill(g,HFORM.red);}              // crest plume
+// BEAR walking in profile facing +x, box 200 x 100
+function hlBear(g){g.beginPath();g.moveTo(40,40);g.bezierCurveTo(60,20,120,18,150,30);g.quadraticCurveTo(160,24,172,30);g.lineTo(196,44);g.quadraticCurveTo(190,54,176,54);
+ g.quadraticCurveTo(160,56,152,60);g.lineTo(156,94);g.lineTo(138,94);g.lineTo(134,68);g.quadraticCurveTo(100,74,70,68);g.lineTo(66,94);g.lineTo(48,94);g.lineTo(44,64);g.quadraticCurveTo(28,56,40,40);g.closePath();
+ hlFill(g,HFORM.black);
+ g.beginPath();g.arc(160,26,7,0,TAU);hlFill(g,HFORM.black);g.beginPath();g.arc(160,26,3.5,0,TAU);hlFill(g,HFORM.red);             // ear
+ hlOvoid(g,172,38,10,8,null,HFORM.white);hlOvoid(g,173,39,5,4,null,HFORM.black);g.beginPath();g.arc(195,45,3,0,TAU);hlFill(g,HFORM.red);   // eye, nose
+ hlOvoid(g,140,48,22,18,HFORM.red,HFORM.teal,3);hlOvoid(g,62,48,22,18,HFORM.red,HFORM.teal,3);                                     // shoulder and hip joints
+ hlUForm(g,146,80,10,16,HFORM.red,3);hlUForm(g,57,80,10,16,HFORM.red,3);hlUForm(g,100,44,26,14,HFORM.red,4);
+ for(const x of[138,48])for(let k=0;k<3;k++){g.beginPath();g.moveTo(x+4+k*5,94);g.lineTo(x+6+k*5,99);hlLine(g,HFORM.white,2);}}   // claws
+function hlGround(g,w,h,white){if(white){g.fillStyle=HFORM.white;g.fillRect(0,0,w,h);}else hlCedar(g,w,h,HFORM.cedar,false);}
+
 // ---------------------------------------------------------------- crest panels (colour-carrying, plane UV 0..1)
-// FORM_A: a wide crest (2:1) — central face flanked by profile heads, on cedar. Façades, gables, lintels.
-TEX.formA=canvasTex(512,256,(g,w,h)=>{hlCedar(g,w,h,HFORM.cedar,false);
- hlFace(g,w/2,h*.52,h*.95,h*.92,{});
- hlMirror(g,w,h,w/2,g=>{   // flanking profile creature: an ovoid head with one eye, a long formline body sweeping out
-  hlSwoop(g,[[w*.33,h*.2],[w*.2,h*.02],[w*.04,h*.1],[w*.04,h*.42],[w*.04,h*.78],[w*.2,h*.94],[w*.33,h*.84]],HFORM.black,h*.05);
-  hlEye(g,w*.14,h*.36,h*.3,h*.2,HFORM.teal);
-  hlUForm(g,w*.2,h*.66,h*.24,h*.16,HFORM.red,h*.045);hlUForm(g,w*.11,h*.72,h*.12,h*.1,HFORM.black,h*.03);
-  hlSplitU(g,w*.27,h*.2,h*.12,h*.1,HFORM.red,h*.03);hlTrigon(g,w*.06,h*.84,h*.08,HFORM.teal);});
+// FORM_A: two salmon nose to nose round a teal ovoid, on cedar — façades, lintels, door boards.
+TEX.formA=canvasTex(512,256,(g,w,h)=>{hlGround(g,w,h,false);
+ hlMirror(g,w,h,w/2,g=>hlIn(g,w*.03,h*.2,w*.44,h*.6,200,80,hlSalmon));hlOvoid(g,w/2,h*.52,h*.22,h*.2,HFORM.black,HFORM.teal,6);
  g.lineWidth=h*.03;g.strokeStyle=HFORM.black;g.strokeRect(h*.015,h*.015,w-h*.03,h-h*.03);});
-// FORM_W: the same crest on white — the bold painted house-fronts of the tribes and the Republic's guild boards
-TEX.formW=canvasTex(512,256,(g,w,h)=>{g.fillStyle=HFORM.white;g.fillRect(0,0,w,h);
- hlFace(g,w/2,h*.52,h*.95,h*.92,{socket:HFORM.teal,tongue:true});
- hlMirror(g,w,h,w/2,g=>{hlSwoop(g,[[w*.34,h*.12],[w*.18,h*.0],[w*.02,h*.2],[w*.05,h*.52],[w*.08,h*.86],[w*.24,h*.96],[w*.34,h*.86]],HFORM.red,h*.06);
-  hlEye(g,w*.15,h*.4,h*.32,h*.22,HFORM.red);hlUForm(g,w*.16,h*.72,h*.26,h*.16,HFORM.black,h*.05);hlTrigon(g,w*.26,h*.62,h*.1,HFORM.teal);});});
-// FORM_V: a tall board (1:4) — a stack of ovoids and U-forms, for pilasters, door jambs, columns-as-boards
+// FORM_W: an orca on white over a band of waves — the bold painted house-fronts and the guild boards.
+TEX.formW=canvasTex(512,256,(g,w,h)=>{hlGround(g,w,h,true);hlIn(g,w*.08,h*.08,w*.84,h*.72,200,100,hlOrca);
+ for(let k=0;k<8;k++){const cx=w*(k+.5)/8;hlUForm(g,cx,h*.86,w*.1,h*.12,k%2?HFORM.teal:HFORM.black,h*.03);}});
+// FORM_V: a tall board (1:4) — a stack of ovoids and U-forms (abstract), for pilasters, jambs, menhirs
 TEX.formV=canvasTex(128,512,(g,w,h)=>{hlCedar(g,w,h,HFORM.cedarD,true);
  for(let k=0;k<4;k++){const cy=h*(k+.5)/4;
   hlOvoid(g,w/2,cy-h*.03,w*.78,h*.12,HFORM.black,k%2?HFORM.teal:HFORM.red,w*.08);
   hlOvoid(g,w/2,cy-h*.02,w*.4,h*.06,HFORM.black,HFORM.white,w*.05);
   hlUForm(g,w/2,cy+h*.075,w*.7,h*.05,k%2?HFORM.red:HFORM.black,w*.08);}});
-// FORM_T: a gable crest (triangle-ready, 2:1) — the thunderbird, wings spread across the gable, head on the axis
-TEX.formT=canvasTex(512,256,(g,w,h)=>{hlCedar(g,w,h,HFORM.cedar,false);
- hlMirror(g,w,h,w/2,g=>{for(let k=0;k<5;k++){const x=w*.08+k*w*.075,y=h*.55+k*h*.05;   // feathers: U-forms stepping up the wing
-   hlUForm(g,x,y,w*.07,h*.28,k%2?HFORM.red:HFORM.black,w*.018);}
-  hlSwoop(g,[[w*.02,h*.9],[w*.12,h*.3],[w*.3,h*.25],[w*.44,h*.38]],HFORM.black,h*.05);
-  hlEye(g,w*.3,h*.45,w*.1,h*.16,HFORM.teal);});
- hlFace(g,w/2,h*.46,h*.62,h*.66,{beak:true,ears:false,teeth:false});});
+// FORM_T: the thunderbird, wings spread across the gable (2:1)
+TEX.formT=canvasTex(512,256,(g,w,h)=>{hlGround(g,w,h,false);hlIn(g,w*.02,h*.04,w*.96,h*.92,200,100,hlThunderbird);});
+// FORM_B: a bear on cedar (2:1) — for the Republic's guild boards and the tribes' hunters
+TEX.formB=canvasTex(512,256,(g,w,h)=>{hlGround(g,w,h,false);hlIn(g,w*.06,h*.06,w*.88,h*.84,200,100,hlBear);});
 // FORM_F: frieze (4:1, repeats along x) — alternating ovoid and split-U, for eave boards and lintels
 TEX.formF=canvasTex(256,64,(g,w,h)=>{hlCedar(g,w,h,HFORM.cedarD,false);
  for(let k=0;k<4;k++){const cx=w*(k+.5)/4;if(k%2){hlOvoid(g,cx,h*.52,w*.18,h*.6,HFORM.black,HFORM.teal,w*.02);hlOvoid(g,cx,h*.55,w*.08,h*.26,null,HFORM.black);}
@@ -155,14 +193,39 @@ TEX.formF=canvasTex(256,64,(g,w,h)=>{hlCedar(g,w,h,HFORM.cedarD,false);
 
 // ---------------------------------------------------------------- totem column (colour-carrying, wraps a cylinder)
 // u runs round the pole with u=0.5 at the FRONT (hTotem instances are yawed so this faces the street), v up.
-// Three crest figures stacked: bird (beak) at the top, bear (teeth, tongue) in the middle, frog/man at the foot.
+// Three animals stacked: EAGLE at the top (a great hooked beak, wings folded down the sides), BEAR in the
+// middle (round ears, muzzle, forepaws with claws), FROG at the foot (wide mouth, splayed legs).
+function hlTotemEagle(g,cx,cy,W,H,sock){
+ hlMirror(g,W,H,cx,g=>{g.beginPath();g.moveTo(cx-W*.16,cy-H*.02);g.bezierCurveTo(cx-W*.5,cy+H*.02,cx-W*.5,cy+H*.36,cx-W*.3,cy+H*.46);g.lineTo(cx-W*.12,cy+H*.46);g.closePath();hlFill(g,HFORM.black);   // folded wing
+  for(let k=0;k<3;k++)hlUForm(g,cx-W*.34+k*W*.07,cy+H*(.22+k*.06),W*.07,H*.2,HFORM.red,W*.025);
+  hlOvoid(g,cx-W*.3,cy+H*.08,W*.12,H*.08,HFORM.black,sock,W*.015);});
+ g.beginPath();g.ellipse(cx,cy-H*.2,W*.3,H*.2,0,0,TAU);hlFill(g,HFORM.black);                                                        // head
+ hlMirror(g,W,H,cx,g=>{hlOvoid(g,cx-W*.15,cy-H*.24,W*.16,H*.1,null,HFORM.white);hlOvoid(g,cx-W*.14,cy-H*.235,W*.08,H*.05,null,HFORM.black);});
+ g.beginPath();g.moveTo(cx-W*.1,cy-H*.14);g.quadraticCurveTo(cx,cy-H*.2,cx+W*.1,cy-H*.14);g.quadraticCurveTo(cx+W*.16,cy+H*.14,cx+W*.02,cy+H*.28);   // beak, curling to a hook
+ g.quadraticCurveTo(cx-W*.06,cy+H*.3,cx-W*.04,cy+H*.2);g.quadraticCurveTo(cx+W*.04,cy+H*.2,cx+W*.02,cy+H*.12);g.quadraticCurveTo(cx-W*.12,cy+H*.04,cx-W*.1,cy-H*.14);
+ hlFill(g,HFORM.ochre);hlLine(g,HFORM.black,W*.02);g.beginPath();g.ellipse(cx,cy+H*.36,W*.12,H*.08,0,0,TAU);hlFill(g,HFORM.red);hlLine(g,HFORM.black,W*.02);}   // chest
+function hlTotemBear(g,cx,cy,W,H,sock){
+ hlMirror(g,W,H,cx,g=>{g.beginPath();g.arc(cx-W*.28,cy-H*.34,W*.1,0,TAU);hlFill(g,HFORM.black);g.beginPath();g.arc(cx-W*.28,cy-H*.34,W*.05,0,TAU);hlFill(g,HFORM.red);});
+ g.beginPath();g.ellipse(cx,cy-H*.1,W*.38,H*.26,0,0,TAU);hlFill(g,HFORM.black);                                                        // head
+ hlMirror(g,W,H,cx,g=>{hlOvoid(g,cx-W*.17,cy-H*.17,W*.16,H*.1,HFORM.red,HFORM.white,W*.02);hlOvoid(g,cx-W*.16,cy-H*.16,W*.08,H*.05,null,HFORM.black);
+  hlUForm(g,cx-W*.28,cy-H*.02,W*.1,H*.1,HFORM.red,W*.025);
+  g.beginPath();g.ellipse(cx-W*.24,cy+H*.34,W*.13,H*.09,0,0,TAU);hlFill(g,HFORM.black);                                                // forepaws
+  for(let k=0;k<4;k++){g.beginPath();g.moveTo(cx-W*.33+k*W*.055,cy+H*.4);g.lineTo(cx-W*.34+k*W*.055,cy+H*.46);hlLine(g,HFORM.white,W*.016);}});
+ g.beginPath();g.ellipse(cx,cy+H*.02,W*.15,H*.12,0,0,TAU);hlFill(g,'#d9b48a');hlLine(g,HFORM.red,W*.02);                               // muzzle
+ g.beginPath();g.ellipse(cx,cy-H*.05,W*.07,H*.04,0,0,TAU);hlFill(g,HFORM.black);
+ g.beginPath();g.moveTo(cx-W*.08,cy+H*.06);g.quadraticCurveTo(cx,cy+H*.11,cx+W*.08,cy+H*.06);hlLine(g,HFORM.black,W*.02);
+ g.beginPath();g.ellipse(cx,cy+H*.32,W*.12,H*.1,0,0,TAU);hlFill(g,HFORM.red);hlLine(g,HFORM.black,W*.02);}                          // belly between the paws
+function hlTotemFrog(g,cx,cy,W,H,sock){
+ hlMirror(g,W,H,cx,g=>{hlSwoop(g,[[cx-W*.2,cy+H*.1],[cx-W*.44,cy+H*.1],[cx-W*.46,cy+H*.34],[cx-W*.3,cy+H*.44]],HFORM.black,W*.07);    // legs
+  for(let k=0;k<3;k++){g.beginPath();g.arc(cx-W*.36+k*W*.05,cy+H*.45,W*.025,0,TAU);hlFill(g,HFORM.black);}});
+ g.beginPath();g.ellipse(cx,cy+H*.06,W*.34,H*.3,0,0,TAU);hlFill(g,'#3f8f5a');hlLine(g,HFORM.black,W*.03);                              // body
+ hlMirror(g,W,H,cx,g=>{g.beginPath();g.arc(cx-W*.17,cy-H*.24,W*.1,0,TAU);hlFill(g,HFORM.white);hlLine(g,HFORM.black,W*.025);
+  g.beginPath();g.arc(cx-W*.16,cy-H*.23,W*.05,0,TAU);hlFill(g,HFORM.black);hlOvoid(g,cx-W*.2,cy+H*.14,W*.1,H*.07,HFORM.black,HFORM.teal,W*.015);});
+ g.beginPath();g.moveTo(cx-W*.26,cy-H*.04);g.quadraticCurveTo(cx,cy+H*.1,cx+W*.26,cy-H*.04);hlLine(g,HFORM.black,W*.035);            // the wide frog smile
+ hlUForm(g,cx,cy+H*.22,W*.14,H*.1,HFORM.red,W*.03);}
 function hlTotemTex(seed,cols){return canvasTex(256,1024,(g,w,h)=>{hlCedar(g,w,h,cols.base,true);
- // back of the pole: shallow adze-carved grooves only
- const figs=[{beak:true,ears:false,teeth:false},{teeth:true,tongue:true},{ears:false,teeth:true}];
- for(let k=0;k<3;k++){const cy=h*(1-(k+.5)/3);   // v=1 top (canvas y 0): figure 0 at the top
-  hlFace(g,w/2,h*(k+.5)/3,w*.5,h*.3,Object.assign({socket:k===1?HFORM.red:cols.socket},figs[(k+seed)%3]));
-  // wings / arms: a pair of U-forms at the sides of each figure, wrapping round the pole
-  hlMirror(g,w,h,w/2,g=>{hlUForm(g,w*.2,h*(k+.62)/3,w*.1,h*.07,HFORM.black,w*.025);hlOvoid(g,w*.2,h*(k+.44)/3,w*.08,h*.04,HFORM.black,cols.socket,w*.012);});
+ const figs=[hlTotemEagle,hlTotemBear,hlTotemFrog];
+ for(let k=0;k<3;k++){figs[k](g,w/2,h*(k+.5)/3,w*.62,h*.3,k===1?HFORM.red:cols.socket);
   g.fillStyle=HFORM.black;g.fillRect(0,h*(k+1)/3-h*.006,w,h*.012);}});}
 TEX.totem=hlTotemTex(0,{base:HFORM.cedar,socket:HFORM.teal});
 TEX.totemP=hlTotemTex(1,{base:'#d8cdb4',socket:HFORM.teal});   // painted ground (the Painted Men)

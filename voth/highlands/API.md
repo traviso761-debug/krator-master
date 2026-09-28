@@ -63,8 +63,8 @@ calls `vnReg(name, lx, lz, r, h)` for its inspector volume(s).
 
 ## Kit items (prefix `h`) — plus every `v*` item of the vernacular set
 
-Boxes: `hLogB hScaleB hRubB hTurfB hBMatB hPaint hGoldB hFormF`. Planes (face +z): `hFormA hFormW hFormV hFormT
-hLaceV hLaceB hWing hClock`. Cylinders (base at y=0): `hTotem hTotemP` (16-sided, crest front at u=.5 — use
+Boxes: `hLogB hScaleB hRubB hTurfB hBMatB hPaint hGoldB hFormF`. Planes (face +z): `hFormA` (salmon pair, cedar) `hFormW` (orca, white)
+`hFormT` (thunderbird) `hFormB` (bear) `hFormV` (abstract tall board) `hLaceV hLaceB hWing hClock`. Cylinders (base at y=0): `hTotem hTotemP` (16-sided, crest front at u=.5 — use
 `hnTotem`), `hBamboo`; centred: `hBambooC` (for `beam()`: w = diameter). Horizontal log along x: `hLogEnd`
 (end grain) `hLogX` (bark). Lathes (base radius 1 at y=0, tip at y=1, scale `[r,h,r]`): `hOnionG/Sc/Sh`,
 `hBulbG/Sc/Sh`. Octagonal: `hTentSc/Sh/T` (cone), `hOctP/L/W/S/Sh` (drum). Keel prism (x −.5….5, y 0…1, z
