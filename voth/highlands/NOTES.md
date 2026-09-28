@@ -24,3 +24,19 @@ Decisions:
 * Travis's ruling mid-round: the carved **faces** were too creepy. The formline maps were redrawn as animals —
   `hFormA` salmon pair, `hFormW` orca over waves, `hFormT` thunderbird, new `hFormB` bear; totems stack eagle,
   bear, frog. `hlFace` is kept (unused) for specific depictions later. Package agents were told: no new faces.
+
+### Round 1 result
+Five packages built in parallel worktrees and merged (each touching only its own two fragments):
+R-A Republican homes + trade (22 defs), R-B Republican civic + guilds (13), R-C Republican monuments, walls,
+industry, farms, mines (15), RU Rustic (17), TR Tribal (15) — **82 defs**. Whole kit ≈ 1.4 M scene
+triangles, ~170 draw calls. Heaviest: Hall of the Republic 151 k, fortress 134 k, cliff settlement 84 k.
+
+Integration fixes: the showcase widens the gap before tall rows and keeps eye-level cameras clear of the next
+row; the label atlas used a fractional column count (4096/409) and misaddressed labels — fixed in
+`../iziz/src/93-labels.js` and re-vendored. Package-local helpers (`hnRA* hnRB* hnRC* hnRU* hnTR*`) that deserve
+promotion to the shared vocabulary next round: `hnRCGableX` (separate ridge-end overhang, tiles wall runs),
+`hnRAKryltso` (correct stair run), `hnTRWalk`/`hnTRRock` (struts aimed at the real rock), the `*Folk` variants
+that stand people on raised floors, box-built animals (`hnRUBeast`, `hnRCBeast`), `hnRAEyelid`.
+
+Next: **Raketstad** (city target) — Iziz's city machinery (terrain, painted ground, occupancy, placers),
+the Ancients spaceport + launch arcologies, the NW-lowlands biome.
