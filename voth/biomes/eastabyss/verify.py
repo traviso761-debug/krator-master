@@ -102,7 +102,9 @@ async def run(a):
     fails = []
     try:
         async with async_playwright() as p:
-            b = await p.chromium.launch(args=["--use-gl=swiftshader", "--enable-webgl",
+            exe = os.environ.get("CHROME_PATH")   # a preinstalled Chromium (e.g. /opt/pw-browsers/chromium-*/chrome-linux/chrome)
+            b = await p.chromium.launch(executable_path=exe or None,
+                                        args=["--use-gl=swiftshader", "--enable-webgl",
                                               "--ignore-gpu-blocklist"])
             W, H = [int(t) for t in a.size.split("x")]
             pg = await b.new_page(viewport={"width": W, "height": H})

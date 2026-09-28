@@ -15,6 +15,16 @@ const VIEWS={
  'From afar':[-2600,260,-2400,0,180,0],
  'Krator rising':[-600,120,600,1900,900,-2100],
 };
+// views on the newer species and the fauna, found from the built forest: the
+// hero of that species nearest the origin, seen from 2.4 crown radii away
+(function(){const TR=HYPERJUNGLE.TREES||[];
+ const nearest=sp=>{let b=null;for(const T of TR){if(!T.hero||T.sp!==sp)continue;if(!b||Math.hypot(T.x,T.z)<Math.hypot(b.x,b.z))b=T;}return b;};
+ const add=(name,T,k,hK)=>{if(!T)return;const d=T.crownR*k,a=Math.atan2(-T.z,-T.x)+.5;VIEWS[name]=[T.x+Math.cos(a)*d,T.y0+T.H*hK,T.z+Math.sin(a)*d,T.x,T.y0+T.H*.72,T.z];};
+ add('A mahogany',nearest(4),2.4,.45);add('A kapok',nearest(5),2.4,.35);
+ const M=nearest(4);if(M)VIEWS['Mahogany buttresses']=[M.x+M.rb*5,M.y0+9,M.z+M.rb*3,M.x,M.y0+14,M.z];
+ const rg=typeof REG!=='undefined'?REG:[];const herd=rg.find(r=>r.kind==='fauna'&&/herd/.test(r.name)),flock=rg.find(r=>r.kind==='fauna'&&/flock/.test(r.name));
+ if(herd)VIEWS['A herd']=[herd.x+70,herd.y+14,herd.z+40,herd.x,herd.y+4,herd.z];
+ if(flock)VIEWS['Sky rays']=[flock.x-flock.r*1.2,flock.y+20,flock.z-flock.r*.4,flock.x,flock.y+60,flock.z];})();
 const ui=document.getElementById('ui');const sel=document.createElement('select');sel.id='viewsel';for(const k in VIEWS){const o=document.createElement('option');o.textContent=k;sel.appendChild(o);}sel.onchange=()=>setView(...VIEWS[sel.value]);ui.appendChild(sel);
 // hidden buttons, one per preset: verify.py drives the views through these
 const _hb=document.createElement('div');_hb.style.display='none';ui.appendChild(_hb);for(const k in VIEWS){const b=document.createElement('button');b.textContent=k;b.onclick=()=>setView(...VIEWS[k]);_hb.appendChild(b);}
