@@ -89,7 +89,8 @@ const STREETS={made:0,tries:0};
  for(let it=0;it<900&&pool.length;it++){const p=pool[Math.floor(rng()*pool.length)];STREETS.tries++;
   const n=nearestRoadPt(p[0],p[1],null,400);if(!n){pool=pool.filter(q=>q!==p);continue;}
   let hd=Math.atan2(p[1]-n.z,p[0]-n.x);const path=[[n.x,n.z]];let x=n.x,z=n.z,len=0;const L=Math.hypot(p[0]-n.x,p[1]-n.z)+rr(30,110);let joined=false;
-  while(len<L){const seg=rr(20,34);hd+=len?rr(-.26,.26):0;   // long straight-ish runs with bends between them: room for continuous rows of housesconst nx=x+Math.cos(hd)*seg,nz=z+Math.sin(hd)*seg;
+  // long straight-ish runs with bends between them: room for continuous rows of houses
+  while(len<L){const seg=rr(20,34);hd+=len?rr(-.26,.26):0;const nx=x+Math.cos(hd)*seg,nz=z+Math.sin(hd)*seg;
    if(blockedAt(nx,nz)){break;}
    if(len>24){const m=nearestRoadPt(nx,nz,null,30);if(m&&m.d<9){path.push([m.x,m.z]);joined=true;break;}}
    x=nx;z=nz;len+=seg;path.push([x,z]);}
