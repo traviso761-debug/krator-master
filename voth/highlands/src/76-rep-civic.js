@@ -86,60 +86,75 @@ function hnRBTree(x,z,h){vPst('vPostB',x,0,z,.16,h*.55,hC(0x5a4632));for(let k=0
 function hnRBLamps(pts,h){if(!vLit())return;for(const [x,z] of pts)vnLampPost(x,0,z,h||3.4);}
 
 // ================================================================= TEMPLE
-// The pantheon: a Russian log church grown into a temple of many gods. A cruciform log hall on a stone platform;
-// the central cube carries keel-arch zakomary under a pyramid, an octagon (vosmerik) with a flared skirt on
-// dougong, a second octagon ringed with kokoshniki and the tall shingle tent with a gold onion. Four corner
-// towers and four arm-roofs carry the lesser gods' domes — gold, green scale, shingle, a tent. A gallery on carved
-// posts runs round the platform under painted dougong; the gods stand round the precinct as animal totems (eagle, bear, orca, salmon).
-function buildHlRepTemple(G,o){reseed(20701+(o.v|0));const S=1.4,C=7,H=11,AW=8,AE=11.4,AH=6,GI=12,GO=14.6,GH=4.2;
- const log=hC(vPick(HPAL.pine)),sh=hC(vPick(HPAL.shingle)).multiplyScalar(1.12),grn=hC(vPick(HPAL.roofGreen)),gold=hC(HPAL.gold[0]),
-  ash=hC(vPick(HPAL.ashlar)),white=hC(HPAL.white),red=hC(HPAL.red),tar=hC(vPick(HPAL.tar)),lit=vLit()?'lit':'glass';
- vnReg('Temple of the Pantheon',0,0,21,41);
- hnSocle(0,0,0,2*GO+1.2,S,2*GO+1.2,0,null,ash);
- const run=7*.32;vnStairs(0,0,GO+.6+run/2,0,8,S,7,'vStone',ash);for(const s of[-1,1])vB('vStone',s*4.3,0,GO+.6+run/2,.6,S+.3,run+.1,0,ash);
- // the central cube and the four arms of the cross, each under a keel (bochka) roof with a small dome
- hnLogBox(0,S,0,2*C,H,2*C,0,log);
- const armDome=[['G',gold],['Sc',grn],['G',gold],['Sc',grn]];
- for(let k=0;k<4;k++){const a=k*Math.PI/2,L=AE-C+1,p=loc(0,0,0,C-1+L/2,a),e=loc(0,0,0,AE,a);
-  hnLogBox(p[0],S,p[1],AW,AH,L,a,log);hnBochka(p[0],S+AH,p[1],L+.8,AW+.9,4,a+Math.PI/2,'hKeelSh',sh);
-  const f=loc(0,0,0,AE+.4,a);hnForm('hFormT',f[0],S+AH+.5,f[1],a,3.8,1.8);
-  const q=loc(0,0,0,AE-1.5,a);hnOnion(q[0],S+AH+3.35,q[1],.72,armDome[k][0],armDome[k][1],.9,'hOctL',log);
-  for(const s of[-1,1]){const w=loc(0,0,s*AW/2,(C+AE)/2+.3,a);hnNal(w[0],S+1.6,w[1],a+s*Math.PI/2,.8,1.4,lit,white,{keel:true});}
-  if(k===0){vnDoor(e[0],S,e[1],a,2,3.2,'hPaint',red,tar,false);hnForm('hFormA',e[0],S+3.55,e[1],a,3,1.3);}
-  else for(const u of[-1.8,1.8]){const w=loc(0,0,u,AE,a);hnNal(w[0],S+1.6,w[1],a,.8,1.4,lit,white,{keel:true});}}
- // zakomary: keel gables along the top of each face of the cube, a low pyramid behind them
- for(let k=0;k<4;k++){const a=k*Math.PI/2;for(const [u,w,h] of[[-4.7,4.2,3],[0,5.2,3.8],[4.7,4.2,3]]){const p=loc(0,0,u,C+.12,a);hnKokoshnik(p[0],S+H,p[1],a,w,h,'hKeelSh',sh);}}
- vnPyrRoof('hPyrSc',0,S+H,0,2*C,2*C,3.4,0,sh,.35);
- // the first octagon, its dougong and flared skirt; the second octagon ringed with kokoshniki; the tent; the onion
- kput('hOctL',[0,S+H,0],null,[5.4,7.5,5.4],log);const y1=S+H+7.5;
- for(let k=0;k<8;k++){const a=k*Math.PI/4,p=loc(0,0,0,5.4*.924,a);hnNal(p[0],S+H+3.6,p[1],a,.8,1.3,lit,white,{keel:true});
-  const d=loc(0,0,0,5.4*.924,a);hnDougong(d[0],y1-.98,d[1],a,.75);}
- kput('hTentSh',[0,y1-.4,0],null,[6.8,2.8,6.8],sh);
- kput('hOctL',[0,y1,0],null,[3.9,4.8,3.9],log);const y2=y1+4.8;
- for(let k=0;k<8;k++){const a=k*Math.PI/4,p=loc(0,0,0,3.9*.924+.15,a);hnKokoshnik(p[0],y2,p[1],a,2.7,2.2,'hKeelSh',sh);
-  if(k%2===0){const w=loc(0,0,0,3.9*.924,a);hnNal(w[0],y1+1.5,w[1],a,.6,1,lit,white,{keel:true});}}
- const tt=hnTent(0,y2,0,4.1,12,'hTentSh',sh);
- hnOnion(0,tt-1.7,0,1.3,'G',gold,1.3,'hOctL',log);
- // the corner towers: one god each — gold onion, green scale onion, a green tent, a shingle onion
- const tops=[['G',gold],['Sc',grn],['tent',grn],['Sh',sh]],cs=[[-1,1],[1,1],[-1,-1],[1,-1]];
- cs.forEach(([sx,sz],i)=>{const x=sx*9,z=sz*9,ad=Math.atan2(sx,sz);kput('hOctL',[x,S,z],null,[2.3,12.5,2.3],log);
-  for(const yy of[S+2,S+7.2]){const p=loc(x,z,0,2.13,ad);hnNal(p[0],yy,p[1],ad,.6,1.1,lit,white,{keel:true});}
-  const q=loc(x,z,0,2.13,ad);hnFrieze(q[0],S+10.6,q[1],ad,1.6,.5);
-  kput('hTentSh',[x,S+12.3,z],null,[2.9,1.4,2.9],sh);
-  if(tops[i][0]==='tent'){const t=hnTent(x,S+12.9,z,2,6.5,'hTentSc',grn);kput('hOctL',[x,S+12.3,z],null,[1.8,.7,1.8],log);kput('hBulbG',[x,t-.9,z],null,[.36,.8,.36],gold);vPst('vIron',x,t-.2,z,.035,1,hC(hRBIRON));}
-  else hnOnion(x,S+12.8,z,1.25,tops[i][0],tops[i][1],1.4,'hOctL',log);});
- // the gallery: carved posts outside, plain posts inside, a shed roof and painted dougong; a bochka over the door
- for(let k=0;k<4;k++){const a=k*Math.PI/2;
-  for(let i=0;i<8;i++){const u=-GO+.2+i*(2*GO-.4)/8;const p=loc(0,0,u,GO-.2,a);const pt=(k===0&&Math.abs(Math.abs(u)-3.4)<1);hnTotemPost(p[0],S,p[1],.22,GH-.3,a,pt);
-   if(!(k===0&&Math.abs(u)<3)){const q=loc(0,0,u,GI,a);vPst('vPost',q[0],S,q[1],.13,GH+.8,log);}}
-  const c=loc(0,0,0,(GI+GO)/2,a);vnShedRoof(c[0],S+GH,c[1],2*GO,GO-GI,.9,a,'vShingleB',sh,.5);
-  const b=loc(0,0,0,GO-.2,a);hnBracketRow(b[0],S+GH-.62,b[1],a,2*GO-1.6,8,.5);}
- hnBochka(0,S+GH+.55,(GI+GO)/2+.3,GO-GI+1.8,6.2,2.6,Math.PI/2,'hKeelSh',sh);hnForm('hFormT',0,S+GH+.8,(GI+GO)/2+.3+(GO-GI+1.8)/2,0,3.2,1.4);
- // the precinct: the gods as animal totems in a ring, two great winged totems at the stair, lamps, a paved way
- [35,65,100,135,225,260,295,325].forEach((deg,k)=>{const a=deg*Math.PI/180,p=loc(0,0,0,19.3,a);vB('vStone',p[0],0,p[1],1.3,.25,1.3,a,ash);
+// Round 7b (Travis: "redesign grand temple so it's more like this structure from the Izmailovo kremlin"): the
+// pantheon as a great timber terem. Three stepped log tiers, each ringed by a gallery on bracketed posts under a flared
+// skirt roof; steep gabled pavilions with lace bargeboards and painted pediments on every tier; a grand covered stair up
+// the front to the first terrace; four corner turrets under harlequin tents; and on top the great oval dome in green
+// and lime harlequin with a clock lantern and two spires. The gods still stand round the precinct as carved pillars.
+function hnSkirt(y,w,d,out,drop,item,c,gap){const O=Array.isArray(out)?out:[out,out,out,out];   // O: front(+z), right(+x), back, left
+ for(let k=0;k<4;k++){const a=k*Math.PI/2,o=O[k],dist=(k%2?w:d)/2,L=(k%2?d:w)+O[(k+1)%4]+O[(k+3)%4],th=Math.atan2(drop,o),len=o/Math.cos(th)+.15;
+  const q=qEuler(0,a,0).multiply(qEuler(th,0,0)),yc=y-drop/2+.08;
+  const seg=(u0,u1)=>{const p=loc(0,0,(u0+u1)/2,dist+o/2,a);kput(item,[p[0],yc,p[1]],q,[u1-u0,.16,len],c);};
+  if(k===0&&gap){seg(-L/2,-gap);seg(gap,L/2);}else seg(-L/2,L/2);
+  const e=loc(0,0,0,dist+o,a);vB('hPaint',e[0],y-drop-.2,e[1],L+.1,.2,.08,a,hC(HPAL.white));}}                       // white eave board
+function buildHlRepTemple(G,o){reseed(20701+(o.v|0));const S=1.4;
+ const log=hC(vPick(HPAL.pine)),sh=hC(0xb89a70),gold=hC(HPAL.gold[0]),ash=hC(vPick(HPAL.ashlar)),white=hC(HPAL.white),red=hC(HPAL.red),tar=hC(vPick(HPAL.tar)),teal=hC(HPAL.teal),lit=vLit()?'lit':'glass';
+ const T=[{w:24,d:18,h:6.5},{w:17,d:13,h:5.5},{w:11,d:9,h:4.5}];let y=S;const ys=[];
+ vnReg('Temple of the Pantheon',0,0,21,36);
+ hnSocle(0,0,-1,34,S,28,0,null,ash);
+ // the tiers: log boxes, each ringed by lattice windows; a gallery on bracketed posts round each under its skirt
+ T.forEach((t,i)=>{ys.push(y);hnLogBox(0,y,0,t.w,t.h,t.d,0,log);
+  for(const [a,L] of[[0,t.w],[Math.PI/2,t.d],[Math.PI,t.w],[-Math.PI/2,t.d]]){const n=Math.max(2,Math.round(L/3.2));for(let k=0;k<n;k++){const u=-L/2+L*(k+.5)/n;if(i===0&&a===0&&Math.abs(u)<3)continue;
+   const p=loc(0,0,u,(a===0||a===Math.PI?t.d:t.w)/2,a);hnNal(p[0],y+t.h*.38,p[1],a,.9,t.h*.34,lit,white,{keel:true});}}
+  y+=t.h;});
+ const yT=y;
+ // skirts: tier 1 over a ground gallery (out 2.4, a gap for the stair), tiers 2 and 3 out over the terrace below
+ const galleryRing=(yb,t,o,drop,gap)=>{const ds=.42;
+  for(const [a,L,D] of[[0,t.w,t.d],[Math.PI/2,t.d,t.w],[Math.PI,t.w,t.d],[-Math.PI/2,t.d,t.w]]){const n=Math.max(3,Math.round((L+2*o)/3));
+   for(let k=0;k<=n;k++){const u=-(L/2+o-.3)+(L+2*o-.6)*k/n;if(gap&&a===0&&Math.abs(u)<gap+.2)continue;const po=o-.35;const p=loc(0,0,u,D/2+po,a);
+    const top=yb+t.h-drop*po/o-.9*ds-.05;const carved=(k%2===1);
+    if(carved)hnPillar(p[0],yb,p[1],.16,top-yb,a,{});else{kput('hCol',[p[0],yb,p[1]],null,[.15,top-yb,.15],red);kput('hCol',[p[0],top-.24,p[1]],null,[.17,.18,.17],teal);}
+    hnDougong(p[0],top,p[1],a,ds);}}};
+ hnSkirt(ys[0]+T[0].h,T[0].w,T[0].d,2.4,1.1,'vShingleB',sh,3.2);galleryRing(ys[0],T[0],2.4,1.1,3.2);
+ for(const s of[-1,1])for(const [a,L,D] of[[0,T[0].w,T[0].d],[Math.PI,T[0].w,T[0].d],[Math.PI/2,T[0].d,T[0].w],[-Math.PI/2,T[0].d,T[0].w]]){   // ground balustrade between the posts
+  const p=loc(0,0,s*(L/4+(a===0?1.6:0)),D/2+2.05,a);kput('hLaceB',[p[0],S+.5,p[1]],qEuler(0,a,0),[a===0?L/2-3.4:L/2,.9,1],log);}
+ for(let i=1;i<3;i++){const lo=T[i-1],t=T[i],ox=(lo.w-t.w)/2,oz=(lo.d-t.d)/2;hnSkirt(ys[i]+t.h,t.w,t.d,[oz+.7,ox+.7,oz+.7,ox+.7],1.0+.1*i,'vShingleB',sh);
+  galleryRing(ys[i],{w:t.w,d:t.d,h:t.h},Math.min(ox,oz)+.3,1.0,0);
+  for(const [a,L,D] of[[0,lo.w,lo.d],[Math.PI,lo.w,lo.d],[Math.PI/2,lo.d,lo.w],[-Math.PI/2,lo.d,lo.w]]){const p=loc(0,0,0,D/2-.15,a);kput('hLaceB',[p[0],ys[i]+.5,p[1]],qEuler(0,a,0),[L-.4,.9,1],log);vB('vWood',p[0],ys[i]+.95,p[1],L-.3,.1,.14,a,tar);}}   // terrace balustrades
+ // the gabled pavilions (teremki): a log bay under a steep gable with lace bargeboards, a painted pediment and a window
+ const pav=(u,a,dist,yb,w,h0,dep,pitch)=>{const c=loc(0,0,u,dist+dep/2-.4,a);hnLogBox(c[0],yb,c[1],w,h0,dep,a,log,.2);
+  const r=pitch*w/2,top=hnGable(c[0],yb+h0,c[1],dep+.2,w,pitch,a+Math.PI/2,'vShingleB',sh,.5,'vGableW',log);
+  hnBarge(c[0],yb+h0,c[1],dep+.2,w,r,a+Math.PI/2,.5,white,'lace');
+  const f=loc(c[0],c[1],0,dep/2+.02,a);hnForm('hFormT',f[0],yb+h0+r*.22,f[1],a,w*.5,r*.42);
+  const wv=loc(c[0],c[1],0,dep/2,a);hnNal(wv[0],yb+h0*.3,wv[1],a,Math.min(1.1,w*.3),h0*.45,lit,white);
+  vPst('vIron',c[0],top,c[1],.04,1.2,hC(0x2e2a26));vBall('hGold',c[0],top+1.2,c[1],.18,gold);};
+ pav(0,0,T[1].d/2,ys[1],6,2.6,3.2,2.2);for(const s of[-1,1])pav(s*5.8,0,T[0].d/2,ys[0]+T[0].h-.9,3.6,1.8,2.6,2.4);   // front: the great pediment above the stair, two on the first skirt
+ for(const a of[Math.PI/2,-Math.PI/2,Math.PI])pav(0,a,(a===Math.PI?T[1].d:T[1].w)/2,ys[1],4.6,2.2,2.6,2.3);
+ for(const a of[0,Math.PI/2,Math.PI,-Math.PI/2])pav(0,a,(a%Math.PI===0?T[2].d:T[2].w)/2,ys[2],3.4,1.9,2.2,2.4);
+ // the grand stair: 30 steps from the forecourt to the first terrace, under stepped gable canopies on red posts
+ {const rise=ys[1]-S,steps=30,run=steps*.32,z1=T[0].d/2+.2,zc=z1+run/2;vnStairs(0,S,zc,0,4.6,rise,steps,'vWood',log);
+  for(const s of[-1,1]){kput('hLaceB',[s*2.4,S+rise/2+.5,zc],qEuler(0,Math.PI/2,0).multiply(qEuler(0,0,s*0)),[run,.9,1],log);}
+  for(let k=0;k<3;k++){const zz=z1+run*(k+.5)/3,yy=S+rise*(1-(k+.5)/3)+2.6;for(const sx of[-1,1])for(const sz of[-1,1]){const pz=zz+sz*run/6.4;const py=S+rise*(1-(pz-z1)/run);kput('hCol',[sx*2.3,py,pz],null,[.12,yy-py,.12],red);}
+   const top=hnGable(0,yy,zz,run/3+.3,5.4,1.6,Math.PI/2,'vShingleB',sh,.4,'vGableW',log);hnBarge(0,yy,zz,run/3+.3,5.4,1.6*2.7,Math.PI/2,.4,white,'lace');}
+  const land=loc(0,0,0,T[1].d/2+.1,0);vnDoor(land[0],ys[1],land[1],0,2,3,'hPaint',red,tar,false);hnEmblem(0,ys[1]+4.3,T[1].d/2+3.1,0,1.6);}
+ // the ground porches flanking the stair: doors into the first tier under bochka roofs
+ for(const s of[-1,1]){const x=s*7.2,z=T[0].d/2;vnDoor(x,S,z,0,1.8,2.8,'hPaint',red,tar,false);hnBochka(x,S+3.4,z+1.3,3,3.4,1.8,Math.PI/2,'hKeelSh',sh);
+  for(const u of[-1.3,1.3])kput('hCol',[x+u,S,z+2.6],null,[.13,3.4,.13],red);hnForm('hFormA',x,S+3.55,z+2.95,0,2.2,1);}
+ // the corner turrets: octagonal log shafts through the skirts, harlequin tents, gold spires
+ [[-1,1,'hTentHR'],[1,1,'hTentHG'],[-1,-1,'hTentHG'],[1,-1,'hTentHR']].forEach(([sx,sz,tent])=>{const x=sx*(T[0].w/2+.6),z=sz*(T[0].d/2+.6);
+  kput('hOctL',[x,S,z],null,[1.9,11.6,1.9],log);for(const yy of[S+3,S+8.4]){const ad=Math.atan2(sx,sz),p=loc(x,z,0,1.76,ad);hnNal(p[0],yy,p[1],ad,.55,1,lit,white,{keel:true});}
+  kput('hOctW',[x,S+11.6,z],null,[2.2,.3,2.2],white);for(let k=0;k<8;k++){const a=k*Math.PI/4;const d=loc(x,z,0,1.9,a);hnDougong(d[0],S+10.9,d[1],a,.34);}
+  kput(tent,[x,S+11.9,z],null,[2.3,6.2,2.3],null);vPst('vIron',x,S+18,z,.04,1.2,hC(0x2e2a26));vBall('hGold',x,S+18.9,z,.24,gold);});
+ // the crown: an octagonal drum ringed by kokoshniki, the great harlequin dome, a clock lantern and two spires
+ kput('hOctL',[0,yT,0],null,[5.2,2.2,4.3],log);for(let k=0;k<8;k++){const a=k*Math.PI/4,p=loc(0,0,0,4.6,a);hnKokoshnik(p[0],yT+2.2,p[1],a,3.2,1.6,'hKeelSh',sh);}
+ const yD=yT+2.2+.6;kput('hDomeHG',[0,yD,0],null,[6.4,10.4,5.3],null);vB('hPaint',0,yD-.2,0,11.6,.3,9.8,0,white);
+ const yL=yD+10.4-.8;hnLogBox(0,yL,0,2.4,1.9,1.6,0,log,.12);kput('hClock',[0,yL+1,.83],null,[1.3,1.3,1],hC(0xffffff));kput('hTentSh',[0,yL+1.9,0],null,[1.9,1.3,1.9],sh);
+ for(const s of[-1,1]){const x=s*1.9;kput('hOctW',[x,yL-.2,0],null,[.55,2.4,.55],red);kput('hTentHR',[x,yL+2.2,0],null,[.6,3.6,.6],null);
+  vPst('vIron',x,yL+5.8,0,.03,.9,hC(0x2e2a26));kput('hDiscG',[x,yL+7.05,0],qEuler(Math.PI/2,0,0),[.55,.05,.55],gold);hnEmblem(x,yL+7.05,.04,0,.8);}
+ // the precinct: the gods as carved pillars in a ring, the paved way, lamps
+ [35,65,100,135,225,260,295,325].forEach((deg,k)=>{const a=deg*Math.PI/180,p=loc(0,0,0,19.6,a);vB('vStone',p[0],0,p[1],1.3,.25,1.3,a,ash);
   hnTotem(p[0],.25,p[1],.42,k%2?9:7.5,a,{wings:k%2?1.7:0,painted:k%2===0,hat:k%3===0});});
- for(const s of[-1,1]){vB('vStone',s*6.2,0,19,1.6,.35,1.6,0,ash);hnTotem(s*6.2,.35,19,.55,11,0,{wings:2.6,painted:true});}
- vnPaving(0,0,20,7,5,0,ash,8);hnRBLamps([[-4.6,18.6],[4.6,18.6],[-12,17],[12,17]],3.6);
+ vnPaving(0,0,20,7,5,0,ash,8);hnRBLamps([[-4.6,19.6],[4.6,19.6],[-12,17],[12,17]],3.6);
  vnFolk(2,21,3,2.5);vnFolk(-9,15.5,2,1.5);}
 
 // The timber bell-and-clock tower (after Travis's clocktower reference): an arched rubble base with a great bell,
@@ -419,7 +434,7 @@ function buildHlRepMuster(G,o){reseed(20771+(o.v|0));const FX=25.5,FZ0=-15.6,FZ1
  hnRBLamps([[-FX+1,FZ0+1],[FX-1,FZ0+1],[-FX+1,FZ1-1],[FX-1,FZ1-1],[-5.5,FZ1-.8],[5.5,FZ1-.8]],3.6);}
 
 const HRB_CIVIC={wealth:'civic',lit:true};
-HL.def({key:'hl_rep_temple',name:'Temple of the Pantheon',branch:'republican',family:'Temple',tags:Object.assign({type:['religious'],landmark:true},HRB_CIVIC),w:42,d:42,h:41,build:buildHlRepTemple});
+HL.def({key:'hl_rep_temple',name:'Temple of the Pantheon',branch:'republican',family:'Temple',tags:Object.assign({type:['religious'],landmark:true},HRB_CIVIC),w:42,d:42,h:38,build:buildHlRepTemple});
 HL.def({key:'hl_rep_town_hall',name:'Town hall',branch:'republican',family:'Civic',tags:Object.assign({type:['civic'],landmark:true},HRB_CIVIC),w:32,d:34,h:33,build:buildHlRepTownHall});
 HL.def({key:'hl_rep_hospital',name:'Hospital',branch:'republican',family:'Civic',tags:Object.assign({type:['civic']},HRB_CIVIC),w:38,d:34,h:15,build:buildHlRepHospital});
 HL.def({key:'hl_rep_watch',name:'City watch',branch:'republican',family:'Civic',tags:Object.assign({type:['civic','military']},HRB_CIVIC),w:24,d:18,h:24,build:buildHlRepWatch});

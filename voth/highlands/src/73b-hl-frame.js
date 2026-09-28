@@ -70,7 +70,8 @@ function hlFrameOf(){const c=VERN.cur;if(c.frame)return c.frame;const w=c.D.tags
  c.frame={st,rich,poor:w==='poor',
   post:hC(vPick(w==='poor'?HFRAME.postPoor:HFRAME.post)),plank:hC(vPick(rich?HFRAME.plankRich:HFRAME.plank)),
   caihua:rich||(w==='middle'&&rng()<.45),latt:vPick(rich?['hLattB','hLattC','hLattA']:['hLattA','hLattA','hLattB']),
-  gallery:rich?.55:w==='middle'?.35:.12,carved:rich?.6:w==='middle'?.25:0,galleryUsed:false};
+  gallery:rich?.55:w==='middle'?.35:.12,carved:rich?.6:w==='middle'?.25:0,galleryUsed:false,
+  dutch:rich?.5:w==='middle'?.33:.1,roofC:hC(vPick(HPAL.slate))};
  return c.frame;}
 // ---------------------------------------------------------------- the pieces
 // a lattice window: backing (glass / lit / dark — the fitting pass reads these as windows), the lattice in front, a
@@ -96,7 +97,8 @@ function hnGeshan(x,y,z,ry,u0,u1,y0,y1,kind){const F=hlFrameOf();const W=u1-u0,H
 function hnFrameFace(x,y,z,ry,w,h,c,wins,kind,winC,o){o=o||{};const F=hlFrameOf();
  const nb=Math.max(1,Math.round(w/2.2)),bw=w/nb,T=.1;
  const isWin=i=>wins===-1?(nb===1||i%2===1||(nb===2&&i===0)):(wins||[]).indexOf(i)>=0;
- const ds=Math.max(.3,Math.min(.46,bw*.2)),tall=h>=2.3,dgH=tall?.9*ds:0,yTop=y+h,yDg=yTop-dgH,archH=tall?.26:.2,yA=yDg-archH;
+ const ds=Math.max(.3,Math.min(.46,bw*.2)),tall=h>=2.3,yTop=y+h,archH=tall?.26:.2,yA=yTop-.1-archH;
+ const C=VERN.cur,dq=C.fdg||(C.fdg=[]);
  const P=(u,oo)=>loc(x,z,u,oo,ry);const teal=hC(HPAL.teal),white=hC(HPAL.white);
  // sill, head plate, architrave (caihua or lacquer)
  {const p=P(0,T*.6);vB('vWood',p[0],y,p[1],w,.18,.2,ry,hC(0x3a2a22));vB('hPaint',p[0],yA,p[1],w,archH,.16,ry,F.caihua?teal:F.post);
@@ -113,12 +115,12 @@ function hnFrameFace(x,y,z,ry,w,h,c,wins,kind,winC,o){o=o||{};const F=hlFrameOf(
  // posts with banded capitals, each capped by a bracket set; the rich add a set mid-bay on the architrave
  if(!o.noPosts)for(let i=0;i<=nb;i++){const u=Math.max(-w/2+.12,Math.min(w/2-.12,-w/2+i*bw)),p=P(u,T);
   kput('hCol',[p[0],y,p[1]],null,[.13,yA-y,.13],F.post);kput('hCol',[p[0],yA-.2,p[1]],null,[.145,.16,.145],teal);kput('hCol',[p[0],yA-.24,p[1]],null,[.146,.04,.146],white);
-  if(tall)hnDougong(p[0],yDg,p[1],ry,ds);}
- if(tall&&!o.noPosts&&(F.rich||F.caihua))for(let i=0;i<nb;i++){const p=P(-w/2+bw*(i+.5),T);hnDougong(p[0],yDg,p[1],ry,ds*.85);}}
+  if(tall)dq.push({x:p[0],z:p[1],ry,s:ds,top:yTop});}
+ if(tall&&!o.noPosts&&(F.rich||F.caihua))for(let i=0;i<nb;i++){const p=P(-w/2+bw*(i+.5),T);dq.push({x:p[0],z:p[1],ry,s:ds*.85,top:yTop});}}
 // a gallery in front of a face: deck on carved cantilevers, posts (lacquered or carved) capped by bracket sets, a fret
 // balustrade, a lattice valance under the architrave. dep: how far it stands out.
 function hnGalleryFace(x,y,z,ry,w,h,dep,kind){const F=hlFrameOf();const nb=Math.max(2,Math.round(w/2.2)),bw=w/nb;const P=(u,oo)=>loc(x,z,u,oo,ry);const teal=hC(HPAL.teal);
- const ds=Math.max(.3,Math.min(.46,bw*.2)),dgH=.9*ds,yTop=y+h,yDg=yTop-dgH,archH=.24,yA=yDg-archH;const dark=hC(0x3a2a22);
+ const ds=Math.max(.3,Math.min(.4,bw*.18)),dgH=.9*ds,yWall=y+h,yTop=yWall-.55,yDg=yTop-dgH,archH=.24,yA=yDg-archH;const dark=hC(0x3a2a22);
  {const d=P(0,dep/2);vB('vWood',d[0],y-.14,d[1],w,.14,dep,ry,F.plank);const e=P(0,dep-.04);vB('hPaint',e[0],y-.3,e[1],w+.04,.18,.1,ry,F.post);}   // deck + lacquered fascia
  for(let i=0;i<=nb;i++){const u=Math.max(-w/2+.12,Math.min(w/2-.12,-w/2+i*bw));
   const k=P(u,dep*.42);kput('hArmW',[k[0],y-.5,k[1]],qEuler(0,ry,0).multiply(qEuler(0,Math.PI/2,0)),[.2,.62,dep*.9],F.post);   // carved cantilever under each post
@@ -129,6 +131,10 @@ function hnGalleryFace(x,y,z,ry,w,h,dep,kind){const F=hlFrameOf();const nb=Math.
  {const a=P(0,dep-.16);vB('hPaint',a[0],yA,a[1],w,archH,.14,ry,F.caihua?teal:F.post);vB('hPaint',a[0],yTop-.1,a[1],w+.1,.1,.24,ry,teal);
   if(F.caihua)for(let i=0;i<nb;i++){const c=P(-w/2+bw*(i+.5),dep-.08);kput('hCaihua',[c[0],yA+archH/2,c[1]],qEuler(0,ry,0),[bw-.2,archH-.03,1],null);}
   for(let i=0;i<nb;i++){const v=P(-w/2+bw*(i+.5),dep-.14);kput(F.rich?'hLattC':'hLattB',[v[0],yA-.2,v[1]],qEuler(0,ry,0),[bw-.3,.36,1],F.post);}}   // hanging valance (guazi)
+ // the pent roof (yan): from the wall top down over the gallery, clear of the brackets; its own eave board
+ {const run=dep+.4,k=(yWall-yTop+.02)/run,th=Math.atan(k),Lr=run/Math.cos(th),c=P(0,run/2),yc=yWall-k*run/2+.07;
+  kput(F.roofItem||'vShingleB',[c[0],yc,c[1]],qEuler(0,ry,0).multiply(qEuler(th,0,0)),[w+.6,.12,Lr+.1],F.roofC||hC(vPick(HPAL.shingle)));
+  const e=P(0,run-.02);vB('hPaint',e[0],yWall-k*run-.14,e[1],w+.6,.14,.06,ry,F.post);}
  // fret balustrade: front and both ends
  const rail=(a,b,rry,L)=>{const m=[(a[0]+b[0])/2,(a[1]+b[1])/2];kput('hLattB',[m[0],y+.45,m[1]],qEuler(0,rry,0),[L-.1,.62,1],F.post);
   vB('hPaint',m[0],y+.84,m[1],L,.09,.14,rry,F.post);vB('vWood',m[0],y,m[1],L,.1,.1,rry,dark);};
@@ -140,6 +146,7 @@ hnRAShutters=function(){if(!hlFrameOn())return _hlShut0.apply(null,arguments);};
 hnFachFace=function(x,y,z,ry,w,h,c,wins,kind,winC){if(!hlFrameOn())return _hlFachFace0(x,y,z,ry,w,h,c,wins,kind,winC);return hnFrameFace(x,y,z,ry,w,h,c,wins,kind,winC);};
 hnFachBox=function(x,y,z,w,h,d,ry,wallC,beamC,kind){if(!hlFrameOn())return _hlFachBox0(x,y,z,w,h,d,ry,wallC,beamC,kind);const F=hlFrameOf();
  vB('hPlankB',x,y,z,w-.1,h,d-.1,ry,F.plank.clone().multiplyScalar(.8));                               // the closed core behind the frame
+ (VERN.cur.fstor||(VERN.cur.fstor=[])).push({x,z,w,d,ry,top:y+h,ds:Math.max(.3,Math.min(.46,Math.max(w,d)/Math.max(1,Math.round(Math.max(w,d)/2.2))*.2))});
  // one gallery per house at most, on the front of a storey wide and tall enough, above the ground
  const gal=!F.galleryUsed&&y>1.5&&w>=5&&h>=2.4&&rng()<F.gallery;if(gal)F.galleryUsed=true;
  for(const s of[1,-1]){const p=loc(x,z,0,s*d/2,ry),fr=ry+(s>0?0:Math.PI);
@@ -151,3 +158,62 @@ vnWin=function(x,y,z,ry,w,h,kind,frameItem,c,shutters){if(!hlFrameOn())return _h
 hnNal=function(x,y,z,ry,w,h,kind,trimC,o){if(!hlFrameOn())return _hlNal0(x,y,z,ry,w,h,kind,trimC,o);const F=hlFrameOf();hnLatWin(x,y,z,ry,w,h,kind||'glass',F.post);
  const hb=loc(x,z,0,.2,ry);vB('hPaint',hb[0],y+h+.44,hb[1],w+.6,.08,.42,ry,hC(HPAL.teal));
  for(const s of[-1,1]){const q=loc(x,z,s*(w/2+.2),.2,ry);kput('hArm',[q[0],y+h+.3,q[1]],qEuler(0,ry,0).multiply(qEuler(0,Math.PI/2,0)),[.1,.26,.36],F.post);}};
+
+// ---------------------------------------------------------------- the frame and the roof (round 7b)
+// Travis: "many buildings have brackets clipping through the slope of the roof ... where the slope of the roof comes
+// down into the dougong it looks good, but on the side where the gables are it's not clear what they're interfacing
+// with. We may need to try replacing some of these roofs with dutch gabled roofs."
+// A gable or hip roof laid on a frame storey (its base at the storey top, its centre over the storey) is LIFTED by the
+// bracket band: L = the set's height + its reach x the roof pitch, so the slab clears every set. The band is closed by a
+// plank frieze, and everything the builder then lays above the storey top inside the roof's footprint — bargeboards,
+// dormers, chimneys, finials, gable murals — rides up with it (the kput wrapper below). Some gables become DUTCH gables
+// (a hip with a small gable at the top), which have eaves on all four sides. The storey's bracket sets are placed last
+// (hlFrameFlush): in the band on every eave face; on a plain gable's end faces none (the frieze shows instead); inside
+// the storey top when no roof sits on it (a storey above).
+function hlRoofOn(x,y,z){const C=VERN.cur;if(!C||!C.fstor||!hlFrameOn())return null;for(const s of C.fstor){if(Math.abs(s.top-y)<.35&&Math.hypot(s.x-x,s.z-z)<1.6)return s;}return null;}
+function hlLiftAt(p){const C=VERN.cur;if(!C||!C.lifts||C.liftOff)return 0;for(const L of C.lifts){if(p[1]<=L.y0+.02)continue;const dx=p[0]-L.x,dz=p[2]-L.z,c=Math.cos(L.ry),s=Math.sin(L.ry);
+  const lx=c*dx-s*dz,lz=s*dx+c*dz;if(Math.abs(lx)<=L.hx&&Math.abs(lz)<=L.hz)return L.L;}return 0;}
+const _hlKputLift=kput;
+kput=function(name,p,q,s,c){const l=hlLiftAt(p);if(l)p=[p[0],p[1]+l,p[2]];return _hlKputLift(name,p,q,s,c);};
+function hlLift(st,x,y,z,w,d,ry,pitch,over,kind){const C=VERN.cur;const L=Math.min(1.45,.9*st.ds+st.ds*1.15*pitch+.06);
+ C.liftOff=true;vB('hPlankB',st.x,st.top,st.z,st.w-.14,L+.05,st.d-.14,st.ry,hlFrameOf().plank.clone().multiplyScalar(.65));C.liftOff=false;   // the frieze behind the sets
+ const r={x,z,y0:y,L,ry,kind,w,d,hx:w/2+(over||.9)+.3,hz:d/2+(over||.9)+.3};(C.froofs||(C.froofs=[])).push(r);(C.lifts||(C.lifts=[])).push(r);return r;}
+const HHIPOF={hGableSc:'hHipSc',hGableTurf:'hHipTurf',vGableS:'vHipS',vGableT:'vHipT',vGableCu:'vHipCu',vGableC:'vHipC'};
+const _hlGable0=vnGableRoof,_hlHip0=vnHipRoof,_hlBarge0=hnBarge;
+vnGableRoof=function(x,y,z,w,d,rise,ry,slabItem,slabC,over,endItem,endC,thick){const st=hlRoofOn(x,y,z);
+ if(!st)return _hlGable0(x,y,z,w,d,rise,ry,slabItem,slabC,over,endItem,endC,thick);
+ const F=hlFrameOf();const dutch=w>=5&&rng()<F.dutch;const r=hlLift(st,x,y,z,w,d,ry||0,rise/(d/2),over,dutch?'dutch':'gable');
+ F.roofItem=slabItem;F.roofC=slabC||F.roofC;const C=VERN.cur;C.liftOff=true;const Y=y+r.L;
+ if(dutch){// the hip below (same pitch), the small gable on top with its upright end triangle set back from the hip ends
+  const hip=HHIPOF[slabItem]&&KIT.defs[HHIPOF[slabItem]]?HHIPOF[slabItem]:'hHipSh';_hlHip0(hip,x,Y,z,w,d,rise,ry,slabC,over===undefined?.9:over);
+  _hlGable0(x,Y+rise*.48,z,w*.62,d*.52,rise*.52,ry,slabItem,slabC,.28,endItem||'vGablePl',endC||hC(vPick(HPAL.stucco)),thick);}
+ else _hlGable0(x,Y,z,w,d,rise,ry,slabItem,slabC,over,endItem,endC,thick);
+ C.liftOff=false;};
+vnHipRoof=function(item,x,y,z,w,d,rise,ry,c,over){const st=hlRoofOn(x,y,z);if(!st)return _hlHip0(item,x,y,z,w,d,rise,ry,c,over);
+ const r=hlLift(st,x,y,z,w,d,ry||0,rise/(Math.min(w,d)/2),over,'hip');const C=VERN.cur;C.liftOff=true;_hlHip0(item,x,y+r.L,z,w,d,rise,ry,c,over);C.liftOff=false;};
+// lace bargeboards on a Dutch gable go on its small top gable only (the lift wrapper raises them)
+hnBarge=function(x,y,z,w,d,rise,ry,over,c,style,endOver){const C=VERN.cur;const r=C&&C.froofs&&C.froofs.find(r=>r.kind==='dutch'&&Math.abs(r.y0-y)<.35&&Math.hypot(r.x-x,r.z-z)<1.6);
+ if(!r)return _hlBarge0(x,y,z,w,d,rise,ry,over,c,style,endOver);return _hlBarge0(x,y+rise*.48,z,w*.62,d*.52,rise*.52,ry,.28,c,style,endOver);};
+// the storeys' bracket sets, once the roofs are known
+function hlFrameFlush(){const C=VERN.cur;if(!C||!C.fdg)return;C.liftOff=true;
+ for(const g of C.fdg){const r=(C.froofs||[]).find(r=>Math.abs(r.y0-g.top)<.35&&Math.abs(Math.cos(r.ry)*(g.x-r.x)-Math.sin(r.ry)*(g.z-r.z))<=r.w/2+1.2&&Math.abs(Math.sin(r.ry)*(g.x-r.x)+Math.cos(r.ry)*(g.z-r.z))<=r.d/2+1.2);
+  if(!r){hnDougong(g.x,g.top-.1-.9*g.s*.8,g.z,g.ry,g.s*.8);continue;}                     // a storey above: small sets inside the storey top
+  const fn=loc(0,0,0,1,g.ry),rz=loc(0,0,0,1,r.ry),eave=Math.abs(fn[0]*rz[0]+fn[1]*rz[1])>.7;
+  if(eave||r.kind!=='gable')hnDougong(g.x,g.top,g.z,g.ry,g.s);}
+ C.fdg=null;C.liftOff=false;}
+const _hlFlush0=hlFlush;
+hlFlush=function(){hlFrameFlush();const C=VERN.cur;const r=_hlFlush0();if(C)C.lifts=null;return r;};   // murals placed in the flush still ride the lift
+// ---------------------------------------------------------------- harlequin roofs (the Izmailovo temple, round 7b)
+// Diamond-checked tile in two tones with a gold seam: green/lime for the great dome and some tents, red/white for
+// the others. The pattern repeats round a lathe (u) and up it (v); instance colour stays white.
+function hlHarl(a,b,seam){return canvasTex(128,128,(g,w,h)=>{g.fillStyle=a;g.fillRect(0,0,w,h);g.fillStyle=b;
+ for(const [cx,cy] of[[w/2,h/2]]){g.beginPath();g.moveTo(cx,cy-h/2);g.lineTo(cx+w/2,cy);g.lineTo(cx,cy+h/2);g.lineTo(cx-w/2,cy);g.closePath();g.fill();}
+ g.strokeStyle=seam;g.lineWidth=3;g.beginPath();g.moveTo(0,h/2);g.lineTo(w/2,0);g.lineTo(w,h/2);g.lineTo(w/2,h);g.closePath();g.stroke();
+ g.fillStyle='rgba(255,255,255,.18)';g.beginPath();g.arc(w*.5,h*.38,6,0,TAU);g.fill();});}
+TEX.hHarlG=hlHarl('#2e6e3a','#7fa848','#c89a30');TEX.hHarlG.repeat.set(12,6);
+TEX.hHarlR=hlHarl('#9a2420','#d8cfbe','#c89a30');TEX.hHarlR.repeat.set(5,3);
+TEX.hHarlGt=hlHarl('#1f5a40','#5f9a50','#c89a30');TEX.hHarlGt.repeat.set(5,3);
+MAT.hHarlG=hStd({map:TEX.hHarlG,roughness:.45,metalness:.1});MAT.hHarlR=hStd({map:TEX.hHarlR,roughness:.5});MAT.hHarlGt=hStd({map:TEX.hHarlGt,roughness:.5});
+// the great dome: a bulb fatter than the onion, its widest point low, drawn to a short neck
+const HGDOME=new THREE.LatheGeometry([[0,0],[.86,0],[1.06,.12],[1.16,.28],[1.14,.44],[1.0,.6],[.74,.76],[.44,.88],[.18,.96],[.06,.99],[0,1]].map(p=>new THREE.Vector2(p[0],p[1])),32);
+kdef('hDomeHG',HGDOME,MAT.hHarlG);kdef('hTentHR',HTENT,MAT.hHarlR);kdef('hTentHG',HTENT,MAT.hHarlGt);kdef('hBulbHG',HBULB,MAT.hHarlGt);

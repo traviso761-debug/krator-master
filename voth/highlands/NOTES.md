@@ -155,3 +155,28 @@ albedo / buildable mask / class, the road list and its spatial hash, OBB occupan
 - **UI.** An hour slider drives the Krator sky, and through `window.HL_HOUR` every clock in town. There is a Paths overlay
   (walkable classes) and a Forest toggle. `window._api.town` exposes the statistics (including why frontage placements
   failed).
+
+## Round 7 (Sep 28 2026) — the East Highland frame; the Izmailovo temple
+- **Frame replaces the half-timbering** (`src/73b-hl-frame.js`, Republican only; `HL_WALLS='fach'` restores the old
+  look). The builders still call `hnFachBox` / `hnFachFace`, `vnWin`, `hnNal` and `hnRAShutters`, which are re-pointed.
+  The storeys become a post-and-beam frame:
+  - posts in red lacquer with teal-and-white capitals (the dougong's colours);
+  - caihua architraves in the mural palette (middle, rich and civic);
+  - plank, lattice curtain-wall (geshan) or mixed infill;
+  - lattice windows (grid, step-fret or lantern);
+  - on some upper storeys, a front gallery on carved cantilevers, with fret balustrade, carved posts and its own pent roof.
+- **The roof interface** (Travis: brackets clipped the roof slopes; on the gable sides it wasn't clear what they met).
+  - A gable or hip roof laid on a frame storey is lifted by the bracket band: height + reach × pitch. A plank frieze
+    closes the band.
+  - Everything the builder then lays above the storey top inside the roof's footprint rides up with it (a kput wrapper):
+    bargeboards, dormers, chimneys, finials, gable murals.
+  - Bracket sets are placed after the building (`hlFrameFlush`): in the band on eave faces; none on a plain gable's end
+    faces; small sets inside the storey top when a storey sits above.
+  - Some gables become **Dutch gables** (hip plus small top gable; rich 50%, middle 33%, poor 10%), with eaves and
+    brackets on all four sides.
+- **Temple of the Pantheon** rebuilt after the Izmailovo kremlin's wooden terem:
+  - three stepped log tiers, each ringed by a gallery on bracketed posts (alternately carved) under a flared shingle skirt;
+  - steep gabled pavilions with lace bargeboards and painted pediments on every tier;
+  - a grand covered stair (30 steps, three stepped gable canopies) to the first terrace, and two bochka porches;
+  - four corner turrets with red/white and green harlequin tents;
+  - the great oval dome in green/lime harlequin (`hDomeHG`) with a clock lantern (live hands) and two emblem spires.
