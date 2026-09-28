@@ -60,7 +60,13 @@ const HCOREAT=(S,i,dy)=>{const K=S.core[Math.min(i,S.core.length-1)];
 // and came back as a bald dune with a white thread on it: the terrace band is
 // 280 m wide against a hill 3.8 km across, and there is no distance at which
 // both read.
-const HHERO=S=>HPOL(S,2550,HMID(S)-.35,130).concat(HPOL(S,1250,HMID(S)+.05,330));
+// SECOND CUT, after the renders: from 130 m up the hill's own shoulder hides a
+// ribbon that sits in a trench 5-90 m deep, and the frame came back as bare
+// slope. The hero now stands 760 m up over the plain, off the downhill side of
+// the sweep, so it looks DOWN into the cut: the snake of terraces reads as a
+// band of dwellings and planting, with the summit towers on the skyline. It is
+// the same station logic as 'A hairpin', widened to hold the whole climb.
+const HHERO=S=>HPOL(S,2750,HMID(S)-.22,760).concat(HPOL(S,1150,HMID(S)+.02,300));
 // The landslip, from out over the plain at the scar's own bearing.
 const HSLIP=S=>HPOL(S,S.slip.r1+820,S.slip.th-.13,S.slip.y1+150)
  .concat(HPOL(S,(S.slip.r0+S.slip.r1)*.5,S.slip.th,(S.slip.y0+S.slip.y1)*.5));
@@ -91,8 +97,22 @@ const VIEWS={
  // planting, looking 130 m along the band: the trough at the lip, the planting
  // spilling over it, the dwelling fronts on the right and the awning of the
  // level above closing the top of the frame.
- 'A garden terrace':     hillOpenP(HA,HA.sta[1].l,HA.sta[1].s,.62,1.75)
-                          .concat(hillOpenP(HA,HA.sta[1].l,HA.sta[1].s+135,.86,1.2)),
+ // STANDING ON A TERRACE, at one of the stations the builder kept clear of
+ // planting, looking OUT over the lip and down the flight of terraces below to
+ // the plain. The first cut looked 135 m along the band, which on a curving,
+ // side-stepping ribbon ended in the cut wall at eye level.
+ // The station's open deck is 96 m of lawn, so the camera stands near the lip,
+ // at the trough, where a 12 degree look down clears the parapet 14 m ahead.
+ // A GARDEN TERRACE, from just off its lip: 60 m out over the fall and level
+ // with the deck of the terrace above, looking back in at the lawn, the trough
+ // and planting at the lip, the dwelling fronts, and the awnings stacked over
+ // them. Earlier cuts STOOD on the terrace, and every one failed the same way:
+ // looking along the band ended at the cut wall, and looking out met the deeper
+ // plate of the level above, which roofs this whole terrace.
+ 'A garden terrace':     (function(S){const st=S.sta[1];
+                           const th=hillAng(st.l)+st.s/hillRad(st.l);
+                           return HPOL(S,st.lip+60,th-.035,hillDeckY(st.l)+14)
+                            .concat(hillOpenP(S,st.l,st.s,.45,4));})(HA),
  // AN AWNING FROM BENEATH. Aimed at the deepest overhang the depth field
  // actually produced (HILL_SITE.awn, measured over all 111 terraces x 25
  // stations): where the plate above reaches further out than this one does, the
