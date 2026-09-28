@@ -50,3 +50,46 @@ the previous night preset's hour (a preset with no hour is now a day preset, as
 an Ancients preset without the night flag), the hut hearth faced sideways so the
 fire read edge-on from the front, and two eye-level presets stood inside
 geometry.
+
+## Round 2 (Sep 28 2026) — adjustments and more buildings
+
+From Travis after walking the set: the great roundhouse's and tavern's lower
+awnings sat too low and cut through their posts; the manor gate flickered;
+expand the Halls to about twice the size with more buildings; another mound
+with a High Priest's palace built into it; ground-level priest compounds; a
+quality pass on the mound stairs; more shops and workshops; a windmill.
+
+* **Awnings**: the ring veranda's shingle skirt and the tavern porch cone now
+  sit on a timber ring at the post tops instead of 1.6 m below them.
+* **Manor gate**: the relief bands stood 7 cm proud, flush with the pylon's
+  batter at its foot (z-fight); now 10 cm. The lintel's top was flush with the
+  pylon tops; it sits lower and narrower.
+* **Mound stair** (`dnMound`): was a run of separate horizontal treads, which
+  opened gaps where the slope was steepest. Now a continuous ramp of tilted
+  slabs following the profile, kerb stringers both sides, treads laid on the
+  ramp every 0.3 m of rise, a landing with gilt-topped piers every 4 m of rise.
+* **Halls of Reformation**: r 34 → 68. Gatehouse drums with a relief bridge,
+  the great hall (r 13), four wing halls on the diagonals with pipe to the
+  centre, two cell blocks (colonnaded ranges of seven God-lit cells), the
+  archive drum, two vat sheds, two pylons, twelve steles, God-posts along the
+  axis. 146 m def.
+* **Palace mound** (`dalab_palace_mound`): r 42 / h 17; three stone terraces
+  cut into the front slope, each a battered range with relief, God-lit
+  galleries, a stone colonnade and banners; the trilithon door into the mound
+  on the lowest; the mound stair passes through them; the greater temple and
+  two wings on the plateau.
+* **Priests' compound** (`dalab_priest_compound`): a stone ring wall (r 22)
+  round three priests' houses, a mural-ringed chapel drum, an altar, steles,
+  gardens, God-posts. **Healers' hall** (`dalab_healers`) alongside: the
+  ward, a dispensary drum, a herb garden, the sick on benches.
+* **Trade**: shop row (three counters with awnings, a tall middle shop),
+  potter's workshop (beehive kiln, pot racks, clay pit, wheel), weaver's
+  workshop (looms under an open hall, drying lines), dyer's yard (six vats
+  and their stains), windmill (tapered earth tower, thatch cap with tail pole,
+  four cloth sails on a tilted axle, millstone shed).
+* Fixes from the shots: mural rings on the chapel and archive drums sat inside
+  the wall face and showed as triangles; the dyer's frames; the compound
+  preset.
+
+41 registered volumes, 9.1 k instances, 257 k scene triangles, ~85 draw calls.
+`--assert` green.
