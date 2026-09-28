@@ -19,12 +19,17 @@ const DPAL={
  red:[0xa8382a,0xb8442e,0x9a3020],                                      // red ochre paint
  turq:[0x2f9a8a,0x3aa896,0x2a8a7a],                                     // turquoise paint, copper-green
  gold:[0xd8a838,0xc89a30,0xe0b848],
- cream:[0xe8dcc0,0xf0e6cc],
  skin:[0x6a9a4a,0x5a8a42,0x7aa852,0x4f7f3c,0x86b060],                   // photosynthetic green, every citizen
  robe:[0xe8dcc0,0xa8382a,0x2f9a8a,0xd8a838,0x3b3b4a,0xf0e8d8,0x8a6a3a],
  priest:[0xf0e8d8,0x2f9a8a,0xd8a838],                                   // white, turquoise, gold: the caste
  turf:[0x5f8a3a,0x6a9a44,0x557f36,0x6f9a48],
  god:0x9af0e0,                                                          // The God's light
+ // THE SACRED DECO (round 4, from the reference sheet): terracotta-red walls, cream trim, turquoise-inlaid fret,
+ // gold finials — the Amerindian-deco of the temples, priests' houses, the palace and the compound chapels
+ sacred:[0x9c4e3c,0xa85a44,0x8e4636,0xa2523e],
+ cream:[0xe8dcc0,0xf0e6cc],
+ trim:[0xdcbc8e,0xe4c69a,0xd4b284],
+ tq:0x3f9a88,
  laterite:[0x8a4a2a,0x9a5630,0x7a4224],                                 // the Historians' Djenne earth
  vothStone:[0x7a7068,0x8a8078,0x6a625a],                                // Voth's cooler ashlar
 };
@@ -98,6 +103,32 @@ TEX.dMural=canvasTex(256,256,(g,w,h)=>{
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;const wear=clamp((fbm(x/40,y/40,6.6,3)-.42)*2.2,0,1)*.45+clamp((y/h-.7)*1.6,0,1)*.5*fbm(x/9,y/9,2.2,2);
   for(let c=0;c<3;c++)d[i+c]=d[i+c]+(214-d[i+c])*wear*.8;const gr=(fbm(x/5,y/5,1.7,1)-.5)*14;d[i]+=gr;d[i+1]+=gr;d[i+2]+=gr;}
  g.putImageData(id,0,0);});
+
+// The same stepped-fret height field, in COLOUR: cream faces over turquoise recesses (the inlay of the deco temples).
+TEX.dReliefTq=canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;const CELL=64;
+ const hf=(x,y)=>{const cx=x%CELL,cy=y%CELL;const bx=Math.floor(x/CELL),by=Math.floor(y/CELL);
+  const u=Math.abs(cx-CELL/2),v=Math.abs(cy-CELL/2);const q=8;const su=Math.floor(u/q),sv=Math.floor(v/q);const ring=Math.max(su,sv);
+  const spiral=((bx+by)%2)?((ring+(su>sv?1:0))%2):(ring%2);let z=spiral?1:0;if(cx<3||cy<3||cx>CELL-4||cy>CELL-4)z=0;if(ring===0)z=1;return z;};
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;const z=hf(x,y);const up=hf(x,(y-2+h)%h);
+  let r,gg,b;if(z){r=226;gg=196;b=150;if(!up){r+=22;gg+=20;b+=16;}}else{r=56;gg=140;b=124;if(up){r-=18;gg-=30;b-=26;}}
+  const n=(fbm(x/9,y/9,5.5,2)-.5)*16;r+=n;gg+=n;b+=n;d[i]=r;d[i+1]=gg;d[i+2]=b;d[i+3]=255;}
+ g.putImageData(id,0,0);});
+// A tall deco panel (1 x 4): a turquoise field with a cream stylised avatar — the rayed head, the great eye, chevron
+// body, three vertical lines — the pier ornament of the temples. Plain UVs; never tiles.
+TEX.dDecoPanel=canvasTex(64,256,(g,w,h)=>{g.fillStyle='#3f9a88';g.fillRect(0,0,w,h);g.fillStyle='#e4c69a';
+ g.fillRect(3,3,w-6,3);g.fillRect(3,h-6,w-6,3);g.fillRect(3,3,3,h-6);g.fillRect(w-6,3,3,h-6);
+ for(let k=0;k<7;k++){const a=Math.PI*(k/6);g.fillRect(32+Math.cos(a)*22-2,44-Math.sin(a)*20-8,4,12);}   // rays
+ g.fillRect(18,40,28,26);g.fillStyle='#3f9a88';g.fillRect(24,48,16,10);g.fillStyle='#e4c69a';g.fillRect(29,50,6,6);   // head, eye
+ g.fillRect(14,72,36,4);for(let k=0;k<5;k++){g.fillRect(16+k*8,80,4,60);}                                   // shoulders, five lines
+ for(let k=0;k<4;k++){const y=150+k*22;g.beginPath();g.moveTo(14,y);g.lineTo(32,y+10);g.lineTo(50,y);g.lineTo(50,y+5);g.lineTo(32,y+15);g.lineTo(14,y+5);g.fill();}   // chevrons
+ g.fillRect(22,238,20,8);g.fillRect(28,232,8,6);});
+TEX.dDecoPanel.wrapS=TEX.dDecoPanel.wrapT=THREE.ClampToEdgeWrapping;
+// Diamond-checker tile, 2 m: ochre, turquoise and cream lozenges with dark grout.
+TEX.dChecker=canvasTex(128,128,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;const S=32;
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;const u=x/S,v=y/S;const a=Math.floor(u+v),b=Math.floor(u-v+64);const k=((a%2)+2*(((b%2)+2)%2));
+  const fu=(u+v)%1,fv=(u-v+64)%1;const grout=fu<.06||fv<.06;const COL=[[204,140,72],[70,150,134],[228,206,166],[184,110,64]];let c=COL[k%4];
+  const n=(fbm(x/7,y/7,3.3,2)-.5)*18;let r=c[0]+n,gg=c[1]+n,bb=c[2]+n;if(grout){r*=.45;gg*=.45;bb*=.45;}d[i]=r;d[i+1]=gg;d[i+2]=bb;d[i+3]=255;}
+ g.putImageData(id,0,0);});
 // Banner: a hung cloth with the eye of The God as its device, GREY so the field takes the tint; the device stays pale.
 TEX.dBanner=canvasTex(64,192,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;const u=x/w-.5,v=y/h;let val=112+(fbm(x/6,y/6,2.2,2)-.5)*18+((x%3<1)?-6:0);
@@ -139,6 +170,9 @@ MAT.dRammed=new THREE.MeshStandardMaterial({map:TEX.dRammed,color:0xffffff,rough
 MAT.dRelief=new THREE.MeshStandardMaterial({map:TEX.dRelief,color:0xffffff,roughness:.95,metalness:0,side:DS});vWorldUV(MAT.dRelief,.25);
 MAT.dMural=new THREE.MeshStandardMaterial({map:TEX.dMural,color:0xffffff,roughness:.94,metalness:0,side:DS});vWorldUV(MAT.dMural,.5);   // boxes: a 2 m band shows the whole frieze and tiles along the wall
 MAT.dMuralP=new THREE.MeshStandardMaterial({map:TEX.dMural,color:0xffffff,roughness:.94,metalness:0,side:DS});                          // planes: one whole tile stretched to the plane (round-house facets)
+MAT.dReliefTq=new THREE.MeshStandardMaterial({map:TEX.dReliefTq,color:0xffffff,roughness:.9,metalness:0,side:DS});vWorldUV(MAT.dReliefTq,.25);
+MAT.dDecoPanel=new THREE.MeshStandardMaterial({map:TEX.dDecoPanel,color:0xffffff,roughness:.9,metalness:0,side:DS});
+MAT.dChecker=new THREE.MeshStandardMaterial({map:TEX.dChecker,color:0xffffff,roughness:.7,metalness:0,side:DS});vWorldUV(MAT.dChecker,.5);
 MAT.dBanner=new THREE.MeshStandardMaterial({map:TEX.dBanner,color:0xffffff,roughness:.9,metalness:0,side:DS});                          // plain UVs: the device must not tile
 MAT.dTurf=new THREE.MeshStandardMaterial({map:TEX.dTurf,color:0xffffff,roughness:1,metalness:0,side:DS});vWorldUV(MAT.dTurf,.25);
 // a mound is a real mesh (lathe), whose UVs are the geometry's 0..1: this copy tiles the turf across it by repeat
@@ -164,7 +198,7 @@ const DDOMELOW=new THREE.SphereGeometry(1,24,8,0,TAU,0,Math.PI/2);
 
 // ---------------------------------------------------------------- kit items
 kdef('dEarth',VBOX,MAT.dRammed);kdef('dEarthBat',VBATTER,MAT.dRammed);kdef('dEarthDrum',DDRUM,MAT.dRammed);kdef('dEarthDrumB',DDRUMB,MAT.dRammed);kdef('dEarthDome',DDOMELOW,MAT.dRammed);
-kdef('dRelief',VBOX,MAT.dRelief);kdef('dReliefBat',VBATTER,MAT.dRelief);kdef('dReliefDrum',DDRUM,MAT.dRelief);
+kdef('dRelief',VBOX,MAT.dRelief);kdef('dReliefTq',VBOX,MAT.dReliefTq);kdef('dDecoPanel',VPLANE,MAT.dDecoPanel);kdef('dChecker',VBOX,MAT.dChecker);kdef('dReliefBat',VBATTER,MAT.dRelief);kdef('dReliefDrum',DDRUM,MAT.dRelief);
 kdef('dStoneDrum',DDRUM,MAT.stone);kdef('dStoneDrumB',DDRUMB,MAT.stone);kdef('dStoneDome',DDOMELOW,MAT.stone);kdef('dStonePyr',VPYR,MAT.stone);
 kdef('dMural',VPLANE,MAT.dMuralP);kdef('dMuralB',VBOX,MAT.dMural);
 kdef('dBanner',VPLANE,MAT.dBanner);

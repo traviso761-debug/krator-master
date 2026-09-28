@@ -124,3 +124,28 @@ SW-lowlands biome; a quality pass on the known issues.
 
 65 registered volumes (24 flora), 10.2 k kit instances + 7.2 k biome, 370 k
 scene triangles, ~110 draw calls. `--assert` green.
+
+## Round 4 (Sep 28 2026) — the sacred deco, gardens all round
+
+From Travis: palace gardens all the way round the back; colour on the palace
+and the other religious buildings, from the art-deco sheet in the reference
+zip (terracotta walls, cream trim, turquoise-inlaid fret, stepped crests, tall
+avatar panels on the piers, diamond-checker tile).
+
+* `DPAL.sacred` (terracotta), `DPAL.trim` (cream), `DPAL.tq`. Three new
+  textures: `dReliefTq` (the stepped fret in colour: cream faces over
+  turquoise recesses), `dDecoPanel` (a 1×4 turquoise panel with the cream
+  avatar, plain UVs), `dChecker` (ochre / turquoise / cream lozenges).
+* Helpers: `dnFretBand`, `dnDecoPanel`, `dnCrest` (three cream-trimmed
+  steps over fret bands, a gilt ball), `dnTrimBand`, `dnChecker`;
+  `dnCornice`, `dnGate` and `dnStele` take a trim / colour flag.
+* Applied to `dnTemple` (default; `o.deco:false` keeps the grey), the
+  priest's house, the shrine, the priests' compound (wall, gate, chapel,
+  steles, checker court), the palace terraces, wings, landings and crest, and
+  the High Priest's ring gate steles. The mounds' turf, stairs and flights
+  stay grey stone so the red reads.
+* Gardens: one arc per bed from 42° round the back to 318°, with a third
+  garden flight up the back to a small checker viewing platform on the rim.
+
+72 registered volumes, 10.7 k kit instances + 8.4 k biome, 400 k scene
+triangles, ~112 draw calls. `--assert` green.
