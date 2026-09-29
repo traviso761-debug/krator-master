@@ -1,0 +1,1 @@
+/* voth-manors — placeholder */
