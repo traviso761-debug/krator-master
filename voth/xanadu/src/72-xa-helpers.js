@@ -278,8 +278,8 @@ function xnCharBagh(x,y,z,w,d,ry,o){o=o||{};const P=(u,v)=>loc(x,z,u,v,ry);const
   for(let k=0;k<Math.max(2,Math.round(bw*bd/22));k++){const q=P(sx*(cw/2+.5+rr(.8,bw-.8)),sz*(cw/2+.5+rr(.8,bd-.8)));if(rng()<.35)xnCypress(q[0],q[1],rr(4,7));else xnTree(q[0],q[1],rr(3,4.5));}
   kput('xLeaf',[c[0],y+.4,c[1]],null,[.6,.5,.6],xC(xPick([0xd04a4a,0xe8a0c0,0xf0e060,0xe86030])));}}
 // paving: a bed with flags on a grid (no overlaps)
-function xnPave(x,z,w,d,ry,c,cell){cell=cell||2.2;c=c||xC(xPick(XPAL.stone));const nx=Math.max(1,Math.round(w/cell)),nz=Math.max(1,Math.round(d/cell));vB('vStone',x,0,z,w,.03,d,ry,c.clone().multiplyScalar(.6));
- for(let i=0;i<nx;i++)for(let j=0;j<nz;j++){const p=loc(x,z,-w/2+(i+.5)*w/nx,-d/2+(j+.5)*d/nz,ry);vB('vFlag',p[0],.03,p[1],w/nx-.08,.04+rng()*.012,d/nz-.08,ry,c.clone().multiplyScalar(rr(.9,1.06)));}}
+function xnPave(x,z,w,d,ry,c,cell,y){cell=cell||2.2;y=y||0;c=c||xC(xPick(XPAL.stone));const nx=Math.max(1,Math.round(w/cell)),nz=Math.max(1,Math.round(d/cell));vB('vStone',x,y,z,w,.03,d,ry,c.clone().multiplyScalar(.6));
+ for(let i=0;i<nx;i++)for(let j=0;j<nz;j++){const p=loc(x,z,-w/2+(i+.5)*w/nx,-d/2+(j+.5)*d/nz,ry);vB('vFlag',p[0],y+.03,p[1],w/nx-.08,.04+rng()*.012,d/nz-.08,ry,c.clone().multiplyScalar(rr(.9,1.06)));}}
 // a yak (the valley's beast): a shaggy box, a low head with wide horns
 function xnYak(x,z,ry,y){y=y||0;const c=xC(xPick([0x2a221c,0x3a2c22,0x4a3a2c,0x6a5040]));const P=(u,v)=>loc(x,z,u,v,ry);
  vB('xPaint',x,y+.55,z,.9,.9,1.9,ry,c);let p=P(0,1.15);vB('xPaint',p[0],y+.6,p[1],.5,.5,.6,ry,c);p=P(0,1.5);vB('xPaint',p[0],y+.55,p[1],.34,.3,.2,ry,c.clone().multiplyScalar(.8));

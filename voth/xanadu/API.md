@@ -139,3 +139,6 @@ vnBannerPole vnChimney vnFence vnPalisade vnFolk vnPaving`.
   `xnRillCross(x,y,z,S,o)`.
 * Defs on an 8 m plot (`snap:8`), rill on the centre line to the plot edge: `xa_rill`, `xa_rill_bend` (from +z to
   +x), `xa_rill_cross`, `xa_rill_pool`, `xa_rill_fountain`; `xa_rill_garden` tiles nine of them.
+* Slope pieces (row "Water — slopes", `rise` on the def): `xa_rill_step` 1.5, `xa_rill_ramp` 1.5, `xa_rill_cascade` 3,
+  `xa_rill_fall` 4; `xa_rill_hill` tiles them down a terraced hill. `xnRillBasin(x,y,z,w,d,ry,curb,c)`,
+  `xnWaterSheet(x,y,z,ry,w,h)`.
