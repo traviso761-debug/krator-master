@@ -4,8 +4,6 @@
 // floor, the tick list, the error panel. A real world replaces this whole
 // section with its own; the biome fragments never read anything from it except
 // through BIO.host (see 88-host-build.js).
-// the ideal-type host borrows the core's helpers; a real world has its own
-const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,fbm,qEuler,qFacing,qUp}=BIO.fn;
 const ERRS=document.getElementById('errs');
 function reportErr(m){ERRS.style.display='block';ERRS.textContent+=m+'\n';}
 window.onerror=(m,s,l,c,e)=>reportErr((e&&e.stack)||(m+' @'+l+':'+c));

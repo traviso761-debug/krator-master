@@ -2,9 +2,9 @@
 // What verify.py --assert measures. Budgets per biome pass come from
 // BIO.stats (charged by BIO.cur inside the biome).
 const BUDGET={
- showcase:{tris:7600000,calls:120},   // measured at q=1 on this 6.8 km map, not a target (KNOWN_ISSUES)
- cls:{pass:5600000,host:900000},
- type:{'abyss/trees':'pass','abyss/floor':'pass','abyss/water':'pass','abyss/dress':'pass','host':'host'},
+ showcase:{tris:11000000,calls:130},  // the ceiling the second pass was given (11M); measured ~7.4M before it (KNOWN_ISSUES)
+ cls:{pass:8200000,host:900000},
+ type:{'abyss/trees':'pass','abyss/reeds':'pass','abyss/floor':'pass','abyss/water':'pass','abyss/dress':'pass','host':'host'},
 };
 function _probePoints(){
  const pts=[],m=new THREE.Matrix4(),pos=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3(),bb=new THREE.Box3();
