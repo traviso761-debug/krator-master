@@ -4788,7 +4788,7 @@ function buildHlRepGenerator(G,o){reseed(21311+(o.v|0));
 function hnRCStoke(x,z){vB('hRCGlow',x,.5,z,.06,.7,1.2,0);for(let k=0;k<3;k++)vBall('vEmber',x-.15,.6+rr(0,.3),z+rr(-.4,.4),.1);}
 
 const HTAG_RC_CIV={wealth:'civic',lit:true};
-HL.def({key:'hl_rep_hall_republic',name:'Hall of the Republic',branch:'republican',family:'Monuments',tags:Object.assign({type:['civic'],landmark:true},HTAG_RC_CIV),w:112,d:100,h:72,build:buildHlRepHallRepublic});
+HL.def({key:'hl_rep_hall_republic',name:'Hall of the Republic',branch:'republican',family:'Monuments',tags:Object.assign({type:['civic'],landmark:true},HTAG_RC_CIV),w:112,d:100,h:72,roofTile:'hTileW',build:buildHlRepHallRepublic});
 HL.def({key:'hl_rep_fortress',name:'Fortress',branch:'republican',family:'Monuments',tags:Object.assign({type:['military']},HTAG_RC_CIV),w:86,d:78,h:46,build:buildHlRepFortress});
 HL.def({key:'hl_rep_wall',name:'Town wall',branch:'republican',family:'Walls and gates',tags:Object.assign({type:['military','infrastructure']},HTAG_RC_CIV),w:40,d:8,h:13,build:buildHlRepWall});
 HL.def({key:'hl_rep_wall_tower',name:'Wall tower',branch:'republican',family:'Walls and gates',tags:Object.assign({type:['military','infrastructure']},HTAG_RC_CIV),w:20,d:12,h:44,build:buildHlRepWallTower});
@@ -7284,6 +7284,17 @@ const _hlKputClock=kput;
 kput=function(name,p,q,s,c){if(name==='hClock'||name==='hRBClock'){const S=typeof s==='number'?s:s[0];let P=new THREE.Vector3(p[0],p[1],p[2]),Q=(q?q.clone():new THREE.Quaternion()),k=S;
   if(KXF){P.applyMatrix4(KXF.m);Q.premultiply(KXF.q);if(KXF.s)k*=KXF.s;}P.x+=KOFF[0];P.y+=KOFF[1];P.z+=KOFF[2];HLCLOCKS.push({p:P,q:Q,r:.42*k});}
  return _hlKputClock(name,p,q,s,c);};
+// ---------------------------------------------------------------- glazed roof tile, per building (round 10e)
+// A def may carry `roofTile:'<TEX key>'` (e.g. 'hTileW', the oxblood/green chevron): every roof piece the builder lays
+// in slate scale or shingle is swapped for a twin of the same geometry skinned in that tile, tiled in world units so a
+// 30 m roof and a 1 m pinnacle carry the same size of tile. Instance colour is dropped (the tile carries its own).
+// Travis: the Hall of the Republic in the chevron tile; the wall towers stay slate ("too fancy for wall towers").
+const HLTILE_MATS=new Set([MAT.scale,MAT.shingle]),HLTILE_MAT={};
+function hlTileMat(key){if(!HLTILE_MAT[key]){const T=TEX[key].clone();T.needsUpdate=true;T.repeat.set(1,1);HLTILE_MAT[key]=vWorldUV(hStd({map:T,roughness:.3,metalness:.08}),1/3.2);}return HLTILE_MAT[key];}
+const _hlKputTile=kput;
+kput=function(name,p,q,s,c){const C=VERN.cur,tk=C&&C.D&&C.D.roofTile,def=tk&&KIT.defs[name];
+ if(def&&HLTILE_MATS.has(def.mat)){const mk=name+'_T'+tk;if(!KIT.defs[mk])kdef(mk,def.geo,hlTileMat(tk));return _hlKputTile(mk,p,q,s,null);}
+ return _hlKputTile(name,p,q,s,c);};
 // TARGET: highlands — rows by branch and family (laid out by hlLayout in 90-scene.js), front (+z) toward the camera.
 const TITLE='Highlands Building Kit';
 const HL_BRANCHES=['republican','rustic','tribal'];

@@ -486,7 +486,7 @@ function buildHlRepGenerator(G,o){reseed(21311+(o.v|0));
 function hnRCStoke(x,z){vB('hRCGlow',x,.5,z,.06,.7,1.2,0);for(let k=0;k<3;k++)vBall('vEmber',x-.15,.6+rr(0,.3),z+rr(-.4,.4),.1);}
 
 const HTAG_RC_CIV={wealth:'civic',lit:true};
-HL.def({key:'hl_rep_hall_republic',name:'Hall of the Republic',branch:'republican',family:'Monuments',tags:Object.assign({type:['civic'],landmark:true},HTAG_RC_CIV),w:112,d:100,h:72,build:buildHlRepHallRepublic});
+HL.def({key:'hl_rep_hall_republic',name:'Hall of the Republic',branch:'republican',family:'Monuments',tags:Object.assign({type:['civic'],landmark:true},HTAG_RC_CIV),w:112,d:100,h:72,roofTile:'hTileW',build:buildHlRepHallRepublic});
 HL.def({key:'hl_rep_fortress',name:'Fortress',branch:'republican',family:'Monuments',tags:Object.assign({type:['military']},HTAG_RC_CIV),w:86,d:78,h:46,build:buildHlRepFortress});
 HL.def({key:'hl_rep_wall',name:'Town wall',branch:'republican',family:'Walls and gates',tags:Object.assign({type:['military','infrastructure']},HTAG_RC_CIV),w:40,d:8,h:13,build:buildHlRepWall});
 HL.def({key:'hl_rep_wall_tower',name:'Wall tower',branch:'republican',family:'Walls and gates',tags:Object.assign({type:['military','infrastructure']},HTAG_RC_CIV),w:20,d:12,h:44,build:buildHlRepWallTower});

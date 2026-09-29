@@ -93,3 +93,14 @@ const _hlKputClock=kput;
 kput=function(name,p,q,s,c){if(name==='hClock'||name==='hRBClock'){const S=typeof s==='number'?s:s[0];let P=new THREE.Vector3(p[0],p[1],p[2]),Q=(q?q.clone():new THREE.Quaternion()),k=S;
   if(KXF){P.applyMatrix4(KXF.m);Q.premultiply(KXF.q);if(KXF.s)k*=KXF.s;}P.x+=KOFF[0];P.y+=KOFF[1];P.z+=KOFF[2];HLCLOCKS.push({p:P,q:Q,r:.42*k});}
  return _hlKputClock(name,p,q,s,c);};
+// ---------------------------------------------------------------- glazed roof tile, per building (round 10e)
+// A def may carry `roofTile:'<TEX key>'` (e.g. 'hTileW', the oxblood/green chevron): every roof piece the builder lays
+// in slate scale or shingle is swapped for a twin of the same geometry skinned in that tile, tiled in world units so a
+// 30 m roof and a 1 m pinnacle carry the same size of tile. Instance colour is dropped (the tile carries its own).
+// Travis: the Hall of the Republic in the chevron tile; the wall towers stay slate ("too fancy for wall towers").
+const HLTILE_MATS=new Set([MAT.scale,MAT.shingle]),HLTILE_MAT={};
+function hlTileMat(key){if(!HLTILE_MAT[key]){const T=TEX[key].clone();T.needsUpdate=true;T.repeat.set(1,1);HLTILE_MAT[key]=vWorldUV(hStd({map:T,roughness:.3,metalness:.08}),1/3.2);}return HLTILE_MAT[key];}
+const _hlKputTile=kput;
+kput=function(name,p,q,s,c){const C=VERN.cur,tk=C&&C.D&&C.D.roofTile,def=tk&&KIT.defs[name];
+ if(def&&HLTILE_MATS.has(def.mat)){const mk=name+'_T'+tk;if(!KIT.defs[mk])kdef(mk,def.geo,hlTileMat(tk));return _hlKputTile(mk,p,q,s,null);}
+ return _hlKputTile(name,p,q,s,c);};
