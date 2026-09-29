@@ -214,3 +214,20 @@ arcaded loggias).
 * Travis: the arches should be open galleries or have real windows. The loggias are galleries now: a thin back
   wall behind a stone gallery floor and end walls, real arched windows (lit) in every bay with a door in the
   middle one, the rail on the upper floor, tile strips beside the windows on the mosaic dresses.
+
+## Round 8 (Sep 29 2026) — the Spicers' Guild and its market
+
+Travis: a luxurious Spicers' Guild after two pictures (a carved timber house with a grand arched porch, balustraded
+stairs and octagonal corner bays under tiered spires; the Hawa Mahal's saffron tiers of cream jharokhas under
+cupolas), with a spice market attached.
+
+`87-xa-spicer.js` (seeds 32500–32599), `xa_guild_spicer` in the Guilds row: a saffron house of five stepped-in
+tiers (four on v2), a cream-trimmed jharokha under its own white cupola in every bay of every face, a gilt roof
+(v1 a gold dome) with chhatris on the top; a carved timber porch of two storeys on gilt-capped columns under a deep
+tiled gable with frieze barge boards and a carved tympanum, lantern-lit, a balustraded timber flight with saffron
+bulb finials on the newels; two-tier octagonal timber bays on the front corners with carved bands under three-
+tier tiled spires. Along the right flank the spice market: a saffron store with a drying rack and sacks on its
+roof, a long shed on timber posts with a frieze and chilli strings between the posts, six stalls beneath (a table
+of spice cones on trays, a shelf of jars, a striped awning, sacks and a basket, a trader), barrels, crates and
+spice heaps in the yard. Views: eye level, porch, market. Kit 148 volumes, 1.11 M tris; the variants page is at
+2.96 M of its 3 M budget and will need splitting (or a lower default `nv`) before the next row.
