@@ -1,0 +1,1651 @@
+diff --git a/voth/ancients/qa/arcB.md b/voth/ancients/qa/arcB.md
+new file mode 100644
+index 0000000..28de95f
+--- /dev/null
++++ b/voth/ancients/qa/arcB.md
+@@ -0,0 +1,237 @@
++# QA pass — group arcB
++
++Types: hexahedron (+ Mav's hypertree), arcoindian, arcoindian2, dalab, veladiga,
++canyon (the Span), spire (Vashtir), theodiga (the dam). Fragments edited:
++`61-spire 63-canyon 64-dalab 65-veladiga 68-hexahedron 70-hypertree 77-dam
++89b-arcoindian 89c-arcoindian2`; target files `hexahedron/91z-views.js`,
++`veladiga/89z-rows.js`, `dalab/91z-views.js`. No shared fragment touched, no
++reseed changed. Every target: build + jscheck + `verify --assert`, error panel
++clean, all correctness invariants PASS. Shots: `shots/qa_<type>_r1..r3`.
++The kit target was built and jscheck'd (my fragments' top-level code runs in it:
++two canvas textures, a few kdefs/materials); its outputs were not committed.
++
++Triangles are scene triangles per type/decay, measured by `verify --assert`.
++"before" is this session's baseline run where one exists, otherwise the last
++logged number in the repo's `log_*.txt` (marked *log*).
++
++---------------------------------------------------------------------------
++## Hexahedron (`68-hexahedron.js`, `70-hypertree.js`, target views)
++
++hex/0 536 724 -> 548 664 · hex/2 381 634 -> 385 634 · mav/0 169 020 -> 168 252
++(`biome/0` 1 550 085 OVER is the hexlush row's hyperjungle, pre-existing, not
++this type's builder.)
++
++Items:
++- **"`RUINS` greens the ground under `+r.s`..."** — FIXED where it was wrong in
++  my targets, and the item is mostly a misdiagnosis: greening marks RUINS, and
++  in every target that builds decay 1, `+s` IS the ruin. It is only wrong where
++  DECAYS omits 1: hexahedron (already fixed) and **veladiga** (DECAYS [0,2]),
++  now fixed in `targets/veladiga/89z-rows.js`. canyon/spire/theodiga/dalab are
++  correct as they stand. Other agents' targets were not checked.
++- **"The terrace cells are still boxes on a ring... bridges only cantilever"** —
++  PARTLY FIXED. Three level sky bridges now cross ~100 m of open air from the
++  fifth-level promenade to lift towers standing on the lower city's exposed
++  point (solved: the lower-plan point furthest from the upper plan, then the
++  nearest promenade edge). The outward pods got raking struts back to the riser
++  (from below they had read as brown discs floating 48 m off the face). The
++  cells themselves are still boxes on a ring.
++- **"No interiors behind the promenade bands, and the cultural centre ... a
++  single block"** — FIXED. The riser behind every promenade is now an arcade (a
++  9 x 14 m arch every third bay, a lamp in each, one pane row above); the summit
++  cultural centre is a ribbed parabolic vault hall on a plinth, closed ends with
++  portals, slotted crown (was seven boxes).
++- **"The imported hypertree is one species..."** — NOT FIXED: porting the other
++  three species and their structural branches is an import job, not QA. Fixed
++  instead: its `apron()` disc read as a paper disc on the plain in every preset
++  (d=0 lays pale rock); removed — the buttress flare and roots are the contact.
++- **"The collapsed flank tears the soffit ... does not sag"** — NOT CHANGED;
++  the item itself notes the nanomaterial spine may make it correct.
++- **"Camera presets hard-code targets..."** — FIXED. The builder exports
++  `HEX_SITE[d]` (union centre, COM, crater, apex tip, summit, shear point and
++  normal); the views read it with measured fallbacks. It caught the crater
++  shots aimed 40 m off the hole. 'Crater soffit' re-aimed to stand out on the
++  failed flank's bearing and look up (it used to see only shafts); 'The shear'
++  aims at the tear itself.
++- Found by looking: the lower city's 16 stepped soffits and the 1 km great
++  soffit rendered BROWN from every up-looking preset. They are on a painted
++  soffit material now (emissive through the concrete map, dimmed at night via
++  `NIGHT`, same approach as the Ledge).
++
++Remaining: cells still boxes; hypertree species; flank sag; the promenade pods
++are still small at hero distance.
++
++---------------------------------------------------------------------------
++## Arcoindian I (`89b-arcoindian.js`)
++
++arcoindian/0 314 236 -> 300 094 · /1 309 590 -> 290 912 (the kit dodecahedron
++rubble (36 tris) replaced by a 12-tri block; see below). ~400k headroom left.
++
++Items:
++- **"The massif reads as a rectangular loaf..."** — IMPROVED. Four
++  amphitheatre bays eaten into the scarp west of the cavern (faded out by
++  x=-640 so the city, shelf and lift towers measure off the same face; bays
++  only cut IN so the viaduct stays clear; fixed constants, no PRNG) and the
++  west taper now comes down in three benches instead of one ramp. Plus the
++  rock itself (next item). The flat master-joint cut is by design (the section).
++- **"The vault light-well collars read as objects..."** — IMPROVED, not gone.
++  Applied Arcoindian II's finding: no rim or lit ring below the vault; the bore
++  is seated at the LOWEST roof point round its rim (it hung a 4 m, 28 m-wide
++  drum below the vault); the lower bore is a near-black in the ceiling's own
++  hue (`MAT.aiBore`) — void-black read blue-grey through the fog. It now reads
++  as a dark recess, but still as a shape, from 'A light well'.
++- **"Plateau is thin... roof fall angular but uniform..."** — PARTLY FIXED. New
++  plateau material (`TEX.aiTopTx`: weathered caprock, faint broken crack
++  network, scrub specks) instead of the bedded face map, which showed as
++  contour stripes / paving; 16 tors of angular blocks (hashed, no PRNG). Roof
++  fall is now a fan thrown out toward the mouth with power-law sizes, seated on
++  the bare shelf past the last terrace, nothing left hanging off the shelf edge.
++  Pods and trees unchanged.
++- **"A `roofY()`/shell disagreement nearly shipped"** — already fixed in code
++  before this pass (both call `roofN()`); tick it.
++- Found by looking: (1) ALL rock (this type and Arcoindian II) was textured with
++  `TEX.concrete` — board-formed concrete with form-tie holes — the root of both
++  "plywood" and "smeared mud". New `TEX.aiRockTx`: bedded sandstone, 11 courses
++  of uneven thickness broken into jointed blocks, lichen/varnish patches,
++  periodic lattice noise so the ~74 m tile has no seam. (A first cut with 19
++  thin courses read as WOOD GRAIN on the vault — keep courses thick.)
++  (2) The cavern's top edge on the section cut was an 8 m staircase (quad
++  dropping); the main face now leaves a band open and a conformal strip whose
++  lower edge IS the roof curve laps over it, UVs matched to the face.
++  (3) Rubble was pale regular dodecahedra ("eggs"); now `aiBlock`, an irregular
++  jittered hexahedron, untextured (on the bedded map they read as crates).
++
++---------------------------------------------------------------------------
++## Arcoindian II (`89c-arcoindian2.js`)
++
++arcoindian2/0 328 222 *(KNOWN_ISSUES)* -> 318 442 · /1 337 000 -> 283 814
++(ruin lost the west flank of the lens; see below).
++
++Items:
++- **"A plan view ... geometrically impossible"** — NOT FIXABLE, inherent to an
++  overhang (as logged).
++- **"The cliff face reads as smeared mud at close range"** — FIXED by the rock
++  texture (shared with Arcoindian I, above). The relief terms are unchanged.
++- **"The lens's flanks are blank over ~150 m; ... shaft blank; gardens a hedge
++  row; sun court floor and scar coarse; rim plateau thin"** — PARTLY FIXED.
++  Flanks: six rows of windows set into the upper shell parallel to the
++  outline, each on a dark reveal, facing the shell normal solved from `lth()`'s
++  gradient (hashed). Rim plateau: the caprock material + (shared) blocks. Also
++  nose galleries no longer poke through the sun court's cheek walls. Shaft,
++  gardens, court floor and scar untouched.
++- **"The ruin is 'intact with an overgrowth pass' at distance"** — FIXED. The
++  lens's cantilevered WEST FLANK has sheared off along a ragged line (x≈-96):
++  one predicate `lG()` drives every surface and placement on the lens; the
++  break is closed by a fracture face open between the plates (storeys show in
++  the tear) with a dark face behind; curved shell pieces cut from the lens's
++  own top/belly lie on the shelf and two on the talus 340 m below, with
++  wreckage; the residential rosette went with it.
++- **"`RIVZ`, `inLens` and `NLU/NLV` are dead locals"** — FIXED: `inLens`
++  removed; `RIVZ` was already gone; `NLU/NLV` are used (lens grid size).
++- **"360 000 triangles of headroom"** — partly spent (flank windows, fracture,
++  fallen pieces); ~380k remains per decay.
++- Also: the escarpment west of the hollow got the same bays and benches as
++  Arcoindian I; the hollow's edge on the joint plane got the same conformal
++  strip; wells seated at the rim-minimum and lined in `aiBore`.
++
++Remaining: the three ceiling well mouths still read as dark shapes in
++'Coronal section'/'Head-on'; the access shaft; the gardens fan; plan view.
++
++---------------------------------------------------------------------------
++## Dalab (`64-dalab.js`, target views)
++
++dalab/1 657 278 (r1) -> see r3 log (floor-plate annuli: triangle-neutral).
++
++Items:
++- **"The great dome's size is a guess"** — NOT FIXABLE here: needs the Voth
++  palace's dimensions. (The builder already rescaled it against the kit, K=4.105,
++  390 m; still a guess against the brief's reference.)
++- **"Room fit-out ... small — wants a closer preset or larger fittings"** — NOT
++  FIXED. Tried a preset standing IN a ward storey: with 4.6 m storeys it is a
++  slit of floor and soffit and the beds are specks; reverted. Fittings are real
++  size on purpose (FH is not a scale factor). The real fix is trimming the
++  plates back to the room ring inside the bite so the rooms sit on the section
++  face; that needs finer plate grids (~35-80k tris) against ~43k headroom.
++- **"Only the domes exist..."** — scope, not QA.
++- Found by looking: three presets had their cameras INSIDE geometry after the
++  K rescale: 'Inside the breach' (between two plates), 'A passageway' (inside
++  the tube), 'The chamber' (outside the opaque dome, and the chamber itself had
++  the 4.6 m floor plate through its 6.4 m cabinets). The first three plates are
++  now annuli over the axis (a 17 m hall, radius 0.34 DR, via new optional
++  `hallR/hallY` args to `sectionInterior`) and the three presets were re-sited.
++
++---------------------------------------------------------------------------
++## Veladiga (`65-veladiga.js`, `targets/veladiga/89z-rows.js`)
++
++veladiga/0 194 804 · /2 192 164 (r1) -> see r3 log (breached park grid 54x42 ->
++96x76, ~+10k on /2 only).
++
++Items:
++- **"The breach tear ... widens with height but does not undercut"** — FIXED.
++  `scal(y)` adds two lobes of width BELOW the crest and none at it, so the crest
++  band overhangs the notch on both sides; the floor-plate stubs use the same
++  function so they stay on the real edge.
++- **"The scour plume ... Gaussian ... does not braid or deposit a bar, ignores
++  the terrace steps"** — FIXED. Braided channels (bars between them), a
++  distal fan where it spreads and drops its load, and the terrace steps are
++  planed off inside the channel (`scourK`). Also found: the old trough never
++  showed at all — 30 m of scour in a park 4-12 m high hit the 0.8 m floor clamp
++  and came out as one flat sheet; scour is now scaled into the park's height.
++- RUINS greening fixed (see Hexahedron, first item).
++
++---------------------------------------------------------------------------
++## The Span (`63-canyon.js`)
++
++canyon/0 89 260 · /1 104 220 · /2 115 232 (r1; old *log*: 89 260 / 132 808 /
++123 160) -> see r3 log (+4 end caps).
++
++Items:
++- **"The three fallen payloads are small ... heavier debris fields and more
++  broken-open interiors"** — FIXED (debris): each fallen payload throws a
++  debris field along one bearing — 26 torn skin plates and dark interior
++  fittings, 150 rubble pieces, elongated downrange. Interiors unchanged (a
++  higher hole density dissolves the shells entirely: holeFn at d*0.8 > 2).
++- **"Payload sway in the rusted variant is a fixed tilt..."** — FIXED. Hang
++  angle now derived from the cables: a crept cable (dL) turns the head through
++  atan(dL/2a); on the rusted prison one cable has PARTED and it swings about the
++  surviving anchor until its centre of mass is under it, atan(a/c); cable
++  beams are drawn to where the head's anchors actually went, the parted one
++  dangles. (Correctly small — ~4 deg — which is why the guys exist.)
++- Found by looking: the gorge walls were three sheets per side — the top plate
++  overhung the inner face by up to 140 m as a floating brown ceiling, and both
++  ends were open (painted card from down the gorge). Top now starts on the
++  inner face's crest; each wall capped at both ends.
++
++---------------------------------------------------------------------------
++## Vashtir (`61-spire.js`)
++
++spire/0 125 438 · /1 85 574 — unchanged.
++
++- **"Radial symmetry visible overhead"** — FIXED: kerb blocks, causeways and
++  portal stairs jittered by a HASH of their index (the PRNG stream, and
++  everything after it, is untouched).
++- **"Intact contrast is low"** — IMPROVED: the skin carries a vertex colour —
++  1 on every arris, 0.5 in the valleys, darker at the foot of each shelf band —
++  merged by a local `spMerge()` because `meshMerged()` drops colour attributes.
++  Reads, but white-on-white remains at the hero distance.
++
++---------------------------------------------------------------------------
++## Theodiga (`77-dam.js`) — no open items; looked at every view
++
++dam/0 115 772 · /1 130 844 *(log)* -> 172 424 / 182 686 (+ leaf-card trees).
++
++- The park's 60 trees were a trunk box + 'moss' blob: 60 green lollipops in
++  every preset. Now `VEG.tree`.
++- The ruin was "intact with patches" at distance (the brief's words). The crest
++  has failed: a ragged notch 120-28 m wide, 128 m deep, at x≈-221 clear of the
++  fin cruciform; face, upstream face, crest deck, guts, tunnels and crest
++  blocks all ask `notch()`; cheeks and floor close it, floor plates stand out
++  of the cheeks every 8 m; debris at the toe.
++
++---------------------------------------------------------------------------
++## Requests for shared code (not done: not mine)
++- `meshMerged()` should carry a `color` attribute when every input has one
++  (Vashtir needed a private copy, `spMerge`).
++- `apron()` at d=0 lays pale rock; under anything organic it reads as a paper
++  disc. A `mat` override argument would help.
++- The kit 'rubble' (regular dodecahedron, untextured white) reads as pale eggs
++  at any size over ~10 m; `aiBlock` in 89b (12 tris) is a drop-in candidate.
+diff --git a/voth/ancients/src/61-spire.js b/voth/ancients/src/61-spire.js
+index f61935e..b49c264 100644
+--- a/voth/ancients/src/61-spire.js
++++ b/voth/ancients/src/61-spire.js
+@@ -21,6 +21,33 @@ kdef('spFinW',new THREE.ShapeGeometry(new THREE.Shape([new THREE.Vector2(0,-.5),
+ kdef('spFinR',new THREE.ShapeGeometry(new THREE.Shape([new THREE.Vector2(0,-.5),new THREE.Vector2(1,-.05),new THREE.Vector2(1,.05),new THREE.Vector2(0,.5)])),MAT.rust);
+ kdef('spSpikeW',new THREE.ConeGeometry(1,1,5).translate(0,.5,0),MAT.white);
+ kdef('spSpikeR',new THREE.ConeGeometry(1,1,5).translate(0,.5,0),MAT.rust);
++// CONTRAST. KNOWN_ISSUES: "white on white at distance, and nothing in this kit
++// casts shadows, so all form comes from facet normals". The facets alone gave
++// too little: at the hero distance a crest and the valley beside it differ by a
++// few percent. So the valleys are PAINTED -- the skin carries a vertex colour
++// that is 1 on every arris and drops to VAL in the re-entrant between two, with
++// a little more at the recessed foot of each shelf band, which is where a
++// real mass this deep would hold its shade. The panel map still reads through.
++MAT.spWhiteV=MAT.white.clone();MAT.spWhiteV.vertexColors=true;
++MAT.spRustV=MAT.rust.clone();MAT.spRustV.vertexColors=true;
++// meshMerged() drops every attribute but position, normal and uv, so the
++// painted skin is merged here instead: same packing, plus the colour (1 where a
++// piece carries none). It still goes out through mesh(), so it is counted.
++function spMerge(geos,mat,parent){
++ const keep=geos.filter(g=>g&&g.attributes.position&&g.attributes.position.count);
++ let nv=0,ni=0;for(const g of keep){nv+=g.attributes.position.count;ni+=g.index?g.index.count:g.attributes.position.count;}
++ const P=new Float32Array(nv*3),N=new Float32Array(nv*3),U=new Float32Array(nv*2),C=new Float32Array(nv*3).fill(1);
++ const I=nv>65535?new Uint32Array(ni):new Uint16Array(ni);let vo=0,io=0;
++ for(const g of keep){const A=g.attributes,c=A.position.count;
++  P.set(A.position.array,vo*3);if(A.normal)N.set(A.normal.array,vo*3);if(A.uv)U.set(A.uv.array,vo*2);
++  if(A.color)C.set(A.color.array,vo*3);
++  if(g.index){const ix=g.index.array;for(let i=0;i<ix.length;i++)I[io+i]=ix[i]+vo;io+=ix.length;}
++  else{for(let i=0;i<c;i++)I[io+i]=vo+i;io+=c;}
++  vo+=c;}
++ const M=new THREE.BufferGeometry();
++ M.setAttribute('position',new THREE.BufferAttribute(P,3));M.setAttribute('normal',new THREE.BufferAttribute(N,3));
++ M.setAttribute('uv',new THREE.BufferAttribute(U,2));M.setAttribute('color',new THREE.BufferAttribute(C,3));
++ M.setIndex(new THREE.BufferAttribute(I,1));return mesh(M,mat,parent);}
+ 
+ function buildSpire(scene,gx,gz,d){reseed(9310+d);KOFF=[gx,0,gz];
+  const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);
+@@ -38,9 +65,16 @@ function buildSpire(scene,gx,gz,d){reseed(9310+d);KOFF=[gx,0,gz];
+   const f=(th+tw*t)*sides/TAU;
+   const w=Math.abs(2*(f-Math.floor(f))-1);
+   return R*Math.pow(1-t,pw)*(inner+(1-inner)*w)*(1+.16*((t*shelf)%1));};
+- const tierGeo=(R,H,sides,inner,pw,shelf,tw,nu,nv,hole)=>gridSurface((u,v)=>{
++ const VAL=.50;
++ const tierGeo=(R,H,sides,inner,pw,shelf,tw,nu,nv,hole)=>{const g=gridSurface((u,v)=>{
+   const th=u*TAU,t=v*.997,r=rOf(R,sides,inner,pw,shelf,tw,th,t);
+   return[r*Math.cos(th),H*v,r*Math.sin(th)];},nu,nv,{uS:R*TAU/24,vS:H/24,hole});
++  const C=new Float32Array((nu+1)*(nv+1)*3);
++  for(let j=0;j<=nv;j++)for(let i=0;i<=nu;i++){const th=i/nu*TAU,t=j/nv*.997;
++   const f=(th+tw*t)*sides/TAU,w=Math.abs(2*(f-Math.floor(f))-1);   // 1 on an arris, 0 in a valley
++   const sp=(t*shelf)%1;                                             // 0 at the foot of a shelf band
++   const k=(j*(nu+1)+i)*3;C[k]=C[k+1]=C[k+2]=lerp(VAL,1,Math.pow(w,.75))*(1-.22*Math.pow(1-sp,5));}
++  g.setAttribute('color',new THREE.BufferAttribute(C,3));return g;};
+ 
+  const shells=[],cores=[],tips=[];
+  const INNER=[.60,.63,.67,.72],PW=[1.05,1.12,1.18,1.22],SHELF=[3,2,2,2];
+@@ -128,7 +162,7 @@ function buildSpire(scene,gx,gz,d){reseed(9310+d);KOFF=[gx,0,gz];
+    qEuler(rr(-.012,.012),c[4],rr(-.012,.012)),new THREE.Vector3(1,1,1)),
+    c[1],c[2],c[3],0,c[5],i*17+3);
+   lx+=rr(-4,4);lz+=rr(-4,4);});
+- meshMerged(shells,skin,G);
++ spMerge(shells,d>0?MAT.spRustV:MAT.spWhiteV,G);
+  meshMerged(cores,d>0?MAT.guts:MAT.dark,G);
+ 
+  // ---------------------------------------------------------------- infill webs
+@@ -181,10 +215,15 @@ function buildSpire(scene,gx,gz,d){reseed(9310+d);KOFF=[gx,0,gz];
+  kput(SLABC(d),[0,2,0],null,[BASE+72,4,BASE+72],null);       // outer terrace
+  kput(SLABC(d),[0,6,0],null,[BASE+42,4,BASE+42],null);
+  kput(SLABC(d),[0,10,0],null,[BASE+16,4,BASE+16],null);      // plinth the mass stands on
+- for(let k=0;k<44;k++){const th=k/44*TAU;                             // massive kerb blocks round the rim
+-  kput(BOXC(d),[Math.cos(th)*(BASE+70),rr(2,5),Math.sin(th)*(BASE+70)],qEuler(0,-th,0),
++ // THE ROSETTE BROKEN UP. From overhead 44 evenly spaced kerb blocks, six
++ // causeways and six stairs at exact sixths made a regular rosette. Angles and
++ // radii are now jittered by a HASH of the index, not by rng(), so the PRNG
++ // stream -- and everything built after this -- is exactly what it was.
++ const PTH=k=>k/6*TAU+.3+.36*(h3(k,4.2,9.3)-.5);                    // causeway / portal bearings
++ for(let k=0;k<44;k++){const th=(k+.8*(h3(k,1.3,7.7)-.5))/44*TAU,rk=BASE+70+9*(h3(k,5.1,2.2)-.5);
++  kput(BOXC(d),[Math.cos(th)*rk,rr(2,5),Math.sin(th)*rk],qEuler(0,-th,0),
+    [rr(8,15),rr(4,9),rr(40,58)],null);}
+- for(let k=0;k<6;k++){const th=k/6*TAU+.3,L=rr(130,270);              // a causeway out from each portal stair
++ for(let k=0;k<6;k++){const th=PTH(k),L=rr(130,270);                  // a causeway out from each portal stair
+   kput(BOXC(d),[Math.cos(th)*(BASE+66+L/2),2,Math.sin(th)*(BASE+66+L/2)],qEuler(0,-th,0),[L,4,rr(30,44)],null);
+   for(const sg of[-1,1])kput(BOXC(d),[Math.cos(th)*(BASE+66+L/2)-Math.sin(th)*sg*20,4,Math.sin(th)*(BASE+66+L/2)+Math.cos(th)*sg*20],
+    qEuler(0,-th,0),[L*.94,8,5],null);}                                // its parapet walls
+@@ -195,7 +234,7 @@ function buildSpire(scene,gx,gz,d){reseed(9310+d);KOFF=[gx,0,gz];
+   kput(BOXC(d),[Math.cos(th)*rO,rr(8,17),Math.sin(th)*rO],qEuler(0,-th,0),[rr(22,38),rr(16,34),rr(20,36)],null);}
+  // The only human-scale thing anywhere on it: six portals at the foot, each with
+  // a threshold slab and a flight of 0.5 m steps running down across the terraces.
+- for(let k=0;k<6;k++){const th=k/6*TAU+.3,r=rOf(BASE,6,INNER[0],PW[0],SHELF[0],0,th,.05)*.985;
++ for(let k=0;k<6;k++){const th=PTH(k),r=rOf(BASE,6,INNER[0],PW[0],SHELF[0],0,th,.05)*.985;
+   kput('archOpen',[Math.cos(th)*r,16.5,Math.sin(th)*r],qFacing([Math.cos(th),0,Math.sin(th)]),1,null);
+   kput(BOXC(d),[Math.cos(th)*(r+13),13.2,Math.sin(th)*(r+13)],qEuler(0,-th,0),[24,2.4,32],null);
+   for(let j=0;j<23;j++){const rs=BASE+17+j*3.3,ys=12-j*.52;if(ys<.4)break;
+diff --git a/voth/ancients/src/63-canyon.js b/voth/ancients/src/63-canyon.js
+index 19e386b..e774f70 100644
+--- a/voth/ancients/src/63-canyon.js
++++ b/voth/ancients/src/63-canyon.js
+@@ -122,12 +122,22 @@ function buildCanyon(scene,gx,gz,d){reseed(9320+d);KOFF=[gx,0,gz];
+  const GAP=700,WALL=460,CH=900,LEN=1900;
+  const SH=[],GL=[],DK=[];
+  // ---------------------------------------------------------------- the gorge
++ // THE GORGE IS A SOLID. It was three sheets per side: the inner face, a top
++ // plate running from -0.8 to +0.8 WALL about the wall centre, and a flat
++ // outer face -- so the top overhung the inner face by up to 140 m as a
++ // floating brown ceiling seen from the gorge floor, and both ends of each
++ // wall were open, so from down the gorge the rock read as painted card. The
++ // top now starts ON the inner face's own crest line, and each wall is capped
++ // at both ends from that face to the outer one.
++ const innerX=(s,u,v)=>-s*(WALL/2-52*fbm(u*11,v*7,9321+s,3)-34*(1-v)*(1-v)-18*fbm(u*29,v*3,9322,2));
+  for(const s of [-1,1]){const CX=s*(GAP+WALL/2);
+   mesh(gridSurface((u,v)=>{const z=-LEN/2+u*LEN,y=v*CH;
+-   const inner=-s*(WALL/2-52*fbm(u*11,v*7,9321+s,3)-34*(1-v)*(1-v)-18*fbm(u*29,v*3,9322,2));
+-   return[CX+inner,y,z];},70,26,{uS:46,vS:16}),MAT.rock,G);
+-  mesh(gridSurface((u,v)=>{const z=-LEN/2+u*LEN;return[CX+(v-.5)*WALL*1.6,CH+26*fbm(u*9,v*9,9323+s,2),z];},54,10,{uS:46,vS:22}),MAT.rock,G);
+-  mesh(gridSurface((u,v)=>{const z=-LEN/2+u*LEN;return[CX+s*WALL*.8,v*CH,z];},32,6,{}),MAT.rock,G);}
++   return[CX+innerX(s,u,v),y,z];},70,26,{uS:46,vS:16}),MAT.rock,G);
++  mesh(gridSurface((u,v)=>{const z=-LEN/2+u*LEN,x0=CX+innerX(s,u,1),x1=CX+s*WALL*.8;
++   return[lerp(x0,x1,v),CH+26*fbm(u*9,v*9,9323+s,2)*Math.min(1,v*6),z];},54,10,{uS:46,vS:22}),MAT.rock,G);
++  mesh(gridSurface((u,v)=>{const z=-LEN/2+u*LEN;return[CX+s*WALL*.8,v*CH,z];},32,6,{}),MAT.rock,G);
++  for(const e of [0,1])mesh(gridSurface((u,v)=>{const y=v*CH,x0=CX+innerX(s,e,v),x1=CX+s*WALL*.8;
++   return[lerp(x0,x1,u),y+(v>.999?26*fbm(e*9,u*9,9323+s,2)*Math.min(1,u*6):0),-LEN/2+e*LEN];},12,20,{uS:10,vS:16}),MAT.rock,G);}
+  mesh(gridSurface((u,v)=>{const x=(u-.5)*GAP*2.1,z=-LEN/2+v*LEN;
+   return[x,2+9*fbm(u*7,v*7,9324,3)-4*Math.exp(-Math.pow(x/260,2)),z];},40,40,{uS:26,vS:26}),d>0?MAT.mud:MAT.rock,G);
+  // ---------------------------------------------------------------- the spans
+@@ -184,14 +194,43 @@ function buildCanyon(scene,gx,gz,d){reseed(9320+d);KOFF=[gx,0,gz];
+     // the snapped cable still hanging from the pipe
+     beam('boxD',[ax,ay,az],[ax+rr(-30,30),ay-o.drop*rr(.5,.9),az+rr(-30,30)],2.2,2.2);
+     rubbleRing(F.position.x,0,F.position.z,o.R*.5,o.R*2.4,70,3);
++    // THE DEBRIS FIELD. A 50 m pod off a 600 m drop does not leave a tidy ring
++    // of pebbles round itself: it bursts and throws its skin downrange. Torn
++    // shell plates (tilted where they came to rest), dark interior fittings
++    // thrown out of the breach, and a heavy spray of rubble, all elongated
++    // along one bearing, which is the way it was travelling.
++    {const fa=rng()*TAU,fx=Math.cos(fa),fz=Math.sin(fa),PX=F.position.x,PZ=F.position.z;
++     for(let k=0;k<26;k++){const t=Math.pow(rng(),.8),along=o.R*(.6+t*4.2),side=o.R*rr(-1.3,1.3)*(.4+t);
++      const px=PX+fx*along-fz*side,pz=PZ+fz*along+fx*side,L=o.R*rr(.18,.55)*(1-t*.5);
++      kput(k%3?'boxR':'boxD',[px,L*.12,pz],qEuler(rr(-.6,.6),rng()*TAU,rr(-.6,.6)),[L,L*rr(.05,.12),L*rr(.4,.9)],null);}
++     for(let k=0;k<150;k++){const t=Math.pow(rng(),1.3),along=o.R*(.3+t*5),side=o.R*rr(-1.6,1.6)*(.3+t);
++      const sc=rr(.8,o.R*.13)*(1-t*.6);
++      kput('rubble',[PX+fx*along-fz*side,sc*.35,PZ+fz*along+fx*side],qEuler(rng()*3,rng()*3,rng()*3),
++       [sc*rr(.7,1.5),sc*rr(.4,.9),sc*rr(.7,1.5)],new THREE.Color().setHSL(rr(.04,.09),rr(.15,.4),rr(.18,.4)));}}
+     return;}
+-   // hung: slight sway when rusted, plumb when intact
+-   const tilt=d>0?rr(-.09,.09):0;
+-   const M=new THREE.Matrix4().compose(new THREE.Vector3(ax,ay-o.drop,az),
+-    qEuler(tilt,rng()*TAU,tilt*.7),new THREE.Vector3(1,1,1));
++   // THE HANG ANGLE COMES FROM THE CABLES. It used to be a random fixed tilt.
++   // A payload hangs from a pair of cables a=0.16R either side of its head,
++   // with its centre of mass c below them. Intact: equal cables, plumb. Rusted:
++   // one cable of the pair has crept by dL, which turns the head through
++   // atan(dL/2a). And on the prison one cable has PARTED, so it hangs from the
++   // other alone and swings until its centre of mass is under that one anchor:
++   // atan(a/c) -- small, because the pair is close-set against a deep payload,
++   // which is exactly why the guys are there. Both are rotations about the
++   // bottom of a real cable, and the cables are drawn to where the head went.
++   const COMD={pod:2.1,prism:3.0,drum:2.3,ring:1.9,cluster:1.9,prison:2.4};
++   const ca=o.R*.16,cc=o.R*(COMD[o.t]||2),snap=d===1&&o.t==='prison'?1:0;
++   const th=snap?Math.atan2(ca,cc):d>0?Math.atan2(rr(-1,1)*o.R*.05,2*ca):0;
++   const qT=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,0,1),th);
++   const H0=new THREE.Vector3(ax,ay-o.drop,az);
++   const piv=snap?new THREE.Vector3(ax+ca,ay-o.drop,az):H0.clone();
++   const head=H0.clone().sub(piv).applyQuaternion(qT).add(piv);
++   const M=new THREE.Matrix4().compose(head,qT.clone().multiply(qEuler(0,rng()*TAU,0)),new THREE.Vector3(1,1,1));
+    hangEmit(P,M,SH,GL,DK);
+-   // the cables: one heavy pair, plus guys to steady it
+-   for(const sg of [-1,1])beam(d>0?'strutR':'strutW',[ax+sg*o.R*.10,ay,az],[ax+sg*o.R*.16,ay-o.drop,az],2.6,2.6);
++   // the cables: one heavy pair to where the head's anchors actually are,
++   // plus guys to steady it
++   for(const sg of [-1,1]){const bot=new THREE.Vector3(sg*ca,0,0).applyQuaternion(qT).add(head);
++    if(snap&&sg<0){beam('boxD',[ax+sg*o.R*.10,ay,az],[ax+sg*o.R*.10+6,ay-o.drop*.38,az+4],2.2,2.2);continue;}
++    beam(d>0?'strutR':'strutW',[ax+sg*o.R*.10,ay,az],[bot.x,bot.y,bot.z],2.6,2.6);}
+    for(let k=0;k<3;k++){const th=k/3*TAU+.4;
+     beam('boxD',[ax,ay-2,az],[ax+Math.cos(th)*o.R*.8,ay-o.drop+o.R*.2,az+Math.sin(th)*o.R*.8],1.1,1.1);}
+    if(d>0){vinesOnRing(ax,ay-o.drop+o.R*.3,az,o.R*.95,Math.round(o.R*.5),o.R*1.3);
+diff --git a/voth/ancients/src/64-dalab.js b/voth/ancients/src/64-dalab.js
+index 3b141a1..789c5ce 100644
+--- a/voth/ancients/src/64-dalab.js
++++ b/voth/ancients/src/64-dalab.js
+@@ -64,8 +64,11 @@ function dalabDome(C,R,H,d,sd,broken){
+ // interior you can only see through one bite out of one quadrant. The rooms are
+ // now laid only across the arc the break actually exposes (widened 1.6x, so the
+ // section does not visibly stop at the tear), which is a fifth of the ring.
+-function sectionInterior(C,R,H,d,sd,broken){
+- const {SH,DK,G}=C;const FH=4.6;
++// hallR/hallY: an optional clear hall on the axis. The great dome's sunken
++// chamber (6.4 m cabinets, pipes at 8.6 m) stood under a floor plate at 4.6 m
++// that cut straight through it, and no camera could see it at all.
++function sectionInterior(C,R,H,d,sd,broken,hallR,hallY){
++ const {SH,DK,G}=C;const FH=4.6;hallR=hallR||0;hallY=hallY||0;
+  const seen=(u,v)=>{if(!broken)return true;
+   const du=Math.abs(((u-broken.u+1.5)%1)-.5);
+   return du<broken.w*(.35+.65*v)*1.6;};
+@@ -77,8 +80,10 @@ function sectionInterior(C,R,H,d,sd,broken){
+   // pencil line. Pale concrete over a dark shadow band is what makes a stack of
+   // floors legible in section; the Forest Tower's shear and Plymouth's slumped
+   // flank both needed exactly this and neither worked without it.
+-  SH.push(gridSurface((u,v)=>{const th=u*TAU,r=rr0*v;return[C.x+r*Math.cos(th),y,C.z+r*Math.sin(th)];},40,5,{uS:R/6,vS:3}));
+-  DK.push(gridSurface((u,v)=>{const th=u*TAU,r=rr0*v;return[C.x+r*Math.cos(th),y-1.4,C.z+r*Math.sin(th)];},40,3,{uS:R/6,vS:3}));
++  // inside the hall the plate is an annulus: its inner edge is a grid line
++  const r0=y<hallY?Math.min(hallR,rr0*.9):0;
++  SH.push(gridSurface((u,v)=>{const th=u*TAU,r=lerp(r0,rr0,v);return[C.x+r*Math.cos(th),y,C.z+r*Math.sin(th)];},40,5,{uS:R/6,vS:3}));
++  DK.push(gridSurface((u,v)=>{const th=u*TAU,r=lerp(r0,rr0,v);return[C.x+r*Math.cos(th),y-1.4,C.z+r*Math.sin(th)];},40,3,{uS:R/6,vS:3}));
+   // a double-loaded corridor: rooms, gangway, rooms
+   for(const ring of [.42,.80]){
+    DK.push(lathe({rFn:()=>rr0*ring,H:FH*.82,nu:36,nv:2,
+@@ -98,6 +103,7 @@ function sectionInterior(C,R,H,d,sd,broken){
+    kput('strip',[px,y+FH-.7,pz],q,[rr0*.18,1,1],lit?CYAN:DEAD);}
+   // conduit bundles dropping through every floor
+   for(let k=0;k<5;k++){const th=rng()*TAU,r=rr0*rr(.2,.9);
++   if(r<r0+3)continue;
+    kput(d>0?'pipeR':'pipe',[C.x+r*Math.cos(th),y+FH*.5,C.z+r*Math.sin(th)],null,[.28,FH,.28],null);}}
+  // service cores: lift shafts and stairs, full height, the spine of the section
+  for(let k=0;k<3;k++){const th=k/3*TAU+.7,r=R*.30;
+@@ -125,7 +131,7 @@ function buildDalab(scene,gx,gz,d){reseed(9330+d);KOFF=[gx,0,gz];
+  // behind it. .20 opens 72 degrees at the crown and 29 at the springing.
+  const BITE={u:.16,w:.20,y0:.04};
+  dalabDome(C,DR,DH,d,9331,BITE);
+- sectionInterior(C,DR,DH,d,9332,BITE);
++ sectionInterior(C,DR,DH,d,9332,BITE,DR*.34,17);   // a 3-storey hall over the chamber
+  // the sunken chamber on the axis: cabinet banks and cable trunking converging
+  // on a circle of floor. A plant room to a stranger, a shrine to a priest.
+  kput(SLABC(d),[0,1.2,0],null,[DR*.30,2.4,DR*.30],null);
+diff --git a/voth/ancients/src/65-veladiga.js b/voth/ancients/src/65-veladiga.js
+index e04b73f..c9f2f73 100644
+--- a/voth/ancients/src/65-veladiga.js
++++ b/voth/ancients/src/65-veladiga.js
+@@ -46,14 +46,30 @@ function buildVeladiga(scene,gx,gz,d){reseed(9380+d);KOFF=[gx,0,gz];
+  // foundation out beneath. So this is a ragged notch, WIDER AT THE TOP, severing
+  // the crest completely and cutting down almost to the riverbed.
+  const BT=.355,BW=.052,BFLOOR=12;
++ // THE UNDERCUT. A notch that only widens with height is a V; a real breach
++ // scallops back UNDER the crest on both sides, because the jet works the
++ // softer fill below while the crest's own mass and reinforcement hang on.
++ // Two lobes of extra width below the crest, none at it, so the crest band
++ // overhangs the tear. scal() is shared with the floor-plate stubs below, which
++ // must stay attached to whatever edge the tear actually has at their level.
++ const scal=y=>1+.58*Math.exp(-Math.pow((y-(H-62))/30,2))+.32*Math.exp(-Math.pow((y-(H-150))/26,2));
+  const blast=d===2?(t,y)=>{const rag=.34*fbm(t*22+y*.004,y*.045,9381,3)-.17;
+-  const w=BW*(.40+1.35*clamp(y/H,0,1))*(1+rag*1.5);
++  const w=BW*(.40+1.35*clamp(y/H,0,1))*scal(y)*(1+rag*1.5);
+   return Math.abs(t-BT)<w&&y>BFLOOR+rag*46;}:()=>false;
+  const bx0=fp(BT,60,0)[0],bz0=fp(BT,60,0)[2];        // where the water came out
+  // the washout: everything downstream of the notch is gouged into a channel
++ // It used to be one Gaussian trough widening with distance. A washout
++ // BRAIDS: the flow splits round bars of its own gravel and rejoins, and where
++ // it spreads and slows at the distal end it drops its load as a fan. scourK is
++ // the channel's strength, 0..1, which the park also uses to plane off the
++ // terrace steps the flood cut through instead of leaving them standing in it.
++ const scourK=(x,z)=>{if(d!==2)return 0;const w=150+Math.max(0,z-bz0)*.42;
++  return Math.exp(-Math.pow((x-bx0)/w,2))*clamp((z-bz0+60)/220,0,1);};
+  const scour=(x,z)=>{if(d!==2)return 0;
+-  const w=150+Math.max(0,z-bz0)*.42;
+-  return-30*Math.exp(-Math.pow((x-bx0)/w,2))*clamp((z-bz0+60)/220,0,1);};
++  const w=150+Math.max(0,z-bz0)*.42,dx=(x-bx0)/w,k=scourK(x,z);
++  const br=Math.abs(Math.sin(dx*4.4+z*.0045+fbm(x*.004,z*.003,9390,2)*4.5));
++  const fan=11*Math.exp(-Math.pow((z-bz0-980)/190,2))*Math.exp(-dx*dx*.45);
++  return-30*k*(.45+.55*br)*clamp(1-(z-bz0-780)/500,.25,1)+fan;};
+  const REC=46,FACE=[],PANEL=[],REV=[],PIER=[],DK=[];
+  // ---- face, recessed panels, reveals --------------------------------------
+  FACE.push(gridSurface((u,v)=>fp(u,v*H,0),NB*18,76,{uS:64,vS:16,
+@@ -154,9 +170,14 @@ function buildVeladiga(scene,gx,gz,d){reseed(9380+d);KOFF=[gx,0,gz];
+  const pV=z=>clamp((z-150)/1340,0,1);
+  const pTerr=z=>-Math.floor(pV(z)*7)*1.4;
+  const pCh=z=>7-4*pV(z);
+- const pY=(x,z)=>Math.max(.8,12+pTerr(z)-pCh(z)*Math.exp(-Math.pow((x-bx0*.35)/115,2))
+-   +3*fbm(x*.004+3,z*.004,9385,3)+scour(x,z));
+- mesh(gridSurface((u,v)=>{const x=(u-.5)*2160,z=150+v*1340;return[x,pY(x,z),z];},54,42,{uS:32,vS:24}),
++ // The scour is scaled into the height the park actually HAS above the plain.
++ // Added raw, a 30 m trough in a park standing 4-12 m up hit the 0.8 m floor
++ // clamp everywhere in the channel, and the braids and bars all came out as
++ // one flat sheet at the clamp.
++ const pY=(x,z)=>{const b=12+lerp(pTerr(z),-pV(z)*7*1.4,clamp(scourK(x,z)*1.6,0,1))
++   -pCh(z)*Math.exp(-Math.pow((x-bx0*.35)/115,2))+3*fbm(x*.004+3,z*.004,9385,3);
++  const sc=scour(x,z);return Math.max(.8,sc<0?b+sc*Math.max(0,b-1.6)/30:b+sc);};
++ mesh(gridSurface((u,v)=>{const x=(u-.5)*2160,z=150+v*1340;return[x,pY(x,z),z];},d===2?96:54,d===2?76:42,{uS:32,vS:24}),
+   d===2?MAT.mud:MAT.lawn,G);
+  if(d!==2)mesh(gridSurface((u,v)=>{const x=(u-.5)*126+bx0*.35,z=170+v*1300;
+   return[x,12+pTerr(z)-pCh(z)*.42,z];},10,34,{}),MAT.water,G);
+@@ -167,7 +188,7 @@ function buildVeladiga(scene,gx,gz,d){reseed(9380+d);KOFF=[gx,0,gz];
+   // they would NOT do: a plate whose lateral span has been blown away is a
+   // cantilever with nothing holding its free end. So each level keeps only a
+   // stub off each edge of the tear, and the stub droops as it projects.
+-  const bhw=y=>BW*(.40+1.35*clamp(y/H,0,1));   // tear half-width in t at height y
++  const bhw=y=>BW*(.40+1.35*clamp(y/H,0,1))*scal(y);   // tear half-width in t at height y
+   const ARC=RA*2*A;                            // metres per unit of t
+   for(let y=Y0;y<Y1;y+=11){const hw=bhw(y);
+    for(let si=0;si<2;si++){const sg=si?1:-1;
+diff --git a/voth/ancients/src/68-hexahedron.js b/voth/ancients/src/68-hexahedron.js
+index a3216d0..6c2f5fc 100644
+--- a/voth/ancients/src/68-hexahedron.js
++++ b/voth/ancients/src/68-hexahedron.js
+@@ -17,6 +17,18 @@
+ // share a centroid. Each pyramid therefore tapers about ITS OWN centre -- if
+ // both scaled about the world origin they would lean into each other -- so
+ // every plan point is (P.O + outline*s), never outline*s alone.
++// Filled by the builder, read by targets/hexahedron/91z-views.js: see the foot.
++const HEX_SITE={};
++// THE SOFFITS ARE PAINTED. A downward face sees only the hemisphere's ground
++// colour (0x6a3a2a), so the lower city's sixteen stepped undersides and the
++// 1 km great soffit under the upper city all rendered brown from every preset
++// that looks up -- which is most of them, on a building held 300 m in the air.
++// The same answer as the Ledge's: a little emissive through the concrete's own
++// map, so the undersides read as pale concrete lit by bounce off the ground.
++// hxNightDim() drops it at night, or the whole underside would glow.
++MAT.hxSoff =new THREE.MeshStandardMaterial({map:TEX.concrete,roughnessMap:TEX.concreteRM,color:0xb8b3aa,emissive:0x77726a,emissiveMap:TEX.concrete,roughness:1,metalness:0,side:DS});
++MAT.hxSoffR=new THREE.MeshStandardMaterial({map:TEX.concrete,roughnessMap:TEX.concreteRM,color:0x6f6861,emissive:0x3f3b36,emissiveMap:TEX.concrete,roughness:1,metalness:0,side:DS});
++function hxNightDim(o,m){if(o)o.onBeforeRender=()=>{m.emissiveIntensity=NIGHT?.06:1;};}
+ function buildHexahedron(scene,gx,gz,d){reseed(9430+d);KOFF=[gx,0,gz];
+  const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);
+  const dd=d>0?1:0;
+@@ -26,7 +38,7 @@ function buildHexahedron(scene,gx,gz,d){reseed(9430+d);KOFF=[gx,0,gz];
+  REGISTER({name:'Hexahedron — the lower city',x:0,z:0,y:YB,r:740,h:YW-YB});
+  REGISTER({name:'Hexahedron — the vertical structure',x:0,z:0,r:460,h:YB});
+  REGISTER({name:'Hexahedron — automated industries',x:0,z:0,r:640,h:34});
+- const SH=[],DK=[],GRD=[],CHAM=.055;
++ const SH=[],DK=[],GRD=[],SOF=[],CHAM=.055;
+ 
+  // ---- the two plans --------------------------------------------------------
+  const TH=75*Math.PI/180,BL=2*Math.cos(TH);        // leg = 1, base = 2 cos(TH)
+@@ -119,6 +131,17 @@ function buildHexahedron(scene,gx,gz,d){reseed(9430+d);KOFF=[gx,0,gz];
+     if(cut(p,y0+RU*.5))continue;
+     if(d>0&&rng()<.34)continue;
+     const Q=W(PU,p,s0),N=pnorm(PU,p),q=qFacing([N[0],0,N[1]]);
++    // THE WALL BEHIND A PROMENADE IS AN ARCADE. It used to carry the same
++    // three rows of panes as every other riser, so the promenade grooves read
++    // as one more step with nothing behind it (KNOWN_ISSUES: "no interiors
++    // behind the promenade bands"). A 9 x 14 m arch every third bay, a lamp
++    // in each while the city is lit, and one row of panes over the top.
++    // Draws no PRNG, so nothing after it moves.
++    if(BAND(k)){if(j%3===0){
++      kput('archOpen',[Q[0]+N[0]*.5,y0+7.6,Q[1]+N[1]*.5],q,[1.5,1.6,1.4],null);
++      if(d===0)kput('strip',[Q[0]+N[0]*.95,y0+12.4,Q[1]+N[1]*.95],q,[5.5,1.2,1.2],WARM);}
++     else kput(WIN,[Q[0]+N[0]*.35,y0+RU*.76,Q[1]+N[1]*.35],q,[2.5,3.1,1],null);
++     continue;}
+     for(let row=0;row<3;row++)
+      kput(WIN,[Q[0]+N[0]*.35,y0+RU*(.20+row*.28),Q[1]+N[1]*.35],q,[2.5,3.1,1],null);}}
+   // sky bridges out to cantilevered pods off the promenade grooves
+@@ -128,6 +151,11 @@ function buildHexahedron(scene,gx,gz,d){reseed(9430+d);KOFF=[gx,0,gz];
+    const ex=Q[0]+N[0]*48,ez=Q[1]+N[1]*48;
+    beam(BOXC(d),[Q[0],y0+RU+3,Q[1]],[ex,y0+RU+3,ez],5,2.4);
+    kput(SLABC(d),[ex,y0+RU+3,ez],null,[15,2.4,15],null);
++   // a raking strut back to the riser below, so the pod is a bracketed
++   // balcony and not a disc floating 48 m off the face (seen from under it,
++   // all you saw of the old one was its brown underside)
++   {const Qb=W(PU,p,s0);for(const sg of [-1,1]){const tx=-N[1]*sg*5,tz=N[0]*sg*5;
++    beam(BOXC(d),[ex+tx*.8,y0+RU+1.6,ez+tz*.8],[Qb[0]+tx,y0+3,Qb[1]+tz],2.6,2.6);}}
+    kput(BOXC(d),[ex,y0+RU+9,ez],qFacing([N[0],0,N[1]]),[16,9,13],null);}}
+ 
+  // ---- the summit: a ridge, not a point --------------------------------------
+@@ -138,11 +166,24 @@ function buildHexahedron(scene,gx,gz,d){reseed(9430+d);KOFF=[gx,0,gz];
+   const CXs=PU.O[0]*SPAN,CZs=PU.O[1]*SPAN;
+   SH.push(gridSurface((u,v)=>{const Q=W(PU,u,lerp(ST,0,v));return[Q[0],YT+lerp(0,7,Math.min(1,v*1.3)),Q[1]];},
+    72,4,{uS:24,vS:4}));
+-  if(d!==2){for(let i=0;i<7;i++){const t=(i/6-.5)*1.5*RA;
+-    const h=22+16*Math.cos(i/6*Math.PI-Math.PI/2);
+-    kput(BOXC(d),[CXs+Math.cos(ang)*t,YT+7+h*.5,CZs+Math.sin(ang)*t],qEuler(0,-ang,0),
+-     [RA*.30,h,38-Math.abs(i-3)*4],null);}
+-   kput('finial',[CXs,YT+53,CZs],null,[7,18,7],null);}
++  // THE CULTURAL CENTRE IS A HALL. It was seven boxes in a row, which read as
++  // a skyline of blocks rather than the one long room the sections draw. Now a
++  // parabolic vault along the ridge on a plinth, ribbed, closed at both ends
++  // with a portal in each, and slotted along its crown for light.
++  if(d!==2){const L=1.3*RA,HW=17,HV=28,ca=Math.cos(ang),sa=Math.sin(ang),Y0=YT+11;
++   const hp=(t,w,y)=>[CXs+ca*t-sa*w,y,CZs+sa*t+ca*w];
++   const vy=w=>Y0+HV*(1-Math.pow(w/HW,2));
++   kput(BOXC(d),[CXs,YT+9,CZs],qEuler(0,-ang,0),[L+18,4,2*HW+16],null);
++   SH.push(gridSurface((u,v)=>{const t=(u-.5)*L,w=(v*2-1)*HW;return hp(t,w,vy(w));},26,14,
++    {uS:L/10,vS:5,hole:(u,v)=>Math.abs(v-.5)<.05&&Math.floor(u*26)%2===0}));
++   for(const e of [-.5,.5])SH.push(gridSurface((u,v)=>{const w=(u*2-1)*HW;
++     return hp(e*L,w,Y0+(vy(w)-Y0)*v);},14,5,{uS:4,vS:3}));
++   for(let i=0;i<=13;i++){const t=(i/13-.5)*L;
++    for(let sgm=0;sgm<6;sgm++){const w0=(sgm/6*2-1)*HW,w1=((sgm+1)/6*2-1)*HW;
++     beam(BOXC(d),hp(t,w0*1.02,vy(w0)+.9),hp(t,w1*1.02,vy(w1)+.9),1.8,2.2);}}
++   for(const e of [-1,1])kput('archOpen',hp(e*(L*.5+.7),0,Y0+9),qFacing([ca*e,0,sa*e]),[2.4,2.3,1.4],null);
++   if(d===0)for(let i=0;i<13;i++)kput('strip',hp(((i+.5)/13-.5)*L,0,Y0+HV-1.5),qEuler(0,-ang,0),[L/15,1.4,1.4],WARM);
++   kput('finial',[CXs,Y0+HV+8,CZs],null,[7,18,7],null);}
+   for(let i=0;i<3;i++){if(d===2&&i===1)continue;
+    const C=[triU[i][0]-cU[0],triU[i][1]-cU[1]];
+    kput(BOXC(d),[CXs+C[0]*ST*SPAN*.8,YT+52,CZs+C[1]*ST*SPAN*.8],null,[8,96,8],null);}}
+@@ -179,7 +220,7 @@ function buildHexahedron(scene,gx,gz,d){reseed(9430+d);KOFF=[gx,0,gz];
+   SH.push(gridSurface((u,v)=>{const Q=W(PL,u,s1);return[Q[0],y0+v*RL,Q[1]];},
+    112,2,{uS:52,vS:2,hole:u=>{const Q=W(PL,u,s1);return crater(Q[0],Q[1]);}}));
+   // soffit, v running outward-to-inward so the normal points DOWN at the ground
+-  SH.push(gridSurface((u,v)=>{const Q=W(PL,u,lerp(s1,s0,v));return[Q[0],y0,Q[1]];},
++  SOF.push(gridSurface((u,v)=>{const Q=W(PL,u,lerp(s1,s0,v));return[Q[0],y0,Q[1]];},
+    112,2,{uS:52,vS:2,hole:(u,v)=>{const Q=W(PL,u,lerp(s1,s0,v));return crater(Q[0],Q[1]);}}));
+   const nc=Math.max(6,Math.round(86*s1));
+   for(let j=0;j<nc;j++){const p=(j+.5)/nc,N=pnorm(PL,p),q=qFacing([N[0],0,N[1]]);
+@@ -219,11 +260,11 @@ function buildHexahedron(scene,gx,gz,d){reseed(9430+d);KOFF=[gx,0,gz];
+  // one. Three caps: the great soffit under the upper city, the deck over the
+  // lower city, and the floor of its truncated apex. They sit 2 m apart rather
+  // than coplanar so the overlap cannot z-fight.
+- SH.push(gridSurface((u,v)=>{const Q=W(PU,u,1-v);return[Q[0],YW,Q[1]];},
++ SOF.push(gridSurface((u,v)=>{const Q=W(PU,u,1-v);return[Q[0],YW,Q[1]];},
+   112,6,{uS:52,vS:8,hole:(u,v)=>cut(u,YW+2)}));
+  SH.push(gridSurface((u,v)=>{const Q=W(PL,u,1-v);return[Q[0],YW-2,Q[1]];},
+   112,6,{uS:52,vS:8,hole:(u,v)=>{const Q=W(PL,u,1-v);return crater(Q[0],Q[1]);}}));
+- SH.push(gridSurface((u,v)=>{const Q=W(PL,u,SB*(1-v));return[Q[0],YB,Q[1]];},
++ SOF.push(gridSurface((u,v)=>{const Q=W(PL,u,SB*(1-v));return[Q[0],YB,Q[1]];},
+   72,3,{uS:24,vS:3,hole:(u,v)=>{const Q=W(PL,u,SB*(1-v));return crater(Q[0],Q[1]);}}));
+  // The lower city's roof is open sky wherever the upper pyramid does not cover
+  // it, which on a 120 deg turn is most of one point. That is the park and
+@@ -236,6 +277,33 @@ function buildHexahedron(scene,gx,gz,d){reseed(9430+d);KOFF=[gx,0,gz];
+   if(rng()<.42){const h=rr(5,17);
+    kput(BOXC(d),[Q[0],YW-2+h*.5,Q[1]],qEuler(0,rng()*TAU,0),[rr(10,26),h,rr(9,22)],null);}
+   else if(d!==2)VEG.tree(Q[0],YW-2,Q[1],i%3,rr(5,10));}
++ // SKY BRIDGES ACROSS THE AIR. KNOWN_ISSUES: the sheets' bridges span BETWEEN
++ // faces across open air, and every bridge here only cantilevered outward to
++ // a pod. The one piece of open air this form has between two of its own
++ // faces is over the lower city's exposed point, where the upper pyramid's
++ // flank rises out of the park. Three level bridges leave the fifth-level
++ // promenade and cross 100 m above that park to lift towers standing on it.
++ // Placement is solved, not typed in: the point of the lower plan furthest
++ // from the upper one, then the nearest promenade edge to each landing.
++ {const Yp=YW+5*RU,sP=su(4),UO=[PU.O[0]*SPAN,PU.O[1]*SPAN];
++  let pA=0,best=-1;for(let i=0;i<400;i++){const Q=W(PL,i/400,1),dd2=Math.hypot(Q[0]-UO[0],Q[1]-UO[1]);
++   if(dd2>best){best=dd2;pA=i/400;}}
++  for(let b=-1;b<=1;b++){const T=W(PL,pA+b*.018,.70);
++   const vx=T[0]/SPAN-PU.O[0],vz=T[1]/SPAN-PU.O[1],m=Math.hypot(vx,vz)||1e-6;
++   if(m<planR(PU,vx/m,vz/m)*1.04||crater(T[0],T[1]))continue;        // must stand in the open
++   let pS=0,bd=1e9;for(let i=0;i<400;i++){const Q=W(PU,i/400,sP),q=Math.hypot(Q[0]-T[0],Q[1]-T[1]);
++    if(q<bd){bd=q;pS=i/400;}}
++   if(bd<60||bd>460||cut(pS,Yp))continue;
++   const S=W(PU,pS,sP),ang=Math.atan2(T[1]-S[1],T[0]-S[0]),nx=-Math.sin(ang),nz=Math.cos(ang);
++   beam(BOXC(d),[S[0],Yp+3,S[1]],[T[0],Yp+3,T[1]],5,9);
++   for(const sg of [-1,1])beam(BOXC(d),[S[0]+nx*sg*4.2,Yp+6.6,S[1]+nz*sg*4.2],
++    [T[0]+nx*sg*4.2,Yp+6.6,T[1]+nz*sg*4.2],1,.8);
++   const hT=Yp+6-(YW-2);
++   kput(BOXC(d),[T[0],YW-2+hT*.5,T[1]],qEuler(0,-ang,0),[15,hT,15],null);
++   kput(BOXC(d),[T[0],YW-2+7,T[1]],qEuler(0,-ang,0),[30,14,26],null);
++   kput(SLABC(d),[T[0],Yp+7,T[1]],null,[13,2,13],null);
++   if(d===0)for(let j=0;j<8;j++)kput('strip',[T[0]+Math.cos(ang)*7.7,YW+10+j*11,T[1]+Math.sin(ang)*7.7],
++    qFacing([Math.cos(ang),0,Math.sin(ang)]),[4,1.2,1.2],WARM);}}
+  // coffer ribs across the great soffit, so it is not a blank 1 km plate
+  for(let j=0;j<30;j++){const p=j/30,Q=W(PU,p,.99),Qi=W(PU,p+.5,.99);
+   if(cut(p,YW+2))continue;
+@@ -356,10 +424,22 @@ function buildHexahedron(scene,gx,gz,d){reseed(9430+d);KOFF=[gx,0,gz];
+   beam(d>0?'boxR':'boxD',[0,7.2,0],[Math.cos(a)*HEXR*.96,7.2,Math.sin(a)*HEXR*.96],16,.6);}
+ 
+  // ---- merge and dress --------------------------------------------------------
+- meshMerged(SH,CONC(dd),G);meshMerged(GRD,d>0?MAT.mud:MAT.slab,G);
++ meshMerged(SH,CONC(dd),G);hxNightDim(meshMerged(SOF,dd?MAT.hxSoffR:MAT.hxSoff,G),dd?MAT.hxSoffR:MAT.hxSoff);
++ meshMerged(GRD,d>0?MAT.mud:MAT.slab,G);
+  if(DK.length)meshMerged(DK,MAT.guts,G);
+  if(d>0){mossOnSurface(SH,0,0,0,300,4);vinesFromLedge(SH,0,0,0,140,26);stainsFromLedge(SH,0,0,0,160,24);
+   scatterMoss(0,0,0,180,HEXR,320,4);rubbleRing(0,0,0,HEXR*.4,HEXR,240,7);trees(0,0,220,HEXR*1.2,80);}
+  else{trees(0,0,HEXR*.55,HEXR*1.25,52);figures(0,300,10,160);}
+  figures(CX,CZ,8,140);
++ // ---- what the presets are derived from ------------------------------------
++ // KNOWN_ISSUES: "presets hard-code targets", and three had to be re-aimed by
++ // hand after the plan or the failure moved. The camera fragment runs after
++ // 90-scene.js, so it reads these instead: builder-local metres, per decay.
++ {const bb=[1e9,-1e9,1e9,-1e9];
++  for(const P of [PU,PL])for(let i=0;i<=240;i++){const Q=W(P,i/240,P===PU?1.14:1.12);   // the decks' reach
++   bb[0]=Math.min(bb[0],Q[0]);bb[1]=Math.max(bb[1],Q[0]);bb[2]=Math.min(bb[2],Q[1]);bb[3]=Math.max(bb[3],Q[1]);}
++  const kS=Math.round(NU*.6),shQ=W(PU,WB,su(kS));
++  HEX_SITE[d]={UC:[(bb[0]+bb[1])/2,(bb[2]+bb[3])/2],BB:bb,COM:[COM[0]*SPAN,COM[1]*SPAN],
++   CRATER:[CX,CZ],APEX:W(PU,.380,1.14),SUMMIT:[PU.O[0]*SPAN,PU.O[1]*SPAN],
++   SHEAR:[shQ[0],YW+kS*RU,shQ[1]],SHEARN:pnorm(PU,WB),YB,YW,YT};}
+  KOFF=[0,0,0];return G;}
+diff --git a/voth/ancients/src/70-hypertree.js b/voth/ancients/src/70-hypertree.js
+index 0fa2682..b273951 100644
+--- a/voth/ancients/src/70-hypertree.js
++++ b/voth/ancients/src/70-hypertree.js
+@@ -114,7 +114,9 @@ function buildHypertree(scene,gx,gz,d){reseed(9450+d);KOFF=[gx,0,gz];
+     qEuler(rng()*3,rng()*3,rng()*3),[s,s*.62,s],
+     new THREE.Color(LEAFC[Math.floor(rng()*LEAFC.length)]));}});
+ 
+- apron(G,0,0,RB*2.4,RB*7,d,2);
++ // NO APRON. apron() lays a graded disc of pale rock (d=0) or mud, and under
++ // a tree either read as a paper disc laid on the plain in every preset. The
++ // buttress flare and the surface roots are the ground contact.
+  scatterMoss(0,0,0,RB*1.2,CR*.7,90,3.2);
+  figures(RB*2.2,0,6,40);
+  KOFF=[0,0,0];return G;}
+diff --git a/voth/ancients/src/77-dam.js b/voth/ancients/src/77-dam.js
+index 67609ea..da1f387 100644
+--- a/voth/ancients/src/77-dam.js
++++ b/voth/ancients/src/77-dam.js
+@@ -28,22 +28,54 @@ function buildDam(scene,gx,gz,d){reseed(9260+d);KOFF=[gx,0,gz];const G=new THREE
+  // has to be punched where they break through it. Generating them afterwards
+  // left every shaft behind an unbroken elevation — all that showed was the 2 m
+  // of collar that protruded, so they read as blind bosses rather than openings.
++ // THE RUIN'S CREST HAS GONE. Everything else about the ruin read close up --
++ // the fallen fins, the drawn-down reservoir, moss and stains -- but at the
++ // hero distance it was the intact dam with a dark stripe: the QA brief's
++ // "intact with patches". A dam this old fails at the crest first, where it
++ // is thinnest and the overtopping works: a ragged notch 120-28 m wide taken
++ // 128 m down, off the fin cruciform so it does not fight it. Every surface,
++ // tunnel and crest block on that line asks notch().
++ const NX=-221,NB=H-128;   // its top edge stops short of the -138 fin (x -153)
++ const notchW=y=>14+46*clamp((y-NB)/(H-NB),0,1)+6*(fbm(y*.05,.3,2360,2)*2-1);
++ const notch=(x,y)=>d>0&&y>NB+4*(fbm(x*.07,.2,2361,2)*2-1)&&Math.abs(x-NX)<notchW(y);
+  const TUNS=[];
+  for(let k=-5;k<=5;k++){const tx=k*52;
+   for(let j=0;j<3;j++){
+    if(rng()<.18)continue;                                  // not a perfect grid
+-   TUNS.push({x:tx,y:96+j*82+rr(-9,9),R:rr(7.5,10.5),blocked:d>0&&rng()<.30});}}
++   const ty=96+j*82+rr(-9,9),tR=rr(7.5,10.5),blk=d>0&&rng()<.30;
++   if(notch(tx,ty)||notch(tx-tR,ty)||notch(tx+tR,ty))continue;
++   TUNS.push({x:tx,y:ty,R:tR,blocked:blk});}}
+  const tunHole=(x,y)=>{for(const t of TUNS){const dx=x-t.x,dy=y-t.y;
+   if(dx*dx+dy*dy<t.R*t.R*.86)return true;}return false;};
+  const fh=holeFn(d*.5,2300,null,1.6);
+  const FACE=[gridSurface(dsFace,160,80,{uS:32,vS:20,hole:(u,v)=>
+-   tunHole((u-.5)*SPAN,v*H)||(fh?fh(u,v):false)}),
+-  gridSurface((u,v)=>{const x=(u-.5)*SPAN,y=v*H;return[x,y,zc(x)-2];},96,10,{uS:32,vS:20}),
+-  gridSurface((u,v)=>{const x=(u-.5)*SPAN;return[x,H,zc(x)+v*th_(H)];},96,4,{uS:32,vS:4})];
++   notch((u-.5)*SPAN,v*H)||tunHole((u-.5)*SPAN,v*H)||(fh?fh(u,v):false)}),
++  gridSurface((u,v)=>{const x=(u-.5)*SPAN,y=v*H;return[x,y,zc(x)-2];},96,10,{uS:32,vS:20,
++   hole:(u,v)=>notch((u-.5)*SPAN,v*H)}),
++  gridSurface((u,v)=>{const x=(u-.5)*SPAN;return[x,H,zc(x)+v*th_(H)];},96,4,{uS:32,vS:4,
++   hole:(u,v)=>notch((u-.5)*SPAN,H)})];
++ // The notch's own walls: its two cheeks and its floor, through the full
++ // thickness of the dam, in the same concrete, with the arcology's floor
++ // plates standing out of the cheeks every 8 m so the break reads as a
++ // section through a city and not as a gap in a wall.
++ if(d>0){const nzA=x=>zc(x)-2,nzB=(x,y)=>zc(x)+th_(y);
++  for(const sg of [-1,1])FACE.push(gridSurface((u,v)=>{const y=lerp(NB,H,v),x=NX+sg*notchW(y);
++    return[x,y,lerp(nzA(x),nzB(x,y),u)];},8,26,{uS:4,vS:12}));
++  FACE.push(gridSurface((u,v)=>{const x=NX+(v*2-1)*notchW(NB);
++    return[x,NB,lerp(nzA(x),nzB(x,NB),u)];},8,4,{uS:4,vS:2}));
++  for(let y=NB+6;y<H-4;y+=8)for(const sg of [-1,1]){const x=NX+sg*notchW(y);
++   const L=rr(3,11),zm=(nzA(x)+nzB(x,y))*.5,dep=th_(y);
++   kput(BOXC(d),[x-sg*(L*.5-1),y,zm],qEuler(0,0,sg*rr(-.12,.05)),[L,1.2,dep*rr(.55,.9)],null);}
++  // what came out of it, down the face and at the toe
++  for(let i=0;i<46;i++){const t=Math.pow(rng(),1.4);
++   const x=NX+rr(-50,50)*(.4+t),sc=rr(6,22)*(1-t*.3);
++   kput(BOXC(d),[x,sc*.3,zc(x)+th_(0)+4+rr(0,90)*t],
++    qEuler(rng()*3,rng()*3,rng()*3),[sc*rr(.8,1.8),sc*rr(.4,.8),sc*rr(.7,1.5)],null);}}
+  meshMerged(FACE,CONC(d),G);
+- if(d>0)mesh(gridSurface((u,v)=>{const x=(u-.5)*SPAN,y=v*H;return[x,y,zc(x)+th_(y)-6];},48,20,{}),MAT.guts,G);
++ if(d>0)mesh(gridSurface((u,v)=>{const x=(u-.5)*SPAN,y=v*H;return[x,y,zc(x)+th_(y)-6];},48,20,
++  {hole:(u,v)=>notch((u-.5)*SPAN,v*H)}),MAT.guts,G);
+  // crest: light wells (arc of slots), residential arc, public centre dome, cultural domes
+- for(let k=-13;k<=13;k++){const x=k*22;const z=zc(x);const gone=d>0&&rng()<.15;kput(BOXC(d),[x,H+9,z+8],null,[15,18,28],null);kput('boxD',[x,H+18.2,z+8],null,[9,.4,20],null);kput(BOXC(d),[x,H+8,z+50],null,[18,16,22],null);for(let r=0;r<2;r++)for(let c=-1;c<=1;c++)kput(d>0?'winSmD':'winSmI',[x+c*5,H+5+r*6,z+61.2],qFacing([0,0,1]),[2,2.4,1],null);
++ for(let k=-13;k<=13;k++){const x=k*22;const z=zc(x);const gone=d>0&&rng()<.15;if(notch(x,H-1)||notch(x+9,H-1)||notch(x-9,H-1))continue;kput(BOXC(d),[x,H+9,z+8],null,[15,18,28],null);kput('boxD',[x,H+18.2,z+8],null,[9,.4,20],null);kput(BOXC(d),[x,H+8,z+50],null,[18,16,22],null);for(let r=0;r<2;r++)for(let c=-1;c<=1;c++)kput(d>0?'winSmD':'winSmI',[x+c*5,H+5+r*6,z+61.2],qFacing([0,0,1]),[2,2.4,1],null);
+   if(!gone){const lit=d>0?rng()<.12:true;kput('strip',[x,H+12.6,z+10],qEuler(0,Math.PI/2,0),[16,1,1],lit?CYAN:DEAD);}}
+  mesh(lathe({rFn:y=>44*Math.pow(clamp(1-Math.pow(y/26,2),0,1),.55),H:26,flutes:24,amp:.06,sharp:2,nu:96,nv:14,hole:(u,y)=>Math.cos(u*TAU*24)<.3&&y>3&&y<22||(d>0&&fbm(u*4,y*.1,2310,2)<.3)}),skin,G,0,H+12,zc(0)+20);
+  if(d===0)mesh(lathe({rFn:y=>42*Math.pow(clamp(1-Math.pow(y/26,2),0,1),.55),H:26,nu:48,nv:10}),MAT.glass,G,0,H+12,zc(0)+20);else mesh(lathe({rFn:y=>40*Math.pow(clamp(1-Math.pow(y/26,2),0,1),.55),H:26,nu:48,nv:10}),MAT.dark,G,0,H+12,zc(0)+20);
+@@ -106,7 +138,10 @@ function buildDam(scene,gx,gz,d){reseed(9260+d);KOFF=[gx,0,gz];const G=new THREE
+   if(d===0)mesh(gridSurface((u,v)=>{const y=lerp(26,2,v);return[x+(u-.5)*14*(1+v*.8),y,zf(26)+6+v*20+v*v*20];},8,12,{}),MAT.spray,G);}
+  mesh(gridSurface((u,v)=>{const x=(u-.5)*(SPAN-40),z=zf(0)+60+v*500;return[x,1.5+3*fbm(u*6,v*6,2400,2)+(z>zf(0)+120?0:-1.5),z];},40,30,{}),d>0?MAT.mud:MAT.lawn,G);
+  mesh(gridSurface((u,v)=>{const x=(u-.5)*(SPAN-60),z=zf(0)+56+v*520;return[x,-1+0*u,z];},4,4,{}),MAT.water,G).position.y=0;
+- for(let i=0;i<60;i++){const x=rr(-280,280),z=zf(0)+rr(90,540);const h=rr(6,14);kput('trunk',[x,1,z],null,[2,h,2],null);kput('moss',[x,h,z],null,[6,3,6],new THREE.Color().setHSL(.3,.5,.2));}
++ // the park's trees go through the shared VEG.tree (leaf cards) -- they were a
++ // trunk box with a 'moss' blob on top, which from every preset read as 60
++ // green lollipops standing on the lawn
++ for(let i=0;i<60;i++){const x=rr(-280,280),z=zf(0)+rr(90,540);VEG.tree(x,1,z,i%3,rr(6,14));}
+  // reservoir behind (full when intact; drawn down and silted when ruined)
+  const WL=d>0?250:378;mesh(gridSurface((u,v)=>{const x=(u-.5)*(SPAN+80),z=-700+v*(700+zc(x)-6);return[x,WL,z];},32,16,{}),MAT.water,G);
+  if(d>0)mesh(gridSurface((u,v)=>{const x=(u-.5)*(SPAN+40),z=-700+v*(700+zc(x)-2);return[x,WL-6+30*fbm(u*5,v*5,2500,2)*v*v,z];},32,16,{uS:20,vS:20}),MAT.mud,G);
+diff --git a/voth/ancients/src/89b-arcoindian.js b/voth/ancients/src/89b-arcoindian.js
+index d84436d..25d6dee 100644
+--- a/voth/ancients/src/89b-arcoindian.js
++++ b/voth/ancients/src/89b-arcoindian.js
+@@ -54,13 +54,88 @@
+ // bottom of each one a pale disc is laid on the chamber floor, which is what a
+ // shaft of daylight actually looks like from inside when nothing else can cast
+ // one.
+-MAT.aiRock =new THREE.MeshStandardMaterial({map:TEX.concrete,roughnessMap:TEX.concreteRM,color:0x8d6146,roughness:1,metalness:0,side:DS});
++// ROCK, NOT CONCRETE. All three rock materials used to carry TEX.concrete: a
++// board-formed map with 0.65 m boards and a form-tie grid. Tinted brown over
++// 1 900 m of cliff that is what read as plywood from the hero and as smeared
++// mud up close (both logged in KNOWN_ISSUES, here and against Arcoindian II,
++// which shares these materials). This is bedded sandstone instead: courses of
++// uneven thickness, each its own tone, a dark parting under each and a lit
++// ledge on top; vertical joints that step between courses; desert-varnish
++// streaks hanging off the ledges. The lattice noise WRAPS, so the tile has no
++// seam at the ~74 m repeat the face UVs use. Mean brightness is held near the
++// concrete map's ~0.73 so the three tints below keep their meaning.
++TEX.aiRockTx=canvasTex(512,512,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
++ const pv=(x,y,Px,Py,s)=>{const xi=Math.floor(x),yi=Math.floor(y),xf=x-xi,yf=y-yi;
++  const H=(a,b)=>h3(((a%Px)+Px)%Px,((b%Py)+Py)%Py,s);
++  const u=xf*xf*(3-2*xf),v=yf*yf*(3-2*yf);
++  return lerp(lerp(H(xi,yi),H(xi+1,yi),u),lerp(H(xi,yi+1),H(xi+1,yi+1),u),v);};
++ const pf=(x,y,Px,Py,s,o)=>{let a=0,f=1,t=0;
++  for(let i=0;i<o;i++){a+=pv(x*f,y*f,Px*f,Py*f,s+i*7.3)/f;t+=1/f;f*=2;}return a/t;};
++ // Course boundaries, periodic in y: 11 courses of uneven thickness summing
++ // to h. The first cut used 19 thin courses with strong tone steps and a wavy
++ // warp, and on a curved vault that is exactly the figure of WOOD GRAIN.
++ // Fewer, thicker courses broken into jointed blocks read as stone.
++ const NC=11,CB=[0];{const th=[];let s=0;for(let i=0;i<NC;i++){const t=.5+h3(i,3.3,9.1)*1.3;th.push(t);s+=t;}
++  for(let i=0;i<NC;i++)CB.push(CB[i]+th[i]/s*h);}
++ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,fx=x/w,fy=y/h;
++  const yw=((y+9*(pf(fx*3,fy*2,3,2,4.1,2)-.5)+h)%h);
++  let c=0;while(c<NC-1&&CB[c+1]<=yw)c++;
++  const c0=CB[c],c1=CB[c+1],ty=(yw-c0)/(c1-c0),ct=c1-c0;
++  // joints: 3-6 per course at hashed x, leaning a little, stepping between
++  // courses; each block between two joints takes its own tone
++  const nj=3+Math.floor(h3(c,8.8,1.1)*4);let jd=1e9,blk=0;
++  for(let j=0;j<nj;j++){const jx=h3(c,j,4.4)*w+(ty-.5)*ct*.30;
++   let dx=x-jx;dx-=Math.round(dx/w)*w;const ad=Math.abs(dx);if(ad<jd)jd=ad;if(dx>0)blk+=1<<j;}
++  let v=.75+(h3(c,1.7,2.9)-.5)*.10+(h3(c,blk,5.5)-.5)*.10;
++  v+=(pf(fx*4,fy*4,4,4,5.2,3)-.5)*.26;                       // lichen and varnish patches
++  v+=(pf(fx*16,fy*16,16,16,6.1,2)-.5)*.10;                   // weathering at block scale
++  v+=(h3(x,y,6.6)-.5)*.06;                                    // grit
++  // canvas y runs DOWN the face (flipY puts row 0 at the top), so c0 is the
++  // course's upper edge: a thin parting, then the lit lip of its ledge
++  const tp=yw-c0,ep=c1-yw;
++  if(tp<1.3)v-=.17;else if(tp<3)v+=.06;
++  if(ep<3)v-=.06*(3-ep)/3;
++  if(jd<1)v-=.20;else if(jd<2.2)v-=.06;
++  // desert varnish: dark streaks hanging off the ledges, fading downward
++  const st=pf(fx*40,fy*1.5,40,1,7.7,2);
++  if(st>.62)v-=(st-.62)*.9*(1-ty);
++  const r=clamp(v,0,1);
++  d[i]=r*248;d[i+1]=r*238;d[i+2]=r*224;d[i+3]=255;}
++ g.putImageData(id,0,0);});
++// THE PLATEAU TOP is not a cliff face. On the bedded map a horizontal surface
++// shows its courses as contour stripes and the whole tabletop read as paving.
++// This is weathered caprock seen from above: a polygonal crack network (a
++// wrapped Voronoi on an 8 x 8 lattice, so it tiles), two scales of mottle,
++// and dark specks of scrub in the low patches.
++TEX.aiTopTx=canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data,N=8,cs=w/N;
++ const P=[];for(let j=0;j<N;j++)for(let i=0;i<N;i++)P.push([(i+.15+.7*h3(i,j,1.3))*cs,(j+.15+.7*h3(i,j,2.9))*cs]);
++ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;let d1=1e9,d2=1e9,ci=0;
++  const gi=Math.floor(x/cs),gj=Math.floor(y/cs);
++  for(let dj=-1;dj<=1;dj++)for(let di=-1;di<=1;di++){const ii=(gi+di+N)%N,jj=(gj+dj+N)%N,Q=P[jj*N+ii];
++   const qx=Q[0]+(gi+di-ii)*cs,qy=Q[1]+(gj+dj-jj)*cs,dd2=Math.hypot(x-qx,y-qy);
++   if(dd2<d1){d2=d1;d1=dd2;ci=jj*N+ii;}else if(dd2<d2)d2=dd2;}
++  const m1=fbm(x/22,y/22,3.3,3),m2=fbm(x/6,y/6,8.8,2);
++  let v=.74+(h3(ci,.5,4.4)-.5)*.06+(m1-.5)*.30+(m2-.5)*.10+(h3(x,y,2.2)-.5)*.06;
++  // cracks faint and broken: at full strength and unbroken the cells came
++  // back as a flagstone pavement laid over the whole plateau
++  const cr=d2-d1,brk=fbm(x/9,y/9,6.4,2);if(brk>.45){if(cr<1)v-=.13;else if(cr<2.2)v-=.04;}
++  if(m1<.40&&h3(x*.37,y*.41,7.1)<.10)v-=.30;                  // scrub in the low patches
++  const r=clamp(v,0,1);d[i]=r*246;d[i+1]=r*236;d[i+2]=r*220;d[i+3]=255;}
++ g.putImageData(id,0,0);});
++MAT.aiTop  =new THREE.MeshStandardMaterial({map:TEX.aiTopTx,color:0x8d6146,roughness:1,metalness:0,side:DS});
++MAT.aiRock =new THREE.MeshStandardMaterial({map:TEX.aiRockTx,color:0x8d6146,roughness:1,metalness:0,side:DS});
+ // The cavern's own shell. Three stops down on the same rock: this is the shade.
+-MAT.aiShade=new THREE.MeshStandardMaterial({map:TEX.concrete,roughnessMap:TEX.concreteRM,color:0x4a372c,roughness:1,metalness:0,side:DS});
++MAT.aiShade=new THREE.MeshStandardMaterial({map:TEX.aiRockTx,color:0x4a372c,roughness:1,metalness:0,side:DS});
+ // The cut face at x = 150. A shade lighter and cleaner than the weathered face,
+ // because a joint plane is fresh rock and has to read as a cut, not as a cliff.
+-MAT.aiCut  =new THREE.MeshStandardMaterial({map:TEX.concrete,roughnessMap:TEX.concreteRM,color:0xa2795a,roughness:1,metalness:0,side:DS});
++MAT.aiCut  =new THREE.MeshStandardMaterial({map:TEX.aiRockTx,color:0xa2795a,roughness:1,metalness:0,side:DS});
+ MAT.aiVoid =new THREE.MeshStandardMaterial({color:0x0b0c0f,roughness:1,metalness:0,side:DS});
++// A LIGHT WELL'S BORE, seen from under the vault. Pale lining read as a saucer
++// stuck to the ceiling; void-black read as a blue-grey one, because 300 m of
++// fog lifts black toward the sky colour while the brown ceiling round it stays
++// brown, and the hue break is what the eye takes for an object. A near-black
++// in the ceiling's own hue is a deep hole in the same rock.
++MAT.aiBore =new THREE.MeshStandardMaterial({map:TEX.aiRockTx,color:0x21170f,roughness:1,metalness:0,side:DS});
+ // What an excavated chamber is lined with. Not black: a chamber the eye cannot
+ // read is the same as no chamber at all, and the section depends on reading it.
+ MAT.aiRoom =new THREE.MeshStandardMaterial({color:0x453c31,roughness:.94,metalness:.12,side:DS});
+@@ -97,6 +172,19 @@ kdef('aiDrum',new THREE.CylinderGeometry(1,1,1,16),MAT.aiKit);
+ kdef('aiHex',new THREE.CylinderGeometry(1,1,1,6),MAT.aiKit);
+ kdef('aiPortal',arcWindowGeo(8,12,1.8),MAT.aiVoid);
+ kdef('aiPool',new THREE.PlaneGeometry(1,1).rotateX(-Math.PI/2),MAT.aiPool);
++// FALLEN ROCK. The kit's 'rubble' is a regular dodecahedron on an untextured
++// white material; at the 20-70 m these cliffs shed, twelve identical pentagons
++// have no edge to read and every talus here came back as a heap of pale eggs.
++// A block off a bedded cliff is a hexahedron with its corners knocked about:
++// eight jittered corners (hashed on the corner, so the faces stay welded), flat
++// shaded, and UNTEXTURED: on the bedded map they came back as wooden crates. 12 triangles to the
++// dodecahedron's 36, and the same volume as the item it replaces at scale 1.
++MAT.aiBlk=new THREE.MeshStandardMaterial({color:0xa49482,roughness:1,metalness:0});   // a step down: bare white came back as crumpled paper
++kdef('aiBlock',(()=>{const g=new THREE.BoxGeometry(1.45,1.45,1.45),p=g.attributes.position;
++ for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i),z=p.getZ(i),
++   k=h3(Math.sign(x)*3.1,Math.sign(y)*5.3,Math.sign(z)*7.7);
++  p.setXYZ(i,x*(1+(k-.5)*.5),y*(1+(h3(k,2.2,1)-.5)*.45),z*(1+(h3(k,4.4,3)-.5)*.5));}
++ const n=g.toNonIndexed();n.computeVertexNormals();return n;})(),MAT.aiBlk);
+ // plymQuadGeo is shared (src/88-plymouth.js). A balcony is a floor, a front and
+ // two ends; a box apiece would be three times the triangles for a solid nobody
+ // can see the inside of. Cross-cutting note in KNOWN_ISSUES says reuse beats
+@@ -123,7 +211,7 @@ function buildArcoindian(scene,gx,gz,d){reseed(9580+d);KOFF=[gx,0,gz];
+  const dd=d>0?1:0;
+  const wallM=dd?MAT.aiWallR:MAT.aiWall, deckM=dd?MAT.aiDeckR:MAT.aiDeck;
+  const BX='aiBox', BXD='aiBoxD';
+- const ROCK=[],SHADE=[],CUT=[],RM=[],SH=[],DK=[],GRD=[];
++ const BORE=[],ROCK=[],TOP=[],SHADE=[],CUT=[],RM=[],SH=[],DK=[],GRD=[];
+ 
+  // ---- the numbers ----------------------------------------------------------
+  const XW=-1560,XS=150;             // the model's west taper; the section cut
+@@ -153,7 +241,11 @@ function buildArcoindian(scene,gx,gz,d){reseed(9580+d);KOFF=[gx,0,gz];
+  // ---- the rock -------------------------------------------------------------
+  // ctop tapers the plateau away at the west end so the cliff grades into the
+  // plain instead of stopping as a sheer mesa wall.
+- const ctop=x=>CT0*clamp(1-Math.pow(clamp((-x-620)/820,0,1),1.5),.07,1);
++ // The taper comes down in BENCHES, not as one ramp: s-t/(2 pi n) is a smooth
++ // staircase whose treads are flat where its derivative 1-cos vanishes. On a
++ // single ramp the west half of the plateau read as a loaf's sloping end.
++ const ctop=x=>{const t=clamp((-x-620)/820,0,1),ts=t-.78*Math.sin(t*TAU*3)/(TAU*3);
++  return CT0*clamp(1-Math.pow(ts,1.5),.07,1);};
+  // THE OVERHANG, as one function. The nominal face leans out 232 m between the
+  // foot and y=470 and then pulls back into a caprock. Everything else — the
+  // cavern, the shelf, the lift towers — is measured off this line.
+@@ -174,7 +266,20 @@ function buildArcoindian(scene,gx,gz,d){reseed(9580+d);KOFF=[gx,0,gz];
+    +30*Math.pow(Math.abs(fbm(x*.021,y*.004,9587,3)-.5)*2,2.1)
+    +13*Math.pow(Math.abs(fbm(x*.038,y*.011,9588,2)-.5)*2,1.5)
+    +28*fbm(x*.0095,y*.012,9589,4)+13*fbm(x*.031,y*.021,9591,3);
+- const faceZ=(x,y)=>brow(y)-rel(x,y)
++ // RE-ENTRANTS. 1 900 m of escarpment on one line read as a rectangular loaf
++ // from the hero view (KNOWN_ISSUES' "single biggest remaining weakness"). A
++ // real scarp retreats unevenly: amphitheatre-headed bays eaten back into it,
++ // leaving spurs standing between them. Four bays, all WEST of the cavern and
++ // faded to nothing by x = -640, so the city, its shelf and the lift towers
++ // are measured off exactly the face they were before. Bays only ever cut IN,
++ // which keeps the foot clear of the viaduct at z = -26; they deepen toward
++ // the top because a scarp retreats from its rim. Fixed constants, no PRNG, so
++ // nothing else in the builder moves.
++ const BAYS=[[-790,78,92],[-1010,64,138],[-1215,96,104],[-1420,70,76]];
++ const bay=(x,y)=>{if(x>-640)return 0;
++  let s=0;for(const b of BAYS)s+=b[2]*Math.exp(-Math.pow((x-b[0])/b[1],2));
++  return s*clamp((-640-x)/110,0,1)*(.62+.38*clamp(y/(ctop(x)+1),0,1));};
++ const faceZ=(x,y)=>brow(y)-rel(x,y)-bay(x,y)
+    +44*Math.pow(clamp(1-y/190,0,1),1.7)                       // talus banking out at the foot
+    +11*Math.pow(clamp((y-ctop(x)*.88)/(ctop(x)*.12+1),0,1),1.2);  // the caprock lip
+ 
+@@ -361,7 +466,12 @@ function buildArcoindian(scene,gx,gz,d){reseed(9580+d);KOFF=[gx,0,gz];
+    if(r3<wr+RPLZ*.6)continue;
+    wx=PCX+Math.cos(a3)*r3;wz=PCZ+Math.sin(a3)*r3;
+    got=!TPOS.some(t=>Math.hypot(wx-t[0],wz-t[1])<t[2]+wr+14);}
+-  if(got)WELL.push({x:wx,z:wz,r:wr,y0:roofY(wx,wz)-4,cav:true});}
++  // The bore starts at the LOWEST point of the roof round its rim, not 4 m
++  // under the roof at its centre: that 4 m stub of lining was a 28 m drum
++  // hanging below the vault, which is what every preset looking up saw.
++  if(got){let ry=1e9;for(let k=0;k<8;k++){const a=k/8*TAU;
++    const q=roofY(wx+Math.cos(a)*wr,wz+Math.sin(a)*wr);if(q>0)ry=Math.min(ry,q);}
++   WELL.push({x:wx,z:wz,r:wr,y0:Math.min(ry,roofY(wx,wz))-.5,cav:true});}}
+  const wellY1=W=>platY(W.x,W.z)+2;
+  const inWell=(x,z,pad)=>{for(let i=0;i<WELL.length;i++){const W=WELL[i];
+    const dx=x-W.x,dz=z-W.z,rr2=W.r+(pad||0);
+@@ -403,7 +513,7 @@ function buildArcoindian(scene,gx,gz,d){reseed(9580+d);KOFF=[gx,0,gz];
+    hole:(u,v)=>mouthHole(lerp(XW,XS,u),v*ctop(lerp(XW,XS,u)))}));
+  // the plateau, lapping 3 m forward over the face top and grading to the plain
+  // at the back of the model
+- ROCK.push(gridSurface((u,v)=>{const x=lerp(XW,XS,u);
++ TOP.push(gridSurface((u,v)=>{const x=lerp(XW,XS,u);
+    const z0=faceZ(x,ctop(x))+3,z=lerp(z0,ZBK,Math.pow(v,.82));
+    return[x,platY(x,z),z];},
+    160,48,{uS:(XS-XW)/78,vS:16,
+@@ -420,7 +530,7 @@ function buildArcoindian(scene,gx,gz,d){reseed(9580+d);KOFF=[gx,0,gz];
+  // talus banked against the foot of the cliff, largest at the wall
+  for(let i=0;i<260;i++){const x=rr(XW+80,XS),t=Math.pow(rng(),1.9);
+   const bx=faceZ(x,10)+t*150,sc=rr(4,24)*(1-t*.45);
+-  kput('rubble',[x,sc*.4+(1-t)*(1-t)*20,bx],qEuler(rng()*3,rng()*3,rng()*3),
++  kput('aiBlock',[x,sc*.4+(1-t)*(1-t)*20,bx],qEuler(rng()*3,rng()*3,rng()*3),
+    [sc*rr(.7,1.5),sc*rr(.5,1),sc*rr(.7,1.5)],new THREE.Color().setHSL(rr(.05,.10),rr(.12,.32),rr(.11,.24)));}
+ 
+  // ---- the cavern shell -----------------------------------------------------
+@@ -461,14 +571,27 @@ function buildArcoindian(scene,gx,gz,d){reseed(9580+d);KOFF=[gx,0,gz];
+      new THREE.Color().setHSL(rr(.06,.10),rr(.10,.20),rr(.10,.17)));}}
+   WELL.forEach(W=>{if(W.half||W.cav||rng()<.45)return;
+    for(let i=0;i<18;i++){const a3=rng()*TAU,r4=W.r*rr(1.5,3.4),sc=rr(3,11);
+-    kput('rubble',[W.x+Math.cos(a3)*r4,wellY1(W)-1+sc*.35,W.z+Math.sin(a3)*r4],
++    kput('aiBlock',[W.x+Math.cos(a3)*r4,wellY1(W)-1+sc*.35,W.z+Math.sin(a3)*r4],
+      qEuler(rng()*3,rng()*3,rng()*3),[sc*rr(.8,1.6),sc*rr(.4,.8),sc*rr(.8,1.6)],
+      new THREE.Color().setHSL(rr(.05,.10),rr(.14,.32),rr(.10,.22)));}});
+   for(let i=0;i<(dd?120:80);i++){const px5=rr(XW+400,XS-20),pz5=rr(-1180,-120);
+    const py5=platY(px5,pz5);
+-   if(py5<40||inWell(px5,pz5,26))continue;
++   // and not out over a bay, where the rim has retreated behind z = -120
++   if(py5<40||inWell(px5,pz5,26)||pz5>faceZ(px5,ctop(px5))-6)continue;
+    kput('hedge',[px5,py5+.5,pz5],qEuler(0,rng()*TAU,0),[rr(2,5),rr(.8,1.5),rr(1.4,3)],
+-    new THREE.Color().setHSL(rr(.14,.26),rr(.18,.34),dd?rr(.06,.12):rr(.07,.14)));}}
++    new THREE.Color().setHSL(rr(.14,.26),rr(.18,.34),dd?rr(.06,.12):rr(.07,.14)));}
++  // TORS. The plateau's own relief was 16 m of smooth noise, and from the
++  // plateau preset it was a tabletop with manholes in it. Knots of harder
++  // caprock stand out of it -- clusters of angular blocks, largest at the
++  // middle -- set by a HASH, not the PRNG, so nothing after them moves.
++  for(let k=0;k<16;k++){const tx=lerp(XW+320,XS-60,h3(k,1.1,5.5)),tz=lerp(-1150,-260,h3(k,2.7,6.1));
++   if(tz>faceZ(tx,ctop(tx))-40||inWell(tx,tz,40)||platY(tx,tz)<60)continue;
++   const n=8+Math.floor(h3(k,3.3,7.3)*9),R0=14+20*h3(k,4.9,8.1);
++   for(let j=0;j<n;j++){const a=h3(k,j,1.9)*TAU,t=Math.sqrt(h3(k,j,2.8)),r=R0*t;
++    const bx=tx+Math.cos(a)*r,bz=tz+Math.sin(a)*r,sc=lerp(15,5,t)*(.7+.6*h3(k,j,3.7));
++    kput('aiBlock',[bx,platY(bx,bz)+sc*.25,bz],qEuler(h3(j,k,1)*.6,h3(j,k,2)*TAU,h3(j,k,3)*.6),
++     [sc*(1+h3(j,k,4)),sc*(.5+.5*h3(j,k,5)),sc*(1+h3(j,k,6))],
++     new THREE.Color().setHSL(.06+.04*h3(j,k,7),.2+.12*h3(j,k,8),.12+.10*h3(j,k,9)));}}}
+  // ---- the rock shelf the city stands on ------------------------------------
+  // Its outer edge is shelfE(): the weathered face where that reaches far
+  // enough forward, a projecting buttress of rock where it does not. Under that
+@@ -491,10 +614,28 @@ function buildArcoindian(scene,gx,gz,d){reseed(9580+d);KOFF=[gx,0,gz];
+   const ry=roofY(XS,z);return ry>0&&y<ry-11;};
+  const cutX=(y,z)=>XS+((fbm(z*.0062,y*.0062,9604,3)*2-1)*11
+    +(fbm(z*.021,y*.021,9627,2)*2-1)*4.5);
++ // THE CAVERN'S EDGE ON THE CUT. gridSurface drops whole quads, so the top of
++ // the cavern opening came back as a flight of 8 m stairs across the section
++ // preset. The main face now leaves a band CB m above the roof edge open as
++ // well, and a conformal strip is laid over that band whose lower edge IS the
++ // roof curve and which laps 0.9 m proud over the stepped quads above it. Its
++ // UVs are recomputed from the main face's own (u,v) so the bedding runs on
++ // across the join instead of jumping.
++ const CB=15,cZa=ZB(XS)+11,cZb=lipZ(XS)-4;
++ const cutU=(y,z)=>Math.pow(clamp((cutZ(y,0)-z)/(cutZ(y,0)+900),0,1),1/.85);
++ const cutSX=(y,z)=>{const b=Math.min(1,cutU(y,z)*6);return cutX(y,z)*b+XS*(1-b);};
++ const inCavBand=(y,z)=>{if(z<=cZa||z>=cZb)return false;
++  const ry=roofY(XS,z);return ry>0&&y>=ry-11&&y<ry-11+CB;};
+  CUT.push(gridSurface((u,v)=>{const y=v*ctop(XS),z=lerp(cutZ(y,0),-900,Math.pow(u,.85));
+    return[cutX(y,z)*Math.min(1,u*6)+XS*(1-Math.min(1,u*6)),y,z];},128,80,{uS:18,vS:CT0/70,
+    hole:(u,v)=>{const y=v*ctop(XS),z=lerp(cutZ(y,0),-900,Math.pow(u,.85));
+-    return inCavCut(y,z)||inCutO(z,y);}}));
++    return inCavCut(y,z)||inCavBand(y,z)||inCutO(z,y);}}));
++ {const g=gridSurface((u,v)=>{const z=lerp(cZa,cZb,u),y=roofY(XS,z)-11+v*(CB+11);
++    return[cutSX(y,z)+.9*Math.min(1,v*3),y,z];},90,5,{uS:1,vS:1});
++  const P=g.attributes.position,UV=g.attributes.uv;
++  for(let i=0;i<P.count;i++){const y=P.getY(i),z=P.getZ(i);
++   UV.setXY(i,cutU(y,z)*18,y/ctop(XS)*CT0/70);}
++  CUT.push(g);}
+  // REVEALS. The chamber openings were rectangles cut in a plane with no
+  // thickness, so 900 m of rock read as a sheet of card. Each opening gets four
+  // returning faces 17 m deep — a sill, a head and two cheeks — which is what
+@@ -508,7 +649,7 @@ function buildArcoindian(scene,gx,gz,d){reseed(9580+d);KOFF=[gx,0,gz];
+    [cutX(yy,lerp(z0,z1,u))-v*RVD,yy,lerp(z0,z1,u)],12,3,{uS:6,vS:3}));});
+  // blocks along the crest, so the plateau does not meet the cut on a drawn line
+  for(let i=0;i<70;i++){const z=rr(-880,cutZ(CT0*.9,0)),sc=rr(6,22);
+-  kput('rubble',[XS+rr(-14,16),ctop(XS)-rr(0,10)+sc*.3,z],qEuler(rng()*3,rng()*3,rng()*3),
++  kput('aiBlock',[XS+rr(-14,16),ctop(XS)-rr(0,10)+sc*.3,z],qEuler(rng()*3,rng()*3,rng()*3),
+    [sc*rr(.7,1.6),sc*rr(.5,1),sc*rr(.7,1.6)],new THREE.Color().setHSL(rr(.05,.10),rr(.14,.32),rr(.16,.32)));}
+  // quarry-like benches at its foot, and the spoil of the joint's own failure
+  for(let b=0;b<3;b++){const by=40+b*46,bd=16+b*9;
+@@ -516,7 +657,7 @@ function buildArcoindian(scene,gx,gz,d){reseed(9580+d);KOFF=[gx,0,gz];
+   CUT.push(gridSurface((u,v)=>[XS+bd,lerp(by,by-46,v),lerp(cutZ(by,0),-860,Math.pow(u,.85))],40,4,{uS:24,vS:5}));}
+  for(let i=0;i<150;i++){const t=Math.pow(rng(),1.7),z=rr(-880,cutZ(20,0));
+   const sc=rr(4,26)*(1-t*.5);
+-  kput('rubble',[XS+8+t*190,sc*.4+(1-t)*(1-t)*30,z],qEuler(rng()*3,rng()*3,rng()*3),
++  kput('aiBlock',[XS+8+t*190,sc*.4+(1-t)*(1-t)*30,z],qEuler(rng()*3,rng()*3,rng()*3),
+    [sc*rr(.7,1.6),sc*rr(.5,1),sc*rr(.7,1.6)],new THREE.Color().setHSL(rr(.05,.10),rr(.14,.34),rr(.14,.30)));}
+ 
+  // ---- the excavated half ---------------------------------------------------
+@@ -648,6 +789,13 @@ function buildArcoindian(scene,gx,gz,d){reseed(9580+d);KOFF=[gx,0,gz];
+   if(!(H>10))return;
+   if(W.half){RM.push(gridSurface((u,v)=>{const th=Math.PI*.5+u*Math.PI;
+     return[W.x+Math.cos(th)*W.r,W.y0+v*H,W.z+Math.sin(th)*W.r];},12,20,{uS:6,vS:18}));}
++  // A cavern well's bore is BLACK for its first 55 m. Arcoindian II found what
++  // four attempts at a rim here never did: MAT.aiRoom is a mid-brown that the
++  // hemisphere lights through any depth of rock, so the lining itself, seen
++  // up through the hole, was the pale "saucer stuck to the ceiling". The rim
++  // was never what you were looking at.
++  else if(W.cav){BORE.push(lathe({rFn:()=>W.r,H:Math.min(55,H),nu:16,nv:5}).translate(W.x,W.y0,W.z));
++   if(H>55)RM.push(lathe({rFn:()=>W.r,H:H-55,nu:16,nv:12}).translate(W.x,W.y0+55,W.z));}
+   else RM.push(lathe({rFn:()=>W.r,H:H,nu:16,nv:18}).translate(W.x,W.y0,W.z));
+   if(!W.half){
+    // the collar on the plateau: an upstand and its own dark reveal
+@@ -670,14 +818,12 @@ function buildArcoindian(scene,gx,gz,d){reseed(9580+d);KOFF=[gx,0,gz];
+   // mostly ABOVE the roof plane leaves a rimmed hole with a lit bore behind it,
+   // which is what a light well looks like from underneath.
+   if(W.cav){
+-   // DARK rim, bright bore. A pale lip under a dark vault is lit from outside
+-   // by a sun nothing occludes and reads as a saucer stuck to the ceiling
+-   // whatever its profile; a dark one reads as the hole it is, and the disc set
+-   // high in the shaft gives the bore something to show when you look up it.
+-   DK.push(lathe({rFn:()=>W.r*1.05,H:7,nu:22,nv:2}).translate(W.x,W.y0-1.2,W.z));
++   // NOTHING BELOW THE ROOF PLANE: no rim, no lit ring. Every one of those
++   // hung under the vault and was lit from outside by a sun nothing occludes.
++   // The shell's own hole, the black bore above it, and a bright disc set high
++   // in the shaft so the hole has something to show when you look up it.
+    kput('aiPool',[W.x,W.y0+(y1-W.y0)*.82,W.z],null,[W.r*1.9,1,W.r*1.9],
+-    new THREE.Color(dd?0x8e887a:0xcfc8b6));
+-   if(!dd)lring(W.x,W.y0-.6,W.z,W.r*1.02,Math.max(8,Math.round(TAU*W.r/9)));}
++    new THREE.Color(dd?0x8e887a:0xcfc8b6));}
+   // the pool of daylight at the foot
+   const py2=W.cav?PY+.6:(W.room?W.room.y0+.5:SHELF+.5);
+   kput('aiPool',[W.x,py2,W.z],null,[W.r*4.2,1,W.r*4.2],
+@@ -922,7 +1068,7 @@ function buildArcoindian(scene,gx,gz,d){reseed(9580+d);KOFF=[gx,0,gz];
+   ROCK.push(gridSurface((u,v)=>{const a=u*TAU,r=lerp(stR(a,1),0,Math.pow(v,.9));
+     return[P.x+Math.cos(a)*r,P.ty,P.z+Math.sin(a)*r];},40,5,{uS:14,vS:5}));
+   for(let i=0;i<34;i++){const a=rng()*TAU,t=Math.pow(rng(),1.6),r=P.sr*(1.36+t*1.5),sc=rr(3,14)*(1-t*.4);
+-   kput('rubble',[P.x+Math.cos(a)*r,sc*.4+(1-t)*10,P.z+Math.sin(a)*r],
++   kput('aiBlock',[P.x+Math.cos(a)*r,sc*.4+(1-t)*10,P.z+Math.sin(a)*r],
+     qEuler(rng()*3,rng()*3,rng()*3),[sc*rr(.7,1.5),sc*rr(.5,1),sc*rr(.7,1.5)],
+     new THREE.Color().setHSL(rr(.05,.10),rr(.13,.32),rr(.12,.26)));}
+   // the pod: a hexagonal drum in two storeys with a ring gallery
+@@ -1043,12 +1189,20 @@ function buildArcoindian(scene,gx,gz,d){reseed(9580+d);KOFF=[gx,0,gz];
+   // angular, tilted where they came to rest — so the big pieces are boxes at
+   // random attitudes and everything is four stops darker.
+   const fallY=(bx,bz)=>{const th=Math.atan2(bz-PCZ,bx-PCX),r4=Math.hypot(bx-PCX,bz-PCZ);
+-   let by=PY;for(let k=1;k<=NT;k++)if(r4>RT(k-1,th))by=TY(k);return by;};
++   let by=PY;for(let k=1;k<=NT;k++)if(r4>RT(k-1,th))by=TY(k);
++   return r4>RT(NT,th)?SHELF:by;};                // past the last terrace: the bare shelf
+   const dkC=()=>new THREE.Color().setHSL(rr(.05,.10),rr(.14,.32),rr(.05,.13));
+-  for(let i=0;i<130;i++){const t=Math.pow(rng(),1.5),a=rng()*TAU;
+-   const r=IMP.r*(.18+t*1.4),sc=rr(4,17)*(1-t*.42);
++  // NOT A RING. The heap used to be radially symmetric with sizes uniform in
++  // a band, which read as a sprinkled circle. A fall off a vault lands and
++  // RUNS OUT downslope -- out toward the mouth (+z) and down the terraces -- so
++  // most pieces are thrown into a fan on that bearing and travel further along
++  // it, and the sizes are a power law: a few huge, many small.
++  const FA=Math.PI/2;
++  for(let i=0;i<130;i++){const t=Math.pow(rng(),1.5),a=rng()<.72?FA+(rng()-.5)*2.3:rng()*TAU;
++   const r=IMP.r*(.18+t*1.4)*(1+.75*Math.max(0,Math.cos(a-FA))),sc=(4+26*Math.pow(rng(),3))*(1-t*.42);
+    const bx=IMP.x+Math.cos(a)*r,bz=IMP.z+Math.sin(a)*r;
+-   kput('rubble',[bx,fallY(bx,bz)+sc*.42+(1-t)*(1-t)*14,bz],qEuler(rng()*3,rng()*3,rng()*3),
++   if(bz>shelfE(bx)-4)continue;                    // ran off the shelf: it is on the plain now
++   kput('aiBlock',[bx,fallY(bx,bz)+sc*.42+(1-t)*(1-t)*14,bz],qEuler(rng()*3,rng()*3,rng()*3),
+     [sc*rr(.7,1.6),sc*rr(.4,.8),sc*rr(.7,1.6)],dkC());}
+   for(let i=0;i<22;i++){const t=Math.pow(rng(),1.3),a=rng()*TAU;
+    const r=IMP.r*(.12+t*1.25),bx=IMP.x+Math.cos(a)*r,bz=IMP.z+Math.sin(a)*r;
+@@ -1057,18 +1211,19 @@ function buildArcoindian(scene,gx,gz,d){reseed(9580+d);KOFF=[gx,0,gz];
+     qEuler(rr(-.9,.9),rng()*TAU,rr(-.9,.9)),[L2,rr(4,11),L2*rr(.5,1.1)],dkC());}
+   // and the dust of it thrown off the shelf onto the plain below
+   for(let i=0;i<90;i++){const t=Math.pow(rng(),1.6),sc=rr(4,22)*(1-t*.5);
+-   kput('rubble',[IMP.x+rr(-190,190),sc*.4+(1-t)*16,rr(-120,150)],
++   kput('aiBlock',[IMP.x+rr(-190,190),sc*.4+(1-t)*16,rr(-120,150)],
+     qEuler(rng()*3,rng()*3,rng()*3),[sc*rr(.7,1.5),sc*rr(.5,1),sc*rr(.7,1.5)],
+     new THREE.Color().setHSL(rr(.05,.10),rr(.14,.32),rr(.06,.15)));}}
+ 
+  // ---- merge and dress ------------------------------------------------------
+- meshMerged(ROCK,MAT.aiRock,G);
++ meshMerged(ROCK,MAT.aiRock,G);meshMerged(TOP,MAT.aiTop,G);
+  meshMerged(SHADE,MAT.aiShade,G);
+  meshMerged(CUT,MAT.aiCut,G);
+  meshMerged(RM,MAT.aiRoom,G);
+  meshMerged(SH,wallM,G);
+  meshMerged(GRD,deckM,G);
+  if(DK.length)meshMerged(DK,MAT.aiVoid,G);
++ meshMerged(BORE,MAT.aiBore,G);
+  if(dd){
+   // stainsFromLedge() aims each streak radially about the BUILDER's origin,
+   // which is 300 m from this city's own centre, so it would lay its decals
+@@ -1078,7 +1233,7 @@ function buildArcoindian(scene,gx,gz,d){reseed(9580+d);KOFF=[gx,0,gz];
+     kput('stain',[f.p[0]+Math.cos(a)*.7,f.p[1]-L*.5,f.p[2]+Math.sin(a)*.7],
+      qFacing([Math.cos(a),0,Math.sin(a)]),[rr(1.4,4.2),L,1],null);}};
+   mossOnSurface(GRD,0,0,0,130,3.6);mossOnSurface(SH,0,0,0,90,3.2);
+-  mossOnSurface(ROCK,0,0,0,110,4.2);
++  mossOnSurface(ROCK,0,0,0,110,4.2);mossOnSurface(TOP,0,0,0,60,4.2);
+   vinesFromLedge(GRD,0,0,0,130,26);aiStain(SH,150,22);
+   for(let i=0;i<150;i++){const th=rng()*TAU;if(tf(th)<.1)continue;
+    const k=1+((rng()*NT)|0),r=RT(k-1,th);
+diff --git a/voth/ancients/src/89c-arcoindian2.js b/voth/ancients/src/89c-arcoindian2.js
+index 54a3154..f35f13c 100644
+--- a/voth/ancients/src/89c-arcoindian2.js
++++ b/voth/ancients/src/89c-arcoindian2.js
+@@ -101,7 +101,7 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
+  const lensM=dd?MAT.a2LensR:MAT.a2Lens, underM=dd?MAT.a2UnderR:MAT.a2Under;
+  const deckM=dd?MAT.aiDeckR:MAT.aiDeck, wallM=dd?MAT.aiWallR:MAT.aiWall;
+  const BX='aiBox', BXD='aiBoxD';
+- const ROCK=[],SHADE=[],CUT=[],RM=[],LNS=[],UND=[],SH=[],DK=[],GRD=[];
++ const BORE=[],ROCK=[],TOP=[],SHADE=[],CUT=[],RM=[],LNS=[],UND=[],SH=[],DK=[],GRD=[];
+ 
+  // ---- the numbers ----------------------------------------------------------
+  const XW=-1500,XS=150;             // the west taper; the master joint
+@@ -138,7 +138,10 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
+  const DECK=LYC+LTH;                // the top deck, 507
+ 
+  // ---- the rock -------------------------------------------------------------
+- const ctop=x=>CT0*clamp(1-Math.pow(clamp((-x-560)/760,0,1),1.5),.06,1);
++ // The taper comes down in BENCHES rather than one ramp (see Arcoindian I, which
++ // shares the fix): a smooth staircase t - k sin(2 pi n t)/(2 pi n).
++ const ctop=x=>{const t=clamp((-x-560)/760,0,1),ts=t-.78*Math.sin(t*TAU*3)/(TAU*3);
++  return CT0*clamp(1-Math.pow(ts,1.5),.06,1);};
+  // The overhang, as one function: the face leans out 400 m between the valley
+  // floor and the crown and then pulls back into a caprock.
+  const brow=y=>-262+400*Math.pow(clamp(y/CROWN,0,1),1.55)-46*Math.pow(clamp((y-CROWN)/80,0,1),1.2);
+@@ -153,7 +156,15 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
+    +28*Math.pow(Math.abs(fbm(x*.020,y*.0042,7124,3)-.5)*2,2.1)
+    +12*Math.pow(Math.abs(fbm(x*.036,y*.011,7125,2)-.5)*2,1.5)
+    +26*fbm(x*.0092,y*.0125,7126,4)+12*fbm(x*.030,y*.020,7127,3);
+- const faceZ=(x,y)=>brow(y)-rel(x,y)
++ // RE-ENTRANTS west of the hollow, faded to nothing by x = -640 so the hollow,
++ // the shelf, the lens and the bridge are measured off the face they always
++ // were. Same treatment as Arcoindian I: amphitheatre bays eaten back into the
++ // scarp, deepening toward the rim, fixed constants and no PRNG.
++ const BAYS=[[-760,70,84],[-960,88,132],[-1170,66,112],[-1370,84,80]];
++ const bay=(x,y)=>{if(x>-640)return 0;
++  let s=0;for(const b of BAYS)s+=b[2]*Math.exp(-Math.pow((x-b[0])/b[1],2));
++  return s*clamp((-640-x)/110,0,1)*(.62+.38*clamp(y/(ctop(x)+1),0,1));};
++ const faceZ=(x,y)=>brow(y)-rel(x,y)-bay(x,y)
+    +54*Math.pow(clamp(1-y/210,0,1),1.7)                          // talus banking out at the foot
+    +10*Math.pow(clamp((y-ctop(x)*.90)/(ctop(x)*.10+1),0,1),1.2); // the caprock lip
+  // THE PLATEAU as a function, not as a surface: every collar, basin, kerb and
+@@ -216,7 +227,17 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
+   if(!(s>t+.5)||!(b>a+2))return null;
+   const u=.5*(1+Math.sqrt(clamp(1-Math.pow(t/s,1/.55),0,1)));
+   return a+u*(b-a);};
+- const inLens=(x,y,z)=>Math.abs(y-LYC)<lth(x,z)&&x<XS;
++ // THE WEST FLANK LET GO (ruin only). KNOWN_ISSUES: at distance the ruin read
++ // as "intact with an overgrowth pass" -- the roof bite, the block field and
++ // the dropped span all read close up, but the SILHOUETTE was the intact one.
++ // A lens keyed into rock at the back and hung on one stalk has one obvious
++ // way to fail: the cantilevered flank furthest from the stalk shears off.
++ // Everything west of a ragged line near x = -96 is gone, and lies on the
++ // shelf and in the gorge under where it hung. One predicate, used by every
++ // surface and placement on the lens, so nothing is left floating.
++ const LFX=LCX-106;
++ const lfx=z=>LFX+30*(fbm(z*.018,.7,7171,3)*2-1)+14*(fbm(z*.061,1.9,7172,2)*2-1);
++ const lG=(x,z)=>dd>0&&x<lfx(z);
+  // THE SUN COURT. The mouth is open to the south, so the lens gets a court cut
+  // into its top that faces the same way: 160 m wide, open over the nose, and
+  // 46 m deep, which is as much as a 104 m lens can give up without cutting
+@@ -300,7 +321,11 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
+    wz=rr(ZB(wx)+50,lz1(wx)-70);
+    ok=lth(wx,wz)>14&&!inNotch(wx,wz)&&Math.abs(wx-A2ST.x)>40
+       &&!WELL.some(w=>Math.hypot(wx-w.x,wz-w.z)<w.r+wr+50);}
+-  if(ok)WELL.push({x:wx,z:wz,r:wr,y0:roofY(wx,wz)+1});}
++  // seated at the LOWEST roof point round its rim, so no rim of shell hangs
++  // proud below the bore and no gap opens above a dipping edge
++  if(ok){let ry=roofY(wx,wz);for(let k=0;k<8;k++){const a=k/8*TAU,q=roofY(wx+Math.cos(a)*wr,wz+Math.sin(a)*wr);
++    if(q>0)ry=Math.min(ry,q);}
++   WELL.push({x:wx,z:wz,r:wr,y0:ry-.5});}}
+  // Two shafts on the joint plane, so the section shows them in long section
+  // running 200 m up to daylight rather than as holes in a ceiling.
+  WELL.push({x:XS,z:-372,r:15,y0:GAL[2].y1-2,half:true,gal:true});
+@@ -363,7 +388,7 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
+  ROCK.push(gridSurface((u,v)=>{const x=lerp(XW,XS,u),y=v*ctop(x);
+    return[x,y,faceZ(x,y)];},224,76,{uS:(XS-XW)/74,vS:CT0/66,
+    hole:(u,v)=>mouthHole(lerp(XW,XS,u),v*ctop(lerp(XW,XS,u)))}));
+- ROCK.push(gridSurface((u,v)=>{const x=lerp(XW,XS,u);
++ TOP.push(gridSurface((u,v)=>{const x=lerp(XW,XS,u);
+    const z0=faceZ(x,ctop(x))+3,z=lerp(z0,ZBK,Math.pow(v,.82));
+    return[x,platY(x,z),z];},148,44,{uS:(XS-XW)/30,vS:40,
+    hole:(u,v)=>{const x=lerp(XW,XS,u),z0=faceZ(x,ctop(x))+3,z=lerp(z0,ZBK,Math.pow(v,.82));
+@@ -377,7 +402,7 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
+  // talus banked against the foot of the cliff, largest at the wall
+  for(let i=0;i<230;i++){const x=rr(XW+60,XS+120),t=Math.pow(rng(),1.9);
+   const bx=faceZ(x,8)+t*170,sc=rr(4,26)*(1-t*.45);
+-  kput('rubble',[x,sc*.4+(1-t)*(1-t)*22,bx],qEuler(rng()*3,rng()*3,rng()*3),
++  kput('aiBlock',[x,sc*.4+(1-t)*(1-t)*22,bx],qEuler(rng()*3,rng()*3,rng()*3),
+    [sc*rr(.7,1.5),sc*rr(.5,1),sc*rr(.7,1.5)],new THREE.Color().setHSL(rr(.05,.10),rr(.12,.32),rr(.11,.24)));}
+ 
+  // ---- the shell of the hollow ----------------------------------------------
+@@ -435,10 +460,27 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
+  // invariants were all green. Only a close camera on the face found it.
+  const cutX=(y,z)=>XS+3+Math.abs((fbm(z*.0062,y*.0062,7137,3)*2-1)*11)
+    +Math.abs((fbm(z*.021,y*.021,7138,2)*2-1)*5);
++ // THE HOLLOW'S EDGE ON THE CUT. Whole quads are what a hole drops, so the top
++ // of the hollow came back as a flight of 8 m stairs across every view of the
++ // joint. The main face leaves a band CB m above the roof edge open too, and a
++ // conformal strip whose lower edge IS the roof curve laps 0.9 m proud over the
++ // stepped quads above it, with UVs recomputed from the main face's own (u,v)
++ // so the bedding carries across. Arcoindian I has the same fix.
++ const CB=15,cZa=ZB(XS)+10,cZb=lipZ(XS)-4;
++ const cutU=(y,z)=>Math.pow(clamp((cutZ(y)-z)/(cutZ(y)+880),0,1),1/.85);
++ const cutSX=(y,z)=>{const b=Math.min(1,cutU(y,z)*6);return cutX(y,z)*b+XS*(1-b);};
++ const inCavBand=(y,z)=>{if(z<=cZa||z>=cZb)return false;
++  const ry=roofY(XS,z);return ry>0&&y>=ry-10&&y<ry-10+CB;};
++ {const g=gridSurface((u,v)=>{const z=lerp(cZa,cZb,u),y=roofY(XS,z)-10+v*(CB+10);
++    return[cutSX(y,z)+.9*Math.min(1,v*3),y,z];},90,5,{uS:1,vS:1});
++  const P=g.attributes.position,UV=g.attributes.uv;
++  for(let i=0;i<P.count;i++){const y=P.getY(i),z=P.getZ(i);
++   UV.setXY(i,cutU(y,z)*38,y/ctop(XS)*CT0/24);}
++  CUT.push(g);}
+  CUT.push(gridSurface((u,v)=>{const y=v*ctop(XS),z=lerp(cutZ(y),-880,Math.pow(u,.85));
+    return[cutX(y,z)*Math.min(1,u*6)+XS*(1-Math.min(1,u*6)),y,z];},124,78,{uS:38,vS:CT0/24,
+    hole:(u,v)=>{const y=v*ctop(XS),z=lerp(cutZ(y),-880,Math.pow(u,.85));
+-    return inCavCut(y,z)||inLensCut(y,z)||inCutO(z,y)
++    return inCavCut(y,z)||inCavBand(y,z)||inLensCut(y,z)||inCutO(z,y)
+       ||(Math.abs(z-A2ST.z)<A2ST.w*.5&&y>A2ST.y0&&y<A2ST.y1);}}));
+  // REVEALS. Every opening returns 15 m into the rock — a sill, a head and two
+  // cheeks. Without them a plane with rectangles cut in it is a sheet of card,
+@@ -453,14 +495,14 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
+  reveal(A2ST.z-A2ST.w*.5,A2ST.z+A2ST.w*.5,A2ST.y0,A2ST.y1,RVD);
+  // blocks along the crest and the spoil of the joint's own failure
+  for(let i=0;i<64;i++){const z=rr(-860,cutZ(CT0*.9)),sc=rr(6,22);
+-  kput('rubble',[XS+rr(-14,16),ctop(XS)-rr(0,10)+sc*.3,z],qEuler(rng()*3,rng()*3,rng()*3),
++  kput('aiBlock',[XS+rr(-14,16),ctop(XS)-rr(0,10)+sc*.3,z],qEuler(rng()*3,rng()*3,rng()*3),
+    [sc*rr(.7,1.6),sc*rr(.5,1),sc*rr(.7,1.6)],new THREE.Color().setHSL(rr(.05,.10),rr(.14,.32),rr(.16,.32)));}
+  for(let b=0;b<3;b++){const by=52+b*52,bd=16+b*9;
+   CUT.push(gridSurface((u,v)=>[XS+lerp(0,bd,v),by,lerp(cutZ(by),-840,Math.pow(u,.85))],36,3,{uS:24,vS:4}));
+   CUT.push(gridSurface((u,v)=>[XS+bd,lerp(by,by-52,v),lerp(cutZ(by),-840,Math.pow(u,.85))],36,4,{uS:24,vS:5}));}
+  for(let i=0;i<140;i++){const t=Math.pow(rng(),1.7),z=rr(-860,cutZ(20));
+   const sc=rr(4,26)*(1-t*.5);
+-  kput('rubble',[XS+8+t*200,sc*.4+(1-t)*(1-t)*30,z],qEuler(rng()*3,rng()*3,rng()*3),
++  kput('aiBlock',[XS+8+t*200,sc*.4+(1-t)*(1-t)*30,z],qEuler(rng()*3,rng()*3,rng()*3),
+    [sc*rr(.7,1.6),sc*rr(.5,1),sc*rr(.7,1.6)],new THREE.Color().setHSL(rr(.05,.10),rr(.14,.34),rr(.14,.30)));}
+ 
+  // ---- the excavated galleries ----------------------------------------------
+@@ -533,13 +575,13 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
+  LNS.push(gridSurface((u,v)=>{const x=lerp(LCX-LWX,XS,u),a=lz0(x),b=lz1(x);
+    const z=lerp(a,b,v);return[x,LYC+lth(x,z),z];},NLU,NLV,{uS:(XS-LCX+LWX)/9,vS:DZ/9,
+    hole:(u,v)=>{const x=lerp(LCX-LWX,XS,u),z=lerp(lz0(x),lz1(x),v);
+-    return lensHole(x,z)||inNotch(x,z)||!!inWell(x,z,-2)
++    return lensHole(x,z)||lG(x,z)||inNotch(x,z)||!!inWell(x,z,-2)
+       ||(Math.abs(x-A2ST.x)<A2ST.w*.5&&Math.abs(z-A2ST.z)<A2ST.w*.5)
+       ||(dd&&SCAR.o&&Math.hypot(x-SCAR.o.x,z-SCAR.o.z)<SCAR.o.r*.42);}}));
+  UND.push(gridSurface((u,v)=>{const x=lerp(LCX-LWX,XS,u),a=lz0(x),b=lz1(x);
+    const z=lerp(a,b,v);return[x,LYC-lth(x,z),z];},NLU,NLV,{uS:(XS-LCX+LWX)/9,vS:DZ/9,
+    hole:(u,v)=>{const x=lerp(LCX-LWX,XS,u),z=lerp(lz0(x),lz1(x),v);
+-    return lensHole(x,z);}}));
++    return lensHole(x,z)||lG(x,z);}}));
+  // RIBS ON THE BELLY. The underside is the single largest surface anyone sees
+  // from the gorge — 500 x 250 m of it, hanging over a 430 m drop — and as one
+  // smooth dark shell it read as a painted ellipse. Fore-and-aft ribs give it a
+@@ -548,13 +590,13 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
+  for(let i=0;i<30;i++){const x=lerp(LCX-LWX+16,XS-6,(i+.5)/30);
+   const a=lz0(x),b=lz1(x);if(!(b>a+40))continue;
+   for(let j=0;j<32;j++){const z=lerp(a+10,b-6,(j+.5)/32),t=lth(x,z);
+-   if(t<7)continue;
++   if(t<7||lG(x,z))continue;
+    kput(BXD,[x,LYC-t+1.1,z],null,[4.2,3.0,(b-a-16)/32*1.06],null);}}
+  for(let j=0;j<9;j++){const z0f=(j+.5)/9;
+   for(let i=0;i<86;i++){const x=lerp(LCX-LWX+16,XS-6,(i+.5)/86);
+    const a=lz0(x),b=lz1(x);if(!(b>a+40))continue;
+    const z=lerp(a+14,b-10,z0f),t=lth(x,z);
+-   if(t<9)continue;
++   if(t<9||lG(x,z))continue;
+    kput(BXD,[x,LYC-t+1.4,z],null,[(LWX+XS-LCX-22)/86*1.06,2.6,5.2],null);}}
+  // THE BANDS. Horizontal planes through the lens, so each one lands exactly on
+  // the joint plane whatever the PRNG does. Each plate is punched wherever the
+@@ -564,7 +606,7 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
+  for(let k=0;k<=NBD;k++){const py=k===NBD?DECK:bandY(k);
+   const need=Math.abs(py-LYC);
+   const hl=(u,v)=>{const x=lerp(LCX-LWX,XS,u),z=lerp(lz0(x),lz1(x),v);
+-   if(lth(x,z)<need+1.2)return true;
++   if(lth(x,z)<need+1.2||lG(x,z))return true;
+    if(inWell(x,z,-2))return true;
+    if(Math.abs(x-A2ST.x)<A2ST.w*.5&&Math.abs(z-A2ST.z)<A2ST.w*.5)return true;
+    if(py>=NY-1&&inNotch(x,z))return true;
+@@ -589,7 +631,7 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
+  for(let k=0;k<NBD;k++){const y0=bandY(k),need=Math.abs(y0+BTH*.5-LYC);
+   for(let i=0;i<34;i++){const x=rr(LCX-LWX+30,XS-8);
+    const z=rr(lz0(x)+18,lz1(x)-14);
+-   if(lth(x,z)<need+6||inNotch(x,z)||inWell(x,z,6))continue;
++   if(lth(x,z)<need+6||lG(x,z)||inNotch(x,z)||inWell(x,z,6))continue;
+    if(Math.abs(x-A2ST.x)<A2ST.w&&Math.abs(z-A2ST.z)<A2ST.w)continue;
+    kput(BXD,[x,y0+BTH*.5,z],qEuler(0,rr(-.3,.3),0),[rr(14,44),BTH-3,1.1],null);
+    if(rng()<.5)kput(BXD,[x,y0+BTH*.5,z],qEuler(0,Math.PI/2+rr(-.3,.3),0),[rr(12,38),BTH-3,1.1],null);}
+@@ -612,8 +654,8 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
+  for(let k=0;k<NBD;k++){const ym=bandY(k)+BTH*.5,need=Math.max(9,Math.abs(ym-LYC));
+   const up=ym<LYC?1:-1;                       // which way is INTO the lens here
+   for(let i=0;i<NSN;i++){const x=lerp(LCX-LWX,XS,(i+.5)/NSN);
+-   const zf=lensFZ(x,need);if(zf==null)continue;
+-   if(inNotch(x,zf))continue;
++   const zf=lensFZ(x,need);if(zf==null||lG(x,zf))continue;
++   if(inNotch(x,zf)||inNotch(x-4,zf)||inNotch(x+4,zf))continue;   // and clear of the court's cheeks, which it poked through
+    const nrm=[0,0,1],bw=(LWX+XS-LCX)/NSN*1.08;
+    // the walkway ledge along the outline, and a dark reveal band behind it
+    kput(BX,[x,ym,zf-1.2],null,[bw,1.3,7],stoneC());
+@@ -625,6 +667,28 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
+    if(rng()<(dd?.05:.13))kput('aiBalc',[x,ym+.4,zf+.6],qFacing(nrm),[5.2,2.2,4.0],stoneC());
+    if(i%11===4&&!(dd&&rng()<.4))kput('aiPost',[x,ym+.9,zf+1.6],null,[1.7,up>0?7:2.6,1.7],stoneC());
+    if(!dd&&i%17===6)kput('strip',[x,ym+1.9,zf+1.9],qFacing(nrm),[24,1.3,1.3],ZLIT[BAND[k].k]||CYAN);}}
++ // THE FLANKS. KNOWN_ISSUES: "the lens's flanks are blank over ~150 m". Out
++ // there the lens is too thin for the upper bands, so the nose galleries run
++ // out and what is left is 150 m of smooth white shell either side of the sun
++ // court. The upper shell is inhabited too: rows of windows set into it
++ // parallel to the outline, each on a dark reveal strip, facing along the
++ // shell's own normal (solved from lth()'s gradient), thinning out toward the
++ // tips where the shell turns into the deck. Hashed, not rng(), so nothing
++ // after them moves.
++ {const yT=(x,z)=>LYC+lth(x,z);
++  const OFF=[5,11,18,26,35,45];
++  for(let r=0;r<OFF.length;r++)for(let i=0;i<150;i++){const x=lerp(LCX-LWX+8,XS-6,(i+.5)/150);
++   if(x>NX0-8&&x<NX1+8)continue;                           // the sun court has its own face
++   const z=lz1(x)-OFF[r]*(.55+.45*sx(x));
++   const t=lth(x,z);if(t<5||lG(x,z)||inWell(x,z,4))continue;
++   if(h3(i,r,3.7)<.18)continue;                            // a blank bay here and there
++   const e=1.5,nx=-(yT(x+e,z)-yT(x-e,z))/(2*e),nz=-(yT(x,z+e)-yT(x,z-e))/(2*e);
++   const L=Math.hypot(nx,1,nz),n=[nx/L,1/L,nz/L];
++   if(n[1]>.93)continue;                                   // too flat: that is roof, not wall
++   const q=qFacing(n),bw=(LWX+XS-LCX)/150*1.02,y=yT(x,z);
++   kput(BXD,[x-n[0]*.8,y-n[1]*.8,z-n[2]*.8],q,[bw,3.6,1.6],null);
++   kput('aiPane',[x+n[0]*.35,y+n[1]*.35,z+n[2]*.35],q,[bw*.72,2.6,1],
++    h3(i,r,5.1)<(dd?.05:.34)?(ZLIT[BAND[Math.min(4,2+(r>>1))].k]||WARM).clone().multiplyScalar((dd?.1:.32)+.5*h3(i,r,6.2)):ROOMC);}}
+  // THE SUN COURT: floor, back wall, cheeks, and a flight of steps down the
+  // middle of it. Open over the nose, facing due south, catching the winter sun
+  // the mouth is oriented for.
+@@ -679,6 +743,7 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
+  // building is half of one.
+  const ROS=[{x:LCX-168,r:80,k:'res',n:'Residential'},{x:LCX+104,r:68,k:'lw',n:'Living'}];
+  ROS.forEach((P,pi)=>{const cz=ZB(P.x)+18;
++  if(lG(P.x,cz+P.r*.4))return;                 // went down with the flank
+   REGISTER({name:'Arcoindian II — '+P.n.toLowerCase()+' rosette',x:P.x,z:cz+P.r*.4,r:P.r+10,y:DECK-4,h:46});
+   for(let ring=0;ring<3;ring++){const rr2=P.r*(.42+ring*.29);
+    const nb=Math.max(8,Math.round(Math.PI*rr2/13));
+@@ -786,7 +851,7 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
+    // stuck to the ceiling, which is the exact failure Arcoindian I logged four
+    // attempts against. Removing the rim did not fix it because the rim was never
+    // what you were looking at. A void-black lining is.
+-   DK.push(lathe({rFn:()=>W.r,H:Math.min(55,H),nu:16,nv:5}).translate(W.x,W.y0,W.z));
++   BORE.push(lathe({rFn:()=>W.r,H:Math.min(55,H),nu:16,nv:5}).translate(W.x,W.y0,W.z));
+    if(H>55)RM.push(lathe({rFn:()=>W.r,H:H-55,nu:16,nv:12}).translate(W.x,W.y0+55,W.z));
+    ROCK.push(lathe({rFn:y2=>W.r*(1.30-.10*y2/9),H:9,nu:18,nv:3}).translate(W.x,y1-2,W.z));
+    RM.push(lathe({rFn:()=>W.r*1.02,H:11,nu:16,nv:2}).translate(W.x,y1-2,W.z));
+@@ -807,6 +872,7 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
+      new THREE.Color(dd?0x8e887a:0xcfc8b6));}
+   // the pool of daylight where the shaft lands
+   const py2=W.gal?GAL[2].y0+.5:DECK+.6;
++  if(!W.gal&&lG(W.x,W.z))return;              // no deck under it any more
+   kput('aiPool',[W.x,py2,W.z],null,[W.r*4.4,1,W.r*4.4],
+    new THREE.Color(dd?0x5f5b50:0x9c9686));
+   if(!dd)for(let i=0;i<8;i++){const th=i/8*TAU;
+@@ -881,7 +947,7 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
+      rng()<(dd?.04:.4)?litOf('lrn'):ROOMC);}
+    if(!down)lc.push([bx,bz,br]);
+    else for(let i=0;i<26;i++){const sc=rr(4,15);
+-    kput('rubble',[bx+rr(-70,70),sc*.4+WSY,bz+rr(-70,70)],qEuler(rng()*3,rng()*3,rng()*3),
++    kput('aiBlock',[bx+rr(-70,70),sc*.4+WSY,bz+rr(-70,70)],qEuler(rng()*3,rng()*3,rng()*3),
+      [sc*rr(.8,1.6),sc*rr(.5,1),sc*rr(.8,1.6)],new THREE.Color().setHSL(rr(.05,.10),rr(.12,.3),rr(.08,.18)));}
+    // collars where the shafts leave the foot of LEARNING
+    kput(BX,[bx,STY0+3,bz],null,[br*2.6,6,br*2.6],stoneC());});
+@@ -1020,7 +1086,7 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
+   // 1 100 m of empty tabletop with five manholes in it.
+   WELL.filter(w=>!w.half).forEach(W=>{
+    for(let i=0;i<26;i++){const a3=rng()*TAU,r4=W.r*rr(1.6,4.2),sc=rr(4,15);
+-    kput('rubble',[W.x+Math.cos(a3)*r4,platY(W.x,W.z)-1+sc*.36,W.z+Math.sin(a3)*r4],
++    kput('aiBlock',[W.x+Math.cos(a3)*r4,platY(W.x,W.z)-1+sc*.36,W.z+Math.sin(a3)*r4],
+      qEuler(rng()*3,rng()*3,rng()*3),[sc*rr(.8,1.7),sc*rr(.4,.9),sc*rr(.8,1.7)],
+      new THREE.Color().setHSL(rr(.05,.10),rr(.14,.32),rr(.10,.22)));}
+    for(let i=0;i<9;i++){const a3=(i+.5)/9*TAU,r4=W.r*2.4;
+@@ -1047,7 +1113,7 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
+     88,30,{uS:(XS+980-XW)/40,vS:760/40}));
+   for(let i=0;i<120;i++){const x=rr(XW+60,XS+940),t=Math.pow(rng(),1.8);
+    const sc=rr(5,24)*(1-t*.4);
+-   kput('rubble',[x,flr(x,GFZ-60-t*180)+sc*.35,GFZ-60-t*180],qEuler(rng()*3,rng()*3,rng()*3),
++   kput('aiBlock',[x,flr(x,GFZ-60-t*180)+sc*.35,GFZ-60-t*180],qEuler(rng()*3,rng()*3,rng()*3),
+     [sc*rr(.7,1.5),sc*rr(.5,1),sc*rr(.7,1.5)],new THREE.Color().setHSL(rr(.05,.10),rr(.12,.3),rr(.12,.26)));}
+   // parks on the banks: what the shafts drop down to
+   for(let i=0;i<(dd?120:100);i++){const x=rr(STX-330,STX+330),z=rr(GFZ-330,GFZ-120);
+@@ -1102,7 +1168,7 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
+    const r=I.r*(.16+t*1.35),sc=rr(4,17)*(1-t*.42);
+    const bx=I.x+Math.cos(a)*r,bz=I.z+Math.sin(a)*r;
+    if(bx>XS)continue;
+-   kput('rubble',[bx,restY(bx,bz)+sc*.42+(1-t)*(1-t)*14,bz],qEuler(rng()*3,rng()*3,rng()*3),
++   kput('aiBlock',[bx,restY(bx,bz)+sc*.42+(1-t)*(1-t)*14,bz],qEuler(rng()*3,rng()*3,rng()*3),
+     [sc*rr(.7,1.6),sc*rr(.4,.8),sc*rr(.7,1.6)],dkC());}
+   for(let i=0;i<20;i++){const t=Math.pow(rng(),1.3),a=rng()*TAU;
+    const r=I.r*(.1+t*1.2),bx=I.x+Math.cos(a)*r,bz=I.z+Math.sin(a)*r;
+@@ -1111,12 +1177,56 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
+    kput(BX,[bx,restY(bx,bz)+rr(2,12)*(1-t),bz],
+     qEuler(rr(-.9,.9),rng()*TAU,rr(-.9,.9)),[L2,rr(4,11),L2*rr(.5,1.1)],dkC());}
+   for(let i=0;i<80;i++){const t=Math.pow(rng(),1.6),sc=rr(4,20)*(1-t*.5);
+-   kput('rubble',[I.x+rr(-220,180),sc*.4+(1-t)*14+WSY,rr(-60,180)],
++   kput('aiBlock',[I.x+rr(-220,180),sc*.4+(1-t)*14+WSY,rr(-60,180)],
+     qEuler(rng()*3,rng()*3,rng()*3),[sc*rr(.7,1.5),sc*rr(.5,1),sc*rr(.7,1.5)],
+     new THREE.Color().setHSL(rr(.05,.10),rr(.14,.32),rr(.06,.15)));}}
+ 
++ // ---- the fallen flank ------------------------------------------------------
++ if(dd){
++  // THE FRACTURE. The lens is closed along the break by a face that is open
++  // BETWEEN its plates and solid where the plates cross it, so the storeys
++  // show in the tear the way the joint plane shows them at the other end; a
++  // dark face 14 m in stops the eye running the length of the lens.
++  const fa=lz0(LFX)-24,fb=lz1(LFX)+24;
++  LNS.push(gridSurface((u,v)=>{const z=lerp(fa,fb,u),x=lfx(z),t=lth(x,z);
++    return[x,LYC+(v*2-1)*t,z];},96,26,{uS:22,vS:6,
++    hole:(u,v)=>{const z=lerp(fa,fb,u),x=lfx(z),t=lth(x,z);if(t<1.5)return true;
++     const y=LYC+(v*2-1)*t;
++     for(let k=0;k<=NBD;k++){const py=k===NBD?DECK:bandY(k);if(Math.abs(y-py)<2.4)return false;}
++     return fbm(u*9,v*4,7173,3)<.64;}}));
++  DK.push(gridSurface((u,v)=>{const z=lerp(fa,fb,u),x=lfx(z)+14,t=lth(x,z)*.93;
++    return[x,LYC+(v*2-1)*t,z];},64,8,{uS:12,vS:4,
++    hole:(u,v)=>{const z=lerp(fa,fb,u);return lth(lfx(z)+14,z)<3;}}));
++  // WHAT CAME DOWN. Pieces of the flank's own shell -- curved plates cut from
++  // the same top and belly functions, so they read as bits of THAT lens -- on
++  // the shelf under where it hung, and two that went over the sill lying on
++  // the talus 340 m below. Then the smaller wreckage round them.
++  const LCOL=()=>new THREE.Color(dd?0x7a7162:0xb9af9b).multiplyScalar(rr(.62,.9));
++  const piece=(x0,x1,top,k,px,pz,gy)=>{
++   const g=gridSurface((u,v)=>{const x=lerp(x0,x1,u),a=lz0(x),b=lz1(x);
++     const zs=.12+.12*(k%4),z=lerp(a+(b-a)*zs,a+(b-a)*(zs+.38),v);return[x,(top?1:-1)*lth(x,z),z];},
++    14,14,{uS:6,vS:6,hole:(u,v)=>fbm(u*5+k*3.1,v*5,7174+k,2)<.22+.5*Math.pow(Math.abs(u-.5)*2,3)});
++   g.center();
++   const F=new THREE.Group();F.position.set(px,0,pz);
++   F.rotation.set(rr(-.5,.5)+(top?0:Math.PI),rng()*TAU,rr(.35,1.15)*(rng()<.5?-1:1));G.add(F);
++   mesh(g,top?lensM:underM,F);dropFragment(F,gy,rr(2,6));};
++  const SX0=LCX-LWX+6;
++  for(let k=0;k<5;k++){const x0=lerp(SX0,LFX-30,k/5),x1=x0+rr(48,74);
++   const px=lerp(-236,-120,(k+.5)/5)+rr(-12,12),pz=lerp(ZB(px)+40,shelfE(px)-30,rr(.15,.85));
++   piece(x0,x1,k%2===0,k,px,pz,SILL);}
++  for(let k=0;k<2;k++){const x0=lerp(SX0,LFX-40,k/2),x1=x0+rr(56,80);
++   const px=-200+k*70+rr(-20,20),pz=rr(-150,-60);
++   piece(x0,x1,k===1,k+5,px,pz,flr(px,pz));}
++  for(let i=0;i<70;i++){const t=Math.pow(rng(),1.3),px=rr(-250,-96),pz=lerp(ZB(px)+20,shelfE(px)-6,rng());
++   const L2=rr(8,30)*(1-t*.4);
++   kput(BX,[px,SILL+L2*.2,pz],qEuler(rr(-.8,.8),rng()*TAU,rr(-.8,.8)),[L2,L2*rr(.15,.4),L2*rr(.5,1)],LCOL());}
++  for(let i=0;i<60;i++){const px=rr(-270,-80),pz=rr(-190,40),sc=rr(4,18);
++   kput(i%3?'aiBlock':BX,[px,flr(px,pz)+sc*.3,pz],qEuler(rng()*3,rng()*3,rng()*3),
++    [sc*rr(.8,1.8),sc*rr(.3,.7),sc*rr(.8,1.6)],LCOL());}
++  REGISTER({name:'Arcoindian II — the fallen flank',x:-170,z:-140,r:150,y:0,h:SILL+60});}
++
+  // ---- merge and dress ------------------------------------------------------
+- meshMerged(ROCK,MAT.aiRock,G);
++ meshMerged(ROCK,MAT.aiRock,G);meshMerged(TOP,MAT.aiTop,G);
+  meshMerged(SHADE,MAT.aiShade,G);
+  meshMerged(CUT,MAT.aiCut,G);
+  meshMerged(RM,MAT.aiRoom,G);
+@@ -1125,6 +1235,7 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
+  meshMerged(SH,wallM,G);
+  meshMerged(GRD,deckM,G);
+  if(DK.length)meshMerged(DK,MAT.aiVoid,G);
++ meshMerged(BORE,MAT.aiBore,G);
+  if(dd){
+   // stainsFromLedge() aims each streak radially about the BUILDER's origin,
+   // which is nowhere near this city's centre, and this plan is not circular
+@@ -1134,14 +1245,14 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
+     kput('stain',[f.p[0]+Math.cos(a)*.7,f.p[1]-L*.5,f.p[2]+Math.sin(a)*.7],
+      qFacing([Math.cos(a),0,Math.sin(a)]),[rr(1.4,4.2),L,1],null);}};
+   mossOnSurface(GRD,0,0,0,130,3.6);mossOnSurface(SH,0,0,0,80,3.2);
+-  mossOnSurface(ROCK,0,0,0,110,4.2);
++  mossOnSurface(ROCK,0,0,0,110,4.2);mossOnSurface(TOP,0,0,0,60,4.2);
+   vinesFromLedge(GRD,0,0,0,120,26);a2Stain(SH,130,22);
+   for(let i=0;i<140;i++){const x=rr(LCX-LWX+20,XS-6),z=lz1(x)-rr(6,26);
+-   if(lth(x,z)<6)continue;
++   if(lth(x,z)<6||lG(x,z))continue;
+    kput('vine',[x,LYC+lth(x,z)-1.2,z],qEuler(rr(-.12,.12),rng()*TAU,rr(-.12,.12)),
+     [rr(.9,2),rr(8,38),rr(.9,2)],null);}
+   for(let i=0;i<50;i++){const x=rr(LCX-LWX+40,XS-10),z=rr(lz0(x)+30,lz1(x)-30);
+-   if(lth(x,z)<LTH*.5)continue;
++   if(lth(x,z)<LTH*.5||lG(x,z))continue;
+    VEG.tree(x,DECK,z,i%3,rr(6,17));}}
+ 
+  // ---- the covered surface, measured ----------------------------------------
+diff --git a/voth/ancients/targets/dalab/91z-views.js b/voth/ancients/targets/dalab/91z-views.js
+index 1874dd8..17ce14f 100644
+--- a/voth/ancients/targets/dalab/91z-views.js
++++ b/voth/ancients/targets/dalab/91z-views.js
+@@ -24,7 +24,12 @@ const VIEWS={
+  // stand-off rather than sitting back at it
+  'The breach':        T([210,90,150,40,55,10],.55),
+  'Section':           T([150,70,95,20,45,5],.5),
+- 'Inside the breach': T([95,52,58,0,44,0],.45),
++ // INSIDE, OVER THE STACK. The old stand-in (0.45 of the scaled stand-off) put
++ // the camera between two floor plates 4.6 m apart: a slit of floor and soffit.
++ // The one open volume inside the dome is above the floor stack (it stops at
++ // 0.86 H) and under the crown, so the camera stands there on the break's
++ // bearing (1.005 rad) and looks out and down the stepped plate edges.
++ 'Inside the breach': [120*.536,372,120*.844, 330*.536,200,330*.844],
+  // straight up the cut face: 330 m of floor plates stacked in one frame, which
+  // is the shot the rescale exists for and did not exist at the old size
+  // Explicit metres in the NEW scale, not scaled-up old ones — the first
+@@ -38,9 +43,15 @@ const VIEWS={
+  // still nearly closed and fills the frame; the floors only show where the
+  // opening is actually wide.
+  'The storeys':       [472,340,743, 38,275,59],
+- 'The chamber':       S([0,34,140,0,14,0]),
++ // IN the chamber hall. The scaled-up preset stood outside the dome looking
++ // through its opaque shell; the chamber had a floor plate through it and no
++ // way in for a camera. It now has a three-storey hall (see sectionInterior's
++ // hallR), and the camera stands in it.
++ 'The chamber':       [40,13,122, 0,4,0],   // off the axis of the radial pipe at k=4
+  'Satellite domes':   S([230,80,190,120,30,60]),
+- 'A passageway':      T([150,26,60,80,14,20],.7),
++ // Beside the passage to dome 2, not inside it: the scaled preset put the
++ // camera in the tube. 130 m off its midpoint, square on.
++ 'A passageway':      [515,40,-15, 479,22,-140],
+  'The wall':          S([330,22,190,180,16,80]),
+  'From the plain':    S([0,110,900,0,70,0]),
+ };
+diff --git a/voth/ancients/targets/hexahedron/91z-views.js b/voth/ancients/targets/hexahedron/91z-views.js
+index 30fdeec..14630f9 100644
+--- a/voth/ancients/targets/hexahedron/91z-views.js
++++ b/voth/ancients/targets/hexahedron/91z-views.js
+@@ -1,25 +1,45 @@
+ // The two plans share a base vertex and are mirror partners, so the union is
+-// NOT centred on the builder origin: its bounding box runs x -318..682 and
+-// z -244..722 in outline units (x1000 m). Every preset therefore aims at the
+-// union centre, local (182, 239), not at 0,0.
+-const HX=-ROWS.hex.s, HR=ROWS.hex.t, CXL=182, CZL=239;
++// NOT centred on the builder origin. Every preset aimed at something the
++// builder COMPUTES -- the union centre, the apex tip, the summit, the shaft
++// bundle (its centre of mass), the shear, the crater -- reads it from
++// HEX_SITE, which buildHexahedron fills and which exists by the time this
++// fragment runs (it comes after 90-scene.js). KNOWN_ISSUES logged three presets
++// that had to be re-aimed by hand when those computations moved; the two crater
++// shots had in fact gone stale again, aimed 40 m off the hole. The fallbacks
++// are the values measured on 2026-09-29, so a builder that stops exporting
++// still frames roughly the right thing.
++const HS=Object.assign({UC:[182,239],COM:[7.8,-10.2],CRATER:[-31.5,97.9],
++  APEX:[682,-244],SUMMIT:[59.6,-77.7],SHEAR:[162.8,900,-38.7]},HEX_SITE[0]||{});
++const HS2=Object.assign({},HS,HEX_SITE[2]||{});
++const HX=-ROWS.hex.s, HR=ROWS.hex.t, CXL=HS.UC[0], CZL=HS.UC[1];
+ const V=(bx,dx,dy,dz,ty)=>[bx+CXL+dx,dy,CZL+dz,bx+CXL,ty,CZL];
++// aim at a builder-local plan point P=[x,z] at height ty, from an offset
++const AT=(bx,P,ty,dx,dy,dz)=>[bx+P[0]+dx,ty+dy,P[1]+dz,bx+P[0],ty,P[1]];
+ const VIEWS={
+  'Hexahedron':V(HX,-520,620,2500,470),
+  'Plan from above':V(HX,60,2500,950,480),
+  'From below':V(HX,700,40,1700,520),
+  'The waist':V(HX,950,700,1400,620),
+  'The upper city':V(HX,700,1030,1150,880),
+- 'The apex':[HX+1180,740,-140,HX+682,660,-244],
+- 'The vertical structure':[HX+560,150,1078,HX-60,330,78],
+- 'Summit':[HX+390,1330,622,HX+60,1050,-78],
++ 'The apex':AT(HX,HS.APEX,660,498,80,104),
++ // the shaft bundle stands on the centre of mass; these two look into its
++ // near flank, so they are offsets from COM rather than from the union
++ 'The vertical structure':AT(HX,[HS.COM[0]-68,HS.COM[1]+88],330,620,-180,1000),
++ 'Summit':AT(HX,HS.SUMMIT,1050,330,280,700),
+  'Under the mass':[HX+40,120,CZL-60,HX+CXL-120,380,CZL],
+- 'Shaft heads':[HX+380,300,CZL+40,HX-40,330,CZL-40],
++ 'Shaft heads':AT(HX,[HS.COM[0]-48,HS.COM[1]+209],330,420,-30,80),
+  'Industries':[HX+1300,130,1300,HX,60,0],
+  'Sheared':V(HR,900,620,2350,470),
+- 'The shear':[HR+882,900,1451,HR+182,850,239],
+- 'The failed cluster':[HR-745,240,-665,HR-45,300,135],
+- 'Crater soffit':[HR-45,60,-385,HR-45,340,135],
++ // along the shear's own face normal (+x+z), aimed at the tear itself
++ 'The shear':[HR+HS2.SHEAR[0]+720,HS2.SHEAR[1],HS2.SHEAR[2]+1490,
++              HR+HS2.SHEAR[0],HS2.SHEAR[1]-50,HS2.SHEAR[2]],
++ 'The failed cluster':AT(HR,HS2.CRATER,300,-700,-60,-800),
++ // UP THROUGH THE HOLE. The old camera stood 520 m off on the far side of the
++ // shaft bundle and saw only shafts. The crater sits over the failed flank,
++ // where the shafts are gone, so stand out on that bearing (COM -> crater)
++ // under the soffit's edge and look up into it.
++ 'Crater soffit':(()=>{const C=HS2.CRATER,M=HS2.COM,dx=C[0]-M[0],dz=C[1]-M[1],L=Math.hypot(dx,dz)||1;
++   return AT(HR,C,340,dx/L*250,-300,dz/L*250);})(),
+  'The hypertree':[-ROWS.mav.s+520,180,ROWS.mav.z+700,-ROWS.mav.s,220,ROWS.mav.z],
+  'Tree and arcology':[-ROWS.mav.s-900,420,ROWS.mav.z+1900,HX+CXL-300,400,CZL],
+  'Both':[(HX+HR)/2,1100,5400,(HX+HR)/2,480,239],
+diff --git a/voth/ancients/targets/veladiga/89z-rows.js b/voth/ancients/targets/veladiga/89z-rows.js
+index bf98278..d752e56 100644
+--- a/voth/ancients/targets/veladiga/89z-rows.js
++++ b/voth/ancients/targets/veladiga/89z-rows.js
+@@ -3,5 +3,9 @@ const TITLE='Veladiga — dam arcology';
+ const GROUND_C=0;
+ const DECAYS=[0,2];                    // intact, and blown open
+ const ROWS={veladiga:{z:0,s:1800,r:1300,t:5400}};
+-const RUINS=Object.values(ROWS).flatMap(r=>r.t?[[r.s,r.z,r.r],[r.t,r.z,r.r*1.4]]:[[r.s,r.z,r.r]]);
++// RUINS greens the ground where a RUIN stands. This target builds only decays
++// 0 (at -s) and 2 (at t), so the shared one-liner's [+s] greened an empty
++// patch of plain at x=+1800 (KNOWN_ISSUES, the Hexahedron entry). Only the
++// breached dam is a ruin here.
++const RUINS=Object.values(ROWS).map(r=>[r.t,r.z,r.r*1.4]);
+ const EXTRA_BUILDERS={veladiga:buildVeladiga};
