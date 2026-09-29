@@ -113,7 +113,7 @@ const STREETS=[];
  for(let h=Math.floor(hmin/3)*3;h<hmax+60;h+=3){const lines=contourLines(h,8,inside);
   for(const L of lines){const s=simplify(L,9);
    // keep clear of the plazas and the palace loop's inside (its own court), then split into the runs far enough from every street
-   let run=[];const flush=()=>{if(run.length>=3){let len=0;for(let i=1;i<run.length;i++)len+=Math.hypot(run[i][0]-run[i-1][0],run[i][1]-run[i-1][1]);if(len>=40){const r=road(run,5,KL.minor,{zone:'contour',lights:false});STREETS.push(r);markLine(run);}}run=[];};
+   let run=[];const flush=()=>{if(run.length>=3){let len=0;for(let i=1;i<run.length;i++)len+=Math.hypot(run[i][0]-run[i-1][0],run[i][1]-run[i-1][1]);if(len>=40){const m0=run[Math.floor(run.length/2)],dm=districtAt(m0[0],m0[1]);const r=road(run,5,KL.minor,{zone:'contour',lights:dm.D.kind==='market'||(dm.D.wealth==='rich'&&dm.d<0)});   // the market streets and the rich quarters hang their lights tooSTREETS.push(r);markLine(run);}}run=[];};
    for(const p of s){if(inPrecinct(p[0],p[1],6)||Math.hypot(p[0]-PAL.x,p[1]-PAL.z)<PAL.r-10||nearStreet(p[0],p[1]))flush();else run.push(p);}flush();}}
  erBakeMasks();
  // stairs: from points along each contour street, down the gradient until a road or 70 m
