@@ -20,6 +20,22 @@ const VIEWS={
  'From the mountains':[-900,900,2900,0,100,0],
  'Krator rising':[-900,30,-600,1890,1300,-610],
 };
+// views found in the built scene: along the river, at a fairy ring, down a hornbeam alley, at the lotus trumpets and the redwoods in the water
+(function(){const G=(x,z)=>terrainH(x,z);
+ const riv=(f)=>{const i=Math.round(f*(RIV.P.length-1)),p=RIV.P[i],q=RIV.P[Math.max(0,i-8)];return{p,q,y:RIV.bed[i]+.65};};
+ {const a=riv(.27),b=riv(.2);VIEWS['The chasm']=[a.p[0],a.y+9,a.p[1],b.p[0],b.y+14,b.p[1]];}
+ {const a=riv(.05);VIEWS['The fountain']=[a.p[0],a.y+22,a.p[1],RIV.P[0][0],RIV.bed[0]+34,RIV.P[0][1]];}
+ {const a=riv(.78),b=riv(.9),dx=b.p[0]-a.p[0],dz=b.p[1]-a.p[1],l=Math.hypot(dx,dz);VIEWS['The sacred river']=[a.p[0]-dz/l*30,Math.max(a.y,G(a.p[0]-dz/l*30,a.p[1]+dx/l*30))+7,a.p[1]+dx/l*30,b.p[0],b.y+6,b.p[1]];}
+ const near=(list,f)=>{let best=null,bd=1e9;list.forEach(o=>{if(f&&!f(o))return;const d=BIO.lodD(o.x,o.z);if(d<bd){bd=d;best=o;}});return best;};
+ const R=near(XANADU.RINGS);if(R){const a=.7,cx=R.x+Math.cos(a)*R.r*2.6,cz=R.z+Math.sin(a)*R.r*2.6;VIEWS['A fairy ring']=[cx,G(cx,cz)+7,cz,R.x,G(R.x,R.z)+3,R.z];}
+ const A=near(XANADU.ARCHES);if(A){const ux=Math.cos(A.a),uz=Math.sin(A.a),L=(A.n/2+.6)*9.5,cx=A.x-ux*L,cz=A.z-uz*L;VIEWS['The hornbeam arches']=[cx,G(cx,cz)+2.2,cz,A.x+ux*L,G(A.x+ux*L,A.z+uz*L)+4.5,A.z+uz*L];}
+ const tr=k=>near(XANADU.TREES,T=>T.sp===k&&T.lv===2);
+ [[2,'The lotus trumpets',34,7],[0,'Dawn redwoods',60,4],[9,'Wisteria',26,3],[3,'A cloud pine',22,5],[4,'Cushion trees',30,5],[6,'The agate tree',30,3]].forEach(v=>{const T=v[0]===0?near(XANADU.TREES,T=>T.sp===0&&T.lv===2&&T.y0<0):tr(v[0]);if(!T)return;
+  let best=null;for(let k=0;k<12;k++){const a=k/12*TAU,cx=T.x+Math.cos(a)*v[2],cz=T.z+Math.sin(a)*v[2];if(!BIO.clearOf(cx,cz,2)||XANADU.blocked(cx,cz,3))continue;const g=Math.max(G(cx,cz),0);if(!best||g<best[1])best=[cx,g,cz];}
+  if(best)VIEWS[v[1]]=[best[0],best[1]+v[3],best[2],T.x,T.y0+T.H*.55,T.z];});
+ {const x=-1000,z=-400,a=.9,cx=x+Math.cos(a)*95,cz=z+Math.sin(a)*95;VIEWS['The pleasure dome']=[cx,G(cx,cz)+26,cz,x,(DOME.y0||G(x,z))+9,z];}
+ ['The vale','The lake shore','The garden ridge','The green flank'].forEach(k=>{const v=VIEWS[k];if(v)v[1]=Math.max(v[1],G(v[0],v[2])+(k==='The lake shore'?6:40));});
+})();
 const ui=document.getElementById('ui');const sel=document.createElement('select');sel.id='viewsel';for(const k in VIEWS){const o=document.createElement('option');o.textContent=k;sel.appendChild(o);}sel.onchange=()=>setView(...VIEWS[sel.value]);ui.appendChild(sel);
 // hidden buttons, one per preset: verify.py drives the views through these
 const _hb=document.createElement('div');_hb.style.display='none';ui.appendChild(_hb);for(const k in VIEWS){const b=document.createElement('button');b.textContent=k;b.onclick=()=>setView(...VIEWS[k]);_hb.appendChild(b);}
