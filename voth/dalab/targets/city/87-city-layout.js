@@ -26,8 +26,17 @@ for(const S of SETTLE){
  // a ring is painted in runs that skip a precinct (the outlying plaza ring would otherwise cut through the mound's foot)
  const ringClipped=(cx,cz,R,w,zone,skip)=>{let run=[];const flush=()=>{if(run.length>1)road(run,w,KL.lane,{zone});run=[];};
   for(let i=0;i<=72;i++){const a=i/72*TAU;const p=[cx+Math.sin(a)*R,cz+Math.cos(a)*R];if(skip(p[0],p[1]))flush();else run.push(p);}flush();};
- const ring=(R,w)=>ringClipped(pc[0],pc[1],R,w,S.key+':ring',(x,z)=>Math.hypot(x-S.x,z-S.z)<S.moundR+12);
- ring(S.ringR,CITY.LANE_W);if(S.ringR2)ring(S.ringR2,CITY.LANE_W);
+ // the main settlement's full grid (Travis, round 10): half rings between the rings and half radials between the
+ // radials from the first ring out, so every block is ~65 m deep; the two great compounds (the Halls, the ranch)
+ // are precincts every ring and half radial stops at, and the build places them there by name
+ S.radials2=[];S.big=[];if(S.main){const front=back+Math.PI;S.big=[{key:'dalab_halls',a:front-Math.PI*.3,d:335,r:82,name:'The Halls of Reformation'},{key:'dalab_ranch',a:front+Math.PI*.3,d:400,r:92,name:'The ranch'},{key:'dalab_priest_compound',a:back+.314,d:200,r:38,name:"The priests' compound"},{key:'dalab_priest_compound',a:back-.314,d:200,r:38,name:null}];
+  for(const B of S.big){B.x=pc[0]+Math.sin(B.a)*B.d;B.z=pc[1]+Math.cos(B.a)*B.d;precinct(B.x,B.z,B.r,B.name);}}
+ const skipBig=(x,z)=>Math.hypot(x-S.x,z-S.z)<S.moundR+12||S.big.some(B=>Math.hypot(x-B.x,z-B.z)<B.r+4);
+ const ring=(R,w)=>ringClipped(pc[0],pc[1],R,w,S.key+':ring',skipBig);
+ ring(S.ringR,CITY.LANE_W);if(S.ringR2)ring(S.ringR2,CITY.LANE_W);if(S.ringR3)ring(S.ringR3,CITY.LANE_W);
+ if(S.main){for(const R of[(S.ringR+S.ringR2)/2,(S.ringR2+S.ringR3)/2])ring(R,CITY.LANE_W);
+  for(let k=0;k<n;k++){const a=back+Math.PI+((k+.5)/n)*TAU;if(angDiff(a,back)<.5)continue;let run=[];const flush=()=>{if(run.length>1)road(run,CITY.STREET_W,KL.street,{zone:S.key+':radial2'});run=[];};
+   for(let r=S.ringR;r<=S.ringR3+22;r+=6){const p=[pc[0]+Math.sin(a)*r,pc[1]+Math.cos(a)*r];if(skipBig(p[0],p[1]))flush();else run.push(p);}flush();S.radials2.push({a});}}
  // a lane round the back of the mound so the houses behind it connect
  // (a full ring: it meets the plaza in front of the mound, so it needs no connectors that could cut the mound's foot)
  ringClipped(S.x,S.z,S.moundR+22,CITY.LANE_W,S.key+':moundlane',(x,z)=>Math.hypot(x-pc[0],z-pc[1])<S.plazaR+2);
@@ -66,17 +75,17 @@ const FIELDS=[];
  window._fields=FIELDS.length;})();
 // farm lanes: every other wedge boundary gets a lane from the ring street out to the fields' edge (the farm workers' way)
 // (a lane never runs at the mound, and stops at the first precinct — another mound, the lab — it would enter)
-for(const S of SETTLE){const n=S.main?18:12;const back=Math.atan2(S.x-S.plaza.x,S.z-S.plaza.z);for(let i=0;i<n;i+=2){const a=i/n*TAU;if(angDiff(a,back)<.55)continue;const R0=S.ringR+4;let R1=(S.main?S.r+300:S.r+210);
+for(const S of SETTLE){const n=S.main?18:12;const back=Math.atan2(S.x-S.plaza.x,S.z-S.plaza.z);for(let i=0;i<n;i+=2){const a=i/n*TAU;if(angDiff(a,back)<.55)continue;const R0=(S.main?S.ringR3:S.ringR)+4;let R1=(S.main?S.r+300:S.r+210);
  for(let r=R0;r<R1;r+=6){if(inPrecinct(S.plaza.x+Math.sin(a)*r,S.plaza.z+Math.cos(a)*r,10)){R1=r-6;break;}}if(R1-R0<30)continue;
  road([[S.plaza.x+Math.sin(a)*R0,S.plaza.z+Math.cos(a)*R0],[S.plaza.x+Math.sin(a)*R1,S.plaza.z+Math.cos(a)*R1]],CITY.LANE_W,KL.lane,{zone:S.key+':farmlane'});}}
 // ---- 5. the connectivity pass: one network. Components by endpoint proximity; each minor component gets a link to the largest ----
 function roadComponents(){const N=ROADS.length,par=[];for(let i=0;i<N;i++)par[i]=i;const find=i=>par[i]===i?i:(par[i]=find(par[i]));const uni=(a,b)=>{par[find(a)]=find(b);};
  for(let i=0;i<N;i++){const A=ROADS[i];for(const e of[A.pts[0],A.pts[A.pts.length-1]]){for(let j=0;j<N;j++){if(i===j)continue;const B=ROADS[j];for(let k=0;k<B.pts.length-1;k++){if(segD(e[0],e[1],B.pts[k],B.pts[k+1])<(A.w+B.w)/2+1.5){uni(i,j);break;}}}}}
  const comp={};for(let i=0;i<N;i++){const c=find(i);(comp[c]||(comp[c]=[])).push(i);}return Object.values(comp);}
-(function connectAll(){let guard=0;while(guard++<12){const C=roadComponents();if(C.length<=1){window._roadComponents=1;return;}C.sort((a,b)=>b.length-a.length);const main=new Set(C[0]);
+(function connectAll(){let guard=0;while(guard++<12){const C=roadComponents().filter(c=>!c.every(i=>ROADS[i].dead));if(C.length<=1){window._roadComponents=1;return;}C.sort((a,b)=>b.length-a.length);const main=new Set(C[0]);
  for(let ci=1;ci<C.length;ci++){let best=null;for(const ri of C[ci]){for(const p of ROADS[ri].pts){const n=nearestRoadPt(p[0],p[1],r=>main.has(r.id));if(!n)continue;let clear=true;for(let t=0;t<=1;t+=.05){if(inPrecinct(p[0]+(n.x-p[0])*t,p[1]+(n.z-p[1])*t,4)){clear=false;break;}}if(clear&&(!best||n.d<best.d))best={p,n};}}
-  if(best)road([best.p,[best.n.x,best.n.z]],CITY.LANE_W,KL.lane,{zone:'connect'});else{const ri=C[ci][0];const p=ROADS[ri].pts[0];const n=nearestRoadPt(p[0],p[1],r=>main.has(r.id));if(n)road([p,[n.x,n.z]],CITY.LANE_W,KL.lane,{zone:'connect'});}}}
- window._roadComponents=roadComponents().length;})();
+  if(best)road([best.p,[best.n.x,best.n.z]],CITY.LANE_W,KL.lane,{zone:'connect'});else{for(const ri of C[ci])ROADS[ri].dead=true;}}}   /* no clear link (a stub cut off by a precinct): it stays a dead end rather than a lane through the precinct (round 10) */
+ window._roadComponents=roadComponents().filter(c=>!c.every(i=>ROADS[i].dead)).length;})();
 // bridges wherever a road crosses a channel (painted as planks over the water)
 (function bridges(){for(const R of ROADS){for(let i=0;i<R.pts.length-1;i++){const a=R.pts[i],b=R.pts[i+1];const L=Math.hypot(b[0]-a[0],b[1]-a[1]);const n=Math.max(2,Math.ceil(L/6));
   for(let k=0;k<=n;k++){const t=k/n;const x=a[0]+(b[0]-a[0])*t,z=a[1]+(b[1]-a[1])*t;const c=channelD(x,z);if(c.d<c.w*.5){bridgeAt(x,z,Math.atan2(b[0]-a[0],b[1]-a[1]),R.w);k+=Math.ceil(c.w*2/(L/n));}}}}

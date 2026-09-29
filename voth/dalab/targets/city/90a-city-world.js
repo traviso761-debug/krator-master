@@ -20,11 +20,30 @@ function cityTerrainMesh(){const N=Math.round(CITY.WORLD/8);const g=new THREE.Pl
 TSTAT.cur='dalab_lab/0';
 placeDef('dalab_lab',{x:CITY.LAB.x,z:CITY.LAB.z,ry:0},{scale:CITY.LAB.scale,y:terrainH(CITY.LAB.x,CITY.LAB.z)-.4,landmark:'The Ancient lab',ignoreMask:true});
 TSTAT.cur=null;
-precinct(CITY.LAB.x,CITY.LAB.z,292*4.105*CITY.LAB.scale+30,'the lab');
+precinct(CITY.LAB.x,CITY.LAB.z,352*4.105*CITY.LAB.scale+24,'the lab and its apron');   // nothing of Dalab's stands on the Ancients' apron
 placeDef('dalab_high_mound',{x:HIGH_MOUND.x,z:HIGH_MOUND.z,ry:HIGH_MOUND.ry},{y:terrainH(HIGH_MOUND.x,HIGH_MOUND.z),landmark:"High Priest's mound",ignoreMask:true,ignorePrecinct:true});
 for(const S of SETTLE){const key=S.main?'dalab_palace_mound':'dalab_mound';const o={x:S.x,z:S.z,ry:S.face};
  placeDef(key,o,{y:terrainH(S.x,S.z),landmark:S.main?"High Priest's palace":S.name+' mound',ignoreMask:true,ignorePrecinct:true,settle:S.key});S.moundOBB=o;}
 
+// ---------------------------------------------------------------- the ruined ancient wall round the compound
+// A real wall in place of the kit's ring of blocks: a battered ghost-panel curtain ~9 m high and 3 m thick in 6 m
+// bays on a concrete footing, its height eaten away by noise (down to stubs and to nothing), toppled bays lying as
+// slabs outside it, rust seams, and clean openings wherever a road of the settlement crosses its line.
+(function labWall(){reseed(SEED_CITY+8);const K=4.105*CITY.LAB.scale;const R=292*K,cx=CITY.LAB.x,cz=CITY.LAB.z;const n=Math.round(TAU*R/6);TSTAT.cur='dalab_lab/0';
+ const bayW=TAU*R/n;let stubs=0,bays=0,gaps=0;
+ for(let k=0;k<n;k++){const th=(k+.5)/n*TAU;const r=R+9*fbm(k*.11,3.1,9370,2);const x=cx+Math.cos(th)*r,z=cz+Math.sin(th)*r;const ry=-th+Math.PI/2;
+  const road=nearestRoadPt(x,z);if(road&&road.d<road.road.w/2+7){gaps++;continue;}                          // an opening where a street passes
+  const y=terrainH(x,z);const ruin=fbm(k*.06,7.7,9372,3);
+  if(ruin<.30){if(rng()<.5)kput('vRustB',[x+Math.cos(th)*rr(4,14),y+.5,z+Math.sin(th)*rr(4,14)],qEuler(rr(-.2,.2),th+rr(-.4,.4),rr(-.15,.15)),[bayW*.9,1.1,rr(5,9)],null);continue;}   // fallen: a slab on the ground outside
+  const h=ruin<.42?rr(1.2,3.5):3+11*smoothstep(.42,.85,ruin)+rr(-.6,.6);if(ruin<.42)stubs++;else bays++;
+  kput('vPanelB',[x,y-.5,z],qEuler(0,ry,0),[bayW+.05,.9,3.6],null);                                          // footing
+  kput('dEarthBat',[x,y+.3,z],qEuler(0,ry,0),[bayW+.02,h,3.0],vC(0xd8d4cc));                                // the battered bay (rammed-earth wedge geometry, tinted ghost-white)
+  kput('vPanelB',[x,y+.3,z],qEuler(0,ry,0),[bayW-.3,h*.96,2.7],null);                                         // the panel skin
+  if(h>6){kput('vRustB',[x,y+h-1.2,z],qEuler(0,ry,0),[bayW+.1,.5,3.1],null);kput('vPanelB',[x,y+h-.6,z],qEuler(0,ry,0),[bayW+.4,.7,3.4],null);}   // rust seam and coping
+  if(rng()<.35)kput('vRustB',[x,y+rr(.5,Math.max(.6,h-1.5)),z],qEuler(0,ry,0),[rr(.8,2.2),rr(.6,1.4),3.2],null);   // rust bleeding through
+  if(rng()<.4)kput('vRock',[x+Math.cos(th)*rr(2.5,6),y+.3,z+Math.sin(th)*rr(2.5,6)],qEuler(rng(),rng(),0),[rr(.6,1.4),rr(.5,1.0),rr(.6,1.4)],vC(0x9a968e));}   // rubble at the foot
+ TSTAT.cur=null;REG.push({name:'The ancient wall (ruined)',x:cx,y:0,z:cz,r:R+6,h:14,cls:'building',key:'dalab_lab',tags:{culture:'dalab',type:['military','infrastructure'],wealth:'civic',lit:false,ancient:true,part:'wall'}});
+ window._labWall={bays,stubs,gaps};})();
 // ---------------------------------------------------------------- the horizon: cleared fields and forest going to the horizon (the brief), under the Krator sky
 // An annulus from the terrain's edge out to 9 km painted with fields, hedges and forest blocks, and a merged mesh of
 // far-tree blobs in the forest belt. KratorSky (81, attached in 94) gives the giant, its rings, the sun, stars and moon.

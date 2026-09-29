@@ -31,14 +31,15 @@ from `../biomes/swlowlands/src` as `86-bio-*.js` (`VENDOR.json` has the
 sha1s). `three.min.js` is the pinned r128 copy that
 `verify.py` serves in place of the CDN.
 
-## The set (rounds 1–2, Sep 28 2026)
+## The set (rounds 1–2, Sep 28 2026; the town types round 10)
 
 | family | keys |
 |---|---|
 | dwellings | `dalab_hut_a` round earth hut · `dalab_hut_b` scrap hut · `dalab_hut_c` post house · `dalab_compound` family compound · `dalab_noble_a` stone hall · `dalab_noble_b` great roundhouse · `dalab_noble_c` earth-walled manor |
 | trade / industry | `dalab_tavern` · `dalab_market_small` · `dalab_market_large` (3×) · `dalab_shops` shop row · `dalab_granaries` · `dalab_warehouse` · `dalab_smithy` scrap smithy · `dalab_workshop` · `dalab_potter` · `dalab_weaver` · `dalab_dyer` · `dalab_windmill` |
 | civic | `dalab_barracks` guard's barracks (giants) · `dalab_healers` healers' hall · `dalab_embassy_iziz` · `dalab_embassy_voth` · `dalab_embassy_yuni` · `dalab_embassy_republic` (a Peles villa from the Highlands kit's Republican set, vendored) · `dalab_chapterhouse` (Historians', ported from the Yuni set) · `dalab_halls` Halls of Reformation (r 68: gatehouse, the great hall — r 18, sixteen piers, clerestory, ribbed panel dome, portico and apses — four wings, cell blocks, archive, vats, two pylons) |
-| farm | `dalab_ranch` (120 m: house, barn, paddocks, monster pen; stock from the `DFAUNA` registry — lizards) |
+| farm | `dalab_ranch` (120 m: house, barn, paddocks, monster pen; stock from the `DFAUNA` registry — lizards) · `dalab_orchard` orchard plot |
+| town types (round 10, `71c-dalab-town.js`) | `dalab_rowhouse` terrace row (three cells, one thatch) · `dalab_tenement` stacked house (two storeys, outside stair, gallery) · `dalab_well` well court · `dalab_bathhouse` bath house (domed hot room, pool court; lit) · `dalab_scribes` scribes' hall (lit) · `dalab_inn` travellers' inn (lizard stalls, stacked lodge) · `dalab_earthyard` earth yard (block stacks, mixing pit, ramming shed) · `dalab_watchtower` watch tower (lookout, a giant at the foot) |
 | sacred | `dalab_temple` priests' temple · `dalab_priest_house` · `dalab_priest_compound` priests' compound (ground level: ring wall, three houses, chapel, stele court) · `dalab_shrine` · `dalab_mound` ceremonial mound (temple + house on top, stair, plaza) · `dalab_palace_mound` High Priest's palace mound (three stone terraces built into the slope, each with its landing and flights, terraced gardens on the flanks, palace hall and wings on top) · `dalab_high_mound` High Priest's mound (terrace, greater temple, ring earthwork with one entrance) |
 
 Every def is placed through `VERN.place(scene,key,x,z,ry,o)` (69c), builds in a
