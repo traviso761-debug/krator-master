@@ -60,12 +60,14 @@ function buildSlSub(scene,gx,gz,d,opt){reseed(20610+d);
    const x=rr(-1.4,1.4);const t=slShack(x,top+.3,zc,rng()<.5?Math.PI/2:-Math.PI/2,dp,w,rr(2.4,3),{lit:.55});
    if(rng()<.3)slShack(x+rr(-.4,.4),t,zc,rng()*TAU,Math.min(w,dp)*.8,Math.min(w,dp)*.8,rr(2.2,2.6),{lit:.55});z+=dp+rr(.4,1.4);}
   // the sail a lookout: scaffold on top, a hut, a flag, a banner down its flank, lines of flags
-  slLattice(0,stop,sz-1,6,2.4,{hut:true});
+  if(!opt.low)slLattice(0,stop,sz-1,6,2.4,{hut:true});else{kput('plank',[0,stop+.1,sz],null,[3,.2,8],null);slShack(0,stop+.2,sz-1,0,2.6,3.4,2.3,{lit:.8,roofy:false});}
   kput('pkCloth',[1.85,11.4,sz+1],qEuler(0,Math.PI/2,0),[3,7,1],new THREE.Color(0xa83a2a));
   kput('pkLadder',[-1.75,stop,sz+2],qEuler(0,-Math.PI/2,0),[1,1.05,1],null);
   portWashLine(0,sz+10,0,sz+30,stop+2,10);portWashLine(0,sz-10,0,-24,stop+1,10);
   // rafts lashed alongside, lines to the casing, boats
-  for(const s of [-1,1])for(const z of [-42,-6,40]){const x=s*(SLS.R+4.4);
+  if(opt.low){const lx=opt.ledge||10,ly=(opt.ledgeY||6)-H.position.y;for(const s of [-1,1])for(const z of [-40,-4,44]){beam('plank',[s*2.4,top+.3,z],[s*(lx+1),ly+.1,z],1.4,.12,null);
+    for(const o of [-.7,.7])beam('tube',[s*2.4,top+1.3,z+o],[s*(lx+1),ly+1.1,z+o],.03,.03,null);}}
+  else for(const s of [-1,1])for(const z of [-42,-6,40]){const x=s*(SLS.R+4.4);
    slRaft(x,z+rr(-3,3),rr(-.04,.04),7,rr(12,16),d,{shack:rng()<.75,line:rng()<.5,people:rng()<.6?3:0,y:.35});
    slRope([s*2.3,top+.4,z-4],[x-s*3.3,.6,z-4],.4,.06,SL_ROPE);slRope([s*2.3,top+.4,z+4],[x-s*3.3,.6,z+4],.4,.06,SL_ROPE);}
   for(let i=0;i<5;i++)portSkiff((rng()<.5?-1:1)*rr(16,22),rr(-70,70),rr(-.3,.3));

@@ -292,7 +292,7 @@ function slCarTown(H,d,holeXZ){const Y=SLC.YF,X0=2,ok=(x,z)=>!holeXZ(x,z);
  const E=SLC.EL[2],em=(E.z0+E.z1)/2,exa=slCarHw(em,SLC.YM)+.6;
  for(let k=0;k<3;k++)portStall(exa+3+k*4,SLC.YM+.35,em-4,0);for(let k=0;k<3;k++)portStall(exa+3+k*4,SLC.YM+.35,em+4,Math.PI);
  portFigures(exa+7,SLC.YM+.35,em,8,4);
- for(const o of SLC.OPEN){const zm=(o[1]+o[2])/2;kput('dot',[o[0]*18.1,14.6,zm],qEuler(0,Math.PI/2,0),[(o[2]-o[1])*.5,4,.2],new THREE.Color(0xb07838));
+ for(const o of SLC.OPEN){const zm=(o[1]+o[2])/2;for(let k=0;k<3;k++)kput('dot',[o[0]*20.6,SLC.YM+4.5,o[1]+3+k*(o[2]-o[1]-6)/2],null,[.35,.35,.35],WARM);portFigures(o[0]*20.6,SLC.YM,zm,4,Math.min(2,(o[2]-o[1])/2-2));
   if(rng()<.7)kput('pkCloth',[o[0]*(slCarHw(zm,SLC.YM)+.3),19.6,zm],qEuler(0,Math.PI/2,0),[(o[2]-o[1])*.8,rr(2.5,5),1],new THREE.Color().setHSL(rr(0,1),.5,.55));}
  // walkways down the port side to rafts at the waterline, rafts and boats all along
  for(const z of [84,-146]){const x=slCarXP(z)+2;slStairTower(x,1.3,z,Y,0,d);kput('plank',[x-1.2,Y-.05,z],null,[4,.14,2],null);
