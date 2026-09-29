@@ -37,8 +37,9 @@ function sjStoneTex(dec){return canvasTex(512,512,(g,w,h)=>{const id=g.createIma
   if(!dec){r=234+v;gg=219+v*.96;b=193+v*.9;}
   else{const wt=fbm(x/60,y/60,4.4,3),li=fbm(x/28,y/28,8.8,3),ch=fbm(x/9,y/9,1.9,2);
    r=124+v*1.2-(wt-.5)*110;gg=113+v*1.1-(wt-.5)*100;b=96+v-(wt-.5)*84;
-   if(li>.56){const k=clamp((li-.56)*6,0,1);r=lerp(r,92,k);gg=lerp(gg,110,k);b=lerp(b,66,k);}   // lichen
-   if(ch<.33){r*=.6;gg*=.58;b*=.56;}}                         // spalled pockets
+   const st=fbm(x/240,y/9,3.7,2);r-=(st-.5)*40;gg-=(st-.5)*38;b-=(st-.5)*34;     // weathering streaked along the grain
+   if(li>.62){const k=clamp((li-.62)*5,0,.55);r=lerp(r,92,k);gg=lerp(gg,106,k);b=lerp(b,70,k);}   // lichen
+   if(ch<.27){r*=.72;gg*=.7;b*=.68;}}                         // spalled pockets
   D[i]=r;D[i+1]=gg;D[i+2]=b;D[i+3]=255;}
  g.putImageData(id,0,0);});}
 // WINDOW WALL. One tile is 8 bays x 4 storeys (canvas 512 x 384: 64 px bays,
@@ -71,11 +72,16 @@ MAT.sjStoneR=new THREE.MeshStandardMaterial({map:TEX.sjStoneR,roughnessMap:TEX.c
 MAT.sjWin=new THREE.MeshStandardMaterial({map:TEX.sjWin,emissive:0xffffff,emissiveMap:TEX.sjWinE,emissiveIntensity:.75,color:0xffffff,roughness:.28,metalness:.25,side:DS});
 MAT.sjWinR=new THREE.MeshStandardMaterial({map:TEX.sjWinR,color:0xffffff,roughness:1,metalness:0,side:DS});
 MAT.sjPave=new THREE.MeshStandardMaterial({map:TEX.concrete,roughnessMap:TEX.concreteRM,color:0xd6c2a2,roughness:1,metalness:0,side:DS});
+// the service core a ruin shows once its glazing is gone: dark board-formed concrete
+MAT.sjCore=new THREE.MeshStandardMaterial({map:TEX.concrete,roughnessMap:TEX.concreteRM,color:0x3c3733,roughness:1,metalness:0,side:DS});
+// the warm line under each terrace lip: stone by day, lit at night (NIGHT is
+// read at render time, so nothing is rebuilt when the view flips)
+MAT.sjGlow=new THREE.MeshStandardMaterial({color:0xe9d8b8,emissive:0xff9440,emissiveIntensity:0,roughness:.8,metalness:0,side:DS});
 MAT.sjPaveR=new THREE.MeshStandardMaterial({map:TEX.concrete,roughnessMap:TEX.concreteRM,color:0x8c7c66,roughness:1,metalness:0,side:DS});
 
-// gridSurface with a UV function and a hole test that also gets the cell index
+// gridSurface with a UV function, which is also handed the point it maps
 function sjGrid(fn,nu,nv,uvf,hole){const pos=[],uv=[],idx=[],cols=nu+1;
- for(let j=0;j<=nv;j++)for(let i=0;i<=nu;i++){const u=i/nu,v=j/nv,p=fn(u,v),t=uvf(u,v);pos.push(p[0],p[1],p[2]);uv.push(t[0],t[1]);}
+ for(let j=0;j<=nv;j++)for(let i=0;i<=nu;i++){const u=i/nu,v=j/nv,p=fn(u,v),t=uvf(u,v,p);pos.push(p[0],p[1],p[2]);uv.push(t[0],t[1]);}
  for(let j=0;j<nv;j++)for(let i=0;i<nu;i++){if(hole&&hole((i+.5)/nu,(j+.5)/nv))continue;const a=j*cols+i,b=a+1,c=a+cols,e=c+1;idx.push(a,c,b,b,c,e);}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));
  g.setIndex(idx);g.computeVertexNormals();return g;}
@@ -104,9 +110,10 @@ const SJ_PM=[[0,0,0],[1,-1.3,0],[1,-.35,.55],[1,.2,.05],[1,-.15,-.6],[1,-2.2,-.6
 // `wv(th)` optionally lifts the outer edge (the f=1 points) so it rolls.
 function sjPlate(y,reF,riF,prof,nu,hole,wv){const nv=prof.length-1;
  return sjGrid((u,v)=>{const th=u*TAU,p=prof[Math.round(v*nv)],re=reF(th),ri=riF(th),r=ri+(re-ri)*p[0]+p[1];return[r*Math.cos(th),y+p[2]+(wv?wv(th)*p[0]:0),r*Math.sin(th)];},
-  nu,nv,(u,v)=>[u*nu/6,v*nv*.3],hole);}
+  nu,nv,(u,v,p)=>[u*Math.max(4,Math.round(TAU*reF(0)/10)),(Math.hypot(p[0],p[2])+p[1]-y)/8],hole);}
 // What the presets need: filled per decay by the builder.
 const SJ_SITE={};
+function sjGlowOn(m){if(m)m.onBeforeRender=()=>{MAT.sjGlow.emissiveIntensity=NIGHT?.6:0;};}
 
 function buildSkyJ(scene,gx,gz,d){reseed(9770+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const dd=d>0?1:0;
  const HO=dd*HOLES;                                  // 1 ruined/toppled, .55 rehabilitated
@@ -157,12 +164,15 @@ function buildSkyJ(scene,gx,gz,d){reseed(9770+d);KOFF=[gx,0,gz];const G=new THRE
  // part: 'all' standing, 'lower' the stump below the break, 'upper' the body
  // above it (ends under the spire, which breaks off on its own). Geometry is
  // made at absolute heights and dropped by ya, so P's origin is height ya.
- const body=(P,dx,ya,yb,part)=>{const oy=-ya,stone=[],win=[],dark=[],plates=[];
+ const gone=k=>{if(!dd||k<0||k>=NP)return false;const y=YS0+k*HS,t=(y-YS0)/(YTOP-YS0);
+  return h3(k*2.3,1.7,9.9)<HO*(.16+.5*Math.pow(t,1.2)+(d===1&&y>YTOP-40?.4:0));};
+ const rowY=j=>j<=0?YB:YS0+(j-1)*HS;                // glazing row j sits on plate j-1 (row 0 on the base roof)
+ const body=(P,dx,ya,yb,part)=>{const oy=-ya,stone=[],win=[],dark=[],plates=[],glow=[];
   const E0=Et;
   // PLATES
   for(let k=0;k<NP;k++){const y=YS0+k*HS,t=(y-YS0)/(YTOP-YS0),jag=(h3(k*1.9,3.1,5.7)-.5)*14;
    if(part==='lower'&&y>yb+jag)continue;if(part==='upper'&&y<=ya+jag)continue;
-   if(dx>0&&h3(k*2.3,1.7,9.9)<HO*(.16+.5*Math.pow(t,1.2)+(d===1&&y>YTOP-40?.4:0)))continue;   // plate gone
+   if(gone(k))continue;
    const E=E0(y),ph=phi(y),ps=psi(y),roof=k===NP-1,ter=roof||k%3===0;
    const rb=ter?th=>E*(1+.2*Math.cos(2*(th-ph))+.08*Math.cos(3*(th-ps))+.03*Math.cos(5*th+k)):th=>E*(.94+.13*Math.cos(2*(th-ph-.35))+.05*Math.cos(3*(th-ps)));
    // THE PLATES REACH FOR THE RIBS. Where a plate's lobe falls short of a
@@ -175,38 +185,48 @@ function buildSkyJ(scene,gx,gz,d){reseed(9770+d);KOFF=[gx,0,gz];const G=new THRE
    const wv=ter?th=>.95*Math.sin(2*(th-ph)+1.1)+.4*Math.sin(3*(th-ps)):th=>.55*Math.sin(2*(th-ph)+.4);
    const ri=roof?(()=>0):dx>0?(th=>E*.22):(th=>Math.min(E*.6,re(th)-6));
    const hole=dx>0?(u,v)=>fbm(u*9+k*1.37,k*.61,71,2)<(.24+.28*t)*HO||(v>.3&&fbm(u*23+k,k*.3,72,2)<.38*HO):null;
-   const g=sjPlate(y+oy,re,ri,ter?SJ_PT:SJ_PM,ter?120:104,hole,wv);stone.push(g);plates.push(g);}
+   const g=sjPlate(y+oy,re,ri,ter?SJ_PT:SJ_PM,ter?120:104,hole,wv);stone.push(g);plates.push(g);
+   if(ter&&!dx)glow.push(sjGrid((u,v)=>{const th=u*TAU,r=re(th)-1.25-v*.9;return[r*Math.cos(th),y+oy-1.37+wv(th),r*Math.sin(th)];},120,1,(u,v)=>[u,v]));}
   // GLAZING between the plates, and in a ruin the dark core behind it
-  const g0=Math.max(ya,YB),g1=Math.min(part==='all'?YTOP:yb,YTOP);
-  if(g1>g0+1){const nv=Math.max(1,Math.round((g1-g0)/HS));
-   win.push(sjGrid((u,v)=>{const th=u*TAU,y=g0+v*(g1-g0),r=E0(y)*.66*(1+.05*Math.cos(2*(th-phi(y))));return[r*Math.cos(th),y+oy,r*Math.sin(th)];},96,nv,
-    (u,v)=>[u*7,(g0+v*(g1-g0)-YS0)/(4*HS)],dx>0?(u,v)=>fbm(u*9+.3,(g0+v*(g1-g0))*.05,13,3)<.56*HO:null));
+  // One row per storey, so a row can die with its floors: glazing only
+  // survives where a plate above or below it still stands to hold it.
+  let j0=0,j1=NP;
+  if(part==='lower'){while(j1>1&&rowY(j1-1)>yb-2)j1--;}else if(part==='upper'){while(j0<NP&&rowY(j0)<ya-2)j0++;}
+  const g0=rowY(j0),g1=rowY(j1);
+  if(j1>j0){const nv=j1-j0,yv=v=>rowY(j0+Math.round(v*nv));
+   win.push(sjGrid((u,v)=>{const th=u*TAU,y=yv(v),r=E0(y)*.66*(1+.05*Math.cos(2*(th-phi(y))));return[r*Math.cos(th),y+oy,r*Math.sin(th)];},96,nv,
+    (u,v,p)=>[u*7,(p[1]-oy-YS0)/(4*HS)],dx>0?(u,v)=>{const j=j0+Math.floor(v*nv),y=rowY(j);const lost=gone(j-1)+gone(j);return lost===2||fbm(u*9+.3,y*.05,13,3)<(.5+.2*lost)*HO;}:null));
    if(dx>0)dark.push(sjGrid((u,v)=>{const th=u*TAU,y=g0+v*(g1-g0),r=E0(y)*.22;return[r*Math.cos(th),y+oy,r*Math.sin(th)];},24,Math.max(1,Math.round((g1-g0)/20)),(u,v)=>[u*3,v*(g1-g0)/8]));}
   // RIBS
+  const spire=[];
   for(let i=0;i<NR;i++){const jr=(h3(i*4.1,2.2,6.6)-.5)*18;
    for(const pc of PLAN[i]){let a=pc[0],b=pc[1];
     if(part==='lower')b=Math.min(b,yb+jr);else if(part==='upper'){a=Math.max(a,ya+jr);b=Math.min(b,YTOP+7);}
     if(b<=a)continue;
     let M=null;if(pc[2]){const p=ribPt(i,a),th=ribTh(i,a).th;
      M=new THREE.Matrix4().makeTranslation(p[0],p[1],p[2]).multiply(new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(-Math.sin(th),0,Math.cos(th)),-pc[2])).multiply(new THREE.Matrix4().makeTranslation(-p[0],-p[1],-p[2]));}
-    const g=ribGeo(i,a,b,oy,M,a>0,b<YSP-1);if(g)stone.push(g);}}
+    // above the roof plate a rib belongs to the spire's mesh (split with no
+    // cap at the join, so the tube stays continuous)
+    if(part==='all'&&a<YTOP&&b>YTOP+1){const g1=ribGeo(i,a,YTOP,oy,M,a>0,false),g2=ribGeo(i,YTOP,b,oy,M,false,b<YSP-1);if(g1)stone.push(g1);if(g2)spire.push(g2);}
+    else{const g=ribGeo(i,a,b,oy,M,a>0,b<YSP-1);if(g)(part==='all'&&a>=YTOP?spire:stone).push(g);}}}
   // THE SPIRE: hoops tying the ribs, a glazed lantern, the needle. Its own
   // mesh, so its bounding box (and the inspector's probe) sits in the spire.
-  const spire=[];
   if(part==='all'){
-   [13,29,47].forEach((h,q)=>{if(d===1&&q>0)return;const y=YTOP+h;
-    spire.push(sjPlate(y+oy,th=>Rs(y)*1.04,th=>Rs(y)*1.04-2.8,SJ_PM,64,d===1?(u,v)=>fbm(u*6,q,73,2)<.45:null));});
+   // (a ruin keeps none of this: its roof plate, which carried the lantern, is gone)
+   if(d!==1)[13,29,47].forEach((h,q)=>{const y=YTOP+h;
+    spire.push(sjPlate(y+oy,th=>Rs(y)*1.04,th=>Rs(y)*1.04-2.8,SJ_PM,64,null));});
    const l1=YTOP+22,lr=y=>Rs(y)*.55;
-   win.push(sjGrid((u,v)=>{const th=u*TAU,y=YTOP-1+v*(l1-YTOP+1);return[lr(y)*Math.cos(th),y+oy,lr(y)*Math.sin(th)];},48,5,(u,v)=>[u*4,(YTOP-1+v*(l1-YTOP+1)-YS0)/(4*HS)],
+   if(d!==1)win.push(sjGrid((u,v)=>{const th=u*TAU,y=YTOP-1+v*(l1-YTOP+1);return[lr(y)*Math.cos(th),y+oy,lr(y)*Math.sin(th)];},48,5,(u,v)=>[u*4,(YTOP-1+v*(l1-YTOP+1)-YS0)/(4*HS)],
     dx>0?(u,v)=>fbm(u*7,v*2,74,2)<.5*HO:null));
-   spire.push(sjPlate(l1+oy,th=>lr(l1)+.8,()=>0,SJ_PM,48,null));
+   if(d!==1)spire.push(sjPlate(l1+oy,th=>lr(l1)+.8,()=>0,SJ_PM,48,null));
    if(d!==1)spire.push(sjGrid((u,v)=>{const th=u*TAU,y=YSP-44+v*56,r=lerp(2.4,.1,Math.pow(v,.8));return[r*Math.cos(th),y+oy,r*Math.sin(th)];},12,10,(u,v)=>[u*2,v*7]));}
-  meshMerged(stone,dx>0?MAT.sjStoneR:MAT.sjStone,P);meshMerged(spire,dx>0?MAT.sjStoneR:MAT.sjStone,P);meshMerged(win,dx>0?MAT.sjWinR:MAT.sjWin,P);meshMerged(dark,MAT.concreteR,P);
+  meshMerged(stone,dx>0?MAT.sjStoneR:MAT.sjStone,P);meshMerged(spire,dx>0?MAT.sjStoneR:MAT.sjStone,P);meshMerged(win,dx>0?MAT.sjWinR:MAT.sjWin,P);meshMerged(dark,MAT.sjCore,P);sjGlowOn(meshMerged(glow,MAT.sjGlow,P));
   if(dx>0){mossOnSurface(plates,0,0,0,part==='all'?320:160,2.2);vinesFromLedge(plates,0,0,0,part==='all'?160:80,16);}
   return plates;};
  // ------------------------------------------------------------- the base block
- const bStone=[],bWin=[],bDark=[],slabs=[];
- for(let s=1;s<=5;s++){const g=sjPlate(s*BS,th=>Rb(th)+bal(th,s),th=>s===5?0:Rb(th)-16,SJ_PT,144,dd?(u,v)=>fbm(u*11+s*2.1,s*.7,31,2)<.24*HO||(v>.3&&fbm(u*29+s,s,32,2)<.34*HO):null);bStone.push(g);slabs.push(g);}
+ const bStone=[],bWin=[],bDark=[],slabs=[],bGlow=[];
+ for(let s=1;s<=5;s++){const g=sjPlate(s*BS,th=>Rb(th)+bal(th,s),th=>s===5?0:Rb(th)-16,SJ_PT,144,dd?(u,v)=>fbm(u*11+s*2.1,s*.7,31,2)<.24*HO||(v>.3&&fbm(u*29+s,s,32,2)<.34*HO):null);bStone.push(g);slabs.push(g);
+  if(!dd)bGlow.push(sjGrid((u,v)=>{const th=u*TAU,r=Rb(th)+bal(th,s)-1.25-v*.9;return[r*Math.cos(th),s*BS-1.37,r*Math.sin(th)];},144,1,(u,v)=>[u,v]));}
  const bh=dd?(u,v)=>fbm(u*14,v*3,41,3)<.56*HO:null;
  bWin.push(sjGrid((u,v)=>{const th=u*TAU,r=Rb(th)-1.2;return[r*Math.cos(th),BS+v*(YB-BS),r*Math.sin(th)];},144,4,(u,v)=>[u*18,v],bh));
  bWin.push(sjGrid((u,v)=>{const th=u*TAU,r=Rb(th)-9;return[r*Math.cos(th),.3+v*(BS-.3),r*Math.sin(th)];},144,1,(u,v)=>[u*17,v*.25],bh));
@@ -230,7 +250,7 @@ function buildSkyJ(scene,gx,gz,d){reseed(9770+d);KOFF=[gx,0,gz];const G=new THRE
   for(let i=0;i<NR;i++){const top=YSP-rr(0,50)*(i%3===0?1:0);const g=ribGeo(i,YTOP+rr(2,9),top,-YTOP,null,true,top<YSP-1);if(g)sp.push(g);}
   sp.push(sjPlate(13,th=>Rs(YTOP+13)*1.04,th=>Rs(YTOP+13)*1.04-2.8,SJ_PM,64,(u,v)=>fbm(u*6,1,73,2)<.4));
   meshMerged(sp,MAT.sjStoneR,S);
-  const Ld=D0+L*Math.cos(tau)+48,a2=ang+rr(-.18,.18);
+  const Ld=D0+L*Math.cos(tau)+rr(60,80),a2=ang+(rng()<.5?-1:1)*rr(.2,.3);
   // yaw * lay-down * roll about its own axis, so the roll cannot tip it off the ground plane
   S.quaternion.copy(new THREE.Quaternion().setFromAxisAngle(_UP,-a2+rr(-.3,.3)).multiply(qAxis(0,0,1,-Math.PI/2+.12)).multiply(qAxis(0,1,0,rr(0,TAU))));
   S.position.set(Math.cos(a2)*Ld,0,Math.sin(a2)*Ld);G.add(S);dropFragment(S,0,2.5);
@@ -249,7 +269,7 @@ function buildSkyJ(scene,gx,gz,d){reseed(9770+d);KOFF=[gx,0,gz];const G=new THRE
   // the needle, down on the plaza
   const na=rr(0,TAU),nr=RP*.95,P1=[],W1=[],H1=[];for(let k=0;k<=10;k++){const t=k/10;P1.push([nr*Math.cos(na)+Math.cos(na+1.3)*t*44,1.2,nr*Math.sin(na)+Math.sin(na+1.3)*t*44]);const w=lerp(2.2,.3,t);W1.push(w);H1.push(w);}
   bStone.push(sjSweep(P1,W1,H1,()=>[0,1,0],true,true));}
- meshMerged(bStone,STONE,G);meshMerged(bWin,WINM,G);meshMerged(bDark,MAT.guts,G);meshMerged(pave,dd?MAT.sjPaveR:MAT.sjPave,G);
+ meshMerged(bStone,STONE,G);meshMerged(bWin,WINM,G);meshMerged(bDark,MAT.sjCore,G);sjGlowOn(meshMerged(bGlow,MAT.sjGlow,G));meshMerged(pave,dd?MAT.sjPaveR:MAT.sjPave,G);
  apron(G,0,0,RP,RP+20,dd,.3);
  // ------------------------------------------------------------- life and decay
  if(!dd){
