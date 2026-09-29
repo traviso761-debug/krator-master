@@ -1,14 +1,16 @@
 # Krator Ancients — handover
 
 ## QUEUE from the user, 2026-09-29 (in this order) — read first
-1. **Finish the Ancient Port** (`voth/port/`, own README/API/CONTRACT). Foundation
+1. **DONE 2026-09-30: the Ancient Port.** Published at https://claude.ai/artifact/VwkLHv9J5apZCF4oDDFo6x
+   (showcase 7.40M triangles, all invariants pass). Original notes: Foundation
    DONE and verified (quay, quay110, pier; showcase/segment/edges targets).
    Six agents dispatched: drydocks+boatyard (82-, dd), cargo: warehouses,
    container dock, gantry cranes (83-, cg), terminals+heliport (84-, tm),
    fishing+recreational harbours (85-, hb), three container ships (86-, vs),
    drone carrier+submarine+berth/pen slips (87-, sl). New segments W <= 110.
    If an agent is stopped, recover its files from .claude/worktrees/.
-2. **Quality pass on ALL Ancient city kit structures** (the kit's types plus
+2. **IN FLIGHT 2026-09-30: quality pass**, six agents by group (towers, civic,
+   domestic, arcA, arcB, arcC); each writes `qa/<group>.md`. **Quality pass on ALL Ancient city kit structures** (the kit's types plus
    the arcologies/skyscrapers added this month), working down KNOWN_ISSUES.
 3. **An alternative, from-scratch version of EACH Ancient city building
    type**, inspired by the `arco1` and `arco2` reference sets (contact sheets
