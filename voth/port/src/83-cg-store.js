@@ -150,7 +150,7 @@ function cgSiloWorks(G,d,k){const D=PORT.DECK,S=CGS.SIL,r=S.r,H=S.H,ruin=d>0,cm=
   const g=hf?lathe({rFn:()=>r,H,nu:24,nv:6,hole:(u,y)=>y>H*.55&&hf(u,y)}):cgTube(r,H,24);g.translate(x,D,z);pbAdd(g,cm,G);
   const cap=new THREE.CircleGeometry(r,24);cap.rotateX(-Math.PI/2);cap.translate(x,D+H,z);pbAdd(cap,cm,G);
   if(d>=1)for(let s=0;s<3;s++){const a=rng()*TAU;kput('stain',[x+Math.cos(a)*(r+.05),D+H-6,z+Math.sin(a)*(r+.05)],qEuler(0,-a+Math.PI/2,0),[rr(1.5,3),rr(6,14),1],null);}
-  if(d>=3&&(id===0||id===2||id===5))cgSiloHouse(x,z,r,H,d);}
+  if(d>=3&&(id===0||id===1||id===3))cgSiloHouse(x,z,r,H,d);}
  // head gallery on top (split over the broken silo at d=1), the elevator tower at its west end
  const gx0=xs[0]-r-1.5,gx1=xs[2]+r;
  if(d===1){cgBx(G,wm,(gx0+xs[1]-1)/2,D+H+2.5,zc,xs[1]-1-gx0,5,6);cgBx(G,wm,(xs[1]+6+gx1)/2,D+H+2.5,zc,gx1-xs[1]-6,5,6);
