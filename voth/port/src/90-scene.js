@@ -57,7 +57,9 @@ for(const it of PORT_LAYOUT.items){const R=portRegOf(it.key);if(!R)continue;cons
  HOLES=(d>=3)?.55:1;KOFF=[0,0,0];KXF=null;
  const opt=portOptFor(it);
  let _G=null;
+ PORT_CUR=opt;
  try{_G=R.build(scene,it.gx,it.gz,d,opt);}catch(e){reportErr(it.key+' d='+d+' '+e.stack);}
+ PORT_CUR=null;
  try{pbFlush();}catch(e){reportErr(it.key+' flush '+e.stack);}
  HOLES=1;
  if(d>=3&&_G&&!R.norepair){KOFF=[it.gx,0,it.gz];try{portRepair(_G,d);}catch(e){reportErr(it.key+' repair '+e.stack);}}

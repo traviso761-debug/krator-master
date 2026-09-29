@@ -8,7 +8,9 @@
 // segment's deck is at y = PORT.DECK.
 const PORT={
  DECK:6,          // quay top, m above sea level: every deck in the port is here
- W:220,           // every segment's footprint width along x
+ W:220,           // the ANCHOR width (quay, pier) and the default; each segment registers its own W
+ WMAX_NEW:110,    // every segment after the anchors is at most this wide (the user's rule)
+ WMAX:220,        // hard ceiling the registry enforces
  SEA0:0,          // sea level
  SEABED:-30,      // the natural seabed far offshore
  CLEAR:8,         // buildings/props stay this far inside the footprint edges
@@ -31,7 +33,7 @@ function portRegister(kind,o){
  if(miss.length){reportErr('PORT_'+kind.toUpperCase()+' '+tag+': missing '+miss.join(', '));return;}
  if(PORT_REG.seg[o.key]||PORT_REG.vessel[o.key]){reportErr('PORT registration: duplicate key '+o.key);return;}
  if(!PORT_CLS[o.cls])reportErr('PORT '+tag+': cls must be one of '+Object.keys(PORT_CLS).join('/'));
- if(o.W!==PORT.W)reportErr('PORT '+tag+': W must be '+PORT.W+' (got '+o.W+')');
+ if(!(o.W>0&&o.W<=PORT.WMAX))reportErr('PORT '+tag+': W must be in (0, '+PORT.WMAX+'] - new segments <= '+PORT.WMAX_NEW+' (got '+o.W+')');
  if(o.LAND>PORT.LAND_MAX||o.SEA>PORT.SEA_MAX||o.LAND<0||o.SEA<0)reportErr('PORT '+tag+': LAND<=120, SEA<=420');
  if(typeof o.build!=='function'||typeof o.stamps!=='function')reportErr('PORT '+tag+': build and stamps must be functions');
  o.kind=kind;
@@ -53,9 +55,12 @@ function portRegOf(key){return PORT_REG.seg[key]||PORT_REG.vessel[key]||null;}
 // water); dz = the neighbour's z offset minus this one's (negative = the
 // neighbour is set back toward the land).
 //
-// The z offsets the showcase cycles through. Indexed (slot*2 + run*3) % 7 so a
-// run of only two segments still shows a flush joint, a 20 m and a 40 m step.
-const PORT_DZSEQ=[0,20,-40,0,40,-20,20];
+// The z offsets the showcase cycles through, indexed (slot*2 + run*3) % 7.
+// Chosen (by search) so neighbours - two apart in the table - never differ by
+// more than 40 m (an 80 m step would leave a 60 m-deep apron standing clear
+// of its neighbour), and the three runs of three show flush joints and 20 and
+// 40 m steps in both directions.
+const PORT_DZSEQ=[0,0,0,20,-20,40,-40];
 // Lay `keys` side by side from x0 (the west edge of the first footprint), each
 // at its own gz; returns the items with nb filled. Run ends see `endW`/`endE`.
 function portRun(keys,d,x0,dzs,o){o=o||{};const out=[];let x=x0;
@@ -83,7 +88,7 @@ function portLayoutShowcase(o){o=Object.assign({decays:[0,1,3],gap:440},o||{});
 // by plain `quay` segments (offset by nbdz[0] / nbdz[1]), natural coast
 // beyond, one decay per run. If `key` is a VESSEL, the run is three quays and
 // the vessel is moored off the middle one in a dredged pocket.
-function portLayoutSegment(key,o){o=Object.assign({gap:440,nbdz:[0,-20],nbKey:'quay'},o||{});
+function portLayoutSegment(key,o){o=Object.assign({gap:440,nbdz:[0,-20],nbKey:'quay110'},o||{});
  const V=PORT_REG.vessel[key],S=PORT_REG.seg[key],R0=V||S;
  if(!R0){reportErr('PORT_ONLY: no segment or vessel registered as "'+key+'"');return {items:[],runs:[],stamps:[],vessels:[]};}
  const nbk=PORT_REG.seg[o.nbKey]?o.nbKey:key;
@@ -109,7 +114,7 @@ function portLayoutSegment(key,o){o=Object.assign({gap:440,nbdz:[0,-20],nbKey:'q
 //   run 1  west neighbour stands out 20, east neighbour set back 20
 //   run 2  open SEA on both sides (no neighbours at all)
 //   run 3  natural LAND coast on both sides
-function portLayoutEdges(key,o){o=Object.assign({gap:440,d:0,nbKey:'quay'},o||{});
+function portLayoutEdges(key,o){o=Object.assign({gap:440,d:0,nbKey:'quay110'},o||{});
  if(!PORT_REG.seg[key]){reportErr('PORT_ONLY: no segment registered as "'+key+'"');return {items:[],runs:[],stamps:[],vessels:[]};}
  const nbk=PORT_REG.seg[o.nbKey]?o.nbKey:key,d=o.d,runs=[];let x=0;
  const cases=[{ks:[nbk,key,nbk],dz:[-40,0,40],ctx:[1,0,1]},{ks:[nbk,key,nbk],dz:[20,0,-20],ctx:[1,0,1]},
@@ -140,7 +145,7 @@ function portVesselFor(opt,i){const v=opt&&opt.vessels;if(!v||!v.length)return n
 function portPlaceVessel(G,key,x,z,heading,d,o){const V=PORT_REG.vessel[key];if(!V)return null;
  const ds=V.decays.indexOf(d)>=0?d:V.decays[0];
  pbFlush();                      // the host's batch so far is charged to the host, not the vessel
- const s0=_seed,k0=KOFF,t0=TSTAT.cur,h0=HOLES;
+ const s0=_seed,k0=KOFF,t0=TSTAT.cur,h0=HOLES,c0=PORT_CUR;PORT_CUR={W:V.W,LAND:V.LAND,SEA:V.SEA,key};
  const wx=KOFF[0]+x,wz=KOFF[2]+z;
  TSTAT.cur=portStatKey(key,ds);HOLES=ds>=3?.55:1;KOFF=[0,0,0];let VG=null;const r0=REG.length;
  try{VG=V.build(scene,wx,wz,ds,Object.assign({heading:heading||0,d:ds,key,host:TSTAT.cur},o||{}));}
@@ -148,7 +153,7 @@ function portPlaceVessel(G,key,x,z,heading,d,o){const V=PORT_REG.vessel[key];if(
  try{pbFlush();}catch(e){reportErr('vessel flush '+e.stack);}
  if(ds>=3&&VG&&!V.norepair){KOFF=[wx,0,wz];try{portRepair(VG,ds);}catch(e){reportErr(key+' repair '+e.stack);}}
  for(let i=r0;i<REG.length;i++)REG[i].type=key;
- KOFF=k0;TSTAT.cur=t0;HOLES=h0;_seed=s0;
+ KOFF=k0;TSTAT.cur=t0;HOLES=h0;_seed=s0;PORT_CUR=c0;
  return VG;}
 
 // ---------------------------------------------------------------- stats keys
@@ -206,6 +211,10 @@ function portH(lx,lz){return terrainH(lx+KOFF[0],lz+KOFF[2]);}
 // stamps run before any builder reseeds.
 const portHash=(a,b,c)=>h3(a*.137+11.3,b*.071+2.9,(c||0)*.193+5.1);
 
+// The placement being built right now (its opt), set by the scene around each
+// build() call, so helpers can default to the segment's own width.
+let PORT_CUR=null;
+const portCurW=()=>(PORT_CUR&&PORT_CUR.W)||PORT.W;
 // Scene-state hooks: setNight() in 92-camera.js calls every function here
 // with (on). The water registers one; a segment may register its own.
 const PORT_NIGHT=[];
@@ -255,11 +264,12 @@ function portViewsSegment(){const V={},L=PORT_LAYOUT,D=PORT.DECK,runs=L.runs||[]
  V['Overview']=portCam((X0+X1)/2,0,120,.2,.45,(X1-X0)*.6+300);
  for(const R of runs){const F=fo(R);V[portDName(R.d)]=portCam(F.x,F.y,F.z,.45,.42,Math.max(260,F.dp*.95+F.w*.35+80));}
  const R0=runs[0],F0=fo(R0),it0=R0.items[1];
- if(!R0.vessel){V['West side']=portCam(it0.gx-PORT.W/2,D,it0.gz+6,-.7,.34,170);
-  V['East side']=portCam(it0.gx+PORT.W/2,D,it0.gz+6,.7,.34,170);
+ if(!R0.vessel){const w0=portRegOf(it0.key).W;V['West side']=portCam(it0.gx-w0/2,D,it0.gz+6,-.7,.34,170);
+  V['East side']=portCam(it0.gx+w0/2,D,it0.gz+6,.7,.34,170);
   const Rr=runs.find(r=>r.d===1);if(Rr){const it=Rr.items[1];V['Ruined sides']=portCam(it.gx,D,it.gz+20,.05,.5,300);}}
  V['From the sea']=[F0.x,14,F0.gz+F0.sea+280,F0.x,8,F0.gz];
  V['Above']=[F0.x,Math.max(500,F0.dp*1.25+200),F0.z+1,F0.x,0,F0.z];
- V['Eye level']=R0.vessel?[F0.x-40,D+1.7,F0.gz-F0.dp/2-20,F0.x,8,F0.gz]:[it0.gx-70,D+1.7,it0.gz-10,it0.gx+30,D+2.2,it0.gz-4];
+ const we=portRegOf(it0.key).W;
+ V['Eye level']=R0.vessel?[F0.x-40,D+1.7,F0.gz-F0.dp/2-20,F0.x,8,F0.gz]:[it0.gx-we*.32,D+1.7,it0.gz-10,it0.gx+we*.14,D+2.2,it0.gz-4];
  const Rn=runs[runs.length-1],Fn=fo(Rn);V['Night']=portCam(Fn.x,Fn.y,Fn.z,.4,.35,Math.max(240,Fn.dp*.8+120),1);
  return V;}

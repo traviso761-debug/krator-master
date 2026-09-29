@@ -114,7 +114,7 @@ function portRevetment(G,x0,z0,x1,z1,d,o){o=Object.assign({width:16,top:PORT.DEC
 
 // ---------------------------------------------------------------- side closure
 // portSideClose(G, nb, d, o): finish the segment's -x (W) and +x (E) sides
-// according to opt.nb. o = {W:220, z0:-LAND, z1:0, top:DECK, wall:{...}}:
+// according to opt.nb. o = {W (defaults to the segment's own registered W), z0:-LAND, z1:0, top:DECK, wall:{...}}:
 // z0..z1 is the stretch of the side where YOUR DECK meets the edge (the land
 // apron, by default). Per side:
 //   seg, dz = 0  flush neighbour: nothing - the deck and the berth continue.
@@ -128,7 +128,7 @@ function portRevetment(G,x0,z0,x1,z1,d,o){o=Object.assign({width:16,top:PORT.DEC
 //   sea          open water: a quay wall along the whole side z0..z1. Add
 //                portEdgeStamps(opt,...) to your stamps so there IS water.
 // Returns {W:'none'|'wall'|'coast', E:...}.
-function portSideClose(G,nb,d,o){o=Object.assign({W:PORT.W,z0:-60,z1:0,top:PORT.DECK,wall:{},landReturn:14},o||{});
+function portSideClose(G,nb,d,o){o=Object.assign({W:portCurW(),z0:-60,z1:0,top:PORT.DECK,wall:{},landReturn:14},o||{});
  const out={};
  for(const side of ['W','E']){const s=side==='W'?-1:1,xe=s*o.W/2,N=(nb&&nb[side])||{kind:'land',dz:0};
   const wo=Object.assign({face:[s,0],top:o.top},o.wall);
@@ -143,7 +143,7 @@ function portSideClose(G,nb,d,o){o=Object.assign({W:PORT.W,z0:-60,z1:0,top:PORT.
 // Stamps a segment adds for its sides (concat them to your stamps() array):
 // a dredged strip outside any side whose neighbour is open 'sea'. Nothing for
 // 'land' or 'seg'. o = {W, LAND, SEA, y (-12), width (40)}.
-function portEdgeStamps(opt,o){o=Object.assign({W:PORT.W,LAND:60,SEA:40,y:-12,width:40},o||{});const out=[];
+function portEdgeStamps(opt,o){o=Object.assign({W:(opt&&opt.W)||PORT.W,LAND:60,SEA:40,y:-12,width:40},o||{});const out=[];
  for(const side of ['W','E']){const N=opt&&opt.nb&&opt.nb[side];if(!N||N.kind!=='sea')continue;const s=side==='W'?-1:1,xe=s*o.W/2;
   out.push({kind:'dig',x0:xe,x1:xe+s*o.width,z0:-o.LAND,z1:o.SEA,y:o.y,soft:30,outside:true});}
  return out;}
