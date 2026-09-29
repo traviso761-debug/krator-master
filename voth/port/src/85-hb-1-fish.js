@@ -21,7 +21,7 @@
 MAT.hbDeck=new THREE.MeshStandardMaterial({color:0x8a8478,roughness:.85,metalness:.1,side:DS});
 MAT.hbPlastic=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.55,metalness:0});
 MAT.hbFishM=new THREE.MeshStandardMaterial({color:0xc4ccd0,roughness:.35,metalness:.5,side:DS});
-const HB_RUST=new THREE.Color(0x3a2216),HB_RUST2=new THREE.Color(0x4e4034);   // instance colours are linear: keep them dark
+const HB_RUST=new THREE.Color(0x6a3a22).convertSRGBToLinear(),HB_RUST2=new THREE.Color(0x6e5e4e).convertSRGBToLinear();   // instance colours are linear: keep them dark
 const hbPick=a=>a[(rng()*a.length)|0];
 const hbCols=a=>a.map(c=>new THREE.Color(c));
 // ---------------------------------------------------------------- the hull
@@ -112,7 +112,7 @@ kdef('hbPedestal',pkMergeGeo([new THREE.BoxGeometry(.3,.9,.3).translate(0,.45,0)
 function hbBoat(type,x,y,z,yaw,d,o){o=o||{};const T=HB_BT[type];
  const q=qEuler(0,yaw,0).multiply(qEuler(o.pitch||0,0,o.roll||0));
  const ru=o.ruin!==undefined?o.ruin:d===1;
- let hc=(o.col||hbPick(T.cols)).clone();if(ru)hc=HB_RUST.clone().lerp(hc,rr(.06,.2)).multiplyScalar(rr(.8,1.4));else if(d>=3)hc.lerp(HB_RUST2,rr(.15,.35));
+ let hc=(o.col||hbPick(T.cols)).clone();if(ru)hc=HB_RUST.clone().lerp(hc,rr(.02,.08)).lerp(HB_RUST2,rr(0,.6)).multiplyScalar(rr(.7,1.15));else if(d>=3)hc.lerp(HB_RUST2,rr(.45,.72));
  let hs=(o.houseCol||hbPick(T.hcols)).clone();if(ru)hs=HB_RUST2.clone().lerp(hs,rr(.1,.25)).multiplyScalar(rr(.8,1.3));else if(d>=3)hs.lerp(HB_RUST2,rr(.1,.3));
  const p=[x,y,z];
  kput('hb'+type+'Hull',p,q,1,hc);kput('hb'+type+'Deck',p,q,1,ru?new THREE.Color(0x5a4a3a):null);
