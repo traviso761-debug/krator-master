@@ -326,7 +326,7 @@ function tmShipYard(G,d){const D=PORT.DECK,x0=-45,x1=-3,nl=5,lw=(x1-x0)/nl,zg=-4
  if(d>=3){// market under the gate canopy; container houses in the bays; a truck turned stall
   for(let i=0;i<nl;i++)for(const s of [-1,1])portStall(lanes[i]+rr(-.6,.6),D,zg+s*2.6,s>0?0:Math.PI);
   for(let i=0;i<6;i++){kput('dot',[x0+4+i*7,cy-.8,zg+rr(-3,3)],null,[.5,.5,.5],WARM);}
-  portContainerHouse(G,lanes[0],D,-26,Math.PI/2+rr(-.1,.1),d,{levels:2,big:true});
+  portContainerHouse(G,lanes[0]+1,D,-26,Math.PI/2+rr(-.1,.1),d,{levels:2,big:false});
   portContainerHouse(G,lanes[2]+1,D,-24,Math.PI/2+rr(-.1,.1),d,{levels:1,big:true});
   portContainerHouse(G,lanes[4],D,-28,Math.PI/2+rr(-.1,.1),d,{levels:3,big:false});
   portContainerHouse(G,lanes[1],D,-62,rr(-.1,.1),d,{levels:2,big:true});
