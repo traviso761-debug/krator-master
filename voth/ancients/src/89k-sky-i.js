@@ -73,6 +73,12 @@ TEX.siWal=siSkin(1,0,0);TEX.siWalR=siSkin(1,1,0);TEX.siWalE=siSkin(1,0,1);
 const siStd=o=>new THREE.MeshStandardMaterial(Object.assign({roughness:.88,metalness:0,side:DS},o));
 MAT.siWall =siStd({map:TEX.siWal,emissive:0xffffff,emissiveMap:TEX.siWalE,emissiveIntensity:1.6});
 MAT.siWallR=siStd({map:TEX.siWalR});
+// THE SHAFT IS DARKER THAN ITS STRANDS. Both were the one pale wall, so the
+// braid read pale on pale and only the dark soffits drew the strands. The
+// shaft's stone is now a warmer, deeper ochre, the strands and the houses on
+// them stay pale, and the braid reads against the core it winds round.
+MAT.siCore =siStd({map:TEX.siWal,color:0xa8896a,emissive:0xffffff,emissiveMap:TEX.siWalE,emissiveIntensity:1.6});
+MAT.siCoreR=siStd({map:TEX.siWalR,color:0xa08a74});
 MAT.siAsh  =siStd({map:TEX.siAsh});
 MAT.siAshR =siStd({map:TEX.siAshR});
 MAT.siDeck =siStd({map:TEX.siAsh,color:0xd6ccb8});
@@ -173,8 +179,8 @@ function siFlush(A,mat,parent){if(!A.I.length)return null;const g=new THREE.Buff
  g.setAttribute('position',new THREE.Float32BufferAttribute(A.P,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(A.N,3));
  g.setAttribute('uv',new THREE.Float32BufferAttribute(A.U,2));g.setIndex(A.I);return mesh(g,mat,parent);}
 // a part's accumulators, one per material
-function siSet(M){return{wall:siAcc(M),ash:siAcc(M),deck:siAcc(M),shade:siAcc(M),void:siAcc(M),sect:siAcc(M)};}
-function siFlushSet(S,dx,parent){siFlush(S.wall,dx?MAT.siWallR:MAT.siWall,parent);siFlush(S.ash,dx?MAT.siAshR:MAT.siAsh,parent);
+function siSet(M){return{core:siAcc(M),wall:siAcc(M),ash:siAcc(M),deck:siAcc(M),shade:siAcc(M),void:siAcc(M),sect:siAcc(M)};}
+function siFlushSet(S,dx,parent){siFlush(S.core,dx?MAT.siCoreR:MAT.siCore,parent);siFlush(S.wall,dx?MAT.siWallR:MAT.siWall,parent);siFlush(S.ash,dx?MAT.siAshR:MAT.siAsh,parent);
  siFlush(S.deck,dx?MAT.siDeckR:MAT.siDeck,parent);siFlush(S.shade,dx?MAT.siShadeR:MAT.siShade,parent);
  siFlush(S.void,MAT.siVoid,parent);siFlush(S.sect,MAT.siSect,parent);}
 // drop a fallen piece so its LOWEST VERTEX sits `bury` under the plain.
@@ -209,7 +215,7 @@ function siCore(C,yLo,yHi,jLo,jHi){const S=C.S,dx=C.dx;
   if(apex){// THE TIP: a slanted knife, the apex set off the axis
    const ax=2.2,az=-1.4;
    for(let k=0;k<8;k++){const a=ring(7,sLo,k),b=ring(7,sLo,k+1),f=(k*5.3);
-    siTri(S.wall,a,b,[ax,SI_H,az],[f/16,sLo/16],[(f+6)/16,sLo/16],[(f+3)/16,SI_H/16]);}
+    siTri(S.core,a,b,[ax,SI_H,az],[f/16,sLo/16],[(f+6)/16,sLo/16],[(f+3)/16,SI_H/16]);}
    if(C.kit&&dx===0){C.kp('siLit',[ax,SI_H-1,az],null,[1.4,3,1.4],null);
     C.kp('siBeam',[ax,SI_H+450,az],null,[3.2,900,3.2],null);C.kp('siBeam',[ax,SI_H+450,az],null,[1.2,900,1.2],null);}
    continue;}
@@ -221,7 +227,7 @@ function siCore(C,yLo,yHi,jLo,jHi){const S=C.S,dx=C.dx;
     if(C.hole&&C.hole(k/8+.06,(ya+yb)/2)&&(ya-yLo)>6)continue;
     const half=((k<7?SI_CA[k+1]:SI_CA[0]+TAU)-SI_CA[k])/2,off=k*5.3;
     const wa=siRseg(i,ya)*Math.sin(half),wb=siRseg(i,yb)*Math.sin(half);
-    siQuad(S.wall,ring(i,yak,k),ring(i,yak1,k+1),ring(i,ybk1,k+1),ring(i,ybk,k),
+    siQuad(S.core,ring(i,yak,k),ring(i,yak1,k+1),ring(i,ybk1,k+1),ring(i,ybk,k),
      [(off-wa)/16,yak/16],[(off+wa)/16,yak1/16],[(off+wb)/16,ybk1/16],[(off-wb)/16,ybk/16]);}}
   // the setback ledge at the foot of this stage
   if(i>0&&i<=7&&SI_K[i]>yLo+.5&&SI_K[i]<yHi-.5){const y=SI_K[i];
@@ -296,8 +302,16 @@ function siStrand(C,s,yA,yB,o){o=o||{};const S=C.S,dx=C.dx,H=.34;
   const nrm=[Math.cos(A.th),0,Math.sin(A.th)],qn=qFacing(nrm),bx=dx?'siBoxR':'siBox',hw=a.yt-a.yb;
   if(arc-lastRib>11&&A.a>.6&&hw>5){lastRib=arc;const r=A.ro+.35;
    C.kp(bx,[r*nrm[0],(a.yb+a.yt)/2,r*nrm[2]],qn,[1.3,hw*.78,.8],null);}
-  if(arc-lastBay>(C.bayN||27)&&A.a>.6&&hw>12){lastBay=arc;C.bayN=rr(18,34);const bw=rr(7,12),bh=Math.min(hw*.7,rr(8,15)),bd=rr(2.6,4.6),r=A.ro+bd/2-.2,yc=a.yb+rr(1.5,hw-bh-1.5)+bh/2;
-   C.kp(bx,[r*nrm[0],yc,r*nrm[2]],qn,[bw,bh,bd],null);
+  // PROJECTING BAYS: the rooms of the strand pushed out through its outer
+  // wall. They were small instanced boxes every 18-34 m of arc; they are now
+  // twice as frequent, up to half as deep again, and real geometry in the
+  // inhabited-wall skin with a roof and a painted-shade soffit, so the strands
+  // read as heavy inhabited masses and not as a smooth ribbon.
+  if(arc-lastBay>(C.bayN||20)&&A.a>.6&&hw>12){lastBay=arc;C.bayN=rr(9,19);const bw=rr(7,14),bh=Math.min(hw*.78,rr(8,18)),bd=rr(3,6.5),r=A.ro+bd/2-.2,yc=a.yb+rr(1.5,hw-bh-1.5)+bh/2;
+   {const tg=[-nrm[2],nrm[0]],r0=A.ro-.4,Pb=(o,l)=>[(r0+o)*nrm[0]+tg[0]*l,(r0+o)*nrm[2]+tg[1]*l],sl=rr(0,1.6);
+    const cb=[Pb(0,-bw/2),Pb(0,bw/2),Pb(bd+.4,bw/2),Pb(bd+.4,-bw/2)],y0b=yc-bh/2,y1b=yc+bh/2;
+    siBlk(S.wall,S.deck,cb,y0b,[y1b+sl,y1b+sl,y1b,y1b]);
+    siQuad(S.shade,[cb[0][0],y0b,cb[0][1]],[cb[3][0],y0b,cb[3][1]],[cb[2][0],y0b,cb[2][1]],[cb[1][0],y0b,cb[1][1]],[0,0],[1,0],[1,1],[0,1]);}
    for(const f of (bw>9?[-.22,.22]:[0]))C.kp(dx?'siDim':'siLit',[(r+bd/2+.03)*nrm[0]-nrm[2]*f*bw,yc+.2,(r+bd/2+.03)*nrm[2]+nrm[0]*f*bw],qn,[.8,bh*.5,.1],null);}
   // lit openings in the street's outer wall: the rooms under the stair
   if(dx===0&&arc-lastLit>3.2&&hw>8){lastLit=arc;for(let k=0;k<2;k++)if(rng()<.42){const yy=rr(a.yb+2,a.yt-3.5),r=A.ro+.05;
@@ -409,6 +423,42 @@ function buildSkyI(scene,gx,gz,d){reseed(9760+d);KOFF=[gx,0,gz];
     C.kp(bx,[r*c,y,r*sn],q,[w,h,dp],null);
     if(h>13)C.kp(bx,[(r+dp*.25)*c,y+h/2+2.5,(r+dp*.25)*sn],q,[w*.6,5,dp*.5],null);
     C.kp(dx?'siDim':'siLit',[(r+dp/2+.03)*c,y-h*.1,(r+dp/2+.03)*sn],q,[.8,h*.45,.1],null);}}
+  // THE CLINGING HOUSES. The Braid read as a twisting spire with a spiral
+  // street: the shaft between the strands was bare but for small instanced
+  // boxes, so at the distance the presets use there was no MASS on it. These
+  // are the foot's slope-topped blocks carried up the shaft, built as real
+  // geometry in the inhabited-wall skin (so they carry slot windows, lit at
+  // night by the same emissive map), each on a corbelled mass that steps back
+  // into the shaft under it, with a painted-shade soffit. They keep clear of
+  // both strands in height, of each other, and inside the strands' outer
+  // radius, so the toppled body still lies on its braids.
+  {const TM=siTh(SI_YE),placed=[];
+   const passes=(s,al)=>{const out=[],sg=s?-1:1;for(let T0=(((al-SI_A0-(s?Math.PI:0))*sg)%TAU+TAU)%TAU;T0<=TM;T0+=TAU)out.push(siThInv(T0));return out;};
+   const soff=(c,y)=>siQuad(C.S.shade,[c[0][0],y,c[0][1]],[c[3][0],y,c[3][1]],[c[2][0],y,c[2][1]],[c[1][0],y,c[1][1]],[0,0],[1,0],[1,1],[0,1]);
+   let nH=0;for(let i=0;i<900;i++){const y=rr(SI_YS+4,346),al=rng()*TAU,h=rr(9,26),w=rr(9,20),t=clamp((y-SI_YS)/(SI_YE-SI_YS),0,1);
+    const dp=Math.min(rr(7,15),siW(t)*.8),ya=y-h/2,yb=y+h/2;
+    if(ya<yLo+6||yb>yHi-12)continue;
+    const rc=siPolyR(siCR(y),al),hw=Math.min(.5,(w/2+1)/Math.max(rc,4));
+    let ok=true;
+    for(const s of [0,1])for(const da of [-hw,0,hw])for(const yp of passes(s,al+da)){const T=siT(clamp((yp-SI_YS)/(SI_YE-SI_YS),0,1));const QS=siStr(s,yp);if(dp<QS.gap-2)continue;if(yp-T-3<yb+2&&yp+4>ya-3)ok=false;}
+    for(const q of placed){let e=Math.abs(al-q[0])%TAU;if(e>Math.PI)e=TAU-e;if(e<hw+q[2]&&Math.abs(y-q[1])<(h+q[3])/2+2)ok=false;}
+    if(!ok)continue;
+    placed.push([al,y,hw,h]);nH++;
+    if(C.hole&&C.hole(((al/TAU)%1+1)%1,y))continue;                  // lost with the fabric
+    const f=siFacet(al),n=[Math.cos(f.mid),Math.sin(f.mid)],tg=[-n[1],n[0]],p0=[rc*Math.cos(al),rc*Math.sin(al)];
+    const Q=(o,l)=>[p0[0]+n[0]*o+tg[0]*l,p0[1]+n[1]*o+tg[1]*l];
+    const ib=-rc*.45,sl=rr(2,6);
+    const c=[Q(ib,-w/2),Q(ib,w/2),Q(dp,w/2),Q(dp,-w/2)];
+    siBlk(C.S.wall,C.S.deck,c,ya,[yb+sl,yb+sl,yb,yb]);soff(c,ya);
+    // the corbel it stands on: narrower, shallower, stepping into the shaft
+    const w2=w*rr(.45,.7),d2=dp*rr(.4,.6),h2=Math.min(h*.45,rr(5,10));
+    const c2=[Q(ib,-w2/2),Q(ib,w2/2),Q(d2,w2/2),Q(d2,-w2/2)];
+    siBlk(C.S.wall,C.S.deck,c2,ya-h2,[ya,ya,ya,ya]);soff(c2,ya-h2);
+    // a set-back room on the high end of some roofs
+    if(rng()<.4){const w3=w*rr(.4,.6),d3=dp*rr(.3,.45),h3r=rr(4,8),c3=[Q(ib,-w3/2),Q(ib,w3/2),Q(d3,w3/2),Q(d3,-w3/2)];
+     siBlk(C.S.wall,C.S.deck,c3,yb,[yb+sl+h3r,yb+sl+h3r,yb+sl+h3r*.6,yb+sl+h3r*.6]);}
+    if(C.kit&&rng()<.5){const d0=Q(dp+.05,rr(-w/4,w/4)),q=qFacing([n[0],0,n[1]]);C.kp(dx?'siDim':'siLit',[d0[0],ya+rr(3,h-5),d0[1]],q,[1.2,rr(2.4,3.6),.12],null);}}
+   if(!upper)site.houses=nH;}
   const jagS=s=>(h3(s*5.3,2.9,C.jseed)-.5)*12;
   for(const s of [0,1]){
    const lo=upper?y0+jagS(s):SI_Y0,hi=cut!=null?Math.min(SI_YE,cut+jagS(s)):SI_YE;
@@ -474,8 +524,18 @@ function buildSkyI(scene,gx,gz,d){reseed(9760+d);KOFF=[gx,0,gz];
   site.falls=falls;
   // the snapped tip and the lost crown on the podium and the plain
   rubbleRing(0,SI_Y0,0,40,PR-8,160,4);
-  for(let i=0;i<14;i++){const a=rng()*TAU,r=rr(60,130);
-   kput('siBoxR',[r*Math.cos(a),rr(1,2.5),r*Math.sin(a)],qEuler(rr(-.4,.4),rng()*TAU,rr(-.4,.4)),[rr(4,9),rr(2.5,5),rr(4,12)],null);}}
+  // THE FALLEN MASONRY. These were fourteen clean instanced boxes; now each
+  // is a broken block of the tower's own fabric: an irregular plan, a top
+  // that is a break (the section texture, pitched every which way), sides in
+  // the ruined inhabited wall, rolled and half buried where it landed. Spilled
+  // round the snapped crown's landing and round each fallen strand piece.
+  const FS=siSet(),chunk=(x,z,sz)=>{const M=new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(rr(-.45,.45),rng()*TAU,rr(-.45,.45))).setPosition(x,rr(-.2,.6),z);
+   for(const k in FS)FS[k].M=M;const w=sz*rr(.6,1.2),dp=sz*rr(.5,1.3),j=()=>rr(.8,1.2);
+   const c=[[-w/2*j(),-dp/2*j()],[w/2*j(),-dp/2*j()],[w/2*j(),dp/2*j()],[-w/2*j(),dp/2*j()]];
+   siBlk(FS.wall,FS.sect,c,-1.5,[sz*rr(.25,.7),sz*rr(.25,.7),sz*rr(.2,.6),sz*rr(.3,.8)]);};
+  for(let i=0;i<14;i++){const a=rng()*TAU,r=rr(60,130);chunk(r*Math.cos(a),r*Math.sin(a),rr(4,10));}
+  for(const f of falls)for(let i=0;i<7;i++){const a=rng()*TAU,r=rr(10,32);chunk(f[0]+r*Math.cos(a),f[1]+r*Math.sin(a),rr(2.5,7));}
+  siFlushSet(FS,1,G);}
  if(dd){scatterMoss(0,0,0,PR+2,PR+110,200,3.5);rubbleRing(0,0,0,PR+2,PR+60,110,3);trees(0,0,PR+50,PR+150,26);
   mossOnRing(0,SI_Y0,0,PR-16,110,3);vinesOnRing(0,SI_Y0-.2,0,PR-12.3,36,10);}
  // ---- what the presets are derived from
