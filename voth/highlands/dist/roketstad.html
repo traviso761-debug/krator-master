@@ -4667,11 +4667,11 @@ function buildHlRepWall(G,o){reseed(21221+(o.v|0));const len=o.len||40;
 function buildHlRepWallTower(G,o){reseed(21231+(o.v|0));const W=8.5,H=16;const red=hC(vPick(HPAL.redwood)),slate=hC(vPick(HPAL.slate));
  vnReg('Wall tower',0,0,9,H+26);
  for(const s of[-1,1])hnRCWallRun(s*(W/2+2.6),0,5.6,0,{wood:red,roofC:slate,ends:true});
- hnRCTower(0,0,.6,W,H,0,{tile:true,roof:(o.v|0)%2?'tent':'spire',clock:(o.v|0)%3===2,lit:vLit(),roofC:slate,beamC:red,flag:true});
+ hnRCTower(0,0,.6,W,H,0,{roof:(o.v|0)%2?'tent':'spire',clock:(o.v|0)%3===2,lit:vLit(),roofC:slate,beamC:red,flag:true});
  vnDoor(0,0,.6-W/2,Math.PI,1.4,2.3,'vStone',hC(vPick(HPAL.ashlar)),hC(vPick(HPAL.tar)),false);vnFolk(0,-7,1,2);}
 function buildHlRepGate(G,o){reseed(21241+(o.v|0));
  vnReg('Town gate',0,0,16,44);
- hnRCGate(0,0,0,{stubs:5,tile:true});
+ hnRCGate(0,0,0,{stubs:5});
  hnRCPave(0,8.5,12,6,0,hC(vPick(HPAL.rubble)),1.6);hnRCPave(0,-8.5,12,6,0,hC(vPick(HPAL.rubble)),1.6);
  vnFolk(0,10,4,4);for(const s of[-1,1])vnFolk(s*3.2,5.8,1,.2);}
 
