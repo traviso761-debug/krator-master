@@ -153,7 +153,7 @@
     return { ct: ct + 0.1, off: 0.5, aw: aw };
   }
   /* hanging trade sign: iron arm + strut off a face, chains, board, icon */
-  function SIGN(F, L, s, u, y, icon, board, ink) {
+  function SIGN(F, L, s, u, y, icon, board, ink, inkFam) {
     FB(F, L, s, u, y - 1.0, 0.22, 1.25, 0.06, 0.03, IRON, 'metal');
     FN(F, L, s, u, y, 0.02, y, 1.55, 0.045, IRON, 'metal');
     FN(F, L, s, u, y - 0.95, 0.04, y, 0.95, 0.035, IRON, 'metal');
@@ -201,9 +201,13 @@
       IB(0.8, vc - 0.1, 0.46, 0.2, ink, 'metal'); ID(0.58, vc, 0.1, ink, 'metal');
       IB(1.1, vc - 0.18, 0.1, 0.36, ink, 'metal'); ID(0.6, vc + 0.02, 0.03, DOORC);
     } else if (icon === 'pot') {
-      ID(0.85, vc - 0.1, 0.22, ink); IB(0.85, vc + 0.1, 0.16, 0.22, ink);
-      IB(0.85, vc + 0.3, 0.26, 0.05, ink); IB(0.85, vc - 0.38, 0.2, 0.06, ink);
-      IB(0.64, vc + 0.04, 0.05, 0.2, ink); IB(1.06, vc + 0.04, 0.05, 0.2, ink);
+      ID(0.85, vc - 0.1, 0.22, ink, inkFam); IB(0.85, vc + 0.1, 0.16, 0.22, ink, inkFam);
+      IB(0.85, vc + 0.3, 0.26, 0.05, ink, inkFam); IB(0.85, vc - 0.38, 0.2, 0.06, ink, inkFam);
+      IB(0.64, vc + 0.04, 0.05, 0.2, ink, inkFam); IB(1.06, vc + 0.04, 0.05, 0.2, ink, inkFam);
+    } else if (icon === 'fruit') {
+      IB(0.85, vc - 0.36, 0.6, 0.3, 0x8a7550); IB(0.85, vc - 0.08, 0.66, 0.05, 0x6f5d3e);
+      ID(0.66, vc + 0.04, 0.12, 0x8a2f2a); ID(0.9, vc + 0.1, 0.13, 0xc4813f); ID(1.08, vc + 0.02, 0.1, 0x6f7d42);
+      IB(0.9, vc + 0.22, 0.03, 0.1, ink);
     }
   }
   /* canopy on poles: a cloth panel over a rect, timber rails, valances on the
@@ -257,6 +261,12 @@
       F.box(ax ? x + dir * t : x, yy, ax ? z : z + dir * t, ax ? run - 0.04 : wd - 0.1, 0.06, ax ? wd - 0.1 : run - 0.04, 0, PLANK, 'wood');
     }
     return L;
+  }
+  /* a stair hand rail with a newel post at each end */
+  function RAIL(F, x0, y0, z0, x1, y1, z1) {
+    F.rod(x0, y0 + 0.95, z0, x1, y1 + 0.95, z1, 0.04, IRON, 'metal');
+    F.rod(x0, y0, z0, x0, y0 + 1.0, z0, 0.05, IRON, 'metal');
+    F.rod(x1, y1, z1, x1, y1 + 1.0, z1, 0.05, IRON, 'metal');
   }
   /* ---- goods ---- */
   function CRATE(F, x, y, z, sz, ry, col) {
@@ -459,8 +469,7 @@
         /* left: solid stair up the flank to the roof terrace */
         const sx = hx - r0 - 0.35;
         const sl = STAIR(F, sx, 4.9, 'z', -1, 0, top, 1.3, shade(c, -0.1));
-        F.rod(sx - 0.62, 1.0, 4.9, sx - 0.62, top + 1.0, 4.9 - sl, 0.04, IRON, 'metal');
-        F.rod(sx - 0.62, 0, 4.75, sx - 0.62, 1.0, 4.75, 0.05, IRON, 'metal');
+        RAIL(F, sx - 0.62, 0.27, 4.9, sx - 0.62, top, 4.9 - sl);
         WIN(F, Lb(5), 3, 2.6, 5.0, 0.8, 1.2, c, { shut: TIMBER2 });
         ROW(F, Lb(6), 2, 5.5, 2, 2.2, 0.8, 1.1, c, { shut: TIMBER2 }, 0);
         /* right: open-sided work shed under a lean-to roof */
@@ -756,8 +765,7 @@
         /* right: stair up the flank */
         const sx = 4.6 + 0.35;
         const sl = STAIR(F, sx, 4.4, 'z', -1, 0, top, 1.3, shade(c, -0.1));
-        F.rod(sx + 0.62, 1.0, 4.4, sx + 0.62, top + 1.0, 4.4 - sl, 0.04, IRON, 'metal');
-        F.rod(sx + 0.62, 0, 4.25, sx + 0.62, 1.0, 4.25, 0.05, IRON, 'metal');
+        RAIL(F, sx + 0.62, 0.27, 4.4, sx + 0.62, top, 4.4 - sl);
         WIN(F, L4, 2, 2.4, 4.6, 0.8, 1.1, c, {});
         /* back: windows, door onto the still-yard */
         ROW(F, V.L(2), 1, 1.6, 2, 2.4, 0.9, 1.2, c, {}, 0);
@@ -913,7 +921,7 @@
         /* stair on the back of the house */
         const bzs = hz - 4.2 - 0.35;
         const sl = STAIR(F, hx - 4.4, bzs, 'x', 1, 0, top, 1.3, shade(c, -0.1));
-        F.rod(hx - 4.4, 1.0, bzs - 0.62, hx - 4.4 + sl, top + 1.0, bzs - 0.62, 0.04, IRON, 'metal');
+        RAIL(F, hx - 4.4, 0.27, bzs - 0.62, hx - 4.4 + sl, top, bzs - 0.62);
         /* the yard: walls, gate, dye vats, drying frames */
         const x0 = hx + 4.2, x1 = 8.6, z0 = hz - 4.2, z1 = hz + 4.2, yc = shade(c, 0.03), wh = 1.9;
         F.box(x1, 0, (z0 + z1) / 2, 0.4, wh, z1 - z0, 0, yc, 'stone');
@@ -1016,7 +1024,7 @@
         /* left: masonry stair up to the roof */
         const sx = -7 - 0.65;
         const sl = STAIR(F, sx, 4.2, 'z', -1, 0, top, 1.3, shade(c, -0.1));
-        F.rod(sx - 0.62, 1.0, 4.2, sx - 0.62, top + 1.0, 4.2 - sl, 0.04, IRON, 'metal');
+        RAIL(F, sx - 0.62, 0.27, 4.2, sx - 0.62, top, 4.2 - sl);
         WIN(F, G, 3, 2.8, 5.0, 0.8, 1.2, c, { shut: TIMBER2 });
         /* right: front windows, strongroom annex behind */
         WIN(F, G, 2, 2.6, 1.7, 0.9, 1.2, c, {});
@@ -1084,7 +1092,7 @@
         /* stair up the shop's flank to its roof terrace; tower door off the terrace */
         const sx = S.x + S.w / 2 + 0.65;
         const sl = STAIR(F, sx, 3.6, 'z', -1, 0, S.h, 1.3, shade(c, -0.1));
-        F.rod(sx + 0.62, 1.0, 3.6, sx + 0.62, S.h + 1.0, 3.6 - sl, 0.04, IRON, 'metal');
+        RAIL(F, sx + 0.62, 0.27, 3.6, sx + 0.62, S.h, 3.6 - sl);
         PARA(F, S, S.h, sc, 0.9, { s: 2, u: -2.4, w: 1.4 });
         DOOR(F, V.L(5.2), 2, 0.3, S.h, 1.0, 2.2, c);
         CANOPY(F, 0.7, 0.5, 4.3, 3.4, S.h, S.h + 2.4, F.pick([0x7a2028, 0xcbb08e]), null, ['z1', 'x1']);
@@ -1095,7 +1103,7 @@
         /* goods in the street */
         wares(-0.2, 5.4, 0);
         chest(-4.1, 3.4, 0, 0.3);
-        [0, 1].forEach(function (i) { F.rod(5.05, 0.1, 1.0 + i * 0.4, 5.05, 1.9, 0.9 + i * 0.4, 0.14, [0x7a2028, 0x2a4d80][i], 'cloth'); });
+        [0, 1].forEach(function (i) { F.rod(2.6 + i * 0.4, 0.1, -3.62, 2.5 + i * 0.4, 1.9, -3.58, 0.14, [0x7a2028, 0x2a4d80][i], 'cloth'); });
         F.cyl(-1.7, 0, 3.9, 0.22, 1.1, 0, 0x6f7478, 'metal');
         F.box(-1.7, 1.1, 3.9, 0.6, 0.45, 0.3, 0, 0x6f7478, 'metal');
         F.ball(-1.7, 1.75, 3.9, 0.18, 0x6f7478, 'metal');
@@ -1216,9 +1224,9 @@
         LINE(F, -3.6, -4.9, 1.0, -4.9, 3.5, [F.pick(SAIL), F.pick(BAN), F.pick(SAIL)], 0.8);
         [-3.6, 1.0].forEach(function (lx) { FN(F, G, 1, lx, 3.55, 0.02, 3.55, 0.9, 0.04, IRON, 'metal'); });
         /* timber stair up the right flank */
-        TSTAIR(F, 5.15, 4.2, 'z', -1, 0, top, 1.1);
+        TSTAIR(F, 5.15, 4.6, 'z', -1, 0, top, 1.1);
         /* roof: paper racks under a canopy, loft behind */
-        PARA(F, { x: 0, z: 0, w: 9.34, d: 9.34 }, top, c, 0.85, { s: 2, u: -3.3, w: 1.3 });
+        PARA(F, { x: 0, z: 0, w: 9.34, d: 9.34 }, top, c, 0.85, { s: 2, u: -3.9, w: 1.2 });
         CANOPY(F, -4.0, 0.4, 3.2, 4.0, top, top + 2.6, F.pick(SAIL), null, ['z1', 'x0']);
         paperRack(-3.6, 2.8, 3.4, top);
         paperRack(-3.6, 2.8, 2.2, top);
@@ -1278,7 +1286,7 @@
         /* back: stair to the main roof */
         const bz = hz - 4.3 - 0.35;
         const sl = STAIR(F, hx - 4.6, bz, 'x', 1, 0, top, 1.3, shade(c, -0.1));
-        F.rod(hx - 4.6, 1.0, bz - 0.62, hx - 4.6 + sl, top + 1.0, bz - 0.62, 0.04, IRON, 'metal');
+        RAIL(F, hx - 4.6, 0.27, bz - 0.62, hx - 4.6 + sl, top, bz - 0.62);
         /* main roof: loft with a small dome, awning, jars of ink and a cistern */
         PARA(F, V.R, top, c, 0.85, { s: 1, u: 3.1, w: 1.4 });
         LOFT(F, hx - 1.3, top, hz - 1.6, 3.6, 3.4, 2.7, shade(c, 0.05), 0, { shut: TIMBER2 });
@@ -1291,6 +1299,323 @@
         for (let i = 0; i < 3; i++) JAR(F, hx + 2.6, top, hz - 0.6 - i * 0.7, 0.22, BASALT[0]);
         F.cyl(hx - 3.1, top, hz + 2.4, 0.5, 1.0, 0, dk, 'stone');
         CHIMNEY(F, hx - 3.2, hz - 3.2, top, 1.3, c);
+      }
+    }
+  });
+
+  /* =================================================================== */
+  ASSET({
+    key: 'voth_shop_enchanter', name: 'Enchanter', culture: 'voth', family: 'shop', source: 'voth-shops',
+    districts: ['wealthy', 'common', 'temple'], wealth: [0.45, 1],
+    blurb: 'An enchanter\'s shop: soul-gem light in the windows, a domed study tower or drum, warded pylons and an arcane sign.',
+    w: 13, d: 12, h: 16, variants: 2,
+    variantDims: [{ w: 13, d: 11, h: 16 }, { w: 12, d: 12, h: 12 }],
+    build: function (F) {
+      const c = F.pick(STONE), dk = shade(c, -0.2);
+      const SOUL = [0x9ab8ff, 0xc39bff, 0x8fe0ff, 0xd8b0ff], soul = F.pick(SOUL);
+      const board = F.pick(LAPIS), ink = GILT, cloth = F.pick([0x2a4d80, 0x6a2434, 0xc9b8d6]);
+      function gems(x0, x1, z, y) {
+        for (let i = 0; i < 6; i++) {
+          const x = x0 + (x1 - x0) * (i + 0.5) / 6;
+          F.cyl(x, y, z, 0.07, 0.12, 0, GILT, 'metal');
+          F.ball(x, y + 0.2, z, 0.09, SOUL[i % 4], 'glow');
+        }
+      }
+      function ward(x, z, h) {
+        F.frustum(x, 0, z, 0.36, 0.24, h, 0, shade(c, -0.08), 'stone', 4);
+        F.box(x, h, z, 0.6, 0.15, 0.6, 0, dk, 'stone');
+        F.ball(x, h + 0.36, z, 0.22, soul, 'glow');
+        F.box(x, h * 0.55, z, 0.52, 0.12, 0.52, 0, F.pick(LAPIS), 'stone');
+      }
+      function armillary(x, y, z) {
+        F.box(x, y, z, 0.5, 0.2, 0.5, 0, dk, 'stone');
+        F.rod(x, y + 0.2, z, x, y + 1.9, z, 0.04, GILT, 'metal');
+        const R = 0.55, cy = y + 1.35;
+        for (let i = 0; i < 12; i++) {
+          const a0 = i / 12 * TAU, a1 = (i + 1) / 12 * TAU;
+          F.rod(x + Math.cos(a0) * R, cy + Math.sin(a0) * R, z, x + Math.cos(a1) * R, cy + Math.sin(a1) * R, z, 0.025, GILT, 'metal');
+          F.rod(x, cy + Math.sin(a0) * R, z + Math.cos(a0) * R, x, cy + Math.sin(a1) * R, z + Math.cos(a1) * R, 0.025, GILT, 'metal');
+          F.rod(x + Math.cos(a0) * R, cy, z + Math.sin(a0) * R, x + Math.cos(a1) * R, cy, z + Math.sin(a1) * R, 0.025, GILT, 'metal');
+        }
+        F.ball(x, cy, z, 0.12, soul, 'glow');
+      }
+
+      if (F.variant === 0) {
+        /* ---- velothi study tower with a low shop and roof terrace ---- */
+        const tx = -3, tz = -1.2, r0 = 3.2, r1 = 2.65, H = 11.0, ry8 = Math.PI / 8, apo = Math.cos(Math.PI / 8);
+        const rAt = function (y) { return (r0 - (r0 - r1) * (y - 0.4) / H) * apo; };
+        F.frustum(tx, 0, tz, r0 + 0.3, r0 + 0.25, 0.4, ry8, dk, 'stone', 8);
+        F.frustum(tx, 0.4, tz, r0, r1, H, ry8, c, 'stone', 8);
+        [4.4, 8.2].forEach(function (by) {
+          const rr = r0 - (r0 - r1) * (by - 0.4) / H;
+          F.frustum(tx, by, tz, rr + 0.12, rr + 0.1, 0.26, ry8, F.pick(LAPIS), 'stone', 8);
+        });
+        const ttop = 11.4;
+        F.frustum(tx, ttop, tz, r1 + 0.3, r1 + 0.3, 0.4, ry8, dk, 'stone', 8);
+        F.cyl(tx, ttop + 0.4, tz, r1 - 0.2, 0.9, 0, shade(c, 0.05), 'stone');
+        for (let k = 0; k < 8; k++) {
+          const th = k * Math.PI / 4;
+          F.box(tx + Math.sin(th) * (r1 - 0.2), ttop + 0.55, tz + Math.cos(th) * (r1 - 0.2), 0.45, 0.55, 0.14, th, soul, 'glow');
+        }
+        const domeC = F.pick(LAPIS);
+        F.dome(tx, ttop + 1.3, tz, r1 - 0.05, 2.3, 0, domeC, 'dome');
+        F.cyl(tx, ttop + 1.28, tz, r1, 0.14, 0, GILT, 'metal');
+        F.rod(tx, ttop + 3.5, tz, tx, ttop + 4.5, tz, 0.05, GILT, 'metal');
+        F.ball(tx, ttop + 4.1, tz, 0.26, soul, 'glow');
+        /* windows on the tower flats: gem-lit, shuttered on the living floors */
+        function octWin(k, y, ww, wh, lit, shut) {
+          const th = k * Math.PI / 4, r = rAt(y + wh / 2) + 0.04;
+          const px = tx + Math.sin(th) * r, pz = tz + Math.cos(th) * r;
+          F.box(px, y, pz, ww, wh, 0.2, th, lit ? soul : DARK, lit ? 'glow' : 'wood');
+          F.box(tx + Math.sin(th) * (r + 0.08), y - 0.2, tz + Math.cos(th) * (r + 0.08), ww + 0.4, 0.2, 0.35, th, dk, 'stone');
+          F.box(tx + Math.sin(th) * (r + 0.02), y + wh, tz + Math.cos(th) * (r + 0.02), ww + 0.3, 0.22, 0.3, th, dk, 'stone');
+          if (shut) [-1, 1].forEach(function (s2) {
+            const ox = Math.cos(th) * s2 * (ww / 2 + 0.25), oz = -Math.sin(th) * s2 * (ww / 2 + 0.25);
+            F.box(px + ox, y, pz + oz, 0.4, wh, 0.08, th, TIMBER2, 'wood');
+          });
+        }
+        [1, 3, 5, 7].forEach(function (k) { octWin(k, 2.0, 0.5, 1.4, true, false); });
+        [0, 2, 4, 6].forEach(function (k) { octWin(k, 5.4, 0.8, 1.3, false, k !== 2); });
+        [1, 3, 5, 7].forEach(function (k) { octWin(k, 9.0, 0.6, 1.4, true, false); });
+        /* tower door on the front flat, pointed surround, rune lamps */
+        const fz = tz + rAt(1.5);
+        F.box(tx, 0.4, fz - 0.1, 1.9, 3.0, 0.5, 0, dk, 'stone');
+        F.box(tx, 3.4, fz - 0.1, 1.2, 0.5, 0.5, 0, dk, 'stone');
+        F.box(tx, 3.9, fz - 0.1, 0.5, 0.3, 0.5, 0, dk, 'stone');
+        F.box(tx, 0.4, fz + 0.12, 1.1, 2.5, 0.12, 0, IRON, 'metal');
+        F.box(tx, 0, fz + 0.5, 2.3, 0.4, 0.9, 0, dk, 'stone');
+        [-1.25, 1.25].forEach(function (ox) { F.ball(tx + ox, 2.6, fz + 0.2, 0.13, soul, 'glow'); });
+        /* bracketed balcony on the front at the upper floor */
+        const bz = tz + rAt(8.4);
+        F.box(tx, 8.45, bz + 0.6, 2.8, 0.22, 1.3, 0, TIMBER2, 'wood');
+        [-1, 1].forEach(function (k) { F.beam(tx + k * 1.1, 8.45, bz + 0.02, tx + k * 1.1, 7.7, bz + 0.02 + 0.8, 0.14, 0.14, TIMBER, 'wood'); });
+        F.box(tx, 8.67, bz + 1.2, 2.8, 0.85, 0.08, 0, TIMBER, 'wood');
+        [-1.36, 1.36].forEach(function (ox) { F.box(tx + ox, 8.67, bz + 0.6, 0.08, 0.85, 1.3, 0, TIMBER, 'wood'); });
+        octWin(0, 8.67, 0.9, 2.0, false, false);
+        POT(F, tx - 1.0, bz + 0.8, 8.67, 0.2);
+        /* the low shop */
+        const S = { x: 2.3, z: 0.1, w: 5.6, d: 7.0, y: 0, h: 4.2 }, sc = shade(c, 0.03);
+        BLOCK(F, S, sc, { quoin: true });
+        F.box(S.x, 0, S.z, S.w + 0.3, 0.35, S.d + 0.3, 0, dk, 'stone');
+        const sf = SHOP(F, S, 0, 0.1, 0.35, 3.2, 2.5, sc, { aw: 1.2, shutC: 0x3a3a52 });
+        gems(S.x - 1.3, S.x + 1.5, S.z + S.d / 2 + sf.off, sf.ct);
+        FB(F, S, 0, 0.1, 1.6, 2.8, 0.05, 0.3, 0.25, PLANK, 'wood');
+        ward(S.x - 2.35, S.z + S.d / 2 + 0.5, 2.6);
+        SIGN(F, S, 0, 2.5, 3.95, 'gem', board, ink);
+        WIN(F, S, 2, -1.8, 1.4, 0.8, 1.2, sc, { pane: soul, glowing: true });
+        WIN(F, S, 1, 0.6, 1.4, 0.8, 1.2, sc, { pane: soul, glowing: true });
+        DOOR(F, S, 1, -1.6, 0.35, 1.0, 2.3, sc);
+        /* stair to the terrace, tower door off it */
+        const sx = S.x + S.w / 2 + 0.65;
+        const sl = STAIR(F, sx, 3.4, 'z', -1, 0, S.h, 1.3, shade(c, -0.1));
+        RAIL(F, sx + 0.62, 0.27, 3.4, sx + 0.62, S.h, 3.4 - sl);
+        PARA(F, S, S.h, sc, 0.9, { s: 2, u: -2.3, w: 1.4 });
+        const tdx = tx + rAt(5.5);
+        F.box(tdx - 0.05, S.h, tz + 0.2, 0.3, 2.3, 1.0, 0, DOORC, 'wood');
+        F.box(tdx - 0.05, S.h + 2.3, tz + 0.2, 0.5, 0.3, 1.6, 0, dk, 'stone');
+        CANOPY(F, 1.0, 0.2, 4.6, 3.2, S.h, S.h + 2.4, cloth, null, ['z1', 'x1']);
+        armillary(3.6, S.h, -1.9);
+        TABLE(F, 2.2, S.h, 1.6, 1.3, 0.8); BENCH(F, 2.2, S.h, 0.9, 1.3, true);
+        F.ball(2.0, S.h + 0.9, 1.6, 0.1, soul, 'glow');
+        for (let i = 0; i < 3; i++) CRATE(F, 1.3 + i * 0.8, S.h, -2.8, 0.65, 0.15 * i);
+        POT(F, 4.5, 3.2, S.h, 0.24, CLAY[1]);
+        /* tower flank and back: a buttress pylon and a second ward */
+        F.frustum(tx - 0.2, 0, tz - rAt(1) - 0.6, 0.7, 0.4, 6.5, 0, shade(c, -0.08), 'stone', 4);
+        F.cone(tx - 0.2, 6.5, tz - rAt(1) - 0.6, 0.5, 0.8, 0, domeC, 'stone');
+        ward(tx - 3.7, tz + 2.6, 2.4);
+      } else {
+        /* ---- hlaalu domed shop: soul-lit drum and dome, warded door, roof loft ---- */
+        const p = 0.35, G = { x: 0, z: 0, w: 10, d: 9, y: p, h: 7.0 }, top = p + 7.0;
+        F.box(0, 0, 0, 10.3, p, 9.3, 0, dk, 'stone');
+        BLOCK(F, G, c, { band: 3.75, quoin: true });
+        F.box(0, 3.97, 0, 10.2, 0.12, 9.2, 0, F.pick(LAPIS), 'stone');
+        const sf = SHOP(F, G, 0, -1.8, p, 3.6, 2.6, c, { aw: 1.3, shutC: 0x3a3a52 });
+        gems(-3.4, -0.2, 4.5 + sf.off, sf.ct);
+        FB(F, G, 0, -1.8, 1.8, 3.2, 0.05, 0.3, 0.25, PLANK, 'wood');
+        for (let i = 0; i < 5; i++) F.ball(-3.1 + i * 0.65, 1.95, 4.75, 0.08, SOUL[i % 4], 'glow');
+        DOOR(F, G, 0, 2.6, p, 1.2, 2.5, c, { leaf: 0x2a2a3a });
+        ward(1.45, 5.0, 2.8); ward(3.75, 5.0, 2.8);
+        SIGN(F, G, 0, -4.6, 5.0, 'gem', board, ink);
+        ROW(F, G, 0, 4.8, 4, 3.3, 0.8, 1.4, c, { pane: soul, glowing: true }, 0);
+        ROW(F, G, 2, 1.5, 3, 2.8, 0.8, 1.3, c, {}, 0);
+        ROW(F, G, 2, 4.8, 3, 2.8, 0.8, 1.4, c, { pane: soul, glowing: true }, 0);
+        ROW(F, G, 1, 1.5, 3, 3.2, 0.8, 1.3, c, {}, 0);
+        ROW(F, G, 1, 4.8, 4, 3.4, 0.8, 1.4, c, { shut: TIMBER2 }, 0);
+        ROW(F, G, 3, 4.8, 2, 2.6, 0.8, 1.4, c, { shut: TIMBER2 }, 0);
+        WIN(F, G, 3, 2.9, 1.5, 0.8, 1.2, c, {});
+        DOOR(F, G, 1, 0.1, p, 1.0, 2.3, c);
+        F.rod(-5.12, p, -4.62, -5.12, top - 0.3, -4.62, 0.1, dk, 'metal');
+        /* drum and dome */
+        const dx = -1.6, dz = -0.6, dr = 2.5, domeC = F.pick(LAPIS);
+        F.cyl(dx, top, dz, dr, 1.7, 0, shade(c, 0.05), 'stone');
+        F.cyl(dx, top + 1.6, dz, dr + 0.12, 0.2, 0, dk, 'stone');
+        for (let i = 0; i < 8; i++) {
+          const a = i / 8 * TAU;
+          F.box(dx + Math.sin(a) * (dr - 0.02), top + 0.3, dz + Math.cos(a) * (dr - 0.02), 0.45, 1.0, 0.14, a, soul, 'glow');
+          F.box(dx + Math.sin(a + TAU / 16) * dr, top, dz + Math.cos(a + TAU / 16) * dr, 0.25, 1.6, 0.25, a, dk, 'stone');
+        }
+        F.dome(dx, top + 1.8, dz, dr + 0.05, 2.4, 0, domeC, 'dome');
+        for (let i = 0; i < 8; i++) {
+          const a = i / 8 * TAU;
+          F.rod(dx + Math.sin(a) * (dr + 0.05), top + 1.85, dz + Math.cos(a) * (dr + 0.05), dx + Math.sin(a) * 1.2, top + 3.95, dz + Math.cos(a) * 1.2, 0.05, GILT, 'metal');
+        }
+        F.cyl(dx, top + 4.15, dz, 0.3, 0.2, 0, GILT, 'metal');
+        F.rod(dx, top + 4.3, dz, dx, top + 5.0, dz, 0.05, GILT, 'metal');
+        F.ball(dx, top + 4.65, dz, 0.2, soul, 'glow');
+        /* roof: timber stair, parapet, loft, awning, armillary */
+        TSTAIR(F, -5.7, 4.3, 'z', -1, 0, top, 1.1);
+        PARA(F, { x: 0, z: 0, w: 10.34, d: 9.34 }, top, c, 0.85, { s: 3, u: -3.7, w: 1.2 });
+        LOFT(F, 3.0, top, -2.4, 3.2, 3.2, 2.6, shade(c, 0.05), 3, { shut: TIMBER2 });
+        F.pyrRoof(3.0, top + 2.6, -2.4, 3.9, 1.1, 3.9, 0, GREEN, 'roof');
+        CANOPY(F, 1.3, 0.6, 4.5, 4.0, top, top + 2.4, cloth, null, ['z1', 'x1']);
+        armillary(3.4, top, 2.8);
+        BENCH(F, 1.9, top, 2.3, 1.2, false);
+        CHIMNEY(F, -4.2, 3.6, top, 1.3, c);
+        for (let i = 0; i < 3; i++) CRATE(F, -4.3 + i * 0.1, top + i * 0.62, -3.6, 0.7 - i * 0.1, 0.2 * i);
+      }
+    }
+  });
+
+  /* =================================================================== */
+  ASSET({
+    key: 'voth_shop_provisioner', name: 'Provisioner', culture: 'voth', family: 'shop', source: 'voth-shops',
+    districts: ['harbour', 'common', 'poor'], wealth: [0.1, 0.6],
+    blurb: 'A fishmonger or grocer: a market counter under a deep canopy, fish racks or tiered produce baskets, loft and roof garden.',
+    w: 14, d: 13, h: 11, variants: 2,
+    variantDims: [{ w: 14, d: 12, h: 10.5 }, { w: 13, d: 13, h: 11 }],
+    build: function (F) {
+      const c = F.pick(POOR.concat(STONE)), dk = shade(c, -0.2);
+      const FISH = [0x8a9296, 0x9aa2a0, 0x7a8286, 0xb0a890];
+      const PROD = [0x8a2f2a, 0xc4813f, 0x6f7d42, 0xe8d9a0, 0x7a5a72, 0xa04f32, 0x9a9a5a];
+      function fish(x, y, z, len, ry, col) {
+        const dx = Math.cos(ry) * len / 2, dz = -Math.sin(ry) * len / 2;
+        F.rod(x - dx, y + 0.07, z - dz, x + dx, y + 0.07, z + dz, 0.07, col, 'metal');
+        F.ball(x + dx, y + 0.07, z + dz, 0.07, col, 'metal');
+        F.beam(x - dx * 1.1, y + 0.07, z - dz * 1.1, x - dx * 1.45, y + 0.12, z - dz * 1.45, 0.07, 0.07, shade(col, -0.15), 'metal');
+      }
+      function hangFish(x0, z0, x1, z1, y, n) {
+        for (let i = 0; i < n; i++) {
+          const t = (i + 0.5) / n, x = x0 + (x1 - x0) * t, z = z0 + (z1 - z0) * t;
+          F.rod(x, y - 0.12, z, x, y, z, 0.012, 0x6b5a3a, 'rope');
+          F.rod(x, y - 0.62, z, x, y - 0.12, z, 0.06, FISH[i % 4], 'metal');
+          F.cone(x, y - 0.72, z, 0.07, 0.12, 0, shade(FISH[i % 4], -0.1), 'metal');
+        }
+      }
+      function fishRack(x, z0, z1, y) {
+        [z0, z1].forEach(function (z) {
+          F.beam(x - 0.6, y, z, x, y + 2.2, z, 0.1, 0.1, TIMBER, 'wood');
+          F.beam(x + 0.6, y, z, x, y + 2.2, z, 0.1, 0.1, TIMBER, 'wood');
+        });
+        F.box(x, y + 2.15, (z0 + z1) / 2, 0.1, 0.1, Math.abs(z1 - z0) + 0.2, 0, TIMBER, 'wood');
+        hangFish(x, z0 + 0.2, x, z1 - 0.2, y + 2.15, Math.round(Math.abs(z1 - z0) / 0.3));
+      }
+      function tiers(L, s, u, wd) {
+        /* three stepped planks of produce baskets against a face */
+        for (let k = 0; k < 3; k++) {
+          FB(F, L, s, u, 0, wd, 0.45 + k * 0.4, 0.5, 1.75 - k * 0.5, k % 2 ? PLANK : TIMBER2, 'wood');
+          const n = Math.floor(wd / 0.55);
+          for (let i = 0; i < n; i++) {
+            const pp = P(L, s, u - wd / 2 + 0.3 + i * (wd - 0.6) / Math.max(1, n - 1), 1.75 - k * 0.5);
+            BASKET(F, pp[0], 0.45 + k * 0.4, pp[1], 0.2, 0.2, PROD[(i + k * 2) % PROD.length]);
+          }
+        }
+      }
+
+      if (F.variant === 0) {
+        /* ---- hlaalu fishmonger on the quay: deep canopy over a stone counter ---- */
+        const p = 0.3, G = { x: 0, z: -1, w: 10, d: 7, y: p, h: 6.6 }, top = p + 6.6;
+        F.box(0, 0, -1, 10.3, p, 7.3, 0, dk, 'stone');
+        BLOCK(F, G, c, { band: 3.6, quoin: true });
+        const sf = SHOP(F, G, 0, -1.4, p, 4.2, 2.5, c, { aw: 0.9 });
+        DOOR(F, G, 0, 3.2, p, 1.1, 2.4, c);
+        CANOPY(F, -5.2, 2.65, 5.2, 6.6, 0, 3.7, F.pick([0x2a4d80, 0xb0c8d8, 0xcbb08e, 0x8a2f2a]), [[-5.2, 6.6], [-1.7, 6.6], [1.7, 6.6], [5.2, 6.6], [-5.2, 2.65], [5.2, 2.65]], ['z1', 'x0', 'x1']);
+        /* the market counter: stone slab on piers, fish laid out, a hanging scale */
+        F.box(-0.6, 0, 5.0, 7.0, 0.85, 0.2, 0, dk, 'stone');
+        [-3.9, -0.6, 2.7].forEach(function (px) { F.box(px, 0, 4.6, 0.3, 0.85, 0.9, 0, dk, 'stone'); });
+        F.box(-0.6, 0.85, 4.6, 7.2, 0.12, 1.0, 0, shade(c, 0.1), 'stone');
+        for (let i = 0; i < 14; i++) fish(-3.8 + (i % 7) * 1.05, 0.97, 4.35 + (i >> 3) * 0.45, 0.5, 0.2 * (i % 3), FISH[i % 4]);
+        BASKET(F, 2.2, 0.97, 4.6, 0.3, 0.25, 0x9aa2a0);
+        F.rod(1.0, 3.55, 4.6, 1.0, 2.2, 4.6, 0.015, IRON, 'metal');
+        F.rod(0.7, 2.2, 4.6, 1.3, 2.2, 4.6, 0.02, IRON, 'metal');
+        F.dome(0.7, 1.9, 4.6, 0.14, 0.08, 0, 0xa8683a, 'metal'); F.dome(1.3, 1.9, 4.6, 0.14, 0.08, 0, 0xa8683a, 'metal');
+        hangFish(-4.9, 6.55, 4.9, 6.55, 3.5, 16);
+        BARREL(F, -4.6, 0, 3.4, 0.42, 1.0); BARREL(F, 4.3, 0, 5.8, 0.42, 1.0);
+        for (let i = 0; i < 3; i++) BASKET(F, -4.6 + i * 0.1, 0, 5.4 + i * 0.5, 0.3, 0.4, i === 1 ? 0x7a8286 : null);
+        F.ball(0, 3.4, 4.0, 0.18, GLOW, 'glow');
+        SIGN(F, G, 0, 4.4, 5.0, 'fish', F.pick([TIMBER2, 0x2a4d80]), 0xd8d0b8, 'metal');
+        ROW(F, G, 0, 4.4, 3, 3.0, 0.9, 1.2, c, { shut: TIMBER2 }, 0);
+        /* left: fish-drying racks and nets */
+        fishRack(-6.4, -3.8, 1.8, 0);
+        F.box(-7.4, 0, -2.0, 0.9, 0.5, 1.2, 0, TIMBER2, 'wood');
+        F.blob(-7.4, 0.7, -2.0, 0.6, 0.4, 0, 0x5a5448, 'cloth');
+        ROW(F, G, 3, 1.5, 2, 1.6, 0.8, 1.1, c, {}, 0);
+        ROW(F, G, 3, 4.4, 2, 1.6, 0.8, 1.2, c, { shut: TIMBER2 }, 0);
+        /* back: nets hung to dry, lobster baskets, door */
+        DOOR(F, G, 1, -2.6, p, 1.0, 2.3, c);
+        ROW(F, G, 1, 1.5, 2, 1.6, 0.8, 1.1, c, {}, 1.8);
+        ROW(F, G, 1, 4.4, 3, 3.0, 0.9, 1.2, c, { shut: TIMBER2 }, 0);
+        FB(F, G, 1, 0.4, 2.6, 2.4, 1.4, 0.04, 0.06, 0x4a4438, 'cloth');
+        for (let i = 0; i < 3; i++) BASKET(F, 3.2 + i * 0.7, 0, -4.9, 0.3, 0.45, null);
+        /* right: stair to the roof */
+        const sx = 5.65;
+        const sl = STAIR(F, sx, 3.1, 'z', -1, 0, top, 1.3, shade(c, -0.1));
+        RAIL(F, sx + 0.62, 0.27, 3.1, sx + 0.62, top, 3.1 - sl);
+        WIN(F, G, 2, 1.8, 4.4, 0.8, 1.1, c, {});
+        /* roof: loft, fish racks under a shade canopy */
+        PARA(F, { x: 0, z: -1, w: 10.34, d: 7.34 }, top, c, 0.85, { s: 2, u: -2.9, w: 1.3 });
+        LOFT(F, -2.6, top, -2.6, 4.2, 3.0, 2.6, shade(c, 0.05), 0, { shut: TIMBER2 });
+        CANOPY(F, 0.6, -4.0, 4.4, 2.0, top, top + 2.6, F.pick(SAIL), null, ['x1']);
+        fishRack(1.6, -3.4, 1.4, top); fishRack(3.4, -3.4, 1.4, top);
+        BARREL(F, -4.3, top, 1.5, 0.4, 0.9); F.cyl(-2.8, top, 1.5, 0.7, 1.1, 0, dk, 'stone');
+        CHIMNEY(F, -4.2, -3.6, top, 1.3, c);
+      } else {
+        /* ---- velothi corner grocer: two open counters, tiered baskets, wrapped canopy ---- */
+        const V = VEL(F, 0, 0, 4.4, 4.1, 6.6, c, { band: 3.6 }), top = V.top;
+        const L1 = V.L(1.6), L4 = V.L(4.6), cloth = F.pick([0x6f7d42, 0x8a2f2a, 0xcbb08e]);
+        SHOP(F, L1, 0, 0.6, 0.4, 3.4, 2.4, c, { aw: 0.8 });
+        SHOP(F, L1, 2, 0.4, 0.4, 3.2, 2.4, c, { aw: 0.8 });
+        tiers(L1, 0, 0.6, 3.2);
+        tiers(L1, 2, 0.4, 3.0);
+        DOOR(F, L1, 0, -2.8, 0.4, 1.1, 2.4, c);
+        /* canopy wrapping the corner, with gourds and strings of peppers */
+        CANOPY(F, -4.5, 4.7, 7.2, 7.2, 0, 3.4, cloth, [[-4.5, 7.2], [1.3, 7.2], [7.2, 7.2], [-4.5, 4.7]], ['z1', 'x0']);
+        CANOPY(F, 4.7, -3.8, 7.2, 4.7, 0, 3.4, cloth, [[7.2, 1.0], [7.2, -3.8], [4.7, -3.8]], ['x1', 'z0']);
+        for (let i = 0; i < 9; i++) {
+          const x = -3.8 + i * 1.3;
+          F.rod(x, 3.26, 7.2, x, 2.9, 7.2, 0.015, 0x6b5a3a, 'rope');
+          if (i % 2) F.blob(x, 2.75, 7.2, 0.14, 0.34, 0, PROD[i % PROD.length], 'leafy');
+          else for (let j = 0; j < 4; j++) F.ball(x, 2.85 - j * 0.12, 7.2, 0.06, 0x8a2f2a, 'leafy');
+        }
+        for (let i = 0; i < 5; i++) {
+          const z = -3.2 + i * 1.5;
+          F.rod(7.2, 3.26, z, 7.2, 2.9, z, 0.015, 0x6b5a3a, 'rope');
+          F.blob(7.2, 2.75, z, 0.14, 0.34, 0, PROD[(i + 3) % PROD.length], 'leafy');
+        }
+        for (let i = 0; i < 3; i++) SACK(F, 6.4, 0, -3.1 + i * 0.6, 0.3, [0xa8987a, 0x9a8a63, 0xb8a880][i]);
+        CRATE(F, -3.8, 0, 5.4, 0.7, 0.2); BASKET(F, -3.8, 0.6, 5.4, 0.28, 0.25, PROD[1]);
+        SIGN(F, V.L(5.6), 0, 3.5, 5.9, 'fruit', TIMBER2, 0x3a2f22);
+        ROW(F, L4, 0, 4.4, 2, 2.0, 0.9, 1.2, c, { shut: TIMBER2 }, 0);
+        ROW(F, L4, 2, 4.4, 2, 2.0, 0.9, 1.2, c, { shut: TIMBER2 }, 0);
+        /* left: stair to the roof; back: door, windows */
+        const sx = -4.4 - 0.35;
+        const sl = STAIR(F, sx, 4.3, 'z', -1, 0, top, 1.3, shade(c, -0.1));
+        RAIL(F, sx - 0.62, 0.27, 4.3, sx - 0.62, top, 4.3 - sl);
+        WIN(F, L4, 3, 2.6, 4.8, 0.8, 1.1, c, {});
+        ROW(F, V.L(2), 1, 1.6, 2, 2.2, 0.9, 1.2, c, {}, 0.6);
+        ROW(F, L4, 1, 4.4, 3, 2.6, 0.8, 1.2, c, { shut: TIMBER2 }, 0);
+        DOOR(F, V.L(1.5), 1, -1.6, 0.4, 1.0, 2.3, c);
+        BARREL(F, 2.8, 0, -5.2, 0.4, 1.0); CRATE(F, 1.8, 0, -5.2, 0.8, 0.1);
+        /* roof: kitchen garden in planters under a shade sail, loft with a small dome */
+        PARA(F, V.R, top, c, 0.85, { s: 3, u: -3.3, w: 1.4 });
+        LOFT(F, 1.5, top, -1.8, 3.4, 3.4, 2.6, shade(c, 0.05), 3, { shut: TIMBER2 });
+        F.dome(1.5, top + 2.6, -1.8, 1.2, 1.0, 0, F.pick(DOME), 'dome');
+        CANOPY(F, -3.6, 0.6, 3.6, 3.8, top, top + 2.4, F.pick(SAIL), null, ['z1']);
+        [-2.4, 0, 2.4].forEach(function (bx) {
+          F.box(bx, top, 2.2, 1.6, 0.5, 1.0, 0, dk, 'stone');
+          for (let i = 0; i < 3; i++) F.blob(bx - 0.5 + i * 0.5, top + 0.7, 2.2, 0.3, 0.45, 0, LEAF[i], 'leafy');
+        });
+        for (let i = 0; i < 3; i++) JAR(F, -3.2, top, -1.0 - i * 0.7, 0.26, CLAY[i]);
+        CHIMNEY(F, -2.2, -3.1, top, 1.3, c);
       }
     }
   });
