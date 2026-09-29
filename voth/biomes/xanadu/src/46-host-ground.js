@@ -21,8 +21,8 @@ const TEX_GROUND=BIO.canvasTex(2048,2048,(g,w,h)=>{const id=g.createImageData(w,
   // the vale: meadow, going gold where it is drier, lush by the water
   c.copy(MEAD).lerp(MEAD2,clamp(.5+n3*2.2,0,1)).lerp(GOLD,smooth(.62,.46,wet)*.75).lerp(LUSH,smooth(.72,.9,wet)*.6);
   // flower drifts in the vale's glades, painted so the meadow reads as a riot from afar
-  {const fd=smooth(.55,.7,fbm(wx*.006-5,wz*.006+2,3131,2))*smooth(.2,.08,up)*smooth(.8,.6,wet)*smooth(20,80,sd);
-   if(fd>0&&BIO.fn.h3(x,y,11)<.35){const hh2=BIO.fn.h3(x>>2,y>>2,12);t.setHSL(hh2,.75,.62);c.lerp(t,fd*.55);}}
+  {const fd=smooth(.55,.7,fbm(wx*.011-5,wz*.011+2,3131,2))*smooth(.2,.08,up)*smooth(.8,.6,wet)*smooth(20,80,sd);
+   if(fd>0&&BIO.fn.h3(x,y,11)<.35){const hh2=BIO.fn.h3(x>>2,y>>2,12);t.setHSL(hh2,.75,.62);c.lerp(t,fd*.28);}}
   // the forested flanks: litter and moss under the canopy
   const fk=smooth(.64,.78,wet)*smooth(.3,.12,up)*smooth(0,120,sd)*smooth(.2,.55,fbm(wx*.0026+2,wz*.0026-5,93,2)+.2);
   t.copy(LIT).lerp(LIT2,clamp(.5+n3*2,0,1)).lerp(MOSS,smooth(.8,.95,wet)*.5);c.lerp(t,fk*.8);
@@ -57,7 +57,7 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};
    ' float b1=0.5+0.5*sin(y*0.21), b2=smoothstep(0.6,0.95,sin(y*0.07+1.3)), b3=smoothstep(0.75,1.0,sin(y*0.13+vGWP.x*0.001));',
    ' vec3 st=mix(vec3(0.30,0.24,0.20),vec3(0.42,0.26,0.14),b1); st=mix(st,vec3(0.24,0.20,0.28),b2*0.8); st=mix(st,vec3(0.55,0.49,0.38),b3*0.7);',
    ' st*=0.85+0.3*texture2D(uDetail,vec2(vGWP.x+vGWP.z,vGWP.y*3.0)*0.05).r;',
-   ' diffuseColor.rgb=mix(diffuseColor.rgb,mix(diffuseColor.rgb,st,0.55+0.25*texture2D(uDetail,vGWP.xz*0.004).r),smoothstep(0.45,0.8,steep));}'].join('\n'));};
+   ' diffuseColor.rgb=mix(diffuseColor.rgb,mix(diffuseColor.rgb,st,0.30+0.25*texture2D(uDetail,vGWP.xz*0.004).r),smoothstep(0.45,0.8,steep));}'].join('\n'));};
 (function(){const SX=TERR.X1-TERR.X0,SZ=TERR.Z1-TERR.Z0,NXg=700,NZg=660,g=new THREE.PlaneGeometry(SX,SZ,NXg,NZg);g.rotateX(-Math.PI/2);g.translate((TERR.X0+TERR.X1)/2,0,(TERR.Z0+TERR.Z1)/2);
  const p=g.attributes.position;for(let i=0;i<p.count;i++)p.setY(i,terrainH(p.getX(i),p.getZ(i)));
  // PlaneGeometry's uv runs v up the plane; the canvas's y runs down it (z south): match them

@@ -472,7 +472,7 @@ function buildFar(T,fi,st,lite){const K=BIO.bucket('xfar');if(!ICO){ICO=new T3.I
    const ny=dy*.7+.45,nl=Math.hypot(dx,ny,dz)||1;
    vtx(x+dx*rx*m,y+dy*ry*m,z+dz*rx*m,dx/nl,ny/nl,dz/nl,mix(cb.r,ca.r,t)*sh,mix(cb.g,ca.g,t)*sh,mix(cb.b,ca.b,t)*sh);}
   tris+=ip.length/9;}
- const bc=barkCol(S,fi).convertSRGBToLinear(),seg=cheap?3:5,top=T.y0+T.H*(hb==='cone'?.95:hb==='column'?.9:.6),rings=[];
+ const bc=shade(C(S.bark[fi%S.bark.length]),-.1).convertSRGBToLinear(),seg=cheap?3:5,top=T.y0+T.H*(hb==='cone'?.95:hb==='column'?.9:.6),rings=[];
  [0,.5,1].forEach(u=>{const y=T.y0+(top-T.y0)*u,r=Math.max(.35,T.rb*(1-.5*u)),ring=[];for(let s=0;s<=seg;s++){const a=s/seg*TAU;ring.push([T.x+Math.cos(a)*r,y,T.z+Math.sin(a)*r,Math.cos(a),Math.sin(a)]);}rings.push(ring);});
  for(let r2=0;r2<rings.length-1;r2++)for(let s2=0;s2<seg;s2++){const A=rings[r2][s2],Bq=rings[r2][s2+1],D=rings[r2+1][s2],E=rings[r2+1][s2+1],sh=.7+.3*(r2/rings.length);
   [A,D,E,A,E,Bq].forEach(p=>vtx(p[0],p[1],p[2],p[3],.05,p[4],bc.r*sh,bc.g*sh,bc.b*sh));tris+=2;}
@@ -485,6 +485,7 @@ function buildFar(T,fi,st,lite){const K=BIO.bucket('xfar');if(!ICO){ICO=new T3.I
  else if(hb==='vase'){blob(T.x,T.y0+T.H*.82,T.z,R,T.H*.17,A,Bc,fi);}
  else if(hb==='cups'||hb==='pads'||hb==='lumps'){for(let k=0;k<(cheap?2:3);k++){const a=a0+k/3*TAU;blob(T.x+Math.cos(a)*R*.55,T.y0+T.H*(.7+.1*(k%2)),T.z+Math.sin(a)*R*.55,R*.45,T.H*.1,A,hb==='cups'?0xff80b0:Bc,fi+k);}}
  else blob(T.x,T.y0+T.H*.75,T.z,R*.9,T.H*.25,A,Bc,fi);
+ {const kk=BIO._lodKey(T.x,T.z);for(let i=0;i<tris;i++)K.k.push(kk);}   // the impostor's triangles carry the tree's lod key like any other
  K.tris+=tris;BIO.tally(tris,0,0);st.far+=tris;}
 
 // ---------------------------------------------------------------- the pass
