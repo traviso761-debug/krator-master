@@ -2010,8 +2010,8 @@ function hnNal(x,y,z,ry,w,h,kind,trimC,o){o=o||{};trimC=trimC||hC(HPAL.white);vn
  const v=f(0,.12);kput('hLaceV',[v[0],y-.42,v[1]],qEuler(0,ry,0),[w+.4,.4,1],trimC);
  if(o.accent){const a=f(0,.16);vB('hPaint',a[0],y+h+.2,a[1],.3,.18,.04,ry,o.accent);}}
 // Russian porch (kryltso): a stair to a raised door under a bochka roof on bulbous posts.
-function hnKryltso(x,y,z,ry,w,rise,roofItem,roofC,postC){const run=Math.max(1.6,rise*1.3);const steps=Math.max(3,Math.round(rise/.2));
- const s=loc(x,z,0,run/2,ry);vnStairs(s[0],y,s[1],ry,w,rise,steps,'vWood',postC);
+function hnKryltso(x,y,z,ry,w,rise,roofItem,roofC,postC){const steps=Math.max(3,Math.round(rise/.2)),sr=steps*.32,run=Math.max(1.6,sr);   // round 10: the run is the treads' own (vnStairs lays steps*.32), foot at `run`, top at the wall
+ const s=loc(x,z,0,run-sr/2,ry);vnStairs(s[0],y,s[1],ry,w,rise,steps,'vWood',postC);
  const pl=loc(x,z,0,.5,ry);vB('vWood',pl[0],y+rise-.18,pl[1],w+.6,.18,1.2,ry,postC);
  for(const sx of[-1,1])for(const sz of[0,1]){const p=loc(x,z,sx*(w/2+.15),.1+sz*(run+.6),ry);const base=sz?y:y+rise;const H=(y+rise+2.4)-base;
   vPst('vPostB',p[0],base,p[1],.1,H,postC);kput('hPaintBall',[p[0],base+H*.45,p[1]],null,[.2,.3,.2],postC);}

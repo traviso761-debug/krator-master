@@ -267,3 +267,36 @@ albedo / buildable mask / class, the road list and its spatial hash, OBB occupan
 - **The N and S highways** get runs of 1–2 buildings with jittered setback and a mixed pick (`HW_TRADE`) instead of
   unbroken rows. Suburbs sit outside the N, S and W gates; farms (steads, strip fields, mills) lie along the W road.
 - Bunkers inside the new wall are skipped. The scene is ~19.6 M triangles; LOD draws 6–11 M.
+
+## Round 10 (Sep 29 2026) — one kit page, Rustic and Tribal salvage, fixes
+- **The kit is one page.** `dist/highlands.html` shows all three branches, with the Republican branch in the East
+  Asian frame (`HL_WALLS='frame'`). The single-branch targets (republican, rustic, tribal) are retired to
+  `_OLD_TARGETS`. The ground plane now grows with the rows.
+- **Rustic salvage** (`src/81b-rus-salvage.js`, seeds 25000–25099). All are born reclaimed (`tags.salvage`):
+  - Tank stue: a turf gable with dragon heads built over a spent tank.
+  - Container chalet: falu-red containers under an Alpine log storey with a stone-weighted shingle gable.
+  - Hull naust: a boathouse under a curved hull panel, with a longboat.
+  - Silo stabbur: a log loft oversailing a corrugated silo.
+  - Scrap-iron market: a turf hall with container-door gable ends.
+- **Tribal salvage** (`src/85b-tri-salvage.js`, seeds 26000–26099):
+  - Tank roundhouse: an upright tank on a stilted deck under a thatch cone.
+  - Container longhouse.
+  - Hull meeting house: on totem posts.
+  - Silo drum-house.
+  - Scrap forge.
+- **Reclaimed twins** (88) already covered Rustic and Tribal dwellings, shops, taverns, farms and smithies.
+- **Temple of the Pantheon**: Zsolnay-style glazed polychrome fish-scale tile (`hlTile`) on the dome, the corner tents
+  and the lantern spires.
+- **The Fallen Arcology is now a crashed ship.** It is a plated hull broken in two:
+  - Nose: ploughed into a berm.
+  - Stern: engine bells, a thrust plate and fins, one snapped into the earth.
+  - Superstructure: a dorsal block, antennae, a dish and flank tanks.
+  - The break: exposed decks with dangling conduit and torn plates.
+  - The town in the cleft and on the flanks is kept.
+- **Roketstad wall**: each gatehouse is turned to the oval wall's tangent, and the runs end exactly at its stubs.
+- **Sky**: the giant's quad is sized so the rings (2.2 disc radii) fit inside it. The near half of the ring now
+  crosses in front of the disc (the `front` term tested the wrong radius).
+- **Known issues**:
+  - `hnKryltso` takes its stair's real run.
+  - The dougong issue is closed (the frame's roof lift).
+  - Re-vendoring from `../ancients/src` is still open.
