@@ -147,3 +147,8 @@ vnBannerPole vnChimney vnFence vnPalisade vnFolk vnPaving`.
 * `xnXMLoggia(x,y,z,ry,w,h,n,dep,D,upper,lit)` — one loggia storey (open arcade on columns before a set-back wall);
   `xnXMPalm(x,z,h,y)`; `xnXMBed(x,z,w,d,ry,y)` (marigolds). Def `xa_vizier` (The Sultan, civic, lit, nv 3), dresses
   `XVZ[v]`.
+
+## 87-xa-spicer.js — the Spicers' Guild
+* `xnXNStall(x,z,ry,lit)` — a spice stall; `xnXNSpiceCone(x,y,z,r,c)`; `xnXNChillies(a,b,n)` (world points);
+  `xnXNSpire(x,y,z,R,c)`; `xnXNTier(x0,y,w,h,d,z,n,lit)` (a saffron storey of jharokhas). Def `xa_guild_spicer`.
+* Note: `XOCT` is unit-radius — a face lies at `R*cos(π/8)` from the centre for scale `[R,h,R]`.
