@@ -386,7 +386,21 @@ function makeFrame(x, z, ry, opt) {
   F.ball = (lx, ly, lz, r, color, family) => { const [x2, z2] = toWorld(lx, lz); mkBall(x2, F.y + ly, z2, r, color, family); };
   F.frustum = (lx, ly, lz, rBottom, rTop, h, ry2, color, family, sides) => { const [x2, z2] = toWorld(lx, lz); mkFrustum(x2, F.y + ly, z2, rBottom, rTop, h, F.ry + (ry2 || 0), color, family, sides); };
   F.pyrRoof = (lx, ly, lz, w, h, d, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkPyrRoof(x2, F.y + ly, z2, w, h, d, F.ry + (ry2 || 0), color, family); };
-  F.beam = (ax, ay, az, bx, by, bz, w, d, color, family) => { const [ax2, az2] = toWorld(ax, az), [bx2, bz2] = toWorld(bx, bz); mkBeam(ax2, F.y + ay, az2, bx2, F.y + by, bz2, w, d, color, family); };
+  /* a beam's roll must come from the LOCAL frame, then turn with the building:
+     setFromUnitVectors on the world direction picks the shortest rotation,
+     whose roll depends on heading, so a sloped slab (roof, canopy, tent side)
+     built at ry = 0 twisted about its own axis at any other ry. Identical at ry = 0. */
+  const _bUp = new THREE.Vector3(0, 1, 0), _bDir = new THREE.Vector3(), _bQy = new THREE.Quaternion(), _bAxY = new THREE.Vector3(0, 1, 0);
+  F.beam = (ax, ay, az, bx, by, bz, w, d, color, family) => {
+    const [ax2, az2] = toWorld(ax, az), [bx2, bz2] = toWorld(bx, bz);
+    const m = mkBeam(ax2, F.y + ay, az2, bx2, F.y + by, bz2, w, d, color, family);
+    if (F.ry && m) {
+      _bDir.set(bx - ax, by - ay, bz - az);
+      if (_bDir.lengthSq() > 1e-12) {
+        m.quaternion.setFromUnitVectors(_bUp, _bDir.normalize()).premultiply(_bQy.setFromAxisAngle(_bAxY, F.ry));
+      }
+    }
+  };
   F.rod = (ax, ay, az, bx, by, bz, r, color, family) => { const [ax2, az2] = toWorld(ax, az), [bx2, bz2] = toWorld(bx, bz); mkRod(ax2, F.y + ay, az2, bx2, F.y + by, bz2, r, color, family); };
   F.lamp = (lx, ly, lz, amp, rad) => { const [x2, z2] = toWorld(lx, lz); const l = new THREE.PointLight(0xffb066, amp || 1, rad || 10); l.position.set(x2, F.y + ly, z2); _add(l); };
   F.tree = (lx, lz, kind, h, ly) => treeHelper(F, lx, lz, kind, h, ly || 0);

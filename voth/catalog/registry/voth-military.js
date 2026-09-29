@@ -250,10 +250,10 @@
     source: 'voth-military',
     districts: ['fortress', 'wall', 'harbor', 'canton'], wealth: [0.4, 1],
     blurb: 'A basalt Velothi fortress with drum and square towers, portcullised gatehouse and keep; or a squat harbour fort with diamond bastions, a sea gate and a signal tower.',
-    w: 62, d: 60, h: 29, variants: 2,
+    w: 63.5, d: 58.5, h: 32.5, variants: 2,
     variantDims: [
-      { w: 62, d: 60, h: 29 },
-      { w: 41, d: 52, h: 29 }
+      { w: 63.5, d: 58.5, h: 27.7 },
+      { w: 45.3, d: 57.2, h: 32.5 }
     ],
     build: function (F) {
       const K = kit(F);
@@ -539,8 +539,14 @@
         /* stone quay platform the fort stands on */
         F.box(0, 0, 0, 45, 1.0, 45, 0, base, 'stone');
         F.box(0, 1.0, 0, 45.3, 0.25, 45.3, 0, shade(base, 0.2), 'stone');
-        /* waterline stain and mooring rings round the quay face */
+        /* waterline stain, bollards and mooring rings round the quay edge */
         F.box(0, 0, 0, 45.1, 0.35, 45.1, 0, shade(base, -0.3), 'stone');
+        [[-22, -6], [-22, 0], [-22, 6], [22, -6], [22, 0], [22, 6], [-8, 22], [8, 22], [-17, 22], [17, 22]].forEach((q) => {
+          F.cyl(q[0], 1.25, q[1], 0.26, 0.7, 0, IRON2, 'metal');
+          F.cyl(q[0], 1.95, q[1], 0.34, 0.12, 0, IRON2, 'metal');
+          if (Math.abs(q[0]) > 21) F.rod(Math.sign(q[0]) * 22.5, 0.6, q[1], Math.sign(q[0]) * 22.62, 0.6, q[1], 0.22, IRON, 'metal');
+          else F.rod(q[0], 0.6, 22.5, q[0], 0.6, 22.62, 0.22, IRON, 'metal');
+        });
         const Y0 = 1.25;
         function curtain(ax, az, bx, bz, out, gap) {
           const alongX = az === bz, L = alongX ? Math.abs(bx - ax) : Math.abs(bz - az);
@@ -718,10 +724,10 @@
     source: 'voth-military',
     districts: ['fortress', 'wall', 'common', 'canton'], wealth: [0.3, 0.8],
     blurb: 'A long Hlaalu barracks with an arcaded ground floor, two dormitory storeys, armoury, chimneyed mess and a roof drill deck; or a battered Velothi block round a drill court with a guard tower.',
-    w: 49, d: 36, h: 22, variants: 2,
+    w: 49.2, d: 35.2, h: 22.9, variants: 2,
     variantDims: [
-      { w: 49, d: 17, h: 19 },
-      { w: 35, d: 36, h: 22 }
+      { w: 49.2, d: 16, h: 19.4 },
+      { w: 35.2, d: 35.2, h: 22.9 }
     ],
     build: function (F) {
       const K = kit(F);
@@ -809,8 +815,8 @@
         K.door(AX1, 0.35, -2.5, 2, 1.2, 2.3, ac);
         K.rack(AX1 + 0.5, 2.2, 2.6, false, 6);
         /* ladder from the armoury roof to the main roof */
-        [-0.45, 0.45].forEach((dz) => F.box(X + 0.35, AH + 0.35, -3 + dz, 0.1, H + 1.5 - AH, 0.1, 0, TIMBER, 'wood'));
-        for (let i = 1; i < 9; i++) F.box(X + 0.35, AH + 0.35 + i * 0.5, -3, 0.08, 0.06, 0.9, 0, TIMBER2, 'wood');
+        [-0.45, 0.45].forEach((dz) => F.box(X + 0.35, AH + 0.35, dz, 0.1, H + 1.5 - AH, 0.1, 0, TIMBER, 'wood'));
+        for (let i = 1; i < 9; i++) F.box(X + 0.35, AH + 0.35 + i * 0.5, 0, 0.08, 0.06, 0.9, 0, TIMBER2, 'wood');
 
         /* ---- mess hall wing (-x): hip roof, two chimneys, big windows */
         const MX0 = -X - 8, MX1 = -X, MD = 13, MH = 6.4, mc = shade(c, 0.05), mcx = (MX0 + MX1) / 2;
@@ -1028,7 +1034,7 @@
     source: 'voth-military',
     districts: ['fortress', 'wall', 'outskirts'], wealth: [0.2, 0.8],
     blurb: 'A walled parade field with a canopied reviewing stand, flagpoles, weapon racks, dummies, archery butts and a small armoury shed.',
-    w: 56, d: 42, h: 10,
+    w: 53.1, d: 39.4, h: 8.8,
     build: function (F) {
       const K = kit(F);
       const c = F.pick(STONE), cop = shade(c, -0.16), earth = F.pick([0x76664d, 0x6f6149, 0x7a6a50]);
@@ -1075,7 +1081,9 @@
         K.flame(k * 3.5, top - 0.05, Z, 0.5);
         F.box(k * 3.5, 0, Z, 2.2, 0.4, 2.2, 0, cop, 'stone');
         K.banner(k * 3.5, 3.6, Z + 0.72, 0, 1.0, 2.4, k < 0 ? GREEN : GOLD, k < 0 ? GOLD : GREEN);
-        F.box(k * 2.0, 0.08, Z + 0.9, 0.14, 2.0, 1.9, k * 0.6, TIMBER2, 'wood');
+        /* gate leaf swung open outward, hinged at the pylon */
+        F.box(k * 2.45, 0, Z + 0.35 + 1.25, 0.14, 2.1, 2.5, 0, TIMBER2, 'wood');
+        [0.4, 1.6].forEach((y) => F.box(k * 2.37, y, Z + 1.6, 0.06, 0.14, 2.5, 0, IRON, 'metal'));
       });
       F.box(0, 3.7, Z, 7.9, 0.4, 0.45, 0, TIMBER, 'wood');
       F.box(0, 2.6, Z + 0.25, 3.2, 1.0, 0.08, 0, GREEN, 'cloth');
@@ -1174,7 +1182,7 @@
     source: 'voth-military',
     districts: ['outskirts', 'wilds', 'wall'], wealth: [0.1, 0.6],
     blurb: 'A field camp inside a ditch-and-palisade: rows of ridge and bell tents, a command pavilion, cookfires, guar pens, supply wagons and a watch platform.',
-    w: 64, d: 56, h: 10,
+    w: 65, d: 53.8, h: 9.9,
     build: function (F) {
       const K = kit(F);
       const earth = F.pick(MUD), bank = shade(earth, 0.08), ditch = shade(earth, -0.55);
