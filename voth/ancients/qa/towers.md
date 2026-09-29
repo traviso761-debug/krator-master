@@ -13,7 +13,7 @@ were taken of every decay of every type (0-3, and 4 for A/D/H) through a
 scratch target holding only these rows at their kit positions, and read.
 
 Kit showcase: **9 967 649 -> 10 017 541** scene triangles (+0.5%; 37 476 of it
-is the new toppled Flatiron). Worst draw calls seen 761 / 900.
+is the new toppled Flatiron). Worst draw calls seen 874 / 900 (the `Skyscraper D` row shot; it was 886 before).
 
 ## KNOWN_ISSUES items — tick these
 
