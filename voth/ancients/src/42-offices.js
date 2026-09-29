@@ -29,9 +29,11 @@ function civWin(name,p,q,s,frac){kput(name,p,q,s,null);const W=CIV_WIN[name];if(
  const S=typeof s==='number'?[s,s,s]:s;const sh=W[3];
  civShardAt(p,q,W[0]*S[0]*sh,W[1]*S[1]*sh,W[2]*S[2]/2+.04,h);}
 // One cluster of shards, w x h, `out` metres proud along q's +z; h in 0..1 picks it.
-function civShardAt(p,q,w,ht,out,h){const i=(h*6|0)%3,v='civShard'+i;civDef(v,()=>civTriGeo(CIV_SHARD_XY[i]),MAT.glass);
- const off=new THREE.Vector3(0,0,out).applyQuaternion(q);
- kput(v,[p[0]+off.x,p[1]+off.y,p[2]+off.z],q,[w*((h*97|0)%2?1:-1),ht,1],null);}
+// One kit mesh for all shards: a kit InstancedMesh is never culled, so each is
+// a draw call in every view. Variety comes from mirroring and the height scale.
+function civShardAt(p,q,w,ht,out,h){civDef('civShard',()=>civTriGeo(CIV_SHARD_XY[0].concat(CIV_SHARD_XY[1].slice(0,6),CIV_SHARD_XY[2].slice(12,18))),MAT.glass);
+ const off=new THREE.Vector3(0,0,out).applyQuaternion(q);const i=(h*6|0)%3;
+ kput('civShard',[p[0]+off.x,p[1]+off.y,p[2]+off.z],q,[w*((h*97|0)%2?1:-1),ht*(i===1?.8:i===2?.9:1),1],null);}
 // INTERIORS. What a hole in a round shell shows: floor plates out to the
 // skin, a corridor light strip under each ceiling (mostly dead in a ruin, a
 // few still on), cabinets and machinery silhouettes, touch panels and conduit

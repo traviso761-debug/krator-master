@@ -35,9 +35,10 @@ function buildStarport(scene,gx,gz,d){reseed(d>0?9601:9600);KOFF=[gx,0,gz];REGIS
   kput('slab',[px,1.2,pz],qEuler(0,-th,0),[6,2.4,24],new THREE.Color(d>0?0x4a4038:0x8a8078));
   if(d>0){scatterMoss(px,3,pz,0,38,25,2);}
   // REHABILITATED: the aprons are camps - tents pitched on the pads
-  if(d===3){civDef('civTent',()=>new THREE.ConeGeometry(1,1,4,1).rotateY(Math.PI/4).translate(0,.5,0),MAT.tarp);
-   for(let k=0;k<9;k++){const a=h3(i,k,350)*TAU,r=8+h3(k,i,351)*26,sz=3+h3(i*3,k,352)*3;
-    kput('civTent',[px+r*Math.cos(a),3,pz+r*Math.sin(a)],qEuler(0,a,0),[sz,sz*.8,sz*1.4],new THREE.Color().setHSL(.07+h3(k,i,353)*.06,.35,.45+h3(i,k,354)*.2));}
+  // (A-frames of the salvage pass's own tarp planes: no new kit mesh.)
+  if(d===3){for(let k=0;k<9;k++){const a=h3(i,k,350)*TAU,r=8+h3(k,i,351)*26,sz=3+h3(i*3,k,352)*3;const tx=px+r*Math.cos(a),tz=pz+r*Math.sin(a);
+    const c=new THREE.Color().setHSL(.07+h3(k,i,353)*.06,.35,.45+h3(i,k,354)*.2);
+    for(const sd of [-1,1])kput('patchTarp',[tx+Math.cos(a+Math.PI/2)*sd*sz*.35,3+sz*.28,tz+Math.sin(a+Math.PI/2)*sd*sz*.35],qEuler(0,-a,0).multiply(qEuler(-sd*.9,0,0)),[sz*1.4,sz*.9,1],c);}
    kput('waterButt',[px+3,4,pz-4],null,[1.2,2,1.2],null);}}
  meshMerged(mouths,skin,G);
  // control needle on the dome
