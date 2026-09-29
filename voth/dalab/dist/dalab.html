@@ -888,7 +888,7 @@ function buildDalab(scene,gx,gz,d){reseed(9330+d);KOFF=[gx,0,gz];
     if(rng()<.5)kput(d>0?'winSmD':'winSmI',[px,12.4*K,pz],qFacing([0,1,0]),[2.4*K,2.4*K,1],null);}
    mossOnRing(mx,11.5*K,mz,L*.38,Math.round(L*.22/K),1.5*K);}});
  // the low ruined wall round the compound, breached in places
- for(let k=0;k<200;k++){const th=k/200*TAU,r=(292+12*fbm(k*.14,2.2,9370,2))*K;
+ for(let k=0;k<(typeof LAB_WALL_GAP!=='undefined'?0:200);k++){const th=k/200*TAU,r=(292+12*fbm(k*.14,2.2,9370,2))*K;   // DALAB: the block ring is replaced by a real ruined wall (90a)
   if(fbm(k*.09,1.1,9371,2)<.30)continue;                     // breaches
   if(typeof LAB_WALL_GAP!=='undefined'&&Math.abs(th-LAB_WALL_GAP.a)<LAB_WALL_GAP.w)continue;   // DALAB: the gate where the oak avenue enters
   kput(BOXC(d),[Math.cos(th)*r,rr(1.4,3.4)*K,Math.sin(th)*r],qEuler(0,-th,0),[rr(6,13)*K,rr(2.8,6.8)*K,rr(2.6,4.4)*K],null);}
@@ -2844,6 +2844,175 @@ HMOTIF.banner=hlMotifItem('b','republic',hlMakeTex(128,384,(g,w,h)=>{g.fillStyle
 MAT[HMOTIF.banner].side=DS;
 HMOTIF.pillar=[[hlWolf2,hlHammer,hlTriskele,hlGrain],[hlTreeOfLife,hlCat,hlMoth,hlStar8],[hlSun,hlMoon,hlStar8,hlGasGiant],[hlTriskele,hlRocket,hlWolf2,hlMoon]].map((ms,i)=>hlMotifItem('p',''+i,hlPillarTex(ms,i===2?'dark':'cedar'),false,true));
 function hlWolf2(g){hlIn(g,0,22,100,56,200,100,hlWolf);}
+// ================================================================= DALAB — the town types (round 10: filling the grid)
+// The kinds a full street grid needs between the huts and the civic set: dense dwellings (a terrace row, a stacked
+// house), the small civic and trade that stand on every block (a well court, a bath house, a scribes' hall, a
+// travellers' inn), the industry the walls are made from (the earth yard), an orchard plot, and the watch towers
+// the giants stand at. Same rules as the rest of the kit: peasants build round in rammed earth under thatch, civic
+// builds in grey stone with relief and murals and carries The God's light. Front is +z.
+
+// ---------------------------------------------------------------- TERRACE ROW: three joined earth cells under one long thatch ridge
+function buildDalabRowhouse(G,o){reseed(8801+(o.v|0));const N=3,CW=5.6,D=6.4,H=2.6;const W=N*CW;const wood=dCol(DPAL.woodGrey),earth=dCol(DPAL.earth);
+ vnReg('Terrace row (peasant)',0,0,W/2+2,H+4.2);
+ vB('dEarth',0,-.05,0,W+1.2,.4,D+1.2,0,dCol(DPAL.earthDark));                                         // the shared plinth
+ vB('dEarth',0,.3,0,W,H,D,0,earth);
+ for(let k=1;k<N;k++)vB('dEarth',-W/2+k*CW,.3,0,.5,H+.3,D+.5,0,dCol(DPAL.earthDark));                 // party walls stand proud
+ for(let k=0;k<N;k++){const x=-W/2+CW/2+k*CW;const c=[DPAL.red,DPAL.turq,DPAL.gold][k%3];
+  vnDoor(x-1.2,.3,D/2,0,.9,1.9,'vWood',wood,vC(0x5a4a3a),false);
+  vnWin(x+1.3,.3+1.2,D/2,0,.8,.7,'open','vWood',wood,true);dnHearth(x+1.3,.3+1.2,D/2,0,.8,.7);
+  vB('dEarth',x,.3+.1,D/2+.06,CW-.9,.5,.12,0,dCol(c));                                                 // each cell its own painted foot
+  dnJar(x+2.2,.3,D/2+1.2,.28);}
+ // one long thatch: a hip over the whole run, a timber ring beam, a smoke hole at each cell
+ vnHipRoof('vHipT',0,.3+H,0,W,D,3.0,0,dCol(DPAL.thatch),1.0);vB('vWood',0,.3+H-.15,0,W+.6,.22,D+.6,0,wood);
+ for(let k=0;k<N;k++)vnChimney(-W/2+CW/2+k*CW+1.0,.3+H+2.3,-1.2,1.0,.1,true);
+ // the shared yard in front: paving, a drying line, a bench, a woodpile at the end
+ vnPaving(0,.02,D/2+2.2,W-2,2.8,0,dCol(DPAL.earthDark),8);vnDryingRack(-W/2+4,0,D/2+3.6,0,4.5);
+ vB('vWood',3.5,.35,D/2+2.4,2.4,.1,.4,0,wood);dnWoodpile(W/2+1.1,0,-.6,Math.PI/2,1.6);
+ dnFolk(-1,D/2+4.2,3,1.8);}
+// ---------------------------------------------------------------- STACKED HOUSE: two storeys of rammed earth, an outside stair to a gallery, three doors up
+function buildDalabTenement(G,o){reseed(8811+(o.v|0));const W=11,D=8,H1=2.9,H2=2.6;const wood=dCol(DPAL.woodGrey),earth=dCol(DPAL.earth);
+ vnReg('Stacked house (peasant)',0,0,8,H1+H2+3.6);
+ vB('dEarth',0,-.05,0,W+1.4,.4,D+1.4,0,dCol(DPAL.earthDark));
+ kput('dEarthBat',[0,.3,0],null,[W,H1,D],earth);vB('dEarth',0,.3+H1-.1,0,W-.2,H2,D-.2,0,earth.clone().multiplyScalar(1.04));   // the ground floor battered, the upper straight
+ vB('dEarth',0,.3+H1-.1,D/2-.05,W,.3,.16,0,dCol(DPAL.red));                                                      // the red string course
+ vnDoor(-3.2,.3,D/2,0,1.0,2.0,'vWood',wood,vC(0x5a4a3a),false);vnDoor(2.6,.3,D/2,0,1.0,2.0,'vWood',wood,vC(0x5a4a3a),false);
+ vnWin(-.4,.3+1.3,D/2,0,.8,.7,'open','vWood',wood,true);dnHearth(-.4,.3+1.3,D/2,0,.8,.7);
+ // the gallery: a timber deck along the front at first-floor level on posts, a rail, the stair up its end
+ const GY=.3+H1-.1;vB('vWood',0,GY,D/2+1.0,W+.6,.18,2.0,0,wood);for(const x of[-W/2,-W/4,0,W/4,W/2])vPst('vPost',x,0,D/2+1.9,.11,GY,wood);
+ vB('vWood',0,GY+1.0,D/2+1.95,W+.6,.08,.08,0,wood);for(const x of[-W/2,-W/4,0,W/4,W/2])vB('vWood',x,GY+.18,D/2+1.95,.08,.85,.08,0,wood);
+ vnStairs(W/2+1.2,0,D/2+1.0,Math.PI/2,1.0,GY,9,'vWood',wood);
+ for(const x of[-3.6,0,3.6]){vnDoor(x,GY,D/2-.1,0,.9,1.9,'vWood',wood,vC(0x5a4a3a),false);vnWin(x+1.6,GY+1.2,D/2-.1,0,.6,.6,'shut','vWood',wood);}
+ for(const s of[-1,1])vnWin(s*W/2,.3+1.4,-1.5,s*Math.PI/2,.7,.7,'shut','vWood',wood);
+ vnHipRoof('vHipT',0,.3+H1+H2-.1,0,W-.2,D-.2,2.6,0,dCol(DPAL.thatch),1.1);vB('vWood',0,.3+H1+H2-.25,0,W+.4,.22,D+.4,0,wood);
+ dnMuralBand(0,.3+H1+H2-.9,-D/2+.05,Math.PI,W-2,.5);vnChimney(-2.5,.3+H1+H2+2.0,-1.5,1.0,.1,true);
+ // the yard: jars, a rack of lines between two posts, folk
+ dnJar(-W/2-.9,0,1.5,.3);dnJar(-W/2-1.5,0,.6,.26);vnDryingRack(-2,0,D/2+3.8,0,5);vnSacks(W/2+.6,0,-1.2,3);
+ dnFolk(-1,D/2+4.6,3,1.6);}
+// ---------------------------------------------------------------- WELL COURT: a paved court round a stone well-drum, a sweep pole, jars, the queue
+function buildDalabWell(G,o){reseed(8821+(o.v|0));const st=dCol(DPAL.stone),wood=dCol(DPAL.woodGrey);
+ vnReg('Well court',0,0,5,5);
+ vnPaving(0,.02,0,8,8,0,st,14);dnDrum('dStoneDrum',0,0,0,1.3,1.1,st);dnDrum('dReliefDrum',0,.35,0,1.34,.5,st);dnDrum('vDarkB',0,1.05,0,1.05,.1,null);
+ for(const s of[-1,1])vPst('vPostB',s*1.1,0,-1.4,.12,2.6,wood);vB('vWood',0,2.5,-1.4,2.6,.14,.14,0,wood);                 // the frame over the well
+ kput('vPost',[1.6,2.0,-1.2],qEuler(0,.4,-.55),[.09,4.6,.09],wood);vB('vWood',2.9,3.3,-.7,.6,.6,.6,0,vC(0x4a3a2c));      // the sweep and its counterweight
+ kput('vPost',[0,1.35,-1.4],qEuler(Math.PI/2,0,0),[.05,2.3,.05],vC(0x3a2a1c));vnBarrel(0,1.55,-1.4,.22,.4,wood);                  // the rope and the bucket
+ vB('vStone',0,.05,2.6,3.0,.35,.8,0,st);dnJar(-2.6,0,1.6,.32);dnJar(2.4,0,1.2,.28);dnJar(2.9,0,2.0,.26);dnJar(-3.0,0,-1.8,.3);
+ vnPlanter(-3.2,0,-3.2,1.8,.7,0,wood);dnStele(3.2,0,-3.2,0,1.8,st);
+ dnFolk(0,2.2,3,1.4);dnFolk(-2,-1,2,.8);}
+// ---------------------------------------------------------------- BATH HOUSE: a stone drum under a low dome, a steaming pool court behind an earth wall; The God's light
+function buildDalabBathhouse(G,o){reseed(8831+(o.v|0));const R=5.2,H=3.8,CW=22,CD=18;const st=dCol(DPAL.stone),wood=dCol(DPAL.wood),earth=dCol(DPAL.earth);
+ vnReg('Bath house',0,0,12,H+R*.7+1.5);vnReg('Bath house wall',0,0,12.5,2.4,{part:'wall',type:['civic']});
+ dnEarthWall(0,0,0,CW,CD,0,2.2,3.0,{c:earth,relief:true,stoneGate:true});
+ // the hot room, back of the court
+ const hz=-CD/2+R+1.8;dnDrum('dStoneDrum',0,0,hz,R,H,st);dnDrum('dReliefDrum',0,.3,hz,R+.06,.9,st);dnMuralRing(0,H-1.3,hz,R+.05,1.0,st,2);
+ kput('dStoneDome',[0,H,hz],null,[R+.3,R*.7,R+.3],st.clone().multiplyScalar(.9));vBall('dGiltBall',0,H+R*.7+.2,hz,.3);
+ vnChimney(R*.5,H+R*.55,hz-R*.4,1.6,.16,false);
+ for(let k=0;k<4;k++){const a=k*Math.PI/2+Math.PI/4;const p=dnOnRing(0,hz,R,a);dnGodWin(p[0],1.6,p[1],a,.9,1.1,'vStone',st);}
+ const dp=dnOnRing(0,hz,R,0);dnGate(dp[0],0,dp[1]+.1,0,1.6,2.6,st);vnDoor(dp[0],0,dp[1],0,1.4,2.5,'vStone',st,vC(0x4a2e1c),false);for(const x of[-2,2])dnGodLamp(x,3.0,dp[1],0);
+ // the pool: a stone-kerbed basin of dark water in the court, steam, benches, a colonnade of stone posts along one side
+ {const pz=hz+R+4.4;vB('vStone',0,0,pz,9,.4,6,0,st);vB('vPanelB',0,.32,pz,8.2,.12,5.2,0,vC(0x3a8a80));   /* the pool reads teal, not black */
+  for(let k=0;k<5;k++)kput('dGlow',[rr(-3.5,3.5),.7+rr(0,.5),pz+rr(-2,2)],null,[1.2,.5,1.2],vC(0xdfe8e4));                      // steam
+  for(const x of[-7,7]){vB('vStone',x,0,pz,1.4,.5,5,0,st);for(const z of[-2,0,2])dnJar(x,.5,pz+z,.24);}
+  for(let k=0;k<5;k++){vPst('vPostS',-CW/2+2.2,0,-CD/2+4+k*2.6,.24,3.0,st);}vB('vWood',-CW/2+2.2,3.0,-CD/2+4+5.2,.4,.25,12,0,wood);
+  vnShedRoof(-CW/2+3.4,3.2,-CD/2+9.2,2.6,12,.7,Math.PI/2,'vShingleB',dCol(DPAL.shingle),.3,.2);}
+ vnPaving(0,.02,CD/2-3,10,4,0,st,10);dnFirePit(CW/2-4,0,CD/2-4,.6);dnChecker(0,.03,hz+R+1.0,5,1.6,0);
+ dnStele(-4.5,0,CD/2+1.6,0,2.4,st,true);dnStele(4.5,0,CD/2+1.6,0,2.4,st,true);
+ dnFolk(0,CD/2+4,3,1.6);dnFolk(3,hz+R+4.4,2,1.2);}
+// ---------------------------------------------------------------- SCRIBES' HALL: a long timber hall on a stone plinth, mural bands, God-lit windows, a stele court
+function buildDalabScribes(G,o){reseed(8841+(o.v|0));const W=18,D=9,H=4.0,Y0=.9;const st=dCol(DPAL.stone),wood=dCol(DPAL.wood),sh=dCol(DPAL.shingle);
+ vnReg("Scribes' hall",0,0,12,Y0+H+4.5);
+ vB('vStone',0,0,0,W+2,Y0,D+2,0,st);dnReliefBand(0,.15,D/2+1.0,0,W-1,.55,st);vnStairs(0,0,D/2+1.0+.6,0,3.4,Y0,3,'vStone',st);
+ vnFrame(0,Y0,0,W,H,D,0,wood,.18);vB('vWood',0,Y0,0,W-.12,H,D-.12,0,wood.clone().multiplyScalar(.9));
+ dnMuralBand(0,Y0+H-1.4,D/2-.02,0,W-3,1.2);dnMuralBand(0,Y0+H-1.4,-D/2+.02,Math.PI,W-3,1.2,1);
+ vnGableRoof(0,Y0+H,0,W,D,3.2,0,'vGableS',sh,1.2,'vGableW',wood,.3);dnCrest(0,Y0+H+3.2,0,3,0,wood);
+ vnDoor(0,Y0,D/2,0,1.5,2.5,'vWood',wood,vC(0x4a2e1c));
+ for(const x of[-6.6,-4.4,-2.2,2.2,4.4,6.6])dnGodWin(x,Y0+1.3,D/2,0,1.0,1.3,'vWood',wood);for(const s of[-1,1])for(const z of[-2.4,2.4])dnGodWin(s*W/2,Y0+1.3,z,s*Math.PI/2,.9,1.2,'vWood',wood);
+ for(const x of[-3.6,3.6])dnGodLamp(x,Y0+3.2,D/2,0);
+ // the reading porch: a bench under a shingle skirt along the front, tablets stacked at its end
+ vnVeranda(0,0,D/2+2.0,W-4,2.6,0,Y0,2.5,wood);vnShedRoof(0,Y0+2.5,D/2+2.0,W-4,2.6,.5,0,'vShingleB',sh,.4,.22);
+ for(let k=0;k<6;k++)vB('vStone',-W/2+5.5+k*.35,Y0,D/2+.9,.3,rr(.5,.9),.7,0,st.clone().multiplyScalar(.9));
+ // the stele court: four steles with the reformed word, a checker path
+ for(const x of[-6,-2,2,6])dnStele(x,0,D/2+6.4,0,2.6,st,x<0);dnChecker(0,.03,D/2+4.6,W-6,1.4,0);
+ dnGodPost(-W/2-1.6,0,D/2+3,3.6);dnGodPost(W/2+1.6,0,D/2+3,3.6);
+ dnPriest(-4,0,D/2+5.2,Math.PI);dnFolk(3,D/2+5.4,4,1.6);}
+// ---------------------------------------------------------------- TRAVELLERS' INN: an earth-walled court with lizard stalls, a stacked lodge at the back, the fire
+function buildDalabInn(G,o){reseed(8851+(o.v|0));const CW=27,CD=24;const wood=dCol(DPAL.woodGrey),earth=dCol(DPAL.earth),st=dCol(DPAL.stone);
+ vnReg("Travellers' inn",0,0,16,10);vnReg('Inn wall',0,0,16.5,2.8,{part:'wall',type:['market/shop']});
+ dnEarthWall(0,0,0,CW,CD,0,2.6,4.2,{c:earth,t:.9});
+ // the lodge along the back: two storeys, a gallery, a long thatch
+ {const W=16,D=7,H1=2.8,H2=2.4,lz=-CD/2+D/2+1.2;kput('dEarthBat',[0,0,lz],null,[W,H1,D],earth);vB('dEarth',0,H1-.1,lz,W-.2,H2,D-.2,0,earth.clone().multiplyScalar(1.04));
+  vB('dEarth',0,H1-.1,lz+D/2-.05,W,.3,.16,0,dCol(DPAL.turq));vnDoor(0,0,lz+D/2,0,1.6,2.2,'vWood',wood,vC(0x5a4a3a),false);
+  for(const x of[-5,5]){vnWin(x,1.3,lz+D/2,0,.9,.8,'open','vWood',wood,true);dnHearth(x,1.3,lz+D/2,0,.9,.8);}
+  const GY=H1-.1;vB('vWood',0,GY,lz+D/2+1.0,W,.18,2.0,0,wood);for(const x of[-W/2+.3,-W/4,0,W/4,W/2-.3])vPst('vPost',x,0,lz+D/2+1.9,.11,GY,wood);
+  vB('vWood',0,GY+1.0,lz+D/2+1.95,W,.08,.08,0,wood);vnStairs(-W/2-.9,0,lz+D/2+1.0,-Math.PI/2,1.0,GY,9,'vWood',wood);
+  for(const x of[-5,-1.7,1.7,5])vnDoor(x,GY,lz+D/2-.1,0,.9,1.9,'vWood',wood,vC(0x5a4a3a),false);
+  vnHipRoof('vHipT',0,H1+H2-.1,lz,W-.2,D-.2,2.8,0,dCol(DPAL.thatch),1.1);vB('vWood',0,H1+H2-.25,lz,W+.4,.22,D+.4,0,wood);vnChimney(4,H1+H2+2.2,lz-1.5,1.0,.1,true);
+  dnBanner(-W/2-.6,H1+H2+.4,lz+D/2-.3,Math.PI/2,.8,2.0,dCol(DPAL.red));}
+ // the stalls: a lean-to along the +x wall, lizards tethered in them
+ {const sx=CW/2-2.6;for(let k=0;k<4;k++){const z=-CD/2+5+k*3.6;vPst('vPost',sx-2.4,0,z,.11,2.2,wood);vB('vWood',sx-1.2,0,z+1.8,2.6,1.1,.12,0,wood);
+   if(k<3)dnAnimal('lizard',sx-1.2,0,z,rr(-.4,.4)-Math.PI/2,rr(1.1,1.5),{c:dCol([0x8a4a2a,0x6a5a2a,0x4f4f36])});}
+  vnShedRoof(sx-1.2,2.3,-CD/2+9.6,3.2,14.4,.7,Math.PI/2,'vShingleB',dCol(DPAL.shingle),.3,.2);vB('vWood',sx-2.4,2.2,-CD/2+9.6,.16,.16,14.4,0,wood);
+  vB('vStone',sx-1.2,0,CD/2-4.6,2.4,.5,1.2,0,st);vB('vDarkB',sx-1.2,.42,CD/2-4.6,2.0,.1,.9,0,vC(0x2a4a48));}   // the trough
+ // the yard: a fire, benches, crates and sacks unloaded, the well, folk and a priest passing through
+ dnFirePit(-4,0,2,.8);for(let k=0;k<3;k++)vB('vWood',-4+Math.cos(k*2.1)*2.2,.35,2+Math.sin(k*2.1)*2.2,1.6,.1,.35,k*2.1,wood);
+ vnCrate(-CW/2+3,0,4,1.0,.3,wood);vnCrate(-CW/2+3.4,0,5.4,.8,.1,wood);vnSacks(-CW/2+4.5,0,7,4);vnBarrel(-CW/2+2.6,0,7.5,.4,1.0,wood);
+ dnDrum('dStoneDrum',5,0,5,1.0,.9,st);dnDrum('vDarkB',5,.85,5,.8,.1,null);dnJar(6.4,0,4.2,.3);
+ vnPaving(0,.02,CD/2+2.2,6,3,0,dCol(DPAL.earthDark),6);dnGodPost(-3.2,0,CD/2+1.0,3.4);dnGodPost(3.2,0,CD/2+1.0,3.4);
+ dnFolk(0,CD/2+3.6,3,1.6);dnFolk(-1,4,4,2.2);}
+// ---------------------------------------------------------------- EARTH YARD: where the walls come from — block stacks, the mixing pit, drying racks, a ramming shed
+function buildDalabEarthyard(G,o){reseed(8861+(o.v|0));const wood=dCol(DPAL.woodGrey),earth=dCol(DPAL.earth),eD=dCol(DPAL.earthDark);
+ vnReg('Earth yard',0,0,10,5);
+ vnFence(0,0,0,18,13,0,wood,3.5,1.1);
+ // the shed: an open post shed with a thatch hip over the ramming frames
+ {const W=8,D=5,H=2.8,sx=-4.5,sz=-3;for(const c of[[-1,-1],[1,-1],[1,1],[-1,1]])vPst('vPostB',sx+c[0]*W/2,0,sz+c[1]*D/2,.14,H,wood);
+  vnHipRoof('vHipT',sx,H,sz,W,D,2.0,0,dCol(DPAL.thatch),.9);
+  for(let k=0;k<2;k++){const fx=sx-2+k*4;vB('vWood',fx,0,sz,1.4,1.2,.9,0,wood);vB('dEarth',fx,.1,sz,1.1,.9,.6,0,earth);for(const s of[-1,1])vPst('vPost',fx+s*.75,0,sz,.06,2.0,wood);}   // the ramming forms
+  dnFolk(sx,sz+1.8,2,1.0);}
+ // the block stacks: rammed blocks drying in rows, some under tarps
+ for(let r=0;r<3;r++)for(let k=0;k<5;k++){const x=1.5+k*1.3,z=-4.5+r*1.6;const n=2+Math.floor(rng()*3);for(let j=0;j<n;j++)vB('dEarth',x+rr(-.05,.05),j*.42,z,1.1,.4,.55,rr(-.06,.06),j%2?earth:eD);}
+ kput('vTarpB',[4.1,1.35,-4.5],vQ(0,0,.06),[6.6,.05,1.4],vC(0xa09070));
+ // the mixing pit: a dark wet disc kerbed with stones, a pile of straw, water jars, a treading figure
+ dnDrum('dEarthDrum',-4,-.02,4,2.6,.3,eD);vB('vDarkB',-4,.26,4,3.6,.08,3.6,0,vC(0x4a3a2a));for(let k=0;k<9;k++){const a=k/9*TAU;kput('vRock',[-4+Math.cos(a)*2.7,.15,4+Math.sin(a)*2.7],qEuler(rng(),rng(),0),[.5,.3,.5],vC(0x6a625a));}
+ kput('vThatchB',[0,0,5],null,[2.2,1.3,2.2],vC(0xc8b060));dnJar(2.0,0,3.8,.34);dnJar(2.7,0,4.6,.3);dnJar(3.5,0,3.9,.3);
+ vnDryingRack(5.5,0,3,Math.PI/2,5);dnWoodpile(7.6,0,0,Math.PI/2,1.6);vnCrate(-7.5,0,-.5,.9,.2,wood);
+ vnPaving(0,.02,8.2,4,2.4,0,eD,4);dnFolk(-3.5,4,1,.4);dnFolk(0,8.4,2,1.2);}
+// ---------------------------------------------------------------- ORCHARD PLOT: a fenced plot of manzanita and skirt palm in rows, a keeper's lean-to, a cistern
+function buildDalabOrchard(G,o){reseed(8871+(o.v|0));const wood=dCol(DPAL.woodGrey),st=dCol(DPAL.stone);
+ vnReg('Orchard plot',0,0,11,4);
+ vnFence(0,0,0,20,18,0,wood,3.0,1.0);
+ for(let r=0;r<3;r++)for(let k=0;k<3;k++){const x=-6+k*6,z=-5.5+r*5.5;if(r===1&&k===1)continue;dnTree(rng()<.7?'manzanita':'skirtpalm',x+rr(-.6,.6),0,z+rr(-.6,.6),{scale:rr(.55,.8)});}
+ for(let k=0;k<7;k++)dnPlant(dPick(['agave','shrub','grass']),rr(-8,8),0,rr(-7.5,7.5),{});
+ // the cistern in the middle, a keeper's lean-to at the gate, ladders and baskets
+ dnDrum('dStoneDrum',0,0,0,1.4,.8,st);dnDrum('vDarkB',0,.75,0,1.15,.1,null);dnJar(1.9,0,.4,.3);
+ for(const z of[-1.2,1.2])vPst('vPost',7.5,0,z,.08,2.0,wood);kput('vTarpB',[6.6,1.9,0],vQ(0,0,.3),[2.4,.05,3.0],vC(0xb0a080));vnSacks(6.4,0,.4,2);
+ kput('vPost',[-2.4,.1,-5.6],qEuler(0,0,.35),[.07,3.2,.07],wood);kput('vPost',[-1.9,.1,-5.6],qEuler(0,0,.35),[.07,3.2,.07],wood);   // a ladder against a tree
+ vnPaving(0,.02,10.4,3,2,0,dCol(DPAL.earthDark),3);dnFolk(2,-3,2,1.4);dnFolk(0,10.6,1,.6);}
+// ---------------------------------------------------------------- WATCH TOWER: a tall battered earth tower with a timber lookout under a thatch cap; a giant at its foot
+function buildDalabWatchtower(G,o){reseed(8881+(o.v|0));const R=2.6,H=11;const wood=dCol(DPAL.woodGrey),earth=dCol(DPAL.earth),st=dCol(DPAL.stone);
+ vnReg('Watch tower',0,0,5,H+5);
+ dnDrum('dStoneDrum',0,-.05,0,R+1.0,.6,st);kput('dEarthDrum',[0,.5,0],null,[R,H,R],earth);kput('dEarthDrum',[0,.5,0],null,[R+.12,1.2,R+.12],dCol(DPAL.earthDark));
+ dnPaintRing(0,.5+H-1.6,0,R+.04,.5,dCol(DPAL.red));dnMuralRing(0,.5+H*.55,0,R+.04,.8,st,3);
+ // the lookout: a timber deck wider than the drum on brackets, a rail, the thatch cap on posts, a bell of Ancient plate
+ const DY=.5+H;vB('vWood',0,DY,0,R*2+2.6,.25,R*2+2.6,0,wood);vB('vWood',0,DY,0,R*2+2.6,.25,R*2+2.6,Math.PI/4,wood);
+ for(let k=0;k<8;k++){const a=k/8*TAU;const p=dnOnRing(0,0,R+.9,a);kput('vPost',[p[0],DY-1.4,p[1]],qEuler(0,-a,.6),[.1,1.9,.1],wood);vPst('vPost',p[0],DY+.25,p[1],.09,1.0,wood);vPst('vPostB',p[0]*.85,DY+.25,p[1]*.85,.12,2.6,wood);}
+ kput('dRopeRing',[0,DY+1.2,0],qEuler(Math.PI/2,0,0),[R+.95,R+.95,1],wood);
+ kput('dConeT',[0,DY+2.7,0],null,[R+1.8,2.6,R+1.8],dCol(DPAL.thatch));vBall('dGiltBall',0,DY+5.3,0,.2);
+ kput('vPlate',[0,DY+1.6,-R-.2],vQ(0,0,0),[.7,.9,1],null);
+ // the door and the ladder-stair spiralling the drum; a brazier on the deck
+ vnDoor(0,.5,R-.02,0,.9,1.9,'vWood',wood,vC(0x5a4a3a),false);
+ for(let k=0;k<22;k++){const t=k/22;const a=Math.PI*.5+t*Math.PI*1.4;const p=dnOnRing(0,0,R+.45,a);vB('vWood',p[0],.5+.6+t*(H-1.6),p[1],.9,.08,.4,a,wood);}
+ dnFirePit(0,DY+.25,0,.35);dnFolk(0,0,1,.1,DY+.25);
+ dnGiant(2.6,0,R+2.4,-.3,2,{spear:true});dnGodPost(-2.4,0,R+2.2,3.4);
+ vnPaving(0,.02,R+2.5,5,2.5,0,st,5);dnFolk(-1,R+4.5,2,1.2);}
+
+dDef({key:'dalab_rowhouse',name:'Terrace row',family:'dwelling',tags:Object.assign({wealth:'peasant',lit:false},DTAG_MF),w:20,d:14,h:7,build:buildDalabRowhouse});
+dDef({key:'dalab_tenement',name:'Stacked house',family:'dwelling',tags:Object.assign({wealth:'peasant',lit:false},DTAG_MF),w:16,d:14,h:10,build:buildDalabTenement});
+dDef({key:'dalab_well',name:'Well court',family:'infrastructure',tags:{type:['infrastructure'],wealth:'peasant',lit:false},w:10,d:10,h:5,build:buildDalabWell});
+dDef({key:'dalab_bathhouse',name:'Bath house',family:'civic',tags:{type:['civic'],wealth:'civic',lit:true},w:25,d:23,h:8,build:buildDalabBathhouse});
+dDef({key:'dalab_scribes',name:"Scribes' hall",family:'civic',tags:{type:['civic','religious'],wealth:'civic',lit:true,role:'scribes'},w:24,d:20,h:9,build:buildDalabScribes});
+dDef({key:'dalab_inn',name:"Travellers' inn",family:'trade',tags:{type:['market/shop','multi-family dwelling'],wealth:'middle',lit:false},w:32,d:30,h:10,build:buildDalabInn});
+dDef({key:'dalab_earthyard',name:'Earth yard',family:'industry',tags:{type:['industry'],wealth:'peasant',lit:false},w:20,d:15,h:5,build:buildDalabEarthyard});
+dDef({key:'dalab_orchard',name:'Orchard plot',family:'farm',tags:{type:['farm'],wealth:'peasant',lit:false},w:22,d:22,h:5,build:buildDalabOrchard});
+dDef({key:'dalab_watchtower',name:'Watch tower',family:'civic',tags:{type:['civic','military'],wealth:'civic',lit:false},w:12,d:12,h:17,build:buildDalabWatchtower});
 // ================================================================= DALAB — civic: the guard's barracks, the three embassies, the Halls of Reformation
 // Civic buildings are the priests' and carry The God's light. Each embassy is a Dalab-built rammed-earth compound
 // (relief gate, drum buttresses) round a hall in the visitor's own idiom: Iziz (sand plaster, orange awnings, deco
@@ -4459,7 +4628,7 @@ const SETTLE=[];
  for(let k=0;k<6;k++){const a=k/6*TAU+Math.PI/6;const x=CITY.RING_C[0]+Math.cos(a)*CITY.RING,z=CITY.RING_C[1]+Math.sin(a)*CITY.RING;
   SETTLE.push({key:'town'+(k+1),name:['Ashfold','Greenmarch','Reedholm','Oakhaven','Cornwell','Stonebrook'][k],x,z,r:170,main:false,face:Math.atan2(L.x-x,L.z-z),plazaR:30,moundR:30,streets:8,ringR:74,ringR2:118});}
  // the main settlement: 3x; its mound faces the lab (north); the palace mound is the High Priest's seat here
- SETTLE.push({key:'main',name:'Dalab',x:CITY.MAIN.x,z:CITY.MAIN.z,r:CITY.MAIN.r,main:true,face:Math.atan2(L.x-CITY.MAIN.x,L.z-CITY.MAIN.z),plazaR:64,moundR:42,streets:8,ringR:210,ringR2:360});
+ SETTLE.push({key:'main',name:'Dalab',x:CITY.MAIN.x,z:CITY.MAIN.z,r:CITY.MAIN.r,main:true,face:Math.atan2(L.x-CITY.MAIN.x,L.z-CITY.MAIN.z),plazaR:64,moundR:42,streets:10,ringR:200,ringR2:330,ringR3:450});
 })();
 // the river: a gentle meander down the west edge; the main channel east to the main settlement; irrigation channels to
 // the western towns and from the main channel to the eastern ones
@@ -4506,7 +4675,7 @@ function cdisc(ctx,x,z,r,col){ctx.beginPath();ctx.arc(px(x),px(z),r*PXS,0,7);ctx
 function cpoly(ctx,pts,col){ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(px(p[0]),px(p[1])):ctx.moveTo(px(p[0]),px(p[1])));ctx.closePath();ctx.fillStyle=col;ctx.fill();}
 const ROADCOL={3:'#8a7a62',4:'#8f8068',5:'#8a8070',6:'#7a6a56'};   // packed earth; the highway a shade darker
 // a road: albedo, blocked in the mask (a little wider), classed, and remembered
-function road(pts,w,cls,opt){opt=opt||{};cstroke(cg,pts,w,opt.col||ROADCOL[cls]||'#8a7a62');if(cls===KL.highway||cls===KL.avenue){cstroke(cg,pts,w*.36,'#9a8a70');cstroke(cg,pts,w*.08,'#7a6a52');}else if(cls===KL.street){cstroke(cg,pts,w*.3,'#968670');}cstroke(mg,pts,w+3,'#000');cstroke(kg,pts,w+1.5,KLCOL(cls));
+function road(pts,w,cls,opt){opt=opt||{};cstroke(cg,pts,w,opt.col||ROADCOL[cls]||'#8a7a62');if(cls===KL.highway||cls===KL.avenue){cstroke(cg,pts,w*.36,'#9a8a70');cstroke(cg,pts,w*.08,'#7a6a52');}else if(cls===KL.street){cstroke(cg,pts,w*.3,'#968670');}cstroke(mg,pts,w+2.4,'#000');cstroke(kg,pts,w+1.2,KLCOL(cls));   /* the mask is 2.15 m/px: a w+3 stroke ate the frontage's first metres (round 10) */
  const r={pts,w,cls,id:ROADS.length,zone:opt.zone||null};ROADS.push(r);return r;}
 function disc(x,z,r,type,col){cdisc(cg,x,z,r,col||(type==='park'?'#5f8a3a':type==='court'?'#8a7a66':'#a89474'));cdisc(mg,x,z,r,type==='park'?'#00ff00':'#000');cdisc(kg,x,z,r,KLCOL(type==='park'?KL.park:type==='court'?KL.court:type==='mound'?KL.mound:KL.plaza));}
 function precinct(x,z,r,name){PRECINCTS.push({x,z,r,name});}
@@ -4535,7 +4704,7 @@ let mData=null,kData=null,cData=null;
 function cityBakeMasks(){mData=mg.getImageData(0,0,CS,CS).data;kData=kg.getImageData(0,0,CS,CS).data;cData=cg.getImageData(0,0,CS,CS).data;}
 function maskAt(x,z){const ix=Math.floor(px(x)),iz=Math.floor(px(z));if(ix<0||iz<0||ix>=CS||iz>=CS)return[0,0];const i=(iz*CS+ix)*4;return[mData[i],mData[i+1]];}
 function klass(x,z){const ix=Math.floor(px(x)),iz=Math.floor(px(z));if(ix<0||iz<0||ix>=CS||iz>=CS)return 0;return kData[(iz*CS+ix)*4];}
-function canBuild(x,z){return maskAt(x,z)[0]>200;}
+function canBuild(x,z){return maskAt(x,z)[0]>235;}   /* a pixel the stroke touched at all is blocked (round 10): a corner could sit a metre inside a lane at 200 */
 function isRoad(x,z){const k=klass(x,z);return k>=3&&k<=6;}
 function walkable(x,z){const k=klass(x,z);return k===1||k===2||(k>=3&&k<=6)||k===9;}
 // ================================================================= BIOME CORE — head
@@ -6545,8 +6714,17 @@ for(const S of SETTLE){
  // a ring is painted in runs that skip a precinct (the outlying plaza ring would otherwise cut through the mound's foot)
  const ringClipped=(cx,cz,R,w,zone,skip)=>{let run=[];const flush=()=>{if(run.length>1)road(run,w,KL.lane,{zone});run=[];};
   for(let i=0;i<=72;i++){const a=i/72*TAU;const p=[cx+Math.sin(a)*R,cz+Math.cos(a)*R];if(skip(p[0],p[1]))flush();else run.push(p);}flush();};
- const ring=(R,w)=>ringClipped(pc[0],pc[1],R,w,S.key+':ring',(x,z)=>Math.hypot(x-S.x,z-S.z)<S.moundR+12);
- ring(S.ringR,CITY.LANE_W);if(S.ringR2)ring(S.ringR2,CITY.LANE_W);
+ // the main settlement's full grid (Travis, round 10): half rings between the rings and half radials between the
+ // radials from the first ring out, so every block is ~65 m deep; the two great compounds (the Halls, the ranch)
+ // are precincts every ring and half radial stops at, and the build places them there by name
+ S.radials2=[];S.big=[];if(S.main){const front=back+Math.PI;S.big=[{key:'dalab_halls',a:front-Math.PI*.3,d:335,r:82,name:'The Halls of Reformation'},{key:'dalab_ranch',a:front+Math.PI*.3,d:400,r:92,name:'The ranch'},{key:'dalab_priest_compound',a:back+.314,d:200,r:38,name:"The priests' compound"},{key:'dalab_priest_compound',a:back-.314,d:200,r:38,name:null}];
+  for(const B of S.big){B.x=pc[0]+Math.sin(B.a)*B.d;B.z=pc[1]+Math.cos(B.a)*B.d;precinct(B.x,B.z,B.r,B.name);}}
+ const skipBig=(x,z)=>Math.hypot(x-S.x,z-S.z)<S.moundR+12||S.big.some(B=>Math.hypot(x-B.x,z-B.z)<B.r+4);
+ const ring=(R,w)=>ringClipped(pc[0],pc[1],R,w,S.key+':ring',skipBig);
+ ring(S.ringR,CITY.LANE_W);if(S.ringR2)ring(S.ringR2,CITY.LANE_W);if(S.ringR3)ring(S.ringR3,CITY.LANE_W);
+ if(S.main){for(const R of[(S.ringR+S.ringR2)/2,(S.ringR2+S.ringR3)/2])ring(R,CITY.LANE_W);
+  for(let k=0;k<n;k++){const a=back+Math.PI+((k+.5)/n)*TAU;if(angDiff(a,back)<.5)continue;let run=[];const flush=()=>{if(run.length>1)road(run,CITY.STREET_W,KL.street,{zone:S.key+':radial2'});run=[];};
+   for(let r=S.ringR;r<=S.ringR3+22;r+=6){const p=[pc[0]+Math.sin(a)*r,pc[1]+Math.cos(a)*r];if(skipBig(p[0],p[1]))flush();else run.push(p);}flush();S.radials2.push({a});}}
  // a lane round the back of the mound so the houses behind it connect
  // (a full ring: it meets the plaza in front of the mound, so it needs no connectors that could cut the mound's foot)
  ringClipped(S.x,S.z,S.moundR+22,CITY.LANE_W,S.key+':moundlane',(x,z)=>Math.hypot(x-pc[0],z-pc[1])<S.plazaR+2);
@@ -6585,17 +6763,17 @@ const FIELDS=[];
  window._fields=FIELDS.length;})();
 // farm lanes: every other wedge boundary gets a lane from the ring street out to the fields' edge (the farm workers' way)
 // (a lane never runs at the mound, and stops at the first precinct — another mound, the lab — it would enter)
-for(const S of SETTLE){const n=S.main?18:12;const back=Math.atan2(S.x-S.plaza.x,S.z-S.plaza.z);for(let i=0;i<n;i+=2){const a=i/n*TAU;if(angDiff(a,back)<.55)continue;const R0=S.ringR+4;let R1=(S.main?S.r+300:S.r+210);
+for(const S of SETTLE){const n=S.main?18:12;const back=Math.atan2(S.x-S.plaza.x,S.z-S.plaza.z);for(let i=0;i<n;i+=2){const a=i/n*TAU;if(angDiff(a,back)<.55)continue;const R0=(S.main?S.ringR3:S.ringR)+4;let R1=(S.main?S.r+300:S.r+210);
  for(let r=R0;r<R1;r+=6){if(inPrecinct(S.plaza.x+Math.sin(a)*r,S.plaza.z+Math.cos(a)*r,10)){R1=r-6;break;}}if(R1-R0<30)continue;
  road([[S.plaza.x+Math.sin(a)*R0,S.plaza.z+Math.cos(a)*R0],[S.plaza.x+Math.sin(a)*R1,S.plaza.z+Math.cos(a)*R1]],CITY.LANE_W,KL.lane,{zone:S.key+':farmlane'});}}
 // ---- 5. the connectivity pass: one network. Components by endpoint proximity; each minor component gets a link to the largest ----
 function roadComponents(){const N=ROADS.length,par=[];for(let i=0;i<N;i++)par[i]=i;const find=i=>par[i]===i?i:(par[i]=find(par[i]));const uni=(a,b)=>{par[find(a)]=find(b);};
  for(let i=0;i<N;i++){const A=ROADS[i];for(const e of[A.pts[0],A.pts[A.pts.length-1]]){for(let j=0;j<N;j++){if(i===j)continue;const B=ROADS[j];for(let k=0;k<B.pts.length-1;k++){if(segD(e[0],e[1],B.pts[k],B.pts[k+1])<(A.w+B.w)/2+1.5){uni(i,j);break;}}}}}
  const comp={};for(let i=0;i<N;i++){const c=find(i);(comp[c]||(comp[c]=[])).push(i);}return Object.values(comp);}
-(function connectAll(){let guard=0;while(guard++<12){const C=roadComponents();if(C.length<=1){window._roadComponents=1;return;}C.sort((a,b)=>b.length-a.length);const main=new Set(C[0]);
+(function connectAll(){let guard=0;while(guard++<12){const C=roadComponents().filter(c=>!c.every(i=>ROADS[i].dead));if(C.length<=1){window._roadComponents=1;return;}C.sort((a,b)=>b.length-a.length);const main=new Set(C[0]);
  for(let ci=1;ci<C.length;ci++){let best=null;for(const ri of C[ci]){for(const p of ROADS[ri].pts){const n=nearestRoadPt(p[0],p[1],r=>main.has(r.id));if(!n)continue;let clear=true;for(let t=0;t<=1;t+=.05){if(inPrecinct(p[0]+(n.x-p[0])*t,p[1]+(n.z-p[1])*t,4)){clear=false;break;}}if(clear&&(!best||n.d<best.d))best={p,n};}}
-  if(best)road([best.p,[best.n.x,best.n.z]],CITY.LANE_W,KL.lane,{zone:'connect'});else{const ri=C[ci][0];const p=ROADS[ri].pts[0];const n=nearestRoadPt(p[0],p[1],r=>main.has(r.id));if(n)road([p,[n.x,n.z]],CITY.LANE_W,KL.lane,{zone:'connect'});}}}
- window._roadComponents=roadComponents().length;})();
+  if(best)road([best.p,[best.n.x,best.n.z]],CITY.LANE_W,KL.lane,{zone:'connect'});else{for(const ri of C[ci])ROADS[ri].dead=true;}}}   /* no clear link (a stub cut off by a precinct): it stays a dead end rather than a lane through the precinct (round 10) */
+ window._roadComponents=roadComponents().filter(c=>!c.every(i=>ROADS[i].dead)).length;})();
 // bridges wherever a road crosses a channel (painted as planks over the water)
 (function bridges(){for(const R of ROADS){for(let i=0;i<R.pts.length-1;i++){const a=R.pts[i],b=R.pts[i+1];const L=Math.hypot(b[0]-a[0],b[1]-a[1]);const n=Math.max(2,Math.ceil(L/6));
   for(let k=0;k<=n;k++){const t=k/n;const x=a[0]+(b[0]-a[0])*t,z=a[1]+(b[1]-a[1])*t;const c=channelD(x,z);if(c.d<c.w*.5){bridgeAt(x,z,Math.atan2(b[0]-a[0],b[1]-a[1]),R.w);k+=Math.ceil(c.w*2/(L/n));}}}}
@@ -6620,14 +6798,14 @@ function occFree(o,pad){const seen={};for(const k of occCells(o)){const L=OCC.ha
 function occAdd(o){o.id=OCC.list.length;OCC.list.push(o);for(const k of occCells(o))(OCC.hash[k]||(OCC.hash[k]=[])).push(o);return o;}
 function obbCorners(o,grow){const g=grow||0;const c=Math.cos(o.ry),s=Math.sin(o.ry);return[[-1,-1],[1,-1],[1,1],[-1,1]].map(k=>[o.x+k[0]*(o.hx+g)*c+k[1]*(o.hz+g)*s,o.z-k[0]*(o.hx+g)*s+k[1]*(o.hz+g)*c]);}
 // ground test: buildable at the corners, edge midpoints and centre (a 3x3 inside too for big plots); not in a precinct; not water
-function groundOK(o,opt){opt=opt||{};const pts=obbCorners(o,opt.grow||0);pts.push([o.x,o.z]);for(let i=0;i<4;i++)pts.push([(pts[i][0]+pts[(i+1)%4][0])/2,(pts[i][1]+pts[(i+1)%4][1])/2]);
- if(o.hx>14||o.hz>14){for(let i=-1;i<=1;i++)for(let j=-1;j<=1;j++){const p=loc(o.x,o.z,i*o.hx*.6,j*o.hz*.6,o.ry);pts.push(p);}}
+function groundOK(o,opt){opt=opt||{};const g=opt.grow||0,hx=o.hx+g,hz=o.hz+g;const pts=[];const nx=Math.max(1,Math.ceil(hx/4)),nz=Math.max(1,Math.ceil(hz/4));   /* every plot sampled on a ~4 m grid, corners included: a lane's end used to slip between the corners and the edge midpoints (round 10) */
+ for(let i=-nx;i<=nx;i++)for(let j=-nz;j<=nz;j++)pts.push(loc(o.x,o.z,i/nx*hx,j/nz*hz,o.ry));
  const W=CITY.WORLD/2-30;for(const p of pts){if(Math.abs(p[0])>W||Math.abs(p[1])>W)return false;if(!opt.ignoreMask&&!canBuild(p[0],p[1]))return false;if(!opt.ignoreOak&&inOakCorridor(p[0],p[1]))return false;if(!opt.ignorePrecinct&&inPrecinct(p[0],p[1],opt.ppad||0))return false;if(isWater(p[0],p[1]))return false;}
  return true;}
 function groundY(o){let y=1e9;for(const p of obbCorners(o,-.5))y=Math.min(y,terrainH(p[0],p[1]));y=Math.min(y,terrainH(o.x,o.z));return y-.06;}
 // STREET ALIGNMENT: the outward normal of the nearest road at the plot, so the door faces the street
 // a plot under an oak vault is no plot: the corridor either side of every oak road (the oaks stand 12.5 m off the line)
-function inOakCorridor(x,z,pad){const n=nearestRoadPt(x,z,r=>r.oak);return !!(n&&n.d<n.road.w/2+12.5+2+(pad||0));}
+function inOakCorridor(x,z,pad){const n=nearestRoadPt(x,z,r=>r.oak);return !!(n&&n.d<n.road.w/2+10+1.5+(pad||0));}
 // the door faces a side street when one is near, the avenue only when nothing else is
 function faceRoadRy(x,z,filter){let n=nearestRoadPt(x,z,r=>!r.oak&&(!filter||filter(r)));if(!n||n.d>45)n=nearestRoadPt(x,z,filter);if(!n)return 0;return Math.atan2(n.x-x,n.z-z);}
 function findSpot(hx,hz,tx,tz,opt){opt=opt||{};const R=opt.R||90,step=opt.step||8;const tries=[[tx,tz]];
@@ -6649,7 +6827,7 @@ function placeNear(key,tx,tz,opt){opt=opt||{};const D=VERN.defs[key];if(!D)retur
 function frontage(R,pitch,setback,pick,max,opt){opt=opt||{};let n=0;const P=R.pts;let carry=pitch*rng();
  for(let i=0;i<P.length-1&&n<max;i++){const a=P[i],b=P[i+1];const L=Math.hypot(b[0]-a[0],b[1]-a[1]);if(L<1)continue;const ux=(b[0]-a[0])/L,uz=(b[1]-a[1])/L;
   for(let d=carry;d<L&&n<max;d+=pitch){for(const side of[-1,1]){if(n>=max)break;const key=pick(d/L,side);if(!key)continue;const D=VERN.defs[key];if(!D)continue;
-   const hx=D.w/2,hz=D.d/2;const off=R.w/2+(R.oak?Math.max(setback,15):setback)+hz;/* an avenue's houses stand back past the oaks */const cx=a[0]+ux*d+(-uz)*side*off,cz=a[1]+uz*d+ux*side*off;
+   const hx=D.w/2,hz=D.d/2;const off=R.w/2+(R.oak?Math.max(setback,12):setback)+hz;/* an avenue's houses stand back past the oaks */const cx=a[0]+ux*d+(-uz)*side*off,cz=a[1]+uz*d+ux*side*off;
    const ry=Math.atan2((a[0]+ux*d)-cx,(a[1]+uz*d)-cz);   // face the road: the door toward the road's centreline
    const o={x:cx,z:cz,hx:hx+1,hz:hz+1,ry,pad:1.5};if(!groundOK(o,{ppad:2})||!occFree(o,1.5))continue;
    o.hx=hx;o.hz=hz;placeDef(key,o,Object.assign({settle:opt.settle},opt.each?opt.each(key):{}));n++;}}
@@ -6734,11 +6912,30 @@ function cityTerrainMesh(){const N=Math.round(CITY.WORLD/8);const g=new THREE.Pl
 TSTAT.cur='dalab_lab/0';
 placeDef('dalab_lab',{x:CITY.LAB.x,z:CITY.LAB.z,ry:0},{scale:CITY.LAB.scale,y:terrainH(CITY.LAB.x,CITY.LAB.z)-.4,landmark:'The Ancient lab',ignoreMask:true});
 TSTAT.cur=null;
-precinct(CITY.LAB.x,CITY.LAB.z,292*4.105*CITY.LAB.scale+30,'the lab');
+precinct(CITY.LAB.x,CITY.LAB.z,352*4.105*CITY.LAB.scale+24,'the lab and its apron');   // nothing of Dalab's stands on the Ancients' apron
 placeDef('dalab_high_mound',{x:HIGH_MOUND.x,z:HIGH_MOUND.z,ry:HIGH_MOUND.ry},{y:terrainH(HIGH_MOUND.x,HIGH_MOUND.z),landmark:"High Priest's mound",ignoreMask:true,ignorePrecinct:true});
 for(const S of SETTLE){const key=S.main?'dalab_palace_mound':'dalab_mound';const o={x:S.x,z:S.z,ry:S.face};
  placeDef(key,o,{y:terrainH(S.x,S.z),landmark:S.main?"High Priest's palace":S.name+' mound',ignoreMask:true,ignorePrecinct:true,settle:S.key});S.moundOBB=o;}
 
+// ---------------------------------------------------------------- the ruined ancient wall round the compound
+// A real wall in place of the kit's ring of blocks: a battered ghost-panel curtain ~9 m high and 3 m thick in 6 m
+// bays on a concrete footing, its height eaten away by noise (down to stubs and to nothing), toppled bays lying as
+// slabs outside it, rust seams, and clean openings wherever a road of the settlement crosses its line.
+(function labWall(){reseed(SEED_CITY+8);const K=4.105*CITY.LAB.scale;const R=292*K,cx=CITY.LAB.x,cz=CITY.LAB.z;const n=Math.round(TAU*R/6);TSTAT.cur='dalab_lab/0';
+ const bayW=TAU*R/n;let stubs=0,bays=0,gaps=0;
+ for(let k=0;k<n;k++){const th=(k+.5)/n*TAU;const r=R+9*fbm(k*.11,3.1,9370,2);const x=cx+Math.cos(th)*r,z=cz+Math.sin(th)*r;const ry=-th+Math.PI/2;
+  const road=nearestRoadPt(x,z);if(road&&road.d<road.road.w/2+7){gaps++;continue;}                          // an opening where a street passes
+  const y=terrainH(x,z);const ruin=fbm(k*.06,7.7,9372,3);
+  if(ruin<.30){if(rng()<.5)kput('vRustB',[x+Math.cos(th)*rr(4,14),y+.5,z+Math.sin(th)*rr(4,14)],qEuler(rr(-.2,.2),th+rr(-.4,.4),rr(-.15,.15)),[bayW*.9,1.1,rr(5,9)],null);continue;}   // fallen: a slab on the ground outside
+  const h=ruin<.42?rr(1.2,3.5):3+11*smoothstep(.42,.85,ruin)+rr(-.6,.6);if(ruin<.42)stubs++;else bays++;
+  kput('vPanelB',[x,y-.5,z],qEuler(0,ry,0),[bayW+.05,.9,3.6],null);                                          // footing
+  kput('dEarthBat',[x,y+.3,z],qEuler(0,ry,0),[bayW+.02,h,3.0],vC(0xd8d4cc));                                // the battered bay (rammed-earth wedge geometry, tinted ghost-white)
+  kput('vPanelB',[x,y+.3,z],qEuler(0,ry,0),[bayW-.3,h*.96,2.7],null);                                         // the panel skin
+  if(h>6){kput('vRustB',[x,y+h-1.2,z],qEuler(0,ry,0),[bayW+.1,.5,3.1],null);kput('vPanelB',[x,y+h-.6,z],qEuler(0,ry,0),[bayW+.4,.7,3.4],null);}   // rust seam and coping
+  if(rng()<.35)kput('vRustB',[x,y+rr(.5,Math.max(.6,h-1.5)),z],qEuler(0,ry,0),[rr(.8,2.2),rr(.6,1.4),3.2],null);   // rust bleeding through
+  if(rng()<.4)kput('vRock',[x+Math.cos(th)*rr(2.5,6),y+.3,z+Math.sin(th)*rr(2.5,6)],qEuler(rng(),rng(),0),[rr(.6,1.4),rr(.5,1.0),rr(.6,1.4)],vC(0x9a968e));}   // rubble at the foot
+ TSTAT.cur=null;REG.push({name:'The ancient wall (ruined)',x:cx,y:0,z:cz,r:R+6,h:14,cls:'building',key:'dalab_lab',tags:{culture:'dalab',type:['military','infrastructure'],wealth:'civic',lit:false,ancient:true,part:'wall'}});
+ window._labWall={bays,stubs,gaps};})();
 // ---------------------------------------------------------------- the horizon: cleared fields and forest going to the horizon (the brief), under the Krator sky
 // An annulus from the terrain's edge out to 9 km painted with fields, hedges and forest blocks, and a merged mesh of
 // far-tree blobs in the forest belt. KratorSky (81, attached in 94) gives the giant, its rings, the sun, stars and moon.
@@ -6771,6 +6968,9 @@ for(const S of SETTLE){const key=S.main?'dalab_palace_mound':'dalab_mound';const
 reseed(SEED_CITY+6);
 const HUTS=['dalab_hut_a','dalab_hut_a','dalab_hut_b','dalab_hut_c','dalab_hut_c','dalab_compound'];
 const TRADE=['dalab_shops','dalab_workshop','dalab_potter','dalab_weaver','dalab_dyer','dalab_smithy','dalab_warehouse','dalab_granaries'];
+// the town types (round 10): what a full grid is made of between the huts and the civic set
+const TOWN_DENSE=['dalab_rowhouse','dalab_rowhouse','dalab_tenement','dalab_tenement','dalab_compound'];
+const TOWN_SMALL=['dalab_well','dalab_orchard','dalab_earthyard','dalab_hut_a','dalab_hut_c','dalab_rowhouse'];
 const NOBLE=['dalab_noble_a','dalab_noble_b','dalab_noble_c'];
 function placeSettlement(S){reseed(SEED_CITY+10+SETTLE.indexOf(S));const P=S.plaza;const k=S.main?3:1;const own=r=>r.zone&&r.zone.indexOf(S.key+':')===0;
  // the market on the plaza (the large one for the main settlement), a shrine beside it
@@ -6794,10 +6994,13 @@ function placeSettlement(S){reseed(SEED_CITY+10+SETTLE.indexOf(S));const P=S.pla
  // the main settlement's own: the Halls, the ranch, the embassies and the chapterhouse, the healers, the priests' compound, windmills
  if(S.main){
   const at=(key,a,d,opt)=>placeNear(key,P.x+Math.sin(a)*d,P.z+Math.cos(a)*d,Object.assign({R:160,step:12,settle:S.key},opt||{}));
-  at('dalab_halls',back+Math.PI-.75,330,{landmark:'The Halls of Reformation',grow:6});
-  at('dalab_ranch',back+Math.PI+.85,400,{landmark:'The ranch',grow:6});
-  at('dalab_priest_compound',back+.55,150,{landmark:"The priests' compound"});
-  at('dalab_priest_compound',back-.55,150);
+  for(const Bg of S.big)placeDef(Bg.key,{x:Bg.x,z:Bg.z,ry:faceRoadRy(Bg.x,Bg.z)},{landmark:Bg.name,settle:S.key,ignoreMask:true,ignorePrecinct:true,ignoreOak:true});   // the Halls and the ranch at their precincts (the grid stopped at them)
+  // the round-10 civic on the grid: bath houses, scribes' halls, travellers' inns at the avenues' ends, watch towers on the outer ring, earth yards at the edge
+  for(let i=0;i<2;i++)at('dalab_bathhouse',back+Math.PI+(i?1.1:-1.1),165,{landmark:i?null:'The bath house'});
+  for(let i=0;i<2;i++)at('dalab_scribes',back+(i?.95:-.95),235,{landmark:i?null:"The scribes' hall"});
+  for(const R of S.radials.filter(r=>r.oak))at('dalab_inn',R.a,S.ringR3-30,{R:120,landmark:null});
+  for(let i=0;i<7;i++)at('dalab_watchtower',back+Math.PI+(i-3)*.72,S.ringR3+6,{R:60,step:8});
+  for(let i=0;i<3;i++)at('dalab_earthyard',back+Math.PI+(i-1)*1.9,S.ringR3-40,{R:90});
   at('dalab_healers',back+Math.PI+.1,120,{landmark:"The healers' hall"});
   const EMB=['dalab_embassy_iziz','dalab_embassy_voth','dalab_embassy_yuni','dalab_embassy_republic','dalab_chapterhouse'];
   EMB.forEach((key,i)=>at(key,back+Math.PI+1.35+i*.16,250,{landmark:VERN.defs[key].name}));
@@ -6805,12 +7008,17 @@ function placeSettlement(S){reseed(SEED_CITY+10+SETTLE.indexOf(S));const P=S.pla
   for(let i=0;i<3;i++)at('dalab_market_small',back+Math.PI+(i-1)*1.6,300,{R:120});
   for(let i=0;i<4;i++)at('dalab_workshop',back+Math.PI+(i-1.5)*.5,200,{R:120});for(let i=0;i<3;i++)at(TRADE[i+2],back+Math.PI+(i-1)*.7,340,{R:140});for(let i=0;i<3;i++)at('dalab_granaries',back+(i-1)*.6,260,{R:120});}
  // the frontage: peasant houses, with trade along the radials near the plaza; count target 15-20 (x3)
- const target=(S.main?130:32)+Math.floor(rng()*3);let n=0;
- const streets=ROADS.filter(r=>own(r)||(S.main&&r.zone==='main:oak')).sort((a,b)=>(a.zone==='main:oak'?0:a.zone.indexOf('radial')>=0?1:2)-(b.zone==='main:oak'?0:b.zone.indexOf('radial')>=0?1:2));
+ const target=(S.main?720:32)+Math.floor(rng()*3);let n=0;   // the main settlement fills its grid (round 10); the walker stops when the streets are full
+ const streets=ROADS.filter(r=>(own(r)&&r.zone!==S.key+':farmlane')||(S.main&&r.zone==='main:oak')).sort((a,b)=>(a.zone==='main:oak'?0:a.zone.indexOf('radial')>=0?1:2)-(b.zone==='main:oak'?0:b.zone.indexOf('radial')>=0?1:2));
  const pick=(t,side)=>{const r=rng();if(t<.35&&r<.28)return vPick(TRADE);if(r<.08)return 'dalab_compound';return vPick(HUTS);};
- for(const R of streets){if(n>=target)break;n+=frontage(R,S.main?18:13,3,pick,target-n,{settle:S.key});}
+ // the main settlement's streets: dense dwellings and the town types mixed with the huts; trade toward the plaza
+ const pickMain=(t,side)=>{const r=rng();if(t<.4&&r<.14)return vPick(TRADE);if(r<.30)return vPick(TOWN_DENSE);if(r<.34)return 'dalab_well';if(r<.37)return 'dalab_orchard';if(r<.39)return 'dalab_earthyard';return vPick(HUTS);};
+ for(const R of streets){if(n>=target)break;n+=frontage(R,13,4.5,S.main?pickMain:pick,target-n,{settle:S.key});}
+ // the main settlement's blocks: whatever the frontage left open inside the grid gets a small plot facing the nearest street
+ if(S.main){let got=0,tries=0;while(got<160&&tries++<1400){const a=rng()*TAU,r=Math.sqrt(rng())*(S.ringR3+10);const x=P.x+Math.sin(a)*r,z=P.z+Math.cos(a)*r;const rd=nearestRoadPt(x,z,q=>!q.oak);if(!rd||rd.d>40||rd.d<8)continue;
+   if(placeNear(vPick(TOWN_SMALL),x,z,{R:12,step:6,settle:S.key,pad:2}))got++;}n+=got;S.infill=got;}
  // if the streets are full and the count is short, the lanes and the mound lane take the rest
- if(n<target)for(const R of ROADS.filter(r=>r.zone&&(r.zone===S.key+':farmlane'||r.zone===S.key+':moundlane'))){if(n>=target)break;n+=frontage(R,22,3,()=>vPick(HUTS),target-n,{settle:S.key});}
+ if(n<target)for(const R of ROADS.filter(r=>r.zone&&(r.zone===S.key+':farmlane'||r.zone===S.key+':moundlane'))){if(n>=target)break;n+=frontage(R,22,4.5,()=>vPick(HUTS),target-n,{settle:S.key});}
  S.houses=n;return n;}
 for(const S of SETTLE)placeSettlement(S);
 // the highway and the avenue frontage: a few wayside shrines and the odd hut
@@ -6821,7 +7029,7 @@ for(const b of BRIDGES)dnBridge(b);
 // ---------------------------------------------------------------- the audit: anything on a street or overlapping another (should be 0)
 (function audit(){let onRoad=0,overlap=0;const who=[];for(const P of PLACED){const o=P.o;if(o.built==='dalab_lab')continue;const ROUND={dalab_halls:66,dalab_priest_compound:21,dalab_market_small:12,dalab_market_large:30};if(/mound/.test(o.built)||ROUND[o.built]){const r=ROUND[o.built]||VERN.defs[o.built].w/2-8;for(let k=0;k<16;k++){const a=k/16*TAU;if(isRoad(o.x+Math.cos(a)*r,o.z+Math.sin(a)*r)){onRoad++;who.push(o.built+'@'+Math.round(o.x)+','+Math.round(o.z));break;}}continue;}const c=obbCorners(o,-1);for(const p of c)if(isRoad(p[0],p[1])){onRoad++;who.push(o.built+'@'+Math.round(o.x)+','+Math.round(o.z));break;}
   for(const Q of PLACED){if(Q===P||Q.o.built==='dalab_lab')continue;if(obbOverlap(o,Q.o,-1)){overlap++;break;}}}
- window._audit={placed:PLACED.length,onRoad,overlap,who:who.slice(0,8)};})();
+ window._audit={placed:PLACED.length,onRoad,overlap,who:who.slice(0,40)};})();
 window._registered=REG.length;
 // ---------------------------------------------------------------- the biome: the clearing, the residual stands, the forest, the avenue's live oaks, the river's willows
 const ORIGINS=SETTLE.map(S=>[S.plaza.x,S.plaza.z]);ORIGINS.push([CITY.LAB.x,CITY.LAB.z+400]);
@@ -6830,14 +7038,24 @@ function bioMaskFn(x,z){const W=CITY.WORLD/2-10;if(Math.abs(x)>W||Math.abs(z)>W)
  const d=Math.hypot(x-0,z+120);const forest=smoothstep(CITY.FOREST_R-140,CITY.FOREST_R+60,d);
  const ns=nearestSettle(x,z);const town=1-smoothstep(ns.S.r-40,ns.S.r+30,ns.d);
  const labD=Math.hypot(x-CITY.LAB.x,z-CITY.LAB.z),labR=292*4.105*CITY.LAB.scale;const lab=1-smoothstep(labR-20,labR+30,labD);
- return Math.max(forest,standK(x,z)*(1-town*.6)*(1-lab)*.9,town*.42,lab*.55);}   // towns are green: trees and understorey between the houses (the mask keeps them off footprints and streets)   // the compound is heavily overgrown: the biome roots inside the ruined wall (the domes are obstacles)
+ return Math.max(forest,standK(x,z)*(1-town*.6)*(1-lab)*.9,town*(ns.S.main?.30:.42),lab*.55);}   /* the main settlement's grid is full of buildings now: less green between them (round 10) */   // towns are green: trees and understorey between the houses (the mask keeps them off footprints and streets)   // the compound is heavily overgrown: the biome roots inside the ruined wall (the domes are obstacles)
 function bioTreeMaskFn(x,z){const m=bioMaskFn(x,z);return m;}
 BIO.host.mask=bioMaskFn;BIO.host.origin=ORIGINS;BIO.host.center=[0,-120];BIO.host.obstacles=LAB_OBST.concat(PLACED.filter(p=>p.key!=='dalab_lab').map(p=>({x:p.o.x,z:p.o.z,r:Math.max(p.o.hx,p.o.hz)*.9})));   // no tree in a building
 BIO.host.fields={wet:(x,z)=>riverD(x,z)<120?.9:.58,tropic:(x,z)=>.32,dry:(x,z)=>.22,salt:(x,z)=>0,flow:(x,z)=>riverD(x,z)<70?1-riverD(x,z)/70:(channelD(x,z).d<14?.5:0),upland:(x,z)=>.15};
 BIO.setScene(scene);
-(function lowlands(){const q=CITY.QUALITY*1.0;/* the 10 M budget: half again the stocking */const t0=performance.now();let T={};
- BIO.cur='lowlands/trees';try{T=SWLOW.build({R:CITY.WORLD*.72,quality:q,avenues:OAK_ROADS().map(P=>({path:P,spacing:P.length>6?38:24,offset:12.5,species:'sprawloak'}))   /* the circuit's oaks stand wider */,groves:[{center:[SETTLE[0].x+300,SETTLE[0].z],r:70,spacing:16,species:'corkoak',stripped:true}]});}catch(e){reportErr('lowlands: '+e.stack);}
+// level of detail (round 10): the biome's hero radius is measured from the plazas; with seven origins nearly every tree on
+// the map was a hero. The distance is scaled so heroes stand within ~700 m of a plaza (a settlement and its fields) and
+// the belts between the towns get the mid and far builds.
+{const lodD0=BIO.lodD;BIO.lodD=function(x,z){return lodD0(x,z)*1.5;};}
+(function lowlands(){const q=CITY.QUALITY*.98;/* the 11 M ceiling with a full grid (round 10): the buildings took the trees' share */const t0=performance.now();let T={};
+ BIO.cur='lowlands/trees';try{T=SWLOW.build({R:CITY.WORLD*.72,quality:q,avenues:OAK_ROADS().map(P=>({path:P,spacing:P.length>6?18:14,offset:10,species:'madrone'}))   /* flayed madrone avenues (Travis, round 9): the oaks hid the buildings */,groves:[{center:[SETTLE[0].x+300,SETTLE[0].z],r:70,spacing:16,species:'corkoak',stripped:true}]});}catch(e){reportErr('lowlands: '+e.stack);}
  BIO.cur=null;window._biome={trees:T.trees,avenue:T.avenue,grove:T.grove,heroes:T.heroes,far:T.far,ms:Math.round(performance.now()-t0)};})();
+// live oaks sprinkled round every settlement: a few sprawl oaks on open ground outside the streets (not on a field, a road or a plot)
+(function oaks(){reseed(SEED_CITY+9);BIO.cur='lowlands/oaks';let n=0;for(const S of SETTLE){const want=S.main?14:5;let tries=0;let got=0;
+ while(got<want&&tries++<300){const a=rng()*TAU,r=S.r*rr(.55,1.25);const x=S.plaza.x+Math.cos(a)*r,z=S.plaza.z+Math.sin(a)*r;
+  if(!canBuild(x,z)||inPrecinct(x,z,20)||isWater(x,z)||inOakCorridor(x,z,6))continue;const rd=nearestRoadPt(x,z);if(rd&&rd.d<26)continue;let hit=false;for(const P of PLACED){if(Math.hypot(P.o.x-x,P.o.z-z)<Math.max(P.o.hx,P.o.hz)+24){hit=true;break;}}if(hit)continue;
+  try{SWLOW.treeAt('sprawloak',x,terrainH(x,z),z,{scale:rr(.8,1.05)});got++;n++;}catch(e){}}}
+ BIO.cur=null;window._oaks=n;})();
 cityTerrainMesh();
 kbake(scene);
 window._cityMs=Math.round(performance.now()-CITY_T0);
@@ -6882,6 +7100,7 @@ const VIEWS={
  'Main settlement — overview':[M_.x-500,380,M_.z+700,M_.x,0,M_.z],
  'Main settlement — a street':(()=>{const R=M_.radials[2];const a=R.a;return[M_.plaza.x+Math.sin(a)*(M_.plazaR+30),1.7,M_.plaza.z+Math.cos(a)*(M_.plazaR+30),M_.plaza.x+Math.sin(a)*(M_.plazaR+180),3,M_.plaza.z+Math.cos(a)*(M_.plazaR+180)];})(),
  'Oak avenue into town':(()=>{const R=M_.radials.find(r=>r.oak)||M_.radials[0];const a=R.a;return[M_.plaza.x+Math.sin(a)*(M_.plazaR+300),3,M_.plaza.z+Math.cos(a)*(M_.plazaR+300),M_.plaza.x,6,M_.plaza.z];})(),
+ 'The ancient wall':[CITY.LAB.x+300,14,CITY.LAB.z+560,CITY.LAB.x+120,12,CITY.LAB.z+470],
  'The lab compound':[CITY.LAB.x+200,60,CITY.LAB.z+520,CITY.LAB.x,40,CITY.LAB.z],
  'The horizon':[M_.x,30,M_.z+300,M_.x+2000,120,M_.z+2600],
  'The Halls and the ranch':[M_.x+300,260,M_.z+700,M_.x+100,0,M_.z+250],
@@ -6976,7 +7195,7 @@ function frame(){const now=performance.now(),dt=Math.min(.1,(now-last)/1000);las
  requestAnimationFrame(frame);}
 frame();window._ready=true;
 // ================================================================= DALAB CITY — dev tools: the Paths overlay, the budgets, window._api.city
-BUDGET.showcase={tris:10000000,calls:900};   // the settlement's ceiling (Travis, round 8)
+BUDGET.showcase={tris:11000000,calls:900};   // the settlement's ceiling (Travis, round 9)
 BUDGET.cls.city=20000000;for(const k in TSTAT.by){BUDGET.type[k.split('/')[0]]='city';}
 const PATHS={on:false,tex:null};
 function pathsTexture(){if(PATHS.tex)return PATHS.tex;const c=document.createElement('canvas');c.width=c.height=CS;const g=c.getContext('2d');
@@ -7073,6 +7292,7 @@ window._api.setHour=h=>{DSKY.hour=h;dalabSkyTick();dalabHourUI();};window._api.n
  // every mound and ring bank in one mesh
  if(DMOUND_GEOS.length){const m=meshMerged(DMOUND_GEOS,MAT.dTurfMesh,scene,0,0,0);m.name='mounds';window._mounds=DMOUND_GEOS.length;DMOUND_GEOS.length=0;}}
 FRAME_HOOKS.push(dt=>{for(const w of DWIND)w.grp.rotateZ(w.rate*dt);});
+WALK.speed=9;   // a little faster on foot (Travis, round 9); the wheel still scales it
 // ================================================================= DALAB CITY — the life layer
 // Everything that moves, in two draw calls (bodies, heads: one InstancedMesh each, rewritten per frame).
 //   townsfolk     wander the road network: pick a node, walk the shortest path, idle, pick another (green-skinned)

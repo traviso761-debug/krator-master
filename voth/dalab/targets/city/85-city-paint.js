@@ -13,7 +13,7 @@ function cdisc(ctx,x,z,r,col){ctx.beginPath();ctx.arc(px(x),px(z),r*PXS,0,7);ctx
 function cpoly(ctx,pts,col){ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(px(p[0]),px(p[1])):ctx.moveTo(px(p[0]),px(p[1])));ctx.closePath();ctx.fillStyle=col;ctx.fill();}
 const ROADCOL={3:'#8a7a62',4:'#8f8068',5:'#8a8070',6:'#7a6a56'};   // packed earth; the highway a shade darker
 // a road: albedo, blocked in the mask (a little wider), classed, and remembered
-function road(pts,w,cls,opt){opt=opt||{};cstroke(cg,pts,w,opt.col||ROADCOL[cls]||'#8a7a62');if(cls===KL.highway||cls===KL.avenue){cstroke(cg,pts,w*.36,'#9a8a70');cstroke(cg,pts,w*.08,'#7a6a52');}else if(cls===KL.street){cstroke(cg,pts,w*.3,'#968670');}cstroke(mg,pts,w+3,'#000');cstroke(kg,pts,w+1.5,KLCOL(cls));
+function road(pts,w,cls,opt){opt=opt||{};cstroke(cg,pts,w,opt.col||ROADCOL[cls]||'#8a7a62');if(cls===KL.highway||cls===KL.avenue){cstroke(cg,pts,w*.36,'#9a8a70');cstroke(cg,pts,w*.08,'#7a6a52');}else if(cls===KL.street){cstroke(cg,pts,w*.3,'#968670');}cstroke(mg,pts,w+2.4,'#000');cstroke(kg,pts,w+1.2,KLCOL(cls));   /* the mask is 2.15 m/px: a w+3 stroke ate the frontage's first metres (round 10) */
  const r={pts,w,cls,id:ROADS.length,zone:opt.zone||null};ROADS.push(r);return r;}
 function disc(x,z,r,type,col){cdisc(cg,x,z,r,col||(type==='park'?'#5f8a3a':type==='court'?'#8a7a66':'#a89474'));cdisc(mg,x,z,r,type==='park'?'#00ff00':'#000');cdisc(kg,x,z,r,KLCOL(type==='park'?KL.park:type==='court'?KL.court:type==='mound'?KL.mound:KL.plaza));}
 function precinct(x,z,r,name){PRECINCTS.push({x,z,r,name});}
@@ -42,6 +42,6 @@ let mData=null,kData=null,cData=null;
 function cityBakeMasks(){mData=mg.getImageData(0,0,CS,CS).data;kData=kg.getImageData(0,0,CS,CS).data;cData=cg.getImageData(0,0,CS,CS).data;}
 function maskAt(x,z){const ix=Math.floor(px(x)),iz=Math.floor(px(z));if(ix<0||iz<0||ix>=CS||iz>=CS)return[0,0];const i=(iz*CS+ix)*4;return[mData[i],mData[i+1]];}
 function klass(x,z){const ix=Math.floor(px(x)),iz=Math.floor(px(z));if(ix<0||iz<0||ix>=CS||iz>=CS)return 0;return kData[(iz*CS+ix)*4];}
-function canBuild(x,z){return maskAt(x,z)[0]>200;}
+function canBuild(x,z){return maskAt(x,z)[0]>235;}   /* a pixel the stroke touched at all is blocked (round 10): a corner could sit a metre inside a lane at 200 */
 function isRoad(x,z){const k=klass(x,z);return k>=3&&k<=6;}
 function walkable(x,z){const k=klass(x,z);return k===1||k===2||(k>=3&&k<=6)||k===9;}

@@ -12,6 +12,7 @@ const VIEWS={
  'Main settlement — overview':[M_.x-500,380,M_.z+700,M_.x,0,M_.z],
  'Main settlement — a street':(()=>{const R=M_.radials[2];const a=R.a;return[M_.plaza.x+Math.sin(a)*(M_.plazaR+30),1.7,M_.plaza.z+Math.cos(a)*(M_.plazaR+30),M_.plaza.x+Math.sin(a)*(M_.plazaR+180),3,M_.plaza.z+Math.cos(a)*(M_.plazaR+180)];})(),
  'Oak avenue into town':(()=>{const R=M_.radials.find(r=>r.oak)||M_.radials[0];const a=R.a;return[M_.plaza.x+Math.sin(a)*(M_.plazaR+300),3,M_.plaza.z+Math.cos(a)*(M_.plazaR+300),M_.plaza.x,6,M_.plaza.z];})(),
+ 'The ancient wall':[CITY.LAB.x+300,14,CITY.LAB.z+560,CITY.LAB.x+120,12,CITY.LAB.z+470],
  'The lab compound':[CITY.LAB.x+200,60,CITY.LAB.z+520,CITY.LAB.x,40,CITY.LAB.z],
  'The horizon':[M_.x,30,M_.z+300,M_.x+2000,120,M_.z+2600],
  'The Halls and the ranch':[M_.x+300,260,M_.z+700,M_.x+100,0,M_.z+250],

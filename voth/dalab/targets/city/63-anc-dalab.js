@@ -155,7 +155,7 @@ function buildDalab(scene,gx,gz,d){reseed(9330+d);KOFF=[gx,0,gz];
     if(rng()<.5)kput(d>0?'winSmD':'winSmI',[px,12.4*K,pz],qFacing([0,1,0]),[2.4*K,2.4*K,1],null);}
    mossOnRing(mx,11.5*K,mz,L*.38,Math.round(L*.22/K),1.5*K);}});
  // the low ruined wall round the compound, breached in places
- for(let k=0;k<200;k++){const th=k/200*TAU,r=(292+12*fbm(k*.14,2.2,9370,2))*K;
+ for(let k=0;k<(typeof LAB_WALL_GAP!=='undefined'?0:200);k++){const th=k/200*TAU,r=(292+12*fbm(k*.14,2.2,9370,2))*K;   // DALAB: the block ring is replaced by a real ruined wall (90a)
   if(fbm(k*.09,1.1,9371,2)<.30)continue;                     // breaches
   if(typeof LAB_WALL_GAP!=='undefined'&&Math.abs(th-LAB_WALL_GAP.a)<LAB_WALL_GAP.w)continue;   // DALAB: the gate where the oak avenue enters
   kput(BOXC(d),[Math.cos(th)*r,rr(1.4,3.4)*K,Math.sin(th)*r],qEuler(0,-th,0),[rr(6,13)*K,rr(2.8,6.8)*K,rr(2.6,4.4)*K],null);}

@@ -274,3 +274,62 @@ smaller gash in the great dome; the standard Krator skybox; the known issues.
   town gets a shop row, a workshop, a windmill and a potter. The biome's
   stocking is q 1.0 with the circuit's oaks wide — 9.7 M of the 10 M.
 * **Horizon** and the rest of the known-issues pass: see KNOWN_ISSUES.md.
+
+## Round 9 (Sep 29 2026) — the ruined wall, madrone avenues, the apron
+
+From Travis: a real ruined ancient wall round the dome with openings where the
+streets are, in place of the ring of blocks; the buildings on the lab's apron
+relocated; walk speed a little faster; the live-oak vaults replaced by avenues
+of flayed madrone (the oaks hid the buildings); live oaks sprinkled near the
+settlements; the central settlement denser; the ceiling to 11 M if needed.
+
+* **The wall** (`90a-city-world.js`, `labWall`): 6 m bays on the kit's wall
+  radius — a concrete footing, a battered rammed-earth wedge tinted
+  ghost-white under a panel skin, a rust seam and coping on the tall bays,
+  rust bleeding through, rubble at the foot; height eaten by noise down to
+  stubs and to toppled slabs lying outside the line; a clean gap wherever a
+  road of the settlement crosses (359 bays, 127 stubs, 11 gaps). The kit's
+  own ring of blocks is off in the vendored builder.
+* **The apron**: the lab's precinct is the wall radius plus 24 m, so nothing of
+  Dalab's stands inside the wall or on the apron; the five plots Travis listed
+  are clear.
+* **Madrone**: `SWLOW.build` gets `species:'madrone'` on every avenue and the
+  circuit; the oaks return as `_oaks` — a few sprawl oaks per settlement on
+  open ground off the streets and plots (44 in all). `WALK.speed` 9.
+* 11 M ceiling; q 1.15: 10.44 M, 210 draw calls, 303 placed, 0 overlaps.
+
+## Round 10 (Sep 29 2026) — filling the grid, the town types
+
+From Travis: the central settlement fills out its grid; invent new building
+types if necessary.
+
+* **The grid** (`87-city-layout.js`): the main settlement gets half rings at
+  265 and 395 m and half radials between its radials from the first ring
+  out, so every block is ~65 m deep; the farm lanes start outside the third
+  ring. The Halls and the ranch are precincts (`S.big`) the grid stops at
+  and the build places them there by name.
+* **The town types** (`src/71c-dalab-town.js`): terrace row, stacked house,
+  well court, bath house, scribes' hall, travellers' inn, earth yard, orchard
+  plot, watch tower. The build puts two bath houses, two scribes' halls, an
+  inn at the end of each avenue, seven watch towers on the outer ring and
+  three earth yards at the edge; the frontage walker on the main streets
+  mixes the dense dwellings, wells, orchards and yards with the huts; then an
+  infill pass drops small plots into whatever the frontage left open inside
+  the grid, facing the nearest street.
+* **Placement fixes the full grid forced** (`88-city-place.js`, `85-city-paint.js`):
+  the mask is 2.15 m per pixel and the road stroke was 1.5 m wider than the
+  road each side, so a plot's road-side corners 2 m off the edge read as
+  road and most frontage slots were refused (the main settlement had 47
+  houses from the walker). The stroke is 1.2 m wider each side, the walker's
+  setback 4.5 m, the buildable threshold 235 (a pixel the stroke touched at
+  all is blocked), and `groundOK` samples every plot on a ~4 m grid, corners
+  included: a lane's rounded end used to slip between the corners and the
+  edge midpoints. The connectivity pass no longer lays a lane through a
+  precinct when a cut-off ring stub has no clear link (the stub stays a dead
+  end). The priests' compounds are grid precincts too.
+* **Budget**: 875 placed (528 in Dalab), 0 overlaps, only the plaza markets,
+  shrines and mounds on a street (by design); the biome's hero radius is
+  scaled ×1.5 (`BIO.lodD`) so heroes stand within ~700 m of a plaza and the
+  belts between towns get the mid and far builds, q .98, the main settlement's
+  green at .30: 10.78 M of the 11 M, 213 draw calls. The set: 98 volumes,
+  568 k triangles, 157 draw calls. `--assert` green on both.
