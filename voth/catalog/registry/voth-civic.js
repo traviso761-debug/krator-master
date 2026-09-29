@@ -1690,10 +1690,10 @@
     key: 'voth_school', name: 'School', culture: 'voth', source: 'voth-civic', family: 'civic',
     districts: ['canton', 'common', 'temple'], wealth: [0.3, 0.9],
     blurb: 'A Temple college round a cloistered court with a domed lecture hall and library tower, or a small flat-roofed schoolhouse with a canopied roof classroom and walled play yard.',
-    w: 41, d: 38.4, h: 27.2, variants: 2,
+    w: 43.6, d: 38.8, h: 27.2, variants: 2,
     variantDims: [
-      { w: 41, d: 38.4, h: 27.2 },
-      { w: 14.6, d: 18.4, h: 10.7 }
+      { w: 43.6, d: 38.8, h: 27.2 },
+      { w: 14.8, d: 19.2, h: 10.4 }
     ],
     build: function (F) {
       const K = kit(F);
@@ -1708,7 +1708,7 @@
     w: 41.7, d: 35.7, h: 29.4, variants: 2,
     variantDims: [
       { w: 41.7, d: 35.7, h: 29.4 },
-      { w: 29.2, d: 23.4, h: 27.4 }
+      { w: 29.4, d: 23.1, h: 27.7 }
     ],
     build: function (F) {
       const K = kit(F);
@@ -1720,11 +1720,11 @@
     key: 'voth_farmhouse', name: 'Farmhouse', culture: 'voth', source: 'voth-civic', family: 'rural',
     districts: ['rural', 'lakeside', 'outskirts'], wealth: [0, 0.6],
     blurb: 'A working farm: a battered, domed Velothi farmstead with granaries and a guar pen; a chinampa house on the lake beds with jetty, racks and fish traps; or a Hlaalu farmhouse with barn, hayloft and kitchen garden.',
-    w: 26.2, d: 22, h: 10.4, variants: 3,
+    w: 26.4, d: 23, h: 11.5, variants: 3,
     variantDims: [
-      { w: 20.6, d: 19.2, h: 10.1 },
-      { w: 24, d: 22, h: 8.0 },
-      { w: 26.2, d: 19.5, h: 10.9 }
+      { w: 20.8, d: 19.6, h: 10.3 },
+      { w: 25.3, d: 23, h: 7.4 },
+      { w: 26.4, d: 20.5, h: 11.5 }
     ],
     build: function (F) {
       const K = kit(F);
@@ -1738,7 +1738,7 @@
     key: 'voth_governor_palace', name: "Governor's Palace", culture: 'voth', source: 'voth-civic', family: 'civic',
     districts: ['canton', 'wealthy'], wealth: [0.8, 1],
     blurb: "The Governor's seat: a domed audience hall on a podium with portico and ceremonial stair, flanking office wings, and a formal garden court with statues and flags behind a guard gatehouse.",
-    w: 43.6, d: 51.2, h: 29.4, variants: 1,
+    w: 43.8, d: 51.9, h: 29.3, variants: 1,
     build: function (F) { govPalace(F, kit(F)); }
   });
 })();
