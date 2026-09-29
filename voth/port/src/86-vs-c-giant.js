@@ -60,7 +60,7 @@ function vsGiantTown(C,S){const hb=S.hb,yb=S.yb,Hh=vsGtHeights(S),B=S.bays,q=vsQ
    for(let t=0;t<n;t++){const y=yb+t*VS.TP,exL=hl<=t,exR=hr<=t,exF=hf<=t,exA=ha<=t,top=t===n-1;
     if(!exL&&!exR&&!exF&&!exA&&!top)continue;                        // buried inside the mountain: never seen
     const home=exL||exR||exF||exA;
-    kput('pkCont40R',[x,y,z],q,1,home?(rng()<.4?vsPaint():vsPaintM()):VS_LINE[(rng()*VS_LINE.length)|0].clone().lerp(new THREE.Color(0x7a5a44),.35));
+    kput('pkCont40R',[x,y,z],q,1,home?(rng()<.25?vsPaint():vsPaintM()):VS_LINE[(rng()*VS_LINE.length)|0].clone().lerp(new THREE.Color(0x7a5a44),.35));
     for(const [ex,sd] of [[exL,-1],[exR,1]])if(ex)for(const o of [-3.1,3.1]){if(rng()<.18)continue;const lit=rng()<.42;
      kput(lit?'dot':'cellD',[x+sd*1.24,y+1.45,z+o+rr(-.5,.5)],q,lit?[.8,1.1,.3]:[1.1,1,.25],lit?WARM:null);}
     for(const [ex,sd] of [[exF,1],[exA,-1]])if(ex&&rng()<.85){const lit=rng()<.45;kput(lit?'dot':'cellD',[x,y+1.45,z+sd*6.12],null,lit?[.8,1.1,.3]:[1,1,.25],lit?WARM:null);
@@ -72,10 +72,10 @@ function vsGiantTown(C,S){const hb=S.hb,yb=S.yb,Hh=vsGtHeights(S),B=S.bays,q=vsQ
  for(const T of tops){const u=rng();
   if(u<.22)vsShack(T.x,T.y,T.z+rr(-3.5,3.5),rr(2.2,2.8),rr(3,5),2.4,Math.PI/2+rr(-.2,.2),{});
   else if(u<.36){kput('planter',[T.x,T.y+.3,T.z+rr(-3,3)],vsQ(Math.PI/2),[4,.6,1.6],null);for(let k=0;k<3;k++)kput('leafCard',[T.x+rr(-.8,.8),T.y+.9,T.z+rr(-4,4)],qEuler(0,rng()*TAU,0),[rr(.6,1),rr(.5,.8),rr(.6,1)],new THREE.Color().setHSL(rr(.22,.32),.5,rr(.45,.6)));}
-  else if(u<.43)VEG.tree(T.x,T.y,T.z+rr(-3,3),(rng()*3)|0,rr(4,8));
-  else if(u<.5)kput('waterButt',[T.x,T.y+1,T.z+rr(-3,3)],null,[1,2,1],null);
-  else if(u<.58){for(let k=-1;k<=1;k++)kput('pkSolar',[T.x,T.y+.5,T.z+k*2],vsQ(0,-.4),1,null);}
-  else if(u<.61)kput('pkDish',[T.x,T.y,T.z],vsQ(rr(0,TAU)),1.2,null);}
+  else if(u<.48){VEG.tree(T.x,T.y,T.z+rr(-3,3),(rng()*3)|0,rr(4,8));if(rng()<.5)VEG.tree(T.x,T.y,T.z+rr(-4,4),(rng()*3)|0,rr(3,6));}
+  else if(u<.54)kput('waterButt',[T.x,T.y+1,T.z+rr(-3,3)],null,[1,2,1],null);
+  else if(u<.61){for(let k=-1;k<=1;k++)kput('pkSolar',[T.x,T.y+.5,T.z+k*2],vsQ(0,-.4),1,null);}
+  else if(u<.64)kput('pkDish',[T.x,T.y,T.z],vsQ(rr(0,TAU)),1.2,null);}
  // shack towers on the peaks
  const pk=tops.filter(T=>T.e>=4).sort((a,b)=>b.y-a.y);const used=[];
  for(const T of pk){if(used.length>=6)break;if(used.some(U=>Math.hypot(U.x-T.x,U.z-T.z)<22))continue;used.push(T);vsTower(T.x,T.y,T.z,4+((rng()*4)|0));}
@@ -114,6 +114,9 @@ function vsGiantTown(C,S){const hb=S.hb,yb=S.yb,Hh=vsGtHeights(S),B=S.bays,q=vsQ
   const hy=tip[1]-9;vsShack(tip[0],hy,tip[2],3.2,3.2,2.5,.4,{lit:.8});vsPlank(tip,[tip[0],hy+2.7,tip[2]],.05,.05,VS_RAIL,'strutR');
   for(let i=0;i<4;i++)VEG.tree(rr(-3,3),S.ydz(z+5),z+rr(2.5,7),i%3,rr(5,8));
   C.reg('Stack town — forecastle crane',0,z,8,50,S.F);}
+ // --- the poop deck: a yard of shacks, a garden and washing
+ {const z=-176;C.at(z);const y=S.ydz(z);for(let i=0;i<8;i++)vsShack(rr(-16,16),y,z+rr(-4,4),rr(2.6,3.6),rr(2.6,3.6),2.5,rr(-.3,.3),{});
+  portGarden(0,y,z+2,12,5,3);VEG.tree(-18,y,z,0,6);VEG.tree(17,y,z+2,2,5);portWashLine(-20,z-5,20,z-5,y+2.2,14);portFigures(0,y,z,8,12);vsGlow(0,y+1.5,z,4);}
  vsReclaimHull(C,S,{boats:20});
  C.wat();for(let i=0;i<8;i++)portSkiff((rng()<.5?1:-1)*(hb+12+rr(0,14)),rr(-150,150),rr(-.3,.3));}
 Object.assign(VS_GIANT,{extra:vsGiantExtra,town:vsGiantTown,noHatchAt:()=>false});

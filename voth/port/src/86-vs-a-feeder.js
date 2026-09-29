@@ -33,8 +33,8 @@ MAT.vsDeckR=new THREE.MeshStandardMaterial({map:TEX.rust,color:0x9a7a68,roughnes
 MAT.vsHatch=new THREE.MeshStandardMaterial({map:TEX.panel,color:0xa9b0ae,roughness:.7,metalness:.25});
 MAT.vsRust=new THREE.MeshStandardMaterial({map:TEX.rust,roughnessMap:TEX.rustRM,metalnessMap:TEX.rustRM,color:0xa8968c,metalness:1,roughness:1,side:DS});
 MAT.vsVoid=new THREE.MeshBasicMaterial({color:0x0b0b0d,side:DS});   // the dark inside a holed hull, lit or not
-MAT.vsSoil=new THREE.MeshStandardMaterial({map:TEX.concrete,color:0x5a4430,roughness:1,metalness:0,side:DS});
-MAT.vsGreen=new THREE.MeshStandardMaterial({map:TEX.concrete,color:0x4c6a30,roughness:1,metalness:0,side:DS});
+MAT.vsSoil=new THREE.MeshStandardMaterial({map:TEX.concrete,color:0x46331f,roughness:1,metalness:0,side:DS});
+MAT.vsGreen=new THREE.MeshStandardMaterial({map:TEX.concrete,color:0x44652a,roughness:1,metalness:0,side:DS});
 
 const VS={RP:2.5,TP:2.6,BP:13.4};                     // row pitch, tier pitch, 40 ft bay pitch
 const VS_LINE=[0xe8e6e0,0x2d5f8e,0xb04a2c,0x3a7a6a,0xd8a63a,0x8a8c8e,0x5a4a7a,0xc8c4bc,0x1f3f66,0x9a3a30,0xe0dcd2].map(c=>new THREE.Color(c));

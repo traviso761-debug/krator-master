@@ -31,13 +31,17 @@ function vsGreenhouse(x,y,z,w,dp){const n=Math.max(2,Math.round(dp/2.4));
   kput('pane',[x+sd*w/4,y+2.5,zz],vsQ(Math.PI/2,-sd*1.07,0),[dp/n*.96,w*.58,1],null);}}
  for(let i=0;i<n*2;i++)kput('leafCard',[x+rr(-w*.35,w*.35),y+.5,z+rr(-dp*.45,dp*.45)],qEuler(0,rng()*TAU,0),[rr(.4,.7),rr(.35,.6),rr(.4,.7)],new THREE.Color().setHSL(rr(.22,.32),.5,rr(.45,.6)));}
 // a terrace top: soil, crop rows or an orchard, a path, a hedge at the front edge
-function vsTerrace(C,S,z,y,w,o){o=o||{};const par=C.at(z);pbBox(par,MAT.vsSoil,0,y+.25,z,w,.5,12.6,0,8);const top=y+.5;
- const kind=o.kind||(rng()<.45?'crops':rng()<.6?'orchard':'glass');
+function vsTerrace(C,S,z,y,w,o){o=o||{};const par=C.at(z);const kind=o.kind||(rng()<.45?'crops':rng()<.6?'orchard':'glass');
+ pbBox(par,kind==='crops'?MAT.vsSoil:MAT.vsGreen,0,y+.25,z,w,.5,12.6,0,8);const top=y+.5;
  if(kind==='crops'){for(let x=-w/2+1.4;x<w/2-1;x+=1.6){if(Math.abs(x)<1)continue;for(let k=0;k<4;k++)kput('leafCard',[x+rr(-.2,.2),top+.35,z+rr(-5.6,5.6)],qEuler(0,rng()*TAU,0),[rr(.5,.9),rr(.3,.5),rr(.5,.9)],new THREE.Color().setHSL(rr(.18,.3),rr(.4,.65),rr(.4,.6)));}}
- else if(kind==='orchard'){for(let i=0;i<4;i++)VEG.tree(rr(-w*.38,w*.38),top,z+rr(-4.5,4.5),i%3,rr(4,7.5));portWeeds(-w/2+1,z-5.5,w/2-1,z+5.5,10,top);}
+ else if(kind==='orchard'){for(let i=0;i<6;i++)VEG.tree(rr(-w*.38,w*.38),top,z+rr(-4.5,4.5),i%3,rr(4,7.5));portWeeds(-w/2+1,z-5.5,w/2-1,z+5.5,10,top);}
  else{vsGreenhouse(-w*.25,top,z,w*.38,10.4);vsGreenhouse(w*.25,top,z,w*.38,10.4);}
  kput('plank',[0,top+.03,z],null,[1.4,.06,12.4],new THREE.Color(0xb8a888));
  for(let x=-w/2+.6;x<w/2;x+=2.2)kput('hedge',[x+1.1,top+.35,z+6.1],null,[2,.7,.5],new THREE.Color(0x4a7a3a));
+ // greenery spilling over the front and the outboard edges
+ for(let i=0;i<w/3;i++)kput('leafCard',[rr(-w/2,w/2),top-.3,z+6.4],qEuler(0,rng()*TAU,0),[rr(.9,1.6),rr(1,1.8),rr(.6,1)],new THREE.Color().setHSL(rr(.2,.32),rr(.4,.6),rr(.38,.55)));
+ for(const sd of [-1,1])for(let i=0;i<4;i++)kput('leafCard',[sd*(w/2+.2),top-.4,z+rr(-5.5,5.5)],qEuler(0,rng()*TAU,0),[rr(.6,1),rr(1.2,2),rr(.9,1.5)],new THREE.Color().setHSL(rr(.2,.32),rr(.4,.6),rr(.38,.55)));
+ if(kind==='crops')for(const sd of [-1,1])VEG.tree(sd*(w/2-1.2),top,z+rr(-4,4),(rng()*3)|0,rr(4,6.5));
  if(rng()<.5)kput('waterButt',[w/2-1.4,top+1.2,z-4.8],null,[1.2,2.4,1.2],null);
  if(rng()<.35)portFigures(0,top,z,3,4);
  return top;}
