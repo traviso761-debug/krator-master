@@ -41,7 +41,7 @@ const VIEWS={
  // THE FALLEN STRAND: strand B's lost section on the plain, the ruin behind.
  'The fallen strand':         (function(S){const f=S.falls[0];return SIV(S,SIOUT(f,150,40),[f[0]*.55,70,f[1]*.55]);})(SIR),
  // THE HANGING STRAND: strand A broken below its hinge, swung out and down.
- 'The hanging strand':        (function(S){const h=S.hinge;return SIV(S,SIOUT(h,170,h[1]-10),[h[0],h[1]-25,h[2]]);})(SIR),
+ 'The hanging strand':        (function(S){const h=S.hangMid||S.hinge;return SIV(S,SIOUT(h,210,h[1]-30),[h[0],h[1]+4,h[2]]);})(SIR),
  // NIGHT: the hero after dark, the lit slots and the beam from the tip.
  'Night':                     SIHERO(SIA,1),
 };
