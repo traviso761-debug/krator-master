@@ -52,7 +52,8 @@ vnReg(name, lx, lz, r, h, extraTags)  // inspector volume, LOCAL frame
 `build(G,o)` is a **named** `function buildDalab*(G,o){reseed(N+(o.v|0)); …}`.
 Local frame: origin at the plot centre on the ground, **+z is the front**.
 Seed blocks: dwellings 8100–8399, trade 8400–8499, civic 8500–8599, sacred
-8600–8699. Take the next free `xx1` and leave room for variants.
+8600–8699, ranch 8700–8799, town types 8800–8899 (`71c-dalab-town.js`). Take
+the next free `xx1` and leave room for variants.
 
 ### Kit items — `69d-dalab-mat.js` (prefix `d`)
 
@@ -102,6 +103,24 @@ DMOUND_GEOS (mounds merge into one mesh in 94)   DWIND (sail groups the frame lo
 The Vernacular helpers (`vnDoor vnWin vnFrame vnGableRoof vnHipRoof
 vnThatchCone vnStairs vnVeranda vnPalisade vnPaving vnPlanter vnBarrel …`) are
 all available and used throughout; see `../iziz/API.md`.
+
+### The town types — `71c-dalab-town.js` (round 10)
+
+| key | name | family / wealth | lit | footprint |
+|---|---|---|---|---|
+| `dalab_rowhouse` | Terrace row | dwelling / peasant (multi-family) | no | 20 × 14 |
+| `dalab_tenement` | Stacked house | dwelling / peasant (multi-family) | no | 16 × 14 |
+| `dalab_well` | Well court | infrastructure / peasant | no | 10 × 10 |
+| `dalab_bathhouse` | Bath house | civic | yes | 25 × 23 |
+| `dalab_scribes` | Scribes' hall | civic (`role:'scribes'`) | yes | 24 × 20 |
+| `dalab_inn` | Travellers' inn | trade / middle | no | 32 × 30 |
+| `dalab_earthyard` | Earth yard | industry / peasant | no | 20 × 15 |
+| `dalab_orchard` | Orchard plot | farm / peasant | no | 22 × 22 |
+| `dalab_watchtower` | Watch tower | civic (military) | no | 12 × 12 |
+
+The settlement mixes the dense dwellings, wells, orchards and yards into the
+main streets' frontage (`TOWN_DENSE`, `TOWN_SMALL` in `90b-city-build.js`) and
+places the civic ones by name.
 
 ### Adding a building
 

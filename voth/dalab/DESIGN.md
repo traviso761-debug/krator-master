@@ -25,6 +25,18 @@ patrols in the streets.
 | priests | `priest` | stone temples on the mounds, round stone houses | The God's light |
 | civic (barracks, Halls, embassies) | `civic` | stone and earth compounds; the guests' own idiom inside | The God's light |
 
+The town types (round 10) follow the same rule. The terrace row and the
+stacked house are peasant rammed earth under thatch, three cells to a roof or
+two storeys with an outside stair and a gallery, the way a full street grid
+packs its people; the well court, the earth yard (where the walls come from:
+block stacks, a mixing pit, ramming forms under a thatch shed) and the orchard
+plot are the small plots every block has. The bath house (a stone drum under a
+low dome over a pool court) and the scribes' hall (a long timber hall on a
+stone plinth with mural bands and a stele court) are civic, so they carry The
+God's light; the travellers' inn is trade (an earth-walled court with lizard
+stalls and a stacked lodge); the watch tower is a tall earth drum with a
+timber lookout under thatch and a giant at its foot, unlit.
+
 ## The vibe
 
 **Cahokian monumentality in rammed earth, wood, stone and scrap.** The most
