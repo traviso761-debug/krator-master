@@ -23,6 +23,8 @@
           * don't build a big surface out of many small pieces (a wall of
             1 m bricks disappears at L2); lay the mass, then detail on top;
           * builds MAY read F.lod (always 0 here) — reserved for hand LODs.
+     2a. L1/L2 keep vertical supports (parts whose height is their largest
+        extent and at least 40% of the level's cut) so decks never float.
      2b. L2 drops 'cloth'-family parts (canopies, awnings, sails): their posts
         fall under the size cut, so the cloth would float.
      3. Point lights (F.lamp) are dropped when LOD is on: a forward renderer
@@ -74,6 +76,11 @@ const KratorLOD = (function () {
     const bb = mesh.geometry.boundingBox || (mesh.geometry.computeBoundingBox(), mesh.geometry.boundingBox);
     const s = mesh.scale;
     const ext = Math.max((bb.max.x - bb.min.x) * s.x, (bb.max.y - bb.min.y) * s.y, (bb.max.z - bb.min.z) * s.z);
+    /* vertical reach in world space: supports (posts, piles, stilts, columns)
+       are tall and thin, and are what keeps a deck from floating */
+    let y0 = Infinity, y1 = -Infinity;
+    for (let i = 1; i < pos.length; i += 3) { if (pos[i] < y0) y0 = pos[i]; if (pos[i] > y1) y1 = pos[i]; }
+    const vext = y1 - y0;
     const c = mesh.material.color;
     /* a mesh that already carries vertex colours (captured ships, carts) keeps them */
     let vcol = null;
@@ -82,7 +89,7 @@ const KratorLOD = (function () {
       for (let i = 0; i < n; i++) { vcol[i * 3] = C.getX(i) * c.r; vcol[i * 3 + 1] = C.getY(i) * c.g; vcol[i * 3 + 2] = C.getZ(i) * c.b; }
     }
     if (g !== mesh.geometry) g.dispose();
-    return { pos, nor, n, ext, fam: famOf(mesh.material), cloth: mesh.material.userData.family === 'cloth', r: c.r, g: c.g, b: c.b, vcol };
+    return { pos, nor, n, ext, fam: famOf(mesh.material), cloth: mesh.material.userData.family === 'cloth', vext, r: c.r, g: c.g, b: c.b, vcol };
   }
 
   function merge(parts, famFilter) {
@@ -112,7 +119,10 @@ const KratorLOD = (function () {
     /* L2 also drops cloth: canopies, awnings and sails are big enough to
        survive the size cut, but the thin posts holding them up are not, so
        at distance they would hang in the air */
-    const keep = parts.filter((p) => p.ext >= minExt && !(lvl === 2 && p.cloth));
+    /* ...and keeps supports that the size cut alone would drop: anything
+       standing at least 40% of the cut tall (piles under a dock, stilts under
+       a shore house, columns under a loggia), so decks and roofs never float */
+    const keep = parts.filter((p) => (p.ext >= minExt || (lvl > 0 && p.vext >= minExt * 0.4 && p.vext >= p.ext * 0.9)) && !(lvl === 2 && p.cloth));
     const fams = oneMesh ? ['matte'] : ['matte', 'metal', 'glass', 'glow'];
     let tris = 0;
     for (const f of fams) {
