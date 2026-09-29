@@ -85,6 +85,17 @@ function log(x,y,z,st,wet){const a=rr(0,TAU),L=rr(10,30),r0=rr(.5,1.1),hx=Math.c
   else if(k<.7)frondCrown(px,py+r*.9,pz,rr(.8,1.6),5,.05,.4,leafCol(PAL.fern,1.7));else mushrooms(px,py+r,pz,2,ri(2,5),.4);}
  return true;}
 
+// the MAQUIS: the uplands' shrubs -- lavender, broom, cistus, rosemary -- in mounds a metre or two across
+function lavender(x,y,z,lv){const R=rr(.5,.9);BIO.put('lobe',[x,y-.1,z],qEuler(0,rr(0,TAU),0),[R,R*.7,R],bright(vary(C(0x8a9a80),.02,.06,.05),.9));
+ const c=bright(vary(C(pick([0x8a5ad8,0x9a6ae0,0x7a4ac8,0xa888e8])),.02,.06,.05),1.15);for(let k=0,m=lv===2?ri(8,14):4;k<m;k++){const a=rr(0,TAU),d=R*rr(0,.8);BIO.put('candle',[x+Math.cos(a)*d,y+R*.45,z+Math.sin(a)*d],qEuler(rr(-.25,.25),rr(0,TAU),rr(-.25,.25)),[.14,rr(.45,.7),.14],c);}}
+function broom(x,y,z,lv){const h=rr(.8,1.5);tuft('clubmoss',x,y,z,h,h*1.6,leafCol([0x4a7a30,0x5a8a34],1.3,.02));tuft('clubmoss',x+rr(-.3,.3),y,z+rr(-.3,.3),h*.8,h*1.3,leafCol([0x4a7a30],1.25,.02));
+ if(lv>=1){const c=bright(C(pick([0xf8d020,0xf0c018,0xffe040])),1.15);for(let k=0,m=lv===2?ri(10,18):5;k<m;k++)BIO.put('bloom',[x+rr(-.6,.6)*h,y+h*rr(.4,1),z+rr(-.6,.6)*h],qEuler(rr(-.5,.5),rr(0,TAU),rr(-.5,.5)),rr(.12,.2),c,{c2:bright(c,.85)});}}
+function cistus(x,y,z,lv){const R=rr(.7,1.3),hc=vary(C(pick([0x5a7a40,0x6a8a48])),.02,.06,.05);BIO.put('lobe',[x,y-.15,z],qEuler(0,rr(0,TAU),0),[R,R*.75,R],shade(hc,-.15));
+ card(x,y+R*.5,z,R*1.5,R*.9,bright(hc,1.35),.25);
+ if(lv>=1){const c=bright(C(pick([0xf080c0,0xffb0d8,0xfff4f8,0xe868b0])),1.1);for(let k=0,m=lv===2?ri(5,10):3;k<m;k++){const a=rr(0,TAU),d=R*rr(.2,.85);BIO.put('bloom',[x+Math.cos(a)*d,y+R*rr(.55,.8),z+Math.sin(a)*d],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),rr(.18,.3),c,{c2:bright(C(0xffe860),1.05)});}}}
+function rosemary(x,y,z,lv){const h=rr(.6,1.1);for(let k=0,m=lv===2?3:1;k<m;k++)tuft('clubmoss',x+rr(-.4,.4),y,z+rr(-.4,.4),h*rr(.8,1.1),h*1.8,leafCol([0x3e5a3a,0x4a6a44,0x5a7a50],1.25,.02));
+ if(lv===2){const c=bright(C(0xa0b0f0),1.1);for(let k=0;k<6;k++)BIO.put('bloom',[x+rr(-.5,.5),y+h*rr(.6,1),z+rr(-.5,.5)],qEuler(rr(-.5,.5),rr(0,TAU),0),rr(.08,.12),c,{c2:c});}}
+
 // ---------------------------------------------------------------- the zone planters
 function plantVale(x,y,z,Z,lv,st){const glade=1-Z.grove,t=rng(),fk=Math.min(1,flowerK(x,z)+glade*.35),gold=smooth(.62,.48,Z.wet);
  if(t<.34){grass(x,y,z,lv,gold>.5?PAL.gold:PAL.meadow);st.tufts++;}
@@ -131,14 +142,19 @@ function plantChasm(x,y,z,Z,lv,st){const t=rng();
  else if(t<.88){fern(x,y,z,lv);st.ferns++;}
  else{boulder(x,y,z,lv,PAL.rock,st,true);}}
 function plantDry(x,y,z,Z,lv,st){const t=rng();
- if(t<.24){silverTuft(x,y,z,lv);st.tufts++;}
- else if(t<.38){bloodGrass(x,y,z,lv);st.tufts++;}
- else if(t<.50){thyme(x,y,z,lv);st.flowers++;}
- else if(t<.60){grass(x,y,z,lv,PAL.gold,.9);st.tufts++;}
- else if(t<.68){star(x,y,z,lv);st.flowers++;if(lv===2&&rng()<.5)star(x+rr(-1,1),y,z+rr(-1,1),lv);}
- else if(t<.75){pearSeedling(x,y,z,lv);st.tufts++;}
- else if(t<.81){plume(x,y,z,lv);st.plumes++;}
- else if(t<.87){flowers(x,y,z,lv,lv===2?ri(3,6):2,rr(.6,1.2),['ruffle','bloom','swirl']);st.flowers++;}
+ if(t<.14){silverTuft(x,y,z,lv);st.tufts++;}
+ else if(t<.24){bloodGrass(x,y,z,lv);st.tufts++;}
+ else if(t<.32){thyme(x,y,z,lv);st.flowers++;}
+ else if(t<.40){grass(x,y,z,lv,PAL.gold,.9);st.tufts++;}
+ else if(t<.48){lavender(x,y,z,lv);st.maquis++;}
+ else if(t<.56){broom(x,y,z,lv);st.maquis++;}
+ else if(t<.64){cistus(x,y,z,lv);st.maquis++;}
+ else if(t<.70){rosemary(x,y,z,lv);st.maquis++;}
+ else if(t<.75){star(x,y,z,lv);st.flowers++;if(lv===2&&rng()<.5)star(x+rr(-1,1),y,z+rr(-1,1),lv);}
+ else if(t<.80){pearSeedling(x,y,z,lv);st.tufts++;}
+ else if(t<.84){plume(x,y,z,lv);st.plumes++;}
+ else if(t<.89){flowers(x,y,z,lv,lv===2?ri(3,6):2,rr(.6,1.2),['ruffle','bloom','swirl']);st.flowers++;}
+ else if(t<.93){box(x,y,z,lv,true);st.boxes++;}
  else{boulder(x,y,z,lv,PAL.limestone,st,false);}}
 function plantCrag(x,y,z,Z,lv,st){const t=rng();
  if(t<.35){silverTuft(x,y,z,lv);st.tufts++;}
@@ -150,9 +166,9 @@ function plantCrag(x,y,z,Z,lv,st){const t=rng();
 // ---------------------------------------------------------------- the pass
 XANADU.buildFloor=function(R,q){
  reseed(600023);q=q==null?1:q;R=R||3400;means();
- const st={tufts:0,flowers:0,plumes:0,boxes:0,bane:0,shrubs:0,moss:0,ferns:0,cobras:0,mush:0,reeds:0,boulders:0,logs:0,lotus:0,rings:0};
+ const st={maquis:0,tufts:0,flowers:0,plumes:0,boxes:0,bane:0,shrubs:0,moss:0,ferns:0,cobras:0,mush:0,reeds:0,boulders:0,logs:0,lotus:0,rings:0};
  function plant(x,y,z,lv){if(!okGround(x,z,.8))return;const Z=zones(x,z);
-  const w=[Z.vale*(1.1+.8*(1-Z.grove)),Z.forest*1.3,Z.shore*1.1,Z.rip*1.2,Z.chasm*1.4+Z.cloud*.9,Z.dry*1.1,Z.crag*.6],P=[plantVale,plantForest,plantShore,plantBank,plantChasm,plantDry,plantCrag];
+  const w=[Z.vale*(1.1+.8*(1-Z.grove)),Z.forest*1.3,Z.shore*1.1,Z.rip*1.2,Z.chasm*1.4+Z.cloud*.9,Z.dry*1.8,Z.crag*.7],P=[plantVale,plantForest,plantShore,plantBank,plantChasm,plantDry,plantCrag];
   let tot=0;for(const v of w)tot+=v;if(tot<=0)return;
   let r=rng()*Math.max(1,tot),k=0;for(;k<w.length;k++){if(r<w[k])break;r-=w[k];}if(k>=w.length)return;
   P[k](x,y,z,Z,lv,st);}
