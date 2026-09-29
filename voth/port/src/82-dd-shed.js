@@ -53,7 +53,7 @@ function buildDdShed(scene,gx,gz,d,opt){reseed(20110+d);ddSeaFix();
   REGISTER({name:'Fallen bridge crane',x:4,z:-72,r:14,h:30,y:-4});}
  // the land gable's lamps, the quay lamps, the pump house, an office drum
  for(const x of [-h+10,h-10])for(let z=-K.LAND+14;z<-4;z+=36)portLamp(x,D,z,x<0?Math.PI/2:-Math.PI/2,d);
- portShed(G,41,-100,10,16,6,d,{name:'Dock pump house',doorSide:1});
+ portShed(G,39,-102,8,14,6,d,{name:'Dock pump house',doorSide:1});
  ddDrum(G,-41,-12,4,d);
  if(d===0){
   const H=ddHull(G,{L:84,B:18,D:12,x:0,y:FL+.05+1.9,z:-52,yaw:Math.PI,dry:true,d,paint:'primer',plate:[0,.64],frames:[.64,.93],sup:false,blocks:FL+.05,seed:7});
@@ -64,7 +64,7 @@ function buildDdShed(scene,gx,gz,d,opt){reseed(20110+d);ddSeaFix();
   ddFigures(0,FL+.05,-50,12,11,36,true);ddFigures(-11,-9.9,-80,3,.4,8,true);ddFigures(0,FL+14,-40,5,5,14,true);
   portFigures(-28,D,-50,10,4);portFigures(28,D,-80,6,4);portFigures(0,D,-3,6,30);
   for(const z of hall.ribZ)for(const s of [-1,1])ddLight(s*14,hall.par(14)-.6,z,d,[.7,.25,.7]);
-  portContainerStack(-41,D,-70,Math.PI/2,2,2,d,{big:true});REGISTER({name:'Container stack',x:-41,z:-70,r:7,h:6,y:D});
+  portContainerStack(-40.5,D,-70,Math.PI/2,2,2,d,{big:true});REGISTER({name:'Container stack',x:-40.5,z:-70,r:6,h:6,y:D});
   portBuoy(-30,30);}
  if(d===1){
   ddHull(G,{L:84,B:18,D:12,x:-1,y:-8.2,z:-52,yaw:Math.PI-.04,roll:-.14,pitch:.015,d,paint:'rust',plate:[0,.5],frames:[.5,.86],sup:false,holes:.6,seed:9});
@@ -77,7 +77,7 @@ function buildDdShed(scene,gx,gz,d,opt){reseed(20110+d);ddSeaFix();
   portWeeds(-h+4,-K.LAND+4,K.X0-2,-3,140,D);portWeeds(K.X1+2,-K.LAND+4,h-4,-3,140,D);
   portRubble(-27,D,-60,5,16);portRubble(26,D,-30,4,12);portRubble(0,D,-107,5,12);
   kput('pkSkiff',[-6,-.6,-20],qEuler(0,.3,Math.PI*.92),1,new THREE.Color(0x5a4636));
-  portContainerStack(-41,D,-70,Math.PI/2,2,1,d,{big:true});REGISTER({name:'Container stack',x:-41,z:-70,r:7,h:6,y:D});}
+  portContainerStack(-40.5,D,-70,Math.PI/2,2,1,d,{big:true});REGISTER({name:'Container stack',x:-40.5,z:-70,r:6,h:6,y:D});}
  if(d===3){
   // fish ponds: timber weirs on piles across the flooded pit, walkways on them
   for(let z=K.Z0+18;z<K.Z1-4;z+=18){for(let x=-19;x<=19;x+=3.8)kput('pkPile',[x,-6,z],null,[.22,6.9,.22],null);
@@ -91,8 +91,8 @@ function buildDdShed(scene,gx,gz,d,opt){reseed(20110+d);ddSeaFix();
   for(const s of [-1,1])for(let z=-100;z<-12;z+=12)for(let k=0;k<2;k++)ddLight(s*(20-k*14),hall.par(20-k*14)-3,z+rr(-3,3),d,[.5,.5,.5]);
   for(const z of hall.ribZ.slice(1,-1))portWashLine(-24,z,24,z,D+14,12);
   for(const s of [-1,1])portContainerHouse(G,s*28,D,-106,rr(-.08,.08),d,{levels:1,big:false});
-  for(let z=-96;z<-24;z+=16)portContainerHouse(G,-42,D,z,Math.PI/2+rr(-.1,.1),d);
-  for(let z=-80;z<-20;z+=18)portContainerHouse(G,42,D,z,Math.PI/2+rr(-.1,.1),d,{levels:1+(z>-50?1:0)});
+  for(let z=-96;z<-24;z+=16)portContainerHouse(G,-39.5,D,z,Math.PI/2+rr(-.1,.1),d);
+  for(let z=-80;z<-20;z+=18)portContainerHouse(G,39.5,D,z,Math.PI/2+rr(-.1,.1),d,{levels:1+(z>-50?1:0)});
   for(const L of wq1.ladders.concat(wq2.ladders))portSkiff(L[0]+rr(-3,3),L[1]+3,Math.PI/2+rr(-.2,.2));
   for(let i=0;i<4;i++)portSkiff(rr(-44,44),rr(12,32),rng()*TAU);
   portFigures(-28,D,-55,22,4);portFigures(28,D,-55,22,4);portFigures(0,D,-3,10,30);portFigures(-42,D,-50,8,4);

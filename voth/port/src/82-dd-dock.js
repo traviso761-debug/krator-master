@@ -136,7 +136,7 @@ function ddHull(P,o){o=Object.assign({L:100,B:18,D:12,x:0,y:0,z:0,yaw:0,pitch:0,
  const T=o.dry?DDM:MAT;
  const pal={new:[T.ddAnti,T.ddTop,T.ddDeck,T.white],primer:[T.ddPrimer,T.ddGrey,T.ddDeck,T.ddGrey],rust:[T.rust,T.rust,T.rust,T.rust]}[o.paint];
  const sd=o.seed*1.37;
- const hf=o.holes>0?(u,v)=>fbm(u*L/14+sd,v*3.2,sd*.7,3)<.1+.3*o.holes*fbm(u*L/40,v,sd+3,2)*1.4:null;
+ const hf=o.holes>0?(u,v)=>fbm(u*L/14+sd,v*3.2,sd*.7,3)<.2+.4*o.holes*fbm(u*L/40,v,sd+3,2):null;
  const [u0,u1]=o.plate;
  if(u1>u0){const nu=Math.max(3,Math.round((u1-u0)*L/2.6)),U=a=>lerp(u0,u1,a),uS=L*(u1-u0)/8;
   add(gridSurface((a,v)=>{const u=U(a),w=thW(u);return sec(u,lerp(-w,w,v));},nu,10,{uS,vS:B*1.3/8,hole:hf?(a,v)=>hf(U(a),v*.5+.25):null}),pal[0]);
@@ -296,7 +296,7 @@ function buildDdDock(scene,gx,gz,d,opt){reseed(20100+d);ddSeaFix();
   portFigures(-40,D,0,10,6);portFigures(38,D,-40,6,6);portFigures(0,D,K.ZM-10,6,20);
   portBuoy(-30,110);portBuoy(34,104);}
  if(d===1){
-  ddHull(G,{L:124,B:20,D:14,x:1.5,y:-9.6,z:-16,yaw:Math.PI+.03,roll:.16,pitch:-.012,d,paint:'rust',sup:true,holes:.75,seed:5});
+  ddHull(G,{L:124,B:20,D:14,x:1.5,y:-10.6,z:-16,yaw:Math.PI+.03,roll:.16,pitch:-.012,d,paint:'rust',sup:true,holes:.75,seed:5});
   REGISTER({name:'Hulk in the flooded dock',x:0,z:-16,r:22,h:24,y:-10});
   portWeeds(-h+4,-K.LAND+4,K.X0-3,K.ZM-4,120,D);portWeeds(K.X1+3,-K.LAND+4,h-4,K.ZM-4,120,D);portWeeds(K.X0,-K.LAND+4,K.X1,K.Z0-3,30,D);
   portTrees(-h+8,-90,-34,-20,5,D,5,11);portTrees(34,-60,h-8,40,4,D,4,10);
