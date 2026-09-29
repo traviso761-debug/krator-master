@@ -43,7 +43,8 @@ Read before changing anything here. `build.py` prints the open count.
 
 - [x] The Vale's terrain from the scale model (class grid, escarpment cleanup, the island).
 - [x] The sacred river traced off the map: gorge, cascades, monotone bed, its own water.
-- [x] Thirty-one species (twenty-three unique, eight from the Rift ridge, altered), tagged.
+- [x] Thirty-three species (twenty-five unique, eight from the Rift ridge, altered), tagged.
+- [x] Quality pass: no trees in the lake or the river, traveller's palm, Persian ironwood twigs, haze blossom, cushion domes, the uplands (cypress, strawberry tree, maquis, an upland LOD origin).
 - [x] Fairy rings and hornbeam arches as placements, with the rings' lawns on the floor.
 - [x] Runtime LOD (chunked bake, BIO.lodTick) with stand-in impostors for the hero trees.
 - [x] Groves round glades on the vale (a grove field in the zones, flowers thick in the glades).

@@ -43,7 +43,7 @@ Everything the biome knows about the map arrives through the fields (wet / uplan
 flow / mist; salt is 0, the lake is fresh) plus terrainH.
 
 ## The flora (50/55/60)
-Thirty-one species. Unique to the Vale:
+Thirty-three species. Unique to the Vale:
 
 - **Dawn redwood** — a fluted, buttressed column and tiers of copper feathers that turn
   green away from the sun (iridescent orange-green). Some stand in the lake's shallows.
@@ -82,6 +82,12 @@ Thirty-one species. Unique to the Vale:
 - **Traveller's palm** — a flat fan of great paddle leaves, all in one plane.
 - **Violet plantain** — purple paddles, and a spike of purple bracts over yellow hands.
 - **Wollemi pine** — tall multi-stemmed, dark cords, spiky cones up top.
+- **Flame cypress** (the uplands) — a Mediterranean column of packed leaves (a lathe in the
+  leafy skin), three lobes wound up it like a flame.
+- **Strawberry tree** (the uplands) — a twisting bole peeling to red agate, a dark crown,
+  red and orange berries, white bells.
+
+The uplands also carry a maquis on the floor: lavender, broom, cistus and rosemary mounds.
 
 From the Rift ridge, altered: the cloud tree-fern, the lantern tree (its lanterns now in
 the psychedelic set), the fan tree as a silver fan palm (flat wheels), the barrel frill

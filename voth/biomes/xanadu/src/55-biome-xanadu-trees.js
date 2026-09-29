@@ -338,7 +338,7 @@ B[18]=function(T,st,lv){const S=SP[18],H=T.H,rb=T.rb,la=rr(0,TAU);
   if(!limbOk(p))continue;if(lv===2)limb(S,p,st,{fam:'xbark0',seg:5,flutes:3,fluteA:.1,twist:.8});else BIO.beam('rod',P3(p[0]),P3(p[4]),rb*.45,.08,rodCol(S,k));for(let i=1;i<=4;i++)spots.push(p[i]);}
  spots.push({x:o.x,y:T.y0+H*.95,z:o.z});
  const cnt=lv===2?2:1;spots.forEach(p=>{for(let c=0;c<cnt;c++){clumpAt('blossom',p.x+rr(-1.3,1.3),p.y+rr(0,1.4),p.z+rr(-1.3,1.3),rr(2.4,3.4),.55,vary(base,.01,.04,.03),o.x,cy,o.z,T.crownR,H*.25,bright(C(pick(PAL.irid.WGP)),1.12));st.clumps++;}});
- if(lv===2)for(let k=0,m=ri(3,6);k<m;k++){const a=rr(0,TAU),d=T.crownR*rr(.2,1),px=T.x+Math.cos(a)*d,pz=T.z+Math.sin(a)*d;BIO.put('mossmat',[px,BIO.terrainH(px,pz)+.06,pz],qEuler(rr(-.05,.05),rr(0,TAU),rr(-.05,.05)),rr(1,2.2),bright(vary(base,.02,.05,.05),1.2));}
+ if(lv===2)for(let k=0,m=ri(3,6);k<m;k++){const a=rr(0,TAU),d=T.crownR*rr(.2,1),px=T.x+Math.cos(a)*d,pz=T.z+Math.sin(a)*d;BIO.put('mossmat',[px,BIO.terrainH(px,pz)+.06,pz],qEuler(rr(-.05,.05),rr(0,TAU),rr(-.05,.05)),rr(.5,1.2),bright(vary(base.clone().lerp(C(0xd8b8e8),.35),.02,.05,.05),.95));}
  T.spread=T.crownR;reg(S,T);};
 // 19 the FROST WILLOW: a pale whorled trunk, arching boughs, a curtain of long silver strands that go lavender away from the sun
 B[19]=function(T,st,lv){const S=SP[19],H=T.H,rb=T.rb,la=rr(0,TAU),lk=rr(.02,.12);
@@ -479,12 +479,12 @@ B[31]=function(T,st,lv){const S=SP[31],H=T.H,rb=T.rb,la=rr(0,TAU),lk=rr(0,.03),t
  bole(T,S,H*.12,u=>rb*(1+.5*Math.exp(-u*H/1)),{fam:'xbark0',flutes:4,fluteA:.14,twist:.9,vs:1,seg:lv===2?8:6});
  // the column: a lathe of packed leaves, swelling low and drawing to a point, three lobes wound up it like a flame
  const hc=vary(pick(S.leaf),.02,.05,.04),n=lv===2?14:8,rings=[];
- for(let i=0;i<=n;i++){const u=lerp(.06,1,i/n),R=T.crownR*Math.pow(Math.sin(Math.PI*Math.min(1,u*1.2+.1)),.6)*(1-u*.6)+.06,y=T.y0+H*u;
-  rings.push({x:T.x+Math.cos(la)*lk*H*u,y,z:T.z+Math.sin(la)*lk*H*u,r:R,yy:H*u,col:bright(u>.85?C(0x6a6a3a).lerp(hc,.5):hc,lerp(1.0,1.35,u))});}
+ for(let i=0;i<=n;i++){const u=lerp(.06,1,i/n),R=T.crownR*Math.pow(Math.sin(Math.PI*(u*.84+.1)),.6)*(1-u*.55)+.06,y=T.y0+H*u;
+  rings.push({x:T.x+Math.cos(la)*lk*H*u,y,z:T.z+Math.sin(la)*lk*H*u,r:R,yy:H*u,col:bright(u>.85?C(0x6a6a3a).lerp(hc,.5):hc,lerp(2.1,2.6,u))});}   // bright: the leafy skin is dark
  rings.push({x:rings[n].x,y:T.y0+H+.4,z:rings[n].z,r:.04,yy:H+.4,col:bright(hc,1.3)});
  st.trunk+=BIO.lathe('xleaf',rings,lv===2?12:8,3,2.5,(R,ang)=>R.r*(1+.16*Math.cos(3*ang+R.yy*tw+ph)+.05*Math.cos(7*ang-R.yy*.9)),(R,ang)=>.72+.28*(.5+.5*Math.cos(3*ang+R.yy*tw+ph)));
  // a little fuzz on the column so its outline is not a turned spindle
- if(lv===2)for(let k=0,m=ri(6,10);k<m;k++){const u=rr(.15,.85),a=rr(0,TAU),R=T.crownR*Math.pow(Math.sin(Math.PI*Math.min(1,u*1.2+.1)),.6)*(1-u*.6);
+ if(lv===2)for(let k=0,m=ri(6,10);k<m;k++){const u=rr(.15,.85),a=rr(0,TAU),R=T.crownR*Math.pow(Math.sin(Math.PI*(u*.84+.1)),.6)*(1-u*.55);
   clumpAt('needle',T.x+Math.cos(a)*R*.95,T.y0+H*u,T.z+Math.sin(a)*R*.95,rr(.9,1.4),.8,bright(hc,1.3),T.x,T.y0+H*u,T.z,R+.5,1,null);st.clumps++;}
  T.spread=T.crownR;if(lv===2)reg(S,T);};
 // 32 the STRAWBERRY TREE: a twisting bole whose bark peels to red agate, a dark rounded crown, clusters of red and orange berries and white bells

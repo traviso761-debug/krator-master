@@ -56,7 +56,7 @@ How the biome zones itself from those (55-trees, `XANADU.zones`):
 | forest | low upland, wet > .64, little mist         | chestnut-leaved oaks, agate trees, Persian ironwood, ginkgos, Wollemi pines, lantern trees; ferns, box, baneberry, cobra lilies, mushrooms; fairy rings, hornbeam arches |
 | chasm  | mist, low upland                           | tree-ferns, chasm frills, Wollemi pines, cacao, violet plantains, dawn redwoods; giant ferns, moss, orchids |
 | cloud  | mist, high upland                          | beard trees, chasm frills, tree-ferns, Wollemi pines |
-| dry    | upland .16–.72, wet < .6                  | whorl olives, cloud pines, bottle palms, desert roses, prickly pears, pitaya, silver fan palms, barrel frills, silver scrub, serpent stalks; garrigue, star flowers, petrified logs; cloud-pine rings |
+| dry    | upland .16–.72, wet < .6                  | flame cypresses, strawberry trees, whorl olives, cloud pines, bottle palms, desert roses, prickly pears, pitaya, silver fan palms, barrel frills, silver scrub, serpent stalks; maquis (lavender, broom, cistus, rosemary), garrigue, star flowers, petrified logs; cloud-pine and cypress rings |
 | crag   | upland > .52                               | wind-leaning cloud pines, silver scrub, barrel frills |
 
 The mask must be zero on cliffs (slope > ~1.4) and in the river's channel.
@@ -68,7 +68,7 @@ XANADU.build({R:3400, quality:1, lakeHue:.49}) -> {trees, heroes, far, rings, ar
 XANADU.dress(geometries, opt)   // growth on a structure: {ledges:{moss,plants,edges,hang}, soffits:{n,mossR,hang}, walls:{n}}
 XANADU.canopyH(x,z)             // approximate canopy top
 XANADU.zones(x,z)               // the zone weights a world can reuse for its own placement
-XANADU.SPECIES / XANADU.PAL     // the 31 species (tagged), the palettes
+XANADU.SPECIES / XANADU.PAL     // the 33 species (tagged), the palettes
 XANADU.RINGS / XANADU.ARCHES    // where the fairy rings and the hornbeam alleys stood ({x,z,r|a,n,lv})
 XANADU.LOD                      // the runtime ranges: {tree:1500, floor:750, farFloor:3000, dress:1500, logs:1500}
 ```
