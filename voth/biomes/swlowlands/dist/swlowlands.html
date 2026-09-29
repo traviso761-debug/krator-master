@@ -1864,6 +1864,14 @@ SWLOW.buildTrees=function(R,q,opt){opt=opt||{};
  TREES.forEach((T,i)=>{const t0=cur();if(T.lv===0){if(SMALL[T.sp])buildFarSmall(T,st);else buildFar(T,i,st);st.fars++;}else{B[T.sp](T,st,T.lv);st.heroes++;}st.byS[T.sp]++;trisS[T.sp]+=cur()-t0;});
  return{trees:TREES.length,avenue:st.avenue||0,grove:st.grove||0,heroes:st.heroes,far:st.fars,bySpecies:SP.map((S,i)=>S.key+':'+st.byS[i]).join(' '),trisBySpecies:SP.map((S,i)=>S.key+':'+Math.round(trisS[i]/1000)+'k').join(' '),limbs:st.limbs,clumps:st.clumps,moss:st.moss,pillars:st.pillars,veils:st.veils,
   tris:{trunk:st.trunk,limbs:st.limb,far:st.far}};};
+// ONE TREE AT A POINT. A world that plants a garden, a courtyard or a sacred grove asks for a
+// species by key at an explicit (x,y,z): no zone, no mask, no LOD (always the hero build).
+// opt.scale shrinks a species to a young or clipped specimen (H, rb, crownR all by it).
+SWLOW.treeAt=function(species,x,y,z,opt){opt=opt||{};means();const sp=typeof species==='number'?species:SP.findIndex(S=>S.key===species);if(sp<0)return null;
+ const S=SP[sp],k=opt.scale==null?1:opt.scale;if(opt.seed!=null)reseed(opt.seed);
+ const st={trunk:0,limb:0,far:0,limbs:0,clumps:0,blooms:0,pods:0,moss:0,fronds:0,knees:0,veils:0,pillars:0,roots:0,epi:0,heroes:0,fars:0,byS:SP.map(()=>0)};
+ const T={x:x,z:z,y0:y-.4,sp:sp,H:rr(S.H[0],S.H[1])*k,rb:rr(S.rb[0],S.rb[1])*k,crownR:rr(S.crownR[0],S.crownR[1])*k,seed:ri(0,999999),wet:opt.wet==null?.6:opt.wet,lv:2};
+ if(opt.bias!=null)T.bias=opt.bias;SWLOW.TREES.push(T);hadd({x:x,z:z,r:T.crownR*.4,rt:T.rb*1.6+.8});B[T.sp](T,st,2);return T;};
 SWLOW._canopyH=function(x,z){let h=0;for(const T of SWLOW.TREES){if(Math.hypot(x-T.x,z-T.z)<Math.max(40,T.crownR))h=Math.max(h,T.y0+T.H);}return h||10;};
 })();
 
@@ -2101,6 +2109,24 @@ SWLOW.buildFloor=function(R,q){
  BIO.grid(120,0,R,(x,z,d)=>{if(BIO.lodD(x,z)>1400)return 0;const Z=zones(x,z);return (Z.rain*.8+Z.swamp*.4+Z.sub*.35)*q;},
   (x,y,z,d)=>{const trop=zones(x,z).rain>.4;for(let t=0;t<4;t++)if(log(x+rr(-25,25),y,z+rr(-25,25),st,trop))break;},{patch:0,pad:3});
  return{under:st};};
+// ONE PLANT AT A POINT, by name, for a world's gardens: the same small-plant builders the floor pass
+// uses, at an explicit (x,y,z) with the near LOD. kinds: fern forkfern giantfern shrub azalea palmetto
+// ears heliconia brom iris reed sedge grass grassgold yucca mullein aloe agave pincushion chaparral toyon
+// sapling moss blooms boulder. opt.set names a palette for shrub/sapling/grass (PAL key), opt.k a size.
+SWLOW.plantAt=function(kind,x,y,z,opt){opt=opt||{};means();const lv=opt.lv==null?2:opt.lv;if(opt.seed!=null)reseed(opt.seed);
+ const st=new Proxy({},{get:(o,k)=>o[k]||0,set:(o,k,v)=>{o[k]=v;return true;}});const set=opt.set?PAL[opt.set]:null;
+ switch(kind){
+  case 'fern':fern(x,y,z,lv,set);break;case 'forkfern':fern(x,y,z,lv,set||PAL.fern,'forkfern');break;case 'giantfern':giantFern(x,y,z,lv);break;
+  case 'shrub':shrub(x,y,z,lv,set,opt.k);break;case 'azalea':azalea(x,y,z,lv,st);break;case 'palmetto':palmetto(x,y,z,lv,st);break;
+  case 'ears':earCluster(x,y,z,lv,st);break;case 'heliconia':heliconia(x,y,z,lv,st);break;case 'brom':brom(x,y,z,st);break;
+  case 'iris':iris(x,y,z,lv,st);break;case 'reed':reed(x,y,z,lv);break;case 'sedge':sedge(x,y,z,lv,set);break;
+  case 'grass':grassTuft(x,y,z,lv,set||PAL.grassGreen,opt.k);break;case 'grassgold':grassTuft(x,y,z,lv,PAL.grassGold,opt.k||1.1);break;
+  case 'yucca':yucca(x,y,z,lv,st);break;case 'mullein':mullein(x,y,z,lv,st);break;case 'aloe':aloe(x,y,z,lv,st);break;case 'agave':agave(x,y,z,lv,st);break;
+  case 'pincushion':pincushion(x,y,z,lv,st);break;case 'chaparral':chaparral(x,y,z,lv,st);break;case 'toyon':toyon(x,y,z,lv,st);break;
+  case 'sapling':sapling(x,y,z,lv,set||PAL.shrub,st);break;case 'moss':groundMoss(x,y,z,opt.k||rr(1.2,2.4),set);break;
+  case 'blooms':blooms(x,y+.3,z,opt.k||.6,ri(4,8),set||PAL.azalea,[.14,.24],.3);break;case 'boulder':boulder(x,y,z,lv,set,st);break;
+  default:BIO.err('plantAt: unknown kind '+kind);return false;}
+ return true;};
 })();
 
 // ==================== 65-biome-swlowlands-dress.js

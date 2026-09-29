@@ -17,7 +17,7 @@ for it and none of them competes with the 32-type showcase for budget.
 
 | target | output | why separate |
 |---|---|---|
-| `repaired` | `dist/repaired.html` | a third variant of every type is +50% scene content; the kit is at 5.80M of 6M |
+| ~~`repaired`~~ | retired | folded into `kit` on 2026-09-28 (DECAYS=[0,1,2,3]); the user accepted the kit running over its 6M soft ceiling |
 | `canyon` | `dist/canyon.html` | its own site (a canyon), nothing to do with the row layout |
 | `dalab` | `dist/dalab.html` | belongs to the DALAB settlement, not to this kit |
 

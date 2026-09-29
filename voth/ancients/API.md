@@ -128,15 +128,20 @@ creates its own `THREE.Group` at `(gx, 0, gz)`, adds it to `scene`, and **must**
 head of each builder, adding two `rng()` calls to the Laboratory silently moves
 every rock in every structure built after it. `build.py` checks this. It also
 checks that no two fragments claim overlapping seeds — remember a builder runs
-**once per decay state**, so `reseed(9100+d)` claims 9100–9102.
+**once per decay state**, so `reseed(9100+d)` claims 9100–9104 (decays 0–4).
 
 ### Decay semantics
 
 `d` is `0` intact, `1` ruined, `2` toppled, `3` rehabilitated, `4`
 rehabilitated **and still standing** ("The Project"). Only types with a `t`
-column in `ROWS` (the eight skyscrapers) are ever called with `d === 2`, only
-the `repaired` target asks for `3`, and only a row that names `j` and lists `4`
-in its own `ds` is ever called with `4` — which today is `skyA` alone.
+column in `ROWS` (the eight skyscrapers) are ever called with `d === 2`; every
+type in the `kit` target is called with `3` (the rehabilitated variants were
+folded in from the retired `repaired` target, and stand at x=0); and only a row
+that names `j` and lists `4` in its own `ds` is ever called with `4`, which
+today is `skyA`, `skyD` and `skyH`: the three Projects.
+
+Only `d === 2` is built cut down: the standing test is `d !== 2`. It used to
+be `d < 2`, which made every tower a three-storey stump at level 3.
 
 Levels 3 and 4 are the same ancient fabric at a reduced hole density: the scene
 loop sets the global `HOLES = 0.55` for them (`holeFn` multiplies `d` by it), so

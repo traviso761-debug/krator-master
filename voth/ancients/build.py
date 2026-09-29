@@ -9,7 +9,7 @@ Also enforces the rules that make subagent work safe on this kit:
      script checks two things: that each build*() actually opens with a
      reseed, and that no two fragments claim overlapping seeds. Note that a
      builder is called once per decay state, so `reseed(9100+d)` claims
-     9100..9102 and `reseed(d>0?9801:9800)` claims 9800..9801 — the check
+     9100..9104 (decays 0-4) and `reseed(d>0?9801:9800)` claims 9800..9801 — the check
      expands both forms before looking for collisions.
 
   2. SHARED SCOPE. Every fragment is concatenated into one <script>, so a
@@ -60,7 +60,6 @@ TARGET_OUT = {
     'kit': 'ancients-kit.html',            # the 32-type showcase
     'theodiga': 'theodiga.html',           # the dam arcology, on its own
     'spire': 'spire.html',                 # the recursive spire, on its own
-    'repaired': 'repaired.html',           # every type at decay level 3
     'canyon': 'canyon.html',               # the cross-canyon span works
     'dalab': 'dalab.html',                 # the ancient lab domes (domes only)
     'veladiga': 'veladiga.html',
@@ -75,6 +74,14 @@ TARGET_OUT = {
     'wing': 'wing.html',                     # memorial group: the Wing
     'drum': 'drum.html',                     # memorial group: the Drum
     'blades': 'blades.html',                 # memorial group: the Blades
+    'trigon': 'trigon.html',                 # the triangular pyramid, 3:1
+    'monolith': 'monolith.html',             # the slab with the arch and the oculi
+    'crescent': 'crescent.html',             # the terraced crescent moon
+    'ledge': 'ledge.html',                   # terraced slabs cantilevered off a cliff
+    'wheel': 'wheel.html',                   # ring plate of parkland on eight towers
+    'skyi': 'skyi.html',                     # Skyscraper I on its own (joins the kit rows)
+    'skyj': 'skyj.html',                     # Skyscraper J on its own (joins the kit rows)
+    'skyk': 'skyk.html',                     # Skyscraper K on its own (joins the kit rows)
     'arcbeam': 'arcbeam.html',                 # the canyon-spanning beam arcology
     'ring': 'ring.html',                       # the barrel arcology, circular toruses
     'arcoindian': 'arcoindian.html',           # the cliff-topography arcology
@@ -111,8 +118,10 @@ GENERIC = {'seed', 'base', 'dir', 'pos', 'tmp', 'i', 'j', 'k', 'n', 'p', 't', 'x
 def seeds_claimed(arg):
     """Expand a reseed() argument into the set of integer seeds it can produce.
 
-    Builders are invoked once per decay state d in {0,1,2}, so the two forms
-    used in this kit cover more than one seed each.
+    Builders are invoked once per decay state, and the kit now shows d in
+    {0,1,2,3} with a few rows adding 4 (the Projects), so `N+d` claims N..N+4.
+    It used to claim N..N+2, which let a d=3 or d=4 stream land on another
+    builder's seed unnoticed.
     """
     arg = arg.replace(' ', '')
     m = re.fullmatch(r'(-?\d+)', arg)
@@ -121,7 +130,7 @@ def seeds_claimed(arg):
     m = re.fullmatch(r'(-?\d+)\+d', arg)
     if m:
         n = int(m.group(1))
-        return {n, n + 1, n + 2}
+        return {n, n + 1, n + 2, n + 3, n + 4}
     m = re.fullmatch(r'd>0\?(-?\d+):(-?\d+)', arg)
     if m:
         return {int(m.group(1)), int(m.group(2))}
@@ -244,7 +253,19 @@ def main():
     if '--target' in sys.argv:
         wanted.append(sys.argv[sys.argv.index('--target') + 1])
     if not wanted:
-        wanted = list(TARGET_OUT)
+        # A target is registered here BEFORE its directory exists, so an agent
+        # can be dispatched without touching this shared file (the memorial
+        # group went in that way). Building "everything" must not die on the
+        # first of those: it used to stop at `wing` and silently leave every
+        # target after it in this dict unbuilt. Skip them loudly instead. An
+        # explicit --target for a missing directory is still a hard error.
+        wanted = []
+        for t in TARGET_OUT:
+            if os.path.isdir(os.path.join(TARGETS, t)):
+                wanted.append(t)
+            else:
+                print('skipped %-14s registered in TARGET_OUT, but targets/%s/ does not exist yet'
+                      % (t, t))
 
     for target in wanted:
         order, html, out = build_one(target, do_checks, assert_origin)

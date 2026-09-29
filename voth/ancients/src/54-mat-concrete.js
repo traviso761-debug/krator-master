@@ -46,12 +46,11 @@ kdef('pane',new THREE.BoxGeometry(1,1,.12),MAT.glass);kdef('paneD',new THREE.Box
 kdef('slabC',new THREE.CylinderGeometry(1,1,1,48),MAT.concrete);kdef('slabCR',new THREE.CylinderGeometry(1,1,1,48),MAT.concreteR);
 const BOXC=d=>d>0?'boxCR':'boxC', SLABC=d=>d>0?'slabCR':'slabC';
 function se(th,n){return 1/Math.pow(Math.pow(Math.abs(Math.cos(th)),n)+Math.pow(Math.abs(Math.sin(th)),n),1/n);}
-// `stand` forces the full-height branch whatever `d` is. The test is `d<2`,
-// which is right for 0 and 1 and wrong for everything above 2: decay 3 falls
-// into the TOPPLED branch and is built cut off at cutY, without the fallen
-// upper body that is the only reason to cut it. That is why a rehabilitated
-// tower is a stump in --target repaired, and why the Projects (decay 4) pass
-// stand=true. Every existing caller omits it and is unchanged.
-function bodyGroup(G,y0,d,dd,build,cutY,topR,stand){const P=new THREE.Group();P.position.set(0,y0,0);G.add(P);useGroupXF(P);if(d<2||stand)build(P,dd,y0,null,false);else build(P,1,y0,cutY,false);endGroupXF();
+// Only a TOPPLED tower (d===2) is cut at cutY; every other level stands at full
+// height. The test used to be `d<2`, which sent decay 3 down the toppled branch
+// without the fallen upper body that is the only reason to cut it, so every
+// rehabilitated tower was a three-storey stump. `stand` predates the fix (the
+// Projects, decay 4, pass it) and is now redundant but harmless.
+function bodyGroup(G,y0,d,dd,build,cutY,topR,stand){const P=new THREE.Group();P.position.set(0,y0,0);G.add(P);useGroupXF(P);if(d!==2||stand)build(P,dd,y0,null,false);else build(P,1,y0,cutY,false);endGroupXF();
  if(d===2)toppledUpper(G,0,0,cutY,topR,(U)=>build(U,1,cutY,null,true),d);}
 

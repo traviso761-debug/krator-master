@@ -1,5 +1,72 @@
 # Krator Ancients — handover
 
+## UPDATE 2026-09-28 — read this first; the sections below it are older
+Branch `claude/laughing-bohr-1zdca5`. Every item here was verified with
+`build.py` + `jscheck.py` + `verify.py --assert --all-views`, and the shots
+were read.
+
+**Tooling note.** This container needed `pip install playwright==1.56.0` (to
+match the pre-installed Chromium 1194 in /opt/pw-browsers) and `pip install
+pillow`. Do not `playwright install`.
+
+| target | state | tris d0 / d1 | notes |
+|---|---|---|---|
+| `trigon` (89f, seed 9710) | NEW, done | 242 517 / 281 731 | `targets/trigon/NOTES.md` |
+| `monolith` (89g, seed 9720) | NEW, done | 385 304 / 374 108 | agent hit the usage limit after finishing; notes written by the coordinator |
+| `crescent` (89h, seed 9730) | NEW, done | 232 400 / 321 048 | `targets/crescent/NOTES.md` |
+| `ledge` (89i, seed 9740) | NEW, done | 604 154 / 484 272 | soffits given painted bounce light (were brown) |
+| `arcube` (89d, seed 9610) | COMPLETED | 403 694 / 323 792 | sheet features added: friezes, oval wells, spine, heliport tower, broad piers; new ruin |
+| `hill` (89e, seed 9660) | FIXED | 533 256 / 486 016 | see below |
+
+**The Hill was burying its own city.** `hillCorr` carved the notch along the
+band of the one level whose back wall stands at each radius; plates are up to
+100 m deep and the meander moves the band ~50 m a level, so away from the
+hairpins most plate fronts lay under the natural hill. Now the notch follows
+`hillEnv(r)`, the union of every plate that reaches r (cached per metre); the
+flank walls follow its edges; a rock floor closes gaps between shallow lips; the
+cut walls are bedded rock (`TEX.hillRock`) instead of pale concrete. The
+facade-height bug the older notes below name as "first task" was already fixed
+in the code. Hero and "A garden terrace" presets re-aimed. Still open: a dark
+band where the hill surface is seen from below at the lip of the cut, in the
+low "The cut wall" shot.
+
+**Kit surgery: DONE (2026-09-28).** Decay 3 is folded into the kit
+(`DECAYS=[0,1,2,3]`) and the `repaired` target is retired; the user chose to
+accept the overage: **8 362 742** scene triangles against the 6M soft ceiling,
+reported OVER by `--assert`, every other invariant passing. The decay-3 stump
+bug is fixed (standing test `d!==2`), so rehabilitated towers stand full height.
+Projects D and H have rows (`j=-1150`) and day/night/close presets; their builder
+code was already written. `ROWV` row shots are capped 90 m short of the next row
+so they no longer stand inside its rehabilitated building. Worst draw calls seen:
+886 of 900 (Rehabilitated D). Plinth shrinking, Project A's firelight and the
+Hotel overhang fixes were already done before this session.
+
+`build.py` now skips registered targets that have no directory (wing, drum,
+blades) instead of aborting a full build at the first one, and its seed check
+expands `N+d` over decays 0-4.
+
+**Done 2026-09-29, all verified independently and published:**
+| target | seed | tris (per decay) | notes |
+|---|---|---|---|
+| `wing` (8ae) | 9620 | 309 952 / 276 804 | coffered spiral disc, two slab wings; ruin drops a wing |
+| `drum` (8af) | 9630 | 241 620 / 329 692 | fins and fluted tiers, sky gates; ruin leans the top |
+| `blades` (8ag) | 9640 | 447 396 / 427 012 | six blades, covered plaza; SKY GARDEN on the canopy roof (user request); no skyI fallback needed |
+| `wheel` (89j) | 9750 | 500 490 / 508 286 | ring park on 8 towers, spokes, 87 light wells; agent hit the usage limit, recovered |
+| `skyI` (89k) | 9760 | 38 980 / 65 844 / 69 746 / 71 468 | the Braid; kit row z=26400 |
+| `skyJ` (89l) | 9770 | 175 520 / 114 292 / 133 290 / 173 834 | the Whorl; kit row z=27200 |
+| `skyK` (89m) | 9780 | 160 499 / 174 692 / 229 042 / 197 700 | the Sail; kit row z=28000 |
+
+The three towers keep dev targets (`skyi`/`skyj`/`skyk`) and also have kit
+rows. The kit is now **9 967 649** scene triangles (OVER the 6M soft ceiling
+by the user's choice), worst draw calls seen 886. Published: kit
+https://claude.ai/artifact/FSKTzZ3duwQ2zrbdEEqYYf (the older link
+1V5VxyNVxS2ZsEy9M7QJhE is a stale build), and a viewer of all the new types
+with per-type scene links at https://claude.ai/artifact/DUmUNgR1mKa66P4zD42X47.
+
+Still open from the older queue: the dockyard pair, overgrown (biome) variants for every
+type except the Hexahedron, and the kit-wide detail pass (Gaudi mouldings,
+interiors behind openings, glass shards).
+
 ## STOPPED: weekly API limit, resets **Sep 27, 8pm** (America/Chicago)
 Written 2026-09-23. Both running agents were killed mid-task by the weekly
 limit, not by any fault of their own. Nothing is broken; everything below was
