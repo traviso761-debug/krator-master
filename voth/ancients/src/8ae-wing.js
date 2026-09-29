@@ -142,10 +142,16 @@ MAT.wgLensR=WGM({map:TEX.concrete,color:0x7f786d});
 MAT.wgWall =WGM({map:TEX.concrete,color:0x7a746c});
 MAT.wgWallR=WGM({map:TEX.concrete,color:0x57524c});
 // Soffits are lit almost entirely by the hemisphere's brown ground colour, so
-// they are tinted cool to come back as grey concrete in shade rather than as
-// brown. NOT emissive: an emissive soffit glows white at night.
-MAT.wgSoff =WGM({map:TEX.concrete,color:0x8a95a6,roughnessMap:null});
-MAT.wgSoffR=WGM({map:TEX.concrete,color:0x5a6270,roughnessMap:null});
+// no albedo brings them back as grey concrete: at best they are brown.
+// QA (arcC): BOUNCE LIGHT IS PAINTED, as on the Ledge. The soffit carries a
+// little emissive through its own concrete map, multiplied by the vertex colour
+// (wgBounce) so the gaps' painted occlusion still darkens it toward the back,
+// and ldNightDim() (89i-ledge.js) pulls it down at night, which is what made the
+// first emissive attempt glow white after dark.
+function wgBounce(m){m.onBeforeCompile=sh=>{sh.fragmentShader=sh.fragmentShader.replace('#include <emissivemap_fragment>',
+ '#include <emissivemap_fragment>\n#ifdef USE_COLOR\n totalEmissiveRadiance*=vColor;\n#endif');};return m;}
+MAT.wgSoff =wgBounce(WGM({map:TEX.concrete,color:0x8c8c89,emissive:0x77746e,emissiveMap:TEX.concrete,roughnessMap:null}));
+MAT.wgSoffR=wgBounce(WGM({map:TEX.concrete,color:0x5e5c58,emissive:0x45423e,emissiveMap:TEX.concrete,roughnessMap:null}));
 MAT.wgDeck =WGM({map:TEX.concrete,color:0x57524b});
 MAT.wgDeckR=WGM({map:TEX.concrete,color:0x524d46});
 MAT.wgLawn =WGM({map:TEX.wgLawn});
@@ -212,9 +218,16 @@ function buildWing(scene,gx,gz,d){reseed(9620+d);KOFF=[gx,0,gz];
 
  // ---- the ruin's numbers -----------------------------------------------------------
  // east: broken off at the root; the break leans in as it rises
- const cutE=y=>190-.12*(y-PY)+12*(fbm(y*.035,.7,9626,2)-.5)*2;
- const cutAB=y=>405+14*(fbm(y*.04,2.2,9627,2)-.5)*2;
- const cutBC=y=>585+12*(fbm(y*.04,4.4,9628,2)-.5)*2;
+ // QA (arcC): each break is STAGGERED slab by slab — a slab lets go at its own
+ // x, stepping in and out by up to 20-36 m from its neighbours, the step made
+ // in the gap between them — so the stump and every fallen piece end in a
+ // ragged row of slab ends instead of one clean cut through the stack. The
+ // stump and the pieces still share the predicate, so the breaks still match.
+ const SLK=y=>Math.max(-1,Math.min(K-1,Math.floor((y-Y0+GP*.5)/SP)));
+ const stag=(y,s,a)=>a*(h3(SLK(y)+2,s,9629)-.5)*2;
+ const cutE=y=>190-.12*(y-PY)+12*(fbm(y*.035,.7,9626,2)-.5)*2+(y>Y0-GP*.5?stag(y,1.3,20):0);
+ const cutAB=y=>405+14*(fbm(y*.04,2.2,9627,2)-.5)*2+stag(y,2.7,36);
+ const cutBC=y=>585+12*(fbm(y*.04,4.4,9628,2)-.5)*2+stag(y,5.1,26);
  // west: the outer slabs pancaked and the whole wing sagging
  const SAG0=430,SAG1=720,SAGT=44;
  const pan=ax=>sm(470,640,ax)*.9;
@@ -270,7 +283,7 @@ function buildWing(scene,gx,gz,d){reseed(9620+d);KOFF=[gx,0,gz];
   g.setAttribute('position',new THREE.Float32BufferAttribute(A.P,3));
   g.setAttribute('uv',new THREE.Float32BufferAttribute(A.U,2));
   g.setAttribute('color',new THREE.Float32BufferAttribute(A.C,3));
-  g.setIndex(A.I);g.computeVertexNormals();mesh(g,MATS[k],par);}};
+  g.setIndex(A.I);g.computeVertexNormals();const o=mesh(g,MATS[k],par);if(k==='soff')ldNightDim(o,MATS[k]);}};
 
  // ---- the rows ---------------------------------------------------------------------
  // A half-wing is a stack of horizontal rows. Each row spans x from the back of
@@ -374,6 +387,15 @@ function buildWing(scene,gx,gz,d){reseed(9620+d);KOFF=[gx,0,gz];
       KP('wgBalc',[X(x),yf,zs*W(x)],q,[5.8,1.15,rr(2.1,2.6)],PALE());
       if(!dd&&full&&rng()<.1)KP('leafCard',[X(x+rr(-2,2)),yf+.9,zs*(W(x)+1.7)],qEuler(0,rng()*TAU,0),[rr(1.2,2),rr(1,1.6),rr(1.2,2)],LEAF());
       if(dd&&rng()<.12)KP('vine',[X(x+rr(-2,2)),yf-.3,zs*(W(x)+2.2)],qEuler(rr(-.1,.1),0,rr(-.1,.1)),[rr(.9,1.6),rr(4,18),rr(.9,1.6)],null);}}}}
+  // ---- QA (arcC): the soffits' ribs. 'Under the cantilever' looked up at a
+  // plain plane 170 m long; now a transverse rib every 9 m (the cantilever's
+  // own structure, deepening toward the root), a lamp slot on every other one.
+  for(let k=0;k<K;k++){const rw={t:'s',k},x0=k===0?HX1+6:XG(k-1)+6;
+   for(let x=x0;x<XT(k)-4;x+=9){const yb=ybot(k,x);if(!inClip(x,yb+1,rw)||inDrum(x,yb)||(dd&&rng()<.3))continue;
+    const dp=1.2+2.4*clamp(1-(x-XR(k))/(XT(k)-XR(k)),0,1);
+    let q=null,yy=yb-dp*.5;if(dd&&rng()<.12){q=qEuler(rr(-.4,.4),0,rr(-.3,.3));yy-=rr(1,4);}
+    KP('wgBox',[X(x),yy,0],q,[1.4,dp,2*W(x)-3],CONC());
+    if(!dd&&Math.round(x/9)%2===0)KP('strip',[X(x+4.5),yb-.35,0],qEuler(0,Math.PI/2,0),[2*W(x)-8,3,3],WARMC);}}
   // ---- the gaps: decks with houses, trees, rails, piers, and light under the soffit
   for(let k=0;k<K-1;k++){const rw={t:'s',k},y=YT(k);
    const xa=XG(k)+4,xb=XT(k)-4;
@@ -505,6 +527,13 @@ function buildWing(scene,gx,gz,d){reseed(9620+d);KOFF=[gx,0,gz];
    if(!dd)kput('strip',[0,PH+2,z+zs*.6],null,[2*PW+4,5,5],WARMC);}
   for(const xs of [1,-1])Q(SS,'mass',[xs*PX,PL,-PZ],[xs*PX,PL,PZ],[xs*PX,PY,PZ],[xs*PX,PY,-PZ],1);
   Q(SS,'conc',[-PX,PY,-PZ],[PX,PY,-PZ],[PX,PY,PZ],[-PX,PY,PZ],2);
+  // QA (arcC): the pedestal was a box. Buttress ribs every 8 m on all four
+  // faces (clear of the portals), and between them rows of deep slots.
+  {const rib=(x,z,q,L)=>{if(dd&&rng()<.2)return;kput('wgBox',[x,(PL+PY)/2-2,z],q,[1.8,PY-PL-8,L],new THREE.Color(dd?0x5a554e:0x8e8980));};
+   for(const zs of [1,-1])for(let x=-PX+6;x<=PX-6;x+=8){if(Math.abs(x)<PW+4)continue;rib(x,zs*(PZ+1.2),null,2.4);
+    for(let y=PL+12;y<PY-12;y+=9.5)if(rng()<.5)kput('wgDim',[x+4,y,zs*(PZ+.3)],null,[1.4,4.2,.8],null);}
+   for(const xs of [1,-1])for(let z=-PZ+6;z<=PZ-6;z+=8){rib(xs*(PX+1.2),z,null,1.8);
+    for(let y=PL+12;y<PY-12;y+=9.5)if(rng()<.5)kput('wgDim',[xs*(PX+.3),y,z+4],null,[.8,4.2,1.4],null);}}
   // the capital and base courses
   kput('wgBox',[0,PY-2.5,0],null,[2*PX+8,5,2*PZ+8],new THREE.Color(dd?0x5e5953:0xa29d94));
   kput('wgBox',[0,PL+2,0],null,[2*PX+6,4,2*PZ+6],new THREE.Color(dd?0x5e5953:0xa29d94));}
@@ -578,9 +607,10 @@ function buildWing(scene,gx,gz,d){reseed(9620+d);KOFF=[gx,0,gz];
   const pieces=[
    // all three came down on their backs: the front face, its slab bands and
    // shadow gaps, turned to the sky; the roof and the soffits are the flanks
-   {lo:y=>cutE(y),hi:y=>cutAB(y),x0:160,x1:420,y0:150,y1:YTOP,q:qEuler(0,.22,0).multiply(qEuler(-Math.PI/2+.1,0,.05)),at:[700,60]},
-   {lo:y=>cutAB(y),hi:y=>cutBC(y),x0:390,x1:600,y0:YS(0),y1:YTOP,q:qEuler(0,-.3,0).multiply(qEuler(-Math.PI/2+.06,0,-.1)),at:[960,-230]},
-   {lo:y=>cutBC(y),hi:()=>1e9,x0:570,x1:695,y0:YS(3),y1:YTOP,q:qEuler(0,.9,0).multiply(qEuler(-Math.PI/2+.35,0,-.25)),at:[1150,40]}];
+   {lo:y=>cutE(y),hi:y=>cutAB(y),x0:150,x1:440,y0:150,y1:YTOP,q:qEuler(0,.22,0).multiply(qEuler(-Math.PI/2+.1,0,.05)),at:[700,60]},
+   {lo:y=>cutAB(y),hi:y=>cutBC(y),x0:370,x1:610,y0:YS(0),y1:YTOP,q:qEuler(0,-.3,0).multiply(qEuler(-Math.PI/2+.06,0,-.1)),at:[960,-230]},
+   {lo:y=>cutBC(y),hi:()=>1e9,x0:560,x1:695,y0:YS(3),y1:YTOP,q:qEuler(0,.9,0).multiply(qEuler(-Math.PI/2+.35,0,-.25)),at:[1150,40]}];
+  const SHS=mkSet();
   for(const PC of pieces){
    // sit its lowest corner 3 m into the plain, centred where it came to rest
    let lo=1e9,cx=0,cz=0,nn=0;
@@ -591,11 +621,26 @@ function buildWing(scene,gx,gz,d){reseed(9620+d);KOFF=[gx,0,gz];
    const FS=mkSet(),Cp={lo:(y)=>PC.lo(y),hi:(y)=>PC.hi(y)};
    emitHalf(FS,1,Cp);dressHalf(1,Cp,false);
    endGroupXF();flush(FS,P);
+   // QA (arcC): bedded in what it crushed — rubble piled wherever the piece's
+   // faces come within a few metres of the plain — and torn slabs of its
+   // concrete thrown out round it (krShard, 89d-arcube.js)
+   {const Mw=new THREE.Matrix4().compose(P.position,P.quaternion,new THREE.Vector3(1,1,1)),v=new THREE.Vector3();
+    for(let x=PC.x0;x<=PC.x1;x+=6)for(let y=PC.y0;y<=PC.y1;y+=6)for(const zs of [1,-1]){if(rng()<.5)continue;
+     v.set(x,y,zs*W(x)).applyMatrix4(Mw);if(v.y>8||v.y<-8)continue;const sz=rr(2,8);
+     kput('wgRub',[v.x+rr(-5,5),Math.max(0,v.y)*.4+sz*.3,v.z+rr(-5,5)],qEuler(rng()*3,rng()*3,rng()*3),[sz*rr(.8,1.5),sz*rr(.5,.9),sz*rr(.8,1.5)],RUBC());}
+    for(let j=0;j<8;j++){const w=rr(12,30),l=rr(14,40),t=rr(3,7);
+     const SH=krShard({w:w,l:l,t:t,layers:2,brk:[1,1,1,j%2],bite:.26,tile:TILE,seg:8});
+     const a=rng()*TAU,r=rr(120,230),x=PC.at[0]+Math.cos(a)*r,z=PC.at[1]+Math.sin(a)*r,qS=qEuler(rr(-.3,.3),rng()*TAU,rr(-.3,.3));
+     const MS=new THREE.Matrix4().compose(new THREE.Vector3(x,-SH.low(qS)-t*.3,z),qS,new THREE.Vector3(1,1,1));
+     for(const [g,key] of [[SH.top,'rib'],[SH.side,'conc'],[SH.bot,'conc'],[SH.brk,'guts']]){if(!g)continue;g.applyMatrix4(MS);
+      const pa=g.attributes.position,ua=g.attributes.uv;for(let i=0;i<pa.count;i+=3){const P3=[0,1,2].map(o=>[pa.getX(i+o),pa.getY(i+o),pa.getZ(i+o)]);
+       T3(SHS,key,P3[0],P3[1],P3[2],[0,1,2].flatMap(o=>[ua.getX(i+o),ua.getY(i+o)]),1,1,1);}}}}
    FALLEN.push({x:PC.at[0],z:PC.at[1]});
    REGISTER({name:'The Wing — the fallen east wing, piece '+FALLEN.length,x:PC.at[0],z:PC.at[1],r:170,h:130});
    rub(PC.at[0],PC.at[1],90,260,260,7);
    for(let j=0;j<40;j++){const a=rng()*TAU,r=rr(100,240),sz=rr(5,16);
-    kput('wgBox',[PC.at[0]+Math.cos(a)*r,sz*.2,PC.at[1]+Math.sin(a)*r],qEuler(rr(-.5,.5),rng()*TAU,rr(-.5,.5)),[sz*rr(1,2.2),sz*.5,sz*rr(.8,1.6)],CONC());}}
+    kput('wgRub',[PC.at[0]+Math.cos(a)*r,sz*.2,PC.at[1]+Math.sin(a)*r],qEuler(rr(-.5,.5),rng()*TAU,rr(-.5,.5)),[sz*rr(1,2.2),sz*.5,sz*rr(.8,1.6)],CONC());}}
+  flush(SHS,G);
   // ---- the stump: floors hanging out of the break, rods, the heap below it
   for(let j=0;j<70;j++){const y=rr(130,Math.min(YTOP,380)),x=cutE(y);if(!inYoke(x-6,y))continue;
    const L=rr(6,20);

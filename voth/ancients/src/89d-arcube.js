@@ -388,10 +388,10 @@ function buildArcube(scene,gx,gz,d){reseed(9610+d);KOFF=[gx,0,gz];
  // THE RUIN'S FAILURES, all on the SOUTH-EAST: the pier under that corner went,
  // the corner of the cube over it sheared away, and the mass has settled BSAG
  // radians down toward it about a horizontal axis through the surviving piers.
- // QA (arcC): the bite now runs the WHOLE south vertex line, 200 m deep at the
- // west end and 365 m at the east: a gouge that started at x = -150 left both
+ // QA (arcC): the bite now runs the WHOLE south vertex line, 280 m deep at the
+ // west end and 400 m at the east: a gouge that started at x = -150 left both
  // end elevations a whole diamond, and the outline is what a ruin must change.
- const BX0=-HX-20, BRMAX=365, BSAG=dd?.07:0;
+ const BX0=-HX-20, BRMAX=400, BSAG=dd?.07:0;
  const FAILX=420, FAILZ=PRZ, FAILH=150;
 
  // ---- the diamond ------------------------------------------------------------
@@ -492,7 +492,7 @@ function buildArcube(scene,gx,gz,d){reseed(9610+d);KOFF=[gx,0,gz];
  // a face and a point INSIDE the mass are tested by the same function and the
  // fracture surface built later lands exactly on the holes this cuts.
  const BRr=(x,ph)=>{if(!dd||x<BX0)return 0;const f=Math.min(1,(x-BX0)/(HX-BX0));
-  return BRMAX*(.55+.45*Math.pow(f,1.3))*(1+.30*(fbm(x*.011,ph*2.2,9618,3)-.5)*2);};
+  return BRMAX*(.7+.3*Math.pow(f,1.3))*(1+.30*(fbm(x*.011,ph*2.2,9618,3)-.5)*2);};
  const biteP=(x,y,z)=>{if(!dd||z<=0||x<BX0)return false;
   const dz=RD-z,dy=y-CY;return Math.hypot(dz,dy)<BRr(x,Math.atan2(dy,Math.max(dz,1e-3)));};
  const bite=(x,t,sd)=>{if(!dd||sd<0)return false;const p=ZY(RD,t);return biteP(x,p[1],p[0]);};
@@ -1287,7 +1287,7 @@ function buildArcube(scene,gx,gz,d){reseed(9610+d);KOFF=[gx,0,gz];
     acShardGeo(2*hz,L2,2*hx,32,qq,[cx,null,cz],PIRG,true,4);
     d0+=L2+rr(18,40);}
    const cx=HTX+dx*(d0+30),cz=dz*(d0+30);
-   MASG.push(acBoxGeo(2*hx+30,26,2*hz+30,25.6,qEuler(Math.PI+.2,-ang,.1),[cx,20,cz]));
+   acShardGeo(2*hx+30,26,2*hz+30,25.6,qEuler(Math.PI+.2,-ang,.1),[cx,null,cz],MASG,false,5);
    rubbleRing(HTX+dx*(d0-60),.4,dz*(d0-60),10,220,160,9);
    for(let j=0;j<40;j++){const f=rr(.1,1.1),sz=rr(3,12);
     kput('rubble',[HTX+dx*(700+f*300)+rr(-90,90),sz*.3,dz*(700+f*300)+rr(-90,90)],
