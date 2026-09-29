@@ -27,8 +27,8 @@
    one precinct, not the city, and are late for the office), and the evening
    window is 4 hours rather than the 2-3 a compline would really run, to make
    the chapel phase genuinely reachable. This is the same characteristic the
-   shopkeeper and quarry-laborer commutes already have � over 500+ units they
-   cannot finish a leg inside a 60-second half-day either � and the intended
+   shopkeeper and quarry-laborer commutes already have — over 500+ units they
+   cannot finish a leg inside a 60-second half-day either — and the intended
    way to inspect any of it is the time-of-day slider, which pins an hour and
    lets the population converge on it.
 
@@ -289,7 +289,7 @@ function updateMonk(cz, idx){
     var post = lifeMonkPost(cz);
     /* at the chapel they stand near-still on a fixed heading derived from
        the chapel's own ry (the same shorthand updateShopkeeper's 'atStall'
-       uses � loc()'s ry and the walk's atan2(dir.x,dir.z) yaw are different
+       uses — loc()'s ry and the walk's atan2(dir.x,dir.z) yaw are different
        conventions, so this is a consistent crowd facing, not a door-accurate
        one); in the fields they work a small patch, so only the field post
        actually wanders. */

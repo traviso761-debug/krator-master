@@ -791,9 +791,9 @@ var COMPOUND_WORKER_SUNRISE = SHOPKEEPER_SUNRISE, COMPOUND_WORKER_SUNSET = SHOPK
         work: { x: wp[0], z: wp[1] },
         /* the compound's own plinth top, +0.30 for the garden slab that sits
            on it (60-land.js draws it at yb-0.05, 0.35 tall). lifeGroundY()
-           below knows nothing about compound plinths � it falls through to
+           below knows nothing about compound plinths — it falls through to
            bare terrainH for anything that isn't a causeway, bridge, canton
-           deck or pier � so a worker placed by ground height alone stands
+           deck or pier — so a worker placed by ground height alone stands
            BELOW the garden he is meant to be tending wherever the plinth
            lifted the compound off a dip. Caught by screenshot, not assumed. */
         floorY: c.y + 0.30,
