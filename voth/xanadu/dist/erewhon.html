@@ -2972,7 +2972,17 @@ function onMap(x,z,m){m=m||0;return Math.abs(x)<ER.W/2-m&&Math.abs(z)<ER.H/2-m;}
 const FLATS=[],FLATCELL=64,FLATGRID={};
 function cityFlat(x,z,r,apron,h){const f=[x,z,r,apron,h];FLATS.push(f);const R=r+apron;
  for(let iz=Math.floor((z-R)/FLATCELL);iz<=Math.floor((z+R)/FLATCELL);iz++)for(let ix=Math.floor((x-R)/FLATCELL);ix<=Math.floor((x+R)/FLATCELL);ix++){const k=ix+','+iz;(FLATGRID[k]||(FLATGRID[k]=[])).push(f);}return h;}
-terrainH=function(x,z){let h=terrainBase(x,z);const L=FLATGRID[Math.floor(x/FLATCELL)+','+Math.floor(z/FLATCELL)];
+// ---------------------------------------------------------------- the benches (Travis): a street on a slope levels a lot's depth either side of itself to its own grade,
+// so the plots between two contour streets are terraces and not a hillside. A bench is a polyline with the road's own
+// base heights at its points; terrainH takes the nearest bench within BENCH_W and blends to the ground over BENCH_B.
+const BENCHES=[],BENCHCELL=48,BENCHGRID={},BENCH_W=10,BENCH_B=4;
+function benchAdd(pts){const B={pts,h:pts.map(p=>terrainBase(p[0],p[1]))};BENCHES.push(B);
+ for(let i=0;i<pts.length-1;i++){const a=pts[i],b=pts[i+1];const x0=Math.min(a[0],b[0])-BENCH_W-BENCH_B,x1=Math.max(a[0],b[0])+BENCH_W+BENCH_B,z0=Math.min(a[1],b[1])-BENCH_W-BENCH_B,z1=Math.max(a[1],b[1])+BENCH_W+BENCH_B;
+  for(let iz=Math.floor(z0/BENCHCELL);iz<=Math.floor(z1/BENCHCELL);iz++)for(let ix=Math.floor(x0/BENCHCELL);ix<=Math.floor(x1/BENCHCELL);ix++){const k=ix+','+iz;(BENCHGRID[k]||(BENCHGRID[k]=[])).push([B,i]);}}}
+function benchH(x,z,h){const L=BENCHGRID[Math.floor(x/BENCHCELL)+','+Math.floor(z/BENCHCELL)];if(!L)return h;let bd=1e9,bh=0;
+ for(const [B,i] of L){const a=B.pts[i],b=B.pts[i+1];const dx=b[0]-a[0],dz=b[1]-a[1],l2=dx*dx+dz*dz||1;const t=clamp(((x-a[0])*dx+(z-a[1])*dz)/l2,0,1);const d=Math.hypot(x-a[0]-dx*t,z-a[1]-dz*t);if(d<bd){bd=d;bh=B.h[i]*(1-t)+B.h[i+1]*t;}}
+ if(bd>BENCH_W+BENCH_B)return h;const k=1-smoothstep(BENCH_W,BENCH_W+BENCH_B,bd);return h*(1-k)+bh*k;}
+terrainH=function(x,z){let h=benchH(x,z,terrainBase(x,z));const L=FLATGRID[Math.floor(x/FLATCELL)+','+Math.floor(z/FLATCELL)];
  if(L)for(const f of L){const d=Math.hypot(x-f[0],z-f[1]);if(d<f[2]+f[3]){const k=1-smoothstep(f[2],f[2]+f[3],d);h=h*(1-k)+f[4]*k;}}return h;};
 function erSlope(x,z){const e=3;return Math.hypot(terrainBase(x+e,z)-terrainBase(x-e,z),terrainBase(x,z+e)-terrainBase(x,z-e))/(2*e);}
 function erGrad(x,z){const e=3;return[(terrainBase(x+e,z)-terrainBase(x-e,z))/(2*e),(terrainBase(x,z+e)-terrainBase(x,z-e))/(2*e)];}
@@ -3083,7 +3093,7 @@ function cstroke(ctx,pts,w,col){if(pts.length<2)return;ctx.lineWidth=Math.max(1,
 function cdisc(ctx,x,z,r,col){ctx.beginPath();ctx.arc(px(x),pz(z),r*PXS,0,7);ctx.fillStyle=col;ctx.fill();}
 function cpoly(ctx,pts,col){ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(px(p[0]),pz(p[1])):ctx.moveTo(px(p[0]),pz(p[1])));ctx.closePath();ctx.fillStyle=col;ctx.fill();}
 const ROADCOL={3:'#8a7a62',4:'#9a8a70',5:'#a89880',6:'#8a8068'};
-function road(pts,w,cls,opt){opt=opt||{};cstroke(cg,pts,w,opt.col||ROADCOL[cls]||'#8a7a62');if(cls!==KL.stair)cstroke(mg,pts,w+.6,'#000');cstroke(kg,pts,w+1,KLCOL(cls));const r={pts,w,cls,id:ROADS.length,zone:opt.zone||null,lights:!!opt.lights};ROADS.push(r);return r;}
+function road(pts,w,cls,opt){opt=opt||{};cstroke(cg,pts,w,opt.col||ROADCOL[cls]||'#8a7a62');if(cls!==KL.stair)cstroke(mg,pts,w+.6,'#000');cstroke(kg,pts,w+1,KLCOL(cls));const r={pts,w,cls,id:ROADS.length,zone:opt.zone||null,lights:!!opt.lights};ROADS.push(r);if(opt.bench)benchAdd(pts);return r;}
 function disc(x,z,r,type,col){cdisc(cg,x,z,r,col||(type==='park'?'#3a7a3c':type==='court'?'#a89a80':'#c9a56b'));cdisc(mg,x,z,r,type==='park'?'#00ff00':'#000');cdisc(kg,x,z,r,KLCOL(type==='park'?KL.park:type==='court'?KL.court:KL.plaza));}
 function precinct(x,z,r,name){PRECINCTS.push({x,z,r,name});}
 function footprint(pts,col){cpoly(cg,pts,col||'rgba(70,55,40,.5)');cpoly(mg,pts,'#000');cpoly(kg,pts,KLCOL(KL.building));}
@@ -5503,8 +5513,8 @@ const GARDEN_RECT=(function(){const c=MP(500,470);return{x:c[0]-8,z:c[1]+8,w:208
 function inGarden(x,z,m){m=m||0;return Math.abs(x-GARDEN_RECT.x)<GARDEN_RECT.w/2+m&&Math.abs(z-GARDEN_RECT.z)<GARDEN_RECT.d/2+m;}
 function ER_INCITY(x,z){return inPoly(CITY_POLY,x,z)||CITY_DISCS.some(D=>Math.hypot(x-D.x,z-D.z)<D.r);}
 // ---------------------------------------------------------------- the highway, the avenues and the stream
-for(const P of ER_LINES.highway)road(P,12,KL.boulevard,{zone:'highway',lights:true});
-for(const P of ER_LINES.avenue)road(P,9,KL.boulevard,{zone:'avenue',lights:true});
+for(const P of ER_LINES.highway)road(P,12,KL.boulevard,{zone:'highway',lights:true,bench:true});
+for(const P of ER_LINES.avenue)road(P,9,KL.boulevard,{zone:'avenue',lights:true,bench:true});
 for(const P of ER_LINES.stream){cstroke(cg,P,7,'#2a8aa0');cstroke(mg,P,14,'#000');cstroke(kg,P,12,KLCOL(KL.water));}
 // ---------------------------------------------------------------- the walls and the gates
 // a gate stands where the highway crosses a wall line (west and east); the palace gate on the south of the palace loop
@@ -5530,7 +5540,7 @@ plaza(MP(340,533)[0],MP(340,533)[1],34,'The plaza');
 for(const D of DIST)if(D.kind==='market')plaza(D.x,D.z,D.r*.42,D.name);
 for(const D of DIST)if(D.kind==='park')plaza(D.x,D.z,D.r*.7,D.name,'park');
 {const R=GARDEN_RECT,pts=[[R.x-R.w/2,R.z-R.d/2],[R.x+R.w/2,R.z-R.d/2],[R.x+R.w/2,R.z+R.d/2],[R.x-R.w/2,R.z+R.d/2]];cpoly(cg,pts,'#3a7a3c');cpoly(mg,pts,'#00ff00');cpoly(kg,pts,KLCOL(KL.park));   // the garden district: a park under its tiles
- const m=7,ring=[[R.x-R.w/2-m,R.z-R.d/2-m],[R.x+R.w/2+m,R.z-R.d/2-m],[R.x+R.w/2+m,R.z+R.d/2+m],[R.x-R.w/2-m,R.z+R.d/2+m],[R.x-R.w/2-m,R.z-R.d/2-m]];road(ring,8,KL.boulevard,{zone:'garden ring',lights:true});   // the ring road the rich face the garden from
+ const m=7,ring=[[R.x-R.w/2-m,R.z-R.d/2-m],[R.x+R.w/2+m,R.z-R.d/2-m],[R.x+R.w/2+m,R.z+R.d/2+m],[R.x-R.w/2-m,R.z+R.d/2+m],[R.x-R.w/2-m,R.z-R.d/2-m]];road(ring,8,KL.boulevard,{zone:'garden ring',lights:true,bench:true});   // the ring road the rich face the garden from
  precinct(R.x,R.z,0,'garden district');PRECINCTS[PRECINCTS.length-1].rect=R;}
 // ---------------------------------------------------------------- contour streets: the town's own streets follow the ground
 // marching squares over an 8 m grid at every ΔH of height inside the city's buildable ground, linked into polylines
@@ -5566,7 +5576,7 @@ const STREETS=[];
  for(let h=Math.floor(hmin/3)*3;h<hmax+60;h+=3){const lines=contourLines(h,8,inside);
   for(const L of lines){const s=simplify(L,9);
    // keep clear of the plazas and the palace loop's inside (its own court), then split into the runs far enough from every street
-   let run=[];const flush=()=>{if(run.length>=3){let len=0;for(let i=1;i<run.length;i++)len+=Math.hypot(run[i][0]-run[i-1][0],run[i][1]-run[i-1][1]);if(len>=40){const m0=run[Math.floor(run.length/2)],dm=districtAt(m0[0],m0[1]);const r=road(run,5,KL.minor,{zone:'contour',lights:dm.D.kind==='market'||(dm.D.wealth==='rich'&&dm.d<0)});   // the market streets and the rich quarters hang their lights tooSTREETS.push(r);markLine(run);}}run=[];};
+   let run=[];const flush=()=>{if(run.length>=3){let len=0;for(let i=1;i<run.length;i++)len+=Math.hypot(run[i][0]-run[i-1][0],run[i][1]-run[i-1][1]);if(len>=40){const m0=run[Math.floor(run.length/2)],dm=districtAt(m0[0],m0[1]);const r=road(run,5,KL.minor,{zone:'contour',bench:true,lights:dm.D.kind==='market'||(dm.D.wealth==='rich'&&dm.d<0)});STREETS.push(r);markLine(run);}}run=[];};
    for(const p of s){if(inPrecinct(p[0],p[1],6)||Math.hypot(p[0]-PAL.x,p[1]-PAL.z)<PAL.r-10||nearStreet(p[0],p[1]))flush();else run.push(p);}flush();}}
  erBakeMasks();
  // stairs: from points along each contour street, down the gradient until a road or 70 m
@@ -6372,16 +6382,16 @@ const VIEWS=(function(){const V={};const pal=_at('palace'),gd=_at('garden'),mm=_
  V['Overview']=[0,1500,900,0,100,-100];
  V['The palace precinct']=[pal.x+220,terrainH(pal.x,pal.z)+140,pal.z+200,pal.x,terrainH(pal.x,pal.z)+20,pal.z];
  V['The garden district']=[gd.x+180,terrainH(gd.x,gd.z)+110,gd.z+160,gd.x,terrainH(gd.x,gd.z),gd.z];
- {const R=GARDEN_RECT,za=R.z-R.d/2+4+7*8;V['Garden district — the rill']=_eye(R.x+R.w/2-6,za,R.x-R.w/2,za,3);V['Garden district — from the ring road']=_eye(R.x+R.w/2+12,R.z+R.d/2+10,R.x,R.z,2);}
+ {const R=GARDEN_RECT,za=R.z-R.d/2+4+7*8;V['Garden district — the rill']=_eye(R.x+R.w/2-6,za,R.x-R.w/2,za,3);V['Garden district — from the ring road']=_eye(R.x+R.w/2+16,za+30,R.x-R.w/4,za,8);}
  {const n=nearestOnLines(ER_LINES.highway,mm.x,mm.z);const dx=n.b[0]-n.a[0],dz=n.b[1]-n.a[1],l=Math.hypot(dx,dz)||1;V['Main market — the highway']=_eye(n.x-dx/l*40,n.z-dz/l*40,n.x+dx/l*60,n.z+dz/l*60);}
  V['Main market — the square']=_eye(mm.x+20,mm.z+22,mm.x-30,mm.z-30,1);
  V['The temple district']=[td.x+200,terrainH(td.x,td.z)+130,td.z+180,td.x,terrainH(td.x,td.z)+10,td.z];
  V['The dockyard']=[dk.x+120,60,dk.z-160,dk.x,10,dk.z];
  V['Pleasure Dome of the Bay']=[isl.x+150,50,isl.z+140,isl.x,14,isl.z];
  V['The lighthouse']=[lh.x+90,40,lh.z-90,lh.x,20,lh.z-20];
- V['The prison']=[pr.x+120,terrainH(pr.x,pr.z)+40,pr.z-130,pr.x,terrainH(pr.x,pr.z)+12,pr.z];
- V['The Caves of Ice']=[cv.x+60,terrainH(cv.x,cv.z)+30,cv.z-90,cv.x,terrainH(cv.x,cv.z)+8,cv.z];
- V['Wealthy homes — the avenue']=_eye(wh.x-40,wh.z-60,wh.x+60,wh.z+20);
+ {const p=_land('xa_prison')||pr;V['The prison']=[p.x+60,terrainH(p.x,p.z)+22,p.z-70,p.x,terrainH(p.x,p.z)+10,p.z];}
+ {const c=_land('xa_ice_cave')||cv;V['The Caves of Ice']=[c.x+30,terrainH(c.x,c.z)+14,c.z-60,c.x,terrainH(c.x,c.z)+6,c.z];}
+ {const n=nearestOnLines(ER_LINES.avenue,wh.x,wh.z);if(n){const dx=n.b[0]-n.a[0],dz=n.b[1]-n.a[1],l=Math.hypot(dx,dz)||1;V['Wealthy homes — the avenue']=_eye(n.x-dx/l*30,n.z-dz/l*30,n.x+dx/l*70,n.z+dz/l*70,1);}else V['Wealthy homes — the avenue']=_eye(wh.x-40,wh.z-60,wh.x+60,wh.z+20);}
  const g=GATES.find(g=>g.kind==='west');if(g)V['West gate — from the highway']=_eye(g.x-70,g.z+10,g.x+20,g.z,3);
  const ge=GATES.find(g=>g.kind==='east');if(ge)V['East gate — from the highway']=_eye(ge.x+70,ge.z-10,ge.x-20,ge.z,3);
  return V;})();

@@ -16,7 +16,7 @@ const VIEWS=(function(){const V={};const pal=_at('palace'),gd=_at('garden'),mm=_
  V['The lighthouse']=[lh.x+90,40,lh.z-90,lh.x,20,lh.z-20];
  {const p=_land('xa_prison')||pr;V['The prison']=[p.x+60,terrainH(p.x,p.z)+22,p.z-70,p.x,terrainH(p.x,p.z)+10,p.z];}
  {const c=_land('xa_ice_cave')||cv;V['The Caves of Ice']=[c.x+30,terrainH(c.x,c.z)+14,c.z-60,c.x,terrainH(c.x,c.z)+6,c.z];}
- V['Wealthy homes — the avenue']=_eye(wh.x-40,wh.z-60,wh.x+60,wh.z+20);
+ {const n=nearestOnLines(ER_LINES.avenue,wh.x,wh.z);if(n){const dx=n.b[0]-n.a[0],dz=n.b[1]-n.a[1],l=Math.hypot(dx,dz)||1;V['Wealthy homes — the avenue']=_eye(n.x-dx/l*30,n.z-dz/l*30,n.x+dx/l*70,n.z+dz/l*70,1);}else V['Wealthy homes — the avenue']=_eye(wh.x-40,wh.z-60,wh.x+60,wh.z+20);}
  const g=GATES.find(g=>g.kind==='west');if(g)V['West gate — from the highway']=_eye(g.x-70,g.z+10,g.x+20,g.z,3);
  const ge=GATES.find(g=>g.kind==='east');if(ge)V['East gate — from the highway']=_eye(ge.x+70,ge.z-10,ge.x-20,ge.z,3);
  return V;})();

@@ -50,8 +50,8 @@ const GARDEN_RECT=(function(){const c=MP(500,470);return{x:c[0]-8,z:c[1]+8,w:208
 function inGarden(x,z,m){m=m||0;return Math.abs(x-GARDEN_RECT.x)<GARDEN_RECT.w/2+m&&Math.abs(z-GARDEN_RECT.z)<GARDEN_RECT.d/2+m;}
 function ER_INCITY(x,z){return inPoly(CITY_POLY,x,z)||CITY_DISCS.some(D=>Math.hypot(x-D.x,z-D.z)<D.r);}
 // ---------------------------------------------------------------- the highway, the avenues and the stream
-for(const P of ER_LINES.highway)road(P,12,KL.boulevard,{zone:'highway',lights:true});
-for(const P of ER_LINES.avenue)road(P,9,KL.boulevard,{zone:'avenue',lights:true});
+for(const P of ER_LINES.highway)road(P,12,KL.boulevard,{zone:'highway',lights:true,bench:true});
+for(const P of ER_LINES.avenue)road(P,9,KL.boulevard,{zone:'avenue',lights:true,bench:true});
 for(const P of ER_LINES.stream){cstroke(cg,P,7,'#2a8aa0');cstroke(mg,P,14,'#000');cstroke(kg,P,12,KLCOL(KL.water));}
 // ---------------------------------------------------------------- the walls and the gates
 // a gate stands where the highway crosses a wall line (west and east); the palace gate on the south of the palace loop
@@ -77,7 +77,7 @@ plaza(MP(340,533)[0],MP(340,533)[1],34,'The plaza');
 for(const D of DIST)if(D.kind==='market')plaza(D.x,D.z,D.r*.42,D.name);
 for(const D of DIST)if(D.kind==='park')plaza(D.x,D.z,D.r*.7,D.name,'park');
 {const R=GARDEN_RECT,pts=[[R.x-R.w/2,R.z-R.d/2],[R.x+R.w/2,R.z-R.d/2],[R.x+R.w/2,R.z+R.d/2],[R.x-R.w/2,R.z+R.d/2]];cpoly(cg,pts,'#3a7a3c');cpoly(mg,pts,'#00ff00');cpoly(kg,pts,KLCOL(KL.park));   // the garden district: a park under its tiles
- const m=7,ring=[[R.x-R.w/2-m,R.z-R.d/2-m],[R.x+R.w/2+m,R.z-R.d/2-m],[R.x+R.w/2+m,R.z+R.d/2+m],[R.x-R.w/2-m,R.z+R.d/2+m],[R.x-R.w/2-m,R.z-R.d/2-m]];road(ring,8,KL.boulevard,{zone:'garden ring',lights:true});   // the ring road the rich face the garden from
+ const m=7,ring=[[R.x-R.w/2-m,R.z-R.d/2-m],[R.x+R.w/2+m,R.z-R.d/2-m],[R.x+R.w/2+m,R.z+R.d/2+m],[R.x-R.w/2-m,R.z+R.d/2+m],[R.x-R.w/2-m,R.z-R.d/2-m]];road(ring,8,KL.boulevard,{zone:'garden ring',lights:true,bench:true});   // the ring road the rich face the garden from
  precinct(R.x,R.z,0,'garden district');PRECINCTS[PRECINCTS.length-1].rect=R;}
 // ---------------------------------------------------------------- contour streets: the town's own streets follow the ground
 // marching squares over an 8 m grid at every ΔH of height inside the city's buildable ground, linked into polylines
@@ -113,7 +113,7 @@ const STREETS=[];
  for(let h=Math.floor(hmin/3)*3;h<hmax+60;h+=3){const lines=contourLines(h,8,inside);
   for(const L of lines){const s=simplify(L,9);
    // keep clear of the plazas and the palace loop's inside (its own court), then split into the runs far enough from every street
-   let run=[];const flush=()=>{if(run.length>=3){let len=0;for(let i=1;i<run.length;i++)len+=Math.hypot(run[i][0]-run[i-1][0],run[i][1]-run[i-1][1]);if(len>=40){const m0=run[Math.floor(run.length/2)],dm=districtAt(m0[0],m0[1]);const r=road(run,5,KL.minor,{zone:'contour',lights:dm.D.kind==='market'||(dm.D.wealth==='rich'&&dm.d<0)});   // the market streets and the rich quarters hang their lights tooSTREETS.push(r);markLine(run);}}run=[];};
+   let run=[];const flush=()=>{if(run.length>=3){let len=0;for(let i=1;i<run.length;i++)len+=Math.hypot(run[i][0]-run[i-1][0],run[i][1]-run[i-1][1]);if(len>=40){const m0=run[Math.floor(run.length/2)],dm=districtAt(m0[0],m0[1]);const r=road(run,5,KL.minor,{zone:'contour',bench:true,lights:dm.D.kind==='market'||(dm.D.wealth==='rich'&&dm.d<0)});STREETS.push(r);markLine(run);}}run=[];};
    for(const p of s){if(inPrecinct(p[0],p[1],6)||Math.hypot(p[0]-PAL.x,p[1]-PAL.z)<PAL.r-10||nearStreet(p[0],p[1]))flush();else run.push(p);}flush();}}
  erBakeMasks();
  // stairs: from points along each contour street, down the gradient until a road or 70 m

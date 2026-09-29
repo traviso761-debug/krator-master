@@ -18,7 +18,17 @@ function onMap(x,z,m){m=m||0;return Math.abs(x)<ER.W/2-m&&Math.abs(z)<ER.H/2-m;}
 const FLATS=[],FLATCELL=64,FLATGRID={};
 function cityFlat(x,z,r,apron,h){const f=[x,z,r,apron,h];FLATS.push(f);const R=r+apron;
  for(let iz=Math.floor((z-R)/FLATCELL);iz<=Math.floor((z+R)/FLATCELL);iz++)for(let ix=Math.floor((x-R)/FLATCELL);ix<=Math.floor((x+R)/FLATCELL);ix++){const k=ix+','+iz;(FLATGRID[k]||(FLATGRID[k]=[])).push(f);}return h;}
-terrainH=function(x,z){let h=terrainBase(x,z);const L=FLATGRID[Math.floor(x/FLATCELL)+','+Math.floor(z/FLATCELL)];
+// ---------------------------------------------------------------- the benches (Travis): a street on a slope levels a lot's depth either side of itself to its own grade,
+// so the plots between two contour streets are terraces and not a hillside. A bench is a polyline with the road's own
+// base heights at its points; terrainH takes the nearest bench within BENCH_W and blends to the ground over BENCH_B.
+const BENCHES=[],BENCHCELL=48,BENCHGRID={},BENCH_W=10,BENCH_B=4;
+function benchAdd(pts){const B={pts,h:pts.map(p=>terrainBase(p[0],p[1]))};BENCHES.push(B);
+ for(let i=0;i<pts.length-1;i++){const a=pts[i],b=pts[i+1];const x0=Math.min(a[0],b[0])-BENCH_W-BENCH_B,x1=Math.max(a[0],b[0])+BENCH_W+BENCH_B,z0=Math.min(a[1],b[1])-BENCH_W-BENCH_B,z1=Math.max(a[1],b[1])+BENCH_W+BENCH_B;
+  for(let iz=Math.floor(z0/BENCHCELL);iz<=Math.floor(z1/BENCHCELL);iz++)for(let ix=Math.floor(x0/BENCHCELL);ix<=Math.floor(x1/BENCHCELL);ix++){const k=ix+','+iz;(BENCHGRID[k]||(BENCHGRID[k]=[])).push([B,i]);}}}
+function benchH(x,z,h){const L=BENCHGRID[Math.floor(x/BENCHCELL)+','+Math.floor(z/BENCHCELL)];if(!L)return h;let bd=1e9,bh=0;
+ for(const [B,i] of L){const a=B.pts[i],b=B.pts[i+1];const dx=b[0]-a[0],dz=b[1]-a[1],l2=dx*dx+dz*dz||1;const t=clamp(((x-a[0])*dx+(z-a[1])*dz)/l2,0,1);const d=Math.hypot(x-a[0]-dx*t,z-a[1]-dz*t);if(d<bd){bd=d;bh=B.h[i]*(1-t)+B.h[i+1]*t;}}
+ if(bd>BENCH_W+BENCH_B)return h;const k=1-smoothstep(BENCH_W,BENCH_W+BENCH_B,bd);return h*(1-k)+bh*k;}
+terrainH=function(x,z){let h=benchH(x,z,terrainBase(x,z));const L=FLATGRID[Math.floor(x/FLATCELL)+','+Math.floor(z/FLATCELL)];
  if(L)for(const f of L){const d=Math.hypot(x-f[0],z-f[1]);if(d<f[2]+f[3]){const k=1-smoothstep(f[2],f[2]+f[3],d);h=h*(1-k)+f[4]*k;}}return h;};
 function erSlope(x,z){const e=3;return Math.hypot(terrainBase(x+e,z)-terrainBase(x-e,z),terrainBase(x,z+e)-terrainBase(x,z-e))/(2*e);}
 function erGrad(x,z){const e=3;return[(terrainBase(x+e,z)-terrainBase(x-e,z))/(2*e),(terrainBase(x,z+e)-terrainBase(x,z-e))/(2*e)];}
