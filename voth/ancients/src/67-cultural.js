@@ -20,12 +20,19 @@ function buildCultural(scene,gx,gz,d){reseed(9390+d);KOFF=[gx,0,gz];
    kput(BOXC(d),[Math.cos(a2)*r,y-4.4,Math.sin(a2)*r],qEuler(0,-a2,0),[7,4,3.2],null);}});
  // the domed great hall on the axis
  const CH=64,gr=y=>52*Math.pow(clamp(1-Math.pow(y/CH,2),0,1),.58);
- SH.push(lathe({rFn:gr,H:CH,flutes:18,amp:.07,sharp:2,nu:64,nv:20,
+ // THE RUIN CHANGES THE SKYLINE. It used to be the intact plan in rust with a
+ // quarter of the halls gone to rubble: every surviving drum stood whole with
+ // its cap on, so the silhouette was the intact one. On level 1 the great
+ // dome has lost its crown (broken at 62% of its height, jagged), and most
+ // campaniles and nearly half the halls are broken off at 40-75% of their
+ // height with no cap. Level 3 (rehabilitated) keeps its full silhouette.
+ const DC=d===1?CH*.62:null;
+ SH.push(lathe({rFn:gr,H:CH,cut:DC,jag:DC?7:0,flutes:18,amp:.07,sharp:2,nu:64,nv:20,
   hole:(u,y)=>(Math.cos(u*TAU*18)<.28&&y>6&&y<CH*.84)||(holeFn(d*.9,9391,null,1.3)||(()=>false))(u,y)}).translate(0,11,0));
  if(d===0)mesh(lathe({rFn:y=>gr(y)-3,H:CH,nu:40,nv:14}),MAT.glass,G,0,11,0);
- else DK.push(lathe({rFn:y=>gr(y)-5,H:CH,nu:32,nv:10,
+ else DK.push(lathe({rFn:y=>gr(y)-5,H:CH,cut:DC,jag:DC?7:0,nu:32,nv:10,
   hole:(u,y)=>fbm(u*5,y*.09,9392,2)<.5}).translate(0,11,0));
- kput(SLABC(d),[0,11+CH,0],null,[12,2,12],null);
+ if(d!==1)kput(SLABC(d),[0,11+CH,0],null,[12,2,12],null);
  if(d===0)kput('finial',[0,11+CH+8,0],null,[3.5,7,3.5],null);
  stripRing(0,20,0,50,d,30);stripRing(0,11+CH*.62,0,38,d,24);
  // Three concentric rings of halls, each ring turned against the last. Ring 1
@@ -37,16 +44,23 @@ function buildCultural(scene,gx,gz,d){reseed(9390+d);KOFF=[gx,0,gz];
   for(let k=0;k<n;k++){const a2=(k+(ri%2)*.5)/n*TAU;
    const bxp=Math.cos(a2)*rad,bzp=Math.sin(a2)*rad;
    if(d>0&&rng()<.28){rubbleRing(bxp,0,bzp,4,bw*1.6,26,2.3);continue;}
-   const tall=(k%3===1),hh=bh*(tall?2.05:1)*(.88+rng()*.24),bwk=bw*(tall?.62:1);
-   SH.push(lathe({rFn:()=>bwk,H:hh,flutes:6,amp:.22,sharp:1,nu:26,nv:6,
-    hole:holeFn(d*.8,9393+ri*5+k,null,2)}).translate(bxp,py,bzp));
+   const tall=(k%3===1),hh0=bh*(tall?2.05:1)*(.88+rng()*.24),bwk=bw*(tall?.62:1);
+   const brk=d===1&&rng()<(tall?.8:.45),hh=brk?hh0*rr(.4,.75):hh0;
+   SH.push(lathe({rFn:()=>bwk,H:hh,cut:brk?hh:null,jag:brk?3.5:0,flutes:6,amp:.22,sharp:1,nu:26,nv:6,
+    hole:holeFn(d*.8,9393+ri*5+k,brk?hh:null,2)}).translate(bxp,py,bzp));
    const cap=bwk*(tall?.95:.42);
-   SH.push(lathe({rFn:y=>bwk*1.04*Math.sqrt(clamp(1-Math.pow(y/cap,2),0,1)),H:cap,nu:20,nv:4,
+   if(!brk)SH.push(lathe({rFn:y=>bwk*1.04*Math.sqrt(clamp(1-Math.pow(y/cap,2),0,1)),H:cap,nu:20,nv:4,
     hole:holeFn(d*.7,9393+ri*5+k,null,1.4)}).translate(bxp,py+hh,bzp));
    if(d>0)DK.push(lathe({rFn:()=>bwk*.86,H:hh,nu:14,nv:2}).translate(bxp,py,bzp));
-   for(let j=0;j<7;j++){const t2=j/7*TAU;
-    kput(d>0?'winBigD':'winBigI',[bxp+bwk*1.02*Math.cos(t2),py+hh*.44,bzp+bwk*1.02*Math.sin(t2)],
-     qFacing([Math.cos(t2),0,Math.sin(t2)]),[1.1,1.1,1],null);}
+   // WINDOWS. Seven small arched windows at half height left every drum a
+   // blank white wall at the distance the presets use. Tall dark-glass slots
+   // now (clear glass on white reads as nothing),
+   // in the six troughs between the flutes (the only place a pane is not
+   // buried in the wall), two tiers on a hall and three on a campanile —
+   // and cheaper than the seven extruded arches they replace.
+   for(let row=0,nr=tall?3:2;row<nr;row++)for(let j=0;j<6;j++){const t2=(j+.5)/6*TAU,yw=py+hh*((row+.55)/nr);
+    kput(d>0?'paneD':'darkPane',[bxp+bwk*1.015*Math.cos(t2),yw,bzp+bwk*1.015*Math.sin(t2)],
+     qFacing([Math.cos(t2),0,Math.sin(t2)]),[bwk*.24,hh/nr*.62,1],null);}
    if(d===0)kput('strip',[bxp,py+hh-2,bzp+bwk*1.03],qFacing([0,0,1]),[bwk*1.2,1,1],CYAN);
    // the spoke running back to the core
    beam(BOXC(d),[bxp*.42,py+2,bzp*.42],[bxp*.9,py+2,bzp*.9],6,3.4);}});

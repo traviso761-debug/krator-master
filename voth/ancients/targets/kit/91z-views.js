@@ -75,6 +75,7 @@ const VIEWS={
  'The Flatiron':[-ROWS.flat.s,180,ROWS.flat.z+620,-ROWS.flat.s,140,ROWS.flat.z],
  'Flatiron prow':[-ROWS.flat.s+130,30,ROWS.flat.z+200,-ROWS.flat.s,60,ROWS.flat.z],
  'Flatiron ruin':[ROWS.flat.s,180,ROWS.flat.z+620,ROWS.flat.s,140,ROWS.flat.z],
+ 'Toppled Flatiron':[ROWS.flat.t-260,110,ROWS.flat.z+380,ROWS.flat.t+20,40,ROWS.flat.z+90],
  'The Perch':[-ROWS.perch.s,300,ROWS.perch.z+900,-ROWS.perch.s,200,ROWS.perch.z],
  'Perch podium':[-ROWS.perch.s+250,120,ROWS.perch.z+320,-ROWS.perch.s,95,ROWS.perch.z],
  'Wheel core':[-ROWS.cult.s+130,90,ROWS.cult.z+230,-ROWS.cult.s,50,ROWS.cult.z],
