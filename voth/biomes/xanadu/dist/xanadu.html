@@ -1592,7 +1592,7 @@ B[3]=function(T,st,lv){const S=SP[3],H=T.H,rb=T.rb,wind=T.wind||0,la=T.lean!=nul
   pts.push({x:T.x+Math.cos(la)*s-Math.sin(la)*side,y:T.y0+t*H*(1-.18*wind),z:T.z+Math.sin(la)*s+Math.cos(la)*side,r:rb*(1-.75*t)*(1+.6*Math.exp(-t*9))});}
  limb(S,pts,st,{fam:'xbark0',seg:lv===2?8:6,flutes:4,fluteA:.10,twist:.7});
  const hc=vary(pick(S.leaf),.02,.06,.05),rc=rodCol(S,T.seed),nP=lv===2?ri(S.pads[0],S.pads[1]):3,cy=T.y0+H*.7;let spread=T.crownR*.5;
- const pad=(x,y,z,R)=>{const m=lv===2?ri(4,7):2;for(let c=0;c<m;c++){const a=rr(0,TAU),d=R*.55*Math.sqrt(rng());clumpAt('needle',x+Math.cos(a)*d,y+rr(-.1,.25)*R*.3,z+Math.sin(a)*d,R*rr(.7,.95),.32,hc,x,y-R*.5,z,R,R*.5,null);st.clumps++;}};
+ const pad=(x,y,z,R)=>{const m=lv===2?ri(4,7):2;for(let c=0;c<m;c++){const a=rr(0,TAU),d=R*.55*Math.sqrt(rng());clumpAt('needle',x+Math.cos(a)*d,y+rr(-.1,.25)*R*.3,z+Math.sin(a)*d,R*rr(.85,1.1),.5,hc,x,y-R*.5,z,R,R*.5,null);st.clumps++;}};
  for(let k=0;k<nP;k++){const t=lerp(.35,.9,k/Math.max(1,nP-1)),i=Math.min(n-1,Math.floor(t*n)),p=pts[i],a=(k%2?la+Math.PI:la)+rr(-.9,.9)+wind*.0,L=T.crownR*rr(.5,1)*(1.1-t*.4),R=rr(1.1,2.2)*Math.min(1.3,H/10);
   const e=[p.x+Math.cos(a)*L,p.y+rr(-.1,.5),p.z+Math.sin(a)*L],m=[mix(p.x,e[0],.5),p.y-rr(.2,.8),mix(p.z,e[2],.5)];
   if(!clear3(e[0],e[1],e[2],R,1))continue;
@@ -2495,15 +2495,15 @@ const FOUNTAIN=(function(){const N=2600,src=RIV.P[0],y0=RIV.bed[0]+.6;
  for(let i=0;i<N;i++){life[i]=-1;pos[i*3]=src[0];pos[i*3+1]=-9999;pos[i*3+2]=src[1];}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));
  const tex=BIO.canvasTex(64,64,(c,w,h)=>{const gr=c.createRadialGradient(32,32,0,32,32,32);gr.addColorStop(0,'rgba(255,255,255,1)');gr.addColorStop(.4,'rgba(245,250,252,.55)');gr.addColorStop(1,'rgba(240,248,250,0)');c.fillStyle=gr;c.fillRect(0,0,w,h);});
- const m=new THREE.PointsMaterial({size:7,map:tex,transparent:true,depthWrite:false,opacity:.85,color:0xf4fafc,sizeAttenuation:true,fog:true});
+ const m=new THREE.PointsMaterial({size:3.2,map:tex,transparent:true,depthWrite:false,opacity:.6,color:0xf4fafc,sizeAttenuation:true,fog:true});
  const P=new THREE.Points(g,m);P.frustumCulled=false;P.userData.probeSkip=true;P.renderOrder=3;scene.add(P);
  let t=0,next=0;
  TICKS.push(dt=>{t+=dt;const pulse=Math.pow(Math.max(0,Math.sin(t*1.3)*Math.sin(t*.47+1)),.5);   // bursts, half-intermitted
-  let spawn=Math.round((80+900*pulse)*dt*10);
+  let spawn=Math.round((40+500*pulse)*dt*10);
   for(let i=0;i<N&&spawn>0;i++){if(life[i]>0)continue;spawn--;
    const a=Math.random()*TAU,s=Math.random()*3,v=mix(18,44,Math.random())*(0.55+0.45*pulse);
    pos[i*3]=src[0]+Math.cos(a)*s;pos[i*3+1]=y0;pos[i*3+2]=src[1]+Math.sin(a)*s;
-   vel[i*3]=Math.cos(a)*mix(1,5,Math.random());vel[i*3+1]=v;vel[i*3+2]=Math.sin(a)*mix(1,5,Math.random());life[i]=v/9.8*2;}
+   const sp=mix(1,9,Math.pow(Math.random(),2));vel[i*3]=Math.cos(a)*sp;vel[i*3+1]=v*mix(.6,1,Math.random());vel[i*3+2]=Math.sin(a)*sp;life[i]=v/9.8*2;}
   for(let i=0;i<N;i++){if(life[i]<=0)continue;life[i]-=dt;vel[i*3+1]-=9.8*dt;vel[i*3]*=.995;vel[i*3+2]*=.995;
    pos[i*3]+=vel[i*3]*dt;pos[i*3+1]+=vel[i*3+1]*dt;pos[i*3+2]+=vel[i*3+2]*dt;if(pos[i*3+1]<y0-1||life[i]<=0){life[i]=-1;pos[i*3+1]=-9999;}}
   g.attributes.position.needsUpdate=true;});
@@ -2555,16 +2555,16 @@ const VIEWS={
  const riv=(f)=>{const i=Math.round(f*(RIV.P.length-1)),p=RIV.P[i],q=RIV.P[Math.max(0,i-8)];return{p,q,y:RIV.bed[i]+.65};};
  {const a=riv(.27),b=riv(.2);VIEWS['The chasm']=[a.p[0],a.y+9,a.p[1],b.p[0],b.y+14,b.p[1]];}
  {const a=riv(.05);VIEWS['The fountain']=[a.p[0],a.y+22,a.p[1],RIV.P[0][0],RIV.bed[0]+34,RIV.P[0][1]];}
- {const a=riv(.78),b=riv(.9),dx=b.p[0]-a.p[0],dz=b.p[1]-a.p[1],l=Math.hypot(dx,dz);VIEWS['The sacred river']=[a.p[0]-dz/l*30,Math.max(a.y,G(a.p[0]-dz/l*30,a.p[1]+dx/l*30))+7,a.p[1]+dx/l*30,b.p[0],b.y+6,b.p[1]];}
+ {const a=riv(.78),b=riv(.9),dx=b.p[0]-a.p[0],dz=b.p[1]-a.p[1],l=Math.hypot(dx,dz);VIEWS['The sacred river']=[a.p[0]-dx/l*40,a.y+16,a.p[1]-dz/l*40,b.p[0],b.y+4,b.p[1]];}
  const near=(list,f)=>{let best=null,bd=1e9;list.forEach(o=>{if(f&&!f(o))return;const d=BIO.lodD(o.x,o.z);if(d<bd){bd=d;best=o;}});return best;};
  const R=near(XANADU.RINGS);if(R){const a=.7,cx=R.x+Math.cos(a)*R.r*2.6,cz=R.z+Math.sin(a)*R.r*2.6;VIEWS['A fairy ring']=[cx,G(cx,cz)+7,cz,R.x,G(R.x,R.z)+3,R.z];}
- const A=near(XANADU.ARCHES);if(A){const ux=Math.cos(A.a),uz=Math.sin(A.a),L=(A.n/2+.6)*9.5,cx=A.x-ux*L,cz=A.z-uz*L;VIEWS['The hornbeam arches']=[cx,G(cx,cz)+2.2,cz,A.x+ux*L,G(A.x+ux*L,A.z+uz*L)+4.5,A.z+uz*L];}
+ const A=near(XANADU.ARCHES);if(A){const ux=Math.cos(A.a),uz=Math.sin(A.a),L=(A.n/2+.6)*9.5,cx=A.x-ux*L,cz=A.z-uz*L;VIEWS['The hornbeam arches']=[cx,G(cx,cz)+2.2,cz,A.x+ux*L,G(A.x+ux*L,A.z+uz*L)+11,A.z+uz*L];}
  const tr=k=>near(XANADU.TREES,T=>T.sp===k&&T.lv===2);
  [[2,'The lotus trumpets',34,7],[0,'Dawn redwoods',60,4],[9,'Wisteria',26,3],[3,'A cloud pine',22,5],[4,'Cushion trees',30,5],[6,'The agate tree',30,3]].forEach(v=>{const T=v[0]===0?near(XANADU.TREES,T=>T.sp===0&&T.lv===2&&T.y0<0):tr(v[0]);if(!T)return;
   let best=null;for(let k=0;k<12;k++){const a=k/12*TAU,cx=T.x+Math.cos(a)*v[2],cz=T.z+Math.sin(a)*v[2];if(!BIO.clearOf(cx,cz,2)||XANADU.blocked(cx,cz,3))continue;const g=Math.max(G(cx,cz),0);if(!best||g<best[1])best=[cx,g,cz];}
   if(best)VIEWS[v[1]]=[best[0],best[1]+v[3],best[2],T.x,T.y0+T.H*.55,T.z];});
  {const x=-1000,z=-400,a=.9,cx=x+Math.cos(a)*95,cz=z+Math.sin(a)*95;VIEWS['The pleasure dome']=[cx,G(cx,cz)+26,cz,x,(DOME.y0||G(x,z))+9,z];}
- ['The vale','The lake shore','The garden ridge','The green flank'].forEach(k=>{const v=VIEWS[k];if(v)v[1]=Math.max(v[1],G(v[0],v[2])+(k==='The lake shore'?6:40));});
+ ['The vale','The lake shore','The garden ridge','The green flank'].forEach(k=>{const v=VIEWS[k];if(v)v[1]=Math.max(v[1],G(v[0],v[2])+(k==='The lake shore'?24:40));});
 })();
 const ui=document.getElementById('ui');const sel=document.createElement('select');sel.id='viewsel';for(const k in VIEWS){const o=document.createElement('option');o.textContent=k;sel.appendChild(o);}sel.onchange=()=>setView(...VIEWS[sel.value]);ui.appendChild(sel);
 // hidden buttons, one per preset: verify.py drives the views through these

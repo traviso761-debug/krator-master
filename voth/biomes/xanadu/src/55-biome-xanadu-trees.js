@@ -172,7 +172,7 @@ B[3]=function(T,st,lv){const S=SP[3],H=T.H,rb=T.rb,wind=T.wind||0,la=T.lean!=nul
   pts.push({x:T.x+Math.cos(la)*s-Math.sin(la)*side,y:T.y0+t*H*(1-.18*wind),z:T.z+Math.sin(la)*s+Math.cos(la)*side,r:rb*(1-.75*t)*(1+.6*Math.exp(-t*9))});}
  limb(S,pts,st,{fam:'xbark0',seg:lv===2?8:6,flutes:4,fluteA:.10,twist:.7});
  const hc=vary(pick(S.leaf),.02,.06,.05),rc=rodCol(S,T.seed),nP=lv===2?ri(S.pads[0],S.pads[1]):3,cy=T.y0+H*.7;let spread=T.crownR*.5;
- const pad=(x,y,z,R)=>{const m=lv===2?ri(4,7):2;for(let c=0;c<m;c++){const a=rr(0,TAU),d=R*.55*Math.sqrt(rng());clumpAt('needle',x+Math.cos(a)*d,y+rr(-.1,.25)*R*.3,z+Math.sin(a)*d,R*rr(.7,.95),.32,hc,x,y-R*.5,z,R,R*.5,null);st.clumps++;}};
+ const pad=(x,y,z,R)=>{const m=lv===2?ri(4,7):2;for(let c=0;c<m;c++){const a=rr(0,TAU),d=R*.55*Math.sqrt(rng());clumpAt('needle',x+Math.cos(a)*d,y+rr(-.1,.25)*R*.3,z+Math.sin(a)*d,R*rr(.85,1.1),.5,hc,x,y-R*.5,z,R,R*.5,null);st.clumps++;}};
  for(let k=0;k<nP;k++){const t=lerp(.35,.9,k/Math.max(1,nP-1)),i=Math.min(n-1,Math.floor(t*n)),p=pts[i],a=(k%2?la+Math.PI:la)+rr(-.9,.9)+wind*.0,L=T.crownR*rr(.5,1)*(1.1-t*.4),R=rr(1.1,2.2)*Math.min(1.3,H/10);
   const e=[p.x+Math.cos(a)*L,p.y+rr(-.1,.5),p.z+Math.sin(a)*L],m=[mix(p.x,e[0],.5),p.y-rr(.2,.8),mix(p.z,e[2],.5)];
   if(!clear3(e[0],e[1],e[2],R,1))continue;
