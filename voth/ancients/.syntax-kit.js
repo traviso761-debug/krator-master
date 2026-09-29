@@ -683,38 +683,125 @@ function factoryExtras(G,d,skin,M){
  luceShells(G,-40,96,60,42,24,d,90,skin);
  if(d>0)rubbleRing(-40,6,96,20,27,40,2.5);}
 
+// ================================================================= CIVIC HELPERS (QA pass, 2026-09-29)
+// Shared by the civic builders this group owns: Offices, Starport, Bunker,
+// Library, Gate, Robotics, Data center, Police, Hospital, Campus, Government.
+// They live here because this is the first of those fragments; they are
+// function declarations, so later fragments can call them.
+//
+// civDef: a LAZY, GUARDED kdef. kdef() called a second time for a name wipes
+// every instance already put under it (KIT.items[name]=[]) and pushes the name
+// into KIT.order again, so kbake builds it twice. The Library did exactly that
+// per decay level and lost its ruined ribs; anything defined inside a builder
+// must come through here.
+function civDef(name,mk,mat){if(!KIT.defs[name])kdef(name,mk(),mat);return name;}
+// Loose triangles (flat list of xy pairs, three per triangle) in the z=0 plane.
+function civTriGeo(xy){const P=[];for(let i=0;i<xy.length;i+=2)P.push(xy[i],xy[i+1],0);
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(P,3));g.computeVertexNormals();return g;}
+// GLASS SHARDS. A dead window (winSmD, winD, winBigD, ovalD, paneD) is an
+// opening with the glass gone; this leaves a few jagged teeth of it standing in
+// the frame, the way a broken pane actually fails, on roughly half of them.
+// The shards are drawn in a unit window (x,y in -.5..+.5) and kept to the lower
+// sides and the apex so they stay inside an arched or oval opening. Choice is
+// by position hash, not rng(), so adding shards moves no other ruin detail.
+const CIV_SHARD_XY=[
+ [-.5,-.5,-.08,-.5,-.5,-.02, .5,-.5,.5,-.12,.22,-.5, -.02,.5,.12,.46,.04,.02, .5,.1,.5,-.05,.3,.0],
+ [-.44,-.5,-.12,-.5,-.3,-.1, .02,-.5,.42,-.5,.26,-.06, -.5,.02,-.5,.3,-.28,.16, -.5,-.5,-.5,-.3,-.4,-.44],
+ [-.5,-.5,.1,-.5,-.36,-.32, .5,-.28,.5,.24,.32,-.02, -.06,.5,.08,.5,-.02,-.08, .18,-.5,.5,-.5,.44,-.3]];
+const CIV_WIN={winSmD:[1.1,2,.4,1],winD:[2.2,4.2,.7,1],winBigD:[3,3.6,.7,1],ovalD:[2,2,.6,.68],paneD:[1,1,.12,1]};
+function civWin(name,p,q,s,frac){kput(name,p,q,s,null);const W=CIV_WIN[name];if(!W||!q)return;
+ const h=h3(p[0]*.173+.3,p[1]*.291+.7,p[2]*.117+.1);if(h>(frac==null?.5:frac))return;
+ const S=typeof s==='number'?[s,s,s]:s;const sh=W[3];
+ civShardAt(p,q,W[0]*S[0]*sh,W[1]*S[1]*sh,W[2]*S[2]/2+.04,h);}
+// One cluster of shards, w x h, `out` metres proud along q's +z; h in 0..1 picks it.
+// One kit mesh for all shards: a kit InstancedMesh is never culled, so each is
+// a draw call in every view. Variety comes from mirroring and the height scale.
+function civShardAt(p,q,w,ht,out,h){civDef('civShard',()=>civTriGeo(CIV_SHARD_XY[0].concat(CIV_SHARD_XY[1].slice(0,6),CIV_SHARD_XY[2].slice(12,18))),MAT.glass);
+ const off=new THREE.Vector3(0,0,out).applyQuaternion(q);const i=(h*6|0)%3;
+ kput('civShard',[p[0]+off.x,p[1]+off.y,p[2]+off.z],q,[w*((h*97|0)%2?1:-1),ht*(i===1?.8:i===2?.9:1),1],null);}
+// INTERIORS. What a hole in a round shell shows: floor plates out to the
+// skin, a corridor light strip under each ceiling (mostly dead in a ruin, a
+// few still on), cabinets and machinery silhouettes, touch panels and conduit
+// bundles dropping through the floors. Everything is kit instances, placed in
+// the band between the skin (rFn) and a liner the builder draws at `rIn`
+// (a fraction of rFn), so it reads as rooms instead of a black wall.
+// y0..y1 local to (cx,cy,cz); `cut` stops it under a broken top.
+const CIV_FLOOR=new THREE.Color(0x3a3834);
+// o: {cx,cy,cz, rFn, y0,y1, step, d, seed, cut, rIn=.72, gap(th)->bool, out, dens=6.5 (m per bay)}
+// `gap` leaves a sector empty (a collapse); with `out` (an array) the floors
+// are annuli pushed there for the caller to meshMerge, so a gap can cut them.
+function civRooms(o){const rIn=o.rIn||.72,cx=o.cx||0,cy=o.cy||0,cz=o.cz||0,step=o.step,d=o.d,seed=o.seed||0,gap=o.gap||null;
+ for(let y=o.y0,f=0;y<o.y1-1;y+=step,f++){if(o.cut!=null&&y>o.cut-2)break;const R=o.rFn(y+step*.5);
+  if(o.out)o.out.push(gridSurface((u,v)=>{const th=u*TAU,r=R*lerp(rIn,.965,v);return[cx+r*Math.cos(th),cy+y,cz+r*Math.sin(th)];},64,1,{hole:gap?(u,v)=>gap(u*TAU):null}));
+  else kput('slab',[cx,cy+y,cz],null,[R*.965,.45,R*.965],CIV_FLOOR);
+  const n=Math.max(6,Math.round(R*TAU/(o.dens||6.5)));const rm=R*(1+rIn)/2;
+  for(let k=0;k<n;k++){const th=(k+.5)/n*TAU;if(gap&&gap(th))continue;const c=Math.cos(th),s=Math.sin(th),hh=h3(k*1.31+seed,f*2.17,seed*.013);
+   const lit=d>0?hh<.12:hh<.85;
+   kput('strip',[cx+c*rm,cy+y+step-.7,cz+s*rm],qEuler(0,-th-Math.PI/2,0),[R*TAU/n*.55,1,1],lit?(d>0?WARM:CYAN):DEAD);
+   if(hh<.55){const w=1+hh*3,hgt=Math.min(step-1.2,1.2+hh*2.6);const rb=R*(rIn+.04)+.6;
+    kput('boxD',[cx+c*rb,cy+y+.25+hgt/2,cz+s*rb],qEuler(0,-th,0),[1+hh*1.4,hgt,w],null);}
+   if(hh>.8){const on=!(d>0&&hh<.93);kput(on?'cell':'cellD',[cx+c*R*(rIn+.02),cy+y+1.5,cz+s*R*(rIn+.02)],qFacing([c,0,s]),[.5,.7,1],on?CYAN:null);}
+   if(k%5===2)for(let j=-1;j<=1;j++){const t2=th+j*.012;kput('tube',[cx+Math.cos(t2)*R*(rIn+.03),cy+y+step/2,cz+Math.sin(t2)*R*(rIn+.03)],null,[.22,step,.22],null);}}}}
+// Angular distance, for sector tests.
+function civDA(a,b){const x=((a-b)%TAU+TAU)%TAU;return Math.min(x,TAU-x);}
+
 // ================================================================= OFFICES (two variants)
 function buildOffices(scene,gx,gz,d){reseed(d>0?9501:9500);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const skin=SHELL(d);
  // A — flared ring (Tange mushroom)
  {REGISTER({name:'Office A — flared ring ('+STATE(d)+')',x:0,z:0,r:55,h:42});const stem=y=>y<12?11+.04*Math.pow(12-y,2):(y<21?11+32*Math.pow((y-12)/9,1.6):43);
-  mesh(lathe({rFn:stem,H:32,nu:72,nv:32,hole:holeFn(d*.7,201,null,1.4)}),skin,G);
-  if(d>0)mesh(lathe({rFn:y=>stem(y)*.92,H:32,nu:32,nv:6}),MAT.dark,G);
-  for(let k=0;k<32;k++){const th=k/32*TAU;if(d>0&&rng()<.35)continue;beam(d>0?'strutR':'strutW',[Math.cos(th)*20,20,Math.sin(th)*20],[Math.cos(th)*45,40,Math.sin(th)*45],2.6,2);
-   for(let r=0;r<2;r++){const rr0=43.7;const t2=th+.1;kput(d>0?'winSmD':'winSmI',[Math.cos(t2)*rr0,25+r*5,Math.sin(t2)*rr0],qFacing([Math.cos(t2),0,Math.sin(t2)]),[5.5,2,1],null);}}
-  kput('slab',[0,38.5,0],null,[44,1.2,44],new THREE.Color(d>0?0x5a4a40:0xd8d4cc));stripRing(0,30,0,41,d,48);stripRing(0,35,0,41,d,48);
-  for(let k=0;k<20;k++){const th=k/20*TAU;if(d>0&&rng()<.2)continue;kput(d>0?'colR':'colW',[Math.cos(th)*36,0,Math.sin(th)*36],null,[1.4,19,1.4],null);}
+  // RUIN: a sector of the ring has come down (it used to stand whole, rusted,
+  // with the same silhouette as the intact one). SEC is its centre, facing the
+  // row camera; the wall tear is ragged, the floors stick out past it, and the
+  // roof, struts, windows, strips and vines in the sector are gone with it.
+  const SEC=1.2,secW=y=>.5+.1*(fbm(y*.15,3.1,207,2)*2-1),inSec=(th,y)=>d>0&&y>13&&civDA(th,SEC)<secW(y);
+  const hA=holeFn(d*.7,201,null,1.4);
+  mesh(lathe({rFn:stem,H:32,nu:72,nv:32,hole:(u,y)=>inSec(u*TAU,y)||(hA?hA(u,y):false)}),skin,G);
+  if(d>0){mesh(lathe({rFn:y=>stem(y)*(y>19?.62:.92),H:32,nu:32,nv:8,hole:(u,y)=>y>21&&civDA(u*TAU,SEC)<.34}),MAT.dark,G);
+   const fl=[];civRooms({rFn:stem,y0:21,y1:32,step:5.5,d,seed:202,rIn:.62,gap:th=>civDA(th,SEC)<.4,out:fl});meshMerged(fl,CONC(d),G);}
+  for(let k=0;k<32;k++){const th=k/32*TAU;if(d>0&&rng()<.35)continue;if(inSec(th,30))continue;beam(d>0?'strutR':'strutW',[Math.cos(th)*20,20,Math.sin(th)*20],[Math.cos(th)*45,40,Math.sin(th)*45],2.6,2);
+   for(let r=0;r<2;r++){const rr0=43.7;const t2=th+.1;if(inSec(t2,25+r*5))continue;civWin(d>0?'winSmD':'winSmI',[Math.cos(t2)*rr0,25+r*5,Math.sin(t2)*rr0],qFacing([Math.cos(t2),0,Math.sin(t2)]),[5.5,2,1],null);}}
+  if(d===0){kput('slab',[0,38.5,0],null,[44,1.2,44],new THREE.Color(0xd8d4cc));stripRing(0,30,0,41,d,48);stripRing(0,35,0,41,d,48);}
+  else{// the roof disc with the fallen sector bitten out of it, and the strips that survive
+   meshMerged([gridSurface((u,v)=>{const th=u*TAU,r=v*44;return[r*Math.cos(th),38.5+.6,r*Math.sin(th)];},96,8,{uS:6,vS:1,hole:(u,v)=>v>.3&&civDA(u*TAU,SEC)<.62-.2*v+.1*(fbm(u*30,v*3,208,2)-.5)}),
+    gridSurface((u,v)=>{const th=u*TAU;return[44*Math.cos(th),37.9+v*1.2,44*Math.sin(th)];},96,1,{hole:(u,v)=>civDA(u*TAU,SEC)<.44})],skin,G);
+   for(const yy of [30,35])for(let k=0;k<48;k++){const th=(k+.5)/48*TAU;const lit=rng()<.1;const dim=rng()<.5;if(civDA(th,SEC)<.62)continue;
+    kput('strip',[41*Math.cos(th),yy,41*Math.sin(th)],qEuler(0,-th-Math.PI/2,0),[TAU*41/48*.92,1,1],lit?(dim?CYAN.clone().multiplyScalar(.5):CYAN):DEAD);}}
+  for(let k=0;k<20;k++){const th=k/20*TAU;if(d>0&&rng()<.2)continue;const lean=d>0&&civDA(th,SEC)<.35;
+   if(!lean)kput(d>0?'colR':'colW',[Math.cos(th)*36,0,Math.sin(th)*36],null,[1.4,19,1.4],null);
+   else beam('colR',[Math.cos(th)*36,0,Math.sin(th)*36],[Math.cos(th)*41+Math.sin(th)*4,15,Math.sin(th)*41-Math.cos(th)*4],1.4,1.4);}
   mesh(lathe({rFn:()=>52,H:1.2,nu:64,nv:1}),skin,G);kput('slab',[0,1.2,0],null,[52,.4,52],new THREE.Color(d>0?0x5a4a40:0xd8d4cc));
+  apron(G,0,0,52,60,d,1.2);
   kput('archOpen',[11.5,4.8,0],qFacing([1,0,0]),[.6,.6,1],null);
-  if(d>0){mossOnRing(0,1.6,0,48,50,2);vinesOnRing(0,38,0,44,30,18);rubbleRing(0,1.2,0,14,50,30,2);}}
+  if(d>0){mossOnRing(0,1.6,0,48,50,2);
+   for(let i=0;i<30;i++){const a=rng()*TAU,L=rr(4,18);const q=qEuler(rr(-.12,.12),0,rr(-.12,.12)),sx=rr(.8,1.6),sz=rr(.8,1.6);if(civDA(a,SEC)<.62)continue;kput('vine',[44*Math.cos(a),38,44*Math.sin(a)],q,[sx,L,sz],null);}
+   rubbleRing(0,1.2,0,14,50,30,2);
+   // what came down: two pieces of the ring wall and a slab of roof, lying
+   // beyond the plinth under the gap, with a talus of rubble banked against them
+   for(let f=0;f<3;f++){const a0=SEC+(f-1)*.3;const F=new THREE.Group();
+    const geo=f<2?gridSurface((u,v)=>{const th=a0-.13+u*.26,y=14+v*18;const r=stem(y);return[r*Math.cos(th)-43*Math.cos(a0),y-23,r*Math.sin(th)-43*Math.sin(a0)];},10,8,{uS:3,vS:2,hole:(u,v)=>h3(u*9|0,v*7|0,209+f)<.18}):
+     gridSurface((u,v)=>{const th=a0-.2+u*.4,r=26+v*18;return[r*Math.cos(th)-35*Math.cos(a0),0,r*Math.sin(th)-35*Math.sin(a0)];},10,4,{});
+    const m=mesh(geo,skin,F);F.position.set(Math.cos(a0)*(64+f*6),0,Math.sin(a0)*(64+f*6));F.rotation.set(rr(-.5,.5),rr(0,TAU),f<2?rr(1.1,1.4):rr(.15,.35));G.add(F);dropFragment(F,0,1.2);
+    rubbleRing(F.position.x,0,F.position.z,3,16,26,2.4);}
+   for(let k=0;k<14;k++){const a=SEC+rr(-.5,.5),r=rr(46,78);kput('plateR',[Math.cos(a)*r,rr(.4,1.2),Math.sin(a)*r],qEuler(rr(-.5,.5),rng()*TAU,rr(-.5,.5)),[rr(3,7),.5,rr(2,5)],null);}}}
  // B — lobed tower (Marina / Hilliard scallops)
  {const bx=190;REGISTER({name:'Office B — lobed tower ('+STATE(d)+')',x:bx,z:0,r:20,h:60});const B=new THREE.Group();B.position.set(bx,0,0);G.add(B);const R=13,H=52,cut=d>0?H*.72:null;
   const lobe=th=>R*(1+.32*(.5+.5*Math.cos(8*th)));
   mesh(lathe({rFn:()=>6,H:12,nu:24,nv:2}),skin,B);for(let k=0;k<16;k++){const th=k/16*TAU;if(d>0&&(k===4||k===11))continue;kput(d>0?'colR':'colW',[bx+Math.cos(th)*13.5,0,Math.sin(th)*13.5],null,[1.3,12,1.3],null);}
   const hole=holeFn(d,210,cut,1.8);
   mesh(lathe({rFn:()=>R,H:H-12,cut:cut?cut-12:null,jag:cut?3:0,flutes:8,amp:.32,sharp:1,nu:96,nv:40,hole,seed:210}),skin,B,0,12,0);
-  if(d>0){mesh(lathe({rFn:()=>R*.88,H:H-12,cut:cut-12,jag:3,nu:32,nv:6,seed:210}),MAT.guts,B,0,12,0);floorSlabs(bx,12,0,()=>R*.95,4,(cut||H)-12,4,d,cut?cut-12:null);}
+  if(d>0){mesh(lathe({rFn:()=>R*.6,H:H-12,cut:cut-12,jag:3,nu:32,nv:6,seed:210}),MAT.guts,B,0,12,0);civRooms({cx:bx,cy:12,rFn:()=>R,y0:4,y1:(cut||H)-12,step:4,d,seed:212,cut:cut?cut-12:null,rIn:.6});}
   const bBands=[];   // ten storeys of lobed banding in one mesh
   for(let s=0;s<Math.floor(((cut||H)-12)/4);s++){const y=12+s*4;
    const bh=d>0?(u,v)=>fbm(u*10+s,2,211+s,2)<.24*d:null;
    bBands.push(lathe({rFn:()=>R*1.09,H:1,flutes:8,amp:.34,sharp:1,nu:96,nv:1,hole:bh}).translate(0,y+3,0));
    bBands.push(gridSurface((u,v)=>{const th=u*TAU;const r=lerp(lobe(th)*.97,lobe(th)*1.09,v);return[r*Math.cos(th),y+3.9,r*Math.sin(th)];},96,2,{hole:bh}));
    for(let k=0;k<8;k++)for(let j=-1;j<=1;j+=2){const th=k/8*TAU+j*.16;const u=((th%TAU)+TAU)%TAU/TAU;if(hole&&hole(u,y-12))continue;const r=lobe(th)+.1;
-    kput(d>0?'winSmD':'winSmI',[bx+r*Math.cos(th),y+1.9,r*Math.sin(th)],qFacing([Math.cos(th),0,Math.sin(th)]),[1.9,1.5,1],null);}
+    civWin(d>0?'winSmD':'winSmI',[bx+r*Math.cos(th),y+1.9,r*Math.sin(th)],qFacing([Math.cos(th),0,Math.sin(th)]),[1.9,1.5,1],null);}
    if(s%3===0)stripRing(bx,y+2.5,0,R*.85,d,24);}
   meshMerged(bBands,skin,B);
   if(!cut){kput('slab',[bx,H+.2,0],null,[R*1.1,.6,R*1.1],new THREE.Color(0xd8d4cc));mesh(lathe({rFn:y=>7*Math.sqrt(clamp(1-Math.pow(y/6,2),0,1)),H:6,nu:24,nv:6}),skin,B,0,H+.5,0);}
-  else{rubbleRing(bx,0,0,15,40,60,2.5);mossOnRing(bx,cut,0,R,10,1.5);}
-  if(d>0){vinesOnRing(bx,12,0,R*1.05,20,10);scatterMoss(bx,0,0,15,45,40,2);}}
+  else{rubbleRing(bx,0,0,15,26,60,2.5);mossOnRing(bx,cut,0,R,10,1.5);}
+  if(d>0){vinesOnRing(bx,12,0,R*1.05,20,10);scatterMoss(bx,0,0,15,28,40,2);}}
  officeC(G,d);figures(60,50,5,5);figures(190,22,3,3);KOFF=[0,0,0];return G;}
 
 // ================================================================= STARPORT — "the Starfish"
@@ -725,20 +812,41 @@ function buildStarport(scene,gx,gz,d){reseed(d>0?9601:9600);KOFF=[gx,0,gz];REGIS
  if(d===0)mesh(lathe({rFn:y=>RD*.98*Math.pow(clamp(1-Math.pow(y/HD,2),0,1),.5),H:HD,nu:48,nv:10,hole:(u,y)=>y<HD*.84}),MAT.glass,G,0,3,0);
  else mesh(lathe({rFn:y=>RD*.9*Math.pow(clamp(1-Math.pow(y/HD,2),0,1),.5),H:HD*.9,nu:48,nv:8}),MAT.dark,G,0,3,0);
  stripRing(0,10,0,RD*.85,d,48);stripRing(0,24,0,RD*.62,d,40);
+ const mouths=[];   // the five hangar end walls, merged after the loop: one draw call
  for(let i=0;i<NA;i++){const th=i/NA*TAU+.3;const cx=Math.cos(th),cz=Math.sin(th);const sx=-cz,sz=cx;
   const broken=d>0&&i===2;const hole=holeFn(d,310+i,null,1.4);
   const arm=(u,v)=>{const s=v*L;const t=s/L;const w=38*(1-.55*t);const h=(HD*.75)*(1-.6*t)+6;const q=(u-.5)*2;const x=RD*.6+s;const y=h*Math.pow(clamp(1-q*q,0,1),.55);
    return[x*cx+q*w*sx,y,x*cz+q*w*sz];};
-  mesh(gridSurface(arm,40,60,{uS:8,vS:30,hole:(u,v)=>{const spine=Math.abs(u-.5)<.045&&v<.9;const gap=broken&&v>.5&&v<.64;return spine||gap||(hole&&hole(u*3+i,v*L));}}),skin,G);
+  // RUIN: the broken arm's outer vault has PANCAKED - flattened onto its own
+  // floor beyond the break, where it used to stand whole past a narrow gap.
+  const armB=broken?(u,v)=>{const p=arm(u,v);if(v>.64)p[1]*=.12+.12*fbm(u*6,v*24,321,2);return p;}:arm;
+  mesh(gridSurface(armB,40,60,{uS:8,vS:30,hole:(u,v)=>{const spine=Math.abs(u-.5)<.045&&v<.9;const gap=broken&&v>.5&&v<.64;return spine||gap||(hole&&hole(u*3+i,v*L));}}),skin,G);
   if(d===0)mesh(gridSurface((u,v)=>arm(.455+u*.09,v*.9),6,40,{}),MAT.glass,G);
-  else mesh(gridSurface((u,v)=>{const p=arm(u,v);return[p[0]*.985,3+(p[1]-3)*.9,p[2]*.985];},20,30,{uS:8,vS:30,hole:(u,v)=>broken&&v>.5&&v<.64}),MAT.guts,G);
-  for(let s=20;s<L-10;s+=20){const p=arm(.5,s/L);const lit=d>0?rng()<.1:true;kput('strip',[p[0],p[1]-2,p[2]],qEuler(0,-th,0),[14,1,1],lit?CYAN:DEAD);}
-  if(broken){const p=arm(.5,.57);rubbleRing(p[0],0,p[2],5,40,90,3);}
+  else mesh(gridSurface((u,v)=>{const p=armB(u,v);return[p[0]*.985,Math.max(.3,3+(p[1]-3)*.9),p[2]*.985];},20,30,{uS:8,vS:30,hole:(u,v)=>broken&&v>.5&&v<.64}),MAT.guts,G);
+  for(let s=20;s<L-10;s+=20){const p=arm(.5,s/L);const lit=d>0?rng()<.1:true;if(broken&&s/L>.5)continue;kput('strip',[p[0],p[1]-2,p[2]],qEuler(0,-th,0),[14,1,1],lit?CYAN:DEAD);}
+  if(broken){const p=arm(.5,.57);rubbleRing(p[0],0,p[2],5,40,90,3);for(const v of [.72,.86]){const p2=arm(.5,v);rubbleRing(p2[0],0,p2[2],12,34,30,2.6);}}
+  // THE HANGAR MOUTH. Each arm used to end in an open half-tube that showed its
+  // own inside. Now its end is walled, with a great dark door in it, lit round
+  // its head when intact; in a ruin the wall is holed and the door stands open
+  // on the arm's floor. (The pancaked arm has no mouth left to close.)
+  if(!broken){const vE=.985,e=arm(.5,vE),e2=arm(.5,1);const n=[e2[0]-e[0],0,e2[2]-e[2]];const nl=Math.hypot(n[0],n[2]);n[0]/=nl;n[2]/=nl;
+   const eh=holeFn(d,340+i,null,3);
+   mouths.push(gridSurface((u,v)=>{const p=arm(u,vE);return[p[0],p[1]*v,p[2]];},20,6,{uS:4,vS:2,hole:(u,v)=>{const q=(u-.5)*2;if(Math.abs(q)<.42&&v<.62)return true;return eh?eh(u,v*20):false;}}));
+   kput('boxD',[e[0]-n[0]*5,5.5,e[2]-n[2]*5],qFacing(n),[26,11,.6],null);
+   kput('slab',[e[0]-n[0]*16,.4,e[2]-n[2]*16],null,[16,.8,16],new THREE.Color(d>0?0x3a3430:0x6a625a));
+   for(let k=-3;k<=3;k++){const lit=d>0?h3(i,k,341)<.12:true;kput('strip',[e[0]+n[2]*k*3.8+n[0]*.2,11.6,e[2]-n[0]*k*3.8+n[2]*.2],qFacing(n),[3,1,1],lit?new THREE.Color(0xffb060):DEAD);}}
   // landing pad at the arm's end
   const px=(RD*.6+L+52)*cx,pz=(RD*.6+L+52)*cz;kput('slab',[px,1.5,pz],null,[42,3,42],new THREE.Color(d>0?0x4a4038:0x8a8078));
   for(let k=0;k<24;k++){const a=k/24*TAU;const lit=d>0?rng()<.15:true;kput('strip',[px+40*Math.cos(a),3.2,pz+40*Math.sin(a)],qEuler(0,-a,0),[6,1,1],lit?new THREE.Color(0xffb060):DEAD);}
   kput('slab',[px,1.2,pz],qEuler(0,-th,0),[6,2.4,24],new THREE.Color(d>0?0x4a4038:0x8a8078));
-  if(d>0){scatterMoss(px,3,pz,0,38,25,2);}}
+  if(d>0){scatterMoss(px,3,pz,0,38,25,2);}
+  // REHABILITATED: the aprons are camps - tents pitched on the pads
+  // (A-frames of the salvage pass's own tarp planes: no new kit mesh.)
+  if(d===3){for(let k=0;k<9;k++){const a=h3(i,k,350)*TAU,r=8+h3(k,i,351)*26,sz=3+h3(i*3,k,352)*3;const tx=px+r*Math.cos(a),tz=pz+r*Math.sin(a);
+    const c=new THREE.Color().setHSL(.07+h3(k,i,353)*.06,.35,.45+h3(i,k,354)*.2);
+    for(const sd of [-1,1])kput('patchTarp',[tx+Math.cos(a+Math.PI/2)*sd*sz*.35,3+sz*.28,tz+Math.sin(a+Math.PI/2)*sd*sz*.35],qEuler(0,-a,0).multiply(qEuler(-sd*.9,0,0)),[sz*1.4,sz*.9,1],c);}
+   kput('waterButt',[px+3,4,pz-4],null,[1.2,2,1.2],null);}}
+ meshMerged(mouths,skin,G);
  // control needle on the dome
  const NH=70,ncut=d>0?NH*.5:null;mesh(lathe({rFn:y=>4.5*(1-.5*y/NH)+ (y>NH-14?9*Math.pow((y-(NH-14))/14,1.4)*(1-.3*Math.pow((y-(NH-14))/14,4)):0),H:NH,cut:ncut,jag:ncut?2:0,flutes:6,amp:.2,nu:40,nv:30,hole:holeFn(d*.6,330,ncut,1)}),skin,G,0,HD-2,0);
  if(!ncut){kput('slab',[0,HD-2+NH,0],null,[13,.8,13],new THREE.Color(0xd8d4cc));stripRing(0,HD-2+NH-4,0,11,d,24);}
@@ -752,17 +860,33 @@ function buildBunker(scene,gx,gz,d){reseed(d>0?9701:9700);KOFF=[gx,0,gz];REGISTE
  // earth berm (hex), cyclopean hex mass, casemates
  const berm=lathe({rFn:y=>78-2.2*y,H:10,nu:6,nv:2});mesh(berm,MAT.mud,G);kput('slab',[0,10,0],null,[56,.4,56],new THREE.Color(0x7a4a34));
  const R0=54,R1=46,HM=16;const hole=holeFn(d*.9,400,null,1.2);
- mesh(lathe({rFn:y=>R0-(R0-R1)*y/HM,H:HM,nu:6,nv:8,hole:(u,y)=>hole&&hole(u,y)&&(u>.62&&u<.85)}),skin,G,0,10,0);
- if(d>0)mesh(lathe({rFn:y=>(R0-(R0-R1)*y/HM)*.9,H:HM,nu:6,nv:2}),MAT.guts,G,0,10,0);
+ // RUIN: the south-east face is BREACHED - a V blown down through the casemate
+ // wall nearly to the berm, the rooms behind it open, the face's ribs and
+ // casemate fins gone and its wall lying in slabs down the berm. Before this
+ // the ruin kept the intact silhouette with a few holes in it.
+ const BR=Math.PI/6,brk=(th,y)=>d>0&&civDA(th,BR)<.3*(.35+.65*clamp(y/HM,0,1))+.03*(fbm(th*9,y*.3,405,2)-.5)&&y>1.5;
+ if(d===0)mesh(lathe({rFn:y=>R0-(R0-R1)*y/HM,H:HM,nu:6,nv:8,hole:(u,y)=>hole&&hole(u,y)&&(u>.62&&u<.85)}),skin,G,0,10,0);
+ else mesh(gridSurface((u,v)=>{const th=u*TAU,y=v*HM,r=hexR(R0-(R0-R1)*y/HM,th);return[r*Math.cos(th),10+y,r*Math.sin(th)];},96,16,
+  {uS:R0*TAU/8,vS:HM/8,hole:(u,v)=>brk(u*TAU,v*HM)||(hole&&hole(u,v*HM)&&(u>.62&&u<.85))}),skin,G);
+ if(d>0){mesh(lathe({rFn:y=>(R0-(R0-R1)*y/HM)*.62,H:HM,nu:6,nv:2}),MAT.guts,G,0,10,0);
+  // the casemate wall between breach and liner: two floors of rooms
+  civRooms({cy:10,rFn:y=>(R0-(R0-R1)*y/HM)*.84,y0:.3,y1:HM,step:8,d,seed:406,rIn:.72,gap:th=>civDA(th,BR)>.6});
+  mesh(lathe({rFn:y=>(R0-(R0-R1)*y/HM)*.9,H:HM,nu:6,nv:2,hole:(u,y)=>civDA(u*TAU,BR)<.34}),MAT.guts,G,0,10,0);
+  // the blown wall, in slabs down the berm, and the spill
+  const n=[Math.cos(BR),0,Math.sin(BR)],bermY=r=>clamp((78-r/.866)/2.2,0,10),rW=hexR(R0,BR);
+  for(let k=0;k<7;k++){const r=rW+rr(2,24),t=rr(-14,14);const x=n[0]*r-n[2]*t,z=n[2]*r+n[0]*t;
+   kput('boxCR',[x,bermY(r)+rr(.3,1.2),z],qEuler(rr(-.5,.5),rng()*TAU,rr(-.5,.5)),[rr(5,10),rr(1.2,2),rr(4,8)],null);}
+  for(let i=0;i<70;i++){const q=Math.pow(rng(),2),r=rW+1+q*24,t=rr(-16,16)*(1-.5*q),sz=rr(.8,3)*(1.2-.5*q);const x=n[0]*r-n[2]*t,z=n[2]*r+n[0]*t;
+   kput('rubble',[x,bermY(r)+(1-q)*2.2+sz*.35,z],qEuler(rng()*3,rng()*3,rng()*3),[sz*rr(.7,1.5),sz*rr(.5,1),sz*rr(.7,1.5)],new THREE.Color().setHSL(rr(.05,.09),rr(.1,.35),rr(.3,.55)));}}
  kput('slab',[0,26,0],null,[R1*.98,.8,R1*.98],new THREE.Color(d>0?0x5a4a40:0xd8d4cc));
  for(let f=0;f<6;f++){const fa=f/6*TAU+Math.PI/6;const n=[Math.cos(fa),0,Math.sin(fa)];const tang=[-n[2],0,n[0]];
-  for(let k=-1;k<=1;k++){const y=20;const rr0=hexR(R0-(R0-R1)*(y-10)/HM,fa)+.3;const px=n[0]*rr0+tang[0]*k*13,pz=n[2]*rr0+tang[2]*k*13;
+  for(let k=-1;k<=1;k++){if(d>0&&f===0&&k===0)continue;const y=20;const rr0=hexR(R0-(R0-R1)*(y-10)/HM,fa)+.3;const px=n[0]*rr0+tang[0]*k*13,pz=n[2]*rr0+tang[2]*k*13;
    kput('finW',[px,y,pz],qFacing(n),[6,1.8,1.6],null);}
   // cliff-face sawtooth ribs (Soleri)
   for(let k=-2;k<=2;k++){const rr0=hexR(R0,fa)+1.2;const px=n[0]*rr0+tang[0]*k*9.5,pz=n[2]*rr0+tang[2]*k*9.5;
-   if(d>0&&rng()<.25)continue;beam(d>0?'strutR':'strutW',[px,10,pz],[px-n[0]*7,10+HM,pz-n[2]*7],3,2.5);}}
+   if(d>0&&rng()<.25)continue;if(d>0&&f===0&&Math.abs(k)<2)continue;beam(d>0?'strutR':'strutW',[px,10,pz],[px-n[0]*7,10+HM,pz-n[2]*7],3,2.5);}}
  // gate + ramp on face 0 (facing +z)
- const ga=Math.PI/2;kput('archOpen',[Math.cos(ga)*(hexR(R0,ga)-1),15,Math.sin(ga)*(hexR(R0,ga)-1)],qFacing([Math.cos(ga),0,Math.sin(ga)]),[1.6,1.6,4],null);
+ const ga=Math.PI/2;const gR=hexR(R0-(R0-R1)*6.5/HM,ga);kput('archOpen',[Math.cos(ga)*(gR-1.9),16.5,Math.sin(ga)*(gR-1.9)],qFacing([Math.cos(ga),0,Math.sin(ga)]),[1.6,1.6,4],null);
  kput(d>0?'strutR':'strutW',[0,5,hexR(R0,ga)+22],qEuler(-.2,0,0),[14,1.5,44],null);
  // observation cupola + gun-bay portico of leaning struts + petal sensor clusters
  const CH=22,ccut=d>0?CH*.6:null;
@@ -778,23 +902,30 @@ function buildBunker(scene,gx,gz,d){reseed(d>0?9701:9700);KOFF=[gx,0,gz];REGISTE
 
 // ================================================================= LIBRARY — "the Crown"
 function buildLibrary(scene,gx,gz,d){reseed(d>0?9801:9800);KOFF=[gx,0,gz];REGISTER({name:'Library — the Crown ('+STATE(d)+')',x:0,z:0,r:60,h:65});REGISTER({name:'Library — reading hall',x:74,z:0,r:22,h:16});const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const skin=SHELL(d);
- mesh(lathe({rFn:()=>42,H:2,nu:80,nv:1}),skin,G);kput('slab',[0,2,0],null,[42,.5,42],new THREE.Color(d>0?0x5a4a40:0xd8d4cc));
+ mesh(lathe({rFn:()=>42,H:2,nu:80,nv:1}),skin,G);apron(G,0,0,42,50,d,2);apron(G,74,0,15,22,d,.5);kput('slab',[0,2,0],null,[42,.5,42],new THREE.Color(d>0?0x5a4a40:0xd8d4cc));
  const pts=[[34,0],[27,12],[19,25],[15.5,34],[17.5,42],[23,50],[27,54]];
- kdef('ribLib'+(d>0?'R':'W'),ribCurveGeo(pts,1.5),d>0?MAT.rust:MAT.white);
+ // civDef, not kdef: a second kdef('ribLibR') at decay 3 wiped the decay-1 ribs
+ civDef('ribLib'+(d>0?'R':'W'),()=>ribCurveGeo(pts,1.5),d>0?MAT.rust:MAT.white);
  const NR=16;for(let k=0;k<NR;k++){const th=k/NR*TAU;const fallen=d>0&&(k===2||k===3||k===9||k===13);
   if(!fallen)kput('ribLib'+(d>0?'R':'W'),[0,2,0],qEuler(0,-th,0),1,null);
   else{kput('ribLib'+(d>0?'R':'W'),[Math.cos(th)*60,1.4,Math.sin(th)*60],qEuler(Math.PI/2,0,-th),[.9,.9,.9],null);rubbleRing(Math.cos(th)*45,2,Math.sin(th)*45,3,16,30,1.8);}}
  const rib=y=>{for(let i=1;i<pts.length;i++)if(y<=pts[i][1]){const t=(y-pts[i-1][1])/(pts[i][1]-pts[i-1][1]);return lerp(pts[i-1][0],pts[i][0],t);}return pts[pts.length-1][0];};
  if(d===0)mesh(lathe({rFn:y=>rib(y)-1.6,H:44,nu:64,nv:30}),MAT.glass,G,0,2,0);
- else mesh(lathe({rFn:y=>rib(y)-1.8,H:44,nu:48,nv:20,hole:(u,y)=>fbm(u*4,y*.06,500,2)<.55}),MAT.dark,G,0,2,0);
+ else{mesh(lathe({rFn:y=>rib(y)-1.8,H:44,nu:48,nv:20,hole:(u,y)=>fbm(u*4,y*.06,500,2)<.55}),MAT.dark,G,0,2,0);
+  // behind the torn crown: three gallery rings of stacks round a dark well,
+  // and the teeth of the glass still standing between the ribs near the foot
+  const gal=[];civRooms({cy:2,rFn:y=>rib(y)-2.2,y0:3,y1:40,step:12,d,seed:505,rIn:.5,out:gal});meshMerged(gal,CONC(d),G);
+  mesh(lathe({rFn:y=>(rib(y)-2)*.5,H:40,nu:24,nv:4}),MAT.dark,G,0,2,0);
+  for(let k=0;k<NR;k++)for(let j=0;j<2;j++){const th=(k+.5)/NR*TAU,y=5+j*8,r=rib(y)-1.6;const hh=h3(k,j,506);if(hh>.6)continue;
+   civShardAt([Math.cos(th)*r,2+y,Math.sin(th)*r],qFacing([Math.cos(th),.25,Math.sin(th)]),TAU*r/NR*.8,7,0,hh);}}
  kput(d>0?'ringR':'ringW',[0,36,0],qEuler(Math.PI/2,0,0),[16,16,10],null);
  kput('slab',[0,2.3,0],null,[30,.6,30],new THREE.Color(0x2a2c30));stripRing(0,6,0,28,d,40);stripRing(0,20,0,18,d,32);
  if(d===0)kput('finial',[0,60,0],null,[3,6,3],null);
  // reading-hall wing: low six-lobed block with arched windows, joined by a covered walk
  const wx=74;mesh(lathe({rFn:()=>15,H:9,flutes:6,amp:.35,sharp:1,nu:72,nv:6,hole:holeFn(d,510,null,2)}),skin,G,wx,0,0);
- if(d>0)mesh(lathe({rFn:()=>13,H:9,nu:24,nv:1}),MAT.dark,G,wx,0,0);
+ if(d>0){mesh(lathe({rFn:()=>9,H:9,nu:24,nv:1}),MAT.dark,G,wx,0,0);civRooms({cx:wx,rFn:()=>15,y0:0,y1:9.2,step:9.2,d,seed:513,rIn:.6});}
  kput('slab',[wx,9.2,0],null,[15.5,.5,15.5],new THREE.Color(d>0?0x5a4a40:0xd8d4cc));mesh(lathe({rFn:y=>16*Math.sqrt(clamp(1-Math.pow(y/5,2),0,1)),H:5,flutes:6,amp:.3,sharp:1,nu:72,nv:6,hole:holeFn(d*.8,511,null,2)}),skin,G,wx,9.4,0);
- for(let k=0;k<12;k++){const th=(k+.5)/12*TAU;const r=15*(1+.35*(.5+.5*Math.cos(6*th)))+.1;kput(d>0?'winBigD':'winBigI',[wx+r*Math.cos(th),4.5,r*Math.sin(th)],qFacing([Math.cos(th),0,Math.sin(th)]),[.8,.9,1],null);}
+ for(let k=0;k<12;k++){const th=(k+.5)/12*TAU;const r=15*(1+.35*(.5+.5*Math.cos(6*th)))+.1;civWin(d>0?'winBigD':'winBigI',[wx+r*Math.cos(th),4.5,r*Math.sin(th)],qFacing([Math.cos(th),0,Math.sin(th)]),[.8,.9,1],null);}
  for(let x=44;x<58;x+=6)for(let s=-1;s<=1;s+=2)kput(d>0?'colR':'colW',[x,2,s*4],null,[.7,5,.7],null);
  mesh(gridSurface((u,v)=>[42+u*18,7.2+.4*Math.sin(u*9),(v-.5)*10],16,4,{hole:d>0?(u,v)=>fbm(u*5,v*2,520,2)<.35:null}),skin,G);
  kput('archOpen',[34.5,4,0],qFacing([1,0,0]),[.5,.5,1],null);
@@ -1202,13 +1333,17 @@ function buildSkyF(scene,gx,gz,d,gy,noPlinth,hcut,slim){reseed(9150+d);gy=gy||0;
  KOFF=[0,0,0];return G;}
 
 // ================================================================= MEGASTRUCTURE 2 — "the Gate" (cyclopean lattice arc with an apex tower)
-function buildArc(scene,gx,gz,d){reseed(9996+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const skin=SHELL(d);
+function buildArc(scene,gx,gz,d){reseed(9820+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const skin=SHELL(d);
  const SPAN=640,RISE=300;REGISTER({name:'Megastructure — the Gate ('+STATE(d)+')',x:0,z:0,r:400,h:RISE+140});
  const C=t=>[SPAN*(t-.5),RISE*(1-Math.pow(2*t-1,2))*(1+.06*Math.sin(t*9)),0];         // centreline, slight wobble
  const W=t=>42*(1+.5*Math.pow(Math.abs(2*t-1),3)),D=t=>34*(1+.4*Math.pow(Math.abs(2*t-1),3)); // section grows toward the feet
  const gone=t=>d>0&&t>.1&&t<.19;                                                             // ruined: gap in the west leg
  const N=96;const chords=[[-1,-1],[1,-1],[-1,1],[1,1],[0,-1.3],[0,1.3]];
- chords.forEach((c,ci)=>{let pts=[];const flush=()=>{if(pts.length>1)mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),pts.length*2,ci<4?5.5:3,8,false),skin,G);pts=[];};
+ // ARC SKIN IN ONE MESH: the chord tubes, the four plated faces and the crest
+ // lattice share `skin` and G, so they are collected and merged once (they were
+ // 14-20 meshes). The merge is untranslated, so it is pixel-exact.
+ const arcSkin=[];
+ chords.forEach((c,ci)=>{let pts=[];const flush=()=>{if(pts.length>1)arcSkin.push(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),pts.length*2,ci<4?5.5:3,8,false));pts=[];};
   for(let i=0;i<=N;i++){const t=i/N;if(gone(t)){flush();continue;}const p=C(t);const tg=[C(t+.001)[0]-p[0],C(t+.001)[1]-p[1]];const L=Math.hypot(tg[0],tg[1]);const nx=-tg[1]/L,ny=tg[0]/L;
    pts.push(new THREE.Vector3(p[0]+nx*c[0]*W(t)/2,p[1]+ny*c[0]*W(t)/2,c[1]*D(t)/2));}flush();});
  for(let i=0;i<N;i+=2){const t=(i+.5)/N;if(gone(t))continue;const p=C(t);const tg=[C(t+.001)[0]-p[0],C(t+.001)[1]-p[1]];const L=Math.hypot(tg[0],tg[1]);const nx=-tg[1]/L,ny=tg[0]/L;
@@ -1219,26 +1354,45 @@ function buildArc(scene,gx,gz,d){reseed(9996+d);KOFF=[gx,0,gz];const G=new THREE
  // armour plating on all four faces of the box section: full when intact, knocked off in patches (painting) when ruined
  const frame=t=>{const p=C(t);const tg=[C(t+.001)[0]-p[0],C(t+.001)[1]-p[1]];const L=Math.hypot(tg[0],tg[1]);return{p,nx:-tg[1]/L,ny:tg[0]/L};};
  const plateGone=(u,v,f)=>gone(u)||(d>0?fbm(u*16+f*3,v*3,1300+f,3)<.53||fbm(u*40,v*6,1320+f,2)<.28:fbm(u*30,v*5,1300+f,2)<.08);
- const facesA=[[1,0],[-1,0],[0,1],[0,-1]];facesA.forEach((fc,f)=>{mesh(gridSurface((u,v)=>{const F=frame(u);const w=W(u)/2,dp=D(u)/2;let a,b;if(fc[0]){a=fc[0]*1.03;b=(v-.5)*2;}else{a=(v-.5)*2;b=fc[1]*1.03;}return[F.p[0]+F.nx*a*w,F.p[1]+F.ny*a*w,b*dp];},192,8,{uS:48,vS:3,hole:(u,v)=>plateGone(u,v,f)}),skin,G);});
+ const facesA=[[1,0],[-1,0],[0,1],[0,-1]];facesA.forEach((fc,f)=>{arcSkin.push(gridSurface((u,v)=>{const F=frame(u);const w=W(u)/2,dp=D(u)/2;let a,b;if(fc[0]){a=fc[0]*1.03;b=(v-.5)*2;}else{a=(v-.5)*2;b=fc[1]*1.03;}return[F.p[0]+F.nx*a*w,F.p[1]+F.ny*a*w,b*dp];},192,8,{uS:48,vS:3,hole:(u,v)=>plateGone(u,v,f)}));});
  // plate seams: thin ribs every few metres along the extrados and intrados
  for(let i=0;i<N;i+=1){const t=(i+.5)/N;if(gone(t))continue;const F=frame(t);for(const a of [1.04,-1.04]){if(d>0&&plateGone(t,.5,a>0?0:1))continue;kput(PLATE(d),[F.p[0]+F.nx*a*W(t)/2,F.p[1]+F.ny*a*W(t)/2,0],qEuler(0,0,Math.atan2(F.ny,F.nx)),[1.2,.6,D(t)*1.06],null);}}
  // fallen plates scattered below the ruined arc
  if(d>0)for(let k=0;k<90;k++){const t=rr(.05,.95);const F=frame(t);const x=F.p[0]+rr(-60,60),z=rr(-80,80);kput('plateR',[x,rr(.5,2.5),z],qEuler(rr(-.4,.4),rng()*TAU,rr(-.4,.4)),[rr(6,16),.6,rr(5,12)],null);}
+ // THE CREST LATTICE along the extrados: a spine of bone vertebrae arching over
+ // the top plating, tied rib to rib by sinuous diagonals, so the deck reads as
+ // grown rather than plated. One merged mesh; a ruin keeps about two thirds.
+ {const cr=[];const V=(F,t,a,b)=>new THREE.Vector3(F.p[0]+F.nx*a*W(t)/2,F.p[1]+F.ny*a*W(t)/2,b*D(t)/2);
+  for(let i=1;i<N-1;i+=2){const t=i/N,t2=(i+2)/N;if(gone(t)||gone(t2))continue;if(d>0&&h3(i,3,1340)<.33)continue;const F=frame(t),F2=frame(t2),Fm=frame((t+t2)/2);
+   cr.push(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([V(F,t,1.02,-1.05),V(F,t,1.24,-.72),V(F,t,1.38,0),V(F,t,1.24,.72),V(F,t,1.02,1.05)]),8,1.1,5,false));
+   const s=(i>>1)%2?1:-1;
+   cr.push(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([V(F,t,1.38,0),V(Fm,(t+t2)/2,1.3,s*.45),V(F2,t2,1.02,s*1.05)]),6,.8,5,false));}
+  meshMerged(arcSkin.concat(cr),skin,G);}
  // feet
- for(const t of [0,1]){const p=C(t);kput(BOXC(d),[p[0],14,0],null,[70,28,50],null);kput(BOXC(d),[p[0]+(t?1:-1)*40,8,0],qEuler(0,0,(t?-1:1)*.35),[60,14,44],null);
+ for(const t of [0,1]){const p=C(t);apron(G,p[0]+(t?1:-1)*18,0,34,86,d,5);kput(BOXC(d),[p[0],14,0],null,[70,28,50],null);kput(BOXC(d),[p[0]+(t?1:-1)*40,8,0],qEuler(0,0,(t?-1:1)*.35),[60,14,44],null);
   for(let k=0;k<5;k++)kput(d>0?'colR':'colW',[p[0]+(t?1:-1)*(30+k*18),0,-40+k*20],null,[2.5,12,2.5],null);}
  // apex tower: fluted shaft with a cluster of spikes, offset toward one side like the painting
  const ap=C(.56);const TH=170,tcut=d>0?TH*.72:null;const T=new THREE.Group();T.position.set(ap[0],ap[1]-8,0);G.add(T);useGroupXF(T);
  mesh(lathe({rFn:y=>20*(1-.3*y/TH)+1,H:TH,cut:tcut,jag:tcut?4:0,flutes:8,amp:.2,sharp:1.5,nu:48,nv:40,hole:holeFn(d,1310,tcut,1.2)}),skin,T);
- if(d>0)mesh(lathe({rFn:y=>17*(1-.3*y/TH),H:TH,cut:tcut,jag:4,nu:20,nv:6}),MAT.guts,T);
- for(let y=10;y<(tcut||TH)-6;y+=6)for(let k=0;k<12;k++){const th=(k+.5)/12*TAU,r=20*(1-.3*y/TH)+1.1;kput(d>0?'winSmD':'winSmI',[r*Math.cos(th),y,r*Math.sin(th)],qFacing([Math.cos(th),0,Math.sin(th)]),[1.6,2.6,1],null);}
+ if(d>0){mesh(lathe({rFn:y=>12*(1-.3*y/TH),H:TH,cut:tcut,jag:4,nu:20,nv:6}),MAT.guts,T);civRooms({rFn:y=>20*(1-.3*y/TH)+1,y0:6,y1:tcut,step:12,d,seed:1312,cut:tcut,rIn:.58});}
+ for(let y=10;y<(tcut||TH)-6;y+=6)for(let k=0;k<12;k++){const th=(k+.5)/12*TAU,r=20*(1-.3*y/TH)+1.1;civWin(d>0?'winSmD':'winSmI',[r*Math.cos(th),y,r*Math.sin(th)],qFacing([Math.cos(th),0,Math.sin(th)]),[1.6,2.6,1],null);}
  for(let yy=20;yy<(tcut||TH)-10;yy+=30)stripRing(0,yy,0,19*(1-.3*yy/TH),d,24);
  if(!tcut){for(let k=0;k<9;k++){const th=k/9*TAU;const r=rr(4,13),h=rr(20,50);beam(d>0?'strutR':'strutW',[Math.cos(th)*r,TH-4,Math.sin(th)*r],[Math.cos(th)*r*1.4,TH-4+h,Math.sin(th)*r*1.4],rr(1.2,2.6),rr(1.2,2.6));}
   if(d===0)kput('finial',[0,TH+30,0],null,[3,6,3],null);}
  endGroupXF();
  // ruined: the fallen leg section lying below the gap, rubble, moss
  if(d>0){const p=C(.15);const F=new THREE.Group();F.position.set(p[0]+30,10,40);F.rotation.set(.3,.4,1.35);G.add(F);
-  for(const c of chords.slice(0,4))mesh(new THREE.CylinderGeometry(5.5,5.5,70,8).translate(c[0]*20,0,c[1]*16),MAT.rust,F);
+  // the fallen leg section: four chords, torn plating on two faces and its
+  // bracing, set down ON the ground (it used to hang 10 m in the air as four
+  // clean cylinders)
+  const fl=[];for(const c of chords.slice(0,4))fl.push(new THREE.CylinderGeometry(5.5,5.5,70,8,1,true).translate(c[0]*20,0,c[1]*16));
+  for(const sd of [-1,1])fl.push(gridSurface((u,v)=>[sd*21.5,(u-.5)*64,(v-.5)*30],12,4,{uS:8,vS:4,hole:(u,v)=>h3(u*12|0,v*4|0,1330+sd)<.45}));
+  meshMerged(fl,MAT.rust,F);dropFragment(F,0,2.5);
+  useGroupXF(F);for(let y=-30;y<30;y+=10){beam('strutR',[-20,y,-16],[20,y+10,16],2.2,2.2);if(h3(y,1,1331)<.6)beam('strutR',[20,y,-16],[-20,y+10,16],2.2,2.2);}endGroupXF();
+  // the chords torn out of the standing arc's broken end, hanging off it
+  {const hg=[];const F0=frame(.192);chords.slice(0,4).forEach((c,ci)=>{const L=[34,62,22,48][ci];const e=new THREE.Vector3(F0.p[0]+F0.nx*c[0]*W(.192)/2,F0.p[1]+F0.ny*c[0]*W(.192)/2,c[1]*D(.192)/2);
+    const pts=[e];for(let k=1;k<=4;k++)pts.push(new THREE.Vector3(e.x-6*k/4+3*Math.sin(k+ci),e.y-L*k/4,e.z+2*Math.cos(k*1.7+ci)));
+    hg.push(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),10,ci<2?2.2:1.6,6,false));});meshMerged(hg,MAT.rust,G);}
   rubbleRing(p[0]+20,0,30,10,90,140,4);scatterMoss(0,0,0,0,420,220,3.5);trees(0,0,60,420,40);vinesOnRing(ap[0],ap[1]-20,0,20,20,40);}
  figures(0,120,6,14);KOFF=[0,0,0];return G;}
 
@@ -1475,16 +1629,51 @@ function buildSpire(scene,gx,gz,d){reseed(9310+d);KOFF=[gx,0,gz];
  figures(Math.cos(4.629)*(BASE+98),Math.sin(4.629)*(BASE+98),5,18);
  KOFF=[0,0,0];return G;}
 // ================================================================= ROBOTICS FACTORY — "the Assembler"
+// THE ROBOT CHASSIS (QA pass 2026-09-29). The test yard's six machines were a
+// box, a smaller box and four tubes. Each is now a legged frame: feet, shins,
+// thighs, a pelvis, a tapered six-sided torso, a shoulder yoke, two arms with
+// clamps, a sensor head; dark actuators at the joints. Built once as merged
+// geometry and instanced (civDef): one draw call for all six.
+// `arm` false drops the left arm. Feet at y=0, facing +z. The joints are 'tube'
+// instances placed by the yard loop.
+function civMergeGeo(geos){let nv=0,ni=0;for(const g of geos){nv+=g.attributes.position.count;ni+=g.index?g.index.count:g.attributes.position.count;}
+ const P=new Float32Array(nv*3),N=new Float32Array(nv*3),U=new Float32Array(nv*2),I=new Uint32Array(ni);let vo=0,io=0;
+ for(const g of geos){const c=g.attributes.position.count;P.set(g.attributes.position.array,vo*3);N.set(g.attributes.normal.array,vo*3);if(g.attributes.uv)U.set(g.attributes.uv.array,vo*2);
+  if(g.index){const ix=g.index.array;for(let i=0;i<ix.length;i++)I[io+i]=ix[i]+vo;io+=ix.length;}else{for(let i=0;i<c;i++)I[io+i]=vo+i;io+=c;}vo+=c;}
+ const G=new THREE.BufferGeometry();G.setAttribute('position',new THREE.BufferAttribute(P,3));G.setAttribute('normal',new THREE.BufferAttribute(N,3));G.setAttribute('uv',new THREE.BufferAttribute(U,2));G.setIndex(new THREE.BufferAttribute(I,1));return G;}
+function civRobotGeo(arm){const B=(w,h,dp,x,y,z,rx)=>{const g=new THREE.BoxGeometry(w,h,dp);if(rx)g.rotateX(rx);return g.translate(x,y,z);};
+ const g=[];
+ for(const s of [-1,1]){g.push(B(2.6,1,4.2,s*2.2,.5,.7),B(1.8,3.6,2.1,s*2.2,2.6,.2,-.08),B(2.3,3.8,2.5,s*2.1,6.2,0,.1));}
+ g.push(B(6.2,1.8,3.2,0,8.6,0));
+ g.push(new THREE.CylinderGeometry(3.3,2.4,4.6,6).scale(1,1,.72).translate(0,11.5,0));
+ g.push(B(9.8,1.6,3.2,0,13.9,0),B(3.8,.8,2.6,0,12.8,1.6));
+ for(const s of [-1,1]){if(s<0&&!arm)continue;g.push(B(1.7,4,1.9,s*5.3,12.6,0),B(1.5,3.8,1.7,s*5.3,9,1.2,-.35),B(1.9,1.4,2,s*5.3,6.9,2.2),B(.5,1.4,.5,s*5.3+.6,5.7,2.6),B(.5,1.4,.5,s*5.3-.6,5.7,2.6));}
+ g.push(new THREE.CylinderGeometry(1.7,2.1,2.4,8).translate(0,15.8,0),B(2.8,.7,1.2,0,15.9,1.8),B(.3,2.4,.3,1.2,17.9,-.5));
+ return civMergeGeo(g);}
 function buildRobotics(scene,gx,gz,d){reseed(9210+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const skin=SHELL(d);
  REGISTER({name:'Robotics factory — the Assembler ('+STATE(d)+')',x:0,z:0,r:230,h:90});
  kput(BOXC(d),[0,2,0],null,[400,4,300],null);
  // main hall: concrete shell with a north-light sawtooth roof of shaped glass
- const HW=200,HD=90,HH=22;kput(BOXC(d),[-40,4+HH/2,0],null,[HW,HH,HD],null);kput('boxD',[-40,4+HH/2,0],null,[HW-2,HH-2,HD-2],null);
- const NB=8;for(let b=0;b<NB;b++){const z0=-HD/2+b*(HD/NB),z1=z0+HD/NB;const gone=d>0&&(b===2||b===5);
-  const roof=gridSurface((u,v)=>{const x=-40-HW/2+u*HW;const zz=lerp(z0,z1,v);const y=4+HH+(1-v)*9*(1-.15*Math.pow(u*2-1,2));return[x,y,zz];},40,6,{uS:20,vS:2,hole:holeFn(d*.7,1400+b,null,2)});mesh(roof,CONC(d),G);
+ const HW=200,HD=90,HH=22;
+ if(d===0){kput(BOXC(d),[-40,4+HH/2,0],null,[HW,HH,HD],null);kput('boxD',[-40,4+HH/2,0],null,[HW-2,HH-2,HD-2],null);}
+ else{// RUIN: the hall is a shell - four walls under the holed roof - and what the
+  // holes show is the assembly floor: three conveyor lines, the machines along
+  // them, travelling gantries overhead, and the dark of the far wall.
+  for(const sz of [-1,1])kput(BOXC(d),[-40,4+HH/2,sz*(HD/2-.8)],null,[HW,HH,1.6],null);
+  for(const sx of [-1,1])kput(BOXC(d),[-40+sx*(HW/2-.8),4+HH/2,0],null,[1.6,HH,HD],null);
+  kput('boxD',[-40,4+HH-1,0],null,[HW-3,.6,HD-3],null);
+  for(const lz of [-24,0,24]){kput('boxD',[-40,5.2,lz],null,[HW-24,1.6,4],null);
+   for(let x=-128;x<=48;x+=16){const hh=h3(x,lz,1405);if(hh<.25)continue;const sd=hh<.6?1:-1;
+    kput(BOXC(d),[x,6,lz+sd*5],null,[4,3.2,4],null);beam('tube',[x,7.6,lz+sd*5],[x+2,13,lz+sd*2.5],1.1,1.1);beam('tube',[x+2,13,lz+sd*2.5],[x+1,9,lz+.5],.8,.8);
+    if(hh>.8)kput('boxD',[x+4,8.2,lz],qEuler(0,hh*3,rr(-.2,.2)),[5,4,3],null);}}
+  for(let x=-120;x<=40;x+=40){kput(d>0?'strutR':'strutW',[x,4+HH-3,0],null,[1.6,1.6,HD-4],null);kput('boxD',[x,4+HH-5,rr(-30,30)],null,[3,3,4],null);}}
+ const NB=8,roofs=[],darks=[];   // the eight bays' roofs (and ruined glazing) merged: 16 meshes -> 2
+ for(let b=0;b<NB;b++){const z0=-HD/2+b*(HD/NB),z1=z0+HD/NB;const gone=d>0&&(b===2||b===5);
+  const roof=gridSurface((u,v)=>{const x=-40-HW/2+u*HW;const zz=lerp(z0,z1,v);const y=4+HH+(1-v)*9*(1-.15*Math.pow(u*2-1,2));return[x,y,zz];},40,6,{uS:20,vS:2,hole:holeFn(d*.7,1400+b,null,2)});roofs.push(roof);
   if(!gone&&d===0)mesh(gridSurface((u,v)=>{const x=-40-HW/2+u*HW;return[x,4+HH+v*9*(1-.15*Math.pow(u*2-1,2)),z0+.2];},40,4,{}),MAT.glass,G);
-  else if(!gone)mesh(gridSurface((u,v)=>{const x=-40-HW/2+u*HW;return[x,4+HH+v*9*(1-.15*Math.pow(u*2-1,2)),z0+.2];},40,2,{hole:(u,v)=>fbm(u*8,b,1410,2)<.4}),MAT.dark,G);
+  else if(!gone)darks.push(gridSurface((u,v)=>{const x=-40-HW/2+u*HW;return[x,4+HH+v*9*(1-.15*Math.pow(u*2-1,2)),z0+.2];},40,2,{hole:(u,v)=>fbm(u*8,b,1410,2)<.4}));
   for(let k=0;k<=10;k++){const x=-40-HW/2+k*HW/10;kput(d>0?'mullR':'mullW',[x,4+HH+4.5,z0+.3],null,[1,9,1],null);}}
+ meshMerged(roofs,CONC(d),G);meshMerged(darks,MAT.dark,G);
  for(let k=0;k<13;k++){const x=-40-HW/2+k*HW/12;kput(BOXC(d),[x,4+HH/2,HD/2+.6],null,[2.2,HH,2],null);kput(BOXC(d),[x,4+HH/2,-HD/2-.6],null,[2.2,HH,2],null);
   if(k%3===1){kput('archOpen',[x+8,10,HD/2+1.5],qFacing([0,0,1]),[1.4,1.2,2],null);}}
  for(let k=0;k<6;k++){const x=-120+k*32;const lit=d>0?rng()<.15:true;kput('strip',[x,4+HH-1,0],qEuler(0,Math.PI/2,0),[70,1,1],lit?CYAN:DEAD);}
@@ -1494,17 +1683,24 @@ function buildRobotics(scene,gx,gz,d){reseed(9210+d);KOFF=[gx,0,gz];const G=new 
  mesh(lathe({rFn:()=>20,H:TH,cut:tcut,jag:3,nu:24,nv:4}),MAT.dark,G,tx,4,tz);
  for(let y=12;y<(tcut||TH)-6;y+=14)for(let k=0;k<10;k++){const th=(k+.5)/10*TAU;const r=21;kput('boxD',[tx+r*Math.cos(th),4+y+2,tz+r*Math.sin(th)],qEuler(0,-th,0),[6,.6,10],null);
   const lit=d>0?rng()<.15:true;kput('strip',[tx+r*Math.cos(th),4+y+7,tz+r*Math.sin(th)],qEuler(0,-th,0),[5,1,1],lit?WARM:DEAD);}
- if(!tcut){kput(SLABC(d),[tx,4+TH+.4,tz],null,[27,.8,27],null);beam(d>0?'strutR':'strutW',[tx,4+TH,tz],[tx-60,4+TH+6,tz+40],3,3);kput('tube',[tx-50,4+TH+2,tz+34],null,[.4,40,.4],null);}
+ if(!tcut){kput(SLABC(d),[tx,4+TH+.4,tz],null,[27,.8,27],null);beam(d>0?'strutR':'strutW',[tx,4+TH,tz],[tx-60,4+TH+6,tz+40],3,3);kput('tube',[tx-50,4+TH+5-20,tz+33.3],null,[.4,40,.4],null);kput('boxD',[tx-50,4+TH+5-41,tz+33.3],null,[3,2.2,3],null);}
  else rubbleRing(tx,4,tz,26,50,50,3);
  // overhead conveyor from tower to hall
  for(let k=0;k<4;k++){const x=70-k*30;kput(d>0?'colR':'colW',[x,4,10],null,[1.2,26,1.2],null);}kput(d>0?'pipeR':'pipe',[40,31,10],qEuler(0,0,Math.PI/2),[2.2,150,2.2],null);
  // test yard: six mount frames (giant robot chassis on stands)
  for(let i=0;i<6;i++){const x=-140+i*50,z=110;const gone=d>0&&(i===1||i===4);kput(SLABC(d),[x,4.6,z],null,[14,1.2,14],null);
   if(gone){rubbleRing(x,5,z,2,12,20,1.6);continue;}const q=qEuler(0,rr(-.4,.4),d>0?rr(-.15,.15):0);
-  kput(BOXC(d),[x,9,z],null,[3,8,3],null);kput('boxD',[x,16,z],q,[12,6,7],null);kput('boxD',[x,21,z],q,[6,4,5],null);
-  for(const s of [-1,1]){kput('tube',[x+s*7.5,14,z],q,[1.2,10,1.2],null);kput('tube',[x+s*3.5,7,z+1],q,[1.4,8,1.4],null);}
-  const lit=d>0?rng()<.2:true;kput('dot',[x,21,z+2.6],null,[2,.6,.4],lit?CYAN:DEAD);}
- for(let k=0;k<5;k++){const x=-165+k*50;kput(BOXC(d),[x,10,110],null,[2,12,2],null);}kput(BOXC(d),[-40,16.5,110],null,[250,1.6,3],null);
+  // mount frame behind the machine, the machine, its actuators
+  kput(BOXC(d),[x,12,z-3.4],null,[3,14,1.6],null);kput(BOXC(d),[x,13.9,z-2.2],null,[5,1.2,1.8],null);
+  // body: one InstancedMesh per finish (kit meshes are never culled, so every
+  // new one is a draw call in every view); actuators are the shared 'tube'
+  const bn=civDef('civRobot'+(d>0?'R':'W'),()=>civRobotGeo(true),d>0?MAT.rust:MAT.white);
+  kput(bn,[x,5.2,z],q,1,null);const qj=q.clone().multiply(qEuler(0,0,Math.PI/2));
+  for(const j of [[2.1,8.2,0,1.2,2.6],[-2.1,8.2,0,1.2,2.6],[2.2,4.3,.2,1.1,2.2],[-2.2,4.3,.2,1.1,2.2],[5.3,10.6,.4,.9,2],[-5.3,10.6,.4,.9,2],[0,13.3,0,1.4,3.6]]){
+   const o=new THREE.Vector3(j[0],j[1],j[2]).applyQuaternion(q);kput('tube',[x+o.x,5.2+o.y,z+o.z],qj,[j[3],j[4],j[3]],null);}
+  const lit=d>0?rng()<.2:true;const vp=new THREE.Vector3(0,15.9,2.45).applyQuaternion(q);kput('dot',[x+vp.x,5.2+vp.y,z+vp.z],q,[2,.5,.4],lit?CYAN:DEAD);}
+ for(let k=0;k<5;k++){const x=-165+k*50;kput(BOXC(d),[x,17,104],null,[2,26,2],null);}kput(BOXC(d),[-40,30.5,104],null,[250,1.6,3],null);
+ for(let k=0;k<3;k++){const x=-125+k*80;kput(BOXC(d),[x,30.5,110],null,[3,1.2,14],null);kput('tube',[x,26,116],null,[.25,9,.25],null);kput('boxD',[x,21.2,116],null,[2,1,2],null);}
  // silos of parts, loading dock
  for(let i=0;i<4;i++){const x=-170,z=-90+i*30;mesh(lathe({rFn:y=>7*(1-.05*Math.pow(y/24,6)),H:24,nu:24,nv:6,hole:holeFn(d*.7,1430+i,null,2.5)}),skin,G,x,4,z);kput(d>0?'ringR':'ringW',[x,28,z],qEuler(Math.PI/2,0,0),[7.3,7.3,2],null);}
  kput(BOXC(d),[-40,5.5,-HD/2-14],null,[HW*.6,3,14],null);for(let k=0;k<6;k++)kput('archOpen',[-100+k*24,10,-HD/2-.8],qFacing([0,0,-1]),[.9,.9,1.5],null);
@@ -5020,15 +5216,50 @@ function buildDataCenter(scene,gx,gz,d){reseed(9220+d);KOFF=[gx,0,gz];const G=ne
  const W=260,Dp=140,H=62;
  // berm and the mass: battered box, 4 faces + roof
  mesh(lathe({rFn:y=>(190-3*y),H:8,nu:8,nv:2}),MAT.mud,G);
- const bat=.06;const face=(fx,fz)=>gridSurface((u,v)=>{const y=v*H;const sh=1-bat*v;let x,z;if(fx){x=fx*W/2*sh;z=(u-.5)*Dp*sh;}else{x=(u-.5)*W*sh;z=fz*Dp/2*sh;}return[x,8+y,z];},fx?40:80,16,{uS:fx?14:26,vS:6,hole:holeFn(d*.5,1700+fx+fz*2,null,1.4)});
+ const bat=.06;
+ // RUIN: the south-east corner of the Vault has CAVED - a quarter-ellipse bitten
+ // down out of both faces and the roof, the server floors behind it open to the
+ // sky. (The ruin used to be the intact box with fins missing.) bx/bz: 0 at the
+ // corner, 1 at the bite's edge; the bite is deepest at the corner.
+ const X0=58,Z0=-12,bx=x=>(W/2-x)/(W/2-X0),bz=z=>(Dp/2-z)/(Dp/2-Z0),jg=(a,b)=>.07*(fbm(a*.08,b*.08,1702,2)-.5);
+ // an ellipsoid octant: its sections are the two face bites and the roof bite
+ const bite=(x,y,z)=>d>0&&x>X0-8&&z>Z0-8&&Math.pow(bx(x),2)+Math.pow(bz(z),2)+Math.pow(Math.max(0,H-y)/(H*.86),2)+jg(x+z,y)<1;
+ const face=(fx,fz)=>gridSurface((u,v)=>{const y=v*H;const sh=1-bat*v;let x,z;if(fx){x=fx*W/2*sh;z=(u-.5)*Dp*sh;}else{x=(u-.5)*W*sh;z=fz*Dp/2*sh;}return[x,8+y,z];},fx?40:80,16,
+  {uS:fx?14:26,vS:6,hole:(u,v)=>{const y=v*H;if(d>0&&((fx===1&&bite(W/2,y,(u-.5)*Dp))||(fz===1&&bite((u-.5)*W,y,Dp/2))))return true;const h=holeFn(d*.5,1700+fx+fz*2,null,1.4);return h?h(u,v):false;}});
  [[1,0],[-1,0],[0,1],[0,-1]].forEach(f=>mesh(face(f[0],f[1]),CONC(d),G));
- mesh(gridSurface((u,v)=>{const sh=1-bat;return[(u-.5)*W*sh,8+H,(v-.5)*Dp*sh];},20,10,{uS:26,vS:14,hole:holeFn(d*.7,1701,null,2)}),CONC(d),G);
- kput('boxD',[0,8+H/2,0],null,[W*.94,H,Dp*.94],null);
+ {const rh=holeFn(d*.7,1701,null,2);mesh(gridSurface((u,v)=>{const sh=1-bat;return[(u-.5)*W*sh,8+H,(v-.5)*Dp*sh];},40,20,{uS:26,vS:14,hole:(u,v)=>(d>0&&Math.pow(bx((u-.5)*W),2)+Math.pow(bz((v-.5)*Dp),2)+jg(u*W,v*Dp)<1&&(u-.5)*W>X0-8&&(v-.5)*Dp>Z0-8)||(rh?rh(u,v):false)}),CONC(d),G);}
+ if(d===0)kput('boxD',[0,8+H/2,0],null,[W*.94,H,Dp*.94],null);
+ else{// the dark mass keeps clear of the bite; three server floors inside it
+  const xi=X0-6,zi=Z0-6,xe=W*.47,ze=Dp*.47;
+  kput('boxD',[(-xe+xi)/2,8+H/2,0],null,[xe+xi,H,Dp*.94],null);kput('boxD',[(xi+xe)/2,8+H/2,(-ze+zi)/2],null,[xe-xi,H,ze+zi],null);
+  for(let j=0;j<4;j++){const fy=8+j*15.5;const lim=j===0?1:.93-.18*j;
+   kput(BOXC(d),[xi+(W/2*.97-xi)*lim/2,fy+.4,zi+(Dp/2*.97-zi)*lim/2],null,[(W/2*.97-xi)*lim,.8,(Dp/2*.97-zi)*lim],null);
+   if(j===3)break;
+   for(let z=zi+5;z<Dp/2-6;z+=8.5)for(let x=xi+5;x<W/2-7;x+=6){if((x-xi)/(W/2*.97-xi)>lim||(z-zi)/(Dp/2*.97-zi)>lim)continue;const hh=h3(x,z,1703+j);if(hh<.12)continue;
+    const fall=hh>.9;kput('boxD',[x,fy+.8+(fall?.7:1.4),z],fall?qEuler(0,hh*6,Math.PI/2):null,[4.4,2.6,1.1],null);
+    if(!fall&&hh<.5)kput('strip',[x,fy+2.2,z+.6],null,[3.6,1,1],hh<.2?new THREE.Color(0x8fd0ff):DEAD);}}
+  // cable trays hanging off the torn floor edges, and the roof that came down
+  for(let k=0;k<10;k++){const t=h3(k,1,1704);const x=lerp(X0,W/2-4,t),z=Z0+h3(k,2,1704)*(Dp/2-Z0-4);kput('tube',[x,8+15.5*(1+(k%3))-4,z],qEuler(rr(-.2,.2),0,rr(-.2,.2)),[.3,8,.3],null);}
+  for(let k=0;k<14;k++){const x=rr(X0,W/2),z=rr(Z0,Dp/2);kput('boxCR',[x,8+rr(1.5,4),z],qEuler(rr(-.5,.5),rng()*TAU,rr(-.5,.5)),[rr(8,18),1.2,rr(6,14)],null);}
+  rubbleRing(W/2*.8,8,Dp/2*.6,4,40,90,3.5);}
  // cooling fins: deep concrete ribs on the long faces, a few fallen in ruin
- for(let k=-9;k<=9;k++){const x=k*13;for(const s of [-1,1]){const gone=d>0&&rng()<.18;const z=s*(Dp/2*(1-bat/2)+2);if(!gone)kput(BOXC(d),[x,8+H/2,z],qEuler(-bat*s*.5,0,0),[4,H+2,7],null);else kput('boxCR',[x+rr(-6,6),9.5,z+s*rr(20,50)],qEuler(Math.PI/2*.9,rr(-.3,.3),0),[4,H*.8,7],null);
-   const lit=d>0?rng()<.08:true;kput('strip',[x+6.5,8+H*.6,z-s*2.5],qEuler(Math.PI/2,0,0),[H*.5,1,1],lit?new THREE.Color(0x8fd0ff):DEAD);}}
+ for(let k=-9;k<=9;k++){const x=k*13;for(const s of [-1,1]){const gone=d>0&&rng()<.18;const z=s*(Dp/2*(1-bat/2)+2);let fh=H+2;if(s>0&&d>0&&x>X0-8){const t=bx(x);fh=t<1?Math.max(2,H*(1-.86*Math.sqrt(1-t*t))):fh;}
+   if(!gone)kput(BOXC(d),[x,8+fh/2,z],qEuler(-bat*s*.5,0,0),[4,fh,7],null);else kput('boxCR',[x+rr(-6,6),9.5,z+s*rr(20,50)],qEuler(Math.PI/2*.9,rr(-.3,.3),0),[4,H*.8,7],null);
+   const lit=d>0?rng()<.08:true;if(!bite(x+6.5,H*.6,s*Dp/2))kput('strip',[x+6.5,8+H*.6,z-s*2.5],qEuler(Math.PI/2,0,0),[H*.5,1,1],lit?new THREE.Color(0x8fd0ff):DEAD);}}
+ // HATCHES AND DUCTS. The fin row was a blank concrete wall between the ribs at
+ // every distance the presets use. Each bay now carries a service hatch or two,
+ // two duct runs threaded through the fins with collars, and every third fin a
+ // downpipe; the short ends get louvre banks. Placed off the battered face.
+ {const zf=(s,yy)=>s*(Dp/2*(1-bat*yy/H)+.25),tq=s=>qEuler(-s*.068,0,0);
+  for(let k=-9;k<9;k++){const x=k*13+6.5;for(const s of [-1,1]){const hh=h3(k,s,1706);
+   for(const yy of [H*.3,H*.82]){if(!bite(x,yy,s*Dp/2)){kput(d>0?'pipeR':'pipe',[x,8+yy,zf(s,yy)+s*1.4],qEuler(0,0,Math.PI/2),[1.3,9,1.3],null);kput('boxD',[x-3.6,8+yy,zf(s,yy)+s*1.1],qEuler(0,0,Math.PI/2),[2.2,1.2,2.2],null);}}
+   for(const yy of hh<.4?[6,H*.55]:hh<.8?[H*.55]:[6,H*.18,H*.66]){if(bite(x,yy,s*Dp/2))continue;const big=yy<8;
+    kput('boxD',[x+(big?0:(hh-.5)*4),8+yy,zf(s,yy)],tq(s),big?[5,7,.5]:[3,3,.4],null);kput(BOXC(d),[x+(big?0:(hh-.5)*4),8+yy+(big?4:2),zf(s,yy)+s*.3],tq(s),[big?6.4:4,.5,.8],null);}
+   if(k%3===0&&!(s>0&&d>0&&x>X0-8))kput(d>0?'pipeR':'pipe',[x-6.5+s*0+3.2,8+H*.5,zf(s,H*.5)+s*4],tq(s),[.8,H,.8],null);}}
+  for(const sx of [-1,1])for(let j=-1;j<=1;j++){const z=j*38;if(sx>0&&bite(W/2,H*.4,z))continue;const xf=sx*(W/2*(1-bat*.4)+.3);
+   kput('boxD',[xf,8+H*.4,z],qEuler(0,0,sx*.068),[.5,16,20],null);for(let r=0;r<6;r++)kput(BOXC(d),[xf+sx*.4,8+H*.4-6.5+r*2.6,z],qEuler(0,0,sx*.068),[1,.5,21],null);}}
  // roof chillers: 8 drums with dark grilles; exhaust stacks
- for(let i=0;i<8;i++){const x=-105+i*30,z=(i%2?1:-1)*22;const gone=d>0&&(i===2||i===5);mesh(lathe({rFn:y=>11*(1-.02*y),H:12,flutes:16,amp:.05,nu:40,nv:4,hole:holeFn(d*.7,1710+i,null,2.5)}),CONC(d),G,x,8+H,z);
+ for(let i=0;i<8;i++){const x=-105+i*30,z=(i%2?1:-1)*22;const gone=d>0&&(i===2||i===5);if(bite(x,H,z)){rubbleRing(x,8,z,3,16,24,2);continue;}mesh(lathe({rFn:y=>11*(1-.02*y),H:12,flutes:16,amp:.05,nu:40,nv:4,hole:holeFn(d*.7,1710+i,null,2.5)}),CONC(d),G,x,8+H,z);
   if(!gone)kput('slab',[x,8+H+12.2,z],null,[10.5,.4,10.5],new THREE.Color(0x1a1d22));else{rubbleRing(x,8+H,z,3,14,20,1.5);}
   kput(d>0?'pipeR':'pipe',[x,8+H+6,z+(i%2?-1:1)*14],qEuler(Math.PI/2,0,0),[1.2,14,1.2],null);}
  for(let i=0;i<3;i++){const x=-30+i*30;mesh(lathe({rFn:y=>4.5*(1-.2*y/40)+1.5*clamp((y-34)/6,0,1),H:40,cut:d>0&&i===1?22:null,jag:2,flutes:8,amp:.1,nu:24,nv:12}),CONC(d),G,x,8+H,-50);}
@@ -5036,8 +5267,8 @@ function buildDataCenter(scene,gx,gz,d){reseed(9220+d);KOFF=[gx,0,gz];const G=ne
  kput('boxD',[0,8+9,Dp/2*.97-2],null,[9,18,16],null);kput(BOXC(d),[0,4,Dp/2+30],qEuler(.12,0,0),[12,1.5,50],null);for(const s of [-1,1])kput(BOXC(d),[s*7,6,Dp/2+30],qEuler(.12,0,0),[1.5,4,50],null);
  for(let i=0;i<6;i++){const x=W/2+30+(i%3)*18,z=-30+Math.floor(i/3)*30;kput('boxD',[x,4,z],null,[10,8,8],null);for(let k=0;k<3;k++)kput('tube',[x-3+k*3,10,z],null,[.6,4,.6],null);kput(d>0?'pipeR':'pipe',[x,9,z+10],qEuler(Math.PI/2,0,0),[.5,14,.5],null);}
  for(let k=0;k<4;k++)kput(d>0?'colR':'colW',[W/2+10+k*22,0,60],null,[1,12,1],null);kput(d>0?'pipeR':'pipe',[W/2+43,11,60],qEuler(0,0,Math.PI/2),[.8,70,.8],null);
- for(let k=-10;k<=10;k++)for(const sz of [-1,1]){const lit=d>0?rng()<.1:true;kput('strip',[k*12,8+H+.6,sz*Dp*.42],null,[8,1,1],lit?new THREE.Color(0x8fd0ff):DEAD);}
- if(d>0){scatterMoss(0,8,0,0,180,120,3);mossOnRing(0,8+H+.3,0,50,30,3);vinesOnRing(0,8+H,0,Dp/2*.9,30,30);rubbleRing(0,8,0,100,200,70,3);trees(0,0,200,290,20);}
+ for(let k=-10;k<=10;k++)for(const sz of [-1,1]){const lit=d>0?rng()<.1:true;if(bite(k*12,H,sz*Dp*.42))continue;kput('strip',[k*12,8+H+.6,sz*Dp*.42],null,[8,1,1],lit?new THREE.Color(0x8fd0ff):DEAD);}
+ if(d>0){scatterMoss(0,8,0,0,180,120,3);mossOnRing(0,8+H+.3,0,50,30,3);for(let i=0;i<30;i++){const a=rng()*TAU,L=rr(4,30),q=qEuler(rr(-.12,.12),0,rr(-.12,.12)),sx=rr(.8,1.6),sz=rr(.8,1.6);const x=Dp/2*.9*Math.cos(a),z=Dp/2*.9*Math.sin(a);if(!bite(x,H,z))kput('vine',[x,8+H,z],q,[sx,L,sz],null);}rubbleRing(0,8,0,100,200,70,3);trees(0,0,200,290,20);}
  figures(0,120,4,8);KOFF=[0,0,0];return G;}
 
 // ================================================================= POLICE STATION — "the Watch"
@@ -5045,20 +5276,36 @@ function buildPolice(scene,gx,gz,d){reseed(9230+d);KOFF=[gx,0,gz];const G=new TH
  REGISTER({name:'Police station — the Watch ('+STATE(d)+')',x:0,z:0,r:90,h:60});
  kput(SLABC(d),[0,.4,0],null,[80,.8,80],null);
  // main block: battered hex, two storeys, slit windows, a sally-port
- const R0=34,R1=30,HM=12;mesh(lathe({rFn:y=>R0-(R0-R1)*y/HM,H:HM,nu:6,nv:4,hole:holeFn(d*.7,1800,null,1.5)}),CONC(d),G,0,.8,0);mesh(lathe({rFn:y=>(R0-(R0-R1)*y/HM)*.9,H:HM,nu:6,nv:1}),MAT.dark,G,0,.8,0);
+ const R0=34,R1=30,HM=12;mesh(lathe({rFn:y=>R0-(R0-R1)*y/HM,H:HM,nu:6,nv:4,hole:holeFn(d*.7,1800,null,1.5)}),CONC(d),G,0,.8,0);if(d>0){mesh(lathe({rFn:y=>(R0-(R0-R1)*y/HM)*.66,H:HM,nu:6,nv:1}),MAT.dark,G,0,.8,0);civRooms({cy:.8,rFn:y=>(R0-(R0-R1)*y/HM)*.84,y0:.3,y1:HM,step:6,d,seed:1805,rIn:.78});}else mesh(lathe({rFn:y=>(R0-(R0-R1)*y/HM)*.9,H:HM,nu:6,nv:1}),MAT.dark,G,0,.8,0);
  kput(SLABC(d),[0,.8+HM,0],null,[R1*.98,.8,R1*.98],null);
- for(let f=0;f<6;f++){const fa=f/6*TAU+Math.PI/6;const n=[Math.cos(fa),0,Math.sin(fa)];const tg=[-n[2],0,n[0]];for(let k=-2;k<=2;k++)for(const yy of [4.5,9.5]){const r=hexR(R0-(R0-R1)*(yy-.8)/HM,fa)+.2;kput(d>0?'winSmD':'winSmI',[n[0]*r+tg[0]*k*7,yy,n[2]*r+tg[2]*k*7],qFacing(n),[1.2,2.6,1],null);}
+ for(let f=0;f<6;f++){const fa=f/6*TAU+Math.PI/6;const n=[Math.cos(fa),0,Math.sin(fa)];const tg=[-n[2],0,n[0]];for(let k=-2;k<=2;k++)for(const yy of [4.5,9.5]){const r=hexR(R0-(R0-R1)*(yy-.8)/HM,fa)+.2;civWin(d>0?'winSmD':'winSmI',[n[0]*r+tg[0]*k*7,yy,n[2]*r+tg[2]*k*7],qFacing(n),[1.2,2.6,1],null);}
   for(let k=-2;k<=2;k++){const r=hexR(R0,fa)+1;beam(BOXC(d),[n[0]*r+tg[0]*k*8,.8,n[2]*r+tg[2]*k*8],[n[0]*(r-4.5)+tg[0]*k*8,.8+HM+2,n[2]*(r-4.5)+tg[2]*k*8],1.6,1.4);}}
  kput('archOpen',[0,4,hexR(R0,Math.PI/2)-.5],qFacing([0,0,1]),[1,1,3],null);kput(BOXC(d),[0,7,hexR(R0,Math.PI/2)+6],null,[16,1,12],null);
  // watch tower: lattice hyperboloid with cupola and light
  const TH=44,tcut=d>0?TH*.6:null;const tx=-22,tz=-18;const rFn=y=>4*Math.sqrt(1+2.5*Math.pow((y-TH*.6)/(TH*.6),2));
  for(let k=0;k<6;k++)for(const dir of [-1,1]){let prev=null;for(let y=0;y<=(tcut||TH);y+=3){const th=k/6*TAU+dir*y*.06;const r=rFn(y);const p=[tx+r*Math.cos(th),.8+HM+y,tz+r*Math.sin(th)];if(prev)beam(d>0?'strutR':'strutW',prev,p,.7,.7);prev=p;}}
  kput('tube',[tx,.8+HM+(tcut||TH)/2,tz],null,[1.6,(tcut||TH),1.6],null);
+ // ruin: the tower's head came down - the lantern cupola lies on the forecourt
+ // north-west of the block, with a run of its lattice beside it
+ if(tcut){const F=new THREE.Group();F.position.set(-58,1,-50);F.rotation.set(.45,.7,2.75);G.add(F);
+  mesh(lathe({rFn:y=>8*Math.pow(clamp(1-Math.pow((y-4)/4,2),0,1),.5)+.01,H:8,nu:32,nv:8}),CONC(d),F);dropFragment(F,.8,.6);
+  for(let k=0;k<5;k++){const a0=[-48+k*1.2,1.4,-38-k*3.5],a1=[-44+k*1.5,1.2,-40-k*3.5];beam('strutR',a0,[a0[0]+9,1.2+(k%2)*1.5,a0[2]-6],.7,.7);beam('strutR',a1,[a1[0]+8,1.3,a1[2]+5],.7,.7);}
+  rubbleRing(-56,.8,-48,4,12,16,1.4);}
  if(!tcut){mesh(lathe({rFn:y=>8*Math.pow(clamp(1-Math.pow((y-4)/4,2),0,1),.5)+.01,H:8,nu:32,nv:8}),CONC(d),G,tx,.8+HM+TH-2,tz);kput('slab',[tx,.8+HM+TH+1.5,tz],null,[7,.6,7],new THREE.Color(0x1a1d22));stripRing(tx,.8+HM+TH+2,tz,6.5,d,16);kput('finial',[tx,.8+HM+TH+8,tz],null,[1.2,2,1.2],null);}
  // vehicle bays wing + perimeter wall with gate
- kput(BOXC(d),[42,5,-10],null,[30,10,50],null);kput('boxD',[42,5,-10],null,[28,9,48],null);for(let k=0;k<3;k++)kput('archOpen',[57.2,3.4,-26+k*16],qFacing([1,0,0]),[.9,.75,1.5],null);
+ if(d===0){kput(BOXC(d),[42,5,-10],null,[30,10,50],null);kput('boxD',[42,5,-10],null,[28,9,48],null);}
+ else{// RUIN: the south bay's roof has caved into it; its walls stand round the
+  // slab and a patrol carrier crushed under it. The rest of the wing is whole.
+  kput(BOXC(d),[42,5,-18.5],null,[30,10,33],null);kput('boxD',[42,5,-18.5],null,[28,9,31.2],null);
+  kput(BOXC(d),[27.6,5,6.5],null,[1.2,10,17],null);kput(BOXC(d),[42,5,14.4],null,[30,10,1.2],null);kput(BOXC(d),[56.4,7.5,6.5],null,[1.2,5,17],null);
+  kput(BOXC(d),[56.4,1.2,1],null,[1.2,2.4,6],null);kput(BOXC(d),[56.4,1.2,12],null,[1.2,2.4,4],null);
+  kput('boxCR',[42,5.6,6.5],qEuler(.05,0,-.42),[30,1,15],null);kput('boxD',[46,1.6,6.5],qEuler(0,.3,.08),[9,3,4.2],null);
+  rubbleRing(42,.8,6.5,2,12,26,1.6);}for(let k=0;k<3;k++)kput('archOpen',[57.2,3.4,-26+k*16],qFacing([1,0,0]),[.9,.75,1.5],null);
  for(let k=0;k<3;k++){const lit=d>0?rng()<.2:true;kput('strip',[57.4,9.2,-26+k*16],qEuler(0,0,0),[10,1,1],lit?CYAN:DEAD);}
- for(let k=0;k<4;k++){const a=k*Math.PI/2;for(let j=-1;j<=1;j+=2){if(k===0&&j===1)continue;kput(BOXC(d),[Math.cos(a)*44+ (-Math.sin(a))*j*22,2.5,Math.sin(a)*44+Math.cos(a)*j*22],qEuler(0,-a,0),[1.2,5,44],null);}}
+ for(let k=0;k<4;k++){const a=k*Math.PI/2;for(let j=-1;j<=1;j+=2){if(k===0&&j===1)continue;const px=Math.cos(a)*44+(-Math.sin(a))*j*22,pz=Math.sin(a)*44+Math.cos(a)*j*22;
+  // ruin: two runs of the perimeter wall lie flat where they fell, outward
+  if(d>0&&((k===2&&j===-1)||(k===3&&j===1))){kput('boxCR',[px+Math.cos(a)*2.8,1.4,pz+Math.sin(a)*2.8],qAxis(-Math.sin(a),0,Math.cos(a),-1.45).multiply(qEuler(0,-a,0)),[1.2,5,44],null);continue;}
+  kput(BOXC(d),[px,2.5,pz],qEuler(0,-a,0),[1.2,5,44],null);}}
  kput(BOXC(d),[46,6,44],null,[3,12,3],null);kput(BOXC(d),[-46,6,44],null,[3,12,3],null);kput('boxD',[0,3,44],null,[1,6,1],null);
  for(let k=0;k<6;k++){const x=-30+k*12;kput(BOXC(d),[x,.8,60],null,[5,.5,10],null);}
  if(d>0){mossOnRing(0,.8+HM+.5,0,26,20,2);rubbleRing(0,.8,0,36,60,40,2);vinesOnRing(0,.8+HM,0,R1,12,10);}
@@ -5069,20 +5316,30 @@ function buildHospital(scene,gx,gz,d){reseed(9240+d);KOFF=[gx,0,gz];const G=new 
  REGISTER({name:'Hospital — the Cloister ('+STATE(d)+')',x:0,z:0,r:120,h:90});
  // podium: 3 storeys, glass ribbons between concrete slabs
  const PW=170,PD=110,SH=5;for(let f=0;f<=3;f++){kput(BOXC(d),[0,f*SH,0],null,[PW,.8,PD],null);if(f<3){if(d===0){kput('pane',[0,f*SH+2.8,PD/2],null,[PW-2,3.6,1],null);kput('pane',[0,f*SH+2.8,-PD/2],null,[PW-2,3.6,1],null);kput('pane',[PW/2,f*SH+2.8,0],qEuler(0,Math.PI/2,0),[PD-2,3.6,1],null);kput('pane',[-PW/2,f*SH+2.8,0],qEuler(0,Math.PI/2,0),[PD-2,3.6,1],null);}
-  kput('boxD',[0,f*SH+2.8,0],null,[PW-3,3.6,PD-3],null);for(let x=-PW/2+5;x<PW/2;x+=10)for(const s of [-1,1])kput(BOXC(d),[x,f*SH+2.8,s*PD/2],null,[.8,4,.8],null);
+  kput('boxD',[0,f*SH+2.8,0],null,[PW-3,3.6,PD-3],null);
+  // ruin: the ribbon glazing is gone but for teeth of it left in the frames
+  if(d>0)for(let x=-PW/2+10;x<PW/2;x+=10)for(const sd of [-1,1]){const hh=h3(x,f,1905+sd);if(hh<.5)civShardAt([x,f*SH+2.8,sd*PD/2],qFacing([0,0,sd]),8.6,3.6,.1,hh*2);}for(let x=-PW/2+5;x<PW/2;x+=10)for(const s of [-1,1])kput(BOXC(d),[x,f*SH+2.8,s*PD/2],null,[.8,4,.8],null);
   for(let k=0;k<8;k++){const lit=d>0?rng()<.15:true;kput('strip',[-70+k*20,f*SH+4.4,PD/2-1],null,[12,1,1],lit?CYAN:DEAD);}}}
  kput('archOpen',[0,2.2,PD/2],qFacing([0,0,1]),[1.2,.9,2],null);kput(BOXC(d),[0,5.5,PD/2+12],null,[30,.8,20],null);for(const s of [-1,1])kput(BOXC(d),[s*13,2.7,PD/2+20],null,[1,5.5,1],null);
  // bed tower: four lobes cantilevered from a square core, oval windows in rows
  const CY=3*SH,TH=42;kput(BOXC(d),[0,CY+TH/2-4,0],null,[22,TH-8,22],null);kput(BOXC(d),[0,CY+TH/2+4,0],null,[24,TH+8,8],null);kput(BOXC(d),[0,CY+TH/2+4,0],null,[8,TH+8,24],null);
- const LR=26;for(let l=0;l<4;l++){const a=l*Math.PI/2+Math.PI/4;const cx=Math.cos(a)*24,cz=Math.sin(a)*24;const gone=d>0&&l===2;const hole=holeFn(d*.8,1900+l,null,2);
-  if(gone){rubbleRing(cx*2.5,0,cz*2.5,10,40,50,3);continue;}
-  mesh(lathe({rFn:y=>LR*(1-.35*Math.pow(clamp(1-y/8,0,1),2))*(1-.03*Math.pow(clamp((y-TH+6)/6,0,1),2)),H:TH,nu:48,nv:20,hole}),CONC(d),G,cx,CY+8,cz);
-  mesh(lathe({rFn:()=>LR*.9,H:TH-2,nu:24,nv:2}),MAT.dark,G,cx,CY+9,cz);kput('slab',[cx,CY+8+TH,cz],null,[LR*.98,.8,LR*.98],new THREE.Color(d>0?0x5a4a40:0xd8d4cc));
-  for(let r=0;r<5;r++)for(let k=0;k<14;k++){const th=a-Math.PI*.55+k/13*Math.PI*1.1;const u=((th%TAU)+TAU)%TAU/TAU;const yy=12+r*6.5;if(hole&&hole(u,yy))continue;kput(d>0?'ovalD':'ovalI',[cx+LR*1.0*Math.cos(th),CY+8+yy,cz+LR*1.0*Math.sin(th)],qFacing([Math.cos(th),0,Math.sin(th)]),[1.5,1.9,1],null);}
-  if(r=>0)stripRing(cx,CY+8+TH-2,cz,LR*.85,d,24);if(d>0){vinesOnRing(cx,CY+8+TH,cz,LR,12,16);mossOnRing(cx,CY+8+TH+.4,cz,LR*.7,8,2);}}
+ const LR=26;for(let l=0;l<4;l++){const a=l*Math.PI/2+Math.PI/4;const cx=Math.cos(a)*24,cz=Math.sin(a)*24;const gone=d>0&&l===0;const hole=holeFn(d*.8,1900+l,null,2);
+  // RUIN: the lobe facing the row camera has fallen to a ragged stump (it was
+  // the one at the back, where no preset saw it, and its rubble lay buried
+  // inside the podium); the back-right lobe is torn off at two thirds.
+  const lcut=d>0&&l===3?TH*.62:null;
+  if(gone){// what stays is the torn inner shell, still keyed to the core
+   mesh(lathe({rFn:y=>LR*(1-.35*Math.pow(clamp(1-y/8,0,1),2)),H:TH,cut:TH*.8,jag:5,nu:48,nv:20,seed:1907,hole:(u,y)=>civDA(u*TAU,a+Math.PI)>.75+.6*(fbm(u*9,y*.09,1906,2)-.5)-.25*y/TH}),CONC(d),G,cx,CY+8,cz);
+   rubbleRing(cx,CY+.4,cz,LR*.7,LR*1.7,70,3.2);for(let k=0;k<6;k++){const q=h3(k,1,1908);kput('boxCR',[cx+Math.cos(a+q*2-1)*(LR+8+q*10),CY+1.5,cz+Math.sin(a+q*2-1)*(LR+8+q*10)],qEuler(q-.5,q*6,.4-q*.8),[8+q*6,1,5+q*5],null);}continue;}
+  mesh(lathe({rFn:y=>LR*(1-.35*Math.pow(clamp(1-y/8,0,1),2))*(1-.03*Math.pow(clamp((y-TH+6)/6,0,1),2)),H:TH,cut:lcut,jag:lcut?3:0,seed:1909,nu:48,nv:20,hole}),CONC(d),G,cx,CY+8,cz);
+  if(d>0){mesh(lathe({rFn:()=>LR*.62,H:lcut?lcut-4:TH-2,nu:24,nv:2}),MAT.dark,G,cx,CY+9,cz);   // wards behind the holes
+   civRooms({cx,cy:CY+8,cz,rFn:y=>LR*(1-.35*Math.pow(clamp(1-y/8,0,1),2)),y0:9.2,y1:TH-2,step:6.5,d,seed:1910+l,rIn:.62,dens:9,cut:lcut});}
+  else mesh(lathe({rFn:()=>LR*.9,H:TH-2,nu:24,nv:2}),MAT.dark,G,cx,CY+9,cz);if(!lcut)kput('slab',[cx,CY+8+TH,cz],null,[LR*.98,.8,LR*.98],new THREE.Color(d>0?0x5a4a40:0xd8d4cc));
+  for(let r=0;r<5;r++)for(let k=0;k<14;k++){const th=a-Math.PI*.55+k/13*Math.PI*1.1;const u=((th%TAU)+TAU)%TAU/TAU;const yy=12+r*6.5;if(hole&&hole(u,yy))continue;if(lcut&&yy>lcut-4)continue;civWin(d>0?'ovalD':'ovalI',[cx+LR*1.0*Math.cos(th),CY+8+yy,cz+LR*1.0*Math.sin(th)],qFacing([Math.cos(th),0,Math.sin(th)]),[1.5,1.9,1],null);}
+  const top=lcut?lcut-3:TH;if(!lcut)stripRing(cx,CY+8+TH-2,cz,LR*.85,d,24);if(d>0){vinesOnRing(cx,CY+8+top,cz,LR,12,16);if(!lcut)mossOnRing(cx,CY+8+TH+.4,cz,LR*.7,8,2);else rubbleRing(cx*1.9,CY+.4,cz*1.9,2,14,24,2.4);}}
  // helipad + plant on the core
- kput(SLABC(d),[0,CY+TH+5,0],null,[16,1,16],null);kput('boxD',[0,CY+TH+5.6,0],null,[1,.2,1],null);for(let k=0;k<12;k++){const a=k/12*TAU;const lit=d>0?rng()<.15:true;kput('strip',[Math.cos(a)*14,CY+TH+5.8,Math.sin(a)*14],qEuler(0,-a,0),[3,1,1],lit?new THREE.Color(0xffb060):DEAD);}
- for(let k=0;k<3;k++)kput(d>0?'pipeR':'pipe',[-6+k*6,CY+TH+8,0],null,[.8,6,.8],null);
+ const RF=CY+8+TH;kput(SLABC(d),[0,RF+.9,0],null,[16,1,16],null);kput('boxD',[0,RF+1.45,0],null,[6,.12,1],null);kput('boxD',[0,RF+1.45,0],null,[1,.12,6],null);for(let k=0;k<12;k++){const a=k/12*TAU;const lit=d>0?rng()<.15:true;kput('strip',[Math.cos(a)*14,RF+1.5,Math.sin(a)*14],qEuler(0,-a,0),[3,1,1],lit?new THREE.Color(0xffb060):DEAD);}
+ for(let k=0;k<3;k++)kput(d>0?'pipeR':'pipe',[-16-k*2.5,RF+3,19],null,[.8,6,.8],null);
  // ambulance apron
  kput(SLABC(d),[0,.3,0],null,[130,.6,130],null);for(let k=0;k<5;k++)kput('boxD',[-40+k*20,.7,PD/2+42],null,[6,.1,12],null);
  if(d>0){scatterMoss(0,3*SH+.4,0,0,80,60,2.5);rubbleRing(0,.6,0,60,120,50,2.5);trees(0,0,100,150,10);}
@@ -6668,10 +6925,13 @@ HYPERJUNGLE.build=function(opt){opt=opt||{};const R=opt.R||3000,q=opt.quality==n
 HYPERJUNGLE.dress=function(geos,opt){if(HYPERJUNGLE.dressGeos){BIO.cur='jungle/dress';HYPERJUNGLE.dressGeos(geos,opt||{});BIO.cur=null;}};
 HYPERJUNGLE.canopyH=function(x,z){return HYPERJUNGLE._canopyH?HYPERJUNGLE._canopyH(x,z):60;};
 // ================================================================= UNIVERSITY v2 — "the Hill School" (one interconnected terrace structure)
-function buildCampus(scene,gx,gz,d){reseed(9800+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);
+function buildCampus(scene,gx,gz,d){reseed(9810+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);
  REGISTER({name:'University — the Hill School ('+STATE(d)+')',x:-40,z:60,r:330,h:90});
- const hill=(x,z)=>{const t=clamp((330-z)/600,0,1);const ex=clamp((380-Math.abs(x))/120,0,1),ez=clamp((360-Math.abs(z))/60,0,1);const e=ex*ex*(3-2*ex)*ez*ez*(3-2*ez);return (58*t*t*(3-2*t)+4*fbm(x/60+3,z/60,1.5,2))*e;};
- const hm=gridSurface((u,v)=>{const x=(u-.5)*780,z=(v-.5)*740;return[x,hill(x,z),z];},90,86,{uS:30,vS:28});mesh(hm,d>0?MAT.turfR:MAT.turf,G);
+ const hill=(x,z)=>{const t=clamp((330-z)/600,0,1);const ex=clamp((290-Math.abs(x))/110,0,1),ez=clamp((360-Math.abs(z))/60,0,1);const e=ex*ex*(3-2*ex)*ez*ez*(3-2*ez);return (58*t*t*(3-2*t)+4*fbm(x/60+3,z/60,1.5,2))*e;};
+ // The hill is 600 m wide, not 780: the row puts the three variants 600 m apart,
+ // so a 780 m hill overlapped each neighbour by 180 m - two terrains cutting
+ // through each other in a seam, and coplanar turf z-fighting where both were 0.
+ const hm=gridSurface((u,v)=>{const x=(u-.5)*596,z=(v-.5)*740;return[x,hill(x,z),z];},70,86,{uS:23,vS:28});mesh(hm,d>0?MAT.turfR:MAT.turf,G);
  const SH=4.2,DEP=18,SB=3.2;const wings=[];const GREEN=new THREE.Color().setHSL(.29,.5,d>0?.14:.24);
  // wing: bar from p0→p1 (horizontal), floors nf, base y0, terraces stepping toward `up` (unit vector, uphill)
  function wing(p0,p1,nf,y0,up,name){const dx=p1[0]-p0[0],dz=p1[1]-p0[1];const L=Math.hypot(dx,dz);const ax=dx/L,az=dz/L;const ang=Math.atan2(az,ax);const q=qEuler(0,-ang,0);
@@ -6699,7 +6959,15 @@ function buildCampus(scene,gx,gz,d){reseed(9800+d);KOFF=[gx,0,gz];const G=new TH
   if(d>0){for(let k=0;k<4;k++){const t=rng();kput('vine',[p0[0]+dx*t+up[0]*.8,y0+nf*SH,p0[1]+dz*t+up[1]*.8],null,[1.4,rr(6,nf*SH),1.4],null);}}}
  // the chain: zigzag up the hill (uphill = −z); each wing's base is the hill height at its downhill face
  const chain=[[[-190,230],[30,230],3,'Wing 1 — academic'],[[30,150],[30,230],3,'Wing 2 — link'],[[30,150],[-170,150],4,'Wing 3 — library floors'],[[-170,60],[-170,150],3,'Wing 4 — link'],[[-170,60],[70,60],4,'Wing 5 — laboratories'],[[70,-30],[70,60],3,'Wing 6 — link'],[[70,-30],[-130,-30],3,'Wing 7 — halls']];
- chain.forEach((c,i)=>{const isX=c[0][1]===c[1][1];const up=isX?[0,-1]:[(c[0][0]<0?1:-1),0];const zf=Math.max(c[0][1],c[1][1]);const y0=Math.round(hill((c[0][0]+c[1][0])/2,zf+2)+1);wing(c[0],c[1],c[2],y0,up,'Campus '+c[3]);});
+ chain.forEach((c,i)=>{const isX=c[0][1]===c[1][1];const up=isX?[0,-1]:[(c[0][0]<0?1:-1),0];const zf=Math.max(c[0][1],c[1][1]);const y0=Math.round(hill((c[0][0]+c[1][0])/2,zf+2)+1);
+  // RUIN: the library floors (wing 3) have come down across a 40 m bay and the
+  // west end stands one storey high, so the ruin changes the skyline instead of
+  // repeating the intact terraces in rust. Upper slabs lie tilted in the bay.
+  if(d>0&&i===2){wing(c[0],[-60,150],c[2],y0,up,'Campus '+c[3]);wing([-100,150],c[1],1,y0,up,'Campus '+c[3]+' (fallen end)');
+   for(let k=0;k<9;k++){const x=rr(-98,-62),z=rr(128,150);kput('boxCR',[x,y0+rr(1,5),z],qEuler(rr(-.6,.6),rr(-.3,.3),rr(-.7,.7)),[rr(8,16),.7,rr(6,12)],null);}
+   for(let k=0;k<80;k++){const q=rng(),x=rr(-100,-60),z=150-q*34,sz=rr(.8,2.6);kput('rubble',[x,y0+(1-q)*4+sz*.3,z],qEuler(rng()*3,rng()*3,rng()*3),[sz*rr(.8,1.5),sz*rr(.5,1),sz*rr(.8,1.5)],new THREE.Color().setHSL(rr(.03,.08),rr(.15,.35),rr(.3,.5)));}
+   for(let k=0;k<6;k++){const x=rr(-165,-105);kput('brick',[x,y0+SH+rr(.5,1.5),rr(132,148)],qEuler(rr(-.4,.4),rng()*3,rr(-.4,.4)),[rr(4,9),rr(1.5,3),.6],null);}}
+  else wing(c[0],c[1],c[2],y0,up,'Campus '+c[3]);});
  // courtyards between wings: big trees, paths, an atrium bridge across each
  [[-70,190,-190,150,30,230],[-70,105,-170,60,30,150],[-50,15,-130,-30,70,60]].forEach((c,i)=>{const [cx,cz,x0,z0,x1,z1]=c;const y=hill(cx,cz);REGISTER({name:'Campus courtyard '+(i+1),x:cx,z:cz,y:y-2,r:60,h:30});
   for(let k=0;k<5;k++){const x=rr(x0+20,x1-20),z=rr(z0+20,z1-20);const h=rr(18,30);kput('trunk',[x,y-2,z],null,[4,h,4],null);for(let j=0;j<4;j++){const s=rr(8,14);kput('moss',[x+rr(-4,4),y+h*.6+j*3,z+rr(-4,4)],qEuler(rng(),rng(),rng()),[s,s*.55,s],new THREE.Color().setHSL(rr(.25,.34),rr(.4,.55),rr(.15,.26)));}}
@@ -6721,7 +6989,7 @@ function buildCampus(scene,gx,gz,d){reseed(9800+d);KOFF=[gx,0,gz];const G=new TH
   for(let k=0;k<8;k++)kput('hedge',[cx+18*Math.cos(k/8*TAU),y+12,cz+18*Math.sin(k/8*TAU)],qEuler(0,-k/8*TAU,0),[8,1,2.5],GREEN);kput('archOpen',[cx,y+2.6,cz+23.8],qFacing([0,0,1]),[.6,.6,1],null);stripRing(cx,y+9.5,cz,20,d,24);
   for(let k=0;k<6;k++)kput(BOXC(d),[cx+k*5,hill(cx+k*5,cz+40)+.4,cz+40],null,[4,.4,6],null);}
  // forest — big canopies, none on platforms/lawn
- for(let i=0;i<300;i++){const x=rr(-380,380),z=rr(-350,350);let on=z>240&&x>-200&&x<70;for(const w of wings){const minx=Math.min(w.p0[0],w.p1[0])-12,maxx=Math.max(w.p0[0],w.p1[0])+12,minz=Math.min(w.p0[1],w.p1[1])-12-(w.up[1]<0?DEP+w.nf*SB:0),maxz=Math.max(w.p0[1],w.p1[1])+12;const wx=w.up[0];const mx0=minx-(wx>0?0:DEP+w.nf*SB),mx1=maxx+(wx>0?DEP+w.nf*SB:0);if(x>mx0&&x<mx1&&z>minz&&z<maxz)on=true;}
+ for(let i=0;i<300;i++){const x=rr(-290,290),z=rr(-350,350);let on=z>240&&x>-200&&x<70;for(const w of wings){const minx=Math.min(w.p0[0],w.p1[0])-12,maxx=Math.max(w.p0[0],w.p1[0])+12,minz=Math.min(w.p0[1],w.p1[1])-12-(w.up[1]<0?DEP+w.nf*SB:0),maxz=Math.max(w.p0[1],w.p1[1])+12;const wx=w.up[0];const mx0=minx-(wx>0?0:DEP+w.nf*SB),mx1=maxx+(wx>0?DEP+w.nf*SB:0);if(x>mx0&&x<mx1&&z>minz&&z<maxz)on=true;}
   if(on||(Math.abs(x+40)<36&&Math.abs(z+110)<36))continue;const y=hill(x,z);const h=rr(16,34);kput('trunk',[x,y,z],null,[3.5,h,3.5],null);for(let k=0;k<4;k++){const s=(4-k)*2.6*(h/24);kput('moss',[x+rr(-2,2),y+h*.5+k*h*.14,z+rr(-2,2)],qEuler(0,rng()*TAU,0),[s,s*.65,s],new THREE.Color().setHSL(rr(.25,.35),rr(.35,.5),rr(.1,.2)));}}
  figures(-80,300,10,30);figures(-70,190,6,20);KOFF=[0,0,0];return G;}
 
@@ -6865,13 +7133,16 @@ function factorySilo(G,d,skin,M){const ax=110,az=-60;REGISTER({name:'Factory —
 // ================================================================= GOVERNMENT v2 — "the Assembly" (all round)
 function buildGovernment(scene,gx,gz,d){reseed(9900+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const skin=SHELL(d);
  REGISTER({name:'Government — the Assembly ('+STATE(d)+')',x:0,z:0,r:150,h:120});
- const tiers=[[92,84,14],[66,60,14],[42,38,14]];let y=0;
+ const tiers=[[92,84,14],[66,60,14],[42,38,14]];let y=0;apron(G,0,0,91,104,d,1.4);
  tiers.forEach((t,i)=>{const [a,b,h]=t;const hole=holeFn(d*(i===2?1:.5),600+i,null,1.3);
   mesh(lathe({rFn:yy=>a-(a-b)*yy/h,H:h,flutes:24-i*6,amp:.05,sharp:2,nu:120,nv:6,hole:hole?(u,yy)=>hole(u,yy+i*30)&&(u>.15&&u<.42):null}),skin,G,0,y,0);
-  if(d>0)mesh(lathe({rFn:yy=>(a-(a-b)*yy/h)*.9,H:h,nu:48,nv:1}),MAT.guts,G,0,y,0);
+  // behind the holes (they are confined to u .15-.42): two floors of rooms per
+  // tier, only in that arc, in front of a liner pushed back to .8
+  if(d>0){mesh(lathe({rFn:yy=>(a-(a-b)*yy/h)*.8,H:h,nu:48,nv:1}),MAT.guts,G,0,y,0);
+   civRooms({cy:y,rFn:yy=>a-(a-b)*yy/h,y0:.3,y1:h,step:7,d,seed:620+i,rIn:.8,gap:th=>{const u=th/TAU;return u<.13||u>.44;}});}
   kput('slab',[0,y+h,0],null,[b*.99,.6,b*.99],new THREE.Color(d>0?0x5a4a40:0xd8d4cc));
   const n=Math.round(a*.42);for(let k=0;k<n;k++)for(let row=0;row<2;row++){const th=(k+.5)/n*TAU;const yy=y+3.5+row*6;const r=a-(a-b)*(yy-y)/h+.2;const u=th/TAU;if(hole&&hole(u,yy+i*30))continue;
-   if(i===0&&row===0&&Math.abs(th-Math.PI/2)<.5)continue;kput(d>0?'winD':'winI',[r*Math.cos(th),yy,r*Math.sin(th)],qFacing([Math.cos(th),0,Math.sin(th)]),[.9,.9,1],null);}
+   if(i===0&&row===0&&Math.abs(th-Math.PI/2)<.5)continue;civWin(d>0?'winD':'winI',[r*Math.cos(th),yy,r*Math.sin(th)],qFacing([Math.cos(th),0,Math.sin(th)]),[.9,.9,1],null);}
   stripRing(0,y+h-1.2,0,b*1.01,d,48);if(d>0)mossOnRing(0,y+h+.2,0,b*.9,Math.round(b*.8),2.2);y+=h;});
  // portico: a fan of leaning struts on the +z face, rising to a ring beam at tier 2, roofed by a curved shell that grows out of the tier wall
  const NP=11;const struts=[];for(let k=0;k<NP;k++){const a=Math.PI/2+(k-(NP-1)/2)*.11;const fallen=d>0&&(k===2||k===7);
@@ -22864,7 +23135,7 @@ const VIEWS={
  'Houses DEF intact':[-ROWS.house2.s+65,22,ROWS.house2.z+120,-ROWS.house2.s+65,6,ROWS.house2.z],'Houses DEF ruined':[ROWS.house2.s+65,22,ROWS.house2.z+120,ROWS.house2.s+65,6,ROWS.house2.z],
  'Skyscraper D':ROWV('skyD',900,300,180),'Skyscraper E':ROWV('skyE',900,300,190),'Skyscraper F':ROWV('skyF',900,300,160),
  'Toppled D':[ROWS.skyD.t-200,120,ROWS.skyD.z+420,ROWS.skyD.t+120,40,ROWS.skyD.z],'Toppled E':[ROWS.skyE.t-200,120,ROWS.skyE.z+420,ROWS.skyE.t+120,40,ROWS.skyE.z],'Toppled F':[ROWS.skyF.t-200,120,ROWS.skyF.z+420,ROWS.skyF.t+120,40,ROWS.skyF.z],
- 'The Gate':[0,300,ROWS.arc.z+1500,0,150,ROWS.arc.z],'The Gate ruin':[ROWS.arc.s-500,20,ROWS.arc.z+560,ROWS.arc.s,160,ROWS.arc.z],
+ 'The Gate':[0,380,ROWS.arc.z+700,0,170,ROWS.arc.z],'The Gate ruin':[ROWS.arc.s-500,20,ROWS.arc.z+560,ROWS.arc.s,160,ROWS.arc.z],
  'Robotics factory':ROWV('robo',600,220,30),'Robotics yard':[-ROWS.robo.s-60,6,ROWS.robo.z+230,-ROWS.robo.s+60,25,ROWS.robo.z-30],
  'Campus':[0,420,ROWS.campus.z+900,0,40,ROWS.campus.z],'Campus intact':[-ROWS.campus.s+40,90,ROWS.campus.z+560,-ROWS.campus.s-40,40,ROWS.campus.z+60],'Campus ruined':[ROWS.campus.s+40,90,ROWS.campus.z+560,ROWS.campus.s-40,40,ROWS.campus.z+60],'Campus lawn':[-ROWS.campus.s-60,14,ROWS.campus.z+400,-ROWS.campus.s-60,30,ROWS.campus.z+200],'Campus courtyard':[-ROWS.campus.s-70,60,ROWS.campus.z+250,-ROWS.campus.s-70,15,ROWS.campus.z+170],
  'Skyscraper G':ROWV('skyG',800,200,110),'Skyscraper H':ROWV('skyH',900,300,170),'Toppled G':[ROWS.skyG.t-250,120,ROWS.skyG.z+450,ROWS.skyG.t+60,40,ROWS.skyG.z],'Toppled H':[ROWS.skyH.t-200,120,ROWS.skyH.z+420,ROWS.skyH.t+120,40,ROWS.skyH.z],
