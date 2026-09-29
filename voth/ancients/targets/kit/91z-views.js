@@ -1,4 +1,12 @@
-const ROWV=(k,dist,h,ty,dx)=>{const R=ROWS[k];return[dx||0,h,R.z+dist,dx||0,ty,R.z];};
+// A row shot stands on the row's centre line, `dist` down +z. Since decay 3 was
+// folded in, that centre line is where every rehabilitated building stands, so a
+// camera deeper than the row spacing stood inside the NEXT row's building: the
+// Skyscraper A shot was a wall of rusted drums 100 m off the lens. The distance
+// is capped to stop 90 m short of the next row, which leaves it behind the camera.
+const ROWV=(k,dist,h,ty,dx)=>{const R=ROWS[k];
+ const nz=Math.min(...Object.values(ROWS).map(o=>o.z).filter(z=>z>R.z),Infinity);
+ const d=Math.min(dist,nz-R.z-90);
+ return[dx||0,h,R.z+d,dx||0,ty,R.z];};
 const VIEWS={
  'Overview':[0,1400,ROWS.lab.z+2600,0,150,5000],
  'Skyscraper A':ROWV('skyA',900,300,210),'Skyscraper B':ROWV('skyB',800,260,160),'Skyscraper C':ROWV('skyC',900,300,200),
@@ -9,6 +17,25 @@ const VIEWS={
  'The Project at night':[ROWS.skyA.j,300,ROWS.skyA.z+780,ROWS.skyA.j,210,ROWS.skyA.z,1],
  'The Project close':[ROWS.skyA.j+150,120,ROWS.skyA.z+260,ROWS.skyA.j,150,ROWS.skyA.z,1],
  'The Project foot':[ROWS.skyA.j+130,14,ROWS.skyA.z+150,ROWS.skyA.j,70,ROWS.skyA.z,1],
+ // PROJECTS D AND H, the Monolith and the Warden reoccupied whole, lit by fire.
+ // Same stations as The Project, off each row's own j.
+ 'Project D':[ROWS.skyD.j,300,ROWS.skyD.z+780,ROWS.skyD.j,180,ROWS.skyD.z],
+ 'Project D at night':[ROWS.skyD.j,300,ROWS.skyD.z+780,ROWS.skyD.j,180,ROWS.skyD.z,1],
+ 'Project D close':[ROWS.skyD.j+150,120,ROWS.skyD.z+260,ROWS.skyD.j,150,ROWS.skyD.z,1],
+ 'Project H':[ROWS.skyH.j,300,ROWS.skyH.z+780,ROWS.skyH.j,170,ROWS.skyH.z],
+ 'Project H at night':[ROWS.skyH.j,300,ROWS.skyH.z+780,ROWS.skyH.j,170,ROWS.skyH.z,1],
+ 'Project H close':[ROWS.skyH.j+150,120,ROWS.skyH.z+260,ROWS.skyH.j,150,ROWS.skyH.z,1],
+ // REHABILITATED (decay 3), folded in from the retired `repaired` target. It
+ // stands at x=0, the middle of each row, so the row shots above already frame
+ // it; these are the close stations that used to be that target's own.
+ 'Rehabilitated A':[0-150,140,ROWS.skyA.z+420,0,160,ROWS.skyA.z],
+ 'Rehabilitated D':[0-150,140,ROWS.skyD.z+420,0,160,ROWS.skyD.z],
+ 'Rehabilitated factory':[0+330,8,ROWS.fac.z+120,0+110,60,ROWS.fac.z-60],
+ 'Rehabilitated government':[0-140,5,ROWS.gov.z+240,0,40,ROWS.gov.z],
+ 'Rehabilitated apartments':[0+170,150,ROWS.apt.z+480,0+170,25,ROWS.apt.z],
+ 'Rehabilitated lab':[0+110,30,ROWS.lab.z+170,0,45,ROWS.lab.z],
+ 'Rehabilitated data center':[0+260,150,ROWS.dc.z+420,0,30,ROWS.dc.z],
+ 'Rehabilitated hotel':[0+120,60,ROWS.hotel.z+260,0,30,ROWS.hotel.z],
  'Toppled A':[ROWS.skyA.t-200,120,ROWS.skyA.z+420,ROWS.skyA.t+120,40,ROWS.skyA.z],'Toppled B':[ROWS.skyB.t-200,110,ROWS.skyB.z+380,ROWS.skyB.t+100,30,ROWS.skyB.z],'Toppled C':[ROWS.skyC.t-200,120,ROWS.skyC.z+420,ROWS.skyC.t+120,40,ROWS.skyC.z],
  'Megastructure':ROWV('mega',1300,330,140),'Megastructure foot':[ROWS.mega.s-320,4,ROWS.mega.z+330,ROWS.mega.s+40,120,ROWS.mega.z],
  'Factory':ROWV('fac',760,280,40),'Factory silo':[ROWS.fac.s+330,8,ROWS.fac.z+120,ROWS.fac.s+110,60,ROWS.fac.z-60],
@@ -51,6 +78,8 @@ const VIEWS={
  'The Perch':[-ROWS.perch.s,300,ROWS.perch.z+900,-ROWS.perch.s,200,ROWS.perch.z],
  'Perch podium':[-ROWS.perch.s+250,120,ROWS.perch.z+320,-ROWS.perch.s,95,ROWS.perch.z],
  'Wheel core':[-ROWS.cult.s+130,90,ROWS.cult.z+230,-ROWS.cult.s,50,ROWS.cult.z],
+ 'Skyscraper I':ROWV('skyI',900,300,210),'Skyscraper J':ROWV('skyJ',900,300,200),'Skyscraper K':ROWV('skyK',900,300,200),
+ 'Toppled I':[ROWS.skyI.t-200,120,ROWS.skyI.z+420,ROWS.skyI.t+120,40,ROWS.skyI.z],'Toppled J':[ROWS.skyJ.t-200,120,ROWS.skyJ.z+420,ROWS.skyJ.t+120,40,ROWS.skyJ.z],'Toppled K':[ROWS.skyK.t-200,120,ROWS.skyK.z+420,ROWS.skyK.t+120,40,ROWS.skyK.z],
  // Theodiga's views moved to targets/theodiga/91z-views.js with the site.
  'Office C':[-ROWS.off.s+330,20,ROWS.off.z+120,-ROWS.off.s+330,10,ROWS.off.z-20],
 };

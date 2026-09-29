@@ -37,7 +37,7 @@ budget counter cannot see where a thing is. **Read the shots. Every round.**
 * **`KNOWN_ISSUES.md`** — what is broken and what is merely unfinished.
 * **`NOTES.md`** — what changed, round by round.
 
-Published: [kit](https://claude.ai/artifact/1V5VxyNVxS2ZsEy9M7QJhE) · [Theodiga](https://claude.ai/artifact/UT9zLRC3sigZRPbMCuhuQf)
+Published: [kit](https://claude.ai/artifact/FSKTzZ3duwQ2zrbdEEqYYf) (current; [older kit build](https://claude.ai/artifact/1V5VxyNVxS2ZsEy9M7QJhE)) · [viewer of the new arcologies and towers](https://claude.ai/artifact/DUmUNgR1mKa66P4zD42X47) · [Theodiga](https://claude.ai/artifact/UT9zLRC3sigZRPbMCuhuQf)
 
 `src/` fragments are concatenated in filename order into a single `<script>`;
 every top-level name is shared by every fragment, and fragment order is

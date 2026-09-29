@@ -24,7 +24,7 @@ function buildSkyG(scene,gx,gz,d){reseed(9160+d);KOFF=[gx,0,gz];const G=new THRE
   for(let y=6;y<L-4;y+=8)for(let k=0;k<18;k++){const th=(k+.5)/18*TAU;if(hole&&hole(th/TAU,y))continue;if(rng()<.55)continue;const lit=dx>0?rng()<.04:true;kput('cell',[R*1.01*Math.cos(th),y,R*1.01*Math.sin(th)],qFacing([Math.cos(th),0,Math.sin(th)]),[3,2.2,.5],lit?WARM.clone().multiplyScalar(rr(.4,.9)):DEAD);}
   for(let y=0;y<L;y+=4)kput(dx>0?'ringR':'ringW',[0,y,0],qEuler(Math.PI/2,0,0),[R+.2,R+.2,1.5],null);
   if(cut==null){mesh(lathe({rFn:()=>R+1.5,H:8,nu:64,nv:1}),CONC(dx),P,0,L,0);kput(SLABC(dx),[0,L+8,0],null,[R+1.6,.8,R+1.6],null);kput(BOXC(dx),[0,L+11,0],null,[10,6,10],null);}};
- const CX=-70;const D=new THREE.Group();D.position.set(CX,Y0,0);G.add(D);useGroupXF(D);if(d<2)build(D,dd,Y0,null,false);else build(D,1,Y0,Y0+60,false);endGroupXF();
+ const CX=-70;const D=new THREE.Group();D.position.set(CX,Y0,0);G.add(D);useGroupXF(D);if(d!==2)build(D,dd,Y0,null,false);else build(D,1,Y0,Y0+60,false);endGroupXF();
  // The drum falls WEST, away from its own block stack. Toppling it east dropped
  // 200 m of tower straight through the stack it is meant to stand beside.
  if(d===2)toppledUpper(G,CX,0,Y0+60,R,(U)=>build(U,1,Y0+60,null,true),d,-1);
