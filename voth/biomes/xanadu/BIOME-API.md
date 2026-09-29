@@ -7,7 +7,21 @@ and calls `build()`. Nothing in the core or a biome fragment names a world's kit
 (`kdef/kput`, `BUCKET/MBK`, `PLATS`, the host's river object…): `build.py` greps for those
 and fails the build if one appears.
 
-The core here is the Rift kit's core, **unchanged** (`BIO.version` still reads `rift-1`).
+The core here is the Rift kit's core plus one additive thing, the RUNTIME LOD (`BIO.version`
+reads `xanadu-1`; a Rift or eastern-abyss fragment runs unchanged on it):
+
+- A pass may set `BIO.range` (metres) while it builds, and `BIO.owner=[x,z]` (a tree's foot)
+  round each plant. Everything put or written into a bucket is then keyed by the chunk of
+  its owner (`BIO.LOD.chunk`, 1200 m) and by that range (and `BIO.minRange`, for stand-ins
+  that must only show BEYOND a distance). `BIO.bake()` splits each item and bucket into one
+  mesh per key. With `BIO.range` left null nothing changes: one mesh, always drawn.
+- The host calls `BIO.lodTick(camera)` every frame before rendering: a chunk's mesh is
+  drawn only while the camera is within its range of the chunk (past its minRange) and the
+  chunk's bounding sphere is in the view. `BIO.LOD.scale` stretches every range at once;
+  `BIO.lodShown` reports what was drawn.
+- Anything that writes into a bucket by hand (an impostor builder pushing to `K.pos`) must
+  push one key per triangle to `K.k` (`BIO._lodKey(x,z)`), or its triangles land in the
+  always-drawn group.
 `BIO.iridBarkMat` is defined by the biome's species fragment only if no other biome
 defined it first, so the Rift and Xanadu can load into the same world.
 
@@ -56,9 +70,15 @@ XANADU.canopyH(x,z)             // approximate canopy top
 XANADU.zones(x,z)               // the zone weights a world can reuse for its own placement
 XANADU.SPECIES / XANADU.PAL     // the 31 species (tagged), the palettes
 XANADU.RINGS / XANADU.ARCHES    // where the fairy rings and the hornbeam alleys stood ({x,z,r|a,n,lv})
+XANADU.LOD                      // the runtime ranges: {tree:1500, floor:750, farFloor:3000, dress:1500, logs:1500}
 ```
 
-Then `BIO.bake()` once.
+How the biome uses the runtime LOD: every hero tree (full detail near the spine at build
+time) is drawn in full within `XANADU.LOD.tree` of its chunk and as a cheap stand-in impostor
+past it; trees built as impostors from the start (far from the spine) are always drawn; the
+floor near the spine shows within `floor`, the far band's coarse floor within `farFloor`.
+
+Then `BIO.bake()` once, and `BIO.lodTick(camera)` every frame.
 
 ## The lake colour
 
@@ -91,4 +111,4 @@ part of a building: `dress()` places plants ON geometry the host hands it.
 ```
 
 To port: copy 10–70, write `BIO.init({...fields})`, set `XANADU_LAKE`, call `XANADU.build`,
-then `BIO.bake()`. Read KNOWN_ISSUES.md first.
+then `BIO.bake()`, and call `BIO.lodTick(camera)` in the frame loop. Read KNOWN_ISSUES.md first.

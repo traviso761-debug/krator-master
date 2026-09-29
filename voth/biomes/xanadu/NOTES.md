@@ -8,7 +8,7 @@ enclosed mountain lake in the East Rift Highlands, longer east-west than north-s
 draining over a cataract off the map to the south-east, and the vale on its south shore
 where the sacred river comes down from a chasm in the mountains. Oceanic and
 Mediterranean at once. One ideal-type artifact, "Krator biome — Xanadu", on the same
-core as the Rift (unchanged) and the same host conventions (a test structure to dress,
+core as the Rift (plus one additive thing, a runtime LOD) and the same host conventions (a test structure to dress,
 the fields as the only way the biome learns the map).
 
 The vibe is more poetic, and more psychedelic, than the earlier biomes. It is a
@@ -106,5 +106,33 @@ second colour as the light moves). The lake's hue (jade here) only tinges the qu
 things: mosses, reeds, the jade second colour of some foliage; its complement is the
 coral the lotus fringes lean to.
 
+## The budget and the runtime LOD
+The Rift's LOD is decided at build time round a spine of origins: full detail near it,
+impostors far from it. On a map this compact with a spine this wide (the promontory, the
+river from mouth to fountain, the vale, both flanks) nearly every tree came out a hero:
+42M triangles, every one drawn from every camera. The core now also has a runtime LOD
+(BIOME-API.md): meshes are baked per 1.2 km chunk and per range, and `BIO.lodTick(camera)`
+draws a chunk only while the camera is near enough and it is in the view. Every hero
+tree also gets a cheap stand-in impostor that shows only past its range. The scene holds
+~22.5M triangles and draws 3–14.5M at the preset views (100–460 draw calls).
+
 ## Lessons this build cost
-(see the end of this file, filled in as the build went)
+- A map read as a class grid is enough terrain: distance to the lake for the slope, a
+  relief per class, a blur, fbm on top. The thin lines on a painted map (escarpments) are
+  not regions: filter them by how many of their own class surround them.
+- A river cut into a height field needs a monotone bed or it pools and climbs; build the
+  bed from the terrain along the line, then clamp it never to rise.
+- An fbm patch mask (mean .5, sd ~.11) cannot make groves: its range is too narrow. A
+  thresholded fbm field (smooth(.45,.58,...)) shared by all the vale's species can.
+- Anything that writes into a merged bucket by hand must carry its LOD key per triangle,
+  or it lands in the always-drawn group (the stand-ins showed up close until it did).
+- An untextured rod must take the designer's bark colour, never the texture tint (a tint
+  divides by the texture's mean and turns the rod near white).
+- Preset views written before the terrain exists end up inside hillsides and trunks; the
+  close views are now found in the built scene (a ring, an alley, a species' nearest tree).
+- verify.py needs Python Playwright; where only Node Playwright is installed, drive the
+  same Chromium from Node (the ideal type loads in ~70 s under SwiftShader at q=1).
+
+## Next
+Fauna; the city on this map as its own kit, clearing its footprints through the mask;
+the cataract as geometry; a second pass on the uplands (denser garrigue, terraces).

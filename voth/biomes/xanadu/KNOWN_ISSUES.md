@@ -7,11 +7,17 @@ Read before changing anything here. `build.py` prints the open count.
 - [ ] PUBLISH AFTER EVERY PASS. A claude.ai artifact is a separate copy of
       `dist/xanadu.html`; strip everything before `<title>` and the trailing
       `</body></html>` before publishing (00-head.html carries the page wrapper).
-- [ ] BUDGET. The ceiling is the Rift's, 25M triangles for the scene, 19M per pass.
-      The first build measured 42M: the LOD spine (ten origins over a 6.4 km map)
-      put almost every tree inside a hero radius. Hero radii were cut by a quarter and
-      the uplands thinned. `XANADU.build({quality:.6})` (or `?q=.6` on the ideal type)
-      is the knob.
+- [ ] BUDGET. The first build measured 42M triangles, all of them drawn from every camera:
+      the LOD spine (ten origins over a 6.4 km map) put almost every tree inside a hero
+      radius. Hero radii were cut by a quarter, the uplands thinned, and the core grew a
+      RUNTIME LOD (BIOME-API.md): the scene now holds ~22.5M triangles (the hero trees'
+      stand-ins included) and draws 3–14.5M at the preset views, in 100–460 draw calls.
+      The probe's ceilings: 30M held, 14M drawn (tracked, not asserted by verify.py),
+      600 calls. `XANADU.build({quality:.6})` (or `?q=.6`) and `BIO.LOD.scale` are the knobs.
+- [ ] Runtime LOD costs draw calls: one mesh per item per chunk. The vale's densest views
+      draw ~460 calls; on weak hardware lower `BIO.LOD.scale` or raise `BIO.LOD.chunk`.
+      Chunks switch whole: at the edge of a range a chunk of hero trees becomes stand-ins at
+      once (a visible pop at 1.5 km, softened by fog).
 - [ ] THE MAP IS READ AT 44 m. Anything on the scale model smaller than a cell (a
       single escarpment line, a narrow spit) is lost or softened; the escarpments
       between the green slopes and the uplands are slopes here, not cliffs.
@@ -39,4 +45,5 @@ Read before changing anything here. `build.py` prints the open count.
 - [x] The sacred river traced off the map: gorge, cascades, monotone bed, its own water.
 - [x] Thirty-one species (twenty-three unique, eight from the Rift ridge, altered), tagged.
 - [x] Fairy rings and hornbeam arches as placements, with the rings' lawns on the floor.
+- [x] Runtime LOD (chunked bake, BIO.lodTick) with stand-in impostors for the hero trees.
 - [x] Groves round glades on the vale (a grove field in the zones, flowers thick in the glades).
