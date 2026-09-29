@@ -16,3 +16,8 @@ settlements/yuni/publish/
 
 # Claude Code runtime state.
 .claude/scheduled_tasks.lock
+
+# Locus's build also writes these side outputs (the Yuni sheets it inherits).
+settlements/locus/publish/
+settlements/locus/locus-plants.html
+settlements/locus/yuni-*.html
