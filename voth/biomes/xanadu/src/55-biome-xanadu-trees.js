@@ -480,7 +480,7 @@ B[31]=function(T,st,lv){const S=SP[31],H=T.H,rb=T.rb,la=rr(0,TAU),lk=rr(0,.03),t
  const hc=vary(pick(S.leaf),.02,.05,.04),rows=lv===2?Math.round(H/1.1):Math.round(H/2.4),per=lv===2?4:3;
  for(let r=0;r<rows;r++){const u=lerp(.1,.99,r/(rows-1)),R=T.crownR*Math.pow(Math.sin(Math.PI*Math.min(1,u*1.25+.08)),.55)*(1-u*.55)+.25,y=T.y0+H*u,cx=T.x+Math.cos(la)*lk*H*u,cz=T.z+Math.sin(la)*lk*H*u;
   for(let k=0;k<per;k++){const a=k/per*TAU+u*H*tw,sz=Math.max(1,R*rr(1.1,1.4));
-   clumpAt('needle',cx+Math.cos(a)*R*.45,y,cz+Math.sin(a)*R*.45,sz,.9,u>.8&&rng()<.3?bright(C(0x8a6a3a),1.1):hc,cx,y,cz,R+.5,1.2,null);st.clumps++;}}
+   clumpAt('needle',cx+Math.cos(a)*R*.45,y,cz+Math.sin(a)*R*.45,sz,.9,u>.8&&rng()<.3?bright(C(0xa07a40),1.25):bright(hc,1.3),cx,y,cz,R+.5,1.2,null);st.clumps++;}}
  T.spread=T.crownR;if(lv===2)reg(S,T);};
 // 32 the STRAWBERRY TREE: a twisting bole whose bark peels to red agate, a dark rounded crown, clusters of red and orange berries and white bells
 B[32]=function(T,st,lv){const S=SP[32],H=T.H,rb=T.rb,la=rr(0,TAU);
