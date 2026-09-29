@@ -90,4 +90,4 @@ function buildXaPleasureDome(G,o){reseed(31011+(o.v|0));const V=xV(o),GW=88,GD=8
  vnFolk(0,38,5,4);vnFolk(0,HZ+HW/2+5,3,2);}
 
 XA.def({key:'xa_palace',name:"Sultan's Palace",family:'The Sultan',tags:{type:['civic','military','single-family dwelling'],wealth:'civic',lit:true,landmark:true},w:60,d:56,h:40,fw:52,fd:42,build:buildXaPalace});
-XA.def({key:'xa_pleasure_dome',name:'Pleasure Dome',family:'The Sultan',tags:{type:['civic'],wealth:'civic',lit:true,landmark:true},w:94,d:94,h:32,fw:88,fd:88,build:buildXaPleasureDome});
+XA.def({key:'xa_pleasure_dome',name:'Garden Pleasure Dome',family:'The Sultan',tags:{type:['civic'],wealth:'civic',lit:true,landmark:true},w:94,d:94,h:32,fw:88,fd:88,build:buildXaPleasureDome});

@@ -48,6 +48,7 @@ DIST = os.path.join(HERE, 'dist')
 # A target is a showcase built from the shared src/ fragments plus its own site
 # table and view list, merged into the one sorted filename order.
 TARGET_OUT = {
+    'erewhon': 'erewhon.html',          # the city of Erewhon, Pearl of Xanadu
     'xanadu': 'xanadu.html',            # the whole kit in rows by family
     'variants': 'xanadu-variants.html', # every def at variants 1 and 2, side by side
 }
@@ -60,8 +61,12 @@ DETERMINISTIC = {
     '69b-vern-mat.js', '69c-vern-helpers.js',          # vendored from ../iziz/src (Iziz Vernacular helpers)
     '70-xa-tex.js', '71-xa-mat.js', '72-xa-helpers.js',   # the Xanadu vocabulary
     '88-xa-dress.js',                                     # the Palopó paint twins
+    '86-bio-45-init.js', '86b-xa-plants.js',              # the biome host binding and the plant shim
     '90-scene.js', '91-probe.js', '92-camera.js', '93-labels.js', '99-tail.html',
     '89z-rows.js', '91z-views.js',        # per-target site table and view list
+    '81-sky.js',                          # KratorSky, vendored from ../iziz/src
+    '83-er-data.js', '84-er-geo.js', '85-er-paint.js', '86-bio-46-er-init.js', '87-er-layout.js', '88-er-place.js',
+    '90a-er-world.js', '90b-er-build.js', '93-er-ui.js',   # the Erewhon city target
 }
 
 # Seed ranges known to collide, kept here so the build stays green while the
@@ -214,7 +219,7 @@ def build_one(target, do_checks):
 VENDORED = ['10-core.js', '12-stats.js', '20-textures.js', '22-materials.js', '30-kit.js',
             '32-surfaces.js', '34-kitdefs.js', '36-decor.js', '38-helpers2.js', '50-registry.js',
             '54-mat-concrete.js', '68-mat-v5.js', '69-mat-salvage.js']          # ../ancients/src (via ../highlands)
-IZIZ_VENDORED = ['69b-vern-mat.js', '69c-vern-helpers.js', '91-probe.js', '92-camera.js', '93-labels.js']   # ../iziz/src (via ../highlands)
+IZIZ_VENDORED = ['69b-vern-mat.js', '69c-vern-helpers.js', '91-probe.js', '92-camera.js', '93-labels.js', '81-sky.js']   # ../iziz/src (via ../highlands)
 
 
 def vendor_manifest():
