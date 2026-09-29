@@ -16,14 +16,14 @@ function occFree(o,pad){const seen={};for(const k of occCells(o)){const L=OCC.ha
 function occAdd(o){o.id=OCC.list.length;OCC.list.push(o);for(const k of occCells(o))(OCC.hash[k]||(OCC.hash[k]=[])).push(o);return o;}
 function obbCorners(o,grow){const g=grow||0;const c=Math.cos(o.ry),s=Math.sin(o.ry);return[[-1,-1],[1,-1],[1,1],[-1,1]].map(k=>[o.x+k[0]*(o.hx+g)*c+k[1]*(o.hz+g)*s,o.z-k[0]*(o.hx+g)*s+k[1]*(o.hz+g)*c]);}
 // ground test: buildable at the corners, edge midpoints and centre (a 3x3 inside too for big plots); not in a precinct; not water
-function groundOK(o,opt){opt=opt||{};const pts=obbCorners(o,opt.grow||0);pts.push([o.x,o.z]);for(let i=0;i<4;i++)pts.push([(pts[i][0]+pts[(i+1)%4][0])/2,(pts[i][1]+pts[(i+1)%4][1])/2]);
- if(o.hx>14||o.hz>14){for(let i=-1;i<=1;i++)for(let j=-1;j<=1;j++){const p=loc(o.x,o.z,i*o.hx*.6,j*o.hz*.6,o.ry);pts.push(p);}}
+function groundOK(o,opt){opt=opt||{};const g=opt.grow||0,hx=o.hx+g,hz=o.hz+g;const pts=[];const nx=Math.max(1,Math.ceil(hx/4)),nz=Math.max(1,Math.ceil(hz/4));   /* every plot sampled on a ~4 m grid, corners included: a lane's end used to slip between the corners and the edge midpoints (round 10) */
+ for(let i=-nx;i<=nx;i++)for(let j=-nz;j<=nz;j++)pts.push(loc(o.x,o.z,i/nx*hx,j/nz*hz,o.ry));
  const W=CITY.WORLD/2-30;for(const p of pts){if(Math.abs(p[0])>W||Math.abs(p[1])>W)return false;if(!opt.ignoreMask&&!canBuild(p[0],p[1]))return false;if(!opt.ignoreOak&&inOakCorridor(p[0],p[1]))return false;if(!opt.ignorePrecinct&&inPrecinct(p[0],p[1],opt.ppad||0))return false;if(isWater(p[0],p[1]))return false;}
  return true;}
 function groundY(o){let y=1e9;for(const p of obbCorners(o,-.5))y=Math.min(y,terrainH(p[0],p[1]));y=Math.min(y,terrainH(o.x,o.z));return y-.06;}
 // STREET ALIGNMENT: the outward normal of the nearest road at the plot, so the door faces the street
 // a plot under an oak vault is no plot: the corridor either side of every oak road (the oaks stand 12.5 m off the line)
-function inOakCorridor(x,z,pad){const n=nearestRoadPt(x,z,r=>r.oak);return !!(n&&n.d<n.road.w/2+12.5+2+(pad||0));}
+function inOakCorridor(x,z,pad){const n=nearestRoadPt(x,z,r=>r.oak);return !!(n&&n.d<n.road.w/2+10+1.5+(pad||0));}
 // the door faces a side street when one is near, the avenue only when nothing else is
 function faceRoadRy(x,z,filter){let n=nearestRoadPt(x,z,r=>!r.oak&&(!filter||filter(r)));if(!n||n.d>45)n=nearestRoadPt(x,z,filter);if(!n)return 0;return Math.atan2(n.x-x,n.z-z);}
 function findSpot(hx,hz,tx,tz,opt){opt=opt||{};const R=opt.R||90,step=opt.step||8;const tries=[[tx,tz]];
@@ -45,7 +45,7 @@ function placeNear(key,tx,tz,opt){opt=opt||{};const D=VERN.defs[key];if(!D)retur
 function frontage(R,pitch,setback,pick,max,opt){opt=opt||{};let n=0;const P=R.pts;let carry=pitch*rng();
  for(let i=0;i<P.length-1&&n<max;i++){const a=P[i],b=P[i+1];const L=Math.hypot(b[0]-a[0],b[1]-a[1]);if(L<1)continue;const ux=(b[0]-a[0])/L,uz=(b[1]-a[1])/L;
   for(let d=carry;d<L&&n<max;d+=pitch){for(const side of[-1,1]){if(n>=max)break;const key=pick(d/L,side);if(!key)continue;const D=VERN.defs[key];if(!D)continue;
-   const hx=D.w/2,hz=D.d/2;const off=R.w/2+(R.oak?Math.max(setback,15):setback)+hz;/* an avenue's houses stand back past the oaks */const cx=a[0]+ux*d+(-uz)*side*off,cz=a[1]+uz*d+ux*side*off;
+   const hx=D.w/2,hz=D.d/2;const off=R.w/2+(R.oak?Math.max(setback,12):setback)+hz;/* an avenue's houses stand back past the oaks */const cx=a[0]+ux*d+(-uz)*side*off,cz=a[1]+uz*d+ux*side*off;
    const ry=Math.atan2((a[0]+ux*d)-cx,(a[1]+uz*d)-cz);   // face the road: the door toward the road's centreline
    const o={x:cx,z:cz,hx:hx+1,hz:hz+1,ry,pad:1.5};if(!groundOK(o,{ppad:2})||!occFree(o,1.5))continue;
    o.hx=hx;o.hz=hz;placeDef(key,o,Object.assign({settle:opt.settle},opt.each?opt.each(key):{}));n++;}}

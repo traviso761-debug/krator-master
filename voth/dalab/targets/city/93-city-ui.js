@@ -1,5 +1,5 @@
 // ================================================================= DALAB CITY — dev tools: the Paths overlay, the budgets, window._api.city
-BUDGET.showcase={tris:10000000,calls:900};   // the settlement's ceiling (Travis, round 8)
+BUDGET.showcase={tris:11000000,calls:900};   // the settlement's ceiling (Travis, round 9)
 BUDGET.cls.city=20000000;for(const k in TSTAT.by){BUDGET.type[k.split('/')[0]]='city';}
 const PATHS={on:false,tex:null};
 function pathsTexture(){if(PATHS.tex)return PATHS.tex;const c=document.createElement('canvas');c.width=c.height=CS;const g=c.getContext('2d');
