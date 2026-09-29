@@ -30,7 +30,7 @@ const VIEWS={
  const R=near(XANADU.RINGS);if(R){const a=.7,cx=R.x+Math.cos(a)*R.r*2.6,cz=R.z+Math.sin(a)*R.r*2.6;VIEWS['A fairy ring']=[cx,G(cx,cz)+7,cz,R.x,G(R.x,R.z)+3,R.z];}
  const A=near(XANADU.ARCHES);if(A){const ux=Math.cos(A.a),uz=Math.sin(A.a),L=(A.n/2+.6)*9.5,cx=A.x-ux*L,cz=A.z-uz*L;VIEWS['The hornbeam arches']=[cx,G(cx,cz)+2.2,cz,A.x+ux*L,G(A.x+ux*L,A.z+uz*L)+11,A.z+uz*L];}
  const tr=k=>near(XANADU.TREES,T=>T.sp===k&&T.lv===2&&BIO.clearOf(T.x,T.z,25));   // a tree clear of the host's structures
- [[2,'The lotus trumpets',34,7],[0,'Dawn redwoods',60,4],[9,'Wisteria',26,3],[3,'A cloud pine',22,5],[4,'Cushion trees',30,5],[6,'The agate tree',30,3],[20,"Traveller's palm",20,4],[10,'Persian ironwood',26,4],[18,'Haze blossom',22,3],[31,'Flame cypress',30,6],[32,'Strawberry tree',15,3]].forEach(v=>{const T=v[0]===0?near(XANADU.TREES,T=>T.sp===0&&T.lv===2&&T.y0<0):tr(v[0]);if(!T)return;
+ [[2,'The lotus trumpets',34,7],[0,'Dawn redwoods',60,4],[9,'Wisteria',26,3],[3,'A cloud pine',22,5],[4,'Cushion trees',30,5],[6,'The agate tree',30,3],[20,"Traveller's palm",20,4],[10,'Persian ironwood',26,4],[18,'Haze blossom',22,3],[31,'Flame cypress',30,6],[32,'Strawberry tree',15,3]].forEach(v=>{const T=v[0]===0?near(XANADU.TREES,T=>T.sp===0&&T.lv===2&&BIO.field('wet',T.x,T.z)>.84):tr(v[0]);if(!T)return;
   let best=null;for(let k=0;k<12;k++){const a=k/12*TAU,cx=T.x+Math.cos(a)*v[2],cz=T.z+Math.sin(a)*v[2];if(!BIO.clearOf(cx,cz,2)||XANADU.blocked(cx,cz,3))continue;const g=Math.max(G(cx,cz),0);if(!best||g<best[1])best=[cx,g,cz];}
   if(best)VIEWS[v[1]]=[best[0],best[1]+v[3],best[2],T.x,T.y0+T.H*.55,T.z];});
  {const x=-1000,z=-400,a=.9,cx=x+Math.cos(a)*95,cz=z+Math.sin(a)*95;VIEWS['The pleasure dome']=[cx,G(cx,cz)+26,cz,x,(DOME.y0||G(x,z))+9,z];}

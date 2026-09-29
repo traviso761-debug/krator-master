@@ -12,7 +12,7 @@ const SP=XANADU.SPECIES,PAL=XANADU.PAL,GOLD=2.399963;
 const T3=BIO.host.THREE,C=h=>new T3.Color(h);
 XANADU.TREES=[];XANADU.RINGS=[];XANADU.ARCHES=[];
 // the runtime LOD ranges (metres from the camera to a chunk): trees in full, the floor near the spine, the far floor, the dressing
-XANADU.LOD={tree:1500,floor:750,farFloor:3000,dress:1500,logs:1500};
+XANADU.LOD={tree:1200,floor:600,farFloor:3000,dress:1200,logs:1200};
 
 // ---------------------------------------------------------------- zones from the fields
 const Y=(x,z)=>BIO.terrainH(x,z);
@@ -599,8 +599,8 @@ XANADU.buildTrees=function(R,q){
  pass(25,26,(Z)=>Z.dry*.25+Z.crag*.12,{hero:400,mid:750,far:false,pad:2,lodK:.6,patch:.5});
  pass(26,32,(Z)=>Z.dry*.2+Z.crag*.2,{hero:320,mid:680,far:false,pad:1.5,lodK:.7,patch:.5});
  pass(27,16,(Z)=>Z.dry*.45+Z.crag*.35,{hero:320,mid:600,far:false,pad:1,lodK:.8,patch:.45});
- pass(31,30,(Z)=>Z.dry*.34+Z.vale*.03,{hero:520,mid:1000,far:true,pad:2.5,patch:.6,patchScale:.006});
- pass(32,24,(Z)=>Z.dry*.4+Z.forest*.03,{hero:470,mid:900,far:true,pad:2.5,patch:.5});
+ pass(31,36,(Z)=>Z.dry*.34+Z.vale*.03,{hero:520,mid:1000,far:true,pad:2.5,patch:.6,patchScale:.006});
+ pass(32,34,(Z)=>Z.dry*.4+Z.forest*.03,{hero:470,mid:900,far:true,pad:2.5,patch:.5});
  pass(30,30,(Z)=>Z.dry*.18,{hero:320,mid:600,far:false,pad:1.5,lodK:.7,patch:.5});
  // build
  // runtime LOD: a hero tree is drawn in full while the camera is within XANADU.LOD.tree metres of
