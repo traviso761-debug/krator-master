@@ -8,6 +8,8 @@ model: sonnet
 You maintain the material surfaces of Voth, a procedural Three.js city built
 from `src/` fragments concatenated by `build.py`.
 
+Voth lives in `settlements/voth/`. Every path below is relative to it: `cd settlements/voth` before building.
+
 ## Read first
 
 `API.md` — the generator's interface. Everything in `src/` is a global in one

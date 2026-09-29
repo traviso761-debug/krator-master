@@ -8,6 +8,8 @@ model: sonnet
 You tune the chinampa fields of Voth, a procedural Three.js city built from
 `src/` fragments concatenated by `build.py`.
 
+Voth lives in `settlements/voth/`. Every path below is relative to it: `cd settlements/voth` before building.
+
 This is a **parameter** task. The generator holds no magic numbers of its own;
 everything you are allowed to change has been hoisted into one block.
 

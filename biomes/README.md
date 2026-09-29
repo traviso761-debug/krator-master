@@ -19,5 +19,5 @@ system on the shared biome core (`BIOME-API.md` inside each kit): `src/` fragmen
 
 Build: `cd <kit> && python3 build.py`. Verify: `python3 verify.py dist/<kit>.html --assert --views "..."`.
 
-Worlds that use a biome (`iziz/`, `screamers/`, `ancients/`) carry their own vendored copies
+Worlds that use a biome (`settlements/iziz/`, `settlements/screamers/`, `kits/ancients/`) carry their own vendored copies
 of its fragments. Edit the kit here, then copy across; `iziz/build.py --vendor-check` reports drift.
