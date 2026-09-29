@@ -161,6 +161,26 @@ function xnIwan(x,y,z,ry,w,h,d,c,o){o=o||{};c=c||xC(xPick(XPAL.wash));const P=(u
  const dz=P(0,d+.06);vnDoor(dz[0],y,dz[1],ry,Math.min(2.2,aw*.4),Math.min(3.2,ah*.5),'vStone',xC(xPick(XPAL.stone)),xC(xPick(XPAL.dark)),false);
  vB('xPaint',fr[0],y+h,fr[1],w+.2,.14,d+.2,ry,xC(XPAL.white));
  if(o.guldasta){for(const s of[-1,1]){const t=P(s*(w/2-.4),d/2);vPst('xColS',t[0],y+h,t[1],.32,1.6,xC(xPick(XPAL.stone)));kput('xBulbT',[t[0],y+h+1.6,t[1]],null,[.5,.7,.5],xC(xPick(XPAL.tile)));vBall('xGold',t[0],y+h+2.4,t[1],.1,xC(XPAL.gold[0]));}}}
+// Open iwan: a real vaulted portal, not a blind one — the pointed-arch frame geometry extruded to the full depth
+// makes the tunnel (its vault and cheeks clad in mosaic), a wash pishtaq wraps it (pilasters, a lintel block, a
+// frieze), a tiled floor runs through, mosaic niches sit in the cheeks. o.through leaves the back open (a portal
+// into a court); else a back wall with a door closes it. (x,z) is the front face centre, ry outward, d the depth.
+function xnIwanOpen(x,y,z,ry,w,h,d,c,o){o=o||{};c=c||xC(xPick(XPAL.wash));const P=(u,v)=>loc(x,z,u,v,ry);const ow=w*.72,oh=h*.8;   // the opening
+ const FW=ow/.7,FH=oh/.84;const m=P(0,-d/2);kput('xArchW',[m[0],y,m[1]],qEuler(0,ry,0),[FW,FH,d],c);            // the tunnel: the arch frame extruded to the depth
+ const fc=P(0,.02);kput(o.item||'xArchM',[fc[0],y,fc[1]],qEuler(0,ry,0),[FW,FH,.16],null);                          // its mosaic face
+ // the vault and cheeks clad in mosaic: two planes on the cheeks, a fan of panels following the arch's curve
+ const spring=.7/1.35*FH,ax=[Math.sin(ry),0,Math.cos(ry)];for(const s of[-1,1]){const q=P(s*(ow/2-.04),-d/2);vB('xMosAB',q[0],y,q[1],.06,spring,d-.1,ry,null);}
+ const bz=t=>{const u=1-t;return [u*u*(-.35)+2*u*t*(-.35)+0,u*u*.7+2*u*t*(.7+.7*.44)+t*t*(.7+.7*.62)];};   // the arch curve in shape space (left half)
+ const N=6;for(const s of[-1,1])for(let k=0;k<N;k++){const a=bz(k/N),b=bz((k+1)/N);const A=P(s*a[0]*FW,-d/2),B=P(s*b[0]*FW,-d/2);
+  xnMember('xMosBB',[A[0],y+a[1]/1.35*FH-.03,A[1]],[B[0],y+b[1]/1.35*FH-.03,B[1]],.08,d-.1,ax,null);}
+ for(const s of[-1,1]){const q=P(s*(w/2-(w-FW)/4),-d/2);vB('xWashB',q[0],y,q[1],(w-FW)/2+.02,h,d,ry,c);}       // the pilasters
+ const t=P(0,-d/2);vB('xWashB',t[0],y+FH-.02,t[1],FW+.04,h-FH+.02,d,ry,c);vB('xPaint',t[0],y+h,t[1],w+.2,.14,d+.2,ry,xC(XPAL.white));
+ const f=P(0,.05);vB('xFriezeB',f[0],y+FH+.2,f[1],w-.6,Math.max(.5,(h-FH)*.55),.12,ry);for(const s of[-1,1]){const q=P(s*(w/2-.3),.05);vB('xFriezeB',q[0],y+.3,q[1],.5,FH-.3,.1,ry);}
+ vB('xTilesB',m[0],y-.04,m[1],ow-.1,.1,d-.1,ry,xC(xPick(XPAL.turquoise)));                                          // the floor through the vault
+ for(const s of[-1,1])for(const v of[-d*.3,d*.3]){const q=P(s*(ow/2-.06),-d/2+v);kput('xArcDark',[q[0],y+.8,q[1]],qEuler(0,ry+s*Math.PI/2,0),[1.4,2.6,.12]);kput('xArcM',[P(s*(ow/2-.1),-d/2+v)[0],y+.8,P(s*(ow/2-.1),-d/2+v)[1]],qEuler(0,ry+s*Math.PI/2,0),[1.8,3.0,.06],null);kput('xArcDark',[P(s*(ow/2-.12),-d/2+v)[0],y+.8,P(s*(ow/2-.12),-d/2+v)[1]],qEuler(0,ry+s*Math.PI/2,0),[1.4,2.6,.1]);}   // the niches
+ if(!o.through){const b=P(0,-d+.2);vB('xWashB',b[0],y,b[1],ow,oh,.4,ry,c);vnDoor(P(0,-d+.4)[0],y,P(0,-d+.4)[1],ry,Math.min(2.2,ow*.4),Math.min(3.2,oh*.5),'vStone',xC(xPick(XPAL.stone)),xC(xPick(XPAL.dark)),false);}
+ if(o.lamps)for(const s of[-1,1]){const q=P(s*(ow/2-.5),-d/2);vBall('vBulb',q[0],y+oh*.6,q[1],.1);}
+ if(o.guldasta){for(const s of[-1,1]){const t=P(s*(w/2-.4),-d/2);vPst('xColS',t[0],y+h,t[1],.32,1.6,xC(xPick(XPAL.stone)));kput('xBulbT',[t[0],y+h+1.6,t[1]],null,[.5,.7,.5],xC(xPick(XPAL.tile)));vBall('xGold',t[0],y+h+2.4,t[1],.1,xC(XPAL.gold[0]));}}}
 // arcade: n pointed arches along a face, a dark bay behind each (or open if o.open), a thin cornice on top
 function xnArcade(x,y,z,ry,w,h,n,item,c,dep,o){o=o||{};dep=dep||.5;const bw=w/n;
  for(let i=0;i<n;i++){const u=-w/2+bw*(i+.5);const p=loc(x,z,u,0,ry);xnArch(item||'xArchS',p[0],y,p[1],ry,bw,h,dep,c,{open:o.open});}

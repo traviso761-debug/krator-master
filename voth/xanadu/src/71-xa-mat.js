@@ -22,8 +22,11 @@ const XPAL={
 };
 
 // ---------------------------------------------------------------- world UV with separate u/v tile sizes (the band and valance maps are not square)
-function xWorldUV(mat,Ku,Kv){mat.onBeforeCompile=sh=>{sh.vertexShader=sh.vertexShader.replace('#include <uv_vertex>',
-`#ifdef USE_UV
+// three.js keys a material's compiled program on onBeforeCompile.toString(). A closure built by vWorldUV (vendored)
+// or a template-literal xWorldUV prints the same source whatever its K, so every world-UV material shared the first
+// compiled program's scale — the stone read at the wash's K, the bath tile at the frieze's. Building the hook with
+// Function() bakes the numbers into its source, so each K gets its own program. xUVKey re-hooks the vendored ones.
+function xUVKey(mat,Ku,Kv){const src=`#ifdef USE_UV
 #ifdef USE_INSTANCING
 mat4 _im=instanceMatrix;
 vec3 _sc=vec3(length(_im[0].xyz),length(_im[1].xyz),length(_im[2].xyz));
@@ -33,7 +36,8 @@ vUv=uv*_sw*vec2(${Ku.toFixed(4)},${Kv.toFixed(4)});
 #else
 vUv=uv;
 #endif
-#endif`);};return mat;}
+#endif`;mat.onBeforeCompile=new Function('sh',`sh.vertexShader=sh.vertexShader.replace('#include <uv_vertex>',${JSON.stringify(src)});`);return mat;}
+function xWorldUV(mat,Ku,Kv){return xUVKey(mat,Ku,Kv);}
 
 // ---------------------------------------------------------------- materials
 const xStd=(o)=>new THREE.MeshStandardMaterial(Object.assign({color:0xffffff,roughness:.92,metalness:0,side:DS},o));
@@ -50,6 +54,7 @@ MAT.xMeadow=new THREE.MeshStandardMaterial({map:TEX.xMeadow,roughness:1});
 vWorldUV(MAT.xEarth,.5);vWorldUV(MAT.xWash,.5);vWorldUV(MAT.xTiles,.5);vWorldUV(MAT.xPenbey,1);vWorldUV(MAT.xRubble,.25);vWorldUV(MAT.xRock,.125);
 vWorldUV(MAT.xMosA,.5);vWorldUV(MAT.xMosB,.5);                                 // mosaics tile every 2 m on boxes; planes keep their own 0..1
 xWorldUV(MAT.xBand,.5,1.667);xWorldUV(MAT.xJali,1,1);xWorldUV(MAT.xValance,1,2);
+for(const k in MAT){const m=MAT[k];if(m&&m.userData&&m.userData.uvK)xUVKey(m,m.userData.uvK,m.userData.uvK);}   // re-hook every vWorldUV material with its own program key
 
 // ---------------------------------------------------------------- geometry
 // Persian dome: lathe, base radius 1 at y=0, tip at y=1 (instances scale [r,h,r]); it swells above the drum
