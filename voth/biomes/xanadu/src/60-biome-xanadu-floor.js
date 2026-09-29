@@ -86,7 +86,7 @@ function log(x,y,z,st,wet){const a=rr(0,TAU),L=rr(10,30),r0=rr(.5,1.1),hx=Math.c
  return true;}
 
 // ---------------------------------------------------------------- the zone planters
-function plantVale(x,y,z,Z,lv,st){const t=rng(),fk=flowerK(x,z),gold=smooth(.62,.48,Z.wet);
+function plantVale(x,y,z,Z,lv,st){const glade=1-Z.grove,t=rng(),fk=Math.min(1,flowerK(x,z)+glade*.35),gold=smooth(.62,.48,Z.wet);
  if(t<.34){grass(x,y,z,lv,gold>.5?PAL.gold:PAL.meadow);st.tufts++;}
  else if(t<.34+.26*fk+.04){flowers(x,y,z,lv,lv===2?ri(5,12):lv===1?4:2,rr(.8,2.2));st.flowers++;if(lv===2)grass(x,y,z,lv,PAL.meadow,.7);}
  else if(t<.70){grass(x,y,z,lv,PAL.meadow,.8);st.tufts++;}
@@ -152,7 +152,7 @@ XANADU.buildFloor=function(R,q){
  reseed(600023);q=q==null?1:q;R=R||3400;means();
  const st={tufts:0,flowers:0,plumes:0,boxes:0,bane:0,shrubs:0,moss:0,ferns:0,cobras:0,mush:0,reeds:0,boulders:0,logs:0,lotus:0,rings:0};
  function plant(x,y,z,lv){if(!okGround(x,z,.8))return;const Z=zones(x,z);
-  const w=[Z.vale*1.3,Z.forest*1.3,Z.shore*1.1,Z.rip*1.2,Z.chasm*1.4+Z.cloud*.9,Z.dry*1.1,Z.crag*.6],P=[plantVale,plantForest,plantShore,plantBank,plantChasm,plantDry,plantCrag];
+  const w=[Z.vale*(1.1+.8*(1-Z.grove)),Z.forest*1.3,Z.shore*1.1,Z.rip*1.2,Z.chasm*1.4+Z.cloud*.9,Z.dry*1.1,Z.crag*.6],P=[plantVale,plantForest,plantShore,plantBank,plantChasm,plantDry,plantCrag];
   let tot=0;for(const v of w)tot+=v;if(tot<=0)return;
   let r=rng()*Math.max(1,tot),k=0;for(;k<w.length;k++){if(r<w[k])break;r-=w[k];}if(k>=w.length)return;
   P[k](x,y,z,Z,lv,st);}
@@ -162,7 +162,7 @@ XANADU.buildFloor=function(R,q){
  bands.forEach((b,bi)=>{const lv=2-bi;O.forEach((o,oi)=>{
   BIO.grid(b[0],0,1e9,(x,z,d)=>{if(nearest(x,z)!==oi)return 0;const ld=Math.hypot(x-o[0],z-o[1]);if(ld>=b[1]||ld<b[2])return 0;return .8*q*(lv===1?.85:1);},(x,y,z)=>plant(x,y,z,lv),
    {patch:.75,patchScale:.014,pad:.6,center:[0,0],box:[o[0]-b[1],o[1]-b[1],o[0]+b[1],o[1]+b[1]]});});});
- BIO.grid(30,0,R,(x,z)=>{if(BIO.lodD(x,z)<1000)return 0;return .6*q;},(x,y,z)=>plant(x,y,z,0),{patch:.75,patchScale:.014,pad:.6});
+ BIO.grid(30,0,R,(x,z)=>{if(BIO.lodD(x,z)<1000)return 0;return .6*q*(1-.8*smooth(.5,.8,BIO.field('upland',x,z)));},(x,y,z)=>plant(x,y,z,0),{patch:.75,patchScale:.014,pad:.6});
  // the still water: lotus pads, lotus flowers standing out of them
  O.forEach((o,oi)=>{BIO.grid(6,0,1e9,(x,z)=>{if(nearest(x,z)!==oi||Math.hypot(x-o[0],z-o[1])>900)return 0;const h=Y(x,z);if(h>-.15||h<-2.6)return 0;
    const fl=BIO.field('flow',x,z);return .5*q*(1-fl)*smooth(.46,.62,fbm(x*.006+1,z*.006-2,808,2));},

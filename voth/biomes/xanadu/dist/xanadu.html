@@ -736,6 +736,9 @@ const TEX_GROUND=BIO.canvasTex(2048,2048,(g,w,h)=>{const id=g.createImageData(w,
   const wet=FC.at(FC.a.wet,wx,wz),up=FC.at(FC.a.up,wx,wz),mist=FC.at(FC.a.mist,wx,wz),flow=FC.at(FC.a.flow,wx,wz),sd=FC.at(FC.a.sd,wx,wz),sl=FC.at(FC.a.slope,wx,wz),hh=FC.at(FC.a.h,wx,wz);
   // the vale: meadow, going gold where it is drier, lush by the water
   c.copy(MEAD).lerp(MEAD2,clamp(.5+n3*2.2,0,1)).lerp(GOLD,smooth(.62,.46,wet)*.75).lerp(LUSH,smooth(.72,.9,wet)*.6);
+  // flower drifts in the vale's glades, painted so the meadow reads as a riot from afar
+  {const fd=smooth(.55,.7,fbm(wx*.006-5,wz*.006+2,3131,2))*smooth(.2,.08,up)*smooth(.8,.6,wet)*smooth(20,80,sd);
+   if(fd>0&&BIO.fn.h3(x,y,11)<.35){const hh2=BIO.fn.h3(x>>2,y>>2,12);t.setHSL(hh2,.75,.62);c.lerp(t,fd*.55);}}
   // the forested flanks: litter and moss under the canopy
   const fk=smooth(.64,.78,wet)*smooth(.3,.12,up)*smooth(0,120,sd)*smooth(.2,.55,fbm(wx*.0026+2,wz*.0026-5,93,2)+.2);
   t.copy(LIT).lerp(LIT2,clamp(.5+n3*2,0,1)).lerp(MOSS,smooth(.8,.95,wet)*.5);c.lerp(t,fk*.8);
@@ -767,10 +770,10 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};
    '{vec3 dt=texture2D(uDetail,vGWP.xz*0.165).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.85);',
    // the strata: bands by height, wandering a little, in the petrified palette (the map is sRGB-decoded, so these are linear)
    ' float steep=1.0-clamp(vGWN.y,0.0,1.0); float y=vGWP.y+6.0*sin(vGWP.x*0.004+vGWP.z*0.003)+2.0*sin(vGWP.x*0.031);',
-   ' float b1=0.5+0.5*sin(y*0.42), b2=smoothstep(0.55,0.95,sin(y*0.11+1.3)), b3=smoothstep(0.7,1.0,sin(y*0.23+vGWP.x*0.001));',
+   ' float b1=0.5+0.5*sin(y*0.21), b2=smoothstep(0.6,0.95,sin(y*0.07+1.3)), b3=smoothstep(0.75,1.0,sin(y*0.13+vGWP.x*0.001));',
    ' vec3 st=mix(vec3(0.30,0.24,0.20),vec3(0.42,0.26,0.14),b1); st=mix(st,vec3(0.24,0.20,0.28),b2*0.8); st=mix(st,vec3(0.55,0.49,0.38),b3*0.7);',
    ' st*=0.85+0.3*texture2D(uDetail,vec2(vGWP.x+vGWP.z,vGWP.y*3.0)*0.05).r;',
-   ' diffuseColor.rgb=mix(diffuseColor.rgb,st,smoothstep(0.42,0.72,steep));}'].join('\n'));};
+   ' diffuseColor.rgb=mix(diffuseColor.rgb,mix(diffuseColor.rgb,st,0.55+0.25*texture2D(uDetail,vGWP.xz*0.004).r),smoothstep(0.45,0.8,steep));}'].join('\n'));};
 (function(){const SX=TERR.X1-TERR.X0,SZ=TERR.Z1-TERR.Z0,NXg=700,NZg=660,g=new THREE.PlaneGeometry(SX,SZ,NXg,NZg);g.rotateX(-Math.PI/2);g.translate((TERR.X0+TERR.X1)/2,0,(TERR.Z0+TERR.Z1)/2);
  const p=g.attributes.position;for(let i=0;i<p.count;i++)p.setY(i,terrainH(p.getX(i),p.getZ(i)));
  // PlaneGeometry's uv runs v up the plane; the canvas's y runs down it (z south): match them
@@ -1400,7 +1403,9 @@ XANADU.TREES=[];XANADU.RINGS=[];XANADU.ARCHES=[];
 const Y=(x,z)=>BIO.terrainH(x,z);
 function zones(x,z){const up=BIO.field('upland',x,z),wet=BIO.field('wet',x,z),flow=BIO.field('flow',x,z),mist=BIO.field('mist',x,z),h=Y(x,z);
  const low=smooth(.22,.08,up),mz=smooth(.35,.7,mist);
- return{up,wet,flow,mist,h,
+ // the groves: the vale's trees gather in them round sunny glades ("forests ancient as the hills, enfolding sunny spots of greenery")
+ const grove=smooth(.45,.58,fbm(x*.0036+11,z*.0036-7,4747,3));
+ return{up,wet,flow,mist,h,grove,
   shore:low*smooth(10,2.5,h)*smooth(.68,.84,wet),                         // the lake shore
   rip:smooth(.25,.75,flow)*smooth(.45,.2,up),                              // the river's banks
   forest:low*smooth(.64,.78,wet)*(1-.6*mz),                                // the green flanks: Hyrcanian and East Asian wood
@@ -1880,7 +1885,7 @@ XANADU.buildTrees=function(R,q){
   const rad=sp===3?rr(6,10):rr(8,15),n=Math.max(7,Math.round(TAU*rad/(sp===3?4.2:5.6))),a0=rr(0,TAU),pos=[];
   for(let k=0;k<n;k++){const a=a0+k/n*TAU,px=x+Math.cos(a)*rad,pz=z+Math.sin(a)*rad;if(!okAt(px,pz,2))return;pos.push([px,pz,a]);}
   let h0=1e9,h1=-1e9;pos.forEach(p=>{const h=Y(p[0],p[1]);h0=Math.min(h0,h);h1=Math.max(h1,h);});if(h1-h0>rad*.45)return;
-  const lvR=lvOf(x,z,700,1400),ring={x,z,r:rad,sp,n,lv:lvR};XANADU.RINGS.push(ring);st.rings++;
+  const lvR=lvOf(x,z,520,1050),ring={x,z,r:rad,sp,n,lv:lvR};XANADU.RINGS.push(ring);st.rings++;
   const H0=rr(S.H[0],S.H[1]);
   pos.forEach(p=>{const T=mk(p[0],Y(p[0],p[1]),p[1],sp);T.H=H0*rr(.9,1.1);T.crownR*=.8;T.outA=p[2];T.lean=rr(.03,.08);T.inA=p[2]+Math.PI+rr(-.3,.3);T.reachIn=rad*rr(.45,.7);
    if(sp===3){T.lean=p[2];T.wind=0;}
@@ -1891,7 +1896,7 @@ XANADU.buildTrees=function(R,q){
   const a=rr(0,TAU),ux=Math.cos(a),uz=Math.sin(a),np=ri(3,7),sp2=rr(8,10.5),hw=rr(4.5,6.5),pairs=[];
   for(let k=0;k<np;k++){const cx=x+ux*sp2*(k-(np-1)/2),cz=z+uz*sp2*(k-(np-1)/2),L=[cx-uz*hw,cz+ux*hw],Rp=[cx+uz*hw,cz-ux*hw];
    if(!okAt(L[0],L[1],2)||!okAt(Rp[0],Rp[1],2))return;if(Math.abs(Y(L[0],L[1])-Y(Rp[0],Rp[1]))>3)return;pairs.push([L,Rp]);}
-  const lvA=lvOf(x,z,700,1400),H=rr(SP[8].H[0],SP[8].H[1]);XANADU.ARCHES.push({x,z,a,n:np,hw,lv:lvA});st.arches++;
+  const lvA=lvOf(x,z,520,1050),H=rr(SP[8].H[0],SP[8].H[1]);XANADU.ARCHES.push({x,z,a,n:np,hw,lv:lvA});st.arches++;
   pairs.forEach((pr,k)=>{[0,1].forEach(s=>{const p=pr[s],o=pr[1-s],T=mk(p[0],Y(p[0],p[1]),p[1],8);T.H=H*rr(.92,1.08);T.partner=o;T.side=s?1:-1;T.lv=lvA;TREES.push(T);hadd({x:p[0],z:p[1],r:T.rb*1.4+1});});});
   hadd({x,z,r:1.5});},{patch:0,pad:4});
  // --- one species pass: a jittered grid over the disc, the zone weight as acceptance
@@ -1906,40 +1911,40 @@ XANADU.buildTrees=function(R,q){
     TREES.push(T);hadd({x:x,z:z,r:T.rb*1.4+1});n++;},{patch:opt.patch==null?.6:opt.patch,patchScale:opt.patchScale||.01,pad:1,noMask:opt.noMask});
   return n;}
  // the shore and the river: dawn redwoods (some standing in the shallows), frost willows, wingnuts, lotus trumpets
- pass(0,15,(Z,x,z)=>{const h=Z.h;if(h>.35||h<-1.3)return 0;return .5*smooth(.5,.7,fbm(x*.004+3,z*.004-1,811,2));},{hero:650,mid:1300,far:true,pad:2.5,patch:0,noMask:true,minY:-1.3});
- pass(0,34,(Z)=>Z.shore*.55+Z.rip*.5+Z.chasm*.35,{hero:650,mid:1300,far:true,pad:3,patch:.4});
- pass(19,40,(Z)=>Z.shore*.45+Z.rip*.45,{hero:600,mid:1200,far:true,pad:4,patch:.5});
- pass(12,40,(Z)=>Z.rip*.55+Z.forest*.05,{hero:600,mid:1200,far:true,pad:4,patch:.5});
- pass(2,48,(Z)=>Z.vale*.26+Z.shore*.32+Z.rip*.2,{hero:650,mid:1300,far:true,pad:4,patch:.5,patchScale:.008});
+ pass(0,15,(Z,x,z)=>{const h=Z.h;if(h>.35||h<-1.3)return 0;return .5*smooth(.5,.7,fbm(x*.004+3,z*.004-1,811,2));},{hero:470,mid:980,far:true,pad:2.5,patch:0,noMask:true,minY:-1.3});
+ pass(0,34,(Z)=>Z.shore*.55+Z.rip*.5+Z.chasm*.35,{hero:470,mid:980,far:true,pad:3,patch:.4});
+ pass(19,40,(Z)=>Z.shore*.45+Z.rip*.45,{hero:430,mid:900,far:true,pad:4,patch:.5});
+ pass(12,40,(Z)=>Z.rip*.55+Z.forest*.05,{hero:430,mid:900,far:true,pad:4,patch:.5});
+ pass(2,48,(Z)=>Z.vale*.26*(.12+1.7*Z.grove)+Z.shore*.32+Z.rip*.2,{hero:470,mid:980,far:true,pad:4,patch:.4});
  // the vale: cushion trees, haze blossoms, wisteria, ginkgos, traveller's palms
- pass(4,40,(Z)=>Z.vale*.34,{hero:600,mid:1200,far:true,pad:3,patch:.55});
- pass(18,40,(Z)=>Z.vale*.32+Z.rip*.08,{hero:600,mid:1200,far:true,pad:3,patch:.55,patchScale:.007});
- pass(9,42,(Z)=>Z.vale*.18+Z.rip*.2+Z.shore*.1,{hero:600,mid:1200,far:true,pad:3,patch:.55});
- pass(1,46,(Z)=>Z.vale*.26+Z.forest*.12,{hero:650,mid:1300,far:true,pad:3,patch:.5,patchScale:.007});
- pass(20,30,(Z)=>Z.vale*.1+Z.rip*.18+Z.chasm*.08,{hero:550,mid:1000,far:false,pad:2.5,lodK:.6,patch:.5});
+ pass(4,40,(Z)=>Z.vale*.34*(.12+1.7*Z.grove),{hero:430,mid:900,far:true,pad:3,patch:.4});
+ pass(18,40,(Z)=>Z.vale*.32*(.12+1.7*Z.grove)+Z.rip*.08,{hero:430,mid:900,far:true,pad:3,patch:.4});
+ pass(9,42,(Z)=>Z.vale*.18*(.12+1.7*Z.grove)+Z.rip*.2+Z.shore*.1,{hero:430,mid:900,far:true,pad:3,patch:.4});
+ pass(1,46,(Z)=>Z.vale*.26*(.12+1.7*Z.grove)+Z.forest*.12,{hero:470,mid:980,far:true,pad:3,patch:.4});
+ pass(20,30,(Z)=>Z.vale*.1+Z.rip*.18+Z.chasm*.08,{hero:400,mid:750,far:false,pad:2.5,lodK:.6,patch:.4});
  // the forest: oaks and agate trees over ironwood, wingnuts on the water, Wollemi pines in the damp, lantern trees under
- pass(11,30,(Z)=>Z.forest*.55,{hero:550,mid:1100,far:true,pad:4,patch:.3});
- pass(6,60,(Z)=>Z.forest*.34+Z.vale*.1,{hero:650,mid:1300,far:true,pad:4,patch:.5,patchScale:.006});
- pass(10,24,(Z)=>Z.forest*.5+Z.vale*.06,{hero:550,mid:1100,far:true,pad:2.5,patch:.45});
- pass(22,50,(Z)=>Z.forest*.08+Z.chasm*.35+Z.cloud*.2,{hero:650,mid:1300,far:true,pad:3,patch:.5});
- pass(24,26,(Z)=>Z.forest*.12+Z.chasm*.25,{hero:550,mid:1000,far:false,pad:2,lodK:.6,patch:.5});
+ pass(11,30,(Z)=>Z.forest*.55,{hero:400,mid:820,far:true,pad:4,patch:.3});
+ pass(6,60,(Z)=>Z.forest*.34+Z.vale*.1,{hero:470,mid:980,far:true,pad:4,patch:.5,patchScale:.006});
+ pass(10,30,(Z)=>Z.forest*.5+Z.vale*.06,{hero:400,mid:820,far:true,pad:2.5,patch:.45});
+ pass(22,50,(Z)=>Z.forest*.08+Z.chasm*.35+Z.cloud*.2,{hero:470,mid:980,far:true,pad:3,patch:.5});
+ pass(24,26,(Z)=>Z.forest*.12+Z.chasm*.25,{hero:400,mid:750,far:false,pad:2,lodK:.6,patch:.5});
  // the chasm and the mountains' mist: tree-ferns, cacao, violet plantains, frills, beard trees
- pass(23,16,(Z)=>Z.chasm*.6+Z.rip*.12+Z.cloud*.3,{hero:550,mid:1000,far:false,pad:1.6,lodK:.6});
- pass(13,16,(Z)=>Z.chasm*.45*smooth(.3,.1,Z.up)+Z.rip*.2+Z.forest*.03,{hero:500,mid:900,far:false,pad:2,lodK:.6,patch:.5});
- pass(21,20,(Z)=>Z.chasm*.35*smooth(.3,.1,Z.up)+Z.rip*.18,{hero:500,mid:900,far:false,pad:2,lodK:.6,patch:.5});
- pass(28,34,(Z)=>Z.chasm*.45+Z.cloud*.35,{hero:600,mid:1200,far:true,pad:3,patch:.4});
- pass(29,22,(Z)=>Z.cloud*.55+Z.chasm*.2,{hero:550,mid:1100,far:true,pad:2.5,lodK:.5});
+ pass(23,16,(Z)=>Z.chasm*.6+Z.rip*.12+Z.cloud*.3,{hero:400,mid:750,far:false,pad:1.6,lodK:.6});
+ pass(13,16,(Z)=>Z.chasm*.45*smooth(.3,.1,Z.up)+Z.rip*.2+Z.forest*.03,{hero:360,mid:680,far:false,pad:2,lodK:.6,patch:.5});
+ pass(21,20,(Z)=>Z.chasm*.35*smooth(.3,.1,Z.up)+Z.rip*.18,{hero:360,mid:680,far:false,pad:2,lodK:.6,patch:.5});
+ pass(28,34,(Z)=>Z.chasm*.45+Z.cloud*.35,{hero:430,mid:900,far:true,pad:3,patch:.4});
+ pass(29,22,(Z)=>Z.cloud*.55+Z.chasm*.2,{hero:400,mid:820,far:true,pad:2.5,lodK:.5});
  // the uplands: whorl olives, cloud pines, bottle palms, desert roses, prickly pears, pitaya, the ridgetop's own
- pass(5,20,(Z)=>Z.dry*.55,{hero:550,mid:1100,far:true,pad:2.5,patch:.5});
- pass(3,26,(Z)=>Z.dry*.3+Z.crag*.45,{hero:600,mid:1200,far:true,pad:3,patch:.5,mod:(T,Z)=>{if(Z.crag>.4){T.wind=rr(.2,.6);T.lean=rr(4.2,5.4);}}});   // the crag's pines lean away from the lake, north-north-west winds
- pass(16,34,(Z)=>Z.dry*.24,{hero:550,mid:1000,far:false,pad:2.5,lodK:.6,patch:.5});
- pass(17,18,(Z)=>Z.dry*.24,{hero:450,mid:800,far:false,pad:1.5,lodK:.7,patch:.5});
- pass(15,14,(Z)=>Z.dry*.34+Z.crag*.08,{hero:450,mid:800,far:false,pad:1.2,lodK:.7,patch:.5});
- pass(14,16,(Z)=>Z.dry*.3,{hero:450,mid:800,far:false,pad:1.5,lodK:.7,patch:.5});
- pass(25,22,(Z)=>Z.dry*.25+Z.crag*.12,{hero:550,mid:1000,far:false,pad:2,lodK:.6,patch:.5});
- pass(26,22,(Z)=>Z.dry*.2+Z.crag*.2,{hero:450,mid:900,far:false,pad:1.5,lodK:.7,patch:.5});
- pass(27,13,(Z)=>Z.dry*.45+Z.crag*.35,{hero:450,mid:800,far:false,pad:1,lodK:.8,patch:.45});
- pass(30,22,(Z)=>Z.dry*.18,{hero:450,mid:800,far:false,pad:1.5,lodK:.7,patch:.5});
+ pass(5,30,(Z)=>Z.dry*.55,{hero:400,mid:820,far:true,pad:2.5,patch:.5});
+ pass(3,34,(Z)=>Z.dry*.3+Z.crag*.45,{hero:430,mid:900,far:true,pad:3,patch:.5,mod:(T,Z)=>{if(Z.crag>.4){T.wind=rr(.2,.6);T.lean=rr(4.2,5.4);}}});   // the crag's pines lean away from the lake, north-north-west winds
+ pass(16,34,(Z)=>Z.dry*.24,{hero:400,mid:750,far:false,pad:2.5,lodK:.6,patch:.5});
+ pass(17,28,(Z)=>Z.dry*.24,{hero:320,mid:600,far:false,pad:1.5,lodK:.7,patch:.5});
+ pass(15,24,(Z)=>Z.dry*.34+Z.crag*.08,{hero:320,mid:600,far:false,pad:1.2,lodK:.7,patch:.5});
+ pass(14,26,(Z)=>Z.dry*.3,{hero:320,mid:600,far:false,pad:1.5,lodK:.7,patch:.5});
+ pass(25,32,(Z)=>Z.dry*.25+Z.crag*.12,{hero:400,mid:750,far:false,pad:2,lodK:.6,patch:.5});
+ pass(26,32,(Z)=>Z.dry*.2+Z.crag*.2,{hero:320,mid:680,far:false,pad:1.5,lodK:.7,patch:.5});
+ pass(27,22,(Z)=>Z.dry*.45+Z.crag*.35,{hero:320,mid:600,far:false,pad:1,lodK:.8,patch:.45});
+ pass(30,30,(Z)=>Z.dry*.18,{hero:320,mid:600,far:false,pad:1.5,lodK:.7,patch:.5});
  // build
  TREES.forEach((T,i)=>{if(T.lv===0){buildFar(T,i,st);st.fars++;}else{B[T.sp](T,st,T.lv);st.heroes++;}st.byS[T.sp]++;});
  return{trees:TREES.length,heroes:st.heroes,far:st.fars,rings:st.rings,arches:st.arches,bySpecies:SP.map((S,i)=>S.key+':'+st.byS[i]).join(' '),clumps:st.clumps,blooms:st.blooms,pods:st.pods,fins:st.fins,fans:st.fans,
@@ -2036,7 +2041,7 @@ function log(x,y,z,st,wet){const a=rr(0,TAU),L=rr(10,30),r0=rr(.5,1.1),hx=Math.c
  return true;}
 
 // ---------------------------------------------------------------- the zone planters
-function plantVale(x,y,z,Z,lv,st){const t=rng(),fk=flowerK(x,z),gold=smooth(.62,.48,Z.wet);
+function plantVale(x,y,z,Z,lv,st){const glade=1-Z.grove,t=rng(),fk=Math.min(1,flowerK(x,z)+glade*.35),gold=smooth(.62,.48,Z.wet);
  if(t<.34){grass(x,y,z,lv,gold>.5?PAL.gold:PAL.meadow);st.tufts++;}
  else if(t<.34+.26*fk+.04){flowers(x,y,z,lv,lv===2?ri(5,12):lv===1?4:2,rr(.8,2.2));st.flowers++;if(lv===2)grass(x,y,z,lv,PAL.meadow,.7);}
  else if(t<.70){grass(x,y,z,lv,PAL.meadow,.8);st.tufts++;}
@@ -2102,7 +2107,7 @@ XANADU.buildFloor=function(R,q){
  reseed(600023);q=q==null?1:q;R=R||3400;means();
  const st={tufts:0,flowers:0,plumes:0,boxes:0,bane:0,shrubs:0,moss:0,ferns:0,cobras:0,mush:0,reeds:0,boulders:0,logs:0,lotus:0,rings:0};
  function plant(x,y,z,lv){if(!okGround(x,z,.8))return;const Z=zones(x,z);
-  const w=[Z.vale*1.3,Z.forest*1.3,Z.shore*1.1,Z.rip*1.2,Z.chasm*1.4+Z.cloud*.9,Z.dry*1.1,Z.crag*.6],P=[plantVale,plantForest,plantShore,plantBank,plantChasm,plantDry,plantCrag];
+  const w=[Z.vale*(1.1+.8*(1-Z.grove)),Z.forest*1.3,Z.shore*1.1,Z.rip*1.2,Z.chasm*1.4+Z.cloud*.9,Z.dry*1.1,Z.crag*.6],P=[plantVale,plantForest,plantShore,plantBank,plantChasm,plantDry,plantCrag];
   let tot=0;for(const v of w)tot+=v;if(tot<=0)return;
   let r=rng()*Math.max(1,tot),k=0;for(;k<w.length;k++){if(r<w[k])break;r-=w[k];}if(k>=w.length)return;
   P[k](x,y,z,Z,lv,st);}
@@ -2112,7 +2117,7 @@ XANADU.buildFloor=function(R,q){
  bands.forEach((b,bi)=>{const lv=2-bi;O.forEach((o,oi)=>{
   BIO.grid(b[0],0,1e9,(x,z,d)=>{if(nearest(x,z)!==oi)return 0;const ld=Math.hypot(x-o[0],z-o[1]);if(ld>=b[1]||ld<b[2])return 0;return .8*q*(lv===1?.85:1);},(x,y,z)=>plant(x,y,z,lv),
    {patch:.75,patchScale:.014,pad:.6,center:[0,0],box:[o[0]-b[1],o[1]-b[1],o[0]+b[1],o[1]+b[1]]});});});
- BIO.grid(30,0,R,(x,z)=>{if(BIO.lodD(x,z)<1000)return 0;return .6*q;},(x,y,z)=>plant(x,y,z,0),{patch:.75,patchScale:.014,pad:.6});
+ BIO.grid(30,0,R,(x,z)=>{if(BIO.lodD(x,z)<1000)return 0;return .6*q*(1-.8*smooth(.5,.8,BIO.field('upland',x,z)));},(x,y,z)=>plant(x,y,z,0),{patch:.75,patchScale:.014,pad:.6});
  // the still water: lotus pads, lotus flowers standing out of them
  O.forEach((o,oi)=>{BIO.grid(6,0,1e9,(x,z)=>{if(nearest(x,z)!==oi||Math.hypot(x-o[0],z-o[1])>900)return 0;const h=Y(x,z);if(h>-.15||h<-2.6)return 0;
    const fl=BIO.field('flow',x,z);return .5*q*(1-fl)*smooth(.46,.62,fbm(x*.006+1,z*.006-2,808,2));},
@@ -2465,7 +2470,8 @@ window._biome=null;
  let shells=[];
  if(typeof buildTestDome==='function'){try{shells=buildTestDome()||[];}catch(e){reportErr('dome: '+e.stack);}}
  if(typeof XANADU!=='undefined'){
-  try{window._biome=XANADU.build({R:TERR.R+300,quality:1});}catch(e){reportErr('biome: '+e.stack);}
+  const qp=+(new URLSearchParams(location.search).get('q')||1);   // ?q=.4 for a quick look
+  try{window._biome=XANADU.build({R:TERR.R+300,quality:qp});}catch(e){reportErr('biome: '+e.stack);}
   if(shells.length){try{XANADU.dress(shells,{ledges:{moss:1400,plants:700,edges:360,hang:12},soffits:{n:900,mossR:3,hang:10},walls:{n:420}});}catch(e){reportErr('dress: '+e.stack);}}}
  const b=BIO.bake();
  window._instances=b.inst;window._bakeCalls=b.calls;window._buildMs=Math.round(performance.now()-t0);
