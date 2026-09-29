@@ -1,13 +1,16 @@
 // ================================================================= GOVERNMENT v2 — "the Assembly" (all round)
 function buildGovernment(scene,gx,gz,d){reseed(9900+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const skin=SHELL(d);
  REGISTER({name:'Government — the Assembly ('+STATE(d)+')',x:0,z:0,r:150,h:120});
- const tiers=[[92,84,14],[66,60,14],[42,38,14]];let y=0;
+ const tiers=[[92,84,14],[66,60,14],[42,38,14]];let y=0;apron(G,0,0,91,104,d,1.4);
  tiers.forEach((t,i)=>{const [a,b,h]=t;const hole=holeFn(d*(i===2?1:.5),600+i,null,1.3);
   mesh(lathe({rFn:yy=>a-(a-b)*yy/h,H:h,flutes:24-i*6,amp:.05,sharp:2,nu:120,nv:6,hole:hole?(u,yy)=>hole(u,yy+i*30)&&(u>.15&&u<.42):null}),skin,G,0,y,0);
-  if(d>0)mesh(lathe({rFn:yy=>(a-(a-b)*yy/h)*.9,H:h,nu:48,nv:1}),MAT.guts,G,0,y,0);
+  // behind the holes (they are confined to u .15-.42): two floors of rooms per
+  // tier, only in that arc, in front of a liner pushed back to .8
+  if(d>0){mesh(lathe({rFn:yy=>(a-(a-b)*yy/h)*.8,H:h,nu:48,nv:1}),MAT.guts,G,0,y,0);
+   civRooms({cy:y,rFn:yy=>a-(a-b)*yy/h,y0:.3,y1:h,step:7,d,seed:620+i,rIn:.8,gap:th=>{const u=th/TAU;return u<.13||u>.44;}});}
   kput('slab',[0,y+h,0],null,[b*.99,.6,b*.99],new THREE.Color(d>0?0x5a4a40:0xd8d4cc));
   const n=Math.round(a*.42);for(let k=0;k<n;k++)for(let row=0;row<2;row++){const th=(k+.5)/n*TAU;const yy=y+3.5+row*6;const r=a-(a-b)*(yy-y)/h+.2;const u=th/TAU;if(hole&&hole(u,yy+i*30))continue;
-   if(i===0&&row===0&&Math.abs(th-Math.PI/2)<.5)continue;kput(d>0?'winD':'winI',[r*Math.cos(th),yy,r*Math.sin(th)],qFacing([Math.cos(th),0,Math.sin(th)]),[.9,.9,1],null);}
+   if(i===0&&row===0&&Math.abs(th-Math.PI/2)<.5)continue;civWin(d>0?'winD':'winI',[r*Math.cos(th),yy,r*Math.sin(th)],qFacing([Math.cos(th),0,Math.sin(th)]),[.9,.9,1],null);}
   stripRing(0,y+h-1.2,0,b*1.01,d,48);if(d>0)mossOnRing(0,y+h+.2,0,b*.9,Math.round(b*.8),2.2);y+=h;});
  // portico: a fan of leaning struts on the +z face, rising to a ring beam at tier 2, roofed by a curved shell that grows out of the tier wall
  const NP=11;const struts=[];for(let k=0;k<NP;k++){const a=Math.PI/2+(k-(NP-1)/2)*.11;const fallen=d>0&&(k===2||k===7);
