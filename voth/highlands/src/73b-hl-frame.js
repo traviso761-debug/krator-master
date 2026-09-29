@@ -271,3 +271,18 @@ function hlSquircleLathe(prof,seg,n){const pos=[],uv=[],idx=[];const e=2/n;
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setIndex(idx);g.computeVertexNormals();return g;}
 const HGDOME2=hlSquircleLathe([[.9,0],[1.02,.08],[1.09,.22],[1.1,.38],[1.05,.52],[.95,.64],[.8,.75],[.6,.85],[.36,.93],[.14,.98],[0,1]],48,3.4);
 kdef('hDomeHG2',HGDOME2,MAT.hHarlG);
+// ---------------------------------------------------------------- glazed polychrome tile (round 10)
+// Travis: "make temple of the pantheon dome and spires colored tile" — Zsolnay-style glazed fish-scale tile, each
+// scale outlined and glinting, laid in chevron bands of the palette (the Matthias Church / Budapest roofs). The
+// pattern repeats seamlessly: 8 scales across a chevron period, 12 rows over two runs of a 6-colour band.
+function hlTile(pal){return canvasTex(256,192,(g,w,h)=>{const cw=32,rh=16;g.fillStyle='#1a1614';g.fillRect(0,0,w,h);
+ for(let r=-1;r<=12;r++)for(let c=-1;c<=8;c++){const off=(r&1)?cw/2:0,cx=c*cw+off+cw/2,cy=r*rh;const rr0=((r%12)+12)%12,cc=((c%8)+8)%8;
+  const band=(rr0+Math.abs(cc-4)+((r&1)&&cc>=4?1:0))%pal.length;const col=pal[band];
+  for(const dx of[0,-w,w]){const x=cx+dx;g.fillStyle=col;g.beginPath();g.moveTo(x-cw/2+1,cy);g.lineTo(x+cw/2-1,cy);g.arc(x,cy,cw/2-1,0,Math.PI);g.closePath();g.fill();
+   g.strokeStyle='rgba(20,14,10,.55)';g.lineWidth=1.6;g.beginPath();g.arc(x,cy,cw/2-1.5,0,Math.PI);g.stroke();
+   g.strokeStyle='rgba(255,255,255,.35)';g.lineWidth=2;g.beginPath();g.arc(x,cy+2,cw/2-6,.35*Math.PI,.75*Math.PI);g.stroke();}}});}
+TEX.hTileD=hlTile(['#2f7a44','#d8a830','#2a5aa8','#e8e0cc','#9a2a24','#2e9488']);TEX.hTileD.repeat.set(9,3);
+TEX.hTileS=hlTile(['#9a2a24','#d8a830','#e8e0cc','#2f7a44','#2a5aa8','#d8a830']);TEX.hTileS.repeat.set(6,4);
+MAT.hTileD=hStd({map:TEX.hTileD,roughness:.28,metalness:.08});MAT.hTileS=hStd({map:TEX.hTileS,roughness:.28,metalness:.08});
+kdef('hDomeTile',HGDOME2,MAT.hTileD);kdef('hTentTile',HTENT,MAT.hTileS);TEX.hTileT=hlTile(['#2f7a44','#d8a830','#2e9488','#e8e0cc','#2a5aa8','#d8a830']);TEX.hTileT.repeat.set(6,4);MAT.hTileT=hStd({map:TEX.hTileT,roughness:.28,metalness:.08});
+kdef('hTentTileD',HTENT,MAT.hTileT);

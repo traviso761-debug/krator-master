@@ -2427,6 +2427,21 @@ function hlSquircleLathe(prof,seg,n){const pos=[],uv=[],idx=[];const e=2/n;
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setIndex(idx);g.computeVertexNormals();return g;}
 const HGDOME2=hlSquircleLathe([[.9,0],[1.02,.08],[1.09,.22],[1.1,.38],[1.05,.52],[.95,.64],[.8,.75],[.6,.85],[.36,.93],[.14,.98],[0,1]],48,3.4);
 kdef('hDomeHG2',HGDOME2,MAT.hHarlG);
+// ---------------------------------------------------------------- glazed polychrome tile (round 10)
+// Travis: "make temple of the pantheon dome and spires colored tile" — Zsolnay-style glazed fish-scale tile, each
+// scale outlined and glinting, laid in chevron bands of the palette (the Matthias Church / Budapest roofs). The
+// pattern repeats seamlessly: 8 scales across a chevron period, 12 rows over two runs of a 6-colour band.
+function hlTile(pal){return canvasTex(256,192,(g,w,h)=>{const cw=32,rh=16;g.fillStyle='#1a1614';g.fillRect(0,0,w,h);
+ for(let r=-1;r<=12;r++)for(let c=-1;c<=8;c++){const off=(r&1)?cw/2:0,cx=c*cw+off+cw/2,cy=r*rh;const rr0=((r%12)+12)%12,cc=((c%8)+8)%8;
+  const band=(rr0+Math.abs(cc-4)+((r&1)&&cc>=4?1:0))%pal.length;const col=pal[band];
+  for(const dx of[0,-w,w]){const x=cx+dx;g.fillStyle=col;g.beginPath();g.moveTo(x-cw/2+1,cy);g.lineTo(x+cw/2-1,cy);g.arc(x,cy,cw/2-1,0,Math.PI);g.closePath();g.fill();
+   g.strokeStyle='rgba(20,14,10,.55)';g.lineWidth=1.6;g.beginPath();g.arc(x,cy,cw/2-1.5,0,Math.PI);g.stroke();
+   g.strokeStyle='rgba(255,255,255,.35)';g.lineWidth=2;g.beginPath();g.arc(x,cy+2,cw/2-6,.35*Math.PI,.75*Math.PI);g.stroke();}}});}
+TEX.hTileD=hlTile(['#2f7a44','#d8a830','#2a5aa8','#e8e0cc','#9a2a24','#2e9488']);TEX.hTileD.repeat.set(9,3);
+TEX.hTileS=hlTile(['#9a2a24','#d8a830','#e8e0cc','#2f7a44','#2a5aa8','#d8a830']);TEX.hTileS.repeat.set(6,4);
+MAT.hTileD=hStd({map:TEX.hTileD,roughness:.28,metalness:.08});MAT.hTileS=hStd({map:TEX.hTileS,roughness:.28,metalness:.08});
+kdef('hDomeTile',HGDOME2,MAT.hTileD);kdef('hTentTile',HTENT,MAT.hTileS);TEX.hTileT=hlTile(['#2f7a44','#d8a830','#2e9488','#e8e0cc','#2a5aa8','#d8a830']);TEX.hTileT.repeat.set(6,4);MAT.hTileT=hStd({map:TEX.hTileT,roughness:.28,metalness:.08});
+kdef('hTentTileD',HTENT,MAT.hTileT);
 // ================================================================= HIGHLANDS / REPUBLICAN — dwellings
 // The Iron Republic's houses, three wealth tiers. Poor: the log izba of the hill towns — round logs, a steep
 // shingle gable to the street, white-painted nalichniki, salvage sheet where the shingle has failed (the Iziz
@@ -3388,17 +3403,17 @@ function buildHlRepTemple(G,o){reseed(20701+(o.v|0));const S=1.4;
  for(const s of[-1,1]){const x=s*9.5,z=T[0].d/2;vnDoor(x,S,z,0,1.8,2.8,'hPaint',red,tar,false);hnBochka(x,S+3.4,z+1.3,3,3.4,1.8,Math.PI/2,'hKeelSh',sh);
   for(const u of[-1.3,1.3])kput('hCol',[x+u,S,z+2.6],null,[.13,3.4,.13],red);hnForm('hFormA',x,S+3.55,z+2.95,0,2.2,1);}
  // the corner turrets: octagonal ashlar shafts through the skirts, harlequin tents, gold spires
- [[-1,1,'hTentHR'],[1,1,'hTentHG'],[-1,-1,'hTentHG'],[1,-1,'hTentHR']].forEach(([sx,sz,tent])=>{const x=sx*(T[0].w/2+.6),z=sz*(T[0].d/2+.6);
+ [[-1,1,'hTentTile'],[1,1,'hTentTileD'],[-1,-1,'hTentTileD'],[1,-1,'hTentTile']].forEach(([sx,sz,tent])=>{const x=sx*(T[0].w/2+.6),z=sz*(T[0].d/2+.6);
   kput('hOctS',[x,S,z],null,[2,9,2],stone);for(const yy of[S+2.4,S+6.2]){const ad=Math.atan2(sx,sz),p=loc(x,z,0,1.76,ad);hnNal(p[0],yy,p[1],ad,.55,1,lit,white,{keel:true});}
   kput('hOctW',[x,S+9,z],null,[2.3,.3,2.3],white);for(let k=0;k<8;k++){const a=k*Math.PI/4;const d=loc(x,z,0,2,a);hnDougong(d[0],S+8.3,d[1],a,.34);}
   kput(tent,[x,S+9.3,z],null,[2.5,5.2,2.5],null);vPst('vIron',x,S+14.4,z,.04,1.2,hC(0x2e2a26));vBall('hGold',x,S+15.3,z,.24,gold);});
  // the crown: an octagonal drum ringed by kokoshniki, the great harlequin dome, a clock lantern and two spires
  kput('hOctS',[0,yT,0],null,[6.4,1.6,5.2],stone);for(let k=0;k<8;k++){const a=k*Math.PI/4,p=loc(0,0,0,5.5,a);hnKokoshnik(p[0],yT+1.6,p[1],a,3.6,1.5,'hKeelSh',sh);}
- const yD=yT+1.6+.4;kput('hDomeHG2',[0,yD,0],null,[9.6,7.2,6.8],null);vB('hPaint',0,yD-.2,0,19.6,.3,14,0,white);   // the long cushion dome, rounded-rectangle in plan
+ const yD=yT+1.6+.4;kput('hDomeTile',[0,yD,0],null,[9.6,7.2,6.8],null);vB('hPaint',0,yD-.2,0,19.6,.3,14,0,white);   // the long cushion dome, rounded-rectangle in plan
  {const UP=[[1.1,.38],[1.05,.52],[.95,.64],[.8,.75],[.6,.85],[.36,.93],[.14,.98],[0,1]],hAt=f=>{for(let i=0;i<UP.length-1;i++){const [r0,y0]=UP[i],[r1,y1]=UP[i+1];if(f<=r0&&f>=r1)return y0+(y1-y0)*(r0-f)/(r0-r1);}return 1;};
   let pv=null;for(let k=0;k<=8;k++){const x=-6.8+k*1.7,yy=yD+7.2*hAt(Math.abs(x)/9.6)+.02;vPst('vIron',x,yy,0,.03,.5,gold);vBall('hGold',x,yy+.56,0,.11,gold);if(pv)beam('hGoldB',[pv[0],pv[1]+.3,0],[x,yy+.3,0],.06,.06,gold);pv=[x,yy];}}   // gilt cresting along the ridge
- const yL=yD+7.2-.3;hnLogBox(0,yL,0,2.4,1.9,1.6,0,log,.12);kput('hClock',[0,yL+1,.83],null,[1.3,1.3,1],hC(0xffffff));kput('hTentSh',[0,yL+1.9,0],null,[1.9,1.3,1.9],sh);
- for(const s of[-1,1]){const x=s*1.9;kput('hOctW',[x,yL-.2,0],null,[.55,2.4,.55],red);kput('hTentHR',[x,yL+2.2,0],null,[.6,3.6,.6],null);
+ const yL=yD+7.2-.3;hnLogBox(0,yL,0,2.4,1.9,1.6,0,log,.12);kput('hClock',[0,yL+1,.83],null,[1.3,1.3,1],hC(0xffffff));kput('hTentTileD',[0,yL+1.9,0],null,[1.9,1.3,1.9],null);
+ for(const s of[-1,1]){const x=s*1.9;kput('hOctW',[x,yL-.2,0],null,[.55,2.4,.55],red);kput('hTentTile',[x,yL+2.2,0],null,[.6,3.6,.6],null);
   vPst('vIron',x,yL+5.8,0,.03,.9,hC(0x2e2a26));kput('hDiscG',[x,yL+7.05,0],qEuler(Math.PI/2,0,0),[.55,.05,.55],gold);hnEmblem(x,yL+7.05,.04,0,.8);}
  // the precinct: the gods as carved pillars in a ring, the paved way, lamps
  [35,65,100,135,225,260,295,325].forEach((deg,k)=>{const a=deg*Math.PI/180,p=loc(0,0,0,23.2,a);vB('vStone',p[0],0,p[1],1.3,.25,1.3,a,ash);
