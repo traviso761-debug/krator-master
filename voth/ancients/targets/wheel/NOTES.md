@@ -51,11 +51,22 @@ height, because at 4 km centimetres are inside the depth resolution.
 - Wild forest over meadows and paths, lakes to marsh, vines off every edge,
   dead windows, stained stone.
 
-## Measured
-(pending final run)
+## Measured (coordinator's verification run; the agent was stopped by the usage limit before its own)
+| | triangles | instances | meshes |
+|---|---|---|---|
+| wheel/0 | 500 490 | 32 520 | 11 |
+| wheel/1 | 508 286 | 32 167 | 14 |
+All six invariants PASS over 16 views, error panel clean, 95 registered
+volumes, draw calls 23-37.
 
-## Views
-(pending final run)
+## Views (16)
+The Wheel, The wheel from above, Along a spoke, In the parkland, A light well,
+Up through a well, The undercity, A rim tower, The central tower, The wheel at
+night, Ruined, Ruin from above, The fallen sector, The broken tower, The fallen
+spoke, The broken crown.
 
-## Weaknesses
-(pending)
+## Weaknesses (from the shots)
+- The lower city beyond the ring is a sea of near-identical pale boxes.
+- Seen from below, the soffit's diamond lattice and dot lamps read as a
+  ceiling grid rather than as the underside of a landscape.
+- The fallen sector's pieces are tidy rectangular slabs.
