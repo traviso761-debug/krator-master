@@ -173,6 +173,17 @@ MAT.blPool =new THREE.MeshStandardMaterial({color:0x33434c,roughness:.12,metalne
 MAT.blPoolR=new THREE.MeshStandardMaterial({color:0x2c3320,roughness:.8,metalness:0,side:DS});
 MAT.blKit  =new THREE.MeshStandardMaterial({map:TEX.blKit,roughnessMap:TEX.concreteRM,color:0xffffff,roughness:1,metalness:0,side:DS});
 MAT.blVoid =new THREE.MeshStandardMaterial({color:0x0b0b0c,roughness:1,metalness:0,side:DS});
+// THE SKY GARDEN on the canopy roof. Grass in two grains with bare patches, so
+// 76 000 m2 of lawn 125 m up reads as turf and not as green paint.
+TEX.blGrass=canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),D=id.data;
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;
+  const a=fbm(x/30,y/30,4.1,3),b=fbm(x/5,y/5,8.3,2),c=fbm(x/1.6,y/1.6,2.9,1);
+  let r=74+(a-.5)*40+(c-.5)*22,gg=108+(a-.5)*44+(b-.5)*30+(c-.5)*20,bb=48+(a-.5)*18;
+  if(a<.33){const t=(.33-a)*3;r+=t*48;gg+=t*16;bb+=t*20;}           // worn patches
+  D[i]=r;D[i+1]=gg;D[i+2]=bb;D[i+3]=255;}
+ g.putImageData(id,0,0);});
+MAT.blLawn =new THREE.MeshStandardMaterial({map:TEX.blGrass,color:0xffffff,roughness:1,metalness:0,side:DS});
+MAT.blLawnR=new THREE.MeshStandardMaterial({map:TEX.blGrass,color:0x9a8d62,roughness:1,metalness:0,side:DS});
 kdef('blBox',new THREE.BoxGeometry(1,1,1),MAT.blKit);
 kdef('blDim',new THREE.BoxGeometry(1,1,1),MAT.blVoid);
 // Presets are DERIVED from this: targets/blades/91z-views.js runs after
@@ -233,7 +244,7 @@ function buildBlades(scene,gx,gz,d){reseed(9640+d);KOFF=[gx,0,gz];
   B.sAtY=yy=>{for(let k=0;k<B.n;k++)if(B.y[k+1]>=yy)return(k+(yy-B.y[k])/(B.y[k+1]-B.y[k]))*B.ds;return B.L;};}
 
  // ---- materials and merge lists ----------------------------------------------
- const LW=[],LS=[],LX=[],LC=[],LH=[],LP=[],LQ=[];
+ const LW=[],LS=[],LX=[],LC=[],LH=[],LP=[],LQ=[],LG=[];
  const mW=dd?MAT.blWinR:MAT.blWin,mS=dd?MAT.blSlitR:MAT.blSlit,mC=dd?MAT.blConcR:MAT.blConc;
  const mH=dd?MAT.blShadeR:MAT.blShade,mP=dd?MAT.blPaveR:MAT.blPave,mQ=dd?MAT.blPoolR:MAT.blPool;
 
@@ -506,7 +517,7 @@ function buildBlades(scene,gx,gz,d){reseed(9640+d);KOFF=[gx,0,gz];
    return fbm(th*2.6,r/34,6.6,2)<.50;}:null;
  {const cf=(y)=>(a,b)=>{const th=a*TAU,r=lerp(RO,RAt(a),b);return[r*Math.cos(th),y,r*Math.sin(th)];};
   const hl=cHole?(a,b)=>cHole(a*TAU,lerp(RO,RA[Math.floor(a*NCT)],b)):null;
-  LC.push(gridSurface(cf(YC1),NCT,3,{hole:hl,uS:TAU*150/TC,vS:70/TC}));
+  LG.push(gridSurface(cf(YC1),NCT,3,{hole:hl,uS:TAU*150/14,vS:70/14}));   // the garden's turf
   LH.push(gridSurface(cf(YC0),NCT,3,{hole:hl,uS:TAU*150/TC,vS:70/TC}));
   LC.push(gridSurface((a,b)=>{const th=a*TAU;return[RO*Math.cos(th),lerp(YC0,YC1,b),RO*Math.sin(th)];},NCT,1,
    {hole:cHole?(a,b)=>cHole(a*TAU,RO+2):null,uS:TAU*RO/TC,vS:1}));
@@ -526,6 +537,59 @@ function buildBlades(scene,gx,gz,d){reseed(9640+d);KOFF=[gx,0,gz];
  {const n=96;for(let i=0;i<n;i++){const th=(i+.5)/n*TAU;if(dd&&cHole(th,RO+1))continue;
    kput('blBox',[(RO+.8)*Math.cos(th),YC1+1.3,(RO+.8)*Math.sin(th)],qEuler(0,-th-Math.PI/2,0),[TAU*RO/n*1.02,2.6,1.6],stone());
    if(!dd)kput('strip',[(RO-.4)*Math.cos(th),YC0-.3,(RO-.4)*Math.sin(th)],qEuler(0,-th-Math.PI/2,0),[TAU*RO/n*.8,4,4],WARMW);}}
+
+ // ============================================================ THE SKY GARDEN
+ // The canopy's roof, 125 m up between the blades: a ring of parkland round the
+ // oculus. A promenade on each edge, twelve radial paths between them, a water
+ // channel just outside the oculus upstand, groves, hedge beds, pavilions, lamps
+ // and people. In the ruin the paths are lost under wild growth and the roof
+ // keeps the canopy's own holes (cHole), so nothing grows over thin air.
+ {const Y=YC1,RW0=RO+16,RW1=RO+22,NRAD=12;
+  const edge=th=>RAt(((th/TAU)%1+1)%1);
+  const gone=(th,r)=>dd&&cHole(th,r);
+  const radD=(th,r)=>{const k=Math.round(th/TAU*NRAD);return Math.abs(angN(th-k*TAU/NRAD))*r;};
+  const onPath=(th,r)=>r<RO+14||r>edge(th)-11||(r>RW0-1&&r<RW1+1)||radD(th,r)<4.5;
+  const PAVE=()=>new THREE.Color().setHSL(rr(.07,.10),rr(.04,.09),dd?rr(.20,.27):rr(.50,.60));
+  // the water channel, a ring just outside the oculus
+  LQ.push(gridSurface((a,b)=>{const th=a*TAU,r=lerp(RW0,RW1,b);return[r*Math.cos(th),Y+.05,r*Math.sin(th)];},NCT,1,
+   {hole:dd?(a,b)=>cHole(a*TAU,RW0+3)||rng()<.35:null}));
+  // promenades: flagstones round both edges, and the radial paths
+  const ringPave=(rf,w)=>{const n=180;for(let i=0;i<n;i++){const th=(i+.5)/n*TAU,r=rf(th);
+   if(gone(th,r)||(dd&&rng()<.5))continue;
+   kput('blBox',[r*Math.cos(th),Y+.15,r*Math.sin(th)],qEuler(0,-th-Math.PI/2,0),[TAU*r/n*1.02,.3,w],PAVE());}};
+  ringPave(()=>RO+8,10);ringPave(th=>edge(th)-6,9);
+  for(let k=0;k<NRAD;k++){const th=k*TAU/NRAD,r0=RO+14,r1=edge(th)-11;if(r1<r0+6)continue;
+   for(let r=r0;r<r1;r+=8){if(gone(th,r+4)||(dd&&rng()<.5))continue;
+    kput('blBox',[(r+4)*Math.cos(th),Y+.15,(r+4)*Math.sin(th)],qEuler(0,-th,0),[8.1,.3,6],PAVE());}}
+  // groves and single trees on the lawn
+  const NT=dd?420:300;let placed=0;
+  for(let j=0;j<NT*6&&placed<NT;j++){const th=rng()*TAU,r=rr(RO+14,edge(th)-11);
+   if(onPath(th,r)||gone(th,r))continue;
+   const grove=fbm(Math.cos(th)*3+r/60,Math.sin(th)*3,7.2,2);
+   if(!dd&&grove<.47&&rng()<.8)continue;           // clearings between the groves
+   plant(r*Math.cos(th),Y,r*Math.sin(th),dd?rr(5,16):rr(7,15));placed++;}
+  // hedge beds and flower borders along the radial paths
+  for(let k=0;k<NRAD;k++){const th0=k*TAU/NRAD;
+   for(const side of [-1,1])for(let r=RO+20;r<edge(th0)-16;r+=11){
+    const th=th0+side*7.5/r;if(gone(th,r)||(dd&&rng()<.6))continue;
+    kput('leafCard',[r*Math.cos(th),Y+.9,r*Math.sin(th)],qEuler(0,-th0,0),[9,1.8,2.4],
+     dd?leafC():new THREE.Color().setHSL(rng()<.25?rr(.95,1.05)%1:rr(.22,.30),rr(.35,.6),rr(.26,.4)));}}
+  // pavilions: one in each of six sectors, a slab roof on four posts
+  for(let k=0;k<6;k++){const th=(k+.5)*TAU/6+.18,r=(RO+14+edge(th)-11)/2;
+   if(gone(th,r))continue;const x=r*Math.cos(th),z=r*Math.sin(th),q=qEuler(0,-th,0);
+   if(dd&&rng()<.5){kput('blBox',[x,Y+.8,z],qEuler(rr(-.3,.3),-th,rr(-.3,.3)),[13,1.2,10],stone());continue;}
+   for(const [ox,oz] of [[-5,-4],[5,-4],[-5,4],[5,4]]){const c=Math.cos(-th),s2=Math.sin(-th);
+    kput('blBox',[x+ox*c-oz*s2,Y+2.4,z+ox*s2+oz*c],q,[.8,4.8,.8],stone());}
+   kput('blBox',[x,Y+5.1,z],q,[14,.8,11],stone());
+   if(!dd)for(let j=0;j<6;j++)person(x+rr(-4,4),Y,z+rr(-4,4));}
+  // lamps along the inner promenade, and people strolling
+  if(!dd){for(let i=0;i<48;i++){const th=(i+.5)/48*TAU,r=RO+13;
+    kput('blBox',[r*Math.cos(th),Y+2,r*Math.sin(th)],null,[.35,4,.35],stoneD());
+    kput('strip',[r*Math.cos(th),Y+4.2,r*Math.sin(th)],null,[1.4,1.4,1.4],WARMW);}
+   for(let i=0;i<220;i++){const th=rng()*TAU,r=rr(RO+4,edge(th)-3);if(onPath(th,r)||rng()<.7)person(r*Math.cos(th),Y,r*Math.sin(th));}}
+  else for(let i=0;i<160;i++){const th=rng()*TAU,r=rr(RO+4,edge(th)-3);if(gone(th,r))continue;
+   kput('moss',[r*Math.cos(th),Y+.2,r*Math.sin(th)],qEuler(0,rng()*TAU,0),[rr(1.5,4),rr(.3,.8),rr(1.5,4)],mossC());}
+  REGISTER({name:dd?'The Blades — the sky garden, gone wild':'The Blades — the sky garden',x:0,z:0,y:YC1,r:200,h:22});}
 
  // ============================================================ THE PLINTH
  // Two stepped tiers, 12 m each, the lower one a planted terrace; the upper
@@ -708,4 +772,5 @@ function buildBlades(scene,gx,gz,d){reseed(9640+d);KOFF=[gx,0,gz];
  meshMerged(LH,mH,G);
  meshMerged(LP,mP,G);
  meshMerged(LQ,mQ,G);
+ meshMerged(LG,dd?MAT.blLawnR:MAT.blLawn,G);
  KOFF=[0,0,0];return G;}

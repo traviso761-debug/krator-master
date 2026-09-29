@@ -21,6 +21,7 @@ const BLR=(S,th,rho,y)=>BLW(S,Math.cos(th)*rho,y,Math.sin(th)*rho);
 // THE HERO: from the south-south-west, where the sun is, 1 500 m off and 330 m
 // up: the whole flame, the tall north-west blade curling away at the back, and
 // through the south entrance the canopy's lintel and the plaza under it.
+const RO_BL=S=>S.RO;
 const BLHERO=S=>BLW(S,-640,330,1380).concat(BLW(S,10,390,0));
 const VIEWS={
  'The Blades':               BLHERO(BLA),
@@ -29,6 +30,14 @@ const VIEWS={
  'The silhouette':           BLW(BLA,1350,70,2250).concat(BLW(BLA,0,400,0)),
  // INSIDE THE PLAZA, LOOKING UP: standing south of the pool, looking up and
  // north through the oculus between the blades to the tallest curling away.
+ // THE SKY GARDEN on the canopy roof: from over the oculus, 70 m above the
+ // lawn, looking out across the ring to the groves and the blades rising from it.
+ 'The sky garden':           BLR(BLA,Math.PI*.15,40,BLA.YC1+70).concat(BLR(BLA,Math.PI*.15+.35,150,BLA.YC1+8)),
+ 'The sky garden at night':  BLR(BLA,Math.PI*.15,40,BLA.YC1+70).concat(BLR(BLA,Math.PI*.15+.35,150,BLA.YC1+8)).concat([1]),
+ // on the lawn itself, eye height, along a radial path toward a blade
+ // Paths run on multiples of 30 degrees; this one is 180. Standing ON it keeps
+ // the lens out of the groves, and the hedges either side frame the view.
+ 'In the garden':            BLR(BLA,Math.PI,RO_BL(BLA)+24,BLA.YC1+1.7).concat(BLR(BLA,Math.PI,200,BLA.YC1+24)),
  'Up between the blades':    BLW(BLA,-18,BLA.PY+1.7,72).concat(BLW(BLA,-30,720,-170)),
  // THE STAIR AND THE PORTAL, at a person's height at the foot of the flight:
  // 120 steps narrowing to the slot between the two tallest blades, the lintel.
@@ -64,6 +73,7 @@ const VIEWS={
                                return BLW(S,40,260,120).concat(BLW(S,(f.a[0]+f.b[0])/2,S.PY+16,(f.a[2]+f.b[2])/2));})(BLB),
  // THE CHOKED PLAZA from a person standing on a rubble heap in its south-east
  // quarter: the fallen blade, the talus, the canopy's slabs, the dead walls.
+ 'The wild garden':          BLR(BLB,Math.PI*.15,40,BLB.YC1+70).concat(BLR(BLB,Math.PI*.15+.35,150,BLB.YC1+8)),
  'The choked plaza':         BLW(BLB,70,BLB.PY+9,105).concat(BLW(BLB,-80,62,-60)),
  // THE BROKEN CROWNS: high off the south-east, the stumps and the lost curls.
  'The broken crowns':        BLW(BLB,640,900,700).concat(BLW(BLB,-20,520,-40)),
