@@ -475,12 +475,17 @@ B[30]=function(T,st,lv){const S=SP[30],H=T.H,rb=T.rb,rc=shade(C(pick(S.bark)),-.
  tips.forEach(p=>{const R=T.crownR*rr(.8,1.2),n=lv===2?ri(3,5):2;for(let k=0;k<n;k++){const a=rr(0,TAU),d=R*rr(0,.3);BIO.put('anemone',[p.x+Math.cos(a)*d,p.y+rr(0,.3)*R,p.z+Math.sin(a)*d],qEuler(rr(-.5,.5),rr(0,TAU),rr(-.5,.5)),R*rr(1.3,1.8),col);st.blooms++;}});};
 
 // 31 the FLAME CYPRESS: a Mediterranean column that twists as it rises, like a flame: dark sprays wound in a spiral, a whorled foot, bronze at the tips
-B[31]=function(T,st,lv){const S=SP[31],H=T.H,rb=T.rb,la=rr(0,TAU),lk=rr(0,.03),tw=rr(.18,.32)*(rng()<.5?-1:1);
- const top=bole(T,S,H*.25,u=>rb*(1+.5*Math.exp(-u*H/1)),{fam:'xbark0',flutes:4,fluteA:.14,twist:.9,vs:1.2,seg:lv===2?8:6,lean:[Math.cos(la)*lk,Math.sin(la)*lk]});
- const hc=vary(pick(S.leaf),.02,.05,.04),rows=lv===2?Math.round(H/1.1):Math.round(H/2.4),per=lv===2?4:3;
- for(let r=0;r<rows;r++){const u=lerp(.1,.99,r/(rows-1)),R=T.crownR*Math.pow(Math.sin(Math.PI*Math.min(1,u*1.25+.08)),.55)*(1-u*.55)+.25,y=T.y0+H*u,cx=T.x+Math.cos(la)*lk*H*u,cz=T.z+Math.sin(la)*lk*H*u;
-  for(let k=0;k<per;k++){const a=k/per*TAU+u*H*tw,sz=Math.max(1,R*rr(1.1,1.4));
-   clumpAt('needle',cx+Math.cos(a)*R*.45,y,cz+Math.sin(a)*R*.45,sz,.9,u>.8&&rng()<.3?bright(C(0xa07a40),1.25):bright(hc,1.3),cx,y,cz,R+.5,1.2,null);st.clumps++;}}
+B[31]=function(T,st,lv){const S=SP[31],H=T.H,rb=T.rb,la=rr(0,TAU),lk=rr(0,.03),tw=rr(.25,.45)*(rng()<.5?-1:1),ph=rr(0,TAU);
+ bole(T,S,H*.12,u=>rb*(1+.5*Math.exp(-u*H/1)),{fam:'xbark0',flutes:4,fluteA:.14,twist:.9,vs:1,seg:lv===2?8:6});
+ // the column: a lathe of packed leaves, swelling low and drawing to a point, three lobes wound up it like a flame
+ const hc=vary(pick(S.leaf),.02,.05,.04),n=lv===2?14:8,rings=[];
+ for(let i=0;i<=n;i++){const u=lerp(.06,1,i/n),R=T.crownR*Math.pow(Math.sin(Math.PI*Math.min(1,u*1.2+.1)),.6)*(1-u*.6)+.06,y=T.y0+H*u;
+  rings.push({x:T.x+Math.cos(la)*lk*H*u,y,z:T.z+Math.sin(la)*lk*H*u,r:R,yy:H*u,col:bright(u>.85?C(0x6a6a3a).lerp(hc,.5):hc,lerp(1.0,1.35,u))});}
+ rings.push({x:rings[n].x,y:T.y0+H+.4,z:rings[n].z,r:.04,yy:H+.4,col:bright(hc,1.3)});
+ st.trunk+=BIO.lathe('xleaf',rings,lv===2?12:8,3,2.5,(R,ang)=>R.r*(1+.16*Math.cos(3*ang+R.yy*tw+ph)+.05*Math.cos(7*ang-R.yy*.9)),(R,ang)=>.72+.28*(.5+.5*Math.cos(3*ang+R.yy*tw+ph)));
+ // a little fuzz on the column so its outline is not a turned spindle
+ if(lv===2)for(let k=0,m=ri(6,10);k<m;k++){const u=rr(.15,.85),a=rr(0,TAU),R=T.crownR*Math.pow(Math.sin(Math.PI*Math.min(1,u*1.2+.1)),.6)*(1-u*.6);
+  clumpAt('needle',T.x+Math.cos(a)*R*.95,T.y0+H*u,T.z+Math.sin(a)*R*.95,rr(.9,1.4),.8,bright(hc,1.3),T.x,T.y0+H*u,T.z,R+.5,1,null);st.clumps++;}
  T.spread=T.crownR;if(lv===2)reg(S,T);};
 // 32 the STRAWBERRY TREE: a twisting bole whose bark peels to red agate, a dark rounded crown, clusters of red and orange berries and white bells
 B[32]=function(T,st,lv){const S=SP[32],H=T.H,rb=T.rb,la=rr(0,TAU);

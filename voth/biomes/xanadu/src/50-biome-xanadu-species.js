@@ -42,7 +42,7 @@ Object.assign(PAL.irid,{
  OG:[0x7aa83a,0x8ab848,0x5a9a40,0x9ac050],                      // the dawn redwood: copper-orange, green away from the sun
  GG:[0xe0c030,0xf0d040,0xd8b028],                               // the ginkgo: green going gold
  PK:[0xb088e0,0xc898f0,0x9a78d8,0xe0a0d0],                      // blossom: pink -> lavender
- WGP:[0x7ad890,0xb07ef0,0x60d0b0,0xc890ff,0x98e878],             // the haze blossom: white going green or purple with the light
+ WGP:[0xc0f0c8,0xdcc4fa,0xb0ecd8,0xe6d0ff,0xcef4b8],             // the haze blossom: white going green or purple with the light
  WV:[0x5a70e0,0x6a60d0,0x4a88e8,0x8858d8],                      // wisteria: violet -> cornflower
  SL:[0xc8a0e8,0xb8b0f0,0xe0c0f0],                               // the frost willow: silver -> lavender
  CP:[0xc02848,0xd84a20,0x8a2a6a,0xe06a18],                      // the ironwood's jewels: amber -> crimson / plum
@@ -517,6 +517,8 @@ BIO.bucket('xbarkF',BIO.iridBarkMat(XANADU.BARKTEX[4],'x-frill',[0.92,1.12,1.0],
 BIO.bucket('xwood',BIO.barkMat(XANADU.WOODTEX),{label:'Petrified-looking dead wood',uvScale:[3,4]});
 BIO.bucket('xrock',M.rock,{label:'Boulders',uvScale:[6,6]});
 BIO.bucket('xfar',BIO.barkMat(null),{label:'Far trees (impostors)'});
+// solid foliage: a lathe skinned in packed leaves (the flame cypress's column)
+BIO.bucket('xleaf',BIO.barkMat(XANADU.CUSHIONTEX),{label:'Dense foliage (flame cypress)',uvScale:[2,2]});
 
 // ---------------------------------------------------------------- instanced items
 BIO.def('feather',BIO.geo.clump(),M.feather,{attrs:['aN','aC2'],label:'Dawn redwood feathers'});
