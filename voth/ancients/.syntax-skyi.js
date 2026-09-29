@@ -17547,7 +17547,7 @@ function siSkin(kind,dec,emis){const S=emis?256:512;
     if(kind===0&&ci%4===0&&fy<.14)v-=34;                                     // panel line
     if(sill)v+=16;
     if(edge===-3)v-=48;                                                      // a panel line
-    r=v*1.03;gg=v*.965;b=v*.86;}
+    r=v*1.04;gg=v*.945;b=v*.81;}
    if(dec){r*=.76;gg*=.755;b*=.72;
     const m=clamp((fbm(xm/2.2,ym/2.2,97.3,2)-.62)*2.4,0,1)*.6;r=lerp(r,56,m);gg=lerp(gg,70,m);b=lerp(b,42,m);  // lichen
     if(fbm(xm*1.3,ym/5,98.9,2)>.6){r*=.7;gg*=.7;b*=.7;}}                      // runs
@@ -17556,7 +17556,7 @@ function siSkin(kind,dec,emis){const S=emis?256:512;
 TEX.siAsh=siSkin(0,0,0);TEX.siAshR=siSkin(0,1,0);
 TEX.siWal=siSkin(1,0,0);TEX.siWalR=siSkin(1,1,0);TEX.siWalE=siSkin(1,0,1);
 const siStd=o=>new THREE.MeshStandardMaterial(Object.assign({roughness:.88,metalness:0,side:DS},o));
-MAT.siWall =siStd({map:TEX.siWal,emissive:0xffffff,emissiveMap:TEX.siWalE,emissiveIntensity:1.1});
+MAT.siWall =siStd({map:TEX.siWal,emissive:0xffffff,emissiveMap:TEX.siWalE,emissiveIntensity:1.6});
 MAT.siWallR=siStd({map:TEX.siWalR});
 MAT.siAsh  =siStd({map:TEX.siAsh});
 MAT.siAshR =siStd({map:TEX.siAshR});
@@ -17566,7 +17566,14 @@ MAT.siDeckR=siStd({map:TEX.siAshR,color:0xb4ac9c});
 // seen from the street below would come back sunlit on a pale material.
 MAT.siShade =siStd({map:TEX.siAsh,color:0x6c7080});
 MAT.siShadeR=siStd({map:TEX.siAshR,color:0x505257});
-MAT.siSect =siStd({map:TEX.siAshR,color:0x4a423a});
+// A break in section: a floor edge every 4 m, the dark of the rooms between
+// them, a cross-wall now and then (a 16 m tile, like the walls).
+TEX.siSect=canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),D=id.data,pm=16/w;
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,xm=(x+.5)*pm,ym=(y+.5)*pm,fi=Math.floor(ym/4),fy=ym-fi*4,n=fbm(xm/1.6,ym/1.6,91.7,2);
+  let v;if(fy<.55)v=128+n*44-(fy<.12?30:0);else if(h3(Math.floor(xm/5.3),fi,90.3)<.45&&xm%5.3<.4)v=84+n*26;else v=24+n*26+(fy<.9?-8:0);
+  D[i]=v*1.04;D[i+1]=v;D[i+2]=v*.9;D[i+3]=255;}
+ g.putImageData(id,0,0);});
+MAT.siSect =siStd({map:TEX.siSect});
 MAT.siVoid =siStd({color:0x0c0b0a,roughness:1});
 MAT.siGlow =new THREE.MeshBasicMaterial({color:0xffc27a});
 MAT.siBeamM=new THREE.MeshBasicMaterial({color:0x5fc8ff,transparent:true,opacity:.42,blending:THREE.AdditiveBlending,depthWrite:false,side:DS,fog:false});
@@ -17741,8 +17748,8 @@ function siStrand(C,s,yA,yB,o){o=o||{};const S=C.S,dx=C.dx,H=.34;
   return{Q:Q,y:y,yt:y+ht,yb:yb,pho:pho,phi:phi,st:st,q:q,
    thbo:Q.th+Q.sg*q/Q.ro,thbi:Q.th+Q.sg*q/Math.max(Q.ri,1)};};
  // samples about 2.4 m apart along the outer edge
- const Y=[yA];for(let y=yA;y<yB;){const Q=siStr(s,y);y+=Math.max(.35,2.4/Math.sqrt(1+Math.pow(Q.om*Q.ro,2)));Y.push(Math.min(y,yB));if(y>=yB)break;}
- const X=Y.map(sec);let arc=0,lastRib=0,lastBay=0,lastDoor=0,lastTie=0,lastFig=0,lastMoss=0,lastVine=0;
+ const Y=[yA];for(let y=yA;y<yB;){const Q=siStr(s,y);y+=Math.max(.3,1.6/Math.sqrt(1+Math.pow(Q.om*Q.ro,2)));Y.push(Math.min(y,yB));if(y>=yB)break;}
+ const X=Y.map(sec);let arc=0,lastRib=0,lastBay=0,lastDoor=0,lastTie=0,lastFig=0,lastMoss=0,lastVine=0,lastLit=0;
  const NR=3;
  for(let j=0;j+1<X.length;j++){const a=X[j],b=X[j+1],A=a.Q,B=b.Q;
   const da=Math.hypot(B.ro*Math.cos(B.th)-A.ro*Math.cos(A.th),B.ro*Math.sin(B.th)-A.ro*Math.sin(A.th));const u0=arc,u1=arc+da;arc=u1;
@@ -17777,6 +17784,9 @@ function siStrand(C,s,yA,yB,o){o=o||{};const S=C.S,dx=C.dx,H=.34;
   if(arc-lastBay>(C.bayN||27)&&A.a>.6&&hw>12){lastBay=arc;C.bayN=rr(18,34);const bw=rr(7,12),bh=Math.min(hw*.7,rr(8,15)),bd=rr(2.6,4.6),r=A.ro+bd/2-.2,yc=a.yb+rr(1.5,hw-bh-1.5)+bh/2;
    C.kp(bx,[r*nrm[0],yc,r*nrm[2]],qn,[bw,bh,bd],null);
    for(const f of (bw>9?[-.22,.22]:[0]))C.kp(dx?'siDim':'siLit',[(r+bd/2+.03)*nrm[0]-nrm[2]*f*bw,yc+.2,(r+bd/2+.03)*nrm[2]+nrm[0]*f*bw],qn,[.8,bh*.5,.1],null);}
+  // lit openings in the street's outer wall: the rooms under the stair
+  if(dx===0&&arc-lastLit>3.2&&hw>8){lastLit=arc;for(let k=0;k<2;k++)if(rng()<.42){const yy=rr(a.yb+2,a.yt-3.5),r=A.ro+.05;
+   C.kp('siLit',[r*nrm[0],yy,r*nrm[2]],qn,[.9,2.8,.1],null);}}
   if(A.gap<.5&&a.st&&arc-lastDoor>37){lastDoor=arc;const f=siFacet(A.th),n2=[Math.cos(f.mid),0,Math.sin(f.mid)];
    siDoor(C,A.cr*nrm[0],a.yt,A.cr*nrm[2],n2,3,5,dx===0);}
   if(A.gap>4&&arc-lastTie>17){lastTie=arc;const y=a.y-A.T*.55;
@@ -17867,12 +17877,16 @@ function buildSkyI(scene,gx,gz,d){reseed(9760+d);KOFF=[gx,0,gz];
    kp:(n,p,q,s,c)=>kput(n,[p[0],p[1]-y0,p[2]],q,s,c)};
   const yLo=upper?y0:SI_Y0,cut=y1!=null?y1:(d===1&&!upper?SI_SNAP:null),yHi=cut!=null?cut:SI_H;
   siCore(C,yLo,yHi,!!upper,cut!=null);
+  // lit slots scattered on the shaft's faces: rooms awake at night
+  if(dx===0&&C.kit)for(let i=0;i<260;i++){const y=rr(yLo+6,Math.min(yHi,SI_K[7])-4),k=Math.floor(rng()*8),f=rr(.15,.85),i7=siSeg(y);
+   const a0=SI_CA[k],a1=k<7?SI_CA[k+1]:SI_CA[0]+TAU,r=siRseg(i7,y),mid=(a0+a1)/2,n=[Math.cos(mid),0,Math.sin(mid)];
+   C.kp('siLit',[lerp(r*Math.cos(a0),r*Math.cos(a1),f)+n[0]*.05,y,lerp(r*Math.sin(a0),r*Math.sin(a1),f)+n[2]*.05],qFacing(n),[.8,2.6,.1],null);}
   // STEPPED MASSES on the shaft between the strands: rooms that project from
   // it wherever no strand passes, each with a lit slot, some with a set-back
   // block on top — the blocky vocabulary of the foot carried up the shaft
   {const TM=siTh(SI_YE),bx=dx?'siBoxR':'siBox';
    const passes=(s,al)=>{const out=[],sg=s?-1:1;for(let T0=(((al-SI_A0-(s?Math.PI:0))*sg)%TAU+TAU)%TAU;T0<=TM;T0+=TAU)out.push(siThInv(T0));return out;};
-   for(let i=0;i<46;i++){const y=rr(SI_YS+10,352),al=rng()*TAU,h=rr(9,20),w=rr(7,14),dp=rr(3,6);
+   for(let i=0;i<80;i++){const y=rr(SI_YS+10,352),al=rng()*TAU,h=rr(9,20),w=rr(7,14),dp=rr(3,6);
     if(y<yLo+8||y>yHi-14)continue;
     let ok=true;for(const s of [0,1])for(const yp of passes(s,al)){const T=siT(clamp((yp-SI_YS)/(SI_YE-SI_YS),0,1));if(yp-T-5<y+h/2&&yp+5>y-h/2)ok=false;}
     if(!ok)continue;
@@ -17889,7 +17903,7 @@ function buildSkyI(scene,gx,gz,d){reseed(9760+d);KOFF=[gx,0,gz];
     // its middle on the plain
     siStrand(C,s,lo,K.y0,{capA:capA,capB:'sect'});
     if(K.hang){const HC={S:siSet(new THREE.Matrix4().makeTranslation(0,-y0,0).multiply(K.M)),dx:dx,y0:y0,kit:false,hole:null,jseed:9763,kp:()=>{}};
-     siStrand(HC,s,K.y0+.8,K.y1,{capA:'sect',capB:'wall',stairs:true});siFlushSet(HC.S,dx,P);
+     siStrand(HC,s,K.yh,K.y1,{capA:'sect',capB:'wall',stairs:true});siFlushSet(HC.S,dx,P);
      siStrand(C,s,K.y1,hi,{capA:'wall',capB:capB});}
     else siStrand(C,s,K.y1,hi,{capA:'sect',capB:capB});}
    else siStrand(C,s,lo,hi,{capA:capA,capB:capB});}
@@ -17897,13 +17911,17 @@ function buildSkyI(scene,gx,gz,d){reseed(9760+d);KOFF=[gx,0,gz];
  // ---- the ruin's breaks, placed so the damage faces the sun and the camera:
  // B broken where it runs south-east, A hanging where it runs south-west
  if(d===1){const near=(s,ya,yb,want)=>{let best=ya,bd=9;for(let y=ya;y<yb;y+=1){const th=siStr(s,y).th;let e=Math.abs(((th-want)%TAU+TAU+Math.PI)%TAU-Math.PI);if(e<bd){bd=e;best=y;}}return best;};
-  const yB0=near(1,140,215,70*Math.PI/180),yA0=near(0,215,285,118*Math.PI/180);
-  const QA=siStr(0,yA0+48),hp=siP((QA.ri+QA.ro)/2,QA.th,yA0+48);
+  // A: stub to yA0, a 16 m gap (fallen into the rubble), then 34 m hanging
+  // from a hinge at yA0+50, its broken lower end swung out and down into the
+  // gap. Both breaks are centred on the side the ruin's hero camera sees.
+  const W0=112*Math.PI/180,yB0=near(1,178,243,W0)-28,yA0=near(0,229,296,W0)-33,yH=yA0+50;
+  const QA=siStr(0,yH),hp=siP((QA.ri+QA.ro)/2,QA.th,yH);
   const rad=new THREE.Vector3(Math.cos(QA.th),0,Math.sin(QA.th)),tan=new THREE.Vector3(-Math.sin(QA.th),0,Math.cos(QA.th));
-  const R=new THREE.Matrix4().makeRotationAxis(tan,.42).multiply(new THREE.Matrix4().makeRotationAxis(rad,-.55));
+  const R=new THREE.Matrix4().makeRotationAxis(tan,.5).multiply(new THREE.Matrix4().makeRotationAxis(rad,-.62));
   const M=new THREE.Matrix4().makeTranslation(hp[0],hp[1],hp[2]).multiply(R).multiply(new THREE.Matrix4().makeTranslation(-hp[0],-hp[1],-hp[2]));
-  site.brk=[{y0:yA0,y1:yA0+48,hang:true,M:M},{y0:yB0,y1:yB0+56,hang:false}];
-  site.hinge=hp;site.hangLo=new THREE.Vector3().fromArray(siP(siStr(0,yA0).ro,siStr(0,yA0).th,yA0)).applyMatrix4(M).toArray();}
+  site.brk=[{y0:yA0,yh:yA0+16,y1:yH,hang:true,M:M},{y0:yB0,y1:yB0+56,hang:false}];
+  const QM=siStr(0,yA0+33);
+  site.hinge=hp;site.hangMid=new THREE.Vector3().fromArray(siP(QM.ro,QM.th,yA0+33-QM.T/2)).applyMatrix4(M).toArray();}
  const BP=new THREE.Group();BP.position.set(0,SI_Y0,0);G.add(BP);useGroupXF(BP);
  if(d!==2)build(BP,dd,SI_Y0,null,false);else build(BP,1,SI_Y0,SI_CUT,false);
  endGroupXF();
@@ -17926,9 +17944,15 @@ function buildSkyI(scene,gx,gz,d){reseed(9760+d);KOFF=[gx,0,gz];
    const FC={S:siSet(new THREE.Matrix4().makeTranslation(-c[0],-c[1],-c[2])),dx:1,y0:0,kit:false,hole:null,jseed:9764,kp:()=>{}};
    siStrand(FC,1,ya,yb,{capA:'sect',capB:'sect'});
    const Gp=new THREE.Group();G.add(Gp);siFlushSet(FC.S,1,Gp);
-   const th=thF+(p?.28:-.12)+rr(-.05,.05),r=p?rr(150,160):rr(116,124);
-   Gp.position.set(r*Math.cos(th),0,r*Math.sin(th));Gp.rotation.set(rr(-.2,.2)+(p?.5:-.3),rr(0,TAU),rr(.9,1.2)*(p?1:-1));
-   siDrop(Gp,2.5);
+   // laid flat on its soffit: the climb taken out about the axis square to
+   // the path, a roll of its own, and a yaw from the fall
+   const th=thF+(p?.3:-.1)+rr(-.05,.05),r=p?rr(152,160):rr(118,124);
+   const fh=new THREE.Vector3(Math.sin(Qm.th),0,-Math.cos(Qm.th)),kx=new THREE.Vector3().crossVectors(fh,new THREE.Vector3(0,1,0)).normalize();   // B runs -theta
+   const qF=new THREE.Quaternion().setFromAxisAngle(kx,-Math.atan(1/Math.max(Qm.a,.05)));
+   const qR=new THREE.Quaternion().setFromAxisAngle(fh,rr(.12,.3)*(p?1:-1)),qY=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),rr(-.7,.7));
+   Gp.quaternion.copy(qY.multiply(qR).multiply(qF));
+   Gp.position.set(r*Math.cos(th),0,r*Math.sin(th));
+   siDrop(Gp,2.2);
    rubbleRing(Gp.position.x,0,Gp.position.z,6,34,70,3);
    REGISTER({name:'Skyscraper I — a fallen section of strand B',x:Gp.position.x,z:Gp.position.z,r:36,h:40});
    falls.push([Gp.position.x,Gp.position.z]);}
@@ -20149,7 +20173,7 @@ const VIEWS={
  // THE FALLEN STRAND: strand B's lost section on the plain, the ruin behind.
  'The fallen strand':         (function(S){const f=S.falls[0];return SIV(S,SIOUT(f,150,40),[f[0]*.55,70,f[1]*.55]);})(SIR),
  // THE HANGING STRAND: strand A broken below its hinge, swung out and down.
- 'The hanging strand':        (function(S){const h=S.hinge;return SIV(S,SIOUT(h,170,h[1]-10),[h[0],h[1]-25,h[2]]);})(SIR),
+ 'The hanging strand':        (function(S){const h=S.hangMid||S.hinge;return SIV(S,SIOUT(h,210,h[1]-30),[h[0],h[1]+4,h[2]]);})(SIR),
  // NIGHT: the hero after dark, the lit slots and the beam from the tip.
  'Night':                     SIHERO(SIA,1),
 };
