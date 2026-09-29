@@ -167,7 +167,7 @@ function xnIwan(x,y,z,ry,w,h,d,c,o){o=o||{};c=c||xC(xPick(XPAL.wash));const P=(u
 // into a court); else a back wall with a door closes it. (x,z) is the front face centre, ry outward, d the depth.
 function xnIwanOpen(x,y,z,ry,w,h,d,c,o){o=o||{};c=c||xC(xPick(XPAL.wash));const P=(u,v)=>loc(x,z,u,v,ry);const ow=w*.72,oh=h*.8;   // the opening
  const FW=ow/.7,FH=oh/.84;const m=P(0,-d/2);kput('xArchW',[m[0],y,m[1]],qEuler(0,ry,0),[FW,FH,d],c);            // the tunnel: the arch frame extruded to the depth
- const fc=P(0,.02);kput(o.item||'xArchM',[fc[0],y,fc[1]],qEuler(0,ry,0),[FW,FH,.16],null);                          // its mosaic face
+ const fc=P(0,.02);kput(o.item||'xArchM',[fc[0],y,fc[1]],qEuler(0,ry,0),[FW,FH,.16],o.faceC||null);                          // its mosaic face
  // the vault and cheeks clad in mosaic: two planes on the cheeks, a fan of panels following the arch's curve
  const spring=.7/1.35*FH,ax=[Math.sin(ry),0,Math.cos(ry)];for(const s of[-1,1]){const q=P(s*(ow/2-.04),-d/2);vB('xMosAB',q[0],y,q[1],.06,spring,d-.1,ry,null);}
  const bz=t=>{const u=1-t;return [u*u*(-.35)+2*u*t*(-.35)+0,u*u*.7+2*u*t*(.7+.7*.44)+t*t*(.7+.7*.62)];};   // the arch curve in shape space (left half)

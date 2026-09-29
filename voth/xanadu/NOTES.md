@@ -190,3 +190,24 @@ cross was not rendering.
   down toward the viewer; a second stance stands at the plunge pool.
 * A bend's arms are +z and +x; ry π turns them to −z,−x and ry π/2 to +x,−z (the garden's bends were wrong).
   `xnPave` takes a y. Extra stances may carry a camera height (`eyes:[[name,dx,dz,tdx,tdz,dy]]`).
+
+## Round 7 (Sep 29 2026) — the Grand Vizier's palace, the slope masses
+
+Travis: the ramp's and cascade's stone was rendering weird and hiding the water; a smaller Grand Vizier's palace
+after three pictures (the Eram garden pavilion, the Majorelle house, a Qajar brick pavilion with two-storey
+arcaded loggias).
+
+* The ramp's fill was two level boxes the tilted slab cut through, and the cascade's batter mass sat on the wrong
+  side of its steps, with the top paving floating over nothing; the terrace pieces' paving overhung their batter.
+  The ramp is one tilted rubble slab now, the cascade's treads are solid to the ground with a block under the top,
+  and the step and waterfall stand on straight-sided blocks. The slope pieces' eye-level views stand at the low
+  end looking up the water (a def's `eye` takes a camera height as a fifth element). Def names lost their commas
+  (verify.py splits view lists on them).
+* `86-xa-vizier.js` (seeds 32400–32499), `xa_vizier` in "The Sultan" row: a two-storey house of two arcaded
+  loggia wings (open pointed arcades on slender columns, a rail on the upper floor, doors and mosaic panels on
+  the wall behind) either side of a taller centre with a hollow two-storey iwan, octagonal bays with little tiled
+  roofs on the outer corners, wide timber eaves on painted brackets, a dome or gilt roof on the centre. In front:
+  a long turquoise pool between marigold beds, cypress and palm avenues, a fountain basin at its head, hedged
+  walks, a garden wall with an open gate between bulb-topped piers. Three dresses by variant: Majorelle cobalt with
+  turquoise arches and lemon shutters; Qajar brick with cream arches and mosaic; Eram cream with tile spandrels.
+  New helpers: `xnXMPalm`, `xnXMBed`, `xnXMLoggia`; `xnIwanOpen` takes `faceC`.

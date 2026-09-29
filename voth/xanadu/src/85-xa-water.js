@@ -26,7 +26,7 @@ function xnRillCross(x,y,z,S,o){o=o||{};const w=o.w||1.2,c=o.c||xC(xPick(XPAL.st
 // a sheet of falling water h tall down a face at (x,z) facing ry, foam at its foot
 function xnWaterSheet(x,y,z,ry,w,h){const p=loc(x,z,0,.08,ry);vB('xWaterB',p[0],y,p[1],w,h,.12,ry,XSHEET);for(let k=0;k<Math.round(w*4);k++){const q=loc(x,z,rr(-w/2,w/2),rr(.1,.5),ry);vBall('vBallW',q[0],y+rr(.02,.3),q[1],rr(.06,.14),XFOAM);}}
 
-function xaWaterDef(key,name,fn,rise,fam){XA.def({key,name,family:fam||'Water',tags:{type:['infrastructure'],wealth:'civic',lit:false},w:8,d:8,h:(rise||0)+2,fw:8,fd:8,snap:8,rise:rise||0,build:fn});}
+function xaWaterDef(key,name,fn,rise,fam){XA.def({key,name,family:fam||'Water',tags:{type:['infrastructure'],wealth:'civic',lit:false},w:8,d:8,h:(rise||0)+2,fw:8,fd:8,snap:8,rise:rise||0,eye:rise?[5,-9,0,0,.6]:undefined,build:fn});}
 // the strip: every piece paves its plot so a run reads as one walk
 function xnXLPlot(V,c,y,z,d){xnPave(0,z||0,8,d||8,0,c,2,y||0);return V===1?'xBTileB':'vStone';}
 xaWaterDef('xa_rill','Rill (straight)',function(G,o){reseed(32301+(o.v|0));const V=xV(o),c=xC(xPick(XPAL.stone));vnReg('Rill',0,0,4.2,1.2);const curb=xnXLPlot(V,c);xnRill(0,0,0,0,8,{c,curb,w:V===2?1.8:1.2});});
@@ -47,30 +47,30 @@ XA.def({key:'xa_rill_garden',name:'Rill garden',family:'Water',tags:{type:['infr
 
 // ---------------------------------------------------------------- the slope pieces
 // a terrace mass filling the +z part of the plot up to `rise`, rubble-faced; the paving on its top and at its foot
-function xnXLTerrace(rise,dz,c,V){xnTerrace(0,0,4-dz/2,8,dz,0,rise,V===2?xC(xPick([0x6a5a48,0x7a6a54,0x5c4e40])):undefined);xnPave(0,4-dz/2,8,dz,0,c,2,rise);xnPave(0,-(8-dz)/2,8,8-dz,0,c,2,0);}
+function xnXLTerrace(rise,dz,c,V){vB('xRubB',0,0,4-dz/2,8,rise-.1,dz,0,V===2?xC(xPick([0x6a5a48,0x7a6a54,0x5c4e40])):xC(xPick(XPAL.rubble)));xnPave(0,4-dz/2,8,dz,0,c,2,rise-.1);xnPave(0,-(8-dz)/2,8,8-dz,0,c,2,0);}   // a straight-sided block: its top and the plot edge agree
 // STEP — rise 1.5: the rill on a terrace, three cascade steps down its face, the rill on at the foot
-xaWaterDef('xa_rill_step','Rill (step, 1.5 m)',function(G,o){reseed(32361+(o.v|0));const V=xV(o),c=xC(xPick(XPAL.stone)),curb=V===1?'xBTileB':'vStone',w=V===2?1.8:1.2,R=1.5;vnReg('Rill step',0,0,4.2,R+1);
+xaWaterDef('xa_rill_step','Rill step (1.5 m)',function(G,o){reseed(32361+(o.v|0));const V=xV(o),c=xC(xPick(XPAL.stone)),curb=V===1?'xBTileB':'vStone',w=V===2?1.8:1.2,R=1.5;vnReg('Rill step',0,0,4.2,R+1);
  xnXLTerrace(R,4,c,V);xnRill(0,R,2.1,0,3.8,{c,curb,w});
  for(let k=0;k<3;k++){const yk=R-(k+1)*.5,zk=-.3-k*.6;vB('vStone',0,yk-.3,zk,w+1.2,.32,.6,0,c);vB('xWaterB',0,yk-.02,zk,w+.6,.14,.5,0,XWATER);xnWaterSheet(0,yk,zk+.3,0,w+.4,.5);vB(curb,0,yk-.05,zk,.3,.3,.6,0,c);}
  xnRill(0,0,-3.05,0,1.9,{c,curb,w});vnFolk(2.8,0,-2.5,1,1);},1.5,'Water — slopes');
 // RAMP — rise 1.5: the whole plot tilted, the rill sliding down it
-xaWaterDef('xa_rill_ramp','Rill (ramp, 1.5 m)',function(G,o){reseed(32371+(o.v|0));const V=xV(o),c=xC(xPick(XPAL.stone)),curb=V===1?'xBTileB':'vStone',w=V===2?1.8:1.2,R=1.5;vnReg('Rill ramp',0,0,4.2,R+1);
+xaWaterDef('xa_rill_ramp','Rill ramp (1.5 m)',function(G,o){reseed(32371+(o.v|0));const V=xV(o),c=xC(xPick(XPAL.stone)),curb=V===1?'xBTileB':'vStone',w=V===2?1.8:1.2,R=1.5;vnReg('Rill ramp',0,0,4.2,R+1);
  const a=Math.atan2(R,8),L=Math.hypot(R,8),q=qEuler(-a,0,0),yc=R/2;   // tilted so the +z edge is `rise` up
- vB('xRubB',0,-.2,-2,8,R/2+.2,4,0,xC(xPick(XPAL.rubble)));vB('xRubB',0,-.2,2,8,R+.1,4,0,xC(xPick(XPAL.rubble)));   // the fill under it
+ kput('xRubB',[0,yc-1.0,0],q,[8,2.0,L],xC(xPick(XPAL.rubble)));   // the fill: a tilted rubble slab, its low end at grade, its high end 1.5 up
  kput('vStone',[0,yc+.1,0],q,[8,.16,L],c.clone().multiplyScalar(.85));const n=4;for(let i=0;i<n;i++)for(let j=0;j<n;j++){const u=-4+(i+.5)*2,v=-L/2+(j+.5)*L/n;if(Math.abs(u)<w/2+.6)continue;
   kput('vFlag',[u,yc+.2+v*Math.sin(a)*1,v*Math.cos(a)],q,[1.92,.05,L/n-.08],c.clone().multiplyScalar(rr(.9,1.06)));}
  kput('xTilesB',[0,yc+.12,0],q,[w+.2,.2,L],xC(XPAL.turquoise));kput('xWaterB',[0,yc+.24,0],q,[w,.16,L],XWATER);for(const s of[-1,1])kput(curb,[s*(w/2+.15),yc+.3,0],q,[.3,.3,L],c);
  for(let k=0;k<6;k++)vBall('vBallW',rr(-w/2,w/2),yc+.35+(-L/2+k*L/6)*Math.sin(a),(-L/2+k*L/6)*Math.cos(a),.06,XFOAM);},1.5,'Water — slopes');
 // CASCADE — rise 3: a chadar, six steps across the plot with water sliding over every one
-xaWaterDef('xa_rill_cascade','Rill (cascade, 3 m)',function(G,o){reseed(32381+(o.v|0));const V=xV(o),c=xC(xPick(XPAL.stone)),curb=V===1?'xBTileB':'vStone',w=V===2?1.8:1.2,R=3,N=6;vnReg('Rill cascade',0,0,4.2,R+1);
- kput('xBatS92',[0,0,-1],null,[8,R,6],xC(xPick(XPAL.rubble)));xnPave(0,3,8,2,0,c,2,R);xnRill(0,R,3.2,0,1.6,{c,curb,w});
- for(let k=0;k<N;k++){const yk=R-(k+1)*.5,z0=2-k,zk=z0-.5;vB('vStone',0,yk-.5,zk,8,.5,1,0,c.clone().multiplyScalar(rr(.9,1.05)));   // the tread, full width: a stair for the folk too
+xaWaterDef('xa_rill_cascade','Rill cascade (3 m)',function(G,o){reseed(32381+(o.v|0));const V=xV(o),c=xC(xPick(XPAL.stone)),curb=V===1?'xBTileB':'vStone',w=V===2?1.8:1.2,R=3,N=6;vnReg('Rill cascade',0,0,4.2,R+1);
+ vB('xRubB',0,0,3,8,R-.1,2,0,xC(xPick(XPAL.rubble)));xnPave(0,3,8,2,0,c,2,R-.1);xnRill(0,R,3.2,0,1.6,{c,curb,w});
+ for(let k=0;k<N;k++){const yk=R-(k+1)*.5,z0=2-k,zk=z0-.5;vB('vStone',0,0,zk,8,yk,1,0,c.clone().multiplyScalar(rr(.9,1.05)));   // the tread, solid to the ground, full width: a stair for the folk too
   vB('xTilesB',0,yk-.16,zk,w+.2,.16,1,0,xC(XPAL.turquoise));vB('xWaterB',0,yk-.02,zk,w,.14,1,0,XWATER);xnWaterSheet(0,yk,z0,Math.PI,w,.5);for(const s of[-1,1])vB(curb,s*(w/2+.15),yk-.05,zk,.3,.3,1,0,c);}
  xnPave(0,-3.5,8,1,0,c,2,0);xnRill(0,0,-3.5,0,1,{c,curb,w});vnFolk(2.5,R,3,1,1);},3,'Water — slopes');
 // FALL — rise 4: the rill over a rock ledge, a waterfall into a plunge pool, the rill on from the pool
-xaWaterDef('xa_rill_fall','Rill (waterfall, 4 m)',function(G,o){reseed(32391+(o.v|0));const V=xV(o),c=xC(xPick(XPAL.stone)),curb=V===1?'xBTileB':'vStone',w=V===2?1.8:1.2,R=4;vnReg('Rill waterfall',0,0,4.2,R+1);
- const rock=xC(xPick([0x6a5a48,0x7a6a54,0x5c4e40]));kput('xBatS92',[0,0,2.1],null,[8,R,3.8],rock);for(let k=0;k<7;k++)kput('xBoulder',[rr(-3.6,3.6),R-.3,rr(.6,3.6)],qEuler(rng(),rng(),0),[rr(.6,1.2),rr(.4,.8),rr(.6,1.2)],rock.clone().multiplyScalar(rr(.8,1.1)));
- xnPave(0,2.5,8,3,0,c,2,R);xnRill(0,R,2.4,0,3.2,{c,curb,w});vB('vStone',0,R-.12,.2,w+.6,.22,1.2,0,c);vB('xWaterB',0,R+.02,.2,w,.12,1.2,0,XWATER);   // the lip, proud of the rock, the water over it
+xaWaterDef('xa_rill_fall','Rill waterfall (4 m)',function(G,o){reseed(32391+(o.v|0));const V=xV(o),c=xC(xPick(XPAL.stone)),curb=V===1?'xBTileB':'vStone',w=V===2?1.8:1.2,R=4;vnReg('Rill waterfall',0,0,4.2,R+1);
+ const rock=xC(xPick([0x9a8a70,0xa89880,0x8c7c64]));vB('xRockB',0,0,2.1,8,R-.1,3.8,0,rock);for(let k=0;k<7;k++)kput('xBoulder',[rr(-3.6,3.6),R-.3,rr(.6,3.6)],qEuler(rng(),rng(),0),[rr(.6,1.2),rr(.4,.8),rr(.6,1.2)],rock.clone().multiplyScalar(rr(.8,1.1)));
+ xnPave(0,2.5,8,3,0,c,2,R-.1);xnRill(0,R,2.4,0,3.2,{c,curb,w});vB('vStone',0,R-.12,.2,w+.6,.22,1.2,0,c);vB('xWaterB',0,R+.02,.2,w,.12,1.2,0,XWATER);   // the lip, proud of the rock, the water over it
  xnWaterSheet(0,.3,-.5,0,w*.95,R-.2);vB('xWaterB',0,R-.05,-.36,w*.95,.14,.4,0,XSHEET);   // the sheet hangs clear of the batterfor(let k=0;k<10;k++)vBall('vBallW',rr(-w,w),rr(.1,.9),rr(-1.2,.2),rr(.1,.22),XFOAM);   // the fall and its spray
  for(let k=0;k<4;k++)kput('xBoulder',[xPick([-1,1])*rr(w/2+.6,3),.2,rr(-2.6,-.2)],qEuler(rng(),rng(),0),[rr(.5,1.0),rr(.4,.7),rr(.5,1.0)],rock);
  xnRillBasin(0,0,-1.4,4.6,2.6,0,curb,c);xnPave(0,-2.5,8,3,0,c,2,0);xnRill(0,0,-3.4,0,1.2,{c,curb,w});
