@@ -2441,7 +2441,10 @@ TEX.hTileD=hlTile(['#2f7a44','#d8a830','#2a5aa8','#e8e0cc','#9a2a24','#2e9488'])
 TEX.hTileS=hlTile(['#9a2a24','#d8a830','#e8e0cc','#2f7a44','#2a5aa8','#d8a830']);TEX.hTileS.repeat.set(6,4);
 MAT.hTileD=hStd({map:TEX.hTileD,roughness:.28,metalness:.08});MAT.hTileS=hStd({map:TEX.hTileS,roughness:.28,metalness:.08});
 kdef('hDomeTile',HGDOME2,MAT.hTileD);kdef('hTentTile',HTENT,MAT.hTileS);TEX.hTileT=hlTile(['#2f7a44','#d8a830','#2e9488','#e8e0cc','#2a5aa8','#d8a830']);TEX.hTileT.repeat.set(6,4);MAT.hTileT=hStd({map:TEX.hTileT,roughness:.28,metalness:.08});
-kdef('hTentTileD',HTENT,MAT.hTileT);
+kdef('hTentTileD',HTENT,MAT.hTileT);// round 10: the wall towers' glazed spires — a quieter palette than the temple's (oxblood and bottle green in chevrons,
+// an ochre line through them), which at the size of a tower spire read as confetti
+TEX.hTileW=hlTile(['#8a2a22','#8a2a22','#2f5a3a','#2f5a3a','#c8a040','#8a2a22','#2f5a3a']);TEX.hTileW.repeat.set(6,4);MAT.hTileW=hStd({map:TEX.hTileW,roughness:.3,metalness:.08});
+kdef('hPyrTile',VPYR,MAT.hTileW);kdef('hTentTileW',HTENT,MAT.hTileW);
 // ================================================================= HIGHLANDS / REPUBLICAN — dwellings
 // The Iron Republic's houses, three wealth tiers. Poor: the log izba of the hill towns — round logs, a steep
 // shingle gable to the street, white-painted nalichniki, salvage sheet where the shingle has failed (the Iziz
@@ -3669,7 +3672,7 @@ function buildHlRepBarracks(G,o){reseed(20761+(o.v|0));const H1=3.4,H2=3,P=1.1;
 function buildHlRepMuster(G,o){reseed(20771+(o.v|0));const FX=25.5,FZ0=-15.6,FZ1=17;
  const rub=hC(vPick(HPAL.rubble)),ash=hC(vPick(HPAL.ashlar)),tar=hC(vPick(HPAL.tar)).multiplyScalar(1.2),grn=hC(vPick(HPAL.roofGreen)),red=hC(HPAL.red),white=hC(HPAL.white);
  vnReg('Mustering ground',0,1,26,3);vnReg('Reviewing tribune',0,-12.5,7.5,9);
- vB('hRBDirt',0,0,.7,2*FX-.6,.05,FZ1-FZ0-.6,0,hC(0xe8dcc4));
+ vB('hRBDirt',0,0,.7,2*FX-.6,.22,FZ1-FZ0-.6,0,hC(0xe8dcc4));   // round 10: .22 thick, clear of the levelled terrain (it z-fought at .05)
  // low wall: back, sides, front with a wide entrance
  const wall=(a,b)=>{const L=Math.hypot(b[0]-a[0],b[1]-a[1]),ry=Math.atan2(b[0]-a[0],b[1]-a[1])-Math.PI/2;const m=[(a[0]+b[0])/2,(a[1]+b[1])/2];
   vB('hRubB',m[0],0,m[1],L,.8,.6,ry,rub);vB('vStone',m[0],.8,m[1],L+.1,.14,.75,ry,ash);};
@@ -3689,7 +3692,7 @@ function buildHlRepMuster(G,o){reseed(20771+(o.v|0));const FX=25.5,FZ0=-15.6,FZ1
  for(const z of[-7,-1,5,11])hnRBRack(-23.6,z,Math.PI/2,3.4);
  kput('hRBBerm',[23.2,0,1],qEuler(0,Math.PI/2,0),[22,3,3.2],hC(vPick(HPAL.turf)));
  for(const z of[-7,-2.5,2,6.5,11]){vB('vThatchB',21.2,0,z,.6,1.5,1.5,0,hC(0xc8b070));hnRBTarget(20.88,1.05,z,-Math.PI/2,.55);}
- for(const z of[-7,-2.5,2,6.5,11]){vB('vWood',8,0,z,.3,.05,1.2,0,white);kput('figB',[7.4,0,z],qEuler(0,Math.PI/2,0),1,hC(0x7a2a22));kput('figH',[7.4,0,z],null,1,hC(0xc9a17e));
+ for(const z of[-7,-2.5,2,6.5,11]){vB('vWood',8,.22,z,.3,.03,1.2,0,white);kput('figB',[7.4,0,z],qEuler(0,Math.PI/2,0),1,hC(0x7a2a22));kput('figH',[7.4,0,z],null,1,hC(0xc9a17e));
   kput('vWood',[7.7,1.35,z],qEuler(0,0,-Math.PI/2+.1),[.04,1.1,.04],hC(0x2e2a26));}
  // two field guns (the Republic's trade), a company in ranks with an officer
  for(const x of[12,17]){const z=13;kput('vPipe',[x,1,z-.3],qEuler(-Math.PI/2+.12,0,0),[.2,2.4,.2],hC(0x3a3834));vB('vWood',x,.5,z+.6,.5,.35,1.8,0,tar);
@@ -4064,44 +4067,77 @@ function buildHlRepGuildAstro(G,o){reseed(21101+(o.v|0));const HX=-4,HZ=-1,W=16,
   for(const q of[qEuler(0,0,0),qEuler(Math.PI/2,0,0),qEuler(Math.PI/2,Math.PI/2,0),qEuler(.4,0,.4)])kput('hRBHoop',c,q,[.7,.7,1]);}
  hnRBLamps([[HX-2.6,FZ+4.6],[HX+2.6,FZ+4.6],[TX-2,TZ+5.8]],3.4);vnFolk(HX+1,FZ+4.4,3,3);}
 
-function buildHlRepGuildScav(G,o){reseed(21111+(o.v|0));const HX=-7,HZ=-2,W=15,D=10,S=1,H1=3.6,H2=3,YX=8,YZ=-1;
- const rub=hC(vPick(HPAL.rubble)),log=hC(vPick(HPAL.pine)).multiplyScalar(.9),ash=hC(vPick(HPAL.ashlar)),tar=hC(vPick(HPAL.tar)),trim=hC(vPick([HPAL.teal,HPAL.red])),iron=hC(hRBIRON),lit=vLit()?'lit':'glass';
- vnReg("Scavengers' Guild",HX,HZ,9,14);vnReg("Scavengers' yard",YX,YZ,9.5,9);
- // the hall: rubble below, logs above, a salvaged metal roof, the gable faced with bleached Ancient panels
- vB('hRubB',HX,0,HZ,W,S+H1,D,0,rub);vB('vStone',HX,S+H1-.2,HZ,W+.2,.2,D+.2,0,ash);const FZ=HZ+D/2,y2=S+H1,y3=y2+H2;
- for(const u of[-5,-2.4,2.4,5])vnWin(HX+u,S+.8,FZ,0,1,1.9,lit,'vStone',ash,true);hnRBWins(HX,S+.8,HZ-D/2,Math.PI,W-2,4,1,1.9,lit,'vStone',ash);
- vnDoor(HX,S,FZ,0,1.8,2.8,'vStone',ash,tar,false);vnStairs(HX,0,FZ+.9,0,2.4,S,4,'vStone',ash);
- hnMural('hM_w_emblem',HX,S+3.05,FZ,0,2.2,1.1);
- hnLogBox(HX,y2,HZ,W,H2,D,0,log);for(const u of[-5,-1.7,1.7,5])hnNal(HX+u,y2+.7,FZ,0,.8,1.1,lit,trim);
+// Round 10 (Travis: "make scavenger guild larger and more elaborate and move it just outside the port gate"): the guild
+// as a compound. The GUILDHALL (rubble ground storey, frame upper storey, a salvaged metal gable faced with Ancient
+// panels, the guild's roundel over the door) with, bridged to it, the STAGE TOWER — a spent rocket stage stood on end,
+// rings of windows cut in it, a frame lookout and a spire on top. Behind, the HULL DEPOT under a curved hull panel. To
+// the east the SORTING YARD, fenced in plate on pipe posts and entered through a gate of stacked tank sections: sorted
+// heaps with their painted boards, a gantry crane spanning the yard with a hull section on its chains, a row of container
+// stores, a furnace with its stack, the weighbridge and booth, carts. Along the road front, the guild's salvage market.
+function buildHlRepGuildScav(G,o){reseed(21111+(o.v|0));
+ const rub=hC(vPick(HPAL.rubble)),ash=hC(vPick(HPAL.ashlar)),tar=hC(vPick(HPAL.tar)),trim=hC(vPick([HPAL.teal,HPAL.red])),iron=hC(hRBIRON),lit=vLit()?'lit':'glass';
+ const rust=hC(vPick(HSV.rust)),conc=hC(vPick(HSV.conc)),hull=hC(vPick([0x9a968c,0x8e8a80,0xa49e90])),plank=hC(vPick(HFRAME.plank));
+ const HX=-18,HZ=-2,W=22,D=12,S=1,H1=3.8,H2=3.2,FZ=HZ+D/2,y2=S+H1,y3=y2+H2;
+ vnReg("Scavengers' Guild",HX,HZ,12,y3+7);vnReg("Scavengers' stage tower",-4,-9,4,26);vnReg("Scavengers' hull depot",HX,-17.5,11,10);vnReg("Scavengers' yard",16,-1,16,6);
+ // ---- the guildhall
+ vB('hRubB',HX,0,HZ,W,S+H1,D,0,rub);vB('vStone',HX,S+H1-.2,HZ,W+.2,.2,D+.2,0,ash);
+ for(const u of[-8,-5,5,8])vnWin(HX+u,S+.8,FZ,0,1,1.9,lit,'vStone',ash,true);hnRBWins(HX,S+.8,HZ-D/2,Math.PI,W-2,6,1,1.9,lit,'vStone',ash);
+ kput('hRAArchS',[HX,0,FZ+.15],null,[4.4,S+3.4,.34],ash);vnDoor(HX,S,FZ+.02,0,2.2,2.9,'vStone',ash,tar,false);
+ vB('vStone',HX,0,FZ+1.6,7,S,3,0,ash);vnStairs(HX,0,FZ+3.1+.64,0,5,S,4,'vStone',ash);
+ hnMural('hM_w_emblem',HX,S+3.7,FZ,0,2.6,1.3);
+ hnFachBox(HX,y2,HZ,W,H2,D,0,null,null,lit);
  const top=hnGable(HX,y3,HZ,W,D,1.15,0,'hGableR',null,.7,'vGableP',null);
- for(let k=0;k<5;k++){const u=rr(-W/2+1,W/2-1),v=rr(-D/2+.8,D/2-.8);kput(vPick(['vPlate','vSheet','vPlateW']),[HX+u,y3+1.15*(D/2-Math.abs(v))+.26,HZ+v],qEuler(-Math.PI/2+Math.sign(v)*Math.atan(1.15),0,rr(-.15,.15)),[rr(1.2,2.2),rr(1,1.8),1],null);}
- for(const s of[-1,1])for(let k=0;k<3;k++)kput('vPlateW',[HX+s*(W/2+.06),y3+.5+k*.9,HZ+rr(-1,1)],qEuler(0,s*Math.PI/2,rr(-.08,.08)),[rr(1.6,2.6),.85,1],null);   // Ancient panels nailed on the gable
- hnStoneChimney(HX+3,top-1.5,HZ-2,2.2,.7);vnChimney(HX-4,top-1.2,HZ+1.5,2.4,.14,true);
- // the gate: two Ancient tank sections under a panel lintel, the guild's roundel on it
- const GX=YX,GZ=YZ+8;for(const s of[-1,1])vPst('vTankW',GX+s*2.6,0,GZ,.55,4.2,null);vB('vPanelB',GX,4.2,GZ,6.4,.8,1.2,0,null);
- kput(HMOTIF.sign.salvage,[GX,4.6,GZ+.62],null,[1.2,1.2,1],null);
- // the yard fence: plate on pipe posts, three sides + the front either side of the gate
- const segs=[[[YX-8,YZ-7],[YX+8,YZ-7]],[[YX+8,YZ-7],[YX+8,GZ]],[[YX-8,GZ],[YX-8,YZ-7]],[[YX-8,GZ],[GX-3.2,GZ]],[[GX+3.2,GZ],[YX+8,GZ]]];
+ for(let k=0;k<7;k++){const u=rr(-W/2+1,W/2-1),v=rr(-D/2+.8,D/2-.8);kput(vPick(['vPlate','vSheet','vPlateW']),[HX+u,y3+1.15*(D/2-Math.abs(v))+.26,HZ+v],qEuler(-Math.PI/2+Math.sign(v)*Math.atan(1.15),0,rr(-.15,.15)),[rr(1.2,2.2),rr(1,1.8),1],null);}
+ for(const s of[-1,1])for(let k=0;k<4;k++)kput('vPlateW',[HX+s*(W/2+.06),y3+.4+k*.9,HZ+rr(-1.4,1.4)],qEuler(0,s*Math.PI/2,rr(-.08,.08)),[rr(1.6,2.8),.85,1],null);
+ kput(HMOTIF.sign.salvage,[HX,y3+2.6,FZ+.75],null,[2,2,1],null);
+ hnStoneChimney(HX+6,top-1.6,HZ-2,2.4,.8);vnChimney(HX-6,top-1.2,HZ+1.5,2.6,.14,true);
+ for(const s of[-1,1]){vnBannerPole(HX+s*5.2,0,FZ+3.6,0,8,hC(s<0?HPAL.red:HPAL.teal));}
+ // ---- the stage tower, bridged from the upper storey
+ {const TX=-4,TZ=-9,R=2.6,TH=16;for(const a of[0,2.1,4.2])vB('boxCR',TX+Math.cos(a)*2,0,TZ+Math.sin(a)*2,1.2,1.4,1.2,a,conc);
+  kput('hTankC',[TX,1.2+TH/2,TZ],null,[R,TH,R],rust);for(let y=2.5;y<TH;y+=3.6){kput('vHoop',[TX,1.2+y+1.5,TZ],qEuler(Math.PI/2,0,0),[R*1.01,R*1.01,1],iron);for(const a of[.3,1.8,-1.2,3])hnLatWin(TX+Math.sin(a)*R,1.2+y-.2,TZ+Math.cos(a)*R,a,.8,1,lit,null);}
+  vnDoor(TX,1.2,TZ+R+.02,0,1,2.1,'hPaint',hC(vPick(HFRAME.post)),tar,false);vB('boxCR',TX,0,TZ+R+.7,2,1.2,1.4,0,conc);
+  const ty=1.2+TH;vB('vWood',TX,ty,TZ,6.6,.25,6.6,0,tar);hnFachBox(TX,ty+.25,TZ,5,2.8,5,0,null,null,lit);
+  hnRCSpire(TX,ty+3.05,TZ,5.8,8,0,hC(vPick(HPAL.slate)),{flag:true,flagC:hC(HPAL.red)});
+  const by=y2+.1;vB('vWood',(TX+HX+W/2)/2,by-.2,TZ+3,TX-R-(HX+W/2)+1.2,.2,1.6,0,plank);kput('hRailC',[(TX+HX+W/2)/2,by+.45,TZ+3.78],null,[TX-R-(HX+W/2)+1,.7,1],tar);
+  for(const x of[HX+W/2+1.2,TX-R-1])vPst('vPipeR',x,0,TZ+3,.12,by-.2,null);}
+ // ---- the hull depot behind the hall
+ {const L=22,R=6.2,arc=Math.PI*.84,he=Math.cos(arc/2)*R,hw=Math.sin(arc/2)*R,eave=3.2,yc=eave-he,DZ=-17.5;
+  vB('boxCR',HX,0,DZ,L+1,.3,2*hw+.8,0,conc);kput('hVault',[HX,.3+yc,DZ],null,[L,R,R],hull);for(let k=0;k<=7;k++)kput('hVaultR',[HX-L/2+L*k/7,.3+yc,DZ],null,[.28,R+.06,R+.06],rust);
+  for(const s of[-1,1]){for(let i=0;i<=7;i++){const x=HX-L/2+.3+(L-.6)*i/7;kput('hCol',[x,.3,DZ+s*(hw-.25)],null,[.15,eave-.65,.15],hC(vPick(HFRAME.postPoor)));}
+   vB('hPlankB',HX,.3,DZ+s*(hw-.45),L-.4,eave-.8,.12,0,plank);vnPatch(HX+rr(-6,6),.6,DZ+s*(hw-.35),s>0?0:Math.PI,5,1.6,5);}
+  for(const e of[-1,1]){const x=HX+e*(L/2-.1);for(let u=-hw+.4;u<hw;u+=.8){const h=yc+Math.sqrt(Math.max(0,R*R-u*u))-.15;vB('hPlankB',x,.3,DZ+u,.14,h,.82,0,plank);}}
+  vB('vDarkB',HX+L/2+.05,.3,DZ,.08,4,5,0);}
+ // ---- the sorting yard: fence, the tank gate, heaps, the gantry, the stores, the furnace, the weighbridge
+ const YX0=-4,YX1=34,YZ0=-23,YZ1=21,GX=16,IT=[['vPlateW','vPlateW','vPlate'],['vSheet','vPlate'],['vPipeR'],['vTankR','vPipeR'],['vPlateW','vSheet'],['vPlate','vPipeR']];
+ const segs=[[[YX0+8,YZ0],[YX1,YZ0]],[[YX1,YZ0],[YX1,YZ1]],[[YX0+8,YZ1],[GX-3.6,YZ1]],[[GX+3.6,YZ1],[YX1,YZ1]],[[YX0+8,YZ0],[YX0+8,-12]]];
  for(const [[ax,az],[bx,bz]] of segs){const L=Math.hypot(bx-ax,bz-az),n=Math.max(1,Math.round(L/2.2)),ry=Math.atan2(bx-ax,bz-az)+Math.PI/2;
-  for(let i=0;i<=n;i++)vPst('vPipeR',ax+(bx-ax)*i/n,0,az+(bz-az)*i/n,.06,2.3,null);
-  for(let i=0;i<n;i++){const t=(i+.5)/n;kput(vPick(['vPlate','vSheet','vPlate','vPlateW']),[ax+(bx-ax)*t,1.05+rr(-.08,.08),az+(bz-az)*t],qEuler(0,ry,rr(-.05,.05)),[L/n+.1,2+rr(-.2,.1),1],null);}}
- // sorted heaps
- const heap=(x,z,items,n,r)=>{const MH=r*.42;hnRCHeap(x,0,z,r*1.05,MH,hC(vPick([0x5a4a3e,0x6a5040,0x4a4038])),0);   // a mound of mixed scrap and earth
-  for(let i=0;i<n;i++){const a=rng()*TAU,d=Math.sqrt(rng())*r*.9,sy=Math.max(0,MH*(1-d/(r*1.05))-.12);const it=vPick(items);   // sy: just under the mound's (conical) surface there
-  if(it==='vPipeR')kput('vPipeR',[x+Math.cos(a)*d,sy+.05,z+Math.sin(a)*d],qEuler(Math.PI/2+rr(-.3,.3),rng()*TAU,0),[rr(.08,.2),rr(1.5,3),rr(.08,.2)],null);
-  else if(it==='vTankR'){const tr=rr(.4,.7);kput('vTankR',[x+Math.cos(a)*d,sy+tr*.5,z+Math.sin(a)*d],qEuler(0,rng()*TAU,Math.PI/2).multiply(qEuler(0,0,0)),[tr,rr(1,2),tr],null);}
-  else kput(it,[x+Math.cos(a)*d,sy+.04,z+Math.sin(a)*d],qEuler(0,rng()*TAU,0).multiply(qEuler(-Math.PI/2+rr(-.25,.25),0,0)),[rr(1,2.2),rr(.8,1.6),1],null);}};
- heap(YX-4.5,YZ-3.5,['vPlateW','vPlateW','vPlate'],26,2.6);heap(YX+.5,YZ-4,['vSheet','vPlate'],22,2.4);heap(YX+5,YZ-3.5,['vPipeR'],24,2.3);heap(YX+5,YZ+2.5,['vTankR','vPipeR'],8,2);
- // the gantry: two pipe A-frames, a beam, a chain and a panel on the hook
- const CX=YX-2.5,CZ=YZ+1.5,CH=5.2;for(const s of[-1,1]){beam('vPipeR',[CX+s*3.4,0,CZ-1.3],[CX+s*3.4,CH,CZ],.18,.18);beam('vPipeR',[CX+s*3.4,0,CZ+1.3],[CX+s*3.4,CH,CZ],.18,.18);}
- kput('vIron',[CX,CH+.12,CZ],null,[7.2,.3,.3],iron);vB('vIron',CX+.6,CH-.15,CZ,.5,.3,.4,0,iron);vPst('vRope',CX+.6,2.5,CZ,.03,2.5,hC(0x5a5048));kput('vPlateW',[CX+.6,1.7,CZ],qEuler(0,.3,.06),[2.2,1.4,1],null);
- // the weighbridge and its booth
- vB('vIron',YX+4,0,YZ+5.2,3,.12,2.2,0,iron);vB('vWood',YX+6.3,0,YZ+5.2,1.4,2.3,1.4,0,log);vnShedRoof(YX+6.3,2.3,YZ+5.2,1.6,1.6,.3,0,'hGableR',null,.15,.08);vnWin(YX+6.3,1,YZ+5.9,0,.6,.6,'open','vWood',tar);
- hnRCCart(YX-5.5,YZ+4.5,.4,tar,true);hnRCCart(GX+1,GZ+3,-.2,tar,true);
- hnRBLamps([[GX-3.6,GZ+.8],[GX+3.6,GZ+.8],[HX-2.4,FZ+2.4]],3.4);vnFolk(YX,YZ+2,4,4);vnFolk(HX,FZ+2.5,2,2);}
+  for(let i=0;i<=n;i++)vPst('vPipeR',ax+(bx-ax)*i/n,0,az+(bz-az)*i/n,.06,2.5,null);
+  for(let i=0;i<n;i++){const t=(i+.5)/n;kput(vPick(['vPlate','vSheet','vPlate','vPlateW']),[ax+(bx-ax)*t,1.15+rr(-.08,.08),az+(bz-az)*t],qEuler(0,ry,rr(-.05,.05)),[L/n+.1,2.2+rr(-.2,.1),1],null);}}
+ for(const s of[-1,1]){for(let k=0;k<2;k++)kput('hTankC',[GX+s*3.3,1.6+k*3.2,YZ1],null,[1.1,3.2,1.1],rust.clone().multiplyScalar(k?.9:1));kput('hTankCap',[GX+s*3.3,6.4,YZ1],null,[1.1,.45,1.1],rust);}
+ vB('vPanelB',GX,6.5,YZ1,8.4,1,1.4,0,null);kput(HMOTIF.sign.salvage,[GX,7,YZ1+.72],null,[1.4,1.4,1],null);for(let k=0;k<6;k++)hnLantern(GX-3+k*1.2,6.45,YZ1+.8);
+ const heap=(x,z,items,n,r)=>{const MH=r*.42;hnRCHeap(x,0,z,r*1.05,MH,hC(vPick([0x5a4a3e,0x6a5040,0x4a4038])),0);
+  for(let i=0;i<n;i++){const a=rng()*TAU,d=Math.sqrt(rng())*r*.9,sy=Math.max(0,MH*(1-d/(r*1.05))-.12);const it=vPick(items);
+   if(it==='vPipeR')kput('vPipeR',[x+Math.cos(a)*d,sy+.05,z+Math.sin(a)*d],qEuler(Math.PI/2+rr(-.3,.3),rng()*TAU,0),[rr(.08,.2),rr(1.5,3),rr(.08,.2)],null);
+   else if(it==='vTankR'){const tr=rr(.4,.7);kput('vTankR',[x+Math.cos(a)*d,sy+tr*.5,z+Math.sin(a)*d],qEuler(0,rng()*TAU,Math.PI/2),[tr,rr(1,2),tr],null);}
+   else kput(it,[x+Math.cos(a)*d,sy+.04,z+Math.sin(a)*d],qEuler(0,rng()*TAU,0).multiply(qEuler(-Math.PI/2+rr(-.25,.25),0,0)),[rr(1,2.2),rr(.8,1.6),1],null);}};
+ const HP=[[10,-8],[18,-8],[26,-8],[10,4],[26,4],[30,13]];HP.forEach(([x,z],i)=>{heap(x,z,IT[i],32,3.5);hnSignBoard(x,.1,z+3.3,0,1.8,.6,'salvage',hC(vPick([HPAL.ochre,HPAL.white,HPAL.teal])));});
+ {const CZ=-2,CH=10;for(const x of[YX0+10,YX1-2]){beam('vPipeR',[x,0,CZ-2],[x,CH,CZ],.24,.24);beam('vPipeR',[x,0,CZ+2],[x,CH,CZ],.24,.24);vB('vIron',x,CH*.45,CZ,.2,.2,2.2,0,iron);}
+  vB('hPaint',(YX0+10+YX1-2)/2,CH+.1,CZ,YX1-YX0-10,.6,.5,0,hC(vPick(HFRAME.post)));vB('hPaint',(YX0+10+YX1-2)/2,CH+.7,CZ,YX1-YX0-9.6,.12,.7,0,hC(HPAL.teal));
+  const TXr=18;vB('vIron',TXr,CH-.3,CZ,1.4,.4,1,0,iron);for(const s of[-1,1])hnCable([TXr,CH-.3,CZ+s*.35],[TXr+s*1.8,5.2,CZ],iron);
+  kput('hHullSeg',[TXr,3.4,CZ],qEuler(0,0,Math.PI/2).multiply(qEuler(0,-Math.PI*.31,0)),[2.6,6,2.6],rust);}
+ for(let k=0;k<5;k++){const c=hContC();hnCont(4+k*6.2,0,YZ0+1.8,0,6,c,{door:1.5});}
+ {const fx=31,fz=18;vB('hRubB',fx,0,fz,4,2.4,3.4,0,rub);kput('hTankC',[fx,3.6,fz],qEuler(0,0,Math.PI/2),[1.3,3.6,1.3],rust);vB('vDarkB',fx,.2,fz-1.72,1.2,1,.06,0);vBall('vEmber',fx,.55,fz-1.75,.3,null,.1);hnRCStack(fx+2.8,0,fz,1.8,14);}
+ vB('vIron',GX,0,YZ1-5,3.4,.14,5,0,iron);vB('vIron',GX,.14,YZ1-5,3.2,.02,4.8,0,hC(0x6a6258));
+ vB('hPlankB',GX+4.2,0,YZ1-4,1.8,2.4,1.8,0,plank);vnShedRoof(GX+4.2,2.4,YZ1-4,2,2,.35,0,'vCorr',null,.2,.08);vnWin(GX+4.2,1,YZ1-3.08,0,.7,.6,'open','vWood',tar);
+ hnRCCart(8,14,.4,tar,true);hnRCCart(24,16,-.3,tar,true);hnRCCart(GX,YZ1-5,0,tar,true);
+ for(let k=0;k<8;k++)kput('vPanelB',[1+k*.14,.08+k*.1,14],qEuler(0,rr(-.1,.1),0),[1.4,.08,2.4],null);
+ // ---- the salvage market along the road front
+ for(let k=0;k<4;k++)hnStall(HX-9+k*6,0,FZ+8.5,0,hC(vPick(HPAL.aged)));
+ hnBunting([HX-12,3,FZ+9.6],[HX+10,3,FZ+9.6],12);
+ hnRBLamps([[GX-4.6,YZ1+1],[GX+4.6,YZ1+1],[HX-3.4,FZ+4.2],[HX+3.4,FZ+4.2]],3.6);vnFolk(16,2,6,8);vnFolk(HX,FZ+7,5,6);}
 
 HL.def({key:'hl_rep_guild_astro',name:"Astronomers' Guild",branch:'republican',family:'Guilds',tags:Object.assign({type:['civic']},HRB_GUILD),w:42,d:22,h:24,build:buildHlRepGuildAstro});
-HL.def({key:'hl_rep_guild_scav',name:"Scavengers' Guild",branch:'republican',family:'Guilds',tags:Object.assign({type:['civic','industry']},HRB_GUILD),w:36,d:22,h:14,build:buildHlRepGuildScav});
+HL.def({key:'hl_rep_guild_scav',name:"Scavengers' Guild",branch:'republican',family:'Guilds',tags:Object.assign({type:['civic','industry']},HRB_GUILD),w:72,d:48,h:28,build:buildHlRepGuildScav});
 // ================================================================= HIGHLANDS / REPUBLICAN — grand works (package R-C)
 // The seat and the sinews of the Iron Republic: the Hall of the Republic, the fortress, the Peles-style town wall
 // with its towers and gate, the Forgehouse and the generator. Massing of the Hall after the "hall of the republic"
@@ -4131,7 +4167,7 @@ function hnRCTier(x,y,z,ow,od,tw,td,rise,ry,c,o){o=o||{};const K=.3,KR=.15;const
   kput('hArm',[p[0],y-.02,p[1]],qEuler(0,ry+Math.atan2(sx,sz)+Math.PI/2,0),[1.2,.75,.3],o.hornC||hC(HPAL.gold[0]));}
  return y+rise;}
 // A slender pyramidal spire with an iron finial, gold ball and a pennant; returns the tip.
-function hnRCSpire(x,y,z,b,h,ry,c,o){o=o||{};kput('hPyrSc',[x,y,z],qEuler(0,ry,0),[b,h,b],c||null);const gold=hC(HPAL.gold[0]);
+function hnRCSpire(x,y,z,b,h,ry,c,o){o=o||{};kput(o.tile?'hPyrTile':'hPyrSc',[x,y,z],qEuler(0,ry,0),[b,h,b],o.tile?null:c||null);const gold=hC(HPAL.gold[0]);
  const t=y+h*.97,fh=Math.max(1.2,h*.1);vPst('vIron',x,t-.4,z,.05+b*.006,fh+.6,hC(0x2e2a26));vBall('hGold',x,t+.15,z,.16+b*.025,gold);vBall('hGold',x,t+fh*.75,z,.1+b*.01,gold);
  if(o.flag){const p=loc(x,z,.75,0,ry);kput('vCloth',[p[0],t+fh-.25,p[1]],qEuler(0,ry,0),[1.5,.8,1],o.flagC||hC(HPAL.red));}
  return t+fh+.2;}
@@ -4155,8 +4191,8 @@ function hnRCLoggia(x,y,z,L,LH,ry,wood,o){o=o||{};vB('vWood',x,y,z,L+.1,.22,L+.1
 // Solid stone flight (monumental stairs): steps rise toward -z of ry from the front edge at (x,z).
 function hnRCFlight(x,y,z,ry,w,rise,item,c){const n=Math.max(2,Math.round(rise/.16)),tr=.34;for(let k=0;k<n;k++){const p=loc(x,z,0,-(k+.5)*tr,ry);vB(item||'vStone',p[0],y,p[1],w,rise*(k+1)/n,tr+.01,ry,c);}return n*tr;}
 // Grid paving: flags with joints (no overlapping slabs, so no z-fighting), on a darker bed.
-function hnRCPave(x,z,w,d,ry,c,cell){cell=cell||2.2;const nx=Math.max(1,Math.round(w/cell)),nz=Math.max(1,Math.round(d/cell));vB('vStone',x,0,z,w,.03,d,ry,c.clone().multiplyScalar(.6));
- for(let i=0;i<nx;i++)for(let j=0;j<nz;j++){const p=loc(x,z,-w/2+(i+.5)*w/nx,-d/2+(j+.5)*d/nz,ry);vB('vFlag',p[0],.03,p[1],w/nx-.08,.04+rng()*.012,d/nz-.08,ry,c.clone().multiplyScalar(rr(.9,1.06)));}}
+function hnRCPave(x,z,w,d,ry,c,cell){cell=cell||2.2;const nx=Math.max(1,Math.round(w/cell)),nz=Math.max(1,Math.round(d/cell));vB('vStone',x,0,z,w,.14,d,ry,c.clone().multiplyScalar(.6));   // round 10: a 14 cm bed, clear of levelled terrain
+ for(let i=0;i<nx;i++)for(let j=0;j<nz;j++){const p=loc(x,z,-w/2+(i+.5)*w/nx,-d/2+(j+.5)*d/nz,ry);vB('vFlag',p[0],.14,p[1],w/nx-.08,.04+rng()*.012,d/nz-.08,ry,c.clone().multiplyScalar(rr(.9,1.06)));}}
 // Low ashlar balustrade from a to b (local [x,z]) at base y: a parapet with a coping and posts every ~3.5 m.
 function hnRCBalus(a,b,y,c,h){h=h||.95;const dx=b[0]-a[0],dz=b[1]-a[1],L=Math.hypot(dx,dz),ry=Math.atan2(dx,dz)-Math.PI/2,m=[(a[0]+b[0])/2,(a[1]+b[1])/2];
  vB('vStone',m[0],y,m[1],L,h-.14,.32,ry,c);vB('vStone',m[0],y+h-.14,m[1],L+.1,.14,.44,ry,c.clone().multiplyScalar(1.05));
@@ -4232,9 +4268,9 @@ function hnRCTower(x,y,z,w,h,ry,o){o=o||{};const rub=hC(vPick(HPAL.rubble)),ash=
  const roof=o.roof||'spire';
  if(roof==='spire'){const b=L+.7,hh=o.spireH||w*2.3;hnRCDormers(x,top-.1,z,b,hh,ry,roofC,cream);
   if(o.pinnacles!==false)for(const sx of[-1,1])for(const sz of[-1,1]){const p=loc(x,z,sx*(L/2-.1),sz*(L/2-.1),ry);kput('hOctP',[p[0],top-.1,p[1]],null,[.5,1.3,.5],cream);
-   kput('hTentSc',[p[0],top+1.15,p[1]],null,[.62,2.1,.62],roofC);vBall('hGold',p[0],top+3.3,p[1],.12,hC(HPAL.gold[0]));}
-  return hnRCSpire(x,top-.1,z,b,hh,ry,roofC,{flag:o.flag,flagC:o.flagC});}
- if(roof==='tent'){const r=(L+1.2)*.62,hh=o.spireH||w*1.8;kput('hTentSc',[x,top-.15,z],qEuler(0,ry,0),[r,hh,r],roofC);
+   kput(o.tile?'hTentTileW':'hTentSc',[p[0],top+1.15,p[1]],null,[.62,2.1,.62],o.tile?null:roofC);vBall('hGold',p[0],top+3.3,p[1],.12,hC(HPAL.gold[0]));}
+  return hnRCSpire(x,top-.1,z,b,hh,ry,roofC,{flag:o.flag,flagC:o.flagC,tile:o.tile});}
+ if(roof==='tent'){const r=(L+1.2)*.62,hh=o.spireH||w*1.8;kput(o.tile?'hTentTileW':'hTentSc',[x,top-.15,z],qEuler(0,ry,0),[r,hh,r],o.tile?null:roofC);
   for(let k=0;k<4;k++){const a=ry+k*Math.PI/2;const p=loc(x,z,0,r*.62,a);vB('vPlaster',p[0],top+hh*.16,p[1],.8,.9,1.0,a,cream);vnGableRoof(p[0],top+hh*.16+.9,p[1],1.0,.8,.5,a+Math.PI/2,'hGableSc',roofC,.1);}
   const t=top-.15+hh;vPst('vIron',x,t-.4,z,.06,2,hC(0x2e2a26));vBall('hGold',x,t+.2,z,.2,hC(HPAL.gold[0]));
   if(o.flag){const p=loc(x,z,.75,0,ry);kput('vCloth',[p[0],t+1.2,p[1]],qEuler(0,ry,0),[1.5,.8,1],o.flagC||hC(HPAL.red));}return t+1.7;}
@@ -4272,7 +4308,7 @@ function hnRCWallRun(x,z,len,ry,o){o=o||{};const H=o.H||9,T=o.T||3.2,rub=o.c||hC
   const ni=Math.max(1,Math.round(len/2.8));for(let i=0;i<=ni;i++){const q=P(-len/2+.15+(len-.3)*i/ni,-T/2+.22);vPst('vPost',q[0],H+.1,q[1],.1,HH+.1,wood);}
   p=P(0,-T/2+.22);vB('vWood',p[0],H+1.0,p[1],len,.1,.1,ry,wood);
   // the roof: a gable over the walk and the hoarding, ridge along the run
-  const sp=T+1.3,oc=(1.3)/2-.05,pitch=o.pitch||.95,rise=pitch*sp/2,rc=P(0,oc);hnRCGableX(rc[0],H+HH-.02,rc[1],len,sp,rise,ry,'hScaleB',roofC,.55,0,o.ends?'vGablePl':null,cream);}
+  const sp=T+1.3,oc=(1.3)/2-.05,pitch=o.pitch||.95,rise=pitch*sp/2,rc=P(0,oc);hnRCGableX(rc[0],H+HH-.02,rc[1],len,sp,rise,ry,'vCorr',o.sheetC||hC(vPick(HSV.corr)),.55,0,o.ends?'vGablePl':null,cream);}
  else{p=P(0,T/2-.3);vB('hRubB',p[0],H,p[1],len,1.0,.6,ry,rub);const nm=Math.max(2,Math.round(len/2.3));
   for(let i=0;i<nm;i++){const q=P(-len/2+len*(i+.5)/nm,T/2-.3);vB('hRubB',q[0],H+1.0,q[1],1.2,1.1,.6,ry,rub);vB('vStone',q[0],H+2.1,q[1],1.36,.16,.74,ry,ash);}
   p=P(0,-T/2+.2);vB('vStone',p[0],H,p[1],len,.9,.4,ry,ash);}
@@ -4315,7 +4351,7 @@ function hnRCGate(x,z,ry,o){o=o||{};const TW=o.tw||8.5,TH=o.th||17,BW=10,BD=10,R
  {const f=P(0,(BD+.8)/2+.02);hnForm('hFormT',f[0],y3+1.2,f[1],ry,3.2,1.6);}
  {const q=P(0,-1);kput('hOctW',[q[0],rt-1.2,q[1]],qEuler(0,ry,0),[1.0,2.6,1.0],wood);hnRCSpire(q[0],rt+1.3,q[1],2.3,6.5,ry,roofC,{flag:true,flagC:hC(HPAL.teal)});}
  // the twin towers, pushed a little toward the field
- for(const s of[-1,1]){const q=P(s*(BW/2+TW/2),.8);hnRCTower(q[0],0,q[1],TW,TH,ry,{roof:'spire',lit,roofC,beamC:wood,cream,flag:s>0});}
+ for(const s of[-1,1]){const q=P(s*(BW/2+TW/2),.8);hnRCTower(q[0],0,q[1],TW,TH,ry,{roof:'spire',tile:o.tile,lit,roofC,beamC:wood,cream,flag:s>0});}
  if(o.stubs){for(const s of[-1,1]){const q=P(s*(BW/2+TW+o.stubs/2-.4),0);hnRCWallRun(q[0],q[1],o.stubs+.8,ry,{roofC,wood,c:rub,ends:true});}}
  if(lit)for(const s of[-1,1]){const q=P(s*(BW/2+1.2),BD/2+4);vnLampPost(q[0],0,q[1],4.2);}}
 
@@ -4397,7 +4433,7 @@ function buildHlRepHallRepublic(G,o){reseed(21201+(o.v|0));
  // ---- the back: a door and stair to the service yard
  vnDoor(0,FL,rz0,Math.PI,2.2,3.2,'vStone',ash,hC(vPick(HPAL.tar)),false);hnForm('hFormA',0,FL+3.45,rz0-.02,Math.PI,2.6,1.3);
  // ---- parterres either side of the forecourt: lawns in clipped hedges, topiary cones, and clipped balls along the platform
- for(const s of[-1,1]){const gx=s*26.5,gz=44.5;vB('hPaint',gx,0,gz,15,.05,12,0,hC(0x5a8a3e));
+ for(const s of[-1,1]){const gx=s*26.5,gz=44.5;vB('hPaint',gx,0,gz,15,.2,12,0,hC(0x5a8a3e));
   for(const [u,v,w,d] of [[0,5.6,15,.8],[0,-5.6,15,.8],[7.1,0,.8,10.4],[-7.1,0,.8,10.4],[0,0,9,.6],[0,0,.6,7]])vB('hRCHedgeB',gx+u,0,gz+v,w,.9,d,0,hC(0x3f6a2e));
   for(const [u,v] of [[-4,-2.6],[4,-2.6],[-4,2.6],[4,2.6]]){kput('hRCLeaf',[gx+u,1.7,gz+v],null,[.85,1.7,.85],hC(0x3a6a2c));}
   for(let k=0;k<6;k++){const x=s*(20+k*5.6);vB('vStone',x,FL,33.2-2.4,1.2,.6,1.2,0,ash);kput('hRCLeaf',[x,FL+1.3,30.8],null,[.8,.8,.8],hC(0x3f6a2e));}}
@@ -4469,11 +4505,11 @@ function buildHlRepWall(G,o){reseed(21221+(o.v|0));const len=o.len||40;
 function buildHlRepWallTower(G,o){reseed(21231+(o.v|0));const W=8.5,H=16;const red=hC(vPick(HPAL.redwood)),slate=hC(vPick(HPAL.slate));
  vnReg('Wall tower',0,0,9,H+26);
  for(const s of[-1,1])hnRCWallRun(s*(W/2+2.6),0,5.6,0,{wood:red,roofC:slate,ends:true});
- hnRCTower(0,0,.6,W,H,0,{roof:(o.v|0)%2?'tent':'spire',clock:(o.v|0)%3===2,lit:vLit(),roofC:slate,beamC:red,flag:true});
+ hnRCTower(0,0,.6,W,H,0,{tile:true,roof:(o.v|0)%2?'tent':'spire',clock:(o.v|0)%3===2,lit:vLit(),roofC:slate,beamC:red,flag:true});
  vnDoor(0,0,.6-W/2,Math.PI,1.4,2.3,'vStone',hC(vPick(HPAL.ashlar)),hC(vPick(HPAL.tar)),false);vnFolk(0,-7,1,2);}
 function buildHlRepGate(G,o){reseed(21241+(o.v|0));
  vnReg('Town gate',0,0,16,44);
- hnRCGate(0,0,0,{stubs:5});
+ hnRCGate(0,0,0,{stubs:5,tile:true});
  hnRCPave(0,8.5,12,6,0,hC(vPick(HPAL.rubble)),1.6);hnRCPave(0,-8.5,12,6,0,hC(vPick(HPAL.rubble)),1.6);
  vnFolk(0,10,4,4);for(const s of[-1,1])vnFolk(s*3.2,5.8,1,.2);}
 
@@ -10253,7 +10289,7 @@ function plotFall(o){let lo=1e9,hi=-1e9;for(const p of obbCorners(o,0).concat([[
 function findSpot(hx,hz,tx,tz,ry,opt){opt=opt||{};const R=opt.R||90,step=opt.step||8;const tries=[[tx,tz]];
  for(let r=step;r<=R;r+=step){const n=Math.max(6,Math.round(TAU*r/step));for(let i=0;i<n;i++){const a=i/n*TAU+r*.37;tries.push([tx+r*Math.cos(a),tz+r*Math.sin(a)]);}}
  for(const t of tries){const o={x:t[0],z:t[1],hx,hz,ry,pad:opt.pad==null?1.5:opt.pad};
-  if(opt.faceAt)o.ry=Math.atan2(opt.faceAt[0]-t[0],opt.faceAt[1]-t[1]);
+  if(opt.faceAt)o.ry=Math.atan2(opt.faceAt[0]-t[0],opt.faceAt[1]-t[1])+(opt.faceOff||0);   // faceOff: turn another local axis to the point
   else if(opt.faceRoad){const n=nearestRoadPt(t[0],t[1]);if(n)o.ry=Math.atan2(n.x-t[0],n.z-t[1]);}
   if(groundOK(o,opt)&&occFree(o,o.pad))return o;}return null;}
 // ---------------------------------------------------------------- the plots (built in 90b in this order)
@@ -10301,7 +10337,7 @@ function onSquare(key,sq,a,opt){const S=SQUARES[sq],D=VERN.defs[key];const r=S.r
  onSquare('hl_rep_kontor','scrap',-Math.PI/2,{landmark:'Scrap Kontor'});onSquare('hl_rep_wreck_market','scrap',Math.PI/2+.3,{landmark:'Wreck market'});
  // the scrap and industrial district (east of INDUSTRY_X): the Forgehouse and the guilds of the forge, the generator,
  // the smithies, and the big salvage works; the Fallen Arcology quarter at its north-east
- reserve('hl_rep_arco_quarter',60,-190,{R:90,step:8,landmark:'The Fallen Arcology'});
+ reserve('hl_rep_arco_quarter',60,-190,{R:90,step:8,landmark:'The Fallen Arcology',face:[PC.x,PC.z],spot:{faceOff:-Math.PI/2}});   // round 10: the ship's stern (local +x) toward the spaceport it came from
  const IX=(fx,fz)=>[RK.INDUSTRY_X+fx*(TC.x+TC.A-RK.INDUSTRY_X),TC.z+fz*TC.B];   // a point in the district by fractions of its span
  {const p=IX(.45,.55);reserve('hl_rep_forgehouse',p[0],p[1],{R:90,step:6,landmark:'The Forgehouse'});}
  {const p=IX(.2,-.25);reserve('hl_rep_guild_alch',p[0],p[1],{R:80,landmark:"Alchemists' Guild"});}
@@ -10664,6 +10700,14 @@ function portSpot(hx,hz,tx,tz,R){for(let r=0;r<=R;r+=8){const n=Math.max(1,Math.
  placeAnc(buildStarport,'starport',PC.x,PC.z,y,PC.starS,Math.PI,[1],{landmark:true,type:['spaceport']});
  {const R=REG.slice().reverse().find(r=>r.cls==='building'&&r.key==='anc_starport');if(R){R.name='The Starport (ruined)';R.tags.landmark=true;}}
  occAdd({x:PC.x,z:PC.z,hx:PORTR.star*.72,hz:PORTR.star*.72,ry:0,pad:0});BIO_OBSTACLES.push({x:PC.x,z:PC.z,r:PORTR.star*.8});
+ // round 10 (Travis: "move [the Scavengers' Guild] just outside the port gate"): the east gate is the port gate — the port
+ // road leaves the town there — and the apron begins at the wall's foot, so the guild takes the first port ground beside the
+ // road past the gate, front to the road; it goes in before the yards and tanks so they fill round it, not it round them
+ {const D=VERN.defs.hl_rep_guild_scav,G0=gatePos(RK.GATES.E),hx=D.w/2+1,hz=D.d/2+1;let o=null,best=1e9;
+  for(let dx=-40;dx<=240;dx+=6)for(let dz=-200;dz<=200;dz+=6){const x=G0[0]+dx,z=G0[1]+dz,dist=Math.hypot(dx,dz);if(dist>=best)continue;
+   const n=nearestRoadPt(x,z),rys=[n?Math.atan2(n.x-x,n.z-z):0,Math.atan2(PC.x-x,PC.z-z),0,Math.PI/2,Math.PI,-Math.PI/2];
+   for(const ry of rys){const t={x,z,hx,hz,ry,pad:2};if(portOK(t,2)&&occFree(t,2)){o=t;best=dist;break;}}}
+  if(o){occAdd(o);o.hx-=1;o.hz-=1;placeVern('hl_rep_guild_scav',o,{y,landmark:"Scavengers' Guild"});BIO_OBSTACLES.push({x:o.x,z:o.z,r:40});}else reportErr("no room for the Scavengers' Guild by the port gate");}
  // the bunkers (round 8): Ancient redoubts round the rim of the table, reclaimed and lived in (state 3 + the repair pass)
  for(let k=0;k<9;k++){const a=k*TAU/9+.2;if(angDiff(a,Math.PI)<.62)continue;const r=PC.top-30,x=PC.x+r*Math.cos(a),z=PC.z+r*Math.sin(a),s=.27;if(insideWall(x,z,-40))continue;
   const o={x,z,hx:90*s*.75,hz:90*s*.75,ry:0,pad:2};if(!occFree(o,2))continue;
@@ -10695,19 +10739,57 @@ function portSpot(hx,hz,tx,tz,R){for(let r=0;r<=R;r+=8){const n=Math.max(1,Math.
   for(let i=0;i<n;i++){const a=rng()*TAU,d=Math.sqrt(rng())*r*.9,sy=y+Math.max(0,MH*(1-d/(r*1.05))-.12);const it=vPick(items);
    if(it==='vPipeR')kput('vPipeR',[x+Math.cos(a)*d,sy+.05,z+Math.sin(a)*d],qEuler(Math.PI/2+rr(-.3,.3),rng()*TAU,0),[rr(.08,.2),rr(1.5,3),rr(.08,.2)],null);
    else kput(it,[x+Math.cos(a)*d,sy+.04,z+Math.sin(a)*d],qEuler(0,rng()*TAU,0).multiply(qEuler(-Math.PI/2+rr(-.25,.25),0,0)),[rr(1,2.2),rr(.8,1.6),1],null);}};
- for(let k=0;k<5;k++){const P=PENT[(k+2)%5];const a=Math.atan2(P.z-PC.z,P.x-PC.x)+(k%2?.34:-.34);const r=rr(PC.P-40,PC.P+60);
-  const o=portSpot(24,18,PC.x+r*Math.cos(a),PC.z+r*Math.sin(a),70);if(!o)continue;occAdd(o);PORTX.yards.push(o);
+ // round 10 (Travis: "many more scrap yards"): the five by the pads, then a dozen more over the empty apron
+ let _ny=0;for(let k=0;k<60&&_ny<17;k++){let a,r;if(k<5){const P=PENT[(k+2)%5];a=Math.atan2(P.z-PC.z,P.x-PC.x)+(k%2?.34:-.34);r=rr(PC.P-40,PC.P+60);}else{a=rr(0,TAU);r=rr(PORTR.ring+30,PC.top-40);}
+  const o=portSpot(24,18,PC.x+r*Math.cos(a),PC.z+r*Math.sin(a),70);if(!o)continue;occAdd(o);PORTX.yards.push(o);_ny++;
   for(let i=0;i<rki(5,8);i++){const p=loc(o.x,o.z,rr(-19,19),rr(-13,13),o.ry);heap(p[0],p[1],vPick([['vPlateW','vPlate'],['vSheet','vPlate'],['vPipeR'],['vPlateW','vPipeR']]),rki(14,26),rr(2,4.2));}
   const cs=obbCorners(o,0);for(let e=0;e<4;e++){const A=cs[e],B=cs[(e+1)%4];const L=Math.hypot(B[0]-A[0],B[1]-A[1]),m=Math.round(L/2.2),ry=Math.atan2(B[0]-A[0],B[1]-A[1])+Math.PI/2;
    for(let i=0;i<m;i++){if(e===0&&Math.abs(i-m/2)<2)continue;const t=(i+.5)/m;kput(vPick(['vPlate','vSheet','vPlateW']),[A[0]+(B[0]-A[0])*t,y+1.05,A[1]+(B[1]-A[1])*t],qEuler(0,ry,rr(-.06,.06)),[L/m+.1,2+rr(-.2,.1),1],null);}}
   cpoly(cg,cs,'rgba(74,62,48,.6)');
   REG.push({name:'Scrapyard',x:o.x,y,z:o.z,r:26,h:5,cls:'building',key:'rk_scrapyard',tags:{culture:'highland-republican',type:['industry','salvage'],wealth:'poor',lit:false}});BIO_OBSTACLES.push({x:o.x,z:o.z,r:28});
   // one or two small scrap smithies beside the yard
-  for(let j=0;j<rki(1,2);j++){const key=kitKey('hl_rep_smithy_small');const D=VERN.defs[key];const q=portSpot(D.w/2+1,D.d/2+1,o.x+rr(-40,40),o.z+rr(-40,40),60);if(!q)continue;q.hx-=1;q.hz-=1;placeVern(key,q,{y});}}
- // the Scavengers' Guild: by the port's entrance, where the road from the town comes in
- {const gx=PC.x-PC.P*Math.cos(Math.PI/5)+20,gz=PC.z+55;const D=VERN.defs.hl_rep_guild_scav;const o=portSpot(D.w/2+1,D.d/2+1,gx,gz,90);
-  if(o){o.hx-=1;o.hz-=1;const n=nearestRoadPt(o.x,o.z);if(n)o.ry=Math.atan2(n.x-o.x,n.z-o.z);placeVern('hl_rep_guild_scav',o,{y,landmark:"Scavengers' Guild"});}else reportErr('no room for the Scavengers\' Guild');}
- window._port={pads:PORTX.pads.length,fuel:PORTX.fuel.length,tanks:PORTX.tanks.length,helis:PORTX.helis.length,yards:PORTX.yards.length};})();
+  for(let j=0;j<(k<5?rki(1,2):rki(0,1));j++){const key=kitKey('hl_rep_smithy_small');const D=VERN.defs[key];const q=portSpot(D.w/2+1,D.d/2+1,o.x+rr(-40,40),o.z+rr(-40,40),60);if(!q)continue;q.hx-=1;q.hz-=1;placeVern(key,q,{y});}}
+ // round 10 (Travis: "some ruined ancient silos and factories"): what the Ancients stored and made here, broken open.
+ // SILO BATTERIES — rows of tall concrete bins on a common slab, tops sheared off at different heights, one or two
+ // fallen and lying in pieces, a head-house tower beside them with its conveyor bridge snapped; FACTORY HALLS — a grid
+ // of concrete columns with a few roof slabs still across them, the rest fallen in, a stretch of wall with its windows
+ // blown out, a chimney, rubble. Both on the empty apron between the yards and the tank farms.
+ const CN=()=>hC(vPick([0xb8b2a6,0xa8a296,0x9a948a,0xc4bcae])),rub=(x,z,n,sp)=>{for(let i=0;i<n;i++)kput('rubble',[x+rr(-sp,sp),y+rr(0,.3),z+rr(-sp,sp)],qEuler(rng()*3,rng()*3,rng()*3),[rr(.6,1.8),rr(.4,1.1),rr(.6,1.6)],CN());};
+ PORTX.silos=0;PORTX.works=0;
+ for(let k=0;k<30&&PORTX.silos<6;k++){const a=rr(0,TAU),r=rr(PORTR.ring+30,PC.top-45);const o=portSpot(22,14,PC.x+r*Math.cos(a),PC.z+r*Math.sin(a),70);if(!o)continue;occAdd(o);PORTX.silos++;
+  const n=rki(4,6),R=rr(3.6,4.6),H=rr(24,34),x0=-(n-1)*R;kput('rkSlab',[o.x,y+.4,o.z],qEuler(0,o.ry,0),[n*R*2+4,.8,R*2+6],CN());
+  for(let i=0;i<n;i++){const p=loc(o.x,o.z,x0+i*R*2,0,o.ry),c=CN(),fate=rng();
+   if(fate<.22){// fallen: the stump, and the bin lying broken beside the row
+    const h=rr(3,7);kput('slabCR',[p[0],y+.8+h/2,p[1]],null,[R,h,R],c);const q=loc(o.x,o.z,x0+i*R*2+rr(-2,2),R*2+3.2,o.ry);
+    kput('slabCR',[q[0],y+R*.9,q[1]],qEuler(0,o.ry+rr(-.3,.3),Math.PI/2),[R*.95,H*.45,R*.95],c);const q2=loc(o.x,o.z,x0+i*R*2+rr(-4,4),R*2+3.2+H*.3,o.ry);
+    kput('slabCR',[q2[0],y+R*.85,q2[1]],qEuler(rr(-.2,.2),o.ry+rr(-.5,.5),Math.PI/2),[R*.9,H*.3,R*.9],c);rub(q[0],q[1],8,5);}
+   else{const h=H*rr(.55,1);kput(fate<.6?'slabCR':'slabC',[p[0],y+.8+h/2,p[1]],null,[R,h,R],c);
+    if(fate>.8)kput('slabC',[p[0],y+.8+h+.3,p[1]],null,[R*1.04,.6,R*1.04],c);else for(let j=0;j<3;j++){const aa=rng()*TAU;kput('boxCR',[p[0]+Math.cos(aa)*R*.8,y+.8+h+rr(.3,1.4),p[1]+Math.sin(aa)*R*.8],qEuler(rr(-.4,.4),aa,rr(-.3,.3)),[rr(1,2.2),rr(.6,1.6),.5],c);}}}
+  // the head-house and its broken conveyor
+  const hp=loc(o.x,o.z,x0-R-5,0,o.ry),HH=H+6;kput('boxC',[hp[0],y+.8+HH/2,hp[1]],qEuler(0,o.ry,0),[6,HH,6],CN());
+  for(let j=0;j<Math.floor(HH/4);j++){const wp=loc(hp[0],hp[1],0,3.02,o.ry);kput('darkPane',[wp[0],y+3+j*4,wp[1]],qEuler(0,o.ry,0),[2.2,1.4,1],null);}
+  const top=y+.8+HH-2,a0=loc(hp[0],hp[1],3,0,o.ry),a1=loc(o.x,o.z,x0+R*.6,0,o.ry);beam('boxCR',[a0[0],top,a0[1]],[(a0[0]*2+a1[0])/3,top-1.2,(a0[1]*2+a1[1])/3],1.6,1.6,CN());
+  kput('boxCR',[a1[0],y+2,a1[1]],qEuler(.3,o.ry+Math.PI/2,.9),[1.6,1.6,H*.35],CN());rub(o.x,o.z,14,n*R);
+  cpoly(cg,obbCorners(o,0),'rgba(150,144,132,.55)');
+  REG.push({name:'Ancient silos (ruined)',x:o.x,y,z:o.z,r:Math.max(o.hx,o.hz)+2,h:H,cls:'building',key:'rk_silos',tags:{culture:'ancients',type:['spaceport','storage'],state:'ruined',wealth:'poor',lit:false}});BIO_OBSTACLES.push({x:o.x,z:o.z,r:24});}
+ for(let k=0;k<40&&PORTX.works<6;k++){const a=rr(0,TAU),r=rr(PORTR.ring+30,PC.top-50);const W=rr(36,56),D=rr(22,32);const o=portSpot(W/2+2,D/2+2,PC.x+r*Math.cos(a),PC.z+r*Math.sin(a),80);if(!o)continue;occAdd(o);PORTX.works++;
+  const H=rr(9,14),nx=Math.round(W/8),nz=Math.round(D/8),c0=CN(),P=(u,v)=>loc(o.x,o.z,u,v,o.ry);kput('rkSlab',[o.x,y+.3,o.z],qEuler(0,o.ry,0),[W+2,.6,D+2],c0);
+  const stand=[];for(let i=0;i<=nx;i++)for(let j=0;j<=nz;j++){const u=-W/2+W*i/nx,v=-D/2+D*j/nz,p=P(u,v),f=rng();if(f<.18){rub(p[0],p[1],3,2);continue;}
+   const h=f<.45?H*rr(.3,.8):H;kput(f<.45?'boxCR':'boxC',[p[0],y+.6+h/2,p[1]],qEuler(0,o.ry,0),[1,h,1],c0);if(h===H)stand.push([i,j]);}
+  // the roof: bays whose four columns stand keep their slab, and a few of those have a sawtooth north-light over them
+  const has=(i,j)=>stand.some(s=>s[0]===i&&s[1]===j);
+  for(let i=0;i<nx;i++)for(let j=0;j<nz;j++){if(!(has(i,j)&&has(i+1,j)&&has(i,j+1)&&has(i+1,j+1))||rng()<.35)continue;const u=-W/2+W*(i+.5)/nx,v=-D/2+D*(j+.5)/nz,p=P(u,v);
+   kput('boxC',[p[0],y+.6+H+.3,p[1]],qEuler(0,o.ry,0),[W/nx+.2,.6,D/nz+.2],c0);if(rng()<.5){const q=P(u,v+D/nz*.25);kput('darkPane',[q[0],y+.6+H+1.6,q[1]],qEuler(-.5,o.ry,0),[W/nx,2.4,1],null);}}
+  // a fallen slab or two, leaning in
+  for(let k2=0;k2<rki(2,4);k2++){const p=P(rr(-W/2+4,W/2-4),rr(-D/2+4,D/2-4));kput('boxCR',[p[0],y+H*.3,p[1]],qEuler(rr(.4,.8)*(rng()<.5?-1:1),o.ry+rr(-.3,.3),rr(-.2,.2)),[W/nx,.6,D/nz],c0);rub(p[0],p[1],4,3);}
+  // the back wall, windows blown out, broken off along its top
+  {const nw=Math.round(W/4);for(let i=0;i<nw;i++){const u=-W/2+W*(i+.5)/nw,hh=H*(i%5===3?rr(.3,.5):rr(.75,1)),p=P(u,-D/2-.4);kput('boxC',[p[0],y+.6+hh/2,p[1]],qEuler(0,o.ry,0),[W/nw+.02,hh,.6],c0);
+   if(hh>5){const q=P(u,-D/2+.02);kput('darkPane',[q[0],y+4,q[1]],qEuler(0,o.ry,0),[W/nw*.6,3.2,1],null);}}}
+  // the chimney
+  {const p=P(W/2+4,-D/2+3),ch=rr(24,38);kput('slabC',[p[0],y+ch/2,p[1]],null,[1.6,ch,1.6],CN());kput('slabCR',[p[0],y+ch+.4,p[1]],null,[1.8,.8,1.8],CN());kput('boxC',[p[0],y+2,p[1]],qEuler(0,o.ry,0),[4.4,4,4.4],c0);}
+  rub(o.x,o.z,10,W/2);cpoly(cg,obbCorners(o,0),'rgba(140,134,124,.55)');
+  REG.push({name:'Ancient factory (ruined)',x:o.x,y,z:o.z,r:Math.max(W,D)/2+2,h:H+2,cls:'building',key:'rk_works',tags:{culture:'ancients',type:['spaceport','industry'],state:'ruined',wealth:'poor',lit:false}});BIO_OBSTACLES.push({x:o.x,z:o.z,r:Math.max(W,D)/2+4});}
+ window._port={pads:PORTX.pads.length,fuel:PORTX.fuel.length,tanks:PORTX.tanks.length,helis:PORTX.helis.length,yards:PORTX.yards.length,silos:PORTX.silos,works:PORTX.works};})();
 // ---------------------------------------------------------------- 6. the farms: steadings along the farm lanes and the N/S highways, ploughed fields round them
 const cropMat=new THREE.MeshLambertMaterial({color:0xffffff});kdef('rkCrop',VBOX,cropMat);
 const FIELDCOL=['#7a6a3a','#6e5e34','#857240','#6a6a3a','#5e6a32','#8a7a48'];
@@ -10826,8 +10908,10 @@ const _eye=(x,z,tx,tz)=>[x,_ty(x,z)+1.7,z,tx,_ty(tx,tz)+4,tz];
 const _sq=SQUARES.main,_mk=SQUARES.market,_tp=SQUARES.temple,_gE=gatePos(RK.GATES.E),_gN=gatePos(RK.GATES.N),_gS=gatePos(RK.GATES.S);
 const _plot=k=>{const P=PLOTS.find(p=>p.key===k);return P?P.o:null;};
 const _near=(o,d,h,ang)=>{if(!o)return null;const a=(ang==null?o.ry:ang);const c=loc(o.x,o.z,0,d,a);return[c[0],_ty(o.x,o.z)+h,c[1],o.x,_ty(o.x,o.z)+8,o.z];};
+// round 10: a port-table site seen from its port side (toward the Starport), a little off square
+const _fromPort=(r,d,h,side)=>{if(!r)return null;const a=Math.atan2(PC.z-r.z,PC.x-r.x)+(side||.45);return[r.x+d*Math.cos(a),PORT_Y+h,r.z+d*Math.sin(a),r.x,PORT_Y+6,r.z];};
 const VIEWS={
- 'Opening — Roketstad from the port road':[_gE[0]+330,_ty(_gE[0],_gE[1])+70,_gE[1]+120,TC.x+40,TC.H+20,TC.z],
+ 'Opening — Roketstad from the port road':[_gE[0]+150,PORT_Y+62,_gE[1]-95,TC.x+60,TC.H+24,TC.z],   // round 10: the old shot stood inside the never-flown arcology's scaffold
  'Overview':[TC.x+300,780,TC.z+1250,(TC.x+PC.x)/2,20,0],
  'The capital from above':[TC.x+150,760,TC.z+980,TC.x,30,TC.z],
  'The old town on the hill':[HILL.x+120,420,HILL.z+520,HILL.x,30,HILL.z],
@@ -10837,26 +10921,36 @@ const VIEWS={
  'Market square':[_mk.x+50,_mk.y+24,_mk.z+44,_mk.x,_mk.y+4,_mk.z],
  'Temple square':[_tp.x+48,_tp.y+24,_tp.z-44,_tp.x,_tp.y+4,_tp.z],
  'Scrap and industrial district':(()=>{const p=[60,40];return[p[0]-60,_ty(p[0],p[1])+140,p[1]+260,p[0]+20,_ty(p[0],p[1])+6,p[1]-20];})(),
- 'East gate — the port road':[_gE[0]+140,_ty(_gE[0],_gE[1])+36,_gE[1]+40,_gE[0],_ty(_gE[0],_gE[1])+10,_gE[1]],
+ 'East gate — the port gate':[_gE[0]+85,_ty(_gE[0],_gE[1])+30,_gE[1]-55,_gE[0],_ty(_gE[0],_gE[1])+10,_gE[1]],
  'North gate':[_gN[0]+40,_ty(_gN[0],_gN[1])+34,_gN[1]-150,_gN[0],_ty(_gN[0],_gN[1])+10,_gN[1]],
  'South gate':[_gS[0]-30,_ty(_gS[0],_gS[1])+34,_gS[1]+150,_gS[0],_ty(_gS[0],_gS[1])+10,_gS[1]],
- 'Streets — eye level':(()=>{const h=VERN_PLACED.filter(v=>/house_(poor|mid)/.test(v.key)&&insideWall(v.o.x,v.o.z,60));const v=h[Math.floor(h.length*.41)]||h[0];if(!v)return _eye(TC.x+100,TC.z,TC.x,TC.z);const o=v.o;const f=loc(o.x,o.z,0,o.hz+7,o.ry),t=loc(o.x,o.z,-30,o.hz+5,o.ry);return _eye(f[0],f[1],t[0],t[1]);})(),
+ // round 10: stand in the street itself and look down it (the old shot stood off a house front and faced the next house)
+ 'Streets — eye level':(()=>{const h=VERN_PLACED.filter(v=>/house_(poor|mid)/.test(v.key)&&insideWall(v.o.x,v.o.z,60));const v=h[Math.floor(h.length*.41)]||h[0];if(!v)return _eye(TC.x+100,TC.z,TC.x,TC.z);const o=v.o;
+  const n=nearestRoadPt(o.x,o.z);if(!n||!n.road.pts)return _eye(o.x,o.z,TC.x,TC.z);const P=n.road.pts;let i=0,bd=1e9;P.forEach((p,k)=>{const d=Math.hypot(p[0]-n.x,p[1]-n.z);if(d<bd){bd=d;i=k;}});
+  const j=i+3<P.length?Math.min(P.length-1,i+4):Math.max(0,i-4);return _eye(n.x,n.z,P[j][0],P[j][1]);})(),
  'The spaceport':[PC.x-420,PORT_Y+300,PC.z+520,PC.x,PORT_Y+20,PC.z],
  'The Starport':[PC.x-150,PORT_Y+70,PC.z+140,PC.x,PORT_Y+14,PC.z],
- 'The arcology that never flew':(()=>{const P=PENT[0];return[P.x-260,PORT_Y+120,P.z+230,P.x,PORT_Y+80,P.z];})(),
- 'An empty launch pad':(()=>{const P=PENT[2];return[P.x-60,PORT_Y+90,P.z+220,P.x,PORT_Y,P.z];})(),
+ // round 10: the never-flown arcology stands on the pad NEAREST THE TOWN (90b); these two had it the wrong way round
+ 'The arcology that never flew':(()=>{const P=PENT.reduce((b,P)=>Math.hypot(P.x-TC.x,P.z-TC.z)<Math.hypot(b.x-TC.x,b.z-TC.z)?P:b);const a=Math.atan2(P.z-PC.z,P.x-PC.x)-.9;return[P.x+300*Math.cos(a),PORT_Y+130,P.z+300*Math.sin(a),P.x,PORT_Y+80,P.z];})(),
+ 'An empty launch pad':(()=>{const P=PENT.reduce((b,P)=>Math.hypot(P.x-TC.x,P.z-TC.z)>Math.hypot(b.x-TC.x,b.z-TC.z)?P:b);const a=Math.atan2(P.z-PC.z,P.x-PC.x)+.5;return[P.x+170*Math.cos(a),PORT_Y+80,P.z+170*Math.sin(a),P.x,PORT_Y+10,P.z];})(),
  'Farms on the south road':(()=>{const p=HIGHWAY.S.out[Math.floor(HIGHWAY.S.out.length*.45)];return[p[0]+200,_ty(p[0],p[1])+120,p[1]+140,p[0],_ty(p[0],p[1]),p[1]];})(),
  'The Inner Wall':[TC.x-200,TC.H+60,TC.z+60,TC.x+2000,300,TC.z],
 };
 {const g=_plot('hl_rep_guild_mech');if(g)VIEWS["Mechanics' Guild clocktower"]=_near(g,40,14);}
 {const g=_plot('hl_rep_town_hall');if(g)VIEWS['Town hall']=_near(g,45,16);}
 {const g=_plot('hl_rep_guild_astro');if(g)VIEWS["Astronomers' Guild"]=_near(g,40,16);}
-{const g=_plot('hl_rep_forgehouse');if(g)VIEWS['The Forgehouse']=_near(g,50,18);}
-{const s=VERN_PLACED.find(v=>v.key==='hl_rep_guild_scav');if(s)VIEWS["Scavengers' Guild"]=_near(s.o,42,14);}
+{const g=_plot('hl_rep_forgehouse');if(g)VIEWS['The Forgehouse']=_near(g,95,40);}
+{const g=_plot('hl_rep_hall_republic');if(g)VIEWS['Hall of the Republic']=_near(g,120,42);}
+{const m=VERN_PLACED.find(v=>v.key==='hl_rep_muster');if(m)VIEWS['The Mustering ground']=_near(m.o,62,24);}
+{const s=VERN_PLACED.find(v=>v.key==='hl_rep_guild_scav');if(s){VIEWS["Scavengers' Guild by the port gate"]=_near(s.o,78,30,s.o.ry+.5);VIEWS["Scavengers' yard — eye level"]=(()=>{const f=loc(s.o.x,s.o.z,16,34,s.o.ry),t=loc(s.o.x,s.o.z,18,0,s.o.ry);return[f[0],PORT_Y+1.7,f[1],t[0],PORT_Y+4,t[1]];})();}}
+{const y=REG.filter(r=>r.key==='rk_scrapyard');const r=y[Math.floor(y.length*.6)];if(r)VIEWS['Scrap yards on the apron']=_fromPort(r,95,48,.3);}
+{const r=REG.find(r=>r.key==='rk_silos');if(r)VIEWS['Ruined Ancient silos']=_fromPort(r,80,34);}
+{const r=REG.find(r=>r.key==='rk_works');if(r)VIEWS['A ruined Ancient factory']=_fromPort(r,85,38,-.5);}
 {const H=SAT.hub;VIEWS['The scrap town']=[H.x-70,PORT_Y+45,H.z+95,H.x,PORT_Y+2,H.z];VIEWS['The scrap town — eye level']=[H.x+6,terrainH(H.x+6,H.z+10)+1.7,H.z+10,H.x-10,terrainH(H.x,H.z)+4,H.z-18];}
 {const b=REG.find(r=>r.key==='anc_bunker');if(b){const k=.16;VIEWS['A reclaimed bunker']=[b.x+(PC.x-b.x)*k+14,PORT_Y+26,b.z+(PC.z-b.z)*k+14,b.x,PORT_Y+4,b.z];}}
 {const a=REG.find(r=>r.key==='anc_launch_ruined');if(a)VIEWS['The arcology from the town']=[TC.x+260,TC.H+60,TC.z+40,a.x,a.y+60,a.z];}
-{const f=PLOTS.find(p=>p.key==='hl_rep_arco_quarter');if(f){const o=f.o,c=loc(o.x,o.z,0,95,o.ry);VIEWS['The Fallen Arcology']=[c[0],_ty(c[0],c[1])+18,c[1],o.x,_ty(o.x,o.z)+14,o.z];}}
+{const f=PLOTS.find(p=>p.key==='hl_rep_arco_quarter');if(f){const o=f.o,c=loc(o.x,o.z,105,80,o.ry),b=loc(o.x,o.z,0,95,o.ry);   // round 10: the ship lies stern (local +x) to the port; look along it off the stern quarter
+  VIEWS['The Fallen Arcology — engines to the port']=[c[0],_ty(c[0],c[1])+30,c[1],o.x+8,_ty(o.x,o.z)+12,o.z];VIEWS['The Fallen Arcology — broadside']=[b[0],_ty(b[0],b[1])+18,b[1],o.x,_ty(o.x,o.z)+14,o.z];}}
 {const g=gatePos(RK.GATES.W);VIEWS['West gate and the farms']=[g[0]-260,_ty(g[0],g[1])+80,g[1]+120,g[0],_ty(g[0],g[1])+8,g[1]];}
 for(const k in VIEWS)if(!VIEWS[k])delete VIEWS[k];
 // ---------------------------------------------------------------- camera, inspector, polygon tool, walk mode

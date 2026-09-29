@@ -30,7 +30,7 @@ function plotFall(o){let lo=1e9,hi=-1e9;for(const p of obbCorners(o,0).concat([[
 function findSpot(hx,hz,tx,tz,ry,opt){opt=opt||{};const R=opt.R||90,step=opt.step||8;const tries=[[tx,tz]];
  for(let r=step;r<=R;r+=step){const n=Math.max(6,Math.round(TAU*r/step));for(let i=0;i<n;i++){const a=i/n*TAU+r*.37;tries.push([tx+r*Math.cos(a),tz+r*Math.sin(a)]);}}
  for(const t of tries){const o={x:t[0],z:t[1],hx,hz,ry,pad:opt.pad==null?1.5:opt.pad};
-  if(opt.faceAt)o.ry=Math.atan2(opt.faceAt[0]-t[0],opt.faceAt[1]-t[1]);
+  if(opt.faceAt)o.ry=Math.atan2(opt.faceAt[0]-t[0],opt.faceAt[1]-t[1])+(opt.faceOff||0);   // faceOff: turn another local axis to the point
   else if(opt.faceRoad){const n=nearestRoadPt(t[0],t[1]);if(n)o.ry=Math.atan2(n.x-t[0],n.z-t[1]);}
   if(groundOK(o,opt)&&occFree(o,o.pad))return o;}return null;}
 // ---------------------------------------------------------------- the plots (built in 90b in this order)
@@ -78,7 +78,7 @@ function onSquare(key,sq,a,opt){const S=SQUARES[sq],D=VERN.defs[key];const r=S.r
  onSquare('hl_rep_kontor','scrap',-Math.PI/2,{landmark:'Scrap Kontor'});onSquare('hl_rep_wreck_market','scrap',Math.PI/2+.3,{landmark:'Wreck market'});
  // the scrap and industrial district (east of INDUSTRY_X): the Forgehouse and the guilds of the forge, the generator,
  // the smithies, and the big salvage works; the Fallen Arcology quarter at its north-east
- reserve('hl_rep_arco_quarter',60,-190,{R:90,step:8,landmark:'The Fallen Arcology'});
+ reserve('hl_rep_arco_quarter',60,-190,{R:90,step:8,landmark:'The Fallen Arcology',face:[PC.x,PC.z],spot:{faceOff:-Math.PI/2}});   // round 10: the ship's stern (local +x) toward the spaceport it came from
  const IX=(fx,fz)=>[RK.INDUSTRY_X+fx*(TC.x+TC.A-RK.INDUSTRY_X),TC.z+fz*TC.B];   // a point in the district by fractions of its span
  {const p=IX(.45,.55);reserve('hl_rep_forgehouse',p[0],p[1],{R:90,step:6,landmark:'The Forgehouse'});}
  {const p=IX(.2,-.25);reserve('hl_rep_guild_alch',p[0],p[1],{R:80,landmark:"Alchemists' Guild"});}
