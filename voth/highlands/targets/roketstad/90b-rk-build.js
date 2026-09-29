@@ -168,14 +168,14 @@ function portSpot(hx,hz,tx,tz,R){for(let r=0;r<=R;r+=8){const n=Math.max(1,Math.
  placeAnc(buildStarport,'starport',PC.x,PC.z,y,PC.starS,Math.PI,[1],{landmark:true,type:['spaceport']});
  {const R=REG.slice().reverse().find(r=>r.cls==='building'&&r.key==='anc_starport');if(R){R.name='The Starport (ruined)';R.tags.landmark=true;}}
  occAdd({x:PC.x,z:PC.z,hx:PORTR.star*.72,hz:PORTR.star*.72,ry:0,pad:0});BIO_OBSTACLES.push({x:PC.x,z:PC.z,r:PORTR.star*.8});
- // round 10 (Travis: "move [the Scavengers' Guild] just outside the port gate"): the east gate is the port gate — the port
+ // round 10 (Travis: "move [the Salvagers' Guild] just outside the port gate"): the east gate is the port gate — the port
  // road leaves the town there — and the apron begins at the wall's foot, so the guild takes the first port ground beside the
  // road past the gate, front to the road; it goes in before the yards and tanks so they fill round it, not it round them
  {const D=VERN.defs.hl_rep_guild_scav,G0=gatePos(RK.GATES.E),hx=D.w/2+1,hz=D.d/2+1;let o=null,best=1e9;
   for(let dx=-40;dx<=240;dx+=6)for(let dz=-200;dz<=200;dz+=6){const x=G0[0]+dx,z=G0[1]+dz,dist=Math.hypot(dx,dz);if(dist>=best)continue;
    const n=nearestRoadPt(x,z),rys=[n?Math.atan2(n.x-x,n.z-z):0,Math.atan2(PC.x-x,PC.z-z),0,Math.PI/2,Math.PI,-Math.PI/2];
    for(const ry of rys){const t={x,z,hx,hz,ry,pad:2};if(portOK(t,2)&&occFree(t,2)){o=t;best=dist;break;}}}
-  if(o){occAdd(o);o.hx-=1;o.hz-=1;placeVern('hl_rep_guild_scav',o,{y,landmark:"Scavengers' Guild"});BIO_OBSTACLES.push({x:o.x,z:o.z,r:40});}else reportErr("no room for the Scavengers' Guild by the port gate");}
+  if(o){occAdd(o);o.hx-=1;o.hz-=1;placeVern('hl_rep_guild_scav',o,{y,landmark:"Salvagers' Guild"});BIO_OBSTACLES.push({x:o.x,z:o.z,r:40});}else reportErr("no room for the Salvagers' Guild by the port gate");}
  // the bunkers (round 8): Ancient redoubts round the rim of the table, reclaimed and lived in (state 3 + the repair pass)
  for(let k=0;k<9;k++){const a=k*TAU/9+.2;if(angDiff(a,Math.PI)<.62)continue;const r=PC.top-30,x=PC.x+r*Math.cos(a),z=PC.z+r*Math.sin(a),s=.27;if(insideWall(x,z,-40))continue;
   const o={x,z,hx:90*s*.75,hz:90*s*.75,ry:0,pad:2};if(!occFree(o,2))continue;

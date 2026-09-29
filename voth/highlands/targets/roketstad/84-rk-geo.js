@@ -10,7 +10,7 @@
 // side. Outside each gate a straggle of poor houses, an inn, shops — thickest on the spaceport road, with scrap
 // smithies. On another rise to the east, the ruined spaceport: a pentagon of five Launch Arcology sites (four launched —
 // the pads stand empty — and one that never went, ruined), the Ancients' Starport in the middle, tanks, fuel centres,
-// helipads, and scrapyards and scrap smithies among them; the Scavengers' Guild by the spaceport. Farms along the N and
+// helipads, and scrapyards and scrap smithies among them; the Salvagers' Guild by the spaceport. Farms along the N and
 // S highways. Forest (the NW-lowlands biome, humid-subtropical tract) on everything not built or ploughed.
 window.CITY=true;
 const RK={

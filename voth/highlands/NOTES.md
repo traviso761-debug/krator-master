@@ -325,3 +325,13 @@ albedo / buildable mask / class, the road list and its spatial hash, OBB occupan
   (and its yard at eye level), scrap yards, silos, a factory, the Hall of the Republic, the Mustering ground, the ship
   from its engines and broadside.
 - **Main**: merged; the five vendored Ancients fragments re-vendored verbatim from `../ancients/src`.
+
+## Round 10c (Sep 29 2026) — the Salvagers; the shipbreakers
+- The Scavengers' Guild is now the **Salvagers' Guild** (display names only; the key stays `hl_rep_guild_scav`).
+- **Shipbreakers' yards** (`79f`, seeds 22401 freighter / 22411 lander, two defs over one body): a ship that came down
+  short of the port and the Salvagers taking it apart — plated fore hull under scaffolding, midships stripped to ribs and
+  stringers with the decks showing, a gantry straddling the cut lifting a plate, sheerlegs over the nose, a ring section
+  cut free on cribbing, the engine bells on timber sledges, the thrust plate on edge, sorted plate stacks, and a camp of
+  corrugated sheds, a forge fire and a winch hauling on the hull. The freighter lies nearly level; the lander is nose-down.
+  In Roketstad both are reserved off the port table's north-east rim (north is -z), outside the walls, each nose-on to
+  the port; three new views.
