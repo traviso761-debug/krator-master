@@ -19,6 +19,14 @@ python3 verify.py voth.html --assert --baseline baseline.json \
         --views "Overview,Chinampas" --out ./shots
 ```
 
+## Building catalog
+
+`catalog/` holds every Voth building on one sheet: the structures the city
+builds (captured from a live build), the first-generation registry, and the
+new building types (housing, manors, shops, taverns, warehouses, civic,
+military). It has automatic LOD. See `catalog/README.md` and
+`catalog/CITY_INVENTORY.md`.
+
 ## The documents
 
 - `API.md` — the generator's interface. Read before editing any fragment.

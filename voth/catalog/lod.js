@@ -40,6 +40,7 @@ const KratorLOD = (function () {
     force: -1,            /* -1 auto; 0/1/2 pin every building to that level */
     NEAR: 5.5, FAR: 16,
     T1: 0.035, T2: 0.14,
+    srgb: true,           /* treat material hexes as sRGB, as the city does */
     stats: { buildings: 0, parts: 0, tris: [0, 0, 0] }
   };
 
@@ -191,7 +192,14 @@ const KratorLOD = (function () {
   const _mat = window.mat;
   window.mat = function (color, family) {
     const m = _mat(color, family);
-    if (family && !m.userData.family) m.userData.family = family;
+    if (!m.userData.tagged) {
+      m.userData.tagged = true;
+      if (family) m.userData.family = family;
+      /* palette hexes are sRGB (the city converts them: 45-kit.js
+         setColorAt(...convertSRGBToLinear())); the engine used them as
+         linear, so with sRGB output everything came out washed pale */
+      if (K.srgb) m.color.convertSRGBToLinear();
+    }
     return m;
   };
 

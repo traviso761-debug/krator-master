@@ -17,13 +17,13 @@ cd voth && python3 -m http.server 8000
 
 | Source (registry file) | What |
 |---|---|
-| `registry/voth-housing.js` | poor, middle and rich housing, 5 variants each |
-| `registry/voth-manors.js` | manors and clan compounds, 3 variants each |
-| `registry/voth-shops.js` | dedicated shop types, 2 variants each |
-| `registry/voth-taverns.js` | tavern variations |
-| `registry/voth-warehouses.js` | warehouse variations |
-| `registry/voth-civic.js` | school, generator (power house), farmhouses, governor's palace |
-| `registry/voth-military.js` | garrison castle, barracks, mustering grounds, army camp |
+| `registry/voth-housing.js` | `voth_house_poor` / `_middle` / `_rich`, 5 variants each |
+| `registry/voth-manors.js` | `voth_manor` (Hlaalu, Velothi, Redoran/Mournhold) and `voth_clan_compound_b` (mudbrick yard, fortified, waterside), 3 each |
+| `registry/voth-shops.js` | smithy, alchemist, clothier, trader/pawnbroker, scribe, enchanter, provisioner, potter/glassblower, 2 variants each |
+| `registry/voth-taverns.js` | `voth_tavern_b`: harbour tavern, Hlaalu corner inn, Velothi cornerclub |
+| `registry/voth-warehouses.js` | `voth_warehouse_b`: canal warehouse with hoist bay, bonded grain store |
+| `registry/voth-civic.js` | school (Temple college, schoolhouse), generator (turbine hall, fumarole vent house), farmhouses (Velothi, chinampa, Hlaalu), governor's palace |
+| `registry/voth-military.js` | garrison (Velothi fortress, harbour fort), barracks (Hlaalu, Velothi), mustering grounds, army camp |
 | `../Claude outputs/krator-master-buildings-voth.js` | first-generation registry (13 entries) |
 | `registry/voth-city-captured.js` + `.data.js` | **generated**: every structure the city builds, pulled from a live build (see below) |
 
@@ -57,6 +57,15 @@ in the inventory from `src/` into a registry file as a new `ASSET`, using the
 captured entry as the target to match. Each variant is one real call from
 the city: the largest, then others spread down the size range.
 
+## Colour
+
+Palette hexes are sRGB. The city converts them before use
+(`45-kit.js`: `setColorAt(...convertSRGBToLinear())`). The engine did not, so
+every catalog render came out washed pale: basalt read as light grey and
+copper roofs as mint. `lod.js` wraps `mat()` to convert (`KratorLOD.srgb`), so
+catalog colours now match the city. The life-layer vessels carry the
+city's own unconverted vertex colours, as they do in the city.
+
 ## LOD
 
 `lod.js` wraps the engine's instance builder. Every building is merged into
@@ -70,10 +79,25 @@ in a `THREE.LOD`:
 | L2 | masses at least 14% of size, in one mesh | 16 × size |
 
 The thresholds are capped at part-size percentiles, so a level never comes
-out empty. Switch distances use max(height, √(w·d)), so a 1 km causeway
+out empty. L1 and L2 also keep vertical supports (piles, stilts, columns)
+that the size cut would otherwise drop, so decks never float. L2 drops
+cloth (canopies, awnings, sails), whose thin posts are gone at that
+distance. Switch distances use max(height, √(w·d)), so a 1 km causeway
 switches at the distance a block would. Authors write nothing per building.
 The one rule is to lay big masses as big primitives and put detail on top.
-The whole catalog, about 1.3 M triangles at L0, draws in a few dozen calls.
+The whole catalog is 250 builds and 2.1 M triangles at L0. It draws in about
+200 calls, and LOD brings what is on screen down to a fraction of that.
+
+## Engine additions
+
+These are in `../Claude outputs/krator-asset-engine.js`:
+* `F.hipRoof(lx, ly, lz, w, h, d, ry, colour, family)` is a true hip roof
+  with a ridge along the longer side. `F.pyrRoof` always met at one point
+  and read as a stretched pyramid on any long building.
+* `F.beam` now keeps its roll under rotation. Sloped slabs (roofs, canopies,
+  tent sides) used to twist about their own axis when a building was
+  placed at a heading that was not a multiple of 90°, by up to 1.46 m on the
+  army camp. Output at 0° is unchanged.
 
 ## Tools
 
