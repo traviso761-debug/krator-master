@@ -9,7 +9,7 @@ Built on the Ancients kit fragment contract and the Iziz Vernacular helpers (ven
 settlement target (Raketstad is next) the same way the Iziz Vernacular set dropped into the Iziz city.
 
 ```
-python build.py                         # dist/highlands.html (all), highlands-republican/-rustic/-tribal.html
+python build.py                         # dist/highlands.html (the whole kit, one page), roketstad.html
 python verify.py dist/highlands.html --assert --views "Overview" --out shots
 ```
 

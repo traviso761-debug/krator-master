@@ -10,8 +10,8 @@ metres, `x` east, `z` south, `y` up; a person is 1.75 m; a storey is ~3 m.
 
 ```
 python build.py                                   # every target
-python build.py --target republican               # one target: highlands | republican | rustic | tribal
-python verify.py dist/highlands-republican.html --assert --views "Republican — Dwellings,Peles villa — eye level" --out shots
+python build.py --target highlands                # one target: highlands | roketstad
+python verify.py dist/highlands.html --assert --views "Republican — Dwellings,Peles villa — eye level" --out shots
 python verify.py dist/highlands.html --eval "()=>window._api.tagAudit()"
 python build.py --vendor-check                    # vendored fragments still identical upstream?
 ```
