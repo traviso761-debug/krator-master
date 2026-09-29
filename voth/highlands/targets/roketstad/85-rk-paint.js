@@ -20,19 +20,24 @@ function precinct(x,z,r,name){PRECINCTS.push({x,z,r,name});}
 function footprint(pts,col){cpoly(cg,pts,col||'rgba(60,50,40,.5)');cpoly(mg,pts,'#000');cpoly(kg,pts,KLCOL(KL.building));}
 function inPrecinct(x,z,pad){for(const p of PRECINCTS)if(Math.hypot(x-p.x,z-p.z)<p.r+(pad||0))return p;return null;}
 // ---- base paint: meadow and forest litter on the shelf; packed earth and cobble inside the wall; the port table ----
+// the town's ground: inside the wall buildable and classless; the wall band neither (called again after the port table
+// is stamped in 87, which paints the whole table unbuildable — the town's east end now stands on it)
+function townPoly(dr,n){const P=[];n=n||300;for(let i=0;i<=n;i++){const t=i/n*TAU;P.push(townPt(t,wallR(t)+dr));}return P;}
+function paintTownMask(){const inner=townPoly(6);cpoly(mg,inner,'#fff');cpoly(kg,inner,KLCOL(0));
+ const band=townPoly(0);cstroke(mg,band,24,'#000');cstroke(kg,band,24,KLCOL(KL.wall));}
 (function paintBase(){reseed(SEED_RK+1);
  cg.fillStyle='#4a5e34';cg.fillRect(0,0,CS,CS);mg.fillStyle='#fff';mg.fillRect(0,0,CS,CS);kg.fillStyle='#000';kg.fillRect(0,0,CS,CS);
  for(let i=0;i<9000;i++){cg.beginPath();cg.arc(rng()*CS,rng()*CS,rr(6,60)*PXS*2,0,7);cg.fillStyle=vPick(['rgba(70,96,48,.45)','rgba(96,110,60,.35)','rgba(58,78,40,.45)','rgba(110,96,62,.25)','rgba(84,104,70,.3)']);cg.fill();}
- // the town: an earthen ground inside the wall (the streets, yards and gardens between the houses)
- const inner=[];for(let i=0;i<=240;i++){const t=i/240*TAU;inner.push(townPt(t,wallR(t)+6));}
- cpoly(cg,inner,'#8a7a60');
- cg.save();cg.beginPath();inner.forEach((q,i)=>i?cg.lineTo(px(q[0]),px(q[1])):cg.moveTo(px(q[0]),px(q[1])));cg.closePath();cg.clip();
- for(let i=0;i<4000;i++){const p=townPt(rng()*TAU,Math.sqrt(rng())*(TC.R+30));cg.beginPath();cg.arc(px(p[0]),px(p[1]),rr(3,20)*PXS,0,7);cg.fillStyle=vPick(['rgba(110,96,70,.35)','rgba(80,90,50,.3)','rgba(130,112,84,.3)','rgba(96,80,60,.35)']);cg.fill();}
- cg.restore();
- // the wall band: nothing builds from 12 m inside the wall to 10 m outside it
- const band=[];for(let i=0;i<=240;i++){const t=i/240*TAU;band.push(townPt(t,wallR(t)));}cstroke(mg,band,24,'#000');cstroke(kg,band,24,KLCOL(KL.wall));
  // the port table: pale ruined paving over the whole top
  cdisc(cg,PC.x,PC.z,PC.top+10,'#8c8a80');for(let i=0;i<1500;i++){const a=rng()*TAU,r=Math.sqrt(rng())*PC.top;cg.beginPath();cg.arc(px(PC.x+r*Math.cos(a)),px(PC.z+r*Math.sin(a)),rr(4,26)*PXS,0,7);cg.fillStyle=vPick(['rgba(110,108,98,.45)','rgba(80,86,64,.35)','rgba(140,136,122,.35)','rgba(96,100,70,.3)']);cg.fill();}
+ // the town: an earthen ground inside the wall (the streets, yards and gardens between the houses); darker, oilier
+ // ground in the scrap and industrial east end
+ const inner=townPoly(6);cpoly(cg,inner,'#8a7a60');
+ cg.save();cg.beginPath();inner.forEach((q,i)=>i?cg.lineTo(px(q[0]),px(q[1])):cg.moveTo(px(q[0]),px(q[1])));cg.closePath();cg.clip();
+ for(let i=0;i<9000;i++){const x=TC.x+rr(-TC.A-40,TC.A+40),z=TC.z+rr(-TC.B-40,TC.B+40),ind=x>RK.INDUSTRY_X;cg.beginPath();cg.arc(px(x),px(z),rr(3,20)*PXS,0,7);
+  cg.fillStyle=ind?vPick(['rgba(70,62,52,.4)','rgba(96,86,70,.35)','rgba(60,56,50,.4)','rgba(110,90,62,.3)']):vPick(['rgba(110,96,70,.35)','rgba(80,90,50,.3)','rgba(130,112,84,.3)','rgba(96,80,60,.35)']);cg.fill();}
+ cg.restore();
+ paintTownMask();
 })();
 // ---- samplers (call cityBakeMasks() after the last paint) ----
 let mData=null,kData=null;

@@ -46,34 +46,50 @@ function reserve(key,tx,tz,opt){opt=opt||{};const D=VERN.defs[key];if(!D){report
  if(!o){reportErr('no room for '+key+' near '+(tx|0)+','+(tz|0));return null;}o.hx-=1;o.hz-=1;return plot(key,o,opt);}
 // facing the centre of a square, on its rim, at bearing a
 function onSquare(key,sq,a,opt){const S=SQUARES[sq],D=VERN.defs[key];const r=S.r+D.d/2+3;return reserve(key,S.x+r*Math.cos(a),S.z+r*Math.sin(a),Object.assign({face:[S.x,S.z],R:40,step:5},opt||{}));}
-(function reserveCivic(){reseed(SEED_RK+4);const M=SQUARES.main,Mk=SQUARES.market,Tp=SQUARES.temple;
- // the main square: town hall to the north, barracks and the mustering ground to the east, the watch to the south
+(function reserveCivic(){reseed(SEED_RK+4);
+ // the old town on the hill: the main square (town hall, barracks and mustering ground, watch, Mercenary Guild, inn)
  onSquare('hl_rep_town_hall','main',-Math.PI/2-.25,{landmark:"Town hall"});
  onSquare('hl_rep_barracks','main',.35,{landmark:'Barracks'});
  {const b=PLOTS[PLOTS.length-1].o;reserve('hl_rep_muster',b.x+Math.cos(.35)*60,b.z+Math.sin(.35)*60+30,{R:110,landmark:'Mustering ground'});}
  onSquare('hl_rep_watch','main',Math.PI/2+.5,{});
  onSquare('hl_rep_guild_merc','main',Math.PI-.35,{landmark:'Mercenary Guild'});
  onSquare('hl_rep_inn','main',Math.PI/2-.55,{});
- // the market square: the market hall on it, the theatre and the Mechanics' Guild off it
+ // the market square: the market hall, the theatre, the Mechanics' Guild; the temple square: the temple, the school
  onSquare('hl_rep_market_hall','market',-.6,{});
  onSquare('hl_rep_theater','market',Math.PI-.4,{landmark:'Theatre'});
  onSquare('hl_rep_guild_mech','market',Math.PI*.55,{landmark:"Mechanics' Guild"});
- // the temple square: the Temple of the Pantheon, the school, the hospital, the Astronomers
  onSquare('hl_rep_temple','temple',Math.PI+.25,{landmark:'Temple of the Pantheon'});
  onSquare('hl_rep_school','temple',Math.PI/2+.2,{});
- {const p=townPt(2.1,245);reserve('hl_rep_hospital',p[0],p[1],{R:90});}
- {const p=townPt(-2.9,110);reserve('hl_rep_guild_astro',p[0],p[1],{R:90,landmark:"Astronomers' Guild"});}
- // by the gates: warehouses and the caravanserai / Farmers' Guild at the south (farm) gate
- {const p=townPt(RK.GATES.S-.35,wallR(RK.GATES.S)-60);reserve('hl_rep_guild_farm',p[0],p[1],{R:80,landmark:"Farmers' Guild"});}
- {const p=townPt(RK.GATES.N+.35,wallR(RK.GATES.N)-62);reserve(kitKey('hl_rep_stables'),p[0],p[1],{R:80});}
- for(const g of[RK.GATES.N-.3,RK.GATES.S+.33,RK.GATES.E+.5]){const p=townPt(g,wallR(g)-48);reserve(kitKey(rng()<.5?'hl_rep_warehouse_a':'hl_rep_warehouse_b'),p[0],p[1],{R:70});}
- // the forge district: the east sector — the Forgehouse by the wall, the guilds and the big smithies round it
- {const p=townPt(-.28,wallR(-.28)-66);reserve('hl_rep_forgehouse',p[0],p[1],{R:70,step:6,landmark:'The Forgehouse',spot:{margin:14}});}
- {const p=townPt(.42,245);reserve('hl_rep_guild_alch',p[0],p[1],{R:80,landmark:"Alchemists' Guild"});}
- {const p=townPt(-.05,185);reserve('hl_rep_guild_smith',p[0],p[1],{R:70,landmark:'Guild of Smiths'});}
- {const p=townPt(-.55,230);reserve('hl_rep_generator',p[0],p[1],{R:80});}
- for(const [a,r] of[[.2,205],[-.3,190],[.55,300]]){const p=townPt(a,r);reserve(kitKey('hl_rep_smithy_large'),p[0],p[1],{R:70});}
- for(const [a,r] of[[.1,290],[-.12,260],[.35,165],[-.45,300],[.62,215]]){const p=townPt(a,r);reserve(kitKey('hl_rep_smithy_small'),p[0],p[1],{R:50});}
+ {const p=hillPt(2.1,245);reserve('hl_rep_hospital',p[0],p[1],{R:90});}
+ {const p=hillPt(-2.9,110);reserve('hl_rep_guild_astro',p[0],p[1],{R:90,landmark:"Astronomers' Guild"});}
+ // the capital: the Republic's square, the Hall of the Republic on its north side, the Mint and the Rocketeers' Guild on
+ // its flanks; the Fortress on the hill's north-west shoulder; the Arsenal toward the north wall of the east end
+ {const S=SQUARES.republic,D=VERN.defs.hl_rep_hall_republic;reserve('hl_rep_hall_republic',S.x,S.z-S.r-D.d/2-3,{face:[S.x,S.z],R:60,step:6,landmark:'Hall of the Republic'});}
+ onSquare('hl_rep_mint','republic',-.1,{landmark:'Mint and Treasury'});
+ onSquare('hl_rep_guild_rocket','republic',Math.PI+.2,{landmark:"Rocketeers' Guild"});
+ onSquare(kitKey('hl_rep_inn'),'republic',Math.PI/2+.5,{});
+ reserve('hl_rep_fortress',HILL.x-200,HILL.z-120,{R:120,step:8,landmark:'The Fortress'});
+ reserve('hl_rep_arsenal',-40,-250,{R:120,step:8,landmark:'Arsenal of the Republic'});
+ // by the gates: the Farmers' Guild at the south (farm) gate, stables at the north, warehouses at every gate
+ {const p=townPt(RK.GATES.S+.18,wallR(RK.GATES.S)-60);reserve('hl_rep_guild_farm',p[0],p[1],{R:80,landmark:"Farmers' Guild"});}
+ {const p=townPt(RK.GATES.N-.18,wallR(RK.GATES.N)-62);reserve(kitKey('hl_rep_stables'),p[0],p[1],{R:80});}
+ for(const g of[RK.GATES.N+.18,RK.GATES.S-.2,RK.GATES.W+.12,RK.GATES.W-.12]){const p=townPt(g,wallR(g)-48);reserve(kitKey(rng()<.5?'hl_rep_warehouse_a':'hl_rep_warehouse_b'),p[0],p[1],{R:70});}
+ // Scraptown's plaza: the Scrap Kontor and the wreck market on it
+ onSquare('hl_rep_kontor','scrap',-Math.PI/2,{landmark:'Scrap Kontor'});onSquare('hl_rep_wreck_market','scrap',Math.PI/2+.3,{landmark:'Wreck market'});
+ // the scrap and industrial district (east of INDUSTRY_X): the Forgehouse and the guilds of the forge, the generator,
+ // the smithies, and the big salvage works; the Fallen Arcology quarter at its north-east
+ reserve('hl_rep_arco_quarter',60,-190,{R:90,step:8,landmark:'The Fallen Arcology'});
+ const IX=(fx,fz)=>[RK.INDUSTRY_X+fx*(TC.x+TC.A-RK.INDUSTRY_X),TC.z+fz*TC.B];   // a point in the district by fractions of its span
+ {const p=IX(.45,.55);reserve('hl_rep_forgehouse',p[0],p[1],{R:90,step:6,landmark:'The Forgehouse'});}
+ {const p=IX(.2,-.25);reserve('hl_rep_guild_alch',p[0],p[1],{R:80,landmark:"Alchemists' Guild"});}
+ {const p=IX(.12,.25);reserve('hl_rep_guild_smith',p[0],p[1],{R:70,landmark:'Guild of Smiths'});}
+ {const p=IX(.3,-.6);reserve('hl_rep_generator',p[0],p[1],{R:80});}
+ const works=[['hl_rep_smelter',.55,-.35],['hl_rep_smelter',.8,.55],['hl_rep_press_works',.35,.7],['hl_rep_hull_vault',.7,-.1],['hl_rep_hull_vault',.25,.05],
+  ['hl_rep_hull_yard',.62,.3],['hl_rep_powder_works',.05,-.62],['hl_rep_gasholder',.42,-.05],['hl_rep_stage_tenement',.15,.5],['hl_rep_stage_tenement',.85,-.3],
+  ['hl_rep_press_works',.9,.15],['hl_rep_garage',.5,.2],['hl_rep_gasholder',.1,-.4]];
+ for(const [k,fx,fz] of works){const p=IX(fx,fz);reserve(k,p[0],p[1],{R:70,step:7});}
+ for(const [fx,fz] of[[.22,.3],[.4,-.45],[.65,.6]]){const p=IX(fx,fz);reserve(kitKey('hl_rep_smithy_large'),p[0],p[1],{R:70});}
+ for(const [fx,fz] of[[.1,.1],[.3,.35],[.5,-.2],[.72,.1],[.35,-.7],[.58,.45]]){const p=IX(fx,fz);reserve(kitKey('hl_rep_smithy_small'),p[0],p[1],{R:50});}
 })();
 cityBakeMasks();
 // ---------------------------------------------------------------- the chaotic street fabric
@@ -82,11 +98,11 @@ cityBakeMasks();
 // (joining it). What comes out is a medieval tangle rather than a grid, and every street connects.
 const STREETS={made:0,tries:0};
 (function growStreets(){reseed(SEED_RK+5);const G=10;const pts=[];
- for(let x=TC.x-TC.R-40;x<=TC.x+TC.R+40;x+=G)for(let z=TC.z-TC.R-40;z<=TC.z+TC.R+40;z+=G){const jx=x+rr(-3,3),jz=z+rr(-3,3);if(!insideWall(jx,jz,26)||!canBuild(jx,jz)||inPrecinct(jx,jz,2))continue;pts.push([jx,jz]);}
+ for(let x=TC.x-TC.A-40;x<=TC.x+TC.A+40;x+=G)for(let z=TC.z-TC.B-60;z<=TC.z+TC.B+60;z+=G){const jx=x+rr(-3,3),jz=z+rr(-3,3);if(!insideWall(jx,jz,26)||!canBuild(jx,jz)||inPrecinct(jx,jz,2))continue;pts.push([jx,jz]);}
  const served=p=>{const n=nearestRoadPt(p[0],p[1],null,40);return n&&n.d<23;};   // blocks ~45 m deep: a row each side and a yard between
  const blockedAt=(x,z)=>!insideWall(x,z,22)||inPrecinct(x,z,1)||!occFree({x,z,hx:3.5,hz:3.5,ry:0},0);
  let pool=pts.filter(p=>!served(p));
- for(let it=0;it<1400&&pool.length;it++){const p=pool[Math.floor(rng()*pool.length)];STREETS.tries++;
+ for(let it=0;it<2800&&pool.length;it++){const p=pool[Math.floor(rng()*pool.length)];STREETS.tries++;
   const n=nearestRoadPt(p[0],p[1],null,400);if(!n){pool=pool.filter(q=>q!==p);continue;}
   let hd=Math.atan2(p[1]-n.z,p[0]-n.x);const path=[[n.x,n.z]];let x=n.x,z=n.z,len=0;const L=Math.hypot(p[0]-n.x,p[1]-n.z)+rr(30,110);let joined=false;
   // long straight-ish runs with bends between them: room for continuous rows of houses

@@ -31,8 +31,16 @@ function gateD(x,z){let d=1e9;for(const [,g] of GATE_LIST){const p=gatePos(g);d=
 // the salvage kit (79b, 79c) in the poorer streets and the forge district (round 8: "intersperse some of this in the city")
 const APOC_HOMES=['hl_rep_cont_stack','hl_rep_silo_house','hl_rep_tank_row','hl_rep_house_tank','hl_rep_house_hulk','hl_rep_radome_tower','hl_rep_crawler'];
 const APOC_SHOPS=['hl_rep_cont_shops','hl_rep_lantern_stall','hl_rep_garage','hl_rep_kontor'];
-function pickTown(x,z,r){const d=squareD(x,z),gd=gateD(x,z),forge=inForge(x,z),w=rng();
- if(forge&&rng()<.08)return{key:vPick(['hl_rep_garage','hl_rep_hull_vault','hl_rep_cont_shops'])};
+// the scrap and industrial district (round 9): workshops, smithies, salvage houses and the big works' outliers
+const IND_TRADE=['hl_rep_smithy_small','hl_rep_workshop_a','hl_rep_workshop_b','hl_rep_garage','hl_rep_cont_shops','hl_rep_smithy_small'];
+const IND_HOMES=APOC_HOMES.concat(['hl_rep_stage_tenement','hl_rep_cont_stack','hl_rep_tank_row']);
+// along the highways (round 9: "make buildings along the N and S highways less monotonous"): more trade, every kind
+const HW_TRADE=['hl_rep_inn','hl_rep_shops','hl_rep_tavern_a','hl_rep_tavern_b','hl_rep_tavern_c','hl_rep_workshop_a','hl_rep_workshop_b','hl_rep_smithy_small','hl_rep_cont_shops','hl_rep_lantern_stall','hl_rep_garage','hl_rep_warehouse_a','hl_rep_market_hall'];
+function pickTown(x,z,r,hw){const d=squareD(x,z),gd=gateD(x,z),forge=inForge(x,z),w=rng();
+ if(forge){const c=rng();if(c<.32)return{key:vPick(IND_TRADE)};if(c<.6)return{key:vPick(IND_HOMES)};if(c<.68)return{key:vPick(['hl_rep_warehouse_a','hl_rep_warehouse_b'])};if(c<.74)return{key:vPick(TAVERNS)};
+  return{key:vPick(HOUSES[rng()<.8?0:1]),v:Math.floor(rng()*6)};}
+ if(hw){const c=rng();if(c<.45)return{key:vPick(HW_TRADE)};if(c<.6)return{key:vPick(APOC_HOMES.concat(APOC_SHOPS))};
+  const wl=d<60?2:d<160?(rng()<.6?1:0):(rng()<.3?1:0);return{key:vPick(HOUSES[wl]),v:Math.floor(rng()*6)};}
  if(d>=130&&rng()<.2)return{key:rng()<.3?vPick(APOC_SHOPS):vPick(APOC_HOMES)};
  const isMain=r&&(r.cls===KL.main||r.cls===KL.highway);
  let wealth=d<45?(w<.55?2:1):d<120?(w<.2?2:w<.8?1:0):d<200?(w<.45?1:0):(w<.85?0:1);
@@ -62,10 +70,10 @@ function frontageAlong(pts,roadW,pick,test,st,opt){opt=typeof opt==='number'?{ga
   const ux=(bx-ax)/L,uz=(bz-az)/L,nx=-uz,nz=ux;
   for(const side of sides){let s=rr(.3,2.5),run=null;const line=roadW/2+(opt.setback==null?1.1:opt.setback);ROW_STAT.rows++;
    const ry=Math.atan2(-nx*side,-nz*side);   // front (+z) to the street
-   while(s<L-3){if(!run||run.left<=0){const cx=ax+ux*(s+6)+nx*side*(line+6),cz=az+uz*(s+6)+nz*side*(line+6);run={pk:pick(cx,cz),left:rki(2,5)};ROW_STAT.runs++;}
+   while(s<L-3){if(!run||run.left<=0){const cx=ax+ux*(s+6)+nx*side*(line+6),cz=az+uz*(s+6)+nz*side*(line+6);run={pk:pick(cx,cz),left:opt.run?rki(opt.run[0],opt.run[1]):rki(2,5)};ROW_STAT.runs++;}
     const key=kitKey(run.pk.key);const D=VERN.defs[key];if(!D){run=null;s+=4;continue;}
     if(s+D.w>L+.5*gapK){if(run.tried){break;}run={pk:pick(ax+ux*s,az+uz*s),left:1,tried:1};continue;}   // does not fit what is left of the run: one narrower try, then the corner
-    const mk=D=>{const along=s+D.w/2,off=line+D.d/2;return{x:ax+ux*along+nx*side*off,z:az+uz*along+nz*side*off,hx:D.w/2,hz:D.d/2,ry,pad:.15};};
+    const jit=opt.jit?rr(0,opt.jit):0;const mk=D=>{const along=s+D.w/2,off=line+D.d/2+jit;return{x:ax+ux*along+nx*side*off,z:az+uz*along+nz*side*off,hx:D.w/2,hz:D.d/2,ry,pad:.15};};
     const fits=o=>{if(!test(o)){st.ground++;const why=groundWhy(o);st[why]=(st[why]||0)+1;return false;}if(!occFree(o,.15)){st.occ++;return false;}return true;};
     let o=mk(D),k2=key;
     // does not fit: a smaller house on the same spot before the row gives up here (shallowest first — the usual
@@ -81,12 +89,12 @@ ROW_FALLBACK=['hl_rep_house_poor_a','hl_rep_house_poor_b','hl_rep_house_poor_c',
  const test=o=>groundOK(o,{town:true,margin:11});
  // 1. the squares first: a closed ring of the best houses and shops round each, fronts on the square
  for(const k in SQUARES){const S=SQUARES[k];const n=Math.max(8,Math.round(TAU*(S.r+2)/24));const ring=[];for(let i=0;i<=n;i++){const t=i/n*TAU;ring.push([S.x+(S.r+.5)*Math.cos(t),S.z+(S.r+.5)*Math.sin(t)]);}
-  frontageAlong(ring,0,(x,z)=>{const w=rng();return w<.4?{key:'hl_rep_shops'}:w<.55?{key:vPick(TAVERNS)}:{key:vPick(HOUSES[w<.8?2:1]),v:Math.floor(rng()*6)};},test,F,{sides:[-1],tol:0,setback:1.2});}
+  frontageAlong(ring,0,S.industrial?(x,z)=>pickTown(x,z,null):(x,z)=>{const w=rng();return w<.4?{key:'hl_rep_shops'}:w<.55?{key:vPick(TAVERNS)}:{key:vPick(HOUSES[w<.8?2:1]),v:Math.floor(rng()*6)};},test,F,{sides:[-1],tol:0,setback:1.2});}
  // 2. the main roads and the highways inside the wall (their frontages are the town's best), then the fabric
  const order=ROADS.filter(r=>insideWall(r.pts[0][0],r.pts[0][1],-4)||insideWall(r.pts[r.pts.length-1][0],r.pts[r.pts.length-1][1],-4))
   .filter(r=>r.zone!=='farmlane'&&!(r.zone||'').startsWith('port')&&!/-out$/.test(r.zone||''))
   .sort((a,b)=>(a.cls-b.cls));
- for(const r of order)frontageAlong(r.pts,r.w,(x,z)=>pickTown(x,z,r),test,F);
+ for(const r of order){const hw=r.cls===KL.highway;frontageAlong(r.pts,r.w,(x,z)=>pickTown(x,z,r,hw),test,F,hw?{run:[1,2],jit:.9}:{});}
  window._frontage=Object.assign(F,ROW_STAT);})();
 // ---------------------------------------------------------------- 2b. the back rows: the block built through
 // Behind every street-front building, on its own alignment, a back house or workshop sharing its rear wall (a .5 m
@@ -108,7 +116,7 @@ ROW_FALLBACK=['hl_rep_house_poor_a','hl_rep_house_poor_b','hl_rep_house_poor_c',
  window._backRows={n,tries,why};})();
 // ---------------------------------------------------------------- 3. the infill: yards and back-lot houses on a footpath to their street
 (function infill(){reseed(SEED_RK+12);let n=0;
- for(let x=TC.x-TC.R-30;x<=TC.x+TC.R+30;x+=9)for(let z=TC.z-TC.R-30;z<=TC.z+TC.R+30;z+=9){const jx=x+rr(-3,3),jz=z+rr(-3,3);if(!insideWall(jx,jz,20))continue;if(!canBuild(jx,jz)||inPrecinct(jx,jz,2))continue;
+ for(let x=TC.x-TC.A-30;x<=TC.x+TC.A+30;x+=9)for(let z=TC.z-TC.B-50;z<=TC.z+TC.B+50;z+=9){const jx=x+rr(-3,3),jz=z+rr(-3,3);if(!insideWall(jx,jz,20))continue;if(!canBuild(jx,jz)||inPrecinct(jx,jz,2))continue;
   const nr=nearestRoadPt(jx,jz,null,60);if(!nr||nr.d>40)continue;
   const pk=pickTown(jx,jz,null);if(pk.key==='hl_rep_shops')pk.key=vPick(HOUSES[0]);const key=kitKey(pk.key);const D=VERN.defs[key];if(!D)continue;
   const ry=Math.atan2(nr.x-jx,nr.z-jz)+rr(-.06,.06);const o={x:jx,z:jz,hx:D.w/2,hz:D.d/2,ry,pad:1.3};
@@ -117,15 +125,13 @@ ROW_FALLBACK=['hl_rep_house_poor_a','hl_rep_house_poor_b','hl_rep_house_poor_c',
  window._infill=n;})();
 // ---------------------------------------------------------------- 4. outside the gates: a straggle of poor houses, an inn, shops; the port road has more, and scrap smithies
 (function suburbs(){reseed(SEED_RK+13);const S={};
- for(const [name] of GATE_LIST){const H=HIGHWAY[name];const east=name==='E';const reach=east?300:170;let acc=0;const pts=[H.gout];
+ const WAY=['hl_rep_tavern_a','hl_rep_tavern_b','hl_rep_shops','hl_rep_workshop_a','hl_rep_workshop_b','hl_rep_smithy_small','hl_rep_cont_shops','hl_rep_lantern_stall','hl_rep_garage',
+  'hl_rep_silo_house','hl_rep_house_tank','hl_rep_farmhouse','hl_rep_house_mid_b','hl_rep_house_poor_a','hl_rep_house_poor_b','hl_rep_house_poor_c','hl_rep_granary','hl_rep_pens'];
+ for(const [name] of GATE_LIST){if(name==='E')continue;const H=HIGHWAY[name];const reach=230;let acc=0;const pts=[H.gout];
   for(const p of H.out){const q=pts[pts.length-1];acc+=Math.hypot(p[0]-q[0],p[1]-q[1]);pts.push(p);if(acc>reach)break;}
-  let inn=0,shops=0,smith=0;const st={placed:0,ground:0,occ:0};
-  const pick=(x,z)=>{const w=rng();if(!inn){inn=1;return{key:'hl_rep_inn'};}
-   if(east&&smith<6&&w<.28){smith++;return{key:'hl_rep_smithy_small'};}
-   if(shops<(east?4:2)&&w<.5){shops++;return{key:rng()<.7?'hl_rep_shops':vPick(TAVERNS)};}
-   if(w<.56)return{key:vPick(['hl_rep_workshop_a','hl_rep_workshop_b'])};
-   return{key:vPick(HOUSES[0]),v:Math.floor(rng()*6)};};
-  frontageAlong(pts,10,pick,o=>groundOK(o,{outside:true}),st,{gapK:east?2.2:4,setback:2.5});S[name]=st.placed;}
+  let inn=0;const st={placed:0,ground:0,occ:0};
+  const pick=(x,z)=>{if(!inn){inn=1;return{key:'hl_rep_inn'};}const k=vPick(WAY);return{key:kitKey(k),v:Math.floor(rng()*6)};};
+  frontageAlong(pts,10,pick,o=>groundOK(o,{outside:true}),st,{gapK:3.2,setback:2,jit:4,run:[1,1]});S[name]=st.placed;}
  window._suburbs=S;})();
 // ---------------------------------------------------------------- 5. the spaceport rise
 // The Ancients' builders run at a scaled group on the port table (flat ground inside the builder, REG adopted to world
@@ -151,25 +157,6 @@ function portOK(o,grow){const pts=obbCorners(o,grow||0);pts.push([o.x,o.z]);
  for(const p of pts){if(Math.hypot(p[0]-PC.x,p[1]-PC.z)>PC.top-12)return false;if(klass(p[0],p[1])!==KL.port)return false;if(inPrecinct(p[0],p[1],6))return false;}return true;}
 function portSpot(hx,hz,tx,tz,R){for(let r=0;r<=R;r+=8){const n=Math.max(1,Math.round(TAU*r/8));for(let i=0;i<n;i++){const a=i/n*TAU+r*.3;const x=tx+r*Math.cos(a),z=tz+r*Math.sin(a);
   const o={x,z,hx,hz,ry:Math.atan2(PC.x-x,PC.z-z),pad:2};if(portOK(o,2)&&occFree(o,2))return o;}}return null;}
-// ---------------------------------------------------------------- 5b. the scrap town (round 8)
-// A plaza with the Scrap Kontor on it, rows of container, silo, tank and crawler houses and shops along its lanes, the
-// big salvage works just out of it: the hull-vault warehouse, the hull-breaker's yard, the powder works (the town's
-// trade — at a safe distance, downwind of nothing).
-const SATSTAT={placed:0,ground:0,occ:0};
-function satTest(o){if(!groundOK(o,{ignoreMask:true,outside:true,ppad:2}))return false;const BAD={1:1,3:1,4:1,5:1,6:1,10:1,14:1};   // roads, plazas, buildings, the wall: anything else (meadow, the table's paving, the class map's soft edges) will do
- for(const p of obbCorners(o,.2).concat([[o.x,o.z]]))if(BAD[klass(p[0],p[1])])return false;return true;}
-function satSpot(key,tx,tz,R){const D=VERN.defs[key];if(!D)return null;for(let r=0;r<=R;r+=6){const n=Math.max(1,Math.round(TAU*r/6));for(let i=0;i<n;i++){const a=i/n*TAU+r*.37,x=tx+r*Math.cos(a),z=tz+r*Math.sin(a);
-  const nr=nearestRoadPt(x,z,null,80);const o={x,z,hx:D.w/2,hz:D.d/2,ry:nr?Math.atan2(nr.x-x,nr.z-z):0,pad:1.5};if(satTest(o)&&occFree(o,1.5))return o;}}return null;}
-const SAT_HOMES=['hl_rep_cont_stack','hl_rep_cont_stack','hl_rep_silo_house','hl_rep_silo_house','hl_rep_tank_row','hl_rep_house_tank','hl_rep_house_tank','hl_rep_house_hulk','hl_rep_radome_tower','hl_rep_crawler'];
-const SAT_PICK=()=>{const w=rng();if(w<.5)return{key:vPick(SAT_HOMES)};if(w<.75)return{key:vPick(['hl_rep_cont_shops','hl_rep_lantern_stall','hl_rep_garage'])};return{key:kitKey(vPick(['hl_rep_house_poor_a','hl_rep_house_poor_b','hl_rep_smithy_small','hl_rep_workshop_a'])),v:Math.floor(rng()*6)};};
-function satelliteTown(y){reseed(SEED_RK+61);const H=SAT.hub;
- {const D=VERN.defs.hl_rep_kontor,o={x:H.x,z:H.z-H.R-D.d/2-2.5,hx:D.w/2,hz:D.d/2,ry:0,pad:1};if(satTest(o)&&occFree(o,1)){placeVern('hl_rep_kontor',o,{landmark:'Scrap Kontor'});SATSTAT.placed++;}}
- for(const [key,dx,dz,name] of[['hl_rep_hull_vault',-40,70,'Hull-vault warehouse'],['hl_rep_hull_yard',70,95,"Hull-breaker's yard"],['hl_rep_powder_works',-95,-60,'The powder works']]){
-  const o=satSpot(key,H.x+dx,H.z+dz,70);if(o){placeVern(key,o,{landmark:name,level:true});SATSTAT.placed++;}else reportErr('scrap town: no room for '+key);}
- const n=Math.max(8,Math.round(TAU*(H.R+2)/22)),ring=[];for(let i=0;i<=n;i++){const t=i/n*TAU;ring.push([H.x+(H.R+.5)*Math.cos(t),H.z+(H.R+.5)*Math.sin(t)]);}
- frontageAlong(ring,0,SAT_PICK,satTest,SATSTAT,{sides:[-1],tol:0,setback:1.2,fallback:false});
- for(const L of SAT.lanes)frontageAlong(L.pts,L.w,SAT_PICK,satTest,SATSTAT,{gapK:1.6,setback:1.6});
- window._sat=SATSTAT;}
 (function spaceport(){reseed(SEED_RK+20);const y=PORT_Y;
  // the pentagon: the arcology that never launched stands on the pad NEAREST THE TOWN (round 8: Travis — "so it is more visible")
  const kNear=PENT.reduce((b,P)=>Math.hypot(P.x-TC.x,P.z-TC.z)<Math.hypot(PENT[b].x-TC.x,PENT[b].z-TC.z)?P.k:b,0);
@@ -182,12 +169,12 @@ function satelliteTown(y){reseed(SEED_RK+61);const H=SAT.hub;
  {const R=REG.slice().reverse().find(r=>r.cls==='building'&&r.key==='anc_starport');if(R){R.name='The Starport (ruined)';R.tags.landmark=true;}}
  occAdd({x:PC.x,z:PC.z,hx:PORTR.star*.72,hz:PORTR.star*.72,ry:0,pad:0});BIO_OBSTACLES.push({x:PC.x,z:PC.z,r:PORTR.star*.8});
  // the bunkers (round 8): Ancient redoubts round the rim of the table, reclaimed and lived in (state 3 + the repair pass)
- for(let k=0;k<9;k++){const a=k*TAU/9+.2;if(angDiff(a,Math.PI)<.62)continue;const r=PC.top-30,x=PC.x+r*Math.cos(a),z=PC.z+r*Math.sin(a),s=.27;
+ for(let k=0;k<9;k++){const a=k*TAU/9+.2;if(angDiff(a,Math.PI)<.62)continue;const r=PC.top-30,x=PC.x+r*Math.cos(a),z=PC.z+r*Math.sin(a),s=.27;if(insideWall(x,z,-40))continue;
   const o={x,z,hx:90*s*.75,hz:90*s*.75,ry:0,pad:2};if(!occFree(o,2))continue;
   placeAnc(buildBunker,'bunker',x,z,y-.4,s,Math.atan2(PC.x-x,PC.z-z)+Math.PI,[3],{type:['military','dwelling'],state:'reclaimed',culture:'ancients-reclaimed'},{repair:true});
   const RB=REG.slice().reverse().find(r=>r.cls==='building'&&r.key==='anc_bunker');if(RB)RB.name='Bunker (reclaimed, inhabited)';
   occAdd(o);BIO_OBSTACLES.push({x,z,r:90*s*.9});PORTX.bunkers=(PORTX.bunkers||0)+1;}
- satelliteTown(y);
+
  // fuel centres: between pads 1-2 and 4-0 and 0-1 (the far side of the pentagon)
  for(const [i,j] of[[0,1],[4,0],[1,2]]){const A=PENT[i],B=PENT[j];const mx=(A.x+B.x)/2,mz=(A.z+B.z)/2,a=Math.atan2(mz-PC.z,mx-PC.x);const x=PC.x+(PC.P+30)*Math.cos(a),z=PC.z+(PC.P+30)*Math.sin(a);
   const s=.55,o={x,z,hx:60*s,hz:60*s,ry:0,pad:2};if(!portOK(o)||!occFree(o,2))continue;
@@ -235,7 +222,7 @@ function sowField(o){const cs=obbCorners(o,0);cpoly(cg,cs,vPick(FIELDCOL));cpoly
  for(let k=0;k<5;k++){const t=k/4;cstroke(cg,[cs[0],cs[1]].map((c,i)=>[c[0]+(cs[3-i][0]-c[0])*t,c[1]+(cs[3-i][1]-c[1])*t]),1,'rgba(40,30,15,.35)');}
  REG.push({name:'Field',x:o.x,y:terrainH(o.x,o.z),z:o.z,r:Math.hypot(o.hx,o.hz),h:1.5,cls:'farm',key:'rk_field',tags:{culture:'highland-republican',type:['farm'],wealth:'poor',lit:false}});}
 (function farms(){reseed(SEED_RK+30);let steads=0,fields=0,mills=0;
- const lanes=FARMLANES.map(f=>({pts:f.pts,w:4.5})).concat(['N','S'].map(k=>({pts:HIGHWAY[k].out,w:10,hw:true})));
+ const lanes=FARMLANES.map(f=>({pts:f.pts,w:4.5})).concat(['N','S','W'].map(k=>({pts:HIGHWAY[k].out,w:10,hw:true})));
  const farmOK=o=>groundOK(o,{outside:true,ppad:4})&&!insideWall(o.x,o.z,-60)&&Math.hypot(o.x-PC.x,o.z-PC.z)>PC.top+60;
  for(const Ln of lanes){const P=Ln.pts;let acc=rr(20,60);
   for(let i=0;i<P.length-1;i++){const a=P[i],b=P[i+1],L=Math.hypot(b[0]-a[0],b[1]-a[1]);if(L<4)continue;const ux=(b[0]-a[0])/L,uz=(b[1]-a[1])/L,nx=-uz,nz=ux;
@@ -267,7 +254,7 @@ function sowField(o){const cs=obbCorners(o,0);cpoly(cg,cs,vPick(FIELDCOL));cpoly
 kdef('rkBed',VBOX,cropMat);kdef('rkPost',VBOX,MAT.wood);
 kdef('rkFruit',new THREE.IcosahedronGeometry(1,0),new THREE.MeshLambertMaterial({color:0xffffff}));kdef('rkStem',new THREE.CylinderGeometry(.5,.7,1,5),MAT.wood);
 (function gardens(){reseed(SEED_RK+50);let n=0,trees=0;
- for(let x=TC.x-TC.R-20;x<=TC.x+TC.R+20;x+=13)for(let z=TC.z-TC.R-20;z<=TC.z+TC.R+20;z+=13){const jx=x+rr(-2,2),jz=z+rr(-2,2);if(!insideWall(jx,jz,13))continue;
+ for(let x=TC.x-TC.A-20;x<=TC.x+TC.A+20;x+=13)for(let z=TC.z-TC.B-40;z<=TC.z+TC.B+40;z+=13){const jx=x+rr(-2,2),jz=z+rr(-2,2);if(!insideWall(jx,jz,13))continue;
   const nr=nearestRoadPt(jx,jz,null,80);const ry=nr?Math.atan2(nr.x-jx,nr.z-jz):0;let o=null;
   for(const H of[8,6,4.5]){const t={x:jx,z:jz,hx:H,hz:H*rr(.8,1.2),ry,pad:.6};if(groundOK(t,{town:true,margin:12})&&occFree(t,.6)){o=t;break;}}
   if(!o)continue;occAdd(o);o.built='garden';n++;
@@ -282,6 +269,15 @@ kdef('rkFruit',new THREE.IcosahedronGeometry(1,0),new THREE.MeshLambertMaterial(
    const mx=(A[0]+B[0])/2,mz=(A[1]+B[1])/2;kput('rkPost',[mx,terrainH(mx,mz)+.75,mz],qEuler(0,Math.atan2(B[0]-A[0],B[1]-A[1])+Math.PI/2,0),[L,.08,.08],hC(0x6a5a44));}
   REG.push({name:orchard?'Orchard':'Kitchen garden',x:o.x,y:terrainH(o.x,o.z),z:o.z,r:Math.hypot(o.hx,o.hz),h:orchard?5:1.5,cls:'farm',key:orchard?'rk_orchard':'rk_garden',tags:{culture:'highland-republican',type:['garden'],wealth:'poor',lit:false}});}
  window._gardens={n,trees};})();
+// ---------------------------------------------------------------- 7c. open-air markets on the plazas (round 9)
+// Rings of stalls on every square (fewer on the temple's), aisles left every fifth stall, fronts to the middle; the
+// centre left open.
+(function markets(){reseed(SEED_RK+70);let n=0;
+ for(const k of['main','market','republic','scrap','temple']){const S=SQUARES[k];const rings=k==='temple'?[.7]:[.42,.72];
+  for(const f of rings){const r=S.r*f;if(r<7)continue;const cnt=Math.floor(TAU*r/4.4);for(let i=0;i<cnt;i++){if(i%5===0)continue;const a=i/cnt*TAU+f*2;const x=S.x+r*Math.cos(a),z=S.z+r*Math.sin(a);
+   hnStall(x,terrainH(x,z),z,Math.atan2(S.x-x,S.z-z));n++;}}
+  REG.push({name:'Open-air market',x:S.x,y:terrainH(S.x,S.z),z:S.z,r:S.r*.8,h:3,cls:'building',key:'rk_market',tags:{culture:'highland-republican',type:['market/shop'],wealth:'poor',lit:false}});}
+ window._stalls=n;})();
 // ---------------------------------------------------------------- 8. footprints into the mask, the terrain mesh, then the forest
 for(const o of OCC.list)footprint(obbCorners(o,.6));
 for(const o of PORTX.pads)cdisc(mg,o.x,o.z,PAD_R,'#000');

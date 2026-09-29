@@ -3691,6 +3691,76 @@ HL.def({key:'hl_rep_theater',name:'Theatre',branch:'republican',family:'Civic',t
 HL.def({key:'hl_rep_school',name:'Schoolhouse',branch:'republican',family:'Civic',tags:Object.assign({type:['civic']},HRB_CIVIC),w:26,d:21,h:14,build:buildHlRepSchool});
 HL.def({key:'hl_rep_barracks',name:'Barracks',branch:'republican',family:'Military',tags:Object.assign({type:['military']},HRB_CIVIC),w:42,d:38,h:15,build:buildHlRepBarracks});
 HL.def({key:'hl_rep_muster',name:'Mustering ground',branch:'republican',family:'Military',tags:Object.assign({type:['military']},HRB_CIVIC),w:52,d:34,h:10,build:buildHlRepMuster});
+// ================================================================= REPUBLICAN — the capital's institutions (round 9)
+// Travis: "Let's make Roketstad the capital of the Iron Republic ... Add in all Republican civic buildings and guilds if
+// not already present, and make 3 more." A republic that forges rockets keeps an ARSENAL, strikes its coin in a MINT, and
+// its rocket-makers have a GUILD. All three in the East Highland manner: dressed stone below, frame storeys with their
+// brackets, caihua and galleries above, Alpine / Russian roofs, the Republic's emblem on the civic fronts.
+const HCAP={stone:[0xd8ccb0,0xcfc2a4,0xe0d4b8],slate:HPAL.slate};
+function hnRustic(x,y,z,w,h,d,ry,c){vB('vStone',x,y,z,w,h,d,ry,c);const n=Math.floor(h/.55);for(let k=0;k<n;k++)for(const s of[-1,1]){const p=loc(x,z,0,s*(d/2+.02),ry);vB('vStone',p[0],y+k*.55+.02,p[1],w-.05,.05,.04,ry,c.clone().multiplyScalar(.82));}}   // rusticated: channelled courses
+// ---------------------------------------------------------------- 1. the Arsenal of the Republic
+// A long stone range round a drill court: the front range with a crenellated gate tower in the middle, two frame
+// storeys over the stone ground floor on the side ranges, an earth-covered magazine at the back (a turf vault with a
+// stone portal), racks of rockets on trestles in the court, the emblem over the gate and flags on the tower.
+function buildHlRepArsenal(G,o){reseed(22001+(o.v|0));const W=46,D=34,S=.5,H1=4.2;
+ const stone=hC(vPick(HCAP.stone)),ash=hC(vPick(HPAL.ashlar)),slate=hC(vPick(HCAP.slate)),red=hC(HPAL.red),gold=hC(HPAL.gold[0]),lit=vLit()?'lit':'glass',rust=hC(vPick(HSV.rust));
+ vnReg('Arsenal of the Republic',0,0,24,20);
+ hnSocle(0,0,0,W+1,S,D+1,0,null,ash);
+ // the front range and its gate tower
+ hnRustic(0,S,D/2-4,W,H1,8,0,stone);hnRBQuoins(0,S,D/2-4,W,H1,8,0,ash);hnFachBox(0,S+H1,D/2-4,W,3.2,8,0,null,null,lit);
+ hnGable(0,S+H1+3.2,D/2-4,W,8,1.2,0,'hGableSc',slate,.6,'vGablePl',stone);
+ vB('vStone',0,0,D/2+.2,9,S+H1+9,6,0,stone);hnRBQuoins(0,0,D/2+.2,9,S+H1+9,6,0,ash);vB('vDarkB',0,S,D/2+3.22,4.4,5,.1,0);
+ for(let k=0;k<5;k++)for(const s of[-1,1]){const p=loc(0,D/2+.2,-4.5+k*2.25,s*3,0);vB('vStone',p[0],S+H1+9,p[1],1.2,1.2,.9,0,stone);}   // merlons
+ hnEmblem(0,S+6.6,D/2+3.28,0,2.4);for(const s of[-1,1]){vPst('vPipe',s*3.8,S+H1+9,D/2+2.8,.06,6,hC(0x2e2a26));vB('hPaint',s*3.8+.9,S+H1+13.6,D/2+2.8,1.8,1.2,.03,0,red);}
+ for(const u of[-19,-15,-11,11,15,19])vnWin(u,S+1.4,D/2+.02,0,1.2,1.8,lit,'vStone',ash);
+ // the side ranges
+ for(const s of[-1,1]){const x=s*(W/2-4);hnRustic(x,S,-2,8,H1,D-12,0,stone);hnFachBox(x,S+H1,-2,8,3,D-12,0,null,null,lit);hnGable(x,S+H1+3,-2,D-12,8,1.2,Math.PI/2,'hGableSc',slate,.6,'vGablePl',stone);}
+ // the magazine: a turf vault behind a stone portal
+ kput('hBatterRub',[0,S,-D/2+5],null,[W-18,5.5,9],hC(0x6a7a4a));vB('vStone',0,S,-D/2+9.6,8,4.2,1.2,0,stone);vB('vDarkB',0,S,-D/2+10.22,3,3,.08,0);vB('vIron',0,S+3,-D/2+10.3,3.4,.2,.1,0,rust);
+ // the drill court: rocket racks on trestles
+ for(let r=0;r<3;r++){const z=-2+r*4;for(const s of[-1,1])vB('vWood',s*4,S,z,.3,1.1,1.4,0,hC(vPick(HPAL.aged)));for(let k=0;k<4;k++){const x=-5+k*3.3;
+  kput('hTankC',[x,S+1.35,z],qEuler(0,0,Math.PI/2),[.28,2.6,.28],hC(vPick([0x6a6a5a,0x8a3a2a])));kput('vConeI',[x+1.3,S+1.35,z],qEuler(0,0,-Math.PI/2),[.28,.6,.28],red);}}
+ vnFolk(0,D/2+6,4,3);}
+// ---------------------------------------------------------------- 2. the Mint and Treasury
+// Rusticated stone below (the coin must feel safe), a piano nobile of lattice curtain wall and caihua on bracketed
+// posts, a Dutch-inclined gable with a gilded cupola and the Republic's emblem in the pediment; the strongroom annex
+// with a round steel door; the coin press's stack behind.
+function buildHlRepMint(G,o){reseed(22011+(o.v|0));const W=24,D=16,S=1,H1=4.6;
+ const stone=hC(vPick(HCAP.stone)),ash=hC(vPick(HPAL.ashlar)),slate=hC(vPick(HCAP.slate)),gold=hC(HPAL.gold[0]),lit=vLit()?'lit':'glass',iron=hC(0x3a3430);
+ vnReg('Mint and Treasury',0,0,14,S+H1+8+5);
+ hnSocle(0,0,0,W+.6,S,D+.6,0,null,ash);hnRustic(0,S,0,W,H1,D,0,stone);hnRBQuoins(0,S,0,W,H1,D,0,ash);
+ vnStairs(0,0,D/2+1.3,0,4,S,4,'vStone',ash);vnDoor(0,S,D/2+.02,0,2,3.2,'vStone',ash,hC(vPick(HPAL.tar)),false);
+ for(const u of[-9,-5.5,5.5,9])vnWin(u,S+1.2,D/2,0,1.1,2,lit,'vStone',ash);
+ hnFachBox(0,S+H1,0,W,3.6,D,0,null,null,lit);
+ const top=hnGable(0,S+H1+3.6,0,W,D,1.1,0,'hGableSc',slate,.7,'vGablePl',stone);hnBarge(0,S+H1+3.6,0,W,D,1.1*D/2,0,.7,hC(HPAL.white),'lace');
+ hnEmblem(0,S+H1+5.2,D/2+.2,0,1.8);
+ kput('hOctP',[0,top-.4,0],null,[1.3,1.6,1.3],stone);hnOnion(0,top+1.2,0,1.05,'G',gold,0);                               // the gilded cupola
+ // the strongroom and the press stack
+ vB('vStone',W/2+3,0,-2,6,4.4,7,0,stone);hnRBQuoins(W/2+3,0,-2,6,4.4,7,0,ash);kput('vHoop',[W/2+6.02,2,-2],qEuler(0,Math.PI/2,0),[1.2,1.2,3],iron);
+ vB('vIron',W/2+6.04,.8,-2,.08,2.4,2.4,0,iron);vnHipRoof('hHipSc',W/2+3,4.4,-2,6,7,1.6,0,slate,.4);
+ hnStoneChimney(-W/2+2,0,-D/2-1,15,1.2);hnSignBoard(-7,S+H1-1,D/2+.05,0,3.4,.8,'scales');}
+// ---------------------------------------------------------------- 3. the Rocketeers' Guild
+// The guildhall of the town's own craft: a frame hall on a stone socle with a gallery, caihua and a Dutch gable; beside
+// it a timber test tower of four bracketed stages gripping a painted rocket upright, a blast wall of rubble and earth
+// at its foot, a flame trench; the rocket on the sign.
+function buildHlRepRocketGuild(G,o){reseed(22021+(o.v|0));const S=.8;
+ const stone=hC(vPick(HCAP.stone)),ash=hC(vPick(HPAL.ashlar)),slate=hC(vPick(HCAP.slate)),red=hC(HPAL.red),post=hC(vPick(HFRAME.post)),white=hC(HPAL.white),lit=vLit()?'lit':'glass';
+ vnReg("Rocketeers' Guild",-4,0,10,12);vnReg('Rocket test tower',8,-2,5,34);
+ hnSocle(-4,0,0,15,S,11,0,null,ash);hnRustic(-4,S,0,14,3.8,10,0,stone);vnDoor(-4,S,5.02,0,1.8,2.8,'vStone',ash,hC(vPick(HPAL.tar)),false);
+ hnFachBox(-4,S+3.8,0,14,3.2,10,0,null,null,lit);hnGable(-4,S+7,0,14,10,1.3,0,'hGableSc',slate,.6,'vGablePl',stone);hnSign(3.2,S+2.6,5.1,0,'rocket');hnEmblem(-4,S+3,5.12,0,1.4);
+ // the test tower: four stages of posts, each capped by bracket sets, platforms, a ladder
+ const tx=8,tz=-2,TW=4.4;let y=0;for(let k=0;k<4;k++){const h=7-k*.8;for(const sx of[-1,1])for(const sz of[-1,1]){kput('hCol',[tx+sx*TW/2,y,tz+sz*TW/2],null,[.2,h,.2],post);hnDougong(tx+sx*TW/2,y+h,tz+sz*TW/2,Math.atan2(sx,sz),.4);}
+  y+=h;vB('vWood',tx,y+.36,tz,TW+1.4,.2,TW+1.4,0,hC(vPick(HPAL.aged)));kput('hRailC',[tx,y+.9,tz+TW/2+.6],null,[TW+1.2,.7,1],hC(vPick(HPAL.aged)));
+  for(const sx of[-1,1])beam('vWood',[tx+sx*TW/2,y-h+.4,tz-TW/2],[tx-sx*TW/2,y-.4,tz-TW/2],.14,.14,hC(vPick(HPAL.aged)));}
+ kput('hCaihua',[tx,y+.46,tz+TW/2+.72],null,[TW+1.3,.18,1],null);
+ // the rocket, upright in the tower: body, bands, nose, four fins
+ const rb=.9;kput('hTankC',[tx,1.8+11,tz],null,[rb,22,rb],hC(0xe0dccf));for(const yy of[5,11,17])kput('vHoop',[tx,1.8+yy,tz],qEuler(Math.PI/2,0,0),[rb*1.02,rb*1.02,1],red);
+ kput('vConeI',[tx,1.8+22+0,tz],null,[rb,3.2,rb],red);for(let k=0;k<4;k++){const a=k*Math.PI/2;const p=loc(tx,tz,0,rb+.7,a);kput('hPaint',[p[0],3.2,p[1]],qEuler(0,a,0),[.08,3,1.4],red);}
+ vB('vIron',tx,0,tz,3,1.8,3,0,hC(0x3a3430));vB('vDarkB',tx,.02,tz+3,2,.1,4,0);                                           // the stand and the flame trench
+ kput('hBatterRub',[tx+5.5,0,tz],null,[2.2,4,9],hC(0x6a7a4a));}
+HL.def({key:'hl_rep_arsenal',name:'Arsenal of the Republic',branch:'republican',family:'Military',tags:Object.assign({type:['military','industry'],landmark:true},HRB_CIVIC),w:48,d:44,h:24,build:buildHlRepArsenal});
+HL.def({key:'hl_rep_mint',name:'Mint and Treasury',branch:'republican',family:'Civic',tags:Object.assign({type:['civic'],landmark:true},HRB_CIVIC),w:34,d:20,h:18,build:buildHlRepMint});
+HL.def({key:'hl_rep_guild_rocket',name:"Rocketeers' Guild",branch:'republican',family:'Guilds',tags:Object.assign({type:['guild'],landmark:true},HRB_CIVIC),w:26,d:14,h:30,build:buildHlRepRocketGuild});
 // ================================================================= HIGHLANDS / REPUBLICAN — the guilds
 // The Iron Republic's guildhalls, each after its trade: the Mercenary Guild's fortified hall of company banners,
 // the Alchemists' laboratory and their bermed magazines of high explosive, the Farmers' hall and grain store, the
@@ -5181,6 +5251,133 @@ HL.def({key:'hl_rep_garage',name:'Salvage garage',branch:'republican',family:'Sh
 HL.def({key:'hl_rep_cont_shops',name:'Container shops',branch:'republican',family:'Shops and workshops',tags:HTAG_APOC('poor',['market/shop']),w:20,d:6,h:8,build:buildHlRepContShops});
 HL.def({key:'hl_rep_lantern_stall',name:'Lantern stall',branch:'republican',family:'Shops and workshops',tags:HTAG_APOC('middle',['market/shop'],{lit:true}),w:11,d:6,h:9,build:buildHlRepLanternStall});
 HL.def({key:'hl_rep_radome_tower',name:'Radome tower house',branch:'republican',family:'Dwellings',tags:HTAG_APOC('poor',['multi-family dwelling']),w:17,d:9,h:24,build:buildHlRepRadomeTower});
+// ================================================================= REPUBLICAN — the scrap and industrial district (round 9)
+// Travis: "Create more salvage-forward buildings and use them and the recently made scrap buildings to flesh out the
+// port-ward side of town as a large scrap and industrial district." Five more, built on the biggest wrecks: a rocket
+// stage, a furnace of hull plate, a fuselage over a market, a sawtooth press shed, a gasholder. Born reclaimed.
+// a market stall: four posts, a striped cloth roof, a trestle table and goods (used here and on the town's plazas)
+function hnStall(x,y,z,ry,c){const w=2.4,d=1.8,post=hC(0x5a4636);for(const sx of[-1,1])for(const sz of[-1,1]){const p=loc(x,z,sx*(w/2-.08),sz*(d/2-.08),ry);vPst('vPost',p[0],y,p[1],.05,2.2+(sz<0?.3:0),post);}
+ kput('vClothB',[x,y+2.45,z],qEuler(0,ry,0).multiply(qEuler(-.16,0,0)),[w+.3,.04,d+.4],c||hC(vPick([0xc03a2a,0x2e8a88,0xd8a030,0x3a6aa8,0x6a8a3a])));
+ const t=loc(x,z,0,d/2-.45,ry);vB('vWood',t[0],y+.75,t[1],w-.3,.08,.7,ry,hC(0x7a6248));for(const s of[-1,1]){const p=loc(t[0],t[1],s*(w/2-.4),0,ry);vB('vWood',p[0],y,p[1],.08,.75,.6,ry,post);}
+ for(let k=0;k<5;k++){const p=loc(t[0],t[1],rr(-w/2+.4,w/2-.4),rr(-.2,.2),ry);kput(vPick(['vClayPot','vGourd','vSack','vBarrel']),[p[0],y+.83,p[1]],null,[rr(.12,.2),rr(.16,.3),rr(.12,.2)],hC(vPick([0x9a5a3a,0xc8a060,0x5a7a5a,0xb3322a,0xefe7d6,0x8a6a3a])));}}
+
+// ---------------------------------------------------------------- 1. the stage tenement
+// A spent rocket stage lying on concrete cradles — fins at the tail, the engine bell still on — made a row of homes:
+// windows and doors cut along its flank, a plank walk on trestles in front, two frame storeys riding its back under
+// steep gables, stairs up to them, washing and a stovepipe.
+function buildHlRepStageTenement(G,o){reseed(22101+(o.v|0));const R=2.6,L=26,yc=.8+R;
+ const hull=hC(vPick([0xd8d4c8,0xc8c4b8,0xb8b4a8])),red=hC(HPAL.red),rust=hC(vPick(HSV.rust)),log=hC(vPick(HPAL.aged)),lit=vLit()?'lit':'glass',corr=hC(vPick(HSV.corr));
+ vnReg('Stage tenement',0,0,14,11);
+ for(const x of[-9,-3,3,9])vB('boxCR',x,0,0,1,1.6,4.6,0,hC(vPick(HSV.conc)));
+ kput('hTankC',[0,yc,0],qEuler(0,0,Math.PI/2),[R,L,R],hull);for(const x of[-10,-2,6])kput('vHoop',[x,yc,0],qEuler(0,Math.PI/2,0),[R*.99,R*.99,1.2],red);
+ kput('vConeI',[-L/2-1.6,yc,0],qEuler(0,0,Math.PI/2),[R*.8,1.8,R*.8],rust);kput('hTankEnd',[L/2,yc,0],null,[R*.6,R,R],hull);                     // bell and nose
+ for(let k=0;k<4;k++){const a=k*Math.PI/2+Math.PI/4;const p=[-L/2+1.6,yc+Math.sin(a)*(R+.9),Math.cos(a)*(R+.9)];kput('hPaint',p,qEuler(a,0,0),[3,.1,1.8],red);}   // fins
+ for(let k=0;k<6;k++){const x=-8+k*3.4;if(k%2)vnDoor(x,.9,R*.98,0,.9,2,'hPaint',hC(vPick(HFRAME.postPoor)),hC(vPick(HPAL.tar)),false);else hnLatWin(x,yc-.3,R*.99,0,1,.9,lit,null);}
+ vB('vWood',0,.8,R+.8,22,.12,1.4,0,log);for(let k=0;k<8;k++)vB('vWood',-10.5+k*3,0,R+.8,.14,.8,1.3,0,log);
+ for(const x of[-5.5,5.5]){hnFachBox(x,yc+R-.35,0,7,2.6,4.2,0,null,null,lit);hnGable(x,yc+R+2.25,0,7,4.2,1.5,0,'vCorr',corr,.5,'vGableW',log);}
+ vnStairs(11.4,.8,R+.1,Math.PI/2,1,R*2-.4,9,'vWood',log);vnChimney(-3.2,yc+R+1.6,-1.2,3,.12,true);
+ hnCable([-8,yc+R+1.4,1.8],[-3,yc+R+1.4,1.8]);for(let k=0;k<4;k++)kput('vCloth',[-7.2+k*1.2,yc+R+1,1.8],null,[.7,.8,1],hC(vPick([0xefe7d6,0x3a6aa8,0xc0302a])));}
+
+// ---------------------------------------------------------------- 2. the smelter
+// A furnace block of rubble clad in hull plate, a glowing tap-hole and a slag heap still hot; two stacks; a timber
+// conveyor climbing from the scrap bins to the charging hopper; a frame cast-house under a steep corrugated gable.
+function buildHlRepSmelter(G,o){reseed(22111+(o.v|0));const rust=hC(vPick(HSV.rust)),iron=hC(0x3a3430),log=hC(vPick(HPAL.aged)),corr=hC(vPick(HSV.corr)),lit=vLit()?'lit':'glass';
+ vnReg('Smelter',0,0,14,20);
+ vB('hRubB',-3,0,0,9,7,8,0,hC(vPick(HPAL.rubble)));vnPatch(-3,.5,4.05,0,8,5.5,9);vnPatch(-7.55,.5,0,-Math.PI/2,7,5.5,8);
+ vB('vDarkB',-3,.4,4.08,1.6,1.4,.06,0);kput('vEmber',[-3,.8,4.02],null,[.6,.45,.2]);kput('hRCHeap',[-3,-.05,7.5],null,[2.4,1.1,2],hC(0x3a3028));for(let k=0;k<5;k++)kput('vEmber',[-3+rr(-1.4,1.4),.35,7.5+rr(-1,1)],null,[.35,.18,.35]);
+ for(const x of[-5.6,-.4]){vPst('vPipeR',x,7,-2.5,.7,11,null);for(let k=1;k<4;k++)kput('vHoop',[x,7+k*2.8,-2.5],qEuler(Math.PI/2,0,0),[.72,.72,2],iron);}
+ kput('hTankC',[-3,8.2,1.4],null,[1.6,2.4,1.6],rust);kput('vConeI',[-3,6.4,1.4],qEuler(Math.PI,0,0),[1.6,1.2,1.6],rust);                             // the charging hopper
+ beam('vWood',[8,1.2,3],[-1.4,9.2,1.4],.9,.12,log);for(let k=0;k<4;k++){const t=(k+.5)/4;vB('vWood',8-9.4*t,0,3-1.6*t,.2,1.2+8*t,.2,0,log);}   // the conveyor on trestles
+ for(let k=0;k<3;k++){vB('vWood',8+k*2.2,0,5,2,1,2,0,log);kput('hRCHeap',[8+k*2.2,1,5],null,[.9,.6,.9],hC(0x5a4a3e));}
+ hnFachBox(6,0,-3,7,3.4,6,0,null,null,lit);hnGable(6,3.4,-3,7,6,1.5,0,'vCorr',corr,.6,'vGableW',log);}
+
+// ---------------------------------------------------------------- 3. the wreck market hall
+// A stretch of fuselage laid over the market: stalls under a hull vault on bracketed posts, open at the sides; a painted
+// board over each end, lanterns under the vault.
+function buildHlRepWreckMarket(G,o){reseed(22121+(o.v|0));const L=22,R=7,arc=Math.PI*.84,he=Math.cos(arc/2)*R,hw=Math.sin(arc/2)*R,eave=3.8,yc=eave-he;
+ const hull=hC(vPick([0x9a968c,0x8e8a80,0xa49e90])),rust=hC(vPick(HSV.rust)),post=hC(vPick(HFRAME.post));
+ vnReg('Wreck market hall',0,0,12,yc+R);
+ kput('hVault',[0,yc,0],null,[L,R,R],hull);for(let k=0;k<=6;k++)kput('hVaultR',[-L/2+L*k/6,yc,0],null,[.3,R+.06,R+.06],rust);
+ for(const s of[-1,1])for(let i=0;i<=6;i++){const x=-L/2+.3+(L-.6)*i/6,z=s*(hw-.2);kput('hCol',[x,0,z],null,[.16,eave-.35,.16],post);hnDougong(x,eave-.35,z,s>0?0:Math.PI,.34);}
+ for(let k=0;k<4;k++)for(const s of[-1,1])hnStall(-8+k*5.3,0,s*2.8,s>0?0:Math.PI);
+ for(let k=0;k<6;k++)hnLantern(-8+k*3.2,yc+R-1.2,0);
+ for(const e of[-1,1])hnSignBoard(e*(L/2+.1),eave+1.2,0,e>0?Math.PI/2:-Math.PI/2,4,.9,vPick(['scales','sack','bread']));}
+
+// ---------------------------------------------------------------- 4. the press works
+// A long shed under a sawtooth of corrugated roofs (their glazed faces to the north), a rolling gantry over plate stacks
+// in the yard, a frame office with its gable at the gate end.
+function buildHlRepPressWorks(G,o){reseed(22131+(o.v|0));const W=24,D=14,H=4.4,corr=hC(vPick(HSV.corr)),log=hC(vPick(HPAL.aged)),iron=hC(0x3a3430),rust=hC(vPick(HSV.rust)),lit=vLit()?'lit':'glass';
+ vnReg('Press works',0,0,14,8);
+ vB('vCorr',0,0,0,W,H,D,0,corr.clone().multiplyScalar(.85));vnPatch(0,.5,D/2+.02,0,18,3,10);
+ for(let k=0;k<5;k++){const x=-W/2+W*(k+.5)/5;kput('vCorr',[x,H+1.1,0],qEuler(0,0,.55),[W/5*1.12,.1,D+.4],corr);vB('vWinGlass',x+W/10-.15,H,0,.08,2.1,D-.4,0);}   // sawtooth roofs, glazed north lights
+ vB('vDarkB',0,0,D/2+.03,5,3.6,.06,0);vB('vIron',0,3.8,D/2+.1,6,.2,.12,0,iron);
+ for(const s of[-1,1]){beam('vIron',[s*9,0,D/2+2],[s*9,6,D/2+5],.25,.25,iron);beam('vIron',[s*9,0,D/2+8],[s*9,6,D/2+5],.25,.25,iron);}vB('vIron',0,6,D/2+5,19,.4,.5,0,rust);
+ for(let k=0;k<3;k++)for(let j=0;j<5;j++)kput('vPlate',[-5+k*5,.1+j*.06,D/2+5],qEuler(-Math.PI/2,rr(-.1,.1),0),[3.4,2,1],null);
+ hnFachBox(W/2+2.6,0,-2,4.2,2.8,5,0,null,null,lit);hnGable(W/2+2.6,2.8,-2,5,4.2,1.5,Math.PI/2,'vCorr',corr,.4,'vGableW',log);}
+
+// ---------------------------------------------------------------- 5. the gasholder tenement
+// An Ancient gasholder — a great drum in its lattice guide frame — its crown now a village roof: frame dwellings ring the
+// base on a plank deck with carved balustrades, a second ring of little houses sits on the drum's top under gables,
+// ladders and a stair climb the frame.
+function buildHlRepGasholder(G,o){reseed(22141+(o.v|0));const R=9,H=10,iron=hC(0x4a4440),drum=hC(vPick([0x6a7a6a,0x7a6a5a,0x5a6a7a])),log=hC(vPick(HPAL.aged)),corr=hC(vPick(HSV.corr)),lit=vLit()?'lit':'glass';
+ vnReg('Gasholder tenement',0,0,R+3,H+8);
+ kput('hTankC',[0,H/2,0],null,[R,H,R],drum);kput('hTankCap',[0,H,0],null,[R,1.4,R],drum.clone().multiplyScalar(.9));
+ for(let k=0;k<12;k++){const a=k/12*TAU;const p=[Math.sin(a)*(R+.6),Math.cos(a)*(R+.6)];vPst('vIron',p[0],0,p[1],.14,H+3,iron);
+  const q=[Math.sin(a+TAU/12)*(R+.6),Math.cos(a+TAU/12)*(R+.6)];for(const y of[H*.5,H+3])beam('vIron',[p[0],y,p[1]],[q[0],y,q[1]],.1,.1,iron);}
+ for(let k=0;k<5;k++){const a=-1.1+k*.55,p=[Math.sin(a)*(R+2.6),Math.cos(a)*(R+2.6)];hnFachBox(p[0],0,p[1],3.6,2.6,3.2,a,null,null,lit);hnGable(p[0],2.6,p[1],3.2,3.6,1.6,a+Math.PI/2,'vCorr',corr,.35,'vGableW',log);}
+ for(let k=0;k<4;k++){const a=k*Math.PI/2+.4,p=[Math.sin(a)*R*.55,Math.cos(a)*R*.55];hnFachBox(p[0],H+.5,p[1],3.4,2.4,3,a,null,null,lit);hnGable(p[0],H+2.9,p[1],3,3.4,1.6,a+Math.PI/2,'vShingleB',hC(vPick(HPAL.shingle)),.35,'vGableW',log);}
+ for(let k=0;k<16;k++){const a=k/16*TAU;const p=[Math.sin(a)*(R+.2),Math.cos(a)*(R+.2)];kput('hRailC',[p[0],H+1.9,p[1]],qEuler(0,a,0),[TAU*R/16,.7,1],log);}
+ vnStairs(R+1.4,0,-3,Math.PI,1.1,H+.6,30,'vWood',log);vnLadder(-R-.7,0,1,0,H,log);}
+
+const HTAG_SCRAP=(wealth,type,more)=>Object.assign({type,wealth,lit:false,salvage:true},more||{});
+HL.def({key:'hl_rep_stage_tenement',name:'Stage tenement',branch:'republican',family:'Dwellings',tags:HTAG_SCRAP('poor',['multi-family dwelling']),w:32,d:9,h:11,build:buildHlRepStageTenement});
+HL.def({key:'hl_rep_smelter',name:'Smelter',branch:'republican',family:'Industry',tags:HTAG_SCRAP('poor',['industry']),w:24,d:18,h:18,build:buildHlRepSmelter});
+HL.def({key:'hl_rep_wreck_market',name:'Wreck market hall',branch:'republican',family:'Shops and workshops',tags:HTAG_SCRAP('poor',['market/shop'],{lit:true}),w:24,d:14,h:10,build:buildHlRepWreckMarket});
+HL.def({key:'hl_rep_press_works',name:'Press works',branch:'republican',family:'Industry',tags:HTAG_SCRAP('poor',['industry']),w:32,d:28,h:8,build:buildHlRepPressWorks});
+HL.def({key:'hl_rep_gasholder',name:'Gasholder tenement',branch:'republican',family:'Dwellings',tags:HTAG_SCRAP('poor',['multi-family dwelling']),w:26,d:26,h:16,build:buildHlRepGasholder});
+// ================================================================= REPUBLICAN — the Fallen Arcology quarter (round 9)
+// Travis: "Include a small district built into a toppled and partly-broken arcology" (after a painting of a pyramid split
+// in two, its halves leaning apart, a town packed into the cleft). Two leaning half-pyramids of Ancient stone faced in a
+// labyrinth relief, a great broken slab fallen against the back, rubble and drifted earth at their feet; in the cleft a
+// crowd of narrow frame towers; terraces cut into the triangular faces with huts on them and stairs zig-zagging up;
+// a row of small houses and a stall at the cleft's mouth. The ruin is Ancient; everything on it is Republican.
+TEX.hMaze=canvasTex(256,256,(g,w,h)=>{g.fillStyle='#c4bba8';g.fillRect(0,0,w,h);const N=8,C=w/N;
+ // a depth-first maze on an 8x8 grid (fixed seed: the same relief everywhere, as on the Ancients' own faces)
+ let s=90217;const R=()=>(s=(s*16807)%2147483647)/2147483647;const seen=new Set(),st=[[0,0]];seen.add('0,0');const cut=[];
+ while(st.length){const [cx,cy]=st[st.length-1];const nb=[[1,0],[-1,0],[0,1],[0,-1]].map(([dx,dy])=>[(cx+dx+N)%N,(cy+dy+N)%N]).filter(([x,y])=>!seen.has(x+','+y));
+  if(!nb.length){st.pop();continue;}const nx=nb[Math.floor(R()*nb.length)];seen.add(nx[0]+','+nx[1]);cut.push([cx,cy,nx[0],nx[1]]);st.push(nx);}
+ g.lineCap='square';for(const [lw,col,o] of[[C*.46,'#6e665a',0],[C*.3,'#8a8274',1.5]]){g.strokeStyle=col;g.lineWidth=lw;
+  for(const [a,b,c,d] of cut){if(Math.abs(a-c)>1||Math.abs(b-d)>1)continue;g.beginPath();g.moveTo((a+.5)*C+o,(b+.5)*C+o);g.lineTo((c+.5)*C+o,(d+.5)*C+o);g.stroke();}}
+ g.strokeStyle='rgba(255,255,255,.12)';g.lineWidth=2;for(let k=0;k<=N;k++){g.beginPath();g.moveTo(0,k*C);g.lineTo(w,k*C);g.stroke();}});
+MAT.hMaze=hStd({map:TEX.hMaze,roughness:.95});vWorldUV(MAT.hMaze,.09);
+kdef('hMazeW',VGABLE,MAT.hMaze);kdef('hMazeB',VBOX,MAT.hMaze);
+function buildHlRepArcoQuarter(G,o){reseed(22201+(o.v|0));
+ const st=hC(vPick([0xd0c6b2,0xc4baa4,0xd8ceb8])),sand=hC(0xb89a70),ash=hC(vPick(HPAL.ashlar)),log=hC(vPick(HPAL.aged)),corr=hC(vPick(HSV.corr)),sh=hC(vPick(HPAL.shingle)),lit=vLit()?'lit':'glass';
+ vnReg('The Fallen Arcology',0,-6,40,32);vnReg('Arcology quarter',0,4,16,18);
+ // the two halves (ridge running back into the scene, the triangular faces to the front), leaning apart; the fallen slab
+ const A={x:-24,z:-6,L:48,H:32,B:40,lean:-.2,sink:1.5},B={x:24,z:-4,L:42,H:27,B:36,lean:.26,sink:3};
+ for(const P of[A,B])kput('hMazeW',[P.x,-P.sink,P.z],qEuler(0,Math.PI/2,0).multiply(qEuler(P.lean,0,0)),[P.L,P.H,P.B],st);
+ kput('hMazeB',[36,9,-26],qEuler(0,.35,0).multiply(qEuler(0,0,.62)),[50,4.5,26],st);
+ for(let k=0;k<26;k++){const x=rr(-44,44),z=rr(12,22)*(rng()<.8?1:-1.4);kput('vRock',[x,rr(.3,1.4),z],qEuler(rng(),rng(),0),[rr(.8,3),rr(.6,2),rr(.8,2.6)],st);}
+ for(const [x,z,r] of[[-38,18,7],[34,16,6],[0,-30,9],[-14,20,4]])kput('hRCHeap',[x,-.05,z],qEuler(0,rng()*TAU,0),[r,r*.3,r*1.2],sand);
+ // the cleft: a crowd of narrow frame towers, 2-4 storeys, jettied, under steep little gables
+ const cx0=0;for(let i=0;i<7;i++){const x=cx0+rr(-2.4,2.4)+(i%2?1.2:-1.2),z=-24+i*6.4,n=hri(2,4),w=rr(3,4);let y=0;
+  if(i===0){vB('vStone',x,0,z-2,5,2.4,.4,0,ash);}
+  for(let k=0;k<n;k++){const ww=w+(k?.5:0);hnFachBox(x,y,z,ww,2.6,ww,0,null,null,lit);if(k<n-1)hnJetty(x,y+2.6+.1,z,ww+.5,ww+.5,0,hC(vPick(HPAL.redwood)),.25);y+=2.7;}
+  hnGable(x,y,z,w+.6,w+.6,1.8,rng()<.5?0:Math.PI/2,rng()<.6?'vCorr':'vShingleB',rng()<.6?corr:sh,.35,'vGableW',log);
+  if(i%2)hnCable([x,y-.3,z],[x+(rng()<.5?-9:9),y+2,z],hC(0x3a3028));}
+ // a cave mouth into the broken half, lanterns at it
+ vB('vDarkB',B.x-B.B*.36,0,B.z+B.L/2-.2,5,6,.4,0);for(let k=0;k<4;k++)hnLantern(B.x-B.B*.36-2+k*1.3,5.8,B.z+B.L/2+.4);
+ // terraces cut into the faces: a platform on beams, a hut, a carved balustrade; stairs zig-zagging between them
+ const terr=(P,u,y)=>{const fz=P.z+P.L/2+1.8,x=P.x+u;vB('boxCR',x,y-.35,fz,7,.35,3.6,0,ash);for(const s of[-1,1])beam('vWood',[x+s*3,y-.35,fz+1.6],[x+s*3,y-3.2,P.z+P.L/2],.22,.22,log);
+  hnFachBox(x-1,y,fz-.4,3.6,2.4,2.8,0,null,null,lit);hnGable(x-1,y+2.4,fz-.4,3.6,2.8,1.6,0,'vShingleB',sh,.3,'vGableW',log);kput('hRailC',[x+1,y+.45,fz+1.78],null,[4.8,.7,1],log);return[x,y,fz];};
+ const t1=terr(A,-2,7),t2=terr(A,-8,14),t3=terr(A,4,20),t4=terr(B,2,8),t5=terr(B,-6,15);
+ for(const [a,b] of[[[A.x-6,0],t1],[t1,t2],[t2,t3],[[B.x-2,0],t4],[t4,t5]]){const p0=Array.isArray(a)&&a.length===2?[a[0],0,A.z+A.L/2+2.6]:a;
+  const dy=b[1]-p0[1],steps=Math.round(dy/.25);const mx=(p0[0]+b[0])/2,mz=Math.max(p0[2],b[2])+.9;vnStairs(mx,p0[1],mz,Math.PI/2,1,dy,steps,'vWood',log);}
+ // the mouth of the cleft: small houses, a stall, a lamp
+ for(const [key,x,z,ry] of[['hl_rep_house_poor_a',-11,24,0],['hl_rep_lantern_stall',11,24.5,0],['hl_rep_house_poor_b',-22,26,.1]]){if(VERN.defs[key])hnSub(key,x,0,z,ry);}
+ hnStall(0,0,22,0);vnLampPost(3,0,20,3.8);vnFolk(0,20,4,4);}
+HL.def({key:'hl_rep_arco_quarter',name:'The Fallen Arcology',branch:'republican',family:'Monuments',tags:{type:['multi-family dwelling','ruin'],wealth:'poor',lit:true,salvage:true,landmark:true},w:100,d:72,h:34,build:buildHlRepArcoQuarter});
 // ================================================================= HIGHLANDS / RUSTIC — dwellings
 // The villages south of the Republic: Norse and Alpine. Stone is only a footing or a ground storey; above it
 // everything is log and board under wide, low shingle gables weighted with stones (Alpine) or steep turf and
