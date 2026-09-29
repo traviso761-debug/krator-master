@@ -238,3 +238,32 @@ albedo / buildable mask / class, the road list and its spatial hash, OBB occupan
     size/distance > 1/300; each InstancedMesh is rewritten near-first and its count cut as the camera moves. It keeps
     about a quarter to three fifths of 520 k instances depending on the view; rendered triangles fall from ~12.8 M to
     5–9 M. The probe sees the full lists. There is a LOD button to compare.
+
+## Round 9 (Sep 29 2026) — Roketstad, capital of the Iron Republic
+- **The town doubled.** An oval wall (`RK.TOWN` in 84: semi-axes 640×395 m, lumps damped toward the east) now runs from
+  the old hill town in the west to the port table's rim in the east, taking in the scrap town. There are four gates:
+  N, S, E (port road) and a new **W gate**.
+- **The east half is the scrap and industrial district** (`inForge`: x > −120 inside the wall).
+  - It has darker earth, its own square (Scrap Kontor, wreck market) and denser works.
+  - The row builder picks from salvage and industrial pools there (`IND_TRADE`/`IND_HOMES`).
+- **Five more salvage-built buildings** (`src/79d-rep-scrap2.js`):
+  - Stage tenement: rocket stages stood on end as flats.
+  - Smelter.
+  - Wreck market: stalls under a hull.
+  - Press works (sawtooth roofs).
+  - Gasholder tenement.
+- **The Fallen Arcology** (`src/79e-rep-arco.js`).
+  - Two half-pyramids of Ancient stone in a DFS-maze relief lean apart, with a broken slab fallen behind.
+  - A crowd of frame towers fills the cleft; terraces with huts and zig-zag stairs are cut into the faces.
+  - A cave mouth has lanterns; houses and a stall stand at the mouth of the cleft.
+  - It stands in the north of the industrial half.
+- **The capital's institutions** (`src/76c-rep-capital.js`):
+  - Arsenal of the Republic: a drill court, a gate tower and a turf magazine.
+  - Mint and Treasury: rusticated stone, a gilded cupola and a strongroom.
+  - Rocketeers' Guild: a guildhall and a bracketed test tower holding a rocket.
+  - The Hall of the Republic, Mint and Rocketeers' Guild face a new **Republic square**. Every earlier civic building
+    and guild is placed too.
+- **Open-air markets**: rings of striped stalls (`hnStall`) on the main, market, temple, Republic and scrap squares.
+- **The N and S highways** get runs of 1–2 buildings with jittered setback and a mixed pick (`HW_TRADE`) instead of
+  unbroken rows. Suburbs sit outside the N, S and W gates; farms (steads, strip fields, mills) lie along the W road.
+- Bunkers inside the new wall are skipped. The scene is ~19.6 M triangles; LOD draws 6–11 M.
