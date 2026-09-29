@@ -4813,6 +4813,7 @@ HL.def({key:'hl_rep_quarry',name:'Quarry',branch:'republican',family:'Mines and 
 // framed, bracketed and roofed like the rest of the East Highland Republic (the frame storeys of 73b, Alpine roofs, lace
 // bargeboards, lattice windows). They are born reclaimed (tags.salvage), so 88 gives them no `_reclaimed` twin.
 kdef('hTankEnd',new THREE.SphereGeometry(1,20,8,0,TAU,0,Math.PI/2).rotateZ(-Math.PI/2),MAT.rust);   // a tank's domed end, bulging toward +x
+kdef('hTankC',new THREE.CylinderGeometry(1,1,1,24),MAT.rust);   // a tank body CENTRED on its position (vTankR stands on its base)
 kdef('hHullSeg',new THREE.CylinderGeometry(1,1,1,18,1,true,0,Math.PI*.62),MAT.rust);                 // a curved section of hull, open
 const HSV={rust:[0x8a5a3a,0x7a4e34,0x96643e,0x6e4a36],conc:[0x9a968c,0x8e8a80,0xa6a296],corr:[0x9a9488,0x8a867a,0xa8a294]};
 // the rotor of a salvaged wind charger: three plate blades on a hub facing +z of ry
@@ -4829,7 +4830,7 @@ function buildHlRepTankHouse(G,o){reseed(21801+(o.v|0));const R=2.1,L=9.4,yc=.6+
  const rust=hC(vPick(HSV.rust)),conc=hC(vPick(HSV.conc)),iron=hC(0x3a3430),corr=hC(vPick(HSV.corr)),log=hC(vPick(HPAL.aged)),red=hC(vPick(HFRAME.postPoor)),lit=vLit()?'lit':'glass';
  vnReg('Tank house',0,0,7,12.5);
  for(const x of[-3.4,0,3.4]){vB('boxCR',x,0,0,.9,1.2,3.8,0,conc);vB('boxCR',x,0,0,1.3,.3,4.2,0,conc);}              // cradles
- kput('vTankR',[0,yc,0],qEuler(0,0,Math.PI/2),[R,L,R],rust);
+ kput('hTankC',[0,yc,0],qEuler(0,0,Math.PI/2),[R,L,R],rust);
  kput('hTankEnd',[L/2,yc,0],null,[R*.42,R,R],rust);kput('hTankEnd',[-L/2,yc,0],qEuler(0,Math.PI,0),[R*.42,R,R],rust);
  for(const x of[-L/2+.3,-1.6,1.6,L/2-.3])kput('vHoop',[x,yc,0],qEuler(0,Math.PI/2,0),[R*.985,R*.985,1],rust.clone().multiplyScalar(.6));          // weld seams
  vnPatch(-2.6,yc-.9,R*.92,0,2.2,1.4,4);vnPatch(3,yc+.2,-R*.92,Math.PI,2,1.2,3);
@@ -4848,7 +4849,7 @@ function buildHlRepTankHouse(G,o){reseed(21801+(o.v|0));const R=2.1,L=9.4,yc=.6+
  const mx=-L/2-1.3;vPst('vPipeR',mx,0,1.6,.09,11.2,null);for(let k=1;k<4;k++)vB('vIron',mx,k*2.6,1.6,.5,.06,.06,0,iron);hnRotor(mx,11.2,1.6+.2,0,1.9,rust);
  hnCable([mx,10.6,1.6],[mx-3,0,4],null);hnCable([mx,10.6,1.6],[mx-2.6,0,-2.2],null);
  for(const sx of[-1,1])for(const sz of[-1,1])vPst('vPipeR',3.4+sx*.7,0,-4.2+sz*.7,.06,3.4,null);
- vB('vWood',3.4,3.4,-4.2,1.8,.14,1.8,0,log);kput('vTankR',[3.4,3.54+.75,-4.2],null,[.8,1.5,.8],rust);hnCable([3.4,4.5,-3.4],[2.2,y2+1,-2.7],hC(0x4a4038));
+ vB('vWood',3.4,3.4,-4.2,1.8,.14,1.8,0,log);kput('hTankC',[3.4,3.54+.75,-4.2],null,[.8,1.5,.8],rust);hnCable([3.4,4.5,-3.4],[2.2,y2+1,-2.7],hC(0x4a4038));
  vnBarrel(-1.4,0,R+.9,.3,.8,hC(0x5a4a3e));hnWoodpile(-4.2,0,R+.7,0,1.4,1);
  kput('hRCHeap',[5.8,-.05,2.8],null,[1.2,.5,1],hC(0x5a4a3e));for(let k=0;k<5;k++)kput(vPick(['vPlate','vSheet']),[5.8+rr(-.8,.8),.4,2.8+rr(-.6,.6)],qEuler(-Math.PI/2+rr(-.3,.3),rng()*TAU,0),[rr(.8,1.4),rr(.6,1),1],null);}
 
@@ -4894,7 +4895,7 @@ function buildHlRepPowderWorks(G,o){reseed(21821+(o.v|0));
   vPst('vPipe',x+3.2,0,7.6,.04,5,iron);vB('hPaint',x+3.2+.45,4.3,7.6,.9,.6,.03,0,red);}                                    // red warning flags
  for(const x of[-5.5,5.5])kput('hBatterRub',[x,0,-1],null,[3.4,3.8,15],turf);                                            // blast berms
  // the boiler house: rubble firebox, the tank, the glowing mouth, the pipe stack on guys
- const bx=-11,bz=-12.2;vB('hRubB',bx,0,bz,5.6,2.4,4.4,0,hC(vPick(HPAL.rubble)));kput('vTankR',[bx,4,bz],qEuler(0,0,Math.PI/2),[1.6,5,1.6],rust);
+ const bx=-11,bz=-12.2;vB('hRubB',bx,0,bz,5.6,2.4,4.4,0,hC(vPick(HPAL.rubble)));kput('hTankC',[bx,4,bz],qEuler(0,0,Math.PI/2),[1.6,5,1.6],rust);
  for(const x of[-1.8,0,1.8])kput('vHoop',[bx+x,4,bz],qEuler(0,Math.PI/2,0),[1.62,1.62,1.4],iron);
  vB('vDarkB',bx,.2,bz+2.22,1.2,1,.06,0);kput('vEmber',[bx,.55,bz+2.15],null,[.4,.3,.12]);
  const sx=bx+4.4;for(let k=0;k<4;k++){vPst('vPipeR',sx,k*4,bz,.55-k*.06,4.05,null);kput('vHoop',[sx,k*4,bz],qEuler(Math.PI/2,0,0),[.58-k*.06,.58-k*.06,2],iron);}
@@ -4997,7 +4998,7 @@ function hnPole(x,z,h,to){vPst('vPost',x,0,z,.14,h,hC(0x5a4636));vB('vWood',x,h-
 // bracket sets, plank-and-plate walls between the posts, plank ends stepped up under the arc, sliding doors under a
 // painted board at the front, two drum ventilators on the crown.
 function buildHlRepHullVault(G,o){reseed(21841+(o.v|0));const L=26,R=8.2,arc=Math.PI*.84,he=Math.cos(arc/2)*R,hw=Math.sin(arc/2)*R,eave=3.6,yc=eave-he;
- const rust=hC(vPick(HSV.rust)),hull=hC(vPick([0xb8b4a8,0xa8a498,0xc4c0b2])),post=hC(vPick(HFRAME.postPoor)),plank=hC(vPick(HFRAME.plank)),iron=hC(0x3a3430),lit=vLit()?'lit':'glass';
+ const rust=hC(vPick(HSV.rust)),hull=hC(vPick([0x9a968c,0x8e8a80,0xa49e90])),post=hC(vPick(HFRAME.postPoor)),plank=hC(vPick(HFRAME.plank)),iron=hC(0x3a3430),lit=vLit()?'lit':'glass';
  vnReg('Hull-vault warehouse',0,0,15,yc+R+1);
  vB('boxCR',0,0,0,L+1,.4,2*hw+1,0,hC(vPick(HSV.conc)));
  kput('hVault',[0,.4+yc,0],null,[L,R,R],hull);                                                                          // the panel
@@ -5042,7 +5043,7 @@ function buildHlRepContStack(G,o){reseed(21861+(o.v|0));const lit=vLit()?'lit':'
  vnStairs(6.9,0,2.9,Math.PI/2,1.1,2.6,8,'vWood',log);                                                                    // up to the walkway
  vB('vWood',1.2,2.52,3.1,10.8,.12,1.3,0,log);for(let i=0;i<5;i++)kput('hCol',[-4+i*2.4,0,3.7],null,[.08,2.52,.08],hC(vPick(HFRAME.postPoor)));
  kput('hRailC',[1.2,3,3.72],null,[10.6,.7,1],log);vnLadder(-4.2,2.6,2.5,0,2.6,log);
- kput('vTankR',[-2.6,7.8+.8,0],null,[.9,1.6,.9],hC(vPick(HSV.rust)));hnSolar(-.6,7.8,-1.2,0,2.2,1.2);hnDish(-.2,7.8,1.6,0,.8);
+ kput('hTankC',[-2.6,7.8+.8,0],null,[.9,1.6,.9],hC(vPick(HSV.rust)));hnSolar(-.6,7.8,-1.2,0,2.2,1.2);hnDish(-.2,7.8,1.6,0,.8);
  hnCable([-3.8,8.5,1.6],[1.1,8.5,1.6]);for(let k=0;k<5;k++)kput('vCloth',[-3.2+k*.9,8.1,1.6],null,[.6,.7,1],hC(vPick([0xefe7d6,0x3a6aa8,0xc0302a,0xd8a030])));}
 
 // ---------------------------------------------------------------- 4. the silo house
@@ -5075,7 +5076,7 @@ function buildHlRepSiloHouse(G,o){reseed(21871+(o.v|0));const R=3,H=6.2,lit=vLit
 function buildHlRepTankRow(G,o){reseed(21881+(o.v|0));const lit=vLit()?'lit':'glass',log=hC(vPick(HPAL.aged)),iron=hC(0x3a3430),sh=hC(vPick(HPAL.shingle));
  vnReg('Tank-cluster row',0,0,10,14);
  const T=[{x:-6.5,r:2.5,h:9,c:hC(vPick([0x3f6a4a,0x4a7a5a]))},{x:0,r:2.1,h:7,c:hC(vPick(HSV.rust))},{x:6.5,r:2.8,h:11.5,c:hC(vPick([0x3a5a7a,0x4a6a8a]))}];
- for(const t of T){vB('boxCR',t.x,0,0,2*t.r+.5,.35,2*t.r+.5,0,hC(vPick(HSV.conc)));kput('vTankR',[t.x,.35+t.h/2,0],null,[t.r,t.h,t.r],t.c);kput('hTankCap',[t.x,.35+t.h,0],null,[t.r,t.r*.4,t.r],t.c.clone().multiplyScalar(.9));
+ for(const t of T){vB('boxCR',t.x,0,0,2*t.r+.5,.35,2*t.r+.5,0,hC(vPick(HSV.conc)));kput('hTankC',[t.x,.35+t.h/2,0],null,[t.r,t.h,t.r],t.c);kput('hTankCap',[t.x,.35+t.h,0],null,[t.r,t.r*.4,t.r],t.c.clone().multiplyScalar(.9));
   for(let y=2.4;y<t.h-.6;y+=2.8){kput('vHoop',[t.x,.35+y+1.4,0],qEuler(Math.PI/2,0,0),[t.r*1.005,t.r*1.005,1],iron);for(const a of[.35,-.5,1.3])hnLatWin(t.x+Math.sin(a)*t.r,.35+y-.4,Math.cos(a)*t.r,a,.8,.9,lit,null);}
   vnDoor(t.x,.35,t.r+.02,0,.9,2,'hPaint',hC(vPick(HFRAME.postPoor)),hC(vPick(HPAL.tar)),false);}
  {const t=T[2];kput('hTentSh',[t.x,.35+t.h+t.r*.3,0],null,[1.6,2.2,1.6],sh);vPst('vPipeR',t.x+1,.35+t.h+.5,0,.06,4,null);hnRotor(t.x+1,.35+t.h+4.5,.2,0,1.4,hC(vPick(HSV.rust)));}
@@ -5092,7 +5093,7 @@ function buildHlRepTankRow(G,o){reseed(21881+(o.v|0));const lit=vLit()?'lit':'gl
 // house with a steep gable, a carved balustrade round the deck, a ladder down, bunting from a mast with a dish.
 function buildHlRepCrawler(G,o){reseed(21891+(o.v|0));const rust=hC(vPick(HSV.rust)),dark=hC(0x3a3028),iron=hC(0x3a3430),lit=vLit()?'lit':'glass',log=hC(vPick(HPAL.aged));
  vnReg('Crawler house',0,0,9,11);
- for(const s of[-1,1]){const z=s*2.5;vB('vRustB',0,.25,z,10,1.5,1.2,0,dark);for(const e of[-1,1])kput('vTankR',[e*5,1,z],qEuler(Math.PI/2,0,0),[.78,1.2,.78],dark);
+ for(const s of[-1,1]){const z=s*2.5;vB('vRustB',0,.25,z,10,1.5,1.2,0,dark);for(const e of[-1,1])kput('hTankC',[e*5,1,z],qEuler(Math.PI/2,0,0),[.78,1.2,.78],dark);
   for(let k=0;k<6;k++)kput('vHoop',[-3.8+k*1.5,.75,z+s*.62],null,[.5,.5,2],iron);for(let k=0;k<20;k++)vB('vIron',-5+k*.52,1.72,z,.2,.06,1.25,0,iron);}
  vB('vRustB',-.4,1.3,0,10.2,1.5,4,0,rust);vB('vRustB',5.8,1.1,0,2.4,1.9,3.6,0,rust);for(let k=0;k<6;k++)vB('vIron',7.02,1.4+k*.24,0,.05,.1,3,0,iron);   // hull and hood, the grille
  vPst('vPipeR',5,3,1.4,.12,2.2,null);kput('vConeI',[5,5.2,1.4],null,[.14,.3,.14],iron);
@@ -5122,7 +5123,7 @@ function buildHlRepGarage(G,o){reseed(21901+(o.v|0));const lit=vLit()?'lit':'gla
  for(let k=0;k<4;k++)kput('vHoop',[7.6,.12+k*.22,-2],qEuler(Math.PI/2,0,0),[.42,.42,3],hC(0x201c1a));
  // the water tank on its stand, drums, the tool chest, the sign, a lamp
  for(const sx of[-1,1])for(const sz of[-1,1])beam('vIron',[-2.4+sx*1,0,-3.8+sz*1],[-2.4+sx*.8,8.2,-3.8+sz*.8],.08,.08,iron);vB('vIron',-2.4,8.2,-3.8,2,.12,2,0,iron);
- kput('vTankR',[-2.4,8.32+.9,-3.8],null,[.85,1.8,.85],rust);kput('hTankCap',[-2.4,10.1,-3.8],null,[.85,.3,.85],rust);
+ kput('hTankC',[-2.4,8.32+.9,-3.8],null,[.85,1.8,.85],rust);kput('hTankCap',[-2.4,10.1,-3.8],null,[.85,.3,.85],rust);
  vnBarrel(.4,0,2.6,.3,.85,hC(0x5a4a3e));vnBarrel(.9,0,3.1,.3,.85,hC(0xb89a30));vB('hPaint',-.2,0,-2.4,.6,1,.9,0,hC(0xb3322a));
  hnSign(.1,2.6,1.6,Math.PI/2,'gear');vnLampPost(8,0,3,4);}
 
@@ -5164,7 +5165,7 @@ function buildHlRepRadomeTower(G,o){reseed(21931+(o.v|0));const lit=vLit()?'lit'
  hnCont(0,0,-1.25,0,12,hContC(),{win:[-4,-1,3],kind:lit});hnCont(0,0,1.25,0,12,hContC(),{win:[-3.5,0,3.5],door:-5,kind:lit});
  hnFachBox(-1,2.6,0,6,2.8,5,0,null,null,lit);hnCont(3.9,2.6,0,Math.PI/2,6,hContC(),{win:[-1.5,1.5],kind:lit});
  hnCont(-1,5.4,-.4,0,6,hContC(),{win:[-1.5,1.4],kind:lit});hnFachBox(-1,8,-.4,3.4,2.4,2.8,0,null,null,lit);vnHipRoof('hHipSc',-1,10.4,-.4,3.4,2.8,1.8,0,slate,.5);
- hnSolar(3.9,5.2,0,Math.PI/2,2.4,1.4);kput('vTankR',[1.9,5.4+.7,0],null,[.7,1.4,.7],hC(vPick(HSV.rust)));
+ hnSolar(3.9,5.2,0,Math.PI/2,2.4,1.4);kput('hTankC',[1.9,5.4+.7,0],null,[.7,1.4,.7],hC(vPick(HSV.rust)));
  hnMast(6.8,0,-3.2,2.4,20);kput('vBallW',[6.8,20+1.9,-3.2],null,[2.1,2.1,2.1],hC(0xe8e4dc));vB('vIron',6.8,19.6,-3.2,1.2,.4,1.2,0,hC(0x3a3430));hnDish(7.6,14,-2.4,Math.PI*.25,1);
  // the zig-zag stair up the +x side
  for(const [y0,z0,dir] of[[0,2.8,-1],[2.6,-2.8,1],[5.2,2.8,-1]]){const zc=z0+dir*1.3;vnStairs(7.3,y0,zc,dir>0?Math.PI:0,1,2.6,8,'vWood',log);vB('vWood',7.3,y0+2.5,z0+dir*2.6+dir*.6,1.2,.12,1.2,0,log);}}
