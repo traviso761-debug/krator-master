@@ -6073,6 +6073,130 @@ HL.def({key:'hl_rus_mill',name:'Watermill',branch:'rustic',family:'Farms and mil
 HL.def({key:'hl_rus_farmhouse',name:'Einhof farmhouse',branch:'rustic',family:'Farms and mills',tags:HRU_T(['farm','multi-family dwelling'],'middle'),w:26,d:22,h:10,build:buildHlRusFarmhouse});
 HL.def({key:'hl_rus_farm',name:'Farm fields',branch:'rustic',family:'Farms and mills',tags:HRU_T(['farm'],'middle'),w:51,d:36,h:3,build:buildHlRusFarm});
 HL.def({key:'hl_rus_pens',name:'Animal pens',branch:'rustic',family:'Farms and mills',tags:HRU_T(['farm'],'middle'),w:27,d:19,h:4,build:buildHlRusPens});
+// ================================================================= HIGHLANDS / RUSTIC — the salvage farms (round 10)
+// Travis: "give the Rustic and Tribal sets some post-apoc and reclaimed buildings". The Norse/Alpine villages take the
+// Ancient wreck as it lies — a fuel tank, a pair of shipping containers, a curved hull panel, a corrugated silo — and
+// build their own world round it: log and board, turf and shingle, dragon heads on the ridges, falu red, painted
+// shields. No electric light (the branch has none). All born reclaimed (tags.salvage): no `_reclaimed` twins.
+// Uses the salvage kit of 79b–79d (hTankC, hTankEnd, hVault, hSiloC, hnCont, hContC, hnCable). Seeds 25000–25099.
+
+// ---------------------------------------------------------------- 1. the tank stue
+// A spent fuel tank on a fieldstone footing is the house; a turf gable on log posts is built right over it as a
+// weather roof (the tank sweats), dragon heads on both apexes; a log vestibule with its own little turf gable against
+// the flank, windows sawn into the plate, a stovepipe through the turf, goats, a woodpile, a hay rack.
+function buildHlRusTankStue(G,o){reseed(25001+(o.v|0));const R=2.1,L=9,yc=.45+R;
+ const rust=hC(vPick(HSV.rust)),log=hC(vPick(HPAL.aged)).multiplyScalar(rr(.9,1.05)),dk=log.clone().multiplyScalar(.72),rub=hC(vPick(HPAL.rubble));
+ vnReg('Tank stue',0,0,6.5,11);
+ vB('hRubB',0,0,0,L-.6,.5,2.6,0,rub);
+ kput('hTankC',[0,yc,0],qEuler(0,0,Math.PI/2),[R,L,R],rust);
+ kput('hTankEnd',[L/2,yc,0],null,[R*.42,R,R],rust);kput('hTankEnd',[-L/2,yc,0],qEuler(0,Math.PI,0),[R*.42,R,R],rust);
+ for(const x of[-L/2+.3,-1.5,1.5,L/2-.3])kput('vHoop',[x,yc,0],qEuler(0,Math.PI/2,0),[R*.985,R*.985,1],rust.clone().multiplyScalar(.6));
+ vnPatch(-2.8,yc-.8,R*.93,0,1.8,1.2,3);
+ for(const x of[-3,2.6])vnWin(x,yc-.35,R*.97,0,.8,.75,'shut','vWood',log);
+ vnWin(L/2+R*.42-.05,yc-.2,0,Math.PI/2,.6,.6,'open','vWood',log);
+ // the weather roof: log posts on stones, plates, a turf gable, dragons
+ const H=yc+R+.5,W=L+1.4,D=2*R+1.8;
+ for(const sx of[-1,-.33,.33,1])for(const sz of[-1,1]){const x=sx*(W/2-.3),z=sz*(D/2-.2);vB('vStone',x,0,z,.5,.25,.5,0,rub);vPst('vPostB',x,.25,z,.14,H-.25,log);}
+ for(const sz of[-1,1])kput('hLogX',[0,H-.1,sz*(D/2-.2)],null,[W+.2,.16,.16],log);
+ const pitch=.95,top=hnRUTurf(0,H,0,W,D,pitch,0,.5,null,null);hnRUDragons(0,H,0,W,D,pitch*D/2,0,.5,dk,.9);
+ vnChimney(-1.2,yc+R*.9,-.6,top-yc-R*.9+.2,.12,true);
+ // the vestibule
+ const vz=R+.75;hnLogBox(1,.45,vz,2.4,2.2,1.5,0,log,.26);vnDoor(1,.45,vz+.76,0,.9,1.85,'vWood',log,dk,false);
+ hnRUTurf(1,2.65,vz,1.9,2.4,.9,Math.PI/2,.3,'hGableLog',log,2);vnStairs(1,0,vz+1.15,0,1.2,.45,2,'vStone',rub);
+ hnRUShield(-.35,1.7,vz,-Math.PI/2,.4,hC(HPAL.red),hC(HPAL.white));
+ hnWoodpile(-W/2-.4,0,-.5,Math.PI/2,3.6,1.4);vnBarrel(-2.2,0,R+1,.32,.8,dk);
+ hnRUHesje(-1,-D/2-2.4,0,6);hnRUBeast(W/2+1.8,1.5,2.2,'goat');hnRUBeast(W/2+1.2,3,1.2,'goat');
+ vnFence(0,0,.8,W+5,D+6.5,0,hC(vPick(HPAL.aged)),2,1);vnFolk(-2.5,vz+2,1,1);}
+
+// ---------------------------------------------------------------- 2. the container chalet
+// Two shipping containers side by side, their paint scrubbed back and the whole length done over in falu red, are the
+// ground storey (byre and store); a log storey on them under a low, wide shingle gable weighted with stones (Alpine),
+// a carved balcony full of geraniums along the front, an outside stair, the crest on the gable, a stovepipe.
+function buildHlRusContChalet(G,o){reseed(25011+(o.v|0));const L=12,Y2=2.6,H2=2.6,D=5.4;
+ const falu=hC(vPick(HPAL.falu)).lerp(hC(0x8a7a68),rr(.1,.3)),log=hC(vPick(HPAL.pine)).multiplyScalar(rr(.85,1)),tar=hC(vPick(HPAL.tar)),sh=hC(vPick(HPAL.shingle));
+ vnReg('Container chalet',0,0,8,Y2+H2+3);
+ hnCont(0,0,-1.25,0,L,falu.clone().multiplyScalar(.92),{});hnCont(0,0,1.25,0,L,falu,{});
+ for(const x of[-4.5,-1.5,3.8])vnWin(x,1.05,2.47,0,.8,.7,'shut','vWood',hC(HPAL.white));
+ vnDoor(1.2,.02,2.47,0,1.1,2.1,'vWood',hC(HPAL.white),tar,false);
+ vB('vWood',0,Y2,0,L+.6,.2,D,0,tar);                                                                      // sole plate
+ hnLogBox(0,Y2+.2,0,L+.4,H2,D,0,log,.3);
+ for(const x of[-4,0,4])vnWin(x,Y2+1.1,D/2,0,.8,.9,'shut','vWood',log);vnDoor(-2,Y2+.2,D/2,0,.9,1.95,'vWood',log,tar,false);
+ const pitch=.44,y0=Y2+.2+H2,over=1.1,top=hnGable(0,y0,0,L+.4,D,pitch,0,'vShingleB',sh,over,'vGableW',log);
+ hnBarge(0,y0,0,L+.4,D,pitch*D/2,0,over,tar,'lace');
+ for(const s of[-1,1])for(let k=0;k<7;k++){const v=s*rr(.8,D/2+over-.3);kput('vRock',[-L/2+.4+k*(L-.8)/6+rr(-.3,.3),top-Math.abs(v)*pitch+.28,v],qEuler(rng(),rng(),0),[rr(.28,.4),.22,rr(.26,.36)],hC(vPick(HPAL.rubble)));}
+ for(const s of[-1,1])hnRUShield(s*(L/2+.22),y0+.6,0,s*Math.PI/2,.5,hC(HPAL.red),hC(HPAL.teal));
+ hnRUBalcony(0,Y2+.2,D/2,0,L-1,1.3,tar,tar,true);
+ vnStairs(L/2+1,0,1.2,Math.PI/2,1.1,Y2+.2,9,'vWood',tar);
+ vnChimney(3.5,y0,-1.3,top-y0+.6,.12,true);
+ hnWoodpile(-L/2-.6,0,-.4,Math.PI/2,4,1.6);hnRUTrough(-3,4.2,0,2.4);hnRUBeast(-3,6,0,'cow');hnRUBeast(2.4,6.2,-.3,'cow');
+ vnFence(0,0,1.2,L+6,D+8,0,hC(vPick(HPAL.aged)),2,1);vnFolk(4,4.5,2,1.2);}
+
+// ---------------------------------------------------------------- 3. the hull naust
+// A Norse boathouse: two long fieldstone walls roofed by a curved panel of rocket hull, ribs and all, turf and moss
+// creeping over the crown; the back stepped in planks under the arc, the front open on the slip; a longboat on its
+// rollers inside with shields along the rail; dragon heads on both ends of the hull.
+function buildHlRusHullNaust(G,o){reseed(25021+(o.v|0));const L=16,R=4.6,arc=Math.PI*.84,he=Math.cos(arc/2)*R,hw=Math.sin(arc/2)*R,eave=2.2,yc=eave-he;
+ const hull=hC(vPick([0x9a968c,0x8e8a80,0xa49e90])),rust=hC(vPick(HSV.rust)),rub=hC(vPick(HPAL.rubble)),tar=hC(vPick(HPAL.tar)),plank=hC(vPick(HPAL.aged));
+ vnReg('Hull naust',0,0,10,yc+R+1.5);
+ for(const s of[-1,1])vB('hRubB',s*(hw-.45),0,0,.9,eave+.05,L,0,rub);
+ kput('hVault',[0,yc,0],qEuler(0,Math.PI/2,0),[L,R,R],hull);
+ for(let k=0;k<=7;k++)kput('hVaultR',[0,yc,-L/2+L*k/7],qEuler(0,Math.PI/2,0),[.26,R+.05,R+.05],rust);
+ for(let k=0;k<26;k++){const a=rr(-arc*.3,arc*.3),zz=rr(-L/2+.5,L/2-.5);kput('vLeaf',[Math.sin(a)*(R+.06),yc+Math.cos(a)*(R+.06),zz],qEuler(0,rng()*TAU,-a),[rr(.3,.6),rr(.12,.2),rr(.3,.6)],hC(vPick([0x5f7a3a,0x6f8a44,0x4f6a34])));}
+ for(let u=-hw+.4;u<hw;u+=.8){const h=yc+Math.sqrt(Math.max(0,R*R-u*u))-.1;vB('hPlankB',u,0,-L/2+.1,.82,h,.14,0,plank);}
+ hnRUDragons(0,yc+R-.25,0,L,.1,0,Math.PI/2,.1,tar,1.1);
+ // the slip: a timber ramp and rollers out of the front
+ for(let k=0;k<6;k++)kput('hLogX',[0,.12,L/2+.8+k*1.1],null,[3.6,.12,.12],plank);
+ // the longboat
+ const bw=2.4,bl=11,bc=tar;for(let k=0;k<5;k++)kput('hLogX',[0,.12,-4+k*2],null,[3,.12,.12],plank);
+ vB('vWood',0,.25,0,.28,.35,bl,0,bc);
+ for(const s of[-1,1]){kput('vWood',[s*bw*.32,.95,0],qEuler(0,0,s*-.55),[.1,1.15,bl-1.4],bc);kput('vWood',[s*bw*.5,1.5,0],null,[.1,.12,bl-2],hC(HPAL.red));
+  for(let k=0;k<7;k++)hnRUShield(s*(bw*.5+.02),1.25,-3.9+k*1.3,s>0?Math.PI/2:-Math.PI/2,.34,hC(vPick([HPAL.red,HPAL.teal,HPAL.ochre,HPAL.white])),hC(vPick([HPAL.black,HPAL.white])));}
+ for(const e of[-1,1]){const a=[0,.4,e*(bl/2-.4)],b=[0,1.7,e*(bl/2+.4)],c=[0,2.6,e*(bl/2+.2)];beam('vWood',a,b,.2,.24,bc);beam('vWood',b,c,.18,.2,bc);
+  kput('vConeI',[0,2.75,e*(bl/2+.05)],vQ(e>0?0:Math.PI,Math.PI/2,0),[.1,.4,.14],hC(HPAL.red));}
+ beam('vWood',[0,.5,1],[0,6,1],.14,.14,bc);
+ for(let k=0;k<4;k++)vnBarrel(hw+.9,0,-L/2+2+k*1.1,.3,.8,tar);hnWoodpile(-hw-.9,0,0,Math.PI/2,6,1.2);vnFolk(2.5,L/2+3,2,1.5);}
+
+// ---------------------------------------------------------------- 4. the silo stabbur
+// A corrugated grain silo, its roof long gone, stood on a fieldstone ring: the village crowned it with a log loft
+// that oversails it on corbels (as a stabbur oversails its posts), under a steep shingle gable with dragon heads;
+// a door cut at the foot, a ladder to the loft, the hay racks and the cart of a farm around it.
+function buildHlRusSiloStabbur(G,o){reseed(25031+(o.v|0));const R=2.3,SH=7.2,W=5.8,H=2.3;
+ const corr=hC(vPick(HSV.corr)).lerp(hC(vPick(HSV.rust)),rr(.1,.45)),rub=hC(vPick(HPAL.rubble)),log=hC(vPick(HPAL.pine)).multiplyScalar(.9),tar=hC(vPick(HPAL.tar)),sh=hC(vPick(HPAL.shingle));
+ vnReg('Silo stabbur',0,0,6,SH+H+4.5);
+ vPst('hTRDisc',0,0,0,R+.4,.5,rub);kput('hSiloC',[0,.5,0],null,[R,SH-.5,R],corr);
+ for(const yy of[1.6,3.6,5.6])kput('vHoop',[0,yy,0],qEuler(Math.PI/2,0,0),[R+.03,R+.03,1.2],hC(vPick(HSV.rust)));
+ vnPatch(-1,1.4,R-.05,0,1.6,1.8,3);vnDoor(0,.5,R+.02,0,1,2,'vWood',log,tar,false);
+ for(let k=0;k<6;k++){const a=k/6*TAU+.3;kput('vWood',[Math.sin(a)*(R-.1),SH-.35,Math.cos(a)*(R-.1)],vQ(a,-.6,0),[.24,.9,.3],log);}   // corbels
+ vB('vWood',0,SH,0,W+.4,.22,W+.4,0,tar);hnLogBox(0,SH+.22,0,W,H,W,0,log,.3);
+ vnWin(0,SH+1,W/2,0,.6,.6,'shut','vWood',log);vnDoor(-1.6,SH+.22,W/2,0,.8,1.7,'vWood',log,tar,false);
+ const pitch=1.15,y0=SH+.22+H,rise=pitch*W/2;hnGable(0,y0,0,W,W,pitch,0,'vShingleB',sh,.6,'vGableW',log);hnRUDragons(0,y0,0,W,W,rise,0,.6,tar,.8);
+ vnLadder(-1.6,0,W/2+.6,0,SH+.4,log);
+ hnRUHesje(-6,3,Math.PI/2,6);hnRUHesje(6,-1,Math.PI/2,5);hnRUCart(4.5,4,.6);vnBarrel(2.4,0,R+.9,.3,.8,tar);vnFolk(-2.5,R+3,1,1);}
+
+// ---------------------------------------------------------------- 5. the scrap-iron market
+// A long open market hall on log posts under a turf gable, its gable ends boarded with salvaged container doors and
+// hull plates; smiths' and tinkers' stalls inside selling pots, blades and sheet; a container turned into a
+// shopfront beside it, a painted signboard with the scales, shields over the posts.
+function buildHlRusScrapMarket(G,o){reseed(25041+(o.v|0));const W=14,D=7,H=3;
+ const log=hC(vPick(HPAL.aged)),tar=hC(vPick(HPAL.tar)),rub=hC(vPick(HPAL.rubble));
+ vnReg('Scrap-iron market',0,0,9,H+5);
+ vB('vStone',0,0,0,W+.6,.25,D+.6,0,rub);
+ for(let i=0;i<=4;i++)for(const s of[-1,1]){const x=-W/2+W*i/4;vPst('vPostB',x,.25,s*(D/2-.1),.15,H-.25,log);if(s>0&&i%2===0)hnRUShield(x,H-.7,D/2+.05,0,.38,hC(vPick([HPAL.red,HPAL.teal])),hC(HPAL.white));}
+ for(const s of[-1,1])kput('hLogX',[0,H-.1,s*(D/2-.1)],null,[W+.3,.18,.18],log);
+ const pitch=.9,top=hnRUTurf(0,H,0,W,D,pitch,0,.6,null,null);hnRUDragons(0,H,0,W,D,pitch*D/2,0,.6,tar,.8);
+ for(const e of[-1,1]){const x=e*(W/2+.02);vB('vCorr',x,.25,-1.2,.08,H-.25,2.3,0,hC(vPick(HCONT)));vB('vRustB',x,.25,1.4,.06,H-.4,2,0,null);
+  for(let u=-D/2+.4;u<D/2;u+=.8){const h=Math.max(.1,(D/2-Math.abs(u))*pitch);vB('vPlateW',x,H,u,.08,h,.78,0,null);}}
+ hnRUStall(-4,0,0,3,2.2,'pots');hnRUStall(0,0,0,3,2.2,'goods');hnRUStall(4,0,0,3,2.2,'pots');
+ for(let k=0;k<4;k++)kput(vPick(['vPlate','vSheet']),[-5+k*3.3,.5,-2.6],qEuler(-.2,0,rr(-.2,.2)),[1.6,1.1,1],null);
+ hnCont(0,0,-D/2-2.4,0,9,hContC(),{shop:true});hnSignBoard(0,3.1,-D/2-1.1,0,3.4,.8,'scales',hC(HPAL.ochre));
+ hnRUCart(W/2+2.5,3,.4);hnRUTrough(-W/2-1.8,2,Math.PI/2,2);hnRUBeast(-W/2-2.8,4.2,0,'horse');
+ vnFolk(0,D/2+2.5,5,4);}
+
+HL.def({key:'hl_rus_tank_stue',name:'Tank stue',branch:'rustic',family:'Salvage',tags:HTAG_SALV('poor',['single-family dwelling']),w:18,d:16,h:11,build:buildHlRusTankStue});
+HL.def({key:'hl_rus_cont_chalet',name:'Container chalet',branch:'rustic',family:'Salvage',tags:HTAG_SALV('middle',['multi-family dwelling','farm']),w:20,d:16,h:10,build:buildHlRusContChalet});
+HL.def({key:'hl_rus_hull_naust',name:'Hull naust',branch:'rustic',family:'Salvage',tags:HTAG_SALV('middle',['industry','warehouse']),w:14,d:26,h:9,build:buildHlRusHullNaust});
+HL.def({key:'hl_rus_silo_stabbur',name:'Silo stabbur',branch:'rustic',family:'Salvage',tags:HTAG_SALV('middle',['farm']),w:16,d:14,h:15,build:buildHlRusSiloStabbur});
+HL.def({key:'hl_rus_scrap_market',name:'Scrap-iron market',branch:'rustic',family:'Salvage',tags:HTAG_SALV('middle',['market/shop']),w:20,d:20,h:9,build:buildHlRusScrapMarket});
 // ================================================================= FUEL STATION — "the Well"
 function buildFuelStation(scene,gx,gz,d){reseed(9970+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const skin=SHELL(d);
  REGISTER({name:'Fuel station — the Well ('+STATE(d)+')',x:0,z:0,r:60,h:30});
@@ -7997,6 +8121,122 @@ HL.def({key:'hl_tri_granary',name:'Stilted granary',branch:'tribal',family:'Farm
 HL.def({key:'hl_tri_smithy',name:'Scrap smithy',branch:'tribal',family:'Farms and crafts',tags:{type:['industry'],wealth:'poor',lit:false},w:16,d:10,h:7,build:buildHlTriSmithy});
 // the cliff settlement (built in 84-tri-dwell.js) is defined last so its row closes the branch
 HL.def({key:'hl_tri_cliff_village',name:'Cliff settlement',branch:'tribal',family:'Cliff settlement',cls:'building',tags:{type:['multi-family dwelling'],wealth:'poor',lit:false,landmark:true},w:88,d:30,h:48,build:buildHlTriCliffVillage});
+// ================================================================= HIGHLANDS / TRIBAL — the salvage villages (round 10)
+// Travis: "give the Rustic and Tribal sets some post-apoc and reclaimed buildings". The tribes lift the wreck off the
+// ground like everything else they build: tanks, containers, silos and hull panels go up on stilts and bamboo, under
+// thatch, and get painted — formline on white, teal and red on black — with trophy horns, totems, gourds and fire
+// cages. No electric light. All born reclaimed (tags.salvage): no `_reclaimed` twins. Seeds 26000–26099.
+
+// ---------------------------------------------------------------- 1. the tank roundhouse
+// An Ancient tank stood on end on a stilted log deck: a door cut in it, a painted band round it at eye height, a
+// steep thatch cone set on its rim with a carved bird on the peak; a bamboo rail round the deck, a ladder, gourds and
+// a fire cage from the eaves, a winged totem at the foot.
+function buildHlTriTankRound(G,o){reseed(26001+(o.v|0));const R=2,H=3.6,FL=1.5,Y=FL;
+ const rust=hC(vPick(HSV.rust)),log=hC(vPick(HPAL.aged)),bam=hC(vPick(HPAL.bamboo)),th=hC(vPick(VPAL.thatch));
+ vnReg('Tank roundhouse',0,0,5,Y+H+5.5);
+ vnStilts(0,0,0,2*R+1.6,2*R+1.6,FL,0,log);vB('vWood',0,Y-.2,.4,2*R+2.2,.2,2*R+3,0,log);
+ kput('hTankC',[0,Y+H/2,0],null,[R,H,R],rust);
+ for(const yy of[Y+.3,Y+H-.3])kput('vHoop',[0,yy,0],qEuler(Math.PI/2,0,0),[R+.02,R+.02,1.4],rust.clone().multiplyScalar(.6));
+ kput('hTRBandCyl',[0,Y+1.9,0],null,[R+.05,.7,R+.05],null);
+ vnPatch(-1.2,Y+.4,-R+.05,Math.PI,1.4,1.2,3);
+ vnDoor(0,Y,R+.03,0,.9,1.8,'vWood',bam,hC(0x5a4a3a),false);
+ for(const s of[-1,1])hnForm('hFormV',s*.95,Y+.15,R-.12,s*-.45,.5,1.6);
+ vnThatchCone(0,Y+H,0,R+.6,3.8,th);
+ vPst('vPost',0,Y+H+3.4,0,.07,1,log);kput('hPaintBall',[0,Y+H+4.4,0],null,[.18,.22,.18],hC(HPAL.black));
+ for(const s of[-1,1])kput('hWing',[s*.55,Y+H+4.45,0],qEuler(0,0,s*-.2),[s*1.1,.55,1],null);
+ const rz=R+1.8;hnBambooRail([-R-1,Y,rz],[-.7,Y,rz],bam,.95);hnBambooRail([.7,Y,rz],[R+1,Y,rz],bam,.95);
+ for(let k=0;k<5;k++){const a=(k+.5)/5*Math.PI-Math.PI/2;(k===2?hnTRCage:hnTRGourd)(Math.sin(a)*(R+.45),Y+H+.1,Math.cos(a)*(R+.45));}
+ vnLadder(0,0,rz+.5,0,FL+.3,log);hnTotem(-2.6,0,rz+.8,.28,5,0,{wings:1.3,painted:true});
+ hnFirepit(2.6,0,rz+2.2,.6);vnFolk(0,rz+3.2,2,1.5);}
+
+// ---------------------------------------------------------------- 2. the container longhouse
+// Two containers end to end on a log stilt frame are the family rooms; a great thatch gable on bamboo posts spans
+// them and a veranda along the front; the container flank facing the veranda painted over in formline boards, black
+// thunderbird bargeboards, trophy horns at both apexes, ladders at the ends, drying racks and gourds.
+function buildHlTriContLong(G,o){reseed(26011+(o.v|0));const L=12.2,FL=1.8,Y=FL,CH=2.6,D=2.44,V=2.2;
+ const log=hC(vPick(HPAL.aged)),bam=hC(vPick(HPAL.bamboo)),th=hC(vPick(VPAL.thatch)),blk=hC(HPAL.black);
+ vnReg('Container longhouse',0,.6,8,Y+CH+5.5);
+ vnStilts(0,0,.6,L,D+V,FL,0,log);vB('vWood',0,Y-.2,.6,L+.6,.2,D+V+.4,0,log);
+ hnCont(-L/4,Y,-.5,0,L/2-.05,hContC(),{});hnCont(L/4,Y,-.5,0,L/2-.05,hContC(),{});
+ const fz=-.5+D/2+.05;for(const u of[-4.5,-1.5,1.5,4.5])hnForm('hFormW',u,Y+.2,fz,0,2.5,2.1);
+ for(const u of[-3,3])vnDoor(u,Y,fz+.08,0,.9,1.9,'vWood',bam,hC(0x5a4a3a),false);
+ // the thatch gable on bamboo posts, over the containers and the veranda
+ const GD=D+V+1.2,gz=.6,y0=Y+CH+.5;for(let i=0;i<=5;i++)for(const s of[-1,1]){const x=-L/2-.2+(L+.4)*i/5;vPst('hBamboo',x,Y,gz+s*(GD/2-.2),.1,CH+.5,bam);}
+ for(const s of[-1,1])kput('hLogX',[0,y0-.1,gz+s*(GD/2-.2)],null,[L+.8,.12,.12],bam);
+ const pitch=1.1,rise=pitch*GD/2;hnGable(0,y0,gz,L+.4,GD,pitch,0,'vGableT',th,.8,null,null);hnBarge(0,y0,gz,L+.4,GD,rise,0,.8,blk,'bird');
+ for(const e of[-1,1])hnTRHorns(e*(L/2+.9),y0+rise+.2,gz,e>0?Math.PI/2:-Math.PI/2,1.1);
+ const vz=gz+GD/2-.25;hnBambooRail([-L/2,Y,vz],[-1,Y,vz],bam,.95);hnBambooRail([1,Y,vz],[L/2,Y,vz],bam,.95);
+ for(let k=0;k<6;k++)hnTRGourd(-L/2+1+k*2,y0-.15,vz+.1);
+ vnLadder(0,0,vz+.55,0,FL+.3,log);vnLadder(-L/2-.7,0,.6,Math.PI/2,FL+.3,log);
+ vnDryingRack(0,0,vz+3,0,6);hnTotem(4,0,vz+1.4,.26,5,0,{wings:1.4});hnFirepit(-3.5,0,vz+3.2,.6);vnFolk(2,vz+4,3,2.5);}
+
+// ---------------------------------------------------------------- 3. the hull meeting house
+// A curved panel of rocket hull, laid on two rows of carved house-posts, is the roof of a meeting house; the back is
+// walled in split planks under the arc, the front open on a painted threshold under a formline crest, trophy horns
+// on the crown, a brazier on each side of the way in, antler poles, benches round the hearth inside.
+function buildHlTriHullHall(G,o){reseed(26021+(o.v|0));const L=14,R=5.2,arc=Math.PI*.84,he=Math.cos(arc/2)*R,hw=Math.sin(arc/2)*R,eave=2.6,yc=eave-he;
+ const hull=hC(vPick([0x9a968c,0x8e8a80,0xa49e90])),rust=hC(vPick(HSV.rust)),log=hC(vPick(HPAL.aged)),rub=hC(vPick(HPAL.rubble));
+ vnReg('Hull meeting house',0,0,10,yc+R+2);
+ vB('vStone',0,0,0,2*hw+.6,.3,L+.6,0,rub);
+ kput('hVault',[0,.3+yc,0],qEuler(0,Math.PI/2,0),[L,R,R],hull);
+ for(let k=0;k<=6;k++)kput('hVaultR',[0,.3+yc,-L/2+L*k/6],qEuler(0,Math.PI/2,0),[.3,R+.06,R+.06],rust);
+ for(let k=0;k<5;k++)for(const s of[-1,1]){const z=-L/2+.8+(L-1.6)*k/4;hnTotemPost(s*(hw-.3),.3,z,.2,eave-.3,s>0?-Math.PI/2:Math.PI/2,k%2===0);}
+ for(let u=-hw+.4;u<hw;u+=.8){const h=yc+Math.sqrt(Math.max(0,R*R-u*u))-.1;vB('vWood',u,.3,-L/2+.1,.82,h,.14,0,log);}
+ hnForm('hFormA',0,eave+.4,L/2-.1,0,5.4,2);
+ hnTRHorns(0,.3+yc+R+.1,L/2-1,0,1.4);hnTRHorns(0,.3+yc+R+.1,-L/2+1,Math.PI,1.1);
+ for(const s of[-1,1]){hnTRBrazier(s*2.4,.3,L/2+1.2,1);vPst('vPost',s*(hw+1.4),0,L/2+.8,.08,4.2,log);hnTRAntlers(s*(hw+1.4),4.2,L/2+.8,0,1.1);}
+ hnFirepit(0,.3,0,.9);for(const s of[-1,1])for(const z of[-3,3])vB('vWood',s*2.2,.3,z,.4,.45,3,0,log);
+ hnTotem(-hw-2.2,0,L/2-1,.3,6,0,{wings:1.6,painted:true,hat:true});vnFolk(0,L/2+3.5,4,3);}
+
+// ---------------------------------------------------------------- 4. the silo drum-house
+// A corrugated silo cut down to a drum on a fieldstone ring is the house wall: a painted band round it, a door and two
+// window holes sawn through, a deep thatch cone on a ring of bamboo rafters oversailing it as a veranda roof on
+// posts, a carved bird at the peak, gourds and a fire cage under the eaves, a stilted granary basket beside it.
+function buildHlTriSiloDrum(G,o){reseed(26031+(o.v|0));const R=3,H=3,RO=R+1.3;
+ const corr=hC(vPick(HSV.corr)).lerp(hC(vPick(HSV.rust)),rr(.2,.55)),log=hC(vPick(HPAL.aged)),bam=hC(vPick(HPAL.bamboo)),th=hC(vPick(VPAL.thatch)),rub=hC(vPick(HPAL.rubble));
+ vnReg('Silo drum-house',0,0,5.5,H+6);
+ vPst('hTRDisc',0,0,0,RO+.2,.3,rub);kput('hSiloC',[0,.3,0],null,[R,H,R],corr);
+ kput('hTRBandCyl',[0,1.5,0],null,[R+.05,.7,R+.05],null);kput('vHoop',[0,H+.2,0],qEuler(Math.PI/2,0,0),[R+.03,R+.03,1.4],hC(vPick(HSV.rust)));
+ vnDoor(0,.3,R+.03,0,1,1.9,'vWood',bam,hC(0x5a4a3a),false);
+ for(const a of[1.1,-1.1]){const x=Math.sin(a)*(R+.02),z=Math.cos(a)*(R+.02);vB('vDarkB',x,1.6,z,.7,.6,.06,a);}
+ for(let k=0;k<12;k++){const a=k/12*TAU+.13;vPst('hBamboo',Math.sin(a)*RO,.3,Math.cos(a)*RO,.08,H-.1,bam);}
+ vnThatchCone(0,H+.3,0,RO+.3,4.4,th);
+ vPst('vPost',0,H+4.2,0,.07,1,log);kput('hPaintBall',[0,H+5.2,0],null,[.18,.22,.18],hC(HPAL.black));
+ for(const s of[-1,1])kput('hWing',[s*.55,H+5.25,0],qEuler(0,0,s*-.2),[s*1.1,.55,1],null);
+ for(let k=0;k<7;k++){const a=(k+.5)/7*TAU;(k%3===0?hnTRCage:hnTRGourd)(Math.sin(a)*(RO+.2),H+.1,Math.cos(a)*(RO+.2));}
+ const gx=RO+3.2;vnStilts(gx,0,-1,2.2,2.2,1.6,0,log);vB('vWood',gx,1.6,-1,2.8,.16,2.8,0,log);kput('hTRMatCyl',[gx,1.76,-1],null,[1.1,1.4,1.1],bam);vnThatchCone(gx,3.16,-1,1.5,2,th);
+ hnTotemPost(-RO-1.2,0,1.5,.16,3,0,true);hnFirepit(-1.5,0,RO+2.4,.6);vnDryingRack(1.5,0,RO+3.4,0,3.4);vnFolk(0,RO+2.2,2,1.8);}
+
+// ---------------------------------------------------------------- 5. the scrap forge and trading shelter
+// A long open shelter under a thatch gable on painted posts, where scrap is beaten into blades and hoes and traded:
+// a forge of stacked plate with its bellows and anvil, a quench trough, racks of sheet and wheels; a container store
+// behind with its doors painted over in formline, trophy horns on the apex, braziers, a hide-drum under the eaves.
+function buildHlTriScrapForge(G,o){reseed(26041+(o.v|0));const W=12,D=6,H=2.8;
+ const log=hC(vPick(HPAL.aged)),bam=hC(vPick(HPAL.bamboo)),th=hC(vPick(VPAL.thatch)),rub=hC(vPick(HPAL.rubble)),iron=hC(0x3a3430),blk=hC(HPAL.black);
+ vnReg('Scrap forge',0,0,8,H+5);
+ vB('vStone',0,0,0,W+.4,.2,D+.4,0,rub);
+ for(let i=0;i<=4;i++)for(const s of[-1,1])hnTotemPost(-W/2+.2+(W-.4)*i/4,.2,s*(D/2-.2),.15,H-.2,0,i%2===0);
+ for(const s of[-1,1])kput('hLogX',[0,H,s*(D/2-.2)],null,[W+.4,.14,.14],log);
+ const pitch=1.05,rise=pitch*D/2;hnGable(0,H+.1,0,W,D,pitch,0,'vGableT',th,.8,'hGableBM',bam);hnBarge(0,H+.1,0,W,D,rise,0,.8,blk,'bird');
+ hnTRHorns(W/2+.9,H+.1+rise+.2,0,Math.PI/2,1);hnTRHorns(-W/2-.9,H+.1+rise+.2,0,-Math.PI/2,1);
+ // the forge
+ vB('hRubB',-3.5,.2,-.8,1.8,.9,1.6,0,rub);for(let k=0;k<4;k++)vB('vRustB',-3.5,1.1+k*.08,-.8,1.9-k*.15,.08,1.7-k*.15,rr(-.1,.1),null);
+ vBall('vEmber',-3.5,1.45,-.8,.4,null,.12);vnChimney(-3.5,1.5,-1.3,H+rise+.6,.18,true);
+ vB('vWood',-5.2,.2,-.8,.9,.5,1.2,0,hC(0x5a3a26));vB('vIron',-1.8,.2,-.4,.3,.7,.3,0,iron);vB('vIron',-1.8,.9,-.4,.7,.18,.28,0,iron);
+ vB('vWood',-1.2,.2,1.3,1.8,.5,.6,0,log);vB('vRustB',-1.2,.6,1.3,1.6,.08,.45,0,null);
+ for(let k=0;k<5;k++)kput(vPick(['vPlate','vSheet','vPlateW']),[1+k*.9,1.1,-D/2+.5],qEuler(-.25,0,rr(-.1,.1)),[.8,1.6,1],null);
+ for(let k=0;k<3;k++)kput('vHoop',[4.8,.7+k*.05,.6+k*.4],qEuler(0,Math.PI/2+rr(-.3,.3),0),[.6,.6,1.5],iron);
+ hnTRBrazier(W/2-1,.2,D/2+1.2,.9);hnTRBrazier(-W/2+1,.2,D/2+1.2,.9);
+ // the store behind: a container, its doors painted over
+ hnCont(1,0,-D/2-2.2,0,6,hContC(),{});hnForm('hFormW',1,.25,-D/2-2.2+1.26,0,5,2.1);
+ for(let k=0;k<5;k++)hnTRGourd(-4+k*2,H-.05,D/2+.3);
+ vnFolk(0,D/2+2.8,4,3);hnTRBeast(-W/2-2,0,2,.4,'goat');}
+
+HL.def({key:'hl_tri_tank_round',name:'Tank roundhouse',branch:'tribal',family:'Salvage',tags:HTAG_SALV('poor',['single-family dwelling']),w:11,d:16,h:11,build:buildHlTriTankRound});
+HL.def({key:'hl_tri_cont_long',name:'Container longhouse',branch:'tribal',family:'Salvage',tags:HTAG_SALV('middle',['multi-family dwelling']),w:18,d:16,h:11,build:buildHlTriContLong});
+HL.def({key:'hl_tri_hull_hall',name:'Hull meeting house',branch:'tribal',family:'Salvage',tags:HTAG_SALV('middle',['civic']),w:18,d:24,h:11,build:buildHlTriHullHall});
+HL.def({key:'hl_tri_silo_drum',name:'Silo drum-house',branch:'tribal',family:'Salvage',tags:HTAG_SALV('poor',['single-family dwelling','farm']),w:20,d:18,h:10,build:buildHlTriSiloDrum});
+HL.def({key:'hl_tri_scrap_forge',name:'Scrap forge',branch:'tribal',family:'Salvage',tags:HTAG_SALV('poor',['industry','market/shop']),w:18,d:16,h:8,build:buildHlTriScrapForge});
 // ================================================================= BIOME CORE — head
 // The engine-independent kit every Krator biome fragment is written against.
 // Nothing below names a world's kit. The host hands in what a biome needs
@@ -10087,7 +10327,7 @@ giant=new THREE.Sprite(new THREE.SpriteMaterial({map:giantTex,fog:false,transpar
 
 // ground: packed earth, tiled in world units
 TEX.meadow.repeat.set(400,400);
-groundM=new THREE.Mesh(new THREE.PlaneGeometry(3200,3200),MAT.meadow);groundM.rotation.x=-Math.PI/2;groundM.position.set(0,-.05,GROUND_C);groundM.userData.probeSkip=true;scene.add(groundM);
+groundM=new THREE.Mesh(new THREE.PlaneGeometry(3200,Math.max(3200,GROUND_C*2+1000)),MAT.meadow);groundM.rotation.x=-Math.PI/2;groundM.position.set(0,-.05,GROUND_C);groundM.userData.probeSkip=true;scene.add(groundM);
 
 // ---------------------------------------------------------------- build every site the target lists
 // SITES = [{key, x, z, ry, o, label}] laid out by hlLayout() from the target's HL_BRANCHES (89z-rows.js)

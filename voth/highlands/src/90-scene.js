@@ -55,7 +55,7 @@ giant=new THREE.Sprite(new THREE.SpriteMaterial({map:giantTex,fog:false,transpar
 
 // ground: packed earth, tiled in world units
 TEX.meadow.repeat.set(400,400);
-groundM=new THREE.Mesh(new THREE.PlaneGeometry(3200,3200),MAT.meadow);groundM.rotation.x=-Math.PI/2;groundM.position.set(0,-.05,GROUND_C);groundM.userData.probeSkip=true;scene.add(groundM);
+groundM=new THREE.Mesh(new THREE.PlaneGeometry(3200,Math.max(3200,GROUND_C*2+1000)),MAT.meadow);groundM.rotation.x=-Math.PI/2;groundM.position.set(0,-.05,GROUND_C);groundM.userData.probeSkip=true;scene.add(groundM);
 
 // ---------------------------------------------------------------- build every site the target lists
 // SITES = [{key, x, z, ry, o, label}] laid out by hlLayout() from the target's HL_BRANCHES (89z-rows.js)

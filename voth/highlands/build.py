@@ -58,12 +58,12 @@ ORIGIN = os.path.join(HERE, '.origin.html')
 # in every target that shows it and the two cannot drift.
 TARGET_OUT = {
     'highlands': 'highlands.html',            # the whole kit: Republican, Rustic, Tribal rows + the cliff settlement
-    'republican': 'highlands-republican.html',
-    'rustic': 'highlands-rustic.html',
-    'tribal': 'highlands-tribal.html',
     'roketstad': 'roketstad.html',            # the town: Roketstad and its spaceport (reclaimed East Highland Republican)
 }
 _OLD_TARGETS = {
+    'republican': 'highlands-republican.html',   # round 10: merged into the one kit page (highlands)
+    'rustic': 'highlands-rustic.html',
+    'tribal': 'highlands-tribal.html',
     'kit': 'ancients-kit.html',            # the 32-type showcase
     'theodiga': 'theodiga.html',           # the dam arcology, on its own
     'spire': 'spire.html',                 # the recursive spire, on its own
