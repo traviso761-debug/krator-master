@@ -109,7 +109,7 @@ function portRevetment(G,x0,z0,x1,z1,d,o){o=Object.assign({width:16,top:PORT.DEC
  for(let i=0;i<n;i++){const s=rr(0,L),w=Math.pow(rng(),.8)*o.width;const p=P(s,w),h=portH(p[0],p[1]);
   if(h>o.top||h<o.toe)continue;const sz=rr(.6,o.smax);
   kput('rubble',[p[0],h+sz*.25,p[1]],qEuler(rng()*3,rng()*3,rng()*3),[sz*rr(.8,1.4),sz*rr(.55,.9),sz*rr(.8,1.3)],
-   new THREE.Color().setHSL(rr(.06,.1),rr(.06,.14),rr(.2,.34)));
+   new THREE.Color().setHSL(rr(.06,.1),rr(.06,.14),rr(.1,.2)));
   if(d>=1&&rng()<.25)kput('moss',[p[0],h+sz*.55,p[1]],null,[sz*.8,sz*.2,sz*.8],new THREE.Color().setHSL(rr(.2,.3),.4,rr(.08,.14)));}}
 
 // ---------------------------------------------------------------- side closure
@@ -134,7 +134,7 @@ function portSideClose(G,nb,d,o){o=Object.assign({W:PORT.W,z0:-60,z1:0,top:PORT.
   const wo=Object.assign({face:[s,0],top:o.top},o.wall);
   if(N.kind==='seg'){
    if(N.dz<-.01){portQuayWall(G,xe,Math.max(o.z0,o.z1+N.dz),xe,o.z1,d,wo);out[side]='wall';}else out[side]='none';}
-  else if(N.kind==='sea'){portQuayWall(G,xe,o.z0,xe,o.z1,d,wo);out[side]='wall';}
+  else if(N.kind==='sea'){portQuayWall(G,xe,o.z0,xe,o.z1,d,wo);portRevetment(G,xe,o.z0+12,xe,o.z0-34,d,{face:[s,0],width:28,top:o.top+.4});out[side]='wall';}
   else{
    portQuayWall(G,xe,o.z1-o.landReturn,xe,o.z1,d,Object.assign({},wo,{fenders:0,ladders:0,bollards:0}));
    portRevetment(G,xe,o.z1+34,xe,o.z1-46,d,{face:[s,0],width:30,top:o.top+.4});
@@ -145,7 +145,7 @@ function portSideClose(G,nb,d,o){o=Object.assign({W:PORT.W,z0:-60,z1:0,top:PORT.
 // 'land' or 'seg'. o = {W, LAND, SEA, y (-12), width (40)}.
 function portEdgeStamps(opt,o){o=Object.assign({W:PORT.W,LAND:60,SEA:40,y:-12,width:40},o||{});const out=[];
  for(const side of ['W','E']){const N=opt&&opt.nb&&opt.nb[side];if(!N||N.kind!=='sea')continue;const s=side==='W'?-1:1,xe=s*o.W/2;
-  out.push({kind:'dig',x0:xe,x1:xe+s*o.width,z0:-o.LAND-10,z1:o.SEA,y:o.y,soft:30});}
+  out.push({kind:'dig',x0:xe,x1:xe+s*o.width,z0:-o.LAND,z1:o.SEA,y:o.y,soft:30,outside:true});}
  return out;}
 
 // ---------------------------------------------------------------- deck on columns
@@ -166,10 +166,11 @@ function portDeckOnPiles(G,x0,z0,x1,z1,d,o){o=Object.assign({top:PORT.DECK,thick
  for(let i=0;i<nb;i++){const za=z0+i*bl,zb=za+bl,zm=(za+zb)/2;
   if(col.has(i)){
    // the span broke at one end and swung down into the water
-   const up=rng()<.5?1:-1,ang=rr(.35,.6)*up;const hinge=up>0?za:zb;
-   const g=boxUV(W*rr(.55,.9),o.thick,bl*.96,8).translate(0,0,up*bl*.48);
-   g.rotateX(ang);g.translate(cx+rr(-W*.1,W*.1),o.top-o.thick/2-rr(1,3),hinge);
-   g.computeBoundingBox();const lift=Math.max(0,portH(cx,zm)-g.boundingBox.min.y-1.2);g.translate(0,lift,0);
+   // hinged at one end, its far end resting on the seabed
+   const up=rng()<.5?1:-1,hinge=up>0?za:zb,far=up>0?zb:za,hy=o.top-o.thick/2-rr(.8,2.2),Ls=bl*.96;
+   const drop=hy-(portH(cx,far)+o.thick*.6);const ang=Math.asin(clamp(drop/Ls,.12,.98))*up;
+   const g=boxUV(W*rr(.55,.9),o.thick,Ls,8).translate(0,0,up*Ls/2);
+   g.rotateX(ang);g.rotateY(rr(-.06,.06));g.translate(cx+rr(-W*.1,W*.1),hy,hinge);
    pbAdd(g,mat,G);
    for(let k=0;k<5;k++)kput('rubble',[cx+rr(-W/2,W/2),portH(cx,zm)+.5,zm+rr(-bl/2,bl/2)],qEuler(rng()*3,rng()*3,rng()*3),rr(.8,2.2),new THREE.Color().setHSL(.08,.08,rr(.4,.55)));
    continue;}
