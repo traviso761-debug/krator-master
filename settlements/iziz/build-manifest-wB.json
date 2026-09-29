@@ -6,8 +6,8 @@
  "22-materials.js": "c044d8ebde78",
  "30-kit.js": "19f7b2276329",
  "32-surfaces.js": "f41847f87f7c",
- "34-kitdefs.js": "9573787ed83f",
- "36-decor.js": "62ea029ee52b",
+ "34-kitdefs.js": "7347254ffed9",
+ "36-decor.js": "18446ddd5706",
  "38-helpers2.js": "242ed9284c4b",
  "40-factory-extras.js": "4fa792eaad47",
  "42-offices.js": "d0d7588a0b40",
@@ -52,6 +52,6 @@
  "91-probe.js": "58095c5d245f",
  "91z-views.js": "a718a30b564c",
  "92-camera.js": "0e63b2bcf4b2",
- "93-labels.js": "74b13b48c9df",
+ "93-labels.js": "99c2c595e0f4",
  "99-tail.html": "d3aaf402992e"
 }
