@@ -40,7 +40,9 @@ portUnderwaterPatch();   // the underwater fade on every MAT material (71-port-t
 const PORT_LAYOUT=(typeof PORT_LAYOUT_DEF!=='undefined'&&PORT_LAYOUT_DEF)||{items:[],stamps:[],runs:[]};
 function portOptFor(it){const R=portRegOf(it.key)||{};
  return {key:it.key,d:it.d,gx:it.gx,gz:it.gz,nb:it.nb||{W:{kind:'land',dz:0},E:{kind:'land',dz:0}},slot:it.slot||0,run:it.run||0,
-  ctx:!!it.ctx,W:R.W,LAND:R.LAND,SEA:R.SEA,vessels:PORT_LAYOUT.vessels||[],heading:it.heading||0};}
+  ctx:!!it.ctx,W:R.W,LAND:R.LAND,SEA:R.SEA,vessels:PORT_LAYOUT.vessels||[],heading:it.heading||0,
+  // a layout item may name the vessel a berth holds, and pass any extra fields
+  vessel:it.vessel||null,...(it.opt||{})};}
 // 1. stamps
 for(const it of PORT_LAYOUT.items){const R=portRegOf(it.key);if(!R){reportErr('layout names unregistered key '+it.key);continue;}
  let st=[];try{st=R.stamps(portOptFor(it))||[];}catch(e){reportErr(it.key+' stamps d='+it.d+' '+e.stack);}
