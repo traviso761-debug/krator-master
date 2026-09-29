@@ -152,3 +152,41 @@ Before 309 952 / 276 804 → after 316 268 / 318 928.
   deformation; coffer loss can read as a pinwheel.
 Best shots: `shots/qa_wing/view_Under_the_cantilever.png`, `view_The_stump.png`,
 `shots/qa_wing2/view_The_fallen_wing.png`.
+
+## Wheel (89j) — DONE
+Before 500 490 / 508 286 → after 565 690 / 523 484.
+* FIXED "The lower city beyond the ring is a sea of near-identical pale
+  boxes": a third of the sunlit blocks step back into a second narrower
+  volume; roofs are pale stone, dark tar or planted; most carry a plant room or
+  stair kiosk — the roofscape has a grain from the band and from above.
+* FIXED "the soffit's diamond lattice and dot lamps read as a ceiling grid":
+  the soffit texture's ribs are faint and uneven, the stone is mottled at the
+  scale of the tile (seamless), dark patches of hanging roots/ferns show the
+  garden above, and lamps are few and irregular (day and night emissive maps
+  follow).
+* FIXED "The fallen sector's pieces are tidy rectangular slabs": along every
+  fracture edge of every fallen slab, floor-plate tongues out of the section
+  every 7.6 m (some bent down), bars, and a lip of the garden deck broken over
+  the edge; the slab's own fragments are piled wherever its edges meet the
+  ground. The slabs are still one thickness each (a stepped outline would mean
+  rewriting their shape code).
+Best shots: `shots/qa_wheel/view_The_fallen_sector.png`, `view_The_undercity.png`,
+`view_The_Wheel.png`.
+
+## Blades (8ag) — DONE (sky garden untouched)
+Before 447 396 / 427 012 → after 447 396 / 466 590 (intact untouched).
+* FIXED "The fallen north-west pieces read as curved plates lying on the
+  plain ... no crater or scar": the fallen pieces' skins are holed (harder than
+  the standing ruin) onto their own section sheet (`piece()` takes a
+  `midList` so the sheet follows the piece's transform); a ragged scar of torn
+  ground (MAT.blScar) under the fallen blade with ~420 pieces of thrown
+  ejecta round it; rubble piled along every contact line; ten torn skin
+  plates (krShard) thrown out on the plain.
+* FIXED "Hole edges in the faces are open (no reveal between the two
+  skins)": every edge between a holed cell and a whole one gets a reveal from
+  the skin to the mid-thickness section sheet, standing and fallen.
+* REMAINS: sunlit convex faces pale at hero distance; the fallen SW piece is
+  inside the ring and hard to see from the hero; section read as a painted
+  lattice at distance; the 32 m window-wall repeat.
+Best shots: `shots/qa_blades/view_The_fallen_blade.png`, `view_Ruined.png`,
+`view_The_sky_garden.png` (kept).
