@@ -52,6 +52,15 @@ SRC = os.path.join(HERE, 'src')
 TARGETS = os.path.join(HERE, 'targets')
 DIST = os.path.join(HERE, 'dist')
 ORIGIN = os.path.join(HERE, '.origin.html')
+CORE = os.path.join(ROOT, 'core', 'materials')   # shared material fragments (core/README.md)
+CORE_FILES = sorted(f for f in os.listdir(CORE) if f[0].isdigit())
+
+
+def srcpath(f, base=None):
+    """Path of fragment f in base (default src/), falling back to core/materials/.
+    A local copy with the same name overrides the shared one."""
+    p = os.path.join(base or SRC, f)
+    return p if os.path.exists(p) or f not in CORE_FILES else os.path.join(CORE, f)
 
 # A target is a showcase built from the shared src/ fragments plus its own site
 # table and view list, merged into the one sorted filename order. Everything
@@ -200,6 +209,7 @@ def build_one(target, do_checks, assert_origin):
         sys.exit('no such target: %s (expected %s)' % (target, tdir))
 
     src = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
+    src.update({f: os.path.join(CORE, f) for f in CORE_FILES if f not in src})
     tgt = {f: os.path.join(tdir, f) for f in os.listdir(tdir) if f[0].isdigit()}
     clash = set(src) & set(tgt)
     if clash:
@@ -257,7 +267,7 @@ def vendor_manifest():
     """VENDOR.json: sha1 of every fragment vendored from ../ancients/src, so drift is visible."""
     out = {}
     for f in VENDORED:
-        with open(os.path.join(SRC, f), 'rb') as fh:
+        with open(srcpath(f), 'rb') as fh:
             out[f] = hashlib.sha1(fh.read()).hexdigest()[:12]
     for f in BIO_VENDORED:
         p = os.path.join(TARGETS, 'city', '86-bio-%s.js' % f)
@@ -277,8 +287,8 @@ def vendor_check():
         return
     drift = []
     for f in VENDORED:
-        a = open(os.path.join(SRC, f), 'rb').read()
-        p = os.path.join(up, f)
+        a = open(srcpath(f), 'rb').read()
+        p = srcpath(f, up)
         if not os.path.exists(p):
             drift.append(f + ' (missing upstream)')
         elif open(p, 'rb').read() != a:

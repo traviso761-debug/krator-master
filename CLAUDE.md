@@ -14,9 +14,10 @@ says which build holds what.
 |---|---|
 | `settlements/<name>/` | one world per folder: `src/`, `build.py`, `verify.py`, docs, `dist/` |
 | `kits/ancients/` | the Ancients building kit and its per-site targets |
+| `kits/catalog/` | harvested master catalog: asset engine, 84 furniture pieces, plants, buildings (unverified) |
 | `kits/furniture/`, `kits/interiors/` | scaffolding only: read `SPEC.md` |
 | `biomes/<name>/` | flora and fauna kits on the shared biome core |
-| `core/materials/` | material fragments shared by the Ancients-lineage builds |
+| `core/materials/` | material fragments shared by the Ancients-lineage builds (`core/README.md`) |
 | `gallery/` | the shareable gallery page and the script that publishes it |
 | `archive/` | old scratch and exported snippets. Do not build from it |
 | `painting-to-3d-world.skill` | a zip. Read `painting-to-3d-world/SKILL.md` inside it before starting a new build or a large expansion |
