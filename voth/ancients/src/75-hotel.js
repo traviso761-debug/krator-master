@@ -23,30 +23,37 @@ function buildHotel(scene,gx,gz,d){reseed(9250+d);KOFF=[gx,0,gz];const G=new THR
  // per level, so level 14 could stand with level 13 gone under it.
  let cutTop=NS+1;
  if(d>0)for(let f=NS-2;f<=NS;f++){if(rng()<.6&&f<cutTop)cutTop=f;}
+ // THE EAST HORN HAS COME DOWN (level 1). Losing the top storey or two left
+ // the ruin's silhouette the intact one; now the last quarter of the crescent
+ // has collapsed in a stepped slope, storey by storey from the 13th down to
+ // the 3rd at the horn's end. A storey is lost where f >= fl(u); a slab only
+ // where f > fl(u), so the highest surviving storey keeps its roof.
+ const fl=u=>d===1&&u>.72?3+Math.floor((1-u)/.28*10*(.85+.3*fbm(u*9,1,2041,2))):99;
  const hConc=[],hBrick=[],hDark=[];   // one mesh per material for the whole crescent
  for(let f=0;f<=NS;f++){const y=f*SH;if(f>=cutTop)continue;
-  hConc.push(gridSurface((u,v)=>{const a=lerp(a0,a1,u);const r=lerp(deckR(f),R+1.5,v);return[Math.sin(a)*r,y,Math.cos(a)*r-R*.7];},80,3,{hole:d>0?(u,v)=>fbm(u*12,f,2000+f,2)<.14:null}));
+  hConc.push(gridSurface((u,v)=>{const a=lerp(a0,a1,u);const r=lerp(deckR(f),R+1.5,v);return[Math.sin(a)*r,y,Math.cos(a)*r-R*.7];},80,3,{hole:d>0?(u,v)=>fbm(u*12,f,2000+f,2)<.14||f>fl(u):null}));
   if(f<NS){const WR=wallR(f);const rf=R-.8;
    if(d===0)mesh(gridSurface((u,v)=>{const a=lerp(a0,a1,u);return[Math.sin(a)*rf,y+.5+v*(SH-.9),Math.cos(a)*rf-R*.7];},80,1,{}),MAT.glass,G);
-   else hDark.push(gridSurface((u,v)=>{const a=lerp(a0,a1,u);return[Math.sin(a)*(rf-.5),y+.5+v*(SH-.9),Math.cos(a)*(rf-.5)-R*.7];},60,1,{hole:(u,v)=>fbm(u*9,f,2010,2)<.35}));
+   else hDark.push(gridSurface((u,v)=>{const a=lerp(a0,a1,u);return[Math.sin(a)*(rf-.5),y+.5+v*(SH-.9),Math.cos(a)*(rf-.5)-R*.7];},60,1,{hole:(u,v)=>fbm(u*9,f,2010,2)<.35||f>=fl(u)}));
    // full storey height, so the wall meets the slab under it and the slab over
    // it instead of floating half a metre clear of both
-   hBrick.push(gridSurface((u,v)=>{const a=lerp(a0,a1,u);return[Math.sin(a)*WR,y+.2+v*SH,Math.cos(a)*WR-R*.7];},60,1,{uS:20}));
-   hDark.push(gridSurface((u,v)=>{const a=lerp(a0,a1,u);const r=lerp(WR,R-1,v);return[Math.sin(a)*r,y+.4,Math.cos(a)*r-R*.7];},40,1,{}));
-   for(let k=0;k<=24;k++){const a=lerp(a0,a1,k/24);kput(d>0?'mullR':'mullW',[Math.sin(a)*rf,y+SH/2,Math.cos(a)*rf-R*.7],qEuler(0,a,0),[.5,SH-.8,.5],null);
+   const lost=u=>f>=fl(u);
+   hBrick.push(gridSurface((u,v)=>{const a=lerp(a0,a1,u);return[Math.sin(a)*WR,y+.2+v*SH,Math.cos(a)*WR-R*.7];},60,1,{uS:20,hole:d===1?u=>lost(u):null}));
+   hDark.push(gridSurface((u,v)=>{const a=lerp(a0,a1,u);const r=lerp(WR,R-1,v);return[Math.sin(a)*r,y+.4,Math.cos(a)*r-R*.7];},40,1,{hole:d===1?u=>lost(u):null}));
+   for(let k=0;k<=24;k++){const a=lerp(a0,a1,k/24);if(lost(k/24)){if(k<24)rng();continue;}kput(d>0?'mullR':'mullW',[Math.sin(a)*rf,y+SH/2,Math.cos(a)*rf-R*.7],qEuler(0,a,0),[.5,SH-.8,.5],null);
     if(k<24){const lit=d>0?rng()<.12:rng()<.7;kput('strip',[Math.sin(a+.035)*(rf-1.5),y+SH-.6,Math.cos(a+.035)*(rf-1.5)-R*.7],qEuler(0,a+.035,0),[4,1,1],lit?WARM:DEAD);}}
    // balcony parapet with planters; the terrace behind (roof of the storey below is the terrace of this one)
-   for(let k=0;k<24;k++){const a=lerp(a0,a1,(k+.5)/24);kput(BOXC(d),[Math.sin(a)*(R+1),y+.9,Math.cos(a)*(R+1)-R*.7],qEuler(0,a,0),[6.4,1,.4],null);
+   for(let k=0;k<24;k++){const a=lerp(a0,a1,(k+.5)/24);if(lost((k+.5)/24))continue;kput(BOXC(d),[Math.sin(a)*(R+1),y+.9,Math.cos(a)*(R+1)-R*.7],qEuler(0,a,0),[6.4,1,.4],null);
     if(d>0||rng()<.4)kput('hedge',[Math.sin(a)*(R+.4),y+1.3,Math.cos(a)*(R+.4)-R*.7],qEuler(0,a,0),[5.5,.7,.9],new THREE.Color().setHSL(rr(.25,.33),.45,d>0?.16:.28));}
    // The court elevation was thirteen storeys of blank brick — the convex face
    // has a full curtain wall and the concave one had not one opening.
-   for(let k=0;k<24;k++){const a=lerp(a0,a1,(k+.5)/24);
+   for(let k=0;k<24;k++){const a=lerp(a0,a1,(k+.5)/24);if(lost((k+.5)/24))continue;
     kput(d>0?'winSmD':'winSmI',[Math.sin(a)*(WR-.35),y+2.1,Math.cos(a)*(WR-.35)-R*.7],qFacing([-Math.sin(a),0,-Math.cos(a)]),[1.5,1.5,1],null);}
    // terrace: a parapet on the inner edge of the slab, planters standing on it
    if(f>0){const pr=deckR(f)+.35,pl=pr*(a1-a0)/24*.94;
-    for(let k=0;k<24;k++){const a=lerp(a0,a1,(k+.5)/24);
+    for(let k=0;k<24;k++){const a=lerp(a0,a1,(k+.5)/24);if(lost((k+.5)/24))continue;
      kput(BOXC(d),[Math.sin(a)*pr,y+.6,Math.cos(a)*pr-R*.7],qEuler(0,a,0),[pl,1.2,.4],null);}
-    if(f%2===0)for(let k=0;k<6;k++){const a=lerp(a0,a1,(k+.5)/6);const r=WR-1.5;
+    if(f%2===0)for(let k=0;k<6;k++){const a=lerp(a0,a1,(k+.5)/6);const r=WR-1.5;if(lost((k+.5)/6))continue;
      kput('hedge',[Math.sin(a)*r,y+.9,Math.cos(a)*r-R*.7],qEuler(0,a,0),[10,1,1.6],new THREE.Color().setHSL(.3,.4,d>0?.15:.26));}}}}
  meshMerged(hConc,CONC(d),G);meshMerged(hBrick,MAT.brick,G);meshMerged(hDark,MAT.dark,G);
  // (0,-R*.7) is the crescent's centre of curvature, not the builder's origin —
@@ -82,21 +89,21 @@ function buildHotel(scene,gx,gz,d){reseed(9250+d);KOFF=[gx,0,gz];const G=new THR
  // every 4.4 m and solid end walls. The ruin keeps its ribs, some of them, and
  // dead glass in rags between them.
  const rTop=Math.min(NS,cutTop-1),roofY=rTop*SH;
- {const rIn=deckR(rTop),rOut=R+1.5,rm=(rIn+rOut)/2,wP=(rOut-rIn)*.64,hP=6.4,aP=.62,KB=1.2;
-  const PV=(u,v)=>{const a=lerp(-aP,aP,u),t=v*Math.PI,r=rm-Math.cos(t)*wP/2,y=roofY+KB+Math.sin(t)*hP;return[Math.sin(a)*r,y,Math.cos(a)*r-R*.7];};
+ {const rIn=deckR(rTop),rOut=R+1.5,rm=(rIn+rOut)/2,wP=(rOut-rIn)*.64,hP=6.4,aP=.62,KB=1.2,aL=-aP,aR=d===1?Math.min(aP,lerp(a0,a1,.68)):aP;
+  const PV=(u,v)=>{const a=lerp(aL,aR,u),t=v*Math.PI,r=rm-Math.cos(t)*wP/2,y=roofY+KB+Math.sin(t)*hP;return[Math.sin(a)*r,y,Math.cos(a)*r-R*.7];};
   const pv=[];
-  for(const e of [-1,1])pv.push(gridSurface((u,v)=>{const a=lerp(-aP,aP,u),r=rm+e*wP/2;return[Math.sin(a)*r,roofY+v*KB,Math.cos(a)*r-R*.7];},48,1,{uS:12}));
-  for(const u0 of [0,1])pv.push(gridSurface((w,v)=>{const a=lerp(-aP,aP,u0),c=[Math.sin(a)*rm,roofY+KB,Math.cos(a)*rm-R*.7],p=PV(u0,v);
+  for(const e of [-1,1])pv.push(gridSurface((u,v)=>{const a=lerp(aL,aR,u),r=rm+e*wP/2;return[Math.sin(a)*r,roofY+v*KB,Math.cos(a)*r-R*.7];},48,1,{uS:12}));
+  for(const u0 of [0,1])pv.push(gridSurface((w,v)=>{const a=lerp(aL,aR,u0),c=[Math.sin(a)*rm,roofY+KB,Math.cos(a)*rm-R*.7],p=PV(u0,v);
    return[lerp(c[0],p[0],w),lerp(c[1],p[1],w),lerp(c[2],p[2],w)];},2,12,{}));
-  for(const u0 of [0,1])pv.push(gridSurface((w,v)=>{const a=lerp(-aP,aP,u0),r=rm+(w*2-1)*wP/2;return[Math.sin(a)*r,roofY+v*KB,Math.cos(a)*r-R*.7];},2,1,{}));
+  for(const u0 of [0,1])pv.push(gridSurface((w,v)=>{const a=lerp(aL,aR,u0),r=rm+(w*2-1)*wP/2;return[Math.sin(a)*r,roofY+v*KB,Math.cos(a)*r-R*.7];},2,1,{}));
   meshMerged(pv,CONC(d),G);
   if(d===0)mesh(gridSurface(PV,48,10,{}),MAT.glass,G);
   else mesh(gridSurface(PV,48,10,{hole:(u,v)=>fbm(u*9,v*3,2031,2)<(d===1?.62:.4)}),MAT.dark,G);
   for(let k=0;k<=24;k++){if(d===1&&rng()<.3)continue;const u=k/24;
    for(let i=0;i<8;i++){if(d===1&&i>=5&&rng()<.5)break;beam(d>0?'mullR':'mullW',PV(u,i/8),PV(u,(i+1)/8),1.1,1.1);}}
-  for(let k=0;k<24;k++){const a=lerp(-aP,aP,(k+.5)/24),r=rm+wP/2+1.6;
+  for(let k=0;k<24;k++){const a=lerp(aL,aR,(k+.5)/24),r=rm+wP/2+1.6;
    if(d===0||rng()<.5)kput('hedge',[Math.sin(a)*r,roofY+.5,Math.cos(a)*r-R*.7],qEuler(0,a,0),[3.2,1,1],new THREE.Color().setHSL(rr(.25,.33),.4,d>0?.15:.27));}
-  if(d===0)for(let k=0;k<12;k++){const a=lerp(-aP,aP,(k+.5)/12),r=rm;
+  if(d===0)for(let k=0;k<12;k++){const a=lerp(aL,aR,(k+.5)/12),r=rm;
    kput('strip',[Math.sin(a)*r,roofY+KB+hP-.6,Math.cos(a)*r-R*.7],qEuler(0,a,0),[6,1,1],WARM);}}
  // THE PORTE-COCHÈRE. It was a 40 x 24 m canopy on four legs converging to
  // r = 6-14 under its middle: a 20 m cantilever each way that would not stand.
@@ -146,6 +153,10 @@ function buildHotel(scene,gx,gz,d){reseed(9250+d);KOFF=[gx,0,gz];const G=new THR
    kput('hedge',[x,deck+.05,z],null,[5.4,.1,9.6],new THREE.Color().setHSL(.26,.35,.33));
    for(const e of [-1,1]){kput('hedge',[x+e*2.9,deck+.45,z],null,[.6,.9,10.2],new THREE.Color().setHSL(.3,.45,.16));
     kput('hedge',[x,deck+.45,z+e*4.8],null,[5.2,.9,.6],new THREE.Color().setHSL(.3,.45,.16));}}}
+ // the collapsed horn lies at its own foot: a talus of rubble and broken slabs
+ if(d===1){const aH=lerp(a0,a1,.88),hx=Math.sin(aH)*(R-12),hz=Math.cos(aH)*(R-12)-R*.7;rubbleRing(hx,.6,hz,4,34,120,4.2);
+  for(let k=0;k<9;k++){const a=lerp(a0,a1,rr(.74,.99)),r=rr(R-30,R+8);
+   kput(SLABC(d),[Math.sin(a)*r,rr(1,6),Math.cos(a)*r-R*.7],qEuler(rr(-.6,.6),rng()*TAU,rr(-.6,.6)),[rr(4,9),.7,rr(3,7)],null);}}
  if(d>0){scatterMoss(0,.6,0,20,120,80,2.4);rubbleRing(0,.6,R*.3-R*.7,10,70,40,2.5);trees(0,0,110,160,12);}
  figures(0,60,6,12);KOFF=[0,0,0];return G;}
 
