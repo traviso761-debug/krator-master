@@ -142,3 +142,8 @@ vnBannerPole vnChimney vnFence vnPalisade vnFolk vnPaving`.
 * Slope pieces (row "Water — slopes", `rise` on the def): `xa_rill_step` 1.5, `xa_rill_ramp` 1.5, `xa_rill_cascade` 3,
   `xa_rill_fall` 4; `xa_rill_hill` tiles them down a terraced hill. `xnRillBasin(x,y,z,w,d,ry,curb,c)`,
   `xnWaterSheet(x,y,z,ry,w,h)`.
+
+## 86-xa-vizier.js — the Grand Vizier's palace
+* `xnXMLoggia(x,y,z,ry,w,h,n,dep,D,upper,lit)` — one loggia storey (open arcade on columns before a set-back wall);
+  `xnXMPalm(x,z,h,y)`; `xnXMBed(x,z,w,d,ry,y)` (marigolds). Def `xa_vizier` (The Sultan, civic, lit, nv 3), dresses
+  `XVZ[v]`.
