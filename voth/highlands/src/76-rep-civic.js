@@ -408,7 +408,7 @@ function buildHlRepBarracks(G,o){reseed(20761+(o.v|0));const H1=3.4,H2=3,P=1.1;
 function buildHlRepMuster(G,o){reseed(20771+(o.v|0));const FX=25.5,FZ0=-15.6,FZ1=17;
  const rub=hC(vPick(HPAL.rubble)),ash=hC(vPick(HPAL.ashlar)),tar=hC(vPick(HPAL.tar)).multiplyScalar(1.2),grn=hC(vPick(HPAL.roofGreen)),red=hC(HPAL.red),white=hC(HPAL.white);
  vnReg('Mustering ground',0,1,26,3);vnReg('Reviewing tribune',0,-12.5,7.5,9);
- vB('hRBDirt',0,0,.7,2*FX-.6,.05,FZ1-FZ0-.6,0,hC(0xe8dcc4));
+ vB('hRBDirt',0,0,.7,2*FX-.6,.22,FZ1-FZ0-.6,0,hC(0xe8dcc4));   // round 10: .22 thick, clear of the levelled terrain (it z-fought at .05)
  // low wall: back, sides, front with a wide entrance
  const wall=(a,b)=>{const L=Math.hypot(b[0]-a[0],b[1]-a[1]),ry=Math.atan2(b[0]-a[0],b[1]-a[1])-Math.PI/2;const m=[(a[0]+b[0])/2,(a[1]+b[1])/2];
   vB('hRubB',m[0],0,m[1],L,.8,.6,ry,rub);vB('vStone',m[0],.8,m[1],L+.1,.14,.75,ry,ash);};
@@ -428,7 +428,7 @@ function buildHlRepMuster(G,o){reseed(20771+(o.v|0));const FX=25.5,FZ0=-15.6,FZ1
  for(const z of[-7,-1,5,11])hnRBRack(-23.6,z,Math.PI/2,3.4);
  kput('hRBBerm',[23.2,0,1],qEuler(0,Math.PI/2,0),[22,3,3.2],hC(vPick(HPAL.turf)));
  for(const z of[-7,-2.5,2,6.5,11]){vB('vThatchB',21.2,0,z,.6,1.5,1.5,0,hC(0xc8b070));hnRBTarget(20.88,1.05,z,-Math.PI/2,.55);}
- for(const z of[-7,-2.5,2,6.5,11]){vB('vWood',8,0,z,.3,.05,1.2,0,white);kput('figB',[7.4,0,z],qEuler(0,Math.PI/2,0),1,hC(0x7a2a22));kput('figH',[7.4,0,z],null,1,hC(0xc9a17e));
+ for(const z of[-7,-2.5,2,6.5,11]){vB('vWood',8,.22,z,.3,.03,1.2,0,white);kput('figB',[7.4,0,z],qEuler(0,Math.PI/2,0),1,hC(0x7a2a22));kput('figH',[7.4,0,z],null,1,hC(0xc9a17e));
   kput('vWood',[7.7,1.35,z],qEuler(0,0,-Math.PI/2+.1),[.04,1.1,.04],hC(0x2e2a26));}
  // two field guns (the Republic's trade), a company in ranks with an officer
  for(const x of[12,17]){const z=13;kput('vPipe',[x,1,z-.3],qEuler(-Math.PI/2+.12,0,0),[.2,2.4,.2],hC(0x3a3834));vB('vWood',x,.5,z+.6,.5,.35,1.8,0,tar);

@@ -168,6 +168,14 @@ function portSpot(hx,hz,tx,tz,R){for(let r=0;r<=R;r+=8){const n=Math.max(1,Math.
  placeAnc(buildStarport,'starport',PC.x,PC.z,y,PC.starS,Math.PI,[1],{landmark:true,type:['spaceport']});
  {const R=REG.slice().reverse().find(r=>r.cls==='building'&&r.key==='anc_starport');if(R){R.name='The Starport (ruined)';R.tags.landmark=true;}}
  occAdd({x:PC.x,z:PC.z,hx:PORTR.star*.72,hz:PORTR.star*.72,ry:0,pad:0});BIO_OBSTACLES.push({x:PC.x,z:PC.z,r:PORTR.star*.8});
+ // round 10 (Travis: "move [the Scavengers' Guild] just outside the port gate"): the east gate is the port gate — the port
+ // road leaves the town there — and the apron begins at the wall's foot, so the guild takes the first port ground beside the
+ // road past the gate, front to the road; it goes in before the yards and tanks so they fill round it, not it round them
+ {const D=VERN.defs.hl_rep_guild_scav,G0=gatePos(RK.GATES.E),hx=D.w/2+1,hz=D.d/2+1;let o=null,best=1e9;
+  for(let dx=-40;dx<=240;dx+=6)for(let dz=-200;dz<=200;dz+=6){const x=G0[0]+dx,z=G0[1]+dz,dist=Math.hypot(dx,dz);if(dist>=best)continue;
+   const n=nearestRoadPt(x,z),rys=[n?Math.atan2(n.x-x,n.z-z):0,Math.atan2(PC.x-x,PC.z-z),0,Math.PI/2,Math.PI,-Math.PI/2];
+   for(const ry of rys){const t={x,z,hx,hz,ry,pad:2};if(portOK(t,2)&&occFree(t,2)){o=t;best=dist;break;}}}
+  if(o){occAdd(o);o.hx-=1;o.hz-=1;placeVern('hl_rep_guild_scav',o,{y,landmark:"Scavengers' Guild"});BIO_OBSTACLES.push({x:o.x,z:o.z,r:40});}else reportErr("no room for the Scavengers' Guild by the port gate");}
  // the bunkers (round 8): Ancient redoubts round the rim of the table, reclaimed and lived in (state 3 + the repair pass)
  for(let k=0;k<9;k++){const a=k*TAU/9+.2;if(angDiff(a,Math.PI)<.62)continue;const r=PC.top-30,x=PC.x+r*Math.cos(a),z=PC.z+r*Math.sin(a),s=.27;if(insideWall(x,z,-40))continue;
   const o={x,z,hx:90*s*.75,hz:90*s*.75,ry:0,pad:2};if(!occFree(o,2))continue;
@@ -199,19 +207,62 @@ function portSpot(hx,hz,tx,tz,R){for(let r=0;r<=R;r+=8){const n=Math.max(1,Math.
   for(let i=0;i<n;i++){const a=rng()*TAU,d=Math.sqrt(rng())*r*.9,sy=y+Math.max(0,MH*(1-d/(r*1.05))-.12);const it=vPick(items);
    if(it==='vPipeR')kput('vPipeR',[x+Math.cos(a)*d,sy+.05,z+Math.sin(a)*d],qEuler(Math.PI/2+rr(-.3,.3),rng()*TAU,0),[rr(.08,.2),rr(1.5,3),rr(.08,.2)],null);
    else kput(it,[x+Math.cos(a)*d,sy+.04,z+Math.sin(a)*d],qEuler(0,rng()*TAU,0).multiply(qEuler(-Math.PI/2+rr(-.25,.25),0,0)),[rr(1,2.2),rr(.8,1.6),1],null);}};
- for(let k=0;k<5;k++){const P=PENT[(k+2)%5];const a=Math.atan2(P.z-PC.z,P.x-PC.x)+(k%2?.34:-.34);const r=rr(PC.P-40,PC.P+60);
-  const o=portSpot(24,18,PC.x+r*Math.cos(a),PC.z+r*Math.sin(a),70);if(!o)continue;occAdd(o);PORTX.yards.push(o);
-  for(let i=0;i<rki(5,8);i++){const p=loc(o.x,o.z,rr(-19,19),rr(-13,13),o.ry);heap(p[0],p[1],vPick([['vPlateW','vPlate'],['vSheet','vPlate'],['vPipeR'],['vPlateW','vPipeR']]),rki(14,26),rr(2,4.2));}
+ // round 10 (Travis: "many more scrap yards"): the five by the pads, then a dozen more over the empty apron
+ let _ny=0;for(let k=0;k<60&&_ny<17;k++){let a,r;if(k<5){const P=PENT[(k+2)%5];a=Math.atan2(P.z-PC.z,P.x-PC.x)+(k%2?.34:-.34);r=rr(PC.P-40,PC.P+60);}else{a=rr(0,TAU);r=rr(PORTR.ring+30,PC.top-40);}
+  const o=portSpot(24,18,PC.x+r*Math.cos(a),PC.z+r*Math.sin(a),70);if(!o)continue;occAdd(o);PORTX.yards.push(o);_ny++;
+  for(let i=0;i<rki(8,12);i++){const p=loc(o.x,o.z,rr(-18,18),rr(-12,12),o.ry);heap(p[0],p[1],vPick([['vPlateW','vPlate'],['vSheet','vPlate'],['vPipeR'],['vPlateW','vPipeR']]),rki(22,36),rr(2.6,5));}
+  // round 10: a store or two of containers along the back fence, and a derrick with a hull plate on its chains
+  for(let i=0;i<rki(1,3);i++){const p=loc(o.x,o.z,-16+i*7,-15.2,o.ry);hnCont(p[0],y,p[1],o.ry+Math.PI/2,6,hContC(),{door:0});}
+  {const p=loc(o.x,o.z,rr(-8,8),rr(-2,4),o.ry),H=rr(9,13),iron=hC(0x3a3430);for(let i=0;i<3;i++){const a=i*TAU/3;beam('vPipeR',[p[0]+Math.cos(a)*3,y,p[1]+Math.sin(a)*3],[p[0],y+H,p[1]],.2,.2);}
+   const q=loc(p[0],p[1],3.5,0,o.ry+rr(0,TAU));beam('vIron',[p[0],y+H,p[1]],[q[0],y+H-1.2,q[1]],.25,.25,iron);hnCable([q[0],y+H-1.2,q[1]],[q[0],y+2.6,q[1]],iron);
+   kput('hHullSeg',[q[0],y+1.6,q[1]],qEuler(0,rng()*TAU,Math.PI/2),[2,3.4,2],null);}
   const cs=obbCorners(o,0);for(let e=0;e<4;e++){const A=cs[e],B=cs[(e+1)%4];const L=Math.hypot(B[0]-A[0],B[1]-A[1]),m=Math.round(L/2.2),ry=Math.atan2(B[0]-A[0],B[1]-A[1])+Math.PI/2;
    for(let i=0;i<m;i++){if(e===0&&Math.abs(i-m/2)<2)continue;const t=(i+.5)/m;kput(vPick(['vPlate','vSheet','vPlateW']),[A[0]+(B[0]-A[0])*t,y+1.05,A[1]+(B[1]-A[1])*t],qEuler(0,ry,rr(-.06,.06)),[L/m+.1,2+rr(-.2,.1),1],null);}}
   cpoly(cg,cs,'rgba(74,62,48,.6)');
   REG.push({name:'Scrapyard',x:o.x,y,z:o.z,r:26,h:5,cls:'building',key:'rk_scrapyard',tags:{culture:'highland-republican',type:['industry','salvage'],wealth:'poor',lit:false}});BIO_OBSTACLES.push({x:o.x,z:o.z,r:28});
   // one or two small scrap smithies beside the yard
-  for(let j=0;j<rki(1,2);j++){const key=kitKey('hl_rep_smithy_small');const D=VERN.defs[key];const q=portSpot(D.w/2+1,D.d/2+1,o.x+rr(-40,40),o.z+rr(-40,40),60);if(!q)continue;q.hx-=1;q.hz-=1;placeVern(key,q,{y});}}
- // the Scavengers' Guild: by the port's entrance, where the road from the town comes in
- {const gx=PC.x-PC.P*Math.cos(Math.PI/5)+20,gz=PC.z+55;const D=VERN.defs.hl_rep_guild_scav;const o=portSpot(D.w/2+1,D.d/2+1,gx,gz,90);
-  if(o){o.hx-=1;o.hz-=1;const n=nearestRoadPt(o.x,o.z);if(n)o.ry=Math.atan2(n.x-o.x,n.z-o.z);placeVern('hl_rep_guild_scav',o,{y,landmark:"Scavengers' Guild"});}else reportErr('no room for the Scavengers\' Guild');}
- window._port={pads:PORTX.pads.length,fuel:PORTX.fuel.length,tanks:PORTX.tanks.length,helis:PORTX.helis.length,yards:PORTX.yards.length};})();
+  for(let j=0;j<(k<5?rki(1,2):rki(0,1));j++){const key=kitKey('hl_rep_smithy_small');const D=VERN.defs[key];const q=portSpot(D.w/2+1,D.d/2+1,o.x+rr(-40,40),o.z+rr(-40,40),60);if(!q)continue;q.hx-=1;q.hz-=1;placeVern(key,q,{y});}}
+ // round 10 (Travis: "some ruined ancient silos and factories"): what the Ancients stored and made here, broken open.
+ // SILO BATTERIES — rows of tall concrete bins on a common slab, tops sheared off at different heights, one or two
+ // fallen and lying in pieces, a head-house tower beside them with its conveyor bridge snapped; FACTORY HALLS — a grid
+ // of concrete columns with a few roof slabs still across them, the rest fallen in, a stretch of wall with its windows
+ // blown out, a chimney, rubble. Both on the empty apron between the yards and the tank farms.
+ const CN=()=>hC(vPick([0xb8b2a6,0xa8a296,0x9a948a,0xc4bcae])),rub=(x,z,n,sp)=>{for(let i=0;i<n;i++)kput('rubble',[x+rr(-sp,sp),y+rr(0,.3),z+rr(-sp,sp)],qEuler(rng()*3,rng()*3,rng()*3),[rr(.6,1.8),rr(.4,1.1),rr(.6,1.6)],CN());};
+ PORTX.silos=0;PORTX.works=0;
+ for(let k=0;k<30&&PORTX.silos<6;k++){const a=rr(0,TAU),r=rr(PORTR.ring+30,PC.top-45);const o=portSpot(22,14,PC.x+r*Math.cos(a),PC.z+r*Math.sin(a),70);if(!o)continue;occAdd(o);PORTX.silos++;
+  const n=rki(4,6),R=rr(3.6,4.6),H=rr(24,34),x0=-(n-1)*R;kput('rkSlab',[o.x,y+.4,o.z],qEuler(0,o.ry,0),[n*R*2+4,.8,R*2+6],CN());
+  for(let i=0;i<n;i++){const p=loc(o.x,o.z,x0+i*R*2,0,o.ry),c=CN(),fate=rng();
+   if(fate<.22){// fallen: the stump, and the bin lying broken beside the row
+    const h=rr(3,7);kput('slabCR',[p[0],y+.8+h/2,p[1]],null,[R,h,R],c);const q=loc(o.x,o.z,x0+i*R*2+rr(-2,2),R*2+3.2,o.ry);
+    kput('slabCR',[q[0],y+R*.9,q[1]],qEuler(0,o.ry+rr(-.3,.3),Math.PI/2),[R*.95,H*.45,R*.95],c);const q2=loc(o.x,o.z,x0+i*R*2+rr(-4,4),R*2+3.2+H*.3,o.ry);
+    kput('slabCR',[q2[0],y+R*.85,q2[1]],qEuler(rr(-.2,.2),o.ry+rr(-.5,.5),Math.PI/2),[R*.9,H*.3,R*.9],c);rub(q[0],q[1],8,5);}
+   else{const h=H*rr(.55,1);kput(fate<.6?'slabCR':'slabC',[p[0],y+.8+h/2,p[1]],null,[R,h,R],c);
+    if(fate>.8)kput('slabC',[p[0],y+.8+h+.3,p[1]],null,[R*1.04,.6,R*1.04],c);else for(let j=0;j<3;j++){const aa=rng()*TAU;kput('boxCR',[p[0]+Math.cos(aa)*R*.8,y+.8+h+rr(.3,1.4),p[1]+Math.sin(aa)*R*.8],qEuler(rr(-.4,.4),aa,rr(-.3,.3)),[rr(1,2.2),rr(.6,1.6),.5],c);}}}
+  // the head-house and its broken conveyor
+  const hp=loc(o.x,o.z,x0-R-5,0,o.ry),HH=H+6;kput('boxC',[hp[0],y+.8+HH/2,hp[1]],qEuler(0,o.ry,0),[6,HH,6],CN());
+  for(let j=0;j<Math.floor(HH/4);j++){const wp=loc(hp[0],hp[1],0,3.02,o.ry);kput('darkPane',[wp[0],y+3+j*4,wp[1]],qEuler(0,o.ry,0),[2.2,1.4,1],null);}
+  const top=y+.8+HH-2,a0=loc(hp[0],hp[1],3,0,o.ry),a1=loc(o.x,o.z,x0+R*.6,0,o.ry);beam('boxCR',[a0[0],top,a0[1]],[(a0[0]*2+a1[0])/3,top-1.2,(a0[1]*2+a1[1])/3],1.6,1.6,CN());
+  kput('boxCR',[a1[0],y+2,a1[1]],qEuler(.3,o.ry+Math.PI/2,.9),[1.6,1.6,H*.35],CN());rub(o.x,o.z,14,n*R);
+  cpoly(cg,obbCorners(o,0),'rgba(150,144,132,.55)');
+  REG.push({name:'Ancient silos (ruined)',x:o.x,y,z:o.z,r:Math.max(o.hx,o.hz)+2,h:H,cls:'building',key:'rk_silos',tags:{culture:'ancients',type:['spaceport','storage'],state:'ruined',wealth:'poor',lit:false}});BIO_OBSTACLES.push({x:o.x,z:o.z,r:24});}
+ for(let k=0;k<40&&PORTX.works<6;k++){const a=rr(0,TAU),r=rr(PORTR.ring+30,PC.top-50);const W=rr(36,56),D=rr(22,32);const o=portSpot(W/2+2,D/2+2,PC.x+r*Math.cos(a),PC.z+r*Math.sin(a),80);if(!o)continue;occAdd(o);PORTX.works++;
+  const H=rr(9,14),nx=Math.round(W/8),nz=Math.round(D/8),c0=CN(),P=(u,v)=>loc(o.x,o.z,u,v,o.ry);kput('rkSlab',[o.x,y+.3,o.z],qEuler(0,o.ry,0),[W+2,.6,D+2],c0);
+  const stand=[];for(let i=0;i<=nx;i++)for(let j=0;j<=nz;j++){const u=-W/2+W*i/nx,v=-D/2+D*j/nz,p=P(u,v),f=rng();if(f<.18){rub(p[0],p[1],3,2);continue;}
+   const h=f<.45?H*rr(.3,.8):H;kput(f<.45?'boxCR':'boxC',[p[0],y+.6+h/2,p[1]],qEuler(0,o.ry,0),[1,h,1],c0);if(h===H)stand.push([i,j]);}
+  // the roof: bays whose four columns stand keep their slab, and a few of those have a sawtooth north-light over them
+  const has=(i,j)=>stand.some(s=>s[0]===i&&s[1]===j);
+  for(let i=0;i<nx;i++)for(let j=0;j<nz;j++){if(!(has(i,j)&&has(i+1,j)&&has(i,j+1)&&has(i+1,j+1))||rng()<.35)continue;const u=-W/2+W*(i+.5)/nx,v=-D/2+D*(j+.5)/nz,p=P(u,v);
+   kput('boxC',[p[0],y+.6+H+.3,p[1]],qEuler(0,o.ry,0),[W/nx+.2,.6,D/nz+.2],c0);if(rng()<.5){const q=P(u,v+D/nz*.25);kput('darkPane',[q[0],y+.6+H+1.6,q[1]],qEuler(-.5,o.ry,0),[W/nx,2.4,1],null);}}
+  // a fallen slab or two, leaning in
+  for(let k2=0;k2<rki(2,4);k2++){const p=P(rr(-W/2+4,W/2-4),rr(-D/2+4,D/2-4));kput('boxCR',[p[0],y+H*.3,p[1]],qEuler(rr(.4,.8)*(rng()<.5?-1:1),o.ry+rr(-.3,.3),rr(-.2,.2)),[W/nx,.6,D/nz],c0);rub(p[0],p[1],4,3);}
+  // the back wall, windows blown out, broken off along its top
+  {const nw=Math.round(W/4);for(let i=0;i<nw;i++){const u=-W/2+W*(i+.5)/nw,hh=H*(i%5===3?rr(.3,.5):rr(.75,1)),p=P(u,-D/2-.4);kput('boxC',[p[0],y+.6+hh/2,p[1]],qEuler(0,o.ry,0),[W/nw+.02,hh,.6],c0);
+   if(hh>5){const q=P(u,-D/2+.02);kput('darkPane',[q[0],y+4,q[1]],qEuler(0,o.ry,0),[W/nw*.6,3.2,1],null);}}}
+  // the chimney
+  {const p=P(W/2+4,-D/2+3),ch=rr(24,38);kput('slabC',[p[0],y+ch/2,p[1]],null,[1.6,ch,1.6],CN());kput('slabCR',[p[0],y+ch+.4,p[1]],null,[1.8,.8,1.8],CN());kput('boxC',[p[0],y+2,p[1]],qEuler(0,o.ry,0),[4.4,4,4.4],c0);}
+  rub(o.x,o.z,10,W/2);cpoly(cg,obbCorners(o,0),'rgba(140,134,124,.55)');
+  REG.push({name:'Ancient factory (ruined)',x:o.x,y,z:o.z,r:Math.max(W,D)/2+2,h:H+2,cls:'building',key:'rk_works',tags:{culture:'ancients',type:['spaceport','industry'],state:'ruined',wealth:'poor',lit:false}});BIO_OBSTACLES.push({x:o.x,z:o.z,r:Math.max(W,D)/2+4});}
+ window._port={pads:PORTX.pads.length,fuel:PORTX.fuel.length,tanks:PORTX.tanks.length,helis:PORTX.helis.length,yards:PORTX.yards.length,silos:PORTX.silos,works:PORTX.works};})();
 // ---------------------------------------------------------------- 6. the farms: steadings along the farm lanes and the N/S highways, ploughed fields round them
 const cropMat=new THREE.MeshLambertMaterial({color:0xffffff});kdef('rkCrop',VBOX,cropMat);
 const FIELDCOL=['#7a6a3a','#6e5e34','#857240','#6a6a3a','#5e6a32','#8a7a48'];

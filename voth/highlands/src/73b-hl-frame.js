@@ -285,4 +285,7 @@ TEX.hTileD=hlTile(['#2f7a44','#d8a830','#2a5aa8','#e8e0cc','#9a2a24','#2e9488'])
 TEX.hTileS=hlTile(['#9a2a24','#d8a830','#e8e0cc','#2f7a44','#2a5aa8','#d8a830']);TEX.hTileS.repeat.set(6,4);
 MAT.hTileD=hStd({map:TEX.hTileD,roughness:.28,metalness:.08});MAT.hTileS=hStd({map:TEX.hTileS,roughness:.28,metalness:.08});
 kdef('hDomeTile',HGDOME2,MAT.hTileD);kdef('hTentTile',HTENT,MAT.hTileS);TEX.hTileT=hlTile(['#2f7a44','#d8a830','#2e9488','#e8e0cc','#2a5aa8','#d8a830']);TEX.hTileT.repeat.set(6,4);MAT.hTileT=hStd({map:TEX.hTileT,roughness:.28,metalness:.08});
-kdef('hTentTileD',HTENT,MAT.hTileT);
+kdef('hTentTileD',HTENT,MAT.hTileT);// round 10: the wall towers' glazed spires — a quieter palette than the temple's (oxblood and bottle green in chevrons,
+// an ochre line through them), which at the size of a tower spire read as confetti
+TEX.hTileW=hlTile(['#8a2a22','#8a2a22','#2f5a3a','#2f5a3a','#c8a040','#8a2a22','#2f5a3a']);TEX.hTileW.repeat.set(6,4);MAT.hTileW=hStd({map:TEX.hTileW,roughness:.3,metalness:.08});
+kdef('hPyrTile',VPYR,MAT.hTileW);kdef('hTentTileW',HTENT,MAT.hTileW);

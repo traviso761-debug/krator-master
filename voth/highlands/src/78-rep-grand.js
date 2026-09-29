@@ -27,7 +27,7 @@ function hnRCTier(x,y,z,ow,od,tw,td,rise,ry,c,o){o=o||{};const K=.3,KR=.15;const
   kput('hArm',[p[0],y-.02,p[1]],qEuler(0,ry+Math.atan2(sx,sz)+Math.PI/2,0),[1.2,.75,.3],o.hornC||hC(HPAL.gold[0]));}
  return y+rise;}
 // A slender pyramidal spire with an iron finial, gold ball and a pennant; returns the tip.
-function hnRCSpire(x,y,z,b,h,ry,c,o){o=o||{};kput('hPyrSc',[x,y,z],qEuler(0,ry,0),[b,h,b],c||null);const gold=hC(HPAL.gold[0]);
+function hnRCSpire(x,y,z,b,h,ry,c,o){o=o||{};kput(o.tile?'hPyrTile':'hPyrSc',[x,y,z],qEuler(0,ry,0),[b,h,b],o.tile?null:c||null);const gold=hC(HPAL.gold[0]);
  const t=y+h*.97,fh=Math.max(1.2,h*.1);vPst('vIron',x,t-.4,z,.05+b*.006,fh+.6,hC(0x2e2a26));vBall('hGold',x,t+.15,z,.16+b*.025,gold);vBall('hGold',x,t+fh*.75,z,.1+b*.01,gold);
  if(o.flag){const p=loc(x,z,.75,0,ry);kput('vCloth',[p[0],t+fh-.25,p[1]],qEuler(0,ry,0),[1.5,.8,1],o.flagC||hC(HPAL.red));}
  return t+fh+.2;}
@@ -51,8 +51,8 @@ function hnRCLoggia(x,y,z,L,LH,ry,wood,o){o=o||{};vB('vWood',x,y,z,L+.1,.22,L+.1
 // Solid stone flight (monumental stairs): steps rise toward -z of ry from the front edge at (x,z).
 function hnRCFlight(x,y,z,ry,w,rise,item,c){const n=Math.max(2,Math.round(rise/.16)),tr=.34;for(let k=0;k<n;k++){const p=loc(x,z,0,-(k+.5)*tr,ry);vB(item||'vStone',p[0],y,p[1],w,rise*(k+1)/n,tr+.01,ry,c);}return n*tr;}
 // Grid paving: flags with joints (no overlapping slabs, so no z-fighting), on a darker bed.
-function hnRCPave(x,z,w,d,ry,c,cell){cell=cell||2.2;const nx=Math.max(1,Math.round(w/cell)),nz=Math.max(1,Math.round(d/cell));vB('vStone',x,0,z,w,.03,d,ry,c.clone().multiplyScalar(.6));
- for(let i=0;i<nx;i++)for(let j=0;j<nz;j++){const p=loc(x,z,-w/2+(i+.5)*w/nx,-d/2+(j+.5)*d/nz,ry);vB('vFlag',p[0],.03,p[1],w/nx-.08,.04+rng()*.012,d/nz-.08,ry,c.clone().multiplyScalar(rr(.9,1.06)));}}
+function hnRCPave(x,z,w,d,ry,c,cell){cell=cell||2.2;const nx=Math.max(1,Math.round(w/cell)),nz=Math.max(1,Math.round(d/cell));vB('vStone',x,0,z,w,.14,d,ry,c.clone().multiplyScalar(.6));   // round 10: a 14 cm bed, clear of levelled terrain
+ for(let i=0;i<nx;i++)for(let j=0;j<nz;j++){const p=loc(x,z,-w/2+(i+.5)*w/nx,-d/2+(j+.5)*d/nz,ry);vB('vFlag',p[0],.14,p[1],w/nx-.08,.04+rng()*.012,d/nz-.08,ry,c.clone().multiplyScalar(rr(.9,1.06)));}}
 // Low ashlar balustrade from a to b (local [x,z]) at base y: a parapet with a coping and posts every ~3.5 m.
 function hnRCBalus(a,b,y,c,h){h=h||.95;const dx=b[0]-a[0],dz=b[1]-a[1],L=Math.hypot(dx,dz),ry=Math.atan2(dx,dz)-Math.PI/2,m=[(a[0]+b[0])/2,(a[1]+b[1])/2];
  vB('vStone',m[0],y,m[1],L,h-.14,.32,ry,c);vB('vStone',m[0],y+h-.14,m[1],L+.1,.14,.44,ry,c.clone().multiplyScalar(1.05));
@@ -128,9 +128,9 @@ function hnRCTower(x,y,z,w,h,ry,o){o=o||{};const rub=hC(vPick(HPAL.rubble)),ash=
  const roof=o.roof||'spire';
  if(roof==='spire'){const b=L+.7,hh=o.spireH||w*2.3;hnRCDormers(x,top-.1,z,b,hh,ry,roofC,cream);
   if(o.pinnacles!==false)for(const sx of[-1,1])for(const sz of[-1,1]){const p=loc(x,z,sx*(L/2-.1),sz*(L/2-.1),ry);kput('hOctP',[p[0],top-.1,p[1]],null,[.5,1.3,.5],cream);
-   kput('hTentSc',[p[0],top+1.15,p[1]],null,[.62,2.1,.62],roofC);vBall('hGold',p[0],top+3.3,p[1],.12,hC(HPAL.gold[0]));}
-  return hnRCSpire(x,top-.1,z,b,hh,ry,roofC,{flag:o.flag,flagC:o.flagC});}
- if(roof==='tent'){const r=(L+1.2)*.62,hh=o.spireH||w*1.8;kput('hTentSc',[x,top-.15,z],qEuler(0,ry,0),[r,hh,r],roofC);
+   kput(o.tile?'hTentTileW':'hTentSc',[p[0],top+1.15,p[1]],null,[.62,2.1,.62],o.tile?null:roofC);vBall('hGold',p[0],top+3.3,p[1],.12,hC(HPAL.gold[0]));}
+  return hnRCSpire(x,top-.1,z,b,hh,ry,roofC,{flag:o.flag,flagC:o.flagC,tile:o.tile});}
+ if(roof==='tent'){const r=(L+1.2)*.62,hh=o.spireH||w*1.8;kput(o.tile?'hTentTileW':'hTentSc',[x,top-.15,z],qEuler(0,ry,0),[r,hh,r],o.tile?null:roofC);
   for(let k=0;k<4;k++){const a=ry+k*Math.PI/2;const p=loc(x,z,0,r*.62,a);vB('vPlaster',p[0],top+hh*.16,p[1],.8,.9,1.0,a,cream);vnGableRoof(p[0],top+hh*.16+.9,p[1],1.0,.8,.5,a+Math.PI/2,'hGableSc',roofC,.1);}
   const t=top-.15+hh;vPst('vIron',x,t-.4,z,.06,2,hC(0x2e2a26));vBall('hGold',x,t+.2,z,.2,hC(HPAL.gold[0]));
   if(o.flag){const p=loc(x,z,.75,0,ry);kput('vCloth',[p[0],t+1.2,p[1]],qEuler(0,ry,0),[1.5,.8,1],o.flagC||hC(HPAL.red));}return t+1.7;}
@@ -168,7 +168,7 @@ function hnRCWallRun(x,z,len,ry,o){o=o||{};const H=o.H||9,T=o.T||3.2,rub=o.c||hC
   const ni=Math.max(1,Math.round(len/2.8));for(let i=0;i<=ni;i++){const q=P(-len/2+.15+(len-.3)*i/ni,-T/2+.22);vPst('vPost',q[0],H+.1,q[1],.1,HH+.1,wood);}
   p=P(0,-T/2+.22);vB('vWood',p[0],H+1.0,p[1],len,.1,.1,ry,wood);
   // the roof: a gable over the walk and the hoarding, ridge along the run
-  const sp=T+1.3,oc=(1.3)/2-.05,pitch=o.pitch||.95,rise=pitch*sp/2,rc=P(0,oc);hnRCGableX(rc[0],H+HH-.02,rc[1],len,sp,rise,ry,'hScaleB',roofC,.55,0,o.ends?'vGablePl':null,cream);}
+  const sp=T+1.3,oc=(1.3)/2-.05,pitch=o.pitch||.95,rise=pitch*sp/2,rc=P(0,oc);hnRCGableX(rc[0],H+HH-.02,rc[1],len,sp,rise,ry,'vCorr',o.sheetC||hC(vPick(HSV.corr)),.55,0,o.ends?'vGablePl':null,cream);}
  else{p=P(0,T/2-.3);vB('hRubB',p[0],H,p[1],len,1.0,.6,ry,rub);const nm=Math.max(2,Math.round(len/2.3));
   for(let i=0;i<nm;i++){const q=P(-len/2+len*(i+.5)/nm,T/2-.3);vB('hRubB',q[0],H+1.0,q[1],1.2,1.1,.6,ry,rub);vB('vStone',q[0],H+2.1,q[1],1.36,.16,.74,ry,ash);}
   p=P(0,-T/2+.2);vB('vStone',p[0],H,p[1],len,.9,.4,ry,ash);}
@@ -211,7 +211,7 @@ function hnRCGate(x,z,ry,o){o=o||{};const TW=o.tw||8.5,TH=o.th||17,BW=10,BD=10,R
  {const f=P(0,(BD+.8)/2+.02);hnForm('hFormT',f[0],y3+1.2,f[1],ry,3.2,1.6);}
  {const q=P(0,-1);kput('hOctW',[q[0],rt-1.2,q[1]],qEuler(0,ry,0),[1.0,2.6,1.0],wood);hnRCSpire(q[0],rt+1.3,q[1],2.3,6.5,ry,roofC,{flag:true,flagC:hC(HPAL.teal)});}
  // the twin towers, pushed a little toward the field
- for(const s of[-1,1]){const q=P(s*(BW/2+TW/2),.8);hnRCTower(q[0],0,q[1],TW,TH,ry,{roof:'spire',lit,roofC,beamC:wood,cream,flag:s>0});}
+ for(const s of[-1,1]){const q=P(s*(BW/2+TW/2),.8);hnRCTower(q[0],0,q[1],TW,TH,ry,{roof:'spire',tile:o.tile,lit,roofC,beamC:wood,cream,flag:s>0});}
  if(o.stubs){for(const s of[-1,1]){const q=P(s*(BW/2+TW+o.stubs/2-.4),0);hnRCWallRun(q[0],q[1],o.stubs+.8,ry,{roofC,wood,c:rub,ends:true});}}
  if(lit)for(const s of[-1,1]){const q=P(s*(BW/2+1.2),BD/2+4);vnLampPost(q[0],0,q[1],4.2);}}
 
@@ -293,7 +293,7 @@ function buildHlRepHallRepublic(G,o){reseed(21201+(o.v|0));
  // ---- the back: a door and stair to the service yard
  vnDoor(0,FL,rz0,Math.PI,2.2,3.2,'vStone',ash,hC(vPick(HPAL.tar)),false);hnForm('hFormA',0,FL+3.45,rz0-.02,Math.PI,2.6,1.3);
  // ---- parterres either side of the forecourt: lawns in clipped hedges, topiary cones, and clipped balls along the platform
- for(const s of[-1,1]){const gx=s*26.5,gz=44.5;vB('hPaint',gx,0,gz,15,.05,12,0,hC(0x5a8a3e));
+ for(const s of[-1,1]){const gx=s*26.5,gz=44.5;vB('hPaint',gx,0,gz,15,.2,12,0,hC(0x5a8a3e));
   for(const [u,v,w,d] of [[0,5.6,15,.8],[0,-5.6,15,.8],[7.1,0,.8,10.4],[-7.1,0,.8,10.4],[0,0,9,.6],[0,0,.6,7]])vB('hRCHedgeB',gx+u,0,gz+v,w,.9,d,0,hC(0x3f6a2e));
   for(const [u,v] of [[-4,-2.6],[4,-2.6],[-4,2.6],[4,2.6]]){kput('hRCLeaf',[gx+u,1.7,gz+v],null,[.85,1.7,.85],hC(0x3a6a2c));}
   for(let k=0;k<6;k++){const x=s*(20+k*5.6);vB('vStone',x,FL,33.2-2.4,1.2,.6,1.2,0,ash);kput('hRCLeaf',[x,FL+1.3,30.8],null,[.8,.8,.8],hC(0x3f6a2e));}}
@@ -365,11 +365,11 @@ function buildHlRepWall(G,o){reseed(21221+(o.v|0));const len=o.len||40;
 function buildHlRepWallTower(G,o){reseed(21231+(o.v|0));const W=8.5,H=16;const red=hC(vPick(HPAL.redwood)),slate=hC(vPick(HPAL.slate));
  vnReg('Wall tower',0,0,9,H+26);
  for(const s of[-1,1])hnRCWallRun(s*(W/2+2.6),0,5.6,0,{wood:red,roofC:slate,ends:true});
- hnRCTower(0,0,.6,W,H,0,{roof:(o.v|0)%2?'tent':'spire',clock:(o.v|0)%3===2,lit:vLit(),roofC:slate,beamC:red,flag:true});
+ hnRCTower(0,0,.6,W,H,0,{tile:true,roof:(o.v|0)%2?'tent':'spire',clock:(o.v|0)%3===2,lit:vLit(),roofC:slate,beamC:red,flag:true});
  vnDoor(0,0,.6-W/2,Math.PI,1.4,2.3,'vStone',hC(vPick(HPAL.ashlar)),hC(vPick(HPAL.tar)),false);vnFolk(0,-7,1,2);}
 function buildHlRepGate(G,o){reseed(21241+(o.v|0));
  vnReg('Town gate',0,0,16,44);
- hnRCGate(0,0,0,{stubs:5});
+ hnRCGate(0,0,0,{stubs:5,tile:true});
  hnRCPave(0,8.5,12,6,0,hC(vPick(HPAL.rubble)),1.6);hnRCPave(0,-8.5,12,6,0,hC(vPick(HPAL.rubble)),1.6);
  vnFolk(0,10,4,4);for(const s of[-1,1])vnFolk(s*3.2,5.8,1,.2);}
 
