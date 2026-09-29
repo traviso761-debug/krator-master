@@ -6,6 +6,11 @@ dangerous in equal measure: a subagent that does not know a function exists
 will write a second, subtly different one. **This file is the contract.** If
 something is not here, ask the planner rather than inventing it.
 
+Files that share a numeric prefix (`78a-life-core.js` … `78j-life-arena.js`)
+are one fragment split into parts: one `reseed(N)` stream, one unit for
+`build.py`'s rules. Comments that cite an old whole-file name such as
+`78-life.js` or `65-facade.js` mean that group. `INDEX.md` lists every part.
+
 Coordinates are world units. `y = 0` is the lake surface (`SEA`). `x` runs
 east, `z` runs south. Terrain extent is ±5400; the city box is ±2400.
 

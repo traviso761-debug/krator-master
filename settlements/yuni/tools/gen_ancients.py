@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generates src/61-ancients.js = kit slice (patched) + tools/anc_kit_tail.js + tools/anc_glue.js + tools/anc_assets.js"""
+"""Generates src/61a-61e (the Ancients port) = kit slice (patched) + tools/anc_kit_tail.js + tools/anc_glue.js + tools/anc_assets.js"""
 import os,re
 HERE=os.path.dirname(os.path.abspath(__file__)); ROOT=os.path.dirname(HERE)
 src=open(os.path.join(ROOT,'ref','ancients-kit-rehabilitated.html')).read()
@@ -93,8 +93,16 @@ var ANCK = (function(){
 var ANC_TH=null, KSKIP=false, KTHIN=1, KTN=0, KTNAMES=[], UVK=1, DISHOK=false, WORN=false, LABTIGHT=false, SEGK=0.5, RSC=1, APRK=0.3;
 function reportErr(m){ ERR('ancients kit: '+m); }
 """
-out = pre + kit + open(os.path.join(HERE,'anc_kit_tail.js')).read() + "})();\n" \
-    + open(os.path.join(HERE,'anc_glue.js')).read() + open(os.path.join(HERE,'anc_assets.js')).read() + "})();\n" \
-    + open(os.path.join(HERE,'anc_furniture.js')).read()
-open(os.path.join(ROOT,'src','61-ancients.js'),'w').write(out)
-print('wrote src/61-ancients.js', len(out))
+# One file per component, so an agent can open the part it needs. build.py joins
+# files that share the 61 prefix back into one unit (one PRNG stream, one scope).
+parts = [('61a-ancients-kit', pre + kit),
+         ('61b-ancients-kit-tail', open(os.path.join(HERE,'anc_kit_tail.js')).read() + "})();\n"),
+         ('61c-ancients-glue', open(os.path.join(HERE,'anc_glue.js')).read()),
+         ('61d-ancients-assets', open(os.path.join(HERE,'anc_assets.js')).read() + "})();\n"),
+         ('61e-ancients-furniture', open(os.path.join(HERE,'anc_furniture.js')).read())]
+old = os.path.join(ROOT,'src','61-ancients.js')
+if os.path.exists(old):
+    os.remove(old)
+for name, text in parts:
+    open(os.path.join(ROOT,'src',name+'.js'),'w').write(text)
+    print('wrote src/%s.js' % name, len(text))

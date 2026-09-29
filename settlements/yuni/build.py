@@ -17,6 +17,9 @@ Also enforces the rules that make subagent work safe:
      planner can see which fragments a subagent actually touched and confirm
      it stayed inside its contract.
 
+  Files sharing a numeric prefix (78a-, 78b-, ...) are one fragment split
+  into readable parts; the rules apply to the joined unit.
+
 Usage:  python3 build.py [--no-checks]
 """
 import hashlib, json, os, re, subprocess, sys
@@ -57,6 +60,33 @@ def strip_head_comments(text):
     return text[i:]
 
 
+PARTS = {}   # unit name -> [(offset of the part in the unit body, part file)]
+
+
+def where(unit, body, pos):
+    """'file:line' of offset pos in a unit body, naming the part file it falls in."""
+    start, f = [p for p in PARTS.get(unit, [(0, unit)]) if p[0] <= pos][-1]
+    return '%s:%d' % (f, body[start:pos].count('\n') + 1)
+
+
+def units(order, bodies):
+    """Files that share a numeric prefix (78a-life-core.js, 78b-life-nav.js, ...) are
+    one fragment split for reading: one PRNG stream opened by the first file's
+    reseed(N), and one unit for every rule below. Returns the unit names (each
+    unit's first file) and the unit bodies."""
+    groups = {}
+    for f in order:
+        groups.setdefault(re.match(r'\d+', f).group(0), []).append(f)
+    PARTS.clear()
+    for g in groups.values():
+        start = 0
+        for x in g:
+            PARTS.setdefault(g[0], []).append((start, x))
+            start += len(bodies[x])
+    return ([g[0] for g in groups.values()],
+            {g[0]: ''.join(bodies[x] for x in g) for g in groups.values()})
+
+
 def check(order, bodies):
     errs, seeds = [], {}
     for f in order:
@@ -73,9 +103,9 @@ def check(order, bodies):
 
         if f != PALETTE_FILE:
             for m in RE_COLOUR_ARRAY.finditer(body):
-                errs.append('%s:%d: colour array outside the palette. Move it to '
+                errs.append('%s: colour array outside the palette. Move it to '
                             '05-palette.js and read it from PAL.'
-                            % (f, body[:m.start()].count('\n') + 1))
+                            % where(f, body, m.start() + len(m.group(0)) - len(m.group(0).lstrip())))
 
     # SHARED-SCOPE COLLISIONS: every fragment lives in one function scope, so a
     # column-0 `var x` / `function x` declared in two fragments silently clobbers.
@@ -112,7 +142,7 @@ def main():
             bodies[f] = fh.read()
 
     if do_checks:
-        errs = check(order, bodies)
+        errs = check(*units(order, bodies))
         if errs:
             print('BUILD RULES FAILED:')
             for e in errs:

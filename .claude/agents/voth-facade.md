@@ -20,9 +20,11 @@ Everything is a global in one shared scope. Read it before writing a line.
 
 ## You may edit
 
-- `src/65-facade.js` — create it if it does not exist. Numbered so it runs
-  after `60-land.js` (which builds the town) and before `75-terrain.js`
-  (which calls `emitBuckets`).
+- The `src/65*` group (`65a-smoke.js` … `65l-arena-built.js`; see
+  `INDEX.md`). It is one fragment split into parts: edit the part that holds
+  the building, or add a new part with the next letter. It runs after
+  `60-land.js` (which builds the town) and before `75-terrain.js` (which
+  calls `emitBuckets`).
 - `structure()` in `src/45-kit.js` — **only** if the planner has said so in
   the brief. It is shared by every building family and a change there reaches
   everything.
