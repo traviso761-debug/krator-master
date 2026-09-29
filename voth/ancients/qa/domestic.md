@@ -161,6 +161,6 @@ talus, fallen outrigger, warts), `shots/qa_dom_c/view_Amphitheater.png`
   needs `paraFill`-style shapes per bay; not worth the draw calls.
 - A final full-kit `--assert` could not complete here (page load > 300 s
   under the machine's load). The per-type numbers above are from the
-  row-filtered copy, whose per-type accounting is identical; the full kit's
-  total should drop by ~0 net (dish −32k, mega +~70k, amph +~24k, over three
-  decays).
+  row-filtered copy, whose per-type accounting is identical. Net change to the
+  full kit over the three decays: about +72 000 triangles (mega +67k, amph
+  +31k, fuel/radar +7k, dish −32k), under 1% of the showcase.
