@@ -190,3 +190,26 @@ Before 447 396 / 427 012 → after 447 396 / 466 590 (intact untouched).
   lattice at distance; the 32 m window-wall repeat.
 Best shots: `shots/qa_blades/view_The_fallen_blade.png`, `view_Ruined.png`,
 `view_The_sky_garden.png` (kept).
+
+## Ledge (89i) — DONE
+Before 604 154 / 484 272 → after 695 268 / 503 588 (was 742 k OVER in the
+first cut; trimmed back under 700 k).
+* FIXED "The foot settlement is a grid of small white boxes": each plot is a
+  compound — a walled yard with a tree (and half the time a lawn), the house at
+  two heights (taller near the cliff), a dark roof terrace (a parapet on a
+  quarter), an awning or kiosk, door and window on the street — in sandstone,
+  ochre and limewash; four paved streets run out of the plaza and a lane
+  follows the toe, and plots keep off them.
+* FIXED "A single lift core runs down to the ground as a thin stalk under the
+  city": the lobby shaft is now the core of a three-stage stepped pylon (lit
+  bands on the middle stage) with raking struts to the underside of the lowest
+  layer.
+* Soffits keep the Ledge's painted bounce (the model the Wing now follows).
+Best shots: `shots/qa_ledge3/view_The_foot.png`, `shots/qa_ledge2/view_The_Ledge.png`,
+`shots/qa_ledge3/view_Ruined.png`.
+
+## Verification
+Every type: `build.py --target <t>`, `jscheck.py`, `verify.py --assert` over
+the views named above: error panel clean, all invariants PASS, no type over
+700 k. Draw calls 20-63 per view. The kit target builds and parses with these
+fragments (they ship in its script; none of these types has a kit row).
