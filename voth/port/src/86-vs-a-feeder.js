@@ -32,6 +32,7 @@ MAT.vsDeck=new THREE.MeshStandardMaterial({map:TEX.panel,color:0x75807a,roughnes
 MAT.vsDeckR=new THREE.MeshStandardMaterial({map:TEX.rust,color:0x9a7a68,roughness:.95,metalness:.1,side:DS});
 MAT.vsHatch=new THREE.MeshStandardMaterial({map:TEX.panel,color:0xa9b0ae,roughness:.7,metalness:.25});
 MAT.vsRust=new THREE.MeshStandardMaterial({map:TEX.rust,roughnessMap:TEX.rustRM,metalnessMap:TEX.rustRM,color:0xa8968c,metalness:1,roughness:1,side:DS});
+MAT.vsVoid=new THREE.MeshBasicMaterial({color:0x0b0b0d,side:DS});   // the dark inside a holed hull, lit or not
 MAT.vsSoil=new THREE.MeshStandardMaterial({map:TEX.concrete,color:0x5a4430,roughness:1,metalness:0,side:DS});
 MAT.vsGreen=new THREE.MeshStandardMaterial({map:TEX.concrete,color:0x4c6a30,roughness:1,metalness:0,side:DS});
 
@@ -40,6 +41,7 @@ const VS_LINE=[0xe8e6e0,0x2d5f8e,0xb04a2c,0x3a7a6a,0xd8a63a,0x8a8c8e,0x5a4a7a,0x
 const VS_RAIL=new THREE.Color(0x6a5040);
 function vsCC(prev){return prev&&rng()<.55?prev:VS_LINE[(rng()*VS_LINE.length)|0];}
 function vsPaint(){const H=[0,.03,.08,.12,.3,.45,.52,.58,.9,.95];return new THREE.Color().setHSL(H[(rng()*H.length)|0]+rr(-.02,.02),rr(.3,.6),rr(.45,.66));}
+function vsPaintM(){return new THREE.Color().setHSL(rr(0,1),rr(.12,.35),rr(.36,.58)).lerp(new THREE.Color(0x7a5040),rr(.1,.4));}
 function vsShackC(){const H=[.05,.09,.13,.55,.6,.95,.33];return new THREE.Color().setHSL(H[(rng()*H.length)|0],rr(.15,.45),rr(.62,.86));}
 function vsQ(yaw,pitch,roll){const q=qEuler(0,yaw||0,0);if(pitch||roll)q.multiply(qEuler(pitch||0,0,roll||0));return q;}
 
@@ -47,7 +49,7 @@ function vsQ(yaw,pitch,roll){const q=qEuler(0,yaw||0,0);if(pitch||roll)q.multipl
 function vsCtx(G,heading,parts){
  const mk=p=>{const g=new THREE.Group();g.matrixAutoUpdate=false;const m=new THREE.Matrix4().makeRotationY(heading);
   if(p&&(p.roll||p.pitch||p.sink)){const t=new THREE.Matrix4(),pz=p.pz||0;
-   m.multiply(t.makeTranslation(0,p.sink||0,pz));m.multiply(t.makeRotationFromEuler(new THREE.Euler(p.pitch||0,0,p.roll||0)));m.multiply(t.makeTranslation(0,0,-pz));}
+   m.multiply(t.makeTranslation(0,p.sink||0,pz+(p.dz||0)));m.multiply(t.makeRotationFromEuler(new THREE.Euler(p.pitch||0,0,p.roll||0)));m.multiply(t.makeTranslation(0,0,-pz));}
   g.matrix.copy(m);G.add(g);const q=new THREE.Quaternion();m.decompose(new THREE.Vector3(),q,new THREE.Vector3());
   return {g,m,q,z0:p&&p.z0!=null?p.z0:-1e9,z1:p&&p.z1!=null?p.z1:1e9,roll:(p&&p.roll)||0};};
  const C={G,parts:parts.map(mk),water:mk(null)};
@@ -105,11 +107,11 @@ function vsHull(C,S,d){const T=S.T,hb=S.hb,L2=S.L2;
   vsSkin(par,S,s0,s1,-1e3,yb0,bot,nu,5,null,0,true);
   vsSkin(par,S,s0,s1,yb0,yb1,boot,nu,1,null,0,true);
   vsSkin(par,S,s0,s1,yb1,1e3,top,hole?nu*2:nu,hole?12:5,hole);
-  if(hole)vsSkin(par,S,s0,s1,yb1,1e3,MAT.dark,nu,3,null,.955,true);
+  if(hole)vsSkin(par,S,s0,s1,yb1,1e3,MAT.vsVoid,nu,3,null,.955,true);
   pbAdd(gridSurface((u,v)=>{const s=lerp(s0,s1,u);return[(v*2-1)*S.bk(s)*hb,S.yk(s),s*L2];},nu,2,{uS:S.L*(s1-s0)/16,vS:S.B/8}),bot,par,true);
   pbAdd(gridSurface((u,v)=>{const s=lerp(s0,s1,u);return[(v*2-1)*S.bd(s)*hb*.996,S.yd(s)+.03,s*L2];},nu,4,{uS:S.L*(s1-s0)/16,vS:S.B/8}),deck,par);
-  if(s0<=-1+1e-6)vsSection(par,S,-1,top);else vsSection(par,S,s0,MAT.dark);
-  if(s1<1-1e-6)vsSection(par,S,s1,MAT.dark);});
+  if(s0<=-1+1e-6)vsSection(par,S,-1,top);else vsSection(par,S,s0,MAT.vsVoid);
+  if(s1<1-1e-6)vsSection(par,S,s1,MAT.vsVoid);});
  // forecastle bulwark and breakwater, the rail round the rest of the deck
  const bp=C.at(L2);
  for(const sd of [1,-1])pbAdd(gridSurface((u,v)=>{const s=lerp(.78,1,u);return[sd*S.bd(s)*hb,S.yd(s)+v*1.8,s*L2];},16,1,{uS:.22*L2/8,vS:.25}),top,bp);
@@ -161,7 +163,7 @@ function vsHouse(C,S,H,d){const par=C.at(H.z),SH=d===0?MAT.white:MAT.vsRust,WN=d
   if(d===0){kput('dot',[-3,my+7.3,mz],null,[.35,.35,.35],new THREE.Color(0xff3a2a));kput('dot',[3,my+7.3,mz],null,[.35,.35,.35],new THREE.Color(0x3aff6a));
    kput('dot',[0,my+9.2,mz],null,[.4,.4,.4],new THREE.Color(0xffffff));}}
  // a free-fall lifeboat on its ramp at the back of the house
- if(d!==1){const lb=H.z-H.dp/2-2.4;kput('boxW',[H.w*.28,y*.35+S.F*.65,lb],vsQ(0,-.5),[2.8,2.6,8.5],new THREE.Color(0xf07a1a));}
+ if(d!==1&&!H.noBoat){const lb=H.z-H.dp/2-2.4;kput('boxW',[H.w*.28,y*.35+S.F*.65,lb],vsQ(0,-.5),[2.8,2.6,8.5],new THREE.Color(0xf07a1a));}
  return out;}
 function vsFunnel(C,S,Fn,d){const par=C.at(Fn.z),SH=d===0?MAT.white:MAT.vsRust,P=vsSE(Fn.w,Fn.dp,Fn.se||3.2,28),x=Fn.x||0,y0=Fn.y0!=null?Fn.y0:S.F;
  vsWall(par,SH,P,x,y0,Fn.z,Fn.h);vsWall(par,d===0?S.boot:MAT.vsBootRu,P,x,y0+Fn.h-5.5,Fn.z,2.4,{sc:1.015});
@@ -207,7 +209,7 @@ function vsStacksRuin(C,S){const hb=S.hb;
    const st=Math.max(0,nt-k);
    for(let t=0;t<st;t++)kput('pkCont40R',[x+rr(-.08,.08),S.yb+t*VS.TP,z],vsQ(Math.PI/2+rr(-.02,.02)),1,portContColor(1));
    for(let j=0;j<nt-st;j++){
-    if((edge||fall)&&rng()<.38){C.wat();kput('pkCont40R',[lo*(hb+rr(3,34)),rr(-2.3,-1.1),z+rr(-14,14)],vsQ(rr(0,TAU),rr(-.35,.35),rr(-.3,.3)),1,portContColor(1));C.use(p);}
+    if((edge||fall)&&rng()<(S.spill||.38)){C.wat();kput('pkCont40R',[lo*(hb+rr(3,34)),rr(-2.3,-1.1),z+rr(-14,14)],vsQ(rr(0,TAU),rr(-.35,.35),rr(-.3,.3)),1,portContColor(1));C.use(p);}
     else if(rng()<.7)kput('pkCont40R',[x+lo*rr(.8,4),S.yb+(st+j*.7)*VS.TP-rr(0,1),z+rr(-2,2)],vsQ(Math.PI/2+rr(-.3,.3),rr(-.1,.1),lo*rr(-.9,-.15)),1,portContColor(1));}}}}
 
 // ---------------------------------------------------------------- ruin dressing
@@ -329,6 +331,8 @@ function vsShip(scene,gx,gz,d,opt,S0){
  S.holes=[];if(d===1)for(let i=0;i<S.ruin.holes;i++)S.holes.push({z:rr(-.7,.7)*S.L2,y:rr(S.F*.4,S.F*.85),rz:rr(2.5,8),ry:rr(1.2,Math.max(1.6,S.F*.3)),sd:i%2?1:-1});
  if(S.crack!=null&&d===1)S.holes.push({z:S.crack,y:S.F*.5,rz:6,ry:S.F*.9,sd:1},{z:S.crack,y:S.F*.4,rz:5,ry:S.F*.8,sd:-1});
  vsHull(C,S,d);
+ if(d===1&&S.crack!=null)for(const p of C.parts){const zc=S.crack+(p.z0>-1e8?.6:-.6);C.use(p);const sc=zc/S.L2;   // torn plating round the break
+  for(let i=0;i<22;i++){const sd=rng()<.5?1:-1,pt=S.side(sc,rr(.1,1),sd);kput("plateR",[pt[0]*rr(.7,1.02),pt[1],zc+rr(-1.5,1.5)],qEuler(rr(-1,1),rr(-1,1),rr(-1,1)),[rr(1.5,5),rr(1.5,5),.14],null);}}
  if(!(d===3&&S.noHatch))vsHatches(C,S,d);
  S.hs=vsHouse(C,S,S.house,d);
  if(S.funnel)vsFunnel(C,S,S.funnel,d);
