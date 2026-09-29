@@ -96,3 +96,9 @@ wall instance is recorded so that, after the building, each face gets a lozenge-
 top (and above its foot), and the tall faces a motif: pink quetzal, sky quetzal, green deer, hooked X star (four
 alpha-cut colour maps, world-tiled bands). Battered blocks get the planes leaned with the wall. Base colour, trim
 and motif order rotate with `o.v`. Verify clean: 95 volumes, 0.75 M tris.
+
+### Round 4b — mural fitting
+Travis: relocate murals that overlap windows so both stay clear. The paint filter now records every opening
+(window panes, door and jali recesses) and the fitting pass projects them — and anything standing in front of a
+face (a cumba, a jharokha, a portico) — into the face frame; each motif is placed at the clear spot nearest its
+preferred position, shrinking through five sizes, or left off. `window._palopo` counts faces / wanted / placed.
