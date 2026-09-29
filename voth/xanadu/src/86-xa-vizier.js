@@ -18,15 +18,19 @@ function xnXMBed(x,z,w,d,ry,y){y=y||0;vB('xEarthB',x,y-.04,z,w,.14,d,ry,xC(0x5a4
  kput('xLeaf',[p[0],y+.16,p[1]],null,[.34,.26,.34],xC(0x3f7a34));vBall('xPaintBall',p[0],y+.34,p[1],.09,xC(xPick([0xf2c12e,0xf0a020,0xe87a20,0xf8d848])));}}
 // one loggia storey of a wing: an open arcade of n pointed arches on slender columns in front of a set-back wall,
 // a rail between the columns on the upper floor, the wall behind with doors / mosaic panels
-function xnXMLoggia(x,y,z,ry,w,h,n,dep,D,upper,lit){const P=(u,v)=>loc(x,z,u,v,ry);const bw=w/n,trim=xC(D.trim),col=xC(D.col),wall=xC(D.wall);
- const back=P(0,-dep/2);vB('vPlaster',back[0],y,back[1],w,h,dep,ry,wall);   // the room behind
+function xnXMLoggia(x,y,z,ry,w,h,n,dep,D,upper,lit){const P=(u,v)=>loc(x,z,u,v,ry);const bw=w/n,trim=xC(D.trim),col=xC(D.col),wall=xC(D.wall),acc=xC(D.acc),mid=Math.floor(n/2);
+ const back=P(0,-dep-.2);vB('vPlaster',back[0],y,back[1],w,h,.4,ry,wall);                                   // the back wall of the gallery: thin, the room is behind it
+ const fl=P(0,-dep/2);vB('vStone',fl[0],y-.12,fl[1],w+.2,.24,dep+.3,ry,xC(xPick(XPAL.stone)));               // the gallery floor
+ for(const s of[-1,1]){const e=P(s*(w/2-.2),-dep/2);vB('vPlaster',e[0],y,e[1],.4,h,dep,ry,wall);}            // its end walls
  for(let i=0;i<=n;i++){const p=P(-w/2+bw*i,0);xnCol(p[0],y,p[1],h-.5,.17,ry,col,trim);}
  xnArcade(x,y+.5,z,ry,w,h-.5,n,D.arch,trim,.4,{open:true});
- for(let i=0;i<n;i++){const u=-w/2+bw*(i+.5),f=P(u,-dep+.06);
-  if(upper){const r=P(u,.05);vB('xPaint',r[0],y+.9,r[1],bw-.5,.08,.08,ry,xC(D.rail));vB('xPaint',r[0],y+.05,r[1],bw-.5,.08,.08,ry,xC(D.rail));for(let k=0;k<Math.round(bw/.3);k++){const q=P(u-bw/2+.25+k*.3,.05);vPst('vPipe',q[0],y+.05,q[1],.018,.85,xC(D.rail));}
-   vnDoor(f[0],y,f[1],ry,1.1,2.4,'xPaint',xC(D.acc),xC(D.acc),i%2===0);if(i%2)xnTibWin(f[0],y+.9,f[1],ry,1.0,1.5,lit?'lit':'glass',xC(D.acc),{noVal:true});}
-  else{if(D.mosaic&&i%2===0)xnMural(i%4?'xMosB':'xMosA',f[0],y+.4,f[1],ry,bw-.9,h-1.2);else{vnDoor(f[0],y,f[1],ry,1.2,2.6,'xPaint',xC(D.acc),xC(D.acc),false);kput('xArcP',[f[0],y+2.6,f[1]],qEuler(0,ry,0),[1.7,.8,.16],trim);}}}
- if(D.mosaic)for(let i=0;i<n;i++){const u=-w/2+bw*(i+.5),sp=P(u,.26);kput('xMosB',[sp[0],y+h-.7,sp[1]],qEuler(0,ry,0),[bw*.8,.7,1],null);}}   // tile in the spandrels
+ for(let i=0;i<n;i++){const u=-w/2+bw*(i+.5),f=P(u,-dep);
+  if(upper){const r=P(u,.05);vB('xPaint',r[0],y+.9,r[1],bw-.5,.08,.08,ry,xC(D.rail));vB('xPaint',r[0],y+.05,r[1],bw-.5,.08,.08,ry,xC(D.rail));for(let k=0;k<Math.round(bw/.3);k++){const q=P(u-bw/2+.25+k*.3,.05);vPst('vPipe',q[0],y+.05,q[1],.018,.85,xC(D.rail));}}
+  if(i===mid){vnDoor(f[0],y,f[1],ry,1.2,2.6,'xPaint',acc,acc,upper);kput('xArcP',[f[0],y+2.6,f[1]],qEuler(0,ry,0),[1.7,.8,.16],acc);}   // a door in the middle bay
+  else xnXTArchWin(f[0],y+.7,f[1],ry,Math.min(1.5,bw-1.3),h-1.5,acc,'xPaint',lit);                            // real arched windows in the others
+  if(D.mosaic&&i!==mid)for(const s of[-1,1]){const m=P(u+s*(bw/2-.28),-dep+.03);vB('xMosAB',m[0],y+.4,m[1],.3,h-1.0,.06,ry);}}   // tile strips beside the windows
+ if(D.mosaic)for(let i=0;i<n;i++){const u=-w/2+bw*(i+.5),sp=P(u,.26);kput('xMosB',[sp[0],y+h-.7,sp[1]],qEuler(0,ry,0),[bw*.8,.7,1],null);}   // tile in the spandrels
+ if(lit)for(let i=0;i<n;i++){const u=-w/2+bw*(i+.5),q=P(u,-dep/2);vBall('vBulb',q[0],y+h-.7,q[1],.07);}}
 
 function buildXaVizier(G,o){reseed(32401+(o.v|0));const V=xV(o),D=XVZ[V%3],lit=xLit();
  const wall=xC(D.wall),trim=xC(D.trim),acc=xC(D.acc),stone=xC(xPick(XPAL.stone)),tim=xC(xPick(XPAL.timber)),gold=xC(xPick(XPAL.gold));
