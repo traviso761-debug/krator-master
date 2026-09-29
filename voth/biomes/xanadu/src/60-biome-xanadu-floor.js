@@ -159,10 +159,13 @@ XANADU.buildFloor=function(R,q){
  // the bands: each origin plants the cells it is nearest to
  const O=BIO.host.origin,nearest=(x,z)=>{let b=0,bd=1e18;for(let i=0;i<O.length;i++){const d=(x-O[i][0])**2+(z-O[i][1])**2;if(d<bd){bd=d;b=i;}}return b;};
  const bands=[[7,420,0],[14,1000,420]];
+ BIO.range=XANADU.LOD.floor;
  bands.forEach((b,bi)=>{const lv=2-bi;O.forEach((o,oi)=>{
   BIO.grid(b[0],0,1e9,(x,z,d)=>{if(nearest(x,z)!==oi)return 0;const ld=Math.hypot(x-o[0],z-o[1]);if(ld>=b[1]||ld<b[2])return 0;return .8*q*(lv===1?.85:1);},(x,y,z)=>plant(x,y,z,lv),
    {patch:.75,patchScale:.014,pad:.6,center:[0,0],box:[o[0]-b[1],o[1]-b[1],o[0]+b[1],o[1]+b[1]]});});});
+ BIO.range=XANADU.LOD.farFloor;
  BIO.grid(30,0,R,(x,z)=>{if(BIO.lodD(x,z)<1000)return 0;return .6*q*(1-.8*smooth(.5,.8,BIO.field('upland',x,z)));},(x,y,z)=>plant(x,y,z,0),{patch:.75,patchScale:.014,pad:.6});
+ BIO.range=XANADU.LOD.floor;
  // the still water: lotus pads, lotus flowers standing out of them
  O.forEach((o,oi)=>{BIO.grid(6,0,1e9,(x,z)=>{if(nearest(x,z)!==oi||Math.hypot(x-o[0],z-o[1])>900)return 0;const h=Y(x,z);if(h>-.15||h<-2.6)return 0;
    const fl=BIO.field('flow',x,z);return .5*q*(1-fl)*smooth(.46,.62,fbm(x*.006+1,z*.006-2,808,2));},
@@ -174,7 +177,9 @@ XANADU.buildFloor=function(R,q){
   const nm=Math.round(TAU*r.r*.62/(r.lv===2?.6:1.6));for(let k=0;k<nm;k++){const a=k/nm*TAU+rr(-.02,.02),d=r.r*.62+rr(-.15,.15),px=r.x+Math.cos(a)*d,pz=r.z+Math.sin(a)*d,h=rr(.15,.32);BIO.put('mushroom',[px,Y(px,pz)-.02,pz],qEuler(rr(-.1,.1),rr(0,TAU),rr(-.1,.1)),[h,h,h],mc);}
   const nf=Math.round(TAU*r.r*.4/(r.lv===2?.35:1));for(let k=0;k<nf;k++){const a=k/nf*TAU,d=r.r*.4+rr(-.2,.2),px=r.x+Math.cos(a)*d,pz=r.z+Math.sin(a)*d,h=rr(.2,.45);BIO.put(it,[px,Y(px,pz)+h,pz],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),rr(.25,.4),pr[0],{c2:pr[1]});}
   if(r.lv===2)for(let k=0;k<40;k++){const a=rr(0,TAU),d=r.r*.9*Math.sqrt(rng()),px=r.x+Math.cos(a)*d,pz=r.z+Math.sin(a)*d;grass(px,Y(px,pz),pz,1,PAL.meadow,.55);}});
+ BIO.range=XANADU.LOD.logs;
  // fallen trees in the forest and the chasm, petrified-looking logs on the uplands
  BIO.grid(110,0,R,(x,z)=>{if(BIO.lodD(x,z)>1100)return 0;const Z=zones(x,z);return (Z.forest*.7+Z.chasm*.5+Z.dry*.35)*q;},(x,y,z)=>{const Z=zones(x,z),wet=Z.dry<.5;for(let t=0;t<4;t++)if(log(x+rr(-20,20),y,z+rr(-20,20),st,wet))break;},{patch:0,pad:2});
+ BIO.range=null;
  return{under:st};};
 })();

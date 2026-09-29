@@ -11,6 +11,8 @@
 const SP=XANADU.SPECIES,PAL=XANADU.PAL,GOLD=2.399963;
 const T3=BIO.host.THREE,C=h=>new T3.Color(h);
 XANADU.TREES=[];XANADU.RINGS=[];XANADU.ARCHES=[];
+// the runtime LOD ranges (metres from the camera to a chunk): trees in full, the floor near the spine, the far floor, the dressing
+XANADU.LOD={tree:1500,floor:750,farFloor:3000,dress:1500,logs:1500};
 
 // ---------------------------------------------------------------- zones from the fields
 const Y=(x,z)=>BIO.terrainH(x,z);
@@ -458,9 +460,10 @@ B[30]=function(T,st,lv){const S=SP[30],H=T.H,rb=T.rb,rc=shade(C(pick(S.bark)),-.
 // Each species a trunk of four quads and one to three blobs by its habit.
 const HABIT={dawnredwood:'cone',wollemi:'cone',ginkgo:'oval',lotustrumpet:'cups',cloudpine:'pads',topiary:'lumps',whorlolive:'dome',agatetree:'vase',ringbeech:'oval',archhornbeam:'dome',
  wisteria:'umbrella',parrotia:'umbrella',hyrcanoak:'dome',wingnut:'dome',hazeblossom:'umbrella',frostwillow:'weep',chasmfrill:'column',cloudfrill:'column',beardtree:'dome'};
-let ICO=null;
-function buildFar(T,fi,st){const K=BIO.bucket('xfar');if(!ICO)ICO=new T3.IcosahedronGeometry(1,1).attributes.position.array;const ip=ICO;
- const S=SP[T.sp],cheap=BIO.lodD(T.x,T.z)>2200,hb=HABIT[S.key]||'dome';let tris=0;
+let ICO=null,ICO0=null;
+// lite: the stand-in behind a hero tree (seen only past its detail range): a coarser blob, fewer of them
+function buildFar(T,fi,st,lite){const K=BIO.bucket('xfar');if(!ICO){ICO=new T3.IcosahedronGeometry(1,1).attributes.position.array;ICO0=new T3.IcosahedronGeometry(1,0).attributes.position.array;}const ip=lite?ICO0:ICO;
+ const S=SP[T.sp],cheap=lite||BIO.lodD(T.x,T.z)>2200,hb=HABIT[S.key]||'dome';let tris=0;
  function vtx(x,y,z,nx,ny,nz,r,g,b){K.pos.push(x,y,z);K.nor.push(nx,ny,nz);K.uv.push(0,0);K.col.push(r,g,b);}
  function blob(x,y,z,rx,ry,colA,colB,sd){const ca=C(colA).convertSRGBToLinear(),cb=C(colB).convertSRGBToLinear(),k1=sd*7.3,k2=sd*3.1;
   for(let i=0;i<ip.length;i+=3){const dx=ip[i],dy=ip[i+1],dz=ip[i+2];
@@ -559,7 +562,14 @@ XANADU.buildTrees=function(R,q){
  pass(27,22,(Z)=>Z.dry*.45+Z.crag*.35,{hero:320,mid:600,far:false,pad:1,lodK:.8,patch:.45});
  pass(30,30,(Z)=>Z.dry*.18,{hero:320,mid:600,far:false,pad:1.5,lodK:.7,patch:.5});
  // build
- TREES.forEach((T,i)=>{if(T.lv===0){buildFar(T,i,st);st.fars++;}else{B[T.sp](T,st,T.lv);st.heroes++;}st.byS[T.sp]++;});
+ // runtime LOD: a hero tree is drawn in full while the camera is within XANADU.LOD.tree metres of
+ // its chunk and as a stand-in impostor past that; a far tree is only ever its impostor
+ TREES.forEach((T,i)=>{BIO.owner=[T.x,T.z];
+  if(T.lv===0){BIO.range=null;BIO.minRange=0;buildFar(T,i,st,false);st.fars++;}
+  else{BIO.range=XANADU.LOD.tree;BIO.minRange=0;B[T.sp](T,st,T.lv);st.heroes++;
+   BIO.range=1e9;BIO.minRange=XANADU.LOD.tree;buildFar(T,i,st,true);}
+  st.byS[T.sp]++;});
+ BIO.owner=null;BIO.range=null;BIO.minRange=0;
  return{trees:TREES.length,heroes:st.heroes,far:st.fars,rings:st.rings,arches:st.arches,bySpecies:SP.map((S,i)=>S.key+':'+st.byS[i]).join(' '),clumps:st.clumps,blooms:st.blooms,pods:st.pods,fins:st.fins,fans:st.fans,
   tris:{trunk:st.trunk,limbs:st.limb,far:st.far,small:st.sapTris}};};
 XANADU._canopyH=function(x,z){let h=0;for(const T of XANADU.TREES){if(Math.hypot(x-T.x,z-T.z)<60)h=Math.max(h,T.y0+T.H);}return h||10;};
