@@ -144,9 +144,9 @@ for(const k in CHUNKS)erBakeChunk(k,CHUNKS[k]);
 (function hangingLights(){let n=0;const G=new THREE.Group();G.name='chunk:lights';scene.add(G);const fronts=PLAN.filter(p=>p.front);
  for(const R of ROADS){if(!R.lights)continue;let acc=0;for(let i=1;i<R.pts.length;i++){const a=R.pts[i-1],b=R.pts[i];const L=Math.hypot(b[0]-a[0],b[1]-a[1]);const dx=(b[0]-a[0])/L,dz=(b[1]-a[1])/L;
    for(let t=acc%16;t<L;t+=16){const rx=a[0]+dx*t,rz=a[1]+dz*t;const nx=-dz,nz=dx;let A=null,B=null,da=1e9,db=1e9;
-    for(const p of fronts){const ex=p.front[0]-rx,ez=p.front[1]-rz;const along=Math.abs(ex*dx+ez*dz);if(along>9)continue;const s=(p.x-rx)*nx+(p.z-rz)*nz;const d=Math.abs(ex*nx+ez*nz);if(d>16)continue;if(s>0&&along<da){da=along;A=p;}else if(s<0&&along<db){db=along;B=p;}}
+    for(const p of fronts){const ex=p.front[0]-rx,ez=p.front[1]-rz;const along=Math.abs(ex*dx+ez*dz);if(along>13)continue;const s=(p.x-rx)*nx+(p.z-rz)*nz;const d=Math.abs(ex*nx+ez*nz);if(d>22)continue;if(s>0&&along<da){da=along;A=p;}else if(s<0&&along<db){db=along;B=p;}}
     if(!A||!B)continue;const ya=A.y+Math.min(A.h,9)*.72,yb=B.y+Math.min(B.h,9)*.72;const pa=[A.front[0],ya,A.front[1]],pb=[B.front[0],yb,B.front[1]];
-    if(Math.hypot(pa[0]-pb[0],pa[2]-pb[2])>26)continue;if(n%2)xnBasketLights(pa,pb,5);else xnUmbrellaLights(pa,pb,5);n++;}
+    if(Math.hypot(pa[0]-pb[0],pa[2]-pb[2])>34)continue;if(n%2)xnBasketLights(pa,pb,5);else xnUmbrellaLights(pa,pb,5);n++;}
    acc+=L;}}
  kbake(G);ER_INST+=window._instances||0;for(const k in KIT.items)KIT.items[k].length=0;window._instances=ER_INST;CHUNK_GROUPS.push({G,key:'lights',sphere:new THREE.Sphere(new THREE.Vector3(0,100,0),3000),range:900,n});window._lights=n;})();
 // the runtime LOD: a chunk is drawn while it is in the view and within its range; the biome's own chunks tick beside it
