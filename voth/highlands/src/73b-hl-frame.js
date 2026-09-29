@@ -116,6 +116,7 @@ function hnFrameFace(x,y,z,ry,w,h,c,wins,kind,winC,o){o=o||{};const F=hlFrameOf(
  if(!o.noPosts)for(let i=0;i<=nb;i++){const u=Math.max(-w/2+.12,Math.min(w/2-.12,-w/2+i*bw)),p=P(u,T);
   kput('hCol',[p[0],y,p[1]],null,[.13,yA-y,.13],F.post);kput('hCol',[p[0],yA-.2,p[1]],null,[.145,.16,.145],teal);kput('hCol',[p[0],yA-.24,p[1]],null,[.146,.04,.146],white);
   if(tall)dq.push({x:p[0],z:p[1],ry,s:ds,top:yTop});}
+ if(tall&&!o.noPosts)(C.ffaces||(C.ffaces=[])).push({x:P(0,0)[0],z:P(0,0)[1],ry,w,s:ds,top:yTop});
  if(tall&&!o.noPosts&&(F.rich||F.caihua))for(let i=0;i<nb;i++){const p=P(-w/2+bw*(i+.5),T);dq.push({x:p[0],z:p[1],ry,s:ds*.85,top:yTop});}}
 // a gallery in front of a face: deck on carved cantilevers, posts (lacquered or carved) capped by bracket sets, a fret
 // balustrade, a lattice valance under the architrave. dep: how far it stands out.
@@ -136,7 +137,8 @@ function hnGalleryFace(x,y,z,ry,w,h,dep,kind){const F=hlFrameOf();const nb=Math.
   kput(F.roofItem||'vShingleB',[c[0],yc,c[1]],qEuler(0,ry,0).multiply(qEuler(th,0,0)),[w+.6,.12,Lr+.1],F.roofC||hC(vPick(HPAL.shingle)));
   const e=P(0,run-.02);vB('hPaint',e[0],yWall-k*run-.14,e[1],w+.6,.14,.06,ry,F.post);}
  // fret balustrade: front and both ends
- const rail=(a,b,rry,L)=>{const m=[(a[0]+b[0])/2,(a[1]+b[1])/2];kput('hLattB',[m[0],y+.45,m[1]],qEuler(0,rry,0),[L-.1,.62,1],F.post);
+ const railI=F.rich||F.caihua?'hRailP':'hRailC',railC=railI==='hRailP'?null:F.plank.clone().lerp(hC(0xe8d4b0),.45);
+ const rail=(a,b,rry,L)=>{const m=[(a[0]+b[0])/2,(a[1]+b[1])/2];kput(railI,[m[0],y+.45,m[1]],qEuler(0,rry,0),[L-.1,.7,1],railC);
   vB('hPaint',m[0],y+.84,m[1],L,.09,.14,rry,F.post);vB('vWood',m[0],y,m[1],L,.1,.1,rry,dark);};
  {const a=P(-w/2,dep-.16),b=P(w/2,dep-.16);rail(a,b,ry,w);for(const s of[-1,1]){const a2=P(s*(w/2-.08),.1),b2=P(s*(w/2-.08),dep-.16);rail(a2,b2,ry+Math.PI/2,dep-.26);}}}
 // ---------------------------------------------------------------- the four overrides
@@ -170,37 +172,60 @@ hnNal=function(x,y,z,ry,w,h,kind,trimC,o){if(!hlFrameOn())return _hlNal0(x,y,z,r
 // (a hip with a small gable at the top), which have eaves on all four sides. The storey's bracket sets are placed last
 // (hlFrameFlush): in the band on every eave face; on a plain gable's end faces none (the frieze shows instead); inside
 // the storey top when no roof sits on it (a storey above).
-function hlRoofOn(x,y,z){const C=VERN.cur;if(!C||!C.fstor||!hlFrameOn())return null;for(const s of C.fstor){if(Math.abs(s.top-y)<.35&&Math.hypot(s.x-x,s.z-z)<1.6)return s;}return null;}
-function hlLiftAt(p){const C=VERN.cur;if(!C||!C.lifts||C.liftOff)return 0;for(const L of C.lifts){if(p[1]<=L.y0+.02)continue;const dx=p[0]-L.x,dz=p[2]-L.z,c=Math.cos(L.ry),s=Math.sin(L.ry);
-  const lx=c*dx-s*dz,lz=s*dx+c*dz;if(Math.abs(lx)<=L.hx&&Math.abs(lz)<=L.hz)return L.L;}return 0;}
+// round 7c: the roof is matched to a storey by FOOTPRINT (a wing roof is often centred off its storey — the hospital);
+// the lift raises only what sits in the roof's own footprint and height band, never a tower drawn through it (the Peles
+// villa's loggia); each eave face gets an eave beam across its bracket tips and the lift is sized so the roof comes
+// down onto that beam; on a Dutch gable, whatever the builder put on the gable wall moves up onto the small top gable.
+const hlInRect=(px,pz,r,mx,mz)=>{const dx=px-r.x,dz=pz-r.z,c=Math.cos(r.ry),s=Math.sin(r.ry);const lx=c*dx-s*dz,lz=s*dx+c*dz;return Math.abs(lx)<=r.w/2+mx&&Math.abs(lz)<=r.d/2+mz?[lx,lz]:null;};
+function hlRoofOn(x,y,z,w,d,ry){const C=VERN.cur;if(!C||!C.fstor||!hlFrameOn())return null;const R={x,z,w,d,ry:ry||0};
+ for(const s of C.fstor){if(Math.abs(s.top-y)<.35&&hlInRect(s.x,s.z,R,.6,.6))return s;}return null;}
+function hlLiftAt(p){const C=VERN.cur;if(!C||!C.lifts||C.liftOff)return null;for(const L of C.lifts){if(p[1]<=L.y0+.02||p[1]>L.y0+L.rise+2.2)continue;
+  const q=hlInRect(p[0],p[2],L,L.over,L.over);if(q)return{L,lx:q[0],lz:q[1]};}return null;}
 const _hlKputLift=kput;
-kput=function(name,p,q,s,c){const l=hlLiftAt(p);if(l)p=[p[0],p[1]+l,p[2]];return _hlKputLift(name,p,q,s,c);};
-function hlLift(st,x,y,z,w,d,ry,pitch,over,kind){const C=VERN.cur;const L=Math.min(1.45,.9*st.ds+st.ds*1.15*pitch+.06);
+kput=function(name,p,q,s,c){const h=hlLiftAt(p);
+ if(h){const L=h.L;
+  if(L.kind==='dutch'&&Math.abs(h.lx)>L.w*.31+.15&&p[1]<L.y0+L.rise*.9&&Math.abs(h.lz)<L.d/2+.6){   // a gable-wall piece: onto the small top gable, smaller
+   const sg=Math.sign(h.lx),nlx=sg*(L.w*.31+(Math.abs(h.lx)-L.w/2)),c0=Math.cos(L.ry),s0=Math.sin(L.ry);
+   const wx=L.x+c0*nlx+s0*h.lz,wz=L.z-s0*nlx+c0*h.lz;p=[wx,L.y0+L.L+L.rise*.48+(p[1]-L.y0)*.45,wz];
+   s=typeof s==='number'?s*.55:[s[0]*.55,s[1]*.55,s[2]*.55];}
+  else p=[p[0],p[1]+L.L,p[2]];}
+ return _hlKputLift(name,p,q,s,c);};
+function hlLift(st,x,y,z,w,d,ry,pitch,over,kind,rise){const C=VERN.cur;const s=st.ds;const L=Math.min(1.7,.9*s+.2+pitch*(s+.25));
  C.liftOff=true;vB('hPlankB',st.x,st.top,st.z,st.w-.14,L+.05,st.d-.14,st.ry,hlFrameOf().plank.clone().multiplyScalar(.65));C.liftOff=false;   // the frieze behind the sets
- const r={x,z,y0:y,L,ry,kind,w,d,hx:w/2+(over||.9)+.3,hz:d/2+(over||.9)+.3};(C.froofs||(C.froofs=[])).push(r);(C.lifts||(C.lifts=[])).push(r);return r;}
+ const ov=over===undefined?.9:over;const r={x,z,y0:y,L,ry,kind,w,d,rise,over:ov};(C.froofs||(C.froofs=[])).push(r);(C.lifts||(C.lifts=[])).push(r);return r;}
 const HHIPOF={hGableSc:'hHipSc',hGableTurf:'hHipTurf',vGableS:'vHipS',vGableT:'vHipT',vGableCu:'vHipCu',vGableC:'vHipC'};
-const _hlGable0=vnGableRoof,_hlHip0=vnHipRoof,_hlBarge0=hnBarge;
-vnGableRoof=function(x,y,z,w,d,rise,ry,slabItem,slabC,over,endItem,endC,thick){const st=hlRoofOn(x,y,z);
+const _hlGable0=vnGableRoof,_hlHip0=vnHipRoof,_hlBarge0=hnBarge,_hlTower0=hnTower,_hlClock0=hnRBClockTower;
+vnGableRoof=function(x,y,z,w,d,rise,ry,slabItem,slabC,over,endItem,endC,thick){const st=hlRoofOn(x,y,z,w,d,ry);
  if(!st)return _hlGable0(x,y,z,w,d,rise,ry,slabItem,slabC,over,endItem,endC,thick);
- const F=hlFrameOf();const dutch=w>=5&&rng()<F.dutch;const r=hlLift(st,x,y,z,w,d,ry||0,rise/(d/2),over,dutch?'dutch':'gable');
+ const F=hlFrameOf();const dutch=w>=5&&rng()<F.dutch;const r=hlLift(st,x,y,z,w,d,ry||0,rise/(d/2),over,dutch?'dutch':'gable',rise);
  F.roofItem=slabItem;F.roofC=slabC||F.roofC;const C=VERN.cur;C.liftOff=true;const Y=y+r.L;
  if(dutch){// the hip below (same pitch), the small gable on top with its upright end triangle set back from the hip ends
   const hip=HHIPOF[slabItem]&&KIT.defs[HHIPOF[slabItem]]?HHIPOF[slabItem]:'hHipSh';_hlHip0(hip,x,Y,z,w,d,rise,ry,slabC,over===undefined?.9:over);
   _hlGable0(x,Y+rise*.48,z,w*.62,d*.52,rise*.52,ry,slabItem,slabC,.28,endItem||'vGablePl',endC||hC(vPick(HPAL.stucco)),thick);}
  else _hlGable0(x,Y,z,w,d,rise,ry,slabItem,slabC,over,endItem,endC,thick);
  C.liftOff=false;};
-vnHipRoof=function(item,x,y,z,w,d,rise,ry,c,over){const st=hlRoofOn(x,y,z);if(!st)return _hlHip0(item,x,y,z,w,d,rise,ry,c,over);
- const r=hlLift(st,x,y,z,w,d,ry||0,rise/(Math.min(w,d)/2),over,'hip');const C=VERN.cur;C.liftOff=true;_hlHip0(item,x,y+r.L,z,w,d,rise,ry,c,over);C.liftOff=false;};
-// lace bargeboards on a Dutch gable go on its small top gable only (the lift wrapper raises them)
-hnBarge=function(x,y,z,w,d,rise,ry,over,c,style,endOver){const C=VERN.cur;const r=C&&C.froofs&&C.froofs.find(r=>r.kind==='dutch'&&Math.abs(r.y0-y)<.35&&Math.hypot(r.x-x,r.z-z)<1.6);
- if(!r)return _hlBarge0(x,y,z,w,d,rise,ry,over,c,style,endOver);return _hlBarge0(x,y+rise*.48,z,w*.62,d*.52,rise*.52,ry,.28,c,style,endOver);};
-// the storeys' bracket sets, once the roofs are known
+vnHipRoof=function(item,x,y,z,w,d,rise,ry,c,over){const st=hlRoofOn(x,y,z,w,d,ry);if(!st)return _hlHip0(item,x,y,z,w,d,rise,ry,c,over);
+ const r=hlLift(st,x,y,z,w,d,ry||0,rise/(Math.min(w,d)/2),over,'hip',rise);const C=VERN.cur;C.liftOff=true;_hlHip0(item,x,y+r.L,z,w,d,rise,ry,c,over);C.liftOff=false;};
+// lace bargeboards on a Dutch gable go on its small top gable only (raised by hand: the lift is off inside)
+// bargeboards ride their roof's lift AS A WHOLE (piece by piece, the lower rake pieces stayed behind and the lace splayed
+// off the lifted roof — Travis, round 7c); on a Dutch gable they go on its small top gable only
+hnBarge=function(x,y,z,w,d,rise,ry,over,c,style,endOver){const C=VERN.cur;const r=C&&C.froofs&&C.froofs.find(r=>Math.abs(r.y0-y)<.35&&hlInRect(x,z,r,1.2,1.2));
+ if(!r)return _hlBarge0(x,y,z,w,d,rise,ry,over,c,style,endOver);const o=C.liftOff;C.liftOff=true;
+ const v=r.kind==='dutch'?_hlBarge0(x,y+r.L+rise*.48,z,w*.62,d*.52,rise*.52,ry,.28,c,style,endOver):_hlBarge0(x,y+r.L,z,w,d,rise,ry,over,c,style,endOver);C.liftOff=o;return v;};
+// towers and clock towers rise THROUGH roofs: nothing of theirs rides a lift
+function hlNoLift(f){return function(){const C=VERN.cur;const o=C&&C.liftOff;if(C)C.liftOff=true;try{return f.apply(null,arguments);}finally{if(C)C.liftOff=o;}};}
+hnTower=hlNoLift(_hlTower0);hnRBClockTower=hlNoLift(_hlClock0);
+// the storeys' bracket sets and eave beams, once the roofs are known
 function hlFrameFlush(){const C=VERN.cur;if(!C||!C.fdg)return;C.liftOff=true;
- for(const g of C.fdg){const r=(C.froofs||[]).find(r=>Math.abs(r.y0-g.top)<.35&&Math.abs(Math.cos(r.ry)*(g.x-r.x)-Math.sin(r.ry)*(g.z-r.z))<=r.w/2+1.2&&Math.abs(Math.sin(r.ry)*(g.x-r.x)+Math.cos(r.ry)*(g.z-r.z))<=r.d/2+1.2);
+ const roofAt=(x,z,top)=>(C.froofs||[]).find(r=>Math.abs(r.y0-top)<.35&&hlInRect(x,z,r,1.2,1.2));
+ const isEave=(ry,r)=>{const fn=loc(0,0,0,1,ry),rz=loc(0,0,0,1,r.ry);return Math.abs(fn[0]*rz[0]+fn[1]*rz[1])>.7;};
+ for(const g of C.fdg){const r=roofAt(g.x,g.z,g.top);
   if(!r){hnDougong(g.x,g.top-.1-.9*g.s*.8,g.z,g.ry,g.s*.8);continue;}                     // a storey above: small sets inside the storey top
-  const fn=loc(0,0,0,1,g.ry),rz=loc(0,0,0,1,r.ry),eave=Math.abs(fn[0]*rz[0]+fn[1]*rz[1])>.7;
-  if(eave||r.kind!=='gable')hnDougong(g.x,g.top,g.z,g.ry,g.s);}
- C.fdg=null;C.liftOff=false;}
+  if(isEave(g.ry,r)||r.kind!=='gable')hnDougong(g.x,g.top,g.z,g.ry,g.s);}
+ for(const f of C.ffaces||[]){const r=roofAt(f.x,f.z,f.top);if(!r||!(isEave(f.ry,r)||r.kind!=='gable'))continue;   // the eave beam on the set tips, under the roof
+  const b=loc(f.x,f.z,0,.1+f.s*1.05,f.ry);vB('hPaint',b[0],f.top+.9*f.s,b[1],f.w+.3,.17,.22,f.ry,hC(HPAL.teal));
+  const e=loc(f.x,f.z,0,.1+f.s*1.05+.12,f.ry);vB('hPaint',e[0],f.top+.9*f.s+.04,e[1],f.w+.3,.09,.02,f.ry,hC(HPAL.white));}
+ C.fdg=null;C.ffaces=null;C.liftOff=false;}
 const _hlFlush0=hlFlush;
 hlFlush=function(){hlFrameFlush();const C=VERN.cur;const r=_hlFlush0();if(C)C.lifts=null;return r;};   // murals placed in the flush still ride the lift
 // ---------------------------------------------------------------- harlequin roofs (the Izmailovo temple, round 7b)
@@ -217,3 +242,32 @@ MAT.hHarlG=hStd({map:TEX.hHarlG,roughness:.45,metalness:.1});MAT.hHarlR=hStd({ma
 // the great dome: a bulb fatter than the onion, its widest point low, drawn to a short neck
 const HGDOME=new THREE.LatheGeometry([[0,0],[.86,0],[1.06,.12],[1.16,.28],[1.14,.44],[1.0,.6],[.74,.76],[.44,.88],[.18,.96],[.06,.99],[0,1]].map(p=>new THREE.Vector2(p[0],p[1])),32);
 kdef('hDomeHG',HGDOME,MAT.hHarlG);kdef('hTentHR',HTENT,MAT.hHarlR);kdef('hTentHG',HTENT,MAT.hHarlGt);kdef('hBulbHG',HBULB,MAT.hHarlGt);
+// ---------------------------------------------------------------- balustrades (round 7c)
+// Travis: "make the balcony railings less asian and give them more of a circular motif with triskelions and/or make them
+// more carved/painted wooden balcony railings." One baluster panel per 0.5 m: two stiles, a great ring holding a
+// triskelion between small rings above and below, top and bottom rails. PAINTED: teal rings, red triskelion, ochre
+// stiles, dark outlines (the mural palette); CARVED: pale, tinted by the house's wood.
+function hlRailTex(painted){return canvasTex(128,160,(g,w,h)=>{g.clearRect(0,0,w,h);
+ const P=painted?{stile:'#c8902e',ring:'#2e9488',tri:'#b3322a',rail:'#8a2e22',line:'#201a18'}:{stile:'#fff',ring:'#fff',tri:'#fff',rail:'#fff',line:'rgba(0,0,0,.45)'};
+ const bar=(x,y,ww,hh,c)=>{g.fillStyle=c;g.fillRect(x,y,ww,hh);};
+ bar(0,0,w,10,P.rail);bar(0,h-10,w,10,P.rail);bar(6,0,7,h,P.stile);bar(w-13,0,7,h,P.stile);
+ const cx=w/2,cy=h/2,R=34;const ring=(x,y,r,c,lw)=>{g.strokeStyle=P.line;g.lineWidth=lw+3;g.beginPath();g.arc(x,y,r,0,TAU);g.stroke();g.strokeStyle=c;g.lineWidth=lw;g.beginPath();g.arc(x,y,r,0,TAU);g.stroke();};
+ bar(cx-3,10,6,h-20,P.stile);ring(cx,cy,R,P.ring,7);ring(cx,24,12,P.ring,5);ring(cx,h-24,12,P.ring,5);
+ for(let k=0;k<3;k++){const a0=k*TAU/3;for(const [c,lw] of[[P.line,8],[P.tri,5]]){g.strokeStyle=c;g.lineWidth=lw;g.lineCap='round';g.beginPath();
+  for(let t=0;t<=1.001;t+=.05){const r=t*R*.82,a=a0+t*2.5,x=cx+Math.cos(a)*r,y=cy+Math.sin(a)*r;t?g.lineTo(x,y):g.moveTo(x,y);}g.stroke();}}
+ g.fillStyle=P.tri;g.beginPath();g.arc(cx,cy,5,0,TAU);g.fill();});}
+TEX.hRailP=hlRailTex(true);TEX.hRailC=hlRailTex(false);
+MAT.hRailP=hStd({map:TEX.hRailP,alphaTest:.5,roughness:.7});MAT.hRailC=hStd({map:TEX.hRailC,alphaTest:.5,roughness:.8});
+hWorldUV(MAT.hRailP,2,1/.7);hWorldUV(MAT.hRailC,2,1/.7);
+kdef('hRailP',VPLANE,MAT.hRailP);kdef('hRailC',VPLANE,MAT.hRailC);
+// ---------------------------------------------------------------- the temple's great dome, flattened (round 7c)
+// Travis: "give Temple of the Pantheon more of a rectangular/flattened dome like in the previously sent pics" — the
+// Izmailovo dome is a long cushion: a rounded-rectangle plan (a superellipse ring at every height of a lathe profile)
+// on a broad, flat-shouldered profile.
+function hlSquircleLathe(prof,seg,n){const pos=[],uv=[],idx=[];const e=2/n;
+ prof.forEach(([r,y],i)=>{for(let j=0;j<=seg;j++){const a=j/seg*TAU,c=Math.cos(a),s=Math.sin(a);
+  pos.push(r*Math.sign(c)*Math.pow(Math.abs(c),e),y,r*Math.sign(s)*Math.pow(Math.abs(s),e));uv.push(j/seg,i/(prof.length-1));}});
+ for(let i=0;i<prof.length-1;i++)for(let j=0;j<seg;j++){const a=i*(seg+1)+j,b=a+seg+1;idx.push(a,b,a+1,a+1,b,b+1);}
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setIndex(idx);g.computeVertexNormals();return g;}
+const HGDOME2=hlSquircleLathe([[.9,0],[1.02,.08],[1.09,.22],[1.1,.38],[1.05,.52],[.95,.64],[.8,.75],[.6,.85],[.36,.93],[.14,.98],[0,1]],48,3.4);
+kdef('hDomeHG2',HGDOME2,MAT.hHarlG);

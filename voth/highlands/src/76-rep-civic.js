@@ -147,8 +147,10 @@ function buildHlRepTemple(G,o){reseed(20701+(o.v|0));const S=1.4;
   kput(tent,[x,S+11.9,z],null,[2.3,6.2,2.3],null);vPst('vIron',x,S+18,z,.04,1.2,hC(0x2e2a26));vBall('hGold',x,S+18.9,z,.24,gold);});
  // the crown: an octagonal drum ringed by kokoshniki, the great harlequin dome, a clock lantern and two spires
  kput('hOctL',[0,yT,0],null,[5.2,2.2,4.3],log);for(let k=0;k<8;k++){const a=k*Math.PI/4,p=loc(0,0,0,4.6,a);hnKokoshnik(p[0],yT+2.2,p[1],a,3.2,1.6,'hKeelSh',sh);}
- const yD=yT+2.2+.6;kput('hDomeHG',[0,yD,0],null,[6.4,10.4,5.3],null);vB('hPaint',0,yD-.2,0,11.6,.3,9.8,0,white);
- const yL=yD+10.4-.8;hnLogBox(0,yL,0,2.4,1.9,1.6,0,log,.12);kput('hClock',[0,yL+1,.83],null,[1.3,1.3,1],hC(0xffffff));kput('hTentSh',[0,yL+1.9,0],null,[1.9,1.3,1.9],sh);
+ const yD=yT+2.2+.4;kput('hDomeHG2',[0,yD,0],null,[7.6,8.4,5.4],null);vB('hPaint',0,yD-.2,0,15.6,.3,11.2,0,white);   // the long cushion dome, rounded-rectangle in plan
+ {const UP=[[1.1,.38],[1.05,.52],[.95,.64],[.8,.75],[.6,.85],[.36,.93],[.14,.98],[0,1]],hAt=f=>{for(let i=0;i<UP.length-1;i++){const [r0,y0]=UP[i],[r1,y1]=UP[i+1];if(f<=r0&&f>=r1)return y0+(y1-y0)*(r0-f)/(r0-r1);}return 1;};
+  let pv=null;for(let k=0;k<=8;k++){const x=-5.2+k*1.3,yy=yD+8.4*hAt(Math.abs(x)/7.6)+.02;vPst('vIron',x,yy,0,.03,.5,gold);vBall('hGold',x,yy+.56,0,.11,gold);if(pv)beam('hGoldB',[pv[0],pv[1]+.3,0],[x,yy+.3,0],.06,.06,gold);pv=[x,yy];}}   // gilt cresting along the ridge
+ const yL=yD+8.4-.3;hnLogBox(0,yL,0,2.4,1.9,1.6,0,log,.12);kput('hClock',[0,yL+1,.83],null,[1.3,1.3,1],hC(0xffffff));kput('hTentSh',[0,yL+1.9,0],null,[1.9,1.3,1.9],sh);
  for(const s of[-1,1]){const x=s*1.9;kput('hOctW',[x,yL-.2,0],null,[.55,2.4,.55],red);kput('hTentHR',[x,yL+2.2,0],null,[.6,3.6,.6],null);
   vPst('vIron',x,yL+5.8,0,.03,.9,hC(0x2e2a26));kput('hDiscG',[x,yL+7.05,0],qEuler(Math.PI/2,0,0),[.55,.05,.55],gold);hnEmblem(x,yL+7.05,.04,0,.8);}
  // the precinct: the gods as carved pillars in a ring, the paved way, lamps

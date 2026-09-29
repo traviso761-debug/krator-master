@@ -78,7 +78,7 @@ function hnSalvDress(D){
 const HSALV_TYPES=['single-family dwelling','multi-family dwelling','market/shop','farm','tavern/inn'];
 const HSALV_DEFENCE=['hl_rep_wall','hl_rep_wall_tower','hl_rep_gate'];   // Travis: the town wall, towers and gate get a reclaimed-roof variant too
 for(const k of VERN.order.slice()){const D=VERN.defs[k];if(!D.branch||k.endsWith('_reclaimed'))continue;const ty=D.tags.type||[];const defence=HSALV_DEFENCE.includes(k);
- const ok=defence||((ty.some(t=>HSALV_TYPES.includes(t))||/smithy|warehouse/.test(k))&&D.tags.wealth!=='civic'&&!D.tags.landmark);if(!ok)continue;
+ const ok=!D.tags.salvage&&(defence||((ty.some(t=>HSALV_TYPES.includes(t))||/smithy|warehouse/.test(k))&&D.tags.wealth!=='civic'&&!D.tags.landmark));   // born-salvage defs (79b) need no twinif(!ok)continue;
  const T=Object.assign({},D.tags,{salvage:true});delete T.culture;delete T.kit;
  HL.def({key:k+'_reclaimed',baseKey:k,name:D.name+' (reclaimed)',branch:D.branch,family:D.family,tags:T,w:D.w,d:D.d,h:D.h,
   build:function buildHlReclaimed(G,o){reseed(24051+(o.v|0));o.salvage=true;D.build(G,o);if(!defence)hnSalvDress(D);

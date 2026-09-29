@@ -180,3 +180,26 @@ albedo / buildable mask / class, the road list and its spatial hash, OBB occupan
   - a grand covered stair (30 steps, three stepped gable canopies) to the first terrace, and two bochka porches;
   - four corner turrets with red/white and green harlequin tents;
   - the great oval dome in green/lime harlequin (`hDomeHG`) with a clock lantern (live hands) and two emblem spires.
+
+## Round 7c (Sep 29 2026) — roof fit, railings, the cushion dome, salvage-built buildings
+- **Roof fit.** A storey is matched to its roof by footprint (the hospital's wing roofs sit 2 m off their storeys).
+  - Each eave face gets an eave beam across its bracket tips; the lift is sized so the roof comes down onto it.
+  - The lift raises only what lies inside the roof's footprint and height band. Towers and clock towers are exempt
+    (the Peles villa's loggia had been torn off its shaft).
+  - Bargeboards ride the lift whole (piece by piece they splayed off the rakes).
+  - On a Dutch gable, pieces the builder put on the gable wall (loft doors, hoists, murals) move up onto the small top
+    gable, at .55 scale.
+- **Railings.** Gallery balustrades are now baluster panels: a great ring with a triskelion between small rings.
+  Painted (teal, red, ochre) on the better houses, carved in pale wood on the rest.
+- **Temple dome.** The long cushion of Izmailovo: a rounded-rectangle plan on a flat-shouldered profile (`hDomeHG2`),
+  with gilt cresting along its ridge.
+- **Salvage-built** (`src/79b-rep-salvage.js`, born reclaimed, so no `_reclaimed` twin):
+  - Tank house: a spent fuel tank on concrete cradles, with a frame storey straddling it on stilts, a wind charger and
+    a cistern.
+  - Hull-plate tower house: two frame storeys on a shattered block of Ancient concrete with rebar, hull-plate walls, a
+    rocket-bell chimney and an antenna mast.
+  - Powder works: three plank sheds between earth blast berms, a tank boiler with a guyed pipe stack, a powder rail and
+    a watch post.
+  - Hull-breaker's yard: a furnace hall with a ridge ventilator and brick stacks; a bracketed gantry lifting a hull
+    section; heaps, a pipe rack, a spent engine bell, an office, a plate fence.
+- The kit showcase budget is raised to 4.5 M triangles / 450 calls (it grew by the frame and four buildings).
