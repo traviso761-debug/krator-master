@@ -118,7 +118,7 @@
     });
     FB(F, L, s, u, y0 + wh, ww + 0.9, 0.34, 0.42, 0.14, shade(c, -0.14), 'stone');
     FB(F, L, s, u, y0 - 0.02, ww + 0.32, 0.08, 0.36, 0.14, shade(c, -0.28), 'stone');
-    if (y0 > 0.05) FB(F, L, s, u, 0, ww + 0.8, y0, 0.55, 0.28, shade(c, -0.26), 'stone');
+    if (y0 > 0.05 && y0 < 0.8) FB(F, L, s, u, 0, ww + 0.8, y0, 0.55, 0.28, shade(c, -0.26), 'stone');
     const k = P(L, s, u + ww * 0.3, 0.12);
     F.ball(k[0], y0 + wh * 0.48, k[1], 0.06, GILT, 'metal');
     if (o.lamp) {
@@ -282,7 +282,7 @@
   }
   function JAR(F, x, y, z, r, col) {
     F.cyl(x, y, z, r * 0.45, r * 0.3, 0, shade(col, -0.1), 'stone');
-    F.ball(x, y + r * 1.05, z, r, col, 'stone');
+    F.blob(x, y + r * 1.05, z, r, r * 1.9, 0, col, 'stone');
     F.cyl(x, y + r * 1.75, z, r * 0.38, r * 0.45, 0, col, 'stone');
     F.cyl(x, y + r * 2.15, z, r * 0.5, r * 0.1, 0, shade(col, -0.12), 'stone');
   }
@@ -397,8 +397,8 @@
     key: 'voth_shop_smithy', name: 'Smithy', culture: 'voth', family: 'shop', source: 'voth-shops',
     districts: ['common', 'poor', 'harbour'], wealth: [0.2, 0.7],
     blurb: 'A smith\'s forge: open work shed with hearth, anvil, quench trough and blade racks beside the family\'s house.',
-    w: 17, d: 17, h: 11, variants: 2,
-    variantDims: [{ w: 17, d: 11, h: 11 }, { w: 17, d: 17, h: 11 }],
+    w: 17.6, d: 16.8, h: 12.1, variants: 2,
+    variantDims: [{ w: 16.7, d: 11, h: 12.1 }, { w: 17.6, d: 16.8, h: 12 }],
     build: function (F) {
       const c = F.pick(STONE), dk = shade(c, -0.2);
       const metalC = 0x6f7478, board = TIMBER2;
@@ -621,8 +621,8 @@
     key: 'voth_shop_alchemist', name: 'Alchemist', culture: 'voth', family: 'shop', source: 'voth-shops',
     districts: ['common', 'wealthy'], wealth: [0.35, 0.85],
     blurb: 'An apothecary: glazed bay of jars, herbs drying under the eaves and on the roof, a copper still in the herb yard.',
-    w: 12, d: 15, h: 13, variants: 2,
-    variantDims: [{ w: 12, d: 12, h: 13 }, { w: 11, d: 15, h: 11 }],
+    w: 11.4, d: 14.9, h: 12.8, variants: 2,
+    variantDims: [{ w: 10.5, d: 11.7, h: 12.8 }, { w: 11.4, d: 14.9, h: 11.4 }],
     build: function (F) {
       const c = F.pick(STONE), dk = shade(c, -0.2), copper = 0xa8683a;
       const board = F.pick([TIMBER2, 0x46603f]), ink = 0xd8d0b8;
@@ -696,14 +696,14 @@
         POT(F, -2.6, fz + 0.85, 4.15, 0.22); POT(F, 2.6, fz + 0.85, 4.15, 0.22, CLAY[2]);
         SIGN(F, G, 2, 4.3, 3.6, 'flask', board, ink);
         /* flanks and back */
-        ROW(F, G, 3, 1.5, 3, 3.2, 0.9, 1.3, c, {}, 0);
+        ROW(F, G, 3, 1.5, 2, 1.5, 0.9, 1.3, c, {}, 1.7);
         ROW(F, G, 3, 4.8, 3, 3.2, 0.9, 1.3, c, { shut: 0x46603f }, 0);
         ROW(F, G, 2, 1.5, 2, 2.4, 0.9, 1.3, c, {}, -0.8);
         ROW(F, G, 2, 4.8, 3, 3.2, 0.9, 1.3, c, { shut: 0x46603f }, 0);
         ROW(F, G, 1, 1.5, 2, 2.0, 0.9, 1.3, c, {}, 0);
         ROW(F, G, 1, 4.8, 2, 2.0, 0.9, 1.3, c, { shut: 0x46603f }, 0);
         F.rod(-3.62, 0.3, -4.7, -3.62, 7.1, -4.7, 0.1, dk, 'metal');
-        DOOR(F, G, 3, -3.9, p, 1.0, 2.3, c);
+        DOOR(F, G, 3, -2.9, p, 1.0, 2.3, c);
         /* upper storey */
         DOOR(F, U, 0, 0.3, t1, 1.0, 2.1, c);
         WIN(F, U, 0, 2.2, t1 + 1.0, 0.8, 1.1, c, {});
@@ -819,8 +819,8 @@
     key: 'voth_shop_clothier', name: 'Clothier', culture: 'voth', family: 'shop', source: 'voth-shops',
     districts: ['common', 'wealthy', 'poor'], wealth: [0.25, 0.8],
     blurb: 'A weaver-clothier: bolts of cloth on the counter, a loom under a roof awning, dyed lengths drying on frames.',
-    w: 17, d: 13, h: 11.5, variants: 2,
-    variantDims: [{ w: 17, d: 11, h: 11 }, { w: 17, d: 13, h: 11.5 }],
+    w: 17.2, d: 12.8, h: 11.3, variants: 2,
+    variantDims: [{ w: 15.8, d: 12.8, h: 11.3 }, { w: 17.2, d: 11.1, h: 10.8 }],
     build: function (F) {
       const c = F.pick(STONE), dk = shade(c, -0.2);
       const DYE = [0x7a2028, 0x8a2f2a, 0x2a4d80, 0x3f6b56, 0xc4813f, 0x6a2434, 0xe8d9a0, 0xc9b8d6, 0xb0c8d8];
@@ -868,9 +868,9 @@
         bolts(-4.0, 0.4, 4 + sf.off, sf.ct, true);
         DOOR(F, G, 0, 3.3, p, 1.2, 2.5, c, { lamp: true });
         /* a clothes rail out in the street */
-        [-4.2, -0.8].forEach(function (rx) { F.box(rx, 0, 6.2, 0.12, 2.3, 0.12, 0, TIMBER, 'wood'); F.box(rx, 0, 6.2, 0.5, 0.08, 0.5, 0, TIMBER, 'wood'); });
-        F.box(-2.5, 2.2, 6.2, 3.5, 0.08, 0.08, 0, TIMBER, 'wood');
-        for (let i = 0; i < 5; i++) F.box(-3.8 + i * 0.66, 0.75, 6.2, 0.5, 1.45, 0.04, 0, dye(i + 3), 'cloth');
+        [5.0, 7.6].forEach(function (rz) { F.box(-5.0, 0, rz, 0.12, 2.3, 0.12, 0, TIMBER, 'wood'); F.box(-5.0, 0, rz, 0.5, 0.08, 0.5, 0, TIMBER, 'wood'); });
+        F.box(-5.0, 2.2, 6.3, 0.08, 0.08, 2.7, 0, TIMBER, 'wood');
+        for (let i = 0; i < 4; i++) F.box(-5.0, 0.75, 5.35 + i * 0.64, 0.04, 1.45, 0.5, 0, dye(i + 3), 'cloth');
         SIGN(F, G, 0, -5.1, 4.2, 'tunic', board, ink);
         ROW(F, G, 0, 4.9, 4, 4.2, 0.9, 1.3, c, { shut: TIMBER2 }, 0);
         ROW(F, G, 3, 1.6, 2, 2.0, 0.9, 1.3, c, {}, 0);
@@ -977,8 +977,8 @@
     key: 'voth_shop_trader', name: 'General Trader', culture: 'voth', family: 'shop', source: 'voth-shops',
     districts: ['common', 'harbour', 'poor'], wealth: [0.2, 0.75],
     blurb: 'A general trader and pawnbroker: goods piled under a deep awning, a barred strongroom, the family upstairs.',
-    w: 17, d: 14, h: 15, variants: 2,
-    variantDims: [{ w: 17, d: 14, h: 11 }, { w: 13, d: 11, h: 15 }],
+    w: 18, d: 13.9, h: 14.7, variants: 2,
+    variantDims: [{ w: 18, d: 13.9, h: 11.7 }, { w: 12.6, d: 9.6, h: 14.7 }],
     build: function (F) {
       const c = F.pick(STONE), dk = shade(c, -0.2), bas = F.pick(BASALT);
       const board = TIMBER2, ink = GILT;
@@ -1103,7 +1103,7 @@
         /* goods in the street */
         wares(-0.2, 5.4, 0);
         chest(-4.1, 3.4, 0, 0.3);
-        [0, 1].forEach(function (i) { F.rod(2.6 + i * 0.4, 0.1, -3.62, 2.5 + i * 0.4, 1.9, -3.58, 0.14, [0x7a2028, 0x2a4d80][i], 'cloth'); });
+        [0, 1].forEach(function (i) { F.rod(4.2 + i * 0.35, 0.1, -3.62, 4.1 + i * 0.35, 1.9, -3.58, 0.14, [0x7a2028, 0x2a4d80][i], 'cloth'); });
         F.cyl(-1.7, 0, 3.9, 0.22, 1.1, 0, 0x6f7478, 'metal');
         F.box(-1.7, 1.1, 3.9, 0.6, 0.45, 0.3, 0, 0x6f7478, 'metal');
         F.ball(-1.7, 1.75, 3.9, 0.18, 0x6f7478, 'metal');
@@ -1125,8 +1125,8 @@
     key: 'voth_shop_scribe', name: 'Scribe & Bookseller', culture: 'voth', family: 'shop', source: 'voth-shops',
     districts: ['common', 'wealthy', 'temple'], wealth: [0.35, 0.9],
     blurb: 'A bookseller-scribe: book stalls in the street, a colonnaded reading loggia, paper drying on racks on the roof.',
-    w: 13, d: 14, h: 11.5, variants: 2,
-    variantDims: [{ w: 11, d: 13, h: 11 }, { w: 13, d: 13, h: 11.5 }],
+    w: 13.5, d: 12.6, h: 12.1, variants: 2,
+    variantDims: [{ w: 10.6, d: 12.6, h: 12.1 }, { w: 13.5, d: 11.2, h: 11.6 }],
     build: function (F) {
       const c = F.pick(STONE), dk = shade(c, -0.2);
       const board = F.pick([0x2a4d80, TIMBER2]), ink = 0x3a2f22;
@@ -1184,7 +1184,6 @@
           F.box(k * 4.3, y1, 3.5, 0.4, 3.4, 2.0, 0, shade(c, 0.03), 'stone');
           const Ls = { x: k * 4.3, z: 3.5, w: 0.4, d: 2.0 };
           WIN(F, Ls, k > 0 ? 2 : 3, 0, y1 + 0.9, 0.9, 1.6, c, {});
-          F.cyl(k * 4.3, y1 + 2.5, 3.5, 0.45, 0.3, 0, DARK, 'wood');
         });
         [-2.6, -0.9, 0.9, 2.6].forEach(function (cx) {
           F.box(cx, y1, 4.25, 0.5, 0.25, 0.5, 0, dk, 'stone');
@@ -1308,8 +1307,8 @@
     key: 'voth_shop_enchanter', name: 'Enchanter', culture: 'voth', family: 'shop', source: 'voth-shops',
     districts: ['wealthy', 'common', 'temple'], wealth: [0.45, 1],
     blurb: 'An enchanter\'s shop: soul-gem light in the windows, a domed study tower or drum, warded pylons and an arcane sign.',
-    w: 13, d: 12, h: 16, variants: 2,
-    variantDims: [{ w: 13, d: 11, h: 16 }, { w: 12, d: 12, h: 12 }],
+    w: 13.5, d: 11.2, h: 15.9, variants: 2,
+    variantDims: [{ w: 13.5, d: 10.7, h: 15.9 }, { w: 11.7, d: 11.2, h: 12.4 }],
     build: function (F) {
       const c = F.pick(STONE), dk = shade(c, -0.2);
       const SOUL = [0x9ab8ff, 0xc39bff, 0x8fe0ff, 0xd8b0ff], soul = F.pick(SOUL);
@@ -1455,10 +1454,7 @@
           F.box(dx + Math.sin(a + TAU / 16) * dr, top, dz + Math.cos(a + TAU / 16) * dr, 0.25, 1.6, 0.25, a, dk, 'stone');
         }
         F.dome(dx, top + 1.8, dz, dr + 0.05, 2.4, 0, domeC, 'dome');
-        for (let i = 0; i < 8; i++) {
-          const a = i / 8 * TAU;
-          F.rod(dx + Math.sin(a) * (dr + 0.05), top + 1.85, dz + Math.cos(a) * (dr + 0.05), dx + Math.sin(a) * 1.2, top + 3.95, dz + Math.cos(a) * 1.2, 0.05, GILT, 'metal');
-        }
+        F.cyl(dx, top + 1.78, dz, dr + 0.14, 0.12, 0, GILT, 'metal');
         F.cyl(dx, top + 4.15, dz, 0.3, 0.2, 0, GILT, 'metal');
         F.rod(dx, top + 4.3, dz, dx, top + 5.0, dz, 0.05, GILT, 'metal');
         F.ball(dx, top + 4.65, dz, 0.2, soul, 'glow');
@@ -1481,8 +1477,8 @@
     key: 'voth_shop_provisioner', name: 'Provisioner', culture: 'voth', family: 'shop', source: 'voth-shops',
     districts: ['harbour', 'common', 'poor'], wealth: [0.1, 0.6],
     blurb: 'A fishmonger or grocer: a market counter under a deep canopy, fish racks or tiered produce baskets, loft and roof garden.',
-    w: 14, d: 13, h: 11, variants: 2,
-    variantDims: [{ w: 14, d: 12, h: 10.5 }, { w: 13, d: 13, h: 11 }],
+    w: 14.3, d: 13, h: 10.9, variants: 2,
+    variantDims: [{ w: 14.3, d: 12, h: 9.6 }, { w: 12.8, d: 13, h: 10.9 }],
     build: function (F) {
       const c = F.pick(POOR.concat(STONE)), dk = shade(c, -0.2);
       const FISH = [0x8a9296, 0x9aa2a0, 0x7a8286, 0xb0a890];
@@ -1578,7 +1574,7 @@
         tiers(L1, 2, 0.4, 3.0);
         DOOR(F, L1, 0, -2.8, 0.4, 1.1, 2.4, c);
         /* canopy wrapping the corner, with gourds and strings of peppers */
-        CANOPY(F, -4.5, 4.7, 7.2, 7.2, 0, 3.4, cloth, [[-4.5, 7.2], [1.3, 7.2], [7.2, 7.2], [-4.5, 4.7]], ['z1', 'x0']);
+        CANOPY(F, -4.5, 4.7, 7.2, 7.2, 0, 3.4, cloth, [[-4.5, 7.2], [3.0, 7.2], [7.2, 7.2], [-4.5, 4.7]], ['z1', 'x0']);
         CANOPY(F, 4.7, -3.8, 7.2, 4.7, 0, 3.4, cloth, [[7.2, 1.0], [7.2, -3.8], [4.7, -3.8]], ['x1', 'z0']);
         for (let i = 0; i < 9; i++) {
           const x = -3.8 + i * 1.3;
@@ -1616,6 +1612,196 @@
         });
         for (let i = 0; i < 3; i++) JAR(F, -3.2, top, -1.0 - i * 0.7, 0.26, CLAY[i]);
         CHIMNEY(F, -2.2, -3.1, top, 1.3, c);
+      }
+    }
+  });
+
+  /* =================================================================== */
+  ASSET({
+    key: 'voth_shop_potter', name: 'Potter & Glassblower', culture: 'voth', family: 'shop', source: 'voth-shops',
+    districts: ['common', 'poor', 'harbour'], wealth: [0.15, 0.7],
+    blurb: 'A potter\'s yard with a beehive kiln and wheel shed, or a glassblower with a furnace hall and a window of coloured glass.',
+    w: 17.8, d: 16.4, h: 11, variants: 2,
+    variantDims: [{ w: 17.8, d: 9.7, h: 9.5 }, { w: 9.2, d: 16.4, h: 11 }],
+    build: function (F) {
+      const c = F.pick(STONE), dk = shade(c, -0.2), brick = 0x7a4a36;
+      const GLASSC = [0x3f8a6a, 0x2a4d80, 0x8a4a5a, 0xb8a060, 0x6fa8b0, 0x5a8a3a];
+      function pots(x, z, y, n, r, cols) {
+        for (let i = 0; i < n; i++) JAR(F, x + (i % 3) * r * 2.3, y, z + Math.floor(i / 3) * r * 2.3, r, cols[i % cols.length]);
+      }
+      function potStack(x, z) {
+        /* a pyramid of jars laid in straw */
+        F.box(x, 0, z, 1.8, 0.1, 1.2, 0, 0xa89060, 'cloth');
+        for (let i = 0; i < 4; i++) JAR(F, x - 0.66 + i * 0.44, 0.1, z - 0.25, 0.2, CLAY[i % 4]);
+        for (let i = 0; i < 4; i++) JAR(F, x - 0.66 + i * 0.44, 0.1, z + 0.25, 0.2, CLAY[(i + 1) % 4]);
+        for (let i = 0; i < 3; i++) JAR(F, x - 0.44 + i * 0.44, 0.55, z, 0.19, CLAY[(i + 2) % 4]);
+      }
+      function wheel(x, z) {
+        F.cyl(x, 0, z, 0.35, 0.1, 0, TIMBER, 'wood');
+        F.cyl(x, 0.1, z, 0.06, 0.65, 0, TIMBER, 'wood');
+        F.cyl(x, 0.75, z, 0.3, 0.06, 0, TIMBER2, 'wood');
+        F.cyl(x, 0.81, z, 0.13, 0.22, 0, CLAY[1], 'stone');
+        F.box(x, 0, z + 0.65, 0.4, 0.45, 0.35, 0, TIMBER2, 'wood');
+      }
+      function shelfRack(x, z, len, alongX, cols) {
+        [-1, 1].forEach(function (k) {
+          F.box(x + (alongX ? k * len / 2 : 0), 0, z + (alongX ? 0 : k * len / 2), 0.1, 1.7, 0.1, 0, TIMBER, 'wood');
+        });
+        [0.5, 1.1, 1.65].forEach(function (hy, r) {
+          F.box(x, hy, z, alongX ? len : 0.45, 0.05, alongX ? 0.45 : len, 0, PLANK, 'wood');
+          const n = Math.floor(len / 0.35);
+          for (let i = 0; i < n && hy < 1.6; i++) {
+            const t = -len / 2 + 0.2 + i * (len - 0.4) / Math.max(1, n - 1);
+            JAR(F, x + (alongX ? t : 0), hy + 0.05, z + (alongX ? 0 : t), 0.1, cols[(i + r) % cols.length]);
+          }
+        });
+      }
+
+      if (F.variant === 0) {
+        /* ---- velothi potter's yard: house, beehive kiln, wheel shed, stacked wares ---- */
+        const hx = -4.5, hz = -0.8, V = VEL(F, hx, hz, 3.6, 3.35, 6.2, c, { band: 3.4 }), top = V.top;
+        const L1 = V.L(1.6), L4 = V.L(4.4);
+        const sf = SHOP(F, L1, 0, 0.7, 0.4, 3.0, 2.5, c, { aw: 1.1 });
+        pots(hx - 0.4, hz + L1.d / 2 + 0.35, sf.ct, 3, 0.14, CLAY);
+        JAR(F, hx + 1.9, sf.ct, hz + L1.d / 2 + 0.5, 0.16, CLAY[3]);
+        DOOR(F, L1, 0, -2.2, 0.4, 1.0, 2.3, c);
+        /* a stepped display of pots in the street */
+        [0, 1].forEach(function (k) { F.box(hx + 0.7, 0, hz + L1.d / 2 + 1.6 - k * 0.45, 3.0, 0.3 + k * 0.35, 0.45, 0, dk, 'stone'); });
+        for (let i = 0; i < 5; i++) JAR(F, hx - 0.5 + i * 0.6, 0.3, hz + L1.d / 2 + 1.6, 0.2, CLAY[i % 4]);
+        for (let i = 0; i < 4; i++) JAR(F, hx - 0.2 + i * 0.6, 0.65, hz + L1.d / 2 + 1.15, 0.18, CLAY[(i + 2) % 4]);
+        WIN(F, L4, 0, 0, 4.3, 0.9, 1.2, c, { shut: TIMBER2 });
+        ROW(F, L4, 3, 4.3, 2, 1.6, 0.8, 1.2, c, { shut: TIMBER2 }, 0);
+        ROW(F, V.L(2), 1, 1.6, 1, 0, 0.9, 1.1, c, {}, 0);
+        ROW(F, L4, 1, 4.3, 2, 1.6, 0.8, 1.2, c, {}, 0);
+        DOOR(F, V.L(1.5), 2, -1.2, 0.4, 1.0, 2.3, c);
+        WIN(F, L4, 2, 1.4, 4.3, 0.8, 1.2, c, {});
+        /* left: stair to the roof */
+        const sx = hx - 3.6 - 0.35;
+        const sl = STAIR(F, sx, hz + 3.6, 'z', -1, 0, top, 1.3, shade(c, -0.1));
+        RAIL(F, sx - 0.62, 0.27, hz + 3.6, sx - 0.62, top, hz + 3.6 - sl);
+        /* the yard */
+        const x0 = hx + 3.6, x1 = 8.4, z0 = hz - 3.6, z1 = hz + 3.8, yc = shade(c, 0.03), wh = 1.5;
+        F.box(x1, 0, (z0 + z1) / 2, 0.4, wh, z1 - z0, 0, yc, 'stone');
+        F.box((x0 + x1) / 2, 0, z0 + 0.2, x1 - x0, wh, 0.4, 0, yc, 'stone');
+        F.box(x1, wh, (z0 + z1) / 2, 0.55, 0.12, z1 - z0 + 0.1, 0, dk, 'stone');
+        F.box((x0 + x1) / 2, wh, z0 + 0.2, x1 - x0, 0.12, 0.55, 0, dk, 'stone');
+        const gA = x0 + 3.4, gB = x0 + 5.2;
+        F.box((x0 + gA) / 2, 0, z1 - 0.2, gA - x0, wh, 0.4, 0, yc, 'stone');
+        F.box((gB + x1) / 2, 0, z1 - 0.2, x1 - gB, wh, 0.4, 0, yc, 'stone');
+        F.box((x0 + gA) / 2, wh, z1 - 0.2, gA - x0, 0.12, 0.55, 0, dk, 'stone');
+        F.box((gB + x1) / 2, wh, z1 - 0.2, x1 - gB, 0.12, 0.55, 0, dk, 'stone');
+        [gA, gB].forEach(function (gx) {
+          F.box(gx, 0, z1 - 0.2, 0.5, 2.4, 0.5, 0, dk, 'stone');
+          F.cone(gx, 2.4, z1 - 0.2, 0.34, 0.5, 0, dk, 'stone');
+        });
+        F.box((gA + gB) / 2, 2.2, z1 - 0.2, gB - gA, 0.2, 0.2, 0, TIMBER, 'wood');
+        SIGN(F, { x: gA, z: z1 - 0.2, w: 0.5, d: 0.5 }, 0, 0, 2.3, 'pot', TIMBER2, CLAY[1]);
+        for (let i = 0; i < 4; i++) JAR(F, x0 + 0.5 + i * 0.7, wh + 0.12, z1 - 0.2, 0.18, CLAY[i % 4]);
+        /* beehive kiln with its firing mouth, vent and woodpile */
+        const kx = 5.9, kz = hz - 1.4;
+        F.cyl(kx, 0, kz, 1.7, 1.2, 0, brick, 'stone');
+        F.cyl(kx, 1.15, kz, 1.78, 0.14, 0, shade(brick, -0.2), 'stone');
+        F.dome(kx, 1.29, kz, 1.7, 2.0, 0, shade(brick, 0.08), 'stone');
+        F.cyl(kx, 3.1, kz, 0.4, 0.8, 0, shade(brick, -0.1), 'stone');
+        F.cyl(kx, 3.9, kz, 0.5, 0.15, 0, shade(brick, -0.25), 'stone');
+        F.box(kx - 1.55, 0, kz + 0.2, 0.9, 1.2, 1.3, 0, shade(brick, -0.12), 'stone');
+        F.box(kx - 2.0, 0.1, kz + 0.2, 0.08, 0.6, 0.6, 0, 0xff8a3a, 'glow');
+        for (let i = 0; i < 4; i++) F.rod(kx + 1.9, 0.1 + i * 0.16, kz - 1.2 + (i % 2) * 0.1, kx + 1.9, 0.1 + i * 0.16, kz + 0.6, 0.08, [0x5a4028, 0x6b5238][i % 2], 'wood');
+        /* wheel shed on posts with shelves of unfired ware */
+        CANOPY(F, x0 + 0.4, z0 + 0.5, x0 + 3.2, hz + 0.9, 0, 2.7, F.pick(SAIL), null, ['z1']);
+        wheel(x0 + 1.4, hz - 1.3);
+        shelfRack(x0 + 1.8, z0 + 0.75, 2.2, true, [0xc8b08a, 0xb89a74, 0xd0bc98]);
+        F.box(x0 + 2.8, 0, hz + 0.4, 0.9, 0.6, 0.9, 0, dk, 'stone');
+        F.box(x0 + 2.8, 0.5, hz + 0.4, 0.8, 0.08, 0.8, 0, 0x7a5a42, 'stone');
+        potStack(x0 + 1.6, hz + 2.4);
+        potStack(6.4, hz + 2.3);
+        /* roof: parapet, loft, pots drying on boards under an awning */
+        PARA(F, V.R, top, c, 0.85, { s: 3, u: -2.6, w: 1.3 });
+        LOFT(F, hx + 1.2, top, hz - 1.6, 2.8, 2.6, 2.5, shade(c, 0.05), 3, { shut: TIMBER2 });
+        CANOPY(F, hx - 2.9, hz + 0.4, hx + 2.9, hz + 2.9, top, top + 2.3, F.pick([0xcbb08e, 0xc4813f]), null, ['z1']);
+        [hz + 1.1, hz + 2.2].forEach(function (bz) {
+          F.box(hx, top + 0.4, bz, 5.0, 0.06, 0.6, 0, PLANK, 'wood');
+          [-2.3, 0, 2.3].forEach(function (ox) { F.box(hx + ox, top, bz, 0.12, 0.4, 0.5, 0, TIMBER, 'wood'); });
+          for (let i = 0; i < 9; i++) JAR(F, hx - 2.2 + i * 0.55, top + 0.46, bz, 0.14, [0xc8b08a, 0xb89a74, 0xd0bc98][i % 3]);
+        });
+        CHIMNEY(F, hx - 2.3, hz - 2.3, top, 1.2, c);
+      } else {
+        /* ---- hlaalu glassblower: narrow street front, furnace hall behind ---- */
+        const p = 0.3, G = { x: 0, z: 2.2, w: 7.5, d: 9, y: p, h: 6.8 }, top = p + 6.8;
+        F.box(0, 0, 2.2, 7.8, p, 9.3, 0, dk, 'stone');
+        BLOCK(F, G, c, { band: 3.7, quoin: true });
+        const fz = G.z + G.d / 2;
+        const sf = SHOP(F, G, 0, -1.3, p, 3.4, 2.6, c, { aw: 1.2 });
+        for (let i = 0; i < 8; i++) {
+          const x = -2.8 + i * 0.4, col = GLASSC[i % GLASSC.length];
+          F.cyl(x, sf.ct, fz + 0.45, 0.09, 0.2 + (i % 3) * 0.08, 0, col, 'glass');
+          F.ball(x, sf.ct + 0.3 + (i % 3) * 0.08, fz + 0.45, 0.1, col, 'glass');
+        }
+        /* glass shelves seen inside the shopfront */
+        [1.75, 2.35].forEach(function (hy) {
+          FB(F, G, 0, -1.3, hy, 3.0, 0.05, 0.25, 0.14, PLANK, 'wood');
+          for (let i = 0; i < 8; i++) F.cyl(-2.6 + i * 0.37, hy + 0.05, fz + 0.14, 0.08, 0.26, 0, GLASSC[(i + (hy > 2 ? 3 : 0)) % GLASSC.length], 'glass');
+        });
+        DOOR(F, G, 0, 2.4, p, 1.1, 2.4, c, { lamp: true });
+        /* balcony across the front */
+        F.box(0, 4.0, fz + 0.6, 6.8, 0.25, 1.2, 0, TIMBER2, 'wood');
+        [-3.2, 0.9, 3.2].forEach(function (bx) { F.beam(bx, 4.0, fz + 0.06, bx, 3.35, fz + 0.06 + 0.7, 0.16, 0.16, TIMBER, 'wood'); });
+        F.box(0, 4.25, fz + 1.15, 6.8, 0.9, 0.1, 0, TIMBER, 'wood');
+        [-3.35, 3.35].forEach(function (bx) { F.box(bx, 4.25, fz + 0.6, 0.1, 0.9, 1.2, 0, TIMBER, 'wood'); });
+        DOOR(F, G, 0, 0, 4.25, 1.0, 2.1, c);
+        WIN(F, G, 0, -2.2, 4.8, 0.8, 1.2, c, { shut: 0x46603f, glass: true });
+        WIN(F, G, 0, 2.2, 4.8, 0.8, 1.2, c, { shut: 0x46603f, glass: true });
+        POT(F, 2.9, fz + 0.8, 4.25, 0.2); POT(F, -2.9, fz + 0.8, 4.25, 0.2, CLAY[2]);
+        SIGN(F, G, 0, -3.3, 3.45, 'pot', TIMBER2, GLASSC[1], 'glass');
+        ROW(F, G, 2, 1.5, 3, 3.0, 0.9, 1.2, c, {}, 0);
+        ROW(F, G, 2, 4.8, 3, 3.0, 0.9, 1.2, c, { shut: 0x46603f }, 0);
+        ROW(F, G, 3, 4.8, 3, 3.0, 0.9, 1.2, c, { shut: 0x46603f }, 0);
+        WIN(F, G, 3, 3.4, 1.5, 0.8, 1.1, c, {});
+        DOOR(F, G, 1, 1.6, p, 1.1, 2.4, c);
+        WIN(F, G, 1, 1.6, 4.8, 0.8, 1.2, c, { shut: 0x46603f });
+        WIN(F, G, 1, -1.8, 4.8, 0.8, 1.2, c, { shut: 0x46603f });
+        /* furnace hall behind: posts, terracotta hip roof, beehive furnace, stack */
+        const hz0 = G.z - G.d / 2, hd = 5.4, hc = hz0 - hd / 2;
+        F.box(0, 0, hc, 7.5, 0.08, hd, 0, 0x5b5348, 'stone');
+        [[-3.5, hz0 - hd + 0.2], [3.5, hz0 - hd + 0.2], [-3.5, hz0 - hd / 2], [3.5, hz0 - hd / 2]].forEach(function (q) {
+          F.box(q[0], 0, q[1], 0.28, 3.4, 0.28, 0, TIMBER, 'wood');
+          F.cyl(q[0], 0, q[1], 0.25, 0.3, 0, dk, 'stone');
+        });
+        F.box(0, 3.4, hz0 - hd + 0.2, 7.3, 0.25, 0.25, 0, TIMBER, 'wood');
+        F.box(-3.5, 3.4, hc, 0.25, 0.25, hd, 0, TIMBER, 'wood');
+        F.box(3.5, 3.4, hc, 0.25, 0.25, hd, 0, TIMBER, 'wood');
+        F.pyrRoof(0, 3.65, hc, 8.3, 1.8, hd + 0.8, 0, F.pick(TERRA), 'roof');
+        const fx = 0.8, fzz = hc - 0.4;
+        F.cyl(fx, 0, fzz, 1.35, 0.9, 0, brick, 'stone');
+        F.dome(fx, 0.9, fzz, 1.35, 1.5, 0, shade(brick, 0.06), 'stone');
+        [0, 1, 2].forEach(function (i) {
+          const a = -0.6 + i * 0.6;
+          F.ball(fx + Math.sin(a) * 1.3, 1.25, fzz + Math.cos(a) * 1.3, 0.18, 0xffa040, 'glow');
+        });
+        F.box(fx, 0, fzz - 1.5, 1.1, 9.8, 1.0, 0, brick, 'stone');
+        F.box(fx, 9.8, fzz - 1.5, 1.4, 0.3, 1.3, 0, shade(brick, -0.25), 'stone');
+        /* marver, annealing oven, blowpipe rack, cullet crates */
+        F.box(-1.8, 0, hc + 0.9, 1.2, 0.85, 0.7, 0, TIMBER, 'wood');
+        F.box(-1.8, 0.85, hc + 0.9, 1.3, 0.08, 0.8, 0, 0x6f7478, 'metal');
+        F.box(-2.4, 0, hc - 1.6, 1.4, 1.1, 1.2, 0, brick, 'stone');
+        F.box(-2.4, 0.3, hc - 1.0, 0.6, 0.4, 0.06, 0, 0xff8a3a, 'glow');
+        F.box(3.1, 0, hc + 0.2, 0.1, 1.4, 1.6, 0, TIMBER, 'wood');
+        for (let i = 0; i < 5; i++) F.rod(3.0, 0.1, hc - 0.5 + i * 0.35, 3.0, 1.6, hc - 0.45 + i * 0.35, 0.025, 0x6f7478, 'metal');
+        CRATE(F, 2.6, 0, hc - 1.9, 0.8, 0.1);
+        for (let i = 0; i < 5; i++) F.box(2.6 - 0.25 + (i % 3) * 0.2, 0.7, hc - 1.9 - 0.15 + (i >> 1) * 0.2, 0.12, 0.08, 0.1, i, GLASSC[i], 'glass');
+        BENCH(F, -0.8, 0, hc + 1.8, 1.4, true);
+        /* left: timber stair to the roof */
+        TSTAIR(F, -4.4, 6.6, 'z', -1, 0, top, 1.1);
+        /* roof: loft, awning, crates of cullet and a water cistern */
+        PARA(F, { x: 0, z: 2.2, w: 7.84, d: 9.34 }, top, c, 0.85, { s: 3, u: -3.0, w: 1.2 });
+        LOFT(F, 0.9, top, 0.6, 4.2, 3.4, 2.6, shade(c, 0.05), 0, { du: -0.9, shut: 0x46603f });
+        F.pyrRoof(0.9, top + 2.6, 0.6, 5.0, 1.2, 4.2, 0, GREEN, 'roof');
+        CANOPY(F, -3.2, 3.2, 3.2, 6.2, top, top + 2.3, F.pick([0x2a4d80, 0xcbb08e, 0x3f6b56]), null, ['z1']);
+        TABLE(F, 0.8, top, 4.7, 1.4, 0.8); BENCH(F, 0.8, top, 4.0, 1.4, true);
+        for (let i = 0; i < 4; i++) F.cyl(0.3 + i * 0.3, top + 0.79, 4.7, 0.06, 0.2, 0, GLASSC[i], 'glass');
+        POT(F, -2.8, 6.0, top, 0.24); POT(F, 2.8, 6.0, top, 0.24, CLAY[3]);
+        F.cyl(-2.5, top, -1.4, 0.65, 1.1, 0, dk, 'stone');
+        CRATE(F, 2.8, top, -1.6, 0.7, 0.2);
       }
     }
   });
