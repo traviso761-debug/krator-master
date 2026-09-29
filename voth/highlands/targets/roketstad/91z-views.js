@@ -38,7 +38,7 @@ const VIEWS={
 {const g=_plot('hl_rep_forgehouse');if(g)VIEWS['The Forgehouse']=_near(g,95,40);}
 {const g=_plot('hl_rep_hall_republic');if(g)VIEWS['Hall of the Republic']=_near(g,120,42);}
 {const m=VERN_PLACED.find(v=>v.key==='hl_rep_muster');if(m)VIEWS['The Mustering ground']=_near(m.o,62,24);}
-{const s=VERN_PLACED.find(v=>v.key==='hl_rep_guild_scav');if(s){VIEWS["Scavengers' Guild by the port gate"]=_near(s.o,78,30,s.o.ry+.5);VIEWS["Scavengers' yard — eye level"]=(()=>{const f=loc(s.o.x,s.o.z,16,34,s.o.ry),t=loc(s.o.x,s.o.z,18,0,s.o.ry);return[f[0],PORT_Y+1.7,f[1],t[0],PORT_Y+4,t[1]];})();}}
+{const s=VERN_PLACED.find(v=>v.key==='hl_rep_guild_scav');if(s){VIEWS["Salvagers' Guild by the port gate"]=_near(s.o,78,30,s.o.ry+.5);VIEWS["Salvagers' yard — eye level"]=(()=>{const f=loc(s.o.x,s.o.z,16,34,s.o.ry),t=loc(s.o.x,s.o.z,18,0,s.o.ry);return[f[0],PORT_Y+1.7,f[1],t[0],PORT_Y+4,t[1]];})();}}
 {const y=REG.filter(r=>r.key==='rk_scrapyard');const r=y[Math.floor(y.length*.6)];if(r)VIEWS['Scrap yards on the apron']=_fromPort(r,72,30,.3);}
 {const r=REG.find(r=>r.key==='rk_silos');if(r)VIEWS['Ruined Ancient silos']=_fromPort(r,80,34);}
 {const r=REG.find(r=>r.key==='rk_works');if(r)VIEWS['A ruined Ancient factory']=_fromPort(r,85,38,-.5);}
@@ -47,5 +47,9 @@ const VIEWS={
 {const a=REG.find(r=>r.key==='anc_launch_ruined');if(a)VIEWS['The arcology from the town']=[TC.x+260,TC.H+60,TC.z+40,a.x,a.y+60,a.z];}
 {const f=PLOTS.find(p=>p.key==='hl_rep_arco_quarter');if(f){const o=f.o,c=loc(o.x,o.z,105,80,o.ry),b=loc(o.x,o.z,0,95,o.ry);   // round 10: the ship lies stern (local +x) to the port; look along it off the stern quarter
   VIEWS['The Fallen Arcology — engines to the port']=[c[0],_ty(c[0],c[1])+30,c[1],o.x+8,_ty(o.x,o.z)+12,o.z];VIEWS['The Fallen Arcology — broadside']=[b[0],_ty(b[0],b[1])+18,b[1],o.x,_ty(o.x,o.z)+14,o.z];}}
+{const a=_plot('hl_rep_shipbreak'),b=_plot('hl_rep_shipbreak_lander');   // round 10c
+ if(a)VIEWS["Shipbreakers' yard — the freighter"]=(()=>{const c=loc(a.x,a.z,-40,70,a.ry);return[c[0],_ty(a.x,a.z)+34,c[1],a.x,_ty(a.x,a.z)+5,a.z];})();
+ if(b)VIEWS["Shipbreakers' yard — the lander"]=(()=>{const c=loc(b.x,b.z,30,55,b.ry);return[c[0],_ty(b.x,b.z)+26,c[1],b.x,_ty(b.x,b.z)+4,b.z];})();
+ if(a&&b)VIEWS['The shipbreakers, north-east of the port']=[PC.x+PC.top*.55,PORT_Y+140,PC.z-PC.top*.3,(a.x+b.x)/2,_ty(a.x,a.z)+5,(a.z+b.z)/2];}
 {const g=gatePos(RK.GATES.W);VIEWS['West gate and the farms']=[g[0]-260,_ty(g[0],g[1])+80,g[1]+120,g[0],_ty(g[0],g[1])+8,g[1]];}
 for(const k in VIEWS)if(!VIEWS[k])delete VIEWS[k];

@@ -1,5 +1,5 @@
-// ================================================================= HIGHLANDS / REPUBLICAN — Astronomers' and Scavengers' guilds
-// Round 5 (Travis): the orrery leaves the Mechanics' Guild for a guild of its own, and the Scavengers get a hall.
+// ================================================================= HIGHLANDS / REPUBLICAN — Astronomers' and Salvagers' guilds
+// Round 5 (Travis): the orrery leaves the Mechanics' Guild for a guild of its own, and the Scavengers (now the Salvagers) get a hall.
 // Seeds 21101–21129 (R-B's block). Civic, lit.
 //
 // Astronomers' Guild: a stucco-and-half-timber hall painted with the heavens, an observatory dome with its slit and
@@ -7,7 +7,7 @@
 // well clear of the orrery's reach) in which the sky turns: the gilt sun, the green gas giant on its great ring, and
 // round the giant Krator and two lesser moons. A sundial and an armillary sphere in the court.
 //
-// Scavengers' Guild: the guild of those who strip the Ancient ruins. A rubble-and-log hall under a salvaged metal
+// Salvagers' Guild: the guild of those who strip the Ancient ruins. A rubble-and-log hall under a salvaged metal
 // roof, faced at the gable with bleached Ancient panels; its gate is two Ancient tank sections under a panel lintel;
 // behind, a yard fenced in plate and pipe where the haul is sorted into heaps (panels, sheet, pipe, tanks), a pipe
 // gantry crane with a panel on its hook, a weighbridge and its booth, carts.
@@ -96,7 +96,7 @@ function buildHlRepGuildScav(G,o){reseed(21111+(o.v|0));
  const rub=hC(vPick(HPAL.rubble)),ash=hC(vPick(HPAL.ashlar)),tar=hC(vPick(HPAL.tar)),trim=hC(vPick([HPAL.teal,HPAL.red])),iron=hC(hRBIRON),lit=vLit()?'lit':'glass';
  const rust=hC(vPick(HSV.rust)),conc=hC(vPick(HSV.conc)),hull=hC(vPick([0x9a968c,0x8e8a80,0xa49e90])),plank=hC(vPick(HFRAME.plank));
  const HX=-18,HZ=-2,W=22,D=12,S=1,H1=3.8,H2=3.2,FZ=HZ+D/2,y2=S+H1,y3=y2+H2;
- vnReg("Scavengers' Guild",HX,HZ,12,y3+7);vnReg("Scavengers' stage tower",-4,-9,4,26);vnReg("Scavengers' hull depot",HX,-17.5,11,10);vnReg("Scavengers' yard",16,-1,16,6);
+ vnReg("Salvagers' Guild",HX,HZ,12,y3+7);vnReg("Salvagers' stage tower",-4,-9,4,26);vnReg("Salvagers' hull depot",HX,-17.5,11,10);vnReg("Salvagers' yard",16,-1,16,6);
  // ---- the guildhall
  vB('hRubB',HX,0,HZ,W,S+H1,D,0,rub);vB('vStone',HX,S+H1-.2,HZ,W+.2,.2,D+.2,0,ash);
  for(const u of[-8,-5,5,8])vnWin(HX+u,S+.8,FZ,0,1,1.9,lit,'vStone',ash,true);hnRBWins(HX,S+.8,HZ-D/2,Math.PI,W-2,6,1,1.9,lit,'vStone',ash);
@@ -155,4 +155,4 @@ function buildHlRepGuildScav(G,o){reseed(21111+(o.v|0));
  hnRBLamps([[GX-4.6,YZ1+1],[GX+4.6,YZ1+1],[HX-3.4,FZ+4.2],[HX+3.4,FZ+4.2]],3.6);vnFolk(16,2,6,8);vnFolk(HX,FZ+7,5,6);}
 
 HL.def({key:'hl_rep_guild_astro',name:"Astronomers' Guild",branch:'republican',family:'Guilds',tags:Object.assign({type:['civic']},HRB_GUILD),w:42,d:22,h:24,build:buildHlRepGuildAstro});
-HL.def({key:'hl_rep_guild_scav',name:"Scavengers' Guild",branch:'republican',family:'Guilds',tags:Object.assign({type:['civic','industry']},HRB_GUILD),w:72,d:48,h:28,build:buildHlRepGuildScav});
+HL.def({key:'hl_rep_guild_scav',name:"Salvagers' Guild",branch:'republican',family:'Guilds',tags:Object.assign({type:['civic','industry']},HRB_GUILD),w:72,d:48,h:28,build:buildHlRepGuildScav});

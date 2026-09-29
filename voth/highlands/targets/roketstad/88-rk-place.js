@@ -79,6 +79,11 @@ function onSquare(key,sq,a,opt){const S=SQUARES[sq],D=VERN.defs[key];const r=S.r
  // the scrap and industrial district (east of INDUSTRY_X): the Forgehouse and the guilds of the forge, the generator,
  // the smithies, and the big salvage works; the Fallen Arcology quarter at its north-east
  reserve('hl_rep_arco_quarter',60,-190,{R:90,step:8,landmark:'The Fallen Arcology',face:[PC.x,PC.z],spot:{faceOff:-Math.PI/2}});   // round 10: the ship's stern (local +x) toward the spaceport it came from
+ // round 10c (Travis: "a couple of crashed space ships in the process of deconstruction just northeast of the spaceport outside
+ // the city walls"): two shipbreakers' yards off the port table's north-east rim, each ship nose-on to the port it fell short of
+ // (local -x toward the port: faceOff +pi/2)
+ for(const [key,b,r] of[['hl_rep_shipbreak',-Math.PI/4,PC.top+75],['hl_rep_shipbreak_lander',-Math.PI/4-.42,PC.top+70]])
+  reserve(key,PC.x+r*Math.cos(b),PC.z+r*Math.sin(b),{R:140,step:8,town:false,landmark:VERN.defs[key].name,face:[PC.x,PC.z],spot:{faceOff:Math.PI/2,outside:true}});
  const IX=(fx,fz)=>[RK.INDUSTRY_X+fx*(TC.x+TC.A-RK.INDUSTRY_X),TC.z+fz*TC.B];   // a point in the district by fractions of its span
  {const p=IX(.45,.55);reserve('hl_rep_forgehouse',p[0],p[1],{R:90,step:6,landmark:'The Forgehouse'});}
  {const p=IX(.2,-.25);reserve('hl_rep_guild_alch',p[0],p[1],{R:80,landmark:"Alchemists' Guild"});}
