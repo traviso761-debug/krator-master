@@ -82,6 +82,7 @@ TARGET_OUT = {
     'skyi': 'skyi.html',                     # Skyscraper I on its own (joins the kit rows)
     'skyj': 'skyj.html',                     # Skyscraper J on its own (joins the kit rows)
     'skyk': 'skyk.html',                     # Skyscraper K on its own (joins the kit rows)
+    'lighthouse': 'lighthouse.html',         # lighthouse island (a modified Skyscraper J)
     'arcbeam': 'arcbeam.html',                 # the canyon-spanning beam arcology
     'ring': 'ring.html',                       # the barrel arcology, circular toruses
     'arcoindian': 'arcoindian.html',           # the cliff-topography arcology
