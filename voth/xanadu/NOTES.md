@@ -211,3 +211,6 @@ arcaded loggias).
   walks, a garden wall with an open gate between bulb-topped piers. Three dresses by variant: Majorelle cobalt with
   turquoise arches and lemon shutters; Qajar brick with cream arches and mosaic; Eram cream with tile spandrels.
   New helpers: `xnXMPalm`, `xnXMBed`, `xnXMLoggia`; `xnIwanOpen` takes `faceC`.
+* Travis: the arches should be open galleries or have real windows. The loggias are galleries now: a thin back
+  wall behind a stone gallery floor and end walls, real arched windows (lit) in every bay with a door in the
+  middle one, the rail on the upper floor, tile strips beside the windows on the mosaic dresses.
