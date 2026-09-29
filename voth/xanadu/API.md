@@ -114,3 +114,14 @@ vnBannerPole vnChimney vnFence vnPalisade vnFolk vnPaving`.
 * Seeds only from your block; each builder `reseed(<block>+k*10+1+(o.v|0))`.
 * Budget: ≤ 60 k triangles per ordinary building, ≤ 250 k for the largest (Grand Temple, palace, fortress, Pleasure
   Dome); draw calls stay low automatically (everything is instanced).
+
+## 83-xa-turk.js — the Turkish note
+* `xnXTRoof(x,y,z,w,d,ry,c,over,rise)` — red-tiled hip on wide eaves with rafter ends and a ridge cap.
+* `xnXTArchWin(x,y,z,ry,w,h,c,kind,lit)` — round-arched window in a surround of `kind` (`vStone`/`vWood`/`xPaint`).
+* `xnXTBay(x,y,z,ry,w,h,d,c,winC,tileItem)` — timber bay with arched windows and tile-panel aprons.
+* `xnXTBalcony(x,y,z,ry,w,d,c)` — iron balcony on brackets with a flower box.
+* `xnXTBigWheel(x,z,ry,stone,gold,maroon)` — a great prayer wheel under a tiled kiosk.
+* `xnBasketLights(a,b,n,cols)` / `xnUmbrellaLights(a,b,n,cols)` — a sagging wire from local `a` to `b` carrying `n`
+  wicker basket lanterns (a bulb in each) or open umbrellas; meant to be strung between buildings.
+* Defs: `xa_temple_ortakoy`, `xa_house_turk_a` (Konak), `xa_house_turk_b`, `xa_shop_turk_a`, `xa_shop_turk_b`,
+  `xa_lane` (carries `eye` for its own eye-level stance).

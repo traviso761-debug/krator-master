@@ -102,3 +102,31 @@ Travis: relocate murals that overlap windows so both stay clear. The paint filte
 (window panes, door and jali recesses) and the fitting pass projects them — and anything standing in front of a
 face (a cumba, a jharokha, a portico) — into the face frame; each motif is placed at the clear spot nearest its
 preferred position, shrinking through five sizes, or left off. `window._palopo` counts faces / wanted / placed.
+
+## Round 5 (Sep 29 2026) — the Turkish note, the lane of lights
+
+Travis: one temple variant straight from the Ortaköy mosque; a couple of house and shop variants more directly
+Turkish (with Palopó twins); hanging basket and umbrella lights to go between buildings. Mid-round: no minarets —
+large prayer wheels in the corners instead; the corner-bay struts pointed the wrong way; more colour on the temple.
+
+`83-xa-turk.js` (seeds 32000–32199), six new defs as rows of their own rather than v-switches:
+* **Temple after Ortaköy** (Sacred, civic): the square baroque hall with a great arch on every face holding a tall
+  window between two lesser ones, ochre pilasters with gilt capitals, mosaic spandrels, a tile band, a second tier
+  of arches, four corner turrets under gold bulbs, the drum and the dome (turquoise / gold / lapis by variant), the
+  pavilion wing, the quay with water in front, pennants. Four great prayer wheels — maroon drums banded in gold on
+  gold axles under tiled kiosks — at the hall's corners, a rail of small wheels along the front terrace.
+* **Konak** (middle) and **Timber corner house** (rich): the Ottoman house — stone / brick ground storey with
+  arched windows, timber bays with arched heads and tile-panel aprons (`xnXTBay`), tile bands between storeys,
+  iron balconies with flower boxes (`xnXTBalcony`), the red-tiled hip on wide eaves with rafter ends
+  (`xnXTRoof`), and on the corner house an octagonal bay on struts over the street corner.
+* **Turkish shop row** and **Corner café** (Trade): arched stone shopfronts with awnings and café tables,
+  timber bays above, the corner café's octagonal bay, umbrella tables and a basket line to a pole.
+* **Lane of lights** (Street, nv 3): the shop row, the konak and the café facing across a paved lane with
+  `xnBasketLights(a,b,n)` (wicker baskets on a sagging wire, a bulb in each) and `xnUmbrellaLights(a,b,n)`
+  (open umbrellas hung canopy-up) strung between them; both helpers take local endpoints and are meant for
+  the settlement placer to string between any two buildings. The def carries `eye:[dx,dz,tdx,tdz]` so its
+  eye-level view stands in the lane looking down it (`xaAutoViews` honours `D.eye`).
+* The four Turkish houses and shops have Palopó twins; the paint filter now also takes big timber and stone boxes
+  (≥ 6 × 2.6 × 6) as walls so the board and brick storeys paint.
+
+Kit: 110 volumes, 0.89 M tris, 121 draw calls; variants page 332 volumes, 2.5 M tris. Verify clean on both.
