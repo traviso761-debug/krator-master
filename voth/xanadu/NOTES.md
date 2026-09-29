@@ -172,3 +172,21 @@ picture; the baths' channels as modules that tile and cap off with pools or foun
   in 71-xa-mat.js now builds each hook with `Function()` so its K is in the source, and re-hooks every vernacular
   material after load. Stone, rubble and rock read at their intended (coarser) scales from this round on. The same
   bug is live in highlands and iziz.
+
+### Round 6c — slope modules, a waterfall, the buried pools
+Travis: slanted versions of the water modules, with a waterfall, for uneven ground; the pool in the bend and
+cross was not rendering.
+* The pools were buried, not z-fighting: the basins were drawn as a solid curb slab with the water box inside it,
+  and the slab's top stood above the water. `xnRillBasin` draws a tiled bed, the water, and a curb *ring*; the
+  pool cap, the bend and the cross use it.
+* Four slope pieces on the same 8 m plot, each with `rise` on its def (the rill enters at the +z edge `rise`
+  metres above where it leaves at −z): **step** (1.5 m: a terrace with three cascade basins down its face),
+  **ramp** (1.5 m: the whole plot tilted, the rill sliding down it), **cascade** (3 m: a chadar stair of six
+  treads, water over every one), **waterfall** (4 m: the rill over a rock ledge, a lip, a sheet hanging clear of
+  the batter into a plunge basin, spray, boulders). Row "Water — slopes", nv 3 (tiled curbs, wider rill).
+* **Rill hill** as the proof: fountain and rill on the height, the waterfall, a cross with a pool and a bend to a
+  ramp, the cascade, the step, a pool at the foot; the ground is stepped earth terraces whose tops sit just under
+  the modules' paving (a placer on real terrain would give each module a `drop` footing instead). The water comes
+  down toward the viewer; a second stance stands at the plunge pool.
+* A bend's arms are +z and +x; ry π turns them to −z,−x and ry π/2 to +x,−z (the garden's bends were wrong).
+  `xnPave` takes a y. Extra stances may carry a camera height (`eyes:[[name,dx,dz,tdx,tdz,dy]]`).
