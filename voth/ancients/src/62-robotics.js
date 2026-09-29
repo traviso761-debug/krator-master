@@ -3,16 +3,16 @@
 // box, a smaller box and four tubes. Each is now a legged frame: feet, shins,
 // thighs, a pelvis, a tapered six-sided torso, a shoulder yoke, two arms with
 // clamps, a sensor head; dark actuators at the joints. Built once as merged
-// geometry and instanced (civDef), so six of them cost one draw call a part.
-// `arm` 0 drops the left arm (the ruined variant). Feet at y=0, facing +z.
+// geometry and instanced (civDef): one draw call for all six.
+// `arm` false drops the left arm. Feet at y=0, facing +z. The joints are 'tube'
+// instances placed by the yard loop.
 function civMergeGeo(geos){let nv=0,ni=0;for(const g of geos){nv+=g.attributes.position.count;ni+=g.index?g.index.count:g.attributes.position.count;}
  const P=new Float32Array(nv*3),N=new Float32Array(nv*3),U=new Float32Array(nv*2),I=new Uint32Array(ni);let vo=0,io=0;
  for(const g of geos){const c=g.attributes.position.count;P.set(g.attributes.position.array,vo*3);N.set(g.attributes.normal.array,vo*3);if(g.attributes.uv)U.set(g.attributes.uv.array,vo*2);
   if(g.index){const ix=g.index.array;for(let i=0;i<ix.length;i++)I[io+i]=ix[i]+vo;io+=ix.length;}else{for(let i=0;i<c;i++)I[io+i]=vo+i;io+=c;}vo+=c;}
  const G=new THREE.BufferGeometry();G.setAttribute('position',new THREE.BufferAttribute(P,3));G.setAttribute('normal',new THREE.BufferAttribute(N,3));G.setAttribute('uv',new THREE.BufferAttribute(U,2));G.setIndex(new THREE.BufferAttribute(I,1));return G;}
-function civRobotGeo(arm,joints){const B=(w,h,dp,x,y,z,rx)=>{const g=new THREE.BoxGeometry(w,h,dp);if(rx)g.rotateX(rx);return g.translate(x,y,z);};
- const J=(r,l,x,y,z)=>new THREE.CylinderGeometry(r,r,l,10).rotateZ(Math.PI/2).translate(x,y,z);const g=[];
- if(joints){for(const s of [-1,1]){g.push(J(1.1,2.2,s*2.2,4.3,.2),J(1.2,2.6,s*2.1,8.2,0));if(s>0||arm)g.push(J(.9,2,s*5.3,10.6,.4));}g.push(J(1.4,3.6,0,13.3,0).rotateY(0));return civMergeGeo(g);}
+function civRobotGeo(arm){const B=(w,h,dp,x,y,z,rx)=>{const g=new THREE.BoxGeometry(w,h,dp);if(rx)g.rotateX(rx);return g.translate(x,y,z);};
+ const g=[];
  for(const s of [-1,1]){g.push(B(2.6,1,4.2,s*2.2,.5,.7),B(1.8,3.6,2.1,s*2.2,2.6,.2,-.08),B(2.3,3.8,2.5,s*2.1,6.2,0,.1));}
  g.push(B(6.2,1.8,3.2,0,8.6,0));
  g.push(new THREE.CylinderGeometry(3.3,2.4,4.6,6).scale(1,1,.72).translate(0,11.5,0));
@@ -60,9 +60,12 @@ function buildRobotics(scene,gx,gz,d){reseed(9210+d);KOFF=[gx,0,gz];const G=new 
   if(gone){rubbleRing(x,5,z,2,12,20,1.6);continue;}const q=qEuler(0,rr(-.4,.4),d>0?rr(-.15,.15):0);
   // mount frame behind the machine, the machine, its actuators
   kput(BOXC(d),[x,12,z-3.4],null,[3,14,1.6],null);kput(BOXC(d),[x,13.9,z-2.2],null,[5,1.2,1.8],null);
-  const one=d>0&&i===5;const bn=civDef('civRobot'+(d>0?(one?'R1':'R'):'W'),()=>civRobotGeo(!one,false),d>0?MAT.rust:MAT.white);
-  civDef('civRobotJ',()=>civRobotGeo(true,true),MAT.dark);
-  kput(bn,[x,5.2,z],q,1,null);kput('civRobotJ',[x,5.2,z],q,1,null);
+  // body: one InstancedMesh per finish (kit meshes are never culled, so every
+  // new one is a draw call in every view); actuators are the shared 'tube'
+  const bn=civDef('civRobot'+(d>0?'R':'W'),()=>civRobotGeo(true),d>0?MAT.rust:MAT.white);
+  kput(bn,[x,5.2,z],q,1,null);const qj=q.clone().multiply(qEuler(0,0,Math.PI/2));
+  for(const j of [[2.1,8.2,0,1.2,2.6],[-2.1,8.2,0,1.2,2.6],[2.2,4.3,.2,1.1,2.2],[-2.2,4.3,.2,1.1,2.2],[5.3,10.6,.4,.9,2],[-5.3,10.6,.4,.9,2],[0,13.3,0,1.4,3.6]]){
+   const o=new THREE.Vector3(j[0],j[1],j[2]).applyQuaternion(q);kput('tube',[x+o.x,5.2+o.y,z+o.z],qj,[j[3],j[4],j[3]],null);}
   const lit=d>0?rng()<.2:true;const vp=new THREE.Vector3(0,15.9,2.45).applyQuaternion(q);kput('dot',[x+vp.x,5.2+vp.y,z+vp.z],q,[2,.5,.4],lit?CYAN:DEAD);}
  for(let k=0;k<5;k++){const x=-165+k*50;kput(BOXC(d),[x,17,104],null,[2,26,2],null);}kput(BOXC(d),[-40,30.5,104],null,[250,1.6,3],null);
  for(let k=0;k<3;k++){const x=-125+k*80;kput(BOXC(d),[x,30.5,110],null,[3,1.2,14],null);kput('tube',[x,26,116],null,[.25,9,.25],null);kput('boxD',[x,21.2,116],null,[2,1,2],null);}
