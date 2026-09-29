@@ -50,7 +50,7 @@ function buildAmphitheater(scene,gx,gz,d){reseed(9960+d);KOFF=[gx,0,gz];const G=
  // carries the top row down to the ground, pierced by 24 arched vomitoria, and
  // each end of the sweep is closed by a wall that follows the rake.
  {const NB=24,topY=TH[NR-1];
-  treads.push(gridSurface((u,v)=>{const a=lerp(a0,a1,u);return[Math.sin(a)*ROUT,v*topY,Math.cos(a)*ROUT];},NB*8,12,{uS:40,vS:3,
+  treads.push(gridSurface((u,v)=>{const a=lerp(a0,a1,u);return[Math.sin(a)*ROUT,v*topY,Math.cos(a)*ROUT];},NB*8,20,{uS:40,vS:3,
    hole:(u,v)=>{const f=(u*NB)%1-.5,y=v*topY;const arch=Math.abs(f)<.2&&y<3.5+5*Math.sqrt(clamp(1-Math.pow(f/.2,2),0,1));
     const g=gone(u);return arch||(g>0&&y>TH[NR-1-g]+2*(fbm(u*20,1,806,2)-.5))||(d>0&&fbm(u*7,v*2,807,2)<.14);}}));
   for(const a of [a0,a1])treads.push(gridSurface((u,v)=>{const r=lerp(R0,ROUT,u);return[Math.sin(a)*r,v*rakeY(r),Math.cos(a)*r];},40,4,{uS:12,vS:2}));}
