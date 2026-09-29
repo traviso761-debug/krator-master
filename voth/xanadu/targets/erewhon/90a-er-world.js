@@ -11,10 +11,14 @@ function erTerrainMesh(){const cell=4,NX=Math.round(ER.W/cell),NZ=Math.round(ER.
  // beyond the map: a dark apron of far ground so the edges do not fall into the void
  const ap=new THREE.Mesh(new THREE.PlaneGeometry(9000,9000),new THREE.MeshStandardMaterial({color:0x4a5a3a,roughness:1}));ap.rotation.x=-Math.PI/2;ap.position.y=-2;ap.userData.probeSkip=true;scene.add(ap);}
 function erWater(){const LK=new THREE.Color().setHSL(XANADU_LAKE.hue,.6,.42);const w=new THREE.Mesh(new THREE.PlaneGeometry(9000,9000),new THREE.MeshStandardMaterial({color:LK,roughness:.12,metalness:.25,transparent:true,opacity:.86}));
- w.rotation.x=-Math.PI/2;w.position.y=ER.LAKE;w.userData.probeSkip=true;w.name='lake';scene.add(w);
+ w.rotation.x=-Math.PI/2;w.position.y=ER.LAKE;w.material.polygonOffset=true;w.material.polygonOffsetFactor=-1;w.material.polygonOffsetUnits=-2;w.userData.probeSkip=true;w.name='lake';scene.add(w);
  // the stream: a ribbon along its line, a metre and a half under the bank's grade (the channel is cut 3 m into the height field)
- const pos=[],idx=[];let vi=0;for(const P of ER_LINES.stream){for(let i=0;i<P.length;i++){const a=P[Math.max(0,i-1)],b=P[Math.min(P.length-1,i+1)];const dx=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dx,dz)||1;const nx=-dz/l*3,nz=dx/l*3;
-   const y=terrainH(P[i][0],P[i][1])+1.4;pos.push(P[i][0]+nx,y,P[i][1]+nz,P[i][0]-nx,y,P[i][1]-nz);if(i>0){const k=vi+2*i;idx.push(k-2,k,k-1,k-1,k,k+1);}}vi+=2*P.length;}
+ // the stream rises in the Caves of Ice: its head runs into the cave mouth at the cave's floor, then drops into its channel
+ const cave=PLAN.find(p=>p.key==='xa_ice_cave');
+ const pos=[],idx=[];let vi=0;for(const P0 of ER_LINES.stream){let P=P0;if(cave){const e0=P[0],e1=P[P.length-1];const d0=Math.hypot(e0[0]-cave.x,e0[1]-cave.z),d1=Math.hypot(e1[0]-cave.x,e1[1]-cave.z);
+   if(Math.min(d0,d1)<60){const m=[cave.x-Math.sin(cave.ry)*6,cave.z-Math.cos(cave.ry)*6];P=d0<d1?[m].concat(P):P.concat([m]);}}   // into the mouth (local +z of the cave)
+  for(let i=0;i<P.length;i++){const a=P[Math.max(0,i-1)],b=P[Math.min(P.length-1,i+1)];const dx=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dx,dz)||1;const nx=-dz/l*3,nz=dx/l*3;
+   let y=terrainH(P[i][0],P[i][1])+1.4;if(cave){const dc=Math.hypot(P[i][0]-cave.x,P[i][1]-cave.z);if(dc<70){const k=smoothstep(30,70,dc);y=(cave.y+.02)*(1-k)+y*k;}}pos.push(P[i][0]+nx,y,P[i][1]+nz,P[i][0]-nx,y,P[i][1]-nz);if(i>0){const k=vi+2*i;idx.push(k-2,k,k-1,k-1,k,k+1);}}vi+=2*P.length;}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setIndex(idx);g.computeVertexNormals();
  const s=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:0x2aa0b8,roughness:.1,metalness:.2,transparent:true,opacity:.9,side:THREE.DoubleSide}));s.userData.probeSkip=true;s.name='stream';scene.add(s);}
 // ---------------------------------------------------------------- the Krator sky and its lighting

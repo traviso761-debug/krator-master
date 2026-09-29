@@ -12,7 +12,7 @@ function cstroke(ctx,pts,w,col){if(pts.length<2)return;ctx.lineWidth=Math.max(1,
 function cdisc(ctx,x,z,r,col){ctx.beginPath();ctx.arc(px(x),pz(z),r*PXS,0,7);ctx.fillStyle=col;ctx.fill();}
 function cpoly(ctx,pts,col){ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(px(p[0]),pz(p[1])):ctx.moveTo(px(p[0]),pz(p[1])));ctx.closePath();ctx.fillStyle=col;ctx.fill();}
 const ROADCOL={3:'#8a7a62',4:'#9a8a70',5:'#a89880',6:'#8a8068'};
-function road(pts,w,cls,opt){opt=opt||{};cstroke(cg,pts,w,opt.col||ROADCOL[cls]||'#8a7a62');if(cls!==KL.stair)cstroke(mg,pts,w+.6,'#000');cstroke(kg,pts,w+1,KLCOL(cls));const r={pts,w,cls,id:ROADS.length,zone:opt.zone||null,lights:!!opt.lights};ROADS.push(r);if(opt.bench)benchAdd(pts);return r;}
+function road(pts,w,cls,opt){opt=opt||{};cstroke(cg,pts,w,opt.col||ROADCOL[cls]||'#8a7a62');cstroke(mg,pts,w+.6,'#000');cstroke(kg,pts,w+1,KLCOL(cls));const r={pts,w,cls,id:ROADS.length,zone:opt.zone||null,lights:!!opt.lights};ROADS.push(r);if(opt.bench)benchAdd(pts);return r;}
 function disc(x,z,r,type,col){cdisc(cg,x,z,r,col||(type==='park'?'#3a7a3c':type==='court'?'#a89a80':'#c9a56b'));cdisc(mg,x,z,r,type==='park'?'#00ff00':'#000');cdisc(kg,x,z,r,KLCOL(type==='park'?KL.park:type==='court'?KL.court:KL.plaza));}
 function precinct(x,z,r,name){PRECINCTS.push({x,z,r,name});}
 function footprint(pts,col){cpoly(cg,pts,col||'rgba(70,55,40,.5)');cpoly(mg,pts,'#000');cpoly(kg,pts,KLCOL(KL.building));}

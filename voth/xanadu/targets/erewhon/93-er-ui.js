@@ -12,3 +12,9 @@ uiButton('Forest',true,()=>{const v=!BIO.baked[0].visible;for(const m of BIO.bak
  const lab=document.createElement('span');lab.textContent='hour '+ERSKY.hour.toFixed(1);const sl=document.createElement('input');sl.type='range';sl.min=0;sl.max=24;sl.step=.1;sl.value=ERSKY.hour;sl.style.width='120px';
  sl.oninput=()=>{ERSKY.hour=parseFloat(sl.value);lab.textContent='hour '+ERSKY.hour.toFixed(1);};wrap.appendChild(lab);wrap.appendChild(sl);ui.appendChild(wrap);}
 window._api.city={ER,DIST,GATES,roads:()=>ROADS.length,plan:()=>PLAN.length,chunks:()=>CHUNK_GROUPS.map(c=>({key:c.key,n:c.n})),setHour:h=>{ERSKY.hour=h;},biome:()=>window._biome};
+// the Doors overlay (Travis): an arrow out of every door, the way it faces — for judging orientation from overhead
+const DOORV={on:false,mesh:null};
+function doorsMesh(){if(DOORV.mesh)return DOORV.mesh;const pos=[];for(const D of window.DOORS){const sx=Math.sin(D.ry),cz=Math.cos(D.ry);const y=(D.y||terrainH(D.x,D.z))+1.2;const ax=D.x+sx*5,az=D.z+cz*5;
+  pos.push(D.x,y,D.z,ax,y,az);for(const s of[-1,1]){pos.push(ax,y,az,ax-sx*1.6+s*cz*1.2,y,az-cz*1.6-s*sx*1.2);}}
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));const m=new THREE.LineSegments(g,new THREE.LineBasicMaterial({color:0xff30d0,depthTest:false,fog:false}));m.renderOrder=9;m.userData.probeSkip=true;m.visible=false;scene.add(m);DOORV.mesh=m;return m;}
+uiButton('Doors',false,()=>{DOORV.on=!DOORV.on;doorsMesh().visible=DOORV.on;return DOORV.on;});

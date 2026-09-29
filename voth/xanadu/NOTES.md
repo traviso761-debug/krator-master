@@ -296,3 +296,22 @@ the Vale of Xanadu biome's plants in every garden; 25 M triangles; LOD if needed
 Erewhon as published: 1 927 plots planned, 1 086 street buildings, 336 garden tiles, 97 farms, 59 light strings,
 589 k kit instances + 87 k biome instances, 13.1 M scene triangles of the 25 M budget at the overview, 1 046 draw
 calls; a chunk-culled walk keeps most views under 8 M. Verify clean.
+
+### Round 9b — Travis's seven
+1. Street buildings keep inside Travis's bounds polygon (`CITY_POLY`, world metres from the Polygon tool); only
+   landmarks, farms and mines stand outside it.
+2. Slope-parallel streets thinned to ~34 m, runs cut only within .6 of that so the network stays whole; alleys and
+   stairs down the fall line every ~40 m, blocked in the mask so they run open between the houses; an **infill pass**
+   after the frontage walker seeds the ground the walker missed with a house facing its nearest street (the plot is
+   set back along the road's outward normal, so the door addresses the street). A **Doors** overlay draws an arrow
+   out of every door for judging orientation from overhead.
+3. The garden district has one explicit stepped ground (`GARDEN_G`: cell levels quantised to 1.5 m, no neighbour
+   more than a cascade apart, a slope cell standing at its LOW level) out to the ring road, retaining walls on
+   every stepped edge, and the water pieces stand with their origin at the low level and their high end uphill
+   (they had been placed a rise too high and facing downhill, and every tile flattened its own overlapping disc:
+   the floating tiles and the canyon under the ring road).
+4. The stream's head runs into the mouth of the Caves of Ice at the cave's floor and drops into its channel after.
+5. A third of residences and shops carry the Palopó paint (six in ten round the markets): the twin is drawn after
+   the def, not weighted in the pools.
+6. The quays and the boat shed open to the lake.
+7. The lake sits at −0.5 m with a polygon offset, off the shore's flat zone at 0.
