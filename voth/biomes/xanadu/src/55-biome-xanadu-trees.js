@@ -207,7 +207,7 @@ B[6]=function(T,st,lv){const S=SP[6],H=T.H,rb=T.rb;
  const nB=lv===2?ri(S.boughs[0],S.boughs[1]):4,a0=rr(0,TAU),hc=vary(pick(S.leaf),.02,.06,.05),cy=T.y0+H*.78,spots=[];
  for(let k=0;k<nB;k++){const a=a0+k/nB*TAU+rr(-.3,.3),len=H*rr(.35,.5),pts=treeGrow({x:T.x,y:T.y0+hB-rr(0,2),z:T.z},dirOf(a,rr(.9,1.2)),len,rAt(.55)*.5,.1,5,-.12,.06);
   if(!limbOk(pts))continue;limb(S,pts,st,{fam:'xbarkA',seg:lv===2?7:5});for(let i=2;i<=5;i++)spots.push(pts[i]);}
- const cnt=lv===2?2:1;spots.forEach(p=>{for(let c=0;c<cnt;c++){clumpAt('broad',p.x+rr(-1.5,1.5),p.y+rr(-.5,1.5),p.z+rr(-1.5,1.5),rr(3,4.6),.6,hc,T.x,cy,T.z,T.crownR,H*.25,irid(S));st.clumps++;}});
+ const cnt=lv===2?2:1;spots.forEach(p=>{for(let c=0;c<cnt;c++){clumpAt('broad',p.x+rr(-1.5,1.5),p.y+rr(-.5,1.5),p.z+rr(-1.5,1.5),rr(4.4,6.4),.6,hc,T.x,cy,T.z,T.crownR,H*.25,irid(S));st.clumps++;}});
  T.spread=T.crownR;reg(S,T);};
 // 7 the RING BEECH: a slender silver bole that leans a little out of its ring, a crown that grows away from the ring's lawn, one bough reaching back over it
 B[7]=function(T,st,lv){const S=SP[7],H=T.H,rb=T.rb,oa=T.outA!=null?T.outA:rr(0,TAU),lk=T.lean||rr(0,.04);
@@ -218,7 +218,7 @@ B[7]=function(T,st,lv){const S=SP[7],H=T.H,rb=T.rb,oa=T.outA!=null?T.outA:rr(0,T
   if(!limbOk(pts))continue;if(lv===2)limb(S,pts,st,{seg:5});for(let i=2;i<=4;i++)spots.push(pts[i]);}
  if(T.inA!=null){const pts=treeGrow({x:top.x,y:top.y-2,z:top.z},dirOf(T.inA,.35),T.reachIn||T.crownR,rAt(.6)*.4,.08,4,.02,.05);if(limbOk(pts,1)){if(lv===2)limb(S,pts,st,{seg:5});for(let i=2;i<=4;i++)spots.push(pts[i]);}}
  spots.push({x:cx,y:T.y0+H*.97,z:cz});
- const cnt=lv===2?2:1;spots.forEach(p=>{for(let c=0;c<cnt;c++){clumpAt('broad',p.x+rr(-1.2,1.2),p.y+rr(-.3,1.2),p.z+rr(-1.2,1.2),rr(2.8,4),.55,hc,cx,cy,cz,T.crownR,H*.22,rng()<.4?irid(S):null);st.clumps++;}});
+ const cnt=lv===2?2:1;spots.forEach(p=>{for(let c=0;c<cnt;c++){clumpAt('broad',p.x+rr(-1.2,1.2),p.y+rr(-.3,1.2),p.z+rr(-1.2,1.2),rr(3.8,5.4),.55,hc,cx,cy,cz,T.crownR,H*.22,rng()<.4?irid(S):null);st.clumps++;}});
  T.spread=T.crownR;reg(S,T);};
 // 8 the ARCH HORNBEAM: a fluted grey trunk that leans toward its partner across the alley; its main limbs arc over and lace with the partner's, the crowns meet in a vault
 B[8]=function(T,st,lv){const S=SP[8],H=T.H,rb=T.rb,P=T.partner;
@@ -235,7 +235,7 @@ B[8]=function(T,st,lv){const S=SP[8],H=T.H,rb=T.rb,P=T.partner;
   const pts=arc([o.x,o.y,o.z],c,e,rb*.45,.1,6);limb(S,pts,st,{fam:'xbark2',seg:5,flutes:4,fluteA:.1,twist:.4});for(let i=2;i<=6;i++)spots.push(pts[i]);}
  // the outer side: a few boughs away from the alley
  for(let k=0,m=lv===2?2:1;k<m;k++){const a=Math.atan2(-uz,-ux)+rr(-.9,.9),pts=treeGrow({x:o.x,y:o.y,z:o.z},dirOf(a,rr(.5,.9)),T.crownR*rr(.6,1),rb*.4,.08,4,-.05,.1);if(limbOk(pts)){if(lv===2)limb(S,pts,st,{fam:'xbark2',seg:5});for(let i=2;i<=4;i++)spots.push(pts[i]);}}
- const cy=apex[1],cnt=lv===2?2:1;spots.forEach(p=>{for(let c=0;c<cnt;c++){clumpAt('broad',p.x+rr(-1,1),p.y+rr(0,1.4),p.z+rr(-1,1),rr(2.4,3.6),.55,hc,apex[0],cy-2,apex[2],L*.7,H*.3,null);st.clumps++;}});
+ const cy=apex[1],cnt=lv===2?2:1;spots.forEach(p=>{for(let c=0;c<cnt;c++){clumpAt('broad',p.x+rr(-1,1),p.y+rr(0,1.4),p.z+rr(-1,1),rr(3.4,5),.55,hc,apex[0],cy-2,apex[2],L*.7,H*.3,null);st.clumps++;}});
  T.spread=T.crownR;reg(S,T,L*.6);};
 // 9 the WISTERIA TREE: two stems wound round each other, an umbrella of low boughs, light leaves, and curtains of racemes in violet, blue and white
 B[9]=function(T,st,lv){const S=SP[9],H=T.H,rb=T.rb,hT=H*rr(.45,.6),ph=rr(0,TAU),tops=[];
@@ -255,7 +255,7 @@ B[10]=function(T,st,lv){const S=SP[10],H=T.H,rb=T.rb,nS=lv===2?ri(S.stems[0],S.s
  for(let k=0;k<nS;k++){const a=a0+k/nS*TAU+rr(-.4,.4),pts=treeGrow({x:T.x+Math.cos(a)*.3,y:T.y0-.2,z:T.z+Math.sin(a)*.3},dirOf(a,rr(1.05,1.3)),H*rr(.6,.8),rb,.1,5,-.25,.1);
   if(lv===2)limb(S,pts,st,{fam:'xbark2',seg:6});else BIO.beam('rod',P3(pts[0]),P3(pts[5]),rb,.1,rodCol(S,k));
   for(let i=2;i<=5;i++)spots.push(pts[i]);}
- const cy=T.y0+H*.8,cnt=lv===2?2:1;spots.forEach(p=>{for(let c=0;c<cnt;c++){const col=C(pick(S.leaf));clumpAt('broad',p.x+rr(-1.6,1.6),p.y+rr(-.2,1.2),p.z+rr(-1.6,1.6),rr(2.4,3.4),.5,col,T.x,cy,T.z,T.crownR,H*.25,C(pick(PAL.irid.CP)));st.clumps++;}});
+ const cy=T.y0+H*.8,cnt=lv===2?2:1;spots.forEach(p=>{for(let c=0;c<cnt;c++){const col=C(pick(S.leaf));clumpAt('broad',p.x+rr(-1.6,1.6),p.y+rr(-.2,1.2),p.z+rr(-1.6,1.6),rr(3.2,4.6),.5,col,T.x,cy,T.z,T.crownR,H*.25,C(pick(PAL.irid.CP)));st.clumps++;}});
  T.spread=T.crownR;if(lv===2)reg(S,T);};
 // 11 the CHESTNUT-LEAVED OAK: the flanks' great tree. A heavy bole, broad boughs, a high dark dome
 B[11]=function(T,st,lv){const S=SP[11],H=T.H,rb=T.rb;
@@ -265,7 +265,7 @@ B[11]=function(T,st,lv){const S=SP[11],H=T.H,rb=T.rb;
  for(let k=0;k<nB;k++){const u=rr(.35,.5),a=a0+k*GOLD,pts=treeGrow({x:T.x,y:T.y0+H*u,z:T.z},dirOf(a,rr(.45,.85)),T.crownR*rr(.8,1.1),rAt(u)*.45,.1,5,-.06,.12);
   if(!limbOk(pts))continue;if(lv===2)limb(S,pts,st,{seg:6});else BIO.beam('rod',P3(pts[0]),P3(pts[5]),pts[0].r,.1,rodCol(S,k));for(let i=2;i<=5;i++)spots.push(pts[i]);}
  spots.push({x:T.x,y:T.y0+H*.95,z:T.z});
- const cnt=lv===2?2:1;spots.forEach(p=>{for(let c=0;c<cnt;c++){clumpAt('broad',p.x+rr(-1.6,1.6),p.y+rr(-.5,1.5),p.z+rr(-1.6,1.6),rr(3.4,5),.6,hc,T.x,cy,T.z,T.crownR,H*.28,null);st.clumps++;}});
+ const cnt=lv===2?2:1;spots.forEach(p=>{for(let c=0;c<cnt;c++){clumpAt('broad',p.x+rr(-1.6,1.6),p.y+rr(-.5,1.5),p.z+rr(-1.6,1.6),rr(5,7.5),.6,hc,T.x,cy,T.z,T.crownR,H*.28,null);st.clumps++;}});
  T.spread=T.crownR;if(lv===2)reg(S,T);};
 // 12 the CAUCASIAN WINGNUT: a leaning bole over the water, spreading boughs, and the catkins: long green chains of winged nuts hanging everywhere
 B[12]=function(T,st,lv){const S=SP[12],H=T.H,rb=T.rb,la=rr(0,TAU),lk=rr(.04,.14);
@@ -274,12 +274,12 @@ B[12]=function(T,st,lv){const S=SP[12],H=T.H,rb=T.rb,la=rr(0,TAU),lk=rr(.04,.14)
  const nB=lv===2?ri(S.boughs[0],S.boughs[1]):3,a0=rr(0,TAU),hc=vary(pick(S.leaf),.02,.06,.05),cy=T.y0+H*.72;
  for(let k=0;k<nB;k++){const a=a0+k/nB*TAU+rr(-.3,.3),pts=treeGrow({x:top.x,y:top.y-rr(0,2),z:top.z},dirOf(a,rr(.35,.8)),T.crownR*rr(.8,1.15),rAt(.45)*.5,.1,5,-.1,.12);
   if(!limbOk(pts))continue;if(lv===2)limb(S,pts,st,{seg:6});else BIO.beam('rod',P3(pts[0]),P3(pts[5]),pts[0].r,.1,rodCol(S,k));
-  for(let i=2;i<=5;i++){const p=pts[i];clumpAt('broad',p.x+rr(-1.2,1.2),p.y+rr(0,1.2),p.z+rr(-1.2,1.2),rr(2.8,4),.5,hc,T.x,cy,T.z,T.crownR,H*.25,irid(S));st.clumps++;
+  for(let i=2;i<=5;i++){const p=pts[i];clumpAt('broad',p.x+rr(-1.2,1.2),p.y+rr(0,1.2),p.z+rr(-1.2,1.2),rr(3.8,5.4),.5,hc,T.x,cy,T.z,T.crownR,H*.25,irid(S));st.clumps++;
    if(lv>=1)for(let c=0,m=lv===2?ri(2,4):1;c<m;c++)BIO.put('catkin',[p.x+rr(-1.8,1.8),p.y-rr(0,.5),p.z+rr(-1.8,1.8)],qEuler(0,rr(0,TAU),0),[rr(.25,.4),rr(.9,1.8),1],bright(vary(0x9ac060,.03,.08,.06),1.1));}}
  T.spread=T.crownR;reg(S,T);};
 // 13 the CACAO: a slim pale trunk, a few layered branches of long drooping leaves (the new ones copper-red), and the pods straight off the trunk: maroon, gold, orange
 B[13]=function(T,st,lv){const S=SP[13],H=T.H,rb=T.rb,rc=rodCol(S,T.seed),hT=H*.55;
- BIO.beam('rod',[T.x,T.y0-.2,T.z],[T.x,T.y0+hT,T.z],rb*2,rb*1.4,tint(pick(S.bark),means().bark[2]));
+ BIO.beam('rod',[T.x,T.y0-.2,T.z],[T.x,T.y0+hT,T.z],rb*2,rb*1.4,shade(C(pick(S.bark)),-.12));
  const nB=lv===2?ri(3,5):3,a0=rr(0,TAU);
  for(let k=0;k<nB;k++){const a=a0+k/nB*TAU+rr(-.3,.3),y=T.y0+hT+rr(-.3,.8),e=[T.x+Math.cos(a)*T.crownR,y+rr(.4,1.2),T.z+Math.sin(a)*T.crownR];
   BIO.beam('rod',[T.x,y,T.z],e,rb*.8,rb*.3,rc);
@@ -308,7 +308,7 @@ B[16]=function(T,st,lv){const S=SP[16],H=T.H,rb=T.rb;
  const hB=H*.55,top=bole(T,S,hB,rAt,{vs:1.2,flutes:5,fluteA:.03,seg:lv===2?12:8,urep:2});
  const n=lv===2?ri(S.forks[0],S.forks[1]):2,a0=rr(0,TAU),hc=vary(pick(S.leaf),.02,.06,.05),plumeC=C(pick([0xf09ab0,0xf8b0c0,0xe88aa8,0xf0c0b0]));
  for(let k=0;k<n;k++){const a=a0+k/n*TAU+rr(-.3,.3),e=[top.x+Math.cos(a)*rr(.8,1.8),top.y+H*rr(.15,.4),top.z+Math.sin(a)*rr(.8,1.8)];
-  BIO.beam('rod',[top.x,top.y-.5,top.z],e,rAt(.55)*.6,rAt(.55)*.4,tint(pick(S.bark),means().bark[5]));
+  BIO.beam('rod',[top.x,top.y-.5,top.z],e,rAt(.55)*.6,rAt(.55)*.4,shade(C(pick(S.bark)),-.12));
   BIO.put('hair',[e[0],e[1]-T.crownR*.55,e[2]],qEuler(0,rr(0,TAU),0),[T.crownR*1.5,T.crownR*1.1,T.crownR*1.5],bright(vary(hc,.02,.06,.05),1.25));
   if(lv>=1)for(let p=0,m=lv===2?ri(2,4):1;p<m;p++)BIO.put('plume',[e[0]+rr(-.4,.4),e[1]+rr(0,.3),e[2]+rr(-.4,.4)],qEuler(rr(-.25,.25),rr(0,TAU),rr(-.25,.25)),[rr(.9,1.3),rr(1.4,2.2),rr(.9,1.3)],bright(vary(plumeC,.02,.06,.05),1.15),{c2:bright(C(0xffe0e8),1.05)});}
  if(lv===2)reg(S,T,T.crownR);};
@@ -318,7 +318,7 @@ B[17]=function(T,st,lv){const S=SP[17],H=T.H,rb=T.rb;
  const top=bole(T,S,H*.55,rAt,{vs:.5,flutes:4,fluteA:.12,twist:1.8,seg:lv===2?12:8,urep:1.5,buttress:.4,bh:.3,nb:4});
  const n=ri(3,6),a0=rr(0,TAU),pair=rng()<.55?[C(0xe02a30),C(0x1a0a10)]:pick([[C(0xff3a8a),C(0xffe0f0)],[C(0xfff0f4),C(0xff2a6a)],[C(0xb01830),C(0xff9a40)]]);
  for(let k=0;k<n;k++){const a=a0+k/n*TAU+rr(-.3,.3),e=[T.x+Math.cos(a)*T.crownR*rr(.4,.9),T.y0+H*rr(.8,1.05),T.z+Math.sin(a)*T.crownR*rr(.4,.9)];
-  BIO.beam('rod',[top.x,top.y-.2,top.z],e,rb*.28,rb*.16,tint(pick(S.bark),means().bark[5]));
+  BIO.beam('rod',[top.x,top.y-.2,top.z],e,rb*.28,rb*.16,shade(C(pick(S.bark)),-.12));
   clumpAt('ucard',e[0],e[1]+.1,e[2],rr(.6,.9),.6,bright(C(pick(S.leaf)),1.3),T.x,T.y0+H,T.z,T.crownR,H*.3,null);
   for(let f=0,m=lv===2?ri(3,6):1;f<m;f++)flower('ruffle',e[0]+rr(-.35,.35),e[1]+rr(.1,.35),e[2]+rr(-.35,.35),rr(.3,.45),bright(vary(pair[0],.02,.05,.04),1.15),bright(pair[1],1.05),true);st.blooms+=3;}};
 // 18 the HAZE BLOSSOM: a low gnarled trunk, a wide umbrella wholly in blossom (pink, lavender, white; now and then all violet), petals lying round its foot
@@ -343,7 +343,7 @@ B[19]=function(T,st,lv){const S=SP[19],H=T.H,rb=T.rb,la=rr(0,TAU),lk=rr(.02,.12)
  T.spread=T.crownR;reg(S,T);};
 // 20 the TRAVELLER'S PALM: a ringed stem and a flat fan of great paddle leaves, all in one plane
 B[20]=function(T,st,lv){const S=SP[20],H=T.H,rb=T.rb,hT=H*.45,fa=rr(0,TAU),hc=vary(pick(S.leaf),.02,.06,.05);
- BIO.beam('rod',[T.x,T.y0-.2,T.z],[T.x,T.y0+hT,T.z],rb*2,rb*1.7,tint(pick(S.bark),means().bark[4]));
+ BIO.beam('rod',[T.x,T.y0-.2,T.z],[T.x,T.y0+hT,T.z],rb*2,rb*1.7,shade(C(pick(S.bark)),-.12));
  const n=lv===2?ri(14,20):9,cx=Math.cos(fa),cz=Math.sin(fa);
  for(let k=0;k<n;k++){const t=(k+.5)/n,ang=lerp(-1.25,1.25,t)+rr(-.04,.04),L=H*rr(.55,.7)*(1-.25*Math.abs(t-.5)),d=[cx*Math.sin(ang),Math.cos(ang),cz*Math.sin(ang)];
   const b=[T.x,T.y0+hT,T.z],m=[b[0]+d[0]*L*.45,b[1]+d[1]*L*.45,b[2]+d[2]*L*.45];
