@@ -125,7 +125,14 @@ const VIEWS={
                            .concat(ACW(ACB,620,150,880)),
  // THE FALLEN TOWER: the heliport tower on its side 700 m out on the north-west
  // plain, its crown upside down at the far end, and the stump on the face above.
+ // QA (arcC): it stood 2 km off and the tower was a sliver in the haze; from
+ // 700 m it fills the frame, torn ends and all.
  'The fallen tower':      (function(S){const T=S.TWR;
-                            return[S.x+T.x-1500,640,S.z-2350,
-                                   S.x+T.x+40,470,S.z-700];})(ACB),
+                            return[S.x+T.x-730,150,S.z-1350,
+                                   S.x+T.x-220,40,S.z-850];})(ACB),
+ // QA (arcC): THE RUINED ELEVATION, the diamond elevation's own camera on the
+ // ruin: the south corner is gone the whole length now, so the diamond has lost
+ // a corner, the mass has settled toward the pier that went, and the tower is gone.
+ 'The ruined elevation':  ACW(ACB,-2350,760,0)
+                           .concat(ACW(ACB,-450,760,0)),
 };
