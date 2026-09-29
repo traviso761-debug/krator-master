@@ -22,6 +22,7 @@
  "71-dalab-trade.js": "28d1b017d656",
  "71-hl-mat.js": "3ccb57f9166f",
  "71b-hl-motif.js": "bf315ee9ebc6",
+ "71c-dalab-town.js": "7400d38cbf82",
  "72-dalab-civic.js": "50249e6d737f",
  "72-hl-helpers.js": "d0d7fa9524d0",
  "73-dalab-sacred.js": "9c228e5e924e",
@@ -41,12 +42,12 @@
  "86-bio-60-biome-swlowlands-floor.js": "f2193633bdca",
  "86-bio-65-biome-swlowlands-dress.js": "15b0b8b8db57",
  "86-bio-70-biome-swlowlands.js": "e166cde5b12b",
- "89z-rows.js": "cc249fb120e2",
+ "89z-rows.js": "1e1a2bf43a3f",
  "90-scene.js": "69d4a4a05996",
  "91-probe.js": "58095c5d245f",
- "91z-views.js": "566f4f8cd2c4",
+ "91z-views.js": "9a322540788e",
  "92-camera.js": "0e63b2bcf4b2",
  "93-labels.js": "74b13b48c9df",
- "94-dalab-light.js": "227ba288e15f",
+ "94-dalab-light.js": "579914194b29",
  "99-tail.html": "d3aaf402992e"
 }
