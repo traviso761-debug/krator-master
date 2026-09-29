@@ -79,6 +79,9 @@ TARGET_OUT = {
     'crescent': 'crescent.html',             # the terraced crescent moon
     'ledge': 'ledge.html',                   # terraced slabs cantilevered off a cliff
     'wheel': 'wheel.html',                   # ring plate of parkland on eight towers
+    'skyi': 'skyi.html',                     # Skyscraper I on its own (joins the kit rows)
+    'skyj': 'skyj.html',                     # Skyscraper J on its own (joins the kit rows)
+    'skyk': 'skyk.html',                     # Skyscraper K on its own (joins the kit rows)
     'arcbeam': 'arcbeam.html',                 # the canyon-spanning beam arcology
     'ring': 'ring.html',                       # the barrel arcology, circular toruses
     'arcoindian': 'arcoindian.html',           # the cliff-topography arcology
