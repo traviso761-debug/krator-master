@@ -27,9 +27,11 @@ const VIEWS={
  'The broken crown':        SJV(SJR,[-110,360,120],[0,330,0]),
  // THE BASE at people scale: on the plaza among the roots
  'The base':                SJV(SJI,[-40,1.7,118],[20,22,40]),
- // LOOKING UP from the base roof, up the trunk to the spire
- 'Looking up':              SJV(SJI,[-40,SJI.YB+1.7,48],[0,300,0]),
+ // LOOKING UP from the plaza, past the base block, up the trunk to the spire
+ 'Looking up':              SJV(SJI,[-26,1.7,112],[0,300,0]),
  // THE FALLEN BODY along its length, from beyond the spire and off to one side
  'The fallen body':         SJV(SJT,SJFP(SJF.Ld+140,45,70),SJFP(SJF.D0+40,30)),
  'Night':                   SJHERO(SJI,1),
+ // UNDER THE TERRACES AT NIGHT: the lit rooms and the warm lines under the lips
+ 'The terraces at night':   SJV(SJI,[-150,120,190],[0,190,0],1),
 };
