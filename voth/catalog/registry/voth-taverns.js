@@ -463,7 +463,24 @@
           F.box(TW.x + p[0] * 1.3, 15.1, TW.z + p[1] * 1.3, 0.4, 0.7, 0.4, 0, cornice, 'stone');
         });
         /* side wing: low green hip roof with wide eaves */
-        F.pyrRoof(SW.x, H3 + 0.2, SW.z - 0.35, SW.w + 1.4, 2.4, SW.d + 0.7, 0, green, 'roof');
+        /* a true hipped roof: two long slopes meeting at a ridge along z,
+           and a square hip pyramid at each end (their inner faces sit
+           under the slopes) */
+        (function () {
+          const rw = SW.w + 1.4, rd = SW.d + 0.7, rz = SW.z - 0.35, y0 = H3 + 0.2, rh = 2.4;
+          const len = rd - rw, zc = rz;
+          [-1, 1].forEach(function (k) {
+            F.pyrRoof(SW.x, y0, zc + k * len / 2, rw, rh, rw, 0, green, 'roof');
+            F.beam(SW.x + k * rw / 2, y0 + 0.04, zc, SW.x, y0 + rh + 0.04, zc, 0.1, len, green, 'roof');
+          });
+          F.beam(SW.x, y0 + rh - 0.05, zc - len / 2, SW.x, y0 + rh - 0.05, zc + len / 2, 0.26, 0.2, shade(green, -0.22), 'roof');
+          [-1, 1].forEach(function (k) { F.ball(SW.x, y0 + rh + 0.05, zc + k * len / 2, 0.16, 0xc4a04a, 'metal'); });
+          F.box(SW.x, y0 - 0.02, rz, rw + 0.06, 0.1, rd + 0.06, 0, shade(green, -0.25), 'roof');
+          /* rafter ends under the long eaves */
+          for (let z = rz - rd / 2 + 0.6; z <= rz + rd / 2 - 0.5; z += 1.1) {
+            [-1, 1].forEach(function (k) { F.box(SW.x + k * (SW.w / 2 + 0.35), y0 - 0.2, z, 0.7, 0.18, 0.14, 0, T, 'wood'); });
+          }
+        })();
         K.chimney(-9.2, -8.4, H3 + 0.6, 2.4, c);
         K.chimney(-4.9, -1.6, H3 + 0.6, 2.2, c);
 

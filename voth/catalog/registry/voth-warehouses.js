@@ -328,6 +328,32 @@
         });
         F.box(L.x, TOP - 0.2, L.z, L.w + 0.5, 0.4, L.d + 0.5, 0, cornice, 'stone');
         K.parapet({ x: L.x, z: L.z, w: L.w + 0.2, d: L.d + 0.2 }, TOP + 0.2, 0.8, 0.3, c);
+        /* storage, not housing: narrow barred slit vents instead of windows */
+        function slit(s, u, y) {
+          K.win(L, s, u, y, 0.32, 1.2, { bars: true });
+          K.fbox(L, s, u, y, 0.05, 1.2, 0.05, 0.12, K.iron, 'metal');
+        }
+        /* heavy pilasters on the long flanks, iron tie-plates at every floor */
+        [2, 3].forEach(function (s) {
+          [-2.2, 1.8].forEach(function (u) {
+            K.fbox(L, s, u, 1.0, 0.9, TOP - 1.2, 0.4, 0.2, shade(c, -0.07), 'stone');
+            K.fbox(L, s, u, TOP - 0.6, 1.2, 0.45, 0.55, 0.27, cornice, 'stone');
+          });
+          FL.slice(1).forEach(function (f) {
+            [-5.2 + 0.3, -1.0 + 0.2, 5.2 - 0.3].forEach(function (u) {
+              if (Math.abs(u) > 4.6) return;
+              K.fbox(L, s, u, f + 0.14, 0.5, 0.5, 0.06, 0.03, 0x3a3530, 'metal');
+              const p = K.at(L, s, u, 0.1);
+              F.ball(p[0], f + 0.39, p[1], 0.1, 0x3a3530, 'metal');
+            });
+          });
+        });
+        [-1, 1].forEach(function (k) {
+          FL.slice(1).forEach(function (f) {
+            K.fbox(L, 0, k * 4.6, f + 0.14, 0.45, 0.45, 0.06, 0.03, 0x3a3530, 'metal');
+            K.fbox(L, 1, k * 1.8, f + 0.14, 0.45, 0.45, 0.06, 0.03, 0x3a3530, 'metal');
+          });
+        });
         F.box(L.x, 0.95, L.z + L.d / 2 + 0.16, L.w + 0.3, 0.12, 0.05, 0, 0x3f4640, 'stone');   /* tide line */
 
         /* ---- front (canal): water door, landing stage, stacked loading doors ---- */
@@ -354,7 +380,7 @@
           K.wheel(b[0], f + 2.8, b[1] - 0.1, 0.16, true);
           F.rod(b[0] + 0.1, f + 2.8, b[1] - 0.1, b[0] + 0.1, f + 1.2, b[1] - 0.1, 0.02, 0x8a7a5a, 'wood');
           F.box(b[0] + 0.1, f + 1.05, b[1] - 0.1, 0.14, 0.18, 0.06, 0, K.iron, 'metal');
-          [-3.4, 3.4].forEach(function (u) { K.win(L, 0, u, f + 0.9, 1.0, 1.5, { shut: 0x5a4028 }); });
+          [-3.4, 3.4].forEach(function (u) { slit(0, u, f + 0.9); });
         });
         [-3.4, 3.4].forEach(function (u) { K.win(L, 0, u, 1.6, 0.9, 1.3, { bars: true }); });
         /* the main hoist hood on the roof edge */
@@ -393,10 +419,10 @@
         /* ---- east flank (street): door, windows, lean-to shed ---- */
         K.door(L, 2, 2.6, 0, 1.4, 2.6, {});
         FL.forEach(function (f, i) {
-          [-4.0, -0.6, 3.6].forEach(function (u) {
-            if (i === 0 && u > 2) return;
-            K.win(L, 2, u, f + (i ? 0.9 : 1.4), 0.9, i ? 1.4 : 1.1, i ? { shut: 0x5a4028 } : { bars: true });
-          });
+          if (i === 0) { [-4.0, -0.2].forEach(function (u) { K.win(L, 2, u, 1.4, 0.9, 1.1, { bars: true }); }); return; }
+          K.win(L, 2, 3.6, f + 1.0, 0.8, 1.0, { shut: 0x5a4028 });          /* the office corner */
+          if (i % 2) slit(2, -4.0, f + 0.9); else louvre(K, L, 2, -4.0, f + 1.0, 1.0, 1.0, trim);
+          slit(2, -0.2, f + 0.9);
         });
         F.box(6.75, 0, -4.0, 2.5, 2.8, 3.8, 0, shade(c, 0.03), 'stone');
         F.beam(5.6, 3.35, -4.0, 8.0, 2.85, -4.0, 0.1, 4.2, F.pick([0xb35a3a, 0xa04f32]), 'roof');
@@ -410,9 +436,9 @@
 
         /* ---- west flank: windows, drainpipe, a davit on the top floor ---- */
         FL.forEach(function (f, i) {
-          [-3.8, 0, 3.8].forEach(function (u) {
-            K.win(L, 3, u, f + (i ? 0.9 : 1.4), 0.9, i ? 1.4 : 1.1, i ? {} : { bars: true });
-          });
+          if (i === 0) { [-3.8, 0, 3.8].forEach(function (u) { K.win(L, 3, u, 1.4, 0.9, 1.1, { bars: true }); }); return; }
+          [-3.8, 3.8].forEach(function (u) { slit(3, u, f + 0.9); });
+          if (i % 2 === 0) louvre(K, L, 3, -0.2, f + 1.0, 1.2, 1.0, trim);
         });
         F.rod(-5.7, 1.0, 4.6, -5.7, TOP, 4.6, 0.1, shade(c, -0.3), 'metal');
         F.box(-5.7, TOP - 0.3, 4.6, 0.45, 0.4, 0.45, 0, shade(c, -0.3), 'metal');
@@ -421,8 +447,9 @@
         /* ---- back (street): cart door, windows, a stepped ramp ---- */
         K.door(L, 1, 0, 0.3, 2.6, 3.2, { base: 0 });
         FL.forEach(function (f, i) {
-          [-3.4, 3.4].forEach(function (u) { K.win(L, 1, u, f + (i ? 0.9 : 1.4), 0.9, i ? 1.4 : 1.1, i ? {} : { bars: true }); });
-          if (i) K.win(L, 1, 0, f + 0.9, 0.9, 1.4, {});
+          if (i === 0) [-3.4, 3.4].forEach(function (u) { K.win(L, 1, u, 1.4, 0.9, 1.1, { bars: true }); });
+          else [-3.4, 3.4].forEach(function (u) { slit(1, u, f + 0.9); });
+          if (i === 4) louvre(K, L, 1, 0, f + 1.0, 1.4, 1.0, trim);
         });
         F.rod(5.7, 1.0, -7.2, 5.7, TOP, -7.2, 0.1, shade(c, -0.3), 'metal');
 

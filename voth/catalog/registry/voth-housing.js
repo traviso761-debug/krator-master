@@ -1125,12 +1125,16 @@
       const inner = shade(c, 0.05);
       F.box(0, 0, 0, 2 * S + 0.6, 0.45, 2 * S + 0.6, 0, dark, 'stone');
       const ranges = [
-        { x: -4.65, z: 5.5, w: 6.7, d: 5 }, { x: 4.65, z: 5.5, w: 6.7, d: 5 },
+        { x: 0, z: 5.5, w: 16, d: 5 },
         { x: 0, z: -5.5, w: 16, d: 5 }, { x: -5.5, z: 0, w: 5, d: 6.2 }, { x: 5.5, z: 0, w: 5, d: 6.2 }];
       ranges.forEach(function (R) { F.box(R.x, 0, R.z, R.w, H, R.d, 0, c, 'stone'); });
-      F.box(0, 3.7, 5.5, 2.7, H - 3.7, 5, 0, c, 'stone');
       const O = { x: 0, z: 0, w: 2 * S, d: 2 * S }, C = { x: 0, z: 0, w: 6, d: 6 };
-      F.box(0, 0, 5.5, 2.6, 0.5, 5, 0, shade(dark, 0.08), 'stone');
+      /* side pilasters over the range joints */
+      [-3.2, 3.2].forEach(function (pz) { [-1, 1].forEach(function (k) {
+        F.box(k * (S + 0.08), 0, pz, 0.3, H, 0.8, 0, trim, 'stone');
+      }); });
+      /* the gate passage comes out in the court as an arch */
+      K.door(C, 0, 0, 0.5, 2.2, 3.0, { wall: inner, ground: 0.5, arch: true, leaf: DOOR, jamb: 0.3 });
       /* outer cornices and ring parapet; inner low parapet round the court */
       F.box(0, 3.4, S + 0.02, 2 * S + 0.1, 0.22, 0.2, 0, trim, 'stone');
       F.box(0, 3.4, -S - 0.02, 2 * S + 0.1, 0.22, 0.2, 0, trim, 'stone');
@@ -1205,8 +1209,8 @@
       K.pot(1.4, -1.2, 0.5, 1.0); K.pot(-0.3, 1.3, 0.5, 0.9); K.jar(1.3, 1.3, 0.5, 1.0);
       /* doors and windows onto the court, both levels */
       [0, 1, 2, 3].forEach(function (s) {
-        K.door(C, s, s < 2 ? -0.9 : 0.9, 0.5, 1.0, 2.2, { wall: inner, ground: 0.5, jamb: 0.2, leaf: shutC, off: 0 });
-        K.win(C, s, s < 2 ? 1.2 : -1.2, 1.3, 0.8, 1.1, { wall: inner });
+        if (s > 0) K.door(C, s, s < 2 ? -0.9 : 0.9, 0.5, 1.0, 2.2, { wall: inner, ground: 0.5, jamb: 0.2, leaf: shutC, off: 0 });
+        if (s > 0) K.win(C, s, s < 2 ? 1.2 : -1.2, 1.3, 0.8, 1.1, { wall: inner });
         K.door(C, s, s < 2 ? 1.0 : -1.0, gy, 0.9, 2.1, { wall: inner, ground: gy, jamb: 0.18, leaf: shutC });
         K.win(C, s, s < 2 ? -1.1 : 1.1, gy + 0.9, 0.8, 1.2, { wall: inner, shut: shutC });
       });
@@ -1223,6 +1227,18 @@
       K.ladder(2.7, gy, -2.2, 2.7, yR + 0.8, -2.95, 1, 0);
       K.chimney(-6.4, 6.3, yR, 1.6, c);
       [[6.8, 6.8], [-6.8, -3.2], [6.6, 2.5]].forEach(function (p) { K.pot(p[0], p[1], yR, 1.0); });
+      /* front range roof: drying racks, rugs airing on a rail, cistern, pots
+         along the court parapet, a pigeon cote */
+      K.rack(-4.6, 4.4, yR, 4.0, 1.7, true);
+      K.rack(-4.6, 6.4, yR, 4.0, 1.5, true, [0x7a2028, 0x9a6a5a, 0xa08464]);
+      K.cistern(5.6, 5.4, yR, 1.0, 1.4, shade(c, -0.1));
+      F.rod(3.2, yR + 1.2, 6.9, 3.2, yR + 1.2, 3.6, 0.05, tim, 'wood');
+      [3.6, 6.9].forEach(function (pz) { F.rod(3.2, yR, pz, 3.2, yR + 1.2, pz, 0.06, tim, 'wood'); });
+      [4.3, 5.5, 6.3].forEach(function (pz, i) { F.box(3.2, yR + 0.3, pz, 0.06, 0.9, 1.0, 0, F.pick(BANNER), 'cloth'); });
+      [-2.4, 0, 2.4].forEach(function (px) { K.pot(px, 3.5, yR, 0.8); K.pot(-3.5, px, yR, 0.8); });
+      F.box(-6.6, yR, -0.8, 1.2, 1.4, 1.2, 0, tim2, 'wood');
+      F.pyrRoof(-6.6, yR + 1.4, -0.8, 1.5, 0.6, 1.5, 0, F.pick(ROOF), 'roof');
+      for (let i = 0; i < 3; i++) F.box(-6.0, yR + 0.3 + i * 0.35, -0.8 - 0.35 + i * 0.35, 0.06, 0.2, 0.2, 0, DOOR, 'wood');
     } else if (F.variant === 3) {
       /* -------- canal house: quay plinth with water door and water stair,
          three storeys, a loggia on the top floor, an altana on the roof */
@@ -1364,7 +1380,8 @@
       dface(0, 3.05, 2.5, 0.4, 0.25, 0.55, shade(trim, -0.06));
       dface(0, 0, 2.8, 0.45, 0.45, 0.9, shade(dark, 0.06));
       dface(0, 0, 3.4, 0.22, 0.9, 1.7, shade(dark, 0.1));
-      F.ball(4 + 1.6 * 0.7071 + 0.3, 2.7, 4 - 1.6 * 0.7071 + 0.3, 0.2, GLOW, 'glow');
+      F.rod(4 + 1.6 * 0.7071, 3.0, 4 - 1.6 * 0.7071, 4 + 1.6 * 0.7071 + 0.45, 3.0, 4 - 1.6 * 0.7071 + 0.45, 0.05, IRON, 'metal');
+      F.ball(4 + 1.6 * 0.7071 + 0.42, 2.72, 4 - 1.6 * 0.7071 + 0.42, 0.2, GLOW, 'glow');
       /* blind ground floor: high barred windows, a plaque */
       [[0, -3.9], [0, -0.5], [2, -4.2], [2, -0.8], [1, -3], [1, 3], [3, -3], [3, 0.5]].forEach(function (w) {
         const B = w[0] === 0 ? Bb : A;
@@ -1421,7 +1438,7 @@
       F.box(1.2, yR, 2.0, 2.0, 0.75, 1.1, 0, tim2, 'wood');
       F.box(1.2, yR, 0.9, 1.8, 0.45, 0.45, 0, tim, 'wood');
       F.box(-2.4, yR, 2.2, 2.4, 0.03, 1.6, 0, F.pick(BANNER), 'cloth');
-      [[-4.8, 0.4], [4.7, 4.7], [4.7, -4.6], [0.8, 4.7]].forEach(function (p) { K.pot(p[0], p[1], yR, 1.1); });
+      [[-4.8, 0.4], [3.3, 3.3], [4.7, -4.6], [0.8, 4.7]].forEach(function (p) { K.pot(p[0], p[1], yR, 1.1); });
       K.rack(3.2, -3.6, yR, 3.0, 1.5, true);
       K.drain(A, 1, 5.2, 0.45, H, c);
       K.drain(A, 3, -3.9, 0.45, H, c);
@@ -1435,11 +1452,11 @@
     blurb: 'Middle-class Voth houses: a Hlaalu block with a copper-roofed loft, a Velothi tower-house with pergola wing, a gallery courtyard house, a canal house with water door and altana, and a chamfered corner house under a shade sail.',
     w: 17, d: 17, h: 17, variants: 5,
     variantDims: [
-      { w: 15, d: 13, h: 12.5 },
-      { w: 14, d: 10.5, h: 17.5 },
-      { w: 16.6, d: 17.4, h: 10.4 },
-      { w: 11, d: 16.6, h: 14.8 },
-      { w: 12.2, d: 12.2, h: 11 }
+      { w: 14.8, d: 12.8, h: 13.2 },
+      { w: 14.6, d: 11.7, h: 17.6 },
+      { w: 17.4, d: 17.4, h: 10.1 },
+      { w: 10.7, d: 17.7, h: 15.4 },
+      { w: 13.3, d: 13.3, h: 11.8 }
     ],
     build: function (F) { middle(F, kit(F)); }
   });
