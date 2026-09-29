@@ -145,7 +145,7 @@ function ddHull(P,o){o=Object.assign({L:100,B:18,D:12,x:0,y:0,z:0,yaw:0,pitch:0,
   add(gridSurface((a,v)=>{const u=U(a),dk=deck(u);return [(v*2-1)*hb(u)*.995,dk,zAt(u,dk)];},nu,2,
    {uS,vS:B/8,hole:hf?(a,v)=>hf(U(a)+.7,v+2):null}),pal[2]);
   for(const ue of [u0,u1]){if(ue>.995)continue;
-   add(gridSurface((a,v)=>{const p=sec(ue,lerp(-Math.PI/2,Math.PI/2,v));return [p[0]*a,p[1],p[2]];},2,12,{uS:B/8,vS:Dh/8}),ue===0?pal[1]:T.ddPrimer);}}
+   add(gridSurface((a,v)=>{const p=sec(ue,lerp(-Math.PI/2,Math.PI/2,v));return [p[0]*a,p[1],p[2]];},2,12,{uS:B/8,vS:Dh/8}),ue===0?pal[1]:o.paint==='rust'?T.rust:T.ddPrimer);}}
  // bare frames: a ring every ~3 m, the keel and two deck-edge stringers
  if(o.frames){const [fa,fb]=o.frames,n=Math.max(1,Math.round((fb-fa)*L/3)),kk=ddK(o.paint==='rust'?'ddRustB':'ddPrim',o.dry);
   for(let i=0;i<=n;i++){const u=lerp(fa,fb,i/n);if(o.d===1&&i>0&&rng()<.18)continue;
@@ -154,18 +154,20 @@ function ddHull(P,o){o=Object.assign({L:100,B:18,D:12,x:0,y:0,z:0,yaw:0,pitch:0,
   for(const th of [0,-Math.PI/2,Math.PI/2]){const a=xf(sec(fa,th)),b=xf(sec(fb,th));beam(kk,a,b,.5,.5,null);}}
  // the stern superstructure: stacked white tiers with dark window bands, a funnel, a mast
  if(o.sup&&u0<=.02){const za=zAt(.05,Dh),zb=zAt(.2,Dh),zc=(za+zb)/2,dp=zb-za;let y=deck(.12);
-  const tiers=o.d===1?[[B*.84,3.2],[B*.74,3]]:[[B*.84,3.2],[B*.74,3],[B*.62,3],[B*.96,2.8]];
+  const th=Math.min(3.2,Dh*.5),big=L>=50;   // tiers scale with the hull: a 30 m boat gets two low ones
+  const tiers=o.d===1?[[B*.84,th],[B*.74,th*.94]]:big?[[B*.84,th],[B*.74,th*.94],[B*.62,th*.94],[B*.96,th*.88]]:[[B*.84,th],[B*.96,th*.9]];
   tiers.forEach(([w,h],i)=>{const dd=i===tiers.length-1&&tiers.length===4?dp*.5:dp*(1-i*.1);
    add(pgeo(boxUV(w,h,dd,8),0,y+h/2,zc+(dp-dd)/2),pal[3]);
    add(pgeo(boxUV(w+.12,1.05,dd+.12,8),0,y+h*.6,zc+(dp-dd)/2),T.dark);y+=h;});
-  add(pgeo(boxUV(B*.16,6,3.4,8),0,y+3,za+2.6),o.paint==='rust'?pal[3]:T.ddTop);
-  if(o.d!==1)add(pgeo(boxUV(.4,9,.4,8),0,y+4.5,zb-3),pal[3]);}
+  const fh=th*1.9,mh=th*2.8;add(pgeo(boxUV(B*.16,fh,Math.min(3.4,dp*.3),8),0,y+fh/2,za+Math.min(2.6,dp*.25)),o.paint==='rust'?pal[3]:T.ddTop);
+  if(o.d!==1)add(pgeo(boxUV(.4,mh,.4,8),0,y+mh/2,zb-Math.min(3,dp*.25)),pal[3]);}
  // keel and bilge blocks, from ground y o.blocks up to the hull
  if(o.blocks!=null){const kc=ddK('ddConc',o.dry),kt=ddK('ddTimb',o.dry);
   const blk=(u,th)=>{const p=xf(sec(u,th)),hh=p[1]-o.blocks-.3;if(hh<.2)return;
    kput(kc,[p[0],o.blocks+hh/2,p[2]],qEuler(0,o.yaw,0),[1.6,hh,1.2],null);kput(kt,[p[0],o.blocks+hh+.15,p[2]],qEuler(0,o.yaw,0),[1.7,.3,1.3],null);};
-  for(let u=.06;u<.9;u+=2.4/L)blk(u,0);
-  for(let u=.28;u<.72;u+=6/L){blk(u,-.95);blk(u,.95);}}
+  const ua=Math.max(.06,u0),ub=Math.min(.9,Math.max(u1,o.frames?o.frames[1]:0));
+  for(let u=ua;u<ub;u+=2.4/L)blk(u,0);
+  for(let u=Math.max(.28,ua);u<Math.min(.72,ub);u+=6/L){blk(u,-.95);blk(u,.95);}}
  return {xf,sec,deck,hb,zAt,M};}
 
 // ---------------------------------------------------------------- the travelling gantry
