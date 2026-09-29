@@ -111,6 +111,17 @@ shards on ~half the dead ones (position hash, no rng draw) ·
 - `The Gate` preset (targets/kit/91z-views.js) stands 500 m past the Robotics
   row, so the factory's roofs fill the lower third of the shot. Pull it to
   z+900 or raise it.
-- Draw calls: opening view 764 -> 814 (limit 900); Offices view 581 -> 629.
+- Draw calls. Measured on the full kit before this pass (777dffc): Robotics
+  yard **938 (already OVER 900)**, Data center ruin 825, Hospital ruin 804,
+  Campus 785, opening 764. The first cut of this pass took Robotics yard to 992;
+  since then the Gate's skin (chords, four plated faces, crest) is one mesh
+  instead of 14-20 per decay (arc meshes 14 -> 4 / 23 -> 7), the Robotics roof
+  bays and ruined glazing are 2 meshes instead of 16, robot joints use the
+  shared `tube`, shards are one kit mesh and tents use `patchTarp`, so the only
+  new never-culled kit meshes are civRobotW, civRobotR and civShard. On the
+  civic-only page Robotics yard went 300 (before) -> 356 -> 274, i.e. now 26
+  calls BELOW where it started; the full-kit figure should be ~910, still over
+  the ceiling as it was before the pass. Not re-measured on the full kit after
+  the last merges (the machine is loaded; one full-kit load is ~10 min).
 - MAT.dark reads mid-grey in daylight, so every "dark opening" in the kit is
   grey rather than black (shared material, not changed).
