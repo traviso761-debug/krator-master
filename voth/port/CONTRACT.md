@@ -1,5 +1,18 @@
 # Krator Ancient Port — project contract (every port agent reads this)
 
+> **Changed by the foundation round (see API.md for the full contract as built):**
+> 1. The builder must be a **top-level `function build...(scene,gx,gz,d,opt)`**
+>    opening with `reseed(N+d)`, passed as `build:` - not a method inside the
+>    registration object as in the example below. build.py's seed check cannot
+>    see inside a method, so it rejects a registering fragment without one.
+> 2. **Stamp order is defined, not irrelevant**: soft rings in stamp order, then
+>    hard shapes in order with the later stamp winning, and points on a shape
+>    edge take the lowest nearby height (cliffs fall inside the wall on the high
+>    side). Added kinds/fields: `ramp` (ya->yb along an axis), `paint`, `dry`.
+> 3. Hard stamp shapes must lie inside the segment's own footprint (checked).
+> 4. Vessel frame fixed: origin midship on the waterline, bow +z at heading 0.
+
+
 A spin-off of the Krator Ancients kit (`voth/ancients/`): a set of modular
 **port segments** and **vessels** for an Ancient port, meant to tile along a
 coast and, later, to be folded into a seaside arcology. It lives in

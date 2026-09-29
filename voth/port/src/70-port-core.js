@@ -103,6 +103,29 @@ function portLayoutSegment(key,o){o=Object.assign({gap:440,nbdz:[0,-20],nbKey:'q
  const items=[].concat(...runs.map(R=>R.items),extra);
  return {items,runs,stamps,vessels:V?[]:portVesselKeys(),focus:key};}
 
+// The edge-case layout: the named segment at decay d against every kind of
+// side it can meet, one run per case, separated by natural coast:
+//   run 0  west neighbour set back 40, east neighbour stands out 40
+//   run 1  west neighbour stands out 20, east neighbour set back 20
+//   run 2  open SEA on both sides (no neighbours at all)
+//   run 3  natural LAND coast on both sides
+function portLayoutEdges(key,o){o=Object.assign({gap:440,d:0,nbKey:'quay'},o||{});
+ if(!PORT_REG.seg[key]){reportErr('PORT_ONLY: no segment registered as "'+key+'"');return {items:[],runs:[],stamps:[],vessels:[]};}
+ const nbk=PORT_REG.seg[o.nbKey]?o.nbKey:key,d=o.d,runs=[];let x=0;
+ const cases=[{ks:[nbk,key,nbk],dz:[-40,0,40],ctx:[1,0,1]},{ks:[nbk,key,nbk],dz:[20,0,-20],ctx:[1,0,1]},
+  {ks:[key],dz:[0],ctx:[0],endW:{kind:'sea'},endE:{kind:'sea'}},{ks:[key],dz:[0],ctx:[0]}];
+ cases.forEach((c,r)=>{const R=portRun(c.ks,d,x,c.dz,{run:r,ctx:c.ctx,endW:c.endW,endE:c.endE});R.focus=R.items[c.ks.length>1?1:0];
+  runs.push(Object.assign({d,case:['steps 40','steps 20','sea sides','land sides'][r]},R));x=R.x1+o.gap;});
+ const mid=(runs[0].x0+runs[runs.length-1].x1)/2;
+ for(const R of runs){R.x0-=mid;R.x1-=mid;for(const it of R.items)it.gx-=mid;}
+ return {items:[].concat(...runs.map(R=>R.items)),runs,stamps:[],vessels:portVesselKeys(),focus:key};}
+function portViewsEdges(){const V={},D=PORT.DECK,runs=PORT_LAYOUT.runs||[];if(!runs.length)return {Empty:[0,300,600,0,0,0]};
+ V['Overview']=portCam(0,0,100,.15,.45,(runs[runs.length-1].x1-runs[0].x0)*.6+300);
+ for(const R of runs){const F=R.focus,G=portRegOf(F.key);
+  V[R.case]=portCam(F.gx,D,F.gz+(G.SEA-G.LAND)/2,.35,.5,Math.max(300,(G.SEA+G.LAND)*1.2));
+  V[R.case+' W']=portCam(F.gx-G.W/2,D,F.gz+4,-.8,.3,160);V[R.case+' E']=portCam(F.gx+G.W/2,D,F.gz+4,.8,.3,160);}
+ return V;}
+
 // ---------------------------------------------------------------- vessels
 // The hook a slip or berth segment uses to show a vessel. `opt.vessels` is the
 // sorted list of registered vessel keys the layout offers (empty until a
@@ -116,6 +139,7 @@ function portVesselFor(opt,i){const v=opt&&opt.vessels;if(!v||!v.length)return n
  return v[((opt.slot||0)+(opt.run||0)+(i||0))%v.length];}
 function portPlaceVessel(G,key,x,z,heading,d,o){const V=PORT_REG.vessel[key];if(!V)return null;
  const ds=V.decays.indexOf(d)>=0?d:V.decays[0];
+ pbFlush();                      // the host's batch so far is charged to the host, not the vessel
  const s0=_seed,k0=KOFF,t0=TSTAT.cur,h0=HOLES;
  const wx=KOFF[0]+x,wz=KOFF[2]+z;
  TSTAT.cur=portStatKey(key,ds);HOLES=ds>=3?.55:1;KOFF=[0,0,0];let VG=null;const r0=REG.length;

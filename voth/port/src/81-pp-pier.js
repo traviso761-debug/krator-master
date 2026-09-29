@@ -69,6 +69,8 @@ function buildPpPier(scene,gx,gz,d,opt){reseed(20010+d);
  portContainerStack(-66,D,108,Math.PI/2,2,2,d,{big:false});
  REGISTER({name:'Mole container block',x:-36,z:106,r:34,h:9,y:D});
  for(let z=12;z<PP.MOLE;z+=34){portLamp(X0+6,D,z,-Math.PI/2,d);portLamp(X1-6,D,z,Math.PI/2,d);}
+ for(let z=172;z<332;z+=40){const b=Math.floor((z-PP.MOLE)/((PP.END-PP.MOLE)/deck.bays));if(deck.collapsed.has(b))continue;
+  portLamp(X0+3,D,z,-Math.PI/2,d);portLamp(X1-3,D,z,Math.PI/2,d);if(d===0)kput('planter',[-30,D+.4,z+20],null,[10,.8,2.4],null);}
  for(let x=-100;x<=30;x+=44)portLamp(x,D,-6.5,0,d);
  portRail(-110,40,-20,D,d);                                   // stops short of the boat basin
  // ---- the vessel hook: a slip-basin berth x 72, bow out to sea. Nothing is
@@ -87,7 +89,8 @@ function buildPpPier(scene,gx,gz,d,opt){reseed(20010+d);
   REGISTER({name:'Barge hulk',x:80,z:72,r:20,h:10,y:-4});
   kput('pkSkiff',[70,-2.2,-30],qEuler(.3,.8,Math.PI*.8),1,new THREE.Color(0x5a4636));
   kput('pkSkiff',[92,-1.9,-14],qEuler(.2,-1.6,.5),1,new THREE.Color(0x6a5040));
-  const zc=deck.bayZ(4)[0];portRubble(-30,D,zc-6,8,20);}
+  const zc=deck.bayZ(4)[0];portRubble(-30,D,zc-6,8,20);
+  for(let b=0;b<deck.bays;b++){if(deck.collapsed.has(b))continue;const z=deck.bayZ(b);portWeeds(X0+2,z[0]+1,X1-2,z[1]-1,14,D);}}
  if(d>=3){
   // houses along the mole's west edge and on the outer deck, stalls down its middle
   for(let z=16;z<PP.MOLE-10;z+=19)portContainerHouse(G,X0+16+rr(-2,2),D,z,Math.PI/2+rr(-.15,.15),d);
@@ -120,7 +123,7 @@ function buildPpPier(scene,gx,gz,d,opt){reseed(20010+d);
 function ppTerminal(G,d){const D=PORT.DECK,HX=PP.HX,HZ=PP.HZ;
  const T=new THREE.Group();T.position.set(HX,D,HZ);G.add(T);
  const tiers=[[30,0,7],[23,7.6,6],[16,14.2,6]];
- const slabC=d>0?new THREE.Color(0x8a8078):new THREE.Color(0xf2efe8);
+ const slabC=d>0?new THREE.Color(0x5e5750):new THREE.Color(0xf2efe8);
  for(const [r,y0,h] of tiers){glassBand(T,()=>r,y0,h,d,HX,D,HZ,Math.round(r*1.6));
   kput('slab',[HX,D+y0+h+.35,HZ],null,[r*1.1,.7,r*1.1],slabC);
   if(d===0){const n=Math.round(r*1.2);for(let k=0;k<n;k++){const a=k/n*TAU;kput('hedge',[HX+Math.cos(a)*r*1.02,D+y0+h+1.1,HZ+Math.sin(a)*r*1.02],qEuler(0,-a,0),[1,.8,r*TAU/n*.8],new THREE.Color(0x4a7a3a));}}

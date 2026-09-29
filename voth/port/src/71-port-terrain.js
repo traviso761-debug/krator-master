@@ -181,7 +181,7 @@ function portGroundColor(x,z,h,slope,paint,cs){let c;const fa=clamp(1-((cs||10)-
   c=PK_GC.dry.map((v,i)=>lerp(lerp(v,PK_GC.grass[i],g),PK_GC.soil[i],r)*(.9+(n2-.5)*.24));
   if(h<4.2){const t=clamp((h-2.4)/1.8,0,1);c=c.map((v,i)=>lerp(PK_GC.dry[i]*1.05,v,t));}}
  if(slope>.55&&!paint){const t=clamp((slope-.55)*2.5,0,1);c=c.map((v,i)=>lerp(v,PK_GC.rock[i],t));}
- return c;}
+ return c.map(v=>Math.pow(clamp(v,0,1),1.9));}   // the table above is sRGB-ish; vertex colours are linear
 
 // ---------------------------------------------------------------- the terrain grid
 // A TENSOR GRID: x lines and z lines, each at a base spacing near the port,
