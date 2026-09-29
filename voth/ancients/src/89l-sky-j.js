@@ -132,7 +132,10 @@ function buildSkyJ(scene,gx,gz,d){reseed(9770+d);KOFF=[gx,0,gz];const G=new THRE
  // antiphase, so adjacent ribs kiss and part and the lattice opens into
  // staggered ovals. Even ribs are roots: over the roof edge to the plaza.
  const KT=TAU*1.0/(YTOP-YS0),AW=Math.PI/NR*.92;
- const ribTh=(i,y)=>{const a=TAU*(y-YS0)/58+Math.PI*i+.5*Math.sin(y/41+i*1.7);const A=AW*(y<YB?.35:y<YF?lerp(.35,1,(y-YB)/(YF-YB)):1);
+ // The wobble's vertical period was 58 m, so each oval void was ~29 m tall on
+ // a 300 m body and the lattice read as a dense helix. At 92 m the ovals are
+ // ~46 m tall, about as tall as the body is wide: big, legible voids.
+ const ribTh=(i,y)=>{const a=TAU*(y-YS0)/92+Math.PI*i+.5*Math.sin(y/41+i*1.7);const A=AW*(y<YB?.35:y<YF?lerp(.35,1,(y-YB)/(YF-YB)):1);
   return{th:TAU*i/NR+KT*(y-YS0)+A*Math.sin(a),nd:Math.pow(Math.sin(a),2)};};
  const RL=[];for(let i=0;i<NR;i++){const th=ribTh(i,YB).th;RL.push(i%2===0?Rb(th)+bal(th,5)+2.2:Rb(th)-9);}
  const ribR=(i,y)=>{if(y>=YTOP)return Rs(y);const rt=Et(y);if(y>=YF)return rt;
@@ -191,7 +194,7 @@ function buildSkyJ(scene,gx,gz,d){reseed(9770+d);KOFF=[gx,0,gz];const G=new THRE
    // undulating bands rather than as a stack of discs
    const wv=ter?th=>.95*Math.sin(2*(th-ph)+1.1)+.4*Math.sin(3*(th-ps)):th=>.55*Math.sin(2*(th-ph)+.4);
    const ri=roof?(()=>0):dx>0?(th=>E*.22):(th=>Math.min(E*.6,re(th)-6));
-   const hole=dx>0?(u,v)=>fbm(u*9+k*1.37,k*.61,71,2)<(.24+.28*t)*HO||(v>.3&&fbm(u*23+k,k*.3,72,2)<.38*HO)||(part==='upper'&&v>.12&&fbm(u*3.2+k*.9,k*.37,75,2)<.46):null;   // the fallen body: whole sectors broken off each plate
+   const hole=dx>0?(u,v)=>fbm(u*9+k*1.37,k*.61,71,2)<(.24+.28*t)*HO||(v>.3&&fbm(u*23+k,k*.3,72,2)<.38*HO)||(part==='upper'&&fbm(u*3.2+k*.9,k*.37,75,2)<.56):null;   // the fallen body: whole sectors broken off each plate
    const g=sjPlate(y+oy,re,ri,ter?SJ_PT:SJ_PM,ter?120:104,hole,wv);if(part==='upper'&&CRUSH)CRUSH(g);stone.push(g);plates.push(g);
    if(ter&&!dx)glow.push(sjGrid((u,v)=>{const th=u*TAU,r=re(th)-1.25-v*.9;return[r*Math.cos(th),y+oy-1.37+wv(th),r*Math.sin(th)];},120,1,(u,v)=>[u,v]));}
   // GLAZING between the plates, and in a ruin the dark core behind it
@@ -250,7 +253,10 @@ function buildSkyJ(scene,gx,gz,d){reseed(9770+d);KOFF=[gx,0,gz];const G=new THRE
  const site={x:gx,z:gz,YB,YTOP,YSP,RP,CUT};
  if(d===2){
   const ang=rr(-.3,.3),r0=Et(CUT)*1.18,r1=Et(YTOP)*1.12,L=YTOP+8-CUT,tau=Math.atan((r0-r1)/L),D0=Et(CUT)*1.3+8;
-  CRUSH=g=>{const P=g.attributes.position,st=Math.sin(tau),ct=Math.cos(tau);
+  // each plate is also knocked off true by up to ~12 degrees, so the body is a
+  // jumble of tilted, broken plates and not a row of parallel discs
+  CRUSH=g=>{const P=g.attributes.position,st=Math.sin(tau),ct=Math.cos(tau),y0=P.getY(0),ta=(h3(y0*.13,1.1,78.1)-.5)*.42,tb=(h3(y0*.17,2.3,78.2)-.5)*.42;
+   for(let i=0;i<P.count;i++){P.setY(i,P.getY(i)+P.getX(i)*ta*.5+P.getZ(i)*tb);}
    for(let i=0;i<P.count;i++){const x=P.getX(i),y=P.getY(i),z=P.getZ(i),xg=((r0-1.2)-y*st)/ct-.25;
     if(x>xg){const e=x-xg,n=h3(i*.37,y*.21,77.7);P.setXYZ(i,xg-n*.9,y+(n-.5)*e*.35,z+Math.sign(z||1)*e*(.35+.4*n));}}
    g.computeVertexNormals();};
