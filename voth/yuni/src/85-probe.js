@@ -1,0 +1,6 @@
+/* ============================== 29. PROBE ==============================
+   Read-only surface for the verifier and for debugging from the console. */
+window._api = { TARGET:TARGET, terrainH:terrainH, riverDist:riverDist, riverLevel:riverLevel, inButte:inButte, butteR:butteR, districtAt:districtAt, maskAt:maskAt,
+  nearestStreet:nearestStreet, onStreet:onStreet, canalLevel:canalLevel, canalAt:canalAt, canalDist:canalDist, CANAL:CANAL, CANAL_LEN:CANAL_LEN, CANAL_W:CANAL_W, CANAL_BASIN:CANAL_BASIN, CANAL_WEIR:CANAL_WEIR, WEIR_S:WEIR_S, FARM_PLOTS:FARM_PLOTS, DITCHES:DITCHES, FARMBELT:FARMBELT, inFarmBelt:inFarmBelt, RW:RW, BUTTE:BUTTE, VAULT:VAULT, VAULTSITE:VAULTSITE, ANTE:ANTE, TUNNEL:TUNNEL, WALL:WALL, GATES:GATES, WALL_TOWERS:WALL_TOWERS,
+  MARKET:MARKET, PARKS:PARKS, CARAVANSERAI:CARAVANSERAI, BRIDGES:BRIDGES, HIGHWAYS:HIGHWAYS, ST:ST, NAV:NAV, SITES:SITES, ASSETS:ASSETS, PLACED:PLACED, PLOTS:PLOTS, IN_RINGS:IN_RINGS, inPlot:inPlot, SHEET_ITEMS:SHEET_ITEMS, FURNS:FURNS, PLANTS:PLANTS, FURN_CULTURES:FURN_CULTURES, PLANT_CLIMATES:PLANT_CLIMATES, PLANT_ARIDITY:PLANT_ARIDITY, TREE_SITES:TREE_SITES,
+  NL_LAMPS:NL_LAMPS, NL_WINDOWS:NL_WINDOWS, BUDGET:BUDGET, skyHour:skyHour, skySetHour:skySetHour, platXZ:platXZ };
