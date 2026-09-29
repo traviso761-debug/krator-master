@@ -51,7 +51,7 @@ function cityTerrainMesh(){const N=Math.round(RK.WORLD/5);const g=new THREE.Plan
 // ---------------------------------------------------------------- the town wall: gates at the three highways, towers, runs of wall between
 const WALLPIECES=[];
 function vpPlace(key,x,z,ry,o){const k=key;TSTAT.cur=k+'/'+((o&&o.v)|0);const G=VERN.place(scene,k,x,z,ry,o);TSTAT.cur=null;return G;}
-(function townWall(){reseed(SEED_RK+7);const gateHalf=22/ (TC.R) ;
+(function townWall(){reseed(SEED_RK+7);const gateHalfAt=g=>22/wallR(g);
  const rkey=k=>VERN.defs[k+'_reclaimed']&&rng()<.6?k+'_reclaimed':k;
  // gates: passage along the highway, face (+z) outward
  for(const [name,g] of GATE_LIST){const p=gatePos(g);const ry=Math.atan2(Math.cos(g),Math.sin(g));const o={x:p[0],z:p[1],hx:22,hz:11,ry,pad:1};
@@ -59,8 +59,8 @@ function vpPlace(key,x,z,ry,o){const k=key;TSTAT.cur=k+'/'+((o&&o.v)|0);const G=
   REG.push({name:name+' gate',x:p[0],y,z:p[1],r:22,h:44,cls:'building',key:'rk_gate_'+name,tags:{culture:'highland-republican',type:['military','infrastructure'],wealth:'civic',lit:true,landmark:true}});}
  // runs between gates: chords of ~34 m, a tower every third joint
  const gs=GATE_LIST.map(g=>g[1]).sort((a,b)=>a-b);
- for(let i=0;i<gs.length;i++){let a=gs[i]+gateHalf*1.02,b=gs[(i+1)%gs.length]-gateHalf*1.02;if(b<a)b+=TAU;
-  const arc=(b-a)*TC.R,n=Math.max(1,Math.round(arc/34));let prev=townPt(a,wallR(a));
+ for(let i=0;i<gs.length;i++){let a=gs[i]+gateHalfAt(gs[i])*1.02,b=gs[(i+1)%gs.length]-gateHalfAt(gs[(i+1)%gs.length])*1.02;if(b<a)b+=TAU;
+  let arc=0;{let pv=townPt(a,wallR(a));for(let k=1;k<=40;k++){const t=a+(b-a)*k/40,c=townPt(t,wallR(t));arc+=Math.hypot(c[0]-pv[0],c[1]-pv[1]);pv=c;}}const n=Math.max(1,Math.round(arc/34));let prev=townPt(a,wallR(a));
   for(let k=1;k<=n;k++){const t=a+(b-a)*k/n,cur=townPt(t,wallR(t));const mx=(prev[0]+cur[0])/2,mz=(prev[1]+cur[1])/2,dx=cur[0]-prev[0],dz=cur[1]-prev[1],len=Math.hypot(dx,dz);
    const ry=Math.atan2(-dz,dx)+Math.PI;   // local x along the run; front (+z) outward
    const o={x:mx,z:mz,hx:len/2,hz:5,ry,pad:0};const y=groundY(o);

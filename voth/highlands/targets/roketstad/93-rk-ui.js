@@ -1,5 +1,5 @@
 // ================================================================= ROKETSTAD — dev tools: the Paths overlay, the hour of day, the town's budgets
-BUDGET.showcase={tris:16000000,calls:1000};
+BUDGET.showcase={tris:32000000,calls:1200};   // round 9: the capital, twice the town; LOD (93b) keeps what is DRAWN far below this
 BUDGET.cls.city=20000000;for(const k in TSTAT.by){BUDGET.type[k.split('/')[0]]='city';}
 const PATHS={on:false,tex:null};
 function pathsTexture(){if(PATHS.tex)return PATHS.tex;const c=document.createElement('canvas');c.width=c.height=CS;const g=c.getContext('2d');
