@@ -31,6 +31,7 @@ MAT.vsBootRu=new THREE.MeshStandardMaterial({map:TEX.rust,color:0x8a5a4a,roughne
 MAT.vsDeck=new THREE.MeshStandardMaterial({map:TEX.panel,color:0x75807a,roughness:.85,metalness:.2,side:DS});
 MAT.vsDeckR=new THREE.MeshStandardMaterial({map:TEX.rust,color:0x9a7a68,roughness:.95,metalness:.1,side:DS});
 MAT.vsHatch=new THREE.MeshStandardMaterial({map:TEX.panel,color:0xa9b0ae,roughness:.7,metalness:.25});
+MAT.vsRust=new THREE.MeshStandardMaterial({map:TEX.rust,roughnessMap:TEX.rustRM,metalnessMap:TEX.rustRM,color:0xa8968c,metalness:1,roughness:1,side:DS});
 MAT.vsSoil=new THREE.MeshStandardMaterial({map:TEX.concrete,color:0x5a4430,roughness:1,metalness:0,side:DS});
 MAT.vsGreen=new THREE.MeshStandardMaterial({map:TEX.concrete,color:0x4c6a30,roughness:1,metalness:0,side:DS});
 
@@ -96,7 +97,7 @@ function vsSection(par,S,sc,mat,y0){const a=S.wAt(sc,y0==null?-1e3:y0);
 
 function vsHull(C,S,d){const T=S.T,hb=S.hb,L2=S.L2;
  const yb0=-.22*T,yb1=Math.min(.3*T,S.F-1.2);
- const top=d>0?MAT.rust:S.mat,boot=d===0?S.boot:MAT.vsBootRu,bot=d>0?MAT.vsBootRu:MAT.vsBottom,deck=d>0?MAT.vsDeckR:MAT.vsDeck;
+ const top=d>0?MAT.vsRust:S.mat,boot=d===0?S.boot:MAT.vsBootRu,bot=d>0?MAT.vsBootRu:MAT.vsBottom,deck=d>0?MAT.vsDeckR:MAT.vsDeck;
  const hole=d===1&&S.holes.length?(z,y,sd)=>{for(const h of S.holes){if(h.sd!==sd)continue;const a=(z-h.z)/h.rz,b=(y-h.y)/h.ry;
   if(a*a+b*b<1+.9*(fbm(z*.21,y*.33,h.z,2)-.5))return true;}return false;}:null;
  C.parts.forEach((p,i)=>{const s0=clamp(p.z0/L2,-1,1),s1=clamp(p.z1/L2,-1,1);if(s1<=s0)return;const par=C.use(p);
@@ -135,12 +136,12 @@ function vsLid(par,mat,P,cx,y,cz){const s=new THREE.Shape();P.forEach((p,i)=>i?s
 // on every storey, and a full-beam bridge deck on top with a mast.
 // H = {z, dp, w, n storeys, sh storey height, step (front setback per 2
 // storeys), bw bridge width, bdp bridge depth, se superellipse exponent, y0}
-function vsHouse(C,S,H,d){const par=C.at(H.z),SH=d===0?MAT.white:MAT.rust,WN=d===0?MAT.winIntact:MAT.winDead;
+function vsHouse(C,S,H,d){const par=C.at(H.z),SH=d===0?MAT.white:MAT.vsRust,WN=d===0?MAT.winIntact:MAT.winDead;
  let y=H.y0!=null?H.y0:S.F;const out={tiers:[]};
- const hole=d===1?(u,v)=>fbm(u*11,v*2.5,H.z*.07+3,2)<.3:null;
+ const hole=d===1?(u,v)=>fbm(u*7,v*1.6,H.z*.07+3,2)<.36:null;
  for(let s=0;s<H.n;s+=2){const k=s/2,ns=Math.min(2,H.n-s),h=ns*H.sh;
   const dp=H.dp-k*H.step,w=H.w-k*(H.stepW||0),cz=H.z-(H.dp-dp)/2;const P=vsSE(w,dp,H.se||5,40);
-  vsWall(par,SH,P,0,y,cz,h,{nv:ns*2,hole});
+  vsWall(par,SH,P,0,y,cz,h,{nv:ns*3,hole});
   for(let j=0;j<ns;j++)if(!(d===1&&rng()<.3))vsWall(par,WN,P,0,y+j*H.sh+1,cz,1.25,{sc:1+.24/Math.min(w,dp)});
   vsLid(par,SH,P,0,y+h,cz);
   if(d===0)for(let i=0;i<5;i++){const a=rr(0,TAU),r=se(a,H.se||5);kput('dot',[Math.cos(a)*r*w/2*1.02,y+Math.floor(rr(0,ns))*H.sh+1.6,cz+Math.sin(a)*r*dp/2*1.02],vsQ(Math.PI/2-a),[1.1,.9,.3],CYAN);}
@@ -162,7 +163,7 @@ function vsHouse(C,S,H,d){const par=C.at(H.z),SH=d===0?MAT.white:MAT.rust,WN=d==
  // a free-fall lifeboat on its ramp at the back of the house
  if(d!==1){const lb=H.z-H.dp/2-2.4;kput('boxW',[H.w*.28,y*.35+S.F*.65,lb],vsQ(0,-.5),[2.8,2.6,8.5],new THREE.Color(0xf07a1a));}
  return out;}
-function vsFunnel(C,S,Fn,d){const par=C.at(Fn.z),SH=d===0?MAT.white:MAT.rust,P=vsSE(Fn.w,Fn.dp,Fn.se||3.2,28),x=Fn.x||0,y0=Fn.y0!=null?Fn.y0:S.F;
+function vsFunnel(C,S,Fn,d){const par=C.at(Fn.z),SH=d===0?MAT.white:MAT.vsRust,P=vsSE(Fn.w,Fn.dp,Fn.se||3.2,28),x=Fn.x||0,y0=Fn.y0!=null?Fn.y0:S.F;
  vsWall(par,SH,P,x,y0,Fn.z,Fn.h);vsWall(par,d===0?S.boot:MAT.vsBootRu,P,x,y0+Fn.h-5.5,Fn.z,2.4,{sc:1.015});
  vsLid(par,MAT.dark,P,x,y0+Fn.h,Fn.z);
  for(const o of [-.22,.22])kput(d===0?'pipe':'pipeR',[x+o*Fn.w,y0+Fn.h+1.2,Fn.z],null,[.45,2.4,.45],null);
@@ -170,7 +171,7 @@ function vsFunnel(C,S,Fn,d){const par=C.at(Fn.z),SH=d===0?MAT.white:MAT.rust,P=v
 // A deck crane on a pedestal: slewing cab, box jib at `el`, hoist wire.
 // Returns the jib tip (hull frame).
 function vsCrane(C,S,x,z,d,o){C.at(z);const y0=S.ydz(z),H=o.H||12,yaw=o.yaw||0,el=o.el||0,len=o.len||25;
- const col=d===1?new THREE.Color(0x9a7060):o.col||null,P=d===1?'postR':'postW',B=d===1?'boxR':'boxW',St=d===1?'strutR':'strutW';
+ const col=d===1?new THREE.Color(0x9a7060):d===3?new THREE.Color(0xe8d49a):o.col||null,P=d>0?'postR':'postW',B=d>0?'boxR':'boxW',St=d>0?'strutR':'strutW';
  kput(P,[x,y0+H/2,z],o.lean?vsQ(0,o.lean,0):null,[1.3,H,1.3],col);
  const cy=y0+H+1.6;kput(B,[x,cy,z],vsQ(yaw,0,o.lean||0),[4.2,3.2,5.2],col);
  const piv=[x+Math.sin(yaw)*1.8,cy+.2,z+Math.cos(yaw)*1.8],dir=[Math.sin(yaw)*Math.cos(el),Math.sin(el),Math.cos(yaw)*Math.cos(el)];
@@ -184,7 +185,7 @@ function vsCrane(C,S,x,z,d,o){C.at(z);const y0=S.ydz(z),H=o.H||12,yaw=o.yaw||0,e
 
 // ---------------------------------------------------------------- the cargo
 function vsHatches(C,S,d){const m=d>0?MAT.vsDeckR:MAT.vsHatch;
- for(const z of S.bays){const nr=S.rowsAt(z),w=nr*VS.RP+.8;const par=C.at(z);
+ for(const z of S.bays){if(d===3&&S.noHatchAt&&S.noHatchAt(z,S))continue;const nr=S.rowsAt(z),w=nr*VS.RP+.8;const par=C.at(z);
   pbBox(par,m,0,S.F+S.hc/2,z,w,S.hc,12.9,0,8);}
  // lashing bridges in the gaps between neighbouring bays
  for(let i=1;i<S.bays.length;i++){const za=S.bays[i-1],zb=S.bays[i];if(zb-za>VS.BP+.1)continue;const z=(za+zb)/2,par=C.at(z);
@@ -206,7 +207,7 @@ function vsStacksRuin(C,S){const hb=S.hb;
    const st=Math.max(0,nt-k);
    for(let t=0;t<st;t++)kput('pkCont40R',[x+rr(-.08,.08),S.yb+t*VS.TP,z],vsQ(Math.PI/2+rr(-.02,.02)),1,portContColor(1));
    for(let j=0;j<nt-st;j++){
-    if((edge||fall)&&rng()<.55){C.wat();kput('pkCont40R',[lo*(hb+rr(3,40)),rr(-1.9,-.4),z+rr(-14,14)],qEuler(rr(-.25,.25),rr(0,TAU),rr(-.3,.3)),1,portContColor(1));C.use(p);}
+    if((edge||fall)&&rng()<.38){C.wat();kput('pkCont40R',[lo*(hb+rr(3,34)),rr(-2.3,-1.1),z+rr(-14,14)],vsQ(rr(0,TAU),rr(-.35,.35),rr(-.3,.3)),1,portContColor(1));C.use(p);}
     else if(rng()<.7)kput('pkCont40R',[x+lo*rr(.8,4),S.yb+(st+j*.7)*VS.TP-rr(0,1),z+rr(-2,2)],vsQ(Math.PI/2+rr(-.3,.3),rr(-.1,.1),lo*rr(-.9,-.15)),1,portContColor(1));}}}}
 
 // ---------------------------------------------------------------- ruin dressing
@@ -233,6 +234,21 @@ function vsWalk(a,b,w,o){o=o||{};const sg=o.sag||0,n=sg?6:1,dx=b[0]-a[0],dz=b[2]
  if(o.rails!==false)for(const s of [1,-1])for(const E of [a,b])kput('postR',[E[0]+s*px,E[1]+.5,E[2]+s*pz],null,[.06,1,.06],VS_RAIL);}
 // A string of warm lamps between two points.
 function vsLights(a,b,n,sag){for(let i=1;i<n;i++){const t=i/n;kput('dot',[lerp(a[0],b[0],t),lerp(a[1],b[1],t)-(sag||0)*Math.sin(Math.PI*t),lerp(a[2],b[2],t)],null,[.22,.22,.22],WARM);}}
+// A glow at night (FIREKIT: shown only after dark) round a lamp or a fire.
+function vsGlow(x,y,z,s){kput('emberB',[x,y,z],qEuler(0,rng()*TAU,0),[s,s*.8,s],new THREE.Color().setHSL(rr(.06,.09),1,.3));}
+// The old accommodation, lived in: shacks hung round every tier on plank
+// brackets, facing out, and warm lit rooms along the dead window bands.
+function vsHouseTown(C,S,hs,H,o){o=o||{};const n=H.se||5;C.at(H.z);
+ hs.tiers.forEach((T,ti)=>{const P=t=>{const r=se(t,n);return[Math.cos(t)*r*T.w/2,T.cz+Math.sin(t)*r*T.dp/2];};
+  const cnt=Math.round((T.w+T.dp)*(o.dens||.35));
+  for(let i=0;i<cnt;i++){const a=rr(0,TAU);if(ti===hs.tiers.length-1&&Math.sin(a)>.5)continue;
+   const p=P(a),q=P(a+.01),tx=q[0]-p[0],tz=q[1]-p[1],L=Math.hypot(tx,tz)||1,nx=tz/L,nz=-tx/L;
+   const w=rr(2.2,3.4),dp=rr(2,3),x=p[0]+nx*(dp/2+.3),z=p[1]+nz*(dp/2+.3),y=T.y+Math.floor(rr(0,T.h/H.sh))*H.sh+.3,yaw=Math.atan2(nx,nz);
+   kput('plank',[x,y-.12,z],vsQ(yaw),[w+.6,.2,dp+.8],null);
+   beam('strutR',[p[0],y-2.2,p[1]],[x+nx*dp*.4,y-.2,z+nz*dp*.4],.1,.1,null);
+   vsShack(x,y,z,w,dp,2.4,yaw,{lit:.55});}
+  for(let i=0;i<(T.w+T.dp)*.3;i++){const a=rr(0,TAU),r=se(a,n);
+   kput('dot',[Math.cos(a)*r*T.w/2*1.02,T.y+Math.floor(rr(0,T.h/H.sh))*H.sh+1.6,T.cz+Math.sin(a)*r*T.dp/2*1.02],vsQ(Math.PI/2-a),[1,.8,.3],WARM);}});}
 // A shack: corrugated box, tarp roof, a window or two. Returns its roof height.
 function vsShack(x,y,z,w,dp,h,yaw,o){o=o||{};kput('shantyBox',[x,y+h/2,z],vsQ(yaw),[w,h,dp],o.col||vsShackC());
  kput('shantyRoof',[x,y+h+.1,z],vsQ(yaw,rr(.05,.2)*(rng()<.5?1:-1)),[w*1.2,1,dp*1.2],null);
@@ -275,7 +291,7 @@ function vsReclaimHull(C,S,o){o=o||{};const hb=S.hb,L2=S.L2,PATCH=['patchPlate',
  // the pontoon on the sea side, stairs down to it, skiffs along it
  C.wat();const pz0=-L2*.34,pz1=L2*.2,px=ps*(hb+2.2);
  for(let z=pz0;z<pz1;z+=8.4)kput('plank',[px,.32,z+4],null,[3.4,.36,8],null);
- for(let z=pz0+4;z<pz1;z+=16){kput('postR',[px+ps*1.5,1.5,z],null,[.08,2.4,.08],VS_RAIL);kput('dot',[px+ps*1.5,2.8,z],null,[.35,.35,.35],WARM);}
+ for(let z=pz0+4;z<pz1;z+=16){kput('postR',[px+ps*1.5,1.5,z],null,[.08,2.4,.08],VS_RAIL);kput('dot',[px+ps*1.5,2.8,z],null,[.35,.35,.35],WARM);vsGlow(px+ps*1.5,2.6,z,2);}
  for(const zs of [pz0+6,pz1-18]){C.at(zs);vsZig(ps*(hb+.95),.5,S.ydz(zs)+.05,zs,1,ps,1.1);}
  C.wat();for(let i=0;i<(o.boats||10);i++){const z=rr(pz0,pz1);portSkiff(ps*(hb+6.2+rr(0,2.5)+(i%3)*4.5),z,rr(-.12,.12)+(rng()<.5?0:Math.PI));}
  if(sh){const z=sh.z,sd=sh.sd,gap=sh.dist-hb;C.at(z);const yd=S.ydz(z);
@@ -310,7 +326,7 @@ function vsShip(scene,gx,gz,d,opt,S0){
  const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);KOFF=[gx,0,gz];
  const S=vsLines(Object.assign({},S0));
  const C=vsCtx(G,opt.heading||0,d===1?S.ruin.parts:[{}]);S.C=C;
- S.holes=[];if(d===1)for(let i=0;i<S.ruin.holes;i++)S.holes.push({z:rr(-.7,.7)*S.L2,y:rr(S.T*.1,S.F*.8),rz:rr(2.5,9),ry:rr(1.5,4),sd:C.parts[0].roll>0?(rng()<.7?1:-1):(rng()<.7?-1:1)});
+ S.holes=[];if(d===1)for(let i=0;i<S.ruin.holes;i++)S.holes.push({z:rr(-.7,.7)*S.L2,y:rr(S.F*.4,S.F*.85),rz:rr(2.5,8),ry:rr(1.2,Math.max(1.6,S.F*.3)),sd:i%2?1:-1});
  if(S.crack!=null&&d===1)S.holes.push({z:S.crack,y:S.F*.5,rz:6,ry:S.F*.9,sd:1},{z:S.crack,y:S.F*.4,rz:5,ry:S.F*.8,sd:-1});
  vsHull(C,S,d);
  if(!(d===3&&S.noHatch))vsHatches(C,S,d);
@@ -336,6 +352,8 @@ function vsFeederTown(C,S){const hb=S.hb,yb=S.yb,H=S.house,hs=S.hs;
   for(const sd of [1,-1]){const lv=1+(rng()<.55?1:0);let y=yb;
    for(let t=0;t<lv;t++)y=vsHome(sd*xw,y,z,Math.PI/2,true,{sides:[-sd,sd],lit:.5});
    kput('plank',[sd*(xw+1.9),yb+VS.TP-.1,z],null,[1.4,.14,11],null);                         // a balcony over the water
+   if(lv>1){kput('plank',[sd*(xw-1.9),yb+VS.TP-.05,z],null,[1.3,.14,12.2],null);kput('pkStair',[sd*(xw-1.9),yb,z-6.1-2.9],vsQ(0),[1.1,1.3,1.2],null);
+    for(let k=0;k<2;k++)kput('pkCloth',[sd*(xw-1.3),yb+VS.TP+1.9,z+rr(-5,5)],vsQ(Math.PI/2),[rr(1,2),rr(.8,1.6),1],vsPaint());}
    if(lv>1&&rng()<.6)vsShack(sd*xw,y,z+rr(-3,3),rr(2.4,3),rr(3,4.5),2.4,Math.PI/2*(rng()<.5?1:0),{});
    else portGarden(sd*xw,y,z,2,10,3);}
   for(const sd of [1,-1])for(let k=-1;k<=1;k++)portStall(sd*(xw-3.6),yb,z+k*3.8,sd>0?-Math.PI/2:Math.PI/2);
@@ -345,7 +363,7 @@ function vsFeederTown(C,S){const hb=S.hb,yb=S.yb,H=S.house,hs=S.hs;
   for(let j=0;j<3;j++){const x=(j-1)*aw;kput('pkAwn',[x,yb+4.7,z],vsQ(0,0,(j%2?.16:-.16)),[aw*1.02,1,12.6],vsPaint());
    for(const e of [-1,1])for(const f of [-6,6])kput('postR',[x+e*aw/2,yb+2.3,z+f],null,[.1,4.6,.1],VS_RAIL);}
   vsLights([-xw,yb+4.1,z-6.2],[xw,yb+4.1,z-6.2],10,.5);vsLights([-xw,yb+4.1,z+6.2],[xw,yb+4.1,z+6.2],10,.5);
-  portFigures(0,yb,z,14,5);}
+  portFigures(0,yb,z,14,5);vsGlow(0,yb+2.6,z,3.2);}
  C.reg('Market ship — market deck',0,(S.bays[0]+S.bays[S.bays.length-1])/2,(S.bays[S.bays.length-1]-S.bays[0])/2+7,12,S.F);
  // ropes from the raised jibs down to the awnings, a shack on each cab, a basket house hung off one jib
  S.cranes.forEach((z,i)=>{const tp=S.tips[i];C.at(z);
@@ -354,14 +372,12 @@ function vsFeederTown(C,S){const hb=S.hb,yb=S.yb,H=S.house,hs=S.hs;
   kput('postR',[0,S.F+12+8,z],null,[.06,4,.06],VS_RAIL);kput('pkCloth',[.7,S.F+12+10,z],vsQ(Math.PI/2),[1.4,.9,1],vsPaint());
   if(i===1){const hy=tp[1]-8;vsShack(tp[0],hy,tp[2],3,3,2.4,.3,{lit:.8});vsPlank(tp,[tp[0],hy+2.6,tp[2]],.05,.05,VS_RAIL,'strutR');}});
  // --- the aft house: shacks climbing its flanks on brackets, a roof village, a garden
- for(const T of hs.tiers)for(const sd of [1,-1])for(let k=0;k<2;k++){if(rng()<.3)continue;const z=T.cz+rr(-T.dp*.3,T.dp*.3),x=sd*(T.w/2+1.4),y=T.y+rr(0,T.h-2.6);
-  kput('plank',[x,y-.1,z],null,[3,.2,3.6],null);beam('strutR',[sd*T.w/2,y-2,z],[x+sd*1.2,y-.2,z],.12,.12,null);
-  vsShack(x,y,z,2.6,3.2,2.4,Math.PI/2,{});}
+ vsHouseTown(C,S,hs,H,{dens:.55});
  for(const T of hs.tiers.slice(0,-1)){portGarden(0,T.y+T.h,T.cz+T.dp/2-1,T.w*.7,1.6,3);for(let i=0;i<4;i++)kput('vine',[rr(-.4,.4)*T.w,T.y+T.h,T.cz+T.dp/2+.2],null,[1,rr(1.5,4),1],null);}
  {let y=hs.top-.2;const bz=hs.bz;
   for(let i=0;i<6;i++){const x=rr(-H.bw*.4,H.bw*.4),z=bz+rr(-2.5,1.5);const y2=vsShack(x,y,z,rr(2.4,3.4),rr(2.4,3.6),2.4,rr(-.2,.2),{});
    if(rng()<.5)vsShack(x+rr(-.4,.4),y2,z,2.4,2.6,2.2,rr(-.3,.3),{});}
-  VEG.tree(-H.bw*.44,y,bz,0,6);VEG.tree(H.bw*.42,y,bz+1,2,5);
+  vsGlow(0,y+1.5,bz,4);VEG.tree(-H.bw*.44,y,bz,0,6);VEG.tree(H.bw*.42,y,bz+1,2,5);
   portWashLine(-H.bw/2,bz+2,H.bw/2,bz+2,y+2,12);
   kput('pkDish',[2,y+2.5,bz-2],vsQ(2),1.4,null);kput('waterButt',[-3,y+1.2,bz-2.5],null,[1.3,2.4,1.3],null);}
  const fz=S.funnel.z;C.at(fz);portWashLine(-4,fz+2,-H.w*.3,H.z-H.dp/2,S.F+10,8);portWashLine(3,fz+2,H.w*.3,H.z-H.dp/2,S.F+13,7);
