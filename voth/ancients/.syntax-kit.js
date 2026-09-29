@@ -23135,7 +23135,7 @@ const VIEWS={
  'Houses DEF intact':[-ROWS.house2.s+65,22,ROWS.house2.z+120,-ROWS.house2.s+65,6,ROWS.house2.z],'Houses DEF ruined':[ROWS.house2.s+65,22,ROWS.house2.z+120,ROWS.house2.s+65,6,ROWS.house2.z],
  'Skyscraper D':ROWV('skyD',900,300,180),'Skyscraper E':ROWV('skyE',900,300,190),'Skyscraper F':ROWV('skyF',900,300,160),
  'Toppled D':[ROWS.skyD.t-200,120,ROWS.skyD.z+420,ROWS.skyD.t+120,40,ROWS.skyD.z],'Toppled E':[ROWS.skyE.t-200,120,ROWS.skyE.z+420,ROWS.skyE.t+120,40,ROWS.skyE.z],'Toppled F':[ROWS.skyF.t-200,120,ROWS.skyF.z+420,ROWS.skyF.t+120,40,ROWS.skyF.z],
- 'The Gate':[0,380,ROWS.arc.z+700,0,170,ROWS.arc.z],'The Gate ruin':[ROWS.arc.s-500,20,ROWS.arc.z+560,ROWS.arc.s,160,ROWS.arc.z],
+ 'The Gate':[-ROWS.arc.s,380,ROWS.arc.z+700,-ROWS.arc.s,170,ROWS.arc.z],'The Gate ruin':[ROWS.arc.s-500,20,ROWS.arc.z+560,ROWS.arc.s,160,ROWS.arc.z],
  'Robotics factory':ROWV('robo',600,220,30),'Robotics yard':[-ROWS.robo.s-60,6,ROWS.robo.z+230,-ROWS.robo.s+60,25,ROWS.robo.z-30],
  'Campus':[0,420,ROWS.campus.z+900,0,40,ROWS.campus.z],'Campus intact':[-ROWS.campus.s+40,90,ROWS.campus.z+560,-ROWS.campus.s-40,40,ROWS.campus.z+60],'Campus ruined':[ROWS.campus.s+40,90,ROWS.campus.z+560,ROWS.campus.s-40,40,ROWS.campus.z+60],'Campus lawn':[-ROWS.campus.s-60,14,ROWS.campus.z+400,-ROWS.campus.s-60,30,ROWS.campus.z+200],'Campus courtyard':[-ROWS.campus.s-70,60,ROWS.campus.z+250,-ROWS.campus.s-70,15,ROWS.campus.z+170],
  'Skyscraper G':ROWV('skyG',800,200,110),'Skyscraper H':ROWV('skyH',900,300,170),'Toppled G':[ROWS.skyG.t-250,120,ROWS.skyG.z+450,ROWS.skyG.t+60,40,ROWS.skyG.z],'Toppled H':[ROWS.skyH.t-200,120,ROWS.skyH.z+420,ROWS.skyH.t+120,40,ROWS.skyH.z],
