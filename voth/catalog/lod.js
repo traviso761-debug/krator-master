@@ -23,6 +23,8 @@
           * don't build a big surface out of many small pieces (a wall of
             1 m bricks disappears at L2); lay the mass, then detail on top;
           * builds MAY read F.lod (always 0 here) — reserved for hand LODs.
+     2b. L2 drops 'cloth'-family parts (canopies, awnings, sails): their posts
+        fall under the size cut, so the cloth would float.
      3. Point lights (F.lamp) are dropped when LOD is on: a forward renderer
         pays for every light on every material, and a street of lamps makes
         the whole catalog crawl. The glow balls that mark lamps stay.
@@ -80,7 +82,7 @@ const KratorLOD = (function () {
       for (let i = 0; i < n; i++) { vcol[i * 3] = C.getX(i) * c.r; vcol[i * 3 + 1] = C.getY(i) * c.g; vcol[i * 3 + 2] = C.getZ(i) * c.b; }
     }
     if (g !== mesh.geometry) g.dispose();
-    return { pos, nor, n, ext, fam: famOf(mesh.material), r: c.r, g: c.g, b: c.b, vcol };
+    return { pos, nor, n, ext, fam: famOf(mesh.material), cloth: mesh.material.userData.family === 'cloth', r: c.r, g: c.g, b: c.b, vcol };
   }
 
   function merge(parts, famFilter) {
@@ -107,7 +109,10 @@ const KratorLOD = (function () {
   function levelGroup(parts, minExt, oneMesh, lvl) {
     const grp = new THREE.Group();
     grp.userData.lodLevel = lvl;
-    const keep = parts.filter((p) => p.ext >= minExt);
+    /* L2 also drops cloth: canopies, awnings and sails are big enough to
+       survive the size cut, but the thin posts holding them up are not, so
+       at distance they would hang in the air */
+    const keep = parts.filter((p) => p.ext >= minExt && !(lvl === 2 && p.cloth));
     const fams = oneMesh ? ['matte'] : ['matte', 'metal', 'glass', 'glow'];
     let tris = 0;
     for (const f of fams) {
@@ -169,6 +174,15 @@ const KratorLOD = (function () {
       if (lvl < 0) { o.autoUpdate = true; }
       else { o.autoUpdate = false; o.levels.forEach((L, i) => { L.object.visible = i === lvl; }); }
     });
+  };
+
+  /* remember each material's family label ('cloth', 'wood', ...): mat() caches
+     by (colour, family), so a material belongs to exactly one family */
+  const _mat = window.mat;
+  window.mat = function (color, family) {
+    const m = _mat(color, family);
+    if (family && !m.userData.family) m.userData.family = family;
+    return m;
   };
 
   /* wrap the engine's instance builder so every building (and every inspector

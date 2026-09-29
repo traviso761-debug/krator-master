@@ -947,10 +947,10 @@
     key: 'voth_house_poor', name: 'Poor House', culture: 'voth', family: 'housing', source: 'voth-housing',
     districts: ['poor', 'warren', 'shore'], wealth: [0, 0.35],
     blurb: 'Low-class Voth dwellings: plaster rowhouses, mud courtyard hovels, flank-galleried tenements, shore huts on piles and mudbrick plinth houses, every roof put to use.',
-    w: 15, d: 12, h: 14, variants: 5,
+    w: 15.3, d: 11.8, h: 14.3, variants: 5,
     variantDims: [
-      { w: 15, d: 9.8, h: 10.2 },
-      { w: 10.6, d: 10.2, h: 5.4 },
+      { w: 15.3, d: 10.3, h: 10.6 },
+      { w: 10.9, d: 10.9, h: 5.1 },
       { w: 9.7, d: 11.8, h: 14.3 },
       { w: 14.6, d: 9.9, h: 8.2 },
       { w: 10.6, d: 11.6, h: 9.1 }
@@ -1450,7 +1450,7 @@
     key: 'voth_house_middle', name: 'Middle-Class House', culture: 'voth', family: 'housing', source: 'voth-housing',
     districts: ['common', 'core'], wealth: [0.3, 0.7],
     blurb: 'Middle-class Voth houses: a Hlaalu block with a copper-roofed loft, a Velothi tower-house with pergola wing, a gallery courtyard house, a canal house with water door and altana, and a chamfered corner house under a shade sail.',
-    w: 17, d: 17, h: 17, variants: 5,
+    w: 17.9, d: 17.7, h: 17.6, variants: 5,
     variantDims: [
       { w: 14.8, d: 12.8, h: 13.2 },
       { w: 14.6, d: 11.7, h: 17.6 },
@@ -1459,5 +1459,561 @@
       { w: 13.3, d: 13.3, h: 11.8 }
     ],
     build: function (F) { middle(F, kit(F)); }
+  });
+  /* ================================================================ RICH */
+  function rich(F, K) {
+    const c = shade(F.pick(STONE), 0.06), trim = shade(c, -0.14), dark = shade(c, -0.3);
+    const marble = F.pick(MARBLE), jade = F.pick(JADE), lapis = F.pick(LAPIS), porph = F.pick(PORPH);
+    const tim = F.pick(TIMBERS), tim2 = shade(tim, 0.15), shutC = F.pick(SHUT);
+    const cop = shade(COPPER, F.rr(-0.04, 0.04));
+    function statue(x, z, y, col) {
+      F.box(x, y, z, 1.0, 1.1, 1.0, 0, shade(col, -0.2), 'stone');
+      F.box(x, y + 1.1, z, 1.15, 0.15, 1.15, 0, shade(col, -0.3), 'stone');
+      F.box(x, y + 1.25, z, 0.7, 0.12, 0.5, 0, col, 'stone');
+      [-0.14, 0.14].forEach(function (k) { F.cyl(x + k, y + 1.37, z, 0.11, 0.8, 0, col, 'stone'); });
+      F.blob(x, y + 2.55, z, 0.3, 0.9, 0, col, 'stone');
+      F.cyl(x, y + 2.1, z, 0.3, 0.5, 0, shade(col, -0.05), 'stone');
+      F.ball(x, y + 3.1, z, 0.16, col, 'stone');
+      F.rod(x - 0.28, y + 2.85, z, x - 0.55, y + 3.4, z + 0.1, 0.07, col, 'stone');
+      F.rod(x + 0.28, y + 2.85, z, x + 0.4, y + 2.2, z + 0.15, 0.07, col, 'stone');
+      F.rod(x - 0.55, y + 2.2, z + 0.1, x - 0.55, y + 3.9, z + 0.1, 0.035, GOLD, 'metal');
+    }
+    /* row of small tiles along a band on all four faces of a block */
+    function mosaic(B, y, cols, step) {
+      for (let s = 0; s < 4; s++) {
+        const L = s < 2 ? B.w : B.d, n = Math.floor(L / step);
+        for (let i = 0; i < n; i++) {
+          K.fb(B, s, -L / 2 + (i + 0.5) * L / n, y, 0.22, 0.22, 0.06, 0.08, cols[i % cols.length], 'stone');
+        }
+      }
+    }
+
+    if (F.variant === 0) {
+      /* -------- Hlaalu mansion: three-storey centre with a top-floor loggia,
+         forward wings with oriels, a columned ground loggia with terrace
+         over it, green copper hip roofs with wide flared eaves */
+      const yP = 0.6;
+      const C = { x: 0, z: -1.5, w: 12, d: 9 }, Ct = { x: 0, z: -2.3, w: 12, d: 7.4 };
+      const Lw = { x: -9, z: 0.5, w: 6, d: 10 }, Rw = { x: 9, z: 0.5, w: 6, d: 10 };
+      F.box(0, 0, -0.5, 25.2, yP, 13.2, 0, dark, 'stone');
+      F.box(0, yP - 0.12, -0.5, 25.4, 0.12, 13.4, 0, shade(dark, 0.1), 'stone');
+      K.flight(0, 7.4, 0, 6.1, 0, yP, 6.0, shade(dark, 0.08), { solid: true, base: 0 });
+      F.box(C.x, 0, C.z, C.w, 7.6, C.d, 0, c, 'stone');
+      F.box(Ct.x, 7.6, Ct.z, Ct.w, 3.5, Ct.d, 0, shade(c, 0.03), 'stone');
+      [Lw, Rw].forEach(function (W) { F.box(W.x, 0, W.z, W.w, 7.6, W.d, 0, c, 'stone'); });
+      /* jade string course at the first floor and a trim course at the second */
+      [C, Lw, Rw].forEach(function (B) {
+        F.box(B.x, 4.0, B.z, B.w + 0.2, 0.3, B.d + 0.2, 0, jade, 'stone');
+        F.box(B.x, 0.6, B.z, B.w + 0.14, 0.4, B.d + 0.14, 0, trim, 'stone');
+      });
+      F.box(C.x, 7.45, C.z, C.w + 0.2, 0.3, C.d + 0.2, 0, trim, 'stone');
+      [Lw, Rw].forEach(function (W) { F.box(W.x, 7.35, W.z, W.w + 0.2, 0.3, W.d + 0.2, 0, trim, 'stone'); });
+      /* ground loggia between the wings, terrace on it */
+      F.box(0, 4.0, 4.25, 12, 0.4, 2.5, 0, trim, 'stone');
+      for (let i = 0; i < 6; i++) {
+        const px = -5.4 + i * 2.16;
+        F.box(px, yP, 5.1, 0.7, 0.3, 0.7, 0, trim, 'stone');
+        F.cyl(px, yP + 0.3, 5.1, 0.26, 2.8, 0, marble, 'stone');
+        F.box(px, 3.7, 5.1, 0.7, 0.3, 0.7, 0, trim, 'stone');
+      }
+      F.box(0, 4.4, 5.35, 12, 0.14, 0.3, 0, jade, 'stone');
+      for (let i = 0; i < 30; i++) F.cyl(-5.8 + i * 11.6 / 29, 4.54, 5.35, 0.08, 0.7, 0, marble, 'stone');
+      F.box(0, 5.24, 5.35, 12, 0.14, 0.34, 0, trim, 'stone');
+      /* centre: door, windows, terrace doors, top loggia */
+      K.door(C, 0, 0, yP, 2.0, 3.0, { wall: c, arch: true, leaf: shade(tim, 0.05), ground: yP, jamb: 0.4 });
+      [-3.6, 3.6].forEach(function (u) { K.win(C, 0, u, 1.5, 1.1, 1.9, { wall: c, arch: true, bars: true }); });
+      [-3.6, 0, 3.6].forEach(function (u) { K.door(C, 0, u, 4.4, 1.2, 2.6, { wall: c, ground: 4.4, arch: true, jamb: 0.26, leaf: shutC }); });
+      const lz = C.z + C.d / 2 - 0.3;
+      for (let i = 0; i < 6; i++) {
+        const px = -5.6 + i * 11.2 / 5;
+        F.cyl(px, 7.9, lz, 0.22, 2.7, 0, marble, 'stone');
+        F.box(px, 10.5, lz, 0.55, 0.3, 0.55, 0, trim, 'stone');
+      }
+      F.box(0, 7.6, lz, 12, 0.3, 0.6, 0, trim, 'stone');
+      F.box(0, 10.8, lz, 12.2, 0.3, 0.7, 0, trim, 'stone');
+      K.rail(-5.8, lz + 0.05, 5.8, lz + 0.05, 7.9, 0.9, jade, 0.3);
+      [-3.4, 0, 3.4].forEach(function (u) { K.door(Ct, 0, u, 7.6, 1.1, 2.4, { wall: c, ground: 7.6, jamb: 0.2, leaf: shutC }); });
+      F.box(0, 7.62, lz - 0.7, 10, 0.02, 1.2, 0, F.pick(BANNER), 'cloth');
+      /* centre back and flanks above the wings */
+      [-4, -1.3, 1.3, 4].forEach(function (u) {
+        K.win(C, 1, u, 1.6, 1.1, 1.8, { wall: c, arch: true, shut: shutC });
+        K.win(C, 1, u, 4.9, 1.1, 1.8, { wall: c, arch: true, shut: shutC });
+        K.win(Ct, 1, u, 8.3, 1.0, 1.6, { wall: c, shut: shutC });
+      });
+      [-2.3, 0.3].forEach(function (u) {
+        K.win(Ct, 2, u, 8.3, 1.0, 1.6, { wall: c, shut: shutC });
+        K.win(Ct, 3, u, 8.3, 1.0, 1.6, { wall: c, shut: shutC });
+      });
+      F.box(0, 4.3, C.z - C.d / 2 - 0.6, 4.2, 0.25, 1.2, 0, trim, 'stone');
+      [-1.6, 1.6].forEach(function (px) { F.beam(px, 3.2, C.z - C.d / 2 - 0.05, px, 4.3, C.z - C.d / 2 - 1.0, 0.28, 0.28, trim, 'stone'); });
+      K.rail(-2.1, C.z - C.d / 2 - 1.15, 2.1, C.z - C.d / 2 - 1.15, 4.55, 0.9, IRON, 0.25);
+      /* wings: oriels on the fronts, windows all round */
+      [Lw, Rw].forEach(function (W, wi) {
+        const fz = W.z + W.d / 2;
+        [-1.7, 1.7].forEach(function (u) { K.win(W, 0, u, 1.5, 1.1, 1.9, { wall: c, arch: true, shut: shutC }); });
+        F.box(W.x, 4.5, fz + 0.5, 3.2, 2.4, 1.0, 0, shade(c, 0.04), 'stone');
+        F.box(W.x, 4.3, fz + 0.5, 3.4, 0.2, 1.2, 0, trim, 'stone');
+        F.box(W.x, 6.9, fz + 0.5, 3.5, 0.22, 1.25, 0, trim, 'stone');
+        F.pyrRoof(W.x, 7.1, fz, 3.6, 0.8, 2.6, 0, cop, 'roof');
+        [-1.2, 1.2].forEach(function (k) { F.beam(W.x + k, 3.3, fz + 0.05, W.x + k, 4.3, fz + 0.9, 0.28, 0.28, trim, 'stone'); });
+        [-0.95, 0, 0.95].forEach(function (k) { F.box(W.x + k, 5.0, fz + 1.02, 0.7, 1.5, 0.08, 0, DOOR, 'wood'); });
+        [-1, 1].forEach(function (k) { F.box(W.x + k * 1.62, 5.0, fz + 0.5, 0.06, 1.5, 0.6, 0, DOOR, 'wood'); });
+        const os = wi === 0 ? 3 : 2;
+        [-3, 0, 3].forEach(function (u) {
+          if (!(wi === 0 && u === 0)) {
+            K.win(W, os, u, 1.5, 1.1, 1.9, { wall: c, arch: true, shut: shutC });
+            K.win(W, os, u, 4.9, 1.1, 1.8, { wall: c, arch: true, shut: shutC });
+          }
+        });
+        [-1.5, 1.5].forEach(function (u) {
+          K.win(W, 1, u, 1.5, 1.0, 1.7, { wall: c, bars: true });
+          K.win(W, 1, u, 4.9, 1.0, 1.7, { wall: c, shut: shutC });
+        });
+        K.win(W, wi === 0 ? 2 : 3, 3.9, 1.5, 0.8, 1.5, { wall: c, arch: true });
+        K.hip(W.x, W.z, 7.6 + 0.28, 8.2, 12.2, 2.8, cop, { flare: 0.72, finC: shade(cop, -0.2) });
+        K.brackets(W, 7.6 + 0.28, 1.0, 4, tim);
+      });
+      K.door(Rw, 2, 3.0, yP, 1.3, 2.6, { wall: c, ground: yP, leaf: tim, lamp: true });
+      /* left wing chimney breast */
+      F.box(-12.4, yP, 0.5, 0.8, 10.0, 1.4, 0, shade(c, -0.06), 'stone');
+      F.box(-12.4, yP + 10.0, 0.5, 1.1, 0.35, 1.7, 0, trim, 'stone');
+      F.cyl(-12.4, yP + 10.35, 0.2, 0.2, 0.6, 0, dark, 'stone'); F.cyl(-12.4, yP + 10.35, 0.8, 0.2, 0.6, 0, dark, 'stone');
+      /* centre roof */
+      K.hip(0, -1.5, 11.1 + 0.28, 14.6, 11.6, 3.9, cop, { flare: 0.72, finC: shade(cop, -0.2) });
+      K.brackets(Ct, 11.1 + 0.28, 1.1, 4, tim);
+      K.chimney(-4.2, -4.8, 12.2, 2.2, c);
+      K.chimney(4.2, -4.8, 12.2, 2.2, c);
+      K.drain(C, 1, 5.7, yP, 7.6, c);
+      /* forecourt: lamps, potted citrus, benches */
+      [-4, 4].forEach(function (px) {
+        F.cyl(px, yP, 5.9, 0.12, 2.6, 0, IRON, 'metal');
+        F.ball(px, yP + 2.8, 5.9, 0.26, GLOW, 'glow');
+      });
+      [-11.6, 11.6].forEach(function (px) { K.pot(px, 5.7, yP, 1.3); });
+      [-3.3, 3.3].forEach(function (px) { F.box(px, yP, 3.4, 1.8, 0.45, 0.5, 0, marble, 'stone'); });
+    } else if (F.variant === 1) {
+      /* -------- Mournhold house: square two-storey block with mosaic bands,
+         corner turrets with blue caps, a portal frame with a calligraphy
+         band and statues, a tiled drum with a ribbed, ringed dome */
+      const yP = 0.8, H = 8.8, S = 7;
+      const Bk = { x: 0, z: 0, w: 14, d: 14 };
+      const tile = [GOLD, marble, jade, porph];
+      F.box(0, 0, 0, 15.4, yP, 15.4, 0, dark, 'stone');
+      F.box(0, yP - 0.12, 0, 15.6, 0.12, 15.6, 0, shade(dark, 0.1), 'stone');
+      F.box(0, 0, 0, 14, H, 14, 0, c, 'stone');
+      [4.6, 8.0].forEach(function (y) {
+        F.box(0, y, 0, 14.12, 0.42, 14.12, 0, lapis, 'stone');
+        mosaic(Bk, y + 0.1, tile, 0.7);
+      });
+      F.box(0, H - 0.1, 0, 14.6, 0.35, 14.6, 0, trim, 'stone');
+      const yR = H + 0.25;
+      K.parapet({ x: 0, z: 0, w: 14.4, d: 14.4 }, yR, 0.55, 0.3, c, []);
+      for (let s = 0; s < 4; s++) for (let i = 0; i < 12; i++) {
+        const p = K.at({ x: 0, z: 0, w: 14.4, d: 14.4 }, s, -6.2 + i * 12.4 / 11, -0.15);
+        F.blob(p[0], yR + 0.72, p[1], 0.26, 0.5, 0, trim, 'stone');
+      }
+      /* corner turrets */
+      [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(function (q) {
+        const tx = q[0] * S, tz = q[1] * S;
+        F.cyl(tx, 0, tz, 1.5, 0.8, 0, dark, 'stone');
+        F.cyl(tx, 0, tz, 1.3, 10.8, 0, shade(c, 0.03), 'stone');
+        [4.6, 8.0].forEach(function (y) { F.cyl(tx, y, tz, 1.38, 0.42, 0, lapis, 'stone'); });
+        F.cyl(tx, 10.6, tz, 1.45, 0.3, 0, trim, 'stone');
+        K.dome(tx, tz, 10.9, 1.45, 1.7, lapis, { ribs: 6, ribR: 0.05, ribC: GOLD });
+        F.cyl(tx, 12.5, tz, 0.06, 0.8, 0, GOLD, 'metal');
+        F.ball(tx, 13.35, tz, 0.14, GOLD, 'metal');
+        const a = Math.atan2(q[0], q[1]);
+        [2.2, 6.0, 9.2].forEach(function (y) {
+          F.box(tx + Math.sin(a) * 1.28, y, tz + Math.cos(a) * 1.28, 0.3, 1.1, 0.2, a, DOOR, 'wood');
+        });
+      });
+      /* drum, dome, lantern */
+      F.cyl(0, yR, 0, 4.8, 0.5, 0, trim, 'stone');
+      F.cyl(0, yR + 0.5, 0, 4.3, 3.2, 0, shade(c, 0.04), 'stone');
+      for (let i = 0; i < 12; i++) {
+        const a = (i + 0.5) / 12 * TAU, b = i / 12 * TAU;
+        const wx = Math.sin(a) * 4.3, wz = Math.cos(a) * 4.3;
+        F.box(wx, yR + 1.2, wz, 0.8, 1.6, 0.2, a, DOOR, 'wood');
+        F.box(wx * 0.998, yR + 2.8, wz * 0.998, 0.45, 0.3, 0.2, a, DOOR, 'wood');
+        F.box(Math.sin(b) * 4.35, yR + 0.5, Math.cos(b) * 4.35, 0.4, 3.2, 0.2, b, trim, 'stone');
+      }
+      F.cyl(0, yR + 3.7, 0, 4.45, 0.45, 0, lapis, 'stone');
+      const dy = yR + 4.15;
+      K.dome(0, 0, dy, 4.5, 4.4, shade(lapis, 0.12), { ribs: 16, ribR: 0.07, ribC: GOLD, ring: trim });
+      [0.35, 0.68].forEach(function (t) {
+        const ph = Math.asin(t);
+        F.cyl(0, dy + 4.4 * t - 0.06, 0, 4.5 * Math.cos(ph) + 0.05, 0.12, 0, GOLD, 'metal');
+      });
+      F.cyl(0, dy + 4.2, 0, 1.05, 1.3, 0, marble, 'stone');
+      for (let i = 0; i < 6; i++) { const a = i / 6 * TAU; F.box(Math.sin(a) * 1.03, dy + 4.5, Math.cos(a) * 1.03, 0.3, 0.7, 0.1, a, DOOR, 'wood'); }
+      F.dome(0, dy + 5.5, 0, 1.05, 0.9, 0, GOLD, 'metal');
+      F.cyl(0, dy + 6.3, 0, 0.07, 1.0, 0, GOLD, 'metal');
+      F.ball(0, dy + 7.35, 0, 0.18, GOLD, 'metal');
+      /* front portal (pishtaq) with calligraphy band */
+      const pz = S + 0.45;
+      F.box(0, 0, pz, 5.8, 10.4, 0.9, 0, marble, 'stone');
+      F.box(0, 10.4, pz, 6.1, 0.3, 1.1, 0, trim, 'stone');
+      for (let i = 0; i < 5; i++) F.pyrRoof(-2.4 + i * 1.2, 10.7, pz, 0.6, 0.6, 0.6, 0, lapis, 'stone');
+      F.box(0, yP, pz + 0.47, 3.2, 5.8, 0.06, 0, DOOR, 'wood');
+      F.box(0, yP + 5.8, pz + 0.47, 2.2, 0.8, 0.06, 0, DOOR, 'wood');
+      F.box(0, yP + 6.6, pz + 0.47, 1.0, 0.6, 0.06, 0, DOOR, 'wood');
+      F.box(0, yP, pz + 0.5, 2.0, 3.3, 0.1, 0, shade(tim, 0.02), 'wood');
+      F.box(0, yP + 3.3, pz + 0.52, 2.4, 0.3, 0.12, 0, GOLD, 'metal');
+      [-1, 1].forEach(function (k) {
+        F.box(k * 2.1, yP, pz + 0.48, 0.5, 7.9, 0.08, 0, BASALT[0], 'stone');
+        for (let i = 0; i < 9; i++) F.box(k * 2.1, yP + 0.4 + i * 0.85, pz + 0.53, 0.26, i % 2 ? 0.14 : 0.3, 0.04, 0, GOLD, 'metal');
+      });
+      F.box(0, yP + 7.9, pz + 0.48, 4.7, 0.55, 0.08, 0, BASALT[0], 'stone');
+      for (let i = 0; i < 11; i++) F.box(-2.0 + i * 0.4, yP + 8.02, pz + 0.53, i % 3 ? 0.18 : 0.3, 0.3, 0.04, 0, GOLD, 'metal');
+      [-1, 1].forEach(function (k) { F.ball(k * 1.9, yP + 3.0, pz + 0.75, 0.22, GLOW, 'glow'); F.rod(k * 1.9, yP + 3.2, pz + 0.45, k * 1.9, yP + 3.2, pz + 0.75, 0.05, IRON, 'metal'); });
+      K.flight(0, 9.9, 0, S + 0.9, 0, yP, 5.0, shade(marble, -0.08), { solid: true, base: 0 });
+      [-3.8, 3.8].forEach(function (px) { statue(px, 8.9, 0, F.pick(MARBLE)); });
+      /* windows: arched below with jade grilles, paired above with balconettes */
+      for (let s = 0; s < 4; s++) {
+        const us = s === 0 ? [-4.6] : [-4.6, 0];
+        us.concat([4.6]).forEach(function (u) {
+          if (s === 1 && u === 0) return;
+          K.win(Bk, s, u, 1.8, 1.1, 2.0, { wall: c, arch: true, bars: true, trim: marble });
+        });
+        [-4.6, 4.6].concat(s === 0 ? [] : [0]).forEach(function (u) {
+          [-0.65, 0.65].forEach(function (k) { K.win(Bk, s, u + k, 5.6, 0.8, 1.8, { wall: c, arch: true, trim: marble }); });
+          K.fb(Bk, s, u, 5.35, 2.6, 0.18, 0.7, 0.35, trim, 'stone');
+          const a = K.at(Bk, s, u - 1.25, 0.66), b = K.at(Bk, s, u + 1.25, 0.66);
+          F.rod(a[0], 6.2, a[1], b[0], 6.2, b[1], 0.04, IRON, 'metal');
+          for (let i = 0; i <= 6; i++) { const t = i / 6; F.rod(a[0] + (b[0] - a[0]) * t, 5.53, a[1] + (b[1] - a[1]) * t, a[0] + (b[0] - a[0]) * t, 6.2, a[1] + (b[1] - a[1]) * t, 0.03, IRON, 'metal'); }
+        });
+      }
+      K.door(Bk, 1, 0, yP, 1.6, 2.8, { wall: c, arch: true, ground: 0, leaf: shade(tim, 0.05), trim: marble });
+      /* roof terrace: pots, benches, a small awning */
+      [[-5.4, -3.2], [5.4, -3.2], [-5.4, 3.2], [5.4, 3.2]].forEach(function (p) { K.pot(p[0], p[1], yR, 1.2); });
+      F.box(0, yR, -5.6, 3.0, 0.45, 0.6, 0, marble, 'stone');
+      K.tent(0, 5.4, yR + 2.3, 4.0, 2.2, 0.5, F.pick(SAIL), { base: yR });
+      F.box(0, yR, 5.4, 1.6, 0.03, 1.2, 0, F.pick(BANNER), 'cloth');
+    } else if (F.variant === 2) {
+      /* -------- pagoda tower-house: four-storey tower with flared pent roofs
+         at each floor, a gallery under the wide cap, a lantern and a second
+         cap; a two-storey hall wing with its own flared hip and a porch */
+      const yP = 0.6, roofC = F.pick([cop, cop, F.pick(ROOF)]);
+      const T = { x: -3.5, z: -0.5, w: 8, d: 8 }, Wg = { x: 4.5, z: 0.5, w: 8, d: 10 };
+      F.box(1.0, 0, 0, 19, yP, 12.4, 0, dark, 'stone');
+      F.box(1.0, yP - 0.12, 0, 19.2, 0.12, 12.6, 0, shade(dark, 0.1), 'stone');
+      F.box(T.x, 0, T.z, T.w, 14.2, T.d, 0, c, 'stone');
+      F.box(Wg.x, 0, Wg.z, Wg.w, 7.4, Wg.d, 0, shade(c, -0.03), 'stone');
+      /* corner piers on the tower */
+      [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(function (q) {
+        F.box(T.x + q[0] * 3.85, 0, T.z + q[1] * 3.85, 0.6, 14.2, 0.6, 0, trim, 'stone');
+      });
+      /* flared pent roofs at the 2nd and 3rd floors */
+      [4.0, 7.4].forEach(function (y) {
+        F.pyrRoof(T.x, y, T.z, 10.6, 2.45, 10.6, 0, roofC, 'roof');
+        F.pyrRoof(T.x, y + 0.33, T.z, 9.3, 5.3, 9.3, 0, shade(roofC, 0.05), 'roof');
+        F.box(T.x, y - 0.22, T.z, 10.6, 0.22, 10.6, 0, shade(roofC, -0.3), 'wood');
+        K.brackets(T, y, 1.2, 3, tim);
+      });
+      /* top storey gallery */
+      F.box(T.x, 10.6, T.z, 10.4, 0.2, 10.4, 0, tim2, 'wood');
+      K.rail(T.x - 5.1, T.z - 5.1, T.x + 5.1, T.z - 5.1, 10.8, 1.0, tim, 0.4);
+      K.rail(T.x - 5.1, T.z + 5.1, T.x + 5.1, T.z + 5.1, 10.8, 1.0, tim, 0.4);
+      K.rail(T.x - 5.1, T.z - 5.1, T.x - 5.1, T.z + 5.1, 10.8, 1.0, tim, 0.4);
+      K.rail(T.x + 5.1, T.z - 5.1, T.x + 5.1, T.z + 5.1, 10.8, 1.0, tim, 0.4);
+      K.brackets(T, 10.6, 1.1, 3, tim);
+      [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(function (q) {
+        F.box(T.x + q[0] * 5.0, 10.8, T.z + q[1] * 5.0, 0.22, 3.4, 0.22, 0, tim, 'wood');
+      });
+      /* cap, lantern, second cap */
+      K.hip(T.x, T.z, 14.2 + 0.28, 12.4, 12.4, 5.5, roofC, { flare: 0.62, finial: false });
+      K.brackets({ x: T.x, z: T.z, w: 10.0, d: 10.0 }, 14.2 + 0.28, 1.1, 3, tim);
+      const Ln = { x: T.x, z: T.z, w: 3.2, d: 3.2 };
+      F.box(T.x, 17.2, T.z, 3.2, 2.4, 3.2, 0, shade(c, 0.05), 'stone');
+      for (let s = 0; s < 4; s++) K.win(Ln, s, 0, 18.0, 0.7, 1.1, { wall: c, arch: true, sill: false });
+      K.hip(T.x, T.z, 19.6 + 0.28, 5.2, 5.2, 2.8, shade(roofC, 0.05), { flare: 0.6, finC: GOLD });
+      F.cyl(T.x, 22.6, T.z, 0.05, 0.9, 0, GOLD, 'metal');
+      /* tower openings */
+      [0.6, 4.0, 7.4].forEach(function (y0, fl) {
+        for (let s = 0; s < 4; s++) {
+          [-1.8, 1.8].forEach(function (u) {
+            if (s === 2 && y0 < 7) return;
+            if (s === 0 && fl === 0) return;
+            K.win(T, s, u, y0 + (fl === 0 ? 1.2 : 1.0), 0.9, 1.6, { wall: c, arch: true, shut: fl === 1 ? shutC : false, bars: fl === 0 });
+          });
+        }
+      });
+      for (let s = 0; s < 4; s++) {
+        K.door(T, s, 0, 10.8, 1.1, 2.3, { wall: c, ground: 10.8, arch: true, jamb: 0.22, leaf: shutC });
+        [-2.4, 2.4].forEach(function (u) { K.win(T, s, u, 11.7, 0.8, 1.3, { wall: c, arch: true }); });
+      }
+      K.door(T, 0, 0, yP, 1.4, 2.7, { wall: c, ground: yP, arch: true, lamp: true, leaf: shade(tim, 0.05) });
+      /* hall wing */
+      F.box(Wg.x, 3.9, Wg.z, Wg.w + 0.2, 0.3, Wg.d + 0.2, 0, trim, 'stone');
+      F.box(Wg.x, 0.6, Wg.z, Wg.w + 0.14, 0.4, Wg.d + 0.14, 0, trim, 'stone');
+      K.hip(Wg.x, Wg.z, 7.4 + 0.28, 10.2, 12.2, 3.8, roofC, { flare: 0.65, finC: GOLD });
+      K.brackets(Wg, 7.4 + 0.28, 1.0, 4, tim);
+      K.door(Wg, 0, 0, yP, 1.6, 2.8, { wall: c, ground: yP, arch: true, leaf: shutC });
+      K.flight(4.5, 8.0, 4.5, 6.2, 0, yP, 3.0, shade(dark, 0.08), { solid: true, base: 0 });
+      K.hip(4.5, 6.35, 3.6 + 0.28, 3.8, 2.7, 1.2, roofC, { flare: 0.6, finC: GOLD });
+      [-1.6, 1.6].forEach(function (k) { F.rod(4.5 + k, 0, 7.5, 4.5 + k, 3.62, 7.5, 0.12, tim, 'wood'); });
+      F.box(4.5, 3.4, 7.5, 3.6, 0.2, 0.2, 0, tim, 'wood');
+      [-2.6, 2.6].forEach(function (u) {
+        K.win(Wg, 0, u, 1.6, 1.0, 1.8, { wall: c, arch: true, shut: shutC });
+        K.win(Wg, 0, u, 4.8, 1.0, 1.7, { wall: c, arch: true, shut: shutC });
+      });
+      K.win(Wg, 0, 0, 4.8, 1.2, 1.7, { wall: c, arch: true, screen: true });
+      [-3, 0, 3].forEach(function (u) {
+        K.win(Wg, 2, u, 1.6, 1.0, 1.8, { wall: c, arch: true, bars: true });
+        K.win(Wg, 2, u, 4.8, 1.0, 1.7, { wall: c, arch: true, shut: shutC });
+      });
+      [-2, 2].forEach(function (u) {
+        K.win(Wg, 1, u, 1.6, 1.0, 1.8, { wall: c, arch: true });
+        K.win(Wg, 1, u, 4.8, 1.0, 1.7, { wall: c, arch: true, shut: shutC });
+      });
+      K.drain(Wg, 2, -4.6, yP, 7.4, c);
+      /* planters and a lamp post by the porch, a bench under the tower */
+      [[1.9, 5.7], [7.1, 5.7]].forEach(function (p) { K.pot(p[0], p[1], yP, 1.3); });
+      F.box(-3.5, yP, 4.2, 2.2, 0.45, 0.6, 0, marble, 'stone');
+      F.cyl(-7.6, yP, 5.4, 0.1, 2.4, 0, IRON, 'metal');
+      F.ball(-7.6, yP + 2.6, 5.4, 0.24, GLOW, 'glow');
+    } else if (F.variant === 3) {
+      /* -------- terraced villa: arcaded ground storey, a first terrace with
+         a pergola and fountain, a second block whose roof is a garden with
+         pergola, canopy and planted cypresses, a top pavilion with a hip */
+      const yP = 0.4, st = shade(c, -0.06);
+      F.box(0, 0, -1, 20.6, yP, 14.6, 0, dark, 'stone');
+      /* L1 */
+      const L1 = { x: 0, z: -2.25, w: 20, d: 11.5 }, T1 = { x: 0, z: -1, w: 20, d: 14 };
+      F.box(L1.x, 0, L1.z, L1.w, 4.6, L1.d, 0, c, 'stone');
+      F.box(0, 4.2, 4.75, 20, 0.4, 2.5, 0, trim, 'stone');
+      F.box(0, 3.25, 5.65, 20, 0.95, 0.7, 0, c, 'stone');
+      for (let i = 0; i < 8; i++) {
+        const px = -9.65 + i * 19.3 / 7;
+        F.box(px, yP, 5.65, 0.7, 2.85, 0.7, 0, st, 'stone');
+        F.box(px, 2.9, 5.65, 0.85, 0.2, 0.85, 0, trim, 'stone');
+        if (i < 7) [0.55, 2.2].forEach(function (dx) {
+          F.box(px + dx, 3.0, 5.65, 0.5, 0.3, 0.6, 0, c, 'stone');
+        });
+      }
+      for (let i = 0; i < 7; i++) {
+        const px = -9.65 + (i + 0.5) * 19.3 / 7;
+        F.box(px - 0.95, 3.0, 5.65, 0.4, 0.25, 0.6, 0, c, 'stone');
+        F.box(px + 0.95, 3.0, 5.65, 0.4, 0.25, 0.6, 0, c, 'stone');
+      }
+      F.box(0, yP, 4.75, 20, 0.06, 2.5, 0, shade(c, -0.18), 'stone');
+      K.door(L1, 0, 0, yP, 1.8, 2.6, { wall: c, ground: yP, arch: true, leaf: shade(tim, 0.05) });
+      [-6.9, -4.1, 4.1, 6.9].forEach(function (u) { K.win(L1, 0, u, 1.3, 1.1, 1.8, { wall: c, arch: true, shut: shutC }); });
+      [-1.6, 1.6].forEach(function (u) { K.win(L1, 0, u, 1.3, 0.8, 1.5, { wall: c, bars: true }); });
+      [-7.5, -4.5, -1.5, 1.5, 4.5, 7.5].forEach(function (u) { K.win(L1, 1, u, 1.5, 1.0, 1.6, { wall: c, shut: shutC }); });
+      [-4.5, 0, 4.5].forEach(function (u) { K.win(L1, 2, u, 1.5, 1.0, 1.6, { wall: c, shut: shutC }); });
+      [-4.5, 2.5].forEach(function (u) { K.win(L1, 3, u, 1.5, 1.0, 1.6, { wall: c, bars: true }); });
+      F.box(0, 4.35, L1.z, 20.3, 0.3, L1.d + 0.3, 0, trim, 'stone');
+      /* terrace balustrade: front, flanks (gap for the stair), back corners */
+      const yT = 4.6, bal = marble;
+      K.rail(-10, 5.95, 10, 5.95, yT, 1.0, bal, 0.3);
+      K.rail(-9.95, -8, -9.95, -1.9, yT, 1.0, bal, 0.3);
+      K.rail(-9.95, -0.1, -9.95, 6, yT, 1.0, bal, 0.3);
+      K.rail(9.95, -8, 9.95, 6, yT, 1.0, bal, 0.3);
+      K.rail(-10, -7.95, -7, -7.95, yT, 1.0, bal, 0.3);
+      K.rail(7, -7.95, 10, -7.95, yT, 1.0, bal, 0.3);
+      /* grand stair up the left flank */
+      K.flight(-10.9, 5.8, -10.9, -1.0, 0, yT, 1.6, st, { solid: true, base: 0, rail: -1, railC: bal });
+      F.box(-10.9, 0, -1.7, 1.6, yT, 1.4, 0, st, 'stone');
+      F.box(-10.9, 0, 6.1, 1.9, 1.1, 0.5, 0, trim, 'stone');
+      K.pot(-10.9, 6.1, 1.1, 1.0);
+      /* L2 */
+      const L2 = { x: 0, z: -3.5, w: 14, d: 9 };
+      F.box(L2.x, yT, L2.z, L2.w, 4.0, L2.d, 0, shade(c, 0.03), 'stone');
+      F.box(L2.x, 8.4, L2.z, L2.w + 0.4, 0.3, L2.d + 0.4, 0, trim, 'stone');
+      [-5.2, -2.6, 0, 2.6, 5.2].forEach(function (u) { K.door(L2, 0, u, yT, 1.1, 2.5, { wall: c, ground: yT, jamb: 0.22, arch: u === 0, leaf: shutC }); });
+      [-3.5, 0, 3.5].forEach(function (u) { K.win(L2, 3, u, yT + 1.2, 1.0, 1.6, { wall: c, shut: shutC }); K.win(L2, 2, u, yT + 1.2, 1.0, 1.6, { wall: c, shut: shutC }); });
+      [-5, -2, 2, 5].forEach(function (u) { K.win(L2, 1, u, yT + 1.2, 1.0, 1.6, { wall: c }); });
+      /* first-terrace pergola, fountain, planters, olive trees */
+      K.pergola(-1.0, 3.5, yT, 10.0, 2.8, 2.6, { climb: true });
+      F.box(-1.0, yT, 3.5, 2.6, 0.75, 1.1, 0, marble, 'stone');
+      F.cyl(5.0, yT, 4.2, 1.0, 0.5, 0, marble, 'stone');
+      F.cyl(5.0, yT + 0.45, 4.2, 0.85, 0.06, 0, 0x4a5a5a, 'glass');
+      F.cyl(5.0, yT + 0.5, 4.2, 0.15, 0.9, 0, marble, 'stone');
+      F.cyl(5.0, yT + 1.4, 4.2, 0.4, 0.12, 0, marble, 'stone');
+      [[-9.0, 5.0], [9.0, 5.0], [-9.0, -6.9], [9.0, -6.9]].forEach(function (p, i) {
+        F.box(p[0], yT, p[1], 1.2, 0.7, 1.2, 0, st, 'stone');
+        if (i < 2) F.tree(p[0], p[1], 'olive', 2.6, yT + 0.7);
+        else F.blob(p[0], yT + 1.1, p[1], 0.6, 0.9, 0, F.pick(LEAF), 'leafy');
+      });
+      [-7.5, -3, 1.5].forEach(function (px) {
+        F.box(px, yT, 5.5, 2.4, 0.55, 0.6, 0, st, 'stone');
+        for (let k = -1; k <= 1; k++) F.blob(px + k * 0.7, yT + 0.7, 5.5, 0.4, 0.5, 0, F.pick(LEAF), 'leafy');
+      });
+      /* stair from the terrace to the roof garden */
+      K.flight(7.9, 3.4, 7.9, -2.0, yT, 8.7, 1.4, st, { solid: true, base: yT, rail: 1, railC: bal });
+      F.box(7.9, yT, -2.7, 1.4, 8.7 - yT, 1.4, 0, st, 'stone');
+      /* L2 roof garden */
+      const yG = 8.7;
+      K.parapet({ x: 0, z: -3.5, w: 14.4, d: 9.4 }, yG, 0.9, 0.25, bal, [{ s: 2, u: 0.8, len: 1.3 }], { cap: trim });
+      const L3 = { x: -2.5, z: -5, w: 7, d: 6 };
+      F.box(L3.x, yG, L3.z, L3.w, 3.1, L3.d, 0, shade(c, 0.06), 'stone');
+      F.box(L3.x, yG + 2.9, L3.z, L3.w + 0.2, 0.2, L3.d + 0.2, 0, trim, 'stone');
+      K.hip(L3.x, L3.z, yG + 3.1 + 0.28, 8.4, 7.4, 2.2, F.pick(ROOF), { finC: GOLD });
+      K.brackets(L3, yG + 3.38, 0.7, 3, tim);
+      K.door(L3, 0, 0, yG, 1.2, 2.3, { wall: c, ground: yG, arch: true, jamb: 0.22, leaf: shutC });
+      [-2.2, 2.2].forEach(function (u) { K.win(L3, 0, u, yG + 0.9, 0.9, 1.4, { wall: c, shut: shutC }); });
+      [0].forEach(function (u) { K.win(L3, 3, u, yG + 0.9, 0.9, 1.4, { wall: c }); K.win(L3, 2, u, yG + 0.9, 0.9, 1.4, { wall: c, shut: shutC }); });
+      [-1.8, 1.8].forEach(function (u) { K.win(L3, 1, u, yG + 0.9, 0.9, 1.4, { wall: c }); });
+      K.pergola(-2.5, -0.65, yG, 6.8, 2.4, 2.4, { vines: 5 });
+      K.canopy(4.0, -4.6, yG + 2.6, 4.6, 5.0, F.pick(SAIL), { posts: [[-1, -1], [1, -1], [-1, 1], [1, 1]], base: yG, val: [0, 2] });
+      F.box(4.0, yG, -4.6, 2.2, 0.03, 3.0, 0, F.pick(BANNER), 'cloth');
+      F.box(4.0, yG, -4.6, 1.6, 0.7, 0.9, 0, tim2, 'wood');
+      [[-6.4, 0.4], [6.4, 0.4]].forEach(function (p) {
+        F.cyl(p[0], yG, p[1], 0.45, 0.6, 0, 0x8a5a3a, 'clay');
+        F.tree(p[0], p[1], 'cypress', 3.4, yG + 0.6);
+      });
+      [-4.5, -1.5, 1.5, 4.5].forEach(function (px) {
+        F.box(px, yG, 0.65, 2.0, 0.5, 0.5, 0, st, 'stone');
+        for (let k = -1; k <= 1; k++) F.blob(px + k * 0.55, yG + 0.6, 0.65, 0.32, 0.4, 0, F.pick(LEAF), 'leafy');
+      });
+      K.chimney(-5.2, -7.3, yG + 3.1, 1.2, c);
+      K.drain(L2, 1, 6.6, yT, 8.6, c);
+      K.drain(L1, 1, -9.6, 0.4, 4.6, c);
+    } else {
+      /* -------- canal palazzo: quay plinth, arcaded portico with a water
+         gate and water stair, piano nobile with a five-light window and a
+         balcony on the portico, merlon crest, roof belvedere and canopy,
+         walled garden behind */
+      const yQ = 1.0, P = { x: 0, z: -1, w: 18, d: 12 }, H = 13.6;
+      const qc = shade(c, -0.24);
+      F.box(0, 0, 0.5, 20, yQ, 16, 0, qc, 'stone');
+      F.box(0, yQ - 0.15, 0.5, 20.2, 0.18, 16.2, 0, shade(qc, 0.12), 'stone');
+      F.box(0, 0, 0.5, 20.06, 0.35, 16.06, 0, 0x4a5a4a, 'stone');
+      F.box(P.x, 0, P.z, P.w, H, P.d, 0, c, 'stone');
+      /* quoins */
+      [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(function (q) {
+        for (let i = 0; i < 12; i++) {
+          const w = i % 2 ? 0.6 : 1.0;
+          F.box(q[0] * (9 - w / 2 + 0.04), yQ + i * 1.05, P.z + q[1] * (6 - 0.3 + 0.04), w, 0.55, 0.6, 0, marble, 'stone');
+          F.box(q[0] * (9 - 0.3 + 0.04), yQ + i * 1.05, P.z + q[1] * (6 - w / 2 + 0.04), 0.6, 0.55, w, 0, marble, 'stone');
+        }
+      });
+      F.box(P.x, 5.5, P.z, P.w + 0.3, 0.3, P.d + 0.3, 0, trim, 'stone');
+      F.box(P.x, 9.9, P.z, P.w + 0.2, 0.25, P.d + 0.2, 0, trim, 'stone');
+      F.box(P.x, H - 0.1, P.z, P.w + 0.7, 0.5, P.d + 0.7, 0, trim, 'stone');
+      /* portico */
+      [1.8, 4.2, 6.6, 8.65].forEach(function (px) {
+        [-1, 1].forEach(function (k) {
+          F.box(k * px, yQ, 6.85, 0.7, 3.6, 0.7, 0, marble, 'stone');
+          F.box(k * px, yQ + 3.5, 6.85, 0.9, 0.2, 0.9, 0, trim, 'stone');
+        });
+      });
+      F.box(0, 4.6, 6.85, 18, 0.7, 0.7, 0, c, 'stone');
+      for (let i = 0; i < 8; i++) {
+        const xs = [-8.65, -6.6, -4.2, -1.8, 1.8, 4.2, 6.6, 8.65];
+        if (i === 7) break;
+        const a = xs[i], b = xs[i + 1];
+        F.box(a + 0.55, 4.2, 6.85, 0.45, 0.4, 0.66, 0, c, 'stone');
+        F.box(b - 0.55, 4.2, 6.85, 0.45, 0.4, 0.66, 0, c, 'stone');
+      }
+      F.box(0, 5.3, 6.1, 18, 0.35, 2.2, 0, trim, 'stone');
+      F.box(0, yQ, 6.0, 18, 0.05, 2.0, 0, shade(c, -0.18), 'stone');
+      K.rail(-8.9, 7.1, 8.9, 7.1, 5.65, 1.0, marble, 0.3);
+      /* behind the portico: water door, goods doors, windows */
+      const fz = P.z + P.d / 2;
+      K.door(P, 0, 0, yQ, 2.8, 3.1, { wall: c, ground: yQ, arch: true, leaf: 0x3a4a3a, jamb: 0.35 });
+      [-3.0, 3.0].forEach(function (u) { K.door(P, 0, u, yQ, 1.6, 2.6, { wall: c, ground: yQ, leaf: tim, jamb: 0.25 }); });
+      [-7.7, 7.7].forEach(function (u) { K.win(P, 0, u, yQ + 1.2, 0.9, 1.4, { wall: c, bars: true }); });
+      /* water stair, poles, boat */
+      K.flight(0, 10.3, 0, 8.5, 0, yQ, 3.6, shade(qc, 0.08), { solid: true, base: 0 });
+      K.mooring(-2.6, 9.1, 3.6, lapis, marble);
+      K.mooring(2.6, 9.1, 3.6, lapis, marble);
+      K.mooring(9.4, 9.3, 3.2, porph, marble);
+      K.boat(7.0, 9.7, 0, 5.4, true, shade(BASALT[1], 0.1));
+      /* piano nobile */
+      for (let i = -2; i <= 2; i++) K.win(P, 0, i * 1.2, 6.3, 0.85, 2.4, { wall: c, arch: true, trim: marble });
+      K.fb(P, 0, 0, 6.08, 6.4, 0.18, 0.3, 0.35, trim, 'stone');
+      [-7.6, -5, 5, 7.6].forEach(function (u) {
+        K.win(P, 0, u, 6.3, 1.1, 2.3, { wall: c, arch: true, trim: marble, shut: shutC });
+        K.fb(P, 0, u, 8.9 + 0.7, 0.5, 0.5, 0.06, 0.05, porph, 'stone');
+      });
+      [-3.6, 3.6].forEach(function (u) { K.fb(P, 0, u, 7.3, 0.8, 0.8, 0.06, 0.05, porph, 'stone'); K.fb(P, 0, u, 7.4, 0.5, 0.5, 0.06, 0.09, marble, 'stone'); });
+      [-7.6, -5, -2.4, 0, 2.4, 5, 7.6].forEach(function (u) { K.win(P, 0, u, 10.8, 0.9, 1.4, { wall: c, trim: marble }); });
+      /* merlon crest */
+      for (let s = 0; s < 4; s++) {
+        const L = s < 2 ? P.w + 0.7 : P.d + 0.7, n = Math.round(L / 1.2);
+        for (let i = 0; i < n; i++) {
+          const p = K.at({ x: P.x, z: P.z, w: P.w + 0.7, d: P.d + 0.7 }, s, -L / 2 + (i + 0.5) * L / n, -0.2);
+          F.box(p[0], H + 0.4, p[1], 0.45, 0.5, 0.45, 0, marble, 'stone');
+          F.pyrRoof(p[0], H + 0.9, p[1], 0.45, 0.4, 0.45, 0, marble, 'stone');
+        }
+      }
+      /* flanks and back */
+      [-4.5, -1.5, 1.5, 4.5].forEach(function (u) {
+        [2, 3].forEach(function (s) {
+          if (!(s === 2 && u === 1.5)) K.win(P, s, u, yQ + 1.3, 0.9, 1.5, { wall: c, bars: true });
+          K.win(P, s, u, 6.4, 1.0, 2.2, { wall: c, arch: true, shut: shutC, trim: marble });
+          K.win(P, s, u, 10.8, 0.9, 1.4, { wall: c, trim: marble });
+        });
+      });
+      K.door(P, 2, 1.5, yQ, 1.3, 2.6, { wall: c, ground: yQ, leaf: shade(tim, 0.05), lamp: true });
+      [-6.5, -3.5, 3.5, 6.5].forEach(function (u) {
+        K.win(P, 1, u, 2.3, 1.0, 1.6, { wall: c, shut: shutC });
+        K.win(P, 1, u, 6.4, 1.0, 2.2, { wall: c, arch: true, shut: shutC, trim: marble });
+        K.win(P, 1, u, 10.8, 0.9, 1.4, { wall: c, trim: marble });
+      });
+      K.door(P, 1, 0, yQ, 1.6, 2.8, { wall: c, arch: true, leaf: shade(tim, 0.05) });
+      F.box(0, 5.8, P.z - P.d / 2 - 0.6, 3.6, 0.22, 1.2, 0, trim, 'stone');
+      [-1.3, 1.3].forEach(function (px) { F.beam(px, 4.8, P.z - P.d / 2 - 0.05, px, 5.8, P.z - P.d / 2 - 1.0, 0.26, 0.26, trim, 'stone'); });
+      K.rail(-1.8, P.z - P.d / 2 - 1.15, 1.8, P.z - P.d / 2 - 1.15, 6.02, 0.9, IRON, 0.25);
+      K.win(P, 1, 0, 6.3, 1.1, 2.3, { wall: c, arch: true, trim: marble });
+      K.drain(P, 3, -5.9, yQ, H, c);
+      K.drain(P, 2, 5.9, yQ, H, c);
+      /* roof: belvedere, canopy, chimneys */
+      const yR = H + 0.4;
+      F.box(P.x, H, P.z, P.w, 0.4, P.d, 0, shade(c, -0.1), 'stone');
+      [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(function (q) {
+        F.cyl(q[0] * 1.9, yR, -4.5 + q[1] * 1.6, 0.2, 2.6, 0, marble, 'stone');
+      });
+      F.box(0, yR, -4.5, 4.4, 0.2, 3.8, 0, marble, 'stone');
+      F.box(0, yR + 2.6, -4.5, 4.4, 0.3, 3.8, 0, trim, 'stone');
+      K.hip(0, -4.5, yR + 2.9 + 0.28, 5.2, 4.6, 1.6, cop, { finC: GOLD });
+      K.rail(-2.1, -2.7, 2.1, -2.7, yR + 0.2, 0.9, IRON, 0.3);
+      K.canopy(-4.5, 1.8, yR + 2.4, 5.0, 3.6, F.pick(SAIL), { posts: [[-1, -1], [1, -1], [-1, 1], [1, 1]], base: yR, val: [0] });
+      F.box(-4.5, yR, 1.8, 2.8, 0.03, 2.0, 0, F.pick(BANNER), 'cloth');
+      F.box(-4.5, yR, 1.8, 1.6, 0.7, 0.9, 0, tim2, 'wood');
+      [[5.5, 3.5], [7.5, 3.5], [5.5, 0.5]].forEach(function (p) { K.pot(p[0], p[1], yR, 1.1); });
+      [-7.8, 7.8].forEach(function (px) {
+        K.chimney(px, -4.5, yR, 1.4, c);
+        F.frustum(px, yR + 2.15, -4.5, 0.3, 0.6, 0.9, 0, dark, 'stone', 8);
+      });
+      /* walled garden behind */
+      const gc = shade(c, -0.08), gz0 = -7.5, gz1 = -12;
+      F.box(-4.6, 0, gz1, 8.8, 2.6, 0.4, 0, gc, 'stone');
+      F.box(4.6, 0, gz1, 8.8, 2.6, 0.4, 0, gc, 'stone');
+      F.box(-9.0, 0, (gz0 + gz1) / 2, 0.4, 2.6, gz0 - gz1, 0, gc, 'stone');
+      F.box(9.0, 0, (gz0 + gz1) / 2, 0.4, 2.6, gz0 - gz1, 0, gc, 'stone');
+      [[-4.6, gz1, 9.0, 0.6], [4.6, gz1, 9.0, 0.6], [-9.0, (gz0 + gz1) / 2, 0.6, 4.5], [9.0, (gz0 + gz1) / 2, 0.6, 4.5]].forEach(function (b) {
+        F.box(b[0], 2.6, b[1], b[2] * 0.97, 0.14, b[3], 0, trim, 'stone');
+      });
+      [-0.6, 0.6].forEach(function (px) {
+        F.box(px * 1.1, 0, gz1, 0.6, 3.1, 0.6, 0, trim, 'stone');
+        F.ball(px * 1.1, 3.35, gz1, 0.28, marble, 'stone');
+      });
+      F.box(0, 0, gz1, 0.8, 2.2, 0.08, 0, IRON, 'metal');
+      F.box(0, 0.02, (gz0 + gz1) / 2, 1.4, 0.04, 4.4, 0, shade(c, -0.18), 'stone');
+      F.cyl(0, 0, -9.8, 1.0, 0.5, 0, marble, 'stone');
+      F.cyl(0, 0.45, -9.8, 0.85, 0.06, 0, 0x4a5a5a, 'glass');
+      F.cyl(0, 0.5, -9.8, 0.12, 0.8, 0, marble, 'stone');
+      F.tree(-5.5, -9.8, 'olive', 4.2);
+      F.tree(5.5, -9.8, 'cypress', 5.0);
+      [-7.8, 7.8].forEach(function (px) { K.pot(px, -8.3, 0, 1.1); });
+    }
+  }
+
+  ASSET({
+    key: 'voth_house_rich', name: 'Wealthy House', culture: 'voth', family: 'housing', source: 'voth-housing',
+    districts: ['wealthy', 'manor'], wealth: [0.65, 1],
+    blurb: 'Wealthy Voth houses: a copper-roofed Hlaalu mansion with loggias, a Mournhold domed house with turrets and mosaic bands, a pagoda-eaved tower-house, a terraced roof-garden villa and a canal palazzo with a water gate.',
+    w: 26.4, d: 23, h: 23.6, variants: 5,
+    variantDims: [
+      { w: 26.4, d: 14.6, h: 16 },
+      { w: 17, d: 18.4, h: 20.7 },
+      { w: 20.2, d: 14.7, h: 23.6 },
+      { w: 22.7, d: 15.3, h: 15.3 },
+      { w: 20.2, d: 23, h: 19.9 }
+    ],
+    build: function (F) { rich(F, kit(F)); }
   });
 })();
