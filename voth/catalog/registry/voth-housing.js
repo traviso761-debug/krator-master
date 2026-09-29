@@ -1178,8 +1178,8 @@
         K.win(OB, 3, u, 4.4, 1.0, 1.6, { wall: c, shut: shutC });
       });
       [-4.5, 4.5].forEach(function (u) { K.win(OB, 3, u, 1.9, 0.7, 0.8, { wall: c, bars: true }); });
-      K.door(OB, 2, 2.5, 0.45, 1.2, 2.4, { wall: c, leaf: shutC, hood: true });
-      K.win(OB, 2, -3.5, 1.9, 0.7, 0.8, { wall: c, bars: true });
+      K.door(OB, 2, 1.3, 0.45, 1.2, 2.4, { wall: c, leaf: shutC, hood: true });
+      K.win(OB, 2, -5.2, 1.9, 0.7, 0.8, { wall: c, bars: true });
       K.door(OB, 3, 0, 0.45, 2.2, 2.6, { wall: c, leaf: tim });
       K.drain(OB, 1, -7.2, 0.45, H, c);
       K.drain(OB, 2, 7.2, 0.45, H, c);
@@ -1454,7 +1454,7 @@
     variantDims: [
       { w: 14.8, d: 12.8, h: 13.2 },
       { w: 14.6, d: 11.7, h: 17.6 },
-      { w: 17.4, d: 17.4, h: 10.1 },
+      { w: 17.9, d: 17.7, h: 10.1 },
       { w: 10.7, d: 17.7, h: 15.4 },
       { w: 13.3, d: 13.3, h: 11.8 }
     ],
