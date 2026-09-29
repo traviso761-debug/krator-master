@@ -6,7 +6,7 @@ window._biome=null;
  const t0=performance.now();
  let shells=[];
  if(typeof buildTestTower==='function'){try{shells=buildTestTower()||[];}catch(e){reportErr('tower: '+e.stack);}}
- try{window._biome=HYPERJUNGLE.build({R:TERR.R-200,quality:1,heroR:1500});}catch(e){reportErr('biome: '+e.stack);}
+ try{window._biome=HYPERJUNGLE.build({R:TERR.R-200,quality:1,heroR:2000});}catch(e){reportErr('biome: '+e.stack);}
  if(shells.length){try{HYPERJUNGLE.dress(shells,{ledges:{moss:2200,plants:900,edges:520,hang:14},soffits:{n:1800,mossR:4,hang:14},walls:{n:520}});}catch(e){reportErr('dress: '+e.stack);}}
  const b=BIO.bake();
  window._instances=b.inst;window._bakeCalls=b.calls;window._buildMs=Math.round(performance.now()-t0);

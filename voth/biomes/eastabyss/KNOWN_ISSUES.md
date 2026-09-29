@@ -7,10 +7,11 @@ Read before changing anything here. `build.py` prints the open count.
 - [ ] PUBLISH AFTER EVERY PASS. The claude.ai artifact is a separate copy of
       `dist/eastabyss.html`; strip everything before `<title>` and the trailing
       `</body></html>` before publishing (00-head.html carries the page wrapper).
-- [ ] BUDGET. The scene is ~7M triangles / ~600k instances at q=1 (the map is
-      four times the hyperjungle's area). The probe's ceilings (5.6M per pass, 7.6M scene)
-      are the measured numbers, not a target; the hyperjungle ran at 2.5M. `EASTABYSS.build({quality:.6})`
-      is the knob. The heaviest items: knee-tree boughs, reed beds, pipe-reed whorls.
+- [ ] BUDGET. The scene was ~7.4M triangles / ~580k instances at q=1 after the first
+      pass and the coal-swamp pass was given a ceiling of 11M (probe: 8.2M per pass,
+      11M scene); see baseline.json for where it landed. The hyperjungle ran at 2.5M.
+      `EASTABYSS.build({quality:.6})` is the knob. The heaviest items: knee-tree and
+      beard-oak boughs, reed beds, pipe-reed whorls, the araucaria ropes.
 - [ ] The savannah is a sketch: umbrella trees, grass, Vain fronds, rosettes, but the
       slope's top is a smooth ramp and the transition into the highlands is not designed.
       It is meant to be its own kit (the abyssal savannah).
@@ -30,6 +31,15 @@ Read before changing anything here. `build.py` prints the open count.
       cataracts; the west river has no slope reach at all (it stays in the basin).
 - [ ] Only one Girder tower dresses. `dress()` samples by triangle area (inherited).
 - [ ] No fauna yet.
+- [ ] The mat-reed beds are registered per bed (a few hundred volumes); a world that
+      registers its own structures densely may want only `EASTABYSS.REEDBEDS`.
+- [ ] The beard oak's boughs are clamped 1.2 m above terrainH point by point; on a
+      steep bank the clamp can put a kink in a bough.
+- [ ] The araucaria's rope branches carry no side shoots; the reference plates show
+      them. The tip rosette is a lobe.
+- [ ] The shore zone reads only terrainH and wet, so the shallows species (stilt-woods,
+      tide lycopsids, cordaites, water palms) do not tell the lake's salt west shore from
+      its marsh east shore; a world with a fresh lake will not notice.
 
 - [ ] The shelf overlay dome (82-host-sky) is a second 4096x2048 canvas: ~16 MB of texture
       for the wall alone. A world that already draws its horizon as geometry does not need it.
@@ -45,6 +55,9 @@ Read before changing anything here. `build.py` prints the open count.
 - [x] The inspector names a plant by its own item label ("Marsh reeds (under Marsh
       knee-tree)"); the map-wide registration no longer swallows every click.
 - [x] Tide lycopsid, Calamophyton palm and Sanfordacaulis added, tagged and zoned.
+- [x] Seal-tree, strap cordaite, seed fern, rope araucaria, beard oak, water palm and
+      mat reed added, tagged and zoned; cordgrass meadows, leaf rafts, water hyacinth,
+      epiphyte ferns and lianas on the floor and the boles.
 
 - [x] Marsh floor above the water plane except in its pools (the first build flooded it).
 - [x] Registered tree volumes use the real spread of the crown; the probe's
