@@ -7,4 +7,5 @@ const VIEWS=portViewsSegment();
 (function(){const D=PORT.DECK;for(const R of PORT_LAYOUT.runs){const it=R.items[1],n=portDName(R.d);
  VIEWS[n+' close']=portCam(it.gx,D+4,it.gz-40,.55,.38,165);
  VIEWS[n+' tower']=portCam(it.gx+36,D+24,it.gz-16,-.6,.12,62);
- VIEWS[n+' yard']=portCam(it.gx-22,D,it.gz-42,-.7,.45,95);}})();
+ VIEWS[n+' yard']=portCam(it.gx-22,D,it.gz-42,-.7,.45,95);
+ if(R.d===0)VIEWS['Intact night']=portCam(it.gx,D+4,it.gz-40,.55,.3,150,1);}})();

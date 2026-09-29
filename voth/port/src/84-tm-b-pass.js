@@ -156,7 +156,7 @@ function tmPassBridge(G,d,s,gl){const D=PORT.DECK,yb=TMP.YB,T1=TMP.T[1];
   pbAdd(lathe({rFn:()=>R,H:th*.35,cut:th*.35,jag:1.4,nu:28,nv:2,seed:9}).translate(tc[0],D,tc[1]),SHELL(d),G);
   const g=lathe({rFn:()=>R,H:th*.62,nu:24,nv:1});g.rotateX(Math.PI/2*.94);g.rotateY(s*.5);g.translate(tc[0]+s*3,D+R*.85,tc[1]+2);pbAdd(g,SHELL(d),G);
   // its roof slab, fallen off the end into the water
-  kput('slab',[tc[0]+s*(3+Math.sin(s*.5)*th*.66),D-1.5,tc[1]+2+Math.cos(.5)*th*.66],qEuler(1.1,s*.5,.2),[R+.8,.6,R+.8],new THREE.Color(0x6e665e));
+  kput('slab',[tc[0]+s*(3+Math.sin(s*.5)*th*.66),-.9,tc[1]+3+Math.cos(.5)*th*.66],qEuler(.3,s*.5,.12),[R+.8,.6,R+.8],new THREE.Color(0x4e4640));
   portRubble(tc[0],D,tc[1],5,16);}
  REGISTER({name:'Boarding tower',x:tc[0],z:tc[1],r:R+.8,h:th+2,y:D});
  const mid=at(0),m2=at(22),m3=at(46);
@@ -222,7 +222,7 @@ function tmPassPlaza(G,d){const D=PORT.DECK,fx=0,fz=-90,T0=TMP.T[0];
  pbAdd(gridSurface(band,28,2,{uS:10,vS:1,hole:hole?(u,v)=>hole(u*4,v*20):null}),SHELL(d),G);
  for(let k=1;k<10;k++){const p=band(k/10,.92);if(d===1&&rng()<.3)continue;kput(d>0?'postR':'postW',[p[0],D+(p[1]-D)/2,p[2]],null,[.22,p[1]-D,.22],null);}
  if(d===0)for(let k=0;k<10;k++){const p=band((k+.5)/10,1);kput('dot',[p[0],p[1]-.2,p[2]],null,[.6,.2,.6],CYAN);}
- REGISTER({name:'Plaza fountain',x:fx,z:fz,r:9,h:5,y:D});REGISTER({name:'Plaza',x:-26,z:-90,r:9,h:8,y:D});REGISTER({name:'Plaza',x:26,z:-90,r:9,h:8,y:D});}
+ REGISTER({name:'Plaza fountain',x:fx,z:fz,r:9,h:5,y:D});REGISTER({name:'Plaza trees',x:-25,z:-81,r:6,h:9,y:D});REGISTER({name:'Plaza trees',x:25,z:-81,r:6,h:9,y:D});}
 // a coach, 12 m, along local +x, bottom centre
 kdef('tmCoach',pkMergeGeo([new THREE.BoxGeometry(12,2.7,2.5).translate(0,2.05,0),new THREE.BoxGeometry(11.6,.25,2.3).translate(0,3.5,0)]),MAT.pkPaint);
 kdef('tmCoachWin',new THREE.BoxGeometry(11.2,.95,2.56).translate(-.2,2.75,0),MAT.darkGlass);
