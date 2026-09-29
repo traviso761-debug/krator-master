@@ -1,5 +1,27 @@
 # Krator Ancients — handover
 
+## QUEUE from the user, 2026-09-29 (in this order) — read first
+1. **Finish the Ancient Port** (`voth/port/`, own README/API/CONTRACT). Foundation
+   DONE and verified (quay, quay110, pier; showcase/segment/edges targets).
+   Six agents dispatched: drydocks+boatyard (82-, dd), cargo: warehouses,
+   container dock, gantry cranes (83-, cg), terminals+heliport (84-, tm),
+   fishing+recreational harbours (85-, hb), three container ships (86-, vs),
+   drone carrier+submarine+berth/pen slips (87-, sl). New segments W <= 110.
+   If an agent is stopped, recover its files from .claude/worktrees/.
+2. **Quality pass on ALL Ancient city kit structures** (the kit's types plus
+   the arcologies/skyscrapers added this month), working down KNOWN_ISSUES.
+3. **An alternative, from-scratch version of EACH Ancient city building
+   type**, inspired by the `arco1` and `arco2` reference sets (contact sheets
+   in `refs/arco1-sheet*.jpg`, `refs/arco2-sheet*.jpg`), intact, ruined and
+   reclaimed/reinhabited. Counts: 2 new skyscrapers, 3 new house and
+   apartment types, 3 offices, and one alternate for every other type.
+4. **Six mysterious ancient machines** after `refs/ancient-machine-sheet0.jpg`
+   (walking tower-rigs, tracked crawler-cities, bucket-wheel/excavator giants,
+   caravan rovers, spider platforms, a turret dome), with ruined and
+   reclaimed variants.
+5. If usage remains: **one new original arcology that incorporates three port
+   segments** (use the port kit's segments).
+
 ## UPDATE 2026-09-28 — read this first; the sections below it are older
 Branch `claude/laughing-bohr-1zdca5`. Every item here was verified with
 `build.py` + `jscheck.py` + `verify.py --assert --all-views`, and the shots
