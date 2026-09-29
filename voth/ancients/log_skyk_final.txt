@@ -1,0 +1,42 @@
+127.0.0.1 - - [29/Sep/2026 06:02:03] "GET /skyk.html HTTP/1.1" 200 -
+ERROR PANEL: clean
+draw calls: 90 triangles: 635431
+counters: {"_instances": 11051, "_projectFire": {}, "_ready": true, "_registered": 15}
+
+--- invariants ---
+  PASS  registered-volumes-non-empty : 15 volumes; thinnest: Skyscraper K — the shell hall (65), Skyscraper K — the campanile (71), Skyscraper K — the rose (100)
+  PASS  no-nan-geometry : clean
+  PASS  per-type-triangle-budget : 4 type/decay pairs, heaviest skyK/2 229042/400000
+  PASS  showcase-triangle-budget : 761933 / 6000000 scene triangles
+  PASS  showcase-draw-calls : 90 / 900 draw calls at this camera
+  PASS  registry-and-bake-ran : 15 registered volumes, 11051 baked instances
+
+--- per type (scene triangles, instances, meshes) ---
+  skyK/2          229042 /  400000  sky     inst    2803  meshes    20
+  skyK/3          197700 /  400000  sky     inst    3062  meshes    14
+  skyK/1          174692 /  400000  sky     inst    2297  meshes    17
+  skyK/0          160499 /  400000  sky     inst    2889  meshes    13
+shot: shots/skyk/view_Skyscraper_K.png   calls 90  tris 0.64M
+shot: shots/skyk/view_The_row.png   calls 111  tris 0.76M
+shot: shots/skyk/view_Ruined_K.png   calls 86  tris 0.63M
+shot: shots/skyk/view_Rehabilitated_K.png   calls 91  tris 0.64M
+shot: shots/skyk/view_Toppled_K.png   calls 67  tris 0.49M
+shot: shots/skyk/view_The_rose.png   calls 57  tris 0.53M
+shot: shots/skyk/view_The_crown.png   calls 56  tris 0.53M
+shot: shots/skyk/view_The_hall_at_eye_level.png   calls 57  tris 0.44M
+shot: shots/skyk/view_Looking_up.png   calls 65  tris 0.54M
+shot: shots/skyk/view_The_fallen_sail.png   calls 111  tris 0.76M
+shot: shots/skyk/view_By_night.png   calls 86  tris 0.63M
+shot: shots/skyk/view_The_shattered_rose.png   calls 64  tris 0.61M
+shot: shots/skyk/view_The_hanging_rib.png   calls 89  tris 0.63M
+shot: shots/skyk/view_The_hoop_from_the_north.png   calls 78  tris 0.62M
+
+--- worst draw calls over 14 views ---
+  The row                      calls   111  tris 0.76M
+  The fallen sail              calls   111  tris 0.76M
+  Rehabilitated K              calls    91  tris 0.64M
+  Skyscraper K                 calls    90  tris 0.64M
+  The hanging rib              calls    89  tris 0.63M
+  Ruined K                     calls    86  tris 0.63M
+
+OK
