@@ -5,6 +5,9 @@ const _land=key=>PLAN.find(p=>p.key===key);
 const VIEWS=(function(){const V={};const pal=_at('palace'),gd=_at('garden'),mm=_at('Main market'),td=_at('temple'),dk=_at('dock'),isl=_at('island'),lh=_at('lighthouse'),pr=_at('prison'),cv=_at('cave'),wh=_at('Wealthy homes (east)');
  V['Opening — from the lake']=[mm.x-200,120,mm.z-700,pal.x+100,terrainH(pal.x,pal.z)+10,pal.z];
  V['Overview']=[0,1500,900,0,100,-100];
+ V['Overhead — the town']=[mm.x-150,900,mm.z+1,mm.x-150,0,mm.z];
+ V['Overhead — the garden']=[gd.x,420,gd.z+1,gd.x,0,gd.z];
+ V['Overhead — the slopes']=[gd.x+80,520,gd.z+161,gd.x+80,0,gd.z+160];
  V['The palace precinct']=[pal.x+220,terrainH(pal.x,pal.z)+140,pal.z+200,pal.x,terrainH(pal.x,pal.z)+20,pal.z];
  V['The garden district']=[gd.x+180,terrainH(gd.x,gd.z)+110,gd.z+160,gd.x,terrainH(gd.x,gd.z),gd.z];
  {const R=GARDEN_RECT,za=R.z-R.d/2+4+7*8;V['Garden district — the rill']=_eye(R.x+R.w/2-6,za,R.x-R.w/2,za,3);V['Garden district — from the ring road']=_eye(R.x+R.w/2+16,za+30,R.x-R.w/4,za,8);}

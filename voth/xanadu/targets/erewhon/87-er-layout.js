@@ -44,11 +44,28 @@ function districtAt(x,z){let best=null,bd=1e9;for(const D of DIST){const d=Math.
 const CITY_DISCS=DIST.filter(D=>!/mine|monastery|prison|cave|island|farm/.test(D.kind));
 // the town: the ground inside the walls and up to the avenue rim, read off the map as one polygon (pixels), less the
 // garden district's rectangle (its own grid) and the palace loop (its own court)
-const CITY_POLY=[[372,262],[560,238],[700,300],[770,400],[905,468],[905,565],[865,700],[790,865],[620,885],[520,870],[400,770],[350,560],[352,350]].map(p=>MP(p[0],p[1]));
+const CITY_POLY=[[-515.7,-550.7],[-529.1,-539.0],[-613.3,-427.8],[-633.2,-325.8],[-630.6,27.8],[-433.3,327.2],[-334.6,468.1],[-246.5,560.7],[-153.4,621.0],[71.1,632.1],[73.3,606.3],[274.1,530.0],[530.0,362.8],[568.4,212.6],[517.3,133.1],[500.9,52.6],[524.1,11.1],[562.0,12.7],[617.3,34.7],[657.2,-65.0],[690.3,-150.1],[694.6,-385.4],[342.2,-655.0],[46.4,-820.6],[-251.5,-765.1]];   // Travis's bounds (world metres): no street building outside it
 function inPoly(P,x,z){let c=false;for(let i=0,j=P.length-1;i<P.length;j=i++){const a=P[i],b=P[j];if((a[1]>z)!==(b[1]>z)&&x<(b[0]-a[0])*(z-a[1])/(b[1]-a[1])+a[0])c=!c;}return c;}
 const GARDEN_RECT=(function(){const c=MP(500,470);return{x:c[0]-8,z:c[1]+8,w:208,d:112};})();   // 26 × 14 tiles of 8 m
 function inGarden(x,z,m){m=m||0;return Math.abs(x-GARDEN_RECT.x)<GARDEN_RECT.w/2+m&&Math.abs(z-GARDEN_RECT.z)<GARDEN_RECT.d/2+m;}
-function ER_INCITY(x,z){return inPoly(CITY_POLY,x,z)||CITY_DISCS.some(D=>Math.hypot(x-D.x,z-D.z)<D.r);}
+function ER_INCITY(x,z){return inPoly(CITY_POLY,x,z);}
+// ---------------------------------------------------------------- the garden grid: cell levels
+// The rectangle is 26 × 14 cells of 8 m. Q is the water level of a cell (the ground quantised to 1.5 m, relaxed so no
+// neighbour differs by more than a cascade); G is the GROUND of a cell — the same, except a cell whose axis drops to
+// its downhill neighbour stands at the LOW level (the slope piece carries its own terrace block). The garden's ground
+// is G, piecewise constant, out to the ring road; retaining walls stand on every edge where G differs.
+const GARDEN_AX=[2,7,11],GARDEN_CX=[4,12,20];
+const GARDEN_BLOCKS=[{key:'xa_bath',c0:6,r0:3,nc:4,nr:3,ry:0,v:2},{key:'xa_bath',c0:15,r0:8,nc:4,nr:3,ry:Math.PI,v:1},{key:'xa_teahouse',c0:21,r0:4,nc:2,nr:2,ry:Math.PI/2,v:0}];
+const GARDEN_G=(function(){const R=GARDEN_RECT,NC=Math.round(R.w/8),NR=Math.round(R.d/8),x0=R.x-R.w/2+4,z0=R.z-R.d/2+4;
+ const Q=[];for(let r=0;r<NR;r++){Q.push([]);for(let c=0;c<NC;c++)Q[r].push(Math.round(terrainBase(x0+c*8,z0+r*8)/1.5)*1.5);}
+ const inB=(r,c)=>GARDEN_BLOCKS.some(B=>c>=B.c0&&c<B.c0+B.nc&&r>=B.r0&&r<B.r0+B.nr);
+ for(const B of GARDEN_BLOCKS){let yb=1e9;for(let a=0;a<B.nr;a++)for(let b=0;b<B.nc;b++)yb=Math.min(yb,Q[B.r0+a][B.c0+b]);for(let a=0;a<B.nr;a++)for(let b=0;b<B.nc;b++)Q[B.r0+a][B.c0+b]=yb;}
+ for(let it=0;it<80;it++){let ch=false;for(let r=0;r<NR;r++)for(let c=0;c<NC;c++){if(inB(r,c))continue;for(const [dr,dc] of[[0,1],[1,0],[0,-1],[-1,0]]){const rr2=r+dr,cc=c+dc;if(rr2<0||cc<0||rr2>=NR||cc>=NC)continue;if(Q[r][c]>Q[rr2][cc]+3){Q[r][c]=Q[rr2][cc]+3;ch=true;}}}if(!ch)break;}
+ for(const r of GARDEN_AX){Q[r][0]=Q[r][1];Q[r][NC-1]=Q[r][NC-2];}for(const c of GARDEN_CX){Q[0][c]=Q[1][c];Q[NR-1][c]=Q[NR-2][c];}   // the caps sit level with their neighbour
+ const G=Q.map(row=>row.slice());
+ for(let r=0;r<NR;r++)for(let c=0;c<NC;c++){if(GARDEN_AX.indexOf(r)>=0){if(c<NC-1&&Q[r][c+1]<Q[r][c])G[r][c]=Q[r][c+1];}else if(GARDEN_CX.indexOf(c)>=0){if(r<NR-1&&Q[r+1][c]<Q[r][c])G[r][c]=Q[r+1][c];}}
+ return{Q,G,NC,NR,x0,z0,at:(x,z)=>{const c=clamp(Math.floor((x-x0+4)/8),0,NC-1),r=clamp(Math.floor((z-z0+4)/8),0,NR-1);return G[r][c];}};})();
+GARDEN_HFN=(x,z)=>inGarden(x,z,11)?GARDEN_G.at(x,z):null;
 // ---------------------------------------------------------------- the highway, the avenues and the stream
 for(const P of ER_LINES.highway)road(P,12,KL.boulevard,{zone:'highway',lights:true,bench:true});
 for(const P of ER_LINES.avenue)road(P,9,KL.boulevard,{zone:'avenue',lights:true,bench:true});
@@ -105,19 +122,19 @@ const STREETS=[];
  // contours every 3 m of height, THINNED so streets stay ~26 m apart on the ground whatever the slope (Travis: on the
  // steep central slopes a fixed height interval packed the streets too close for a plot between them): a run of a
  // contour is kept only where it is at least GAP from every street already accepted (the highway and avenues count)
- const GAP=26,HC=12,SH={};const hk=(x,z)=>Math.floor(x/HC)+','+Math.floor(z/HC);
+ const GAP=34,HC=12,SH={};const hk=(x,z)=>Math.floor(x/HC)+','+Math.floor(z/HC);
  const mark=pts=>{for(const p of pts)for(let t=0;t<1;t+=.34){const q=p;(SH[hk(q[0],q[1])]||(SH[hk(q[0],q[1])]=[])).push(q);}};
  const markLine=pts=>{for(let i=1;i<pts.length;i++){const a=pts[i-1],b=pts[i],n=Math.max(1,Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/6));for(let k=0;k<=n;k++){const q=[a[0]+(b[0]-a[0])*k/n,a[1]+(b[1]-a[1])*k/n];(SH[hk(q[0],q[1])]||(SH[hk(q[0],q[1])]=[])).push(q);}}};
- const nearStreet=(x,z)=>{const ix=Math.floor(x/HC),iz=Math.floor(z/HC),R=Math.ceil(GAP/HC);for(let a=-R;a<=R;a++)for(let b=-R;b<=R;b++){const L=SH[(ix+a)+','+(iz+b)];if(!L)continue;for(const q of L)if(Math.hypot(q[0]-x,q[1]-z)<GAP)return true;}return false;};
+ const nearStreet=(x,z)=>{const ix=Math.floor(x/HC),iz=Math.floor(z/HC),R=Math.ceil(GAP/HC);for(let a=-R;a<=R;a++)for(let b=-R;b<=R;b++){const L=SH[(ix+a)+','+(iz+b)];if(!L)continue;for(const q of L)if(Math.hypot(q[0]-x,q[1]-z)<GAP*.6)return true;}return false;};   // a run is cut only when it comes within .6 GAP of a street; between .6 and 1 GAP it stays (fewer fragments)
  for(const R of ROADS)markLine(R.pts);
  for(let h=Math.floor(hmin/3)*3;h<hmax+60;h+=3){const lines=contourLines(h,8,inside);
   for(const L of lines){const s=simplify(L,9);
    // keep clear of the plazas and the palace loop's inside (its own court), then split into the runs far enough from every street
-   let run=[];const flush=()=>{if(run.length>=3){let len=0;for(let i=1;i<run.length;i++)len+=Math.hypot(run[i][0]-run[i-1][0],run[i][1]-run[i-1][1]);if(len>=40){const m0=run[Math.floor(run.length/2)],dm=districtAt(m0[0],m0[1]);const r=road(run,5,KL.minor,{zone:'contour',bench:true,lights:dm.D.kind==='market'||(dm.D.wealth==='rich'&&dm.d<0)});STREETS.push(r);markLine(run);}}run=[];};
+   let run=[];const flush=()=>{if(run.length>=3){let len=0;for(let i=1;i<run.length;i++)len+=Math.hypot(run[i][0]-run[i-1][0],run[i][1]-run[i-1][1]);if(len>=24){const m0=run[Math.floor(run.length/2)],dm=districtAt(m0[0],m0[1]);const r=road(run,5,KL.minor,{zone:'contour',bench:true,lights:dm.D.kind==='market'||(dm.D.wealth==='rich'&&dm.d<0)});STREETS.push(r);markLine(run);}}run=[];};
    for(const p of s){if(inPrecinct(p[0],p[1],6)||Math.hypot(p[0]-PAL.x,p[1]-PAL.z)<PAL.r-10||nearStreet(p[0],p[1]))flush();else run.push(p);}flush();}}
  erBakeMasks();
  // stairs: from points along each contour street, down the gradient until a road or 70 m
- let n=0;for(const R of STREETS){let acc=0;for(let i=1;i<R.pts.length;i++){const a=R.pts[i-1],b=R.pts[i];const L=Math.hypot(b[0]-a[0],b[1]-a[1]);acc+=L;if(acc<75)continue;acc=0;
+ let n=0;for(const R of STREETS){let acc=0;for(let i=1;i<R.pts.length;i++){const a=R.pts[i-1],b=R.pts[i];const L=Math.hypot(b[0]-a[0],b[1]-a[1]);acc+=L;if(acc<42)continue;acc=0;   // an alley or stair down the fall line every ~40 m
   let p=[(a[0]+b[0])/2,(a[1]+b[1])/2];const path=[p.slice()];for(let k=0;k<20;k++){const g=erGrad(p[0],p[1]);const gl=Math.hypot(g[0],g[1]);if(gl<.03)break;p=[p[0]-g[0]/gl*5,p[1]-g[1]/gl*5];path.push(p.slice());if(k>1&&isRoad(p[0],p[1]))break;if(!inside(p[0],p[1]))break;}
   if(path.length>3){road(path,3,KL.stair,{zone:'stair'});n++;}}}
  window._streets=STREETS.length;window._stairs=n;})();
