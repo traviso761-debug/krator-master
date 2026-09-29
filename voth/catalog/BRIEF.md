@@ -68,6 +68,7 @@ small domes and cone caps, pylons; **domed** — a block carrying a hemisphere;
 * **LOD is automatic** from part size (see `lod.js`): lay the big masses as
   big primitives, then detail on top. Never build a wall out of many small
   bricks. Nothing to write per building.
+* **Roofs**: `F.hipRoof` for any roof that is not square (it has a ridge); `F.pyrRoof` only on square plans. `F.beam` slabs are rotation-safe, so sloped canopies and lean-tos can be beams.
 * **Scale**: metres. A storey is ~3–3.5 m, a door ~2.2–2.8 m, a person 1.7 m.
 * **Variation**: variants should differ in plan, massing and silhouette, not
   just colour. Use `F.variant` for the designed variant, `F.rnd()/F.rr()/
