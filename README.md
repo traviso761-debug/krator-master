@@ -7,7 +7,7 @@ Procedural models of places, served to the local network by a small Python serve
 does), **Mordor**, which is a country rather than a city, **Minas Tirith**, which is the other end of the same
 war, the **Kowloon Walled City**, which is one building, **Kyrene**, which is a rotating habitat with its
 country overhead, **Mystery Flesh Pit National Park**, which is a hole, **Yellowstone**, which is a real national park
-on top of a real one, **the Backrooms**, which go on forever, **the City** from *Blame!*, which very nearly does, and **the Shire**, which is a few miles of hedges round a hill with a hole in it. They run on the same core modules and the same page shell; each place is a data file plus a set of build
+on top of a real one, **the Backrooms**, which go on forever, **the City** from *Blame!*, which very nearly does, **the Infinity Castle** from *Demon Slayer*, a hall with rooms hanging from its ceiling that moves when someone plays the biwa, and **the Shire**, which is a few miles of hedges round a hill with a hole in it. They run on the same core modules and the same page shell; each place is a data file plus a set of build
 stages, and anything only one of them needs travels with that one.
 
 The front page at `/` lists whatever the server is serving, and every scene carries a Home button and a menu
@@ -53,6 +53,7 @@ Page-only keys: the Backrooms' N (noclip), M (sound), R (start again); the City'
 | `/yellowstone` | `/yellowstone.html`, `/ynp`, `/caldera` | `yellowstone.html` | Yellowstone National Park: the real ground and the caldera |
 | `/backrooms` | `/backrooms.html`, `/level0`, `/noclip` | `backrooms.html` | The Backrooms (fan work) |
 | `/city` | `/blame.html`, `/blame`, `/megastructure`, `/killy` | `blame.html` | The City, after *Blame!* (fan work) |
+| `/infinitycastle` | `/infinitycastle.html`, `/mugenjo`, `/infinity-castle`, `/nakime` | `infinitycastle.html` | The Infinity Castle (fan work) |
 | `/rivendell` | `/rivendell.html`, `/imladris` | `rivendell.html` | Rivendell: the cleft of the Bruinen (fan work) |
 | `/shire` | `/shire.html`, `/hobbiton`, `/bagend` | `shire.html` | The Shire: Hobbiton and Bywater (fan work) |
 | `/arrakeen` | `/arrakeen.html`, `/arrakis`, `/dune` | `arrakeen.html` | Arrakeen: the city in the basin (fan work) |
@@ -1218,6 +1219,92 @@ Kyrene and the Backrooms, because nothing here stands on terrain under a sky.
   is. `#view=N` opens view N; the page keeps `#at=mode,x,y,z,distance,yaw,pitch` and `#cut=axis,0-1,side`
   current, so a link goes to the same place. `?seed=` builds another City.
 
+### `/infinitycastle`: the Infinity Castle
+
+Fan work after Koyoharu Gotouge's *Demon Slayer: Kimetsu no Yaiba* (Shueisha, 2016-2020) and ufotable's anime and
+films. Nothing of theirs is used: every shape comes out of a seeded generator (`src/infinitycastle/`) and the
+numbers in `data/cities/infinitycastle.json`, and every surface is painted on a canvas when the page opens. The
+castle has no published plan and is never the same twice (ufotable made around thirty versions of it for one
+television shot), so this is one castle of many; `?seed=` makes another. Its shape follows what the anime and
+the films show of it, checked against stills: the Swordsmith Village Upper Moon meeting, the Hashira Training
+fall, and the 2025 film's halls, Doma's lake and end credits. It runs on its own renderer and camera, like the
+City.
+
+- **A hall, not a pit.** From outside, in the film's end credits, the castle is one block, so here it is a box:
+  760 m each way and 520 m high, the far side lost in warm haze. **The floor** is tatami to the horizon, lit in
+  pools. **The ceiling** is boards with rooms hanging from it like stalactites, columns of one to five boxes
+  upside down, each with small slatted windows a bay apart, as in the shot of Akaza on the tatami. **The walls**
+  are buildings stacked from floor to ceiling, two rows deep, some jutting out, a few on their sides or upside
+  down. Their room-fronts are drawn by the facade shader (`mats.js`), in the block's own coordinates:
+  - tiers 3.6 m high, with posts a ken (1.82 m) apart;
+  - runs of lit and dark shoji, doors open onto the dark, and gold fusuma;
+  - balustrades with rows of lanterns along them, and tiled eaves.
+- **In the air** (`castle.js`, `kit.js`):
+  - 700 clusters of real pieces, each with its own up: tatami rooms with fusuma, shoji, engawa and hipped roofs,
+    and sliding doors along their fronts (about 7,700 panels, each on its own track); galleries with lanterns hung
+    down the middle; stacks of rooms; stairs to nowhere, narrow or wide;
+  - **switchback towers**, wide flights zigzagging up between landings the width of both lanes, and **tangles**
+    after the manga's Escher pages: a platform with stairs off three or four sides, going up, hung upside down under
+    it, or on their sides;
+  - the **wide stair**, as the castle's big stairs are drawn: 2.4 m between heavy boxed stringers, closed risers,
+    the underside boarded in, spindle rails both sides and a lantern on the top post, so a long stair is a row of
+    lanterns;
+  - 320 blocks of the walls hung free;
+  - bridges straight across from wall to wall, with a lantern on every length;
+  - bridges that stop partway and turn into stairs;
+  - long straight stairways up the walls, wide (they, the bridges and the spurs are laid out first, and the
+    clusters keep off them);
+  - houses standing on the floor;
+  - shafts of dusty light slanting down from the ceiling.
+- **The places** (`places.js`), each a view with a card:
+  - **the stage**: a deck of polished boards on seventy-metre stilts against the north wall, with a stair
+    straight up to it from the floor;
+  - **Nakime**: on a ledge at the back of the stage in front of great studded doors, in black with a striped obi,
+    her hair over her eyes and the biwa upright in her lap;
+  - **Muzan's lab**: hung upside down from the middle of the ceiling, at the bottom of a cone of red ring-lights
+    with red points scattered round it;
+  - **the way in**: in the ceiling, the mansion floor with its doors open and the fire above;
+  - **the great floor**: polished boards on the tatami under the way in, where the fall comes down;
+  - **the cocoon**, in its hall on the south wall;
+  - **the stair-well**, on the east wall;
+  - **Doma's lake**: on the floor and lit teal, with lotus, boardwalks and lamps on posts, and a palace on stilts
+    of two five-roofed towers and a hall up a red stair;
+  - **Akaza's hall**: dark polished boards behind a heavy rail on the west wall, with lamps on the beams, the
+    compass of his art drawn in light, and pillars pouring water in front of it;
+  - **the pillar hall**: high on the west wall and lit grey-green (manga only; the films have not got there).
+  Each lit place has its own haze: teal, red or grey-green.
+- **The biwa** (B, or the button; `biwa.js`): Nakime strikes it and the whole castle reconfigures. A front goes
+  out from her through every wall at 140 m/s, dealing the doors again behind it, and everything the strum moves
+  waits for the front to reach it, so the change ripples outward from her. What it moves:
+  - **rooms**, near you and all over the hall (up to about 145 a strum): they slide, shuffle through up to five
+    slides like a sliding puzzle, turn over, drop or rise, or swap places with a neighbour, swinging past each other;
+  - **doors**: the rooms round you slide their doors open or shut, panel after panel, as the front reaches them;
+    a great strum slams every one within 260 m;
+  - **stairs**: flights, switchbacks and tangles swing 90° about one end, to meet somewhere new;
+  - **districts**: every room within 50 m of a point turns 90° about it together, as the castle folds;
+  - **the walls**: blocks slide in and out, and some are rammed 40–110 m into the hall like pillars, hold, and are
+    usually pulled back; runs of up to fourteen neighbouring blocks ram out one after another, a line of pillars;
+  - **the ceiling**: its columns of rooms drop, singly or in a cascade outward from a point, and often rise again;
+  - **the floor**: the houses on it slide across the tatami and turn.
+
+  Each strum has two echoes, about 2 and 5 seconds after it, each smaller than the last.
+
+  Nothing leaves the hall, moves into a place, or lands on or passes through the camera. When something big
+  slams home near you the camera shakes and there is a thud. **Shift+B**, or **Biwa ×3**, is a great strum: three
+  strikes, twice as much of everything, and a wider fold. She plays on her own every 15–30 seconds, with a great
+  strum every fourth time, and between strums something near you shifts every second or two: the castle is never
+  quite still ("Nakime: playing" turns all of it off; so does `#still` in the address). `#strum` or `#strum=2` makes
+  her play as the page opens.
+
+  The sound is made on the page: four plucked strings with a buzzing bridge (the sawari), the slap of the
+  plectrum and a hall's echo, and M mutes it. Nothing she moves is in the fingerprint, which is taken before she
+  first plays.
+- **Fall** (the button, or `#fall`): in through the doors in the ceiling the way the Demon Slayer Corps came,
+  520 m down past everything to the great floor in half a minute, with a line at each thing you pass.
+- **Getting about:** the site's controls; F flies (the wheel is speed). The HUD says where you are, how high
+  you are and how far under the ceiling. The page keeps `#at=x,y,z,distance,yaw,pitch` current, and `#view=N`
+  opens view N.
+
 ## Layout
 
 ```
@@ -1248,6 +1335,7 @@ src/
   yellowstone/ main.js landmarks.js nature.js   Yellowstone: the geysers, pools, falls, lodges, herds and caldera; the land cover, forest, rivers and steam
   backrooms/ main.js level.js textures.js sound.js   the Backrooms: its own renderer, the generator and baked light, the canvases, the hum
   blame/    main.js city.js detail.js builders.js figures.js mats.js sphere.js   the City: its own renderer, camera, section and tour; the 25 km block; the Megastructure's structure and the layers' furniture; the Builders and the lifts; Killy and Cibo; the patterns and the poché; the whole of it round the Sun
+  infinitycastle/ main.js mats.js kit.js castle.js places.js biwa.js   the Infinity Castle: its own renderer, camera and fall; the canvases and the facade shader; the kit and its clusters; the shaft, its walls and the void; the places; the biwa
   minastirith/ main.js landmarks.js life.js  Minas Tirith: the Tower, the Court, the Gate, the rock, the banners
   kowloon/  main.js section.js kaitak.js life.js   the Walled City: the section, the approach, the washing
   starship/ page.js parts.js                 the page the ships and Babylon 5 share: renderer, sky, turntable, cards; the hull pieces
