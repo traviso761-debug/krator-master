@@ -83,3 +83,16 @@ distinct.
   square towers); watch (taller tower on the other corner / a bell cote); mustering ground (tiled stand / a
   colonnaded stand and barrack sheds); arena (smaller single-tier / four mosaic gates); amphitheatre (five or nine
   tiers, gilt stage roof); baths (gold lesser domes / three tiled domes); garden (long pool / chhatri).
+
+## Round 4 (Sep 29 2026) — the Palopó paint
+
+Travis: variants of the shops, residences, bathhouse and neighbourhood temple painted like Santa Catarina Palopó
+(four reference photos: turquoise and cobalt houses, orange/yellow trim, huipil motifs across the walls).
+
+`88-xa-dress.js`: twelve twins `<key>_palopo` in the row "Palopó paint", running the same builder and seed under
+a paint filter on `kput` — every wall item takes the building's base colour (turquoise / cobalt / royal / teal /
+sky), painted trim goes orange or yellow (black surrounds stay black), valances take a second trim — and every big
+wall instance is recorded so that, after the building, each face gets a lozenge-chain or zigzag band under its
+top (and above its foot), and the tall faces a motif: pink quetzal, sky quetzal, green deer, hooked X star (four
+alpha-cut colour maps, world-tiled bands). Battered blocks get the planes leaned with the wall. Base colour, trim
+and motif order rotate with `o.v`. Verify clean: 95 volumes, 0.75 M tris.
