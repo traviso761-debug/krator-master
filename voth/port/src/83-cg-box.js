@@ -91,7 +91,7 @@ function buildCgBox(scene,gx,gz,d,opt){reseed(20210+d);
     kput('pkStair',[x+lx*c+lz*s,D+i*2,z-lx*s+lz*c],qEuler(0,yw+(up?0:Math.PI),0),[1.1,1,1],null);}
    REGISTER({name:'Straddle-carrier house',x,z,r:6,h:22,y:D});}}
  // ---- quay interchange: boxes landed in a line, lamps
- if(d<3){for(let x=-h+14;x<h-14;x+=13.4)if(rng()<.6)portContainer(x+rr(-.4,.4),D,-9,rr(-.02,.02),true,d);}
+ if(d<3){for(let x=-h+36;x<h-14;x+=13.4)if(rng()<.7)portContainer(x+rr(-.4,.4),D,-9,rr(-.02,.02),true,d);}   // clear of the eye-level preset's spot
  for(let x=-h+22;x<=h-22+.1;x+=33)portLamp(x,D,-3.5,0,d);
  // ---- the reefer block (west): two banks of reefers either side of a three-tier rack
  const rx0=-45*k,rx1=-8*k,rzc=-83.8,RB=1.1;
