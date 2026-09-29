@@ -14,7 +14,7 @@ function buildSkyD(scene,gx,gz,d){reseed(9130+d);KOFF=[gx,0,gz];const G=new THRE
  const PR=48;
  skyPlinth(G,dd,PR);
  const rFn=y=>{const t=clamp(y/H,0,1);return 30*(1-.12*t)+(t>.84?9*Math.pow((t-.84)/.16,.7):0);};
- const build=(P,dx,y0,y1,upper)=>{const cut=(dx>0&&!upper&&y1!=null)?y1:(dx>0&&d===1?H*.76:null);const L=(cut!=null?cut:H)-y0;const hole=holeFn(dx,47+(upper?1:0),cut!=null?L:null,1.2);
+ const build=(P,dx,y0,y1,upper)=>{const cut=(dx>0&&!upper&&y1!=null)?y1:(dx>0&&d===1?H*.76:null);const L=(cut!=null?cut:H)-y0;let hole=holeFn(dx,47+(upper?1:0),cut!=null?L:null,1.2);if(d===1&&!upper)hole=skyScarHole(hole,.3,.13,L*.38,L,47);   // the collapse scar (52-sky-abc.js)
   const skin=gridSurface((u,v)=>{const th=u*TAU,y=v*L;const fy=((y+y0)%12)/12;const rec=fy>.62&&fy<.92?.94:1;const r=rFn(y+y0)*se(th,3.2)*rec;return[r*Math.cos(th),y,r*Math.sin(th)];},96,Math.round(L/2),{uS:16,vS:L/8,hole:hole?(u,v)=>hole(u,v*L):null});
   mesh(skin,CONC(dx),P);
   if(dx>0){
@@ -36,7 +36,7 @@ function buildSkyD(scene,gx,gz,d){reseed(9130+d);KOFF=[gx,0,gz];const G=new THRE
      if(!burns(k,sy))continue;
      const r=r0*se(th,3.2)+.15,nrm=[Math.cos(th),0,Math.sin(th)];
      fireWindow([r*Math.cos(th),y+9.2,r*Math.sin(th)],nrm,qFacing(nrm),TAU*r/NB*.8,3.2);}}
-   else if(((yy/12)|0)%3===0)stripRing(0,y+9,0,r0*.9,dx,28);}
+   else if(((yy/12)|0)%3===0&&!(d===1&&!upper&&y>L*.38))stripRing(0,y+9,0,r0*.9,dx,28);}
   meshMerged(dRib,MAT.dark,P);
   // the floors behind the ribbon burn too, so the fire shows through the tears
   if(PROJ)for(let y=12,sy=1;y<L-8;y+=12,sy++){if(!burns.raw((sy*5)%NB,sy))continue;if(rng()<.45)continue;

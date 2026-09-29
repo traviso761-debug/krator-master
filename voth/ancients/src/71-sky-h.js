@@ -15,7 +15,7 @@ function buildSkyH(scene,gx,gz,d){reseed(9170+d);KOFF=[gx,0,gz];const G=new THRE
  const PR=56;
  skyPlinth(G,dd,PR);
  const half=y=>{const t=clamp(y/H,0,1);const step=Math.floor(t*5)/5;return 34*(1-.45*step)-2*(t*5-step*5)*.3;};
- const build=(P,dx,y0,y1,upper)=>{const cut=(dx>0&&!upper&&y1!=null)?y1:(dx>0&&d===1?H*.7:null);const L=(cut!=null?cut:H)-y0;const hole=holeFn(dx*.9,87+(upper?1:0),cut!=null?L:null,1.1);
+ const build=(P,dx,y0,y1,upper)=>{const cut=(dx>0&&!upper&&y1!=null)?y1:(dx>0&&d===1?H*.7:null);const L=(cut!=null?cut:H)-y0;let hole=holeFn(dx*.9,87+(upper?1:0),cut!=null?L:null,1.1);if(d===1&&!upper)hole=skyScarHole(hole,.3,.12,L*.4,L,87);   // the collapse scar (52-sky-abc.js)
   const skin=gridSurface((u,v)=>{const th=u*TAU,y=v*L;const groove=Math.abs(Math.sin(2*th))>.995?.9:1;const r=half(y+y0)*se(th,7)*groove;return[r*Math.cos(th),y,r*Math.sin(th)];},128,Math.round(L/2),{uS:16,vS:L/8,hole:hole?(u,v)=>hole(u,v*L):null});
   mesh(skin,CONC(dx),P);
   if(dx>0){
@@ -41,7 +41,7 @@ function buildSkyH(scene,gx,gz,d){reseed(9170+d);KOFF=[gx,0,gz];const G=new THRE
    const nrm=[Math.cos(th),0,Math.sin(th)];
    kput(dx>0?'winSmD':'winSmI',[px,y,pz],qFacing(nrm),[.8,3.2,1],null);
    if(PROJ&&burns(f*5+k+2,sy))fireWindow([px,y,pz],nrm,qFacing(nrm),1.0,3.0);}}
-  if(!PROJ)for(let yy=20;yy<L-10;yy+=40)stripRing(0,yy,0,half(yy+y0)*.9,dx,8);
+  if(!PROJ)for(let yy=20;yy<(d===1&&!upper?L*.4:L-10);yy+=40)stripRing(0,yy,0,half(yy+y0)*.9,dx,8);
   if(cut==null){const ht=half(H);kput(BOXC(dx),[0,L+1,0],null,[ht*2+3,2,ht*2+3],null);for(let k=0;k<12;k++){const a=k/12*TAU;const r=ht*se(a,7)+.5;kput(BOXC(dx),[r*Math.cos(a),L+4,r*Math.sin(a)],qEuler(0,-a,0),[2.5,5,3],null);}
    mesh(lathe({rFn:y=>ht*.55*(1-.3*y/30)+1.5*clamp((y-24)/6,0,1),H:30,flutes:4,amp:.15,sharp:2,nu:24,nv:10}),CONC(dx),P,0,L+2,0);kput('finial',[0,L+38,0],null,[3,5,3],null);stripRing(0,L+26,0,ht*.45,dx,12);}};
  bodyGroup(G,Y0,d,dd,build,Y0+80,half(Y0+80),PROJ);
