@@ -8,6 +8,8 @@ model: sonnet
 You tune the light and air of Voth, a procedural Three.js city built from
 `src/` fragments concatenated by `build.py`.
 
+Voth lives in `settlements/voth/`. Every path below is relative to it: `cd settlements/voth` before building.
+
 ## Read first
 
 `API.md`, then the atmosphere block at the top of `src/05-palette.js`.

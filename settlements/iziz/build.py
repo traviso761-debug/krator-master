@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Concatenate src/* + targets/<t>/* into dist/<t>.html (Dalab).
+"""Concatenate src/* + targets/<t>/* into dist/<t>.html (Iziz).
 
 Also enforces the rules that make subagent work safe on this kit:
 
@@ -47,6 +47,7 @@ except Exception:
     pass
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.dirname(os.path.dirname(HERE))   # repo root: biomes/, kits/, settlements/
 SRC = os.path.join(HERE, 'src')
 TARGETS = os.path.join(HERE, 'targets')
 DIST = os.path.join(HERE, 'dist')
@@ -57,8 +58,26 @@ ORIGIN = os.path.join(HERE, '.origin.html')
 # else — core, helpers, all 33 builders — is shared, so a fix to a builder lands
 # in every target that shows it and the two cannot drift.
 TARGET_OUT = {
-    'set': 'dalab-set.html',            # the Dalab building kit showcase
-    'city': 'dalab.html',               # the settlement
+    'vernacular': 'iziz-vernacular.html',      # the Iziz Vernacular set showcase
+    'city': 'iziz.html',                        # the city
+    'wA': 'w-a.html', 'wB': 'w-b.html', 'wC': 'w-c.html',   # per-agent work sheets (round 2)
+}
+_OLD_TARGETS = {
+    'kit': 'ancients-kit.html',            # the 32-type showcase
+    'theodiga': 'theodiga.html',           # the dam arcology, on its own
+    'spire': 'spire.html',                 # the recursive spire, on its own
+    'repaired': 'repaired.html',           # every type at decay level 3
+    'canyon': 'canyon.html',               # the cross-canyon span works
+    'dalab': 'dalab.html',                 # the ancient lab domes (domes only)
+    'veladiga': 'veladiga.html',
+    'hexahedron': 'hexahedron.html',           # Soleri's other dam arcology
+    'forest': 'forest.html',                   # the planted-torus arcology
+    'darco': 'darco.html',                     # the swept-horn arcology
+    'launch': 'launch.html',                   # the launch arcology
+    'plymouth': 'plymouth.html',               # the plymouth arcology
+    'arcbeam': 'arcbeam.html',                 # the canyon-spanning beam arcology
+    'ring': 'ring.html',                       # the barrel arcology, circular toruses
+    'arcoindian': 'arcoindian.html',           # the cliff-topography arcology
 }
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
@@ -66,24 +85,26 @@ DETERMINISTIC = {
     '00-head.html', '10-core.js', '12-stats.js', '20-textures.js', '22-materials.js',
     '30-kit.js', '32-surfaces.js', '34-kitdefs.js', '36-decor.js', '38-helpers2.js',
     '50-registry.js', '54-mat-concrete.js', '68-mat-v5.js', '69-mat-salvage.js',
-    '69b-vern-mat.js', '69c-vern-helpers.js',            # vendored from ../iziz/src (the Vernacular kit + helpers)
-    '69d-dalab-mat.js', '69e-dalab-helpers.js',          # Dalab materials, kit items, building blocks
-    '70-hl-tex.js', '71-hl-mat.js', '71b-hl-motif.js', '72-hl-helpers.js', '73-hl-carve.js',   # vendored from ../highlands/src
-    '81-sky.js', '86-bio-45-init.js', '90-scene.js', '91-probe.js', '92-camera.js', '93-labels.js', '94-dalab-light.js', '99-tail.html',
+    '66-office-c.js', '78-factory-silo.js', '80-aa-battery.js', '40-factory-extras.js',
+    '69b-vern-mat.js', '69c-vern-helpers.js', '78-transplant.js', '79-iziz-original.js', '81-sky.js', '90-scene.js',
+    '91-probe.js', '92-camera.js', '93-labels.js', '99-tail.html',
     '89z-rows.js', '91z-views.js',        # per-target site table and view list
-    '84-city-geo.js', '85-city-paint.js', '93-city-ui.js',   # city target: geometry, the painted ground, dev-tool UI
+    '84-city-geo.js', '93-city-ui.js',    # city target: geometry constants, dev-tool UI
 }
 
 # Seed ranges known to collide, kept here so the build stays green while the
 # collision is tracked in KNOWN_ISSUES.md. Remove an entry when it is fixed;
 # do not add one without an accompanying KNOWN_ISSUES entry.
-SEED_COLLISION_EXCEPTIONS = set()
+SEED_COLLISION_EXCEPTIONS = {
+    ('48-library.js', '76-campus.js'),   # both claim 9800/9801 - see KNOWN_ISSUES.md
+    ('60-gate.js', '87-mega.js'),        # 9995+d vs 9996+d overlap  - see KNOWN_ISSUES.md
+}
 
 # Fragments that are IIFE-scoped by contract (the Krator biome core and biome
 # fragments): their column-0 declarations live inside a closure, so the
 # shared-scope name checks do not apply. They keep their own PRNG too, so the
 # reseed rule does not apply either. Matched by filename prefix.
-SCOPED_PREFIXES = ('86-bio-',)   # none yet: the settlement pass vendors a biome the way Iziz's city did
+SCOPED_PREFIXES = ('86-bio-',)
 def scoped(f):
     return f.startswith(SCOPED_PREFIXES)
 
@@ -219,51 +240,60 @@ def build_one(target, do_checks, assert_origin):
 
 VENDORED = ['10-core.js', '12-stats.js', '20-textures.js', '22-materials.js', '30-kit.js',
             '32-surfaces.js', '34-kitdefs.js', '36-decor.js', '38-helpers2.js', '50-registry.js',
-            '54-mat-concrete.js', '68-mat-v5.js', '69-mat-salvage.js']          # ../ancients/src
-VENDORED_IZIZ = ['69b-vern-mat.js', '69c-vern-helpers.js', '81-sky.js', '90-scene.js', '91-probe.js',
-                 '92-camera.js', '93-labels.js', '99-tail.html', '00-head.html',
-                 '75-port-embassy.js', '76-port-chapterhouse.js']   # ../iziz/src (the vp* kit, the Voth embassy, the Historians' chapterhouse from the Yuni set)
-VENDORED_HL = ['70-hl-tex.js', '71-hl-mat.js', '71b-hl-motif.js', '72-hl-helpers.js', '73-hl-carve.js', '74-rep-dwell.js']   # ../highlands/src (the Republican dwellings, for the embassy)
+            '54-mat-concrete.js', '68-mat-v5.js', '69-mat-salvage.js',
+            # the Ancients builders the city places (ruined d=1 / repaired d=3)
+            '40-factory-extras.js', '42-offices.js', '46-bunker.js', '48-library.js', '52-sky-abc.js',
+            '56-sky-d.js', '57-sky-e.js', '58-sky-f.js', '64-houses-def.js', '66-office-c.js', '73-police.js',
+            '76-campus.js', '78-factory-silo.js', '79-government.js', '80-aa-battery.js', '81-houses-abc.js',
+            '82-apartments.js', '83-amphitheater.js', '84-fuel.js', '88-factory.js', '89-lab.js']
+
+
 BIO_VENDORED = ['10-core-head', '20-core-kit', '30-core-foliage', '40-core-place',
-                '50-biome-swlowlands-species', '55-biome-swlowlands-trees', '60-biome-swlowlands-floor',
-                '65-biome-swlowlands-dress', '70-biome-swlowlands']   # ../biomes/swlowlands/src -> src/86-bio-*.js
+                '50-biome-hyperjungle-species', '55-biome-hyperjungle-trees', '60-biome-hyperjungle-floor',
+                '65-biome-hyperjungle-dress', '70-biome-hyperjungle']   # ../biomes/hyperjungle/src -> targets/city/86-bio-*.js
 
 
 def vendor_manifest():
-    """VENDOR.json: sha1 of every fragment vendored from ../ancients/src and ../iziz/src, so drift is visible."""
+    """VENDOR.json: sha1 of every fragment vendored from ../ancients/src, so drift is visible."""
     out = {}
-    for f in VENDORED + VENDORED_IZIZ + VENDORED_HL + ['86-bio-%s.js' % b for b in BIO_VENDORED]:
+    for f in VENDORED:
         with open(os.path.join(SRC, f), 'rb') as fh:
             out[f] = hashlib.sha1(fh.read()).hexdigest()[:12]
+    for f in BIO_VENDORED:
+        p = os.path.join(TARGETS, 'city', '86-bio-%s.js' % f)
+        if os.path.exists(p):
+            with open(p, 'rb') as fh:
+                out['targets/city/86-bio-%s.js' % f] = hashlib.sha1(fh.read()).hexdigest()[:12]
     with open(os.path.join(HERE, 'VENDOR.json'), 'w', encoding='utf-8') as fh:
         json.dump(out, fh, indent=1, sort_keys=True)
     return out
 
 
 def vendor_check():
-    """Compare the vendored fragments with ../ancients/src and ../iziz/src when those repos are beside this one."""
-    lab = os.path.join(TARGETS, 'city', '63-anc-dalab.js'); up = os.path.join(os.path.dirname(HERE), 'ancients', 'src', '64-dalab.js')
-    if os.path.exists(lab) and os.path.exists(up):
-        print('vendor-check: targets/city/63-anc-dalab.js %s ../ancients/src/64-dalab.js' % ('identical to' if open(lab,'rb').read()==open(up,'rb').read() else 'drifts from (deliberate: the wall gap LAB_WALL_GAP and the narrower BITE, marked DALAB in the file)'))
-    for label, files, up in (('ancients', VENDORED, os.path.join(os.path.dirname(HERE), 'ancients', 'src')),
-                             ('iziz', VENDORED_IZIZ, os.path.join(os.path.dirname(HERE), 'iziz', 'src')),
-                             ('highlands', VENDORED_HL, os.path.join(os.path.dirname(HERE), 'highlands', 'src')),
-                             ('biomes/swlowlands', [('86-bio-%s.js' % b, b + '.js') for b in BIO_VENDORED],
-                              os.path.join(os.path.dirname(HERE), 'biomes', 'swlowlands', 'src'))):
-        if not os.path.isdir(up):
-            print('vendor-check: ../%s/src not found; skipped' % label)
-            continue
-        drift = []
-        for f in files:
-            f, upf = (f if isinstance(f, tuple) else (f, f))
-            a = open(os.path.join(SRC, f), 'rb').read()
-            p = os.path.join(up, upf)
-            if not os.path.exists(p):
-                drift.append(f + ' (missing upstream)')
-            elif open(p, 'rb').read() != a:
-                drift.append(f)
-        print('vendor-check: %s' % ('all %d fragments identical to ../%s/src' % (len(files), label)
-                                     if not drift else 'DRIFT vs ../%s/src in ' % label + ', '.join(drift) + ' - re-vendor or note in KNOWN_ISSUES.md'))
+    """Compare the vendored fragments with ../ancients/src when that repo is beside this one."""
+    up = os.path.join(ROOT, 'kits', 'ancients', 'src')
+    if not os.path.isdir(up):
+        print('vendor-check: ../ancients/src not found; skipped')
+        return
+    drift = []
+    for f in VENDORED:
+        a = open(os.path.join(SRC, f), 'rb').read()
+        p = os.path.join(up, f)
+        if not os.path.exists(p):
+            drift.append(f + ' (missing upstream)')
+        elif open(p, 'rb').read() != a:
+            drift.append(f)
+    print('vendor-check: %s' % ('all %d vendored fragments identical to ../ancients/src' % len(VENDORED)
+                                 if not drift else 'DRIFT in ' + ', '.join(drift) + ' - re-vendor or note in KNOWN_ISSUES.md'))
+    bup = os.path.join(ROOT, 'biomes', 'hyperjungle', 'src')
+    if not os.path.isdir(bup):
+        print('vendor-check: ../biomes/hyperjungle/src not found; biome check skipped')
+        return
+    bdrift = [f for f in BIO_VENDORED
+              if open(os.path.join(TARGETS, 'city', '86-bio-%s.js' % f), 'rb').read()
+              != open(os.path.join(bup, f + '.js'), 'rb').read()]
+    print('vendor-check: %s' % ('all %d biome fragments identical to ../biomes/hyperjungle/src' % len(BIO_VENDORED)
+                                 if not bdrift else 'BIOME DRIFT in ' + ', '.join(bdrift)))
 
 
 def main():

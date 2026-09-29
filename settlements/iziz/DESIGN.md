@@ -1,6 +1,6 @@
 # Iziz — design doc
 
-Iziz is rebuilt as its own repo (`voth/iziz/`) on the Ancients kit's fragment
+Iziz is rebuilt as its own repo (`settlements/iziz/`) on the Ancients kit's fragment
 contract (see `API.md`), because the finished city has to hold four
 vocabularies at once — the outer wall / palace / spaceport of the original Iziz
 render, the Ancients kit in ruined and reclaimed states, the hyperjungle biome

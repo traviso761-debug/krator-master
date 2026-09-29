@@ -47,6 +47,9 @@ except Exception:
     pass
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.dirname(os.path.dirname(HERE))   # repo root: biomes/, kits/, settlements/
+UPSTREAM = {'ancients': os.path.join(ROOT, 'kits', 'ancients'), 'iziz': os.path.join(ROOT, 'settlements', 'iziz'),
+            'highlands': os.path.join(ROOT, 'settlements', 'highlands')}
 SRC = os.path.join(HERE, 'src')
 TARGETS = os.path.join(HERE, 'targets')
 DIST = os.path.join(HERE, 'dist')
@@ -237,7 +240,7 @@ def vendor_manifest():
 def vendor_check():
     """Compare vendored fragments with ../highlands/src."""
     for up_name, files in (('highlands', VENDORED),):
-        up = os.path.join(os.path.dirname(HERE), up_name, 'src')
+        up = os.path.join(UPSTREAM[up_name], 'src')
         if not os.path.isdir(up):
             print('vendor-check: ../%s/src not found; skipped' % up_name)
             continue
