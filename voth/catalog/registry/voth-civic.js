@@ -2,7 +2,7 @@
    voth-civic — Voth building catalog, civic / industrial / rural entries
    source: 'voth-civic'   |  culture: 'voth'
      voth_school            2 variants  temple college | neighbourhood schoolhouse
-     voth_generator         1 variant   geothermal steam turbine hall
+     voth_generator         2 variants  steam turbine hall | fumarole vent house
      voth_farmhouse         3 variants  velothi farmstead | chinampa | hlaalu farm
      voth_governor_palace   1 variant   domed audience hall, wings, garden court
 
@@ -862,6 +862,163 @@
     K.crate(10.4, 0, 8.4, 1.0, 0.2); K.crate(10.9, 1.0, 8.5, 0.8, -0.1);
   }
 
+  /* v1 — fumarole vent house: a battered Velothi rotunda over a steam vent,
+     bronze-ribbed dome, a glowing gauge gallery round its drum, a turbine
+     shed with a great bronze flywheel in a pit, one tall stack, a tank,
+     conduits out on pylons */
+  function genVent(F, K) {
+    const c = shade(F.pick(ST), -0.08), tr = shade(c, -0.14), base = shade(c, -0.26);
+    const RX = -5, RZ = -2;
+    const rf = function (y) { return 6.0 - 0.8 * (y - 0.6) / 9; };
+    F.frustum(RX, 0, RZ, 6.5, 6.3, 0.6, 0, base, 'stone', 16);
+    F.frustum(RX, 0.6, RZ, 6.0, 5.2, 9, 0, c, 'stone', 16);
+    [3.4, 9.3].forEach(function (y) { F.cyl(RX, y, RZ, rf(y + 0.15) + 0.1, 0.3, 0, tr, 'stone'); });
+    for (let i = 0; i < 8; i++) {
+      const a = (i + 0.5) / 8 * TAU, sa = Math.sin(a), ca = Math.cos(a);
+      F.beam(RX + sa * 6.0, 0.6, RZ + ca * 6.0, RX + sa * 5.22, 9.3, RZ + ca * 5.22, 0.7, 0.7, shade(c, -0.05), 'stone');
+      F.beam(RX + sa * rf(4.6), 4.6, RZ + ca * rf(4.6), RX + sa * 6.35, 5.25, RZ + ca * 6.35, 0.3, 0.3, shade(c, -0.1), 'stone');
+    }
+    /* gauge gallery */
+    F.cyl(RX, 5.2, RZ, 6.45, 0.22, 0, tr, 'stone');
+    F.cyl(RX, 6.25, RZ, 6.4, 0.06, 0, IRON, 'metal');
+    for (let i = 0; i < 24; i++) {
+      const a = i / 24 * TAU;
+      F.rod(RX + Math.sin(a) * 6.38, 5.42, RZ + Math.cos(a) * 6.38, RX + Math.sin(a) * 6.38, 6.3, RZ + Math.cos(a) * 6.38, 0.03, IRON, 'metal');
+    }
+    for (let i = 0; i < 16; i++) {
+      const a = (i + 0.5) / 16 * TAU, r = rf(6.1) + 0.03;
+      F.box(RX + Math.sin(a) * r, 5.7, RZ + Math.cos(a) * r, 0.9, 0.9, 0.2, a, i % 3 ? 0xffc27a : 0x9fe8b0, 'glow');
+      F.box(RX + Math.sin(a) * (r + 0.05), 5.62, RZ + Math.cos(a) * (r + 0.05), 1.05, 0.1, 0.2, a, BRASS, 'metal');
+    }
+    /* slit windows between the ribs, the iron door, base vents leaking steam */
+    for (let i = 0; i < 8; i++) {
+      const a = i / 8 * TAU;
+      [[1.8, 1.6], [7.2, 1.6]].forEach(function (q) {
+        if (i === 0 && q[0] < 5) return;
+        const r = rf(q[0] + 0.8) + 0.02;
+        F.box(RX + Math.sin(a) * r, q[0], RZ + Math.cos(a) * r, 0.5, q[1], 0.3, a, DARK, 'wood');
+        F.box(RX + Math.sin(a) * (r + 0.05), q[0] - 0.2, RZ + Math.cos(a) * (r + 0.05), 0.8, 0.2, 0.4, a, tr, 'stone');
+      });
+    }
+    K.door(RX, 0.6, RZ + rf(2.0) + 0.05, 0, 2.2, 2.8, c, { arch: true, leaf: IRON, leafFam: 'metal', steps: 2 });
+    [2.2, 4.0].forEach(function (a) {
+      const r = 6.3;
+      F.box(RX + Math.sin(a) * r, 0.1, RZ + Math.cos(a) * r, 1.2, 0.5, 0.3, a, DARK, 'wood');
+      F.blob(RX + Math.sin(a) * (r + 0.5), 0.7, RZ + Math.cos(a) * (r + 0.5), 0.6, 1.2, 0, STEAM, 'steam');
+      F.blob(RX + Math.sin(a) * (r + 0.9), 1.5, RZ + Math.cos(a) * (r + 0.9), 0.75, 1.2, 1, shade(STEAM, 0.03), 'steam');
+    });
+    /* dome, bronze ribs, lantern vent */
+    F.cyl(RX, 9.6, RZ, 5.3, 0.35, 0, tr, 'stone');
+    F.dome(RX, 9.95, RZ, 5.1, 3.8, 0, shade(c, 0.05), 'dome');
+    for (let i = 0; i < 12; i++) {
+      const a = i / 12 * TAU, sa = Math.sin(a), ca = Math.cos(a);
+      let prev = null;
+      for (let k = 0; k <= 5; k++) {
+        const t = k / 5 * 1.3;
+        const pt = [RX + sa * 5.14 * Math.cos(t), 9.95 + 3.84 * Math.sin(t), RZ + ca * 5.14 * Math.cos(t)];
+        if (prev) F.rod(prev[0], prev[1], prev[2], pt[0], pt[1], pt[2], 0.14, BRONZE, 'metal');
+        prev = pt;
+      }
+    }
+    F.cyl(RX, 13.4, RZ, 0.95, 1.3, 0, BRONZE, 'metal');
+    F.cone(RX, 14.7, RZ, 1.3, 0.8, 0, shade(BRONZE, -0.15), 'metal');
+    F.blob(RX + 0.3, 15.6, RZ, 0.9, 1.4, 0, STEAM, 'steam');
+    F.blob(RX + 0.9, 16.6, RZ + 0.2, 1.1, 1.6, 1, shade(STEAM, 0.03), 'steam');
+
+    /* turbine shed */
+    const SX = 6, SZ = -2;
+    F.box(SX, 0, SZ, 10.6, 0.5, 7.6, 0, base, 'stone');
+    F.box(SX, 0.5, SZ, 10, 7, 7, 0, shade(c, 0.03), 'stone');
+    K.band(SX, SZ, 10, 7, 3.6, 0.25, 0.3, tr);
+    K.band(SX, SZ, 10, 7, 7.1, 0.4, 0.5, tr);
+    K.parapet(SX, SZ, 10, 7, 7.5, 0.7, 0.35, c);
+    F.box(SX + 0.5, 7.5, SZ, 7, 1.6, 2.6, 0, shade(c, 0.05), 'stone');
+    F.box(SX + 0.5, 9.1, SZ, 7.5, 0.25, 3.1, 0, tr, 'stone');
+    for (let i = 0; i < 6; i++) {
+      [0, 1].forEach(function (s) { K.fb(SX - 2.3 + i * 1.15, 7.8, SZ + (s ? -1.3 : 1.3), s, 0.05, 0.75, 0.9, 0.12, DARK, 'wood'); });
+    }
+    K.row(SX, 2.2, 1.5, 0, [-2.5, 2.5], 1.8, 3.2, c, { arch: true, mull: IRON });
+    K.door(SX, 0.5, 1.5, 0, 1.8, 2.8, c, { leaf: IRON, leafFam: 'metal', steps: 1, lamp: -1 });
+    K.row(SX, 2.4, -5.5, 1, [-2.5, 0, 2.5], 1.4, 2.8, c, { arch: true, mull: IRON });
+    K.row(11, 4.6, SZ, 2, [-2.4, 2.4], 1.0, 1.4, c, {});
+    F.cyl(SX - 2, 7.5, SZ - 2.6, 0.4, 1.1, 0, IRON, 'metal');
+    F.cone(SX - 2, 8.6, SZ - 2.6, 0.7, 0.5, 0, IRON, 'metal');
+    /* great bronze flywheel in a pit off the east end */
+    const WX = 12.9, WY = 3.3;
+    F.box(WX, 0, SZ, 1.8, 0.8, 7.0, 0, base, 'stone');
+    F.box(WX, 0.8, SZ, 1.9, 0.12, 7.1, 0, tr, 'stone');
+    F.rod(WX - 0.28, WY, SZ, WX + 0.28, WY, SZ, 3.0, BRONZE, 'metal');
+    F.rod(WX - 0.32, WY, SZ, WX + 0.32, WY, SZ, 2.5, shade(BRONZE, -0.35), 'metal');
+    [-1, 1].forEach(function (k) {
+      for (let i = 0; i < 6; i++) {
+        const a = i / 6 * TAU;
+        F.beam(WX + k * 0.36, WY + Math.cos(a) * 0.5, SZ + Math.sin(a) * 0.5, WX + k * 0.36, WY + Math.cos(a) * 2.55, SZ + Math.sin(a) * 2.55, 0.12, 0.4, BRASS, 'metal');
+      }
+      F.rod(WX + k * 0.3, WY, SZ, WX + k * 0.5, WY, SZ, 0.6, BRASS, 'metal');
+    });
+    F.rod(11, WY, SZ, 14.4, WY, SZ, 0.28, IRON, 'metal');
+    K.fd(11, WY, SZ, 2, 0.12, 0.7, 0.24, BRONZE, 'metal');
+    F.box(14.3, 0, SZ, 0.9, WY - 0.2, 1.3, 0, shade(c, -0.1), 'stone');
+    F.box(14.3, WY - 0.3, SZ, 0.7, 0.7, 0.9, 0, IRON, 'metal');
+    [[WX - 1.1, SZ - 3.6], [WX + 1.1, SZ - 3.6], [WX - 1.1, SZ + 3.6], [WX + 1.1, SZ + 3.6]].forEach(function (p) {
+      F.rod(p[0], 0, p[1], p[0], 1.1, p[1], 0.05, IRON, 'metal');
+    });
+    [-1, 1].forEach(function (k) {
+      F.rod(WX - 1.1, 1.05, SZ + k * 3.6, WX + 1.1, 1.05, SZ + k * 3.6, 0.04, IRON, 'metal');
+      F.rod(WX + k * 1.1, 1.05, SZ - 3.6, WX + k * 1.1, 1.05, SZ + 3.6, 0.04, IRON, 'metal');
+    });
+    /* pipes from the rotunda up and over onto the shed roof */
+    [0.75, 1.05].forEach(function (a, i) {
+      const px = RX + Math.sin(a) * 6.35, pz = RZ + Math.cos(a) * 6.35, top = 10.4 + i * 0.6;
+      F.rod(px, 0.6, pz, px, top, pz, 0.26, BRASS, 'metal');
+      F.ball(px, top, pz, 0.3, BRASS, 'metal');
+      F.rod(px, top, pz, 3.2 + i * 0.7, top, pz, 0.26, BRASS, 'metal');
+      F.ball(3.2 + i * 0.7, top, pz, 0.3, BRASS, 'metal');
+      F.rod(3.2 + i * 0.7, top, pz, 3.2 + i * 0.7, 7.5, pz, 0.26, BRASS, 'metal');
+      F.rod(3.2 + i * 0.7, 7.5, pz, 3.2 + i * 0.7, 7.9, pz, 0.4, BRONZE, 'metal');
+      F.rod(px - 0.4, 3.0, pz, px + 0.4, 3.0, pz, 0.36, BRONZE, 'metal');
+    });
+    /* stack and flue */
+    const TX = -5, TZ = -10.3;
+    F.box(TX, 0, TZ, 3.0, 2.0, 3.0, 0, base, 'stone');
+    F.frustum(TX, 2.0, TZ, 1.3, 1.0, 20, Math.PI / 8, shade(c, -0.05), 'stone', 8);
+    [6, 11, 16, 21].forEach(function (y) { F.cyl(TX, y, TZ, 1.3 - 0.3 * (y - 2) / 20 + 0.08, 0.3, 0, BRONZE, 'metal'); });
+    F.cyl(TX, 22, TZ, 1.15, 0.5, 0, IRON, 'metal');
+    F.box(TX, 3.0, -8.6, 1.4, 1.8, 2.2, 0, IRON, 'metal');
+    [[0.1, 1.0, 0, 0.85, 1.5], [0.5, 2.0, 0.2, 1.1, 1.9], [1.1, 3.1, 0.45, 1.35, 2.3], [1.9, 4.0, 0.7, 1.5, 2.4]].forEach(function (b, k) {
+      F.blob(TX + b[0], 22.5 + b[1], TZ + b[2], b[3], b[4], k, shade(STEAM, -0.04 + k * 0.025), 'steam');
+    });
+    /* tank */
+    const QX = -12.3, QZ = 4.4;
+    F.cyl(QX, 0, QZ, 2.4, 0.4, 0, base, 'stone');
+    F.cyl(QX, 0.4, QZ, 2.2, 4.4, 0, shade(BRONZE, -0.08), 'metal');
+    [1.4, 2.8, 4.2].forEach(function (y) { F.cyl(QX, y, QZ, 2.27, 0.15, 0, IRON, 'metal'); });
+    F.cone(QX, 4.8, QZ, 2.35, 0.9, 0, BRASS, 'metal');
+    F.rod(QX + 2.2, 1.6, QZ, RX + 3.4, 1.6, QZ, 0.3, BRASS, 'metal');
+    F.rod(QX + 3.2, 1.3, QZ, QX + 3.2, 1.9, QZ, 0.45, BRONZE, 'metal');
+    /* conduits out to the front on two pylons, down into a valve pit */
+    [9.9, 10.6].forEach(function (x) {
+      F.rod(x, 5.9, 1.5, x, 5.9, 10.4, 0.26, BRASS, 'metal');
+      F.rod(x, 5.9, 1.5, x, 5.9, 1.85, 0.38, BRONZE, 'metal');
+      F.ball(x, 5.9, 10.4, 0.29, BRASS, 'metal');
+      F.rod(x, 5.9, 10.4, x, 0.9, 10.4, 0.26, BRASS, 'metal');
+    });
+    [5.2, 8.6].forEach(function (z) {
+      F.box(10.25, 0, z, 1.8, 0.4, 1.8, 0, base, 'stone');
+      F.frustum(10.25, 0, z, 0.7, 0.5, 5.2, 0, shade(c, 0.02), 'stone', 4);
+      F.box(10.25, 5.2, z, 2.4, 0.45, 0.8, 0, tr, 'stone');
+      [9.2, 11.3].forEach(function (x) {
+        F.box(x, 5.65, z, 0.35, 0.4, 0.6, 0, tr, 'stone');
+        F.pyrRoof(x, 6.05, z, 0.5, 0.4, 0.8, 0, shade(c, -0.25), 'roof');
+      });
+    });
+    F.box(10.25, 0, 10.5, 2.4, 0.9, 1.4, 0, base, 'stone');
+    F.box(10.25, 0.9, 10.5, 2.6, 0.15, 1.6, 0, tr, 'stone');
+    K.barrel(-1.2, 0, 5.4, 0.45, 1.1); K.barrel(-0.3, 0, 5.8, 0.45, 1.1);
+    K.crate(3.6, 0, 3.4, 1.0, 0.25); K.crate(4.3, 0, 4.6, 0.8, -0.2);
+    K.jar(-10.0, 0, 7.4, 0.4, 0x6a6458);
+  }
+
   /* ============================================================= FARMHOUSE */
 
   /* v0 — Velothi farmstead: battered domed house, walled yard, granaries,
@@ -1543,9 +1700,16 @@
   ASSET({
     key: 'voth_generator', name: 'Power House', culture: 'voth', source: 'voth-civic', family: 'industrial',
     districts: ['industrial', 'harbour', 'guild-row'], wealth: [0.3, 0.7],
-    blurb: 'Geothermal steam power house: buttressed turbine hall, bronze boiler drums and turbine casing, smoking stacks, cooling tanks, a crane gantry, conduits out on pylons and a control tower with glowing gauges.',
-    w: 41.2, d: 36, h: 28.3, variants: 1,
-    build: function (F) { genHall(F, kit(F)); }
+    blurb: 'Geothermal steam power house: a buttressed turbine hall or a domed fumarole vent house with a flywheel; bronze boiler drums and turbine casing, smoking stacks, cooling tanks, a crane gantry, conduits out on pylons and a control tower with glowing gauges.',
+    w: 41.7, d: 35.7, h: 29.4, variants: 2,
+    variantDims: [
+      { w: 41.7, d: 35.7, h: 29.4 },
+      { w: 29.2, d: 23.4, h: 27.4 }
+    ],
+    build: function (F) {
+      const K = kit(F);
+      if (F.variant === 1) genVent(F, K); else genHall(F, K);
+    }
   });
 
   ASSET({
