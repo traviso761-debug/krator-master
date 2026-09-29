@@ -49,7 +49,7 @@ function tmMullions(P,n,y0,h,d,skip){const nm=d>0?'mullR':'mullW';
   if(d===1&&rng()<.25){if(rng()<.5)kput(nm,[p[0],y0+h*.35,p[1]],qEuler(rr(-.5,.5),yaw,rr(-.6,.6)),[.8,h*.7,.8],null);continue;}
   kput(nm,[p[0],y0+h/2,p[1]],qEuler(0,yaw,0),[.7,h,.7],null);}}
 // Hedges / planters along a plan (a terrace edge).
-function tmHedgeRing(P,n,y,d){for(let i=0;i<n;i++){if(d===1&&rng()<.3)continue;const u=(i+.5)/n,p=P(u),q=P(u+.002);
+function tmHedgeRing(P,n,y,d,skip){for(let i=0;i<n;i++){if(d===1&&rng()<.3)continue;const u=(i+.5)/n,p=P(u),q=P(u+.002);if(skip&&skip(p))continue;
  const yaw=Math.atan2(-(q[1]-p[1]),q[0]-p[0]),L=tmPerim(P)/n*.86;
  kput('planter',[p[0],y+.35,p[1]],qEuler(0,yaw,0),[L,.7,1.1],d>0?new THREE.Color(0x6a5a48):new THREE.Color(0xe8e4dc));
  kput('hedge',[p[0],y+.95,p[1]],qEuler(0,yaw,0),[L*.96,d===1?rr(.6,1.8):.7,d===1?rr(.9,1.8):.9],new THREE.Color().setHSL(rr(.24,.3),.45,d===1?rr(.2,.34):.36));}}
@@ -267,6 +267,18 @@ function tmShipBuilding(G,d,gl){const D=PORT.DECK,cx=TMS.BX,cz=TMS.BZ,ax=TMS.BAX
   tmMullions(P(0),48,y+1.25,2.85,d);
   if(d===0)tmStripRing(P(.1),24,y+1.2,d);}
  pbAdd(tmBandGeo(P(0),D+12.2,1.9,NU,1,hole?(u,v)=>hole(u*3,90+v*4):null),shell,G);   // parapet over the roof slab
+ // white sun fins standing off the two long faces, the full height of the upper floors
+ for(let i=0;i<80;i++){const u=(i+.5)/80,p=P(.35)(u);if(Math.abs(p[0]-cx)>ax*.8)continue;const q=P(.35)(u+.003);
+  const yaw=Math.atan2(-(q[1]-p[1]),q[0]-p[0])+Math.PI/2;if(d===1&&rng()<.3)continue;
+  kput(d>0?'plateR':'plateW',[p[0],D+8.7,p[1]],d===1&&rng()<.2?qEuler(rr(-.08,.08),yaw,rr(-.06,.06)):qEuler(0,yaw,0),[.22,8.4,1.1],null);}
+ // a glazed stair drum on the sea face, rising over the roof
+ const sx=cx-20,sz=cz+az+.8,sr=3.4,sh=16.4;
+ pbAdd(lathe({rFn:()=>sr*.92,H:sh,nu:20,nv:1}).translate(sx,D,sz),MAT.dark,G);
+ if(d===0)gl.push(lathe({rFn:()=>sr,H:sh,nu:24,nv:1}).translate(sx,D,sz));
+ for(let k=0;k<12;k++){const a=k/12*TAU;if(d===1&&rng()<.35)continue;kput(d>0?'mullR':'mullW',[sx+Math.cos(a)*sr,D+sh/2,sz+Math.sin(a)*sr],qEuler(0,-a,0),[.5,sh,.5],null);}
+ for(let y=D+2.05;y<D+sh;y+=4.1)kput('slab',[sx,y,sz],null,[sr+.15,.25,sr+.15],d>0?new THREE.Color(0x6e665e):new THREE.Color(0xe8e4dc));
+ kput('slab',[sx,D+sh+.3,sz],null,[sr+.5,.6,sr+.5],d>0?new THREE.Color(0x6e665e):new THREE.Color(0xf2efe8));
+ if(d===0)stripRing(sx,D+sh-.6,sz,sr+.1,d,12);
  // plant room and a roof garden strip
  const PR=tmPlan(cx+22,cz-1,10,6,6,3);
  pbAdd(tmBandGeo(PR,D+12.8,3.6,32,1),shell,G);pbAdd(tmSlabGeo(PR,32,D+16.8,.4),CONC(d),G);
