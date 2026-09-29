@@ -56,10 +56,11 @@ MAT.xPalDeer=xStd({map:TEX.xPalDeer,alphaTest:.5,roughness:.85});MAT.xPalStar=xS
 kdef('xPalBand',VPLANE,MAT.xPalBand);kdef('xPalZig',VPLANE,MAT.xPalZig);kdef('xPalBird',VPLANE,MAT.xPalBird);kdef('xPalBird2',VPLANE,MAT.xPalBird2);kdef('xPalDeer',VPLANE,MAT.xPalDeer);kdef('xPalStar',VPLANE,MAT.xPalStar);
 
 // ---------------------------------------------------------------- the paint filter on kput
-const XPALOPO_WALL=new Set(['xWashB','xEarthB','vPlaster','xWallW','xWallE','xBatW96','xBatW92','xBatW86','xBatW80','xBatE96','xBatE92','xBatE86','xBatE80']);
+const XPALOPO_WALL=new Set(['xWashB','xEarthB','vPlaster','vWood@wall','vStone@wall','xWallW','xWallE','xBatW96','xBatW92','xBatW86','xBatW80','xBatE96','xBatE92','xBatE86','xBatE80']);
 const _xaKputPalopo=kput;
 kput=function(name,p,q,s,c){const C=VERN.cur;if(!C||!C.o.palopo||C.palBusy)return _xaKputPalopo(name,p,q,s,c);const P=C.pal;
- if(XPALOPO_WALL.has(name)){const S=Array.isArray(s)?s:[s,s,s];if(S[0]>=2.4&&S[1]>=2.0&&S[2]>=1.2)C.walls.push({name,p,q,s:S});return _xaKputPalopo(name,p,q,s,P.base);}
+ const bigBox=(name==='vWood'||name==='vStone')&&Array.isArray(s)&&s[0]>=6&&s[1]>=2.6&&s[2]>=6;   // the board and brick storeys of the Turkish houses
+ if(XPALOPO_WALL.has(name)||bigBox){const S=Array.isArray(s)?s:[s,s,s];if(S[0]>=2.4&&S[1]>=2.0&&S[2]>=1.2)C.walls.push({name,p,q,s:S});return _xaKputPalopo(name,p,q,s,P.base);}
  if((name==='vWinLit'||name==='vWinGlass'||name==='vDarkB')&&Array.isArray(s)&&s[0]>.35&&s[1]>.35)C.opens.push({p,q,s});   // an opening: the mural fitting avoids it
  if(name==='xPaint'&&c&&(c.r>.03||c.g>.03||c.b>.03))return _xaKputPalopo(name,p,q,s,P.trim);          // painted trim goes orange / yellow; the black surrounds stay black
  if(name==='vWood'&&Array.isArray(s)&&s[1]<.4&&Math.max(s[0],s[2])>1)return _xaKputPalopo(name,p,q,s,P.trim);   // lintels, sills, head beams
@@ -99,7 +100,7 @@ function xaPalopoPaint(C){C.palBusy=true;const P=C.pal;let i=0;
  C.palBusy=false;}
 
 // ---------------------------------------------------------------- the twins
-const XPALOPO_KEYS=['xa_poor_a','xa_poor_b','xa_poor_c','xa_mid_a','xa_mid_b','xa_mid_c','xa_rich_a','xa_rich_b','xa_rich_c','xa_shops','xa_bath','xa_temple'];
+const XPALOPO_KEYS=['xa_poor_a','xa_poor_b','xa_poor_c','xa_mid_a','xa_mid_b','xa_mid_c','xa_rich_a','xa_rich_b','xa_rich_c','xa_shops','xa_bath','xa_temple','xa_house_turk_a','xa_house_turk_b','xa_shop_turk_a','xa_shop_turk_b'];
 for(const k of XPALOPO_KEYS){const D=VERN.defs[k];if(!D)continue;const T=Object.assign({},D.tags,{paint:'palopo'});delete T.culture;delete T.kit;
  XA.def({key:k+'_palopo',baseKey:k,name:D.name+' (Palopó paint)',family:'Palopó paint',tags:T,w:D.w,d:D.d,h:D.h,fw:D.fw,fd:D.fd,nv:D.nv,
   build:function(G,o){reseed(31901+(o.v|0));const C=VERN.cur;o.palopo=true;C.walls=[];C.opens=[];C.palStats=(window._palopo=window._palopo||{faces:0,placed:0,wanted:0});const v=(o.v|0);

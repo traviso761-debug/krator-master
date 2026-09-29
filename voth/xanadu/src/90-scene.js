@@ -25,7 +25,8 @@ function xaAutoViews(extra){const V={};const R=XA_ROWS;if(!R.length)return V;con
  V['Overview']=[-900,520,mid.z+80,0,10,mid.z];
  for(const r of R){const dist=Math.max(rowCamDist(r.w),(r.h||0)*1.7);V[r.family]=[0,Math.max(18,dist*.45),r.z+r.d/2+dist,0,Math.min(4+(r.h||0)*.35,20),r.z];}
  for(const S of SITES){const D=VERN.defs[S.key];if(!D)continue;const dist=eyeCamDist(D);
-  V[D.name+(S.o.v?' v'+S.o.v:'')+' — eye level']=[S.x+D.w*.18,1.7,S.z+dist,S.x,Math.min(D.h||6,14)*.4,S.z];}
+  const E=D.eye;   // a def may name its own eye-level stance: [dx,dz,tdx,tdz] from its plot centre (the lane looks down its length)
+  V[D.name+(S.o.v?' v'+S.o.v:'')+' — eye level']=E?[S.x+E[0],1.7,S.z+E[1],S.x+E[2],Math.min(D.h||6,14)*.3,S.z+E[3]]:[S.x+D.w*.18,1.7,S.z+dist,S.x,Math.min(D.h||6,14)*.4,S.z];}
  return Object.assign(V,extra||{});}
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);
 renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;document.body.appendChild(renderer.domElement);
