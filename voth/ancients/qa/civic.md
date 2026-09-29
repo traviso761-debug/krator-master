@@ -7,7 +7,7 @@ reseed except the two KNOWN_ISSUES asked to move (Campus, Gate).
 
 Verified: `build.py --target kit`, `jscheck.py .syntax-kit.js` (PARSES OK),
 `verify.py dist/ancients-kit.html --assert --views ...` — error panel clean,
-every invariant PASS, showcase OVER as before (10 145 579, was 9 967 649).
+every invariant PASS, showcase OVER as before (10 146 021, was 9 967 649).
 Shots: `shots/qa_kit_civic/`. Rounds were rendered on a scratch copy of the kit
 page that builds only these 11 types (the full kit loads in ~10 min here).
 
@@ -120,8 +120,10 @@ shards on ~half the dead ones (position hash, no rng draw) ·
   shared `tube`, shards are one kit mesh and tents use `patchTarp`, so the only
   new never-culled kit meshes are civRobotW, civRobotR and civShard. On the
   civic-only page Robotics yard went 300 (before) -> 356 -> 274, i.e. now 26
-  calls BELOW where it started; the full-kit figure should be ~910, still over
-  the ceiling as it was before the pass. Not re-measured on the full kit after
-  the last merges (the machine is loaded; one full-kit load is ~10 min).
+  calls BELOW where it started. Full kit, final: **Robotics yard 910** (was
+  938), Data center ruin 786 (was 825), opening 797 (was 764). Robotics yard
+  is still over 900, as it was before the pass; the rest of that view's calls
+  are other rows' meshes plus the ~50 never-culled kit meshes. Showcase
+  10 146 021 triangles (was 9 967 649).
 - MAT.dark reads mid-grey in daylight, so every "dark opening" in the kit is
   grey rather than black (shared material, not changed).
