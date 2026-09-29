@@ -76,17 +76,23 @@ function buildPpPier(scene,gx,gz,d,opt){reseed(20010+d);
  // ---- the vessel hook: a slip-basin berth x 72, bow out to sea. Nothing is
  // registered yet; when a vessel fragment exists the layout offers it here.
  const vk=portVesselFor(opt,0);
- if(vk){const V=PORT_REG.vessel[vk];if(V.beam<=58&&V.length<=370)portPlaceVessel(G,vk,72,24+V.length/2,0,d);}
- else if(d===0){portBuoy(72,120);portBuoy(72,260);portBuoy(-100,200);}
+ // The slip is 24..404 m along z, so a vessel up to 380 m fits (the giant is
+ // ~370-380). PPV remembers the moored hull so the pier's own dressing keeps out.
+ let PPV=null;
+ if(vk){const V=PORT_REG.vessel[vk];if(V.beam<=58&&V.length<=380){portPlaceVessel(G,vk,72,24+V.length/2,0,d);
+  PPV={x0:72-V.beam/2-4,x1:72+V.beam/2+4,z0:20,z1:28+V.length};}}
+ const inPPV=(x,z)=>PPV&&x>PPV.x0&&x<PPV.x1&&z>PPV.z0&&z<PPV.z1;
+ if(!vk&&d===0){portBuoy(72,120);portBuoy(72,260);portBuoy(-100,200);}
  if(d===0){portFigures(-30,D,70,14,50);portFigures(-30,D,300,10,40);portFigures(0,D,-30,8,80);
   for(let i=0;i<3;i++)portSkiff(rr(50,95),rr(-40,-8),rr(-.2,.2)+Math.PI*(i%2));}
  if(d===1){
   portWeeds(-105,-78,105,-3,150,D);portWeeds(X0+2,2,X1-2,PP.MOLE-2,140,D);
   portTrees(X0+6,10,X1-6,PP.MOLE-10,9,D,5,11);portTrees(-100,-30,-10,-10,5,D,4,9);
   // the barge hulk aground on the bar in the slip basin
-  const hk=boxUV(14,7,56,8);hk.rotateZ(.16);hk.rotateY(.12);hk.translate(80,-1.2,70);pbAdd(hk,MAT.rust,G);
+  // (only when no vessel is moored in the slip: it would sit inside the hull)
+  if(!PPV){const hk=boxUV(14,7,56,8);hk.rotateZ(.16);hk.rotateY(.12);hk.translate(80,-1.2,70);pbAdd(hk,MAT.rust,G);
   pbBox(G,MAT.rust,78,3.2,86,10,2.2,12,.12,8);
-  REGISTER({name:'Barge hulk',x:80,z:72,r:20,h:10,y:-4});
+  REGISTER({name:'Barge hulk',x:80,z:72,r:20,h:10,y:-4});}
   kput('pkSkiff',[70,-2.2,-30],qEuler(.3,.8,Math.PI*.8),1,new THREE.Color(0x5a4636));
   kput('pkSkiff',[92,-1.9,-14],qEuler(.2,-1.6,.5),1,new THREE.Color(0x6a5040));
   const zc=deck.bayZ(4)[0];portRubble(-30,D,zc-6,8,20);
@@ -109,7 +115,7 @@ function buildPpPier(scene,gx,gz,d,opt){reseed(20010+d);
   // boats: moored along the mole, in the basin, hauled out on the slipway
   for(const L of mE.ladders.concat(mW.ladders))portSkiff(L[0]+(L[0]>-30?3:-3),L[1]+rr(-3,3),rr(-.15,.15));
   for(let i=0;i<10;i++)portSkiff(rr(46,98),rr(-44,-4),rr(-.3,.3)+Math.PI*(i%2));
-  for(let i=0;i<14;i++)portSkiff(rr(40,100),rr(20,400),rr(-.4,.4));
+  for(let i=0;i<14;i++){const x=rr(40,100),z=rr(20,400),a=rr(-.4,.4);if(!inPPV(x,z))portSkiff(x,z,a);}
   for(let i=0;i<4;i++){const x=R[0]+4+i*6.5,z=rr(-70,-58);portSkiff(x,z,rr(-.1,.1),null,portH(x,z)+.35);}
   portWashLine(X0+6,20,X0+6,60,9,10);portWashLine(-60,-6.5,-16,-6.5,8.5,8);
   portFigures(-30,D,80,30,40);portFigures(-20,D,-30,16,70);portFigures(-30,D,330,10,20);
