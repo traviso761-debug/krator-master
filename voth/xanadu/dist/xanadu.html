@@ -1248,8 +1248,11 @@ const XPAL={
 };
 
 // ---------------------------------------------------------------- world UV with separate u/v tile sizes (the band and valance maps are not square)
-function xWorldUV(mat,Ku,Kv){mat.onBeforeCompile=sh=>{sh.vertexShader=sh.vertexShader.replace('#include <uv_vertex>',
-`#ifdef USE_UV
+// three.js keys a material's compiled program on onBeforeCompile.toString(). A closure built by vWorldUV (vendored)
+// or a template-literal xWorldUV prints the same source whatever its K, so every world-UV material shared the first
+// compiled program's scale — the stone read at the wash's K, the bath tile at the frieze's. Building the hook with
+// Function() bakes the numbers into its source, so each K gets its own program. xUVKey re-hooks the vendored ones.
+function xUVKey(mat,Ku,Kv){const src=`#ifdef USE_UV
 #ifdef USE_INSTANCING
 mat4 _im=instanceMatrix;
 vec3 _sc=vec3(length(_im[0].xyz),length(_im[1].xyz),length(_im[2].xyz));
@@ -1259,7 +1262,8 @@ vUv=uv*_sw*vec2(${Ku.toFixed(4)},${Kv.toFixed(4)});
 #else
 vUv=uv;
 #endif
-#endif`);};return mat;}
+#endif`;mat.onBeforeCompile=new Function('sh',`sh.vertexShader=sh.vertexShader.replace('#include <uv_vertex>',${JSON.stringify(src)});`);return mat;}
+function xWorldUV(mat,Ku,Kv){return xUVKey(mat,Ku,Kv);}
 
 // ---------------------------------------------------------------- materials
 const xStd=(o)=>new THREE.MeshStandardMaterial(Object.assign({color:0xffffff,roughness:.92,metalness:0,side:DS},o));
@@ -1276,6 +1280,7 @@ MAT.xMeadow=new THREE.MeshStandardMaterial({map:TEX.xMeadow,roughness:1});
 vWorldUV(MAT.xEarth,.5);vWorldUV(MAT.xWash,.5);vWorldUV(MAT.xTiles,.5);vWorldUV(MAT.xPenbey,1);vWorldUV(MAT.xRubble,.25);vWorldUV(MAT.xRock,.125);
 vWorldUV(MAT.xMosA,.5);vWorldUV(MAT.xMosB,.5);                                 // mosaics tile every 2 m on boxes; planes keep their own 0..1
 xWorldUV(MAT.xBand,.5,1.667);xWorldUV(MAT.xJali,1,1);xWorldUV(MAT.xValance,1,2);
+for(const k in MAT){const m=MAT[k];if(m&&m.userData&&m.userData.uvK)xUVKey(m,m.userData.uvK,m.userData.uvK);}   // re-hook every vWorldUV material with its own program key
 
 // ---------------------------------------------------------------- geometry
 // Persian dome: lathe, base radius 1 at y=0, tip at y=1 (instances scale [r,h,r]); it swells above the drum
@@ -1490,6 +1495,26 @@ function xnIwan(x,y,z,ry,w,h,d,c,o){o=o||{};c=c||xC(xPick(XPAL.wash));const P=(u
  const dz=P(0,d+.06);vnDoor(dz[0],y,dz[1],ry,Math.min(2.2,aw*.4),Math.min(3.2,ah*.5),'vStone',xC(xPick(XPAL.stone)),xC(xPick(XPAL.dark)),false);
  vB('xPaint',fr[0],y+h,fr[1],w+.2,.14,d+.2,ry,xC(XPAL.white));
  if(o.guldasta){for(const s of[-1,1]){const t=P(s*(w/2-.4),d/2);vPst('xColS',t[0],y+h,t[1],.32,1.6,xC(xPick(XPAL.stone)));kput('xBulbT',[t[0],y+h+1.6,t[1]],null,[.5,.7,.5],xC(xPick(XPAL.tile)));vBall('xGold',t[0],y+h+2.4,t[1],.1,xC(XPAL.gold[0]));}}}
+// Open iwan: a real vaulted portal, not a blind one — the pointed-arch frame geometry extruded to the full depth
+// makes the tunnel (its vault and cheeks clad in mosaic), a wash pishtaq wraps it (pilasters, a lintel block, a
+// frieze), a tiled floor runs through, mosaic niches sit in the cheeks. o.through leaves the back open (a portal
+// into a court); else a back wall with a door closes it. (x,z) is the front face centre, ry outward, d the depth.
+function xnIwanOpen(x,y,z,ry,w,h,d,c,o){o=o||{};c=c||xC(xPick(XPAL.wash));const P=(u,v)=>loc(x,z,u,v,ry);const ow=w*.72,oh=h*.8;   // the opening
+ const FW=ow/.7,FH=oh/.84;const m=P(0,-d/2);kput('xArchW',[m[0],y,m[1]],qEuler(0,ry,0),[FW,FH,d],c);            // the tunnel: the arch frame extruded to the depth
+ const fc=P(0,.02);kput(o.item||'xArchM',[fc[0],y,fc[1]],qEuler(0,ry,0),[FW,FH,.16],null);                          // its mosaic face
+ // the vault and cheeks clad in mosaic: two planes on the cheeks, a fan of panels following the arch's curve
+ const spring=.7/1.35*FH,ax=[Math.sin(ry),0,Math.cos(ry)];for(const s of[-1,1]){const q=P(s*(ow/2-.04),-d/2);vB('xMosAB',q[0],y,q[1],.06,spring,d-.1,ry,null);}
+ const bz=t=>{const u=1-t;return [u*u*(-.35)+2*u*t*(-.35)+0,u*u*.7+2*u*t*(.7+.7*.44)+t*t*(.7+.7*.62)];};   // the arch curve in shape space (left half)
+ const N=6;for(const s of[-1,1])for(let k=0;k<N;k++){const a=bz(k/N),b=bz((k+1)/N);const A=P(s*a[0]*FW,-d/2),B=P(s*b[0]*FW,-d/2);
+  xnMember('xMosBB',[A[0],y+a[1]/1.35*FH-.03,A[1]],[B[0],y+b[1]/1.35*FH-.03,B[1]],.08,d-.1,ax,null);}
+ for(const s of[-1,1]){const q=P(s*(w/2-(w-FW)/4),-d/2);vB('xWashB',q[0],y,q[1],(w-FW)/2+.02,h,d,ry,c);}       // the pilasters
+ const t=P(0,-d/2);vB('xWashB',t[0],y+FH-.02,t[1],FW+.04,h-FH+.02,d,ry,c);vB('xPaint',t[0],y+h,t[1],w+.2,.14,d+.2,ry,xC(XPAL.white));
+ const f=P(0,.05);vB('xFriezeB',f[0],y+FH+.2,f[1],w-.6,Math.max(.5,(h-FH)*.55),.12,ry);for(const s of[-1,1]){const q=P(s*(w/2-.3),.05);vB('xFriezeB',q[0],y+.3,q[1],.5,FH-.3,.1,ry);}
+ vB('xTilesB',m[0],y-.04,m[1],ow-.1,.1,d-.1,ry,xC(xPick(XPAL.turquoise)));                                          // the floor through the vault
+ for(const s of[-1,1])for(const v of[-d*.3,d*.3]){const q=P(s*(ow/2-.06),-d/2+v);kput('xArcDark',[q[0],y+.8,q[1]],qEuler(0,ry+s*Math.PI/2,0),[1.4,2.6,.12]);kput('xArcM',[P(s*(ow/2-.1),-d/2+v)[0],y+.8,P(s*(ow/2-.1),-d/2+v)[1]],qEuler(0,ry+s*Math.PI/2,0),[1.8,3.0,.06],null);kput('xArcDark',[P(s*(ow/2-.12),-d/2+v)[0],y+.8,P(s*(ow/2-.12),-d/2+v)[1]],qEuler(0,ry+s*Math.PI/2,0),[1.4,2.6,.1]);}   // the niches
+ if(!o.through){const b=P(0,-d+.2);vB('xWashB',b[0],y,b[1],ow,oh,.4,ry,c);vnDoor(P(0,-d+.4)[0],y,P(0,-d+.4)[1],ry,Math.min(2.2,ow*.4),Math.min(3.2,oh*.5),'vStone',xC(xPick(XPAL.stone)),xC(xPick(XPAL.dark)),false);}
+ if(o.lamps)for(const s of[-1,1]){const q=P(s*(ow/2-.5),-d/2);vBall('vBulb',q[0],y+oh*.6,q[1],.1);}
+ if(o.guldasta){for(const s of[-1,1]){const t=P(s*(w/2-.4),-d/2);vPst('xColS',t[0],y+h,t[1],.32,1.6,xC(xPick(XPAL.stone)));kput('xBulbT',[t[0],y+h+1.6,t[1]],null,[.5,.7,.5],xC(xPick(XPAL.tile)));vBall('xGold',t[0],y+h+2.4,t[1],.1,xC(XPAL.gold[0]));}}}
 // arcade: n pointed arches along a face, a dark bay behind each (or open if o.open), a thin cornice on top
 function xnArcade(x,y,z,ry,w,h,n,item,c,dep,o){o=o||{};dep=dep||.5;const bw=w/n;
  for(let i=0;i<n;i++){const u=-w/2+bw*(i+.5);const p=loc(x,z,u,0,ry);xnArch(item||'xArchS',p[0],y,p[1],ry,bw,h,dep,c,{open:o.open});}
@@ -2851,12 +2876,13 @@ TEX.xGlass=canvasTex(128,256,(g,w,h)=>{const cols=['#e03030','#2860d8','#30b040'
  for(let k=0;k<12;k++){const a=k/12*TAU;g.beginPath();g.moveTo(rc[0],rc[1]);g.lineTo(rc[0]+Math.cos(a)*w*.42,rc[1]+Math.sin(a)*w*.42);g.stroke();}g.beginPath();g.arc(rc[0],rc[1],w*.42,0,TAU);g.stroke();});
 TEX.xGlass.wrapS=TEX.xGlass.wrapT=THREE.ClampToEdgeWrapping;
 MAT.xGlass=new THREE.MeshBasicMaterial({map:TEX.xGlass,side:THREE.DoubleSide});
-// the bath tile: red and purple lobes on orange (the tiled pavilion and its pool), world-tiled
-TEX.xBTile=canvasTex(128,128,(g,w,h)=>{const c=32;g.fillStyle='#e0902a';g.fillRect(0,0,w,h);
- for(let i=0;i<w/c;i++)for(let j=0;j<h/c;j++){const x=i*c,y=j*c;g.fillStyle=(i+j)%2?'#d02a2a':'#4a2a9a';g.beginPath();g.moveTo(x,y);g.quadraticCurveTo(x+c,y,x+c,y+c);g.quadraticCurveTo(x,y+c,x,y);g.fill();
-  g.fillStyle=(i+j)%2?'#4a2a9a':'#d02a2a';g.beginPath();g.moveTo(x+c,y);g.quadraticCurveTo(x,y,x,y+c);g.quadraticCurveTo(x+c,y+c,x+c,y);g.fill();}
- g.strokeStyle='rgba(60,20,10,.45)';g.lineWidth=1.5;for(let k=0;k<=w;k+=c){g.beginPath();g.moveTo(k,0);g.lineTo(k,h);g.stroke();g.beginPath();g.moveTo(0,k);g.lineTo(w,k);g.stroke();}},[1,1]);
-MAT.xBTile=xStd({map:TEX.xBTile,roughness:.35});
+// the bath tile, after the picture: on each tile an orange ground, a half circle off the left edge and one off the
+// right, so that across the joints the circles close — red and purple in a checker — and the orange left between
+// them reads as pointed lenses running up the wall; dark grout on the joints, a glossy glaze
+TEX.xBTile=canvasTex(128,128,(g,w,h)=>{const c=32,n=w/c;g.fillStyle='#e8942c';g.fillRect(0,0,w,h);
+ for(let j=0;j<n;j++)for(let i=0;i<=n;i++){g.fillStyle=(i+j)%2?'#c8262a':'#4a2a9c';g.beginPath();g.arc(i*c,j*c+c/2,c/2,0,TAU);g.fill();}
+ g.strokeStyle='rgba(70,25,10,.55)';g.lineWidth=2;for(let k=0;k<=w;k+=c){g.beginPath();g.moveTo(k,0);g.lineTo(k,h);g.stroke();g.beginPath();g.moveTo(0,k);g.lineTo(w,k);g.stroke();}},[1,1]);
+MAT.xBTile=xStd({map:TEX.xBTile,roughness:.22,metalness:.05});xWorldUV(MAT.xBTile,.7,.7);
 kdef('xGlass',VPLANE,MAT.xGlass);kdef('xBTileB',VBOX,MAT.xBTile);
 // emerald pool water, a little brighter than the kit's canal water
 MAT.xEmerald=xStd({color:0x117a62,roughness:.08,metalness:.25,transparent:true,opacity:.96});kdef('xEmeraldB',VBOX,MAT.xEmerald);kdef('xEmeraldDisc',XDISC,MAT.xEmerald);kdef('xEmeraldOct',XOCT,MAT.xEmerald);
@@ -2882,7 +2908,7 @@ function xnXKLake(pts,y,c){for(const p of pts){kput('xDiscS',[p[0],y-.02,p[1]],n
 function buildXaGrandBath(G,o){reseed(32201+(o.v|0));const V=xV(o),lit=xLit();
  const stone=xC(xPick([0xefe6d2,0xe8dfc8,0xf2ebdb])),gold=xC(xPick(XPAL.gold)),turq=xC(xPick([XPAL.turquoise,0x2a9aa0,0x3aa8a8])),tim=xC(xPick(XPAL.red));
  const HW=30,HD=30,HZ=-4,PH=V===2?17:14,PW=1.5,NX=5,NZ=5;   // the hall: 30×30 plan, five piers a side
- vnReg('Grand Baths — hall',0,HZ,HW/2+2,PH+3);vnReg('Grand Baths — iwan',0,HZ+HD/2+4,8,20);vnReg('Grand Baths — tiled pavilion',0,HZ-HD/2-26,4,10);
+ vnReg('Grand Baths — hall',0,HZ,HW/2+2,PH+3);vnReg('Grand Baths — iwan',0,HZ+HD/2+2.5,8,20);vnReg('Grand Baths — tiled pavilion',0,HZ-HD/2-26,4,10);
  // the ground: a paved forecourt, the hall floor in glazed tile, the garden gravel
  xnPave(0,HZ+HD/2+10,HW+8,14,0,stone,2.4);vB('xTilesB',0,-.06,HZ,HW+1,.14,HD+1,0,turq);vB('xEarthB',0,-.1,HZ-HD/2-18,HW+14,.1,34,0,xC(0xc8b088));
  // the ring of piers, the arches and stained glass between them on the two long sides and the back, the front open
@@ -2903,20 +2929,58 @@ function buildXaGrandBath(G,o){reseed(32201+(o.v|0));const V=xV(o),lit=xLit();
  xnXKLake(lake,0,stone);if(V===2)xnFountain(0,.3,HZ,2.4,stone);else{vPst('xColS',0,.1,HZ-2,.5,1.2,stone);kput('xOctS',[0,1.3,HZ-2],null,[1.4,.2,1.4],stone);kput('xEmeraldOct',[0,1.5,HZ-2],null,[1.2,.16,1.2],null);}
  for(let k=0;k<7;k++){const a=k/7*TAU;xnFolk(Math.cos(a)*11,0,HZ+Math.sin(a)*11,1,1.2);}
  // the iwan at the front: a mosaic pishtaq with its twin turrets, a rill running out of it down the forecourt
- xnIwan(0,0,HZ+HD/2+PW/2+.3,0,13,PH+5,4,stone,{mosaic:true,guldasta:true});
+ xnIwanOpen(0,0,HZ+HD/2+PW/2+4.4,0,13,PH+5,5,stone,{through:true,guldasta:true,lamps:lit});
  for(const s of[-1,1]){vPst('xColS',s*8.6,0,HZ+HD/2+2.6,1.0,PH+7,stone);kput('xBulbT',[s*8.6,PH+7,HZ+HD/2+2.6],null,[1.4,1.8,1.4],xC(xPick(XPAL.tile)));vBall('xGold',s*8.6,PH+9,HZ+HD/2+2.6,.16,gold);}
- xnChannel([0,HZ+HD/2+4.6],[0,HZ+HD/2+17],1.2,stone);xnPool(0,0,HZ+HD/2+12,6,4,0,stone);
+ xnRill(0,0,HZ+HD/2+8.6,0,8,{c:stone});xnRill(0,0,HZ+HD/2+16.6,0,8,{c:stone,cap:'pool'});
  // the back: the long tiled pool down the garden to the tiled pavilion with its copper sun on a green-tiled roof
- const BZ=HZ-HD/2-1;xnChannel([0,BZ],[0,BZ-6],1.4,stone);
+ const BZ=HZ-HD/2-1;xnRill(0,0,BZ-3,0,6,{c:stone});
  vB('xBTileB',0,-.2,BZ-14,7,.6,16,0);vB('vStone',0,-.2,BZ-14,7.8,.12,16.8,0,stone);vB('xEmeraldB',0,.2,BZ-14,5.8,.24,14.8,0,null);   // the tiled pool: a tiled curb, water inside
  {const z=BZ-26,S=6;vB('xBTileB',0,0,z,S,S,S,0);vnDoor(0,0,z+S/2,0,1.4,3,'xPaint',xC(0x1e4a2a),xC(0x1e4a2a),false);vB('vWood',0,S,z,S+.8,.2,S+.8,0,xC(0x3a2a20));
-  vnGableRoof(0,S+.2,z,S+.6,S+.6,1.6,0,'xGableT',xC(0x2f6a4a),.4);kput('xSun',[0,S+3.6,z],qEuler(0,0,0),[3.2,3.2,1],null);vPst('xGold',0,S+1.5,z,.08,.8,xC(0xb06a30));}
+  vnGableRoof(0,S+.2,z,S+.6,S+.6,1.6,0,'xGableT',xC(0x2f6a4a),.4);{const cu=xC(0xb8702e),cy=S+3.4;vPst('xGold',0,S+1.4,z,.1,1.2,cu);kput('xDiscG',[0,cy,z],qEuler(Math.PI/2,0,0),[1.1,.16,1.1],cu);   // the copper sun: a disc, a face, sixteen rays
+  kput('xDiscG',[0,cy,z+.09],qEuler(Math.PI/2,0,0),[.5,.06,.5],cu.clone().multiplyScalar(1.2));for(let k=0;k<16;k++){const a=k/16*TAU,L=k%2?1.0:1.5;const r=1.05+L/2;
+   kput('xGoldB',[Math.cos(a)*r,cy+Math.sin(a)*r,z],qEuler(0,0,a),[L,.16,.14],cu);}}}
  // the gardens: cypress avenues either side of the pool, parterres beyond them, hedges, lamps at night
  for(const s of[-1,1]){for(let k=0;k<7;k++)xnCypress(s*5.6,BZ-3-k*4,rr(6,9));xnCharBagh(s*15,0,BZ-14,12,22,0,{r:1.6,channel:.8});vB('xPaint',s*9,0,BZ-14,.4,.6,26,0,xC(xPick(XPAL.leaf)).multiplyScalar(.8));}
  if(lit){for(const s of[-1,1]){vnLampPost(s*6,0,HZ+HD/2+9,3.4);vnLampPost(s*4.6,0,BZ-24,3.2);}for(let i=0;i<NX;i++)for(const s of[-1,1])vBall('vBulb',px[i],PH-2.2,HZ+s*(HD/2-.9),.09);}
  vnFolk(0,HZ+HD/2+8,4,3);vnFolk(0,BZ-10,3,2);}
 
-XA.def({key:'xa_grand_bath',name:'Grand Baths',family:'Public',tags:{type:['religious','infrastructure'],wealth:'civic',lit:true,landmark:true},w:62,d:88,h:26,fw:44,fd:82,eye:[-13,12,3,-14],build:buildXaGrandBath});
+XA.def({key:'xa_grand_bath',name:'Grand Baths',family:'Public',tags:{type:['religious','infrastructure'],wealth:'civic',lit:true,landmark:true},w:62,d:88,h:26,fw:44,fd:82,eye:[1,30,0,13],eyes:[['garden',0,-72,0,-52],['pavilion',4,-35,0,-46],['hall',-13,12,3,-14]],build:buildXaGrandBath});
+// ================================================================= XANADU — the water modules (package X-L, round 6)
+// Travis: the channels of the baths as modules that tile end to end and cap off with pools or fountains. Every piece
+// sits on the same 8 m plot with its rill on the plot's centre line running out to the plot edge, so two pieces
+// placed 8 m apart on the same axis join flush: straight, bend, cross, and the two caps. Seeds 32300–32399.
+
+// a rill segment centred at (x,z), L long along local z, on a paved strip; o.cap 'pool' | 'fountain' closes its far
+// (−z) end with a pool or a fountain basin instead of running out to the edge; o.w the water width (1.2)
+function xnRill(x,y,z,ry,L,o){o=o||{};const w=o.w||1.2,c=o.c||xC(xPick(XPAL.stone)),curb=o.curb||'vStone',tile=xC(XPAL.turquoise),P=(u,v)=>loc(x,z,u,v,ry);
+ const run=o.cap?L-3.2:L,zc=o.cap?(L-run)/2:0;   // the run stops short of a cap
+ const m=P(0,zc);vB('xWaterB',m[0],y-.02,m[1],w,.16,run,ry,xC(XPAL.water));vB('xTilesB',m[0],y-.2,m[1],w+.2,.2,run,ry,tile);
+ for(const s of[-1,1]){const p=P(s*(w/2+.15),zc);vB(curb,p[0],y-.05,p[1],.3,.3,run,ry,c);}
+ if(o.cap==='pool'){const q=P(0,-L/2+2.2);vB(curb,q[0],y-.05,q[1],5.2,.3,4.4,ry,c);vB('xTilesB',q[0],y-.2,q[1],4.6,.2,3.8,ry,tile);vB('xWaterB',q[0],y-.02,q[1],4.6,.18,3.8,ry,xC(XPAL.water));
+  const j=P(0,-L/2+4.4);vB('xWaterB',j[0],y-.02,j[1],w,.16,.6,ry,xC(XPAL.water));}
+ else if(o.cap==='fountain'){const q=P(0,-L/2+2.4);xnFountain(q[0],y,q[1],2.4,c);const j=P(0,-L/2+4.2);vB('xWaterB',j[0],y-.02,j[1],w,.16,1.2,ry,xC(XPAL.water));}}
+// a cross of two rills with a small square basin at the meeting
+function xnRillCross(x,y,z,S,o){o=o||{};const w=o.w||1.2,c=o.c||xC(xPick(XPAL.stone));xnRill(x,y,z,0,S,{w,c,curb:o.curb});xnRill(x,y,z,Math.PI/2,S,{w,c,curb:o.curb});
+ vB(o.curb||'vStone',x,y-.05,z,w+1.6,.3,w+1.6,0,c);vB('xWaterB',x,y,z,w+1.0,.18,w+1.0,0,xC(XPAL.water));vBall('vBallW',x,y+.2,z,.12,xC(0xe8f4f8));}
+
+function xaWaterDef(key,name,fn){XA.def({key,name,family:'Water',tags:{type:['infrastructure'],wealth:'civic',lit:false},w:8,d:8,h:2,fw:8,fd:8,snap:8,build:fn});}
+// the strip: every piece paves its plot so a run reads as one walk
+function xnXLPlot(V,c){xnPave(0,0,8,8,0,c,2);return V===1?'xBTileB':'vStone';}
+xaWaterDef('xa_rill','Rill (straight)',function(G,o){reseed(32301+(o.v|0));const V=xV(o),c=xC(xPick(XPAL.stone));vnReg('Rill',0,0,4.2,1.2);const curb=xnXLPlot(V,c);xnRill(0,0,0,0,8,{c,curb,w:V===2?1.8:1.2});});
+xaWaterDef('xa_rill_bend','Rill (bend)',function(G,o){reseed(32311+(o.v|0));const V=xV(o),c=xC(xPick(XPAL.stone));vnReg('Rill bend',0,0,4.2,1.2);const curb=xnXLPlot(V,c);const w=V===2?1.8:1.2;
+ xnRill(0,0,2,0,4,{c,curb,w});xnRill(2,0,0,Math.PI/2,4,{c,curb,w});vB(curb,0,-.05,0,w+.6,.3,w+.6,0,c);vB('xWaterB',0,-.02,0,w,.16,w,0,xC(XPAL.water));});
+xaWaterDef('xa_rill_cross','Rill (cross)',function(G,o){reseed(32321+(o.v|0));const V=xV(o),c=xC(xPick(XPAL.stone));vnReg('Rill cross',0,0,4.2,1.2);const curb=xnXLPlot(V,c);xnRillCross(0,0,0,8,{c,curb,w:V===2?1.8:1.2});});
+xaWaterDef('xa_rill_pool','Rill (pool cap)',function(G,o){reseed(32331+(o.v|0));const V=xV(o),c=xC(xPick(XPAL.stone));vnReg('Rill pool',0,0,4.2,1.2);const curb=xnXLPlot(V,c);xnRill(0,0,0,0,8,{c,curb,w:V===2?1.8:1.2,cap:'pool'});
+ for(const s of[-1,1])vPst('vClayPot',s*3.2,0,-2.4,.3,.5,xC(0x9a5a38));});
+xaWaterDef('xa_rill_fountain','Rill (fountain cap)',function(G,o){reseed(32341+(o.v|0));const V=xV(o),c=xC(xPick(XPAL.stone));vnReg('Rill fountain',0,0,4.2,2.6);const curb=xnXLPlot(V,c);xnRill(0,0,0,0,8,{c,curb,w:V===2?1.8:1.2,cap:'fountain'});});
+// the proof: a run of the modules tiled on the 8 m grid — a fountain at the head, three straights, a cross with
+// bends off each arm to pool caps, a pool at the foot — with cypresses and beds along it
+function buildXaRillGarden(G,o){reseed(32351+(o.v|0));const V=xV(o);vnReg('Rill garden',0,0,14,8);
+ const v={v:V};xnSub('xa_rill_fountain',0,0,16,Math.PI,v);xnSub('xa_rill',0,0,8,0,v);xnSub('xa_rill_cross',0,0,0,0,v);xnSub('xa_rill',0,0,-8,0,v);xnSub('xa_rill_pool',0,0,-16,0,v);
+ xnSub('xa_rill_bend',8,0,0,-Math.PI/2,v);xnSub('xa_rill_pool',8,0,-8,0,v);xnSub('xa_rill_bend',-8,0,0,Math.PI,v);xnSub('xa_rill_pool',-8,0,-8,0,v);
+ for(const s of[-1,1])for(let k=0;k<5;k++)xnCypress(s*5.2,14-k*7,rr(5,8));for(const s of[-1,1]){vB('xEarthB',s*7,-.05,10,6,.12,10,0,xC(0x6a5a3a));kput('xLeaf',[s*7,.3,10],null,[.7,.5,.7],xC(xPick([0xd04a4a,0xe8a0c0,0xf0e060])));xnTree(s*7,7,3.6);}
+ vnFolk(3,4,3,2);}
+XA.def({key:'xa_rill_garden',name:'Rill garden',family:'Water',tags:{type:['infrastructure'],wealth:'civic',lit:false},w:28,d:44,h:9,fw:24,fd:40,nv:3,eye:[1,28,0,8],build:buildXaRillGarden});
 // ================================================================= XANADU — the Palopó paint (dress pass, round 4)
 // Travis: variants of the shops, the residences, the bathhouse and the neighbourhood temple painted like Santa
 // Catarina Palopó on Lake Atitlán — whole houses in saturated turquoise and cobalt with orange or yellow trim, and
@@ -3059,6 +3123,7 @@ function xaAutoViews(extra){const V={};const R=XA_ROWS;if(!R.length)return V;con
  for(const r of R){const dist=Math.max(rowCamDist(r.w),(r.h||0)*1.7);V[r.family]=[0,Math.max(18,dist*.45),r.z+r.d/2+dist,0,Math.min(4+(r.h||0)*.35,20),r.z];}
  for(const S of SITES){const D=VERN.defs[S.key];if(!D)continue;const dist=eyeCamDist(D);
   const E=D.eye;   // a def may name its own eye-level stance: [dx,dz,tdx,tdz] from its plot centre (the lane looks down its length)
+  for(const X of(D.eyes||[]))V[D.name+(S.o.v?' v'+S.o.v:'')+' — '+X[0]]=[S.x+X[1],1.7,S.z+X[2],S.x+X[3],Math.min(D.h||6,14)*.3,S.z+X[4]];   // extra stances
   V[D.name+(S.o.v?' v'+S.o.v:'')+' — eye level']=E?[S.x+E[0],1.7,S.z+E[1],S.x+E[2],Math.min(D.h||6,14)*.3,S.z+E[3]]:[S.x+D.w*.18,1.7,S.z+dist,S.x,Math.min(D.h||6,14)*.4,S.z];}
  return Object.assign(V,extra||{});}
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);

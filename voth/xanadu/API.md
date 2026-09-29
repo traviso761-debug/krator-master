@@ -130,4 +130,12 @@ vnBannerPole vnChimney vnFence vnPalisade vnFolk vnPaving`.
 * Items: `xGlass` (stained-glass plane, unlit), `xBTileB` (lobed bath tile box), `xEmeraldB/Disc/Oct` (emerald water).
 * `xnXKPier(x,z,w,h,c,strip)` — tall pier with mosaic strips; `xnXKGlassArch(x,y,z,ry,w,h,c)` — stained-glass
   screen in a pointed arch over an open walk; `xnXKLake(pts,y,c)` — a lobed pool from `[x,z,r]` discs.
-* Def: `xa_grand_bath` (Public, civic, lit, nv 3).
+* Def: `xa_grand_bath` (Public, civic, lit, nv 3). Def fields `eye:[dx,dz,tdx,tdz]` (its eye-level stance) and
+  `eyes:[[name,dx,dz,tdx,tdz],…]` (further named stances) feed `xaAutoViews`.
+* `xnIwanOpen(x,y,z,ry,w,h,d,c,{through,item,lamps,guldasta})` (72-xa-helpers) — a hollow vaulted portal.
+
+## 85-xa-water.js — the water modules
+* `xnRill(x,y,z,ry,L,{w,c,curb,cap:'pool'|'fountain'})` — a rill segment L long on the local z axis;
+  `xnRillCross(x,y,z,S,o)`.
+* Defs on an 8 m plot (`snap:8`), rill on the centre line to the plot edge: `xa_rill`, `xa_rill_bend` (from +z to
+  +x), `xa_rill_cross`, `xa_rill_pool`, `xa_rill_fountain`; `xa_rill_garden` tiles nine of them.

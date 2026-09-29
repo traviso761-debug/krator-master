@@ -14,12 +14,13 @@ TEX.xGlass=canvasTex(128,256,(g,w,h)=>{const cols=['#e03030','#2860d8','#30b040'
  for(let k=0;k<12;k++){const a=k/12*TAU;g.beginPath();g.moveTo(rc[0],rc[1]);g.lineTo(rc[0]+Math.cos(a)*w*.42,rc[1]+Math.sin(a)*w*.42);g.stroke();}g.beginPath();g.arc(rc[0],rc[1],w*.42,0,TAU);g.stroke();});
 TEX.xGlass.wrapS=TEX.xGlass.wrapT=THREE.ClampToEdgeWrapping;
 MAT.xGlass=new THREE.MeshBasicMaterial({map:TEX.xGlass,side:THREE.DoubleSide});
-// the bath tile: red and purple lobes on orange (the tiled pavilion and its pool), world-tiled
-TEX.xBTile=canvasTex(128,128,(g,w,h)=>{const c=32;g.fillStyle='#e0902a';g.fillRect(0,0,w,h);
- for(let i=0;i<w/c;i++)for(let j=0;j<h/c;j++){const x=i*c,y=j*c;g.fillStyle=(i+j)%2?'#d02a2a':'#4a2a9a';g.beginPath();g.moveTo(x,y);g.quadraticCurveTo(x+c,y,x+c,y+c);g.quadraticCurveTo(x,y+c,x,y);g.fill();
-  g.fillStyle=(i+j)%2?'#4a2a9a':'#d02a2a';g.beginPath();g.moveTo(x+c,y);g.quadraticCurveTo(x,y,x,y+c);g.quadraticCurveTo(x+c,y+c,x+c,y);g.fill();}
- g.strokeStyle='rgba(60,20,10,.45)';g.lineWidth=1.5;for(let k=0;k<=w;k+=c){g.beginPath();g.moveTo(k,0);g.lineTo(k,h);g.stroke();g.beginPath();g.moveTo(0,k);g.lineTo(w,k);g.stroke();}},[1,1]);
-MAT.xBTile=xStd({map:TEX.xBTile,roughness:.35});
+// the bath tile, after the picture: on each tile an orange ground, a half circle off the left edge and one off the
+// right, so that across the joints the circles close — red and purple in a checker — and the orange left between
+// them reads as pointed lenses running up the wall; dark grout on the joints, a glossy glaze
+TEX.xBTile=canvasTex(128,128,(g,w,h)=>{const c=32,n=w/c;g.fillStyle='#e8942c';g.fillRect(0,0,w,h);
+ for(let j=0;j<n;j++)for(let i=0;i<=n;i++){g.fillStyle=(i+j)%2?'#c8262a':'#4a2a9c';g.beginPath();g.arc(i*c,j*c+c/2,c/2,0,TAU);g.fill();}
+ g.strokeStyle='rgba(70,25,10,.55)';g.lineWidth=2;for(let k=0;k<=w;k+=c){g.beginPath();g.moveTo(k,0);g.lineTo(k,h);g.stroke();g.beginPath();g.moveTo(0,k);g.lineTo(w,k);g.stroke();}},[1,1]);
+MAT.xBTile=xStd({map:TEX.xBTile,roughness:.22,metalness:.05});xWorldUV(MAT.xBTile,.7,.7);
 kdef('xGlass',VPLANE,MAT.xGlass);kdef('xBTileB',VBOX,MAT.xBTile);
 // emerald pool water, a little brighter than the kit's canal water
 MAT.xEmerald=xStd({color:0x117a62,roughness:.08,metalness:.25,transparent:true,opacity:.96});kdef('xEmeraldB',VBOX,MAT.xEmerald);kdef('xEmeraldDisc',XDISC,MAT.xEmerald);kdef('xEmeraldOct',XOCT,MAT.xEmerald);
@@ -45,7 +46,7 @@ function xnXKLake(pts,y,c){for(const p of pts){kput('xDiscS',[p[0],y-.02,p[1]],n
 function buildXaGrandBath(G,o){reseed(32201+(o.v|0));const V=xV(o),lit=xLit();
  const stone=xC(xPick([0xefe6d2,0xe8dfc8,0xf2ebdb])),gold=xC(xPick(XPAL.gold)),turq=xC(xPick([XPAL.turquoise,0x2a9aa0,0x3aa8a8])),tim=xC(xPick(XPAL.red));
  const HW=30,HD=30,HZ=-4,PH=V===2?17:14,PW=1.5,NX=5,NZ=5;   // the hall: 30×30 plan, five piers a side
- vnReg('Grand Baths — hall',0,HZ,HW/2+2,PH+3);vnReg('Grand Baths — iwan',0,HZ+HD/2+4,8,20);vnReg('Grand Baths — tiled pavilion',0,HZ-HD/2-26,4,10);
+ vnReg('Grand Baths — hall',0,HZ,HW/2+2,PH+3);vnReg('Grand Baths — iwan',0,HZ+HD/2+2.5,8,20);vnReg('Grand Baths — tiled pavilion',0,HZ-HD/2-26,4,10);
  // the ground: a paved forecourt, the hall floor in glazed tile, the garden gravel
  xnPave(0,HZ+HD/2+10,HW+8,14,0,stone,2.4);vB('xTilesB',0,-.06,HZ,HW+1,.14,HD+1,0,turq);vB('xEarthB',0,-.1,HZ-HD/2-18,HW+14,.1,34,0,xC(0xc8b088));
  // the ring of piers, the arches and stained glass between them on the two long sides and the back, the front open
@@ -66,17 +67,19 @@ function buildXaGrandBath(G,o){reseed(32201+(o.v|0));const V=xV(o),lit=xLit();
  xnXKLake(lake,0,stone);if(V===2)xnFountain(0,.3,HZ,2.4,stone);else{vPst('xColS',0,.1,HZ-2,.5,1.2,stone);kput('xOctS',[0,1.3,HZ-2],null,[1.4,.2,1.4],stone);kput('xEmeraldOct',[0,1.5,HZ-2],null,[1.2,.16,1.2],null);}
  for(let k=0;k<7;k++){const a=k/7*TAU;xnFolk(Math.cos(a)*11,0,HZ+Math.sin(a)*11,1,1.2);}
  // the iwan at the front: a mosaic pishtaq with its twin turrets, a rill running out of it down the forecourt
- xnIwan(0,0,HZ+HD/2+PW/2+.3,0,13,PH+5,4,stone,{mosaic:true,guldasta:true});
+ xnIwanOpen(0,0,HZ+HD/2+PW/2+4.4,0,13,PH+5,5,stone,{through:true,guldasta:true,lamps:lit});
  for(const s of[-1,1]){vPst('xColS',s*8.6,0,HZ+HD/2+2.6,1.0,PH+7,stone);kput('xBulbT',[s*8.6,PH+7,HZ+HD/2+2.6],null,[1.4,1.8,1.4],xC(xPick(XPAL.tile)));vBall('xGold',s*8.6,PH+9,HZ+HD/2+2.6,.16,gold);}
- xnChannel([0,HZ+HD/2+4.6],[0,HZ+HD/2+17],1.2,stone);xnPool(0,0,HZ+HD/2+12,6,4,0,stone);
+ xnRill(0,0,HZ+HD/2+8.6,0,8,{c:stone});xnRill(0,0,HZ+HD/2+16.6,0,8,{c:stone,cap:'pool'});
  // the back: the long tiled pool down the garden to the tiled pavilion with its copper sun on a green-tiled roof
- const BZ=HZ-HD/2-1;xnChannel([0,BZ],[0,BZ-6],1.4,stone);
+ const BZ=HZ-HD/2-1;xnRill(0,0,BZ-3,0,6,{c:stone});
  vB('xBTileB',0,-.2,BZ-14,7,.6,16,0);vB('vStone',0,-.2,BZ-14,7.8,.12,16.8,0,stone);vB('xEmeraldB',0,.2,BZ-14,5.8,.24,14.8,0,null);   // the tiled pool: a tiled curb, water inside
  {const z=BZ-26,S=6;vB('xBTileB',0,0,z,S,S,S,0);vnDoor(0,0,z+S/2,0,1.4,3,'xPaint',xC(0x1e4a2a),xC(0x1e4a2a),false);vB('vWood',0,S,z,S+.8,.2,S+.8,0,xC(0x3a2a20));
-  vnGableRoof(0,S+.2,z,S+.6,S+.6,1.6,0,'xGableT',xC(0x2f6a4a),.4);kput('xSun',[0,S+3.6,z],qEuler(0,0,0),[3.2,3.2,1],null);vPst('xGold',0,S+1.5,z,.08,.8,xC(0xb06a30));}
+  vnGableRoof(0,S+.2,z,S+.6,S+.6,1.6,0,'xGableT',xC(0x2f6a4a),.4);{const cu=xC(0xb8702e),cy=S+3.4;vPst('xGold',0,S+1.4,z,.1,1.2,cu);kput('xDiscG',[0,cy,z],qEuler(Math.PI/2,0,0),[1.1,.16,1.1],cu);   // the copper sun: a disc, a face, sixteen rays
+  kput('xDiscG',[0,cy,z+.09],qEuler(Math.PI/2,0,0),[.5,.06,.5],cu.clone().multiplyScalar(1.2));for(let k=0;k<16;k++){const a=k/16*TAU,L=k%2?1.0:1.5;const r=1.05+L/2;
+   kput('xGoldB',[Math.cos(a)*r,cy+Math.sin(a)*r,z],qEuler(0,0,a),[L,.16,.14],cu);}}}
  // the gardens: cypress avenues either side of the pool, parterres beyond them, hedges, lamps at night
  for(const s of[-1,1]){for(let k=0;k<7;k++)xnCypress(s*5.6,BZ-3-k*4,rr(6,9));xnCharBagh(s*15,0,BZ-14,12,22,0,{r:1.6,channel:.8});vB('xPaint',s*9,0,BZ-14,.4,.6,26,0,xC(xPick(XPAL.leaf)).multiplyScalar(.8));}
  if(lit){for(const s of[-1,1]){vnLampPost(s*6,0,HZ+HD/2+9,3.4);vnLampPost(s*4.6,0,BZ-24,3.2);}for(let i=0;i<NX;i++)for(const s of[-1,1])vBall('vBulb',px[i],PH-2.2,HZ+s*(HD/2-.9),.09);}
  vnFolk(0,HZ+HD/2+8,4,3);vnFolk(0,BZ-10,3,2);}
 
-XA.def({key:'xa_grand_bath',name:'Grand Baths',family:'Public',tags:{type:['religious','infrastructure'],wealth:'civic',lit:true,landmark:true},w:62,d:88,h:26,fw:44,fd:82,eye:[-13,12,3,-14],build:buildXaGrandBath});
+XA.def({key:'xa_grand_bath',name:'Grand Baths',family:'Public',tags:{type:['religious','infrastructure'],wealth:'civic',lit:true,landmark:true},w:62,d:88,h:26,fw:44,fd:82,eye:[1,30,0,13],eyes:[['garden',0,-72,0,-52],['pavilion',4,-35,0,-46],['hall',-13,12,3,-14]],build:buildXaGrandBath});

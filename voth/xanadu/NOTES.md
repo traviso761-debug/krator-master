@@ -147,3 +147,28 @@ tile running out to a tiled cube pavilion with a green-tiled roof and a copper s
 avenues and parterres. New maps: `xGlass` (stained glass, unlit so it glows), `xBTile` (the lobed bath tile);
 `xEmerald*` water. v1: tiled domes over alternate piers and arabesque strips; v2: taller piers, a rounder lake
 with a fountain. The def carries `eye` so its view stands inside the hall. Kit 113 volumes, 0.91 M tris.
+
+### Round 6b — the hollow iwan, the bath tile, the water modules
+Travis: make the iwan an actual hollow portal rather than a blind archway; the pavilion's tile to match the
+picture; the baths' channels as modules that tile and cap off with pools or fountains.
+* `xnIwanOpen` (72-xa-helpers): the pointed-arch frame geometry extruded to the full depth makes the tunnel, its
+  cheeks and vault clad in mosaic panels (a fan of six panels a side following the arch curve), a mosaic face, a
+  wash pishtaq round it, a turquoise-tiled floor through, mosaic niches in the cheeks, lamps; `through` leaves the
+  back open into the court, else a back wall with a door. The Grand Baths' portal is one, and its eye-level view
+  now stands on the forecourt looking through it into the hall; `D.eyes` adds further named stances (garden,
+  pavilion, hall) to the auto views.
+* The bath tile is the picture's: on each tile a half circle off the left edge and one off the right, so across
+  the joints the circles close, red and purple in a checker, and the orange left between reads as pointed lenses;
+  world-tiled at ~0.45 m. The pavilion's sun is a copper disc with sixteen rays on a stem.
+* `85-xa-water.js` (seeds 32300–32399): `xnRill(x,y,z,ry,L,{w,c,curb,cap})` and `xnRillCross`; five module defs
+  in a Water row on a common 8 m plot with the rill on the plot's centre line running out to the edge, so pieces
+  placed on the 8 m grid join flush — straight, bend, cross, pool cap, fountain cap (`snap:8`; v1 tiled curbs,
+  v2 a wider rill) — and the **Rill garden** as the proof, nine modules tiled through `xnSub`. The Grand Baths'
+  own channels are rill modules now.
+* **A shader-program bug, fixed:** three.js keys a material's compiled program on `onBeforeCompile.toString()`.
+  The closures `vWorldUV` (vendored) and the old `xWorldUV` built print the same source whatever their K, so every
+  world-UV material in the kit was drawn with the first compiled program's scale — stone at the wash's K, the
+  bath tile at the frieze's (which is why its circles came out as ellipses and no K change moved them). `xUVKey`
+  in 71-xa-mat.js now builds each hook with `Function()` so its K is in the source, and re-hooks every vernacular
+  material after load. Stone, rubble and rock read at their intended (coarser) scales from this round on. The same
+  bug is live in highlands and iziz.
