@@ -32,7 +32,6 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `58-rich.js` | 48 **big** | 16d. ASSETS: WEALTHY COMPOUNDS + THE EMIR'S PALA (1) |
 | `59-civic.js` | 84 **big** | 16e. ASSETS: CIVIC, NEO-AFRICAN AND PARK PIECES (1) |
 | `60-flora.js` | 2 | 15. FLORA — LOCUS (1) |
-| `61-ancients.js` | 262 **big** | *identical to Yuni's 61a-61e joined: the Ancients port.* 61. THE ANCIENTS (2); rng + noise (13); per-type accounting (33); textures (50); materials (157); instancing kit (205); surfaces (238); kit definitions (shared geometry) (332); decoration helpers (359); v2 helpers (475) |
 | `62-plants.js` | 4 | 15b. THE PLANT CATALOGUE — SPECIES (1) |
 | `63-furniture.js` | 10 | 15c. THE FURNITURE CATALOGUE — SEED SET (1) |
 | `64-locus-chapterhouse.js` | 14 | 16Q. LOCUS — the Geomancers' Chapterhouse (1) |

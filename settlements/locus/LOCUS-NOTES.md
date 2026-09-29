@@ -74,3 +74,12 @@ Needs only `terrainH`, `lakeDist`, `riverDist`, `LOCUS_FP`, `maskAt`, `camera`, 
 `python3 verify.py locus.html --out DIR --hour H --views "…" --wait MS --shot-eval "()=>…" --eval "()=>…" --assert`
 (`--shot-eval` runs JS then screenshots `evN.png`; `--wait` lets the sim run first). Headless SwiftShader
 runs at a few fps, so the sim moves slowly there.
+
+## The Ancients port was removed (Sep 2026)
+
+Locus inherited Yuni's `61-ancients.js` (262 KB: the Ancients kit port, its `ancient_*` assets and furniture)
+when it forked the Yuni engine, but never placed any of it: no layout schedules an `ancient_*` key and the
+kit sheet lists only Locus's own kit. Removing it leaves `locus.html` and `locus-kit.html` building the same
+static scene (identical mesh, instance and triangle counts and instance transforms; only the animated life
+layer differs between any two runs) and cuts `locus.html` from 1.08 MB to 0.82 MB. To place an Ancient
+building in Locus later, vendor the parts from `kits/ancients/` rather than restoring the old port.
