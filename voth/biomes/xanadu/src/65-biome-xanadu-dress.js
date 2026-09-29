@@ -45,6 +45,6 @@ XANADU.dressWalls=function(geos,opt){opt=opt||{};
   if(k<.35)curtain([f.p[0]+f.n[0]*.3,f.p[1],f.p[2]+f.n[2]*.3],f.n[0],f.n[2],rr(2,opt.hang||8),rr(1,3));
   else if(k<.55)orchids(f.p,f.n);
   else moss([f.p[0]+f.n[0]*.05,f.p[1],f.p[2]+f.n[2]*.05],f.n,rr(.6,1.6));});};
-XANADU.dressGeos=function(geos,opt){opt=opt||{};reseed(650023+(opt.seed||0));
- XANADU.dressLedges(geos,opt.ledges||{});XANADU.dressSoffits(geos,opt.soffits||{});XANADU.dressWalls(geos,opt.walls||{});};
+XANADU.dressGeos=function(geos,opt){opt=opt||{};reseed(650023+(opt.seed||0));BIO.range=XANADU.LOD.dress;
+ XANADU.dressLedges(geos,opt.ledges||{});XANADU.dressSoffits(geos,opt.soffits||{});XANADU.dressWalls(geos,opt.walls||{});BIO.range=null;};
 })();

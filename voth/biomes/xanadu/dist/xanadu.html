@@ -24,7 +24,7 @@ canvas{display:block}
 // The engine-independent kit every Krator biome fragment is written against.
 // Nothing below names a world's kit. The host hands in what a biome needs
 // through BIO.init(...) (see BIOME-API.md) and everything else lives here.
-var BIO={host:null,stats:{},cur:null,version:'rift-1'};
+var BIO={host:null,stats:{},cur:null,version:'xanadu-1'};
 // EVERYTHING BELOW IS LOCAL. The core declares no generic global (rng, clamp,
 // TAU...): a world that already has those would be clobbered. Biome fragments
 // pull what they need from BIO.fn at the top of their own closure.
@@ -122,7 +122,7 @@ BIO.def=function(name,geo,mat,opt){opt=opt||{};
  if(BIO.defs[name])BIO.err('BIO.def: '+name+' defined twice');
  const g=geo.index?geo.toNonIndexed():geo;
  BIO.defs[name]={geo:g,mat,tris:g.attributes.position.count/3,attrs:opt.attrs||null,label:opt.label||name};
- BIO.items[name]={m:[],c:[],n:[],c2:[],count:0};BIO.order.push(name);};
+ BIO.items[name]={m:[],c:[],n:[],c2:[],k:[],count:0};BIO.order.push(name);};
 const _bm=new (function(){return {}})();   // scratch holder, filled after THREE binds
 BIO._scratch=function(){const T=BIO.host.THREE;if(!_bm.m){_bm.m=new T.Matrix4();_bm.q=new T.Quaternion();_bm.e=new T.Euler();_bm.p=new T.Vector3();_bm.s=new T.Vector3();_bm.c=new T.Color();_bm.up=new T.Vector3(0,1,0);_bm.v=new T.Vector3();}return _bm;};
 // rotation helpers: qEuler(rx,ry,rz) or qFacing([nx,ny,nz]) (local +z toward n)
@@ -144,7 +144,7 @@ BIO.put=function(name,pos,q,sc,col,extra){
  if(def.attrs){
   if(def.attrs.indexOf('aN')>=0){const n=(extra&&extra.n)||[0,1,0];it.n.push(n[0],n[1],n[2]);}
   if(def.attrs.indexOf('aC2')>=0){const c2=extra&&extra.c2;if(c2==null)it.c2.push(S.c.r,S.c.g,S.c.b);else{if(c2.isColor)S.c.copy(c2);else S.c.set(c2);S.c.convertSRGBToLinear();it.c2.push(S.c.r,S.c.g,S.c.b);}}}
- it.count++;BIO.tally(def.tris,1,0);};
+ it.k.push(BIO._lodKey(pos[0],pos[2]));it.count++;BIO.tally(def.tris,1,0);};
 // a beam of instanced item `name` (a unit cylinder along y, centred) from a to b
 BIO.beam=function(name,a,b,r0,r1,col){const T=BIO.host.THREE,S=BIO._scratch();
  const dx=b[0]-a[0],dy=b[1]-a[1],dz=b[2]-a[2],L=Math.hypot(dx,dy,dz);if(L<1e-4)return;
@@ -154,7 +154,7 @@ BIO.beam=function(name,a,b,r0,r1,col){const T=BIO.host.THREE,S=BIO._scratch();
 // ---------------------------------------------------------------- merged buckets
 BIO.buckets={};
 BIO.bucket=function(fam,mat,opt){opt=opt||{};
- if(!BIO.buckets[fam])BIO.buckets[fam]={mat,pos:[],nor:[],uv:[],col:[],tris:0,label:opt.label||fam,uvScale:opt.uvScale||[3,3]};
+ if(!BIO.buckets[fam])BIO.buckets[fam]={mat,pos:[],nor:[],uv:[],col:[],k:[],tris:0,label:opt.label||fam,uvScale:opt.uvScale||[3,3]};
  return BIO.buckets[fam];};
 const _lc={r:1,g:1,b:1};
 // COLOURS ARE sRGB IN, LINEAR OUT. r128 sends instance and vertex colours to
@@ -169,7 +169,7 @@ BIO.tri=function(fam,a,b,c,col,n){const K=BIO.buckets[fam];if(!K){BIO.err('BIO.t
   nx=uy*vz-uz*vy;ny=uz*vx-ux*vz;nz=ux*vy-uy*vx;const l=Math.hypot(nx,ny,nz)||1;nx/=l;ny/=l;nz/=l;}
  const cc=_col3(col);
  [a,b,c].forEach(p=>{K.pos.push(p[0],p[1],p[2]);K.nor.push(nx,ny,nz);K.uv.push(p[3]||0,p[4]||0);K.col.push(cc[0],cc[1],cc[2]);});
- K.tris++;BIO.tally(1,0,0);};
+ K.k.push(BIO._lodKey(a[0],a[2]));K.tris++;BIO.tally(1,0,0);};
 BIO.quad=function(fam,a,b,c,d,col){BIO.tri(fam,a,b,c,col);BIO.tri(fam,a,c,d,col);};
 // TUBE along pts [{x,y,z,r,col?}], parallel-transport frames, constant texture
 // repeat along the length (so a bole shows no shear bands where the radius
@@ -196,7 +196,7 @@ BIO.tube=function(fam,pts,col,opt){opt=opt||{};const T=BIO.host.THREE,K=BIO.buck
    pv(a0,c0);pv(b1,c1);pv(b0,c1);pv(a0,c0);pv(a1,c0);pv(b1,c1);tris+=2;}}
  if(opt.cap){[[0,-1],[n-1,1]].forEach(e=>{const ri2=rings[e[0]],ctr=[pts[e[0]].x,pts[e[0]].y,pts[e[0]].z];
   for(let s3=0;s3<seg;s3++){if(e[1]>0)BIO.tri(fam,ctr,ri2[s3].p,ri2[s3+1].p,opt.capCol!=null?opt.capCol:col);else BIO.tri(fam,ctr,ri2[s3+1].p,ri2[s3].p,opt.capCol!=null?opt.capCol:col);}});}
- K.tris+=tris;BIO.tally(tris,0,0);return tris;};
+ {const kk=BIO._lodKey(pts[0].x,pts[0].z);for(let i=0;i<tris;i++)K.k.push(kk);} K.tris+=tris;BIO.tally(tris,0,0);return tris;};
 // LATHE from rings [{x,y,z,yy,col}], radius rad(ring,ang), ambient-occlusion aof(ring,ang);
 // true surface normals so fluting and buttress fins shade
 BIO.lathe=function(fam,rings,seg,rep,vs,rad,aof){const K=BIO.buckets[fam];if(!K){BIO.err('BIO.lathe: no bucket '+fam);return 0;}
@@ -212,7 +212,7 @@ BIO.lathe=function(fam,rings,seg,rep,vs,rad,aof){const K=BIO.buckets[fam];if(!K)
  const pv=q=>{K.pos.push(q.p[0],q.p[1],q.p[2]);K.nor.push(q.n[0],q.n[1],q.n[2]);K.uv.push(q.u,q.v);K.col.push(q.c[0],q.c[1],q.c[2]);};
  let tris=0;
  for(let i=0;i<n-1;i++)for(let s=0;s<seg;s++){const a0=V[i][s],a1=V[i][s+1],b0=V[i+1][s],b1=V[i+1][s+1];pv(a0);pv(b1);pv(a1);pv(a0);pv(b0);pv(b1);tris+=2;}
- K.tris+=tris;BIO.tally(tris,0,0);return tris;};
+ {const kk=BIO._lodKey(rings[0].x,rings[0].z);for(let i=0;i<tris;i++)K.k.push(kk);} K.tris+=tris;BIO.tally(tris,0,0);return tris;};
 // a parametric SURFACE fn(u,v)->[x,y,z] over nu x nv cells, smooth normals, uv scaled
 BIO.surf=function(fam,fn,nu,nv,col,opt){opt=opt||{};const K=BIO.buckets[fam];if(!K){BIO.err('BIO.surf: no bucket '+fam);return 0;}
  const P=[];for(let i=0;i<=nu;i++){const row=[];for(let j=0;j<=nv;j++)row.push(fn(i/nu,j/nv));P.push(row);}
@@ -224,7 +224,31 @@ BIO.surf=function(fam,fn,nu,nv,col,opt){opt=opt||{};const K=BIO.buckets[fam];if(
   K.pos.push(p[0],p[1],p[2]);K.nor.push(n[0],n[1],n[2]);K.uv.push(i/nu*uS,j/nv*vS);K.col.push(c[0],c[1],c[2]);};
  for(let i=0;i<nu;i++)for(let j=0;j<nv;j++){if(opt.hole&&opt.hole((i+.5)/nu,(j+.5)/nv))continue;
   pv(i,j);pv(i+1,j+1);pv(i+1,j);pv(i,j);pv(i,j+1);pv(i+1,j+1);tris+=2;}
- K.tris+=tris;BIO.tally(tris,0,0);return tris;};
+ {const kk=BIO._lodKey(P[0][0][0],P[0][0][2]);for(let i=0;i<tris;i++)K.k.push(kk);} K.tris+=tris;BIO.tally(tris,0,0);return tris;};
+
+// ---------------------------------------------------------------- runtime LOD (xanadu-1, additive)
+// A pass may set BIO.range (metres) while it builds: everything it puts is then
+// keyed by the CHUNK of its owner (BIO.owner=[x,z], a tree's foot, or the
+// instance's own position) and by that range, and bake() splits the item or the
+// bucket into one mesh per key. BIO.lodTick(camera), called every frame by the
+// host, shows a chunk's mesh only while the camera is within its range of the
+// chunk (and past BIO.minRange, for the impostors that stand in beyond it) and
+// the chunk is in the view. With BIO.range left null nothing changes: one mesh
+// per item or bucket, always drawn, as before.
+BIO.LOD={chunk:1200,scale:1};BIO.range=null;BIO.minRange=0;BIO.owner=null;BIO.lodMeshes=[];
+BIO._lodKey=function(x,z){if(BIO.range==null)return null;const o=BIO.owner||[x,z],C=BIO.LOD.chunk;
+ return Math.floor(o[0]/C)+','+Math.floor(o[1]/C)+'|'+BIO.range+'|'+(BIO.minRange||0);};
+function _lodEntry(mesh,key,y0,y1){const p=key.split('|'),c=p[0].split(','),C=BIO.LOD.chunk,cx=+c[0],cz=+c[1];
+ const T=BIO.host.THREE,e={mesh,x0:cx*C,z0:cz*C,x1:(cx+1)*C,z1:(cz+1)*C,y0,y1,range:+p[1],minRange:+p[2]};
+ e.sphere=new T.Sphere(new T.Vector3((e.x0+e.x1)/2,(y0+y1)/2,(e.z0+e.z1)/2),Math.hypot(C*.5+60,C*.5+60,(y1-y0)/2+60));
+ BIO.lodMeshes.push(e);mesh.userData.lodChunk=p[0];return e;}
+let _frus=null,_pm=null;
+BIO.lodTick=function(camera){const T=BIO.host.THREE;if(!_frus){_frus=new T.Frustum();_pm=new T.Matrix4();}
+ _pm.multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse);_frus.setFromProjectionMatrix(_pm);
+ const P=camera.position,s=BIO.LOD.scale;let shown=0,tris=0;
+ for(const e of BIO.lodMeshes){const dx=Math.max(e.x0-P.x,0,P.x-e.x1),dz=Math.max(e.z0-P.z,0,P.z-e.z1),dy=Math.max(e.y0-P.y,0,P.y-e.y1),d=Math.hypot(dx,dy,dz);
+  const v=d<e.range*s&&d>=e.minRange*s&&_frus.intersectsSphere(e.sphere);e.mesh.visible=v;if(v){shown++;tris+=e.mesh.userData.tris||0;}}
+ BIO.lodShown={meshes:shown,of:BIO.lodMeshes.length,tris};return BIO.lodShown;};
 
 // ---------------------------------------------------------------- bake
 // Turns the stores into meshes. Call once per host after every biome has
@@ -232,24 +256,33 @@ BIO.surf=function(fam,fn,nu,nv,col,opt){opt=opt||{};const K=BIO.buckets[fam];if(
 BIO.baked=[];
 BIO.bake=function(){const T=BIO.host.THREE,scene=BIO.host.scene;if(!scene)throw new Error('BIO.bake: no scene (BIO.init({scene}) or BIO.setScene first)');let calls=0,inst=0;
  for(const name of BIO.order){const it=BIO.items[name];if(!it.count)continue;const def=BIO.defs[name];
-  const geo=def.geo.clone();
-  if(def.attrs&&it.n.length)geo.setAttribute('aN',new T.InstancedBufferAttribute(new Float32Array(it.n),3));
-  if(def.attrs&&it.c2.length)geo.setAttribute('aC2',new T.InstancedBufferAttribute(new Float32Array(it.c2),3));
-  const im=new T.InstancedMesh(geo,def.mat,it.count);
-  im.instanceMatrix.array.set(it.m);im.instanceMatrix.needsUpdate=true;
-  im.instanceColor=new T.InstancedBufferAttribute(new Float32Array(it.c),3);
-  im.frustumCulled=false;im.userData.biome=true;im.userData.inspectLabel=def.label;im.name='biome:'+name;
-  scene.add(im);BIO.baked.push(im);calls++;inst+=it.count;
-  BIO.items[name]={m:[],c:[],n:[],c2:[],count:0};}
+  // group the instances by lod key (null: the always-drawn mesh)
+  const G=new Map();for(let i=0;i<it.count;i++){const k=it.k[i]||'';let g=G.get(k);if(!g){g=[];G.set(k,g);}g.push(i);}
+  for(const [key,idx] of G){const n=idx.length,geo=def.geo.clone();
+   const mA=new Float32Array(n*16),cA=new Float32Array(n*3),nA=it.n.length?new Float32Array(n*3):null,c2A=it.c2.length?new Float32Array(n*3):null;let y0=1e9,y1=-1e9;
+   idx.forEach((i,j)=>{for(let q=0;q<16;q++)mA[j*16+q]=it.m[i*16+q];for(let q=0;q<3;q++){cA[j*3+q]=it.c[i*3+q];if(nA)nA[j*3+q]=it.n[i*3+q];if(c2A)c2A[j*3+q]=it.c2[i*3+q];}const y=it.m[i*16+13];if(y<y0)y0=y;if(y>y1)y1=y;});
+   if(def.attrs&&nA)geo.setAttribute('aN',new T.InstancedBufferAttribute(nA,3));
+   if(def.attrs&&c2A)geo.setAttribute('aC2',new T.InstancedBufferAttribute(c2A,3));
+   const im=new T.InstancedMesh(geo,def.mat,n);
+   im.instanceMatrix.array.set(mA);im.instanceMatrix.needsUpdate=true;
+   im.instanceColor=new T.InstancedBufferAttribute(cA,3);
+   im.frustumCulled=false;im.userData.biome=true;im.userData.inspectLabel=def.label;im.userData.tris=n*def.tris;im.name='biome:'+name;
+   if(key)_lodEntry(im,key,y0,y1);
+   scene.add(im);BIO.baked.push(im);calls++;inst+=n;}
+  BIO.items[name]={m:[],c:[],n:[],c2:[],k:[],count:0};}
  for(const fam in BIO.buckets){const K=BIO.buckets[fam];if(!K.pos.length)continue;
-  const g=new T.BufferGeometry();
-  g.setAttribute('position',new T.Float32BufferAttribute(K.pos,3));g.setAttribute('normal',new T.Float32BufferAttribute(K.nor,3));
-  g.setAttribute('uv',new T.Float32BufferAttribute(K.uv,2));g.setAttribute('color',new T.Float32BufferAttribute(K.col,3));
-  g.computeBoundingSphere();
-  const m=new T.Mesh(g,K.mat);m.frustumCulled=false;m.userData.biome=true;m.userData.inspectLabel=K.label;m.name='biome:'+fam;
-  scene.add(m);BIO.baked.push(m);calls++;
-  K.pos=[];K.nor=[];K.uv=[];K.col=[];}
- BIO.lastBake={calls,inst};return BIO.lastBake;};
+  const G=new Map(),nt=K.pos.length/9;for(let t=0;t<nt;t++){const k=K.k[t]||'';let g=G.get(k);if(!g){g=[];G.set(k,g);}g.push(t);}
+  for(const [key,tl] of G){const n=tl.length,P=new Float32Array(n*9),N=new Float32Array(n*9),U=new Float32Array(n*6),Cc=new Float32Array(n*9);let y0=1e9,y1=-1e9;
+   tl.forEach((t,j)=>{for(let q=0;q<9;q++){P[j*9+q]=K.pos[t*9+q];N[j*9+q]=K.nor[t*9+q];Cc[j*9+q]=K.col[t*9+q];}for(let q=0;q<6;q++)U[j*6+q]=K.uv[t*6+q];const y=K.pos[t*9+1];if(y<y0)y0=y;if(y>y1)y1=y;});
+   const g=new T.BufferGeometry();
+   g.setAttribute('position',new T.BufferAttribute(P,3));g.setAttribute('normal',new T.BufferAttribute(N,3));
+   g.setAttribute('uv',new T.BufferAttribute(U,2));g.setAttribute('color',new T.BufferAttribute(Cc,3));
+   g.computeBoundingSphere();
+   const m=new T.Mesh(g,K.mat);m.frustumCulled=!key;m.userData.biome=true;m.userData.inspectLabel=K.label;m.userData.tris=n;m.name='biome:'+fam;
+   if(key)_lodEntry(m,key,y0,y1);
+   scene.add(m);BIO.baked.push(m);calls++;}
+  K.pos=[];K.nor=[];K.uv=[];K.col=[];K.k=[];}
+ BIO.lastBake={calls,inst,lodMeshes:BIO.lodMeshes.length};return BIO.lastBake;};
 
 Object.assign(BIO.fn,{qEuler,qFacing,qUp});
 })();
@@ -1398,6 +1431,8 @@ BIO.def('boulder',new T3.IcosahedronGeometry(1,1),BIO.solidMat(XANADU.ROCKTEX),{
 const SP=XANADU.SPECIES,PAL=XANADU.PAL,GOLD=2.399963;
 const T3=BIO.host.THREE,C=h=>new T3.Color(h);
 XANADU.TREES=[];XANADU.RINGS=[];XANADU.ARCHES=[];
+// the runtime LOD ranges (metres from the camera to a chunk): trees in full, the floor near the spine, the far floor, the dressing
+XANADU.LOD={tree:1500,floor:750,farFloor:3000,dress:1500,logs:1500};
 
 // ---------------------------------------------------------------- zones from the fields
 const Y=(x,z)=>BIO.terrainH(x,z);
@@ -1845,9 +1880,10 @@ B[30]=function(T,st,lv){const S=SP[30],H=T.H,rb=T.rb,rc=shade(C(pick(S.bark)),-.
 // Each species a trunk of four quads and one to three blobs by its habit.
 const HABIT={dawnredwood:'cone',wollemi:'cone',ginkgo:'oval',lotustrumpet:'cups',cloudpine:'pads',topiary:'lumps',whorlolive:'dome',agatetree:'vase',ringbeech:'oval',archhornbeam:'dome',
  wisteria:'umbrella',parrotia:'umbrella',hyrcanoak:'dome',wingnut:'dome',hazeblossom:'umbrella',frostwillow:'weep',chasmfrill:'column',cloudfrill:'column',beardtree:'dome'};
-let ICO=null;
-function buildFar(T,fi,st){const K=BIO.bucket('xfar');if(!ICO)ICO=new T3.IcosahedronGeometry(1,1).attributes.position.array;const ip=ICO;
- const S=SP[T.sp],cheap=BIO.lodD(T.x,T.z)>2200,hb=HABIT[S.key]||'dome';let tris=0;
+let ICO=null,ICO0=null;
+// lite: the stand-in behind a hero tree (seen only past its detail range): a coarser blob, fewer of them
+function buildFar(T,fi,st,lite){const K=BIO.bucket('xfar');if(!ICO){ICO=new T3.IcosahedronGeometry(1,1).attributes.position.array;ICO0=new T3.IcosahedronGeometry(1,0).attributes.position.array;}const ip=lite?ICO0:ICO;
+ const S=SP[T.sp],cheap=lite||BIO.lodD(T.x,T.z)>2200,hb=HABIT[S.key]||'dome';let tris=0;
  function vtx(x,y,z,nx,ny,nz,r,g,b){K.pos.push(x,y,z);K.nor.push(nx,ny,nz);K.uv.push(0,0);K.col.push(r,g,b);}
  function blob(x,y,z,rx,ry,colA,colB,sd){const ca=C(colA).convertSRGBToLinear(),cb=C(colB).convertSRGBToLinear(),k1=sd*7.3,k2=sd*3.1;
   for(let i=0;i<ip.length;i+=3){const dx=ip[i],dy=ip[i+1],dz=ip[i+2];
@@ -1946,7 +1982,14 @@ XANADU.buildTrees=function(R,q){
  pass(27,22,(Z)=>Z.dry*.45+Z.crag*.35,{hero:320,mid:600,far:false,pad:1,lodK:.8,patch:.45});
  pass(30,30,(Z)=>Z.dry*.18,{hero:320,mid:600,far:false,pad:1.5,lodK:.7,patch:.5});
  // build
- TREES.forEach((T,i)=>{if(T.lv===0){buildFar(T,i,st);st.fars++;}else{B[T.sp](T,st,T.lv);st.heroes++;}st.byS[T.sp]++;});
+ // runtime LOD: a hero tree is drawn in full while the camera is within XANADU.LOD.tree metres of
+ // its chunk and as a stand-in impostor past that; a far tree is only ever its impostor
+ TREES.forEach((T,i)=>{BIO.owner=[T.x,T.z];
+  if(T.lv===0){BIO.range=null;BIO.minRange=0;buildFar(T,i,st,false);st.fars++;}
+  else{BIO.range=XANADU.LOD.tree;BIO.minRange=0;B[T.sp](T,st,T.lv);st.heroes++;
+   BIO.range=1e9;BIO.minRange=XANADU.LOD.tree;buildFar(T,i,st,true);}
+  st.byS[T.sp]++;});
+ BIO.owner=null;BIO.range=null;BIO.minRange=0;
  return{trees:TREES.length,heroes:st.heroes,far:st.fars,rings:st.rings,arches:st.arches,bySpecies:SP.map((S,i)=>S.key+':'+st.byS[i]).join(' '),clumps:st.clumps,blooms:st.blooms,pods:st.pods,fins:st.fins,fans:st.fans,
   tris:{trunk:st.trunk,limbs:st.limb,far:st.far,small:st.sapTris}};};
 XANADU._canopyH=function(x,z){let h=0;for(const T of XANADU.TREES){if(Math.hypot(x-T.x,z-T.z)<60)h=Math.max(h,T.y0+T.H);}return h||10;};
@@ -2114,10 +2157,13 @@ XANADU.buildFloor=function(R,q){
  // the bands: each origin plants the cells it is nearest to
  const O=BIO.host.origin,nearest=(x,z)=>{let b=0,bd=1e18;for(let i=0;i<O.length;i++){const d=(x-O[i][0])**2+(z-O[i][1])**2;if(d<bd){bd=d;b=i;}}return b;};
  const bands=[[7,420,0],[14,1000,420]];
+ BIO.range=XANADU.LOD.floor;
  bands.forEach((b,bi)=>{const lv=2-bi;O.forEach((o,oi)=>{
   BIO.grid(b[0],0,1e9,(x,z,d)=>{if(nearest(x,z)!==oi)return 0;const ld=Math.hypot(x-o[0],z-o[1]);if(ld>=b[1]||ld<b[2])return 0;return .8*q*(lv===1?.85:1);},(x,y,z)=>plant(x,y,z,lv),
    {patch:.75,patchScale:.014,pad:.6,center:[0,0],box:[o[0]-b[1],o[1]-b[1],o[0]+b[1],o[1]+b[1]]});});});
+ BIO.range=XANADU.LOD.farFloor;
  BIO.grid(30,0,R,(x,z)=>{if(BIO.lodD(x,z)<1000)return 0;return .6*q*(1-.8*smooth(.5,.8,BIO.field('upland',x,z)));},(x,y,z)=>plant(x,y,z,0),{patch:.75,patchScale:.014,pad:.6});
+ BIO.range=XANADU.LOD.floor;
  // the still water: lotus pads, lotus flowers standing out of them
  O.forEach((o,oi)=>{BIO.grid(6,0,1e9,(x,z)=>{if(nearest(x,z)!==oi||Math.hypot(x-o[0],z-o[1])>900)return 0;const h=Y(x,z);if(h>-.15||h<-2.6)return 0;
    const fl=BIO.field('flow',x,z);return .5*q*(1-fl)*smooth(.46,.62,fbm(x*.006+1,z*.006-2,808,2));},
@@ -2129,8 +2175,10 @@ XANADU.buildFloor=function(R,q){
   const nm=Math.round(TAU*r.r*.62/(r.lv===2?.6:1.6));for(let k=0;k<nm;k++){const a=k/nm*TAU+rr(-.02,.02),d=r.r*.62+rr(-.15,.15),px=r.x+Math.cos(a)*d,pz=r.z+Math.sin(a)*d,h=rr(.15,.32);BIO.put('mushroom',[px,Y(px,pz)-.02,pz],qEuler(rr(-.1,.1),rr(0,TAU),rr(-.1,.1)),[h,h,h],mc);}
   const nf=Math.round(TAU*r.r*.4/(r.lv===2?.35:1));for(let k=0;k<nf;k++){const a=k/nf*TAU,d=r.r*.4+rr(-.2,.2),px=r.x+Math.cos(a)*d,pz=r.z+Math.sin(a)*d,h=rr(.2,.45);BIO.put(it,[px,Y(px,pz)+h,pz],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),rr(.25,.4),pr[0],{c2:pr[1]});}
   if(r.lv===2)for(let k=0;k<40;k++){const a=rr(0,TAU),d=r.r*.9*Math.sqrt(rng()),px=r.x+Math.cos(a)*d,pz=r.z+Math.sin(a)*d;grass(px,Y(px,pz),pz,1,PAL.meadow,.55);}});
+ BIO.range=XANADU.LOD.logs;
  // fallen trees in the forest and the chasm, petrified-looking logs on the uplands
  BIO.grid(110,0,R,(x,z)=>{if(BIO.lodD(x,z)>1100)return 0;const Z=zones(x,z);return (Z.forest*.7+Z.chasm*.5+Z.dry*.35)*q;},(x,y,z)=>{const Z=zones(x,z),wet=Z.dry<.5;for(let t=0;t<4;t++)if(log(x+rr(-20,20),y,z+rr(-20,20),st,wet))break;},{patch:0,pad:2});
+ BIO.range=null;
  return{under:st};};
 })();
 
@@ -2182,8 +2230,8 @@ XANADU.dressWalls=function(geos,opt){opt=opt||{};
   if(k<.35)curtain([f.p[0]+f.n[0]*.3,f.p[1],f.p[2]+f.n[2]*.3],f.n[0],f.n[2],rr(2,opt.hang||8),rr(1,3));
   else if(k<.55)orchids(f.p,f.n);
   else moss([f.p[0]+f.n[0]*.05,f.p[1],f.p[2]+f.n[2]*.05],f.n,rr(.6,1.6));});};
-XANADU.dressGeos=function(geos,opt){opt=opt||{};reseed(650023+(opt.seed||0));
- XANADU.dressLedges(geos,opt.ledges||{});XANADU.dressSoffits(geos,opt.soffits||{});XANADU.dressWalls(geos,opt.walls||{});};
+XANADU.dressGeos=function(geos,opt){opt=opt||{};reseed(650023+(opt.seed||0));BIO.range=XANADU.LOD.dress;
+ XANADU.dressLedges(geos,opt.ledges||{});XANADU.dressSoffits(geos,opt.soffits||{});XANADU.dressWalls(geos,opt.walls||{});BIO.range=null;};
 })();
 
 // ==================== 70-biome-xanadu.js
@@ -2195,7 +2243,7 @@ XANADU.build=function(opt){opt=opt||{};const R=opt.R||3400,q=opt.quality==null?1
  const out={R,quality:q,trees:0,heroes:0,far:0};
  if(XANADU.buildTrees){BIO.cur='xanadu/trees';Object.assign(out,XANADU.buildTrees(R,q));}
  if(XANADU.buildFloor){BIO.cur='xanadu/floor';Object.assign(out,XANADU.buildFloor(R,q));}
- BIO.cur=null;return out;};
+ BIO.cur=null;BIO.range=null;BIO.owner=null;BIO.minRange=0;return out;};
 XANADU.dress=function(geos,opt){if(XANADU.dressGeos){BIO.cur='xanadu/dress';XANADU.dressGeos(geos,opt||{});BIO.cur=null;}};
 XANADU.canopyH=function(x,z){return XANADU._canopyH?XANADU._canopyH(x,z):10;};
 
@@ -2532,8 +2580,9 @@ function frame(){const now=performance.now(),dt=Math.min(.1,(now-last)/1000);las
  if(keys.q)ctl.target.y-=sp;if(keys.e)ctl.target.y+=sp;
  for(let i=0;i<TICKS.length;i++){try{TICKS[i](dt,now/1000);}catch(e){if(!renderErr){renderErr=true;reportErr('tick: '+e.stack);}}}
  applyCam();if(typeof sky!=='undefined'){sky.position.copy(camera.position);giant.position.copy(camera.position).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);}
+ camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);
  try{renderer.render(scene,camera);}catch(e){if(!renderErr){renderErr=true;reportErr('render: '+e.stack);}}
- hud.textContent=`cam ${camera.position.x|0},${camera.position.y|0},${camera.position.z|0}  tgt ${ctl.target.x|0},${ctl.target.y|0},${ctl.target.z|0}\ncalls ${renderer.info.render.calls}  tris ${(renderer.info.render.triangles/1e6).toFixed(2)}M  inst ${window._instances}`;
+ hud.textContent=`cam ${camera.position.x|0},${camera.position.y|0},${camera.position.z|0}  tgt ${ctl.target.x|0},${ctl.target.y|0},${ctl.target.z|0}\ncalls ${renderer.info.render.calls}  tris ${(renderer.info.render.triangles/1e6).toFixed(2)}M  inst ${window._instances}\nlod ${BIO.lodShown?BIO.lodShown.meshes+'/'+BIO.lodShown.of+' chunk meshes':''}`;
  requestAnimationFrame(frame);}
 frame();window._ready=true;
 
@@ -2542,7 +2591,7 @@ frame();window._ready=true;
 // What verify.py --assert measures. Budgets per biome pass come from
 // BIO.stats (charged by BIO.cur inside the biome).
 const BUDGET={
- showcase:{tris:25000000,calls:150},   // the agreed ceiling for this 6.4 km scene (KNOWN_ISSUES); q=1 measures under it
+ showcase:{tris:30000000,calls:600,rendered:14000000},   // held in memory (the hero trees' stand-ins included) / drawn at any one camera, with the runtime LOD (KNOWN_ISSUES)
  cls:{pass:19000000,host:900000},
  type:{'xanadu/trees':'pass','xanadu/floor':'pass','xanadu/dress':'pass','host':'host'},
 };
@@ -2563,7 +2612,7 @@ function nanSweep(){const bad=[];let badInst=0;
  return {meshes:bad.length,first:bad.slice(0,8),instances:badInst,firstInstances:[]};}
 function typeStats(){const out={};for(const k in BIO.stats){const t=BIO.stats[k],cls=BUDGET.type[k]||'pass';out[k]={tris:t.tris,inst:t.inst,meshes:t.meshes,cls,limit:BUDGET.cls[cls],over:t.tris>BUDGET.cls[cls]};}return out;}
 window._api={BUDGET,REG,
- get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
+ get totals(){const t=BIO.totals();return {rendered:BIO.lodShown?BIO.lodShown.tris:null,lodMeshes:BIO.lodMeshes.length,tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
  typeStats,regOccupancy,nanSweep,
  setView:(cx,cy,cz,tx,ty,tz)=>setView(cx,cy,cz,tx,ty,tz),views:()=>Object.keys(VIEWS),
  biome:()=>window._biome};
