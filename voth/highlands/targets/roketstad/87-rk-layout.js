@@ -58,3 +58,14 @@ const FARMLANES=[];
      const end=[x+nx*len,z+nz*len];if(Math.abs(end[0])>RK.WORLD/2-40||Math.abs(end[1])>RK.WORLD/2-40)continue;
      if(Math.hypot(end[0]-PC.x,end[1]-PC.z)<PC.top+140)continue;
      const pts=meander([x+nx*5,z+nz*5],end,5,18,x*.01+z*.013);FARMLANES.push({pts,key,side});road(pts,4.5,KL.lane,{zone:'farmlane',col:'#8a7a5c'});}}}}})();
+// ---------------------------------------------------------------- 6. the scrap town (round 8): a hub on the port table's west rim beside the port road
+// Travis: "build a small satellite town out of this type near the spaceport/scavenger's guild". A small plaza south of
+// the road where it climbs onto the table, a spur to the road, and lanes wandering out from the plaza (never across the
+// pads, never back toward the town). 90b fills them with the salvage-built kit (79b, 79c).
+const SAT=(()=>{reseed(SEED_RK+60);const hub={x:PC.x-PC.top+70,z:PC.z+62,R:15};
+ disc(hub.x,hub.z,hub.R,'plaza','#8a8272');const lanes=[];
+ const n=nearestRoadPt(hub.x,hub.z,r=>r.cls===KL.highway);if(n)lanes.push(road([[hub.x,hub.z-hub.R],[n.x,n.z]],6,KL.street,{zone:'sat'}));
+ for(let k=0;k<6;k++){const a=-Math.PI/2+.55+k*TAU/7;const L=rr(55,95);const a0=[hub.x+Math.cos(a)*(hub.R+.5),hub.z+Math.sin(a)*(hub.R+.5)],e=[hub.x+Math.cos(a)*(hub.R+L),hub.z+Math.sin(a)*(hub.R+L)];
+  if(Math.hypot(e[0]-PC.x,e[1]-PC.z)<PC.P+PAD_R+20)continue;if(Math.hypot(e[0]-TC.x,e[1]-TC.z)<TC.R+140)continue;
+  lanes.push(road(meander(a0,e,5,12,k*1.7+.3),5,KL.street,{zone:'sat'}));}
+ return{hub,lanes};})();

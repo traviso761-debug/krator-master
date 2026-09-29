@@ -29,4 +29,7 @@ const VIEWS={
 {const g=_plot('hl_rep_guild_astro');if(g)VIEWS["Astronomers' Guild"]=_near(g,40,16);}
 {const g=_plot('hl_rep_forgehouse');if(g)VIEWS['The Forgehouse']=_near(g,50,18);}
 {const s=VERN_PLACED.find(v=>v.key==='hl_rep_guild_scav');if(s)VIEWS["Scavengers' Guild"]=_near(s.o,42,14);}
+{const H=SAT.hub;VIEWS['The scrap town']=[H.x-70,PORT_Y+45,H.z+95,H.x,PORT_Y+2,H.z];VIEWS['The scrap town — eye level']=[H.x+6,terrainH(H.x+6,H.z+10)+1.7,H.z+10,H.x-10,terrainH(H.x,H.z)+4,H.z-18];}
+{const b=REG.find(r=>r.key==='anc_bunker');if(b)VIEWS['A reclaimed bunker']=[b.x+(b.x-PC.x)*.25+20,b.y+30,b.z+(b.z-PC.z)*.25+20,b.x,b.y+4,b.z];}
+{const a=REG.find(r=>r.key==='anc_launch_ruined');if(a)VIEWS['The arcology from the town']=[TC.x+260,TC.H+60,TC.z+40,a.x,a.y+60,a.z];}
 for(const k in VIEWS)if(!VIEWS[k])delete VIEWS[k];

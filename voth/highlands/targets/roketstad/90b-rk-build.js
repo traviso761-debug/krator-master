@@ -28,7 +28,12 @@ function placeVern(key,o,opt){opt=opt||{};const D=VERN.defs[key];if(!D){reportEr
 const HOUSES={0:['hl_rep_house_poor_a','hl_rep_house_poor_b','hl_rep_house_poor_c'],1:['hl_rep_house_mid_a','hl_rep_house_mid_b','hl_rep_house_mid_c'],2:['hl_rep_house_rich_a','hl_rep_house_rich_b','hl_rep_house_rich_c']};
 const TAVERNS=['hl_rep_tavern_a','hl_rep_tavern_b','hl_rep_tavern_c'];
 function gateD(x,z){let d=1e9;for(const [,g] of GATE_LIST){const p=gatePos(g);d=Math.min(d,Math.hypot(x-p[0],z-p[1]));}return d;}
+// the salvage kit (79b, 79c) in the poorer streets and the forge district (round 8: "intersperse some of this in the city")
+const APOC_HOMES=['hl_rep_cont_stack','hl_rep_silo_house','hl_rep_tank_row','hl_rep_house_tank','hl_rep_house_hulk','hl_rep_radome_tower','hl_rep_crawler'];
+const APOC_SHOPS=['hl_rep_cont_shops','hl_rep_lantern_stall','hl_rep_garage','hl_rep_kontor'];
 function pickTown(x,z,r){const d=squareD(x,z),gd=gateD(x,z),forge=inForge(x,z),w=rng();
+ if(forge&&rng()<.08)return{key:vPick(['hl_rep_garage','hl_rep_hull_vault','hl_rep_cont_shops'])};
+ if(d>=130&&rng()<.2)return{key:rng()<.3?vPick(APOC_SHOPS):vPick(APOC_HOMES)};
  const isMain=r&&(r.cls===KL.main||r.cls===KL.highway);
  let wealth=d<45?(w<.55?2:1):d<120?(w<.2?2:w<.8?1:0):d<200?(w<.45?1:0):(w<.85?0:1);
  if(forge&&wealth===2)wealth=1;
@@ -112,7 +117,7 @@ ROW_FALLBACK=['hl_rep_house_poor_a','hl_rep_house_poor_b','hl_rep_house_poor_c',
  window._infill=n;})();
 // ---------------------------------------------------------------- 4. outside the gates: a straggle of poor houses, an inn, shops; the port road has more, and scrap smithies
 (function suburbs(){reseed(SEED_RK+13);const S={};
- for(const [name] of GATE_LIST){const H=HIGHWAY[name];const east=name==='E';const reach=east?420:170;let acc=0;const pts=[H.gout];
+ for(const [name] of GATE_LIST){const H=HIGHWAY[name];const east=name==='E';const reach=east?300:170;let acc=0;const pts=[H.gout];
   for(const p of H.out){const q=pts[pts.length-1];acc+=Math.hypot(p[0]-q[0],p[1]-q[1]);pts.push(p);if(acc>reach)break;}
   let inn=0,shops=0,smith=0;const st={placed:0,ground:0,occ:0};
   const pick=(x,z)=>{const w=rng();if(!inn){inn=1;return{key:'hl_rep_inn'};}
@@ -126,9 +131,10 @@ ROW_FALLBACK=['hl_rep_house_poor_a','hl_rep_house_poor_b','hl_rep_house_poor_c',
 // The Ancients' builders run at a scaled group on the port table (flat ground inside the builder, REG adopted to world
 // space). Four launch sites stand EMPTY (the arcologies went); the fifth never launched and lies in ruin. The Starport
 // in the middle of the pentagon, fuel centres between the pads, tanks, helipads, scrapyards and scrap smithies.
-function placeAnc(fn,name,x,z,y,s,ry,args,tags){const G=new THREE.Group();G.position.set(x,y,z);G.rotation.y=ry;G.scale.setScalar(s);scene.add(G);G.updateMatrix();
+function placeAnc(fn,name,x,z,y,s,ry,args,tags,opt){opt=opt||{};let H=null;const G=new THREE.Group();G.position.set(x,y,z);G.rotation.y=ry;G.scale.setScalar(s);scene.add(G);G.updateMatrix();
  const r0=REG.length,xfDepth=_XFSTACK.length,xf0=KXF;KOFF=[0,0,0];useGroupXF(G);TSTAT.cur='anc_'+name;HOLES=1;
- try{withFlatGround(()=>fn.apply(null,[G,0,0].concat(args)));}catch(e){reportErr(name+' '+e.stack);}
+ try{H=withFlatGround(()=>fn.apply(null,[G,0,0].concat(args)));}catch(e){reportErr(name+' '+e.stack);}
+ if(opt.repair&&H){try{repairPass(H,3);}catch(e){reportErr('repair '+name+' '+e.stack);}}   // the reclaimed state: shacks, patches, lines (inside the group transform)
  // unwind to where we started: a vendored builder that opens a body group without closing it left this site's
  // transform on the stack, and every kput after the spaceport (tanks, yards, farms, gardens) landed inside a launch pad
  const leak=_XFSTACK.length-xfDepth-1;if(leak>0)window._xfLeaks=(window._xfLeaks||0)+leak;_XFSTACK.length=xfDepth;KXF=xf0;KOFF=[0,0,0];TSTAT.cur=null;
@@ -145,9 +151,28 @@ function portOK(o,grow){const pts=obbCorners(o,grow||0);pts.push([o.x,o.z]);
  for(const p of pts){if(Math.hypot(p[0]-PC.x,p[1]-PC.z)>PC.top-12)return false;if(klass(p[0],p[1])!==KL.port)return false;if(inPrecinct(p[0],p[1],6))return false;}return true;}
 function portSpot(hx,hz,tx,tz,R){for(let r=0;r<=R;r+=8){const n=Math.max(1,Math.round(TAU*r/8));for(let i=0;i<n;i++){const a=i/n*TAU+r*.3;const x=tx+r*Math.cos(a),z=tz+r*Math.sin(a);
   const o={x,z,hx,hz,ry:Math.atan2(PC.x-x,PC.z-z),pad:2};if(portOK(o,2)&&occFree(o,2))return o;}}return null;}
+// ---------------------------------------------------------------- 5b. the scrap town (round 8)
+// A plaza with the Scrap Kontor on it, rows of container, silo, tank and crawler houses and shops along its lanes, the
+// big salvage works just out of it: the hull-vault warehouse, the hull-breaker's yard, the powder works (the town's
+// trade — at a safe distance, downwind of nothing).
+const SATSTAT={placed:0,ground:0,occ:0};
+function satTest(o){if(!groundOK(o,{ignoreMask:true,outside:true,ppad:2}))return false;for(const p of obbCorners(o,.2).concat([[o.x,o.z]])){const k=klass(p[0],p[1]);if(k!==0&&k!==KL.port)return false;
+ if(k===0&&!canBuild(p[0],p[1]))return false;}return true;}
+function satSpot(key,tx,tz,R){const D=VERN.defs[key];if(!D)return null;for(let r=0;r<=R;r+=6){const n=Math.max(1,Math.round(TAU*r/6));for(let i=0;i<n;i++){const a=i/n*TAU+r*.37,x=tx+r*Math.cos(a),z=tz+r*Math.sin(a);
+  const nr=nearestRoadPt(x,z,null,80);const o={x,z,hx:D.w/2,hz:D.d/2,ry:nr?Math.atan2(nr.x-x,nr.z-z):0,pad:1.5};if(satTest(o)&&occFree(o,1.5))return o;}}return null;}
+const SAT_PICK=()=>{const w=rng();if(w<.5)return{key:vPick(APOC_HOMES)};if(w<.75)return{key:vPick(['hl_rep_cont_shops','hl_rep_lantern_stall','hl_rep_garage'])};return{key:kitKey(vPick(['hl_rep_house_poor_a','hl_rep_house_poor_b','hl_rep_smithy_small','hl_rep_workshop_a'])),v:Math.floor(rng()*6)};};
+function satelliteTown(y){reseed(SEED_RK+61);const H=SAT.hub;
+ {const D=VERN.defs.hl_rep_kontor,o={x:H.x,z:H.z-H.R-D.d/2-2.5,hx:D.w/2,hz:D.d/2,ry:0,pad:1};if(satTest(o)&&occFree(o,1)){placeVern('hl_rep_kontor',o,{landmark:'Scrap Kontor'});SATSTAT.placed++;}}
+ for(const [key,dx,dz,name] of[['hl_rep_hull_vault',-40,70,'Hull-vault warehouse'],['hl_rep_hull_yard',70,95,"Hull-breaker's yard"],['hl_rep_powder_works',-95,-60,'The powder works']]){
+  const o=satSpot(key,H.x+dx,H.z+dz,70);if(o){placeVern(key,o,{landmark:name,level:true});SATSTAT.placed++;}else reportErr('scrap town: no room for '+key);}
+ const n=Math.max(8,Math.round(TAU*(H.R+2)/22)),ring=[];for(let i=0;i<=n;i++){const t=i/n*TAU;ring.push([H.x+(H.R+.5)*Math.cos(t),H.z+(H.R+.5)*Math.sin(t)]);}
+ frontageAlong(ring,0,SAT_PICK,satTest,SATSTAT,{sides:[-1],tol:0,setback:1.2,fallback:false});
+ for(const L of SAT.lanes)frontageAlong(L.pts,L.w,SAT_PICK,satTest,SATSTAT,{gapK:1.6,setback:1.6});
+ window._sat=SATSTAT;}
 (function spaceport(){reseed(SEED_RK+20);const y=PORT_Y;
- // the pentagon: vertex 0 (east, against the mountains) is the one that never launched
- for(const P of PENT){const ruined=P.k===0;const ry=P.a+Math.PI/2;
+ // the pentagon: the arcology that never launched stands on the pad NEAREST THE TOWN (round 8: Travis — "so it is more visible")
+ const kNear=PENT.reduce((b,P)=>Math.hypot(P.x-TC.x,P.z-TC.z)<Math.hypot(PENT[b].x-TC.x,PENT[b].z-TC.z)?P.k:b,0);
+ for(const P of PENT){const ruined=P.k===kNear;const ry=P.a+Math.PI/2;
   placeAnc(buildLaunch,ruined?'launch_ruined':'launch_pad',P.x,P.z,y,PC.s,ry,ruined?[1]:[1,true],{landmark:true,type:['spaceport']});
   const R=REG.slice().reverse().find(r=>r.cls==='building'&&r.key&&r.key.startsWith('anc_launch'));if(R){R.name=ruined?'Launch Arcology — the one that never flew':'Launch site '+'VWXYZ'[P.k]+' — empty pad';R.tags.landmark=true;}
   occAdd({x:P.x,z:P.z,hx:PAD_R*.8,hz:PAD_R*.8,ry:0,pad:0});BIO_OBSTACLES.push({x:P.x,z:P.z,r:PAD_R*(ruined?.9:.7)});PORTX.pads.push(P);}
@@ -155,6 +180,13 @@ function portSpot(hx,hz,tx,tz,R){for(let r=0;r<=R;r+=8){const n=Math.max(1,Math.
  placeAnc(buildStarport,'starport',PC.x,PC.z,y,PC.starS,Math.PI,[1],{landmark:true,type:['spaceport']});
  {const R=REG.slice().reverse().find(r=>r.cls==='building'&&r.key==='anc_starport');if(R){R.name='The Starport (ruined)';R.tags.landmark=true;}}
  occAdd({x:PC.x,z:PC.z,hx:PORTR.star*.72,hz:PORTR.star*.72,ry:0,pad:0});BIO_OBSTACLES.push({x:PC.x,z:PC.z,r:PORTR.star*.8});
+ // the bunkers (round 8): Ancient redoubts round the rim of the table, reclaimed and lived in (state 3 + the repair pass)
+ for(let k=0;k<9;k++){const a=k*TAU/9+.2;if(angDiff(a,Math.PI)<.62)continue;const r=PC.top-30,x=PC.x+r*Math.cos(a),z=PC.z+r*Math.sin(a),s=.27;
+  const o={x,z,hx:90*s*.75,hz:90*s*.75,ry:0,pad:2};if(!occFree(o,2))continue;
+  placeAnc(buildBunker,'bunker',x,z,y-.4,s,Math.atan2(PC.x-x,PC.z-z)+Math.PI,[3],{type:['military','dwelling'],state:'reclaimed',culture:'ancients-reclaimed'},{repair:true});
+  const RB=REG.slice().reverse().find(r=>r.cls==='building'&&r.key==='anc_bunker');if(RB)RB.name='Bunker (reclaimed, inhabited)';
+  occAdd(o);BIO_OBSTACLES.push({x,z,r:90*s*.9});PORTX.bunkers=(PORTX.bunkers||0)+1;}
+ satelliteTown(y);
  // fuel centres: between pads 1-2 and 4-0 and 0-1 (the far side of the pentagon)
  for(const [i,j] of[[0,1],[4,0],[1,2]]){const A=PENT[i],B=PENT[j];const mx=(A.x+B.x)/2,mz=(A.z+B.z)/2,a=Math.atan2(mz-PC.z,mx-PC.x);const x=PC.x+(PC.P+30)*Math.cos(a),z=PC.z+(PC.P+30)*Math.sin(a);
   const s=.55,o={x,z,hx:60*s,hz:60*s,ry:0,pad:2};if(!portOK(o)||!occFree(o,2))continue;

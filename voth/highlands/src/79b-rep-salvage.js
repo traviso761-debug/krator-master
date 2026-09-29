@@ -5,6 +5,7 @@
 // framed, bracketed and roofed like the rest of the East Highland Republic (the frame storeys of 73b, Alpine roofs, lace
 // bargeboards, lattice windows). They are born reclaimed (tags.salvage), so 88 gives them no `_reclaimed` twin.
 kdef('hTankEnd',new THREE.SphereGeometry(1,20,8,0,TAU,0,Math.PI/2).rotateZ(-Math.PI/2),MAT.rust);   // a tank's domed end, bulging toward +x
+kdef('hTankC',new THREE.CylinderGeometry(1,1,1,24),MAT.rust);   // a tank body CENTRED on its position (vTankR stands on its base)
 kdef('hHullSeg',new THREE.CylinderGeometry(1,1,1,18,1,true,0,Math.PI*.62),MAT.rust);                 // a curved section of hull, open
 const HSV={rust:[0x8a5a3a,0x7a4e34,0x96643e,0x6e4a36],conc:[0x9a968c,0x8e8a80,0xa6a296],corr:[0x9a9488,0x8a867a,0xa8a294]};
 // the rotor of a salvaged wind charger: three plate blades on a hub facing +z of ry
@@ -21,7 +22,7 @@ function buildHlRepTankHouse(G,o){reseed(21801+(o.v|0));const R=2.1,L=9.4,yc=.6+
  const rust=hC(vPick(HSV.rust)),conc=hC(vPick(HSV.conc)),iron=hC(0x3a3430),corr=hC(vPick(HSV.corr)),log=hC(vPick(HPAL.aged)),red=hC(vPick(HFRAME.postPoor)),lit=vLit()?'lit':'glass';
  vnReg('Tank house',0,0,7,12.5);
  for(const x of[-3.4,0,3.4]){vB('boxCR',x,0,0,.9,1.2,3.8,0,conc);vB('boxCR',x,0,0,1.3,.3,4.2,0,conc);}              // cradles
- kput('vTankR',[0,yc,0],qEuler(0,0,Math.PI/2),[R,L,R],rust);
+ kput('hTankC',[0,yc,0],qEuler(0,0,Math.PI/2),[R,L,R],rust);
  kput('hTankEnd',[L/2,yc,0],null,[R*.42,R,R],rust);kput('hTankEnd',[-L/2,yc,0],qEuler(0,Math.PI,0),[R*.42,R,R],rust);
  for(const x of[-L/2+.3,-1.6,1.6,L/2-.3])kput('vHoop',[x,yc,0],qEuler(0,Math.PI/2,0),[R*.985,R*.985,1],rust.clone().multiplyScalar(.6));          // weld seams
  vnPatch(-2.6,yc-.9,R*.92,0,2.2,1.4,4);vnPatch(3,yc+.2,-R*.92,Math.PI,2,1.2,3);
@@ -40,7 +41,7 @@ function buildHlRepTankHouse(G,o){reseed(21801+(o.v|0));const R=2.1,L=9.4,yc=.6+
  const mx=-L/2-1.3;vPst('vPipeR',mx,0,1.6,.09,11.2,null);for(let k=1;k<4;k++)vB('vIron',mx,k*2.6,1.6,.5,.06,.06,0,iron);hnRotor(mx,11.2,1.6+.2,0,1.9,rust);
  hnCable([mx,10.6,1.6],[mx-3,0,4],null);hnCable([mx,10.6,1.6],[mx-2.6,0,-2.2],null);
  for(const sx of[-1,1])for(const sz of[-1,1])vPst('vPipeR',3.4+sx*.7,0,-4.2+sz*.7,.06,3.4,null);
- vB('vWood',3.4,3.4,-4.2,1.8,.14,1.8,0,log);kput('vTankR',[3.4,3.54+.75,-4.2],null,[.8,1.5,.8],rust);hnCable([3.4,4.5,-3.4],[2.2,y2+1,-2.7],hC(0x4a4038));
+ vB('vWood',3.4,3.4,-4.2,1.8,.14,1.8,0,log);kput('hTankC',[3.4,3.54+.75,-4.2],null,[.8,1.5,.8],rust);hnCable([3.4,4.5,-3.4],[2.2,y2+1,-2.7],hC(0x4a4038));
  vnBarrel(-1.4,0,R+.9,.3,.8,hC(0x5a4a3e));hnWoodpile(-4.2,0,R+.7,0,1.4,1);
  kput('hRCHeap',[5.8,-.05,2.8],null,[1.2,.5,1],hC(0x5a4a3e));for(let k=0;k<5;k++)kput(vPick(['vPlate','vSheet']),[5.8+rr(-.8,.8),.4,2.8+rr(-.6,.6)],qEuler(-Math.PI/2+rr(-.3,.3),rng()*TAU,0),[rr(.8,1.4),rr(.6,1),1],null);}
 
@@ -86,7 +87,7 @@ function buildHlRepPowderWorks(G,o){reseed(21821+(o.v|0));
   vPst('vPipe',x+3.2,0,7.6,.04,5,iron);vB('hPaint',x+3.2+.45,4.3,7.6,.9,.6,.03,0,red);}                                    // red warning flags
  for(const x of[-5.5,5.5])kput('hBatterRub',[x,0,-1],null,[3.4,3.8,15],turf);                                            // blast berms
  // the boiler house: rubble firebox, the tank, the glowing mouth, the pipe stack on guys
- const bx=-11,bz=-12.2;vB('hRubB',bx,0,bz,5.6,2.4,4.4,0,hC(vPick(HPAL.rubble)));kput('vTankR',[bx,4,bz],qEuler(0,0,Math.PI/2),[1.6,5,1.6],rust);
+ const bx=-11,bz=-12.2;vB('hRubB',bx,0,bz,5.6,2.4,4.4,0,hC(vPick(HPAL.rubble)));kput('hTankC',[bx,4,bz],qEuler(0,0,Math.PI/2),[1.6,5,1.6],rust);
  for(const x of[-1.8,0,1.8])kput('vHoop',[bx+x,4,bz],qEuler(0,Math.PI/2,0),[1.62,1.62,1.4],iron);
  vB('vDarkB',bx,.2,bz+2.22,1.2,1,.06,0);kput('vEmber',[bx,.55,bz+2.15],null,[.4,.3,.12]);
  const sx=bx+4.4;for(let k=0;k<4;k++){vPst('vPipeR',sx,k*4,bz,.55-k*.06,4.05,null);kput('vHoop',[sx,k*4,bz],qEuler(Math.PI/2,0,0),[.58-k*.06,.58-k*.06,2],iron);}
