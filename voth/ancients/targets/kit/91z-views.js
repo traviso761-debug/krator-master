@@ -30,7 +30,7 @@ const VIEWS={
  // it; these are the close stations that used to be that target's own.
  'Rehabilitated A':[0-150,140,ROWS.skyA.z+420,0,160,ROWS.skyA.z],
  'Rehabilitated D':[0-150,140,ROWS.skyD.z+420,0,160,ROWS.skyD.z],
- 'Rehabilitated factory':[0+330,8,ROWS.fac.z+120,0+110,60,ROWS.fac.z-60],
+ 'Rehabilitated factory':[0+150,8,ROWS.fac.z+200,0+110,60,ROWS.fac.z-60],
  'Rehabilitated government':[0-140,5,ROWS.gov.z+240,0,40,ROWS.gov.z],
  'Rehabilitated apartments':[0+170,150,ROWS.apt.z+480,0+170,25,ROWS.apt.z],
  'Rehabilitated lab':[0+110,30,ROWS.lab.z+170,0,45,ROWS.lab.z],
