@@ -56,5 +56,6 @@ function buildSkyG(scene,gx,gz,d){reseed(9160+d);KOFF=[gx,0,gz];const G=new THRE
    for(let x=CX+R+4;x<BX-BW-gap/2;x+=5)kput(dd>0?'mullR':'mullW',[x,y1+1.5,bz+3.2],null,[.4,4,.4],null);}});
  kput('archOpen',[CX+R-1,Y0+5,0],qFacing([1,0,0]),[.7,.7,1],null);
  if(dd>0){vinesOnRing(CX,Y0+40,0,R,20,20);}
- figures(-100,140,6,6);KOFF=[0,0,0];return G;}
+ figures(-PR,PR*1.28,6,6);   // follows the podium, like the other seven (was a hardcoded -100,140)
+KOFF=[0,0,0];return G;}
 
