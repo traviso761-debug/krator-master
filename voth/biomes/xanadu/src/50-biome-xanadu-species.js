@@ -42,6 +42,7 @@ Object.assign(PAL.irid,{
  OG:[0x7aa83a,0x8ab848,0x5a9a40,0x9ac050],                      // the dawn redwood: copper-orange, green away from the sun
  GG:[0xe0c030,0xf0d040,0xd8b028],                               // the ginkgo: green going gold
  PK:[0xb088e0,0xc898f0,0x9a78d8,0xe0a0d0],                      // blossom: pink -> lavender
+ WGP:[0x7ad890,0xb07ef0,0x60d0b0,0xc890ff,0x98e878],             // the haze blossom: white going green or purple with the light
  WV:[0x5a70e0,0x6a60d0,0x4a88e8,0x8858d8],                      // wisteria: violet -> cornflower
  SL:[0xc8a0e8,0xb8b0f0,0xe0c0f0],                               // the frost willow: silver -> lavender
  CP:[0xc02848,0xd84a20,0x8a2a6a,0xe06a18],                      // the ironwood's jewels: amber -> crimson / plum
@@ -129,8 +130,8 @@ XANADU.SPECIES=[
  /*17*/{key:'adenium',name:'Desert rose',H:[1.2,2.6],rb:[.4,.7],crownR:[1,1.8],barkK:5,bark:[0xb8a890,0xa89880,0xc8b8a0],
   leaf:[0x4a7a34,0x3e6a2e],irid:null,
   tags:{climate:'subtropic',aridity:'arid',abyssal:false,riparian:'no'}},
- /*18*/{key:'hazeblossom',name:'Haze blossom',H:[8,14],rb:[.4,.7],crownR:[6,9],barkK:0,bark:[0x6a4a5a,0x7a5a6a,0x5a3a4a],
-  leaf:[0xf0a0c8,0xf8b8d8,0xe890c0,0xd0a0f0,0xfff0f8],irid:'PK',boughs:[5,8],
+ /*18*/{key:'hazeblossom',name:'Haze blossom',H:[8,14],rb:[.4,.7],crownR:[6,9],barkK:0,bark:[0x6b4a4c,0x5c3e40,0x7a5652],
+  leaf:[0xf4f6f0,0xe4f2dc,0xeee2f8,0xd8ecd0,0xf8f0fc],irid:'WGP',boughs:[5,8],
   tags:{climate:'temperate',aridity:'subhumid',abyssal:false,riparian:'both'}},
  /*19*/{key:'frostwillow',name:'Frost willow',H:[10,16],rb:[.6,1.0],crownR:[6,9],barkK:0,bark:[0xc8c0c8,0xb8b0c0,0xd8d0d8],
   leaf:[0xd8e0f0,0xe0e8f8,0xc8d0e8],irid:'SL',boughs:[5,8],
@@ -169,6 +170,13 @@ XANADU.SPECIES=[
  /*30*/{key:'anemonestalk',name:'Serpent stalk',H:[5,10],rb:[.12,.2],crownR:[1.4,2.4],barkK:3,bark:[0x2e2a2c,0x262224,0x3a3438],
   leaf:[0xe03a2a,0xd02a3a,0xf04a30],irid:null,
   tags:{climate:'subtropic',aridity:'semiarid',abyssal:true,riparian:'no'}},
+ // the uplands' own
+ /*31*/{key:'flamecypress',name:'Flame cypress',H:[12,22],rb:[.3,.5],crownR:[1.6,2.6],barkK:0,bark:[0x8a5a3a,0x7a4a34,0x9a6a44],
+  leaf:[0x2a4a2a,0x324e2c,0x28442e,0x3a5a30],irid:null,
+  tags:{climate:'temperate',aridity:'semiarid',abyssal:false,riparian:'no'}},
+ /*32*/{key:'arbutus',name:'Strawberry tree',H:[5,9],rb:[.3,.5],crownR:[3,5],barkK:1,bark:[0xffb898,0xffc8a8,0xf0a888],
+  leaf:[0x2e5a2a,0x3a6a30,0x2a5028],irid:null,boughs:[4,6],
+  tags:{climate:'temperate',aridity:'semiarid',abyssal:false,riparian:'no'}},
 ];
 
 // ---------------------------------------------------------------- leaf and flower textures
@@ -315,8 +323,9 @@ TX.candle=BIO.alphaTex(256,(g,S)=>{g.lineCap='round';const cx=S/2;
   g.beginPath();g.moveTo(x,y);g.lineTo(x+Math.cos(a)*L*(Math.abs(Math.cos(a))>.3?1:.5),y+Math.sin(a)*L*.5);g.stroke();}},[170,170,170]);
 XANADU.TEX=TX;
 /* the CUSHION skin: tiny leaves packed solid, opaque -- the cushion tree's clipped-looking domes, the box domes of the forest floor */
-XANADU.CUSHIONTEX=BIO.canvasTex(256,256,(g,w,h)=>{g.fillStyle='#8a8a8a';g.fillRect(0,0,w,h);
- for(let i=0;i<2600;i++){const x=rng()*w,y=rng()*h,l=Math.round(lerp(90,215,rng()));g.fillStyle='rgb('+l+','+l+','+l+')';g.beginPath();g.ellipse(x,y,rr(2.5,4.5),rr(1.4,2.4),rr(0,TAU),0,TAU);g.fill();}});
+XANADU.CUSHIONTEX=BIO.canvasTex(512,512,(g,w,h)=>{g.fillStyle='#4a4a4a';g.fillRect(0,0,w,h);
+ for(let i=0;i<9000;i++){const x=rng()*w,y=rng()*h,l=Math.round(lerp(110,240,Math.pow(rng(),.7))),a=rr(0,TAU),L=rr(3,5.5);g.fillStyle='rgb('+l+','+l+','+l+')';
+  g.beginPath();g.ellipse(x,y,L,L*.45,a,0,TAU);g.fill();g.strokeStyle='rgba(60,60,60,.5)';g.lineWidth=.8;g.beginPath();g.moveTo(x-Math.cos(a)*L*.8,y-Math.sin(a)*L*.8);g.lineTo(x+Math.cos(a)*L*.8,y+Math.sin(a)*L*.8);g.stroke();}},3);
 
 // ---------------------------------------------------------------- an iridescent bark (shared hook; the Rift kit's)
 BIO.iridBarkMat=BIO.iridBarkMat||function(tex,key,colA,colB){const m=BIO.barkMat(tex);
@@ -394,7 +403,11 @@ G.flat=function(){const pos=[],uv=[],nor=[];const P=[[-.5,-.5],[.5,-.5],[.5,.5],
 G.cone=function(){const g=new T3.ConeGeometry(.5,1,7,1);g.translate(0,.5,0);return g;};
 G.ball=function(){return new T3.SphereGeometry(1,6,4);};
 // a CUSHION: a smooth dome with uvs for the leafy skin, origin at its centre
-G.cushion=function(){const g=new T3.SphereGeometry(1,10,7);return g;};
+G.cushion=function(){const g=new T3.SphereGeometry(1,14,9).toNonIndexed(),p=g.attributes.position,col=[];
+ const lump=(x,y,z)=>1+.07*Math.sin(x*5.1+z*3.3)*Math.cos(y*4.7+x*1.9)+.05*Math.sin(z*7.3-y*5.2)+.04*Math.cos(x*9.1+y*8.3+z*6.7);
+ for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i),z=p.getZ(i),k=lump(x,y,z);p.setXYZ(i,x*k,y*k,z*k);
+  const ao=lerp(.45,1.12,smooth(-.8,.7,y))*(.9+.2*(k-1)/.16);col.push(ao,ao,ao);}
+ g.setAttribute('color',new T3.Float32BufferAttribute(col,3));g.computeVertexNormals();return g;};
 // a LILY PAD: a flat disc with a notch, vertex-coloured paler at the rim
 G.pad=function(){const pos=[],nor=[],uv=[],col=[];const n=12;
  for(let k=0;k<n;k++){const a0=(k/n)*TAU*.93+.22,a1=((k+1)/n)*TAU*.93+.22;
@@ -460,7 +473,7 @@ const M=XANADU.MAT={
  olive:BIO.leafMat(TX.olive,'x-olive',{aN:true,irid:true,swayW:'1.0',swayA:.08}),
  blossom:BIO.leafMat(TX.blossom,'x-blossom',{aN:true,irid:true,swayW:'1.0',swayA:.08}),
  needle:BIO.leafMat(TX.needle,'x-needle',{aN:true,swayW:'1.0',swayA:.05}),
- cushion:BIO.solidMat(XANADU.CUSHIONTEX),
+ cushion:new T3.MeshLambertMaterial({map:XANADU.CUSHIONTEX,vertexColors:true}),
  raceme:BIO.leafMat(TX.raceme,'x-raceme',{irid:true,swayW:'(-position.y)',swayA:.10,axis:1,alphaTest:.38}),
  willow:BIO.leafMat(TX.willow,'x-willow',{irid:true,swayW:'(-position.y)',swayA:.14,axis:1,alphaTest:.35}),
  catkin:BIO.leafMat(TX.catkin,'x-catkin',{swayW:'(-position.y)',swayA:.12,axis:1,alphaTest:.35}),

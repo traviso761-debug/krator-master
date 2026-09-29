@@ -184,7 +184,8 @@ const OBSTACLES=[];
 // the LOD spine: the promontory, the river from the mouth up to the fountain, the vale, both green flanks
 const SPINE=[[-980,-420],[-300,-560],[620,-380],[420,200],[-360,650],[-190,1560],[-720,2020],[-1330,2000],[-2100,-60],[1700,700]];
 BIO.init({THREE:THREE,scene:scene,terrainH:terrainH,
- mask:(x,z)=>{const h=terrainH(x,z);if(h<.15)return 0;const w=h<.6?(h-.15)/.45:1;const up=FC.at(FC.a.up,x,z),lim=mix(1.45,.95,smooth(.5,.8,up));return w*smooth(lim,lim*.55,FC.at(FC.a.slope,x,z));},   // nothing rooted under water or on a cliff; the mountains' faces stay bare rock
+ mask:(x,z)=>{const h=terrainH(x,z);if(h<.15)return 0;const rv=riverNear(x,z);if(rv){const g=RIV.gorgeK(rv.s),kf=mix(.06,.35,g);if(rv.d<RIV.halfW(rv.s)+.8*.65/kf+1.5)return 0;}   // the river's channel and its water
+ const w=h<.6?(h-.15)/.45:1;const up=FC.at(FC.a.up,x,z),lim=mix(1.45,.95,smooth(.5,.8,up));return w*smooth(lim,lim*.55,FC.at(FC.a.slope,x,z));},   // nothing rooted under water or on a cliff; the mountains' faces stay bare rock
  obstacles:OBSTACLES,ticks:tick,seed:23,
  origin:SPINE,center:[0,0],fields:FIELD,err:reportErr});
 BIO.setSun([-1200,950,-600]);

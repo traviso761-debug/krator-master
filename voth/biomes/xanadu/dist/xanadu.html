@@ -741,7 +741,8 @@ const OBSTACLES=[];
 // the LOD spine: the promontory, the river from the mouth up to the fountain, the vale, both green flanks
 const SPINE=[[-980,-420],[-300,-560],[620,-380],[420,200],[-360,650],[-190,1560],[-720,2020],[-1330,2000],[-2100,-60],[1700,700]];
 BIO.init({THREE:THREE,scene:scene,terrainH:terrainH,
- mask:(x,z)=>{const h=terrainH(x,z);if(h<.15)return 0;const w=h<.6?(h-.15)/.45:1;const up=FC.at(FC.a.up,x,z),lim=mix(1.45,.95,smooth(.5,.8,up));return w*smooth(lim,lim*.55,FC.at(FC.a.slope,x,z));},   // nothing rooted under water or on a cliff; the mountains' faces stay bare rock
+ mask:(x,z)=>{const h=terrainH(x,z);if(h<.15)return 0;const rv=riverNear(x,z);if(rv){const g=RIV.gorgeK(rv.s),kf=mix(.06,.35,g);if(rv.d<RIV.halfW(rv.s)+.8*.65/kf+1.5)return 0;}   // the river's channel and its water
+ const w=h<.6?(h-.15)/.45:1;const up=FC.at(FC.a.up,x,z),lim=mix(1.45,.95,smooth(.5,.8,up));return w*smooth(lim,lim*.55,FC.at(FC.a.slope,x,z));},   // nothing rooted under water or on a cliff; the mountains' faces stay bare rock
  obstacles:OBSTACLES,ticks:tick,seed:23,
  origin:SPINE,center:[0,0],fields:FIELD,err:reportErr});
 BIO.setSun([-1200,950,-600]);
@@ -901,6 +902,7 @@ Object.assign(PAL.irid,{
  OG:[0x7aa83a,0x8ab848,0x5a9a40,0x9ac050],                      // the dawn redwood: copper-orange, green away from the sun
  GG:[0xe0c030,0xf0d040,0xd8b028],                               // the ginkgo: green going gold
  PK:[0xb088e0,0xc898f0,0x9a78d8,0xe0a0d0],                      // blossom: pink -> lavender
+ WGP:[0x7ad890,0xb07ef0,0x60d0b0,0xc890ff,0x98e878],             // the haze blossom: white going green or purple with the light
  WV:[0x5a70e0,0x6a60d0,0x4a88e8,0x8858d8],                      // wisteria: violet -> cornflower
  SL:[0xc8a0e8,0xb8b0f0,0xe0c0f0],                               // the frost willow: silver -> lavender
  CP:[0xc02848,0xd84a20,0x8a2a6a,0xe06a18],                      // the ironwood's jewels: amber -> crimson / plum
@@ -988,8 +990,8 @@ XANADU.SPECIES=[
  /*17*/{key:'adenium',name:'Desert rose',H:[1.2,2.6],rb:[.4,.7],crownR:[1,1.8],barkK:5,bark:[0xb8a890,0xa89880,0xc8b8a0],
   leaf:[0x4a7a34,0x3e6a2e],irid:null,
   tags:{climate:'subtropic',aridity:'arid',abyssal:false,riparian:'no'}},
- /*18*/{key:'hazeblossom',name:'Haze blossom',H:[8,14],rb:[.4,.7],crownR:[6,9],barkK:0,bark:[0x6a4a5a,0x7a5a6a,0x5a3a4a],
-  leaf:[0xf0a0c8,0xf8b8d8,0xe890c0,0xd0a0f0,0xfff0f8],irid:'PK',boughs:[5,8],
+ /*18*/{key:'hazeblossom',name:'Haze blossom',H:[8,14],rb:[.4,.7],crownR:[6,9],barkK:0,bark:[0x6b4a4c,0x5c3e40,0x7a5652],
+  leaf:[0xf4f6f0,0xe4f2dc,0xeee2f8,0xd8ecd0,0xf8f0fc],irid:'WGP',boughs:[5,8],
   tags:{climate:'temperate',aridity:'subhumid',abyssal:false,riparian:'both'}},
  /*19*/{key:'frostwillow',name:'Frost willow',H:[10,16],rb:[.6,1.0],crownR:[6,9],barkK:0,bark:[0xc8c0c8,0xb8b0c0,0xd8d0d8],
   leaf:[0xd8e0f0,0xe0e8f8,0xc8d0e8],irid:'SL',boughs:[5,8],
@@ -1028,6 +1030,13 @@ XANADU.SPECIES=[
  /*30*/{key:'anemonestalk',name:'Serpent stalk',H:[5,10],rb:[.12,.2],crownR:[1.4,2.4],barkK:3,bark:[0x2e2a2c,0x262224,0x3a3438],
   leaf:[0xe03a2a,0xd02a3a,0xf04a30],irid:null,
   tags:{climate:'subtropic',aridity:'semiarid',abyssal:true,riparian:'no'}},
+ // the uplands' own
+ /*31*/{key:'flamecypress',name:'Flame cypress',H:[12,22],rb:[.3,.5],crownR:[1.6,2.6],barkK:0,bark:[0x8a5a3a,0x7a4a34,0x9a6a44],
+  leaf:[0x2a4a2a,0x324e2c,0x28442e,0x3a5a30],irid:null,
+  tags:{climate:'temperate',aridity:'semiarid',abyssal:false,riparian:'no'}},
+ /*32*/{key:'arbutus',name:'Strawberry tree',H:[5,9],rb:[.3,.5],crownR:[3,5],barkK:1,bark:[0xffb898,0xffc8a8,0xf0a888],
+  leaf:[0x2e5a2a,0x3a6a30,0x2a5028],irid:null,boughs:[4,6],
+  tags:{climate:'temperate',aridity:'semiarid',abyssal:false,riparian:'no'}},
 ];
 
 // ---------------------------------------------------------------- leaf and flower textures
@@ -1174,8 +1183,9 @@ TX.candle=BIO.alphaTex(256,(g,S)=>{g.lineCap='round';const cx=S/2;
   g.beginPath();g.moveTo(x,y);g.lineTo(x+Math.cos(a)*L*(Math.abs(Math.cos(a))>.3?1:.5),y+Math.sin(a)*L*.5);g.stroke();}},[170,170,170]);
 XANADU.TEX=TX;
 /* the CUSHION skin: tiny leaves packed solid, opaque -- the cushion tree's clipped-looking domes, the box domes of the forest floor */
-XANADU.CUSHIONTEX=BIO.canvasTex(256,256,(g,w,h)=>{g.fillStyle='#8a8a8a';g.fillRect(0,0,w,h);
- for(let i=0;i<2600;i++){const x=rng()*w,y=rng()*h,l=Math.round(lerp(90,215,rng()));g.fillStyle='rgb('+l+','+l+','+l+')';g.beginPath();g.ellipse(x,y,rr(2.5,4.5),rr(1.4,2.4),rr(0,TAU),0,TAU);g.fill();}});
+XANADU.CUSHIONTEX=BIO.canvasTex(512,512,(g,w,h)=>{g.fillStyle='#4a4a4a';g.fillRect(0,0,w,h);
+ for(let i=0;i<9000;i++){const x=rng()*w,y=rng()*h,l=Math.round(lerp(110,240,Math.pow(rng(),.7))),a=rr(0,TAU),L=rr(3,5.5);g.fillStyle='rgb('+l+','+l+','+l+')';
+  g.beginPath();g.ellipse(x,y,L,L*.45,a,0,TAU);g.fill();g.strokeStyle='rgba(60,60,60,.5)';g.lineWidth=.8;g.beginPath();g.moveTo(x-Math.cos(a)*L*.8,y-Math.sin(a)*L*.8);g.lineTo(x+Math.cos(a)*L*.8,y+Math.sin(a)*L*.8);g.stroke();}},3);
 
 // ---------------------------------------------------------------- an iridescent bark (shared hook; the Rift kit's)
 BIO.iridBarkMat=BIO.iridBarkMat||function(tex,key,colA,colB){const m=BIO.barkMat(tex);
@@ -1253,7 +1263,11 @@ G.flat=function(){const pos=[],uv=[],nor=[];const P=[[-.5,-.5],[.5,-.5],[.5,.5],
 G.cone=function(){const g=new T3.ConeGeometry(.5,1,7,1);g.translate(0,.5,0);return g;};
 G.ball=function(){return new T3.SphereGeometry(1,6,4);};
 // a CUSHION: a smooth dome with uvs for the leafy skin, origin at its centre
-G.cushion=function(){const g=new T3.SphereGeometry(1,10,7);return g;};
+G.cushion=function(){const g=new T3.SphereGeometry(1,14,9).toNonIndexed(),p=g.attributes.position,col=[];
+ const lump=(x,y,z)=>1+.07*Math.sin(x*5.1+z*3.3)*Math.cos(y*4.7+x*1.9)+.05*Math.sin(z*7.3-y*5.2)+.04*Math.cos(x*9.1+y*8.3+z*6.7);
+ for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i),z=p.getZ(i),k=lump(x,y,z);p.setXYZ(i,x*k,y*k,z*k);
+  const ao=lerp(.45,1.12,smooth(-.8,.7,y))*(.9+.2*(k-1)/.16);col.push(ao,ao,ao);}
+ g.setAttribute('color',new T3.Float32BufferAttribute(col,3));g.computeVertexNormals();return g;};
 // a LILY PAD: a flat disc with a notch, vertex-coloured paler at the rim
 G.pad=function(){const pos=[],nor=[],uv=[],col=[];const n=12;
  for(let k=0;k<n;k++){const a0=(k/n)*TAU*.93+.22,a1=((k+1)/n)*TAU*.93+.22;
@@ -1319,7 +1333,7 @@ const M=XANADU.MAT={
  olive:BIO.leafMat(TX.olive,'x-olive',{aN:true,irid:true,swayW:'1.0',swayA:.08}),
  blossom:BIO.leafMat(TX.blossom,'x-blossom',{aN:true,irid:true,swayW:'1.0',swayA:.08}),
  needle:BIO.leafMat(TX.needle,'x-needle',{aN:true,swayW:'1.0',swayA:.05}),
- cushion:BIO.solidMat(XANADU.CUSHIONTEX),
+ cushion:new T3.MeshLambertMaterial({map:XANADU.CUSHIONTEX,vertexColors:true}),
  raceme:BIO.leafMat(TX.raceme,'x-raceme',{irid:true,swayW:'(-position.y)',swayA:.10,axis:1,alphaTest:.38}),
  willow:BIO.leafMat(TX.willow,'x-willow',{irid:true,swayW:'(-position.y)',swayA:.14,axis:1,alphaTest:.35}),
  catkin:BIO.leafMat(TX.catkin,'x-catkin',{swayW:'(-position.y)',swayA:.12,axis:1,alphaTest:.35}),
@@ -1600,16 +1614,22 @@ B[3]=function(T,st,lv){const S=SP[3],H=T.H,rb=T.rb,wind=T.wind||0,la=T.lean!=nul
  const e=pts[n];pad(e.x,e.y+.2,e.z,rr(1.3,2.2)*Math.min(1.3,H/10));
  T.spread=spread;if(lv===2)reg(S,T,spread);};
 // 4 the CUSHION TREE: braided stems spreading from one foot, and over them a lumpy dome of smooth leafy cushions, as if clipped
-B[4]=function(T,st,lv){const S=SP[4],H=T.H,rb=T.rb,nS=lv===2?ri(S.stems[0],S.stems[1]):3,a0=rr(0,TAU),tips=[];
- for(let k=0;k<nS;k++){const a=a0+k/nS*TAU+rr(-.3,.3),reach=T.crownR*rr(.3,.75),hh=H*rr(.45,.75),pts=[],n=5,tw=rr(1.5,3)*(k%2?1:-1);
-  for(let i=0;i<=n;i++){const t=i/n,r=rb*(1-.5*t)*(1+.8*Math.exp(-t*6)),w=Math.sin(t*Math.PI)*.6;const aa=a+tw*t*.35;
-   pts.push({x:T.x+Math.cos(aa)*(reach*Math.pow(t,1.3)+.3)+Math.cos(a+1.6)*w,y:T.y0+hh*t,z:T.z+Math.sin(aa)*(reach*Math.pow(t,1.3)+.3)+Math.sin(a+1.6)*w,r});}
-  if(lv===2)limb(S,pts,st,{fam:'xbark0',seg:6,flutes:3,fluteA:.12,twist:.9});else BIO.beam('rod',P3(pts[0]),P3(pts[n]),rb,rb*.5,rodCol(S,k));
+B[4]=function(T,st,lv){const S=SP[4],H=T.H,rb=T.rb,nS=lv===2?ri(S.stems[0],S.stems[1]):3,a0=rr(0,TAU),tips=[],sc=Math.min(1.3,H/9);
+ const dc={x:T.x,y:T.y0+H*.66,z:T.z},Rd=T.crownR*.72;
+ // the braided stems: from one foot, wound round each other, out to the dome's underside
+ for(let k=0;k<nS;k++){const a=a0+k/nS*TAU+rr(-.3,.3),reach=Rd*rr(.35,.8),hh=dc.y-T.y0-Rd*rr(.1,.35),pts=[],n=6,tw=rr(1.5,3)*(k%2?1:-1);
+  for(let i=0;i<=n;i++){const t=i/n,r=rb*(1-.5*t)*(1+.8*Math.exp(-t*6)),w=Math.sin(t*Math.PI)*.5;const aa=a+tw*t*.35;
+   pts.push({x:T.x+Math.cos(aa)*(reach*Math.pow(t,1.4)+.25)+Math.cos(a+1.6)*w,y:T.y0+hh*t,z:T.z+Math.sin(aa)*(reach*Math.pow(t,1.4)+.25)+Math.sin(a+1.6)*w,r});}
+  if(lv===2)limb(S,pts,st,{fam:'xbark0',seg:6,flutes:3,fluteA:.12,twist:.9});else{BIO.beam('rod',P3(pts[0]),P3(pts[3]),rb,rb*.7,rodCol(S,k));BIO.beam('rod',P3(pts[3]),P3(pts[n]),rb*.7,rb*.45,rodCol(S,k));}
   tips.push(pts[n]);}
- const hc=vary(pick(S.leaf),.02,.06,.05),cy=T.y0+H*.72;let n=0;
- tips.forEach(p=>{const R=rr(1.3,2.2)*Math.min(1.3,H/9);BIO.put('cushion',[p.x,p.y+R*.4,p.z],qEuler(0,rr(0,TAU),0),[R,R*rr(.75,.9),R],bright(vary(hc,.02,.06,.06),rr(1.1,1.35)));n++;});
- const nc=lv===2?ri(6,11):4;for(let k=0;k<nc;k++){const a=rr(0,TAU),d=T.crownR*.6*Math.sqrt(rng()),R=rr(1.4,2.6)*Math.min(1.3,H/9),y=cy+(1-d/T.crownR)*H*.22+rr(-.5,.5);
-  BIO.put('cushion',[T.x+Math.cos(a)*d,y,T.z+Math.sin(a)*d],qEuler(0,rr(0,TAU),0),[R,R*rr(.7,.9),R],bright(vary(hc,.02,.06,.06),lerp(1.05,1.45,smooth(-2,4,y-cy))));n++;}
+ const hc=vary(pick(S.leaf),.02,.06,.05);let n=0;
+ const cushion=(x,y,z,R,up)=>{const c=bright(vary(hc,.015,.05,.04),lerp(1.0,1.35,up));BIO.put('cushion',[x,y,z],qEuler(rr(-.15,.15),rr(0,TAU),rr(-.15,.15)),[R,R*rr(.72,.86),R],c);n++;
+  // a leafy fringe where it meets the air, so the dome's outline is not a row of balls
+  if(lv===2)for(let f=0;f<2;f++){const a=rr(0,TAU);clumpAt('broad',x+Math.cos(a)*R*.8,y+rr(-.2,.4)*R,z+Math.sin(a)*R*.8,R*rr(.55,.8),.5,c,x,y-R*.4,z,R,R*.6,null);}};
+ // the dome: cushions packed on a golden spiral over the upper shell, smaller toward the rim; one over every stem's tip
+ const nc=lv===2?ri(14,20):7;for(let k=0;k<nc;k++){const t=(k+.5)/nc,ph=Math.acos(1-t*.95),th=k*GOLD,d=[Math.sin(ph)*Math.cos(th),Math.cos(ph)*.62,Math.sin(ph)*Math.sin(th)];
+  const R=rr(1.4,2.2)*sc*(1.1-.3*t);cushion(dc.x+d[0]*Rd,dc.y+d[1]*Rd,dc.z+d[2]*Rd,R,1-t*.8);}
+ tips.forEach(p=>cushion(p.x,p.y+.3*sc,p.z,rr(1.1,1.6)*sc,.2));
  st.cushions=(st.cushions||0)+n;T.spread=T.crownR;if(lv===2)reg(S,T);};
 // 5 the WHORL OLIVE: a short fat bole wrung like a cloth (deep flutes winding a turn every few metres, striped cream and umber), two or three twisted limbs, a silver crown
 B[5]=function(T,st,lv){const S=SP[5],H=T.H,rb=T.rb;
@@ -1673,9 +1693,12 @@ B[9]=function(T,st,lv){const S=SP[9],H=T.H,rb=T.rb,hT=H*rr(.45,.6),ph=rr(0,TAU),
 // 10 the PERSIAN IRONWOOD: three to six mottled stems in a vase, a wide spreading crown, every spray a different jewel (amber, crimson, gold, plum, the odd green)
 B[10]=function(T,st,lv){const S=SP[10],H=T.H,rb=T.rb,nS=lv===2?ri(S.stems[0],S.stems[1]):3,a0=rr(0,TAU),spots=[];
  for(let k=0;k<nS;k++){const a=a0+k/nS*TAU+rr(-.4,.4),pts=treeGrow({x:T.x+Math.cos(a)*.3,y:T.y0-.2,z:T.z+Math.sin(a)*.3},dirOf(a,rr(1.05,1.3)),H*rr(.6,.8),rb,.1,5,-.25,.1);
-  if(lv===2)limb(S,pts,st,{fam:'xbark2',seg:6});else BIO.beam('rod',P3(pts[0]),P3(pts[5]),rb,.1,rodCol(S,k));
+  if(lv===2)limb(S,pts,st,{fam:'xbark2',seg:6});else for(let i=0;i<5;i+=2)BIO.beam('rod',P3(pts[i]),P3(pts[Math.min(5,i+2)]),pts[i].r,pts[Math.min(5,i+2)].r,rodCol(S,k));
   for(let i=2;i<=5;i++)spots.push(pts[i]);}
- const cy=T.y0+H*.8,cnt=lv===2?2:1;spots.forEach(p=>{for(let c=0;c<cnt;c++){const col=C(pick(S.leaf));clumpAt('broad',p.x+rr(-1.6,1.6),p.y+rr(-.2,1.2),p.z+rr(-1.6,1.6),rr(3.2,4.6),.5,col,T.x,cy,T.z,T.crownR,H*.25,C(pick(PAL.irid.CP)));st.clumps++;}});
+ const cy=T.y0+H*.8,cnt=lv===2?2:1,rc=rodCol(S,1);
+ spots.forEach(p=>{for(let c=0;c<cnt;c++){const a=rr(0,TAU),d=rr(.6,2.2),q=[p.x+Math.cos(a)*d,p.y+rr(.1,.9),p.z+Math.sin(a)*d];
+  BIO.beam('rod',P3(p),q,Math.max(.05,p.r*.5),.04,rc);   // the twig the spray sits on
+  clumpAt('broad',q[0],q[1],q[2],rr(2.6,3.8),.5,C(pick(S.leaf)),T.x,cy,T.z,T.crownR,H*.25,C(pick(PAL.irid.CP)));st.clumps++;}});
  T.spread=T.crownR;if(lv===2)reg(S,T);};
 // 11 the CHESTNUT-LEAVED OAK: the flanks' great tree. A heavy bole, broad boughs, a high dark dome
 B[11]=function(T,st,lv){const S=SP[11],H=T.H,rb=T.rb;
@@ -1744,11 +1767,11 @@ B[17]=function(T,st,lv){const S=SP[17],H=T.H,rb=T.rb;
 // 18 the HAZE BLOSSOM: a low gnarled trunk, a wide umbrella wholly in blossom (pink, lavender, white; now and then all violet), petals lying round its foot
 B[18]=function(T,st,lv){const S=SP[18],H=T.H,rb=T.rb,la=rr(0,TAU);
  const pts=treeGrow({x:T.x,y:T.y0-.3,z:T.z},dirOf(la,rr(1.2,1.45)),H*.4,rb,rb*.6,5,-.1,.18);limb(S,pts,st,{fam:'xbark0',seg:lv===2?8:6,flutes:4,fluteA:.12,twist:.6});
- const o=pts[5],nB=lv===2?ri(S.boughs[0],S.boughs[1]):4,a0=rr(0,TAU),violet=rng()<.15,base=violet?C(pick([0xb080f0,0xa070e8,0xc098ff])):C(pick(S.leaf)),cy=T.y0+H*.8,spots=[];
+ const o=pts[5],nB=lv===2?ri(S.boughs[0],S.boughs[1]):4,a0=rr(0,TAU),violet=rng()<.15,base=violet?C(pick([0xe0d0fa,0xd4c0f6,0xe8dcff])):C(pick(S.leaf)),cy=T.y0+H*.8,spots=[];
  for(let k=0;k<nB;k++){const a=a0+k/nB*TAU+rr(-.3,.3),p=treeGrow({x:o.x,y:o.y,z:o.z},dirOf(a,rr(.25,.6)),T.crownR*rr(.8,1.1),rb*.5,.08,4,-.06,.2);
   if(!limbOk(p))continue;if(lv===2)limb(S,p,st,{fam:'xbark0',seg:5,flutes:3,fluteA:.1,twist:.8});else BIO.beam('rod',P3(p[0]),P3(p[4]),rb*.45,.08,rodCol(S,k));for(let i=1;i<=4;i++)spots.push(p[i]);}
  spots.push({x:o.x,y:T.y0+H*.95,z:o.z});
- const cnt=lv===2?2:1;spots.forEach(p=>{for(let c=0;c<cnt;c++){clumpAt('blossom',p.x+rr(-1.3,1.3),p.y+rr(0,1.4),p.z+rr(-1.3,1.3),rr(2.4,3.4),.55,vary(base,.02,.06,.04),o.x,cy,o.z,T.crownR,H*.25,C(pick(PAL.irid.PK)));st.clumps++;}});
+ const cnt=lv===2?2:1;spots.forEach(p=>{for(let c=0;c<cnt;c++){clumpAt('blossom',p.x+rr(-1.3,1.3),p.y+rr(0,1.4),p.z+rr(-1.3,1.3),rr(2.4,3.4),.55,vary(base,.01,.04,.03),o.x,cy,o.z,T.crownR,H*.25,bright(C(pick(PAL.irid.WGP)),1.12));st.clumps++;}});
  if(lv===2)for(let k=0,m=ri(3,6);k<m;k++){const a=rr(0,TAU),d=T.crownR*rr(.2,1),px=T.x+Math.cos(a)*d,pz=T.z+Math.sin(a)*d;BIO.put('mossmat',[px,BIO.terrainH(px,pz)+.06,pz],qEuler(rr(-.05,.05),rr(0,TAU),rr(-.05,.05)),rr(1,2.2),bright(vary(base,.02,.05,.05),1.2));}
  T.spread=T.crownR;reg(S,T);};
 // 19 the FROST WILLOW: a pale whorled trunk, arching boughs, a curtain of long silver strands that go lavender away from the sun
@@ -1762,15 +1785,24 @@ B[19]=function(T,st,lv){const S=SP[19],H=T.H,rb=T.rb,la=rr(0,TAU),lk=rr(.02,.12)
    BIO.put('willow',[p.x+rr(-1,1),p.y+rr(0,.5),p.z+rr(-1,1)],qEuler(0,rr(0,TAU),0),[rr(1.2,2),drop,1],bright(vary(hc,.02,.04,.05),1.3),{c2:bright(C(pick(PAL.irid.SL)),1.1)});st.strands=(st.strands||0)+1;}}}
  T.spread=T.crownR;reg(S,T);};
 // 20 the TRAVELLER'S PALM: a ringed stem and a flat fan of great paddle leaves, all in one plane
-B[20]=function(T,st,lv){const S=SP[20],H=T.H,rb=T.rb,hT=H*.45,fa=rr(0,TAU),hc=vary(pick(S.leaf),.02,.06,.05);
- BIO.beam('rod',[T.x,T.y0-.2,T.z],[T.x,T.y0+hT,T.z],rb*2,rb*1.7,shade(C(pick(S.bark)),-.12));
- const n=lv===2?ri(14,20):9,cx=Math.cos(fa),cz=Math.sin(fa);
- for(let k=0;k<n;k++){const t=(k+.5)/n,ang=lerp(-1.25,1.25,t)+rr(-.04,.04),L=H*rr(.55,.7)*(1-.25*Math.abs(t-.5)),d=[cx*Math.sin(ang),Math.cos(ang),cz*Math.sin(ang)];
-  const b=[T.x,T.y0+hT,T.z],m=[b[0]+d[0]*L*.45,b[1]+d[1]*L*.45,b[2]+d[2]*L*.45];
-  BIO.beam('rod',b,m,.07,.05,shade(hc,-.2));
-  const q=qBasis([cx*Math.cos(ang),-Math.sin(ang),cz*Math.cos(ang)],d);   // the blade lies in the fan's plane
-  BIO.put('banana',m,q,[L*.32,L*.62,1],bright(vary(hc,.02,.05,.05),rr(1.2,1.45)),{n:[-cz,.4,cx]});st.fans++;}
- if(lv===2)reg(S,T,H*.4);};
+B[20]=function(T,st,lv){const S=SP[20],H=T.H,rb=T.rb,hT=H*rr(.34,.46),fa=rr(0,TAU),cx=Math.cos(fa),cz=Math.sin(fa),hc=vary(pick(S.leaf),.02,.05,.04);
+ // the stem: a ringed column (leaf scars every half metre), a little swollen at the foot
+ const top=bole(T,S,hT,u=>rb*(1+.3*Math.exp(-u*H/1.1)),{fam:'xbark4',vs:1,seg:lv===2?10:6,urep:1.2});
+ const b=[top.x,top.y-.3,top.z],n=lv===2?ri(16,22):10,sheathC=bright(C(0xb8c070),1.1);
+ const inP=ang=>[cx*Math.sin(ang),Math.cos(ang),cz*Math.sin(ang)],perp=ang=>[cx*Math.cos(ang),-Math.sin(ang),cz*Math.cos(ang)];
+ for(let k=0;k<n;k++){const t=(k+.5)/n,e=Math.abs(t-.5)*2,ang=lerp(-1.32,1.32,t)+rr(-.03,.03),side=k%2?1:-1,out=side*rr(.03,.07);   // two ranks, overlapping
+  const d=inP(ang);d[0]+=-cz*out;d[2]+=cx*out;
+  const Lp=H*rr(.30,.36)*(1-.25*e),Lb=H*rr(.36,.44)*(1-.2*e),Wb=Lb*rr(.24,.3);
+  // the sheath: the petiole's broad folded base, which together make the fan's pale V
+  BIO.put('banana',b,qBasis(perp(ang),d),[Lp*.2,Lp*.42,1],bright(vary(sheathC,.02,.05,.05),rr(.95,1.1)),{n:[-cz*side,.2,cx*side]});
+  const m=[b[0]+d[0]*Lp,b[1]+d[1]*Lp,b[2]+d[2]*Lp];BIO.beam('rod',[b[0]+d[0]*Lp*.35,b[1]+d[1]*Lp*.35,b[2]+d[2]*Lp*.35],m,.09,.05,shade(hc,-.15));
+  // the blade: droops more the further out it stands, a little twisted about its rib
+  const ang2=ang+Math.sign(ang||1)*lerp(.05,.55,e*e);const d2=inP(ang2);d2[0]+=-cz*out*2;d2[2]+=cx*out*2;
+  const tw=perp(ang2);tw[0]+=-cz*side*.25;tw[2]+=cx*side*.25;
+  BIO.put('banana',m,qBasis(tw,d2),[Wb,Lb,1],bright(vary(hc,.02,.05,.05),rr(1.15,1.4)),{n:[-cz*side,.35,cx*side]});st.fans++;}
+ if(lv===2)for(let k=0,m=ri(1,3);k<m;k++){const sgn=k%2?1:-1,ang=sgn*rr(1.5,1.9),d=inP(ang),L=H*.3;   // last season's leaves, hanging dead at the fan's foot
+  BIO.put('banana',[b[0],b[1]-.4,b[2]],qBasis(perp(ang+sgn*.9),inP(ang+sgn*.9)),[L*.2,L,1],bright(C(pick([0x8a7a48,0x9a8452,0x7a6a40])),1.05),{n:[-cz,.2,cx]});}
+ if(lv===2)reg(S,T,H*.45);};
 // 21 the VIOLET PLANTAIN: a purple pseudostem, arching purple paddles, and a tall spike of purple bracts over hands of yellow fruit
 B[21]=function(T,st,lv){const S=SP[21],H=T.H,rb=T.rb,hc=vary(pick(S.leaf),.02,.06,.05);
  BIO.beam('rod',[T.x,T.y0-.2,T.z],[T.x,T.y0+H*.55,T.z],rb*2,rb*1.5,rodCol(S,T.seed));
@@ -1876,10 +1908,30 @@ B[30]=function(T,st,lv){const S=SP[30],H=T.H,rb=T.rb,rc=shade(C(pick(S.bark)),-.
  const col=bright(vary(pick(S.leaf),.02,.08,.05),1.2);
  tips.forEach(p=>{const R=T.crownR*rr(.8,1.2),n=lv===2?ri(3,5):2;for(let k=0;k<n;k++){const a=rr(0,TAU),d=R*rr(0,.3);BIO.put('anemone',[p.x+Math.cos(a)*d,p.y+rr(0,.3)*R,p.z+Math.sin(a)*d],qEuler(rr(-.5,.5),rr(0,TAU),rr(-.5,.5)),R*rr(1.3,1.8),col);st.blooms++;}});};
 
+// 31 the FLAME CYPRESS: a Mediterranean column that twists as it rises, like a flame: dark sprays wound in a spiral, a whorled foot, bronze at the tips
+B[31]=function(T,st,lv){const S=SP[31],H=T.H,rb=T.rb,la=rr(0,TAU),lk=rr(0,.03),tw=rr(.18,.32)*(rng()<.5?-1:1);
+ const top=bole(T,S,H*.25,u=>rb*(1+.5*Math.exp(-u*H/1)),{fam:'xbark0',flutes:4,fluteA:.14,twist:.9,vs:1.2,seg:lv===2?8:6,lean:[Math.cos(la)*lk,Math.sin(la)*lk]});
+ const hc=vary(pick(S.leaf),.02,.05,.04),rows=lv===2?Math.round(H/1.1):Math.round(H/2.4),per=lv===2?4:3;
+ for(let r=0;r<rows;r++){const u=lerp(.1,.99,r/(rows-1)),R=T.crownR*Math.pow(Math.sin(Math.PI*Math.min(1,u*1.25+.08)),.55)*(1-u*.55)+.25,y=T.y0+H*u,cx=T.x+Math.cos(la)*lk*H*u,cz=T.z+Math.sin(la)*lk*H*u;
+  for(let k=0;k<per;k++){const a=k/per*TAU+u*H*tw,sz=Math.max(1,R*rr(1.1,1.4));
+   clumpAt('needle',cx+Math.cos(a)*R*.45,y,cz+Math.sin(a)*R*.45,sz,.9,u>.8&&rng()<.3?bright(C(0x8a6a3a),1.1):hc,cx,y,cz,R+.5,1.2,null);st.clumps++;}}
+ T.spread=T.crownR;if(lv===2)reg(S,T);};
+// 32 the STRAWBERRY TREE: a twisting bole whose bark peels to red agate, a dark rounded crown, clusters of red and orange berries and white bells
+B[32]=function(T,st,lv){const S=SP[32],H=T.H,rb=T.rb,la=rr(0,TAU);
+ const pts=treeGrow({x:T.x,y:T.y0-.3,z:T.z},dirOf(la,rr(1.2,1.45)),H*.45,rb,rb*.6,5,-.05,.2);limb(S,pts,st,{fam:'xbark1',seg:lv===2?8:6,flutes:4,fluteA:.1,twist:.8,col:barkCol(S,T.seed)});
+ const o=pts[5],nB=lv===2?ri(S.boughs[0],S.boughs[1]):3,a0=rr(0,TAU),hc=vary(pick(S.leaf),.02,.05,.04),cy=T.y0+H*.72,spots=[];
+ for(let k=0;k<nB;k++){const a=a0+k/nB*TAU+rr(-.3,.3),p=treeGrow({x:o.x,y:o.y,z:o.z},dirOf(a,rr(.4,.8)),T.crownR*rr(.7,1),rb*.5,.08,4,-.05,.2);
+  if(!limbOk(p))continue;if(lv===2)limb(S,p,st,{fam:'xbark1',seg:5,col:barkCol(S,k)});else BIO.beam('rod',P3(p[0]),P3(p[4]),rb*.45,.08,C(0xa05038));for(let i=2;i<=4;i++)spots.push(p[i]);}
+ spots.push({x:o.x,y:T.y0+H*.95,z:o.z});
+ spots.forEach(p=>{clumpAt('broad',p.x+rr(-.8,.8),p.y+rr(0,.8),p.z+rr(-.8,.8),rr(2,2.8),.6,hc,o.x,cy,o.z,T.crownR,H*.3,null);st.clumps++;
+  if(lv===2){for(let f=0,m=ri(3,7);f<m;f++)BIO.put('ball',[p.x+rr(-1.2,1.2),p.y+rr(-.6,.6),p.z+rr(-1.2,1.2)],null,rr(.07,.11),bright(C(pick([0xe02a20,0xf05a20,0xf08a20,0xd01a28])),1.1));
+   if(rng()<.4)for(let f=0,m=ri(2,4);f<m;f++)BIO.put('bloom',[p.x+rr(-1,1),p.y+rr(-.3,.6),p.z+rr(-1,1)],qEuler(rr(-.4,.4),rr(0,TAU),0),rr(.12,.2),bright(C(0xfff8ec),1.05),{c2:bright(C(0xf0e8c0),1)});}});
+ T.spread=T.crownR;if(lv===2)reg(S,T);};
+
 // ---------------------------------------------------------------- impostors (the far canopy)
 // Each species a trunk of four quads and one to three blobs by its habit.
 const HABIT={dawnredwood:'cone',wollemi:'cone',ginkgo:'oval',lotustrumpet:'cups',cloudpine:'pads',topiary:'lumps',whorlolive:'dome',agatetree:'vase',ringbeech:'oval',archhornbeam:'dome',
- wisteria:'umbrella',parrotia:'umbrella',hyrcanoak:'dome',wingnut:'dome',hazeblossom:'umbrella',frostwillow:'weep',chasmfrill:'column',cloudfrill:'column',beardtree:'dome'};
+ wisteria:'umbrella',parrotia:'umbrella',hyrcanoak:'dome',wingnut:'dome',hazeblossom:'umbrella',frostwillow:'weep',chasmfrill:'column',cloudfrill:'column',beardtree:'dome',flamecypress:'column',arbutus:'dome'};
 let ICO=null,ICO0=null;
 // lite: the stand-in behind a hero tree (seen only past its detail range): a coarser blob, fewer of them
 function buildFar(T,fi,st,lite){const K=BIO.bucket('xfar');if(!ICO){ICO=new T3.IcosahedronGeometry(1,1).attributes.position.array;ICO0=new T3.IcosahedronGeometry(1,0).attributes.position.array;}const ip=lite?ICO0:ICO;
@@ -1918,8 +1970,8 @@ XANADU.buildTrees=function(R,q){
  const okAt=(x,z,pad)=>BIO.mask(x,z)>.2&&!blocked(x,z,pad)&&BIO.clearOf(x,z,pad+2);
  // --- THE RINGS: fairy circles of one species round an empty lawn
  BIO.grid(300,0,R,(x,z)=>{const Z=zones(x,z);return (Z.forest*.55+Z.vale*.5+Z.dry*.3)*q;},(x,y,z)=>{
-  const Z=zones(x,z),sp=Z.dry>.5?3:(Z.vale>Z.forest?(rng()<.4?1:rng()<.5?18:7):7),S=SP[sp];
-  const rad=sp===3?rr(6,10):rr(8,15),n=Math.max(7,Math.round(TAU*rad/(sp===3?4.2:5.6))),a0=rr(0,TAU),pos=[];
+  const Z=zones(x,z),sp=Z.dry>.5?(rng()<.5?3:31):(Z.vale>Z.forest?(rng()<.4?1:rng()<.5?18:7):7),S=SP[sp];
+  const rad=sp===3||sp===31?rr(6,10):rr(8,15),n=Math.max(7,Math.round(TAU*rad/(sp===3?4.2:sp===31?3.2:5.6))),a0=rr(0,TAU),pos=[];
   for(let k=0;k<n;k++){const a=a0+k/n*TAU,px=x+Math.cos(a)*rad,pz=z+Math.sin(a)*rad;if(!okAt(px,pz,2))return;pos.push([px,pz,a]);}
   let h0=1e9,h1=-1e9;pos.forEach(p=>{const h=Y(p[0],p[1]);h0=Math.min(h0,h);h1=Math.max(h1,h);});if(h1-h0>rad*.45)return;
   const lvR=lvOf(x,z,520,1050),ring={x,z,r:rad,sp,n,lv:lvR};XANADU.RINGS.push(ring);st.rings++;
@@ -1940,7 +1992,7 @@ XANADU.buildTrees=function(R,q){
  function pass(sp,cell,accept,opt){opt=opt||{};let n=0;
   BIO.grid(cell,0,R,(x,z,d)=>{const Z=zones(x,z);const a=accept(Z,x,z);if(a<=0)return 0;
     const lod=BIO.lod(x,z);return a*(opt.lodK?lerp(1,lod,opt.lodK):1)*q;},
-   (x,y,z,d)=>{if(y<(opt.minY==null?.3:opt.minY))return;
+   (x,y,z,d)=>{if(y<(opt.minY==null?.8:opt.minY))return;
     if(blocked(x,z,opt.pad==null?4:opt.pad))return;if(!BIO.clearOf(x,z,(opt.pad==null?4:opt.pad)+2))return;
     const T=mk(x,y,z,sp);if(opt.mod)opt.mod(T,zones(x,z));
     T.lv=lvOf(x,z,opt.hero,opt.mid);
@@ -1948,7 +2000,7 @@ XANADU.buildTrees=function(R,q){
     TREES.push(T);hadd({x:x,z:z,r:T.rb*1.4+1});n++;},{patch:opt.patch==null?.6:opt.patch,patchScale:opt.patchScale||.01,pad:1,noMask:opt.noMask});
   return n;}
  // the shore and the river: dawn redwoods (some standing in the shallows), frost willows, wingnuts, lotus trumpets
- pass(0,15,(Z,x,z)=>{const h=Z.h;if(h>.35||h<-1.3)return 0;return .5*smooth(.5,.7,fbm(x*.004+3,z*.004-1,811,2));},{hero:470,mid:980,far:true,pad:2.5,patch:0,noMask:true,minY:-1.3});
+ pass(0,16,(Z,x,z)=>{const h=Z.h;if(h<.9||h>4.5)return 0;return .5*Z.shore*smooth(.48,.66,fbm(x*.004+3,z*.004-1,811,2));},{hero:470,mid:980,far:true,pad:2.5,patch:0,minY:.9});   // the redwoods' stands along the shore
  pass(0,34,(Z)=>Z.shore*.55+Z.rip*.5+Z.chasm*.35,{hero:470,mid:980,far:true,pad:3,patch:.4});
  pass(19,40,(Z)=>Z.shore*.45+Z.rip*.45,{hero:430,mid:900,far:true,pad:4,patch:.5});
  pass(12,40,(Z)=>Z.rip*.55+Z.forest*.05,{hero:430,mid:900,far:true,pad:4,patch:.5});
@@ -1972,15 +2024,17 @@ XANADU.buildTrees=function(R,q){
  pass(28,34,(Z)=>Z.chasm*.45+Z.cloud*.35,{hero:430,mid:900,far:true,pad:3,patch:.4});
  pass(29,22,(Z)=>Z.cloud*.55+Z.chasm*.2,{hero:400,mid:820,far:true,pad:2.5,lodK:.5});
  // the uplands: whorl olives, cloud pines, bottle palms, desert roses, prickly pears, pitaya, the ridgetop's own
- pass(5,30,(Z)=>Z.dry*.55,{hero:400,mid:820,far:true,pad:2.5,patch:.5});
- pass(3,34,(Z)=>Z.dry*.3+Z.crag*.45,{hero:430,mid:900,far:true,pad:3,patch:.5,mod:(T,Z)=>{if(Z.crag>.4){T.wind=rr(.2,.6);T.lean=rr(4.2,5.4);}}});   // the crag's pines lean away from the lake, north-north-west winds
- pass(16,34,(Z)=>Z.dry*.24,{hero:400,mid:750,far:false,pad:2.5,lodK:.6,patch:.5});
+ pass(5,24,(Z)=>Z.dry*.55,{hero:400,mid:820,far:true,pad:2.5,patch:.5});
+ pass(3,28,(Z)=>Z.dry*.3+Z.crag*.45,{hero:430,mid:900,far:true,pad:3,patch:.5,mod:(T,Z)=>{if(Z.crag>.4){T.wind=rr(.2,.6);T.lean=rr(4.2,5.4);}}});   // the crag's pines lean away from the lake, north-north-west winds
+ pass(16,28,(Z)=>Z.dry*.24,{hero:400,mid:750,far:false,pad:2.5,lodK:.6,patch:.5});
  pass(17,28,(Z)=>Z.dry*.24,{hero:320,mid:600,far:false,pad:1.5,lodK:.7,patch:.5});
  pass(15,24,(Z)=>Z.dry*.34+Z.crag*.08,{hero:320,mid:600,far:false,pad:1.2,lodK:.7,patch:.5});
  pass(14,26,(Z)=>Z.dry*.3,{hero:320,mid:600,far:false,pad:1.5,lodK:.7,patch:.5});
- pass(25,32,(Z)=>Z.dry*.25+Z.crag*.12,{hero:400,mid:750,far:false,pad:2,lodK:.6,patch:.5});
+ pass(25,26,(Z)=>Z.dry*.25+Z.crag*.12,{hero:400,mid:750,far:false,pad:2,lodK:.6,patch:.5});
  pass(26,32,(Z)=>Z.dry*.2+Z.crag*.2,{hero:320,mid:680,far:false,pad:1.5,lodK:.7,patch:.5});
- pass(27,22,(Z)=>Z.dry*.45+Z.crag*.35,{hero:320,mid:600,far:false,pad:1,lodK:.8,patch:.45});
+ pass(27,16,(Z)=>Z.dry*.45+Z.crag*.35,{hero:320,mid:600,far:false,pad:1,lodK:.8,patch:.45});
+ pass(31,30,(Z)=>Z.dry*.34+Z.vale*.03,{hero:520,mid:1000,far:true,pad:2.5,patch:.6,patchScale:.006});
+ pass(32,24,(Z)=>Z.dry*.4+Z.forest*.03,{hero:470,mid:900,far:true,pad:2.5,patch:.5});
  pass(30,30,(Z)=>Z.dry*.18,{hero:320,mid:600,far:false,pad:1.5,lodK:.7,patch:.5});
  // build
  // runtime LOD: a hero tree is drawn in full while the camera is within XANADU.LOD.tree metres of
@@ -2084,6 +2138,17 @@ function log(x,y,z,st,wet){const a=rr(0,TAU),L=rr(10,30),r0=rr(.5,1.1),hx=Math.c
   else if(k<.7)frondCrown(px,py+r*.9,pz,rr(.8,1.6),5,.05,.4,leafCol(PAL.fern,1.7));else mushrooms(px,py+r,pz,2,ri(2,5),.4);}
  return true;}
 
+// the MAQUIS: the uplands' shrubs -- lavender, broom, cistus, rosemary -- in mounds a metre or two across
+function lavender(x,y,z,lv){const R=rr(.5,.9);BIO.put('lobe',[x,y-.1,z],qEuler(0,rr(0,TAU),0),[R,R*.7,R],bright(vary(C(0x8a9a80),.02,.06,.05),.9));
+ const c=bright(vary(C(pick([0x8a5ad8,0x9a6ae0,0x7a4ac8,0xa888e8])),.02,.06,.05),1.15);for(let k=0,m=lv===2?ri(8,14):4;k<m;k++){const a=rr(0,TAU),d=R*rr(0,.8);BIO.put('candle',[x+Math.cos(a)*d,y+R*.45,z+Math.sin(a)*d],qEuler(rr(-.25,.25),rr(0,TAU),rr(-.25,.25)),[.14,rr(.45,.7),.14],c);}}
+function broom(x,y,z,lv){const h=rr(.8,1.5);tuft('clubmoss',x,y,z,h,h*1.6,leafCol([0x4a7a30,0x5a8a34],1.3,.02));tuft('clubmoss',x+rr(-.3,.3),y,z+rr(-.3,.3),h*.8,h*1.3,leafCol([0x4a7a30],1.25,.02));
+ if(lv>=1){const c=bright(C(pick([0xf8d020,0xf0c018,0xffe040])),1.15);for(let k=0,m=lv===2?ri(10,18):5;k<m;k++)BIO.put('bloom',[x+rr(-.6,.6)*h,y+h*rr(.4,1),z+rr(-.6,.6)*h],qEuler(rr(-.5,.5),rr(0,TAU),rr(-.5,.5)),rr(.12,.2),c,{c2:bright(c,.85)});}}
+function cistus(x,y,z,lv){const R=rr(.7,1.3),hc=vary(C(pick([0x5a7a40,0x6a8a48])),.02,.06,.05);BIO.put('lobe',[x,y-.15,z],qEuler(0,rr(0,TAU),0),[R,R*.75,R],shade(hc,-.15));
+ card(x,y+R*.5,z,R*1.5,R*.9,bright(hc,1.35),.25);
+ if(lv>=1){const c=bright(C(pick([0xf080c0,0xffb0d8,0xfff4f8,0xe868b0])),1.1);for(let k=0,m=lv===2?ri(5,10):3;k<m;k++){const a=rr(0,TAU),d=R*rr(.2,.85);BIO.put('bloom',[x+Math.cos(a)*d,y+R*rr(.55,.8),z+Math.sin(a)*d],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),rr(.18,.3),c,{c2:bright(C(0xffe860),1.05)});}}}
+function rosemary(x,y,z,lv){const h=rr(.6,1.1);for(let k=0,m=lv===2?3:1;k<m;k++)tuft('clubmoss',x+rr(-.4,.4),y,z+rr(-.4,.4),h*rr(.8,1.1),h*1.8,leafCol([0x3e5a3a,0x4a6a44,0x5a7a50],1.25,.02));
+ if(lv===2){const c=bright(C(0xa0b0f0),1.1);for(let k=0;k<6;k++)BIO.put('bloom',[x+rr(-.5,.5),y+h*rr(.6,1),z+rr(-.5,.5)],qEuler(rr(-.5,.5),rr(0,TAU),0),rr(.08,.12),c,{c2:c});}}
+
 // ---------------------------------------------------------------- the zone planters
 function plantVale(x,y,z,Z,lv,st){const glade=1-Z.grove,t=rng(),fk=Math.min(1,flowerK(x,z)+glade*.35),gold=smooth(.62,.48,Z.wet);
  if(t<.34){grass(x,y,z,lv,gold>.5?PAL.gold:PAL.meadow);st.tufts++;}
@@ -2130,14 +2195,19 @@ function plantChasm(x,y,z,Z,lv,st){const t=rng();
  else if(t<.88){fern(x,y,z,lv);st.ferns++;}
  else{boulder(x,y,z,lv,PAL.rock,st,true);}}
 function plantDry(x,y,z,Z,lv,st){const t=rng();
- if(t<.24){silverTuft(x,y,z,lv);st.tufts++;}
- else if(t<.38){bloodGrass(x,y,z,lv);st.tufts++;}
- else if(t<.50){thyme(x,y,z,lv);st.flowers++;}
- else if(t<.60){grass(x,y,z,lv,PAL.gold,.9);st.tufts++;}
- else if(t<.68){star(x,y,z,lv);st.flowers++;if(lv===2&&rng()<.5)star(x+rr(-1,1),y,z+rr(-1,1),lv);}
- else if(t<.75){pearSeedling(x,y,z,lv);st.tufts++;}
- else if(t<.81){plume(x,y,z,lv);st.plumes++;}
- else if(t<.87){flowers(x,y,z,lv,lv===2?ri(3,6):2,rr(.6,1.2),['ruffle','bloom','swirl']);st.flowers++;}
+ if(t<.14){silverTuft(x,y,z,lv);st.tufts++;}
+ else if(t<.24){bloodGrass(x,y,z,lv);st.tufts++;}
+ else if(t<.32){thyme(x,y,z,lv);st.flowers++;}
+ else if(t<.40){grass(x,y,z,lv,PAL.gold,.9);st.tufts++;}
+ else if(t<.48){lavender(x,y,z,lv);st.maquis++;}
+ else if(t<.56){broom(x,y,z,lv);st.maquis++;}
+ else if(t<.64){cistus(x,y,z,lv);st.maquis++;}
+ else if(t<.70){rosemary(x,y,z,lv);st.maquis++;}
+ else if(t<.75){star(x,y,z,lv);st.flowers++;if(lv===2&&rng()<.5)star(x+rr(-1,1),y,z+rr(-1,1),lv);}
+ else if(t<.80){pearSeedling(x,y,z,lv);st.tufts++;}
+ else if(t<.84){plume(x,y,z,lv);st.plumes++;}
+ else if(t<.89){flowers(x,y,z,lv,lv===2?ri(3,6):2,rr(.6,1.2),['ruffle','bloom','swirl']);st.flowers++;}
+ else if(t<.93){box(x,y,z,lv,true);st.boxes++;}
  else{boulder(x,y,z,lv,PAL.limestone,st,false);}}
 function plantCrag(x,y,z,Z,lv,st){const t=rng();
  if(t<.35){silverTuft(x,y,z,lv);st.tufts++;}
@@ -2149,9 +2219,9 @@ function plantCrag(x,y,z,Z,lv,st){const t=rng();
 // ---------------------------------------------------------------- the pass
 XANADU.buildFloor=function(R,q){
  reseed(600023);q=q==null?1:q;R=R||3400;means();
- const st={tufts:0,flowers:0,plumes:0,boxes:0,bane:0,shrubs:0,moss:0,ferns:0,cobras:0,mush:0,reeds:0,boulders:0,logs:0,lotus:0,rings:0};
+ const st={maquis:0,tufts:0,flowers:0,plumes:0,boxes:0,bane:0,shrubs:0,moss:0,ferns:0,cobras:0,mush:0,reeds:0,boulders:0,logs:0,lotus:0,rings:0};
  function plant(x,y,z,lv){if(!okGround(x,z,.8))return;const Z=zones(x,z);
-  const w=[Z.vale*(1.1+.8*(1-Z.grove)),Z.forest*1.3,Z.shore*1.1,Z.rip*1.2,Z.chasm*1.4+Z.cloud*.9,Z.dry*1.1,Z.crag*.6],P=[plantVale,plantForest,plantShore,plantBank,plantChasm,plantDry,plantCrag];
+  const w=[Z.vale*(1.1+.8*(1-Z.grove)),Z.forest*1.3,Z.shore*1.1,Z.rip*1.2,Z.chasm*1.4+Z.cloud*.9,Z.dry*1.8,Z.crag*.7],P=[plantVale,plantForest,plantShore,plantBank,plantChasm,plantDry,plantCrag];
   let tot=0;for(const v of w)tot+=v;if(tot<=0)return;
   let r=rng()*Math.max(1,tot),k=0;for(;k<w.length;k++){if(r<w[k])break;r-=w[k];}if(k>=w.length)return;
   P[k](x,y,z,Z,lv,st);}
