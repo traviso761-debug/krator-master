@@ -40,6 +40,7 @@
   const ROOF = [0xb35a3a, 0xa04f32, 0xc36a42, 0x6b7a4a, 0x7a5a72, 0xc4813f];
   const CU = [0x4a7d64, 0x3f6b56, 0x6b7a4a];           /* verdigris copper: jade + roof green */
   const DOME = [0xb08d3c, 0xa0843f, 0x8f7a44, 0xb0a682, 0x9d9379, 0xa8a08a, 0x93886d];
+  const DOMEDK = [0xb08d3c, 0xa0843f, 0x8f7a44, 0x93886d];     /* the gilt/bronze end of PAL.dome */
   const BANNER = [0x7a2028, 0x8a2f2a, 0x5c4028, 0xe8d9a0, 0xc9b8d6, 0xb8d0b0, 0xb0c8d8, 0xcbb08e, 0xe8c090];
   const SAIL = [0xcfc2a3, 0xc0b190, 0xb8a880, 0xa89878];
   const LEAF = [0x4e5a34, 0x43502e, 0x5b6740, 0x616a41];
@@ -677,8 +678,9 @@
       G.rod(k * 2.3, 3.2, gz + 2.5, k * 2.3, 3.2, gz + 3.2, 0.06, IRON, 'metal');
       G.ball(k * 2.3, 2.9, gz + 3.2, 0.24, GLOW, 'glow');
       G.box(k * 6.3, 0, gz + 1.2, 2.2, 0.5, 0.7, 0, dk, 'stone');
-      G.rod(k * 4.5, 7.4, gz + 2.6, k * 4.5, 9.6, gz + 2.6, 0.06, IRON, 'metal');
-      G.box(k * 4.5, 6.2, gz + 2.72, 1.1, 3.2, 0.08, 0, F.pick(BANNER), 'cloth');
+      G.rod(k * 3.4, 6.85, gz + 2.5, k * 3.4, 6.85, gz + 3.05, 0.05, IRON, 'metal');
+      G.rod(k * 3.4 - 0.55, 6.8, gz + 2.98, k * 3.4 + 0.55, 6.8, gz + 2.98, 0.04, IRON, 'metal');
+      G.box(k * 3.4, 4.5, gz + 2.98, 1.0, 2.3, 0.06, 0, F.pick(BANNER), 'cloth');
     });
 
     /* main hall: podium, ground storey, copper skirt roof, upper storey, crown roof */
@@ -772,7 +774,7 @@
      stepping down a grand stair to a water garden, pylons at the gate */
   function manorVelothi(F) {
     const G = sub(F, 0, 0, -1.9, 0), K = kit(G);
-    const c = F.pick(ST), dk = shade(c, -0.22), domeC = F.pick(DOME), cl = F.pick(SAIL);
+    const c = F.pick(ST), dk = shade(c, -0.22), domeC = F.pick(DOMEDK), cl = F.pick(SAIL);
     const PZ = -10.5, PW = 30, PD = 21, PH = 3.0;
 
     /* podium (upper terrace) with talus, buttresses, parapet */
@@ -914,8 +916,9 @@
       G.pyrRoof(k * 5.2, 6.85, 24.5, 2.0, 1.3, 2.0, 0, domeC, 'roof');
       G.rod(k * 4.3, 4.6, 24.5, k * 3.6, 4.6, 24.5, 0.06, IRON, 'metal');
       G.ball(k * 3.6, 4.3, 24.5, 0.24, GLOW, 'glow');
-      G.box(k * 5.2, 1.6, 24.5 + 1.2, 1.2, 3.8, 0.06, 0, F.pick(BANNER), 'cloth');
-      K.win(k * 5.2, 1.0, 24.5 + 1.25 - 0.02, 0.4, 0.5, 0, c, { sill: false, lintel: false });
+      G.rod(k * 5.2, 5.55, 25.35, k * 5.2, 5.55, 26.05, 0.05, IRON, 'metal');
+      G.rod(k * 5.2 - 0.5, 5.5, 25.98, k * 5.2 + 0.5, 5.5, 25.98, 0.04, IRON, 'metal');
+      G.box(k * 5.2, 2.0, 25.98, 0.9, 3.45, 0.06, 0, F.pick(BANNER), 'cloth');
     });
     G.box(0, 0, 24.5, 7.8, 0.14, 1.4, 0, dk, 'stone');
   }
@@ -924,7 +927,7 @@
      colonnaded porch, statues on plinths, stable and guar pen, servants' wing */
   function manorDomed(F) {
     const G = sub(F, 1.5, 0, -4.45, 0), K = kit(G);
-    const c = F.pick(ST), dk = shade(c, -0.22), domeC = F.pick(DOME), lap = F.pick(LAPIS), por = F.pick(PORPH);
+    const c = F.pick(ST), dk = shade(c, -0.22), domeC = F.pick(DOMEDK), lap = F.pick(LAPIS), por = F.pick(PORPH);
     const mar = F.pick(MARBLE), hz = -6;
 
     /* hall */
@@ -1091,11 +1094,13 @@
     G.box(0, 0, 0, 2 * X, 0.06, 2 * Z, 0, shade(c, 0.12), 'stone');
     const seg = function (x0, z0, x1, z1) {
       const ax = Math.abs(x1 - x0) > Math.abs(z1 - z0), L = ax ? Math.abs(x1 - x0) : Math.abs(z1 - z0);
-      const n = Math.max(1, Math.round(L / 4));
+      const n = Math.max(1, Math.round(L / 4)), lo = WH - 0.3;
+      /* one mass per side (so the wall survives LOD), uneven patched tops over it */
+      G.box((x0 + x1) / 2, 0, (z0 + z1) / 2, ax ? L : WT, lo, ax ? WT : L, 0, c, 'stone');
       for (let i = 0; i < n; i++) {
         const a = i / n, b = (i + 1) / n, h = WH + F.rr(-0.25, 0.25);
         const mx = x0 + (x1 - x0) * (a + b) / 2, mz = z0 + (z1 - z0) * (a + b) / 2, l = L / n + 0.02;
-        G.box(mx, 0, mz, ax ? l : WT, h, ax ? WT : l, 0, i % 2 ? c : shade(c, 0.04), 'stone');
+        G.box(mx, lo, mz, ax ? l : WT, h - lo, ax ? WT : l, 0, i % 2 ? c : shade(c, 0.04), 'stone');
         G.box(mx, h, mz, ax ? l : WT + 0.12, 0.16, ax ? WT + 0.12 : l, 0, shade(c, -0.12), 'stone');
         if (i > 0) {
           const px = ax ? x0 + (x1 - x0) * a : mx, pz = ax ? mz : z0 + (z1 - z0) * a;
@@ -1256,13 +1261,15 @@
       G.box(k * 4, 10.2, Z, 4.6, 0.3, 4.6, 0, dk, 'stone');
       K.parapet({ x: k * 4, z: Z, w: 4.4, d: 4.4, c: c, top: 10.5 }, 0.6, 0.35, [], dk, true);
       [3.5, 7.2].forEach(function (y) {
-        K.win(k * 4, y, Z + 2.2 - 0.12 * y / 10.5 * 4, 0.4, 1.3, 0, c, { sill: false });
-        K.win(k * (4 + 2.25 - 0.4 * y / 10.5), y, Z, 0.4, 1.3, k > 0 ? 2 : 3, c, { sill: false });
-        K.win(k * 4, y, Z - 2.2 + 0.12 * y / 10.5 * 4, 0.4, 1.3, 1, c, { sill: false });
+        const gh = 2.4 - 0.4 * (y + 0.65) / 10.5 + 0.02;
+        K.win(k * (4 + gh), y, Z, 0.4, 1.3, k > 0 ? 2 : 3, c, { sill: false });
+        K.win(k * 4, y, Z - gh, 0.4, 1.3, 1, c, { sill: false });
       });
       G.rod(k * 2.2, 4.5, Z + 2.3, k * 2.2, 4.5, Z + 2.9, 0.06, IRON, 'metal');
       G.ball(k * 2.2, 4.2, Z + 2.9, 0.24, GLOW, 'glow');
-      G.box(k * 4, 3.0, Z + 2.25, 1.3, 4.6, 0.08, 0, ban, 'cloth');
+      G.rod(k * 4, 9.5, Z + 2.0, k * 4, 9.5, Z + 2.55, 0.05, IRON, 'metal');
+      G.rod(k * 4 - 0.7, 9.45, Z + 2.5, k * 4 + 0.7, 9.45, Z + 2.5, 0.04, IRON, 'metal');
+      G.box(k * 4, 5.0, Z + 2.5, 1.3, 4.4, 0.06, 0, ban, 'cloth');
     });
     G.box(0, 4.6, Z, 3.4, 4.4, 4.2, 0, c, 'stone');
     G.box(0, 9.0, Z, 3.8, 0.3, 4.4, 0, dk, 'stone');
@@ -1419,11 +1426,11 @@
     key: 'voth_manor', name: 'Estate Manor', culture: 'voth', family: 'housing', source: 'voth-manors',
     districts: ['manor', 'estate'], wealth: [0.6, 1],
     blurb: 'Country seat of a wealthy Dunmer house: Hlaalu walled manor, Velothi terraced keep-house, or Mournhold domed hall.',
-    w: 45, d: 50, h: 16, variants: 3,
+    w: 45, d: 50.5, h: 16, variants: 3,
     variantDims: [
-      { w: 45, d: 50, h: 16 },
-      { w: 32.5, d: 47, h: 19.5 },
-      { w: 50, d: 45.5, h: 22 }
+      { w: 45, d: 50.5, h: 16 },
+      { w: 33, d: 48, h: 19.5 },
+      { w: 51, d: 47, h: 22 }
     ],
     build: function (F) {
       [manorHlaalu, manorVelothi, manorDomed][F.variant % 3](F);
@@ -1434,11 +1441,11 @@
     key: 'voth_clan_compound_b', name: 'Clan Compound (varied)', culture: 'voth', family: 'housing', source: 'voth-manors',
     districts: ['common', 'estate', 'warren'], wealth: [0.2, 0.8],
     blurb: 'Walled cluster of clan houses round shared courts: mudbrick yard, fortified keep compound, or waterside compound with a dock.',
-    w: 34.5, d: 28.5, h: 12, variants: 3,
+    w: 34.5, d: 29, h: 9.6, variants: 3,
     variantDims: [
-      { w: 34.5, d: 28.5, h: 12 },
-      { w: 40, d: 38.5, h: 23.5 },
-      { w: 38, d: 42, h: 15 }
+      { w: 34.5, d: 29, h: 9.6 },
+      { w: 40.5, d: 40.5, h: 23.5 },
+      { w: 38, d: 45, h: 15 }
     ],
     build: function (F) {
       [clanMud, clanFort, clanWater][F.variant % 3](F);
