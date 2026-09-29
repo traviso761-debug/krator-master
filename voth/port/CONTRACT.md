@@ -1,5 +1,13 @@
 # Krator Ancient Port — project contract (every port agent reads this)
 
+> **Change (user, 2026-09-29): segment width.** The two anchor segments,
+> `quay` and `pier`, stay 220 m wide (the pier 220 x 420). **Every other
+> segment is at most ~110 m wide.** Width is per segment (each registration
+> carries its own `W`) and the showcase lays segments out by their own
+> widths, so 110 and 220 wide segments tile flush. SEA <= 420, LAND <= 120
+> and the 8 m clearance are unchanged. Where the text below says "W = 220",
+> read "W <= 110 for new segments".
+
 A spin-off of the Krator Ancients kit (`voth/ancients/`): a set of modular
 **port segments** and **vessels** for an Ancient port, meant to tile along a
 coast and, later, to be folded into a seaside arcology. It lives in
