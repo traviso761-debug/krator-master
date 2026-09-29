@@ -403,7 +403,7 @@ G.flat=function(){const pos=[],uv=[],nor=[];const P=[[-.5,-.5],[.5,-.5],[.5,.5],
 G.cone=function(){const g=new T3.ConeGeometry(.5,1,7,1);g.translate(0,.5,0);return g;};
 G.ball=function(){return new T3.SphereGeometry(1,6,4);};
 // a CUSHION: a smooth dome with uvs for the leafy skin, origin at its centre
-G.cushion=function(){const g=new T3.SphereGeometry(1,14,9).toNonIndexed(),p=g.attributes.position,col=[];
+G.cushion=function(){const g=new T3.SphereGeometry(1,12,8).toNonIndexed(),p=g.attributes.position,col=[];
  const lump=(x,y,z)=>1+.07*Math.sin(x*5.1+z*3.3)*Math.cos(y*4.7+x*1.9)+.05*Math.sin(z*7.3-y*5.2)+.04*Math.cos(x*9.1+y*8.3+z*6.7);
  for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i),z=p.getZ(i),k=lump(x,y,z);p.setXYZ(i,x*k,y*k,z*k);
   const ao=lerp(.45,1.12,smooth(-.8,.7,y))*(.9+.2*(k-1)/.16);col.push(ao,ao,ao);}

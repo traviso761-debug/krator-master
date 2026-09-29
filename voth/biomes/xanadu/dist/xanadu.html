@@ -739,7 +739,7 @@ const FIELD={wet:(x,z)=>FC.at(FC.a.wet,x,z),salt:(x,z)=>0,upland:(x,z)=>FC.at(FC
 // ---------------------------------------------------------------- the host binding
 const OBSTACLES=[];
 // the LOD spine: the promontory, the river from the mouth up to the fountain, the vale, both green flanks
-const SPINE=[[-980,-420],[-300,-560],[620,-380],[420,200],[-360,650],[-190,1560],[-720,2020],[-1330,2000],[-2100,-60],[1700,700]];
+const SPINE=[[-980,-420],[-300,-560],[620,-380],[420,200],[-360,650],[-190,1560],[-720,2020],[-1330,2000],[-2100,-60],[1700,700],[-1080,1020]];   // the last: the western uplands' ridge
 BIO.init({THREE:THREE,scene:scene,terrainH:terrainH,
  mask:(x,z)=>{const h=terrainH(x,z);if(h<.15)return 0;const rv=riverNear(x,z);if(rv){const g=RIV.gorgeK(rv.s),kf=mix(.06,.35,g);if(rv.d<RIV.halfW(rv.s)+.8*.65/kf+1.5)return 0;}   // the river's channel and its water
  const w=h<.6?(h-.15)/.45:1;const up=FC.at(FC.a.up,x,z),lim=mix(1.45,.95,smooth(.5,.8,up));return w*smooth(lim,lim*.55,FC.at(FC.a.slope,x,z));},   // nothing rooted under water or on a cliff; the mountains' faces stay bare rock
@@ -1263,7 +1263,7 @@ G.flat=function(){const pos=[],uv=[],nor=[];const P=[[-.5,-.5],[.5,-.5],[.5,.5],
 G.cone=function(){const g=new T3.ConeGeometry(.5,1,7,1);g.translate(0,.5,0);return g;};
 G.ball=function(){return new T3.SphereGeometry(1,6,4);};
 // a CUSHION: a smooth dome with uvs for the leafy skin, origin at its centre
-G.cushion=function(){const g=new T3.SphereGeometry(1,14,9).toNonIndexed(),p=g.attributes.position,col=[];
+G.cushion=function(){const g=new T3.SphereGeometry(1,12,8).toNonIndexed(),p=g.attributes.position,col=[];
  const lump=(x,y,z)=>1+.07*Math.sin(x*5.1+z*3.3)*Math.cos(y*4.7+x*1.9)+.05*Math.sin(z*7.3-y*5.2)+.04*Math.cos(x*9.1+y*8.3+z*6.7);
  for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i),z=p.getZ(i),k=lump(x,y,z);p.setXYZ(i,x*k,y*k,z*k);
   const ao=lerp(.45,1.12,smooth(-.8,.7,y))*(.9+.2*(k-1)/.16);col.push(ao,ao,ao);}
@@ -1446,7 +1446,7 @@ const SP=XANADU.SPECIES,PAL=XANADU.PAL,GOLD=2.399963;
 const T3=BIO.host.THREE,C=h=>new T3.Color(h);
 XANADU.TREES=[];XANADU.RINGS=[];XANADU.ARCHES=[];
 // the runtime LOD ranges (metres from the camera to a chunk): trees in full, the floor near the spine, the far floor, the dressing
-XANADU.LOD={tree:1500,floor:750,farFloor:3000,dress:1500,logs:1500};
+XANADU.LOD={tree:1200,floor:600,farFloor:3000,dress:1200,logs:1200};
 
 // ---------------------------------------------------------------- zones from the fields
 const Y=(x,z)=>BIO.terrainH(x,z);
@@ -2033,8 +2033,8 @@ XANADU.buildTrees=function(R,q){
  pass(25,26,(Z)=>Z.dry*.25+Z.crag*.12,{hero:400,mid:750,far:false,pad:2,lodK:.6,patch:.5});
  pass(26,32,(Z)=>Z.dry*.2+Z.crag*.2,{hero:320,mid:680,far:false,pad:1.5,lodK:.7,patch:.5});
  pass(27,16,(Z)=>Z.dry*.45+Z.crag*.35,{hero:320,mid:600,far:false,pad:1,lodK:.8,patch:.45});
- pass(31,30,(Z)=>Z.dry*.34+Z.vale*.03,{hero:520,mid:1000,far:true,pad:2.5,patch:.6,patchScale:.006});
- pass(32,24,(Z)=>Z.dry*.4+Z.forest*.03,{hero:470,mid:900,far:true,pad:2.5,patch:.5});
+ pass(31,36,(Z)=>Z.dry*.34+Z.vale*.03,{hero:520,mid:1000,far:true,pad:2.5,patch:.6,patchScale:.006});
+ pass(32,34,(Z)=>Z.dry*.4+Z.forest*.03,{hero:470,mid:900,far:true,pad:2.5,patch:.5});
  pass(30,30,(Z)=>Z.dry*.18,{hero:320,mid:600,far:false,pad:1.5,lodK:.7,patch:.5});
  // build
  // runtime LOD: a hero tree is drawn in full while the camera is within XANADU.LOD.tree metres of
@@ -2630,7 +2630,7 @@ const VIEWS={
  const R=near(XANADU.RINGS);if(R){const a=.7,cx=R.x+Math.cos(a)*R.r*2.6,cz=R.z+Math.sin(a)*R.r*2.6;VIEWS['A fairy ring']=[cx,G(cx,cz)+7,cz,R.x,G(R.x,R.z)+3,R.z];}
  const A=near(XANADU.ARCHES);if(A){const ux=Math.cos(A.a),uz=Math.sin(A.a),L=(A.n/2+.6)*9.5,cx=A.x-ux*L,cz=A.z-uz*L;VIEWS['The hornbeam arches']=[cx,G(cx,cz)+2.2,cz,A.x+ux*L,G(A.x+ux*L,A.z+uz*L)+11,A.z+uz*L];}
  const tr=k=>near(XANADU.TREES,T=>T.sp===k&&T.lv===2&&BIO.clearOf(T.x,T.z,25));   // a tree clear of the host's structures
- [[2,'The lotus trumpets',34,7],[0,'Dawn redwoods',60,4],[9,'Wisteria',26,3],[3,'A cloud pine',22,5],[4,'Cushion trees',30,5],[6,'The agate tree',30,3]].forEach(v=>{const T=v[0]===0?near(XANADU.TREES,T=>T.sp===0&&T.lv===2&&T.y0<0):tr(v[0]);if(!T)return;
+ [[2,'The lotus trumpets',34,7],[0,'Dawn redwoods',60,4],[9,'Wisteria',26,3],[3,'A cloud pine',22,5],[4,'Cushion trees',30,5],[6,'The agate tree',30,3],[20,"Traveller's palm",20,4],[10,'Persian ironwood',26,4],[18,'Haze blossom',22,3],[31,'Flame cypress',30,6],[32,'Strawberry tree',15,3]].forEach(v=>{const T=v[0]===0?near(XANADU.TREES,T=>T.sp===0&&T.lv===2&&BIO.field('wet',T.x,T.z)>.84):tr(v[0]);if(!T)return;
   let best=null;for(let k=0;k<12;k++){const a=k/12*TAU,cx=T.x+Math.cos(a)*v[2],cz=T.z+Math.sin(a)*v[2];if(!BIO.clearOf(cx,cz,2)||XANADU.blocked(cx,cz,3))continue;const g=Math.max(G(cx,cz),0);if(!best||g<best[1])best=[cx,g,cz];}
   if(best)VIEWS[v[1]]=[best[0],best[1]+v[3],best[2],T.x,T.y0+T.H*.55,T.z];});
  {const x=-1000,z=-400,a=.9,cx=x+Math.cos(a)*95,cz=z+Math.sin(a)*95;VIEWS['The pleasure dome']=[cx,G(cx,cz)+26,cz,x,(DOME.y0||G(x,z))+9,z];}
