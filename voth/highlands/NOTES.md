@@ -340,3 +340,9 @@ albedo / buildable mask / class, the road list and its spatial hash, OBB occupan
 - Travis: the glazed tile was "a little too fancy for wall towers". Wall towers and the town gate's towers are back on
   their dark slate spires; the hoardings keep their corrugated sheet. `hnRCTower`/`hnRCSpire` keep the `tile` option
   (and `MAT.hTileW`, `hPyrTile`, `hTentTileW`) for any building that wants it; nothing passes it now.
+
+## Round 10e (Sep 29 2026) — the Hall of the Republic in glazed tile
+- Travis chose the chevron tile (mockup A) for the **Hall of the Republic**. Mechanism, general for any def: `roofTile:'<TEX key>'`
+  on the def makes the kput filter at the end of `88-hl-dress.js` swap every slate-scale or shingle roof piece that
+  building lays for a twin of the same geometry in that tile (world-unit UVs, 3.2 m per repeat, instance colour
+  dropped). The Hall carries `roofTile:'hTileW'`; the Fortress stays slate; the wall towers stay slate.
