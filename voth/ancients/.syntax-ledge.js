@@ -12761,6 +12761,95 @@ kdef('acOvalRim',(function(){const s=new THREE.Shape();s.absellipse(0,0,.5,.5,0,
  const hl=new THREE.Path();hl.absellipse(0,0,.37,.37,0,TAU,true);s.holes.push(hl);
  return new THREE.ExtrudeGeometry(s,{depth:1,bevelEnabled:false,curveSegments:9});})(),MAT.acKit);
 kdef('acOvalIn',new THREE.CylinderGeometry(.39,.39,1,18).rotateX(Math.PI/2).translate(0,0,.5),MAT.acVoid);
+// ---------------------------------------------------------------- krShard
+// A SHATTERED PIECE, for everything that has fallen onto a plain. Shared by the
+// nine types of the arcC quality pass (Arcube, Trigon, Monolith, Crescent,
+// Ledge, Wheel, Wing, Drum, Blades); it lives here because this fragment sorts
+// first of them, but it is a hoisted function declaration so order is moot.
+//
+// A box laid on the ground reads as a building set down there, however it is
+// tipped. A piece that FELL has a torn outline, and the storeys inside it tear
+// back unevenly from the break, so each floor plate stands out past the one over
+// it. So: a prism whose outline is a star-shaped polygon (sampled by angle, so a
+// fan from the centre is always valid), straight along the edges that were the
+// skin and bitten along the edges that were torn, stacked in `layers` storeys
+// each bitten further than the one below.
+//
+// Local frame: x across (w), z along (l), y through the thickness (t), centred
+// on the origin. brk = which edges are torn, [+z, +x, -z, -x]. Uses rng(), so it
+// is deterministic under the calling builder's reseed. Returns non-indexed,
+// flat-shaded geometries by role — top (every layer's upward face), bot, side
+// (untorn edges), brk (torn edges) — any of which may be null, and rim: points
+// on the torn edges at each storey line with their outward normals and the
+// depth of the step there, for the caller's plates, rebar and rubble.
+function krShard(o){
+ const w=o.w,l=o.l,t=o.t,NL=Math.max(1,o.layers|0||1),brk=o.brk||[1,1,0,0];
+ const bite=o.bite==null?.22:o.bite,tile=o.tile||25.6,seg=o.seg||14;
+ const hw=w/2,hl=l/2,ca=Math.atan2(hl,hw);
+ // side of an angle: 0 +z, 1 +x, 2 -z, 3 -x
+ const sideOf=a=>{a=((a%TAU)+TAU)%TAU;if(a<ca||a>=TAU-ca)return 1;if(a<Math.PI-ca)return 0;if(a<Math.PI+ca)return 3;return 2;};
+ const span=[[ca,Math.PI-ca],[-ca,ca],[Math.PI+ca,TAU-ca],[Math.PI-ca,Math.PI+ca]];
+ const len=[w,l,w,l];
+ // the outline's angles: the four corners exactly, and a run along each side
+ const A=[];
+ for(const s of [1,0,3,2]){const m=Math.max(3,Math.min(16,Math.round(len[s]/seg)));
+  for(let i=0;i<m;i++)A.push({a:lerp(span[s][0],span[s][1],i/m),s:s,corner:i===0});}
+ const N=A.length;
+ // the rectangle's own radius at each angle
+ const R0=A.map(v=>{const c=Math.abs(Math.cos(v.a)),s=Math.abs(Math.sin(v.a));
+  return Math.min(c>1e-6?hw/c:1e9,s>1e-6?hl/s:1e9);});
+ // is vertex i on a torn edge? a corner is torn if either side meeting there is
+ const torn=A.map((v,i)=>{if(brk[v.s])return true;if(v.corner){const p=A[(i-1+N)%N].s;return !!brk[p];}return false;});
+ // the bite, per vertex per layer, monotone upward: a few deep notches
+ const F=[];let f0=A.map((v,i)=>{if(!torn[i])return 0;const deep=rng()<.18?rr(1.4,2.2):1;return bite*rr(.15,1)*deep;});
+ // smooth the corners of a torn edge into the straight neighbour a little
+ for(let k=0;k<NL;k++){F.push(f0.slice());f0=f0.map((f,i)=>torn[i]?Math.min(.8,f+bite*rr(0,.55)):0);}
+ const V=(k,i,y)=>{const r=R0[i]*(1-F[k][i]);return[Math.cos(A[i].a)*r,y,Math.sin(A[i].a)*r];};
+ const acc={top:[],bot:[],side:[],brk:[]},rim=[];
+ const tri=(key,a,b,c)=>acc[key].push(a,b,c);
+ const Y=k=>-t/2+t*k/NL;
+ for(let k=0;k<NL;k++){const y0=Y(k),y1=Y(k+1),C1=[0,y1,0];
+  if(k===0){const C0=[0,y0,0];for(let i=0;i<N;i++)tri('bot',C0,V(0,i,y0),V(0,(i+1)%N,y0));}
+  for(let i=0;i<N;i++){const j=(i+1)%N;
+   tri('top',C1,V(k,j,y1),V(k,i,y1));
+   const key=(brk[A[i].s]||F[k][i]>0||F[k][j]>0)?'brk':'side';
+   const a0=V(k,i,y0),a1=V(k,i,y1),b0=V(k,j,y0),b1=V(k,j,y1);
+   tri(key,a0,b1,b0);tri(key,a0,a1,b1);
+   if(key==='brk'&&k<NL-1){const m=[(a1[0]+b1[0])/2,y1,(a1[2]+b1[2])/2],ex=b1[0]-a1[0],ez=b1[2]-a1[2],el=Math.hypot(ex,ez)||1;
+    const up=[(V(k+1,i,y1)[0]+V(k+1,j,y1)[0])/2,(V(k+1,i,y1)[2]+V(k+1,j,y1)[2])/2];
+    rim.push({p:m,n:[ez/el,0,-ex/el],step:Math.hypot(m[0]-up[0],m[2]-up[1]),len:el,k:k});}
+   else if(key==='brk'&&k===NL-1){const m=[(a1[0]+b1[0])/2,y1,(a1[2]+b1[2])/2],ex=b1[0]-a1[0],ez=b1[2]-a1[2],el=Math.hypot(ex,ez)||1;
+    rim.push({p:m,n:[ez/el,0,-ex/el],step:0,len:el,k:k});}}}
+ const geo=L=>{if(!L.length)return null;const pos=[],uv=[];
+  for(let i=0;i<L.length;i+=3){const a=L[i],b=L[i+1],c=L[i+2];
+   const e1=[b[0]-a[0],b[1]-a[1],b[2]-a[2]],e2=[c[0]-a[0],c[1]-a[1],c[2]-a[2]];
+   const nx=Math.abs(e1[1]*e2[2]-e1[2]*e2[1]),ny=Math.abs(e1[2]*e2[0]-e1[0]*e2[2]),nz=Math.abs(e1[0]*e2[1]-e1[1]*e2[0]);
+   for(const q of [a,b,c]){pos.push(q[0],q[1],q[2]);
+    if(ny>=nx&&ny>=nz)uv.push(q[0]/tile,q[2]/tile);else if(nx>=nz)uv.push(q[2]/tile,q[1]/tile);else uv.push(q[0]/tile,q[1]/tile);}}
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
+  g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.computeVertexNormals();return g;};
+ // the rim's outward normal: the outline runs anticlockwise seen from -y, so
+ // (ez,-ex) points out; check against the centre and flip if not
+ for(const q of rim){if(q.n[0]*q.p[0]+q.n[2]*q.p[2]<0){q.n[0]=-q.n[0];q.n[2]=-q.n[2];}}
+ // radius of layer k's outline at angle a, and whether (x,z) is m inside it
+ const rAt=(k,a)=>{a=((a-A[0].a)%TAU+TAU)%TAU+A[0].a;let i=0;while(i<N-1&&A[i+1].a<=a)i++;
+  const j=(i+1)%N,a1=j?A[j].a:A[0].a+TAU,f=(a-A[i].a)/Math.max(1e-6,a1-A[i].a);
+  const pi=V(k,i,0),pj=V(k,j,0);return Math.hypot(lerp(pi[0],pj[0],f),lerp(pi[2],pj[2],f));};
+ return{top:geo(acc.top),bot:geo(acc.bot),side:geo(acc.side),brk:geo(acc.brk),rim:rim,NL:NL,
+  inside:(x,z,m,k)=>Math.hypot(x,z)<rAt(k==null?NL-1:k,Math.atan2(z,x))-(m||0),
+  topY:k=>Y((k==null?NL-1:k)+1),
+  // the lowest point of the piece once turned by q (a Quaternion), to bed it
+  low:q=>{let m=1e9;const v=new THREE.Vector3();
+   for(let i=0;i<N;i++)for(const y of [-t/2,t/2]){const p=V(0,i,y);v.set(p[0],p[1],p[2]).applyQuaternion(q);m=Math.min(m,v.y);}return m;},
+  high:q=>{let m=-1e9;const v=new THREE.Vector3();
+   for(let i=0;i<N;i++)for(const y of [-t/2,t/2]){const p=V(0,i,y);v.set(p[0],p[1],p[2]).applyQuaternion(q);m=Math.max(m,v.y);}return m;}};}
+// krSeam: where a fallen piece meets the plain. Calls fn(x,y,z) at every
+// `step`-th vertex of the given (already placed) geometries that lies within h
+// of the ground, so the caller can pile its own fragments along the contact
+// line and the piece is bedded in what it crushed rather than floating over, or
+// sliced by, a flat plain.
+function krSeam(geos,h,step,fn){for(const g of geos){if(!g||!g.attributes)continue;const p=g.attributes.position;
+ for(let i=0;i<p.count;i+=step){const y=p.getY(i);if(y<h&&y>-h)fn(p.getX(i),y,p.getZ(i));}}}
 // Presets are DERIVED from this: targets/arcube/91z-views.js runs after
 // 90-scene.js, so both builders have already left their dimensions here.
 const ARC_SITE={};
@@ -12815,7 +12904,10 @@ function buildArcube(scene,gx,gz,d){reseed(9610+d);KOFF=[gx,0,gz];
  // THE RUIN'S FAILURES, all on the SOUTH-EAST: the pier under that corner went,
  // the corner of the cube over it sheared away, and the mass has settled BSAG
  // radians down toward it about a horizontal axis through the surviving piers.
- const BX0=-150, BRMAX=365, BSAG=dd?.07:0;
+ // QA (arcC): the bite now runs the WHOLE south vertex line, 280 m deep at the
+ // west end and 400 m at the east: a gouge that started at x = -150 left both
+ // end elevations a whole diamond, and the outline is what a ruin must change.
+ const BX0=-HX-20, BRMAX=400, BSAG=dd?.07:0;
  const FAILX=420, FAILZ=PRZ, FAILH=150;
 
  // ---- the diamond ------------------------------------------------------------
@@ -12867,6 +12959,28 @@ function buildArcube(scene,gx,gz,d){reseed(9610+d);KOFF=[gx,0,gz];
   const dims=[[sz,sy],[sz,sy],[sx,sz],[sx,sz],[sx,sy],[sx,sy]];
   for(let f=0;f<6;f++)for(let k=0;k<4;k++){const i=f*4+k;a.setXY(i,a.getX(i)*dims[f][0]/tile,a.getY(i)*dims[f][1]/tile);}
   g.applyMatrix4(new THREE.Matrix4().makeRotationFromQuaternion(q));g.translate(p[0],p[1],p[2]);return g;};
+ // QA (arcC): the same call, SHATTERED (krShard): the box's y ends (along=true,
+ // a pier or a tower lying down, torn across its shaft) or its sides (a slab of
+ // stacked floors, torn round its edges) are torn, every storey torn back
+ // further than the one below, the tear on the break map, floor tongues and
+ // bars out of it. p[1]===null beds it: its lowest point `bed` m into the plain.
+ const BRKG=[];
+ const acShardGeo=(sx,sy,sz,tile,q,p,skin,along,bed)=>{
+  const w=sx,l=along?sy:sz,t=along?sz:sy,qq=along?q.clone().multiply(qEuler(Math.PI/2,0,0)):q;
+  const SH=krShard({w:w,l:l,t:t,layers:Math.max(2,Math.min(9,Math.round(t/14))),brk:along?[1,0,1,0]:[1,1,1,1],bite:.2,tile:tile,seg:Math.max(10,Math.min(w,l)/5)});
+  const y=p[1]===null?-SH.low(qq)-(bed||2):p[1];
+  const M=new THREE.Matrix4().compose(new THREE.Vector3(p[0],y,p[2]),qq,new THREE.Vector3(1,1,1));
+  if(SH.top)skin.push(SH.top.applyMatrix4(M));if(SH.side)skin.push(SH.side.applyMatrix4(M));
+  if(SH.bot)SHDG.push(SH.bot.applyMatrix4(M));if(SH.brk)BRKG.push(SH.brk.applyMatrix4(M));
+  const W=(a,b,c)=>{const v=new THREE.Vector3(a,b,c).applyMatrix4(M);return[v.x,v.y,v.z];};
+  for(const r of SH.rim){const n=r.n,pp=r.p;
+   if(r.step>2&&rng()<.6){const L=r.step*rr(.5,1)+rr(1,5);
+    kput('acBox',W(pp[0]-n[0]*r.step*.5+n[0]*L*.5,pp[1]+.8,pp[2]-n[2]*r.step*.5+n[2]*L*.5),
+     qq.clone().multiply(qFacing([n[0],0,n[2]])).multiply(qEuler(rr(-.05,.05),0,rr(-.07,.07))),[r.len*rr(.5,.9),1.6,L],new THREE.Color(0xa0968a));}
+   if(rng()<.35)for(let b=0;b<2;b++){const L=rr(4,12);
+    kput('acDim',W(pp[0]+n[0]*L*.35+rr(-2,2),pp[1]-rr(.5,3),pp[2]+n[2]*L*.35+rr(-2,2)),
+     qq.clone().multiply(qFacing([n[0]+rr(-.3,.3),rr(-.3,.4),n[2]+rr(-.3,.3)])),[.45,.45,L],null);}}
+  return SH;};
 
  // ---- decay ------------------------------------------------------------------
  // holeFn multiplies its u by 4.5*scale internally, so a u normalised over a
@@ -12894,7 +13008,7 @@ function buildArcube(scene,gx,gz,d){reseed(9610+d);KOFF=[gx,0,gz];
  // a face and a point INSIDE the mass are tested by the same function and the
  // fracture surface built later lands exactly on the holes this cuts.
  const BRr=(x,ph)=>{if(!dd||x<BX0)return 0;const f=Math.min(1,(x-BX0)/(HX-BX0));
-  return BRMAX*Math.pow(f,.72)*(1+.30*(fbm(x*.011,ph*2.2,9618,3)-.5)*2);};
+  return BRMAX*(.7+.3*Math.pow(f,1.3))*(1+.30*(fbm(x*.011,ph*2.2,9618,3)-.5)*2);};
  const biteP=(x,y,z)=>{if(!dd||z<=0||x<BX0)return false;
   const dz=RD-z,dy=y-CY;return Math.hypot(dz,dy)<BRr(x,Math.atan2(dy,Math.max(dz,1e-3)));};
  const bite=(x,t,sd)=>{if(!dd||sd<0)return false;const p=ZY(RD,t);return biteP(x,p[1],p[0]);};
@@ -13524,17 +13638,17 @@ function buildArcube(scene,gx,gz,d){reseed(9610+d);KOFF=[gx,0,gz];
   const fracZ=(x,y)=>{const dy=y-CY;let r=BRr(x,0);if(Math.abs(dy)>=r*Math.SQRT1_2)return null;
    for(let i=0;i<3;i++){const ph=Math.asin(clamp(dy/r,-1,1));r=BRr(x,ph);if(Math.abs(dy)>=r*Math.SQRT1_2)return null;}
    return RD-Math.sqrt(r*r-dy*dy);};
-  const FLH=16,BNU=70;
+  const FLH=16,BNU=110;
   for(let k=Math.floor((CY-BRMAX)/FLH);k<=Math.ceil((CY+BRMAX)/FLH);k++){const ya=k*FLH,yb=ya+FLH,ym=ya+FLH*.5,yn=yb+FLH*.5;
-   BRK.push(gridSurface((u,v)=>{const x=lerp(BX0,HX,u),z=fracZ(x,ym);
+   BRK.push(gridSurface((u,v)=>{const x=lerp(Math.max(BX0,-HX),HX,u),z=fracZ(x,ym);
      return[x,lerp(ya,yb,v),z===null?RD-Math.abs(ym-CY):z];},BNU,1,
-    {uS:(HX-BX0)/25.6,vS:FLH/25.6,hole:(u,v)=>fracZ(lerp(BX0,HX,u),ym)===null}));
-   (yb>CY?SHD:DEK).push(gridSurface((u,v)=>{const x=lerp(BX0,HX,u);
+    {uS:(HX-BX0)/25.6,vS:FLH/25.6,hole:(u,v)=>fracZ(lerp(Math.max(BX0,-HX),HX,u),ym)===null}));
+   (yb>CY?SHD:DEK).push(gridSurface((u,v)=>{const x=lerp(Math.max(BX0,-HX),HX,u);
      const za=fracZ(x,ym),zb=fracZ(x,yn),ze=RD-Math.abs(yb-CY);
      return[x,yb,lerp(za===null?ze:za,zb===null?ze:zb,v)];},BNU,1,
-    {uS:(HX-BX0)/25.6,vS:1,hole:(u,v)=>{const x=lerp(BX0,HX,u);return fracZ(x,ym)===null&&fracZ(x,yn)===null;}}));}
-  for(const sg of [1,-1])BRK.push(gridSurface((u,v)=>{const x=lerp(BX0,HX,u),ph=sg*Math.PI/4,r=BRr(x,ph)+v*22;
-    return[x,CY+r*Math.sin(ph)-1.6,RD-r*Math.cos(ph)-1.6];},60,2,{uS:(HX-BX0)/25.6,vS:1}));
+    {uS:(HX-BX0)/25.6,vS:1,hole:(u,v)=>{const x=lerp(Math.max(BX0,-HX),HX,u);return fracZ(x,ym)===null&&fracZ(x,yn)===null;}}));}
+  for(const sg of [1,-1])BRK.push(gridSurface((u,v)=>{const x=lerp(Math.max(BX0,-HX),HX,u),ph=sg*Math.PI/4,r=BRr(x,ph)+v*22;
+    return[x,CY+r*Math.sin(ph)-1.6,RD-r*Math.cos(ph)-1.6];},96,2,{uS:(HX-BX0)/25.6,vS:1}));
   // and the slabs themselves, torn off at random lengths past the riser
   for(let x=BX0+30;x<HX-6;x+=22)for(let y=Math.ceil((CY-BRMAX)/FLH)*FLH;y<CY+BRMAX;y+=FLH){
    const zf=fracZ(x,y-FLH*.5),zg=fracZ(x,y+FLH*.5);if(zf===null&&zg===null)continue;
@@ -13659,24 +13773,18 @@ function buildArcube(scene,gx,gz,d){reseed(9610+d);KOFF=[gx,0,gz];
    for(let s2=0;s2<3;s2++){const cx=BX+s2*150*.79+s2*18,cz=BZ+s2*150*.62+s2*8;
     const L2=rr(118,138),yaw=-.66+rr(-.22,.22),Y0=PHX*.78;
     const q=qEuler(0,yaw,Math.PI/2).multiply(qEuler(0,rr(-.35,.35),0)).multiply(qEuler(0,0,rr(-.12,.12)));
-    PIRG.push(acBoxGeo(2*PHX,L2,2*PHZ*.9,32,q,[cx,Y0,cz]));
-    for(const e of [-1,1]){const o=new THREE.Vector3(0,e*(L2*.5+.5),0).applyQuaternion(q);
-     kput('acDim',[cx+o.x,Y0+o.y,cz+o.z],q,[2*PHX*.86,1.4,2*PHZ*.8],null);
-     for(let f2=-2;f2<=2;f2++){const o2=new THREE.Vector3(f2*18,e*(L2*.5+1.2),0).applyQuaternion(q);
-      kput('acBox',[cx+o2.x,Y0+o2.y,cz+o2.z],q,[2,1.4,2*PHZ*.78],new THREE.Color(0xb6ac9a));}}}
+    acShardGeo(2*PHX,L2,2*PHZ*.9,32,q,[cx,null,cz],PIRG,true,3);}
    rubbleRing(BX+220,2,BZ+170,30,330,170,11);
-   for(let j=0;j<60;j++)kput('acBox',[BX+rr(-110,480),rr(2,18),BZ+rr(-110,420)],
-     qEuler(rr(-.6,.6),rng()*TAU,rr(-.6,.6)),[rr(10,48),rr(3,12),rr(8,40)],new THREE.Color(0x8b8272));}
+   for(let j=0;j<60;j++){const sz=rr(4,16);kput('rubble',[BX+rr(-110,480),sz*.3,BZ+rr(-110,420)],
+     qEuler(rng()*3,rng()*3,rng()*3),[sz*rr(1,2),sz*rr(.4,.8),sz*rr(1,1.8)],new THREE.Color().setHSL(rr(.07,.1),rr(.05,.12),rr(.3,.45)));}}
   // ---- what came off the corner -----------------------------------------------
   // The wedge came down under its own vertex: a field of great tilted blocks of
   // stacked floors south of the east half, the biggest 120 m across, and a fan
   // of rubble spilling out from under them.
-  for(let j=0;j<18;j++){const x=rr(-60,540),z=rr(500,880),s=rr(40,125)*(j<6?1:.6);
+  for(let j=0;j<26;j++){const x=rr(-470,540),z=rr(500,880)+(x<0?rr(-40,60):0),s=rr(40,125)*(j<8?1:.6);
    const q=qEuler(rr(-.5,.5),rng()*TAU,rr(-.5,.5)),h=s*rr(.35,.6);
    const sz=s*rr(.6,1);
-   MASG.push(acBoxGeo(s,h,sz,25.6,q,[x,h*.32,z]));
-   for(let f2=0;f2<Math.floor(h/14);f2++){const e=new THREE.Vector3(0,-h*.5+7+f2*14,0).applyQuaternion(q);
-    kput('acDim',[x+e.x,h*.32+e.y,z+e.z],q,[s*1.01,1.6,sz*1.01],null);}}
+   acShardGeo(s,h,sz,25.6,q,[x,null,z],MASG,false,h*.14);}
   rubbleRing(260,.4,860,20,330,260,12);
   // ---- the heliport tower, across the plain -----------------------------------
   // It snapped where it left the upper north face, 1 080 m up, went over to the
@@ -13692,16 +13800,14 @@ function buildArcube(scene,gx,gz,d){reseed(9610+d);KOFF=[gx,0,gz];
     const qq=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),-ang)
       .multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1,0,0),Math.PI/2))
       .multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),rr(-.3,.3)));
-    PIRG.push(acBoxGeo(2*hz,L2,2*hx,32,qq,[cx,hx,cz]));
-    for(const e of [-1,1]){const o=new THREE.Vector3(0,e*(L2*.5+.5),0).applyQuaternion(qq);
-     kput('acDim',[cx+o.x,hx+o.y,cz+o.z],qq,[2*hz*.84,1.4,2*hx*.8],null);}
+    acShardGeo(2*hz,L2,2*hx,32,qq,[cx,null,cz],PIRG,true,4);
     d0+=L2+rr(18,40);}
    const cx=HTX+dx*(d0+30),cz=dz*(d0+30);
-   MASG.push(acBoxGeo(2*hx+30,26,2*hz+30,25.6,qEuler(Math.PI+.2,-ang,.1),[cx,20,cz]));
+   acShardGeo(2*hx+30,26,2*hz+30,25.6,qEuler(Math.PI+.2,-ang,.1),[cx,null,cz],MASG,false,5);
    rubbleRing(HTX+dx*(d0-60),.4,dz*(d0-60),10,220,160,9);
-   for(let j=0;j<40;j++){const f=rr(.1,1.1);
-    kput('acBox',[HTX+dx*(700+f*300)+rr(-90,90),rr(1,8),dz*(700+f*300)+rr(-90,90)],
-     qEuler(rr(-.5,.5),rng()*TAU,rr(-.5,.5)),[rr(6,24),rr(2,7),rr(5,18)],new THREE.Color(0x8b8272));}}
+   for(let j=0;j<40;j++){const f=rr(.1,1.1),sz=rr(3,12);
+    kput('rubble',[HTX+dx*(700+f*300)+rr(-90,90),sz*.3,dz*(700+f*300)+rr(-90,90)],
+     qEuler(rng()*3,rng()*3,rng()*3),[sz*rr(1,2),sz*rr(.4,.8),sz*rr(1,1.8)],new THREE.Color().setHSL(rr(.07,.1),rr(.05,.12),rr(.3,.45)));}}
   for(let j=0;j<120;j++){const x=rr(-HX,HX),z=rr(-RD,RD);
    if(rng()<.5)plant(x,.4,z,rr(6,15));}
   rubbleRing(0,.4,0,760,1020,220,8);
@@ -13746,6 +13852,7 @@ function buildArcube(scene,gx,gz,d){reseed(9610+d);KOFF=[gx,0,gz];
  meshMerged(MASG,masM,G);
  meshMerged(DEKG,dekM,G);
  meshMerged(SHDG,shdM,G);
+ meshMerged(BRKG,MAT.acBreak,G);
  meshMerged(GRD,pavM,G);
  KOFF=[0,0,0];return G;}
 // ================================================================= THE HILL ARCOLOGY — the sinuous terraced city
@@ -14910,7 +15017,10 @@ function buildTrigon(scene,gx,gz,d){reseed(9710+d);KOFF=[gx,0,gz];
               (y,ym)=>[-(S3*DY(y)-CHY(y)),(DY(y)+2*RT(ym))/S3]];
  const DIST=[(y,ym)=>RT(ym),y=>DY(y),y=>DY(y)];
  // the balcony face's nested chevrons: bands parallel to its two arrises
- const chev=(s,y)=>{const e=EDGES[2](y,y+.01),f=Math.abs(s-(e[0]+e[1])*.5)/((e[1]-e[0])*.5),b=Math.floor(f*6);return b===1||b===3;};
+ // QA (arcC): the bands used to be |s|/half-width, i.e. lines converging on the
+ // apex, which at 1.5 km read as vertical ochre stripes. A chevron is a band of
+ // constant y + k|s|: nested inverted Vs stacked up the face, a third ochre.
+ const chev=(s,y)=>{const e=EDGES[2](y,y+.01),v=(y+1.35*Math.abs(s-(e[0]+e[1])*.5))/78;return v-Math.floor(v)<.34;};
 
  // ---- the portals --------------------------------------------------------------
  const RV=10;                              // depth of the reveal, to the glass
@@ -15155,7 +15265,7 @@ function buildTrigon(scene,gx,gz,d){reseed(9710+d);KOFF=[gx,0,gz];
   // ======================================================== THE PORTAL FACE, in detail
   const inPort=(s,y,m)=>{for(const P of PORT)if(y>P.yb-m&&y<P.yt+m&&Math.abs(s)<P.w(y)+m)return true;return false;};
   // panel relief: ochre plates and vents, the reference's greeble
-  for(let j=0;j<900;j++){const y=rr(PL+3,YP-6),e=EDGES[1](y,y),s=rr(e[0]+3,e[1]-3);
+  for(let j=0;j<2400;j++){const y=rr(PL+3,YP-6),e=EDGES[1](y,y),s=rr(e[0]+3,e[1]-3);
    if(inPort(s,y,7))continue;const p=FP(1,DY(y)+.3,s,y);if(!keep(p)||gone(1,s,y))continue;
    const big=rng()<.3;
    kput(rng()<.12?'tgDim':'tgBox',p,QFT[1],big?[rr(6,14),rr(4,10),.7]:[rr(1.5,5),rr(1.2,3.5),.9],
@@ -15204,7 +15314,7 @@ function buildTrigon(scene,gx,gz,d){reseed(9710+d);KOFF=[gx,0,gz];
     const s0=-dir*run*.5,s1=dir*run*.5;
     const a=FP(0,Rr+2.4,s0,y0+.6),b=FP(0,Rr+2.4,s1,Y+.3);
     const mid=[(a[0]+b[0])*.5,(a[1]+b[1])*.5,(a[2]+b[2])*.5];
-    if(keep(mid)){const dv=[b[0]-a[0],b[1]-a[1],b[2]-a[2]],L=Math.hypot(dv[0],dv[1],dv[2]);
+    if(keep(mid)&&(!piece||(keep(a)&&keep(b)))){const dv=[b[0]-a[0],b[1]-a[1],b[2]-a[2]],L=Math.hypot(dv[0],dv[1],dv[2]);
      const q=qB([NX[0],0,NZ[0]],dv);
      const zv=new THREE.Vector3(0,0,1).applyQuaternion(q);
      const broken=dd&&rng()<.45;
@@ -15219,6 +15329,29 @@ function buildTrigon(scene,gx,gz,d){reseed(9710+d);KOFF=[gx,0,gz];
        const s=lerp(s0,s1,f),y=lerp(y0+.6,Y+.3,f);
        kput('tgBox',FP(0,Rr+2.2,s,y+.7),QF[0],[Math.abs(s1-s0)/ns+.08,.45,4.4],DECK());}}
      if(!dd)for(let k2=0;k2<4;k2++){const f=rng();person(FP(0,Rr+2.4,lerp(s0,s1,f),lerp(y0+.6,Y+.3,f)+1.2));}}}}
+  // ---- QA (arcC): the risers' relief ---------------------------------------------------
+  // A 92 m riser was a flat wall map: graph paper from 'The terraces'. Now each
+  // one carries pilasters every two bays, a string course every seven storeys,
+  // and runs of real balconies in some bays and not others (a bay's run is
+  // decided per 25.6 m group, so the riser reads as neighbourhoods, not a grid),
+  // with planting on them intact and vines off them in the ruin.
+  for(let i=0;i<NT;i++){const y0=TY(i),y1=TY(i+1),R=DY(y0),hlo=(2*DY(y1)+R)/S3-5;
+   for(let s=-Math.floor(hlo/12.8)*12.8;s<=hlo;s+=12.8){const ym=(y0+y1)*.5;
+    const p=FP(0,R+.7,s,ym+1);if(!kp(0,s,ym,R)||gone(0,s,ym)||(dd&&rng()<.25))continue;
+    kput('tgBox',p,QF[0],[1.3,y1-y0-6,1.4],STONE());}
+   for(let y=y0+TILE;y<y1-8;y+=TILE){
+    for(let s=-hlo+6;s<hlo-6;s+=12){if(!kp(0,s,y,R)||gone(0,s,y)||(dd&&rng()<.3))continue;
+     kput('tgBox',FP(0,R+.6,s,y),QF[0],[12.1,1.1,1.2],STONE());}}
+   for(let g=Math.floor(-hlo/25.6);g*25.6<hlo;g++){
+    const h=Math.abs(Math.sin(g*12.9898+i*78.233)*43758.5453)%1;if(h<.3)continue;
+    const yA=y0+STY*(h<.7?4:5),col=h<.8?STONE:OCHRE;
+    for(let y=yA;y<y1-STY*2;y+=STY*(h<.85?1:2))for(let b=0;b<4;b++){const s=g*25.6+(b+.5)*6.4;
+     if(Math.abs(s)>hlo-4||!kp(0,s,y,R)||gone(0,s,y+1))continue;
+     if(dd&&(rng()<.5||slumpRiser(s,y)))continue;
+     let q=QF[0];if(dd&&rng()<.08)q=QF[0].clone().multiply(qEuler(rr(.9,1.4),0,rr(-.3,.3)));
+     kput('tgBalc',FP(0,R,s,y),q,[5.4,1.1,rr(2,2.6)],col());
+     if(!dd&&rng()<.14)kput('leafCard',FP(0,R+1.6,s+rr(-1.6,1.6),y+.9),qEuler(0,rng()*TAU,0),[rr(1.2,2),rr(1,1.6),rr(1.2,2)],LEAF());
+     if(dd&&rng()<.07)kput('vine',FP(0,R+2.2,s,y-.2),qEuler(rr(-.1,.1),0,rr(-.1,.1)),[rr(.9,1.6),rr(6,22),rr(.9,1.6)],null);}}}
   // ---- the slumps: what came off each broken lip, all the way down -----------------
   if(dd&&!piece)for(const S of SLUMP){
    for(let j=S.i;j>=0;j--){const Yt=TY(j),wv=16+(S.i-j)*7;
@@ -15328,13 +15461,20 @@ function buildTrigon(scene,gx,gz,d){reseed(9710+d);KOFF=[gx,0,gz];
   else if(r3<.52&&dd)kput('moss',[x,PL+.3,z],null,[rr(2,6),rr(.5,1.2),rr(2,6)],MOSS());
   else person([x,PL,z]);}
  // ---- the ground works ----------------------------------------------------------------
- const GP=ACC();
- {const n=72;for(let j=0;j<n;j++){const a0=j/n*TAU,a1=(j+1)/n*TAU;
-   for(let r2=0;r2<3;r2++){const q0=lerp(120,430,r2/3),q1=lerp(120,430,(r2+1)/3);
-    const w=r=>r*(1+.05*Math.sin(a0*3));
-    const P=(a,r)=>[Math.cos(a)*r,.18,Math.sin(a)*r];
-    const A=P(a0,q0),B=P(a1,q0),C=P(a1,q1),E=P(a0,q1);quad(GP,A,B,C,E,[A[0]/30,A[2]/30],[B[0]/30,B[2]/30],[C[0]/30,C[2]/30],[E[0]/30,E[2]/30]);}}}
+ // QA (arcC): the disc was one pale paving map, 860 m of it. Now it is laid out:
+ // a paved ring round the plinth, a stone kerb, and beyond it three avenues on
+ // the stair axes with lawns between them, each lawn edged by a paved walk.
+ const GP=ACC(),GL=ACC(),GK=ACC();
+ {const n=180,RB=[120,236,248,262,418,430];
+  const onAve=a=>{for(let k=0;k<3;k++){let da=Math.abs(a-PHI[k])%TAU;if(da>Math.PI)da=TAU-da;if(da<(STW[k]*.5+26)/330)return true;}return false;};
+  for(let j=0;j<n;j++){const a0=j/n*TAU,a1=(j+1)/n*TAU,am=(a0+a1)*.5,ave=onAve(am);
+   for(let r2=0;r2<RB.length-1;r2++){const q0=RB[r2],q1=RB[r2+1];
+    const L=r2===1||r2===4?GK:(r2===3&&!ave?GL:GP);
+    const P=(a,r)=>[Math.cos(a)*r,L===GK?.62:(L===GL?.55:.48),Math.sin(a)*r];
+    const A=P(a0,q0),B=P(a1,q0),C=P(a1,q1),E=P(a0,q1);quad(L,A,B,C,E,[A[0]/30,A[2]/30],[B[0]/30,B[2]/30],[C[0]/30,C[2]/30],[E[0]/30,E[2]/30]);}}}
  mesh(geoOf(GP),dd?MAT.tgPaveR:MAT.tgPave,G);
+ mesh(geoOf(GL),dd?MAT.tgLawnR:MAT.tgLawn,G);
+ mesh(geoOf(GK),dd?MAT.tgStoneR:MAT.tgStone,G);
  for(let k=0;k<3;k++)for(let r2=300;r2<640;r2+=22)for(const sg of [-1,1]){
   const p=FP(k,r2,sg*44,0);plant(p,dd?rr(9,17):rr(8,13));}
  for(let j=0;j<(dd?40:160);j++){const a=rng()*TAU,r2=rr(280,420);person([Math.cos(a)*r2,.2,Math.sin(a)*r2]);}
@@ -15356,6 +15496,7 @@ function buildTrigon(scene,gx,gz,d){reseed(9710+d);KOFF=[gx,0,gz];
    const v=Nb.clone().applyQuaternion(q).y;if(best===null||v<best){best=v;bq=q;}}
   const pieces=[{keep:p=>p[1]>=cutY(p[0],p[2])&&p[1]<cut2(p[0],p[2]),y0:CUTLO,y1:YB2+12,base:360,twist:0,cap:[860,YB2-10]},
                 {keep:p=>p[1]>=cut2(p[0],p[2]),y0:YB2-12,y1:YA,base:360+(YB2-12-CUTLO)+30,twist:.16,cap:[YB2+10,null]}];
+  const FS3=mkSet();
   for(const PC of pieces){
    const q=PC.twist?new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),PC.twist).multiply(bq):bq;
    // where the lowest corner of this piece lands: sit it on the plain, 3 m buried
@@ -15376,7 +15517,31 @@ function buildTrigon(scene,gx,gz,d){reseed(9710+d);KOFF=[gx,0,gz];
      beam('tgBox',v,[v[0]*.4+rr(-6,6),YP+(YA-YP)*.45,v[2]*.4+rr(-6,6)],1.4,1.4,new THREE.Color(0x4e4032));}}
    endGroupXF();
    flush(FS2,P);
-   if(!LAND)LAND={x:T.x,z:T.z};}
+   if(!LAND)LAND={x:T.x,z:T.z};
+   // QA (arcC): THE CRUSHED SEAM. Where the piece's faces meet the plain the
+   // jagged skirt floated or sank by a metre or two; now every face point within
+   // a few metres of the ground gets its own fragments piled against it, so the
+   // piece is bedded in what it crushed.
+   {const Mw=new THREE.Matrix4().compose(P.position,P.quaternion,new THREE.Vector3(1,1,1)),v=new THREE.Vector3();
+    for(let y=PC.y0;y<=Math.min(PC.y1,YA-4);y+=5)for(let k=0;k<3;k++){const D=DY(y),hs=S3*D;
+     for(let s=-hs;s<=hs;s+=7){if(rng()<.45)continue;const f=FP(k,D,s,y);v.set(f[0],f[1],f[2]).applyMatrix4(Mw);
+      if(v.y>9||v.y<-8)continue;const sz=rr(2,8);
+      kput('tgRub',[v.x+rr(-5,5),Math.max(0,v.y)*.4+sz*.3,v.z+rr(-5,5)],qEuler(rng()*3,rng()*3,rng()*3),
+       [sz*rr(.8,1.5),sz*rr(.5,.9),sz*rr(.8,1.5)],RUBC());}}}
+   // and the cladding that burst off it: torn plates of face, ochre and stone,
+   // thrown out either side (krShard, 89d-arcube.js)
+   for(let j=0;j<9;j++){const a=FALL+rr(-.9,.9)*(j%2?1:-1),r=PC.base+rr(-60,160),w=rr(14,34),l=rr(18,46),th=rr(3,7);
+    const SH=krShard({w:w,l:l,t:th,layers:2,brk:[1,1,1,j%3?0:1],bite:.25,tile:TILE,seg:8});
+    const qS=qEuler(rr(-.25,.25),rng()*TAU,rr(-.25,.25)),x=Math.cos(a)*r,z=Math.sin(a)*r;
+    const M=new THREE.Matrix4().compose(new THREE.Vector3(x,-SH.low(qS)-th*.3,z),qS,new THREE.Vector3(1,1,1));
+    const SK=j%3===0?FS3.por:FS3.bal;
+    for(const [g,L] of [[SH.top,SK],[SH.side,FS3.stn],[SH.bot,FS3.shd],[SH.brk,FS3.guts]]){if(!g)continue;
+     g.applyMatrix4(M);const pa=g.attributes.position,ua=g.attributes.uv;
+     for(let i=0;i<pa.count;i+=3){const P3=[0,1,2].map(o=>[pa.getX(i+o),pa.getY(i+o),pa.getZ(i+o)]),U3=[0,1,2].map(o=>[ua.getX(i+o),ua.getY(i+o)]);
+      quad(L,P3[0],P3[1],P3[2],P3[2],U3[0],U3[1],U3[2],U3[2]);}}
+    tgRub(x,z,Math.max(w,l)*.35,Math.max(w,l)*.8,22,4);}
+   }
+  flush(FS3,G);
   // ---- debris: the trail it tore, the fan it threw ---------------------------------------
   const LX=FX*520,LZ=FZ*520;
   tgRub(LX,LZ,110,380,380,8);
@@ -15537,6 +15702,10 @@ kdef('mnPort',new THREE.CylinderGeometry(1,1,1,10,1,true).rotateX(Math.PI/2),MAT
 kdef('mnHole',new THREE.CircleGeometry(1,10),MAT.mnVoid);
 kdef('mnArchW',mnArchGeo(),MAT.mnVoid);
 kdef('mnLit',new THREE.PlaneGeometry(1,1),MAT.dot);
+// QA (arcC): the oculi's night light. Warm cards lining each bore, shown only at
+// night (setNight() toggles the classes in FIREKIT), so a bore reads as a lit
+// ring after dark instead of a black hole in a dark slab.
+kdef('mnGlow',new THREE.PlaneGeometry(1,1),MAT.dot);FIREKIT.push('mnGlow');
 // Presets are DERIVED from this: targets/monolith/91z-views.js runs after
 // 90-scene.js, so both builders have left their dimensions here.
 const MN_SITE={};
@@ -15751,7 +15920,9 @@ function buildMonolith(scene,gx,gz,d){reseed(9720+d);KOFF=[gx,0,gz];
    for(let s=0;s<ns;s++){const sa=ac+(s-(ns-1)/2)*sw*2.6;if(Math.abs(sa-ac)>w/2-1)continue;
     const lt=!dd&&rng()<.16;
     if(lt)kput('mnLit',F.pt(sa,yc,o2+.02),F.q,[sw,sh,1],litC());
-    else kput('mnDim',F.pt(sa,yc,o2),F.q,[sw,sh,.35],null);}}
+    else{kput('mnDim',F.pt(sa,yc,o2),F.q,[sw,sh,.35],null);
+     // QA (arcC): a dark slit by day, but a third of them are lived in after dark
+     if(!dd&&rng()<.34)kput('mnGlow',F.pt(sa,yc,o2+.25),F.q,[sw,sh,1],litC().multiplyScalar(.8));}}}
   else if(r<.30){const pr=Math.min(w,h)*rr(.14,.26);
    kput('mnPort',F.pt(ac,yc,t+.35),F.q,[pr,pr,.9],stoneD());
    kput('mnHole',F.pt(ac,yc,t+.45),F.q,[pr*.84,pr*.84,1],null);}
@@ -15887,6 +16058,14 @@ function buildMonolith(scene,gx,gz,d){reseed(9720+d);KOFF=[gx,0,gz];
      kput('mnPort',[px3,py3,sd*(DZ(py3)+3.2)],qFacing([0,0,sd]),[1.8,1.8,.8],stoneD());
      kput('mnHole',[px3,py3,sd*(DZ(py3)+3.7)],qFacing([0,0,sd]),[1.4,1.4,1],null);}}}
   const zz=DZ(o.y)-1;
+  // the night glow lining the bore, between the ribs: the lower half brighter,
+  // as if the light pooled on the floor of the ring
+  if(!dd){const n=Math.round(TAU*o.r/7);
+   for(let i=0;i<n;i++){const th=(i+.5)/n*TAU;if(!inArc(o,th))continue;
+    const qg=QB(new THREE.Vector3(0,0,1),new THREE.Vector3(-Math.sin(th),Math.cos(th),0),new THREE.Vector3(-Math.cos(th),-Math.sin(th),0));
+    for(let z=-zz+10;z<zz-8;z+=14){if(rng()<.25)continue;
+     kput('mnGlow',[o.x+(o.r-.35)*Math.cos(th),o.y+(o.r-.35)*Math.sin(th),z],qg,[rr(7,11),TAU*o.r/n*.8,1],
+      WARMW.clone().multiplyScalar((Math.sin(th)<0?rr(.6,.95):rr(.3,.55))));}}}
   // transverse ribs
   for(let z=-zz+7;z<zz-5;z+=14){const n=Math.round(TAU*o.r/8);
    for(let i=0;i<n;i++){const th=(i+.5)/n*TAU;if(!inArc(o,th)||(dd&&rng()<.2))continue;
@@ -16003,6 +16182,22 @@ function buildMonolith(scene,gx,gz,d){reseed(9720+d);KOFF=[gx,0,gz];
  GRD.push(gridSurface((u,v)=>{const th=u*TAU,r=lerp(260,dd?380:430,v)*(1+.05*fbm(u*7,1.3,3.3,2));
   return[Math.cos(th)*r*1.08,.3,Math.sin(th)*r*.78];},64,3,{uS:60,vS:4}));
  GRD.push(gridSurface((u,v)=>[lerp(-280,280,u),.28,lerp(-205,205,v)],10,8,{uS:22,vS:16}));
+ // QA (arcC): the court was one pale paving map. It is laid out now: pale stone
+ // bands radiating from the foot every 15 degrees and three concentric kerbs,
+ // with benches and planters on the bands; in the ruin the bands are broken
+ // and the kerbs half buried.
+ {const EL=(th,r,y)=>[Math.cos(th)*r*1.08,y,Math.sin(th)*r*.78];
+  for(let k=0;k<24;k++){const th=k/24*TAU,w=k%6===0?9:4,r0=262,r1=dd?370:426;
+   const px=-Math.sin(th)*w*.5,pz=Math.cos(th)*w*.5;
+   if(dd&&k%2)continue;
+   ASH.push(gridSurface((u,v)=>{const p=EL(th,lerp(r0,r1,u),.42);return[p[0]+lerp(-1,1,v)*px,.42,p[2]+lerp(-1,1,v)*pz];},dd?3:6,1,{uS:(r1-r0)/T,vS:w/T,
+    hole:dd?(u=>fbm(u*5+k,k*.7,9721,2)>.55):undefined}));
+   if(!dd)for(let r=280;r<420;r+=34){const p=EL(th,r,0);
+    kput('mnBox',[p[0],.9,p[2]],qEuler(0,-th,0),[4.5,1,1.6],stone());
+    if(rng()<.5)plant(p[0]+Math.cos(th)*12,.9,p[2]+Math.sin(th)*9,rr(6,10));}}
+  for(const rk of [262,340,426]){if(dd&&rk>380)continue;
+   ASH.push(gridSurface((u,v)=>{const th=u*TAU,p=EL(th,rk+lerp(-2.5,2.5,v),.44);return p;},96,1,{uS:TAU*rk/T,vS:5/T,
+    hole:dd?(u=>fbm(u*9,rk*.01,9722,2)>.5):undefined}));}}
  if(!dd){trees(0,0,470,900,70);
   for(let j=0;j<40;j++){const a=j/40*TAU;plant(Math.cos(a)*440*1.08,.3,Math.sin(a)*440*.78,rr(9,14));}
   for(let j=0;j<60;j++){const a=rng()*TAU,r=rr(250,420);person(Math.cos(a)*r*1.08,.3,Math.sin(a)*r*.78);}}
@@ -16031,21 +16226,44 @@ function buildMonolith(scene,gx,gz,d){reseed(9720+d);KOFF=[gx,0,gz];
   const SLABS=[{c:[340,0,80],s:[150,44,118],e:[.06,.35,-.10]},{c:[500,0,-120],s:[118,58,96],e:[.22,1.15,.12]},
    {c:[610,0,170],s:[168,36,88],e:[-.08,-.55,.06]},{c:[300,0,-260],s:[92,74,64],e:[.42,.72,.30]},
    {c:[720,0,-10],s:[84,28,62],e:[.03,.2,-.04]},{c:[420,0,320],s:[70,40,70],e:[.5,.1,.35]}];
-  for(const S of SLABS){const Q=qEuler(S.e[0],S.e[1],S.e[2]);
-   let mn=1e9;for(const [sx,sy,sz] of [[-1,-1,-1],[1,-1,-1],[1,-1,1],[-1,-1,1],[-1,1,-1],[1,1,-1],[1,1,1],[-1,1,1]]){
-    const v=new THREE.Vector3(sx*S.s[0]/2,sy*S.s[1]/2,sz*S.s[2]/2).applyQuaternion(Q);mn=Math.min(mn,v.y);}
-   const C=[S.c[0],-mn*.8,S.c[2]];
-   rotBox(C,S.s,Q,CITY);
+  // QA (arcC): each is a SHATTERED piece (krShard, in 89d-arcube.js), not a box:
+  // a torn outline on the edges that broke, every storey through its thickness
+  // torn back further than the one under it so the floor plates step out along
+  // the break, the section map on the torn faces, the orange skin only on what
+  // is left of the face that came down uppermost, plates and bars sticking out
+  // of the tear, and each one bedded in a crushed skirt of its own fragments.
+  const SBRK=[[1,1,0,1],[1,0,1,1],[0,1,1,1],[1,1,1,0],[1,1,1,1],[1,0,1,1]];
+  SLABS.forEach((S,si)=>{const Q=qEuler(S.e[0],S.e[1],S.e[2]);
+   const SH=krShard({w:S.s[0],l:S.s[2],t:S.s[1],layers:Math.max(3,Math.round(S.s[1]/8.6)),brk:SBRK[si],bite:.2,tile:T,seg:10});
+   const C=[S.c[0],-SH.low(Q)*.8,S.c[2]];
+   const M=new THREE.Matrix4().compose(new THREE.Vector3(C[0],C[1],C[2]),Q,new THREE.Vector3(1,1,1));
+   if(SH.top)CITY.push(SH.top.applyMatrix4(M));if(SH.side)CITY.push(SH.side.applyMatrix4(M));
+   if(SH.bot)SHD.push(SH.bot.applyMatrix4(M));if(SH.brk)SEC.push(SH.brk.applyMatrix4(M));
+   const W=(x,y,z)=>{const v=new THREE.Vector3(x,y,z).applyQuaternion(Q);return[C[0]+v.x,C[1]+v.y,C[2]+v.z];};
    // its skin, what is left of it, on the face that came down uppermost
+   const ty=SH.topY();
    for(let lx=-S.s[0]/2+6;lx<S.s[0]/2-5;lx+=12)for(let lz=-S.s[2]/2+5;lz<S.s[2]/2-4;lz+=10){
-    if(rng()<.45)continue;const v=new THREE.Vector3(lx,S.s[1]/2+.9,lz).applyQuaternion(Q);
-    kput(PAN,[C[0]+v.x,C[1]+v.y,C[2]+v.z],Q,[11.4,1.8,9.4],orange());}
-   // the floor plates in its broken end
-   for(let ly=-S.s[1]/2+4;ly<S.s[1]/2-2;ly+=4.3){const v=new THREE.Vector3(S.s[0]/2+.6,ly,0).applyQuaternion(Q);
-    kput('mnDim',[C[0]+v.x,C[1]+v.y,C[2]+v.z],Q,[1,2.6,S.s[2]*.9],null);}
-   rubbleRing(S.c[0],.3,S.c[2],Math.max(S.s[0],S.s[2])*.45,Math.max(S.s[0],S.s[2])*.45+90,70,7);}
-  for(let j=0;j<120;j++){const x=rr(200,780),z=rr(-360,380);
-   kput('mnBox',[x,rr(1,5),z],qEuler(rr(-.6,.6),rng()*TAU,rr(-.6,.6)),[rr(6,26),rr(3,10),rr(5,20)],rng()<.3?orange():stone());}
+    if(rng()<.4||!SH.inside(lx,lz,7))continue;
+    kput(PAN,W(lx,ty+.9,lz),Q,[11.4,1.8,9.4],orange());}
+   // the tear: a plate tongue out of every storey step, bars out of the rest
+   for(const q of SH.rim){const n=q.n,p=q.p;
+    if(q.step>2&&rng()<.7){const L=q.step*rr(.5,1)+rr(1,4);
+     const qq=Q.clone().multiply(qFacing([n[0],0,n[2]])).multiply(qEuler(rr(-.06,.06),0,rr(-.08,.08)));
+     kput('mnBox',W(p[0]-n[0]*q.step*.5+n[0]*L*.5,p[1]+.45,p[2]-n[2]*q.step*.5+n[2]*L*.5),qq,[q.len*rr(.5,.9),.9,L],stoneD());}
+    if(rng()<.55)for(let b=0;b<3;b++){const L=rr(3,9),a=Q.clone().multiply(qFacing([n[0]+rr(-.3,.3),rr(-.3,.4),n[2]+rr(-.3,.3)]));
+     kput('mnDim',W(p[0]+n[0]*L*.4+rr(-2,2),p[1]-rr(.5,3),p[2]+n[2]*L*.4+rr(-2,2)),a,[.35,.35,L],null);}}
+   // the crushed skirt: its own fragments packed against every side, heaped on the torn ones
+   const Rm=Math.max(S.s[0],S.s[2])*.5;
+   for(let j=0;j<Math.round(Rm*1.1);j++){const a=rng()*TAU,r=Rm*rr(.55,1.05),sz=rr(2,9);
+    kput('rubble',[S.c[0]+Math.cos(a)*r,sz*.3,S.c[2]+Math.sin(a)*r],qEuler(rng()*3,rng()*3,rng()*3),
+     [sz*rr(.8,1.5),sz*rr(.4,.8),sz*rr(.8,1.5)],rng()<.25?orange():new THREE.Color().setHSL(rr(.06,.1),rr(.05,.15),rr(.3,.5)));}
+   for(let j=0;j<Math.round(Rm*.25);j++){const a=rng()*TAU,r=Rm*rr(.7,1.3),L=rr(6,18);
+    kput('mnBox',[S.c[0]+Math.cos(a)*r,rr(1,3),S.c[2]+Math.sin(a)*r],qEuler(rr(-.5,.5),rng()*TAU,rr(-.5,.5)),[L,rr(1.5,4),L*rr(.4,.8)],rng()<.35?orange():stone());}
+   rubbleRing(S.c[0],.3,S.c[2],Rm,Rm+90,70,7);});
+  // the shards between them: broken plates of skin and stone, not bricks
+  for(let j=0;j<150;j++){const x=rr(200,780),z=rr(-360,380),L=rr(6,24);
+   const sk=rng()<.35;
+   kput(sk?PAN:'mnBox',[x,rr(.8,3),z],qEuler(rr(-.45,.45),rng()*TAU,rr(-.45,.45)),[L,sk?rr(.8,1.6):rr(2,6),L*rr(.35,.8)],sk?orange():stone());}
   // ---- the skin that came off: panels lying round the foot
   for(let j=0;j<420;j++){const sd=rng()<.6?1:-1,x=rr(-300,320);if(Math.abs(x-AX)<34)continue;
    const z=sd*(DZ(0)+PL[0].ez+Math.pow(rng(),1.6)*220);
@@ -16721,6 +16939,26 @@ function buildCrescent(scene,gx,gz,d){reseed(9730+d);KOFF=[gx,0,gz];
    for(const g of L.SOFF){g.applyMatrix4(M);SHD.push(g);}
    for(const g of L.SIDE){g.applyMatrix4(M);SIDE.push(g);}
    for(const g of L.SECT){g.applyMatrix4(M);SECT.push(g);}
+   // QA (arcC): the piece is bedded in what it crushed: its own fragments piled
+   // along every line where it meets the plain (krSeam, 89d-arcube.js), and the
+   // plaza under it torn up into a dark skirt of broken paving and grit
+   krSeam(L.SHELL.concat(L.SIDE,L.SECT),8,5,(x,y,z)=>{if(rng()<.55)return;rubble(x+rr(-6,6),Math.max(0,y)*.4,z+rr(-6,6),rr(2,9));});
+   {const cw0=new THREE.Vector3(c[0],c[1],c[2]).applyMatrix4(M),n=18,R0=rr(150,200),ph=rng()*9;
+    const rq=a=>R0*(1+.25*Math.sin(a*2+ph)+.12*Math.sin(a*5+ph*3));
+    for(let i=0;i<n;i++){const a0=i/n*TAU,a1=(i+1)/n*TAU;
+     const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute([cw0.x,.6,cw0.z,
+      cw0.x+Math.cos(a1)*rq(a1),.6,cw0.z+Math.sin(a1)*rq(a1),cw0.x+Math.cos(a0)*rq(a0),.6,cw0.z+Math.sin(a0)*rq(a0)],3));
+     g.setAttribute('uv',new THREE.Float32BufferAttribute([cw0.x/16,cw0.z/16,(cw0.x+Math.cos(a1)*rq(a1))/16,(cw0.z+Math.sin(a1)*rq(a1))/16,
+      (cw0.x+Math.cos(a0)*rq(a0))/16,(cw0.z+Math.sin(a0)*rq(a0))/16],2));g.computeVertexNormals();GUTS.push(g);}}
+   // and the bronze skin that burst off it: torn plates of shell thrown clear
+   for(let j=0;j<12;j++){const w=rr(10,30),l=rr(14,40),t=rr(2.5,6);
+    const SH=krShard({w:w,l:l,t:t,layers:2,brk:[1,1,1,j%2],bite:.26,tile:16,seg:8});
+    const a=rng()*TAU,r=rr(120,260),x=P.x+Math.cos(a)*r,z=P.z+Math.sin(a)*r;
+    const qS=qEuler(rr(-.3,.3),rng()*TAU,rr(-.3,.3));
+    const MS=new THREE.Matrix4().compose(new THREE.Vector3(x,-SH.low(qS)-t*.3,z),qS,new THREE.Vector3(1,1,1));
+    if(SH.top)SHELL.push(SH.top.applyMatrix4(MS));if(SH.side)SHELL.push(SH.side.applyMatrix4(MS));
+    if(SH.bot)GUTS.push(SH.bot.applyMatrix4(MS));if(SH.brk)SECT.push(SH.brk.applyMatrix4(MS));
+    heap(x,z,Math.max(w,l)*.3,Math.max(w,l)*.8,16,4);}
    KXF={m:M,q:q};capDress(P.a,-1,40);if(P.cb)capDress(P.b,1,40);endGroupXF();
    const cw=new THREE.Vector3(c[0],c[1],c[2]).applyMatrix4(M);
    FALL.push({x:cw.x,y:cw.y,z:cw.z});
@@ -16729,8 +16967,14 @@ function buildCrescent(scene,gx,gz,d){reseed(9730+d);KOFF=[gx,0,gz];
    for(let i=0;i<60;i++)moss(cw.x+rr(-160,160),.3,cw.z+rr(-160,160),rr(2,7));}
   // debris from the break down the terraces and across the forecourt
   heap(-360,40,60,420,300,9);
-  for(let i=0;i<50;i++)kput('crBox',[rr(-1100,-420),rr(1,6),rr(-80,420)],qEuler(rr(-.6,.6),rng()*TAU,rr(-.6,.6)),
-   [rr(6,26),rr(2,8),rr(5,20)],new THREE.Color().setHSL(rr(.38,.46),rr(.1,.25),rr(.22,.36)));
+  // QA (arcC): these were fifty green boxes. Torn slabs of the horn's floors now
+  // (krShard): section on the tear, shell on what was the outside
+  for(let i=0;i<50;i++){const w=rr(8,28),l=rr(6,22),t=rr(3,9);
+   const SH=krShard({w:w,l:l,t:t,layers:Math.max(1,Math.round(t/3.5)),brk:[1,1,rng()<.5?1:0,1],bite:.24,tile:16,seg:7});
+   const qS=qEuler(rr(-.5,.5),rng()*TAU,rr(-.5,.5)),x=rr(-1100,-420),z=rr(-80,420);
+   const MS=new THREE.Matrix4().compose(new THREE.Vector3(x,-SH.low(qS)-t*.25,z),qS,new THREE.Vector3(1,1,1));
+   if(SH.top)(rng()<.5?SHELL:DECK).push(SH.top.applyMatrix4(MS));if(SH.side)SHELL.push(SH.side.applyMatrix4(MS));
+   if(SH.bot)GUTS.push(SH.bot.applyMatrix4(MS));if(SH.brk)SECT.push(SH.brk.applyMatrix4(MS));}
   heap(0,0,300,560,220,7);
   for(let i=0;i<160;i++){const x=rr(-700,500),z=rr(-420,420);if(inFoot(x,z)&&rng()<.7)continue;moss(x,.3,z,rr(2,8));}
   }
@@ -16759,6 +17003,20 @@ function buildCrescent(scene,gx,gz,d){reseed(9730+d);KOFF=[gx,0,gz];
   for(let x=-640;x<=640;x+=2){const on=onSide(x,y)>=0;
    if(on){if(x0===null)x0=x;xl=x;}else if(x0!==null){if(xl-x0>6)ledgeRun(x0,xl,y,mj);x0=null;}}
   if(x0!==null&&xl-x0>6)ledgeRun(x0,xl,y,mj);}
+ // QA (arcC): and a grain the other way. At 2 km the ledges alone were a fine
+ // stripe on a flat card; pilasters on every 30 m window tile between them make
+ // the face a grid of bays, and about one bay in four carries a stack of real
+ // balconies — a neighbourhood's worth, decided per bay so they cluster — which
+ // is what the hero and the side elevation see as the grain of a city.
+ for(let y=PLH+1.5;y<CY+R1-20;y+=15)for(let x=-630;x<=630;x+=30){const ym=y+7.5,sp=onSide(x,ym);
+  if(sp>=0&&!(dd&&rng()<.3))for(const sd of [-1,1])kput('crBox',[x,ym,sd*(DP(sp)*.5+.6)],null,[1.3,15.1,1.2],
+   dd?new THREE.Color().setHSL(rr(.36,.44),rr(.1,.22),rr(.2,.3)):new THREE.Color().setHSL(.085,.35,rr(.36,.44)));
+  const hv=h3(Math.floor(x/30)+40,Math.floor(y/15),9733.7);if(hv<.74)continue;
+  for(const sd of [-1,1])for(let f=hv<.87?1:0;f<4;f++)for(let b=0;b<5;b++){const bx=x+3+b*6,by=y+f*3.75+.25,sb=onSide(bx,by+1);
+   if(sb<0||onSide(bx,by+3)<0||(dd&&rng()<.55))continue;
+   kput('crBalc',[bx,by,sd*DP(sb)*.5],qFacing([0,0,sd]),[5.4,1.1,rr(1.6,2.4)],stone());
+   if(!dd&&rng()<.08)kput('leafCard',[bx+rr(-1.5,1.5),by+1,sd*(DP(sb)*.5+1.3)],qEuler(0,rng()*TAU,0),[rr(1.2,2),rr(1,1.6),rr(1.2,2)],
+    new THREE.Color().setHSL(rr(.2,.3),rr(.25,.45),rr(.22,.32)));}}
  // five thousand years of runs down both faces
  if(dd)for(let i=0;i<300;i++){const sd=rng()<.5?-1:1,sv=rr(.1,SB-.03),v=rr(.12,.95),p=XS(sv,sd>0?1:0,v);
   if(p[1]<30)continue;const L=rr(30,110);
@@ -17286,6 +17544,19 @@ function buildLedge(scene,gx,gz,d){reseed(9740+d);KOFF=[gx,0,gz];
  {const tp=0;box(-78,-8,tp,28,-46,46,{x0:A_FASC,z0:A_FASC,z1:A_FASC,t:A_DECK});
   box(-40,XR,0,LAY[0].y+2,-15,15,{x0:A_FASC,z0:A_FASC,z1:A_FASC});
   winX(-40.4,-9,9,28,LAY[0].y,[0,.5]);
+  // QA (arcC): this shaft stood under the whole city as one thin stalk. It is
+  // now the core of a stepped pylon — two broader stages round its foot, set
+  // back as they rise — with raking struts from the upper stage out to the
+  // underside of the lowest layer, so the city visibly stands on something.
+  {const Y1=LAY[0].y;
+   box(-64,XR,0,Y1*.34,-44,44,{x0:A_FASC,z0:A_FASC,z1:A_FASC,t:A_DECK});
+   box(-52,XR,Y1*.34,Y1*.68,-31,31,{x0:A_FASC,z0:A_FASC,z1:A_FASC,t:A_DECK});
+   box(-46,XR,Y1*.68,Y1*.9,-22,22,{x0:A_FASC,z0:A_FASC,z1:A_FASC,t:A_DECK});
+   winX(-46.4,-18,18,Y1*.68+4,Y1*.9-4,[.5,.25]);
+   winX(-64.4,-40,40,30,Y1*.34-4,[.375,.125]);winX(-52.4,-26,26,Y1*.34+4,Y1*.68-4,[.625,.375]);
+   for(const sz of [-1,1]){const b=blockAt(0,sz*64),R=b?effR(b):0;if(R<40)continue;
+    beam('ldBox',[-50,Y1*.66,sz*28],[-Math.min(150,R-8),Y1-3,sz*64],5,5,stoneD());}
+   if(!dd)for(let y=Y1*.34;y<Y1*.68;y+=14)kput('strip',[-53,y,0],qEuler(0,Math.PI/2,0),[56,6,6],WARMW);}
   winX(-78.4,-44,-12,4,24,[.375,.125]);winX(-78.4,12,44,4,24,[.625,.375]);
   kput('ldDim',[-78.5,6.5,0],null,[1.2,13,20],null);
   kput('ldBox',[-84,14.5,0],null,[14,1.6,30],stoneD());
@@ -17360,20 +17631,54 @@ function buildLedge(scene,gx,gz,d){reseed(9740+d);KOFF=[gx,0,gz];
  let NHOUSE=0;
  for(let x=-1180;x<-150;x+=rr(24,32))for(let z=-760;z<760;z+=rr(22,30)){
   if(Math.abs(z)<24)continue;if(x>-340&&Math.abs(z)<104)continue;
+  if(x<-330&&[-240,-120,120,240].some(zs=>Math.abs(z-(zs+Math.sin((x+1150)/820*9+zs)*14))<17))continue;
   const tz=toe(z);if(x>-tz-30)continue;
   const p=.95*Math.exp(-Math.pow((x+380)/420,2))*(1-clamp((Math.abs(z)-560)/200,0,1));
   if(rng()>p)continue;
   if(inDebris(x,z)||(dd&&rng()<.45))continue;
-  const w=rr(10,19),dp=rr(10,17),h=dd?rr(3,7):rr(5,12),xx=x+rr(-3,3),zz=z+rr(-3,3),
-   col=new THREE.Color().setHSL(rr(.055,.10),rr(.22,.42),dd?rr(.30,.42):rr(.42,.60));
+  // QA (arcC): a house was one pale box, and eight hundred of them on a grid
+  // read as a model. Now a plot is a COMPOUND: a walled yard with a tree in it,
+  // the house in one corner of it at two or three heights (taller toward the
+  // cliff), a darker roof terrace behind a parapet with a stair kiosk or an
+  // awning, doors and windows on the street side, in sandstone, ochre and
+  // limewash rather than one white.
+  const w=rr(10,19),dp=rr(10,17),xx=x+rr(-3,3),zz=z+rr(-3,3),near=clamp(1-(-x-150)/700,0,1),
+   h=dd?rr(3,7):rr(4.5,8)+near*rr(0,9);
+  const tone=rng(),col=tone<.45?new THREE.Color().setHSL(rr(.07,.10),rr(.28,.45),dd?rr(.28,.38):rr(.46,.58))
+   :tone<.8?new THREE.Color().setHSL(rr(.045,.07),rr(.4,.58),dd?rr(.22,.32):rr(.36,.46))
+   :new THREE.Color().setHSL(rr(.09,.12),rr(.06,.14),dd?rr(.34,.44):rr(.66,.76));
+  const sz=z>0?-1:1,sx=rng()<.5?-1:1;
+  // the yard: the plot runs 5-8 m past the house on two sides, walled
+  const yw=w+rr(3,6),yd=dp+rr(3,6),yx=xx-sx*(yw-w)/2,yz=zz+sz*(yd-dp)/2*-1,wallC=col.clone().multiplyScalar(.82);
+  for(const e of [-1,1]){if(e!==sz&&!(dd&&rng()<.4))kput('ldBox',[yx,1.1,yz+e*yd/2],null,[yw,2.2,.5],wallC);
+   if(!(dd&&rng()<.4))kput('ldBox',[yx+e*yw/2,1.1,yz],null,[.5,2.2,yd],wallC);}
+  if(!dd&&rng()<.5)kput('ldLawn',[xx-sx*(yw-w)*.5-sx*w*.25,.25,yz],null,[Math.max(3,yw-w-1),.3,yd-1.5],new THREE.Color().setHSL(rr(.1,.2),rr(.2,.35),rr(.24,.32)));
+  plant(xx-sx*(w/2+(yw-w)/2),.2,zz+rr(-dp/4,dp/4),dd?rr(5,12):rr(6,10));
+  // the house, stepped
   kput('ldBox',[xx,h/2,zz],null,[w,h,dp],col);NHOUSE++;
-  if(dd){kput('ldDim',[xx,h-.3,zz],null,[w-1.6,.8,dp-1.6],null);}
-  else{if(rng()<.38){const w2=w*rr(.4,.7),d2=dp*rr(.4,.7),h2=rr(3,5);kput('ldBox',[xx+rr(-1,1)*(w-w2)/2,h+h2/2,zz+rr(-1,1)*(dp-d2)/2],null,[w2,h2,d2],col);}
-   kput('ldBox',[xx,h+.35,zz],null,[w+.4,.7,dp+.4],stoneD());}
-  const sz=z>0?-1:1;kput('ldDim',[xx+rr(-w/4,w/4),1.6,zz+sz*(dp/2+.05)],null,[2,3.2,.3],null);
-  if(!dd&&rng()<.5)kput('ldDim',[xx-w/2-.05,h*.6,zz+rr(-dp/4,dp/4)],null,[.3,1.6,2.4],null);
-  if(rng()<(dd?.25:.4))plant(xx+rr(-1,1)*(w/2+5),.2,zz+rr(-1,1)*(dp/2+4),dd?rr(4,11):rr(6,10));
+  if(dd){kput('ldDim',[xx,h-.3,zz],null,[w-1.6,.8,dp-1.6],null);
+   if(rng()<.5)kput('rubble',[xx+rr(-w/2,w/2),rr(.5,1.5),zz+sz*(dp/2+rr(1,4))],qEuler(rng()*3,rng()*3,rng()*3),[rr(1,3),rr(.6,1.5),rr(1,3)],stoneD());}
+  else{const w2=w*rr(.45,.7),d2=dp*rr(.45,.7),h2=rr(3,4.5),ux=xx+sx*(w-w2)/2,uz=zz-sz*(dp-d2)/2;
+   if(rng()<.7){kput('ldBox',[ux,h+h2/2,uz],null,[w2,h2,d2],col);
+    kput('ldBox',[ux,h+h2+.3,uz],null,[w2+.3,.6,d2+.3],stoneD());
+    kput('ldDim',[ux,h+h2*.55,uz+sz*(d2/2+.05)],null,[w2*.4,1.4,.3],null);}
+   // the roof terrace: a darker deck inside a parapet, and a kiosk or an awning
+   kput('ldDim',[xx,h+.05,zz],null,[w-1.2,.2,dp-1.2],null);
+   if(rng()<.25){kput('ldBox',[xx,h+.5,zz+dp/2-.2],null,[w,1,.4],col);kput('ldBox',[xx,h+.5,zz-dp/2+.2],null,[w,1,.4],col);
+    kput('ldBox',[xx+w/2-.2,h+.5,zz],null,[.4,1,dp],col);kput('ldBox',[xx-w/2+.2,h+.5,zz],null,[.4,1,dp],col);}
+   if(rng()<.45)kput('ldBox',[xx-sx*w*.25,h+2.4,zz+sz*dp*.2],null,[w*.35,.25,dp*.35],new THREE.Color().setHSL(rr(0,.1),rr(.35,.6),rr(.3,.45)));
+   // windows: a row on the street side, one on the flank
+   kput('ldDim',[xx+rr(-.3,.3)*w,h*.62,zz+sz*(dp/2+.05)],null,[1.4,1.5,.3],null);
+   kput('ldDim',[xx-w/2-.05,h*.6,zz+rr(-dp/4,dp/4)],null,[.3,1.6,2.4],null);}
+  kput('ldDim',[xx+rr(-w/4,w/4),1.6,zz+sz*(dp/2+.05)],null,[2,3.2,.3],null);
   if(!dd&&rng()<.6)for(let q=0;q<2;q++){person(xx+rr(-w,w),.2,zz+sz*(dp/2+rr(2,6)));NFIG++;}}
+ // QA (arcC): streets. The town had none, only sand between the boxes: four
+ // paved streets now run out from the plaza into it, and a lane along the toe.
+ {const hole=dd?(u,v)=>fbm(u*30,v*3,9761,2)<.4:null;
+  for(const zs of [-240,-120,120,240]){const g=gridSurface((u,v)=>[lerp(-1150,-330,u),.26,zs+lerp(-5,5,v)+Math.sin(u*9+zs)*14],40,1,{uS:820/24,vS:.5,hole:hole});
+   mesh(g,dd?MAT.ldPaveR:MAT.ldPave,G);}
+  const g=gridSurface((u,v)=>{const z=lerp(-740,740,u),tz=toe(z);return[-tz-24+lerp(-4,4,v),.26,z];},60,1,{uS:1480/24,vS:.4,hole:hole});
+  mesh(g,dd?MAT.ldPaveR:MAT.ldPave,G);}
  // orchards out on the plain
  for(let j2=0;j2<(dd?150:320);j2++){const x=rr(-1900,-1150),z=rr(-700,700);if(Math.abs(z)<30)continue;plant(x,0,z,dd?rr(4,9):rr(5,8));}
 
@@ -17579,14 +17884,24 @@ function whWinLit(){
   g.putImageData(id,0,0);});}
 // The soffit: 8 m coffers at 32 m a tile, a lamp in each. mode 0 albedo, 1 the
 // day emissive (painted bounce + lamps), 2 the night emissive (lamps only).
+// QA (arcC): from below it read as a ceiling grid — even ribs, a lamp in every
+// other coffer. The ribs are now faint and uneven, the stone is mottled at the
+// scale of the whole tile (seamless), the underside of the garden above shows
+// through as dark hanging roots and ferns in patches, and the lamps are few
+// and irregular: the underside of a landscape more than of a room.
 function whSoffTex(dec,mode){
  return canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),D=id.data;
   for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;
-   const cx=x&63,cy=y&63,rib=cx<6||cy<6,lx=cx-35,ly=cy-35,lamp=lx*lx+ly*ly<20&&((x>>6)+(y>>6))%2===0&&!(dec&&h3(x>>6,y>>6,3.7)<.8);
-   const n=(fbm(x/12,y/12,3.3,2)-.5)*14;let r,gg,b;
-   if(mode===0){let v=rib?206+n:172+n;if(dec)v=v*.7-Math.max(0,fbm(x/4,y/40,5.5,2)-.45)*120;
-    if(lamp)v=250;r=v+2;gg=v;b=v-4;}
-   else if(mode===1){let v=(dec?(rib?74:62):(rib?112:94))+n*.3;r=v*.90;gg=v*.95;b=v;if(lamp){r=255;gg=226;b=170;}}
+   const ci=x>>6,cj=y>>6,cx=x&63,cy=y&63,rw=3+Math.floor(h3(ci,cj,2.9)*4),rib=cx<rw||cy<rw;
+   const lx=cx-26-h3(ci,cj,5.1)*22,ly=cy-26-h3(ci,cj,6.3)*22,lamp=lx*lx*(h3(ci,cj,7.7)<.4?.18:1)+ly*ly<18&&h3(ci,cj,4.1)<.34&&!(dec&&h3(ci,cj,3.7)<.8);
+   const big=whTile((X,Y)=>fbm(X/70,Y/70,8.1,3),x,y,w,h),root=whTile((X,Y)=>fbm(X/22,Y/22,9.3,3),x,y,w,h);
+   const hang=root>.6&&!lamp,n=(fbm(x/12,y/12,3.3,2)-.5)*14+(big-.5)*46;let r,gg,b;
+   if(mode===0){let v=rib?184+n:170+n;if(dec)v=v*.7-Math.max(0,fbm(x/4,y/40,5.5,2)-.45)*120;
+    if(lamp)v=250;r=v+2;gg=v;b=v-4;
+    if(hang){const f=Math.min(1,(root-.6)*6),s=.55+.45*fbm(x/2.5,y/9,4.8,2);r=lerp(r,58*s,f);gg=lerp(gg,74*s,f);b=lerp(b,40*s,f);}}
+   else if(mode===1){let v=(dec?(rib?68:62):(rib?100:94))+n*.3;r=v*.90;gg=v*.95;b=v;
+    if(hang){const f=Math.min(1,(root-.6)*6);r*=1-.6*f;gg*=1-.5*f;b*=1-.65*f;}
+    if(lamp){r=255;gg=226;b=170;}}
    else{r=gg=b=0;if(lamp){r=255;gg=212;b=150;}else if(rib){r=gg=b=3;}}
    D[i]=clamp(r,0,255);D[i+1]=clamp(gg,0,255);D[i+2]=clamp(b,0,255);D[i+3]=255;}
   g.putImageData(id,0,0);});}
@@ -18209,8 +18524,23 @@ function buildWheel(scene,gx,gz,d){reseed(9750+d);KOFF=[gx,0,gz];
   const p=[L(-w/2,-dp/2),L(w/2,-dp/2),L(w/2,dp/2),L(-w/2,dp/2)];
   const wk=sh?'winsh':'win';let u=rng()*51.2;const yr=-Math.floor(rng()*8)*4.2;
   for(let i=0;i<4;i++)u+=wq(A[wk],p[i],p[(i+1)%4],0,0,h,h,u,yr);
-  const rk=dd&&rng()<.55?'void':(sh?'roofsh':'stone');
-  quadW(A[rk],[p[0][0],h,p[0][1]],[p[1][0],h,p[1][1]],[p[2][0],h,p[2][1]],[p[3][0],h,p[3][1]]);NBLD++;};
+  // QA (arcC): the lower city read as a sea of identical pale boxes. A third of
+  // the sunlit blocks now step back into a second, narrower volume; roofs are
+  // pale stone, dark tar, or planted; and most carry a plant room or a stair
+  // kiosk, so from the band and from above the roofscape has a grain.
+  let hr=h,wr=w,dr=dp,Lr=L;
+  if(!dd&&!sh&&rng()<.34&&h>9){const f=rr(.5,.72),h2=rr(6,16);wr=w*f;dr=dp*f;
+   const ox=rr(-1,1)*(w-wr)*.4,oz=rr(-1,1)*(dp-dr)*.4;Lr=(lx,lz)=>L(lx+ox,lz+oz);
+   quadW(A.stone,[p[0][0],h,p[0][1]],[p[1][0],h,p[1][1]],[p[2][0],h,p[2][1]],[p[3][0],h,p[3][1]]);
+   const p2=[Lr(-wr/2,-dr/2),Lr(wr/2,-dr/2),Lr(wr/2,dr/2),Lr(-wr/2,dr/2)];
+   for(let i=0;i<4;i++)u+=wq(A[wk],p2[i],p2[(i+1)%4],h,h,h+h2,h+h2,u,yr);
+   hr=h+h2;for(let i=0;i<4;i++)p[i]=p2[i];}
+  const rv=rng(),rk=dd&&rng()<.55?'void':(sh?'roofsh':(rv<.3?'roofsh':'stone'));
+  quadW(A[rk],[p[0][0],hr,p[0][1]],[p[1][0],hr,p[1][1]],[p[2][0],hr,p[2][1]],[p[3][0],hr,p[3][1]]);NBLD++;
+  if(!dd&&!sh&&rv>.8)kput('whBox',[(p[0][0]+p[2][0])/2,hr+.35,(p[0][1]+p[2][1])/2],qEuler(0,-rotA,0),[wr-2.4,.6,dr-2.4],
+   new THREE.Color().setHSL(rr(.2,.3),rr(.3,.5),rr(.2,.28)));
+  if(!dd&&rng()<.55){const c2=Lr(rr(-.25,.25)*wr,rr(-.25,.25)*dr),kh=rr(2.5,4.5);
+   kput('whBox',[c2[0],hr+kh/2,c2[1]],qEuler(0,-rotA,0),[rr(3,7),kh,rr(3,6)],rng()<.5?stoneC():stoneD());}};
  for(let r=RRD[0]+18;r<RG-14;r+=rr(30,36)){for(let a=rr(0,.02);a<TAU;a+=rr(26,34)/r){
   const w=rr(16,26),dp=rr(14,22),x0=r*Math.cos(a),z0=r*Math.sin(a);
   if(RRD.some(R=>Math.abs(r-R)<10+dp/2+3))continue;
@@ -18252,7 +18582,25 @@ function buildWheel(scene,gx,gz,d){reseed(9750+d);KOFF=[gx,0,gz];
    const gb=shapeGeo(sh,0,32);gb.applyMatrix4(T.m);put(M.soff,gb);
    let u=0;for(let j=0;j<pts.length;j++){const p=pts[j],q=pts[(j+1)%pts.length];
     if(kind[j]==='w')u+=wwX(A.win,T.X,p,q,0,H,u);
-    else quadW(A.sect,T.X(p[0],0,p[1]),T.X(q[0],0,q[1]),T.X(q[0],H,q[1]),T.X(p[0],H,p[1]));}};
+    else quadW(A.sect,T.X(p[0],0,p[1]),T.X(q[0],0,q[1]),T.X(q[0],H,q[1]),T.X(p[0],H,p[1]));}
+   // QA (arcC): a slab that fell 300 m does not keep a clean edge. Along every
+   // fracture the storeys tear back unevenly: a floor plate tongue out of the
+   // section every 7.6 m of height, some bent down, bars out of the rest, and a
+   // lip of the garden deck broken over the edge; and along the bottom, where
+   // it hit, its own fragments are piled against it so it sits IN the city it
+   // crushed, not on a clean plain.
+   withXF(T,()=>{for(let j=0;j<pts.length;j++){if(kind[j]!=='s')continue;const p=pts[j],q=pts[(j+1)%pts.length];
+    const ex=q[0]-p[0],ez=q[1]-p[1],L=Math.hypot(ex,ez);if(L<3)continue;let nx=ez/L,nz=-ex/L;
+    if(nx*(p[0]+q[0])+nz*(p[1]+q[1])<0){nx=-nx;nz=-nz;}
+    const qa=qFacing([nx,0,nz]);
+    for(let y=4;y<H-2;y+=7.6){if(rng()<.45)continue;const f=rr(.15,.85),o=rr(2,9),bend=rng()<.3?rr(.2,.7):rr(-.05,.08);
+     kput('whBox',[lerp(p[0],q[0],f)+nx*o*.5,y,lerp(p[1],q[1],f)+nz*o*.5],qa.clone().multiply(qEuler(bend,0,rr(-.06,.06))),[Math.min(L*.8,rr(6,16)),1.1,o+1],stoneD());}
+    for(let b=0;b<Math.round(L/6);b++)if(rng()<.5){const f=rng();rebar([lerp(p[0],q[0],f),rr(2,H-2),lerp(p[1],q[1],f)],[nx,rr(-.3,.1),nz],rr(2,8));}
+    if(rng()<.7){const f=rr(.2,.8),o=rr(3,8);
+     kput('whBox',[lerp(p[0],q[0],f)+nx*o*.4,H-o*.25,lerp(p[1],q[1],f)+nz*o*.4],qa.clone().multiply(qEuler(rr(.35,.8),0,0)),[Math.min(L*.7,rr(10,24)),2,o],stoneC());}}});
+   for(let j=0;j<pts.length;j++){const p=pts[j];if(rng()<.35)continue;
+    for(const yy of [0,H]){const w=T.X(p[0],yy,p[1]);if(w[1]>10)continue;
+     for(let q=0;q<2;q++)chunk(w[0]+rr(-8,8),Math.max(0,w[1])*.3,w[2]+rr(-8,8),[rr(3,11),rr(1.5,5),rr(3,9)]);}}};
   const UP=new THREE.Vector3(0,1,0);
   for(let i=0;i<NB;i++){const a0=BR[i],a1=BR[i+1],am=(a0+a1)/2;
    const er=new THREE.Vector3(Math.cos(am),0,Math.sin(am)),et=new THREE.Vector3(-Math.sin(am),0,Math.cos(am));
@@ -19739,10 +20087,16 @@ MAT.wgLensR=WGM({map:TEX.concrete,color:0x7f786d});
 MAT.wgWall =WGM({map:TEX.concrete,color:0x7a746c});
 MAT.wgWallR=WGM({map:TEX.concrete,color:0x57524c});
 // Soffits are lit almost entirely by the hemisphere's brown ground colour, so
-// they are tinted cool to come back as grey concrete in shade rather than as
-// brown. NOT emissive: an emissive soffit glows white at night.
-MAT.wgSoff =WGM({map:TEX.concrete,color:0x8a95a6,roughnessMap:null});
-MAT.wgSoffR=WGM({map:TEX.concrete,color:0x5a6270,roughnessMap:null});
+// no albedo brings them back as grey concrete: at best they are brown.
+// QA (arcC): BOUNCE LIGHT IS PAINTED, as on the Ledge. The soffit carries a
+// little emissive through its own concrete map, multiplied by the vertex colour
+// (wgBounce) so the gaps' painted occlusion still darkens it toward the back,
+// and ldNightDim() (89i-ledge.js) pulls it down at night, which is what made the
+// first emissive attempt glow white after dark.
+function wgBounce(m){m.onBeforeCompile=sh=>{sh.fragmentShader=sh.fragmentShader.replace('#include <emissivemap_fragment>',
+ '#include <emissivemap_fragment>\n#ifdef USE_COLOR\n totalEmissiveRadiance*=vColor;\n#endif');};return m;}
+MAT.wgSoff =wgBounce(WGM({map:TEX.concrete,color:0x8c8c89,emissive:0x77746e,emissiveMap:TEX.concrete,roughnessMap:null}));
+MAT.wgSoffR=wgBounce(WGM({map:TEX.concrete,color:0x5e5c58,emissive:0x45423e,emissiveMap:TEX.concrete,roughnessMap:null}));
 MAT.wgDeck =WGM({map:TEX.concrete,color:0x57524b});
 MAT.wgDeckR=WGM({map:TEX.concrete,color:0x524d46});
 MAT.wgLawn =WGM({map:TEX.wgLawn});
@@ -19809,9 +20163,16 @@ function buildWing(scene,gx,gz,d){reseed(9620+d);KOFF=[gx,0,gz];
 
  // ---- the ruin's numbers -----------------------------------------------------------
  // east: broken off at the root; the break leans in as it rises
- const cutE=y=>190-.12*(y-PY)+12*(fbm(y*.035,.7,9626,2)-.5)*2;
- const cutAB=y=>405+14*(fbm(y*.04,2.2,9627,2)-.5)*2;
- const cutBC=y=>585+12*(fbm(y*.04,4.4,9628,2)-.5)*2;
+ // QA (arcC): each break is STAGGERED slab by slab — a slab lets go at its own
+ // x, stepping in and out by up to 20-36 m from its neighbours, the step made
+ // in the gap between them — so the stump and every fallen piece end in a
+ // ragged row of slab ends instead of one clean cut through the stack. The
+ // stump and the pieces still share the predicate, so the breaks still match.
+ const SLK=y=>Math.max(-1,Math.min(K-1,Math.floor((y-Y0+GP*.5)/SP)));
+ const stag=(y,s,a)=>a*(h3(SLK(y)+2,s,9629)-.5)*2;
+ const cutE=y=>190-.12*(y-PY)+12*(fbm(y*.035,.7,9626,2)-.5)*2+(y>Y0-GP*.5?stag(y,1.3,20):0);
+ const cutAB=y=>405+14*(fbm(y*.04,2.2,9627,2)-.5)*2+stag(y,2.7,36);
+ const cutBC=y=>585+12*(fbm(y*.04,4.4,9628,2)-.5)*2+stag(y,5.1,26);
  // west: the outer slabs pancaked and the whole wing sagging
  const SAG0=430,SAG1=720,SAGT=44;
  const pan=ax=>sm(470,640,ax)*.9;
@@ -19867,7 +20228,7 @@ function buildWing(scene,gx,gz,d){reseed(9620+d);KOFF=[gx,0,gz];
   g.setAttribute('position',new THREE.Float32BufferAttribute(A.P,3));
   g.setAttribute('uv',new THREE.Float32BufferAttribute(A.U,2));
   g.setAttribute('color',new THREE.Float32BufferAttribute(A.C,3));
-  g.setIndex(A.I);g.computeVertexNormals();mesh(g,MATS[k],par);}};
+  g.setIndex(A.I);g.computeVertexNormals();const o=mesh(g,MATS[k],par);if(k==='soff')ldNightDim(o,MATS[k]);}};
 
  // ---- the rows ---------------------------------------------------------------------
  // A half-wing is a stack of horizontal rows. Each row spans x from the back of
@@ -19971,6 +20332,15 @@ function buildWing(scene,gx,gz,d){reseed(9620+d);KOFF=[gx,0,gz];
       KP('wgBalc',[X(x),yf,zs*W(x)],q,[5.8,1.15,rr(2.1,2.6)],PALE());
       if(!dd&&full&&rng()<.1)KP('leafCard',[X(x+rr(-2,2)),yf+.9,zs*(W(x)+1.7)],qEuler(0,rng()*TAU,0),[rr(1.2,2),rr(1,1.6),rr(1.2,2)],LEAF());
       if(dd&&rng()<.12)KP('vine',[X(x+rr(-2,2)),yf-.3,zs*(W(x)+2.2)],qEuler(rr(-.1,.1),0,rr(-.1,.1)),[rr(.9,1.6),rr(4,18),rr(.9,1.6)],null);}}}}
+  // ---- QA (arcC): the soffits' ribs. 'Under the cantilever' looked up at a
+  // plain plane 170 m long; now a transverse rib every 9 m (the cantilever's
+  // own structure, deepening toward the root), a lamp slot on every other one.
+  for(let k=0;k<K;k++){const rw={t:'s',k},x0=k===0?HX1+6:XG(k-1)+6;
+   for(let x=x0;x<XT(k)-4;x+=9){const yb=ybot(k,x);if(!inClip(x,yb+1,rw)||inDrum(x,yb)||(dd&&rng()<.3))continue;
+    const dp=1.2+2.4*clamp(1-(x-XR(k))/(XT(k)-XR(k)),0,1);
+    let q=null,yy=yb-dp*.5;if(dd&&rng()<.12){q=qEuler(rr(-.4,.4),0,rr(-.3,.3));yy-=rr(1,4);}
+    KP('wgBox',[X(x),yy,0],q,[1.4,dp,2*W(x)-3],CONC());
+    if(!dd&&Math.round(x/9)%2===0)KP('strip',[X(x+4.5),yb-.35,0],qEuler(0,Math.PI/2,0),[2*W(x)-8,3,3],WARMC);}}
   // ---- the gaps: decks with houses, trees, rails, piers, and light under the soffit
   for(let k=0;k<K-1;k++){const rw={t:'s',k},y=YT(k);
    const xa=XG(k)+4,xb=XT(k)-4;
@@ -20102,6 +20472,13 @@ function buildWing(scene,gx,gz,d){reseed(9620+d);KOFF=[gx,0,gz];
    if(!dd)kput('strip',[0,PH+2,z+zs*.6],null,[2*PW+4,5,5],WARMC);}
   for(const xs of [1,-1])Q(SS,'mass',[xs*PX,PL,-PZ],[xs*PX,PL,PZ],[xs*PX,PY,PZ],[xs*PX,PY,-PZ],1);
   Q(SS,'conc',[-PX,PY,-PZ],[PX,PY,-PZ],[PX,PY,PZ],[-PX,PY,PZ],2);
+  // QA (arcC): the pedestal was a box. Buttress ribs every 8 m on all four
+  // faces (clear of the portals), and between them rows of deep slots.
+  {const rib=(x,z,q,L)=>{if(dd&&rng()<.2)return;kput('wgBox',[x,(PL+PY)/2-2,z],q,[1.8,PY-PL-8,L],new THREE.Color(dd?0x5a554e:0x8e8980));};
+   for(const zs of [1,-1])for(let x=-PX+6;x<=PX-6;x+=8){if(Math.abs(x)<PW+4)continue;rib(x,zs*(PZ+1.2),null,2.4);
+    for(let y=PL+12;y<PY-12;y+=9.5)if(rng()<.5)kput('wgDim',[x+4,y,zs*(PZ+.3)],null,[1.4,4.2,.8],null);}
+   for(const xs of [1,-1])for(let z=-PZ+6;z<=PZ-6;z+=8){rib(xs*(PX+1.2),z,null,1.8);
+    for(let y=PL+12;y<PY-12;y+=9.5)if(rng()<.5)kput('wgDim',[xs*(PX+.3),y,z+4],null,[.8,4.2,1.4],null);}}
   // the capital and base courses
   kput('wgBox',[0,PY-2.5,0],null,[2*PX+8,5,2*PZ+8],new THREE.Color(dd?0x5e5953:0xa29d94));
   kput('wgBox',[0,PL+2,0],null,[2*PX+6,4,2*PZ+6],new THREE.Color(dd?0x5e5953:0xa29d94));}
@@ -20175,9 +20552,10 @@ function buildWing(scene,gx,gz,d){reseed(9620+d);KOFF=[gx,0,gz];
   const pieces=[
    // all three came down on their backs: the front face, its slab bands and
    // shadow gaps, turned to the sky; the roof and the soffits are the flanks
-   {lo:y=>cutE(y),hi:y=>cutAB(y),x0:160,x1:420,y0:150,y1:YTOP,q:qEuler(0,.22,0).multiply(qEuler(-Math.PI/2+.1,0,.05)),at:[700,60]},
-   {lo:y=>cutAB(y),hi:y=>cutBC(y),x0:390,x1:600,y0:YS(0),y1:YTOP,q:qEuler(0,-.3,0).multiply(qEuler(-Math.PI/2+.06,0,-.1)),at:[960,-230]},
-   {lo:y=>cutBC(y),hi:()=>1e9,x0:570,x1:695,y0:YS(3),y1:YTOP,q:qEuler(0,.9,0).multiply(qEuler(-Math.PI/2+.35,0,-.25)),at:[1150,40]}];
+   {lo:y=>cutE(y),hi:y=>cutAB(y),x0:150,x1:440,y0:150,y1:YTOP,q:qEuler(0,.22,0).multiply(qEuler(-Math.PI/2+.1,0,.05)),at:[700,60]},
+   {lo:y=>cutAB(y),hi:y=>cutBC(y),x0:370,x1:610,y0:YS(0),y1:YTOP,q:qEuler(0,-.3,0).multiply(qEuler(-Math.PI/2+.06,0,-.1)),at:[960,-230]},
+   {lo:y=>cutBC(y),hi:()=>1e9,x0:560,x1:695,y0:YS(3),y1:YTOP,q:qEuler(0,.9,0).multiply(qEuler(-Math.PI/2+.35,0,-.25)),at:[1150,40]}];
+  const SHS=mkSet();
   for(const PC of pieces){
    // sit its lowest corner 3 m into the plain, centred where it came to rest
    let lo=1e9,cx=0,cz=0,nn=0;
@@ -20188,11 +20566,26 @@ function buildWing(scene,gx,gz,d){reseed(9620+d);KOFF=[gx,0,gz];
    const FS=mkSet(),Cp={lo:(y)=>PC.lo(y),hi:(y)=>PC.hi(y)};
    emitHalf(FS,1,Cp);dressHalf(1,Cp,false);
    endGroupXF();flush(FS,P);
+   // QA (arcC): bedded in what it crushed — rubble piled wherever the piece's
+   // faces come within a few metres of the plain — and torn slabs of its
+   // concrete thrown out round it (krShard, 89d-arcube.js)
+   {const Mw=new THREE.Matrix4().compose(P.position,P.quaternion,new THREE.Vector3(1,1,1)),v=new THREE.Vector3();
+    for(let x=PC.x0;x<=PC.x1;x+=6)for(let y=PC.y0;y<=PC.y1;y+=6)for(const zs of [1,-1]){if(rng()<.5)continue;
+     v.set(x,y,zs*W(x)).applyMatrix4(Mw);if(v.y>8||v.y<-8)continue;const sz=rr(2,8);
+     kput('wgRub',[v.x+rr(-5,5),Math.max(0,v.y)*.4+sz*.3,v.z+rr(-5,5)],qEuler(rng()*3,rng()*3,rng()*3),[sz*rr(.8,1.5),sz*rr(.5,.9),sz*rr(.8,1.5)],RUBC());}
+    for(let j=0;j<8;j++){const w=rr(12,30),l=rr(14,40),t=rr(3,7);
+     const SH=krShard({w:w,l:l,t:t,layers:2,brk:[1,1,1,j%2],bite:.26,tile:TILE,seg:8});
+     const a=rng()*TAU,r=rr(120,230),x=PC.at[0]+Math.cos(a)*r,z=PC.at[1]+Math.sin(a)*r,qS=qEuler(rr(-.3,.3),rng()*TAU,rr(-.3,.3));
+     const MS=new THREE.Matrix4().compose(new THREE.Vector3(x,-SH.low(qS)-t*.3,z),qS,new THREE.Vector3(1,1,1));
+     for(const [g,key] of [[SH.top,'rib'],[SH.side,'conc'],[SH.bot,'conc'],[SH.brk,'guts']]){if(!g)continue;g.applyMatrix4(MS);
+      const pa=g.attributes.position,ua=g.attributes.uv;for(let i=0;i<pa.count;i+=3){const P3=[0,1,2].map(o=>[pa.getX(i+o),pa.getY(i+o),pa.getZ(i+o)]);
+       T3(SHS,key,P3[0],P3[1],P3[2],[0,1,2].flatMap(o=>[ua.getX(i+o),ua.getY(i+o)]),1,1,1);}}}}
    FALLEN.push({x:PC.at[0],z:PC.at[1]});
    REGISTER({name:'The Wing — the fallen east wing, piece '+FALLEN.length,x:PC.at[0],z:PC.at[1],r:170,h:130});
    rub(PC.at[0],PC.at[1],90,260,260,7);
    for(let j=0;j<40;j++){const a=rng()*TAU,r=rr(100,240),sz=rr(5,16);
-    kput('wgBox',[PC.at[0]+Math.cos(a)*r,sz*.2,PC.at[1]+Math.sin(a)*r],qEuler(rr(-.5,.5),rng()*TAU,rr(-.5,.5)),[sz*rr(1,2.2),sz*.5,sz*rr(.8,1.6)],CONC());}}
+    kput('wgRub',[PC.at[0]+Math.cos(a)*r,sz*.2,PC.at[1]+Math.sin(a)*r],qEuler(rr(-.5,.5),rng()*TAU,rr(-.5,.5)),[sz*rr(1,2.2),sz*.5,sz*rr(.8,1.6)],CONC());}}
+  flush(SHS,G);
   // ---- the stump: floors hanging out of the break, rods, the heap below it
   for(let j=0;j<70;j++){const y=rr(130,Math.min(YTOP,380)),x=cutE(y);if(!inYoke(x-6,y))continue;
    const L=rr(6,20);
@@ -20351,6 +20744,8 @@ MAT.drLawnR=drStd({map:TEX.drGrassR,roughnessMap:null});
 MAT.drPave =drStd({map:TEX.concrete,color:0x8a857a});
 MAT.drPaveR=drStd({map:TEX.concrete,color:0x5c5d4e});
 MAT.drVoid =drStd({color:0x0a0a0b,roughnessMap:null});
+// QA (arcC): crushed earth and grit under a fallen piece
+MAT.drScar =drStd({map:TEX.concrete,color:0x4a4034});
 MAT.drKit  =drStd({map:TEX.concrete,color:0xffffff});
 kdef('drBox',new THREE.BoxGeometry(1,1,1),MAT.drKit);
 kdef('drDim',new THREE.BoxGeometry(1,1,1),MAT.drVoid);
@@ -20464,7 +20859,7 @@ function buildDrum(scene,gx,gz,d){reseed(9630+d);KOFF=[gx,0,gz];
  // ---- materials by state ----------------------------------------------------------------
  const MK={BLK:dd?MAT.drBlkR:MAT.drBlk,CORE:dd?MAT.drCoreR:MAT.drCore,SLOT:dd?MAT.drSlotR:MAT.drSlot,
   CONC:dd?MAT.drConcR:MAT.drConc,DECK:dd?MAT.drDeckR:MAT.drDeck,SHADE:dd?MAT.drShadeR:MAT.drShade,
-  SECT:MAT.drSect,LAWN:dd?MAT.drLawnR:MAT.drLawn,PAVE:dd?MAT.drPaveR:MAT.drPave,VOID:MAT.drVoid};
+  SECT:MAT.drSect,SCAR:MAT.drScar,LAWN:dd?MAT.drLawnR:MAT.drLawn,PAVE:dd?MAT.drPaveR:MAT.drPave,VOID:MAT.drVoid};
 
  // ---- the palette and the small things ------------------------------------------------
  const WG=new THREE.Color(0xffc478);
@@ -20596,6 +20991,16 @@ function buildDrum(scene,gx,gz,d){reseed(9630+d);KOFF=[gx,0,gz];
    if(y0>=YK-1e-6)Q('CONC',[FP(i0,y0,TF/2),FP(i0,y0,-TF/2),FP(i1,y1,-TF/2),FP(i1,y1,TF/2)],
     [[0,y0/8],[TF/8,y0/8],[TF/8,y1/8],[0,y1/8]],c);}
   if(prev>=0&&prev!==2)cap(YS[YS.length-1]>YC?YC:YS[YS.length-1],prev,'CONC');
+  // QA (arcC): the fins' flanks were blank board-marked planes wherever a gap
+  // between tiers laid them open. They are inhabited walls: deep window
+  // openings in storey rows (a third lit), and a balcony slab under every
+  // fourth row, on both flanks, in every gap.
+  for(let ti=0;ti<TIERS.length;ti++){const ya=(ti===0?YBASE:TIERS[ti-1].yt)+3,yb=TIERS[ti].yb-3;
+   for(let y=ya;y<yb-3;y+=4.2){for(const sd of [-1,1]){const n=[-stt*sd,0,ct*sd],qn=qFacing(n);
+     for(let r=RI(y)+8;r<RF(y)-7;r+=6.5){if(finInVoid(th,y)||snapped(f,y)||h3(f*7+sd,Math.round(y/4.2),r*.13)<.35)continue;
+      const lit=!dd&&h3(r*.7,y*.3,f+sd*3)<.33;
+      put(lit?'strip':'drDim',FP(r,y,sd*(TF/2+(lit?.08:.2))),qn,lit?[2.2,17,2]:[2.4,3.2,.5],lit?WG:null);}
+     if(Math.round((y-ya)/4.2)%4===2&&!(dd&&rng()<.4))put('drBox',FP((RI(y)+RF(y))*.5,y-1.8,sd*(TF/2+1.2)),qn,[RF(y)-RI(y)-10,.6,2.4],grey());}}}
   // the fin's foot on the podium, and a lamp at the slot's foot
   if(!dd)put('strip',[RFOOT*ct,3,RFOOT*stt],qEuler(0,-th+Math.PI/2,0),[TF*.9,10,10],WG);}
  // the coronet: a ring tying the blade tips together
@@ -20740,7 +21145,36 @@ function buildDrum(scene,gx,gz,d){reseed(9630+d);KOFF=[gx,0,gz];
  if(dd){DEB=[];
   // a piece: a box of w x h x dp, turned and laid down, its lowest corner 1.5 m
   // into the plain. The outer face keeps the block skin, the rest is fracture.
-  const piece=(w,h,dp,x,z,yaw,rx,rz,outer,key2)=>{
+  // QA (arcC): with `brk` a piece is SHATTERED (krShard, 89d-arcube.js): torn
+  // on the edges brk names, its storeys torn back unevenly from the break so the
+  // floor plates step out, the section map on the tear, slab tongues and bars
+  // out of it. The lantern and the coronet arcs stay boxes.
+  const pushG=(key,g)=>{if(!g)return;const A=ACC[key]||(ACC[key]={P:[],N:[],U:[],I:[],n:0});
+   const p=g.attributes.position,nn=g.attributes.normal,u=g.attributes.uv;
+   for(let i=0;i<p.count;i++){A.P.push(p.getX(i),p.getY(i),p.getZ(i));A.N.push(nn.getX(i),nn.getY(i),nn.getZ(i));
+    A.U.push(u.getX(i),u.getY(i));A.I.push(A.n+i);}
+   A.n+=p.count;};
+  const shard=(w,h,dp,x,z,q,outer,key2,brk)=>{
+   const SH=krShard({w:w,l:dp,t:h,layers:Math.max(2,Math.min(9,Math.round(h/6.5))),brk:brk,bite:.2,tile:12,seg:7});
+   const ymin=SH.low(q),ymax=SH.high(q),bury=1.5+(ymax-ymin)*rr(.06,.16);
+   const M=new THREE.Matrix4().compose(new THREE.Vector3(x,-ymin-bury,z),q,new THREE.Vector3(1,1,1));
+   pushG('CONC',SH.top&&SH.top.applyMatrix4(M));pushG('SHADE',SH.bot&&SH.bot.applyMatrix4(M));
+   pushG(outer,SH.side&&SH.side.applyMatrix4(M));pushG(key2,SH.brk&&SH.brk.applyMatrix4(M));
+   const W=(a,b,c)=>{const v=new THREE.Vector3(a,b,c).applyMatrix4(M);return[v.x,v.y,v.z];};
+   for(const r of SH.rim){const n=r.n,p=r.p;
+    if(r.step>1.5&&rng()<.6){const L=r.step*rr(.5,1)+rr(.8,3);
+     kput('drBox',W(p[0]-n[0]*r.step*.5+n[0]*L*.5,p[1]+.35,p[2]-n[2]*r.step*.5+n[2]*L*.5),
+      q.clone().multiply(qFacing([n[0],0,n[2]])).multiply(qEuler(rr(-.05,.05),0,rr(-.07,.07))),[r.len*rr(.5,.9),.7,L],grey());}
+    if(rng()<.4)for(let b=0;b<2;b++){const L=rr(2.5,7);
+     kput('drBox',W(p[0]+n[0]*L*.35+rr(-1.5,1.5),p[1]-rr(.4,2),p[2]+n[2]*L*.35+rr(-1.5,1.5)),
+      q.clone().multiply(qFacing([n[0]+rr(-.3,.3),rr(-.3,.4),n[2]+rr(-.3,.3)])),[.3,.3,L],new THREE.Color(0x3a2a20));}}
+   const R=Math.max(w,h,dp)*.5;DEB.push({x:x,z:z,r:R*.9});
+   const tp=ymax-ymin-bury;
+   for(let i=0;i<Math.round(R/4);i++)moss(x+rr(-.3,.3)*R,Math.max(.2,tp*rr(.3,1)),z+rr(-.3,.3)*R,rr(1,3));
+   if(tp>6&&rng()<.6)plant(x+rr(-.2,.2)*R,tp*rr(.5,.9),z+rr(-.2,.2)*R,rr(5,11));
+   return R;};
+  const piece=(w,h,dp,x,z,yaw,rx,rz,outer,key2,brk)=>{
+   if(brk)return shard(w,h,dp,x,z,new THREE.Quaternion().setFromEuler(new THREE.Euler(rx,yaw,rz,'YXZ')),outer,key2,brk);
    const m=new THREE.Matrix4().compose(new THREE.Vector3(0,0,0),new THREE.Quaternion().setFromEuler(new THREE.Euler(rx,yaw,rz,'YXZ')),new THREE.Vector3(1,1,1));
    const cs=[];for(const a of [-1,1])for(const b of [-1,1])for(const c of [-1,1]){const v=new THREE.Vector3(a*w/2,b*h/2,c*dp/2).applyMatrix4(m);cs.push(v);}
    let ymin=1e9,ymax=-1e9;for(const v of cs){ymin=Math.min(ymin,v.y);ymax=Math.max(ymax,v.y);}
@@ -20776,15 +21210,21 @@ function buildDrum(scene,gx,gz,d){reseed(9630+d);KOFF=[gx,0,gz];
    const dm=[B.w,B.h,B.dp],ord=[0,1,2].sort((a,b)=>dm[a]-dm[b]),ax=rng()<.72?ord[0]:ord[1];
    const tA=rr(.14,.42)*(rng()<.5?-1:1),tB=rr(-.2,.2);
    const rx=ax===2?Math.PI/2+tA:tB,rz=ax===0?Math.PI/2+tA:(ax===1?tA:tB);
-   piece(B.w,B.h,B.dp,at[0],at[1],rng()*TAU,rx,rz,rng()<.6?'BLK':'SECT','SECT');}
+   piece(B.w,B.h,B.dp,at[0],at[1],rng()*TAU,rx,rz,rng()<.6?'BLK':'SECT','SECT',[0,1,1,1]);}
   // the crown's blades and the fins' upper runs: long slabs
   for(let i=0;i<14;i++){const L=rr(70,150),dp=rr(26,52),R=L*.5,at=place(300,820,.9,R*.7);if(!at)continue;
-   piece(TF,dp,L,at[0],at[1],rng()*TAU,rr(-.1,.1),Math.PI/2+rr(-.25,.25),'CONC','SECT');}
+   piece(TF,dp,L,at[0],at[1],rng()*TAU,rr(-.1,.1),Math.PI/2+rr(-.25,.25),'CONC','SECT',[1,0,1,0]);}
   // arcs of the coronet ring
   for(let i=0;i<7;i++){const at=place(420,900,.9,30);if(!at)continue;
    piece(rr(40,70),5,8,at[0],at[1],rng()*TAU,rr(-.3,.3),rr(-.3,.3),'CONC','SECT');}
   // the lantern, on its side
   {const at=place(500,700,.5,40);if(at)piece(56,44,56,at[0],at[1],rng()*TAU,Math.PI/2,0,'CORE','SECT');}
+  // QA (arcC): the ground each piece came down on: a torn skirt of crushed earth
+  // and grit under and round it (and the only contact shadow this kit has)
+  for(const q of DEB.slice()){const n=14,R0=q.r*rr(1.05,1.3),ph=rng()*9;
+   const rr2=a=>R0*(1+.22*Math.sin(a*3+ph)+.12*Math.sin(a*7+ph*2));
+   for(let i=0;i<n;i++){const a0=i/n*TAU,a1=(i+1)/n*TAU;
+    QH('SCAR',[q.x,.38,q.z],[q.x,.38,q.z],[q.x+Math.cos(a1)*rr2(a1),.38,q.z+Math.sin(a1)*rr2(a1)],[q.x+Math.cos(a0)*rr2(a0),.38,q.z+Math.sin(a0)*rr2(a0)],16,0);}}
   // rubble: a heap along the foot on the side it fell, and round every piece
   for(const q of DEB.slice())heap(q.x,q.z,q.r*.7,q.r*1.8,Math.min(60,Math.round(q.r*1.2)),5);
   for(let i=0;i<10;i++){const a=AF+rr(-.8,.8),r=rr(RFOOT-10,RFOOT+120);heap(r*Math.cos(a),r*Math.sin(a),0,50,70,9);}
@@ -20871,7 +21311,8 @@ function buildDrum(scene,gx,gz,d){reseed(9630+d);KOFF=[gx,0,gz];
  // many pieces as possible between
  let EYE=null;
  if(DEB){let best=-1;
-  for(let i=0;i<900;i++){const a=AF+rr(-.8,.8),r=rr(400,700),x=r*Math.cos(a),z=r*Math.sin(a);
+  // QA (arcC): inside the kerb (the court is r 560): it stood out on bare soil
+  for(let i=0;i<900;i++){const a=AF+rr(-.8,.8),r=rr(380,535),x=r*Math.cos(a),z=r*Math.sin(a);
    if(DEB.some(q=>Math.hypot(x-q.x,z-q.z)<q.r*1.9+10)||onWall(x,z)||TREES.some(t=>Math.hypot(x-t[0],z-t[1])<14))continue;
    let sc=0;for(const q of DEB){const t=(q.x*x+q.z*z)/(r*r),ox=q.x-t*x,oz=q.z-t*z;
     if(t>.25&&t<.85&&Math.hypot(ox,oz)<40+q.r)sc++;}
@@ -21078,6 +21519,8 @@ TEX.blGrass=canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),D=id.dat
  g.putImageData(id,0,0);});
 MAT.blLawn =new THREE.MeshStandardMaterial({map:TEX.blGrass,color:0xffffff,roughness:1,metalness:0,side:DS});
 MAT.blLawnR=new THREE.MeshStandardMaterial({map:TEX.blGrass,color:0x9a8d62,roughness:1,metalness:0,side:DS});
+// QA (arcC): the torn ground under the fallen blade
+MAT.blScar=new THREE.MeshStandardMaterial({map:TEX.concrete,color:0x3e3328,roughness:1,metalness:0,side:DS});
 kdef('blBox',new THREE.BoxGeometry(1,1,1),MAT.blKit);
 kdef('blDim',new THREE.BoxGeometry(1,1,1),MAT.blVoid);
 // Presets are DERIVED from this: targets/blades/91z-views.js runs after
@@ -21202,9 +21645,24 @@ function buildBlades(scene,gx,gz,d){reseed(9640+d);KOFF=[gx,0,gz];
   const face=(f,hole,list,T)=>{const g=gridSurface((a,b)=>{const q=S(a,b);return B.P(q[0],q[1],f);},nu,nv,
     {hole:hole?(a,b)=>{const q=S(a,b);return hole(q[0],q[1]);}:null});
    setUV(g,nu,nv,(a,b)=>{const q=S(a,b);return[f*q[0]*B.W(q[1])/2/T,q[1]/T];});list.push(g);};
+  // QA (arcC): THE REVEALS. A hole used to leave the gap between the two skins
+  // open, so at a grazing angle you saw through the blade's edge. Every edge
+  // between a holed cell and a whole one now gets a reveal from the skin to the
+  // mid-thickness section sheet, in the section's own material.
+  const reveal=(f,hole,list)=>{if(!hole||!list)return;const H=[];
+   for(let j=0;j<nv;j++){const row=[];for(let i=0;i<nu;i++){const q=S((i+.5)/nu,(j+.5)/nv);row.push(hole(q[0],q[1]));}H.push(row);}
+   const P=(i,j,d)=>{const q=S(i/nu,j/nv);return B.P(q[0],q[1],d);},pos=[],uv=[];
+   const qd=(i0,j0,i1,j1)=>{const a=P(i0,j0,f),b=P(i1,j1,f),c=P(i1,j1,0),e=P(i0,j0,0);
+    for(const p of [a,b,c,a,c,e]){pos.push(p[0],p[1],p[2]);uv.push((p[0]+p[2])/16,p[1]/16);}};
+   for(let j=0;j<nv;j++)for(let i=0;i<nu;i++){if(!H[j][i])continue;
+    if(i>0&&!H[j][i-1])qd(i,j,i,j+1);if(i<nu-1&&!H[j][i+1])qd(i+1,j,i+1,j+1);
+    if(j>0&&!H[j-1][i])qd(i,j,i+1,j);if(j<nv-1&&!H[j+1][i])qd(i,j+1,i+1,j+1);}
+   if(!pos.length)return;const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
+   g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.computeVertexNormals();list.push(g);};
   if(o.inner)face(-1,o.hI,o.inner,TW);
   if(o.outer)face(1,o.hO,o.outer,TW);
-  if(o.mid&&(o.hI||o.hO))face(0,(u,s)=>!((o.hI&&o.hI(u,s))||(o.hO&&o.hO(u,s))),LX,16);
+  if(o.mid){reveal(-1,o.inner&&o.hI,o.midList||LX);reveal(1,o.outer&&o.hO,o.midList||LX);}
+  if(o.mid&&(o.hI||o.hO))face(0,(u,s)=>!((o.hI&&o.hI(u,s))||(o.hO&&o.hO(u,s))),o.midList||LX,16);
   if(o.edge)for(const e of [-1,1]){const g=gridSurface((a,b)=>B.P(e,lerp(s0(e),s1(e),b),2*a-1),2,nv,{});
    setUV(g,2,nv,(a,b)=>{const s=lerp(s0(e),s1(e),b);return[(2*a-1)*B.T(s)/2/TW,s/TW];});o.edge.push(g);}
   for(const [cap,sf] of [[o.top,s1],[o.bot,s0]]){if(!cap)continue;
@@ -21264,7 +21722,11 @@ function buildBlades(scene,gx,gz,d){reseed(9640+d);KOFF=[gx,0,gz];
   let acc=0;
   for(let si=0;si<K.segs.length;si++){const sg=K.segs[si],sA=K.lines[si],sB=K.lines[si+1];
    const tmp={w:[],s:[],x:[]};
-   piece(B,sA,sB,{inner:tmp.w,outer:tmp.s,edge:tmp.s,top:tmp.x,bot:tmp.x,hI:null,hO:null});
+   // QA (arcC): the pieces were clean curved plates. A slab that came down 400 m
+   // bursts: both skins are holed now (harder than the standing ruin), with the
+   // section sheet showing through, so a piece reads as a shattered slab.
+   const fI=(u,s2)=>fbm(u*2.1+B.sd+si,s2/48,B.sd*.3+7.7,3)<.36,fO=(u,s2)=>fbm(u*2.3+B.sd+si+4,s2/52,B.sd*.3+9.1,3)<.31;
+   piece(B,sA,sB,{inner:tmp.w,outer:tmp.s,edge:tmp.s,top:tmp.x,bot:tmp.x,hI:fI,hO:fO,mid:true,midList:tmp.x});
    const all=[...tmp.w,...tmp.s,...tmp.x];
    for(const g of all)g.applyMatrix4(M0);
    const bb=new THREE.Box3();for(const g of all){g.computeBoundingBox();bb.union(g.boundingBox);}
@@ -21613,7 +22075,35 @@ function buildBlades(scene,gx,gz,d){reseed(9640+d);KOFF=[gx,0,gz];
    for(let j=0;j<16;j++){const e=rng()<.5?-1:1,s=lerp(f.s0(e),f.s1(e),rng()),p=xf(f.M,B.P(e,s,up));
     kput('vine',p,null,[1.5,Math.max(3,p[1]-(f.dir>0?0:PY)),1.5],null);}
    const c=f.box.getCenter(new THREE.Vector3()),sz=f.box.getSize(new THREE.Vector3());
-   talus(c.x,f.dir>0?0:PY,c.z,Math.min(sz.x,sz.z)*.35,Math.max(sz.x,sz.z)*.62,f.dir>0?300:160,5.5);}
+   talus(c.x,f.dir>0?0:PY,c.z,Math.min(sz.x,sz.z)*.35,Math.max(sz.x,sz.z)*.62,f.dir>0?300:160,5.5);
+   // QA (arcC): bedded in what it hit — rubble piled along every line where
+   // its skins meet the ground (krSeam, 89d-arcube.js) ...
+   const gy=f.dir>0?0:PY;
+   for(let j=0;j<60;j++){const e=rng()<.5?-1:1,u=rng()<.6?e*rr(.85,1):rr(-1,1),s2=lerp(f.s0(u),f.s1(u),rng()),o=rr(-1,1),p=xf(f.M,B.P(u,s2,o));
+    if(p[1]-gy>9)continue;const zz=rr(2.5,8);
+    kput('rubble',[p[0]+rr(-6,6),gy+zz*.35,p[2]+rr(-6,6)],qEuler(rng()*3,rng()*3,rng()*3),[zz*rr(.8,1.5),zz*rr(.5,.9),zz*rr(.8,1.5)],rubC());}
+   // ... and, on the plain, torn slabs of its skin thrown out either side
+   if(f.dir>0)for(let j=0;j<10;j++){const w=rr(10,26),l=rr(12,34),t=rr(3,6);
+    const SH=krShard({w:w,l:l,t:t,layers:2,brk:[1,1,1,j%2],bite:.26,tile:16,seg:8});
+    const a=rng()*TAU,r=Math.max(sz.x,sz.z)*rr(.4,.75),x=c.x+Math.cos(a)*r,z=c.z+Math.sin(a)*r;
+    const qS=qEuler(rr(-.3,.3),rng()*TAU,rr(-.3,.3));
+    const MS=new THREE.Matrix4().compose(new THREE.Vector3(x,-SH.low(qS)-t*.3,z),qS,new THREE.Vector3(1,1,1));
+    if(SH.top)LS.push(SH.top.applyMatrix4(MS));if(SH.side)LS.push(SH.side.applyMatrix4(MS));
+    if(SH.bot)LX.push(SH.bot.applyMatrix4(MS));if(SH.brk)LX.push(SH.brk.applyMatrix4(MS));
+    talus(x,0,z,Math.max(w,l)*.3,Math.max(w,l)*.7,14,3.5);}}
+  // QA (arcC): THE SCAR. Where the north-west blade came down the plain is torn
+  // open: a ragged skirt of crushed earth under and round the pieces, and a
+  // ring of thrown ejecta beyond it, so it hit something.
+  for(const Fp of FOOT){if(Fp.B.brk.dir<0)continue;const ax=Fp.b[0]-Fp.a[0],az=Fp.b[2]-Fp.a[2],L=Math.hypot(ax,az),ex=ax/L,ez=az/L;
+   const n=24,pos=[],uv=[];const W=Fp.hw*1.5,ph=Fp.B.sd;
+   const rim=t=>{const a=t*TAU,cx=Math.cos(a),sn=Math.sin(a),f=1+.22*Math.sin(a*3+ph)+.12*Math.sin(a*7+ph*2);
+    const lx=cx*(L*.5+W*.4)*f,lz=sn*W*f;return[(Fp.a[0]+Fp.b[0])/2+lx*ex-lz*ez,.45,(Fp.a[2]+Fp.b[2])/2+lx*ez+lz*ex];};
+   const m=[(Fp.a[0]+Fp.b[0])/2,.45,(Fp.a[2]+Fp.b[2])/2];
+   for(let i=0;i<n;i++){const A2=rim(i/n),B2=rim((i+1)/n);pos.push(...m,...B2,...A2);uv.push(m[0]/16,m[2]/16,B2[0]/16,B2[2]/16,A2[0]/16,A2[2]/16);}
+   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
+   g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.computeVertexNormals();mesh(g,MAT.blScar,G);
+   for(let j=0;j<420;j++){const t=rng(),p=rim(t),k=rr(1,1.5),x=m[0]+(p[0]-m[0])*k,z=m[2]+(p[2]-m[2])*k,zz=rr(1,5)*(1.6-k*.6);
+    kput('rubble',[x,zz*.3,z],qEuler(rng()*3,rng()*3,rng()*3),[zz*rr(.8,1.5),zz*rr(.4,.8),zz*rr(.8,1.5)],rubC());}}
   // the stumps' own talus, outside and in
   for(const B of BT){const bo=B.P(0,4,1),bi=B.P(0,PY+2,-1),ro=Rp1(B.phi)+6;
    talus(ro*Math.cos(B.phi),0,ro*Math.sin(B.phi),4,B.brk?160:90,B.brk?220:80,B.brk?7:5);

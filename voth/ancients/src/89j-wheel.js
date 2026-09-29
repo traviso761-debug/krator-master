@@ -94,14 +94,24 @@ function whWinLit(){
   g.putImageData(id,0,0);});}
 // The soffit: 8 m coffers at 32 m a tile, a lamp in each. mode 0 albedo, 1 the
 // day emissive (painted bounce + lamps), 2 the night emissive (lamps only).
+// QA (arcC): from below it read as a ceiling grid — even ribs, a lamp in every
+// other coffer. The ribs are now faint and uneven, the stone is mottled at the
+// scale of the whole tile (seamless), the underside of the garden above shows
+// through as dark hanging roots and ferns in patches, and the lamps are few
+// and irregular: the underside of a landscape more than of a room.
 function whSoffTex(dec,mode){
  return canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),D=id.data;
   for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;
-   const cx=x&63,cy=y&63,rib=cx<6||cy<6,lx=cx-35,ly=cy-35,lamp=lx*lx+ly*ly<20&&((x>>6)+(y>>6))%2===0&&!(dec&&h3(x>>6,y>>6,3.7)<.8);
-   const n=(fbm(x/12,y/12,3.3,2)-.5)*14;let r,gg,b;
-   if(mode===0){let v=rib?206+n:172+n;if(dec)v=v*.7-Math.max(0,fbm(x/4,y/40,5.5,2)-.45)*120;
-    if(lamp)v=250;r=v+2;gg=v;b=v-4;}
-   else if(mode===1){let v=(dec?(rib?74:62):(rib?112:94))+n*.3;r=v*.90;gg=v*.95;b=v;if(lamp){r=255;gg=226;b=170;}}
+   const ci=x>>6,cj=y>>6,cx=x&63,cy=y&63,rw=3+Math.floor(h3(ci,cj,2.9)*4),rib=cx<rw||cy<rw;
+   const lx=cx-26-h3(ci,cj,5.1)*22,ly=cy-26-h3(ci,cj,6.3)*22,lamp=lx*lx*(h3(ci,cj,7.7)<.4?.18:1)+ly*ly<18&&h3(ci,cj,4.1)<.34&&!(dec&&h3(ci,cj,3.7)<.8);
+   const big=whTile((X,Y)=>fbm(X/70,Y/70,8.1,3),x,y,w,h),root=whTile((X,Y)=>fbm(X/22,Y/22,9.3,3),x,y,w,h);
+   const hang=root>.6&&!lamp,n=(fbm(x/12,y/12,3.3,2)-.5)*14+(big-.5)*46;let r,gg,b;
+   if(mode===0){let v=rib?184+n:170+n;if(dec)v=v*.7-Math.max(0,fbm(x/4,y/40,5.5,2)-.45)*120;
+    if(lamp)v=250;r=v+2;gg=v;b=v-4;
+    if(hang){const f=Math.min(1,(root-.6)*6),s=.55+.45*fbm(x/2.5,y/9,4.8,2);r=lerp(r,58*s,f);gg=lerp(gg,74*s,f);b=lerp(b,40*s,f);}}
+   else if(mode===1){let v=(dec?(rib?68:62):(rib?100:94))+n*.3;r=v*.90;gg=v*.95;b=v;
+    if(hang){const f=Math.min(1,(root-.6)*6);r*=1-.6*f;gg*=1-.5*f;b*=1-.65*f;}
+    if(lamp){r=255;gg=226;b=170;}}
    else{r=gg=b=0;if(lamp){r=255;gg=212;b=150;}else if(rib){r=gg=b=3;}}
    D[i]=clamp(r,0,255);D[i+1]=clamp(gg,0,255);D[i+2]=clamp(b,0,255);D[i+3]=255;}
   g.putImageData(id,0,0);});}
@@ -724,8 +734,23 @@ function buildWheel(scene,gx,gz,d){reseed(9750+d);KOFF=[gx,0,gz];
   const p=[L(-w/2,-dp/2),L(w/2,-dp/2),L(w/2,dp/2),L(-w/2,dp/2)];
   const wk=sh?'winsh':'win';let u=rng()*51.2;const yr=-Math.floor(rng()*8)*4.2;
   for(let i=0;i<4;i++)u+=wq(A[wk],p[i],p[(i+1)%4],0,0,h,h,u,yr);
-  const rk=dd&&rng()<.55?'void':(sh?'roofsh':'stone');
-  quadW(A[rk],[p[0][0],h,p[0][1]],[p[1][0],h,p[1][1]],[p[2][0],h,p[2][1]],[p[3][0],h,p[3][1]]);NBLD++;};
+  // QA (arcC): the lower city read as a sea of identical pale boxes. A third of
+  // the sunlit blocks now step back into a second, narrower volume; roofs are
+  // pale stone, dark tar, or planted; and most carry a plant room or a stair
+  // kiosk, so from the band and from above the roofscape has a grain.
+  let hr=h,wr=w,dr=dp,Lr=L;
+  if(!dd&&!sh&&rng()<.34&&h>9){const f=rr(.5,.72),h2=rr(6,16);wr=w*f;dr=dp*f;
+   const ox=rr(-1,1)*(w-wr)*.4,oz=rr(-1,1)*(dp-dr)*.4;Lr=(lx,lz)=>L(lx+ox,lz+oz);
+   quadW(A.stone,[p[0][0],h,p[0][1]],[p[1][0],h,p[1][1]],[p[2][0],h,p[2][1]],[p[3][0],h,p[3][1]]);
+   const p2=[Lr(-wr/2,-dr/2),Lr(wr/2,-dr/2),Lr(wr/2,dr/2),Lr(-wr/2,dr/2)];
+   for(let i=0;i<4;i++)u+=wq(A[wk],p2[i],p2[(i+1)%4],h,h,h+h2,h+h2,u,yr);
+   hr=h+h2;for(let i=0;i<4;i++)p[i]=p2[i];}
+  const rv=rng(),rk=dd&&rng()<.55?'void':(sh?'roofsh':(rv<.3?'roofsh':'stone'));
+  quadW(A[rk],[p[0][0],hr,p[0][1]],[p[1][0],hr,p[1][1]],[p[2][0],hr,p[2][1]],[p[3][0],hr,p[3][1]]);NBLD++;
+  if(!dd&&!sh&&rv>.8)kput('whBox',[(p[0][0]+p[2][0])/2,hr+.35,(p[0][1]+p[2][1])/2],qEuler(0,-rotA,0),[wr-2.4,.6,dr-2.4],
+   new THREE.Color().setHSL(rr(.2,.3),rr(.3,.5),rr(.2,.28)));
+  if(!dd&&rng()<.55){const c2=Lr(rr(-.25,.25)*wr,rr(-.25,.25)*dr),kh=rr(2.5,4.5);
+   kput('whBox',[c2[0],hr+kh/2,c2[1]],qEuler(0,-rotA,0),[rr(3,7),kh,rr(3,6)],rng()<.5?stoneC():stoneD());}};
  for(let r=RRD[0]+18;r<RG-14;r+=rr(30,36)){for(let a=rr(0,.02);a<TAU;a+=rr(26,34)/r){
   const w=rr(16,26),dp=rr(14,22),x0=r*Math.cos(a),z0=r*Math.sin(a);
   if(RRD.some(R=>Math.abs(r-R)<10+dp/2+3))continue;
@@ -767,7 +792,25 @@ function buildWheel(scene,gx,gz,d){reseed(9750+d);KOFF=[gx,0,gz];
    const gb=shapeGeo(sh,0,32);gb.applyMatrix4(T.m);put(M.soff,gb);
    let u=0;for(let j=0;j<pts.length;j++){const p=pts[j],q=pts[(j+1)%pts.length];
     if(kind[j]==='w')u+=wwX(A.win,T.X,p,q,0,H,u);
-    else quadW(A.sect,T.X(p[0],0,p[1]),T.X(q[0],0,q[1]),T.X(q[0],H,q[1]),T.X(p[0],H,p[1]));}};
+    else quadW(A.sect,T.X(p[0],0,p[1]),T.X(q[0],0,q[1]),T.X(q[0],H,q[1]),T.X(p[0],H,p[1]));}
+   // QA (arcC): a slab that fell 300 m does not keep a clean edge. Along every
+   // fracture the storeys tear back unevenly: a floor plate tongue out of the
+   // section every 7.6 m of height, some bent down, bars out of the rest, and a
+   // lip of the garden deck broken over the edge; and along the bottom, where
+   // it hit, its own fragments are piled against it so it sits IN the city it
+   // crushed, not on a clean plain.
+   withXF(T,()=>{for(let j=0;j<pts.length;j++){if(kind[j]!=='s')continue;const p=pts[j],q=pts[(j+1)%pts.length];
+    const ex=q[0]-p[0],ez=q[1]-p[1],L=Math.hypot(ex,ez);if(L<3)continue;let nx=ez/L,nz=-ex/L;
+    if(nx*(p[0]+q[0])+nz*(p[1]+q[1])<0){nx=-nx;nz=-nz;}
+    const qa=qFacing([nx,0,nz]);
+    for(let y=4;y<H-2;y+=7.6){if(rng()<.45)continue;const f=rr(.15,.85),o=rr(2,9),bend=rng()<.3?rr(.2,.7):rr(-.05,.08);
+     kput('whBox',[lerp(p[0],q[0],f)+nx*o*.5,y,lerp(p[1],q[1],f)+nz*o*.5],qa.clone().multiply(qEuler(bend,0,rr(-.06,.06))),[Math.min(L*.8,rr(6,16)),1.1,o+1],stoneD());}
+    for(let b=0;b<Math.round(L/6);b++)if(rng()<.5){const f=rng();rebar([lerp(p[0],q[0],f),rr(2,H-2),lerp(p[1],q[1],f)],[nx,rr(-.3,.1),nz],rr(2,8));}
+    if(rng()<.7){const f=rr(.2,.8),o=rr(3,8);
+     kput('whBox',[lerp(p[0],q[0],f)+nx*o*.4,H-o*.25,lerp(p[1],q[1],f)+nz*o*.4],qa.clone().multiply(qEuler(rr(.35,.8),0,0)),[Math.min(L*.7,rr(10,24)),2,o],stoneC());}}});
+   for(let j=0;j<pts.length;j++){const p=pts[j];if(rng()<.35)continue;
+    for(const yy of [0,H]){const w=T.X(p[0],yy,p[1]);if(w[1]>10)continue;
+     for(let q=0;q<2;q++)chunk(w[0]+rr(-8,8),Math.max(0,w[1])*.3,w[2]+rr(-8,8),[rr(3,11),rr(1.5,5),rr(3,9)]);}}};
   const UP=new THREE.Vector3(0,1,0);
   for(let i=0;i<NB;i++){const a0=BR[i],a1=BR[i+1],am=(a0+a1)/2;
    const er=new THREE.Vector3(Math.cos(am),0,Math.sin(am)),et=new THREE.Vector3(-Math.sin(am),0,Math.cos(am));

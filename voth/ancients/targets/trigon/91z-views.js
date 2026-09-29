@@ -28,8 +28,12 @@ const VIEWS={
  // the terraces raking: standing off the face at mid-height and looking back
  // along the treads so their planting and the stair read as steps
  'The terraces':          TGF(TGA,0,330,-190,640).concat(TGF(TGA,0,TGA.DY(470),40,470)),
- // UP THE ARRIS: at the foot of the portal/balcony corner, looking up it
- 'Up the arris':          TGP(TGA,34,360,3).concat(TGP(TGA,34,2*TGA.DY(520),520)),
+ // UP THE ARRIS: off the portal/balcony corner, looking up it. QA (arcC): it
+ // stood 150 m off the corner looking 64 degrees up, which is sky either side
+ // of a knife edge and no ground; from 560 m, a little round toward the
+ // balcony face, the plinth's cut corner and the stair sit in the bottom of the
+ // frame and the arris runs up out of the top of it.
+ 'Up the arris':          TGP(TGA,40,560,1.7).concat(TGP(TGA,34,2*TGA.DY(150),150)),
  // the pyramidion and beacon, 1 030-1 100 m up
  'The apex':              TGP(TGA,70,175,1085).concat([TGA.x,1045,TGA.z]),
  // people on the portal-side stair and the great gate over them

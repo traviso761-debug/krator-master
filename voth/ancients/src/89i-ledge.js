@@ -487,6 +487,19 @@ function buildLedge(scene,gx,gz,d){reseed(9740+d);KOFF=[gx,0,gz];
  {const tp=0;box(-78,-8,tp,28,-46,46,{x0:A_FASC,z0:A_FASC,z1:A_FASC,t:A_DECK});
   box(-40,XR,0,LAY[0].y+2,-15,15,{x0:A_FASC,z0:A_FASC,z1:A_FASC});
   winX(-40.4,-9,9,28,LAY[0].y,[0,.5]);
+  // QA (arcC): this shaft stood under the whole city as one thin stalk. It is
+  // now the core of a stepped pylon — two broader stages round its foot, set
+  // back as they rise — with raking struts from the upper stage out to the
+  // underside of the lowest layer, so the city visibly stands on something.
+  {const Y1=LAY[0].y;
+   box(-64,XR,0,Y1*.34,-44,44,{x0:A_FASC,z0:A_FASC,z1:A_FASC,t:A_DECK});
+   box(-52,XR,Y1*.34,Y1*.68,-31,31,{x0:A_FASC,z0:A_FASC,z1:A_FASC,t:A_DECK});
+   box(-46,XR,Y1*.68,Y1*.9,-22,22,{x0:A_FASC,z0:A_FASC,z1:A_FASC,t:A_DECK});
+   winX(-46.4,-18,18,Y1*.68+4,Y1*.9-4,[.5,.25]);
+   winX(-64.4,-40,40,30,Y1*.34-4,[.375,.125]);winX(-52.4,-26,26,Y1*.34+4,Y1*.68-4,[.625,.375]);
+   for(const sz of [-1,1]){const b=blockAt(0,sz*64),R=b?effR(b):0;if(R<40)continue;
+    beam('ldBox',[-50,Y1*.66,sz*28],[-Math.min(150,R-8),Y1-3,sz*64],5,5,stoneD());}
+   if(!dd)for(let y=Y1*.34;y<Y1*.68;y+=14)kput('strip',[-53,y,0],qEuler(0,Math.PI/2,0),[56,6,6],WARMW);}
   winX(-78.4,-44,-12,4,24,[.375,.125]);winX(-78.4,12,44,4,24,[.625,.375]);
   kput('ldDim',[-78.5,6.5,0],null,[1.2,13,20],null);
   kput('ldBox',[-84,14.5,0],null,[14,1.6,30],stoneD());
@@ -561,20 +574,54 @@ function buildLedge(scene,gx,gz,d){reseed(9740+d);KOFF=[gx,0,gz];
  let NHOUSE=0;
  for(let x=-1180;x<-150;x+=rr(24,32))for(let z=-760;z<760;z+=rr(22,30)){
   if(Math.abs(z)<24)continue;if(x>-340&&Math.abs(z)<104)continue;
+  if(x<-330&&[-240,-120,120,240].some(zs=>Math.abs(z-(zs+Math.sin((x+1150)/820*9+zs)*14))<17))continue;
   const tz=toe(z);if(x>-tz-30)continue;
   const p=.95*Math.exp(-Math.pow((x+380)/420,2))*(1-clamp((Math.abs(z)-560)/200,0,1));
   if(rng()>p)continue;
   if(inDebris(x,z)||(dd&&rng()<.45))continue;
-  const w=rr(10,19),dp=rr(10,17),h=dd?rr(3,7):rr(5,12),xx=x+rr(-3,3),zz=z+rr(-3,3),
-   col=new THREE.Color().setHSL(rr(.055,.10),rr(.22,.42),dd?rr(.30,.42):rr(.42,.60));
+  // QA (arcC): a house was one pale box, and eight hundred of them on a grid
+  // read as a model. Now a plot is a COMPOUND: a walled yard with a tree in it,
+  // the house in one corner of it at two or three heights (taller toward the
+  // cliff), a darker roof terrace behind a parapet with a stair kiosk or an
+  // awning, doors and windows on the street side, in sandstone, ochre and
+  // limewash rather than one white.
+  const w=rr(10,19),dp=rr(10,17),xx=x+rr(-3,3),zz=z+rr(-3,3),near=clamp(1-(-x-150)/700,0,1),
+   h=dd?rr(3,7):rr(4.5,8)+near*rr(0,9);
+  const tone=rng(),col=tone<.45?new THREE.Color().setHSL(rr(.07,.10),rr(.28,.45),dd?rr(.28,.38):rr(.46,.58))
+   :tone<.8?new THREE.Color().setHSL(rr(.045,.07),rr(.4,.58),dd?rr(.22,.32):rr(.36,.46))
+   :new THREE.Color().setHSL(rr(.09,.12),rr(.06,.14),dd?rr(.34,.44):rr(.66,.76));
+  const sz=z>0?-1:1,sx=rng()<.5?-1:1;
+  // the yard: the plot runs 5-8 m past the house on two sides, walled
+  const yw=w+rr(3,6),yd=dp+rr(3,6),yx=xx-sx*(yw-w)/2,yz=zz+sz*(yd-dp)/2*-1,wallC=col.clone().multiplyScalar(.82);
+  for(const e of [-1,1]){if(e!==sz&&!(dd&&rng()<.4))kput('ldBox',[yx,1.1,yz+e*yd/2],null,[yw,2.2,.5],wallC);
+   if(!(dd&&rng()<.4))kput('ldBox',[yx+e*yw/2,1.1,yz],null,[.5,2.2,yd],wallC);}
+  if(!dd&&rng()<.5)kput('ldLawn',[xx-sx*(yw-w)*.5-sx*w*.25,.25,yz],null,[Math.max(3,yw-w-1),.3,yd-1.5],new THREE.Color().setHSL(rr(.1,.2),rr(.2,.35),rr(.24,.32)));
+  plant(xx-sx*(w/2+(yw-w)/2),.2,zz+rr(-dp/4,dp/4),dd?rr(5,12):rr(6,10));
+  // the house, stepped
   kput('ldBox',[xx,h/2,zz],null,[w,h,dp],col);NHOUSE++;
-  if(dd){kput('ldDim',[xx,h-.3,zz],null,[w-1.6,.8,dp-1.6],null);}
-  else{if(rng()<.38){const w2=w*rr(.4,.7),d2=dp*rr(.4,.7),h2=rr(3,5);kput('ldBox',[xx+rr(-1,1)*(w-w2)/2,h+h2/2,zz+rr(-1,1)*(dp-d2)/2],null,[w2,h2,d2],col);}
-   kput('ldBox',[xx,h+.35,zz],null,[w+.4,.7,dp+.4],stoneD());}
-  const sz=z>0?-1:1;kput('ldDim',[xx+rr(-w/4,w/4),1.6,zz+sz*(dp/2+.05)],null,[2,3.2,.3],null);
-  if(!dd&&rng()<.5)kput('ldDim',[xx-w/2-.05,h*.6,zz+rr(-dp/4,dp/4)],null,[.3,1.6,2.4],null);
-  if(rng()<(dd?.25:.4))plant(xx+rr(-1,1)*(w/2+5),.2,zz+rr(-1,1)*(dp/2+4),dd?rr(4,11):rr(6,10));
+  if(dd){kput('ldDim',[xx,h-.3,zz],null,[w-1.6,.8,dp-1.6],null);
+   if(rng()<.5)kput('rubble',[xx+rr(-w/2,w/2),rr(.5,1.5),zz+sz*(dp/2+rr(1,4))],qEuler(rng()*3,rng()*3,rng()*3),[rr(1,3),rr(.6,1.5),rr(1,3)],stoneD());}
+  else{const w2=w*rr(.45,.7),d2=dp*rr(.45,.7),h2=rr(3,4.5),ux=xx+sx*(w-w2)/2,uz=zz-sz*(dp-d2)/2;
+   if(rng()<.7){kput('ldBox',[ux,h+h2/2,uz],null,[w2,h2,d2],col);
+    kput('ldBox',[ux,h+h2+.3,uz],null,[w2+.3,.6,d2+.3],stoneD());
+    kput('ldDim',[ux,h+h2*.55,uz+sz*(d2/2+.05)],null,[w2*.4,1.4,.3],null);}
+   // the roof terrace: a darker deck inside a parapet, and a kiosk or an awning
+   kput('ldDim',[xx,h+.05,zz],null,[w-1.2,.2,dp-1.2],null);
+   if(rng()<.25){kput('ldBox',[xx,h+.5,zz+dp/2-.2],null,[w,1,.4],col);kput('ldBox',[xx,h+.5,zz-dp/2+.2],null,[w,1,.4],col);
+    kput('ldBox',[xx+w/2-.2,h+.5,zz],null,[.4,1,dp],col);kput('ldBox',[xx-w/2+.2,h+.5,zz],null,[.4,1,dp],col);}
+   if(rng()<.45)kput('ldBox',[xx-sx*w*.25,h+2.4,zz+sz*dp*.2],null,[w*.35,.25,dp*.35],new THREE.Color().setHSL(rr(0,.1),rr(.35,.6),rr(.3,.45)));
+   // windows: a row on the street side, one on the flank
+   kput('ldDim',[xx+rr(-.3,.3)*w,h*.62,zz+sz*(dp/2+.05)],null,[1.4,1.5,.3],null);
+   kput('ldDim',[xx-w/2-.05,h*.6,zz+rr(-dp/4,dp/4)],null,[.3,1.6,2.4],null);}
+  kput('ldDim',[xx+rr(-w/4,w/4),1.6,zz+sz*(dp/2+.05)],null,[2,3.2,.3],null);
   if(!dd&&rng()<.6)for(let q=0;q<2;q++){person(xx+rr(-w,w),.2,zz+sz*(dp/2+rr(2,6)));NFIG++;}}
+ // QA (arcC): streets. The town had none, only sand between the boxes: four
+ // paved streets now run out from the plaza into it, and a lane along the toe.
+ {const hole=dd?(u,v)=>fbm(u*30,v*3,9761,2)<.4:null;
+  for(const zs of [-240,-120,120,240]){const g=gridSurface((u,v)=>[lerp(-1150,-330,u),.26,zs+lerp(-5,5,v)+Math.sin(u*9+zs)*14],40,1,{uS:820/24,vS:.5,hole:hole});
+   mesh(g,dd?MAT.ldPaveR:MAT.ldPave,G);}
+  const g=gridSurface((u,v)=>{const z=lerp(-740,740,u),tz=toe(z);return[-tz-24+lerp(-4,4,v),.26,z];},60,1,{uS:1480/24,vS:.4,hole:hole});
+  mesh(g,dd?MAT.ldPaveR:MAT.ldPave,G);}
  // orchards out on the plain
  for(let j2=0;j2<(dd?150:320);j2++){const x=rr(-1900,-1150),z=rr(-700,700);if(Math.abs(z)<30)continue;plant(x,0,z,dd?rr(4,9):rr(5,8));}
 

@@ -245,6 +245,95 @@ kdef('acOvalRim',(function(){const s=new THREE.Shape();s.absellipse(0,0,.5,.5,0,
  const hl=new THREE.Path();hl.absellipse(0,0,.37,.37,0,TAU,true);s.holes.push(hl);
  return new THREE.ExtrudeGeometry(s,{depth:1,bevelEnabled:false,curveSegments:9});})(),MAT.acKit);
 kdef('acOvalIn',new THREE.CylinderGeometry(.39,.39,1,18).rotateX(Math.PI/2).translate(0,0,.5),MAT.acVoid);
+// ---------------------------------------------------------------- krShard
+// A SHATTERED PIECE, for everything that has fallen onto a plain. Shared by the
+// nine types of the arcC quality pass (Arcube, Trigon, Monolith, Crescent,
+// Ledge, Wheel, Wing, Drum, Blades); it lives here because this fragment sorts
+// first of them, but it is a hoisted function declaration so order is moot.
+//
+// A box laid on the ground reads as a building set down there, however it is
+// tipped. A piece that FELL has a torn outline, and the storeys inside it tear
+// back unevenly from the break, so each floor plate stands out past the one over
+// it. So: a prism whose outline is a star-shaped polygon (sampled by angle, so a
+// fan from the centre is always valid), straight along the edges that were the
+// skin and bitten along the edges that were torn, stacked in `layers` storeys
+// each bitten further than the one below.
+//
+// Local frame: x across (w), z along (l), y through the thickness (t), centred
+// on the origin. brk = which edges are torn, [+z, +x, -z, -x]. Uses rng(), so it
+// is deterministic under the calling builder's reseed. Returns non-indexed,
+// flat-shaded geometries by role — top (every layer's upward face), bot, side
+// (untorn edges), brk (torn edges) — any of which may be null, and rim: points
+// on the torn edges at each storey line with their outward normals and the
+// depth of the step there, for the caller's plates, rebar and rubble.
+function krShard(o){
+ const w=o.w,l=o.l,t=o.t,NL=Math.max(1,o.layers|0||1),brk=o.brk||[1,1,0,0];
+ const bite=o.bite==null?.22:o.bite,tile=o.tile||25.6,seg=o.seg||14;
+ const hw=w/2,hl=l/2,ca=Math.atan2(hl,hw);
+ // side of an angle: 0 +z, 1 +x, 2 -z, 3 -x
+ const sideOf=a=>{a=((a%TAU)+TAU)%TAU;if(a<ca||a>=TAU-ca)return 1;if(a<Math.PI-ca)return 0;if(a<Math.PI+ca)return 3;return 2;};
+ const span=[[ca,Math.PI-ca],[-ca,ca],[Math.PI+ca,TAU-ca],[Math.PI-ca,Math.PI+ca]];
+ const len=[w,l,w,l];
+ // the outline's angles: the four corners exactly, and a run along each side
+ const A=[];
+ for(const s of [1,0,3,2]){const m=Math.max(3,Math.min(16,Math.round(len[s]/seg)));
+  for(let i=0;i<m;i++)A.push({a:lerp(span[s][0],span[s][1],i/m),s:s,corner:i===0});}
+ const N=A.length;
+ // the rectangle's own radius at each angle
+ const R0=A.map(v=>{const c=Math.abs(Math.cos(v.a)),s=Math.abs(Math.sin(v.a));
+  return Math.min(c>1e-6?hw/c:1e9,s>1e-6?hl/s:1e9);});
+ // is vertex i on a torn edge? a corner is torn if either side meeting there is
+ const torn=A.map((v,i)=>{if(brk[v.s])return true;if(v.corner){const p=A[(i-1+N)%N].s;return !!brk[p];}return false;});
+ // the bite, per vertex per layer, monotone upward: a few deep notches
+ const F=[];let f0=A.map((v,i)=>{if(!torn[i])return 0;const deep=rng()<.18?rr(1.4,2.2):1;return bite*rr(.15,1)*deep;});
+ // smooth the corners of a torn edge into the straight neighbour a little
+ for(let k=0;k<NL;k++){F.push(f0.slice());f0=f0.map((f,i)=>torn[i]?Math.min(.8,f+bite*rr(0,.55)):0);}
+ const V=(k,i,y)=>{const r=R0[i]*(1-F[k][i]);return[Math.cos(A[i].a)*r,y,Math.sin(A[i].a)*r];};
+ const acc={top:[],bot:[],side:[],brk:[]},rim=[];
+ const tri=(key,a,b,c)=>acc[key].push(a,b,c);
+ const Y=k=>-t/2+t*k/NL;
+ for(let k=0;k<NL;k++){const y0=Y(k),y1=Y(k+1),C1=[0,y1,0];
+  if(k===0){const C0=[0,y0,0];for(let i=0;i<N;i++)tri('bot',C0,V(0,i,y0),V(0,(i+1)%N,y0));}
+  for(let i=0;i<N;i++){const j=(i+1)%N;
+   tri('top',C1,V(k,j,y1),V(k,i,y1));
+   const key=(brk[A[i].s]||F[k][i]>0||F[k][j]>0)?'brk':'side';
+   const a0=V(k,i,y0),a1=V(k,i,y1),b0=V(k,j,y0),b1=V(k,j,y1);
+   tri(key,a0,b1,b0);tri(key,a0,a1,b1);
+   if(key==='brk'&&k<NL-1){const m=[(a1[0]+b1[0])/2,y1,(a1[2]+b1[2])/2],ex=b1[0]-a1[0],ez=b1[2]-a1[2],el=Math.hypot(ex,ez)||1;
+    const up=[(V(k+1,i,y1)[0]+V(k+1,j,y1)[0])/2,(V(k+1,i,y1)[2]+V(k+1,j,y1)[2])/2];
+    rim.push({p:m,n:[ez/el,0,-ex/el],step:Math.hypot(m[0]-up[0],m[2]-up[1]),len:el,k:k});}
+   else if(key==='brk'&&k===NL-1){const m=[(a1[0]+b1[0])/2,y1,(a1[2]+b1[2])/2],ex=b1[0]-a1[0],ez=b1[2]-a1[2],el=Math.hypot(ex,ez)||1;
+    rim.push({p:m,n:[ez/el,0,-ex/el],step:0,len:el,k:k});}}}
+ const geo=L=>{if(!L.length)return null;const pos=[],uv=[];
+  for(let i=0;i<L.length;i+=3){const a=L[i],b=L[i+1],c=L[i+2];
+   const e1=[b[0]-a[0],b[1]-a[1],b[2]-a[2]],e2=[c[0]-a[0],c[1]-a[1],c[2]-a[2]];
+   const nx=Math.abs(e1[1]*e2[2]-e1[2]*e2[1]),ny=Math.abs(e1[2]*e2[0]-e1[0]*e2[2]),nz=Math.abs(e1[0]*e2[1]-e1[1]*e2[0]);
+   for(const q of [a,b,c]){pos.push(q[0],q[1],q[2]);
+    if(ny>=nx&&ny>=nz)uv.push(q[0]/tile,q[2]/tile);else if(nx>=nz)uv.push(q[2]/tile,q[1]/tile);else uv.push(q[0]/tile,q[1]/tile);}}
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
+  g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.computeVertexNormals();return g;};
+ // the rim's outward normal: the outline runs anticlockwise seen from -y, so
+ // (ez,-ex) points out; check against the centre and flip if not
+ for(const q of rim){if(q.n[0]*q.p[0]+q.n[2]*q.p[2]<0){q.n[0]=-q.n[0];q.n[2]=-q.n[2];}}
+ // radius of layer k's outline at angle a, and whether (x,z) is m inside it
+ const rAt=(k,a)=>{a=((a-A[0].a)%TAU+TAU)%TAU+A[0].a;let i=0;while(i<N-1&&A[i+1].a<=a)i++;
+  const j=(i+1)%N,a1=j?A[j].a:A[0].a+TAU,f=(a-A[i].a)/Math.max(1e-6,a1-A[i].a);
+  const pi=V(k,i,0),pj=V(k,j,0);return Math.hypot(lerp(pi[0],pj[0],f),lerp(pi[2],pj[2],f));};
+ return{top:geo(acc.top),bot:geo(acc.bot),side:geo(acc.side),brk:geo(acc.brk),rim:rim,NL:NL,
+  inside:(x,z,m,k)=>Math.hypot(x,z)<rAt(k==null?NL-1:k,Math.atan2(z,x))-(m||0),
+  topY:k=>Y((k==null?NL-1:k)+1),
+  // the lowest point of the piece once turned by q (a Quaternion), to bed it
+  low:q=>{let m=1e9;const v=new THREE.Vector3();
+   for(let i=0;i<N;i++)for(const y of [-t/2,t/2]){const p=V(0,i,y);v.set(p[0],p[1],p[2]).applyQuaternion(q);m=Math.min(m,v.y);}return m;},
+  high:q=>{let m=-1e9;const v=new THREE.Vector3();
+   for(let i=0;i<N;i++)for(const y of [-t/2,t/2]){const p=V(0,i,y);v.set(p[0],p[1],p[2]).applyQuaternion(q);m=Math.max(m,v.y);}return m;}};}
+// krSeam: where a fallen piece meets the plain. Calls fn(x,y,z) at every
+// `step`-th vertex of the given (already placed) geometries that lies within h
+// of the ground, so the caller can pile its own fragments along the contact
+// line and the piece is bedded in what it crushed rather than floating over, or
+// sliced by, a flat plain.
+function krSeam(geos,h,step,fn){for(const g of geos){if(!g||!g.attributes)continue;const p=g.attributes.position;
+ for(let i=0;i<p.count;i+=step){const y=p.getY(i);if(y<h&&y>-h)fn(p.getX(i),y,p.getZ(i));}}}
 // Presets are DERIVED from this: targets/arcube/91z-views.js runs after
 // 90-scene.js, so both builders have already left their dimensions here.
 const ARC_SITE={};
@@ -299,7 +388,10 @@ function buildArcube(scene,gx,gz,d){reseed(9610+d);KOFF=[gx,0,gz];
  // THE RUIN'S FAILURES, all on the SOUTH-EAST: the pier under that corner went,
  // the corner of the cube over it sheared away, and the mass has settled BSAG
  // radians down toward it about a horizontal axis through the surviving piers.
- const BX0=-150, BRMAX=365, BSAG=dd?.07:0;
+ // QA (arcC): the bite now runs the WHOLE south vertex line, 280 m deep at the
+ // west end and 400 m at the east: a gouge that started at x = -150 left both
+ // end elevations a whole diamond, and the outline is what a ruin must change.
+ const BX0=-HX-20, BRMAX=400, BSAG=dd?.07:0;
  const FAILX=420, FAILZ=PRZ, FAILH=150;
 
  // ---- the diamond ------------------------------------------------------------
@@ -351,6 +443,28 @@ function buildArcube(scene,gx,gz,d){reseed(9610+d);KOFF=[gx,0,gz];
   const dims=[[sz,sy],[sz,sy],[sx,sz],[sx,sz],[sx,sy],[sx,sy]];
   for(let f=0;f<6;f++)for(let k=0;k<4;k++){const i=f*4+k;a.setXY(i,a.getX(i)*dims[f][0]/tile,a.getY(i)*dims[f][1]/tile);}
   g.applyMatrix4(new THREE.Matrix4().makeRotationFromQuaternion(q));g.translate(p[0],p[1],p[2]);return g;};
+ // QA (arcC): the same call, SHATTERED (krShard): the box's y ends (along=true,
+ // a pier or a tower lying down, torn across its shaft) or its sides (a slab of
+ // stacked floors, torn round its edges) are torn, every storey torn back
+ // further than the one below, the tear on the break map, floor tongues and
+ // bars out of it. p[1]===null beds it: its lowest point `bed` m into the plain.
+ const BRKG=[];
+ const acShardGeo=(sx,sy,sz,tile,q,p,skin,along,bed)=>{
+  const w=sx,l=along?sy:sz,t=along?sz:sy,qq=along?q.clone().multiply(qEuler(Math.PI/2,0,0)):q;
+  const SH=krShard({w:w,l:l,t:t,layers:Math.max(2,Math.min(9,Math.round(t/14))),brk:along?[1,0,1,0]:[1,1,1,1],bite:.2,tile:tile,seg:Math.max(10,Math.min(w,l)/5)});
+  const y=p[1]===null?-SH.low(qq)-(bed||2):p[1];
+  const M=new THREE.Matrix4().compose(new THREE.Vector3(p[0],y,p[2]),qq,new THREE.Vector3(1,1,1));
+  if(SH.top)skin.push(SH.top.applyMatrix4(M));if(SH.side)skin.push(SH.side.applyMatrix4(M));
+  if(SH.bot)SHDG.push(SH.bot.applyMatrix4(M));if(SH.brk)BRKG.push(SH.brk.applyMatrix4(M));
+  const W=(a,b,c)=>{const v=new THREE.Vector3(a,b,c).applyMatrix4(M);return[v.x,v.y,v.z];};
+  for(const r of SH.rim){const n=r.n,pp=r.p;
+   if(r.step>2&&rng()<.6){const L=r.step*rr(.5,1)+rr(1,5);
+    kput('acBox',W(pp[0]-n[0]*r.step*.5+n[0]*L*.5,pp[1]+.8,pp[2]-n[2]*r.step*.5+n[2]*L*.5),
+     qq.clone().multiply(qFacing([n[0],0,n[2]])).multiply(qEuler(rr(-.05,.05),0,rr(-.07,.07))),[r.len*rr(.5,.9),1.6,L],new THREE.Color(0xa0968a));}
+   if(rng()<.35)for(let b=0;b<2;b++){const L=rr(4,12);
+    kput('acDim',W(pp[0]+n[0]*L*.35+rr(-2,2),pp[1]-rr(.5,3),pp[2]+n[2]*L*.35+rr(-2,2)),
+     qq.clone().multiply(qFacing([n[0]+rr(-.3,.3),rr(-.3,.4),n[2]+rr(-.3,.3)])),[.45,.45,L],null);}}
+  return SH;};
 
  // ---- decay ------------------------------------------------------------------
  // holeFn multiplies its u by 4.5*scale internally, so a u normalised over a
@@ -378,7 +492,7 @@ function buildArcube(scene,gx,gz,d){reseed(9610+d);KOFF=[gx,0,gz];
  // a face and a point INSIDE the mass are tested by the same function and the
  // fracture surface built later lands exactly on the holes this cuts.
  const BRr=(x,ph)=>{if(!dd||x<BX0)return 0;const f=Math.min(1,(x-BX0)/(HX-BX0));
-  return BRMAX*Math.pow(f,.72)*(1+.30*(fbm(x*.011,ph*2.2,9618,3)-.5)*2);};
+  return BRMAX*(.7+.3*Math.pow(f,1.3))*(1+.30*(fbm(x*.011,ph*2.2,9618,3)-.5)*2);};
  const biteP=(x,y,z)=>{if(!dd||z<=0||x<BX0)return false;
   const dz=RD-z,dy=y-CY;return Math.hypot(dz,dy)<BRr(x,Math.atan2(dy,Math.max(dz,1e-3)));};
  const bite=(x,t,sd)=>{if(!dd||sd<0)return false;const p=ZY(RD,t);return biteP(x,p[1],p[0]);};
@@ -1008,17 +1122,17 @@ function buildArcube(scene,gx,gz,d){reseed(9610+d);KOFF=[gx,0,gz];
   const fracZ=(x,y)=>{const dy=y-CY;let r=BRr(x,0);if(Math.abs(dy)>=r*Math.SQRT1_2)return null;
    for(let i=0;i<3;i++){const ph=Math.asin(clamp(dy/r,-1,1));r=BRr(x,ph);if(Math.abs(dy)>=r*Math.SQRT1_2)return null;}
    return RD-Math.sqrt(r*r-dy*dy);};
-  const FLH=16,BNU=70;
+  const FLH=16,BNU=110;
   for(let k=Math.floor((CY-BRMAX)/FLH);k<=Math.ceil((CY+BRMAX)/FLH);k++){const ya=k*FLH,yb=ya+FLH,ym=ya+FLH*.5,yn=yb+FLH*.5;
-   BRK.push(gridSurface((u,v)=>{const x=lerp(BX0,HX,u),z=fracZ(x,ym);
+   BRK.push(gridSurface((u,v)=>{const x=lerp(Math.max(BX0,-HX),HX,u),z=fracZ(x,ym);
      return[x,lerp(ya,yb,v),z===null?RD-Math.abs(ym-CY):z];},BNU,1,
-    {uS:(HX-BX0)/25.6,vS:FLH/25.6,hole:(u,v)=>fracZ(lerp(BX0,HX,u),ym)===null}));
-   (yb>CY?SHD:DEK).push(gridSurface((u,v)=>{const x=lerp(BX0,HX,u);
+    {uS:(HX-BX0)/25.6,vS:FLH/25.6,hole:(u,v)=>fracZ(lerp(Math.max(BX0,-HX),HX,u),ym)===null}));
+   (yb>CY?SHD:DEK).push(gridSurface((u,v)=>{const x=lerp(Math.max(BX0,-HX),HX,u);
      const za=fracZ(x,ym),zb=fracZ(x,yn),ze=RD-Math.abs(yb-CY);
      return[x,yb,lerp(za===null?ze:za,zb===null?ze:zb,v)];},BNU,1,
-    {uS:(HX-BX0)/25.6,vS:1,hole:(u,v)=>{const x=lerp(BX0,HX,u);return fracZ(x,ym)===null&&fracZ(x,yn)===null;}}));}
-  for(const sg of [1,-1])BRK.push(gridSurface((u,v)=>{const x=lerp(BX0,HX,u),ph=sg*Math.PI/4,r=BRr(x,ph)+v*22;
-    return[x,CY+r*Math.sin(ph)-1.6,RD-r*Math.cos(ph)-1.6];},60,2,{uS:(HX-BX0)/25.6,vS:1}));
+    {uS:(HX-BX0)/25.6,vS:1,hole:(u,v)=>{const x=lerp(Math.max(BX0,-HX),HX,u);return fracZ(x,ym)===null&&fracZ(x,yn)===null;}}));}
+  for(const sg of [1,-1])BRK.push(gridSurface((u,v)=>{const x=lerp(Math.max(BX0,-HX),HX,u),ph=sg*Math.PI/4,r=BRr(x,ph)+v*22;
+    return[x,CY+r*Math.sin(ph)-1.6,RD-r*Math.cos(ph)-1.6];},96,2,{uS:(HX-BX0)/25.6,vS:1}));
   // and the slabs themselves, torn off at random lengths past the riser
   for(let x=BX0+30;x<HX-6;x+=22)for(let y=Math.ceil((CY-BRMAX)/FLH)*FLH;y<CY+BRMAX;y+=FLH){
    const zf=fracZ(x,y-FLH*.5),zg=fracZ(x,y+FLH*.5);if(zf===null&&zg===null)continue;
@@ -1143,24 +1257,18 @@ function buildArcube(scene,gx,gz,d){reseed(9610+d);KOFF=[gx,0,gz];
    for(let s2=0;s2<3;s2++){const cx=BX+s2*150*.79+s2*18,cz=BZ+s2*150*.62+s2*8;
     const L2=rr(118,138),yaw=-.66+rr(-.22,.22),Y0=PHX*.78;
     const q=qEuler(0,yaw,Math.PI/2).multiply(qEuler(0,rr(-.35,.35),0)).multiply(qEuler(0,0,rr(-.12,.12)));
-    PIRG.push(acBoxGeo(2*PHX,L2,2*PHZ*.9,32,q,[cx,Y0,cz]));
-    for(const e of [-1,1]){const o=new THREE.Vector3(0,e*(L2*.5+.5),0).applyQuaternion(q);
-     kput('acDim',[cx+o.x,Y0+o.y,cz+o.z],q,[2*PHX*.86,1.4,2*PHZ*.8],null);
-     for(let f2=-2;f2<=2;f2++){const o2=new THREE.Vector3(f2*18,e*(L2*.5+1.2),0).applyQuaternion(q);
-      kput('acBox',[cx+o2.x,Y0+o2.y,cz+o2.z],q,[2,1.4,2*PHZ*.78],new THREE.Color(0xb6ac9a));}}}
+    acShardGeo(2*PHX,L2,2*PHZ*.9,32,q,[cx,null,cz],PIRG,true,3);}
    rubbleRing(BX+220,2,BZ+170,30,330,170,11);
-   for(let j=0;j<60;j++)kput('acBox',[BX+rr(-110,480),rr(2,18),BZ+rr(-110,420)],
-     qEuler(rr(-.6,.6),rng()*TAU,rr(-.6,.6)),[rr(10,48),rr(3,12),rr(8,40)],new THREE.Color(0x8b8272));}
+   for(let j=0;j<60;j++){const sz=rr(4,16);kput('rubble',[BX+rr(-110,480),sz*.3,BZ+rr(-110,420)],
+     qEuler(rng()*3,rng()*3,rng()*3),[sz*rr(1,2),sz*rr(.4,.8),sz*rr(1,1.8)],new THREE.Color().setHSL(rr(.07,.1),rr(.05,.12),rr(.3,.45)));}}
   // ---- what came off the corner -----------------------------------------------
   // The wedge came down under its own vertex: a field of great tilted blocks of
   // stacked floors south of the east half, the biggest 120 m across, and a fan
   // of rubble spilling out from under them.
-  for(let j=0;j<18;j++){const x=rr(-60,540),z=rr(500,880),s=rr(40,125)*(j<6?1:.6);
+  for(let j=0;j<26;j++){const x=rr(-470,540),z=rr(500,880)+(x<0?rr(-40,60):0),s=rr(40,125)*(j<8?1:.6);
    const q=qEuler(rr(-.5,.5),rng()*TAU,rr(-.5,.5)),h=s*rr(.35,.6);
    const sz=s*rr(.6,1);
-   MASG.push(acBoxGeo(s,h,sz,25.6,q,[x,h*.32,z]));
-   for(let f2=0;f2<Math.floor(h/14);f2++){const e=new THREE.Vector3(0,-h*.5+7+f2*14,0).applyQuaternion(q);
-    kput('acDim',[x+e.x,h*.32+e.y,z+e.z],q,[s*1.01,1.6,sz*1.01],null);}}
+   acShardGeo(s,h,sz,25.6,q,[x,null,z],MASG,false,h*.14);}
   rubbleRing(260,.4,860,20,330,260,12);
   // ---- the heliport tower, across the plain -----------------------------------
   // It snapped where it left the upper north face, 1 080 m up, went over to the
@@ -1176,16 +1284,14 @@ function buildArcube(scene,gx,gz,d){reseed(9610+d);KOFF=[gx,0,gz];
     const qq=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),-ang)
       .multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1,0,0),Math.PI/2))
       .multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),rr(-.3,.3)));
-    PIRG.push(acBoxGeo(2*hz,L2,2*hx,32,qq,[cx,hx,cz]));
-    for(const e of [-1,1]){const o=new THREE.Vector3(0,e*(L2*.5+.5),0).applyQuaternion(qq);
-     kput('acDim',[cx+o.x,hx+o.y,cz+o.z],qq,[2*hz*.84,1.4,2*hx*.8],null);}
+    acShardGeo(2*hz,L2,2*hx,32,qq,[cx,null,cz],PIRG,true,4);
     d0+=L2+rr(18,40);}
    const cx=HTX+dx*(d0+30),cz=dz*(d0+30);
-   MASG.push(acBoxGeo(2*hx+30,26,2*hz+30,25.6,qEuler(Math.PI+.2,-ang,.1),[cx,20,cz]));
+   acShardGeo(2*hx+30,26,2*hz+30,25.6,qEuler(Math.PI+.2,-ang,.1),[cx,null,cz],MASG,false,5);
    rubbleRing(HTX+dx*(d0-60),.4,dz*(d0-60),10,220,160,9);
-   for(let j=0;j<40;j++){const f=rr(.1,1.1);
-    kput('acBox',[HTX+dx*(700+f*300)+rr(-90,90),rr(1,8),dz*(700+f*300)+rr(-90,90)],
-     qEuler(rr(-.5,.5),rng()*TAU,rr(-.5,.5)),[rr(6,24),rr(2,7),rr(5,18)],new THREE.Color(0x8b8272));}}
+   for(let j=0;j<40;j++){const f=rr(.1,1.1),sz=rr(3,12);
+    kput('rubble',[HTX+dx*(700+f*300)+rr(-90,90),sz*.3,dz*(700+f*300)+rr(-90,90)],
+     qEuler(rng()*3,rng()*3,rng()*3),[sz*rr(1,2),sz*rr(.4,.8),sz*rr(1,1.8)],new THREE.Color().setHSL(rr(.07,.1),rr(.05,.12),rr(.3,.45)));}}
   for(let j=0;j<120;j++){const x=rr(-HX,HX),z=rr(-RD,RD);
    if(rng()<.5)plant(x,.4,z,rr(6,15));}
   rubbleRing(0,.4,0,760,1020,220,8);
@@ -1230,5 +1336,6 @@ function buildArcube(scene,gx,gz,d){reseed(9610+d);KOFF=[gx,0,gz];
  meshMerged(MASG,masM,G);
  meshMerged(DEKG,dekM,G);
  meshMerged(SHDG,shdM,G);
+ meshMerged(BRKG,MAT.acBreak,G);
  meshMerged(GRD,pavM,G);
  KOFF=[0,0,0];return G;}

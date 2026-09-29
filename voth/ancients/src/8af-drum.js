@@ -126,6 +126,8 @@ MAT.drLawnR=drStd({map:TEX.drGrassR,roughnessMap:null});
 MAT.drPave =drStd({map:TEX.concrete,color:0x8a857a});
 MAT.drPaveR=drStd({map:TEX.concrete,color:0x5c5d4e});
 MAT.drVoid =drStd({color:0x0a0a0b,roughnessMap:null});
+// QA (arcC): crushed earth and grit under a fallen piece
+MAT.drScar =drStd({map:TEX.concrete,color:0x4a4034});
 MAT.drKit  =drStd({map:TEX.concrete,color:0xffffff});
 kdef('drBox',new THREE.BoxGeometry(1,1,1),MAT.drKit);
 kdef('drDim',new THREE.BoxGeometry(1,1,1),MAT.drVoid);
@@ -239,7 +241,7 @@ function buildDrum(scene,gx,gz,d){reseed(9630+d);KOFF=[gx,0,gz];
  // ---- materials by state ----------------------------------------------------------------
  const MK={BLK:dd?MAT.drBlkR:MAT.drBlk,CORE:dd?MAT.drCoreR:MAT.drCore,SLOT:dd?MAT.drSlotR:MAT.drSlot,
   CONC:dd?MAT.drConcR:MAT.drConc,DECK:dd?MAT.drDeckR:MAT.drDeck,SHADE:dd?MAT.drShadeR:MAT.drShade,
-  SECT:MAT.drSect,LAWN:dd?MAT.drLawnR:MAT.drLawn,PAVE:dd?MAT.drPaveR:MAT.drPave,VOID:MAT.drVoid};
+  SECT:MAT.drSect,SCAR:MAT.drScar,LAWN:dd?MAT.drLawnR:MAT.drLawn,PAVE:dd?MAT.drPaveR:MAT.drPave,VOID:MAT.drVoid};
 
  // ---- the palette and the small things ------------------------------------------------
  const WG=new THREE.Color(0xffc478);
@@ -371,6 +373,16 @@ function buildDrum(scene,gx,gz,d){reseed(9630+d);KOFF=[gx,0,gz];
    if(y0>=YK-1e-6)Q('CONC',[FP(i0,y0,TF/2),FP(i0,y0,-TF/2),FP(i1,y1,-TF/2),FP(i1,y1,TF/2)],
     [[0,y0/8],[TF/8,y0/8],[TF/8,y1/8],[0,y1/8]],c);}
   if(prev>=0&&prev!==2)cap(YS[YS.length-1]>YC?YC:YS[YS.length-1],prev,'CONC');
+  // QA (arcC): the fins' flanks were blank board-marked planes wherever a gap
+  // between tiers laid them open. They are inhabited walls: deep window
+  // openings in storey rows (a third lit), and a balcony slab under every
+  // fourth row, on both flanks, in every gap.
+  for(let ti=0;ti<TIERS.length;ti++){const ya=(ti===0?YBASE:TIERS[ti-1].yt)+3,yb=TIERS[ti].yb-3;
+   for(let y=ya;y<yb-3;y+=4.2){for(const sd of [-1,1]){const n=[-stt*sd,0,ct*sd],qn=qFacing(n);
+     for(let r=RI(y)+8;r<RF(y)-7;r+=6.5){if(finInVoid(th,y)||snapped(f,y)||h3(f*7+sd,Math.round(y/4.2),r*.13)<.35)continue;
+      const lit=!dd&&h3(r*.7,y*.3,f+sd*3)<.33;
+      put(lit?'strip':'drDim',FP(r,y,sd*(TF/2+(lit?.08:.2))),qn,lit?[2.2,17,2]:[2.4,3.2,.5],lit?WG:null);}
+     if(Math.round((y-ya)/4.2)%4===2&&!(dd&&rng()<.4))put('drBox',FP((RI(y)+RF(y))*.5,y-1.8,sd*(TF/2+1.2)),qn,[RF(y)-RI(y)-10,.6,2.4],grey());}}}
   // the fin's foot on the podium, and a lamp at the slot's foot
   if(!dd)put('strip',[RFOOT*ct,3,RFOOT*stt],qEuler(0,-th+Math.PI/2,0),[TF*.9,10,10],WG);}
  // the coronet: a ring tying the blade tips together
@@ -515,7 +527,36 @@ function buildDrum(scene,gx,gz,d){reseed(9630+d);KOFF=[gx,0,gz];
  if(dd){DEB=[];
   // a piece: a box of w x h x dp, turned and laid down, its lowest corner 1.5 m
   // into the plain. The outer face keeps the block skin, the rest is fracture.
-  const piece=(w,h,dp,x,z,yaw,rx,rz,outer,key2)=>{
+  // QA (arcC): with `brk` a piece is SHATTERED (krShard, 89d-arcube.js): torn
+  // on the edges brk names, its storeys torn back unevenly from the break so the
+  // floor plates step out, the section map on the tear, slab tongues and bars
+  // out of it. The lantern and the coronet arcs stay boxes.
+  const pushG=(key,g)=>{if(!g)return;const A=ACC[key]||(ACC[key]={P:[],N:[],U:[],I:[],n:0});
+   const p=g.attributes.position,nn=g.attributes.normal,u=g.attributes.uv;
+   for(let i=0;i<p.count;i++){A.P.push(p.getX(i),p.getY(i),p.getZ(i));A.N.push(nn.getX(i),nn.getY(i),nn.getZ(i));
+    A.U.push(u.getX(i),u.getY(i));A.I.push(A.n+i);}
+   A.n+=p.count;};
+  const shard=(w,h,dp,x,z,q,outer,key2,brk)=>{
+   const SH=krShard({w:w,l:dp,t:h,layers:Math.max(2,Math.min(9,Math.round(h/6.5))),brk:brk,bite:.2,tile:12,seg:7});
+   const ymin=SH.low(q),ymax=SH.high(q),bury=1.5+(ymax-ymin)*rr(.06,.16);
+   const M=new THREE.Matrix4().compose(new THREE.Vector3(x,-ymin-bury,z),q,new THREE.Vector3(1,1,1));
+   pushG('CONC',SH.top&&SH.top.applyMatrix4(M));pushG('SHADE',SH.bot&&SH.bot.applyMatrix4(M));
+   pushG(outer,SH.side&&SH.side.applyMatrix4(M));pushG(key2,SH.brk&&SH.brk.applyMatrix4(M));
+   const W=(a,b,c)=>{const v=new THREE.Vector3(a,b,c).applyMatrix4(M);return[v.x,v.y,v.z];};
+   for(const r of SH.rim){const n=r.n,p=r.p;
+    if(r.step>1.5&&rng()<.6){const L=r.step*rr(.5,1)+rr(.8,3);
+     kput('drBox',W(p[0]-n[0]*r.step*.5+n[0]*L*.5,p[1]+.35,p[2]-n[2]*r.step*.5+n[2]*L*.5),
+      q.clone().multiply(qFacing([n[0],0,n[2]])).multiply(qEuler(rr(-.05,.05),0,rr(-.07,.07))),[r.len*rr(.5,.9),.7,L],grey());}
+    if(rng()<.4)for(let b=0;b<2;b++){const L=rr(2.5,7);
+     kput('drBox',W(p[0]+n[0]*L*.35+rr(-1.5,1.5),p[1]-rr(.4,2),p[2]+n[2]*L*.35+rr(-1.5,1.5)),
+      q.clone().multiply(qFacing([n[0]+rr(-.3,.3),rr(-.3,.4),n[2]+rr(-.3,.3)])),[.3,.3,L],new THREE.Color(0x3a2a20));}}
+   const R=Math.max(w,h,dp)*.5;DEB.push({x:x,z:z,r:R*.9});
+   const tp=ymax-ymin-bury;
+   for(let i=0;i<Math.round(R/4);i++)moss(x+rr(-.3,.3)*R,Math.max(.2,tp*rr(.3,1)),z+rr(-.3,.3)*R,rr(1,3));
+   if(tp>6&&rng()<.6)plant(x+rr(-.2,.2)*R,tp*rr(.5,.9),z+rr(-.2,.2)*R,rr(5,11));
+   return R;};
+  const piece=(w,h,dp,x,z,yaw,rx,rz,outer,key2,brk)=>{
+   if(brk)return shard(w,h,dp,x,z,new THREE.Quaternion().setFromEuler(new THREE.Euler(rx,yaw,rz,'YXZ')),outer,key2,brk);
    const m=new THREE.Matrix4().compose(new THREE.Vector3(0,0,0),new THREE.Quaternion().setFromEuler(new THREE.Euler(rx,yaw,rz,'YXZ')),new THREE.Vector3(1,1,1));
    const cs=[];for(const a of [-1,1])for(const b of [-1,1])for(const c of [-1,1]){const v=new THREE.Vector3(a*w/2,b*h/2,c*dp/2).applyMatrix4(m);cs.push(v);}
    let ymin=1e9,ymax=-1e9;for(const v of cs){ymin=Math.min(ymin,v.y);ymax=Math.max(ymax,v.y);}
@@ -551,15 +592,21 @@ function buildDrum(scene,gx,gz,d){reseed(9630+d);KOFF=[gx,0,gz];
    const dm=[B.w,B.h,B.dp],ord=[0,1,2].sort((a,b)=>dm[a]-dm[b]),ax=rng()<.72?ord[0]:ord[1];
    const tA=rr(.14,.42)*(rng()<.5?-1:1),tB=rr(-.2,.2);
    const rx=ax===2?Math.PI/2+tA:tB,rz=ax===0?Math.PI/2+tA:(ax===1?tA:tB);
-   piece(B.w,B.h,B.dp,at[0],at[1],rng()*TAU,rx,rz,rng()<.6?'BLK':'SECT','SECT');}
+   piece(B.w,B.h,B.dp,at[0],at[1],rng()*TAU,rx,rz,rng()<.6?'BLK':'SECT','SECT',[0,1,1,1]);}
   // the crown's blades and the fins' upper runs: long slabs
   for(let i=0;i<14;i++){const L=rr(70,150),dp=rr(26,52),R=L*.5,at=place(300,820,.9,R*.7);if(!at)continue;
-   piece(TF,dp,L,at[0],at[1],rng()*TAU,rr(-.1,.1),Math.PI/2+rr(-.25,.25),'CONC','SECT');}
+   piece(TF,dp,L,at[0],at[1],rng()*TAU,rr(-.1,.1),Math.PI/2+rr(-.25,.25),'CONC','SECT',[1,0,1,0]);}
   // arcs of the coronet ring
   for(let i=0;i<7;i++){const at=place(420,900,.9,30);if(!at)continue;
    piece(rr(40,70),5,8,at[0],at[1],rng()*TAU,rr(-.3,.3),rr(-.3,.3),'CONC','SECT');}
   // the lantern, on its side
   {const at=place(500,700,.5,40);if(at)piece(56,44,56,at[0],at[1],rng()*TAU,Math.PI/2,0,'CORE','SECT');}
+  // QA (arcC): the ground each piece came down on: a torn skirt of crushed earth
+  // and grit under and round it (and the only contact shadow this kit has)
+  for(const q of DEB.slice()){const n=14,R0=q.r*rr(1.05,1.3),ph=rng()*9;
+   const rr2=a=>R0*(1+.22*Math.sin(a*3+ph)+.12*Math.sin(a*7+ph*2));
+   for(let i=0;i<n;i++){const a0=i/n*TAU,a1=(i+1)/n*TAU;
+    QH('SCAR',[q.x,.38,q.z],[q.x,.38,q.z],[q.x+Math.cos(a1)*rr2(a1),.38,q.z+Math.sin(a1)*rr2(a1)],[q.x+Math.cos(a0)*rr2(a0),.38,q.z+Math.sin(a0)*rr2(a0)],16,0);}}
   // rubble: a heap along the foot on the side it fell, and round every piece
   for(const q of DEB.slice())heap(q.x,q.z,q.r*.7,q.r*1.8,Math.min(60,Math.round(q.r*1.2)),5);
   for(let i=0;i<10;i++){const a=AF+rr(-.8,.8),r=rr(RFOOT-10,RFOOT+120);heap(r*Math.cos(a),r*Math.sin(a),0,50,70,9);}
@@ -646,7 +693,8 @@ function buildDrum(scene,gx,gz,d){reseed(9630+d);KOFF=[gx,0,gz];
  // many pieces as possible between
  let EYE=null;
  if(DEB){let best=-1;
-  for(let i=0;i<900;i++){const a=AF+rr(-.8,.8),r=rr(400,700),x=r*Math.cos(a),z=r*Math.sin(a);
+  // QA (arcC): inside the kerb (the court is r 560): it stood out on bare soil
+  for(let i=0;i<900;i++){const a=AF+rr(-.8,.8),r=rr(380,535),x=r*Math.cos(a),z=r*Math.sin(a);
    if(DEB.some(q=>Math.hypot(x-q.x,z-q.z)<q.r*1.9+10)||onWall(x,z)||TREES.some(t=>Math.hypot(x-t[0],z-t[1])<14))continue;
    let sc=0;for(const q of DEB){const t=(q.x*x+q.z*z)/(r*r),ox=q.x-t*x,oz=q.z-t*z;
     if(t>.25&&t<.85&&Math.hypot(ox,oz)<40+q.r)sc++;}
