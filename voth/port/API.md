@@ -10,13 +10,17 @@ and the r128 pitfalls still holds here; this file covers what is new.
 * **x** along the coast, **z** land (-) to sea (+), **y** up. **Sea level is
   y = 0.** Every deck is at **`PORT.DECK` = 6**.
 * A segment's local origin is the centre of its quay line at sea level. Its
-  footprint is x in [-W/2, W/2] (W = `PORT.W` = 220 always), z in [-LAND, SEA]
-  (LAND <= 120, SEA <= 420).
+  footprint is x in [-W/2, W/2], z in [-LAND, SEA] (LAND <= 120, SEA <= 420).
+* **W is per segment.** The anchors `quay` and `pier` are 220; **every new
+  segment is at most `PORT.WMAX_NEW` = 110 m wide.** Register your own `W`;
+  read it back as `opt.W` (and `opt.W/2` for your edges) - never hard-code
+  110 or 220. Layouts advance by each segment's own W, so widths mix flush.
+  `quay110` is the 110 m plain quay (same builder as `quay`).
 * Buildings, cranes, ships and props stay `PORT.CLEAR` = 8 m inside the x
   edges and the z extremes (`port-clearance` reports REGISTER volumes that
   do not). Decks, walls and paving may run to the edge.
-* Constants: `PORT = {DECK:6, W:220, SEA0:0, SEABED:-30, CLEAR:8, LAND_MAX:120,
-  SEA_MAX:420, BERTH:-16}`.
+* Constants: `PORT = {DECK:6, W:220 (anchor width, default), WMAX_NEW:110,
+  WMAX:220, SEA0:0, SEABED:-30, CLEAR:8, LAND_MAX:120, SEA_MAX:420, BERTH:-16}`.
 
 ## Fragment order
 
@@ -41,7 +45,7 @@ underwater fade (see "Materials").
 | block | owner | fragment number |
 |---|---|---|
 | 19990 | terrain nature scatter (`71`) | — |
-| 20000-20099 | anchors: `quay` 20000+d, `pier` 20010+d | `80`, `81` |
+| 20000-20099 | anchors: `quay` and `quay110` 20000+d (one builder), `pier` 20010+d | `80`, `81` |
 | 20100-20199 | agent 1 | `82-...` |
 | 20200-20299 | agent 2 | `83-...` |
 | 20300-20399 | agent 3 | `84-...` |
@@ -59,7 +63,7 @@ function buildXxYard(scene,gx,gz,d,opt){reseed(20100+d);
  const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);KOFF=[gx,0,gz];
  ...                                   // local coordinates from here on
  KOFF=[0,0,0];return G;}
-PORT_SEG({key:'yard',name:'Ship yard',cls:'seg',W:220,LAND:80,SEA:200,decays:[0,1,3],
+PORT_SEG({key:'yard',name:'Ship yard',cls:'seg',W:110,LAND:80,SEA:200,decays:[0,1,3],
   stamps:xxStamps,build:buildXxYard});
 ```
 
@@ -148,12 +152,13 @@ Edges (`73`):
 * `portRevetment(G,x0,z0,x1,z1,d,o)` - riprap skin and boulders over the
   existing ground in a band `o.width` on the face side, between `o.toe` and
   `o.top`. Does not shape the ground.
-* `portSideClose(G,opt.nb,d,{z0:-LAND,z1:0})` - finishes both x sides where
+* `portSideClose(G,opt.nb,d,{z0:-LAND,z1:0})` - (W defaults to your own
+  registered width) finishes both x sides where
   your deck (z0..z1) meets the edge: flush neighbour nothing; neighbour set
   back -> quay wall along your edge; neighbour standing out -> nothing (it
   builds); `land` -> short return wall + revetment round the corner; `sea`
   -> wall along the whole side + revetment at the back corner.
-* `portEdgeStamps(opt,{LAND,SEA})` - concat to your stamps: dredges outside a
+* `portEdgeStamps(opt,{LAND,SEA})` - (W from opt.W) concat to your stamps: dredges outside a
   `sea` side. Every segment should include it.
 * `portDeckOnPiles(G,x0,z0,x1,z1,d,o) -> info` - slab on concrete columns,
   bays `o.bay` along z, `o.collapse:[bay indices]` drops spans into the sea,
@@ -222,8 +227,9 @@ it).
 `PORT_LAYOUT_DEF`:
 * `portLayoutShowcase({decays,gap})` - one run per decay of every segment,
   sorted by key, offsets from `PORT_DZSEQ`, `gap` m of coast between runs.
-* `portLayoutSegment(key,{nbdz:[W,E]})` - key per decay between quays.
-* `portLayoutEdges(key,{d})` - key against steps +/-40, +/-20, sea, land.
+* `portLayoutSegment(key,{nbdz:[W,E],nbKey:'quay110'})` - key per decay between
+  110 m plain quays.
+* `portLayoutEdges(key,{d,nbKey:'quay110'})` - key against steps +/-40, +/-20, sea, land.
 `91z-views.js`: `const VIEWS=portViewsShowcase()` / `portViewsSegment()` /
 `portViewsEdges()`, then add your own. The first view is the opening shot;
 a 7th element truthy = night.

@@ -11,6 +11,15 @@
 >    side). Added kinds/fields: `ramp` (ya->yb along an axis), `paint`, `dry`.
 > 3. Hard stamp shapes must lie inside the segment's own footprint (checked).
 > 4. Vessel frame fixed: origin midship on the waterline, bow +z at heading 0.
+> 5. **Width is per segment (user's change, mid-build).** `quay` and `pier` stay
+>    220 m wide (the pier stays 220 x 420); **every new segment is at most
+>    110 m wide** (`PORT.WMAX_NEW`). Each registration carries its own `W`
+>    (the registry accepts 0 < W <= 220); the layouts place segments by their
+>    own widths (cursor += W), so 110 and 220 m segments tile flush. A 110 m
+>    plain quay, `quay110`, is registered from the same builder as `quay` and
+>    is the neighbour in the segment/edges dev targets. Read "W = 220 m for
+>    every segment" below as "W = the segment's own width"; the footprint is
+>    x in [-W/2, W/2]. SEA <= 420, LAND <= 120 and the 8 m clearance are unchanged.
 
 
 A spin-off of the Krator Ancients kit (`voth/ancients/`): a set of modular

@@ -41,6 +41,14 @@ segment target moored off three quays, and placed by the pier in the showcase
 slip basin), then removed. `portPlaceVessel` flushes the host's batch first -
 the first try charged the pier's walls to the vessel.
 
+**Width change (user, mid-build).** W is per segment: anchors 220, new
+segments <= 110 (`PORT.WMAX_NEW`). `quay` got a 110 m twin, `quay110`, from
+the same builder (content chosen by `opt.W`), which is now the plain
+neighbour in the dev targets. `portSideClose`/`portEdgeStamps` default to the
+segment's own W (the scene sets `PORT_CUR` round each build). The showcase's
+offset table was re-searched so neighbours never differ by more than 40 m:
+the old one put a 110 m quay 80 m proud of a 220 m one, clear of its apron.
+
 **Anchors.** `quay` (60 + 40) and `pier` (80 + 420): measured 24-93 k
 triangles per decay, 45-115 draw calls per view, showcase 0.82 M triangles
 with env (terrain, sea, 3 k natural trees) 0.52 M.

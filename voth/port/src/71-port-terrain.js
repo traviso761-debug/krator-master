@@ -9,7 +9,8 @@
 // seabed falls to PORT.SEABED (-30 m) by ~500 m offshore. The shoreline
 // wanders +/-18 m along x and the land carries low hills, so a long run of
 // coast is not a ruled line. Continuous and C1 everywhere.
-function portShore(x){return 110*(fbm(x/1400+3.7,1.3,.7,3)-.5)+14*(fbm(x/170,4.1,2.2,2)-.5);}
+// kept landward of z~+6 so a 40 m berth never ends against a sand bar
+function portShore(x){return -10+60*(fbm(x/1400+3.7,1.3,.7,3)-.5)+10*(fbm(x/170,4.1,2.2,2)-.5);}
 function portNatH(x,z){
  const zz=z-portShore(x);                        // + seaward of the natural waterline
  if(zz>=0){const q=Math.pow(zz/260,1.6),f=1-Math.exp(-q);

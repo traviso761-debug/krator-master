@@ -29,13 +29,16 @@ that finds footprint and junction mistakes.
 ## Developing a segment or a vessel
 
 1. Take your seed block and fragment number from `API.md` ("Seed blocks").
-2. Write `src/<NN>-<prefix>-<key>.js`: stamps, a top-level
+2. **New segments are at most 110 m wide** (`PORT.WMAX_NEW`); the anchors
+   `quay`/`pier` are 220. Use `opt.W`, never a literal width.
+   Write `src/<NN>-<prefix>-<key>.js`: stamps, a top-level
    `function build<Name>(scene,gx,gz,d,opt){reseed(<N>+d); ...}`, and a
    column-0 `PORT_SEG({key:'<key>', ...})` (or `PORT_VESSEL`). Copy the shape
    of `src/80-pq-quay.js` (small) or `src/81-pp-pier.js` (large).
 3. Make your dev target: `cp -r targets/segment targets/<key>` and set
    `PORT_ONLY='<key>'` and `TITLE` in its `89z-rows.js`. It shows your key in
-   every decay, flanked by plain quays (west flush, east set back 20 m), with
+   every decay, flanked by 110 m plain quays (`quay110`; west flush, east set
+   back 20 m), with
    natural coast beyond. `targets/edges/` (same edit) shows it against every
    side case: steps of 40 and 20 m both ways, open sea, natural land.
 4. `python3 build.py --target <key>` + `jscheck.py` + `verify.py --assert`,
