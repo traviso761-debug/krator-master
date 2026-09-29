@@ -29,22 +29,22 @@ python3 verify.py voth.html --assert --baseline baseline.json \
 
 ## Layout
 
+`INDEX.md` lists every fragment, its sections and its size. Regenerate it
+with `python3 ../../tools/make_index.py`. Files that share a numeric prefix
+(`78a-`, `78b-`, …) are one fragment split into readable parts; `build.py`
+treats the group as one unit. The main groups are:
+
 | | |
 |---|---|
-| `src/00-head.html` | page shell, error panel, Three.js loader |
-| `src/05-palette.js` | **frozen** — all colour, materials, budgets |
-| `src/10-core.js` | RNG, noise, water SDF, river, terrain field |
-| `src/15-shore.js` | shoreline trace, arc-length addressing |
-| `src/20-stage.js` | lights, sky, volcano, sun and moon |
-| `src/30-layout.js` | cantons, wall, gates, roads, piers, farms, manors |
-| `src/40-ground.js` | ground canvas and placement mask |
-| `src/45-kit.js` | emit kit, instancing, world-unit UV hook |
-| `src/47-texture.js` | procedural surface textures |
-| `src/50-cantons.js` | canton geometry, spans, causeways |
-| `src/55-chinampa.js` | chinampa fields (`CHINP` params block) |
-| `src/60-land.js` | compounds and town buildings |
-| `src/70-veg.js` | vegetation and terraced orchards |
-| `src/75-terrain.js` | terrain mesh and water shader |
-| `src/80-camera.js` | controls, preset views, HUD |
-| `src/85-probe.js` | read-only API exposed to the verifier |
-| `src/99-tail.html` | close |
+| `src/05-palette.js` | **frozen**: all colour, materials, budgets |
+| `src/10-core.js`, `15-shore.js` | RNG, noise, water SDF, river, terrain; shoreline arc-length addressing |
+| `src/20-stage.js`, `21-sky.js` | lights, sky, volcano, sun and moon |
+| `src/30a–30d` | city layout, districts, mainland shore, roads, curtain wall, strider stations |
+| `src/45-kit.js`, `47-texture.js` | emit kit and instancing; procedural textures |
+| `src/50a–50f` | cantons, palace, canton types, guild, necropolis, spans |
+| `src/60-land.js`, `61-monastery.js` | compounds and town buildings; the monastery |
+| `src/65a–65l` | smoke, props, flora, docks, shrines, walls and gates, tavern, healing, mills, arena |
+| `src/70-veg.js`, `71-industry.js` | vegetation; wilderness industry |
+| `src/78a–78j` | life layer: nav grid, ships, boats, citizens, clergy, trade, arena combat |
+| `src/79a–79c` | silt strider convoys, their nav grid, the strider model |
+| `src/80`–`87` | camera, day/night, weather, fauna, probe, inspector, path visualizer |
