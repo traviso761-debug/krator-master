@@ -12,9 +12,8 @@
    A "block" L is {x, z, w, d} (plus y/h where useful); FB() lays a box against
    one of its faces: `u` runs along the face (+x for sides 0/1, +z for 2/3),
    `off` is the box centre's distance out from the face plane.
-   Beams (F.beam) are only ever given square sections here: a non-square beam
-   twists when the frame is turned off-axis. Sloped shed roofs are hip roofs
-   whose back half is buried in a taller wall.
+   Sloped shed roofs are hip roofs (F.hipRoof) whose back half is buried in a
+   taller wall; every non-square roof uses F.hipRoof so it rises to a ridge.
    All helpers live inside this IIFE: the registries share one global scope.
    ====================================================================== */
 (function () {
@@ -474,7 +473,7 @@
         ROW(F, Lb(6), 2, 5.5, 2, 2.2, 0.8, 1.1, c, { shut: TIMBER2 }, 0);
         /* right: open-sided work shed under a lean-to roof */
         const wx = hx + r0 - 0.25, ox = 7.8, sd = 8.4;
-        F.pyrRoof(wx, 3.8, 0, 2 * (ox + 0.5 - wx), 1.5, sd, 0, F.pick(TERRA), 'roof');
+        F.hipRoof(wx, 3.8, 0, 2 * (ox + 0.5 - wx), 1.5, sd, 0, F.pick(TERRA), 'roof');
         F.box(ox, 3.6, 0, 0.26, 0.26, sd - 0.4, 0, TIMBER, 'wood');
         [-1, 1].forEach(function (k) {
           F.box(ox, 0, k * (sd / 2 - 0.35), 0.28, 3.6, 0.28, 0, TIMBER, 'wood');
@@ -575,7 +574,7 @@
         [-1, 1].forEach(function (k) { F.box(2.8 + k * 0.65, 0.05, 7.05, 1.2, 2.5, 0.08, k * 0.9, TIMBER2, 'wood'); });
         /* work shed against the back range: lean-to terracotta roof on posts */
         const sz0 = A.z + A.d / 2, sdp = 4.0;
-        F.pyrRoof(3.6, 3.6, sz0, 8.2, 1.6, 2 * sdp + 0.4, 0, F.pick(TERRA), 'roof');
+        F.hipRoof(3.6, 3.6, sz0, 8.2, 1.6, 2 * sdp + 0.4, 0, F.pick(TERRA), 'roof');
         [0.2, 3.6, 7.0].forEach(function (px) {
           F.box(px, 0, sz0 + sdp - 0.2, 0.26, 3.6, 0.26, 0, TIMBER, 'wood');
           F.beam(px, 2.8, sz0 + sdp - 0.2, px, 3.5, sz0 + sdp - 1.1, 0.12, 0.12, TIMBER, 'wood');
@@ -601,7 +600,7 @@
         PARA(F, { x: 0, z: -5, w: 16.34, d: 5.34 }, top, c, 0.85, { s: 0, u: -4.1, w: 8.2 });
         PARA(F, { x: -5, z: 2.4, w: 6.34, d: 9.2 }, top, c, 0.85, { s: 1, u: 0, w: 6.4 });
         const Lo = LOFT(F, 4.6, top, -5.1, 5.0, 3.6, 2.8, shade(c, 0.05), 3, { shut: TIMBER2 });
-        F.pyrRoof(4.6, top + 2.8, -5.1, 5.8, 1.5, 4.4, 0, GREEN, 'roof');
+        F.hipRoof(4.6, top + 2.8, -5.1, 5.8, 1.5, 4.4, 0, GREEN, 'roof');
         CANOPY(F, -7.2, -0.5, -2.8, 5.6, top, top + 2.3, F.pick(BAN), null, ['x0', 'z1']);
         TABLE(F, -5.0, top, 2.4, 1.4, 0.9);
         BENCH(F, -5.0, top, 1.5, 1.4, true); BENCH(F, -5.0, top, 3.3, 1.4, true);
@@ -659,8 +658,8 @@
         if (s < 2) JARSHELF(F, a[0], b[0], a[1], y0 + 0.1, 3, true);
         else JARSHELF(F, a[1], b[1], a[0], y0 + 0.1, 3, false);
         const pr = P(L, s, u, 0);
-        if (s < 2) F.pyrRoof(pr[0], y0 + bh + 0.14, pr[1], bw + 0.5, 0.55, 2 * (bd + 0.3), 0, roofC, 'roof');
-        else F.pyrRoof(pr[0], y0 + bh + 0.14, pr[1], 2 * (bd + 0.3), 0.55, bw + 0.5, 0, roofC, 'roof');
+        if (s < 2) F.hipRoof(pr[0], y0 + bh + 0.14, pr[1], bw + 0.5, 0.55, 2 * (bd + 0.3), 0, roofC, 'roof');
+        else F.hipRoof(pr[0], y0 + bh + 0.14, pr[1], 2 * (bd + 0.3), 0.55, bw + 0.5, 0, roofC, 'roof');
       }
       function dryRack(x0, x1, z, y) {
         F.box(x0, y, z, 0.12, 1.9, 0.12, 0, TIMBER, 'wood');
@@ -900,7 +899,7 @@
         frame(0.2, 2.0, 5.1, 2.0, top, 3.0, 5, 3);
         frame(0.2, 0.5, 5.1, 0.5, top, 3.0, 5, 6);
         LOFT(F, -0.8, top, -2.35, 5.2, 2.8, 2.7, shade(c, 0.05), 0, { du: -1.2, shut: TIMBER2 });
-        F.pyrRoof(-0.8, top + 2.7, -2.35, 6.0, 1.2, 3.6, 0, F.pick(TERRA), 'roof');
+        F.hipRoof(-0.8, top + 2.7, -2.35, 6.0, 1.2, 3.6, 0, F.pick(TERRA), 'roof');
         CHIMNEY(F, 4.4, -3.2, top, 1.5, c);
         F.cyl(3.2, top, -2.9, 0.6, 1.2, 0, dk, 'stone');
       } else {
@@ -1052,7 +1051,7 @@
         /* roof: loft with a green hip roof, awning over stored stock */
         PARA(F, { x: -1, z: 0, w: 12.34, d: 9.34 }, top, c, 0.9, { s: 3, u: -3.2, w: 1.4 });
         LOFT(F, 2.2, top, -2.2, 5.0, 3.2, 2.7, shade(c, 0.05), 0, { du: -1.0, shut: TIMBER2 });
-        F.pyrRoof(2.2, top + 2.7, -2.2, 5.8, 1.4, 4.0, 0, GREEN, 'roof');
+        F.hipRoof(2.2, top + 2.7, -2.2, 5.8, 1.4, 4.0, 0, GREEN, 'roof');
         CANOPY(F, -6.3, 0.8, -1.2, 3.9, top, top + 2.4, F.pick(SAIL), null, ['z1']);
         for (let i = 0; i < 3; i++) CRATE(F, -5.6 + i * 0.95, top, 3.2, 0.8, 0.1 * i, CRATEC[i]);
         CRATE(F, -5.6, top + 0.68, 3.2, 0.65, 0.3);
@@ -1231,7 +1230,7 @@
         paperRack(-3.6, 2.8, 2.2, top);
         paperRack(-3.6, 2.8, 1.0, top);
         LOFT(F, -1.2, top, -2.5, 5.2, 3.0, 2.6, shade(c, 0.05), 0, { du: 1.2, shut: TIMBER2 });
-        F.pyrRoof(-1.2, top + 2.6, -2.5, 6.0, 1.2, 3.8, 0, F.pick(TERRA), 'roof');
+        F.hipRoof(-1.2, top + 2.6, -2.5, 6.0, 1.2, 3.8, 0, F.pick(TERRA), 'roof');
         CHIMNEY(F, 3.3, -3.4, top, 1.3, c);
       } else {
         /* ---- velothi scriptorium on a corner: arcade of stalls along the side street ---- */
@@ -1770,7 +1769,7 @@
         F.box(0, 3.4, hz0 - hd + 0.2, 7.3, 0.25, 0.25, 0, TIMBER, 'wood');
         F.box(-3.5, 3.4, hc, 0.25, 0.25, hd, 0, TIMBER, 'wood');
         F.box(3.5, 3.4, hc, 0.25, 0.25, hd, 0, TIMBER, 'wood');
-        F.pyrRoof(0, 3.65, hc, 8.3, 1.8, hd + 0.8, 0, F.pick(TERRA), 'roof');
+        F.hipRoof(0, 3.65, hc, 8.3, 1.8, hd + 0.8, 0, F.pick(TERRA), 'roof');
         const fx = 0.8, fzz = hc - 0.4;
         F.cyl(fx, 0, fzz, 1.35, 0.9, 0, brick, 'stone');
         F.dome(fx, 0.9, fzz, 1.35, 1.5, 0, shade(brick, 0.06), 'stone');
@@ -1795,7 +1794,7 @@
         /* roof: loft, awning, crates of cullet and a water cistern */
         PARA(F, { x: 0, z: 2.2, w: 7.84, d: 9.34 }, top, c, 0.85, { s: 3, u: -3.0, w: 1.2 });
         LOFT(F, 0.9, top, 0.6, 4.2, 3.4, 2.6, shade(c, 0.05), 0, { du: -0.9, shut: 0x46603f });
-        F.pyrRoof(0.9, top + 2.6, 0.6, 5.0, 1.2, 4.2, 0, GREEN, 'roof');
+        F.hipRoof(0.9, top + 2.6, 0.6, 5.0, 1.2, 4.2, 0, GREEN, 'roof');
         CANOPY(F, -3.2, 3.2, 3.2, 6.2, top, top + 2.3, F.pick([0x2a4d80, 0xcbb08e, 0x3f6b56]), null, ['z1']);
         TABLE(F, 0.8, top, 4.7, 1.4, 0.8); BENCH(F, 0.8, top, 4.0, 1.4, true);
         for (let i = 0; i < 4; i++) F.cyl(0.3 + i * 0.3, top + 0.79, 4.7, 0.06, 0.2, 0, GLASSC[i], 'glass');
