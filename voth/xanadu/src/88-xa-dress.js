@@ -60,6 +60,7 @@ const XPALOPO_WALL=new Set(['xWashB','xEarthB','vPlaster','xWallW','xWallE','xBa
 const _xaKputPalopo=kput;
 kput=function(name,p,q,s,c){const C=VERN.cur;if(!C||!C.o.palopo||C.palBusy)return _xaKputPalopo(name,p,q,s,c);const P=C.pal;
  if(XPALOPO_WALL.has(name)){const S=Array.isArray(s)?s:[s,s,s];if(S[0]>=2.4&&S[1]>=2.0&&S[2]>=1.2)C.walls.push({name,p,q,s:S});return _xaKputPalopo(name,p,q,s,P.base);}
+ if((name==='vWinLit'||name==='vWinGlass'||name==='vDarkB')&&Array.isArray(s)&&s[0]>.35&&s[1]>.35)C.opens.push({p,q,s});   // an opening: the mural fitting avoids it
  if(name==='xPaint'&&c&&(c.r>.03||c.g>.03||c.b>.03))return _xaKputPalopo(name,p,q,s,P.trim);          // painted trim goes orange / yellow; the black surrounds stay black
  if(name==='vWood'&&Array.isArray(s)&&s[1]<.4&&Math.max(s[0],s[2])>1)return _xaKputPalopo(name,p,q,s,P.trim);   // lintels, sills, head beams
  if(name==='xValance')return _xaKputPalopo(name,p,q,s,P.trim2);
@@ -77,8 +78,23 @@ function xaPalopoPaint(C){C.palBusy=true;const P=C.pal;let i=0;
    const up=new THREE.Vector3(0,1,0).applyQuaternion(qf);const at=(dy,dz)=>[c[0]+up.x*dy+n.x*dz,c[1]+up.y*dy,c[2]+up.z*dy+n.z*dz];
    _xaKputPalopo(i%2?'xPalBand':'xPalZig',at(H*.5-.55,0),qf,[len-.5,.6,1],null);
    if(H>2.6)_xaKputPalopo(i%2?'xPalZig':'xPalBand',at(-H*.5+.7,0),qf,[len-.5,.6,1],null);
-   if(H>2.6&&len>3.2){const m=Math.min(len*.62,H*.86);const xs=len>9?[-len/4,len/4]:[0];const right=new THREE.Vector3(1,0,0).applyQuaternion(qf);
-    xs.forEach((dx,j)=>{const a=at(H*.02,.01);_xaKputPalopo(P.motifs[(i+j)%P.motifs.length],[a[0]+right.x*dx,a[1],a[2]+right.z*dx],qf,[m,m,1],null);});}
+   if(H>2.6&&len>3.2){const m0=Math.min(len*.62,H*.86);const right=new THREE.Vector3(1,0,0).applyQuaternion(qf);
+    // FITTING: obstacles are the openings on or near this face and anything standing in front of it (a cumba, a
+    // jharokha, a portico), projected into the face frame (u along, v up); a motif is placed at the clear spot
+    // nearest its preferred position, shrinking through four sizes before giving up.
+    const obs=[];const proj=(o,front)=>{const d=[o.p[0]-c[0],o.p[1]-c[1],o.p[2]-c[2]];const dep=d[0]*n.x+d[2]*n.z;if(dep<-.6||dep>(front?3.5:1.6))return;
+     obs.push({u:d[0]*right.x+d[2]*right.z,v:d[1],hu:Math.max(o.s[0],o.s[2])/2+.1,hv:o.s[1]/2+.1});};
+    for(const o of C.opens)proj(o,false);for(const o of C.walls)if(o!==wl){const dd=[o.p[0]-c[0],o.p[2]-c[2]];if(dd[0]*n.x+dd[1]*n.z>.3)proj({p:[o.p[0],o.p[1]+(o.name.startsWith('xBat')||o.name.startsWith('xWall')?o.s[1]/2:0),o.p[2]],s:o.s},true);}
+    const clear=(u,v,h)=>!obs.some(o=>Math.abs(o.u-u)<o.hu+h&&Math.abs(o.v-v)<o.hv+h);
+    const want=len>9?[-len/4,len/4]:[0];let placed=0;
+    for(let j=0;j<want.length;j++){let best=null;
+     for(const m of[m0,m0*.82,m0*.66,m0*.5,m0*.38]){const h=m/2,v0=-H/2+1.05+h,v1=H/2-.9-h;if(v1<v0)continue;
+      for(let u=-len/2+.35+h;u<=len/2-.35-h+1e-6;u+=.4)for(let v=v0;v<=v1+1e-6;v+=.35){if(!clear(u,v,h))continue;
+       const sc=Math.hypot(u-want[j],(v-H*.02)*.6)-m*1.5;if(!best||sc<best.sc)best={u,v,m,sc};}
+      if(best)break;}
+     if(!best)continue;const a=at(best.v,.01);_xaKputPalopo(P.motifs[(i+j)%P.motifs.length],[a[0]+right.x*best.u,a[1],a[2]+right.z*best.u],qf,[best.m,best.m,1],null);
+     obs.push({u:best.u,v:best.v,hu:best.m/2,hv:best.m/2});placed++;}
+    C.palStats.faces++;C.palStats.placed+=placed;C.palStats.wanted+=want.length;}
    i++;}}
  C.palBusy=false;}
 
@@ -86,7 +102,7 @@ function xaPalopoPaint(C){C.palBusy=true;const P=C.pal;let i=0;
 const XPALOPO_KEYS=['xa_poor_a','xa_poor_b','xa_poor_c','xa_mid_a','xa_mid_b','xa_mid_c','xa_rich_a','xa_rich_b','xa_rich_c','xa_shops','xa_bath','xa_temple'];
 for(const k of XPALOPO_KEYS){const D=VERN.defs[k];if(!D)continue;const T=Object.assign({},D.tags,{paint:'palopo'});delete T.culture;delete T.kit;
  XA.def({key:k+'_palopo',baseKey:k,name:D.name+' (Palopó paint)',family:'Palopó paint',tags:T,w:D.w,d:D.d,h:D.h,fw:D.fw,fd:D.fd,nv:D.nv,
-  build:function(G,o){reseed(31901+(o.v|0));const C=VERN.cur;o.palopo=true;C.walls=[];const v=(o.v|0);
+  build:function(G,o){reseed(31901+(o.v|0));const C=VERN.cur;o.palopo=true;C.walls=[];C.opens=[];C.palStats=(window._palopo=window._palopo||{faces:0,placed:0,wanted:0});const v=(o.v|0);
    C.pal={base:xC(XPALOPO.base[(v*2+XPALOPO_KEYS.indexOf(k))%XPALOPO.base.length]),trim:xC(XPALOPO.trim[(v+XPALOPO_KEYS.indexOf(k))%XPALOPO.trim.length]),trim2:xC(xPick(XPALOPO.trim)),
     motifs:XPALOPO.motifs.slice(v%4).concat(XPALOPO.motifs.slice(0,v%4))};
    D.build(G,o);reseed(31951+(o.v|0));xaPalopoPaint(C);
