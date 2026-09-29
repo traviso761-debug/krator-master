@@ -37,7 +37,7 @@ scene.add(new THREE.HemisphereLight(0xdde8ff,0x6a5a3a,.7));
 const sun=new THREE.DirectionalLight(0xfff0d8,1.7);sun.position.set(-500,760,520);scene.add(sun);          // a high, hard mountain sun
 const fill=new THREE.DirectionalLight(0xb8c8ff,.3);fill.position.set(500,300,-600);scene.add(fill);
 // hooks the frame loop runs (city: sky/lighting update); the showcase adds none
-const FRAME_HOOKS=[];
+const FRAME_HOOKS=(typeof FRAME_HOOKS_PRE!=='undefined')?FRAME_HOOKS_PRE.slice():[];
 // sky dome (the Ancients kit's haze sky, deepened toward the zenith for altitude; the city target swaps in KratorSky)
 let sky,giant,groundM,LABELS;const SITE_GROUPS=[];
 const giantDir=new THREE.Vector3(Math.sin(66*Math.PI/180)*Math.cos(25*Math.PI/180),Math.sin(25*Math.PI/180),-Math.cos(66*Math.PI/180)*Math.cos(25*Math.PI/180));
@@ -65,6 +65,7 @@ for(const S of SITES){const k=S.key+'/'+((S.o&&S.o.v)||0);TSTAT.cur=k;const r0=R
  for(let i=r0;i<REG.length;i++)REG[i].type=S.key;TSTAT.cur=null;}
 window._registered=REG.length;
 kbake(scene);
+if(typeof BIO!=='undefined'&&BIO.host){BIO.setScene(scene);BIO.setSun([-.5,.76,.52]);BIO.bake();}   // the gardens' biome plants
 
 // site labels come from src/93-labels.js (the atlas over REG)
 LABELS=new THREE.Group();LABELS.userData.probeSkip=true;scene.add(LABELS);

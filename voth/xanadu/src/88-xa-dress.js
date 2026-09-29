@@ -100,7 +100,7 @@ function xaPalopoPaint(C){C.palBusy=true;const P=C.pal;let i=0;
  C.palBusy=false;}
 
 // ---------------------------------------------------------------- the twins
-const XPALOPO_KEYS=['xa_poor_a','xa_poor_b','xa_poor_c','xa_mid_a','xa_mid_b','xa_mid_c','xa_rich_a','xa_rich_b','xa_rich_c','xa_shops','xa_bath','xa_temple','xa_house_turk_a','xa_house_turk_b','xa_shop_turk_a','xa_shop_turk_b'];
+const XPALOPO_KEYS=['xa_poor_a','xa_poor_b','xa_poor_c','xa_mid_a','xa_mid_b','xa_mid_c','xa_rich_a','xa_rich_b','xa_rich_c','xa_shops','xa_bath','xa_temple','xa_house_turk_a','xa_house_turk_b','xa_shop_turk_a','xa_shop_turk_b','xa_andean_mid','xa_andean_rich'];
 for(const k of XPALOPO_KEYS){const D=VERN.defs[k];if(!D)continue;const T=Object.assign({},D.tags,{paint:'palopo'});delete T.culture;delete T.kit;
  XA.def({key:k+'_palopo',baseKey:k,name:D.name+' (Palopó paint)',family:'Palopó paint',tags:T,w:D.w,d:D.d,h:D.h,fw:D.fw,fd:D.fd,nv:D.nv,
   build:function(G,o){reseed(31901+(o.v|0));const C=VERN.cur;o.palopo=true;C.walls=[];C.opens=[];C.palStats=(window._palopo=window._palopo||{faces:0,placed:0,wanted:0});const v=(o.v|0);

@@ -231,3 +231,62 @@ roof, a long shed on timber posts with a frieze and chilli strings between the p
 of spice cones on trays, a shelf of jars, a striped awning, sacks and a basket, a trader), barrels, crates and
 spice heaps in the yard. Views: eye level, porch, market. Kit 148 volumes, 1.11 M tris; the variants page is at
 2.96 M of its 3 M budget and will need splitting (or a lower default `nv`) before the next row.
+
+## Round 9 (Sep 29 2026) — Erewhon, Pearl of Xanadu
+
+Travis: three Andean residences (the cholets of El Alto and the blue shop-houses of Palopó), then the city: an
+enclosed mountain lake, the town up the mountain's side from Travis's MS-paint map (water / flat / steep / ridge /
+unbuildable / cliff as slope classes; purple highway, pink avenues, red walls, blue stream), 20 000 souls, walls and
+three distinct gates, the palace precinct on a plateau above the light-grey cliff, the garden district under it on a
+rill grid with two public baths, the Grand Baths and a teahouse, wealth climbing with height, poor and industry by the
+water, the prison in a cliff, terrace farms outside the walls, mines east, the Pleasure Dome of the Bay on the island
+with its barge, a lighthouse with a turning beacon, Palopó paint round the markets, hanging lights on the avenues,
+the Vale of Xanadu biome's plants in every garden; 25 M triangles; LOD if needed. Poem for vibes.
+
+**The kit** (backported first, all in rows on the kit page):
+* `87b-xa-andean.js` — Palopó shop-house (poor), Cholet (middle), Cholet palace (rich): stepped three-colour frames
+  round glazed bays (`xnXOFrame`), lozenge zigzags, chakanas, chrome-and-colour rails, the chalet on the roof.
+* `85b-xa-garden.js` — fourteen garden tiles from the garden agent's brief over all twenty-one photographs (not only
+  Majorelle: Fin, Shazdeh, Dowlatabad, Le Jardin Secret, Jnan Sbil, the Barcelona gardens, a Sicilian shrine pool):
+  T-junction, jet allée, weir terrace (1 m), star basin court, tiled plunge pool, lily pond, cactus court, pergola
+  walk, brick court, kiosk, painted-vault pavilion, bath pool, gate waterfall (4 m), parterre; five tile maps
+  (checker, Fin, leaf tile, chevron, herringbone brick).
+* `87c-xa-erewhon.js` — the Sultan's pleasure barge, quay, boat shed, warehouse, the lighthouse (an octagonal stone
+  tower; its beacon is a real mesh turned by a frame hook, the only moving part in the kit), the teahouse on a
+  double rill plot, the prison in the cliff, the mouth of the Caves of Ice, the palace gate, and the **Pleasure Dome
+  of the Bay** — the biome host's ruined test dome on the island made whole and clad in the Xanadu manner (twenty
+  gilt-capped columns, a mosaic-windowed drum, a turquoise dome, the caves of ice glazed inside) with its dock and
+  the barge. The kit's dome is renamed the Garden Pleasure Dome.
+* **The Vale of Xanadu biome**, vendored from the published artifact (its source recovered into
+  `../biomes/xanadu/`): `86-bio-*` in the kit, one additive export (`XANADU.treeAt`, a single hero of a named species
+  at a point), and `86b-xa-plants.js`, the `xaPlant` shim through which `xnTree`, `xnCypress`, the palms, the pots
+  and the cacti plant the biome's species (flame cypress, cloud pine, ginkgo, whorl olive, Persian ironwood, haze
+  blossom, strawberry tree, cacao, bottle and fan palms, prickly pear, pitaya, desert rose, barrel frill, silver
+  scrub). The kit page bakes the biome after the kit (`BIO.bake`).
+* The variants page's budget is 6 M now (it carries every def three to five times).
+
+**The city** (`targets/erewhon/`, `dist/erewhon.html`):
+* `tools/erewhon-map.py` classifies the map, fills the label text from its surroundings, solves the heights as an
+  eikonal climb from the water at each class's slope (flat 7°, steep 26°, ridge 9°, unbuildable 48°, cliff 68°),
+  lifts the **palace plateau** by hand (a polygon raised 90 m, falling off over 150 px through ground reachable
+  without crossing a cliff pixel, so the light-grey line carries the whole drop and the slums stay low), compresses
+  the mountain above the town, smooths, weathers by class, cuts the stream, thins the coloured lines to polylines and
+  writes `83-er-data.js` (heights at 8 m, classes at 4 m, both base64).
+* `84-er-geo` decodes it (`terrainH` bilinear + levelled pads), `85-er-paint` paints albedo / mask / class canvases
+  from the classes, `86-bio-46-er-init` binds the biome (fields from class, height, the stream), `87-er-layout` reads
+  the districts off the map's labels, paints the highway and avenues, finds the gates where the highway crosses the
+  wall lines (west / east) and the palace gate at the loop's crown, lays **contour streets** (marching squares over
+  the height field every 3 m of height inside the town polygon, less the garden rectangle, thinned so the streets
+  stay ~26 m apart on the ground whatever the slope — Travis: a fixed height interval packed them too close on the
+  steep central slopes for a plot between them) with **stairs** down the
+  fall line every 75 m, and a ring road round the garden; `88-er-place` is the occupancy and the PLAN (every building
+  described first, built later chunk by chunk); `90a-er-world` the terrain mesh, the lake, the stream ribbon, the
+  Krator sky, the walls (battered curtain segments stepping with the ground, drum towers every four); `90b-er-build`
+  the landmarks on levelled pads, the **garden district** as a 26 × 14 tile grid on a 1.5 m-quantised stepped
+  surface (no neighbour more than a cascade apart; three rill axes, three cross rills, courts and parterres between,
+  two public baths and the teahouse on reserved blocks, the Grand Baths at the head, a wall with openings at the
+  axes), the frontage walker (buildings face every street, zoned by district wealth and kind, wealth climbing with
+  height, Palopó twins round the markets, a narrow fallback def when the plot fails), the farms and mines outside,
+  the hanging lights (basket and umbrella strings wherever two fronts face across a lit avenue), then the terrain,
+  the biome, and **one bake per 480 m chunk** — the runtime LOD: a chunk is drawn while it is in the view and within
+  1.7 km (landmarks always), the biome's own chunk LOD ticks beside it.

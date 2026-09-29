@@ -10,7 +10,7 @@ const XVZ=[ // the three dresses: cobalt (Majorelle) / brick (Qajar) / cream (Er
  {wall:0xb08a5c,trim:0xf0e6d2,acc:0x2a6a5a,col:0xf0e6d2,rail:0x7a4a22,mosaic:true,arch:'xArchP',glass:false},
  {wall:0xd8c4a0,trim:0xf4eee0,acc:0x36b0b8,col:0xf4eee0,rail:0x7a2a2a,mosaic:true,arch:'xArchP',glass:false}];
 // a palm: a leaning trunk of stacked rings and a crown of fronds
-function xnXMPalm(x,z,h,y){y=y||0;const lean=rr(-.12,.12),t=xC(0x8a6a48);for(let k=0;k<Math.round(h/.5);k++)vPst('xDrumS',x+lean*k*.5,y+k*.5,z,.16-.004*k,.5,t.clone().multiplyScalar(rr(.9,1.05)));
+function xnXMPalm(x,z,h,y){y=y||0;if(typeof xaPlant==='function'&&xaPlant('palm',x,y,z,h))return;const lean=rr(-.12,.12),t=xC(0x8a6a48);for(let k=0;k<Math.round(h/.5);k++)vPst('xDrumS',x+lean*k*.5,y+k*.5,z,.16-.004*k,.5,t.clone().multiplyScalar(rr(.9,1.05)));
  const top=[x+lean*h,y+h,z];for(let k=0;k<9;k++){const a=k/9*TAU+rr(-.2,.2);kput('xLeaf',[top[0]+Math.cos(a)*1.1,top[1]+.1-Math.abs(Math.sin(k))*.2,top[2]+Math.sin(a)*1.1],qEuler(.3,-a,.5),[2.4,.18,.6],xC(xPick([0x3a8a3a,0x4a9a44,0x2f7a34])));}
  vBall('xPaintBall',top[0],top[1],top[2],.35,xC(0x6a4a30));}
 // a marigold bed: an earth bed, a low hedge, yellow and orange heads
