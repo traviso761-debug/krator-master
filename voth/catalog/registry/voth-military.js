@@ -324,17 +324,23 @@
           F.cyl(tx, TH + 2.6, tz, 3.0, 0.35, 0, trimL, 'stone');
           F.cone(tx, TH + 2.95, tz, 3.4, 4.2, 0, capC, 'roof');
           K.mast(tx, TH + 6.3, tz, 1.8, 0.8);
+          const rAt = (y) => (R0 + 0.2) - (R0 + 0.2 - R1) * (y - 1.6) / (TH - 1.6);
           for (let i = 0; i < 4; i++) {
             const a = k > 0 ? -0.2 + i * 0.75 : Math.PI + 0.2 - i * 0.75;
-            const sx = tx + Math.cos(a) * (R0 - 0.1), sz = tz + Math.sin(a) * (R0 - 0.1);
-            F.box(sx, 5.5, sz, 0.26, 1.9, 0.5, -a, DOOR, 'wood');
-            F.box(sx, 10, sz, 0.26, 1.5, 0.5, -a, DOOR, 'wood');
+            [[5.5, 1.9], [10, 1.5]].forEach((q) => {
+              const r = rAt(q[0] + q[1] / 2) - 0.06;
+              F.box(tx + Math.cos(a) * r, q[0], tz + Math.sin(a) * r, 0.24, q[1], 0.36, -a - Math.PI / 2, DOOR, 'wood');
+              F.box(tx + Math.cos(a) * (r - 0.05), q[0] - 0.15, tz + Math.sin(a) * (r - 0.05), 0.6, q[1] + 0.3, 0.3, -a - Math.PI / 2, shade(wallC, -0.18), 'stone');
+            });
           }
           /* lantern door onto the tower top and small slits */
           F.box(tx - k * 0.2, TH, tz - 2.55, 1.0, 1.9, 0.2, 0, DOOR, 'wood');
           /* hanging banner on the outer face of each drum */
-          F.box(tx, 6.5, tz + R0 - 0.3, 1.6, 5.2, 0.12, 0, k < 0 ? GREEN : GOLD, 'cloth');
-          F.box(tx, 11.7, tz + R0 - 0.3, 2.1, 0.16, 0.3, 0, IRON, 'metal');
+          const bz = tz + rAt(6.5) + 0.12;
+          F.box(tx, 6.5, bz, 1.6, 5.2, 0.1, 0, k < 0 ? GREEN : GOLD, 'cloth');
+          F.box(tx, 6.5, bz + 0.02, 1.6, 0.3, 0.1, 0, k < 0 ? GOLD : GREEN, 'cloth');
+          F.box(tx, 11.7, bz, 2.1, 0.16, 0.16, 0, IRON, 'metal');
+          [-0.9, 0.9].forEach((u) => F.box(tx + u, 11.7, (bz + tz + rAt(11.7)) / 2 - 0.05, 0.1, 0.12, bz - tz - rAt(11.7) + 0.2, 0, IRON, 'metal'));
         });
 
         /* ---- back square towers (z = -Z): battered, open pavilion cap */
@@ -363,7 +369,9 @@
             K.slit(p2[0], 10.4, p2[1], s, 1.6, wallC);
           });
           /* door from the wall-walk on the bailey side */
-          K.door(tx - k * (R1 + 0.2), H, tz + 1.2, k > 0 ? 3 : 2, 1.2, 2.2, wallC, { step: false });
+          const rd = (R0 + 0.2) - (R0 + 0.2 - R1) * (H + 1.1 - 1.5) / (TH - 1.5) - 0.02;
+          K.door(tx - k * rd, H, tz + 1.2, k > 0 ? 3 : 2, 1.2, 2.2, wallC, { step: false });
+          K.door(tx - k * 1.2, H, tz + rd, 0, 1.2, 2.2, wallC, { step: false });
         });
 
         /* ---- gatehouse: two square towers, a passage block, portcullis */
@@ -391,10 +399,10 @@
         F.box(0, 0.12, GZ - 0.5, 2.9, 4.2, 7.2, 0, 0x14120f, 'wood');
         for (let i = 0; i < 7; i++) {
           const px = -1.35 + i * 0.45;
-          F.box(px, 1.6, GZ + 3.12, 0.1, 3.8, 0.1, 0, IRON, 'metal');
+          F.box(px, 1.6, GZ + 3.12, 0.1, 2.7, 0.1, 0, IRON, 'metal');
           F.cone(px, 1.25, GZ + 3.12, 0.07, 0.35, 0, IRON, 'metal');
         }
-        for (let j = 0; j < 6; j++) F.box(0, 1.9 + j * 0.62, GZ + 3.12, 3.0, 0.09, 0.12, 0, IRON, 'metal');
+        for (let j = 0; j < 5; j++) F.box(0, 1.9 + j * 0.52, GZ + 3.12, 3.0, 0.09, 0.12, 0, IRON, 'metal');
         F.box(0, 0.12, GZ + 3.0, 3.8, 0.3, 0.3, 0, trimD, 'stone');
         K.archHead(0, 4.32, GZ + 3.0, 0, 4.2, 2.1, 0.25, trimL);
         /* rear arch into the bailey */
@@ -628,8 +636,11 @@
         K.parapetRect(0, GZ, 4.2, 2.6, Y0 + H + 2.4, 0.45, wallC, trimD, 1.0);
         K.opening(0, Y0 - 0.4, GZ - 2.6, 1, 4.2, 4.8, 0.1, 0x14120f);
         K.archHead(0, Y0 + 4.4, GZ - 2.6, 1, 5.4, 2.4, 0.3, trimL);
-        for (let i = 0; i < 9; i++) F.box(-1.9 + i * 0.475, Y0 + 2.2, GZ - 2.75, 0.1, 4.0, 0.1, 0, IRON, 'metal');
-        for (let j = 0; j < 6; j++) F.box(0, Y0 + 2.4 + j * 0.6, GZ - 2.75, 4.3, 0.09, 0.12, 0, IRON, 'metal');
+        for (let i = 0; i < 9; i++) {
+          F.box(-1.9 + i * 0.475, Y0 + 1.9, GZ - 2.75, 0.1, 2.45, 0.1, 0, IRON, 'metal');
+          F.cone(-1.9 + i * 0.475, Y0 + 1.55, GZ - 2.75, 0.07, 0.35, 0, IRON, 'metal');
+        }
+        for (let j = 0; j < 4; j++) F.box(0, Y0 + 2.1 + j * 0.6, GZ - 2.75, 4.3, 0.09, 0.12, 0, IRON, 'metal');
         K.banner(-3.0, Y0 + H + 1.6, GZ - 2.6, 1, 1.4, 3.6, GREEN, GOLD);
         K.banner(3.0, Y0 + H + 1.6, GZ - 2.6, 1, 1.4, 3.6, GOLD, GREEN);
         K.win(0, Y0 + 7.4, GZ - 2.6, 1, 1.2, 1.3, wallC, { pointed: true, bars: true });
@@ -1228,13 +1239,21 @@
         K.slope(gx, 7.0, gz - 1.6, gx, 6.1, gz + 1.7, 3.2, 0.08, tentC(), 'cloth');
         F.beam(gx + k * 1.1, 0.2, gz + 1.1, gx + k * 1.1, 4.4, gz - 1.1, 0.12, 0.12, TIMBER, 'wood');
         for (let i = 0; i < 6; i++) F.box(gx - k * 1.25, 0.6 + i * 0.66, gz - 1.1, 0.5, 0.07, 0.07, 0, TIMBER2, 'wood');
-        F.box(k * 2.2, 0, Z + 0.4, 0.2, 2.8, 2.4, k * 0.9, TIMBER2, 'wood');
+        /* gate leaf swung open inward against the tower */
+        F.box(k * 2.45, 0.05, Z - 1.35, 0.16, 2.9, 2.5, 0, TIMBER2, 'wood');
+        [0.5, 2.3].forEach((y) => F.box(k * 2.35, 0.05 + y, Z - 1.35, 0.08, 0.16, 2.5, 0, TIMBER, 'wood'));
+        F.beam(k * 2.35, 0.7, Z - 0.25, k * 2.35, 2.2, Z - 2.45, 0.08, 0.12, TIMBER, 'wood');
       });
       F.box(0, 5.7, Z - 0.6, 10.5, 0.3, 0.3, 0, TIMBER, 'wood');
       F.box(0, 3.9, Z - 0.4, 2.6, 1.8, 0.06, 0, GREEN, 'cloth');
       F.box(0, 3.9, Z - 0.36, 2.7, 0.2, 0.06, 0, GOLD, 'cloth');
-      F.box(0, 0.35, Z + 3.6, 4.2, 0.2, 6.2, 0, TIMBER3, 'wood');
-      [-1, 1].forEach((k) => F.box(k * 2.0, 0.55, Z + 3.6, 0.15, 0.6, 6.2, 0, TIMBER, 'wood'));
+      /* plank bridge over the ditch: sleepers on berm and counterscarp, trestles */
+      F.box(0, 0.55, Z + 3.4, 4.2, 0.2, 6.2, 0, TIMBER3, 'wood');
+      [-1, 1].forEach((k) => F.box(k * 2.0, 0.75, Z + 3.4, 0.15, 0.7, 6.2, 0, TIMBER, 'wood'));
+      F.box(0, 0.35, Z + 1.1, 4.4, 0.2, 0.4, 0, TIMBER, 'wood');
+      F.box(0, 0.35, Z + 5.9, 4.4, 0.2, 0.4, 0, TIMBER, 'wood');
+      [-1.6, 1.6].forEach((x) => F.box(x, 0, Z + 3.6, 0.3, 0.55, 0.3, 0, TIMBER, 'wood'));
+      F.box(0, 0, Z + 6.9, 4.2, 0.35, 0.8, 0, TIMBER3, 'wood');
 
       /* ---- tents */
       function ridge(x, z, L, W, H, alongX, col) {
