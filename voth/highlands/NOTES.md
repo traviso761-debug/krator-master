@@ -203,3 +203,38 @@ albedo / buildable mask / class, the road list and its spatial hash, OBB occupan
   - Hull-breaker's yard: a furnace hall with a ridge ventilator and brick stacks; a bracketed gantry lifting a hull
     section; heaps, a pipe rack, a spent engine bell, an office, a plate fence.
 - The kit showcase budget is raised to 4.5 M triangles / 450 calls (it grew by the frame and four buildings).
+
+## Round 8 (Sep 29 2026) — the scrap quarter; Roketstad on the new kit
+- **Ten salvage-built buildings** (`src/79c-rep-apoc.js`, born reclaimed). The wreck is the shell (painted containers,
+  corrugated silos, tanks, a crawler's hull, a rocket-hull panel); the Republic supplies the frame storeys, Alpine
+  gables, lattice, balustrades and signs.
+  - Hull-vault warehouse: a ribbed curved hull panel on bracketed posts.
+  - Scrap Kontor: containers, a frame storey, a lookout, a weighbridge, a strongroom and the emblem flag.
+  - Container stack.
+  - Silo house (wrap porch, annex).
+  - Tank-cluster row (bridges between tanks).
+  - Crawler house.
+  - Salvage garage (jib crane, carport).
+  - Container shops.
+  - Lantern stall.
+  - Radome tower house (lattice mast, radome).
+- **Fixes.**
+  - The reclaimed-twin filter's `continue` had been commented out in 7c, so every Republican def got a twin.
+  - Tank bodies now use a centred cylinder (`hTankC`; `vTankR` stands on its base).
+- **Temple of the Pantheon**, squatter, wider and in stone:
+  - ashlar tiers of 32×24, 24×17 and 16×11 m, with quoins and string courses;
+  - ashlar pavilions and turrets, a stone stair from the forecourt;
+  - a wider, lower cushion dome;
+  - the galleries, gables and stair canopies stay timber.
+- **Roketstad** is rebuilt on the kit as it now stands: the frame, Dutch gables, triskelion balustrades, the stone temple.
+  - About 1 in 5 frontage buildings in the poorer streets comes from the salvage kit; some forge-district lots too.
+  - **The scrap town** (`SAT` in 87, `satelliteTown` in 90b): a plaza on the port table's west rim by the road and the
+    Scavengers' Guild, with the Scrap Kontor on it and eight wandering lanes of salvage houses and shops. The hull-vault
+    warehouse, hull-breaker's yard and powder works stand at its edge.
+  - **Bunkers**: Ancient redoubts (vendored `buildBunker` and `aaBattery`) round the table's rim, in the reclaimed
+    state with the repair pass (shacks, patches, lines).
+  - The unlaunched arcology now stands on the pad nearest the town.
+  - **LOD** (`93b-rk-lod.js`): screen-size culling of the kit's instances. An instance draws only while
+    size/distance > 1/300; each InstancedMesh is rewritten near-first and its count cut as the camera moves. It keeps
+    about a quarter to three fifths of 520 k instances depending on the view; rendered triangles fall from ~12.8 M to
+    5–9 M. The probe sees the full lists. There is a LOD button to compare.
