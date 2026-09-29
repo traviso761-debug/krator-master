@@ -225,7 +225,11 @@ const WIN=d=>d>0?MAT.winDead:MAT.winIntact;
 const CYAN=new THREE.Color(0x7ff4ff), WARM=new THREE.Color(0xffd28a), DEAD=new THREE.Color(0x0a0c0e);
 
 // ---------------------------------------------------------------- instancing kit
-const KIT={defs:{},items:{},order:[]};
+// `meshes` is filled by kbake: name -> the one InstancedMesh that item baked
+// into. One kdef is one InstancedMesh, so anything that wants to switch a whole
+// class of instanced detail on or off at run time (the firelight, at night) can
+// do it with a single .visible, with no per-instance bookkeeping.
+const KIT={defs:{},items:{},order:[],meshes:{}};
 function kdef(name,geo,mat){KIT.defs[name]={geo,mat};KIT.items[name]=[];KIT.order.push(name);}
 let KOFF=[0,0,0],KXF=null; // builder offset; optional {m,q} transform (leaning spire)
 function kput(name,p,q,s,c){let P=p,Q=q;if(KXF){const v=new THREE.Vector3(p[0],p[1],p[2]).applyMatrix4(KXF.m);P=[v.x,v.y,v.z];Q=(q?q.clone():new THREE.Quaternion()).premultiply(KXF.q);}
@@ -247,7 +251,7 @@ function kbake(parent){KIT_BAKED=true;const m=new THREE.Matrix4(),pos=new THREE.
   it.forEach((o,i)=>{pos.set(o.p[0],o.p[1],o.p[2]);const s=typeof o.s==='number'?sc.set(o.s,o.s,o.s):sc.set(o.s[0],o.s[1],o.s[2]);
    m.compose(pos,o.q||q0,s);im.setMatrixAt(i,m);if(o.c)im.setColorAt(i,o.c);});
   if(im.instanceColor){const W=new THREE.Color(0xffffff);it.forEach((o,i)=>{if(!o.c)im.setColorAt(i,W);});}
-  if(im.instanceColor)im.instanceColor.needsUpdate=true;im.instanceMatrix.needsUpdate=true;im.frustumCulled=false;parent.add(im);tot+=it.length;}
+  if(im.instanceColor)im.instanceColor.needsUpdate=true;im.instanceMatrix.needsUpdate=true;im.frustumCulled=false;parent.add(im);KIT.meshes[name]=im;tot+=it.length;}
  window._instances=tot;}
 // orientation helpers
 const _M=new THREE.Matrix4(),_V0=new THREE.Vector3(),_UP=new THREE.Vector3(0,1,0),_X=new THREE.Vector3(1,0,0);
@@ -474,19 +478,23 @@ function stripRing(gx,gy,gz,r,d,n){
  n=n||28;const L=TAU*r/n*.92;for(let k=0;k<n;k++){const th=(k+.5)/n*TAU;const lit=d>0?(rng()<.10):true;
   kput('strip',[gx+r*Math.cos(th),gy,gz+r*Math.sin(th)],qEuler(0,-th-Math.PI/2,0),[L,1,1],lit?(d>0&&rng()<.5?CYAN.clone().multiplyScalar(.5):CYAN):DEAD);}}
 function mullions(gx,gy,gz,r,h,n,d){for(let k=0;k<n;k++){const th=k/n*TAU;kput(d>0?'mullR':'mullW',[gx+r*Math.cos(th),gy+h/2,gz+r*Math.sin(th)],qEuler(0,-th,0),[1,h,1],null);}}
-function glassBand(parent,rFn,y0,h,d,gx,gy,gz,n){ // gallery ring: glass drum (intact) or bare mullions round a dark drum (ruin)
+// `noStrip` suppresses the light-strip ring. The strips are an UNLIT material,
+// so a dead segment renders at a fixed pale grey rather than going dark with
+// the scene; on a building meant to have no power at all (The Project) that
+// shows up at night as a row of glowing dashes. Every existing caller omits it.
+function glassBand(parent,rFn,y0,h,d,gx,gy,gz,n,noStrip){ // gallery ring: glass drum (intact) or bare mullions round a dark drum (ruin)
  const o={rFn:y=>rFn(y0+y)*(1.09+.05*Math.sin(Math.PI*y/h)),H:h,nu:48,nv:6};
  if(d===0){mesh(lathe(o),MAT.glass,parent,0,y0,0);}
  mesh(lathe({rFn:y=>rFn(y0+y)*.97,H:h,nu:32,nv:2}),MAT.dark,parent,0,y0,0);
  mullions(gx,gy+y0,gz,rFn(y0+h/2)*1.1,h,n||36,d);
- stripRing(gx,gy+y0+h*.55,gz,rFn(y0+h/2)*.95,d,n||28);
+ if(!noStrip)stripRing(gx,gy+y0+h*.55,gz,rFn(y0+h/2)*.95,d,n||28);
  // ledge slab under the band
  kput('slab',[gx,gy+y0-.4,gz],null,[rFn(y0)*1.16,.8,rFn(y0)*1.16],new THREE.Color(d>0?0x5a4a40:0xd8d4cc));}
 function floorSlabs(gx,gy,gz,rFn,y0,y1,step,d,cut){for(let y=y0;y<y1;y+=step){if(cut!=null&&y>cut+3)break;kput('slab',[gx,gy+y,gz],null,[rFn(y)*.93,.5,rFn(y)*.93],new THREE.Color(0x2a2c30));}}
-function scatterMoss(gx,gy,gz,rMin,rMax,n,sMax){for(let i=0;i<n;i++){const a=rng()*TAU,r=rr(rMin,rMax);const s=rr(.5,sMax);
+function scatterMoss(gx,gy,gz,rMin,rMax,n,sMax){n=biomeN(n);for(let i=0;i<n;i++){const a=rng()*TAU,r=rr(rMin,rMax);const s=rr(.5,sMax);
  kput('moss',[gx+r*Math.cos(a),gy+s*.25,gz+r*Math.sin(a)],qEuler(0,rng()*TAU,0),[s*rr(.8,1.4),s*.38,s*rr(.8,1.4)],new THREE.Color().setHSL(rr(.22,.32),rr(.3,.5),rr(.05,.12)));}}
-function mossOnRing(gx,gy,gz,r,n,sMax){for(let i=0;i<n;i++){const a=rng()*TAU,s=rr(.6,sMax);kput('moss',[gx+r*Math.cos(a)*rr(.85,1.02),gy+s*.2,gz+r*Math.sin(a)*rr(.85,1.02)],null,[s*1.3,s*.4,s*1.3],new THREE.Color().setHSL(rr(.2,.3),rr(.3,.5),rr(.05,.12)));}}
-function vinesOnRing(gx,gy,gz,r,n,lMax){for(let i=0;i<n;i++){const a=rng()*TAU,L=rr(4,lMax);kput('vine',[gx+r*Math.cos(a),gy,gz+r*Math.sin(a)],qEuler(rr(-.12,.12),0,rr(-.12,.12)),[rr(.8,1.6),L,rr(.8,1.6)],null);}}
+function mossOnRing(gx,gy,gz,r,n,sMax){n=biomeN(n);for(let i=0;i<n;i++){const a=rng()*TAU,s=rr(.6,sMax);kput('moss',[gx+r*Math.cos(a)*rr(.85,1.02),gy+s*.2,gz+r*Math.sin(a)*rr(.85,1.02)],null,[s*1.3,s*.4,s*1.3],new THREE.Color().setHSL(rr(.2,.3),rr(.3,.5),rr(.05,.12)));}}
+function vinesOnRing(gx,gy,gz,r,n,lMax){n=biomeN(n);for(let i=0;i<n;i++){const a=rng()*TAU,L=rr(4,lMax);kput('vine',[gx+r*Math.cos(a),gy,gz+r*Math.sin(a)],qEuler(rr(-.12,.12),0,rr(-.12,.12)),[rr(.8,1.6),L,rr(.8,1.6)],null);}}
 // Rubble piles AGAINST the wall it fell from. The radius is biased hard toward
 // rMin, blocks are largest there, and they bank up into a talus slope that
 // thins to a scatter at the outer edge. A uniform annulus reads as a decorative
@@ -543,22 +551,55 @@ function upFaces(src,count,minNY){return faceSamples(src,count,minNY,1.01);}
 function sideFaces(src,count){return faceSamples(src,count,0,.34);}
 // The outer band of the flat surfaces is where a ledge is: water leaves the
 // building there, so that is where vines root and where stains start.
-function ledgePoints(geos,n,frac){const s=upFaces(geos,n*4,.5);if(!s.length)return[];
+// `cx,cz` is the centre the radius is measured from, and it is NOT always the
+// builder's origin. A crescent is drawn about a centre of curvature well off
+// that origin (the Hotel's is 63 m away), so measuring from 0,0 ranks the two
+// HORNS of the crescent as its outermost points and hangs every vine and every
+// water stain off the two ends of the building instead of off its long face.
+function ledgePoints(geos,n,frac,cx,cz){const s=upFaces(geos,n*4,.5);if(!s.length)return[];
+ if(cx!==undefined)for(const f of s)f.r=Math.hypot(f.p[0]-cx,f.p[2]-cz);
  s.sort((a,b)=>b.r-a.r);return s.slice(0,Math.max(1,Math.round(s.length*(frac||.3))));}
-function mossOnSurface(geos,gx,gy,gz,n,sMax){for(const f of upFaces(geos,n,.55)){const s=rr(.5,sMax);
+function mossOnSurface(geos,gx,gy,gz,n,sMax){for(const f of upFaces(geos,biomeN(n),.55)){const s=rr(.5,sMax);
  kput('moss',[gx+f.p[0],gy+f.p[1]+s*.15,gz+f.p[2]],qEuler(0,rng()*TAU,0),[s*rr(.8,1.5),s*rr(.22,.42),s*rr(.8,1.5)],new THREE.Color().setHSL(rr(.22,.32),rr(.3,.5),rr(.05,.12)));}}
-function vinesFromLedge(geos,gx,gy,gz,n,lMax){for(const f of ledgePoints(geos,n,.3)){const L=rr(4,lMax);
+function vinesFromLedge(geos,gx,gy,gz,n,lMax,cx,cz){for(const f of ledgePoints(geos,biomeN(n),.3,cx,cz)){const L=rr(4,lMax);
  kput('vine',[gx+f.p[0],gy+f.p[1],gz+f.p[2]],qEuler(rr(-.14,.14),rng()*TAU,rr(-.14,.14)),[rr(.8,1.7),L,rr(.8,1.7)],null);}}
 // Water-staining below each ledge: a multiply-blended streak, so it darkens
 // whatever wall it lands on instead of painting a grey rectangle over it.
-function stainsFromLedge(geos,gx,gy,gz,n,lMax){for(const f of ledgePoints(geos,n,.45)){
- const L=rr(5,lMax),a=Math.atan2(f.p[2],f.p[0]),o=1.004;
- kput('stain',[gx+f.p[0]*o,gy+f.p[1]-L*.5,gz+f.p[2]*o],qFacing([Math.cos(a),0,Math.sin(a)]),[rr(1.4,4.5),L,1],null);}}
+//
+// Still radial, which is the standing complaint against it on a rectilinear
+// plan — but it is now radial about `cx,cz` rather than always about the
+// builder's origin. On the Hotel, whose crescent is struck from a centre 63 m
+// behind the origin, the two are 43 degrees apart at the horns, so every
+// streak at the ends of the building was laid across the facade instead of
+// down it. Callers on a circular plan centred on their own origin pass nothing
+// and are unchanged.
+function stainsFromLedge(geos,gx,gy,gz,n,lMax,cx,cz){const ox=cx||0,oz=cz||0;
+ for(const f of ledgePoints(geos,n,.45,cx,cz)){
+ const L=rr(5,lMax),a=Math.atan2(f.p[2]-oz,f.p[0]-ox),o=1.004;
+ kput('stain',[gx+ox+(f.p[0]-ox)*o,gy+f.p[1]-L*.5,gz+oz+(f.p[2]-oz)*o],qFacing([Math.cos(a),0,Math.sin(a)]),[rr(1.4,4.5),L,1],null);}}
 
 // VEGETATION HAND-OFF. The Krator flora pass is a separate project and will
 // replace VEG.tree wholesale; everything in this kit that plants anything goes
 // through it, so that swap is one assignment and touches no builder.
 // y is the ground height at (x,z) — ask terrainH, do not assume 0.
+// ---------------------------------------------------------------- THE BIOME
+// One dial the whole kit's planting hangs off, so "overgrown" is a setting
+// rather than 33 separate edits. `lush` multiplies every scattered population:
+// 1 is the kit as designed, 3 is a site the plain has taken back.
+//
+// A builder is CROSS-COMPATIBLE with this when its own planting loops route
+// their counts through BIOME.lush too — the shared helpers below already do,
+// so a type that plants only via trees()/scatterMoss()/VEG.tree gets it free,
+// and a type with a bespoke scatter (both forest types, Arcbeam, Arcoindian)
+// has to opt in. That difference is exactly what the biome pass is testing.
+//
+// It is a GLOBAL and the builders run in sequence, so anything that sets it
+// must put it back — see `withBiome`, which is the only sanctioned way in.
+const BIOME={lush:1};
+function withBiome(lush,fn){const was=BIOME.lush;BIOME.lush=lush;
+ try{fn();}finally{BIOME.lush=was;}}
+const biomeN=n=>Math.round(n*BIOME.lush);
+
 // The hand-off point for flora. Every planting call in the kit goes through
 // this, so changing it changes the forest everywhere at once — which is the
 // point: see the LEAF CARD note in 34-kitdefs.js for why the four-icosahedra
@@ -582,7 +623,7 @@ const VEG={
    // no texture at all — came back as near-black shrubs.
    new THREE.Color().setHSL(rr(.22,.34),rr(.30,.52),rr(.40,.68)));}},
 };
-function trees(gx,gz,rMin,rMax,n){for(let i=0;i<n;i++){const a=rng()*TAU,r=rr(rMin,rMax),h=rr(6,14);
+function trees(gx,gz,rMin,rMax,n){n=biomeN(n);for(let i=0;i<n;i++){const a=rng()*TAU,r=rr(rMin,rMax),h=rr(6,14);
  const x=gx+r*Math.cos(a),z=gz+r*Math.sin(a);VEG.tree(x,terrainH(x,z),z,i%3,h);}}
 // APRON. Every structure meets the ground on a hard line without one. This lays
 // a graded skirt from the foot of the mass out to the ground, so the two blend.
@@ -600,6 +641,14 @@ function stats(){}
 // ---------------------------------------------------------------- v2 helpers
 kdef('strutW',new THREE.BoxGeometry(1,1,1),MAT.white); kdef('strutR',new THREE.BoxGeometry(1,1,1),MAT.rust);
 kdef('cell',new THREE.BoxGeometry(1,1,.5),MAT.dot);
+// The same cell on a LIT material. `cell` is MeshBasicMaterial, which is right
+// for a window that is on and wrong for one that is off: a DEAD instance colour
+// is 0x0a0c0e and an unlit material ignores the scene, so it renders at a fixed
+// ~60/255 grey. In daylight that reads as a dark opening and nobody noticed.
+// Put the scene into night for The Project and every dead window on the tower
+// became a pale panel, brighter than the wall around it. This one goes black
+// when the light does.
+kdef('cellD',new THREE.BoxGeometry(1,1,.5),MAT.winDead);
 kdef('winSmI',arcWindowGeo(1.1,2,.4),MAT.winIntact); kdef('winSmD',arcWindowGeo(1.1,2,.4),MAT.winDead);
 function beam(name,a,b,w,dp,color){const dx=b[0]-a[0],dy=b[1]-a[1],dz=b[2]-a[2];const L=Math.sqrt(dx*dx+dy*dy+dz*dz);
  const q=new THREE.Quaternion().setFromUnitVectors(_UP,new THREE.Vector3(dx,dy,dz).normalize());kput(name,[(a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2],q,[w,L,dp],color||null);}
@@ -673,7 +722,12 @@ kdef('pane',new THREE.BoxGeometry(1,1,.12),MAT.glass);kdef('paneD',new THREE.Box
 kdef('slabC',new THREE.CylinderGeometry(1,1,1,48),MAT.concrete);kdef('slabCR',new THREE.CylinderGeometry(1,1,1,48),MAT.concreteR);
 const BOXC=d=>d>0?'boxCR':'boxC', SLABC=d=>d>0?'slabCR':'slabC';
 function se(th,n){return 1/Math.pow(Math.pow(Math.abs(Math.cos(th)),n)+Math.pow(Math.abs(Math.sin(th)),n),1/n);}
-function bodyGroup(G,y0,d,dd,build,cutY,topR){const P=new THREE.Group();P.position.set(0,y0,0);G.add(P);useGroupXF(P);if(d<2)build(P,dd,y0,null,false);else build(P,1,y0,cutY,false);endGroupXF();
+// Only a TOPPLED tower (d===2) is cut at cutY; every other level stands at full
+// height. The test used to be `d<2`, which sent decay 3 down the toppled branch
+// without the fallen upper body that is the only reason to cut it, so every
+// rehabilitated tower was a three-storey stump. `stand` predates the fix (the
+// Projects, decay 4, pass it) and is now redundant but harmless.
+function bodyGroup(G,y0,d,dd,build,cutY,topR,stand){const P=new THREE.Group();P.position.set(0,y0,0);G.add(P);useGroupXF(P);if(d!==2||stand)build(P,dd,y0,null,false);else build(P,1,y0,cutY,false);endGroupXF();
  if(d===2)toppledUpper(G,0,0,cutY,topR,(U)=>build(U,1,cutY,null,true),d);}
 
 // ---------------------------------------------------------------- v5 materials
@@ -732,6 +786,114 @@ kdef('spipe',new THREE.CylinderGeometry(1,1,1,7),MAT.rust);
 kdef('waterButt',new THREE.CylinderGeometry(1,1,1,10),MAT.corrugate);
 kdef('planter',new THREE.BoxGeometry(1,1,1),MAT.timber);
 kdef('plank',new THREE.BoxGeometry(1,1,1),MAT.timber);
+
+// ---------------------------------------------------------------- FIRELIGHT
+// The kit's lit window is CYAN — `litC`, `stripRing`, `MAT.strip` — because
+// that is the Ancients' own electric light, and every intact structure in the
+// showcase still carries it. Fire is the opposite signal: a later people
+// burning things inside a building that has had no power for five thousand
+// years. So it gets its own materials, its own kit items, and its own
+// InstancedMeshes — which is also what makes the night state a two-line
+// visibility toggle instead of a rebuild (see setNight in 92-camera.js).
+//
+// Everything here is UNLIT (MeshBasicMaterial): a scene light cannot make a
+// window brighter than the sunlit wall around it — that is a standing kit-wide
+// complaint (see Plymouth in KNOWN_ISSUES) — so the fire has to BE the light
+// rather than receive it.
+TEX.ember=canvasTex(64,64,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;
+  const rad=Math.hypot(x-w/2,y-h/2)/(w/2);
+  const a=Math.pow(clamp(1-rad,0,1),2.2)*(.72+.28*(fbm(x/7,y/7,3.7,2)-.5)*2);
+  d[i]=255;d[i+1]=178;d[i+2]=96;d[i+3]=clamp(a,0,1)*255;}
+ g.putImageData(id,0,0);});
+TEX.ember.wrapS=TEX.ember.wrapT=THREE.ClampToEdgeWrapping;
+// The flame itself, seen through an opening: hot and pale in the middle, going
+// to a deep ember at the edges, mottled so no two windows read the same.
+TEX.flame=canvasTex(64,64,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;
+  const fy=1-y/h;                                   // hotter low, where the fuel is
+  let v=clamp(.30+.85*fy*fy+(fbm(x/9,y/6,5.1,3)-.5)*1.1,0,1);
+  d[i]=255*clamp(v*1.25,0,1);d[i+1]=255*clamp(v*v*1.05,0,1);d[i+2]=255*clamp(v*v*v*.8,0,1);d[i+3]=255;}
+ g.putImageData(id,0,0);});
+TEX.flame.wrapS=TEX.flame.wrapT=THREE.ClampToEdgeWrapping;
+MAT.flame=new THREE.MeshBasicMaterial({map:TEX.flame,color:0xffffff,side:DS});
+MAT.ember=new THREE.MeshBasicMaterial({map:TEX.ember,color:0xffffff,transparent:true,
+ blending:THREE.AdditiveBlending,depthWrite:false,fog:false,side:DS});
+// Three quads crossed about the vertical, like the leaf card: a glow has to
+// read from any bearing, and this kit has no billboard. Six triangles.
+function crossGeo(){const P=[],N=[],U=[];
+ for(let q=0;q<3;q++){const a=q*Math.PI/3,c=Math.cos(a),s=Math.sin(a);
+  const V=[[-c,-1,-s],[c,-1,s],[c,1,s],[-c,-1,-s],[c,1,s],[-c,1,-s]];
+  const T=[[0,0],[1,0],[1,1],[0,0],[1,1],[0,1]];
+  for(let i=0;i<6;i++){P.push(V[i][0],V[i][1],V[i][2]);N.push(0,1,0);U.push(T[i][0],T[i][1]);}}
+ const g=new THREE.BufferGeometry();
+ g.setAttribute('position',new THREE.Float32BufferAttribute(P,3));
+ g.setAttribute('normal',new THREE.Float32BufferAttribute(N,3));
+ g.setAttribute('uv',new THREE.Float32BufferAttribute(U,2));return g;}
+kdef('fireWin',new THREE.PlaneGeometry(1,1),MAT.flame);   // the opening, filled with fire
+kdef('ember',new THREE.PlaneGeometry(1,1),MAT.ember);     // the spill out of it
+kdef('emberB',crossGeo(),MAT.ember);                      // a glow seen from any bearing
+const FIREKIT=['fireWin','ember','emberB'];               // what setNight() toggles
+
+// FIRE TERRITORIES over (bay, storey).
+//
+// A 50% coin flip per cell renders as dither, and dither is exactly what this
+// must not be. What has to read is that PARTICULAR PARTS of the building are
+// occupied: contiguous blocks of bays and floors, with dark floors and dark
+// bays between them, so the elevation says "these four storeys of this side,
+// and that stack over there, and nothing in between" — different gangs, each
+// holding a piece. So the mask is a handful of seeded rectangles, one per
+// gang, frayed at their edges by an fbm so none of them is a clean lit
+// rectangle and so a few rooms inside each are dark.
+//
+// Takes and restores the global PRNG, because it is called once in the middle
+// of a builder and must not shift that builder's stream.
+function fireTerritories(nBay,nSto,seed,n){const T=[],s0=_seed;reseed(seed);
+ for(let i=0;i<n;i++)T.push({b:Math.floor(rng()*nBay),w:Math.round(rr(6,14)),
+  y:Math.round(rr(-8,Math.max(1,nSto-6))),h:Math.round(rr(12,34)),k:rr(0,99)});
+ _seed=s0;return T;}
+function fireBurns(T,nBay,b,s){
+ for(const t of T){const db=((b-t.b)%nBay+nBay)%nBay;if(db>=t.w)continue;
+  const ds=s-t.y;if(ds<0||ds>=t.h)continue;
+  const e=clamp(Math.min(Math.min(db,t.w-1-db)/(t.w*.42),Math.min(ds,t.h-1-ds)/(t.h*.40)),0,1);
+  if(fbm(b*.42+t.k,s*.30,t.k,2)<.30+.52*e)return true;}
+ return false;}
+// THE ONE ENTRY POINT. Three buildings want this (Projects A, D and H) on three
+// completely different window grids — A's 32 bays of cell windows, D's 28 bays
+// of glazed ribbon, H's 20 slits on four flat faces — and the one thing this kit
+// has been bitten by repeatedly is a helper reimplemented privately in two or
+// three fragments (stripRing, the canopy blob). So the grid is the CALLER's and
+// the mask is shared: hand it your bay and storey counts and a seed, get back a
+// predicate. It keeps the tally too, because "roughly 50%" cannot be eyeballed
+// on a clustered mask and has to be counted — window._projectFire, which
+// verify.py prints in its counters line.
+const PROJFIRE={};
+window._projectFire=PROJFIRE;
+function fireMask(key,nBay,nSto,seed,n){
+ const T=fireTerritories(nBay,Math.max(1,nSto),seed,n);
+ const rec=PROJFIRE[key]||(PROJFIRE[key]={lit:0,cells:0,pits:0});
+ const f=(b,s)=>{const on=fireBurns(T,nBay,b,s);rec.cells++;if(on)rec.lit++;return on;};
+ f.raw=(b,s)=>fireBurns(T,nBay,b,s);     // same question, asked off the record
+ return f;}
+// One burning window: the opening filled with flame, proud of the shell, and an
+// additive card of spill over it. `n` is the outward normal, `q` its quaternion.
+function fireWindow(p,n,q,w,h){const b=rr(.55,1);
+ kput('fireWin',[p[0]+n[0]*.45,p[1],p[2]+n[2]*.45],q,[w,h,1],
+  new THREE.Color().setHSL(rr(.035,.075),rr(.85,1),clamp(.30+b*.34,0,.72)));
+ kput('ember',[p[0]+n[0]*.85,p[1]+h*.15,p[2]+n[2]*.85],q,[w*4.2,h*4.8,1],
+  new THREE.Color().setHSL(rr(.035,.08),1,clamp(.14+b*.34,0,.46)));}
+// A fire on a floor: a pool of light on the deck, the flame over it, and a
+// halo over that. All three are the radial ember card — a flat quad of the
+// FLAME texture laid horizontal read as a glowing rectangle of carpet, which
+// is what the first cut of this looked like.
+function firePit(key,x,y,z,s){
+ if(PROJFIRE[key])PROJFIRE[key].pits++;
+ kput('ember',[x,y+.15,z],qEuler(-Math.PI/2,rng()*TAU,0),[s*3.4,s*3.4,1],
+  new THREE.Color().setHSL(rr(.04,.075),1,.32));
+ kput('emberB',[x,y+s*.7,z],qEuler(0,rng()*TAU,0),[s*1.35,s*1.5,s*1.35],
+  new THREE.Color().setHSL(rr(.03,.065),1,.50));
+ kput('emberB',[x,y+s*1.5,z],qEuler(0,rng()*TAU,0),[s*2.8,s*2.3,s*2.8],
+  new THREE.Color().setHSL(rr(.04,.09),1,.19));}
 
 // THE REPAIRED PASS.
 //
@@ -10742,7 +10904,12 @@ function portSpot(hx,hz,tx,tz,R){for(let r=0;r<=R;r+=8){const n=Math.max(1,Math.
  // round 10 (Travis: "many more scrap yards"): the five by the pads, then a dozen more over the empty apron
  let _ny=0;for(let k=0;k<60&&_ny<17;k++){let a,r;if(k<5){const P=PENT[(k+2)%5];a=Math.atan2(P.z-PC.z,P.x-PC.x)+(k%2?.34:-.34);r=rr(PC.P-40,PC.P+60);}else{a=rr(0,TAU);r=rr(PORTR.ring+30,PC.top-40);}
   const o=portSpot(24,18,PC.x+r*Math.cos(a),PC.z+r*Math.sin(a),70);if(!o)continue;occAdd(o);PORTX.yards.push(o);_ny++;
-  for(let i=0;i<rki(5,8);i++){const p=loc(o.x,o.z,rr(-19,19),rr(-13,13),o.ry);heap(p[0],p[1],vPick([['vPlateW','vPlate'],['vSheet','vPlate'],['vPipeR'],['vPlateW','vPipeR']]),rki(14,26),rr(2,4.2));}
+  for(let i=0;i<rki(8,12);i++){const p=loc(o.x,o.z,rr(-18,18),rr(-12,12),o.ry);heap(p[0],p[1],vPick([['vPlateW','vPlate'],['vSheet','vPlate'],['vPipeR'],['vPlateW','vPipeR']]),rki(22,36),rr(2.6,5));}
+  // round 10: a store or two of containers along the back fence, and a derrick with a hull plate on its chains
+  for(let i=0;i<rki(1,3);i++){const p=loc(o.x,o.z,-16+i*7,-15.2,o.ry);hnCont(p[0],y,p[1],o.ry+Math.PI/2,6,hContC(),{door:0});}
+  {const p=loc(o.x,o.z,rr(-8,8),rr(-2,4),o.ry),H=rr(9,13),iron=hC(0x3a3430);for(let i=0;i<3;i++){const a=i*TAU/3;beam('vPipeR',[p[0]+Math.cos(a)*3,y,p[1]+Math.sin(a)*3],[p[0],y+H,p[1]],.2,.2);}
+   const q=loc(p[0],p[1],3.5,0,o.ry+rr(0,TAU));beam('vIron',[p[0],y+H,p[1]],[q[0],y+H-1.2,q[1]],.25,.25,iron);hnCable([q[0],y+H-1.2,q[1]],[q[0],y+2.6,q[1]],iron);
+   kput('hHullSeg',[q[0],y+1.6,q[1]],qEuler(0,rng()*TAU,Math.PI/2),[2,3.4,2],null);}
   const cs=obbCorners(o,0);for(let e=0;e<4;e++){const A=cs[e],B=cs[(e+1)%4];const L=Math.hypot(B[0]-A[0],B[1]-A[1]),m=Math.round(L/2.2),ry=Math.atan2(B[0]-A[0],B[1]-A[1])+Math.PI/2;
    for(let i=0;i<m;i++){if(e===0&&Math.abs(i-m/2)<2)continue;const t=(i+.5)/m;kput(vPick(['vPlate','vSheet','vPlateW']),[A[0]+(B[0]-A[0])*t,y+1.05,A[1]+(B[1]-A[1])*t],qEuler(0,ry,rr(-.06,.06)),[L/m+.1,2+rr(-.2,.1),1],null);}}
   cpoly(cg,cs,'rgba(74,62,48,.6)');
@@ -10921,7 +11088,7 @@ const VIEWS={
  'Market square':[_mk.x+50,_mk.y+24,_mk.z+44,_mk.x,_mk.y+4,_mk.z],
  'Temple square':[_tp.x+48,_tp.y+24,_tp.z-44,_tp.x,_tp.y+4,_tp.z],
  'Scrap and industrial district':(()=>{const p=[60,40];return[p[0]-60,_ty(p[0],p[1])+140,p[1]+260,p[0]+20,_ty(p[0],p[1])+6,p[1]-20];})(),
- 'East gate — the port gate':[_gE[0]+85,_ty(_gE[0],_gE[1])+30,_gE[1]-55,_gE[0],_ty(_gE[0],_gE[1])+10,_gE[1]],
+ 'East gate — the port gate':[_gE[0]+70,_ty(_gE[0],_gE[1])+26,_gE[1]+30,_gE[0],_ty(_gE[0],_gE[1])+10,_gE[1]],
  'North gate':[_gN[0]+40,_ty(_gN[0],_gN[1])+34,_gN[1]-150,_gN[0],_ty(_gN[0],_gN[1])+10,_gN[1]],
  'South gate':[_gS[0]-30,_ty(_gS[0],_gS[1])+34,_gS[1]+150,_gS[0],_ty(_gS[0],_gS[1])+10,_gS[1]],
  // round 10: stand in the street itself and look down it (the old shot stood off a house front and faced the next house)
@@ -10943,7 +11110,7 @@ const VIEWS={
 {const g=_plot('hl_rep_hall_republic');if(g)VIEWS['Hall of the Republic']=_near(g,120,42);}
 {const m=VERN_PLACED.find(v=>v.key==='hl_rep_muster');if(m)VIEWS['The Mustering ground']=_near(m.o,62,24);}
 {const s=VERN_PLACED.find(v=>v.key==='hl_rep_guild_scav');if(s){VIEWS["Scavengers' Guild by the port gate"]=_near(s.o,78,30,s.o.ry+.5);VIEWS["Scavengers' yard — eye level"]=(()=>{const f=loc(s.o.x,s.o.z,16,34,s.o.ry),t=loc(s.o.x,s.o.z,18,0,s.o.ry);return[f[0],PORT_Y+1.7,f[1],t[0],PORT_Y+4,t[1]];})();}}
-{const y=REG.filter(r=>r.key==='rk_scrapyard');const r=y[Math.floor(y.length*.6)];if(r)VIEWS['Scrap yards on the apron']=_fromPort(r,95,48,.3);}
+{const y=REG.filter(r=>r.key==='rk_scrapyard');const r=y[Math.floor(y.length*.6)];if(r)VIEWS['Scrap yards on the apron']=_fromPort(r,72,30,.3);}
 {const r=REG.find(r=>r.key==='rk_silos');if(r)VIEWS['Ruined Ancient silos']=_fromPort(r,80,34);}
 {const r=REG.find(r=>r.key==='rk_works');if(r)VIEWS['A ruined Ancient factory']=_fromPort(r,85,38,-.5);}
 {const H=SAT.hub;VIEWS['The scrap town']=[H.x-70,PORT_Y+45,H.z+95,H.x,PORT_Y+2,H.z];VIEWS['The scrap town — eye level']=[H.x+6,terrainH(H.x+6,H.z+10)+1.7,H.z+10,H.x-10,terrainH(H.x,H.z)+4,H.z-18];}
