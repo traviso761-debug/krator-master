@@ -102,10 +102,7 @@ DETERMINISTIC = {
 # Seed ranges known to collide, kept here so the build stays green while the
 # collision is tracked in KNOWN_ISSUES.md. Remove an entry when it is fixed;
 # do not add one without an accompanying KNOWN_ISSUES entry.
-SEED_COLLISION_EXCEPTIONS = {
-    ('48-library.js', '76-campus.js'),   # both claim 9800/9801 - see KNOWN_ISSUES.md
-    ('60-gate.js', '87-mega.js'),        # 9995+d vs 9996+d overlap  - see KNOWN_ISSUES.md
-}
+SEED_COLLISION_EXCEPTIONS = set()   # Library/Campus and Gate/Mega were reseeded in the civic QA pass
 
 RE_BUILDER = re.compile(r'^function\s+(build[A-Za-z0-9_]*)\s*\(([^)]*)\)\s*\{(.{0,80})', re.M)
 RE_RESEED_ARG = re.compile(r'\breseed\(\s*([^)]*?)\s*\)')
