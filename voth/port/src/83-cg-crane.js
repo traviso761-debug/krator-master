@@ -244,8 +244,9 @@ function cgContainerTower(G,x,y,z,yaw,d,o){o=Object.assign({levels:3+((rng()*4)|
 // fits. d=0 loaded; d=1 (o.sunk) sunk by the stern onto the silted berth,
 // listing, rusted, containers spilled; d>=3 (o.houses) a house barge:
 // container houses and gardens on deck, washing lines, skiffs alongside.
-// o = {draft 4, free 3, yaw 0, sunk (d===1), houses (d>=3)}.
-function cgBarge(G,x,z,L,B,d,o){o=Object.assign({draft:4,free:3,yaw:0,sunk:d===1,houses:d>=3},o||{});
+// o = {draft 4, free 3, yaw 0, sunk (d===1), houses (d>=3), bulk (false: hatch
+// covers instead of containers - a bulk barge)}.
+function cgBarge(G,x,z,L,B,d,o){o=Object.assign({draft:4,free:3,yaw:0,sunk:d===1,houses:d>=3,bulk:false},o||{});
  const ruin=d>0,Bg=new THREE.Group();Bg.rotation.order='YXZ';G.add(Bg);
  if(o.sunk){Bg.position.set(x,-o.free-1.6,z);Bg.rotation.set(rr(.08,.14),o.yaw+rr(-.06,.06),rr(-.05,-.025));}
  else{Bg.position.set(x,0,z);Bg.rotation.set(0,o.yaw,0);}
@@ -267,7 +268,10 @@ function cgBarge(G,x,z,L,B,d,o){o=Object.assign({draft:4,free:3,yaw:0,sunk:d===1
  kput('pkCol',[hx+1,Y+8.6,0],null,[.12,5,.12],null);
  if(d===0){kput('dot',[hx+1,Y+13.7,0],null,[.4,.4,.4],CG.FLOOD);kput('dot',[L/2-1.5,Y+2,0],null,[.4,.4,.4],CG.RED);}
  cgXF(Bg,G);
- if(!o.houses){
+ if(!o.houses&&o.bulk){
+  for(let bx=hx+9;bx<L/2-15;bx+=11.5)if(!(o.sunk&&rng()<.4))cgBx(Bg,ruin?MAT.rust:MAT.cgBlue,bx,Y+.7,0,10.6,1.4,B-4.5);
+  cgBx(Bg,ruin?MAT.rust:MAT.white,L/2-8,Y+1,0,6,2,B*.6);}
+ else if(!o.houses){
   // cargo: bays of 40' boxes fore-and-aft, rows across, 1-3 tiers (fewer when sunk: spilled)
   const nR=Math.max(1,Math.floor((B-2)/2.5));
   for(let bx=hx+8;bx<L/2-15;bx+=12.6)for(let r=0;r<nR;r++){const zr=(r-(nR-1)/2)*2.5;
