@@ -45,18 +45,23 @@ Hotel overhang fixes were already done before this session.
 blades) instead of aborting a full build at the first one, and its seed check
 expands `N+d` over decays 0-4.
 
-**In flight (dispatched 2026-09-28):** the Wing (`8ae-wing.js`, 9620), the
-Drum (`8af-drum.js`, 9630), the Blades (`8ag-blades.js`, 9640, with its skyI
-fallback) from the memorial-group briefs below, and a NEW type, **the Wheel**
-(`89j-wheel.js`, target `wheel`, seed 9750, registered): a raised ring band of
-forested parkland and buildings, ~2.4-3.2 km across, carried on eight towers,
-with a tallest central tower and eight elevated parkland spokes from it to the
-rim towers, many light wells through band and spokes lighting an inhabited lower
-city; the idea of a raised plate city on towers (the user cited Midgar) but
-lighter, greener, and not a copy. Its ruin drops one band sector onto the city.
-Each agent works in its own worktree and commits as it goes; if one is stopped,
-look for its files under .claude/worktrees/ and recover them before
-re-dispatching.
+**Done 2026-09-29, all verified independently and published:**
+| target | seed | tris (per decay) | notes |
+|---|---|---|---|
+| `wing` (8ae) | 9620 | 309 952 / 276 804 | coffered spiral disc, two slab wings; ruin drops a wing |
+| `drum` (8af) | 9630 | 241 620 / 329 692 | fins and fluted tiers, sky gates; ruin leans the top |
+| `blades` (8ag) | 9640 | 447 396 / 427 012 | six blades, covered plaza; SKY GARDEN on the canopy roof (user request); no skyI fallback needed |
+| `wheel` (89j) | 9750 | 500 490 / 508 286 | ring park on 8 towers, spokes, 87 light wells; agent hit the usage limit, recovered |
+| `skyI` (89k) | 9760 | 38 980 / 65 844 / 69 746 / 71 468 | the Braid; kit row z=26400 |
+| `skyJ` (89l) | 9770 | 175 520 / 114 292 / 133 290 / 173 834 | the Whorl; kit row z=27200 |
+| `skyK` (89m) | 9780 | 160 499 / 174 692 / 229 042 / 197 700 | the Sail; kit row z=28000 |
+
+The three towers keep dev targets (`skyi`/`skyj`/`skyk`) and also have kit
+rows. The kit is now **9 967 649** scene triangles (OVER the 6M soft ceiling
+by the user's choice), worst draw calls seen 886. Published: kit
+https://claude.ai/artifact/FSKTzZ3duwQ2zrbdEEqYYf (the older link
+1V5VxyNVxS2ZsEy9M7QJhE is a stale build), and a viewer of all the new types
+with per-type scene links at https://claude.ai/artifact/DUmUNgR1mKa66P4zD42X47.
 
 Still open from the older queue: the dockyard pair, overgrown (biome) variants for every
 type except the Hexahedron, and the kit-wide detail pass (Gaudi mouldings,
