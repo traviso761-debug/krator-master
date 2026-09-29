@@ -279,7 +279,9 @@ the Vale of Xanadu biome's plants in every garden; 25 M triangles; LOD if needed
   the height field every 3 m of height inside the town polygon, less the garden rectangle, thinned so the streets
   stay ~26 m apart on the ground whatever the slope — Travis: a fixed height interval packed them too close on the
   steep central slopes for a plot between them) with **stairs** down the
-  fall line every 75 m, and a ring road round the garden; `88-er-place` is the occupancy and the PLAN (every building
+  fall line every 75 m, and a ring road round the garden; every street inside the town **benches** the ground a
+  lot's depth (10 m + 4 m blend) either side of itself to its own grade (Travis: the plots between contour streets
+  were hillside, and stood empty), so the town is terraces stepping down the mountain; `88-er-place` is the occupancy and the PLAN (every building
   described first, built later chunk by chunk); `90a-er-world` the terrain mesh, the lake, the stream ribbon, the
   Krator sky, the walls (battered curtain segments stepping with the ground, drum towers every four); `90b-er-build`
   the landmarks on levelled pads, the **garden district** as a 26 × 14 tile grid on a 1.5 m-quantised stepped
@@ -290,3 +292,7 @@ the Vale of Xanadu biome's plants in every garden; 25 M triangles; LOD if needed
   the hanging lights (basket and umbrella strings wherever two fronts face across a lit avenue), then the terrain,
   the biome, and **one bake per 480 m chunk** — the runtime LOD: a chunk is drawn while it is in the view and within
   1.7 km (landmarks always), the biome's own chunk LOD ticks beside it.
+
+Erewhon as published: 1 927 plots planned, 1 086 street buildings, 336 garden tiles, 97 farms, 59 light strings,
+589 k kit instances + 87 k biome instances, 13.1 M scene triangles of the 25 M budget at the overview, 1 046 draw
+calls; a chunk-culled walk keeps most views under 8 M. Verify clean.
