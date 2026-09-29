@@ -335,3 +335,8 @@ albedo / buildable mask / class, the road list and its spatial hash, OBB occupan
   corrugated sheds, a forge fire and a winch hauling on the hull. The freighter lies nearly level; the lander is nose-down.
   In Roketstad both are reserved off the port table's north-east rim (north is -z), outside the walls, each nose-on to
   the port; three new views.
+
+## Round 10d (Sep 29 2026) — wall towers back to slate
+- Travis: the glazed tile was "a little too fancy for wall towers". Wall towers and the town gate's towers are back on
+  their dark slate spires; the hoardings keep their corrugated sheet. `hnRCTower`/`hnRCSpire` keep the `tile` option
+  (and `MAT.hTileW`, `hPyrTile`, `hTentTileW`) for any building that wants it; nothing passes it now.

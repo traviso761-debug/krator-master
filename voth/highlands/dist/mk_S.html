@@ -7284,6 +7284,14 @@ const _hlKputClock=kput;
 kput=function(name,p,q,s,c){if(name==='hClock'||name==='hRBClock'){const S=typeof s==='number'?s:s[0];let P=new THREE.Vector3(p[0],p[1],p[2]),Q=(q?q.clone():new THREE.Quaternion()),k=S;
   if(KXF){P.applyMatrix4(KXF.m);Q.premultiply(KXF.q);if(KXF.s)k*=KXF.s;}P.x+=KOFF[0];P.y+=KOFF[1];P.z+=KOFF[2];HLCLOCKS.push({p:P,q:Q,r:.42*k});}
  return _hlKputClock(name,p,q,s,c);};
+// MOCKUP ONLY (not committed): the Hall of the Republic and the Fortress with every roof piece in glazed tile
+TEX.mockTile=TEX.hTileS.clone();TEX.mockTile.needsUpdate=true;TEX.mockTile.repeat.set(1,1);
+MAT.mockTile=vWorldUV(hStd({map:TEX.mockTile,roughness:.3,metalness:.08}),1/3.2);
+const _MOCK_KEYS=new Set(['hl_rep_hall_republic','hl_rep_fortress']),_MOCK_MATS=new Set([MAT.scale,MAT.shingle]);
+const _mockKput=kput;
+kput=function(name,p,q,s,c){const C=VERN.cur,def=KIT.defs[name];
+ if(C&&_MOCK_KEYS.has(C.D.key)&&def&&_MOCK_MATS.has(def.mat)){const mk=name+'_mockT';if(!KIT.defs[mk])kdef(mk,def.geo,MAT.mockTile);return _mockKput(mk,p,q,s,null);}
+ return _mockKput(name,p,q,s,c);};
 // TARGET: highlands — rows by branch and family (laid out by hlLayout in 90-scene.js), front (+z) toward the camera.
 const TITLE='Highlands Building Kit';
 const HL_BRANCHES=['republican','rustic','tribal'];
