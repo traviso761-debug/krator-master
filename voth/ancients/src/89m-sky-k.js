@@ -308,6 +308,11 @@ function buildSkyK(scene,gx,gz,d){reseed(9780+d);KOFF=[gx,0,gz];const G=new THRE
   const roofHole=dd>0?(u,v)=>fbm(u*5,v*3,786,2)<(.34+(u>.3&&u<.74?.32:0))*HOLES:null;
   const roof=[];
   roof.push(skGrid((u,v)=>{const q=hProf(u,v);return hPt(u,q[0],q[1]);},44,26,roofHole?(u,v)=>roofHole(u,v):null));
+  // THE SHELL HAS A THICKNESS. It was one surface, so every tear in the ruined
+  // roof showed a paper edge and the intact hall's ceiling was the back of its
+  // own roof. A second skin 0.9 m inside it, punched by the same predicate,
+  // makes the ceiling and turns each tear into a sectioned slab.
+  roof.push(skGrid((u,v)=>{const q=hProf(u,v),n=hN(u,v);return hPt(u,q[0]-n[0]*.9,Math.max(.3,q[1]-n[1]*.9));},44,26,roofHole?(u,v)=>roofHole(u,v):null));
   // transverse ribs on the shell, raised 0.8 m
   for(let k=1;k<14;k++){const sk=k/14;if(roofHole&&roofHole(sk,.5))continue;
    roof.push(skGrid((u,v)=>{const s=sk+(v<.5?-.006:.006);const q=hProf(s,u),n=hN(s,u);const o=(v>.2&&v<.8)?.8:0;return hPt(s,q[0]+n[0]*o,q[1]+n[1]*o);},24,3,roofHole?(u)=>roofHole(sk,u):null,4));}

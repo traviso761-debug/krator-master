@@ -167,6 +167,13 @@ function buildSkyJ(scene,gx,gz,d){reseed(9770+d);KOFF=[gx,0,gz];const G=new THRE
  const gone=k=>{if(!dd||k<0||k>=NP)return false;const y=YS0+k*HS,t=(y-YS0)/(YTOP-YS0);
   return h3(k*2.3,1.7,9.9)<HO*(.16+.5*Math.pow(t,1.2)+(d===1&&y>YTOP-40?.4:0));};
  const rowY=j=>j<=0?YB:YS0+(j-1)*HS;                // glazing row j sits on plate j-1 (row 0 on the base roof)
+ // THE FALLEN BODY'S PLATES CRUSH. They used to come down whole, so the body
+ // lay on the plain as a cage of perfect vertical discs. Every plate vertex
+ // that would stand below the ground once the body is laid down is pushed
+ // back onto it and splayed sideways: each plate lands on a flattened,
+ // spread foot, and the body sits down into its own wreckage. Set for the
+ // toppled upper body only (it needs that body's lay-down, below).
+ let CRUSH=null;
  const body=(P,dx,ya,yb,part)=>{const oy=-ya,stone=[],win=[],dark=[],plates=[],glow=[];
   const E0=Et;
   // PLATES
@@ -184,8 +191,8 @@ function buildSkyJ(scene,gx,gz,d){reseed(9770+d);KOFF=[gx,0,gz];const G=new THRE
    // undulating bands rather than as a stack of discs
    const wv=ter?th=>.95*Math.sin(2*(th-ph)+1.1)+.4*Math.sin(3*(th-ps)):th=>.55*Math.sin(2*(th-ph)+.4);
    const ri=roof?(()=>0):dx>0?(th=>E*.22):(th=>Math.min(E*.6,re(th)-6));
-   const hole=dx>0?(u,v)=>fbm(u*9+k*1.37,k*.61,71,2)<(.24+.28*t)*HO||(v>.3&&fbm(u*23+k,k*.3,72,2)<.38*HO):null;
-   const g=sjPlate(y+oy,re,ri,ter?SJ_PT:SJ_PM,ter?120:104,hole,wv);stone.push(g);plates.push(g);
+   const hole=dx>0?(u,v)=>fbm(u*9+k*1.37,k*.61,71,2)<(.24+.28*t)*HO||(v>.3&&fbm(u*23+k,k*.3,72,2)<.38*HO)||(part==='upper'&&v>.12&&fbm(u*3.2+k*.9,k*.37,75,2)<.46):null;   // the fallen body: whole sectors broken off each plate
+   const g=sjPlate(y+oy,re,ri,ter?SJ_PT:SJ_PM,ter?120:104,hole,wv);if(part==='upper'&&CRUSH)CRUSH(g);stone.push(g);plates.push(g);
    if(ter&&!dx)glow.push(sjGrid((u,v)=>{const th=u*TAU,r=re(th)-1.25-v*.9;return[r*Math.cos(th),y+oy-1.37+wv(th),r*Math.sin(th)];},120,1,(u,v)=>[u,v]));}
   // GLAZING between the plates, and in a ruin the dark core behind it
   // One row per storey, so a row can die with its floors: glazing only
@@ -243,6 +250,10 @@ function buildSkyJ(scene,gx,gz,d){reseed(9770+d);KOFF=[gx,0,gz];const G=new THRE
  const site={x:gx,z:gz,YB,YTOP,YSP,RP,CUT};
  if(d===2){
   const ang=rr(-.3,.3),r0=Et(CUT)*1.18,r1=Et(YTOP)*1.12,L=YTOP+8-CUT,tau=Math.atan((r0-r1)/L),D0=Et(CUT)*1.3+8;
+  CRUSH=g=>{const P=g.attributes.position,st=Math.sin(tau),ct=Math.cos(tau);
+   for(let i=0;i<P.count;i++){const x=P.getX(i),y=P.getY(i),z=P.getZ(i),xg=((r0-1.2)-y*st)/ct-.25;
+    if(x>xg){const e=x-xg,n=h3(i*.37,y*.21,77.7);P.setXYZ(i,xg-n*.9,y+(n-.5)*e*.35,z+Math.sign(z||1)*e*(.35+.4*n));}}
+   g.computeVertexNormals();};
   const U=new THREE.Group();U.position.set(Math.cos(ang)*D0,r0-1.2,Math.sin(ang)*D0);U.rotation.set(0,-ang,-(Math.PI/2+tau));G.add(U);
   useGroupXF(U);body(U,1,CUT,YTOP+8,'upper');endGroupXF();
   // the spire, snapped off at the cap and thrown on past the body
