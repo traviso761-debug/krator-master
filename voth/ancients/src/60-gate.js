@@ -5,7 +5,11 @@ function buildArc(scene,gx,gz,d){reseed(9820+d);KOFF=[gx,0,gz];const G=new THREE
  const W=t=>42*(1+.5*Math.pow(Math.abs(2*t-1),3)),D=t=>34*(1+.4*Math.pow(Math.abs(2*t-1),3)); // section grows toward the feet
  const gone=t=>d>0&&t>.1&&t<.19;                                                             // ruined: gap in the west leg
  const N=96;const chords=[[-1,-1],[1,-1],[-1,1],[1,1],[0,-1.3],[0,1.3]];
- chords.forEach((c,ci)=>{let pts=[];const flush=()=>{if(pts.length>1)mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),pts.length*2,ci<4?5.5:3,8,false),skin,G);pts=[];};
+ // ARC SKIN IN ONE MESH: the chord tubes, the four plated faces and the crest
+ // lattice share `skin` and G, so they are collected and merged once (they were
+ // 14-20 meshes). The merge is untranslated, so it is pixel-exact.
+ const arcSkin=[];
+ chords.forEach((c,ci)=>{let pts=[];const flush=()=>{if(pts.length>1)arcSkin.push(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),pts.length*2,ci<4?5.5:3,8,false));pts=[];};
   for(let i=0;i<=N;i++){const t=i/N;if(gone(t)){flush();continue;}const p=C(t);const tg=[C(t+.001)[0]-p[0],C(t+.001)[1]-p[1]];const L=Math.hypot(tg[0],tg[1]);const nx=-tg[1]/L,ny=tg[0]/L;
    pts.push(new THREE.Vector3(p[0]+nx*c[0]*W(t)/2,p[1]+ny*c[0]*W(t)/2,c[1]*D(t)/2));}flush();});
  for(let i=0;i<N;i+=2){const t=(i+.5)/N;if(gone(t))continue;const p=C(t);const tg=[C(t+.001)[0]-p[0],C(t+.001)[1]-p[1]];const L=Math.hypot(tg[0],tg[1]);const nx=-tg[1]/L,ny=tg[0]/L;
@@ -16,7 +20,7 @@ function buildArc(scene,gx,gz,d){reseed(9820+d);KOFF=[gx,0,gz];const G=new THREE
  // armour plating on all four faces of the box section: full when intact, knocked off in patches (painting) when ruined
  const frame=t=>{const p=C(t);const tg=[C(t+.001)[0]-p[0],C(t+.001)[1]-p[1]];const L=Math.hypot(tg[0],tg[1]);return{p,nx:-tg[1]/L,ny:tg[0]/L};};
  const plateGone=(u,v,f)=>gone(u)||(d>0?fbm(u*16+f*3,v*3,1300+f,3)<.53||fbm(u*40,v*6,1320+f,2)<.28:fbm(u*30,v*5,1300+f,2)<.08);
- const facesA=[[1,0],[-1,0],[0,1],[0,-1]];facesA.forEach((fc,f)=>{mesh(gridSurface((u,v)=>{const F=frame(u);const w=W(u)/2,dp=D(u)/2;let a,b;if(fc[0]){a=fc[0]*1.03;b=(v-.5)*2;}else{a=(v-.5)*2;b=fc[1]*1.03;}return[F.p[0]+F.nx*a*w,F.p[1]+F.ny*a*w,b*dp];},192,8,{uS:48,vS:3,hole:(u,v)=>plateGone(u,v,f)}),skin,G);});
+ const facesA=[[1,0],[-1,0],[0,1],[0,-1]];facesA.forEach((fc,f)=>{arcSkin.push(gridSurface((u,v)=>{const F=frame(u);const w=W(u)/2,dp=D(u)/2;let a,b;if(fc[0]){a=fc[0]*1.03;b=(v-.5)*2;}else{a=(v-.5)*2;b=fc[1]*1.03;}return[F.p[0]+F.nx*a*w,F.p[1]+F.ny*a*w,b*dp];},192,8,{uS:48,vS:3,hole:(u,v)=>plateGone(u,v,f)}));});
  // plate seams: thin ribs every few metres along the extrados and intrados
  for(let i=0;i<N;i+=1){const t=(i+.5)/N;if(gone(t))continue;const F=frame(t);for(const a of [1.04,-1.04]){if(d>0&&plateGone(t,.5,a>0?0:1))continue;kput(PLATE(d),[F.p[0]+F.nx*a*W(t)/2,F.p[1]+F.ny*a*W(t)/2,0],qEuler(0,0,Math.atan2(F.ny,F.nx)),[1.2,.6,D(t)*1.06],null);}}
  // fallen plates scattered below the ruined arc
@@ -29,7 +33,7 @@ function buildArc(scene,gx,gz,d){reseed(9820+d);KOFF=[gx,0,gz];const G=new THREE
    cr.push(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([V(F,t,1.02,-1.05),V(F,t,1.24,-.72),V(F,t,1.38,0),V(F,t,1.24,.72),V(F,t,1.02,1.05)]),8,1.1,5,false));
    const s=(i>>1)%2?1:-1;
    cr.push(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([V(F,t,1.38,0),V(Fm,(t+t2)/2,1.3,s*.45),V(F2,t2,1.02,s*1.05)]),6,.8,5,false));}
-  meshMerged(cr,skin,G);}
+  meshMerged(arcSkin.concat(cr),skin,G);}
  // feet
  for(const t of [0,1]){const p=C(t);apron(G,p[0]+(t?1:-1)*18,0,34,86,d,5);kput(BOXC(d),[p[0],14,0],null,[70,28,50],null);kput(BOXC(d),[p[0]+(t?1:-1)*40,8,0],qEuler(0,0,(t?-1:1)*.35),[60,14,44],null);
   for(let k=0;k<5;k++)kput(d>0?'colR':'colW',[p[0]+(t?1:-1)*(30+k*18),0,-40+k*20],null,[2.5,12,2.5],null);}

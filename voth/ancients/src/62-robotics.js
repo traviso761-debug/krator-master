@@ -37,11 +37,13 @@ function buildRobotics(scene,gx,gz,d){reseed(9210+d);KOFF=[gx,0,gz];const G=new 
     kput(BOXC(d),[x,6,lz+sd*5],null,[4,3.2,4],null);beam('tube',[x,7.6,lz+sd*5],[x+2,13,lz+sd*2.5],1.1,1.1);beam('tube',[x+2,13,lz+sd*2.5],[x+1,9,lz+.5],.8,.8);
     if(hh>.8)kput('boxD',[x+4,8.2,lz],qEuler(0,hh*3,rr(-.2,.2)),[5,4,3],null);}}
   for(let x=-120;x<=40;x+=40){kput(d>0?'strutR':'strutW',[x,4+HH-3,0],null,[1.6,1.6,HD-4],null);kput('boxD',[x,4+HH-5,rr(-30,30)],null,[3,3,4],null);}}
- const NB=8;for(let b=0;b<NB;b++){const z0=-HD/2+b*(HD/NB),z1=z0+HD/NB;const gone=d>0&&(b===2||b===5);
-  const roof=gridSurface((u,v)=>{const x=-40-HW/2+u*HW;const zz=lerp(z0,z1,v);const y=4+HH+(1-v)*9*(1-.15*Math.pow(u*2-1,2));return[x,y,zz];},40,6,{uS:20,vS:2,hole:holeFn(d*.7,1400+b,null,2)});mesh(roof,CONC(d),G);
+ const NB=8,roofs=[],darks=[];   // the eight bays' roofs (and ruined glazing) merged: 16 meshes -> 2
+ for(let b=0;b<NB;b++){const z0=-HD/2+b*(HD/NB),z1=z0+HD/NB;const gone=d>0&&(b===2||b===5);
+  const roof=gridSurface((u,v)=>{const x=-40-HW/2+u*HW;const zz=lerp(z0,z1,v);const y=4+HH+(1-v)*9*(1-.15*Math.pow(u*2-1,2));return[x,y,zz];},40,6,{uS:20,vS:2,hole:holeFn(d*.7,1400+b,null,2)});roofs.push(roof);
   if(!gone&&d===0)mesh(gridSurface((u,v)=>{const x=-40-HW/2+u*HW;return[x,4+HH+v*9*(1-.15*Math.pow(u*2-1,2)),z0+.2];},40,4,{}),MAT.glass,G);
-  else if(!gone)mesh(gridSurface((u,v)=>{const x=-40-HW/2+u*HW;return[x,4+HH+v*9*(1-.15*Math.pow(u*2-1,2)),z0+.2];},40,2,{hole:(u,v)=>fbm(u*8,b,1410,2)<.4}),MAT.dark,G);
+  else if(!gone)darks.push(gridSurface((u,v)=>{const x=-40-HW/2+u*HW;return[x,4+HH+v*9*(1-.15*Math.pow(u*2-1,2)),z0+.2];},40,2,{hole:(u,v)=>fbm(u*8,b,1410,2)<.4}));
   for(let k=0;k<=10;k++){const x=-40-HW/2+k*HW/10;kput(d>0?'mullR':'mullW',[x,4+HH+4.5,z0+.3],null,[1,9,1],null);}}
+ meshMerged(roofs,CONC(d),G);meshMerged(darks,MAT.dark,G);
  for(let k=0;k<13;k++){const x=-40-HW/2+k*HW/12;kput(BOXC(d),[x,4+HH/2,HD/2+.6],null,[2.2,HH,2],null);kput(BOXC(d),[x,4+HH/2,-HD/2-.6],null,[2.2,HH,2],null);
   if(k%3===1){kput('archOpen',[x+8,10,HD/2+1.5],qFacing([0,0,1]),[1.4,1.2,2],null);}}
  for(let k=0;k<6;k++){const x=-120+k*32;const lit=d>0?rng()<.15:true;kput('strip',[x,4+HH-1,0],qEuler(0,Math.PI/2,0),[70,1,1],lit?CYAN:DEAD);}
