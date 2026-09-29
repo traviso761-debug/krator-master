@@ -852,7 +852,7 @@
       F.box(5.9, 10.4, z, 3.8, 0.6, 1.0, 0, tr, 'stone');
       [3.8, 8.0].forEach(function (x) {
         F.box(x, 11.0, z, 0.5, 0.5, 0.8, 0, tr, 'stone');
-        F.pyrRoof(x, 11.5, z, 0.7, 0.5, 1.0, 0, shade(c, -0.25), 'roof');
+        F.hipRoof(x, 11.5, z, 0.7, 0.5, 1.0, 0, shade(c, -0.25), 'roof');
       });
       K.fb(5.9, 5.0, z + 0.78, 0, 0.02, 0.6, 1.0, 0.06, F.pick(BANNER), 'cloth');
     });
@@ -994,8 +994,12 @@
     F.cyl(QX, 0.4, QZ, 2.2, 4.4, 0, shade(BRONZE, -0.08), 'metal');
     [1.4, 2.8, 4.2].forEach(function (y) { F.cyl(QX, y, QZ, 2.27, 0.15, 0, IRON, 'metal'); });
     F.cone(QX, 4.8, QZ, 2.35, 0.9, 0, BRASS, 'metal');
-    F.rod(QX + 2.2, 1.6, QZ, RX + 3.4, 1.6, QZ, 0.3, BRASS, 'metal');
-    F.rod(QX + 3.2, 1.3, QZ, QX + 3.2, 1.9, QZ, 0.45, BRONZE, 'metal');
+    {
+      const vx = RX - QX, vz = RZ - QZ, L = Math.hypot(vx, vz), ux = vx / L, uz = vz / L;
+      F.rod(QX + ux * 2.1, 1.6, QZ + uz * 2.1, QX + ux * (L - 5.8), 1.6, QZ + uz * (L - 5.8), 0.3, BRASS, 'metal');
+      F.rod(QX + ux * 3.0, 1.6, QZ + uz * 3.0, QX + ux * 3.3, 1.6, QZ + uz * 3.3, 0.45, BRONZE, 'metal');
+      F.box(QX + ux * 3.15, 0, QZ + uz * 3.15, 0.5, 1.2, 0.5, 0, shade(c, -0.1), 'stone');
+    }
     /* conduits out to the front on two pylons, down into a valve pit */
     [9.9, 10.6].forEach(function (x) {
       F.rod(x, 5.9, 1.5, x, 5.9, 10.4, 0.26, BRASS, 'metal');
@@ -1009,7 +1013,7 @@
       F.box(10.25, 5.2, z, 2.4, 0.45, 0.8, 0, tr, 'stone');
       [9.2, 11.3].forEach(function (x) {
         F.box(x, 5.65, z, 0.35, 0.4, 0.6, 0, tr, 'stone');
-        F.pyrRoof(x, 6.05, z, 0.5, 0.4, 0.8, 0, shade(c, -0.25), 'roof');
+        F.hipRoof(x, 6.05, z, 0.5, 0.4, 0.8, 0, shade(c, -0.25), 'roof');
       });
     });
     F.box(10.25, 0, 10.5, 2.4, 0.9, 1.4, 0, base, 'stone');
@@ -1256,7 +1260,7 @@
     }
     F.box(SX, 1.05, SZ, 4.5, 0.25, 4.5, 0, shade(TIMBER, 0.08), 'wood');
     F.box(SX + 0.3, 1.3, SZ + 0.3, 3.4, 2.4, 3.0, 0, shade(c, 0.06), 'stone');
-    F.pyrRoof(SX + 0.3, 3.7, SZ + 0.3, 4.0, 1.2, 3.6, 0, reed, 'reed');
+    F.hipRoof(SX + 0.3, 3.7, SZ + 0.3, 4.0, 1.2, 3.6, 0, reed, 'reed');
     K.door(SX - 1.4, 1.3, SZ + 0.3, 3, 0.9, 1.8, c, {});
     K.win(SX + 0.3, 2.3, SZ + 1.8, 0, 0.7, 0.7, c, {});
     F.rod(7.1, 1.3, 3.4, 11.4, 1.3, 3.4, 0.03, 0x6b5a3a, 'rope');
@@ -1360,7 +1364,7 @@
       F.box(BX + p[0] * 4.85, 4.6, BZ + p[1] * 5.35, 0.3, 2.6, 0.3, 0, shade(wood, -0.25), 'wood');
     });
     const roofC = F.pick([0x6b7a4a, 0x6b7a4a, 0xb35a3a, 0xa04f32]);
-    F.pyrRoof(BX, 7.2, BZ, 11.4, 3.0, 12.4, 0, roofC, 'roof');
+    F.hipRoof(BX, 7.2, BZ, 11.4, 3.0, 12.4, 0, roofC, 'roof');
     F.box(BX, 9.5, BZ, 1.0, 0.8, 1.0, 0, wood, 'wood');
     F.pyrRoof(BX, 10.3, BZ, 1.4, 0.6, 1.4, 0, shade(roofC, -0.1), 'roof');
     K.door(BX, 0.35, 3.0, 0, 3.4, 3.2, bc, {});
