@@ -20320,6 +20320,15 @@ function buildWing(scene,gx,gz,d){reseed(9620+d);KOFF=[gx,0,gz];
       KP('wgBalc',[X(x),yf,zs*W(x)],q,[5.8,1.15,rr(2.1,2.6)],PALE());
       if(!dd&&full&&rng()<.1)KP('leafCard',[X(x+rr(-2,2)),yf+.9,zs*(W(x)+1.7)],qEuler(0,rng()*TAU,0),[rr(1.2,2),rr(1,1.6),rr(1.2,2)],LEAF());
       if(dd&&rng()<.12)KP('vine',[X(x+rr(-2,2)),yf-.3,zs*(W(x)+2.2)],qEuler(rr(-.1,.1),0,rr(-.1,.1)),[rr(.9,1.6),rr(4,18),rr(.9,1.6)],null);}}}}
+  // ---- QA (arcC): the soffits' ribs. 'Under the cantilever' looked up at a
+  // plain plane 170 m long; now a transverse rib every 9 m (the cantilever's
+  // own structure, deepening toward the root), a lamp slot on every other one.
+  for(let k=0;k<K;k++){const rw={t:'s',k},x0=k===0?HX1+6:XG(k-1)+6;
+   for(let x=x0;x<XT(k)-4;x+=9){const yb=ybot(k,x);if(!inClip(x,yb+1,rw)||inDrum(x,yb)||(dd&&rng()<.3))continue;
+    const dp=1.2+2.4*clamp(1-(x-XR(k))/(XT(k)-XR(k)),0,1);
+    let q=null,yy=yb-dp*.5;if(dd&&rng()<.12){q=qEuler(rr(-.4,.4),0,rr(-.3,.3));yy-=rr(1,4);}
+    KP('wgBox',[X(x),yy,0],q,[1.4,dp,2*W(x)-3],CONC());
+    if(!dd&&Math.round(x/9)%2===0)KP('strip',[X(x+4.5),yb-.35,0],qEuler(0,Math.PI/2,0),[2*W(x)-8,3,3],WARMC);}}
   // ---- the gaps: decks with houses, trees, rails, piers, and light under the soffit
   for(let k=0;k<K-1;k++){const rw={t:'s',k},y=YT(k);
    const xa=XG(k)+4,xb=XT(k)-4;
@@ -20451,6 +20460,13 @@ function buildWing(scene,gx,gz,d){reseed(9620+d);KOFF=[gx,0,gz];
    if(!dd)kput('strip',[0,PH+2,z+zs*.6],null,[2*PW+4,5,5],WARMC);}
   for(const xs of [1,-1])Q(SS,'mass',[xs*PX,PL,-PZ],[xs*PX,PL,PZ],[xs*PX,PY,PZ],[xs*PX,PY,-PZ],1);
   Q(SS,'conc',[-PX,PY,-PZ],[PX,PY,-PZ],[PX,PY,PZ],[-PX,PY,PZ],2);
+  // QA (arcC): the pedestal was a box. Buttress ribs every 8 m on all four
+  // faces (clear of the portals), and between them rows of deep slots.
+  {const rib=(x,z,q,L)=>{if(dd&&rng()<.2)return;kput('wgBox',[x,(PL+PY)/2-2,z],q,[1.8,PY-PL-8,L],new THREE.Color(dd?0x5a554e:0x8e8980));};
+   for(const zs of [1,-1])for(let x=-PX+6;x<=PX-6;x+=8){if(Math.abs(x)<PW+4)continue;rib(x,zs*(PZ+1.2),null,2.4);
+    for(let y=PL+12;y<PY-12;y+=9.5)if(rng()<.5)kput('wgDim',[x+4,y,zs*(PZ+.3)],null,[1.4,4.2,.8],null);}
+   for(const xs of [1,-1])for(let z=-PZ+6;z<=PZ-6;z+=8){rib(xs*(PX+1.2),z,null,1.8);
+    for(let y=PL+12;y<PY-12;y+=9.5)if(rng()<.5)kput('wgDim',[xs*(PX+.3),y,z+4],null,[.8,4.2,1.4],null);}}
   // the capital and base courses
   kput('wgBox',[0,PY-2.5,0],null,[2*PX+8,5,2*PZ+8],new THREE.Color(dd?0x5e5953:0xa29d94));
   kput('wgBox',[0,PL+2,0],null,[2*PX+6,4,2*PZ+6],new THREE.Color(dd?0x5e5953:0xa29d94));}
