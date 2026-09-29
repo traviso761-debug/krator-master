@@ -118,3 +118,14 @@ plaza · The broken crowns · The ruin from above. All derived from `BL_SITE`.
   on a large face close up.
 * Hole edges in the faces are open (no reveal between the two skins); from a
   grazing angle you can see the gap.
+
+## The sky garden (added 2026-09-29, at the user's request)
+The canopy's roof (the ring at 125 m round the oculus) is now a garden: turf
+(`TEX.blGrass`), a paved promenade on both edges, twelve radial paths with
+hedge and flower borders, a water channel just outside the oculus upstand,
+groves (~300 trees in clusters with clearings), six pavilions, 48 lamps on the
+inner promenade and people. The ruin keeps the canopy's holes, so the garden
+has gone wild over what is left: ~420 trees, moss, paving mostly lost, a
+collapsed pavilion roof on its side. Views: `The sky garden`, `The sky garden
+at night`, `In the garden` (eye level on the 180-degree path), `The wild
+garden`. blades/0 is now 447 396 triangles, blades/1 427 012.
