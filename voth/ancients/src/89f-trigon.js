@@ -204,7 +204,10 @@ function buildTrigon(scene,gx,gz,d){reseed(9710+d);KOFF=[gx,0,gz];
               (y,ym)=>[-(S3*DY(y)-CHY(y)),(DY(y)+2*RT(ym))/S3]];
  const DIST=[(y,ym)=>RT(ym),y=>DY(y),y=>DY(y)];
  // the balcony face's nested chevrons: bands parallel to its two arrises
- const chev=(s,y)=>{const e=EDGES[2](y,y+.01),f=Math.abs(s-(e[0]+e[1])*.5)/((e[1]-e[0])*.5),b=Math.floor(f*6);return b===1||b===3;};
+ // QA (arcC): the bands used to be |s|/half-width, i.e. lines converging on the
+ // apex, which at 1.5 km read as vertical ochre stripes. A chevron is a band of
+ // constant y + k|s|: nested inverted Vs stacked up the face, a third ochre.
+ const chev=(s,y)=>{const e=EDGES[2](y,y+.01),v=(y+1.35*Math.abs(s-(e[0]+e[1])*.5))/78;return v-Math.floor(v)<.34;};
 
  // ---- the portals --------------------------------------------------------------
  const RV=10;                              // depth of the reveal, to the glass
@@ -449,7 +452,7 @@ function buildTrigon(scene,gx,gz,d){reseed(9710+d);KOFF=[gx,0,gz];
   // ======================================================== THE PORTAL FACE, in detail
   const inPort=(s,y,m)=>{for(const P of PORT)if(y>P.yb-m&&y<P.yt+m&&Math.abs(s)<P.w(y)+m)return true;return false;};
   // panel relief: ochre plates and vents, the reference's greeble
-  for(let j=0;j<900;j++){const y=rr(PL+3,YP-6),e=EDGES[1](y,y),s=rr(e[0]+3,e[1]-3);
+  for(let j=0;j<2400;j++){const y=rr(PL+3,YP-6),e=EDGES[1](y,y),s=rr(e[0]+3,e[1]-3);
    if(inPort(s,y,7))continue;const p=FP(1,DY(y)+.3,s,y);if(!keep(p)||gone(1,s,y))continue;
    const big=rng()<.3;
    kput(rng()<.12?'tgDim':'tgBox',p,QFT[1],big?[rr(6,14),rr(4,10),.7]:[rr(1.5,5),rr(1.2,3.5),.9],
@@ -498,7 +501,7 @@ function buildTrigon(scene,gx,gz,d){reseed(9710+d);KOFF=[gx,0,gz];
     const s0=-dir*run*.5,s1=dir*run*.5;
     const a=FP(0,Rr+2.4,s0,y0+.6),b=FP(0,Rr+2.4,s1,Y+.3);
     const mid=[(a[0]+b[0])*.5,(a[1]+b[1])*.5,(a[2]+b[2])*.5];
-    if(keep(mid)){const dv=[b[0]-a[0],b[1]-a[1],b[2]-a[2]],L=Math.hypot(dv[0],dv[1],dv[2]);
+    if(keep(mid)&&(!piece||(keep(a)&&keep(b)))){const dv=[b[0]-a[0],b[1]-a[1],b[2]-a[2]],L=Math.hypot(dv[0],dv[1],dv[2]);
      const q=qB([NX[0],0,NZ[0]],dv);
      const zv=new THREE.Vector3(0,0,1).applyQuaternion(q);
      const broken=dd&&rng()<.45;
@@ -513,6 +516,29 @@ function buildTrigon(scene,gx,gz,d){reseed(9710+d);KOFF=[gx,0,gz];
        const s=lerp(s0,s1,f),y=lerp(y0+.6,Y+.3,f);
        kput('tgBox',FP(0,Rr+2.2,s,y+.7),QF[0],[Math.abs(s1-s0)/ns+.08,.45,4.4],DECK());}}
      if(!dd)for(let k2=0;k2<4;k2++){const f=rng();person(FP(0,Rr+2.4,lerp(s0,s1,f),lerp(y0+.6,Y+.3,f)+1.2));}}}}
+  // ---- QA (arcC): the risers' relief ---------------------------------------------------
+  // A 92 m riser was a flat wall map: graph paper from 'The terraces'. Now each
+  // one carries pilasters every two bays, a string course every seven storeys,
+  // and runs of real balconies in some bays and not others (a bay's run is
+  // decided per 25.6 m group, so the riser reads as neighbourhoods, not a grid),
+  // with planting on them intact and vines off them in the ruin.
+  for(let i=0;i<NT;i++){const y0=TY(i),y1=TY(i+1),R=DY(y0),hlo=(2*DY(y1)+R)/S3-5;
+   for(let s=-Math.floor(hlo/12.8)*12.8;s<=hlo;s+=12.8){const ym=(y0+y1)*.5;
+    const p=FP(0,R+.7,s,ym+1);if(!kp(0,s,ym,R)||gone(0,s,ym)||(dd&&rng()<.25))continue;
+    kput('tgBox',p,QF[0],[1.3,y1-y0-6,1.4],STONE());}
+   for(let y=y0+TILE;y<y1-8;y+=TILE){
+    for(let s=-hlo+6;s<hlo-6;s+=12){if(!kp(0,s,y,R)||gone(0,s,y)||(dd&&rng()<.3))continue;
+     kput('tgBox',FP(0,R+.6,s,y),QF[0],[12.1,1.1,1.2],STONE());}}
+   for(let g=Math.floor(-hlo/25.6);g*25.6<hlo;g++){
+    const h=Math.abs(Math.sin(g*12.9898+i*78.233)*43758.5453)%1;if(h<.3)continue;
+    const yA=y0+STY*(h<.7?4:5),col=h<.8?STONE:OCHRE;
+    for(let y=yA;y<y1-STY*2;y+=STY*(h<.85?1:2))for(let b=0;b<4;b++){const s=g*25.6+(b+.5)*6.4;
+     if(Math.abs(s)>hlo-4||!kp(0,s,y,R)||gone(0,s,y+1))continue;
+     if(dd&&(rng()<.5||slumpRiser(s,y)))continue;
+     let q=QF[0];if(dd&&rng()<.08)q=QF[0].clone().multiply(qEuler(rr(.9,1.4),0,rr(-.3,.3)));
+     kput('tgBalc',FP(0,R,s,y),q,[5.4,1.1,rr(2,2.6)],col());
+     if(!dd&&rng()<.14)kput('leafCard',FP(0,R+1.6,s+rr(-1.6,1.6),y+.9),qEuler(0,rng()*TAU,0),[rr(1.2,2),rr(1,1.6),rr(1.2,2)],LEAF());
+     if(dd&&rng()<.07)kput('vine',FP(0,R+2.2,s,y-.2),qEuler(rr(-.1,.1),0,rr(-.1,.1)),[rr(.9,1.6),rr(6,22),rr(.9,1.6)],null);}}}
   // ---- the slumps: what came off each broken lip, all the way down -----------------
   if(dd&&!piece)for(const S of SLUMP){
    for(let j=S.i;j>=0;j--){const Yt=TY(j),wv=16+(S.i-j)*7;
@@ -622,13 +648,20 @@ function buildTrigon(scene,gx,gz,d){reseed(9710+d);KOFF=[gx,0,gz];
   else if(r3<.52&&dd)kput('moss',[x,PL+.3,z],null,[rr(2,6),rr(.5,1.2),rr(2,6)],MOSS());
   else person([x,PL,z]);}
  // ---- the ground works ----------------------------------------------------------------
- const GP=ACC();
- {const n=72;for(let j=0;j<n;j++){const a0=j/n*TAU,a1=(j+1)/n*TAU;
-   for(let r2=0;r2<3;r2++){const q0=lerp(120,430,r2/3),q1=lerp(120,430,(r2+1)/3);
-    const w=r=>r*(1+.05*Math.sin(a0*3));
-    const P=(a,r)=>[Math.cos(a)*r,.18,Math.sin(a)*r];
-    const A=P(a0,q0),B=P(a1,q0),C=P(a1,q1),E=P(a0,q1);quad(GP,A,B,C,E,[A[0]/30,A[2]/30],[B[0]/30,B[2]/30],[C[0]/30,C[2]/30],[E[0]/30,E[2]/30]);}}}
+ // QA (arcC): the disc was one pale paving map, 860 m of it. Now it is laid out:
+ // a paved ring round the plinth, a stone kerb, and beyond it three avenues on
+ // the stair axes with lawns between them, each lawn edged by a paved walk.
+ const GP=ACC(),GL=ACC(),GK=ACC();
+ {const n=180,RB=[120,236,248,262,418,430];
+  const onAve=a=>{for(let k=0;k<3;k++){let da=Math.abs(a-PHI[k])%TAU;if(da>Math.PI)da=TAU-da;if(da<(STW[k]*.5+26)/330)return true;}return false;};
+  for(let j=0;j<n;j++){const a0=j/n*TAU,a1=(j+1)/n*TAU,am=(a0+a1)*.5,ave=onAve(am);
+   for(let r2=0;r2<RB.length-1;r2++){const q0=RB[r2],q1=RB[r2+1];
+    const L=r2===1||r2===4?GK:(r2===3&&!ave?GL:GP);
+    const P=(a,r)=>[Math.cos(a)*r,L===GK?.62:(L===GL?.55:.48),Math.sin(a)*r];
+    const A=P(a0,q0),B=P(a1,q0),C=P(a1,q1),E=P(a0,q1);quad(L,A,B,C,E,[A[0]/30,A[2]/30],[B[0]/30,B[2]/30],[C[0]/30,C[2]/30],[E[0]/30,E[2]/30]);}}}
  mesh(geoOf(GP),dd?MAT.tgPaveR:MAT.tgPave,G);
+ mesh(geoOf(GL),dd?MAT.tgLawnR:MAT.tgLawn,G);
+ mesh(geoOf(GK),dd?MAT.tgStoneR:MAT.tgStone,G);
  for(let k=0;k<3;k++)for(let r2=300;r2<640;r2+=22)for(const sg of [-1,1]){
   const p=FP(k,r2,sg*44,0);plant(p,dd?rr(9,17):rr(8,13));}
  for(let j=0;j<(dd?40:160);j++){const a=rng()*TAU,r2=rr(280,420);person([Math.cos(a)*r2,.2,Math.sin(a)*r2]);}
@@ -650,6 +683,7 @@ function buildTrigon(scene,gx,gz,d){reseed(9710+d);KOFF=[gx,0,gz];
    const v=Nb.clone().applyQuaternion(q).y;if(best===null||v<best){best=v;bq=q;}}
   const pieces=[{keep:p=>p[1]>=cutY(p[0],p[2])&&p[1]<cut2(p[0],p[2]),y0:CUTLO,y1:YB2+12,base:360,twist:0,cap:[860,YB2-10]},
                 {keep:p=>p[1]>=cut2(p[0],p[2]),y0:YB2-12,y1:YA,base:360+(YB2-12-CUTLO)+30,twist:.16,cap:[YB2+10,null]}];
+  const FS3=mkSet();
   for(const PC of pieces){
    const q=PC.twist?new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),PC.twist).multiply(bq):bq;
    // where the lowest corner of this piece lands: sit it on the plain, 3 m buried
@@ -670,7 +704,31 @@ function buildTrigon(scene,gx,gz,d){reseed(9710+d);KOFF=[gx,0,gz];
      beam('tgBox',v,[v[0]*.4+rr(-6,6),YP+(YA-YP)*.45,v[2]*.4+rr(-6,6)],1.4,1.4,new THREE.Color(0x4e4032));}}
    endGroupXF();
    flush(FS2,P);
-   if(!LAND)LAND={x:T.x,z:T.z};}
+   if(!LAND)LAND={x:T.x,z:T.z};
+   // QA (arcC): THE CRUSHED SEAM. Where the piece's faces meet the plain the
+   // jagged skirt floated or sank by a metre or two; now every face point within
+   // a few metres of the ground gets its own fragments piled against it, so the
+   // piece is bedded in what it crushed.
+   {const Mw=new THREE.Matrix4().compose(P.position,P.quaternion,new THREE.Vector3(1,1,1)),v=new THREE.Vector3();
+    for(let y=PC.y0;y<=Math.min(PC.y1,YA-4);y+=5)for(let k=0;k<3;k++){const D=DY(y),hs=S3*D;
+     for(let s=-hs;s<=hs;s+=7){if(rng()<.45)continue;const f=FP(k,D,s,y);v.set(f[0],f[1],f[2]).applyMatrix4(Mw);
+      if(v.y>9||v.y<-8)continue;const sz=rr(2,8);
+      kput('tgRub',[v.x+rr(-5,5),Math.max(0,v.y)*.4+sz*.3,v.z+rr(-5,5)],qEuler(rng()*3,rng()*3,rng()*3),
+       [sz*rr(.8,1.5),sz*rr(.5,.9),sz*rr(.8,1.5)],RUBC());}}}
+   // and the cladding that burst off it: torn plates of face, ochre and stone,
+   // thrown out either side (krShard, 89d-arcube.js)
+   for(let j=0;j<9;j++){const a=FALL+rr(-.9,.9)*(j%2?1:-1),r=PC.base+rr(-60,160),w=rr(14,34),l=rr(18,46),th=rr(3,7);
+    const SH=krShard({w:w,l:l,t:th,layers:2,brk:[1,1,1,j%3?0:1],bite:.25,tile:TILE,seg:8});
+    const qS=qEuler(rr(-.25,.25),rng()*TAU,rr(-.25,.25)),x=Math.cos(a)*r,z=Math.sin(a)*r;
+    const M=new THREE.Matrix4().compose(new THREE.Vector3(x,-SH.low(qS)-th*.3,z),qS,new THREE.Vector3(1,1,1));
+    const SK=j%3===0?FS3.por:FS3.bal;
+    for(const [g,L] of [[SH.top,SK],[SH.side,FS3.stn],[SH.bot,FS3.shd],[SH.brk,FS3.guts]]){if(!g)continue;
+     g.applyMatrix4(M);const pa=g.attributes.position,ua=g.attributes.uv;
+     for(let i=0;i<pa.count;i+=3){const P3=[0,1,2].map(o=>[pa.getX(i+o),pa.getY(i+o),pa.getZ(i+o)]),U3=[0,1,2].map(o=>[ua.getX(i+o),ua.getY(i+o)]);
+      quad(L,P3[0],P3[1],P3[2],P3[2],U3[0],U3[1],U3[2],U3[2]);}}
+    tgRub(x,z,Math.max(w,l)*.35,Math.max(w,l)*.8,22,4);}
+   }
+  flush(FS3,G);
   // ---- debris: the trail it tore, the fan it threw ---------------------------------------
   const LX=FX*520,LZ=FZ*520;
   tgRub(LX,LZ,110,380,380,8);
