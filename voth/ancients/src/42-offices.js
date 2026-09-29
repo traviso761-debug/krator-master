@@ -75,8 +75,8 @@ function buildOffices(scene,gx,gz,d){reseed(d>0?9501:9500);KOFF=[gx,0,gz];const 
    for(let r=0;r<2;r++){const rr0=43.7;const t2=th+.1;if(inSec(t2,25+r*5))continue;civWin(d>0?'winSmD':'winSmI',[Math.cos(t2)*rr0,25+r*5,Math.sin(t2)*rr0],qFacing([Math.cos(t2),0,Math.sin(t2)]),[5.5,2,1],null);}}
   if(d===0){kput('slab',[0,38.5,0],null,[44,1.2,44],new THREE.Color(0xd8d4cc));stripRing(0,30,0,41,d,48);stripRing(0,35,0,41,d,48);}
   else{// the roof disc with the fallen sector bitten out of it, and the strips that survive
-   mesh(gridSurface((u,v)=>{const th=u*TAU,r=v*44;return[r*Math.cos(th),38.5+.6,r*Math.sin(th)];},96,8,{uS:6,vS:1,hole:(u,v)=>v>.3&&civDA(u*TAU,SEC)<.62-.2*v+.1*(fbm(u*30,v*3,208,2)-.5)}),skin,G);
-   mesh(gridSurface((u,v)=>{const th=u*TAU;return[44*Math.cos(th),37.9+v*1.2,44*Math.sin(th)];},96,1,{hole:(u,v)=>civDA(u*TAU,SEC)<.44}),skin,G);
+   meshMerged([gridSurface((u,v)=>{const th=u*TAU,r=v*44;return[r*Math.cos(th),38.5+.6,r*Math.sin(th)];},96,8,{uS:6,vS:1,hole:(u,v)=>v>.3&&civDA(u*TAU,SEC)<.62-.2*v+.1*(fbm(u*30,v*3,208,2)-.5)}),
+    gridSurface((u,v)=>{const th=u*TAU;return[44*Math.cos(th),37.9+v*1.2,44*Math.sin(th)];},96,1,{hole:(u,v)=>civDA(u*TAU,SEC)<.44})],skin,G);
    for(const yy of [30,35])for(let k=0;k<48;k++){const th=(k+.5)/48*TAU;const lit=rng()<.1;const dim=rng()<.5;if(civDA(th,SEC)<.62)continue;
     kput('strip',[41*Math.cos(th),yy,41*Math.sin(th)],qEuler(0,-th-Math.PI/2,0),[TAU*41/48*.92,1,1],lit?(dim?CYAN.clone().multiplyScalar(.5):CYAN):DEAD);}}
   for(let k=0;k<20;k++){const th=k/20*TAU;if(d>0&&rng()<.2)continue;const lean=d>0&&civDA(th,SEC)<.35;

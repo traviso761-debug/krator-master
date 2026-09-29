@@ -6,6 +6,7 @@ function buildStarport(scene,gx,gz,d){reseed(d>0?9601:9600);KOFF=[gx,0,gz];REGIS
  if(d===0)mesh(lathe({rFn:y=>RD*.98*Math.pow(clamp(1-Math.pow(y/HD,2),0,1),.5),H:HD,nu:48,nv:10,hole:(u,y)=>y<HD*.84}),MAT.glass,G,0,3,0);
  else mesh(lathe({rFn:y=>RD*.9*Math.pow(clamp(1-Math.pow(y/HD,2),0,1),.5),H:HD*.9,nu:48,nv:8}),MAT.dark,G,0,3,0);
  stripRing(0,10,0,RD*.85,d,48);stripRing(0,24,0,RD*.62,d,40);
+ const mouths=[];   // the five hangar end walls, merged after the loop: one draw call
  for(let i=0;i<NA;i++){const th=i/NA*TAU+.3;const cx=Math.cos(th),cz=Math.sin(th);const sx=-cz,sz=cx;
   const broken=d>0&&i===2;const hole=holeFn(d,310+i,null,1.4);
   const arm=(u,v)=>{const s=v*L;const t=s/L;const w=38*(1-.55*t);const h=(HD*.75)*(1-.6*t)+6;const q=(u-.5)*2;const x=RD*.6+s;const y=h*Math.pow(clamp(1-q*q,0,1),.55);
@@ -24,7 +25,7 @@ function buildStarport(scene,gx,gz,d){reseed(d>0?9601:9600);KOFF=[gx,0,gz];REGIS
   // on the arm's floor. (The pancaked arm has no mouth left to close.)
   if(!broken){const vE=.985,e=arm(.5,vE),e2=arm(.5,1);const n=[e2[0]-e[0],0,e2[2]-e[2]];const nl=Math.hypot(n[0],n[2]);n[0]/=nl;n[2]/=nl;
    const eh=holeFn(d,340+i,null,3);
-   mesh(gridSurface((u,v)=>{const p=arm(u,vE);return[p[0],p[1]*v,p[2]];},20,6,{uS:4,vS:2,hole:(u,v)=>{const q=(u-.5)*2;if(Math.abs(q)<.42&&v<.62)return true;return eh?eh(u,v*20):false;}}),skin,G);
+   mouths.push(gridSurface((u,v)=>{const p=arm(u,vE);return[p[0],p[1]*v,p[2]];},20,6,{uS:4,vS:2,hole:(u,v)=>{const q=(u-.5)*2;if(Math.abs(q)<.42&&v<.62)return true;return eh?eh(u,v*20):false;}}));
    kput('boxD',[e[0]-n[0]*5,5.5,e[2]-n[2]*5],qFacing(n),[26,11,.6],null);
    kput('slab',[e[0]-n[0]*16,.4,e[2]-n[2]*16],null,[16,.8,16],new THREE.Color(d>0?0x3a3430:0x6a625a));
    for(let k=-3;k<=3;k++){const lit=d>0?h3(i,k,341)<.12:true;kput('strip',[e[0]+n[2]*k*3.8+n[0]*.2,11.6,e[2]-n[0]*k*3.8+n[2]*.2],qFacing(n),[3,1,1],lit?new THREE.Color(0xffb060):DEAD);}}
@@ -38,6 +39,7 @@ function buildStarport(scene,gx,gz,d){reseed(d>0?9601:9600);KOFF=[gx,0,gz];REGIS
    for(let k=0;k<9;k++){const a=h3(i,k,350)*TAU,r=8+h3(k,i,351)*26,sz=3+h3(i*3,k,352)*3;
     kput('civTent',[px+r*Math.cos(a),3,pz+r*Math.sin(a)],qEuler(0,a,0),[sz,sz*.8,sz*1.4],new THREE.Color().setHSL(.07+h3(k,i,353)*.06,.35,.45+h3(i,k,354)*.2));}
    kput('waterButt',[px+3,4,pz-4],null,[1.2,2,1.2],null);}}
+ meshMerged(mouths,skin,G);
  // control needle on the dome
  const NH=70,ncut=d>0?NH*.5:null;mesh(lathe({rFn:y=>4.5*(1-.5*y/NH)+ (y>NH-14?9*Math.pow((y-(NH-14))/14,1.4)*(1-.3*Math.pow((y-(NH-14))/14,4)):0),H:NH,cut:ncut,jag:ncut?2:0,flutes:6,amp:.2,nu:40,nv:30,hole:holeFn(d*.6,330,ncut,1)}),skin,G,0,HD-2,0);
  if(!ncut){kput('slab',[0,HD-2+NH,0],null,[13,.8,13],new THREE.Color(0xd8d4cc));stripRing(0,HD-2+NH-4,0,11,d,24);}
