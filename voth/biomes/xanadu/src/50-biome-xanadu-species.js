@@ -172,7 +172,7 @@ XANADU.SPECIES=[
   tags:{climate:'subtropic',aridity:'semiarid',abyssal:true,riparian:'no'}},
  // the uplands' own
  /*31*/{key:'flamecypress',name:'Flame cypress',H:[12,22],rb:[.3,.5],crownR:[1.6,2.6],barkK:0,bark:[0x8a5a3a,0x7a4a34,0x9a6a44],
-  leaf:[0x2a4a2a,0x324e2c,0x28442e,0x3a5a30],irid:null,
+  leaf:[0x3e6a38,0x4a7a3e,0x365e34,0x547e40],irid:null,
   tags:{climate:'temperate',aridity:'semiarid',abyssal:false,riparian:'no'}},
  /*32*/{key:'arbutus',name:'Strawberry tree',H:[5,9],rb:[.3,.5],crownR:[3,5],barkK:1,bark:[0xffb898,0xffc8a8,0xf0a888],
   leaf:[0x2e5a2a,0x3a6a30,0x2a5028],irid:null,boughs:[4,6],
