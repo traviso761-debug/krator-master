@@ -125,3 +125,9 @@ vnBannerPole vnChimney vnFence vnPalisade vnFolk vnPaving`.
   wicker basket lanterns (a bulb in each) or open umbrellas; meant to be strung between buildings.
 * Defs: `xa_temple_ortakoy`, `xa_house_turk_a` (Konak), `xa_house_turk_b`, `xa_shop_turk_a`, `xa_shop_turk_b`,
   `xa_lane` (carries `eye` for its own eye-level stance).
+
+## 84-xa-grandbath.js — the Grand Baths
+* Items: `xGlass` (stained-glass plane, unlit), `xBTileB` (lobed bath tile box), `xEmeraldB/Disc/Oct` (emerald water).
+* `xnXKPier(x,z,w,h,c,strip)` — tall pier with mosaic strips; `xnXKGlassArch(x,y,z,ry,w,h,c)` — stained-glass
+  screen in a pointed arch over an open walk; `xnXKLake(pts,y,c)` — a lobed pool from `[x,z,r]` discs.
+* Def: `xa_grand_bath` (Public, civic, lit, nv 3).

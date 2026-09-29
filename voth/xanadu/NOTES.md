@@ -130,3 +130,20 @@ large prayer wheels in the corners instead; the corner-bay struts pointed the wr
   (≥ 6 × 2.6 × 6) as walls so the board and brick storeys paint.
 
 Kit: 110 volumes, 0.89 M tris, 121 draw calls; variants page 332 volumes, 2.5 M tris. Verify clean on both.
+
+## Round 6 (Sep 29 2026) — the Grand Baths
+
+Travis: a colonnaded, mostly open Grand Baths with stained-glass windows and gardens, after five pictures (the
+Nasir al-Mulk mosque's mosaic iwan and stained-glass hall, a bold tiled pavilion with a copper sun and a long
+tiled pool, a tall mosaic-banded colonnade over an emerald pool, the Fin garden's iwan over a rill down a cypress
+avenue).
+
+`84-xa-grandbath.js` (seeds 32200–32299), one def `xa_grand_bath` in the Public row: a mosaic iwan with twin
+turrets on a paved forecourt with a rill and pool; behind it the great hall — a ring of sixteen tall pale piers
+with a mosaic strip up each face and gilt neckings, a stained-glass screen in a pointed arch between every pair
+above an open walk (the front bays open), a ring roof with a mosaic soffit and gilt cornice round a centre open to
+the sky over a lobed emerald lake on a turquoise glazed-tile floor; at the back a long pool in red-purple-orange
+tile running out to a tiled cube pavilion with a green-tiled roof and a copper sun on the ridge, between cypress
+avenues and parterres. New maps: `xGlass` (stained glass, unlit so it glows), `xBTile` (the lobed bath tile);
+`xEmerald*` water. v1: tiled domes over alternate piers and arabesque strips; v2: taller piers, a rounder lake
+with a fountain. The def carries `eye` so its view stands inside the hall. Kit 113 volumes, 0.91 M tris.
