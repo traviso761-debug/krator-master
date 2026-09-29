@@ -51,17 +51,26 @@ function cityTerrainMesh(){const N=Math.round(RK.WORLD/5);const g=new THREE.Plan
 // ---------------------------------------------------------------- the town wall: gates at the three highways, towers, runs of wall between
 const WALLPIECES=[];
 function vpPlace(key,x,z,ry,o){const k=key;TSTAT.cur=k+'/'+((o&&o.v)|0);const G=VERN.place(scene,k,x,z,ry,o);TSTAT.cur=null;return G;}
-(function townWall(){reseed(SEED_RK+7);const gateHalfAt=g=>22/wallR(g);
+(function townWall(){reseed(SEED_RK+7);
  const rkey=k=>VERN.defs[k+'_reclaimed']&&rng()<.6?k+'_reclaimed':k;
+ // round 10 (Travis: "gates don't quite connect to city walls"): each gatehouse is turned to the wall's own tangent
+ // (the wall is an oval, not a circle, so the radial bearing left it skewed), and the runs either side start and end
+ // exactly at the ends of its wall stubs (hnRCGate stubs reach GATE_END from the passage) instead of 22 m round the arc
+ const GATE_END=18.4,GI={};
+ const tangentRy=t=>{const a=townPt(t-.004,wallR(t-.004)),b=townPt(t+.004,wallR(t+.004));return Math.atan2(-(b[1]-a[1]),b[0]-a[0])+Math.PI;};
  // gates: passage along the highway, face (+z) outward
- for(const [name,g] of GATE_LIST){const p=gatePos(g);const ry=Math.atan2(Math.cos(g),Math.sin(g));const o={x:p[0],z:p[1],hx:22,hz:11,ry,pad:1};
+ for(const [name,g] of GATE_LIST){const p=gatePos(g);const ry=tangentRy(g);const o={x:p[0],z:p[1],hx:22,hz:11,ry,pad:1};
+  GI[g]={ends:[-1,1].map(s=>loc(p[0],p[1],s*GATE_END,0,ry))};
   const y=groundY(o)+.1;cityFlat(p[0],p[1],24,14,y);vpPlace(rkey('hl_rep_gate'),p[0],p[1],ry,{y,v:0});occAdd(o);WALLPIECES.push({key:'gate',name,o});
   REG.push({name:name+' gate',x:p[0],y,z:p[1],r:22,h:44,cls:'building',key:'rk_gate_'+name,tags:{culture:'highland-republican',type:['military','infrastructure'],wealth:'civic',lit:true,landmark:true}});}
+ const gateHalfAt=g=>GATE_END/wallR(g);
+ const nearEnd=(g,pt)=>GI[g].ends.reduce((a,b)=>Math.hypot(b[0]-pt[0],b[1]-pt[1])<Math.hypot(a[0]-pt[0],a[1]-pt[1])?b:a);
  // runs between gates: chords of ~34 m, a tower every third joint
  const gs=GATE_LIST.map(g=>g[1]).sort((a,b)=>a-b);
- for(let i=0;i<gs.length;i++){let a=gs[i]+gateHalfAt(gs[i])*1.02,b=gs[(i+1)%gs.length]-gateHalfAt(gs[(i+1)%gs.length])*1.02;if(b<a)b+=TAU;
-  let arc=0;{let pv=townPt(a,wallR(a));for(let k=1;k<=40;k++){const t=a+(b-a)*k/40,c=townPt(t,wallR(t));arc+=Math.hypot(c[0]-pv[0],c[1]-pv[1]);pv=c;}}const n=Math.max(1,Math.round(arc/34));let prev=townPt(a,wallR(a));
-  for(let k=1;k<=n;k++){const t=a+(b-a)*k/n,cur=townPt(t,wallR(t));const mx=(prev[0]+cur[0])/2,mz=(prev[1]+cur[1])/2,dx=cur[0]-prev[0],dz=cur[1]-prev[1],len=Math.hypot(dx,dz);
+ for(let i=0;i<gs.length;i++){const g0=gs[i],g1=gs[(i+1)%gs.length];let a=g0+gateHalfAt(g0),b=g1-gateHalfAt(g1);if(b<a)b+=TAU;
+  let arc=0;{let pv=townPt(a,wallR(a));for(let k=1;k<=40;k++){const t=a+(b-a)*k/40,c=townPt(t,wallR(t));arc+=Math.hypot(c[0]-pv[0],c[1]-pv[1]);pv=c;}}const n=Math.max(1,Math.round(arc/34));
+  let prev=nearEnd(g0,townPt(a,wallR(a)));
+  for(let k=1;k<=n;k++){const t=a+(b-a)*k/n,cur=k===n?nearEnd(g1,townPt(b,wallR(b))):townPt(t,wallR(t));const mx=(prev[0]+cur[0])/2,mz=(prev[1]+cur[1])/2,dx=cur[0]-prev[0],dz=cur[1]-prev[1],len=Math.hypot(dx,dz);
    const ry=Math.atan2(-dz,dx)+Math.PI;   // local x along the run; front (+z) outward
    const o={x:mx,z:mz,hx:len/2,hz:5,ry,pad:0};const y=groundY(o);
    vpPlace(rkey('hl_rep_wall'),mx,mz,ry,{y,len:len+.6,v:k%2});occAdd(o);WALLPIECES.push({key:'wall',o});

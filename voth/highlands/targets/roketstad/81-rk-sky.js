@@ -43,7 +43,7 @@ const KratorSky=(function(){
   vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
   fragmentShader:`varying vec2 vUv;uniform sampler2D map;uniform vec3 L;uniform float haze,ring,tilt,t;
   void main(){vec2 p=(vUv-0.5)*2.0;
-   float R=0.62;vec2 q=p/R;float r2=dot(q,q);vec3 col=vec3(0.);float a=0.;
+   float R=0.42;vec2 q=p/R;float r2=dot(q,q);vec3 col=vec3(0.);float a=0.;
    float cs=cos(tilt),sn=sin(tilt);vec2 rp=vec2(q.x,q.y/max(sn,0.08));float rr=length(rp);
    float inRing=ring*smoothstep(1.35,1.4,rr)*(1.0-smoothstep(2.1,2.2,rr))*(0.55+0.45*sin(rr*40.0));
    float behind=step(0.0,q.y)*step(rr,1.0);
@@ -58,7 +58,7 @@ const KratorSky=(function(){
    vec3 ringCol=vec3(0.85,0.82,0.78);float ringA=inRing*(1.0-behind)*(r2<1.0?0.0:1.0);
    float ringLit=clamp(dot(vec3(0.,1.,0.),normalize(L))*0.5+0.6,0.15,1.0);
    col=mix(col,ringCol*ringLit,ringA*0.7);a=max(a,ringA*0.7);
-   float front=step(q.y,0.0)*step(rr,1.0)*inRing;col=mix(col,ringCol*ringLit,front*0.6);
+   float front=step(q.y,0.0)*step(r2,1.0)*inRing;col=mix(col,ringCol*ringLit,front*0.6);
    a*=1.0-haze;
    gl_FragColor=vec4(col,a);}`});
  const giant=new THREE.Mesh(new THREE.PlaneGeometry(1,1),giantMat);
@@ -74,7 +74,7 @@ const KratorSky=(function(){
  function update(camPos,hour,day,dens){state.hour=hour;state.day=day;state.dens=dens;group.position.copy(camPos);
   const s=sunDir(hour,day);state.sun.copy(s);skyMat.uniforms.sun.value.copy(s);skyMat.uniforms.dens.value=dens;
   const ang=Math.acos(Math.max(-1,Math.min(1,s.dot(giantDir))));const ecl=s.y>0?Math.max(0,1-ang/GIANT_ANG):0;const eclF=ecl>0?Math.min(1,ecl*1.6):0;state.eclipse=eclF;skyMat.uniforms.ecl.value=eclF*0.9;
-  giant.position.copy(giantDir).multiplyScalar(0.96);giant.lookAt(new THREE.Vector3(0,0,0));const size=2*0.96*Math.tan(GIANT_ANG)/0.62;giant.scale.set(size,size,1);
+  giant.position.copy(giantDir).multiplyScalar(0.96);giant.lookAt(new THREE.Vector3(0,0,0));const size=2*0.96*Math.tan(GIANT_ANG)/0.42;   // /R of the shader: the quad is sized so the rings (2.2 disc radii) fit inside itgiant.scale.set(size,size,1);
   const right=new THREE.Vector3().crossVectors(new THREE.Vector3(0,1,0),giantDir).normalize();const upB=new THREE.Vector3().crossVectors(giantDir,right).normalize();
   giantMat.uniforms.L.value.set(s.dot(right),s.dot(upB),-s.dot(giantDir));giantMat.uniforms.haze.value=0.15+0.35*Math.max(0,dens-1)*0.7;giantMat.uniforms.ring.value=state.ring?1:0;giantMat.uniforms.t.value=hour/24;
   sun.position.copy(s).multiplyScalar(0.95);const ss=0.11*(1+0.5*Math.max(0,0.15-s.y)*6);sun.scale.set(ss,ss,1);sun.material.opacity=s.y>-0.08?1-eclF*0.85:0;
