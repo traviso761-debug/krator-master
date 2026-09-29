@@ -63,6 +63,7 @@
     G.ball = function (x, y, z, r, col, fam) { const p = T(x, z); P.ball(p[0], oy + y, p[1], r, col, fam); };
     G.frustum = function (x, y, z, rb, rt, h, r2, col, fam, sides) { const p = T(x, z); P.frustum(p[0], oy + y, p[1], rb, rt, h, (r2 || 0) + th, col, fam, sides); };
     G.pyrRoof = function (x, y, z, w, h, d, r2, col, fam) { const p = T(x, z); P.pyrRoof(p[0], oy + y, p[1], w, h, d, (r2 || 0) + th, col, fam); };
+    G.hipRoof = function (x, y, z, w, h, d, r2, col, fam) { const p = T(x, z); P.hipRoof(p[0], oy + y, p[1], w, h, d, (r2 || 0) + th, col, fam); };
     G.beam = function (ax, ay, az, bx, by, bz, w, d, col, fam) { const a = T(ax, az), b = T(bx, bz); P.beam(a[0], oy + ay, a[1], b[0], oy + by, b[1], w, d, col, fam); };
     G.rod = function (ax, ay, az, bx, by, bz, r, col, fam) { const a = T(ax, az), b = T(bx, bz); P.rod(a[0], oy + ay, a[1], b[0], oy + by, b[1], r, col, fam); };
     /* a sloping sheet (cloth, planks) from edge-centre a to edge-centre b, `width` across */
@@ -195,18 +196,23 @@
       }
     };
 
-    /* hip roof with a kicked eave: shallow skirt + steeper crown; returns peak y */
+    /* hip roof with a kicked eave: shallow skirt + steeper crown, both ridged
+       along the longer side (F.hipRoof); equal inset all round so the crown's
+       eaves sit on the skirt's surface. Returns ridge y. */
     K.hip = function (x, y, z, w, d, h, col, o) {
       o = o || {};
       G.box(x, y, z, w, 0.26, d, 0, shade(col, -0.3), 'roof');
-      const f = 0.3, hs = h * 0.42, yb = y + 0.26;
-      G.pyrRoof(x, yb, z, w, hs, d, 0, col, 'roof');
+      const f = 0.3, hs = h * 0.42, yb = y + 0.26, i = Math.min(w, d) * f / 2;
+      G.hipRoof(x, yb, z, w, hs, d, 0, col, 'roof');
       const y2 = yb + hs * f - 0.04, h2 = h - hs * f + 0.04;
-      G.pyrRoof(x, y2, z, w * (1 - f), h2, d * (1 - f), 0, shade(col, 0.06), 'roof');
-      const top = y2 + h2;
+      G.hipRoof(x, y2, z, w - 2 * i, h2, d - 2 * i, 0, shade(col, 0.06), 'roof');
+      const top = y2 + h2, r = Math.abs(w - d) / 2;
       if (o.finial !== false) {
-        G.cyl(x, top - 0.35, z, 0.14, 0.95, 0, IRON, 'metal');
-        G.ball(x, top + 0.7, z, 0.24, 0xb08d3c, 'metal');
+        (r > 0.3 ? [-1, 1] : [0]).forEach(function (k) {
+          const fx = x + (w >= d ? k * r : 0), fz = z + (w >= d ? 0 : k * r);
+          G.cyl(fx, top - 0.35, fz, 0.14, 0.95, 0, IRON, 'metal');
+          G.ball(fx, top + 0.7, fz, 0.24, 0xb08d3c, 'metal');
+        });
       }
       return top;
     };
@@ -365,7 +371,7 @@
         G.rod(x - 1.3, 2.9, z, x + 1.3, 2.9, z, 0.1, TIMBER, 'wood');
         G.rod(x, 2.9, z, x, 1.9, z, 0.02, ROPE, 'rope');
         G.cyl(x, 1.55, z, 0.22, 0.34, 0, 0x5a4a34, 'wood');
-        G.pyrRoof(x, 3.09, z, 2.9, 0.9, 1.3, 0, shade(TIMBER, 0.1), 'wood');
+        G.hipRoof(x, 3.09, z, 2.9, 0.9, 1.3, 0, shade(TIMBER, 0.1), 'wood');
       }
     };
 
@@ -688,7 +694,7 @@
     G.box(0, 0, hz, 29.6, 0.6, 15.6, 0, dk, 'stone');
     const B1 = K.mass(0, 0.6, hz, 28, 5.0, 14, c, { cornice: false, bands: [0.4] });
     G.box(0, 5.6, hz, 30.4, 0.24, 16.4, 0, shade(cu, -0.3), 'roof');
-    G.pyrRoof(0, 5.84, hz, 30.4, 4.0, 16.4, 0, cu, 'roof');
+    G.hipRoof(0, 5.84, hz, 30.4, 4.0, 16.4, 0, cu, 'roof');
     const B2 = K.mass(0, 5.6, hz, 20, 4.4, 10, shade(c, 0.03), {});
     K.hip(0, 10.0, hz, 23.4, 13.4, 4.6, cu);
     /* ground-storey windows all round, tall and shuttered to the court */
