@@ -250,7 +250,7 @@ function hbJetty(G,x,z0,z1,w,y,d,o){o=o||{};const n=Math.max(1,Math.round((z1-z0
 // geometry: from the crown edge (a line at o.top) outward along (nx,nz), 1:1,
 // down to o.bot (-8, under any seabed), a rough rock skin with boulders on it
 // and a weed band at the waterline. The terrain's cliff stands inside it.
-MAT.hbRock=new THREE.MeshStandardMaterial({map:TEX.concrete,color:0x8e877c,roughness:1,metalness:0,side:DS});
+MAT.hbRock=new THREE.MeshStandardMaterial({map:TEX.concrete,color:0x746c62,roughness:1,metalness:0,side:DS});
 function hbMound(G,ax,az,bx,bz,nx,nz,d,o){o=Object.assign({top:PORT.DECK-.04,bot:-8,n:1},o||{});const run=o.run||(o.top-o.bot);
  const L=Math.hypot(bx-ax,bz-az);if(L<.5)return;
  const P=(u,v)=>{const x=ax+(bx-ax)*u+nx*run*v,z=az+(bz-az)*u+nz*run*v,j=(fbm(x/3.5,z/3.5,3.3,2)-.5)*1.6*Math.sin(Math.PI*Math.min(1,v*1.3));
@@ -266,7 +266,7 @@ function hbBoulders(P,n,d){for(let i=0;i<n;i++){const v=Math.pow(rng(),.9)*.62,p
  if(p[1]<-3.5)continue;
  const wet=p[1]<.9&&p[1]>-1.2;
  kput('rubble',[p[0],p[1]+s*.3,p[2]],qEuler(rng()*3,rng()*3,rng()*3),[s*rr(.9,1.4),s*rr(.55,.85),s*rr(.9,1.3)],
-  wet?new THREE.Color().setHSL(rr(.12,.2),rr(.2,.35),rr(.06,.1)):new THREE.Color().setHSL(rr(.07,.1),rr(.05,.12),rr(.14,.26)));
+  wet?new THREE.Color().setHSL(rr(.12,.2),rr(.2,.35),rr(.06,.1)):new THREE.Color().setHSL(rr(.07,.1),rr(.05,.12),rr(.07,.15)));
  if(d>=1&&!wet&&rng()<.22)kput('moss',[p[0],p[1]+s*.6,p[2]],null,[s*.8,s*.2,s*.8],new THREE.Color().setHSL(rr(.2,.3),.4,rr(.08,.14)));}}
 // ---------------------------------------------------------------- small harbour light
 // A white tapered column with a lantern: green (d=0), fallen across the rocks
