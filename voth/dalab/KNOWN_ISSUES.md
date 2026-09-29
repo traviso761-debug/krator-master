@@ -79,11 +79,10 @@ saying what fixed it.
       off the streets (`_oaks`).
 
 ## Round 10
-- [ ] Two overview shots (`Main settlement — overview`, `The Halls and the
-      ranch`) show a flat cream bar the width of a landmark label just under
-      the "Scribes' hall" label; close-up shots of both scribes' halls show
-      nothing on the ground. Most likely a label quad at the edge of its fade;
-      not chased this round.
+- [x] Two overview shots showed a flat cream bar the width of a landmark label
+      under the "Scribes' hall" label. **Round 10 (merge to main):** it was the
+      misaddressed label-atlas cell that Iziz upstream fixed (whole atlas
+      cells); `93-labels.js` re-vendored, the bar is gone (`shots/c16`).
 - [ ] The placed count differs by a few between runs of the same build (875 /
       882): something in placement or the biome reads an unseeded source. The
       audit is clean either way.

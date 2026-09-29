@@ -333,3 +333,7 @@ types if necessary.
   belts between towns get the mid and far builds, q .98, the main settlement's
   green at .30: 10.78 M of the 11 M, 213 draw calls. The set: 98 volumes,
   568 k triangles, 157 draw calls. `--assert` green on both.
+* **Merged to main** (Sep 29 2026): `origin/main` merged in (the Reed Lake kit
+  landed beside this one; no overlap), `93-labels.js` re-vendored from
+  `../iziz/src` (whole atlas cells), `--vendor-check` clean but for the
+  deliberate 63 drift, the town types documented in API.md and DESIGN.md.
