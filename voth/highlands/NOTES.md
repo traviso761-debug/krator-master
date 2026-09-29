@@ -300,3 +300,28 @@ albedo / buildable mask / class, the road list and its spatial hash, OBB occupan
   - `hnKryltso` takes its stair's real run.
   - The dougong issue is closed (the frame's roof lift).
   - Re-vendoring from `../ancients/src` is still open.
+
+## Round 10b (Sep 29 2026) — the guild at the port gate, the apron's ruins, tiled wall spires, views, main
+- **Scavengers' Guild** (`77b`, seed 21111, now 72×48): a compound. The guildhall (rubble ground storey, frame upper
+  storey, a salvaged metal gable faced with Ancient panels, the salvage roundel over the door) bridged to a spent rocket
+  stage stood on end as a lookout tower (window rings, frame lookout, spire); a hull-vault depot behind; east of it the
+  fenced sorting yard entered through a gate of stacked tank sections: six sorted heaps with painted boards, a gantry
+  crane with a hull section on its chains, five container stores, a furnace and stack, the weighbridge and booth, carts;
+  the salvage market of stalls along the road front. In Roketstad it is placed from the spaceport builder (the ground
+  past the east gate is port apron, which the town placer rejects): the nearest valid footprint to the gate, turned to
+  the port road.
+- **Spaceport apron**: 17 scrap yards (was 5), each with 8–12 heaps, a container store or two and a derrick; 6 ruined
+  Ancient **silo batteries** (bins sheared at different heights, some fallen and lying broken, a head-house with its
+  snapped conveyor) and 6 ruined Ancient **factory halls** (column grid, the surviving roof bays with north-lights,
+  slabs fallen in, a broken back wall, a chimney, rubble). The placers retry until they reach their counts.
+- **Fallen Arcology**: the plot's `faceAt`/`faceOff` turns the ship's stern (local +x, the engines) to the Starport.
+- **Z-fighting**: level plots flatten the terrain to 6 cm above the building origin; the Mustering ground's dirt and the
+  Hall's parterre and paving beds were thinner than that. They are now 14–22 cm thick.
+- **Wall towers and gate towers**: glazed tile spires and pinnacles (`MAT.hTileW`, oxblood and bottle green in
+  chevrons with an ochre line; the temple's six-colour tile read as confetti at spire size). The tile survives the
+  reclaimed twin (it is not a roof material in `HSALV`). Wall hoardings are roofed in corrugated sheet.
+- **Views**: the opening and east-gate shots had drifted inside the never-flown arcology's scaffold; the street shot now
+  stands in a street and looks down it; the two launch-pad views had the ruined and empty pads swapped. New: the guild
+  (and its yard at eye level), scrap yards, silos, a factory, the Hall of the Republic, the Mustering ground, the ship
+  from its engines and broadside.
+- **Main**: merged; the five vendored Ancients fragments re-vendored verbatim from `../ancients/src`.
