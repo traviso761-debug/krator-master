@@ -156,11 +156,12 @@ function portSpot(hx,hz,tx,tz,R){for(let r=0;r<=R;r+=8){const n=Math.max(1,Math.
 // big salvage works just out of it: the hull-vault warehouse, the hull-breaker's yard, the powder works (the town's
 // trade — at a safe distance, downwind of nothing).
 const SATSTAT={placed:0,ground:0,occ:0};
-function satTest(o){if(!groundOK(o,{ignoreMask:true,outside:true,ppad:2}))return false;for(const p of obbCorners(o,.2).concat([[o.x,o.z]])){const k=klass(p[0],p[1]);if(k!==0&&k!==KL.port)return false;
- if(k===0&&!canBuild(p[0],p[1]))return false;}return true;}
+function satTest(o){if(!groundOK(o,{ignoreMask:true,outside:true,ppad:2}))return false;const BAD={1:1,3:1,4:1,5:1,6:1,10:1,14:1};   // roads, plazas, buildings, the wall: anything else (meadow, the table's paving, the class map's soft edges) will do
+ for(const p of obbCorners(o,.2).concat([[o.x,o.z]]))if(BAD[klass(p[0],p[1])])return false;return true;}
 function satSpot(key,tx,tz,R){const D=VERN.defs[key];if(!D)return null;for(let r=0;r<=R;r+=6){const n=Math.max(1,Math.round(TAU*r/6));for(let i=0;i<n;i++){const a=i/n*TAU+r*.37,x=tx+r*Math.cos(a),z=tz+r*Math.sin(a);
   const nr=nearestRoadPt(x,z,null,80);const o={x,z,hx:D.w/2,hz:D.d/2,ry:nr?Math.atan2(nr.x-x,nr.z-z):0,pad:1.5};if(satTest(o)&&occFree(o,1.5))return o;}}return null;}
-const SAT_PICK=()=>{const w=rng();if(w<.5)return{key:vPick(APOC_HOMES)};if(w<.75)return{key:vPick(['hl_rep_cont_shops','hl_rep_lantern_stall','hl_rep_garage'])};return{key:kitKey(vPick(['hl_rep_house_poor_a','hl_rep_house_poor_b','hl_rep_smithy_small','hl_rep_workshop_a'])),v:Math.floor(rng()*6)};};
+const SAT_HOMES=['hl_rep_cont_stack','hl_rep_cont_stack','hl_rep_silo_house','hl_rep_silo_house','hl_rep_tank_row','hl_rep_house_tank','hl_rep_house_tank','hl_rep_house_hulk','hl_rep_radome_tower','hl_rep_crawler'];
+const SAT_PICK=()=>{const w=rng();if(w<.5)return{key:vPick(SAT_HOMES)};if(w<.75)return{key:vPick(['hl_rep_cont_shops','hl_rep_lantern_stall','hl_rep_garage'])};return{key:kitKey(vPick(['hl_rep_house_poor_a','hl_rep_house_poor_b','hl_rep_smithy_small','hl_rep_workshop_a'])),v:Math.floor(rng()*6)};};
 function satelliteTown(y){reseed(SEED_RK+61);const H=SAT.hub;
  {const D=VERN.defs.hl_rep_kontor,o={x:H.x,z:H.z-H.R-D.d/2-2.5,hx:D.w/2,hz:D.d/2,ry:0,pad:1};if(satTest(o)&&occFree(o,1)){placeVern('hl_rep_kontor',o,{landmark:'Scrap Kontor'});SATSTAT.placed++;}}
  for(const [key,dx,dz,name] of[['hl_rep_hull_vault',-40,70,'Hull-vault warehouse'],['hl_rep_hull_yard',70,95,"Hull-breaker's yard"],['hl_rep_powder_works',-95,-60,'The powder works']]){

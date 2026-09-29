@@ -65,7 +65,7 @@ const FARMLANES=[];
 const SAT=(()=>{reseed(SEED_RK+60);const hub={x:PC.x-PC.top+70,z:PC.z+62,R:15};
  disc(hub.x,hub.z,hub.R,'plaza','#8a8272');const lanes=[];
  const n=nearestRoadPt(hub.x,hub.z,r=>r.cls===KL.highway);if(n)lanes.push(road([[hub.x,hub.z-hub.R],[n.x,n.z]],6,KL.street,{zone:'sat'}));
- for(let k=0;k<6;k++){const a=-Math.PI/2+.55+k*TAU/7;const L=rr(55,95);const a0=[hub.x+Math.cos(a)*(hub.R+.5),hub.z+Math.sin(a)*(hub.R+.5)],e=[hub.x+Math.cos(a)*(hub.R+L),hub.z+Math.sin(a)*(hub.R+L)];
+ for(let k=0;k<8;k++){const a=-Math.PI/2+.4+k*TAU/8.6;const L=rr(65,115);const a0=[hub.x+Math.cos(a)*(hub.R+.5),hub.z+Math.sin(a)*(hub.R+.5)],e=[hub.x+Math.cos(a)*(hub.R+L),hub.z+Math.sin(a)*(hub.R+L)];
   if(Math.hypot(e[0]-PC.x,e[1]-PC.z)<PC.P+PAD_R+20)continue;if(Math.hypot(e[0]-TC.x,e[1]-TC.z)<TC.R+140)continue;
   lanes.push(road(meander(a0,e,5,12,k*1.7+.3),5,KL.street,{zone:'sat'}));}
  return{hub,lanes};})();
