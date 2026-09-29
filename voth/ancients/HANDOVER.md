@@ -1,5 +1,15 @@
 # Krator Ancients — handover
 
+## PAUSED 2026-09-29 (user stopped to save usage) — resume here
+- Merged and published: QA domestic, towers, civic, this month's arcologies (arcC). Kit artifact https://claude.ai/artifact/FSKTzZ3duwQ2zrbdEEqYYf.
+- Unmerged WIP from seven stopped agents: `voth/wip/` (README there lists each patch and its base).
+- Queue after those land: (3) arco1/arco2 alternates of every building type; (4) six ancient machines; (5) port arcology;
+  low priority: regroup kit rows by category, skyscraper stumps beside each tower, Iziz variants (Sky C tripod market,
+  small podiums), dish floating wreckage, bunker launchers pointing forward/down like intact, shrink podiums for density,
+  Yuni variants from voth/yuni/src/61-ancients.js (worn decay, ancient_quad, short comb apartments, roofed terrace stacks,
+  reclaimed dish with dish intact, 4-cylinder hospital).
+- KNOWN_ISSUES not yet ticked from qa/civic.md, qa/arcC.md (and domestic/towers if not done).
+
 ## QUEUE from the user, 2026-09-29 (in this order) — read first
 1. **DONE 2026-09-30: the Ancient Port.** Published at https://claude.ai/artifact/VwkLHv9J5apZCF4oDDFo6x
    (showcase 7.40M triangles, all invariants pass). Original notes: Foundation
