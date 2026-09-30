@@ -8,7 +8,7 @@ in gallery/README.md.
 
 Usage:  python3 gallery/build_gallery.py [--no-build]
 """
-import html, json, os, shutil, subprocess, sys
+import html, json, os, re, shutil, subprocess, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 HERE = os.path.join(ROOT, 'gallery')
@@ -45,6 +45,8 @@ ENTRIES = [
      'Every Ancients type intact beside its worn twin: whole, rust-streaked, the white skin tarnished.'),
     ('kit', 'ancient-iziz-style', 'kits/ancients/dist/iziz-style.html', 'Ancient Iziz Style',
      'The Iziz building families built the Ancient way, each intact, destroyed and rehabilitated, with the Iziz variants: cut-out apartments, offices and houses, towers on small plinths, and the tripod market.'),
+    ('kit', 'voth-catalog', 'settlements/voth/catalog/index.html', 'Voth buildings',
+     'Every Voth building on one walkable sheet: the structures the city builds, housing, manors, shops, taverns, warehouses, civic and military sets, with automatic LOD.'),
     ('kit', 'yuni-kit', 'settlements/yuni/yuni-assets.html', 'Yuni buildings', 'Every Yuni building type, laid out as a sheet.'),
     ('kit', 'yuni-furniture', 'settlements/yuni/yuni-furniture.html', 'Yuni furniture', 'The furniture catalogue, tagged by culture.'),
     ('kit', 'yuni-plants', 'settlements/yuni/yuni-plants.html', 'Yuni plants', 'The plants of Yuni\'s gardens and terraces.'),
@@ -168,6 +170,25 @@ ENTRIES = [
 ]
 
 
+THREE_CDN = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'
+
+
+def bundle(path):
+    """The page as one self-contained file: a page that loads local scripts (the Voth catalog) gets each one
+    inlined, and a local three.min.js becomes the same r128 build from cdnjs. Built worlds pass through as is."""
+    html = open(path, encoding='utf-8').read()
+    here = os.path.dirname(path)
+    def inline(m):
+        src = m.group(1)
+        if src.startswith(('http:', 'https:', '//')):
+            return m.group(0)
+        if os.path.basename(src) == 'three.min.js':
+            return '<script src="%s"></script>' % THREE_CDN
+        body = open(os.path.join(here, src.replace('%20', ' ')), encoding='utf-8').read()
+        return '<script>\n' + body.replace('</script', '<\\/script') + '\n</script>'
+    return re.sub(r'<script src="([^"]+)"></script>', inline, html)
+
+
 def main():
     if '--no-build' not in sys.argv:
         dirs = []
@@ -188,7 +209,8 @@ def main():
     items = []
     for section, slug, path, name, blurb, *rest in ENTRIES:
         src = os.path.join(ROOT, path)
-        shutil.copyfile(src, os.path.join(SITE, 'worlds', slug + '.html'))
+        with open(os.path.join(SITE, 'worlds', slug + '.html'), 'w', encoding='utf-8') as fh:
+            fh.write(bundle(src))
         items.append({'section': section, 'slug': slug, 'name': name, 'blurb': blurb,
                       'mb': round(os.path.getsize(src) / 1048576, 1), 'source': path,
                       'tag': rest[0] if rest else None})

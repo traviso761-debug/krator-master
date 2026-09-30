@@ -5808,6 +5808,7 @@ for(const k of XPALOPO_KEYS){const D=VERN.defs[k];if(!D)continue;const T=Object.
    for(let i=C.r0;i<REG.length;i++)if(!/Palopó/.test(REG[i].name))REG[i].name+=' — Palopó';}});}
 // TARGET: xanadu — rows by family (laid out by xaLayout in 90-scene.js), front (+z) toward the camera.
 const TITLE='Xanadu Building Kit';
+const XA_VARIANTS=true;   // every def at every variant, v0 first (the old separate variants page is folded in)
 const XA_EXTRA=[].filter(S=>VERN.defs[S.key]);   // whole-settlement pieces shown after the rows
 const SITES=[];
 // ---------------------------------------------------------------- scene (Xanadu showcase)
@@ -5818,8 +5819,8 @@ const XA_ROWS=[];   // {family, z, d, keys}
 // tall (a temple, the palace) the gap is widened so the previous row's camera is not behind a 40 m wall.
 const rowCamDist=w=>Math.max(40,Math.min(w*.55,260));
 const eyeCamDist=D=>Math.max(10,Math.max(D.w,D.h||0)*.9+D.d*.5);   // an eye-level camera stands this far in front of the plot centre
-const XA_ALLV=(typeof XA_VARIANTS!=='undefined')&&XA_VARIANTS;   // a target may show every def at all its variants (o.v = 1 … nv-1)
-const xaVs=k=>{if(!XA_ALLV)return[0];const n=VERN.defs[k].nv||3,out=[];for(let v=1;v<n;v++)out.push(v);return out;};
+const XA_ALLV=(typeof XA_VARIANTS!=='undefined')&&XA_VARIANTS;   // a target may show every def at all its variants (o.v = 0 … nv-1)
+const xaVs=k=>{if(!XA_ALLV)return[0];const n=VERN.defs[k].nv||3,out=[];for(let v=0;v<n;v++)out.push(v);return out;};   // every variant, v0 first
 (function xaLayout(){let z=0;const fams=XA.families();
  let prev=null;fams.forEach((F,fi)=>{const ws=F.keys.map(k=>(VERN.defs[k].w+9)*xaVs(k).length);const total=ws.reduce((a,c)=>a+c,0);
   const dmax=Math.max(...F.keys.map(k=>VERN.defs[k].d||VERN.defs[k].w)),hmax=Math.max(...F.keys.map(k=>VERN.defs[k].h||0));
@@ -5911,6 +5912,7 @@ window._api={BUDGET,REG,
  defs:()=>VERN.order.map(k=>{const D=VERN.defs[k];return{key:k,name:D.name,family:D.family,tags:D.tags,w:D.w,d:D.d,h:D.h};})};
 // TARGET: xanadu — preset views (generated per row and per building; the first entry is the opening shot)
 const VIEWS=xaAutoViews();
+BUDGET.showcase={tris:6000000,calls:600};   // every variant of everything: the old variants page's budget
 // ---------------------------------------------------------------- camera, inspector, polygon tool, walk mode
 const ctl={target:new THREE.Vector3(0,10,0),theta:0,phi:1.1,radius:120};
 function setView(cx,cy,cz,tx,ty,tz){WALK.on=false;ctl.target.set(tx,ty,tz);const dx=cx-tx,dy=cy-ty,dz=cz-tz;ctl.radius=Math.sqrt(dx*dx+dy*dy+dz*dz);ctl.theta=Math.atan2(dx,dz);ctl.phi=Math.acos(clamp(dy/ctl.radius,-1,1));}
