@@ -7,7 +7,7 @@ By default, builds should use the standard Krator skybox with gas giant and sun,
 
 When building life layer, Voth currently has the most complete example. Its pathing layer should be incorporated into all new builds as soon as life layer is being designed. It also has the most complete and comprehensive collision system which can be used as an example. 
 
-There is an included skill file, painting-to-3d-world. Read before starting a new settlement or building kit, or when making large change or expansion to existing ones. When pushing changes to the main branch, reread the skill file, and update with any useful lessons from the build, including known pitfalls, ways to overcome them, and ways to better organize and implement builds.
+There is an included skill file, painting-to-3d-world. Read before starting a new settlement or building kit, or when making large change or expansion to existing ones. When pushing changes to the main branch, reread the skill file, and update with any useful lessons from the build, including known pitfalls, ways to overcome them, and ways to better organize and implement builds. If you run into a particularly aggravating or repeat problem and solve it, note it in the file readme so future sessions without context can pick up the trick and note it in the skill file.
 
 ## Where things are
 
