@@ -18,8 +18,8 @@ function banDisc(W,H){return {R:Math.min(W*.4,H*.32),cx:W/2,cy:H>W*1.25?H*.38:H*
 function awnGeneric(o){const w=o.w||2.4,d=o.d||1.4,drop=o.drop===undefined?.5:o.drop;const c=P('cloth');const ca=pick([P('cloth'),P('tarp'),c]);
  plane4('cloth',[-w/2,0,0],[w/2,0,0],[-w/2,-drop,d],[w/2,-drop,d],.02,ca);box('cloth',0,-drop-.16,d,w,.16,.02,jc(ca,.05));
  for(const sx of [-1,1])beam('wood',[sx*(w/2-.05),-drop-.02,d-.05],[sx*(w/2-.05),-drop-(o.h||2.2)+.02,d-.05],.07,jc(0x5c4630,.06),true,6);}
-function bannerGeneric(o){const w=o.w||.8,h=o.h||2;beam('wood',[-w/2-.1,0,0],[w/2+.1,0,0],.05,jc(0x5c4630,.06),true,5);quad('cloth',0,-h/2,.03,w,h,P('cloth'));
- for(let k=0;k<4;k++)box('cloth',-w/2+w*(k+.5)/4,-h-.08,.03,w/4-.02,.16,.01,P('cloth'));}
+function bannerGeneric(o){const w=o.w||.8,h=o.h||2;beam('wood',[-w/2-.1,0,.14],[w/2+.1,0,.14],.05,jc(0x5c4630,.06),true,5);quad('cloth',0,-h/2,.16,w,h,P('cloth'));
+ for(let k=0;k<4;k++)box('cloth',-w/2+w*(k+.5)/4,-h-.08,.16,w/4-.02,.16,.01,P('cloth'));}
 function flagGeneric(o){const w=o.w||1,h=o.h||.6;beam('wood',[0,-1.6,0],[0,.3,0],.04,jc(0x4a4038,.05),true,5);quad('cloth',w/2,-h/2+.1,0,w,h,P('cloth'),0);}
 function emblemGeneric(o){const w=o.w||.9,h=o.h||.9;box('iron',0,-h/2,0,w,h,.04,P('rust'));for(const sx of [-1,1])for(const sy of [-1,1])box('iron',sx*(w/2-.07),sy*(h/2-.07),.03,.04,.04,.03,jc(0x3a3430,.04));}
 // shop signs carry a pictograph, not English: the trade text picks an icon, drawn on the board's canvas in the culture's ink colour
@@ -67,7 +67,8 @@ function mkCulture(o){const K=o.key,pole=jc(o.pole||0x7a5a38,0);
   if(cloth){const c=jc(pick(o.awn.cols),.06);plane4('cloth',[-w/2,0,0],[w/2,0,0],[-w/2,-drop,d],[w/2,-drop,d],.03,c);for(let k=0;k<Math.round(w/.4);k++)box('cloth',-w/2+.2+k*.4,-drop-.24-(k%2?.08:0),d,.34,.24+(k%2?.08:0),.02,jc(c,.08));}
   else{plane4('awn:'+K,[-w/2,0,0],[w/2,0,0],[-w/2,-drop,d],[w/2,-drop,d],.03);for(let k=0;k<Math.round(w/.3);k++){const sc=k%2;box('awn:'+K,-w/2+.15+k*.3,-drop-.2+(sc?.03:0),d,.3,.2-(sc?.03:0),.02);}}
   for(const sx of [-1,1])beam('wood',[sx*(w/2-.05),-drop-.2,d-.05],[sx*(w/2-.05),-drop-ph,d-.05],.07,pole,true,6);};
- const banner=q=>{const w=q.w||.8,h=q.h||2;beam('wood',[-w/2-.1,0,0],[w/2+.1,0,0],.05,pole,true,5);banDecal('ban:'+K,drawBan,0,-h/2,.03,w,h,0);};
+ // a banner hangs from a rod that stands proud of its pole (z=.14 clears a pole up to ~0.12 m radius), so the pole never pierces the cloth
+ const banner=q=>{const w=q.w||.8,h=q.h||2;beam('wood',[-w/2-.1,0,.14],[w/2+.1,0,.14],.05,pole,true,5);banDecal('ban:'+K,drawBan,0,-h/2,.16,w,h,0);};
  const flag=q=>{const w=q.w||1,h=q.h||.65;beam('wood',[0,-1.6,0],[0,.3,0],.04,pole,true,5);
   if(o.flagStyle==='pennant'){const c=jc(o.field,.04);poly('cloth',[[0,.35,0],[w*1.5,.1,0],[w*1.15,-.04,0],[w*1.5,-.2,0],[0,-.1,0]],c,true);}else banDecal('ban:'+K,drawBan,w/2,-h/2+.1,0,w,h,0);};
  const emblem=q=>{const w=q.w||.9;banDecal('em:'+K,drawPlate,0,-(q.h||w)/2,.03,w,q.h||w,0);};

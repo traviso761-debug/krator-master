@@ -102,3 +102,31 @@ function bottleString(a,b,n,o){o=o||{};for(let k=0;k<n;k++){const t=(k+.5)/n;con
 // water butt on stilts: a small tank + legs + downpipe
 function waterButt(x,y,z,r,h,o){o=o||{};const c=o.col===undefined?jc(pick([0x3a6a8a,0x8a4a3a,0x6a7a78,0x4d6f3c]),.06):jc(o.col,.05);for(let k=0;k<4;k++){const a=k*PI/2+PI/4;beam('wood',[x+Math.cos(a)*r*.8,0,z+Math.sin(a)*r*.8],[x+Math.cos(a)*r*.8,y,z+Math.sin(a)*r*.8],.09,jc(0x5c4630,.06));}
  cyl('sheet',x,y,z,r,h,c,12,r,true);cyl('iron',x,y+h,z,r*.9,.05,jc(0x3a3430,.05),12);cone('iron',x,y+h+.05,z,r*.95,r*.3,jc(0x4a4038,.05),12);}
+
+// ---------------------------------------------------------------- PLACEHOLDER FLORA
+// Buildings never model plants as part of themselves (README rule: a plant is its own tagged object, placed). Anything green a building wants
+// (crop rows, planter fill, a kitchen garden, a shrub by the door, moss, vines, a shade tree) is a call to plant(kind, x,y,z, opts). The default
+// draws a low-poly PLACEHOLDER; the host swaps in real biome flora by setting PLANTS.draw = function(slot){ plantFrame(slot,()=>{...}) } and every
+// plant in every building follows, with no building edited. window._api.plants() lists the slots for a swap or an audit.
+//   kind (the ROLE, the biome picks the species): 'crop' (one crop plant, o.h tall) 'crop-tall' (corn/sunflower class, o.h) 'crop-vine' (beans/vines up a support, o.h)
+//        'groundcover' (a mat filling a planter or bed, o.r radius) 'shrub' (o.r) 'flower' (o.r) 'tree' (o.h, o.r crown) 'vine-wall' (climber on a wall, o.h) 'grass' (tuft) 'moss'
+//   opts: s (scale), h, r, ry, moisture 'arid'|'mild'|'wet' (what it needs), riparian (bool), cultivated (default true), tags {..}
+const PLANTS={list:[],draw:null};
+function plantsReset(){PLANTS.list.length=0;}
+function plantFrame(slot,fn){const keep=CMS.slice();CMS.length=0;CMS.push(slot.m.clone());CM=CMS[0];try{fn();}finally{CMS.length=0;for(const m of keep)CMS.push(m);CM=CMS[CMS.length-1];}}
+const PLANT_PH=[0x5a7a3c,0x6a8a44,0x4e6e38];   // placeholder greens: muted, one family, obviously stand-ins
+function plantPlaceholder(sl){const c=jc(pick(PLANT_PH),.08),h=sl.h||1,r=sl.r||.3,k=sl.kind;
+ if(k==='crop')sph('plain',0,.2*sl.s,0,(r||.2)*sl.s,c,.75);
+ else if(k==='crop-tall'){beam('plain',[0,0,0],[0,h,0],.05*sl.s,jc(0x7a9a3c,.06),true,5);sph('plain',0,h*.85,0,.2*sl.s,c,1.4);}
+ else if(k==='crop-vine'){beam('plain',[0,0,0],[0,h*.9,0],.03*sl.s,c,true,4);sph('plain',0,h*.6,0,.16*sl.s,c,1.6);}
+ else if(k==='groundcover'){sph('plain',0,0,0,r*sl.s,c,.35);}
+ else if(k==='shrub'||k==='flower'){sph('plain',0,r*.6*sl.s,0,r*sl.s,c,.8);}
+ else if(k==='tree'){cyl('wood',0,0,0,.14*sl.s,h*.55,jc(0x6a5238,.06),6);sph('plain',0,h*.55+r*.6,0,r,c,.9);}
+ else if(k==='vine-wall'){box('plain',0,0,0,r*2,h,.08,c);}
+ else if(k==='grass'||k==='moss'){cone('plain',0,0,0,(r||.15)*sl.s,(h||.3)*sl.s,c,5);}
+ else sph('plain',0,.2,0,.2,c,1);}
+function plant(kind,x,y,z,o){o=o||{};const sl={kind,key:CURKEY,m:CM.clone().multiply(TF(x,y,z,o.ry||0)),s:o.s||1,h:o.h||0,r:o.r||0,
+ tags:Object.assign({class:'flora',role:kind,biome:'placeholder (swap for local flora)',moisture:o.moisture||'mild',riparian:!!o.riparian,cultivated:o.cultivated!==false},o.tags||{})};
+ PLANTS.list.push(sl);
+ // draw: the host's biome plant if one is installed, else the placeholder (both draw in the slot's own frame)
+ plantFrame(sl,()=>{(PLANTS.draw||plantPlaceholder)(sl);});return sl;}

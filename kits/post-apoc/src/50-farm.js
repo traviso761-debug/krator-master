@@ -217,8 +217,8 @@ function fmFarmhouse(o){
  W(-2.0,0,-6.2,0,()=>{crate(0,0,0,.6,.2);crate(.7,0,.1,.6,-.2);sacks(-.3,0,.7,5,.1);});
  // sockets
  sock('awning',sx,5.2,sz+r+.03,0,{w:2.2,d:1.4,drop:.4,h:1.9});
- beam('wood',[sx-1.0,6.6,sz+r+.3],[sx+1.0,6.6,sz+r+.3],.08,jc(0x5c4630,.06));for(const s of [-1,1])beam('wood',[sx+s*.9,6.5,sz+r+.3],[sx+s*.9,6.2,sz+r-.1],.05,jc(0x5c4630,.06));
- sock('banner',sx,6.6,sz+r+.34,0,{w:.9,h:2.4});
+ beam('wood',[sx-1.0,7.7,sz+r+.3],[sx+1.0,7.7,sz+r+.3],.08,jc(0x5c4630,.06));for(const s of [-1,1])beam('wood',[sx+s*.9,7.6,sz+r+.3],[sx+s*.9,7.3,sz+r-.1],.05,jc(0x5c4630,.06));
+ sock('banner',sx,7.7,sz+r+.34,0,{w:.9,h:1.6});   // hangs 7.7 -> 6.1: clear of the awning (top 5.2)
  beam('wood',[sx,sh+1.2,sz],[sx,10.4,sz],.05,jc(0x4a4038,.05),true,5);sock('flag',sx,10.4,sz,0,{w:1.2,h:.7});
  sock('emblem',hx1+.05,4.3,-1.5,PI/2,{w:1.0,h:1.0});sock('paint',hx1+.02,1.2,-1.5,PI/2,{w:2.5,h:1.8});
 }
