@@ -45,6 +45,8 @@ ENTRIES = [
      'Every Ancients type intact beside its worn twin: whole, rust-streaked, the white skin tarnished.'),
     ('kit', 'ancient-iziz-style', 'kits/ancients/dist/iziz-style.html', 'Ancient Iziz Style',
      'The Iziz building families built the Ancient way, each intact, destroyed and rehabilitated, with the Iziz variants: cut-out apartments, offices and houses, towers on small plinths, and the tripod market.'),
+    ('kit', 'ringsea-craft', 'kits/ringsea/dist/ringsea.html', 'Ring Sea watercraft',
+     'Twelve vessels of the Ring Sea rowing at anchor: a Voth trireme, an Iron Republic turtle ship, the Xanadu swan barge, a Yuni junk, canoes, outriggers and raiders.'),
     ('kit', 'voth-catalog', 'settlements/voth/catalog/index.html', 'Voth buildings',
      'Every Voth building on one walkable sheet: the structures the city builds, housing, manors, shops, taverns, warehouses, civic and military sets, with automatic LOD.'),
     ('kit', 'yuni-kit', 'settlements/yuni/yuni-assets.html', 'Yuni buildings', 'Every Yuni building type, laid out as a sheet.'),
