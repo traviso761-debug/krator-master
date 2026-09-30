@@ -133,3 +133,26 @@ function plant(kind,x,y,z,o){o=o||{};const sl={kind,key:CURKEY,m:CM.clone().mult
  PLANTS.list.push(sl);
  // draw: the host's biome plant if one is installed, else the placeholder (both draw in the slot's own frame)
  plantFrame(sl,()=>{(PLANTS.draw||plantPlaceholder)(sl);});return sl;}
+
+// ---------------------------------------------------------------- TYRE FURNITURE (stools, chairs, tables): stacked tyres, woven cord, timber frames
+// After the reference photos: two tyres stacked make a seat with a lattice of cord over the hole; a chair adds a tyre standing on edge as the backrest
+// (cord net inside it) in a timber frame with arms; a table is a tyre with a round wooden top. Cords stay in muted rope colours (ochre, olive, faded orange, dirty white).
+// All draw in the current frame, facing +z, base on y; pass ry to turn them. o: {n: tyres in the seat stack, wood: hex, cord: hex}
+const TYRE_CORDS=[0xa8892a,0x6a7a3a,0x9a5a2a,0xb8b0a0];
+function tireWeave(cx,cy,cz,r,cord,n,plane){n=n||5;const c=jc(cord,.05);for(let i=-n+1;i<n;i++){const off=i*r/n,h=Math.sqrt(Math.max(0,r*r-off*off));if(h<.03)continue;
+ if(plane==='v'){box('plain',cx,cy+off-.008,cz,2*h,.018,.018,c);box('plain',cx+off-.008,cy-h,cz,.018,2*h,.018,c);}
+ else{box('plain',cx,cy,cz+off-.008,2*h,.018,.018,c);box('plain',cx+off-.008,cy,cz-h,.018,.018,2*h,c);}}}
+function tireStool(x,y,z,o){o=o||{};const n=o.n||2,R=TYR.R,t=TYR.t,cord=o.cord||pick(TYRE_CORDS);for(let k=0;k<n;k++)tire(x,y+.12+k*.235,z,R,t,undefined,rng()*TAU);
+ cyl('cloth',x,y+.02,z,R-t*1.1,n*.235-.1,jc(0x4a4034,.05),10);tireWeave(x,y+n*.235-.01,z,R-t,cord,5,'h');}   /* a sack-cloth pad in the hole, the cord lattice across the tyre top */
+function tireChair(x,y,z,ry,o){o=o||{};W(x,y,z,ry||0,()=>{const wc=jc(o.wood||pick([0x5a2a24,0xa88a5e,0x7a5236]),.06),n=o.n||2,R=TYR.R,t=TYR.t,cord=o.cord||pick(TYRE_CORDS),sy=n*.235;
+  tireStool(0,0,0,{n:n,cord:cord});
+  /* backrest: a tyre on edge behind the seat, cord net inside, held by two posts that run to the ground */
+  const bz=-.36,by=sy+.42;tire(0,by,bz,R*1.12,t,undefined,0,PI/2,0);tireWeave(0,by,bz,(R*1.12-t)*.98,cord,5,'v');
+  for(const sx of [-1,1]){beam('wood',[sx*.46,0,bz-.02],[sx*.46,by+.62,bz-.02],.06,wc,true,6);   /* back posts */
+   beam('wood',[sx*.46,sy+.04,bz],[sx*.5,sy+.3,.42],.055,wc,true,5);                              /* arm rails, sloping to the front */
+   beam('wood',[sx*.5,0,.4],[sx*.5,sy+.3,.4],.055,wc,true,5);}                                     /* front arm posts */
+  beam('wood',[-.46,by+.6,bz-.02],[.46,by+.6,bz-.02],.035,wc,true,5);beam('wood',[-.46,sy-.02,bz-.02],[.46,sy-.02,bz-.02],.035,wc,true,5);});}
+function tireTable(x,y,z,o){o=o||{};const wc=jc(o.wood||0x7a5236,.06),n=o.n||1,R=TYR.R*1.15,t=TYR.t*1.1,top=n*.24+.25;
+ for(const k of [0,1].slice(0,n))tire(x,y+.13+k*.24,z,R,t,undefined,rng()*TAU);
+ for(const a of [.6,2.2,3.8,5.4])beam('wood',[x+Math.cos(a)*(R+.02),y,z+Math.sin(a)*(R+.02)],[x+Math.cos(a)*(R+.02),y+top,z+Math.sin(a)*(R+.02)],.05,wc,true,6);
+ cyl('wood',x,y+top,z,R+.1,.05,wc,14);}

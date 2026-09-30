@@ -21,7 +21,7 @@ function lgPost(x,z,y1,y0,w){beam('iron',[x,y0||0,z],[x,y1,z],w||.12,jc(0x4a4038
 // roof water tank on a little stand
 function lgTank(x,y,z,r,h,col){for(let k=0;k<4;k++){const a=k*PI/2+PI/4;beam('iron',[x+Math.cos(a)*r*.75,y,z+Math.sin(a)*r*.75],[x+Math.cos(a)*r*.75,y+.9,z+Math.sin(a)*r*.75],.09,jc(0x4a4038,.05));}
  box('plank',x,y+.9,z,r*2.1,.1,r*2.1,jc(0x5c4630,.06));cyl('sheet',x,y+1.0,z,r,h,jc(col||0x3a6a8a,.05),12,r,true);cyl('iron',x,y+1.0+h*.5,z,r+.04,.08,jc(0x3a3430,.05),12);
- cone('iron',x,y+1.0+h,z,r*.95,r*.3,jc(0x4a4038,.05),12);beam('iron',[x+r,y+1.0,z],[x+r+.5,y+.1,z],.05,jc(0x4a4038,.05),true,5);}
+ cone('iron',x,y+1.0+h,z,r*.95,r*.3,jc(0x4a4038,.05),12);beam('iron',[x+r,y+1.0,z],[x+r+.5,y+.03,z],.05,jc(0x4a4038,.05),true,5);}
 // satellite dish on a pole, aimed by ry
 function lgDish(x,y,z,ry,r){r=r||.85;beam('iron',[x,y,z],[x,y+1.3,z],.08,jc(0x6a6a66,.05),true,6);W(x,y+1.5,z,ry,()=>{cylH('iron',0,0,0,r,.1,jc(0xdcd8cc,.04),'z',14);cylH('iron',0,0,.06,r*.97,.03,jc(0xb8b4a8,.04),'z',14);
  beam('iron',[0,0,0],[0,.4,r*.85],.03,jc(0x3a3430,.04),true,4);sph('iron',0,.4,r*.85,.09,jc(0x3a3430,.04));beam('iron',[0,-.3,-.05],[0,-1.5+0,-.05],.05,jc(0x4a4038,.05),true,5);});}
@@ -125,65 +125,101 @@ function lgTwinSilo(o){
  for(const px of [-4.3,4.3]){beam('wood',[px,py,fz+2.7],[px,py+3.6,fz+2.7],.09,jc(0x5c4630,.06),true,6);sock('banner',px,py+3.5,fz+2.75,0,{w:.7,h:2.2});}
  sock('emblem',-1.4,hy+.8,fz+.34,0,{w:.9,h:.9});sock('emblem',1.4,hy+.8,fz+.34,0,{w:.9,h:.9});sock('paint',-sx,7.7,sz+r+.02,0,{w:2.4,h:.9});sock('paint',sx,7.7,sz+r+.02,0,{w:2.4,h:.9});}
 
-// ================================================================== lg-bulkhead: an Ancient bulkhead behind a deep portico, buttressed, crowned, with wings that wrap forward round a tyre courtyard
-defBuilding({key:'lg-bulkhead',name:'Bulkhead manor',seed:4230,tags:{type:['multi-family dwelling'],size:'large',core:'arcology bulkhead',materials:['ancient ceramic','container','plank','tyres','sheet metal']},w:26,d:24,h:17,build:lgBulkhead});
+// a proper well: tyre ring, dark recessed shaft, timber frame with windlass, rope, bucket and a little roof
+function lgWell(cx,cz){const R=.9,rope=jc(0x8a7a5a,.05),wd=jc(0x5c4630,.06);
+ tireRing(cx,cz,R,3,0,TAU);
+ sector('plain',cx,cz,.5,.68,0,TAU,.03,.62,jc(0x14100c,.02));                                  // dark shaft lining
+ cyl('plain',cx,.03,cz,.66,.02,jc(0x0a1216,.02),16);                                            // black water, far below the rim
+ sector('conc',cx,cz,.66,1.25,0,TAU,.64,.74,jc(0x9a9488,.05));                                  // stone rim
+ for(const sx of [-1,1]){beam('wood',[cx+sx*1.15,0,cz],[cx+sx*1.15,2.5,cz],.13,wd,true,7);beam('wood',[cx+sx*1.15,.5,cz+.5],[cx+sx*1.15,1.9,cz],.07,wd,true,5);beam('wood',[cx+sx*1.15,.5,cz-.5],[cx+sx*1.15,1.9,cz],.07,wd,true,5);}
+ cylH('wood',cx,2.3,cz,.1,2.3,jc(0x7a5c3c,.06),'x',8);cylH('plain',cx,2.3,cz,.2,.5,rope,'x',8);
+ beam('iron',[cx+1.2,2.3,cz],[cx+1.6,2.3,cz],.04,jc(0x3a3430,.05),true,5);beam('iron',[cx+1.6,2.3,cz],[cx+1.6,1.95,cz+.28],.04,jc(0x3a3430,.05),true,5);sph('wood',cx+1.6,1.93,cz+.3,.06,wd);
+ beam('plain',[cx,2.15,cz],[cx,1.05,cz],.02,rope,true,4);cyl('sheet',cx,.78,cz,.19,.28,jc(0x8a6a44,.06),10,.17);cyl('iron',cx,.78+.26,cz,.2,.03,jc(0x3a3430,.05),10);beam('iron',[cx-.19,1.06,cz],[cx+.19,1.06,cz],.02,jc(0x3a3430,.05),true,3);
+ lgGable(cx,2.55,cz,2.7,1.7,.65,{ov:.15,col:0xb85a3a,col2:0xc99a2e});}
+
+// ================================================================== lg-bulkhead: an Ancient bulkhead fronting a real three-storey house, deep portico, buttresses, attic and wings round a courtyard
+defBuilding({key:'lg-bulkhead',name:'Bulkhead manor',seed:4230,tags:{type:['multi-family dwelling'],size:'large',core:'arcology bulkhead',materials:['ancient ceramic','container','plank','tyres','sheet metal']},w:26,d:28,h:18,build:lgBulkhead});
 function lgBulkhead(o){
  const bz=-6,bh=9.6,fz=bz+.45+.16,dz=fz+.08,cw=jc(0xcfccc4,.03),cw2=jc(0xb8b4aa,.04),cw3=jc(0xa8a498,.04);
- W(0,0,bz,0,()=>bulkhead({w:14,h:bh,th:.9,hatch:o.v===1?'door':'round'}));
- // ---- projecting portico with a deep reveal: side walls, two tall columns, entablature, cornice, roof slab with a parapet, steps
- const pw=4.7,pd=3.4,ph=8.2;
- box('conc',0,0,dz+pd/2,2*pw+1.8,.3,pd+.4,cw2);
- for(let k=0;k<3;k++)box('conc',0,0,dz+pd+.2+k*.5,2*pw+.8+k*.7,.12+ (2-k)*.1,.5,cw2);
- for(const sx of [-1,1]){box('conc',sx*(pw-.55),.3,dz+(pd-1.0)/2,.7,ph-.3,pd-1.0,cw);                                  // reveal wall
-  cyl('conc',sx*pw,.3,dz+pd-.5,.62,.3,cw2,16);cyl('conc',sx*pw,.6,dz+pd-.5,.5,ph-.9,cw,16);cyl('conc',sx*pw,ph-.3,dz+pd-.5,.66,.3,cw2,16);box('conc',sx*pw,ph,dz+pd-.5,1.4,.25,1.4,cw2);
-  box('conc',sx*(pw+1.7),0,dz+pd/2-.2,1.3,ph+.6,pd-.4,cw);box('conc',sx*(pw+1.7),ph+.6,dz+pd/2-.2,1.6,.3,pd,cw2);}    // outer buttress piers of the portico
- box('conc',0,ph+.25,dz+pd/2,2*pw+3.4,.8,pd-.3,cw);box('conc',0,ph+1.05,dz+pd/2+.15,2*pw+4.2,.3,pd+.5,cw2);
- for(let k=0;k<9;k++)box('conc',-pw-1.9+k*(2*pw+3.8)/8,ph+.25,dz+pd-.15,.22,.3,.2,cw3);                                    // dentils
- // portico roof: parapet with a sheet-and-plank lookout
- for(const sz of [1]){box('conc',0,ph+1.35,dz+pd+.05,2*pw+3.6,.55,.25,cw2);}
- for(const sx of [-1,1])box('conc',sx*(pw+1.9),ph+1.35,dz+pd/2,.25,.55,pd,cw2);
- // ---- buttresses flanking the portico, stepped caps
- for(const sx of [-1,1]){box('conc',sx*6.6,0,dz+.75,1.1,bh-.2,1.5,cw);box('conc',sx*6.6,bh-.6,dz+.8,1.4,.3,1.8,cw2);box('conc',sx*6.6,bh-.2,dz+.8,1.15,.5,1.55,cw);cone('conc',sx*6.6,bh+.3,dz+.8,.5,.9,cw2,4);}
- // ---- cornice, and an attic pavilion set back on the crown of the bulkhead with a hipped sheet roof
- box('conc',0,bh-.35,dz-.05,15.2,.35,1.3,cw2);
- box('conc',0,bh+.3,bz-.35,7.2,2.6,2.2,cw);box('conc',0,bh+2.9,bz-.35,8.0,.3,2.9,cw2);
- lgGable(0,bh+3.2,bz-.35,7.4,2.4,1.7,{ov:.5,col:0xb85a3a,col2:0xc99a2e});
- for(const x of [-2.4,2.4])win(x,bh+1.0,bz+.75,1.0,1.1,{lit:o.v===1});
- for(const sx of [-1,1])cone('conc',sx*3.7,bh+3.2,bz-1.2,.25,1.0,cw2,5);
- // ---- side wings wrap forward: a U of containers running front-back, with a tower stack and a roof terrace on the west
- const Cw=[0xa83a2c,0x2f7f8e,0xd8a020,0x4d6f3c,0x2f5f8f],zc=1.6;
- lgBox(-8.6,0,zc,PI/2,CT.L40,Cw[0],()=>{door(-4,.16,1.22,1.0,2.0,{step:true});win(-1.6,1.05,1.22,1.2,.9,{lit:true});porthole(1,1.4,1.22,.32);porthole(2.2,1.4,1.22,.32);win(4.4,1.05,1.22,.9,.9,{bars:true});});
- lgBox(-8.6,CT.H,zc,PI/2,CT.L40,Cw[1],()=>{win(-3.4,1.05,1.22,1.2,1.0,{shutters:true});porthole(-1,1.4,1.22,.34);porthole(.4,1.4,1.22,.34);win(2.6,1.05,1.22,1.2,1.0);});
- lgBox(-8.6,CT.H*2,4.6,PI/2,CT.L20,Cw[3],()=>{win(-1.2,1.05,1.22,1.2,1.0,{lit:true});porthole(1.4,1.4,1.22,.32);door(3.0,.16,1.22,.95,1.95,{step:false});});   // tower box, door end faces the terrace (north)
- lgBox(8.6,0,zc,-PI/2,CT.L40,Cw[2],()=>{door(-4,.16,1.22,1.0,2.0,{step:true});win(-1.6,1.05,1.22,1.2,.9);porthole(1,1.4,1.22,.32);porthole(2.2,1.4,1.22,.32);win(4.4,1.05,1.22,.9,.9,{lit:o.v===1});});
- lgBox(8.6,CT.H,4.6,-PI/2,CT.L20,Cw[4],()=>{win(-1.2,1.05,1.22,1.2,1.0);porthole(1.4,1.4,1.22,.32);porthole(2.4,1.4,1.22,.32);});
- lgTank(8.6,CT.H+.06,-2.4,.8,1.2,0x3a6a8a);stovepipe(8.6,CT.H+.06,-4.0,1.2);lgSolar(8.6,CT.H+.1,.2,2.2,1.2,0,.5);
- // tower caps: hipped sheet roof on the west tower, flag pole
+ W(0,0,bz,0,()=>bulkhead({w:14,h:bh,th:.9,hatch:o.v===1?'round':'door'}));
+ if(o.v!==1)door(0,.3,bz-.35,2.0,3.05,{step:false,col:0x7a2e28});                                  // the main entrance: a door in the great doorway, facing +z
+ // ---- the house behind the facade: a solid three-storey block (plank and sheet over an earth core), floors at .3 / 3.6 / 6.9, roofed and parapeted
+ const zc=-10.5,dep=8.1,F=[.3,3.6,6.9],SB=3.3,sc=o.v===1?[0x3b7f8e,0xc99a2e,0x8a4a2a]:[0x8a4a2a,0x3b7f8e,0xc99a2e];
+ box('earth',0,0,zc,14,9.9,dep,jc(0xa89880,.05));
+ for(let s=0;s<3;s++){patchWall(7.05,F[s],zc,dep,SB,PI/2,{col:sc[s]});patchWall(-7.05,F[s],zc,dep,SB,-PI/2,{col:sc[(s+1)%3]});patchWall(0,F[s],zc-dep/2-.05,14,SB,PI,{col:sc[s]});
+  box('plank',0,F[s]-.18,zc,14.5,.36,dep+.4,jc(0x4a3a2c,.06));}
+ // parapet, roof sheet, plant on the block roof
+ box('sheet',0,9.85,zc,13.8,.1,dep-.2,jc(0x8a4a2a,.06));for(const sx of [-1,1])box('conc',sx*6.85,9.9,zc,.35,.9,dep,cw2);box('conc',0,9.9,zc-dep/2+.1,14,.9,.35,cw2);
+ for(const [x,z] of [[-6,-8.3],[6,-8.3],[-6,-12.7],[6,-12.7]]){box('earth',x,9.9,z,1.0,3.4,1.0,jc(0xa8503a,.06));box('conc',x,13.3,z,1.25,.2,1.25,jc(0x6a6660,.05));}
+ lgTank(-6,9.9,-10.5,.8,1.3,0x3a6a8a);lgDish(6,9.9,-10.5,.5,.7);stovepipe(-6.2,9.9,-14.0,1.4);stovepipe(6.2,9.9,-14.0,1.2);
+ // attic: solid, with a gable roof running front-to-back, windows on every face
+ const az=-9.65,ad=8.8;box('conc',0,9.9,az,10,2.8,ad,cw);box('conc',0,12.5,az,10.8,.3,ad+.6,cw2);
+ for(let k=0;k<5;k++){box('conc',-4.6+k*2.3,12.2,-5.2,.5,.3,.3,cw3);}
+ W(0,12.8,az,PI/2,()=>lgGable(0,0,0,ad+.6,10,1.9,{ov:.5,col:0xb85a3a,col2:0xc99a2e}));
+ for(const x of [-2.8,2.8])win(x,10.8,-5.2,1.0,1.1,{lit:o.v===1});
+ for(const s of [-1,1])for(const z of [-7.6,-9.65,-11.7])W(s*5.03,0,z,s*PI/2,()=>win(0,10.7,0,.9,1.0,{lit:z>-9}));
+ for(const x of [-2.4,2.4])W(x,0,-14.08,PI,()=>win(0,10.7,0,.9,1.0,{}));
+ // ---- side and rear faces: doors, windows, balconies, steel stairs, ladders, brackets, awnings
+ for(let s=0;s<3;s++){const sill=F[s]+1.0;
+  for(const sd of [-1,1]){for(const z of [-7.6,-13.3])W(sd*7.1,0,z,sd*PI/2,()=>win(0,sill,0,1.0,1.2,{lit:(s+z)%3===0,shutters:s===1}));
+   if(s===0)W(sd*7.1,0,-10.5,sd*PI/2,()=>door(0,F[0],0,1.0,2.2,{step:true,col:sd<0?0x2f5f8f:0x4d6f3c}));
+   else W(sd*7.1,0,-10.5,sd*PI/2,()=>door(0,F[s],0,1.0,2.1,{step:false}));}
+  for(const x of [-5.2,-2.6,2.6,5.2])W(x,0,zc-dep/2-.03,PI,()=>win(0,sill,0,1.0,1.2,{lit:(s+x)%2===0}));
+  if(s===2)W(0,0,zc-dep/2-.03,PI,()=>win(0,sill,0,1.2,1.2,{lit:true}));}
+ W(0,0,zc-dep/2-.03,PI,()=>door(0,F[0],0,1.1,2.2,{step:true,col:0x7a2e28}));
+ for(const sd of [-1,1]){const xo=sd*7.9,xr=sd*8.7,ry=sd>0?PI/2:-PI/2,rl=sd>0?['r','b']:['l','b'];
+  deck(xo,F[1],-10.5,1.7,3.8,{rail:rl,posts:false});deck(xo,F[2],-11.1,1.7,2.6,{rail:sd>0?['r','f','b']:['l','f','b'],posts:false});
+  for(const z of [-12.1,-10.5,-8.9])beam('iron',[sd*7.05,F[1]-1.0,z],[xr-sd*.02,F[1]-.12,z],.06,jc(0x4a4038,.05),true,5);
+  for(const z of [-12.0,-10.2])beam('iron',[sd*7.05,F[2]-1.0,z],[xr-sd*.02,F[2]-.12,z],.06,jc(0x4a4038,.05),true,5);
+  lgPost(xr,-12.3,F[1]-.12,0,.12);lgPost(xr,-9.3,F[1]-.12,0,.12);lgPost(xr,-12.2,F[2]-.12,F[1],.1);lgPost(xr,-9.9,F[2]-.12,F[1],.1);
+  stairs(sd*8.3,0,-5.0,sd*8.3,F[1],-8.6,1.1,{steel:true});ladder(sd*7.35,F[1],-9.5,F[2]-F[1],ry);
+  lgAwn(sd*7.05,F[2]+2.5,-11.1,ry,1.8,1.2,.4);}
+ deck(0,F[1],zc-dep/2-.85,7.0,1.7,{rail:['l','r','b'],posts:false});
+ for(const x of [-3,0,3])beam('iron',[x,F[1]-1.0,zc-dep/2],[x,F[1]-.12,zc-dep/2-1.7],.06,jc(0x4a4038,.05),true,5);
+ for(const x of [-3.4,3.4])lgPost(x,zc-dep/2-1.65,F[1]-.12,0,.12);
+ lgAwn(0,2.8,zc-dep/2-.02,PI,2.4,1.2,.4);
+ // ---- projecting portico with a deep reveal: chunky side walls, two heavy columns, outer piers, entablature, cornice, parapet, steps
+ const pw=4.7,pd=3.8,ph=8.2;
+ box('conc',0,0,dz+pd/2,2*pw+2.2,.3,pd+.4,cw2);
+ for(let k=0;k<3;k++)box('conc',0,0,dz+pd+.2+k*.5,2*pw+1.0+k*.7,.12+(2-k)*.1,.5,cw2);
+ for(const sx of [-1,1]){box('conc',sx*(pw-.5),.3,dz+(pd-1.2)/2,.9,ph-.3,pd-1.2,cw);
+  cyl('conc',sx*pw,.3,dz+pd-.7,.9,.3,cw2,18);cyl('conc',sx*pw,.6,dz+pd-.7,.75,ph-.9,cw,18);cyl('conc',sx*pw,ph-.3,dz+pd-.7,.9,.3,cw2,18);box('conc',sx*pw,ph,dz+pd-.7,1.9,.3,1.9,cw2);
+  box('conc',sx*(pw+1.9),0,dz+pd/2-.2,1.8,ph+.6,pd-.4,cw);box('conc',sx*(pw+1.9),ph+.6,dz+pd/2-.2,2.1,.3,pd,cw2);}
+ box('conc',0,ph+.3,dz+pd/2,2*pw+4.4,.9,pd-.3,cw);box('conc',0,ph+1.2,dz+pd/2+.15,2*pw+5.4,.35,pd+.5,cw2);
+ for(let k=0;k<10;k++)box('conc',-pw-2.3+k*(2*pw+4.6)/9,ph+.3,dz+pd-.15,.26,.3,.22,cw3);
+ box('conc',0,ph+1.55,dz+pd+.05,2*pw+5.2,.6,.3,cw2);for(const sx of [-1,1])box('conc',sx*(pw+2.5),ph+1.55,dz+pd/2,.3,.6,pd,cw2);
+ // ---- chunky buttresses flanking the portico, stepped caps
+ for(const sx of [-1,1]){box('conc',sx*6.4,0,dz+1.1,1.5,bh-.2,2.2,cw);box('conc',sx*6.4,bh-.8,dz+1.15,1.8,.35,2.5,cw2);box('conc',sx*6.4,bh-.45,dz+1.15,1.55,.55,2.25,cw);cone('conc',sx*6.4,bh+.1,dz+1.15,.6,1.1,cw2,4);}
+ box('conc',0,bh-.35,dz-.05,15.4,.35,1.5,cw2);
+ // ---- side wings wrap forward: a U of containers, doors centred on their faces with steps, awnings on braces
+ const Cw=[0xa83a2c,0x2f7f8e,0xd8a020,0x4d6f3c,0x2f5f8f],zw=1.6;
+ const wing=(x,ry,c0,c1)=>{lgBox(x,0,zw,ry,CT.L40,c0,()=>{door(0,.16,1.22,1.0,2.0,{step:true});win(-3.6,1.05,1.22,1.2,.9,{lit:true});win(3.6,1.05,1.22,1.2,.9,{bars:true});porthole(-1.7,1.4,1.22,.32);porthole(1.7,1.4,1.22,.32);});
+  lgBox(x,CT.H,zw,ry,CT.L40,c1,()=>{win(-3.6,1.05,1.22,1.2,1.0,{shutters:true});win(3.6,1.05,1.22,1.2,1.0);porthole(-1.2,1.4,1.22,.34);porthole(1.2,1.4,1.22,.34);});};
+ wing(-8.6,PI/2,Cw[0],Cw[1]);wing(8.6,-PI/2,Cw[2],Cw[3]);
+ lgBox(-8.6,CT.H*2,4.6,PI/2,CT.L20,Cw[3],(len)=>{win(-1.2,1.05,1.22,1.2,1.0,{lit:true});porthole(1.4,1.4,1.22,.32);W(len/2+.02,0,0,PI/2,()=>door(0,.16,0,.95,1.95,{step:false}));});
+ lgBox(8.6,CT.H*2,4.6,-PI/2,CT.L20,Cw[4],()=>{win(-1.2,1.05,1.22,1.2,1.0);porthole(1.4,1.4,1.22,.32);porthole(2.4,1.4,1.22,.32);});
+ lgTank(8.6,CT.H*2+.06-CT.H+0,-2.4,.8,1.2,0x3a6a8a);stovepipe(8.6,CT.H+.06,-4.0,1.2);lgSolar(8.6,CT.H+.1,.2,2.2,1.2,0,.5);
  lgGable(-8.6,CT.H*3+.05,4.6,2.6,6.0,1.0,{ov:.2,col:0xc45a30,col2:0xc45a30});
- // plank rear hall behind the bulkhead
- patchWall(0,0,-11.8,12,3.2,0);patchWall(-6,0,-9.2,5.2,3.2,PI/2);patchWall(6,0,-9.2,5.2,3.2,PI/2);
- lgGable(0,3.2,-9.4,12.2,5.4,1.6,{ov:.4,col:0x9a5a3a,col2:0xc99a2e});win(-3,1.2,-8.9,1.0,1.0,{});door(2,0,-11.75,1.1,2.1,{step:false});
- // (junk is lashed to the wings and yard: the ceramic stays clean and grand)
- // ---- courtyard: tyre wall with a gate, well, fire, planters
+ lgAwn(-7.38,2.7,zw,PI/2,2.0,1.1,.4);lgAwn(7.38,2.7,zw,-PI/2,2.0,1.1,.4);
+ // ---- courtyard: tyre wall with a gate, a real well, fire, planters
  const wz=10.6;tireWall(-7.6,wz,-1.9,wz,5);tireWall(1.9,wz,7.6,wz,5);
  for(const s of [-1,1]){beam('wood',[s*1.9,0,wz],[s*1.9,3.2,wz],.16,jc(0x5c4630,.06),true,7);}beam('wood',[-1.9,3.1,wz],[1.9,3.1,wz],.14,jc(0x5c4630,.06),true,7);
  tireWall(-7.6,wz,-7.6,8.6,5);tireWall(7.6,wz,7.6,8.6,5);
- fire(-1.5,.02,4.2,.6);tireRing(3.6,4.6,1.1,3,0,TAU);cyl('plain',3.6,.5,4.6,.9,.22,jc(0x3a6a70,.04),12);
+ fire(-1.5,.02,4.2,.6);lgWell(3.6,4.6);
  for(const sx of [-3.2,-.4])box('plank',sx,.32,6.4,1.6,.1,.4,P('woodD'));
  tireRing(-4.4,8.4,.8,2,0,TAU);plant('groundcover',-4.4,.5,8.4,{r:.6,moisture:'mild'});tireRing(4.6,8.4,.8,2,0,TAU);plant('groundcover',4.6,.5,8.4,{r:.6,moisture:'mild'});
- // ---- west roof terrace on the 2-high wing: reached by a steel stair that ends on the deck edge; deck sits on posts + wall brackets
+ // ---- west roof terrace on the 2-high wing: reached by a steel stair that ends on the deck edge
  const ty=CT.H*2+.06;deck(-8.0,ty,-1.5,4.6,6.0,{rail:['l','r','b'],posts:false});
  lgPost(-5.85,-4.3,ty-.1,0);lgPost(-5.85,1.2,ty-.1,0);stairs(-6.6,0,6.6,-6.6,ty,1.5,1.1,{steel:true});
  for(const bz2 of [-3.5,-.5])beam('iron',[-7.38,ty-1.2,bz2],[-5.85,ty-.12,bz2],.06,jc(0x4a4038,.05),true,5);
  lgTank(-9.3,ty,-3.6,.8,1.3,0x8a4a3a);lgDish(-6.5,ty,-3.9,.5);lgSolar(-7.9,ty+.05,-2.3,2.4,1.2,0,.5);
  lgTarp(-8.0,ty+2.3,-2.5,3.0,2.0,.4);for(const dx of [-1.5,1.5]){beam('wood',[-8.0+dx,ty,-2.5],[-8.0+dx,ty+2.3,-2.5],.07,jc(0x5c4630,.06),true,5);beam('wood',[-8.0+dx,ty,-.5],[-8.0+dx,ty+1.9,-.5],.07,jc(0x5c4630,.06),true,5);}
- junkPile(11.6,-5.0,1.5,9);barrel(11.6,0,6.4);barrel(12.0,0,6.9);tireStack(11.8,8.4,4);crate(5.6,0,5.6,.7,.3);lamp(-5.6,0,8.4,3.4);lamp(5.6,0,8.4,3.4);
- // ---- sockets
- sock('emblem',-(pw-.55)+.36,4.6,dz+1.2,PI/2,{w:1.5,h:1.5});sock('emblem',(pw-.55)-.36,4.6,dz+1.2,-PI/2,{w:1.5,h:1.5});sock('emblem',0,bh+1.6,bz+.78,0,{w:1.3,h:1.3});
+ junkPile(11.6,-2.0,1.5,9);barrel(11.6,0,6.4);barrel(12.0,0,6.9);tireStack(11.8,8.4,4);crate(5.6,0,5.6,.7,.3);lamp(-5.6,0,8.4,3.4);lamp(5.6,0,8.4,3.4);
+ // ---- sockets: emblems on the reveal walls and attic front, banners on their own free poles in the court (clear of columns, steps, awnings), flag on the attic ridge
+ sock('emblem',-(pw-.5)+.46,4.6,dz+1.2,PI/2,{w:1.5,h:1.5});sock('emblem',(pw-.5)-.46,4.6,dz+1.2,-PI/2,{w:1.5,h:1.5});sock('emblem',0,10.9+.6,-5.17,0,{w:1.3,h:1.3});
  sock('paint',-7.36,CT.H+1.3,-4.7,PI/2,{w:1.8,h:1.0});
- for(const s of [-1,1]){lgPost(s*(pw+1.9),dz+pd-.3,ph+3.6,ph+.6,.1);sock('banner',s*(pw+1.9),ph+3.5,dz+pd-.24,0,{w:.9,h:3});}
- beam('iron',[0,bh+4.6,bz-.35],[0,bh+7.0,bz-.35],.07,jc(0x4a4038,.05),true,5);sock('flag',0,bh+7.0,bz-.35,0,{w:1.4,h:.8});
- lgAwn(-7.38,2.6,5.6,PI/2,1.6,1.1,.4);lgAwn(7.38,2.6,-2.4,-PI/2,1.6,1.1,.4);sock('awning',2,2.65,-11.86,PI,{w:2.4,d:1.4,drop:.5,h:2.15});}
+ for(const s of [-1,1]){const bx=s*5.9,bzp=dz+pd+3.4;beam('wood',[bx,0,bzp],[bx,8.3,bzp],.16,jc(0x5c4630,.06),true,7);sock('banner',bx,8.1,bzp,0,{w:.9,h:3.2});}
+ beam('iron',[0,14.6,-5.7],[0,17.0,-5.7],.07,jc(0x4a4038,.05),true,5);sock('flag',0,17.0,-5.7,0,{w:1.4,h:.8});}
 
 // ================================================================== lg-tanktower: a vertical tank wrapped in plank storeys
 defBuilding({key:'lg-tanktower',name:'Tank-tower tenement',seed:4240,tags:{type:['multi-family dwelling'],size:'large',core:'storage tank',materials:['tank','plank','sheet metal','pipes']},w:18,d:16,h:21,build:lgTankTower});
@@ -205,8 +241,8 @@ function lgTankTower(o){
   if(s>=1)W(x1+.05,0,s%2?-1.1:3.9,PI/2,()=>door(0,U(s),0,1.0,2.0,{step:false}));       // the door onto this floor's stair landing
   if(s>0){deck((x0+x1)/2,U(s),z1+.85,5.4,1.5,{rail:['f','l','r'],posts:false});for(const px of [x0+1.4,x1-2.6])beam('wood',[px,y-.6,z1-.05],[px,U(s)-.1,z1+1.5],.08,jc(0x5c4630,.06));}
   lgRoof('corr',x0-.2,x1+.2,z1+.5,y+h+.05,z1-.1,y+h+.55,.05,jc(pick([0xd06a30,0xa8acac,0x2f5f8f,0xc99a2e]),.05));
-  if(s>=1){const R=tr+.9,a0=PI*.62,a1=PI*1.18;sector('plank',tx,tz,tr+.05,R,a0,a1,y,y+h,jc(col,.06));sector('plank',tx,tz,R-.02,R+.12,a0,a1,y+h,y+h+.12,jc(0x4a3a2c,.06));
-   sector('plank',tx,tz,tr+.05,R+.55,a0,a1,y-.16,y,jc(0x4a3a2c,.06));
+  if(s>=1){const R=tr+.9,a0=PI*.62,a1=PI*1.18;sector('plank',tx,tz,tr+.05,R,a0,a1,U(s),y+h,jc(col,.06));sector('plank',tx,tz,R-.02,R+.12,a0,a1,y+h,y+h+.12,jc(0x4a3a2c,.06));
+   sector('plank',tx,tz,tr+.05,R+.55,a0,a1,U(s)-.18,U(s),jc(0x4a3a2c,.06));
    for(const a of [PI*.75,PI*.95,PI*1.12]){const px=tx+Math.cos(a)*(R+.03),pz=tz+Math.sin(a)*(R+.03);W(px,0,pz,PI/2-a,()=>win(0,sil,0,.8,1.0,{lit:(s+Math.round(a*3))%2===0}));}}
  }
  // ---- stair: a steel switchback on the right side. Landings sit at the floor height of each door; every flight ends exactly on a landing edge
@@ -224,12 +260,21 @@ function lgTankTower(o){
  // catwalk ring with rail on the tank's shoulder
  const yc=Y0(4)-.1;sector('plank',tx,tz,tr+.05,tr+.9,PI*1.15,PI*2.2,yc-.13,yc,jc(0x6a5238,.06));lgArcRail(tx,tz,tr+.85,PI*1.15,PI*2.2,yc,.95);
  for(const a of [PI*1.2,PI*1.6,PI*2.1])beam('iron',[tx+Math.cos(a)*(tr+.7),yc-.13,tz+Math.sin(a)*(tr+.7)],[tx+Math.cos(a)*(tr+.05),yc-1.3,tz+Math.sin(a)*(tr+.05)],.07,jc(0x4a4038,.05));
- // external pipes
- pipe('iron',[[tx-tr-.4,0,tz+.4],[tx-tr-.4,5,tz+.4],[tx-tr-.1,5.4,tz-.6],[tx-tr-.1,th-.6,tz-.6],[tx-tr-.5,th-.3,tz-.6]],.16,jc(0xc45a30,.05));
- pipe('iron',[[tx-1,.5,tz-tr-.35],[tx-1,th-.4,tz-tr-.35],[tx+.6,th-.2,tz-tr-.3]],.13,jc(0xc99a2e,.05));
- pipe('iron',[[8.3,0,-3.7],[8.3,5.5,-3.7],[8.5,5.5,-4.1],[8.5,12,-4.1],[8.6,12,-4.1],[8.6,ty-.4,-4.1]],.17,jc(0x6a5a4c,.05));
- pipe('iron',[[-.4,.6,6.6],[-.4,4.8,6.6],[3,4.8,6.7],[3,9.6,6.7]],.11,jc(0x5a5a56,.05));
- for(const [px,py,pz] of [[8.5,8,-4.1],[tx-tr-.4,3,tz+.4],[3,7,6.7]])cyl('iron',px,py,pz,.26,.14,jc(0x3a3430,.05),8);
+ // ---- external pipes: every run goes from a source (gutter, tank port) to an end (a barrel, a wall port), with elbows and wall brackets
+ const brk=(p,q)=>beam('iron',p,q,.05,jc(0x4a4038,.05),true,5),pc=jc(0x6a5a4c,.05);
+ // A: back eave gutter -> corner down-pipe that jogs out with each jettied floor -> into a barrel
+ beam('iron',[-1.6,ty+.03,-4.95],[7.3,ty+.03,-4.95],.16,jc(0x5a4a3c,.05),true,8);
+ const pa=[[7.3,ty+.03,-4.95]];for(let s=4;s>=0;s--){const xs=X1(s)+.3,zs=Z0(s)-.3;pa.push([xs,Y0(s)+st-.25,zs]);if(s>0)pa.push([xs,Y0(s)+.05,zs]);}
+ const bxa=X1(0)+.3,bza=Z0(0)-.3;pa.push([bxa,.93,bza]);pipe('iron',pa,.09,pc);barrel(bxa,0,bza,0x5a5a56,{open:true});
+ for(let s=0;s<=4;s++){const y=Y0(s)+1.4,xs=X1(s)+.3,zs=Z0(s)-.3;brk([X1(s)-.35,y,Z0(s)-.03],[xs,y,zs]);brk([X1(s)+.03,y,Z0(s)+.35],[xs,y,zs]);}
+ cyl('iron',X1(2)+.3,Y0(2)+2.0,Z0(2)-.3,.15,.14,jc(0x3a3430,.05),8);
+ // B: barrel -> up the back of the tank -> into a wall port near the shoulder
+ const angP=(a,r)=>[tx+Math.cos(a)*r,tz+Math.sin(a)*r];
+ {const a=PI*1.38,[bx,bz]=angP(a,tr+.36),[wx,wz]=angP(a,tr+.02),yp=th-.5;pipe('iron',[[bx,.93,bz],[bx,yp,bz],[wx,yp,wz]],.11,jc(0xc45a30,.05));barrel(bx,0,bz,0x8a3a2c,{open:true});sph('iron',wx,yp,wz,.2,jc(0x3a3430,.05));
+  for(const y of [2.4,5,7.6,10.2]){const [q,r2]=angP(a,tr+.02);brk([q,y,r2],[bx,y,bz]);}}
+ // C: a wall port at the third band -> steps out and down to a second barrel
+ {const a=PI*1.62,[bx,bz]=angP(a,tr+.55),[wx,wz]=angP(a,tr+.02),yp=Y0(2)+.5;pipe('iron',[[wx,yp,wz],[bx,yp,bz],[bx,.93,bz]],.09,jc(0xc99a2e,.05));barrel(bx,0,bz,0x2f5f8f,{open:true});sph('iron',wx,yp,wz,.16,jc(0x3a3430,.05));
+  for(const y of [1.8,3.8]){brk([wx,y,wz],[bx,y,bz]);}}
  // ground: tyre plinth wall, crates, barrels
  tireWall(-7.6,4.6,-2.6,4.6,2);barrel(5.6,0,7.4);barrel(6.1,0,7.9);crate(2.4,0,7.6,.7,.3);tireStack(-3.5,6.4,3);lamp(4.2,0,7.0,3.4);junkPile(-8,-6.5,1.4,8);waterButt(9.2,1.8,-6,.6,1.0);
  // sockets (awnings on the wall face, over the balcony; banners on poles set on the roof slab)
