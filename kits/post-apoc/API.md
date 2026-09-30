@@ -72,6 +72,13 @@ tireStack junkPile antenna fenceRun bottleString waterButt`. Appliqué doors/win
 Real openings (an open-fronted shop, a walk-in porch) need `wallOpen` or a core with `open:'front'`.
 If you need a helper twice, add it at the top of YOUR fragment with your prefix. If you think the ENGINE (files 10-36, 80, 9x) needs a change, do not edit it: describe it in your report.
 
+## Night, and the invisible front door
+**Night:** the `Time` select (Day / Dusk / Night) or `?night=0..1` or `window._api.setNight(v)` drives sky (stars, dusk glow, moon), sun/moon light, hemisphere, fog, lit windows, lamp and fire glow, and a pool of six real point lights that follows the camera to the nearest lamps and fires.
+Nothing to author: about half of all `glass` panes are lit windows (deterministic, by position), and every `glow` piece (lamp bulbs, fires, `lit` windows) becomes a halo and a candidate light. To make something glow at night, draw it in `glow`.
+**Front door:** every placed building carries `rec.front = {source, local:{x,z,yaw}, world:{x,y,z,yaw}}`, invisible data (the `Doors` button draws a debug arrow at each). It is picked from the builder's `door()` calls (the widest door facing within 50 degrees of +z),
+else a def may declare `front:{x,z,yaw}`, else the default (centre of the +z edge). `frontOf(key)` returns a def's local front; `placeFacing(key,x,z,tx,tz,o)` places a building so its front door faces a point (a road, a plaza). `_api.doors()` lists them all.
+Keep a building's main entrance a `door()` call, or declare `front`.
+
 ## Flora is a placeholder, always
 A building never models a plant. Anything living (crops, planter fill, kitchen garden, shrubs, vines, moss, a shade tree) is `plant(kind,x,y,z,{h,r,s,ry,moisture,riparian,tags})`
 (end of `34-adds.js`). Kinds are ROLES, the biome picks the species: `crop crop-tall crop-vine groundcover shrub flower tree vine-wall grass moss`. The default draws a small muted

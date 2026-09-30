@@ -2,7 +2,10 @@
 // Small builders for the things lashed onto a reclaimed core: sheet-metal lean-tos, tyre and bottle walls, plank rooms, decks, stairs, doors,
 // windows, chimneys, solar panels, barrels, fences. All draw in the CURRENT frame; facing is +z unless a ry argument turns them.
 // ---- openings, applied to a surface facing +z at (x,y,z): y is the sill / threshold
-function door(x,y,z,w,h,o){o=o||{};const c=o.col===undefined?jc(pick([0x7a2e28,0x2f5f8f,0x3b7f6e,0x8a5a30,0xc99a2e,0x4d6f3c]),.06):jc(o.col,.05);const fr=jc(o.frame||0x4a3a2c,.05);
+/* every door() call leaves an invisible record (world position, outward direction, size): place() picks the building's FRONT DOOR from them */
+let DOORS_CUR=[];
+function doorNote(x,y,z,w,h){const p=new THREE.Vector3(x,y,z+.03).applyMatrix4(CM);const dv=new THREE.Vector3(0,0,1).transformDirection(CM);DOORS_CUR.push({wx:p.x,wy:p.y,wz:p.z,dx:dv.x,dz:dv.z,w:w,h:h});}
+function door(x,y,z,w,h,o){o=o||{};doorNote(x,y,z,w,h);const c=o.col===undefined?jc(pick([0x7a2e28,0x2f5f8f,0x3b7f6e,0x8a5a30,0xc99a2e,0x4d6f3c]),.06):jc(o.col,.05);const fr=jc(o.frame||0x4a3a2c,.05);
  box('plank',x,y,z+.03,w-.1,h-.05,.06,c);box('iron',x,y+h-.06,z+.06,w+.14,.12,.12,fr);for(const sx of [-1,1])box('iron',x+sx*(w/2+.02),y,z+.06,.1,h,.12,fr);
  box('iron',x+w/2-.16,y+h*.45,z+.08,.05,.05,.06,jc(0xb8a060,.05));if(o.step!==false)box('conc',x,y-.02,z+.28,w+.3,.06,.5,jc(0x8a8478,.05));}
 function win(x,y,z,w,h,o){o=o||{};const fr=jc(o.frame||0x4a3a2c,.05);const lit=o.lit;

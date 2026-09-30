@@ -18,7 +18,13 @@ function sbEnd(){const b=SBS.pop();SB=SBS.length?SBS[SBS.length-1]:null;if(SB){f
 const _v=new THREE.Vector3(),_n=new THREE.Vector3(),_nm=new THREE.Matrix3(),_mm=new THREE.Matrix4(),_WC=new THREE.Color(1,1,1);
 let GSTAT={tris:0};
 // emit a base geometry through matrix lm (local to CM). uvm: undefined = world box projection; {su,sv} = the geometry's own UVs scaled
+/* NIGHT support, decided at build time and deterministic (position hash, no rng): about half the glass panes are LIT windows (bucket 'winlit', warm colour),
+   and every glow piece leaves a HALO record (lamp bulbs, fire) that 91n-night.js turns into a glow sprite and, near the camera, a real point light. */
+let HALOS=[],HALOKEY=new Set();function halosReset(){HALOS=[];HALOKEY=new Set();}
 function emit(mk,geo,lm,col,uvm){_mm.copy(CM);if(lm)_mm.multiply(lm);
+ if(mk==='glass'){const hh=h3(Math.round(_mm.elements[12]*2)/2,Math.round(_mm.elements[13]*2)/2,Math.round(_mm.elements[14]*2)/2);if(hh<.5){mk='winlit';const f=.75+.6*hh;col=new THREE.Color().setRGB(.86*f,.55*f,.22*f);}}
+ else if(mk==='glow'&&col!==undefined&&col!==null){const px=_mm.elements[12],py=_mm.elements[13],pz=_mm.elements[14];const k=Math.round(px/.6)+','+Math.round(py/.6)+','+Math.round(pz/.6);
+  if(!HALOKEY.has(k)){HALOKEY.add(k);const cc=typeof col==='number'?hc(col):col;HALOS.push({x:px,y:py,z:pz,r:cc.r,g:cc.g,b:cc.b,big:geo.type==='ConeGeometry'});}}
  const b=GTARGET[mk]||(GTARGET[mk]={p:[],n:[],u:[],c:[],i:[]});
  const Pa=geo.attributes.position,Na=geo.attributes.normal,Ua=geo.attributes.uv,I=geo.index;const base=b.p.length/3;_nm.getNormalMatrix(_mm);
  let c=col===undefined||col===null?_WC:(typeof col==='number'?hc(col):col);const ts=1/(TILE[mk]||1);

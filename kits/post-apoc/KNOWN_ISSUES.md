@@ -3,8 +3,9 @@
 Open items are lines starting `- [ ]`; `build.py` prints them on every build.
 
 - [ ] Cultural packs are stand-ins built from the brief (Iziz orange awnings, Voth banners, Republic triskelion); replace the glyphs with each culture's real sigils when settled.
-- [ ] Nothing animates except turbines and fans (`spin()`); flags and cloth do not flutter, fires do not flicker, no smoke.
-- [ ] No night pass: `glow` pieces are unlit-bright at all hours; there is no light volume.
+- [ ] Nothing animates except turbines and fans (`spin()`); flags and cloth do not flutter, fires do not flicker (the lamp pool is steady), no smoke.
+- [ ] Night is a pool of six point lights plus glow sprites; there is no light volume, and windows are lit or dark by position hash, not by a schedule.
+- [ ] Front doors are picked from `door()` calls; buildings that build their entrances by other means fall back to the default (+z edge centre). `_api.doors()` shows which.
 - [ ] No collision or path data for the set: buildings publish their bounding box (`REG[i].bbox`) and nothing else.
 
 - [ ] Rust weathering is heavy by request (`WEATHER` in `src/22-mat.js`, rust scale in `src/20-tex.js`): metal reads dark under the sun; ease `weather()` if a settlement wants a brighter look.

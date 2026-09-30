@@ -4,7 +4,7 @@ A generic post-apocalyptic building kit, made of **reclaimed and recycled materi
 a Voth river shanty, a Republic frontier stop) and then dressed in that culture's marks. Not to be confused with the Ancients' reclaimed buildings
 (`kits/ancients`, the Ancient Iziz Style): this set is called **post-apoc** everywhere.
 
-`dist/post-apoc.html` shows every building in rows by family. Toolbar: view select, Inspector (hover: name, class, tags), Shadows, **Culture** (Generic /
+`dist/post-apoc.html` shows every building in rows by family. Toolbar: **Time** (Day / Dusk / Night), **Doors** (shows each building's front-door marker), view select, Inspector (hover: name, class, tags), Shadows, **Culture** (Generic /
 Iziz / Voth / Republic: rebuilds the whole set with that culture's marks), Polygon (click-to-coordinates), Walk (F).
 URL parameters: `?culture=iziz`, `?only=shop-food,dw-silo`.
 
