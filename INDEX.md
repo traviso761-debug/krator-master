@@ -18,7 +18,7 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`settlements/voth`](settlements/voth/INDEX.md) | 62 | 1786 | 70 | Voth: a Venice/Vivec-like Dunmer city on an enclosed brackish bay, with the most complete life layer and collision system. |
 | [`settlements/xanadu`](settlements/xanadu/INDEX.md) | 51 | 596 | 66 | Xanadu: the building kit of the southern Sultanate (Tibetan massing, Indian, Turkish and Persian detail) and the city of Erewhon. |
 | [`settlements/yuni`](settlements/yuni/INDEX.md) | 44 | 876 | 194 | Yuni: the city, plus its building-kit, furniture and plant sheets. |
-| [`kits/ancients`](kits/ancients/INDEX.md) | 91 | 1693 | 89 | The Ancients kit: ruined megastructures of the ancient civilisation, 33 structure types, one target per site. |
+| [`kits/ancients`](kits/ancients/INDEX.md) | 92 | 1722 | 89 | The Ancients kit: ruined megastructures of the ancient civilisation, 33 structure types, one target per site. |
 | [`kits/post-apoc`](kits/post-apoc/INDEX.md) | 24 | 355 | 34 | The Post-Apoc set: reclaimed and recycled buildings (containers, silos, tanks, buses, bulkheads, tyre and bottle walls) with sockets for any culture's marks. |
 | [`biomes/eastabyss`](biomes/eastabyss/INDEX.md) | 17 | 205 | 54 | Biome kit: see `biomes/README.md`. |
 | [`biomes/hyperjungle`](biomes/hyperjungle/INDEX.md) | 19 | 176 | 33 | Biome kit: see `biomes/README.md`. |
