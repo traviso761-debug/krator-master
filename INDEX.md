@@ -15,6 +15,7 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`settlements/reedlake`](settlements/reedlake/INDEX.md) | 32 | 310 | 33 | Reed Lake: a floating reed-lake village and its kit. |
 | [`settlements/screamers`](settlements/screamers/INDEX.md) | 72 | 536 | 45 | Hexahedron: the Screamers' tribal village in and under a ruined arcology, forked from the Ancients kit. |
 | [`settlements/voth`](settlements/voth/INDEX.md) | 62 | 1786 | 70 | Voth: a Venice/Vivec-like Dunmer city on an enclosed brackish bay, with the most complete life layer and collision system. |
+| [`settlements/xanadu`](settlements/xanadu/INDEX.md) | 51 | 596 | 66 | Xanadu: the building kit of the southern Sultanate (Tibetan massing, Indian, Turkish and Persian detail) and the city of Erewhon. |
 | [`settlements/yuni`](settlements/yuni/INDEX.md) | 44 | 875 | 194 | Yuni: the city, plus its building-kit, furniture and plant sheets. |
 | [`kits/ancients`](kits/ancients/INDEX.md) | 89 | 1518 | 81 | The Ancients kit: ruined megastructures of the ancient civilisation, 33 structure types, one target per site. |
 | [`biomes/eastabyss`](biomes/eastabyss/INDEX.md) | 17 | 205 | 54 | Biome kit: see `biomes/README.md`. |
@@ -24,7 +25,7 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`biomes/sedesert`](biomes/sedesert/INDEX.md) | 18 | 192 | 32 | Biome kit: see `biomes/README.md`. |
 | [`biomes/swbay`](biomes/swbay/INDEX.md) | 19 | 211 | 46 | Biome kit: see `biomes/README.md`. |
 | [`biomes/swlowlands`](biomes/swlowlands/INDEX.md) | 17 | 226 | 57 | Biome kit: see `biomes/README.md`. |
-| [`biomes/xanadu`](biomes/xanadu/INDEX.md) | 19 | 245 | 65 | Biome kit: see `biomes/README.md`. |
+| [`biomes/xanadu`](biomes/xanadu/INDEX.md) | 19 | 246 | 66 | Biome kit: see `biomes/README.md`. |
 
 ## Not builds
 
