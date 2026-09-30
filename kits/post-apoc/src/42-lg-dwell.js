@@ -156,7 +156,7 @@ function lgBulkhead(o){
   box('plank',0,F[s]-.18,zc,14.5,.36,dep+.4,jc(0x4a3a2c,.06));}
  // parapet, roof sheet, plant on the block roof
  box('sheet',0,9.85,zc,13.8,.1,dep-.2,jc(0x8a4a2a,.06));for(const sx of [-1,1])box('conc',sx*6.85,9.9,zc,.35,.9,dep,cw2);box('conc',0,9.9,zc-dep/2+.1,14,.9,.35,cw2);
- for(const [x,z] of [[-6,-8.3],[6,-8.3],[-6,-12.7],[6,-12.7]]){box('earth',x,9.9,z,1.0,3.4,1.0,jc(0xa8503a,.06));box('conc',x,13.3,z,1.25,.2,1.25,jc(0x6a6660,.05));}
+ for(const [x,z] of [[-6,-8.3],[6,-8.3]]){box('earth',x,9.9,z,1.0,3.4,1.0,jc(0xa8503a,.06));box('conc',x,13.3,z,1.25,.2,1.25,jc(0x6a6660,.05));}
  lgTank(-6,9.9,-10.5,.8,1.3,0x3a6a8a);lgDish(6,9.9,-10.5,.5,.7);stovepipe(-6.2,9.9,-14.0,1.4);stovepipe(6.2,9.9,-14.0,1.2);
  // attic: solid, with a gable roof running front-to-back, windows on every face
  const az=-9.65,ad=8.8;box('conc',0,9.9,az,10,2.8,ad,cw);box('conc',0,12.5,az,10.8,.3,ad+.6,cw2);
@@ -208,9 +208,9 @@ function lgBulkhead(o){
  lgGable(-8.6,CT.H*3+.05,4.6,2.6,6.0,1.0,{ov:.2,col:0xc45a30,col2:0xc45a30});
  lgAwn(-7.38,2.26,zw,PI/2,1.6,1.1,.4);lgAwn(7.38,2.26,zw,-PI/2,1.6,1.1,.4);
  // ---- courtyard: tyre wall with a gate, a real well, fire, planters
- const wz=10.6;tireWall(-7.6,wz,-1.9,wz,5);tireWall(1.9,wz,7.6,wz,5);
+ const wz=10.6;tireWall(-7.95,wz,-1.9,wz,5);tireWall(1.9,wz,7.95,wz,5);      // front runs, corner tyres included, tight to the gate posts
  for(const s of [-1,1]){beam('wood',[s*1.9,0,wz],[s*1.9,3.2,wz],.16,jc(0x5c4630,.06),true,7);}beam('wood',[-1.9,3.1,wz],[1.9,3.1,wz],.14,jc(0x5c4630,.06),true,7);
- tireWall(-7.6,wz,-7.6,8.6,5);tireWall(7.6,wz,7.6,8.6,5);
+ tireWall(-7.6,wz-.35,-7.6,7.7,5);tireWall(7.6,wz-.35,7.6,7.7,5);      // side runs start at the corner tyre and end against the wings' front faces (z 7.7)
  fire(-1.5,.02,4.2,.6);lgWell(3.6,4.6);
  for(const sx of [-3.2,-.4])box('plank',sx,.32,6.4,1.6,.1,.4,P('woodD'));
  tireRing(-4.4,8.4,.8,2,0,TAU);plant('groundcover',-4.4,.5,8.4,{r:.6,moisture:'mild'});tireRing(4.6,8.4,.8,2,0,TAU);plant('groundcover',4.6,.5,8.4,{r:.6,moisture:'mild'});

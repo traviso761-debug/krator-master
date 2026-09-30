@@ -150,12 +150,12 @@ function cvMess(o){
 defBuilding({key:'chief',name:"Big man's house",seed:4430,tags:{type:['civic','single-family dwelling'],size:'large',core:'arcology bulkhead',materials:['ancient ceramic','container','bus','sheet palisade','junk trophies']},w:25,d:34,h:18,build:cvChief});
 function cvChief(o){
  const bz=-5,bh=7.6,fz=bz+.45+.16,dz=fz+.08,cw=jc(0xcfccc4,.03),cw2=jc(0xb8b4aa,.04),H=CT.H;
- W(0,0,bz,0,()=>bulkhead({w:9,h:bh,th:.9,hatch:'door'}));
+ W(0,0,bz,0,()=>bulkhead({w:8,h:bh,th:.9,hatch:'door'}));
  door(0,.3,bz-.35,2.0,3.05,{step:false,col:0x7a2e28});                                    // the main entrance, facing +z, under the throne bay
  const c=[0xa83a2c,0x2f7f8e,0xd8a020,0x4d6f3c,0x2f5f8f,0xc45a30,0x8a3a6a];if(o.v===1)c.reverse();
  // ---- thick bulkhead: chunky door reveal, corner piers, cornice
- for(const sx of [-1,1]){box('conc',sx*1.4,.3,bz+.45+.02+.25,.6,3.5,.5,cw2);box('conc',sx*5.15,0,bz+.15,1.3,bh,1.5,cw);box('conc',sx*5.15,bh,bz+.15,1.6,.3,1.8,cw2);}
- box('conc',0,3.75,bz+.45+.02+.25,3.4,.5,.5,cw2);box('conc',0,bh-.35,bz+.45+.02+.4,9.0,.35,.8,cw2);
+ for(const sx of [-1,1]){box('conc',sx*1.4,.3,bz+.45+.02+.25,.6,3.5,.5,cw2);box('conc',sx*4.3,0,bz+.15,.9,bh,1.5,cw);box('conc',sx*4.3,bh,bz+.15,1.1,.3,1.8,cw2);}
+ box('conc',0,3.75,bz+.45+.02+.25,3.4,.5,.5,cw2);box('conc',0,bh-.35,bz+.45+.02+.4,8.4,.35,.8,cw2);
  // ---- the rear hall: a solid two-storey block behind the bulkhead with a big gable roof
  const hz=-9.5,hd=8.1,HF=[.3,3.6],SB=3.3;
  box('earth',0,0,hz,10,8.3,hd,jc(0xa89880,.05));
@@ -202,8 +202,8 @@ function cvChief(o){
  for(let k=0;k<7;k++)cone('iron',0,10.5,-11.5+k*2.0,.09,.8+(k%2?0:.4),jc(0x3a3430,.05),6);   // ridge finials
  // ---- gate wall in front of the wings: bus on the east, sheet-and-post palisade with spiked tops, side fences
  const wz=13.2;W(6.5,0,wz,0,()=>bus({len:8.4}));
- fenceRun(-11.6,wz,-2.2,wz,3.4,{type:'sheet'});for(let x=-11.6;x<=-2.1;x+=1.5)cvSpike(x,wz,3.9+rr(-.2,.2),0x4a4038);
- fenceRun(9.6,wz,11.6,wz,3.4,{type:'sheet'});
+ fenceRun(-11.6,wz,-1.9,wz,3.4,{type:'sheet'});for(let x=-11.6;x<=-2.1;x+=1.5)cvSpike(x,wz,3.9+rr(-.2,.2),0x4a4038);
+ fenceRun(1.9,wz,2.4,wz,3.4,{type:'sheet'});fenceRun(9.6,wz,11.6,wz,3.4,{type:'sheet'});   // closes the strip between the gate post and the bus
  for(const sx of [-1,1]){fenceRun(sx*11.6,wz,sx*11.6,-16,2.4,{type:'sheet'});for(let z=wz;z>-16;z-=2.0)cvSpike(sx*11.6,z,3.8+rr(-.2,.2),0x4a4038);}
  fenceRun(-11.6,-16.3,11.6,-16.3,2.4,{type:'sheet'});
  for(const gx of [-1.9,1.9]){cvPole(gx,wz,5.2,.2,0x4a3a2c);cyl('iron',gx,4.9,wz+.2,.5,.06,jc(0xdcd8cc,.04),14);sph('plain',gx,5.4,wz,.26,jc(0xe0d6c0,.03));}
