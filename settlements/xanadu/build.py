@@ -61,7 +61,6 @@ def srcpath(f, base=None):
 TARGET_OUT = {
     'erewhon': 'erewhon.html',          # the city of Erewhon, Pearl of Xanadu
     'xanadu': 'xanadu.html',            # the whole kit in rows by family
-    'variants': 'xanadu-variants.html', # every def at variants 1 and 2, side by side
 }
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell.

@@ -315,3 +315,8 @@ calls; a chunk-culled walk keeps most views under 8 M. Verify clean.
    the def, not weighted in the pools.
 6. The quays and the boat shed open to the lake.
 7. The lake sits at −0.5 m with a polygon offset, off the shore's flat zone at 0.
+
+## The variants page folded into the kit page (Sep 30 2026)
+
+`dist/xanadu.html` now shows every def at every variant side by side, v0 first (`XA_VARIANTS` in the xanadu
+target; `xaVs` returns 0 … nv-1). The separate `variants` target and `dist/xanadu-variants.html` are gone.
