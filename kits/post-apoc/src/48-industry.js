@@ -179,7 +179,7 @@ function inWarehouse(o){
  W(dx0,0,ZF+1.1,0,()=>{plane4("plank",[0,DK-.05,0],[0,DK-.05,2.3],[-3.6,0,0],[-3.6,0,2.3],.1,jc(0x7a6448,.07));for(const z of [0,2.3])beam("wood",[0,DK,z],[-3.6,0,z],.08,jc(inW,.06));});
  // jib crane at the dock end
  // overhead portal gantry crane over the loading yard: four splayed legs, two runway girders, a bridge with a trolley and winch, hook block and a slung crate
- const jz=ZF+2.9,gy=jc(0x9a7a2a,.08),gd=jc(0x4a4a46,.05),gxL=5.2,gxR=10.8,gz0=3.9,gz1=8.3,gt=6.2,gb=8.0,gtz=5.6;
+ const jz=ZF+2.9,gy=jc(0x9a7a2a,.08),gd=jc(0x4a4a46,.05),gxL=7.0,gxR=12.6,gz0=3.9,gz1=8.3,gt=6.2,gb=9.8,gtz=5.6;   /* the gantry stands clear of the dock awnings (the last one ends at x = 6.1) */
  for(const gx of [gxL,gxR]){for(const [z,sg] of [[gz0,-1],[gz1,1]]){beam('iron',[gx,0,z+sg*.45],[gx,gt,z],.24,gd);cyl('conc',gx,0,z+sg*.45,.4,.18,jc(0x8a8478,.06),8);
    beam('iron',[gx,gt-1.6,z+sg*.1],[gx,gt,z-sg*.9],.1,gd,true,5);}
   box('sheet',gx,gt,(gz0+gz1)/2,.4,.35,gz1-gz0+.6,gy);box('iron',gx,2.2,(gz0+gz1)/2,.12,.12,gz1-gz0,gd);}
