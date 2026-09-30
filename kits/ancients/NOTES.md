@@ -989,3 +989,70 @@ MAT.white mesh of the structure goes worn, not only the ones SHELL() made. The
 texture is made on first use, so targets without decay 5 are unchanged: the kit
 showcase and skyi fingerprint identically before and after (same counts, same
 instance transforms). worn.html: 5.3 M tris, 146 registered, error panel clean.
+
+## The Engines (2026-09-30)
+
+A new target, `engines`, and a new fragment, `src/8ah-engines.js`: five
+cyclopean machines of unclear purpose on one plain. They are drawn from a
+reference set of crawler excavators, walker rigs, canted bores, ring machines
+and piston towers.
+
+* **The Harrow**: a 320 m crawler on four track units with stepped plated
+  decks, stacks, a rear counterweight, and an A-frame staying a 250 m boom. Its
+  bucket wheel is raised to the sky. A 1.5 km furrow of spoil berms runs back
+  from it.
+* **The Strider**: a four-legged walker, hull 172 m up, halted with one foot
+  lifted. A probe runs from its belly to a ring of stones on the ground.
+* **The Breech**: a 90 m concrete barrel that comes out of a spoil heap at 22
+  degrees and sits in a trunnion cradle. Its muzzle holds a core drum and
+  eight rods.
+* **The Gyre**: a 430 m plated ring on edge in a stepped saddle, with four
+  trussed buttresses. A verdigris inner ring is pivoted inside it at 38
+  degrees, and a core is slung on spokes.
+* **The Press**: 500 m twin concrete piers under a lintel with a tipped yoke
+  and lattice cages. The crosshead hangs mid-stroke with its die 110 m over an
+  anvil that shows one small impression. It has counterweights on chains and a
+  conveyor gantry that runs into the ground.
+
+Each machine is shown once, at decay 1, and SITEX puts it at x = s. Seeds
+10100-10144. The helpers are `en*` (enBlk, enTube, enRing, enTruss, enCage,
+enDeck, enTrack, enHang). The big masses are merged meshes with UVs in metres.
+
+Spoil uses its own material, `EN_SPOIL`. MAT.rock and MAT.mud read as pale
+sand under this sun. Its colour hex is linear, so it is much darker than the
+soil it has to match.
+
+Measured: 146 k scene triangles, 52 draw calls at the hero view. The heaviest
+machine is the Harrow at 58 k of 250 k. Error panel clean, all invariants pass.
+The furrow and the Breech's heap were reshot after the material change.
+
+## The Engines: ruined, and five more (2026-09-30)
+
+**Ruin pass on the first five.** It is gated on dd, so d 0 still builds them
+whole. The Harrow's boom is snapped: the outer boom hangs off the break, the
+bucket wheel lies on its side on the plain, the front-right track is thrown,
+the counterweight has fallen, and a stack lies sheared across deck 2. The
+Strider's rear-left leg has buckled. The body is built in its own frame, rolled
+and pitched so that corner sags, and the legs are placed from the tilted hips.
+The Breech is holed along its back onto a dark liner. Its upper verdigris band
+has burst, three rods are down, a cradle pylon has split, and the gantry tower
+has snapped. The Gyre has lost more than a quarter of its plates. Its inner
+ring has broken, with a fifth of it lying on the plain, one spoke is torn and
+one buttress is down. The Press has lost the west end of its lintel, with the
+cage, pulley and counterweight. The crosshead is jammed askew, the yoke has
+half fallen, and the conveyor's outer span has dropped. All five get breaches,
+debris, moss, vines and stains (`enBreach`, `enDebris`, `enOvergrow`).
+
+**Five more** in `src/8ai-engines2.js`:
+* the Sleeper: a 240 m kneeling automaton with a torn-off arm and trees on its shoulder
+* the Carapace: a 260 m disc on fourteen legs, listing on its folded side
+* the Retorts: spheres on leg frames and a flare stack; one sphere has fallen, rolled and split open
+* the Needle: a square spire on a finned drum, snapped at 430 m, its top lying on the plain
+* the Ram: a drill-nosed tracked hull stuck in a ridge, its tail torn open
+
+Seeds 10150-10194. The target now shows ten sites, with GROUND_C -1000 and 26
+views, including three eye-level plains and one from 1.9 km up.
+
+Measured: 326 k scene triangles. The heaviest machine is the Harrow at 69 k of
+250 k. There are 20 registered volumes, all occupied, and the error panel is
+clean. Every view was shot and looked at.
