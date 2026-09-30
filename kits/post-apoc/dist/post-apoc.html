@@ -2968,7 +2968,7 @@ function dkCrane(x0){const dk=jc(0x6a4a3a,.05),st=jc(0x4a4038,.05);const H=9.0;c
  for(const x of xs)for(const z of zs){box('iron',x-.2,0,z-.2,.4,H,.4,jc(0xc98a2a,.06));box('conc',x-.5,0,z-.5,1.0,.3,1.0,jc(0x8a8880,.05));}
  for(const x of xs){for(const [ya,yb] of [[0,4.5],[4.5,9]]){beam('iron',[x,ya,zs[0]],[x,yb,zs[1]],.09,st);beam('iron',[x,ya,zs[1]],[x,yb,zs[0]],.09,st);}for(const y of [4.5]){beam('iron',[x,y,zs[0]],[x,y,zs[1]],.14,st);}}
  for(const z of zs){for(const [ya,yb] of [[0,4.5],[4.5,9]]){beam('iron',[xs[0],ya,z],[xs[1],yb,z],.09,st);beam('iron',[xs[0],yb,z],[xs[1],ya,z],.09,st);}beam('iron',[xs[0],4.5,z],[xs[1],4.5,z],.14,st);}
- box('plank',x0-3,H,-10.3,6,.18,7.2,jc(0x6a5a44,.06));
+ box('plank',x0,H,-6.7,6,.18,7.2,jc(0x6a5a44,.06));      // centred on the four legs (x0, z -6.7); the rails below run round its edge
  // rails, cab, counterweight, ladder
  for(const [a,b] of [[[x0-3,-10.3],[x0+3,-10.3]],[[x0+3,-10.3],[x0+3,-3.1]],[[x0-3,-10.3],[x0-3,-3.1]]]){const L=Math.hypot(b[0]-a[0],b[1]-a[1]),n=Math.max(1,Math.round(L/1.6));for(let k=0;k<=n;k++){const t=k/n;beam('wood',[a[0]+(b[0]-a[0])*t,H+.18,a[1]+(b[1]-a[1])*t],[a[0]+(b[0]-a[0])*t,H+1.2,a[1]+(b[1]-a[1])*t],.04,jc(0x5c4630,.06),true,5);}beam('wood',[a[0],H+1.2,a[1]],[b[0],H+1.2,b[1]],.045,jc(0x5c4630,.06));}
  box('plank',x0+1.0,H+.18,-9.4,2.0,2.2,2.2,jc(0x3b7f8e,.06));box('glass',x0+1.0,H+1.0,-7.18,1.6,.8,.04,jc(0x6a9a94,.06));roofP('corr',x0-.2,x0+2.2,-6.9,H+2.4,-9.9,H+2.7,.07,P('rust'));
@@ -3054,7 +3054,7 @@ function dkLand(){
  // pump outside
  box('iron',px+3.0,0,pz+1.1,.6,1.4,.5,jc(0xc99a2e,.05));box('glass',px+3.0,.95,pz+1.36,.4,.3,.03,jc(0x9ac0a0,.06));box('iron',px+3.0,1.4,pz+1.1,.7,.1,.6,jc(0x3a3430,.05));pipe('iron',[[px+3.3,1.0,pz+1.1],[px+3.6,.5,pz+1.5],[px+3.2,.12,pz+2.2]],.035,jc(0x2a2826,.05));
  pipe('iron',[[18,1.1,-16.3],[16.5,.35,-14.6],[px+2.2,.35,pz+.6]],.09,jc(0x4a4038,.05));barrel(px+4.5,0,pz-1.0);barrel(px+5.0,0,pz-.6);barrel(px+4.7,0,pz+.4);
- dkCrane(19.2);
+ W(0,0,-1.6,0,()=>dkCrane(19.2));      // set back so the front legs stand on the quay (edge z -5.2), not over its tyre face
  // scatter
  junkPile(-22,-20,1.8,8);tireStack(24.6,-10,3);crate(3.6,0,-6.4,.7,.2);crate(3.6,.7,-6.4,.6,.5);}
 function dkBuild(o){
