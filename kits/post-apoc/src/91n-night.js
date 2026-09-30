@@ -5,7 +5,7 @@
 const NIGHT={v:0,pool:[],halos:null,halosBig:null,lastPool:-1,active:false};
 const NCOL={day:{hemiS:new THREE.Color(0xffe6c8),hemiG:new THREE.Color(0x6a4a34),fog:new THREE.Color(0xd2b894),sun:new THREE.Color(0xfff0dc)},
  dusk:{hemiS:new THREE.Color(0xffb890),hemiG:new THREE.Color(0x4a3038),fog:new THREE.Color(0xb88a6a),sun:new THREE.Color(0xff9a58)},
- night:{hemiS:new THREE.Color(0x3a4c80),hemiG:new THREE.Color(0x181420),fog:new THREE.Color(0x141c30),sun:new THREE.Color(0x8ea0d8)}};
+ night:{hemiS:new THREE.Color(0x4a5e96),hemiG:new THREE.Color(0x24202e),fog:new THREE.Color(0x141c30),sun:new THREE.Color(0x8ea0d8)}};
 const _nc=new THREE.Color();
 function nmix(k,v){const a=NCOL.day[k],b=NCOL.dusk[k],c=NCOL.night[k];return v<.5?_nc.copy(a).lerp(b,v*2):_nc.copy(b).lerp(c,(v-.5)*2);}
 const NSTEP=(a,b,x)=>{const t=clamp((x-a)/(b-a),0,1);return t*t*(3-2*t);};
@@ -26,7 +26,7 @@ function nightRebuild(){for(const k of ['halos','halosBig']){if(NIGHT[k]){scene.
 function nightSet(v,force){v=clamp(v,0,1);const changed=v!==NIGHT.v||force;NIGHT.v=v;if(!changed)return;
  const nt=NSTEP(.3,.9,v),lightK=NSTEP(.25,.85,v);   // nt: how night it is (windows, glow); lightK: sun to moon hand-over
  skyMat.uniforms.u_n.value=NSTEP(.35,1,v);skyMat.uniforms.u_d.value=Math.sin(clamp(v,0,1)*PI)*.9;
- hemi.color.copy(nmix('hemiS',v));hemi.groundColor.copy(nmix('hemiG',v));hemi.intensity=lerp(.85,.4,NSTEP(0,1,v));
+ hemi.color.copy(nmix('hemiS',v));hemi.groundColor.copy(nmix('hemiG',v));hemi.intensity=lerp(.85,.62,NSTEP(0,1,v));
  sun.color.copy(nmix('sun',v));sun.intensity=v<.5?lerp(1.75,1.05,v*2):lerp(1.05,.55,(v-.5)*2);
  {const sd=SUNDIR.clone();sd.y=lerp(SUNDIR.y,.28,NSTEP(0,.5,v));sd.normalize();LIGHTDIR.copy(sd).lerp(MOONDIR,NSTEP(.5,.85,v)).normalize();}   /* the sun sinks toward dusk, then the moon takes the light */
  fill.intensity=lerp(.32,.07,nt);renderer.toneMappingExposure=lerp(1.05,1.2,nt);

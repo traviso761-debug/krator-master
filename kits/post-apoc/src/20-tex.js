@@ -59,3 +59,9 @@ TEX.chain=canvasTex(64,64,(g,w,h)=>{g.clearRect(0,0,w,h);g.strokeStyle='rgba(215
 reseed(9017);TEX.dirt=canvasTex(512,512,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;for(let y=0;y<h;y++)for(let x=0;x<w;x++){
  const n=fbm(x/48,y/48,.7,4),n2=fbm(x/7,y/7,4,1),i=(y*w+x)*4;const v=.7+.24*n+.16*n2;d[i]=(158*v)|0;d[i+1]=(126*v)|0;d[i+2]=(92*v)|0;d[i+3]=255;}g.putImageData(id,0,0);
  for(let i=0;i<260;i++){g.fillStyle=`rgba(${rr(70,120)|0},${rr(60,100)|0},${rr(45,80)|0},${rr(.3,.7)})`;g.fillRect(rng()*w,rng()*h,rr(1,4),rr(1,3));}});TILE.dirt=8;
+
+// steel: cleaner structural steel: brushed streaks, faint scratches, a few small rust flecks (crane frames, rails); tinted by vertex colour
+reseed(9019);TEX.steel=canvasTex(128,128,(g,w,h)=>{g.fillStyle=gray(176);g.fillRect(0,0,w,h);const id=g.getImageData(0,0,w,h),d=id.data;
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const v=184+fbm(x/24,y/3,4.4,2)*18-4+fbm(x/3,y/3,8,1)*5;const i=(y*w+x)*4;d[i]=d[i+1]=d[i+2]=v;}g.putImageData(id,0,0);
+ for(let i=0;i<40;i++){g.fillStyle=`rgba(255,255,255,${rr(.04,.12)})`;g.fillRect(rng()*w,rng()*h,rr(8,40),1);}
+ for(let i=0;i<14;i++){const x=rng()*w,y=rng()*h,r=rr(1.5,4);const gr=g.createRadialGradient(x,y,0,x,y,r);gr.addColorStop(0,'rgba(130,64,26,.75)');gr.addColorStop(1,'rgba(130,64,26,0)');g.fillStyle=gr;g.fillRect(x-r,y-r,r*2,r*2);}});TILE.steel=1.2;

@@ -15,6 +15,7 @@ mkMat('earth',TEX.earth,{rough:1,bump:.8});
 mkMat('conc',TEX.conc,{rough:.88,bump:.8});
 mkMat('iron',TEX.iron,{rough:.7,metal:.45,bump:.35});
 mkMat('wood',TEX.wood,{rough:.92,bump:.5});
+mkMat('steel',TEX.steel,{rough:.5,metal:.2,bump:.12});   /* metalness stays low: with no environment map a strongly metallic surface renders black */
 mkMat('bottle',TEX.bottle,{rough:.25,metal:.05,bump:.8});
 mkMat('rubber',null,{rough:.95});
 mkMat('cloth',TEX.weave,{rough:1,side:THREE.DoubleSide});
@@ -30,7 +31,7 @@ const SRGB2LIN=c=>{c.convertSRGBToLinear();return c;};
 // WEATHERING. Reclaimed metal and timber never keeps a bright paint: on these material families emit() desaturates the tint and pulls it toward rust
 // (strength 0..1). Cloth, glass, glow, bottles, plain paint and the culture marks (canvas materials) are left alone, so a culture's awnings and
 // banners stay bright against the rusted junk.
-const WEATHER={corr:1,corrH:1,cont:1,sheet:1,iron:.9,plank:.7,wood:.55};
+const WEATHER={corr:1,corrH:1,cont:1,sheet:1,iron:.9,plank:.7,wood:.55,steel:.15};
 const _wc=new THREE.Color(),_hsl={h:0,s:0,l:0},RUSTLIN=new THREE.Color(0.30,0.105,0.045);
 function weather(c,k){_wc.copy(c);_wc.getHSL(_hsl);const s=_hsl.s*(1-.72*k),l=_hsl.l*(1-.08*k);_wc.setHSL(_hsl.h,s,l);_wc.lerp(RUSTLIN,.20*k*(1-Math.min(1,_hsl.l*1.6)*.35));return _wc;}
 const _HC={};function hc(hex){let c=_HC[hex];if(!c){c=SRGB2LIN(new THREE.Color(hex));_HC[hex]=c;}return c;}

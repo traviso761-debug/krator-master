@@ -16,6 +16,7 @@ Open items are lines starting `- [ ]`; `build.py` prints them on every build.
 
 ## Fixed / measured
 
+- The arena is a hell-in-a-cell: roofed cage on the pit wall top, tyre-chair stands (about 200k triangles).
 - 33 defs, 36 placed buildings in the showcase (compound places 4), 0.84M triangles in the whole scene at ~50 draw calls; `verify.py --assert` passes all seven checks under every culture pack.
 - Culture system moved to `core/sockets/` (shared, with a runnable example); Republic is red, Voth blue, plus Yuni (yellow, hyperboloid) and Beast Riders (green, claw).
 - Flora is placeholder-only (`plant()`, 349 slots in the showcase); banners stand off their poles; shop signs are pictographs (fish, shield, crossed swords, gear and wrench, crate and sack, bowl, anchor, ticket).
