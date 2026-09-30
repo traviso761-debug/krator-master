@@ -11,6 +11,9 @@ function stripeTex(key,cols,n,tile){cvMat(key,128,64,(g,w,h)=>{const sw=w/n;for(
 function drawTriskele(g,cx,cy,R,cols,lw){g.lineCap='round';g.lineWidth=lw;for(let k=0;k<3;k++){g.strokeStyle=cols[k%cols.length];g.beginPath();const a0=k*TAU/3-PI/2;
  for(let i=0;i<=24;i++){const t=i/24;const a=a0+t*2.5;const r=R*(.12+.86*t);const x=cx+Math.cos(a)*r,y=cy+Math.sin(a)*r;if(i)g.lineTo(x,y);else g.moveTo(x,y);}g.stroke();
   const ae=a0+2.5;g.fillStyle=cols[k%cols.length];g.beginPath();g.arc(cx+Math.cos(ae)*R*.98,cy+Math.sin(ae)*R*.98,lw*.75,0,TAU);g.fill();}}
+// banners and flags are drawn at THEIR OWN aspect ratio (canvas px map 1:1 to world metres), so an emblem stays round on a tall banner and a wide flag alike
+function banDecal(base,draw,x,y,z,w,h,ry){const k=base+':'+w.toFixed(2)+'x'+h.toFixed(2);if(!MAT[k]){const pw=128,ph=Math.max(24,Math.round(128*h/w));cvMat(k,pw,ph,(g)=>draw(g,pw,ph));}decal(k,x,y,z,w,h,ry||0);}
+function banDisc(W,H){return {R:Math.min(W*.4,H*.32),cx:W/2,cy:H>W*1.25?H*.38:H*.5};}
 // ------------------------------------------------------------------ generic: faded tarp, rag, plain iron
 function awnGeneric(o){const w=o.w||2.4,d=o.d||1.4,drop=o.drop===undefined?.5:o.drop;const c=P('cloth');const ca=pick([P('cloth'),P('tarp'),c]);
  plane4('cloth',[-w/2,0,0],[w/2,0,0],[-w/2,-drop,d],[w/2,-drop,d],.02,ca);box('cloth',0,-drop-.16,d,w,.16,.02,jc(ca,.05));
@@ -39,24 +42,28 @@ cultDef({key:'generic',name:'Generic (unmarked)',paint:null,signBg:'#9a7a52',sig
 stripeTex('awn:iziz',['#e07a2a','#f3e2c0','#f2a24a','#f3e2c0','#e07a2a','#f3e2c0','#d8893c','#f3e2c0','#2f8f8a','#f3e2c0'],10);
 cvMat('em:iziz',128,128,(g,w,h)=>{g.clearRect(0,0,w,h);g.fillStyle='#2f8f8a';g.beginPath();g.arc(64,64,60,0,TAU);g.fill();g.fillStyle='#e07a2a';g.beginPath();g.arc(64,64,44,0,TAU);g.fill();
  g.fillStyle='#f3e2c0';g.beginPath();g.arc(64,64,22,0,TAU);g.fill();for(let k=0;k<12;k++){const a=k*TAU/12;g.fillStyle='#f3e2c0';g.beginPath();g.moveTo(64+Math.cos(a-.11)*46,64+Math.sin(a-.11)*46);g.lineTo(64+Math.cos(a)*58,64+Math.sin(a)*58);g.lineTo(64+Math.cos(a+.11)*46,64+Math.sin(a+.11)*46);g.fill();}},{alpha:true});
-cvMat('ban:iziz',64,192,(g,w,h)=>{g.fillStyle='#e07a2a';g.fillRect(0,0,w,h);g.fillStyle='#2f8f8a';g.fillRect(0,0,7,h);g.fillRect(w-7,0,7,h);g.fillStyle='#f3e2c0';g.beginPath();g.arc(32,64,17,0,TAU);g.fill();g.fillStyle='#e07a2a';g.beginPath();g.arc(32,64,10,0,TAU);g.fill();
- g.fillStyle='#f2a24a';for(let k=0;k<3;k++)g.fillRect(14,110+k*16,36,7);});
+function drawBanIziz(g,W,H){g.fillStyle='#e07a2a';g.fillRect(0,0,W,H);g.fillStyle='#2f8f8a';g.fillRect(0,0,W*.09,H);g.fillRect(W*.91,0,W*.09,H);const d=banDisc(W,H);
+ g.fillStyle='#f3e2c0';g.beginPath();g.arc(d.cx,d.cy,d.R,0,TAU);g.fill();g.fillStyle='#e07a2a';g.beginPath();g.arc(d.cx,d.cy,d.R*.58,0,TAU);g.fill();
+ if(H>W*1.25){g.fillStyle='#f2a24a';for(let k=0;k<3;k++)g.fillRect(W*.24,H*.62+k*H*.07,W*.52,H*.03);}}
+function drawBanVoth(g,W,H){g.fillStyle='#7a2028';g.fillRect(0,0,W,H);g.fillStyle='#4a3220';g.fillRect(0,0,W*.09,H);g.fillRect(W*.91,0,W*.09,H);if(H>W*1.25){g.fillStyle='#5c4028';g.fillRect(0,H*.82,W,H*.035);}
+ const d=banDisc(W,H),R=d.R;g.strokeStyle='#d8cdb4';g.lineWidth=Math.max(2,W*.04);g.beginPath();g.moveTo(d.cx,d.cy-R);g.lineTo(d.cx+R*.75,d.cy);g.lineTo(d.cx,d.cy+R);g.lineTo(d.cx-R*.75,d.cy);g.closePath();g.stroke();g.fillStyle='#d8cdb4';g.beginPath();g.arc(d.cx,d.cy,R*.16,0,TAU);g.fill();
+ reseed(9710);for(let i=0;i<160;i++){g.fillStyle=`rgba(0,0,0,${rr(.04,.14)})`;g.fillRect(rng()*W,rng()*H,rr(1,3),rr(2,9));}}
+function drawBanRep(g,W,H){g.fillStyle='#2a8a86';g.fillRect(0,0,W,H);const bd=Math.min(W,H)*.07;g.fillStyle='#c9963a';if(H>W){g.fillRect(0,0,W,bd);g.fillRect(0,H-bd,W,bd);}else{g.fillRect(0,0,bd,H);g.fillRect(W-bd,0,bd,H);}
+ const d=banDisc(W,H);g.fillStyle='#f0e6cc';g.beginPath();g.arc(d.cx,d.cy,d.R,0,TAU);g.fill();drawTriskele(g,d.cx,d.cy,d.R*.82,['#c23a2a','#2a8a86','#c9963a'],Math.max(3,d.R*.27));
+ if(H>W*1.25){g.fillStyle='#c9963a';for(let k=0;k<3;k++)g.fillRect(W*.24,H*.66+k*H*.06,W*.52,H*.025);}}
 function awnIziz(o){const w=o.w||2.4,d=o.d||1.4,drop=o.drop===undefined?.5:o.drop;plane4('awn:iziz',[-w/2,0,0],[w/2,0,0],[-w/2,-drop,d],[w/2,-drop,d],.03);
  for(let k=0;k<Math.round(w/.3);k++){const x=-w/2+.15+k*.3;const sc=k%2;box('awn:iziz',x,-drop-.2+(sc?.03:0),d,.3,.2-(sc?.03:0),.02);}
  for(const sx of [-1,1])beam('wood',[sx*(w/2-.05),-drop-.2,d-.05],[sx*(w/2-.05),-drop-(o.h||2.2),d-.05],.07,jc(0xe8dcc0,.04),true,6);}
 cultDef({key:'iziz',name:'Iziz',paint:[0xe07a2a,0x2f8f8a,0xf2a24a,0xd8893c,0xe8dcc0,0xc9442a],paintShare:.6,
- fill:{awning:awnIziz,banner:o=>{const w=o.w||.8,h=o.h||2;beam('wood',[-w/2-.1,0,0],[w/2+.1,0,0],.05,jc(0xe8dcc0,.04),true,5);decal('ban:iziz',0,-h/2,.03,w,h,0);},
+ fill:{awning:awnIziz,banner:o=>{const w=o.w||.8,h=o.h||2;beam('wood',[-w/2-.1,0,0],[w/2+.1,0,0],.05,jc(0xe8dcc0,.04),true,5);banDecal('ban:iziz',drawBanIziz,0,-h/2,.03,w,h,0);},
   flag:o=>{const w=o.w||1,h=o.h||.6;beam('wood',[0,-1.6,0],[0,.3,0],.04,jc(0xe8dcc0,.04),true,5);quad('awn:iziz',w/2,-h/2+.1,0,w,h,null,0);},
   emblem:o=>{const w=o.w||.9;decal('em:iziz',0,-(o.h||w)/2,.03,w,w,0);},
   sign:o=>signBoard(o,'#e07a2a','#f3e2c0','#2f8f8a')}});
 // ------------------------------------------------------------------ Voth: deep red and brown banners, ash-white glyph, ragged cloth
-cvMat('ban:voth',64,224,(g,w,h)=>{g.fillStyle='#7a2028';g.fillRect(0,0,w,h);g.fillStyle='#4a3220';g.fillRect(0,0,6,h);g.fillRect(w-6,0,6,h);g.fillStyle='#5c4028';g.fillRect(0,h-40,w,8);
- g.strokeStyle='#d8cdb4';g.lineWidth=3;g.beginPath();g.moveTo(32,30);g.lineTo(52,70);g.lineTo(32,110);g.lineTo(12,70);g.closePath();g.stroke();g.fillStyle='#d8cdb4';g.beginPath();g.arc(32,70,7,0,TAU);g.fill();
- g.beginPath();g.moveTo(32,124);g.lineTo(38,150);g.lineTo(26,150);g.fill();reseed(9710);for(let i=0;i<200;i++){g.fillStyle=`rgba(0,0,0,${rr(.04,.14)})`;g.fillRect(rng()*w,rng()*h,rr(1,3),rr(2,9));}},{alpha:false});
 cvMat('em:voth',128,128,(g,w,h)=>{g.clearRect(0,0,w,h);g.fillStyle='#4a3220';g.beginPath();g.arc(64,64,60,0,TAU);g.fill();g.fillStyle='#7a2028';g.beginPath();g.arc(64,64,50,0,TAU);g.fill();
  g.strokeStyle='#d8cdb4';g.lineWidth=5;g.beginPath();g.moveTo(64,20);g.lineTo(100,64);g.lineTo(64,108);g.lineTo(28,64);g.closePath();g.stroke();g.fillStyle='#d8cdb4';g.beginPath();g.arc(64,64,10,0,TAU);g.fill();},{alpha:true});
 function bannerVoth(o){const w=o.w||.9,h=o.h||3;beam('wood',[-w/2-.12,0,0],[w/2+.12,0,0],.06,jc(0x3a2a1c,.05),true,5);
- decal('ban:voth',0,-h/2,.03,w,h,0);}
+ banDecal('ban:voth',drawBanVoth,0,-h/2,.03,w,h,0);}
 function awnVoth(o){const w=o.w||2.4,d=o.d||1.4,drop=o.drop===undefined?.5:o.drop;const c=jc(pick([0x7a2028,0x8a2f2a,0x5c4028,0x4a3220]),.06);
  plane4('cloth',[-w/2,0,0],[w/2,0,0],[-w/2,-drop,d],[w/2,-drop,d],.03,c);for(let k=0;k<Math.round(w/.4);k++)box('cloth',-w/2+.2+k*.4,-drop-.24-(k%2?.08:0),d,.34,.24+(k%2?.08:0),.02,jc(c,.08));
  for(const sx of [-1,1])beam('wood',[sx*(w/2-.05),-drop-.2,d-.05],[sx*(w/2-.05),-drop-(o.h||2.2),d-.05],.08,jc(0x3a2a1c,.05),true,6);}
@@ -68,11 +75,9 @@ cultDef({key:'voth',name:'Voth',paint:[0x7a2028,0x8a2f2a,0x5c4028,0x4a3220,0xd8c
 stripeTex('awn:rep',['#2a8a86','#f0e6cc','#c9773a','#f0e6cc'],8);
 cvMat('em:rep',128,128,(g,w,h)=>{g.clearRect(0,0,w,h);g.fillStyle='#1c5a58';g.beginPath();g.arc(64,64,62,0,TAU);g.fill();g.fillStyle='#f0e6cc';g.beginPath();g.arc(64,64,54,0,TAU);g.fill();
  drawTriskele(g,64,64,44,['#c23a2a','#2a8a86','#c9963a'],9);},{alpha:true});
-cvMat('ban:rep',64,192,(g,w,h)=>{g.fillStyle='#2a8a86';g.fillRect(0,0,w,h);g.fillStyle='#c9963a';g.fillRect(0,0,w,8);g.fillRect(0,h-8,w,8);g.fillStyle='#f0e6cc';g.beginPath();g.arc(32,72,25,0,TAU);g.fill();drawTriskele(g,32,72,20,['#c23a2a','#2a8a86','#c9963a'],5);
- for(let k=0;k<3;k++){g.fillStyle='#c9963a';g.fillRect(12,120+k*14,40,5);}},{alpha:false});
 function awnRep(o){const w=o.w||2.4,d=o.d||1.4,drop=o.drop===undefined?.5:o.drop;plane4('awn:rep',[-w/2,0,0],[w/2,0,0],[-w/2,-drop,d],[w/2,-drop,d],.03);box('awn:rep',0,-drop-.18,d,w,.18,.02);
  for(const sx of [-1,1])beam('wood',[sx*(w/2-.05),-drop-.18,d-.05],[sx*(w/2-.05),-drop-(o.h||2.2),d-.05],.07,jc(0x7a5a38,.05),true,6);}
 cultDef({key:'republic',name:'Republic',paint:[0x2a8a86,0xc23a2a,0xc9963a,0xf0e6cc,0x1c5a58],paintShare:.55,
- fill:{awning:awnRep,banner:o=>{const w=o.w||.8,h=o.h||2;beam('wood',[-w/2-.1,0,0],[w/2+.1,0,0],.05,jc(0x7a5a38,.05),true,5);decal('ban:rep',0,-h/2,.03,w,h,0);},
-  flag:o=>{const w=o.w||1,h=o.h||.7;beam('wood',[0,-1.6,0],[0,.3,0],.04,jc(0x7a5a38,.05),true,5);decal('ban:rep',w/2,-h/2+.1,0,w,h,0);},
+ fill:{awning:awnRep,banner:o=>{const w=o.w||.8,h=o.h||2;beam('wood',[-w/2-.1,0,0],[w/2+.1,0,0],.05,jc(0x7a5a38,.05),true,5);banDecal('ban:rep',drawBanRep,0,-h/2,.03,w,h,0);},
+  flag:o=>{const w=o.w||1,h=o.h||.7;beam('wood',[0,-1.6,0],[0,.3,0],.04,jc(0x7a5a38,.05),true,5);banDecal('ban:rep',drawBanRep,w/2,-h/2+.1,0,w,h,0);},
   emblem:o=>{const w=o.w||.9;decal('em:rep',0,-(o.h||w)/2,.03,w,w,0);},sign:o=>signBoard(o,'#2a8a86','#f0e6cc','#7a5a38')}});
