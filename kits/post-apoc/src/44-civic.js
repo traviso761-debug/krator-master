@@ -131,62 +131,76 @@ function cvMess(o){
  sock('sign',L/2+1.28,2.3,0,PI/2,{w:3,h:.7,trade:'MESS'});}
 
 // ================================================================== chief: big man's house
-defBuilding({key:'chief',name:"Big man's house",seed:4430,tags:{type:['civic','single-family dwelling'],size:'large',core:'arcology bulkhead',materials:['ancient ceramic','container','bus','sheet palisade','junk trophies']},w:25,d:20,h:16,build:cvChief});
+defBuilding({key:'chief',name:"Big man's house",seed:4430,tags:{type:['civic','single-family dwelling'],size:'large',core:'arcology bulkhead',materials:['ancient ceramic','container','bus','sheet palisade','junk trophies']},w:25,d:34,h:18,build:cvChief});
 function cvChief(o){
- const bz=-6.4,bh=7.6,fz=bz+.45+.16,dz=fz+.08,cw=jc(0xcfccc4,.03),cw2=jc(0xb8b4aa,.04);
+ const bz=-5,bh=7.6,fz=bz+.45+.16,dz=fz+.08,cw=jc(0xcfccc4,.03),cw2=jc(0xb8b4aa,.04),H=CT.H;
  W(0,0,bz,0,()=>bulkhead({w:9,h:bh,th:.9,hatch:'door'}));
- const c=[0xa83a2c,0x2f7f8e,0xd8a020,0x4d6f3c,0x2f5f8f,0xc45a30];if(o.v===1)c.reverse();
- // ---- side wings run front-back (a U): west two-high with a tower box in front, east the same with a fourth box on top
- for(const s of [-1,1]){const x=s*8.4,ry=s<0?PI/2:-PI/2,col=s<0?[c[0],c[1],c[3]]:[c[2],c[4],c[5]];
-  lgBox(x,0,0,ry,CT.L40,col[0],()=>{const dl=s<0?4.4:-4,wl=s<0?-4:4.4;door(dl,.16,1.22,1.0,2.0,{step:true});win(-1.6,1.05,1.22,1.2,.9,{lit:true});porthole(1,1.4,1.22,.32);porthole(2.2,1.4,1.22,.32);win(wl,1.05,1.22,.9,.9,{bars:true});});
-  lgBox(x,CT.H,0,ry,CT.L40,col[1],()=>{win(-3.4,1.05,1.22,1.2,1.0,{shutters:true});porthole(-1,1.4,1.22,.34);porthole(.4,1.4,1.22,.34);win(2.6,1.05,1.22,1.2,1.0,{lit:true});});
-  lgBox(x,CT.H*2,3.05,ry,CT.L20,col[2],()=>{win(-1.2,1.05,1.22,1.2,1.0,{lit:true});porthole(1.4,1.4,1.22,.32);door(3.0,.16,1.22,.95,1.95,{step:false});});
-  // terrace on the rear half of the roof, steel stair along the wing face that ends exactly on the deck edge (z=0)
-  const ty=CT.H*2+.06;deck(x+s*.8,ty,-2.95,4.6,5.9,{rail:['l','r','b'],posts:false});
-  lgPost(x-s*2.3+s*.0-0,-5.7,ty-.1,0);lgPost(x-s*2.3,-.3,ty-.1,0);
-  stairs(s*6.4,0,6.6,s*6.4,ty,0,1.1,{steel:true});
-  for(const bz2 of [-4.5,-1.5])beam('iron',[x-s*1.22,ty-1.2,bz2],[x-s*1.22-s*1.4,ty-.12,bz2],.06,jc(0x4a4038,.05),true,5);}
- // west: gabled hut roof on the tower box; east: a fourth box, dish, antenna and a tarp lookout
- lgGable(-8.4,CT.H*3+.05,3.05,2.6,6.0,1.1,{ov:.2,col:0xc45a30,col2:0xc45a30});
- lgBox(8.4,CT.H*3,3.05,-PI/2,CT.L20,c[3],()=>{win(-1.2,1.05,1.22,1.2,1.0,{lit:true});porthole(1.6,1.4,1.22,.32);});
- lgTank(-8.4,CT.H*2+.06,-4.9,.75,1.2,0x8a3a2c);lgSolar(-8.4,CT.H*2+.1,-2.4,2.2,1.2,0,.5);
- lgDish(8.4,CT.H*4+.02,3.05,-.4,.7);antenna(9.4,CT.H*4,3.6,3);lgTarp(8.4,CT.H*2+.06+2.2,-2.5,3.0,2.0,.4);
- for(const dx of [-1.5,1.5]){beam('wood',[8.4+dx,CT.H*2+.06,-2.5],[8.4+dx,CT.H*2+.06+2.2,-2.5],.07,jc(0x5c4630,.06),true,5);beam('wood',[8.4+dx,CT.H*2+.06,-.5],[8.4+dx,CT.H*2+.06+1.8,-.5],.07,jc(0x5c4630,.06),true,5);}
- // annex rooms between the bulkhead ends and the wings, with lean roofs
- for(const s of [-1,1]){patchWall(s*5.95,0,-4.0,1.4,3.4,0);patchWall(s*5.95,0,-6.0,1.4,3.4,0);lgRoof('corr',s*5.25,s*6.65,-3.2,3.3,-6.6,3.8,.06,jc(0x8a5a30,.05));}
- // ---- projecting throne bay: deck across the bulkhead face, plank sides, a canopy with a gabled, horned front, twin steel stairs
- const ty=4.3,bd=3.6;
- deck(0,ty,fz+bd/2,8.6,bd,{rail:['l','r'],posts:false});
- for(const sx of [-1,1]){lgPost(sx*4.25,fz+bd-.2,ty+3.4,0,.2);lgPost(sx*4.25,fz+.3,ty+3.4,ty,.16);beam('iron',[sx*4.25,ty-1.6,fz+.1],[sx*4.25,ty-.12,fz+2.0],.08,jc(0x4a4038,.05));
-  box('plank',sx*4.25,ty,fz+.4,.14,1.1,bd-.5,jc(0x8a5a30,.06));}
- W(0,ty+3.4,fz+bd/2,PI/2,()=>lgGable(0,0,0,bd,9.4,1.7,{ov:.3,col:0xa83a2c,col2:0xc99a2e}));
- for(const sx of [-1,1]){beam('wood',[sx*.2,ty+5.15,fz+bd+.32],[sx*2.2,ty+6.6,fz+bd+.32],.14,jc(0x3a2a1c,.05),true,6);cone('iron',sx*2.2,ty+6.6,fz+bd+.32,.1,.5,jc(0xd8d0c0,.03),6);}
+ door(0,.3,bz-.35,2.0,3.05,{step:false,col:0x7a2e28});                                    // the main entrance, facing +z, under the throne bay
+ const c=[0xa83a2c,0x2f7f8e,0xd8a020,0x4d6f3c,0x2f5f8f,0xc45a30,0x8a3a6a];if(o.v===1)c.reverse();
+ // ---- thick bulkhead: chunky door reveal, corner piers, cornice
+ for(const sx of [-1,1]){box('conc',sx*1.55,.3,bz+.5,.6,3.5,.9,cw2);box('conc',sx*4.9,0,bz+.45,1.3,bh,1.5,cw);box('conc',sx*4.9,bh,bz+.45,1.6,.3,1.8,cw2);cone('conc',sx*4.9,bh+.3,bz+.45,.55,1.1,cw2,4);}
+ box('conc',0,3.8,bz+.55,3.7,.5,1.0,cw2);box('conc',0,bh-.35,dz-.05,10.4,.35,1.4,cw2);
+ // ---- the rear hall: a solid two-storey block behind the bulkhead with a big gable roof
+ const hz=-9.5,hd=8.1,HF=[.3,3.6],SB=3.3;
+ box('earth',0,0,hz,10,6.9,hd,jc(0xa89880,.05));
+ for(let s=0;s<2;s++){const sc=[c[1],c[5]][s];patchWall(5.04,HF[s],hz,hd,SB,PI/2,{col:sc});patchWall(-5.04,HF[s],hz,hd,SB,-PI/2,{col:c[s?0:2]});patchWall(0,HF[s],hz-hd/2-.05,10,SB,PI,{col:sc});box('plank',0,HF[s]-.18,hz,10.5,.36,hd+.4,jc(0x4a3a2c,.06));}
+ W(0,6.9,hz,PI/2,()=>lgGable(0,0,0,hd+.8,10,2.6,{ov:.5,col:0xb85a3a,col2:0xc99a2e}));
+ for(const [x,z] of [[-3.2,-7.6],[3.2,-11.4]]){box('earth',x,8.0,z,.9,3.2,.9,jc(0xa8503a,.06));box('conc',x,11.2,z,1.1,.18,1.1,jc(0x6a6660,.05));}
+ for(let s=0;s<2;s++){const sill=HF[s]+1.0;for(const sd of [-1,1])for(const z of [-9.0,-12.2])W(sd*5.1,0,z,sd*PI/2,()=>win(0,sill,0,.9,1.2,{lit:(s+z)%2===0,shutters:s===0}));
+  for(const x of [-3.4,-1.2,1.2,3.4])W(x,0,hz-hd/2-.03,PI,()=>win(0,sill,0,1.0,1.2,{lit:s===1}));}
+ W(0,0,hz-hd/2-.03,PI,()=>door(0,HF[0],0,1.1,2.2,{step:true,col:0x2f5f8f}));lgAwn(0,2.8,hz-hd/2-.02,PI,2.4,1.2,.4);
+ for(const sd of [-1,1]){deck(sd*5.85,HF[1],-11.2,1.6,3.0,{rail:sd>0?['r','f','b']:['l','f','b'],posts:false});for(const z of [-12.5,-9.9])beam('iron',[sd*5.05,HF[1]-1.0,z],[sd*6.6,HF[1]-.12,z],.06,jc(0x4a4038,.05),true,5);lgPost(sd*6.6,-12.6,HF[1]-.12,0,.12);lgPost(sd*6.6,-9.8,HF[1]-.12,0,.12);
+  W(sd*5.1,0,-11.2,sd*PI/2,()=>door(0,HF[1],0,1.0,2.1,{step:false}));lgAwn(sd*5.05,HF[1]+2.5,-11.2,sd*PI/2,1.8,1.2,.4);}
+ // annex rooms between the hall and the wings (solid boxes with flat sheet roofs)
+ for(const sd of [-1,1]){box('plank',sd*6.1,0,-7.6,2.3,3.5,5.2,jc(sd<0?0x8a5a30:0x5a7a4a,.06));box('sheet',sd*6.1,3.5,-7.6,2.7,.16,5.6,jc(0x8a4a2a,.06));W(sd*7.26,0,-7.6,sd*PI/2,()=>win(0,1.2,0,.9,1.0,{lit:true}));}
+ // rear tower: a three-box stack with a hipped roof, window rows, dish and flag
+ for(let k=0;k<3;k++)lgBox(3.6,H*k,-15.3,0,CT.L20,c[(k+2)%c.length],()=>{win(-1.2,1.05,1.22,1.1,1.0,{lit:k===2||o.v===1});porthole(1.2,1.4,1.22,.32);if(k===0)door(0,.16,1.22,.95,1.95,{step:true});});
+ lgGable(3.6,H*3+.05,-15.3,6.4,2.7,1.3,{ov:.25,col:0xc45a30,col2:0x8a4a2a});lgDish(4.6,H*3+.05+1.0,-15.6,.2,.6);
+ // ---- long wings: rear boxes and front boxes run end to end down both sides, staggered in height (west 3 high behind, 2 in front; east 2 behind, 1 in front + a gate tower)
+ const wing=(sd,zc,levels,cols)=>{const x=sd*8.4,ry=sd<0?PI/2:-PI/2;
+  for(let k=0;k<levels;k++)lgBox(x,H*k,zc,ry,CT.L40,cols[k],()=>{if(k===0){door(0,.16,1.22,1.0,2.0,{step:true});win(-3.6,1.05,1.22,1.2,.9,{lit:true});win(3.6,1.05,1.22,1.2,.9,{bars:true});porthole(-1.7,1.4,1.22,.32);porthole(1.7,1.4,1.22,.32);}
+   else{win(-3.6,1.05,1.22,1.2,1.0,{shutters:k===1});win(3.6,1.05,1.22,1.2,1.0,{lit:k===2});porthole(-1.2,1.4,1.22,.34);porthole(1.2,1.4,1.22,.34);}});
+  lgAwn(sd*7.18,2.7,zc,ry,2.0,1.1,.4);};
+ wing(-1,-6.1,3,[c[0],c[1],c[3]]);wing(-1,6.1,2,[c[2],c[4]]);wing(1,-6.1,2,[c[5],c[6]]);wing(1,6.1,1,[c[3]]);
+ for(let k=1;k<=2;k++)lgBox(8.4,H*k,9.15,-PI/2,CT.L20,c[(k+3)%c.length],()=>{win(-1.2,1.05,1.22,1.2,1.0,{lit:true});porthole(1.4,1.4,1.22,.32);});   // gate tower over the east front box
+ lgGable(-8.4,H*3+.05,-6.1,CT.L40+.1,2.6,1.2,{ov:.2,col:0xc45a30,col2:0x8a4a2a});                       // west rear: a long hipped hut roof
+ lgDish(8.4,H*3+.05,9.15,-.4,.7);antenna(9.4,H*3,9.6,3);lgSolar(-8.4,H*2+.06,6.0,2.4,1.2,0,.5);
+ // west terrace over the front box, steel stair to its south edge; east terrace over the rear box, stair along the outer face
+ {const ty=H*2+.06;deck(-7.8,ty,3.15,4.4,5.7,{rail:['l','r','b'],posts:false});lgPost(-5.7,.5,ty-.1,0);lgPost(-5.7,3.9,ty-.1,0);stairs(-6.4,0,11.4,-6.4,ty,6.0,1.1,{steel:true});
+  for(const z of [1,4])beam('iron',[-7.18,ty-1.2,z],[-5.75,ty-.12,z],.06,jc(0x4a4038,.05),true,5);lgTank(-9.2,ty,1.4,.75,1.2,0x8a3a2c);
+  lgTarp(-7.8,ty+2.2,1.2,3.0,2.0,.4);for(const dx of [-1.5,1.5]){beam('wood',[-7.8+dx,ty,1.2],[-7.8+dx,ty+2.2,1.2],.07,jc(0x5c4630,.06),true,5);beam('wood',[-7.8+dx,ty,3.2],[-7.8+dx,ty+1.8,3.2],.07,jc(0x5c4630,.06),true,5);}}
+ {const ty=H*2+.06;deck(9.1,ty,-9.2,3.8,6.0,{rail:['l','r','b'],posts:false});lgPost(10.85,-12.0,ty-.1,0);lgPost(10.85,-6.5,ty-.1,0);stairs(10.4,0,-0.8,10.4,ty,-6.2,1.1,{steel:true});
+  for(const z of [-11,-8])beam('iron',[9.62,ty-1.2,z],[10.85,ty-.12,z],.06,jc(0x4a4038,.05),true,5);lgTarp(8.6,ty+2.2,-10.4,3.0,2.0,.4);for(const dx of [-1.5,1.5]){beam('wood',[8.6+dx,ty,-10.4],[8.6+dx,ty+2.2,-10.4],.07,jc(0x5c4630,.06),true,5);beam('wood',[8.6+dx,ty,-8.4],[8.6+dx,ty+1.8,-8.4],.07,jc(0x5c4630,.06),true,5);}}
+ // ---- projecting throne bay: a timber room on the front of the bulkhead, deck on posts, side walls with windows, canopy gable with horns, twin steel stairs
+ const ty=4.3,bd=5.0;
+ deck(0,ty,fz+bd/2,8.6,bd,{rail:['f'],posts:false});
+ for(const sx of [-1,1]){lgPost(sx*4.25,fz+bd-.2,ty+3.4,0,.26);lgPost(sx*4.25,fz+.3,ty+3.4,ty,.2);beam('iron',[sx*4.25,ty-1.6,fz+.1],[sx*4.25,ty-.12,fz+2.2],.08,jc(0x4a4038,.05));beam('iron',[sx*4.25,ty-1.6,fz+2.6],[sx*4.25,ty-.12,fz+bd-.6],.08,jc(0x4a4038,.05));
+  box('plank',sx*4.15,ty,fz,.3,3.4,bd-1.0,jc(sx<0?0x8a5a30:0xa83a2c,.06));W(sx*4.32,0,fz+1.4,sx*PI/2,()=>win(0,ty+1.0,0,1.0,1.1,{lit:true}));W(sx*4.32,0,fz+3.2,sx*PI/2,()=>win(0,ty+1.0,0,1.0,1.1,{shutters:true}));}
+ W(0,ty+3.4,fz+bd/2,PI/2,()=>lgGable(0,0,0,bd,9.4,1.8,{ov:.3,col:0xa83a2c,col2:0xc99a2e}));
+ for(const sx of [-1,1]){beam('wood',[sx*.2,ty+5.25,fz+bd+.32],[sx*2.2,ty+6.7,fz+bd+.32],.14,jc(0x3a2a1c,.05),true,6);cone('iron',sx*2.2,ty+6.7,fz+bd+.32,.1,.5,jc(0xd8d0c0,.03),6);}
  stairs(-3.3,0,fz+bd+4.3,-3.3,ty,fz+bd,1.2,{steel:true});stairs(3.3,0,fz+bd+4.3,3.3,ty,fz+bd,1.2,{steel:true});
  W(0,ty,fz+.6,0,()=>{box('sheet',0,0,0,1.3,.6,.9,jc(0x9a3a2c,.05));box('sheet',0,.6,-.4,1.3,1.9,.14,jc(0x9a3a2c,.05));cyl('iron',0,1.9,-.34,.55,.08,jc(0xdcd8cc,.04),14);
   for(const sx of [-1,1]){beam('iron',[sx*.65,.6,-.4],[sx*1.0,2.6,-.5],.07,jc(0x3a3430,.05),true,5);beam('iron',[sx*.65,1.3,-.4],[sx*1.3,2.2,-.5],.06,jc(0x3a3430,.05),true,5);}});
  sph('glow',0,ty+3.0,fz+.9,.12,jc(0xffd890,.03));
- // crown of the bulkhead: spikes and horns
  for(let k=-4;k<=4;k++)cone('iron',k*1.0,bh+.3,bz,.09,.9+(k%2?0:.5),jc(0x3a3430,.05),6);
- for(const sx of [-1,1]){beam('iron',[sx*4.6,bh+.3,bz],[sx*5.4,bh+2.2,bz],.09,jc(0x3a3430,.05),true,5);beam('iron',[sx*4.2,bh+.3,bz],[sx*3.9,bh+2.6,bz],.07,jc(0x3a3430,.05),true,5);}
  sph('plain',0,bh+.75,bz+.2,.3,jc(0xe0d6c0,.03));
- // ---- gate wall: bus on the east, sheet-and-post palisade with spiked tops on the west, side fences along the wings
- const wz=9.4;W(6.5,0,wz,0,()=>bus({len:8.4}));
+ // ---- gate wall in front of the wings: bus on the east, sheet-and-post palisade with spiked tops, side fences
+ const wz=13.2;W(6.5,0,wz,0,()=>bus({len:8.4}));
  fenceRun(-11.6,wz,-2.2,wz,3.4,{type:'sheet'});for(let x=-11.6;x<=-2.1;x+=1.5)cvSpike(x,wz,3.9+rr(-.2,.2),0x4a4038);
  fenceRun(9.6,wz,11.6,wz,3.4,{type:'sheet'});
- for(const sx of [-1,1]){fenceRun(sx*11.6,wz,sx*11.6,bz+1,3.4,{type:'sheet'});for(let z=wz;z>bz;z-=2.0)cvSpike(sx*11.6,z,3.8+rr(-.2,.2),0x4a4038);}
+ for(const sx of [-1,1]){fenceRun(sx*11.6,wz,sx*11.6,-16,2.4,{type:'sheet'});for(let z=wz;z>-16;z-=2.0)cvSpike(sx*11.6,z,3.8+rr(-.2,.2),0x4a4038);}
+ fenceRun(-11.6,-16.3,11.6,-16.3,2.4,{type:'sheet'});
  for(const gx of [-1.9,1.9]){cvPole(gx,wz,5.2,.2,0x4a3a2c);cyl('iron',gx,4.9,wz+.2,.5,.06,jc(0xdcd8cc,.04),14);sph('plain',gx,5.4,wz,.26,jc(0xe0d6c0,.03));}
  beam('wood',[-1.9,4.7,wz],[1.9,4.7,wz],.2,jc(0x4a3a2c,.05),true,7);
- // trophies: bonnets and hubcaps on spiked poles
- for(const [x,z,h] of [[-6,7.6,4.2],[-3.6,7.4,3.6],[3.6,7.4,3.6],[5.5,7.6,4.2]])cvSpike(x,z,h,0x4a4038);
- for(const [x,z] of [[-6,7.6],[5.5,7.6]])box('sheet',x,2.6,z,1.3,.06,.9,jc(pick([0xa83a2c,0x2f5f8f,0xd8a020]),.05),.4,.3,0);
- for(let k=0;k<5;k++){cyl('iron',-3.6,1.2+k*.32,7.4,.32-.02*k,.05,jc(k%2?0xdcd8cc:0xb8902a,.05),12);cyl('iron',3.6,1.2+k*.32,7.4,.32-.02*k,.05,jc(k%2?0xb8902a:0xdcd8cc,.05),12);}
- for(let k=0;k<3;k++)barrel(-6.4+k*.5,0,3.6);tireRing(-5.6,1.6,.8,2,0,TAU);fire(-5.6,.44,1.6,.3);crate(5.6,0,4.4,.7,.2);sacks(5.0,0,5.0,4);junkPile(-5.5,5.8,1.2,7);lamp(4.6,0,3.6,3.8);lamp(-4.6,0,3.6,3.8);
- // ---- sockets
- for(const [x,y,z,h] of [[-5.0,0,fz+bd+.6,8.4],[5.0,0,fz+bd+.6,8.4],[-9.6,CT.H*2+.06,-.8,4.4],[10.9,CT.H*2+.06,-.8,4.4],[11.0,0,wz-.1,7.4]]){if(y<.1)cvPole(x,z,y+h,.07);else lgPost(x,z,y+h,y-.05,.07);sock('banner',x,y+h-.05,z+.06,0,{w:.8,h:2.6});}
+ for(const [x,z,h] of [[-6,9.6,4.2],[-3.6,9.4,3.6],[3.6,9.4,3.6],[5.5,9.6,4.2]])cvSpike(x,z,h,0x4a4038);
+ for(const [x,z] of [[-6,9.6],[5.5,9.6]])box('sheet',x,2.6,z,1.3,.06,.9,jc(pick([0xa83a2c,0x2f5f8f,0xd8a020]),.05),.4,.3,0);
+ for(let k=0;k<5;k++){cyl('iron',-3.6,1.2+k*.32,9.4,.32-.02*k,.05,jc(k%2?0xdcd8cc:0xb8902a,.05),12);cyl('iron',3.6,1.2+k*.32,9.4,.32-.02*k,.05,jc(k%2?0xb8902a:0xdcd8cc,.05),12);}
+ for(let k=0;k<3;k++)barrel(-5.6+k*.5,0,5.6);tireRing(-4.6,2.2,.8,2,0,TAU);fire(-4.6,.44,2.2,.3);crate(5.0,0,5.0,.7,.2);sacks(4.6,0,6.2,4);junkPile(-5.5,8.6,1.2,7);lamp(4.6,0,4.0,3.8);lamp(-4.6,0,4.0,3.8);junkPile(0,-17.6,1.4,7);
+ // ---- sockets: banners on their own free poles beside the bay, at the gate and on the terraces
+ for(const [x,y,z,h] of [[-5.6,0,fz+bd+.9,8.6],[5.6,0,fz+bd+.9,8.6],[11.0,0,wz-.1,7.4]]){cvPole(x,z,y+h,.07);sock('banner',x,y+h-.05,z,0,{w:.8,h:2.6});}
  for(const x of [-1.9,1.9])sock('flag',x,5.5,wz,0,{w:1.4,h:.8});
  beam('iron',[0,bh+2.6,bz],[0,bh+4.6,bz],.07,jc(0x4a4038,.05),true,5);sock('flag',0,bh+4.6,bz,0,{w:1.6,h:.9});
- lgAwn(-7.18,2.5,-4.4,PI/2,2.0,1.3,.5);lgAwn(7.18,2.5,-4.0,-PI/2,2.0,1.3,.5);
-  sock('emblem',0,ty+4.3,fz+bd+.05,0,{w:1.3,h:1.3});sock('emblem',-2.6,ty+2.6,fz+.06,0,{w:1.2,h:1.2});sock('emblem',2.6,ty+2.6,fz+.06,0,{w:1.2,h:1.2});sock('paint',-8.4+1.22+.02,CT.H+1.3,-4.7,PI/2,{w:1.8,h:1.0});}
+ sock('emblem',0,ty+4.3,fz+bd+.05,0,{w:1.3,h:1.3});sock('emblem',-2.6,ty+2.6,fz+.06,0,{w:1.2,h:1.2});sock('emblem',2.6,ty+2.6,fz+.06,0,{w:1.2,h:1.2});sock('paint',-7.16,H+1.3,-9.0,PI/2,{w:1.8,h:1.0});}
 
 // ================================================================== shaman hut
 defBuilding({key:'shaman',name:'Shaman hut',seed:4440,tags:{type:['religious'],size:'small',core:'tyre dome',materials:['tyres','earth','bottle glass','hubcaps','rebar']},w:13,d:13,h:8.5,build:cvShaman});
