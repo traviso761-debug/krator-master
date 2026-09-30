@@ -154,21 +154,21 @@ function cvChief(o){
  door(0,.3,bz-.35,2.0,3.05,{step:false,col:0x7a2e28});                                    // the main entrance, facing +z, under the throne bay
  const c=[0xa83a2c,0x2f7f8e,0xd8a020,0x4d6f3c,0x2f5f8f,0xc45a30,0x8a3a6a];if(o.v===1)c.reverse();
  // ---- thick bulkhead: chunky door reveal, corner piers, cornice
- for(const sx of [-1,1]){box('conc',sx*1.55,.3,bz+.5,.6,3.5,.9,cw2);box('conc',sx*4.9,0,bz+.45,1.3,bh,1.5,cw);box('conc',sx*4.9,bh,bz+.45,1.6,.3,1.8,cw2);cone('conc',sx*4.9,bh+.3,bz+.45,.55,1.1,cw2,4);}
- box('conc',0,3.8,bz+.55,3.7,.5,1.0,cw2);box('conc',0,bh-.35,dz-.05,10.4,.35,1.4,cw2);
+ for(const sx of [-1,1]){box('conc',sx*1.4,.3,bz+.45+.02+.25,.6,3.5,.5,cw2);box('conc',sx*5.15,0,bz+.15,1.3,bh,1.5,cw);box('conc',sx*5.15,bh,bz+.15,1.6,.3,1.8,cw2);cone('conc',sx*5.15,bh+.3,bz+.15,.55,1.1,cw2,4);}
+ box('conc',0,3.75,bz+.45+.02+.25,3.4,.5,.5,cw2);box('conc',0,bh-.35,bz+.45+.02+.4,9.0,.35,.8,cw2);
  // ---- the rear hall: a solid two-storey block behind the bulkhead with a big gable roof
  const hz=-9.5,hd=8.1,HF=[.3,3.6],SB=3.3;
  box('earth',0,0,hz,10,6.9,hd,jc(0xa89880,.05));
- for(let s=0;s<2;s++){const sc=[c[1],c[5]][s];patchWall(5.04,HF[s],hz,hd,SB,PI/2,{col:sc});patchWall(-5.04,HF[s],hz,hd,SB,-PI/2,{col:c[s?0:2]});patchWall(0,HF[s],hz-hd/2-.05,10,SB,PI,{col:sc});box('plank',0,HF[s]-.18,hz,10.5,.36,hd+.4,jc(0x4a3a2c,.06));}
+ for(let s=0;s<2;s++){const sc=[c[1],c[5]][s];lgClad(5.04,HF[s],hz,hd,SB,PI/2,sc);lgClad(-5.04,HF[s],hz,hd,SB,-PI/2,c[s?0:2]);lgClad(0,HF[s],hz-hd/2-.05,10,SB,PI,sc);box('plank',0,HF[s]-.18,hz,10.5,.36,hd+.4,jc(0x4a3a2c,.06));}
  W(0,6.9,hz,PI/2,()=>lgGable(0,0,0,hd+.8,10,2.6,{ov:.5,col:0xb85a3a,col2:0xc99a2e}));
  for(const [x,z] of [[-3.2,-7.6],[3.2,-11.4]]){box('earth',x,8.0,z,.9,3.2,.9,jc(0xa8503a,.06));box('conc',x,11.2,z,1.1,.18,1.1,jc(0x6a6660,.05));}
  for(let s=0;s<2;s++){const sill=HF[s]+1.0;for(const sd of [-1,1])for(const z of [-9.0,-12.2])W(sd*5.1,0,z,sd*PI/2,()=>win(0,sill,0,.9,1.2,{lit:(s+z)%2===0,shutters:s===0}));
-  for(const x of [-3.4,-1.2,1.2,3.4])W(x,0,hz-hd/2-.03,PI,()=>win(0,sill,0,1.0,1.2,{lit:s===1}));}
- W(0,0,hz-hd/2-.03,PI,()=>door(0,HF[0],0,1.1,2.2,{step:true,col:0x2f5f8f}));lgAwn(0,2.8,hz-hd/2-.02,PI,2.4,1.2,.4);
+  for(const x of [-3.4,-1.2,1.2,3.4])W(x,0,hz-hd/2-.10,PI,()=>win(0,sill,0,1.0,1.2,{lit:s===1}));}
+ W(0,0,hz-hd/2-.10,PI,()=>lgDoor(0,HF[0],0,1.1,2.2,{step:true,col:0x2f5f8f}));lgAwn(0,2.85,hz-hd/2-.12,PI,2.4,1.2,.4);
  for(const sd of [-1,1]){deck(sd*5.85,HF[1],-11.2,1.6,3.0,{rail:sd>0?['r','f','b']:['l','f','b'],posts:false});for(const z of [-12.5,-9.9])beam('iron',[sd*5.05,HF[1]-1.0,z],[sd*6.6,HF[1]-.12,z],.06,jc(0x4a4038,.05),true,5);lgPost(sd*6.6,-12.6,HF[1]-.12,0,.12);lgPost(sd*6.6,-9.8,HF[1]-.12,0,.12);
-  W(sd*5.1,0,-11.2,sd*PI/2,()=>door(0,HF[1],0,1.0,2.1,{step:false}));lgAwn(sd*5.05,HF[1]+2.5,-11.2,sd*PI/2,1.8,1.2,.4);}
+  W(sd*5.1,0,-11.2,sd*PI/2,()=>lgDoor(0,HF[1],0,1.0,2.1,{step:false}));lgAwn(sd*5.05,HF[1]+2.5,-11.2,sd*PI/2,1.8,1.2,.4);}
  // annex rooms between the hall and the wings (solid boxes with flat sheet roofs)
- for(const sd of [-1,1]){box('plank',sd*6.1,0,-7.6,2.3,3.5,5.2,jc(sd<0?0x8a5a30:0x5a7a4a,.06));box('sheet',sd*6.1,3.5,-7.6,2.7,.16,5.6,jc(0x8a4a2a,.06));W(sd*7.26,0,-7.6,sd*PI/2,()=>win(0,1.2,0,.9,1.0,{lit:true}));}
+ for(const sd of [-1,1]){box('plank',sd*6.15,0,-7.6,2.0,3.5,5.2,jc(sd<0?0x8a5a30:0x5a7a4a,.06));box('sheet',sd*6.15,3.5,-7.6,2.0,.16,5.2,jc(0x8a4a2a,.06));W(sd*7.16,0,-7.6,sd*PI/2,()=>win(0,1.2,0,.9,1.0,{lit:true}));}
  // rear tower: a three-box stack with a hipped roof, window rows, dish and flag
  for(let k=0;k<3;k++)lgBox(3.6,H*k,-15.3,0,CT.L20,c[(k+2)%c.length],()=>{win(-1.2,1.05,1.22,1.1,1.0,{lit:k===2||o.v===1});porthole(1.2,1.4,1.22,.32);if(k===0)door(0,.16,1.22,.95,1.95,{step:true});});
  lgGable(3.6,H*3+.05,-15.3,6.4,2.7,1.3,{ov:.25,col:0xc45a30,col2:0x8a4a2a});lgDish(4.6,H*3+.05+1.0,-15.6,.2,.6);
@@ -179,7 +179,7 @@ function cvChief(o){
   lgAwn(sd*7.18,2.7,zc,ry,2.0,1.1,.4);};
  wing(-1,-6.1,3,[c[0],c[1],c[3]]);wing(-1,6.1,2,[c[2],c[4]]);wing(1,-6.1,2,[c[5],c[6]]);wing(1,6.1,1,[c[3]]);
  for(let k=1;k<=2;k++)lgBox(8.4,H*k,9.15,-PI/2,CT.L20,c[(k+3)%c.length],()=>{win(-1.2,1.05,1.22,1.2,1.0,{lit:true});porthole(1.4,1.4,1.22,.32);});   // gate tower over the east front box
- lgGable(-8.4,H*3+.05,-6.1,CT.L40+.1,2.6,1.2,{ov:.2,col:0xc45a30,col2:0x8a4a2a});                       // west rear: a long hipped hut roof
+ W(-8.4,H*3+.05,-6.1,PI/2,()=>lgGable(0,0,0,CT.L40,2.6,1.2,{ov:.2,col:0xc45a30,col2:0x8a4a2a}));                       // west rear: a long hipped hut roof
  lgDish(8.4,H*3+.05,9.15,-.4,.7);antenna(9.4,H*3,9.6,3);lgSolar(-8.4,H*2+.06,6.0,2.4,1.2,0,.5);
  // west terrace over the front box, steel stair to its south edge; east terrace over the rear box, stair along the outer face
  {const ty=H*2+.06;deck(-7.8,ty,3.15,4.4,5.7,{rail:['l','r','b'],posts:false});lgPost(-5.7,.5,ty-.1,0);lgPost(-5.7,3.9,ty-.1,0);stairs(-6.4,0,11.4,-6.4,ty,6.0,1.1,{steel:true});
@@ -191,8 +191,8 @@ function cvChief(o){
  const ty=4.3,bd=5.0;
  deck(0,ty,fz+bd/2,8.6,bd,{rail:['f'],posts:false});
  for(const sx of [-1,1]){lgPost(sx*4.25,fz+bd-.2,ty+3.4,0,.26);lgPost(sx*4.25,fz+.3,ty+3.4,ty,.2);beam('iron',[sx*4.25,ty-1.6,fz+.1],[sx*4.25,ty-.12,fz+2.2],.08,jc(0x4a4038,.05));beam('iron',[sx*4.25,ty-1.6,fz+2.6],[sx*4.25,ty-.12,fz+bd-.6],.08,jc(0x4a4038,.05));
-  box('plank',sx*4.15,ty,fz,.3,3.4,bd-1.0,jc(sx<0?0x8a5a30:0xa83a2c,.06));W(sx*4.32,0,fz+1.4,sx*PI/2,()=>win(0,ty+1.0,0,1.0,1.1,{lit:true}));W(sx*4.32,0,fz+3.2,sx*PI/2,()=>win(0,ty+1.0,0,1.0,1.1,{shutters:true}));}
- W(0,ty+3.4,fz+bd/2,PI/2,()=>lgGable(0,0,0,bd,9.4,1.8,{ov:.3,col:0xa83a2c,col2:0xc99a2e}));
+  box('plank',sx*4.15,ty,fz+(bd-1.0)/2,.3,3.4,bd-1.0,jc(sx<0?0x8a5a30:0xa83a2c,.06));W(sx*4.32,0,fz+1.4,sx*PI/2,()=>win(0,ty+1.0,0,1.0,1.1,{lit:true}));W(sx*4.32,0,fz+3.2,sx*PI/2,()=>win(0,ty+1.0,0,1.0,1.1,{shutters:true}));}
+ W(0,ty+3.4,fz+(bd+.3)/2,PI/2,()=>lgGable(0,0,0,bd-.3,9.4,1.8,{ov:.3,col:0xa83a2c,col2:0xc99a2e}));
  for(const sx of [-1,1]){beam('wood',[sx*.2,ty+5.25,fz+bd+.32],[sx*2.2,ty+6.7,fz+bd+.32],.14,jc(0x3a2a1c,.05),true,6);cone('iron',sx*2.2,ty+6.7,fz+bd+.32,.1,.5,jc(0xd8d0c0,.03),6);}
  stairs(-3.3,0,fz+bd+4.3,-3.3,ty,fz+bd,1.2,{steel:true});stairs(3.3,0,fz+bd+4.3,3.3,ty,fz+bd,1.2,{steel:true});
  W(0,ty,fz+.6,0,()=>{box('sheet',0,0,0,1.3,.6,.9,jc(0x9a3a2c,.05));box('sheet',0,.6,-.4,1.3,1.9,.14,jc(0x9a3a2c,.05));cyl('iron',0,1.9,-.34,.55,.08,jc(0xdcd8cc,.04),14);
