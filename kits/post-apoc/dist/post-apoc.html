@@ -1268,14 +1268,14 @@ function cvFlags(a,b,n,cols){beam('plain',a,b,.012,jc(0x6a5a44,.05),true,3);for(
 const cvFlagCols=[0xc9442a,0xd8a020,0x2f7f8e,0xe8dcc0,0x4d6f3c,0x8a3a6a];
 
 // ================================================================== longhouse (three interior layouts: v0 feast hall, v1 sleeping hall, v2 council hall)
-defBuilding({key:'longhouse',name:'Village longhouse',seed:4410,tags:{type:['civic','multi-family dwelling'],size:'large',core:'timber hall with sheet roof',materials:['plank','corrugated sheet','tyres','earth','timber']},w:39,d:18,h:9.5,build:cvLonghouse});
+defBuilding({key:'longhouse',name:'Village longhouse',seed:4410,tags:{type:['civic','multi-family dwelling'],size:'large',core:'timber hall with sheet roof',materials:['plank','corrugated sheet','tyres','earth','timber']},w:40,d:18,h:9.5,build:cvLonghouse});   // o.front:'open'|'closed' picks the front wall (default 'closed'; v=1 and v=2 default to 'open' so their furniture layouts read from the street); o.v 0/1/2 = feast / sleeping / council hall
 function cvLonghouse(o){
- const v=o.v|0,HW=30,HD=10,py=.56,wy=3.7,rise=3.0,fz=HD/2;
+ const v=o.v|0,HW=30,HD=10,py=.6,wy=3.7,rise=3.0,fz=HD/2,open=(o.front||(v>=1?'open':'closed'))==='open';
  // tyre-and-earth plinth (top .45), plank floor (top .56) inside the walls, boardwalk decks at .56 start OUTSIDE the wall line: no coplanar surfaces
  box('earth',0,0,0,HW+.6,.45,HD+.6,jc(0xa89880,.05));
  for(const sz of [-1,1])tireWall(-HW/2-.1,sz*(HD/2+.35),HW/2+.1,sz*(HD/2+.35),2,{cap:false});
  for(const sx of [-1,1])tireWall(sx*(HW/2+.35),-HD/2,sx*(HW/2+.35),HD/2,2,{cap:false});
- box('plank',0,.45,0,HW-.3,.11,HD-.3,jc(0x8a6a44,.06));
+ box('plank',0,.45,0,HW-.3,.15,HD-.3,jc(0x8a6a44,.06));
  // back wall (z-): closed patchwork with small doors and windows, porch, benches
  W(0,0,0,PI,()=>{patchWall(0,py,fz,HW,wy-py,0);
   for(let k=0;k<6;k++){const x=-12.5+k*5;if(k%2===0)door(x,py,fz+.05,1.3,2.3,{step:false,col:pick([0x7a2e28,0x2f5f8f,0x3b7f6e,0xc99a2e])});else win(x,py+1.0,fz+.06,1.2,1.1,{lit:true,shutters:true});}
@@ -1284,16 +1284,32 @@ function cvLonghouse(o){
   for(const x of [-8,-1.5,5.5,11])cvBench(x,py,fz+.55,3.0);for(const px of [-13,13])barrel(px,py,fz+1.6);
   for(let k=0;k<3;k++)sock('awning',-6+k*6,wy-.5,fz+.02,0,{w:4.6,d:1.6,drop:.5,h:wy-.5-py+.02});
   for(const x of [-9.5,-3.5,2.5,8.5]){cvPole(x,fz+2.55,4.6,.08);sock('banner',x,4.5,fz+2.6,0,{w:.7,h:2.2});}});
- // front wall (z+): open bays so the hall reads from the street: three door bays and two sill bays between plank pilasters
+ // front wall (z+): 'open' = bays so the hall reads from the street; 'closed' = solid wall with framed doors
  const ops=[];for(const x of [-12,0,12])ops.push({x0:x-1.7,x1:x+1.7,y0:py,y1:py+2.55});for(const x of [-6,6])ops.push({x0:x-2.3,x1:x+2.3,y0:py+.9,y1:py+2.55});
- wallOpen('plank',0,py,fz,HW,wy-py,.14,ops,0x9a7a52);
+ if(open){
+ // front wall (z+): open bays so the hall reads from the street: three door bays and two sill bays between plank pilasters
+ wallOpen('plank',0,py-.03,fz,HW,wy-py+.03,.14,ops,0x9a7a52);
  for(const x of [-9,-3,3,9])lgPatch(x,py+1.6,fz+.08,1.4,1.0,pick([0x2f7f8e,0xc45a30,0xd8a020,0x4d6f3c]));
- for(const x of [-15,-9,-3,3,9,15]){box('plank',x,py,fz+.02,.36,wy-py,.3,jc(0x5c4630,.06));}
- for(const x of [-12,0,12]){box('plank',x,py+2.55,fz+.02,3.9,.16,.2,jc(0x5c4630,.06));}
+ for(const x of [-15,-9,-3,3,9,15]){box('plank',x,py-.03,fz+.02,.36,wy-py-.05,.3,jc(0x5c4630,.06));}
+ for(const x of [-12,0,12]){box('plank',x,py+2.52,fz+.02,3.9,.16,.2,jc(0x5c4630,.06));}
  deck(0,py,fz+1.3,HW-1.5,2.6,{posts:false,col:0x9a7a52});stairs(0,0,fz+4.6,0,py,fz+2.6,2.2);
  for(const px of [-13,13]){barrel(px,py,fz+1.6);barrel(px+.5,py,fz+2.0);}
- for(const x of [-12,12])sock('awning',x,py+2.7,fz+.02,0,{w:3.6,d:1.5,drop:.4,h:2.3});
+ for(const x of [-12,12])sock('awning',x,py+2.78,fz+.02,0,{w:3.6,d:1.5,drop:.4,h:2.3});
  for(const x of [-9,-3,3,9]){cvPole(x,fz+1.8,wy+1.75,.09);sock('banner',x,wy+1.65,fz+1.86,0,{w:.7,h:2.2});}   // props that hold the front roof slope lifted
+ }else{ // closed front: solid plank wall, three framed door bays (the middle one open a crack, the outer two ajar), small windows, porch roof at normal height
+  patchWall(0,py-.03,fz,HW,wy-py+.03,0);
+  for(const x of [-12,12]){const sg=x>0?1:-1,hx=x-sg*.7,an=1.1;box('iron',x,py,fz+.075,1.4,2.3,.03,jc(0x14100c,.02));
+   for(const sx of [-1,1])box('plank',x+sx*.78,py,fz+.09,.14,2.5,.16,jc(0x5c4630,.06));box('plank',x,py+2.4,fz+.09,1.7,.16,.16,jc(0x5c4630,.06));
+   box('plank',hx+sg*Math.cos(an)*.62,py,fz+.12+Math.sin(an)*.62,1.24,2.2,.07,jc(pick([0x7a2e28,0x2f5f8f,0xc99a2e]),.06),-sg*an);}
+  door(0,py,fz+.05,1.5,2.4,{step:false,col:0x7a2e28});
+  for(const x of [-8,-5,5,8])win(x,py+1.1,fz+.07,1.0,.9,{lit:true,shutters:x%2!==0});
+  for(const x of [-9,-3,3,9])lgPatch(x,py+1.9,fz+.08,1.3,.9,pick([0x2f7f8e,0xc45a30,0xd8a020,0x4d6f3c]));
+  lgLean(0,fz,HW-1.5,2.7,wy-.1,wy-.8,{col:0xb85a3a});
+  for(const x of [-12,0,12])sock('awning',x,py+2.78,fz+.02,0,{w:x?3.6:2.6,d:1.5,drop:.4,h:2.3});
+  for(const x of [-9,-3,3,9]){cvPole(x,fz+2.55,4.6,.08);sock('banner',x,4.5,fz+2.6,0,{w:.7,h:2.2});}
+  deck(0,py,fz+1.3,HW-1.5,2.6,{posts:false,col:0x9a7a52});stairs(0,0,fz+4.6,0,py,fz+2.6,2.2);
+  for(const px of [-13,13]){barrel(px,py,fz+1.6);barrel(px+.5,py,fz+2.0);}
+ }
  // ---- interior layouts (hall floor top y=.56, x -14.8..14.8, z -4.9..4.9)
  const lampH=(x,z)=>{beam('plain',[x,wy+.6,z],[x,wy-.35,z],.012,jc(0x4a4038,.05),true,3);sph('glow',x,wy-.55,z,.17,jc(0xffd890,.03));cyl('iron',x,wy-.4,z,.22,.04,jc(0x3a3430,.05),8);};
  if(v===0){ // feast hall: two long tables with benches, hearth pits down the middle, a head table on a dais
@@ -1325,7 +1341,7 @@ function cvLonghouse(o){
  }
  // double-pitched sheet roof with smoke vents along the ridge
  // roof: back slope down to the eave, FRONT slope propped up 1.8 m so the open hall shows under it (a lifted side)
- {const hw=HW/2+.7,lift=1.8,ze=fz+1.8;lgRoof('corr',-hw,hw,-(HD/2+.49),wy,0,wy+rise,.07,jc(0x3b7f8e,.05));lgRoof('corr',-hw,hw,ze,wy+lift,0,wy+rise,.07,jc(0xb85a3a,.05));
+ if(!open)lgGable(0,wy,0,HW,HD,rise,{ov:.7,col:0x3b7f8e,col2:0xb85a3a});else {const hw=HW/2+.7,lift=1.8,ze=fz+1.8;lgRoof('corr',-hw,hw,-(HD/2+.49),wy,0,wy+rise,.07,jc(0x3b7f8e,.05));lgRoof('corr',-hw,hw,ze,wy+lift,0,wy+rise,.07,jc(0xb85a3a,.05));
   box('iron',0,wy+rise-.02,0,HW+1.4,.1,.16,jc(0x5a4a3c,.05));const yf=wy+rise-(rise-lift)*(HD/2)/ze;
   for(const sx of [-1,1])poly('plank',[[sx*HW/2,wy,-HD/2],[sx*HW/2,wy,HD/2],[sx*HW/2,yf,HD/2],[sx*HW/2,wy+rise,0],[sx*HW/2,wy+rise*.09,-HD/2]],jc(0x8a6a44,.06),true);}
  for(let k=0;k<6;k++){const x=-12.5+k*5;box('plank',x,wy+rise-.05,0,.7,.6,.7,jc(0x6a5238,.06));lgRoof('corr',x-.55,x+.55,.6,wy+rise+1.05,-.6,wy+rise+1.05,.05,jc(0x5a5a56,.05));
