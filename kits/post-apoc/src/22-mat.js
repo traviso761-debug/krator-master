@@ -21,7 +21,7 @@ mkMat('cloth',TEX.weave,{rough:1,side:THREE.DoubleSide});
 mkMat('chain',TEX.chain,{rough:.6,metal:.6,side:THREE.DoubleSide,alphaTest:.4});
 mkMat('glass',null,{rough:.08,metal:.1,transparent:true,opacity:.78,depthWrite:false,emissive:0x061012,ei:.5});
 {const m=new THREE.MeshBasicMaterial({vertexColors:true});m.toneMapped=false;MAT.glow=m;}   // lamps, fire, lit windows
-mkMat('water',null,{rough:.1,metal:.35,transparent:true,opacity:.9,depthWrite:false});TILE.water=1;   // dock water: a plate just above the ground plane
+mkMat('water',null,{rough:.1,metal:.35,transparent:true,opacity:.9,depthWrite:false});TILE.water=1;MAT.water.color.setRGB(.5,.58,.56);   // muted: harbour water should not out-shout the rust   // dock water: a plate just above the ground plane
 MAT.plain=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.9});           // untextured painted stuff (leaves, hides, ropes)
 TILE.plain=1;TILE.rubber=1;TILE.glass=1;TILE.glow=1;
 const SRGB2LIN=c=>{c.convertSRGBToLinear();return c;};
