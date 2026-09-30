@@ -10,13 +10,13 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`settlements/girder`](settlements/girder/INDEX.md) | 26 | 503 | 88 | Girder: an outlying Beast Rider village in the central-crater hyperjungle. |
 | [`settlements/highlands`](settlements/highlands/INDEX.md) | 45 | 745 | 53 | Highlands: Republican, Rustic and Tribal building kits for the temperate highlands of the Inner Wall, and the town of Roketstad. |
 | [`settlements/iziz`](settlements/iziz/INDEX.md) | 50 | 426 | 53 | Iziz: the city rebuilt on the Iziz Vernacular style and the Ancients kit. |
-| [`settlements/locus`](settlements/locus/INDEX.md) | 56 | 1083 | 262 | Locus: a fork of the Yuni engine in the eastern abyss, with its own kit sheet and plant catalogue. |
+| [`settlements/locus`](settlements/locus/INDEX.md) | 55 | 821 | 84 | Locus: a fork of the Yuni engine in the eastern abyss, with its own kit sheet and plant catalogue. |
 | [`settlements/mavs-refuge`](settlements/mavs-refuge/INDEX.md) | 28 | 615 | 69 | Mav's Refuge: a refuge in the hypertropic jungle on the lee shore of the Ring Sea. |
 | [`settlements/reedlake`](settlements/reedlake/INDEX.md) | 32 | 310 | 33 | Reed Lake: a floating reed-lake village and its kit. |
 | [`settlements/screamers`](settlements/screamers/INDEX.md) | 72 | 536 | 45 | Hexahedron: the Screamers' tribal village in and under a ruined arcology, forked from the Ancients kit. |
 | [`settlements/voth`](settlements/voth/INDEX.md) | 62 | 1786 | 70 | Voth: a Venice/Vivec-like Dunmer city on an enclosed brackish bay, with the most complete life layer and collision system. |
 | [`settlements/yuni`](settlements/yuni/INDEX.md) | 44 | 875 | 194 | Yuni: the city, plus its building-kit, furniture and plant sheets. |
-| [`kits/ancients`](kits/ancients/INDEX.md) | 88 | 1505 | 81 | The Ancients kit: ruined megastructures of the ancient civilisation, 33 structure types, one target per site. |
+| [`kits/ancients`](kits/ancients/INDEX.md) | 89 | 1518 | 81 | The Ancients kit: ruined megastructures of the ancient civilisation, 33 structure types, one target per site. |
 | [`biomes/eastabyss`](biomes/eastabyss/INDEX.md) | 17 | 205 | 54 | Biome kit: see `biomes/README.md`. |
 | [`biomes/hyperjungle`](biomes/hyperjungle/INDEX.md) | 19 | 176 | 33 | Biome kit: see `biomes/README.md`. |
 | [`biomes/nwlowlands`](biomes/nwlowlands/INDEX.md) | 17 | 205 | 56 | Biome kit: see `biomes/README.md`. |

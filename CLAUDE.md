@@ -47,6 +47,11 @@ python3 verify.py <built html> --assert ...           # see that build's README
 Every build is deterministic. After a refactor, rebuild and compare the output
 hashes against the previous commit's. Identical hashes prove nothing changed.
 
+## Publishing
+
+When a new or changed settlement, kit or biome goes to `main`, update and republish
+the Krator Worlds gallery (see the end of `README.md` and `gallery/README.md`).
+
 ## Shared and vendored code
 
 - `core/materials/` holds one copy of the material fragments the Ancients-lineage
