@@ -23,6 +23,7 @@ ABOUT = {
     'settlements/locus': 'Locus: a fork of the Yuni engine in the eastern abyss, with its own kit sheet and plant catalogue.',
     'settlements/girder': 'Girder: an outlying Beast Rider village in the central-crater hyperjungle.',
     'settlements/mavs-refuge': "Mav's Refuge: a refuge in the hypertropic jungle on the lee shore of the Ring Sea.",
+    'settlements/xanadu': 'Xanadu: the building kit of the southern Sultanate (Tibetan massing, Indian, Turkish and Persian detail) and the city of Erewhon.',
     'kits/ancients': 'The Ancients kit: ruined megastructures of the ancient civilisation, 33 structure types, one target per site.',
 }
 # Files that are generated or duplicated elsewhere: never edit or read them whole.

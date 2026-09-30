@@ -22,3 +22,6 @@ settlements/locus/publish/
 settlements/locus/locus-plants.html
 settlements/locus/yuni-*.html
 gallery/site/
+
+# verify.py variant-shot folders (shots-var etc.)
+shots-*/

@@ -2055,8 +2055,16 @@ XANADU.buildTrees=function(R,q){
  return{trees:TREES.length,heroes:st.heroes,far:st.fars,rings:st.rings,arches:st.arches,bySpecies:SP.map((S,i)=>S.key+':'+st.byS[i]).join(' '),clumps:st.clumps,blooms:st.blooms,pods:st.pods,fins:st.fins,fans:st.fans,
   tris:{trunk:st.trunk,limbs:st.limb,far:st.far,small:st.sapTris}};};
 XANADU._canopyH=function(x,z){let h=0;for(const T of XANADU.TREES){if(Math.hypot(x-T.x,z-T.z)<60)h=Math.max(h,T.y0+T.H);}return h||10;};
+// ---------------------------------------------------------------- one tree at a point (additive, for a world's gardens)
+// XANADU.treeAt(x,y,z,sp,{H,scale,lv}) builds a single hero of species sp at a world point, outside the zone passes
+// (a garden, a courtyard, an avenue). Draws from the biome's own PRNG; bake it with everything else.
+XANADU.treeAt=function(x,y,z,sp,opt){opt=opt||{};const S=SP[sp];if(!S||!B[sp])return null;if(!XANADU._meansDone){means();XANADU._meansDone=true;}
+ const st=XANADU._st||(XANADU._st={trunk:0,limb:0,far:0,sapTris:0,clumps:0,blooms:0,pods:0,moss:0,fronds:0,fins:0,fans:0,heroes:0,fars:0,rings:0,arches:0,byS:SP.map(()=>0)});
+ const T={x:x,z:z,y0:y-.4,sp:sp,H:rr(S.H[0],S.H[1]),rb:rr(S.rb[0],S.rb[1]),crownR:rr(S.crownR[0],S.crownR[1]),seed:ri(0,999999),wet:opt.wet==null?.6:opt.wet,lv:opt.lv==null?2:opt.lv};
+ if(opt.H){const f=opt.H/T.H;T.H=opt.H;T.rb*=Math.pow(f,.8);T.crownR*=Math.min(1.6,f);}
+ if(opt.scale){T.H*=opt.scale;T.rb*=Math.pow(opt.scale,.8);T.crownR*=opt.scale;}
+ const o0=BIO.owner;BIO.owner=[x,z];B[sp](T,st,T.lv);BIO.owner=o0;XANADU.TREES.push(T);hadd({x:x,z:z,r:T.rb*1.4+1});st.byS[sp]++;return T;};
 })();
-
 // ==================== 60-biome-xanadu-floor.js
 // ================================================================= XANADU — floor
 // Everything under the trees, by zone, from the same climate fields the tree
