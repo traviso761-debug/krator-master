@@ -77,7 +77,11 @@
   var s=document.createElement('script');
   s.src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
   if(location.protocol!=='file:') s.crossOrigin='anonymous';
-  s.onload=function(){ try{ BUILD(); }catch(e){ ERR('build: '+(e&&e.stack||e)); } };
+  /* three.js loads async and can arrive (from cache, instantly) before the parser has reached the big BUILD
+     script below: calling BUILD() then threw 'BUILD is not defined' and the loading screen never cleared.
+     Wait until the whole document is parsed. */
+  function go(){ try{ BUILD(); }catch(e){ ERR('build: '+(e&&e.stack||e)); } }
+  s.onload=function(){ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', go); else go(); };
   s.onerror=function(){ ERR('Could not load three.js from the CDN.'); };
   document.head.appendChild(s);
 })();
