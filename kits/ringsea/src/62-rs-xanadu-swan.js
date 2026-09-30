@@ -10,7 +10,8 @@ function buildRsXanaduSwan(){reseed(71200);
  rsHullMesh(B,H,'metal',(u,h,s)=>{if(h>.92)return RED;if(h<.34)return BLK;const row=Math.floor(h*9),k=(Math.floor(u*90+row*.5))%2;return k?GOLD:DGOLD;});rsFoam(B,H,.5);
  const dY=rsDeck(B,H,{bw:.3,col:0x7a1a18,mk:'cloth'});rsWale(B,H,.93,.07,'metal',GOLD);rsWale(B,H,.62,.05,'metal',0xf0cc60);
  // the swan: neck rising from the stem, head, beak, the flame crest; the tail at the stern
- const pb=H.pt(1,0,1);const neck=[[pb[0]-.6,pb[1]-.2,0],[pb[0]+.6,pb[1]+1.2,0],[pb[0]+.9,pb[1]+3.6,0],[pb[0]+.2,pb[1]+6.2,0],[pb[0]+.6,pb[1]+8.4,0],[pb[0]+1.6,pb[1]+9.2,0]];
+ // the neck is rooted 3.4 m inside the hull, where the shell is wide enough to swallow its base
+ const pb=H.pt(1,0,1);const uN=H.uAt(pb[0]-3.4);const neck=[[pb[0]-3.4,H.ys(uN)-.45,0],[pb[0]-1.6,H.ys(H.uAt(pb[0]-1.6))-.05,0],[pb[0]+.6,pb[1]+1.2,0],[pb[0]+.9,pb[1]+3.6,0],[pb[0]+.2,pb[1]+6.2,0],[pb[0]+.6,pb[1]+8.4,0],[pb[0]+1.6,pb[1]+9.2,0]];
  rsTube(B,'metal',neck,t=>.62*(1-.55*t),GOLD,60,12);
  const hd=[pb[0]+1.9,pb[1]+9.3,0];rsSphere(B,'metal',.5,hd,[1.25,.9,.8],GOLD,14,10);
  rsCone(B,'metal',.2,1.3,[hd[0]+1.05,hd[1]-.1,0],[0,0,-Math.PI/2+.25],0xe0a020,8);
@@ -18,8 +19,10 @@ function buildRsXanaduSwan(){reseed(71200);
  for(let i=0;i<7;i++){const a=.2+i*.32;rsCone(B,'metal',.1,1.4-i*.08,[hd[0]-.3-Math.cos(a)*.6,hd[1]+.3+Math.sin(a)*.5,0],[0,0,a-.2],GOLD,5);}
  for(let i=0;i<9;i++){const p=neck[Math.min(5,1+Math.floor(i/2))];rsCone(B,'metal',.08,.9,[p[0]-.5,p[1]+(i%2)*.4,0],[0,0,1.1],0xf0cc60,5);}
  rsSpine(B,H,.18,GOLD,null,null,'metal');
- const pS=H.pt(0,0,1);rsScroll(B,[pS[0]+.2,pS[1],0],1.8,1.3,.4,GOLD,-1,'metal');
- for(let i=0;i<5;i++)rsScroll(B,[pS[0]+.5,pS[1]-.1,(i-2)*.22],1.1-i*.05,1,.1,0xf0cc60,-1,'metal');
+ // the tail likewise grows out of the hull 3 m forward of the sternpost, then curls
+ const pS=H.pt(0,0,1);const uT=H.uAt(pS[0]+3);rsTube(B,'metal',[[pS[0]+3,H.ys(uT)-.4,0],[pS[0]+1.4,H.ys(H.uAt(pS[0]+1.4))-.05,0],[pS[0]+.2,pS[1],0]],.42,GOLD,16,10);
+ rsScroll(B,[pS[0]+.2,pS[1],0],1.8,1.3,.4,GOLD,-1,'metal');
+ for(let i=0;i<5;i++){const z=(i-2)*.22;rsTube(B,'metal',[[pS[0]+2.2,H.ys(uT)-.2,z*.5],[pS[0]+.5,pS[1]-.1,z]],.1,0xf0cc60,6,6);rsScroll(B,[pS[0]+.5,pS[1]-.1,z],1.1-i*.05,1,.1,0xf0cc60,-1,'metal');}
  // the paddlers: 25 a side, crimson and gilt, paddles on a quick shared stroke
  const pts=[];for(let i=0;i<25;i++){const x=lerp(-15,15,i/24);if(Math.abs(x)<5.5)continue;pts.push([x,dY(H.uAt(x))+.55,H.halfAt(H.uAt(x),dY(H.uAt(x)))*.55]);}
  for(const P of pts)for(const s of[-1,1])rsFigure(B,[P[0]-.3,P[1]-.55,s*P[2]],0,RED,true);

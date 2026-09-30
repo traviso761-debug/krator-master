@@ -33,7 +33,7 @@ const giant=new THREE.Sprite(new THREE.SpriteMaterial({map:giantTex,fog:false,tr
 // ---- the sea: one plane, scrolled normal map (94-rs-anim.js), the waterline at y=0
 TEX.rsWater.repeat.set(260,260);
 const RS_SEA=new THREE.MeshStandardMaterial({color:0x06222e,roughness:.24,metalness:.45,normalMap:TEX.rsWater,normalScale:new THREE.Vector2(.55,.55)});
-const RS_CZ=(Math.ceil(12/RS_COLS)-1)*RS_PZ/2;
+const RS_CZ=(Math.ceil(RS.order.length/RS_COLS)-1)*RS_PZ/2;
 const groundM=new THREE.Mesh(new THREE.PlaneGeometry(12000,12000),RS_SEA);groundM.rotation.x=-Math.PI/2;groundM.position.set(0,0,RS_CZ);groundM.userData.probeSkip=true;groundM.userData.isGround=true;scene.add(groundM);
 // ---- the far shore: the volcano NW across the sea, low islands, all unfogged and pre-hazed
 {reseed(79001);const far=(col,x,z,r,h,seg)=>{const m=new THREE.Mesh(new THREE.ConeGeometry(r,h,seg||24,1,true),new THREE.MeshBasicMaterial({color:col,fog:false}));m.position.set(x,h/2-2,z);m.userData.probeSkip=true;scene.add(m);return m;};

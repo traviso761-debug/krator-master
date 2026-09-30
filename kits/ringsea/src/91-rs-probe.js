@@ -28,7 +28,10 @@ function rsExtra(){const R=[];const P=RS_PLACED;
  {const bad=[];const m=new THREE.Matrix4(),v=new THREE.Vector3();for(const p of P)p.G.children.filter(o=>o.isInstancedMesh).forEach(im=>{let lo=1e9;const g=im.geometry;g.computeBoundingBox();if(im.userData.pose)im.userData.pose(im.userData.tCatch);
    for(let i=0;i<im.count;i++){im.getMatrixAt(i,m);v.set(0,0,g.boundingBox.max.z).applyMatrix4(m);lo=Math.min(lo,v.y);}if(lo>.2)bad.push(p.D.name+' '+im.name+' tip '+lo.toFixed(2));});
   R.push({name:'oars-reach-water',ok:!bad.length,detail:bad.length?bad.join(' | '):'every bank dips'});}
- // 5. project tags
+ // 5. sails clear the cabins: no sail vertex inside a registered solid (castles, deckhouses)
+ {const bad=[];for(const p of P){const S=p.G.userData.solids||[],Q=p.G.userData.sail||[];let n=0;for(const q of Q)for(const b of S){if(q[0]>b.min[0]+.05&&q[0]<b.max[0]-.05&&q[1]>b.min[1]+.05&&q[1]<b.max[1]-.05&&q[2]>b.min[2]+.05&&q[2]<b.max[2]-.05){n++;break;}}if(n)bad.push(p.D.name+' '+n+' sail pts');}
+  R.push({name:'sails-clear-cabins',ok:!bad.length,detail:bad.length?bad.join(' | '):'no sail passes through a cabin'});}
+ // 6. project tags
  {const t=tagAudit();R.push({name:'tags-complete',ok:!t.bad,detail:t.bad?t.first.join(' | '):REG.length+' vessels tagged culture/type/wealth/propulsion/hull'});}
  return R;}
 window._api={BUDGET,REG,
