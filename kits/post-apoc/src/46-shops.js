@@ -66,7 +66,7 @@ function shFood(o){
  shGoods(sx-1.0,.96,-1.0,1.2,.8);shGoods(sx+.3,.96,-1.0,1.0,.8,[0x5a9a3a,0x7ab04a,0xe07a2a]);for(let k=0;k<3;k++)barrel(sx+1.2+k*.02,.96,-1.0+(k-1)*.28,undefined,{open:true});
  shHang(sx-1.6,sx+1.6,2.35,-3.35,7,'bottles');
  // SOCKETS
- sock('sign',cx,3.3,fz-.1,0,{w:3.6,h:.95,trade:'FOOD'});shSignPosts(cx,fz-.38,CT.H-.02,3.9,3.6);
+ sock('sign',cx,3.3,fz-.1,0,{w:3.6,h:1.15,trade:'FOOD'});shSignPosts(cx,fz-.38,CT.H-.02,3.9,3.6);
  sock('awning',cx,2.72,fz,0,{w:5.6,d:1.7,drop:.6,h:2.12});
  sock('awning',sx,2.72,-3.5,0,{w:3.9,d:2.4,drop:.5,h:2.22});
  shBanner(cx+3.35,fz+1.7,4.6);
@@ -104,7 +104,7 @@ function shArmor(o){
  tireStack(cx+5.7,fz+1.0,4);tireStack(cx+5.7,fz+1.7,3);
  for(let k=0;k<5;k++)box('sheet',cx-6.7,k*.07,fz+.7,.9,.06,.7,jc(pick([0x8a8a86,0x7a4a3a]),.06),.1*k);
  // SOCKETS
- sock('sign',cx-1.2,3.3,fz-.1,0,{w:3.4,h:.95,trade:'ARMOR'});shSignPosts(cx-1.2,fz-.38,CT.H-.02,3.9,3.4);
+ sock('sign',cx-1.2,3.3,fz-.1,0,{w:3.4,h:1.15,trade:'ARMOR'});shSignPosts(cx-1.2,fz-.38,CT.H-.02,3.9,3.4);
  sock('awning',cx-2.4,2.72,fz,0,{w:5.6,d:1.7,drop:.6,h:2.12});
  sock('awning',fx,2.98,fzc-.06,0,{w:3.6,d:2.4,drop:.5,h:2.48});
  shBanner(cx-L/2-.7,fz+.5,4.8);
@@ -136,14 +136,14 @@ function shWeapon(o){
  for(const q of [3.6,6.0]){beam('wood',[q,0,fzn+.55],[q,1.5,fzn+.55],.08,jc(shWood,.06),true,6);}box('wood',4.8,1.3,fzn+.55,2.5,.06,.06,jc(shWood,.06));
  for(let k=0;k<7;k++){const x=3.85+k*.3;beam('wood',[x,1.28,fzn+.55],[x+.02,.7,fzn+.55],.03,jc(0x4a3220,.05),true,4);box('iron',x-.02,.15,fzn+.55,.04,.55,.02,jc(0x9a9a92,.05));}
  // archery target: a straw disc on an A-frame, arrows stuck in it; hay bales; crates of arrows and a barrel of spears
- const tx=5.4,tz=.3;for(const q of [-1,1])beam('wood',[tx+q*.7,0,tz-.4],[tx+q*.15,1.6,tz-.1],.07,jc(shWood,.06),true,5);
- cylH('plain',tx,1.55,tz,.85,.14,jc(0xc8a860,.05),'z',16);for(const [r,c] of [[.7,0xd8d0c0],[.5,0x2a5a8a],[.32,0xc23a2a],[.14,0xe0b830]])cylH('plain',tx,1.55,tz+.075,r,.02,jc(c,.03),'z',16);
- for(let k=0;k<4;k++){const a=k*1.5+.4,r=rr(.1,.5);beam('wood',[tx+Math.cos(a)*r,1.55+Math.sin(a)*r,tz+.5],[tx+Math.cos(a)*r,1.55+Math.sin(a)*r,tz+.05],.02,jc(0xd0c0a0,.05),true,4);}
+ const tx=5.4,tz=.3;for(const q of [-1,1])beam('wood',[tx+q*.7,0,tz-.6],[tx+q*.15,1.6,tz-.2],.07,jc(shWood,.06),true,5);
+ cylH('plain',tx,1.55,tz-.02,.85,.12,jc(0xc8a860,.05),'z',16);box('wood',tx-.06,1.0,tz-.16,.12,1.2,.05,jc(shWood,.06));[[.7,0xd8d0c0],[.5,0x2a5a8a],[.32,0xc23a2a],[.14,0xe0b830]].forEach(([r,c],i)=>cylH('plain',tx,1.55,tz+.08+i*.012,r,.03,jc(c,.03),'z',16));
+ for(let k=0;k<4;k++){const a=k*1.5+.4,r=rr(.1,.5);beam('wood',[tx+Math.cos(a)*r,1.55+Math.sin(a)*r,tz+.5],[tx+Math.cos(a)*r,1.55+Math.sin(a)*r,tz+.12],.02,jc(0xd0c0a0,.05),true,4);}
  for(let k=0;k<3;k++)box('plain',tx-1.4+k*.7,0,tz+2.2,.6,.36,.36,jc(0xb89a4a,.06));
  for(let k=0;k<2;k++)crate(4.7+k*.7,0,fzn-.7,.7,rr(-.2,.2));barrel(6.3,0,fzn-.8,0x5a5a56);for(let k=0;k<4;k++)shSpear(6.3+rr(-.1,.1),fzn-.8,rr(1.5,1.9),k*1.5,.18);
  shBanner(6.8,fzn+1.0,4.4);
  // SOCKETS
- sock('sign',cx+.8,3.55,cz+.75,0,{w:3.4,h:.95,trade:'WEAPONS'});shSignPosts(cx+.8,cz+.55,2.4,4.15,3.4);
+ sock('sign',cx+.8,3.55,cz+.75,0,{w:3.4,h:1.15,trade:'WEAPONS'});shSignPosts(cx+.8,cz+.55,2.4,4.15,3.4);
  sock('awning',wx,2.32,fz+.02,0,{w:2.7,d:1.45,drop:.45,h:1.87});
  sock('flag',gx,4.9+1.6,gz,0,{w:1.0,h:.6});sock('emblem',cx-4.6-.03,2.0,cz,-PI/2,{w:.9,h:.9});sock('paint',cx+2.7,1.9,fz+.03,0,{w:1.6,h:.8});}
 // ---------------------------------------------------------------- 4640 tinker's shop
@@ -177,7 +177,7 @@ function shTinker(o){
  tireStack(cx+4.1,fz+1.2,5);tireStack(cx+4.1,fz+1.9,3);junkPile(-6.6,-.5,1.6,12);junkPile(-3.4,1.4,1.2,9);junkPile(6.4,2.6,1.3,8);
  barrel(cx-3.6,0,fz+.6);barrel(cx-4.0,0,fz+1.0);lamp(cx+2.2,0,fz+2.0,3.0);
  // SOCKETS
- sock('sign',cx+.4,3.3,fz-.1,0,{w:3.4,h:.95,trade:'TINKER'});shSignPosts(cx+.4,fz-.38,CT.H-.02,3.9,3.4);
+ sock('sign',cx+.4,3.3,fz-.1,0,{w:3.4,h:1.15,trade:'TINKER'});shSignPosts(cx+.4,fz-.38,CT.H-.02,3.9,3.4);
  sock('awning',cx,2.72,fz,0,{w:5.8,d:1.7,drop:.6,h:2.12});sock('awning',sx,2.72,-3.5,0,{w:3.4,d:2.4,drop:.5,h:2.22});
  shBanner(cx+3.7,fz+2.5,4.5);
  sock('flag',cx+2.4,CT.H+1.6,cz-.4,0,{w:1.0,h:.6});sock('emblem',cx+L/2+.03,2.25,cz,PI/2,{w:.9,h:.9});sock('paint',cx-L/2-.03,1.6,cz,-PI/2,{w:1.4,h:1.0});}
@@ -206,7 +206,7 @@ function shGeneral(o){
  for(const q of [5.4,6.6])tire(q,.95,fz+2.2,.1,.02,jc(0x8a8a86,.05),0,PI/2,0);
  tireStack(6.3,fz+.9,3);lamp(-7.0,0,fz+1.0,3.2);
  // SOCKETS
- sock('sign',0,4.05,fz-.1,0,{w:5.4,h:1.3,trade:'GENERAL'});shSignPosts(0,fz-.5,3.0,4.85,5.4);
+ sock('sign',0,4.05,fz-.1,0,{w:5.4,h:1.5,trade:'GENERAL'});shSignPosts(0,fz-.5,3.0,4.85,5.4);
  sock('awning',-4.9,2.1,fz,0,{w:2.4,d:1.2,drop:.4,h:1.7});sock('awning',4.9,2.1,fz,0,{w:2.4,d:1.2,drop:.4,h:1.7});
  shBanner(6.9,fz+.9,4.6);sock('flag',-5.4,3.05+1.6,cz,0,{w:1.0,h:.6});
  sock('emblem',-L-.03,2.25,cz,-PI/2,{w:.9,h:.9});sock('paint',L+.03,1.5,cz,PI/2,{w:1.6,h:1.1});}

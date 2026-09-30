@@ -110,24 +110,30 @@ function arMast(k){const dk=jc(0x4a4038,.05),lt=jc(0x6a6a66,.05);const h=18.0,w=
  for(let b=0;b<6;b++){const y0=b*3,y1=y0+3;for(const [a,c] of [[[-w,-w],[w,-w]],[[w,-w],[w,w]],[[w,w],[-w,w]],[[-w,w],[-w,-w]]]){beam('iron',[a[0],y1,a[1]],[c[0],y1,c[1]],.04,lt,true,5);const f=(b%2)?1:-1;beam('iron',[a[0],f>0?y0:y1,a[1]],[c[0],f>0?y1:y0,c[1]],.03,lt,true,4);}}
  box('iron',-.9,h,-.9,1.8,.16,1.8,dk);arPole(0,h,h+1.9,0,.05);
  // arms to the cage rings and the ladder
- for(const [y,rr2] of [[15.9,2.3],[9.3,2.85]]){for(const sx of [-.5,.5])beam('iron',[sx,y,-w],[sx,y,-rr2],.06,dk);beam('iron',[0,y-1.3,-w],[0,y,-rr2+.1],.05,dk);}
+ for(const [y,rr2] of [[16.1,2.6],[9.25,3.2]]){for(const sx of [-.5,.5])beam('iron',[sx,y,-w],[sx,y,-rr2],.06,dk);beam('iron',[0,y-1.3,-w],[0,y,-rr2+.1],.05,dk);}
  ladder(0,0,w+.08,h-.3,0);
  arSearch(-.45,12.6,w+.35,PI,0);arSearch(.45,12.6,w+.35,PI,0);
  sock('banner',0,14.6,w+.06,0,{w:1.0,h:3.0});sock('flag',0,h+2.0,0,0,{w:1.5,h:.7});}
 function arPole(x,y0,y1,z,r){beam('wood',[x,y0,z],[x,y1,z],r,jc(0x4a4038,.05),true,6);}
-function arCage(){const T=15.8,Mid=9.0,rT=13.0,rM=12.2;const st=jc(0x4a4038,.05);
- sector('iron',0,0,rT-.35,rT+.35,0,TAU,T,T+.6,st,56);sector('iron',0,0,rT-.25,rT+.25,0,TAU,T-.9,T-.5,jc(0x5a5048,.05),56);
- sector('iron',0,0,rM-.3,rM+.3,0,TAU,Mid,Mid+.5,st,56);
- const N=32;for(let i=0;i<N;i++){const a=i/N*TAU,b=(i+1)/N*TAU;const xa=Math.cos(a),za=Math.sin(a);
-  beam('iron',[xa*rM,Mid+.4,za*rM],[xa*rT,T+.1,za*rT],.06,st,true,5);
-  const m=(a+b)/2,rm=(rT+rM)/2,ym=(T+Mid)/2+.25,ch=2*rm*Math.sin(PI/N),hh=Math.hypot(T-Mid-.3,rT-rM);
-  arRad(rm,m,ym,()=>{quad('chain',0,0,0,ch,hh,jc(0xb4b8b8,.05),0,Math.atan2(rT-rM,T-Mid),0);});}
- // hoops between ribs, and chains hanging under the mid ring
- sector('iron',0,0,(rT+rM)/2-.06,(rT+rM)/2+.06,0,TAU,(T+Mid)/2,(T+Mid)/2+.12,jc(0x5a5048,.05),56);
- for(let i=0;i<40;i++){const a=i/40*TAU+.08,len=rr(1.5,5.5);const x=Math.cos(a)*(rM-.1),z=Math.sin(a)*(rM-.1);beam('iron',[x,Mid,z],[x,Mid-len,z],.022,jc(0x6a6a66,.05),true,3);
+function arCage(){const T=15.8,Mid=9.0,rT=13.0,rM=12.2;const st=jc(0x4a4038,.05),st2=jc(0x5a5048,.05);const dr=rT-rM,dy=T-Mid;
+ const rAt=y=>rM+dr*(y-Mid)/dy;                          // the cone line the ribs and chain-link follow
+ // rings with real thickness (0.9 wide, 0.8 tall); nothing else touches their faces
+ sector('iron',0,0,rT-.45,rT+.45,0,TAU,T,T+.8,st,56);
+ sector('iron',0,0,rM-.45,rM+.45,0,TAU,Mid-.05,Mid+.5,st,56);
+ const N=32,y0=Mid+.5,y1=T,tilt=Math.atan2(dr,dy);
+ for(let i=0;i<N;i++){const a=i/N*TAU,b=(i+1)/N*TAU;const xa=Math.cos(a),za=Math.sin(a);
+  // rib: a 0.14 square section on the cone line, running up into the top ring and down into the mid ring
+  beam('iron',[xa*rAt(Mid+.2),Mid+.2,za*rAt(Mid+.2)],[xa*rAt(T+.3),T+.3,za*rAt(T+.3)],.14,st);
+  // chain-link panel: tucked .16 inside the rib line so it never shares a plane with a rib, hoop or ring
+  const m=(a+b)/2,ym=(y0+y1)/2,rc=rAt(ym)-.16,ch=2*(rc+.02)*Math.sin(PI/N)*.98,hh=Math.hypot(dr*(y1-y0)/dy,y1-y0)-.06;
+  arRad(rc,m,ym,()=>{quad('chain',0,0,0,ch,hh,jc(0xb4b8b8,.05),0,tilt,0);});}
+ // hoop halfway up: sits OUTSIDE the ribs' outer face, not through the panels
+ const ym=(Mid+T)/2;sector('iron',0,0,rAt(ym)+.09,rAt(ym)+.21,0,TAU,ym,ym+.16,st2,56);
+ // chains hung under the mid ring (they start inside the ring)
+ for(let i=0;i<40;i++){const a=i/40*TAU+.08,len=rr(1.5,5.5);const x=Math.cos(a)*(rM-.1),z=Math.sin(a)*(rM-.1);beam('iron',[x,Mid+.05,z],[x,Mid-len,z],.022,jc(0x6a6a66,.05),true,3);
   if(i%2===0){for(let q=0;q<len/.6;q++)sph('iron',x,Mid-.3-q*.6,z,.05,jc(0x7a7a76,.05),1.7);}sph('iron',x,Mid-len,z,.09,jc(0x3a3430,.05));}
- // heavy swag chains along the top ring
- for(let i=0;i<16;i++){const a=i/16*TAU;const b=a+TAU/16;const p=[Math.cos(a)*rT,T-.7,Math.sin(a)*rT],q=[Math.cos(b)*rT,T-.7,Math.sin(b)*rT];const m=[(p[0]+q[0])/2*.985,T-1.6,(p[2]+q[2])/2*.985];beam('iron',p,m,.03,jc(0x6a6a66,.05),true,4);beam('iron',m,q,.03,jc(0x6a6a66,.05),true,4);}}
+ // heavy swag chains hung from the outside of the top ring
+ for(let i=0;i<16;i++){const a=i/16*TAU,b=a+TAU/16,ro=rT+.6;const p=[Math.cos(a)*ro,T+.35,Math.sin(a)*ro],q=[Math.cos(b)*ro,T+.35,Math.sin(b)*ro];const m=[(p[0]+q[0])/2,T-.7,(p[2]+q[2])/2];beam('iron',p,m,.03,jc(0x6a6a66,.05),true,4);beam('iron',m,q,.03,jc(0x6a6a66,.05),true,4);}}
 function arGantry(){const dk=jc(0x4a4038,.05);const A=[-10.96,-10.96],B=[10.96,10.96];// runs SW..NE over the pit
  const dx=B[0]-A[0],dz=B[1]-A[1],L=Math.hypot(dx,dz),ry=Math.atan2(-dz,dx);
  W((A[0]+B[0])/2,0,(A[1]+B[1])/2,ry,()=>{const y0=17.0,y1=17.9;

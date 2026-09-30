@@ -31,9 +31,9 @@ const groundM=new THREE.Mesh(new THREE.PlaneGeometry(3200,3200),groundMat);groun
 // ---------------------------------------------------------------- layout: rows by family, front (+z) toward the camera
 const SITES=[],ROWS=[];
 const ONLY=(new URLSearchParams(location.search)).get('only');const ONLYSET=ONLY?new Set(ONLY.split(',')):null;   // ?only=key,key builds just those defs
-(function layout(){let z=0;const GAP=9;for(const F of FAMILIES){const keys=F.keys.filter(k=>DEFS[k]&&(!ONLYSET||ONLYSET.has(k)));if(!keys.length)continue;
- const ws=keys.map(k=>DEFS[k].w+GAP),total=ws.reduce((a,c)=>a+c,0),dmax=Math.max(...keys.map(k=>DEFS[k].d)),hmax=Math.max(...keys.map(k=>DEFS[k].h));
- z+=dmax/2;let x=-total/2;keys.forEach((k,i)=>{SITES.push({key:k,x:x+ws[i]/2,z,ry:0,o:{v:0}});x+=ws[i];});
+(function layout(){let z=0;const GAP=9;for(const F of FAMILIES){const keys=F.keys.filter(k=>DEFS[k.split('@')[0]]&&(!ONLYSET||ONLYSET.has(k.split('@')[0])));   // 'key@culture' dresses that site in a culture's marksif(!keys.length)continue;
+ const DK=k=>DEFS[k.split('@')[0]];const ws=keys.map(k=>DK(k).w+GAP),total=ws.reduce((a,c)=>a+c,0),dmax=Math.max(...keys.map(k=>DK(k).d)),hmax=Math.max(...keys.map(k=>DK(k).h));
+ z+=dmax/2;let x=-total/2;keys.forEach((k,i)=>{const kk=k.split('@');SITES.push({key:kk[0],x:x+ws[i]/2,z,ry:0,o:kk[1]?{v:0,culture:kk[1]}:{v:0}});x+=ws[i];});
  ROWS.push({family:F.name,z,d:dmax,w:total,h:hmax,keys});z+=dmax/2+Math.max(26,hmax*1.3)+8;}})();
 const GROUND_C=ROWS.length?ROWS[ROWS.length-1].z/2:0;groundM.position.set(0,0,GROUND_C);
 // ---------------------------------------------------------------- (re)build the world for a culture
@@ -51,5 +51,5 @@ function autoViews(){const V={};const R=ROWS;const mid=R[Math.floor(R.length/2)]
  V['Opening']=[R[0].w*.28,Math.max(20,R[0].d*.8),R[0].z+R[0].d*.5+38,0,4,R[0].z];
  V['Overview']=[-R[0].w*.9,R[R.length-1].z*.7,R[R.length-1].z*.5+150,0,2,mid.z];
  for(const r of R){const dist=Math.max(44,Math.min(r.w*.55,200),(r.h||0)*1.7);V[r.family]=[r.w*.12,Math.max(16,dist*.42),r.z+r.d/2+dist,0,Math.min(3+(r.h||0)*.3,14),r.z];}
- for(const S of SITES){const D=DEFS[S.key];const dist=Math.max(11,Math.max(D.w,D.h)*.85+D.d*.4);V[D.name+' — eye level']=[S.x+D.w*.15,1.7,S.z+D.d/2+dist*.55,S.x,Math.min(D.h,12)*.35,S.z];}
+ for(const S of SITES){const D=DEFS[S.key];const dist=Math.max(11,Math.max(D.w,D.h)*.85+D.d*.4);V[D.name+(S.o.culture?' ('+S.o.culture+')':'')+' — eye level']=[S.x+D.w*.15,1.7,S.z+D.d/2+dist*.55,S.x,Math.min(D.h,12)*.35,S.z];}
  return V;}

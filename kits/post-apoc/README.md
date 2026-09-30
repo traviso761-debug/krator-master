@@ -16,9 +16,9 @@ URL parameters: `?culture=iziz`, `?only=shop-food,dw-silo`.
    packed with earth), **bottle-glass walls**, patchwork plank-and-sheet walls, decks, stairs, ladders, stovepipes, solar panels, water butts, barrels, tarps, fences, junk piles.
 3. **Sockets** (`src/36-def.js`, `sock()`): every building declares where a culture's marks go (`awning`, `banner`, `flag`, `emblem`, `sign`, `paint`) with a
    local frame and size. Buildings never mention a culture.
-4. **Culture packs** (`src/80-cultures.js`, `cultDef()`): fill the sockets. Shipped: `generic` (faded tarps and rags), `iziz` (orange-led striped awnings, teal accent),
-   `voth` (deep red and brown banners with an ash-white glyph), `republic` (the triskelion in red, teal and ochre on plates, banners and striped awnings).
-   A pack may also supply a `paint` list that the containers' livery (`PAINT()`) draws from. To add a culture: one `cultDef({...})`, no building changes.
+4. **Culture packs** (`core/sockets/80-cultures.js`, shared, see `core/sockets/README.md`): fill the sockets. Shipped: `generic` (faded tarps and rags), `iziz` (orange, teal, striped awnings, a sun),
+   `republic` (Voth's deep red with the triskelion), `voth` (deep blue with an ash-white glyph, ragged cloth), `yuni` (yellow, the hyperboloid), `beastriders` (green, the claw).
+   A pack may also supply a `paint` list that the containers' livery (`PAINT()`) draws from. To add a culture: one `mkCulture({...})`, no building changes. `place(key,x,z,ry,{culture:'yuni'})` dresses one building in a pack.
 
 ## The buildings (33 defs, tags per README: culture, type)
 

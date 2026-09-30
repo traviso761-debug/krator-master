@@ -467,10 +467,22 @@ function waterButt(x,y,z,r,h,o){o=o||{};const c=o.col===undefined?jc(pick([0x3a6
 // ---------------------------------------------------------------- registry, placement, cultural sockets
 // A building def: {key, name, seed, tags:{type:[...],...}, w, d, h, build(o)}. The builder draws in its local frame (origin = plot centre on the
 // ground, +z the front, x right, y up) and stays inside w x d (overhangs of ~1 m allowed). It never mentions a culture: it declares SOCKETS,
-// and the active culture pack (80-cultures.js) fills them. o = {v: variant, culture-neutral options}.
+// and the active culture pack (core/sockets/80-cultures.js) fills them. o = {v: variant, culture-neutral options}.
 const DEFS={};
 function defBuilding(d){if(DEFS[d.key])reportErr('duplicate def '+d.key);d.cls=d.cls||'building';d.tags=Object.assign({culture:'post-apoc (generic)',sockets:true},d.tags||{});DEFS[d.key]=d;return d;}
 const REG=[];function regClear(){REG.length=0;}
+// ---- placement: place(key,x,z,ry,o) builds a def into the current frame (nested calls make compounds)
+function place(key,x,z,ry,o){const d=DEFS[key];if(!d){reportErr('no def '+key);return null;}o=o||{};
+ const y=o.y!==undefined?o.y:terrainH(x,z);const keepKey=CURKEY,keepSocks=SOCKS,keepCult=CULT.cur;CURKEY=key;SOCKS=[];
+ if(o.culture&&CULT.packs[o.culture])CULT.cur=CULT.packs[o.culture];   // o.culture dresses THIS building (and any it places) in another culture's marks
+ pushM(TF(x,y,z,ry||0));const org=new THREE.Vector3().applyMatrix4(CM);const bb=sbBegin();const t0=GSTAT.tris;
+ reseed(d.seed+(o.v|0)*7);
+ try{d.build(o);fillSockets();}catch(e){reportErr('build '+key+': '+(e.stack||e));}
+ sbEnd();popM();CURKEY=keepKey;SOCKS=keepSocks;CULT.cur=keepCult;
+ const rec={key,name:d.name,cls:d.cls,tags:d.tags,x:org.x,y:org.y,z:org.z,ry:ry||0,r:Math.hypot(d.w,d.d)/2,h:d.h,tris:GSTAT.tris-t0,bbox:bb,v:o.v|0};REG.push(rec);return rec;}
+// ---------------------------------------------------------------- SOCKETS: where a culture's marks go (shared: core/sockets/)
+// A building declares sockets; the ACTIVE culture pack draws into them. The building never names a culture. See core/sockets/README.md.
+// Needs from the host build: CM (running matrix) + TF(x,y,z,ry) + CMS (matrix stack), rng/pick/jc/P (colour), reportErr, and the primitives the packs draw with.
 // ---- sockets: where a culture's marks go. type: 'awning' 'banner' 'flag' 'emblem' 'sign' 'paint'.
 // Frame of a socket: origin at the anchor, +z OUT of the surface, +x along the surface, y up.
 //   awning {w,d,drop}: a canopy over a door, stall or window; the anchor is the top edge against the wall, w wide, d deep, sloping down by `drop`
@@ -486,14 +498,7 @@ function fillSockets(){const C=CULT.cur;const list=SOCKS;SOCKS=[];const keep=CMS
  for(const s of list){const f=C.fill[s.type]||CULT.generic.fill[s.type];if(!f)continue;CMS.length=0;CMS.push(s.m.clone());CM=CMS[0];
   try{f(s.o,s);}catch(e){reportErr('socket '+s.type+' in '+s.key+': '+(e.stack||e));}}
  CMS.length=0;for(const m of keep)CMS.push(m);CM=CMS[CMS.length-1];}
-// ---- placement: place(key,x,z,ry,o) builds a def into the current frame (nested calls make compounds)
-function place(key,x,z,ry,o){const d=DEFS[key];if(!d){reportErr('no def '+key);return null;}o=o||{};
- const y=o.y!==undefined?o.y:terrainH(x,z);const keepKey=CURKEY,keepSocks=SOCKS;CURKEY=key;SOCKS=[];
- pushM(TF(x,y,z,ry||0));const org=new THREE.Vector3().applyMatrix4(CM);const bb=sbBegin();const t0=GSTAT.tris;
- reseed(d.seed+(o.v|0)*7);
- try{d.build(o);fillSockets();}catch(e){reportErr('build '+key+': '+(e.stack||e));}
- sbEnd();popM();CURKEY=keepKey;SOCKS=keepSocks;
- const rec={key,name:d.name,cls:d.cls,tags:d.tags,x:org.x,y:org.y,z:org.z,ry:ry||0,r:Math.hypot(d.w,d.d)/2,h:d.h,tris:GSTAT.tris-t0,bbox:bb,v:o.v|0};REG.push(rec);return rec;}
+
 // ---- cultures: a pack is {key,name,paint:[hex...],fill:{awning,banner,flag,emblem,sign,paint}}; 80-cultures.js registers them.
 const CULT={packs:{},cur:null,generic:null};
 function cultDef(p){CULT.packs[p.key]=p;if(p.key==='generic'){CULT.generic=p;if(!CULT.cur)CULT.cur=p;}return p;}
@@ -1286,7 +1291,7 @@ function shFood(o){
  shGoods(sx-1.0,.96,-1.0,1.2,.8);shGoods(sx+.3,.96,-1.0,1.0,.8,[0x5a9a3a,0x7ab04a,0xe07a2a]);for(let k=0;k<3;k++)barrel(sx+1.2+k*.02,.96,-1.0+(k-1)*.28,undefined,{open:true});
  shHang(sx-1.6,sx+1.6,2.35,-3.35,7,'bottles');
  // SOCKETS
- sock('sign',cx,3.3,fz-.1,0,{w:3.6,h:.95,trade:'FOOD'});shSignPosts(cx,fz-.38,CT.H-.02,3.9,3.6);
+ sock('sign',cx,3.3,fz-.1,0,{w:3.6,h:1.15,trade:'FOOD'});shSignPosts(cx,fz-.38,CT.H-.02,3.9,3.6);
  sock('awning',cx,2.72,fz,0,{w:5.6,d:1.7,drop:.6,h:2.12});
  sock('awning',sx,2.72,-3.5,0,{w:3.9,d:2.4,drop:.5,h:2.22});
  shBanner(cx+3.35,fz+1.7,4.6);
@@ -1324,7 +1329,7 @@ function shArmor(o){
  tireStack(cx+5.7,fz+1.0,4);tireStack(cx+5.7,fz+1.7,3);
  for(let k=0;k<5;k++)box('sheet',cx-6.7,k*.07,fz+.7,.9,.06,.7,jc(pick([0x8a8a86,0x7a4a3a]),.06),.1*k);
  // SOCKETS
- sock('sign',cx-1.2,3.3,fz-.1,0,{w:3.4,h:.95,trade:'ARMOR'});shSignPosts(cx-1.2,fz-.38,CT.H-.02,3.9,3.4);
+ sock('sign',cx-1.2,3.3,fz-.1,0,{w:3.4,h:1.15,trade:'ARMOR'});shSignPosts(cx-1.2,fz-.38,CT.H-.02,3.9,3.4);
  sock('awning',cx-2.4,2.72,fz,0,{w:5.6,d:1.7,drop:.6,h:2.12});
  sock('awning',fx,2.98,fzc-.06,0,{w:3.6,d:2.4,drop:.5,h:2.48});
  shBanner(cx-L/2-.7,fz+.5,4.8);
@@ -1356,14 +1361,14 @@ function shWeapon(o){
  for(const q of [3.6,6.0]){beam('wood',[q,0,fzn+.55],[q,1.5,fzn+.55],.08,jc(shWood,.06),true,6);}box('wood',4.8,1.3,fzn+.55,2.5,.06,.06,jc(shWood,.06));
  for(let k=0;k<7;k++){const x=3.85+k*.3;beam('wood',[x,1.28,fzn+.55],[x+.02,.7,fzn+.55],.03,jc(0x4a3220,.05),true,4);box('iron',x-.02,.15,fzn+.55,.04,.55,.02,jc(0x9a9a92,.05));}
  // archery target: a straw disc on an A-frame, arrows stuck in it; hay bales; crates of arrows and a barrel of spears
- const tx=5.4,tz=.3;for(const q of [-1,1])beam('wood',[tx+q*.7,0,tz-.4],[tx+q*.15,1.6,tz-.1],.07,jc(shWood,.06),true,5);
- cylH('plain',tx,1.55,tz,.85,.14,jc(0xc8a860,.05),'z',16);for(const [r,c] of [[.7,0xd8d0c0],[.5,0x2a5a8a],[.32,0xc23a2a],[.14,0xe0b830]])cylH('plain',tx,1.55,tz+.075,r,.02,jc(c,.03),'z',16);
- for(let k=0;k<4;k++){const a=k*1.5+.4,r=rr(.1,.5);beam('wood',[tx+Math.cos(a)*r,1.55+Math.sin(a)*r,tz+.5],[tx+Math.cos(a)*r,1.55+Math.sin(a)*r,tz+.05],.02,jc(0xd0c0a0,.05),true,4);}
+ const tx=5.4,tz=.3;for(const q of [-1,1])beam('wood',[tx+q*.7,0,tz-.6],[tx+q*.15,1.6,tz-.2],.07,jc(shWood,.06),true,5);
+ cylH('plain',tx,1.55,tz-.02,.85,.12,jc(0xc8a860,.05),'z',16);box('wood',tx-.06,1.0,tz-.16,.12,1.2,.05,jc(shWood,.06));[[.7,0xd8d0c0],[.5,0x2a5a8a],[.32,0xc23a2a],[.14,0xe0b830]].forEach(([r,c],i)=>cylH('plain',tx,1.55,tz+.08+i*.012,r,.03,jc(c,.03),'z',16));
+ for(let k=0;k<4;k++){const a=k*1.5+.4,r=rr(.1,.5);beam('wood',[tx+Math.cos(a)*r,1.55+Math.sin(a)*r,tz+.5],[tx+Math.cos(a)*r,1.55+Math.sin(a)*r,tz+.12],.02,jc(0xd0c0a0,.05),true,4);}
  for(let k=0;k<3;k++)box('plain',tx-1.4+k*.7,0,tz+2.2,.6,.36,.36,jc(0xb89a4a,.06));
  for(let k=0;k<2;k++)crate(4.7+k*.7,0,fzn-.7,.7,rr(-.2,.2));barrel(6.3,0,fzn-.8,0x5a5a56);for(let k=0;k<4;k++)shSpear(6.3+rr(-.1,.1),fzn-.8,rr(1.5,1.9),k*1.5,.18);
  shBanner(6.8,fzn+1.0,4.4);
  // SOCKETS
- sock('sign',cx+.8,3.55,cz+.75,0,{w:3.4,h:.95,trade:'WEAPONS'});shSignPosts(cx+.8,cz+.55,2.4,4.15,3.4);
+ sock('sign',cx+.8,3.55,cz+.75,0,{w:3.4,h:1.15,trade:'WEAPONS'});shSignPosts(cx+.8,cz+.55,2.4,4.15,3.4);
  sock('awning',wx,2.32,fz+.02,0,{w:2.7,d:1.45,drop:.45,h:1.87});
  sock('flag',gx,4.9+1.6,gz,0,{w:1.0,h:.6});sock('emblem',cx-4.6-.03,2.0,cz,-PI/2,{w:.9,h:.9});sock('paint',cx+2.7,1.9,fz+.03,0,{w:1.6,h:.8});}
 // ---------------------------------------------------------------- 4640 tinker's shop
@@ -1397,7 +1402,7 @@ function shTinker(o){
  tireStack(cx+4.1,fz+1.2,5);tireStack(cx+4.1,fz+1.9,3);junkPile(-6.6,-.5,1.6,12);junkPile(-3.4,1.4,1.2,9);junkPile(6.4,2.6,1.3,8);
  barrel(cx-3.6,0,fz+.6);barrel(cx-4.0,0,fz+1.0);lamp(cx+2.2,0,fz+2.0,3.0);
  // SOCKETS
- sock('sign',cx+.4,3.3,fz-.1,0,{w:3.4,h:.95,trade:'TINKER'});shSignPosts(cx+.4,fz-.38,CT.H-.02,3.9,3.4);
+ sock('sign',cx+.4,3.3,fz-.1,0,{w:3.4,h:1.15,trade:'TINKER'});shSignPosts(cx+.4,fz-.38,CT.H-.02,3.9,3.4);
  sock('awning',cx,2.72,fz,0,{w:5.8,d:1.7,drop:.6,h:2.12});sock('awning',sx,2.72,-3.5,0,{w:3.4,d:2.4,drop:.5,h:2.22});
  shBanner(cx+3.7,fz+2.5,4.5);
  sock('flag',cx+2.4,CT.H+1.6,cz-.4,0,{w:1.0,h:.6});sock('emblem',cx+L/2+.03,2.25,cz,PI/2,{w:.9,h:.9});sock('paint',cx-L/2-.03,1.6,cz,-PI/2,{w:1.4,h:1.0});}
@@ -1426,7 +1431,7 @@ function shGeneral(o){
  for(const q of [5.4,6.6])tire(q,.95,fz+2.2,.1,.02,jc(0x8a8a86,.05),0,PI/2,0);
  tireStack(6.3,fz+.9,3);lamp(-7.0,0,fz+1.0,3.2);
  // SOCKETS
- sock('sign',0,4.05,fz-.1,0,{w:5.4,h:1.3,trade:'GENERAL'});shSignPosts(0,fz-.5,3.0,4.85,5.4);
+ sock('sign',0,4.05,fz-.1,0,{w:5.4,h:1.5,trade:'GENERAL'});shSignPosts(0,fz-.5,3.0,4.85,5.4);
  sock('awning',-4.9,2.1,fz,0,{w:2.4,d:1.2,drop:.4,h:1.7});sock('awning',4.9,2.1,fz,0,{w:2.4,d:1.2,drop:.4,h:1.7});
  shBanner(6.9,fz+.9,4.6);sock('flag',-5.4,3.05+1.6,cz,0,{w:1.0,h:.6});
  sock('emblem',-L-.03,2.25,cz,-PI/2,{w:.9,h:.9});sock('paint',L+.03,1.5,cz,PI/2,{w:1.6,h:1.1});}
@@ -1610,10 +1615,20 @@ function inWarehouse(o){
  for(let k=0;k<7;k++)tire(dx0+1.0+k*2.2,.8,ZF+dz+.05,.36,.12,undefined,0,PI/2,0);
  W(dx0,0,ZF+1.1,0,()=>{plane4("plank",[0,DK-.05,0],[0,DK-.05,2.3],[-3.6,0,0],[-3.6,0,2.3],.1,jc(0x7a6448,.07));for(const z of [0,2.3])beam("wood",[0,DK,z],[-3.6,0,z],.08,jc(inW,.06));});
  // jib crane at the dock end
- const jx=4.0,jz=ZF+2.9;cyl('conc',jx,DK,jz,.5,.2,jc(0x8a8478,.06),8);cyl('iron',jx,DK+.2,jz,.16,5.4,jc(0x5a4a3c,.05),10);beam('iron',[jx,DK+5.6,jz],[jx-4.6,DK+5.5,jz],.2,jc(0xa8642a,.06));
- beam('iron',[jx,DK+3.4,jz],[jx-2.8,DK+5.45,jz],.1,jc(0x4a4038,.05));box('iron',jx-3.6,DK+5.0,jz-.15,.5,.4,.3,jc(0xc9a03a,.06));
- for(let k=0;k<7;k++)box('iron',jx-3.6,DK+4.8-k*.2,jz-.05,.06,.14,.1,jc(0x5a5a56,.05),0,(k%2)*1.5);cone('iron',jx-3.6,DK+3.4,jz,.09,.3,jc(0x3a3430,.05),5);
- for(let k=0;k<2;k++)for(const [sx,sy] of [[-1,0],[1,0]])box('plank',jx-3.6+sx*.55,DK+k*.6+.02,jz+.4,.5,.55,.55,jc(pick([0xb89a4a,0x8a6a44]),.06));
+ // overhead portal gantry crane over the loading yard: four splayed legs, two runway girders, a bridge with a trolley and winch, hook block and a slung crate
+ const jz=ZF+2.9,gy=jc(0xd8a02a,.05),gd=jc(0x4a4a46,.05),gxL=5.2,gxR=10.8,gz0=3.9,gz1=8.3,gt=6.2,gb=8.0,gtz=5.6;
+ for(const gx of [gxL,gxR]){for(const [z,sg] of [[gz0,-1],[gz1,1]]){beam('iron',[gx,0,z+sg*.45],[gx,gt,z],.24,gd);cyl('conc',gx,0,z+sg*.45,.4,.18,jc(0x8a8478,.06),8);
+   beam('iron',[gx,gt-1.6,z+sg*.1],[gx,gt,z-sg*.9],.1,gd,true,5);}
+  box('plain',gx,gt,(gz0+gz1)/2,.4,.35,gz1-gz0+.6,gy);box('iron',gx,2.2,(gz0+gz1)/2,.12,.12,gz1-gz0,gd);}
+ box('plain',(gxL+gxR)/2,gt+.35,gz0,gxR-gxL+1.4,.4,.5,gy);box('plain',(gxL+gxR)/2,gt+.35,gz1,gxR-gxL+1.4,.4,.5,gy);        // runway girders
+ box('plain',gb,gt+.75,(gz0+gz1)/2,.6,.5,gz1-gz0+.5,gy);                                                                  // bridge girder
+ for(const z of [gz0,gz1])box('iron',gb,gt+.75,z,1.0,.5,.7,gd);
+ box('plain',gb-.5,gt+1.25,gtz-.5,1.0,.55,1.1,jc(0xc45a30,.05));cylH('plain',gb,gt+1.55,gtz+.1,.22,.9,gd,'x',10);box('glass',gb-.3,gt+1.6,gtz+.06,.6,.3,.03,jc(0x6a9a94,.05));
+ for(const sx of [-.14,.14])beam('iron',[gb+sx,gt+1.4,gtz],[gb+sx,3.9,gtz],.06,jc(0x2a2826,.03),true,4);
+ box('plain',gb-.25,3.6,gtz-.2,.5,.4,.4,gy);cone('iron',gb,3.35,gtz,.1,.25,jc(0x2a2826,.03),6);
+ for(const [a,b] of [[-.55,-.45],[.55,-.45],[.55,.45],[-.55,.45]])beam('iron',[gb,3.5,gtz],[gb+a,2.85,gtz+b],.025,jc(0x2a2826,.03),true,3);
+ box('plank',gb-.6,1.75,gtz-.5,1.2,1.1,1.0,jc(0xa08258,.06));box('plank',gb-.6,2.8,gtz-.5,1.24,.05,1.04,jc(0x4a3a2c,.05));box('plank',gb-.6,1.75,gtz-.5,1.24,.06,1.04,jc(0x4a3a2c,.05));
+ for(let k=0;k<2;k++)box('plain',gb-.4+k*.2,2.85,gtz-.2,.16,.06,.06,jc(0xd8a02a,.05));
  // dock goods: crate stacks and sacks on the deck
  for(let k=0;k<4;k++){pallet(-9.0+k*.05,DK,jz-.4,1.6,1.2);for(let q=0;q<3;q++)crate(-9.0,DK+.12+q*.8,jz-.4,.8,rr(-.1,.1),pick([0x8a6a44,0x6a5238,0xa08258]));break;}
  sacks(-6.0,DK,jz-.8,6,0.2);sacks(-5.4,DK+.34,jz-.8,3,.1);
@@ -1623,7 +1638,7 @@ function inWarehouse(o){
   if(i===1)tarp(x,.12+n*.95+.05,z-.55,1.7,1.3,.5,pick([0x2f62b8,0x3b7f8e,0xc9852a]),{poles:false});});
  tarp(6.6,3.05,4.0,1.7,1.3,.5,0x3b7f8e,{poles:false});
  tireStack(11.6,4.2,5);tireStack(11.6,5.0,4);barrel(11.6,0,6.4,0x8a3a2c);barrel(12.1,0,6.7,0x2f62b8);pallet(11.5,0,2.4,1.4,1.2);
- lamp(-10.6,0,ZF+2.2,4.2);lamp(11.0,0,ZF+.8,5.0);
+ lamp(-10.6,0,ZF+2.2,4.2);lamp(12.0,0,ZF+.8,5.0);
  for(const [i,x] of dxs.entries())inDigit(x,DK+3.8,ZF+.06,i+1,.7,0x2a2826);inDigit(X0-.06,3.6,-1.0,7,1.0,0x2a2826,-PI/2);inDigit(X0-.06,3.6,-1.5,4,1.0,0x2a2826,-PI/2);
  // SOCKETS: awnings over the outer doors (posts land on the deck), banners on a beam bracket, paint panels for stencilled numbers, gable emblem, ridge flag
  sock('awning',dxs[0],WH-.4,ZF+.05,0,{w:4.2,d:2.6,drop:.5,h:WH-.4-.5-DK});sock('awning',dxs[2],WH-.4,ZF+.05,0,{w:4.2,d:2.6,drop:.5,h:WH-.4-.5-DK});
@@ -1829,8 +1844,12 @@ function fmFarmhouse(o){
   W(sx+Math.cos(a)*(r+.05),y-.03,sz+Math.sin(a)*(r+.05),PI/2-a,()=>beam('iron',[0,0,0],[0,-.02,.7],.05,jc(0x4a4038,.05)));
   if(k%4===0)beam('wood',[px,0,pz],[px,y-.05,pz],.09,jc(0x5c4630,.06));
   const a2=a+.052*PI,y2=y+.33;const qx=sx+Math.cos(a2)*(R2+.42),qz=sz+Math.sin(a2)*(R2+.42);const rx=sx+Math.cos(a)*(R2+.42),rz=sz+Math.sin(a)*(R2+.42);if(k<N-1)beam('wood',[rx,y+.95,rz],[qx,y2+.95,qz],.05,jc(0x5c4630,.06));if(k%2===0)beam('wood',[rx,y-.05,rz],[rx,y+.95,rz],.04,jc(0x5c4630,.06),true,5);}
- { const a=PI*.78+(N-1)*.052*PI;const px=sx+Math.cos(a)*(R2),pz=sz+Math.sin(a)*(R2);W(px,.22+(N-1)*.33+.05,pz,PI/2-a,()=>{box('plank',0,0,0,1.2,.06,1.2,jc(0x6a5238,.06));});
-  W(sx+Math.cos(a+.3)*(r+.02),0,sz+Math.sin(a+.3)*(r+.02),PI/2-a-.3,()=>door(0,5.85,0,.9,1.7,{step:false,col:0x3f9a8a}));}
+ { const a=PI*.78+(N-1)*.052*PI,yl=.22+(N-1)*.33;const px=sx+Math.cos(a)*(r+.65),pz=sz+Math.sin(a)*(r+.65);
+  // landing flush with the last tread, running back to the silo wall; door sill exactly at its top, centred on the landing
+  W(px,yl,pz,PI/2-a,()=>{box('plank',0,-.05,0,1.3,.06,1.3,jc(0x6a5238,.06));for(const s of [-1]){beam('wood',[s*.62,-.05,-.6],[s*.62,.95,-.6],.05,jc(0x5c4630,.06),true,5);beam('wood',[s*.62,-.05,.62],[s*.62,.95,.62],.05,jc(0x5c4630,.06),true,5);beam('wood',[s*.62,.95,-.6],[s*.62,.95,.62],.05,jc(0x5c4630,.06));}
+   beam('wood',[-.62,.95,.62],[.62,.95,.62],.05,jc(0x5c4630,.06));beam('wood',[-.62,-.05,.62],[-.62,-.6,.62],.04,jc(0x5c4630,.06));});
+  W(sx+Math.cos(a)*(r+.02),yl+.01,sz+Math.sin(a)*(r+.02),PI/2-a,()=>door(0,0,0,.9,1.8,{step:false,col:0x3f9a8a}));
+  beam('wood',[px+Math.cos(a)*.6,0,pz+Math.sin(a)*.6],[px+Math.cos(a)*.6,yl-.05,pz+Math.sin(a)*.6],.1,jc(0x5c4630,.06));}
  // east barn lean-to for the cart
  W(hx1,0,-1.9,PI/2,()=>{fmLean(0,0,5.0,2.9,3.9,2.7,{col:0x8a3a2c});box('plank',0,0,1.4,5.0,.08,2.9,jc(0x6a5a44,.08));
   for(const s of [-1,1])box('plank',s*2.45,0,1.4,.08,2.7,2.8,jc(pick(PAL.wood),.07));
@@ -1927,14 +1946,27 @@ function dfTower(o){
    beam('iron',P0(-1,y0,s0),P0(1,y1,s1),.05,jc(0x6a4a34,.06));beam('iron',P0(1,y0,s0),P0(-1,y1,s1),.05,jc(0x6a4a34,.06));
    if(i%2===0)beam('iron',P0(-1,(y0+y1)/2,(s0+s1)/2),P0(1,(y0+y1)/2,(s0+s1)/2),.045,bc);}}
  for(let i=0;i<4;i++){const y=lv[i]+.05;for(const [a,c] of [[[-1,1],[1,1]],[[1,1],[1,-1]],[[1,-1],[-1,-1]],[[-1,-1],[-1,1]]])beam('iron',[a[0]*S(y),y,a[1]*S(y)],[c[0]*S(y),y,c[1]*S(y)],.09,bc);}
- // zig-zag stair up the front (+z) face: four flights with landings; each flight sits on the slope
- for(let k=0;k<4;k++){const y0=k*3.5,y1=y0+3.5,dir=k%2?-1:1;const zz=S((y0+y1)/2)+.75;const ax=-dir*2.3,bx=dir*2.3;
-  stairs(ax,y0,zz,bx,y1,zz,.95,{rail:true});
-  // landing at the top of the flight, tied back to the leg
-  const lx=dir*2.9,lz=S(y1)+.6;box('plank',lx,y1-.12,lz,1.5,.1,1.3,jc(pick(PAL.wood),.07));beam('iron',[lx,y1-.2,lz+.6],[dir*S(y1),y1-1.2,S(y1)],.06,bc);beam('iron',[lx,y1-.2,lz+.6],[dir*S(y1),y1-.2,S(y1)-.1],.06,bc);
-  if(k<3)beam('iron',[lx-dir*.7,y1-.12,lz+.55],[lx+dir*.7,y1-.12,lz+.55],.05,bc);
-  // bracket the flight to the tower: two outriggers
-  for(const u of [-.6,.6]){const xx=u*2.3;const yy=y0+(xx*dir+2.3)/4.6*3.5;beam('iron',[xx,yy-.1,zz],[xx,yy-.2,S(yy)],.05,bc,true,5);}}
+ // zig-zag stair up the front (+z) face: four steel flights. Each flight starts at the previous landing's inner edge and ends on the next landing,
+ // whose centre sits on a leg bay (x = +-S(y)); the last flight ends on an apron platform level with the deck, beside the gate in the deck rail.
+ const zf=y=>S(y)+.75,tc=jc(0x6a5a4c,.05);
+ const hr=(a,c,off)=>{const n=Math.max(2,Math.round(Math.hypot(c[0]-a[0],c[2]-a[2])/1.3));beam('iron',[a[0],a[1]+1.0,a[2]+off],[c[0],c[1]+1.0,c[2]+off],.035,bc,true,6);
+  for(let i=0;i<=n;i++){const u=i/n,px=a[0]+(c[0]-a[0])*u,py=a[1]+(c[1]-a[1])*u,pz=a[2]+(c[2]-a[2])*u;beam('iron',[px,py,pz+off],[px,py+1.0,pz+off],.035,bc,true,5);}};
+ const landing=(cx,ly,cz,wd,dp)=>{box('iron',cx,ly-.1,cz,wd,.1,dp,tc);for(let k=0;k<=Math.round(dp/.3);k++)box('iron',cx,ly-.006,cz-dp/2+k*.3,wd,.012,.05,jc(0x3a3430,.04));};
+ for(let k=0;k<4;k++){const y0=k*3.5,y1=y0+3.5,dir=k%2?-1:1;
+  const sxs=k===0?-3.3:-dir*(S(y0)-.3);const exs=k<3?dir*(S(y1)-.3):-1.9;
+  const zs=zf(y0),ze=k<3?zf(y1):3.2;
+  stairs(sxs,y0,zs,exs,y1,ze,.85,{steel:true,rail:false});
+  hr([sxs,y0,zs],[exs,y1,ze],.5);if(k<3)hr([sxs,y0,zs],[exs,y1,ze],-.5);
+  if(k<3){const lx=dir*(S(y1)+.3),lz=zf(y1);landing(lx,y1,lz,1.2,1.8);
+   // landing struts to the leg bay and rail on its outer edge and front
+   for(const q of [-.8,.8])beam('iron',[lx,y1-.1,lz+q],[dir*S(y1),y1-1.3,S(y1)+q*.2],.06,bc);beam('iron',[lx,y1-.1,lz-.8],[dir*S(y1),y1-.1,S(y1)],.06,bc);
+   beam('iron',[lx+dir*.6,y1,lz-.9],[lx+dir*.6,y1+1.0,lz-.9],.035,bc,true,5);beam('iron',[lx+dir*.6,y1,lz+.9],[lx+dir*.6,y1+1.0,lz+.9],.035,bc,true,5);beam('iron',[lx+dir*.6,y1+1.0,lz-.9],[lx+dir*.6,y1+1.0,lz+.9],.035,bc,true,5);
+   beam('iron',[lx-dir*.6,y1+1.0,lz+.9],[lx+dir*.6,y1+1.0,lz+.9],.035,bc,true,5);beam('iron',[lx-dir*.6,y1,lz+.9],[lx-dir*.6,y1+1.0,lz+.9],.035,bc,true,5);}
+  else{ // apron platform flush with the deck (top at y1 = 14), open to the deck through the rail gate
+   landing(-2.4,y1,3.2,1.4,1.0);for(const sx of [-1,1])beam('iron',[-2.4+sx*.6,y1-.1,3.6],[-2.4+sx*.3,y1-1.4,S(12.6)],.05,bc);beam('iron',[-3.1,y1,2.7],[-3.1,y1+1.0,2.7],.035,bc,true,5);beam('iron',[-3.1,y1,3.7],[-3.1,y1+1.0,3.7],.035,bc,true,5);
+   beam('iron',[-3.1,y1+1.0,2.7],[-3.1,y1+1.0,3.7],.035,bc,true,5);beam('iron',[-3.1,y1+.5,2.7],[-3.1,y1+.5,3.7],.03,bc,true,5);beam('iron',[-3.1,y1+1.0,3.7],[-1.7,y1+1.0,3.7],.035,bc,true,5);beam('iron',[-1.7,y1,3.7],[-1.7,y1+1.0,3.7],.035,bc,true,5);
+   // gate posts in the deck rail and an open gate leaf
+   for(const gx of [-2.7,-1.4])beam('iron',[gx,y1,2.7],[gx,y1+1.15,2.7],.06,bc,true,6);beam('iron',[-1.4,y1+.1,2.7],[-1.4,y1+1.0,3.5],.03,bc,true,4);beam('iron',[-1.4,y1+1.0,2.7],[-1.4,y1+1.0,3.5],.035,bc,true,4);}}
  // lower flight rail gate: base fence with a gate gap where the stair meets the ground
  const fz=S(0)+1.3,fx=4.5;fenceRun(-fx,-fz+1.3,fx,-fz+1.3,1.9,{barbed:true});fenceRun(-fx,-fz+1.3,-fx,fz,1.9,{barbed:true});fenceRun(fx,-fz+1.3,fx,fz,1.9,{barbed:true});
  fenceRun(-fx,fz,-3.4,fz,1.9,{barbed:true});fenceRun(-1.2,fz,fx,fz,1.9,{barbed:true});
@@ -1947,7 +1979,7 @@ function dfTower(o){
  const rl=1.05,rc=jc(0x7a4a34,.05);const corners=[[-2.7,2.7],[2.7,2.7],[2.7,-2.7],[-2.7,-2.7]];
  const rail=(a,c,skip)=>{const n=Math.max(1,Math.round(Math.hypot(c[0]-a[0],c[1]-a[1])/1.1));for(let k=0;k<=n;k++){const u=k/n;beam('iron',[a[0]+(c[0]-a[0])*u,y,a[1]+(c[1]-a[1])*u],[a[0]+(c[0]-a[0])*u,y+rl,a[1]+(c[1]-a[1])*u],.05,rc,true,5);}
   beam('iron',[a[0],y+rl,a[1]],[c[0],y+rl,c[1]],.06,rc);beam('iron',[a[0],y+.55,a[1]],[c[0],y+.55,c[1]],.04,rc);};
- rail(corners[1],corners[2]);rail(corners[2],corners[3]);rail(corners[3],[-2.7,.4]);rail([2.7,2.7],[-1.4,2.7]);
+ rail(corners[1],corners[2]);rail(corners[2],corners[3]);rail(corners[3],corners[0]);rail([2.7,2.7],[-1.4,2.7]);
  // sheet panels hung on the rail (patched): a few tin plates
  box('corr',1.3,y,-2.72,1.4,.8,.04,jc(0xc45a30,.06));box('sheet',-1.3,y,-2.72,1.3,.7,.04,jc(0x3fa08e,.06));
  // cab: 3.4 x 3.2 x 2.5, patched plank and sheet
@@ -2046,7 +2078,7 @@ function dfWhipPost(x,z){beam('wood',[x,0,z],[x,2.6,z],.18,jc(0x5c4630,.06),true
  for(const s of [-1,1]){cyl('iron',x+s*.55,1.85,z,.09,.09,jc(0x4a4038,.05),8);beam('iron',[x+s*.55,1.85,z],[x+s*.5,1.3,z+.1],.02,jc(0x3a3430,.05),true,3);}
  for(let k=0;k<5;k++)beam('iron',[x,1.15,z+.15],[x+rr(-.2,.2),.55+k*.02,z+.2],.02,jc(0x3a3430,.05),true,3);
  cyl('plain',x+.5,0,z+.6,.7,.02,jc(0x4a2c24,.05),10);}
-function dfMud(x,z,r,w){cyl('plain',x,.02,z,r,.03,jc(pick([0x4a3624,0x3e2c1e,0x52402a]),.06),12);if(w)cyl('water',x+r*.1,.05,z,r*.55,.01,jc(0x3a6a70,.05),10);}
+function dfMud(x,z,r,w){cyl('plain',x,.02,z,r,.03,jc(pick([0x4a3624,0x3e2c1e,0x52402a]),.06),12);if(w)cyl('water',x+r*.1,.05,z,r*.55,.01,jc(0x4e4634,.04),10);}
 function dfChain(a,b,n){for(let k=0;k<n;k++){const t=(k+.5)/n;const p=[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t-Math.sin(t*PI)*.12,a[2]+(b[2]-a[2])*t];box('iron',p[0],p[1],p[2],.06,.06,.06,jc(0x4a4038,.05),k%2?.7:0,0,0);}
  beam('iron',a,b,.015,jc(0x4a4038,.05),true,3);}
 function dfCells(o){
@@ -2054,10 +2086,16 @@ function dfCells(o){
  W(cx,0,cz,0,()=>container({len:L,col:0x6a7a78,doorEnd:false}));
  const fz=cz+CT.W/2;
  // barred slit windows: dark slots cut over the wall with bars across; a door with a wicket
- for(const k of [-4.3,-1.4,1.9,4.6]){box('iron',cx+k,1.75,fz+.005,.9,.28,.03,jc(0x0a0808,.03));for(let j=0;j<5;j++)box('iron',cx+k-.36+j*.18,1.72,fz+.04,.03,.34,.03,jc(0x3a3430,.05));
+ for(const k of [-2.3,.6,3.2,5.0]){box('iron',cx+k,1.75,fz+.005,.9,.28,.03,jc(0x0a0808,.03));for(let j=0;j<5;j++)box('iron',cx+k-.36+j*.18,1.72,fz+.04,.03,.34,.03,jc(0x3a3430,.05));
   box('iron',cx+k,2.06,fz+.03,1.0,.05,.06,jc(0x4a4038,.05));box('iron',cx+k,1.68,fz+.03,1.0,.05,.06,jc(0x4a4038,.05));}
- box('iron',cx-6.0,.25,fz+.02,.9,1.9,.06,jc(0x4a4038,.05));box('iron',cx-6.0,1.55,fz+.06,.35,.2,.04,jc(0x0a0808,.03));dfPadlock(cx-5.7,1.0,fz+.1);
- for(const yy of [.5,1.2,1.8])box('iron',cx-6.0,yy,fz+.06,.9,.06,.04,jc(0x3a3430,.05));
+ // cell door: dark steel frame proud of the face, leaf centred inside it, wicket, hinges, hasp and padlock
+ {const dx=cx-4.5,fw=1.1,fh=2.15,y0=.16,fc=jc(0x2a2624,.04);
+  for(const sx of [-1,1])box('iron',dx+sx*(fw/2-.05),y0,fz+.02,.1,fh,.1,fc);box('iron',dx,y0+fh-.1,fz+.02,fw,.1,.1,fc);box('iron',dx,y0,fz+.02,fw,.06,.1,fc);
+  box('iron',dx,y0+.06,fz+.03,fw-.2,fh-.16,.06,jc(0x5a4a40,.05));
+  for(const yy of [.6,1.3,1.9])box('iron',dx,yy,fz+.07,fw-.2,.06,.04,jc(0x3a3430,.05));
+  box('iron',dx,1.55,fz+.07,.38,.22,.05,jc(0x0a0808,.03));for(let j=0;j<3;j++)box('iron',dx-.1+j*.1,1.53,fz+.1,.02,.26,.02,jc(0x3a3430,.05));
+  for(const yy of [.4,1.85])box('iron',dx-fw/2+.1,yy,fz+.1,.14,.08,.05,jc(0x3a3430,.05));
+  box('iron',dx+.3,.95,fz+.1,.28,.1,.04,jc(0x3a3430,.05));dfPadlock(dx+.38,.78,fz+.14);}
  // roof furnishings: barbed wire coils and a spotlight
  for(let k=0;k<3;k++)box('iron',cx-4+k*3.5,CT.H+.05,cz+.3,.03,.5,.03,jc(0x3a3430,.05),0,0,.4);
  beam('iron',[cx-L/2+.3,CT.H,fz-.2],[cx+L/2-.3,CT.H,fz-.2],.02,jc(0x3a3430,.05),true,3);
@@ -2070,7 +2108,7 @@ function dfGuard(o){
  const gx=7.2,gz=5.6;
  box('plank',gx,0,gz,3.0,.14,2.4,jc(0x6a5238,.08));for(const [px,pz,pw,pd] of [[gx,gz-1.1,3.0,.1],[gx-1.45,gz,.1,2.4],[gx+1.45,gz,.1,2.4]])box('plank',px,.14,pz,pw,2.2,pd,jc(0xa87a4a,.07));
  wallOpen('plank',gx,.14,gz+1.16,3.0,2.2,.1,[{x0:gx-.3,x1:gx+.6,y0:.14,y1:2.0},{x0:gx-1.2,x1:gx-.6,y0:1.0,y1:1.8}],jc(0xa87a4a,.07));
- door(gx+.15,.14,gz+1.18,.9,1.85,{step:true,col:0x2f5f8f});win(gx-.9,1.0,gz+1.19,.6,.7,{bars:true});
+ door(gx+.15,.14,gz+1.18,.9,1.85,{step:true,col:0x8a3a2c});win(gx-.9,1.0,gz+1.19,.6,.7,{bars:true});
  dfRoof('corr',gx-1.75,gx+1.75,gz+1.45,2.35,gz-1.3,2.85,.07,jc(0x9a8a70,.06));
  for(const sx of [-1,1])beam('wood',[gx+sx*1.6,0,gz+1.2],[gx+sx*1.6,2.4,gz+1.2],.1,jc(0x5c4630,.06));
  // lookout: four stilts, platform, rail, little roof, ladder, lamp
@@ -2169,12 +2207,26 @@ function cpSpikes(L,y,z,gap){gap=gap||.95;const n=Math.floor(L/gap);const c=jc(0
 // a chain-link swag hung from the top on the outside
 function cpChain(L,y,z,drop){quad('chain',0,y-drop/2,z,L,drop,jc(0xb4b8b8,.05));for(let k=0;k<Math.round(L/2.2);k++){const x=-L/2+.5+k*2.2;beam('iron',[x,y,z],[x,y-drop*rr(.8,1.1),z],.012,jc(0x6a6a66,.05),true,3);}}
 // ---- a wrecked car (x long, front +x); base at y
-function cpCar(x,y,z,ry,col,o){o=o||{};W(x,y,z,ry,()=>{const dk=jc(0x2a2826,.03),c=col;
- box('iron',0,.26,0,4.3,.2,1.7,dk);box('sheet',0,.4,0,4.4,.62,1.82,c);box('sheet',-.15,1.02,0,2.5,.48,1.66,jc(c,.05));box('sheet',-.15,1.5,0,2.4,.05,1.6,jc(c,.05));
- for(const sz of [-1,1]){box('glass',-.15,1.1,sz*.84,2.2,.34,.04,jc(0x6a9a94,.06));}box('glass',1.05,1.1,0,.04,.32,1.5,jc(0x6a9a94,.06),0,0,.6);
- box('sheet',1.5,1.02,0,1.35,.07,1.62,c,0,0,-.07);box('sheet',-1.75,1.02,0,.9,.07,1.62,c,0,0,.06);box('iron',2.22,.4,0,.12,.2,1.8,jc(0x8a8a86,.06));box('iron',-2.22,.4,0,.12,.2,1.8,jc(0x8a8a86,.06));
- if(!o.noWheels)for(const wx of [-1.4,1.4])for(const sz of [-1,1]){cpTire(wx,.34,sz*.92,.34,undefined,0,PI/2,0);}
- if(o.door){box('sheet',.55,.5,.95,1.1,.55,.05,jc(c,.08),.9);}});}
+function cpCar(x,y,z,ry,col,o){o=o||{};W(x,y,z,ry,()=>{if(o.flip)pushM(TF(0,0,0,0,PI,0));
+ const dk=jc(0x2a2826,.03),c=col,c2=jc(col,.06),gl=jc(0x6a9a94,.06);
+ box('iron',0,.3,0,4.2,.14,1.5,dk);                                                     // floor pan / chassis
+ box('sheet',0,.38,0,4.3,.6,1.8,c);                                                    // lower body 0.38..0.98
+ box('iron',2.17,.42,0,.14,.2,1.86,jc(0x8a8a86,.06));box('iron',-2.17,.42,0,.14,.2,1.86,jc(0x8a8a86,.06));   // bumpers
+ box('sheet',1.6,.98,0,1.1,.07,1.7,c2,0,0,-.08);box('sheet',-1.65,.98,0,.8,.07,1.7,c2,0,0,.07);              // bonnet, boot
+ for(const sz of [-1,1]){box('glow',2.14,.62,sz*.6,.06,.16,.3,jc(0xd8d0b0,.03));box('plain',-2.14,.62,sz*.6,.06,.14,.28,jc(0x9a2a20,.04));}
+ // cabin: four pillars, roof, glass
+ for(const sx of [-1,1])for(const sz of [-1,1])box('sheet',-.15+sx*1.1,.98,sz*.8,.08,.55,.08,c2);
+ box('sheet',-.15,1.53,0,2.5,.06,1.74,c2);
+ if(!o.noGlass){for(const sz of [-1,1])box('glass',-.15,1.06,sz*.82,2.1,.44,.03,gl);box('glass',1.0,1.06,0,.03,.44,1.5,gl,0,0,.5);box('glass',-1.25,1.06,0,.03,.44,1.5,gl,0,0,-.5);}
+ // doors: seams and handles on both flanks; one door may hang open
+ for(const sz of [-1,1]){const openHere=(o.open&&sz===o.open);
+  for(const sx of [-.75,.45])box('iron',sx,.42,sz*.905,.03,.55,.02,dk);
+  if(!openHere){box('iron',.3,.85,sz*.915,.16,.03,.03,jc(0x8a8a86,.05));}
+  else W(.45,.4,sz*.9,sz*.95,()=>{box('sheet',-.6,0,0,1.2,.6,.05,c2);box('glass',-.6,.6,0,1.0,.4,.03,gl);});}
+ // axles, wheels with hubs
+ for(const wx of [-1.4,1.4]){beam('iron',[wx,.34,-.86],[wx,.34,.86],.05,dk,true,6);for(const sz of [-1,1]){if(o.noWheel&&o.noWheel[0]===wx&&o.noWheel[1]===sz){cyl('iron',wx,.0,sz*.86,.1,.04,jc(0x8a8a86,.05),8);continue;}
+   cpTire(wx,.34,sz*.9,.34,undefined,0,PI/2,0);cylH('iron',wx,.34,sz*(.9+.09),.13,.05,jc(0x8a8a86,.05),'z',8);}}
+ if(o.flip)popM();});}
 // ---------------------------------------------------------------- wall segments. Frame: x along the wall (centred), z>0 = interior, wall occupies z in [-th,0]
 const cpSeg={
  cont(L,s){const pcs=s.pcs;let x=-L/2;let i=0;for(const p of pcs){for(let k=0;k<2;k++){W(x+p/2+(k?rr(-.12,.12):0),k*CT.H,-CT.W/2,0,()=>container({len:p,doorEnd:false,col:cpCol()}));}
@@ -2197,12 +2249,19 @@ const cpSeg={
   for(let i=0;i<=n;i++){const x=-L/2+i*L/n;beam('wood',[x,0,-.02],[x,H+.15,-.02],.09,jc(0x5c4630,.06),true,6);if(i%2===1)beam('wood',[x,3.6,-.25],[x,0,-2.6],.07,jc(0x5c4630,.06));}
   for(const y of [.7,2.3,H-.1])box('plank',0,y,-.24,L,.1,.08,jc(0x5c4630,.06));
   cpSpikes(L,H+.15,-.18);if(rng()<.5)cpChain(L,H,-.26,1.3);},
- car(L,s){const n=Math.max(1,Math.floor(L/4.5));const step=L/n;
-  for(let i=0;i<n;i++){const cx=-L/2+step*(i+.5);for(let k=0;k<4;k++){const c=jc(pick([0x9a3a2c,0x3b7f8e,0xc99a2e,0x6a7a78,0xb8b0a0,0x2f5f8f,0xc45a30]),.08);
-    cpCar(cx+(k%2?step*.12:-step*.05)+rr(-.15,.15),k*1.2,-1.0+rr(-.12,.12),(k%2?PI:0)+rr(-.06,.06),c,{door:k%2===0});}}
-  box('sheet',0,4.9,-1.0,L*.8,.05,1.5,P('rust'),0,0,.02);cpSpikes(L,4.95,-1.5);}
+ car(L,s){const n=Math.max(1,Math.floor(L/4.7));const step=L/n;const RT=1.56,FL=RT*2;
+  const cols=()=>jc(pick([0x9a3a2c,0x3b7f8e,0xc99a2e,0x6a7a78,0xb8b0a0,0x2f5f8f,0xc45a30,0x4d6f3c]),.08);
+  const pos0=[];for(let i=0;i<n;i++)pos0.push(-L/2+step*(i+.5));
+  const pos1=n>1?pos0.slice(0,n-1).map((x)=>x+step/2):[pos0[0]+(step>5.2?.5:0)];
+  const zc=-1.0;
+  pos0.forEach((x,i)=>cpCar(x,0,zc+rr(-.05,.05),i%2?PI:0,cols(),{open:rng()<.5?(rng()<.5?1:-1):0,noGlass:rng()<.3,noWheel:rng()<.25?[pick([-1.4,1.4]),pick([-1,1])]:undefined}));
+  pos1.forEach((x,i)=>{cpCar(x,FL,zc+rr(-.05,.05),i%2?0:PI,cols(),{flip:true,open:rng()<.4?1:0,noGlass:rng()<.5});
+   cpCar(x+rr(-.08,.08),FL,zc+rr(-.05,.05),rng()<.5?0:PI,cols(),{open:rng()<.4?-1:0,noGlass:rng()<.5});});
+  // chains lashing the stack and outward props
+  for(const x of [-L/2+.6,L/2-.6]){beam('iron',[x,.3,-2.05],[x,4.3,-2.05],.02,jc(0x6a6a66,.05),true,3);beam('wood',[x,3.4,-1.9],[x,0,-3.2],.07,jc(0x5c4630,.06));}
+  cpSpikes(L,FL+RT+.05,-1.6);}
 };
-const cpSegTop={cont:5.2,tyre:4.6,sheet:4.6,car:5.0};
+const cpSegTop={cont:5.2,tyre:4.6,sheet:4.6,car:4.8};
 function cpRun(x0,z0,x1,z1,spec){const dx=x1-x0,dz=z1-z0,L=Math.hypot(dx,dz),ux=dx/L,uz=dz/L,ry=Math.atan2(-uz,ux);let fixed=0,nf=0;
  for(const s of spec){if(s.pcs)s.len=s.pcs.reduce((a,c)=>a+c,0);if(s.len)fixed+=s.len;else nf++;}
  const flex=nf?(L-fixed)/nf:0;let p=0;for(const s of spec){const len=s.len||flex;const c=p+len/2;W(x0+ux*c,0,z0+uz*c,ry,()=>cpSeg[s.t](len,s));p+=len;}}
@@ -2498,24 +2557,30 @@ function arMast(k){const dk=jc(0x4a4038,.05),lt=jc(0x6a6a66,.05);const h=18.0,w=
  for(let b=0;b<6;b++){const y0=b*3,y1=y0+3;for(const [a,c] of [[[-w,-w],[w,-w]],[[w,-w],[w,w]],[[w,w],[-w,w]],[[-w,w],[-w,-w]]]){beam('iron',[a[0],y1,a[1]],[c[0],y1,c[1]],.04,lt,true,5);const f=(b%2)?1:-1;beam('iron',[a[0],f>0?y0:y1,a[1]],[c[0],f>0?y1:y0,c[1]],.03,lt,true,4);}}
  box('iron',-.9,h,-.9,1.8,.16,1.8,dk);arPole(0,h,h+1.9,0,.05);
  // arms to the cage rings and the ladder
- for(const [y,rr2] of [[15.9,2.3],[9.3,2.85]]){for(const sx of [-.5,.5])beam('iron',[sx,y,-w],[sx,y,-rr2],.06,dk);beam('iron',[0,y-1.3,-w],[0,y,-rr2+.1],.05,dk);}
+ for(const [y,rr2] of [[16.1,2.6],[9.25,3.2]]){for(const sx of [-.5,.5])beam('iron',[sx,y,-w],[sx,y,-rr2],.06,dk);beam('iron',[0,y-1.3,-w],[0,y,-rr2+.1],.05,dk);}
  ladder(0,0,w+.08,h-.3,0);
  arSearch(-.45,12.6,w+.35,PI,0);arSearch(.45,12.6,w+.35,PI,0);
  sock('banner',0,14.6,w+.06,0,{w:1.0,h:3.0});sock('flag',0,h+2.0,0,0,{w:1.5,h:.7});}
 function arPole(x,y0,y1,z,r){beam('wood',[x,y0,z],[x,y1,z],r,jc(0x4a4038,.05),true,6);}
-function arCage(){const T=15.8,Mid=9.0,rT=13.0,rM=12.2;const st=jc(0x4a4038,.05);
- sector('iron',0,0,rT-.35,rT+.35,0,TAU,T,T+.6,st,56);sector('iron',0,0,rT-.25,rT+.25,0,TAU,T-.9,T-.5,jc(0x5a5048,.05),56);
- sector('iron',0,0,rM-.3,rM+.3,0,TAU,Mid,Mid+.5,st,56);
- const N=32;for(let i=0;i<N;i++){const a=i/N*TAU,b=(i+1)/N*TAU;const xa=Math.cos(a),za=Math.sin(a);
-  beam('iron',[xa*rM,Mid+.4,za*rM],[xa*rT,T+.1,za*rT],.06,st,true,5);
-  const m=(a+b)/2,rm=(rT+rM)/2,ym=(T+Mid)/2+.25,ch=2*rm*Math.sin(PI/N),hh=Math.hypot(T-Mid-.3,rT-rM);
-  arRad(rm,m,ym,()=>{quad('chain',0,0,0,ch,hh,jc(0xb4b8b8,.05),0,Math.atan2(rT-rM,T-Mid),0);});}
- // hoops between ribs, and chains hanging under the mid ring
- sector('iron',0,0,(rT+rM)/2-.06,(rT+rM)/2+.06,0,TAU,(T+Mid)/2,(T+Mid)/2+.12,jc(0x5a5048,.05),56);
- for(let i=0;i<40;i++){const a=i/40*TAU+.08,len=rr(1.5,5.5);const x=Math.cos(a)*(rM-.1),z=Math.sin(a)*(rM-.1);beam('iron',[x,Mid,z],[x,Mid-len,z],.022,jc(0x6a6a66,.05),true,3);
+function arCage(){const T=15.8,Mid=9.0,rT=13.0,rM=12.2;const st=jc(0x4a4038,.05),st2=jc(0x5a5048,.05);const dr=rT-rM,dy=T-Mid;
+ const rAt=y=>rM+dr*(y-Mid)/dy;                          // the cone line the ribs and chain-link follow
+ // rings with real thickness (0.9 wide, 0.8 tall); nothing else touches their faces
+ sector('iron',0,0,rT-.45,rT+.45,0,TAU,T,T+.8,st,56);
+ sector('iron',0,0,rM-.45,rM+.45,0,TAU,Mid-.05,Mid+.5,st,56);
+ const N=32,y0=Mid+.5,y1=T,tilt=Math.atan2(dr,dy);
+ for(let i=0;i<N;i++){const a=i/N*TAU,b=(i+1)/N*TAU;const xa=Math.cos(a),za=Math.sin(a);
+  // rib: a 0.14 square section on the cone line, running up into the top ring and down into the mid ring
+  beam('iron',[xa*rAt(Mid+.2),Mid+.2,za*rAt(Mid+.2)],[xa*rAt(T+.3),T+.3,za*rAt(T+.3)],.14,st);
+  // chain-link panel: tucked .16 inside the rib line so it never shares a plane with a rib, hoop or ring
+  const m=(a+b)/2,ym=(y0+y1)/2,rc=rAt(ym)-.16,ch=2*(rc+.02)*Math.sin(PI/N)*.98,hh=Math.hypot(dr*(y1-y0)/dy,y1-y0)-.06;
+  arRad(rc,m,ym,()=>{quad('chain',0,0,0,ch,hh,jc(0xb4b8b8,.05),0,tilt,0);});}
+ // hoop halfway up: sits OUTSIDE the ribs' outer face, not through the panels
+ const ym=(Mid+T)/2;sector('iron',0,0,rAt(ym)+.09,rAt(ym)+.21,0,TAU,ym,ym+.16,st2,56);
+ // chains hung under the mid ring (they start inside the ring)
+ for(let i=0;i<40;i++){const a=i/40*TAU+.08,len=rr(1.5,5.5);const x=Math.cos(a)*(rM-.1),z=Math.sin(a)*(rM-.1);beam('iron',[x,Mid+.05,z],[x,Mid-len,z],.022,jc(0x6a6a66,.05),true,3);
   if(i%2===0){for(let q=0;q<len/.6;q++)sph('iron',x,Mid-.3-q*.6,z,.05,jc(0x7a7a76,.05),1.7);}sph('iron',x,Mid-len,z,.09,jc(0x3a3430,.05));}
- // heavy swag chains along the top ring
- for(let i=0;i<16;i++){const a=i/16*TAU;const b=a+TAU/16;const p=[Math.cos(a)*rT,T-.7,Math.sin(a)*rT],q=[Math.cos(b)*rT,T-.7,Math.sin(b)*rT];const m=[(p[0]+q[0])/2*.985,T-1.6,(p[2]+q[2])/2*.985];beam('iron',p,m,.03,jc(0x6a6a66,.05),true,4);beam('iron',m,q,.03,jc(0x6a6a66,.05),true,4);}}
+ // heavy swag chains hung from the outside of the top ring
+ for(let i=0;i<16;i++){const a=i/16*TAU,b=a+TAU/16,ro=rT+.6;const p=[Math.cos(a)*ro,T+.35,Math.sin(a)*ro],q=[Math.cos(b)*ro,T+.35,Math.sin(b)*ro];const m=[(p[0]+q[0])/2,T-.7,(p[2]+q[2])/2];beam('iron',p,m,.03,jc(0x6a6a66,.05),true,4);beam('iron',m,q,.03,jc(0x6a6a66,.05),true,4);}}
 function arGantry(){const dk=jc(0x4a4038,.05);const A=[-10.96,-10.96],B=[10.96,10.96];// runs SW..NE over the pit
  const dx=B[0]-A[0],dz=B[1]-A[1],L=Math.hypot(dx,dz),ry=Math.atan2(-dz,dx);
  W((A[0]+B[0])/2,0,(A[1]+B[1])/2,ry,()=>{const y0=17.0,y1=17.9;
@@ -2705,7 +2770,7 @@ function dkBuild(o){
  dkRope([-14,1.2,-1.4],[-14,dkQ+.4,-5.4],.5);dkRope([-12.3,1.2,.5],[-10.6,dkQ+.4,-5.5],.5);
  dkRope([9.0,1.6,2.5],[8.3,1.3,1.5],.2);dkRope([4.2,1.3,2.0],[5.2,1.2,1.4],.2);
 }
-// ---------------------------------------------------------------- cultural marker packs
+// ---------------------------------------------------------------- CULTURE PACKS (shared: core/sockets/)
 // A building never names a culture. It declares sockets (36-def.js); the ACTIVE pack draws into them. To add a culture, add one cultDef() here
 // (or in its own fragment 8x-*.js): {key,name,paint:[hex..],paintShare,signBg,signFg, fill:{awning,banner,flag,emblem,sign,paint}}. Any fill a pack
 // omits falls back to the generic one. Fills run in the socket frame: origin at the anchor, +z out of the surface, +x along it, y up.
@@ -2745,49 +2810,60 @@ function signBoard(o,bg,fg,frame){const w=o.w||2,h=o.h||.7,t=(o.trade||'').toUpp
  box('plank',0,-h/2-.06,-.02,w+.12,h+.12,.06,jc(frame||0x4a3a2c,.05));decal(key,0,0,.02,w,h,0);}
 cultDef({key:'generic',name:'Generic (unmarked)',paint:null,signBg:'#9a7a52',signFg:'#2a1c10',
  fill:{awning:awnGeneric,banner:bannerGeneric,flag:flagGeneric,emblem:emblemGeneric,sign:o=>signBoard(o,'#8a6c48','#e8dcc0','#4a3a2c'),paint:o=>{}}});
-// ------------------------------------------------------------------ Iziz: orange-led striped awnings, teal accent (Iziz Vernacular palette)
-stripeTex('awn:iziz',['#e07a2a','#f3e2c0','#f2a24a','#f3e2c0','#e07a2a','#f3e2c0','#d8893c','#f3e2c0','#2f8f8a','#f3e2c0'],10);
-cvMat('em:iziz',128,128,(g,w,h)=>{g.clearRect(0,0,w,h);g.fillStyle='#2f8f8a';g.beginPath();g.arc(64,64,60,0,TAU);g.fill();g.fillStyle='#e07a2a';g.beginPath();g.arc(64,64,44,0,TAU);g.fill();
- g.fillStyle='#f3e2c0';g.beginPath();g.arc(64,64,22,0,TAU);g.fill();for(let k=0;k<12;k++){const a=k*TAU/12;g.fillStyle='#f3e2c0';g.beginPath();g.moveTo(64+Math.cos(a-.11)*46,64+Math.sin(a-.11)*46);g.lineTo(64+Math.cos(a)*58,64+Math.sin(a)*58);g.lineTo(64+Math.cos(a+.11)*46,64+Math.sin(a+.11)*46);g.fill();}},{alpha:true});
-function drawBanIziz(g,W,H){g.fillStyle='#e07a2a';g.fillRect(0,0,W,H);g.fillStyle='#2f8f8a';g.fillRect(0,0,W*.09,H);g.fillRect(W*.91,0,W*.09,H);const d=banDisc(W,H);
- g.fillStyle='#f3e2c0';g.beginPath();g.arc(d.cx,d.cy,d.R,0,TAU);g.fill();g.fillStyle='#e07a2a';g.beginPath();g.arc(d.cx,d.cy,d.R*.58,0,TAU);g.fill();
- if(H>W*1.25){g.fillStyle='#f2a24a';for(let k=0;k<3;k++)g.fillRect(W*.24,H*.62+k*H*.07,W*.52,H*.03);}}
-function drawBanVoth(g,W,H){g.fillStyle='#7a2028';g.fillRect(0,0,W,H);g.fillStyle='#4a3220';g.fillRect(0,0,W*.09,H);g.fillRect(W*.91,0,W*.09,H);if(H>W*1.25){g.fillStyle='#5c4028';g.fillRect(0,H*.82,W,H*.035);}
- const d=banDisc(W,H),R=d.R;g.strokeStyle='#d8cdb4';g.lineWidth=Math.max(2,W*.04);g.beginPath();g.moveTo(d.cx,d.cy-R);g.lineTo(d.cx+R*.75,d.cy);g.lineTo(d.cx,d.cy+R);g.lineTo(d.cx-R*.75,d.cy);g.closePath();g.stroke();g.fillStyle='#d8cdb4';g.beginPath();g.arc(d.cx,d.cy,R*.16,0,TAU);g.fill();
- reseed(9710);for(let i=0;i<160;i++){g.fillStyle=`rgba(0,0,0,${rr(.04,.14)})`;g.fillRect(rng()*W,rng()*H,rr(1,3),rr(2,9));}}
-function drawBanRep(g,W,H){g.fillStyle='#2a8a86';g.fillRect(0,0,W,H);const bd=Math.min(W,H)*.07;g.fillStyle='#c9963a';if(H>W){g.fillRect(0,0,W,bd);g.fillRect(0,H-bd,W,bd);}else{g.fillRect(0,0,bd,H);g.fillRect(W-bd,0,bd,H);}
- const d=banDisc(W,H);g.fillStyle='#f0e6cc';g.beginPath();g.arc(d.cx,d.cy,d.R,0,TAU);g.fill();drawTriskele(g,d.cx,d.cy,d.R*.82,['#c23a2a','#2a8a86','#c9963a'],Math.max(3,d.R*.27));
- if(H>W*1.25){g.fillStyle='#c9963a';for(let k=0;k<3;k++)g.fillRect(W*.24,H*.66+k*H*.06,W*.52,H*.025);}}
-function awnIziz(o){const w=o.w||2.4,d=o.d||1.4,drop=o.drop===undefined?.5:o.drop;plane4('awn:iziz',[-w/2,0,0],[w/2,0,0],[-w/2,-drop,d],[w/2,-drop,d],.03);
- for(let k=0;k<Math.round(w/.3);k++){const x=-w/2+.15+k*.3;const sc=k%2;box('awn:iziz',x,-drop-.2+(sc?.03:0),d,.3,.2-(sc?.03:0),.02);}
- for(const sx of [-1,1])beam('wood',[sx*(w/2-.05),-drop-.2,d-.05],[sx*(w/2-.05),-drop-(o.h||2.2),d-.05],.07,jc(0xe8dcc0,.04),true,6);}
-cultDef({key:'iziz',name:'Iziz',paint:[0xe07a2a,0x2f8f8a,0xf2a24a,0xd8893c,0xe8dcc0,0xc9442a],paintShare:.6,
- fill:{awning:awnIziz,banner:o=>{const w=o.w||.8,h=o.h||2;beam('wood',[-w/2-.1,0,0],[w/2+.1,0,0],.05,jc(0xe8dcc0,.04),true,5);banDecal('ban:iziz',drawBanIziz,0,-h/2,.03,w,h,0);},
-  flag:o=>{const w=o.w||1,h=o.h||.6;beam('wood',[0,-1.6,0],[0,.3,0],.04,jc(0xe8dcc0,.04),true,5);quad('awn:iziz',w/2,-h/2+.1,0,w,h,null,0);},
-  emblem:o=>{const w=o.w||.9;decal('em:iziz',0,-(o.h||w)/2,.03,w,w,0);},
-  sign:o=>signBoard(o,'#e07a2a','#f3e2c0','#2f8f8a')}});
-// ------------------------------------------------------------------ Voth: deep red and brown banners, ash-white glyph, ragged cloth
-cvMat('em:voth',128,128,(g,w,h)=>{g.clearRect(0,0,w,h);g.fillStyle='#4a3220';g.beginPath();g.arc(64,64,60,0,TAU);g.fill();g.fillStyle='#7a2028';g.beginPath();g.arc(64,64,50,0,TAU);g.fill();
- g.strokeStyle='#d8cdb4';g.lineWidth=5;g.beginPath();g.moveTo(64,20);g.lineTo(100,64);g.lineTo(64,108);g.lineTo(28,64);g.closePath();g.stroke();g.fillStyle='#d8cdb4';g.beginPath();g.arc(64,64,10,0,TAU);g.fill();},{alpha:true});
-function bannerVoth(o){const w=o.w||.9,h=o.h||3;beam('wood',[-w/2-.12,0,0],[w/2+.12,0,0],.06,jc(0x3a2a1c,.05),true,5);
- banDecal('ban:voth',drawBanVoth,0,-h/2,.03,w,h,0);}
-function awnVoth(o){const w=o.w||2.4,d=o.d||1.4,drop=o.drop===undefined?.5:o.drop;const c=jc(pick([0x7a2028,0x8a2f2a,0x5c4028,0x4a3220]),.06);
- plane4('cloth',[-w/2,0,0],[w/2,0,0],[-w/2,-drop,d],[w/2,-drop,d],.03,c);for(let k=0;k<Math.round(w/.4);k++)box('cloth',-w/2+.2+k*.4,-drop-.24-(k%2?.08:0),d,.34,.24+(k%2?.08:0),.02,jc(c,.08));
- for(const sx of [-1,1])beam('wood',[sx*(w/2-.05),-drop-.2,d-.05],[sx*(w/2-.05),-drop-(o.h||2.2),d-.05],.08,jc(0x3a2a1c,.05),true,6);}
-cultDef({key:'voth',name:'Voth',paint:[0x7a2028,0x8a2f2a,0x5c4028,0x4a3220,0xd8cdb4],paintShare:.5,
- fill:{awning:awnVoth,banner:bannerVoth,flag:o=>{const w=o.w||1.6,h=o.h||.5;beam('wood',[0,-1.8,0],[0,.4,0],.05,jc(0x3a2a1c,.05),true,5);
-   poly('cloth',[[0,.35,0],[w,.1,0],[w*.75,-.02,0],[w,-.16,0],[0,-.1,0]],jc(0x7a2028,.05),true);},
-  emblem:o=>{const w=o.w||.9;decal('em:voth',0,-(o.h||w)/2,.03,w,w,0);},sign:o=>signBoard(o,'#5c4028','#d8cdb4','#3a2a1c')}});
-// ------------------------------------------------------------------ Republic: the triskelion (red, teal, ochre), teal and ochre stripes
-stripeTex('awn:rep',['#2a8a86','#f0e6cc','#c9773a','#f0e6cc'],8);
-cvMat('em:rep',128,128,(g,w,h)=>{g.clearRect(0,0,w,h);g.fillStyle='#1c5a58';g.beginPath();g.arc(64,64,62,0,TAU);g.fill();g.fillStyle='#f0e6cc';g.beginPath();g.arc(64,64,54,0,TAU);g.fill();
- drawTriskele(g,64,64,44,['#c23a2a','#2a8a86','#c9963a'],9);},{alpha:true});
-function awnRep(o){const w=o.w||2.4,d=o.d||1.4,drop=o.drop===undefined?.5:o.drop;plane4('awn:rep',[-w/2,0,0],[w/2,0,0],[-w/2,-drop,d],[w/2,-drop,d],.03);box('awn:rep',0,-drop-.18,d,w,.18,.02);
- for(const sx of [-1,1])beam('wood',[sx*(w/2-.05),-drop-.18,d-.05],[sx*(w/2-.05),-drop-(o.h||2.2),d-.05],.07,jc(0x7a5a38,.05),true,6);}
-cultDef({key:'republic',name:'Republic',paint:[0x2a8a86,0xc23a2a,0xc9963a,0xf0e6cc,0x1c5a58],paintShare:.55,
- fill:{awning:awnRep,banner:o=>{const w=o.w||.8,h=o.h||2;beam('wood',[-w/2-.1,0,0],[w/2+.1,0,0],.05,jc(0x7a5a38,.05),true,5);banDecal('ban:rep',drawBanRep,0,-h/2,.03,w,h,0);},
-  flag:o=>{const w=o.w||1,h=o.h||.7;beam('wood',[0,-1.6,0],[0,.3,0],.04,jc(0x7a5a38,.05),true,5);banDecal('ban:rep',drawBanRep,w/2,-h/2+.1,0,w,h,0);},
-  emblem:o=>{const w=o.w||.9;decal('em:rep',0,-(o.h||w)/2,.03,w,w,0);},sign:o=>signBoard(o,'#2a8a86','#f0e6cc','#7a5a38')}});
+// ------------------------------------------------------------------ symbols: each draws in the box (cx,cy,R) with two ink colours
+const SYMBOLS={
+ sun:(g,cx,cy,R,c1,c2)=>{g.fillStyle=c1;g.beginPath();g.arc(cx,cy,R*.92,0,TAU);g.fill();g.fillStyle=c2;g.beginPath();g.arc(cx,cy,R*.54,0,TAU);g.fill();g.fillStyle=c1;g.beginPath();g.arc(cx,cy,R*.24,0,TAU);g.fill();
+  for(let k=0;k<12;k++){const a=k*TAU/12;g.fillStyle=c1;g.beginPath();g.moveTo(cx+Math.cos(a-.11)*R*.98,cy+Math.sin(a-.11)*R*.98);g.lineTo(cx+Math.cos(a)*R*1.18,cy+Math.sin(a)*R*1.18);g.lineTo(cx+Math.cos(a+.11)*R*.98,cy+Math.sin(a+.11)*R*.98);g.fill();}},
+ triskele:(g,cx,cy,R,c1,c2)=>{drawTriskele(g,cx,cy,R*.82,[c1,c2,'#c9963a'],Math.max(3,R*.27));},
+ diamond:(g,cx,cy,R,c1,c2)=>{g.strokeStyle=c1;g.lineWidth=Math.max(2,R*.11);g.lineJoin='round';g.beginPath();g.moveTo(cx,cy-R);g.lineTo(cx+R*.75,cy);g.lineTo(cx,cy+R);g.lineTo(cx-R*.75,cy);g.closePath();g.stroke();g.fillStyle=c1;g.beginPath();g.arc(cx,cy,R*.16,0,TAU);g.fill();},
+ // hyperboloid of one sheet: the cooling-tower profile with its ruling lines (Yuni)
+ hyperboloid:(g,cx,cy,R,c1,c2)=>{const a=R*.4,hh=R*.92,b=hh*.55;const xw=t=>a*Math.sqrt(1+(t*hh/b)*(t*hh/b));const rx=xw(1),ry=R*.13;
+  g.strokeStyle=c1;g.lineCap='round';g.lineWidth=Math.max(2,R*.05);
+  for(let k=0;k<7;k++){const th=k*TAU/7;g.beginPath();g.moveTo(cx+Math.cos(th)*rx,cy-hh+Math.sin(th)*ry);g.lineTo(cx+Math.cos(th+1.05)*rx,cy+hh+Math.sin(th+1.05)*ry);g.stroke();}
+  g.lineWidth=Math.max(2.5,R*.1);for(const sx of [-1,1]){g.beginPath();for(let i=0;i<=28;i++){const t=-1+2*i/28;const x=cx+sx*xw(t),y=cy+t*hh;if(i)g.lineTo(x,y);else g.moveTo(x,y);}g.stroke();}
+  for(const [yy,r_x] of [[cy-hh,rx],[cy,a],[cy+hh,rx]]){g.beginPath();g.ellipse(cx,yy,r_x,ry*(r_x===a?.8:1),0,0,TAU);g.stroke();}},
+ // three parallel talon slashes (Beast Riders)
+ claw:(g,cx,cy,R,c1,c2)=>{g.fillStyle=c1;for(let k=-1;k<=1;k++){const x0=cx+k*R*.5;g.beginPath();g.moveTo(x0-R*.2,cy-R*.95);g.quadraticCurveTo(x0+R*.62,cy-R*.15,x0+R*.08,cy+R*1.0);g.quadraticCurveTo(x0+R*.2,cy-R*.05,x0-R*.2,cy-R*.95);g.closePath();g.fill();}},
+};
+// ------------------------------------------------------------------ the factory: a culture is a palette, a symbol and two cloth styles
+// mkCulture({key,name,field,edge,band,disc,ink,ink2,sym,awn:{mode:'stripes'|'cloth',cols,n},paint,pole,signBg,signFg,signFrame,flagStyle:'rect'|'pennant'})
+//   field/edge/band: banner cloth, its side edges and its end bands; disc: a round ground behind the symbol (optional); ink/ink2: symbol colours
+function mkCulture(o){const K=o.key,pole=jc(o.pole||0x7a5a38,0);
+ const drawBan=(g,W,H)=>{g.fillStyle=o.field;g.fillRect(0,0,W,H);g.fillStyle=o.edge;const e=Math.min(W,H)*.09;if(H>W){g.fillRect(0,0,e,H);g.fillRect(W-e,0,e,H);g.fillStyle=o.band;g.fillRect(0,0,W,e*.8);g.fillRect(0,H-e*.8,W,e*.8);}else{g.fillRect(0,0,W,e);g.fillRect(0,H-e,W,e);g.fillStyle=o.band;g.fillRect(0,0,e*.8,H);g.fillRect(W-e*.8,0,e*.8,H);}
+  const d=banDisc(W,H);if(o.disc){g.fillStyle=o.disc;g.beginPath();g.arc(d.cx,d.cy,d.R*1.06,0,TAU);g.fill();}SYMBOLS[o.sym](g,d.cx,d.cy,d.R*.94,o.ink,o.ink2||o.ink);
+  if(H>W*1.25){g.fillStyle=o.band;for(let k=0;k<3;k++)g.fillRect(W*.24,H*.66+k*H*.06,W*.52,H*.025);}
+  reseed(9700+K.length);for(let i=0;i<120;i++){g.fillStyle=`rgba(0,0,0,${rr(.03,.11)})`;g.fillRect(rng()*W,rng()*H,rr(1,3),rr(2,8));}};
+ const drawPlate=(g,W,H)=>{g.fillStyle=o.edge;g.fillRect(0,0,W,H);g.fillStyle=o.field;g.fillRect(W*.06,H*.06,W*.88,H*.88);const d=banDisc(W,H);if(o.disc){g.fillStyle=o.disc;g.beginPath();g.arc(W/2,H/2,W*.36,0,TAU);g.fill();}SYMBOLS[o.sym](g,W/2,H/2,W*.3,o.ink,o.ink2||o.ink);};
+ const cloth=o.awn.mode==='cloth';if(!cloth)stripeTex('awn:'+K,o.awn.cols,o.awn.n||8);
+ const awning=q=>{const w=q.w||2.4,d=q.d||1.4,drop=q.drop===undefined?.5:q.drop,ph=q.h||2.2;
+  if(cloth){const c=jc(pick(o.awn.cols),.06);plane4('cloth',[-w/2,0,0],[w/2,0,0],[-w/2,-drop,d],[w/2,-drop,d],.03,c);for(let k=0;k<Math.round(w/.4);k++)box('cloth',-w/2+.2+k*.4,-drop-.24-(k%2?.08:0),d,.34,.24+(k%2?.08:0),.02,jc(c,.08));}
+  else{plane4('awn:'+K,[-w/2,0,0],[w/2,0,0],[-w/2,-drop,d],[w/2,-drop,d],.03);for(let k=0;k<Math.round(w/.3);k++){const sc=k%2;box('awn:'+K,-w/2+.15+k*.3,-drop-.2+(sc?.03:0),d,.3,.2-(sc?.03:0),.02);}}
+  for(const sx of [-1,1])beam('wood',[sx*(w/2-.05),-drop-.2,d-.05],[sx*(w/2-.05),-drop-ph,d-.05],.07,pole,true,6);};
+ const banner=q=>{const w=q.w||.8,h=q.h||2;beam('wood',[-w/2-.1,0,0],[w/2+.1,0,0],.05,pole,true,5);banDecal('ban:'+K,drawBan,0,-h/2,.03,w,h,0);};
+ const flag=q=>{const w=q.w||1,h=q.h||.65;beam('wood',[0,-1.6,0],[0,.3,0],.04,pole,true,5);
+  if(o.flagStyle==='pennant'){const c=jc(o.field,.04);poly('cloth',[[0,.35,0],[w*1.5,.1,0],[w*1.15,-.04,0],[w*1.5,-.2,0],[0,-.1,0]],c,true);}else banDecal('ban:'+K,drawBan,w/2,-h/2+.1,0,w,h,0);};
+ const emblem=q=>{const w=q.w||.9;banDecal('em:'+K,drawPlate,0,-(q.h||w)/2,.03,w,q.h||w,0);};
+ return cultDef({key:K,name:o.name,paint:o.paint,paintShare:o.paintShare||.55,fill:{awning,banner,flag,emblem,sign:q=>signBoard(q,o.signBg,o.signFg,o.signFrame),paint:q=>{}}});}
+// ------------------------------------------------------------------ the packs (add a culture = one mkCulture call)
+mkCulture({key:'iziz',name:'Iziz',field:'#e07a2a',edge:'#2f8f8a',band:'#f2a24a',disc:null,ink:'#f3e2c0',ink2:'#e07a2a',sym:'sun',pole:0xe8dcc0,
+ awn:{mode:'stripes',cols:['#e07a2a','#f3e2c0','#f2a24a','#f3e2c0','#e07a2a','#f3e2c0','#d8893c','#f3e2c0','#2f8f8a','#f3e2c0'],n:10},
+ paint:[0xe07a2a,0x2f8f8a,0xf2a24a,0xd8893c,0xe8dcc0,0xc9442a],signBg:'#e07a2a',signFg:'#f3e2c0',signFrame:0x2f8f8a});
+// Republic: the triskelion, on Voth's deep red
+mkCulture({key:'republic',name:'Republic',field:'#7a2028',edge:'#4a3220',band:'#c9963a',disc:'#f0e6cc',ink:'#7a2028',ink2:'#2a8a86',sym:'triskele',pole:0x7a5a38,
+ awn:{mode:'stripes',cols:['#7a2028','#f0e6cc','#c9963a','#f0e6cc'],n:8},
+ paint:[0x7a2028,0x8a2f2a,0xc9963a,0xf0e6cc,0x5c4028],signBg:'#7a2028',signFg:'#f0e6cc',signFrame:0x4a3220});
+// Voth: deep blue, ash-white glyph, ragged cloth
+mkCulture({key:'voth',name:'Voth',field:'#24487a',edge:'#182e4d',band:'#3a5f8f',disc:null,ink:'#d8cdb4',sym:'diamond',pole:0x3a2a1c,flagStyle:'pennant',
+ awn:{mode:'cloth',cols:[0x24487a,0x1f3a5f,0x3a5f8f,0x2a3a4a]},
+ paint:[0x24487a,0x1f3a5f,0x3a5f8f,0x2a3a4a,0xd8cdb4],signBg:'#1f3a5f',signFg:'#d8cdb4',signFrame:0x182e4d});
+// Yuni: yellow, the hyperboloid
+mkCulture({key:'yuni',name:'Yuni',field:'#dcb42c',edge:'#5a4410',band:'#f4ecc8',disc:'#f6efd0',ink:'#4a3a12',sym:'hyperboloid',pole:0x5a4410,
+ awn:{mode:'stripes',cols:['#e0b52a','#f4ecc8','#c99a1e','#f4ecc8'],n:8},
+ paint:[0xd9b12a,0xe8c84a,0x8a6a1a,0xf4ecc8,0x4a3a12],signBg:'#dcb42c',signFg:'#3a2c08',signFrame:0x5a4410});
+// Beast Riders: green, the claw
+mkCulture({key:'beastriders',name:'Beast Riders',field:'#3f7a3a',edge:'#2e5a2c',band:'#6a9a4a',disc:null,ink:'#e6dcc2',sym:'claw',pole:0x4a3a22,flagStyle:'pennant',
+ awn:{mode:'cloth',cols:[0x58924a,0x4a8240,0x6aa050,0x7f8a48]},
+ paint:[0x3f7a3a,0x2e5a2c,0x5a8a3e,0xe0d6c0,0x4a3a22],signBg:'#2e5a2c',signFg:'#e6dcc2',signFrame:0x4a3a22});
 // ---------------------------------------------------------------- the showcase table: rows of the kit, by family. Keys are the contract with the builders.
 const TITLE='Post-Apoc Set';
 const FAMILIES=[
@@ -2835,9 +2911,9 @@ const groundM=new THREE.Mesh(new THREE.PlaneGeometry(3200,3200),groundMat);groun
 // ---------------------------------------------------------------- layout: rows by family, front (+z) toward the camera
 const SITES=[],ROWS=[];
 const ONLY=(new URLSearchParams(location.search)).get('only');const ONLYSET=ONLY?new Set(ONLY.split(',')):null;   // ?only=key,key builds just those defs
-(function layout(){let z=0;const GAP=9;for(const F of FAMILIES){const keys=F.keys.filter(k=>DEFS[k]&&(!ONLYSET||ONLYSET.has(k)));if(!keys.length)continue;
- const ws=keys.map(k=>DEFS[k].w+GAP),total=ws.reduce((a,c)=>a+c,0),dmax=Math.max(...keys.map(k=>DEFS[k].d)),hmax=Math.max(...keys.map(k=>DEFS[k].h));
- z+=dmax/2;let x=-total/2;keys.forEach((k,i)=>{SITES.push({key:k,x:x+ws[i]/2,z,ry:0,o:{v:0}});x+=ws[i];});
+(function layout(){let z=0;const GAP=9;for(const F of FAMILIES){const keys=F.keys.filter(k=>DEFS[k.split('@')[0]]&&(!ONLYSET||ONLYSET.has(k.split('@')[0])));   // 'key@culture' dresses that site in a culture's marksif(!keys.length)continue;
+ const DK=k=>DEFS[k.split('@')[0]];const ws=keys.map(k=>DK(k).w+GAP),total=ws.reduce((a,c)=>a+c,0),dmax=Math.max(...keys.map(k=>DK(k).d)),hmax=Math.max(...keys.map(k=>DK(k).h));
+ z+=dmax/2;let x=-total/2;keys.forEach((k,i)=>{const kk=k.split('@');SITES.push({key:kk[0],x:x+ws[i]/2,z,ry:0,o:kk[1]?{v:0,culture:kk[1]}:{v:0}});x+=ws[i];});
  ROWS.push({family:F.name,z,d:dmax,w:total,h:hmax,keys});z+=dmax/2+Math.max(26,hmax*1.3)+8;}})();
 const GROUND_C=ROWS.length?ROWS[ROWS.length-1].z/2:0;groundM.position.set(0,0,GROUND_C);
 // ---------------------------------------------------------------- (re)build the world for a culture
@@ -2855,7 +2931,7 @@ function autoViews(){const V={};const R=ROWS;const mid=R[Math.floor(R.length/2)]
  V['Opening']=[R[0].w*.28,Math.max(20,R[0].d*.8),R[0].z+R[0].d*.5+38,0,4,R[0].z];
  V['Overview']=[-R[0].w*.9,R[R.length-1].z*.7,R[R.length-1].z*.5+150,0,2,mid.z];
  for(const r of R){const dist=Math.max(44,Math.min(r.w*.55,200),(r.h||0)*1.7);V[r.family]=[r.w*.12,Math.max(16,dist*.42),r.z+r.d/2+dist,0,Math.min(3+(r.h||0)*.3,14),r.z];}
- for(const S of SITES){const D=DEFS[S.key];const dist=Math.max(11,Math.max(D.w,D.h)*.85+D.d*.4);V[D.name+' — eye level']=[S.x+D.w*.15,1.7,S.z+D.d/2+dist*.55,S.x,Math.min(D.h,12)*.35,S.z];}
+ for(const S of SITES){const D=DEFS[S.key];const dist=Math.max(11,Math.max(D.w,D.h)*.85+D.d*.4);V[D.name+(S.o.culture?' ('+S.o.culture+')':'')+' — eye level']=[S.x+D.w*.15,1.7,S.z+D.d/2+dist*.55,S.x,Math.min(D.h,12)*.35,S.z];}
  return V;}
 // ---------------------------------------------------------------- probe (window._api): everything a headless check needs
 window._api={REG,DEFS,CULT,SOCK_ALL,SITES,ROWS,

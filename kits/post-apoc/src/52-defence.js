@@ -20,14 +20,27 @@ function dfTower(o){
    beam('iron',P0(-1,y0,s0),P0(1,y1,s1),.05,jc(0x6a4a34,.06));beam('iron',P0(1,y0,s0),P0(-1,y1,s1),.05,jc(0x6a4a34,.06));
    if(i%2===0)beam('iron',P0(-1,(y0+y1)/2,(s0+s1)/2),P0(1,(y0+y1)/2,(s0+s1)/2),.045,bc);}}
  for(let i=0;i<4;i++){const y=lv[i]+.05;for(const [a,c] of [[[-1,1],[1,1]],[[1,1],[1,-1]],[[1,-1],[-1,-1]],[[-1,-1],[-1,1]]])beam('iron',[a[0]*S(y),y,a[1]*S(y)],[c[0]*S(y),y,c[1]*S(y)],.09,bc);}
- // zig-zag stair up the front (+z) face: four flights with landings; each flight sits on the slope
- for(let k=0;k<4;k++){const y0=k*3.5,y1=y0+3.5,dir=k%2?-1:1;const zz=S((y0+y1)/2)+.75;const ax=-dir*2.3,bx=dir*2.3;
-  stairs(ax,y0,zz,bx,y1,zz,.95,{rail:true});
-  // landing at the top of the flight, tied back to the leg
-  const lx=dir*2.9,lz=S(y1)+.6;box('plank',lx,y1-.12,lz,1.5,.1,1.3,jc(pick(PAL.wood),.07));beam('iron',[lx,y1-.2,lz+.6],[dir*S(y1),y1-1.2,S(y1)],.06,bc);beam('iron',[lx,y1-.2,lz+.6],[dir*S(y1),y1-.2,S(y1)-.1],.06,bc);
-  if(k<3)beam('iron',[lx-dir*.7,y1-.12,lz+.55],[lx+dir*.7,y1-.12,lz+.55],.05,bc);
-  // bracket the flight to the tower: two outriggers
-  for(const u of [-.6,.6]){const xx=u*2.3;const yy=y0+(xx*dir+2.3)/4.6*3.5;beam('iron',[xx,yy-.1,zz],[xx,yy-.2,S(yy)],.05,bc,true,5);}}
+ // zig-zag stair up the front (+z) face: four steel flights. Each flight starts at the previous landing's inner edge and ends on the next landing,
+ // whose centre sits on a leg bay (x = +-S(y)); the last flight ends on an apron platform level with the deck, beside the gate in the deck rail.
+ const zf=y=>S(y)+.75,tc=jc(0x6a5a4c,.05);
+ const hr=(a,c,off)=>{const n=Math.max(2,Math.round(Math.hypot(c[0]-a[0],c[2]-a[2])/1.3));beam('iron',[a[0],a[1]+1.0,a[2]+off],[c[0],c[1]+1.0,c[2]+off],.035,bc,true,6);
+  for(let i=0;i<=n;i++){const u=i/n,px=a[0]+(c[0]-a[0])*u,py=a[1]+(c[1]-a[1])*u,pz=a[2]+(c[2]-a[2])*u;beam('iron',[px,py,pz+off],[px,py+1.0,pz+off],.035,bc,true,5);}};
+ const landing=(cx,ly,cz,wd,dp)=>{box('iron',cx,ly-.1,cz,wd,.1,dp,tc);for(let k=0;k<=Math.round(dp/.3);k++)box('iron',cx,ly-.006,cz-dp/2+k*.3,wd,.012,.05,jc(0x3a3430,.04));};
+ for(let k=0;k<4;k++){const y0=k*3.5,y1=y0+3.5,dir=k%2?-1:1;
+  const sxs=k===0?-3.3:-dir*(S(y0)-.3);const exs=k<3?dir*(S(y1)-.3):-1.9;
+  const zs=zf(y0),ze=k<3?zf(y1):3.2;
+  stairs(sxs,y0,zs,exs,y1,ze,.85,{steel:true,rail:false});
+  hr([sxs,y0,zs],[exs,y1,ze],.5);if(k<3)hr([sxs,y0,zs],[exs,y1,ze],-.5);
+  if(k<3){const lx=dir*(S(y1)+.3),lz=zf(y1);landing(lx,y1,lz,1.2,1.8);
+   // landing struts to the leg bay and rail on its outer edge and front
+   for(const q of [-.8,.8])beam('iron',[lx,y1-.1,lz+q],[dir*S(y1),y1-1.3,S(y1)+q*.2],.06,bc);beam('iron',[lx,y1-.1,lz-.8],[dir*S(y1),y1-.1,S(y1)],.06,bc);
+   beam('iron',[lx+dir*.6,y1,lz-.9],[lx+dir*.6,y1+1.0,lz-.9],.035,bc,true,5);beam('iron',[lx+dir*.6,y1,lz+.9],[lx+dir*.6,y1+1.0,lz+.9],.035,bc,true,5);beam('iron',[lx+dir*.6,y1+1.0,lz-.9],[lx+dir*.6,y1+1.0,lz+.9],.035,bc,true,5);
+   beam('iron',[lx-dir*.6,y1+1.0,lz+.9],[lx+dir*.6,y1+1.0,lz+.9],.035,bc,true,5);beam('iron',[lx-dir*.6,y1,lz+.9],[lx-dir*.6,y1+1.0,lz+.9],.035,bc,true,5);}
+  else{ // apron platform flush with the deck (top at y1 = 14), open to the deck through the rail gate
+   landing(-2.4,y1,3.2,1.4,1.0);for(const sx of [-1,1])beam('iron',[-2.4+sx*.6,y1-.1,3.6],[-2.4+sx*.3,y1-1.4,S(12.6)],.05,bc);beam('iron',[-3.1,y1,2.7],[-3.1,y1+1.0,2.7],.035,bc,true,5);beam('iron',[-3.1,y1,3.7],[-3.1,y1+1.0,3.7],.035,bc,true,5);
+   beam('iron',[-3.1,y1+1.0,2.7],[-3.1,y1+1.0,3.7],.035,bc,true,5);beam('iron',[-3.1,y1+.5,2.7],[-3.1,y1+.5,3.7],.03,bc,true,5);beam('iron',[-3.1,y1+1.0,3.7],[-1.7,y1+1.0,3.7],.035,bc,true,5);beam('iron',[-1.7,y1,3.7],[-1.7,y1+1.0,3.7],.035,bc,true,5);
+   // gate posts in the deck rail and an open gate leaf
+   for(const gx of [-2.7,-1.4])beam('iron',[gx,y1,2.7],[gx,y1+1.15,2.7],.06,bc,true,6);beam('iron',[-1.4,y1+.1,2.7],[-1.4,y1+1.0,3.5],.03,bc,true,4);beam('iron',[-1.4,y1+1.0,2.7],[-1.4,y1+1.0,3.5],.035,bc,true,4);}}
  // lower flight rail gate: base fence with a gate gap where the stair meets the ground
  const fz=S(0)+1.3,fx=4.5;fenceRun(-fx,-fz+1.3,fx,-fz+1.3,1.9,{barbed:true});fenceRun(-fx,-fz+1.3,-fx,fz,1.9,{barbed:true});fenceRun(fx,-fz+1.3,fx,fz,1.9,{barbed:true});
  fenceRun(-fx,fz,-3.4,fz,1.9,{barbed:true});fenceRun(-1.2,fz,fx,fz,1.9,{barbed:true});
@@ -40,7 +53,7 @@ function dfTower(o){
  const rl=1.05,rc=jc(0x7a4a34,.05);const corners=[[-2.7,2.7],[2.7,2.7],[2.7,-2.7],[-2.7,-2.7]];
  const rail=(a,c,skip)=>{const n=Math.max(1,Math.round(Math.hypot(c[0]-a[0],c[1]-a[1])/1.1));for(let k=0;k<=n;k++){const u=k/n;beam('iron',[a[0]+(c[0]-a[0])*u,y,a[1]+(c[1]-a[1])*u],[a[0]+(c[0]-a[0])*u,y+rl,a[1]+(c[1]-a[1])*u],.05,rc,true,5);}
   beam('iron',[a[0],y+rl,a[1]],[c[0],y+rl,c[1]],.06,rc);beam('iron',[a[0],y+.55,a[1]],[c[0],y+.55,c[1]],.04,rc);};
- rail(corners[1],corners[2]);rail(corners[2],corners[3]);rail(corners[3],[-2.7,.4]);rail([2.7,2.7],[-1.4,2.7]);
+ rail(corners[1],corners[2]);rail(corners[2],corners[3]);rail(corners[3],corners[0]);rail([2.7,2.7],[-1.4,2.7]);
  // sheet panels hung on the rail (patched): a few tin plates
  box('corr',1.3,y,-2.72,1.4,.8,.04,jc(0xc45a30,.06));box('sheet',-1.3,y,-2.72,1.3,.7,.04,jc(0x3fa08e,.06));
  // cab: 3.4 x 3.2 x 2.5, patched plank and sheet
@@ -139,7 +152,7 @@ function dfWhipPost(x,z){beam('wood',[x,0,z],[x,2.6,z],.18,jc(0x5c4630,.06),true
  for(const s of [-1,1]){cyl('iron',x+s*.55,1.85,z,.09,.09,jc(0x4a4038,.05),8);beam('iron',[x+s*.55,1.85,z],[x+s*.5,1.3,z+.1],.02,jc(0x3a3430,.05),true,3);}
  for(let k=0;k<5;k++)beam('iron',[x,1.15,z+.15],[x+rr(-.2,.2),.55+k*.02,z+.2],.02,jc(0x3a3430,.05),true,3);
  cyl('plain',x+.5,0,z+.6,.7,.02,jc(0x4a2c24,.05),10);}
-function dfMud(x,z,r,w){cyl('plain',x,.02,z,r,.03,jc(pick([0x4a3624,0x3e2c1e,0x52402a]),.06),12);if(w)cyl('water',x+r*.1,.05,z,r*.55,.01,jc(0x3a6a70,.05),10);}
+function dfMud(x,z,r,w){cyl('plain',x,.02,z,r,.03,jc(pick([0x4a3624,0x3e2c1e,0x52402a]),.06),12);if(w)cyl('water',x+r*.1,.05,z,r*.55,.01,jc(0x4e4634,.04),10);}
 function dfChain(a,b,n){for(let k=0;k<n;k++){const t=(k+.5)/n;const p=[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t-Math.sin(t*PI)*.12,a[2]+(b[2]-a[2])*t];box('iron',p[0],p[1],p[2],.06,.06,.06,jc(0x4a4038,.05),k%2?.7:0,0,0);}
  beam('iron',a,b,.015,jc(0x4a4038,.05),true,3);}
 function dfCells(o){
@@ -147,10 +160,16 @@ function dfCells(o){
  W(cx,0,cz,0,()=>container({len:L,col:0x6a7a78,doorEnd:false}));
  const fz=cz+CT.W/2;
  // barred slit windows: dark slots cut over the wall with bars across; a door with a wicket
- for(const k of [-4.3,-1.4,1.9,4.6]){box('iron',cx+k,1.75,fz+.005,.9,.28,.03,jc(0x0a0808,.03));for(let j=0;j<5;j++)box('iron',cx+k-.36+j*.18,1.72,fz+.04,.03,.34,.03,jc(0x3a3430,.05));
+ for(const k of [-2.3,.6,3.2,5.0]){box('iron',cx+k,1.75,fz+.005,.9,.28,.03,jc(0x0a0808,.03));for(let j=0;j<5;j++)box('iron',cx+k-.36+j*.18,1.72,fz+.04,.03,.34,.03,jc(0x3a3430,.05));
   box('iron',cx+k,2.06,fz+.03,1.0,.05,.06,jc(0x4a4038,.05));box('iron',cx+k,1.68,fz+.03,1.0,.05,.06,jc(0x4a4038,.05));}
- box('iron',cx-6.0,.25,fz+.02,.9,1.9,.06,jc(0x4a4038,.05));box('iron',cx-6.0,1.55,fz+.06,.35,.2,.04,jc(0x0a0808,.03));dfPadlock(cx-5.7,1.0,fz+.1);
- for(const yy of [.5,1.2,1.8])box('iron',cx-6.0,yy,fz+.06,.9,.06,.04,jc(0x3a3430,.05));
+ // cell door: dark steel frame proud of the face, leaf centred inside it, wicket, hinges, hasp and padlock
+ {const dx=cx-4.5,fw=1.1,fh=2.15,y0=.16,fc=jc(0x2a2624,.04);
+  for(const sx of [-1,1])box('iron',dx+sx*(fw/2-.05),y0,fz+.02,.1,fh,.1,fc);box('iron',dx,y0+fh-.1,fz+.02,fw,.1,.1,fc);box('iron',dx,y0,fz+.02,fw,.06,.1,fc);
+  box('iron',dx,y0+.06,fz+.03,fw-.2,fh-.16,.06,jc(0x5a4a40,.05));
+  for(const yy of [.6,1.3,1.9])box('iron',dx,yy,fz+.07,fw-.2,.06,.04,jc(0x3a3430,.05));
+  box('iron',dx,1.55,fz+.07,.38,.22,.05,jc(0x0a0808,.03));for(let j=0;j<3;j++)box('iron',dx-.1+j*.1,1.53,fz+.1,.02,.26,.02,jc(0x3a3430,.05));
+  for(const yy of [.4,1.85])box('iron',dx-fw/2+.1,yy,fz+.1,.14,.08,.05,jc(0x3a3430,.05));
+  box('iron',dx+.3,.95,fz+.1,.28,.1,.04,jc(0x3a3430,.05));dfPadlock(dx+.38,.78,fz+.14);}
  // roof furnishings: barbed wire coils and a spotlight
  for(let k=0;k<3;k++)box('iron',cx-4+k*3.5,CT.H+.05,cz+.3,.03,.5,.03,jc(0x3a3430,.05),0,0,.4);
  beam('iron',[cx-L/2+.3,CT.H,fz-.2],[cx+L/2-.3,CT.H,fz-.2],.02,jc(0x3a3430,.05),true,3);
@@ -163,7 +182,7 @@ function dfGuard(o){
  const gx=7.2,gz=5.6;
  box('plank',gx,0,gz,3.0,.14,2.4,jc(0x6a5238,.08));for(const [px,pz,pw,pd] of [[gx,gz-1.1,3.0,.1],[gx-1.45,gz,.1,2.4],[gx+1.45,gz,.1,2.4]])box('plank',px,.14,pz,pw,2.2,pd,jc(0xa87a4a,.07));
  wallOpen('plank',gx,.14,gz+1.16,3.0,2.2,.1,[{x0:gx-.3,x1:gx+.6,y0:.14,y1:2.0},{x0:gx-1.2,x1:gx-.6,y0:1.0,y1:1.8}],jc(0xa87a4a,.07));
- door(gx+.15,.14,gz+1.18,.9,1.85,{step:true,col:0x2f5f8f});win(gx-.9,1.0,gz+1.19,.6,.7,{bars:true});
+ door(gx+.15,.14,gz+1.18,.9,1.85,{step:true,col:0x8a3a2c});win(gx-.9,1.0,gz+1.19,.6,.7,{bars:true});
  dfRoof('corr',gx-1.75,gx+1.75,gz+1.45,2.35,gz-1.3,2.85,.07,jc(0x9a8a70,.06));
  for(const sx of [-1,1])beam('wood',[gx+sx*1.6,0,gz+1.2],[gx+sx*1.6,2.4,gz+1.2],.1,jc(0x5c4630,.06));
  // lookout: four stilts, platform, rail, little roof, ladder, lamp

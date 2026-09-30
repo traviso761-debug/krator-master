@@ -13,6 +13,7 @@ import hashlib, json, os, re, subprocess, sys
 try: sys.stdout.reconfigure(encoding='utf-8')
 except Exception: pass
 HERE = os.path.dirname(os.path.abspath(__file__)); SRC = os.path.join(HERE, 'src'); DIST = os.path.join(HERE, 'dist')
+CORE_SOCK = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'sockets')   # shared: the socket + culture system (core/sockets/README.md)
 OUT = os.path.join(DIST, 'post-apoc.html')
 RE_DECL = re.compile(r'^(?:const|let|var|function)\s+([A-Za-z_$][\w$]*)', re.M)
 RE_SEED = re.compile(r'defBuilding\(\{[^}]*?\bseed\s*:\s*(\d+)', re.S)
@@ -21,8 +22,10 @@ GENERIC = {'seed','base','dir','pos','tmp','i','j','k','n','p','t','x','y','z','
 ALLOW_GENERIC = {'P', 'W', 'PI', 'TAU'}   # engine names on purpose
 
 def main():
-    files = sorted(f for f in os.listdir(SRC) if f[0].isdigit())
-    bodies = {f: open(os.path.join(SRC, f), encoding='utf-8', newline='').read() for f in files}
+    paths = {f: os.path.join(CORE_SOCK, f) for f in os.listdir(CORE_SOCK) if f[0].isdigit()}
+    paths.update({f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()})   # a local copy with the same name overrides the shared one
+    files = sorted(paths)
+    bodies = {f: open(paths[f], encoding='utf-8', newline='').read() for f in files}
     errs = []
     if '--no-checks' not in sys.argv:
         decl = {}

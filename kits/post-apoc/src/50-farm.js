@@ -196,8 +196,12 @@ function fmFarmhouse(o){
   W(sx+Math.cos(a)*(r+.05),y-.03,sz+Math.sin(a)*(r+.05),PI/2-a,()=>beam('iron',[0,0,0],[0,-.02,.7],.05,jc(0x4a4038,.05)));
   if(k%4===0)beam('wood',[px,0,pz],[px,y-.05,pz],.09,jc(0x5c4630,.06));
   const a2=a+.052*PI,y2=y+.33;const qx=sx+Math.cos(a2)*(R2+.42),qz=sz+Math.sin(a2)*(R2+.42);const rx=sx+Math.cos(a)*(R2+.42),rz=sz+Math.sin(a)*(R2+.42);if(k<N-1)beam('wood',[rx,y+.95,rz],[qx,y2+.95,qz],.05,jc(0x5c4630,.06));if(k%2===0)beam('wood',[rx,y-.05,rz],[rx,y+.95,rz],.04,jc(0x5c4630,.06),true,5);}
- { const a=PI*.78+(N-1)*.052*PI;const px=sx+Math.cos(a)*(R2),pz=sz+Math.sin(a)*(R2);W(px,.22+(N-1)*.33+.05,pz,PI/2-a,()=>{box('plank',0,0,0,1.2,.06,1.2,jc(0x6a5238,.06));});
-  W(sx+Math.cos(a+.3)*(r+.02),0,sz+Math.sin(a+.3)*(r+.02),PI/2-a-.3,()=>door(0,5.85,0,.9,1.7,{step:false,col:0x3f9a8a}));}
+ { const a=PI*.78+(N-1)*.052*PI,yl=.22+(N-1)*.33;const px=sx+Math.cos(a)*(r+.65),pz=sz+Math.sin(a)*(r+.65);
+  // landing flush with the last tread, running back to the silo wall; door sill exactly at its top, centred on the landing
+  W(px,yl,pz,PI/2-a,()=>{box('plank',0,-.05,0,1.3,.06,1.3,jc(0x6a5238,.06));for(const s of [-1]){beam('wood',[s*.62,-.05,-.6],[s*.62,.95,-.6],.05,jc(0x5c4630,.06),true,5);beam('wood',[s*.62,-.05,.62],[s*.62,.95,.62],.05,jc(0x5c4630,.06),true,5);beam('wood',[s*.62,.95,-.6],[s*.62,.95,.62],.05,jc(0x5c4630,.06));}
+   beam('wood',[-.62,.95,.62],[.62,.95,.62],.05,jc(0x5c4630,.06));beam('wood',[-.62,-.05,.62],[-.62,-.6,.62],.04,jc(0x5c4630,.06));});
+  W(sx+Math.cos(a)*(r+.02),yl+.01,sz+Math.sin(a)*(r+.02),PI/2-a,()=>door(0,0,0,.9,1.8,{step:false,col:0x3f9a8a}));
+  beam('wood',[px+Math.cos(a)*.6,0,pz+Math.sin(a)*.6],[px+Math.cos(a)*.6,yl-.05,pz+Math.sin(a)*.6],.1,jc(0x5c4630,.06));}
  // east barn lean-to for the cart
  W(hx1,0,-1.9,PI/2,()=>{fmLean(0,0,5.0,2.9,3.9,2.7,{col:0x8a3a2c});box('plank',0,0,1.4,5.0,.08,2.9,jc(0x6a5a44,.08));
   for(const s of [-1,1])box('plank',s*2.45,0,1.4,.08,2.7,2.8,jc(pick(PAL.wood),.07));
