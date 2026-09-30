@@ -255,7 +255,9 @@ VENDORED = ['10-core.js', '12-stats.js', '20-textures.js', '22-materials.js', '3
             '40-factory-extras.js', '42-offices.js', '46-bunker.js', '48-library.js', '52-sky-abc.js',
             '56-sky-d.js', '57-sky-e.js', '58-sky-f.js', '64-houses-def.js', '66-office-c.js', '73-police.js',
             '76-campus.js', '78-factory-silo.js', '79-government.js', '80-aa-battery.js', '81-houses-abc.js',
-            '82-apartments.js', '83-amphitheater.js', '84-fuel.js', '88-factory.js', '89-lab.js']
+            '82-apartments.js', '83-amphitheater.js', '84-fuel.js', '88-factory.js', '89-lab.js',
+            # the Ancient Iziz Style: transplant families, wreck(), and the Iziz variants of the kit
+            '77z-iziz-style.js']
 
 
 BIO_VENDORED = ['10-core-head', '20-core-kit', '30-core-foliage', '40-core-place',

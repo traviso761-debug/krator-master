@@ -4,16 +4,8 @@
 // then the hyperjungle outside the moat (and undergrowth in the parks and ruins), then one bake per store.
 const BUILD_T0=performance.now();
 // ---------------------------------------------------------------- the Ancients-kit catalogue (vendored builders) and how to run one at a plot
-// one TYPE out of a kit builder that lays several side by side (apartments A/B/C, offices A/B/C, houses A-F): build the
-// lot, then keep only what stands in the type's x-range of the builder's own frame (items, meshes, REG volumes)
-function kitSection(fn,x0,x1){return function(G,gx,gz,d){const snap=kitSnapshot(),r0=REG.length;const inv=KXF?KXF.m.clone().invert():new THREE.Matrix4();
- const H=fn(G,gx,gz,d);const v=new THREE.Vector3();
- for(const n in KIT.items){const it=KIT.items[n];let w=snap[n]||0;for(let i=w;i<it.length;i++){v.set(it[i].p[0],it[i].p[1],it[i].p[2]).applyMatrix4(inv);if(v.x>=x0&&v.x<=x1)it[w++]=it[i];}it.length=w;}
- G.updateMatrixWorld(true);const gi=G.matrixWorld.clone().invert();const dead=[];
- G.traverse(m=>{if(!m.isMesh)return;m.geometry.computeBoundingBox();const b=m.geometry.boundingBox.clone().applyMatrix4(m.matrixWorld).applyMatrix4(gi);const cx=(b.min.x+b.max.x)/2;if(cx<x0||cx>x1)dead.push(m);});
- for(const m of dead)m.parent.remove(m);
- for(let i=REG.length-1;i>=r0;i--)if(REG[i].x<x0||REG[i].x>x1)REG.splice(i,1);
- return H;};}
+// kitSection, measureKit, trimPlinths, itemBox, kitSnapshot/kitRestore, MAT.concRust and tripodMarket are in
+// the Ancients kit now (src/77z-iziz-style.js, vendored).
 const KITCAT={
  honey:{fn:kitSection(buildApartments,75,235),name:'Apartments B — honeycomb wall',smax:.6,smin:.18,type:['multi-family dwelling'],kind:'mid',rowPitch:24},
  aptsA:{fn:kitSection(buildApartments,-60,60),name:'Apartments A — terrace stack',smax:.45,smin:.16,type:['multi-family dwelling'],kind:'mid'},
@@ -48,72 +40,11 @@ const KITCAT={
  bunker:{fn:buildBunker,name:'Bunker',smax:.45,smin:.2,type:['military'],kind:'military'},
 };
 const DEADLIGHT=new THREE.Color(0x4a4744);
-MAT.concRust=MAT.rust.clone();MAT.concRust.color=new THREE.Color(1,.93,.86);if(MAT.rust.onBeforeCompile)MAT.concRust.onBeforeCompile=MAT.rust.onBeforeCompile;
-// THE TRIPOD MARKET (Travis): a reclaimed Skyscraper C hangs a great awning from each side of its leg triangle, sloping out to
-// a mast at the opposite point, so from above the legs' triangle and the three awnings make a six-pointed star; market
-// stalls stand in the shade under each awning and in the open triangle between the legs.
 const AWNINGS=[];
-function tripodMarket(G,o,y,scale,ry,gx,gz,y0){const legAt=(k,ly)=>{const th=k/3*TAU+Math.PI/6,r=62-42*(ly-5)/150;return loc(gx,gz,Math.cos(th)*r*scale,Math.sin(th)*r*scale,ry);};
- const hb=38,rb=62-42*(hb-5)/150;const Y=ly=>y0+ly*scale;const cols=[0xe07a2a,0xc9442a,0xe0a030];
- for(let k=0;k<3;k++){const a=legAt(k,hb),b=legAt((k+1)%3,hb);const tm=(k+.5)/3*TAU+Math.PI/6;const ap=loc(gx,gz,Math.cos(tm)*rb*scale*1.05,Math.sin(tm)*rb*scale*1.05,ry);
-  const ya=Y(hb),yp=y+6.5;
-  // the awning: a sagging cloth triangle, 6 x 6 subdivided so the fall line reads
-  const pos=[],uv=[],N=6;const P=(u,v)=>{const w=1-u-v;const sag=-1.4*Math.sin(Math.PI*Math.min(1,u+v))*(1-Math.abs(u-v));return[a[0]*w+b[0]*u+ap[0]*v,ya*(w+u)+yp*v+sag,a[1]*w+b[1]*u+ap[1]*v];};
-  for(let i=0;i<N;i++)for(let j=0;j<N-i;j++){const q=[[i,j],[i+1,j],[i,j+1]];const add=t=>{for(const[ii,jj]of t){const p=P(ii/N,jj/N);pos.push(...p);uv.push(p[0]*.5,p[2]*.5);}};add(q);if(i+j<N-1)add([[i+1,j],[i+1,j+1],[i,j+1]]);}
-  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.computeVertexNormals();
-  AWNINGS.push({g,c:cols[k]});
-  // the mast at the point, guy ropes, a valance along the leading edges
-  kput('vPostS',[ap[0],y,ap[1]],null,[.35,yp-y+.4,.35],vC(0xe2b676));kput('vBall',[ap[0],yp+.5,ap[1]],null,[.4,.4,.4],vC(0x8a6a2a));
-  for(const s2 of[-1,1]){const g2=loc(ap[0],ap[1],s2*3,0,tm);beam('vRope',[ap[0],yp+.3,ap[1]],[g2[0]+(ap[0]-gx)*.15,y,g2[1]+(ap[1]-gz)*.15],.05,.05,vC(0xa89878));}
-  // stalls in the shade: three per awning along the triangle's centre line
-  for(let t=0;t<3;t++){const f=.25+t*.22;const m=[(a[0]+b[0])/2*(1-f)+ap[0]*f,(a[1]+b[1])/2*(1-f)+ap[1]*f];const Gs=new THREE.Group();Gs.position.set(m[0],y+1.55,m[1]);Gs.rotation.y=Math.atan2(ap[0]-gx,ap[1]-gz)+Math.PI/2;scene.add(Gs);useGroupXF(Gs);try{vnStall(0,0,0,vC(cols[(k+t)%3]));}finally{endGroupXF();}}}
- // and the open triangle between the legs
- for(let t=0;t<3;t++){const th=t/3*TAU+Math.PI/2,r=rb*scale*.3;const Gs=new THREE.Group();Gs.position.set(o.x+Math.cos(th)*r,y+1.55,o.z+Math.sin(th)*r);Gs.rotation.y=-th;scene.add(Gs);useGroupXF(Gs);try{vnStall(0,0,0);}finally{endGroupXF();}}
- REG.push({name:'Tripod market',x:o.x,y:y,z:o.z,r:rb*scale*1.1,h:12,cls:'building',key:'city_tripod_market',tags:{culture:'iziz-vernacular',type:['market/shop'],wealth:'middle',lit:true,note:'awnings hung from a reclaimed Skyscraper C'}});}
+// the tripod market in Iziz dress: Vernacular mast, finial, rope and stalls (the kit version is generic)
+const IZ_TRIPOD={awnings:AWNINGS,post:'vPostS',ball:'vBall',rope:'vRope',col:vC,stall:c=>vnStall(0,0,0,c),culture:'iziz-vernacular'};
 // on one of the three hills: the top, the escarpment or the skirt out to the ring road and a little beyond
 function onHill(x,z){for(const k of HILLKEYS){const H=HILL[k];if(Math.hypot(x-H.x,z-H.z)<H.ring+40)return true;}return false;}
-// an instanced item's world-space box: the def geometry's own bounds through the item's scale and rotation (a torus or
-// cylinder is radius 1, a box half-size .5 — measuring by the scale alone got every ring half its real size)
-const _defBB={};function itemBox(n,q){let bb=_defBB[n];if(!bb){const g=KIT.defs[n]&&KIT.defs[n].geo;if(!g){return null;}g.computeBoundingBox();bb=_defBB[n]=g.boundingBox.clone();}
- const sz=typeof q.s==='number'?[q.s,q.s,q.s]:q.s;const out=new THREE.Box3(),v=new THREE.Vector3();
- for(const x of[bb.min.x,bb.max.x])for(const y of[bb.min.y,bb.max.y])for(const z of[bb.min.z,bb.max.z]){v.set(x*sz[0],y*sz[1],z*sz[2]);if(q.q)v.applyQuaternion(q.q);out.expandByPoint(v.set(v.x+q.p[0],v.y+q.p[1],v.z+q.p[2]));}
- return out;}
-function kitSnapshot(){const s={};for(const n in KIT.items)s[n]=KIT.items[n].length;return s;}
-function kitRestore(s){for(const n in KIT.items)KIT.items[n].length=s[n]||0;}
-// build once into a throwaway group to learn the footprint (centre + half sizes) — then discard every trace of it.
-// d picks the state measured (3 by default; the toppled tower is measured at 2 to find where its upper body lies).
-function kitBuildParts(cat,d){const snap=kitSnapshot(),r0=REG.length,st=JSON.stringify(TSTAT.by),bad=TSTAT.bad.length,cur=TSTAT.cur;
- const G=new THREE.Group();KOFF=[0,0,0];HOLES=d===3?.55:1;TSTAT.cur='measure';useGroupXF(G);
- try{withFlatGround(()=>cat.fn(G,0,0,d));}catch(e){reportErr('measure '+cat.name+' '+e.stack);}endGroupXF();HOLES=1;KOFF=[0,0,0];
- const parts=[];G.updateMatrixWorld(true);G.traverse(o=>{if(o.isMesh){o.geometry.computeBoundingBox();parts.push(o.geometry.boundingBox.clone().applyMatrix4(o.matrixWorld));}});
- for(const n in KIT.items){if(/^(trunk|leafCard|moss|vine|rubble|fig|hedge|stain)/.test(n))continue;const it=KIT.items[n];for(let i=snap[n]||0;i<it.length;i++){const o=it[i],p=o.p,sz=typeof o.s==='number'?[o.s,o.s,o.s]:o.s;
-  const b=itemBox(n,o);if(b)parts.push(b);}}
- kitRestore(snap);REG.length=r0;TSTAT.by=JSON.parse(st);TSTAT.bad.length=bad;TSTAT.cur=cur;return parts;}
-function measureKit(cat){if(cat.meas)return cat.meas;const parts=kitBuildParts(cat,3);const bb=new THREE.Box3();for(const b of parts)bb.union(b);
- // the CORE: what stands above the plinth line (the platforms and plazas the kit lays round a building are trimmed at
- // placement — Travis: shrink the plinths so more pack in). A skyscraper's core is its SHAFT (the upper half).
- const th=Math.min(10,.3*bb.max.y);const coreTh=cat.kind==='sky'?bb.max.y*(cat.coreFrac||.5):th;
- const core=new THREE.Box3();for(const b of parts)if(b.max.y>coreTh)core.union(b);if(!isFinite(core.min.x))core.copy(bb);
- // the shaft's foot: the lowest part that stands inside the core's footprint and rises past the plinth line
- // a tower's PODIUM top: the highest low part wider than the shaft. Everything at or under it is the kit's podium and goes;
- // the shaft is lowered so that level lands on the city's own square plinth.
- let baseY=0;if(cat.kind==='sky'){const cw=Math.max(core.max.x-core.min.x,core.max.z-core.min.z);for(const b of parts){if(b.max.y>bb.max.y*.12||b.max.y<0)continue;if(Math.max(b.max.x-b.min.x,b.max.z-b.min.z)<cw*1.1)continue;baseY=Math.max(baseY,b.max.y);}}
- cat.meas={cx:(core.min.x+core.max.x)/2,cz:(core.min.z+core.max.z)/2,hx:Math.max(4,(core.max.x-core.min.x)/2),hz:Math.max(4,(core.max.z-core.min.z)/2),h:bb.max.y,th:cat.kind==='sky'?coreTh:th,baseY,
-  full:{hx:(bb.max.x-bb.min.x)/2,hz:(bb.max.z-bb.min.z)/2}};return cat.meas;}
-// drop what a kit builder laid BEYOND the plot below the plinth line (plinths, plazas, aprons, the colonnade round a
-// tower's podium): an instanced item or a mesh goes when it is low and any part of it leaves the plot by more than 2 m.
-// `keep` (an OBB) protects a region — the toppled tower's fallen body.
-function trimPlinths(G,snap,o,y,scale,th,keep,podY){const c=Math.cos(o.ry),s=Math.sin(o.ry);const pod=podY!=null?podY:-1e9;
- const outOf=(wx,wz,e,B)=>{const dx=wx-B.x,dz=wz-B.z,cc=Math.cos(B.ry),ss=Math.sin(B.ry);const lx=cc*dx-ss*dz,lz=ss*dx+cc*dz;return Math.abs(lx)+e>B.hx+2||Math.abs(lz)+e>B.hz+2;};
- const kept=(wx,wz)=>keep&&!outOf(wx,wz,0,keep);const lowY=y+th*scale*.9;
- for(const n in KIT.items){const it=KIT.items[n];const a=snap[n]||0;if(it.length<=a)continue;let w=a;
-  for(let i=a;i<it.length;i++){const q=it[i],b=itemBox(n,q);if(!b){it[w++]=q;continue;}const cx=(b.min.x+b.max.x)/2,cz=(b.min.z+b.max.z)/2,e=Math.max(b.max.x-b.min.x,b.max.z-b.min.z)/2;
-   if(((b.max.y<lowY&&outOf(cx,cz,e,o))||b.max.y<pod+.3)&&!kept(cx,cz))continue;it[w++]=q;}it.length=w;}
- const dead=[];G.updateMatrixWorld(true);G.traverse(m=>{if(!m.isMesh)return;m.geometry.computeBoundingBox();const b=m.geometry.boundingBox.clone().applyMatrix4(m.matrixWorld);
-  const cx=(b.min.x+b.max.x)/2,cz=(b.min.z+b.max.z)/2,e=Math.max(b.max.x-b.min.x,b.max.z-b.min.z)/2;
-  if(((b.max.y<lowY&&outOf(cx,cz,e,o))||b.max.y<pod+.3)&&!kept(cx,cz))dead.push(m);});
- for(const m of dead)m.parent.remove(m);}
-function kitTris(){let t=0;for(const k in TSTAT.by)t+=TSTAT.by[k].tris;return t;}
 // run a kit builder at a plot: the long axis along the plot's, scaled to fit (capped), flora stripped, REG adopted.
 // opt: {d-state via arg, flip, noRot, y, smax, trim, keep(OBB), tint, lit, tags, name, repairs(n passes), level}
 function placeKit(key,o,d,opt){const cat=KITCAT[key];if(!cat)return null;opt=opt||{};const M=measureKit(cat);
@@ -142,12 +73,12 @@ function placeKit(key,o,d,opt){const cat=KITCAT[key];if(!cat)return null;opt=opt
  const civic=cat.kind==='civic'||cat.kind==='military';const lit=opt.lit!=null?opt.lit:(d===0||(d===3&&(civic||(onHill(o.x,o.z)&&rng()<.5))));
  if(sky)citySkyPlinth(opt.plinth||o,y,lit);
  // Skyscraper D is bare concrete in the kit: its ruined and reclaimed skins go to rust-streaked steel here (Travis)
- if(key==='skyD'&&d>0)G.traverse(m=>{if(m.isMesh&&(m.material===MAT.concreteR||m.material===MAT.concrete))m.material=MAT.concRust;});
+ if(key==='skyD'&&d>0)izsRustSkin(G);
  if(!lit&&d===3){for(const n in KIT.items){if(!/^(strip|dot|cell|lampI|bulb|glow|izGlow|vBulb|tbulb)/.test(n))continue;const it=KIT.items[n];for(let i=snap[n]||0;i<it.length;i++)it[i].c=DEADLIGHT;}}
  for(let i=r0;i<REG.length;i++){const r=REG[i];const p=loc(gx,gz,r.x*scale,r.z*scale,ry);r.x=p[0];r.z=p[1];r.y=y0+(r.y||0)*scale;r.r=Math.max(6,Math.min(r.r*scale,Math.hypot(o.hx,o.hz)+(opt.keep?0:4)));r.h*=scale;
   if(opt.name)r.name=opt.name;
   r.cls='building';r.key='anc_'+key;r.tags=Object.assign({culture:d===3?'ancients-reclaimed':'ancients',type:cat.type,wealth:d===3?(civic?'civic':'middle'):'poor',state,lit},opt.tags||{});}
- if(key==='skyC'&&d===3)tripodMarket(G,o,y,scale,ry,gx,gz,y0);   // after the REG adoption: the market registers itself in world space
+ if(key==='skyC'&&d===3)tripodMarket(G,o,y,scale,ry,gx,gz,y0,IZ_TRIPOD);   // after the REG adoption: the market registers itself in world space
  // level the ground under the plot (the terrain mesh is built after placement): no plinth floats or buries on a slope
  if(opt.level!==false)cityFlat(o.x,o.z,Math.hypot(o.hx,o.hz)*.95,8,y+.06);
  TSTAT.cur=null;o.built=key;occAdd(o);return G;}
