@@ -14,7 +14,6 @@ const ROWS={
  gyre:   {z:-1300,s:  250,r:360},
  press:  {z:-1100,s: 1350,r:300},
 };
-// A little greening under each machine, and along the Harrow's furrow.
-const RUINS=Object.keys(ROWS).map(k=>[ROWS[k].s,ROWS[k].z,ROWS[k].r*.9])
- .concat([[ROWS.harrow.s-700,ROWS.harrow.z,260],[ROWS.harrow.s-1300,ROWS.harrow.z,220]]);
+// A little greening under each machine.
+const RUINS=Object.keys(ROWS).map(k=>[ROWS[k].s,ROWS[k].z,ROWS[k].r*.9]);
 const EXTRA_BUILDERS={harrow:buildHarrow,strider:buildStrider,breech:buildBreech,gyre:buildGyre,press:buildPress};

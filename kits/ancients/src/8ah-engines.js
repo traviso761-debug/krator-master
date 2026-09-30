@@ -28,6 +28,11 @@
 // PLATE/CONC/SHELL, so an intact variant is a row change, not a rewrite.
 
 const EN_SITE={};
+// Spoil: the plain's own red soil heaped up (the ground paint is ~rgb 150,82,58),
+// a shade darker than the flat so the berms read. The hex is LINEAR (r128 does
+// not convert material colours), so it is far darker than it looks. MAT.rock and MAT.mud are
+// pale under this sun and read as sand.
+const EN_SPOIL=new THREE.MeshStandardMaterial({map:TEX.concrete,color:0x6a2412,roughness:1,side:DS});
 function enV(a){return new THREE.Vector3(a[0],a[1],a[2]);}
 // two unit vectors perpendicular to axis `ax` (and to each other); e2 leans up
 function enFrame(ax){const up=Math.abs(ax.y)>.9?new THREE.Vector3(1,0,0):new THREE.Vector3(0,1,0);
@@ -92,7 +97,7 @@ function enHang(name,pts,lo,hi,r){for(const p of pts){const L=Math.min(rr(lo,hi)
 // ---------------------------------------------------------------- THE HARROW
 function buildHarrow(scene,gx,gz,d){reseed(10100+d);KOFF=[gx,0,gz];
  const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);
- const PL=PLATE(d),acc=[],hull=[];
+ const PL=PLATE(d),hull=[];
  // four crawler units under four bogie pylons and slewing drums
  const TR=[[-112,-66],[-112,66],[112,-66],[112,66]];
  for(const t of TR){enTrack(t[0],t[1],92,17,34,PL);
@@ -111,7 +116,8 @@ function buildHarrow(scene,gx,gz,d){reseed(10100+d);KOFF=[gx,0,gz];
   for(let y=214;y<270;y+=14)kput('ringR',[x,y,20],qEuler(Math.PI/2,0,0),[5.6,5.6,14]);}
  // the rear counterweight on two truss arms
  for(const s of[-1,1])enTruss('strutR',[-118,146,s*32],[-212,150,s*32],10,10,1.2);
- enBlk(acc,-232,145,0,44,60,100);
+ enBlk(hull,-232,145,0,44,60,100);
+ for(let y=121;y<172;y+=10)kput('boxD',[-232,y,0],null,[44.6,1.2,100.6]);
  // the A-frame
  const AP=[60,300,0];
  for(const s of[-1,1])enTruss('strutR',[18,172,s*48],AP,8,12,1.1);
@@ -136,14 +142,15 @@ function buildHarrow(scene,gx,gz,d){reseed(10100+d);KOFF=[gx,0,gz];
  // chains hanging off the boom
  const hang=[];for(let i=0;i<9;i++){const t=rr(.12,.92),p=BP(t);hang.push([p[0],p[1]-11,rr(-10,10)]);}
  enHang('tube',hang,20,95,.9);
- meshMerged(hull,MAT.rust,G);meshMerged(acc,CONC(d),G);
+ meshMerged(hull,MAT.rust,G);
  // THE FURROW. A pair of spoil berms and a centre ridge run back 1.5 km from
  // the tracks. Its base sits 0.3 m under the ground, so the red soil shows in
  // the ruts and only the spoil stands proud.
  const X0=-150,X1=-1700;
  mesh(gridSurface((u,v)=>{const x=lerp(X0,X1,u),z=(v-.5)*250,az=Math.abs(z),fade=Math.pow(1-u,.45)*clamp(u*12,0,1);
-  const h=(8*Math.exp(-Math.pow((az-98)/10,2))+4.5*Math.exp(-Math.pow(z/15,2))+2.2*Math.exp(-Math.pow((az-44)/5,2)))*fade*(.65+.7*fbm(u*28,v*6,10103,2));
-  return[x,h-.3,z];},170,56,{uS:200,vS:30}),MAT.mud,G);
+  const n=fbm(u*40,v*9,10103,3);
+  const h=(13*Math.exp(-Math.pow((az-100)/16,2))+6*Math.exp(-Math.pow(z/20,2))+3*Math.exp(-Math.pow((az-44)/6,2)))*fade*(.45+1.1*n);
+  return[x,h-.6,z];},200,64,{uS:200,vS:30}),EN_SPOIL,G);
  for(let i=0;i<70;i++){const x=rr(-160,-1100),z=(rng()<.5?-1:1)*rr(88,112),s=rr(1,4)*(1+x/1400);
   kput('rubble',[x,s*.3,z],qEuler(rng()*3,rng()*3,rng()*3),[s*1.4,s*.8,s*1.2],new THREE.Color().setHSL(rr(.05,.08),rr(.2,.35),rr(.3,.45)));}
  // the foot: spoil against the tracks, moss, a few trees, people for scale
@@ -257,7 +264,7 @@ function buildBreech(scene,gx,gz,d){reseed(10120+d);KOFF=[gx,0,gz];
  // the mound it comes out of
  const MX=-62;
  mesh(gridSurface((u,v)=>{const th=u*TAU,r=v*150*(1+.12*fbm(u*6,1.7,10121,2)),x=r*Math.cos(th),z=r*Math.sin(th);
-  const q=clamp(1-r/150,0,1);return[MX+x,34*Math.pow(q,1.6)*(.8+.4*fbm(x/40,z/40,10122,2))-.3,z];},64,20,{uS:40,vS:12}),MAT.mud,G);
+  const q=clamp(1-r/150,0,1);return[MX+x,52*q*q*(3-2*q)*(.7+.6*fbm(x/30,z/30,10122,3))-.6,z];},72,24,{uS:40,vS:12}),EN_SPOIL,G);
  rubbleRing(MX+20,0,0,60,190,110,6);
  scatterMoss(MX,0,0,60,260,90,4);trees(MX,0,160,420,30);
  figures(T[0]+30,90,5,8);
