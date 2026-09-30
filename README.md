@@ -15,3 +15,10 @@ There is an included skill file, painting-to-3d-world. Read before starting a ne
 holds the working rules for agents. Settlements are in `settlements/`, building
 kits in `kits/`, biomes in `biomes/`, shared code in `core/`. The gallery of every
 built world is published from `gallery/` (see `gallery/README.md`).
+
+**Keep the Krator Worlds gallery current.** Whenever you push a new or changed
+settlement, building kit or biome to `main`, update the gallery in the same
+session: add the new page to `ENTRIES` in `gallery/build_gallery.py` if it is not
+listed, run `python3 gallery/build_gallery.py`, and republish `gallery/site/` to
+the Krator Worlds artifact at the URL in `gallery/README.md` (same URL, every file
+in `gallery/site/worlds/` attached). Do not publish a new artifact.
