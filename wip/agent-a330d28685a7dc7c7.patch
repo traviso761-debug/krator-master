@@ -1,0 +1,1415 @@
+diff --git a/voth/port/API.md b/voth/port/API.md
+index bf11a7f..e809735 100644
+--- a/voth/port/API.md
++++ b/voth/port/API.md
+@@ -75,15 +75,29 @@ PORT_SEG({key:'yard',name:'Ship yard',cls:'seg',W:110,LAND:80,SEA:200,decays:[0,
+   `length beam draft`. `cls`: `'seg'` 200 000 triangles per placed decay,
+   `'vessel'` 250 000, `'small'` 60 000. Optional `norepair:true` skips the
+   d>=3 salvage pass (defaults true for vessels).
++* Optional `place`: `'coast'` (default), `'land'` or `'sea'` - see "Grid
++  placement" below. A land block has `SEA:0`, `LAND` and `W` <= `PORT.BLOCK`
++  (110); a sea platform `LAND:0`, `SEA` and `W` <= 110. A coastal segment
++  that sea platforms may attach to gives `seaEnd:{x, w}` (local x of the
++  attachment centre on its z = SEA edge; the pier: x -30, w 120).
+ * A registration error goes to the on-screen error panel, which fails verify.
+ 
+ `opt` (to both `stamps(opt)` and `build(...,opt)`):
+-`{key, d, gx, gz, nb:{W:{kind,dz,key}, E:{...}}, slot, run, ctx, W, LAND,
+-SEA, vessels:[keys], heading}`. `nb.kind` is `'seg'`, `'land'` (natural
+-coast) or `'sea'` (open water); `dz` = neighbour's z offset minus yours
+-(negative: the neighbour is set back toward the land). `ctx` is true for the
+-plain quays flanking your key in the dev targets. `vessels` is the sorted list
+-of registered vessel keys a berth may show (see "Vessel hook").
++`{key, d, gx, gz, place, nb:{W, E, N, S}, slot, run, ctx, W, LAND, SEA,
++vessels:[keys], vessel, fleet, heading}` plus any fields of the layout item's
++`opt`. `nb` has all four sides: **W** -x, **E** +x, **N** the land side
++(-z), **S** the sea side (+z). Each is `{kind, dz, dx, key, place, span,
++list}`: `kind` `'seg'` (something placed touches that side), `'land'`
++(natural land) or `'sea'` (open water); `dz`/`dx` = the neighbour's gz/gx
++minus yours (for a coastal W/E neighbour, `dz` negative = set back toward
++the land); `span:[a,b]` the stretch of YOUR side (local x for N/S, local z
++for W/E) the neighbour covers; `list` every neighbour on that side. With
++nothing placed there: coastal N `'land'`, S `'sea'`; a land block `'land'`
++all round; a sea platform `'sea'` all round. `portSideOpen(opt.nb,side,a,b)`
++returns the stretches of [a,b] no neighbour covers. `ctx` is true for the
++plain quays flanking your key in the dev targets. `vessels` is the sorted
++list of registered vessel keys a berth may show; `vessel` / `fleet` a
++layout's own choice (see "Vessel hook").
+ 
+ Decays: segments `[0,1,3]` (0 intact, 1 ruined, 3 reclaimed). At d>=3 the
+ scene sets `HOLES = .55` and runs the salvage pass on your group after you
+@@ -183,6 +197,32 @@ pkLine pkGuard pkCol pkPile pkStair pkDoor`. Pivots: standing things at the
+ bottom centre; fenders, ladders at their top (scale y = length); skiff and
+ buoy on the waterline (y=0). Instance colour multiplies each.
+ 
++Land blocks and sea platforms (`73`):
++* `portBlockStamps(opt,{y,soft,paint,depth,width,mole})` - land: a `flat`
++  at deck level over the footprint; sea: a `fill` mole to deck level
++  (`mole:false` for a deck on piles) and a dredged strip (`outside:true`)
++  beyond every W/E/S stretch no neighbour covers. Concat your own after it.
++* `portBlockClose(G,opt,d,{wall,sea,land})` - finishes all four sides from
++  `opt.nb`, stretch by stretch: covered by a neighbour at deck level ->
++  nothing; a sea platform's side on a pier's deck end -> a plain face; open,
++  sea -> a finished quay wall facing out (fenders, ladders, bollards); open,
++  land -> a retaining wall with coping down to the ground outside (the
++  finished step where a neighbour block is set back). Returns the stretches
++  it built per side. Coastal segments keep `portSideClose` for W/E; N and S
++  of a coastal segment need nothing (a land block behind is flush with the
++  apron; a sea platform off a pier meets its deck end).
++
++Inspector (`70`): every mesh made through `mesh()`/`meshMerged()` (so every
++`pbFlush` batch) and every `kput` instance is tagged with its owner (the
++segment or vessel being built, with its decay) and the current **part**:
++`portPart('straddle carrier'); ... portPart(null)` names what follows. A
++click that hits no REGISTER volume says `Container dock (ruined) — near
++Straddle carrier` / `straddle carrier / pkCont40R`; REGISTER volumes stay the
++preferred name. **REGISTER now applies the group transform `KXF`** to
++(x, y, z), like `kput`, so `portContainerHouse`/`portShed` register in the
++right place inside a rotated vessel/crane group; pass `xf:false` if you
++already transformed the point yourself.
++
+ Utilities (`70`): `pbAdd(geo,mat,parent,noRepair)` - batch opaque geometry
+ (already in the parent's frame); the scene merges it into one mesh per
+ (parent, material) when your builder returns. `pbBox(parent,mat,x,y,z,w,h,dp,
+@@ -191,6 +231,18 @@ yaw)`, `pkMergeGeo(geos)`, `portYaw(tx,tz)`, `portCam(tx,ty,tz,az,el,r,night)`.
+ Mark anything under water `noRepair` (the salvage pass would stick patches on
+ it).
+ 
++**The salvage pass** (d>=3, `portRepairPass`) samples only visible, opaque
++MeshStandard meshes (not `noRepair`, `probeSkip`, invisible or transparent
++ones - a night-only light beam no longer grows shacks in the sky), nothing
++below y 0.4, patches only on wall triangles >= 1.2 m on their shortest edge
++(none on thin bars), shanties only on raised flat triangles >= 3 m (roofs,
++platforms - not open deck or paving, which get the odd planter or butt).
++
++**r128 pitfalls** (on top of the ancients list): `BufferGeometry` has no
++`applyQuaternion` - use `g.applyMatrix4(new THREE.Matrix4().makeRotationFromQuaternion(q))`;
++`useGroupXF` handles one group level (for nested frames compose the chain
++yourself, e.g. `cgMatOf` in 83-cg-crane.js).
++
+ ## Vessels
+ 
+ * Frame: origin **midship on the waterline**, bow toward **+z at heading 0**,
+@@ -206,7 +258,15 @@ it).
+   and `portPlaceVessel(G,vk,x,z,heading,d)`: the vessel is charged to its own
+   `'key/d'` budget, the PRNG is saved and restored round it, and it is
+   dressed by its own d=3 code (norepair). The pier offers its slip basin
+-  (x 72, bow out, beam <= 58, length <= 370).
++  (x 72, bow out, beam <= 58, length <= 380). `portVesselFor(opt,i)` returns
++  the layout's choice when there is one - `opt.fleet[i]` (a key, or null for
++  none), else `opt.vessel` for i=0 - and otherwise cycles the registered
++  keys by slot and run. A layout item names its vessel with `vessel:'vsGiant'`
++  (or `fleet:[...]`); a FREE-standing vessel item is `vessel:true`. Every
++  placement is recorded in `PORT_VPLACED` (`{key,d,x,z,heading,host,stat}`,
++  world) for views.
++* `REGISTER` inside `useGroupXF(H)` now lands where the group puts it (see
++  "Inspector"); your own pre-transformed registrations pass `xf:false`.
+ * A vessel's dev target is a segment-target copy with `PORT_ONLY` = the
+   vessel key: it is moored off three quays in a dredged pocket, heading +x.
+ * Reclaimed vessels are inhabited; do your own d=3 dressing.
+@@ -216,7 +276,11 @@ it).
+ * Every `MeshStandardMaterial` in `MAT` at scene start gets the **underwater
+   fade** (below y=0 it fades to deep water with depth). A material you create
+   inside a builder does not: define it at top level in `MAT`.
+-* The sea is one sheet at y=0 (`MAT.pkSea`); `dry:true` stamps cut it.
++* **Dry pits**: the fade is off inside every `dry:true` stamp (its rect, or a
++  polygon's bounding box; up to 16), so the normal kit and `MAT` materials
++  read correctly in a pumped-out pit - no un-faded twins needed.
++* The sea is one sheet at y=0 (`MAT.pkSea`); `dry:true` stamps cut it (rows
++  share their vertices, so no hairline cracks run across the open sea).
+ * `PORT_NIGHT.push(on=>...)` runs your own night change (lights on, etc.).
+   Fire items (`FIREKIT`) already toggle.
+ 
+@@ -225,14 +289,47 @@ it).
+ `build.py` builds every `targets/*/89z-rows.js`. A target sets `TITLE`
+ (literal string - build.py stamps it into `<title>`) and
+ `PORT_LAYOUT_DEF`:
+-* `portLayoutShowcase({decays,gap})` - one run per decay of every segment,
+-  sorted by key, offsets from `PORT_DZSEQ`, `gap` m of coast between runs.
+-* `portLayoutSegment(key,{nbdz:[W,E],nbKey:'quay110'})` - key per decay between
+-  110 m plain quays.
+-* `portLayoutEdges(key,{d,nbKey:'quay110'})` - key against steps +/-40, +/-20, sea, land.
++* `portLayoutShowcase({decays,gap,back,sea,chain,slip,moor})` - one coastal
++  run per decay of every `place:'coast'` segment, sorted by key, offsets
++  from `PORT_DZSEQ`, `gap` m of coast between runs; `back` (true): every
++  `place:'land'` key once per run in a row behind the run's middle (leftovers
++  in a row behind that); `sea` (true): the `place:'sea'` keys chained `chain`
++  (2) long off the great pier's end; `slip:{segKey:vesselKey}` the vessel a
++  segment holds; `moor:{E:key,W:key}` vessels alongside the platform chain.
++* `portLayoutSegment(key,{nbdz:[W,E],nbKey:'quay110'})` - key per decay
++  between 110 m plain quays; a land key behind the middle of three quays with
++  a block behind it and one beside it (stepped 20); a sea key off the great
++  pier's end with a second chained seaward.
++* `portLayoutEdges(key,{d,nbKey:'quay110'})` - key against steps +/-40,
++  +/-20, sea, land; land keys: blocks stepped 40, land round, block behind a
++  block; sea keys: an L of three platforms, a lone one.
+ `91z-views.js`: `const VIEWS=portViewsShowcase()` / `portViewsSegment()` /
+ `portViewsEdges()`, then add your own. The first view is the opening shot;
+-a 7th element truthy = night.
++a 7th element truthy = night; an **8th element truthy = the segment
++boundary overlay** (every placed footprint outlined at deck height, coloured
++by placement - coastal amber, land green, sea cyan - with the land edge brown,
++the sea edge blue, the quay line white, and a key label). By hand: the
++"Segment bounds (b)" button or the `b` key; from verify: a preset with the
++flag, or `_api.setBounds(true)`. `_api.inspectRay(ox,oy,oz,dx,dy,dz)` returns
++the inspector's text for a ray.
++
++### Grid placement (land blocks, sea platforms)
++
++A target can compose any layout with the helpers in `70`:
++```js
++const R=portRun(['cgBox','pier','quay'],0,x0,[0,0,-20],{run:0});    // coastal run
++const b1=portBehind(R.items[1],'myBlock',{dx:-55});    // behind the pier, west half
++const b2=portBehind(b1,'myBlock');                     // behind that block
++const p1=portOff(R.items[1],'myPlatform','S');         // off the pier's end (seaEnd)
++const p2=portOff(p1,'myPlatform','E');                 // beside it
++const m=portMoor('vsPanamax',0,'W',[p1],null);         // {item, stamp}: alongside p1
++const PORT_LAYOUT_DEF={items:R.items.concat([b1,b2,p1,p2,m.item]),stamps:[m.stamp],
++  runs:[Object.assign({d:0,back:[b1,b2],sea:[p1,p2]},R)],vessels:portVesselKeys()};
++```
++The scene calls `portLinkNb(items)` on every layout before the stamps, so
++every item's `nb` (all four sides) comes from the footprints: nothing to
++wire by hand. `targets/harbour` is a worked example (a Long-Beach-like
++harbour: land blocks two deep, an L of platforms off the pier).
+ 
+ ## Budgets and invariants (`verify.py --assert`)
+ 
+diff --git a/voth/port/CONTRACT.md b/voth/port/CONTRACT.md
+index 498a358..3b3aad5 100644
+--- a/voth/port/CONTRACT.md
++++ b/voth/port/CONTRACT.md
+@@ -20,6 +20,31 @@
+ >    is the neighbour in the segment/edges dev targets. Read "W = 220 m for
+ >    every segment" below as "W = the segment's own width"; the footprint is
+ >    x in [-W/2, W/2]. SEA <= 420, LAND <= 120 and the 8 m clearance are unchanged.
++6. **Placement kinds (wave 3).** A registration may give `place`:
++   `'coast'` (the default - everything below), `'land'` or `'sea'`.
++   * `place:'land'` - a block **wholly on land**, at most 110 x 110: `SEA:0`,
++     `LAND <= 110`, local z in [-LAND, 0]. It stands BEHIND a coastal segment
++     (its z=0 edge on that segment's -LAND edge) or behind another land
++     block; any of its four sides may meet another block, a coastal segment
++     or natural land. Its stamps flatten its whole footprint to deck level
++     (`portBlockStamps`).
++   * `place:'sea'` - a platform **wholly in the water**, at most 110 x 110:
++     `LAND:0`, `SEA <= 110`, local z in [0, SEA]. It attaches to the seaward
++     end of a pier (the pier's z = SEA edge, at its registered `seaEnd.x`)
++     or to any side of another platform, so piers can be extended and
++     branched (the Port of Long Beach, refs/long-beach.png). Its stamps build
++     a mole (or leave water for piles) and dredge round every open side.
++   * **Four-sided neighbours.** `opt.nb` has **N** (land side, -z), **S**
++     (sea side, +z), **W** (-x) and **E** (+x), each `{kind:'seg'|'land'|'sea',
++     dz, dx, key, place, span, list}`, computed by the scene from the placed
++     footprints. Every side must look finished: blocks and platforms call
++     `portBlockClose(G,opt,d)` (a quay wall on open water, a retaining wall on
++     open land or where a neighbour is stepped back, nothing where a
++     neighbour continues the deck), coastal segments keep `portSideClose`.
++   * Layouts place them with `portBehind(host,key)` / `portOff(host,key,side)`
++     (API.md "Grid placement"); the showcase puts every land key in a row
++     behind each run and the sea keys in a chain off the great pier's end,
++     and `targets/harbour` composes a small Long-Beach-like harbour.
+ 
+ 
+ A spin-off of the Krator Ancients kit (`voth/ancients/`): a set of modular
+@@ -54,8 +79,9 @@ The kit is y-up, so in code:
+ - **Edges.** -z faces land (or the arcology). +z faces open sea. The +/-x
+   sides must look finished whether the neighbour is land, sea, or another
+   segment (flush, or offset back/forward). Every builder receives
+-  `opt.nb = {W:{kind:'seg'|'land'|'sea', dz}, E:{...}}` (dz = the neighbour's z
+-  offset minus this one's) and should close its sides accordingly: a finished
++  `opt.nb = {W:{kind:'seg'|'land'|'sea', dz}, E:{...}, N:{...}, S:{...}}` (dz =
++  the neighbour's z offset minus this one's; N/S are the land/sea sides, see
++  item 6 above) and should close its sides accordingly: a finished
+   quay wall with fenders/coping where it faces water, a revetment or
+   retaining wall where it faces land, nothing extra where a flush neighbour
+   continues the deck, and a finished step where offsets differ.
+diff --git a/voth/port/KNOWN_ISSUES.md b/voth/port/KNOWN_ISSUES.md
+index 235e889..a62e3e8 100644
+--- a/voth/port/KNOWN_ISSUES.md
++++ b/voth/port/KNOWN_ISSUES.md
+@@ -9,3 +9,7 @@ Open items start with `- [ ]` (build.py prints them after every build).
+ - [ ] Rail tracks do not join across an offset junction (each segment lays its own at its own z) and have no buffer stops at a run end.
+ - [ ] Natural-coast trees (`portNatureScatter`) are the ancients' leaf-card trees and read as dark blobs from high above.
+ - [ ] Water is a single transparent sheet with a fresnel rim: at very low grazing angles it goes milky-pale rather than mirroring the sky.
++- [ ] The dry-pit fade mask is per rect (a polygon `dry` stamp masks its bounding box) and holds 16 rects; more dry stamps than that fade normally beyond the 16th (reported on the error panel).
++- [ ] Vessels moored by the layout (`portMoor`: the showcase's Panamax and feeder alongside the platform chain) float free at d=1 in deep water - the ruined vessel's own list and settle only; nothing grounds them.
++- [ ] The segment-boundary labels are screen-sized sprites: at showcase overview distance neighbouring labels overlap.
++- [ ] A coastal segment does not finish its N (land) edge: with no land block behind, its apron meets natural ground through its stamp's soft ring, as before; with a block behind, the two decks are flush (nothing needed).
+diff --git a/voth/port/NOTES.md b/voth/port/NOTES.md
+index caf62e6..d407b2c 100644
+--- a/voth/port/NOTES.md
++++ b/voth/port/NOTES.md
+@@ -52,3 +52,47 @@ the old one put a 110 m quay 80 m proud of a 220 m one, clear of its apron.
+ **Anchors.** `quay` (60 + 40) and `pier` (80 + 420): measured 24-93 k
+ triangles per decay, 45-115 draw calls per view, showcase 0.82 M triangles
+ with env (terrain, sea, 3 k natural trees) 0.52 M.
++
++## Round 3 — shared code (foundation owner, seed block 20000-20099)
++
++**Inspector.** "unregistered mesh" is gone: `mesh()` and `kput()` are wrapped
++in `70` to tag every mesh and instance with the stat key being built and a
++part name (`portPart`); the scene records `PORT_OWN[stat]` (segment/vessel
++name, decay, host) and hands each InstancedMesh its per-instance owner list
++(`instanceId` -> item). The click names the REGISTER volume round the hit
++(preferring one of the same owner), else "Owner (decay) — near <nearest
++volume of that owner>" and the part / kit item or material. The sea sheet is
++looked through; terrain is named by the stamp that shaped it. REGISTER
++applies KXF (vessels' own pre-transformed `C.reg` passes `xf:false`).
++
++**Floating shacks.** Cause: the reclaimed haven's two lighthouse beams
++(`hbBeams`, 90 m additive cones, invisible by day) were sampled by the kit's
++`repairPass`, which walks every mesh: shanties, patches and planters were
++stuck along 90 m of invisible cone ~30 m up. `portRepairPass` replaces it
++for the port: visible opaque standard meshes only, no noRepair/probeSkip
++subtrees, nothing under y 0.4, no patches on thin members, no shanties on
++open deck/paving (only raised flat faces >= 3 m), counts scaled by sampled
++area not the bounding box.
++
++**Segment boundaries.** `b` / button / 8th preset element / `_api.setBounds`.
++
++**Grid placement.** `place:'land'|'sea'`, `nb` N/S/E/W from footprints
++(`portLinkNb`, run by the scene on every layout), `portBehind`, `portOff`,
++`portMoor`, `portSideOpen`, `portBlockStamps`, `portBlockClose`; the pier
++registers `seaEnd` and runs its deck on to z=420 (head end open) when a
++platform abuts. Showcase: land row behind each run's middle, platform chain
++of two off the pier. `targets/harbour`: Long-Beach-like composition. Tested
++with throwaway `tmpLand` / `tmpSea` blocks (deleted).
++
++**Fleet.** Every vessel in every decay of the showcase: the giant in the
++pier's slip, the drone carrier in the deep-water berth (the only berth it
++fits), the Panamax and feeder moored along the platform chain (or off the
++pier head), the submarine in its pen. `portVesselFor` honours `opt.fleet` /
++`opt.vessel`; `PORT_VPLACED` records every placement; the showcase has a
++preset per vessel per decay and 'Reclaimed drone carrier — flight deck'.
++
++**Sea and dry pits.** ddSeaFix's union-cut sea folded into
++`portBuildTerrain` (and removed from 82-dd-dock/82-dd-shed); the underwater
++fade is masked inside `dry` stamps (up to 16 rects, a uniform array), so dry
++pits can use the normal kit.
++
+diff --git a/voth/port/README.md b/voth/port/README.md
+index 73ab9ef..1792a32 100644
+--- a/voth/port/README.md
++++ b/voth/port/README.md
+@@ -43,7 +43,10 @@ that finds footprint and junction mistakes.
+    side case: steps of 40 and 20 m both ways, open sea, natural land.
+ 4. `python3 build.py --target <key>` + `jscheck.py` + `verify.py --assert`,
+    read the shots, repeat. Commit after each verified milestone.
+-5. The showcase needs no edit: it lays out whatever is registered.
++5. The showcase needs no edit: it lays out whatever is registered (coastal
++   segments in the runs, `place:'land'` blocks behind them, `place:'sea'`
++   platforms off the great pier). A land or sea key's dev target (the same
++   `segment` / `edges` copy) shows it behind / off plain quays and the pier.
+ 
+ Do not edit the shared fragments (`00`-`74`, `90`-`99`) from a segment task.
+ If a shared helper is wrong or missing, say so in `KNOWN_ISSUES.md` and
+@@ -54,7 +57,20 @@ work around it inside your own fragment.
+ * `CONTRACT.md` - the project contract every port agent reads.
+ * `API.md` - coordinates, registration, stamps, helpers, budgets, seeds.
+ * `NOTES.md` - what was done, round by round. `KNOWN_ISSUES.md` - what is not.
+-* `src/` - fragments. `targets/` - `showcase`, `segment`, `edges`.
++* `src/` - fragments. `targets/` - `showcase`, `segment`, `edges`, `harbour`
++  (a Long-Beach-like composition: land blocks two deep, platforms off the
++  pier), and the agents' dev targets.
++
++## In the page
++
++Click anything to inspect it: a REGISTER volume's name when the point is in
++one, otherwise the segment or vessel that built what was hit, its decay and
++its part (every mesh and instance is tagged). `n` toggles night, `b` (or the
++"Segment bounds" button) the footprint overlay: every placed segment outlined
++at deck height, coloured by placement (coastal amber, land block green, sea
++platform cyan), land edge brown, sea edge blue, quay line white, labelled
++with its key. Presets may switch either (7th / 8th element); verify can call
++`_api.setBounds(true)` or `_api.inspectRay(...)`.
+ * `refs/` - the reference contact sheets (mood, never copy).
+ * `dist/`, `shots/`, logs, `.syntax-*`, manifests are build outputs and are
+   git-ignored: parallel agents would otherwise conflict on every merge.
+diff --git a/voth/port/src/70-port-core.js b/voth/port/src/70-port-core.js
+index 06ff58b..1d0a0b4 100644
+--- a/voth/port/src/70-port-core.js
++++ b/voth/port/src/70-port-core.js
+@@ -16,6 +16,7 @@ const PORT={
+  CLEAR:8,         // buildings/props stay this far inside the footprint edges
+  LAND_MAX:120, SEA_MAX:420,
+  BERTH:-16,       // a working berth's dredged depth
++ BLOCK:110,       // a land block / sea platform: at most BLOCK x BLOCK
+ };
+ // Budget classes a registration may name (read by 91-probe.js).
+ const PORT_CLS={seg:200000,vessel:250000,small:60000};
+@@ -36,6 +37,10 @@ function portRegister(kind,o){
+  if(!(o.W>0&&o.W<=PORT.WMAX))reportErr('PORT '+tag+': W must be in (0, '+PORT.WMAX+'] - new segments <= '+PORT.WMAX_NEW+' (got '+o.W+')');
+  if(o.LAND>PORT.LAND_MAX||o.SEA>PORT.SEA_MAX||o.LAND<0||o.SEA<0)reportErr('PORT '+tag+': LAND<=120, SEA<=420');
+  if(typeof o.build!=='function'||typeof o.stamps!=='function')reportErr('PORT '+tag+': build and stamps must be functions');
++ if(kind==='seg'){const pl=o.place||'coast';
++  if(['coast','land','sea'].indexOf(pl)<0)reportErr('PORT '+tag+": place must be 'coast', 'land' or 'sea'");
++  if(pl==='land'&&(o.SEA!==0||o.LAND>PORT.BLOCK||o.W>PORT.BLOCK))reportErr('PORT '+tag+": a place:'land' block has SEA 0, LAND and W <= "+PORT.BLOCK);
++  if(pl==='sea'&&(o.LAND!==0||o.SEA>PORT.BLOCK||o.W>PORT.BLOCK))reportErr('PORT '+tag+": a place:'sea' platform has LAND 0, SEA and W <= "+PORT.BLOCK);}
+  o.kind=kind;
+  if(kind==='vessel'&&o.norepair===undefined)o.norepair=true;   // vessels dress their own d=3
+  PORT_REG[kind][o.key]=o;}
+@@ -48,12 +53,38 @@ function portRegOf(key){return PORT_REG.seg[key]||PORT_REG.vessel[key]||null;}
+ // ---------------------------------------------------------------- layout
+ // A LAYOUT is what a target hands the scene: PORT_LAYOUT = {items:[...],
+ // stamps:[...world stamps...], runs:[...]}. An item is one placed segment:
+-//   {key, d, gx, gz, nb:{W:{kind,dz,key},E:{...}}, slot, run, ctx}
++//   {key, d, gx, gz, place, nb:{W,E,N,S}, slot, run, ctx, vessel, fleet, opt}
+ // or one free-standing vessel:
+ //   {vessel:true, key, d, gx, gz, heading}
+-// nb.kind is 'seg' (another segment), 'land' (natural coast) or 'sea' (open
+-// water); dz = the neighbour's z offset minus this one's (negative = the
+-// neighbour is set back toward the land).
++//
++// PLACEMENT KINDS (a registration's `place`, default 'coast'):
++//   coast  a coastal segment: its quay line at local z=0, land apron
++//          z in [-LAND,0], sea structure z in [0,SEA]. Tiled along x in RUNS.
++//   land   a block that sits wholly on land, z in [-LAND,0] (LAND <= 110),
++//          SEA 0. Placed BEHIND a coastal segment (its z=0 edge on that
++//          segment's -LAND edge) or behind another land block: portBehind().
++//   sea    a platform wholly in the water, z in [0,SEA] (SEA <= 110), LAND 0.
++//          Placed off the seaward end of a pier (a coastal segment's z=SEA
++//          edge, at its registered `seaEnd.x`) or off any side of another
++//          platform: portOff().
++//
++// NEIGHBOURS. After the layout is made the scene calls portLinkNb(items),
++// which finds every item's neighbours from the footprints and fills
++// nb = {W, E, N, S}. N is the land side (-z), S the sea side (+z), W is -x, E
++// is +x. Each side is
++//   {kind, dz, dx, key, place, span:[a,b], list:[...]}
++// kind  'seg'  another placed item touches this side (any place)
++//       'land' natural land, 'sea' open water (nothing placed there)
++// dz, dx  the (first) neighbour's gz / gx minus yours; for a coastal W/E
++//       neighbour dz is the quay-line offset exactly as before (negative:
++//       set back toward the land)
++// span  the stretch of YOUR side, in your local coordinates (x for N/S, z
++//       for W/E), that the first neighbour covers; `list` holds every
++//       neighbour on that side with its own key/place/dz/dx/span, and
++//       portSideOpen(nb,side,a,b) returns the stretches no neighbour covers.
++// With nothing placed: coastal N 'land', S 'sea' and W/E from the run
++// (natural 'land' at run ends unless the layout says 'sea'); a land block
++// 'land' on every side; a sea platform 'sea' on every side.
+ //
+ // The z offsets the showcase cycles through, indexed (slot*2 + run*3) % 7.
+ // Chosen (by search) so neighbours - two apart in the table - never differ by
+@@ -61,74 +92,181 @@ function portRegOf(key){return PORT_REG.seg[key]||PORT_REG.vessel[key]||null;}
+ // of its neighbour), and the three runs of three show flush joints and 20 and
+ // 40 m steps in both directions.
+ const PORT_DZSEQ=[0,0,0,20,-20,40,-40];
+-// Lay `keys` side by side from x0 (the west edge of the first footprint), each
+-// at its own gz; returns the items with nb filled. Run ends see `endW`/`endE`.
++function portPlaceOf(key){const R=PORT_REG.seg[key];return (R&&R.place)||'coast';}
++// Footprint of a placed item in world coordinates.
++function portFoot(it){const R=portRegOf(it.key);if(!R||it.vessel===true)return null;
++ return {x0:it.gx-R.W/2,x1:it.gx+R.W/2,z0:it.gz-R.LAND,z1:it.gz+R.SEA};}
++// Lay coastal `keys` side by side from x0 (the west edge of the first
++// footprint), each at its own gz; returns the items with nb.W/E filled. Run
++// ends see `endW`/`endE`.
+ function portRun(keys,d,x0,dzs,o){o=o||{};const out=[];let x=x0;
+  keys.forEach((k,i)=>{const R=portRegOf(k);const w=R?R.W:PORT.W;
+-  out.push({key:k,d,gx:x+w/2,gz:dzs[i]||0,slot:i,run:o.run||0,ctx:!!(o.ctx&&o.ctx[i])});x+=w;});
++  out.push({key:k,d,gx:x+w/2,gz:dzs[i]||0,place:'coast',slot:i,run:o.run||0,ctx:!!(o.ctx&&o.ctx[i])});x+=w;});
+  out.forEach((it,i)=>{
+   const P=out[i-1],N=out[i+1];
+   it.nb={W:P?{kind:'seg',dz:P.gz-it.gz,key:P.key}:Object.assign({kind:'land',dz:0},o.endW||{}),
+          E:N?{kind:'seg',dz:N.gz-it.gz,key:N.key}:Object.assign({kind:'land',dz:0},o.endE||{})};});
+  return {items:out,x0,x1:x};}
+-// The showcase: one continuous run per decay (intact, ruined, reclaimed), each
+-// holding every registered segment that supports that decay, sorted by key,
+-// separated by `gap` metres of untouched natural coast.
+-function portLayoutShowcase(o){o=Object.assign({decays:[0,1,3],gap:440},o||{});
+- const keys=portSegKeys(),runs=[];let x=0;
+- o.decays.forEach((d,r)=>{const ks=keys.filter(k=>PORT_REG.seg[k].decays.indexOf(d)>=0);
++// A land block BEHIND `host` (a coastal segment or another land block): its
++// z=0 edge on the host's -LAND edge, its centre o.dx along x from the host's.
++function portBehind(host,key,o){o=o||{};const HR=portRegOf(host.key);if(!HR||!portRegOf(key))return null;
++ return {key,d:o.d!==undefined?o.d:host.d,gx:host.gx+(o.dx||0),gz:host.gz-HR.LAND,place:'land',
++  slot:host.slot||0,run:host.run||0,host:host.key};}
++// A sea platform OFF `host`: side 'S' (default) puts it on the host's
++// seaward edge (z = SEA) at the host's registered seaEnd.x (+o.dx); 'E' / 'W'
++// beside the host (a platform), at the host's gz (+o.dz).
++function portOff(host,key,side,o){side=side||'S';o=o||{};const HR=portRegOf(host.key),R=portRegOf(key);if(!HR||!R)return null;
++ let gx=host.gx,gz=host.gz;
++ if(side==='S'){gx+=((HR.seaEnd&&HR.seaEnd.x)||0)+(o.dx||0);gz+=HR.SEA;}
++ else{const s=side==='E'?1:-1;gx+=s*(HR.W/2+R.W/2);gz+=(o.dz||0);}
++ return {key,d:o.d!==undefined?o.d:host.d,gx,gz,place:'sea',slot:host.slot||0,run:host.run||0,host:host.key};}
++// Fill every item's nb.{W,E,N,S} from the footprints (see above). Coastal
++// W/E sides keep what portRun gave them and gain `place`, `dx`, `span`,
++// `list`. Idempotent; the scene calls it on every layout.
++function portLinkNb(items){const T=.6,its=items.filter(it=>it.vessel!==true&&portRegOf(it.key)),F=its.map(portFoot);
++ its.forEach((A,i)=>{const a=F[i],pl=A.place||portPlaceOf(A.key);A.place=pl;const nb=A.nb||(A.nb={});
++  const def={N:pl==='sea'?'sea':'land',S:pl==='land'?'land':'sea',W:pl==='sea'?'sea':'land',E:pl==='sea'?'sea':'land'};
++  for(const side of ['W','E','N','S']){const list=[];
++   its.forEach((B,j)=>{if(j===i)return;const b=F[j];let hit=false,s0,s1;
++    if(side==='E'||side==='W'){hit=Math.abs(side==='E'?b.x0-a.x1:b.x1-a.x0)<T;s0=Math.max(a.z0,b.z0)-A.gz;s1=Math.min(a.z1,b.z1)-A.gz;}
++    else{hit=Math.abs(side==='N'?b.z1-a.z0:b.z0-a.z1)<T;s0=Math.max(a.x0,b.x0)-A.gx;s1=Math.min(a.x1,b.x1)-A.gx;}
++    if(hit&&s1-s0>1)list.push({kind:'seg',key:B.key,place:B.place||portPlaceOf(B.key),dz:B.gz-A.gz,dx:B.gx-A.gx,span:[s0,s1]});});
++   const run=(side==='W'||side==='E')&&pl==='coast'&&nb[side]&&nb[side].kind?nb[side]:null;
++   let S;
++   if(run){S=Object.assign({},run);const m=run.kind==='seg'&&list.find(l=>l.key===run.key&&l.place==='coast')||list[0];
++    if(m){S.place=m.place;S.dx=m.dx;S.span=m.span;}}
++   else if(list.length)S=Object.assign({},list[0]);
++   else S={kind:def[side],dz:0,dx:0};
++   S.list=list;nb[side]=S;}});
++ return items;}
++// The stretches [a,b] of side `side` (local coordinates along it, between a
++// and b) that no neighbour covers: where a block finishes its own edge.
++function portSideOpen(nb,side,a,b){const N=nb&&nb[side];let open=[[a,b]];
++ for(const l of (N&&N.list)||[]){const nx=[];for(const [p,q] of open){if(l.span[1]<=p||l.span[0]>=q){nx.push([p,q]);continue;}
++  if(l.span[0]>p)nx.push([p,l.span[0]]);if(l.span[1]<q)nx.push([l.span[1],q]);}open=nx;}
++ return open.filter(s=>s[1]-s[0]>.5);}
++// A free-standing vessel moored alongside the E or W face of `items`' joint
++// footprint (a platform chain, or `ext` = {x0,x1,z0,z1} when none), bow +z.
++// Returns {item, stamp}: the stamp dredges a pocket that starts 1 m outside
++// the face, so it never digs into what it is moored to.
++function portMoor(key,d,side,items,ext,o){o=o||{};const V=PORT_REG.vessel[key];if(!V)return null;
++ let e=ext?Object.assign({},ext):null;
++ if(!ext)for(const it of items||[]){const f=portFoot(it);if(!f)continue;
++  e=e?{x0:Math.min(e.x0,f.x0),x1:Math.max(e.x1,f.x1),z0:Math.min(e.z0,f.z0),z1:Math.max(e.z1,f.z1)}:Object.assign({},f);}
++ if(!e)return null;const s=side==='W'?-1:1,edge=s>0?e.x1:e.x0,gap=o.gap||3;
++ const x=edge+s*(gap+V.beam/2),z=(e.z0+e.z1)/2+(o.dz||0);
++ const xa=edge+s*1,xb=x+s*(V.beam/2+12);
++ return {item:{vessel:true,key,d,gx:x,gz:z,heading:0,run:o.run||0},
++  stamp:{kind:'dig',x0:Math.min(xa,xb),x1:Math.max(xa,xb),z0:z-V.length/2-20,z1:z+V.length/2+20,y:-(V.draft+(d===1?1:5)),soft:30}};}
++// The showcase: one continuous coastal run per decay (intact, ruined,
++// reclaimed), each holding every registered coastal segment that supports
++// that decay, sorted by key, separated by `gap` metres of natural coast.
++// o.back: every registered LAND block is placed once per run, in a row
++//   behind the run's middle (a 110 m slot per 110 m of coastal width; any
++//   keys left over go in a row behind the first).
++// o.sea: the registered SEA platforms off the great pier's end (the run item
++//   with a seaEnd, else the deepest), chained seaward `o.chain` long (the
++//   keys cycle, so one platform key still makes a chain).
++// o.slip {segKey: vesselKey}: the vessel each such segment holds (opt.vessel).
++// o.moor {E: key, W: key}: vessels moored alongside the platform chain's
++//   east / west faces (or off the pier head when no platform is registered).
++function portLayoutShowcase(o){o=Object.assign({decays:[0,1,3],gap:440,back:true,sea:true,chain:2,slip:null,moor:null},o||{});
++ const all=portSegKeys(),byP=p=>all.filter(k=>portPlaceOf(k)===p);
++ const keys=byP('coast'),landK=byP('land'),seaK=byP('sea'),runs=[];let x=0;
++ const has=(k,d)=>PORT_REG.seg[k].decays.indexOf(d)>=0;
++ o.decays.forEach((d,r)=>{const ks=keys.filter(k=>has(k,d));
+   if(!ks.length)return;
+   const dzs=ks.map((k,i)=>PORT_DZSEQ[(i*2+r*3)%PORT_DZSEQ.length]);
+-  const R=portRun(ks,d,x,dzs,{run:r});runs.push(Object.assign({d},R));x=R.x1+o.gap;});
++  const R=portRun(ks,d,x,dzs,{run:r});runs.push(Object.assign({d,back:[],sea:[],moored:[]},R));x=R.x1+o.gap;});
+  const mid=runs.length?(runs[0].x0+runs[runs.length-1].x1)/2:0;
+  for(const R of runs){R.x0-=mid;R.x1-=mid;for(const it of R.items)it.gx-=mid;}
+- const items=[].concat(...runs.map(R=>R.items));
+- return {items,runs,stamps:[],vessels:portVesselKeys()};}
+-// The single-segment dev layout: the named key in each of its decays, flanked
+-// by plain `quay` segments (offset by nbdz[0] / nbdz[1]), natural coast
+-// beyond, one decay per run. If `key` is a VESSEL, the run is three quays and
+-// the vessel is moored off the middle one in a dredged pocket.
++ const stamps=[];
++ for(const R of runs){const d=R.d;
++  if(o.slip)for(const it of R.items)if(o.slip[it.key])it.vessel=o.slip[it.key];
++  const lk=o.back?landK.filter(k=>has(k,d)):[];
++  if(lk.length){const slots=[];
++   for(const it of R.items){const n=Math.floor(portRegOf(it.key).W/PORT.BLOCK+1e-6);for(let j=0;j<n;j++)slots.push({host:it,dx:(j-(n-1)/2)*PORT.BLOCK});}
++   const n=Math.min(lk.length,slots.length),s0=Math.max(0,Math.floor((slots.length-n)/2));
++   lk.forEach((k,i)=>{const b=i<n?portBehind(slots[s0+i].host,k,{dx:slots[s0+i].dx}):portBehind(R.back[(i-n)%n],k);if(b)R.back.push(b);});}
++  let host=R.items.find(it=>portRegOf(it.key).seaEnd)||R.items.slice().sort((a,b)=>portRegOf(b.key).SEA-portRegOf(a.key).SEA)[0];
++  R.pierHost=host;
++  const sk=o.sea?seaK.filter(k=>has(k,d)):[];
++  if(sk.length&&host)for(let i=0;i<Math.max(1,o.chain);i++){const p=portOff(i?R.sea[i-1]:host,sk[i%sk.length],'S');if(p)R.sea.push(p);}
++  if(o.moor&&host){const HR=portRegOf(host.key),ex=((HR.seaEnd&&HR.seaEnd.x)||0)+host.gx,z0=host.gz+HR.SEA;
++   const ext=R.sea.length?null:{x0:ex-PORT.BLOCK/2,x1:ex+PORT.BLOCK/2,z0,z1:z0+2*PORT.BLOCK};
++   for(const side of ['E','W']){const k=o.moor[side];if(!k)continue;const m=portMoor(k,d,side,R.sea,ext,{run:runs.indexOf(R)});
++    if(m){R.moored.push(m.item);stamps.push(m.stamp);}}}}
++ const items=[].concat(...runs.map(R=>R.items.concat(R.back,R.sea,R.moored)));
++ return {items,runs,stamps,vessels:portVesselKeys()};}
++// The single-key dev layout, one run per decay of the key:
++//  coast   the key flanked by plain `quay110`s (offset nbdz[0] / nbdz[1]);
++//  land    three quay110s (the east one set back 20), the block behind the
++//          middle one, a second block behind it and another behind the east
++//          quay: N, S, E are neighbours (E stepped), W is natural land;
++//  sea     quay110, the great pier, quay110; the platform off the pier's end
++//          and a second one chained off its sea side;
++//  vessel  three quays, the vessel moored off the middle one in a dredged pocket.
++// Each run records its focus item (R.focus) for the views.
+ function portLayoutSegment(key,o){o=Object.assign({gap:440,nbdz:[0,-20],nbKey:'quay110'},o||{});
+  const V=PORT_REG.vessel[key],S=PORT_REG.seg[key],R0=V||S;
+  if(!R0){reportErr('PORT_ONLY: no segment or vessel registered as "'+key+'"');return {items:[],runs:[],stamps:[],vessels:[]};}
+- const nbk=PORT_REG.seg[o.nbKey]?o.nbKey:key;
++ const pl=V?'vessel':portPlaceOf(key);
++ const nbk=PORT_REG.seg[o.nbKey]?o.nbKey:(pl==='coast'?key:'quay110');
+  const runs=[],stamps=[],extra=[];let x=0;
+  R0.decays.forEach((d,r)=>{
+-  const ks=V?[nbk,nbk,nbk]:[nbk,key,nbk];
+-  const R=portRun(ks,d,x,[o.nbdz[0],0,o.nbdz[1]],{run:r,ctx:V?[1,1,1]:[1,0,1]});
+-  runs.push(Object.assign({d},R));x=R.x1+o.gap;});
++  const ks=pl==='coast'?[nbk,key,nbk]:pl==='sea'&&PORT_REG.seg.pier?[nbk,'pier',nbk]:[nbk,nbk,nbk];
++  const dz=pl==='land'?[0,0,-20]:pl==='sea'?[0,0,0]:[o.nbdz[0],0,o.nbdz[1]];
++  const R=portRun(ks,d,x,dz,{run:r,ctx:pl==='coast'?[1,0,1]:[1,1,1]});
++  runs.push(Object.assign({d,back:[],sea:[]},R));x=R.x1+o.gap;});
+  const mid=runs.length?(runs[0].x0+runs[runs.length-1].x1)/2:0;
+  for(const R of runs){R.x0-=mid;R.x1-=mid;for(const it of R.items)it.gx-=mid;
+-  if(V){const M=R.items[1],Rq=portRegOf(M.key);
++  const M=R.items[1];R.focus=M;
++  if(pl==='land'){const b=portBehind(M,key);R.back.push(b,portBehind(b,key),portBehind(R.items[2],key));R.focus=b;}
++  else if(pl==='sea'){const p=portOff(M,key,'S');R.sea.push(p,portOff(p,key,'S'));R.focus=p;}
++  else if(V){const Rq=portRegOf(M.key);
+    const vz=M.gz+Rq.SEA+V.beam/2+14,vx=M.gx;
+    extra.push({vessel:true,key,d:R.d,gx:vx,gz:vz,heading:Math.PI/2,run:runs.indexOf(R)});
+    R.vessel={x:vx,z:vz};
+    stamps.push({kind:'dig',x0:vx-V.length/2-30,x1:vx+V.length/2+30,z0:vz-V.beam/2-20,z1:vz+V.beam/2+24,
+                 y:-Math.max(V.draft+5,10),soft:40});}}
+- const items=[].concat(...runs.map(R=>R.items),extra);
+- return {items,runs,stamps,vessels:V?[]:portVesselKeys(),focus:key};}
++ const items=[].concat(...runs.map(R=>R.items.concat(R.back,R.sea)),extra);
++ return {items,runs,stamps,vessels:V||pl!=='coast'?[]:portVesselKeys(),focus:key};}
+ 
+-// The edge-case layout: the named segment at decay d against every kind of
+-// side it can meet, one run per case, separated by natural coast:
++// The edge-case layout: the named key at decay d against every kind of side
++// it can meet, one run per case, separated by natural coast. Coastal keys:
+ //   run 0  west neighbour set back 40, east neighbour stands out 40
+ //   run 1  west neighbour stands out 20, east neighbour set back 20
+ //   run 2  open SEA on both sides (no neighbours at all)
+ //   run 3  natural LAND coast on both sides
++// Land blocks: 0 behind the middle of three quays at dz -40/0/+40 with
++//   blocks behind all three (W and E stepped 40); 1 alone behind one quay
++//   (land on three sides); 2 behind another block (S is a block).
++// Sea platforms: 0 off the pier's end with a platform chained off its E side
++//   and one off that one's S (an L); 1 alone off the pier's end.
+ function portLayoutEdges(key,o){o=Object.assign({gap:440,d:0,nbKey:'quay110'},o||{});
+  if(!PORT_REG.seg[key]){reportErr('PORT_ONLY: no segment registered as "'+key+'"');return {items:[],runs:[],stamps:[],vessels:[]};}
+- const nbk=PORT_REG.seg[o.nbKey]?o.nbKey:key,d=o.d,runs=[];let x=0;
+- const cases=[{ks:[nbk,key,nbk],dz:[-40,0,40],ctx:[1,0,1]},{ks:[nbk,key,nbk],dz:[20,0,-20],ctx:[1,0,1]},
+-  {ks:[key],dz:[0],ctx:[0],endW:{kind:'sea'},endE:{kind:'sea'}},{ks:[key],dz:[0],ctx:[0]}];
+- cases.forEach((c,r)=>{const R=portRun(c.ks,d,x,c.dz,{run:r,ctx:c.ctx,endW:c.endW,endE:c.endE});R.focus=R.items[c.ks.length>1?1:0];
+-  runs.push(Object.assign({d,case:['steps 40','steps 20','sea sides','land sides'][r]},R));x=R.x1+o.gap;});
++ const pl=portPlaceOf(key),nbk=PORT_REG.seg[o.nbKey]?o.nbKey:key,d=o.d,runs=[];let x=0;
++ const cases=pl==='land'?[{ks:[nbk,nbk,nbk],dz:[-40,0,40],ctx:[1,1,1],nm:'blocks stepped 40'},{ks:[nbk],dz:[0],ctx:[1],nm:'land round'},{ks:[nbk],dz:[0],ctx:[1],nm:'block behind a block'}]
++  :pl==='sea'?[{ks:[nbk,PORT_REG.seg.pier?'pier':nbk,nbk],dz:[0,0,0],ctx:[1,1,1],nm:'platform L'},{ks:[PORT_REG.seg.pier?'pier':nbk],dz:[0],ctx:[1],nm:'sea round'}]
++  :[{ks:[nbk,key,nbk],dz:[-40,0,40],ctx:[1,0,1],nm:'steps 40'},{ks:[nbk,key,nbk],dz:[20,0,-20],ctx:[1,0,1],nm:'steps 20'},
++    {ks:[key],dz:[0],ctx:[0],endW:{kind:'sea'},endE:{kind:'sea'},nm:'sea sides'},{ks:[key],dz:[0],ctx:[0],nm:'land sides'}];
++ cases.forEach((c,r)=>{const R=portRun(c.ks,d,x,c.dz,{run:r,ctx:c.ctx,endW:c.endW,endE:c.endE});
++  runs.push(Object.assign({d,case:c.nm,back:[],sea:[]},R));x=R.x1+o.gap;});
+  const mid=(runs[0].x0+runs[runs.length-1].x1)/2;
+- for(const R of runs){R.x0-=mid;R.x1-=mid;for(const it of R.items)it.gx-=mid;}
+- return {items:[].concat(...runs.map(R=>R.items)),runs,stamps:[],vessels:portVesselKeys(),focus:key};}
++ for(const R of runs){R.x0-=mid;R.x1-=mid;for(const it of R.items)it.gx-=mid;
++  const M=R.items[R.items.length>1?1:0];R.focus=M;
++  if(pl==='land'){
++   if(R.case==='blocks stepped 40'){for(const it of R.items)R.back.push(portBehind(it,key));R.focus=R.back[1];}
++   else if(R.case==='land round'){R.back.push(portBehind(M,key));R.focus=R.back[0];}
++   else{const b=portBehind(M,key);R.back.push(b,portBehind(b,key));R.focus=R.back[1];}}
++  if(pl==='sea'){const p=portOff(M,key,'S');R.sea.push(p);R.focus=p;
++   if(R.case==='platform L'){const q=portOff(p,key,'E');R.sea.push(q,portOff(q,key,'S'));}}}
++ return {items:[].concat(...runs.map(R=>R.items.concat(R.back,R.sea))),runs,stamps:[],vessels:portVesselKeys(),focus:key};}
+ function portViewsEdges(){const V={},D=PORT.DECK,runs=PORT_LAYOUT.runs||[];if(!runs.length)return {Empty:[0,300,600,0,0,0]};
+  V['Overview']=portCam(0,0,100,.15,.45,(runs[runs.length-1].x1-runs[0].x0)*.6+300);
+- for(const R of runs){const F=R.focus,G=portRegOf(F.key);
++ for(const R of runs){const F=R.focus,G=portRegOf(F.key),pl=portPlaceOf(F.key),zs=F.gz+(pl==='land'?-G.LAND/2:pl==='sea'?G.SEA/2:0)+4;
+   V[R.case]=portCam(F.gx,D,F.gz+(G.SEA-G.LAND)/2,.35,.5,Math.max(300,(G.SEA+G.LAND)*1.2));
+-  V[R.case+' W']=portCam(F.gx-G.W/2,D,F.gz+4,-.8,.3,160);V[R.case+' E']=portCam(F.gx+G.W/2,D,F.gz+4,.8,.3,160);}
++  V[R.case+' W']=portCam(F.gx-G.W/2,D,zs,-.8,.3,160);V[R.case+' E']=portCam(F.gx+G.W/2,D,zs,.8,.3,160);}
+  return V;}
+ 
+ // ---------------------------------------------------------------- vessels
+@@ -140,20 +278,31 @@ function portViewsEdges(){const V={},D=PORT.DECK,runs=PORT_LAYOUT.runs||[];if(!r
+ // -draft. The vessel is charged to its own budget ('key/d'), not the segment's,
+ // and the PRNG is saved and restored round it, so the segment's own stream
+ // does not move when a vessel is edited.
+-function portVesselFor(opt,i){const v=opt&&opt.vessels;if(!v||!v.length)return null;
+- return v[((opt.slot||0)+(opt.run||0)+(i||0))%v.length];}
++// A layout may choose: opt.fleet[i] (a key, or null for none) wins, then
++// opt.vessel for i=0; otherwise the registered keys are cycled by slot/run.
++function portVesselFor(opt,i){i=i||0;
++ if(opt&&opt.fleet&&opt.fleet[i]!==undefined){const k=opt.fleet[i];return k&&PORT_REG.vessel[k]?k:null;}
++ if(opt&&i===0&&typeof opt.vessel==='string'&&PORT_REG.vessel[opt.vessel])return opt.vessel;
++ const v=opt&&opt.vessels;if(!v||!v.length)return null;
++ return v[((opt.slot||0)+(opt.run||0)+i)%v.length];}
++// Every vessel placed so far: {key, d, x, z, heading, host, stat} in world
++// coordinates (views and the boundary overlay read it after the scene).
++const PORT_VPLACED=[];
+ function portPlaceVessel(G,key,x,z,heading,d,o){const V=PORT_REG.vessel[key];if(!V)return null;
+  const ds=V.decays.indexOf(d)>=0?d:V.decays[0];
+  pbFlush();                      // the host's batch so far is charged to the host, not the vessel
+  const s0=_seed,k0=KOFF,t0=TSTAT.cur,h0=HOLES,c0=PORT_CUR;PORT_CUR={W:V.W,LAND:V.LAND,SEA:V.SEA,key};
+  const wx=KOFF[0]+x,wz=KOFF[2]+z;
+  TSTAT.cur=portStatKey(key,ds);HOLES=ds>=3?.55:1;KOFF=[0,0,0];let VG=null;const r0=REG.length;
++ PORT_OWN[TSTAT.cur]={key,d:ds,name:V.name,place:'vessel',host:t0};const p0=PORT_PART;PORT_PART=null;
++ PORT_VPLACED.push({key,d:ds,x:wx,z:wz,heading:heading||0,host:t0,stat:TSTAT.cur});
+  try{VG=V.build(scene,wx,wz,ds,Object.assign({heading:heading||0,d:ds,key,host:TSTAT.cur},o||{}));}
+  catch(e){reportErr('vessel '+key+' d='+ds+' '+e.stack);}
+  try{pbFlush();}catch(e){reportErr('vessel flush '+e.stack);}
+  if(ds>=3&&VG&&!V.norepair){KOFF=[wx,0,wz];try{portRepair(VG,ds);}catch(e){reportErr(key+' repair '+e.stack);}}
+  for(let i=r0;i<REG.length;i++)REG[i].type=key;
+- KOFF=k0;TSTAT.cur=t0;HOLES=h0;_seed=s0;PORT_CUR=c0;
++ if(VG&&VG.isObject3D){const st=TSTAT.cur;VG.userData.own=st;VG.traverse(o=>{if((o.isMesh||o.isInstancedMesh)&&!o.userData.own)o.userData.own=st;});}
++ KOFF=k0;TSTAT.cur=t0;HOLES=h0;_seed=s0;PORT_CUR=c0;PORT_PART=p0;
+  return VG;}
+ 
+ // ---------------------------------------------------------------- stats keys
+@@ -219,14 +368,11 @@ const portCurW=()=>(PORT_CUR&&PORT_CUR.W)||PORT.W;
+ // with (on). The water registers one; a segment may register its own.
+ const PORT_NIGHT=[];
+ 
+-// The d=3 salvage pass, port edition: repairPass() on the group, with every
+-// child marked userData.noRepair taken out first (quay walls down to the
+-// seabed, pier columns, anything under water) so patches and shanties are
+-// not stuck to them. The scene calls this; builders need not.
+-function portRepair(G,d){const off=[];
+- G.traverse(o=>{if(o!==G&&o.userData&&o.userData.noRepair)off.push(o);});
+- const par=off.map(o=>o.parent);off.forEach(o=>o.parent.remove(o));
+- try{repairPass(G,d);}finally{off.forEach((o,i)=>par[i].add(o));}}
++// The d=3 salvage pass: portRepairPass() (below) on the group. It skips
++// every child marked userData.noRepair (quay walls down to the seabed, pier
++// columns, anything under water), invisible and transparent meshes, thin
++// members and open paving. The scene calls this; builders need not.
++function portRepair(G,d){portRepairPass(G,d);}
+ 
+ // View helper for the targets' VIEWS tables: look at (tx,ty,tz) from bearing
+ // `az` (radians; 0 = from the sea, +z; PI/2 = from the east, +x), elevation
+@@ -239,37 +385,155 @@ const portDName=d=>PORT_DNAME[d]||('Decay '+d);
+ // scene has run, so they read the layout that was actually built.
+ function portViewsShowcase(){const V={},L=PORT_LAYOUT,D=PORT.DECK,runs=L.runs||[];if(!runs.length)return {Empty:[0,300,600,0,0,0]};
+  const X0=runs[0].x0,X1=runs[runs.length-1].x1,span=X1-X0;
++ const ext=its=>{let z0=1e9,z1=-1e9,x0=1e9,x1=-1e9;for(const it of its){const f=portFoot(it);if(!f)continue;
++  z0=Math.min(z0,f.z0);z1=Math.max(z1,f.z1);x0=Math.min(x0,f.x0);x1=Math.max(x1,f.x1);}return {x0,x1,z0,z1};};
++ const all=ext(L.items);
+  V['Overview']=portCam((X0+X1)/2,0,90,.18,.42,span*.62+300);
+- for(const R of runs){const nm=portDName(R.d),mid=(R.x0+R.x1)/2,w=R.x1-R.x0;
+-  let z0=1e9,z1=-1e9;for(const it of R.items){const G=portRegOf(it.key);z0=Math.min(z0,it.gz-G.LAND);z1=Math.max(z1,it.gz+G.SEA);}
+-  V[nm+' run']=portCam(mid,D,(z0+z1)/2,.3,.5,Math.max(w,(z1-z0)*1.5)*.78+180);}
++ for(const R of runs){const nm=portDName(R.d),mid=(R.x0+R.x1)/2,w=R.x1-R.x0,e=ext(R.items.concat(R.back||[],R.sea||[]));
++  V[nm+' run']=portCam(mid,D,(e.z0+e.z1)/2,.3,.5,Math.max(w,(e.z1-e.z0)*1.5)*.78+180);}
+  for(const R of runs){const nm=portDName(R.d);
+   for(let j=1;j<R.items.length;j++){const A=R.items[j-1],B=R.items[j],x=(A.gx+B.gx)/2;
+    V[nm+' junction '+j]=portCam(x,D,Math.max(A.gz,B.gz)+6,.55,.32,150);}
+   const a=R.items[0],b=R.items[R.items.length-1],ra=portRegOf(a.key),rb=portRegOf(b.key);
+   V[nm+' west end']=portCam(a.gx-ra.W/2,D,a.gz+8,-.75,.3,190);
+-  V[nm+' east end']=portCam(b.gx+rb.W/2,D,b.gz+8,.75,.3,190);}
++  V[nm+' east end']=portCam(b.gx+rb.W/2,D,b.gz+8,.75,.3,190);
++  if(R.back&&R.back.length){const e=ext(R.back);V[nm+' land blocks']=portCam((e.x0+e.x1)/2,D,(e.z0+e.z1)/2,-.25,.55,Math.max(e.x1-e.x0,e.z1-e.z0)*1.1+160);}
++  if(R.sea&&R.sea.length){const e=ext(R.sea.concat(R.moored||[]));const x=(e.x0+e.x1)/2;
++   V[nm+' sea platforms']=portCam(x,D,(e.z0+e.z1)/2,.5,.5,Math.max(e.x1-e.x0+120,e.z1-e.z0)*1.1+200);}}
+  const q=L.items.find(it=>it.key==='quay'&&it.d===0)||L.items[0];
+  V['Eye level on the quay']=[q.gx-70,D+1.7,q.gz-9,q.gx+40,D+2.2,q.gz-3];
+- V['From the sea']=[(X0+X1)/2,16,760,(X0+X1)/2,6,0];
++ V['From the sea']=[(X0+X1)/2,16,Math.max(760,all.z1+380),(X0+X1)/2,6,0];
+  V['From above']=[(X0+X1)/2,span*.75+400,150,(X0+X1)/2,0,149];
+  const rl=runs[runs.length-1];V['Night over the '+portDName(rl.d).toLowerCase()+' run']=portCam((rl.x0+rl.x1)/2,D,60,.3,.3,(rl.x1-rl.x0)*.6+200,1);
++ // the footprint overlay on (8th element): every placed segment outlined and labelled
++ const r0=runs[Math.floor(runs.length/2)];
++ V['Segment bounds']=portCam((r0.x0+r0.x1)/2,D,(all.z0+all.z1)/2,.1,.95,(r0.x1-r0.x0)*.62+300,0).concat([0,1]);
+  return V;}
+ // Segment target: each decay of the focus key; its sides; from the sea,
+ // above, at eye level, at night. Works for a vessel focus too.
+ function portViewsSegment(){const V={},L=PORT_LAYOUT,D=PORT.DECK,runs=L.runs||[];if(!runs.length)return {Empty:[0,300,600,0,0,0]};
+  const X0=runs[0].x0,X1=runs[runs.length-1].x1;
++ const foc=R=>R.focus||R.items[1]||R.items[0];
+  const fo=R=>{if(R.vessel){const Vr=PORT_REG.vessel[L.focus];return {x:R.vessel.x,z:R.vessel.z,y:4,w:Vr.length+60,dp:Vr.beam+60,gz:R.vessel.z,land:0,sea:0};}
+-  const it=R.items[1],G=portRegOf(it.key);return {x:it.gx,z:it.gz+(G.SEA-G.LAND)/2,y:D,w:G.W,dp:G.LAND+G.SEA,gz:it.gz,land:G.LAND,sea:G.SEA};};
++  const it=foc(R),G=portRegOf(it.key);return {x:it.gx,z:it.gz+(G.SEA-G.LAND)/2,y:D,w:G.W,dp:G.LAND+G.SEA,gz:it.gz,land:G.LAND,sea:G.SEA};};
+  V['Overview']=portCam((X0+X1)/2,0,120,.2,.45,(X1-X0)*.6+300);
+  for(const R of runs){const F=fo(R);V[portDName(R.d)]=portCam(F.x,F.y,F.z,.45,.42,Math.max(260,F.dp*.95+F.w*.35+80));}
+- const R0=runs[0],F0=fo(R0),it0=R0.items[1];
+- if(!R0.vessel){const w0=portRegOf(it0.key).W;V['West side']=portCam(it0.gx-w0/2,D,it0.gz+6,-.7,.34,170);
+-  V['East side']=portCam(it0.gx+w0/2,D,it0.gz+6,.7,.34,170);
+-  const Rr=runs.find(r=>r.d===1);if(Rr){const it=Rr.items[1];V['Ruined sides']=portCam(it.gx,D,it.gz+20,.05,.5,300);}}
++ const R0=runs[0],F0=fo(R0),it0=foc(R0),pl=portPlaceOf(it0.key),zs=pl==='coast'?6:F0.z-it0.gz;
++ if(!R0.vessel){const w0=portRegOf(it0.key).W;V['West side']=portCam(it0.gx-w0/2,D,it0.gz+zs,-.7,.34,170);
++  V['East side']=portCam(it0.gx+w0/2,D,it0.gz+zs,.7,.34,170);
++  const Rr=runs.find(r=>r.d===1);if(Rr){const it=foc(Rr);V['Ruined sides']=portCam(it.gx,D,it.gz+(pl==='coast'?20:zs),.05,.5,300);}}
+  V['From the sea']=[F0.x,14,F0.gz+F0.sea+280,F0.x,8,F0.gz];
+  V['Above']=[F0.x,Math.max(500,F0.dp*1.25+200),F0.z+1,F0.x,0,F0.z];
+  const we=portRegOf(it0.key).W;
+- V['Eye level']=R0.vessel?[F0.x-40,D+1.7,F0.gz-F0.dp/2-20,F0.x,8,F0.gz]:[it0.gx-we*.32,D+1.7,it0.gz-10,it0.gx+we*.14,D+2.2,it0.gz-4];
++ V['Eye level']=R0.vessel?[F0.x-40,D+1.7,F0.gz-F0.dp/2-20,F0.x,8,F0.gz]:pl==='coast'?[it0.gx-we*.32,D+1.7,it0.gz-10,it0.gx+we*.14,D+2.2,it0.gz-4]
++  :[it0.gx-we*.32,D+1.7,F0.z-F0.dp*.3,it0.gx+we*.14,D+2.2,F0.z];
+  const Rn=runs[runs.length-1],Fn=fo(Rn);V['Night']=portCam(Fn.x,Fn.y,Fn.z,.4,.35,Math.max(240,Fn.dp*.8+120),1);
++ V['Bounds']=portCam(F0.x,D,F0.z,.1,.9,Math.max(420,F0.dp*1.3+F0.w),0).concat([0,1]);
+  return V;}
++
++// ---------------------------------------------------------------- inspector tags
++// Click-to-inspect names what it hit even without a REGISTER volume. Every
++// mesh made through mesh()/meshMerged() (so every pbFlush batch) and every
++// kput instance is tagged, at creation, with the budget key being built
++// (TSTAT.cur: 'cgBox/1', 'vsGiant/3#2') and the current PART name, if a
++// builder set one with portPart('straddle carrier') ... portPart(null). The
++// scene fills PORT_OWN[stat] = {key, d, name, place, host} for every placed
++// segment and vessel, so the inspector can say "Container dock (ruined) -
++// near Straddle carrier / pkCont40R" at worst. REGISTER volumes stay the
++// preferred, more specific name. None of this draws from the PRNG.
++const PORT_OWN={'env/0':{key:'env',d:0,name:'Terrain and nature'}};
++let PORT_PART=null;
++function portPart(name){PORT_PART=name||null;}
++{const _mesh0=mesh;
++ mesh=function(geo,mat,parent,x,y,z){const m=_mesh0(geo,mat,parent,x,y,z);
++  if(TSTAT.cur)m.userData.own=TSTAT.cur;if(PORT_PART)m.userData.part=PORT_PART;return m;};
++ const _kput0=kput;
++ kput=function(name,p,q,s,c){_kput0(name,p,q,s,c);const L=KIT.items[name];
++  if(L&&L.length){const it=L[L.length-1];it.own=TSTAT.cur;if(PORT_PART)it.part=PORT_PART;}};}
++// REGISTER, port edition: (x, y, z) go through the group transform KXF as
++// kput's positions do, so a helper that registers itself (portContainerHouse,
++// portShed) lands in the right place inside a rotated vessel or crane group.
++// A caller that has already transformed its point passes xf:false. Each
++// entry also remembers its owner (TSTAT.cur) and part.
++REGISTER=function(o){let x=o.x,y=o.y||0,z=o.z;
++ if(KXF&&o.xf!==false){const v=new THREE.Vector3(x,y,z).applyMatrix4(KXF.m);x=v.x;y=v.y;z=v.z;}
++ REG.push({name:o.name,x:x+KOFF[0],y,z:z+KOFF[2],r:o.r,h:o.h,own:TSTAT.cur,part:PORT_PART||undefined});};
++// The owner record of a stat key, and its display name.
++function portOwnerOf(stat){if(!stat)return null;
++ return PORT_OWN[stat]||PORT_OWN[stat.split('#')[0]]||{key:stat.split('/')[0],d:+stat.split('/')[1]||0,name:stat.split('/')[0]};}
++function portOwnerName(stat){const o=portOwnerOf(stat);if(!o)return '';if(o.key==='env')return o.name;
++ let s=o.name+' ('+portDName(o.d).toLowerCase()+')';
++ if(o.host){const h=portOwnerOf(o.host);if(h&&h.key!=='env')s+=' at the '+h.name.toLowerCase();}
++ return s;}
++
++// ---------------------------------------------------------------- the salvage pass, port edition
++// The kit's repairPass() (69-mat-salvage.js) samples EVERY mesh under the
++// group, so on the port it stuck shanties and patches to invisible
++// night-only light beams (the shacks floating round the reclaimed
++// lighthouse), to glass, to open paving and to thin members (crane bars,
++// rails, masts). This is the same two populations under the port's rules:
++//  * sources: visible, opaque MeshStandard meshes only (no probeSkip or
++//    noRepair on it or an ancestor, no invisible ancestor); nothing sampled
++//    below y = 0.4;
++//  * patches only on wall triangles whose shortest edge is >= 1.2 m, and
++//    no bigger than 1.6x that edge (a 0.5 m bar gets none);
++//  * shanties only on RAISED flat triangles (a roof, a platform: not at deck
++//    level and more than 1 m over the ground or sea under it) whose shortest
++//    edge is >= 3 m. Open deck and paving get the odd planter or water butt.
++function portFaceSamples(G,count,lo,hi){
++ const tri=[],cum=[],v=new THREE.Vector3();let tot=0;
++ G.updateMatrixWorld(true);const inv=new THREE.Matrix4().copy(G.matrixWorld).invert();
++ const ok=o=>{if(!o.isMesh||o.isInstancedMesh)return false;
++  for(let p=o;p&&p!==G;p=p.parent){if(!p.visible)return false;if(p.userData&&(p.userData.noRepair||p.userData.probeSkip))return false;}
++  const m=o.material;return !!m&&!Array.isArray(m)&&m.isMeshStandardMaterial&&!m.transparent&&m.opacity>=1&&m.visible!==false;};
++ G.traverse(o=>{if(!ok(o))return;const g=o.geometry,A=g&&g.attributes&&g.attributes.position;if(!A)return;
++  const M=new THREE.Matrix4().multiplyMatrices(inv,o.matrixWorld);
++  const P=A.array,I=g.index?g.index.array:null,nT=I?I.length/3:A.count/3;
++  for(let f=0;f<nT;f++){const a=(I?I[f*3]:f*3)*3,b=(I?I[f*3+1]:f*3+1)*3,c=(I?I[f*3+2]:f*3+2)*3;
++   v.set(P[a],P[a+1],P[a+2]).applyMatrix4(M);const ax=v.x,ay=v.y,az=v.z;
++   v.set(P[b],P[b+1],P[b+2]).applyMatrix4(M);const bx=v.x,by=v.y,bz=v.z;
++   v.set(P[c],P[c+1],P[c+2]).applyMatrix4(M);const cx=v.x,cy=v.y,cz=v.z;
++   const ux=bx-ax,uy=by-ay,uz=bz-az,wx=cx-ax,wy=cy-ay,wz=cz-az;
++   const nx=uy*wz-uz*wy,ny=uz*wx-ux*wz,nz=ux*wy-uy*wx,L=Math.hypot(nx,ny,nz);
++   if(!(L>1e-9))continue;const up=Math.abs(ny/L);if(up<lo||up>hi)continue;
++   const e=Math.min(Math.hypot(ux,uy,uz),Math.hypot(wx,wy,wz),Math.hypot(cx-bx,cy-by,cz-bz));
++   tot+=L*.5;tri.push([ax,ay,az,bx,by,bz,cx,cy,cz,nx/L,ny/L,nz/L,e]);cum.push(tot);}});
++ const out=[];
++ if(tot>0)for(let i=0;i<count;i++){const t=rng()*tot;let a=0,b=cum.length-1;
++  while(a<b){const m=(a+b)>>1;if(cum[m]<t)a=m+1;else b=m;}
++  const T=tri[a];let u=rng(),w=rng();if(u+w>1){u=1-u;w=1-w;}
++  out.push({p:[T[0]+u*(T[3]-T[0])+w*(T[6]-T[0]),T[1]+u*(T[4]-T[1])+w*(T[7]-T[1]),T[2]+u*(T[5]-T[2])+w*(T[8]-T[2])],n:[T[9],T[10],T[11]],e:T[12]});}
++ return {out,area:tot};}
++function portRepairPass(G,d){
++ const A=portFaceSamples(G,0,0,1.01).area;if(!(A>0))return;
++ // scaled by the sampled area, not the bounding box: a light beam or a long
++ // rail no longer inflates the count
++ const sz=clamp(Math.sqrt(A)*1.1,18,620);
++ const nSide=Math.round(clamp(sz*.62,16,340)),nUp=Math.round(clamp(sz*.40,12,240));
++ const PATCH=['patchSheet','patchPlate','patchBoard','patchTarp'],D=PORT.DECK;
++ const k0=PORT_PART;portPart('salvage');
++ for(const f of portFaceSamples(G,nSide,0,.34).out){
++  if(rng()<.42)continue;
++  if(f.p[1]<.4||f.e<1.2)continue;
++  const n=f.n,w=Math.min(rr(2,7.5),f.e*1.6),h=Math.min(rr(1.6,5),f.e*1.6);
++  const q=qFacing(n).multiply(qEuler(0,0,rr(-.24,.24)));
++  kput(PATCH[(rng()*4)|0],[f.p[0]+n[0]*.25,f.p[1]+n[1]*.25,f.p[2]+n[2]*.25],q,[w,h,1],null);
++  if(rng()<.09)kput('dot',[f.p[0]+n[0]*.6,f.p[1]+n[1]*.6+h*.35,f.p[2]+n[2]*.6],q,[1.2,1.2,1],WARM);}
++ for(const f of portFaceSamples(G,nUp,.62,1.01).out){const p=f.p,r=rng();if(p[1]<.4)continue;
++  const gy=Math.max(0,terrainH(p[0]+KOFF[0],p[2]+KOFF[2]));
++  if(Math.abs(p[1]-D)<.7||p[1]-gy<1){                        // deck, paving, ground-level slabs
++   if(r<.12)kput('waterButt',[p[0],p[1]+1.15,p[2]],null,[1.15,2.3,1.15],null);
++   else if(r<.3&&f.e>=1.5){kput('planter',[p[0],p[1]+.35,p[2]],qEuler(0,rng()*TAU,0),[rr(1.6,3.2),.7,rr(1,1.8)],null);
++    for(let k=0;k<3;k++)kput('moss',[p[0]+rr(-1.1,1.1),p[1]+.95,p[2]+rr(-.7,.7)],null,[.75,.5,.75],new THREE.Color().setHSL(rr(.26,.34),.55,.28));}
++   continue;}
++  if(r<.32&&f.e>=3){const w=rr(2.5,Math.min(6.5,f.e*1.4)),hh=rr(2,3.8),dp=rr(2.5,Math.min(6,f.e*1.4));const yaw=rng()*TAU;
++   kput('shantyBox',[p[0],p[1]+hh/2,p[2]],qEuler(0,yaw,0),[w,hh,dp],null);
++   kput('shantyRoof',[p[0],p[1]+hh+.2,p[2]],qEuler(rr(.08,.26),yaw,0),[w*1.3,1,dp*1.3],null);
++   if(rng()<.45)kput('spipe',[p[0]+w*.28,p[1]+hh+1.4,p[2]],null,[.28,3,.28],null);}
++  else if(f.e<1)continue;
++  else if(r<.50)kput('waterButt',[p[0],p[1]+1.15,p[2]],null,[1.15,2.3,1.15],null);
++  else if(r<.73){kput('planter',[p[0],p[1]+.35,p[2]],qEuler(0,rng()*TAU,0),[rr(1.6,Math.min(4.2,f.e*1.8)),.7,rr(1,2.2)],null);
++   for(let k=0;k<3;k++)kput('moss',[p[0]+rr(-1.3,1.3),p[1]+.95,p[2]+rr(-.9,.9)],null,[.75,.5,.75],new THREE.Color().setHSL(rr(.26,.34),.55,.28));}
++  else if(r<.87)kput('plank',[p[0],p[1]+.12,p[2]],qEuler(0,rng()*TAU,0),[rr(2,Math.min(6,f.e*2)),.22,rr(.5,1.3)],null);
++  else if(rng()<.5)kput('dot',[p[0],p[1]+1.7,p[2]],qEuler(0,rng()*TAU,0),[1.2,1.2,1],WARM);}
++ portPart(k0);}
+diff --git a/voth/port/src/71-port-terrain.js b/voth/port/src/71-port-terrain.js
+index 97136dc..243eb09 100644
+--- a/voth/port/src/71-port-terrain.js
++++ b/voth/port/src/71-port-terrain.js
+@@ -150,11 +150,18 @@ PORT_NIGHT.push(on=>{PK_SEA_RIM.value.setRGB(on?.03:.26,on?.045:.36,on?.075:.44)
+ // builder makes itself with `new THREE.MeshStandardMaterial` is not patched:
+ // put it in MAT at top level, or call portUW on it.
+ const PK_UW={value:new THREE.Color(.018,.075,.095)};
+-function portUWsh(sh){sh.uniforms.u_uw=PK_UW;
+- sh.vertexShader='varying float vUWy;\n'+sh.vertexShader.replace('#include <project_vertex>',
+-  '#include <project_vertex>\nvec4 _uwp=vec4(transformed,1.0);\n#ifdef USE_INSTANCING\n_uwp=instanceMatrix*_uwp;\n#endif\nvUWy=(modelMatrix*_uwp).y;');
+- sh.fragmentShader='uniform vec3 u_uw;\nvarying float vUWy;\n'+sh.fragmentShader.replace('#include <tonemapping_fragment>',
+-  'gl_FragColor.rgb=mix(gl_FragColor.rgb,u_uw,clamp(-vUWy/9.0,0.0,0.9));\n#include <tonemapping_fragment>');}
++// DRY MASK: inside a `dry` stamp (a pumped-out pit) nothing is under water,
++// so the fade is switched off there - up to PK_DRYN rects (a polygon stamp
++// uses its bounding box), filled in by portBuildTerrain. The normal kit and
++// MAT materials therefore work in a dry pit; no un-faded twins needed.
++const PK_DRYN=16,PK_DRY={value:Array.from({length:PK_DRYN},()=>new THREE.Vector4(0,0,-1,-1))},PK_NDRY={value:0};
++function portUWsh(sh){sh.uniforms.u_uw=PK_UW;sh.uniforms.u_dry=PK_DRY;sh.uniforms.u_ndry=PK_NDRY;
++ sh.vertexShader='varying vec3 vUWp;\n'+sh.vertexShader.replace('#include <project_vertex>',
++  '#include <project_vertex>\nvec4 _uwp=vec4(transformed,1.0);\n#ifdef USE_INSTANCING\n_uwp=instanceMatrix*_uwp;\n#endif\nvUWp=(modelMatrix*_uwp).xyz;');
++ sh.fragmentShader='uniform vec3 u_uw;\nuniform vec4 u_dry['+PK_DRYN+'];\nuniform int u_ndry;\nvarying vec3 vUWp;\n'+sh.fragmentShader.replace('#include <tonemapping_fragment>',
++  ['float _uwk=clamp(-vUWp.y/9.0,0.0,0.9);',
++   'for(int _i=0;_i<'+PK_DRYN+';_i++){if(_i>=u_ndry)break;vec4 _r=u_dry[_i];if(vUWp.x>_r.x&&vUWp.x<_r.z&&vUWp.z>_r.y&&vUWp.z<_r.w)_uwk=0.0;}',
++   'gl_FragColor.rgb=mix(gl_FragColor.rgb,u_uw,_uwk);','#include <tonemapping_fragment>'].join('\n'));}
+ function portUW(sh){portUWsh(sh);}
+ function portUWGlass(sh){portUWsh(sh);const g=MAT.glass.userData.fresnel;if(g)g(sh);}
+ function portUnderwaterPatch(){
+@@ -209,7 +216,7 @@ function portBuildTerrain(scene,layout){
+  let X0=1e9,X1=-1e9,Z0=-150,Z1=150;const xe=[],ze=[];
+  for(const it of layout.items){const R=portRegOf(it.key);if(!R)continue;
+   const w=R.W||PORT.W;X0=Math.min(X0,it.gx-w/2);X1=Math.max(X1,it.gx+w/2);
+-  if(!it.vessel){Z0=Math.min(Z0,it.gz-R.LAND);Z1=Math.max(Z1,it.gz+R.SEA);xe.push(it.gx-w/2,it.gx+w/2);ze.push(it.gz,it.gz-R.LAND,it.gz+R.SEA);}}
++  if(it.vessel!==true){Z0=Math.min(Z0,it.gz-R.LAND);Z1=Math.max(Z1,it.gz+R.SEA);xe.push(it.gx-w/2,it.gx+w/2);ze.push(it.gz,it.gz-R.LAND,it.gz+R.SEA);}}
+  if(X0>X1){X0=-500;X1=500;}
+  for(const s of PORT_ST.list){if(s.poly){xe.push(s.x0,s.x1);ze.push(s.z0,s.z1);}else{xe.push(s.x0,s.x1);ze.push(s.z0,s.z1);}}
+  const cx=(X0+X1)/2;
+@@ -246,19 +253,27 @@ function portBuildTerrain(scene,layout){
+   const m=mesh(g,MAT.pkGround,scene);m.userData.probeSkip=true;m.name='terrain';chunks.push(m);}
+  // THE SEA: one flat sheet at y=0 over the whole grid. It is drawn over land
+  // too, where the terrain (above 0) simply hides it. Only a `dry` stamp cuts
+- // it: rows crossing one are split into runs of non-dry cells. (Runs were
+- // tried for every row, skipping dry land: the T-junctions between rows of
+- // different extents showed as hairline cracks across the open sea.)
+- const WP=[],WI=[];const anyDry=PORT_ST.list.some(s=>s.dry);
++ // it. Then every row of cells in the dry stamps' z range is cut at the UNION
++ // of all those rows' wet/dry boundaries, so neighbouring rows share their
++ // vertices: rows split independently met in T-junctions that showed as
++ // hairline cracks across the whole open sea along the pit's z lines (the
++ // fix from ddSeaFix, 82-dd-dock.js, folded in here).
++ const WP=[],WI=[],WU=[];const dry=PORT_ST.list.filter(s=>s.dry);
+  const quad=(xa,xb,za,zb)=>{const b=WP.length/3;WP.push(xa,0,za, xb,0,za, xa,0,zb, xb,0,zb);WI.push(b,b+2,b+1,b+1,b+2,b+3);};
+- if(!anyDry)quad(xs[0],xs[nx-1],zs[0],zs[nz-1]);
+- else for(let j=0;j<nz-1;j++){const wet=i=>!portDry((xs[i]+xs[i+1])/2,(zs[j]+zs[j+1])/2);let i=0;
+-  while(i<nx-1){if(!wet(i)){i++;continue;}let e=i;while(e+1<nx-1&&wet(e+1))e++;quad(xs[i],xs[e+1],zs[j],zs[j+1]);i=e+1;}}
++ if(!dry.length)quad(xs[0],xs[nx-1],zs[0],zs[nz-1]);
++ else{const zlo=Math.min(...dry.map(s=>s.z0))-1,zhi=Math.max(...dry.map(s=>s.z1))+1,wet=new Map(),cut=new Set([0,nx-1]);
++  for(let j=0;j<nz-1;j++){const zc=(zs[j]+zs[j+1])/2;if(zc<zlo||zc>zhi)continue;const row=new Uint8Array(nx-1);
++   for(let i=0;i<nx-1;i++){row[i]=portDry((xs[i]+xs[i+1])/2,zc)?0:1;if(i>0&&row[i]!==row[i-1])cut.add(i);}wet.set(j,row);}
++  const B=[...cut].sort((a,b)=>a-b);
++  for(let j=0;j<nz-1;j++){const row=wet.get(j);
++   for(let k=0;k<B.length-1;k++){if(row&&!row[B[k]])continue;quad(xs[B[k]],xs[B[k+1]],zs[j],zs[j+1]);}}}
++ dry.slice(0,PK_DRYN).forEach((s,i)=>PK_DRY.value[i].set(s.x0,s.z0,s.x1,s.z1));PK_NDRY.value=Math.min(dry.length,PK_DRYN);
++ if(dry.length>PK_DRYN)reportErr('more than '+PK_DRYN+' dry stamps: the underwater fade is only masked in the first '+PK_DRYN);
+  const wg=new THREE.BufferGeometry();wg.setAttribute('position',new THREE.Float32BufferAttribute(WP,3));
+- const WU=[];for(let q=0;q<WP.length;q+=3)WU.push(WP[q]/46,WP[q+2]/46);
++ for(let q=0;q<WP.length;q+=3)WU.push(WP[q]/46,WP[q+2]/46);
+  wg.setAttribute('uv',new THREE.Float32BufferAttribute(WU,2));
+  const WN=[];for(let q=0;q<WP.length;q+=3)WN.push(0,1,0);wg.setAttribute('normal',new THREE.Float32BufferAttribute(WN,3));
+- wg.setIndex(WI);
++ wg.setIndex(WP.length/3>65535?new THREE.Uint32BufferAttribute(WI,1):new THREE.Uint16BufferAttribute(WI,1));
+  const sea=mesh(wg,MAT.pkSea,scene);sea.userData.probeSkip=true;sea.name='sea';sea.renderOrder=1;
+  portNatureScatter(X0,X1);
+  return {chunks,sea,nx,nz};}
+diff --git a/voth/port/src/73-port-edges.js b/voth/port/src/73-port-edges.js
+index 9ebe207..35d66a8 100644
+--- a/voth/port/src/73-port-edges.js
++++ b/voth/port/src/73-port-edges.js
+@@ -186,3 +186,49 @@ function portDeckOnPiles(G,x0,z0,x1,z1,d,o){o=Object.assign({top:PORT.DECK,thick
+    if(h<=0)continue;
+    kput('pkCol',[x,gy,z],null,[o.colR,h,o.colR],d>0?new THREE.Color().setHSL(.07,.08,rr(.42,.55)):null);}}
+  return info;}
++
++// ---------------------------------------------------------------- land blocks and sea platforms
++// portBlockStamps(opt, o) -> stamps for a place:'land' block or a place:'sea'
++// platform (concat your own after them). o = {y (DECK), soft (30), paint,
++// depth (-12), width (30), mole (true)}.
++//   land  a `flat` at deck level over the whole footprint (soft ring out).
++//   sea   mole:true - a `fill` to deck level over the footprint, and a dredged
++//         strip (outside:true, the one allowed exception to "inside the
++//         footprint") beyond every W/E/S stretch no neighbour covers;
++//         mole:false - the strips only (put your deck on portDeckOnPiles).
++function portBlockStamps(opt,o){const pl=opt.place||portPlaceOf(opt.key),W=opt.W,h=W/2;
++ o=Object.assign({y:PORT.DECK,soft:30,depth:-12,width:30,mole:true},o||{});const out=[];
++ if(pl==='land'){out.push({kind:'flat',x0:-h,z0:-opt.LAND,x1:h,z1:0,y:o.y,soft:o.soft,paint:o.paint||(opt.d>=1?'soil':'pave')});return out;}
++ const z0=0,z1=opt.SEA,w=o.width;
++ if(o.mole)out.push({kind:'fill',x0:-h,z0,x1:h,z1,y:o.y,paint:o.paint||(opt.d>=1?'soil':'pave')});
++ const side=(nm,a,b,mk)=>{for(const [p,q] of portSideOpen(opt.nb,nm,a,b))out.push(Object.assign({kind:'dig',y:o.depth,soft:o.soft,outside:true},mk(p,q)));};
++ side('W',z0,z1,(p,q)=>({x0:-h-w,x1:-h,z0:p,z1:q}));side('E',z0,z1,(p,q)=>({x0:h,x1:h+w,z0:p,z1:q}));
++ side('S',-h,h,(p,q)=>({x0:p,x1:q,z0:z1,z1:z1+w}));
++ return out;}
++// portBlockClose(G, opt, d, o) -> {N,S,W,E: [[a,b,'wall'|'retain'|'face'],...]}
++// Finishes all four sides of a land block or a sea platform from opt.nb (see
++// "NEIGHBOURS" in 70-port-core.js), stretch by stretch along each side:
++//   covered by a neighbour at the same deck  nothing (the deck continues);
++//   (sea platform) covered by a coastal      a plain face under the deck
++//     segment - the end of a pier's deck     (no coping or fenders);
++//   open, sea platform or a 'sea' side       a finished quay wall facing out:
++//                                            coping, fenders, ladders, bollards;
++//   open, land block                         a retaining wall with coping down
++//                                            to the ground outside, no
++//                                            fenders: the finished step where a
++//                                            neighbour block is set back, or
++//                                            the edge on natural land.
++// o = {wall:{portQuayWall options for every wall}, sea:{...}, land:{...}}.
++function portBlockClose(G,opt,d,o){o=o||{};const pl=opt.place||portPlaceOf(opt.key),h=opt.W/2;
++ const z0=pl==='sea'?0:-opt.LAND,z1=pl==='sea'?opt.SEA:0,out={};
++ const S={N:{a:-h,b:h,p:s=>[s,z0],face:[0,-1]},S:{a:-h,b:h,p:s=>[s,z1],face:[0,1]},
++  W:{a:z0,b:z1,p:s=>[-h,s],face:[-1,0]},E:{a:z0,b:z1,p:s=>[h,s],face:[1,0]}};
++ const base=Object.assign({},o.wall||{});
++ const seaW=Object.assign({},base,o.sea||{}),landW=Object.assign({tide:false,fenders:0,ladders:0,bollards:0},base,o.land||{});
++ for(const nm of ['N','S','W','E']){const s=S[nm],N=opt.nb&&opt.nb[nm];out[nm]=[];
++  const wall=(a,b,wo,tag)=>{const A=s.p(a),B=s.p(b);portQuayWall(G,A[0],A[1],B[0],B[1],d,Object.assign({face:s.face},wo));out[nm].push([a,b,tag]);};
++  for(const [a,b] of portSideOpen(opt.nb,nm,s.a,s.b)){
++   const sea=pl==='sea'||(N&&N.kind==='sea');wall(a,b,sea?seaW:landW,sea?'wall':'retain');}
++  if(pl==='sea')for(const l of (N&&N.list)||[])if(l.place==='coast'){const a=Math.max(s.a,l.span[0]),b=Math.min(s.b,l.span[1]);
++   if(b-a>.5)wall(a,b,Object.assign({},base,{cope:false,fenders:0,ladders:0,bollards:0,top:PORT.DECK-.2}),'face');}}
++ return out;}
+diff --git a/voth/port/src/81-pp-pier.js b/voth/port/src/81-pp-pier.js
+index 47ad4fa..07beb67 100644
+--- a/voth/port/src/81-pp-pier.js
++++ b/voth/port/src/81-pp-pier.js
+@@ -50,10 +50,15 @@ function buildPpPier(scene,gx,gz,d,opt){reseed(20010+d);
+  REGISTER({name:'Boat basin and slipway',x:72,z:-40,r:28,h:18,y:-10});
+  // ---- the deck on columns, and the head
+  const collapse=d>=1?[4,5]:[];
+- const deck=portDeckOnPiles(G,X0,PP.MOLE,X1,PP.END,d,{collapse});
+- pbBox(G,d>0?MAT.rust:MAT.white,(X0+X1)/2,D-.9,PP.END+.15,X1-X0+.6,2.1,.3,0,8);          // head fascia
+- for(let x=X0+2.5;x<X1;x+=5)if(!(d===1&&rng()<.3))kput('pkGuard',[x,D,PP.END-.3],null,1,d>0?new THREE.Color(0x8a5a3a):null);
+- for(let x=X0+6;x<X1;x+=12)if(!(d===1&&rng()<.5))kput('pkFender',[x,D-1.8,PP.END+.6],null,[1,5,1],null);
++ // a sea platform on the head's end (opt.nb.S, grid placement): the deck runs
++ // on to the footprint edge to meet it, and the head's end is left open
++ // where the platform covers it (fascia, rail and fenders only either side)
++ const hs=opt.nb&&opt.nb.S&&opt.nb.S.kind==='seg',END=hs?PP.SEA:PP.END;
++ const hopen=hs?portSideOpen(opt.nb,'S',X0,X1):[[X0,X1]],hfree=x=>hopen.some(o=>x>o[0]&&x<o[1]);
++ const deck=portDeckOnPiles(G,X0,PP.MOLE,X1,END,d,{collapse});
++ for(const [a,b] of hopen)pbBox(G,d>0?MAT.rust:MAT.white,(a+b)/2,D-.9,END+.15,b-a+.6,2.1,.3,0,8);          // head fascia
++ for(let x=X0+2.5;x<X1;x+=5)if(!(d===1&&rng()<.3)&&hfree(x))kput('pkGuard',[x,D,END-.3],null,1,d>0?new THREE.Color(0x8a5a3a):null);
++ for(let x=X0+6;x<X1;x+=12)if(!(d===1&&rng()<.5)&&hfree(x))kput('pkFender',[x,D-1.8,END+.6],null,[1,5,1],null);
+  REGISTER({name:'Great pier — mole',x:-30,z:75,r:56,h:18,y:-6});
+  REGISTER({name:'Great pier — deck',x:-30,z:215,r:56,h:16,y:-14});
+  REGISTER({name:'Great pier — outer deck',x:-30,z:300,r:40,h:16,y:-14});
+@@ -69,7 +74,7 @@ function buildPpPier(scene,gx,gz,d,opt){reseed(20010+d);
+  portContainerStack(-66,D,108,Math.PI/2,2,2,d,{big:false});
+  REGISTER({name:'Mole container block',x:-36,z:106,r:34,h:9,y:D});
+  for(let z=12;z<PP.MOLE;z+=34){portLamp(X0+6,D,z,-Math.PI/2,d);portLamp(X1-6,D,z,Math.PI/2,d);}
+- for(let z=172;z<332;z+=40){const b=Math.floor((z-PP.MOLE)/((PP.END-PP.MOLE)/deck.bays));if(deck.collapsed.has(b))continue;
++ for(let z=172;z<332;z+=40){const b=Math.floor((z-PP.MOLE)/((END-PP.MOLE)/deck.bays));if(deck.collapsed.has(b))continue;
+   portLamp(X0+3,D,z,-Math.PI/2,d);portLamp(X1-3,D,z,Math.PI/2,d);if(d===0)kput('planter',[-30,D+.4,z+20],null,[10,.8,2.4],null);}
+  for(let x=-100;x<=30;x+=44)portLamp(x,D,-6.5,0,d);
+  portRail(-110,40,-20,D,d);                                   // stops short of the boat basin
+@@ -143,4 +148,6 @@ function ppTerminal(G,d){const D=PORT.DECK,HX=PP.HX,HZ=PP.HZ;
+   kput('dot',[HX,D+top+mastH+1.8,HZ],null,[1.6,1.6,1.6],d===0?CYAN:WARM);}
+  REGISTER({name:'Pier head terminal',x:HX,z:HZ,r:32,h:top+mastH+4,y:D});}
+ 
+-PORT_SEG({key:'pier',name:'Great pier',cls:'seg',W:220,LAND:PP.LAND,SEA:PP.SEA,decays:[0,1,3],stamps:ppStamps,build:buildPpPier});
++// seaEnd: where a sea platform attaches (grid placement, portOff): the head's
++// centre line, x = -30 (the pier head spans x -90..30), on the z = SEA edge.
++PORT_SEG({key:'pier',name:'Great pier',cls:'seg',W:220,LAND:PP.LAND,SEA:PP.SEA,decays:[0,1,3],seaEnd:{x:(PP.X0+PP.X1)/2,w:PP.X1-PP.X0},stamps:ppStamps,build:buildPpPier});
+diff --git a/voth/port/src/82-dd-dock.js b/voth/port/src/82-dd-dock.js
+index 0cad7e0..94f22c8 100644
+--- a/voth/port/src/82-dd-dock.js
++++ b/voth/port/src/82-dd-dock.js
+@@ -53,33 +53,8 @@ function ddLight(x,y,z,d,s){if(d===1)return;kput('dot',[x,y,z],null,s||[.9,.5,.9
+ // ShapeGeometry UVs are raw metres; the kit's textures want ~8 m a tile.
+ function ddShapeUV(g,t){const uv=g.attributes.uv;for(let i=0;i<uv.count;i++)uv.setXY(i,uv.getX(i)/(t||8),uv.getY(i)/(t||8));return g;}
+ 
+-// ---------------------------------------------------------------- the sea over a dry pit (WORKAROUND)
+-// A `dry` stamp makes portBuildTerrain (71-port-terrain.js) emit the sea as
+-// one run of quads per terrain row, split round the dry cells. The rows next
+-// to a pit's z edges then meet in T-junctions: a row-long edge (23 km) against
+-// the split edges of its neighbour. They render as hairline cracks right
+-// across the open sea along the pit's z lines (seen and confirmed: the lines
+-// go when the pit is not dry). Until the shared sea is fixed (request in
+-// notes/drydocks.md) the first dry-pit builder re-meshes it once: every row is
+-// cut at the UNION of all rows' wet/dry boundaries, so neighbouring rows share
+-// every vertex. Same sheet, same material, same UVs; a no-op without dry stamps.
+-let DD_SEAFIXED=false;
+-function ddSeaFix(){if(DD_SEAFIXED)return;DD_SEAFIXED=true;
+- const T=(typeof PORT_TERRAIN!=='undefined')?PORT_TERRAIN:null,Gd=PORT_ST.grid;if(!T||!T.sea||!Gd)return;
+- const dry=PORT_ST.list.filter(s=>s.dry);if(!dry.length)return;
+- const {xs,zs,nx,nz}=Gd,zlo=Math.min(...dry.map(s=>s.z0))-1,zhi=Math.max(...dry.map(s=>s.z1))+1;
+- const wet=new Map(),cut=new Set([0,nx-1]);
+- for(let j=0;j<nz-1;j++){const zc=(zs[j]+zs[j+1])/2;if(zc<zlo||zc>zhi)continue;const row=new Uint8Array(nx-1);
+-  for(let i=0;i<nx-1;i++){row[i]=portDry((xs[i]+xs[i+1])/2,zc)?0:1;if(i>0&&row[i]!==row[i-1])cut.add(i);}wet.set(j,row);}
+- const B=[...cut].sort((a,b)=>a-b),P=[],I=[],U=[],N=[];
+- for(let j=0;j<nz-1;j++){const row=wet.get(j);
+-  for(let k=0;k<B.length-1;k++){if(row&&!row[B[k]])continue;const xa=xs[B[k]],xb=xs[B[k+1]],za=zs[j],zb=zs[j+1],b=P.length/3;
+-   P.push(xa,0,za, xb,0,za, xa,0,zb, xb,0,zb);I.push(b,b+2,b+1,b+1,b+2,b+3);
+-   U.push(xa/46,za/46, xb/46,za/46, xa/46,zb/46, xb/46,zb/46);N.push(0,1,0,0,1,0,0,1,0,0,1,0);}}
+- const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(P,3));
+- g.setAttribute('uv',new THREE.Float32BufferAttribute(U,2));g.setAttribute('normal',new THREE.Float32BufferAttribute(N,3));
+- g.setIndex(P.length/3>65535?new THREE.Uint32BufferAttribute(I,1):new THREE.Uint16BufferAttribute(I,1));g.computeBoundingSphere();
+- const old=T.sea.geometry;T.sea.geometry=g;old.dispose();}
++// (The sea over a dry pit: ddSeaFix's union-cut re-mesh now lives in
++// portBuildTerrain, 71-port-terrain.js, so the workaround is gone.)
+ 
+ // ---------------------------------------------------------------- the stepped pit
+ // ddPit(G,o): the altar walls, the head and the floor of a graving dock, as
+@@ -251,7 +226,7 @@ function ddDockStamps(o){const d=o.d,D=PORT.DECK,K=DDK,h=o.W/2;
+  if(d===3)s.push({kind:'fill',x0:K.X0,z0:K.Z0,x1:K.X1,z1:K.Z0+34,y:DDK.GY,paint:'grass'});      // the garden terrace
+  return s.concat(portEdgeStamps(o,{LAND:K.LAND,SEA:K.SEA}));}
+ 
+-function buildDdDock(scene,gx,gz,d,opt){reseed(20100+d);ddSeaFix();
++function buildDdDock(scene,gx,gz,d,opt){reseed(20100+d);
+  const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);KOFF=[gx,0,gz];
+  const D=PORT.DECK,K=DDK,h=opt.W/2,dry=d===0,FL=DD.FLOOR;
+  // ---- paving round the pit and the entrance; walls; the mole's sides
+diff --git a/voth/port/src/82-dd-shed.js b/voth/port/src/82-dd-shed.js
+index ec93ede..875e4f2 100644
+--- a/voth/port/src/82-dd-shed.js
++++ b/voth/port/src/82-dd-shed.js
+@@ -25,7 +25,7 @@ function ddShedStamps(o){const d=o.d,D=PORT.DECK,K=DDS,h=o.W/2;
+   s.push({kind:'fill',poly:[[-50,10],[0,6],[40,14],[30,30],[-30,32]],y:-1.8,soft:12,paint:'sand'});}
+  return s.concat(portEdgeStamps(o,{LAND:K.LAND,SEA:K.SEA}));}
+ 
+-function buildDdShed(scene,gx,gz,d,opt){reseed(20110+d);ddSeaFix();
++function buildDdShed(scene,gx,gz,d,opt){reseed(20110+d);
+  const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);KOFF=[gx,0,gz];
+  const D=PORT.DECK,K=DDS,h=opt.W/2,dry=d===0,FL=DD.FLOOR;
+  const pv=(a,b,c,e)=>portPaving(G,a,b,c,e,d);
+diff --git a/voth/port/src/86-vs-a-feeder.js b/voth/port/src/86-vs-a-feeder.js
+index 147a20c..0cfde5d 100644
+--- a/voth/port/src/86-vs-a-feeder.js
++++ b/voth/port/src/86-vs-a-feeder.js
+@@ -57,7 +57,7 @@ function vsCtx(G,heading,parts){
+  C.use=p=>{KXF={m:p.m,q:p.q};return p.g;};
+  C.at=z=>C.use(C.part(z));
+  C.wat=()=>C.use(C.water);
+- C.reg=(name,x,z,r,h,y)=>{const v=new THREE.Vector3(x,y||0,z).applyMatrix4(C.part(z).m);REGISTER({name,x:v.x,z:v.z,r,h,y:v.y});};
++ C.reg=(name,x,z,r,h,y)=>{const v=new THREE.Vector3(x,y||0,z).applyMatrix4(C.part(z).m);REGISTER({name,x:v.x,z:v.z,r,h,y:v.y,xf:false});};
+  return C;}
+ 
+ // ---------------------------------------------------------------- hull lines
+diff --git a/voth/port/src/88-zz-tmp.js b/voth/port/src/88-zz-tmp.js
+new file mode 100644
+index 0000000..e9c4c4e
+--- /dev/null
++++ b/voth/port/src/88-zz-tmp.js
+@@ -0,0 +1,20 @@
++// THROWAWAY test blocks for the grid placement (foundation round 3). Delete.
++function tmpLandStamps(o){return portBlockStamps(o);}
++function buildTmpLand(scene,gx,gz,d,opt){reseed(20080+d);
++ const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);KOFF=[gx,0,gz];const D=PORT.DECK,h=opt.W/2;
++ portPaving(G,-h,-opt.LAND,h,0,d);
++ portBlockClose(G,opt,d);
++ portShed(G,0,-60,50,26,9,d,{name:'Test block shed'});
++ portContainerStack(-30,D,-20,0,2,2,d,{big:true});REGISTER({name:'Test block stack',x:-30,z:-20,r:8,h:8,y:D});
++ if(d>=3)portContainerHouse(G,30,D,-25,.2,d);
++ KOFF=[0,0,0];return G;}
++PORT_SEG({key:'tmpLand',name:'Test land block',cls:'seg',place:'land',W:110,LAND:110,SEA:0,decays:[0,1,3],stamps:tmpLandStamps,build:buildTmpLand});
++function tmpSeaStamps(o){return portBlockStamps(o);}
++function buildTmpSea(scene,gx,gz,d,opt){reseed(20090+d);
++ const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);KOFF=[gx,0,gz];const D=PORT.DECK,h=opt.W/2;
++ portPaving(G,-h,0,h,opt.SEA,d);
++ portBlockClose(G,opt,d);
++ portShed(G,0,60,40,22,8,d,{name:'Test platform shed'});
++ portLamp(-40,D,20,0,d);portLamp(40,D,90,0,d);
++ KOFF=[0,0,0];return G;}
++PORT_SEG({key:'tmpSea',name:'Test sea platform',cls:'seg',place:'sea',W:110,LAND:0,SEA:110,decays:[0,1,3],stamps:tmpSeaStamps,build:buildTmpSea});
+diff --git a/voth/port/src/90-scene.js b/voth/port/src/90-scene.js
+index b62bd57..fb839ce 100644
+--- a/voth/port/src/90-scene.js
++++ b/voth/port/src/90-scene.js
+@@ -39,10 +39,14 @@ const giantDir=new THREE.Vector3(Math.sin(66*Math.PI/180)*Math.cos(25*Math.PI/18
+ portUnderwaterPatch();   // the underwater fade on every MAT material (71-port-terrain.js)
+ const PORT_LAYOUT=(typeof PORT_LAYOUT_DEF!=='undefined'&&PORT_LAYOUT_DEF)||{items:[],stamps:[],runs:[]};
+ function portOptFor(it){const R=portRegOf(it.key)||{};
+- return {key:it.key,d:it.d,gx:it.gx,gz:it.gz,nb:it.nb||{W:{kind:'land',dz:0},E:{kind:'land',dz:0}},slot:it.slot||0,run:it.run||0,
+-  ctx:!!it.ctx,W:R.W,LAND:R.LAND,SEA:R.SEA,vessels:PORT_LAYOUT.vessels||[],heading:it.heading||0,
+-  // a layout item may name the vessel a berth holds, and pass any extra fields
+-  vessel:it.vessel||null,...(it.opt||{})};}
++ const nb=Object.assign({W:{kind:'land',dz:0},E:{kind:'land',dz:0},N:{kind:'land',dz:0},S:{kind:'sea',dz:0}},it.nb||{});
++ return {key:it.key,d:it.d,gx:it.gx,gz:it.gz,nb,slot:it.slot||0,run:it.run||0,
++  ctx:!!it.ctx,W:R.W,LAND:R.LAND,SEA:R.SEA,place:portPlaceOf(it.key),vessels:PORT_LAYOUT.vessels||[],heading:it.heading||0,
++  // a layout item may name the vessel a berth holds (vessel) or several
++  // (fleet: [key per portVesselFor index]), and pass any extra fields (opt)
++  vessel:(typeof it.vessel==='string')?it.vessel:null,fleet:it.fleet||null,...(it.opt||{})};}
++// 0. every item's neighbours on all four sides, from the footprints (70-port-core.js)
++try{portLinkNb(PORT_LAYOUT.items);}catch(e){reportErr('layout nb '+e.stack);}
+ // 1. stamps
+ for(const it of PORT_LAYOUT.items){const R=portRegOf(it.key);if(!R){reportErr('layout names unregistered key '+it.key);continue;}
+  let st=[];try{st=R.stamps(portOptFor(it))||[];}catch(e){reportErr(it.key+' stamps d='+it.d+' '+e.stack);}
+@@ -56,17 +60,23 @@ TSTAT.cur=null;
+ // 3. builders (segments, then any free-standing vessels the layout places)
+ for(const it of PORT_LAYOUT.items){const R=portRegOf(it.key);if(!R)continue;const d=it.d;
+  const key=portStatKey(it.key,d);it.stat=key;TSTAT.cur=key;const _r0=REG.length;
++ PORT_OWN[key]={key:it.key,d,name:R.name,place:it.vessel===true?'vessel':portPlaceOf(it.key)};
++ if(it.vessel===true)PORT_VPLACED.push({key:it.key,d,x:it.gx,z:it.gz,heading:it.heading||0,host:null,stat:key});
+  HOLES=(d>=3)?.55:1;KOFF=[0,0,0];KXF=null;
+  const opt=portOptFor(it);
+  let _G=null;
+  PORT_CUR=opt;
+  try{_G=R.build(scene,it.gx,it.gz,d,opt);}catch(e){reportErr(it.key+' d='+d+' '+e.stack);}
+- PORT_CUR=null;
++ PORT_CUR=null;PORT_PART=null;
+  try{pbFlush();}catch(e){reportErr(it.key+' flush '+e.stack);}
+  HOLES=1;
+  if(d>=3&&_G&&!R.norepair){KOFF=[it.gx,0,it.gz];try{portRepair(_G,d);}catch(e){reportErr(it.key+' repair '+e.stack);}}
+  KOFF=[0,0,0];KXF=null;
+- for(let i=_r0;i<REG.length;i++)if(!REG[i].type)REG[i].type=it.key;
++ // anything the builder made without mesh() is still its own (the inspector)
++ if(_G&&_G.isObject3D){if(!_G.userData.own)_G.userData.own=key;_G.traverse(o=>{if((o.isMesh||o.isInstancedMesh)&&!o.userData.own)o.userData.own=key;});}
++ for(let i=_r0;i<REG.length;i++){if(!REG[i].type)REG[i].type=it.key;if(!REG[i].own)REG[i].own=key;}
+  TSTAT.cur=null;}
+ window._registered=REG.length;
+ kbake(scene);
++// per-instance owners for the inspector: instanceId i of KIT.meshes[name] is KIT.items[name][i]
++for(const n in KIT.meshes){const m=KIT.meshes[n];m.userData.kname=n;m.userData.owns=KIT.items[n];}
+diff --git a/voth/port/src/91-probe.js b/voth/port/src/91-probe.js
+index 0dac5d0..6e1faeb 100644
+--- a/voth/port/src/91-probe.js
++++ b/voth/port/src/91-probe.js
+@@ -76,7 +76,7 @@ function portChecks(){const R=[],bad=[],near=[];
+   if(s.x0<it.gx-G.W/2-e||s.x1>it.gx+G.W/2+e||s.z0<it.gz-G.LAND-e||s.z1>it.gz+G.SEA+e)
+    bad.push(s.owner+' '+s.kind+' ['+(s.x0-it.gx).toFixed(1)+','+(s.z0-it.gz).toFixed(1)+' .. '+(s.x1-it.gx).toFixed(1)+','+(s.z1-it.gz).toFixed(1)+']');}
+  R.push({name:'port-stamps-inside-footprint',ok:!bad.length,detail:bad.length?bad.length+' stamps: '+bad.slice(0,4).join(' | '):PORT_ST.list.length+' stamps, all inside their footprints'});
+- for(const it of PORT_LAYOUT.items){if(it.vessel)continue;const G=portRegOf(it.key);if(!G)continue;const C=PORT.CLEAR-.5;
++ for(const it of PORT_LAYOUT.items){if(it.vessel===true)continue;const G=portRegOf(it.key);if(!G)continue;const C=PORT.CLEAR-.5;
+   for(const r of REG){if(r.type!==it.key)continue;if(Math.abs(r.x-it.gx)>G.W/2+1||r.z<it.gz-G.LAND-1||r.z>it.gz+G.SEA+1)continue;
+    if(r.x-r.r<it.gx-G.W/2+C||r.x+r.r>it.gx+G.W/2-C||r.z-r.r<it.gz-G.LAND+C||r.z+r.r>it.gz+G.SEA-C)near.push(it.key+'/'+it.d+' '+r.name);}}
+  R.push({name:'port-clearance',ok:!near.length,budget:true,detail:near.length?near.length+' volumes inside the 8 m clearance: '+[...new Set(near)].slice(0,5).join(' | '):'all registered volumes clear of the footprint edges'});
+@@ -87,7 +87,7 @@ window._api={
+  get totals(){let tris=0,inst=0,meshes=0;for(const k in TSTAT.by){tris+=TSTAT.by[k].tris;inst+=TSTAT.by[k].inst;meshes+=TSTAT.by[k].meshes;}
+   return {tris,inst,meshes,registered:REG.length,types:Object.keys(TSTAT.by).length};},
+  typeStats,regOccupancy,nanSweep,extra:portChecks,
+- layout:()=>PORT_LAYOUT.items.map(it=>({key:it.key,d:it.d,gx:it.gx,gz:it.gz,nb:it.nb,stat:it.stat,vessel:!!it.vessel})),
++ layout:()=>PORT_LAYOUT.items.map(it=>({key:it.key,d:it.d,gx:it.gx,gz:it.gz,nb:it.nb,stat:it.stat,vessel:it.vessel===true})),
+  terrainH:(x,z)=>terrainH(x,z),
+  setView:(cx,cy,cz,tx,ty,tz)=>setView(cx,cy,cz,tx,ty,tz),
+  views:()=>Object.keys(VIEWS),
+diff --git a/voth/port/src/92-camera.js b/voth/port/src/92-camera.js
+index e03ecfe..b248602 100644
+--- a/voth/port/src/92-camera.js
++++ b/voth/port/src/92-camera.js
+@@ -23,21 +23,101 @@ function setNight(on){on=!!on;if(NIGHT===on)return;NIGHT=on;
+  for(const n of FIREKIT)if(KIT.meshes[n])KIT.meshes[n].visible=on;
+  for(const f of PORT_NIGHT)try{f(on);}catch(e){reportErr('night hook '+e.stack);}}   // port: the sea, and any segment's own
+ const ctl={target:new THREE.Vector3(0,100,0),theta:0,phi:1.1,radius:900};
+-function setView(cx,cy,cz,tx,ty,tz,night){ctl.target.set(tx,ty,tz);const dx=cx-tx,dy=cy-ty,dz=cz-tz;ctl.radius=Math.sqrt(dx*dx+dy*dy+dz*dz);ctl.theta=Math.atan2(dx,dz);ctl.phi=Math.acos(clamp(dy/ctl.radius,-1,1));setNight(night);}
++// A preset may carry an EIGHTH element: truthy = the segment-boundary overlay
++// on. Like night, a preset sets it (absent = off); `b` toggles it by hand.
++function setView(cx,cy,cz,tx,ty,tz,night,bounds){ctl.target.set(tx,ty,tz);const dx=cx-tx,dy=cy-ty,dz=cz-tz;ctl.radius=Math.sqrt(dx*dx+dy*dy+dz*dz);ctl.theta=Math.atan2(dx,dz);ctl.phi=Math.acos(clamp(dy/ctl.radius,-1,1));setNight(night);setBounds(bounds);}
++// ---------------------------------------------------------------- SEGMENT BOUNDARIES
++// The footprint of every placed segment, drawn at deck height over ground and
++// water: W/E edges in the colour of its placement kind (coastal amber, land
++// block green, sea platform cyan), the land edge (-z) brown, the sea edge
++// (+z) blue, the quay line (z = 0) of a coastal segment white; a label with
++// the key and decay at its centre. Built on first use; not counted in any
++// budget, not probed, not inspectable.
++const PORT_BCOL={coast:0xffb020,land:0x5ee06a,sea:0x40d0ff,N:0x9a5a2a,S:0x2a5cff,Q:0xf4f0e8};
++let BOUNDS=null,BOUNDS_ON=false;
++function portBoundsLabel(txt,col){const c=document.createElement('canvas');c.width=512;c.height=96;const g=c.getContext('2d');
++ g.fillStyle='rgba(12,12,16,.72)';g.fillRect(0,0,512,96);g.strokeStyle='#'+new THREE.Color(col).getHexString();g.lineWidth=6;g.strokeRect(3,3,506,90);
++ g.fillStyle='#fff';g.font='bold 44px system-ui,sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText(txt,256,50);
++ const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;
++ const s=new THREE.Sprite(new THREE.SpriteMaterial({map:t,depthTest:false,depthWrite:false,transparent:true,sizeAttenuation:false,fog:false}));
++ s.scale.set(.16,.03,1);s.renderOrder=1001;return s;}
++function portBoundsBuild(){const G=new THREE.Group();G.name='bounds';G.userData.probeSkip=true;G.userData.bounds=true;
++ const y=PORT.DECK+.4,rib={},lin={};const add=(k,x0,z0,x1,z1,w)=>{const P=rib[k]||(rib[k]=[]),Q=lin[k]||(lin[k]=[]);
++  const dx=x1-x0,dz=z1-z0,L=Math.hypot(dx,dz)||1,nx=-dz/L*w/2,nz=dx/L*w/2;
++  P.push(x0-nx,y,z0-nz, x1-nx,y,z1-nz, x1+nx,y,z1+nz, x0-nx,y,z0-nz, x1+nx,y,z1+nz, x0+nx,y,z0+nz);Q.push(x0,y,z0,x1,y,z1);};
++ for(const it of PORT_LAYOUT.items){if(it.vessel===true)continue;const f=portFoot(it);if(!f)continue;const pl=it.place||portPlaceOf(it.key);
++  add(pl,f.x0,f.z0,f.x0,f.z1,2.4);add(pl,f.x1,f.z0,f.x1,f.z1,2.4);
++  add('N',f.x0,f.z0,f.x1,f.z0,3.2);add('S',f.x0,f.z1,f.x1,f.z1,3.2);
++  if(pl==='coast'&&f.z0<it.gz-.5&&f.z1>it.gz+.5)add('Q',f.x0+2,it.gz,f.x1-2,it.gz,1.2);
++  const l=portBoundsLabel(it.key+' · '+portDName(it.d).toLowerCase()+(pl==='coast'?'':' · '+pl),PORT_BCOL[pl]);l.position.set(it.gx,y+14,(f.z0+f.z1)/2);G.add(l);}
++ for(const k in rib){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(rib[k],3));
++  const m=new THREE.Mesh(g,new THREE.MeshBasicMaterial({color:PORT_BCOL[k],side:DS,depthTest:false,depthWrite:false,transparent:true,opacity:.85,fog:false}));m.renderOrder=1000;G.add(m);
++  const lg=new THREE.BufferGeometry();lg.setAttribute('position',new THREE.Float32BufferAttribute(lin[k],3));
++  const ln=new THREE.LineSegments(lg,new THREE.LineBasicMaterial({color:PORT_BCOL[k],depthTest:false,depthWrite:false,transparent:true,fog:false}));ln.renderOrder=1000;G.add(ln);}
++ G.traverse(o=>{o.userData.probeSkip=true;o.userData.bounds=true;o.frustumCulled=false;});
++ scene.add(G);return G;}
++function setBounds(on){on=!!on;if(on===BOUNDS_ON&&(!on||BOUNDS))return;BOUNDS_ON=on;
++ if(on&&!BOUNDS)BOUNDS=portBoundsBuild();if(BOUNDS)BOUNDS.visible=on;
++ const lg=document.getElementById('boundsLegend');if(lg)lg.style.display=on?'block':'none';
++ const bt=document.getElementById('boundsBtn');if(bt)bt.style.background=on?'#6a4a38':'';}
+ function applyCam(){const r=ctl.radius,sp=Math.sin(ctl.phi);camera.position.set(ctl.target.x+r*sp*Math.sin(ctl.theta),ctl.target.y+r*Math.cos(ctl.phi),ctl.target.z+r*sp*Math.cos(ctl.theta));
+  // port: never under the ground or the sea (the ancients clamp was y>=2)
+  const _gy=Math.max(.8,terrainH(camera.position.x,camera.position.z)+1.2);if(camera.position.y<_gy)camera.position.y=_gy;camera.lookAt(ctl.target);}
+ const ui=document.getElementById('ui');const sel=document.createElement('select');sel.id='viewsel';for(const k in VIEWS){const o=document.createElement('option');o.textContent=k;sel.appendChild(o);}sel.onchange=()=>setView(...VIEWS[sel.value]);ui.appendChild(sel);const hb=document.createElement('div');hb.style.display='none';ui.appendChild(hb);for(const k in VIEWS){const b=document.createElement('button');b.textContent=k;b.onclick=()=>setView(...VIEWS[k]);hb.appendChild(b);}
+ const insp=document.getElementById('insp');const ray=new THREE.Raycaster();
+-function inspectAt(cx,cy){const v=new THREE.Vector2(cx/innerWidth*2-1,-(cy/innerHeight)*2+1);ray.setFromCamera(v,camera);const hits=ray.intersectObjects(scene.children,true).filter(h=>h.object!==sky&&h.object!==giant);
+- if(!hits.length){insp.textContent='(nothing)';return;}const p=hits[0].point;let best=null;for(const r of REG){const dx=p.x-r.x,dz=p.z-r.z;if(dx*dx+dz*dz<=r.r*r.r&&p.y>=r.y-2&&p.y<=r.y+r.h+5){if(!best||r.r<best.r)best=r;}}
+- insp.textContent=(best?best.name:'unregistered '+(hits[0].object.isInstancedMesh?'instance':'mesh'))+'\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0);}
++// ---------------------------------------------------------------- INSPECTOR
++// What a ray hits, named: a REGISTER volume round the hit point if there is
++// one (the most specific name), else the owner every mesh and instance was
++// tagged with at build time (70-port-core.js: segment or vessel, decay,
++// part), with the nearest registered volume of the same owner as a hint.
++// The sea sheet is looked through (to what is under it, if anything near);
++// the terrain is named by the stamp that shaped the point, or natural coast.
++let _portMatN=null;
++function portMatName(m){if(!m)return '';if(!_portMatN){_portMatN=new Map();for(const k in MAT)if(MAT[k]&&MAT[k].isMaterial)_portMatN.set(MAT[k],k);}
++ return _portMatN.get(m)||m.name||m.type;}
++function portHitInfo(h){const o=h.object;
++ if(o.isInstancedMesh&&h.instanceId!=null&&o.userData.owns){const it=o.userData.owns[h.instanceId]||{};
++  return {own:it.own||null,part:it.part?it.part+' / '+o.userData.kname:o.userData.kname};}
++ let own=null,part=null;for(let p=o;p;p=p.parent){const u=p.userData||{};if(!own&&u.own)own=u.own;if(!part&&u.part)part=u.part;}
++ const mn=portMatName(o.material);return {own,part:part?part+' / '+mn:mn};}
++function portGroundName(x,z){let best=null;const C=portCands(x);if(C)for(const s of C)if(portSD(s,x,z)<0&&s.owner!=='layout')best=s;
++ const h=terrainH(x,z);
++ if(best){const i=+String(best.owner).split('@')[1],it=PORT_LAYOUT.items[i];
++  const nm=it&&it.stat?portOwnerName(it.stat):best.owner;return 'ground: '+nm+' ('+best.kind+(best.paint?', '+best.paint:'')+')';}
++ return 'natural coast: '+(h<-.2?'seabed':h<2.4?'beach':'land');}
++function portInspectHits(hits){
++ const vis=o=>{for(let p=o;p;p=p.parent)if(!p.visible||(p.userData&&p.userData.bounds))return false;return true;};
++ hits=hits.filter(h=>h.object!==sky&&h.object!==giant&&vis(h.object));
++ if(!hits.length)return '(nothing)';
++ let h=hits[0],pre='';
++ if(h.object.name==='sea'){const u=hits.find(x=>x.object.name!=='sea');
++  if(!u||h.point.y-u.point.y>25)return 'open sea'+(u&&u.object.name==='terrain'?' over '+portGroundName(u.point.x,u.point.z).replace(/^ground: /,''):'')+'\n'+h.point.x.toFixed(0)+', 0, '+h.point.z.toFixed(0);
++  h=u;pre='under water: ';}
++ const p=h.point,xyz='\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0);
++ if(h.object.name==='terrain')return pre+portGroundName(p.x,p.z)+xyz;
++ const I=portHitInfo(h),own=I.own,on=own?portOwnerName(own):'(untagged '+(h.object.isInstancedMesh?'instance':'mesh')+')';
++ let best=null,near=null,nd=1e9;
++ for(const r of REG){const dx=p.x-r.x,dz=p.z-r.z,dd=Math.sqrt(dx*dx+dz*dz);
++  if(dd<=r.r&&p.y>=r.y-2&&p.y<=r.y+r.h+5){const sc=(r.own&&r.own===own?0:1e4)+r.r;if(!best||sc<best.sc)best={r,sc};}
++  else if(own&&r.own===own&&dd-r.r<nd){nd=dd-r.r;near=r;}}
++ if(best&&(best.r.own===own||!own))return pre+best.r.name+'\n'+on+' / '+I.part+xyz;
++ return pre+on+(near&&nd<30?' — near '+near.name:'')+'\n'+I.part+(best?'  (inside '+best.r.name+')':'')+xyz;}
++function portInspectRay(o,dir){ray.set(o,dir.clone().normalize());ray.camera=camera;return portInspectHits(ray.intersectObjects(scene.children,true));}
++function inspectAt(cx,cy){const v=new THREE.Vector2(cx/innerWidth*2-1,-(cy/innerHeight)*2+1);ray.setFromCamera(v,camera);
++ insp.textContent=portInspectHits(ray.intersectObjects(scene.children,true));}
+ for(const k in VIEWS){if(false){const b=document.createElement('button');b.textContent=k;b.onclick=()=>setView(...VIEWS[k]);ui.appendChild(b);}}
++{const b=document.createElement('button');b.id='boundsBtn';b.textContent='Segment bounds (b)';b.onclick=()=>setBounds(!BOUNDS_ON);ui.appendChild(b);
++ const lg=document.createElement('div');lg.id='boundsLegend';lg.style.cssText='display:none;width:100%;font:12px system-ui;color:#eee;background:rgba(0,0,0,.5);padding:4px 8px;border-radius:4px';
++ const sw=(c,t)=>'<span style="display:inline-block;width:14px;height:4px;margin:0 4px 2px 10px;background:#'+new THREE.Color(c).getHexString()+'"></span>'+t;
++ lg.innerHTML=sw(PORT_BCOL.coast,'coastal')+sw(PORT_BCOL.land,'land block')+sw(PORT_BCOL.sea,'sea platform')+sw(PORT_BCOL.N,'land edge (-z)')+sw(PORT_BCOL.S,'sea edge (+z)')+sw(PORT_BCOL.Q,'quay line');
++ ui.appendChild(lg);}
++window._api.setBounds=on=>{setBounds(on);return BOUNDS_ON;};
++window._api.inspectRay=(ox,oy,oz,dx,dy,dz)=>portInspectRay(new THREE.Vector3(ox,oy,oz),new THREE.Vector3(dx,dy,dz));
+ setView(...VIEWS[Object.keys(VIEWS)[0]]);   // first preset is the opening shot, whatever the target calls it
+ // 00-head.html is shared, so the target names itself here rather than shipping
+ // a second copy of the page shell.
+ document.title=TITLE;
+-document.getElementById('cap').textContent=TITLE+' — click any structure to inspect · drag to orbit · wheel to zoom · right-drag / WASD to move';
++document.getElementById('cap').textContent=TITLE+' — click any structure to inspect · drag to orbit · wheel to zoom · right-drag / WASD to move · n night · b segment bounds';
+ // input
+ const cv=renderer.domElement;let drag=null;const keys={};
+ cv.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,sx:e.clientX,sy:e.clientY,b:e.button};cv.setPointerCapture(e.pointerId);});
+@@ -47,7 +127,7 @@ cv.addEventListener('pointermove',e=>{if(!drag)return;const dx=e.clientX-drag.x,
+  else{const f=ctl.radius*.0015;const rt=new THREE.Vector3(Math.cos(ctl.theta),0,-Math.sin(ctl.theta));const fw=new THREE.Vector3(-Math.sin(ctl.theta),0,-Math.cos(ctl.theta));
+   ctl.target.addScaledVector(rt,-dx*f).addScaledVector(fw,-dy*f);}});
+ cv.addEventListener('wheel',e=>{ctl.radius=clamp(ctl.radius*(e.deltaY>0?1.1:.9),5,9000);e.preventDefault();},{passive:false});
+-addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(k==='n')setNight(!NIGHT);keys[k]=true;});addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
++addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(k==='n')setNight(!NIGHT);if(k==='b')setBounds(!BOUNDS_ON);keys[k]=true;});addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
+ addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
+ const hud=document.getElementById('hud');let last=performance.now(),renderErr=false;
+ function frame(){const now=performance.now(),dt=Math.min(.1,(now-last)/1000);last=now;
+diff --git a/voth/port/targets/harbour/89z-rows.js b/voth/port/targets/harbour/89z-rows.js
+new file mode 100644
+index 0000000..78bea08
+--- /dev/null
++++ b/voth/port/targets/harbour/89z-rows.js
+@@ -0,0 +1,43 @@
++// TARGET: harbour - a small Long-Beach-like composition (refs/long-beach.png)
++// built with the grid placement (70-port-core.js "layout"): one coastal
++// run of existing segments with the great pier in the middle; land blocks two
++// rows deep behind its centre (the hinterland of yards and sheds); and sea
++// platforms off the pier's end, chained seaward and then east into an L, like
++// Long Beach's Pier J / Pier T landfill, with basins between. Ships: the giant
++// in the pier's slip, the drone carrier at the deep-water berth, the Panamax
++// along the platforms' west face, the feeder off the L's east end.
++// Whatever place:'land' / place:'sea' keys are registered are used, cycled;
++// with none registered the run and the ships still stand.
++const TITLE='Krator Ancient Port — harbour';
++const HARBOUR_D=0;                     // the decay the whole harbour is built in
++const PORT_LAYOUT_DEF=(()=>{const d=HARBOUR_D,ok=k=>PORT_REG.seg[k]&&PORT_REG.seg[k].decays.indexOf(d)>=0;
++ const byP=p=>portSegKeys().filter(k=>portPlaceOf(k)===p&&ok(k));
++ // the coast, west to east, and each segment's set-back (neighbours <= 40 apart)
++ const plan=[['hbHaven',0],['hbMarina',0],['tmPass',0],['cgStore',-20],['cgBox',-20],['cgCrane',-20],['pier',0],
++  ['quay',0],['cgCrane',20],['slBerth',20],['tmShip',0],['ddDock',0],['hbFish',0]].filter(p=>ok(p[0]));
++ const R=portRun(plan.map(p=>p[0]),d,0,plan.map(p=>p[1]),{run:0});
++ const mid=(R.x0+R.x1)/2;R.x0-=mid;R.x1-=mid;for(const it of R.items)it.gx-=mid;
++ const items=R.items.slice(),stamps=[],back=[],sea=[],moored=[];
++ for(const it of items){if(it.key==='pier')it.vessel='vsGiant';if(it.key==='slBerth')it.vessel='slCarrier';}
++ // land blocks: a 110 m slot behind every 110 m of the central coast (cgStore
++ // .. slBerth), and a second row behind the middle four
++ const lk=byP('land');let li=0;
++ if(lk.length){const from=items.findIndex(it=>it.key==='cgStore'),to=items.findIndex(it=>it.key==='slBerth');
++  const row1=[];
++  items.forEach((it,i)=>{if(from<0||to<0||i<from||i>to)return;const n=Math.floor(portRegOf(it.key).W/PORT.BLOCK+1e-6);
++   for(let j=0;j<n;j++){const b=portBehind(it,lk[li++%lk.length],{dx:(j-(n-1)/2)*PORT.BLOCK});if(b)row1.push(b);}});
++  const m0=Math.max(0,Math.floor(row1.length/2)-2);
++  for(const h of row1.slice(m0,m0+4)){const b=portBehind(h,lk[li++%lk.length]);if(b)back.push(b);}
++  back.unshift(...row1);}
++ // sea platforms off the pier's end: two seaward, then two east (an L)
++ const sk=byP('sea'),pier=items.find(it=>it.key==='pier');let si=0;const nk=()=>sk[si++%sk.length];
++ if(sk.length&&pier){const p1=portOff(pier,nk(),'S'),p2=portOff(p1,nk(),'S'),p3=portOff(p2,nk(),'E'),p4=portOff(p3,nk(),'E');
++  sea.push(p1,p2,p3,p4);}
++ // ships alongside: the Panamax on the west face of the seaward pair, the
++ // feeder off the east end of the L (or both off the pier head, no platforms)
++ if(pier){const e=portFoot(pier),ex=pier.gx+portRegOf('pier').seaEnd.x,ext={x0:ex-55,x1:ex+55,z0:e.z1,z1:e.z1+220};
++  const a=sea.length?portMoor('vsPanamax',d,'W',[sea[0],sea[1]],null,{dz:20}):portMoor('vsPanamax',d,'W',null,ext);
++  const b=sea.length?portMoor('vsFeeder',d,'E',[sea[3]],null):portMoor('vsFeeder',d,'E',null,ext);
++  for(const m of [a,b])if(m){moored.push(m.item);stamps.push(m.stamp);}}
++ const run=Object.assign({d,back,sea,moored},R);
++ return {items:items.concat(back,sea,moored),runs:[run],stamps,vessels:portVesselKeys(),harbour:{pier,back,sea}};})();
+diff --git a/voth/port/targets/harbour/91z-views.js b/voth/port/targets/harbour/91z-views.js
+new file mode 100644
+index 0000000..97ee7ae
+--- /dev/null
++++ b/voth/port/targets/harbour/91z-views.js
+@@ -0,0 +1,16 @@
++// Presets for the harbour. First = opening.
++const VIEWS=(()=>{const V={},L=PORT_LAYOUT,D=PORT.DECK,R=L.runs&&L.runs[0];if(!R)return {Empty:[0,300,600,0,0,0]};
++ let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9;for(const it of L.items){const f=portFoot(it);if(!f)continue;
++  x0=Math.min(x0,f.x0);x1=Math.max(x1,f.x1);z0=Math.min(z0,f.z0);z1=Math.max(z1,f.z1);}
++ const cx=(x0+x1)/2,cz=(z0+z1)/2,span=Math.max(x1-x0,z1-z0);
++ V['Harbour']=portCam(cx,0,cz,.55,.5,span*.95+300);
++ V['From above']=[cx,span*1.05+500,cz+1,cx,0,cz];
++ V['Segment bounds']=[cx,span*1.05+500,cz+1,cx,0,cz,0,1];
++ const H=L.harbour||{},P=H.pier;
++ if(P){const f=portFoot(P);let e={x0:f.x0,x1:f.x1,z0:f.z0,z1:f.z1};for(const it of (H.sea||[])){const g=portFoot(it);e={x0:Math.min(e.x0,g.x0),x1:Math.max(e.x1,g.x1),z0:e.z0,z1:Math.max(e.z1,g.z1)};}
++  V['The great pier and its platforms']=portCam((e.x0+e.x1)/2,D,(e.z0+e.z1)/2+60,.9,.42,(e.z1-e.z0)*.9+200);
++  V['Pier head from the sea']=portCam(P.gx-30,D,P.gz+400,-.35,.18,420);}
++ if(H.back&&H.back.length){let e=null;for(const it of H.back){const g=portFoot(it);e=e?{x0:Math.min(e.x0,g.x0),x1:Math.max(e.x1,g.x1),z0:Math.min(e.z0,g.z0),z1:Math.max(e.z1,g.z1)}:g;}
++  V['The hinterland']=portCam((e.x0+e.x1)/2,D,(e.z0+e.z1)/2,-.3,.45,(e.x1-e.x0)*.7+220);}
++ V['Night']=portCam(cx,D,cz,.4,.35,span*.7+260,1);
++ return V;})();
+diff --git a/voth/port/targets/showcase/89z-rows.js b/voth/port/targets/showcase/89z-rows.js
+index bd232c0..3700505 100644
+--- a/voth/port/targets/showcase/89z-rows.js
++++ b/voth/port/targets/showcase/89z-rows.js
+@@ -2,12 +2,15 @@
+ // (intact, then natural coast, ruined, coast, reclaimed), sorted by key, with
+ // z offsets cycled from PORT_DZSEQ so flush joints and 20 / 40 m steps all
+ // appear. Run ends meet untouched natural coast. Nothing here names a
+-// segment: a new fragment that calls PORT_SEG appears here by itself.
+-// Vessels are not tiled here; a slip/berth segment places them (opt.vessels).
++// segment: a new fragment that calls PORT_SEG appears here by itself -
++// coastal segments in the runs, place:'land' blocks in a row behind each
++// run's middle, place:'sea' platforms chained off the great pier's end.
++//
++// THE FLEET: every registered vessel in every decay. The great pier's slip
++// holds the giant container ship and the deep-water berth the drone carrier
++// (the only berth it fits); the Panamax and the feeder lie alongside the sea
++// platforms (east / west faces), or off the pier head when no platform is
++// registered; the submarine pen places the submarine itself.
+ const TITLE='Krator Ancient Port — showcase';
+-const PORT_LAYOUT_DEF=portLayoutShowcase({decays:[0,1,3],gap:440});
+-// A different vessel in each run's deep-water berth, so the fleet is on show:
+-// the giant container ship intact, the carrier ruined, the mid-size ship
+-// reclaimed. The berth falls back to the carrier if a key is not registered.
+-{const FLEET={0:'vsGiant',1:'slCarrier',3:'vsPanamax'};
+- for(const it of PORT_LAYOUT_DEF.items)if(it.key==='slBerth')it.vessel=FLEET[it.d]||null;}
++const PORT_LAYOUT_DEF=portLayoutShowcase({decays:[0,1,3],gap:440,
++ slip:{pier:'vsGiant',slBerth:'slCarrier'},moor:{E:'vsPanamax',W:'vsFeeder'}});
+diff --git a/voth/port/targets/showcase/91z-views.js b/voth/port/targets/showcase/91z-views.js
+index 79051cf..a144f42 100644
+--- a/voth/port/targets/showcase/91z-views.js
++++ b/voth/port/targets/showcase/91z-views.js
+@@ -1,4 +1,18 @@
+ // Presets derived from the layout that was built (see portViewsShowcase in
+-// 70-port-core.js): an overview, each run, each junction and run end, eye
+-// level on the quay, from the sea, from above, and night. First = opening.
++// 70-port-core.js): an overview, each run, each junction and run end, the
++// land-block rows and sea platforms, eye level on the quay, from the sea,
++// from above, night, and 'Segment bounds' (the footprint overlay on).
++// First = opening.
+ const VIEWS=portViewsShowcase();
++// Straight at the fleet, from the vessels actually placed (PORT_VPLACED).
++for(const v of PORT_VPLACED){const V=PORT_REG.vessel[v.key];if(!V)continue;
++ const nm=portDName(v.d)+' '+V.name.toLowerCase();if(VIEWS[nm])continue;
++ // bow +z at heading 0: look from off the starboard quarter, high enough to see the deck
++ const az=v.heading+.95;VIEWS[nm]=portCam(v.x,Math.max(8,V.draft*.6),v.z,az,.3,V.length*.72+V.beam*1.4+60);}
++// The reclaimed haven and marina from the land, low: where shacks once
++// floated round the lighthouse (the salvage pass sampled its night beams).
++{const h=PORT_LAYOUT.items.find(it=>it.key==='hbHaven'&&it.d===3);
++ if(h)VIEWS['Reclaimed haven from the land']=[h.gx-60,PORT.DECK+14,h.gz-260,h.gx+20,PORT.DECK+10,h.gz+60];}
++// The reclaimed drone carrier, close: the town on its flight deck.
++{const c=PORT_VPLACED.find(v=>v.key==='slCarrier'&&v.d===3);
++ if(c)VIEWS['Reclaimed drone carrier — flight deck']=portCam(c.x+10,22,c.z+40,c.heading+.7,.42,230);}

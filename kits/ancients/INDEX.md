@@ -25,83 +25,83 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `34-kitdefs.js` | 7 | kit definitions (shared geometry) (1); THE LEAF CARD (32) |
 | `36-decor.js` | 13 | decoration helpers (1); THE BIOME (127) |
 | `38-helpers2.js` | 3 | v2 helpers (1) |
-| `40-factory-extras.js` | 3 |  |
-| `42-offices.js` | 4 |  |
-| `44-starport.js` | 3 |  |
-| `46-bunker.js` | 3 |  |
-| `48-library.js` | 3 |  |
+| `40-factory-extras.js` | 4 |  |
+| `42-offices.js` | 11 |  |
+| `44-starport.js` | 5 |  |
+| `46-bunker.js` | 5 |  |
+| `48-library.js` | 4 |  |
 | `50-registry.js` | <1 | v3: inspector registry + group transforms (1) |
-| `52-sky-abc.js` | 16 |  |
+| `52-sky-abc.js` | 18 |  |
 | `54-mat-concrete.js` | 4 | v4: concrete, brick, glass panes (1) |
 | `56-sky-d.js` | 5 |  |
 | `57-sky-e.js` | 3 |  |
 | `58-sky-f.js` | 4 |  |
-| `60-gate.js` | 5 |  |
+| `60-gate.js` | 7 |  |
 | `61-spire.js` | 15 |  |
-| `62-robotics.js` | 4 |  |
+| `62-robotics.js` | 8 |  |
 | `63-canyon.js` | 15 |  |
 | `64-dalab.js` | 11 |  |
-| `64-houses-def.js` | 4 |  |
+| `64-houses-def.js` | 5 |  |
 | `65-veladiga.js` | 13 |  |
 | `66-office-c.js` | 2 |  |
-| `66b-flatiron.js` | 4 |  |
-| `67-cultural.js` | 4 |  |
+| `66b-flatiron.js` | 8 |  |
+| `67-cultural.js` | 5 |  |
 | `68-hexahedron.js` | 22 |  |
 | `69-mat-salvage.js` | 12 | salvage (decay level 3) (1); FIRELIGHT (44) |
 | `69w-worn.js` | 12 | the WORN variant (decay 5) (1) |
 | `70-hypertree.js` | 7 |  |
-| `70-sky-g.js` | 5 |  |
-| `70b-perch.js` | 2 |  |
+| `70-sky-g.js` | 6 |  |
+| `70b-perch.js` | 4 |  |
 | `71-sky-h.js` | 5 |  |
 | `71b-forest.js` | 47 **big** |  |
 | `71c-ring.js` | 62 **big** |  |
-| `72-datacenter.js` | 3 |  |
-| `73-police.js` | 3 |  |
-| `74-hospital.js` | 3 |  |
+| `72-datacenter.js` | 7 |  |
+| `73-police.js` | 5 |  |
+| `74-hospital.js` | 5 |  |
 | `75-biome-10-core-head.js` | 5 | PRNG (14); noise (24); host binding (32); accounting (72) |
 | `75-biome-20-core-kit.js` | 12 | merged buckets (46); bake (121) |
 | `75-biome-30-core-foliage.js` | 13 | alpha textures (18); card geometries (48); the foliage hook (110) |
 | `75-biome-40-core-place.js` | 6 | surface sampling (53) |
 | `75-biome-45-bind.js` | 3 |  |
-| `75-hotel.js` | 7 |  |
+| `75-hotel.js` | 14 |  |
 | `76-50-biome-hyperjungle-species.js` | 14 | leaf textures (38); bark textures (90); materials (126); instanced items (148) |
 | `76-55-biome-hyperjungle-trees.js` | 24 | trunk profile (18); colour (27); polyline helpers (Girder) (62); one hero hypertree (84); an immature hypertree (209); the far forest: impostors (242); the pass (272) |
 | `76-60-biome-hyperjungle-floor.js` | 27 | colour (18); keep-clear (54); bole profiles (68); fields (87); the plants (93); fallen hypertrees (160); lianas (211); the pass (219) |
 | `76-65-biome-hyperjungle-dress.js` | 7 |  |
 | `76-70-biome-hyperjungle.js` | <1 |  |
-| `76-campus.js` | 8 |  |
+| `76-campus.js` | 9 |  |
 | `77-dam.js` | 11 |  |
 | `78-factory-silo.js` | 2 |  |
 | `79-government.js` | 4 |  |
 | `80-aa-battery.js` | <1 |  |
-| `81-houses-abc.js` | 4 |  |
-| `82-apartments.js` | 6 |  |
+| `81-houses-abc.js` | 5 |  |
+| `82-apartments.js` | 8 |  |
 | `83-amphitheater.js` | 5 |  |
-| `84-fuel.js` | 2 |  |
+| `84-fuel.js` | 4 |  |
 | `85-radar.js` | 3 |  |
-| `86-dish.js` | 2 |  |
+| `86-dish.js` | 3 |  |
 | `86b-darco.js` | 25 |  |
 | `87-launch.js` | 67 **big** |  |
-| `87-mega.js` | 5 |  |
-| `88-factory.js` | 6 |  |
+| `87-mega.js` | 10 |  |
+| `88-factory.js` | 9 |  |
 | `88-plymouth.js` | 51 **big** |  |
 | `89-arcbeam.js` | 52 **big** |  |
 | `89-lab.js` | 6 |  |
 | `89b-arcoindian.js` | 70 **big** |  |
 | `89c-arcoindian2.js` | 73 **big** |  |
-| `89d-arcube.js` | 81 **big** | the dwelling grid (112) |
+| `89d-arcube.js` | 89 **big** | the dwelling grid (112); krShard (248) |
 | `89e-hill.js` | 62 **big** | materials (64); kit (142); the landform and the route (155) |
-| `89f-trigon.js` | 48 **big** |  |
-| `89g-monolith.js` | 45 **big** |  |
-| `89h-crescent.js` | 47 **big** | the skins (45) |
-| `89i-ledge.js` | 48 **big** |  |
-| `89j-wheel.js` | 67 **big** |  |
-| `89k-sky-i.js` | 38 **big** | the skins (27); the form (102); geometry accumulators (159); the shaft (200); a strand (250); the builder (330) |
-| `89l-sky-j.js` | 24 |  |
+| `89f-trigon.js` | 52 **big** |  |
+| `89g-monolith.js` | 49 **big** |  |
+| `89h-crescent.js` | 51 **big** | the skins (45) |
+| `89i-ledge.js` | 52 **big** |  |
+| `89j-wheel.js` | 70 **big** |  |
+| `89k-sky-i.js` | 43 **big** | the skins (27); the form (108); geometry accumulators (165); the shaft (206); a strand (256); the builder (344) |
+| `89l-sky-j.js` | 25 |  |
 | `89m-sky-k.js` | 36 **big** |  |
-| `8ae-wing.js` | 41 **big** |  |
-| `8af-drum.js` | 45 **big** | the skins (38) |
-| `8ag-blades.js` | 52 **big** |  |
+| `8ae-wing.js` | 46 **big** |  |
+| `8af-drum.js` | 48 **big** | the skins (38) |
+| `8ag-blades.js` | 56 **big** |  |
 | `90-scene.js` | 7 | scene (1) |
 | `91-probe.js` | 5 | probe (window._api) (1) |
 | `92-camera.js` | 6 | camera control (1); DAY / NIGHT (2) |
@@ -126,7 +126,7 @@ Each target adds its own fragments to `src/` and builds one output.
 | `forest` | `89z-rows.js`, `91z-views.js` | 5 |
 | `hexahedron` | `89z-rows.js`, `91z-views.js` | 5 |
 | `hill` | `89z-rows.js`, `91z-views.js` | 13 |
-| `kit` | `89z-rows.js`, `91z-views.js` | 12 |
+| `kit` | `89z-rows.js`, `91z-views.js` | 13 |
 | `launch` | `89z-rows.js`, `91z-views.js` | 13 |
 | `ledge` | `89z-rows.js`, `91z-views.js` | 5 |
 | `monolith` | `89z-rows.js`, `91z-views.js` | 4 |
@@ -137,7 +137,7 @@ Each target adds its own fragments to `src/` and builds one output.
 | `skyk` | `89z-rows.js`, `91z-views.js` | 2 |
 | `spire` | `89z-rows.js`, `91z-views.js` | 2 |
 | `theodiga` | `89z-rows.js`, `91z-views.js` | 1 |
-| `trigon` | `89z-rows.js`, `91z-views.js` | 4 |
+| `trigon` | `89z-rows.js`, `91z-views.js` | 5 |
 | `veladiga` | `89z-rows.js`, `91z-views.js` | 1 |
 | `wheel` | `89z-rows.js`, `91z-views.js` | 7 |
 | `wing` | `89z-rows.js`, `91z-views.js` | 5 |

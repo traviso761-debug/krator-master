@@ -20,7 +20,9 @@ function buildSkyG(scene,gx,gz,d){reseed(9160+d);KOFF=[gx,0,gz];const G=new THRE
  // the drum tower (dark glass, a few lit cells)
  const R=26;const build=(P,dx,y0,y1,upper)=>{const cut=(dx>0&&!upper&&y1!=null)?y1:(dx>0&&d===1?H*.85:null);const L=(cut!=null?cut:H)-y0;const hole=holeFn(dx*.8,77+(upper?1:0),cut!=null?L:null,1.3);
   const drum=lathe({rFn:()=>R,H:L,nu:64,nv:Math.round(L/4),hole:hole,seed:77});mesh(drum,dx>0?MAT.guts:MAT.darkGlass,P);
-  if(dx>0){for(let y=4;y<L-2;y+=4)kput('slab',[0,y,0],null,[R*.95,.4,R*.95],new THREE.Color(0x2a2c30));mesh(lathe({rFn:()=>R*.6,H:L,nu:24,nv:2}),MAT.guts,P);}
+  // pale plates with a dark soffit under each, so the torn drum reads as a
+  // building sliced open and not as one dark field (the Skyscraper A lesson)
+  if(dx>0){for(let y=4;y<L-2;y+=4){kput('slab',[0,y,0],null,[R*.95,.4,R*.95],new THREE.Color(0xbdb7ad));kput('slab',[0,y-1,0],null,[R*.92,.5,R*.92],new THREE.Color(0x191b1f));}mesh(lathe({rFn:()=>R*.6,H:L,nu:24,nv:2}),MAT.guts,P);}
   for(let y=6;y<L-4;y+=8)for(let k=0;k<18;k++){const th=(k+.5)/18*TAU;if(hole&&hole(th/TAU,y))continue;if(rng()<.55)continue;const lit=dx>0?rng()<.04:true;kput('cell',[R*1.01*Math.cos(th),y,R*1.01*Math.sin(th)],qFacing([Math.cos(th),0,Math.sin(th)]),[3,2.2,.5],lit?WARM.clone().multiplyScalar(rr(.4,.9)):DEAD);}
   for(let y=0;y<L;y+=4)kput(dx>0?'ringR':'ringW',[0,y,0],qEuler(Math.PI/2,0,0),[R+.2,R+.2,1.5],null);
   if(cut==null){mesh(lathe({rFn:()=>R+1.5,H:8,nu:64,nv:1}),CONC(dx),P,0,L,0);kput(SLABC(dx),[0,L+8,0],null,[R+1.6,.8,R+1.6],null);kput(BOXC(dx),[0,L+11,0],null,[10,6,10],null);}};
@@ -54,5 +56,6 @@ function buildSkyG(scene,gx,gz,d){reseed(9160+d);KOFF=[gx,0,gz];const G=new THRE
    for(let x=CX+R+4;x<BX-BW-gap/2;x+=5)kput(dd>0?'mullR':'mullW',[x,y1+1.5,bz+3.2],null,[.4,4,.4],null);}});
  kput('archOpen',[CX+R-1,Y0+5,0],qFacing([1,0,0]),[.7,.7,1],null);
  if(dd>0){vinesOnRing(CX,Y0+40,0,R,20,20);}
- figures(-100,140,6,6);KOFF=[0,0,0];return G;}
+ figures(-PR,PR*1.28,6,6);   // follows the podium, like the other seven (was a hardcoded -100,140)
+KOFF=[0,0,0];return G;}
 
