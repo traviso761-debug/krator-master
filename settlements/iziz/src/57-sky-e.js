@@ -7,7 +7,12 @@
 // worked example -- a tower standing on a podium 90 m up.
 function buildSkyE(scene,gx,gz,d,gy,noPlinth,hcut){reseed(9140+d);gy=gy||0;KOFF=[gx,gy,gz];const G=new THREE.Group();G.position.set(gx,gy,gz);scene.add(G);const dd=d>0?1:0;
  const H=360,Y0=10;REGISTER({name:'Skyscraper E — the Sail ('+(d===2?'toppled':STATE(d))+')',x:0,y:gy,z:0,r:120,h:H+40});
- if(!noPlinth)skyPlinth(G,dd,105);
+ // PLINTH. The lens is 68 m across its long axis (aF(0)=34) and 26 deep; its
+ // concrete edge fins add 3. Nothing else reaches the podium. 105 was a circle
+ // three times the width of the building it carried; 48 puts the column ring at
+ // 44.6, just outboard of the fins.
+ const PR=48;
+ if(!noPlinth)skyPlinth(G,dd,PR);
  const aF=y=>34*(1-.45*Math.pow(clamp(y/H,0,1),1.3)),bF=y=>13*(1-.3*clamp(y/H,0,1)),rot=y=>.8*clamp(y/H,0,1);
  const PT=(u,y,s)=>{const a=aF(y),b=bF(y),r=rot(y);const x=(u-.5)*2*a,z=s*b*(1-Math.pow(u*2-1,2));return[x*Math.cos(r)-z*Math.sin(r),y,x*Math.sin(r)+z*Math.cos(r)];};
  const build=(P,dx,y0,y1,upper)=>{const cut=(dx>0&&!upper&&y1!=null)?y1:(dx>0&&d===1?H*.82:null);const L=(cut!=null?cut:H)-y0;const hole=holeFn(dx*.8,57+(upper?1:0),cut!=null?L:null,1.5);
@@ -24,6 +29,6 @@ function buildSkyE(scene,gx,gz,d,gy,noPlinth,hcut){reseed(9140+d);gy=gy||0;KOFF=
   if(cut==null){for(const uu of [0,1]){const A=PT(uu,H,1);beam(BOXC(dx),[A[0],L,A[2]],[A[0]*1.1,L+34,A[2]*1.1],3,5);}
    if(dx===0){mesh(gridSurface((u,v)=>{const p=PT(u,H,1);const q=PT(u,H,-1);const z=lerp(q[2],p[2],v),x=lerp(q[0],p[0],v);return[x,L+.5,z];},20,6,{}),MAT.glass,P);kput('finial',[0,L+36,0],null,[3,6,3],null);}}};
  bodyGroup(G,Y0,d,dd,build,Y0+70,aF(Y0+70));
- if(!noPlinth)figures(-100,130,6,6);
+ if(!noPlinth)figures(-PR,PR*1.28,6,6);
  KOFF=[0,0,0];return G;}
 
