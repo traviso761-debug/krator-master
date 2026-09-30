@@ -14,7 +14,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 HERE = os.path.join(ROOT, 'gallery')
 SITE = os.path.join(HERE, 'site')
 
-# (section, slug, built file, name, one line)
+# (section, slug, built file, name, one line[, tag])
 ENTRIES = [
     ('world', 'voth', 'settlements/voth/voth.html', 'Voth',
      'A city of cantons on an enclosed brackish bay, with barges, ferries, monks and ordinators on the move.'),
@@ -55,6 +55,54 @@ ENTRIES = [
     ('kit', 'screamers-furniture', 'settlements/screamers/dist/furniture.html', 'Screamer furniture', 'The Screamers\' furniture set.'),
     ('kit', 'locus-kit', 'settlements/locus/locus-kit.html', 'Locus buildings', 'Dwellings, farm, infrastructure, petroleum and power.'),
 
+    # Arcologies: each its own kit target. 'new' marks this month's group (QA group arcC).
+    ('arcology', 'arc-theodiga', 'kits/ancients/dist/theodiga.html', 'Theodiga',
+     "Soleri's dam arcology: a city in the wall of a dam, the heaviest single structure in the kit.", 'earlier'),
+    ('arcology', 'arc-veladiga', 'kits/ancients/dist/veladiga.html', 'Veladiga',
+     "Soleri's other dam arcology, intact and breached.", 'earlier'),
+    ('arcology', 'arc-hexahedron', 'kits/ancients/dist/hexahedron.html', 'Hexahedron',
+     "Soleri's double pyramid, intact and sheared open.", 'earlier'),
+    ('arcology', 'arc-forest', 'kits/ancients/dist/forest.html', 'Forest Tower',
+     'Six columns carrying five planted toruses staggered up a hexagon.', 'earlier'),
+    ('arcology', 'arc-ring', 'kits/ancients/dist/ring.html', 'Forest Ring',
+     'The barrel arcology: one bulging tree-covered drum.', 'earlier'),
+    ('arcology', 'arc-darco', 'kits/ancients/dist/darco.html', 'Darco Arcology',
+     'The swept horn, intact and with the horn brought down.', 'earlier'),
+    ('arcology', 'arc-launch', 'kits/ancients/dist/launch.html', 'Launch Arcology',
+     'The city that meant to leave, intact and after it came back down.', 'earlier'),
+    ('arcology', 'arc-plymouth', 'kits/ancients/dist/plymouth.html', 'Plymouth Arcology',
+     'A residential mountain, stepped on a chamfered plan 732 by 524 m.', 'earlier'),
+    ('arcology', 'arc-hill', 'kits/ancients/dist/hill.html', 'The Hill Arcology',
+     'A city built into a slope: 111 garden terraces climbing sinuously.', 'earlier'),
+    ('arcology', 'arc-arcoindian', 'kits/ancients/dist/arcoindian.html', 'Arcoindian I',
+     'Three round towers on terraces in an overhang bitten out of a cliff.', 'earlier'),
+    ('arcology', 'arc-arcoindian2', 'kits/ancients/dist/arcoindian2.html', 'Arcoindian II',
+     'The half-cave: a city in a deep shelf on a canyon wall.', 'earlier'),
+    ('arcology', 'arc-arcbeam', 'kits/ancients/dist/arcbeam.html', 'Arcbeam',
+     'The bridge city across a 3.4 km gorge.', 'earlier'),
+    ('arcology', 'arc-canyon', 'kits/ancients/dist/canyon.html', 'The Span',
+     'Cross-canyon pipe works and everything hung beneath them.', 'earlier'),
+    ('arcology', 'arc-spire', 'kits/ancients/dist/spire.html', 'Vashtir',
+     'The recursive spire: a pale pyramid-mountain of self-similar towers.', 'earlier'),
+    ('arcology', 'arc-arcube', 'kits/ancients/dist/arcube.html', 'Arcube',
+     "Soleri's kilometre cube, stood on a horizontal diagonal.", 'new'),
+    ('arcology', 'arc-wing', 'kits/ancients/dist/wing.html', 'The Wing',
+     'A monument that is also a city: a coffered drum in a yoke with two stacked wings.', 'new'),
+    ('arcology', 'arc-drum', 'kits/ancients/dist/drum.html', 'The Drum',
+     'An 836 m round tower of radial fins and stacked dwelling blocks.', 'new'),
+    ('arcology', 'arc-blades', 'kits/ancients/dist/blades.html', 'The Blades',
+     'Six inhabited concrete slabs round a covered plaza, curling out like a flame.', 'new'),
+    ('arcology', 'arc-trigon', 'kits/ancients/dist/trigon.html', 'Trigon',
+     'A pyramid on an equilateral base, three times as tall as it is wide.', 'new'),
+    ('arcology', 'arc-monolith', 'kits/ancients/dist/monolith.html', 'The Monolith',
+     'A slab arcology with a through-arch at its foot and three oculi.', 'new'),
+    ('arcology', 'arc-crescent', 'kits/ancients/dist/crescent.html', 'The Crescent',
+     'A terraced moon 1 112 m tall, standing on its lower horn.', 'new'),
+    ('arcology', 'arc-ledge', 'kits/ancients/dist/ledge.html', 'The Ledge',
+     'Terraced slab layers cantilevered off a sandstone cliff.', 'new'),
+    ('arcology', 'arc-wheel', 'kits/ancients/dist/wheel.html', 'The Wheel',
+     'A raised ring of parkland on eight towers.', 'new'),
+
     ('biome', 'hyperjungle', 'biomes/hyperjungle/dist/hyperjungle.html', 'Central hyperjungle', 'Six hypertree species, understorey, epiphyte gardens, fauna.'),
     ('biome', 'eastabyss', 'biomes/eastabyss/dist/eastabyss.html', 'Eastern abyss', 'Salt lake, flats and marsh, coal-swamp jungle, mat reed beds.'),
     ('biome', 'sedesert', 'biomes/sedesert/dist/sedesert.html', 'Eastern high desert', 'Socotran flora, mesas, hoodoos, a canyon ending in a cataract.'),
@@ -69,7 +117,7 @@ ENTRIES = [
 def main():
     if '--no-build' not in sys.argv:
         dirs = []
-        for _, _, path, _, _ in ENTRIES:
+        for _, _, path, _, _, *_ in ENTRIES:
             d = os.path.dirname(path)
             d = os.path.dirname(d) if os.path.basename(d) == 'dist' else d
             if d not in dirs:
@@ -84,11 +132,12 @@ def main():
         shutil.rmtree(SITE)
     os.makedirs(os.path.join(SITE, 'worlds'))
     items = []
-    for section, slug, path, name, blurb in ENTRIES:
+    for section, slug, path, name, blurb, *rest in ENTRIES:
         src = os.path.join(ROOT, path)
         shutil.copyfile(src, os.path.join(SITE, 'worlds', slug + '.html'))
         items.append({'section': section, 'slug': slug, 'name': name, 'blurb': blurb,
-                      'mb': round(os.path.getsize(src) / 1048576, 1), 'source': path})
+                      'mb': round(os.path.getsize(src) / 1048576, 1), 'source': path,
+                      'tag': rest[0] if rest else None})
     tpl = open(os.path.join(HERE, 'index.template.html'), encoding='utf-8').read()
     page = tpl.replace('/*ENTRIES*/[]', json.dumps(items, ensure_ascii=False))
     with open(os.path.join(SITE, 'index.html'), 'w', encoding='utf-8') as fh:
