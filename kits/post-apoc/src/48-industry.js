@@ -179,19 +179,19 @@ function inWarehouse(o){
  W(dx0,0,ZF+1.1,0,()=>{plane4("plank",[0,DK-.05,0],[0,DK-.05,2.3],[-3.6,0,0],[-3.6,0,2.3],.1,jc(0x7a6448,.07));for(const z of [0,2.3])beam("wood",[0,DK,z],[-3.6,0,z],.08,jc(inW,.06));});
  // jib crane at the dock end
  // overhead portal gantry crane over the loading yard: four splayed legs, two runway girders, a bridge with a trolley and winch, hook block and a slung crate
- const jz=ZF+2.9,gy=jc(0xd8a02a,.05),gd=jc(0x4a4a46,.05),gxL=5.2,gxR=10.8,gz0=3.9,gz1=8.3,gt=6.2,gb=8.0,gtz=5.6;
+ const jz=ZF+2.9,gy=jc(0x9a7a2a,.08),gd=jc(0x4a4a46,.05),gxL=5.2,gxR=10.8,gz0=3.9,gz1=8.3,gt=6.2,gb=8.0,gtz=5.6;
  for(const gx of [gxL,gxR]){for(const [z,sg] of [[gz0,-1],[gz1,1]]){beam('iron',[gx,0,z+sg*.45],[gx,gt,z],.24,gd);cyl('conc',gx,0,z+sg*.45,.4,.18,jc(0x8a8478,.06),8);
    beam('iron',[gx,gt-1.6,z+sg*.1],[gx,gt,z-sg*.9],.1,gd,true,5);}
-  box('plain',gx,gt,(gz0+gz1)/2,.4,.35,gz1-gz0+.6,gy);box('iron',gx,2.2,(gz0+gz1)/2,.12,.12,gz1-gz0,gd);}
- box('plain',(gxL+gxR)/2,gt+.35,gz0,gxR-gxL+1.4,.4,.5,gy);box('plain',(gxL+gxR)/2,gt+.35,gz1,gxR-gxL+1.4,.4,.5,gy);        // runway girders
- box('plain',gb,gt+.75,(gz0+gz1)/2,.6,.5,gz1-gz0+.5,gy);                                                                  // bridge girder
+  box('sheet',gx,gt,(gz0+gz1)/2,.4,.35,gz1-gz0+.6,gy);box('iron',gx,2.2,(gz0+gz1)/2,.12,.12,gz1-gz0,gd);}
+ box('sheet',(gxL+gxR)/2,gt+.35,gz0,gxR-gxL+1.4,.4,.5,gy);box('sheet',(gxL+gxR)/2,gt+.35,gz1,gxR-gxL+1.4,.4,.5,gy);        /* runway girders */
+ box('sheet',gb,gt+.75,(gz0+gz1)/2,.6,.5,gz1-gz0+.5,gy);                                                                  // bridge girder
  for(const z of [gz0,gz1])box('iron',gb,gt+.75,z,1.0,.5,.7,gd);
- box('plain',gb-.5,gt+1.25,gtz-.5,1.0,.55,1.1,jc(0xc45a30,.05));cylH('plain',gb,gt+1.55,gtz+.1,.22,.9,gd,'x',10);box('glass',gb-.3,gt+1.6,gtz+.06,.6,.3,.03,jc(0x6a9a94,.05));
+ box('sheet',gb-.5,gt+1.25,gtz-.5,1.0,.55,1.1,jc(0x8a4a2a,.06));cylH('iron',gb,gt+1.55,gtz+.1,.22,.9,gd,'x',10);box('glass',gb-.3,gt+1.6,gtz+.06,.6,.3,.03,jc(0x6a9a94,.05));
  for(const sx of [-.14,.14])beam('iron',[gb+sx,gt+1.4,gtz],[gb+sx,3.9,gtz],.06,jc(0x2a2826,.03),true,4);
- box('plain',gb-.25,3.6,gtz-.2,.5,.4,.4,gy);cone('iron',gb,3.35,gtz,.1,.25,jc(0x2a2826,.03),6);
+ box('sheet',gb-.25,3.6,gtz-.2,.5,.4,.4,gy);cone('iron',gb,3.35,gtz,.1,.25,jc(0x2a2826,.03),6);
  for(const [a,b] of [[-.55,-.45],[.55,-.45],[.55,.45],[-.55,.45]])beam('iron',[gb,3.5,gtz],[gb+a,2.85,gtz+b],.025,jc(0x2a2826,.03),true,3);
  box('plank',gb-.6,1.75,gtz-.5,1.2,1.1,1.0,jc(0xa08258,.06));box('plank',gb-.6,2.8,gtz-.5,1.24,.05,1.04,jc(0x4a3a2c,.05));box('plank',gb-.6,1.75,gtz-.5,1.24,.06,1.04,jc(0x4a3a2c,.05));
- for(let k=0;k<2;k++)box('plain',gb-.4+k*.2,2.85,gtz-.2,.16,.06,.06,jc(0xd8a02a,.05));
+ for(let k=0;k<2;k++)box('sheet',gb-.4+k*.2,2.85,gtz-.2,.16,.06,.06,jc(0x9a7a2a,.06));
  // dock goods: crate stacks and sacks on the deck
  for(let k=0;k<4;k++){pallet(-9.0+k*.05,DK,jz-.4,1.6,1.2);for(let q=0;q<3;q++)crate(-9.0,DK+.12+q*.8,jz-.4,.8,rr(-.1,.1),pick([0x8a6a44,0x6a5238,0xa08258]));break;}
  sacks(-6.0,DK,jz-.8,6,0.2);sacks(-5.4,DK+.34,jz-.8,3,.1);

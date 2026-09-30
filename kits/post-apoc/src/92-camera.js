@@ -76,7 +76,7 @@ function frame(){const now=performance.now(),dt=Math.min(.1,(now-last)/1000);las
   if(keys.q)ctl.target.y-=sp;if(keys.e)ctl.target.y+=sp;}
  for(const f of FRAME_HOOKS)f(dt,now);
  applyCam();sky.position.copy(camera.position);giant.position.copy(camera.position).addScaledVector(giantDir,4200);sunDisc.position.copy(camera.position).addScaledVector(SUNDIR,4800);
- {const tg=WALK.on?new THREE.Vector3(WALK.x,0,WALK.z):ctl.target;sun.target.position.set(tg.x,0,tg.z);sun.position.set(tg.x+SUNDIR.x*300,SUNDIR.y*300,tg.z+SUNDIR.z*300);sun.target.updateMatrixWorld();}
+ {const tg=WALK.on?new THREE.Vector3(WALK.x,0,WALK.z):ctl.target;sun.target.position.set(tg.x,0,tg.z);sun.position.set(tg.x+LIGHTDIR.x*300,LIGHTDIR.y*300,tg.z+LIGHTDIR.z*300);sun.target.updateMatrixWorld();}
  try{renderer.render(scene,camera);}catch(e){if(!renderErr){renderErr=true;reportErr('render: '+e.stack);}}
  hud.textContent=`cam ${camera.position.x|0},${camera.position.y|0},${camera.position.z|0}  tgt ${ctl.target.x|0},${ctl.target.y|0},${ctl.target.z|0}${WALK.on?'  WALK':''}\ncalls ${renderer.info.render.calls}  tris ${(renderer.info.render.triangles/1e6).toFixed(2)}M  reg ${REG.length}`;
  requestAnimationFrame(frame);}

@@ -5,14 +5,14 @@ renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;d
 const scene=new THREE.Scene();scene.fog=new THREE.FogExp2(0xd2b894,.00075);
 const camera=new THREE.PerspectiveCamera(50,innerWidth/innerHeight,.3,9000);
 const hemi=new THREE.HemisphereLight(0xffe6c8,0x6a4a34,.85);scene.add(hemi);
-const sun=new THREE.DirectionalLight(0xfff0dc,1.75);const SUNDIR=new THREE.Vector3(-.55,.66,.38).normalize();scene.add(sun);scene.add(sun.target);
+const sun=new THREE.DirectionalLight(0xfff0dc,1.75);const SUNDIR=new THREE.Vector3(-.55,.66,.38).normalize(),LIGHTDIR=SUNDIR.clone(),MOONDIR=new THREE.Vector3(.5,.52,-.42).normalize();scene.add(sun);scene.add(sun.target);
 sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);{const c=sun.shadow.camera;c.left=-70;c.right=70;c.top=70;c.bottom=-70;c.near=10;c.far=700;}sun.shadow.bias=-.0006;sun.shadow.normalBias=.35;
 const fill=new THREE.DirectionalLight(0xc0d0ff,.32);fill.position.set(800,400,-900);scene.add(fill);
 const FRAME_HOOKS=[];
 // standard Krator skybox: dusty gradient, gas giant low in the north-east (altitude 25 deg, azimuth 66 deg), a sun disc on the light's line
-const skyMat=new THREE.ShaderMaterial({side:THREE.BackSide,fog:false,depthWrite:false,uniforms:{},
+const skyMat=new THREE.ShaderMaterial({side:THREE.BackSide,fog:false,depthWrite:false,uniforms:{u_n:{value:0},u_d:{value:0}},
  vertexShader:'varying vec3 vP;void main(){vP=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
- fragmentShader:'varying vec3 vP;void main(){float h=clamp(normalize(vP).y,-.05,1.);vec3 hz=vec3(.86,.72,.55);vec3 zen=vec3(.33,.47,.68);vec3 c=mix(hz,zen,pow(h,.5));gl_FragColor=vec4(c,1.);}'});
+ fragmentShader:'uniform float u_n;uniform float u_d;varying vec3 vP;float hs(vec3 p){return fract(sin(dot(p,vec3(12.9898,78.233,37.719)))*43758.5453);}void main(){vec3 d=normalize(vP);float h=clamp(d.y,-.05,1.);vec3 hz=mix(vec3(.86,.72,.55),vec3(.07,.085,.14),u_n);vec3 zen=mix(vec3(.33,.47,.68),vec3(.008,.014,.05),u_n);vec3 c=mix(hz,zen,pow(h,.5));c=mix(c,vec3(.95,.42,.2),u_d*pow(1.-h,3.));vec3 g=floor(d*230.);float st=step(.9968,hs(g));c+=vec3(st)*u_n*clamp(d.y*2.,0.,1.)*(.45+.55*hs(g+3.));gl_FragColor=vec4(c,1.);}'});
 const sky=new THREE.Mesh(new THREE.SphereGeometry(6000,32,16),skyMat);sky.userData.probeSkip=true;scene.add(sky);
 const giantTex=canvasTex(512,512,(g,w,h)=>{g.clearRect(0,0,w,h);const grd=g.createRadialGradient(256,256,0,256,256,256);
  for(let i=0;i<=20;i++){const t=i/20;const b=.8+.2*Math.sin(i*2.1);grd.addColorStop(t*.96,`rgba(${220*b|0},${180*b|0},${150*b|0},${.85*(1-Math.pow(t,6))})`);}
@@ -41,11 +41,13 @@ const GROUND_C=ROWS.length?ROWS[ROWS.length-1].z/2:0;groundM.position.set(0,0,GR
 // ---------------------------------------------------------------- (re)build the world for a culture
 let WORLD=null;
 function buildWorld(cultureKey){if(WORLD){scene.remove(WORLD);WORLD.traverse(o=>{if(o.geometry)o.geometry.dispose();});}
- WORLD=new THREE.Group();scene.add(WORLD);GB={};GTARGET=GB;SPINNERS.length=0;regClear();plantsReset();SOCK_ALL.length=0;GSTAT.tris=0;SBS.length=0;SB=null;resetCM();
+ WORLD=new THREE.Group();scene.add(WORLD);GB={};GTARGET=GB;SPINNERS.length=0;regClear();plantsReset();halosReset();SOCK_ALL.length=0;GSTAT.tris=0;SBS.length=0;SB=null;resetCM();
  CULT.cur=CULT.packs[cultureKey]||CULT.generic;const t0=performance.now();
  for(const S of SITES)place(S.key,S.x,S.z,S.ry||0,S.o);
  flushBuckets(GB,WORLD,true);
  for(const sp of SPINNERS){const grp=new THREE.Group();grp.matrixAutoUpdate=false;grp.matrix.copy(sp.world);const inner=new THREE.Group();grp.add(inner);flushBuckets(sp.buckets,inner,true);sp.node=inner;WORLD.add(grp);}
+ if(typeof nightRebuild==='function')nightRebuild();
+ if(typeof doorsRebuild==='function')doorsRebuild();
  window._build={ms:performance.now()-t0,tris:GSTAT.tris,culture:CULT.cur.key,sites:SITES.length,spinners:SPINNERS.length};return WORLD;}
 FRAME_HOOKS.push(dt=>{for(const sp of SPINNERS)if(sp.node)sp.node.rotation[sp.axis]+=sp.rate*dt;});
 // views: an opening, an overview, a row shot per family and an eye-level shot per building
