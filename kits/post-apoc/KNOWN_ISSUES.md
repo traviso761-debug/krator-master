@@ -15,6 +15,9 @@ Open items are lines starting `- [ ]`; `build.py` prints them on every build.
 
 ## Fixed / measured
 
-- 33 defs, 36 placed buildings in the showcase (compound places 4), 0.8M triangles in the whole scene at ~36 draw calls; `verify.py --assert` passes all seven checks.
+- 33 defs, 36 placed buildings in the showcase (compound places 4), 0.84M triangles in the whole scene at ~50 draw calls; `verify.py --assert` passes all seven checks under every culture pack.
+- Culture system moved to `core/sockets/` (shared, with a runnable example); Republic is red, Voth blue, plus Yuni (yellow, hyperboloid) and Beast Riders (green, claw).
+- Flora is placeholder-only (`plant()`, 349 slots in the showcase); banners stand off their poles; shop signs are pictographs (fish, shield, crossed swords, gear and wrench, crate and sack, bowl, anchor, ticket).
+- QA passes on socket overlaps (emblems, windows, doors, panels), stairs meeting landings, floating parts, z-fighting, car walls, arena cage layers, the warehouse crane, the dock hoist wheel.
 - `plane4` used the wrong corner (every sheet half a width off in x) and `spin()` polluted the footprint bbox: both fixed in `30-geo.js`.
 - Bus and semi wheel axles, bulkhead trim bars off-centre: fixed in `32-cores.js`.
