@@ -5,7 +5,49 @@ Add polygon tool that allows user to create copy/pasteable coordinates for debug
 When placing streets, paths, and highways, make sure they connect to existing network unless otherwise specified. Ask if unclear.
 By default, builds should use the standard Krator skybox with gas giant and sun, +/- relevant local details (distant mountains and volcano position, etc).
 
-When building life layer, Voth currently has the most complete example. Its pathing layer should be incorporated into all new builds as soon as life layer is being designed. It also has the most complete and comprehensive collision system which can be used as an example. 
+When building life layer, Voth currently has the most complete example. Its pathing layer should be incorporated into all new builds as soon as life layer is being designed. It also has the most complete and comprehensive collision system which can be used as an example. Never encode a world rule solely in the visual implementation if it could exist as simulation data!
+
+Bad:
+
+if (x > -500 && x < 200 && faction === "screamer") {
+    spawnRaid();
+}
+
+Good:
+
+Screamer faction
+    territory: North Crater
+    hostility: Player
+    behavior:
+        raid hostile settlements
+
+Bad:
+
+merchant walks to this coordinate
+
+Good:
+
+Merchant
+    preferred activity: TRADE
+
+Market
+    activity: TRADE
+    capacity: 20
+
+Bad:
+
+Mav's gatherers walk to these four coordinates.
+
+Good:
+
+Gatherer
+    activity: GATHER_FOOD
+
+Jungle region
+    resource: FRUIT
+    gatherable: true
+
+That is the difference between a procedural scene generator and a procedural world simulator.
 
 There is an included skill file, painting-to-3d-world. Read before starting a new settlement or building kit, or when making large change or expansion to existing ones. When pushing changes to the main branch, reread the skill file, and update with any useful lessons from the build, including known pitfalls, ways to overcome them, and ways to better organize and implement builds. If you run into a particularly aggravating or repeat problem and solve it, note it in the file readme so future sessions without context can pick up the trick and note it in the skill file.
 
