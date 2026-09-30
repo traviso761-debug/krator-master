@@ -10,7 +10,7 @@ mkMat('corr',TEX.corr,{rough:.62,metal:.45,bump:1.4});
 mkMat('corrH',TEX.corrH,{rough:.62,metal:.45,bump:1.4});
 mkMat('cont',TEX.cont,{rough:.6,metal:.4,bump:1.6});
 mkMat('sheet',TEX.sheet,{rough:.7,metal:.35,bump:1.2});
-mkMat('plank',TEX.plank,{rough:.92,bump:.9});
+mkMat('plank',TEX.plank,{rough:.92,bump:.35});
 mkMat('earth',TEX.earth,{rough:1,bump:.8});
 mkMat('conc',TEX.conc,{rough:.88,bump:.8});
 mkMat('iron',TEX.iron,{rough:.7,metal:.45,bump:.35});

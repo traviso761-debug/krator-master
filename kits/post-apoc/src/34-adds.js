@@ -55,9 +55,16 @@ function deck(x,y,z,w,d,o){o=o||{};const th=.12;box('plank',x,y-th,z,w,th,d,o.co
   for(let i=0;i<4;i++)if(sides.indexOf(names[i])>=0)seg(cs[i],cs[(i+1)%4]);}}
 // stair from a foot point to a top point (x,y,z each), width w: treads on two stringers
 function stairs(ax,ay,az,bx,by,bz,w,o){o=o||{};const dx=bx-ax,dz=bz-az,dy=by-ay;const run=Math.hypot(dx,dz);const n=Math.max(2,Math.round(dy/.2));const ang=Math.atan2(dx,dz);
- const wc=jc(0x5c4630,.06);W(ax,ay,az,ang,()=>{const nx=[-w/2,w/2];for(const sx of nx)beam('iron',[sx,0,0],[sx,dy,run],.07,jc(0x4a4038,.05));
-  for(let k=1;k<=n;k++){box('plank',0,dy*k/n-.05,run*(k-.5)/n,w,.05,run/n+.04,jc(pick(PAL.wood),.07));}
-  if(o.rail!==false)for(const sx of nx){beam('wood',[sx,1.0,0],[sx,dy+1.0,run],.05,wc);beam('wood',[sx,0,0],[sx,1.0,0],.05,wc,true,5);beam('wood',[sx,dy,run],[sx,dy+1.0,run],.05,wc,true,5);}});}
+ const wc=jc(0x5c4630,.06),ic=jc(0x4a4038,.05);
+ W(ax,ay,az,ang,()=>{const nx=[-w/2,w/2];
+  if(o.steel){ // steel: channel stringers, grating treads with a nosing, pipe handrails on posts (o.steel=true)
+   for(const sx of nx){beam('iron',[sx,0,0],[sx,dy,run],.09,ic);}
+   for(let k=1;k<=n;k++){const y=dy*k/n-.04,z=run*(k-.5)/n;box('iron',0,y,z,w,.04,run/n+.03,jc(0x6a5a4c,.06));box('iron',0,y+.04,z+run/n*.5-.03,w,.03,.04,jc(0x3a3430,.04));}
+   if(o.rail!==false)for(const sx of nx){const xs=sx*1.02;beam('iron',[xs,1.0,0],[xs,dy+1.0,run],.035,ic,true,6);beam('iron',[xs,.5,0],[xs,dy+.5,run],.025,ic,true,5);
+    const np=Math.max(2,Math.round(run/1.4)+1);for(let k=0;k<np;k++){const t=k/(np-1);beam('iron',[xs,dy*t,run*t],[xs,dy*t+1.0,run*t],.04,ic,true,5);}}
+  }else{for(const sx of nx)beam('iron',[sx,0,0],[sx,dy,run],.07,ic);
+   for(let k=1;k<=n;k++){box('plank',0,dy*k/n-.05,run*(k-.5)/n,w,.05,run/n+.04,jc(pick(PAL.wood),.07));}
+   if(o.rail!==false)for(const sx of nx){beam('wood',[sx,1.0,0],[sx,dy+1.0,run],.05,wc);beam('wood',[sx,0,0],[sx,1.0,0],.05,wc,true,5);beam('wood',[sx,dy,run],[sx,dy+1.0,run],.05,wc,true,5);}}});}
 function ladder(x,y,z,h,ry,o){o=o||{};W(x,y,z,ry||0,()=>{const c=jc(0x5a5048,.05);beam('iron',[-.22,0,0],[-.22,h,0],.05,c);beam('iron',[.22,0,0],[.22,h,0],.05,c);for(let k=1;k*.32<h;k++)beam('iron',[-.22,k*.32,0],[.22,k*.32,0],.035,c,true,5);});}
 // ---- roof and yard furniture
 function stovepipe(x,y,z,h,o){o=o||{};const r=o.r||.09;const c=jc(pick([0x4a4038,0x5a4a3c,0x6a5a4c]),.05);cyl('iron',x,y,z,r,h,c,8);cyl('iron',x,y+h,z,r*1.5,.06,c,8);cone('iron',x,y+h+.06,z,r*2.2,.16,jc(0x3a3430,.05),8);

@@ -27,11 +27,13 @@ reseed(9010);TEX.sheet=canvasTex(256,256,(g,w,h)=>{g.fillStyle=gray(178);g.fillR
   g.fillStyle='rgba(20,15,10,.6)';for(let r=x+5;r<x+pw;r+=14){g.fillRect(r,y+3,2.2,2.2);g.fillRect(r,y+ph-5,2.2,2.2);}}
  blotches(g,w,h,22,12,40,.42);rustStreaks(g,w,h,50,true);speckle(g,w,h,300,.05,.2,true);});TILE.sheet=2;
 // planks, horizontal courses: 8 boards per 1.6 m
-reseed(9011);TEX.plank=canvasTex(256,256,(g,w,h)=>{const n=8,bh=h/n;for(let i=0;i<n;i++){g.fillStyle=gray(rr(140,220));g.fillRect(0,i*bh,w,bh);
- for(let k=0;k<14;k++){g.fillStyle=`rgba(40,28,18,${rr(.06,.2)})`;g.fillRect(0,i*bh+rng()*bh,w,rr(.6,1.4));}
- const cut=rng()*w;g.fillStyle='rgba(20,12,6,.5)';g.fillRect(cut,i*bh,1.6,bh);g.fillStyle='rgba(20,12,6,.55)';g.fillRect(0,i*bh,w,1.4);
- g.fillStyle='rgba(15,10,6,.7)';g.fillRect(cut-6,i*bh+bh*.5-1,2,2);g.fillRect(cut+7,i*bh+bh*.5-1,2,2);}
- blotches(g,w,h,6,8,24,.18);});TILE.plank=1.6;
+reseed(9011);TEX.plank=canvasTex(256,256,(g,w,h)=>{   // 4 boards of ~0.5 m per 2 m repeat, staggered joints, soft grain: reads as weathered planking, not bamboo
+ const n=4,bh=h/n;for(let i=0;i<n;i++){const y0=i*bh;const t=rr(165,205);g.fillStyle=gray(t);g.fillRect(0,y0,w,bh);
+  for(let k=0;k<26;k++){g.fillStyle=`rgba(40,28,18,${rr(.03,.10)})`;const yy=y0+rng()*bh;g.fillRect(rng()*w*.3,yy,rr(w*.3,w),rr(.5,1.1));}
+  for(let k=0;k<3;k++){const gx=rng()*w,gy=y0+rr(bh*.2,bh*.8);g.fillStyle='rgba(30,20,12,.22)';g.beginPath();g.ellipse(gx,gy,rr(3,7),rr(1.5,3),0,0,TAU);g.fill();}
+  const cut=(i*97+rng()*40)%w;g.fillStyle='rgba(20,12,6,.32)';g.fillRect(cut,y0,1.4,bh);g.fillStyle='rgba(20,12,6,.38)';g.fillRect(0,y0,w,1.6);
+  g.fillStyle='rgba(15,10,6,.5)';for(const nx of [cut-7,cut+8])g.fillRect(nx,y0+bh*.5-1,2,2);}
+ blotches(g,w,h,5,8,22,.16);speckle(g,w,h,260,.04,.12,true);});TILE.plank=2;
 reseed(9012);TEX.earth=canvasTex(256,256,(g,w,h)=>{g.fillStyle=gray(196);g.fillRect(0,0,w,h);const id=g.getImageData(0,0,w,h),d=id.data;
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const n=fbm(x/22,y/22,1.3,3)*70+fbm(x/4,y/4,5,1)*38;const i=(y*w+x)*4;const v=150+n;d[i]=d[i+1]=d[i+2]=v;}
  g.putImageData(id,0,0);for(let i=0;i<14;i++){g.strokeStyle='rgba(40,30,20,.3)';g.lineWidth=1;g.beginPath();let x=rng()*w,y=rng()*h;g.moveTo(x,y);for(let k=0;k<6;k++){x+=rr(-14,14);y+=rr(2,16);g.lineTo(x,y);}g.stroke();}});TILE.earth=3;
