@@ -37,6 +37,11 @@ material families, instanced per family under a draw-call budget. The catalog
 in `kits/catalog/` uses family strings (`'wood'`, `'cloth'`, `'plank'`…) plus a
 colour. Neither is compatible with `MAT`.
 
+## `sockets/`
+
+The cultural socket and banner/awning system: buildings declare sockets, a culture pack fills them (Iziz, Republic, Voth, Yuni, Beast Riders, generic). A worked example, `sockets/example/`,
+builds a sheet of the same wall in every pack. Read `sockets/README.md`. **Used by** `kits/post-apoc` (its `build.py` reads `37-sockets.js` and `80-cultures.js` from here; a local copy with the same name overrides).
+
 ## Planned: a material registry
 
 This comes later, with the furniture kit and the Blender export. The plan is not

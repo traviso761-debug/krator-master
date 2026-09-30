@@ -25,6 +25,7 @@ ABOUT = {
     'settlements/mavs-refuge': "Mav's Refuge: a refuge in the hypertropic jungle on the lee shore of the Ring Sea.",
     'settlements/xanadu': 'Xanadu: the building kit of the southern Sultanate (Tibetan massing, Indian, Turkish and Persian detail) and the city of Erewhon.',
     'kits/ringsea': 'Ring Sea watercraft: 21 procedural vessels (warships, cargo ships, barges, canoes, outriggers, rafts) of the cultures round the Ring Sea.',
+    'kits/post-apoc': 'The Post-Apoc set: reclaimed and recycled buildings (containers, silos, tanks, buses, bulkheads, tyre and bottle walls) with sockets for any culture\'s marks.',
     'kits/ancients': 'The Ancients kit: ruined megastructures of the ancient civilisation, 33 structure types, one target per site.',
 }
 # Files that are generated or duplicated elsewhere: never edit or read them whole.
@@ -145,7 +146,7 @@ def main():
              '| Build | Fragments | src KB | Largest KB | What |', '|---|---|---|---|---|'] + rows + [
              '', '## Not builds', '',
              '| Path | What |', '|---|---|',
-             '| `core/` | shared code: `core/materials/` (see `core/README.md`) |',
+             '| `core/` | shared code: `core/materials/` (see `core/README.md`) and `core/sockets/` (cultural sockets, banners and awnings, with a runnable example) |',
              '| `kits/catalog/` | harvested master catalog of furniture, plants and buildings (unverified) |',
              '| `kits/furniture/`, `kits/interiors/` | specs only |',
              '| `gallery/` | the shareable gallery of every built world |',

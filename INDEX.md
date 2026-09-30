@@ -18,7 +18,8 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`settlements/voth`](settlements/voth/INDEX.md) | 62 | 1786 | 70 | Voth: a Venice/Vivec-like Dunmer city on an enclosed brackish bay, with the most complete life layer and collision system. |
 | [`settlements/xanadu`](settlements/xanadu/INDEX.md) | 51 | 596 | 66 | Xanadu: the building kit of the southern Sultanate (Tibetan massing, Indian, Turkish and Persian detail) and the city of Erewhon. |
 | [`settlements/yuni`](settlements/yuni/INDEX.md) | 44 | 876 | 194 | Yuni: the city, plus its building-kit, furniture and plant sheets. |
-| [`kits/ancients`](kits/ancients/INDEX.md) | 90 | 1670 | 89 | The Ancients kit: ruined megastructures of the ancient civilisation, 33 structure types, one target per site. |
+| [`kits/ancients`](kits/ancients/INDEX.md) | 92 | 1722 | 89 | The Ancients kit: ruined megastructures of the ancient civilisation, 33 structure types, one target per site. |
+| [`kits/post-apoc`](kits/post-apoc/INDEX.md) | 24 | 355 | 34 | The Post-Apoc set: reclaimed and recycled buildings (containers, silos, tanks, buses, bulkheads, tyre and bottle walls) with sockets for any culture's marks. |
 | [`kits/ringsea`](kits/ringsea/INDEX.md) | 36 | 183 | 10 | Ring Sea watercraft: 21 procedural vessels (warships, cargo ships, barges, canoes, outriggers, rafts) of the cultures round the Ring Sea. |
 | [`biomes/eastabyss`](biomes/eastabyss/INDEX.md) | 17 | 205 | 54 | Biome kit: see `biomes/README.md`. |
 | [`biomes/hyperjungle`](biomes/hyperjungle/INDEX.md) | 19 | 176 | 33 | Biome kit: see `biomes/README.md`. |
@@ -33,7 +34,7 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 
 | Path | What |
 |---|---|
-| `core/` | shared code: `core/materials/` (see `core/README.md`) |
+| `core/` | shared code: `core/materials/` (see `core/README.md`) and `core/sockets/` (cultural sockets, banners and awnings, with a runnable example) |
 | `kits/catalog/` | harvested master catalog of furniture, plants and buildings (unverified) |
 | `kits/furniture/`, `kits/interiors/` | specs only |
 | `gallery/` | the shareable gallery of every built world |
