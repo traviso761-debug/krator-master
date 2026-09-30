@@ -174,16 +174,16 @@ function lgBulkhead(o){
   if(s===2)W(0,0,rz,PI,()=>win(0,sill,0,1.2,1.2,{lit:true}));}
  W(0,0,rz,PI,()=>lgDoor(0,F[0],0,1.1,2.2,{step:true,col:0x7a2e28}));W(0,0,rz,PI,()=>lgDoor(0,F[1],0,1.1,2.1,{step:false,col:0x2f5f8f}));                 // ground door and the door onto the rear balcony
  for(const sd of [-1,1]){const xo=sd*7.9,xr=sd*8.7,ry=sd>0?PI/2:-PI/2,rl=sd>0?['r','b']:['l','b'];
-  deck(xo,F[1],-10.5,1.7,3.8,{rail:rl,posts:false});deck(xo,F[2],-11.1,1.7,2.6,{rail:sd>0?['r','f','b']:['l','f','b'],posts:false});
+  deck(xo,F[1],-10.5,1.7,3.8,{rail:rl,posts:false});deck(xo,F[2],-10.5,1.7,3.4,{rail:sd>0?['r','b']:['l','b'],posts:false});
   for(const z of [-12.1,-10.5,-8.9])beam('iron',[sd*7.05,F[1]-1.0,z],[xr-sd*.02,F[1]-.12,z],.06,jc(0x4a4038,.05),true,5);
-  for(const z of [-12.0,-10.2])beam('iron',[sd*7.05,F[2]-1.0,z],[xr-sd*.02,F[2]-.12,z],.06,jc(0x4a4038,.05),true,5);
-  lgPost(xr,-12.3,F[1]-.12,0,.12);lgPost(xr,-9.3,F[1]-.12,0,.12);lgPost(xr,-12.2,F[2]-.12,F[1],.1);lgPost(xr,-9.9,F[2]-.12,F[1],.1);
-  stairs(sd*8.3,0,-5.0,sd*8.3,F[1],-8.6,1.1,{steel:true});ladder(sd*7.35,F[1],-9.5,F[2]-F[1],ry);
-  lgAwn(sd*7.05,F[2]+2.5,-11.1,ry,1.8,1.2,.4);}
+  for(const z of [-11.8,-9.2])beam('iron',[sd*7.05,F[2]-1.0,z],[xr-sd*.02,F[2]-.12,z],.06,jc(0x4a4038,.05),true,5);
+  lgPost(xr,-12.3,F[1]-.12,0,.12);lgPost(xr,-9.3,F[1]-.12,0,.12);lgPost(xr,-12.1,F[2]-.12,F[1],.1);lgPost(xr,-8.95,F[2]-.12,F[1],.1);
+  stairs(sd*8.3,0,-5.0,sd*8.3,F[1],-8.6,1.1,{steel:true});ladder(sd*7.35,F[1],-8.6,F[2]-F[1],ry);
+  lgAwn(sd*7.10,F[2]+2.2,-10.5,ry,1.6,1.2,.4);lgAwn(sd*7.10,F[0]+2.3,-10.5,ry,1.6,1.2,.4);}   // side awnings: centred on their doors (z -10.5), top = door head + .1, width = door + .6
  deck(0,F[1],rz-.85,7.0,1.7,{rail:['l','r','b'],posts:false});
  for(const x of [-3,0,3])beam('iron',[x,F[1]-1.0,rz],[x,F[1]-.12,rz-1.7],.06,jc(0x4a4038,.05),true,5);
  for(const x of [-3.4,3.4])lgPost(x,rz-1.65,F[1]-.12,0,.12);
- lgAwn(0,2.85,rz-.02,PI,2.4,1.2,.4);
+ lgAwn(0,F[0]+2.3,rz,PI,1.7,1.2,.4);
  // ---- projecting portico with a deep reveal: chunky side walls, two heavy columns, outer piers, entablature, cornice, parapet, steps
  const pw=4.7,pd=3.8,ph=8.2;
  box('conc',0,0,dz+pd/2,2*pw+2.2,.3,pd+.4,cw2);
@@ -206,7 +206,7 @@ function lgBulkhead(o){
  lgBox(8.6,CT.H*2,4.6,-PI/2,CT.L20,Cw[4],()=>{win(-1.2,1.05,1.22,1.2,1.0);porthole(1.4,1.4,1.22,.32);porthole(2.4,1.4,1.22,.32);});
  lgTank(8.6,CT.H*2+.06-CT.H+0,-2.4,.8,1.2,0x3a6a8a);stovepipe(8.6,CT.H+.06,-4.0,1.2);lgSolar(8.6,CT.H+.1,.2,2.2,1.2,0,.5);
  lgGable(-8.6,CT.H*3+.05,4.6,2.6,6.0,1.0,{ov:.2,col:0xc45a30,col2:0xc45a30});
- lgAwn(-7.38,2.7,zw,PI/2,2.0,1.1,.4);lgAwn(7.38,2.7,zw,-PI/2,2.0,1.1,.4);
+ lgAwn(-7.38,2.26,zw,PI/2,1.6,1.1,.4);lgAwn(7.38,2.26,zw,-PI/2,1.6,1.1,.4);
  // ---- courtyard: tyre wall with a gate, a real well, fire, planters
  const wz=10.6;tireWall(-7.6,wz,-1.9,wz,5);tireWall(1.9,wz,7.6,wz,5);
  for(const s of [-1,1]){beam('wood',[s*1.9,0,wz],[s*1.9,3.2,wz],.16,jc(0x5c4630,.06),true,7);}beam('wood',[-1.9,3.1,wz],[1.9,3.1,wz],.14,jc(0x5c4630,.06),true,7);
