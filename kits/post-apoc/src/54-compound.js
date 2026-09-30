@@ -134,7 +134,7 @@ function cpTowerSilo(){const r=2.55,h=8.0;silo({r:r,h:h,roofCol:0x3b7f8e});
  const sa=-PI/2;cylH('iron',Math.cos(sa)*(r+.9),gy+1.3,Math.sin(sa)*(r+.9),.22,.5,jc(0x3a3430,.05),'z',10);sph('glow',Math.cos(sa)*(r+.9),gy+1.3,Math.sin(sa)*(r+.9)-.28,.15,jc(0xfff2c0,.03));
  beam('iron',[Math.cos(sa)*(r+.9),gy,Math.sin(sa)*(r+.9)],[Math.cos(sa)*(r+.9),gy+1.1,Math.sin(sa)*(r+.9)],.05,jc(0x3a3430,.05),true,5);
  tireRing(0,0,r+.85,3,.3,1.4);barrel(-1.4,0,r+.5);barrel(-1.9,0,r+.2);
- const apex=h+r*.42+.5;sock('flag',0,apex+.15,0,0,{w:1.5,h:.7});
+ const apex=h+r*.42+.5;cpPole(0,apex,apex+2.8,0,.05,jc(0x4a4038,.05));sock('flag',0,apex+2.9,0,0,{w:1.5,h:.7});
  sock('banner',Math.cos(PI/2)*(r+1.1),gy+1.05,Math.sin(PI/2)*(r+1.1)+.05,0,{w:1.0,h:1.9});
  sock('emblem',Math.sin(-.55)*(r+.03),4.3,Math.cos(-.55)*(r+.03),-.55,{w:1.1,h:1.1});}
 function cpTowerTank(){const r=2.2,y0=6.4;const lc=jc(0x4a4038,.05);
@@ -149,7 +149,7 @@ function cpTowerTank(){const r=2.2,y0=6.4;const lc=jc(0x4a4038,.05);
  const la=PI*.4;ladder(Math.cos(la)*(R(3)+.08),0,Math.sin(la)*(R(3)+.08),y0+1.0,PI/2-la);
  pipe('iron',[[2.2,y0+.8,0],[3.3,y0+.8,0],[3.3,1.1,0],[3.6,1.0,0]],.07,jc(0x4a4038,.05));cylH('iron',3.7,.85,0,.05,.2,jc(0x8a5a2a,.06),'x',6);barrel(3.3,0,.6);barrel(3.3,0,-.5);
  tireRing(0,0,3.6,3,-1.0,.0);
- const top=y0+.3+3.0+.16+r*.14+.28;sock('flag',0,top+.1,0,0,{w:1.5,h:.7});
+ const top=y0+.3+3.0+.16+r*.14+.28;cpPole(0,top,top+2.8,0,.05,jc(0x4a4038,.05));sock('flag',0,top+2.9,0,0,{w:1.5,h:.7});   /* a real mast above the tank cap: the flag flies well clear of it */
  sock('banner',Math.cos(PI/2)*2.95,y0+1.05,Math.sin(PI/2)*2.95+.05,0,{w:1.0,h:1.9});
  sock('emblem',Math.sin(.5)*(r+.03),y0+2.3,Math.cos(.5)*(r+.03),.5,{w:1.2,h:1.2});}
 function cpTowerScaffold(){const s=2.15,lv=[3.8,7.6,10.6];const pc=jc(0x8a8a86,.05);
