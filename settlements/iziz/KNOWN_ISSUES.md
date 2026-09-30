@@ -100,8 +100,10 @@ saying what fixed it.
       neighbours (they are tall, not podium) — The Project's legs straddle shacks.
 - [ ] VENDOR DRIFT (deliberate, local patches): `52-sky-abc.js` (nested-transform
       restore, `KXF=CX` -> `endGroupXF()`), `83-amphitheater.js` (struts meet the
-      rim wall's outer face instead of running through the top rows). Port both
-      upstream to ../ancients or re-apply after a re-vendor.
+      rim wall's outer face instead of running through the top rows). Both are now
+      upstream in kits/ancients (2026-09-30; the sky-abc one as `endGroupXF();KXF=CX;`,
+      right under this build's stacked useGroupXF and the kit's plain one), so a
+      re-vendor no longer loses them.
 - [ ] The toppled Skyscraper B keeps its own podium (its fallen body was laid by
       the kit to rest on it) on a 60 m lot; the fall is checked against boulevards,
       plazas, parks, courts, water, rock, precincts and standing buildings.

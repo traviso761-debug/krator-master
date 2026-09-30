@@ -127,7 +127,7 @@ function buildSkyB(scene,gx,gz,d){reseed(9110+d);KOFF=[gx,0,gz];const G=new THRE
    if(s%4===0)stripRing(0,y+2.6,0,rFn(y+y0)*.85,dx,36);}
   meshMerged(bands,SHELL(dx),P);
   if(cut==null){const Q=new THREE.Group();Q.position.set(0,L,0);P.add(Q);kput('slab',[0,L,0],null,[rFn(H)*1.1,1,rFn(H)*1.1],new THREE.Color(dx>0?0x5a4a40:0xd8d4cc));
-   const CX=KXF;useGroupXF(Q);KXF={m:CX.m.clone().multiply(Q.matrix),q:CX.q.clone().multiply(Q.quaternion)};petalRing(Q,NL,rFn(H)*.75,42,16,6,1,0,dx,19,SHELL(dx),dx>0?(i=>i%4===1):null);KXF=CX;
+   const CX=KXF;useGroupXF(Q);KXF={m:CX.m.clone().multiply(Q.matrix),q:CX.q.clone().multiply(Q.quaternion)};petalRing(Q,NL,rFn(H)*.75,42,16,6,1,0,dx,19,SHELL(dx),dx>0?(i=>i%4===1):null);endGroupXF();KXF=CX;/*end the nested group, then restore the outer transform: right both here and in a host (Iziz) whose useGroupXF keeps a stack*/
    if(dx===0){mesh(lathe({rFn:y=>rFn(H)*.72*Math.pow(clamp(1-Math.pow(y/30,2),0,1),.6),H:30,nu:48,nv:14}),MAT.glass,P,0,L+1,0);kput('finial',[0,L+38,0],null,[4,7,4],null);}}};
  const P=new THREE.Group();P.position.set(0,32,0);G.add(P);useGroupXF(P);if(d!==2)body(P,dd,32,null,false);else body(P,1,32,32+55,false);endGroupXF();
  if(d===2)toppledUpper(G,0,0,87,rFn(87)*1.3,(U,dx,y0)=>body(U,1,87,null,true),d);
