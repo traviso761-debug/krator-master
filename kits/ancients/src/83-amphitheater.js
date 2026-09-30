@@ -47,7 +47,7 @@ function buildAmphitheater(scene,gx,gz,d){reseed(9960+d);KOFF=[gx,0,gz];const G=
  meshMerged(aisles,skin,G);
  // outer rim: leaning struts and a flared rim wall (Tange). Strut count follows
  // the sweep, so they stay at the same spacing now the bowl is narrower.
- for(let k=0;k<16;k++){const a=lerp(a0,a1,(k+.5)/16);const fallen=d>0&&(k===3||k===11);const A=[Math.sin(a)*100,0,Math.cos(a)*100],B=[Math.sin(a)*88,27,Math.cos(a)*88];
+ for(let k=0;k<16;k++){const a=lerp(a0,a1,(k+.5)/16);const fallen=d>0&&(k===3||k===11);const A=[Math.sin(a)*103,0,Math.cos(a)*103],B=[Math.sin(a)*93.2,29.5,Math.cos(a)*93.2];   // struts meet the rim wall's OUTER face (from Iziz); they used to run through the top rows
   if(!fallen)beam(d>0?'strutR':'strutW',A,B,2.6,2.2);else beam('strutR',[A[0],1.5,A[2]],[A[0]*.8,2,A[2]*.8],2.6,2.2);}
  mesh(gridSurface((u,v)=>{const a=lerp(a0,a1,u);const r=lerp(88,92,v);return[Math.sin(a)*r,24+v*6,Math.cos(a)*r];},80,2,{uS:20,hole:holeFn(d*.7,820,null,2)}),CONC(d),G);
  // stage + petal acoustic shell
