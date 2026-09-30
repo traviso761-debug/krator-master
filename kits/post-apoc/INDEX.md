@@ -24,7 +24,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `34-adds.js` | 20 | additions and recycled-material constructions (1); PLACEHOLDER FLORA (109); TYRE FURNITURE (stools, chairs, tables): stacked (137) |
 | `36-def.js` | 4 | registry, placement, cultural sockets (1) |
 | `40-dw-small.js` | 32 **big** | small dwellings: 7 types (4x fragments: 40 dw-sm (2); shared helpers for the small dwellings (51); dw-tire: earthship-style round hut (94); dw-bus: a wrecked school bus as the home (146); dw-tank: a storage tank as a pod (lying, or stan (197); dw-bottle: the pretty one, a timber-framed cotta (265); dw-stilt: a plank-and-sheet box up on tall poles (311) |
-| `42-lg-dwell.js` | 32 **big** | large dwellings: container stack, twin silo hall (2) |
+| `42-lg-dwell.js` | 33 **big** | large dwellings: container stack, twin silo hall (2) |
 | `44-civic.js` | 30 | civic and religious: longhouse, mess hall, big m (2) |
 | `46-shops.js` | 23 | shops: food, armour, weapons, tinker, general st (2); 4610 food shop (40); 4620 armour shop (75); 4630 weapon shop (112); 4640 tinker's shop (149); 4650 general store (184) |
 | `48-industry.js` | 24 | industry and power: smithy, wind generator, fuel (2); 4810 scrap smithy (19); 4820 wind generator (70); 4830 fuel generator (113); 4840 warehouse (154) |

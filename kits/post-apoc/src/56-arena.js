@@ -32,9 +32,9 @@ function arStands(){for(const [q0,q1] of arQ){
   {const n=Math.max(2,Math.round((q1-q0)*17.3/2.4));for(let i=0;i<=n;i++){const a=q0+(q1-q0)*i/n;beam('iron',[Math.cos(a)*17.4,0,Math.sin(a)*17.4],[Math.cos(a)*17.4,2.85,Math.sin(a)*17.4],.05,jc(0x4a4038,.05),true,5);}}
   const m2=['stool','bench','stool','bench','stool'];for(let k=0;k<5;k++)arRow(17.95+k*1.15,1.15,3.9+k*1.05,q0,q1,k,2,m2[k]);
   const cs=3.2/24.4;let ci=0;for(let a=q0;a<q1-.001;a+=cs){const b=Math.min(q1,a+cs);const h=rr(9.8,12.2);const c=rng()<.75?jc(arBright(),.08):P('galv');
-   sector('corr',0,0,24.34,24.42,a,b,0,h,c);sector('corr',0,0,24.34,24.42,a,b,0,3.0,jc(pick([0x6a5a44,0x8a3a2c,0x3b7f6e]),.08));
+   sector('corr',0,0,24.34,24.42,a,b,0,h,c);
    if(ci%3===1){const m=(a+b)/2;arRad(24.42,m,h,()=>{sock('banner',0,0,.02,0,{w:1.1,h:3.0});});}ci++;}
-  {const m=(q0+q1)/2;arRad(24.5,m,0,()=>ladder(0,0,.05,9.6,0));}}}
+  }}
 // ---- the pit
 function arPit(){cyl('earth',0,.02,0,28,.04,jc(0xb49a76,.04),56);cyl('plain',0,.05,0,11.2,.03,jc(0xd8c088,.03),48);cyl('plain',0,.08,0,8.2,.02,jc(0xcfb47a,.04),40);cyl('plain',0,.1,0,4.6,.02,jc(0xc8a86a,.04),32);
  for(let k=0;k<9;k++){const a=k/9*TAU+.3,r=rr(2,9.5);const c=pick([0xe6dccb,0x8a6a3a,0x7a2a20]);box('plain',Math.cos(a)*r,.11,Math.sin(a)*r,rr(.15,.6),.02,rr(.15,.5),jc(c,.06),rng()*TAU);}
@@ -67,14 +67,20 @@ function arEntry(){
  for(const sx of [-1,1])box('iron',sx*1.55-.05,4.15,24.6,.1,1.85,.1,jc(0x3a3532,.04));            // hangers
  box('sheet',-1.6,4.15,24.66,3.2,1.85,.1,jc(0xc99a2e,.06));                                       // plate 3.2 x 1.85, front face at z 24.71
  box('iron',-1.68,4.11,24.72,3.36,.06,.05,jc(0x3a3532,.04));box('iron',-1.68,5.94,24.72,3.36,.06,.05,jc(0x3a3532,.04));
- sock('emblem',0,5.07,24.735,0,{w:1.35,h:1.35});sock('emblem',0,5.07,24.585,PI,{w:1.35,h:1.35});
+ for(const sx of [-1,1])box('iron',sx*1.68-.04,4.11,24.72,.08,1.95,.05,jc(0x3a3532,.04));
+ sock('emblem',0,5.07,24.79,0,{w:1.35,h:1.35});sock('emblem',0,5.07,24.585,PI,{w:1.35,h:1.35});
  sock('banner',-4.3,5.95,24.82,0,{w:1.0,h:2.6});sock('banner',4.3,5.95,24.82,0,{w:1.0,h:2.6});
  // rear arch over the pit end of the tunnel: two posts and a full-width solid beam that sits on them
  for(const sx of [-1,1])box('iron',sx*4.3-.15,0,12.1,.3,5.6,.3,jc(0x3a3532,.04));
  box('iron',-4.6,5.35,12.1,9.2,.4,.4,jc(0x3a3532,.04));box('sheet',-4.0,4.55,12.0,8.0,.8,.06,jc(0x6a6a66,.05));
  // E and W gate corridors: sheet flanks
  for(const sx of [-1,1])for(const sz of [-1,1]){W(sx*15.5,0,sz*2.75,0,()=>{box('corr',0,0,0,9.0,3.2,.12,pick([P('galv'),P('rust'),P('paint')]));for(let k=0;k<5;k++)beam('wood',[-4.4+k*2.2,0,0],[-4.4+k*2.2,3.4,0],.08,jc(0x5c4630,.06),true,6);});}
- for(const sx of [-1,1]){W(sx*15.5,0,0,0,()=>{box('plank',0,3.2,0,9,.12,4.4,jc(0x6a5a44,.06));});}
+ // staff gallery (the only upper entrance besides the loge): the east corridor roof, reached by a stair from the ground
+ W(15.5,0,0,0,()=>{box('plank',0,3.2,0,9,.12,4.4,jc(0x6a5a44,.06));});
+ stairs(25.6,0,0,20.4,3.32,0,2.0);
+ for(const z of [-2.2,2.2])arRail(11.2,z,20.0,z,3.32);arRail(11.2,-2.2,11.2,2.2,3.32);
+ for(const z of [-1.3,1.3])box('iron',20.0-.1,3.32,z-.08,.16,2.3,.16,jc(0x3a3532,.04));box('iron',19.9,5.55,-1.4,.16,.16,2.8,jc(0x3a3532,.04));   // door frame at the stair head
+ W(19.9,3.32,-1.25,.9,()=>{box('corr',0,.05,0,1.15,2.1,.06,jc(0x3b7f6e,.06));});
  // ticket booth (container) with hatch, awning, sign
  const bx=9.6,bz=25.4;W(bx,0,bz,0,()=>container({len:CT.L20,doorEnd:false,col:jc(0x3b7f8e,.05)}));
  win(bx-.8,1.1,bz+CT.W/2,1.6,.9,{});door(bx+1.8,.16,bz+CT.W/2,.9,2.0,{step:true});
@@ -92,21 +98,23 @@ function arLoge(){const dy=3.6;box('plank',0,dy-.14,-18.7,13.6,.14,7.6,jc(0x6a5a
  for(let i=0;i<=4;i++)for(const z of [-22.3,-15.2]){beam('iron',[-6.4+i*3.2,0,z],[-6.4+i*3.2,dy-.14,z],.06,jc(0x4a4038,.05),true,6);}
  for(let i=0;i<4;i++){beam('iron',[-6.4+i*3.2,0,-15.2],[-6.4+(i+1)*3.2,dy-.7,-15.2],.03,jc(0x5a5048,.05),true,4);beam('iron',[-6.4+i*3.2,dy-.7,-15.2],[-6.4+(i+1)*3.2,0,-15.2],.03,jc(0x5a5048,.05),true,4);}
  W(-.5,dy,-19.9,0,()=>bus({len:10.6,col:0xc99a2e}));
- // stairs at the west end, rail along the front
- stairs(-8.4,0,-15.0,-6.9,dy,-15.0,1.0);arRail(-6.9,-15.05,6.8,-15.05,dy);
+ // rail along the front
+ arRail(-6.9,-15.05,6.8,-15.05,dy);
  // canopy of sheet on posts, sloping to the pit
  for(const x of [-6.2,-2.1,2.1,6.2])beam('wood',[x,dy,-15.1],[x,dy+3.5,-15.1],.09,jc(0x5c4630,.06),true,6);
  for(const x of [-6.2,-2.1,2.1,6.2])beam('wood',[x,dy,-22.2],[x,dy+4.9,-22.2],.09,jc(0x5c4630,.06),true,6);
  roofP('corr',-7.3,7.3,-14.4,dy+3.5,-22.6,dy+4.9,.08,jc(0xa8402e,.06));roofP('corr',-7.3,7.3,-14.4,dy+3.42,-22.6,dy+4.82,.02,jc(0xd8d0c0,.04));
  for(let k=0;k<8;k++)beam('wood',[-6.8+k*2,dy+3.5,-14.5],[-6.8+k*2,dy+4.9,-22.4],.05,jc(0x5c4630,.06));
  // hoarding with the emblem above the back edge
- box('sheet',0,dy+5.0,-22.5,4.4,3.2,.14,jc(0x6a6a66,.04));for(const x of [-2.1,2.1])beam('wood',[x,dy+4.6,-22.35],[x,dy+8.4,-22.35],.08,jc(0x5c4630,.06),true,6);
+ box('sheet',0,dy+5.0,-22.5,4.4,3.2,.14,jc(0x6a6a66,.04));for(const x of [-2.5,2.5])beam('wood',[x,dy+4.6,-22.35],[x,dy+8.4,-22.35],.08,jc(0x5c4630,.06),true,6);
  sock('emblem',0,dy+6.6,-22.4+.16,0,{w:2.4,h:2.4});
  sock('banner',-6.2,dy+3.5,-14.95,0,{w:1.2,h:2.6});sock('banner',6.2,dy+3.5,-14.95,0,{w:1.2,h:2.6});
  sock('awning',0,dy+2.2,-14.6,0,{w:4.0,d:1.0,drop:.4,h:1.8});
  for(const x of [-4.2,-3.0,3.0,4.2])tireChair(x,dy,-16.5,0,{});tireTable(0,dy,-16.3,{n:2});tireChair(-.9,dy,-17.3,0,{});tireChair(.9,dy,-17.3,0,{});
  // stair to the loge from behind
- stairs(8.5,0,-26.0,8.5,dy,-21.6,1.0);
+ box('plank',6.6,dy-.14,-21.6,3.0,.14,1.8,jc(0x6a5a44,.06));for(const [x,z] of [[9.4,-22.4],[9.4,-20.8]])beam('iron',[x,0,z],[x,dy-.14,z],.06,jc(0x4a4038,.05),true,6);
+ arRail(6.8,-22.45,9.5,-22.45,dy);arRail(9.5,-22.45,9.5,-20.75,dy);arRail(6.8,-20.75,9.5,-20.75,dy);
+ stairs(9.0,0,-27.4,9.0,dy,-22.4,1.0);
 }
 function arRail(x0,z0,x1,z1,y){const L=Math.hypot(x1-x0,z1-z0);const n=Math.max(1,Math.round(L/1.6));for(let k=0;k<=n;k++){const t=k/n;beam('wood',[x0+(x1-x0)*t,y,z0+(z1-z0)*t],[x0+(x1-x0)*t,y+1.0,z0+(z1-z0)*t],.045,jc(0x5c4630,.06),true,5);}beam('wood',[x0,y+1,z0],[x1,y+1,z1],.05,jc(0x5c4630,.06));beam('wood',[x0,y+.5,z0],[x1,y+.5,z1],.035,jc(0x5c4630,.06));}
 // ---- the cage (hell-in-a-cell): flush on the pit wall cap, roof 6 m above it
@@ -129,7 +137,8 @@ function arCage(){const rc=11.3,WT=2.65,CTP=WT+6.0;const st=jc(0x4a4038,.05),st2
   for(const sx of [-1,1])W(sx*1.85,WT+.52,.02,sx<0?-.8:PI+.8,()=>{const lw=1.7,lh=3.05;quad('chain',lw/2,lh/2,0,lw,lh,jc(0xb4b8b8,.05));for(const y of [0,lh])box('iron',lw/2,y-.03,0,lw,.06,.08,st);box('iron',0,0,0,.08,lh,.08,st);box('iron',lw-.04,0,0,.08,lh,.08,st);});
   box('sheet',-1.7,6.75,.3,3.4,1.5,.1,jc(pick([0x8a3a2c,0x3b7f6e,0xc99a2e]),.06));
   for(const sx of [-1,1]){box('iron',sx*1.6-.05,6.5,.14,.1,.3,.2,st);box('iron',sx*1.6-.05,7.95,.14,.1,.3,.2,st);}
-  sock('emblem',0,7.5,.365,0,{w:1.3,h:1.3});}));
+  for(const y of [6.75,8.2])box('iron',-1.7,y-.03,.4,3.4,.06,.05,jc(0x3a3532,.04));
+  sock('emblem',0,7.5,.42,0,{w:1.3,h:1.3});}));
  // roof: radial spokes and two hoops of beams over a chain-link deck, hub ring with a hatch
  const ry=CTP+.275;
  for(let i=0;i<16;i++){const a=i/16*TAU+.1;beam('iron',[Math.cos(a)*1.3,ry,Math.sin(a)*1.3],[Math.cos(a)*(rc-.1),ry,Math.sin(a)*(rc-.1)],.16,st);}
