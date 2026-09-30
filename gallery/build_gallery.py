@@ -43,6 +43,8 @@ ENTRIES = [
      'Ruined megastructures of the ancient civilisation: 33 structure types at every level of decay.'),
     ('kit', 'ancients-worn', 'kits/ancients/dist/worn.html', 'Ancients, worn',
      'Every Ancients type intact beside its worn twin: whole, rust-streaked, the white skin tarnished.'),
+    ('kit', 'ancient-iziz-style', 'kits/ancients/dist/iziz-style.html', 'Ancient Iziz Style',
+     'The Iziz building families built the Ancient way, each intact, destroyed and rehabilitated, with the Iziz variants: cut-out apartments, offices and houses, towers on small plinths, and the tripod market.'),
     ('kit', 'yuni-kit', 'settlements/yuni/yuni-assets.html', 'Yuni buildings', 'Every Yuni building type, laid out as a sheet.'),
     ('kit', 'yuni-furniture', 'settlements/yuni/yuni-furniture.html', 'Yuni furniture', 'The furniture catalogue, tagged by culture.'),
     ('kit', 'yuni-plants', 'settlements/yuni/yuni-plants.html', 'Yuni plants', 'The plants of Yuni\'s gardens and terraces.'),

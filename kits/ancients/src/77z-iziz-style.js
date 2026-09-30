@@ -248,6 +248,22 @@ izsFamily('arena','Arena',130,true,(P,x,z)=>{const cc=0xd4a05a,ccL=0xe6bd7e;cons
   const Q=new THREE.Group();Q.position.set(px,31,pz);Q.rotation.y=-th;P.add(Q);petalRing(Q,3,.4,3,8,9,1.6,0,0,20+k,tsand(0xf1dba6),null);}
  kput('slab',[x,.2,z],null,[A0-28,.4,B0-24],tC(0xd8c090));for(let k=0;k<4;k++){const th=k/4*TAU+Math.PI/4;kput('archOpen',[x+A0*.98*Math.cos(th),5,z+B0*.98*Math.sin(th)],qFacing([Math.cos(th),0,Math.sin(th)]),[1.4,1.1,2],null);}});
 
+// ---- placing one family: mode 'intact' | 'ruin' | 'rehab'. The same steps as Iziz's TRANS.place (reseed, build in a
+// group under the nested transform, wreck() for the two decayed states, the dark-blue glass), plus a REG entry.
+MAT.izsGlass=new THREE.MeshStandardMaterial({color:0x2a4a66,metalness:.55,roughness:.18,emissive:0x0a1a2a,emissiveIntensity:.5,side:DS});
+let IZS_ROOT=null;
+function izsPlace(scene,key,mode,x,z,ry,scale,seed,y){const p=IZS_BY[key];if(!p){reportErr('izsPlace: no family '+key);return null;}
+ y=y||0;scale=scale||1;ry=ry||0;if(!IZS_ROOT){IZS_ROOT=new THREE.Group();scene.add(IZS_ROOT);}
+ reseed(seed);const ranges={};for(const n in KIT.items)ranges[n]=KIT.items[n].length;
+ const P=new THREE.Group();P.position.set(x,y,z);P.rotation.y=ry;P.scale.setScalar(scale);scene.add(P);P.updateMatrixWorld(true);
+ const k0=KOFF;KOFF=[0,0,0];useGroupXF(P);if(scale!==1)KXF.s=scale;
+ try{p.fn(P,0,0);}catch(e){reportErr('iziz style '+key+' '+e.stack);}
+ endGroupXF();KOFF=k0;
+ if(mode==='ruin'||mode==='rehab'){try{wreck(P,IZS_ROOT,ranges,mode,x,z,seed+1);}catch(e){reportErr('wreck '+key+' '+e.stack);}}
+ P.traverse(m=>{if(m.isMesh&&m.material===MAT.glass)m.material=MAT.izsGlass;});
+ REG.push({name:p.name+' — Ancient Iziz Style'+(mode==='ruin'?' (destroyed)':mode==='rehab'?' (rehabilitated)':' (intact)'),x,y,z,r:p.size*.45*scale,h:p.size*1.2*scale});
+ return P;}
+
 // ---- the Ancient-kit variants Iziz invented (moved from the Iziz city build unchanged)
 const izsFlat=f=>typeof withFlatGround==='function'?withFlatGround(f):f();   // Iziz flattens its terrain while it measures
 // one TYPE out of a kit builder that lays several side by side (apartments A/B/C, offices A/B/C, houses A-F): build the
@@ -264,7 +280,7 @@ MAT.concRust=MAT.rust.clone();MAT.concRust.color=new THREE.Color(1,.93,.86);if(M
 // Skyscraper D is bare concrete in the kit: its ruined and reclaimed skins go to rust-streaked steel (Travis)
 function izsRustSkin(G){G.traverse(m=>{if(m.isMesh&&(m.material===MAT.concreteR||m.material===MAT.concrete))m.material=MAT.concRust;});}
 // T: {awnings (array the caller bakes), post, ball, rope (kit item names), col (hex -> Color), stall(col) (builds
-// one stall at the current group transform), culture (REG tag)}
+// one stall at the current group transform; the group is passed too), culture (REG tag)}
 // THE TRIPOD MARKET (Travis): a reclaimed Skyscraper C hangs a great awning from each side of its leg triangle, sloping out to
 // a mast at the opposite point, so from above the legs' triangle and the three awnings make a six-pointed star; market
 // stalls stand in the shade under each awning and in the open triangle between the legs.
@@ -281,9 +297,9 @@ function tripodMarket(G,o,y,scale,ry,gx,gz,y0,T){const legAt=(k,ly)=>{const th=k
   kput(T.post,[ap[0],y,ap[1]],null,[.35,yp-y+.4,.35],T.col(0xe2b676));kput(T.ball,[ap[0],yp+.5,ap[1]],null,[.4,.4,.4],T.col(0x8a6a2a));
   for(const s2 of[-1,1]){const g2=loc2(ap[0],ap[1],s2*3,0,tm);beam(T.rope,[ap[0],yp+.3,ap[1]],[g2[0]+(ap[0]-gx)*.15,y,g2[1]+(ap[1]-gz)*.15],.05,.05,T.col(0xa89878));}
   // stalls in the shade: three per awning along the triangle's centre line
-  for(let t=0;t<3;t++){const f=.25+t*.22;const m=[(a[0]+b[0])/2*(1-f)+ap[0]*f,(a[1]+b[1])/2*(1-f)+ap[1]*f];const Gs=new THREE.Group();Gs.position.set(m[0],y+1.55,m[1]);Gs.rotation.y=Math.atan2(ap[0]-gx,ap[1]-gz)+Math.PI/2;scene.add(Gs);useGroupXF(Gs);try{T.stall(T.col(cols[(k+t)%3]));}finally{endGroupXF();}}}
+  for(let t=0;t<3;t++){const f=.25+t*.22;const m=[(a[0]+b[0])/2*(1-f)+ap[0]*f,(a[1]+b[1])/2*(1-f)+ap[1]*f];const Gs=new THREE.Group();Gs.position.set(m[0],y+1.55,m[1]);Gs.rotation.y=Math.atan2(ap[0]-gx,ap[1]-gz)+Math.PI/2;scene.add(Gs);useGroupXF(Gs);try{T.stall(T.col(cols[(k+t)%3]),Gs);}finally{endGroupXF();}}}
  // and the open triangle between the legs
- for(let t=0;t<3;t++){const th=t/3*TAU+Math.PI/2,r=rb*scale*.3;const Gs=new THREE.Group();Gs.position.set(o.x+Math.cos(th)*r,y+1.55,o.z+Math.sin(th)*r);Gs.rotation.y=-th;scene.add(Gs);useGroupXF(Gs);try{T.stall();}finally{endGroupXF();}}
+ for(let t=0;t<3;t++){const th=t/3*TAU+Math.PI/2,r=rb*scale*.3;const Gs=new THREE.Group();Gs.position.set(o.x+Math.cos(th)*r,y+1.55,o.z+Math.sin(th)*r);Gs.rotation.y=-th;scene.add(Gs);useGroupXF(Gs);try{T.stall(undefined,Gs);}finally{endGroupXF();}}
  REG.push({name:'Tripod market',x:o.x,y:y,z:o.z,r:rb*scale*1.1,h:12,cls:'building',key:'city_tripod_market',tags:{culture:T.culture,type:['market/shop'],wealth:'middle',lit:true,note:'awnings hung from a reclaimed Skyscraper C'}});}
 // an instanced item's world-space box: the def geometry's own bounds through the item's scale and rotation (a torus or
 // cylinder is radius 1, a box half-size .5 — measuring by the scale alone got every ring half its real size)
