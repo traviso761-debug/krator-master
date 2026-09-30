@@ -422,6 +422,20 @@ function rsCloth(g,W,H,base,seams,dir){g.fillStyle=base;g.fillRect(0,0,W,H);cons
  for(let i=1;i<n;i++){const t=i/n;g.beginPath();if(dir==='h'){g.moveTo(0,t*H);g.lineTo(W,t*H);}else{g.moveTo(t*W,0);g.lineTo(t*W,H);}g.stroke();}
  for(let i=0;i<2200;i++){g.fillStyle=`rgba(${h3(i,1,1)>.5?255:0},${h3(i,1,1)>.5?255:0},${h3(i,1,1)>.5?240:0},${.04*h3(i,2,2)})`;g.fillRect(h3(i,3,3)*W,h3(i,4,4)*H,3,3);}}
 function rsCentroid(P){let x=0,y=0;for(const p of P){x+=p[0];y+=p[1];}return[x/P.length,y/P.length];}
+// ---------------------------------------------------------------- culture symbols and liveries
+// Copied from core/sockets/80-cultures.js (SYMBOLS and the mkCulture packs, on main): the same marks and
+// colours the buildings carry, so a ship reads as the same faction as its port. Re-copy if the packs change.
+const RS_CULT={iziz:{field:'#e07a2a',edge:'#2f8f8a',band:'#f2a24a',ink:'#f3e2c0',ink2:'#e07a2a'},
+ voth:{field:'#24487a',edge:'#182e4d',band:'#3a5f8f',ink:'#d8cdb4'}};
+function rsSymSun(g,cx,cy,R,c1,c2){g.fillStyle=c1;g.beginPath();g.arc(cx,cy,R*.92,0,TAU);g.fill();g.fillStyle=c2;g.beginPath();g.arc(cx,cy,R*.54,0,TAU);g.fill();g.fillStyle=c1;g.beginPath();g.arc(cx,cy,R*.24,0,TAU);g.fill();
+ for(let k=0;k<12;k++){const a=k*TAU/12;g.fillStyle=c1;g.beginPath();g.moveTo(cx+Math.cos(a-.11)*R*.98,cy+Math.sin(a-.11)*R*.98);g.lineTo(cx+Math.cos(a)*R*1.18,cy+Math.sin(a)*R*1.18);g.lineTo(cx+Math.cos(a+.11)*R*.98,cy+Math.sin(a+.11)*R*.98);g.fill();}}
+function rsSymDiamond(g,cx,cy,R,c1){g.strokeStyle=c1;g.lineWidth=Math.max(2,R*.11);g.lineJoin='round';g.beginPath();g.moveTo(cx,cy-R);g.lineTo(cx+R*.75,cy);g.lineTo(cx,cy+R);g.lineTo(cx-R*.75,cy);g.closePath();g.stroke();g.fillStyle=c1;g.beginPath();g.arc(cx,cy,R*.16,0,TAU);g.fill();}
+// a faction sail: field, edge bands along the outline, the symbol at the centroid (sym: 'sun' | 'diamond')
+function rsFactionSail(g,W,H,P,C,sym,rk){rsCloth(g,W,H,C.field,8,'h');g.save();rsPolyPath(g,P);g.clip();g.strokeStyle=C.edge;g.lineWidth=W*.06;rsPolyPath(g,P);g.stroke();
+ g.strokeStyle=C.band;g.lineWidth=W*.018;rsPolyPath(g,rsInset(P,W*.05));g.stroke();const [cx,cy]=rsCentroid(P),R=Math.min(W,H)*(rk||.17);
+ if(sym==='sun')rsSymSun(g,cx,cy,R,C.ink,C.ink2);else rsSymDiamond(g,cx,cy,R,C.ink);g.restore();}
+// vertex colours are linear: pass a faction hex through this to see the hex as picked
+const rsLin=h=>new THREE.Color(h).convertSRGBToLinear();
 // ---------------------------------------------------------------- ring sea hull
 // One parametric hull serves every vessel. u runs stern (0) to bow (1); s is the side (-1 port,
 // +1 starboard, 0 the centreline); h is the height fraction, keel (0) to sheer (1).
@@ -527,7 +541,7 @@ function rsSail(B,o){const nu=o.nu||20,nv=o.nv||12;const U=rsV(o.U).normalize(),
    return[o.O[0]+U.x*s+Vv.x*t+N.x*off,o.O[1]+U.y*s+Vv.y*t+N.y*off,o.O[2]+U.z*s+Vv.z*t+N.z*off];},nu,nv,
   (u,v)=>{const i=Math.round(u*nu);const a=A[i],b=Bf[i];return[(lerp(a[0],b[0],v)-s0)/dS,(lerp(a[1],b[1],v)-t0)/dT];});
  rsPut(B,mk,g,null,null,null,0xffffff);
- {const pa=g.attributes.position;for(let i=0;i<pa.count;i+=3)B.sail.push([pa.getX(i),pa.getY(i),pa.getZ(i)]);}
+ {const pa=g.attributes.position,sid=B.sailN=(B.sailN||0)+1;for(let i=0;i<pa.count;i+=3)B.sail.push([pa.getX(i),pa.getY(i),pa.getZ(i),sid]);}
  // a point on the sail in the vessel frame (for battens, sheets, spars that follow the cloth)
  const at=(u,v)=>{const i=Math.round(clamp(u,0,1)*nu);const a=A[i],b=Bf[i];const s=lerp(a[0],b[0],v),t=lerp(a[1],b[1],v);let off=bel*Math.sin(Math.PI*v)*smooth01(u/.25);if(sc)off*=.55+.45*Math.abs(Math.sin(Math.PI*u*sc));
   return[o.O[0]+U.x*s+Vv.x*t+N.x*off,o.O[1]+U.y*s+Vv.y*t+N.y*off,o.O[2]+U.z*s+Vv.z*t+N.z*off];};
@@ -659,36 +673,39 @@ RS_VESSEL({key:'hykTrireme',name:'Hykkousoi Trireme',culture:'hykkousoi',L:44,B:
 // hexagonal plate cut from the white composite of the Ancient towers the settlers reclaimed, studded
 // with spikes. An ochre beast-head at the bow breathes a sulphur smoke screen; twelve ports a side
 // under the shell's eave, ten great sweeps a side below them, two lowering masts carrying cream
-// battened lugs with the three ochre peaks of Iziz. (Ref: geobukseon.)
-function rsIzizBatten(g,W,H,P){rsCloth(g,W,H,'#e6dcc4',7,'h');g.save();rsPolyPath(g,P);g.clip();g.fillStyle='rgba(120,70,30,.18)';for(let i=0;i<6;i++)g.fillRect(0,H*i/6,W,H/14);
- g.strokeStyle='#7a5a30';g.lineWidth=W*.03;rsPolyPath(g,P);g.stroke();const [cx,cy]=rsCentroid(P);g.fillStyle='#2a8a8a';g.fillRect(0,cy+W*.12,W,W*.05);
- g.fillStyle='#c88a3a';for(let i=-1;i<=1;i++){g.beginPath();g.moveTo(cx+i*W*.16-W*.09,cy+W*.1);g.lineTo(cx+i*W*.16,cy-W*.1+Math.abs(i)*W*.04);g.lineTo(cx+i*W*.16+W*.09,cy+W*.1);g.closePath();g.fill();}g.restore();}
+// battened lugs in the Iziz livery: orange field, teal edge, the sun disc (core/sockets). The shell is
+// boxy (a superellipse section with near-square plan ends), not a round vault. (Ref: geobukseon.)
+function rsIzizBatten(g,W,H,P){rsFactionSail(g,W,H,P,RS_CULT.iziz,'sun',.2);g.save();rsPolyPath(g,P);g.clip();g.fillStyle='rgba(60,30,10,.12)';for(let i=0;i<6;i++)g.fillRect(0,H*i/6,W,H/30);g.restore();}
 function buildRsIzizTurtle(){reseed(71100);
  const V={group:new THREE.Group(),anims:[]};const B=rsBucket();
- const TIM=0x8a6038,TEAL=0x2a8a8a,OCHRE=0xc88a3a,IRON=0xe4e0d4;
+ const TIM=0x8a6038,TEAL=rsLin(RS_CULT.iziz.edge),OCHRE=rsLin(RS_CULT.iziz.field),IRON=0xe4e0d4;   // OCHRE is the Iziz orange
  const H=rsHull({L:34,B:10,fb:2.4,dr:1.5,sheerF:.9,sheerA:1.6,sp:2.2,pb:1.9,pa:2.4,q:.55,n:4,flare:.16,rakeF:1.4,rakeA:.4,transom:.52,keelEnd:.5,kp:4});
  rsHullMesh(B,H,'wood',(u,h,s)=>h>.9?TEAL:h>.82?OCHRE:h<.35?0x2c2a24:TIM);rsFoam(B,H,1.1);
- const dY=rsDeck(B,H,{bw:.3,col:0x8a7254});rsWale(B,H,.83,.13,'wood',0x3a2a1c);rsWale(B,H,.55,.1,'wood',0x3a2a1c);rsSpine(B,H,.25,0x3a2a1c);
+ const dY=rsDeck(B,H,{bw:.3,col:0x8a7254});rsWale(B,H,.83,.13,'paint',OCHRE);rsWale(B,H,.55,.1,'wood',0x3a2a1c);rsSpine(B,H,.25,0x3a2a1c);
  // the shell: an iron hex-plated vault from stern to bow, its eave just outboard of the sheer
  const x0=H.xAt(.06,1),x1=H.xAt(.93,1),y0=H.ys(.5)+.05,hw=H.hb(.5)+.25,rise=2.9;
- const shell=(u,v)=>{const x=lerp(x0,x1,u),e=Math.abs(u*2-1),k=Math.pow(Math.max(0,1-Math.pow(e,6)),.35),a=v*Math.PI;return[x,y0+Math.sin(a)*rise*k+(u>.5?(H.ys(lerp(.06,.93,u))-H.ys(.5))*.6:0),Math.cos(a)*hw*Math.max(.3,k)];};
+ // superellipse section (exponent 2/7): flat roof, near-vertical walls, rounded corners; ends cut near square
+ const se=(c,n)=>Math.sign(c)*Math.pow(Math.abs(c),2/n);
+ const shell=(u,v)=>{const x=lerp(x0,x1,u),e=Math.abs(u*2-1),k=Math.pow(Math.max(0,1-Math.pow(e,12)),.18),a=v*Math.PI;return[x,y0+se(Math.sin(a),7)*rise*k+(u>.5?(H.ys(lerp(.06,.93,u))-H.ys(.5))*.6:0),se(Math.cos(a),7)*hw*Math.max(.55,k)];};
  rsPut(B,'hex',rsGrid(shell,30,16,(u,v,p)=>[p[0]/3,v*Math.PI*(hw+rise)/2/3]),null,null,null,IRON);
  // spikes along the shell, normal-out, skipping the ridge walk
  for(let i=1;i<20;i++)for(let j=1;j<14;j++){if(j===7)continue;const u=i/20,v=j/14;const p=shell(u,v),pu=shell(u+.01,v),pv=shell(u,v+.01);
   const N=new THREE.Vector3(pu[0]-p[0],pu[1]-p[1],pu[2]-p[2]).cross(new THREE.Vector3(pv[0]-p[0],pv[1]-p[1],pv[2]-p[2])).normalize();if(N.y<0)N.negate();
   rsPut(B,'metal',new THREE.ConeGeometry(.07,.5,5,1),[p[0]+N.x*.25,p[1]+N.y*.25,p[2]+N.z*.25],new THREE.Quaternion().setFromUnitVectors(_rsUp,N),null,0x3a3c40);}
  // the ridge walk and the gunports under the eave
- const ridge=[];for(let i=0;i<=20;i++)ridge.push(shell(i/20,.5));rsTube(B,'paint',ridge.map(p=>[p[0],p[1]+.1,0]),.22,0x2a8a8a,40,6);
- for(let i=0;i<12;i++){const u=lerp(.14,.86,i/11);for(const s of[-1,1]){const p=shell(u,s>0?.08:.92);rsBox(B,'paint',[.55,.45,.1],[p[0],p[1]-.05,p[2]+s*.02],[0,0,0],0x0e0c0a);
+ const ridge=[];for(let i=0;i<=20;i++)ridge.push(shell(i/20,.5));rsTube(B,'paint',ridge.map(p=>[p[0],p[1]+.1,0]),.22,OCHRE,40,6);
+ // orange trim along both eaves and round the roof's shoulders
+ for(const v of[.03,.97,.25,.75]){const pts=[];for(let i=0;i<=20;i++)pts.push(shell(i/20,v));rsTube(B,'paint',pts,v<.1||v>.9?.16:.1,v<.1||v>.9?OCHRE:TEAL,40,6);}
+ for(let i=0;i<12;i++){const u=lerp(.14,.86,i/11);for(const s of[-1,1]){const p=shell(u,s>0?.08:.92);rsBox(B,'paint',[.75,.65,.08],[p[0],p[1]-.05,p[2]+s*.01],[0,0,0],OCHRE);rsBox(B,'paint',[.55,.45,.1],[p[0],p[1]-.05,p[2]+s*.02],[0,0,0],0x0e0c0a);
   rsLink(B,'metal',[p[0],p[1]-.05,p[2]],[p[0],p[1]-.05,p[2]+s*.7],.1,0x1c1c1e,8);}}
  // the dragon's head at the bow and its smoke; a painted demon face on the bow planks
  const pb=H.pt(1,0,1);rsTube(B,'paint',[[pb[0]-1.6,pb[1]+.3,0],[pb[0]-.5,pb[1]+.8,0],[pb[0]+.4,pb[1]+1.5,0]],.55,0xb8782c,12,10);
- rsDragonHead(B,[pb[0]+.8,pb[1]+1.8,0],1.25,0xc88a3a,0xf0e8d0,.3);
+ rsDragonHead(B,[pb[0]+.8,pb[1]+1.8,0],1.25,OCHRE,0xf0e8d0,.3);
  if(!RSMAT.smoke)rsDefMat('smoke',new THREE.MeshStandardMaterial({color:0xc8c49a,transparent:true,opacity:.35,depthWrite:false,roughness:1}));
  for(let i=0;i<6;i++)rsSphere(B,'smoke',.5+i*.28,[pb[0]+3+i*1.3,pb[1]+1.6+i*.55,rr(-.3,.3)],[1.3,1,1],0xd0cca0,10,8);
  for(const s of[-1,1]){rsDecal(B,H,.95,s,.6,.8,0xe8d8b0,'paint',20,.08);rsDecal(B,H,.95,s,.6,.28,0x111111,'paint',14,.12);}
  // the stern transom crest
- {const p=H.pt(0,0,.7);rsPut(B,'paint',new THREE.CircleGeometry(1.1,24),[p[0]-.08,p[1],0],[0,-Math.PI/2,0],null,TEAL);rsPut(B,'paint',new THREE.CircleGeometry(.55,20),[p[0]-.12,p[1],0],[0,-Math.PI/2,0],null,0xd8b048);}
+ {const p=H.pt(0,0,.7);rsPut(B,'paint',new THREE.CircleGeometry(1.1,24),[p[0]-.08,p[1],0],[0,-Math.PI/2,0],null,TEAL);rsPut(B,'paint',new THREE.CircleGeometry(.55,20),[p[0]-.12,p[1],0],[0,-Math.PI/2,0],null,OCHRE);}
  // sweeps and two lowering masts
  rsOars(V,H,{name:'sweeps',uA:.2,uB:.82,n:10,hF:.62,len:8.5,inb:2.6,r:.07,bladeW:.32,col:0x7a6040,sweep:.36,rate:.32});
  for(const [mx,mh] of[[4,15],[-6,13]]){const base=y0+rise;rsLink(B,'wood',[mx,y0-.5,0],[mx,base+mh,0],.24,0x6a4a30,8,.16);const w=mh*.62;
@@ -696,8 +713,8 @@ function buildRsIzizTurtle(){reseed(71100);
    A:t=>[-w*.3,t*mh*.9],Bf:t=>[w*.7+Math.sin(t*Math.PI)*w*.08,t*mh*.84+mh*.06],draw:rsIzizBatten});
   for(let k=0;k<=6;k++){const pts=[];for(let i=0;i<=8;i++)pts.push(S.at(k/6,i/8));rsTube(B,'wood',pts,.05,0x4a3a26,16,5);}
   rsRope(B,[mx,base+mh,0],[H.xAt(.98,1),H.ys(.98)+.5,0]);rsRope(B,[mx,base+mh,0],[H.xAt(.02,1),H.ys(.02)+.5,0]);
-  rsPennant(B,[mx,base+mh+.2,0],3.2,.8,[0x2a8a8a,0xc88a3a]);}
- for(const x of[-15.5,-14.6])rsFigure(B,[x,dY(.03)+.1,rr(-1,1)],0,[0xe8dcc0,0x2a8a8a][x<-15?0:1]);
+  rsPennant(B,[mx,base+mh+.2,0],3.2,.8,[TEAL,OCHRE]);}
+ for(const x of[-15.5,-14.6])rsFigure(B,[x,dY(.03)+.1,rr(-1,1)],0,[0xe8dcc0,OCHRE][x<-15?0:1]);
  {const p=H.pt(0,0,.3);rsBox(B,'wood',[.3,3.4,2.2],[p[0]-.6,p[1]-.8,0],null,0x3a2a1c);}
  rsBake(B,V.group,'izizTurtle');V.deckY=y0+rise;return V;}
 RS_VESSEL({key:'izizTurtle',name:'Iziz Turtle Ship',culture:'iziz-vernacular',L:40,B:28,H:21,
@@ -749,18 +766,19 @@ RS_VESSEL({key:'xanaduSwan',name:'Xanadu Swan Barge',culture:'xanadu',L:48,B:9,H
 // ---------------------------------------------------------------- vessel: Voth Ordinator Flagship
 // The flagship of the Ordinators' fleet: a 50 m, square-sectioned, flat-transomed junk-built hull,
 // lacquered brown-black, with a raked bow and a three-storey stern castle under dark red tile, a
-// tiled deckhouse amidships, and three masts of oxblood battened sails, the main bearing the gold
-// Voth sigil. The mizzen is stepped on the castle so its sail rides clear of the roofs. Bolt-throwers
+// tiled deckhouse amidships, and three masts of green battened sails, the main bearing the gold
+// wave. The mizzen is stepped on the castle so its sail rides clear of the roofs. Bolt-throwers
 // on the foredeck, gilded Ordinators at the rails, lanterns, a great stern rudder.
 // (Ref: the fantasy junk sheet; the dark hull matches the Voth Chitin Bireme.)
 // the Voth lacquer, shared with 71-rs-voth-chitin.js. Vertex colours are read as LINEAR, so a hex picked by eye
 // has to be converted or a brown-black comes out mid-brown (that is what the first pass did).
 const RS_VOTH_HULL=new THREE.Color(0x2a1c14).convertSRGBToLinear(),RS_VOTH_HULL2=new THREE.Color(0x160f0a).convertSRGBToLinear();
-function rsVothOxblood(g,W,H,P){rsCloth(g,W,H,'#5e1c14',8,'h');g.save();rsPolyPath(g,P);g.clip();for(let i=0;i<8;i++){g.fillStyle=`rgba(0,0,0,${.06+.05*(i%2)})`;g.fillRect(0,H*i/8,W,H/8);}
- g.strokeStyle='#2a0c08';g.lineWidth=W*.025;rsPolyPath(g,P);g.stroke();g.restore();}
-function rsVothSigil(g,W,H,P){rsVothOxblood(g,W,H,P);g.save();rsPolyPath(g,P);g.clip();const [cx,cy]=rsCentroid(P);g.strokeStyle='#d8a838';g.fillStyle='#d8a838';
- g.lineWidth=W*.04;g.beginPath();g.arc(cx,cy,W*.17,0,TAU);g.stroke();g.beginPath();g.moveTo(cx,cy-W*.28);g.lineTo(cx,cy+W*.28);g.moveTo(cx-W*.22,cy-W*.08);g.lineTo(cx+W*.22,cy-W*.08);g.stroke();
- g.beginPath();g.arc(cx,cy+W*.07,W*.055,0,TAU);g.fill();g.restore();}
+// the sails: green battened cloth, the main with the gold wave (Travis kept these from the first pass)
+function rsVothGreen(g,W,H,P){rsCloth(g,W,H,'#2f6a52',8,'h');g.save();rsPolyPath(g,P);g.clip();for(let i=0;i<8;i++){g.fillStyle=`rgba(0,0,0,${.05+.04*(i%2)})`;g.fillRect(0,H*i/8,W,H/8);}
+ g.strokeStyle='#183a2c';g.lineWidth=W*.025;rsPolyPath(g,P);g.stroke();g.restore();}
+function rsVothWave(g,W,H,P){rsVothGreen(g,W,H,P);g.save();rsPolyPath(g,P);g.clip();const [cx,cy]=rsCentroid(P);g.strokeStyle='#e4b83a';g.lineCap='round';
+ for(let r=0;r<4;r++){g.lineWidth=W*.045;g.beginPath();const R=W*(.1+r*.06);g.arc(cx+W*.05,cy+H*.02,R,Math.PI*.95,Math.PI*1.95);g.stroke();}
+ for(let k=0;k<3;k++){g.lineWidth=W*.04;g.beginPath();g.arc(cx-W*.14+k*W*.1,cy+H*.12,W*.06,Math.PI,Math.PI*1.9);g.stroke();}g.restore();}
 function buildRsVothFlagship(){reseed(71300);
  const V={group:new THREE.Group(),anims:[]};const B=rsBucket();
  const lin=h=>new THREE.Color(h).convertSRGBToLinear();
@@ -781,11 +799,11 @@ function buildRsVothFlagship(){reseed(71300);
  // the deckhouse amidships
  rsCabin(B,{x:-2,y:dY(.5),w:9,d:7,h:2.4,wall:WALL,win:6,winCol:0xe8a040,roof:'hip',roofMk:'tile',roofCol:TILE,rh:1.6,over:.6,flare:.35});
  // masts and sails: fore (raked forward), main (its foot clears the castle roofs), mizzen stepped on the castle
- [[15,26,-.12,'voth-oxblood',5.2],[2,36,0,'voth-sigil',castleTop-dY(H.uAt(2))+1.2],[-17,13,.05,'voth-oxblood',castleTop-dY(H.uAt(-17))+.6]].forEach(([mx,mh,lean,key,foot],i)=>{
+ [[15,26,-.12,'voth-green',5.2],[2,36,0,'voth-wave',castleTop-dY(H.uAt(2))+1.2],[-17,13,.05,'voth-green',castleTop-dY(H.uAt(-17))+.6]].forEach(([mx,mh,lean,key,foot],i)=>{
   const base=dY(H.uAt(mx));const tp=[mx+Math.sin(-lean)*mh,base+mh,0];rsLink(B,'wood',[mx,base-.5,0],tp,.32,0x2a1a10,8,.2);
   const sh=mh-foot-1,w=Math.min(sh*.72,i===2?8.5:20);
   const S=rsSail(B,{key,O:[mx+.4,base+foot,-.5],U:[-1,0,-.18],V:[Math.sin(-lean),1,0],belly:.9,scallop:7,
-   A:t=>[-w*.12,t*sh],Bf:t=>[w*(.74+.2*Math.sin(t*Math.PI*.9)),t*sh*.95+sh*.03],draw:key==='voth-sigil'?rsVothSigil:rsVothOxblood});
+   A:t=>[-w*.12,t*sh],Bf:t=>[w*(.74+.2*Math.sin(t*Math.PI*.9)),t*sh*.95+sh*.03],draw:key==='voth-wave'?rsVothWave:rsVothGreen});
   for(let k=0;k<=7;k++){const pts=[];for(let j=0;j<=8;j++)pts.push(S.at(k/7,j/8));rsTube(B,'wood',pts,.06,0x140c08,16,5);}
   rsRope(B,tp,[H.xAt(1,1)+.5,H.ys(1),0]);rsPennant(B,[tp[0],tp[1]+.3,0],4,.9,[RED,GOLD]);});
  // the great rudder, lanterns, the windlass, two bolt-throwers, the Ordinators
@@ -798,7 +816,7 @@ function buildRsVothFlagship(){reseed(71300);
  rsBake(B,V.group,'vothFlagship');V.deckY=dY(.5);return V;}
 RS_VESSEL({key:'vothFlagship',name:'Voth Ordinator Flagship',culture:'voth',L:56,B:16,H:43,
  tags:{type:['warship','flagship','junk'],propulsion:['sail'],hull:'monohull',wealth:'state',crew:120,role:'flagship of the Ordinators'},
- blurb:'A brown-black junk-built flagship: oxblood battened sails with the gold Voth sigil, a stepped stern castle under red tile.',build:buildRsVothFlagship});
+ blurb:'A brown-black junk-built flagship: green battened sails with the gold wave, a stepped stern castle under red tile.',build:buildRsVothFlagship});
 // ---------------------------------------------------------------- vessel: Beast-Rider Voyaging Canoe (wa'a kaulua)
 // How the beast-riders of Mav's Refuge cross the Ring Sea when the flyers cannot carry the load:
 // two 20 m dugout-and-plank hulls lashed to six crossbeams, a slatted platform between them with a
@@ -877,9 +895,11 @@ function buildRsHykGalley(){reseed(71500);
  const xs=H.xAt(.06,1);for(let i=0;i<3;i++){const pts=[];for(let j=0;j<=16;j++){const a=j/16*Math.PI;pts.push([xs+i*1.2-Math.sin(a)*.8,dY(.1)+Math.sin(a)*2.4,Math.cos(a)*2.2]);}rsTube(B,'paint',pts,.1,i%2?CREAM:BLUE,32,6);}
  rsCabin(B,{x:-8.5,y:dY(.2),w:4,d:3.4,h:1.9,wall:0x6a3a1e,win:3,roof:'vault',roofMk:'wood',roofCol:0x7a4a28,rh:.7,over:.25});
  // two tall sails on curved bamboo yards
- [[-1.5,15],[-8,12]].forEach(([mx,mh],i)=>{const base=dY(H.uAt(mx));rsBamboo(B,[mx,base-.3,0],[mx,base+mh*.62+2,0],.16,0x9a7a44,1.2);
+ // the fore sail is stepped just abaft the tarp and cut short so its clew and yard end a metre
+ // forward of the aft mast: the two sails must not pass through each other (sails-clear-sails)
+ [[1.2,15,.42],[-7.6,12,.5]].forEach(([mx,mh,span],i)=>{const base=dY(H.uAt(mx));rsBamboo(B,[mx,base-.3,0],[mx,base+mh*.62+2,0],.16,0x9a7a44,1.2);rsSolid(B,[mx-.2,base,-.2],[mx+.2,base+mh*.62+2,.2]);
   const S=rsSail(B,{key:'hyk-scroll',O:[mx+.3,base+3.3,.35],U:[-1,0,0],V:[0,1,0],belly:-.8,nu:22,nv:12,
-   A:t=>[t*.9,t*mh],Bf:t=>[lerp(mh*.62,.9,t)+Math.sin(Math.PI*t)*mh*.12,lerp(.1,mh,Math.pow(t,1.1))],draw:rsHykScroll});
+   A:t=>[t*.9,t*mh],Bf:t=>[lerp(mh*span,.9,t)+Math.sin(Math.PI*t)*mh*.1,lerp(.1,mh,Math.pow(t,1.1))],draw:rsHykScroll});
   // the curved yard runs past the head and the clew; the boom along the foot
   const yd=[];for(let k=0;k<=18;k++)yd.push(S.at(k/18,1));const e0=yd[0],e1=yd[yd.length-1];yd.unshift([e0[0]+1.2,e0[1]-.6,e0[2]]);yd.push([e1[0]+.4,e1[1]+1.6,e1[2]]);
   rsTube(B,'wood',yd,t=>.17*(1-.5*t),0x9a7a44,60,8);for(let k=1;k<yd.length-1;k+=2)rsSphere(B,'rope',.19,yd[k],[1,.5,1],0x5a4128,8,4);
@@ -1139,13 +1159,11 @@ RS_VESSEL({key:'islanderKarakoa',name:'Islander Karakoa',culture:'ringsea-island
 // The Voth build their fast raiders the old way, on the shell of something that lived: a 30 m hull
 // of lacquered chitin, its deck roofed by seven overlapping carapace segments like a beetle's back,
 // an insect prow of compound eyes and hooked mandibles, the abdomen's sting curling up at the stern.
-// Two banks of oars; two ribbed fan sails of ochre silk on bone ribs, the black Voth sigil on each.
+// Two banks of oars; two ribbed fan sails of Voth-blue silk on bone ribs with the ash-white diamond;
+// the compound eyes are blue.
 // (Ref: the ribbed fan sails of the Dragons 2 sketches; Dunmer chitin; the turtle ship's idea of a roof.)
-function rsFanOchre(g,W,H,P){rsCloth(g,W,H,'#c8923a',1,'v');g.save();rsPolyPath(g,P);g.clip();
- const gr=g.createLinearGradient(0,H,0,0);gr.addColorStop(0,'rgba(120,50,10,.35)');gr.addColorStop(1,'rgba(255,220,150,.15)');g.fillStyle=gr;g.fillRect(0,0,W,H);
- const [cx,cy]=rsCentroid(P);g.strokeStyle='#1a1410';g.fillStyle='#1a1410';g.lineWidth=W*.025;g.beginPath();g.arc(cx,cy,W*.12,0,TAU);g.stroke();
- g.beginPath();g.moveTo(cx,cy-W*.2);g.lineTo(cx,cy+W*.2);g.moveTo(cx-W*.16,cy-W*.06);g.lineTo(cx+W*.16,cy-W*.06);g.stroke();g.beginPath();g.arc(cx,cy+W*.05,W*.04,0,TAU);g.fill();
- g.strokeStyle='#4a2a10';g.lineWidth=W*.02;rsPolyPath(g,P);g.stroke();g.restore();}
+// the fan sails in the Voth livery (core/sockets): deep blue field, dark edge, the ash-white diamond
+function rsFanVoth(g,W,H,P){rsFactionSail(g,W,H,P,RS_CULT.voth,'diamond',.16);g.save();rsPolyPath(g,P);g.clip();const gr=g.createLinearGradient(0,H,0,0);gr.addColorStop(0,'rgba(0,0,20,.3)');gr.addColorStop(1,'rgba(160,190,230,.12)');g.fillStyle=gr;g.fillRect(0,0,W,H);g.restore();}
 function buildRsVothChitin(){reseed(72100);
  const V={group:new THREE.Group(),anims:[]};const B=rsBucket();
  const lin=h=>new THREE.Color(h).convertSRGBToLinear();const CH=lin(0x2e2016),CH2=lin(0x2a1c14),DK=lin(0x120c08);   // the Voth lacquer: the same brown-black as the Ordinator Flagship (RS_VOTH_HULL)
@@ -1158,7 +1176,7 @@ function buildRsVothChitin(){reseed(72100);
   const rim=[];for(let j=0;j<=12;j++){const a=j/12*Math.PI;rim.push([x1,cy+.2+Math.sin(a)*r*1.12-.15,Math.cos(a)*hw*1.12]);}rsTube(B,'chitin',rim,.07,DK,24,5);}
  // the insect prow: compound eyes, hooked mandibles, feelers; the sting at the stern
  const pb=H.pt(1,0,1);rsSphere(B,'chitin',1.1,[pb[0]-.6,pb[1]+.3,0],[1.3,.8,1],CH2,14,10);
- for(const s of[-1,1]){rsSphere(B,'metal',.55,[pb[0]-.2,pb[1]+.55,s*.75],[1,1,1],0x101c14,12,10);
+ for(const s of[-1,1]){rsSphere(B,'metal',.55,[pb[0]-.2,pb[1]+.55,s*.75],[1,1,1],rsLin(0x2e6ad8),12,10);rsSphere(B,'glow',.2,[pb[0]+.12,pb[1]+.62,s*1.02],[1,1,1],0x6aa8ff,8,6);
   rsTube(B,'chitin',[[pb[0]-.2,pb[1]-.1,s*.5],[pb[0]+1.4,pb[1]-.2,s*1],[pb[0]+2.6,pb[1]-.1,s*.6],[pb[0]+2.9,pb[1],s*.05]],t=>.2*(1-.8*t),DK,24,8);
   rsTube(B,'chitin',[[pb[0]-.2,pb[1]+.9,s*.4],[pb[0]+.8,pb[1]+2.6,s*.9],[pb[0]+2.4,pb[1]+3.4,s*1.4]],t=>.05*(1-.6*t),DK,16,5);}
  const pa=H.pt(0,0,1);rsTube(B,'chitin',[[pa[0]+.6,pa[1]-.3,0],[pa[0]-.6,pa[1]+.6,0],[pa[0]-1,pa[1]+2.2,0],[pa[0]-.2,pa[1]+3.4,0],[pa[0]+.8,pa[1]+3.3,0]],t=>.45*(1-.85*t),CH2,40,10);
@@ -1166,17 +1184,18 @@ function buildRsVothChitin(){reseed(72100);
  rsOars(V,H,{name:'lower bank',uA:.2,uB:.8,n:16,hF:.5,len:5.4,inb:1.3,r:.045,col:0x3a2a1a,phase:0});
  rsOars(V,H,{name:'upper bank',uA:.22,uB:.78,n:14,hF:.76,len:6.5,inb:1.6,r:.05,col:0x3a2a1a,phase:.2});
  // two ribbed fan sails: bone ribs radiating from a boss at the mast foot
- [[2,12.5,1],[-7,9.5,.85]].forEach(([mx,mh,k])=>{const base=cy+2.2;rsLink(B,'paint',[mx,base-1.5,0],[mx,base+mh,0],.18,0xe8dcc0,8,.12);
-  const R=mh*.95,a0=.1,a1=1.25,A0=[0,0];
-  const S=rsSail(B,{key:'voth-fan',O:[mx,base+.6,.3],U:[-1,0,0],V:[0,1,0],belly:.6,nu:24,nv:10,
-   A:t=>A0,Bf:t=>{const a=lerp(Math.PI/2-a0,Math.PI/2-a1,t);const rr0=R*(1-.07*Math.sin(t*Math.PI*6)**2);return[Math.cos(a)*rr0,Math.sin(a)*rr0];},draw:rsFanOchre});
+ // the fore fan sweeps less far aft and the aft mast stands further back: the fans must not touch (sails-clear-sails)
+ [[2,12.5,1,1.02],[-9.2,9.5,.85,1.2]].forEach(([mx,mh,k,a1])=>{const base=cy+2.2;rsLink(B,'paint',[mx,base-1.5,0],[mx,base+mh,0],.18,0xe8dcc0,8,.12);
+  const R=mh*.95,a0=.1,A0=[0,0];
+  const S=rsSail(B,{key:'voth-fan-blue',O:[mx,base+.6,.3],U:[-1,0,0],V:[0,1,0],belly:.6,nu:24,nv:10,
+   A:t=>A0,Bf:t=>{const a=lerp(Math.PI/2-a0,Math.PI/2-a1,t);const rr0=R*(1-.07*Math.sin(t*Math.PI*6)**2);return[Math.cos(a)*rr0,Math.sin(a)*rr0];},draw:rsFanVoth});
   for(let i=0;i<=6;i++){const t=i/6,pts=[];for(let j=0;j<=6;j++)pts.push(S.at(t,j/6));rsTube(B,'paint',pts,t=>.07*(1-.5*t),0xe8dcc0,12,5);}
   rsRope(B,[mx,base+mh,0],[H.xAt(1,1),H.ys(1),0]);rsRope(B,S.at(1,1),[mx-7*k,cy+.5,0]);});
  for(const x of[-12,-1,6])rsFigure(B,[x,x<-11?dY(H.uAt(x)):cy+2.1,rr(-.4,.4)],rr(0,TAU),[0x4a3a5a,0x8a3a1c,0x2a2a2a][Math.floor(rng()*3)],false,0x8a8aa0);
  rsBake(B,V.group,'vothChitin');V.deckY=cy;return V;}
 RS_VESSEL({key:'vothChitin',name:'Voth Chitin Bireme',culture:'voth',L:34,B:17,H:16,
  tags:{type:['warship','bireme','turtle ship'],propulsion:['oars','sail'],hull:'monohull',wealth:'state',crew:80,role:'fast raider'},
- blurb:'A lacquered chitin hull roofed by seven carapace segments, an insect prow, two banks of oars, ribbed fan sails.',build:buildRsVothChitin});
+ blurb:'A brown-black chitin hull roofed by seven carapace segments, blue-eyed insect prow, two banks of oars, blue ribbed fan sails.',build:buildRsVothChitin});
 // ---------------------------------------------------------------- vessel: Hykkousoi Siege Hexareme
 // The Hykkousoi's siege ship, the heaviest thing on the Ring Sea that still rows: a 48 m hull with
 // three banks of great oars pulled two men to the oar, a bronze triple ram, shields along the rails,
@@ -1232,19 +1251,19 @@ function buildRsHykHexareme(){reseed(72200);
 RS_VESSEL({key:'hykHexareme',name:'Hykkousoi Siege Hexareme',culture:'hykkousoi',L:55,B:30,H:29,
  tags:{type:['warship','hexareme','siege ship'],propulsion:['oars','sail'],hull:'monohull',wealth:'state',crew:420,role:'siege and line-breaking'},
  blurb:'Three banks of great oars, twin crenellated towers, a stone-thrower, a raised boarding bridge and a wave-sun square sail.',build:buildRsHykHexareme});
-// ---------------------------------------------------------------- vessel: Xanadu Pearl Baghlah
-// The Sultanate's deep-water trader, carrying the valley's gold out and pearls, carpets and spice
-// back: a 36 m teak hull with a long raked stem and a high square stern, the stern a carved and
-// gilded gallery of arched windows under a turquoise tile rosette (the Persian hand in Xanadu), two
-// masts raked forward under great white lateens edged in turquoise with a gold rosette, a poop
-// rail, and a deck of rolled carpets, chests and water jars.
-function rsXanaduLateen(g,W,H,P){rsCloth(g,W,H,'#f0ebe0',11,'v');g.save();rsPolyPath(g,P);g.clip();g.strokeStyle='#1f8a9a';g.lineWidth=W*.035;rsPolyPath(g,rsInset(P,W*.03));g.stroke();
- g.strokeStyle='#d8a838';g.lineWidth=W*.01;rsPolyPath(g,rsInset(P,W*.06));g.stroke();const [cx,cy]=rsCentroid(P),R=W*.1;
- for(let i=0;i<8;i++){const a=i/8*TAU;g.fillStyle=i%2?'#1f8a9a':'#d8a838';g.beginPath();g.ellipse(cx+Math.cos(a)*R*.7,cy+Math.sin(a)*R*.7,R*.45,R*.2,a,0,TAU);g.fill();}
- g.fillStyle='#d8a838';g.beginPath();g.arc(cx,cy,R*.35,0,TAU);g.fill();g.restore();}
-function buildRsXanaduBaghlah(){reseed(72300);
+// ---------------------------------------------------------------- vessel: Hykkousoi Pearl Baghlah
+// The Hykkousoi pearling ship, mother to a season of divers: a 36 m teak hull with a long raked stem
+// and a high square stern, the stern a carved and gilded gallery of arched windows under a blue
+// rosette, two masts raked forward under great white lateens edged in Hykkousoi blue with a ring of
+// pearls round a gold sun. Along the starboard side the diving booms hang their stone-weighted lines,
+// divers in the water between dives; on deck the oyster baskets and the opening mats.
+function rsHykPearlLateen(g,W,H,P){rsCloth(g,W,H,'#f0ebe0',11,'v');g.save();rsPolyPath(g,P);g.clip();g.strokeStyle='#3f86a6';g.lineWidth=W*.035;rsPolyPath(g,rsInset(P,W*.03));g.stroke();
+ g.strokeStyle='#d8a838';g.lineWidth=W*.01;rsPolyPath(g,rsInset(P,W*.06));g.stroke();const [cx,cy]=rsCentroid(P),R=W*.11;
+ g.fillStyle='#d8a838';g.beginPath();g.arc(cx,cy,R*.42,0,TAU);g.fill();for(let i=0;i<16;i++){const a=i/16*TAU;g.fillStyle='#f8f4ec';g.beginPath();g.arc(cx+Math.cos(a)*R*.8,cy+Math.sin(a)*R*.8,R*.11,0,TAU);g.fill();
+  g.strokeStyle='#3f86a6';g.lineWidth=1.5;g.stroke();}g.restore();}
+function buildRsHykPearl(){reseed(72300);
  const V={group:new THREE.Group(),anims:[]};const B=rsBucket();
- const TEAK=0x8a5a30,DK=0x3a2414,TURQ=0x1f9aa8,GOLD=0xd8a838,WHITE=0xece6d8;
+ const TEAK=0x8a5a30,DK=0x3a2414,TURQ=0x3f86a6,GOLD=0xd8a838,WHITE=0xece6d8;   // TURQ is the Hykkousoi blue
  const H=rsHull({L:36,B:9,fb:3,dr:2.4,sheerF:1.6,sheerA:3.6,sp:2.4,pb:2.4,pa:3,q:.5,n:2.8,flare:.1,rakeF:4.2,rakeA:.6,transom:.55,keelEnd:.8});
  rsHullMesh(B,H,'wood',(u,h,s)=>h>.93?TURQ:h>.89?GOLD:h<.4?WHITE:u<.12&&h>.6?TURQ:TEAK);rsFoam(B,H,1.2);
  const dY=rsDeck(B,H,{bw:.8,col:0xb0906a});rsWale(B,H,.89,.1,'metal',GOLD);rsWale(B,H,.7,.12,'wood',DK);rsSpine(B,H,.22,DK,[[H.xAt(1,1)+.8,H.ys(1)+.5],[H.xAt(1,1)+1.2,H.ys(1)+1.1]]);
@@ -1257,33 +1276,41 @@ function buildRsXanaduBaghlah(){reseed(72300);
   rsRoof(B,'tile',2.8,1,.6,[p[0]+1.2,p[1]+.5,p[2]+s*.25],null,TURQ,.1,.3);}
  for(const a of rsAlong(H,.02,.2,8,1)){rsLink(B,'metal',[a.p[0],pd,a.p[2]*.95],[a.p[0],pd+1,a.p[2]*.95],.04,GOLD,5);}
  // two masts raked forward, great lateens
- const lateen=(mx,mh,tack,peak,clew,key)=>{const base=dY(H.uAt(mx)),rk=.14,top=[mx+Math.sin(rk)*mh,base+mh,0];rsLink(B,'wood',[mx,base-.3,0],top,.34,0x6a4a2c,8,.2);
-  const S=rsSail(B,{key,O:[0,base,.45],U:[1,0,0],V:[0,1,0],belly:-1.4,nu:22,nv:12,A:t=>[lerp(tack[0],peak[0],t),lerp(tack[1],peak[1],t)+Math.sin(Math.PI*t)*.9],Bf:t=>[lerp(clew[0],peak[0],t)+Math.sin(Math.PI*t)*.8,lerp(clew[1],peak[1],t)],draw:rsXanaduLateen});
+ const lateen=(mx,mh,tack,peak,clew,key,zs)=>{const base=dY(H.uAt(mx)),rk=.14,top=[mx+Math.sin(rk)*mh,base+mh,0];rsLink(B,'wood',[mx,base-.3,0],top,.34,0x6a4a2c,8,.2);
+  // the two lateens hang on opposite sides of their masts and belly apart, so they never touch (sails-clear-sails)
+  const S=rsSail(B,{key,O:[0,base,.45*zs],U:[1,0,0],V:[0,1,0],belly:1.2*zs,nu:22,nv:12,A:t=>[lerp(tack[0],peak[0],t),lerp(tack[1],peak[1],t)+Math.sin(Math.PI*t)*.9],Bf:t=>[lerp(clew[0],peak[0],t)+Math.sin(Math.PI*t)*.8,lerp(clew[1],peak[1],t)],draw:rsHykPearlLateen});
   const yd=[];for(let k=0;k<=16;k++)yd.push(S.at(k/16,0));yd.unshift([yd[0][0]+1.4,yd[0][1]-.5,yd[0][2]]);rsTube(B,'wood',yd,t=>.24*(1-.5*Math.abs(t-.35)),0x7a5634,40,6);
   rsRope(B,top,S.at(.45,0));rsRope(B,top,[mx-6,H.ys(H.uAt(mx-6)),-3.6]);rsRope(B,top,[mx-6,H.ys(H.uAt(mx-6)),3.6]);rsPennant(B,[top[0],top[1]+.3,0],4,.8,[TURQ,GOLD]);};
- lateen(3,24,[18,2.6],[-13,30],[-7,2.4],'xanadu-lateen');lateen(-9.5,15,[-3.5,4.6],[-19,19],[-14.5,4.4],'xanadu-lateen');
- // the cargo: rolled carpets, chests, water jars; the crew; the helmsman on the poop
- for(let i=0;i<10;i++){const x=rr(6,14),z=rr(-3,3);rsCyl(B,'cloth',.28,.28,2.4,[x,dY(H.uAt(x))+.3+(i%3)*.5,z],[0,rr(-.3,.3),Math.PI/2],[0xa02a2a,0x2a4a8a,0xc88a3a,0x1f8a7a][i%4],10);}
+ lateen(3,24,[18,2.6],[-13,30],[-7,2.4],'hyk-pearl',1);lateen(-9.5,15,[-3.5,4.6],[-19,19],[-14.5,4.4],'hyk-pearl',-1);
+ // the diving booms: six spars out over the starboard side, each with a stone-weighted line; divers
+ // in the water between dives; the hauling crew at the rail
+ for(let i=0;i<6;i++){const x=lerp(-6,12,i/5),u=H.uAt(x),yr=H.ys(u),zr=H.hb(u);rsLink(B,'wood',[x,yr+.2,zr-.4],[x+.3,yr+1.4,zr+2.6],.07,0x7a5634,5);
+  const tip=[x+.3,yr+1.4,zr+2.6];rsRope(B,tip,[x+.3,-3.2,zr+2.6],.015,0xd8cca8);rsSphere(B,'paint',.22,[x+.3,-3.3,zr+2.6],[1,.8,1],0x6a6660,8,6);rsRope(B,tip,[x,yr+.3,zr-.6],.015,0xd8cca8);
+  if(i%2===0){rsSphere(B,'paint',.13,[x+.9,.05,zr+2.4],null,0x6a4028,8,6);rsCyl(B,'cloth',.16,.18,.4,[x+.9,-.2,zr+2.4],null,0x2a4a6a,6);}
+  if(i%2)rsFigure(B,[x-.4,dY(u),zr-1],Math.PI/2,[0xece6d8,0x3f86a6][i%3?0:1]);}
+ // on deck: oyster baskets, the opening mats with their pearls
+ for(let i=0;i<9;i++){const x=rr(5,14),z=rr(-3,1);rsCyl(B,'thatch',.4,.32,.55,[x,dY(H.uAt(x))+.28,z],null,0xb89a60,10);for(let k=0;k<3;k++)rsSphere(B,'paint',.1,[x+rr(-.2,.2),dY(H.uAt(x))+.58,z+rr(-.2,.2)],[1.4,.5,1],0x8a8a7a,6,4);}
+ for(const x of[-2,0]){const y=dY(H.uAt(x));rsBox(B,'cloth',[1.6,.03,1.2],[x,y+.02,-2.2],null,0xd8c8a0);for(let k=0;k<8;k++)rsSphere(B,'metal',.05,[x+rr(-.6,.6),y+.07,-2.2+rr(-.4,.4)],null,0xf4f0ea,6,4);}
  for(let i=0;i<5;i++){const x=rr(-4,2),z=rr(-3,3);rsBox(B,'wood',[1.1,.8,.8],[x,dY(H.uAt(x))+.4,z],[0,rr(0,1),0],0x5a3a22);rsBox(B,'metal',[1.15,.1,.85],[x,dY(H.uAt(x))+.75,z],[0,0,0],GOLD);}
  for(let i=0;i<6;i++){const x=rr(15,17),z=rr(-2,2);rsSphere(B,'paint',.35,[x,dY(H.uAt(x))+.35,z],[1,1.3,1],0xb86a3a,10,8);}
  for(const [x,z] of[[-14,0],[10,1.5],[-3,-2.8],[17,-1]])rsFigure(B,[x,x<-12?pd:dY(H.uAt(x)),z],rr(0,TAU),[0xece6d8,0x7a1a24,0x1f8a9a][Math.floor(rng()*3)]);
  {const p=H.pt(0,0,.2);rsBox(B,'wood',[2.4,4.6,.35],[p[0]-1,p[1]+.6,0],null,DK);}
- rsBake(B,V.group,'xanaduBaghlah');V.deckY=dY(.5);return V;}
-RS_VESSEL({key:'xanaduBaghlah',name:'Xanadu Pearl Baghlah',culture:'xanadu',L:44,B:12,H:36,
- tags:{type:['merchant','baghlah'],propulsion:['sail'],hull:'monohull',wealth:'rich',crew:40,role:'deep-water trader: gold out, pearls and spice home'},
- blurb:'A teak baghlah with a gilded, arch-windowed stern under a turquoise rosette, and two great white lateens edged in turquoise.',build:buildRsXanaduBaghlah});
+ rsBake(B,V.group,'hykPearl');V.deckY=dY(.5);return V;}
+RS_VESSEL({key:'hykPearl',name:'Hykkousoi Pearl Baghlah',culture:'hykkousoi',L:44,B:17,H:36,
+ tags:{type:['pearler','baghlah'],propulsion:['sail'],hull:'monohull',wealth:'rich',crew:60,role:'pearl-diving mother ship'},
+ blurb:'A teak baghlah with a gilded, arch-windowed stern, pearling booms and divers over the side, two white lateens ringed with pearls.',build:buildRsHykPearl});
 // ---------------------------------------------------------------- vessel: Iziz Wheel Galley
 // The second ship of the Iziz harbour guard, built by settlers who found gearwheels in the Ancient
 // towers and put them to work: a 30 m flat-floored galley driven by four paddle wheels a side, turned
 // by treadmill crews below deck on axles of reclaimed Ancient steel. Wheel boxes painted in the Iziz
-// teal and ochre, a long lime-washed deckhouse with crossbow ports and a white composite roof, a
+// orange and teal (core/sockets livery), a long lime-washed deckhouse with crossbow ports and a white composite roof, a
 // lookout platform, a small lateen for running before the wind. The wheels turn.
 function buildRsIzizWheel(){reseed(72400);
  const V={group:new THREE.Group(),anims:[]};const B=rsBucket();
- const WHITE=0xe6e0d0,TEAL=0x2a8a8a,OCHRE=0xc88a3a,DK=0x3a2a1c,STEEL=0x8a8e94;
+ const WHITE=0xe6e0d0,TEAL=rsLin(RS_CULT.iziz.edge),OCHRE=rsLin(RS_CULT.iziz.field),DK=0x3a2a1c,STEEL=0x8a8e94;
  const H=rsHull({L:30,B:7,fb:2,dr:1.2,sheerF:1.1,sheerA:1.3,sp:2.4,pb:2,pa:1.8,q:.45,n:3.6,flare:.1,rakeF:1.6,rakeA:.4,transom:.45,keelEnd:.4,kp:4});
- rsHullMesh(B,H,'wood',(u,h,s)=>h>.9?TEAL:h>.84?OCHRE:h<.35?0x6a2a1c:WHITE);rsFoam(B,H,1);
- const dY=rsDeck(B,H,{bw:.5,col:0xa88a62});rsWale(B,H,.84,.08,'wood',DK);rsSpine(B,H,.18,DK);
+ rsHullMesh(B,H,'wood',(u,h,s)=>h>.94?TEAL:h>.78?OCHRE:h<.35?0x6a2a1c:h<.41?OCHRE:WHITE);rsFoam(B,H,1);
+ const dY=rsDeck(B,H,{bw:.5,col:0xa88a62});rsWale(B,H,.86,.09,'paint',TEAL);rsWale(B,H,.78,.07,'paint',OCHRE);rsSpine(B,H,.18,DK);
  // the wheels: four a side, each its own group so it can turn; wheel boxes over them
  const R=1.7,wx=[-8.5,-3,2.5,8];
  for(const x of wx)for(const s of[-1,1]){const u=H.uAt(x),hw=H.hb(u)*.98,z=s*(hw+.55);const WB=rsBucket();
@@ -1292,26 +1319,30 @@ function buildRsIzizWheel(){reseed(72400);
   rsCyl(WB,'metal',.22,.22,.9,[0,0,0],[Math.PI/2,0,0],STEEL,10);
   const G=rsBake(WB,null,'wheel');G.position.set(x,.35,z);V.group.add(G);const ph=h3(x,s,2);V.anims.push(t=>{G.rotation.z=-(t*1.2+ph);});
   // the housing: a half-drum over the top of the wheel, its outer face a painted half-ring
-  const Rh=R+.3;rsPut(B,'paint',rsGrid((u,v)=>{const a=v*Math.PI;return[x+Math.cos(a)*Rh,.35+Math.sin(a)*Rh,z+(u-.5)*1.2];},2,14),null,null,null,TEAL);
+  const Rh=R+.3;rsPut(B,'paint',rsGrid((u,v)=>{const a=v*Math.PI;return[x+Math.cos(a)*Rh,.35+Math.sin(a)*Rh,z+(u-.5)*1.2];},2,14),null,null,null,OCHRE);
   rsPut(B,'paint',new THREE.RingGeometry(R-.35,Rh,20,1,0,Math.PI),[x,.35,z+s*.6],s>0?null:[0,Math.PI,0],null,OCHRE);
+  rsPut(B,'paint',new THREE.CircleGeometry(.45,16),[x,.35+R*.62,z+s*.62],s>0?null:[0,Math.PI,0],null,TEAL);
   rsPut(B,'paint',new THREE.RingGeometry(R-.6,R-.35,20,1,0,Math.PI),[x,.35,z+s*.61],s>0?null:[0,Math.PI,0],null,TEAL);
   rsLink(B,'metal',[x,.35,s*(hw-.3)],[x,.35,z],.14,STEEL,8);}
  // the deckhouse: lime-washed, crossbow ports, a white composite roof reclaimed from the towers
  const yd=dY(.5);rsCabin(B,{x:0,y:yd,w:20,d:5.2,h:2.2,wall:WHITE,win:10,winCol:0x1a1410,roof:'vault',roofMk:'ancient',roofCol:0xffffff,rh:.9,over:.3});
- for(let i=0;i<10;i++){const x=-9+i*2;for(const s of[-1,1])rsBox(B,'paint',[.9,.12,.1],[x,yd+1.2,s*2.64],null,OCHRE);}
+ for(let i=0;i<10;i++){const x=-9+i*2;for(const s of[-1,1]){rsBox(B,'paint',[.9,.12,.1],[x,yd+1.2,s*2.64],null,OCHRE);rsBox(B,'paint',[.62,1.06,.04],[x+.05,yd+1.25,s*2.61],null,OCHRE);}}
+ // orange bands at the deckhouse's foot and eave, the sun disc of Iziz on both ends
+ for(const s of[-1,1]){rsBox(B,'paint',[20.1,.25,.06],[0,yd+.15,s*2.63],null,OCHRE);rsBox(B,'paint',[20.1,.3,.06],[0,yd+2.05,s*2.63],null,OCHRE);}
+ for(const s of[-1,1]){const xe=s*10.03,q=[0,s*Math.PI/2,0];rsPut(B,'paint',new THREE.CircleGeometry(.95,24),[xe,yd+1.2,0],q,null,OCHRE);rsPut(B,'paint',new THREE.CircleGeometry(.55,20),[xe+s*.01,yd+1.2,0],q,null,rsLin(RS_CULT.iziz.ink));rsPut(B,'paint',new THREE.CircleGeometry(.25,14),[xe+s*.02,yd+1.2,0],q,null,OCHRE);}
  // the lookout platform and its ladder, the stern cabin
  {const x=6,y=yd+3.1;for(const a of[-1,1])for(const b of[-1,1])rsLink(B,'wood',[x+a*.9,y,b*.9],[x+a*.9,y+2.2,b*.9],.07,DK,5);rsBox(B,'wood',[2.2,.15,2.2],[x,y+2.2,0],null,0x8a6a44);
   for(const a of[-1,1])rsLink(B,'wood',[x+a*1.1,y+2.3,-1.1],[x+a*1.1,y+2.9,1.1],.03,DK,4);rsFigure(B,[x,y+2.28,0],0,TEAL);}
  rsCabin(B,{x:-12.5,y:dY(.1),w:3.4,d:4.4,h:2,wall:WHITE,win:2,roof:'gable',roofMk:'wood',roofCol:OCHRE,rh:.9,over:.25});
  // the small lateen forward, its foot above the deckhouse roof
  const mx=11.5,base=dY(H.uAt(mx)),mh=13;rsLink(B,'wood',[mx,base-.2,0],[mx+1,base+mh,0],.16,0x6a4a2c,8,.1);
- const S=rsSail(B,{key:'iziz-lateen',O:[0,base,.3],U:[1,0,0],V:[0,1,0],belly:-.8,nu:18,nv:10,A:t=>[lerp(16.5,1,t),lerp(1.6,14.5,t)],Bf:t=>[lerp(6,1,t),lerp(4.4,14.5,t)],draw:typeof rsLateenCream==='function'?rsLateenCream:rsIzizWheelSail});
+ const S=rsSail(B,{key:'iziz-sun-lateen',O:[0,base,.3],U:[1,0,0],V:[0,1,0],belly:-.8,nu:18,nv:10,A:t=>[lerp(16.5,1,t),lerp(1.6,14.5,t)],Bf:t=>[lerp(6,1,t),lerp(4.4,14.5,t)],draw:rsIzizWheelSail});
  const yd2=[];for(let k=0;k<=12;k++)yd2.push(S.at(k/12,0));rsTube(B,'wood',yd2,.1,0x7a5634,30,6);rsRope(B,[mx+1,base+mh,0],S.at(.5,0));
  rsLink(B,'wood',[-14,dY(.04)+.9,0],[-17,-.8,0],.08,DK,5);rsBox(B,'wood',[1.3,1.5,.12],[-16.8,-.9,0],null,DK);
  for(const [x,z] of[[-13,1.8],[12,-1.5],[14,1.2]])rsFigure(B,[x,dY(H.uAt(x)),z],rr(0,TAU),[WHITE,TEAL,OCHRE][Math.floor(rng()*3)]);
  rsBake(B,V.group,'izizWheel');V.deckY=yd;return V;}
-// the lateen painter, for when this fragment is taken without the dhoni's (68-rs-iziz-dhoni.js)
-function rsIzizWheelSail(g,W,H,P){rsCloth(g,W,H,'#ece2c8',10,'v');g.save();rsPolyPath(g,P);g.clip();g.strokeStyle='#a89468';g.lineWidth=W*.02;rsPolyPath(g,P);g.stroke();g.restore();}
+// the lateen in the Iziz livery (core/sockets): orange field, teal edge, the sun
+function rsIzizWheelSail(g,W,H,P){rsFactionSail(g,W,H,P,RS_CULT.iziz,'sun',.15);}
 RS_VESSEL({key:'izizWheel',name:'Iziz Wheel Galley',culture:'iziz-vernacular',L:34,B:12,H:18,
  tags:{type:['warship','wheel boat'],propulsion:['paddle wheels','sail'],hull:'monohull',wealth:'state',crew:60,role:'harbour guard and river patrol'},
  blurb:'Four treadmill paddle wheels a side on Ancient-steel axles, a lime-washed deckhouse with crossbow ports, a lookout and a small lateen.',build:buildRsIzizWheel});
@@ -1399,6 +1430,163 @@ function buildRsIslanderLakatoi(){reseed(72600);
 RS_VESSEL({key:'islanderLakatoi',name:'Islander Lakatoi',culture:'ringsea-islander',L:19,B:11,H:17,
  tags:{type:['merchant','trading raft'],propulsion:['sail','paddles'],hull:'multihull',wealth:'common',crew:20,role:'the annual pot-trading voyage'},
  blurb:'Four dugouts lashed under one deck, thatched houses fore and aft, pots in nets, and two tall pandanus crab-claw sails.',build:buildRsIslanderLakatoi});
+// ---------------------------------------------------------------- vessel: Voth Cargo Hulk
+// The workhorse of the Voth grain and ash-salt trade: a bluff, round-ended 30 m hulk, tarred dark with
+// the Voth blue along the sheer, crenellated castles fore and aft, one big square sail in the Voth
+// livery (deep blue, dark edge, the ash-white diamond, from core/sockets), an open hatch with the hold
+// full of sacks, and a cargo derrick off the mast swinging a net of them aboard.
+function rsVothHulkSail(g,W,H,P){rsFactionSail(g,W,H,P,RS_CULT.voth,'diamond',.22);g.save();rsPolyPath(g,P);g.clip();g.fillStyle='rgba(0,0,0,.1)';for(let i=1;i<7;i++)g.fillRect(W*i/7,0,3,H);g.restore();}
+function buildRsVothHulk(){reseed(72700);
+ const V={group:new THREE.Group(),anims:[]};const B=rsBucket();
+ const TAR=rsLin(0x2e2218),TAR2=rsLin(0x1c140e),BLUE=rsLin(RS_CULT.voth.field),BLUE2=rsLin(RS_CULT.voth.band),ASH=rsLin(RS_CULT.voth.ink),WOOD=rsLin(0x5a4430);
+ const H=rsHull({L:30,B:10,fb:3.4,dr:2.6,sheerF:2.4,sheerA:2.8,sp:2,pb:1.5,pa:1.5,q:.38,n:3.2,flare:.08,rakeF:2,rakeA:1.4,keelEnd:1,kp:3});
+ rsHullMesh(B,H,'wood',(u,h,s)=>h>.93?BLUE:h>.89?ASH:h<.4?TAR2:TAR);rsFoam(B,H,1.3);
+ const dY=rsDeck(B,H,{bw:1,col:rsLin(0x6a5a44)});for(const hF of[.8,.68,.56,.46])rsWale(B,H,hF,.1,'wood',TAR2);rsSpine(B,H,.26,TAR2);
+ for(const s of[-1,1])for(let i=0;i<3;i++)rsDecal(B,H,.3+i*.2,s,.91,.35,BLUE2,'paint',4,.05);
+ // castles: crenellated boxes fore and aft
+ const castle=(x,w,h)=>{const y=dY(H.uAt(x)),d=H.halfAt(H.uAt(x),y)*2+.4;const top=rsCabin(B,{x,y,w,d,h,mk:'wood',wall:WOOD,win:2,winCol:0x120c08,roof:'flat',roofMk:'wood',roofCol:TAR,over:.2});
+  for(let i=0;i<Math.round(w/1);i++)for(const s of[-1,1])rsBox(B,'wood',[.5,.6,.25],[x-w/2+.4+i*(w-.8)/Math.max(1,Math.round(w/1)-1),top+.3,s*(d/2+.1)],null,WOOD);
+  for(let i=0;i<Math.round(d/1);i++)for(const s of[-1,1])rsBox(B,'wood',[.25,.6,.5],[x+s*(w/2+.1),top+.3,-d/2+.4+i*(d-.8)/Math.max(1,Math.round(d/1)-1)],null,WOOD);
+  rsSolid(B,[x-w/2,top,-d/2],[x+w/2,top+.6,d/2]);return top;};
+ const fT=castle(11.5,5,2),aT=castle(-11,7,2.6);
+ rsLink(B,'wood',[-11,aT,0],[-11,aT+3,0],.05,TAR2,5);rsPennant(B,[-11,aT+3,0],3,.8,[BLUE,ASH]);
+ // the open hatch and the sacks in the hold, the derrick and its netted load
+ const hy=dY(.5);rsBox(B,'wood',[7,.4,4.6],[1.5,hy+.2,0],null,TAR);rsBox(B,'paint',[6.4,.05,4],[1.5,hy+.42,0],null,0x0a0806);
+ for(let i=0;i<18;i++)rsSphere(B,'cloth',.4,[rr(-1.4,4.4),hy+.2+rr(0,.3),rr(-1.6,1.6)],[1.2,.6,.8],0xc8b890,8,6);
+ const mx=-2.5,mh=21;rsLink(B,'wood',[mx,hy-1,0],[mx,hy+mh,0],.36,WOOD,10,.22);rsCyl(B,'wood',.8,.7,1,[mx,hy+mh-2,0],null,WOOD,12);
+ const boomTip=[5,hy+6.5,3.8];rsLink(B,'wood',[mx,hy+1.4,.3],boomTip,.13,WOOD,6);rsRope(B,[mx,hy+10,0],boomTip,.03);rsRope(B,boomTip,[5,hy+3.2,3.8],.03);
+ for(let i=0;i<6;i++)rsSphere(B,'cloth',.32,[5+rr(-.4,.4),hy+2.6+rr(-.3,.3),3.8+rr(-.4,.4)],[1.2,.6,.8],0xc8b890,8,6);rsSphere(B,'rope',.9,[5,hy+2.7,3.8],[1,.9,1],0x3a3026,8,6);
+ // the square sail, braced round, its foot above the castle rails
+ const w=15,a=.95,foot=Math.max(fT,aT)-hy+1.2;const S=rsSail(B,{key:'voth-hulk',O:[mx+.5,hy+foot,0],U:[Math.sin(a),0,Math.cos(a)],V:[0,1,0],belly:-1.6,
+  A:t=>[(t-.5)*w,mh-foot-2.6],Bf:t=>[(t-.5)*w*.94,0],draw:rsVothHulkSail});
+ rsSailEdge(B,S,0,.2,WOOD);rsSailEdge(B,S,1,.12,WOOD);const tp=[mx,hy+mh,0];rsRope(B,tp,[H.xAt(1,1),H.ys(1),0]);rsRope(B,tp,[H.xAt(0,1),H.ys(0),0]);
+ for(const s of[-1,1]){rsRope(B,S.at(s<0?0:1,1),[mx-5,dY(.35)+.4,s*4.6]);rsRope(B,tp,[mx,H.ys(.46),s*4.9]);}
+ rsPennant(B,[mx,hy+mh+.2,0],5,.9,[BLUE,ASH]);
+ {const p=H.pt(0,0,.3);rsBox(B,'wood',[2.8,4.8,.4],[p[0]-1.2,p[1]+.8,0],null,TAR2);}
+ for(let i=0;i<8;i++){const x=rr(6,9),z=rr(-3,3),y=dY(H.uAt(x))+.5;if(i%2)rsBox(B,'wood',[1,1,1],[x,y,z],[0,rr(0,1),0],WOOD);else rsCyl(B,'wood',.45,.45,1,[x,y,z],null,WOOD,10);}
+ for(const [x,z] of[[-11,1.5],[1,3],[4.2,2.6],[8,-2]])rsFigure(B,[x,x<-9?aT:dY(H.uAt(x)),z],rr(0,TAU),[BLUE,rsLin(0x6a5a44),ASH][Math.floor(rng()*3)],false,0x8a8aa0);
+ rsBake(B,V.group,'vothHulk');V.deckY=hy;return V;}
+RS_VESSEL({key:'vothHulk',name:'Voth Cargo Hulk',culture:'voth',L:36,B:16,H:24,
+ tags:{type:['cargo','merchant','hulk'],propulsion:['sail'],hull:'monohull',wealth:'middle',crew:22,role:'grain and ash-salt carrier'},
+ blurb:'A bluff tarred hulk with crenellated castles, a hold of sacks and a working derrick, one square sail in Voth blue with the ash diamond.',build:buildRsVothHulk});
+// ---------------------------------------------------------------- vessel: Hykkousoi Amphora Corbita
+// The Hykkousoi round-ship for oil, wine and fish sauce: a deep, rounded 26 m hull, its sternpost
+// rising into a gilded swan's neck bent forward over the deck, a small artemon on a raked foremast,
+// a square mainsail with a triangular topsail above the yard, a vaulted cabin aft, and the deck and
+// open hold packed with amphorae in their racks. (Ref: the Roman corbita.)
+function rsHykCorbitaSail(g,W,H,P){rsCloth(g,W,H,'#ece6d6',8,'v');g.save();rsPolyPath(g,P);g.clip();g.strokeStyle='#3f86a6';g.lineWidth=W*.06;rsPolyPath(g,P);g.stroke();
+ g.strokeStyle='#d8a640';g.lineWidth=W*.015;rsPolyPath(g,rsInset(P,W*.06));g.stroke();const [cx,cy]=rsCentroid(P),R=Math.min(W,H)*.2;
+ g.fillStyle='#3f86a6';for(let i=0;i<14;i++){const a=i/14*TAU;g.beginPath();g.arc(cx+Math.cos(a)*R,cy+Math.sin(a)*R,R*.08,0,TAU);g.fill();}
+ g.fillStyle='#34495a';g.beginPath();g.ellipse(cx,cy+R*.1,R*.28,R*.4,0,0,TAU);g.fill();g.fillRect(cx-R*.12,cy-R*.5,R*.24,R*.2);
+ g.strokeStyle='#34495a';g.lineWidth=R*.07;for(const s of[-1,1]){g.beginPath();g.arc(cx+s*R*.28,cy-R*.18,R*.14,s>0?-1.2:1.2+Math.PI*.2,s>0?1.2:Math.PI*1.8);g.stroke();}g.restore();}
+function rsAmphora(B,p,k,col,tilt){const q=qEuler(tilt||0,0,0);const P=(x,y,z)=>{const v=new THREE.Vector3(x*k,y*k,z*k).applyQuaternion(q);return[p[0]+v.x,p[1]+v.y,p[2]+v.z];};
+ rsSphere(B,'paint',.28*k,P(0,.62,0),[1,1.5,1],col,8,6);rsCone(B,'paint',.16*k,.35*k,P(0,.12,0),[Math.PI,0,0],col,6);rsCyl(B,'paint',.07*k,.1*k,.35*k,P(0,1.18,0),q,col,6);
+ for(const s of[-1,1])rsTube(B,'paint',[P(s*.08,1.3,0),P(s*.2,1.28,0),P(s*.22,1.08,0)],.025*k,col,4,4);}
+function buildRsHykCorbita(){reseed(72800);
+ const V={group:new THREE.Group(),anims:[]};const B=rsBucket();
+ const BLUE=0x3f86a6,GOLD=0xd8a640,WOOD=0x7a5030,DARK=0x3a2a1e,TERR=0xb8683a;
+ const H=rsHull({L:26,B:7.5,fb:2.6,dr:2,sheerF:1.1,sheerA:2.6,sp:2.2,pb:1.9,pa:1.8,q:.45,n:2.4,flare:.08,rakeF:-.6,rakeA:1.2,keelEnd:.5});
+ rsHullMesh(B,H,'wood',(u,h,s)=>h>.9?BLUE:h>.86?GOLD:h<.36?0x3a3a30:WOOD);rsFoam(B,H,1);
+ const dY=rsDeck(B,H,{bw:.8,col:0xa88a64});rsWale(B,H,.86,.08,'paint',GOLD);rsWale(B,H,.66,.1,'wood',DARK);rsWale(B,H,.5,.1,'wood',DARK);
+ // the swan's neck sternpost, rising out of the hull and bending forward over the deck
+ const pS=H.pt(0,0,1),uS=H.uAt(pS[0]+2);rsSpine(B,H,.2,DARK);
+ const neck=[[pS[0]+2,H.ys(uS)-.4,0],[pS[0]+.3,pS[1]-.1,0],[pS[0]-.4,pS[1]+1.6,0],[pS[0]+.1,pS[1]+3.1,0],[pS[0]+1.1,pS[1]+3.6,0]];rsTube(B,'metal',neck,t=>.34*(1-.5*t),GOLD,40,10);
+ rsSphere(B,'metal',.3,[pS[0]+1.3,pS[1]+3.55,0],[1.3,.9,.8],GOLD,10,8);rsCone(B,'metal',.1,.6,[pS[0]+1.8,pS[1]+3.45,0],[0,0,-Math.PI/2+.3],0xe0a020,6);
+ // the aft cabin, vaulted
+ rsCabin(B,{x:-8.6,y:dY(.14),w:4.2,d:4.6,h:1.9,wall:0x8a6038,win:2,roof:'vault',roofMk:'wood',roofCol:BLUE,rh:.8,over:.2});
+ // amphorae: an open hold of them upright, racks on deck lying down
+ const hy=dY(.5);rsBox(B,'paint',[7,.05,4.6],[1,hy+.03,0],null,0x0a0806);
+ for(let i=0;i<5;i++)for(let j=0;j<4;j++)rsAmphora(B,[-2+i*1.35,hy-.7,-1.6+j*1.05],.95,[TERR,0xa85a30,0xc8784a][(i+j)%3]);
+ for(const s of[-1,1])for(let i=0;i<7;i++)rsAmphora(B,[5.5+i*.55,dY(H.uAt(6))+.35,s*2.2],.7,[TERR,0xa85a30][i%2],s*Math.PI/2);
+ // the mainmast: square course and a triangular topsail above the yard; the artemon forward
+ const mx=0,mh=17;rsLink(B,'wood',[mx,hy-1,0],[mx,hy+mh,0],.3,0x7a5634,8,.18);const w=13,a=.95,U=[Math.sin(a),0,Math.cos(a)];const foot=3.2,yard=mh-4.6;
+ const S=rsSail(B,{key:'hyk-corbita',O:[mx+.4,hy+foot,0],U,V:[0,1,0],belly:-1.3,A:t=>[(t-.5)*w,yard-foot],Bf:t=>[(t-.5)*w*.9,0],draw:rsHykCorbitaSail});
+ rsSailEdge(B,S,0,.18,0x6a4a2c);rsSailEdge(B,S,1,.1,0x6a4a2c);
+ for(const s of[-1,1]){const T=rsSail(B,{key:'hyk-corbita-top',O:[mx+.4,hy+yard+.7,0],U,V:[0,1,0],belly:-.3,nu:6,nv:6,A:t=>[s*lerp(.3,w*.45,t),lerp(3.6,0,t)],Bf:t=>[s*.3,lerp(3.6,0,t)],draw:(g,W,H2,P)=>{rsCloth(g,W,H2,'#ece6d6',3,'v');g.save();rsPolyPath(g,P);g.clip();g.strokeStyle='#3f86a6';g.lineWidth=W*.08;rsPolyPath(g,P);g.stroke();g.restore();}});}
+ const tp=[mx,hy+mh,0];rsRope(B,tp,[H.xAt(1,1),H.ys(1),0]);rsRope(B,tp,[pS[0]+1,pS[1]+3.3,0]);for(const s of[-1,1])rsRope(B,S.at(s<0?0:1,1),[mx-4,dY(.35)+.4,s*3.6]);
+ {const fx=H.xAt(.94,1),fy=H.ys(.94),ft=[fx+4,fy+6.5,0];rsLink(B,'wood',[fx-1,fy-.4,0],ft,.13,0x7a5634,8,.09);
+  const S2=rsSail(B,{key:'hyk-corbita',O:[ft[0]-1.6,fy+2.6,0],U:[Math.sin(.9),0,Math.cos(.9)],V:[.3,1,0],belly:-.5,A:t=>[(t-.5)*4,3.4],Bf:t=>[(t-.5)*3.6,0],draw:rsHykCorbitaSail});rsSailEdge(B,S2,0,.08,0x6a4a2c);}
+ rsPennant(B,[mx,hy+mh+.2,0],3.4,.7,[BLUE,0xf0e8d8]);
+ for(const s of[-1,1]){const p=H.pt(.08,s,.9);rsLink(B,'wood',[p[0]+1,p[1]+.6,p[2]*1.05],[p[0]-2.2,-1.5,p[2]*1.2],.11,0x7a5634,6);rsBox(B,'wood',[1.5,1,.1],[p[0]-1.9,-1.2,p[2]*1.2],[0,0,.5],0x7a5634);}
+ for(const [x,z] of[[-8.8,1.5],[3,2.6],[-4,-2.6]])rsFigure(B,[x,x<-7?dY(.14)+2.7:dY(H.uAt(x)),z],rr(0,TAU),[0x3a5a78,0xe0d8c8][Math.floor(rng()*2)]);
+ rsBake(B,V.group,'hykCorbita');V.deckY=hy;return V;}
+RS_VESSEL({key:'hykCorbita',name:'Hykkousoi Amphora Corbita',culture:'hykkousoi',L:32,B:14,H:22,
+ tags:{type:['cargo','merchant','round ship'],propulsion:['sail'],hull:'monohull',wealth:'middle',crew:14,role:'oil, wine and fish-sauce carrier'},
+ blurb:'A deep round-ship under a gilded swan sternpost, square course and topsail, and a hold and deck racked with amphorae.',build:buildRsHykCorbita});
+// ---------------------------------------------------------------- vessel: Xanadu Bullion Carrack
+// How the valley's gold reaches the sea: a 40 m maroon-and-gold carrack with a tall three-storey
+// aftcastle and an overhanging forecastle under turquoise tile, fighting tops on the masts, saffron
+// square sails bordered in maroon with the gold eight-spoked wheel, a lateen on the mizzen, and a
+// guarded deck of iron-bound bullion chests. Every sail's foot rides above the castles.
+function rsXanaduWheel(g,W,H,P){rsCloth(g,W,H,'#e89a2a',8,'v');g.save();rsPolyPath(g,P);g.clip();g.strokeStyle='#7a1a24';g.lineWidth=W*.08;rsPolyPath(g,P);g.stroke();
+ g.strokeStyle='#d8a838';g.lineWidth=W*.015;rsPolyPath(g,rsInset(P,W*.07));g.stroke();const [cx,cy]=rsCentroid(P),R=Math.min(W,H)*.2;
+ g.strokeStyle='#7a1a24';g.lineWidth=R*.14;g.beginPath();g.arc(cx,cy,R,0,TAU);g.stroke();g.lineWidth=R*.08;for(let i=0;i<8;i++){const a=i/8*TAU;g.beginPath();g.moveTo(cx+Math.cos(a)*R*.2,cy+Math.sin(a)*R*.2);g.lineTo(cx+Math.cos(a)*R*1.18,cy+Math.sin(a)*R*1.18);g.stroke();}
+ g.fillStyle='#d8a838';g.beginPath();g.arc(cx,cy,R*.24,0,TAU);g.fill();g.restore();}
+function buildRsXanaduCarrack(){reseed(72900);
+ const V={group:new THREE.Group(),anims:[]};const B=rsBucket();
+ const MAR=rsLin(0x6a1a24),MAR2=rsLin(0x3a0e14),GOLD=0xd8a838,TURQ=rsLin(0x1f9aa8),CREAM=rsLin(0xe8dcc0),WOOD=rsLin(0x5a3a24);
+ const H=rsHull({L:40,B:11,fb:3.8,dr:3,sheerF:3,sheerA:4.2,sp:2.2,pb:2,pa:1.9,q:.45,n:2.8,flare:.06,rakeF:3.4,rakeA:1,transom:.4,keelEnd:1.2});
+ rsHullMesh(B,H,'wood',(u,h,s)=>h>.94?GOLD:h>.9?MAR:h>.87?GOLD:h<.42?MAR2:MAR);rsFoam(B,H,1.4);
+ const dY=rsDeck(B,H,{bw:1,col:rsLin(0x8a6a4a)});rsWale(B,H,.87,.1,'metal',GOLD);rsWale(B,H,.7,.14,'wood',MAR2);rsWale(B,H,.56,.14,'wood',MAR2);rsSpine(B,H,.28,MAR2);
+ for(const a of rsAlong(H,.25,.75,9,.78))rsDecal(B,H,a.u,a.s,.78,.35,GOLD,'metal',14,.1);
+ // the castles: three storeys aft, one overhanging forward, turquoise tile hip roofs
+ let aTop=dY(.12);[[10,9.6,2.4],[7.5,8.4,2.2],[5,6.8,2.1]].forEach(([w,d,h],i)=>{const x=H.xAt(.12,1)+w/2-1.5+i*.6;
+  rsCabin(B,{x,y:aTop,w,d,h,mk:'wood',wall:i?MAR:CREAM,win:Math.round(w/1.3),winCol:0x100808,roof:'hip',roofMk:'tile',roofCol:TURQ,rh:.9+i*.2,over:.35,flare:.2});aTop+=h+.2;});
+ aTop+=1.4;
+ const fx=H.xAt(.88,1),fTop=rsCabin(B,{x:fx+1,y:dY(.88),w:7,d:9.4,h:2.3,mk:'wood',wall:MAR,win:4,winCol:0x100808,roof:'hip',roofMk:'tile',roofCol:TURQ,rh:1.2,over:.5,flare:.2})+.2;
+ for(const a of rsAlong(H,.25,.8,26,1))rsLink(B,'metal',a.p,[a.p[0],a.p[1]+1,a.p[2]],.04,GOLD,5);
+ // masts: fore (square), main (course + topsail, fighting top), mizzen (lateen above the aftcastle)
+ const mast=(mx,mh,r)=>{const b=dY(H.uAt(mx));rsLink(B,'wood',[mx,b-.5,0],[mx,b+mh,0],r,WOOD,10,r*.6);return b;};
+ const sq=(mx,y0,y1,w,a,key,bel)=>{const U=[Math.sin(a),0,Math.cos(a)];const S=rsSail(B,{key,O:[mx+.5,y0,0],U,V:[0,1,0],belly:bel,A:t=>[(t-.5)*w,y1-y0],Bf:t=>[(t-.5)*w*.92,0],draw:rsXanaduWheel});
+  rsSailEdge(B,S,0,.17,WOOD);rsSailEdge(B,S,1,.1,WOOD);return S;};
+ const fb=mast(11,20,.3);sq(11,fTop+1.4,fb+17,11,1,'xanadu-wheel',-1.2);
+ const mb=mast(0,31,.42);const cT=mb+21;sq(0,mb+5,cT,15,1,'xanadu-wheel',-1.6);sq(0,cT+1.4,mb+29,10,1,'xanadu-wheel',-.9);
+ rsCyl(B,'wood',1.1,.9,1.1,[0,cT+.7,0],null,MAR,14);rsCyl(B,'wood',.9,.75,.9,[11,fb+17.6,0],null,MAR,12);
+ const zb=mast(-12,17,.24);const S3=rsSail(B,{key:'xanadu-wheel',O:[0,0,.35],U:[1,0,0],V:[0,1,0],belly:.8,nu:16,nv:8,
+  A:t=>[lerp(-6.5,-20,t),lerp(aTop+.2,zb+19,t)],Bf:t=>[lerp(-17,-20,t),lerp(aTop,zb+19,t)],draw:rsXanaduWheel});
+ {const yd=[];for(let k=0;k<=10;k++)yd.push(S3.at(k/10,0));rsTube(B,'wood',yd,.14,WOOD,20,6);}
+ for(const [mx,top] of[[11,fb+20],[0,mb+31],[-12,zb+17]]){rsRope(B,[mx,top,0],[mx+ (mx>5?9:-8),mx>5?fTop:aTop-1.4,0]);rsPennant(B,[mx,top+.2,0],4.5,.9,[MAR,GOLD]);}
+ // the bullion: iron-bound chests stacked amidships, guards in maroon
+ for(let i=0;i<12;i++){const x=rr(-4,4),z=rr(-3,3),y=dY(H.uAt(x))+.35+(i%3)*.72;rsBox(B,'wood',[1.2,.7,.8],[x,y,z],[0,rr(-.2,.2),0],WOOD);rsBox(B,'metal',[1.24,.1,.84],[x,y+.25,z],[0,0,0],GOLD);rsBox(B,'metal',[.1,.72,.84],[x,y,z],[0,0,0],0x2a2a2a);}
+ for(const [x,z] of[[-5,3.2],[5,-3.2],[5.5,3],[-6,-3],[14,1]])rsFigure(B,[x,x>10?fTop-.2:dY(H.uAt(x)),z],rr(0,TAU),[MAR,GOLD][Math.floor(rng()*2)]);
+ {const p=H.pt(0,0,.2);rsBox(B,'wood',[2.6,5,.4],[p[0]-1.1,p[1]+.8,0],null,MAR2);}
+ rsBake(B,V.group,'xanaduCarrack');V.deckY=mb;return V;}
+RS_VESSEL({key:'xanaduCarrack',name:'Xanadu Bullion Carrack',culture:'xanadu',L:48,B:16,H:38,
+ tags:{type:['cargo','merchant','carrack'],propulsion:['sail'],hull:'monohull',wealth:'royal',crew:90,role:'carries the valley gold to the coast markets'},
+ blurb:'A maroon-and-gold carrack under turquoise-tiled castles, saffron sails with the gold wheel, a guarded deck of bullion chests.',build:buildRsXanaduCarrack});
+// ---------------------------------------------------------------- vessel: Iziz Salvage Lighter
+// How Iziz feeds its rebuilding: a flat, square-ended 28 m lighter in the Iziz orange with a teal
+// sheer, its open well stacked with white composite panels and pipe cut from the Ancient towers,
+// an A-frame derrick at the bow lifting another panel aboard, a little wheelhouse aft under an
+// orange roof, and a single lug sail with the Iziz sun (core/sockets livery).
+function rsIzizLug(g,W,H,P){rsFactionSail(g,W,H,P,RS_CULT.iziz,'sun',.2);}
+function buildRsIzizLighter(){reseed(73000);
+ const V={group:new THREE.Group(),anims:[]};const B=rsBucket();
+ const OR=rsLin(RS_CULT.iziz.field),TEAL=rsLin(RS_CULT.iziz.edge),CREAM=rsLin(RS_CULT.iziz.ink),DK=0x3a2a1c,RUST=0x6a3a24;
+ const H=rsHull({L:28,B:9,fb:2,dr:1.6,sheerF:.9,sheerA:.6,sp:2,pb:1.3,pa:1.3,q:.3,n:5,flare:.05,rakeF:2.2,rakeA:1.4,transom:.6,keelEnd:.9,kp:5});
+ rsHullMesh(B,H,'wood',(u,h,s)=>h>.9?TEAL:h>.84?CREAM:h<.4?RUST:OR);rsFoam(B,H,1.2);
+ const dY=rsDeck(B,H,{bw:.7,col:0x8a7a62});rsWale(B,H,.84,.1,'paint',TEAL);rsWale(B,H,.6,.1,'paint',TEAL);rsSpine(B,H,.2,DK);
+ for(const s of[-1,1]){const p=H.pt(.5,s,.62),N=H.nrm(.5,s,.62);const q=new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,0,1),N);rsPut(B,'paint',new THREE.CircleGeometry(1.1,24),[p[0]+N.x*.06,p[1],p[2]+N.z*.06],q,null,CREAM);
+  rsPut(B,'paint',new THREE.CircleGeometry(.62,20),[p[0]+N.x*.08,p[1],p[2]+N.z*.08],q,null,OR);rsPut(B,'paint',new THREE.CircleGeometry(.28,14),[p[0]+N.x*.1,p[1],p[2]+N.z*.1],q,null,CREAM);}
+ // the open well: coamings, and the salvage: stacked white panels, pipe lengths, a tangle of cable
+ const hy=dY(.5);for(const s of[-1,1])rsBox(B,'paint',[14,.6,.25],[0,hy+.3,s*3.2],null,OR);for(const s of[-1,1])rsBox(B,'paint',[.25,.6,6.4],[s*7,hy+.3,0],null,OR);
+ for(let i=0;i<5;i++)for(let j=0;j<2;j++)rsBox(B,'ancient',[5.2,.25,2.4],[-3+j*6.2+rr(-.3,.3),hy+.2+i*.27,rr(-.4,.4)],[0,rr(-.08,.08),0],0xffffff,4);
+ for(let i=0;i<5;i++)rsCyl(B,'ancient',.35,.35,5.5,[rr(-5,5),hy+1.7+(i%2)*.7,-2.2+i*.3],[0,0,Math.PI/2],0xffffff,12);
+ rsTube(B,'rope',[[-5,hy+1.6,2],[-3,hy+2.2,2.4],[-1,hy+1.8,1.6],[1,hy+2,2.2]],.08,0x1a1a1a,20,5);
+ // the A-frame derrick at the bow, a panel in the slings
+ const dx=10.5,dyy=dY(H.uAt(dx));for(const s of[-1,1])rsLink(B,'metal',[dx,dyy,s*3],[dx+3.4,dyy+7.4,0],.16,OR,8);rsRope(B,[dx+3.4,dyy+7.4,0],[4,hy+1.5,0],.04);
+ rsRope(B,[dx+3.4,dyy+7.4,0],[dx+3.4,dyy+2.4,0],.03);rsBox(B,'ancient',[3.6,.2,2],[dx+3.4,dyy+2.2,0],[0,.3,.08],0xffffff,4);for(const s of[-1,1])rsRope(B,[dx+3.4,dyy+3.8,0],[dx+3.4+s*1.6,dyy+2.3,0],.02);
+ // the wheelhouse aft, the mast and the sun lug
+ const wT=rsCabin(B,{x:-11,y:dY(.1),w:3.4,d:3.6,h:2.3,mk:'paint',wall:CREAM,win:2,winCol:0x101418,roof:'gable',roofMk:'paint',roofCol:OR,rh:.8,over:.25});
+ rsLink(B,'wood',[-11,wT,0],[-11,wT+2.4,0],.04,DK,4);rsPennant(B,[-11,wT+2.4,0],2.4,.7,[OR,TEAL]);
+ const mx=-6.2,mb=dY(H.uAt(mx)),mh=15;rsLink(B,'wood',[mx,mb-.3,0],[mx,mb+mh,0],.22,0x6a4a2c,8,.14);
+ const S=rsSail(B,{key:'iziz-lug',O:[mx+.3,mb+3.2,.35],U:[1,0,0],V:[0,1,0],belly:-.9,nu:14,nv:10,A:t=>[lerp(-2.6,-3.4,t),lerp(0,11,t)],Bf:t=>[lerp(6,5.6,t),lerp(0,8.6,t)],draw:rsIzizLug});
+ rsLink(B,'wood',S.at(1,0),S.at(1,1),.1,0x6a4a2c,6);rsLink(B,'wood',S.at(0,0),S.at(0,1),.09,0x6a4a2c,6);rsRope(B,[mx,mb+mh,0],S.at(1,.2));rsRope(B,[mx,mb+mh,0],[H.xAt(1,1),H.ys(1),0]);
+ for(const [x,z] of[[-11,1.2],[8.5,2],[9.2,-2.4],[2,3.8]])rsFigure(B,[x,dY(H.uAt(x)),z],rr(0,TAU),[OR,TEAL,CREAM][Math.floor(rng()*3)]);
+ rsBake(B,V.group,'izizLighter');V.deckY=hy;return V;}
+RS_VESSEL({key:'izizLighter',name:'Iziz Salvage Lighter',culture:'iziz-vernacular',L:34,B:13,H:20,
+ tags:{type:['cargo','lighter','salvage'],propulsion:['sail','poles'],hull:'monohull',wealth:'common',crew:10,role:'hauls Ancient panels and pipe to the Iziz yards'},
+ blurb:'A flat orange lighter with a well of white Ancient panels and pipe, an A-frame derrick at the bow and a sun-marked lug sail.',build:buildRsIzizLighter});
 // ---------------------------------------------------------------- scene (the Ring Sea roadstead)
 // The kit sheet: every registered vessel riding at anchor on open water, rowing in place, in a
 // grid of RS_COLS columns, bows east (+x), so a camera on the south side sees every starboard
@@ -1499,6 +1687,13 @@ function rsExtra(){const R=[];const P=RS_PLACED;
  // 5. sails clear the cabins: no sail vertex inside a registered solid (castles, deckhouses)
  {const bad=[];for(const p of P){const S=p.G.userData.solids||[],Q=p.G.userData.sail||[];let n=0;for(const q of Q)for(const b of S){if(q[0]>b.min[0]+.05&&q[0]<b.max[0]-.05&&q[1]>b.min[1]+.05&&q[1]<b.max[1]-.05&&q[2]>b.min[2]+.05&&q[2]<b.max[2]-.05){n++;break;}}if(n)bad.push(p.D.name+' '+n+' sail pts');}
   R.push({name:'sails-clear-cabins',ok:!bad.length,detail:bad.length?bad.join(' | '):'no sail passes through a cabin'});}
+ // 5b. sails clear each other: no point of one sail within 0.3 m of another sail's (hashed on a 0.5 m grid)
+ {const bad=[];for(const p of P){const Q=p.G.userData.sail||[],grid=new Map(),key=(x,y,z)=>Math.floor(x/.5)+','+Math.floor(y/.5)+','+Math.floor(z/.5);let n=0;
+   for(const q of Q){const k=key(q[0],q[1],q[2]);(grid.get(k)||grid.set(k,[]).get(k)).push(q);}
+   for(const q of Q){let hit=false;for(let dx=-1;dx<=1&&!hit;dx++)for(let dy=-1;dy<=1&&!hit;dy++)for(let dz=-1;dz<=1&&!hit;dz++){const L=grid.get((Math.floor(q[0]/.5)+dx)+','+(Math.floor(q[1]/.5)+dy)+','+(Math.floor(q[2]/.5)+dz));
+     if(L)for(const r of L){if(r[3]!==q[3]&&(r[0]-q[0])**2+(r[1]-q[1])**2+(r[2]-q[2])**2<.09){hit=true;break;}}}if(hit)n++;}
+   if(n)bad.push(p.D.name+' '+n+' pts');}
+  R.push({name:'sails-clear-sails',ok:!bad.length,detail:bad.length?bad.join(' | '):'no two sails touch'});}
  // 6. project tags
  {const t=tagAudit();R.push({name:'tags-complete',ok:!t.bad,detail:t.bad?t.first.join(' | '):REG.length+' vessels tagged culture/type/wealth/propulsion/hull'});}
  return R;}

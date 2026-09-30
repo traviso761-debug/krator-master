@@ -23,3 +23,12 @@ Iziz wheel galley (animated wheels), Beast-Rider rookery raft (with flyers), Isl
 New invariant `sails-clear-cabins` found the junk's sails through its sterncastle (29 points) and the
 galley's through its cabin; both fixed by raising the feet / stepping the mizzen on the castle.
 Lesson: vertex colours are linear, so dark hexes render mid-tone; convert them (API.md, Colour).
+
+## 2026-09-30: round 3
+Flagship back on its green and gold-wave sails. Iziz ships in the core/sockets livery (orange field, teal
+edge, sun disc): turtle ship with orange trim and a boxy superellipse shell, wheel galley with orange
+housings, bands, window frames and sun discs. Chitin bireme in the Voth livery (blue fan sails, ash
+diamond), blue eyes. The baghlah became the Hykkousoi pearler (diving booms, divers, oyster baskets).
+Galley sails no longer overlap. New invariant `sails-clear-sails` (verified: it fails on the old galley,
+and it caught the chitin fans and the baghlah lateens, both fixed). Four cargo ships: Voth hulk,
+Hykkousoi corbita, Xanadu carrack, Iziz salvage lighter.

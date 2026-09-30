@@ -34,9 +34,11 @@ function buildRsHykGalley(){reseed(71500);
  const xs=H.xAt(.06,1);for(let i=0;i<3;i++){const pts=[];for(let j=0;j<=16;j++){const a=j/16*Math.PI;pts.push([xs+i*1.2-Math.sin(a)*.8,dY(.1)+Math.sin(a)*2.4,Math.cos(a)*2.2]);}rsTube(B,'paint',pts,.1,i%2?CREAM:BLUE,32,6);}
  rsCabin(B,{x:-8.5,y:dY(.2),w:4,d:3.4,h:1.9,wall:0x6a3a1e,win:3,roof:'vault',roofMk:'wood',roofCol:0x7a4a28,rh:.7,over:.25});
  // two tall sails on curved bamboo yards
- [[-1.5,15],[-8,12]].forEach(([mx,mh],i)=>{const base=dY(H.uAt(mx));rsBamboo(B,[mx,base-.3,0],[mx,base+mh*.62+2,0],.16,0x9a7a44,1.2);
+ // the fore sail is stepped just abaft the tarp and cut short so its clew and yard end a metre
+ // forward of the aft mast: the two sails must not pass through each other (sails-clear-sails)
+ [[1.2,15,.42],[-7.6,12,.5]].forEach(([mx,mh,span],i)=>{const base=dY(H.uAt(mx));rsBamboo(B,[mx,base-.3,0],[mx,base+mh*.62+2,0],.16,0x9a7a44,1.2);rsSolid(B,[mx-.2,base,-.2],[mx+.2,base+mh*.62+2,.2]);
   const S=rsSail(B,{key:'hyk-scroll',O:[mx+.3,base+3.3,.35],U:[-1,0,0],V:[0,1,0],belly:-.8,nu:22,nv:12,
-   A:t=>[t*.9,t*mh],Bf:t=>[lerp(mh*.62,.9,t)+Math.sin(Math.PI*t)*mh*.12,lerp(.1,mh,Math.pow(t,1.1))],draw:rsHykScroll});
+   A:t=>[t*.9,t*mh],Bf:t=>[lerp(mh*span,.9,t)+Math.sin(Math.PI*t)*mh*.1,lerp(.1,mh,Math.pow(t,1.1))],draw:rsHykScroll});
   // the curved yard runs past the head and the clew; the boom along the foot
   const yd=[];for(let k=0;k<=18;k++)yd.push(S.at(k/18,1));const e0=yd[0],e1=yd[yd.length-1];yd.unshift([e0[0]+1.2,e0[1]-.6,e0[2]]);yd.push([e1[0]+.4,e1[1]+1.6,e1[2]]);
   rsTube(B,'wood',yd,t=>.17*(1-.5*t),0x9a7a44,60,8);for(let k=1;k<yd.length-1;k+=2)rsSphere(B,'rope',.19,yd[k],[1,.5,1],0x5a4128,8,4);

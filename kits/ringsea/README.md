@@ -1,6 +1,6 @@
 # Ring Sea watercraft
 
-Seventeen procedural vessels for the Ring Sea, each tagged by culture, riding at anchor
+Twenty-one procedural vessels for the Ring Sea, each tagged by culture, riding at anchor
 on one sheet and rowing in place. Built on the Ancients-lineage fragment contract
 (`core/materials/` + vendored shell), one vessel per fragment.
 
@@ -15,9 +15,9 @@ Every vessel has two preset views: `<name>` (starboard bow quarter) and `<name> 
 | # | Fragment | Vessel | Culture | Type |
 |---|---|---|---|---|
 | 1 | `60-rs-hyk-trireme.js` | Hykkousoi Trireme | hykkousoi | warship, trireme (162 oars, triple ram, roundel sails) |
-| 2 | `61-rs-iziz-turtle.js` | Iziz Turtle Ship | iziz-vernacular | turtle ship (spiked shell of reclaimed Ancient hex plate) |
+| 2 | `61-rs-iziz-turtle.js` | Iziz Turtle Ship | iziz-vernacular | turtle ship (boxy spiked shell of Ancient hex plate, Iziz orange trim, sun sails) |
 | 3 | `62-rs-xanadu-swan.js` | Xanadu Swan Barge | xanadu | royal barge (swan neck and tail rooted in the hull, 32 paddlers) |
-| 4 | `63-rs-voth-flagship.js` | Voth Ordinator Flagship | voth | flagship (brown-black junk hull, oxblood sails, mizzen on the castle) |
+| 4 | `63-rs-voth-flagship.js` | Voth Ordinator Flagship | voth | flagship (brown-black junk hull, green sails with the gold wave, mizzen on the castle) |
 | 5 | `64-rs-beast-waa.js` | Beast-Rider Voyaging Canoe | beast-rider | double canoe (crab-claw sails, flyer's perch) |
 | 6 | `65-rs-hyk-galley.js` | Hykkousoi Scroll-Sail Galley | hykkousoi | explorer (bamboo-yard scroll sails, tarp hold) |
 | 7 | `66-rs-salvage-tug.js` | Salvagers' Sailing Tug | ancients-salvage | Ancient steel tug converted to gaff rig |
@@ -25,12 +25,16 @@ Every vessel has two preset views: `<name>` (starboard bow quarter) and `<name> 
 | 9 | `68-rs-iziz-dhoni.js` | Iziz Dhoni | iziz-vernacular | coaster, main and mizzen lateen |
 | 10 | `69-rs-islander-oruwa.js` | Islander Oruwa | ringsea-islander | outrigger fishing canoe |
 | 11 | `70-rs-islander-karakoa.js` | Islander Karakoa | ringsea-islander | war outrigger (double outriggers, tanja sail) |
-| 12 | `71-rs-voth-chitin.js` | Voth Chitin Bireme | voth | bireme raider, carapace roof, fan sails (flagship's lacquer) |
+| 12 | `71-rs-voth-chitin.js` | Voth Chitin Bireme | voth | bireme raider, carapace roof, Voth-blue fan sails, blue eyes |
 | 13 | `72-rs-hyk-hexareme.js` | Hykkousoi Siege Hexareme | hykkousoi | three banks of great oars, towers, stone-thrower, boarding bridge |
-| 14 | `73-rs-xanadu-baghlah.js` | Xanadu Pearl Baghlah | xanadu | deep-water trader, gilded arch-windowed stern, two lateens |
-| 15 | `74-rs-iziz-wheel.js` | Iziz Wheel Galley | iziz-vernacular | treadmill paddle-wheel warship (the wheels turn) |
+| 14 | `73-rs-hyk-pearl.js` | Hykkousoi Pearl Baghlah | hykkousoi | pearling mother ship: diving booms, divers, oyster baskets |
+| 15 | `74-rs-iziz-wheel.js` | Iziz Wheel Galley | iziz-vernacular | treadmill paddle-wheel warship (the wheels turn), orange trim, sun lateen |
 | 16 | `75-rs-beast-rookery.js` | Beast-Rider Rookery Raft | beast-rider | trimaran roost tower for flyers (`rsFlyer`) |
 | 17 | `76-rs-islander-lakatoi.js` | Islander Lakatoi | ringsea-islander | four-hull trading raft, twin pandanus crab claws |
+| 18 | `77-rs-voth-hulk.js` | Voth Cargo Hulk | voth | cargo: bluff hulk, castles, hold of sacks, derrick, Voth-blue square sail |
+| 19 | `78-rs-hyk-corbita.js` | Hykkousoi Amphora Corbita | hykkousoi | cargo: round-ship, swan sternpost, amphorae |
+| 20 | `79-rs-xanadu-carrack.js` | Xanadu Bullion Carrack | xanadu | cargo: tiled castles, saffron wheel sails, bullion chests |
+| 21 | `80-rs-iziz-lighter.js` | Iziz Salvage Lighter | iziz-vernacular | cargo: flat lighter of Ancient panels and pipe, A-frame derrick |
 
 `ringsea-islander`, `beast-rider` and `hykkousoi` are culture tags this kit introduced; the rest reuse existing ones. Iron Republic, Dalab and Yuni have no ships here (landlocked or not seafaring).
 
@@ -53,3 +57,8 @@ See `API.md` for the vessel frame and the builders.
 `src/00-30, 92, 93, 99` are vendored from `settlements/reedlake` (see `KNOWN_ISSUES.md`
 for the two deliberate changes). `verify.py`/`jscheck.py` come from the same place, with
 `_api.extra()` vessel invariants and a pre-installed-Chromium fallback.
+
+## Faction colours
+
+Iziz and Voth ships wear the liveries of `core/sockets/80-cultures.js` (on main): `RS_CULT`, `rsSymSun`,
+`rsSymDiamond` and `rsFactionSail` in `41-rs-tex.js` are copies of those packs and symbols. Re-copy them if the packs change.
