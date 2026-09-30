@@ -41,12 +41,26 @@ function cpSpikes(L,y,z,gap){gap=gap||.95;const n=Math.floor(L/gap);const c=jc(0
 // a chain-link swag hung from the top on the outside
 function cpChain(L,y,z,drop){quad('chain',0,y-drop/2,z,L,drop,jc(0xb4b8b8,.05));for(let k=0;k<Math.round(L/2.2);k++){const x=-L/2+.5+k*2.2;beam('iron',[x,y,z],[x,y-drop*rr(.8,1.1),z],.012,jc(0x6a6a66,.05),true,3);}}
 // ---- a wrecked car (x long, front +x); base at y
-function cpCar(x,y,z,ry,col,o){o=o||{};W(x,y,z,ry,()=>{const dk=jc(0x2a2826,.03),c=col;
- box('iron',0,.26,0,4.3,.2,1.7,dk);box('sheet',0,.4,0,4.4,.62,1.82,c);box('sheet',-.15,1.02,0,2.5,.48,1.66,jc(c,.05));box('sheet',-.15,1.5,0,2.4,.05,1.6,jc(c,.05));
- for(const sz of [-1,1]){box('glass',-.15,1.1,sz*.84,2.2,.34,.04,jc(0x6a9a94,.06));}box('glass',1.05,1.1,0,.04,.32,1.5,jc(0x6a9a94,.06),0,0,.6);
- box('sheet',1.5,1.02,0,1.35,.07,1.62,c,0,0,-.07);box('sheet',-1.75,1.02,0,.9,.07,1.62,c,0,0,.06);box('iron',2.22,.4,0,.12,.2,1.8,jc(0x8a8a86,.06));box('iron',-2.22,.4,0,.12,.2,1.8,jc(0x8a8a86,.06));
- if(!o.noWheels)for(const wx of [-1.4,1.4])for(const sz of [-1,1]){cpTire(wx,.34,sz*.92,.34,undefined,0,PI/2,0);}
- if(o.door){box('sheet',.55,.5,.95,1.1,.55,.05,jc(c,.08),.9);}});}
+function cpCar(x,y,z,ry,col,o){o=o||{};W(x,y,z,ry,()=>{if(o.flip)pushM(TF(0,0,0,0,PI,0));
+ const dk=jc(0x2a2826,.03),c=col,c2=jc(col,.06),gl=jc(0x6a9a94,.06);
+ box('iron',0,.3,0,4.2,.14,1.5,dk);                                                     // floor pan / chassis
+ box('sheet',0,.38,0,4.3,.6,1.8,c);                                                    // lower body 0.38..0.98
+ box('iron',2.17,.42,0,.14,.2,1.86,jc(0x8a8a86,.06));box('iron',-2.17,.42,0,.14,.2,1.86,jc(0x8a8a86,.06));   // bumpers
+ box('sheet',1.6,.98,0,1.1,.07,1.7,c2,0,0,-.08);box('sheet',-1.65,.98,0,.8,.07,1.7,c2,0,0,.07);              // bonnet, boot
+ for(const sz of [-1,1]){box('glow',2.14,.62,sz*.6,.06,.16,.3,jc(0xd8d0b0,.03));box('plain',-2.14,.62,sz*.6,.06,.14,.28,jc(0x9a2a20,.04));}
+ // cabin: four pillars, roof, glass
+ for(const sx of [-1,1])for(const sz of [-1,1])box('sheet',-.15+sx*1.1,.98,sz*.8,.08,.55,.08,c2);
+ box('sheet',-.15,1.53,0,2.5,.06,1.74,c2);
+ if(!o.noGlass){for(const sz of [-1,1])box('glass',-.15,1.06,sz*.82,2.1,.44,.03,gl);box('glass',1.0,1.06,0,.03,.44,1.5,gl,0,0,.5);box('glass',-1.25,1.06,0,.03,.44,1.5,gl,0,0,-.5);}
+ // doors: seams and handles on both flanks; one door may hang open
+ for(const sz of [-1,1]){const openHere=(o.open&&sz===o.open);
+  for(const sx of [-.75,.45])box('iron',sx,.42,sz*.905,.03,.55,.02,dk);
+  if(!openHere){box('iron',.3,.85,sz*.915,.16,.03,.03,jc(0x8a8a86,.05));}
+  else W(.45,.4,sz*.9,sz*.95,()=>{box('sheet',-.6,0,0,1.2,.6,.05,c2);box('glass',-.6,.6,0,1.0,.4,.03,gl);});}
+ // axles, wheels with hubs
+ for(const wx of [-1.4,1.4]){beam('iron',[wx,.34,-.86],[wx,.34,.86],.05,dk,true,6);for(const sz of [-1,1]){if(o.noWheel&&o.noWheel[0]===wx&&o.noWheel[1]===sz){cyl('iron',wx,.0,sz*.86,.1,.04,jc(0x8a8a86,.05),8);continue;}
+   cpTire(wx,.34,sz*.9,.34,undefined,0,PI/2,0);cylH('iron',wx,.34,sz*(.9+.09),.13,.05,jc(0x8a8a86,.05),'z',8);}}
+ if(o.flip)popM();});}
 // ---------------------------------------------------------------- wall segments. Frame: x along the wall (centred), z>0 = interior, wall occupies z in [-th,0]
 const cpSeg={
  cont(L,s){const pcs=s.pcs;let x=-L/2;let i=0;for(const p of pcs){for(let k=0;k<2;k++){W(x+p/2+(k?rr(-.12,.12):0),k*CT.H,-CT.W/2,0,()=>container({len:p,doorEnd:false,col:cpCol()}));}
@@ -69,12 +83,19 @@ const cpSeg={
   for(let i=0;i<=n;i++){const x=-L/2+i*L/n;beam('wood',[x,0,-.02],[x,H+.15,-.02],.09,jc(0x5c4630,.06),true,6);if(i%2===1)beam('wood',[x,3.6,-.25],[x,0,-2.6],.07,jc(0x5c4630,.06));}
   for(const y of [.7,2.3,H-.1])box('plank',0,y,-.24,L,.1,.08,jc(0x5c4630,.06));
   cpSpikes(L,H+.15,-.18);if(rng()<.5)cpChain(L,H,-.26,1.3);},
- car(L,s){const n=Math.max(1,Math.floor(L/4.5));const step=L/n;
-  for(let i=0;i<n;i++){const cx=-L/2+step*(i+.5);for(let k=0;k<4;k++){const c=jc(pick([0x9a3a2c,0x3b7f8e,0xc99a2e,0x6a7a78,0xb8b0a0,0x2f5f8f,0xc45a30]),.08);
-    cpCar(cx+(k%2?step*.12:-step*.05)+rr(-.15,.15),k*1.2,-1.0+rr(-.12,.12),(k%2?PI:0)+rr(-.06,.06),c,{door:k%2===0});}}
-  box('sheet',0,4.9,-1.0,L*.8,.05,1.5,P('rust'),0,0,.02);cpSpikes(L,4.95,-1.5);}
+ car(L,s){const n=Math.max(1,Math.floor(L/4.7));const step=L/n;const RT=1.56,FL=RT*2;
+  const cols=()=>jc(pick([0x9a3a2c,0x3b7f8e,0xc99a2e,0x6a7a78,0xb8b0a0,0x2f5f8f,0xc45a30,0x4d6f3c]),.08);
+  const pos0=[];for(let i=0;i<n;i++)pos0.push(-L/2+step*(i+.5));
+  const pos1=n>1?pos0.slice(0,n-1).map((x)=>x+step/2):[pos0[0]+(step>5.2?.5:0)];
+  const zc=-1.0;
+  pos0.forEach((x,i)=>cpCar(x,0,zc+rr(-.05,.05),i%2?PI:0,cols(),{open:rng()<.5?(rng()<.5?1:-1):0,noGlass:rng()<.3,noWheel:rng()<.25?[pick([-1.4,1.4]),pick([-1,1])]:undefined}));
+  pos1.forEach((x,i)=>{cpCar(x,FL,zc+rr(-.05,.05),i%2?0:PI,cols(),{flip:true,open:rng()<.4?1:0,noGlass:rng()<.5});
+   cpCar(x+rr(-.08,.08),FL,zc+rr(-.05,.05),rng()<.5?0:PI,cols(),{open:rng()<.4?-1:0,noGlass:rng()<.5});});
+  // chains lashing the stack and outward props
+  for(const x of [-L/2+.6,L/2-.6]){beam('iron',[x,.3,-2.05],[x,4.3,-2.05],.02,jc(0x6a6a66,.05),true,3);beam('wood',[x,3.4,-1.9],[x,0,-3.2],.07,jc(0x5c4630,.06));}
+  cpSpikes(L,FL+RT+.05,-1.6);}
 };
-const cpSegTop={cont:5.2,tyre:4.6,sheet:4.6,car:5.0};
+const cpSegTop={cont:5.2,tyre:4.6,sheet:4.6,car:4.8};
 function cpRun(x0,z0,x1,z1,spec){const dx=x1-x0,dz=z1-z0,L=Math.hypot(dx,dz),ux=dx/L,uz=dz/L,ry=Math.atan2(-uz,ux);let fixed=0,nf=0;
  for(const s of spec){if(s.pcs)s.len=s.pcs.reduce((a,c)=>a+c,0);if(s.len)fixed+=s.len;else nf++;}
  const flex=nf?(L-fixed)/nf:0;let p=0;for(const s of spec){const len=s.len||flex;const c=p+len/2;W(x0+ux*c,0,z0+uz*c,ry,()=>cpSeg[s.t](len,s));p+=len;}}

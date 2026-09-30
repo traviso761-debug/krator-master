@@ -145,7 +145,7 @@ def main():
              '| Build | Fragments | src KB | Largest KB | What |', '|---|---|---|---|---|'] + rows + [
              '', '## Not builds', '',
              '| Path | What |', '|---|---|',
-             '| `core/` | shared code: `core/materials/` (see `core/README.md`) |',
+             '| `core/` | shared code: `core/materials/` (see `core/README.md`) and `core/sockets/` (cultural sockets, banners and awnings, with a runnable example) |',
              '| `kits/catalog/` | harvested master catalog of furniture, plants and buildings (unverified) |',
              '| `kits/furniture/`, `kits/interiors/` | specs only |',
              '| `gallery/` | the shareable gallery of every built world |',

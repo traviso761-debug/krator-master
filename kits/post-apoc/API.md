@@ -2,7 +2,7 @@
 
 The Post-Apoc set is a generic building kit for settlements built from RECLAIMED and RECYCLED material: silos, shipping containers, storage tanks,
 buses and trailers, arcology bulkheads (the reclaimed large objects), used alone or fused with outbuildings and additions of sheet metal, earth-filled
-tyres, timber, and glass or plastic bottles. It is culture-neutral. Each building declares **sockets**; a **culture pack** (`src/80-cultures.js`)
+tyres, timber, and glass or plastic bottles. It is culture-neutral. Each building declares **sockets**; a **culture pack** (`core/sockets/80-cultures.js`)
 fills them (Iziz orange striped awnings, Voth banners, Republic triskelion). Not to be confused with the Ancients' reclaimed buildings: this set is
 called **post-apoc** everywhere (folder `kits/post-apoc`, def tag `culture: 'post-apoc (generic)'`).
 
