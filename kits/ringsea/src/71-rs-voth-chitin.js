@@ -11,13 +11,13 @@ function rsFanOchre(g,W,H,P){rsCloth(g,W,H,'#c8923a',1,'v');g.save();rsPolyPath(
  g.strokeStyle='#4a2a10';g.lineWidth=W*.02;rsPolyPath(g,P);g.stroke();g.restore();}
 function buildRsVothChitin(){reseed(72100);
  const V={group:new THREE.Group(),anims:[]};const B=rsBucket();
- const CH=0xb88a48,CH2=0x8a6a3a,DK=0x2a2014;
+ const lin=h=>new THREE.Color(h).convertSRGBToLinear();const CH=lin(0x2e2016),CH2=lin(0x2a1c14),DK=lin(0x120c08);   // the Voth lacquer: the same brown-black as the Ordinator Flagship (RS_VOTH_HULL)
  const H=rsHull({L:30,B:5.8,fb:2.1,dr:1.2,sheerF:1.1,sheerA:1.6,sp:2.2,pb:2,pa:2.4,q:.55,n:2.2,flare:.2,rakeF:1.2,rakeA:.8,keelEnd:.3,tile:3});
- rsHullMesh(B,H,'chitin',(u,h,s)=>h<.32?0x4a3a24:h>.9?CH2:CH);rsFoam(B,H,.9);const dY=rsDeck(B,H,{bw:.35,col:0x6a5a40,mk:'chitin'});
- rsWale(B,H,.9,.1,'chitin',0x5a4a2c);rsWale(B,H,.6,.08,'chitin',0x5a4a2c);
+ rsHullMesh(B,H,'chitin',(u,h,s)=>h<.32?lin(0x1a120c):h>.9?CH2:CH);rsFoam(B,H,.9);const dY=rsDeck(B,H,{bw:.35,col:0x3a2a1c,mk:'chitin'});
+ rsWale(B,H,.9,.1,'metal',0x8a6a30);rsWale(B,H,.6,.08,'chitin',0x140c08);
  // seven overlapping carapace segments, each a little higher than the one ahead of it
  const cy=dY(.5);for(let i=0;i<7;i++){const x0=lerp(-10,7,i/7),x1=x0+3.2,hw=H.halfAt(H.uAt(x0+1.6),cy)*.9+.15,r=1.3+Math.sin(Math.PI*(i+.5)/7)*.6;
-  const g=rsGrid((u,v)=>{const a=v*Math.PI,x=lerp(x0,x1,u),k=1+.12*u;return[x,cy+.2+Math.sin(a)*r*k-u*.15,Math.cos(a)*hw*k];},6,12,(u,v,p)=>[p[0]/3,v*2]);rsPut(B,'chitin',g,null,null,null,i%2?CH:0xc89a58);
+  const g=rsGrid((u,v)=>{const a=v*Math.PI,x=lerp(x0,x1,u),k=1+.12*u;return[x,cy+.2+Math.sin(a)*r*k-u*.15,Math.cos(a)*hw*k];},6,12,(u,v,p)=>[p[0]/3,v*2]);rsPut(B,'chitin',g,null,null,null,i%2?CH:lin(0x3a2a1c));
   const rim=[];for(let j=0;j<=12;j++){const a=j/12*Math.PI;rim.push([x1,cy+.2+Math.sin(a)*r*1.12-.15,Math.cos(a)*hw*1.12]);}rsTube(B,'chitin',rim,.07,DK,24,5);}
  // the insect prow: compound eyes, hooked mandibles, feelers; the sting at the stern
  const pb=H.pt(1,0,1);rsSphere(B,'chitin',1.1,[pb[0]-.6,pb[1]+.3,0],[1.3,.8,1],CH2,14,10);

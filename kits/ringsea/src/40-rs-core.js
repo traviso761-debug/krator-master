@@ -27,7 +27,9 @@ function rsDefMat(key,m){RSMAT[key]=m;return m;}
 // one BufferGeometry (position, normal, uv, color). Pieces are CONSUMED: never reuse a geometry
 // after rsPut. Indexed stock geometry is expanded through toNonIndexed(), which walks the index
 // (the Three.js pitfall: never concatenate an indexed position array by hand).
-function rsBucket(){return {m:{},tris:0};}
+function rsBucket(){return {m:{},tris:0,solids:[],sail:[]};}
+// solids: boxes sails must not pass through (cabins, castles); rsSolid adds one by hand
+function rsSolid(B,min,max){B.solids.push({min,max});}
 const _rsM=new THREE.Matrix4(),_rsQ=new THREE.Quaternion(),_rsE=new THREE.Euler(),_rsP=new THREE.Vector3(),_rsS=new THREE.Vector3();
 function rsQ(rot){if(!rot)return _rsQ.set(0,0,0,1);if(rot.isQuaternion)return rot;_rsE.set(rot[0]||0,rot[1]||0,rot[2]||0,rot[3]||'XYZ');return _rsQ.setFromEuler(_rsE);}
 function rsCol(c){return c&&c.isColor?c:new THREE.Color(c==null?0xffffff:c);}
@@ -47,7 +49,7 @@ function rsBake(B,parent,name){const G=parent||new THREE.Group();
   const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.BufferAttribute(P,3));geo.setAttribute('normal',new THREE.BufferAttribute(N,3));
   geo.setAttribute('uv',new THREE.BufferAttribute(U,2));geo.setAttribute('color',new THREE.BufferAttribute(C,3));geo.computeBoundingSphere();
   const me=new THREE.Mesh(geo,rsMat(mk));me.name=(name||'vessel')+':'+mk;G.add(me);}
- B.m={};return G;}
+ G.userData.solids=(G.userData.solids||[]).concat(B.solids);G.userData.sail=(G.userData.sail||[]).concat(B.sail);B.m={};B.solids=[];B.sail=[];return G;}
 
 // world-unit UVs, triplanar by the face normal: a 2 m plank tile stays 2 m on a 0.3 m cleat and
 // a 30 m wale alike. Call on a geometry at its REAL size, before rsPut moves it.

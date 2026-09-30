@@ -24,7 +24,7 @@ ABOUT = {
     'settlements/girder': 'Girder: an outlying Beast Rider village in the central-crater hyperjungle.',
     'settlements/mavs-refuge': "Mav's Refuge: a refuge in the hypertropic jungle on the lee shore of the Ring Sea.",
     'settlements/xanadu': 'Xanadu: the building kit of the southern Sultanate (Tibetan massing, Indian, Turkish and Persian detail) and the city of Erewhon.',
-    'kits/ringsea': 'Ring Sea watercraft: 12 procedural vessels (triremes, biremes, turtle ships, junk, barges, canoes, outriggers) of the cultures round the Ring Sea.',
+    'kits/ringsea': 'Ring Sea watercraft: 17 procedural vessels (triremes, a hexareme, biremes, turtle and wheel ships, junk, baghlah, barges, canoes, outriggers, rafts) of the cultures round the Ring Sea.',
     'kits/ancients': 'The Ancients kit: ruined megastructures of the ancient civilisation, 33 structure types, one target per site.',
 }
 # Files that are generated or duplicated elsewhere: never edit or read them whole.

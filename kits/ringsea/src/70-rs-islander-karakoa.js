@@ -24,7 +24,11 @@ function buildRsIslanderKarakoa(){reseed(72000);
  for(const P of pts)for(const s of[-1,1])rsFigure(B,[P[0]-.2,P[1]-.62,s*P[2]],0,[0xc8a870,RED][Math.floor(h3(P[0],P[2],s)*2)],true,0x6a4028);
  rsOars(V,H,{name:'paddles',points:pts.map(p=>[p[0],p[1]+.3,p[2]+.3]),len:3.1,inb:.25,r:.03,bladeL:.6,bladeW:.2,col:0x8a6a44,sweep:.5,lift:.3,rate:.75,pitch:1.1,immerse:.2,ripple:.3});
  // the fighting deck amidships, shields, spears, warriors
- const fx0=-5,fx1=5,fy=yB+1.1;for(let i=0;i<24;i++){const x=lerp(fx0,fx1,i/23);rsLink(B,'wood',[x,fy,-2.4],[x,fy,2.4],.06,BAM,5);}
+ const fx0=-5,fx1=5,fy=yB+1.1;
+ // the fighting deck: split bamboo laid edge to edge on a solid bearer frame, so it reads as a floor
+ rsBox(B,'wood',[fx1-fx0+.3,.12,5],[0,fy-.13,0],null,0x5a4028);for(const z of[-2.45,0,2.45])rsBox(B,'wood',[fx1-fx0+.4,.16,.16],[0,fy-.02,z],null,0x6a4a2c);
+ {const n=44,w=(fx1-fx0)/n;for(let i=0;i<n;i++){const x=fx0+(i+.5)*w,t=h3(i,3,9);const g=new THREE.CylinderGeometry(w*.52,w*.52,4.9,6,1,false,0,Math.PI);g.rotateX(Math.PI/2);
+  rsPut(B,'wood',rsUV(g,1),[x,fy+.02,0],null,null,new THREE.Color(BAM).offsetHSL(0,0,(t-.5)*.1));}}
  for(const x of[fx0,0,fx1])for(const s of[-1,1])rsLink(B,'wood',[x,dY(.5),s*1],[x,fy,s*2.2],.08,0x6a4a2c,5);
  for(let i=0;i<9;i++){const x=lerp(fx0+.5,fx1-.5,i/8);for(const s of[-1,1]){const a={p:[x,fy+.55,s*2.45],n:new THREE.Vector3(0,0,s)};rsShield(B,a,.42,[RED,YEL,0xe8dcc0][i%3],0x8a7a60);}}
  for(let i=0;i<9;i++){const x=rr(fx0+.5,fx1-.5),z=rr(-1.8,1.8);rsFigure(B,[x,fy,z],rr(0,TAU),[RED,0x3a2a1c,YEL][Math.floor(rng()*3)],false,0x6a4028);rsLink(B,'wood',[x+.2,fy+.3,z],[x+.4,fy+3,z],.025,0x5a4028,4);rsCone(B,'metal',.05,.3,[x+.41,fy+3.15,z],null,0xb0b4b8,4);}

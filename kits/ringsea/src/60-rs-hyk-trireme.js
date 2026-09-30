@@ -1,9 +1,9 @@
-// ---------------------------------------------------------------- vessel: Voth Brackwater Trireme
-// The Voth battle line: a 38 m three-banked galley, 162 oars, the top bank through an outrigger
+// ---------------------------------------------------------------- vessel: Hykkousoi Trireme
+// The Hykkousoi battle line: a 38 m three-banked galley, 162 oars, the top bank through an outrigger
 // box. Gilded triple ram and a bronze-sheathed forefoot; a barrel-vaulted, rivet-studded deckhouse
-// the length of the waist; three braced masts carrying pale roundel sails (the Voth sun-and-jar,
+// the length of the waist; three braced masts carrying pale roundel sails (the Hykkousoi sun-and-jar,
 // fish at the corners); the blue aphlaston curling forward over the stern. (Ref: the Atlantis galley.)
-function rsVothRoundel(g,W,H,P){const gr=g.createLinearGradient(0,0,W,0);gr.addColorStop(0,'#aec8d0');gr.addColorStop(.5,'#e4eff0');gr.addColorStop(1,'#a8c2cc');g.fillStyle=gr;g.fillRect(0,0,W,H);
+function rsHykRoundel(g,W,H,P){const gr=g.createLinearGradient(0,0,W,0);gr.addColorStop(0,'#aec8d0');gr.addColorStop(.5,'#e4eff0');gr.addColorStop(1,'#a8c2cc');g.fillStyle=gr;g.fillRect(0,0,W,H);
  rsCloth(g,W,H,'rgba(0,0,0,0)',9,'v');g.save();rsPolyPath(g,P);g.clip();
  g.lineWidth=W*.07;g.strokeStyle='#44606e';rsPolyPath(g,P);g.stroke();
  const [cx,cy]=rsCentroid(P),R=Math.min(W,H)*.3;g.fillStyle='#e8f2f2';g.beginPath();g.arc(cx,cy,R*1.12,0,TAU);g.fill();
@@ -15,7 +15,7 @@ function rsVothRoundel(g,W,H,P){const gr=g.createLinearGradient(0,0,W,0);gr.addC
  // fish at the corners
  const fish=(x,y,s,f)=>{g.save();g.translate(x,y);g.scale(f*s,s);g.beginPath();g.ellipse(0,0,30,11,0,0,TAU);g.moveTo(26,0);g.lineTo(44,-12);g.lineTo(44,12);g.closePath();g.fill();g.restore();};
  g.fillStyle='#4a6674';fish(W*.2,H*.12,1.4,1);fish(W*.8,H*.12,1.4,-1);g.restore();}
-function buildRsVothTrireme(){reseed(71000);
+function buildRsHykTrireme(){reseed(71000);
  const V={group:new THREE.Group(),anims:[]};const B=rsBucket();
  const BLUE=0x3f86a6,TEAL=0x5fb4c0,WOOD=0x8a5a36,GOLD=0xd8a640,DARK=0x3a2a1e;
  const H=rsHull({L:38,B:5.4,fb:2.2,dr:1.2,sheerF:1.3,sheerA:2.2,sp:2.6,pb:2.6,pa:2.0,q:.62,n:2.6,flare:.12,rakeF:1.0,rakeA:1.4,keelEnd:.2});
@@ -47,8 +47,8 @@ function buildRsVothTrireme(){reseed(71000);
  // three masts, braced yards, roundel sails
  const masts=[[-9.5,13],[1,16.5],[10.5,12]];masts.forEach(([mx,mh],i)=>{const base=cy+1.1+1.35;rsLink(B,'wood',[mx,base-1.5,0],[mx,base+mh,0],.2,0x7a5634,8,.13);
   const w=mh*.8,a=.95,U=[Math.sin(a),0,Math.cos(a)];
-  const S=rsSail(B,{key:'voth-roundel',O:[mx+.35,base+mh*.12,0],U,V:[0,1,0],belly:-1.1,
-   A:t=>{const s=(t-.5)*w;return[s,mh*.84+Math.pow(Math.abs(s)/(w/2),1.6)*mh*.12];},Bf:t=>{const s=(t-.5)*w*.55;return[s,mh*.05*Math.abs(t-.5)];},draw:rsVothRoundel});
+  const S=rsSail(B,{key:'hyk-roundel',O:[mx+.35,base+mh*.12,0],U,V:[0,1,0],belly:-1.1,
+   A:t=>{const s=(t-.5)*w;return[s,mh*.84+Math.pow(Math.abs(s)/(w/2),1.6)*mh*.12];},Bf:t=>{const s=(t-.5)*w*.55;return[s,mh*.05*Math.abs(t-.5)];},draw:rsHykRoundel});
   rsSailEdge(B,S,0,.13,0x6a4a2c);rsSailEdge(B,S,1,.05,0x6a4a2c);
   const top=[mx,base+mh,0];rsRope(B,top,S.at(0,0));rsRope(B,top,S.at(1,0));rsRope(B,S.at(0,1),[mx-2.5,cy+1.2,-hw]);
   rsRope(B,top,[H.xAt(1,1),H.ys(1),0]);rsRope(B,top,[H.xAt(0,1)+1,H.ys(0)-.5,0]);
@@ -56,7 +56,7 @@ function buildRsVothTrireme(){reseed(71000);
  // crew on the vault walk and the steersman aft; two steering oars
  for(const x of[-14,-6,4,9,14])rsFigure(B,[x,x>-10&&x<12?cy+2.45:dY(H.uAt(x)),rr(-.5,.5)],rr(-.6,.6),[0x3a5a78,0xe0d8c8,0x8a3020][Math.floor(rng()*3)]);
  for(const s of[-1,1]){const p=H.pt(.08,s,.9);rsLink(B,'wood',[p[0]+1,p[1]+.6,p[2]*1.05],[p[0]-2.4,-1.4,p[2]*1.25],.1,0x7a5634,6);rsBox(B,'wood',[1.6,.9,.08],[p[0]-2.1,-1.1,p[2]*1.24],[0,0,.55],0x7a5634);}
- rsBake(B,V.group,'vothTrireme');V.deckY=cy;return V;}
-RS_VESSEL({key:'vothTrireme',name:'Voth Brackwater Trireme',culture:'voth',L:44,B:13,H:20,
+ rsBake(B,V.group,'hykTrireme');V.deckY=cy;return V;}
+RS_VESSEL({key:'hykTrireme',name:'Hykkousoi Trireme',culture:'hykkousoi',L:44,B:13,H:20,
  tags:{type:['warship','trireme'],propulsion:['oars','sail'],hull:'monohull',wealth:'state',crew:200,role:'ship of the line'},
- blurb:'Three banks of oars, a gilded triple ram, a riveted barrel-vault deckhouse and three roundel sails.',build:buildRsVothTrireme});
+ blurb:'Three banks of oars, a gilded triple ram, a riveted barrel-vault deckhouse and three roundel sails.',build:buildRsHykTrireme});

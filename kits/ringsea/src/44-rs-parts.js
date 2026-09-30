@@ -12,7 +12,8 @@ function rsVault(B,mk,x0,x1,y0,hw,rise,col,nu,nv,tile){const g=rsGrid((u,v)=>{co
  return rsPut(B,mk,g,null,null,null,col);}
 // a cabin: four walls, windows as dark insets, a roof by kind ('flat','gable','vault','hip'); returns roof top y
 function rsCabin(B,o){const x=o.x,y=o.y,z=o.z||0,w=o.w,d=o.d,h=o.h,wc=o.wall||0x8a6a48,mk=o.mk||'wood';
- rsBox(B,mk,[w,h,d],[x,y+h/2,z],null,wc,2);
+ rsBox(B,mk,[w,h,d],[x,y+h/2,z],null,wc,2);rsSolid(B,[x-w/2,y,z-d/2],[x+w/2,y+h,z+d/2]);
+ const ovR=o.over==null?.35:o.over,rhR=o.rh||h*.45;rsSolid(B,[x-w/2-ovR,y+h,z-d/2-ovR],[x+w/2+ovR,y+h+(o.roof==='flat'||!o.roof?.14:rhR*.6),z+d/2+ovR]);
  if(o.win){const n=o.win,ww=Math.min(.7,w/n*.45);for(let i=0;i<n;i++){const xx=x-w/2+(i+.5)*w/n;for(const s of[-1,1])rsBox(B,'paint',[ww,h*.38,.06],[xx,y+h*.58,z+s*(d/2+.02)],null,o.winCol||0x1a1410);}}
  const rc=o.roofCol||0x6a4a30,rk=o.roofMk||'wood',ov=o.over==null?.35:o.over,rh=o.rh||h*.45;
  if(o.roof==='gable'){for(const s of[-1,1]){const L=Math.hypot(d/2+ov,rh);rsBox(B,rk,[w+ov*2,.12,L],[x,y+h+rh/2,z+s*(d/4+ov/2)],[s*Math.atan2(rh,d/2+ov),0,0],rc,2);}return y+h+rh;}
@@ -38,3 +39,5 @@ function rsDragonHead(B,p,k,col,horn,jawOpen){const P=(x,y,z)=>[p[0]+x*k,p[1]+y*
 function rsScroll(B,p,R,turns,r0,col,dir,mk,z){const pts=[];const n=Math.max(12,turns*24|0);for(let i=0;i<=n;i++){const t=i/n,a=t*turns*TAU,rad=R*(1-.72*t);
  pts.push([p[0]+dir*(R-rad*Math.cos(a)),p[1]+rad*Math.sin(a),z||0]);}
  return rsTube(B,mk||'paint',pts,t=>r0*(1-.7*t),col,n*3,8);}
+// an arched opening as a flat shape in the xy plane facing +z (windows, stern galleries): w wide, h tall
+function rsArchGeo(w,h){const s=new THREE.Shape();s.moveTo(-w/2,-h/2);s.lineTo(w/2,-h/2);s.lineTo(w/2,h/2-w/2);s.absarc(0,h/2-w/2,w/2,0,Math.PI,false);s.lineTo(-w/2,-h/2);return new THREE.ShapeGeometry(s,8);}
