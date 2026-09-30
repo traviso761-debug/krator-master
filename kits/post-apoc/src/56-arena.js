@@ -74,7 +74,7 @@ function arEntry(){
  // ticket booth (container) with hatch, awning, sign
  const bx=9.6,bz=25.4;W(bx,0,bz,0,()=>container({len:CT.L20,doorEnd:false,col:jc(0x3b7f8e,.05)}));
  win(bx-.8,1.1,bz+CT.W/2,1.6,.9,{});door(bx+1.8,.16,bz+CT.W/2,.9,2.0,{step:true});
- sock('awning',bx-.8,2.3,bz+CT.W/2,0,{w:2.4,d:1.2,drop:.35,h:2.3});sock('sign',bx+.2,2.35,bz+CT.W/2+.05,0,{w:2.2,h:.5,trade:'TICKETS'});
+ sock('awning',bx-.8,2.05,bz+CT.W/2,0,{w:2.4,d:1.2,drop:.35,h:1.55});sock('sign',bx+.2,2.4,bz+CT.W/2+.05,0,{w:2.2,h:.4,trade:'TICKETS'});
  stovepipe(bx+2.2,CT.H,bz-.3,1.2);arQueue(bx);
  // two stalls: lean-to counters with awnings
  for(const [sx,c] of [[-9.6,0x8a3a2c],[-15.4,0x3b7f6e]]){W(sx,0,25.4,0,()=>{box('plank',0,0,0,4.0,.1,2.4,jc(0x6a5a44,.06));wallOpen('plank',0,.1,-1.1,4.0,2.4,.1,[],jc(c,.06));

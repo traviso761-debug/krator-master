@@ -193,7 +193,7 @@ function cpTowerScaffold(){const s=2.15,lv=[3.8,7.6,10.6];const pc=jc(0x8a8a86,.
  antenna(-1.0,y+hh+.5,-1.0,2.6);
  cpPole(1.0,y+hh+.3,y+hh+3.2,-.6,.05,jc(0x4a4038,.05));sock('flag',1.0,y+hh+3.3,-.6,0,{w:1.4,h:.65});
  sock('banner',0.0,lv[1]+1.0,s+.6+.05,0,{w:1.0,h:2.0});cpPole(-.5,lv[1],lv[1]+1.02,s+.6,.03,pc);cpPole(.5,lv[1],lv[1]+1.02,s+.6,.03,pc);
- sock('emblem',0,y+1.3,hw+.06,0,{w:.9,h:.9});
+ sock('emblem',0,y+.5,hw+.06,0,{w:.8,h:.8});
  // water butt and junk at the foot
  waterButt(-s-.9,1.1,-s,.55,.9);barrel(s+.9,0,s+.2);crate(s+1.0,0,-s+.4,.6,.3);tireStack(-s-.8,s+.5,3);}
 function cpTowerBox(){const L=CT.L20;
@@ -205,9 +205,9 @@ function cpTowerBox(){const L=CT.L20;
  // lookout shelter: three planked sides + lean roof
  wallOpen('plank',1.0,ty+.14,-.9,2.6,2.0,.1,[],jc(0x8a5a30,.05));for(const sx of [-1,1])wallOpen('plank',1.0+sx*1.3,ty+.14,0,1.8,2.0,.1,[],jc(0x7a5a38,.05),sx*PI/2);
  roofP('corr',-.6,2.6,1.1,ty+2.15,-1.2,ty+2.55,.07,pick([P('galv'),P('rust')]));
- ladder(-2.0,0,CT.W/2+.02,CT.H+.9,0);ladder(-CT.W/2-.04,CT.H,-.7,CT.H+.9,PI/2);ladder(.5,CT.H*2,CT.W/2+.02,CT.H+.9,0);
+ ladder(2.6,0,CT.W/2+.02,CT.H+.9,0);ladder(-CT.W/2-.04,CT.H,-.7,CT.H+.9,PI/2);ladder(.5,CT.H*2,CT.W/2+.02,CT.H+.9,0);
  cpPole(-2.8,ty+.14,ty+3.7,-.8,.05,jc(0x4a4038,.05));sock('flag',-2.8,ty+3.8,-.8,0,{w:1.4,h:.65});
- sock('banner',-.7,ty+1.15,CT.W/2+.75+.06,0,{w:1.0,h:1.9});sock('emblem',-.7,CT.H*.5+1.2,CT.W/2+.02,0,{w:.9,h:.9});
+ sock('banner',-.7,ty+1.15,CT.W/2+.75+.06,0,{w:1.0,h:1.9});sock('emblem',-2.2,1.3,CT.W/2+.02,0,{w:.85,h:.85});
  waterButt(-3.3,ty+.14+.45,.5,.5,.8);barrel(3.0,0,CT.W/2+.5);tireStack(-3.9,1.4,4);crate(3.5,0,1.7,.6,.2);}
 // ---------------------------------------------------------------- the ground plan
 function cpGround(G,placed){const zf=G.zf,zb=G.zb,xr=G.xr,v=G.v,zm=(zb+zf)/2;
