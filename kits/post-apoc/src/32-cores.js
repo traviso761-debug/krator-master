@@ -71,7 +71,7 @@ function bulkhead(o){const w=o.w||9,h=o.h||7,th=o.th||.9;const c=jc(pick(PAL.con
  if(o.hatch==='door'){wallOpen('conc',0,.3,0,w,h-.3,th,[{x0:-1.1,x1:1.1,y0:.3,y1:3.4}],c);}else box('conc',0,.3,0,w,h-.3,th,c);
  box('conc',0,0,.05,w+.5,.3,th+.5,jc(0xb0aca2,.04));box('conc',0,h,0,w+.4,.3,th+.35,jc(0xb8b4aa,.04));
  const n=Math.max(2,Math.round(w/3));for(let k=0;k<=n;k++){const x=-w/2+k*w/n;box('conc',x,.3,th/2+.08,.42,h-.3,.16,jc(0xc8c4ba,.03));}
- for(let k=0;k<3;k++){box('iron',-w/2+.4,h*.25+k*h*.25,th/2+.02,w-.8,.06,.05,trim);}
+ for(let k=0;k<3;k++){box('iron',0,h*.25+k*h*.25,th/2+.02,w-.8,.06,.05,trim);}
  if(o.hatch==='round'){const R=Math.min(w,h)*.3;const hy=h*.5;tire(0,hy,th/2+.05,R+.25,.22,jc(0x4a4640,.03),0,PI/2,0);
   W(0,hy,th/2+.12,0,()=>{cylH('iron',0,0,0,R,.12,jc(0x5a5650,.04),'z',22);for(let k=0;k<4;k++){const a=k*PI/4;beam('iron',[Math.cos(a)*R*.85,Math.sin(a)*R*.85,.1],[-Math.cos(a)*R*.85,-Math.sin(a)*R*.85,.1],.09,jc(0x3a3632,.04));}
    cylH('iron',0,0,.08,R*.18,.16,jc(0x8a5a2a,.06),'z',12);});}
