@@ -57,14 +57,17 @@ function canvasTex(w,h,fn){const c=document.createElement('canvas');c.width=w;c.
  const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.encoding=THREE.sRGBEncoding;t.anisotropy=4;return t;}
 function gray(v,a){v=clamp(v|0,0,255);return a===undefined?`rgb(${v},${v},${v})`:`rgba(${v},${v},${v},${a})`;}
 function speckle(g,w,h,n,amin,amax,dark){for(let i=0;i<n;i++){const x=rng()*w,y=rng()*h,s=rng()*2+.6;g.fillStyle=dark?`rgba(0,0,0,${rr(amin,amax)})`:`rgba(255,255,255,${rr(amin,amax)})`;g.fillRect(x,y,s,s);}}
-function rustStreaks(g,w,h,n,vertical){for(let i=0;i<n;i++){const x=rng()*w,y=rng()*h,L=rr(h*.1,h*.6),th=rr(1,4);g.fillStyle=`rgba(60,40,25,${rr(.05,.22)})`;if(vertical)g.fillRect(x,y,th,L);else g.fillRect(x,y,L,th);}}
-function blotches(g,w,h,n,rmin,rmax,a){for(let i=0;i<n;i++){const x=rng()*w,y=rng()*h,r=rr(rmin,rmax);const gr=g.createRadialGradient(x,y,0,x,y,r);gr.addColorStop(0,`rgba(70,45,28,${rr(a*.5,a)})`);gr.addColorStop(1,'rgba(70,45,28,0)');g.fillStyle=gr;g.fillRect(x-r,y-r,r*2,r*2);}}
+// rust is COLOUR, not just darkness: orange-brown scale over the grey, dark pitting at its edges (vertex tints multiply into it)
+function rustStreaks(g,w,h,n,vertical){for(let i=0;i<n;i++){const x=rng()*w,y=rng()*h,L=rr(h*.12,h*.7),th=rr(1,5);g.fillStyle=`rgba(${rr(110,150)|0},${rr(48,70)|0},${rr(18,32)|0},${rr(.25,.7)})`;if(vertical)g.fillRect(x,y,th,L);else g.fillRect(x,y,L,th);
+ g.fillStyle=`rgba(40,20,10,${rr(.1,.3)})`;if(vertical)g.fillRect(x+th,y,1,L*.8);else g.fillRect(x,y+th,L*.8,1);}}
+function blotches(g,w,h,n,rmin,rmax,a){for(let i=0;i<n;i++){const x=rng()*w,y=rng()*h,r=rr(rmin,rmax)*1.5;const gr=g.createRadialGradient(x,y,0,x,y,r);const c=`${rr(125,165)|0},${rr(58,84)|0},${rr(22,38)|0}`;gr.addColorStop(0,`rgba(${c},${Math.min(.9,rr(a*.9,a*1.8))})`);gr.addColorStop(.6,`rgba(${c},${a*.6})`);gr.addColorStop(1,`rgba(${c},0)`);g.fillStyle=gr;g.fillRect(x-r,y-r,r*2,r*2);}}
 const TILE={};
 // corrugated sheet, ribs VERTICAL (vary along u). 8 ribs per repeat.
 function texCorr(rot,ribs,W,H){reseed(9001+(rot?1:0)+ribs);return canvasTex(W||128,H||128,(g,w,h)=>{
- if(rot){g.translate(w/2,h/2);g.rotate(Math.PI/2);g.translate(-w/2,-h/2);}
+ g.save();if(rot){g.translate(w/2,h/2);g.rotate(Math.PI/2);g.translate(-w/2,-h/2);}
  for(let x=0;x<w;x++){const t=x/w*ribs;const s=Math.sin(t*TAU);const v=186+58*s+(s>.7?18:0);g.fillStyle=gray(v);g.fillRect(x,0,1,h);}
- rustStreaks(g,w,h,26,true);blotches(g,w,h,5,6,18,.25);speckle(g,w,h,160,.05,.18,true);speckle(g,w,h,60,.06,.2,false);});}
+ g.restore();   // rust is drawn in the un-rotated frame: rain-runs always run DOWN the sheet
+ rustStreaks(g,w,h,54,true);blotches(g,w,h,17,8,28,.42);speckle(g,w,h,260,.05,.25,true);});}
 TEX={};
 TEX.corr=texCorr(false,8);TILE.corr=0.8;
 TEX.corrH=texCorr(true,8);TILE.corrH=0.8;
@@ -74,13 +77,13 @@ TEX.cont=texCorr(false,4,256,128);TILE.cont=1.2;
 reseed(9010);TEX.sheet=canvasTex(256,256,(g,w,h)=>{g.fillStyle=gray(178);g.fillRect(0,0,w,h);
  for(let i=0;i<9;i++){const x=rng()*w,y=rng()*h,pw=rr(50,120),ph=rr(40,100);g.fillStyle=gray(rr(150,215));g.fillRect(x,y,pw,ph);g.strokeStyle='rgba(30,25,20,.55)';g.lineWidth=1.5;g.strokeRect(x,y,pw,ph);
   g.fillStyle='rgba(20,15,10,.6)';for(let r=x+5;r<x+pw;r+=14){g.fillRect(r,y+3,2.2,2.2);g.fillRect(r,y+ph-5,2.2,2.2);}}
- blotches(g,w,h,10,10,34,.3);rustStreaks(g,w,h,24,true);speckle(g,w,h,300,.05,.16,true);});TILE.sheet=2;
+ blotches(g,w,h,22,12,40,.42);rustStreaks(g,w,h,50,true);speckle(g,w,h,300,.05,.2,true);});TILE.sheet=2;
 // planks, horizontal courses: 8 boards per 1.6 m
 reseed(9011);TEX.plank=canvasTex(256,256,(g,w,h)=>{const n=8,bh=h/n;for(let i=0;i<n;i++){g.fillStyle=gray(rr(140,220));g.fillRect(0,i*bh,w,bh);
  for(let k=0;k<14;k++){g.fillStyle=`rgba(40,28,18,${rr(.06,.2)})`;g.fillRect(0,i*bh+rng()*bh,w,rr(.6,1.4));}
  const cut=rng()*w;g.fillStyle='rgba(20,12,6,.5)';g.fillRect(cut,i*bh,1.6,bh);g.fillStyle='rgba(20,12,6,.55)';g.fillRect(0,i*bh,w,1.4);
  g.fillStyle='rgba(15,10,6,.7)';g.fillRect(cut-6,i*bh+bh*.5-1,2,2);g.fillRect(cut+7,i*bh+bh*.5-1,2,2);}
- blotches(g,w,h,6,8,24,.22);});TILE.plank=1.6;
+ blotches(g,w,h,6,8,24,.18);});TILE.plank=1.6;
 reseed(9012);TEX.earth=canvasTex(256,256,(g,w,h)=>{g.fillStyle=gray(196);g.fillRect(0,0,w,h);const id=g.getImageData(0,0,w,h),d=id.data;
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const n=fbm(x/22,y/22,1.3,3)*70+fbm(x/4,y/4,5,1)*38;const i=(y*w+x)*4;const v=150+n;d[i]=d[i+1]=d[i+2]=v;}
  g.putImageData(id,0,0);for(let i=0;i<14;i++){g.strokeStyle='rgba(40,30,20,.3)';g.lineWidth=1;g.beginPath();let x=rng()*w,y=rng()*h;g.moveTo(x,y);for(let k=0;k<6;k++){x+=rr(-14,14);y+=rr(2,16);g.lineTo(x,y);}g.stroke();}});TILE.earth=3;
@@ -90,7 +93,7 @@ reseed(9013);TEX.conc=canvasTex(256,256,(g,w,h)=>{g.fillStyle=gray(225);g.fillRe
  for(let i=0;i<10;i++){const x=rng()*w;const gr=g.createLinearGradient(x,0,x,h);gr.addColorStop(0,'rgba(60,50,40,0)');gr.addColorStop(rr(.3,.6),`rgba(60,50,40,${rr(.06,.16)})`);gr.addColorStop(1,'rgba(60,50,40,0)');g.fillStyle=gr;g.fillRect(x,0,rr(3,10),h);}
  g.fillStyle='rgba(40,40,45,.6)';for(const [x,y] of [[8,8],[w-8,8],[8,h-8],[w-8,h-8],[w/2-8,h/2-8],[w/2+8,h/2+8]]){g.beginPath();g.arc(x,y,2.4,0,TAU);g.fill();}});TILE.conc=2;
 reseed(9014);TEX.iron=canvasTex(128,128,(g,w,h)=>{g.fillStyle=gray(150);g.fillRect(0,0,w,h);const id=g.getImageData(0,0,w,h),d=id.data;
- for(let y=0;y<h;y++)for(let x=0;x<w;x++){const v=158+fbm(x/10,y/10,3.1,3)*44-22+fbm(x/2.5,y/2.5,7,1)*12;const i=(y*w+x)*4;d[i]=d[i+1]=d[i+2]=v;}g.putImageData(id,0,0);rustStreaks(g,w,h,8,true);blotches(g,w,h,4,6,16,.2);});TILE.iron=1;
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const v=158+fbm(x/10,y/10,3.1,3)*44-22+fbm(x/2.5,y/2.5,7,1)*12;const i=(y*w+x)*4;d[i]=d[i+1]=d[i+2]=v;}g.putImageData(id,0,0);rustStreaks(g,w,h,26,true);blotches(g,w,h,12,6,20,.45);});TILE.iron=1;
 // timber (posts, beams, logs): vertical grain
 reseed(9018);TEX.wood=canvasTex(128,128,(g,w,h)=>{g.fillStyle=gray(190);g.fillRect(0,0,w,h);for(let x=0;x<w;x++){const v=190+Math.sin(x*.9+fbm(x/6,0,1,2)*9)*16+rr(-10,10);g.fillStyle=gray(v);g.fillRect(x,0,1,h);}
  for(let i=0;i<10;i++){g.fillStyle=`rgba(40,28,18,${rr(.08,.24)})`;g.fillRect(rng()*w,rng()*h,rr(1,2),rr(10,50));}for(let i=0;i<2;i++){const x=rng()*w,y=rng()*h;g.fillStyle='rgba(30,20,12,.45)';g.beginPath();g.ellipse(x,y,3,6,0,0,TAU);g.fill();}});TILE.wood=1;
@@ -133,6 +136,12 @@ mkMat('water',null,{rough:.1,metal:.35,transparent:true,opacity:.9,depthWrite:fa
 MAT.plain=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.9});           // untextured painted stuff (leaves, hides, ropes)
 TILE.plain=1;TILE.rubber=1;TILE.glass=1;TILE.glow=1;
 const SRGB2LIN=c=>{c.convertSRGBToLinear();return c;};
+// WEATHERING. Reclaimed metal and timber never keeps a bright paint: on these material families emit() desaturates the tint and pulls it toward rust
+// (strength 0..1). Cloth, glass, glow, bottles, plain paint and the culture marks (canvas materials) are left alone, so a culture's awnings and
+// banners stay bright against the rusted junk.
+const WEATHER={corr:1,corrH:1,cont:1,sheet:1,iron:.9,plank:.7,wood:.55};
+const _wc=new THREE.Color(),_hsl={h:0,s:0,l:0},RUSTLIN=new THREE.Color(0.30,0.105,0.045);
+function weather(c,k){_wc.copy(c);_wc.getHSL(_hsl);const s=_hsl.s*(1-.72*k),l=_hsl.l*(1-.08*k);_wc.setHSL(_hsl.h,s,l);_wc.lerp(RUSTLIN,.20*k*(1-Math.min(1,_hsl.l*1.6)*.35));return _wc;}
 const _HC={};function hc(hex){let c=_HC[hex];if(!c){c=SRGB2LIN(new THREE.Color(hex));_HC[hex]=c;}return c;}
 // jittered copy of a hex colour (value drift only), deterministic through the PRNG
 function jc(hex,j){j=j===undefined?.08:j;const c=new THREE.Color(hex);const f=1+rr(-j,j);c.r=clamp(c.r*f,0,1);c.g=clamp(c.g*(1+rr(-j,j)*.5+(f-1)*.5),0,1);c.b=clamp(c.b*(1+(f-1)*.6),0,1);return SRGB2LIN(c);}
@@ -175,7 +184,8 @@ let GSTAT={tris:0};
 function emit(mk,geo,lm,col,uvm){_mm.copy(CM);if(lm)_mm.multiply(lm);
  const b=GTARGET[mk]||(GTARGET[mk]={p:[],n:[],u:[],c:[],i:[]});
  const Pa=geo.attributes.position,Na=geo.attributes.normal,Ua=geo.attributes.uv,I=geo.index;const base=b.p.length/3;_nm.getNormalMatrix(_mm);
- const c=col===undefined||col===null?_WC:(typeof col==='number'?hc(col):col);const ts=1/(TILE[mk]||1);
+ let c=col===undefined||col===null?_WC:(typeof col==='number'?hc(col):col);const ts=1/(TILE[mk]||1);
+ if(WEATHER[mk]&&c!==_WC)c=weather(c,WEATHER[mk]);
  for(let i=0;i<Pa.count;i++){_v.fromBufferAttribute(Pa,i).applyMatrix4(_mm);_n.fromBufferAttribute(Na,i).applyMatrix3(_nm).normalize();
   b.p.push(_v.x,_v.y,_v.z);b.n.push(_n.x,_n.y,_n.z);b.c.push(c.r,c.g,c.b);
   if(uvm&&Ua){b.u.push(Ua.getX(i)*uvm.su,Ua.getY(i)*uvm.sv);}
@@ -523,6 +533,698 @@ function dwSilo(o){
  sock('awning',0,2.75,r+.02,0,{w:2.0,d:1.3,drop:.55,h:2.5});
  beam('wood',[3.6,0,r+2.9],[3.6,4.0,r+2.9],.08,jc(0x5c4630,.06),true,6);sock('banner',3.6,4.0,r+2.95,0,{w:.7,h:2});
  sock('emblem',0,5.0,r+.03,0,{w:.9,h:.9});}
+
+// ---------------------------------------------------------------- shared helpers for the small dwellings
+const dwWood=0x5c4630;
+function dwPole(x,y0,z,y1,w,col){beam('wood',[x,y0,z],[x,y1,z],w||.1,col===undefined?jc(dwWood,.06):jc(col,.05),true,6);}
+// a rail (posts + top and mid bar) from (x0,z0) to (x1,z1) standing on y
+function dwRail(x0,z0,x1,z1,y,h){h=h||1;const c=jc(dwWood,.06);const L=Math.hypot(x1-x0,z1-z0);if(L<.1)return;const n=Math.max(1,Math.round(L/1.3));
+ for(let k=0;k<=n;k++){const t=k/n,px=x0+(x1-x0)*t,pz=z0+(z1-z0)*t;beam('wood',[px,y,pz],[px,y+h,pz],.06,c,true,5);}
+ beam('wood',[x0,y+h,z0],[x1,y+h,z1],.07,c);beam('wood',[x0,y+h*.5,z0],[x1,y+h*.5,z1],.04,c);}
+// a ladder leaning in the current frame: foot at z=za on the ground, top at (zb,yb); w wide, centred on x
+function dwLean(x,w,za,zb,yb){const c=jc(0x5a5048,.05);const L=Math.hypot(za-zb,yb);for(const sx of [-1,1])beam('iron',[x+sx*w/2,0,za],[x+sx*w/2,yb,zb],.05,c);
+ for(let k=1;k*.32<L;k++){const t=k*.32/L;beam('iron',[x-w/2,yb*t,za+(zb-za)*t],[x+w/2,yb*t,za+(zb-za)*t],.035,c,true,5);}}
+// solar panel on a small frame: tilted toward +z, base at y, w x d (plan depth)
+function dwSolar(x,y,z,w,d,ry,tilt){W(x,y,z,ry||0,()=>{const t=tilt===undefined?.5:tilt,c=Math.cos(t)*d/2,h=Math.sin(t)*d,fc=jc(0x8a8a86,.05);
+ plane4('glass',[-w/2,h+.2,-c],[w/2,h+.2,-c],[-w/2,.2,c],[w/2,.2,c],.05,jc(0x1c2c50,.05));
+ for(const [a,b] of [[[-w/2,h+.2,-c],[w/2,h+.2,-c]],[[-w/2,.2,c],[w/2,.2,c]],[[-w/2,h+.2,-c],[-w/2,.2,c]],[[w/2,h+.2,-c],[w/2,.2,c]],[[0,h+.2,-c],[0,.2,c]]])beam('iron',a,b,.05,fc);
+ for(const sx of [-.4,.4]){beam('iron',[sx*w,0,-c],[sx*w,h+.2,-c],.05,fc);beam('iron',[sx*w,0,c],[sx*w,.2,c],.05,fc);}});}
+// bright patchwork sheets nailed on a wall face (frame: at (x,y,z) facing +z via ry), avoiding nothing: use on solid wall runs only
+function dwPatches(x,y,z,w,h,ry,n,z0){W(x,y,z,ry||0,()=>{for(let k=0;k<n;k++){const pw=rr(.5,1.2),ph=rr(.4,.9);box(pick(['sheet','corr','sheet']),rr(-w/2+pw/2,w/2-pw/2),rr(0,Math.max(0,h-ph)),(z0||.06),pw,ph,.03,pick([P('paint'),P('rust'),P('galv'),P('paint')]),0,0,rr(-.05,.05));}});}
+// wall quad in the plane z (x0..x1) with heights hA at x0 and hB at x1 (a trapezoid wall under a sloping roof)
+function dwTrap(mk,x0,x1,z,y0,hA,hB,col){poly(mk,[[x0,y0,z],[x1,y0,z],[x1,hB,z],[x0,hA,z]],col,true);}
+
+// ---------------------------------------------------------------- dw-tire: earthship-style round hut
+defBuilding({key:'dw-tire',name:'Tyre hut',seed:4030,tags:{type:['single-family dwelling'],size:'small',core:'earth-filled tyres',materials:['tyres','earth','bottle glass','sheet metal']},w:11,d:11,h:5.4,build:dwTire});
+function dwTire(o){
+ const s=o.v===1?-1:1,R=3.5,H1=6*TYR.H,HW=2.55,dg=.17,fa=PI/2,wa=fa-s*1.15,wh=1.5/R,rise=1.25,RE=R+.75;
+ const plast=jc(pick([0xd4b08a,0xcf9a72,0xc9a878]),.03);
+ const gaps=[[fa-dg,fa+dg],[wa-wh,wa+wh]].sort((a,b)=>a[0]-b[0]);
+ cyl('earth',0,0,0,R-.24,.1,jc(0x9a8a70,.05),20);
+ tireRing(0,0,R,6,fa+dg,fa+TAU-dg);
+ // plastered upper wall in two arcs, with the doorway and the window left open
+ sector('earth',0,0,R-.3,R+.3,gaps[0][1],gaps[1][0],H1,HW,plast);sector('earth',0,0,R-.3,R+.3,gaps[1][1],gaps[0][0]+TAU,H1,HW,plast);
+ sector('earth',0,0,R-.3,R+.3,fa-dg,fa+dg,2.15,HW,plast);
+ // the bottle-glass window: stepped tiers in a timber frame, plaster infill in the corners
+ const tiers=[[3.0,H1,1.85],[2.3,1.85,2.2],[1.5,2.2,2.42]];
+ for(const [w,y0,y1] of tiers){const hw=w/2/R;
+  W(Math.cos(wa)*R,0,Math.sin(wa)*R,PI/2-wa,()=>bottleWall(0,y0,0,w,y1-y0,0,{th:.34}));
+  if(w<3){sector('earth',0,0,R-.3,R+.3,wa-wh,wa-hw,y0,y1,plast);sector('earth',0,0,R-.3,R+.3,wa+hw,wa+wh,y0,y1,plast);}}
+ sector('earth',0,0,R-.3,R+.3,wa-wh,wa+wh,2.42,HW,plast);
+ // a small second bottle light at the back
+ {const ab=fa+s*2.4;W(Math.cos(ab)*R,0,Math.sin(ab)*R,PI/2-ab,()=>{bottleWall(0,1.5,0,1.1,.8,0,{th:.34});});}
+ // door with timber frame
+ door(0,0,R*Math.cos(dg)-.1,1.0,2.0,{step:false});
+ for(const sx of [-1,1])dwPole(sx*.62,0,R+.1,2.2,.18);box('wood',0,2.08,R,1.7,.2,.4,jc(dwWood,.06));
+ tire(0,.12,R+.7,TYR.R,TYR.t,undefined,rng()*TAU);box('plank',0,.24,R+.45,1.2,.06,.5,P('woodD'));
+ // ring beam and the shallow cone roof of sheet on rafters
+ const nb=16;for(let k=0;k<nb;k++){const a0=k/nb*TAU,a1=(k+1)/nb*TAU;beam('wood',[Math.cos(a0)*(R+.05),HW+.1,Math.sin(a0)*(R+.05)],[Math.cos(a1)*(R+.05),HW+.1,Math.sin(a1)*(R+.05)],.3,jc(0x6a5238,.06));}
+ const rc=jc(pick([0xb0522e,0x3f7a72,0x8a8a84,0xc99a2e]),.05);
+ cyl('corr',0,HW+.05,0,RE,rise,rc,20,.9,true);cyl('iron',0,HW+.03,0,RE+.03,.1,jc(0x5a4a3c,.05),20);
+ for(let k=0;k<20;k++){const a=k/20*TAU;beam('wood',[Math.cos(a)*(R-.5),HW,Math.sin(a)*(R-.5)],[Math.cos(a)*(RE+.05),HW-.02,Math.sin(a)*(RE+.05)],.12,jc(dwWood,.06));}
+ const top=HW+.05+rise;
+ cyl('iron',0,top,0,.95,.14,jc(0x4a4038,.05),12);cyl('glass',0,top+.14,0,.78,.55,jc(pick(PAL.glass),.05),10);for(let k=0;k<8;k++){const a=k/8*TAU;beam('iron',[Math.cos(a)*.78,top+.14,Math.sin(a)*.78],[Math.cos(a)*.78,top+.69,Math.sin(a)*.78],.05,jc(0x4a4038,.05));}
+ cone('sheet',0,top+.69,0,1.05,.4,jc(0x8a8a84,.05),10);stovepipe(.6,top-.1,-.9,1.5);
+ // solar panel on the roof slope, facing out on the side away from the window
+ {const ra=fa+s*.7,ry=(r)=>HW+.05+(RE-r)/(RE-.9)*rise+.16,pts=[];for(const r of [2.2,3.5])for(const da of [-.33,.33])pts.push([Math.cos(ra+da)*r,ry(r),Math.sin(ra+da)*r]);
+  plane4('glass',pts[0],pts[1],pts[2],pts[3],.05,jc(0x1c2c50,.05));for(const [a,b] of [[0,1],[2,3],[0,2],[1,3]])beam('iron',pts[a],pts[b],.05,jc(0x8a8a86,.05));
+  for(const p of [pts[0],pts[1],pts[2],pts[3]])beam('iron',[p[0],p[1]-.16,p[2]],p,.05,jc(0x4a4038,.05));}
+ // berm of earth behind, planted
+ for(let a=PI+.2;a<TAU-.1;a+=.42){const rr_=R+.8+rr(-.1,.1);sph('earth',Math.cos(a)*rr_,-.1,Math.sin(a)*rr_,1.7,jc(0x8f7a5a,.05),.9);}
+ for(let a=PI+.35;a<TAU-.25;a+=.5)sph('plain',Math.cos(a)*(R+.8),1.6,Math.sin(a)*(R+.8),.55,jc(pick([0x4d6f3c,0x6a8a3c,0x3f7a52]),.1),.55);
+ // ladder to the roof (side), tyre planters, water butt, junk
+ {const al=fa+s*1.0;W(Math.cos(al)*(R+.3),0,Math.sin(al)*(R+.3),PI/2-al,()=>dwLean(0,.5,1.6,.55,3.0));}
+ for(const [cx,cz] of [[Math.cos(wa)*(R+1.15),Math.sin(wa)*(R+1.15)],[-s*1.9,R+1.5]]){tireRing(cx,cz,.72,2,0,TAU);sph('plain',cx,.42,cz,.62,jc(pick([0x4d6f3c,0x5a8a3c]),.1),.5);sph('plain',cx+.15,.6,cz,.3,jc(0xd05a3a,.1),.6);}
+ {const al=fa+s*2.5;waterButt(Math.cos(al)*(R+.9),1.0,Math.sin(al)*(R+.9),.55,.9);}
+ tireStack(s*2.6,R+1.7,3);barrel(-s*3.2,0,R+1.6);crate(-s*3.5,0,R+2.1,.6,.3);junkPile(-s*4.3,R-.6,.9,6);lamp(s*1.0,0,R+1.6,2.6);
+ // SOCKETS: awning over the door, banner on a pole by the door, emblem on the plaster between door and window
+ sock('awning',0,2.35,R+.3,0,{w:1.8,d:1.3,drop:.5,h:2.4});
+ dwPole(-s*3.0,0,R+1.3,4.6,.1);sock('banner',-s*3.0,4.5,R+1.33,0,{w:.7,h:1.9});
+ {const ae=fa-s*.6;W(Math.cos(ae)*(R+.31),0,Math.sin(ae)*(R+.31),PI/2-ae,()=>sock('emblem',0,1.85,0,0,{w:.6,h:.6}));}}
+
+// ---------------------------------------------------------------- dw-bus: a wrecked school bus as the home
+defBuilding({key:'dw-bus',name:'Bus house',seed:4040,tags:{type:['single-family dwelling'],size:'small',core:'school bus',materials:['bus body','plank','sheet metal','tyres']},w:14,d:9,h:5.2,build:dwBus});
+function dwBus(o){
+ const cx=2.2,cz=-1.7,L=10.6,zf=cz+1.2,bx0=cx-4.6;                  // bus body spans cx-4.6 .. cx+3.8, side face z=zf
+ W(cx,0,cz,0,()=>bus({len:L,col:o.v===1?0x3b7f8e:(o.v===2?0x9a3a2c:0xd8a020)}));
+ // rust patches and a stripe on the flank, a door in use, tyre steps
+ dwPatches(cx-1.2,.85,zf,6.0,.5,0,3,.02);
+ door(cx+2.35,.8,zf,.9,1.5,{step:false});
+ for(const [dz,n] of [[.5,3],[1.25,2],[2.0,1]])for(let k=0;k<n;k++)tire(cx+2.15+rr(-.03,.03),.12+k*.24,zf+dz+.3,TYR.R,TYR.t,undefined,rng()*TAU);
+ // deck along the side, canopy above on posts, stairs down to the yard
+ const dx=cx-.6,dw=4.6,dz0=zf,dd=2.0;
+ deck(dx,.8,dz0+dd/2,dw,dd);
+ dwRail(cx-2.9,zf+dd,cx-2.05,zf+dd,.8);dwRail(cx-1.0,zf+dd,cx+1.7,zf+dd,.8);dwRail(cx-2.9,zf,cx-2.9,zf+dd,.8);dwRail(cx+1.7,zf+dd,cx+1.7,zf+.9,.8);
+ stairs(cx-1.5,0,zf+dd+1.9,cx-1.5,.8,zf+dd+.05,1.0);
+ box('plank',cx-1.3,2.45,zf-.02,3.6,.4,.08,jc(0x5c4630,.06));                       // fascia lashed along the bus roof edge
+ leanRoof(cx-1.3,zf,3.6,dd+.3,2.85,2.65,{col:jc(o.v===1?0xc45a30:0x3f7a72,.05)});
+ // deck furniture: a table, tyre seats, a hanging bottle string
+ box('plank',cx-.4,.8,zf+1.0,.9,.06,.6,P('woodD'));for(const sx of [-.35,.35])box('wood',cx-.4+sx,.86,zf+1.0,.06,.6,.06,jc(dwWood,.05));
+ tire(cx-2.2,.92,zf+1.0,TYR.R*.8,TYR.t*.8);tire(cx+.5,.92,zf+.6,TYR.R*.8,TYR.t*.8);
+ bottleString([cx-3.0,2.62,zf+dd+.35],[cx+.4,2.62,zf+dd+.35],7);
+ // rear lean-to kitchen of planks and sheet against the back of the bus
+ const kx1=bx0,kx0=bx0-3.4,kz0=cz-1.5,kz1=cz+1.5,hN=2.75,hF=2.15,kc=(kx0+kx1)/2;
+ box('plank',kc,0,cz,3.4,.16,3.0,jc(0x6a5a44,.08));
+ W(0,0,kz1,0,()=>{});
+ // side walls (trapezoids under the sloped roof), rear wall, hatch wall
+ for(const z of [kz0,kz1]){dwTrap('plank',kx0,kx1,z,.16,hF,hN,jc(pick([0x3b7f6e,0x9a7a52,0xc99a2e]),.06));}
+ {const c0=jc(pick([0x7a2e28,0x2f5f8f,0x9a7a52]),.06);box('plank',kx0,.16,cz,.1,hF-.16,3.0,c0);}
+ dwPatches(kc,.3,kz1,3.4,1.5,0,4,.05);dwPatches(kx0-.06,.3,cz,3.0,1.5,-PI/2,3,.02);dwPatches(kc,.3,kz0,3.4,1.5,PI,4,.05);
+ plane4('corr',[kx1+.05,hN+.02,kz0-.3],[kx1+.05,hN+.02,kz1+.3],[kx0-.35,hF-.03,kz0-.3],[kx0-.35,hF-.03,kz1+.3],.07,o.v===1?P('rust'):P('galv'));
+ for(const z of [kz0-.3,kz1+.3])beam('wood',[kx1,hN-.02,z],[kx0-.35,hF-.05,z],.09,jc(dwWood,.06));
+ // serving hatch with shelf and shutter, and a door, on the +z wall
+ win(kc+.7,.95,kz1,1.1,.85,{shutters:true,lit:o.v===1});box('plank',kc+.7,.92,kz1+.28,1.5,.06,.5,jc(0x6a5238,.06));
+ door(kc-.9,.16,kz1,.85,1.85,{step:true});
+ // roof furniture: bus roof garden, solar, stovepipes
+ const ry=2.45;
+ for(const [px,pw] of [[cx-3.4,1.5],[cx-1.6,1.5]]){box('plank',px,ry,cz,pw,.42,1.3,jc(0x6a5238,.06));box('plain',px,ry+.4,cz,pw-.1,.04,1.2,jc(0x4a3626,.06));
+  for(let k=0;k<5;k++)sph('plain',px+rr(-pw/2+.25,pw/2-.25),ry+.6,cz+rr(-.4,.4),rr(.22,.36),jc(pick([0x4d6f3c,0x6a8a3c,0x3f7a52,0x8a9a3c]),.1),.8);}
+ dwSolar(cx+1.1,ry,cz,2.8,1.5,0,.5);stovepipe(cx-.3,ry,cz-.5,1.3);stovepipe(kc-.6,hN-.3,cz+.3,1.7);
+ // yard: a water butt on stilts at the kitchen, barrels, crate, tyre seat, junk
+ waterButt(kx0+1.0,1.5,kz0-1.2,.6,.9);barrel(kx0+.2,0,kz1+.7);barrel(kx0+.7,0,kz1+1.1);crate(kc-1.6,0,kz1+1.2,.6,.3);tireStack(cx+4.9,zf+1.2,2);tire(cx+5.0,.12,zf+2.6,TYR.R,TYR.t);
+ junkPile(kx0+.2,kz0-1.6,1.0,6);lamp(cx+3.0,0,zf+2.4,2.9);
+ // poles: banner in the yard, flag at the kitchen's rear corner
+ dwPole(cx+4.4,0,zf+3.0,4.3,.1);dwPole(kx0-.3,0,kz0,4.7,.1);
+ // SOCKETS
+ sock('awning',cx+2.35,2.3,zf,0,{w:1.5,d:1.1,drop:.4,h:1.3});
+ sock('awning',kc+.7,1.9,kz1,0,{w:1.6,d:.9,drop:.3,h:1.2});
+ sock('banner',cx+4.4,4.2,zf+3.03,0,{w:.7,h:1.8});
+ sock('flag',kx0-.3,4.7,kz0,0,{w:1.0,h:.6});
+ sock('emblem',cx-.2,1.13,zf+.02,0,{w:.55,h:.55});}
+
+// ---------------------------------------------------------------- dw-tank: a storage tank as a pod (lying, or standing in variant 1)
+defBuilding({key:'dw-tank',name:'Tank pod',seed:4050,tags:{type:['single-family dwelling'],size:'small',core:'storage tank',materials:['tank steel','plank','sheet metal','tyres','concrete']},w:11,d:9,h:5.6,build:dwTank});
+function dwTank(o){
+ const col=o.v===1?0x9a5a3a:0x4a8f92;
+ if(o.v===1)return dwTankStand(o,col);
+ const r=1.7,L=8.4,cy=r+.35;
+ tankH({r:r,L:L,col:col});
+ // tyre cradle: earth-filled stacks chocked against the belly, concrete plinth ends
+ for(const sx of [-1,1])for(const sz of [-1,1])tireStack(sx*L*.28,sz*(r+.05),2);
+ for(const sx of [-1,1])tireStack(sx*(L/2+.3),0,2);
+ // skin cut: door, round port windows and a plank porch
+ const skin=(y)=>Math.sqrt(r*r-(y-cy)*(y-cy));
+ door(-1.4,1.4,1.42,.9,1.6,{step:false});
+ for(const px of [.9,2.0]){porthole(px,cy,1.62,.32);}
+ porthole(-3.2,cy+.15,skin(cy+.15)-.06,.26);
+ // porch
+ deck(-1.6,1.3,2.25,4.0,1.8);
+ dwRail(-3.6,3.15,-3.25,3.15,1.3);dwRail(-2.15,3.15,.4,3.15,1.3);dwRail(-3.6,1.5,-3.6,3.15,1.3);dwRail(.4,3.15,.4,1.5,1.3);
+ stairs(-2.7,0,5.1,-2.7,1.3,3.2,1.1);
+ // ladder to the manhole, stovepipe, solar, flag pole
+ dwLean(3.9,.5,2.9,1.0,3.35);
+ dwSolar(2.6,3.55,0,2.6,1.2,0,.4);stovepipe(-1.8,3.6,.1,1.6);
+ // rear lean-to of plank and sheet against the flank
+ W(0,0,0,PI,()=>{const c0=jc(pick([0x9a7a52,0xc99a2e,0x7a2e28]),.05);
+  leanRoof(-2.3,1.6,3.8,2.4,2.55,1.95,{col:P('galv')});
+  dwTrap('plank',-4.2,-.4,1.65,.16,2.4,2.4,c0);dwTrap('plank',-4.2,-4.2,1.6,.16,1.9,1.9,c0);
+  box('plank',-4.2,.16,2.8,.1,1.85,2.4,c0);box('plank',-.4,.16,2.8,.1,1.85,2.4,jc(pick([0x3b7f6e,0x2f5f8f]),.05));
+  box('plank',-2.3,.16,4.0,3.8,1.8,.1,jc(pick([0x3b7f6e,0x9a7a52]),.06));box('plank',-2.3,0,2.8,3.8,.16,2.4,jc(0x6a5a44,.08));
+  dwPatches(-2.3,.3,4.06,3.8,1.4,0,4,.03);});
+ waterButt(4.4,1.9,-1.9,.6,.9);pipe('iron',[[3.5,2.0,-3.6],[4.4,2.0,-3.6],[4.4,2.8,-1.9]],.03,jc(0x6a6a66,.05));
+ barrel(5.2,0,1.8);barrel(5.7,0,1.3);crate(4.9,0,2.6,.6,.2);junkPile(5.0,-3.2,1.1,7);lamp(1.3,0,3.4,3.0);
+ dwPole(.55,0,3.35,3.8,.1);dwPole(1.2,3.72,0,5.4,.06);
+ // SOCKETS
+ sock('awning',-1.4,3.06,1.37,0,{w:1.5,d:1.4,drop:.45,h:1.3});
+ sock('banner',.55,3.7,3.38,0,{w:.7,h:1.6});
+ sock('flag',1.2,5.4,0,0,{w:1.1,h:.6});
+ sock('emblem',3.15,cy,1.71,0,{w:.7,h:.7});}
+// standing tank (variant 1): tyre-buttressed, door at porch height, ports round the skin, ladder to the roof
+function dwTankStand(o,col){
+ const r=2.1,h=5.2;tankV({r:r,h:h,col:col});
+ for(let a=.5;a<TAU;a+=.5)if(Math.abs(Math.atan2(Math.sin(a),Math.cos(a))-PI/2)>.6)for(let k=0;k<2;k++)tire(Math.cos(a)*(r+.5),.12+k*.24,Math.sin(a)*(r+.5),TYR.R,TYR.t,undefined,rng()*TAU);
+ // porch, door and stairs at the front (+z)
+ deck(0,1.1,r+.7,3.4,1.9);
+ dwRail(-1.7,r+1.65,-1.35,r+1.65,1.1);dwRail(-.25,r+1.65,1.7,r+1.65,1.1);dwRail(-1.7,r-.2,-1.7,r+1.65,1.1);dwRail(1.7,r+1.65,1.7,r-.2,1.1);
+ stairs(-.8,0,r+3.5,-.8,1.1,r+1.65,1.0);
+ door(0,1.1,r-.06,.9,1.7,{step:false});
+ for(const [a,y] of [[.85,3.2],[-.85,3.2],[.85,4.6],[-.85,4.6],[PI-.5,3.4],[PI+.5,3.4]])W(Math.sin(a)*r,0,Math.cos(a)*r,a,()=>porthole(0,y,-.02,.3));
+ // ladder to the roof at the back, roof rail, stovepipe, water butt on the porch side
+ W(0,0,-(r+.05),PI,()=>ladder(0,.1,0,h+.5,0));
+ dwSolar(-.9,.3+h+.5,.4,2.0,1.1,0,.35);stovepipe(1.0,.3+h+.6,-.3,1.5);
+ waterButt(-3.6,1.6,.3,.65,.95);
+ // lean-to shed on the east flank
+ W(r-.05,0,0,PI/2,()=>{leanRoof(0,0,3.6,2.2,2.8,2.2,{col:jc(0x8a4a2a,.05)});
+  for(const sx of [-1,1])dwTrap('plank',0,2.2,sx*1.8,.16,2.6,2.2,jc(pick([0x9a7a52,0xc99a2e]),.06));
+  box('plank',0,.16,2.2,3.6,1.9,.1,jc(0x7a2e28,.06));box('plank',0,0,1.1,3.6,.16,2.2,jc(0x6a5a44,.08));});
+ barrel(3.9,0,-1.9);crate(-3.2,0,2.9,.6,.4);tireStack(3.4,3.0,3);junkPile(-3.6,-2.6,1.0,6);lamp(2.4,0,r+2.2,3.2);
+ dwPole(2.7,0,r+1.9,4.4,.1);dwPole(-.2,.3+h+.6,-.9,7.0,.06);
+ sock('awning',0,2.9,r,0,{w:1.5,d:1.4,drop:.45,h:1.35});
+ sock('banner',2.7,4.3,r+1.93,0,{w:.7,h:1.7});
+ sock('flag',-.2,7.0,-.9,0,{w:1.1,h:.6});
+ W(Math.sin(.95)*r,0,Math.cos(.95)*r,.95,()=>sock('emblem',0,3.7,.02,0,{w:.7,h:.7}));}
+
+// ---------------------------------------------------------------- dw-bottle: the pretty one, a timber-framed cottage of bottle-glass panels
+defBuilding({key:'dw-bottle',name:'Bottle cottage',seed:4060,tags:{type:['single-family dwelling'],size:'small',core:'timber frame + bottle walls',materials:['bottle glass','timber','tyres and earth','corrugated sheet']},w:12,d:10,h:6.4,build:dwBottle});
+function dwBottle(o){
+ const x0=-3.7,x1=3.7,zf=2.4,zb=-2.4,y0=.5,H=2.6,yt=y0+H;
+ const pal=o.v===1?[0x3b7f6e,0xc99a2e,0x7a2e28]:[0x2f6f8f,0xd8a020,0x9a3a2c];
+ const wc=jc(pal[0],.05),wc2=jc(pal[1],.05),wc3=jc(pal[2],.05),frame=jc(0x5c4630,.06);
+ // tyre-and-earth foundation course and plank floor
+ tireWall(x0,zf,x1,zf,2);tireWall(x0,zb,x1,zb,2);tireWall(x0,zf,x0,zb,2);tireWall(x1,zf,x1,zb,2);
+ box('plank',0,.3,0,7.6,.2,4.9,jc(0x6a5a44,.08));
+ // timber frame: posts, sill and plate, corner braces
+ const fx=[-3.7,-2.1,-.1,.9,2.3,3.7];
+ for(const x of fx)for(const z of [zf,zb])box('wood',x,y0,z,.18,H,.18,jc(0x6a5238,.06));
+ for(const z of [-2.4,0,2.4])for(const x of [x0,x1])if(z===0)box('wood',x,y0,0,.18,H,.18,jc(0x6a5238,.06));
+ for(const z of [zf,zb]){box('wood',0,y0,z,7.6,.14,.2,frame);box('wood',0,yt-.14,z,7.6,.2,.22,frame);}
+ for(const x of [x0,x1]){box('wood',x,y0,0,.2,.14,4.9,frame);box('wood',x,yt-.14,0,.22,.2,4.9,frame);}
+ for(const [sx,sz] of [[-1,1],[1,1]]){const bx=sx*3.7,bz=zf;beam('wood',[bx,y0+.1,bz+.02],[bx-sx*.9,yt-.1,bz+.02],.1,frame);}
+ // front wall: bottle panel, door, plank pier, big bottle panel; knee walls of plank below
+ bottleWall(-2.9,1.0,zf,1.6,1.85,0,{th:.3});box('plank',-2.9,y0,zf,1.6,.5,.12,wc2);
+ box('plank',-1.1,y0+2.0,zf,2.0,H-2.0,.12,wc);box('plank',-2.1,y0,zf,.1,H,.14,frame);
+ box('plank',-.1+.5,y0,zf,1.0,H,.12,wc3);dwPatches(.4,y0+.2,zf,.9,H-.4,0,2,.08);
+ bottleWall(2.1,1.0,zf,2.8,1.85,0,{th:.3});box('plank',2.1,y0,zf,2.8,.5,.12,wc2);box('plank',2.1,y0+2.0,zf,2.8,H-2.0,.12,wc);
+ door(-1.1,y0,zf+.02,1.0,1.9,{step:false,col:pal[2]});
+ // back wall and side walls: plank, patched, with a bottle window each
+ box('plank',0,y0,zb,7.4,H,.12,wc2);dwPatches(0,y0+.3,zb-.06,7,H-.6,PI,5,0);bottleWall(1.2,1.2,zb-.02,1.6,1.1,PI,{th:.3});
+ for(const sx of [-1,1]){box('plank',sx*3.7,y0,0,.12,H,4.8,sx<0?wc:wc3);bottleWall(sx*3.72,1.2,-.2,1.5,1.2,sx*PI/2,{th:.3});}
+ // gable roof of corrugated sheet, ridge along x, and a ridge pole with the flag
+ gableRoof(0,yt,0,7.6,4.9,1.95,{ov:.45,col:jc(pick([0xb4b8b8,0xc0c2bd]),.04)});
+ {const hd=2.4+.45*.7,ri=1.95;for(const [sg,xa,xb,ta,tb,c] of [[1,-3.2,-.6,.12,.6,pal[1]],[1,1.0,3.4,.4,.85,pal[2]],[-1,-2.6,.4,.15,.55,pal[0]]])roofP('corr',xa,xb,sg*hd*(1-ta)+0,yt+ri*ta+.04,sg*hd*(1-tb),yt+ri*tb+.04,.05,jc(c,.05));}
+ dwPole(-3.6,yt+1.8,0,yt+3.5,.07);
+ // brick chimney against the right gable, with a stovepipe cap
+ box('earth',x1+.6,0,0,1.5,1.3,1.2,jc(0xa0553a,.05));box('earth',x1+.6,1.3,0,.95,yt+2.5-1.3,.95,jc(0xa0553a,.05));box('conc',x1+.6,yt+2.5,0,1.15,.14,1.15,jc(0x8a8478,.05));stovepipe(x1+.6,yt+2.64,0,.7);
+ // porch: plank deck the width of the house, half roofed on posts, tyre step, rail, hanging bottles
+ deck(0,y0,zf+1.0,7.6,2.0);
+ leanRoof(2.1,zf,3.6,2.0,3.05,2.6,{col:jc(pal[2],.05)});
+ dwRail(.1,zf+1.95,3.9,zf+1.95,y0);dwRail(3.9,zf+1.95,3.9,zf+.1,y0);
+ bottleString([.2,2.5,zf+1.95],[3.8,2.5,zf+1.95],9);
+ tire(-1.1,.12,zf+2.5,TYR.R,TYR.t,undefined,rng()*TAU);box('plank',-1.1,.26,zf+2.05,1.3,.06,.5,P('woodD'));
+ // flower boxes under the left window, planters, rain barrel, fence
+ for(const [px,pz] of [[-2.9,zf+.32]]){box('plank',px,y0+.05,pz,1.4,.26,.3,jc(0x6a5238,.06));for(let k=0;k<6;k++)sph('plain',px-.55+k*.22,y0+.4,pz,.13,jc(pick([0xd05a3a,0xe0b030,0xc060a0,0x5a9a3c]),.08),.9);}
+ tireRing(-4.6,zf+1.1,.72,2);sph('plain',-4.6,.42,zf+1.1,.62,jc(0x4d6f3c,.1),.5);sph('plain',-4.45,.6,zf+1.1,.3,jc(0xe0b030,.1),.6);
+ barrel(x0-.6,0,-.3);barrel(x0-.6,0,.3);
+ fenceRun(-4.8,zf+3.4,-1.6,zf+3.4,1.0,{type:'pickets'});fenceRun(1.4,zf+3.4,4.8,zf+3.4,1.0,{type:'pickets'});lamp(-1.1,0,zf+3.0,2.8);
+ // SOCKETS
+ sock('awning',-1.1,y0+2.0,zf,0,{w:1.6,d:1.3,drop:.45,h:1.55});
+ sock('banner',3.4,2.6,zf+1.98,0,{w:.6,h:.75});
+ sock('flag',-3.6,yt+3.5,0,0,{w:1.1,h:.6});
+ sock('emblem',.4,y0+1.6,zf+.05,0,{w:.6,h:.6});}
+
+// ---------------------------------------------------------------- dw-stilt: a plank-and-sheet box up on tall poles
+defBuilding({key:'dw-stilt',name:'Stilt perch',seed:4070,tags:{type:['single-family dwelling'],size:'small',core:'salvaged poles and pipes',materials:['plank','sheet metal','poles','pipe','tarp']},w:9,d:11,h:9.6,build:dwStilt});
+function dwStilt(o){
+ const FY=4.6,hx=2.4,hz=2.0,H1=2.2,pal=o.v===1?[0x3b7f6e,0xc99a2e]:[0x9a3a2c,0x2f6f8f];
+ const c1=jc(pal[0],.05),c2=jc(pal[1],.05);
+ // poles and cross-bracing (mixed timber and rusty pipe)
+ const pp=[[-hx,-hz],[hx,-hz],[-hx,hz],[hx,hz],[0,-hz],[0,hz]];
+ pp.forEach(([x,z],i)=>{if(i%2)beam('iron',[x,0,z],[x,FY,z],.2,jc(0x7a4a2a,.08),true,8);else dwPole(x,0,z,FY,.24);cyl('conc',x,0,z,.28,.25,jc(0x8a8880,.05),8);});
+ for(const z of [-hz,hz]){beam('iron',[-hx,.5,z],[0,2.6,z],.09,jc(0x6a4a30,.06),true,6);beam('iron',[0,.5,z],[hx,2.6,z],.09,jc(0x6a4a30,.06),true,6);beam('iron',[-hx,2.6,z],[0,4.5,z],.09,jc(0x6a4a30,.06),true,6);beam('iron',[hx,2.6,z],[0,4.5,z],.09,jc(0x6a4a30,.06),true,6);
+  beam('wood',[-hx,2.4,z],[hx,2.4,z],.14,jc(dwWood,.06));}
+ beam('wood',[-hx,2.4,-hz],[-hx,2.4,hz],.14,jc(dwWood,.06));beam('wood',[hx,2.4,-hz],[hx,2.4,hz],.14,jc(dwWood,.06));
+ // floor and joists
+ for(const x of [-hx,-hx/2,0,hx/2,hx])box('wood',x,FY-.42,0,.14,.14,hz*2+.4,jc(dwWood,.06));
+ box('plank',0,FY-.28,0,hx*2+.5,.28,hz*2+.5,jc(0x6a5238,.06));
+ // lower room: front wall with real openings, patched side and back walls
+ const fz=hz;
+ wallOpen('plank',0,FY,fz,hx*2,H1,.14,[{x0:.55,x1:1.55,y0:FY,y1:FY+1.95},{x0:-1.9,x1:-.9,y0:FY+.9,y1:FY+1.85}],c1);
+ door(1.05,FY,fz+.02,1.0,1.95,{step:false,col:pal[1]});win(-1.4,FY+.9,fz,1.0,.95,{shutters:true,lit:o.v===1});
+ dwPatches(-1.6,FY+.2,fz,1.6,.65,0,2,.08);
+ box('plank',0,FY,-hz,hx*2,H1,.14,c1);dwPatches(0,FY+.2,-hz-.02,4.4,1.7,PI,5,.05);win(-1.0,FY+1.0,-hz-.04,.9,.8,{});
+ for(const sx of [-1,1]){box('plank',sx*hx,FY,0,.14,H1,hz*2,sx<0?c2:c1);dwPatches(sx*(hx+.02),FY+.2,0,3.6,1.7,sx*PI/2,4,.05);}
+ win(0,0,0,0,0);
+ // roof of the lower room: sheet, slight fall to the front, and the loft cabin above it
+ roofP('corr',-hx-.3,hx+.3,hz+.6,FY+H1+.02,-hz-.3,FY+H1+.3,.08,P('galv'));
+ const cy0=FY+H1+.3,cw=1.7,cd=1.5,zc=-.5,CH=1.8;
+ box('plank',0,cy0,zc-cd,cw*2,CH,.12,c2);box('plank',0,cy0,zc+cd,cw*2,CH,.12,c2);for(const sx of [-1,1])box('plank',sx*cw,cy0,zc,.12,CH,cd*2,c1);
+ dwPatches(0,cy0+.2,zc+cd+.02,cw*2,CH-.4,0,3,.06);
+ win(-.6,cy0+.6,zc+cd+.04,.8,.7,{lit:o.v===1});
+ roofP('corr',-cw-.4,cw+.4,zc+cd+.5,cy0+CH,zc-cd-.3,cy0+CH+.55,.08,o.v===1?P('rust'):P('paint'));
+ stovepipe(1.0,cy0+CH+.2,zc-.6,1.4);
+ // front deck around, ladder, stair with landing, rails
+ deck(.925,FY,hz+.85,hx*2+1.85,1.7);
+ dwRail(-hx,hz+1.7,hx+1.85,hz+1.7,FY);dwRail(-hx,hz,-hx,hz+1.7,FY);dwRail(hx+1.85,hz+1.7,hx+1.85,hz+.1,FY);
+ deck(3.4,2.3,.5,1.7,2.0);
+ dwRail(2.55,-.5,2.55,1.5,2.3);dwRail(4.25,-.5,4.25,1.5,2.3);dwRail(2.55,1.5,4.25,1.5,2.3);
+ stairs(3.4,0,-4.0,3.4,2.3,-.5,1.0);
+ dwLean(3.4,.5,1.62,1.62,FY+.9-2.3);
+ // (the ladder is drawn from the landing up: shift into place)
+ // water butt on stilts, gutter pipe, hoist beam with pulley and hanging crate, tarp shelter, junk
+ waterButt(-3.8,2.6,-1.4,.65,1.0);pipe('iron',[[-hx-.3,FY+H1,-1.4],[-3.3,FY+H1,-1.4],[-3.8,FY+H1-2.4,-1.4],[-3.8,3.7,-1.4]],.035,jc(0x6a6a66,.05));
+ {const hx_=-1.5,hy=cy0+1.5;beam('wood',[hx_,hy,zc+cd],[hx_,hy+.05,4.6],.14,jc(dwWood,.06));beam('wood',[hx_,hy-.9,zc+cd],[hx_,hy,3.2],.09,jc(dwWood,.06));
+  cyl('iron',hx_,hy-.3,4.6,.14,.16,jc(0x4a4038,.05),8);beam('plain',[hx_,hy,4.6],[hx_,FY+1.5,4.6],.015,jc(0x8a7a5a,.05),true,3);crate(hx_,FY+.9,4.6,.6,.3);}
+ W(0,0,0,PI,()=>tarp(0,FY-.4,hz,3.6,1.6,2.9,pick([0x3a6a8a,0x8a4a3a,0xb09a4a])));
+ junkPile(-.6,1.3,1.4,9);tireStack(-2.6,3.4,3);barrel(-3.3,0,2.8);barrel(-3.8,0,2.4);crate(1.5,0,4.0,.6,.2);pallet(2.6,0,-3.5,1.2,.9,.4);lamp(-1.9,0,3.7,3.0);
+ // SOCKETS
+ sock('awning',1.05,FY+2.05,fz,0,{w:1.5,d:1.3,drop:.45,h:1.45});
+ sock('banner',.9,cy0+CH-.15,zc+cd+.06,0,{w:.7,h:1.25});
+ sock('emblem',-.5,cy0+1.3,zc+cd+.07,0,{w:.5,h:.4});
+ sock('flag',-cw,cy0+CH+.55+.6,zc-cd,0,{w:1.0,h:.5});
+ dwPole(-cw,cy0+CH,zc-cd,cy0+CH+1.2,.06);}
+// prefix: sh
+// ---------------------------------------------------------------- shops: food, armour, weapons, tinker, general store (46 shops, seeds 4600-4699)
+// Every shop = one reclaimed core with an OPEN service front (counter + goods that read from 30 m), a SIGN board on posts, an AWNING socket per
+// service opening, a banner pole, a roof flag and a wall emblem. Goods are drawn in 'plain' paint so they keep their colour.
+const shWood=0x5c4630;
+function shPost(x,z,h,r){beam('wood',[x,0,z],[x,h,z],r||.1,jc(shWood,.06),true,6);}
+// the two posts a sign board stands on: base y0, top y1, board centre x, posts just behind the board at zb
+function shSignPosts(x,zb,y0,y1,w){for(const sx of [-1,1]){beam('wood',[x+sx*(w/2-.3),y0,zb],[x+sx*(w/2-.3),y1,zb],.1,jc(shWood,.06),true,6);}
+ beam('wood',[x-w/2+.2,y1-.05,zb+.02],[x+w/2-.2,y1-.05,zb+.02],.09,jc(shWood,.06));}
+// a hanging rail with goods: kind fish|meat|tools|wire|caps|pots|bottles
+function shHang(x0,x1,y,z,n,kind){beam('iron',[x0,y,z],[x1,y,z],.05,jc(0x4a4038,.05),true,6);
+ for(let k=0;k<n;k++){const x=x0+(x1-x0)*(k+.5)/n+rr(-.05,.05);const len=rr(.12,.32);const yy=y-len;beam('plain',[x,y,z],[x,yy,z],.012,jc(0x6a5a44,.05),true,3);
+  if(kind==='fish'){const c=pick([0xc8ccc8,0xb8bcb4,0xd8b98a]);box('plain',x-.05,yy-.8,z-.09,.1,.8,.18,jc(c,.05),0,0,rr(-.08,.08));box('plain',x-.1,yy-.92,z-.02,.2,.14,.04,jc(0xc9843a,.06));box('plain',x-.055,yy-.3,z-.1,.11,.06,.2,jc(0xc23a2a,.05));}
+  else if(kind==='meat'){sph('plain',x,yy-.3,z,.17,jc(pick([0x8a2f24,0x9a3a2c,0x6a2a20]),.06),1.9);}
+  else if(kind==='tools'){const t=k%3;if(t===0)box('iron',x-.02,yy-.45,z,.045,.45,.03,jc(0x8a8a86,.06));else if(t===1)cylH('iron',x,yy-.25,z,.22,.03,jc(0x9a9a92,.06),'z',12);else{box('wood',x-.02,yy-.5,z,.05,.5,.05,jc(0x6a4a30,.06));box('iron',x-.1,yy-.62,z,.2,.13,.06,jc(0x6a6a66,.06));}}
+  else if(kind==='wire'){tire(x,yy-.22,z,.24,.05,jc(pick([0xb86a3a,0xc98a3a,0x3a5a8a]),.06),0,PI/2,0);}
+  else if(kind==='caps'){cylH('iron',x,yy-.2,z,.2,.05,jc(pick([0xc8ccd0,0xa8acb0,0xb87a4a]),.06),'z',12);}
+  else if(kind==='pots'){cyl('iron',x,yy-.3,z,.14,.28,jc(pick([0x8a8a86,0xb8683a,0x4a6a8a]),.08),8,.18);}
+  else if(kind==='bottles'){const c=pick([0x3f9a52,0xc98a2a,0x2f62b8,0xd5ecea]);cyl('glass',x,yy-.3,z,.05,.26,jc(c,.05),6);}}}
+// produce heap: little spheres of fruit/veg on a tray at (x,y,z) w x d
+function shGoods(x,y,z,w,d,cols){const n=Math.round(w*d*10);for(let k=0;k<n;k++){const px=x+rr(-w/2+.08,w/2-.08),pz=z+rr(-d/2+.08,d/2-.08);const h=(1-Math.abs(px-x)/(w/2))*.08;sph('plain',px,y+.1+h+rr(0,.04),pz,rr(.09,.14),jc(pick(cols||[0xc23a2a,0xd8a02a,0x5a9a3a,0xe07a2a,0x8a3a5a]),.08));}}
+function shCrateProduce(x,y,z,s,ry,cols){crate(x,y,z,s,ry);const h=s*.46;shGoods(x,y+h,z,s*.85,s*.85,cols);}
+// mannequin post wearing scrap armour: tyre-tread torso, hubcap shoulders, can helmet
+function shMannequin(x,z,y0,o){o=o||{};const c=o.cap||pick([0xc8ccd0,0xb87a4a,0xa8acb0,0xc9a03a]);
+ box('plank',x,y0,z,.6,.12,.6,jc(0x6a5238,.06));beam('wood',[x,y0+.12,z],[x,y0+1.05,z],.09,jc(shWood,.06),true,6);
+ for(let k=0;k<4;k++)tire(x,y0+1.0+k*.16,z,.33-Math.abs(k-1.5)*.02,.1,jc(k===1?(o.band||0xc23a2a):0x3a3634,.05),rng()*TAU);
+ beam('wood',[x,y0+1.55,z],[x,y0+1.9,z],.09,jc(shWood,.06),true,6);
+ for(const sx of [-1,1]){cylH('iron',x+sx*.42,y0+1.5,z,.25,.07,jc(c,.06),'x',12);box('rubber',x+sx*.46,y0+.8,z,.09,.7,.09,jc(0x2a2624,.05),0,0,-sx*.1);}
+ cylH('iron',x,y0+1.3,z+.3,.26,.06,jc(c,.06),'z',14);box('cloth',x-.3,y0+.7,z-.24,.6,1.0,.03,jc(o.cape||0xc23a2a,.06));
+ if(o.kind===1){for(let k=0;k<3;k++)cylH('iron',x,y0+.86+k*.02,z+.2,.32-k*.02,.03,jc(0x8a8a86,.06),'z',10);}     // a belt of plates
+ sph('iron',x,y0+1.98,z,.19,jc(o.helm||0x9a9a92,.05),1.05);box('iron',x-.12,y0+1.9,z+.16,.24,.04,.03,jc(0x1a1816,.03));
+ if(o.crest)box('plain',x-.04,y0+2.12,z-.14,.08,.26,.3,jc(pick([0xc23a2a,0xd8a02a,0x2a8a86]),.06));}
+// a small counter: width w along x from x0, front at z (front face), depth d, height h
+function shCounter(x,z,w,d,h,col){box('plank',x,0,z,w,h-.06,d,jc(col||0x7a5a3c,.06));box('plank',x,h-.06,z,w+.12,.07,d+.12,jc(0x9a7a52,.06));
+ box('corr',x,.05,z+d/2+.01,w-.1,h-.2,.03,PAINT());}
+function shShelf(x,y,z,w,levels,gap,cols){for(let l=0;l<levels;l++){const yy=y+l*gap;box('plank',x,yy,z,w,.05,.36,jc(0x6a5238,.06));
+  const n=Math.round(w/.22);for(let k=0;k<n;k++){const bw=rr(.1,.2),bh=rr(.12,gap*.7);box('plain',x-w/2+(k+.5)*w/n,yy+.05,z+rr(-.04,.04),bw,bh,rr(.14,.24),jc(pick(cols||[0xc23a2a,0x2f62b8,0xd8a02a,0x5a9a3a,0xb8b0a0,0x8a5a3a]),.08));}}
+ for(const sx of [-1,1])box('plank',x+sx*(w/2),y,z,.05,levels*gap,.36,jc(0x5c4630,.06));}
+function shBanner(x,z,h){beam('wood',[x,0,z],[x,h+.05,z],.08,jc(shWood,.06),true,6);sock('banner',x,h,z+.05,0,{w:.8,h:2.0});}
+// ---------------------------------------------------------------- 4610 food shop
+defBuilding({key:'shop-food',name:'Food shop',seed:4610,tags:{type:['market/shop'],size:'small',core:'shipping container',materials:['container','plank','sheet metal','brick']},w:15,d:8,h:6,build:shFood});
+function shFood(o){
+ const cx=-1,cz=-2.6,fz=cz+CT.W/2,L=CT.L20;const col=[0xc99a2e,0x3b7f8e,0x7a9a3c][(o.v|0)%3];
+ W(cx,0,cz,0,()=>container({len:L,open:'front',col:col}));
+ // inside: drying rail with fish and smoked meat, back shelves, a barrel of pickles
+ shHang(cx-2.7,cx+.2,2.2,cz-.2,9,'fish');shHang(cx+.4,cx+2.7,2.2,cz-.2,5,'meat');
+ shShelf(cx-.4,.55,cz-.95,4.6,3,.55);for(let k=0;k<2;k++)barrel(cx+2.4,.1,cz+.3+k*.6);
+ // counter with produce, scales, a stack of loaves, a tray of eggs
+ shCounter(cx-1.0,fz-.15,4.6,.7,1.05);shGoods(cx-2.2,1.05,fz-.15,1.2,.55);shGoods(cx-.6,1.05,fz-.15,1.0,.55,[0xd8a02a,0xe0b060,0xc88a3a]);
+ for(let k=0;k<4;k++)sph('plain',cx+.7+k*.18,1.17,fz-.15,.13,jc(0xc8843a,.06),.7);
+ box('iron',cx+1.35,1.11,fz-.1,.3,.05,.3,jc(0x8a8a86,.06));cyl('iron',cx+1.35,1.16,fz-.1,.03,.3,jc(0x6a6a66,.06),6);
+ // sacks of grain and crates of produce out front, barrels, a fish box
+ sacks(cx-3.9,0,fz+.6,5,.2);sacks(cx-3.7,.02,fz+1.2,3,-.2);
+ shCrateProduce(cx+2.0,0,fz+.7,.7,.2);shCrateProduce(cx+2.0,.7,fz+.7,.6,.4,[0x5a9a3a,0x7ab04a]);shCrateProduce(cx+2.9,0,fz+.5,.65,0,[0xe07a2a,0xd8a02a]);
+ shCrateProduce(cx-1.0,0,fz+1.5,.6,.3,[0xc23a2a,0xe07a2a]);
+ barrel(cx+3.4,0,fz+1.1,0x2f62b8);barrel(cx+3.9,0,fz+.6,0x8a3a2c);
+ // grill and oven: a brick body with a coal bed and a stovepipe, a chopping block
+ const ox=cx+6.0,oz=-1.9;box('earth',ox,0,oz,1.5,1.0,1.1,jc(0x8a4a3a,.06));box('iron',ox,1.0,oz,1.6,.06,1.2,jc(0x3a3430,.05));
+ box('glow',ox-.3,1.06,oz+.02,.7,.04,.7,jc(0xff8a3a,.08));for(let k=0;k<6;k++)box('iron',ox-.6+k*.24,1.12,oz,.03,.03,.9,jc(0x2a2826,.03));
+ box('glow',ox+.1,.25,oz+.56,.6,.4,.03,jc(0xff9a3a,.06));box('iron',ox,.6,oz+.55,.9,.05,.03,jc(0x1a1816,.04));
+ stovepipe(ox+.55,1.06,oz-.35,3.0);for(let k=0;k<3;k++)sph('plain',ox+.55+k*.05,4.4+k*.5,oz-.35,.2+k*.1,jc(0xd8d8d0,.03),.7);
+ box('wood',ox+1.35,0,oz+.4,.45,.5,.45,jc(0x8a6a44,.07));
+ // side lean-to stall (left): a patchwork back wall, a table of produce and dried goods, its own awning
+ const sx=-6.6;patchWall(sx,0,-3.55,3.9,2.7,0);for(const q of [-1,1])shPost(sx+q*1.85,-1.0,2.2);
+ box('plank',sx,0,-1.0,3.5,.9,.9,jc(0x8a6a44,.07));box('plank',sx,.9,-1.0,3.7,.06,1.0,jc(0xa08258,.06));
+ shGoods(sx-1.0,.96,-1.0,1.2,.8);shGoods(sx+.3,.96,-1.0,1.0,.8,[0x5a9a3a,0x7ab04a,0xe07a2a]);for(let k=0;k<3;k++)barrel(sx+1.2+k*.02,.96,-1.0+(k-1)*.28,undefined,{open:true});
+ shHang(sx-1.6,sx+1.6,2.35,-3.35,7,'bottles');
+ // SOCKETS
+ sock('sign',cx,3.3,fz-.1,0,{w:3.6,h:.95,trade:'FOOD'});shSignPosts(cx,fz-.38,CT.H-.02,3.9,3.6);
+ sock('awning',cx,2.72,fz,0,{w:5.6,d:1.7,drop:.6,h:2.12});
+ sock('awning',sx,2.72,-3.5,0,{w:3.9,d:2.4,drop:.5,h:2.22});
+ shBanner(cx+3.35,fz+1.7,4.6);
+ sock('flag',cx-2.8,CT.H+1.6,cz+.6,0,{w:1.0,h:.6});sock('emblem',cx+L/2+.03,2.3,cz,PI/2,{w:.9,h:.9});
+ sock('paint',cx+L/2+.03,1.5,cz+.2,PI/2,{w:1.4,h:1.0});}
+// ---------------------------------------------------------------- 4620 armour shop
+defBuilding({key:'shop-armor',name:'Armour shop',seed:4620,tags:{type:['market/shop'],size:'small',core:'shipping container',materials:['container','tyres','hubcaps','brick','sheet metal']},w:16,d:8,h:6.2,build:shArmor});
+function shArmor(o){
+ const cx=-1.4,cz=-3.3,fz=cz+CT.W/2,L=CT.L40;
+ W(cx,0,cz,0,()=>container({len:L,open:'front',col:[0x7a3a2c,0x3b6f7e,0x4d6f3c][(o.v|0)%3]}));
+ // inside: pegboard of helmets (cans, pots, bowls), plate racks, workbench with vice
+ box('plank',cx+2.4,.9,cz-1.1,5.4,1.5,.05,jc(0x6a5238,.06));
+ for(let r=0;r<2;r++)for(let k=0;k<7;k++){const x=cx+.2+k*.72;beam('wood',[x,1.15+r*.7,cz-1.07],[x,1.15+r*.7,cz-.86],.03,jc(0x2a2624,.05),true,4);
+  sph('iron',x,1.27+r*.7,cz-.9,.15,jc(pick([0x9a9a92,0xb87a4a,0xc8ccd0,0x7a8a8a,0x8a4a3a]),.07),.95);if(k%2===0)box('plain',x-.03,1.32+r*.7,cz-.9,.06,.12,.2,jc(0xc23a2a,.06));}
+ for(let k=0;k<3;k++){const x=cx-4.9+k*1.05;box('wood',x-.45,0,cz-.95,.06,1.7,.06,jc(shWood,.06));box('wood',x+.45,0,cz-.95,.06,1.7,.06,jc(shWood,.06));
+  for(let q=0;q<5;q++)box(pick(['sheet','corr']),x-.36,.3+q*.28,cz-.95,.72,.22,.03,jc(pick([0x8a8a86,0xa8a49a,0x7a4a3a,0x3b6f7e]),.07),0,-.1);}
+ box('plank',cx-1.6,0,cz-.8,2.4,.95,.6,jc(0x7a5a3c,.06));box('iron',cx-1.6,.95,cz-.8,2.5,.07,.7,jc(0x4a4038,.05));
+ box('iron',cx-2.4,1.02,cz-.7,.22,.3,.16,jc(0x3a3430,.05));box('iron',cx-2.4,1.3,cz-.7,.1,.06,.1,jc(0x8a8a86,.05));
+ for(let k=0;k<4;k++)box('iron',cx-1.6+k*.2,1.02,cz-.7,.12,.06,.5,jc(0x8a8a86,.06),.3*k);
+ // display counter and front rack, grindstone, plate stack, tyre stock
+ shCounter(cx+3.1,fz-.1,5.4,.6,1.0);for(let k=0;k<4;k++)box('sheet',cx+1.3+k*.9,1.0,fz-.1,.7,.04,.4,jc(pick([0x8a8a86,0xa8a49a,0x7a4a3a]),.06),0,0,rr(-.1,.1));
+ for(let k=0;k<3;k++)shMannequin(cx-4.4+k*2.0,fz+.95,0,{kind:k===1?1:0,crest:k!==1,helm:pick([0x9a9a92,0xb87a4a]),cape:[0xc23a2a,0x2a8a86,0xd8a02a][k],band:[0xd8a02a,0xc23a2a,0x2a8a86][k]});
+ // forge lean-to at the right end: sheet wind wall, a brick hearth with hood, anvil, bellows, quench barrel
+ const fx=cx+L/2+2.2,fzc=-3.0;sheetWall(fx,0,fzc-.1,3.6,2.9,0,{col:0x8a8478});for(const q of [-1,1])shPost(fx+q*1.75,fzc+2.1,2.4);
+ box('earth',fx,0,fzc+.7,1.7,.95,1.1,jc(0x8a4a3a,.06));box('iron',fx,.95,fzc+.7,1.8,.07,1.2,jc(0x3a3430,.05));box('glow',fx,.98,fzc+.75,.9,.06,.6,jc(0xff8a3a,.08));
+ cone('glow',fx,1.0,fzc+.75,.3,.6,jc(0xffb050,.06),7);
+ cone('iron',fx,1.55,fzc+.7,1.05,1.0,jc(0x4a4038,.05),8);pipe('iron',[[fx,2.5,fzc+.7],[fx,2.9,fzc-.3],[fx,3.6,fzc-.3],[fx,5.9,fzc-.3]],.15,jc(0x4a4038,.05));
+ cyl('iron',fx,5.9,fzc-.3,.24,.06,jc(0x3a3430,.05),8);
+ cyl('wood',fx-1.9,0,fzc+1.6,.25,.5,jc(0x6a4a30,.07),8);box('iron',fx-1.9,.5,fzc+1.6,.5,.12,.22,jc(0x3a3632,.05));cone('iron',fx-2.25,.62,fzc+1.6,.07,.24,jc(0x3a3632,.05),6);
+ box('wood',fx+1.4,.3,fzc+.5,.55,.5,.7,jc(0x6a4a30,.07));cone('iron',fx+1.0,.75,fzc+.5,.2,.35,jc(0x4a4038,.05),6);
+ cyl('sheet',fx+1.1,0,fzc+1.7,.32,.75,jc(0x3a5a8a,.06),10,.32,true);cyl('plain',fx+1.1,.7,fzc+1.7,.28,.02,jc(0x1a3a4a,.03),10);
+ // yard: grindstone, tyre stock, plate stack
+ for(const q of [-1,1])box('wood',cx+q*.5-4.5+9.4,0,fz+1.3,.08,.8,.08,jc(shWood,.06));
+ cyl('conc',cx+4.9,.5,fz+1.3,.32,.08,jc(0x9a9488,.05),14);
+ tireStack(cx+5.7,fz+1.0,4);tireStack(cx+5.7,fz+1.7,3);
+ for(let k=0;k<5;k++)box('sheet',cx-6.7,k*.07,fz+.7,.9,.06,.7,jc(pick([0x8a8a86,0x7a4a3a]),.06),.1*k);
+ // SOCKETS
+ sock('sign',cx-1.2,3.3,fz-.1,0,{w:3.4,h:.95,trade:'ARMOR'});shSignPosts(cx-1.2,fz-.38,CT.H-.02,3.9,3.4);
+ sock('awning',cx-2.4,2.72,fz,0,{w:5.6,d:1.7,drop:.6,h:2.12});
+ sock('awning',fx,2.98,fzc-.06,0,{w:3.6,d:2.4,drop:.5,h:2.48});
+ shBanner(cx-L/2-.7,fz+.5,4.8);
+ sock('flag',cx+2.5,CT.H+1.6,cz+.4,0,{w:1.0,h:.6});sock('emblem',cx-L/2-.03,2.3,cz,-PI/2,{w:.9,h:.9});sock('paint',cx+L/2+.03,1.4,cz,PI/2,{w:1.6,h:1.1});}
+// ---------------------------------------------------------------- 4630 weapon shop
+defBuilding({key:'shop-weapon',name:'Weapon shop',seed:4630,tags:{type:['market/shop'],size:'small',core:'school bus',materials:['bus body','sheet metal','plank','bars']},w:14,d:9,h:6.8,build:shWeapon});
+function shSpear(x,z,h,ry,lean){const tx=Math.sin(ry)*lean,tz=Math.cos(ry)*lean;beam('wood',[x,0,z],[x+tx,h,z+tz],.045,jc(0x6a4a30,.06),true,5);
+ cone('iron',x+tx,h,z+tz,.05,.3,jc(0xb8b8b0,.05),5);}
+function shWeapon(o){
+ const cx=-.6,cz=-2.9,fz=cz+1.2,L=10.6;
+ W(cx,0,cz,0,()=>bus({len:L,col:[0x6a9a4a,0xc0502e,0x5a8a9a][(o.v|0)%3]}));
+ // armouring: welded plates over the side windows, bars over the counter window, spikes along the roof edge
+ for(const k of [0,1,2,4,5])box('sheet',cx-4.3+k*1.05+.4+.4,1.4,fz+.03,.9,.8,.04,jc(pick([0x8a8478,0x6a4a3a,0x7a7a70]),.06));
+ const wx=cx-.25;for(let k=0;k<11;k++)box('iron',wx-1.0+k*.2,.95,fz+.08,.035,1.25,.035,jc(0x2a2826,.03));box('iron',wx,1.3,fz+.08,2.2,.05,.05,jc(0x2a2826,.03));
+ box('plank',wx,1.0,fz+.1,2.4,.07,.65,jc(0x9a7a52,.06));box('plank',wx,.15,fz+.1,2.3,.85,.6,jc(0x6a5238,.06));
+ for(let k=0;k<4;k++)box('iron',wx-.9+k*.6,1.07,fz+.5,.06,.16,.06,jc(0xa8a8a0,.05),0,0,rr(-.5,.5));           // blades on the counter
+ for(let k=0;k<9;k++)cone('iron',cx-4.4+k*1.05,2.3,fz-.02,.06,.22,jc(0x6a6a66,.05),5);
+ // guard post on the bus roof at the rear: platform, four posts, sheet roof, sandbag parapet, ladder
+ const gx=cx-3.5,gz=cz;box('plank',gx,2.36,gz,2.4,.1,2.2,jc(0x6a5238,.06));for(const a of [-1,1])for(const b of [-1,1])beam('wood',[gx+a*1.05,2.4,gz+b*.95],[gx+a*1.05,4.6,gz+b*.95],.09,jc(shWood,.06),true,6);
+ roofP('corr',gx-1.4,gx+1.4,gz+1.3,4.4,gz-1.3,4.9,.07,P('rust'));sacks(gx-.4,2.46,gz+1.0,6,0);box('plank',gx,2.46,gz-1.0,2.2,.5,.1,jc(0x7a6448,.07));
+ ladder(gx-1.2,0,gz+1.25,2.4,0);
+ // fence wall across the front with a gate gap; racks of spears, blades and pipe clubs on the outside
+ const fzn=2.7;fenceRun(-6.6,fzn,wx-1.8,fzn,1.3,{type:'sheet'});fenceRun(wx+1.8,fzn,6.6,fzn,1.3,{type:'sheet'});
+ for(let k=0;k<20;k++){const x=-6.5+k*.68;if(x>wx-2&&x<wx+2)continue;cone('iron',x,1.3,fzn,.06,.28,jc(0x8a8a86,.05),5);}
+ for(const q of [-5.2,-3.7]){box('wood',q+.7,.9,fzn+.55,1.4,.06,.08,jc(shWood,.06));}
+ for(let k=0;k<7;k++)shSpear(-5.9+k*.22,fzn+.5,rr(2.1,2.5),.0,.05);
+ for(let k=0;k<6;k++){const x=-4.3+k*.24;box('iron',x,.55,fzn+.55,.09,1.1,.025,jc(pick([0xb8b8b0,0x9a9a92]),.05),0,0,rr(-.06,.06));box('wood',x,.4,fzn+.55,.05,.18,.05,jc(0x4a3220,.06));}
+ for(let k=0;k<5;k++){const x=-2.7+k*.3;beam('iron',[x,0,fzn+.5],[x+.1,1.45,fzn+.55],.07,jc(0x5a5a56,.05),true,6);sph('iron',x+.1,1.5,fzn+.55,.1,jc(0x4a4a46,.05));}
+ for(const q of [3.6,6.0]){beam('wood',[q,0,fzn+.55],[q,1.5,fzn+.55],.08,jc(shWood,.06),true,6);}box('wood',4.8,1.3,fzn+.55,2.5,.06,.06,jc(shWood,.06));
+ for(let k=0;k<7;k++){const x=3.85+k*.3;beam('wood',[x,1.28,fzn+.55],[x+.02,.7,fzn+.55],.03,jc(0x4a3220,.05),true,4);box('iron',x-.02,.15,fzn+.55,.04,.55,.02,jc(0x9a9a92,.05));}
+ // archery target: a straw disc on an A-frame, arrows stuck in it; hay bales; crates of arrows and a barrel of spears
+ const tx=5.4,tz=.3;for(const q of [-1,1])beam('wood',[tx+q*.7,0,tz-.4],[tx+q*.15,1.6,tz-.1],.07,jc(shWood,.06),true,5);
+ cylH('plain',tx,1.55,tz,.85,.14,jc(0xc8a860,.05),'z',16);for(const [r,c] of [[.7,0xd8d0c0],[.5,0x2a5a8a],[.32,0xc23a2a],[.14,0xe0b830]])cylH('plain',tx,1.55,tz+.075,r,.02,jc(c,.03),'z',16);
+ for(let k=0;k<4;k++){const a=k*1.5+.4,r=rr(.1,.5);beam('wood',[tx+Math.cos(a)*r,1.55+Math.sin(a)*r,tz+.5],[tx+Math.cos(a)*r,1.55+Math.sin(a)*r,tz+.05],.02,jc(0xd0c0a0,.05),true,4);}
+ for(let k=0;k<3;k++)box('plain',tx-1.4+k*.7,0,tz+2.2,.6,.36,.36,jc(0xb89a4a,.06));
+ for(let k=0;k<2;k++)crate(4.7+k*.7,0,fzn-.7,.7,rr(-.2,.2));barrel(6.3,0,fzn-.8,0x5a5a56);for(let k=0;k<4;k++)shSpear(6.3+rr(-.1,.1),fzn-.8,rr(1.5,1.9),k*1.5,.18);
+ shBanner(6.8,fzn+1.0,4.4);
+ // SOCKETS
+ sock('sign',cx+.8,3.55,cz+.75,0,{w:3.4,h:.95,trade:'WEAPONS'});shSignPosts(cx+.8,cz+.55,2.4,4.15,3.4);
+ sock('awning',wx,2.32,fz+.02,0,{w:2.7,d:1.45,drop:.45,h:1.87});
+ sock('flag',gx,4.9+1.6,gz,0,{w:1.0,h:.6});sock('emblem',cx-4.6-.03,2.0,cz,-PI/2,{w:.9,h:.9});sock('paint',cx+2.7,1.9,fz+.03,0,{w:1.6,h:.8});}
+// ---------------------------------------------------------------- 4640 tinker's shop
+defBuilding({key:'shop-tinker',name:"Tinker's shop",seed:4640,tags:{type:['market/shop'],size:'small',core:'shipping container',materials:['container','salvage','tyres','wire']},w:16,d:8,h:11,build:shTinker});
+function shTinker(o){
+ const cx=.9,cz=-3.0,fz=cz+CT.W/2,L=CT.L20;
+ W(cx,0,cz,0,()=>container({len:L,open:'front',col:[0x3b7f8e,0xb8502e,0x7a9a3c][(o.v|0)%3]}));
+ // inside: shelves crammed with bits, hanging tools, coils of wire, radios
+ shShelf(cx,.5,cz-.95,5.6,3,.55,[0x8a5a3a,0x3b7f8e,0xc9a03a,0x6a6a66,0xc23a2a,0x2a2826]);
+ shHang(cx-2.7,cx-.1,2.15,cz+.1,6,'tools');shHang(cx+.2,cx+2.7,2.15,cz+.1,5,'wire');
+ for(let k=0;k<3;k++){box('iron',cx+1.6+k*.5,1.62,cz-.85,.4,.3,.3,jc(0x3a3430,.05));cylH('iron',cx+1.6+k*.5,1.85,cz-.7,.05,.12,jc(0xb0b0a8,.05),'x',6);}
+ // front: a long counter of junk, a hanging bike wheel and tyres on the end wall, the cart
+ shCounter(cx,fz-.1,5.6,.6,.95,0x5a5a56);for(let k=0;k<9;k++){const px=cx-2.4+k*.6;box('plain',px,.95,fz-.1,rr(.14,.3),rr(.12,.34),rr(.14,.3),jc(pick([0xb8683a,0x2f62b8,0xc9a03a,0x6a6a66,0xc23a2a]),.08),rng()*TAU);}
+ tire(cx+L/2+.15,1.5,cz+.1,.5,.09,undefined,0,0,PI/2);tire(cx+L/2+.15,.6,cz-.5,.4,.09,undefined,0,0,PI/2);
+ // radio mast on the roof with a dish and cable: lattice legs, cross rungs, a dish, a whip antenna
+ const mx=cx-1.6,mz=cz;for(const [a,b] of [[-.3,-.3],[.3,-.3],[.3,.3],[-.3,.3]])beam('iron',[mx+a,CT.H,mz+b],[mx+a*.35,CT.H+6.2,mz+b*.35],.05,jc(0x6a5a4c,.05),true,5);
+ for(let k=0;k<7;k++){const y=CT.H+.4+k*.85,s=.3*(1-(k*.85+.4)/6.6);beam('iron',[mx-s,y,mz-s],[mx+s,y,mz+s],.03,jc(0x6a5a4c,.05),true,4);beam('iron',[mx+s,y,mz-s],[mx-s,y,mz+s],.03,jc(0x6a5a4c,.05),true,4);}
+ antenna(mx,CT.H+6.2,mz,2.2);
+ pushM(TF(mx+.5,CT.H+4.6,mz+.35,.5,-1.0,0));cyl('iron',0,0,0,.9,.14,jc(0xc8ccd0,.05),16,.3);cyl('iron',0,.02,0,.07,.5,jc(0x4a4038,.05),6);popM();
+ for(let k=0;k<3;k++)beam('plain',[mx+.3,CT.H+3.2,mz+.3],[cx+2.9,CT.H,cz+.5],.02,jc(0x1a1816,.03),true,3);
+ // second stall on the left with a workbench and vice, patchwork back wall, hanging bits
+ const sx=-5.4;patchWall(sx,0,-3.55,3.4,2.7,0);for(const q of [-1,1])shPost(sx+q*1.65,-1.1,2.2);
+ box('plank',sx,0,-1.6,3.0,.95,.9,jc(0x6a5238,.06));box('plank',sx,.95,-1.6,3.2,.06,1.0,jc(0x8a7048,.06));
+ box('iron',sx+.9,1.01,-1.35,.22,.24,.18,jc(0x3a3430,.05));box('iron',sx+.9,1.24,-1.35,.3,.05,.14,jc(0x8a8a86,.05));cyl('iron',sx+.9,1.0,-1.1,.02,.3,jc(0x8a8a86,.05),5);
+ for(let k=0;k<6;k++)box('plain',sx-1.2+k*.3,1.01,-1.7,rr(.12,.24),rr(.1,.2),rr(.12,.2),jc(pick([0x8a8a86,0xb8683a,0xc9a03a]),.08),rng()*TAU);
+ shHang(sx-1.5,sx+1.5,2.3,-3.35,6,'caps');
+ // yard: a two-wheel cart with a load, tyre pile, junk heaps, barrels of scrap, a lamp
+ const kx=6.1,kz=-.6;box('plank',kx,.6,kz,1.8,.14,1.1,jc(0x7a5a3c,.06));for(const q of [-1,1]){tire(kx+.1,.5,kz+q*.65,.5,.09,undefined,0,0,PI/2);box('plank',kx-.9+.02,.7,kz+q*.5,.06,.4,.06,jc(shWood,.06));}
+ beam('wood',[kx-.9,.7,kz-.4],[kx-2.0,.4,kz-.4],.07,jc(shWood,.06),true,5);beam('wood',[kx-.9,.7,kz+.4],[kx-2.0,.4,kz+.4],.07,jc(shWood,.06),true,5);box('wood',kx-2.0,0,kz,.1,.4,.9,jc(shWood,.06));
+ for(let k=0;k<5;k++)box('plain',kx-.5+rr(-.5,.5),.74+(k%2)*.3,kz+rr(-.3,.3),rr(.3,.6),rr(.25,.45),rr(.3,.5),jc(pick([0x8a3a2c,0x2f62b8,0x6a6a66,0xc9a03a]),.08),rng()*TAU);
+ tireStack(cx+4.1,fz+1.2,5);tireStack(cx+4.1,fz+1.9,3);junkPile(-6.6,-.5,1.6,12);junkPile(-3.4,1.4,1.2,9);junkPile(6.4,2.6,1.3,8);
+ barrel(cx-3.6,0,fz+.6);barrel(cx-4.0,0,fz+1.0);lamp(cx+2.2,0,fz+2.0,3.0);
+ // SOCKETS
+ sock('sign',cx+.4,3.3,fz-.1,0,{w:3.4,h:.95,trade:'TINKER'});shSignPosts(cx+.4,fz-.38,CT.H-.02,3.9,3.4);
+ sock('awning',cx,2.72,fz,0,{w:5.8,d:1.7,drop:.6,h:2.12});sock('awning',sx,2.72,-3.5,0,{w:3.4,d:2.4,drop:.5,h:2.22});
+ shBanner(cx+3.7,fz+2.5,4.5);
+ sock('flag',cx+2.4,CT.H+1.6,cz-.4,0,{w:1.0,h:.6});sock('emblem',cx+L/2+.03,2.25,cz,PI/2,{w:.9,h:.9});sock('paint',cx-L/2-.03,1.6,cz,-PI/2,{w:1.4,h:1.0});}
+// ---------------------------------------------------------------- 4650 general store
+defBuilding({key:'shop-general',name:'General store',seed:4650,tags:{type:['market/shop'],size:'medium',core:'shipping container',materials:['containers','corrugated sheet','plank']},w:15,d:8,h:5.2,build:shGeneral});
+function shGeneral(o){
+ const cz=-3.2,fz=cz+CT.W/2,L=CT.L20;const cA=[0x3b7f8e,0xc9852a,0x8a3a2c][(o.v|0)%3],cB=[0xc99a2e,0x4d6f3c,0x3b7f8e][(o.v|0)%3];
+ W(-L/2,0,cz,0,()=>container({len:L,col:cA,doorEnd:false}));W(L/2,0,cz,0,()=>container({len:L,col:cB,doorEnd:false}));
+ // roof of mixed sheet lapped over both boxes, a lean-to porch roof over the centre, deck and posts
+ roofP('corr',-6.5,0,cz+1.5,2.72,cz-1.5,3.05,.07,P('rust'));roofP('corr',0,6.5,cz+1.5,2.72,cz-1.5,3.05,.07,P('galv'));box('iron',0,2.65,cz+1.5,13,.08,.1,jc(0x5a4a3c,.05));
+ const px0=-3.6,px1=3.6;deck((px0+px1)/2,.3,fz+1.5,px1-px0,3.0,{posts:false,rail:['l','r']});for(let k=0;k<6;k++)box('conc',px0+.3+k*1.36,0,fz+2.9,.5,.3,.5,jc(0x8a8478,.06));
+ roofP('corr',px0,px1,fz+3.3,2.35,fz-.05,2.72,.06,P('paint'));beam('wood',[px0,2.35,fz+3.3],[px1,2.35,fz+3.3],.12,jc(shWood,.06));
+ for(const x of [px0,-1.2,1.2,px1])beam('wood',[x,.3,fz+3.25],[x,2.4,fz+3.25],.12,jc(shWood,.06),true,6);
+ stairs(-1.6,0,fz+4.4,-1.6,.3,fz+3.4,1.4,{rail:false});
+ // doors and windows: a door, a big display window and a service hatch under the porch, windows on the wings
+ door(-.9,.3,fz,1.1,2.0,{step:false});win(1.6,1.0,fz,2.2,1.0,{lit:o.v===1});box('plank',1.6,.3,fz+.3,2.5,.08,.5,jc(0x8a6a44,.06));
+ win(-4.9,1.0,fz,1.7,.9,{shutters:true});win(4.9,1.0,fz,1.7,.9,{bars:true});
+ // goods: hanging on the porch beam, barrels, sacks, a bench, crates, a hitching post
+ shHang(px0+.2,px1-.2,2.3,fz+3.25,12,'pots');beam('plain',[-1.2,2.3,fz+3.25],[3.0,2.3,fz+3.25],.01,jc(0x6a5a44,.05));
+ bottleString([px0+.3,2.25,fz+3.2],[px1-.3,2.25,fz+3.2],8);
+ for(let k=0;k<3;k++){barrel(2.6+k*.02,.3,fz+2.4+k*.55,pick([0x8a3a2c,0x2f62b8,0x4d6f3c]));}sacks(-3.0,.3,fz+2.5,6,.1);shCrateProduce(2.9,.3,fz+.7,.6,.2);
+ box('plank',.4,.3,fz+.6,1.6,.5,.4,jc(0x8a6a44,.07));box('plank',.4,.8,fz+.4,1.6,.5,.06,jc(0x8a6a44,.07),0,-.2);
+ for(let k=0;k<3;k++)barrel(-6.4+k*.5,0,fz+.5+k*.15,undefined);sacks(-6.0,0,fz+2.0,5,.3);crate(-4.6,0,fz+1.6,.8,.2);crate(-4.6,.8,fz+1.6,.6,.5);
+ // hitching post at the right: two posts, a rail, rings
+ for(const q of [5.0,7.0])beam('wood',[q,0,fz+2.2],[q,1.3,fz+2.2],.12,jc(shWood,.06),true,6);beam('wood',[5.0,1.15,fz+2.2],[7.0,1.15,fz+2.2],.09,jc(shWood,.06),true,6);
+ for(const q of [5.4,6.6])tire(q,.95,fz+2.2,.1,.02,jc(0x8a8a86,.05),0,PI/2,0);
+ tireStack(6.3,fz+.9,3);lamp(-7.0,0,fz+1.0,3.2);
+ // SOCKETS
+ sock('sign',0,4.05,fz-.1,0,{w:5.4,h:1.3,trade:'GENERAL'});shSignPosts(0,fz-.5,3.0,4.85,5.4);
+ sock('awning',-4.9,2.1,fz,0,{w:2.4,d:1.2,drop:.4,h:1.7});sock('awning',4.9,2.1,fz,0,{w:2.4,d:1.2,drop:.4,h:1.7});
+ shBanner(6.9,fz+.9,4.6);sock('flag',-5.4,3.05+1.6,cz,0,{w:1.0,h:.6});
+ sock('emblem',-L-.03,2.25,cz,-PI/2,{w:.9,h:.9});sock('paint',L+.03,1.5,cz,PI/2,{w:1.6,h:1.1});}
+// prefix: in
+// ---------------------------------------------------------------- industry and power: smithy, wind generator, fuel generator, warehouse (48 industry, seeds 4800-4899)
+const inW=0x5c4630;
+function inPost(x,z,h,r){beam('wood',[x,0,z],[x,h,z],r||.11,jc(inW,.06),true,6);}
+// lattice tower leg frame: base half-width s0 at y=0 tapering to s1 at H, `n` bays, in the current frame centred on (0,0)
+function inLattice(H,s0,s1,n,col,r){col=col||jc(0x8a8a86,.05);const sq=[[-1,-1],[1,-1],[1,1],[-1,1]];
+ const S=y=>s0+(s1-s0)*y/H;
+ for(const [a,b] of sq)beam('iron',[a*s0,0,b*s0],[a*s1,H,b*s1],r||.09,col,true,6);
+ for(let i=0;i<=n;i++){const y=H*i/n,s=S(y);for(let k=0;k<4;k++){const a=sq[k],b=sq[(k+1)%4];if(i>0)beam('iron',[a[0]*s,y,a[1]*s],[b[0]*s,y,b[1]*s],.05,col,true,5);
+   if(i<n){const y2=H*(i+1)/n,s2=S(y2);const flip=(i+k)%2;beam('iron',[a[0]*(flip?s2:s),flip?y2:y,a[1]*(flip?s2:s)],[b[0]*(flip?s:s2),flip?y:y2,b[1]*(flip?s:s2)],.04,col,true,4);}}}}
+// ground anchor: a concrete block with a ring bolt; and a guy cable from (x0,y0,z0) to it
+function inAnchor(ax,az){box('conc',ax-.35,0,az-.35,.7,.3,.7,jc(0x9a9488,.06));tire(ax,.3,az,.16,.03,jc(0x4a4038,.05),0,PI/2,0);}
+function inGuy(a,b,sag){const m=[(a[0]+b[0])/2,(a[1]+b[1])/2-(sag||.12),(a[2]+b[2])/2];beam('iron',a,m,.025,jc(0x3a3632,.04),true,3);beam('iron',m,b,.025,jc(0x3a3632,.04),true,3);}
+// stencilled digit (7-segment, boxes) centred at (x,y..y+h,z) on a wall facing +z (ry turns it)
+function inDigit(x,y,z,d,h,col,ry){const seg={0:'abcdef',1:'bc',2:'abdeg',3:'abcdg',4:'bcfg',5:'acdfg',6:'acdefg',7:'abc',8:'abcdefg',9:'abcdfg'}[d]||'abcdefg';const w=h*.55,t=h*.14;const c=jc(col,.03);
+ W(x,y,z,ry||0,()=>{const B=(sx,sy,sw,sh)=>box('plain',sx,sy,0,sw,sh,.03,c);
+  if(seg.includes('a'))B(0,h-t,w,t);if(seg.includes('g'))B(0,h/2-t/2,w,t);if(seg.includes('d'))B(0,0,w,t);
+  if(seg.includes('b'))B(w/2-t/2,h/2,t,h/2);if(seg.includes('c'))B(w/2-t/2,0,t,h/2);if(seg.includes('f'))B(-w/2+t/2,h/2,t,h/2);if(seg.includes('e'))B(-w/2+t/2,0,t,h/2);});}
+// ---------------------------------------------------------------- 4810 scrap smithy
+defBuilding({key:'smithy',name:'Scrap smithy',seed:4810,tags:{type:['industry'],size:'medium',core:'timber and sheet shed',materials:['sheet metal','tyres','earth','engine block','timber']},w:14,d:12,h:9.5,build:inSmithy});
+function inSmithy(o){
+ const X0=-5,X1=5,ZB=-4.5,ZF=3.6,EY=3.4,RY=4.9,ZR=-.5;
+ // floor of trodden ash, back and left walls of patched sheet, posts
+ box('conc',(X0+X1)/2,0,(ZB+ZF)/2,X1-X0,.06,ZF-ZB,jc(0x5a5048,.06));
+ for(let k=0;k<5;k++)sheetWall(X0+1+k*2,0,ZB,2.0,3.5,0,{col:pick([0x8a8478,0x8a4a3a,0x3b7f8e,0x7a7a70,0xa8642a])});
+ for(let k=0;k<4;k++)sheetWall(X0,0,ZB+1+k*2,2.0,3.3,PI/2,{col:pick([0x8a8478,0x8a4a3a,0x7a7a70,0xa8642a])});
+ for(const x of [X0,-1.7,1.7,X1])inPost(x,ZF,EY+.05,.13);for(const z of [ZB,-.5])inPost(X1,z,z===ZB?EY+.1:RY,.13);inPost(X0,ZR,RY,.13);
+ // roof: two slopes in bays of different sheet
+ const bays=[[-5.7,-2.8],[-2.8,.4],[.4,3.2],[3.2,5.7]];const cols=[0x8a8478,0xa8642a,0x6a7a78,0x8a4a3a];
+ bays.forEach((b,i)=>{roofP('corr',b[0],b[1],ZF+.7,EY-.1,ZR,RY,.07,jc(cols[i],.06));roofP('corr',b[0],b[1],ZB-.6,EY+.1,ZR,RY,.07,jc(cols[(i+2)%4],.06));});
+ box('iron',0,RY-.04,ZR,12.2,.12,.18,jc(0x4a4038,.05));
+ for(const x of [X0,-1.7,1.7,X1]){beam('wood',[x,EY,ZF],[x,RY,ZR],.1,jc(inW,.06));beam('wood',[x,EY+.05,ZB],[x,RY,ZR],.1,jc(inW,.06));}
+ beam('wood',[X0,EY,ZF],[X1,EY,ZF],.13,jc(inW,.06));
+ // the forge: an earth-and-tyre hearth against the back wall, a sheet hood, a tall stovepipe with cap and stays
+ const hx=-2.2,hz=-3.5;tireWall(hx-1.4,hz+.95,hx+1.4,hz+.95,4,{cap:false});box('earth',hx,.05,hz-.1,3.0,1.0,1.9,jc(0xa08a70,.05));box('earth',hx,1.0,hz-.05,3.1,.14,2.0,jc(0x8a7a64,.05));
+ box('glow',hx,.35,hz+.98,1.2,.6,.06,jc(0xff7a2a,.05));sph('glow',hx,1.5,hz+.4,.5,jc(0xff8a30,.05),.5);box('glow',hx,1.14,hz+.1,1.5,.06,.9,jc(0xff8a2a,.08));cone('glow',hx,1.16,hz+.1,.5,.9,jc(0xffb040,.06),7);cone('glow',hx,1.16,hz+.1,.25,1.3,jc(0xffe28a,.04),6);
+ cone('sheet',hx,1.9,hz-.05,1.4,1.3,jc(0x5a4a40,.05),8);cyl('iron',hx,1.85,hz-.05,1.42,.12,jc(0x3a3430,.05),8);
+ cyl('iron',hx,3.2,hz-.05,.3,5.7,jc(0x4a4038,.05),10);for(let k=0;k<5;k++)cyl('iron',hx,3.6+k*1.1,hz-.05,.34,.1,jc(0x3a3430,.05),10);
+ cyl('iron',hx,8.9,hz-.05,.5,.1,jc(0x3a3430,.05),10);cone('iron',hx,9.0,hz-.05,.55,.4,jc(0x4a4038,.05),10);
+ for(const s of [-1,1])inGuy([hx,7.6,hz-.05],[hx+s*3.0,RY-.1,hz+.4],.05);
+ // bellows (two boards, a leather gusset, a nozzle into the fire) and a rack of tongs and hammers on the back wall
+ const bx=.6,bz=-3.3;beam('wood',[bx-.4,0,bz-.3],[bx-.4,.7,bz-.3],.1,jc(inW,.06),true,5);beam('wood',[bx+.4,0,bz-.3],[bx+.4,.7,bz-.3],.1,jc(inW,.06),true,5);
+ box('plank',bx,.7,bz,1.0,.06,1.6,jc(0x8a6a44,.06));box('plank',bx,.86,bz+.1,1.0,.06,1.5,jc(0x7a5a3c,.06),0,-.28);box('cloth',bx,.76,bz+.15,.98,.12,1.3,jc(0x6a4a30,.06));
+ beam('wood',[bx,1.15,bz+.7],[bx,2.1,bz+1.1],.05,jc(inW,.06),true,5);pipe('iron',[[bx-.2,.78,bz+.1],[hx+1.0,.85,hz+.4],[hx+.6,.85,hz+.85]],.05,jc(0x3a3430,.05));
+ shHang(2.0,4.6,2.6,ZB+.3,8,'tools');box('plank',3.3,1.3,ZB+.05,3.0,.06,.14,jc(inW,.06));for(let k=0;k<6;k++)box('iron',2.1+k*.45,1.3,ZB+.16,.05,.4,.03,jc(0x6a6a66,.05));
+ // anvil: an engine block on a stump; a quench trough of planks and water; hot work on the anvil
+ const ax=1.8,az=-1.0;cyl('wood',ax,0,az,.4,.72,jc(0x6a4a30,.07),9);box('iron',ax-.45,.72,az-.25,.9,.36,.5,jc(0x4a4a46,.05));
+ for(let k=0;k<4;k++)cyl('iron',ax-.34+k*.23,1.08,az,.07,.04,jc(0x1a1816,.03),6);box('iron',ax-.3,1.08,az-.25,.6,.06,.5,jc(0x8a8a86,.05));cone('iron',ax+.8,.88,az,.12,.35,jc(0x4a4a46,.05),6);
+ box('glow',ax,1.14,az,.4,.04,.1,jc(0xff6a2a,.06));for(let k=0;k<9;k++)box('glow',ax+rr(-.7,.7),1.3+rr(0,.8),az+rr(-.5,.6),.04,.04,.04,jc(0xffc060,.05));
+ const qx=-.3,qz=-1.4;box('plank',qx,0,qz,2.1,.62,.8,jc(0x6a5238,.06));box('plain',qx,.6,qz,1.9,.03,.6,jc(0x2a5a6a,.03));for(const s of [-1,1])box('iron',qx+s*.6,.0,qz,.05,.66,.85,jc(0x3a3430,.05));
+ // sorted scrap: bins at the left outside: sheets, pipes, tyres, gears and wheels, springs
+ const bz0=-3.3;const pens=[[bz0,'sheet'],[bz0+2.3,'pipe'],[bz0+4.6,'tyre'],[bz0+6.9,'gear']];
+ for(const [z,k] of pens){const x=-6.2;box('plank',x-.7,0,z,.08,.6,1.9,jc(0x6a5238,.06));box('plank',x,0,z-.95,1.4,.6,.08,jc(0x6a5238,.06));box('plank',x,0,z+.95,1.4,.6,.08,jc(0x6a5238,.06));
+  if(k==='sheet')for(let q=0;q<8;q++)box('sheet',x+rr(-.1,.1),.05+q*.08,z+rr(-.1,.1),1.2,.06,1.6,pick([P('rust'),P('galv'),P('paint')]),rr(-.1,.1));
+  if(k==='pipe')for(let q=0;q<7;q++)beam('iron',[x-.5,.2+(q%3)*.2,z-.8+q*.25],[x+.5,.2+(q%3)*.2,z-.8+q*.25],.1+(q%2)*.05,P('rust'),true,7);
+  if(k==='tyre')tireStack(x,z,4);
+  if(k==='gear')for(let q=0;q<6;q++){tire(x+rr(-.4,.4),.16+(q>3?.28:0),z+rr(-.6,.6),rr(.2,.34),.09,jc(pick([0x8a4a3a,0x6a6a66,0x4a4a46]),.06),0,rr(-.3,.3),0);}}
+ // small crane arm with chain hoist at the front right: pipe mast, jib, brace, chain and hook over a cart with an engine block
+ const kx=5.7,kz=5.0;cyl('conc',kx,0,kz,.45,.25,jc(0x8a8478,.06),8);cyl('iron',kx,.25,kz,.14,4.6,jc(0x4a4038,.05),10);beam('iron',[kx,4.6,kz],[kx-3.6,4.5,kz],.18,jc(0x5a4a3c,.05));
+ beam('iron',[kx,2.9,kz],[kx-2.3,4.45,kz],.09,jc(0x4a4038,.05));box('iron',kx-2.5,4.15,kz-.12,.5,.35,.24,jc(0xa8642a,.06));
+ for(let k=0;k<8;k++)box('iron',kx-2.5,3.9-k*.2,kz-.05+(k%2)*.03,.06,.14,.1,jc(0x5a5a56,.05),0,(k%2)*1.5);cone('iron',kx-2.5,2.35,kz,.09,.3,jc(0x3a3430,.05),5);
+ box('plank',kx-2.5,.55,kz,1.3,.1,.9,jc(0x6a5238,.06));for(const s of [-1,1])tire(kx-2.5+s*.5,.3,kz+.5,.3,.09,undefined,0,0,PI/2);
+ box('iron',kx-2.9,.65,kz-.2,.9,.4,.5,jc(0x5a5a56,.05));cyl('iron',kx-2.75,1.05,kz-.2,.09,.06,jc(0x1a1816,.03),6);
+ // yard clutter: charcoal sacks, coal heap, barrels, lamp
+ for(let k=0;k<5;k++)sph('plain',-4.6+(k%3)*.45,.2+Math.floor(k/3)*.3,4.9+(k%2)*.1,.24,jc(0x2a2624,.04),.75);barrel(-3.4,0,5.0);barrel(-2.9,0,5.2);lamp(3.6,0,4.6,3.4);
+ // SOCKETS
+ beam('wood',[-1.4,EY-.08,ZF+.1],[1.4,EY-.08,ZF+.1],.12,jc(inW,.06));sock('awning',0,EY-.1,ZF+.15,0,{w:4.6,d:1.9,drop:.5,h:2.8});
+ beam('wood',[-6.5,0,5.2],[-6.5,5.6,5.2],.09,jc(inW,.06),true,6);sock('banner',-6.5,5.6,5.25,0,{w:.9,h:2.2});
+ sock('emblem',X0-.08,2.9,-1.0,-PI/2,{w:.9,h:.9});sock('flag',4.3,RY+1.6,ZR,0,{w:1.1,h:.6});sock('paint',X0-.08,1.5,ZB+5.0,-PI/2,{w:1.5,h:1.0});}
+// ---------------------------------------------------------------- 4820 wind generator
+defBuilding({key:'gen-wind',name:'Wind generator',seed:4820,tags:{type:['infrastructure'],size:'large',core:'lattice tower',materials:['steel lattice','scrap sheet','drum','container','cable']},w:14,d:14,h:24.5,build:inWind});
+function inWind(o){
+ const tz=-1.0,H=o.v===1?13:19.2;
+ W(0,0,tz,0,()=>{
+  box('conc',0,0,0,3.8,.5,3.8,jc(0x9a9488,.06));inLattice(H,1.3,o.v===1?.4:.5,o.v===1?6:8,jc(o.v===1?0x8a4a3a:0x8a8a86,.05),.1);
+  // platform + yaw bearing, ladder to the first landing, a cable from the nacelle down the leg
+  box('iron',0,H,0,1.2,.12,1.2,jc(0x4a4038,.05));cyl('iron',0,H+.12,0,.35,.25,jc(0x3a3430,.05),10);ladder(0,0,1.32,5,0);
+  beam('plain',[.3,H,.3],[1.28,.5,1.28],.04,jc(0x1a1816,.03),true,4);
+  if(o.v!==1){
+   const ny=H+.95;cylH('sheet',0,ny,.2,.6,2.3,jc(0x8a4a3a,.06),'z',14,true);sph('sheet',0,ny,1.35,.6,jc(0x3b7f8e,.06));for(const s of [-1,1])beam('iron',[s*.45,ny-.5,-.8],[s*.45,ny-.9,.9],.06,jc(0x4a4038,.05));
+   beam('iron',[0,ny,-.8],[0,ny+.1,-3.7],.09,jc(0x5a4a3c,.05));box('sheet',-.02,ny-.1,-3.7,.05,1.3,1.5,jc(0xa8642a,.06));
+   spin(0,ny,1.85,0,'z',1.3,()=>{cyl('iron',0,0,-.05,.3,.1,jc(0x3a3430,.05),10);sph('iron',0,0,.12,.28,jc(0x8a8a86,.05));
+    const bc=[0xc45a30,0x3b7f8e,0xd8a02a];for(let k=0;k<3;k++){const a=k*TAU/3+.4,dx=-Math.sin(a),dy=Math.cos(a),px=Math.cos(a),py=Math.sin(a);
+     const q=(r,w,z)=>[dx*r+px*w,dy*r+py*w,z];beam('iron',[dx*.3,dy*.3,.02],[dx*4.5,dy*4.5,.05],.09,jc(0x4a4038,.05));
+     poly('sheet',[q(.4,.3,0),q(.4,-.32,0),q(2.6,-.5,.12),q(2.6,.15,.12)],jc(bc[k],.05),true);poly('sheet',[q(2.6,.15,.12),q(2.6,-.5,.12),q(4.6,-.22,.04),q(4.6,.12,.04)],jc(bc[(k+1)%3],.05),true);}});
+  }else{
+   const wy=H+1.5;box('iron',0,H+.12,-.4,.5,1.2,.9,jc(0x3a3430,.05));beam('iron',[0,wy,-.3],[0,wy,-4.0],.09,jc(0x5a4a3c,.05));box('sheet',-.02,wy-.4,-4.0,.05,1.5,1.8,jc(0xc9a03a,.06));
+   spin(0,wy,.5,0,'z',.9,()=>{cyl('iron',0,0,-.1,.28,.3,jc(0x3a3430,.05),8);cylH('iron',0,0,0,.28,.3,jc(0x3a3430,.05),'z',8);
+    for(let k=0;k<18;k++){const a=k*TAU/18,dx=-Math.sin(a),dy=Math.cos(a),px=Math.cos(a),py=Math.sin(a);const q=(r,w,z)=>[dx*r+px*w,dy*r+py*w,z];
+     poly('sheet',[q(1.0,.17,0),q(1.0,-.17,.08),q(2.5,-.22,.14),q(2.5,.16,.06)],jc(pick([0xa8a49a,0x9a9488,0xa8642a,0x7a7a70]),.06),true);}
+    for(const R of [1.05,2.5])for(let k=0;k<18;k++){const a=k*TAU/18,b=(k+1)*TAU/18;beam('iron',[Math.cos(a)*R,Math.sin(a)*R,.05],[Math.cos(b)*R,Math.sin(b)*R,.05],.05,jc(0x4a4038,.05),true,4);}
+    for(let k=0;k<6;k++){const a=k*TAU/6;beam('iron',[0,0,.02],[Math.cos(a)*2.5,Math.sin(a)*2.5,.05],.035,jc(0x4a4038,.05),true,4);}});
+   beam('iron',[0,H-.2,0],[0,.6,0],.05,jc(0x6a6a66,.05),true,4);
+  }
+  // guy cables: from the tower legs to concrete ground anchors, plus tension turnbuckles
+  for(const [a,b] of [[-1,-1],[1,-1],[1,1],[-1,1]]){const ax=a*5.6,az=b*5.6-(b>0?.5:.0);for(const yy of [H*.55,H*.85]){const s=1.3+(.5-1.3)*yy/H;const t=(yy/H);inGuy([a*s,yy,b*s],[ax*(1-t*.55)*.0+ax,.3,az+0],.2);}
+   inAnchor(ax,az);}
+ });
+ // control shed: a short container at the foot, with battery rack, cables and a door; solar panel on the roof
+ const sx=0,sz=3.9;W(sx,0,sz,0,()=>container({len:CT.L20,col:[0x3b7f8e,0xb8502e,0x4d6f3c][(o.v|0)%3]}));const fz=sz+CT.W/2;
+ door(-1.2,.16,fz,1.0,2.0);win(1.1,1.2,fz,.9,.6,{lit:true,bars:true});for(let k=0;k<3;k++)box('iron',.5+k*.3,2.0,fz+.03,.15,.3,.04,jc(0x2a2826,.03));
+ solar(1.0,CT.H+.02,sz,2.4,1.4,0,.5);
+ for(let r=0;r<2;r++)for(let k=0;k<5;k++){const bx=4.2+k*.02,z=sz-1.0+k*.5;box('plain',3.9,r*.36,z,.7,.34,.42,jc(0x2a2826,.04));box('plain',3.9,r*.36+.34,z-.1,.1,.05,.1,jc(0xc23a2a,.03));box('plain',3.9,r*.36+.34,z+.1,.1,.05,.1,jc(0x1a1816,.03));}
+ box('plank',3.9,.0,sz-1.3,.9,.08,3.0,jc(0x5c4630,.06),0,0,0);
+ pipe('iron',[[3.5,.8,sz-.4],[3.0,.7,sz-.3],[CT.L20/2+.02,.6,sz-.2]],.05,jc(0x1a1816,.03));pipe('iron',[[1.3,.05,-1.0-.4+2.6],[1.3,.05,sz-CT.W/2]],.05,jc(0x1a1816,.03));
+ // fence: chain-link round the tower foot and shed with a gate gap, barrels, lamp
+ fenceRun(-4.6,-4.2,4.6,-4.2,1.8,{barbed:true});fenceRun(4.6,-4.2,4.6,6.0,1.8,{barbed:true});fenceRun(-4.6,-4.2,-4.6,6.0,1.8,{barbed:true});
+ fenceRun(-4.6,6.0,-.6,6.0,1.8,{barbed:true});fenceRun(1.6,6.0,4.6,6.0,1.8,{barbed:true});lamp(-4.0,0,5.4,3.2);barrel(-3.8,0,3.0);barrel(-3.8,0,3.6);
+ // SOCKETS
+ sock('awning',-1.2,2.7,fz,0,{w:1.9,d:1.2,drop:.45,h:2.25});
+ beam('wood',[4.6,0,6.0],[4.6,4.8,6.0],.09,jc(inW,.06),true,6);sock('banner',4.6,4.8,6.05,0,{w:.8,h:2.0});
+ sock('flag',-2.4,CT.H+1.6,sz,0,{w:1.0,h:.6});sock('emblem',CT.L20/2+.03,2.25,sz,PI/2,{w:.9,h:.9});sock('paint',-2.0,1.9,fz+.02,0,{w:1.3,h:.9});}
+// ---------------------------------------------------------------- 4830 fuel generator
+defBuilding({key:'gen-fuel',name:'Fuel generator',seed:4830,tags:{type:['infrastructure'],size:'medium',core:'shipping container',materials:['container','steel drums','tank','chain-link','cable']},w:14,d:12,h:8.4,build:inFuel});
+function inFuel(o){
+ const cx=-2.8,cz=-2.6,L=CT.L20,fz=cz+CT.W/2;
+ W(cx,0,cz,0,()=>container({len:L,col:[0x8a3a2c,0x3b6f7e,0xc9852a][(o.v|0)%3],doorEnd:false}));
+ // front: two louvred radiator vents, a door, a conduit; roof: muffler box and the big exhaust stack, a second small stack
+ for(const vx of [-4.5,-3.3]){box('iron',vx,.6,fz+.02,1.0,1.4,.06,jc(0x2a2826,.04));for(let k=0;k<9;k++)box('iron',vx,.7+k*.14,fz+.06,.92,.05,.06,jc(0x6a6a66,.05),0,-.3);}
+ door(cx+1.4,.16,fz,1.0,2.0);
+ pipe('iron',[[cx-.4,.16,fz+.05],[cx-.4,2.4,fz+.05],[cx+.6,2.5,fz+.05]],.05,jc(0x1a1816,.03));
+ const stx=cx-2.0;box('iron',stx-.5,CT.H,cz-.5,1.0,.7,1.0,jc(0x3a3430,.05));cyl('iron',stx,CT.H+.7,cz,.3,4.6,jc(0x4a4038,.05),10);for(let k=0;k<4;k++)cyl('iron',stx,CT.H+1.2+k*1.1,cz,.34,.1,jc(0x2a2624,.05),10);
+ cyl('iron',stx,CT.H+5.3,cz,.34,.08,jc(0x2a2624,.05),10);cone('iron',stx,CT.H+5.4,cz,.5,.35,jc(0x4a4038,.05),10);for(const s of [-1,1])inGuy([stx,CT.H+4.2,cz],[stx+s*1.6,CT.H,cz+.9],.03);
+ stovepipe(cx+.8,CT.H,cz+.3,1.6);
+ // cooling fan in the end wall (+x): a static guard ring and a spinning fan
+ W(cx+L/2+.02,1.4,cz,PI/2,()=>{tire(0,0,.03,.82,.07,jc(0x3a3430,.05),0,PI/2,0);box('iron',0,-.9,.0,1.8,1.8,.04,jc(0x2a2826,.04));
+  cylH('iron',0,0,.06,.86,.05,jc(0x1a1816,.03),'z',16);for(const a of [0,PI/2])beam('iron',[Math.cos(a)*.8,Math.sin(a)*.8,.12],[-Math.cos(a)*.8,-Math.sin(a)*.8,.12],.04,jc(0x8a8a86,.05));});
+ spin(cx+L/2+.15,1.4,cz,PI/2,'z',6,()=>{cylH('iron',0,0,0,.1,.08,jc(0xc9a03a,.05),'z',8);for(let k=0;k<5;k++){const a=k*TAU/5;const dx=Math.cos(a),dy=Math.sin(a);poly('sheet',[[dx*.1-dy*.1,dy*.1+dx*.1,0],[dx*.1+dy*.1,dy*.1-dx*.1,0],[dx*.65+dy*.14,dy*.65-dx*.14,.06],[dx*.65-dy*.14,dy*.65+dx*.14,.06]],jc(0xc9a03a,.05),true);}});
+ // power pole with cross-arm, three sagging cables to the house
+ const ppx=cx+L/2+1.2;beam('wood',[ppx,0,cz+.5],[ppx,5.2,cz+.5],.16,jc(0x5c4630,.06),true,7);box('wood',ppx-.8,4.8,cz+.4,1.6,.1,.1,jc(0x5c4630,.06));
+ for(let k=-1;k<=1;k++){const bx=ppx+k*.7;sph('glow',bx,4.95,cz+.45,.06,jc(0xd8e0d8,.03));pipe('iron',[[bx,4.95,cz+.45],[cx+L/2-.3+k*.3,3.8,cz+k*.4],[cx+L/2-.6+k*.5,CT.H,cz+k*.4]],.02,jc(0x1a1816,.03),4);}
+ // fuel tank on stilts: horizontal tank on a steel frame, ladder, filler, gauge, hose to a pump at the foot
+ const tx=3.7,tz=1.4,ty=2.7,tr=.95,tl=3.6;
+ for(const a of [-1,1])for(const b of [-1,1]){beam('iron',[tx+a*1.3,0,tz+b*.8],[tx+a*1.2,ty-.2,tz+b*.7],.11,jc(0x5a5a56,.05),true,6);}
+ for(const a of [-1,1]){beam('iron',[tx+a*1.3,.9,tz-.8],[tx+a*1.2,ty-.6,tz+.7],.05,jc(0x5a5a56,.05),true,4);beam('iron',[tx+a*1.3,.9,tz+.8],[tx+a*1.2,ty-.6,tz-.7],.05,jc(0x5a5a56,.05),true,4);}
+ for(const a of [-1,1])box('iron',tx+a*1.25-.06,ty-.3,tz-.9,.12,.12,1.8,jc(0x4a4038,.05));
+ const tk=jc([0x9a3a2c,0xd8d0b8,0x3a5a7a][(o.v|0)%3],.05);cylH('sheet',tx,ty+tr,tz,tr,tl-tr*.6,tk,'x',18,true);for(const s of [-1,1])sph('sheet',tx+s*(tl/2-tr*.3),ty+tr,tz,tr,tk,1);
+ for(const f of [-.3,.3])cylH('iron',tx+f*tl,ty+tr,tz,tr+.03,.1,jc(0x3a3430,.05),'x',18);cyl('iron',tx,ty+tr*2,tz,.28,.25,jc(0x3a3430,.05),10);box('iron',tx+.8,ty+tr*2,tz-.2,.4,.2,.4,jc(0xc9a03a,.06));
+ cyl('glass',tx+1.7,ty+.4,tz+.95,.06,1.0,jc(0xd8e0c0,.05),6);ladder(tx-1.7,0,tz+.9,ty+1.2,0);
+ const px=tx-.3,pz=tz+2.0;box('iron',px-.3,0,pz-.25,.6,1.5,.5,jc(0xc23a2a,.06));box('glass',px-.2,1.0,pz+.26,.4,.3,.03,jc(0xd8e0c0,.05));box('iron',px-.35,1.5,pz-.3,.7,.1,.6,jc(0x3a3430,.05));
+ pipe('iron',[[tx+.5,ty,tz+.95],[px+.4,ty-.8,tz+1.4],[px+.3,1.3,pz]],.06,jc(0x3a3430,.05));pipe('iron',[[px+.3,1.2,pz+.2],[px+.8,.5,pz+.6],[px+1.1,.9,pz+.5]],.04,jc(0x1a1816,.03),6);
+ // bund wall round the tank foot
+ const bd=jc(0x9a9488,.05);box('conc',tx,0,tz-1.5,4.8,.4,.25,bd);box('conc',tx,0,tz+3.0,4.8,.4,.25,bd);box('conc',tx-2.4,0,tz+.75,.25,.4,4.5,bd);box('conc',tx+2.4,0,tz+.75,.25,.4,4.5,bd);
+ // drum store: stacked drums on pallets, three high, left front
+ for(let r=0;r<2;r++){const z=2.4+r*1.5;pallet(-5.0,0,z,2.8,1.2);for(let k=0;k<4;k++){barrel(-6.0+k*.62,.12,z-.25+(r%2)*.1);barrel(-6.0+k*.62,.12,z+.3);}
+  for(let k=0;k<3;k++){barrel(-5.7+k*.62,1.0,z-.1,undefined,{open:k===1});}}barrel(-5.4,1.88,3.2);barrel(-4.8,1.88,3.2);
+ // chain-link yard fence with a gate gap, lamp, tarp
+ fenceRun(-6.6,-5.2,6.6,-5.2,1.8,{barbed:true});fenceRun(6.6,-5.2,6.6,5.2,1.8,{barbed:true});fenceRun(-6.6,-5.2,-6.6,5.2,1.8,{barbed:true});
+ fenceRun(-6.6,5.2,-1.0,5.2,1.8,{barbed:true});fenceRun(1.4,5.2,6.6,5.2,1.8,{barbed:true});lamp(-.2,0,4.4,3.6);
+ // SOCKETS
+ sock('awning',cx+1.4,2.72,fz,0,{w:1.9,d:1.3,drop:.45,h:2.27});
+ beam('wood',[1.4,0,5.2],[1.4,5.0,5.2],.09,jc(inW,.06),true,6);sock('banner',1.4,5.0,5.25,0,{w:.8,h:2.0});
+ sock('flag',cx+2.6,CT.H+1.6,cz-.5,0,{w:1.0,h:.6});sock('emblem',cx-.6,2.4,fz+.02,0,{w:.85,h:.85});sock('paint',cx-L/2-.03,1.4,cz,-PI/2,{w:1.6,h:1.1});}
+// ---------------------------------------------------------------- 4840 warehouse
+defBuilding({key:'warehouse',name:'Warehouse',seed:4840,tags:{type:['industry'],size:'large',core:'corrugated hangar',materials:['corrugated sheet','steel trusses','containers','pallets']},w:26,d:18,h:9.7,build:inWarehouse});
+function inWarehouse(o){
+ const X0=-11.5,X1=10.5,ZB=-8.5,ZF=2.6,DK=1.15,WH=5.4,RY=8.0,ZR=(ZB+ZF)/2;const cw=[0xd0ccc0,0xd8a02a,0x4a9a98,0xc4502e,0xb8a888,0x5a8acb];
+ // foundation and raised dock floor
+ box('conc',(X0+X1)/2,0,(ZB+ZF)/2,X1-X0,DK,ZF-ZB,jc(0x8a8478,.05));
+ // back and side walls: patchwork panels of corrugated sheet
+ for(let k=0;k<11;k++)sheetWall(X0+1+k*2,DK,ZB,2.0,WH-DK,0,{col:cw[(k*5+1)%6],th:.1});
+ for(let k=0;k<5;k++){sheetWall(X0,DK,ZB+1.15+k*2.3,2.3,WH-DK,PI/2,{col:cw[(k*3)%6],th:.1});sheetWall(X1,DK,ZB+1.15+k*2.3,2.3,WH-DK,-PI/2,{col:cw[(k*3+2)%6],th:.1});}
+ // front wall with three roll-up door openings, doors half raised, a door drum at the head, steel posts between
+ const dxs=[-7,-1.5,4.0],dw=3.6;const ops=dxs.map(x=>({x0:x-dw/2,x1:x+dw/2,y0:DK,y1:DK+3.5}));
+ wallOpen('corr',(X0+X1)/2,DK,ZF,X1-X0,WH-DK,.1,ops,jc(0xd0ccc0,.04),0);
+ for(const x of dxs){const raise=[.8,.4,1.6][dxs.indexOf(x)];box('corr',x,DK,ZF+.02,dw-.1,3.5-raise,.05,jc(pick([0xc4502e,0x2f8f8a,0xb0aca0]),.05));cylH('iron',x,DK+3.5-.05,ZF+.14,.2,dw,jc(0x4a4038,.05),'x',10);
+  for(const s of [-1,1])box('iron',x+s*(dw/2+.06),DK,ZF+.05,.14,3.7,.14,jc(0x3a3430,.05));box('iron',x,DK+3.55,ZF+.08,dw+.3,.14,.14,jc(0x3a3430,.05));}
+ for(let k=0;k<9;k++)box('iron',X0+k*(X1-X0)/8-.07,DK,ZF+.05,.14,WH-DK,.14,jc(0x4a4038,.05));
+ // gable roof of mixed sheet on trusses; gable end walls with truss and a vent
+ const segs=[[X0-.5,X0+5.5],[X0+5.5,X0+10.5],[X0+10.5,X0+16.5],[X0+16.5,X1+.5]];
+ segs.forEach((b,i)=>{roofP('corr',b[0],b[1],ZF+.8,WH-.1,ZR,RY,.08,jc(cw[(i*2+1)%6],.06));roofP('corr',b[0],b[1],ZB-.8,WH-.1,ZR,RY,.08,jc(cw[(i*2+4)%6],.06));});
+ box('iron',(X0+X1)/2,RY-.05,ZR,X1-X0+1.4,.16,.24,jc(0x4a4038,.05));
+ for(const gx of [X0,X1]){poly('corr',[[gx,WH,ZB],[gx,WH,ZF],[gx,RY,ZR]],jc(gx<0?0x8a8478:0x8a4a3a,.05),true);}
+ for(let k=0;k<6;k++){const x=X0+.05+k*(X1-X0-.1)/5;beam('iron',[x,WH,ZF],[x,RY,ZR],.13,jc(0x4a4038,.05));beam('iron',[x,WH,ZB],[x,RY,ZR],.13,jc(0x4a4038,.05));beam('iron',[x,WH-.05,ZF],[x,WH-.05,ZB],.1,jc(0x4a4038,.05));
+  if(k>0&&k<5){beam('iron',[x,WH,ZF],[x,WH+(RY-WH)*.5,ZR+(ZF-ZR)*.5],.05,jc(0x4a4038,.05),true,4);}}
+ // dock: deck of plank, tyre bumpers on the edge, steps, ramp down at the left
+ const dx0=-10,dx1=4.6,dz=3.4;box('plank',(dx0+dx1)/2,DK-.1,ZF+dz/2,dx1-dx0,.1,dz,jc(0x7a6448,.07));box('conc',(dx0+dx1)/2,0,ZF+dz/2,dx1-dx0,DK-.1,dz,jc(0x9a9488,.06));
+ for(let k=0;k<7;k++)tire(dx0+1.0+k*2.2,.8,ZF+dz+.05,.36,.12,undefined,0,PI/2,0);
+ W(dx0,0,ZF+1.1,0,()=>{plane4("plank",[0,DK-.05,0],[0,DK-.05,2.3],[-3.6,0,0],[-3.6,0,2.3],.1,jc(0x7a6448,.07));for(const z of [0,2.3])beam("wood",[0,DK,z],[-3.6,0,z],.08,jc(inW,.06));});
+ // jib crane at the dock end
+ const jx=4.0,jz=ZF+2.9;cyl('conc',jx,DK,jz,.5,.2,jc(0x8a8478,.06),8);cyl('iron',jx,DK+.2,jz,.16,5.4,jc(0x5a4a3c,.05),10);beam('iron',[jx,DK+5.6,jz],[jx-4.6,DK+5.5,jz],.2,jc(0xa8642a,.06));
+ beam('iron',[jx,DK+3.4,jz],[jx-2.8,DK+5.45,jz],.1,jc(0x4a4038,.05));box('iron',jx-3.6,DK+5.0,jz-.15,.5,.4,.3,jc(0xc9a03a,.06));
+ for(let k=0;k<7;k++)box('iron',jx-3.6,DK+4.8-k*.2,jz-.05,.06,.14,.1,jc(0x5a5a56,.05),0,(k%2)*1.5);cone('iron',jx-3.6,DK+3.4,jz,.09,.3,jc(0x3a3430,.05),5);
+ for(let k=0;k<2;k++)for(const [sx,sy] of [[-1,0],[1,0]])box('plank',jx-3.6+sx*.55,DK+k*.6+.02,jz+.4,.5,.55,.55,jc(pick([0xb89a4a,0x8a6a44]),.06));
+ // dock goods: crate stacks and sacks on the deck
+ for(let k=0;k<4;k++){pallet(-9.0+k*.05,DK,jz-.4,1.6,1.2);for(let q=0;q<3;q++)crate(-9.0,DK+.12+q*.8,jz-.4,.8,rr(-.1,.1),pick([0x8a6a44,0x6a5238,0xa08258]));break;}
+ sacks(-6.0,DK,jz-.8,6,0.2);sacks(-5.4,DK+.34,jz-.8,3,.1);
+ // yard right of the dock: forklift-height stacks of crates on pallets, tarped, more pallets, a container as a store
+ const stacks=[[6.6,4.6],[8.0,4.2],[9.4,4.6],[6.9,6.6],[8.6,6.4]];
+ stacks.forEach(([x,z],i)=>{const n=2+((i*3)%3);pallet(x,0,z,1.4,1.2);for(let q=0;q<n;q++)box('plank',x,.12+q*.95,z,1.3,.9,1.1,pick([P('wood'),P('woodD'),jc(0x8a6a44,.07)]),rr(-.05,.05));
+  if(i===1)tarp(x,.12+n*.95+.05,z-.55,1.7,1.3,.5,pick([0x2f62b8,0x3b7f8e,0xc9852a]),{poles:false});});
+ tarp(6.6,3.05,4.0,1.7,1.3,.5,0x3b7f8e,{poles:false});
+ tireStack(11.6,4.2,5);tireStack(11.6,5.0,4);barrel(11.6,0,6.4,0x8a3a2c);barrel(12.1,0,6.7,0x2f62b8);pallet(11.5,0,2.4,1.4,1.2);
+ lamp(-10.6,0,ZF+2.2,4.2);lamp(11.0,0,ZF+.8,5.0);
+ for(const [i,x] of dxs.entries())inDigit(x,DK+3.8,ZF+.06,i+1,.7,0x2a2826);inDigit(X0-.06,3.6,-1.0,7,1.0,0x2a2826,-PI/2);inDigit(X0-.06,3.6,-1.5,4,1.0,0x2a2826,-PI/2);
+ // SOCKETS: awnings over the outer doors (posts land on the deck), banners on a beam bracket, paint panels for stencilled numbers, gable emblem, ridge flag
+ sock('awning',dxs[0],WH-.4,ZF+.05,0,{w:4.2,d:2.6,drop:.5,h:WH-.4-.5-DK});sock('awning',dxs[2],WH-.4,ZF+.05,0,{w:4.2,d:2.6,drop:.5,h:WH-.4-.5-DK});
+ beam('iron',[-6,WH-.05,ZF+.15],[3,WH-.05,ZF+.15],.1,jc(0x4a4038,.05));
+ sock('banner',-4.25,WH-.05,ZF+.2,0,{w:.9,h:2.2});sock('banner',1.25,WH-.05,ZF+.2,0,{w:.9,h:2.2});
+ sock('paint',-4.25,DK+1.4,ZF+.06,0,{w:1.8,h:1.5});sock('paint',1.25,DK+1.4,ZF+.06,0,{w:1.8,h:1.5});sock('paint',X0,2.6,-3,-PI/2,{w:2.6,h:1.6});
+ sock('emblem',X1+.05,5.2,ZR,PI/2,{w:1.4,h:1.4});sock('flag',X0+1.5,RY+1.6,ZR,0,{w:1.2,h:.7});}
 // prefix: fm
 // ---------------------------------------------------------------- farm: 3 buildings (50 farm) : farm plot, farmhouse, granary
 // ENGINE WORKAROUND: plane4/roofP take e2 from the 4th point, which shifts every sheet by half its width. These pass the same-side point twice, right in either version.

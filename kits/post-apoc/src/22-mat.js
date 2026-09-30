@@ -25,6 +25,12 @@ mkMat('water',null,{rough:.1,metal:.35,transparent:true,opacity:.9,depthWrite:fa
 MAT.plain=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.9});           // untextured painted stuff (leaves, hides, ropes)
 TILE.plain=1;TILE.rubber=1;TILE.glass=1;TILE.glow=1;
 const SRGB2LIN=c=>{c.convertSRGBToLinear();return c;};
+// WEATHERING. Reclaimed metal and timber never keeps a bright paint: on these material families emit() desaturates the tint and pulls it toward rust
+// (strength 0..1). Cloth, glass, glow, bottles, plain paint and the culture marks (canvas materials) are left alone, so a culture's awnings and
+// banners stay bright against the rusted junk.
+const WEATHER={corr:1,corrH:1,cont:1,sheet:1,iron:.9,plank:.7,wood:.55};
+const _wc=new THREE.Color(),_hsl={h:0,s:0,l:0},RUSTLIN=new THREE.Color(0.30,0.105,0.045);
+function weather(c,k){_wc.copy(c);_wc.getHSL(_hsl);const s=_hsl.s*(1-.72*k),l=_hsl.l*(1-.08*k);_wc.setHSL(_hsl.h,s,l);_wc.lerp(RUSTLIN,.20*k*(1-Math.min(1,_hsl.l*1.6)*.35));return _wc;}
 const _HC={};function hc(hex){let c=_HC[hex];if(!c){c=SRGB2LIN(new THREE.Color(hex));_HC[hex]=c;}return c;}
 // jittered copy of a hex colour (value drift only), deterministic through the PRNG
 function jc(hex,j){j=j===undefined?.08:j;const c=new THREE.Color(hex);const f=1+rr(-j,j);c.r=clamp(c.r*f,0,1);c.g=clamp(c.g*(1+rr(-j,j)*.5+(f-1)*.5),0,1);c.b=clamp(c.b*(1+(f-1)*.6),0,1);return SRGB2LIN(c);}

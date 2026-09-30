@@ -5,14 +5,17 @@ function canvasTex(w,h,fn){const c=document.createElement('canvas');c.width=w;c.
  const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.encoding=THREE.sRGBEncoding;t.anisotropy=4;return t;}
 function gray(v,a){v=clamp(v|0,0,255);return a===undefined?`rgb(${v},${v},${v})`:`rgba(${v},${v},${v},${a})`;}
 function speckle(g,w,h,n,amin,amax,dark){for(let i=0;i<n;i++){const x=rng()*w,y=rng()*h,s=rng()*2+.6;g.fillStyle=dark?`rgba(0,0,0,${rr(amin,amax)})`:`rgba(255,255,255,${rr(amin,amax)})`;g.fillRect(x,y,s,s);}}
-function rustStreaks(g,w,h,n,vertical){for(let i=0;i<n;i++){const x=rng()*w,y=rng()*h,L=rr(h*.1,h*.6),th=rr(1,4);g.fillStyle=`rgba(60,40,25,${rr(.05,.22)})`;if(vertical)g.fillRect(x,y,th,L);else g.fillRect(x,y,L,th);}}
-function blotches(g,w,h,n,rmin,rmax,a){for(let i=0;i<n;i++){const x=rng()*w,y=rng()*h,r=rr(rmin,rmax);const gr=g.createRadialGradient(x,y,0,x,y,r);gr.addColorStop(0,`rgba(70,45,28,${rr(a*.5,a)})`);gr.addColorStop(1,'rgba(70,45,28,0)');g.fillStyle=gr;g.fillRect(x-r,y-r,r*2,r*2);}}
+// rust is COLOUR, not just darkness: orange-brown scale over the grey, dark pitting at its edges (vertex tints multiply into it)
+function rustStreaks(g,w,h,n,vertical){for(let i=0;i<n;i++){const x=rng()*w,y=rng()*h,L=rr(h*.12,h*.7),th=rr(1,5);g.fillStyle=`rgba(${rr(110,150)|0},${rr(48,70)|0},${rr(18,32)|0},${rr(.25,.7)})`;if(vertical)g.fillRect(x,y,th,L);else g.fillRect(x,y,L,th);
+ g.fillStyle=`rgba(40,20,10,${rr(.1,.3)})`;if(vertical)g.fillRect(x+th,y,1,L*.8);else g.fillRect(x,y+th,L*.8,1);}}
+function blotches(g,w,h,n,rmin,rmax,a){for(let i=0;i<n;i++){const x=rng()*w,y=rng()*h,r=rr(rmin,rmax)*1.5;const gr=g.createRadialGradient(x,y,0,x,y,r);const c=`${rr(125,165)|0},${rr(58,84)|0},${rr(22,38)|0}`;gr.addColorStop(0,`rgba(${c},${Math.min(.9,rr(a*.9,a*1.8))})`);gr.addColorStop(.6,`rgba(${c},${a*.6})`);gr.addColorStop(1,`rgba(${c},0)`);g.fillStyle=gr;g.fillRect(x-r,y-r,r*2,r*2);}}
 const TILE={};
 // corrugated sheet, ribs VERTICAL (vary along u). 8 ribs per repeat.
 function texCorr(rot,ribs,W,H){reseed(9001+(rot?1:0)+ribs);return canvasTex(W||128,H||128,(g,w,h)=>{
- if(rot){g.translate(w/2,h/2);g.rotate(Math.PI/2);g.translate(-w/2,-h/2);}
+ g.save();if(rot){g.translate(w/2,h/2);g.rotate(Math.PI/2);g.translate(-w/2,-h/2);}
  for(let x=0;x<w;x++){const t=x/w*ribs;const s=Math.sin(t*TAU);const v=186+58*s+(s>.7?18:0);g.fillStyle=gray(v);g.fillRect(x,0,1,h);}
- rustStreaks(g,w,h,26,true);blotches(g,w,h,5,6,18,.25);speckle(g,w,h,160,.05,.18,true);speckle(g,w,h,60,.06,.2,false);});}
+ g.restore();   // rust is drawn in the un-rotated frame: rain-runs always run DOWN the sheet
+ rustStreaks(g,w,h,54,true);blotches(g,w,h,17,8,28,.42);speckle(g,w,h,260,.05,.25,true);});}
 TEX={};
 TEX.corr=texCorr(false,8);TILE.corr=0.8;
 TEX.corrH=texCorr(true,8);TILE.corrH=0.8;
@@ -22,13 +25,13 @@ TEX.cont=texCorr(false,4,256,128);TILE.cont=1.2;
 reseed(9010);TEX.sheet=canvasTex(256,256,(g,w,h)=>{g.fillStyle=gray(178);g.fillRect(0,0,w,h);
  for(let i=0;i<9;i++){const x=rng()*w,y=rng()*h,pw=rr(50,120),ph=rr(40,100);g.fillStyle=gray(rr(150,215));g.fillRect(x,y,pw,ph);g.strokeStyle='rgba(30,25,20,.55)';g.lineWidth=1.5;g.strokeRect(x,y,pw,ph);
   g.fillStyle='rgba(20,15,10,.6)';for(let r=x+5;r<x+pw;r+=14){g.fillRect(r,y+3,2.2,2.2);g.fillRect(r,y+ph-5,2.2,2.2);}}
- blotches(g,w,h,10,10,34,.3);rustStreaks(g,w,h,24,true);speckle(g,w,h,300,.05,.16,true);});TILE.sheet=2;
+ blotches(g,w,h,22,12,40,.42);rustStreaks(g,w,h,50,true);speckle(g,w,h,300,.05,.2,true);});TILE.sheet=2;
 // planks, horizontal courses: 8 boards per 1.6 m
 reseed(9011);TEX.plank=canvasTex(256,256,(g,w,h)=>{const n=8,bh=h/n;for(let i=0;i<n;i++){g.fillStyle=gray(rr(140,220));g.fillRect(0,i*bh,w,bh);
  for(let k=0;k<14;k++){g.fillStyle=`rgba(40,28,18,${rr(.06,.2)})`;g.fillRect(0,i*bh+rng()*bh,w,rr(.6,1.4));}
  const cut=rng()*w;g.fillStyle='rgba(20,12,6,.5)';g.fillRect(cut,i*bh,1.6,bh);g.fillStyle='rgba(20,12,6,.55)';g.fillRect(0,i*bh,w,1.4);
  g.fillStyle='rgba(15,10,6,.7)';g.fillRect(cut-6,i*bh+bh*.5-1,2,2);g.fillRect(cut+7,i*bh+bh*.5-1,2,2);}
- blotches(g,w,h,6,8,24,.22);});TILE.plank=1.6;
+ blotches(g,w,h,6,8,24,.18);});TILE.plank=1.6;
 reseed(9012);TEX.earth=canvasTex(256,256,(g,w,h)=>{g.fillStyle=gray(196);g.fillRect(0,0,w,h);const id=g.getImageData(0,0,w,h),d=id.data;
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const n=fbm(x/22,y/22,1.3,3)*70+fbm(x/4,y/4,5,1)*38;const i=(y*w+x)*4;const v=150+n;d[i]=d[i+1]=d[i+2]=v;}
  g.putImageData(id,0,0);for(let i=0;i<14;i++){g.strokeStyle='rgba(40,30,20,.3)';g.lineWidth=1;g.beginPath();let x=rng()*w,y=rng()*h;g.moveTo(x,y);for(let k=0;k<6;k++){x+=rr(-14,14);y+=rr(2,16);g.lineTo(x,y);}g.stroke();}});TILE.earth=3;
@@ -38,7 +41,7 @@ reseed(9013);TEX.conc=canvasTex(256,256,(g,w,h)=>{g.fillStyle=gray(225);g.fillRe
  for(let i=0;i<10;i++){const x=rng()*w;const gr=g.createLinearGradient(x,0,x,h);gr.addColorStop(0,'rgba(60,50,40,0)');gr.addColorStop(rr(.3,.6),`rgba(60,50,40,${rr(.06,.16)})`);gr.addColorStop(1,'rgba(60,50,40,0)');g.fillStyle=gr;g.fillRect(x,0,rr(3,10),h);}
  g.fillStyle='rgba(40,40,45,.6)';for(const [x,y] of [[8,8],[w-8,8],[8,h-8],[w-8,h-8],[w/2-8,h/2-8],[w/2+8,h/2+8]]){g.beginPath();g.arc(x,y,2.4,0,TAU);g.fill();}});TILE.conc=2;
 reseed(9014);TEX.iron=canvasTex(128,128,(g,w,h)=>{g.fillStyle=gray(150);g.fillRect(0,0,w,h);const id=g.getImageData(0,0,w,h),d=id.data;
- for(let y=0;y<h;y++)for(let x=0;x<w;x++){const v=158+fbm(x/10,y/10,3.1,3)*44-22+fbm(x/2.5,y/2.5,7,1)*12;const i=(y*w+x)*4;d[i]=d[i+1]=d[i+2]=v;}g.putImageData(id,0,0);rustStreaks(g,w,h,8,true);blotches(g,w,h,4,6,16,.2);});TILE.iron=1;
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const v=158+fbm(x/10,y/10,3.1,3)*44-22+fbm(x/2.5,y/2.5,7,1)*12;const i=(y*w+x)*4;d[i]=d[i+1]=d[i+2]=v;}g.putImageData(id,0,0);rustStreaks(g,w,h,26,true);blotches(g,w,h,12,6,20,.45);});TILE.iron=1;
 // timber (posts, beams, logs): vertical grain
 reseed(9018);TEX.wood=canvasTex(128,128,(g,w,h)=>{g.fillStyle=gray(190);g.fillRect(0,0,w,h);for(let x=0;x<w;x++){const v=190+Math.sin(x*.9+fbm(x/6,0,1,2)*9)*16+rr(-10,10);g.fillStyle=gray(v);g.fillRect(x,0,1,h);}
  for(let i=0;i<10;i++){g.fillStyle=`rgba(40,28,18,${rr(.08,.24)})`;g.fillRect(rng()*w,rng()*h,rr(1,2),rr(10,50));}for(let i=0;i<2;i++){const x=rng()*w,y=rng()*h;g.fillStyle='rgba(30,20,12,.45)';g.beginPath();g.ellipse(x,y,3,6,0,0,TAU);g.fill();}});TILE.wood=1;

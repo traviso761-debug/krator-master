@@ -21,7 +21,8 @@ let GSTAT={tris:0};
 function emit(mk,geo,lm,col,uvm){_mm.copy(CM);if(lm)_mm.multiply(lm);
  const b=GTARGET[mk]||(GTARGET[mk]={p:[],n:[],u:[],c:[],i:[]});
  const Pa=geo.attributes.position,Na=geo.attributes.normal,Ua=geo.attributes.uv,I=geo.index;const base=b.p.length/3;_nm.getNormalMatrix(_mm);
- const c=col===undefined||col===null?_WC:(typeof col==='number'?hc(col):col);const ts=1/(TILE[mk]||1);
+ let c=col===undefined||col===null?_WC:(typeof col==='number'?hc(col):col);const ts=1/(TILE[mk]||1);
+ if(WEATHER[mk]&&c!==_WC)c=weather(c,WEATHER[mk]);
  for(let i=0;i<Pa.count;i++){_v.fromBufferAttribute(Pa,i).applyMatrix4(_mm);_n.fromBufferAttribute(Na,i).applyMatrix3(_nm).normalize();
   b.p.push(_v.x,_v.y,_v.z);b.n.push(_n.x,_n.y,_n.z);b.c.push(c.r,c.g,c.b);
   if(uvm&&Ua){b.u.push(Ua.getX(i)*uvm.su,Ua.getY(i)*uvm.sv);}
