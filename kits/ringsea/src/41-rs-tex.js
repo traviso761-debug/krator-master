@@ -62,3 +62,17 @@ function rsCloth(g,W,H,base,seams,dir){g.fillStyle=base;g.fillRect(0,0,W,H);cons
  for(let i=1;i<n;i++){const t=i/n;g.beginPath();if(dir==='h'){g.moveTo(0,t*H);g.lineTo(W,t*H);}else{g.moveTo(t*W,0);g.lineTo(t*W,H);}g.stroke();}
  for(let i=0;i<2200;i++){g.fillStyle=`rgba(${h3(i,1,1)>.5?255:0},${h3(i,1,1)>.5?255:0},${h3(i,1,1)>.5?240:0},${.04*h3(i,2,2)})`;g.fillRect(h3(i,3,3)*W,h3(i,4,4)*H,3,3);}}
 function rsCentroid(P){let x=0,y=0;for(const p of P){x+=p[0];y+=p[1];}return[x/P.length,y/P.length];}
+// ---------------------------------------------------------------- culture symbols and liveries
+// Copied from core/sockets/80-cultures.js (SYMBOLS and the mkCulture packs, on main): the same marks and
+// colours the buildings carry, so a ship reads as the same faction as its port. Re-copy if the packs change.
+const RS_CULT={iziz:{field:'#e07a2a',edge:'#2f8f8a',band:'#f2a24a',ink:'#f3e2c0',ink2:'#e07a2a'},
+ voth:{field:'#24487a',edge:'#182e4d',band:'#3a5f8f',ink:'#d8cdb4'}};
+function rsSymSun(g,cx,cy,R,c1,c2){g.fillStyle=c1;g.beginPath();g.arc(cx,cy,R*.92,0,TAU);g.fill();g.fillStyle=c2;g.beginPath();g.arc(cx,cy,R*.54,0,TAU);g.fill();g.fillStyle=c1;g.beginPath();g.arc(cx,cy,R*.24,0,TAU);g.fill();
+ for(let k=0;k<12;k++){const a=k*TAU/12;g.fillStyle=c1;g.beginPath();g.moveTo(cx+Math.cos(a-.11)*R*.98,cy+Math.sin(a-.11)*R*.98);g.lineTo(cx+Math.cos(a)*R*1.18,cy+Math.sin(a)*R*1.18);g.lineTo(cx+Math.cos(a+.11)*R*.98,cy+Math.sin(a+.11)*R*.98);g.fill();}}
+function rsSymDiamond(g,cx,cy,R,c1){g.strokeStyle=c1;g.lineWidth=Math.max(2,R*.11);g.lineJoin='round';g.beginPath();g.moveTo(cx,cy-R);g.lineTo(cx+R*.75,cy);g.lineTo(cx,cy+R);g.lineTo(cx-R*.75,cy);g.closePath();g.stroke();g.fillStyle=c1;g.beginPath();g.arc(cx,cy,R*.16,0,TAU);g.fill();}
+// a faction sail: field, edge bands along the outline, the symbol at the centroid (sym: 'sun' | 'diamond')
+function rsFactionSail(g,W,H,P,C,sym,rk){rsCloth(g,W,H,C.field,8,'h');g.save();rsPolyPath(g,P);g.clip();g.strokeStyle=C.edge;g.lineWidth=W*.06;rsPolyPath(g,P);g.stroke();
+ g.strokeStyle=C.band;g.lineWidth=W*.018;rsPolyPath(g,rsInset(P,W*.05));g.stroke();const [cx,cy]=rsCentroid(P),R=Math.min(W,H)*(rk||.17);
+ if(sym==='sun')rsSymSun(g,cx,cy,R,C.ink,C.ink2);else rsSymDiamond(g,cx,cy,R,C.ink);g.restore();}
+// vertex colours are linear: pass a faction hex through this to see the hex as picked
+const rsLin=h=>new THREE.Color(h).convertSRGBToLinear();

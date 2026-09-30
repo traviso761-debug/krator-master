@@ -31,6 +31,13 @@ function rsExtra(){const R=[];const P=RS_PLACED;
  // 5. sails clear the cabins: no sail vertex inside a registered solid (castles, deckhouses)
  {const bad=[];for(const p of P){const S=p.G.userData.solids||[],Q=p.G.userData.sail||[];let n=0;for(const q of Q)for(const b of S){if(q[0]>b.min[0]+.05&&q[0]<b.max[0]-.05&&q[1]>b.min[1]+.05&&q[1]<b.max[1]-.05&&q[2]>b.min[2]+.05&&q[2]<b.max[2]-.05){n++;break;}}if(n)bad.push(p.D.name+' '+n+' sail pts');}
   R.push({name:'sails-clear-cabins',ok:!bad.length,detail:bad.length?bad.join(' | '):'no sail passes through a cabin'});}
+ // 5b. sails clear each other: no point of one sail within 0.3 m of another sail's (hashed on a 0.5 m grid)
+ {const bad=[];for(const p of P){const Q=p.G.userData.sail||[],grid=new Map(),key=(x,y,z)=>Math.floor(x/.5)+','+Math.floor(y/.5)+','+Math.floor(z/.5);let n=0;
+   for(const q of Q){const k=key(q[0],q[1],q[2]);(grid.get(k)||grid.set(k,[]).get(k)).push(q);}
+   for(const q of Q){let hit=false;for(let dx=-1;dx<=1&&!hit;dx++)for(let dy=-1;dy<=1&&!hit;dy++)for(let dz=-1;dz<=1&&!hit;dz++){const L=grid.get((Math.floor(q[0]/.5)+dx)+','+(Math.floor(q[1]/.5)+dy)+','+(Math.floor(q[2]/.5)+dz));
+     if(L)for(const r of L){if(r[3]!==q[3]&&(r[0]-q[0])**2+(r[1]-q[1])**2+(r[2]-q[2])**2<.09){hit=true;break;}}}if(hit)n++;}
+   if(n)bad.push(p.D.name+' '+n+' pts');}
+  R.push({name:'sails-clear-sails',ok:!bad.length,detail:bad.length?bad.join(' | '):'no two sails touch'});}
  // 6. project tags
  {const t=tagAudit();R.push({name:'tags-complete',ok:!t.bad,detail:t.bad?t.first.join(' | '):REG.length+' vessels tagged culture/type/wealth/propulsion/hull'});}
  return R;}
