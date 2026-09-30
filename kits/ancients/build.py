@@ -69,6 +69,7 @@ def srcpath(f, base=None):
 TARGET_OUT = {
     'kit': 'ancients-kit.html',            # the 32-type showcase
     'worn': 'worn.html',                   # every type intact and worn (decay 5)
+    'iziz-style': 'iziz-style.html',       # the Ancient Iziz Style: families, wreck states, Iziz variants
     'theodiga': 'theodiga.html',           # the dam arcology, on its own
     'spire': 'spire.html',                 # the recursive spire, on its own
     'canyon': 'canyon.html',               # the cross-canyon span works
