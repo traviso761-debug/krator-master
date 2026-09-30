@@ -8,7 +8,7 @@ Open items are lines starting `- [ ]`; `build.py` prints them on every build.
 - [ ] Front doors are picked from `door()` calls; buildings that build their entrances by other means fall back to the default (+z edge centre). `_api.doors()` shows which.
 - [ ] No collision or path data for the set: buildings publish their bounding box (`REG[i].bbox`) and nothing else.
 
-- [ ] Rust weathering is heavy by request (`WEATHER` in `src/22-mat.js`, rust scale in `src/20-tex.js`): metal reads dark under the sun; ease `weather()` if a settlement wants a brighter look.
+- [ ] Rust weathering is heavy by request (`WEATHER` in `src/22-mat.js`); metal is now matt (roughness ~.9, metalness ~.08) so dusk and moon light do not glaze it. Doors use unweathered `plain` paint so they stay readable against rusted walls.
 - [ ] Steel stairs and rails on the container stack use the timber stair/deck helpers, so they read as wood.
 - [ ] Compound slots fit buildings up to ~21.5 x 16 m only: `lg-stack`, `warehouse`, `chief` and `longhouse` are rejected (reported in `window._compound`).
 - [ ] Container and silo textures shimmer at long range (no mipmapped anisotropy tuning yet).

@@ -6,20 +6,20 @@ function mkMat(key,tex,o){o=o||{};const m=new THREE.MeshStandardMaterial({map:te
  transparent:!!o.transparent,opacity:o.opacity===undefined?1:o.opacity,alphaTest:o.alphaTest||0,depthWrite:o.depthWrite===undefined?true:o.depthWrite});
  if(o.bump&&tex){m.bumpMap=tex;m.bumpScale=o.bump;}if(o.emissive){m.emissive=new THREE.Color(o.emissive);m.emissiveIntensity=o.ei||1;}
  MAT[key]=m;return m;}
-mkMat('corr',TEX.corr,{rough:.62,metal:.45,bump:1.4});
-mkMat('corrH',TEX.corrH,{rough:.62,metal:.45,bump:1.4});
-mkMat('cont',TEX.cont,{rough:.6,metal:.4,bump:1.6});
-mkMat('sheet',TEX.sheet,{rough:.7,metal:.35,bump:1.2});
+mkMat('corr',TEX.corr,{rough:.9,metal:.08,bump:1.4});   /* rusted sheet is matt: rough and barely metallic, so dusk light and the moon do not glaze it */
+mkMat('corrH',TEX.corrH,{rough:.9,metal:.08,bump:1.4});
+mkMat('cont',TEX.cont,{rough:.9,metal:.08,bump:1.6});
+mkMat('sheet',TEX.sheet,{rough:.92,metal:.08,bump:1.2});
 mkMat('plank',TEX.plank,{rough:.92,bump:.35});
 mkMat('earth',TEX.earth,{rough:1,bump:.8});
 mkMat('conc',TEX.conc,{rough:.88,bump:.8});
-mkMat('iron',TEX.iron,{rough:.7,metal:.45,bump:.35});
+mkMat('iron',TEX.iron,{rough:.88,metal:.1,bump:.35});
 mkMat('wood',TEX.wood,{rough:.92,bump:.5});
-mkMat('steel',TEX.steel,{rough:.5,metal:.2,bump:.12});   /* metalness stays low: with no environment map a strongly metallic surface renders black */
+mkMat('steel',TEX.steel,{rough:.75,metal:.1,bump:.12});   /* metalness stays low: with no environment map a strongly metallic surface renders black */
 mkMat('bottle',TEX.bottle,{rough:.25,metal:.05,bump:.8});
 mkMat('rubber',null,{rough:.95});
 mkMat('cloth',TEX.weave,{rough:1,side:THREE.DoubleSide});
-mkMat('chain',TEX.chain,{rough:.6,metal:.6,side:THREE.DoubleSide,alphaTest:.4});
+mkMat('chain',TEX.chain,{rough:.85,metal:.15,side:THREE.DoubleSide,alphaTest:.4});
 mkMat('glass',null,{rough:.08,metal:.1,transparent:true,opacity:.78,depthWrite:false,emissive:0x061012,ei:.5});
 {const m=new THREE.MeshBasicMaterial({vertexColors:true});m.toneMapped=false;MAT.glow=m;}   // lamps, fire, lit windows
 mkMat('water',null,{rough:.1,metal:.35,transparent:true,opacity:.9,depthWrite:false});TILE.water=1;MAT.water.color.setRGB(.5,.58,.56);   // muted: harbour water should not out-shout the rust   // dock water: a plate just above the ground plane
