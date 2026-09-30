@@ -103,7 +103,8 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `8ae-wing.js` | 46 **big** |  |
 | `8af-drum.js` | 48 **big** | the skins (38) |
 | `8ag-blades.js` | 56 **big** |  |
-| `8ah-engines.js` | 23 | THE HARROW (97); THE STRIDER (165); THE BREECH (227); THE GYRE (276); THE PRESS (318) |
+| `8ah-engines.js` | 33 **big** | THE HARROW (131); THE STRIDER (230); THE BREECH (314); THE GYRE (382); THE PRESS (435) |
+| `8ai-engines2.js` | 19 | THE SLEEPER (32); THE CARAPACE (101); THE RETORTS (148); THE NEEDLE (202); THE RAM (248) |
 | `90-scene.js` | 7 | scene (1) |
 | `91-probe.js` | 5 | probe (window._api) (1) |
 | `92-camera.js` | 6 | camera control (1); DAY / NIGHT (2) |
@@ -125,7 +126,7 @@ Each target adds its own fragments to `src/` and builds one output.
 | `dalab` | `89z-rows.js`, `91z-views.js` | 3 |
 | `darco` | `89z-rows.js`, `91z-views.js` | 2 |
 | `drum` | `89z-rows.js`, `91z-views.js` | 6 |
-| `engines` | `89z-rows.js`, `91z-views.js` | 3 |
+| `engines` | `89z-rows.js`, `91z-views.js` | 4 |
 | `forest` | `89z-rows.js`, `91z-views.js` | 5 |
 | `hexahedron` | `89z-rows.js`, `91z-views.js` | 5 |
 | `hill` | `89z-rows.js`, `91z-views.js` | 13 |

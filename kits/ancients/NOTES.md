@@ -1025,3 +1025,34 @@ soil it has to match.
 Measured: 146 k scene triangles, 52 draw calls at the hero view. The heaviest
 machine is the Harrow at 58 k of 250 k. Error panel clean, all invariants pass.
 The furrow and the Breech's heap were reshot after the material change.
+
+## The Engines: ruined, and five more (2026-09-30)
+
+**Ruin pass on the first five.** It is gated on dd, so d 0 still builds them
+whole. The Harrow's boom is snapped: the outer boom hangs off the break, the
+bucket wheel lies on its side on the plain, the front-right track is thrown,
+the counterweight has fallen, and a stack lies sheared across deck 2. The
+Strider's rear-left leg has buckled. The body is built in its own frame, rolled
+and pitched so that corner sags, and the legs are placed from the tilted hips.
+The Breech is holed along its back onto a dark liner. Its upper verdigris band
+has burst, three rods are down, a cradle pylon has split, and the gantry tower
+has snapped. The Gyre has lost more than a quarter of its plates. Its inner
+ring has broken, with a fifth of it lying on the plain, one spoke is torn and
+one buttress is down. The Press has lost the west end of its lintel, with the
+cage, pulley and counterweight. The crosshead is jammed askew, the yoke has
+half fallen, and the conveyor's outer span has dropped. All five get breaches,
+debris, moss, vines and stains (`enBreach`, `enDebris`, `enOvergrow`).
+
+**Five more** in `src/8ai-engines2.js`:
+* the Sleeper: a 240 m kneeling automaton with a torn-off arm and trees on its shoulder
+* the Carapace: a 260 m disc on fourteen legs, listing on its folded side
+* the Retorts: spheres on leg frames and a flare stack; one sphere has fallen, rolled and split open
+* the Needle: a square spire on a finned drum, snapped at 430 m, its top lying on the plain
+* the Ram: a drill-nosed tracked hull stuck in a ridge, its tail torn open
+
+Seeds 10150-10194. The target now shows ten sites, with GROUND_C -1000 and 26
+views, including three eye-level plains and one from 1.9 km up.
+
+Measured: 326 k scene triangles. The heaviest machine is the Harrow at 69 k of
+250 k. There are 20 registered volumes, all occupied, and the error panel is
+clean. Every view was shot and looked at.
