@@ -6,7 +6,7 @@ The Ancients kit: ruined megastructures of the ancient civilisation, 33 structur
 
 Docs: `API.md`, `DESIGN.md`, `HANDOVER.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `README.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/ancients-kit.html`, `dist/arcbeam.html`, `dist/arcoindian.html`, `dist/arcoindian2.html`, `dist/arcube.html`, `dist/blades.html`, `dist/canyon.html`, `dist/crescent.html`, `dist/dalab.html`, `dist/darco.html`, `dist/drum.html`, `dist/forest.html`, `dist/hexahedron.html`, `dist/hill.html`, `dist/iziz-style.html`, `dist/launch.html`, `dist/ledge.html`, `dist/monolith.html`, `dist/plymouth.html`, `dist/ring.html`, `dist/skyi.html`, `dist/skyj.html`, `dist/skyk.html`, `dist/spire.html`, `dist/theodiga.html`, `dist/trigon.html`, `dist/veladiga.html`, `dist/wheel.html`, `dist/wing.html`, `dist/worn.html`
+Built output (never open it; edit `src/` and rebuild): `dist/ancients-kit.html`, `dist/arcbeam.html`, `dist/arcoindian.html`, `dist/arcoindian2.html`, `dist/arcube.html`, `dist/blades.html`, `dist/canyon.html`, `dist/crescent.html`, `dist/dalab.html`, `dist/darco.html`, `dist/drum.html`, `dist/engines.html`, `dist/forest.html`, `dist/hexahedron.html`, `dist/hill.html`, `dist/iziz-style.html`, `dist/launch.html`, `dist/ledge.html`, `dist/monolith.html`, `dist/plymouth.html`, `dist/ring.html`, `dist/skyi.html`, `dist/skyj.html`, `dist/skyk.html`, `dist/spire.html`, `dist/theodiga.html`, `dist/trigon.html`, `dist/veladiga.html`, `dist/wheel.html`, `dist/wing.html`, `dist/worn.html`
 
 Build: `cd kits/ancients && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -103,6 +103,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `8ae-wing.js` | 46 **big** |  |
 | `8af-drum.js` | 48 **big** | the skins (38) |
 | `8ag-blades.js` | 56 **big** |  |
+| `8ah-engines.js` | 23 | THE HARROW (97); THE STRIDER (165); THE BREECH (227); THE GYRE (276); THE PRESS (318) |
 | `90-scene.js` | 7 | scene (1) |
 | `91-probe.js` | 5 | probe (window._api) (1) |
 | `92-camera.js` | 6 | camera control (1); DAY / NIGHT (2) |
@@ -124,6 +125,7 @@ Each target adds its own fragments to `src/` and builds one output.
 | `dalab` | `89z-rows.js`, `91z-views.js` | 3 |
 | `darco` | `89z-rows.js`, `91z-views.js` | 2 |
 | `drum` | `89z-rows.js`, `91z-views.js` | 6 |
+| `engines` | `89z-rows.js`, `91z-views.js` | 3 |
 | `forest` | `89z-rows.js`, `91z-views.js` | 5 |
 | `hexahedron` | `89z-rows.js`, `91z-views.js` | 5 |
 | `hill` | `89z-rows.js`, `91z-views.js` | 13 |
