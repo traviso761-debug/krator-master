@@ -7,8 +7,8 @@ __pycache__/
 log_*.txt
 *.log
 
-# Screenshots from verify.py. Already-tracked shots stay tracked until the
-# planned history purge; new ones are not committed.
+# Screenshots from verify.py are never committed (they were purged from history
+# on 2026-09-30, 1.16 GB); keep them local or publish them elsewhere.
 shots/
 
 # Yuni's per-artifact copies (rebuilt by build.py on every run).
