@@ -50,8 +50,9 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `76-campus.js` | 8 |  |
 | `76-port-chapterhouse.js` | 17 |  |
 | `77-anc-guilds.js` | 20 | THE SALVAGERS' GUILD — the Reliquary (74); THE MERCENARY GUILD — the Watch (121) |
+| `77z-iziz-style.js` | 47 **big** | ANCIENT IZIZ STYLE (1) |
 | `78-factory-silo.js` | 2 |  |
-| `78-transplant.js` | 53 **big** |  |
+| `78-transplant.js` | 23 |  |
 | `79-government.js` | 4 |  |
 | `79-iziz-original.js` | 23 |  |
 | `80-aa-battery.js` | <1 |  |
@@ -74,7 +75,7 @@ Each target adds its own fragments to `src/` and builds one output.
 
 | Target | Fragments | KB |
 |---|---|---|
-| `city` | `84-city-geo.js`, `85-city-paint.js`, `86-bio-10-core-head.js`, `86-bio-20-core-kit.js`, `86-bio-30-core-foliage.js`, `86-bio-40-core-place.js`, `86-bio-45-init.js`, `86-bio-50-biome-hyperjungle-species.js`, `86-bio-55-biome-hyperjungle-trees.js`, `86-bio-60-biome-hyperjungle-floor.js`, `86-bio-65-biome-hyperjungle-dress.js`, `86-bio-70-biome-hyperjungle.js`, `87-city-layout.js`, `88-city-place.js`, `89z-rows.js`, `90a-city-world.js`, `90b-city-build.js`, `91z-views.js`, `93-city-ui.js` | 193 |
+| `city` | `84-city-geo.js`, `85-city-paint.js`, `86-bio-10-core-head.js`, `86-bio-20-core-kit.js`, `86-bio-30-core-foliage.js`, `86-bio-40-core-place.js`, `86-bio-45-init.js`, `86-bio-50-biome-hyperjungle-species.js`, `86-bio-55-biome-hyperjungle-trees.js`, `86-bio-60-biome-hyperjungle-floor.js`, `86-bio-65-biome-hyperjungle-dress.js`, `86-bio-70-biome-hyperjungle.js`, `87-city-layout.js`, `88-city-place.js`, `89z-rows.js`, `90a-city-world.js`, `90b-city-build.js`, `91z-views.js`, `93-city-ui.js` | 185 |
 | `vernacular` | `89z-rows.js`, `91z-views.js` | 3 |
 | `wA` | `89z-rows.js`, `91z-views.js` | 2 |
 | `wB` | `89z-rows.js`, `91z-views.js` | 1 |

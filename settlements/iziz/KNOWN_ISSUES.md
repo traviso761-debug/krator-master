@@ -98,12 +98,14 @@ saying what fixed it.
       podium (everything up to its top) is cut and the shaft lowered onto the
       plinth. Skyscraper A's leaning legs still reach past its lot over the
       neighbours (they are tall, not podium) — The Project's legs straddle shacks.
-- [ ] VENDOR DRIFT (deliberate, local patches): `52-sky-abc.js` (nested-transform
-      restore, `KXF=CX` -> `endGroupXF()`), `83-amphitheater.js` (struts meet the
-      rim wall's outer face instead of running through the top rows). Both are now
-      upstream in kits/ancients (2026-09-30; the sky-abc one as `endGroupXF();KXF=CX;`,
-      right under this build's stacked useGroupXF and the kit's plain one), so a
-      re-vendor no longer loses them.
+- [ ] Re-vendored from kits/ancients on 2026-09-30 (all 35 kit fragments identical, including the Ancient
+      Iziz Style module, 77z-iziz-style.js). The kit's later fixes change the city: smaller skyscraper plinths
+      (Skyscraper E 105 -> 48 m), decay-3 towers no longer cut to stumps, the QA passes on 24 builders. The
+      city now places 612 registered buildings (was 599) at 5.2 M tris. The page renders with a clean error
+      panel; `verify.py --assert` was not run after the re-vendor.
+- [ ] BIOME DRIFT (deliberate): targets/city/86-bio-* wrap the hyperjungle biome in closures so it cannot
+      clobber the city's globals (`var BIO`, `BIO.setScene`). Upstream (biomes/hyperjungle) has since added
+      fauna (58, `opt.fauna`); porting it means re-applying the closure wrap to the new fragments.
 - [ ] The toppled Skyscraper B keeps its own podium (its fallen body was laid by
       the kit to rest on it) on a 60 m lot; the fall is checked against boulevards,
       plazas, parks, courts, water, rock, precincts and standing buildings.
@@ -141,9 +143,5 @@ saying what fixed it.
 - [ ] `verify.py` is the Ancients copy; its `--assert` budgets come from this
       repo's `91-probe.js` (3 M tris / 400 calls; the city raises them to 16 M /
       900 in `93-city-ui.js`) but the wording still says "showcase". Fine for now.
-- [ ] `--vendor-check` reports DRIFT in 34-kitdefs/36-decor against the copy of
-      ../ancients staged in the cloud workspace: that copy is the OLDER one (the
-      vendored files carry the newer postW/VEG.tree notes from Travis's machine).
-      Run the check on Travis's machine, where ../ancients is current.
 - [ ] `build.py` has a SCOPED exemption (`86-bio-*`) for the IIFE-scoped biome
       fragments; their column-0 names are not checked for collisions.
