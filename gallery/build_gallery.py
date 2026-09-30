@@ -39,6 +39,8 @@ ENTRIES = [
     ('world', 'mavs-refuge', 'settlements/mavs-refuge/mavs-refuge.html', "Mav's Refuge",
      'A refuge in the hypertropic jungle on the lee shore of the Ring Sea.'),
 
+    ('kit', 'post-apoc-kit', 'kits/post-apoc/dist/post-apoc.html', 'Post-Apoc set',
+     'Reclaimed-and-recycled buildings (containers, silos, tanks, buses, tyre and bottle walls) with sockets for any culture\'s marks: switch between Generic, Iziz, Voth and Republic.'),
     ('kit', 'ancients-kit', 'kits/ancients/dist/ancients-kit.html', 'Ancients',
      'Ruined megastructures of the ancient civilisation: 33 structure types at every level of decay.'),
     ('kit', 'ancients-worn', 'kits/ancients/dist/worn.html', 'Ancients, worn',
