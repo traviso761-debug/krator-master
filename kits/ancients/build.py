@@ -68,6 +68,7 @@ def srcpath(f, base=None):
 # in every target that shows it and the two cannot drift.
 TARGET_OUT = {
     'kit': 'ancients-kit.html',            # the 32-type showcase
+    'worn': 'worn.html',                   # every type intact and worn (decay 5)
     'theodiga': 'theodiga.html',           # the dam arcology, on its own
     'spire': 'spire.html',                 # the recursive spire, on its own
     'canyon': 'canyon.html',               # the cross-canyon span works
@@ -103,7 +104,7 @@ DETERMINISTIC = {
     '30-kit.js', '32-surfaces.js', '34-kitdefs.js', '36-decor.js', '38-helpers2.js',
     '50-registry.js', '54-mat-concrete.js', '66-office-c.js', '68-mat-v5.js',
     '78-factory-silo.js', '80-aa-battery.js', '40-factory-extras.js', '90-scene.js',
-    '69-mat-salvage.js',
+    '69-mat-salvage.js', '69w-worn.js',
     '91-probe.js', '92-camera.js', '99-tail.html',
     '89z-rows.js', '91z-views.js',        # per-target site table and view list
 }

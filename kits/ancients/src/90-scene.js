@@ -48,17 +48,23 @@ const BUILDERS=Object.assign({},typeof EXTRA_BUILDERS!=='undefined'?EXTRA_BUILDE
 // one type gets a variant nobody else has: The Project is skyA `ds:[0,1,2,4]`,
 // so no other builder is ever called with 4. `j` is its x, the way `t` is the
 // toppled x.
-const SITEX=(R,d)=>d===0?-R.s:d===1?R.s:d===2?R.t:d===4?R.j:0;
+//
+// Level 5 is WORN (69w-worn.js): the builder runs at decay 0, whole, and
+// wornPass() weathers it. It stands at `w`, or at the ruined slot when a row
+// has no `w`, so a target with DECAYS [0,5] shows intact west and worn east.
+const SITEX=(R,d)=>d===0?-R.s:d===1?R.s:d===2?R.t:d===4?R.j:d===5?(R.w!=null?R.w:R.s):0;
 for(const k in ROWS){const R=ROWS[k];
  for(const d of (R.ds||(typeof DECAYS!=='undefined'?DECAYS:[0,1,2]))){if(d===2&&!R.t)continue;if(d===4&&R.j==null)continue;
- TSTAT.cur=k+'/'+d;const _r0=REG.length,_x=SITEX(R,d);
- HOLES=(d>=3)?.55:1;             // rehabilitated: the fabric is only part-eaten
+ TSTAT.cur=k+'/'+d;const _r0=REG.length,_x=SITEX(R,d),_l0=d===5?wornLens():null;
+ HOLES=(d>=3&&d!==5)?.55:1;      // rehabilitated: the fabric is only part-eaten
  let _G=null;
- try{_G=BUILDERS[k](scene,_x,R.z,d);}catch(e){reportErr(k+' d='+d+' '+e.stack);}
+ try{_G=BUILDERS[k](scene,_x,R.z,d===5?0:d);}catch(e){reportErr(k+' d='+d+' '+e.stack);}
  HOLES=1;
+ if(d===5&&_G){KOFF=[_x,0,R.z];try{wornPass(_G,_l0,WORN_PLANTS[k]||0);}catch(e){reportErr(k+' worn '+e.stack);}KOFF=[0,0,0];
+  for(let i=_r0;i<REG.length;i++)REG[i].name=REG[i].name.indexOf('(intact)')>=0?REG[i].name.replace('(intact)','(worn)'):REG[i].name+' (worn)';}
  // The repaired dressing runs on the group the builder returned, so it reaches
  // every type without a builder knowing level 3 exists.
- if(d>=3&&_G){KOFF=[_x,0,R.z];try{repairPass(_G,d);}catch(e){reportErr(k+' repair '+e.stack);}KOFF=[0,0,0];}
+ if(d>=3&&d!==5&&_G){KOFF=[_x,0,R.z];try{repairPass(_G,d);}catch(e){reportErr(k+' repair '+e.stack);}KOFF=[0,0,0];}
  for(let i=_r0;i<REG.length;i++)REG[i].type=k;           // so --assert can name the owner of an empty volume
  TSTAT.cur=null;}}
 window._registered=REG.length;

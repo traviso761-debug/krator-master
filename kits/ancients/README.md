@@ -4,6 +4,11 @@ A procedural architectural kit for the ruined ancient civilisation of Krator —
 33 structure types, each a builder that takes a site and a decay level and emits
 geometry into a Three.js r128 scene. Cyclopean · Modernist · Organic.
 
+Decay levels: 0 intact, 1 ruined, 2 toppled, 3 repaired, 4 rehabilitated and
+still standing (the Projects), 5 **worn** (whole, weathered: `src/69w-worn.js`,
+shown by the `worn` target). Any host can show a worn building by running a
+builder at decay 0 and then `wornPass(G, wornLens(), plants)`.
+
 ```
 python build.py                                     # src/ -> dist/ancients-kit.html
 python jscheck.py .syntax-kit.js                    # does it PARSE? ~5 s

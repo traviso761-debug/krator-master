@@ -1,5 +1,5 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>The Wheel — the ring city on eight towers</title>
+<title>Krator Ancients — worn</title>
 <style>
 html,body{margin:0;height:100%;overflow:hidden;background:#3a2a24;font:13px/1.4 system-ui,sans-serif;color:#eee}
 canvas{display:block}
@@ -19764,29 +19764,32 @@ function skCampanile(Q,dx,from,to,jag){const cr=y=>5.5-.9*clamp(y/94,0,1);const 
   kput(dx>0?'skNeedleR':'skNeedle',[0,135,0],null,[1.1,22,1.1],null);
   kput('finial',[0,147.2,0],null,[1.5,2.4,1.5],null);
   if(dx===0)kput('emberB',[0,147.2,0],null,[5,5,5],null);}}
-// TARGET: wheel — the Wheel, a raised ring of parkland on eight towers, intact
-// and ruined.
-//
-// A band of forested parkland and buildings 2.9 km across, carried 300 m up on
-// eight inhabited towers, with a 1.1 km central tower on the axis and eight
-// parkland spokes running from it to the rim towers, the whole pierced with
-// light wells over a lower city. Its own target because it is 3.7 km across
-// with its lower city and a 700 k-triangle megastructure on its own.
-const TITLE='The Wheel — the ring city on eight towers';
-const GROUND_C=0;
-const DECAYS=[0,1];
-// Each site is the wheel (outer radius 1 450 m) inside its lower city (radius
-// 1 850 m); the ruin throws its broken tower another 450 m out past the rim.
-// s = 3 800 puts 7 600 m between the axes: 3 900 m of open plain between the two
-// cities, and every preset below looks away from the other site or has 7 km of
-// haze between it and the other one.
-const ROWS={
- wheel:{z:0,s:3800,r:2100},
-};
-// A green belt round each city; the ruin's plain has gone wild further out.
-const RUINS=[[-ROWS.wheel.s,0,ROWS.wheel.r*.95],
-             [ROWS.wheel.s,0,ROWS.wheel.r*1.12]];
-const EXTRA_BUILDERS={wheel:buildWheel};
+// TARGET: worn — every type in the kit twice: intact (x=-s) and WORN (x=+s, decay 5,
+// 69w-worn.js). Worn is the intact structure, whole, weathered: rust bleeding
+// from seams and fasteners, streaks under every ledge and sill, flush rusted
+// plates where the white skin has gone, and a few tufts on the tall towers only.
+// The row table is the kit target's, with the per-row `ds` overrides dropped so
+// every row shows exactly DECAYS; there are no ruins, so RUINS is empty.
+// Keep ROWS in step with targets/kit/89z-rows.js when a type is added there.
+const TITLE='Krator Ancients — worn';
+const DECAYS=[0,5];
+const GROUND_C=11000;        // z centre of the ground plane and its paint
+// skyA, skyD and skyH carry a fourth variant the other types do not: `ds`
+// overrides the target's DECAYS for that row alone and `j` is its x, the way
+// `t` is the toppled x. Decay 4 is THE PROJECTS — Skyscraper A, the Monolith
+// and the Warden rehabilitated and STILL STANDING, the buildings a later people
+// reoccupied whole rather than camped in the stump of. Each stands west of its
+// own intact tower, so every existing three-variant row shot is unchanged.
+const ROWS={skyA:{z:0,s:300,r:280,t:1200,j:-1150},skyB:{z:800,s:300,r:260,t:1200},skyC:{z:1600,s:300,r:280,t:1200},mega:{z:2900,s:700,r:520},fac:{z:4000,s:330,r:330},port:{z:5400,s:540,r:420},
+ gov:{z:6500,s:270,r:190},lib:{z:7100,s:220,r:130},bunk:{z:7600,s:220,r:130},off:{z:8100,s:265,r:260},apt:{z:8600,s:520,r:300},amph:{z:9200,s:220,r:130},
+ fuel:{z:9600,s:150,r:80},radar:{z:9900,s:150,r:70},dish:{z:10200,s:150,r:80},house:{z:10500,s:120,r:120},lab:{z:10900,s:420,r:200},house2:{z:11400,s:120,r:120},skyD:{z:12100,s:300,r:280,t:1200,j:-1150},skyE:{z:12900,s:300,r:280,t:1200},skyF:{z:13700,s:300,r:280,t:1200},arc:{z:14900,s:800,r:520},robo:{z:15900,s:330,r:280},campus:{z:17100,s:600,r:420},skyG:{z:18100,s:320,r:300,t:1300},skyH:{z:18900,s:300,r:280,t:1200,j:-1150},dc:{z:19700,s:400,r:330},police:{z:20300,s:180,r:110},hosp:{z:20800,s:260,r:170},hotel:{z:21400,s:260,r:170},cult:{z:22500,s:400,r:330},
+ perch:{z:24200,s:430,r:330},
+ flat:{z:25400,s:300,r:200},
+ // Skyscrapers I, J and K (added 2026-09-29): each built in its own dev target
+ // (skyi/skyj/skyk) first, then given a row here like A-H.
+ skyI:{z:26400,s:300,r:280,t:1200},skyJ:{z:27200,s:300,r:280,t:1200},skyK:{z:28000,s:300,r:280,t:1200}};
+const RUINS=[];
+const EXTRA_BUILDERS={cult:buildCultural,perch:buildPerch,flat:buildFlatiron,skyI:buildSkyI,skyJ:buildSkyJ,skyK:buildSkyK};
 // ================================================================= THE WING — a monument that is also a city
 // First of the memorial group. One figure against the sky: a coffered DRUM held
 // in a yoke on ONE pedestal, and two wings of stacked horizontal slabs lifting
@@ -22012,86 +22015,90 @@ window._api={
  setView:(cx,cy,cz,tx,ty,tz)=>setView(cx,cy,cz,tx,ty,tz),
  views:()=>Object.keys(VIEWS),
 };
-// Presets, DERIVED. 89z-rows.js loads before 90-scene.js and this file after it,
-// so both builders have run and left their dimensions in WH_SITE. WHDEF is the
-// fallback only if a builder threw.
-//
-// Builder frame: the wheel is centred on the site; x east, z south, angles
-// measured from +x toward +z. The eight rim towers stand at 22.5 + 45k degrees
-// on radius RC; tower k+1 is at TA[k]. The sun is in the west-south-west, so
-// the lit faces look toward -x/+z and every hero shot stands on that side.
-// The camera is 50 degrees vertical: a frame is 0.933 x the sight line tall and
-// 1.49 x wide, so the whole 2.9 km wheel wants ~2 km of stand-off across it.
-const WHDEF={x:0,z:0,d:0,dd:0,RC:1260,R0:1100,R1:1420,YD:300,YS:262,YR:205,RH:330,SW:38,RG:1850,HT:556,HC:1000,HSP:1115,
- YBRK:395,YCC:880,CS:2,BT:3,FS:1,TA:[0,1,2,3,4,5,6,7].map(k=>(22.5+45*k)*Math.PI/180),wells:[],spokes:[],towers:[],fall:{}};
-const WHA=Object.assign({},WHDEF,{x:-3800},WH_SITE[0]||{});
-const WHB=Object.assign({},WHDEF,{x:3800},WH_SITE[1]||{});
-const WHW=(S,x,y,z)=>[S.x+x,y,S.z+z];
-const WHP=(S,r,a,y)=>WHW(S,r*Math.cos(a),y,r*Math.sin(a));
-// the well nearest a bearing, on the band
-const WHWELL=(S,a,type)=>{let best=null,bd=1e9;for(const W of S.wells){if(type!=null&&W.type!==type)continue;
- let q=Math.abs(((W.ac-a)%(2*Math.PI)+3*Math.PI)%(2*Math.PI)-Math.PI);if(q<bd){bd=q;best=W;}}
- return best||{x:1200*Math.cos(a),z:1200*Math.sin(a),r:30,rc:1200,ac:a,type:0};};
-// THE HERO: three-quarter from the south-west and above, 2.9 km from the axis:
-// the near rim with its towers and terraces, the spokes running in to the
-// central tower, the far rim beyond, the lower city under all of it.
-const WHHERO=S=>WHW(S,-1900,1180,2050).concat(WHW(S,60,330,-80));
+// A row shot stands on the row's centre line, `dist` down +z. Since decay 3 was
+// folded in, that centre line is where every rehabilitated building stands, so a
+// camera deeper than the row spacing stood inside the NEXT row's building: the
+// Skyscraper A shot was a wall of rusted drums 100 m off the lens. The distance
+// is capped to stop 90 m short of the next row, which leaves it behind the camera.
+const ROWV=(k,dist,h,ty,dx)=>{const R=ROWS[k];
+ const nz=Math.min(...Object.values(ROWS).map(o=>o.z).filter(z=>z>R.z),Infinity);
+ const d=Math.min(dist,nz-R.z-90);
+ return[dx||0,h,R.z+d,dx||0,ty,R.z];};
 const VIEWS={
- 'The Wheel':              WHHERO(WHA),
- // THE FIGURE: straight down from 4 km. The ring, its eight knuckles and
- // towers, the spokes, the hub, the wells, the city's rings and avenues.
- 'The wheel from above':   WHW(WHA,0,4100,40).concat(WHW(WHA,0,0,0)),
- // ALONG A SPOKE: on the promenade of spoke 3, near the band, walking in: the
- // trees and pavilions, the wells, the central tower closing the axis.
- 'Along a spoke':          (function(S){const k=2,a=S.TA[k],sp=(S.spokes[k]||{sB:1070}).sB;
-                            const t=-34;const e=[Math.cos(a),Math.sin(a)],n=[-Math.sin(a),Math.cos(a)];
-                            const s0=sp-60;return WHW(S,s0*e[0]+t*n[0],S.YD+1.7,s0*e[1]+t*n[1]).concat(WHW(S,0,S.YD+150,0));})(WHA),
- // ON THE BAND: in the parkland of sector 2-3, looking along the ring toward
- // rim tower 3 across meadow and woods, the terraces on the left.
- 'In the parkland':        (function(S){const a=S.TA[1]+30*Math.PI/180,r=S.RC-40;
-                            return WHP(S,r,a,S.YD+14).concat(WHP(S,S.RC+20,S.TA[1]+4*Math.PI/180,S.YD+60));})(WHA),
- // A LIGHT WELL: from over its rim, looking down the shaft to the garden on
- // the ground 300 m below.
- 'A light well':           (function(S){const W=WHWELL(S,S.TA[2]+22*Math.PI/180,0);
-                            const a=Math.atan2(W.z,W.x),rr=Math.hypot(W.x,W.z);
-                            return WHP(S,rr+W.r*.55,a,S.YD+34).concat(WHP(S,rr-W.r*.25,a,0));})(WHA),
- // THE LOWER CITY UNDER THE PLATE: in the street under the band, looking up
- // a well — the soffit's lamps, the lit shaft, trees against the sky.
- // (standing on the ring road under the middle of the band, 260 m along it
- // from the well, so the street and its buildings are in the frame too)
- 'Up through a well':      (function(S){let W=null,bd=1e9;for(const V of S.wells)if(V.sec===2&&Math.abs(V.rc-S.RC)<bd){bd=Math.abs(V.rc-S.RC);W=V;}
-                            W=W||WHWELL(S,S.TA[2]+22*Math.PI/180,0);
-                            return WHP(S,S.RC,W.ac-260/S.RC,2).concat(WHP(S,W.rc,W.ac,S.YD-20));})(WHA),
- // UNDER THE BAND: the undercity at street level between two towers — the
- // dark plate overhead, lit windows, the pools of daylight from the wells.
- 'The undercity':          (function(S){const a=(S.TA[2]+S.TA[3])/2;
-                            return WHP(S,S.RC,a-9*Math.PI/180,14).concat(WHP(S,S.RC-20,a+6*Math.PI/180,110));})(WHA),
- // A RIM TOWER, close: tower 3 from outside the ring, the band running
- // through it, its fin and the terraces either side.
- 'A rim tower':            (function(S){const a=S.TA[2];
-                            return WHP(S,S.RC+820,a-9*Math.PI/180,420).concat(WHP(S,S.RC,a,330));})(WHA),
- // THE CENTRAL TOWER from the hub: its lobes and ribs, the sky ring, the halo.
- 'The central tower':      WHW(WHA,-690,390,760).concat(WHW(WHA,0,640,0)),
- // THE RING AT NIGHT: the hero after dark.
- 'The wheel at night':     WHHERO(WHA).concat([1]),
- // the ruin from the same side, further back, so the fallen sector and the
- // broken tower's top on the plain are in the frame
- 'Ruined':                 WHW(WHB,-2350,1300,2650).concat(WHW(WHB,-150,200,120)),
- 'Ruin from above':        WHW(WHB,0,4100,40).concat(WHW(WHB,0,0,0)),
- // THE FALLEN SECTOR: the torn stubs at towers 3 and 4, the five slabs lying
- // across the buried city, the debris field.
- 'The fallen sector':      (function(S){const am=(S.TA[2]+S.TA[3])/2;
-                            return WHP(S,S.RC+1250,am+.30,520).concat(WHP(S,S.RC,am,120));})(WHB),
- // THE BROKEN TOWER: rim tower 4's stump and its top in two pieces on the
- // plain outside the rim, fin in the air.
- 'The broken tower':       (function(S){const a=S.TA[3];
-                            return WHP(S,S.RC+900,a+.42,330).concat(WHP(S,S.RC+220,a,160));})(WHB),
- // THE FALLEN SPOKE: spoke 2's stubs at the hub and the band, its middle on
- // the avenue under it.
- 'The fallen spoke':       (function(S){const a=S.TA[1];
-                            return WHP(S,1250,a+.62,480).concat(WHP(S,700,a,120));})(WHB),
- // THE BROKEN CROWN: the central tower's torn top, the spire on the hub.
- 'The broken crown':       WHW(WHB,-560,990,640).concat(WHW(WHB,0,760,0)),
+ 'Overview':[0,1400,ROWS.lab.z+2600,0,150,5000],
+ 'Skyscraper A':ROWV('skyA',900,300,210),'Skyscraper B':ROWV('skyB',800,260,160),'Skyscraper C':ROWV('skyC',900,300,200),
+ // THE PROJECT. A seventh element on a preset means "night" — see setNight in
+ // src/92-camera.js. Day first, because you have to see the patched fabric
+ // before the fires mean anything.
+ 'The Project':[ROWS.skyA.j,300,ROWS.skyA.z+780,ROWS.skyA.j,210,ROWS.skyA.z],
+ 'The Project at night':[ROWS.skyA.j,300,ROWS.skyA.z+780,ROWS.skyA.j,210,ROWS.skyA.z,1],
+ 'The Project close':[ROWS.skyA.j+150,120,ROWS.skyA.z+260,ROWS.skyA.j,150,ROWS.skyA.z,1],
+ 'The Project foot':[ROWS.skyA.j+130,14,ROWS.skyA.z+150,ROWS.skyA.j,70,ROWS.skyA.z,1],
+ // PROJECTS D AND H, the Monolith and the Warden reoccupied whole, lit by fire.
+ // Same stations as The Project, off each row's own j.
+ 'Project D':[ROWS.skyD.j,300,ROWS.skyD.z+780,ROWS.skyD.j,180,ROWS.skyD.z],
+ 'Project D at night':[ROWS.skyD.j,300,ROWS.skyD.z+780,ROWS.skyD.j,180,ROWS.skyD.z,1],
+ 'Project D close':[ROWS.skyD.j+150,120,ROWS.skyD.z+260,ROWS.skyD.j,150,ROWS.skyD.z,1],
+ 'Project H':[ROWS.skyH.j,300,ROWS.skyH.z+780,ROWS.skyH.j,170,ROWS.skyH.z],
+ 'Project H at night':[ROWS.skyH.j,300,ROWS.skyH.z+780,ROWS.skyH.j,170,ROWS.skyH.z,1],
+ 'Project H close':[ROWS.skyH.j+150,120,ROWS.skyH.z+260,ROWS.skyH.j,150,ROWS.skyH.z,1],
+ // REHABILITATED (decay 3), folded in from the retired `repaired` target. It
+ // stands at x=0, the middle of each row, so the row shots above already frame
+ // it; these are the close stations that used to be that target's own.
+ 'Rehabilitated A':[0-150,140,ROWS.skyA.z+420,0,160,ROWS.skyA.z],
+ 'Rehabilitated D':[0-150,140,ROWS.skyD.z+420,0,160,ROWS.skyD.z],
+ 'Rehabilitated factory':[0+330,8,ROWS.fac.z+120,0+110,60,ROWS.fac.z-60],
+ 'Rehabilitated government':[0-140,5,ROWS.gov.z+240,0,40,ROWS.gov.z],
+ 'Rehabilitated apartments':[0+170,150,ROWS.apt.z+480,0+170,25,ROWS.apt.z],
+ 'Rehabilitated lab':[0+110,30,ROWS.lab.z+170,0,45,ROWS.lab.z],
+ 'Rehabilitated data center':[0+260,150,ROWS.dc.z+420,0,30,ROWS.dc.z],
+ 'Rehabilitated hotel':[0+120,60,ROWS.hotel.z+260,0,30,ROWS.hotel.z],
+ 'Toppled A':[ROWS.skyA.t-200,120,ROWS.skyA.z+420,ROWS.skyA.t+120,40,ROWS.skyA.z],'Toppled B':[ROWS.skyB.t-200,110,ROWS.skyB.z+380,ROWS.skyB.t+100,30,ROWS.skyB.z],'Toppled C':[ROWS.skyC.t-200,120,ROWS.skyC.z+420,ROWS.skyC.t+120,40,ROWS.skyC.z],
+ 'Megastructure':ROWV('mega',1300,330,140),'Megastructure foot':[ROWS.mega.s-320,4,ROWS.mega.z+330,ROWS.mega.s+40,120,ROWS.mega.z],
+ 'Factory':ROWV('fac',760,280,40),'Factory silo':[ROWS.fac.s+330,8,ROWS.fac.z+120,ROWS.fac.s+110,60,ROWS.fac.z-60],
+ 'Starport':ROWV('port',1250,560,20),'Government':ROWV('gov',480,170,40),'Government portico':[-ROWS.gov.s-140,5,ROWS.gov.z+240,-ROWS.gov.s,40,ROWS.gov.z],'Government ruin':[ROWS.gov.s-140,5,ROWS.gov.z+240,ROWS.gov.s,40,ROWS.gov.z],
+ 'Library':ROWV('lib',330,100,25),'Bunker':ROWV('bunk',330,110,15),'Bunker battery':[ROWS.bunk.s+60,30,ROWS.bunk.z+120,ROWS.bunk.s,40,ROWS.bunk.z],
+ 'Offices':ROWV('off',430,110,25),'Apartments intact':[-ROWS.apt.s+170,150,ROWS.apt.z+480,-ROWS.apt.s+170,25,ROWS.apt.z],'Apartments ruined':[ROWS.apt.s+170,150,ROWS.apt.z+480,ROWS.apt.s+170,25,ROWS.apt.z],'Apartments close':[-ROWS.apt.s+60,8,ROWS.apt.z+200,-ROWS.apt.s+150,30,ROWS.apt.z],
+ 'Amphitheater':[0,220,ROWS.amph.z-330,0,10,ROWS.amph.z],'Amphitheater stage':[-ROWS.amph.s+40,30,ROWS.amph.z-140,-ROWS.amph.s,12,ROWS.amph.z],
+ 'Fuel station':[-ROWS.fuel.s+90,26,ROWS.fuel.z+110,-ROWS.fuel.s,8,ROWS.fuel.z],'Fuel station ruin':[ROWS.fuel.s+90,26,ROWS.fuel.z+110,ROWS.fuel.s,8,ROWS.fuel.z],
+ 'Radar tower':[-ROWS.radar.s+100,40,ROWS.radar.z+150,-ROWS.radar.s,40,ROWS.radar.z],'Radar tower ruin':[ROWS.radar.s+100,40,ROWS.radar.z+150,ROWS.radar.s,30,ROWS.radar.z],
+ 'Satellite dish':[-ROWS.dish.s+120,50,ROWS.dish.z+150,-ROWS.dish.s,35,ROWS.dish.z],'Satellite dish ruin':[ROWS.dish.s+120,50,ROWS.dish.z+150,ROWS.dish.s,30,ROWS.dish.z],
+ 'Houses intact':[-ROWS.house.s+70,22,ROWS.house.z+120,-ROWS.house.s+70,6,ROWS.house.z],'Houses ruined':[ROWS.house.s+70,22,ROWS.house.z+120,ROWS.house.s+70,6,ROWS.house.z],'Lab':ROWV('lab',820,190,55),
+ // The Laboratory sites sit at x=+/-420, wider apart than most rows, so the
+ // 520 m row shot used to push both of them off the edges of the frame and
+ // show the empty middle. Three views: the pair, then each one close.
+ 'Lab intact':[-ROWS.lab.s+110,30,ROWS.lab.z+170,-ROWS.lab.s,45,ROWS.lab.z],
+ 'Lab ruined':[ROWS.lab.s+110,30,ROWS.lab.z+170,ROWS.lab.s,45,ROWS.lab.z],
+ 'Houses DEF intact':[-ROWS.house2.s+65,22,ROWS.house2.z+120,-ROWS.house2.s+65,6,ROWS.house2.z],'Houses DEF ruined':[ROWS.house2.s+65,22,ROWS.house2.z+120,ROWS.house2.s+65,6,ROWS.house2.z],
+ 'Skyscraper D':ROWV('skyD',900,300,180),'Skyscraper E':ROWV('skyE',900,300,190),'Skyscraper F':ROWV('skyF',900,300,160),
+ 'Toppled D':[ROWS.skyD.t-200,120,ROWS.skyD.z+420,ROWS.skyD.t+120,40,ROWS.skyD.z],'Toppled E':[ROWS.skyE.t-200,120,ROWS.skyE.z+420,ROWS.skyE.t+120,40,ROWS.skyE.z],'Toppled F':[ROWS.skyF.t-200,120,ROWS.skyF.z+420,ROWS.skyF.t+120,40,ROWS.skyF.z],
+ 'The Gate':[0,300,ROWS.arc.z+1500,0,150,ROWS.arc.z],'The Gate ruin':[ROWS.arc.s-500,20,ROWS.arc.z+560,ROWS.arc.s,160,ROWS.arc.z],
+ 'Robotics factory':ROWV('robo',600,220,30),'Robotics yard':[-ROWS.robo.s-60,6,ROWS.robo.z+230,-ROWS.robo.s+60,25,ROWS.robo.z-30],
+ 'Campus':[0,420,ROWS.campus.z+900,0,40,ROWS.campus.z],'Campus intact':[-ROWS.campus.s+40,90,ROWS.campus.z+560,-ROWS.campus.s-40,40,ROWS.campus.z+60],'Campus ruined':[ROWS.campus.s+40,90,ROWS.campus.z+560,ROWS.campus.s-40,40,ROWS.campus.z+60],'Campus lawn':[-ROWS.campus.s-60,14,ROWS.campus.z+400,-ROWS.campus.s-60,30,ROWS.campus.z+200],'Campus courtyard':[-ROWS.campus.s-70,60,ROWS.campus.z+250,-ROWS.campus.s-70,15,ROWS.campus.z+170],
+ 'Skyscraper G':ROWV('skyG',800,200,110),'Skyscraper H':ROWV('skyH',900,300,170),'Toppled G':[ROWS.skyG.t-250,120,ROWS.skyG.z+450,ROWS.skyG.t+60,40,ROWS.skyG.z],'Toppled H':[ROWS.skyH.t-200,120,ROWS.skyH.z+420,ROWS.skyH.t+120,40,ROWS.skyH.z],
+ 'Data center':[-ROWS.dc.s+260,150,ROWS.dc.z+420,-ROWS.dc.s,30,ROWS.dc.z],'Data center ruin':[ROWS.dc.s+260,150,ROWS.dc.z+420,ROWS.dc.s,30,ROWS.dc.z],'Data center close':[-ROWS.dc.s+60,12,ROWS.dc.z+220,-ROWS.dc.s,40,ROWS.dc.z],
+ 'Police station':[-ROWS.police.s+120,60,ROWS.police.z+170,-ROWS.police.s,15,ROWS.police.z],'Police ruin':[ROWS.police.s+120,60,ROWS.police.z+170,ROWS.police.s,15,ROWS.police.z],
+ 'Hospital':[-ROWS.hosp.s+160,80,ROWS.hosp.z+260,-ROWS.hosp.s,35,ROWS.hosp.z],'Hospital ruin':[ROWS.hosp.s+160,80,ROWS.hosp.z+260,ROWS.hosp.s,35,ROWS.hosp.z],
+ 'Hotel':[-ROWS.hotel.s+120,60,ROWS.hotel.z+260,-ROWS.hotel.s,30,ROWS.hotel.z],'Hotel ruin':[ROWS.hotel.s+120,60,ROWS.hotel.z+260,ROWS.hotel.s,30,ROWS.hotel.z],
+ // Both presets looked at the CONVEX face, which is a plain curtain wall at a
+ // constant radius. Everything this type is about — the stepped terraces, and
+ // the planters that used to hang off them in mid-air — is on the concave side,
+ // and nothing had ever been pointed at it.
+ 'Hotel court':[-ROWS.hotel.s,95,ROWS.hotel.z-190,-ROWS.hotel.s,34,ROWS.hotel.z+10],
+ 'Hotel terraces':[-ROWS.hotel.s+30,52,ROWS.hotel.z-60,-ROWS.hotel.s+10,30,ROWS.hotel.z+18],
+ 'Hotel ruin court':[ROWS.hotel.s,95,ROWS.hotel.z-190,ROWS.hotel.s,34,ROWS.hotel.z+10],
+ 'Cultural centre':[-ROWS.cult.s,240,ROWS.cult.z+620,-ROWS.cult.s,40,ROWS.cult.z],
+ 'Cultural centre ruin':[ROWS.cult.s,240,ROWS.cult.z+620,ROWS.cult.s,40,ROWS.cult.z],
+ 'The Flatiron':[-ROWS.flat.s,180,ROWS.flat.z+620,-ROWS.flat.s,140,ROWS.flat.z],
+ 'Flatiron prow':[-ROWS.flat.s+130,30,ROWS.flat.z+200,-ROWS.flat.s,60,ROWS.flat.z],
+ 'Flatiron ruin':[ROWS.flat.s,180,ROWS.flat.z+620,ROWS.flat.s,140,ROWS.flat.z],
+ 'The Perch':[-ROWS.perch.s,300,ROWS.perch.z+900,-ROWS.perch.s,200,ROWS.perch.z],
+ 'Perch podium':[-ROWS.perch.s+250,120,ROWS.perch.z+320,-ROWS.perch.s,95,ROWS.perch.z],
+ 'Wheel core':[-ROWS.cult.s+130,90,ROWS.cult.z+230,-ROWS.cult.s,50,ROWS.cult.z],
+ 'Skyscraper I':ROWV('skyI',900,300,210),'Skyscraper J':ROWV('skyJ',900,300,200),'Skyscraper K':ROWV('skyK',900,300,200),
+ 'Toppled I':[ROWS.skyI.t-200,120,ROWS.skyI.z+420,ROWS.skyI.t+120,40,ROWS.skyI.z],'Toppled J':[ROWS.skyJ.t-200,120,ROWS.skyJ.z+420,ROWS.skyJ.t+120,40,ROWS.skyJ.z],'Toppled K':[ROWS.skyK.t-200,120,ROWS.skyK.z+420,ROWS.skyK.t+120,40,ROWS.skyK.z],
+ // Theodiga's views moved to targets/theodiga/91z-views.js with the site.
+ 'Office C':[-ROWS.off.s+330,20,ROWS.off.z+120,-ROWS.off.s+330,10,ROWS.off.z-20],
 };
 // ---------------------------------------------------------------- camera control
 // ---------------------------------------------------------------- DAY / NIGHT
