@@ -17,24 +17,25 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 |---|---|---|
 | `00-head.html` | 3 |  |
 | `10-core.js` | 2 | error panel (1); rng + noise (7) |
-| `20-tex.js` | 8 | procedural textures (1) |
-| `22-mat.js` | 4 | materials (1); the palette (culture-neutral) (37) |
-| `30-geo.js` | 14 | geometry engine (1) |
-| `32-cores.js` | 9 | the reclaimed large objects (1) |
-| `34-adds.js` | 17 | additions and recycled-material constructions (1); PLACEHOLDER FLORA (106) |
-| `36-def.js` | 2 | registry, placement, cultural sockets (1) |
-| `40-dw-small.js` | 32 **big** | small dwellings: 7 types (4x fragments: 40 dw-sm (2); shared helpers for the small dwellings (51); dw-tire: earthship-style round hut (94); dw-bus: a wrecked school bus as the home (145); dw-tank: a storage tank as a pod (lying, or stan (196); dw-bottle: the pretty one, a timber-framed cotta (264); dw-stilt: a plank-and-sheet box up on tall poles (310) |
-| `42-lg-dwell.js` | 27 | large dwellings: container stack, twin silo hall (2) |
-| `44-civic.js` | 25 | civic and religious: longhouse, mess hall, big m (2) |
+| `20-tex.js` | 9 | procedural textures (1) |
+| `22-mat.js` | 5 | materials (1); the palette (culture-neutral) (40) |
+| `30-geo.js` | 15 | geometry engine (1) |
+| `32-cores.js` | 11 | the reclaimed large objects (1) |
+| `34-adds.js` | 20 | additions and recycled-material constructions (1); PLACEHOLDER FLORA (109); TYRE FURNITURE (stools, chairs, tables): stacked (137) |
+| `36-def.js` | 4 | registry, placement, cultural sockets (1) |
+| `40-dw-small.js` | 32 **big** | small dwellings: 7 types (4x fragments: 40 dw-sm (2); shared helpers for the small dwellings (51); dw-tire: earthship-style round hut (94); dw-bus: a wrecked school bus as the home (146); dw-tank: a storage tank as a pod (lying, or stan (197); dw-bottle: the pretty one, a timber-framed cotta (265); dw-stilt: a plank-and-sheet box up on tall poles (311) |
+| `42-lg-dwell.js` | 32 **big** | large dwellings: container stack, twin silo hall (2) |
+| `44-civic.js` | 30 | civic and religious: longhouse, mess hall, big m (2) |
 | `46-shops.js` | 23 | shops: food, armour, weapons, tinker, general st (2); 4610 food shop (40); 4620 armour shop (75); 4630 weapon shop (112); 4640 tinker's shop (149); 4650 general store (184) |
 | `48-industry.js` | 24 | industry and power: smithy, wind generator, fuel (2); 4810 scrap smithy (19); 4820 wind generator (70); 4830 fuel generator (113); 4840 warehouse (154) |
 | `50-farm.js` | 29 | farm: 3 buildings (50 farm) : farm plot, farmhou (2); farmhouse: silo stair-core fused to a long plank (143); granary: four silos on a shared apron, catwalk,  (222) |
 | `52-defence.js` | 24 | defence and justice: watchtower, prisoner cages (2); watchtower (7); prisoner cages (100) |
-| `54-compound.js` | 28 | WALLED COMPOUND (infrastructure + civic). Gate f (2); wall segments. Frame: x along the wall (centred) (64); the gate tower (container piers, hinged leaves,  (111); corner towers. Each returns nothing; all sockets (147); the ground plan (212); the builder (243) |
-| `56-arena.js` | 17 | THUNDERDOME ARENA (civic). Half scrap colosseum, (2) |
+| `54-compound.js` | 27 | WALLED COMPOUND (infrastructure + civic). Gate f (2); wall segments. Frame: x along the wall (centred) (43); the gate tower (container piers, hinged leaves,  (86); corner towers. Each returns nothing; all sockets (122); the ground plan (187); the builder (218) |
+| `56-arena.js` | 18 | THUNDERDOME ARENA (civic). Half scrap colosseum, (2) |
 | `58-dock.js` | 18 | DOCK (infrastructure). Land at the back (-z), ha (2) |
 | `89-rows.js` | <1 | the showcase table: rows of the kit, by family.  (1) |
 | `90-scene.js` | 7 | scene: renderer, sky, ground, lights, the showca (1); layout: rows by family, front (+z) toward the ca (31); (re)build the world for a culture (41) |
-| `91-probe.js` | 1 | probe (window._api): everything a headless check (1) |
+| `91-probe.js` | 2 | probe (window._api): everything a headless check (1) |
+| `91n-night.js` | 8 | NIGHT and dusk, and the invisible front-door mar (1) |
 | `92-camera.js` | 11 | camera, inspector, polygon tool, walk mode (1) |
 | `99-tail.html` | <1 |  |
