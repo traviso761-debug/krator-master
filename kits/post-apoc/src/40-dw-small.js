@@ -125,7 +125,8 @@ function dwTire(o){
  cyl('iron',0,top,0,.95,.14,jc(0x4a4038,.05),12);cyl('glass',0,top+.14,0,.78,.55,jc(pick(PAL.glass),.05),10);for(let k=0;k<8;k++){const a=k/8*TAU;beam('iron',[Math.cos(a)*.78,top+.14,Math.sin(a)*.78],[Math.cos(a)*.78,top+.69,Math.sin(a)*.78],.05,jc(0x4a4038,.05));}
  cone('sheet',0,top+.69,0,1.05,.4,jc(0x8a8a84,.05),10);stovepipe(.6,top-.1,-.9,1.5);
  // solar panel on the roof slope, facing out on the side away from the window
- {const ra=fa+s*.7,ry=(r)=>HW+.05+(RE-r)/(RE-.9)*rise+.16,pts=[];for(const r of [2.2,3.5])for(const da of [-.33,.33])pts.push([Math.cos(ra+da)*r,ry(r),Math.sin(ra+da)*r]);
+ {const ra=fa+s*.7,ry=(r)=>HW+.05+(RE-r)/(RE-.9)*rise+.16,pts=[];const rc=2.85,hl=.65,hw2=.8,ux=Math.cos(ra),uz=Math.sin(ra),tx=-uz,tz=ux;   /* a true rectangle: tangential width 1.6, radial length 1.3, so glass and frame share the same four corners */
+  for(const sr of [-hl,hl])for(const st of [-hw2,hw2]){const r=rc+sr;pts.push([ux*r+tx*st,ry(r),uz*r+tz*st]);}
   plane4('glass',pts[0],pts[1],pts[2],pts[3],.05,jc(0x1c2c50,.05));for(const [a,b] of [[0,1],[2,3],[0,2],[1,3]])beam('iron',pts[a],pts[b],.05,jc(0x8a8a86,.05));
   for(const p of [pts[0],pts[1],pts[2],pts[3]])beam('iron',[p[0],p[1]-.16,p[2]],p,.05,jc(0x4a4038,.05));}
  // berm of earth behind, planted

@@ -48,16 +48,39 @@ function tankH(o){const r=o.r||1.6,L=o.L||7;const c=o.col===undefined?jc(pick([0
  for(const f of [-.3,0,.3])cylH('iron',f*L,r+.35,0,r+.04,.12,jc(0x4a4038,.05),'x',18);box('iron',0,r*2+.3,0,1.1,.16,.9,jc(0x4a4038,.05));
  return {r:r,L:L,h:2*r+.35};}
 // ---- school bus / coach. Long axis x, front at +x. o:{len,col,windows:true}
-function bus(o){o=o||{};const L=o.len||10.6,Wd=2.4,H=2.35;const c=o.col===undefined?jc(pick([0xd8a020,0xc99a2e,0x9a3a2c,0x3b7f8e,0xb8b0a0]),.06):jc(o.col,.04);const ink=jc(0x2a2826,.03);
- box('sheet',-.4,.75,0,L-2.2,H-.75,Wd,c);box('sheet',L/2-1.05,.75,0,2.0,1.3,Wd-.1,c);            // body + bonnet
- box('iron',0,.5,0,L-.1,.3,Wd-.1,jc(0x3a3532,.05));                                              // chassis
- box('sheet',-.4,H,0,L-2.2,.1,Wd-.1,jc(c,.04));
- for(const sz of [-1,1]){ // window band and pillars
-  const n=Math.floor((L-3.6)/1.05);for(let k=0;k<n;k++){const x=-L/2+1.0+k*1.05;box('glass',x+.4,1.45,sz*(Wd/2+.02),.86,.72,.04,jc(0x6a9a94,.06));}
-  box('iron',-.4,1.1,sz*(Wd/2+.015),L-2.2,.06,.04,ink);box('iron',-.4,2.02,sz*(Wd/2+.015),L-2.2,.06,.04,ink);}
- box('glass',L/2-2.2,1.5,0,.05,.85,Wd-.3,jc(0x6a9a94,.06),0,0,-.25);                            // windscreen
- for(const wx of [-L*.33,L*.32])for(const sz of [-1,1]){tire(wx,.5,sz*(Wd/2-.05),.5,.2,undefined,0,PI/2,0);cylH('iron',wx,.5,sz*(Wd/2+.13),.22,.06,jc(0x8a8a86,.06),'z',10);}
- box('iron',L/2+.02,.4,0,.1,.2,Wd,jc(0x6a6a66,.06));return {L:L,W:Wd,H:H};}
+function bus(o){o=o||{};const L=o.len||10.6,Wd=2.4,H=2.35,hz=Wd/2;const c=o.col===undefined?jc(pick([0xd8a020,0xc99a2e,0x9a3a2c,0x3b7f8e,0xb8b0a0]),.06):jc(o.col,.04);
+ const ink=jc(0x2a2826,.03),dk=jc(0x3a3532,.05),roofC=jc(c,.05),glassC=()=>jc(pick(PAL.glass),.06);
+ const bx0=-L/2+.7,bx1=L/2-1.5,wA=-L*.33,wB=L*.32,ah=.68,wz=1.08;   /* body span, the two axles, half an arch, wheel centre offset from the midline */
+ /* chassis: a dark frame under the floor, two axles, a drive shaft and a tank; the wheels stand in real arches */
+ box('iron',(bx0+L/2)/2-.3,.48,0,L-1.0,.3,2.0,dk);
+ for(const wx of [wA,wB]){cylH('iron',wx,.5,0,.09,2.1,dk,'z',8);box('iron',wx,.62,0,.9,.1,1.2,jc(0x5a4a3c,.05));}
+ cylH('iron',(wA+wB)/2,.6,0,.07,wB-wA,jc(0x4a4038,.05),'x',8);cylH('iron',-.9,.62,.55,.32,1.1,jc(0x6a6a66,.06),'x',10);
+ /* body: three full-height runs between the arches, and a lintel over each arch (the wheel shows in the opening) */
+ const seg=(a,b,y0)=>{box('sheet',(a+b)/2,y0,0,b-a,H-y0,Wd,c);};
+ seg(bx0,wA-ah,.75);seg(wA+ah,wB-ah,.75);seg(wB+ah,bx1,.75);seg(wA-ah,wA+ah,1.06);seg(wB-ah,wB+ah,1.06);
+ for(const wx of [wA,wB]){box('iron',wx,.75,0,ah*2,.31,Wd-.3,ink);                                   /* dark wheel well behind the tyre */
+  for(const sz of [-1,1]){cylH('rubber',wx,.49,sz*wz,.5,.34,jc(0x1c1a18,.03),'z',16);cylH('iron',wx,.49,sz*(wz+.18),.27,.05,jc(0x8a8a86,.06),'z',12);cylH('iron',wx,.49,sz*(wz+.2),.09,.05,jc(0x4a4038,.05),'z',8);
+   for(let k=0;k<6;k++){const a=k/6*TAU;box('iron',wx+Math.cos(a)*.17,.49+Math.sin(a)*.17-.02,sz*(wz+.2),.04,.04,.03,jc(0x3a3532,.04));}
+   box('sheet',wx,1.0,sz*(hz+.03),ah*2+.16,.06,.06,jc(c,.04));}}                                       /* fender lip over each arch */
+ /* windows, belt lines and rub rail as before (the bus house counts on them) */
+ for(const sz of [-1,1]){const n=Math.floor((L-3.6)/1.05);for(let k=0;k<n;k++){const x=-L/2+1.0+k*1.05;box('glass',x+.4,1.45,sz*(hz+.02),.86,.72,.04,glassC());box('iron',x+.4-.47,1.4,sz*(hz+.02),.06,.82,.05,ink);}
+  box('iron',(bx0+bx1)/2,1.1,sz*(hz+.015),bx1-bx0,.06,.04,ink);box('iron',(bx0+bx1)/2,2.02,sz*(hz+.015),bx1-bx0,.06,.04,ink);box('sheet',(bx0+bx1)/2,.92,sz*(hz+.025),bx1-bx0,.07,.05,ink);}
+ /* roof: a cambered cap, a hatch, flashers */
+ roofP('sheet',bx0,bx1,hz,H-.02,hz-.55,H+.1,.06,roofC);roofP('sheet',bx0,bx1,-hz,H-.02,-(hz-.55),H+.1,.06,roofC);box('sheet',(bx0+bx1)/2,H+.08,0,bx1-bx0,.06,Wd-1.1,roofC);
+ box('iron',(bx0+bx1)/2-.8,H+.14,0,.8,.12,.7,dk);box('glow',bx1-.15,H+.1,.9,.16,.12,.24,jc(0xffb040,.03));box('glow',bx1-.15,H+.1,-.9,.16,.12,.24,jc(0xffb040,.03));
+ box('glow',bx0+.15,H+.1,.9,.14,.12,.22,jc(0xff3a2a,.03));box('glow',bx0+.15,H+.1,-.9,.14,.12,.22,jc(0xff3a2a,.03));
+ /* rear: an emergency door with a window, a bumper, tail lights */
+ box('iron',bx0-.02,.85,0,.05,1.4,1.1,ink);box('glass',bx0-.05,1.5,0,.04,.55,.8,glassC());box('iron',bx0-.06,.85,0,.06,1.4,.04,jc(0x8a8a86,.05));
+ box('iron',bx0-.16,.52,0,.24,.26,Wd+.1,jc(0x6a6a66,.06));for(const sz of [-1,1])box('glow',bx0-.03,.95,sz*.98,.05,.22,.3,jc(0xff3a2a,.03));
+ /* cab: a bonnet, grille, headlights, mirrors, a raked two-piece windscreen, a front bumper, a folded stop-sign arm */
+ const fx=bx1;box('sheet',fx+.9,.75,0,1.8,.85,Wd-.4,c);box('sheet',fx+.9,1.6,0,1.7,.06,Wd-.7,jc(c,.04));
+ box('iron',fx+1.79,.9,0,.05,.5,1.5,ink);for(let k=0;k<5;k++)box('iron',fx+1.82,.95+k*.09,0,.04,.03,1.45,jc(0x8a8a86,.05));
+ for(const sz of [-1,1]){box('glow',fx+1.8,1.2,sz*.85,.06,.16,.26,jc(0xf6e6b0,.03));box('iron',fx+1.84,.56,sz*.5,.16,.22,.5,jc(0x6a6a66,.06));}
+ box('iron',fx+1.9,.5,0,.2,.26,Wd+.05,jc(0x6a6a66,.06));
+ for(const sz of [-1,1]){box('glass',fx+.06,1.3,sz*.52,.05,.98,.98,glassC(),0,0,-.14);}box('iron',fx+.06,1.3,0,.07,1.0,.06,ink);
+ for(const sz of [-1,1]){beam('iron',[fx+.3,1.3,sz*(hz+.02)],[fx+.75,1.55,sz*(hz+.35)],.03,ink,true,4);box('iron',fx+.75,1.35,sz*(hz+.37),.05,.4,.16,ink);}
+ box('sheet',fx-.02,1.55,-(hz+.1),.06,.36,.36,jc(0xc23a2a,.05));   /* the stop-sign arm, folded */
+ return {L:L,W:Wd,H:H};}
 // ---- semi truck: cab + long trailer. front at +x. o:{trailer:true,col,tcol}
 function semi(o){o=o||{};const L=o.trailer===false?0:13.4;const c=o.col===undefined?jc(pick([0x9a3a2c,0x2f5f8f,0xb8b0a0,0x4d6f3c]),.06):jc(o.col,.04);
  const off=L?-1.6:0;W(off,0,0,0,()=>{box('sheet',L/2+.4,.7,0,2.6,1.7,2.4,c);box('sheet',L/2+1.3,.7,0,1.2,1.0,2.3,jc(c,.05));box('glass',L/2+.2,1.85,0,.05,.65,2.0,jc(0x6a9a94,.06),0,0,-.2);

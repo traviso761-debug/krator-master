@@ -32,7 +32,7 @@ function nightSet(v,force){v=clamp(v,0,1);const changed=v!==NIGHT.v||force;NIGHT
  fill.intensity=lerp(.32,.07,nt);renderer.toneMappingExposure=lerp(1.05,1.2,nt);
  scene.fog.color.copy(nmix('fog',v));scene.fog.density=lerp(.00075,.0011,nt);
  sunDisc.material.opacity=1-NSTEP(.5,.8,v);sunDisc.visible=sunDisc.material.opacity>.02;moonDisc.material.opacity=NSTEP(.55,.95,v);moonDisc.visible=moonDisc.material.opacity>.02;giant.material.opacity=lerp(1,.42,nt);giant.material.color.setRGB(lerp(1,.34,nt),lerp(1,.4,nt),lerp(1,.62,nt));
- MAT.glow.color.setScalar(lerp(.55,1.5,nt));MAT.winlit.color.setRGB(lerp(.12,1.35,nt),lerp(.16,1.15,nt),lerp(.16,.85,nt));
+ MAT.glow.color.setScalar(lerp(.55,1.5,nt));MAT.winlit.color.setRGB(lerp(.16,1.35,nt),lerp(.6,1.15,nt),lerp(1.1,.85,nt));   /* by day a lit window reads as ordinary teal glass */
  for(const k of ['halos','halosBig'])if(NIGHT[k]){NIGHT[k].material.opacity=nt*.9;NIGHT[k].visible=nt>.02;}
  const on=nt>.02;if(on!==NIGHT.active){NIGHT.active=on;for(const L of NIGHT.pool)L.visible=on;for(const k in MAT)MAT[k].needsUpdate=true;}   // light count changed: recompile once
  NIGHT.k=nt;NIGHT.lastPool=-1;}
