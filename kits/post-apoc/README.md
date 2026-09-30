@@ -36,6 +36,11 @@ URL parameters: `?culture=iziz`, `?only=shop-food,dw-silo`.
 Reusing a building elsewhere: `place(key, x, z, ry, {v: variant})` inside any world that carries `30-geo.js`, `20-tex.js`, `22-mat.js`, `32-cores.js`, `34-adds.js`,
 `36-def.js` and the fragment that holds the def; add the culture pack fragment for the world's own marks. Everything is merged into ~16 draw calls.
 
+## Flora
+
+Plants are never part of a building: they are `plant()` placeholders (roles like `crop`, `shrub`, `groundcover`, `tree`) tagged by moisture and riparian need, so a settlement swaps in
+its biome's real plants once (`PLANTS.draw`) and every building follows. See `API.md`.
+
 ## The compound
 
 `compound` builds a walled yard from mixed reclaimed wall segments and takes buildings through **slots**: `place('compound', x, z, ry, {slots:['smithy','dw-silo','gen-fuel','shop-general']})`.

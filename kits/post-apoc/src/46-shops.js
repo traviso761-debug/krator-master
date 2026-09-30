@@ -157,7 +157,7 @@ function shTinker(o){
  for(let k=0;k<3;k++){box('iron',cx+1.6+k*.5,1.62,cz-.85,.4,.3,.3,jc(0x3a3430,.05));cylH('iron',cx+1.6+k*.5,1.85,cz-.7,.05,.12,jc(0xb0b0a8,.05),'x',6);}
  // front: a long counter of junk, a hanging bike wheel and tyres on the end wall, the cart
  shCounter(cx,fz-.1,5.6,.6,.95,0x5a5a56);for(let k=0;k<9;k++){const px=cx-2.4+k*.6;box('plain',px,.95,fz-.1,rr(.14,.3),rr(.12,.34),rr(.14,.3),jc(pick([0xb8683a,0x2f62b8,0xc9a03a,0x6a6a66,0xc23a2a]),.08),rng()*TAU);}
- tire(cx+L/2+.15,1.5,cz+.1,.5,.09,undefined,0,0,PI/2);tire(cx+L/2+.15,.6,cz-.5,.4,.09,undefined,0,0,PI/2);
+ tire(cx+L/2+.15,.78,cz-.6,.5,.09,undefined,0,0,PI/2);tire(cx+L/2+.15,.68,cz+.62,.4,.09,undefined,0,0,PI/2);
  // radio mast on the roof with a dish and cable: lattice legs, cross rungs, a dish, a whip antenna
  const mx=cx-1.6,mz=cz;for(const [a,b] of [[-.3,-.3],[.3,-.3],[.3,.3],[-.3,.3]])beam('iron',[mx+a,CT.H,mz+b],[mx+a*.35,CT.H+6.2,mz+b*.35],.05,jc(0x6a5a4c,.05),true,5);
  for(let k=0;k<7;k++){const y=CT.H+.4+k*.85,s=.3*(1-(k*.85+.4)/6.6);beam('iron',[mx-s,y,mz-s],[mx+s,y,mz+s],.03,jc(0x6a5a4c,.05),true,4);beam('iron',[mx+s,y,mz-s],[mx-s,y,mz+s],.03,jc(0x6a5a4c,.05),true,4);}
@@ -180,7 +180,7 @@ function shTinker(o){
  sock('sign',cx+.4,3.3,fz-.1,0,{w:3.4,h:1.15,trade:'TINKER'});shSignPosts(cx+.4,fz-.38,CT.H-.02,3.9,3.4);
  sock('awning',cx,2.72,fz,0,{w:5.8,d:1.7,drop:.6,h:2.12});sock('awning',sx,2.72,-3.5,0,{w:3.4,d:2.4,drop:.5,h:2.22});
  shBanner(cx+3.7,fz+2.5,4.5);
- sock('flag',cx+2.4,CT.H+1.6,cz-.4,0,{w:1.0,h:.6});sock('emblem',cx+L/2+.03,2.25,cz,PI/2,{w:.9,h:.9});sock('paint',cx-L/2-.03,1.6,cz,-PI/2,{w:1.4,h:1.0});}
+ sock('flag',cx+2.4,CT.H+1.6,cz-.4,0,{w:1.0,h:.6});sock('emblem',cx+L/2+.05,1.95,cz,PI/2,{w:.8,h:.8});sock('paint',cx-L/2-.03,1.6,cz,-PI/2,{w:1.4,h:1.0});}
 // ---------------------------------------------------------------- 4650 general store
 defBuilding({key:'shop-general',name:'General store',seed:4650,tags:{type:['market/shop'],size:'medium',core:'shipping container',materials:['containers','corrugated sheet','plank']},w:15,d:8,h:5.2,build:shGeneral});
 function shGeneral(o){

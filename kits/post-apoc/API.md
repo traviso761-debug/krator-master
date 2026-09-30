@@ -72,6 +72,13 @@ tireStack junkPile antenna fenceRun bottleString waterButt`. Appliqué doors/win
 Real openings (an open-fronted shop, a walk-in porch) need `wallOpen` or a core with `open:'front'`.
 If you need a helper twice, add it at the top of YOUR fragment with your prefix. If you think the ENGINE (files 10-36, 80, 9x) needs a change, do not edit it: describe it in your report.
 
+## Flora is a placeholder, always
+A building never models a plant. Anything living (crops, planter fill, kitchen garden, shrubs, vines, moss, a shade tree) is `plant(kind,x,y,z,{h,r,s,ry,moisture,riparian,tags})`
+(end of `34-adds.js`). Kinds are ROLES, the biome picks the species: `crop crop-tall crop-vine groundcover shrub flower tree vine-wall grass moss`. The default draws a small muted
+placeholder; the host installs biome-appropriate flora once, with `PLANTS.draw = slot => plantFrame(slot, () => {...draw the local species...})`, and every plant in every building follows.
+Each slot carries tags (`class:'flora'`, `role`, `biome`, `moisture: arid|mild|wet`, `riparian`, `cultivated`). `window._api.plants()` lists what each building placed. Beds, planters and supports stay in the building; only the living plant is a `plant()`.
+Sockets must also keep clear of windows, doors and panels: give every emblem/paint/banner socket its own patch of wall.
+
 ## The look
 Fused, patched, lived-in, bright junk-colour: faded livery paint (rust red, teal, mustard, olive) against galvanised grey and weathered timber; patchwork; things lashed on in layers
 with lean-to roofs, decks, ladders, stovepipes, solar panels, water butts, tyre stacks, hanging bottles, rag awnings. Read the reference sheets (`refs/sheet0-3.jpg`, index in `refs/INDEX.txt`): the silo-house with a

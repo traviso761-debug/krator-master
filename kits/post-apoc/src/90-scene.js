@@ -31,7 +31,9 @@ const groundM=new THREE.Mesh(new THREE.PlaneGeometry(3200,3200),groundMat);groun
 // ---------------------------------------------------------------- layout: rows by family, front (+z) toward the camera
 const SITES=[],ROWS=[];
 const ONLY=(new URLSearchParams(location.search)).get('only');const ONLYSET=ONLY?new Set(ONLY.split(',')):null;   // ?only=key,key builds just those defs
-(function layout(){let z=0;const GAP=9;for(const F of FAMILIES){const keys=F.keys.filter(k=>DEFS[k.split('@')[0]]&&(!ONLYSET||ONLYSET.has(k.split('@')[0])));   // 'key@culture' dresses that site in a culture's marksif(!keys.length)continue;
+(function layout(){let z=0;const GAP=9;for(const F of FAMILIES){const keys=F.keys.filter(k=>DEFS[k.split('@')[0]]&&(!ONLYSET||ONLYSET.has(k.split('@')[0])));
+ // 'key@culture' dresses that site in a culture's marks
+ if(!keys.length)continue;
  const DK=k=>DEFS[k.split('@')[0]];const ws=keys.map(k=>DK(k).w+GAP),total=ws.reduce((a,c)=>a+c,0),dmax=Math.max(...keys.map(k=>DK(k).d)),hmax=Math.max(...keys.map(k=>DK(k).h));
  z+=dmax/2;let x=-total/2;keys.forEach((k,i)=>{const kk=k.split('@');SITES.push({key:kk[0],x:x+ws[i]/2,z,ry:0,o:kk[1]?{v:0,culture:kk[1]}:{v:0}});x+=ws[i];});
  ROWS.push({family:F.name,z,d:dmax,w:total,h:hmax,keys});z+=dmax/2+Math.max(26,hmax*1.3)+8;}})();
@@ -39,7 +41,7 @@ const GROUND_C=ROWS.length?ROWS[ROWS.length-1].z/2:0;groundM.position.set(0,0,GR
 // ---------------------------------------------------------------- (re)build the world for a culture
 let WORLD=null;
 function buildWorld(cultureKey){if(WORLD){scene.remove(WORLD);WORLD.traverse(o=>{if(o.geometry)o.geometry.dispose();});}
- WORLD=new THREE.Group();scene.add(WORLD);GB={};GTARGET=GB;SPINNERS.length=0;regClear();SOCK_ALL.length=0;GSTAT.tris=0;SBS.length=0;SB=null;resetCM();
+ WORLD=new THREE.Group();scene.add(WORLD);GB={};GTARGET=GB;SPINNERS.length=0;regClear();plantsReset();SOCK_ALL.length=0;GSTAT.tris=0;SBS.length=0;SB=null;resetCM();
  CULT.cur=CULT.packs[cultureKey]||CULT.generic;const t0=performance.now();
  for(const S of SITES)place(S.key,S.x,S.z,S.ry||0,S.o);
  flushBuckets(GB,WORLD,true);
