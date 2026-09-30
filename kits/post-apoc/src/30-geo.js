@@ -60,7 +60,7 @@ function beam(mk,a,b,w,col,round,seg){const dx=b[0]-a[0],dy=b[1]-a[1],dz=b[2]-a[
  else{m.compose(new THREE.Vector3((a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2),q,new THREE.Vector3(w,L,w));emit(mk,gbox(),m,col);}}
 // a sheet spanning two edges: p0->p1 is one edge, p0->p3 the other; thickness th along the normal. Roof sheets, panels.
 function plane4(mk,p0,p1,p2,p3,th,col){
- const e1=new THREE.Vector3(p1[0]-p0[0],p1[1]-p0[1],p1[2]-p0[2]),e2=new THREE.Vector3(p3[0]-p0[0],p3[1]-p0[1],p3[2]-p0[2]);
+ const e1=new THREE.Vector3(p1[0]-p0[0],p1[1]-p0[1],p1[2]-p0[2]),e2=new THREE.Vector3(p2[0]-p0[0],p2[1]-p0[1],p2[2]-p0[2]);   // p2 is the same-side corner across from p0 (p3 is the diagonal, unused)
  const L1=e1.length(),L2=e2.length();if(L1<1e-6||L2<1e-6)return;const X=e1.clone().normalize();const Nn=new THREE.Vector3().crossVectors(X,e2).normalize();const Zc=new THREE.Vector3().crossVectors(X,Nn).normalize();
  const q=new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(X,Nn,Zc));
  const mid=new THREE.Vector3(p0[0],p0[1],p0[2]).addScaledVector(e1,.5).addScaledVector(e2,.5);
@@ -109,7 +109,7 @@ function flushBuckets(buckets,parent,shadow){const out=[];for(const mk in bucket
  parent.add(mesh);out.push(mesh);}return out;}
 // ---- spinners: parts that turn (rotors, fans). spin(x,y,z,ry,axis,rate,fn): fn builds in a local frame whose origin is the pivot.
 const SPINNERS=[];
-function spin(x,y,z,ry,axis,rate,fn){const keep=GTARGET,keepCM=CM,keepStack=CMS.slice();const own={};GTARGET=own;
+function spin(x,y,z,ry,axis,rate,fn){const keep=GTARGET,keepCM=CM,keepStack=CMS.slice(),keepSB=SB;SB=null;const own={};GTARGET=own;   // spinner vertices are in their own frame: keep them out of the building bbox
  const wm=CM.clone().multiply(TF(x,y,z,ry));CMS.length=0;CMS.push(new THREE.Matrix4());CM=CMS[0];
- try{fn();}finally{GTARGET=keep;CMS.length=0;for(const m of keepStack)CMS.push(m);CM=keepCM;}
+ try{fn();}finally{GTARGET=keep;SB=keepSB;CMS.length=0;for(const m of keepStack)CMS.push(m);CM=keepCM;}
  SPINNERS.push({buckets:own,world:wm,axis:axis||'z',rate:rate===undefined?1:rate});}

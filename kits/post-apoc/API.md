@@ -51,7 +51,7 @@ cyl(mat, x,y,z, r,h, colour, seg, rTop, wrap) vertical, base at y; wrap=true mak
 cylH(mat, x,y,z, r,L, colour, 'x'|'z', seg, wrap)   horizontal cylinder centred on (x,y,z)
 cone(mat, x,y,z, r,h, colour, seg)  sph(mat, x,y,z, r, colour, yScale)  tire(x,y,z, R,t, colour, ry,rx,rz)  (axis vertical; rx=PI/2 stands it up)
 beam(mat, [x,y,z],[x,y,z], w, colour, round, seg)   pipe(mat, [pts], r, colour)   (no-roll basis: safe for any direction)
-roofP(mat, x0,x1, zLow,yLow, zHigh,yHigh, th, colour)   plane4(mat, p0,p1,p2,p3, th, colour)   quad/decal (flat, two-sided)
+roofP(mat, x0,x1, zLow,yLow, zHigh,yHigh, th, colour)   plane4(mat, p0,p1,p2,p3, th, colour)  (p0->p1 one edge, p0->p2 the other, p3 the far corner)   quad/decal (flat, two-sided)
 poly(mat, [[x,y,z]...], colour, double)   prism(mat, [[x,z]...], y0,y1, colour)   sector(mat, cx,cz, r0,r1, a0,a1, y0,y1, colour)  (curved walls)
 wallOpen(mat, x,y,z, w,h,th, [{x0,x1,y0,y1}], colour, ry)     a wall with real rectangular openings
 spin(x,y,z, ry, 'x'|'y'|'z', rate, fn)     parts that turn (turbine rotor, fans): fn draws about the pivot. Rate in rad/s.
