@@ -23,31 +23,31 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `30-kit.js` | 3 | instancing kit (1) |
 | `32-surfaces.js` | 7 | surfaces (1) |
 | `34-kitdefs.js` | 7 | kit definitions (shared geometry) (1); THE LEAF CARD (32) |
-| `36-decor.js` | 11 | decoration helpers (1) |
-| `38-helpers2.js` | 2 | v2 helpers (1) |
-| `40-factory-extras.js` | 3 |  |
-| `42-offices.js` | 4 |  |
-| `46-bunker.js` | 3 |  |
-| `48-library.js` | 3 |  |
+| `36-decor.js` | 13 | decoration helpers (1); THE BIOME (127) |
+| `38-helpers2.js` | 3 | v2 helpers (1) |
+| `40-factory-extras.js` | 4 |  |
+| `42-offices.js` | 11 |  |
+| `46-bunker.js` | 5 |  |
+| `48-library.js` | 4 |  |
 | `50-registry.js` | <1 | v3: inspector registry + group transforms (1) |
-| `52-sky-abc.js` | 11 |  |
+| `52-sky-abc.js` | 18 |  |
 | `54-mat-concrete.js` | 4 | v4: concrete, brick, glass panes (1) |
-| `56-sky-d.js` | 3 |  |
+| `56-sky-d.js` | 5 |  |
 | `57-sky-e.js` | 3 |  |
-| `58-sky-f.js` | 3 |  |
-| `64-houses-def.js` | 4 |  |
+| `58-sky-f.js` | 4 |  |
+| `64-houses-def.js` | 5 |  |
 | `66-office-c.js` | 2 |  |
-| `69-mat-salvage.js` | 5 | salvage (decay level 3) (1) |
+| `69-mat-salvage.js` | 12 | salvage (decay level 3) (1); FIRELIGHT (44) |
 | `69b-vern-mat.js` | 14 | textures (world units: a 128px tile = 2 m) (30); world-unit UVs (93); materials (116); geometry (133); kit items (153) |
 | `69c-vern-helpers.js` | 19 | primitives (local frame; y = BASE of the piece) (51); walls, frames, plinths (60); roofs (ridge along local x unless noted) (87); openings (108); porches, stairs, yards (134) |
 | `70-vern-dwellings.js` | 19 | POOR (9); MIDDLE (61); RICH (126) |
 | `71-vern-trade.js` | 18 | shop row: three units under one salvaged-sheet r (18); tavern: the deco long hall in timber, cross-gabl (42); workshops (70); scrap smithy: forge under a salvaged roof on pip (103); market canopy: a great two-tier rain roof over r (131); warehouse: long timber shed clad in board and sh (153) |
 | `72-vern-civic.js` | 17 | school: hall with a bell tower, two classroom wi (13); hospital: a long ward block with deep verandas b (45); barracks and drill yard: palisade, two barrack b (72); the alchemist's compound: walled; house with a d (109) |
-| `73-police.js` | 3 |  |
+| `73-police.js` | 5 |  |
 | `73-vern-infra.js` | 9 | grain silos: four stave silos on stilts under th (5); storage tank: a reclaimed Ancient tank on a ston (24); electric generator: stone engine house, a reclai (47) |
 | `74-vern-guilds.js` | 35 **big** | local helpers (LOCAL frame, y = base of the piec (8); Farmers' Guild: half-timber hall on a stone plin (86); Beast Hunters' Guild: trophy hall with a towerin (140); caravanserai: walled court, gatehouse with a two (190); Forgemaster's Hall: tall stone hall with a 9 m o (238) |
 | `75-port-embassy.js` | 24 | textures (near-grey, tinted per instance; 128 px (10); materials (35); geometry (43); kit items (58); local helpers (vp prefix) (68); the embassy (84) |
-| `76-campus.js` | 8 |  |
+| `76-campus.js` | 9 |  |
 | `76-port-chapterhouse.js` | 17 |  |
 | `77-anc-guilds.js` | 20 | THE SALVAGERS' GUILD — the Reliquary (74); THE MERCENARY GUILD — the Watch (121) |
 | `77z-iziz-style.js` | 47 **big** | ANCIENT IZIZ STYLE (1) |
@@ -56,12 +56,12 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `79-government.js` | 4 |  |
 | `79-iziz-original.js` | 23 |  |
 | `80-aa-battery.js` | <1 |  |
-| `81-houses-abc.js` | 4 |  |
+| `81-houses-abc.js` | 5 |  |
 | `81-sky.js` | 10 |  |
-| `82-apartments.js` | 6 |  |
+| `82-apartments.js` | 8 |  |
 | `83-amphitheater.js` | 5 |  |
-| `84-fuel.js` | 2 |  |
-| `88-factory.js` | 6 |  |
+| `84-fuel.js` | 4 |  |
+| `88-factory.js` | 9 |  |
 | `89-lab.js` | 6 |  |
 | `90-scene.js` | 3 | scene (1); build every site the target lists (31) |
 | `91-probe.js` | 3 | probe (window._api) — same contract as the Ancie (1) |

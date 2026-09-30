@@ -194,7 +194,8 @@ def main():
         dirs = []
         for _, _, path, _, _, *_ in ENTRIES:
             d = os.path.dirname(path)
-            d = os.path.dirname(d) if os.path.basename(d) == 'dist' else d
+            while not os.path.exists(os.path.join(ROOT, d, 'build.py')):   # dist/, or a page beside its build (the Voth catalog)
+                d = os.path.dirname(d)
             if d not in dirs:
                 dirs.append(d)
         for d in dirs:
