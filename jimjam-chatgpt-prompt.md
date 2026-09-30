@@ -1,6 +1,6 @@
 # Prompt for ChatGPT: build the Jimjam city kit
 
-*(Copy everything below the line into ChatGPT. Attach the five reference images with it. If ChatGPT cannot read the GitHub repo `traviso761-debug/krator-master` directly, also attach the files listed in section 2.)*
+*(Copy everything below the line into ChatGPT. Attach all eight reference images with it, in the order given (images 1–5: the city, images 6–8: the brick columns). If ChatGPT cannot read the GitHub repo `traviso761-debug/krator-master` directly, also attach the files listed in section 2.)*
 
 ---
 
@@ -122,8 +122,27 @@ What to take from each reference image (attached):
 - **Image 2 (red towers above the city):** **thick, tapering, cylindrical spires built in stacked stages**, each stage capped with a flared ring or balcony and ending in a dome with masts. Smaller **bulbous turrets clustered** on the flanks. Round windows, small square windows, vents. Use this for the silhouette of spires, wall towers, fortress towers and the windmill tower. Take the **massing** only: Jimjam is brick and marble, not painted sheet metal.
 - **Image 3 (terraced hill town):** the city climbs in **terraces joined by stairs**. **Round raised plazas** sit on drum-shaped podiums, with **radial sunray / mandala patterns** inlaid on their tops in red, orange and white. Arcades of arched openings run along the terrace walls, crenellated parapets top them, and greenery spills over the edges. Use this for raised plazas, the amphitheater, the palace plaza pattern and terrace walls.
 - **Images 4 and 5 (two contact sheets of an imagined red city):** red brick everywhere. **Columns wrapped in a diamond/lattice pattern** in lighter brick or marble, **gold/yellow domes**, **stepped pyramidal temple towers** (shikhara-like), long red banners with a **gold sun emblem**, crenellated fortress walls with thick round towers, **arcaded viaducts**, market shops under canvas awnings, reflecting pools in front of tombs and temples, and processional plazas lined with columns and statues. The labelled panels (HOUSES, SHOPS, SMALL TEMPLE, GRAND TEMPLE, FORTRESS, CITADEL, PLAZA, GARDEN) show what each building type should feel like. **Use these as the main guide.**
+- **Images 6, 7 and 8 (Tudor-style ornamental brick chimney stacks):** **intricately patterned brick shafts**. This is the signature detail for Jimjam's columns. Each one has three parts:
+  - **Base:** a square or octagonal brick pedestal with two or three stepped, moulded courses (the dark moulded bands in images 6 and 7).
+  - **Shaft:** round or octagonal, covered in **raised brick relief** in one of these patterns:
+    - **spiral twist:** ribs winding up the shaft (image 6, second from left; image 7).
+    - **zigzag / chevron:** stacked V-bands (image 6, left; image 7).
+    - **diamond lattice with raised studs:** crossing ribs with a pyramidal stud in each diamond (image 6, right; image 7, left).
+    - **ogee / interlaced trellis:** pointed arches interlocking (image 8, centre).
+    - **honeycomb / fleur diaper:** small diamonds, each holding a fleur (image 8, right).
+    - **square shaft with tracery panels:** sunken panels holding branching relief (image 6, centre).
+  - **Cap:** a flared, corbelled top that steps out, finished with a **crenellated or star-shaped crown** (image 6 and 7 tops) or a moulded octagonal cap with small corbel spurs (image 8).
+  - In image 7 the shafts come in mixed red and **dark vitrified (near-black) headers**. That two-tone brick is welcome in Jimjam as `brickDark`.
+  - **Where to use them (where appropriate, not everywhere):**
+    - **clustered chimney stacks** on the rooftops of middle and rich houses, the inn, the tavern, the palace and the weaponsmith's forge. They should come in groups of 2–6 shafts joined at base and cap, each shaft with a *different* pattern, exactly as in images 6 and 7.
+    - **free-standing ornamental columns:** the processional line on the palace plaza, the temple approach, the gate of the caravanserai.
+    - **arcade columns** on civic, sacred and palace buildings, alongside the plain marble ones. Use about one patterned column for every plain one, or all patterned on the grandest façades.
+    - **gate-flanking pillars** on the wall gate and the fortress gate.
+    - the **drum stages of spires**, where one stage may be wrapped in a relief pattern.
+    - **Not** on poor housing, farms, warehouses or the barracks, which use plain brick only (a plain square chimney is fine).
+  - The patterns are **brick** (red, yellow or dark). Marble is used only for the base and cap mouldings where a building already uses marble trim.
 
-### Palette (put this in `JPAL` in `60-jj-mat.js`)
+### Palette (put this in `JPAL` in `60-jj-mat.js`; add `brickDark` `#3E2A26` for the dark vitrified headers of images 6–8)
 
 | name | approx hex | use |
 |---|---|---|
@@ -143,6 +162,7 @@ What to take from each reference image (attached):
 - **Red brick:** running bond with visible mortar. Tint it to get the red and yellow versions. Scale: **a 128 px tile = 2 m**, so bricks are roughly 0.25 × 0.08 m.
 - **Banded brick:** red and yellow in horizontal bands. The bands show from a distance, which matters for the city read.
 - **Diamond lattice:** for column shafts and some wall panels.
+- **Relief-brick patterns for the ornamental shafts** (images 6–8): spiral, chevron, studded diamond, ogee trellis, fleur diaper and tracery panel. Each pattern is **one colour texture plus one matching bump/normal map**, drawn procedurally on a canvas. The texture must wrap seamlessly around the shaft (the pattern repeats a whole number of times around the circumference) and tile vertically.
 - **Marble:** near-white with faint veins.
 - **Dome scales/ribs:** for gold, slate and terracotta domes.
 - **Sunray inlay:** a radial pattern of alternating red and yellow wedges on marble, with concentric rings (image 3). This is used for plaza floors and **must be a separate texture** so any plaza can use it.
@@ -155,6 +175,11 @@ Every building should be assembled mostly from these pieces. Build the helpers f
 - `jjPlinth(...)`: a raised podium with a marble cap. **Raised plazas and raised ground floors are a core Jimjam feature. Most civic buildings stand on one.**
 - `jjStairs(...)`: marble stairs up to a plinth, with cheek walls.
 - `jjColumn(x,y,z,r,h,{lattice})`: a round column with a marble base and capital, optionally lattice-patterned.
+- `jjBrickShaft(x,y,z,r,h,{pattern, section:'round'|'octagon'|'square', base, cap:'crenel'|'star'|'corbel', c})`: an ornamental brick shaft as in images 6–8. `pattern` is one of `'spiral' | 'chevron' | 'diamond' | 'ogee' | 'fleur' | 'tracery' | 'plain'`. **How to get the relief without blowing the triangle budget:**
+  - **Far and mid distance (the default):** a 12–16-sided cylinder with the pattern's colour texture + bump/normal map. Nothing else.
+  - **Near (hero columns at eye level: palace plaza, temple approach, gate pillars):** `{relief:true}` adds real geometry for the *main* ribs only: for spiral, 4–6 twisted rib strips (a tube or extruded strip swept along a helix); for diamond, the studs as small instanced pyramids. Instance them through the kit; never one mesh per stud. Keep a single relief shaft **under 4 k triangles**.
+  - The base and cap are stacked stepped boxes/octagons (instanced), with a crenellated or star crown built from instanced merlons.
+- `jjChimneyStack(x,y,z,{n, patterns, h})`: 2–6 `jjBrickShaft`s on one shared stepped base with a shared or individual crenellated cap. Each shaft gets a different pattern (pick them with `rng()`, so it stays deterministic). This goes on roofs. The builder places it with its base **on** the roof or wall top, never floating above or sunk through it.
 - `jjArch(x,y,z,w,h,ry,{depth})`: a round-headed arch opening with a marble archivolt. Build it from instanced voussoir blocks or a lathe/extrude **with UVs**.
 - `jjArcade(...)`: a row of arches on columns.
 - `jjDome(x,y,z,r,{kind:'gold'|'slate'|'terracotta', shape:'hemi'|'onion'|'ribbed'})`: a dome on a short drum, with an optional lantern cupola and finial.
@@ -284,7 +309,7 @@ jjReg(name, lx, lz, r, h, extraTags) // inspector volume in the local frame
 
 **Do not try to write all of this in one reply.** You will run out of room and produce broken, half-finished files. Work in rounds, and **stop at the end of each round** so I can check it:
 
-- **Round 1: skeleton.** Folder, copied engine files, `build.py` adapted, `60-jj-mat.js` (palette, textures, kit items), `61-jj-helpers.js` (the JJ registry and **all** helpers from section 5), a test target that shows just the helpers (a wall, an arcade, one dome of each kind, one spire of 2, 3 and 5 stages, a round plaza with the sunray inlay). Build it and verify it.
+- **Round 1: skeleton.** Folder, copied engine files, `build.py` adapted, `60-jj-mat.js` (palette, textures, kit items), `61-jj-helpers.js` (the JJ registry and **all** helpers from section 5), a test target that shows just the helpers (a wall, an arcade, one dome of each kind, one spire of 2, 3 and 5 stages, a round plaza with the sunray inlay, **one `jjBrickShaft` of every pattern side by side (both plain and `relief:true`) and one `jjChimneyStack` of 4**, plus an eye-level view of the shafts to compare against images 6–8). Build it and verify it.
 - **Round 2: housing (9)** + furniture and flora placeholders.
 - **Round 3: shops (8)** + the jimjam culture pack (banners, signs, awnings).
 - **Round 4: hospitality + civic** (inn, tavern, caravanserai, library, school, amphitheater).
@@ -318,6 +343,7 @@ In **every** round:
 - Stairs that don't meet the plinth top. Doors below or above the floor level. Buildings sunk into or floating above the ground (`y` must be the ground at the base).
 - Domes too flat or too small. Jimjam domes are **prominent**, often taller than a hemisphere (onion) and sitting on a visible drum.
 - "Thick spires" drawn as thin needles. Jimjam spires are **fat, staged cylinders**, like image 2: 4–10 m in diameter at the base.
+- Brick-shaft patterns that don't wrap: a visible seam down one side of the column means the pattern doesn't repeat a whole number of times around the circumference. Relief shafts built as hundreds of separate meshes (use instancing), or relief on every column in the city (use it only on hero columns). Chimney stacks floating above the roof.
 - Forgetting marble trim. Every red or yellow brick building needs white marble at the plinth cap, string courses, window/door surrounds and the cornice. That contrast *is* the style.
 - Plants or fountains modelled as part of a building. Make them separate objects (section 7).
 - An inspector volume with missing tags. `tagAudit()` must pass.
