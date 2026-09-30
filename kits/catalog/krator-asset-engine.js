@@ -18,7 +18,9 @@
      - F.frustum's r is a HALF-WIDTH: the block spans 2*r. With sides:4 the flat
        faces are square to the frame, so the front face sits at local z = +r.
        It is square in plan and cannot make a rectangular trough — use boxes.
-     - F.pyrRoof covers EXACTLY w by d at the eaves.
+     - F.pyrRoof covers EXACTLY w by d at the eaves and meets at one point;
+       F.hipRoof covers the same w by d but rises to a RIDGE along the longer
+       side — use it for any roof that is not square.
      - A vertical-axis F.cyl cannot be tilted; use F.rod/F.beam between two
        points for anything leaning, arching or horizontal.
      - For a block placed at (cos a, sin a) * r, ry = -a points its long axis
@@ -325,6 +327,38 @@ function mkPyrRoof(x, y, z, w, h, d, ry, color, family) {
   return _add(m);
 }
 
+/* a true hip roof: covers EXACTLY w (x) by d (z) at the eaves, rises h to a
+   RIDGE along the longer side (ridge length |w - d|), with triangular hipped
+   ends. pyrRoof always meets at one point, which reads as a stretched pyramid
+   on any long building; use this instead. w == d gives a pyramid. */
+function mkHipRoof(x, y, z, w, h, d, ry, color, family) {
+  w = Math.max(w, 0.02); d = Math.max(d, 0.02); h = Math.max(h, 0.02);
+  const hw = w / 2, hd = d / 2, along = w >= d;
+  const r = along ? (w - d) / 2 : (d - w) / 2;
+  const A = [-hw, 0, -hd], B = [hw, 0, -hd], C = [hw, 0, hd], D = [-hw, 0, hd];
+  const P = along ? [-r, h, 0] : [0, h, -r], Q = along ? [r, h, 0] : [0, h, r];
+  const tris = along
+    ? [[A, P, Q], [A, Q, B], [D, C, Q], [D, Q, P], [A, D, P], [B, Q, C], [A, B, C], [A, C, D]]
+    : [[A, P, B], [B, P, Q], [B, Q, C], [D, Q, P], [D, C, Q], [A, D, P], [A, B, C], [A, C, D]];
+  const pos = [];
+  tris.forEach((t) => t.forEach((v) => pos.push(v[0], v[1], v[2])));
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  /* wind every face outward (normal away from the roof's centre line) */
+  const p = geo.attributes.position, a = new THREE.Vector3(), b = new THREE.Vector3(), c = new THREE.Vector3();
+  for (let i = 0; i < p.count; i += 3) {
+    a.fromBufferAttribute(p, i); b.fromBufferAttribute(p, i + 1); c.fromBufferAttribute(p, i + 2);
+    const n = new THREE.Vector3().subVectors(b, a).cross(new THREE.Vector3().subVectors(c, a));
+    const m = new THREE.Vector3().addVectors(a, b).add(c).divideScalar(3);
+    const out = m.y < 1e-6 ? new THREE.Vector3(0, -1, 0) : new THREE.Vector3(along ? (Math.abs(m.x) > r ? m.x : 0) : m.x, 0.001, along ? m.z : (Math.abs(m.z) > r ? m.z : 0));
+    if (n.dot(out) < 0) { p.setXYZ(i + 1, c.x, c.y, c.z); p.setXYZ(i + 2, b.x, b.y, b.z); }
+  }
+  geo.computeVertexNormals();
+  const m = new THREE.Mesh(geo, mat(color, family));
+  m.position.set(x, y, z); m.rotation.y = ry || 0;
+  return _add(m);
+}
+
 /* ------------------------------------------------------------ registry */
 const FURN_CULTURES = ['ancient', 'ancients-salvage', 'yuni-court', 'yuni-common', 'yuni-poor', 'sahelian', 'order', 'nomad', 'voth', 'iziz', 'beast-rider'];
 const PLANT_CLIMATES = ['hypertropic', 'tropic', 'temperate', 'cold'];
@@ -386,7 +420,22 @@ function makeFrame(x, z, ry, opt) {
   F.ball = (lx, ly, lz, r, color, family) => { const [x2, z2] = toWorld(lx, lz); mkBall(x2, F.y + ly, z2, r, color, family); };
   F.frustum = (lx, ly, lz, rBottom, rTop, h, ry2, color, family, sides) => { const [x2, z2] = toWorld(lx, lz); mkFrustum(x2, F.y + ly, z2, rBottom, rTop, h, F.ry + (ry2 || 0), color, family, sides); };
   F.pyrRoof = (lx, ly, lz, w, h, d, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkPyrRoof(x2, F.y + ly, z2, w, h, d, F.ry + (ry2 || 0), color, family); };
-  F.beam = (ax, ay, az, bx, by, bz, w, d, color, family) => { const [ax2, az2] = toWorld(ax, az), [bx2, bz2] = toWorld(bx, bz); mkBeam(ax2, F.y + ay, az2, bx2, F.y + by, bz2, w, d, color, family); };
+  F.hipRoof = (lx, ly, lz, w, h, d, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkHipRoof(x2, F.y + ly, z2, w, h, d, F.ry + (ry2 || 0), color, family); };
+  /* a beam's roll must come from the LOCAL frame, then turn with the building:
+     setFromUnitVectors on the world direction picks the shortest rotation,
+     whose roll depends on heading, so a sloped slab (roof, canopy, tent side)
+     built at ry = 0 twisted about its own axis at any other ry. Identical at ry = 0. */
+  const _bUp = new THREE.Vector3(0, 1, 0), _bDir = new THREE.Vector3(), _bQy = new THREE.Quaternion(), _bAxY = new THREE.Vector3(0, 1, 0);
+  F.beam = (ax, ay, az, bx, by, bz, w, d, color, family) => {
+    const [ax2, az2] = toWorld(ax, az), [bx2, bz2] = toWorld(bx, bz);
+    const m = mkBeam(ax2, F.y + ay, az2, bx2, F.y + by, bz2, w, d, color, family);
+    if (F.ry && m) {
+      _bDir.set(bx - ax, by - ay, bz - az);
+      if (_bDir.lengthSq() > 1e-12) {
+        m.quaternion.setFromUnitVectors(_bUp, _bDir.normalize()).premultiply(_bQy.setFromAxisAngle(_bAxY, F.ry));
+      }
+    }
+  };
   F.rod = (ax, ay, az, bx, by, bz, r, color, family) => { const [ax2, az2] = toWorld(ax, az), [bx2, bz2] = toWorld(bx, bz); mkRod(ax2, F.y + ay, az2, bx2, F.y + by, bz2, r, color, family); };
   F.lamp = (lx, ly, lz, amp, rad) => { const [x2, z2] = toWorld(lx, lz); const l = new THREE.PointLight(0xffb066, amp || 1, rad || 10); l.position.set(x2, F.y + ly, z2); _add(l); };
   F.tree = (lx, lz, kind, h, ly) => treeHelper(F, lx, lz, kind, h, ly || 0);
