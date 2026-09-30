@@ -974,3 +974,18 @@ goes stale the moment the computation changes.
 
 Measured: hex/0 577 616 and hex/2 440 570 of 700 000, mav/0 174 420 of 250 000,
 error panel clean, all invariants pass.
+
+## Worn (decay 5), folded in from Yuni (2026-09-30)
+
+Yuni's port of the kit had a WORN variant for its `ancient_*` assets: the intact
+fabric, whole, with rust bleeding from seams and fasteners (`TEX.panelWorn`,
+`MAT.whiteWorn`), streaks under every ledge, sill and ring, flush rusted plates,
+and moss and vine only on the tall towers. It now lives in `src/69w-worn.js` as
+decay 5, and the `worn` target shows every type intact (west) and worn (east).
+
+Differences from Yuni's version: the dirty-white tint (0.90, 0.87, 0.81) is the
+worn material's colour instead of a per-part tint at merge time, and every
+MAT.white mesh of the structure goes worn, not only the ones SHELL() made. The
+texture is made on first use, so targets without decay 5 are unchanged: the kit
+showcase and skyi fingerprint identically before and after (same counts, same
+instance transforms). worn.html: 5.3 M tris, 146 registered, error panel clean.
