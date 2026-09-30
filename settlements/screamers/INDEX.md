@@ -75,7 +75,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `80-aa-battery.js` | <1 |  |
 | `81-houses-abc.js` | 4 |  |
 | `82-apartments.js` | 6 |  |
-| `83-amphitheater.js` | 5 |  |
+| `83-amphitheater.js` | 7 |  |
 | `84-fuel.js` | 2 |  |
 | `85-radar.js` | 3 |  |
 | `86-dish.js` | 2 |  |

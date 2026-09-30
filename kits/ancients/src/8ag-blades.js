@@ -184,6 +184,8 @@ TEX.blGrass=canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),D=id.dat
  g.putImageData(id,0,0);});
 MAT.blLawn =new THREE.MeshStandardMaterial({map:TEX.blGrass,color:0xffffff,roughness:1,metalness:0,side:DS});
 MAT.blLawnR=new THREE.MeshStandardMaterial({map:TEX.blGrass,color:0x9a8d62,roughness:1,metalness:0,side:DS});
+// QA (arcC): the torn ground under the fallen blade
+MAT.blScar=new THREE.MeshStandardMaterial({map:TEX.concrete,color:0x3e3328,roughness:1,metalness:0,side:DS});
 kdef('blBox',new THREE.BoxGeometry(1,1,1),MAT.blKit);
 kdef('blDim',new THREE.BoxGeometry(1,1,1),MAT.blVoid);
 // Presets are DERIVED from this: targets/blades/91z-views.js runs after
@@ -308,9 +310,24 @@ function buildBlades(scene,gx,gz,d){reseed(9640+d);KOFF=[gx,0,gz];
   const face=(f,hole,list,T)=>{const g=gridSurface((a,b)=>{const q=S(a,b);return B.P(q[0],q[1],f);},nu,nv,
     {hole:hole?(a,b)=>{const q=S(a,b);return hole(q[0],q[1]);}:null});
    setUV(g,nu,nv,(a,b)=>{const q=S(a,b);return[f*q[0]*B.W(q[1])/2/T,q[1]/T];});list.push(g);};
+  // QA (arcC): THE REVEALS. A hole used to leave the gap between the two skins
+  // open, so at a grazing angle you saw through the blade's edge. Every edge
+  // between a holed cell and a whole one now gets a reveal from the skin to the
+  // mid-thickness section sheet, in the section's own material.
+  const reveal=(f,hole,list)=>{if(!hole||!list)return;const H=[];
+   for(let j=0;j<nv;j++){const row=[];for(let i=0;i<nu;i++){const q=S((i+.5)/nu,(j+.5)/nv);row.push(hole(q[0],q[1]));}H.push(row);}
+   const P=(i,j,d)=>{const q=S(i/nu,j/nv);return B.P(q[0],q[1],d);},pos=[],uv=[];
+   const qd=(i0,j0,i1,j1)=>{const a=P(i0,j0,f),b=P(i1,j1,f),c=P(i1,j1,0),e=P(i0,j0,0);
+    for(const p of [a,b,c,a,c,e]){pos.push(p[0],p[1],p[2]);uv.push((p[0]+p[2])/16,p[1]/16);}};
+   for(let j=0;j<nv;j++)for(let i=0;i<nu;i++){if(!H[j][i])continue;
+    if(i>0&&!H[j][i-1])qd(i,j,i,j+1);if(i<nu-1&&!H[j][i+1])qd(i+1,j,i+1,j+1);
+    if(j>0&&!H[j-1][i])qd(i,j,i+1,j);if(j<nv-1&&!H[j+1][i])qd(i,j+1,i+1,j+1);}
+   if(!pos.length)return;const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
+   g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.computeVertexNormals();list.push(g);};
   if(o.inner)face(-1,o.hI,o.inner,TW);
   if(o.outer)face(1,o.hO,o.outer,TW);
-  if(o.mid&&(o.hI||o.hO))face(0,(u,s)=>!((o.hI&&o.hI(u,s))||(o.hO&&o.hO(u,s))),LX,16);
+  if(o.mid){reveal(-1,o.inner&&o.hI,o.midList||LX);reveal(1,o.outer&&o.hO,o.midList||LX);}
+  if(o.mid&&(o.hI||o.hO))face(0,(u,s)=>!((o.hI&&o.hI(u,s))||(o.hO&&o.hO(u,s))),o.midList||LX,16);
   if(o.edge)for(const e of [-1,1]){const g=gridSurface((a,b)=>B.P(e,lerp(s0(e),s1(e),b),2*a-1),2,nv,{});
    setUV(g,2,nv,(a,b)=>{const s=lerp(s0(e),s1(e),b);return[(2*a-1)*B.T(s)/2/TW,s/TW];});o.edge.push(g);}
   for(const [cap,sf] of [[o.top,s1],[o.bot,s0]]){if(!cap)continue;
@@ -370,7 +387,11 @@ function buildBlades(scene,gx,gz,d){reseed(9640+d);KOFF=[gx,0,gz];
   let acc=0;
   for(let si=0;si<K.segs.length;si++){const sg=K.segs[si],sA=K.lines[si],sB=K.lines[si+1];
    const tmp={w:[],s:[],x:[]};
-   piece(B,sA,sB,{inner:tmp.w,outer:tmp.s,edge:tmp.s,top:tmp.x,bot:tmp.x,hI:null,hO:null});
+   // QA (arcC): the pieces were clean curved plates. A slab that came down 400 m
+   // bursts: both skins are holed now (harder than the standing ruin), with the
+   // section sheet showing through, so a piece reads as a shattered slab.
+   const fI=(u,s2)=>fbm(u*2.1+B.sd+si,s2/48,B.sd*.3+7.7,3)<.36,fO=(u,s2)=>fbm(u*2.3+B.sd+si+4,s2/52,B.sd*.3+9.1,3)<.31;
+   piece(B,sA,sB,{inner:tmp.w,outer:tmp.s,edge:tmp.s,top:tmp.x,bot:tmp.x,hI:fI,hO:fO,mid:true,midList:tmp.x});
    const all=[...tmp.w,...tmp.s,...tmp.x];
    for(const g of all)g.applyMatrix4(M0);
    const bb=new THREE.Box3();for(const g of all){g.computeBoundingBox();bb.union(g.boundingBox);}
@@ -719,7 +740,35 @@ function buildBlades(scene,gx,gz,d){reseed(9640+d);KOFF=[gx,0,gz];
    for(let j=0;j<16;j++){const e=rng()<.5?-1:1,s=lerp(f.s0(e),f.s1(e),rng()),p=xf(f.M,B.P(e,s,up));
     kput('vine',p,null,[1.5,Math.max(3,p[1]-(f.dir>0?0:PY)),1.5],null);}
    const c=f.box.getCenter(new THREE.Vector3()),sz=f.box.getSize(new THREE.Vector3());
-   talus(c.x,f.dir>0?0:PY,c.z,Math.min(sz.x,sz.z)*.35,Math.max(sz.x,sz.z)*.62,f.dir>0?300:160,5.5);}
+   talus(c.x,f.dir>0?0:PY,c.z,Math.min(sz.x,sz.z)*.35,Math.max(sz.x,sz.z)*.62,f.dir>0?300:160,5.5);
+   // QA (arcC): bedded in what it hit — rubble piled along every line where
+   // its skins meet the ground (krSeam, 89d-arcube.js) ...
+   const gy=f.dir>0?0:PY;
+   for(let j=0;j<60;j++){const e=rng()<.5?-1:1,u=rng()<.6?e*rr(.85,1):rr(-1,1),s2=lerp(f.s0(u),f.s1(u),rng()),o=rr(-1,1),p=xf(f.M,B.P(u,s2,o));
+    if(p[1]-gy>9)continue;const zz=rr(2.5,8);
+    kput('rubble',[p[0]+rr(-6,6),gy+zz*.35,p[2]+rr(-6,6)],qEuler(rng()*3,rng()*3,rng()*3),[zz*rr(.8,1.5),zz*rr(.5,.9),zz*rr(.8,1.5)],rubC());}
+   // ... and, on the plain, torn slabs of its skin thrown out either side
+   if(f.dir>0)for(let j=0;j<10;j++){const w=rr(10,26),l=rr(12,34),t=rr(3,6);
+    const SH=krShard({w:w,l:l,t:t,layers:2,brk:[1,1,1,j%2],bite:.26,tile:16,seg:8});
+    const a=rng()*TAU,r=Math.max(sz.x,sz.z)*rr(.4,.75),x=c.x+Math.cos(a)*r,z=c.z+Math.sin(a)*r;
+    const qS=qEuler(rr(-.3,.3),rng()*TAU,rr(-.3,.3));
+    const MS=new THREE.Matrix4().compose(new THREE.Vector3(x,-SH.low(qS)-t*.3,z),qS,new THREE.Vector3(1,1,1));
+    if(SH.top)LS.push(SH.top.applyMatrix4(MS));if(SH.side)LS.push(SH.side.applyMatrix4(MS));
+    if(SH.bot)LX.push(SH.bot.applyMatrix4(MS));if(SH.brk)LX.push(SH.brk.applyMatrix4(MS));
+    talus(x,0,z,Math.max(w,l)*.3,Math.max(w,l)*.7,14,3.5);}}
+  // QA (arcC): THE SCAR. Where the north-west blade came down the plain is torn
+  // open: a ragged skirt of crushed earth under and round the pieces, and a
+  // ring of thrown ejecta beyond it, so it hit something.
+  for(const Fp of FOOT){if(Fp.B.brk.dir<0)continue;const ax=Fp.b[0]-Fp.a[0],az=Fp.b[2]-Fp.a[2],L=Math.hypot(ax,az),ex=ax/L,ez=az/L;
+   const n=24,pos=[],uv=[];const W=Fp.hw*1.5,ph=Fp.B.sd;
+   const rim=t=>{const a=t*TAU,cx=Math.cos(a),sn=Math.sin(a),f=1+.22*Math.sin(a*3+ph)+.12*Math.sin(a*7+ph*2);
+    const lx=cx*(L*.5+W*.4)*f,lz=sn*W*f;return[(Fp.a[0]+Fp.b[0])/2+lx*ex-lz*ez,.45,(Fp.a[2]+Fp.b[2])/2+lx*ez+lz*ex];};
+   const m=[(Fp.a[0]+Fp.b[0])/2,.45,(Fp.a[2]+Fp.b[2])/2];
+   for(let i=0;i<n;i++){const A2=rim(i/n),B2=rim((i+1)/n);pos.push(...m,...B2,...A2);uv.push(m[0]/16,m[2]/16,B2[0]/16,B2[2]/16,A2[0]/16,A2[2]/16);}
+   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
+   g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.computeVertexNormals();mesh(g,MAT.blScar,G);
+   for(let j=0;j<420;j++){const t=rng(),p=rim(t),k=rr(1,1.5),x=m[0]+(p[0]-m[0])*k,z=m[2]+(p[2]-m[2])*k,zz=rr(1,5)*(1.6-k*.6);
+    kput('rubble',[x,zz*.3,z],qEuler(rng()*3,rng()*3,rng()*3),[zz*rr(.8,1.5),zz*rr(.4,.8),zz*rr(.8,1.5)],rubC());}}
   // the stumps' own talus, outside and in
   for(const B of BT){const bo=B.P(0,4,1),bi=B.P(0,PY+2,-1),ro=Rp1(B.phi)+6;
    talus(ro*Math.cos(B.phi),0,ro*Math.sin(B.phi),4,B.brk?160:90,B.brk?220:80,B.brk?7:5);

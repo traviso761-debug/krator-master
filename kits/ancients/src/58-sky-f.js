@@ -4,7 +4,9 @@
 // instead of 0.8. kput adds all three components of KOFF and bodyGroup already
 // routes the instanced pieces through useGroupXF, so lifting both KOFF and the
 // group moves merged meshes and instances together. See buildPerch for a
-// worked example -- a tower standing on a podium 90 m up.
+// worked example -- a tower standing on a podium 90 m up. An explicit hcut
+// also holds at level 3: the Perch's rehabilitated half-height ruin used to
+// stand back up to its full 290 m (level 3 is "the ruin, reoccupied").
 // `slim` is a PLAN SCALE, default 1 — the whole footprint shrinks while H stays
 // 290, so the same tower can be a slender one. The footprint here was always
 // dominated by the PODIUM, not the building: skyPlinth was r=105 where the
@@ -25,7 +27,7 @@ function buildSkyF(scene,gx,gz,d,gy,noPlinth,hcut,slim){reseed(9150+d);gy=gy||0;
  const PR=48*PS;
  if(!noPlinth)skyPlinth(G,dd,PR);
  const RT=y=>(28*(1-.2*clamp(y/H,0,1))+6*Math.sin(Math.PI*clamp(y/H,0,1)))*PS;
- const build=(P,dx,y0,y1,upper)=>{const cut=(dx>0&&!upper&&y1!=null)?y1:(dx>0&&d===1?H*(hcut||.8):null);const L=(cut!=null?cut:H)-y0;
+ const build=(P,dx,y0,y1,upper)=>{const cut=(dx>0&&!upper&&y1!=null)?y1:(dx>0&&(d===1||(d===3&&hcut))?H*(hcut||.8):null);const L=(cut!=null?cut:H)-y0;
   mesh(lathe({rFn:()=>11*PS,H:L,nu:32,nv:4,hole:holeFn(dx*.6,67,null,2)}),CONC(dx),P);if(dx>0)mesh(lathe({rFn:()=>9.5*PS,H:L,nu:16,nv:1}),MAT.guts,P);
   const trays=[],darks=[];   // one mesh for the whole stack, not three per tray
   let k0=Math.round(y0/TS);for(let y=0;y+2<L;y+=TS){const k=k0+((y/TS)|0);const yy=y+y0;const R=RT(yy);const ang=k*.14;const fallen=dx>0&&(k%7===3);
