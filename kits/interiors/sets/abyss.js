@@ -69,7 +69,7 @@
     const out = [], n = 6, RR = 12.5, ri = 3.15;
     for (let i = 0; i < n; i++) {
       const a = PI / 2 + PI / n + i * TAU / n, x = Math.cos(a) * RR, z = Math.sin(a) * RR;
-      out.push({ id: 'class-' + i, kind: 'school', poly: SH.circle(ri, 16, R3(x), R3(z)), y: 0.7, h: 2.5,
+      out.push({ id: 'class-' + i, kind: 'school', poly: SH.circle(ri, 8, R3(x), R3(z)), y: 0.7, h: 2.5,
         doors: [{ at: [R3(x - Math.cos(a) * ri), R3(z - Math.sin(a) * ri)], w: 1.1 }] });
     }
     return out;
@@ -116,7 +116,7 @@
         'deck the outside flight climbs to). The second upper box (turned 0.08) and the top box across them have no door the builder ' +
         'cuts: not planned. Variant 1 (silo house) is #1, variant 2 (painted townhouse) #2' },
     { key: 'abyss_house_mid#1', name: 'Abyssal family house (variant 1: silo house)', culture: 'eastabyss', wealth: 0.5, types: ['single-family dwelling'], lot: [14, 14],
-      rooms: [{ id: 'silo', kind: 'bedroom', poly: SH.circle(2.6, 16, -3.2, -2.2), y: 1.15, h: 3.0, doors: [{ at: [-2.02, 0.117], w: 0.95 }] }],
+      rooms: [{ id: 'silo', kind: 'bedroom', poly: SH.circle(2.6, 8, -3.2, -2.2), y: 1.15, h: 3.0, doors: [{ at: [-2.02, 0.117], w: 0.95 }] }],
       bodies: [{ id: 'cabin', poly: rect(5.4, 4.6, 3.4, -2.6), y: 1.0, levels: [{ h: 2.7 }], wall: 0.1, roof: 'flat',
         doors: [{ at: [2.2, -0.3], w: 1.0 }], program: ['living'] }],
       note: 'the domed silo (r 2.7, door at angle 0.35 PI) and the plank cabin (5.4 x 4.6) on the deck at H 1.0, the tarp porch ' +
@@ -134,10 +134,10 @@
       types: ['single-family dwelling'], lot: [24, 24],
       bodies: [
         { id: 'west-pavilion', poly: rect(5.3, 3.9, -6, -3), y: 1.8, levels: [{ h: 2.8 }], wall: 0.25, roof: 'flat',
-          doors: [{ at: [-6, -1.05], w: 1.2 }], program: ['hall', 'kitchen'] },
+          doors: [{ at: [-6, -1.05], w: 1.2 }], program: ['living'] },
         { id: 'east-pavilion', poly: rect(5.8, 4.4, 5.5, -3.5), y: 1.8, levels: [{ h: 2.8 }], wall: 0.25, roof: 'flat',
-          doors: [{ at: [5.5, -1.3], w: 1.2 }], program: ['bedroom', 'bedroom'] }],
-      note: 'the two walled pavilions under their sails on the compound deck (H 1.8); the third sail shades the open court, the ' +
+          doors: [{ at: [5.5, -1.3], w: 1.2 }], program: ['bedroom'] }],
+      note: 'the two walled pavilions under their sails on the compound deck (H 1.8), one room each (5.3 x 3.9 and 5.8 x 4.4: too small to cut in two); the third sail shades the open court, the ' +
         'compound wall and the private dock are open' },
     { key: 'abyss_house_rich#2', name: 'Abyssal great house (variant 2: tin-mirror tower house)', culture: 'eastabyss', wealth: 0.85,
       types: ['single-family dwelling'], lot: [24, 24],
@@ -151,8 +151,8 @@
     { key: 'abyss_shop_weapons', name: 'Weaponsmith', culture: 'eastabyss', wealth: 0.45, types: ['market/shop', 'industry'], lot: [13, 12],
       rooms: [
         { id: 'shop', kind: 'shop', poly: rect(7.7, 5.45, -1.2, -2.125), y: 0.9, h: 2.9, doors: [{ at: [-1.2, 0.6], w: 6.0, swing: 'none' }] },
-        { id: 'forge', kind: 'smithy', poly: rect(3.0, 3.4, 4.7, 3.4), y: 0, h: 2.6,
-          doors: [{ at: [4.7, 5.1], w: 2.4, swing: 'none' }, { at: [3.2, 3.4], w: 2.4, swing: 'none' }] }],
+        { id: 'forge', kind: 'smithy', poly: rect(3.2, 3.6, 4.7, 3.4), y: 0, h: 2.6,
+          doors: [{ at: [4.7, 5.2], w: 1.8, swing: 'none' }] }],
       note: 'variant 0: the plank forge-shop, three walls open to the front on the deck (H 0.9), and the forge on the ground under its ' +
         'own corrugated lean-to (open on all sides). Variant 1 is a container (its side hinged up as an awning) and a forge under a sail' },
     { key: 'abyss_shop_armor', name: 'Armourer', culture: 'eastabyss', wealth: 0.55, types: ['market/shop', 'industry'], lot: [12, 12],
@@ -176,15 +176,14 @@
         'at the back (kitchen) and the counter in front. Variant 1 (drum kitchen) cooks in a horizontal drum with no floor and seats ' +
         'its tables on the open deck' },
     { key: 'abyss_shop_alchemy', name: 'Alchemist', culture: 'eastabyss', wealth: 0.6, types: ['market/shop'], lot: [12, 12],
-      rooms: [{ id: 'tank', kind: 'shop', poly: SH.circle(2.9, 20, -1, -1.8), y: 1.05, h: 3.0, doors: [{ at: [-1, 1.1], w: 0.95 }] }],
+      rooms: [{ id: 'tank', kind: 'shop', poly: SH.circle(2.9, 8, -1, -1.8), y: 1.05, h: 3.0, doors: [{ at: [-1, 0.88], w: 0.95 }] }],
       note: 'the upright tank house (r 3.0, 5 m) on the deck at H 0.9, door on the front; one room (its ring balcony is outside). ' +
         'Variant 1 adds a second, narrow tank (r 1.6) with no door, on a gantry' },
     { key: 'abyss_shop_salvage', name: 'Salvage dealer and tinker', culture: 'eastabyss', wealth: 0.4, types: ['market/shop', 'industry'], lot: [16, 14],
       rooms: [
-        { id: 'office', kind: 'shop', poly: rect(CW, 2.95, 3.4, 1.275), y: 0.2, h: 2.4, doors: [{ at: [4.54, 1.2], w: 0.9 }] },
-        { id: 'bench', kind: 'workshop', poly: rect(CW, 2.95, 3.4, -1.675), y: 0.2, h: 2.4, doors: [{ at: [3.4, -3.15], w: 2.0 }] }],
-      note: 'variant 0: the 6.1 m container office turned along z in the scrap yard, split into the shop (side door) and the tinker\'s ' +
-        'bench (cargo doors); the fenced yard is open. Variant 1 keeps the office in an upright tank (r 2.3) under a hoist derrick' },
+        { id: 'office', kind: 'shop', poly: rect(CW, C6, 3.4, -0.2), y: 0.2, h: 2.4, doors: [{ at: [4.54, 1.2], w: 0.9 }] }],
+      note: 'variant 0: the 6.1 m container office turned along z in the scrap yard, one shop room behind the side door (the cargo doors ' +
+        'kept shut: the 2.28 m box fits its counter only with the end wall free; split in two, neither half fits its counter or bench); the tinker works in the open fenced yard, not planned. Variant 1 keeps the office in an upright tank (r 2.3) under a hoist derrick' },
     { key: 'abyss_shop_salt', name: 'Salt and fish merchant', culture: 'eastabyss', wealth: 0.4, types: ['market/shop'], lot: [14, 12],
       rooms: [{ id: 'stall', kind: 'shop', poly: rect(11.6, 9.0, 0, -0.3), y: 0.1, h: 3.0,
         doors: [{ at: [0, 4.2], w: 6, swing: 'none' }, { at: [-5.8, -0.3], w: 4, swing: 'none' }, { at: [5.8, -0.3], w: 4, swing: 'none' }] }],
@@ -280,8 +279,8 @@
     /* ---------- Farming and storage (65-abyss-90-farm.js) */
     { key: 'abyss_farmhouse', name: 'Marsh farmhouse', culture: 'eastabyss', wealth: 0.35, types: ['farm', 'single-family dwelling'], lot: [24, 22],
       bodies: [{ id: 'house', poly: rect(7, 4.4, -6, -6), y: 1.6, levels: [{ h: 2.5 }], wall: 0.12, roof: 'hip', pitch: 0.75,
-        doors: [{ at: [-7.4, -3.8], w: 0.95 }], program: ['living', 'kitchen', 'bedroom'] }],
-      note: 'variant 0: the plank stilt house (7 x 4.4) on its deck at H 1.6, the door left of centre under the porch canopy; the ' +
+        doors: [{ at: [-7.4, -3.8], w: 0.95 }], program: ['living', 'bedroom'] }],
+      note: 'variant 0: the plank stilt house (7 x 4.4) on its deck at H 1.6, a living room (the hearth is its kitchen) and a bedroom: 4.4 m deep, it does not cut into three; the door left of centre under the porch canopy; the ' +
         'pen, the threshing deck and the drying racks are open. Variant 1 lives in a horizontal drum (no floor) behind a reed wall' },
     { key: 'abyss_granary', name: 'Silo granary', culture: 'eastabyss', wealth: 0.5, types: ['farm', 'infrastructure'], lot: [28, 24],
       rooms: granaryRooms,
