@@ -8,6 +8,7 @@
 */
 var WALK = { freq: 1.05, thigh: 0.36, knee: 0.8, arm: 0.3, bob: 0.025, sway: 0.03, twist: 0.12 };
 var POSE = {};   /* name -> {rx,ry,rz, px,py,pz} rest-relative, arms in the hanging convention */
+var CUR_DEF = null;   /* the character being built: its extraPose(u, clipName) drives bones the clips do not know */
 
 function setRot(name, x, y, z){ POSE[name] = POSE[name] || {}; POSE[name].rx = x; POSE[name].ry = y; POSE[name].rz = z; }
 function setPos(name, x, y, z){ POSE[name] = POSE[name] || {}; POSE[name].px = x; POSE[name].py = y; POSE[name].pz = z; }
@@ -63,8 +64,8 @@ function idlePose(u){
    reads with an axe, a sword, a polearm, a fist or an open hand. */
 var ATTACK_KEYS = [
   { u: 0.00, aR: 0.05, aRz: -0.16, fR: -0.18, hR: 0,    aL: 0.05, hipRy: 0,     spRy: 0,     spRx: -0.04, hipY: 0,     tL: 0,     tR: 0,    kL: 0.06, kR: 0.06, hdRy: 0 },
-  { u: 0.30, aR: 2.3,  aRz: -0.9,  fR: -0.9,  hR: 0.3,  aL: -0.5, hipRy: 0.35,  spRy: 0.45,  spRx: -0.2,  hipY: -0.05, tL: -0.4,  tR: 0.25, kL: 0.5,  kR: 0.3,  hdRy: -0.3 },
-  { u: 0.48, aR: -0.9, aRz: -0.35, fR: -0.2,  hR: -0.2, aL: 0.4,  hipRy: -0.35, spRy: -0.6,  spRx: 0.4,   hipY: -0.12, tL: -0.55, tR: 0.35, kL: 0.7,  kR: 0.25, hdRy: 0.2 },
+  { u: 0.30, aR: 2.5,  aRz: -0.45, fR: -1.5,  hR: 0.4,  aL: -0.5, hipRy: 0.35,  spRy: 0.45,  spRx: -0.2,  hipY: -0.05, tL: -0.4,  tR: 0.25, kL: 0.5,  kR: 0.3,  hdRy: -0.3 },
+  { u: 0.48, aR: -0.8, aRz: -0.3,  fR: -0.25, hR: -0.3, aL: 0.4,  hipRy: -0.35, spRy: -0.6,  spRx: 0.4,   hipY: -0.12, tL: -0.55, tR: 0.35, kL: 0.7,  kR: 0.25, hdRy: 0.2 },
   { u: 0.66, aR: -1.1, aRz: -0.5,  fR: -0.3,  hR: -0.2, aL: 0.5,  hipRy: -0.4,  spRy: -0.5,  spRx: 0.3,   hipY: -0.1,  tL: -0.5,  tR: 0.3,  kL: 0.65, kR: 0.3,  hdRy: 0.1 },
   { u: 1.00, aR: 0.05, aRz: -0.16, fR: -0.18, hR: 0,    aL: 0.05, hipRy: 0,     spRy: 0,     spRx: -0.04, hipY: 0,     tL: 0,     tR: 0,    kL: 0.06, kR: 0.06, hdRy: 0 }
 ];
@@ -110,7 +111,7 @@ function bakeClip(name, fn, duration, frames){
   var times = [], q = {}, pos = {}, i;
   BONE_DEFS.forEach(function(d){ q[d.name] = []; pos[d.name] = []; });
   for(i = 0; i <= frames; i++){
-    var u = (i % frames) / frames; times.push(i / frames * duration); fn(u); applyPose();
+    var u = (i % frames) / frames; times.push(i / frames * duration); fn(u); if(CUR_DEF && CUR_DEF.extraPose) CUR_DEF.extraPose(u, name); applyPose();
     BONE_DEFS.forEach(function(d){ var b = BONES[d.name]; q[d.name].push(b.quaternion.x, b.quaternion.y, b.quaternion.z, b.quaternion.w); pos[d.name].push(b.position.x, b.position.y, b.position.z); });
   }
   var tracks = [];
@@ -126,6 +127,14 @@ function mixamoClip(data, name){
   var tracks = [], n = data.frames, times = [], i;
   for(i = 0; i <= n; i++) times.push(i / data.fps);
   var scale = data.unitScale * (BONES.mixamorigHips.userData.rest.y / data.hipHeight);
+  /* bones the clip does not carry (extra arms, a tail) get the character's overlay */
+  if(CUR_DEF && CUR_DEF.extraPose){
+    var extra = BONE_DEFS.map(function(d){ return d.name; }).filter(function(b){ return !data.bones[b]; }), eq = {};
+    extra.forEach(function(b){ eq[b] = []; });
+    for(i = 0; i <= n; i++){ restPose(); CUR_DEF.extraPose((i % n) / n, name); applyPose();
+      extra.forEach(function(b){ var q = BONES[b].quaternion; eq[b].push(q.x, q.y, q.z, q.w); }); }
+    extra.forEach(function(b){ tracks.push(new THREE.QuaternionKeyframeTrack(b + '.quaternion', times, eq[b])); });
+  }
   for(var bone in data.bones){
     if(!BONES[bone]) continue;
     var rec = data.bones[bone];
@@ -158,6 +167,13 @@ function CHAR_MAIN(){
   sun.shadow.mapSize.set(2048, 2048); sun.shadow.camera.left = sun.shadow.camera.bottom = -3; sun.shadow.camera.right = sun.shadow.camera.top = 3;
   sun.shadow.camera.near = 1; sun.shadow.camera.far = 20; sun.shadow.bias = -0.0008; sun.shadow.normalBias = 0.02; scene.add(sun);
   var rim = new THREE.DirectionalLight(0xc0d4ff, 0.7); rim.position.set(-4, 3, -5); scene.add(rim);
+  /* environment for reflections: a small room with a warm sky, a cool floor and two bright panels, pre-filtered */
+  var env = new THREE.Scene(); env.background = new THREE.Color(0xbfc8d8);
+  function panel(x, y, z, w, h, c, ry){ var m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color: c, side: THREE.DoubleSide })); m.position.set(x, y, z); m.rotation.y = ry || 0; env.add(m); }
+  panel(0, 8, 0, 40, 40, 0xf4ead8, 0); env.children[env.children.length - 1].rotation.x = Math.PI / 2;      /* ceiling, warm */
+  panel(0, -2, 0, 40, 40, 0x8a8478, 0); env.children[env.children.length - 1].rotation.x = Math.PI / 2;     /* floor, dim */
+  panel(6, 4, 5, 4, 3, 0xfff6e0, -0.9); panel(-7, 3, -4, 3, 5, 0xdfe8ff, 0.7); panel(0, 2, -12, 24, 8, 0x9aa4b4, 0);
+  var pmrem = new THREE.PMREMGenerator(renderer); scene.environment = pmrem.fromScene(env, 0.04).texture; pmrem.dispose();
 
   /* ground: a scrolling grid so the walk reads as travel */
   var cv = document.createElement('canvas'); cv.width = cv.height = 256; var cx = cv.getContext('2d');
@@ -169,13 +185,15 @@ function CHAR_MAIN(){
 
   /* the character: picked by the URL hash (#puffer), default the first registered */
   var key = (location.hash || '').replace('#', ''), def = CHARACTERS.find(function(c){ return c.key === key; }) || CHARACTERS[0];
+  CUR_DEF = def;
   defineBones(def.proportions);
+  if(def.extraBones) def.extraBones(P);
   var bones = buildSkeleton();
   bones.forEach(function(b){ b.userData.rest = b.position.clone(); });
   def.build();
   var geo = mergePieces(bones, false), geoMetal = mergePieces(bones, true);
   var mat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.72, metalness: 0.0, skinning: true });   /* r128: skinning must be opted into per material */
-  var matMetal = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.42, metalness: 0.45, skinning: true });   /* no environment map, so full metalness would go black */
+  var matMetal = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.35, metalness: 0.85, skinning: true });
   var mesh = new THREE.SkinnedMesh(geo, mat);
   mesh.castShadow = true; mesh.receiveShadow = true; mesh.frustumCulled = false;
   var rig = new THREE.Group(); rig.add(mesh); mesh.add(bones[0]);

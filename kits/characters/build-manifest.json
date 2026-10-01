@@ -7,10 +7,11 @@
  "30-rig.js": "0a830907119534cd5088ecc90308732f75c59dc9",
  "31-barbarian.js": "f7c453be5bcb20fdba66f6949c7170424c0e5759",
  "32-puffer.js": "043533b6e4d8e80a723b527dc1f67ff21cdc3c6d",
- "33-priest.js": "95bfe93f603fd00d881cc4866b45f348dce816f8",
- "34-knight.js": "c24950dabadc16f6470951fc010df81ab98743ec",
+ "33-priest.js": "1ba20c845d15ffe7caa7d95d0a60eddffaccdacd",
+ "34-knight.js": "5aa9ecf16efb4c0c9bac3f5f58f76f46d9f1e5e0",
  "35-warrior.js": "392c64dbc69ab7ad9804d4da609601c2c8a3be63",
- "40-walk.js": "c5061f644df5367d2428c0388ca572ba23c66653",
+ "36-lizard.js": "67a8e69bc1659098fea4c2d8823bbcfbd3b15647",
+ "40-walk.js": "e2324c858a75afbffc2bf1d2589085e1caae2173",
  "99-tail.html": "7a7605b5f0a4ff1965cbbb49687581ccc223e5fb",
- "dist/barbarian.html": "0ca6321e431f719c2ab63b410de21f5f6fad088c"
+ "dist/barbarian.html": "3a02561a3af3cfc3427a9dabd64f75420e32dd1b"
 }

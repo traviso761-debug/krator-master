@@ -4,7 +4,7 @@
 const http = require('http'), fs = require('fs'), path = require('path');
 const { chromium } = require('playwright');
 const HERE = __dirname, OUT = process.argv[2] || path.join(HERE, 'shots');
-const CHARS = (process.argv[3] || 'barbarian,puffer,priest,knight,warrior').split(',');
+const CHARS = (process.argv[3] || 'barbarian,puffer,priest,knight,warrior,lizard').split(',');
 const N = parseInt(process.argv[4] || '8', 10);
 fs.mkdirSync(OUT, { recursive: true });
 (async () => {

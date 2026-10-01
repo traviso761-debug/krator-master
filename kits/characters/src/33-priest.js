@@ -22,8 +22,8 @@ function buildPriestBody(){
   var legBones = ['mixamorigSpine1', 'mixamorigSpine', 'mixamorigHips', B(1, 'UpLeg'), B(-1, 'UpLeg'), B(1, 'Leg'), B(-1, 'Leg')];
   /* the robe: shoulders to the floor */
   var robe = [];
-  for(var i = 0; i <= 44; i++){ var t = i / 44, y = 2.02 - t * 2.0, flare = 0.3 + t * t * 0.42; robe.push({ y: y, rx: flare + (t < 0.15 ? (0.15 - t) * 0.6 : 0), rz: flare * 0.78 }); }
-  addPiece(bodyTube(robe, 60), PR_BLACK, legBones.concat(['mixamorigSpine2']), { tint: priestTint(0, 14), power: 2 });
+  for(var i = 0; i <= 70; i++){ var t = i / 70, y = 2.02 - t * 2.0, flare = 0.3 + t * t * 0.42; robe.push({ y: y, rx: flare + (t < 0.15 ? (0.15 - t) * 0.6 : 0), rz: flare * 0.78 }); }
+  addPiece(bodyTube(robe, 84), PR_BLACK, legBones.concat(['mixamorigSpine2']), { tint: priestTint(0, 14), power: 2 });
   /* the mantle over the shoulders, and the hood */
   var mantle = [{ y: 2.12, rx: 0.18, rz: 0.16 }, { y: 2.0, rx: 0.38, rz: 0.3 }, { y: 1.78, rx: 0.5, rz: 0.4 }, { y: 1.55, rx: 0.52, rz: 0.42 }];
   addPiece(bodyTube(mantle, 40, false), PR_BLACK, ['mixamorigSpine2', 'mixamorigNeck', 'mixamorigSpine1'], { tint: priestTint(4, 9) });

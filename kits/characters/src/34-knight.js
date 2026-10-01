@@ -56,13 +56,13 @@ function buildKnightBody(){
   });
 }
 function buildSword(){
-  var g = new THREE.Group(), steel = propMat(KN_STEEL, 0.5, 0.35), gold = propMat(KN_GOLD, 0.5, 0.4), blue = propMat(KN_BLUE);
+  var g = new THREE.Group(), steel = propMat(KN_STEEL, 0.9, 0.3), gold = propMat(KN_GOLD, 0.9, 0.35), blue = propMat(KN_BLUE);
   propMesh(g, new THREE.CylinderGeometry(0.02, 0.022, 0.26, 8), blue, 0, 0.0);                          /* grip, centred on the hand */
   propMesh(g, new THREE.SphereGeometry(0.035, 8, 6), gold, 0, 0.16);                                      /* pommel */
   var blade = new THREE.BoxGeometry(0.07, 0.95, 0.012); blade.translate(0, -0.14 - 0.475, 0);
   var tip = new THREE.CylinderGeometry(0, 0.035, 0.1, 4); tip.rotateX(Math.PI); tip.rotateY(Math.PI / 4); tip.translate(0, -0.14 - 0.95 - 0.05, 0);
   propMesh(g, blade, steel); propMesh(g, tip, steel);
-  propMesh(g, new THREE.BoxGeometry(0.03, 0.9, 0.02), propMat(0xeef0f4, 0.5, 0.3), 0, -0.6);             /* fuller ridge */
+  propMesh(g, new THREE.BoxGeometry(0.03, 0.9, 0.02), propMat(0xeef0f4, 0.9, 0.25), 0, -0.6);             /* fuller ridge */
   [1, -1].forEach(function(m){ var q = new THREE.CatmullRomCurve3([V3(0, -0.14, 0), V3(m * 0.08, -0.16, 0), V3(m * 0.13, -0.1, 0), V3(m * 0.14, -0.03, 0)]);
     propMesh(g, new THREE.TubeGeometry(q, 10, 0.014, 6, false), gold); });
   return g;

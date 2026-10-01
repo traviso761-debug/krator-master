@@ -26,5 +26,6 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `33-priest.js` | 6 | the desert priest (1) |
 | `34-knight.js` | 7 | the horned knight (1) |
 | `35-warrior.js` | 8 | the lacquered warrior (1) |
-| `40-walk.js` | 18 | pose, walk cycle, scene (1); scene and loop (140) |
+| `36-lizard.js` | 11 | the four-armed lizard (1) |
+| `40-walk.js` | 19 | pose, walk cycle, scene (1); scene and loop (149) |
 | `99-tail.html` | <1 |  |
