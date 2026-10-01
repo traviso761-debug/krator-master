@@ -162,7 +162,11 @@ const dd = d>0 ? 1 : 0;      // "is this a ruin" - drives materials and holes
 
 `d === 2` differs from `d === 1` only in that the upper body is built into a
 separate group laid on its side by `toppledUpper()`. Most decay effects are
-driven by `dd`, not `d`.
+driven by `dd`, not `d`. A placer can BREAK the fallen body in two: set the global
+`TOPPLE_BREAK={x,z}` (builder-local) around the call and clear it after. Only
+builders whose `toppledUpper` call passes `partFn(U,y0,y1)` break: everything built
+through `bodyGroup` (D, E, F). The second piece's foot and bearing come back on
+`TOPPLE_BREAK.out`. See NOTES "Iziz round 4".
 
 Decay is expressed through a small vocabulary, all of which take `d` (or `dd`)
 directly: `SHELL(d)` picks white metal vs rust, `WIN(d)` lit vs dead glass,

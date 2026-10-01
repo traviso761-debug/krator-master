@@ -16,10 +16,17 @@ import os, re, subprocess, sys
 HERE=os.path.dirname(os.path.abspath(__file__)); SRC=os.path.join(HERE,'src'); DIST=os.path.join(HERE,'dist')
 OUT=sys.argv[1] if len(sys.argv)>1 else "swbay.html"
 FORBID=['kdef(','kput(','kbake(','BUCKET[','MBK[','FAMMAT[','PLATS','BRIDGES','TOWERS','RIVER','PALISADE','KOFF']
-frags=sorted(f for f in os.listdir(SRC) if not f.startswith('.'))
+# shared fragments from core/terrain, opt-in by name (core/README.md): '36-core-carve.js' gives
+# BIO.carve, overhangs on the heightfield. A local src/ copy with the same name wins.
+CORE_TERRAIN=[]
+CORE_T=os.path.normpath(os.path.join(HERE,'..','..','core','terrain'))
+PATH={f:os.path.join(SRC,f) for f in os.listdir(SRC) if not f.startswith('.')}
+for f in CORE_TERRAIN:
+    if f not in PATH: PATH[f]=os.path.join(CORE_T,f)
+frags=sorted(PATH)
 out=[]; bad=[]
 for f in frags:
-    s=open(os.path.join(SRC,f),encoding='utf8').read()
+    s=open(PATH[f],encoding='utf8').read()
     n=int(re.match(r'(\d+)',f).group(1))
     if 10<=n<80 and '-host-' not in f:
         for w in FORBID:
