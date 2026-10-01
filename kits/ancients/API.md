@@ -85,7 +85,7 @@ a top-level statement across a fragment boundary.
 | file | what |
 |---|---|
 | `00-head.html` | page shell, styles, `#ui` `#cap` `#insp` `#hud` `#errs`, the three.js loader |
-| `10-core.js` | error panel, PRNG (`reseed rng rr`), noise (`h3 vnoise fbm`), `clamp lerp TAU` |
+| `10-core.js` | error panel, PRNG (`reseed rng rr`), noise (`h3 vnoise fbm`), `clamp lerp TAU`, the frame hook `TICKS tick` |
 | `12-stats.js` | per-type accounting (`TSTAT`, `tcur triOf ktri finite3`) — no geometry, no PRNG draws |
 | `20-textures.js` | `canvasTex`, `TEX.panel/.rust/.ground` |
 | `22-materials.js` | `MAT.*`, `SHELL(d)`, `WIN(d)`, `CYAN WARM DEAD` |
@@ -415,6 +415,38 @@ ceilings are exceeded — see `KNOWN_ISSUES.md`.
 | `_api.nanSweep()` | meshes with a non-finite vertex, instances placed at NaN |
 | `_api.setView(cx,cy,cz,tx,ty,tz)`, `_api.views()` | camera, preset names |
 | `_api.BUDGET`, `_api.REG` | the budget table and the raw registry |
+
+## Animation
+
+One frame hook, and nothing else animates. `10-core.js` holds
+
+```js
+const TICKS=[];
+function tick(fn){TICKS.push(fn);}      // fn(dt, t)
+```
+
+and the frame loop in `92-camera.js` calls every registered function once per
+frame, **after** the camera has moved and **before** the render, as
+`fn(dt, t)`: `dt` in seconds, clamped to 0.1 (so a multi-second SwiftShader
+frame cannot fling anything round), `t` wall-clock seconds. The argument order
+is Screamers' (its `10-core.js` has the same hook), which is also what the
+biome binding already passes its wind through, so the biome's wind now moves in
+this kit too. A tick that throws is reported once to the error panel and the
+frame still renders.
+
+Rules: **move or show what the builder already built; never build in a
+tick.** Register once per fragment, not once per builder call (a builder runs
+once per decay level), and keep the per-frame work to a handful of transform or
+`.visible` writes. `NIGHT` is readable inside a tick, so night-only effects can
+switch themselves.
+
+**Screenshots are single frames**, taken ~900 ms after a preset is applied at an
+unknown wall-clock time, so anything that moves must still read in a still.
+The worked example is the lighthouse beacon (`89n-lighthouse.js`): its sweep
+advances by the clamped `dt`, and when the camera JUMPS (a preset, not an
+orbit) it re-aims the beam at a fixed bearing off the line to the camera, so
+every preset shows the beam at a known angle and the sweep carries on from
+there.
 
 ## Ground contact
 
