@@ -136,4 +136,4 @@ registerCharacter({ key: 'lizard', name: 'Four-armed lizard', clips: ['mixamo', 
     defBone('tail3', 'tail2', 0, 0.68, -0.9); defBone('tail4', 'tail3', 0, 0.5, -1.3, [0, 0.35, -1.75]);
   },
   extraPose: lizardExtraPose,
-  build: function(){ buildLizardBody(); attachProp(1, buildBow(), V3(0, -0.02, 0.06), [0, Math.PI / 2, 0]); } });
+  weapons: { lowerLeftHand: 'bow' }, build: buildLizardBody });

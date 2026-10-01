@@ -122,8 +122,5 @@ function buildAxe(mirror){
 }
 
 registerCharacter({ key: 'barbarian', name: 'Barbarian (pink mustache)', proportions: {}, clips: ['walk', 'mixamo', 'run', 'idle'], defaultClip: 'mixamo',
-  build: function(){
-    buildBarbarianBody();
-    /* grip 8 cm below the wrist, shaft tilted in and forward */
-    [1, -1].forEach(function(s){ attachProp(s, buildAxe(s < 0), V3(0, -0.08, 0.01), [-0.35, 0, s * -0.65]); });
-  } });
+  weapons: { mixamorigLeftHand: 'axe', mixamorigRightHand: 'axe' },
+  build: buildBarbarianBody });

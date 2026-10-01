@@ -79,4 +79,4 @@ registerCharacter({ key: 'sardaukar', name: 'Sardaukar (Moebius)', clips: ['mixa
   proportions: { hip: 1.1, spine: 1.24, spine1: 1.38, spine2: 1.52, neck: 1.84, head: 1.96, headTop: 2.5,
     shoulderX: 0.15, shoulderY: 1.78, armX: 0.34, armY: 1.72, elbowX: 0.64, wristX: 0.94, handTipX: 1.06,
     hipX: 0.14, kneeX: 0.15, kneeY: 0.6, kneeZ: 0.02, ankleY: 0.12, footTipZ: 0.26 },
-  build: function(){ buildSardaukarBody(); attachProp(-1, buildLance(), V3(0, -0.04, 0.04), [-0.2, 0, -0.35]); } });
+  weapons: { mixamorigRightHand: 'lance' }, build: buildSardaukarBody });

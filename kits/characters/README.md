@@ -40,6 +40,29 @@ piece to the metallic material, and `opts.power` softens the weight falloff
 (2 for cloth that should follow several bones, 4 for limbs). Props go through
 `attachProp(side, group, pos, euler)` with the arm imagined hanging.
 
+## Weapons
+
+`45-weapons.js` holds a registry (`registerWeapon(key, {name, style, up, reach,
+blade, build})`) and the grip system. Every weapon is built in one canonical
+frame: grip at the origin, shaft along Y with the business end at -Y (`up: true`
+for staffs and bows, whose head is at +Y), edge along +Z. Every hand bone gets a
+socket bone at the grip point between the curled fingers; a carry style
+(`carry` for blades, `ground` for polearms carried low, `staff` for staffs and
+bows) maps the shaft onto a hold direction in that frame. A character declares
+`weapons: { mixamorigRightHand: 'sword', lowerLeftHand: 'bow' }`; the viewer
+has a select per hand, so any key goes on any hand of any character.
+
+Clearance is solved, not eyeballed. `measureCapsules` reads the skinned body
+back into per-bone capsules (90th-percentile radius in four bins per bone, legs
+capped so a robe does not count). `solveClearance` then samples every clip of
+the character, and for each frame picks the smallest socket tilt (two axes) and
+outward offset that keeps the shaft and blade points out of every capsule but
+the holding arm's, with hysteresis so the choice does not flicker. The result
+is written into the clip as the socket's quaternion and position tracks, so the
+weapon's fix-up is part of the animation, exactly as a weapon bone would be in
+a game rig. The HUD reports the largest tilt used and any residual penetration
+per weapon; changing a weapon re-solves and re-binds the clips live.
+
 ## Mixamo compatibility
 
 The bones are named `mixamorigHips`, `mixamorigLeftArm` and so on (Mixamo's

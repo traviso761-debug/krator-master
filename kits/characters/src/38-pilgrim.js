@@ -77,4 +77,4 @@ registerCharacter({ key: 'pilgrim', name: 'Desert pilgrim (Moebius)', clips: ['i
   proportions: { hip: 1.1, spine: 1.24, spine1: 1.38, spine2: 1.52, neck: 1.84, head: 1.96, headTop: 2.2,
     shoulderX: 0.14, shoulderY: 1.78, armX: 0.3, armY: 1.72, elbowX: 0.6, wristX: 0.9, handTipX: 1.02,
     hipX: 0.13, kneeX: 0.14, kneeY: 0.6, kneeZ: 0.02, ankleY: 0.12, footTipZ: 0.24 },
-  build: function(){ buildPilgrimBody(); attachProp(-1, buildStaff(PG_RED, pilgrimStaffHead), V3(0, -0.02, 0.06), [0, 0, 0]); } });
+  weapons: { mixamorigRightHand: 'staffcrook' }, build: buildPilgrimBody });

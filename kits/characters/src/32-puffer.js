@@ -108,7 +108,7 @@ function buildPufferBody(){
     for(var k = -1; k <= 1; k++) addPiece(spike(V3(l.an.x + k * 0.1, 0.05, 0.28), V3(k * 0.2, -0.2, 1), 0.1, 0.03, 4), PF_BONE, [FOOT]);
   });
 }
-registerCharacter({ key: 'puffer', name: 'Pufferfish ogre', clips: ['mixamo', 'walk', 'idle', 'run'], defaultClip: 'mixamo',
+registerCharacter({ key: 'puffer', name: 'Pufferfish ogre', clips: ['mixamo', 'walk', 'idle', 'run'], defaultClip: 'mixamo', capsuleCap: 0.75,
   proportions: { hip: 0.96, spine: 1.06, spine1: 1.2, spine2: 1.36, neck: 1.62, head: 1.70, headTop: 2.05,
     shoulderX: 0.18, shoulderY: 1.56, armX: 0.52, armY: 1.52, elbowX: 0.88, wristX: 1.20, handTipX: 1.34,
     hipX: 0.24, kneeX: 0.25, kneeY: 0.50, kneeZ: 0.03, ankleY: 0.12, footTipZ: 0.3 },

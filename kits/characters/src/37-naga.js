@@ -99,9 +99,5 @@ registerCharacter({ key: 'naga', name: 'Naga', clips: ['mixamo', 'walk', 'run', 
     chain.forEach(function(c, i){ defBone('serpent' + (i + 1), i ? 'serpent' + i : 'mixamorigHips', c[0], c[1], c[2], i === 6 ? [0, 0.08, -2.5] : null); });
   },
   extraPose: nagaExtraPose,
-  build: function(){ buildNagaBody();
-    attachProp(-1, buildDagger(false), V3(0, -0.05, 0.02), [0.3, 0, 0]);
-    attachProp(1, buildDagger(false), V3(0, -0.05, 0.02), [0.3, 0, 0]);
-    /* the lower right hand gets the ice dagger; lower hands are mounted by name */
-    PROPS.push({ side: -1, group: buildDagger(true), pos: V3(0, -0.05, 0.02), euler: [0.3, 0, 0], bone: 'lowerRightHand' });
-  } });
+  weapons: { mixamorigRightHand: 'dagger', mixamorigLeftHand: 'dagger', lowerRightHand: 'icedagger' },
+  build: buildNagaBody });

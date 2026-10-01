@@ -118,7 +118,7 @@ function buildMoebiusFigure(spec){
     fist(s, spec.gloves || skin, [HAND]);
       if(spec.fringe) for(var fr = 0; fr < 5; fr++){ var fp = V3(s * (0.2 + fr * 0.02), 1.06, -0.1 + fr * 0.05); addPiece(limbTube(fp, V3(fp.x + s * 0.02, 0.4, fp.z - 0.03), [{ t: 0, r: 0.012 }, { t: 1, r: 0.008 }], 5), spec.fringe, ['mixamorigHips', B(s, 'UpLeg'), B(s, 'Leg')], { power: 2 }); }   /* hip fringe */
     if(spec.streamers) for(var k = 0; k < 4; k++){ var sp = V3(a.sh.x + s * 0.05, a.sh.y - 0.05, -0.1 + k * 0.06);
-      addPiece(limbTube(sp, V3(sp.x + s * (0.1 + k * 0.08), 0.6 + k * 0.1, sp.z - 0.15 + k * 0.1), [{ t: 0, r: 0.02 }, { t: 1, r: 0.012 }], 6), spec.streamers, [ARM, 'mixamorigSpine2', 'mixamorigHips'], { power: 2 }); }
+      addPiece(limbTube(sp, V3(sp.x + s * (0.1 + k * 0.08), 0.6 + k * 0.1, sp.z - 0.15 + k * 0.1), [{ t: 0, r: 0.02 }, { t: 1, r: 0.012 }], 6), spec.streamers, [ARM, 'mixamorigSpine2', 'mixamorigSpine1'], { power: 2 }); }
   });
   mbShoulders(spec);
   if(spec.cape) mbCape(spec, ['mixamorigSpine2', 'mixamorigSpine1', 'mixamorigSpine', 'mixamorigHips', B(1, 'Leg'), B(-1, 'Leg')]);
@@ -136,19 +136,19 @@ function blotchTint(base, blot){ var a, b; return function(p){ if(!a){ a = C(bas
 
 var MOEBIUS_SPECS = [
   { key: 'leto', name: 'Moebius: Duke Leto', skin: 0xd8b090, hair: { type: 'cap', color: 0xe8c040 }, top: 0x2a3030, pants: 0xb8c4d0, boots: 0xd85a2a, bootHeight: 0.42,
-    shoulders: { type: 'segmented', color: 0xe86a2a, color2: 0xf0a040, metal: true }, cape: { color: 0x4a8a7a, side: 1, length: 1.3, trim: 0x2a5a4a }, belt: { color: 0x3a2a1a }, pouches: 0x5a3a2a, discs: 4, gloves: 0xd8b090, sword: true, face: { r: 0.105, iris: 0x4a6a9a, brow: 0xc8a030 } },
+    shoulders: { type: 'segmented', color: 0xe86a2a, color2: 0xf0a040, metal: true }, cape: { color: 0x4a8a7a, side: 1, length: 1.3, trim: 0x2a5a4a }, belt: { color: 0x3a2a1a }, pouches: 0x5a3a2a, discs: 4, gloves: 0xd8b090, sword: true, weapons: { mixamorigRightHand: 'sword' }, face: { r: 0.105, iris: 0x4a6a9a, brow: 0xc8a030 } },
   { key: 'emperor', name: 'Moebius: the Emperor', skin: 0xd0a888, hat: { type: 'winged', color: 0xf4f0e8 }, top: 0xe8e0d8, topTint: stripeTint(0xe8e0d8, 0xc02a3a, 10, true), pants: 0xc02a3a, boots: 0xf4f0e8,
     shoulders: { type: 'pads', color: 0xf0e8e0 }, cape: { color: 0xc8302a, length: 1.6, width: 0.4, trim: 0x8a1a1a }, emblem: { color: 0x3a6ab8, r: 0.08 }, belt: { color: 0x2a4a9a }, sleeves: 0x3a6ab8, patternLines: 0x2a4a9a, face: { r: 0.105, iris: 0x3a5a8a, brow: 0x3a2a20 } },
   { key: 'feyd', name: 'Moebius: feathered lord', skin: 0xd8b090, hat: { type: 'feathers', color: 0x2a2a30, color2: 0xf0e8e0 }, top: 0xd84a6a, pants: 0xd8b090, boots: 0x6a4a2a, bootHeight: 0.35,
     shoulders: { type: 'feathers', color: 0xf0e8e0, color2: 0x2a2a30 }, cape: { color: 0x2a5aa8, length: 1.5, width: 0.4, tint: stripeTint(0x2a5aa8, 0xd84a3a, 12, true) }, emblem: { color: 0x2a9a6a, r: 0.07 }, belt: { color: 0xd8b048, metal: true }, fringe: 0xd8b048 },
   { key: 'padishah', name: 'Moebius: hooded priest', skin: 0xd8b090, hat: { type: 'tallcyl', color: 0x101418 }, top: 0x14181e, robe: { color: 0x14181e, tint: function(){ var k, s, o; return function(p){ if(!k){ k = C(0x14181e); s = C(0xc8c0b8); o = C(0xe88a3a); } if(p.y > 0.45) return k; var v = Math.atan2(p.z, p.x) * 8; return (Math.floor(v) % 2 + 2) % 2 ? s : o; }; }() },
-    sleeves: 0x14181e, wideSleeves: true, discs: 5, emblem: { color: 0xf0e8e0, r: 0.06 }, staff: { color: 0xc8302a, head: spiralStaffHead }, boots: 0x101418, hatDiscs: true },
+    sleeves: 0x14181e, wideSleeves: true, discs: 5, emblem: { color: 0xf0e8e0, r: 0.06 }, weapons: { mixamorigRightHand: 'staffspiral' }, boots: 0x101418, hatDiscs: true },
   { key: 'jessica', name: 'Moebius: lady with streamers', skin: 0xe0c0a8, hair: { type: 'bob', color: 0x14121a }, hat: { type: 'ruff', color: 0x2a4aa8 }, top: 0x2a4aa8, bareMidriff: true, pants: 0x2a3a8a, pantsTint: blotchTint(0x2a3a8a, 0x4a6ad0), boots: 0x8a9ab8, bootsMetal: true, bootHeight: 0.5,
-    emblem: { color: 0xd84a3a, r: 0.06 }, streamers: 0x7a9a3a, sleeves: 0x3a4a9a, gloves: 0x8a9ab8, belt: { color: 0x2a3a8a, buckle: 0xd84a3a }, holster: 0x4a3a3a, earrings: 0xd8b048, cuffColor: 0x8a9ab8, staff: { color: 0xd8dce4, head: null, thick: true }, face: { r: 0.1, iris: 0x3a6a9a, brow: 0x14121a, lips: 0xc02a4a } },
+    emblem: { color: 0xd84a3a, r: 0.06 }, streamers: 0x7a9a3a, sleeves: 0x3a4a9a, gloves: 0x8a9ab8, belt: { color: 0x2a3a8a, buckle: 0xd84a3a }, holster: 0x4a3a3a, earrings: 0xd8b048, cuffColor: 0x8a9ab8, weapons: { mixamorigRightHand: 'rod' }, face: { r: 0.1, iris: 0x3a6a9a, brow: 0x14121a, lips: 0xc02a4a } },
   { key: 'harkonnen', name: 'Moebius: pink baron', skin: 0xe8b0a0, hat: { type: 'pinkhelm', color: 0xf0b0c8, color2: 0xf08a3a }, top: 0xf0b0c8, topTint: blotchTint(0xf0b0c8, 0x3a2a3a), pants: 0xf0b0c8, pantsTint: blotchTint(0xf0b0c8, 0x3a2a3a), boots: 0xf0b0c8, bootHeight: 0.2,
     sleeves: 0xc8d0a0, sleeveTint: stripeTint(0xc8d0a0, 0x4a7a3a, 14, false), shoulders: { type: 'balls', color: 0xf08a3a, color2: 0xf0b0c8 }, belt: { color: 0xe8c040, buckle: 0x9a6a2a }, gloves: 0xf0b0c8, boxy: true, kneeBalls: 0xf08a3a, cuffColor: 0xf08a3a },
   { key: 'stilgar', name: 'Moebius: desert captain', skin: 0xc89870, hair: { type: 'curly', color: 0x8a5a2a }, top: 0x4a7a4a, pants: 0x8a7a5a, boots: 0x6a4a2a, bootHeight: 0.3,
-    cape: { color: 0xd89a3a, length: 1.5, width: 0.4, trim: 0x8a5a1a }, emblem: { color: 0xc02a3a, r: 0.09 }, belt: { color: 0xd8b048, metal: true }, pouches: 0x6a4a2a, cuffs: 0xd8b048, gloves: 0x6a4a2a, sword: true, face: { r: 0.105, iris: 0x3a5a3a, brow: 0x6a4a2a, beard: 0x8a5a2a } },
+    cape: { color: 0xd89a3a, length: 1.5, width: 0.4, trim: 0x8a5a1a }, emblem: { color: 0xc02a3a, r: 0.09 }, belt: { color: 0xd8b048, metal: true }, pouches: 0x6a4a2a, cuffs: 0xd8b048, gloves: 0x6a4a2a, sword: true, weapons: { mixamorigRightHand: 'dagger' }, face: { r: 0.105, iris: 0x3a5a3a, brow: 0x6a4a2a, beard: 0x8a5a2a } },
   { key: 'goldpriest', name: 'Moebius: gold priest', skin: 0x6a9a6a, hat: { type: 'crown', color: 0xd8b048, color2: 0x4a8a5a }, top: 0xe8a030, robe: { color: 0xe8a030, tint: stripeTint(0xe8a030, 0xd84a2a, 4, false) },
     sleeves: 0xe8a030, wideSleeves: true, shoulders: { type: 'pleated', color: 0xe8a030, color2: 0xf0d060 }, emblem: { color: 0xc8302a, r: 0.06 }, discs: 5, ornaments: true, boots: 0x6a4a2a },
   { key: 'greenwoman', name: 'Moebius: woman in green', skin: 0xe0c0a8, hat: { type: 'hood', color: 0xd83a2a }, top: 0x2a6a3a, robe: { color: 0x2a6a3a }, sleeves: 0x9a9aa0, gloves: 0x9a9aa0, hook: true, beltCord: 0xd8b048, boots: 0x2a2a2a, cuffColor: 0x6a6a70, face: { r: 0.1, iris: 0x3a7a5a, brow: 0xb83a2a, lips: 0xc04a5a } }
@@ -158,5 +158,5 @@ MOEBIUS_SPECS.forEach(function(spec){
     proportions: { hip: 1.1, spine: 1.24, spine1: 1.38, spine2: 1.52, neck: 1.84, head: 1.96, headTop: 2.3,
       shoulderX: 0.14, shoulderY: 1.78, armX: 0.32, armY: 1.72, elbowX: 0.62, wristX: 0.92, handTipX: 1.04,
       hipX: 0.13, kneeX: 0.14, kneeY: 0.6, kneeZ: 0.02, ankleY: 0.12, footTipZ: 0.24 },
-    build: function(){ buildMoebiusFigure(spec); if(spec.staff){ var st = buildStaff(spec.staff.color, spec.staff.head); if(spec.staff.thick) st.children[0].scale.set(1.8, 1, 1.8); attachProp(-1, st, V3(0, -0.02, 0.06), [0, 0, 0]); } } });
+    weapons: spec.weapons || {}, build: function(){ buildMoebiusFigure(spec); } });
 });

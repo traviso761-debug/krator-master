@@ -188,6 +188,7 @@ function CHAR_MAIN(){
   CUR_DEF = def;
   defineBones(def.proportions);
   if(def.extraBones) def.extraBones(P);
+  addWeaponSockets();
   var bones = buildSkeleton();
   bones.forEach(function(b){ b.userData.rest = b.position.clone(); });
   def.build();
@@ -201,7 +202,11 @@ function CHAR_MAIN(){
   var meshMetal = null;
   if(geoMetal.attributes.position.count){ meshMetal = new THREE.SkinnedMesh(geoMetal, matMetal); meshMetal.castShadow = true; meshMetal.frustumCulled = false; rig.add(meshMetal); meshMetal.bind(skeleton, mesh.bindMatrix); }
   scene.add(rig);
-  mountProps();
+  /* weapons: one per hand from the character's table; any key fits any hand */
+  var handBones = BONE_DEFS.filter(function(d){ return /Hand$/.test(d.name); }).map(function(d){ return d.name; });
+  function sideOf(bone){ return /Left/.test(bone) ? 1 : -1; }
+  for(var hb in (def.weapons || {})) mountWeapon(hb, sideOf(hb), def.weapons[hb]);
+  measureCapsules(geo, bones);
   document.getElementById('cap').textContent = def.name + ': procedural skinned rig, Mixamo-named bones. Drag to orbit, wheel to zoom.';
   var skel = new THREE.SkeletonHelper(mesh); skel.visible = false; scene.add(skel);
 
@@ -209,8 +214,17 @@ function CHAR_MAIN(){
   var clips = { walk: bakeClip('walk', walkPose, 1 / WALK.freq, 32), idle: bakeClip('idle', idlePose, 3.2, 24), attack: bakeClip('attack', attackPose, 1.1, 36),
                 mixamo: mixamoClip(MIXAMO_WALK, 'mixamo walk'), run: mixamoClip(MIXAMO_RUN, 'mixamo run'), midle: mixamoClip(MIXAMO_IDLE, 'mixamo idle') };
   if(def.extraClips) Object.assign(clips, def.extraClips());
+  var mixerEarly = new THREE.AnimationMixer(mesh), actionsEarly = {};
+  for(var ck in clips) actionsEarly[ck] = mixerEarly.clipAction(clips[ck]);
+  var clearanceKeys = (def.clips || []).concat(['attack']).filter(function(k, i, arr){ return clips[k] && arr.indexOf(k) === i; });
+  var clearance = solveClearance(mixerEarly, actionsEarly, clearanceKeys, 16);
+  mixerEarly.stopAllAction(); mixerEarly.uncacheRoot(mesh);
+  bones.forEach(function(b){ b.quaternion.identity(); b.position.copy(b.userData.rest); });
+  CHAR.clearance = clearance;
   var mixer = new THREE.AnimationMixer(mesh), actions = {};
   for(var k in clips){ actions[k] = mixer.clipAction(clips[k]); }
+  /* after the solver rewrote socket tracks, the mixer needs fresh actions */
+  function rebindClips(){ var name = current ? current.getClip().name : null; mixer.stopAllAction(); mixer.uncacheRoot(mesh); for(var k2 in clips) actions[k2] = mixer.clipAction(clips[k2]); current = null; if(name){ var key = Object.keys(clips).find(function(c){ return clips[c].name === name; }); play(key); } }
   var current = null;
   function play(name){ var a = actions[name]; if(current === a) return; a.reset().setEffectiveWeight(1).fadeIn(0.3).play(); if(current) current.fadeOut(0.3); current = a; for(var k in actions) if(ui[k]) ui[k].classList.toggle('on', k === name); }
   /* step length from the thigh swing; the ground scrolls at that speed */
@@ -225,6 +239,13 @@ function CHAR_MAIN(){
   var LABELS = { walk: 'Walk (procedural)', mixamo: 'Walk (Mixamo)', run: 'Run (Mixamo)', idle: 'Idle', midle: 'Idle (Mixamo)', attack: 'Attack', raise: 'Raise hand' };
   var order = (def.clips || []).concat(['attack']).filter(function(k, i, arr){ return clips[k] && arr.indexOf(k) === i; });
   order.forEach(function(k){ button(k, LABELS[k] || k, function(){ play(k); }); });
+  /* a weapon select per hand */
+  handBones.forEach(function(hb){
+    var ws = document.createElement('select'); ws.title = hb; var label = hb.replace('mixamorig', '').replace('Hand', ' hand');
+    var none = document.createElement('option'); none.value = 'none'; none.textContent = label + ': none'; ws.appendChild(none);
+    for(var wk in WEAPONS){ var o = document.createElement('option'); o.value = wk; o.textContent = label + ': ' + WEAPONS[wk].name; if((def.weapons || {})[hb] === wk) o.selected = true; ws.appendChild(o); }
+    ws.onchange = function(){ mountWeapon(hb, sideOf(hb), ws.value); CHAR.clearance = solveClearance(mixer, actions, clearanceKeys, 16); rebindClips(); axeTris = countPropTris(); };
+    uiBox.appendChild(ws); });
   button('turn', 'Turntable', function(){ state.turntable = !state.turntable; ui.turn.classList.toggle('on', state.turntable); });
   button('bones', 'Bones', function(){ skel.visible = !skel.visible; ui.bones.classList.toggle('on', skel.visible); });
   button('wire', 'Wireframe', function(){ state.wire = !state.wire; mat.wireframe = state.wire; ui.wire.classList.toggle('on', state.wire); });
@@ -251,15 +272,17 @@ function CHAR_MAIN(){
     }
     renderer.render(scene, camera);
     frames++; fpsT += dt; if(fpsT > 0.5){ fps = Math.round(frames / fpsT); frames = 0; fpsT = 0; }
-    hud.textContent = 'tris ' + Math.round(geo.userData.tris + geoMetal.userData.tris) + ' body + ' + axeTris + ' props\nbones ' + bones.length + '  draw calls ' + renderer.info.render.calls + '\n' + fps + ' fps  clip ' + (current ? current.getClip().name + ' ' + current.getClip().duration.toFixed(2) + 's' : '-');
+    hud.textContent = 'tris ' + Math.round(geo.userData.tris + geoMetal.userData.tris) + ' body + ' + axeTris + ' props\n' + 'bones ' + bones.length + '  draw calls ' + renderer.info.render.calls + '\n' + fps + ' fps  clip ' + (current ? current.getClip().name + ' ' + current.getClip().duration.toFixed(2) + 's' : '-')
+      + (CHAR.clearance || []).map(function(r){ return '\n' + r.bone.replace('mixamorig', '') + ': ' + r.key + ' max tilt ' + r.maxTilt + '\u00b0' + (r.penetration < 0.002 ? ' clear' : ' pen ' + r.penetration.toFixed(2)); }).join('');
   }
-  var axeTris = 0; rig.traverse(function(o){ if(o.isMesh && !o.isSkinnedMesh){ var a = o.geometry.attributes.position; axeTris += (o.geometry.index ? o.geometry.index.count : a.count) / 3; } }); axeTris = Math.round(axeTris);
+  function countPropTris(){ var n = 0; rig.traverse(function(o){ if(o.isMesh && !o.isSkinnedMesh){ var a = o.geometry.attributes.position; n += (o.geometry.index ? o.geometry.index.count : a.count) / 3; } }); return Math.round(n); }
+  var axeTris = countPropTris();
   play(def.defaultClip || order[0]);
   tick();
 
   /* deterministic hooks for screenshots */
   CHAR.mesh = mesh; CHAR.bones = BONES; CHAR.clips = clips; CHAR.mixer = mixer; CHAR.orbit = orbit; CHAR.rig = rig; CHAR.renderer = renderer; CHAR.scene = scene; CHAR.camera = camera;
-  CHAR.play = play;
+  CHAR.play = play; CHAR.mountWeapon = function(bone, key){ mountWeapon(bone, sideOf(bone), key); CHAR.clearance = solveClearance(mixer, actions, clearanceKeys, 16); rebindClips(); };
   CHAR.setPhase = function(name, u){
     for(var k in actions) actions[k].stop();
     var a = actions[name]; a.reset().setEffectiveWeight(1).play(); a.time = u * clips[name].duration; current = a;

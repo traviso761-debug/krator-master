@@ -70,4 +70,4 @@ registerCharacter({ key: 'crescent', name: 'Crescent priest (Moebius)', clips: [
   proportions: { hip: 1.1, spine: 1.24, spine1: 1.38, spine2: 1.52, neck: 1.84, head: 1.96, headTop: 2.22,
     shoulderX: 0.14, shoulderY: 1.8, armX: 0.3, armY: 1.74, elbowX: 0.6, wristX: 0.9, handTipX: 1.02,
     hipX: 0.13, kneeX: 0.14, kneeY: 0.6, kneeZ: 0.02, ankleY: 0.12, footTipZ: 0.24 },
-  build: function(){ buildCrescentBody(); attachProp(-1, buildStaff(0xa88a50, crescentStaffHead), V3(0, -0.02, 0.06), [0, 0, 0]); } });
+  weapons: { mixamorigRightHand: 'staffcrescent' }, build: buildCrescentBody });

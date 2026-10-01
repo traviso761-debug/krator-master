@@ -20,17 +20,18 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `20-mixamo-walk.js` | 18 | Mixamo clip: walk (1) |
 | `21-mixamo-idle.js` | 44 **big** | Mixamo clip: idle (1) |
 | `22-mixamo-run.js` | 13 | Mixamo clip: run (1) |
-| `30-rig.js` | 4 | the shared rig (1) |
-| `31-barbarian.js` | 9 | the barbarian (1) |
-| `32-puffer.js` | 9 | the pufferfish ogre (1) |
-| `33-priest.js` | 6 | the desert priest (1) |
-| `34-knight.js` | 7 | the horned knight (1) |
-| `35-warrior.js` | 8 | the lacquered warrior (1) |
-| `36-lizard.js` | 11 | the four-armed lizard (1) |
-| `37-naga.js` | 9 | the naga (1) |
-| `38-pilgrim.js` | 6 | the desert pilgrim (1) |
-| `39-crescent.js` | 6 | the crescent priest (1) |
-| `40-sardaukar.js` | 7 | the Sardaukar (1) |
-| `41-moebius.js` | 16 | Moebius: the Dune costume sheet (1) |
-| `50-walk.js` | 19 | pose, walk cycle, scene (1); scene and loop (149) |
+| `30-rig.js` | 8 | the shared rig (1) |
+| `31-barbarian.js` | 11 | the barbarian (1) |
+| `32-puffer.js` | 11 | the pufferfish ogre (1) |
+| `33-priest.js` | 8 | the desert priest (1) |
+| `34-knight.js` | 10 | the horned knight (1) |
+| `35-warrior.js` | 9 | the lacquered warrior (1) |
+| `36-lizard.js` | 13 | the four-armed lizard (1) |
+| `37-naga.js` | 10 | the naga (1) |
+| `38-pilgrim.js` | 8 | the desert pilgrim (1) |
+| `39-crescent.js` | 7 | the crescent priest (1) |
+| `40-sardaukar.js` | 9 | the Sardaukar (1) |
+| `41-moebius.js` | 23 | Moebius: the Dune costume sheet (1) |
+| `45-weapons.js` | 14 | weapons: registry, grip, clearance (1) |
+| `50-walk.js` | 22 | pose, walk cycle, scene (1); scene and loop (149) |
 | `99-tail.html` | <1 |  |

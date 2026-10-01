@@ -85,4 +85,4 @@ registerCharacter({ key: 'knight', name: 'Horned knight', clips: ['mixamo', 'wal
   proportions: { hip: 1.1, spine: 1.24, spine1: 1.38, spine2: 1.52, neck: 1.84, head: 1.96, headTop: 2.3,
     shoulderX: 0.16, shoulderY: 1.78, armX: 0.36, armY: 1.72, elbowX: 0.68, wristX: 0.98, handTipX: 1.12,
     hipX: 0.16, kneeX: 0.17, kneeY: 0.6, kneeZ: 0.02, ankleY: 0.12, footTipZ: 0.26 },
-  build: function(){ buildKnightBody(); attachProp(-1, buildSword(), V3(0, -0.08, 0.02), [0.2, 0, 0.1]); } });
+  weapons: { mixamorigRightHand: 'sword' }, build: buildKnightBody });
