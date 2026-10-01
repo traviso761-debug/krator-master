@@ -44,8 +44,11 @@ biome needed (an abyss or a hyperjungle fragment runs unchanged on it):
   `mesh(material, {sun})` (surface nets, `aOcc`/`aSun` per vertex). Queries: `covered` (the
   ceiling over a point), `topAt` (the rock's top over a patch), `rockAt(x,y,z)`, `floorOcc`,
   `floorSun`. With no patches every query is a no-op, so the ideal host loads it and
-  declares none. Any other biome adds it by listing it in its own `CORE_TERRAIN`
-  (`core/README.md` has the four steps).
+  declares none (the ideal host declares one: the undercut under the cataract's lip,
+  `LIP` and `UNDERCUT` in 45, the worked example on a coarse world). Any other biome adds
+  it by listing it in its own `CORE_TERRAIN` (`core/README.md` has the four steps).
+- A host may give `window._api` `hostChecks()` and `hostNegatives()`; `verify.py --assert`
+  runs them (each negative must fail) after the kit's invariants.
 - `BIO.dynamic(name, geo, mat, count, {label})` and `BIO.tick(fn)`: the moving things
   (fauna) are InstancedMeshes the biome updates itself every frame.
 - The merged buckets and the instance stores are growable Float32 stores (`BIO.Store`)
