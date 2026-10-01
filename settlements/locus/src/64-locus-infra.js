@@ -34,7 +34,7 @@ reseed(646001);
     } });
 
   /* =============================================================== 2. FISHING DOCK */
-  ASSET({ key:'infra_fishing_dock', name:'Fishing dock', family:'prop', kit:'locus', group:'Town: warehouse and fishing dock', culture:'abyssal-desert', types:['infrastructure'],
+  ASSET({ key:'infra_fishing_dock', name:'Fishing dock', family:'prop', kit:['locus','abyss'], group:'Town: warehouse and fishing dock', kitGroup:{ abyss:'Street furniture and docks' }, culture:'abyssal-desert', types:['infrastructure'],
     districts:['poor'], wealth:[0,0.6], w:12, d:34, h:5, variants:2, variantNames:['straight jetty','T-head jetty'],
     build:function(F){
       var v=F.variant, pk=F.pick(PLANKC), pc=F.pick(PILEC), Y=1.25, W=3.2, z0=15.5, z1=-16.5;

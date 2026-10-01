@@ -20,9 +20,17 @@ var ASSETS = [], ASSET_BY_KEY = {};
 /* PROJECT TAGS (every kit asset carries them; the inspector shows them):
      culture  who builds it: 'yuni' | 'abyssal-desert' | 'geomancer' | 'ancient' | 'sahelian' | 'order' | 'nomad'
      types    building types, one or more of BUILDING_TYPES
-     kit      which sub-kit sheet it belongs to ('locus'); absent = the Yuni base kit
-     group    the row it is laid out in on its kit sheet (free text) */
-var BUILDING_TYPES = ['civic','market/shop','tavern/inn','industry','farm','single-family dwelling','multi-family dwelling','infrastructure','religious','funerary','prop'];
+     kit      which sub-kit sheet(s) it belongs to: a string ('locus') or an array (['locus','abyss']);
+              absent = the Yuni base kit. Test it with assetInKit(A,k), never A.kit===k.
+     group    the row it is laid out in on its kit sheet (free text)
+     kitGroup optional per-kit override of `group`, for an asset on two sheets: { abyss:'Housing — poor' }.
+              Read it with assetGroup(A,k).
+     sim      optional life-layer scaffolding (data only; nothing reads it yet): { activity, capacity, focus:[x,y,z] } */
+var BUILDING_TYPES = ['civic','market/shop','tavern/inn','industry','farm','single-family dwelling','multi-family dwelling','infrastructure','religious','funerary','military','prop'];
+function assetInKit(A,k){ return Array.isArray(A.kit) ? A.kit.indexOf(k)>=0 : A.kit===k; }
+function assetGroup(A,k){ return (A.kitGroup && A.kitGroup[k]) || A.group || 'kit'; }
+/* KIT_ROWS[kit] = the row order on that kit's sheet; a kit without an entry keeps fragment (declaration) order */
+var KIT_ROWS = {};
 function ASSET(o){ if(ASSET_BY_KEY[o.key]) ERR('asset key declared twice: '+o.key); o.variants=o.variants||1;
   if(o.kit){ if(!o.culture) ERR('asset '+o.key+' (kit '+o.kit+') has no culture tag');
     if(!o.types || !o.types.length) ERR('asset '+o.key+' (kit '+o.kit+') has no building-type tags');
@@ -44,7 +52,7 @@ function assetTags(A){ return (A.culture ? 'culture: '+A.culture : '') + (A.type
      w,d,h    footprint (x, z) and height in METRES; build() must stay inside w x d
    The build frame is the same F as an ASSET: origin at the footprint centre on the floor,
    +z is the FRONT (the side you face it from / its open side).                              */
-var FURN_CULTURES = ['ancient','yuni-court','yuni-common','yuni-poor','sahelian','order','nomad','ancients-salvage'];
+var FURN_CULTURES = ['ancient','yuni-court','yuni-common','yuni-poor','sahelian','order','nomad','ancients-salvage','abyssal-desert'];
 var FURNS = [], FURN_BY_KEY = {};
 function FURN(o){
   if(FURN_BY_KEY[o.key]) ERR('furniture key declared twice: '+o.key);
@@ -70,9 +78,10 @@ function PLANT(o){
   if(PLANT_CLIMATES.indexOf(o.climate)<0) ERR('plant '+o.key+': climate must be one of '+PLANT_CLIMATES.join(', '));
   if(PLANT_ARIDITY.indexOf(o.aridity)<0) ERR('plant '+o.key+': aridity must be one of '+PLANT_ARIDITY.join(', '));
   /* project biome tags (optional, LOCUS onward): tags:{ wet:'arid'|'mild'|'wet', abyssal:true|false, riparian:'yes'|'no'|'both' } */
+  /* use (optional, ABYSS onward): edibility / harvestability, free text ('edible (leaves)', 'ornamental') — shown by the inspector */
   o.variants=o.variants||1; PLANTS.push(o); PLANT_BY_KEY[o.key]=o; return o;
 }
-function plantTags(A){ var t=A.tags||{}; return A.climate+' · '+A.aridity+(t.wet?' · '+t.wet:'')+(t.abyssal!=null?(t.abyssal?' · abyssal':' · non-abyssal'):'')+(t.riparian?' · riparian: '+t.riparian:''); }
+function plantTags(A){ var t=A.tags||{}; return A.climate+' · '+A.aridity+(t.wet?' · '+t.wet:'')+(t.abyssal!=null?(t.abyssal?' · abyssal':' · non-abyssal'):'')+(t.riparian?' · riparian: '+t.riparian:'')+(A.use?' · use: '+A.use:''); }
 
 function assetFrame(x,z,ry,opt){
   opt=opt||{};
