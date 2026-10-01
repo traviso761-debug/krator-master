@@ -84,10 +84,17 @@ function winAt(f,lx,lz,y,side,w,h,cool,frameCol){
   BOX(p[0]+n[0]*0.04,y-h/2-0.16,p[1]+n[1]*0.04, along?w+0.34:0.16, 0.08, along?0.16:w+0.34, f.ry, frameCol||TIMBERC[2], 'timber');
   pane(p[0],y,p[1],n[0],n[1],w,h,cool);
 }
+/* a doorway in a front wall: two jambs and a lintel, the leaf standing OPEN, swung in against the jamb on the
+   left as one looks out (the side the interiors keep its swing clear on), so rooms can be seen and walked into */
 function doorAt(f,lx,lz,y,side,w,h,col){
   var p=LP(f,lx,lz), n=sideN(f,side), along=(side==='f'||side==='b');
-  BOX(p[0],y,p[1], along?w+0.3:0.12, h+0.16, along?0.12:w+0.3, f.ry, TIMBERC[0], 'timber');
-  BOX(p[0]+n[0]*0.05,y,p[1]+n[1]*0.05, along?w:0.08, h, along?0.08:w, f.ry, col, 'plank');
+  if(side!=='f'){
+    BOX(p[0],y,p[1], along?w+0.3:0.12, h+0.16, along?0.12:w+0.3, f.ry, TIMBERC[0], 'timber');
+    BOX(p[0]+n[0]*0.05,y,p[1]+n[1]*0.05, along?w:0.08, h, along?0.08:w, f.ry, col, 'plank'); return;
+  }
+  [-1,1].forEach(function(s){ fBOX(f,lx+s*(w/2+0.075),lz,y,0.15,h+0.16,0.12,TIMBERC[0],'timber'); });
+  fBOX(f,lx,lz,y+h,w+0.3,0.16,0.12,TIMBERC[0],'timber');
+  fBOX(f,lx-w/2+0.05,lz-0.12-w/2,y,0.08,h,w,col,'plank');
 }
 /* hipped / frustum roof on a local rectangle: bottom x0..x1,z0..z1 at yb, top inset (ix,iz) at yt */
 function hipRoof(fam,f,x0,x1,z0,z1,yb,ix,iz,yt,col,soffit){
@@ -356,7 +363,8 @@ function roundHut(x,z,y,r,doorA,o){
   /* door: lintel + leaf standing ajar */
   var dx=Math.cos(doorA), dz=Math.sin(doorA);
   BOX(x+dx*(r-0.02),y+0.2+2.0,z+dz*(r-0.02),0.24,0.22,1.6,-doorA,tc,'timber');
-  BOX(x+dx*(r-0.1),y+0.2,z+dz*(r-0.1),0.07,2.0,1.1,-doorA,shade(pick(PLANKC),-0.1),'plank');
+  var ha=doorA-gap*0.85, hr=r-0.2-0.55;                                              /* the leaf open, swung in */
+  BOX(x+Math.cos(ha)*hr,y+0.2,z+Math.sin(ha)*hr,1.1,2.0,0.07,-ha,shade(pick(PLANKC),-0.1),'plank');
   /* windows */
   (o.wins||[1.15,-1.15,2.6]).forEach(function(da){ var a=doorA+da, nx=Math.cos(a), nz=Math.sin(a), px=x+nx*r, pz=z+nz*r;
     BOX(px,y+1.25,pz,0.12,0.95,0.95,-a,tc,'timber'); pane(px+nx*0.02,y+1.72,pz+nz*0.02,nx,nz,0.7,0.7,false); });
