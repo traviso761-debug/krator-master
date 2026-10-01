@@ -18,7 +18,7 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`settlements/screamers`](settlements/screamers/INDEX.md) | 72 | 538 | 45 | Hexahedron: the Screamers' tribal village in and under a ruined arcology, forked from the Ancients kit. |
 | [`settlements/voth`](settlements/voth/INDEX.md) | 62 | 1786 | 70 | Voth: a Venice/Vivec-like Dunmer city on an enclosed brackish bay, with the most complete life layer and collision system. |
 | [`settlements/xanadu`](settlements/xanadu/INDEX.md) | 51 | 596 | 66 | Xanadu: the building kit of the southern Sultanate (Tibetan massing, Indian, Turkish and Persian detail) and the city of Erewhon. |
-| [`settlements/ys`](settlements/ys/INDEX.md) | 49 | 804 | 69 | Ys: the half-drowned Hykkousoi capital on the ruins of an Ancient city at the head of the north-west bay of the Ring Sea (phase 2: the Hykkousoi kit, 89 pieces on the kit sheet; phase 3 prep: the layout, shore and nav). |
+| [`settlements/ys`](settlements/ys/INDEX.md) | 49 | 807 | 69 | Ys: the half-drowned Hykkousoi capital on the ruins of an Ancient city at the head of the north-west bay of the Ring Sea (phase 2: the Hykkousoi kit, 89 pieces on the kit sheet; phase 3 prep: the layout, shore and nav). |
 | [`settlements/yuni`](settlements/yuni/INDEX.md) | 44 | 876 | 194 | Yuni: the city, plus its building-kit, furniture and plant sheets. |
 | [`kits/ancients`](kits/ancients/INDEX.md) | 92 | 1722 | 89 | The Ancients kit: ruined megastructures of the ancient civilisation, 33 structure types, one target per site. |
 | [`kits/post-apoc`](kits/post-apoc/INDEX.md) | 24 | 355 | 34 | The Post-Apoc set: reclaimed and recycled buildings (containers, silos, tanks, buses, bulkheads, tyre and bottle walls) with sockets for any culture's marks. |
