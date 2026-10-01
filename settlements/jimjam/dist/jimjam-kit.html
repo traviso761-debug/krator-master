@@ -1269,7 +1269,8 @@ JJFLORA.def({key:'jj_flora_palm',name:'Jimjam placeholder palm',w:3.6,d:3.6,h:6.
 // lights the facades. A family fragment adds a building with JJ.def({... row:'Shops' ...}); nothing
 // here needs editing. Furniture and placeholder flora get their own rows at the end.
 const TITLE='Jimjam City Kit';
-const JJ_ROW_ORDER=['Housing — poor','Housing — middle','Housing — rich','Shops','Hospitality','Civic','Temple','Palace and plaza','Military','Walls','Agriculture and storage','Helper gallery'];
+// The temple row is LAST (southmost): its solstice sightline runs south-west, over open ground.
+const JJ_ROW_ORDER=['Helper gallery','Housing — poor','Housing — middle','Housing — rich','Shops','Hospitality','Civic','Palace and plaza','Military','Walls','Agriculture and storage','Temple'];
 const JJ_ROWS=(()=>{const jjRows={};for(const jjK of JJ.order){const jjD=JJ.defs[jjK];const jjR=jjD.row||'Other';(jjRows[jjR]=jjRows[jjR]||[]).push(jjK);}
  const jjNames=JJ_ROW_ORDER.filter(jjR=>jjRows[jjR]).concat(Object.keys(jjRows).filter(jjR=>JJ_ROW_ORDER.indexOf(jjR)<0));
  return jjNames.map(jjR=>({name:jjR,keys:jjRows[jjR]}));})();
@@ -1282,7 +1283,8 @@ let GROUND_C=0;
   const jjZc=jjZ+jjDepth/2;JJ_ROW_Z[jjRow.name]={z:jjZc,depth:jjDepth,width:jjTotal};
   for(const jjD of jjDs){const jjW=jjD.w||jjD.r*2||16;
    // ry = PI turns local +z (the front) to world -z (north); the plot centre sits on the row line
-   SITES.push({key:jjD.key,x:jjX+jjW/2,z:jjZc,ry:Math.PI,o:{v:0},row:jjRow.name});jjX+=jjW+jjGap;}
+   // a def may fix its own world yaw (the temple aims its axis at the solstice sunset)
+   SITES.push({key:jjD.key,x:jjX+jjW/2,z:jjZc,ry:jjD.ry!==undefined?jjD.ry:Math.PI,o:{v:0},row:jjRow.name});jjX+=jjW+jjGap;}
   jjZ+=jjDepth+30;}
  GROUND_C=jjZ/2;})();
 // Furniture and flora rows, north of the buildings (z < 0), fronts facing north too.
@@ -1321,7 +1323,8 @@ JJ_SUN.castShadow=true;JJ_SUN.shadow.mapSize.set(2048,2048);JJ_SUN.shadow.bias=-
 scene.traverse(jjO=>{if(!jjO.isMesh||jjO.material.type==='ShaderMaterial')return;if(jjO.userData.isGround){jjO.receiveShadow=true;return;}jjO.castShadow=true;jjO.receiveShadow=true;});
 FRAME_HOOKS.push(()=>{const jjT=(typeof ctl!=='undefined'&&ctl.target)?ctl.target:camera.position;const jjL=KratorSky.lighting();JJ_SUN.target.position.copy(jjT);JJ_SUN.position.copy(jjT).addScaledVector(jjL.sunDir,800);JJ_SUN.target.updateMatrixWorld();});
 // Lightweight project probe; verify.py remains the unmodified Ancients harness.
-const BUDGET={showcase:{tris:700000,calls:450},cls:{small:60000,medium:250000,mega:700000},type:{jj_helper_gallery:'mega'}};
+// Showcase budget sized for the full 39-building sheet (with sun shadows each call is drawn twice).
+const BUDGET={showcase:{tris:3000000,calls:1600},cls:{small:60000,medium:250000,mega:700000},type:{jj_helper_gallery:'mega',jj_palace:'mega',jj_temple_sun:'mega',jj_fortress:'mega',jj_caravanserai:'mega',jj_amphitheater:'mega'}};
 function jjProbePoints(){const jjPts=[],jjM=new THREE.Matrix4(),jjPos=new THREE.Vector3(),jjQ=new THREE.Quaternion(),jjSc=new THREE.Vector3(),jjBB=new THREE.Box3();scene.traverse(jjO=>{if(jjO.userData&&jjO.userData.probeSkip)return;if(jjO.isInstancedMesh){for(let jjI=0;jjI<jjO.count;jjI++){jjO.getMatrixAt(jjI,jjM);jjM.decompose(jjPos,jjQ,jjSc);jjPts.push([jjPos.x,jjPos.y,jjPos.z]);}return;}if(!jjO.isMesh)return;jjBB.setFromObject(jjO);if(!isFinite(jjBB.min.x)||!isFinite(jjBB.max.x))return;jjPts.push([(jjBB.min.x+jjBB.max.x)/2,(jjBB.min.y+jjBB.max.y)/2,(jjBB.min.z+jjBB.max.z)/2]);for(const jjX of [jjBB.min.x,jjBB.max.x])for(const jjY of [jjBB.min.y,jjBB.max.y])for(const jjZ of [jjBB.min.z,jjBB.max.z])jjPts.push([jjX,jjY,jjZ]);});return jjPts;}
 function regOccupancy(){const jjBy={},jjBucket=100;REG.forEach((jjR,jjI)=>{const jjA=Math.floor((jjR.z-jjR.r)/jjBucket),jjB=Math.floor((jjR.z+jjR.r)/jjBucket);for(let jjK=jjA;jjK<=jjB;jjK++)(jjBy[jjK]||(jjBy[jjK]=[])).push(jjI);});const jjN=new Array(REG.length).fill(0);for(const jjP of jjProbePoints()){const jjCandidates=jjBy[Math.floor(jjP[2]/jjBucket)];if(!jjCandidates)continue;for(const jjI of jjCandidates){const jjR=REG[jjI],jjDX=jjP[0]-jjR.x,jjDZ=jjP[2]-jjR.z;if(jjDX*jjDX+jjDZ*jjDZ<=jjR.r*jjR.r&&jjP[1]>=jjR.y-2&&jjP[1]<=jjR.y+jjR.h+5)jjN[jjI]++;}}return REG.map((jjR,jjI)=>({name:jjR.name,type:jjR.type,n:jjN[jjI]}));}
 function nanSweep(){const jjBad=[];scene.traverse(jjO=>{if(!jjO.isMesh||(jjO.userData&&jjO.userData.probeSkip))return;const jjP=jjO.geometry&&jjO.geometry.attributes&&jjO.geometry.attributes.position;if(!jjP)return;for(let jjI=0;jjI<jjP.array.length;jjI++)if(!isFinite(jjP.array[jjI])){jjBad.push({geo:jjO.geometry.type,at:jjI,n:jjP.array.length});break;}});return{meshes:jjBad.length,first:jjBad.slice(0,8),instances:TSTAT.bad.length,firstInstances:TSTAT.bad.slice(0,8)};}
@@ -1337,7 +1340,7 @@ window._api={BUDGET,REG,get totals(){let jjTris=0,jjInst=0,jjMeshes=0;for(const 
 const VIEWS={};
 (()=>{const jjSite=jjK=>SITES.find(jjS=>jjS.key===jjK);
  const jjToWorld=(jjS,jjP)=>{const jjC=Math.cos(jjS.ry),jjSn=Math.sin(jjS.ry);return[jjS.x+jjP[0]*jjC+jjP[2]*jjSn,jjP[1],jjS.z-jjP[0]*jjSn+jjP[2]*jjC];};
- const jjH=JJ_ROWS[0]?JJ_ROW_Z[JJ_ROWS[0].name]:{z:0,width:60};
+ const jjH=JJ_ROW_Z['Housing — poor']||(JJ_ROWS[0]?JJ_ROW_Z[JJ_ROWS[0].name]:{z:0,width:60});
  VIEWS['Opening']=[-jjH.width*.45,46,jjH.z-70,0,6,jjH.z+30];
  const jjLast=JJ_ROWS.length?JJ_ROW_Z[JJ_ROWS[JJ_ROWS.length-1].name]:{z:0};
  VIEWS['Overview']=[-420,380,-260,0,0,jjLast.z*.45];
