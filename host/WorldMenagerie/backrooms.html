@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>The Backrooms</title>
+<link rel="stylesheet" href="css/iziz.css">
+<link rel="stylesheet" href="css/chicago.css">
+<style>
+/* the shell's colours are the Izani night; the Backrooms are not night, they are fluorescent */
+#loading{background:#1f1a0a;color:#e6d38a}
+#title{color:#f0e2a0}
+#ui button,#menagerie a{background:rgba(40,34,12,.82);color:#f0e2a0;border-color:#b9a255}
+#ui button[aria-pressed="true"],#ui button[aria-expanded="true"]{background:#d8c26a;color:#231d08}
+#timebar{background:rgba(40,34,12,.7);border-color:#8a7a3a;color:#f0e2a0;letter-spacing:.04em}
+canvas{cursor:crosshair}
+/* what an old camcorder does to it: the corners go dark and the picture never quite holds still */
+#vhs{position:fixed;inset:0;pointer-events:none;z-index:1;
+  background:radial-gradient(ellipse at center,rgba(0,0,0,0) 55%,rgba(20,14,0,.55) 100%)}
+#vhs::after{content:"";position:absolute;inset:0;opacity:.07;
+  background-image:repeating-linear-gradient(0deg,rgba(0,0,0,.6) 0 1px,transparent 1px 3px)}
+/* falling through the floor */
+#noclip{position:fixed;inset:0;pointer-events:none;z-index:7;opacity:0;transition:opacity .25s;
+  background:repeating-radial-gradient(circle at 37% 61%,#fff 0 1px,#000 1px 2px,#bbb 2px 3px);background-size:7px 5px;
+  mix-blend-mode:normal}
+#noclip.on{opacity:1;animation:snow .08s steps(2) infinite}
+@keyframes snow{0%{background-position:0 0}50%{background-position:3px 2px}100%{background-position:-2px 1px}}
+</style>
+</head>
+<body>
+<div id="loading">noclipping…</div>
+<div id="title">THE BACKROOMS</div>
+<div id="hint"><span class="for-mouse">Click to look around (Esc lets the mouse go). W A S D to walk, Shift to run. N to noclip into another level, G for the god's-eye view (the wheel to go higher or lower), M for the hum, R to start again.</span><span class="for-touch">Drag on the left to walk, anywhere else to look. Noclip takes you somewhere else.</span></div>
+<div id="vhs"></div><div id="noclip"></div>
+<div id="ui"></div><div id="views" role="dialog" aria-label="Viewpoints"></div><div id="card" role="dialog" aria-label="Details" aria-live="polite"></div><div id="side"></div><div id="errs"></div>
+<script src="vendor/three/three.min.js"></script>
+<script type="module" src="src/backrooms/main.js"></script>
+</body>
+</html>

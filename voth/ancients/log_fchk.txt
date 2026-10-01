@@ -1,0 +1,40 @@
+127.0.0.1 - - [22/Sep/2026 07:29:30] "GET /forest.html HTTP/1.1" 200 -
+ERROR PANEL: clean
+draw calls: 35 triangles: 1277830
+counters: {"_instances": 40903, "_ready": true, "_registered": 20}
+
+--- invariants ---
+  PASS  registered-volumes-non-empty : 20 volumes; thinnest: Forest arcology — heliport (49), Forest arcology — heliport (87), Forest arcology — the city centre (96)
+  PASS  no-nan-geometry : clean
+  PASS  per-type-triangle-budget : 2 type/decay pairs, heaviest forest/1 651750/700000
+  PASS  showcase-triangle-budget : 1276866 / 6000000 scene triangles
+  PASS  showcase-draw-calls : 35 / 900 draw calls at this camera
+  PASS  registry-and-bake-ran : 20 registered volumes, 40903 baked instances
+
+--- per type (scene triangles, instances, meshes) ---
+  forest/1        651750 /  700000  mega    inst   20067  meshes     4
+  forest/0        625116 /  700000  mega    inst   20836  meshes     4
+shot: ./shots/fchk\view_Forest_arcology.png   calls 35  tris 1.28M
+shot: ./shots/fchk\view_Hexagonal_plan.png   calls 32  tris 1.23M
+shot: ./shots/fchk\view_Toruses_from_below.png   calls 30  tris 1.23M
+shot: ./shots/fchk\view_The_arcade.png   calls 30  tris 1.23M
+shot: ./shots/fchk\view_Promenade_deck.png   calls 30  tris 1.23M
+shot: ./shots/fchk\view_Terrace_forest.png   calls 30  tris 1.23M
+shot: ./shots/fchk\view_The_central_void.png   calls 30  tris 1.23M
+shot: ./shots/fchk\view_The_six_columns.png   calls 33  tris 1.27M
+shot: ./shots/fchk\view_The_crown.png   calls 30  tris 1.23M
+shot: ./shots/fchk\view_Cultural_terrace.png   calls 30  tris 1.23M
+shot: ./shots/fchk\view_The_ruin.png   calls 34  tris 1.28M
+shot: ./shots/fchk\view_Collapsed_sector.png   calls 31  tris 1.22M
+shot: ./shots/fchk\view_Ruined_forest.png   calls 34  tris 1.28M
+shot: ./shots/fchk\view_Both.png   calls 34  tris 1.28M
+
+--- worst draw calls over 14 views ---
+  Forest arcology              calls    35  tris 1.28M
+  The ruin                     calls    34  tris 1.28M
+  Ruined forest                calls    34  tris 1.28M
+  Both                         calls    34  tris 1.28M
+  The six columns              calls    33  tris 1.27M
+  Hexagonal plan               calls    32  tris 1.23M
+
+OK

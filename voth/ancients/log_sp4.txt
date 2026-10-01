@@ -1,0 +1,22 @@
+127.0.0.1 - - [21/Sep/2026 04:08:19] "GET /spire.html HTTP/1.1" 200 -
+ERROR PANEL: clean
+draw calls: 37 triangles: 176044
+counters: {"_instances": 2780, "_ready": true, "_registered": 6}
+
+--- invariants ---
+  PASS  registered-volumes-non-empty : 6 volumes; thinnest: Vashtir — plinth and buttressed feet (intact) (231), Vashtir — the crown (ruined) (311), Vashtir — the crown (intact) (490)
+  PASS  no-nan-geometry : clean
+  PASS  per-type-triangle-budget : 2 type/decay pairs, heaviest spire/0 125438/700000
+  PASS  showcase-triangle-budget : 233892 / 6000000 scene triangles
+  PASS  showcase-draw-calls : 37 / 900 draw calls at this camera
+  PASS  registry-and-bake-ran : 6 registered volumes, 2780 baked instances
+
+--- per type (scene triangles, instances, meshes) ---
+  spire/0         125438 /  700000  mega    inst    1222  meshes    16
+  spire/1         108454 /  700000  mega    inst    1558  meshes    19
+shot: ./shots/sp4\view_Vashtir.png   calls 37  tris 0.18M
+
+--- worst draw calls over 1 views ---
+  Vashtir                      calls    37  tris 0.18M
+
+OK

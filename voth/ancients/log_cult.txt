@@ -1,0 +1,165 @@
+127.0.0.1 - - [21/Sep/2026 14:36:50] "GET /ancients-kit.html HTTP/1.1" 200 -
+ERROR PANEL: clean
+draw calls: 519 triangles: 5077150
+counters: {"_instances": 77622, "_ready": true, "_registered": 116}
+
+--- invariants ---
+  PASS  registered-volumes-non-empty : 116 volumes; thinnest: Library — reading hall (21), Laboratory — reactor hut (23), Laboratory — reactor hut (27)
+  PASS  no-nan-geometry : clean
+  PASS  per-type-triangle-budget : 70 type/decay pairs, heaviest skyB/2 276096/400000
+  OVER  showcase-triangle-budget : 6000416 / 6000000 scene triangles
+  PASS  showcase-draw-calls : 519 / 900 draw calls at this camera
+  PASS  registry-and-bake-ran : 116 registered volumes, 77622 baked instances
+
+--- per type (scene triangles, instances, meshes) ---
+  skyB/2          276096 /  400000  sky     inst    2539  meshes    18
+  skyB/0          241492 /  400000  sky     inst    1864  meshes    18
+  skyC/2          232226 /  400000  sky     inst    2608  meshes    15
+  mega/1          226042 /  700000  mega    inst    3491  meshes    15
+  skyB/1          212702 /  400000  sky     inst    2017  meshes     6
+  skyC/1          207172 /  400000  sky     inst    2359  meshes    12
+  fac/1           201324 /  250000  medium  inst    1778  meshes    61
+  mega/0          192806 /  700000  mega    inst    2989  meshes    15
+  skyC/0          189384 /  400000  sky     inst    1933  meshes    12
+  skyA/2          173824 /  400000  sky     inst    3517  meshes     9
+  fac/0           167235 /  250000  medium  inst     863  meshes    48
+  skyH/2          142238 /  400000  sky     inst    1262  meshes     7
+  campus/1        140800 /  700000  mega    inst    3591  meshes     8
+  skyA/1          134246 /  400000  sky     inst    3071  meshes     7
+  apt/1           130328 /  250000  medium  inst    1053  meshes    22
+  skyG/2          130312 /  400000  sky     inst    1519  meshes    11
+  campus/0        128284 /  700000  mega    inst    3266  meshes     8
+  apt/0           128076 /  250000  medium  inst     767  meshes    17
+  skyG/1          120060 /  400000  sky     inst    1316  meshes     9
+  skyH/1          114388 /  400000  sky     inst     989  meshes     4
+  cult/1          114292 /  250000  medium  inst    1418  meshes     3
+  skyD/2          110052 /  400000  sky     inst    1160  meshes     9
+  skyF/2          109868 /  400000  sky     inst    1598  meshes    15
+  skyE/2          103170 /  400000  sky     inst    2005  meshes     6
+  skyA/0          101460 /  400000  sky     inst    3067  meshes    10
+  skyH/0           98184 /  400000  sky     inst     461  meshes     4
+  skyD/1           95206 /  400000  sky     inst     959  meshes     5
+  skyF/1           94414 /  400000  sky     inst    1302  meshes     9
+  arc/1            94126 /  700000  mega    inst    1245  meshes    22
+  skyE/1           91158 /  400000  sky     inst    1675  meshes     4
+  lab/1            90042 /  250000  medium  inst    1023  meshes    23
+  cult/0           89732 /  250000  medium  inst     683  meshes     3
+  port/1           82994 /  250000  medium  inst     957  meshes    15
+  skyG/0           80676 /  400000  sky     inst     620  meshes    12
+  arc/0            78840 /  700000  mega    inst     868  meshes    11
+  skyF/0           74052 /  400000  sky     inst     976  meshes    29
+  off/0            66732 /  250000  medium  inst     586  meshes    12
+  skyE/0           66108 /  400000  sky     inst    1380  meshes     5
+  skyD/0           65184 /  400000  sky     inst     338  meshes    31
+  gov/1            63056 /  250000  medium  inst     905  meshes    14
+  lab/0            57826 /  250000  medium  inst     381  meshes    22
+  off/1            55410 /  250000  medium  inst     674  meshes    10
+  hotel/1          55194 /  250000  medium  inst    1841  meshes     6
+  robo/1           43378 /  250000  medium  inst     680  meshes    20
+  dc/1             41280 /  250000  medium  inst     563  meshes    17
+  port/0           39276 /  250000  medium  inst     307  meshes    15
+  hosp/1           35704 /  250000  medium  inst     717  meshes     6
+  lib/1            35322 /  250000  medium  inst     441  meshes     6
+  gov/0            33340 /  250000  medium  inst     438  meshes    14
+  hotel/0          28928 /  250000  medium  inst    1200  meshes    20
+  hosp/0           28660 /  250000  medium  inst     565  meshes     8
+  dish/1           26060 /   60000  small   inst     177  meshes     7
+  amph/1           23758 /  250000  medium  inst     328  meshes     6
+  robo/0           21532 /  250000  medium  inst     296  meshes    22
+  house/0          21317 /   60000  small   inst      88  meshes    28
+  house/1          21018 /   60000  small   inst     134  meshes    25
+  lib/0            19628 /  250000  medium  inst     124  meshes     5
+  dish/0           19324 /   60000  small   inst      51  meshes     6
+  dc/0             18868 /  250000  medium  inst     182  meshes    17
+  bunk/1           17866 /  250000  medium  inst     344  meshes     4
+  fuel/1           16810 /   60000  small   inst     162  meshes     8
+  radar/1          13874 /   60000  small   inst     378  meshes     3
+  police/1         12476 /   60000  small   inst     295  meshes     2
+  police/0         10976 /   60000  small   inst     313  meshes     3
+  fuel/0            9504 /   60000  small   inst      55  meshes     7
+  amph/0            9440 /  250000  medium  inst     111  meshes     6
+  radar/0           8484 /   60000  small   inst     356  meshes     5
+  house2/1          7426 /   60000  small   inst     155  meshes     5
+  bunk/0            4964 /  250000  medium  inst     142  meshes     3
+  house2/0          4392 /   60000  small   inst     106  meshes     6
+
+NOTE: 69 views requested. Software GL makes this slow; 16 per run is the working limit.
+shot: ./shots/cult3\view_Overview.png   calls 519  tris 5.08M
+shot: ./shots/cult3\view_Skyscraper_A.png   calls 71  tris 4.20M
+shot: ./shots/cult3\view_Skyscraper_B.png   calls 100  tris 4.35M
+shot: ./shots/cult3\view_Skyscraper_C.png   calls 137  tris 4.52M
+shot: ./shots/cult3\view_Toppled_A.png   calls 64  tris 4.19M
+shot: ./shots/cult3\view_Toppled_B.png   calls 82  tris 4.26M
+shot: ./shots/cult3\view_Toppled_C.png   calls 97  tris 4.30M
+shot: ./shots/cult3\view_Megastructure.png   calls 195  tris 4.88M
+shot: ./shots/cult3\view_Megastructure_foot.png   calls 112  tris 4.46M
+shot: ./shots/cult3\view_Factory.png   calls 300  tris 5.02M
+shot: ./shots/cult3\view_Factory_silo.png   calls 211  tris 4.57M
+shot: ./shots/cult3\view_Starport.png   calls 330  tris 5.08M
+shot: ./shots/cult3\view_Government.png   calls 358  tris 5.10M
+shot: ./shots/cult3\view_Government_portico.png   calls 347  tris 5.09M
+shot: ./shots/cult3\view_Government_ruin.png   calls 272  tris 4.84M
+shot: ./shots/cult3\view_Library.png   calls 365  tris 5.11M
+shot: ./shots/cult3\view_Bunker.png   calls 376  tris 5.11M
+shot: ./shots/cult3\view_Bunker_battery.png   calls 372  tris 5.11M
+shot: ./shots/cult3\view_Offices.png   calls 391  tris 5.14M
+shot: ./shots/cult3\view_Apartments_intact.png   calls 408  tris 5.21M
+shot: ./shots/cult3\view_Apartments_ruined.png   calls 414  tris 5.19M
+shot: ./shots/cult3\view_Apartments_close.png   calls 416  tris 5.22M
+shot: ./shots/cult3\view_Amphitheater.png   calls 153  tris 4.19M
+shot: ./shots/cult3\view_Amphitheater_stage.png   calls 516  tris 4.75M
+shot: ./shots/cult3\view_Fuel_station.png   calls 156  tris 4.46M
+shot: ./shots/cult3\view_Fuel_station_ruin.png   calls 250  tris 4.68M
+shot: ./shots/cult3\view_Radar_tower.png   calls 280  tris 4.79M
+shot: ./shots/cult3\view_Radar_tower_ruin.png   calls 391  tris 5.01M
+shot: ./shots/cult3\view_Satellite_dish.png   calls 203  tris 4.63M
+shot: ./shots/cult3\view_Satellite_dish_ruin.png   calls 274  tris 4.69M
+shot: ./shots/cult3\view_Houses_intact.png   calls 513  tris 5.34M
+shot: ./shots/cult3\view_Houses_ruined.png   calls 508  tris 5.33M
+shot: ./shots/cult3\view_Lab.png   calls 594  tris 5.41M
+shot: ./shots/cult3\view_Lab_intact.png   calls 269  tris 4.79M
+shot: ./shots/cult3\view_Lab_ruined.png   calls 523  tris 5.28M
+shot: ./shots/cult3\view_Houses_DEF_intact.png   calls 577  tris 5.41M
+shot: ./shots/cult3\view_Houses_DEF_ruined.png   calls 566  tris 5.38M
+shot: ./shots/cult3\view_Skyscraper_D.png   calls 569  tris 5.21M
+shot: ./shots/cult3\view_Skyscraper_E.png   calls 544  tris 5.11M
+shot: ./shots/cult3\view_Skyscraper_F.png   calls 585  tris 5.16M
+shot: ./shots/cult3\view_Toppled_D.png   calls 106  tris 4.33M
+shot: ./shots/cult3\view_Toppled_E.png   calls 112  tris 4.34M
+shot: ./shots/cult3\view_Toppled_F.png   calls 127  tris 4.38M
+shot: ./shots/cult3\view_The_Gate.png   calls 532  tris 4.82M
+shot: ./shots/cult3\view_The_Gate_ruin.png   calls 107  tris 4.22M
+shot: ./shots/cult3\view_Robotics_factory.png   calls 633  tris 4.95M
+shot: ./shots/cult3\view_Robotics_yard.png   calls 642  tris 5.11M
+shot: ./shots/cult3\view_Campus.png   calls 547  tris 4.85M
+shot: ./shots/cult3\view_Campus_intact.png   calls 537  tris 4.82M
+shot: ./shots/cult3\view_Campus_ruined.png   calls 525  tris 4.81M
+shot: ./shots/cult3\view_Campus_lawn.png   calls 534  tris 4.81M
+shot: ./shots/cult3\view_Campus_courtyard.png   calls 109  tris 4.20M
+shot: ./shots/cult3\view_Skyscraper_G.png   calls 515  tris 4.80M
+shot: ./shots/cult3\view_Skyscraper_H.png   calls 512  tris 4.86M
+shot: ./shots/cult3\view_Toppled_G.png   calls 135  tris 4.33M
+shot: ./shots/cult3\view_Toppled_H.png   calls 114  tris 4.28M
+shot: ./shots/cult3\view_Data_center.png   calls 482  tris 4.77M
+shot: ./shots/cult3\view_Data_center_ruin.png   calls 566  tris 4.87M
+shot: ./shots/cult3\view_Data_center_close.png   calls 523  tris 4.84M
+shot: ./shots/cult3\view_Police_station.png   calls 332  tris 4.53M
+shot: ./shots/cult3\view_Police_ruin.png   calls 501  tris 4.76M
+shot: ./shots/cult3\view_Hospital.png   calls 480  tris 4.75M
+shot: ./shots/cult3\view_Hospital_ruin.png   calls 548  tris 4.83M
+shot: ./shots/cult3\view_Hotel.png   calls 543  tris 4.87M
+shot: ./shots/cult3\view_Hotel_ruin.png   calls 533  tris 4.81M
+shot: ./shots/cult3\view_Cultural_centre.png   calls 444  tris 4.76M
+shot: ./shots/cult3\view_Cultural_centre_ruin.png   calls 444  tris 4.75M
+shot: ./shots/cult3\view_Wheel_core.png   calls 474  tris 4.72M
+shot: ./shots/cult3\view_Office_C.png   calls 382  tris 5.11M
+
+--- worst draw calls over 69 views ---
+  Robotics yard                calls   642  tris 5.11M
+  Robotics factory             calls   633  tris 4.95M
+  Lab                          calls   594  tris 5.41M
+  Skyscraper F                 calls   585  tris 5.16M
+  Houses DEF intact            calls   577  tris 5.41M
+  Skyscraper D                 calls   569  tris 5.21M
+
+OK

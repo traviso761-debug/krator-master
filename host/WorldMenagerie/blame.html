@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>The City — after Blame!</title>
+<link rel="stylesheet" href="css/iziz.css">
+<link rel="stylesheet" href="css/chicago.css">
+<style>
+/* The shell's colours are the Izani night. The City is a manga: grey, black, white, and the one red Nihei's
+   covers use. */
+html,body{background:#0c0d0f}
+#loading{background:#0c0d0f;color:#dcdcd6}
+#title{color:#ecece6;letter-spacing:.42em}
+#seedtag{color:#9a9a94}
+#ui button,#menagerie a,#views button{background:rgba(14,15,17,.84);color:#e4e4de;border-color:#5b5d61}
+#ui button:hover,#views button:hover{border-color:#c8321f}
+#ui button[aria-pressed="true"],#ui button[aria-expanded="true"],#menagerie a[aria-current="true"]{background:#c8321f;color:#fff;border-color:#c8321f}
+#views,#menagerie{background:rgba(12,13,15,.95);border-color:#5b5d61}
+#views .sub,#menagerie .sub{color:#9a9a94}
+#card{background:rgba(12,13,15,.92);border-color:#5b5d61;color:#dcdcd6}
+#card h2{color:#fff;letter-spacing:.14em;text-transform:uppercase}
+#card .sub{color:#9a9a94}
+#timebar{background:rgba(12,13,15,.72);border-color:#5b5d61;color:#e4e4de;letter-spacing:.03em}
+#overlay{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}
+/* paper: a little grain and the corners darkened, the way a printed page is */
+#paper{position:fixed;inset:0;pointer-events:none;z-index:1;
+  background:radial-gradient(ellipse at center,rgba(0,0,0,0) 58%,rgba(0,0,0,.42) 100%)}
+#paper::after{content:"";position:absolute;inset:0;opacity:.09;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+#fade{position:fixed;inset:0;background:#000;opacity:0;pointer-events:none;transition:opacity .4s;z-index:3}
+#fade.on{opacity:1}
+#caption{position:fixed;left:50%;bottom:calc(var(--barh,56px) + 70px);transform:translateX(-50%);width:min(640px,calc(100% - 32px));
+  text-align:center;pointer-events:none;z-index:4;opacity:0;transition:opacity .6s;text-shadow:0 1px 8px #000,0 0 2px #000}
+#caption.on{opacity:1}
+#caption b{display:block;font:400 30px Georgia,serif;letter-spacing:.14em;color:#fff;margin-bottom:6px}
+#caption span{font:15px/1.5 Georgia,serif;color:#e4e4de}
+@media (max-width:700px){#caption b{font-size:22px}#caption span{font-size:13px}}
+canvas{cursor:grab}
+</style>
+</head>
+<body>
+<div id="loading">climbing…</div>
+<div id="title">THE CITY<span id="seedtag"></span></div>
+<div id="hint"><span class="for-mouse">Drag to look round, right-drag or shift-drag to pan, the wheel to go nearer or further - from three metres to ninety kilometres. WASD and Q/E to move. X cuts it open and C flips which half you keep, F flies, K finds Killy, P pulls back from him to the whole City.</span><span class="for-touch">Drag to look round, pinch to go nearer or further, two fingers to pan. "Pull back" goes from Killy to the whole City.</span></div>
+<div id="paper"></div><canvas id="overlay"></canvas><div id="caption" aria-live="polite"></div><div id="fade"></div>
+<div id="ui"></div><div id="views" role="dialog" aria-label="Viewpoints"></div><div id="card" role="dialog" aria-label="Details" aria-live="polite"></div><div id="side"></div><div id="errs"></div>
+<script src="vendor/three/three.min.js"></script>
+<script type="module" src="src/blame/main.js"></script>
+</body>
+</html>

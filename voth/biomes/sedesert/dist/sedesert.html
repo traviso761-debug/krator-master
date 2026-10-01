@@ -1,0 +1,2334 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Krator biome — the eastern high desert</title>
+<style>
+html,body{margin:0;height:100%;overflow:hidden;background:#3a2a22;font:13px/1.4 system-ui,sans-serif;color:#eee}
+canvas{display:block}
+#ui{position:fixed;left:10px;top:10px;display:flex;flex-wrap:wrap;gap:6px;max-width:70vw;z-index:5}
+#ui button{background:rgba(30,16,10,.75);color:#f4e4d0;border:1px solid #a06a48;border-radius:4px;padding:5px 9px;cursor:pointer}
+#ui button:hover{background:#7a4a30}
+#hud{position:fixed;right:10px;bottom:10px;background:rgba(0,0,0,.5);padding:6px 9px;border-radius:4px;font-family:ui-monospace,monospace;font-size:12px;white-space:pre;z-index:5}
+#errs{position:fixed;left:10px;bottom:10px;max-width:60vw;max-height:30vh;overflow:auto;background:rgba(120,0,0,.85);color:#fff;padding:6px 9px;border-radius:4px;font-family:ui-monospace,monospace;font-size:12px;white-space:pre-wrap;display:none;z-index:9}
+#insp{position:fixed;left:10px;top:78px;background:rgba(0,0,0,.55);color:#ffd9a8;padding:5px 9px;border-radius:4px;font:12px ui-monospace,monospace;white-space:pre;z-index:5;margin:0}
+#viewsel{background:rgba(30,16,10,.85);color:#f4e4d0;border:1px solid #a06a48;border-radius:4px;padding:5px 9px;font-size:13px}
+#cap{position:fixed;left:10px;top:44px;background:rgba(0,0,0,.45);padding:4px 8px;border-radius:4px;font-size:12px;color:#f0dcc4;z-index:5;max-width:60vw}
+</style><div id="ui"></div>
+<div id="cap">Krator biome kit — the eastern high desert: red desert, the river's linear oasis, the rain-shadow pond, the cataract into the Abyss (ideal type) · click to inspect · drag to orbit · wheel to zoom · right-drag / WASD to move</div>
+<pre id="insp">inspector: click a structure</pre>
+<div id="hud"></div>
+<pre id="errs"></pre>
+<script>document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"'+(location.protocol==='file:'?'':' crossorigin="anonymous"')+'><\/script>');</script>
+<script>
+
+// ==================== 10-core-head.js
+// ================================================================= BIOME CORE — head
+// The engine-independent kit every Krator biome fragment is written against.
+// Nothing below names a world's kit. The host hands in what a biome needs
+// through BIO.init(...) (see BIOME-API.md) and everything else lives here.
+var BIO={host:null,stats:{},cur:null,version:'sedesert-1'};
+// EVERYTHING BELOW IS LOCAL. The core declares no generic global (rng, clamp,
+// TAU...): a world that already has those would be clobbered. Biome fragments
+// pull what they need from BIO.fn at the top of their own closure.
+(function(){
+const TAU=Math.PI*2;
+const clamp=(v,a,b)=>v<a?a:v>b?b:v, lerp=(a,b,t)=>a+(b-a)*t, mix=lerp;
+const smooth=(a,b,x)=>{const t=clamp((x-a)/(b-a),0,1);return t*t*(3-2*t);};
+
+// ---------------------------------------------------------------- PRNG
+// The biome's OWN stream. A host that adds a biome must not see its rubble
+// move, so the biome never draws from the host's generator.
+let _bseed=1234567;
+function reseed(s){_bseed=s>>>0;}
+function rng(){_bseed|=0;_bseed=_bseed+0x6D2B79F5|0;let t=Math.imul(_bseed^_bseed>>>15,1|_bseed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;}
+function rr(a,b){return a+(b-a)*rng();}
+function ri(a,b){return a+Math.floor(rng()*(b-a+1));}
+function pick(arr){return arr[Math.floor(rng()*arr.length)%arr.length];}
+
+// ---------------------------------------------------------------- noise
+function h3(x,y,z){const s=Math.sin(x*12.9898+y*78.233+z*37.719)*43758.5453;return s-Math.floor(s);}
+function vnoise(x,y,z){const xi=Math.floor(x),yi=Math.floor(y),zi=Math.floor(z),xf=x-xi,yf=y-yi,zf=z-zi;
+ const sm=t=>t*t*(3-2*t);const u=sm(xf),v=sm(yf),w=sm(zf);const l=(a,b,t)=>a+(b-a)*t;
+ return l(l(l(h3(xi,yi,zi),h3(xi+1,yi,zi),u),l(h3(xi,yi+1,zi),h3(xi+1,yi+1,zi),u),v),
+          l(l(h3(xi,yi,zi+1),h3(xi+1,yi,zi+1),u),l(h3(xi,yi+1,zi+1),h3(xi+1,yi+1,zi+1),u),v),w);}
+function fbm(x,y,z,o){o=o||3;let a=0,f=1,s=0;for(let i=0;i<o;i++){a+=vnoise(x*f,y*f,z*f)/f;s+=1/f;f*=2.03;}return a/s;}
+
+// ---------------------------------------------------------------- host binding
+// host = { THREE, scene, terrainH(x,z), mask(x,z), obstacles[], ticks(fn), seed,
+//          origin[x,z], err(msg), stat(key,tris,inst) }
+BIO.init=function(h){
+ if(!h||!h.THREE)throw new Error('BIO.init: host needs THREE');
+ // scene may arrive later (a world that creates its scene after its kit loads
+ // calls BIO.setScene before build); it is only needed at bake
+ BIO.host={
+  THREE:h.THREE,scene:h.scene||null,
+  terrainH:h.terrainH||((x,z)=>0),
+  // the default mask: nothing roots under the local water surface (a world with
+  // footprints or its own rule passes its own)
+  mask:h.mask||((x,z)=>{const d=BIO.terrainH(x,z)-BIO.waterH(x,z);return d<.15?0:d<.7?(d-.15)/.55:1;}),
+  obstacles:h.obstacles||[],
+  ticks:h.ticks||(fn=>{}),
+  seed:h.seed==null?1:h.seed,
+  // origin: [x,z] or a LIST of [x,z] -- the LOD curve is measured from the
+  // nearest one, so a long showcase (a lake shore, a river) can keep detail
+  // along a spine instead of round one point. center: the disc the grids
+  // cover (default: the first origin).
+  origin:(h.origin&&typeof h.origin[0]==='number')?[h.origin]:(h.origin||[[0,0]]),
+  center:h.center||null,
+  // fields: optional climate fields a multi-zone biome asks for, each
+  // (x,z)->0..1. Missing ones fall back to BIO.fieldDefault. wet: 0 arid ..
+  // 1 saturated; salt: 0 .. 1 crust; upland: 0 basin floor .. 1 the high edge.
+  fields:h.fields||{},
+  // waterH(x,z): the local water surface. The hyperjungle and the abyss keep
+  // their water at y=0 (the default); a river that descends, or a pond in a
+  // hollow, hands its own level in and the biome reads depth as terrainH-waterH.
+  waterH:h.waterH||((x,z)=>0),
+  // register(o): a volume the world's inspector / probe can name ({name,x,z,y,r,h});
+  // a world without an inspector leaves it out
+  register:h.register||(o=>{}),
+  // lod: the detail radii from the spine, a property of the world's spine, not of
+  // a species pass: hero (full detail), mid, far (impostors stop), floor bands
+  lod:Object.assign({hero:800,mid:1500,far:2200,floor:[500,1250]},h.lod||{}),
+  // windows: named rectangles [x0,z0,x1,z1] a biome may ask for (BIO.window('water')):
+  // where the world's water is, so a water-bound pass looks nowhere else
+  windows:h.windows||{},
+  err:h.err||(m=>console.error(m)),
+  stat:h.stat||null};
+ reseed(BIO.host.seed*7919+11);
+ return BIO;};
+BIO.setScene=function(s){BIO.host.scene=s;};
+BIO.err=function(m){if(BIO.host)BIO.host.err(m);else console.error(m);};
+BIO.terrainH=function(x,z){return BIO.host?BIO.host.terrainH(x,z):0;};
+BIO.mask=function(x,z){return BIO.host?BIO.host.mask(x,z):1;};
+BIO.waterH=function(x,z){return BIO.host?BIO.host.waterH(x,z):0;};
+// depth of the ground under the local water surface (negative: above it)
+BIO.depth=function(x,z){return BIO.waterH(x,z)-BIO.terrainH(x,z);};
+BIO.register=function(o){if(BIO.host)BIO.host.register(o);};
+BIO.LOD=function(){return BIO.host?BIO.host.lod:{hero:800,mid:1500,far:2200,floor:[500,1250]};};
+BIO.window=function(n){return (BIO.host&&BIO.host.windows[n])||null;};
+// the bounding box of the LOD spine, padded: every point within `pad` of an origin lies inside it
+BIO.originBox=function(pad){const O=BIO.host?BIO.host.origin:[[0,0]];let x0=1e9,z0=1e9,x1=-1e9,z1=-1e9;for(const o of O){x0=Math.min(x0,o[0]);z0=Math.min(z0,o[1]);x1=Math.max(x1,o[0]);z1=Math.max(z1,o[1]);}return[x0-pad,z0-pad,x1+pad,z1+pad];};
+// distance from the LOD origin, for the detail curve
+BIO.lodD=function(x,z){const O=BIO.host?BIO.host.origin:[[0,0]];let m=1e9;for(let i=0;i<O.length;i++){const d=Math.hypot(x-O[i][0],z-O[i][1]);if(d<m)m=d;}return m;};
+BIO.center=function(){const h=BIO.host;return h?(h.center||h.origin[0]):[0,0];};
+// a field a world does not bind is 0, except the three with a meaningful default
+BIO.fieldDefault={wet:(x,z)=>BIO.terrainH(x,z)<2?1:.6,salt:(x,z)=>0,upland:(x,z)=>0};
+const ZEROF=(x,z)=>0;
+BIO.field=function(n,x,z){const f=BIO.host&&BIO.host.fields[n];return f?f(x,z):(BIO.fieldDefault[n]||ZEROF)(x,z);};
+BIO.hasField=function(n){return !!(BIO.host&&BIO.host.fields[n]);};
+// LOD is a CURVE, not two steps: full detail under ~700 m, a quarter by 3 km.
+BIO.lod=function(x,z){return clamp(1.18-BIO.lodD(x,z)/2600,.22,1);};
+
+// ---------------------------------------------------------------- accounting
+// Every instance and merged triangle is charged to BIO.cur ('jungle/hyper',
+// 'jungle/floor'...), so a probe can assert per-pass budgets.
+BIO.tally=function(tris,inst,meshes){const k=BIO.cur||'biome';
+ const t=BIO.stats[k]||(BIO.stats[k]={tris:0,inst:0,meshes:0});
+ t.tris+=tris||0;t.inst+=inst||0;t.meshes+=meshes||0;
+ if(BIO.host&&BIO.host.stat)BIO.host.stat(k,tris||0,inst||0);};
+BIO.totals=function(){let tris=0,inst=0,meshes=0;for(const k in BIO.stats){tris+=BIO.stats[k].tris;inst+=BIO.stats[k].inst;meshes+=BIO.stats[k].meshes;}return{tris,inst,meshes};};
+
+BIO.fn={TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm};
+})();
+
+// ==================== 20-core-kit.js
+// ================================================================= BIOME CORE — kit
+// Two ways to put geometry in the world, both cheap:
+//   INSTANCED ITEMS   BIO.def(name,geo,mat) once, BIO.put(name,...) thousands of
+//                     times, one InstancedMesh per item at bake. Per-instance
+//                     colour, and optional per-instance extras (aN normal, aC2
+//                     second colour) for the foliage shaders.
+//   MERGED BUCKET     BIO.tri/quad/tube/lathe/surf write vertex-coloured
+//                     triangles into a bucket per material family; one Mesh per
+//                     family at bake. Boles, limbs, logs, boulders go here.
+// Both are charged to BIO.cur by the accounting in 10-core-head.js.
+(function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm}=BIO.fn;
+// A GROWABLE FLOAT32 STORE with the two things a fragment uses of an array:
+// push(...values) and length. Half of a build went into pushing tens of
+// millions of doubles into JS arrays and copying them into typed arrays at
+// bake; a Float32Array that doubles as it fills is 17x faster and rounds each
+// value exactly as Float32BufferAttribute would have, so the bits are the same.
+function Store(cap){this.a=new Float32Array(cap||1024);this.n=0;}
+Store.prototype.push=function(){let n=this.n;const m=n+arguments.length;if(m>this.a.length){let c=this.a.length*2;while(c<m)c*=2;const b=new Float32Array(c);b.set(this.a.subarray(0,n));this.a=b;}
+ for(let i=0;i<arguments.length;i++)this.a[n++]=arguments[i];this.n=n;};
+Object.defineProperty(Store.prototype,'length',{get:function(){return this.n;}});
+Store.prototype.data=function(){return this.a.slice(0,this.n);};   // a copy: the store can be dropped after bake
+BIO.Store=Store;
+const newItem=()=>({m:new Store(4096),c:new Store(1024),n:new Store(64),c2:new Store(64),count:0});
+BIO.defs={};BIO.order=[];BIO.items={};
+BIO.def=function(name,geo,mat,opt){opt=opt||{};
+ if(BIO.defs[name])BIO.err('BIO.def: '+name+' defined twice');
+ const g=geo.index?geo.toNonIndexed():geo;
+ BIO.defs[name]={geo:g,mat,tris:g.attributes.position.count/3,attrs:opt.attrs||null,label:opt.label||name};
+ BIO.items[name]=newItem();BIO.order.push(name);};
+const _bm=new (function(){return {}})();   // scratch holder, filled after THREE binds
+BIO._scratch=function(){const T=BIO.host.THREE;if(!_bm.m){_bm.m=new T.Matrix4();_bm.q=new T.Quaternion();_bm.e=new T.Euler();_bm.p=new T.Vector3();_bm.s=new T.Vector3();_bm.c=new T.Color();_bm.up=new T.Vector3(0,1,0);_bm.v=new T.Vector3();}return _bm;};
+// rotation helpers: qEuler(rx,ry,rz) or qFacing([nx,ny,nz]) (local +z toward n)
+function qEuler(rx,ry,rz){const S=BIO._scratch();S.e.set(rx||0,ry||0,rz||0,'YXZ');return new BIO.host.THREE.Quaternion().setFromEuler(S.e);}
+function qFacing(n){const T=BIO.host.THREE,v=new T.Vector3(n[0],n[1],n[2]).normalize();return new T.Quaternion().setFromUnitVectors(new T.Vector3(0,0,1),v);}
+function qUp(n){const T=BIO.host.THREE,v=new T.Vector3(n[0],n[1],n[2]).normalize();return new T.Quaternion().setFromUnitVectors(new T.Vector3(0,1,0),v);}
+// put(name, [x,y,z], quat|null, [sx,sy,sz]|s, colour(hex|Color|null), extra{n:[..], c2:hex})
+BIO.put=function(name,pos,q,sc,col,extra){
+ const it=BIO.items[name];if(!it){BIO.err('BIO.put: no item '+name);return;}
+ if(!(isFinite(pos[0])&&isFinite(pos[1])&&isFinite(pos[2]))){BIO.err('BIO.put: NaN position for '+name);return;}
+ const S=BIO._scratch();
+ S.p.set(pos[0],pos[1],pos[2]);
+ if(typeof sc==='number')S.s.set(sc,sc,sc);else S.s.set(sc[0],sc[1],sc[2]);
+ S.m.compose(S.p,q||S.q.set(0,0,0,1),S.s);
+ const e=S.m.elements;for(let i=0;i<16;i++)it.m.push(e[i]);
+ if(col==null)it.c.push(1,1,1);
+ else{if(col.isColor)S.c.copy(col);else S.c.set(col);S.c.convertSRGBToLinear();it.c.push(S.c.r,S.c.g,S.c.b);}
+ const def=BIO.defs[name];
+ if(def.attrs){
+  if(def.attrs.indexOf('aN')>=0){const n=(extra&&extra.n)||[0,1,0];it.n.push(n[0],n[1],n[2]);}
+  if(def.attrs.indexOf('aC2')>=0){const c2=extra&&extra.c2;if(c2==null)it.c2.push(S.c.r,S.c.g,S.c.b);else{if(c2.isColor)S.c.copy(c2);else S.c.set(c2);S.c.convertSRGBToLinear();it.c2.push(S.c.r,S.c.g,S.c.b);}}}
+ it.count++;BIO.tally(def.tris,1,0);};
+// a beam of instanced item `name` (a unit cylinder along y, centred) from a to b
+BIO.beam=function(name,a,b,r0,r1,col){const T=BIO.host.THREE,S=BIO._scratch();
+ const dx=b[0]-a[0],dy=b[1]-a[1],dz=b[2]-a[2],L=Math.hypot(dx,dy,dz);if(L<1e-4)return;
+ S.v.set(dx/L,dy/L,dz/L);const q=new T.Quaternion().setFromUnitVectors(S.up,S.v);
+ BIO.put(name,[(a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2],q,[r0*2,L,(r1==null?r0:r1)*2],col);};
+
+// ---------------------------------------------------------------- merged buckets
+BIO.buckets={};
+BIO.bucket=function(fam,mat,opt){opt=opt||{};
+ if(!BIO.buckets[fam])BIO.buckets[fam]={mat,pos:new Store(1<<16),nor:new Store(1<<16),uv:new Store(1<<15),col:new Store(1<<16),tris:0,label:opt.label||fam,uvScale:opt.uvScale||[3,3]};
+ return BIO.buckets[fam];};
+const _lc={r:1,g:1,b:1};
+// COLOURS ARE sRGB IN, LINEAR OUT. r128 sends instance and vertex colours to
+// the shader untouched, and the renderer encodes its output to sRGB, so a raw
+// hex would render a stop too bright. Everything passed here is a designer's
+// sRGB colour (hex, Color, or [r,g,b] already linear) and is converted once.
+function _col3(c){const S=BIO._scratch();if(c==null)return[1,1,1];if(Array.isArray(c))return c;
+ if(c.isColor)S.c.copy(c);else S.c.set(c);S.c.convertSRGBToLinear();return[S.c.r,S.c.g,S.c.b];}
+// one triangle, flat normal unless `n` is given; a,b,c CCW from outside
+BIO.tri=function(fam,a,b,c,col,n){const K=BIO.buckets[fam];if(!K){BIO.err('BIO.tri: no bucket '+fam);return;}
+ let nx,ny,nz;if(n){nx=n[0];ny=n[1];nz=n[2];}else{const ux=b[0]-a[0],uy=b[1]-a[1],uz=b[2]-a[2],vx=c[0]-a[0],vy=c[1]-a[1],vz=c[2]-a[2];
+  nx=uy*vz-uz*vy;ny=uz*vx-ux*vz;nz=ux*vy-uy*vx;const l=Math.hypot(nx,ny,nz)||1;nx/=l;ny/=l;nz/=l;}
+ const cc=_col3(col);
+ [a,b,c].forEach(p=>{K.pos.push(p[0],p[1],p[2]);K.nor.push(nx,ny,nz);K.uv.push(p[3]||0,p[4]||0);K.col.push(cc[0],cc[1],cc[2]);});
+ K.tris++;BIO.tally(1,0,0);};
+BIO.quad=function(fam,a,b,c,d,col){BIO.tri(fam,a,b,c,col);BIO.tri(fam,a,c,d,col);};
+// TUBE along pts [{x,y,z,r,col?}], parallel-transport frames, constant texture
+// repeat along the length (so a bole shows no shear bands where the radius
+// changes). opt: seg, cap, rfn(i,ang,pt)->radius multiplier, vscale
+BIO.tube=function(fam,pts,col,opt){opt=opt||{};const T=BIO.host.THREE,K=BIO.buckets[fam];if(!K){BIO.err('BIO.tube: no bucket '+fam);return 0;}
+ const seg=opt.seg||8,sc=K.uvScale,n=pts.length;if(n<2)return 0;
+ const Tn=[],N=[],Bn=[];
+ for(let i=0;i<n;i++){const a=pts[Math.max(0,i-1)],b=pts[Math.min(n-1,i+1)];Tn.push(new T.Vector3(b.x-a.x,b.y-a.y,b.z-a.z).normalize());}
+ const ref=Math.abs(Tn[0].y)>.9?new T.Vector3(1,0,0):new T.Vector3(0,1,0);
+ N[0]=new T.Vector3().crossVectors(Tn[0],ref).normalize();Bn[0]=new T.Vector3().crossVectors(Tn[0],N[0]).normalize();
+ for(let j=1;j<n;j++){const nn=N[j-1].clone().sub(Tn[j].clone().multiplyScalar(N[j-1].dot(Tn[j]))).normalize();N[j]=nn;Bn[j]=new T.Vector3().crossVectors(Tn[j],nn).normalize();}
+ const rt=pts[Math.min(n-1,Math.floor(n*.3))].r||1;   // one u-repeat count for the whole tube
+ const rings=[];let vAcc=0;
+ for(let q=0;q<n;q++){if(q>0)vAcc+=Math.hypot(pts[q].x-pts[q-1].x,pts[q].y-pts[q-1].y,pts[q].z-pts[q-1].z);
+  const ring=[];const urep=Math.max(1,Math.round(TAU*rt/sc[0]));
+  for(let s=0;s<=seg;s++){const ang=s/seg*TAU,rad=pts[q].r*(opt.rfn?opt.rfn(q,ang,pts[q]):1);
+   const cx=Math.cos(ang),sx=Math.sin(ang);const nx=N[q].x*cx+Bn[q].x*sx,ny=N[q].y*cx+Bn[q].y*sx,nz=N[q].z*cx+Bn[q].z*sx;
+   ring.push({p:[pts[q].x+nx*rad,pts[q].y+ny*rad,pts[q].z+nz*rad],n:[nx,ny,nz],uv:[s/seg*urep,vAcc/(opt.vscale||sc[1])]});}
+  rings.push(ring);}
+ const pv=(v,c)=>{K.pos.push(v.p[0],v.p[1],v.p[2]);K.nor.push(v.n[0],v.n[1],v.n[2]);K.uv.push(v.uv[0],v.uv[1]);K.col.push(c[0],c[1],c[2]);};
+ const cc=_col3(col);let tris=0;
+ for(let r2=0;r2<n-1;r2++){const c0=pts[r2].col!=null?_col3(pts[r2].col):cc,c1=pts[r2+1].col!=null?_col3(pts[r2+1].col):cc;
+  for(let s2=0;s2<seg;s2++){const a0=rings[r2][s2],a1=rings[r2][s2+1],b0=rings[r2+1][s2],b1=rings[r2+1][s2+1];
+   pv(a0,c0);pv(b1,c1);pv(b0,c1);pv(a0,c0);pv(a1,c0);pv(b1,c1);tris+=2;}}
+ if(opt.cap){[[0,-1],[n-1,1]].forEach(e=>{const ri2=rings[e[0]],ctr=[pts[e[0]].x,pts[e[0]].y,pts[e[0]].z];
+  for(let s3=0;s3<seg;s3++){if(e[1]>0)BIO.tri(fam,ctr,ri2[s3].p,ri2[s3+1].p,opt.capCol!=null?opt.capCol:col);else BIO.tri(fam,ctr,ri2[s3+1].p,ri2[s3].p,opt.capCol!=null?opt.capCol:col);}});}
+ K.tris+=tris;BIO.tally(tris,0,0);return tris;};
+// LATHE from rings [{x,y,z,yy,col}], radius rad(ring,ang), ambient-occlusion aof(ring,ang);
+// true surface normals so fluting and buttress fins shade
+BIO.lathe=function(fam,rings,seg,rep,vs,rad,aof){const K=BIO.buckets[fam];if(!K){BIO.err('BIO.lathe: no bucket '+fam);return 0;}
+ const n=rings.length,P=[];
+ for(let i=0;i<n;i++){const row=[];for(let s=0;s<seg;s++){const a=s/seg*TAU,r=rad(rings[i],a);row.push([rings[i].x+Math.cos(a)*r,rings[i].y,rings[i].z+Math.sin(a)*r]);}P.push(row);}
+ const V=[];
+ for(let i=0;i<n;i++){const vr=[],lc=_col3(rings[i].col);
+  for(let s=0;s<=seg;s++){const s0=s%seg,pa=P[i][(s0+1)%seg],pb=P[i][(s0+seg-1)%seg],pu=P[Math.min(n-1,i+1)][s0],pd=P[Math.max(0,i-1)][s0];
+   const ax=pa[0]-pb[0],ay=pa[1]-pb[1],az=pa[2]-pb[2],ux=pu[0]-pd[0],uy=pu[1]-pd[1],uz=pu[2]-pd[2];
+   let nx=uy*az-uz*ay,ny=uz*ax-ux*az,nz=ux*ay-uy*ax;const nl=Math.hypot(nx,ny,nz)||1;const ao=aof?aof(rings[i],s0/seg*TAU):1;
+   vr.push({p:P[i][s0],n:[nx/nl,ny/nl,nz/nl],u:s/seg*rep,v:rings[i].yy/vs,c:[lc[0]*ao,lc[1]*ao,lc[2]*ao]});}
+  V.push(vr);}
+ const pv=q=>{K.pos.push(q.p[0],q.p[1],q.p[2]);K.nor.push(q.n[0],q.n[1],q.n[2]);K.uv.push(q.u,q.v);K.col.push(q.c[0],q.c[1],q.c[2]);};
+ let tris=0;
+ for(let i=0;i<n-1;i++)for(let s=0;s<seg;s++){const a0=V[i][s],a1=V[i][s+1],b0=V[i+1][s],b1=V[i+1][s+1];pv(a0);pv(b1);pv(a1);pv(a0);pv(b0);pv(b1);tris+=2;}
+ K.tris+=tris;BIO.tally(tris,0,0);return tris;};
+// a parametric SURFACE fn(u,v)->[x,y,z] over nu x nv cells, smooth normals, uv scaled
+BIO.surf=function(fam,fn,nu,nv,col,opt){opt=opt||{};const K=BIO.buckets[fam];if(!K){BIO.err('BIO.surf: no bucket '+fam);return 0;}
+ const P=[];for(let i=0;i<=nu;i++){const row=[];for(let j=0;j<=nv;j++)row.push(fn(i/nu,j/nv));P.push(row);}
+ const nrm=(i,j)=>{const a=P[Math.min(nu,i+1)][j],b=P[Math.max(0,i-1)][j],c=P[i][Math.min(nv,j+1)],d=P[i][Math.max(0,j-1)];
+  const ux=a[0]-b[0],uy=a[1]-b[1],uz=a[2]-b[2],vx=c[0]-d[0],vy=c[1]-d[1],vz=c[2]-d[2];
+  let nx=uy*vz-uz*vy,ny=uz*vx-ux*vz,nz=ux*vy-uy*vx;const l=Math.hypot(nx,ny,nz)||1;return[nx/l,ny/l,nz/l];};
+ const cc=_col3(col),uS=opt.uS||1,vS=opt.vS||1;let tris=0;
+ const pv=(i,j)=>{const p=P[i][j],n=nrm(i,j);const c=opt.colFn?_col3(opt.colFn(i/nu,j/nv,p)):cc;
+  K.pos.push(p[0],p[1],p[2]);K.nor.push(n[0],n[1],n[2]);K.uv.push(i/nu*uS,j/nv*vS);K.col.push(c[0],c[1],c[2]);};
+ for(let i=0;i<nu;i++)for(let j=0;j<nv;j++){if(opt.hole&&opt.hole((i+.5)/nu,(j+.5)/nv))continue;
+  pv(i,j);pv(i+1,j+1);pv(i+1,j);pv(i,j);pv(i,j+1);pv(i+1,j+1);tris+=2;}
+ K.tris+=tris;BIO.tally(tris,0,0);return tris;};
+
+// ---------------------------------------------------------------- bake
+// Turns the stores into meshes. Call once per host after every biome has
+// built; a second call only emits what arrived since the first.
+BIO.baked=[];
+BIO.bake=function(){const T=BIO.host.THREE,scene=BIO.host.scene;if(!scene)throw new Error('BIO.bake: no scene (BIO.init({scene}) or BIO.setScene first)');let calls=0,inst=0;
+ for(const name of BIO.order){const it=BIO.items[name];if(!it.count)continue;const def=BIO.defs[name];
+  const geo=def.geo.clone();
+  if(def.attrs&&it.n.length)geo.setAttribute('aN',new T.InstancedBufferAttribute(it.n.data(),3));
+  if(def.attrs&&it.c2.length)geo.setAttribute('aC2',new T.InstancedBufferAttribute(it.c2.data(),3));
+  const im=new T.InstancedMesh(geo,def.mat,it.count);
+  im.instanceMatrix.array.set(it.m.a.subarray(0,it.m.n));im.instanceMatrix.needsUpdate=true;
+  im.instanceColor=new T.InstancedBufferAttribute(it.c.data(),3);
+  im.frustumCulled=false;im.userData.biome=true;im.userData.inspectLabel=def.label;im.name='biome:'+name;
+  scene.add(im);BIO.baked.push(im);calls++;inst+=it.count;
+  BIO.items[name]=newItem();}
+ for(const fam in BIO.buckets){const K=BIO.buckets[fam];if(!K.pos.length)continue;
+  const g=new T.BufferGeometry();
+  g.setAttribute('position',new T.Float32BufferAttribute(K.pos.data(),3));g.setAttribute('normal',new T.Float32BufferAttribute(K.nor.data(),3));
+  g.setAttribute('uv',new T.Float32BufferAttribute(K.uv.data(),2));g.setAttribute('color',new T.Float32BufferAttribute(K.col.data(),3));
+  g.computeBoundingSphere();
+  const m=new T.Mesh(g,K.mat);m.frustumCulled=false;m.userData.biome=true;m.userData.inspectLabel=K.label;m.name='biome:'+fam;
+  scene.add(m);BIO.baked.push(m);calls++;
+  K.pos=new Store(1024);K.nor=new Store(1024);K.uv=new Store(1024);K.col=new Store(1024);}
+ BIO.lastBake={calls,inst};return BIO.lastBake;};
+
+// ---------------------------------------------------------------- dynamic instances
+// A biome's moving things (fauna) are InstancedMeshes it updates itself every
+// frame through BIO.tick; the core makes the mesh, charges it, and adds it to
+// the scene at once (it is not a store, so it needs no bake).
+BIO.dynamic=function(name,geo,mat,count,opt){opt=opt||{};const T=BIO.host.THREE,scene=BIO.host.scene;if(!scene)throw new Error('BIO.dynamic: no scene');
+ const g=geo.index?geo.toNonIndexed():geo,im=new T.InstancedMesh(g,mat,count);
+ im.frustumCulled=false;im.userData.biome=true;im.userData.inspectLabel=opt.label||name;im.name='biome:'+name;im.instanceMatrix.setUsage(T.DynamicDrawUsage);
+ scene.add(im);BIO.baked.push(im);BIO.tally(g.attributes.position.count/3*count,count,1);return im;};
+BIO.tick=function(fn){BIO.host.ticks(fn);};
+Object.assign(BIO.fn,{qEuler,qFacing,qUp});
+})();
+
+// ==================== 30-core-foliage.js
+// ================================================================= BIOME CORE — foliage
+// What makes a card read as leaves. Ported from Girder's 60-trees.js and the
+// Hexahedron's 71b-flora.js, with the three lessons those cost:
+//   - LAMBERT, never Standard: a Standard card keeps a 4% specular at any
+//     roughness and goes white at grazing angles, i.e. from under the canopy.
+//   - two-sided light MIX, not a flip: a leaf seen from below is a lit,
+//     translucent leaf, not the ground-hemisphere shadow a flipped normal gives.
+//   - low-alpha texels carry the species' MID colour, or mipmapping bleeds a
+//     black fringe round every leaf at distance; and alpha is boosted with
+//     distance, or the far canopy thins to lace.
+(function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm,qEuler,qFacing,qUp}=BIO.fn;
+BIO.WIND={t:{value:0}};
+BIO.SUN={value:null};                 // set by BIO.setSun([x,y,z]); defaults at first use
+BIO.setSun=function(v){const T=BIO.host.THREE;if(!BIO.SUN.value)BIO.SUN.value=new T.Vector3();BIO.SUN.value.set(v[0],v[1],v[2]).normalize();};
+BIO._windTicked=false;
+BIO._tickWind=function(){if(BIO._windTicked)return;BIO._windTicked=true;BIO.host.ticks(dt=>{BIO.WIND.t.value+=dt;});};
+
+// ---------------------------------------------------------------- alpha textures
+// draw(g,S) paints GREYSCALE leaves on a transparent canvas; the material's
+// per-instance colour tints them. fillRGB fills the transparent texels.
+BIO.alphaTex=function(S,draw,fillRGB){const T=BIO.host.THREE;
+ const c=document.createElement('canvas');c.width=c.height=S;const g=c.getContext('2d');g.clearRect(0,0,S,S);draw(g,S);
+ const d=g.getImageData(0,0,S,S).data,out=new Uint8Array(S*S*4);
+ for(let o=0;o<out.length;o+=4){const a=d[o+3];
+  if(a<48){out[o]=fillRGB[0];out[o+1]=fillRGB[1];out[o+2]=fillRGB[2];}else{out[o]=d[o];out[o+1]=d[o+1];out[o+2]=d[o+2];}
+  out[o+3]=a;}
+ const t=new T.DataTexture(out,S,S,T.RGBAFormat);
+ t.encoding=T.sRGBEncoding;t.generateMipmaps=true;t.minFilter=T.LinearMipmapLinearFilter;t.magFilter=T.LinearFilter;
+ t.anisotropy=4;t.needsUpdate=true;t.wrapS=t.wrapT=T.RepeatWrapping;return t;};
+// a COLOUR canvas texture (bark, ground), repeat-wrapped
+BIO.canvasTex=function(w,h,fn,rep){const T=BIO.host.THREE;const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');fn(g,w,h);
+ const t=new T.CanvasTexture(c);t.wrapS=t.wrapT=T.RepeatWrapping;t.anisotropy=8;t.encoding=T.sRGBEncoding;if(rep)t.repeat.set(rep,rep);return t;};
+// drawing helpers for leaf textures
+BIO.tex={
+ grey(l){l=clamp(Math.round(l),0,255);return'rgb('+l+','+l+','+l+')';},
+ leaf(g,x,y,len,wid,ang,lum,rib){g.save();g.translate(x,y);g.rotate(ang);
+  g.fillStyle=BIO.tex.grey(lum);g.beginPath();g.moveTo(0,0);g.quadraticCurveTo(len*.45,wid,len,0);g.quadraticCurveTo(len*.45,-wid,0,0);g.fill();
+  if(rib){g.strokeStyle=BIO.tex.grey(lum*.72);g.lineWidth=1;g.beginPath();g.moveTo(0,0);g.lineTo(len*.92,0);g.stroke();}
+  g.restore();},
+ cl:[],
+ clusters(S,n,k){BIO.tex.cl=[];for(let i=0;i<n;i++){const a=i/n*TAU+rr(-.3,.3),r=S*.5*k*(i%3===0?rr(0,.35):rr(.55,1));BIO.tex.cl.push([S/2+Math.cos(a)*r,S/2+Math.sin(a)*r]);}},
+ clPt(S,sd,lim){const c=pick(BIO.tex.cl),a=rr(0,TAU),r=sd*S*Math.sqrt(-2*Math.log(1-rng()*.98))*.6;
+  let x=c[0]+Math.cos(a)*r,y=c[1]+Math.sin(a)*r;const d=Math.hypot(x-S/2,y-S/2),m=S*.5*lim;if(d>m){x=S/2+(x-S/2)*m/d;y=S/2+(y-S/2)*m/d;}
+  return[x,y,Math.atan2(y-c[1],x-c[0])];},
+ discPt(S,k){const a=rr(0,TAU),r=S*.5*k*Math.sqrt(rng());return[S/2+Math.cos(a)*r,S/2+Math.sin(a)*r,a];}
+};
+
+// ---------------------------------------------------------------- card geometries
+BIO.geo={};
+// leaf clump: a tripod of three tilted unit quads
+BIO.geo.clump=function(){const T=BIO.host.THREE,pos=[],uv=[],nor=[];
+ for(let k=0;k<3;k++){const az=k/3*TAU+.3,tilt=.92,ca=Math.cos(az),sa=Math.sin(az);
+  const n=[Math.sin(tilt)*ca,Math.cos(tilt),Math.sin(tilt)*sa],u=[-sa,0,ca],v=[-Math.cos(tilt)*ca,Math.sin(tilt),-Math.cos(tilt)*sa];
+  const c=[n[0]*.10,n[1]*.10-.04,n[2]*.10];
+  const P=[[-.5,-.5],[.5,-.5],[.5,.5],[-.5,.5]].map(q=>[c[0]+u[0]*q[0]+v[0]*q[1],c[1]+u[1]*q[0]+v[1]*q[1],c[2]+u[2]*q[0]+v[2]*q[1],q[0]+.5,q[1]+.5]);
+  [0,1,2,0,2,3].forEach(i=>{pos.push(P[i][0],P[i][1],P[i][2]);uv.push(P[i][3],P[i][4]);nor.push(n[0],n[1],n[2]);});}
+ return BIO.geo._make(pos,nor,uv);};
+BIO.geo._make=function(pos,nor,uv,col){const T=BIO.host.THREE,g=new T.BufferGeometry();
+ g.setAttribute('position',new T.Float32BufferAttribute(pos,3));g.setAttribute('normal',new T.Float32BufferAttribute(nor,3));g.setAttribute('uv',new T.Float32BufferAttribute(uv,2));
+ if(col)g.setAttribute('color',new T.Float32BufferAttribute(col,3));return g;};
+// hanging raceme / strand: two crossed quads, local y 0 (hung) .. -1
+BIO.geo.hang=function(){const pos=[],uv=[],nor=[];
+ for(let k=0;k<2;k++){const ca=Math.cos(k*Math.PI/2+.4),sa=Math.sin(k*Math.PI/2+.4);
+  const P=[[-.5,0],[.5,0],[.5,-1],[-.5,-1]].map(q=>[ca*q[0],q[1],sa*q[0],q[0]+.5,-q[1]]);
+  [0,2,1,0,3,2].forEach(i=>{pos.push(P[i][0],P[i][1],P[i][2]);uv.push(P[i][3],P[i][4]);nor.push(-sa,0,ca);});}
+ return BIO.geo._make(pos,nor,uv);};
+// a hanging RIBBON: origin at the top, running down to y=-1 in nseg tapering
+// quads, drifting in z so a curtain of them is not a plank; texture repeats
+// once per segment so a long one reads as a chain of leaves
+BIO.geo.ribbon=function(nseg,taper,drift){const pos=[],uv=[],nor=[];nseg=nseg||4;taper=taper==null?.55:taper;drift=drift==null?.18:drift;
+ const P=[];for(let i=0;i<=nseg;i++){const t=i/nseg,w=.5*lerp(1,taper,t),z=Math.sin(t*3.1)*drift;P.push([-w,-t,z],[w,-t,z]);}
+ for(let i=0;i<nseg;i++){const a=P[2*i],b=P[2*i+1],c=P[2*i+2],d=P[2*i+3];
+  [[a,0,0],[c,0,1],[b,1,0],[b,1,0],[c,0,1],[d,1,1]].forEach(q=>{pos.push(q[0][0],q[0][1],q[0][2]);uv.push(q[1],q[2]);nor.push(0,0,1);});}
+ return BIO.geo._make(pos,nor,uv);};
+// an arching FROND: pinned at the origin, arching along +x to x=1 and down
+BIO.geo.frond=function(nseg){const pos=[],uv=[],nor=[];nseg=nseg||3;
+ const P=[];for(let i=0;i<=nseg;i++){const t=i/nseg,w=.16*Math.sin(t*Math.PI)*.9+.02,y=.32*Math.sin(t*2.2)-.22*t*t;P.push([t,y,-w],[t,y,w]);}
+ for(let i=0;i<nseg;i++){const a=P[2*i],b=P[2*i+1],c=P[2*i+2],d=P[2*i+3];
+  [[a,0,0],[b,1,0],[c,0,1],[b,1,0],[d,1,1],[c,0,1]].forEach(q=>{pos.push(q[0][0],q[0][1],q[0][2]);uv.push(q[1],q[2]);nor.push(0,1,0);});}
+ return BIO.geo._make(pos,nor,uv);};
+// a MOSS MAT: a fan of quads in the xz plane, front face UP (winding matters:
+// the Hexahedron lost 18k of these to a reversed fan). Flip pi about x for a soffit.
+BIO.geo.mat=function(){const pos=[],uv=[],nor=[];const N=7;
+ for(let s=0;s<N;s++){const a0=s/N*TAU,a1=(s+1)/N*TAU,r0=rr(.7,1),r1=rr(.7,1);
+  const A=[0,0,0],B=[Math.cos(a0)*r0,rr(0,.08),Math.sin(a0)*r0],C=[Math.cos(a1)*r1,rr(0,.08),Math.sin(a1)*r1];
+  [[A,.5,.5],[C,.5+C[0]*.5,.5+C[2]*.5],[B,.5+B[0]*.5,.5+B[2]*.5]].forEach(q=>{pos.push(q[0][0],q[0][1],q[0][2]);uv.push(q[1],q[2]);nor.push(0,1,0);});}
+ return BIO.geo._make(pos,nor,uv);};
+// a BUSH LOBE: a squat 6-sided dome, origin at the ground
+BIO.geo.lobe=function(){const T=BIO.host.THREE;const g=new T.SphereGeometry(1,7,4,0,TAU,0,Math.PI*.55);g.scale(1,.8,1);return g;};
+// a BLOOM: a diamond of two quads, origin at the centre
+BIO.geo.bloom=function(){const pos=[],uv=[],nor=[];
+ for(let k=0;k<2;k++){const ca=Math.cos(k*Math.PI/2),sa=Math.sin(k*Math.PI/2);
+  const P=[[-.5,0],[0,.5],[.5,0],[0,-.5]].map(q=>[ca*q[0],q[1],sa*q[0],q[0]+.5,q[1]+.5]);
+  [0,1,2,0,2,3].forEach(i=>{pos.push(P[i][0],P[i][1],P[i][2]);uv.push(P[i][3],P[i][4]);nor.push(-sa,0,ca);});}
+ return BIO.geo._make(pos,nor,uv);};
+// a POD on its stalk: local y 0 (hung) .. -1, vertex-coloured (stalk dark, pod white)
+BIO.geo.pod=function(){const T=BIO.host.THREE;
+ const parts=[[new T.CylinderGeometry(.012,.012,.5,3,1,true).translate(0,-.25,0),.16],[new T.SphereGeometry(.15,6,4).scale(1,1.75,1).translate(0,-.735,0),1]];
+ const pos=[],nor=[],col=[],uv=[];
+ parts.forEach(p=>{const g=p[0].toNonIndexed(),a=g.attributes.position.array,b=g.attributes.normal.array,u=g.attributes.uv.array;
+  for(let i=0;i<a.length;i+=3){pos.push(a[i],a[i+1],a[i+2]);nor.push(b[i],b[i+1],b[i+2]);
+   const sh=p[1]===1?(.78+.22*Math.sin(Math.atan2(a[i+2],a[i])*5))*lerp(.72,1,clamp((a[i+1]+1)/.5,0,1)):p[1];col.push(sh,sh,sh);}
+  for(let j=0;j<u.length;j++)uv.push(u[j]);});
+ return BIO.geo._make(pos,nor,uv,col);};
+// a unit cylinder along y, centred (for BIO.beam)
+BIO.geo.rod=function(n){const T=BIO.host.THREE;return new T.CylinderGeometry(.5,.5,1,n||7);};
+// a tapering trunk from y=0 up to y=1
+BIO.geo.trunk=function(n){const T=BIO.host.THREE;return new T.CylinderGeometry(.16,.4,1,n||8).translate(0,.5,0);};
+
+// ---------------------------------------------------------------- the foliage hook
+// o: { aN:bool, irid:bool, swayW:'glsl expr', swayA:0.2, axis:0|1, dist:bool }
+//   swayW  weight of the displacement per vertex: '1.0' for a clump, '(-position.y)'
+//          for something hung from y=0, '(position.x)' for a frond pinned at x=0
+//   axis   which instanceMatrix column sets the amplitude (1 for a long thin hang)
+BIO.foliageHook=function(o){o=o||{};
+ return function(sh){
+  sh.uniforms.uWindT=BIO.WIND.t;
+  if(!BIO.SUN.value)BIO.setSun([.45,.72,-.52]);
+  sh.uniforms.uSunDir=BIO.SUN;
+  sh.vertexShader=sh.vertexShader
+   .replace('#include <common>','#include <common>\nuniform float uWindT;\nvarying vec3 vFlWP;\nvarying float vFlD;\n'+
+    (o.aN?'attribute vec3 aN;\nvarying vec3 vFlN;\n':'')+(o.irid?'attribute vec3 aC2;\nvarying vec3 vFlC2;\n':''))
+   .replace('#include <project_vertex>',[
+    'vec4 mvPosition = vec4( transformed, 1.0 );',
+    'float _sc = 1.0; float _ph = 0.0;',
+    '#ifdef USE_INSTANCING',
+    '  mvPosition = instanceMatrix * mvPosition;',
+    '  _ph = dot(instanceMatrix[3].xyz, vec3(0.131,0.073,0.117));',
+    '  _sc = length(instanceMatrix['+(o.axis||0)+'].xyz);',
+    '#endif',
+    'float _wg = '+(o.swayW||'1.0')+';',
+    'mvPosition.xyz += _wg * _sc * vec3(',
+    '   sin(uWindT*0.9+_ph) + 0.45*sin(uWindT*2.3+_ph*1.7+position.x*5.0),',
+    '   0.40*sin(uWindT*1.6+_ph*0.6+position.z*5.0),',
+    '   cos(uWindT*0.7+_ph*1.3) + 0.45*sin(uWindT*2.9+_ph+position.y*5.0) ) * '+(o.swayA==null?.06:o.swayA).toFixed(3)+';',
+    'vFlWP = (modelMatrix * mvPosition).xyz;',
+    o.aN?'vFlN = aN;':'',o.irid?'vFlC2 = aC2;':'',
+    'mvPosition = modelViewMatrix * mvPosition;',
+    'vFlD = -mvPosition.z;',
+    'gl_Position = projectionMatrix * mvPosition;'].join('\n'));
+  // the lighting normal: the clump's own (aN, world space, so it shades as a
+  // lit mass), or the card normal bent toward world-up for anything without one
+  if(o.aN)sh.vertexShader=sh.vertexShader.replace('#include <defaultnormal_vertex>','vec3 transformedNormal = normalize(normalMatrix * aN);');
+  else sh.vertexShader=sh.vertexShader.replace('#include <defaultnormal_vertex>','#include <defaultnormal_vertex>\n'+
+   '{vec3 _up=normalize(normalMatrix*vec3(0.0,1.0,0.0)); transformedNormal=normalize(mix(normalize(transformedNormal),_up,0.45));}');
+  sh.fragmentShader=sh.fragmentShader
+   .replace('#include <common>','#include <common>\nuniform float uWindT;\nuniform vec3 uSunDir;\nvarying vec3 vFlWP;\nvarying float vFlD;\n'+
+    (o.aN?'varying vec3 vFlN;\n':'')+(o.irid?'varying vec3 vFlC2;\n':''))
+   .replace('#include <map_fragment>','#include <map_fragment>\n diffuseColor.a *= 1.0 + clamp(vFlD/650.0, 0.0, 1.1);')
+   .replace('reflectedLight.indirectDiffuse += ( gl_FrontFacing ) ? vIndirectFront : vIndirectBack;','reflectedLight.indirectDiffuse += 0.72*vIndirectFront + 0.28*vIndirectBack;')
+   .replace('reflectedLight.directDiffuse = ( gl_FrontFacing ) ? vLightFront : vLightBack;','reflectedLight.directDiffuse = vLightFront + 0.30*vLightBack;');
+  // IRIDESCENCE (prism gum): green facing the sun, the second colour away from
+  // it and at grazing view angles, shimmering slowly in the wind
+  if(o.irid)sh.fragmentShader=sh.fragmentShader.replace('#include <color_fragment>',[
+   '#include <color_fragment>',
+   '{ vec3 _V = normalize(cameraPosition - vFlWP); vec3 _N = normalize('+(o.aN?'vFlN':'vec3(0.0,1.0,0.0)')+');',
+   '  float _fr = 1.0 - abs(dot(_N,_V));',
+   '  float _sf = dot(_N, uSunDir)*0.5 + 0.5;',
+   '  float _sh = 0.16*sin(uWindT*0.8 + dot(vFlWP, vec3(0.045,0.083,0.037))) + 0.08*sin(uWindT*1.9 + dot(vFlWP, vec3(-0.21,0.13,0.17)));',
+   '  float _k = smoothstep(0.22, 0.78, _sf*1.15 - _fr*0.80 + 0.30 + _sh);',
+   '  diffuseColor.rgb *= mix(vFlC2, vColor, _k) / max(vColor, vec3(0.004)); }'].join('\n'));
+ };};
+// a foliage MATERIAL: Lambert, alpha-tested, double-sided, hooked. Each key
+// compiles its own program (different hooks on different materials need
+// different cache keys or three silently shares one).
+BIO.leafMat=function(tex,key,o){const T=BIO.host.THREE;o=o||{};
+ const m=new T.MeshLambertMaterial({color:0xffffff,map:tex||null,alphaTest:o.alphaTest==null?.42:o.alphaTest,side:T.DoubleSide,vertexColors:!!o.vertexColors});
+ m.onBeforeCompile=BIO.foliageHook(o);m.customProgramCacheKey=function(){return'biofol|'+key;};
+ BIO._tickWind();return m;};
+// a BARK / WOOD material for merged buckets: Lambert, vertex-coloured, textured
+BIO.barkMat=function(tex,col){const T=BIO.host.THREE;return new T.MeshLambertMaterial({color:col==null?0xffffff:col,map:tex||null,vertexColors:true,side:T.DoubleSide});};
+// a plain material for instanced solids (rods, lobes, boulders)
+BIO.solidMat=function(tex,col){const T=BIO.host.THREE;return new T.MeshLambertMaterial({color:col==null?0xffffff:col,map:tex||null,side:T.DoubleSide});};
+
+// ---------------------------------------------------------------- colour
+// The sRGB-aware colour maths every biome ends up needing (the abyss kit's
+// lesson): a designer's hex renders about twice as bright under the
+// sun+hemisphere rig, and a tinted near-grey texture needs its mean divided out.
+BIO.col=(function(){const T=()=>BIO.host.THREE,C=h=>new (T().Color)(h);let WHITE=null,DARK=null;
+ // toward white (f>0) or toward a warm black (f<0)
+ function shade(hex,f){const c=hex.isColor?hex.clone():C(hex);if(!WHITE){WHITE=C(0xffffff);DARK=C(0x120f0a);}if(f>=0)c.lerp(WHITE,f);else c.lerp(DARK,-f);return c;}
+ // multiply in linear light, back to sRGB
+ function bright(col,k){const c=col.isColor?col.clone():C(col);c.convertSRGBToLinear();c.r=Math.min(1,c.r*k);c.g=Math.min(1,c.g*k);c.b=Math.min(1,c.b*k);return c.convertLinearToSRGB();}
+ const _hsl={h:0,s:0,l:0};
+ // jitter hue / saturation / lightness by +-dh, +-ds, +-dl (three rng draws)
+ function vary(hex,dh,ds,dl){const c=hex.isColor?hex.clone():C(hex);c.getHSL(_hsl);c.setHSL(((_hsl.h+rr(-dh,dh))%1+1)%1,clamp(_hsl.s+rr(-ds,ds),0,1),clamp(_hsl.l+rr(-dl,dl),.03,.97));return c;}
+ // the linear mean of a canvas texture (sampled)
+ function texMean(tex){const im=tex&&tex.image;if(!im||!im.getContext)return[.25,.25,.25];
+  const d=im.getContext('2d').getImageData(0,0,im.width,im.height).data;let r=0,g=0,b=0,n=0;
+  for(let i=0;i<d.length;i+=4*13){r+=d[i];g+=d[i+1];b+=d[i+2];n++;}
+  const c=C(0).setRGB(r/n/255,g/n/255,b/n/255).convertSRGBToLinear();return[c.r,c.g,c.b];}
+ // the sRGB tint that renders `hex` on a texture of linear mean m
+ function tint(hex,m,k){const c=hex.isColor?hex.clone():C(hex);c.convertSRGBToLinear();k=k==null?1:k;
+  c.setRGB(Math.min(1,c.r*k/Math.max(.02,m[0])),Math.min(1,c.g*k/Math.max(.02,m[1])),Math.min(1,c.b*k/Math.max(.02,m[2])));return c.convertLinearToSRGB();}
+ return{shade,bright,vary,texMean,tint};})();
+
+})();
+
+// ==================== 40-core-place.js
+// ================================================================= BIOME CORE — placement
+// Where things go. Ported from the Hexahedron's forest rebuild (the forest is
+// PLACEMENT, not plants) and Girder's keep-clear tests.
+
+// SPECIES COME IN STANDS. A per-tree random draw mixes species so evenly the
+// eye integrates them back into one colour; an fbm patch field a few hundred
+// metres across picks a dominant species with a fraction off-pattern.
+// fbm is bell-shaped (mean .5, sd ~.11): splitting its raw value n ways gave
+// 1/27/53/20 % for four species. The value is stretched through the middle of
+// the bell first so the n bands come out roughly even.
+(function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm,qEuler,qFacing,qUp}=BIO.fn;
+BIO.standAt=function(x,z,n,scale,seed){scale=scale||.0017;const f=fbm(x*scale+31,z*scale-19,seed||9483,2);
+ const u=smooth(.30,.70,f);return clamp(Math.floor(u*n),0,n-1);};
+BIO.stand=function(x,z,n,off,scale,seed){return rng()<(off==null?.26:off)?Math.floor(rng()*n):BIO.standAt(x,z,n,scale,seed);};
+
+// A JITTERED GRID over a disc [rIn,rOut] round the origin: one candidate per
+// cell, jittered, tested against the host mask, an fbm patch mask (the floor
+// is patchy) and `accept(x,z,d)->0..1`. Even coverage with no clumps of
+// rejection-sampling luck, and the count is predictable from the cell size.
+// opt.depth: [lo,hi] of BIO.depth (ground under the local water) a cell must lie in;
+// the default (up to .3 m above the water) keeps everything out of the water.
+BIO.grid=function(cell,rIn,rOut,accept,fn,opt){opt=opt||{};const o=opt.center||BIO.center(),N=Math.ceil(rOut*2/cell);let n=0;const D=opt.depth;
+ const pk=opt.patch==null?.85:opt.patch,ps=opt.patchScale||.016;
+ const B=opt.box;   // optional [x0,z0,x1,z1] window (a zone strip); cells outside it cost nothing
+ let ix0=0,ix1=N-1,iz0=0,iz1=N-1;
+ if(B){ix0=Math.max(0,Math.floor((B[0]-(o[0]-rOut))/cell));ix1=Math.min(N-1,Math.ceil((B[2]-(o[0]-rOut))/cell));iz0=Math.max(0,Math.floor((B[1]-(o[1]-rOut))/cell));iz1=Math.min(N-1,Math.ceil((B[3]-(o[1]-rOut))/cell));}
+ for(let iz=iz0;iz<=iz1;iz++)for(let ix=ix0;ix<=ix1;ix++){
+  const x=o[0]-rOut+(ix+rng())*cell,z=o[1]-rOut+(iz+rng())*cell,u=rng();
+  if(B&&(x<B[0]||z<B[1]||x>B[2]||z>B[3]))continue;
+  const d=Math.hypot(x-o[0],z-o[1]);if(d<rIn||d>rOut)continue;
+  // accept first: a zero there (out of the zone, out of the LOD band) costs
+  // nothing more, and the host mask (terrain calls) is only paid for the rest.
+  // Same result as testing it last: a zero never passed the u test anyway.
+  const a=accept?accept(x,z,d):1;if(a<=0)continue;
+  if(D){const dep=BIO.depth(x,z);if(dep<D[0]||dep>D[1])continue;}
+  const m=opt.noMask?1:BIO.mask(x,z);if(m<=0)continue;
+  const patch=pk>0?(1-pk*.5)+pk*fbm(x*ps+7,z*ps-3,9484,2):1;
+  if(u>a*m*clamp(patch,0,1.15))continue;
+  if(!BIO.clearOf(x,z,opt.pad||0))continue;
+  fn(x,BIO.terrainH(x,z),z,d);n++;}
+ return n;};
+// POISSON-ish scatter of n points with a minimum spacing, area-uniform in the
+// annulus, biased outward by `pow` (>1 pushes the crowd out)
+BIO.scatter=function(n,rIn,rOut,minD,fn,opt){opt=opt||{};const o=opt.center||BIO.center(),P=[];let tries=0;
+ while(P.length<n&&tries++<n*40){const a=rng()*TAU,u=Math.pow(rng(),opt.pow||1);
+  const r=Math.sqrt(lerp(rIn*rIn,rOut*rOut,u)),x=o[0]+Math.cos(a)*r,z=o[1]+Math.sin(a)*r;
+  if(rng()>BIO.mask(x,z))continue;if(!BIO.clearOf(x,z,opt.pad||0))continue;
+  let ok=true;for(const q of P)if(Math.hypot(x-q[0],z-q[1])<minD){ok=false;break;}
+  if(!ok)continue;P.push([x,z]);fn(x,BIO.terrainH(x,z),z,r);}
+ return P;};
+// keep-clear: outside every host obstacle cylinder (plus pad), on the ground
+BIO.clearOf=function(x,z,pad){const O=BIO.host.obstacles;pad=pad||0;
+ for(let i=0;i<O.length;i++){const q=O[i];if(Math.hypot(x-q.x,z-q.z)<q.r+pad)return false;}return true;};
+// keep-clear in 3D: a blob of horizontal radius rad, half-height vr at (x,y,z)
+BIO.clearOf3=function(x,y,z,rad,vr){const O=BIO.host.obstacles;
+ for(let i=0;i<O.length;i++){const q=O[i];if(q.y0!=null&&(y+vr<q.y0||y-vr>q.y1))continue;
+  if(Math.hypot(x-q.x,z-q.z)<q.r+rad)return false;}return true;};
+
+// ---------------------------------------------------------------- surface sampling
+// For growing on a structure the host hands over as BufferGeometry[] in world
+// space. Samples by triangle area, then filters by facing:
+//   upFaces    normal.y > minUp   (ledges, treads, roofs)      -> moss, plants
+//   downFaces  normal.y < -minDown (soffits, ceilings)          -> mats, curtains
+//   sideFaces  |normal.y| < .35                                 -> vines, brackets
+// Each sample: {p:[x,y,z], n:[nx,ny,nz], a:area}
+BIO.faceSamples=function(geos,n,filt){const out=[];const F=[];let tot=0;
+ for(const g of geos){const p=g.attributes.position;if(!p)continue;const idx=g.index?g.index.array:null;const cnt=idx?idx.length:p.count;
+  for(let i=0;i<cnt;i+=3){const a=idx?idx[i]:i,b=idx?idx[i+1]:i+1,c=idx?idx[i+2]:i+2;
+   const ax=p.getX(a),ay=p.getY(a),az=p.getZ(a),bx=p.getX(b),by=p.getY(b),bz=p.getZ(b),cx=p.getX(c),cy=p.getY(c),cz=p.getZ(c);
+   const ux=bx-ax,uy=by-ay,uz=bz-az,vx=cx-ax,vy=cy-ay,vz=cz-az;
+   let nx=uy*vz-uz*vy,ny=uz*vx-ux*vz,nz=ux*vy-uy*vx;const l=Math.hypot(nx,ny,nz);if(l<1e-9)continue;nx/=l;ny/=l;nz/=l;
+   if(filt&&!filt(nx,ny,nz))continue;
+   const ar=l*.5;tot+=ar;F.push([ax,ay,az,bx,by,bz,cx,cy,cz,nx,ny,nz,ar,tot]);}}
+ if(!F.length)return out;
+ for(let k=0;k<n;k++){const r=rng()*tot;let lo=0,hi=F.length-1;while(lo<hi){const m=(lo+hi)>>1;if(F[m][13]<r)lo=m+1;else hi=m;}
+  const f=F[lo];let u=rng(),v=rng();if(u+v>1){u=1-u;v=1-v;}const w=1-u-v;
+  out.push({p:[f[0]*w+f[3]*u+f[6]*v,f[1]*w+f[4]*u+f[7]*v,f[2]*w+f[5]*u+f[8]*v],n:[f[9],f[10],f[11]],a:f[12]});}
+ return out;};
+BIO.upFaces=function(geos,n,minUp){return BIO.faceSamples(geos,n,(nx,ny,nz)=>ny>(minUp==null?.62:minUp));};
+BIO.downFaces=function(geos,n,minDown){return BIO.faceSamples(geos,n,(nx,ny,nz)=>ny<-(minDown==null?.62:minDown));};
+BIO.sideFaces=function(geos,n){return BIO.faceSamples(geos,n,(nx,ny,nz)=>Math.abs(ny)<.35);};
+// LEDGE POINTS: the outer edges of up-facing faces -- where a vine roots and
+// hangs off. Found as up-face samples that have empty air just outboard of them
+// (no up-face within `gap` metres in the direction away from the surface's centroid).
+BIO.ledgePoints=function(geos,n,gap){gap=gap||2.5;const S=BIO.upFaces(geos,n*4,.62);if(!S.length)return[];
+ let cx=0,cz=0;S.forEach(s=>{cx+=s.p[0];cz+=s.p[2];});cx/=S.length;cz/=S.length;
+ const cell=gap,H={};const key=(x,y,z)=>(Math.floor(x/cell))+','+(Math.floor(y/(cell*2)))+','+(Math.floor(z/cell));
+ S.forEach(s=>{H[key(s.p[0],s.p[1],s.p[2])]=1;});
+ const out=[];
+ for(const s of S){if(out.length>=n)break;const dx=s.p[0]-cx,dz=s.p[2]-cz,l=Math.hypot(dx,dz)||1;const ox=dx/l,oz=dz/l;
+  if(!H[key(s.p[0]+ox*gap,s.p[1],s.p[2]+oz*gap)])out.push({p:s.p,n:[ox,0,oz]});}
+ return out;};
+
+})();
+
+// ==================== 45-host-stage.js
+// ================================================================= HOST — stage
+// The ideal-type host for the EASTERN HIGH DESERT: everything a world provides
+// that a biome does not. Renderer, lights, the dust haze, the desert terrain
+// with terrainH(), the local water surface waterH() (a river that DESCENDS,
+// and a pond at its own level), the climate fields the biome asks for, the
+// river ribbon + the pond + the cataract, the painted ground, the tick list,
+// the error panel. A real world replaces this whole section with its own;
+// the biome fragments never read anything from it except through BIO.host.
+//
+// THE MAP (x east, z south, origin at the map's centre, R 3400):
+//   x < -2250          the INNER WALL mountains rise (900 m at the edge)
+//   |z| > ~2000        the TRACKLESS RED DESERT: dune fields, nothing roots
+//   the main body      red desert: scrub, badland patches, mesas, the odd butte
+//   z ~ zR(x)          THE RIVER, west to east, in a shallow canyon 30 m deep and
+//                      ~250 m wide: the linear oasis; the walls step in two benches
+//   (720,1180) r 620   THE BUTTE south of the river; a pond in a hollow on its
+//                      north-western foot (260,700): the rain-shadow oasis
+//   x > 3130           THE ABYSS: the plateau ends in a cliff; the river leaves
+//                      through its notch as a cataract 700 m high
+const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,fbm,qEuler,qFacing,qUp}=BIO.fn;
+// THE WATER COLOUR. One hue (the wadi pools' teal-green), set by the host
+// before the biome loads: the river, the pond, the reed stands' accents and
+// the alien candles' tips all derive from it (see 50-species).
+var SEDESERT_WATER={hue:0.42};
+const ERRS=document.getElementById('errs');
+function reportErr(m){ERRS.style.display='block';ERRS.textContent+=m+'\n';}
+window.onerror=(m,s,l,c,e)=>reportErr((e&&e.stack)||(m+' @'+l+':'+c));
+window.addEventListener('unhandledrejection',e=>reportErr('promise: '+(e.reason&&e.reason.stack||e.reason)));
+const TICKS=[];
+function tick(fn){TICKS.push(fn);}
+const REG=[];function REGISTER(o){REG.push(o);}
+// is (x,y,z) inside a registered volume (a cylinder, with a little slop above and below)
+function regHas(r,x,y,z){const dx=x-r.x,dz=z-r.z;return dx*dx+dz*dz<=r.r*r.r&&y>=(r.y||0)-2&&y<=(r.y||0)+r.h+5;}
+
+const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);
+renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.0;document.body.appendChild(renderer.domElement);
+const scene=new THREE.Scene();const HAZE=new THREE.Color(0xd9c3a6);scene.fog=new THREE.FogExp2(HAZE.getHex(),.000135);
+const camera=new THREE.PerspectiveCamera(50,innerWidth/innerHeight,1,16000);
+scene.add(new THREE.HemisphereLight(0xc8d4e4,0x6a4030,.58));
+const sun=new THREE.DirectionalLight(0xfff2dc,1.55);sun.position.set(-1000,1150,-560);scene.add(sun);
+const fill=new THREE.DirectionalLight(0xd8b8a0,.22);fill.position.set(900,300,900);scene.add(fill);
+
+// ---------------------------------------------------------------- the river, the canyon, the butte, the mesas
+const TERR={R:3400,RIM:3130};
+// the river's centreline (z of the line at x) and the canyon's half-width
+function zR(x){return 210*Math.sin(x*.00074+.6)+90*Math.sin(x*.0021-1.1)+35*Math.sin(x*.0061);}
+function Wc(x){return (120+45*Math.sin(x*.0017+2)+22*Math.sin(x*.0053))*(1-.45*smooth(-2200,-2900,x));}   // a gorge in the mountains
+// the canyon's depth: 32 m on the plateau, deeper into the mountain gorge
+function Dc(x){return 32+55*smooth(-2200,-3000,x);}
+// the canyon's profile: u = distance from the line in half-widths; wallK 1 on the floor,
+// two stepped benches down each wall, 0 at the rim and beyond
+function canyonU(x,z){return Math.abs(z-zR(x))/Wc(x);}
+function wallK(u){return u<1.6?.55*smooth(1.0,.8,u)+.45*smooth(.72,.5,u):0;}
+// the Abyss: 0 on the plateau, 1 past the cliff's edge (the edge wobbles with z)
+function abyssK(x,z){return smooth(3130,3260,x+60*Math.sin(z*.003)+20*Math.sin(z*.011));}
+// where the world's one structure stands: on the canyon's north rim, back from the edge
+const TOWER={x:1450,z:0};
+const POND={x:230,z:640,r:110};
+const BUTTE={x:720,z:1180,r:620,h:135};
+// the Wile E. Coyote furniture: [x,z,r,h]
+const MESAS=[[BUTTE.x,BUTTE.z,BUTTE.r,BUTTE.h],[-1500,-1300,260,90],[-650,1950,180,60],[1950,-950,320,110],[2500,1450,200,75],[-1100,850,150,45],[1350,2250,240,70],[2150,-2100,300,85],[-2000,-1900,220,65],[1900,300,120,40],[-450,-1700,140,50]];
+function mesaH(x,z){let h=0;for(let i=0;i<MESAS.length;i++){const M=MESAS[i],dx=x-M[0],dz=z-M[1],d=Math.hypot(dx,dz);if(d>M[2]*1.5)continue;
+ const a=Math.atan2(dz,dx),e=M[2]*(1+.07*Math.sin(3*a+i)+.045*Math.sin(7*a+2*i)+.03*Math.sin(13*a)),u=d/e;
+ h+=M[3]*(.82*smooth(1.0,.9,u)+.18*smooth(1.22,.96,u))+(i===0?4*Math.sin(x*.01)*Math.sin(z*.013):0)*smooth(1,.8,u);}return h;}
+function mtnX(x,z){return x+140*Math.sin(z*.0013)+50*Math.sin(z*.0041);}
+function mtnH(x,z){const xe=mtnX(x,z),m=smooth(-2250,-3700,xe);if(m<=0&&xe>-2050)return 0;
+ return 900*Math.pow(m,1.5)+(fbm(x*.0016,z*.0016,44,3)-.5)*260*smooth(-2100,-2700,xe)+40*(fbm(x*.006,z*.006,45,2)-.5)*smooth(-2150,-2500,xe);}
+function badK(x,z){return smooth(.56,.68,fbm(x*.0009+9,z*.0009+4,61,2));}
+function duneK(x,z){return smooth(1900,2500,Math.abs(z))*(1-smooth(2900,3200,x));}
+function pondD(x,z){const dx=x-POND.x,dz=z-POND.z,a=Math.atan2(dz,dx);return Math.hypot(dx,dz)*(1+.12*Math.sin(3*a+1)+.06*Math.sin(5*a));}
+function trend(x){return 40-.0045*x;}
+// the canyon floor's height at x (flat across the floor; the water sits 1.2 m under it)
+function floorC(x){const zr=zR(x);return trend(x)+mtnH(x,zr)-Dc(x);}
+function WL(x){return floorC(x)-1.2;}
+// ---------------------------------------------------------------- terrain
+// terrainH is memoised one point deep: the biome's zoning, the mask and the depth
+// test all ask for the same point in a row (about half of all calls repeat the last)
+const _tm={x:NaN,z:NaN,h:0};
+function terrainH(x,z){if(x===_tm.x&&z===_tm.z)return _tm.h;const h=terrainH0(x,z);_tm.x=x;_tm.z=z;_tm.h=h;return h;}
+function terrainH0(x,z){
+ const dC=Math.abs(z-zR(x)),u=dC/Wc(x),wall=wallK(u);
+ const und=(fbm(x*.0006+3,z*.0006-1,17,3)-.5)*9+(fbm(x*.004,z*.004,29,2)-.5)*1.6;
+ let h=trend(x)+mtnH(x,z)+mesaH(x,z)+und*(1-wall);
+ const bad=badK(x,z);if(bad>0){const t=fbm(x*.0035,z*.0035,62,2);h+=bad*(14*Math.floor(t*6)/6+6*(t-.5));}
+ const dn=duneK(x,z);if(dn>0)h+=dn*(7*(.5+.5*Math.sin(z*.021+x*.004+3*fbm(x*.0012,z*.0012,71,2)))+4*(fbm(x*.003,z*.003,72,2)-.5));
+ const dp=pondD(x,z);if(dp<160)h-=12*smooth(125,35,dp);
+ if(u<1.6){h+=3*smooth(.92,1.1,u)*smooth(1.5,1.15,u);                                   // the rim's lip
+  h=mix(h,floorC(x)+(fbm(x*.02,z*.02,88,2)-.5)*.6,wall)-2.6*smooth(16,5,dC)*wall;}      // the flat floor, the channel
+ const ab=abyssK(x,z);if(ab>0)h=mix(h,-720+(fbm(x*.002,z*.002,91,2)-.5)*40,Math.pow(ab,.9));   // the Abyss
+ return h;}
+const PL=(function(){const b=terrainH(POND.x,POND.z);return b+6.2;})();   // the pond's surface: 6 m of water in a 12 m hollow
+function waterH(x,z){if(canyonU(x,z)<1.1&&x<TERR.RIM+40)return WL(x);if(pondD(x,z)<170)return PL;return -1e9;}
+// the climate fields the biome asks for (cached below; these are the definitions)
+function fieldsAt(x,z,h,slope){const dC=Math.abs(z-zR(x)),u=dC/Wc(x),wall=wallK(u),ab=smooth(3080,3200,x+60*Math.sin(z*.003));
+ const dp=pondD(x,z),oasis=smooth(300,90,dp)*(1-ab),bad=badK(x,z),dn=duneK(x,z),mt=clamp(mtnH(x,z)/900,0,1),mesa=clamp((mesaH(x,z)-30)/60,0,1);   // only a mesa's top and wall count as upland, not its apron
+ const up=clamp(Math.max(mt,mesa*.55),0,1);
+ const seep=smooth(-1900,-2300,x)*smooth(.62,.42,fbm(x*.003+5,z*.003-2,101,2))*smooth(.75,.2,mt);   // springs at the mountain foot
+ let wet=Math.max(.05,wall*.95*(1-slope*.3),.62*smooth(700,110,dC),oasis*.92,seep*.5);wet*=(1-dn*.9)*(1-ab);
+ const flow=Math.max(smooth(48,7,dC)*(1-ab),smooth(190,120,dp)*.7*(1-ab))*(h-waterH(x,z)<3.5?1:.4);
+ const rock=clamp(Math.max(bad,smooth(.3,.62,slope)*.9,ab*.9),0,1),flowK=clamp(flow,0,1);
+ return{wet:clamp(wet,0,1),flow:flowK,upland:up,canyon:wall,rim:smooth(.86,1.02,u)*smooth(1.6,1.15,u)*(1-dn)*(1-ab),
+  rock:rock,dune:dn,oasis:oasis,slope:slope,abyss:ab,
+  // the painter's and the ground mesh's own fields: the mountain mass, how much fine strata shows, how much mud cracks
+  mtn:mt,strata:smooth(.15,.6,rock)*(1-smooth(.15,.45,ab))*(1-smooth(.02,.12,mt)),
+  crack:Math.max(smooth(.5,.95,oasis)*smooth(.6,.2,flowK),smooth(.9,1,wall)*smooth(.5,.8,clamp(wet,0,1))*.2)};}
+const FNAMES=['wet','flow','upland','canyon','rim','rock','dune','oasis','slope','abyss','mtn','strata','crack'];
+// a coarse cache of the fields (they cost several terrainH calls each)
+const FC=(function(){const N=384,S=TERR.R*2.2,a={};FNAMES.forEach(n=>a[n]=new Float32Array(N*N));a.h=new Float32Array(N*N);
+ const cs=S/(N-1);
+ for(let j=0;j<N;j++)for(let i=0;i<N;i++){a.h[j*N+i]=terrainH((i/(N-1)-.5)*S,(j/(N-1)-.5)*S);}
+ for(let j=0;j<N;j++)for(let i=0;i<N;i++){const x=(i/(N-1)-.5)*S,z=(j/(N-1)-.5)*S,k=j*N+i;
+  const hx=a.h[j*N+Math.min(N-1,i+1)]-a.h[j*N+Math.max(0,i-1)],hz=a.h[Math.min(N-1,j+1)*N+i]-a.h[Math.max(0,j-1)*N+i],slope=clamp(Math.hypot(hx,hz)/(2*cs)*1.6,0,1);
+  const F=fieldsAt(x,z,a.h[k],slope);FNAMES.forEach(n=>a[n][k]=F[n]);}
+ // bilinear, with the lattice cell of the last point kept: the biome reads ten fields at one point in a row
+ const L={x:NaN,z:NaN,k:0,fu:0,fv:0};
+ const at=(arr,x,z)=>{if(x!==L.x||z!==L.z){const u=clamp((x/S+.5)*(N-1),0,N-1.001),v=clamp((z/S+.5)*(N-1),0,N-1.001),i=Math.floor(u),j=Math.floor(v);L.x=x;L.z=z;L.k=j*N+i;L.fu=u-i;L.fv=v-j;}
+  const k=L.k,fu=L.fu,fv=L.fv;return arr[k]*(1-fu)*(1-fv)+arr[k+1]*fu*(1-fv)+arr[k+N]*(1-fu)*fv+arr[k+N+1]*fu*fv;};
+ return{N,S,a,at};})();
+const FIELD={};FNAMES.forEach(n=>FIELD[n]=(x,z)=>FC.at(FC.a[n],x,z));
+// ---------------------------------------------------------------- the host binding
+const OBSTACLES=[];
+// the LOD spine: a row of origins along the river, plus the pond and the butte's foot
+TOWER.z=zR(TOWER.x)-Wc(TOWER.x)*2.1;
+const SPINE=[];for(let x=-3000;x<=3200;x+=700)SPINE.push([x,zR(x)]);SPINE.push([POND.x,POND.z],[BUTTE.x-300,BUTTE.z-500],[TOWER.x,TOWER.z]);
+BIO.init({THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,   // the core's default mask: nothing rooted under the local water
+ obstacles:OBSTACLES,ticks:tick,seed:11,origin:SPINE,center:[0,0],fields:FIELD,register:REGISTER,err:reportErr,
+ windows:{water:[-TERR.R,-700,TERR.R,1000]}});   // the river strip and the pond: the water-bound passes look nowhere else
+BIO.setSun([-1000,1150,-560]);
+// ---------------------------------------------------------------- the ground
+// One mesh, painted by zone from the field cache: red desert, dunes, the
+// banded badland and mesa strata, the mountain rock, the canyon's gravel floor
+// and damp silt, the pond's playa rim, the Abyss's cliff.
+const TEX_GROUND=BIO.canvasTex(1536,1536,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;const S=TERR.R*2.2;
+ const c=new THREE.Color(),t=new THREE.Color();
+ const RED1=new THREE.Color(0xa85a42),RED2=new THREE.Color(0x884834),PALE=new THREE.Color(0xc99a72),PAVE=new THREE.Color(0x6e4634),SCRUB=new THREE.Color(0x9e6a4c),SAND=new THREE.Color(0xdca070),SAND2=new THREE.Color(0xeab888),
+  BANDS=[new THREE.Color(0xb8683f),new THREE.Color(0x8f4f3a),new THREE.Color(0xd4a884),new THREE.Color(0xa4523a),new THREE.Color(0x7a4030),new THREE.Color(0xc98a5e)],
+  MTN=new THREE.Color(0x7a6a5e),MTN2=new THREE.Color(0x9a8a7a),GRAVEL=new THREE.Color(0xc7b08e),SILT=new THREE.Color(0x9a8a68),DAMP=new THREE.Color(0x5a5040),ALGA=new THREE.Color(0x6a7a48),
+  PLAYA=new THREE.Color(0xdcd2c0),CLIFF=new THREE.Color(0x5a3a30),CLIFF2=new THREE.Color(0x7a5040);
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;const wx=(x/w-.5)*S,wz=(y/h-.5)*S;
+  const n=fbm(x/24,y/24,.3,2)-.5,n2=(BIO.fn.h3(x,y,3)-.5),hh=FC.at(FC.a.h,wx,wz);
+  const wet=FC.at(FC.a.wet,wx,wz),flow=FC.at(FC.a.flow,wx,wz),can=FC.at(FC.a.canyon,wx,wz),rock=FC.at(FC.a.rock,wx,wz),dn=FC.at(FC.a.dune,wx,wz),oa=FC.at(FC.a.oasis,wx,wz),up=FC.at(FC.a.mtn,wx,wz),sl=FC.at(FC.a.slope,wx,wz),ab=FC.at(FC.a.abyss,wx,wz);
+  const pav=fbm(x/90+5,y/90-2,.7,2);
+  c.copy(RED1).lerp(RED2,clamp(.5+n*1.8,0,1)).lerp(PALE,clamp(n2*.6+.25+.25*Math.sin(wx*.01+wz*.013),0,1)*.35).lerp(PAVE,smooth(.56,.7,pav)*.45);   // the red desert, darker where the pavement of stones lies
+  c.lerp(SCRUB,clamp(.35*smooth(.15,.45,wet),0,1));
+  t.copy(SAND).lerp(SAND2,clamp(.5+n*1.6,0,1));c.lerp(t,dn);                                             // the dunes
+  c.lerp(BANDS[1],FC.at(FC.a.strata,wx,wz)*.4);       // rock: a red-brown under the strata the shader paints by height (aRock)
+  t.copy(MTN).lerp(MTN2,clamp(.5+n*1.5,0,1));c.lerp(t,smooth(.08,.5,up)*.9);
+  t.copy(GRAVEL).lerp(SILT,smooth(.6,.9,wet));t.lerp(BANDS[1],smooth(.95,.5,can)*.6);c.lerp(t,smooth(.25,.7,can));   // the canyon: banded walls, gravel floor
+  c.lerp(DAMP,smooth(.55,.95,flow)*.8);c.lerp(ALGA,smooth(.85,1,flow)*.35);
+  c.lerp(PLAYA,smooth(.55,.95,oa)*smooth(.5,.2,flow)*.55);c.lerp(DAMP,smooth(.75,1,oa)*flow*.6);              // the pond's playa rim, its damp margin
+  t.copy(CLIFF).lerp(CLIFF2,clamp(.5+n*1.5,0,1)).lerp(BANDS[Math.abs(Math.floor(hh/26))%BANDS.length],.45);c.lerp(t,ab*.9);   // the Abyss wall: coarse strata, 26 m
+  c.lerp(BANDS[Math.abs(Math.floor(hh/40+1))%BANDS.length],smooth(.03,.15,up)*smooth(.3,.62,sl)*.35);                    // the mountain ramps: faint 40 m ledges
+  const k=1+n*.10+n2*.05;
+  d[i]=clamp(c.r*255*k,0,255);d[i+1]=clamp(c.g*255*k,0,255);d[i+2]=clamp(c.b*255*k,0,255);d[i+3]=255;}
+ g.putImageData(id,0,0);});
+// detail: fine grain everywhere, tiled every ~6 m; mud cracks weighted per vertex (aCrack) round the pond and on the silt
+const TEX_DETAIL=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,v=232+(fbm(x/9,y/9,5,2)-.5)*36+(BIO.fn.h3(x,y,9)-.5)*24;d[i]=d[i+1]=d[i+2]=clamp(v,0,255);d[i+3]=255;}
+ g.putImageData(id,0,0);});
+const TEX_CRACK=BIO.canvasTex(256,256,(g,w,h)=>{g.fillStyle='#ffffff';g.fillRect(0,0,w,h);
+ g.strokeStyle='rgba(70,60,50,.6)';g.lineCap='round';
+ const P=[];for(let i=0;i<16;i++)P.push([rng()*w,rng()*h]);
+ for(let i=0;i<P.length;i++)for(let j=i+1;j<P.length;j++){const a=P[i],b=P[j];if(Math.hypot(a[0]-b[0],a[1]-b[1])>w*.4)continue;if(rng()<.45)continue;
+  g.lineWidth=rr(1.2,2.6);for(let k=-1;k<=1;k++)for(let m=-1;m<=1;m++){g.beginPath();g.moveTo(a[0]+k*w,a[1]+m*h);g.quadraticCurveTo((a[0]+b[0])/2+rr(-18,18)+k*w,(a[1]+b[1])/2+rr(-18,18)+m*h,b[0]+k*w,b[1]+m*h);g.stroke();}}});
+// STRATA are painted by the shader from world y (exact bands, 3.4 m each), weighted
+// per vertex by the rock field (aRock): the coarse field cache would wobble them.
+const STRATA=[0xb8683f,0x8f4f3a,0xd4a884,0xa4523a,0x7a4030,0xc98a5e].map(h=>new THREE.Color(h).convertSRGBToLinear());
+const MAT_GROUND=new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0xa89e94});
+MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.uniforms.uCrack={value:TEX_CRACK};sh.uniforms.uBands={value:STRATA};
+ sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute float aCrack;attribute float aRock;varying float vCrack;varying float vRock;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vCrack=aCrack;vRock=aRock;');
+ sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail,uCrack;uniform vec3 uBands[6];varying vec3 vGWP;varying float vCrack;varying float vRock;')
+  .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 dt=texture2D(uDetail,vGWP.xz*0.165).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;vec3 ck=texture2D(uCrack,vGWP.xz*0.14).rgb;'+
+  'float bb=mod(floor(vGWP.y/3.4+0.3*dt2.r),6.0);vec3 bc=uBands[0];if(bb>0.5)bc=uBands[1];if(bb>1.5)bc=uBands[2];if(bb>2.5)bc=uBands[3];if(bb>3.5)bc=uBands[4];if(bb>4.5)bc=uBands[5];'+
+  'diffuseColor.rgb=mix(diffuseColor.rgb,bc*(0.85+0.3*dt.r),vRock*0.9);'+
+  'diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.85)*mix(vec3(1.0),ck,vCrack);}');};
+(function(){const N=420,S=TERR.R*2.2,g=new THREE.PlaneGeometry(S,S,N,N);g.rotateX(-Math.PI/2);
+ const p=g.attributes.position,ck=new Float32Array(p.count),rk=new Float32Array(p.count);for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i);p.setY(i,terrainH(x,z));
+  ck[i]=FC.at(FC.a.crack,x,z);rk[i]=FC.at(FC.a.strata,x,z);}   // mud cracks and fine strata are fields (fieldsAt)
+ g.setAttribute('aCrack',new THREE.BufferAttribute(ck,1));g.setAttribute('aRock',new THREE.BufferAttribute(rk,1));
+ g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The high desert';scene.add(m);})();
+
+// ---------------------------------------------------------------- the water
+// The river is a ribbon at WL(x) following its channel, the pond a disc at PL,
+// both in one vertex-coloured ripple material (SEDESERT_WATER's hue: the teal
+// of a wadi pool, paler over gravel shallows). The cataract is a curtain of
+// its own material, falling from the notch to the Abyss floor, with mist.
+const WHUE=SEDESERT_WATER.hue;
+const WATER_SHALLOW=new THREE.Color().setHSL(WHUE,.55,.46),WATER_MID=new THREE.Color().setHSL(WHUE,.62,.30),WATER_DEEP=new THREE.Color().setHSL(WHUE,.6,.15),WATER_PALE=new THREE.Color().setHSL(WHUE-.03,.35,.62);
+const MAT_WATER=new THREE.ShaderMaterial({fog:true,vertexColors:true,
+ uniforms:THREE.UniformsUtils.merge([THREE.UniformsLib.fog,{uT:{value:0},uSun:{value:new THREE.Vector3(-1000,1150,-560).normalize()},uSky:{value:new THREE.Color(0xdfe6ec)}}]),
+ vertexShader:['#include <fog_pars_vertex>','varying vec3 vWP;varying vec3 vCol;',
+  'void main(){vCol=color;vec4 wp=modelMatrix*vec4(position,1.0);vWP=wp.xyz;vec4 mvPosition=viewMatrix*wp;gl_Position=projectionMatrix*mvPosition;','#include <fog_vertex>','}'].join('\n'),
+ fragmentShader:['#include <fog_pars_fragment>','uniform float uT;uniform vec3 uSun,uSky;varying vec3 vWP;varying vec3 vCol;',
+  'void main(){',
+  ' float dcam=length(cameraPosition-vWP);float rk=1.0-smoothstep(120.0,420.0,dcam);',   // ripples fade with range or they alias into a moire
+  ' vec3 n=normalize(vec3(rk*(0.035*sin(vWP.x*0.31+uT*1.1)+0.02*sin(vWP.z*0.53-uT*0.7+vWP.x*0.11)),1.0,rk*(0.035*cos(vWP.z*0.27+uT*0.9)+0.02*sin(vWP.x*0.47+uT*1.3))));',
+  ' vec3 V=normalize(cameraPosition-vWP);float fr=pow(1.0-max(dot(n,V),0.0),3.0);',
+  ' vec3 col=mix(vCol,uSky,0.10+fr*0.62);',
+  ' vec3 H=normalize(uSun+V);col+=pow(max(dot(n,H),0.0),140.0)*0.8*vec3(1.0,0.97,0.9);',
+  ' gl_FragColor=vec4(col,1.0);','#include <fog_fragment>','}'].join('\n')});
+MAT_WATER.uniforms.fogColor.value=scene.fog.color;MAT_WATER.uniforms.fogDensity.value=scene.fog.density;
+TICKS.push(dt=>{MAT_WATER.uniforms.uT.value+=dt;});
+const FOAM=new THREE.Color(0xeaf2f0);
+function waterColorAt(x,z,out){const h=terrainH(x,z),d=Math.max(0,waterH(x,z)-h),shoal=fbm(x*.02+2,z*.02-4,505,2);
+ out.copy(WATER_SHALLOW).lerp(WATER_PALE,Math.max(smooth(.5,.7,shoal)*smooth(1.6,.3,d),smooth(.6,.1,d)*.7)).lerp(WATER_MID,smooth(.9,2.2,d)).lerp(WATER_DEEP,smooth(2.5,5,d));
+ // rapids: whitewater in the mountain gorge where the bed steepens, and a riffle at the notch
+ const rap=Math.max(smooth(-2200,-2700,x),smooth(TERR.RIM-80,TERR.RIM+20,x))*smooth(.48,.66,fbm(x*.06,z*.08,606,2));out.lerp(FOAM,rap*.85);return out;}
+(function(){
+ // the river ribbon: 12 m steps along x, 9 vertices across the channel (half-width 12 m)
+ const pos=[],col=[],c=new THREE.Color(),NW=8,HW=12;
+ const push=(x,z)=>{const y=WL(x);waterColorAt(x,z,c);c.convertSRGBToLinear();pos.push(x,y,z);col.push(c.r,c.g,c.b);};
+ const X0=-TERR.R*1.1,X1=TERR.RIM+34;let n=0;const rows=[];
+ for(let x=X0;x<=X1;x+=12){const zr=zR(x),row=[];for(let k=0;k<=NW;k++){const z=zr+(k/NW-.5)*2*HW;row.push(pos.length/3);push(x,z);}rows.push(row);}
+ const idx=[];for(let r=0;r<rows.length-1;r++)for(let k=0;k<NW;k++){const a=rows[r][k],b=rows[r][k+1],cc=rows[r+1][k],dd=rows[r+1][k+1];idx.push(a,cc,dd,a,dd,b);}
+ // the pond: a fan
+ const pc=pos.length/3;push(POND.x,POND.z);const PN=40,PR=[];for(let k=0;k<=PN;k++){const a=k/PN*TAU,r=165;PR.push(pos.length/3);push(POND.x+Math.cos(a)*r,POND.z+Math.sin(a)*r);}
+ for(let k=0;k<PN;k++)idx.push(pc,PR[k+1],PR[k]);
+ // the pond's vertices sit at PL, the river's at WL(x): fix the pond ring
+ for(let k=pc;k<pos.length/3;k++)pos[k*3+1]=PL;
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));g.setIndex(idx);g.computeVertexNormals();
+ const m=new THREE.Mesh(g,MAT_WATER);m.userData.probeSkip=true;m.userData.inspectLabel='The river';m.renderOrder=1;scene.add(m);})();
+// the cataract: a curtain from the notch at the rim to the Abyss floor, streaked, foaming white at the lip and at the plunge pool
+const TEX_FALL=BIO.canvasTex(128,512,(g,w,h)=>{g.fillStyle='#ffffff';g.fillRect(0,0,w,h);
+ for(let i=0;i<260;i++){const x=rng()*w,l=rr(40,200);g.strokeStyle='rgba('+(rng()<.5?'150,190,200':'255,255,255')+','+(.2+rng()*.5).toFixed(2)+')';g.lineWidth=rr(1,4);g.beginPath();g.moveTo(x,rng()*h);g.lineTo(x+rr(-3,3),rng()*h+l);g.stroke();}});
+const MAT_FALL=new THREE.ShaderMaterial({fog:true,transparent:true,depthWrite:false,side:THREE.DoubleSide,
+ uniforms:THREE.UniformsUtils.merge([THREE.UniformsLib.fog,{uT:{value:0},uTex:{value:TEX_FALL},uCol:{value:new THREE.Color().setHSL(WHUE,.4,.7)}}]),
+ vertexShader:['#include <fog_pars_vertex>','varying vec2 vUv;varying vec3 vWP;',
+  'void main(){vUv=uv;vec4 wp=modelMatrix*vec4(position,1.0);vWP=wp.xyz;vec4 mvPosition=viewMatrix*wp;gl_Position=projectionMatrix*mvPosition;','#include <fog_vertex>','}'].join('\n'),
+ fragmentShader:['#include <fog_pars_fragment>','uniform float uT;uniform sampler2D uTex;uniform vec3 uCol;varying vec2 vUv;varying vec3 vWP;',
+  'void main(){',
+  ' vec3 s1=texture2D(uTex,vec2(vUv.x*2.0,vUv.y*6.0-uT*0.9)).rgb;vec3 s2=texture2D(uTex,vec2(vUv.x*3.1+0.3,vUv.y*4.0-uT*1.3)).rgb;',
+  ' float f=(s1.r*s2.g);vec3 col=mix(uCol,vec3(1.0),0.1+0.6*smoothstep(0.35,0.9,f));',
+  ' float a=(0.22+0.5*smoothstep(0.3,0.9,f))*(0.5+0.5*s1.g);a*=smoothstep(0.0,0.1,vUv.x)*smoothstep(1.0,0.9,vUv.x);',
+  ' a*=mix(1.0,0.55,smoothstep(0.4,1.0,vUv.y));',   // it breaks into spray toward the foot
+  ' gl_FragColor=vec4(col,a);','#include <fog_fragment>','}'].join('\n')});
+MAT_FALL.uniforms.fogColor.value=scene.fog.color;MAT_FALL.uniforms.fogDensity.value=scene.fog.density;
+TICKS.push(dt=>{MAT_FALL.uniforms.uT.value+=dt;});
+const FALL={x:TERR.RIM+34,z:zR(TERR.RIM+34),y:WL(TERR.RIM+34),floor:-700};
+(function(){const pos=[],uv=[],idx=[],NS=44,HW=13,H=FALL.y-FALL.floor;
+ for(let i=0;i<=NS;i++){const t=i/NS,y=FALL.y-H*t,x=FALL.x+40*(1-Math.exp(-t*3))+t*t*90,w=HW*(1+t*2.2);
+  for(let k=-1;k<=1;k+=2){pos.push(x,y,FALL.z+k*w);uv.push(k<0?0:1,t);}}
+ for(let i=0;i<NS;i++){const a=i*2,b=a+1,c2=a+2,d=a+3;idx.push(a,c2,d,a,d,b);}
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setIndex(idx);g.computeVertexNormals();
+ const m=new THREE.Mesh(g,MAT_FALL);m.userData.probeSkip=true;m.userData.inspectLabel='The cataract';m.renderOrder=2;scene.add(m);
+ // mist: soft sprites at the plunge and up the fall; the rising column drifts
+ const mistTex=BIO.canvasTex(128,128,(gg,w,h)=>{const gr=gg.createRadialGradient(64,64,0,64,64,64);gr.addColorStop(0,'rgba(255,255,255,.9)');gr.addColorStop(.45,'rgba(240,246,250,.45)');gr.addColorStop(1,'rgba(240,246,250,0)');gg.fillStyle=gr;gg.fillRect(0,0,w,h);});
+ const SPR=[];
+ for(let i=0;i<26;i++){const t=i<16?rr(.72,1.02):rr(.15,.7),y=FALL.y-H*t,x=FALL.x+40*(1-Math.exp(-t*3))+t*t*90+rr(-30,60),s=i<16?rr(120,260):rr(40,90);
+  const sm=new THREE.SpriteMaterial({map:mistTex,transparent:true,depthWrite:false,opacity:i<16?rr(.28,.5):rr(.18,.3),fog:true,color:0xf4f8fa});
+  const sp=new THREE.Sprite(sm);sp.position.set(x,y+(i<16?rr(0,140):0),FALL.z+rr(-90,90)*(i<16?1:.4));sp.scale.set(s,s*rr(.7,1.1),1);sp.userData.probeSkip=true;sp.userData.inspectLabel='Mist';sp.userData.ph=rr(0,TAU);sp.userData.y0=sp.position.y;scene.add(sp);SPR.push(sp);}
+ // spray at the lip: small sprites torn off the edge
+ for(let i=0;i<8;i++){const sm=new THREE.SpriteMaterial({map:mistTex,transparent:true,depthWrite:false,opacity:rr(.2,.35),fog:true,color:0xffffff});
+  const sp=new THREE.Sprite(sm);sp.position.set(FALL.x+rr(-4,26),FALL.y+rr(2,18),FALL.z+rr(-16,16));const s=rr(10,26);sp.scale.set(s,s*rr(.8,1.2),1);sp.userData.probeSkip=true;sp.userData.inspectLabel='Spray';sp.userData.ph=rr(0,TAU);sp.userData.y0=sp.position.y;scene.add(sp);SPR.push(sp);}
+ TICKS.push((dt,t)=>{for(let i=0;i<SPR.length;i++){const s=SPR[i];s.position.y=s.userData.y0+8*Math.sin(t*.25+s.userData.ph);}});
+ // the plunge pool on the Abyss floor: a fan of water, foam white where the fall lands, the floor's rocks standing out of it
+ {const px=FALL.x+40+90+40,pz=FALL.z,py=-703,pos=[px,py,pz],col=[],cf=FOAM.clone().convertSRGBToLinear(),cd=WATER_DEEP.clone().convertSRGBToLinear();col.push(cf.r,cf.g,cf.b);const PN=36,idx=[];
+  for(let k=0;k<=PN;k++){const a=k/PN*TAU,r=150*(1+.15*Math.sin(3*a)+.1*Math.sin(5*a+1));pos.push(px+Math.cos(a)*r,py,pz+Math.sin(a)*r);const c=cd.clone().lerp(cf,.15);col.push(c.r,c.g,c.b);}
+  for(let k=0;k<PN;k++)idx.push(0,k+2,k+1);
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));g.setIndex(idx);g.computeVertexNormals();
+  const m=new THREE.Mesh(g,MAT_WATER);m.userData.probeSkip=true;m.userData.inspectLabel='The plunge pool';m.renderOrder=1;scene.add(m);}
+ REGISTER({name:'The cataract',x:FALL.x+60,z:FALL.z,y:FALL.floor,r:160,h:H+40});})();
+
+// ==================== 50-biome-sedesert-species.js
+// ================================================================= EASTERN HIGH DESERT — species (data + kit items)
+// The eastern high desert of Krator: red desert like the American south-west,
+// with Socotran flora. Dragon trees where the water table allows, a diverse
+// set of succulents -- cacti AND the big-stemmed Socotran kind (bottle trees,
+// desert roses, giant candelabras) -- mesquites tall along the river and
+// shrinking to shrubs away from it, palms in the wadi and at the pond, and
+// one alien note: the twist-candles standing in the shallows. Everything here
+// is DATA and kit definitions; no placement. Tags follow the project rule:
+// climate / aridity / abyssal / riparian. Every aridity tag is honoured by the
+// placement passes: an 'arid' plant never roots on wet ground, a 'humid' one
+// never away from water.
+var SEDESERT={};
+(function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm,qEuler,qFacing,qUp}=BIO.fn;
+const T3=BIO.host.THREE,C=h=>new T3.Color(h);SEDESERT.C=C;
+SEDESERT.TAGS={climate:'tropic',aridity:'arid..subhumid',abyssal:false,riparian:'both'};
+
+// ---------------------------------------------------------------- THE WATER COLOUR
+// One hue drives the river, the pond and every watery accent. The host sets
+// SEDESERT_WATER.hue before this file loads (or calls SEDESERT.setWater(h)
+// before build()). Teal-green here, a wadi pool. The flora stays its own
+// colours -- red desert reads red, not tinted -- but the reed stands, the
+// candles' tips and the algae carry the hue, and the blooms its COMPLEMENT
+// (which, for a teal pool, is the desert rose's own pink).
+SEDESERT.WATER={hue:(typeof SEDESERT_WATER!=='undefined'&&SEDESERT_WATER.hue!=null)?SEDESERT_WATER.hue:.42};
+const hsl=(h,s,l)=>C(0).setHSL(((h%1)+1)%1,s,l);
+SEDESERT.setWater=function(hue){const h=hue;SEDESERT.WATER.hue=h;
+ const P=SEDESERT.PAL=SEDESERT.PAL||{};
+ P.accent=[hsl(h,.55,.42),hsl(h+.03,.5,.48),hsl(h-.03,.45,.38),hsl(h+.05,.6,.52)].map(c=>c.getHex());        // reed tips, algae, candle tips
+ P.comp=[hsl(h+.5,.72,.62),hsl(h+.47,.78,.58),hsl(h+.53,.70,.66),hsl(h+.5,.62,.72),hsl(h+.45,.80,.55)].map(c=>c.getHex());   // the blooms: rose pinks
+ P.candle=[0xd8c060,0xc8a850,0xb8506a,0xa84860,0xc87848,0xe0d0a0,0xd09070].map(x=>C(x).lerp(hsl(h,.5,.55),.08).getHex());
+ P.candleTip=[hsl(h,.55,.62),hsl(h+.04,.6,.7)].map(c=>c.getHex());
+ return P;};
+SEDESERT.setWater(SEDESERT.WATER.hue);
+const PAL=SEDESERT.PAL;
+Object.assign(PAL,{
+ dragon:[0x4f7a5a,0x5c8a62,0x3f6a4c,0x6a9a6c,0x487858],
+ euph:[0x4a7040,0x527a46,0x3e6236,0x5a8450,0x467040],
+ cardon:[0x587868,0x60806e,0x4c6c5a,0x6a8a78],
+ bottleLeaf:[0x3f6a3a,0x4a7a44,0x36603a],
+ boojumLeaf:[0x8a9a5a,0x9aa860],
+ quiver:[0x7a9a72,0x8aa87a,0x6a8a64,0x9ab088],
+ mesquite:[0x7a9a3a,0x8aa848,0x6a8a30,0x94b050,0x5e7e2c],
+ palm:[0x4a7a3a,0x5a8a44,0x3e6a32,0x6a9a4e],
+ roseLeaf:[0x4a7a44,0x5a8a4c],
+ yucca:[0x5a7a5a,0x6a8a62,0x4a6a4c,0x7a9a6c],
+ agave:[0x7a8a6a,0x8a9a78,0x6a7a5a,0x9aa088],
+ agaveRed:[0x9a5a4a,0xa86a52,0x8a4a3c],
+ puya:[0x8a9a80,0x9aa890,0x7a8a70],
+ spike:[0xc8b070,0xd8c080,0xb8a060],
+ echium:[0xc81a24,0xd8202a,0xb01820,0xe0303a],
+ echiumLeaf:[0x6a8a6a,0x7a9a78],
+ spinifex:[0x8aa080,0x9ab088,0x7a9a70,0xa8b890,0x9aa878],
+ drygrass:[0xc8b070,0xd8c080,0xb8a060,0xe0cc90],
+ creosote:[0x5a7a3a,0x6a8a44,0x4e6e34],
+ saltbush:[0x9aa088,0xa8b098,0x8a9a80],
+ hoodia:[0x7a8a6a,0x8a9a78],
+ barrel:[0x5a7a4a,0x6a8a52,0x4e6e40],
+ pear:[0x6a8a5a,0x7a9a66,0x5a7a4c],
+ cholla:[0xa8b090,0xb8c0a0,0x98a080],
+ reed:[0x6a8a3a,0x7a9a44,0x5a7a30,0x8aa850],
+ sedge:[0x7a8a4a,0x8a9a54],
+ lichen:[0xd88a3a,0xe0a048,0xc0c0a0,0x9aa090,0xb8b088],
+ rock:[0xb4613f,0x9a4e34,0xc97a55,0x8a4a36,0xd39a70],
+ rockGrey:[0x7a6a5e,0x8a7a6e,0x6a5a50],
+ deadwood:[0x9a8a78,0x8a7a68,0xb0a090,0x7a6a5a],
+ pod:[0xc8b850,0xd8c860,0xb8a840],
+});
+
+// ---------------------------------------------------------------- the tree species
+// H height band, rb bole radius, crownR, bark kind (0 dragon-scale, 1 fibrous,
+// 2 smooth pale peeling, 3 furrowed dark, 4 ribbed succulent), and the habit
+// the builder reads. Bark colours are written a stop DARK: the sun+hemisphere
+// rig renders them about twice as bright (the abyss kit's lesson).
+SEDESERT.SPECIES=[
+ /*0*/{key:'dragon',name:'Dragon tree',H:[12,22],rb:[.9,1.6],crownR:[8,14],barkK:0,bark:[0x8a7a66,0x7e6e5a,0x968672],
+  leaf:PAL.dragon,forks:6,forkLen:[.22,.17,.14,.12,.10,.09],resin:0x8a2a1e,
+  far:{poleU:.55,blobs:[[.86,.85,.1,'L0','L2']]},
+  tags:{climate:'tropic',aridity:'semiarid',abyssal:false,riparian:'both'}},
+ /*1*/{key:'candelabra',name:'Giant candelabra',H:[22,44],rb:[1.6,2.8],crownR:[12,20],barkK:4,bark:[0x4e6a3c,0x466236,0x587444],
+  leaf:PAL.euph,cols:[40,80],
+  far:{poleU:.22,blobs:[[.62,.8,.36,'L0','L2'],[.55,.55,.3,'L1','L3',{rich:true,off:.3}]]},
+  tags:{climate:'tropic',aridity:'arid',abyssal:false,riparian:'no'}},
+ /*2*/{key:'cardon',name:'Cardon',H:[20,38],rb:[1.2,2.2],crownR:[9,15],barkK:3,bark:[0x5a4a3c,0x4e4034,0x66564a],
+  leaf:PAL.cardon,cols:[22,48],
+  far:{poleU:.3,blobs:[[.68,.75,.3,'L0','L2']]},
+  tags:{climate:'tropic',aridity:'arid',abyssal:false,riparian:'no'}},
+ /*3*/{key:'bottle',name:'Bottle tree',H:[7,14],rb:[1.0,1.9],crownR:[4,7],barkK:2,bark:[0x8a8070,0x7e7466,0x969080],
+  leaf:PAL.bottleLeaf,
+  far:{poleU:.35,blobs:[[.3,1.5,.36,'B0','B2',{rxOf:'rb'}],[.85,.7,.16,'L0','L1']]},
+  tags:{climate:'tropic',aridity:'arid',abyssal:false,riparian:'no'}},
+ /*4*/{key:'boojum',name:'Boojum',H:[12,24],rb:[.5,.9],crownR:[3,5],barkK:2,bark:[0x8e8e78,0x82826c,0x9a9a84],
+  leaf:PAL.boojumLeaf,
+  far:{poleU:1,taper:.9,blobs:[[.98,1.4,1.2,0xd8c040,0xb8a030,{abs:true}]]},
+  tags:{climate:'tropic',aridity:'arid',abyssal:false,riparian:'no'}},
+ /*5*/{key:'quiver',name:'Quiver tree',H:[7,13],rb:[.7,1.2],crownR:[5,8],barkK:2,bark:[0x9a8a66,0x8e7e5c,0xa89874],
+  leaf:PAL.quiver,forks:4,forkLen:[.28,.24,.2,.17],
+  far:{poleU:.55,blobs:[[.9,.8,.14,'L0','L2']]},
+  tags:{climate:'tropic',aridity:'arid',abyssal:false,riparian:'no'}},
+ /*6*/{key:'mesquite',name:'Mesquite',H:[4,16],rb:[.3,.9],crownR:[5,14],barkK:3,bark:[0x4a3a2e,0x3e3026,0x564638],
+  leaf:PAL.mesquite,farIf:T=>T.H>8,
+  far:{poleU:.35,blobs:[[.72,.85,.3,'L0','L2']]},
+  tags:{climate:'tropic',aridity:'semiarid',abyssal:false,riparian:'both'}},
+ /*7*/{key:'palm',name:'Wadi palm',H:[9,20],rb:[.45,.7],crownR:[5,8],barkK:1,bark:[0x6a5a44,0x5e4e3a,0x766650],
+  leaf:PAL.palm,fronds:[14,22],
+  far:{poleU:1,blobs:[[.9,.8,.14,'L0','L2']]},
+  tags:{climate:'tropic',aridity:'subhumid',abyssal:false,riparian:'yes'}},
+ /*8*/{key:'rose',name:'Desert rose',H:[2.5,5],rb:[.8,1.5],crownR:[2,3.5],barkK:2,bark:[0x8a8078,0x7e746c,0x968c84],
+  leaf:PAL.roseLeaf,
+  far:{poleU:.35,blobs:[[.35,1.2,.3,'B0','B1',{rxOf:'rb'}],[.8,.8,.25,'P','L0']]},
+  tags:{climate:'tropic',aridity:'arid',abyssal:false,riparian:'no'}},
+ /*9*/{key:'puya',name:'Giant puya',H:[6,10],rb:[.4,.6],crownR:[2.5,3.5],barkK:1,bark:[0x8a7a5a,0x7e6e50],
+  leaf:PAL.puya,
+  far:{poleU:.35,blobs:[[.5,.9,.55,'L0','L1',{yOf:'R',ryOf:'R'}]]},
+  tags:{climate:'tropic',aridity:'arid',abyssal:false,riparian:'no'}},
+ /*10*/{key:'agave',name:'Mountain agave',H:[6,9],rb:[.14,.22],crownR:[1.5,2.6],barkK:1,bark:[0x6a4a4a,0x5e4040],
+  leaf:PAL.agaveRed,
+  far:{poleU:.35,blobs:[[.5,.9,.55,'L0','L1',{yOf:'R',ryOf:'R'}]]},
+  tags:{climate:'tropic',aridity:'arid',abyssal:false,riparian:'no'}},
+ /*11*/{key:'yucca',name:'Joshua tree',H:[6,13],rb:[.4,.8],crownR:[4,7],barkK:1,bark:[0x5a4a3e,0x4e4034,0x66564a],
+  leaf:PAL.yucca,forks:3,forkLen:[.32,.28,.24],
+  far:{poleU:.4,blobs:[[.9,.8,.14,'L0','L2']]},
+  tags:{climate:'tropic',aridity:'arid',abyssal:false,riparian:'no'}},
+ /*12*/{key:'candle',name:'Twist-candles',H:[2,7],rb:[.3,.6],crownR:[2,4],barkK:2,bark:[0x9a8a78],
+  leaf:PAL.candle,depth:[-.6,1.4],   // stands in the shallows
+  tags:{climate:'tropic',aridity:'humid',abyssal:false,riparian:'yes'}},
+];
+SEDESERT.byKey={};SEDESERT.SPECIES.forEach(S=>SEDESERT.byKey[S.key]=S);
+
+// ---------------------------------------------------------------- leaf textures
+// Greyscale on transparent canvases (BIO.alphaTex); the per-instance colour
+// tints them. Names say the habit.
+reseed(500021);
+const TX={};
+/* straps: stiff sword leaves radiating from cushions -- the dragon tree's tufts, the Joshua tree's daggers */
+TX.strap=BIO.alphaTex(512,(g,S)=>{g.lineCap='round';BIO.tex.clusters(S,8,.55);
+ for(let i=0;i<96;i++){const p=BIO.tex.clPt(S,.09,.6),lum=lerp(110,235,i/96)+rr(-20,20),n=ri(11,16),a0=rr(0,TAU);
+  for(let k=0;k<n;k++){const a=a0+k/n*TAU+rr(-.15,.15),L=rr(70,125);g.strokeStyle=BIO.tex.grey(lum*rr(.85,1.08));g.lineWidth=rr(4,7);
+   g.beginPath();g.moveTo(p[0],p[1]);g.quadraticCurveTo(p[0]+Math.cos(a)*L*.5,p[1]+Math.sin(a)*L*.5+rr(-5,5),p[0]+Math.cos(a)*L,p[1]+Math.sin(a)*L);g.stroke();}}},[130,130,130]);
+/* aloe rosettes: shorter, fatter, curving leaves -- the quiver tree */
+TX.aloe=BIO.alphaTex(512,(g,S)=>{g.lineCap='round';BIO.tex.clusters(S,7,.55);
+ for(let i=0;i<44;i++){const p=BIO.tex.clPt(S,.08,.55),lum=lerp(115,235,i/44)+rr(-18,18),n=ri(10,16),a0=rr(0,TAU);
+  for(let k=0;k<n;k++){const a=a0+k/n*TAU+rr(-.12,.12),L=rr(46,80);g.strokeStyle=BIO.tex.grey(lum*rr(.85,1.08));g.lineWidth=rr(6,10);
+   g.beginPath();g.moveTo(p[0],p[1]);g.quadraticCurveTo(p[0]+Math.cos(a+.25)*L*.55,p[1]+Math.sin(a+.25)*L*.55,p[0]+Math.cos(a)*L,p[1]+Math.sin(a)*L);g.stroke();}}},[140,140,140]);
+/* feathery sprays -- the mesquite's bipinnate foliage */
+TX.feather=BIO.alphaTex(512,(g,S)=>{g.lineCap='round';BIO.tex.clusters(S,9,.62);
+ for(let i=0;i<78;i++){const p=BIO.tex.clPt(S,.09,.62),a=p[2]+rr(-.7,.7),L=rr(50,86),lum=lerp(110,235,i/78)+rr(-18,18);
+  g.strokeStyle=BIO.tex.grey(lum*.55);g.lineWidth=2.2;g.beginPath();g.moveTo(p[0],p[1]);g.lineTo(p[0]+Math.cos(a)*L,p[1]+Math.sin(a)*L);g.stroke();
+  for(let s=4;s<L;s+=3.4){const t=s/L,nl=lerp(14,5,t),bx=p[0]+Math.cos(a)*s,by=p[1]+Math.sin(a)*s;g.strokeStyle=BIO.tex.grey(lum*rr(.85,1.08));g.lineWidth=1.8;
+   for(let sd=-1;sd<=1;sd+=2){const na=a+sd*1.15;g.beginPath();g.moveTo(bx,by);g.lineTo(bx+Math.cos(na)*nl,by+Math.sin(na)*nl);g.stroke();}}}},[130,130,130]);
+/* the palm's pinnate frond: a long midrib with stiff leaflets, along +x */
+TX.palmfrond=BIO.alphaTex(256,(g,S)=>{g.lineCap='round';
+ for(let f=0;f<3;f++){const y=S*(.19+.31*f);g.strokeStyle=BIO.tex.grey(95);g.lineWidth=3.4;g.beginPath();g.moveTo(3,y);g.lineTo(S-3,y+rr(-3,3));g.stroke();
+  for(let x=8;x<S-4;x+=4.6){const t=x/S,L=lerp(30,8,Math.pow(t,1.2))*rr(.85,1.1);for(let sd=-1;sd<=1;sd+=2){
+   g.strokeStyle=BIO.tex.grey(lerp(120,230,rng()));g.lineWidth=2.8;g.beginPath();g.moveTo(x,y);g.quadraticCurveTo(x+L*.35,y+sd*L*.55,x+L*.5,y+sd*L);g.stroke();}}}},[140,140,140]);
+/* the boojum's side twigs: a sparse leafless spray along +x, tipped with tiny leaves */
+TX.bristle=BIO.alphaTex(256,(g,S)=>{g.lineCap='round';
+ for(let f=0;f<3;f++){const y=S*(.19+.31*f);g.strokeStyle=BIO.tex.grey(110);g.lineWidth=3;g.beginPath();g.moveTo(3,y);g.lineTo(S-3,y);g.stroke();
+  for(let x=10;x<S-6;x+=11){const t=x/S;for(let sd=-1;sd<=1;sd+=2){const L=lerp(18,8,t),a=sd*rr(1.0,1.4);
+   g.strokeStyle=BIO.tex.grey(lerp(130,220,rng()));g.lineWidth=2;g.beginPath();g.moveTo(x,y);g.lineTo(x+Math.cos(a)*L,y+Math.sin(a)*L);g.stroke();
+   g.fillStyle=BIO.tex.grey(230);g.beginPath();g.ellipse(x+Math.cos(a)*L,y+Math.sin(a)*L,3.5,2,a,0,TAU);g.fill();}}}},[150,150,150]);
+/* tiny resinous leaves in dense clusters -- creosote, saltbush */
+TX.small=BIO.alphaTex(512,(g,S)=>{BIO.tex.clusters(S,10,.66);g.strokeStyle=BIO.tex.grey(90);g.lineWidth=1.6;
+ for(let k=0;k<16;k++){const p=BIO.tex.discPt(S,.4),q=BIO.tex.discPt(S,.9);g.beginPath();g.moveTo(p[0],p[1]);g.lineTo(q[0],q[1]);g.stroke();}
+ for(let i=0;i<420;i++){const c=BIO.tex.clPt(S,.11,.92),lum=lerp(115,245,i/420)+rr(-20,12);g.fillStyle=BIO.tex.grey(lum);g.beginPath();g.ellipse(c[0],c[1],rr(5,8),rr(2.5,4),rr(0,TAU),0,TAU);g.fill();}},[165,165,165]);
+/* fat pads with spine dots -- the prickly pear */
+TX.paddle=BIO.alphaTex(512,(g,S)=>{BIO.tex.clusters(S,8,.6);
+ for(let i=0;i<110;i++){const c=BIO.tex.clPt(S,.10,.80),lum=lerp(125,240,i/110)+rr(-15,10),r=rr(16,26);
+  g.fillStyle=BIO.tex.grey(lum);g.beginPath();g.ellipse(c[0],c[1],r,r*.7,rr(0,TAU),0,TAU);g.fill();
+  g.fillStyle=BIO.tex.grey(60);for(let k=0;k<5;k++){g.beginPath();g.arc(c[0]+rr(-r*.7,r*.7),c[1]+rr(-r*.5,r*.5),1.4,0,TAU);g.fill();}}},[175,175,175]);
+/* spinifex: a hummock of stiff needles radiating up from the base (vertical tuft card) */
+TX.needle=BIO.alphaTex(256,(g,S)=>{g.lineCap='round';
+ for(let k=0;k<70;k++){const x0=S/2+rr(-18,18),a=-Math.PI/2+rr(-.95,.95),L=S*rr(.4,.8)*(1-.35*Math.abs(a+Math.PI/2)),lum=lerp(120,240,rng());
+  g.strokeStyle=BIO.tex.grey(lum);g.lineWidth=rr(1.2,2.2);g.beginPath();g.moveTo(x0,S);g.lineTo(x0+Math.cos(a)*L,S+Math.sin(a)*L);g.stroke();}},[150,150,150]);
+/* dry grass: fine straw blades (vertical tuft card) */
+TX.grass=BIO.alphaTex(256,(g,S)=>{g.lineCap='round';
+ for(let k=0;k<44;k++){const x0=S/2+rr(-20,20),a=-Math.PI/2+rr(-.5,.5),L=S*rr(.5,.95),lum=lerp(120,240,rng());
+  g.strokeStyle=BIO.tex.grey(lum);g.lineWidth=rr(1.4,2.6);g.beginPath();g.moveTo(x0,S);g.quadraticCurveTo(x0+Math.cos(a)*L*.5,S+Math.sin(a)*L*.6,x0+Math.cos(a)*L*1.1,S+Math.sin(a)*L);g.stroke();
+  if(rng()<.3){g.fillStyle=BIO.tex.grey(lum*.8);g.beginPath();g.ellipse(x0+Math.cos(a)*L*1.1,S+Math.sin(a)*L,2.5,9,a+Math.PI/2,0,TAU);g.fill();}}},[150,150,150]);
+/* reeds: tall blades from the base (vertical tuft card) */
+TX.reed=BIO.alphaTex(256,(g,S)=>{g.lineCap='round';
+ for(let k=0;k<26;k++){const x0=S/2+rr(-16,16),a=-Math.PI/2+rr(-.28,.28),L=S*rr(.72,.98),lum=lerp(105,235,rng());
+  g.strokeStyle=BIO.tex.grey(lum);g.lineWidth=rr(2.4,4.2);g.beginPath();g.moveTo(x0,S);g.quadraticCurveTo(x0+Math.cos(a)*L*.5,S+Math.sin(a)*L*.55,x0+Math.cos(a)*L+rr(-10,10)*Math.sign(Math.cos(a)||1),S+Math.sin(a)*L);g.stroke();
+  if(rng()<.35){g.fillStyle=BIO.tex.grey(lum*.75);g.beginPath();g.ellipse(x0+Math.cos(a)*L,S+Math.sin(a)*L,3.2,12,a+Math.PI/2,0,TAU);g.fill();}}},[140,140,140]);
+/* the tower of jewels: a conical spire packed with florets on a leafy base (vertical card, base at the bottom) */
+TX.spire=BIO.alphaTex(256,(g,S)=>{g.lineCap='round';
+ for(let k=0;k<26;k++){const a=-Math.PI/2+rr(-1.2,1.2),L=S*rr(.12,.22);g.strokeStyle=BIO.tex.grey(lerp(90,150,rng()));g.lineWidth=rr(2,3.5);g.beginPath();g.moveTo(S/2,S-2);g.lineTo(S/2+Math.cos(a)*L,S-2+Math.sin(a)*L);g.stroke();}
+ for(let i=0;i<900;i++){const t=rng(),y=S*.04+t*S*.82,w=S*.03+t*S*.16,x=S/2+rr(-w,w),lum=lerp(150,250,rng());g.fillStyle=BIO.tex.grey(lum);g.beginPath();g.arc(x,y,rr(2,4.5),0,TAU);g.fill();}},[170,170,170]);
+/* a plume: a loose head of small flowers (the boojum's and the agave's) */
+TX.plume=BIO.alphaTex(256,(g,S)=>{for(let i=0;i<300;i++){const a=rr(0,TAU),r=S*.46*Math.sqrt(rng()),x=S/2+Math.cos(a)*r,y=S/2+Math.sin(a)*r*.8;
+ g.fillStyle=BIO.tex.grey(lerp(140,250,rng()));g.beginPath();g.arc(x,y,rr(3,7),0,TAU);g.fill();}},[180,180,180]);
+/* a bloom: a five-petalled flower with a dark eye, seen face-on (desert rose, hoodia) */
+TX.bloom=BIO.alphaTex(128,(g,S)=>{const cx=S/2,cy=S/2;
+ for(let p=0;p<5;p++){const a=p/5*TAU;g.fillStyle=BIO.tex.grey(lerp(170,235,rng()));g.beginPath();g.ellipse(cx+Math.cos(a)*S*.22,cy+Math.sin(a)*S*.22,S*.2,S*.13,a,0,TAU);g.fill();}
+ g.fillStyle=BIO.tex.grey(110);g.beginPath();g.arc(cx,cy,S*.10,0,TAU);g.fill();g.fillStyle=BIO.tex.grey(60);g.beginPath();g.arc(cx,cy,S*.04,0,TAU);g.fill();},[200,200,200]);
+/* mesquite pods: a few long beaded beans hanging (v=0 at the top) */
+TX.pods=BIO.alphaTex(256,(g,S)=>{g.lineCap='round';
+ for(let k=0;k<7;k++){const x0=rr(30,S-30),L=S*rr(.55,.95),lum=lerp(150,235,rng());g.strokeStyle=BIO.tex.grey(lum);g.lineWidth=rr(5,8);
+  g.beginPath();g.moveTo(x0,0);g.quadraticCurveTo(x0+rr(-14,14),L*.5,x0+rr(-10,10),L);g.stroke();
+  g.fillStyle=BIO.tex.grey(lum*.85);for(let y=12;y<L;y+=11){g.beginPath();g.arc(x0+rr(-2,2),y,4.2,0,TAU);g.fill();}}},[170,170,170]);
+/* lichen: a crusty patch, ragged, with bare spots */
+TX.lichen=BIO.alphaTex(128,(g,S)=>{for(let i=0;i<200;i++){const x=S/2+(rng()-.5)*S*.96,y=S/2+(rng()-.5)*S*.96;if(Math.hypot(x-S/2,y-S/2)>S*.46)continue;
+ g.fillStyle=BIO.tex.grey(lerp(120,235,rng()));g.beginPath();g.arc(x,y,rr(4,11),0,TAU);g.fill();}},[160,160,160]);
+SEDESERT.TEX=TX;
+
+// ---------------------------------------------------------------- bark, rock, wood textures
+// Painted NEAR-GREY (mean ~140) and tinted from SPECIES.bark by the builders.
+// Kinds: 0 dragon-scale (leaf-scar bands, fine cracks), 1 fibrous (palm,
+// yucca), 2 smooth pale peeling (bottle tree, desert rose, quiver, boojum),
+// 3 furrowed dark (mesquite, cardon base), 4 ribbed succulent (candelabra).
+SEDESERT.barkTex=function(kind){return BIO.canvasTex(256,512,(g,w,h)=>{
+ g.fillStyle='#8c8c8c';g.fillRect(0,0,w,h);
+ if(kind===0){
+  for(let y=0;y<h;y+=rr(9,16)){g.fillStyle='rgba('+(rng()<.5?'70,70,70':'150,150,150')+',.45)';g.fillRect(0,y,w,rr(2,5));
+   for(let x=0;x<w;x+=rr(10,22)){g.fillStyle='rgba(60,60,60,.4)';g.beginPath();g.ellipse(x,y+rr(1,4),rr(4,8),rr(1.5,3),0,0,TAU);g.fill();}}
+  for(let i=0;i<70;i++){const x=rng()*w,y=rng()*h;g.strokeStyle='rgba(50,50,50,.35)';g.lineWidth=rr(.8,1.8);g.beginPath();g.moveTo(x,y);g.lineTo(x+rr(-4,4),y+rr(10,40));g.stroke();}}
+ else if(kind===1){
+  for(let i=0;i<420;i++){const x=rng()*w,y=rng()*h;g.strokeStyle='rgba('+(rng()<.5?'50,50,50':'170,170,170')+','+(.3+rng()*.5).toFixed(2)+')';
+   g.lineWidth=rr(1,3);g.beginPath();g.moveTo(x,y);g.lineTo(x+rr(-6,6),y+rr(14,60));g.stroke();}
+  for(let i=0;i<60;i++){g.fillStyle='rgba(40,40,40,.5)';g.beginPath();g.ellipse(rng()*w,rng()*h,rr(5,12),rr(3,6),0,0,TAU);g.fill();}}
+ else if(kind===2){
+  for(let k=0;k<30;k++){const y=rng()*h;g.fillStyle='rgba('+(rng()<.5?'125,125,125':'170,170,170')+',.35)';g.fillRect(0,y,w,rr(6,30));}
+  for(let i=0;i<70;i++){const x=rng()*w,y=rng()*h;g.fillStyle='rgba(185,185,185,'+(.3+rng()*.4).toFixed(2)+')';g.beginPath();g.moveTo(x,y);g.lineTo(x+rr(10,40),y+rr(-3,3));g.lineTo(x+rr(8,30),y+rr(6,16));g.closePath();g.fill();}   // peeling flakes
+  for(let i=0;i<60;i++){const x=rng()*w,y=rng()*h;g.fillStyle='rgba(60,60,60,'+(.3+rng()*.4).toFixed(2)+')';g.fillRect(x,y,rr(4,18),rr(1.2,2.6));}}
+ else if(kind===3){
+  for(let i=0;i<260;i++){const x=rng()*w,d=rng();g.strokeStyle='rgba('+(d<.5?'45,45,45':'160,160,160')+','+(.3+rng()*.5).toFixed(2)+')';
+   g.lineWidth=d<.5?rr(2,6):rr(1,2);g.beginPath();g.moveTo(x,-10);g.bezierCurveTo(x+rr(-12,12),h*.33,x+rr(-12,12),h*.66,x+rr(-8,8),h+10);g.stroke();}
+  for(let i=0;i<40;i++){g.fillStyle='rgba(35,35,35,.55)';const x=rng()*w,y=rng()*h;g.fillRect(x,y,rr(2,6),rr(20,90));}}
+ else{
+  const n=9;for(let k=0;k<n;k++){const x=(k+.5)*w/n;const gr=g.createLinearGradient(x-w/n/2,0,x+w/n/2,0);gr.addColorStop(0,'rgba(60,60,60,.7)');gr.addColorStop(.5,'rgba(190,190,190,.6)');gr.addColorStop(1,'rgba(60,60,60,.7)');g.fillStyle=gr;g.fillRect(x-w/n/2,0,w/n,h);}
+  for(let i=0;i<120;i++){g.fillStyle='rgba(40,40,40,.6)';g.beginPath();g.arc(rng()*w,rng()*h,rr(1,2.2),0,TAU);g.fill();}}
+});};
+SEDESERT.BARKTEX=[0,1,2,3,4].map(k=>SEDESERT.barkTex(k));
+// bleached driftwood
+SEDESERT.WOODTEX=BIO.canvasTex(256,256,(g,w,h)=>{g.fillStyle='#9a9088';g.fillRect(0,0,w,h);
+ for(let i=0;i<240;i++){const y=rng()*h;g.strokeStyle='rgba('+(rng()<.5?'70,62,54':'200,192,180')+','+(.2+rng()*.4).toFixed(2)+')';g.lineWidth=1+rng()*2;
+  g.beginPath();g.moveTo(-4,y);g.lineTo(w+4,y+rr(-5,5));g.stroke();}});
+// red sandstone: horizontal strata of differing lightness, grain, the odd dark seam
+SEDESERT.ROCKTEX=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
+ for(let y=0;y<h;y++){const band=.94+.12*fbm(0,y/14,3.3,2)+.05*Math.sin(y*.35);
+  for(let x=0;x<w;x++){const i=(y*w+x)*4,v=(120+(fbm(x/22,y/22,3.3,3)-.5)*60+(fbm(x/4,y/4,9,1)-.5)*24)*band;d[i]=clamp(v*1.06,0,255);d[i+1]=clamp(v*.94,0,255);d[i+2]=clamp(v*.86,0,255);d[i+3]=255;}}
+ g.putImageData(id,0,0);
+ for(let k=0;k<6;k++){const y=rng()*h;g.fillStyle='rgba(50,30,20,.35)';g.fillRect(0,y,w,rr(1,3));}});
+
+// ---------------------------------------------------------------- geometries local to this biome
+const G={};
+// a TUFT: three crossed vertical quads, origin at the base, up to y=1 (grass, needles, reeds, spires)
+G.tuft=function(){const pos=[],uv=[],nor=[];
+ for(let k=0;k<3;k++){const a=k/3*Math.PI+.2,ca=Math.cos(a),sa=Math.sin(a);
+  const P=[[-.5,0],[.5,0],[.5,1],[-.5,1]].map(q=>[ca*q[0],q[1],sa*q[0],q[0]+.5,1-q[1]]);
+  [0,1,2,0,2,3].forEach(i=>{pos.push(P[i][0],P[i][1],P[i][2]);uv.push(P[i][3],P[i][4]);nor.push(-sa,0,ca);});}
+ return BIO.geo._make(pos,nor,uv);};
+// a ROSETTE (agave / puya): three tiers of stiff pointed leaves, vertex-coloured
+// pale at the base and full-colour at the tip, unit radius, origin at the ground
+G.agave=function(){const pos=[],nor=[],uv=[],col=[];
+ const tiers=[[10,1.0,.35,.34],[8,.72,.62,.3],[6,.44,.95,.24]];
+ tiers.forEach((tr,ti)=>{const n=tr[0],R=tr[1],el=tr[2],wd=tr[3];const a0=ti*.27;
+  for(let k=0;k<n;k++){const a=a0+k/n*TAU,ca=Math.cos(a),sa=Math.sin(a),px=-sa,pz=ca;
+   const tip=[ca*R*Math.cos(el),Math.sin(el)*R+.05,sa*R*Math.cos(el)],mid=[ca*R*.5*Math.cos(el*.7),Math.sin(el*.7)*R*.5+.04,sa*R*.5*Math.cos(el*.7)],base=[ca*.06,.02,sa*.06];
+   const W=wd*R;
+   const q=[[base[0]-px*W*.3,base[1],base[2]-pz*W*.3],[base[0]+px*W*.3,base[1],base[2]+pz*W*.3],[mid[0]+px*W*.5,mid[1],mid[2]+pz*W*.5],[mid[0]-px*W*.5,mid[1],mid[2]-pz*W*.5],tip];
+   const nrm=[-Math.sin(el)*ca,Math.cos(el),-Math.sin(el)*sa];
+   const push=(p,c)=>{pos.push(p[0],p[1],p[2]);nor.push(nrm[0],nrm[1],nrm[2]);uv.push(0,0);col.push(c,c,c);};
+   push(q[0],.6);push(q[1],.6);push(q[2],.9);push(q[0],.6);push(q[2],.9);push(q[3],.9);
+   push(q[3],.9);push(q[2],.9);push(q[4],1.0);}});
+ return BIO.geo._make(pos,nor,uv,col);};
+// a ribbed succulent COLUMN: unit height (y 0..1), radius .5, domed top, vertex-coloured (ridges light, grooves dark)
+G.column=function(){const pos=[],nor=[],uv=[],col=[];const seg=8,prof=[[0,.5],[.55,.49],[.86,.42],[1.0,.22]];
+ const ring=(i)=>{const r=[];for(let s=0;s<seg;s++){const a=s/seg*TAU,rib=s%2?1:.84;r.push([Math.cos(a)*prof[i][1]*rib,prof[i][0],Math.sin(a)*prof[i][1]*rib,s%2?1:.78]);}return r;};
+ const R=prof.map((p,i)=>ring(i));
+ const push=(p,n)=>{pos.push(p[0],p[1],p[2]);nor.push(n[0],n[1],n[2]);uv.push(0,0);col.push(p[3],p[3],p[3]);};
+ for(let i=0;i<prof.length-1;i++)for(let s=0;s<seg;s++){const a=R[i][s],b=R[i][(s+1)%seg],c=R[i+1][s],d=R[i+1][(s+1)%seg];
+  const na=[a[0],.15,a[2]],nb=[b[0],.15,b[2]],nc=[c[0],.3,c[2]],nd=[d[0],.3,d[2]];
+  push(a,na);push(d,nd);push(c,nc);push(a,na);push(b,nb);push(d,nd);}
+ const top=[0,1.05,0,1];for(let s=0;s<seg;s++){const a=R[prof.length-1][s],b=R[prof.length-1][(s+1)%seg];push(a,[0,1,0]);push(b,[0,1,0]);push(top,[0,1,0]);}
+ return BIO.geo._make(pos,nor,uv,col);};
+// a TWIST-CANDLE: a tapered, three-lobed column twisting as it rises, unit height, vertex-coloured pale at the base
+G.candle=function(){const pos=[],nor=[],uv=[],col=[];const seg=9,nr=8;const P=[];
+ for(let i=0;i<=nr;i++){const t=i/nr,r=.5*Math.pow(1-.72*t,.7)*(i===nr?.2:1),row=[];for(let s=0;s<seg;s++){const a=s/seg*TAU,rr2=r*(1+.28*Math.cos(3*a+t*3.6));row.push([Math.cos(a)*rr2,t,Math.sin(a)*rr2,lerp(.66,1,t)]);}P.push(row);}
+ const push=(p)=>{const l=Math.hypot(p[0],p[2])||1;pos.push(p[0],p[1],p[2]);nor.push(p[0]/l*.9,.3,p[2]/l*.9);uv.push(0,0);col.push(p[3],p[3],p[3]);};
+ for(let i=0;i<nr;i++)for(let s=0;s<seg;s++){const a=P[i][s],b=P[i][(s+1)%seg],c=P[i+1][s],d=P[i+1][(s+1)%seg];push(a);push(d);push(c);push(a);push(b);push(d);}
+ const top=[0,1.04,0,1];for(let s=0;s<seg;s++){push(P[nr][s]);push(P[nr][(s+1)%seg]);push(top);}
+ return BIO.geo._make(pos,nor,uv,col);};
+// a HOODOO: a mushroom pillar of sandstone, unit height, origin at the base
+G.hoodoo=function(){const pos=[],nor=[],uv=[];const seg=8,prof=[[0,.55],[.15,.4],[.45,.33],[.72,.34],[.78,.5],[.92,.46],[1.0,.06]];
+ const R=prof.map(p=>{const r=[];for(let s=0;s<seg;s++){const a=s/seg*TAU+.2,w=1+.12*Math.sin(3*a)+.06*Math.sin(5*a+1);r.push([Math.cos(a)*p[1]*w,p[0],Math.sin(a)*p[1]*w]);}return r;});
+ const push=(p,n)=>{pos.push(p[0],p[1],p[2]);nor.push(n[0],n[1],n[2]);uv.push(Math.atan2(p[2],p[0])/TAU*3,p[1]*4);};
+ for(let i=0;i<prof.length-1;i++)for(let s=0;s<seg;s++){const a=R[i][s],b=R[i][(s+1)%seg],c=R[i+1][s],d=R[i+1][(s+1)%seg];
+  const nn=p=>{const l=Math.hypot(p[0],p[2])||1;return[p[0]/l,.1,p[2]/l];};
+  push(a,nn(a));push(d,nn(d));push(c,nn(c));push(a,nn(a));push(b,nn(b));push(d,nn(d));}
+ return BIO.geo._make(pos,nor,uv);};
+// a CONE on its base, origin at the base (spikes' bases, cholla joints)
+G.cone=function(){const g=new T3.ConeGeometry(.5,1,7,1);g.translate(0,.5,0);return g;};
+// a BARREL: a squat ribbed sphere, origin at the base
+G.barrel=function(){const g=new T3.SphereGeometry(.5,10,6);g.scale(1,.85,1);g.translate(0,.42,0);const p=g.attributes.position;
+ for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i),a=Math.atan2(z,x),k=1+.08*Math.cos(a*8);p.setX(i,x*k);p.setZ(i,z*k);}g.computeVertexNormals();return g;};
+SEDESERT.G=G;
+
+// ---------------------------------------------------------------- materials
+SEDESERT.MAT={
+ bark:SEDESERT.BARKTEX.map(t=>BIO.barkMat(t)),
+ wood:BIO.barkMat(SEDESERT.WOODTEX),
+ rock:BIO.barkMat(SEDESERT.ROCKTEX),
+ strap:BIO.leafMat(TX.strap,'strap',{aN:true,swayW:'1.0',swayA:.05}),
+ aloe:BIO.leafMat(TX.aloe,'aloe',{aN:true,swayW:'1.0',swayA:.03}),
+ feather:BIO.leafMat(TX.feather,'feather',{aN:true,swayW:'1.0',swayA:.12}),
+ small:BIO.leafMat(TX.small,'small',{aN:true,swayW:'1.0',swayA:.06}),
+ paddle:BIO.leafMat(TX.paddle,'paddle',{aN:true,swayW:'1.0',swayA:.0}),
+ palmfrond:BIO.leafMat(TX.palmfrond,'palmfrond',{swayW:'(position.x)',swayA:.09}),
+ bristle:BIO.leafMat(TX.bristle,'bristle',{swayW:'(position.x)',swayA:.04}),
+ needle:BIO.leafMat(TX.needle,'needle',{swayW:'(position.y)',swayA:.05,alphaTest:.4}),
+ grass:BIO.leafMat(TX.grass,'grass',{swayW:'(position.y)',swayA:.12,alphaTest:.4}),
+ reed:BIO.leafMat(TX.reed,'reed',{swayW:'(position.y)',swayA:.11,alphaTest:.4}),
+ spire:BIO.leafMat(TX.spire,'spire',{swayW:'(position.y)',swayA:.04,alphaTest:.42}),
+ plume:BIO.leafMat(TX.plume,'plume',{swayW:'1.0',swayA:.06,alphaTest:.4}),
+ bloom:BIO.leafMat(TX.bloom,'bloom',{swayW:'1.0',swayA:.05,alphaTest:.4}),
+ pods:BIO.leafMat(TX.pods,'pods',{swayW:'(-position.y)',swayA:.10,axis:1,alphaTest:.4}),
+ hang:BIO.leafMat(TX.small,'hang',{swayW:'(-position.y)',swayA:.05,axis:1}),
+ lichen:BIO.leafMat(TX.lichen,'lichen',{swayW:'0.0',swayA:0,alphaTest:.3}),
+ agave:BIO.leafMat(null,'agave',{swayW:'0.0',swayA:0,alphaTest:0,vertexColors:true}),
+ column:BIO.leafMat(null,'column',{swayW:'0.0',swayA:0,alphaTest:0,vertexColors:true}),
+ candle:BIO.leafMat(null,'candle',{swayW:'0.0',swayA:0,alphaTest:0,vertexColors:true}),
+ solid:BIO.solidMat(null,0xffffff),
+};
+const M=SEDESERT.MAT;
+['Dragon-tree bark','Fibrous bark','Pale peeling bark','Furrowed bark','Succulent stems'].forEach((lab,i)=>BIO.bucket('bark'+i,M.bark[i],{label:lab,uvScale:[i===4?3:4,6]}));
+BIO.bucket('wood',M.wood,{label:'Dead wood',uvScale:[3,4]});
+BIO.bucket('rock',M.rock,{label:'Rock',uvScale:[8,8]});
+BIO.bucket('far',BIO.barkMat(null),{label:'Far trees (impostors)'});
+
+// ---------------------------------------------------------------- instanced items
+BIO.def('strap',BIO.geo.clump(),M.strap,{attrs:['aN'],label:'Dragon-tree tufts'});
+BIO.def('dagger',BIO.geo.clump(),M.strap,{attrs:['aN'],label:'Joshua-tree daggers'});
+BIO.def('aloe',BIO.geo.clump(),M.aloe,{attrs:['aN'],label:'Quiver-tree rosettes'});
+BIO.def('feather',BIO.geo.clump(),M.feather,{attrs:['aN'],label:'Mesquite foliage'});
+BIO.def('small',BIO.geo.clump(),M.small,{attrs:['aN'],label:'Scrub foliage'});
+BIO.def('paddle',BIO.geo.clump(),M.paddle,{attrs:['aN'],label:'Prickly-pear pads'});
+BIO.def('palmfrond',BIO.geo.frond(4),M.palmfrond,{label:'Palm fronds'});
+BIO.def('bristle',BIO.geo.frond(3),M.bristle,{label:'Boojum twigs'});
+BIO.def('needle',G.tuft(),M.needle,{label:'Spinifex'});
+BIO.def('grass',G.tuft(),M.grass,{label:'Dry grass'});
+BIO.def('reed',G.tuft(),M.reed,{label:'Reeds'});
+BIO.def('spire',G.tuft(),M.spire,{label:'Tower of jewels'});
+BIO.def('plume',BIO.geo.clump(),M.plume,{attrs:['aN'],label:'Flower plumes'});
+BIO.def('bloom',BIO.geo.bloom(),M.bloom,{label:'Blooms'});
+BIO.def('pods',BIO.geo.ribbon(3,.7,.08),M.pods,{label:'Mesquite pods'});
+BIO.def('strand',BIO.geo.ribbon(2,.4,.05),M.hang,{label:'Hanging growth'});
+BIO.def('lichen',BIO.geo.mat(),M.lichen,{label:'Lichen'});
+BIO.def('lobe',BIO.geo.lobe(),M.solid,{label:'Bush lobes'});
+BIO.def('agave',G.agave(),M.agave,{label:'Agave rosettes'});
+BIO.def('column',G.column(),M.column,{label:'Succulent columns'});
+BIO.def('candle',G.candle(),M.candle,{label:'Twist-candles'});
+BIO.def('barrel',G.barrel(),M.solid,{label:'Barrel cacti'});
+BIO.def('cone',G.cone(),M.solid,{label:'Cones and joints'});
+BIO.def('rod',BIO.geo.rod(7),M.solid,{label:'Stems'});
+BIO.def('trunk',BIO.geo.trunk(8),BIO.solidMat(SEDESERT.BARKTEX[1]),{label:'Small trunks (fibrous)'});
+BIO.def('trunk2',BIO.geo.trunk(8),BIO.solidMat(SEDESERT.BARKTEX[2]),{label:'Small trunks (pale)'});
+BIO.def('hoodoo',G.hoodoo(),BIO.solidMat(SEDESERT.ROCKTEX),{label:'Hoodoos'});
+BIO.def('boulder',new T3.IcosahedronGeometry(1,1),BIO.solidMat(SEDESERT.ROCKTEX),{label:'Boulders'});
+BIO.def('stone',new T3.IcosahedronGeometry(1,0),BIO.solidMat(SEDESERT.ROCKTEX),{label:'Stones'});
+})();
+
+// ==================== 55-biome-sedesert-trees.js
+// ================================================================= EASTERN HIGH DESERT — trees
+// The thirteen tree-scale species of the eastern high desert, each with its
+// own builder, placed by zone from the host's climate fields (wet / flow /
+// upland / canyon / rim / rock / dune / oasis / slope) and terrainH. The zone
+// weights are computed HERE from those fields, never from the host's map: a
+// world that binds the same fields gets the same zoning. Beyond the LOD spine
+// the big species become blob impostors in the 'far' bucket; the small ones
+// thin out with distance and stop. Every count scales with q; the core
+// charges BIO.cur.
+(function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm,qEuler,qFacing,qUp}=BIO.fn;
+const SP=SEDESERT.SPECIES,PAL=SEDESERT.PAL,GOLD=2.399963;
+const T3=BIO.host.THREE,C=SEDESERT.C;
+SEDESERT.TREES=[];
+
+// ---------------------------------------------------------------- zones from the fields
+// Each weight 0..1. A plant's aridity tag is honoured by which weight it reads:
+// 'arid' species read scrub / bad / mtn (dry ground only), 'humid' ones bank /
+// oasis, 'semiarid' the rim and the benches as well as the floor.
+const Y=(x,z)=>BIO.terrainH(x,z);
+function zones(x,z){const F=n=>BIO.field(n,x,z);
+ const wet=F('wet'),flow=F('flow'),up=F('upland'),can=F('canyon'),rim=F('rim'),rock=F('rock'),dune=F('dune'),oasis=F('oasis'),slope=F('slope'),ab=F('abyss');
+ const open=(1-can)*(1-dune)*(1-ab),gentle=smooth(.55,.25,slope);
+ return{wet,flow,up,can,rim,rock,dune,oasis,slope,ab,
+  rip:can*smooth(.5,.85,wet)*gentle,                 // the canyon floor
+  bank:can*flow*gentle,                              // its banks
+  bench:smooth(.15,.45,can)*smooth(.95,.7,can),      // the walls' benches
+  oasis:oasis*(1-can),
+  scrub:open*(1-rock*.75)*smooth(.55,.1,up)*(1-oasis*.6)*gentle,
+  bad:open*rock*smooth(.6,.2,up),
+  mtn:open*smooth(.06,.3,up)*smooth(.95,.6,up),
+  desert:dune};}
+SEDESERT.zones=zones;
+// the scrub's stands: which of the three big succulents dominates here (0 candelabra, 1 cardon, 2 Joshua tree)
+SEDESERT.standOf=(x,z)=>BIO.standAt(x,z,3,.0022,71);
+
+// ---------------------------------------------------------------- colour (the maths is the core's, BIO.col)
+const {shade,bright,vary,texMean,tint}=BIO.col;
+let MEAN=null;
+function means(){if(MEAN)return MEAN;MEAN={bark:SEDESERT.BARKTEX.map(t=>texMean(t)),wood:texMean(SEDESERT.WOODTEX),rock:texMean(SEDESERT.ROCKTEX)};return MEAN;}
+Object.assign(SEDESERT,{means,tint,bright,shade,vary});
+// a species' bark colour on its texture: 39 distinct answers over 130k calls, so memoised
+const BARKC={};
+const barkCol=(S,k)=>{const key=S.key+(k%S.bark.length);return BARKC[key]||(BARKC[key]=tint(S.bark[k%S.bark.length],means().bark[S.barkK]));};
+// an untextured rod / lobe in a species' bark colour: the designer's colour, a shade down
+const rodCol=(S,k)=>shade(C(S.bark[k%S.bark.length]),-.25);
+// a leaf colour from a palette: a jittered pick, brightened (the floor and the dressing use it too)
+const leafCol=(set,k,dh,ds,dl)=>bright(vary(pick(set),dh==null?.05:dh,ds==null?.14:ds,dl==null?.07:dl),k==null?1.3:k);
+SEDESERT.leafCol=leafCol;
+const compCol=()=>bright(vary(pick(PAL.comp),.03,.10,.06),1.15);
+
+// ---------------------------------------------------------------- polyline helpers (Girder's)
+function treeGrow(o,d,len,r0,r1,n,curve,wig){let sx=-d[2],sz=d[0];const sl=Math.hypot(sx,sz)||1;sx/=sl;sz/=sl;
+ const w1=rr(-1,1)*wig,w2=rr(-1,1)*wig,pts=[];
+ for(let k=0;k<=n;k++){const t=k/n,w=(w1*Math.sin(t*Math.PI)+w2*Math.sin(t*TAU))*len;
+  pts.push({x:o.x+d[0]*len*t+sx*w,y:o.y+d[1]*len*t+curve*len*t*t,z:o.z+d[2]*len*t+sz*w,r:mix(r0,r1,Math.pow(t,.8))});}
+ return pts;}
+const clear3=(x,y,z,rad,vr)=>BIO.clearOf3(x,y,z,rad,vr);
+
+// ---------------------------------------------------------------- keep-clear between trees
+const HC=120,HASH={};
+function hkey(x,z){return Math.floor(x/HC)+','+Math.floor(z/HC);}
+function hadd(o){const R=o.r+30;for(let z=Math.floor((o.z-R)/HC);z<=Math.floor((o.z+R)/HC);z++)for(let x=Math.floor((o.x-R)/HC);x<=Math.floor((o.x+R)/HC);x++){const k=x+','+z;(HASH[k]||(HASH[k]=[])).push(o);}}
+function blocked(x,z,pad){const L=HASH[hkey(x,z)];if(!L)return false;for(let i=0;i<L.length;i++){const o=L[i];if(Math.hypot(x-o.x,z-o.z)<o.r+pad)return true;}return false;}
+SEDESERT.blocked=blocked;
+
+// ---------------------------------------------------------------- foliage helpers
+function clumpAt(item,x,y,z,size,flat,col,cx,cy,cz,ex,ey){
+ const dx=(x-cx)/ex,dy=(y-cy)/ey,dz=(z-cz)/ex,qq=Math.hypot(dx,dy,dz);
+ const ao=mix(.55,1,smooth(.3,.95,qq))*mix(.82,1,smooth(-.6,.35,dy))*rr(.9,1.1);
+ const nx=dx*.9+rr(-.3,.3),ny=dy*.7+.75+rr(-.15,.2),nz=dz*.9+rr(-.3,.3),nn=Math.hypot(nx,ny,nz)||1;
+ BIO.put(item,[x,y,z],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),[size,size*flat,size],bright(col,ao),{n:[nx/nn,ny/nn,nz/nn]});}
+function frondAt(item,x,y,z,a,L,pitch,col,wid){BIO.put(item,[x,y,z],qEuler(rr(-.1,.1),-a,pitch),[L,L*rr(.85,1.05),L*(wid||rr(1.1,1.4))],col);}
+function frondCrown(item,x,y,z,Rf,n,p0,p1,col,wid){const a0=rr(0,TAU);for(let k=0;k<n;k++){const a=a0+k/n*TAU+rr(-.2,.2);frondAt(item,x,y,z,a,Rf*rr(.85,1.1),rr(p0,p1),bright(col,rr(.88,1.1)),wid);}}
+// a SCATTER OF BLOOMS in a disc of radius r: one colour per head, every fourth bloom
+// shaded (the tree heads); o.flat lays them on the ground with no shading (the floor)
+function blooms(x,y,z,r,n,set,sz,o){o=o||{};const c=bright(vary(pick(set||PAL.comp),.03,.1,.08),1.15),tl=o.tilt==null?.5:o.tilt;
+ for(let i=0;i<n;i++){const a=rr(0,TAU),d=r*Math.sqrt(rng()),s=sz?rr(sz[0],sz[1]):rr(o.s0==null?.3:o.s0,o.s1==null?.55:o.s1);
+  BIO.put('bloom',[x+Math.cos(a)*d,y+(o.flat?rr(0,.4):rr(-.3,.4)*r),z+Math.sin(a)*d],qEuler(rr(-tl,tl),rr(0,TAU),rr(-tl,tl)),s,(o.flat||i%4)?c:shade(c,rr(-.1,.2)));}}
+const bloomsAt=blooms;SEDESERT.blooms=blooms;
+// the volume the world's inspector names a tree by
+const regTree=(T,S,r,h)=>BIO.register({name:S.name,x:T.x,z:T.z,y:T.y0,r:r,h:h});
+
+// ---------------------------------------------------------------- the builders
+// Each: (T, st, lv) where T={x,z,y0,sp,H,rb,crownR,seed} and lv 2 near / 1 mid / 0 far
+const B=[];
+// a DICHOTOMOUS TREE: a bole, then forks that each split in two, a tuft at every tip
+// (the dragon tree's umbrella, the quiver tree's dome, the Joshua tree's gnarl). cfg:
+// fam bucket, item tuft item, boleU fraction of H for the bole, el0 first fork
+// elevation, spread the opening angle per level, tuftK tuft size vs crownR, flat
+function forkTree(T,st,lv,cfg){const S=SP[T.sp],fam=cfg.fam,H=T.H,rb=T.rb,ti=T.seed%3;
+ const boleH=H*cfg.boleU,rAt=u=>rb*(1-.35*u)*(1+.5*Math.exp(-u*boleH/2.5));
+ const rings=[],vs=5,lean=rr(0,cfg.lean||.04),la=rr(0,TAU);
+ for(let yy=0;yy<boleH;yy+=vs*.5){const u=yy/boleH;rings.push({x:T.x+Math.cos(la)*lean*yy,y:T.y0+yy,z:T.z+Math.sin(la)*lean*yy,r:rAt(u),yy:yy,col:barkCol(S,(Math.floor(yy/6)+ti)%S.bark.length)});}
+ const top={x:T.x+Math.cos(la)*lean*boleH,y:T.y0+boleH,z:T.z+Math.sin(la)*lean*boleH};
+ rings.push({x:top.x,y:top.y,z:top.z,r:rAt(1),yy:boleH,col:barkCol(S,1)},{x:top.x,y:top.y+rAt(1)*.8,z:top.z,r:.05,yy:boleH+1,col:barkCol(S,1)});   // closed with a dome, never an open pipe
+ const ph=rr(0,TAU);
+ st.trunk+=BIO.lathe(fam,rings,lv===2?10:7,Math.max(1,Math.round(TAU*rb/3)),vs,(R,ang)=>R.r*(1+(cfg.flute||.03)*Math.sin(4*ang+R.yy*.1+ph)),null);
+ const spots=[],NL=lv===2?S.forks:Math.max(2,S.forks-2);   // a mid-range tree forks two levels less and wears bigger tufts
+ function fork(o,d,lvl,r0){const len=H*S.forkLen[lvl]*rr(.85,1.15)*(lv===2?1:1.25),pts=treeGrow(o,d,len,r0,Math.max(.08,r0*.55),3,cfg.curve==null?.06:cfg.curve,cfg.wig==null?.06:cfg.wig);
+  for(let i=1;i<pts.length;i++)if(!clear3(pts[i].x,pts[i].y,pts[i].z,pts[i].r+1.5,pts[i].r+1.5))return;
+  st.limb+=BIO.tube(fam,pts,barkCol(S,2),{seg:r0>.5?6:lvl>2?3:4,cap:lvl===NL-1});st.forks++;
+  const e=pts[pts.length-1];
+  if(lvl<NL-1){const sx=-d[2],sz=d[0],sl=Math.hypot(sx,sz)||1,side=[sx/sl,0,sz/sl],spread=cfg.spread*rr(.8,1.2),tw=rr(0,TAU);
+   for(let k=-1;k<=1;k+=2){const dd=[d[0]*Math.cos(spread)+side[0]*Math.sin(spread)*k+Math.cos(tw)*.12,d[1]*Math.cos(spread)+(cfg.rise==null?.12:cfg.rise),d[2]*Math.cos(spread)+side[2]*Math.sin(spread)*k+Math.sin(tw)*.12],l=Math.hypot(dd[0],dd[1],dd[2]);
+    fork({x:e.x,y:e.y,z:e.z},[dd[0]/l,dd[1]/l,dd[2]/l],lvl+1,Math.max(.08,r0*.62));}}
+  else spots.push({p:e,s:len*.3});}
+ const a0=rr(0,TAU),nTop=cfg.nTop||2;
+ for(let k=0;k<nTop;k++){const a=a0+k/nTop*TAU+rr(-.3,.3),el=cfg.el0*rr(.85,1.15);fork(top,[Math.cos(a)*Math.cos(el),Math.sin(el),Math.sin(a)*Math.cos(el)],0,rAt(1)*.75);}
+ if(!spots.length)spots.push({p:top,s:2},{p:{x:top.x,y:top.y+1,z:top.z},s:1.5});   // hemmed in by an obstacle: a tuft on the pole at least
+ // a FILLED crown (the dragon tree): tufts between the tips too, so the umbrella closes
+ if(cfg.fill&&lv===2&&spots.length>3){const n=Math.round(spots.length*cfg.fill);for(let i=0;i<n;i++){const a=pick(spots),b=pick(spots);if(a===b)continue;
+  spots.push({p:{x:(a.p.x+b.p.x)/2,y:(a.p.y+b.p.y)/2+rr(-.3,.3),z:(a.p.z+b.p.z)/2},s:(a.s+b.s)/2,fill:true});}}
+ const cy=T.y0+H*.9,ex=T.crownR,ey=H*.25,sz0=T.crownR*cfg.tuftK*(lv===2?1:1.6),nC=lv===2?cfg.nC:Math.max(1,Math.round(cfg.nC*.5));let mine=0;
+ spots.forEach(s=>{for(let c=0;c<nC;c++){const a=rr(0,TAU),d=s.s*.5*Math.sqrt(rng()),x=s.p.x+Math.cos(a)*d,z=s.p.z+Math.sin(a)*d,y=s.p.y+rr(0,.6)*s.s;
+  if(!clear3(x,y,z,sz0*.5,sz0*.4))continue;clumpAt(cfg.item,x,y,z,sz0*rr(.85,1.2),cfg.flat,C(pick(S.leaf)),T.x,cy,T.z,ex,ey);st.clumps++;mine++;}
+  if(cfg.skirt&&lv===2&&!s.fill&&rng()<.7){BIO.put('strand',[s.p.x,s.p.y-.1,s.p.z],qEuler(0,rr(0,TAU),0),[sz0*.6,sz0*rr(.5,.9),1],bright(vary(0x8a7a5a,.02,.08,.06),1.1));}   // last year's dead leaves under the tuft
+  if(cfg.bloom&&lv===2&&rng()<cfg.bloom){BIO.put('plume',[s.p.x,s.p.y+sz0*.5,s.p.z],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),sz0*rr(.5,.8),bright(vary(pick(cfg.bloomCol),.02,.1,.06),1.2),{n:[0,1,0]});}});
+ if(!mine){clumpAt(cfg.item,top.x,top.y+1,top.z,sz0,cfg.flat,C(pick(S.leaf)),T.x,cy,T.z,ex,ey);st.clumps++;}
+ let spread=T.crownR*.6,topY=top.y+2;spots.forEach(s=>{spread=Math.max(spread,Math.hypot(s.p.x-T.x,s.p.z-T.z)+s.s);topY=Math.max(topY,s.p.y+s.s+sz0);});
+ // registered by the crown's real reach (the forks rise past H), or the probe finds an empty volume
+ regTree(T,S,spread,topY-T.y0);}
+// 0 the dragon tree: a straight pale bole, an umbrella of forks, dense stiff tufts, red resin on the bark
+B[0]=function(T,st,lv){forkTree(T,st,lv,{fam:'bark0',item:'strap',boleU:.42,el0:1.1,spread:.48,rise:.12,curve:.08,wig:.04,tuftK:.3,flat:.6,nC:2,nTop:ri(3,5),fill:.5,flute:.05});
+ if(lv===2){const S=SP[0];for(let k=0,m=ri(2,5);k<m;k++){const a=rr(0,TAU),yy=rr(.5,T.H*.45);BIO.put('lichen',[T.x+Math.cos(a)*(T.rb*1.02),T.y0+yy,T.z+Math.sin(a)*(T.rb*1.02)],qUp([Math.cos(a),0,Math.sin(a)]),rr(.3,.7),bright(C(S.resin),1.3));}}};   // resin bleeds
+// 5 the quiver tree: a gold peeling bole, a dome of forks, fat aloe rosettes
+B[5]=function(T,st,lv){forkTree(T,st,lv,{fam:'bark2',item:'aloe',boleU:.55,el0:1.15,spread:.5,rise:.15,curve:.04,wig:.05,tuftK:.34,flat:.65,nC:2,nTop:2,bloom:.35,bloomCol:PAL.spike});};
+// 11 the Joshua tree: a shaggy bole, a few gnarled forks, dagger tufts each over a skirt of dead leaves
+B[11]=function(T,st,lv){forkTree(T,st,lv,{fam:'bark1',item:'dagger',boleU:.4,el0:.9,spread:.7,rise:.05,curve:.12,wig:.16,tuftK:.4,flat:.8,nC:2,nTop:ri(1,3),skirt:true,lean:.08,bloom:.2,bloomCol:[0xf0e8c0,0xe8e0b8]});};
+// a SUCCULENT COLUMN TREE: a trunk, thick arms, and columns rising from the arms
+// in a dome (the giant candelabra) or a vase (the cardon)
+function columnTree(T,st,lv,cfg){const S=SP[T.sp],fam=cfg.fam,H=T.H,rb=T.rb,ti=T.seed%3;
+ const trH=H*cfg.trunkU,rAt=u=>rb*(1-.25*u)*(1+.6*Math.exp(-u*trH/2.5));
+ const rings=[],vs=6;for(let yy=0;yy<trH;yy+=vs*.5)rings.push({x:T.x,y:T.y0+yy,z:T.z,r:rAt(yy/trH),yy:yy,col:barkCol(S,(Math.floor(yy/5)+ti)%S.bark.length)});
+ rings.push({x:T.x,y:T.y0+trH,z:T.z,r:rAt(1),yy:trH,col:barkCol(S,1)},{x:T.x,y:T.y0+trH+rAt(1)*.6,z:T.z,r:.05,yy:trH+1,col:barkCol(S,1)});
+ st.trunk+=BIO.lathe(fam,rings,lv===2?10:7,Math.max(1,Math.round(TAU*rb/3)),vs,(R,ang)=>R.r*(1+cfg.flute*Math.sin(cfg.nrib*ang)),null);
+ // the arms
+ const nA=lv===2?ri(cfg.arms[0],cfg.arms[1]):ri(3,4),a0=rr(0,TAU),spots=[];const hc=C(pick(S.leaf));
+ for(let k=0;k<nA;k++){const a=a0+k*GOLD+rr(-.3,.3),el=cfg.armEl*rr(.8,1.2),len=T.crownR*cfg.armK*rr(.8,1.1),r0=rAt(1)*rr(.45,.6);
+  const o={x:T.x+Math.cos(a)*rAt(1)*.5,y:T.y0+trH*rr(.8,1),z:T.z+Math.sin(a)*rAt(1)*.5},pts=treeGrow(o,[Math.cos(a)*Math.cos(el),Math.sin(el),Math.sin(a)*Math.cos(el)],len,r0,r0*.55,4,cfg.armCurve,.05);
+  let ok=true;for(let i=1;i<pts.length;i++)if(!clear3(pts[i].x,pts[i].y,pts[i].z,pts[i].r+2,pts[i].r+2)){ok=false;break;}if(!ok)continue;
+  st.limb+=BIO.tube(fam,pts,barkCol(S,2),{seg:r0>.8?6:4,cap:true});
+  for(let s=1;s<=4;s++){const p=pts[s],u=s/4;spots.push({p:p,r:p.r,u:Math.hypot(p.x-T.x,p.z-T.z)/T.crownR,along:u});}}
+ spots.push({p:{x:T.x,y:T.y0+trH,z:T.z,r:rAt(1)*.6},r:rAt(1)*.6,u:0,along:1});
+ // the columns: from every arm point a cluster rises; height by the dome / vase shape
+ const nCol=lv===2?ri(S.cols[0],S.cols[1]):Math.round(S.cols[0]*.45);let placed=0;
+ const dome=u=>cfg.vase?mix(.55,1,smooth(0,1,u)):mix(1,.35,u*u);
+ const topY=T.y0+H;
+ for(let i=0;i<nCol&&spots.length;i++){const s=spots[i%spots.length],a=rr(0,TAU),d=Math.max(.3,s.r)*rr(.4,1.6)+(i%3?0:rr(0,1.5));
+  const x=s.p.x+Math.cos(a)*d,z=s.p.z+Math.sin(a)*d,u=clamp(Math.hypot(x-T.x,z-T.z)/T.crownR,0,1.2);
+  const h=(topY-s.p.y)*dome(u)*rr(.7,1.05),w=cfg.colW*rb*rr(.8,1.25);if(h<1.5)continue;
+  const tilt=(cfg.vase?.14:.06)*u*rr(.5,1.4),ta=Math.atan2(z-T.z,x-T.x);
+  if(!clear3(x,s.p.y+h*.5,z,w,h*.5))continue;
+  BIO.put('column',[x,s.p.y-.3,z],qEuler(Math.sin(ta)*tilt,rr(0,TAU),-Math.cos(ta)*tilt),[w,h+.3,w],bright(vary(i%5?hc:C(pick(S.leaf)),.02,.06,.05),rr(.9,1.08)));placed++;
+  if(lv===2&&rng()<cfg.sideK){const hh=h*rr(.25,.5),yy=s.p.y+h*rr(.3,.7),aa=rr(0,TAU);BIO.put('column',[x+Math.cos(aa)*w*.7,yy,z+Math.sin(aa)*w*.7],qEuler(Math.sin(aa)*.5,0,-Math.cos(aa)*.5),[w*.6,hh,w*.6],bright(vary(hc,.02,.06,.05),1.0));placed++;}
+  if(lv===2&&cfg.bloom&&rng()<.12)bloomsAt(x,s.p.y+h+.3,z,w*.8,ri(2,5),cfg.bloom,[.25,.45]);}
+ if(!placed){BIO.put('column',[T.x,T.y0+trH-.3,T.z],qEuler(0,0,0),[cfg.colW*rb,H-trH,cfg.colW*rb],bright(hc,1.0));placed++;}
+ st.cols+=placed;regTree(T,S,T.crownR,T.H);}
+// 1 the giant candelabra: a ribbed green trunk, arms, and a dome of hundreds of ribbed columns
+B[1]=function(T,st,lv){columnTree(T,st,lv,{fam:'bark4',trunkU:.22,flute:.08,nrib:9,arms:[6,10],armEl:.55,armK:.75,armCurve:.28,colW:.62,vase:false,sideK:.35,bloom:null});};
+// 2 the cardon: a woody furrowed trunk, arms fanning out, a vase of thick blue-grey columns
+B[2]=function(T,st,lv){columnTree(T,st,lv,{fam:'bark3',trunkU:.28,flute:.05,nrib:6,arms:[4,7],armEl:.45,armK:.8,armCurve:.35,colW:.8,vase:true,sideK:.5,bloom:[0xf4ecd8,0xf8f0e0]});};
+// 3 the bottle tree: a swollen spiny bottle, a few stubby branches with strap tufts and pink blooms
+B[3]=function(T,st,lv){const S=SP[T.sp],fam='bark2',H=T.H,rb=T.rb,ti=T.seed%3,bH=H*.68;
+ const rAt=u=>rb*(.9+.75*Math.pow(Math.sin(clamp(u*1.15,0,1)*Math.PI),.7)*(1-u*.4))*(u>.92?mix(1,.35,(u-.92)/.08):1);
+ const rings=[],vs=4;for(let yy=0;yy<=bH;yy+=vs*.4){const u=yy/bH;rings.push({x:T.x,y:T.y0+yy,z:T.z,r:Math.max(.12,rAt(u)),yy:yy,col:barkCol(S,(Math.floor(yy/4)+ti)%3)});}
+ rings.push({x:T.x,y:T.y0+bH+.4,z:T.z,r:.05,yy:bH+.5,col:barkCol(S,1)});
+ const ph=rr(0,TAU);st.trunk+=BIO.lathe(fam,rings,lv===2?12:8,Math.max(1,Math.round(TAU*rb/2.5)),vs,(R,ang)=>R.r*(1+.04*Math.sin(7*ang+ph)+.02*Math.sin(13*ang+R.yy)),null);
+ const spots=[],nB=ri(2,4),a0=rr(0,TAU),top={x:T.x,y:T.y0+bH,z:T.z};
+ for(let k=0;k<nB;k++){const a=a0+k*GOLD,el=rr(.6,1.2),len=(H-bH)*rr(.8,1.2),pts=treeGrow({x:T.x+Math.cos(a)*rAt(.9)*.5,y:T.y0+bH*rr(.86,.98),z:T.z+Math.sin(a)*rAt(.9)*.5},[Math.cos(a)*Math.cos(el),Math.sin(el),Math.sin(a)*Math.cos(el)],len,rb*.28,.12,3,.05,.08);
+  st.limb+=BIO.tube(fam,pts,barkCol(S,2),{seg:5,cap:true});spots.push(pts[3],pts[2]);}
+ spots.push(top);
+ const cy=T.y0+H*.9,sz0=T.crownR*rr(.45,.6);
+ spots.forEach((p,i)=>{if(lv<2&&i%2)return;clumpAt('strap',p.x,p.y+sz0*.2,p.z,sz0*rr(.9,1.2),.5,C(pick(S.leaf)),T.x,cy,T.z,T.crownR,H*.3);st.clumps++;
+  if(rng()<.75)bloomsAt(p.x,p.y+sz0*.5,p.z,sz0*.6,lv===2?ri(5,12):3,PAL.comp,[.35,.6]);st.blooms++;});
+ regTree(T,S,T.crownR,T.H);};
+// 4 the boojum: a tapering pole, bristled all the way up, sometimes forking near the top, a yellow plume at every tip
+B[4]=function(T,st,lv){const S=SP[T.sp],fam='bark2',H=T.H,rb=T.rb,ti=T.seed%3,la=rr(0,TAU),bend=rr(0,.12);
+ const rAt=u=>rb*(1-.9*u)+.06;
+ const poleAt=u=>({x:T.x+Math.cos(la)*bend*H*u*u,y:T.y0+H*u,z:T.z+Math.sin(la)*bend*H*u*u});
+ const rings=[];for(let u=0;u<=1;u+=.06){const p=poleAt(u);rings.push({x:p.x,y:p.y,z:p.z,r:rAt(u),yy:u*H,col:barkCol(S,(Math.floor(u*8)+ti)%3)});}
+ const e=poleAt(1);rings.push({x:e.x,y:e.y+.4,z:e.z,r:.03,yy:H+.4,col:barkCol(S,1)});
+ st.trunk+=BIO.lathe(fam,rings,lv===2?8:6,2,6,(R,ang)=>R.r,null);
+ const tips=[e];
+ if(rng()<.55){const nF=ri(1,2);for(let k=0;k<nF;k++){const u0=rr(.5,.75),o=poleAt(u0),a=rr(0,TAU),el=rr(.9,1.25),len=H*(1-u0)*rr(.8,1.1);
+  const pts=treeGrow(o,[Math.cos(a)*Math.cos(el),Math.sin(el),Math.sin(a)*Math.cos(el)],len,rAt(u0)*.7,.06,3,.02,.05);st.limb+=BIO.tube(fam,pts,barkCol(S,1),{seg:5,cap:true});tips.push(pts[3]);}}
+ const hc=vary(pick(S.leaf),.02,.08,.05);
+ if(lv>=1){const step=lv===2?1.3:2.6;for(let yy=1.5;yy<H*.96;yy+=step){const u=yy/H,p=poleAt(u),n=lv===2?3:2;
+  for(let k=0;k<n;k++){const a=rr(0,TAU),L=rr(.8,1.6)*(1-.4*u);frondAt('bristle',p.x+Math.cos(a)*rAt(u),p.y,p.z+Math.sin(a)*rAt(u),a,L,rr(-.2,.3),bright(hc,rr(.9,1.1)),.9);}}}
+ tips.forEach(p=>{BIO.put('plume',[p.x,p.y+.5,p.z],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),rr(1.2,2.2),bright(vary(0xd8c040,.02,.1,.06),1.2),{n:[0,1,0]});st.blooms++;});
+ if(lv===2)regTree(T,S,T.crownR,T.H);};
+// 6 the mesquite: several dark stems leaning out from the base, feathery yellow-green foliage, pods hanging in season
+B[6]=function(T,st,lv){const S=SP[T.sp],fam='bark3',H=T.H,rb=T.rb,shrub=H<6.5;
+ const nS=shrub?ri(3,6):ri(2,4),a0=rr(0,TAU),spots=[],hc=C(pick(S.leaf));
+ for(let k=0;k<nS;k++){const a=a0+k/nS*TAU+rr(-.4,.4),el=shrub?rr(.5,1.0):rr(.8,1.25),len=H*rr(.55,.8),r0=rb*rr(.6,1)*(shrub?.5:1);
+  const pts=treeGrow({x:T.x+Math.cos(a)*rb*.4,y:T.y0-.3,z:T.z+Math.sin(a)*rb*.4},[Math.cos(a)*Math.cos(el),Math.sin(el),Math.sin(a)*Math.cos(el)],len,r0,r0*.35,4,-.15,.1);
+  if(shrub){for(let i=0;i<pts.length-1;i++)BIO.beam('rod',[pts[i].x,pts[i].y,pts[i].z],[pts[i+1].x,pts[i+1].y,pts[i+1].z],pts[i].r,pts[i+1].r,rodCol(S,k));}
+  else st.limb+=BIO.tube(fam,pts,barkCol(S,k),{seg:5,cap:true});
+  for(let s=2;s<=4;s++)spots.push({p:pts[s],s:len*.22});
+  // secondaries
+  const nSec=shrub?(lv===2?2:1):(lv===2?3:2);
+  for(let q=0;q<nSec;q++){const p=pts[ri(2,3)],a2=a+rr(-1.2,1.2),el2=rr(.1,.7),len2=len*rr(.35,.6);
+   const sec=treeGrow({x:p.x,y:p.y,z:p.z},[Math.cos(a2)*Math.cos(el2),Math.sin(el2),Math.sin(a2)*Math.cos(el2)],len2,Math.max(.05,p.r*.55),.04,3,-.2,.1);
+   if(shrub)BIO.beam('rod',[sec[0].x,sec[0].y,sec[0].z],[sec[3].x,sec[3].y,sec[3].z],sec[0].r,.04,rodCol(S,q));else st.limb+=BIO.tube(fam,sec,barkCol(S,2),{seg:4});
+   spots.push({p:sec[2],s:len2*.35},{p:sec[3],s:len2*.4,tip:true});}}
+ const cy=T.y0+H*.75,ex=T.crownR,ey=H*.35,sz0=Math.max(1.2,T.crownR*rr(.3,.42)),nC=lv===2?1.6:1;let mine=0;
+ spots.forEach(s=>{const cnt=Math.floor(nC)+(rng()<nC-Math.floor(nC)?1:0);
+  for(let c=0;c<cnt;c++){const a=rr(0,TAU),d=s.s*Math.sqrt(rng()),x=s.p.x+Math.cos(a)*d,z=s.p.z+Math.sin(a)*d,y=s.p.y+rr(-.2,.6)*s.s;
+   if(!clear3(x,y,z,sz0*.5,sz0*.35))continue;clumpAt('feather',x,y,z,sz0*rr(.85,1.25)*(s.tip?1.1:1),.55,hc,T.x,cy,T.z,ex,ey);st.clumps++;mine++;}
+  if(lv===2&&!shrub&&rng()<.3){BIO.put('pods',[s.p.x,s.p.y-.2,s.p.z],qEuler(0,rr(0,TAU),0),[rr(.8,1.4),rr(.8,1.6),1],bright(vary(pick(PAL.pod),.02,.1,.06),1.1));st.pods++;}});
+ if(!mine){clumpAt('feather',T.x,T.y0+H*.7,T.z,sz0,.55,hc,T.x,cy,T.z,ex,ey);st.clumps++;}
+ if(!shrub)regTree(T,S,T.crownR,T.H);};
+// 7 the wadi palm: a fibrous trunk, a crown of arching pinnate fronds, a skirt of dead ones, a bunch of dates
+B[7]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,la=rr(0,TAU),lk=rr(0,.14);
+ BIO.put('trunk',[T.x,T.y0-.5,T.z],qUp([Math.cos(la)*lk,1,Math.sin(la)*lk]),[rb/.4*1.1,H+.5,rb/.4*1.1],tint(pick(S.bark),means().bark[1],rr(.8,1)));st.sapTris+=BIO.defs.trunk.tris;
+ const tx=T.x+Math.cos(la)*lk*H,tz=T.z+Math.sin(la)*lk*H,ty=T.y0+H*(1-lk*lk*.5),Rf=T.crownR;
+ const n=lv===2?ri(S.fronds[0],S.fronds[1]):lv===1?9:5,hc=vary(pick(S.leaf),.03,.1,.05);
+ frondCrown('palmfrond',tx,ty,tz,Rf,n,-.15,.35,bright(hc,1.45),1.15);
+ if(lv>=1){frondCrown('palmfrond',tx,ty+.5,tz,Rf*.6,lv===2?5:3,.6,1.15,bright(shade(hc,.1),1.45),1);
+  for(let k=0,m=lv===2?ri(4,8):3;k<m;k++){const a=rr(0,TAU);BIO.put('strand',[tx+Math.cos(a)*rb*.9,ty-.5,tz+Math.sin(a)*rb*.9],qFacing([Math.cos(a),0,Math.sin(a)]),[rr(1,1.8),Rf*rr(.5,.8),1],bright(vary(0x8a7a4a,.02,.1,.06),1.1));}
+  if(lv===2&&rng()<.6){const a=rr(0,TAU);BIO.put('plume',[tx+Math.cos(a)*rb*1.2,ty-1.2,tz+Math.sin(a)*rb*1.2],qEuler(0,rr(0,TAU),0),[1.2,1.8,1.2],bright(vary(0xc88a3a,.02,.1,.06),1.1),{n:[Math.cos(a),.2,Math.sin(a)]});}}
+ st.fronds+=n;if(lv===2)regTree(T,S,Rf,T.H);};
+// 8 the desert rose: a squat swollen caudex on the rock, stubby branches, a head of pink blooms
+B[8]=function(T,st,lv){const S=SP[T.sp],fam='bark2',H=T.H,rb=T.rb,ti=T.seed%3,bH=H*.55;
+ const rAt=u=>rb*(1.3-.9*u*u)*(u>.9?mix(1,.4,(u-.9)/.1):1);
+ const rings=[];for(let u=0;u<=1;u+=.1)rings.push({x:T.x,y:T.y0+bH*u,z:T.z,r:Math.max(.1,rAt(u)),yy:bH*u,col:barkCol(S,(Math.floor(u*4)+ti)%3)});
+ rings.push({x:T.x,y:T.y0+bH+.3,z:T.z,r:.05,yy:bH+.3,col:barkCol(S,1)});
+ const ph=rr(0,TAU);st.trunk+=BIO.lathe(fam,rings,lv===2?10:7,2,3,(R,ang)=>R.r*(1+.08*Math.sin(3*ang+ph)+.03*Math.sin(8*ang+R.yy*2)),null);
+ const nB=lv===2?ri(3,6):3,a0=rr(0,TAU),hc=C(pick(S.leaf)),cy=T.y0+H;
+ for(let k=0;k<nB;k++){const a=a0+k*GOLD,el=rr(.7,1.3),len=(H-bH)*rr(.7,1.3),pts=treeGrow({x:T.x+Math.cos(a)*rAt(.8)*.5,y:T.y0+bH*.92,z:T.z+Math.sin(a)*rAt(.8)*.5},[Math.cos(a)*Math.cos(el),Math.sin(el),Math.sin(a)*Math.cos(el)],len,rb*.22,.08,2,.03,.1);
+  st.limb+=BIO.tube(fam,pts,barkCol(S,2),{seg:4,cap:true});const e=pts[2];
+  if(rng()<.6)clumpAt('small',e.x,e.y+.2,e.z,T.crownR*rr(.35,.5),.6,hc,T.x,cy,T.z,T.crownR,H*.4);
+  bloomsAt(e.x,e.y+.4,e.z,T.crownR*.35,lv===2?ri(6,14):4,PAL.comp,[.32,.55]);st.blooms++;}
+ };
+// 9 the giant puya: a ball of needles the size of a hut, a straw spike three times its height
+B[9]=function(T,st,lv){const S=SP[T.sp],R=T.crownR,H=T.H,hc=vary(pick(S.leaf),.02,.08,.05);
+ BIO.put('agave',[T.x,T.y0-.2,T.z],qEuler(0,rr(0,TAU),0),[R,R*.95,R],bright(hc,1.2));
+ if(lv>=1){for(let k=0,n=lv===2?8:4;k<n;k++){const a=k/n*TAU+rr(-.2,.2);BIO.put('needle',[T.x+Math.cos(a)*R*.55,T.y0-.1,T.z+Math.sin(a)*R*.55],qEuler(rr(-.1,.1),rr(0,TAU),rr(-.1,.1)),[R*.9,R*.8,R*.9],bright(vary(hc,.02,.06,.05),1.25));}}
+ if(rng()<.75){const sc=bright(vary(pick(PAL.spike),.02,.08,.05),1.1);BIO.beam('rod',[T.x,T.y0+R*.5,T.z],[T.x+rr(-.3,.3),T.y0+H,T.z+rr(-.3,.3)],R*.16,R*.05,sc);
+  for(let k=0,n=lv===2?ri(6,10):3;k<n;k++){const u=rr(.45,1);BIO.put('plume',[T.x+rr(-.3,.3),T.y0+R*.5+(H-R*.5)*u,T.z+rr(-.3,.3)],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),R*mix(.55,.3,u),bright(vary(0xd8d0a8,.02,.06,.06),1.15),{n:[0,1,0]});}st.spikes++;}
+ };
+// 10 the mountain agave: a red-tinged rosette and a candelabra flower stalk
+B[10]=function(T,st,lv){const S=SP[T.sp],R=T.crownR,H=T.H,hc=C(pick(S.leaf)).lerp(C(pick(PAL.agave)),rr(.2,.6));
+ BIO.put('agave',[T.x,T.y0-.15,T.z],qEuler(0,rr(0,TAU),0),[R,R*.8,R],bright(hc,1.2));
+ const sc=shade(C(0x6a4a4a),-.1);BIO.beam('rod',[T.x,T.y0+R*.3,T.z],[T.x+rr(-.4,.4),T.y0+H,T.z+rr(-.4,.4)],T.rb,T.rb*.4,sc);
+ const n=lv===2?ri(6,10):4,a0=rr(0,TAU);
+ for(let k=0;k<n;k++){const u=mix(.5,.95,k/n),a=a0+k*GOLD,L=R*mix(.9,.4,k/n),y=T.y0+R*.3+(H-R*.3)*u,ex=T.x+Math.cos(a)*L,ez=T.z+Math.sin(a)*L;
+  BIO.beam('rod',[T.x,y,T.z],[ex,y+L*.35,ez],T.rb*.35,T.rb*.15,sc);
+  BIO.put('plume',[ex,y+L*.35+.3,ez],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),R*rr(.45,.7),bright(vary(0xd8c040,.03,.1,.06),1.2),{n:[0,1,0]});}
+ st.spikes++;};
+// 12 the twist-candles: a clump of tapering three-lobed columns in pastel yellows, roses and rusts,
+// twisting as they rise, with small mint ones glowing at their feet -- standing in the shallows
+B[12]=function(T,st,lv){const S=SP[T.sp],H=T.H,n=lv===2?ri(3,8):ri(2,4),a0=rr(0,TAU),base=T.y0+.5;
+ for(let k=0;k<n;k++){const a=a0+k*GOLD,d=k?T.crownR*rr(.2,.9):0,x=T.x+Math.cos(a)*d,z=T.z+Math.sin(a)*d,h=H*(k?rr(.4,.9):1),w=T.rb*rr(.7,1.3)*(.5+.5*h/H);
+  const y=Math.min(BIO.terrainH(x,z),base)-.2;
+  BIO.put('candle',[x,y,z],qEuler(rr(-.08,.08),rr(0,TAU),rr(-.08,.08)),[w*2,h,w*2],bright(vary(pick(S.leaf),.02,.08,.05),1.15));st.candles++;}
+ if(lv===2)for(let k=0,m=ri(2,6);k<m;k++){const a=rr(0,TAU),d=T.crownR*rr(.5,1.4),x=T.x+Math.cos(a)*d,z=T.z+Math.sin(a)*d,y=Math.min(BIO.terrainH(x,z),base)-.1,h=rr(.4,1.1);
+  BIO.put('candle',[x,y,z],qEuler(rr(-.15,.15),rr(0,TAU),rr(-.15,.15)),[h*.5,h,h*.5],bright(vary(pick(PAL.candleTip),.02,.08,.05),1.5));st.candles++;}
+ };
+
+// ---------------------------------------------------------------- impostors (the far canopy)
+let ICO=null;
+function buildFar(T,fi,st){const K=BIO.bucket('far');if(!ICO)ICO=new T3.IcosahedronGeometry(1,1).attributes.position.array;const ip=ICO;
+ const S=SP[T.sp],cheap=BIO.lodD(T.x,T.z)>BIO.LOD().far;let tris=0;
+ function vtx(x,y,z,nx,ny,nz,r,g,b){K.pos.push(x,y,z);K.nor.push(nx,ny,nz);K.uv.push(0,0);K.col.push(r,g,b);}
+ function blob(x,y,z,rx,ry,colA,colB,sd){const ca=C(colA).convertSRGBToLinear(),cb=C(colB).convertSRGBToLinear(),k1=sd*7.3,k2=sd*3.1;
+  for(let i=0;i<ip.length;i+=3){const dx=ip[i],dy=ip[i+1],dz=ip[i+2];
+   const m=1+.16*Math.sin(dx*4.1+k1)*Math.cos(dz*3.7+k2)+.1*Math.sin(dy*6.3+k2+dx*2);
+   const sh=(.55+.45*smooth(-.7,.8,dy))*(.9+.2*Math.sin(dx*9+dz*7+k1)),t=smooth(-.2,.7,dy+.3*Math.sin(dx*5+k2));
+   const ny=dy*.7+.45,nl=Math.hypot(dx,ny,dz)||1;
+   vtx(x+dx*rx*m,y+dy*ry*m,z+dz*rx*m,dx/nl,ny/nl,dz/nl,mix(cb.r,ca.r,t)*sh,mix(cb.g,ca.g,t)*sh,mix(cb.b,ca.b,t)*sh);}
+  tris+=ip.length/9;}
+ // the pole: a four-ring lathe in the bark colour, darker toward the foot, tapered as the species record says
+ const F=S.far||{poleU:.35},bc=C(S.bark[fi%S.bark.length]).convertSRGBToLinear(),seg=cheap?4:6,taper=F.taper==null?.4:F.taper,top=T.y0+T.H*F.poleU;
+ const rings=[0,.06,.5,1].map(u=>{const sh=.7+.3*u*.75;return{x:T.x,y:T.y0+(top-T.y0)*u,z:T.z,r:Math.max(.3,T.rb*(1-taper*u)*(u<.08?1.5:1)),yy:u,col:[bc.r*sh,bc.g*sh,bc.b*sh]};});
+ st.far+=BIO.lathe('far',rings,seg,1,1,(Rg,a)=>Rg.r,null);   // (the lathe charges its own triangles)
+ // the crown: the species' blobs [yK of H, rx of crownR, ry of H, colour A, colour B, options]
+ const L=S.leaf.map(h=>bright(h,.9)),R=T.crownR,a0=(T.seed%628)/100;
+ const colOf=c=>typeof c==='number'?c:c==='P'?PAL.comp[fi%PAL.comp.length]:c[0]==='B'?S.bark[+c[1]%S.bark.length]:c==='L0'?L[fi%L.length]:L[+c[1]%L.length];
+ F.blobs.forEach((b,bi)=>{const o=b[5]||{};if(o.rich&&cheap)return;
+  const y=o.abs?T.y0+T.H*b[0]:o.yOf==='R'?T.y0+R*b[0]:T.y0+T.H*b[0],rx=o.abs?b[1]:o.rxOf==='rb'?T.rb*b[1]:R*b[1],ry=o.abs?b[2]:o.ryOf==='R'?R*b[2]:T.H*b[2],off=o.off?R*o.off:0;
+  blob(T.x+Math.cos(a0)*off,y,T.z+Math.sin(a0)*off,rx,ry,colOf(b[3]),colOf(b[4]),fi+(o.rich?3:bi));});
+ K.tris+=tris;BIO.tally(tris,0,0);st.far+=tris;}
+
+// ---------------------------------------------------------------- the pass
+SEDESERT.buildTrees=function(R,q){
+ reseed(550021);q=q==null?1:q;R=R||3000;means();
+ const st={trunk:0,limb:0,far:0,sapTris:0,forks:0,clumps:0,blooms:0,pods:0,fronds:0,cols:0,spikes:0,candles:0,heroes:0,fars:0,byS:SP.map(()=>0)};
+ const TREES=SEDESERT.TREES;TREES.length=0;for(const k in HASH)delete HASH[k];
+ const mk=(x,y,z,sp)=>{const S=SP[sp];return{x:x,z:z,y0:y-.4,sp:sp,H:rr(S.H[0],S.H[1]),rb:rr(S.rb[0],S.rb[1]),crownR:rr(S.crownR[0],S.crownR[1]),seed:ri(0,999999)};};
+ const LOD=BIO.LOD(),WATER=BIO.window('water');
+ // one species pass: a jittered grid over the whole disc, the zone weight as
+ // acceptance; past the hero radius a tree is a mid-range one, past the mid
+ // radius an impostor (or, for a species with none, nothing)
+ function pass(P){const sp=P.sp,S=SP[sp],opt=P.opt||{},pad=opt.pad==null?4:opt.pad,small=!!opt.small,hero=LOD.hero*(small?.94:1),mid=LOD.mid*(small?.87:1);let n=0;
+  BIO.grid(P.cell,0,R,(x,z,d)=>{const Z=zones(x,z);const a=P.accept(Z,x,z);if(a<=0)return 0;
+    const lod=BIO.lod(x,z);return a*(opt.lodK?lerp(1,lod,opt.lodK):1)*q;},
+   (x,y,z,d)=>{if(blocked(x,z,pad))return;
+    const T=mk(x,y,z,sp);
+    if(opt.size)opt.size(T,zones(x,z));
+    const ld=BIO.lodD(x,z);T.lv=ld<hero?2:(ld<mid?1:0);
+    if(T.lv===0&&!(S.far&&(!S.farIf||S.farIf(T))))return;
+    TREES.push(T);hadd({x:x,z:z,r:T.rb*1.4+1});n++;},
+   {patch:opt.patch==null?.6:opt.patch,patchScale:opt.patchScale||.01,noMask:!!S.depth,depth:S.depth||[-Infinity,-.3],pad:pad+2,box:opt.water?WATER:null});
+  return n;}
+ SEDESERT.PASSES.forEach(pass);
+ // build
+ TREES.forEach((T,i)=>{if(T.lv===0){buildFar(T,i,st);st.fars++;}else{B[T.sp](T,st,T.lv);st.heroes++;}st.byS[T.sp]++;});
+ return{trees:TREES.length,heroes:st.heroes,far:st.fars,bySpecies:SP.map((S,i)=>S.key+':'+st.byS[i]).join(' '),forks:st.forks,clumps:st.clumps,blooms:st.blooms,pods:st.pods,fronds:st.fronds,columns:st.cols,spikes:st.spikes,candles:st.candles,
+  tris:{trunk:st.trunk,limbs:st.limb,far:st.far,small:st.sapTris}};};
+SEDESERT._canopyH=function(x,z){let h=0;for(const T of SEDESERT.TREES){if(Math.hypot(x-T.x,z-T.z)<160)h=Math.max(h,T.y0+T.H);}return h||6;};
+// the nearest built hero of a species to a point (a world's camera or a placement pass may want one)
+SEDESERT.nearestTree=function(sp,x,z,minH){let b=null,bd=1e9;for(const T of SEDESERT.TREES){if(T.sp!==sp||T.lv<2||(minH&&T.H<minH))continue;const d=Math.hypot(T.x-x,T.z-z);if(d<bd){bd=d;b=T;}}return b;};
+
+// ---------------------------------------------------------------- the passes (data: species, cell, acceptance from the zones, options)
+// opt: pad keep-clear, patch/patchScale the stand patchiness, small the smaller LOD
+// radii, lodK thinning with distance, water only in the host's water window,
+// size(T,Z) a hook that sizes a tree from the zones
+const stand=SEDESERT.standOf;
+SEDESERT.PASSES=[
+ // dragon trees where the water table allows: the canyon rim and benches, the pond, the mountain-foot seeps
+ {sp:0,cell:48,accept:(Z)=>Z.rim*.4+Z.oasis*.45*(1-Z.flow*.6)+Z.bench*.22+Z.mtn*smooth(.22,.5,Z.wet)*.5+Z.rip*.04,opt:{pad:5,patch:.4,patchScale:.008}},
+ // the big succulents in stands across the scrub, the badlands' edges, the rim
+ {sp:1,cell:80,accept:(Z,x,z)=>(stand(x,z)===0?.30:.03)*Z.scrub+Z.bad*.06,opt:{pad:8,patch:.5,patchScale:.006}},
+ {sp:2,cell:75,accept:(Z,x,z)=>(stand(x,z)===1?.28:.03)*Z.scrub+Z.rim*.12+Z.bench*.06,opt:{pad:7,patch:.5,patchScale:.006}},
+ {sp:11,cell:60,accept:(Z,x,z)=>(stand(x,z)===2?.28:.03)*Z.scrub*(.4+.6*smooth(.02,.25,Z.up))+Z.bad*.05,opt:{pad:3,patch:.5}},
+ // the bottle trees and boojums on the harder ground; the quiver trees on the rocky slopes
+ {sp:3,cell:60,accept:(Z)=>Z.bad*.28+Z.scrub*.05+Z.mtn*.14+Z.bench*.1,opt:{pad:3,patch:.45}},
+ {sp:4,cell:70,accept:(Z)=>Z.scrub*.12+Z.bad*.16+smooth(.05,.3,Z.dune)*smooth(.6,.3,Z.dune)*.35,opt:{pad:2.5,patch:.4}},
+ {sp:5,cell:55,accept:(Z)=>Z.mtn*.5*smooth(.7,.3,Z.up)+Z.bad*.1+Z.scrub*smooth(.1,.35,Z.up)*.2,opt:{pad:3,patch:.45}},
+ // the mesquites: tall on the banks and the floor, at the pond; shrinking to shrubs out in the scrub as the water table falls
+ {sp:6,cell:28,accept:(Z)=>Z.bank*.8+Z.rip*.4+Z.oasis*.5*(1-Z.flow*.5)+Z.scrub*.24*smooth(.08,.45,Z.wet)+Z.bench*.16,opt:{pad:2.5,patch:.45,patchScale:.012,
+  size:(T,Z)=>{const S=SP[6],k=smooth(.12,.85,Z.wet);T.H=lerp(S.H[0]*.7,S.H[1],k)*rr(.85,1.1);T.crownR=lerp(S.crownR[0]*.6,S.crownR[1],k)*rr(.85,1.1);T.rb=lerp(S.rb[0],S.rb[1],k);}}},
+ // the wadi palms on the floor and at the pond: only where the host says the water is
+ {sp:7,cell:34,accept:(Z)=>Z.rip*.45*smooth(.7,.95,Z.wet)+Z.bank*.35+Z.oasis*.8*(1-Z.flow*.4),opt:{pad:2.5,patch:.4,water:true}},
+ // the desert roses on the walls and the rock; the puyas and agaves on the slopes
+ {sp:8,cell:40,accept:(Z)=>Z.bench*.45+Z.rock*(1-Z.can)*(1-Z.dune)*(1-Z.ab)*.2+Z.rim*.2,opt:{pad:1.5,lodK:.5,patch:.4,small:true}},
+ {sp:9,cell:60,accept:(Z)=>Z.mtn*.3+Z.bad*.1,opt:{pad:2,lodK:.5,patch:.45,small:true}},
+ {sp:10,cell:50,accept:(Z)=>Z.mtn*.28+Z.scrub*.1+Z.bad*.12+Z.rim*.1,opt:{pad:1.5,lodK:.5,patch:.45,small:true}},
+ // the twist-candles: in the shallows of the river and the pond (their depth band is on the species record)
+ {sp:12,cell:16,accept:(Z)=>(Z.bank+Z.oasis*Z.flow)*.45,opt:{pad:1.5,lodK:.5,patch:.5,patchScale:.02,small:true,water:true}},
+];
+})();
+
+// ==================== 60-biome-sedesert-floor.js
+// ================================================================= EASTERN HIGH DESERT — floor
+// Everything under the trees, by zone, from the same climate fields the tree
+// pass reads (SEDESERT.zones):
+//   the SCRUB       spinifex hummocks on the red soil (the character of the
+//                   place), dry grass, creosote and saltbush, stands of the
+//                   tower of jewels, agaves, barrel cacti, prickly pear, cholla,
+//                   hoodia clumps in pink flower, stones and boulders
+//   the BADLAND     hoodoos, rubble, boulders, an agave or a barrel in a crack
+//   the CANYON      reeds and sedge at the water, dry grass and creosote on the
+//                   floor, bleached fallen mesquites, boulders off the walls
+//   the POND        reeds round the margin, blooms, a playa of cracked mud
+//   the MOUNTAINS   agaves, spinifex, grey boulders and scree
+//   the RIM/BENCH   creosote, agave, stones
+//   the RED DESERT  almost nothing: a tuft, a stone
+// Three LOD bands along the spine (near / mid / far) at 8 / 16 / 32 m cells.
+(function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm,qEuler,qFacing,qUp}=BIO.fn;
+const PAL=SEDESERT.PAL,zones=SEDESERT.zones,blocked=SEDESERT.blocked,C=SEDESERT.C;
+const {bright,shade,vary,tint,means,leafCol}=SEDESERT;
+const Y=(x,z)=>BIO.terrainH(x,z);
+const rockTint=(set,k)=>tint(vary(pick(set||PAL.rock),.02,.06,.06),means().rock,k==null?rr(.35,.6):k);
+const rodCol=(hex)=>shade(vary(hex,.02,.08,.06),rr(-.45,-.2));
+// the floor's blooms lie flat on the ground, small, one colour per patch
+const blooms=(x,y,z,r,n,set,sz)=>SEDESERT.blooms(x,y,z,r,n,set,sz,{flat:true,tilt:.4,s0:.16,s1:.34});
+// a RING SCATTER: n things round (x,z), the first at the centre, the rest dLo..dHi out (two draws each)
+function around(x,z,n,dLo,dHi,fn){for(let i=0;i<n;i++){const a=rr(0,TAU),d=i?rr(dLo,dHi):0;fn(x+Math.cos(a)*d,z+Math.sin(a)*d,i,a);}}
+
+// ---------------------------------------------------------------- fields local to the floor
+const echK=(x,z)=>smooth(.5,.64,fbm(x*.0048+3,z*.0048-8,2121,2));      // the tower-of-jewels stands
+const hoodK=(x,z)=>smooth(.5,.62,fbm(x*.0052-5,z*.0052+2,3131,2));     // the hoodia patches
+const hummK=(x,z)=>fbm(x*.006+21,z*.006+13,777,2);                     // spinifex density
+const okGround=(x,z,pad)=>!blocked(x,z,pad)&&BIO.clearOf(x,z,pad);
+
+// ---------------------------------------------------------------- small plants
+function tuft(item,x,y,z,h,w,col){BIO.put(item,[x,y-.05,z],qEuler(rr(-.06,.06),rr(0,TAU),rr(-.06,.06)),[w||h*.8,h,w||h*.8],col);}
+function card(item,x,y,z,s,sy,col,tilt){BIO.put(item,[x,y,z],qEuler(rr(-(tilt||.2),tilt||.2),rr(0,TAU),rr(-(tilt||.2),tilt||.2)),[s,sy==null?s:sy,s],col,{n:[rr(-.2,.2),1,rr(-.2,.2)]});}
+// a SPINIFEX HUMMOCK: a grey-green dome of needles, bare in the middle when old
+function hummock(x,y,z,lv,k){const R=rr(.9,2.2)*(k||1),hc=leafCol(PAL.spinifex,1.3,.03);
+ if(lv>=1)BIO.put('lobe',[x,y-.4,z],qEuler(0,rr(0,TAU),0),[R*.75,R*.5,R*.75],shade(vary(hc,.02,.08,.05),-.3));
+ around(x,z,lv===2?ri(3,5):lv===1?2:1,R*.2,R*.6,(px,pz)=>tuft('needle',px,y,pz,R*rr(.7,1.0),R*rr(1.2,1.6),bright(vary(hc,.02,.06,.05),rr(.9,1.1))));}
+function drygrass(x,y,z,lv){const h=rr(.5,1.1)*(lv===0?1.6:1);around(x,z,lv===2?ri(2,4):1,.6,1.8,(px,pz)=>tuft('grass',px,y,pz,h*rr(.8,1.1),h*1.3,leafCol(PAL.drygrass,1.3,.03)));}
+function reed(x,y,z,lv,acc){const set=acc?PAL.accent:PAL.reed,h=rr(1.4,2.8)*(lv===0?1.5:1);
+ around(x,z,lv===2?ri(2,4):lv===1?2:1,.7,2.2,(hx,hz,k)=>{if(k&&BIO.depth(hx,hz)>.8)return;tuft('reed',hx,y,hz,h*rr(.75,1.1),h*rr(.7,1.0),leafCol(set,1.3,.025));});}
+function sedge(x,y,z,lv){const h=rr(.5,1.0)*(lv===0?1.5:1);tuft('grass',x,y,z,h,h*1.3,leafCol(PAL.sedge,1.3,.03));}
+function creosote(x,y,z,lv){const hc=vary(pick(PAL.creosote),.04,.1,.06),Rs=rr(1.0,2.4);
+ if(lv===2){for(let i=0,m=ri(2,4);i<m;i++){const a=rr(0,TAU),d=i?Rs*rr(.3,.7):0,h=Rs*rr(.6,1.1);
+   BIO.beam('rod',[x,y-.1,z],[x+Math.cos(a)*d*1.3,y+h,z+Math.sin(a)*d*1.3],.05,.02,rodCol(0x4a3a2e));
+   card('small',x+Math.cos(a)*d,y+h,z+Math.sin(a)*d,Rs*rr(.9,1.3),Rs*rr(.6,.9),bright(vary(hc,.03,.08,.05),1.4),.3);}}
+ else card('small',x,y+Rs*.5,z,Rs*1.4,Rs*.9,bright(hc,1.4));}
+function saltbush(x,y,z,lv){const hc=vary(pick(PAL.saltbush),.03,.08,.05),Rs=rr(.8,1.8);
+ if(lv>=1)BIO.put('lobe',[x,y-.2,z],qEuler(0,rr(0,TAU),0),[Rs*.8,Rs*.6,Rs*.8],shade(vary(hc,.02,.08,.05),-.25));
+ card('small',x,y+Rs*.45,z,Rs*1.5,Rs*.9,bright(hc,1.35),.25);}
+function echium(x,y,z,lv){around(x,z,lv===2?ri(2,5):lv===1?2:1,1,3,(px,pz)=>{const h=rr(2.2,4.2);
+  if(lv===2)BIO.put('agave',[px,y-.1,pz],qEuler(0,rr(0,TAU),0),[h*.22,h*.16,h*.22],leafCol(PAL.echiumLeaf,1.2,.02));
+  tuft('spire',px,y+h*.05,pz,h,h*.42,leafCol(PAL.echium,1.25,.015));});}
+function agaveR(x,y,z,set,k){const R=rr(.6,1.5)*(k||1),c=vary(pick(set||PAL.agave),.03,.1,.06);
+ BIO.put('agave',[x,y-.05,z],qEuler(rr(-.06,.06),rr(0,TAU),rr(-.06,.06)),[R,R*.8,R],bright(c,1.1));}
+function barrel(x,y,z,lv,k){around(x,z,lv===2?ri(1,3):1,.8,1.6,(px,pz)=>{const R=rr(.5,1.3)*(k||1);
+ BIO.put('barrel',[px,y-.05,pz],qEuler(rr(-.1,.1),rr(0,TAU),rr(-.1,.1)),[R,R*rr(.8,1.3),R],leafCol(PAL.barrel,1.15,.03,.08,.05));
+ if(lv===2&&rng()<.3)blooms(px,y+R*.9,pz,R*.3,ri(2,4),[0xe8d040,0xf0a040],[.12,.22]);});}
+function pear(x,y,z,lv){const hc=vary(pick(PAL.pear),.03,.08,.05);
+ around(x,z,lv===2?ri(3,6):2,.3,1.2,(px,pz)=>{const h=rr(.4,1.4);card('paddle',px,y+h,pz,rr(1,1.8),rr(.9,1.4),bright(vary(hc,.02,.06,.05),1.3),.35);});
+ if(lv===2&&rng()<.4)blooms(x,y+1.6,z,.8,ri(2,5),[0xe8c030,0xd8a030,0xe07070],[.14,.24]);}
+function cholla(x,y,z,lv){const hc=leafCol(PAL.cholla,1.2,.02,.06,.05),h=rr(1.2,2.6),n=lv===2?ri(5,9):3;
+ BIO.beam('rod',[x,y-.1,z],[x,y+h*.5,z],.08,.06,rodCol(0x5a4a3a));
+ for(let i=0;i<n;i++){const a=rr(0,TAU),el=rr(.2,1.2),L=rr(.5,1.1),y0=y+h*rr(.3,.6);const e=[x+Math.cos(a)*Math.cos(el)*L,y0+Math.sin(el)*L,z+Math.sin(a)*Math.cos(el)*L];
+  BIO.put('cone',[e[0],e[1]-.1,e[2]],qEuler(rr(-.4,.4),rr(0,TAU),rr(-.4,.4)),[.3,rr(.5,.9),.3],hc);BIO.beam('rod',[x,y0,z],e,.05,.05,hc);}}
+function hoodia(x,y,z,lv){const hc=leafCol(PAL.hoodia,1.15,.02,.06,.05),n=lv===2?ri(5,10):3;
+ for(let i=0;i<n;i++){const a=rr(0,TAU),d=rr(0,.8),h=rr(.4,1.1);BIO.put('column',[x+Math.cos(a)*d,y-.1,z+Math.sin(a)*d],qEuler(rr(-.25,.25),rr(0,TAU),rr(-.25,.25)),[.22,h,.22],hc);}
+ blooms(x,y+.8,z,.9,lv===2?ri(5,12):3,PAL.comp,[.28,.5]);}
+function stone(x,y,z,lv,set,st){around(x,z,lv===2?ri(1,3):1,.5,1.5,(px,pz)=>{const r=rr(.15,.5);
+ BIO.put('stone',[px,y+r*.2,pz],qEuler(rr(-.5,.5),rr(0,TAU),rr(-.5,.5)),[r*rr(.9,1.4),r*.7,r*rr(.9,1.4)],rockTint(set));st.stones++;});}
+function boulder(x,y,z,lv,set,st){const Rb=rr(1,3.2);
+ around(x,z,lv===2?ri(1,2):1,Rb*.7,Rb*1.2,(bx,bz,i)=>{const r=Rb*(i?rr(.35,.7):1),by=Y(bx,bz),h=r*rr(.55,.95);
+  BIO.put('boulder',[bx,by+h*.3,bz],qEuler(rr(-.25,.25),rr(0,TAU),rr(-.25,.25)),[r*rr(.9,1.3),h*.8,r*rr(.9,1.3)],rockTint(set));st.boulders++;
+  if(lv===2)SEDESERT.ROCKS.push([bx,by+h*1.05,bz,r]);   // a basking place (the fauna pass reads it)
+  if(lv===2&&rng()<.4){BIO.put('lichen',[bx+rr(-.2,.2)*r,by+h*1.08,bz+rr(-.2,.2)*r],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),r*rr(.4,.8),leafCol(PAL.lichen,1.1,.02));}});}
+function hoodoo(x,y,z,lv,st){const h=rr(4,14),w=h*rr(.22,.36);
+ BIO.put('hoodoo',[x,y-.4,z],qEuler(rr(-.04,.04),rr(0,TAU),rr(-.04,.04)),[w,h,w],rockTint(PAL.rock,rr(.4,.65)));st.hoodoos++;
+ for(let i=0,n=lv===2?ri(3,7):2;i<n;i++){const a=rr(0,TAU),d=w*rr(.8,2.2),r=rr(.3,.9);BIO.put('stone',[x+Math.cos(a)*d,Y(x+Math.cos(a)*d,z+Math.sin(a)*d)+r*.2,z+Math.sin(a)*d],qEuler(rr(-.5,.5),rr(0,TAU),rr(-.5,.5)),[r*1.2,r*.7,r*1.2],rockTint(PAL.rock));}}
+// a fallen mesquite: a bleached tube with its stubs, dry grass grown up through it
+function log(x,y,z,st){const a=rr(0,TAU),L=rr(6,16),r0=rr(.25,.55),hx=Math.cos(a),hz=Math.sin(a),n=Math.ceil(L/3)+1,pts=[];
+ for(let i=0;i<n;i++){const t=i/(n-1),px=x+hx*(t-.5)*L,pz=z+hz*(t-.5)*L;if(BIO.mask(px,pz)<=0||!okGround(px,pz,1.5))return false;
+  pts.push({x:px,y:Y(px,pz)+r0*.4+Math.sin(t*Math.PI)*.3,z:pz,r:mix(r0,r0*.4,t),col:tint(pick(PAL.deadwood),means().wood,rr(.8,1.1))});}
+ BIO.tube('wood',pts,pts[0].col,{seg:7,cap:true});st.logs++;
+ for(let k=0,m=ri(2,4);k<m;k++){const i=ri(1,n-2),p=pts[i],b=rr(0,TAU),el=rr(.3,1.2),Ls=rr(.8,2.5);BIO.beam('rod',[p.x,p.y,p.z],[p.x+Math.cos(b)*Math.cos(el)*Ls,p.y+Math.sin(el)*Ls,p.z+Math.sin(b)*Math.cos(el)*Ls],p.r*.5,.04,shade(C(pick(PAL.deadwood)),-.1));}
+ if(rng()<.6)drygrass(x+rr(-1,1),y,z+rr(-1,1),2);
+ return true;}
+
+SEDESERT.small={tuft,card,agaveR,barrel};   // the dressing pass grows the same plants on a ledge
+// ---------------------------------------------------------------- the zone planters
+// Each takes (x,y,z,Z,lv,st) and places one plant of the zone's mix.
+function plantScrub(x,y,z,Z,lv,st){const t=rng(),ek=echK(x,z),hk=hoodK(x,z),hm=hummK(x,z);
+ if(t<.22+.2*smooth(.4,.7,hm)){hummock(x,y,z,lv);st.hummocks++;if(lv>=1&&hm>.55)hummock(x+rr(-2.5,2.5),y,z+rr(-2.5,2.5),lv,.8);}
+ else if(t<.55){if(rng()<ek){echium(x,y,z,lv);st.spires++;}else{drygrass(x,y,z,lv);st.tufts++;}}
+ else if(t<.66){creosote(x,y,z,lv);st.shrubs++;}
+ else if(t<.72){saltbush(x,y,z,lv);st.shrubs++;}
+ else if(t<.78){if(rng()<hk*.8){hoodia(x,y,z,lv);st.hoodia++;}else{agaveR(x,y,z,rng()<.5?PAL.agave:PAL.agaveRed);st.rosettes++;}}
+ else if(t<.84){barrel(x,y,z,lv);st.cacti++;}
+ else if(t<.89){pear(x,y,z,lv);st.cacti++;}
+ else if(t<.93){cholla(x,y,z,lv);st.cacti++;}
+ else if(t<.98){stone(x,y,z,lv,PAL.rock,st);}
+ else{boulder(x,y,z,lv,PAL.rock,st);}}
+function plantBad(x,y,z,Z,lv,st){const t=rng();
+ if(t<.45){stone(x,y,z,lv,PAL.rock,st);}
+ else if(t<.62){boulder(x,y,z,lv,PAL.rock,st);}
+ else if(t<.74){agaveR(x,y,z,PAL.agave,.9);st.rosettes++;}
+ else if(t<.82){barrel(x,y,z,lv);st.cacti++;}
+ else if(t<.92){drygrass(x,y,z,lv);st.tufts++;}
+ else{hummock(x,y,z,lv,.7);st.hummocks++;}}
+function plantRip(x,y,z,Z,lv,st){const t=rng(),nearW=smooth(.4,.9,Z.flow);
+ if(t<.3*nearW+.05){reed(x,y,z,lv,rng()<.25);st.reeds++;}
+ else if(t<.45){sedge(x,y,z,lv);st.tufts++;}
+ else if(t<.62){drygrass(x,y,z,lv);st.tufts++;}
+ else if(t<.74){creosote(x,y,z,lv);st.shrubs++;}
+ else if(t<.8){saltbush(x,y,z,lv);st.shrubs++;}
+ else if(t<.9){stone(x,y,z,lv,rng()<.5?PAL.rock:PAL.rockGrey,st);}
+ else if(t<.96){boulder(x,y,z,lv,rng()<.6?PAL.rock:PAL.rockGrey,st);}
+ else{blooms(x,y,z,rr(.6,1.4),ri(2,6),rng()<.5?PAL.comp:[0xe8d040,0xf0f0d0]);st.blooms++;}}
+function plantOasis(x,y,z,Z,lv,st){const t=rng(),nearW=smooth(.3,.8,Z.flow);
+ if(t<.4*nearW+.05){reed(x,y,z,lv,rng()<.3);st.reeds++;}
+ else if(t<.55){sedge(x,y,z,lv);st.tufts++;}
+ else if(t<.7){drygrass(x,y,z,lv);st.tufts++;}
+ else if(t<.8){creosote(x,y,z,lv);st.shrubs++;}
+ else if(t<.9){blooms(x,y,z,rr(.6,1.6),ri(3,8),rng()<.6?PAL.comp:[0xe8d040,0xf0f0d0]);st.blooms++;}
+ else{stone(x,y,z,lv,PAL.rockGrey,st);}}
+function plantMtn(x,y,z,Z,lv,st){const t=rng();
+ if(t<.25){agaveR(x,y,z,rng()<.6?PAL.agave:PAL.agaveRed,1.1);st.rosettes++;}
+ else if(t<.45){hummock(x,y,z,lv,.8);st.hummocks++;}
+ else if(t<.6){drygrass(x,y,z,lv);st.tufts++;}
+ else if(t<.85){stone(x,y,z,lv,PAL.rockGrey,st);}
+ else{boulder(x,y,z,lv,PAL.rockGrey,st);}}
+function plantRim(x,y,z,Z,lv,st){const t=rng();
+ if(t<.3){creosote(x,y,z,lv);st.shrubs++;}
+ else if(t<.5){agaveR(x,y,z,PAL.agave);st.rosettes++;}
+ else if(t<.7){hummock(x,y,z,lv,.9);st.hummocks++;}
+ else if(t<.9){stone(x,y,z,lv,PAL.rock,st);}
+ else{barrel(x,y,z,lv);st.cacti++;}}
+function plantDune(x,y,z,Z,lv,st){const t=rng();
+ if(t<.7){drygrass(x,y,z,lv);st.tufts++;}else{stone(x,y,z,lv,PAL.rock,st);}}
+
+// ---------------------------------------------------------------- the pass
+SEDESERT.ROCKS=[];
+SEDESERT.buildFloor=function(R,q){
+ reseed(600021);q=q==null?1:q;R=R||3000;means();SEDESERT.ROCKS.length=0;
+ const st={hummocks:0,tufts:0,shrubs:0,spires:0,rosettes:0,cacti:0,hoodia:0,reeds:0,blooms:0,stones:0,boulders:0,hoodoos:0,logs:0};
+ // one plant of the right zone's mix at (x,z); density by zone
+ function plant(x,y,z,lv){if(blocked(x,z,.8))return;const Z=zones(x,z);if(Z.ab>.3)return;
+  const w=[Z.scrub*.95,Z.bad*.5,Z.rip*1.3,Z.bank*1.2,Z.oasis*1.3,Z.mtn*.6,Z.rim*.7,Z.bench*.5,Z.desert*.1],P=[plantScrub,plantBad,plantRip,plantRip,plantOasis,plantMtn,plantRim,plantRim,plantDune];
+  let tot=0;for(let i=0;i<w.length;i++)tot+=w[i];if(tot<=0)return;
+  let r=rng()*Math.max(1,tot),k=0;for(;k<w.length;k++){if(r<w[k])break;r-=w[k];}if(k>=w.length)return;
+  P[k](x,y,z,Z,lv,st);}
+ // three bands along the LOD spine (the core's floor radii); each band's window is the spine's reach
+ const L=BIO.LOD(),bands=[[9,L.floor[0],0],[18,L.floor[1],L.floor[0]],[36,1e9,L.floor[1]]];
+ bands.forEach((b,bi)=>{const lv=2-bi;
+  BIO.grid(b[0],0,R,(x,z,d)=>{const ld=BIO.lodD(x,z);if(ld>=b[1]||ld<b[2])return 0;return .62*q*(lv===0?.5:1);},(x,y,z,d)=>plant(x,y,z,lv),{patch:.7,patchScale:.014,pad:.8,box:b[1]<1e9?BIO.originBox(b[1]):null});});
+ // the water's edge: reeds standing in the shallows of the river and the pond (the host's water window)
+ BIO.grid(9,0,R,(x,z,d)=>{const ld=BIO.lodD(x,z);if(ld>=L.mid)return 0;const Z=zones(x,z);return .4*q*(Z.bank+Z.oasis)*smooth(1.0,.3,BIO.depth(x,z));},
+  (x,y,z,d)=>{const lv=BIO.lodD(x,z)<L.floor[0]*1.2?2:1;reed(x,Math.max(y,BIO.waterH(x,z)-.5),z,lv,rng()<.35);st.reeds++;},{patch:.6,patchScale:.03,noMask:true,depth:[-.1,1.0],pad:1,box:BIO.window('water')});
+ // hoodoos in the badlands
+ BIO.grid(55,0,R,(x,z,d)=>{if(BIO.lodD(x,z)>L.far)return 0;const Z=zones(x,z);return Z.bad*.5*q;},(x,y,z,d)=>{if(blocked(x,z,3))return;const lv=BIO.lodD(x,z)<L.hero*1.1?2:1;
+  for(let i=0,n=ri(1,3);i<n;i++){const hx=x+rr(-14,14),hz=z+rr(-14,14);if(okGround(hx,hz,2))hoodoo(hx,Y(hx,hz),hz,lv,st);}},{patch:.3,pad:3});
+ // fallen mesquites on the canyon floor
+ BIO.grid(70,0,R,(x,z,d)=>{if(BIO.lodD(x,z)>L.mid)return 0;const Z=zones(x,z);return Z.rip*.7*q;},(x,y,z,d)=>{for(let t=0;t<4;t++)if(log(x+rr(-16,16),y,z+rr(-16,16),st))break;},{patch:0,pad:2});
+ return{under:st};};
+})();
+
+// ==================== 65-biome-sedesert-dress.js
+// ================================================================= EASTERN HIGH DESERT — growth on structures
+// What the high desert does to a building left in it: not much, and slowly.
+// Lichen crusts on every sunlit ledge and down the wall under each drip,
+// dust and grass in the corners, an agave or a barrel cactus in a crack, a
+// desert rose or a young dragon tree where a ledge holds a little soil, and a
+// climbing succulent hanging off the odd edge. The soffits stay almost bare.
+// The host hands over its shells as BufferGeometry[] in world space; this pass
+// samples their faces (BIO.upFaces / downFaces / sideFaces / ledgePoints) and
+// grows on them. It never touches the geometry -- a plant is never part of a
+// building.
+(function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm,qEuler,qFacing,qUp}=BIO.fn;
+const PAL=SEDESERT.PAL,C=SEDESERT.C,SPK=SEDESERT.byKey;
+const {bright,vary,leafCol}=SEDESERT,{tuft,card,agaveR,barrel}=SEDESERT.small;
+const licCol=()=>leafCol(PAL.lichen,1.1,.03,.1,.06);
+const vineCol=()=>leafCol(PAL.saltbush,1.2,.03,.08,.05);
+
+// a LICHEN CRUST lying on a surface with normal n
+function lichen(p,n,r){const q=qUp(n);const s=r*rr(.7,1.3);
+ BIO.put('lichen',[p[0]+n[0]*.05,p[1]+n[1]*.05,p[2]+n[2]*.05],q,[s,1,s],licCol());}
+// a CLIMBING SUCCULENT hanging off a point: a few strands facing (dx,dz)
+function hangs(p,dx,dz,len,w){const m=Math.hypot(dx,dz);
+ if(m<1e-6){const a=rng()*TAU;dx=Math.cos(a);dz=Math.sin(a);}else{dx/=m;dz/=m;}
+ const q=qFacing([dx,0,dz]),tx=-dz,tz=dx,n=1+Math.floor(rng()*3),c=vineCol();
+ for(let i=0;i<n;i++){const o=(i-(n-1)/2)*w/n+rr(-.1,.1)*w,L=len*rr(.5,1);
+  BIO.put('strand',[p[0]+tx*o+dx*rr(.05,.3),p[1]+rr(-.15,.05),p[2]+tz*o+dz*rr(.05,.3)],q,[w/n*rr(.6,1.2),L,1],c.clone().multiplyScalar(rr(.85,1.1)));}}
+// a PLANT on a ledge: the floor's own grass, agave, barrel and creosote, at the ledge's scale
+function plant(p,s){const k=rng();const y=p[1];
+ if(k<.4){for(let i=0,n=1+Math.floor(rng()*3);i<n;i++)tuft('grass',p[0]+rr(-.5,.5)*s,y,p[2]+rr(-.5,.5)*s,s*.8,s*.7,leafCol(PAL.drygrass,1.3,.03,.1,.06));}
+ else if(k<.65)agaveR(p[0],y,p[2],PAL.agave,s*.55);
+ else if(k<.82)barrel(p[0],y,p[2],1,s*.45);
+ else card('small',p[0],y+s*.4,p[2],s*1.2,s*.8,leafCol(PAL.creosote,1.4,.04,.1,.06),.2);}
+// a SMALL TREE on a ledge: a desert rose (a swollen little trunk with pink blooms) or a young dragon tree
+function smallTree(p,h){
+ if(rng()<.5){const S=SPK.rose;BIO.put('trunk2',[p[0],p[1],p[2]],qEuler(rr(-.05,.05),0,rr(-.05,.05)),[h*.45/.4,h*.6,h*.45/.4],C(pick(S.bark)));
+  const c=bright(vary(pick(PAL.comp),.03,.1,.06),1.15);for(let i=0,n=6+Math.floor(rng()*8);i<n;i++){const a=rng()*TAU,d=h*.35*Math.sqrt(rng());BIO.put('bloom',[p[0]+Math.cos(a)*d,p[1]+h*.6+rr(0,.3)*h,p[2]+Math.sin(a)*d],qEuler(rr(-.5,.5),rng()*TAU,rr(-.5,.5)),rr(.3,.5),c);}}
+ else{const S=SPK.dragon;BIO.put('trunk2',[p[0],p[1],p[2]],qEuler(rr(-.05,.05),0,rr(-.05,.05)),[h*.06/.4+.3,h*.7,h*.06/.4+.3],C(pick(S.bark)));
+  const c=C(pick(S.leaf)),n=3+Math.floor(rng()*4);for(let i=0;i<n;i++){const a=i/n*TAU,d=h*.25;BIO.put('strap',[p[0]+Math.cos(a)*d,p[1]+h*.75,p[2]+Math.sin(a)*d],qEuler(rr(-.2,.2),rng()*TAU,rr(-.2,.2)),[h*.35,h*.2,h*.35],c.clone().multiplyScalar(rr(1.1,1.4)),{n:[Math.cos(a)*.5,.8,Math.sin(a)*.5]});}}}
+// LEDGES: lichen on the flat, plants toward the outer edge, a succulent hanging off the odd edge
+SEDESERT.dressLedges=function(geos,opt){opt=opt||{};
+ const nL=opt.lichen||300,nP=opt.plants||120,nE=opt.edges||60;
+ BIO.upFaces(geos,nL,.6).forEach(f=>lichen(f.p,f.n,rr(.6,opt.lichenR||2)));
+ BIO.upFaces(geos,nP,.6).forEach(f=>{if(rng()<.08)smallTree(f.p,rr(3,opt.treeH||7));else plant(f.p,rr(.8,opt.size||2));});
+ BIO.ledgePoints(geos,nE,2.5).forEach(l=>{const p=[l.p[0]+l.n[0]*.3,l.p[1]-.1,l.p[2]+l.n[2]*.3];
+  lichen([l.p[0],l.p[1],l.p[2]],[0,1,0],rr(.6,1.4));
+  if(rng()<.35)hangs(p,l.n[0],l.n[2],rr(2,opt.hang||8),rr(1,3));});};
+// SOFFITS: a little lichen near the rim, a strand or two; the middle stays bare
+SEDESERT.dressSoffits=function(geos,opt){opt=opt||{};
+ const S=BIO.downFaces(geos,opt.n||120,.6);if(!S.length)return;
+ let cx=0,cz=0;S.forEach(f=>{cx+=f.p[0];cz+=f.p[2];});cx/=S.length;cz/=S.length;
+ let rMax=1e-6;S.forEach(f=>{f.r=Math.hypot(f.p[0]-cx,f.p[2]-cz);if(f.r>rMax)rMax=f.r;});
+ S.forEach(f=>{const u=f.r/rMax,lit=Math.pow(u,1.6);if(rng()>lit*.6)return;
+  lichen(f.p,[0,-1,0],rr(.5,opt.lichenR||1.5));
+  if(rng()<lit*.25)hangs([f.p[0],f.p[1]-.2,f.p[2]],f.p[0]-cx,f.p[2]-cz,rr(2,opt.hang||6),rr(1,2));});};
+// WALLS: lichen streaks under the drips, a cactus in a crack
+SEDESERT.dressWalls=function(geos,opt){opt=opt||{};
+ BIO.sideFaces(geos,opt.n||160).forEach(f=>{const k=rng();
+  if(k<.7)lichen([f.p[0]+f.n[0]*.05,f.p[1],f.p[2]+f.n[2]*.05],f.n,rr(.5,1.6));
+  else if(k<.85)BIO.put('barrel',[f.p[0]+f.n[0]*.25,f.p[1],f.p[2]+f.n[2]*.25],qUp(f.n),[.45,.5,.45],leafCol(PAL.barrel,1.15,.03,.08,.05));
+  else hangs([f.p[0]+f.n[0]*.3,f.p[1],f.p[2]+f.n[2]*.3],f.n[0],f.n[2],rr(1.5,opt.hang||5),rr(.8,2));});};
+SEDESERT.dressGeos=function(geos,opt){opt=opt||{};reseed(650021+(opt.seed||0));
+ SEDESERT.dressLedges(geos,opt.ledges||{});SEDESERT.dressSoffits(geos,opt.soffits||{});SEDESERT.dressWalls(geos,opt.walls||{});};
+})();
+
+// ==================== 70-biome-sedesert.js
+// ================================================================= EASTERN HIGH DESERT — build / dress / canopyH
+// The biome's public surface (BIOME-API.md). The passes live in 55 (trees),
+// 60 (floor) and 65 (dress); this file only orders them and reports.
+SEDESERT.build=function(opt){opt=opt||{};const R=opt.R||3000,q=opt.quality==null?1:opt.quality;
+ if(opt.waterHue!=null)SEDESERT.setWater(opt.waterHue);
+ const out={R,quality:q,trees:0,heroes:0,far:0};
+ if(SEDESERT.buildTrees){BIO.cur='desert/trees';Object.assign(out,SEDESERT.buildTrees(R,q));}
+ if(SEDESERT.buildFloor){BIO.cur='desert/floor';Object.assign(out,SEDESERT.buildFloor(R,q));}
+ if(SEDESERT.buildFauna){BIO.cur='desert/fauna';Object.assign(out,SEDESERT.buildFauna(R,q));}
+ BIO.cur=null;return out;};
+SEDESERT.dress=function(geos,opt){if(SEDESERT.dressGeos){BIO.cur='desert/dress';SEDESERT.dressGeos(geos,opt||{});BIO.cur=null;}};
+SEDESERT.canopyH=function(x,z){return SEDESERT._canopyH?SEDESERT._canopyH(x,z):6;};
+
+// ==================== 75-biome-sedesert-fauna.js
+// ================================================================= EASTERN HIGH DESERT — fauna
+// The first fauna layer on the biome contract. Four kinds, each placed from
+// the same climate fields the flora reads, and animated by the biome itself
+// through BIO.tick (the core makes the dynamic instanced meshes, BIO.dynamic):
+//   KITES      big broad-winged raptors circling in thermals over the mesas,
+//              the butte and the canyon: a few birds per thermal, banked into
+//              the turn, climbing and sinking slowly, wingspan 3 m
+//   SWIFTS     flocks of small fast birds over the pond and the canyon's water,
+//              a flat swarm that never quite settles
+//   STRIDERS   long-legged flightless walkers in small bands on the canyon
+//              floor and at the pond, pacing the river; sand-coloured, 2.4 m
+//   LIZARDS    basking on the floor's boulders (SEDESERT.ROCKS), banded, still
+// Tags follow the project rule. No fauna is ever part of a building.
+(function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm,qEuler,qFacing,qUp}=BIO.fn;
+const PAL=SEDESERT.PAL,zones=SEDESERT.zones,C=SEDESERT.C,{bright,vary}=SEDESERT;
+const T3=BIO.host.THREE;
+SEDESERT.FAUNA=[
+ {key:'kite',name:'Desert kite',span:[2.6,3.4],tags:{climate:'tropic',aridity:'arid',abyssal:false,riparian:'both'}},
+ {key:'swift',name:'Wadi swift',span:[.6,.8],tags:{climate:'tropic',aridity:'semiarid',abyssal:false,riparian:'yes'}},
+ {key:'strider',name:'Sand strider',H:[2.0,2.7],tags:{climate:'tropic',aridity:'semiarid',abyssal:false,riparian:'both'}},
+ {key:'lizard',name:'Rock lizard',L:[.25,.45],tags:{climate:'tropic',aridity:'arid',abyssal:false,riparian:'no'}},
+];
+// ---------------------------------------------------------------- geometries (unit, vertex-coloured)
+const G={};
+// a gliding bird: a body spindle and two swept wings, span 1 along x, facing +z, vertex-coloured (pale underside)
+G.bird=function(){const pos=[],nor=[],col=[];
+ const tri=(a,b,c,cc)=>{const ux=b[0]-a[0],uy=b[1]-a[1],uz=b[2]-a[2],vx=c[0]-a[0],vy=c[1]-a[1],vz=c[2]-a[2];let nx=uy*vz-uz*vy,ny=uz*vx-ux*vz,nz=ux*vy-uy*vx;const l=Math.hypot(nx,ny,nz)||1;
+  [a,b,c].forEach(p=>{pos.push(p[0],p[1],p[2]);nor.push(nx/l,ny/l,nz/l);col.push(cc,cc,cc);});};
+ const body=[[0,0,.16],[.03,.02,0],[-.03,.02,0],[0,-.03,0],[0,0,-.14]];
+ tri(body[0],body[1],body[3],.9);tri(body[0],body[3],body[2],.9);tri(body[0],body[2],body[1],.55);
+ tri(body[4],body[3],body[1],.9);tri(body[4],body[2],body[3],.9);tri(body[4],body[1],body[2],.55);
+ for(let s=-1;s<=1;s+=2){const root=[s*.03,.02,.03],mid=[s*.28,.04,.0],tip=[s*.5,.0,-.06],back=[s*.2,.02,-.1];
+  // top (dark) and underside (pale), both faces
+  tri(root,mid,back,.5);tri(mid,tip,back,.5);tri(root,back,mid,.95);tri(mid,back,tip,.95);}
+ const tail=[[0,0,-.12],[.06,0,-.24],[-.06,0,-.24]];tri(tail[0],tail[1],tail[2],.6);tri(tail[0],tail[2],tail[1],.9);
+ return BIO.geo._make(pos,nor,new Array(pos.length/3*2).fill(0),col);};
+// a strider's body: a plump spindle with a long neck and a small head, facing +z, legs are rods
+G.striderBody=function(){const g=new T3.SphereGeometry(.5,8,6);g.scale(.55,.6,1);
+ const neck=new T3.CylinderGeometry(.06,.1,1.0,5).translate(0,.5,0).rotateX(-.7).translate(0,.4,.4);
+ const head=new T3.SphereGeometry(.15,6,5).scale(1,.8,1.6).translate(0,1.12,1.06);
+ const parts=[g,neck,head],pos=[],nor=[],col=[];
+ parts.forEach((p,i)=>{const q=p.toNonIndexed(),a=q.attributes.position.array,n=q.attributes.normal.array;for(let k=0;k<a.length;k+=3){pos.push(a[k],a[k+1],a[k+2]);nor.push(n[k],n[k+1],n[k+2]);const sh=i===0?(a[k+1]<-.1?.98:.8):.75;col.push(sh,sh,sh);}});
+ return BIO.geo._make(pos,nor,new Array(pos.length/3*2).fill(0),col);};
+// a lizard: a flat body, a tapering tail, a wedge head; length 1 along +z, banded by vertex colour
+G.lizard=function(){const pos=[],nor=[],col=[];const P=[];
+ const W=u=>u<.35?.16*Math.sin(u/.35*Math.PI*.5+.4):u<.62?.16:.16*(1-(u-.62)/.38);
+ const H=u=>u<.62?.07:.07*(1-(u-.62)/.38)+.005;
+ const n=12;for(let i=0;i<=n;i++){const u=i/n,z=u-.45,w=W(u),h=H(u),band=(i%3===0)?.55:1;P.push([[-w,0,z,band],[0,h,z,band*1.1],[w,0,z,band]]);}
+ const push=(p,nn)=>{pos.push(p[0],p[1],p[2]);nor.push(nn[0],nn[1],nn[2]);col.push(p[3],p[3],p[3]);};
+ for(let i=0;i<n;i++){const a=P[i],b=P[i+1];for(let s=0;s<2;s++){const a0=a[s],a1=a[s+1],b0=b[s],b1=b[s+1],nn=s===0?[-.6,.8,0]:[.6,.8,0];push(a0,nn);push(b1,nn);push(b0,nn);push(a0,nn);push(a1,nn);push(b1,nn);}}
+ for(let k=0;k<4;k++){const s=k<2?-1:1,z=k%2?.05:-.25,leg=[[s*.1,.03,z,.7],[s*.3,.0,z-.06*s,.7],[s*.3,.0,z+.06,.7]];push(leg[0],[0,1,0]);push(leg[1],[0,1,0]);push(leg[2],[0,1,0]);}
+ return BIO.geo._make(pos,nor,new Array(pos.length/3*2).fill(0),col);};
+// ---------------------------------------------------------------- materials
+const M={
+ bird:BIO.leafMat(null,'fauna-bird',{swayW:'0.0',swayA:0,alphaTest:0,vertexColors:true}),
+ body:BIO.leafMat(null,'fauna-body',{swayW:'0.0',swayA:0,alphaTest:0,vertexColors:true}),
+ solid:BIO.solidMat(null,0xffffff),
+};
+BIO.def('lizard',G.lizard(),M.body,{label:'Rock lizards'});
+// ---------------------------------------------------------------- the pass
+// Static fauna is put like any item; the moving kinds are laid out here and
+// driven by one tick.
+SEDESERT.buildFauna=function(R,q){
+ reseed(700021);q=q==null?1:q;R=R||3000;const T=T3,st={kites:0,swifts:0,striders:0,lizards:0,thermals:0,flocks:0,bands:0};
+ const LOD=BIO.LOD(),Y=(x,z)=>BIO.terrainH(x,z);
+ // ---- lizards: on the boulders the floor left, where the ground is dry and rocky
+ SEDESERT.ROCKS.forEach(r=>{if(rng()>.28*q)return;const Z=zones(r[0],r[2]);if(Z.scrub+Z.bad+Z.rim+Z.mtn<.3)return;
+  const L=rr(.25,.45),c=bright(vary(pick([0x8a7a5a,0x9a8a6a,0x6a5a4a,0xa0805a]),.03,.1,.06),1.1);
+  BIO.put('lizard',[r[0]+rr(-.3,.3)*r[3],r[1],r[2]+rr(-.3,.3)*r[3]],qEuler(0,rr(0,TAU),0),[L,L,L],c);st.lizards++;});
+ // ---- kites: thermals over high ground, the canyon and the butte, a few birds each
+ const therm=[];
+ BIO.grid(380,0,R,(x,z)=>{if(BIO.lodD(x,z)>LOD.far)return 0;const Z=zones(x,z);return (Z.rim*.8+Z.bad*.5+Z.up*1.2+Z.scrub*.15)*q;},(x,y,z)=>{
+  therm.push({x,z,y0:y+rr(60,140),r:rr(40,90),n:ri(2,5),w:rr(.12,.2)*(rng()<.5?1:-1),ph:rr(0,TAU),climb:rr(20,45)});},{patch:.3,pad:0,noMask:true});
+ const kites=[];therm.forEach(t=>{for(let i=0;i<t.n;i++)kites.push({t,a:rr(0,TAU),dr:rr(.8,1.15),dy:rr(-8,8),span:rr(2.6,3.4),ph:rr(0,TAU)});st.thermals++;});
+ st.kites=kites.length;
+ // ---- swifts: flocks over the pond and the river's water
+ const flocks=[];
+ BIO.grid(90,0,R,(x,z)=>{if(BIO.lodD(x,z)>LOD.mid)return 0;const Z=zones(x,z);return (Z.oasis*.9+Z.bank*.7)*q;},(x,y,z)=>{
+  flocks.push({x,z,y0:BIO.waterH(x,z)>-1e8?BIO.waterH(x,z)+rr(6,14):y+rr(6,14),n:ri(14,30),r:rr(18,40),ph:rr(0,TAU),w:rr(.5,.9)});},{patch:.4,pad:0,noMask:true,depth:[-3,3],box:BIO.window('water')});
+ const swifts=[];flocks.forEach(f=>{for(let i=0;i<f.n;i++)swifts.push({f,p:rr(0,TAU),q:rr(0,TAU),k:rr(.7,1.3),span:rr(.6,.8)});st.flocks++;});
+ st.swifts=swifts.length;
+ // ---- striders: bands on the canyon floor and at the pond, walking the river's way and back
+ const bands=[];
+ BIO.grid(110,0,R,(x,z)=>{if(BIO.lodD(x,z)>LOD.mid)return 0;const Z=zones(x,z);return (Z.rip*.6+Z.oasis*.5)*q*smooth(.4,.15,Z.slope);},(x,y,z)=>{
+  bands.push({x,z,n:ri(4,9),ph:rr(0,TAU),dir:rr(0,TAU),len:rr(40,80),sp:rr(.9,1.4)});},{patch:.2,pad:3});
+ const striders=[];bands.forEach(b=>{for(let i=0;i<b.n;i++)striders.push({b,ox:rr(-9,9),oz:rr(-9,9),H:rr(2.0,2.7),ph:rr(0,TAU),c:bright(vary(pick([0xa88858,0x987848,0xb09060,0x8a6a40]),.02,.08,.05),.9).convertSRGBToLinear()});st.bands++;});   // an instance colour is LINEAR (BIO.put converts; a dynamic mesh must itself)
+ st.striders=striders.length;
+ // ---- the dynamic meshes
+ const kiteM=kites.length?BIO.dynamic('kite',G.bird(),M.bird,kites.length,{label:'Desert kites'}):null;
+ const swiftM=swifts.length?BIO.dynamic('swift',G.bird(),M.bird,swifts.length,{label:'Wadi swifts'}):null;
+ const bodyM=striders.length?BIO.dynamic('strider',G.striderBody(),M.body,striders.length,{label:'Sand striders'}):null;
+ const legM=striders.length?BIO.dynamic('striderleg',BIO.geo.rod(5),M.solid,striders.length*2,{label:'Sand striders'}):null;
+ const m=new T.Matrix4(),p=new T.Vector3(),qq=new T.Quaternion(),s=new T.Vector3(),e=new T.Euler(),c=new T.Color();
+ const setI=(im,i,x,y,z,rx,ry,rz,sx,sy,sz,col)=>{p.set(x,y,z);e.set(rx,ry,rz,'YXZ');qq.setFromEuler(e);s.set(sx,sy,sz);m.compose(p,qq,s);im.setMatrixAt(i,m);if(col)im.setColorAt(i,col);};
+ const kiteCol=C(0x4a3a2c).convertSRGBToLinear(),swiftCol=C(0x3a3a3c).convertSRGBToLinear();
+ // the first frame lays everyone out; the colours are set once
+ let first=true;
+ BIO.tick((dt,t)=>{
+  if(kiteM){kites.forEach((k,i)=>{const th=k.t,a=k.a+t*th.w,r=th.r*k.dr,x=th.x+Math.cos(a)*r,z=th.z+Math.sin(a)*r,y=th.y0+k.dy+th.climb*Math.sin(t*.05+k.ph);
+   const sg=Math.sign(th.w),heading=Math.atan2(-Math.sin(a)*sg,Math.cos(a)*sg);   // along the circle's tangent
+   setI(kiteM,i,x,y,z,.06*Math.sin(t*.7+k.ph),heading,-.45*sg,k.span,k.span,k.span,first?kiteCol:null);});kiteM.instanceMatrix.needsUpdate=true;if(first)kiteM.instanceColor.needsUpdate=true;}
+  if(swiftM){swifts.forEach((w,i)=>{const f=w.f,u=t*f.w*w.k,x=f.x+Math.cos(u+w.p)*f.r*Math.sin(u*.37+w.q),z=f.z+Math.sin(u*1.13+w.q)*f.r*.8,y=f.y0+4*Math.sin(u*1.7+w.p)+2*Math.cos(u*.6);
+   const vx=-Math.sin(u+w.p)*f.r*Math.sin(u*.37+w.q),vz=Math.cos(u*1.13+w.q)*f.r*.8,heading=Math.atan2(vx,vz);
+   setI(swiftM,i,x,y,z,0,heading,.3*Math.sin(u*2+w.p),w.span,w.span,w.span,first?swiftCol:null);});swiftM.instanceMatrix.needsUpdate=true;if(first)swiftM.instanceColor.needsUpdate=true;}
+  if(bodyM){striders.forEach((sd,i)=>{const b=sd.b,u=(t*b.sp+sd.ph*20)%(b.len*2),along=u<b.len?u:b.len*2-u,fwd=u<b.len?1:-1;
+   const x=b.x+Math.cos(b.dir)*(along-b.len/2)+sd.ox,z=b.z+Math.sin(b.dir)*(along-b.len/2)+sd.oz,g=Y(x,z),legH=sd.H*.5,step=t*b.sp*2.4+sd.ph,bob=.06*Math.abs(Math.sin(step));
+   const heading=Math.atan2(Math.cos(b.dir)*fwd,Math.sin(b.dir)*fwd),y=g+legH+bob;
+   setI(bodyM,i,x,y,z,0,heading,0,sd.H*.62,sd.H*.62,sd.H*.62,first?sd.c:null);
+   const dz=Math.sin(step)*.35,cd=Math.cos(heading),sn=Math.sin(heading);
+   for(let l=0;l<2;l++){const sg=l?1:-1,swing=dz*sg,lx=x+cd*.18*sg*-1+sn*swing*legH,lz=z-sn*.18*sg*-1+cd*swing*legH;
+    setI(legM,i*2+l,(x+lx)/2,g+legH*.55,(z+lz)/2,swing*.9,heading,0,.11,legH*1.1,.11,first?sd.c:null);}});   // the swing is fore-aft: about the local x
+   bodyM.instanceMatrix.needsUpdate=true;legM.instanceMatrix.needsUpdate=true;if(first){bodyM.instanceColor.needsUpdate=true;legM.instanceColor.needsUpdate=true;}}
+  first=false;});
+ SEDESERT.FAUNA_LAYOUT={thermals:therm,flocks:flocks,bands:bands};   // a world's camera may want to find them
+ therm.forEach(t=>BIO.register({name:'Kite thermal',x:t.x,z:t.z,y:t.y0-60,r:t.r*1.2+6,h:t.climb+80}));
+ bands.forEach(b=>BIO.register({name:'Sand striders',x:b.x,z:b.z,y:Y(b.x,b.z)-4,r:b.len/2+14,h:10}));
+ return{fauna:st};};
+})();
+
+// ==================== 82-host-sky.js
+// ================================================================= HOST — Krator sky (from the Hexahedron)
+// Baked equirectangular dome (a dry, deep-blue column with an ochre dust haze,
+// the sun, a few cumulus and cirrus, the Inner Wall mountains standing high in
+// the west, the far side of the Abyss a haze line in the east, low mesas on
+// every other horizon) and the gas giant as real geometry. Host-only: a biome
+// never touches the sky.
+
+// ---------------------------------------------------------------- the Inner Wall painter
+// We are on the plateau of the eastern high desert. The Inner Wall -- the
+// crater's great rampart -- stands in the west: a range of peaks 14-22 degrees
+// high at azimuth 270, falling to a low blue rim to the north and south, and
+// nothing to the east but the haze over the Abyss. u = ((270-az)/360) mod 1,
+// so west (az 270) is u=0/1; north u=.75, south u=.25, east u=.5.
+// how much a dome column at u faces azimuth az0: 1 straight at it, falling off as cos^p
+function facing(u,az0,p){const az=((270-u*360)%360+360)%360,d=Math.abs(((az-az0)%360+540)%360-180);return Math.pow(Math.max(0,Math.cos(d*Math.PI/180)),p);}
+function paintWall(g,w,h,HZ,DEG){const base=HZ+6;
+ const westOf=u=>facing(u,270,1.2);
+ const rimH=(u,layer)=>{const west=westOf(u);
+  const n=fbm(u*19+layer*7,layer*3.3,61+layer,3)-.5,n2=fbm(u*131+layer*2,layer,73+layer,3)-.5,n3=fbm(u*400,layer*2,75,2)-.5;
+  const peaks=Math.pow(Math.max(0,fbm(u*47+layer,layer*5,91,2)-.5)/.5,1.6);
+  return (layer===0?1.2+west*4:.8+west*15.5)*DEG+n*(layer===0?1.5:4.0)*DEG*(0.3+west)+n2*1.6*DEG*(.2+west)+n3*.5*DEG+peaks*4.5*DEG*west;};
+ const wallPath=layer=>{g.beginPath();g.moveTo(0,base+40);for(let x=0;x<=w;x+=2)g.lineTo(x,base-rimH(x/w,layer));g.lineTo(w,base+40);g.closePath();};
+ // the far ranges: blue-grey, hazed
+ g.fillStyle='rgba(150,160,180,.5)';wallPath(0);g.fill();
+ // the near wall: violet-grey rock, lit crests, darker toward the foot in its own haze
+ const grd=g.createLinearGradient(0,HZ-22*DEG,0,base);
+ grd.addColorStop(0,'rgba(120,112,124,1)');grd.addColorStop(.45,'rgba(96,88,98,1)');grd.addColorStop(1,'rgba(128,118,116,1)');
+ g.fillStyle=grd;wallPath(1);g.fill();
+ g.save();wallPath(1);g.clip();
+ // strata and ridges: bands falling to the right (the dip), gullies from the crests
+ for(let i=0;i<1800;i++){const u=rng(),e=westOf(u);if(rng()>e*e)continue;
+  const x=u*w,top=base-rimH(u,1),t=rng(),y=mix(top,base,t);
+  g.strokeStyle='rgba('+(rng()<.55?'56,50,58':'168,160,156')+','+(.10+rng()*.22).toFixed(2)+')';g.lineWidth=1+rng()*1.6;
+  g.beginPath();g.moveTo(x,y);g.lineTo(x+rr(-90,90),y+rr(-8,8));g.stroke();
+  if(rng()<.12){g.strokeStyle='rgba(40,36,44,'+(.2+rng()*.22).toFixed(2)+')';g.lineWidth=rr(1.5,3.5);g.beginPath();g.moveTo(x,top+3);g.lineTo(x+rr(-6,6),mix(top,base,rr(.4,.9)));g.stroke();}}
+ // sunlit crests (the sun is WNW: the west faces glow), a shadow under each
+ for(let x=0;x<=w;x+=2){const u=x/w,e=westOf(u),top=base-rimH(u,1);
+  g.fillStyle='rgba(246,232,214,'+(.42*e).toFixed(2)+')';g.fillRect(x,top,2,3+e*9);
+  g.fillStyle='rgba(40,36,44,'+(.2*e).toFixed(2)+')';g.fillRect(x,top+5+e*8,2,4+e*8);}
+ // the foot: a paler talus apron and the mountains' own dust haze
+ g.beginPath();g.moveTo(0,base+40);for(let x=0;x<=w;x+=2){const u=x/w,e=westOf(u);g.lineTo(x,base-(e*2.4*DEG)*(0.7+0.3*fbm(u*53,2,97,2))-(fbm(u*211,3,98,2)-.5)*1.0*DEG*e);}g.lineTo(w,base+40);g.closePath();
+ g.fillStyle='rgba(160,140,124,.8)';g.fill();
+ const vv=g.createLinearGradient(0,HZ-16*DEG,0,base);
+ vv.addColorStop(0,'rgba(222,206,184,.0)');vv.addColorStop(1,'rgba(222,206,184,.55)');
+ g.fillStyle=vv;g.fillRect(0,HZ-16*DEG,w,base-HZ+16*DEG);
+ g.restore();}
+const skyTex=BIO.canvasTex(4096,2048,(g,w,h)=>{
+ const HZ=h*.5,DEG=h/180;
+ // --- the column: dry air, a deep zenith, an ochre dust band at the horizon -
+ const grd=g.createLinearGradient(0,0,0,h);
+ grd.addColorStop(0.00,'#2f5aa0');grd.addColorStop(0.14,'#4570b0');
+ grd.addColorStop(0.30,'#6f92c2');grd.addColorStop(0.42,'#9fb4cc');
+ grd.addColorStop(0.478,'#cdd2c8');grd.addColorStop(0.497,'#e6d8c0');
+ grd.addColorStop(0.503,'#d2b494');grd.addColorStop(0.60,'#b88a66');
+ grd.addColorStop(0.78,'#9a6a4c');grd.addColorStop(1.00,'#7a5238');
+ g.fillStyle=grd;g.fillRect(0,0,w,h);
+ const wrapE=(x,y,rx,ry,f)=>{g.fillStyle=f;for(let k=-1;k<=1;k++){
+  g.beginPath();g.ellipse(x+k*w,y,rx,ry,0,0,TAU);g.fill();}};
+ // --- THE SUN, at the azimuth the directional light actually uses ----------
+ // sun.position is (-1000,1150,-560): azimuth 299.2, altitude 45.1. u follows
+ // the dome's own mapping, u = ((270-az)/360) mod 1.
+ const SUNU=((270-299.2)/360%1+1)%1, sx=w*SUNU, sy=HZ-45.1*DEG;
+ {const gl=g.createRadialGradient(sx,sy,0,sx,sy,520);
+  gl.addColorStop(0,'rgba(255,250,236,.95)');gl.addColorStop(.05,'rgba(255,244,214,.5)');
+  gl.addColorStop(.2,'rgba(255,236,196,.16)');gl.addColorStop(1,'rgba(255,230,180,0)');
+  g.fillStyle=gl;for(let k=-1;k<=1;k++)g.fillRect(sx-520+k*w,sy-520,1040,1040);
+  wrapE(sx,sy,15,15,'rgba(255,253,244,1)');}
+ // --- cirrus: long thin streaks high up -----------------------------------
+ for(let i=0;i<40;i++){const y=HZ-rr(28,70)*DEG,x=rng()*w,L=rr(200,700),a=rr(-.06,.06);
+  g.save();g.translate(x,y);g.rotate(a);g.fillStyle='rgba(245,246,250,'+(.05+.1*rng()).toFixed(3)+')';
+  for(let k=0;k<5;k++){g.beginPath();g.ellipse(rr(-L*.4,L*.4),rr(-6,6),L*rr(.3,.6),rr(2,6),0,0,TAU);g.fill();}g.restore();}
+ // --- a few fair-weather cumulus, flat-based, low ---------------------------
+ for(let ci=0;ci<60;ci++){
+  const t=Math.pow(rng(),1.5);
+  const cy=HZ-(3+t*26)*DEG, cx=rng()*w;
+  const sc=.35+.9*t+rr(0,.3), cw=rr(60,140)*sc, ch2=cw*rr(.16,.3);
+  const ca=(.2+.3*rng())*(1-.3*t);
+  wrapE(cx,cy+ch2*.12,cw*.92,ch2*.34,'rgba(160,150,150,'+(ca*.5).toFixed(3)+')');
+  const nP=6+Math.floor(rng()*7);
+  for(let p2=0;p2<nP;p2++){
+   const px=cx+rr(-1,1)*cw*.78,k2=1-Math.abs(px-cx)/cw;
+   const pr=ch2*(.45+.75*k2)*rr(.75,1.2);
+   wrapE(px,cy-pr*.55,pr*1.5,pr,'rgba(252,250,246,'+(ca*rr(.6,1)).toFixed(3)+')');}}
+ // --- dust veils near the horizon ------------------------------------------
+ for(let i=0;i<40;i++)
+  wrapE(rng()*w,HZ-rr(2,HZ*.3),rr(300,1200),rr(6,20),'rgba(236,220,196,'+(.03+.06*rng()).toFixed(3)+')');
+ // --- two small moons, well off the giant ----------------------------------
+ [[0.38,26,54,'rgba(232,228,220,'],[0.615,17,38,'rgba(220,206,198,']].forEach(M=>{
+  const mx=w*M[0],my=HZ-M[1]*DEG;
+  wrapE(mx,my,M[2],M[2],M[3]+'.6)');
+  wrapE(mx-M[2]*.3,my-M[2]*.3,M[2]*.62,M[2]*.62,M[3]+'.3)');});
+ // --- THE INNER WALL in the west --------------------------------------------
+ paintWall(g,w,h,HZ,DEG);
+ // --- the far side of the Abyss: a haze line low in the east, the desert's
+ //     far mesas everywhere else ------------------------------------------------
+ const eastOf=u=>facing(u,90,1.6);
+ g.beginPath();g.moveTo(0,HZ+20);for(let x=0;x<=w;x+=2){const u=x/w,e=eastOf(u);g.lineTo(x,HZ-(0.35+.35*(fbm(u*40,1,113,2)-.5))*DEG*e-(1-e)*.2*DEG);}g.lineTo(w,HZ+20);g.closePath();g.fillStyle='rgba(176,168,172,.45)';g.fill();
+ const mesas=(col,h0,h1,off)=>{g.fillStyle=col;g.beginPath();g.moveTo(0,HZ+20);
+  for(let x=0;x<=w;x+=2){const u=x/w,e=eastOf(u),n=fbm(off+u*60,off,7,2),step=Math.floor(fbm(off*3+u*180,off*3,11,2)*5)/5;
+   let hh=(h0+(h1-h0)*step)*(1-e*.9)*(.6+.4*n);g.lineTo(x,HZ-hh*DEG);}
+  g.lineTo(w,HZ+20);g.closePath();g.fill();};
+ mesas('rgba(168,132,116,.55)',.15,.7,17.3);
+ mesas('rgba(140,98,84,.7)',.1,.45,41.7);
+ const gm=g.createLinearGradient(0,HZ-DEG*1.2,0,HZ+24);
+ gm.addColorStop(0,'rgba(216,196,172,0)');gm.addColorStop(.3,'rgba(216,196,172,.3)');
+ gm.addColorStop(1,'rgba(216,196,172,.95)');
+ g.fillStyle=gm;g.fillRect(0,HZ-DEG*1.2,w,DEG*1.2+24);
+});
+skyTex.wrapS=THREE.RepeatWrapping;skyTex.wrapT=THREE.ClampToEdgeWrapping;
+const sky=new THREE.Mesh(new THREE.SphereGeometry(9000,72,44),
+ new THREE.MeshBasicMaterial({map:skyTex,side:THREE.BackSide,fog:false,depthWrite:false}));
+sky.userData.probeSkip=true;sky.renderOrder=-10;scene.add(sky);
+// THE GAS GIANT Krator orbits, ported from Girder's sky as real geometry
+// rather than a painted sprite. Canon: 30 degrees across at azimuth 67,
+// altitude 25 -- sixty full moons wide. It stands over the Abyss, in the
+// north-east, well clear of the Inner Wall: no overlay dome is needed here.
+//
+// The band coordinates are computed in the FRAGMENT shader from the world-space
+// normal against a world-space spin axis, so the mesh needs no rotation of its
+// own and there is no local/world convention to get wrong. The axis lies in the
+// PLANE OF THE SKY, tilted 23 degrees from the sky's own up: that is the only
+// reading that gives both a tilted planet AND rings seen as a hairline.
+const GIANT_DIST=6000,GIANT_R=GIANT_DIST*Math.tan(15*Math.PI/180);
+const giantDir=new THREE.Vector3(Math.sin(66*Math.PI/180)*Math.cos(25*Math.PI/180),Math.sin(25*Math.PI/180),-Math.cos(66*Math.PI/180)*Math.cos(25*Math.PI/180)).normalize();
+const _gE1=new THREE.Vector3().crossVectors(new THREE.Vector3(0,1,0),giantDir).normalize();
+const _gUp=new THREE.Vector3().crossVectors(giantDir,_gE1).normalize();
+const GIANT_AXIS=_gUp.clone().multiplyScalar(Math.cos(23*Math.PI/180))
+ .addScaledVector(_gE1,Math.sin(23*Math.PI/180)).normalize();
+const GIANT_B1=new THREE.Vector3().crossVectors(GIANT_AXIS,giantDir).normalize();
+const GIANT_B2=new THREE.Vector3().crossVectors(GIANT_AXIS,GIANT_B1).normalize();
+const GU={
+ uSunDir:{value:new THREE.Vector3().copy(sun.position).normalize()},
+ uAxis:{value:GIANT_AXIS},uE1:{value:GIANT_B1},uE2:{value:GIANT_B2},
+ uZone:{value:new THREE.Color(0x3c7e91)},uBelt:{value:new THREE.Color(0xd6c9a8)},
+ uStormC:{value:new THREE.Color(0xb98a63)},uRimCol:{value:new THREE.Color(0x9fd4ea)},
+ uNightC:{value:new THREE.Color(0x4b6f86)},uHazeC:{value:new THREE.Color(0xc4b4a0)},
+ uSpin:{value:0},uRingLat:{value:.08},uHazeK:{value:.30}};
+const giantMat=new THREE.ShaderMaterial({fog:false,depthWrite:false,uniforms:GU,
+ vertexShader:[
+  'varying vec3 vN; varying vec3 vV; varying vec3 vSky;',
+  'void main(){vec4 wp=modelMatrix*vec4(position,1.0);',
+  ' vN=normalize(mat3(modelMatrix)*normal);',
+  ' vV=normalize(cameraPosition-wp.xyz);',
+  ' vSky=normalize(wp.xyz-cameraPosition);',
+  ' gl_Position=projectionMatrix*viewMatrix*wp;}'].join('\n'),
+ fragmentShader:[
+  'uniform vec3 uSunDir,uAxis,uE1,uE2,uZone,uBelt,uStormC,uRimCol,uNightC,uHazeC;',
+  'uniform float uSpin,uRingLat,uHazeK;',
+  'varying vec3 vN; varying vec3 vV; varying vec3 vSky;',
+  'float oval(float lat,float lon,vec4 s){float dl=lat-s.x;',
+  ' float dg=mod(lon-s.y+3.14159265,6.28318531)-3.14159265;',
+  ' return (dg*dg)/(s.z*s.z)+(dl*dl)/(s.w*s.w);}',
+  'void main(){vec3 N=normalize(vN),V=normalize(vV);',
+  ' float sLat=clamp(dot(N,uAxis),-1.0,1.0), lat=asin(sLat);',
+  ' float lon=atan(dot(N,uE2),dot(N,uE1))+uSpin;',
+  ' float wav=0.42*sin(lon*3.0+lat*6.0)+0.24*sin(lon*7.0-2.1)+0.13*sin(lon*13.0+lat*3.0);',
+  ' float b=sin(lat*10.0+wav);',
+  ' vec3 col=mix(uZone,uBelt,smoothstep(-0.45,0.45,b));',
+  ' col*=0.93+0.12*sin(lat*37.0+1.6*sin(lon*2.0+0.7));',
+  ' col=mix(col,uZone*0.70,smoothstep(0.70,1.0,abs(sLat)));',
+  ' col=mix(uStormC,col,smoothstep(0.45,1.0,oval(lat,lon,vec4(-0.36,1.10,0.40,0.13))));',
+  ' col=mix(uStormC*1.12,col,smoothstep(0.45,1.0,oval(lat,lon,vec4(0.21,4.05,0.26,0.085))));',
+  ' col*=1.0-0.34*(1.0-smoothstep(0.0,0.075,abs(lat-uRingLat)));',
+  // clamp not max: two unit vectors can dot a hair over 1.0 and pow() of a
+  // negative base is undefined in GLSL
+  ' float ndv=clamp(dot(N,V),0.0,1.0);',
+  ' float limb=pow(max(ndv,0.0015),0.35);',
+  ' float ndl=dot(N,uSunDir);',
+  ' float day=smoothstep(-0.17,0.17,ndl);',
+  ' vec3 outc=col*limb*(0.92*day)+col*limb*uNightC*0.11;',
+  ' float fres=pow(max(1.0-ndv,0.0),3.2);',
+  ' outc+=uRimCol*fres*0.16*mix(smoothstep(-0.35,0.45,ndl),1.0,0.15);',
+  // extinction: the disc is 30 deg wide, so its lower limb sits a good deal
+  // deeper in the air than its upper one; the air is drier here than on the
+  // basin floor, so the floor under the extinction is lower
+  ' float up=max(vSky.y,0.0);',
+  ' outc=mix(outc,uHazeC,clamp(0.30+uHazeK*exp(-up/0.16),0.0,0.86));',
+  ' gl_FragColor=vec4(outc,1.0);}'].join('\n')});
+const giant=new THREE.Mesh(new THREE.SphereGeometry(GIANT_R,96,64),giantMat);
+giant.renderOrder=-9;giant.userData.probeSkip=true;scene.add(giant);
+// the rings, edge-on because the spin axis lies in the plane of the sky
+const ringMat=new THREE.ShaderMaterial({fog:false,transparent:true,depthWrite:false,
+ side:THREE.DoubleSide,uniforms:{uIn:{value:1.30},uOut:{value:2.12},
+  uCol:{value:new THREE.Color(0xbcb09a)},uHazeC:GU.uHazeC,uHazeK:GU.uHazeK},
+ vertexShader:['varying vec2 vUvR; varying vec3 vSky;',
+  'void main(){vUvR=position.xy;vec4 wp=modelMatrix*vec4(position,1.0);',
+  ' vSky=normalize(wp.xyz-cameraPosition);',
+  ' gl_Position=projectionMatrix*viewMatrix*wp;}'].join('\n'),
+ fragmentShader:['uniform float uIn,uOut,uHazeK;uniform vec3 uCol,uHazeC;',
+  'varying vec2 vUvR; varying vec3 vSky;',
+  'void main(){float r=length(vUvR);',
+  ' float t=(r-uIn)/(uOut-uIn);',
+  ' if(t<0.0||t>1.0)discard;',
+  ' float a=0.62*(0.45+0.55*sin(t*34.0))*(1.0-smoothstep(0.86,1.0,t));',
+  ' a*=smoothstep(0.0,0.06,t);',
+  ' a*=1.0-0.55*smoothstep(0.40,0.46,t)*(1.0-smoothstep(0.46,0.52,t));',
+  ' vec3 c=uCol*(0.8+0.3*sin(t*21.0));',
+  ' float up=max(vSky.y,0.0);',
+  ' c=mix(c,uHazeC,clamp(0.2+uHazeK*exp(-up/0.16),0.0,0.86));',
+  ' gl_FragColor=vec4(c,a);}'].join('\n')});
+const giantRing=new THREE.Mesh(new THREE.RingGeometry(GIANT_R*1.30,GIANT_R*2.12,256,1),ringMat);
+giantRing.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,1),GIANT_AXIS);
+giantRing.renderOrder=-9;giantRing.userData.probeSkip=true;scene.add(giantRing);
+TICKS.push(function(dt){GU.uSpin.value+=dt*0.006;});
+
+// ==================== 85-host-tower.js
+// ================================================================= HOST — one Girder tower
+// A single ruined tower of Girder's four, standing on the canyon's north rim (back
+// from the edge, on the flat) so the desert dressing pass has soffits, ledges
+// and walls to work on, and the river has something for scale.
+// A single ruined tower of Girder's four (30 storeys of 5 m on a 48 m square,
+// 4x4 cyclopean columns, 16 m floor plates in a 3x3 grid, spandrel girders,
+// X-bracing, core walls, a ragged unfinished top), rebuilt here in plain
+// three.js so the biome has soffits, ledges and walls to grow on. It is a TEST
+// STRUCTURE for SEDESERT.dress(): the host merges its shells per material
+// and hands the geometries over; the biome samples their faces itself.
+// Host-only. No plant is placed in this file.
+function buildTestTower(){
+ const TX=TOWER.x,TZ=TOWER.z,HALF=24,N=30,FH=5,SLAB=1,COLS=[-HALF+1.6,-8,8,HALF-1.6];
+ const y0=terrainH(TX,TZ);
+ const conc=[],rust=[];
+ const box=(list,x,y,z,w,h,d,rot)=>{const g=new THREE.BoxGeometry(w,h,d);if(rot){g.rotateX(rot[0]||0);g.rotateY(rot[1]||0);g.rotateZ(rot[2]||0);}g.translate(x,y+h/2,z);list.push(g);};
+ const beam=(list,ax,ay,az,bx,by,bz,w,d)=>{const L=Math.hypot(bx-ax,by-ay,bz-az);const g=new THREE.BoxGeometry(w,L,d);
+  const q=new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0),new THREE.Vector3(bx-ax,by-ay,bz-az).normalize());
+  g.applyMatrix4(new THREE.Matrix4().makeRotationFromQuaternion(q));g.translate((ax+bx)/2,(ay+by)/2,(az+bz)/2);list.push(g);};
+ // the ruin state: floors above 18 lose plates, the top is ragged
+ const floors=[];for(let k=0;k<=N;k++){const missing=[];
+  if(k>10)for(let bi=-1;bi<=1;bi++)for(let bj=-1;bj<=1;bj++){const p=k>22?.55:(k>16?.30:.10);if(rng()<p)missing.push(bi+','+bj);}
+  floors.push({k,y:y0+3+k*FH,missing});}
+ const top=y0+3+N*FH;
+ // columns, some running on past the roof as broken stubs
+ COLS.forEach((cx,i)=>COLS.forEach((cz,j)=>{const over=rng()<.55?rr(2,13):.4;box(rust,TX+cx,y0-3,TZ+cz,3.2,top-y0+3+over,3.2);}));
+ floors.forEach(F=>{const yb=F.y-SLAB;
+  for(let bi=-1;bi<=1;bi++)for(let bj=-1;bj<=1;bj++){if(F.missing.indexOf(bi+','+bj)>=0)continue;
+   if(bi||bj)box(conc,TX+bi*16,yb,TZ+bj*16,16.02,SLAB,16.02);
+   else if(F.k<N){box(conc,TX-6.2,yb,TZ,3.6,SLAB,16);box(conc,TX+1.8,yb,TZ-6.1,12.4,SLAB,3.8);box(conc,TX+1.8,yb,TZ+6.1,12.4,SLAB,3.8);}}
+  [[0,-1],[0,1],[-1,0],[1,0]].forEach(f=>box(rust,TX+f[0]*(HALF-.35),yb-.9,TZ+f[1]*(HALF-.35),f[0]?.7:48,1.5,f[0]?48:.7));
+  [-8,8].forEach(c=>{box(rust,TX+c,yb-.8,TZ,.9,.8,47);box(rust,TX,yb-.8,TZ+c,47,.8,.9);});
+  if(F.k<N&&F.k<20){box(conc,TX,F.y,TZ-7.6,16,FH,.8);box(conc,TX,F.y,TZ+7.6,16,FH,.8);box(conc,TX+7.6,F.y,TZ,.8,FH,14.4);}
+ });
+ // X-bracing, two storeys at a time, gaps where it has fallen
+ [[0,-1],[0,1],[-1,0],[1,0]].forEach(f=>{for(let k=0;k<N;k+=2){if(rng()<.22)continue;
+  const ya=floors[k].y,yb2=floors[Math.min(N,k+2)].y-SLAB,px=TX+f[0]*(HALF-.4),pz=TZ+f[1]*(HALF-.4),ax=f[0]?0:-8,az=f[1]?0:-8;
+  beam(rust,px+ax,ya,pz+az,px-ax,yb2,pz-az,.55,.55);beam(rust,px-ax,ya,pz-az,px+ax,yb2,pz+az,.55,.55);}});
+ // rubble at the foot
+ for(let i=0;i<40;i++){const a=rng()*TAU,r=rr(26,52);const x=TX+Math.cos(a)*r,z=TZ+Math.sin(a)*r;box(conc,x,terrainH(x,z)-.5,z,rr(2,7),rr(1,3),rr(2,6),[rr(-.3,.3),rng()*TAU,rr(-.3,.3)]);}
+ // merge per material
+ const TEXC=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,v=150+(fbm(x/18,y/18,2.2,3)-.5)*60+(fbm(x/3,y/3,8,1)-.5)*20;d[i]=v*.92;d[i+1]=v*.86;d[i+2]=v*.74;d[i+3]=255;}g.putImageData(id,0,0);});
+ const TEXR=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,v=fbm(x/14,y/9,5.5,3),u=fbm(x/4,y/4,3,2);d[i]=96+v*46+u*16;d[i+1]=70+v*34+u*8;d[i+2]=52+v*22;d[i+3]=255;}g.putImageData(id,0,0);});
+ const merge=(list,mat,label)=>{const pos=[],nor=[],uv=[];
+  list.forEach(g=>{const ng=g.toNonIndexed();const p=ng.attributes.position.array,n=ng.attributes.normal.array;
+   for(let i=0;i<p.length;i++){pos.push(p[i]);nor.push(n[i]);}
+   for(let i=0;i<p.length;i+=3){uv.push((p[i]+p[i+2])/6,p[i+1]/6);}});   // triplanar-ish world uv
+  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setAttribute('normal',new THREE.Float32BufferAttribute(nor,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));
+  const m=new THREE.Mesh(geo,mat);m.userData.inspectLabel=label;m.userData.host=true;scene.add(m);return geo;};
+ const gC=merge(conc,new THREE.MeshLambertMaterial({map:TEXC,color:0x8e8878}),'Girder tower — concrete');
+ const gR=merge(rust,new THREE.MeshLambertMaterial({map:TEXR,color:0x6e4a36}),'Girder tower — iron');
+ OBSTACLES.push({x:TX,z:TZ,r:HALF*1.5+6,y0:y0-5,y1:top+20});
+ REGISTER({name:'Girder tower (test structure, ruined)',x:TX,z:TZ,y:y0,r:HALF*1.5,h:top-y0+16});
+ return [gC,gR];}
+
+// ==================== 88-host-build.js
+// ================================================================= HOST — build
+// The order a world follows: its own structures first (they fill OBSTACLES and
+// hand their shells to dress()), then the biome, then one bake.
+window._biome=null;
+(function(){
+ const t0=performance.now();
+ let shells=[];
+ if(typeof buildTestTower==='function'){try{shells=buildTestTower()||[];}catch(e){reportErr('tower: '+e.stack);}}
+ try{window._biome=SEDESERT.build({R:TERR.R-150,quality:1});}catch(e){reportErr('biome: '+e.stack);}
+ if(shells.length){try{SEDESERT.dress(shells,{ledges:{lichen:1400,plants:420,edges:180,hang:9},soffits:{n:400,lichenR:1.5,hang:7},walls:{n:420}});}catch(e){reportErr('dress: '+e.stack);}}
+ const b=BIO.bake();
+ window._instances=b.inst;window._bakeCalls=b.calls;window._buildMs=Math.round(performance.now()-t0);
+ REGISTER({name:'The eastern high desert (ideal type)',x:0,z:0,r:TERR.R,h:1200});
+})();
+
+// ==================== 90-host-camera.js
+// ================================================================= HOST — camera, inspector, loop
+const ctl={target:new THREE.Vector3(0,0,0),theta:0,phi:1.1,radius:600};
+function setView(cx,cy,cz,tx,ty,tz){ctl.target.set(tx,ty,tz);const dx=cx-tx,dy=cy-ty,dz=cz-tz;ctl.radius=Math.sqrt(dx*dx+dy*dy+dz*dz);ctl.theta=Math.atan2(dx,dz);ctl.phi=Math.acos(clamp(dy/ctl.radius,-1,1));}
+function applyCam(){const r=ctl.radius,sp=Math.sin(ctl.phi);camera.position.set(ctl.target.x+r*sp*Math.sin(ctl.theta),ctl.target.y+r*Math.cos(ctl.phi),ctl.target.z+r*sp*Math.cos(ctl.theta));
+ const g=terrainH(camera.position.x,camera.position.z)+1.8;if(camera.position.y<g)camera.position.y=g;camera.lookAt(ctl.target);}
+// the presets are found on the map rather than typed: the river meanders, and
+// the scrub's stands (candelabra / cardon / Joshua) are an fbm field
+const gh=(x,z,dy)=>terrainH(x,z)+(dy||0);
+// one sweep of the map scores every preset at once: the species' own acceptance
+// (SEDESERT.PASSES), nearer the spine preferred
+const ACC=sp=>SEDESERT.PASSES.find(p=>p.sp===sp).accept;
+const SCORES={
+ cand:(Z,x,z,ld)=>ACC(1)(Z,x,z)-ld/6000,
+ card:(Z,x,z,ld)=>ACC(2)(Z,x,z)-ld/6000,
+ josh:(Z,x,z,ld)=>ACC(11)(Z,x,z)-ld/6000,
+ bad:(Z,x,z,ld)=>badK(x,z)*(1-Z.can)*(1-Z.rim)-Z.up*3-ld/4000,   // badK: the host's own badland field
+ quiv:(Z,x,z,ld)=>x>-1800?-1e9:Z.mtn*smooth(.7,.3,Z.up)-ld/8000};
+const P=(function(){const best={},bs={};for(const k in SCORES){best[k]=[0,0];bs[k]=-1e9;}
+ for(let z=-1900;z<=1900;z+=45)for(let x=-2900;x<=2950;x+=45){const Z=SEDESERT.zones(x,z),ld=BIO.lodD(x,z);
+  for(const k in SCORES){const s=SCORES[k](Z,x,z,ld);if(s>bs[k]){bs[k]=s;best[k]=[x,z];}}}return best;})();
+const P_CAND=P.cand,P_CARD=P.card,P_JOSH=P.josh,P_BAD=P.bad,P_QUIV=P.quiv;
+const look=(cx,cz,dyc,tx,tz,dyt)=>[cx,gh(cx,cz,dyc),cz,tx,gh(tx,tz,dyt),tz];
+// the fauna nearest a point: a thermal, a flock, a band (the layout the fauna pass left)
+function nearFauna(kind,x,z){const L=(SEDESERT.FAUNA_LAYOUT||{})[kind]||[];let b=null,bd=1e9;for(const f of L){const d=Math.hypot(f.x-x,f.z-z);if(d<bd){bd=d;b=f;}}return b||{x:x,z:z,y0:gh(x,z)+80,r:60,len:80};}
+const TH=nearFauna('thermals',BUTTE.x-200,BUTTE.z-400),FL=nearFauna('flocks',POND.x,POND.z),BD=nearFauna('bands',600,zR(600));
+// the nearest built hero of a species to a point, so a preset frames a real tree
+function nearTree(sp,x,z,minH){return SEDESERT.nearestTree(sp,x,z,minH)||{x:x,z:z,y0:gh(x,z),H:8,crownR:5};}
+// a camera d metres from a tree, looking at its crown
+function atTree(T,d,az,dy){const cx=T.x+Math.cos(az)*d,cz=T.z+Math.sin(az)*d;return[cx,Math.max(gh(cx,cz,2),T.y0+(dy==null?T.H*.45:dy)),cz,T.x,T.y0+T.H*.6,T.z];}
+const rimN=(x,k)=>zR(x)-Wc(x)*(k==null?1.1:k),rimS=(x,k)=>zR(x)+Wc(x)*(k==null?1.1:k);
+const VIEWS={
+ 'The linear oasis':look(400,rimN(400,1.15),10,900,zR(900),4),
+ 'Dragon trees on the rim':atTree(nearTree(0,-150,rimS(-150,1.1)),42,.6),
+ 'Mesquite bosque':atTree(nearTree(6,1100,zR(1100)+10,10),46,2.2,5),
+ 'The wadi gorge':look(-2380,zR(-2380)+26,5,-2650,zR(-2650),12),
+ 'The rain-shadow pond':[POND.x-230,PL+22,POND.z-190,POND.x+20,PL+.5,POND.z+10],
+ 'The butte':look(BUTTE.x-1500,BUTTE.z-650,55,BUTTE.x,BUTTE.z,100),
+ 'Candelabra scrub':atTree(nearTree(1,P_CAND[0],P_CAND[1]),95,2.3),
+ 'Cardon stand':atTree(nearTree(2,P_CARD[0],P_CARD[1]),80,2.0),
+ 'Joshua trees':atTree(nearTree(11,P_JOSH[0],P_JOSH[1]),40,2.6),
+ 'Badlands and hoodoos':look(P_BAD[0]-260,P_BAD[1]+220,60,P_BAD[0]+40,P_BAD[1]-40,12),
+ 'Quiver trees at the wall foot':atTree(nearTree(5,P_QUIV[0],P_QUIV[1]),60,.2,6),
+ 'Trackless red desert':look(600,2250,14,900,2950,8),
+ 'The tower':look(TOWER.x-430,TOWER.z-260,40,TOWER.x,TOWER.z,90),
+ 'Under the tower':look(TOWER.x+40,TOWER.z-70,4,TOWER.x,TOWER.z,80),
+ 'Kites in a thermal':[TH.x-TH.r*2.4,gh(TH.x-TH.r*2.4,TH.z+TH.r,14),TH.z+TH.r,TH.x,TH.y0+10,TH.z],
+ 'Swifts over the water':[FL.x-FL.r*.9,FL.y0+2,FL.z+FL.r*.7,FL.x,FL.y0,FL.z],
+ 'Sand striders':look(BD.x-24,BD.z+18,2.4,BD.x,BD.z,2.2),
+ 'The cataract':[FALL.x+420,FALL.y-110,FALL.z+300,FALL.x+60,FALL.y-260,FALL.z],
+ 'Into the Abyss':[3060,gh(3060,zR(3060)-220,26),zR(3060)-220,3700,-140,zR(3150)+60],
+ 'From afar':look(-2500,2550,360,0,0,40),
+ 'Krator rising':[-600,gh(-600,600,30),600,1900,900,-2100],
+};
+const ui=document.getElementById('ui');const sel=document.createElement('select');sel.id='viewsel';for(const k in VIEWS){const o=document.createElement('option');o.textContent=k;sel.appendChild(o);}sel.onchange=()=>setView(...VIEWS[sel.value]);ui.appendChild(sel);
+// hidden buttons, one per preset: verify.py drives the views through these
+const _hb=document.createElement('div');_hb.style.display='none';ui.appendChild(_hb);for(const k in VIEWS){const b=document.createElement('button');b.textContent=k;b.onclick=()=>setView(...VIEWS[k]);_hb.appendChild(b);}
+const insp=document.getElementById('insp');const ray=new THREE.Raycaster();
+function inspectAt(cx,cy){const v=new THREE.Vector2(cx/innerWidth*2-1,-(cy/innerHeight)*2+1);ray.setFromCamera(v,camera);
+ const hits=ray.intersectObjects(scene.children,true).filter(h=>!h.object.userData.probeSkip||h.object.userData.inspectLabel);
+ if(!hits.length){insp.textContent='(nothing)';return;}const p=hits[0].point,o=hits[0].object;
+ // the smallest registered volume round the point, ignoring the map-wide one
+ let best=null;for(const r of REG){if(r.r>1500)continue;if(regHas(r,p.x,p.y,p.z)&&(!best||r.r<best.r))best=r;}
+ // a plant names itself (the item's label); a bole or a structure names its registered volume
+ const lab=o.userData.inspectLabel||o.name||'mesh',isItem=o.isInstancedMesh&&o.userData.biome;
+ let name=isItem?lab+(best?'  (under '+best.name+')':''):(best?best.name+'  ·  '+lab:lab);
+ insp.textContent=name+'\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m';}
+setView(...VIEWS[Object.keys(VIEWS)[0]]);
+const cv=renderer.domElement;let drag=null;const keys={};
+cv.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,sx:e.clientX,sy:e.clientY,b:e.button};cv.setPointerCapture(e.pointerId);});
+cv.addEventListener('pointerup',e=>{if(drag&&drag.b===0&&Math.abs(e.clientX-drag.sx)<4&&Math.abs(e.clientY-drag.sy)<4)inspectAt(e.clientX,e.clientY);drag=null;});cv.addEventListener('contextmenu',e=>e.preventDefault());
+cv.addEventListener('pointermove',e=>{if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;drag.x=e.clientX;drag.y=e.clientY;
+ if(drag.b===0){ctl.theta-=dx*.005;ctl.phi=clamp(ctl.phi-dy*.005,.05,Math.PI-.05);}
+ else{const f=ctl.radius*.0015;const rt=new THREE.Vector3(Math.cos(ctl.theta),0,-Math.sin(ctl.theta));const fw=new THREE.Vector3(-Math.sin(ctl.theta),0,-Math.cos(ctl.theta));
+  ctl.target.addScaledVector(rt,-dx*f).addScaledVector(fw,-dy*f);}});
+cv.addEventListener('wheel',e=>{ctl.radius=clamp(ctl.radius*(e.deltaY>0?1.1:.9),3,6000);e.preventDefault();},{passive:false});
+addEventListener('keydown',e=>keys[e.key.toLowerCase()]=true);addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
+addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
+const hud=document.getElementById('hud');let last=performance.now(),renderErr=false,hudText='';
+const fw=new THREE.Vector3(),rt=new THREE.Vector3();
+function frame(){const now=performance.now(),dt=Math.min(.1,(now-last)/1000);last=now;
+ const sp=ctl.radius*.6*dt;fw.set(-Math.sin(ctl.theta),0,-Math.cos(ctl.theta));rt.set(Math.cos(ctl.theta),0,-Math.sin(ctl.theta));
+ if(keys.w)ctl.target.addScaledVector(fw,sp);if(keys.s)ctl.target.addScaledVector(fw,-sp);if(keys.d)ctl.target.addScaledVector(rt,sp);if(keys.a)ctl.target.addScaledVector(rt,-sp);
+ if(keys.q)ctl.target.y-=sp;if(keys.e)ctl.target.y+=sp;
+ for(let i=0;i<TICKS.length;i++){try{TICKS[i](dt,now/1000);}catch(e){if(!renderErr){renderErr=true;reportErr('tick: '+e.stack);}}}
+ applyCam();if(typeof sky!=='undefined'){sky.position.copy(camera.position);giant.position.copy(camera.position).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);}
+ try{renderer.render(scene,camera);}catch(e){if(!renderErr){renderErr=true;reportErr('render: '+e.stack);}}
+ const ht=`cam ${camera.position.x|0},${camera.position.y|0},${camera.position.z|0}  tgt ${ctl.target.x|0},${ctl.target.y|0},${ctl.target.z|0}\ncalls ${renderer.info.render.calls}  tris ${(renderer.info.render.triangles/1e6).toFixed(2)}M  inst ${window._instances}`;
+ if(ht!==hudText){hudText=ht;hud.textContent=ht;}   // the DOM is written only when the numbers change
+ requestAnimationFrame(frame);}
+frame();window._ready=true;
+
+// ==================== 91-host-probe.js
+// ================================================================= HOST — probe (window._api)
+// What verify.py --assert measures. Budgets per biome pass come from
+// BIO.stats (charged by BIO.cur inside the biome).
+const BUDGET={
+ showcase:{tris:12800000,calls:120},   // measured at q=1 on this 6.8 km map (baseline.json), not a target (KNOWN_ISSUES)
+ cls:{pass:7000000,host:900000},
+ type:{'desert/trees':'pass','desert/floor':'pass','desert/fauna':'pass','desert/dress':'pass','host':'host'},
+};
+function _probePoints(){
+ const pts=[],m=new THREE.Matrix4(),pos=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3(),bb=new THREE.Box3();
+ scene.traverse(o=>{if(o.userData&&o.userData.probeSkip)return;
+  if(o.isInstancedMesh){for(let i=0;i<o.count;i++){o.getMatrixAt(i,m);m.decompose(pos,q,sc);pts.push([pos.x,pos.y,pos.z]);}return;}
+  if(!o.isMesh)return;bb.setFromObject(o);if(!isFinite(bb.min.x)||!isFinite(bb.max.x))return;
+  pts.push([(bb.min.x+bb.max.x)/2,(bb.min.y+bb.max.y)/2,(bb.min.z+bb.max.z)/2]);});
+ return pts;}
+function regOccupancy(){const n=new Array(REG.length).fill(0);const P=_probePoints();
+ REG.forEach((r,i)=>{for(const p of P)if(regHas(r,p[0],p[1],p[2]))n[i]++;});
+ return REG.map((r,i)=>({name:r.name,n:n[i]}));}
+function nanSweep(){const bad=[];let badInst=0;
+ scene.traverse(o=>{if(!o.isMesh&&!o.isInstancedMesh)return;if(o.userData&&o.userData.probeSkip)return;
+  const p=o.geometry&&o.geometry.attributes&&o.geometry.attributes.position;if(p){const a=p.array;for(let i=0;i<a.length;i++)if(!isFinite(a[i])){bad.push({geo:o.name||o.geometry.type,at:i});break;}}
+  if(o.isInstancedMesh){const a=o.instanceMatrix.array;for(let i=0;i<a.length;i++)if(!isFinite(a[i])){badInst++;break;}}});
+ return {meshes:bad.length,first:bad.slice(0,8),instances:badInst,firstInstances:[]};}
+function typeStats(){const out={};for(const k in BIO.stats){const t=BIO.stats[k],cls=BUDGET.type[k]||'pass';out[k]={tris:t.tris,inst:t.inst,meshes:t.meshes,cls,limit:BUDGET.cls[cls],over:t.tris>BUDGET.cls[cls]};}return out;}
+window._api={BUDGET,REG,
+ get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
+ typeStats,regOccupancy,nanSweep,
+ setView:(cx,cy,cz,tx,ty,tz)=>setView(cx,cy,cz,tx,ty,tz),views:()=>Object.keys(VIEWS),
+ biome:()=>window._biome};
+window._registered=REG.length;
+</script>
+
+</body></html>

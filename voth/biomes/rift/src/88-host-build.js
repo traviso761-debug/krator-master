@@ -1,0 +1,14 @@
+// ================================================================= HOST — build
+// The order a world follows: its own structures first (they fill OBSTACLES and
+// hand their shells to dress()), then the biome, then one bake.
+window._biome=null;
+(function(){
+ const t0=performance.now();
+ let shells=[];
+ if(typeof buildTestTower==='function'){try{shells=buildTestTower()||[];}catch(e){reportErr('tower: '+e.stack);}}
+ try{window._biome=RIFT.build({R:TERR.R-150,quality:1});}catch(e){reportErr('biome: '+e.stack);}
+ if(shells.length){try{RIFT.dress(shells,{ledges:{moss:2200,plants:900,edges:520,hang:14},soffits:{n:1800,mossR:4,hang:14},walls:{n:520}});}catch(e){reportErr('dress: '+e.stack);}}
+ const b=BIO.bake();
+ window._instances=b.inst;window._bakeCalls=b.calls;window._buildMs=Math.round(performance.now()-t0);
+ REGISTER({name:'The Rift (ideal type)',x:0,z:0,r:TERR.R,h:520});
+})();

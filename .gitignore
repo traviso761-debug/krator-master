@@ -25,3 +25,8 @@ gallery/site/
 
 # verify.py variant-shot folders (shots-var etc.)
 shots-*/
+
+# host/: the LAN server's generated files (host/sync.py, host/sitectl build)
+host/site/
+host/site.toml
+host/menagerie/
