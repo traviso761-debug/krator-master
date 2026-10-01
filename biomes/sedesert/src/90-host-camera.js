@@ -2,7 +2,9 @@
 const ctl={target:new THREE.Vector3(0,0,0),theta:0,phi:1.1,radius:600};
 function setView(cx,cy,cz,tx,ty,tz){ctl.target.set(tx,ty,tz);const dx=cx-tx,dy=cy-ty,dz=cz-tz;ctl.radius=Math.sqrt(dx*dx+dy*dy+dz*dz);ctl.theta=Math.atan2(dx,dz);ctl.phi=Math.acos(clamp(dy/ctl.radius,-1,1));}
 function applyCam(){const r=ctl.radius,sp=Math.sin(ctl.phi);camera.position.set(ctl.target.x+r*sp*Math.sin(ctl.theta),ctl.target.y+r*Math.cos(ctl.phi),ctl.target.z+r*sp*Math.cos(ctl.theta));
- const g=terrainH(camera.position.x,camera.position.z)+1.8;if(camera.position.y<g)camera.position.y=g;camera.lookAt(ctl.target);}
+ const cp=camera.position,g=terrainH(cp.x,cp.z)+1.8;if(cp.y<g)cp.y=g;
+ if(BIO.carve.rockAt(cp.x,cp.y,cp.z))cp.y=(BIO.carve.topAt(cp.x,cp.z)??cp.y)+1.8;   // inside the cap's rock: out on top of it
+ camera.lookAt(ctl.target);}
 // the presets are found on the map rather than typed: the river meanders, and
 // the scrub's stands (candelabra / cardon / Joshua) are an fbm field
 const gh=(x,z,dy)=>terrainH(x,z)+(dy||0);
@@ -47,6 +49,8 @@ const VIEWS={
  'Swifts over the water':[FL.x-FL.r*.9,FL.y0+2,FL.z+FL.r*.7,FL.x,FL.y0,FL.z],
  'Sand striders':look(BD.x-24,BD.z+18,2.4,BD.x,BD.z,2.2),
  'The cataract':[FALL.x+420,FALL.y-110,FALL.z+300,FALL.x+60,FALL.y-260,FALL.z],
+ 'The undercut lip':[LIP.x+150,LIP.floorY+18,LIP.z+110,LIP.x-8,LIP.floorY+24,LIP.z],
+ 'Behind the cataract':[LIP.x-18,LIP.floorY+9,LIP.z-10,LIP.x+300,LIP.floorY-25,LIP.z+28],
  'Into the Abyss':[3060,gh(3060,zR(3060)-220,26),zR(3060)-220,3700,-140,zR(3150)+60],
  'From afar':look(-2500,2550,360,0,0,40),
  'Krator rising':[-600,gh(-600,600,30),600,1900,900,-2100],

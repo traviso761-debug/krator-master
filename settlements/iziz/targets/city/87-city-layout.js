@@ -36,9 +36,12 @@ function ringToRing(a,b){const A=HILL[a],B=HILL[b];const ang=Math.atan2(B.z-A.z,
  road([[A.x+A.ring*Math.cos(ang),A.z+A.ring*Math.sin(ang)],[B.x-B.ring*Math.cos(ang),B.z-B.ring*Math.sin(ang)]],16,KL.boulevard,{zone:'thoroughfare'});}
 ringToRing('palace','temple');ringToRing('temple','arena');ringToRing('arena','palace');
 // ---- 3. gate roads: each gate to the nearest point of the closest ring road ----
-for(const g of GATES){const [gx,gz]=gatePos(g);const ix=(wallR(g)-30)*Math.cos(g),iz=(wallR(g)-30)*Math.sin(g);
+// (from the round-3 gate line, coreR; the stretch from there out to the moved gate is its own road, pass 3b)
+for(const g of GATES){const [gx,gz]=gatePos(g);const ix=(coreR(g)-30)*Math.cos(g),iz=(coreR(g)-30)*Math.sin(g);
  let best=null;for(const k of HILLKEYS){const H=HILL[k];const d=Math.hypot(ix-H.x,iz-H.z)-H.ring;if(!best||d<best.d)best={k,d,H};}
- const H=best.H;const ang=Math.atan2(H.z-iz,H.x-ix);road([[ix,iz],[H.x-H.ring*Math.cos(ang),H.z-H.ring*Math.sin(ang)]],16,KL.boulevard,{zone:'gate:'+Math.round(g*180/Math.PI)});}
+ const H=best.H;const ang=Math.atan2(H.z-iz,H.x-ix);road([[ix,iz],[H.x-H.ring*Math.cos(ang),H.z-H.ring*Math.sin(ang)]],16,KL.boulevard,{zone:'gate:'+Math.round(g*180/Math.PI)});
+ // 3b. the gate road runs on through the farm belt to the gate where the wall stands now
+ road([[(wallR(g)-30)*Math.cos(g),(wallR(g)-30)*Math.sin(g)],[ix,iz]],16,KL.boulevard,{zone:'gate:'+Math.round(g*180/Math.PI)});}
 // the gate highways run on from the end of each causeway to the nearest edge of the map (Travis): straight, and the
 // jungle is kept off them (mask + a line of keep-clear discs for the hypertrees)
 for(const g of GATES){const R=wallR(g),p=[(R+240)*Math.cos(g),(R+240)*Math.sin(g)],E=CITY.WORLD/2-2;
@@ -71,7 +74,7 @@ function park(x,z,r,name){disc(x,z,r,'park');precinct(x,z,r+2,name||'park');PARK
 // a park near a hill: the first bearing (sweeping from a0) whose disc lies on the plateau, clear of every hill's
 // escarpment and skirt foot and of the wall band — a park never climbs a hill side (Travis)
 function parkNear(H,a0,r,rad,name){for(let k=0;k<20;k++){const a=a0+(k%2?1:-1)*Math.ceil(k/2)*.22;const x=H.x+r*Math.cos(a),z=H.z+r*Math.sin(a);
-  if(!insideWall(x,z,rad+30))continue;let ok=true;for(const kk of HILLKEYS){const Q=HILL[kk];if(Math.hypot(x-Q.x,z-Q.z)<Q.r0+Q.E+rad+8)ok=false;}
+  if(!insideCore(x,z,rad+30))continue;let ok=true;for(const kk of HILLKEYS){const Q=HILL[kk];if(Math.hypot(x-Q.x,z-Q.z)<Q.r0+Q.E+rad+8)ok=false;}
   if(!ok)continue;if(inPrecinct(x,z,rad))continue;park(x,z,rad,name);return[x,z];}reportErr('no ground for '+name);return null;}
 {const H=HILL.temple,g=H.gate;   // the temple's park district: two parks at the foot, either side of the ramp
  for(const s of[-1,1])parkNear(H,g+s*1.05,H.ring+64,42,'Temple park '+(s<0?'west':'east'));}

@@ -173,13 +173,30 @@ inside `VERN.place`, `TRANS.place` and `placeKit`. Rule for placers: call the
 builder at local (0,0) and carry the centring in the GROUP — `KOFF` is added
 in world space after the transform and cannot centre a scaled, rotated plot.
 
-## The city target (`targets/city/`, round 3)
+## The city target (`targets/city/`, round 3; round 4 below)
+
+**Round 4 — the core and the belt.** The wall stands √1.2 further out than in round 3 (20% more enclosed area), and
+the bunkers, gates, towers and spaceport moved with it. Everything laid out in round 3 still keys on the old line,
+`coreR`/`insideCore`: the ancient clusters, the parks, the settler lattice, the core farms, The Project and the
+toppled B. So the core did not move. The ring between `coreR` and `wallR` is the **farm belt** (90b pass 2b, painted before the
+guilds and civic buildings): a belt road at `coreR-20`, radial lanes every ~52 m, and blocks between them. Three in four
+blocks are farmed, as runs, and reserved in the mask as `field`; their plots are laid out in pass 6b (`cityFarmPlot`,
+any rectangle at any yaw). The rest fill by the hill rules through the frontage walker and the infill. `window._belt`
+and `_api.city.belt()` report it.
+
+**Pinned by Travis's coordinates** (88): the toppled F (`toppledF`, falls toward a point and breaks near another via
+the kit's `TOPPLE_BREAK`, see placeKit `breakAt`), the repaired Skyscraper C with its tripod market (`tripodHere`, slot
+`forceD:3`). A slot's `forceD` overrides its quarter's decay state.
+
+**Life-layer destinations:** `LIFE_DESTS.market` (also `window.LIFE_DESTS`) holds every tripod-market stall
+`{x,y,z,face}`. Each market's REG entry is tagged `market:true, destination:'market'`. `_api.city.lifeDests()`.
+
 
 Fragments, in build order (they sit between the shared `src/` fragments):
 
 | fragment | what |
 |---|---|
-| `84-city-geo.js` | `CITY` constants (WORLD 1900, PLATEAU 18, CHASM −16, R 470, GATES, the three HILLS as mesas `{x,z,H,r0,E,ring,gate}`), `wallR(t)`, `hillProfile/hillH`, `cityFlat`, **`terrainH` reassigned** (plateau + hills + moat + causeways + spaceport pad), `insideWall`, `nearestHill`, `radial`, `FRAME_HOOKS_PRE` |
+| `84-city-geo.js` | `CITY` constants (WORLD 1900, PLATEAU 18, CHASM −16, R 470, WALL_K √1.2, GATES, the three HILLS as mesas `{x,z,H,r0,E,ring,gate}`), `coreR(t)` (the round-3 wall line) and `wallR(t)` (the wall, WALL_K further out), `insideCore` beside `insideWall`, `hillProfile/hillH`, `cityFlat`, **`terrainH` reassigned** (plateau + hills + moat + causeways + spaceport pad), `insideWall`, `nearestHill`, `radial`, `FRAME_HOOKS_PRE` |
 | `85-city-paint.js` | the painted ground: `gcv` albedo / `mv` buildable mask / `kv` class canvases (2048 px), `KL` classes, `road(pts,w,cls,opt)` (paints + pushes to `ROADS`), `disc`, `footprint`, `annulus`, `precinct/inPrecinct`, `cityBakeMasks()` then `canBuild/klass/isRoad/walkable` samplers |
 | `86-bio-10…70` | the hyperjungle biome kit, vendored byte-identical (SCOPED in build.py; manifest in VENDOR.json) |
 | `86-bio-45-init.js` | `BIO.init` against `terrainH` and the mask canvases; `bioMaskFn` (jungle outside the moat, undergrowth in parks at .85 and in ruined clusters at .28), `bioTreeMaskFn` (hypertrees stand back 130 m from the wall), `BIO_OBSTACLES`, `RUIN_RECTS` |
@@ -187,6 +204,7 @@ Fragments, in build order (they sit between the shared `src/` fragments):
 | `88-city-place.js` | occupancy (`OCC`, `obbOverlap`, `occFree`, `occAdd`, `obbCorners`, `groundOK`, `groundY`, `findSpot`); the ancient lattice `AG` (pitch 40, street 7, 12°), cluster growth to the ½-area target, reclaimed/ruined split by distance to a ring, streets + two connectors per cluster, slot tiling by wishlist (`QUOTA` per hill: 5 sky / 15 midrise reclaimed) |
 | `90a-city-world.js` | terrain mesh (4 m cells, albedo texture), moat water, `KratorSky` attach + `citySkyTick` (sun/hemi/fog/BIO.setSun), outer wall + gates, palace hill (palace `orig` @1, Ancient curtain wall r 84, two `izBarracks` blocks inside, statue, lamp columns), temple (`anc` @.8), arena (`anc` @.82), needle, spaceport |
 | `90b-city-build.js` | `KITCAT` + `measureKit` (core footprint above the plinth line) + `placeKit` (fit, `hmax`, flora strip, `trimPlinths`, repairPass, lighting rule, REG adoption) + `placeTrans` + `placeVern`; passes 1 ancient clusters → 2 moat bunkers + rust amphitheatre → 3 civic/guilds (`placeNear`, `placeOnTop`, `fillTop` for the temple and arena tops) → 4 settler streets (BFS from the network) → 5 frontage walker (`pickVern` zoning) → 5b infill with footpaths → 6 farms → 7 footprints into the mask, jungle (trees with the tree mask, floor with the full mask), `BIO.bake` → 8 `kbake`, `TRANS.bake`, labels |
+| `90c-city-atmos.js` | binds `core/atmos` (`ATMOS`, pulled in by `TARGET_CORE` in build.py) and places the lamps, banners, fountains, evening lights, glow, particles, weather (UI selector, `apply` on the city's fog, sun and ground), ivy, window boxes and cisterns, the sewer outfall and drain; ends with `ATMOS.finish()` and `ATMOS.cull(scene)`. `window._atmos`, `_api.city.atmos()` |
 | `src/93-labels.js` | **standard package**: floating labels for every REG volume (buildings, farms, furniture; repeated wall segments skipped) as ONE atlas mesh — constant screen size, landmarks (`tags.role` or `tags.landmark`) bigger and never faded; lives in `LABELS`, toggled by the Labels button |
 | `91z-views.js`, `93-city-ui.js` | presets; Paths overlay (class map + DOORS), Jungle toggle, hour slider, city budgets, `window._api.city` |
 

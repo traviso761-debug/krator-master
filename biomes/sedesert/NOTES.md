@@ -77,6 +77,21 @@ blooms / leaf colours / registration / ring scatter are one helper each, the hos
 Abyss and tower maths are defined once, the camera's five map sweeps are one, and the
 world's register / lod / windows are host hooks instead of numbers in the biome.
 
+## The undercut lip (Oct 2026)
+
+The cataract used to leave the river ribbon 30 m out over the Abyss: the face below the
+plateau's edge is ~8:1, and a curtain falling from the edge itself runs 2-3 m inside the rock
+for most of its 700 m. A carve patch only takes rock away, so the lip first had to come out:
+the canyon floor runs on as a sheer promontory (`lipD`, a rounded box, its front 1-3 m behind
+the fall's start), then the cave is carved under its cap. Lessons:
+- **The ground's cell sets the patch's pad.** The ground here is 17.8 m; the window round the
+  lip is split 12 ways (1.5 m), or the 3 m sheer faces and the recess are not resolved.
+- **A wide margin duplicates whatever face is beside the patch.** At 21 m the patch's rock
+  covered the Abyss face beside the promontory, where 1.5 m ground cells cannot match its
+  exact surface: cross-hatching. The recess now climbs at 12:1, so the margin is 10 m.
+- **Take the ground's own rock weight.** Forcing a patch's steep faces to the strata showed a
+  seam against the painted Abyss wall below it.
+
 ## Next
 The Inner Wall's foothills proper (the slope's top is only
 sketched here — it is meant to be its own kit); drop an Ancients kit megastructure onto

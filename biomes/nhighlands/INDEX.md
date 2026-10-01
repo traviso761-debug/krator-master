@@ -14,7 +14,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 3 |  |
-| `10-core-head.js` | 6 | PRNG (14); noise (24); host binding (32); accounting (89) |
+| `10-core-head.js` | 7 | PRNG (14); noise (24); host binding (41); accounting (98) |
 | `20-core-kit.js` | 18 | merged buckets (54); runtime LOD (xanadu-1, additive) (129); indexed buckets (153); bake (176) |
 | `30-core-foliage.js` | 13 | alpha textures (18); card geometries (48); the foliage hook (110) |
 | `40-core-place.js` | 7 | surface sampling (56) |
