@@ -7,7 +7,8 @@
    krator-master-buildings-*.js.
 
    Provides: scene/camera/renderer, orbit + WASD/walk camera control, a
-   geometry kit (box/cyl/cone/dome/blob/ball/beam/rod/frustum/pyrRoof), a
+   geometry kit (box/cyl/cone/dome/blob/ball/beam/rod/frustum/pyrRoof, and
+   decal: a painted canvas panel for emblems and hangings), a
    procedural F.tree() helper, the three registries with per-variant
    variantDims support, buildAsset/buildFurn/buildPlant (each returning a
    selectable THREE.Group), rebuildInstance() and measureInstance(), the
@@ -228,11 +229,20 @@ window._gotoRow = function (z, width) {
 
 /* ------------------------------------------------------------ material */
 const _matCache = new Map();
+/* per-family [roughness, metalness]; anything not listed is matte (0.85, 0).
+   The furniture kit's cultural materials (nacre, gold, lacquer, glazed ceramic, obsidian, jade)
+   read as what they are only through these: CATALOG_MATERIALS below names each. */
+const MAT_FAMILY_LOOK = {
+  metal: [0.4, 0.7], gold: [0.22, 0.9], bronze: [0.42, 0.75], rust: [0.85, 0.35],
+  nacre: [0.18, 0.35], lacquer: [0.22, 0.05], ceramic: [0.3, 0.05], obsidian: [0.12, 0.15], jade: [0.35, 0.05],
+  plastic: [0.5, 0.0], bone: [0.6, 0.0]
+};
 function mat(color, family) {
   const key = color + '|' + (family || '');
   if (_matCache.has(key)) return _matCache.get(key);
   let roughness = 0.85, metalness = 0.0, transparent = false, opacity = 1;
-  if (family === 'metal') { roughness = 0.4; metalness = 0.7; }
+  const fam = MAT_FAMILY_LOOK[family];
+  if (fam) { roughness = fam[0]; metalness = fam[1]; }
   else if (family === 'glass') { roughness = 0.05; metalness = 0.1; transparent = true; opacity = 0.55; }
   else if (family === 'glow') { roughness = 1; }
   const m = family === 'glow'
@@ -321,6 +331,31 @@ function mkFrustum(x, y, z, rBottom, rTop, h, ry, color, family, sides) {
    The 4-sided cone is a diamond in plan, so the geometry is turned 45 deg first and
    then scaled, which makes the covered footprint exactly w by d rather than w+d over
    root two — and keeps a non-square roof square to its building. */
+/* a painted panel: a plane of w by h facing +z (turned by ry), bottom-centre at (x, y, z), with a
+   canvas texture painted ONCE per key by paint(ctx, W, H) and cached. Canvas pixels map 128 per metre
+   (clamped 32..512), so an emblem stays round on a tall banner and a wide frieze alike. The material
+   carries `family` like any other (cloth, hide, plaster ...). Deterministic as long as paint() is. */
+const _texCache = new Map();
+function mkDecal(x, y, z, w, h, ry, key, paint, family) {
+  let m = _texCache.get(key);
+  if (!m) {
+    const c = document.createElement('canvas');
+    c.width = Math.max(32, Math.min(512, Math.round(w * 128)));
+    c.height = Math.max(32, Math.min(512, Math.round(h * 128)));
+    paint(c.getContext('2d'), c.width, c.height);
+    const t = new THREE.CanvasTexture(c);
+    t.anisotropy = 4;
+    const rough = family === 'metal' || family === 'gold' ? 0.45 : 0.92;
+    m = new THREE.MeshStandardMaterial({ map: t, roughness: rough, metalness: family === 'gold' ? 0.6 : 0, side: THREE.DoubleSide });
+    m.userData.family = family || '';
+    _texCache.set(key, m);
+  }
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(w, h), m);
+  mesh.position.set(x, y + h / 2, z); mesh.rotation.y = ry || 0;
+  return _add(mesh);
+}
+/* a colour number as a CSS colour, for canvas painting */
+function cssCol(c) { return '#' + ('000000' + (c >>> 0 & 0xffffff).toString(16)).slice(-6); }
 function mkPyrRoof(x, y, z, w, h, d, ry, color, family) {
   const geo = new THREE.ConeGeometry(0.5, Math.max(h, 0.02), 4);
   geo.rotateY(Math.PI / 4);
@@ -365,7 +400,31 @@ function mkHipRoof(x, y, z, w, h, d, ry, color, family) {
 }
 
 /* ------------------------------------------------------------ registry */
-const FURN_CULTURES = ['ancient', 'ancients-salvage', 'yuni-court', 'yuni-common', 'yuni-poor', 'sahelian', 'order', 'nomad', 'voth', 'iziz', 'beast-rider', 'generic'];
+/* furniture cultures, in sheet order. The first eleven are the harvested ones; the rest are the
+   interiors-phase sets (kits/catalog/krator-master-furniture-<culture>.js), each registered by its
+   own file through FURN_CULTURE() below, which adds its palette and its socket pack. 'generic' and
+   'scrap' are the poor-tier sets any culture's poor buildings pull from. */
+const FURN_CULTURES = ['ancient', 'ancients-salvage', 'yuni-court', 'yuni-common', 'yuni-poor', 'sahelian', 'order', 'nomad', 'voth', 'iziz', 'beast-rider',
+  'generic', 'scrap', 'lizardmen', 'eastabyss', 'xanadu', 'screamer', 'islander', 'republican', 'rustic', 'painted', 'reedlake', 'post-apoc', 'hykkousoi'];
+/* FURN_CULTURE_INFO[culture] = { name, pack, influences, materials }: pack is the core/sockets
+   culture pack (core/sockets/80-cultures.js mkCulture key) whose banner cloth the culture's
+   tapestries and hangings share, so a dressed building and its furniture match; null = none yet. */
+const FURN_CULTURE_INFO = {
+  'ancient': { name: 'Ancients', pack: null }, 'ancients-salvage': { name: 'Ancients salvage', pack: null },
+  'yuni-court': { name: 'Yuni court', pack: 'yuni' }, 'yuni-common': { name: 'Yuni', pack: 'yuni' }, 'yuni-poor': { name: 'Yuni poor', pack: 'yuni' },
+  'sahelian': { name: 'Sahelian', pack: 'yuni' }, 'order': { name: 'The Order', pack: 'yuni' }, 'nomad': { name: 'Eastern Nomads', pack: null },
+  'voth': { name: 'Voth', pack: 'voth' }, 'iziz': { name: 'Iziz', pack: 'iziz' }, 'beast-rider': { name: 'Beast Riders', pack: 'beast-rider' }
+};
+/* wealth tiers (kits/furniture/SPEC.md): a piece's wealth band, the ROOM wealth (0-1) it suits.
+   poor sets are the generic ones; common uses a culture's regional materials; court is bespoke. */
+const FURN_TIERS = { poor: [0, 0.35], common: [0.3, 0.75], court: [0.7, 1] };
+/* register a culture: its palette (FPAL[key]) and info, before its pieces. Idempotent on the key. */
+function FURN_CULTURE(key, info) {
+  if (FURN_CULTURES.indexOf(key) < 0) FURN_CULTURES.push(key);
+  if (info && info.palette) FPAL[key] = Object.assign(FPAL[key] || {}, info.palette);
+  FURN_CULTURE_INFO[key] = Object.assign(FURN_CULTURE_INFO[key] || {}, info || {}, { palette: undefined });
+  return FURN_CULTURE_INFO[key];
+}
 const PLANT_CLIMATES = ['hypertropic', 'tropic', 'temperate', 'cold'];
 const PLANT_ARIDITY = ['arid', 'semiarid', 'subhumid', 'humid'];
 const ASSET_CULTURES = ['voth', 'beast-rider'];
@@ -394,7 +453,9 @@ const FURN_ANCHORS = ['floor', 'wall', 'ceiling', 'surface'];
 const FURN_TYPES = ['table', 'chair', 'bench', 'seating', 'bed', 'storage', 'shelf', 'desk', 'lamp', 'stove',
   'altar', 'shrine', 'fountain', 'statue', 'monument', 'planter', 'rug', 'screen', 'banner', 'counter',
   'stall', 'rack', 'workstation', 'loom', 'well', 'pen', 'tomb', 'vessel', 'shelter', 'weapon', 'debris',
-  'ladder', 'board', 'stack', 'brazier', 'book', 'tool', 'food', 'drink', 'supply'];
+  'ladder', 'board', 'stack', 'brazier', 'book', 'tool', 'art', 'food', 'drink', 'supply'];
+/* 'art' is wall-mounted art (a mask, a plate, a painted panel, a mounted skull): anchor wall,
+   no walk-up access. Tapestries and hangings are 'banner'. */
 const FURNS = [], FURN_BY_KEY = {};
 function FURN(o) {
   if (FURN_BY_KEY[o.key]) { console.error('duplicate furniture key', o.key); return; }
@@ -403,6 +464,9 @@ function FURN(o) {
   if (!o.rooms) o.rooms = o.room ? [o.room] : ['hall'];
   else if (typeof o.rooms === 'string') o.rooms = [o.rooms];
   o.room = o.rooms[0];
+  /* tier and wealth band: given, or read off the culture name (yuni-court, yuni-poor), else common */
+  if (!o.tier) o.tier = /-court$/.test(o.culture) ? 'court' : /-poor$/.test(o.culture) || o.culture === 'generic' || o.culture === 'scrap' ? 'poor' : 'common';
+  if (!o.wealth) o.wealth = (FURN_TIERS[o.tier] || [0, 1]).slice();
   FURNS.push(o); FURN_BY_KEY[o.key] = o;
 }
 /* the y at which to build a furniture piece so it sits on its anchor:
@@ -435,7 +499,38 @@ const CATALOG_MATERIALS = {
   skin:      { tags: ['organic'], families: ['skin'] },
   emissive:  { tags: ['glow'], families: ['glow'] },
   food:      { tags: ['organic'], families: ['food'] },
+  /* the interiors-phase regional materials (kits/furniture/README.md "Materials by culture") */
+  bamboo:    { tags: ['wood', 'organic'], families: ['bamboo'] },
+  reed:      { tags: ['organic', 'fabric'], families: ['reed'] },
+  hyperMahogany: { tags: ['wood'], families: ['mahogany'] },
+  nacre:     { tags: ['organic', 'glossy'], families: ['nacre'] },
+  gold:      { tags: ['metal', 'precious'], families: ['gold'] },
+  bronze:    { tags: ['metal'], families: ['bronze'] },
+  lacquer:   { tags: ['wood', 'glossy'], families: ['lacquer'] },
+  ceramic:   { tags: ['stone', 'glossy'], families: ['ceramic', 'tile'] },
+  obsidian:  { tags: ['stone', 'glossy'], families: ['obsidian'] },
+  jade:      { tags: ['stone'], families: ['jade'] },
+  bone:      { tags: ['organic'], families: ['bone', 'antler', 'shell'] },
+  hide:      { tags: ['organic', 'fabric'], families: ['hide', 'fur', 'leather'] },
+  wicker:    { tags: ['organic', 'wood'], families: ['wicker'] },
+  plastic:   { tags: ['weathered'], families: ['plastic'] },
   unassigned:{ tags: [], families: [''] }
+};
+/* How the canonical names land in the two other material systems (core/README.md "Planned: a
+   material registry" step 2). Ancients-lineage builds have MAT.* (core/materials/22-materials.js,
+   68-mat-v5.js); Voth/Yuni-lineage builds have FAMMAT families. A host exporting a catalog piece
+   maps each name here; a name with no entry on a side falls back to that side's generic surface. */
+const CORE_MATERIAL_MAP = {
+  timber: { ancients: 'MAT.slab', fammat: 'wood' }, bark: { ancients: 'MAT.slab', fammat: 'trunk' },
+  stone: { ancients: 'MAT.rock', fammat: 'stone' }, plaster: { ancients: 'MAT.white', fammat: 'plaster' },
+  concrete: { ancients: 'MAT.rock', fammat: 'stone' }, roofTile: { ancients: 'MAT.slab', fammat: 'roof' },
+  metal: { ancients: 'MAT.pipe', fammat: 'metal' }, rustSteel: { ancients: 'MAT.rust', fammat: 'metal' },
+  glass: { ancients: 'MAT.glass', fammat: 'glass' }, cloth: { ancients: null, fammat: 'cloth' },
+  foliage: { ancients: 'MAT.vine', fammat: 'leaf' }, emissive: { ancients: 'MAT.strip', fammat: null },
+  bronze: { ancients: 'MAT.pipe', fammat: 'metal' }, gold: { ancients: 'MAT.pipe', fammat: 'metal' },
+  obsidian: { ancients: 'MAT.darkGlass', fammat: 'stone' }, plastic: { ancients: 'MAT.white', fammat: null },
+  ceramic: { ancients: 'MAT.slab', fammat: 'stone' }, hyperMahogany: { ancients: 'MAT.slab', fammat: 'wood' },
+  bamboo: { ancients: null, fammat: 'wood' }, reed: { ancients: null, fammat: 'trunk' }
 };
 const FAMILY_TO_MATERIAL = {};
 for (const k in CATALOG_MATERIALS) for (const f of CATALOG_MATERIALS[k].families) FAMILY_TO_MATERIAL[f] = k;
@@ -665,58 +760,6 @@ const FPAL = {
     stoneCharcoal: 0x2a2f38, stoneTaupe: 0x8a8478,
     timberEbony: 0x2a2620, timberSepia: 0x4a3f30, timberWalnut: 0x6a3a2a, timberUmber: 0x6a5c48,
     timberMudDark: 0x7a6a4e, timberMud: 0x8a7558, timberStraw: 0xc9a86a
-  },
-  /* culture-neutral containers, food, drink and supplies (krator-master-generic.js) and the
-     biome fruit (krator-master-fruit.js). Hand-picked, not clustered. Food keys are role + name:
-     bread*, cheese*, meat*, fruit*, veg*, drink* */
-  'generic': {
-    timberPine: 0xb48a5a, timberOak: 0x8a6a4e, timberWalnut: 0x5e3f2a, timberDark: 0x3e2c20, timberBirch: 0xd2b88a,
-    wickerStraw: 0xc4a064, wickerTan: 0x9c7a48, wickerDark: 0x6e5432,
-    stoneClay: 0xb06a44, stoneClayDark: 0x8a4e32, stoneBuff: 0xd2bc94, stoneGrey: 0x8e8a82, stoneSlate: 0x4e5258,
-    stoneCream: 0xeee6d2, stoneGlazeBlue: 0x3e6a8a, stoneGlazeGreen: 0x5a7a4a, stoneGlazeOchre: 0xc08a3a,
-    glassGreen: 0x3e6e44, glassAmber: 0x9a5a1e, glassClear: 0xcfe0e0, glassBlue: 0x3a5a8a, glassViolet: 0x5a3a6e,
-    iron: 0x3a3a3a, tin: 0xa8acae, brass: 0xc29a44, copper: 0xb06a3a, pewter: 0x8a8f92,
-    clothLinen: 0xe2d6b8, clothHessian: 0xa8885a, clothMadder: 0xa8402e, clothIndigo: 0x2e4a7a, clothOchre: 0xc9a24a,
-    clothSage: 0x7a8a62, clothRose: 0xc87a7a,
-    waxBone: 0xeadfc4, waxHoney: 0xd8a848, waxRed: 0xb02a24,
-    paperCream: 0xe8dcb8, inkBlack: 0x1a1a22, coalBlack: 0x262422,
-    breadCrust: 0xa8682e, breadDark: 0x6e4220, breadCrumb: 0xe8cc90, pieCrust: 0xc88a40,
-    cheeseYellow: 0xe8c25a, cheesePale: 0xf0e2b0, cheeseRind: 0xc8963a, cheeseBlue: 0x8a9aa0,
-    meatRed: 0x9a3a32, meatCured: 0x7a2e26, meatRoast: 0x8a4a22, meatFat: 0xf0e4cc, meatSausage: 0x8a4a32,
-    fishSilver: 0xa8b0b0, fishBack: 0x4e5a62, fishSmoked: 0xb8823a,
-    fruitApple: 0xb8302a, fruitAppleGreen: 0x8ab040, fruitPear: 0xc8b048, fruitOrange: 0xe08a24,
-    fruitLemon: 0xe8d040, fruitGrape: 0x5a2a5a, fruitPlum: 0x4a2a5a, fruitBerry: 0xc82a2a, fruitBanana: 0xe8cc48,
-    vegCarrot: 0xe07a24, vegOnion: 0xc8964a, vegGarlic: 0xeae0cc, vegCabbage: 0x8ab060, vegLeaf: 0x5a8a3a,
-    vegHerb: 0x4a6a32, vegPotato: 0xa88a5a, vegPumpkin: 0xd8782a, vegMushroom: 0xc8b090, vegPepper: 0xb82a1e,
-    vegBean: 0x7a3a2a, nutBrown: 0x8a5a30, grainStraw: 0xd8c080, flourWhite: 0xf0ead8,
-    eggShell: 0xece2cc, eggBrown: 0xc8a070, eggYolk: 0xf0b030,
-    honeyAmber: 0xd89a28, jamRuby: 0x8a1e2a, butterYellow: 0xf0d890, creamWhite: 0xf4ece0, icingPink: 0xe8a8b0,
-    stewBrown: 0x7a4a24, soupGold: 0xc8902e, sauceRed: 0xa8341e,
-    drinkWine: 0x5a1420, drinkAle: 0xb87a28, drinkFoam: 0xf2ead8, drinkMilk: 0xf2efe6, drinkWater: 0x7aa0b0,
-    drinkTea: 0x7a4a24, drinkSpirit: 0xc8902e, drinkOil: 0xc8a840,
-    saltWhite: 0xf4f2ec, spiceRed: 0xa8401e, spiceTurmeric: 0xd8a020, spiceBlack: 0x2e2620,
-    soapCream: 0xe8e0c0, soapGreen: 0x9ab07a, tobaccoBrown: 0x6a4428, herbDry: 0x8a8a4a, medicineRed: 0x9a2a2a,
-    /* biome fruit (krator-master-fruit.js): colours taken from the fruiting part each biome draws */
-    fruitScaleRed: 0xc0262a, fruitScaleFlesh: 0xf0b8b0, fruitFernEgg: 0x8a6a3a, fruitFernMeal: 0xe8d8a8,
-    fruitTideHusk: 0x7e3030, fruitTideJelly: 0xe8e0c8, fruitCycadRed: 0xb83a2a,
-    fruitGateRind: 0xe0862a, fruitGatePulp: 0xf2ead0, fruitMahogany: 0x5a3a22, fruitMahoganySeed: 0xc89a5a,
-    fruitSilkGreen: 0x7a9a4a, fruitSilkFloss: 0xf0e6d0, fruitPandanKey: 0xd87a2a, fruitPandanTip: 0x5a6a2a, fruitPandanPaste: 0xe8a040,
-    fruitAril: 0xd0202a, fruitArilSeed: 0x2e3a2a, fruitRowan: 0xd83a2a, fruitRowanJelly: 0xc8502a, fruitBilberry: 0x2a3a6a,
-    fruitLanternPod: 0x9a62c8, fruitLanternPodGlow: 0xc89ae8, fruitMast: 0x8a6a4a, fruitMastHusk: 0x6a5a3a, fruitAcorn: 0x9a7a3a,
-    fruitBanksia: 0xe88a24, drinkNectar: 0xe8b040,
-    fruitBallmelon: 0x8ab838, fruitBallmelonFlesh: 0xf0d850, fruitFrillPink: 0xff40a0, fruitFrillCore: 0xf8e0ec,
-    fruitLanternPink: 0xff50a0, fruitLanternGold: 0xffc030, fruitLanternOrange: 0xff7030, fruitLanternBlue: 0x40a0ff,
-    fruitLanternViolet: 0xd040e0, fruitLanternTeal: 0x30d0c0, fruitBellDate: 0x857e32,
-    fruitMesquite: 0xc8b850, fruitMesquiteCake: 0xb08a4a, fruitDate: 0x8a4a22, fruitDateStrand: 0xc88a3a,
-    fruitTuna: 0xe86a20, fruitTunaFlesh: 0xd8402a,
-    fungusCoralOrange: 0xf08a3a, fungusCoralPink: 0xf090b0, fungusCoralViolet: 0x9a70c8, fungusParasol: 0xc8a882,
-    fruitMadrone: 0xc82a1e, drinkCider: 0xd8a050, fruitRattlepod: 0x8a2a1c, fruitRattleBean: 0x4a2a1a,
-    fruitTamarindShell: 0x4a3424, fruitTamarindPulp: 0x8a4a22, fruitFig: 0x5a3a5a, fruitFigFlesh: 0xd8586a,
-    fruitCacaoRed: 0x8a2a3a, fruitCacaoGold: 0xd8a030, fruitCacaoOrange: 0xe07a28, fruitCacaoPulp: 0xf4ecdc, drinkCacao: 0x5a3020,
-    fruitPitaya: 0xe0206a, fruitPitayaFlame: 0x7ab040, fruitPitayaFlesh: 0xf4f0ec,
-    fruitPlantain: 0xf0d040, fruitPlantainBract: 0x6a2a8a, fruitPlantainFried: 0xd89a3a, fruitWingnut: 0x9ac060,
-    fruitArbutusRed: 0xe02a20, fruitArbutusOrange: 0xf08a20, fruitWhorlOlive: 0x6a6a3a, fruitWhorlCream: 0xd8c8a0,
-    fruitLotusPod: 0x8a9a5a, fruitLotusSeed: 0xe8e0c0
   }
 };
 /* the colour a palette key names for a culture; throws on an unknown key so a typo fails the build */
@@ -775,6 +818,8 @@ function makeFrame(x, z, ry, opt) {
     }
   };
   F.rod = (ax, ay, az, bx, by, bz, r, color, family) => { const [ax2, az2] = toWorld(ax, az), [bx2, bz2] = toWorld(bx, bz); mkRod(ax2, F.y + ay, az2, bx2, F.y + by, bz2, r, color, family); };
+  F.decal = (lx, ly, lz, w, h, ry2, key, paint, family) => { const [x2, z2] = toWorld(lx, lz); mkDecal(x2, F.y + ly, z2, w, h, F.ry + (ry2 || 0), key, paint, family); };
+  F.css = cssCol;
   F.lamp = (lx, ly, lz, amp, rad) => { const [x2, z2] = toWorld(lx, lz); const l = new THREE.PointLight(0xffb066, amp || 1, rad || 10); l.position.set(x2, F.y + ly, z2); _add(l); };
   F.tree = (lx, lz, kind, h, ly) => treeHelper(F, lx, lz, kind, h, ly || 0);
   return F;

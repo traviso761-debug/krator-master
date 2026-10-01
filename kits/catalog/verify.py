@@ -2,8 +2,9 @@
 """Headless verification for the master catalog (dist/catalog.html).
 
 Usage:
-  python3 verify.py dist/catalog.html [--assert] [--seeds 4] [--sheet all|furniture|plants|buildings]
-                                      [--out ./shots] [--rows] [--dump r.json] [--eval "()=>..."]
+  python3 verify.py dist/catalog.html [--assert] [--seeds 4] [--sheet all|furniture|buildings]
+                                      [--query cultures=xanadu,voth] [--out ./shots] [--rows [words]]
+                                      [--dump r.json] [--eval "()=>..."]
 
 What it does:
   1. Serves this folder over HTTP and routes three.min.js to the local r128 copy.
@@ -25,12 +26,15 @@ What it does:
                          materials it declares cover every material family it builds with;
                          plants: climate + aridity; buildings: culture, family, and types
                          (non-empty, every one in BUILDING_TYPES)
-     plus static checks on every FURN file (FURN_FILES):
+     plus static checks on krator-master-furniture.js and every krator-master-furniture-<culture>.js:
        spec-source       no entry still declares the old `room:` key
        style-*           SPEC "No host globals", F.shade/F.TAU not bare shade/TAU, and
-                         "Colour": no literal colour (0x...) or literal colour array
+                         "Colour": no literal colour (0x...) or literal colour array in any
+                         FURN block; style-colour-kit: none in the kit or a culture file outside
+                         its /* PALETTE */ block either
      Under-size (built > 30% smaller than declared on an axis) is a WARN.
-  5. --out: screenshots (initial view, one per section, and --rows one per row).
+  5. --out: screenshots (initial view, one per section, and --rows one per row; --rows xanadu,court
+     only the rows whose title has one of the words).
 
 Exit code is non-zero if the error panel is dirty, the page threw, or an assertion fails.
 ALLOW (below) lists pieces deferred in KNOWN_ISSUES.md; it is empty unless a piece
@@ -69,15 +73,22 @@ def _exe():
     return {}
 
 
-FURN_FILES = ['krator-master-furniture.js', 'krator-master-generic.js', 'krator-master-fruit.js']
+def furn_files():
+    """krator-master-furniture.js and every per-culture file (krator-master-furniture-<culture>.js)"""
+    return ['krator-master-furniture.js'] + sorted(f for f in os.listdir(HERE)
+                                                 if f.startswith('krator-master-furniture-') and f.endswith('.js'))
+
+
+PALETTE_BLOCK = re.compile(r'/\* PALETTE \*/.*?/\* END PALETTE \*/', re.S)
 
 
 def furn_blocks():
-    """(key, head, body) of every FURN({...}) entry in FURN_FILES; text before a file's first
-    entry (a file's shared helpers, e.g. KGEN) belongs to no entry."""
+    """every literal FURN({...}) block in every furniture file, as (key, head, body). A culture file's
+    palette (between the PALETTE markers) is the one place literal colours belong and is cut out
+    first; FK.set() pieces are built from style sheets of palette keys and are checked in the page."""
     out = []
-    for name in FURN_FILES:
-        src = open(os.path.join(HERE, name), encoding='utf-8').read()
+    for f in furn_files():
+        src = PALETTE_BLOCK.sub('', open(os.path.join(HERE, f), encoding='utf-8').read())
         starts = [m.start() for m in re.finditer(r'^FURN\(\{', src, re.M)] + [len(src)]
         for a, b in zip(starts, starts[1:]):
             blk = src[a:b]
@@ -85,6 +96,21 @@ def furn_blocks():
             i = blk.find('build')
             out.append((key, blk[:i], blk[i:]))
     return out
+
+
+def kit_checks():
+    """the furniture kit and the style sheets outside FURN blocks: no literal colour anywhere but a palette"""
+    res = []
+    bad = []
+    for f in ['krator-furniture-kit.js'] + furn_files():
+        src = PALETTE_BLOCK.sub('', open(os.path.join(HERE, f), encoding='utf-8').read())
+        n = len(HEX.findall(src))
+        if n:
+            bad.append('%s: %d' % (f, n))
+    res.append({'name': 'style-colour-kit', 'ok': not bad,
+                'detail': ('literal colours outside a PALETTE block: ' + ', '.join(bad)) if bad
+                else 'kit and %d furniture files: 0 literal colours outside the PALETTE blocks' % len(furn_files())})
+    return res
 
 
 PAL_KEY_CALLS = re.compile(r"F\.(?:col|shade)\(\s*'([^']+)'")
@@ -126,6 +152,7 @@ def static_checks():
                 'detail': ('%d of %d pieces carry %d literal colours (%d build literal arrays): %s'
                            % (len(lit), len(blocks), sum(n for _, n in lit), len(arr), ', '.join(k for k, _ in lit[:10])))
                 if lit or arr else '%d pieces, 0 literal colours: every colour is a palette key (FPAL)' % len(blocks)})
+    res += kit_checks()
     keys = {k: palette_keys(body) for k, _, body in blocks}
     return res, keys
 
@@ -276,7 +303,8 @@ async def run(a):
             three = os.path.join(HERE, 'three.min.js')
             await pg.route('**/three.min.js', lambda route: asyncio.ensure_future(
                 route.fulfill(path=three, content_type='application/javascript')))
-            q = '' if a.sheet == 'all' else '?sheet=' + a.sheet
+            q = ('' if a.sheet in ('all', 'furniture') else 'sheet=' + a.sheet) + (('&' if a.sheet not in ('all', 'furniture') else '') + a.query if a.query else '')
+            q = '?' + q if q else ''
             await pg.goto('http://127.0.0.1:%d/%s%s' % (port, rel, q), timeout=300000)
             try:
                 await pg.wait_for_function("window._ready===true || document.getElementById('errs').textContent.length>0",
@@ -356,8 +384,11 @@ async def run(a):
                     await pg.wait_for_timeout(600)
                     fn = os.path.join(a.out, 'section_%s.png' % s['kind']); await pg.screenshot(path=fn); print('shot:', fn)
                 if a.rows:
-                    n = await pg.evaluate('()=>window._catalog.rows.length')
-                    for i in range(n):
+                    titles = await pg.evaluate('()=>window._catalog.rows.map(r=>r.title)')
+                    want = [w.strip().lower() for w in a.rows.split(',') if w.strip()] if a.rows != 'all' else []
+                    for i, title in enumerate(titles):
+                        if want and not any(w in title.lower() for w in want):
+                            continue
                         t = await pg.evaluate("(i)=>{window._catalog.gotoRow(i);return window._catalog.rows[i].title;}", i)
                         await pg.wait_for_timeout(600)
                         fn = os.path.join(a.out, 'row_%02d_%s.png' % (i, re.sub(r'[^a-z0-9]+', '-', t.lower()).strip('-')))
@@ -376,11 +407,13 @@ if __name__ == '__main__':
     ap = argparse.ArgumentParser()
     ap.add_argument('html')
     ap.add_argument('--assert', dest='assert_', action='store_true')
-    ap.add_argument('--sheet', default='all', choices=['all', 'furniture', 'plants', 'buildings'])
+    ap.add_argument('--sheet', default='furniture', choices=['all', 'furniture', 'plants', 'buildings'], help='the catalog registers furniture only; plants and buildings are for a page that loads them')
     ap.add_argument('--out', default='')
-    ap.add_argument('--rows', action='store_true', help='with --out: one screenshot per row')
+    ap.add_argument('--rows', nargs='?', const='all', default='',
+                    help="with --out: one screenshot per row; or a comma list of row-title words (--rows xanadu,court) for a few rows")
     ap.add_argument('--dump', default='', help='with --assert: write the per-instance results as JSON')
     ap.add_argument('--seeds', type=int, default=4, help='with --assert: audit seeds 1..N of every instance (default 4)')
     ap.add_argument('--eval', action='append')
+    ap.add_argument('--query', default='', help="extra page query, e.g. cultures=xanadu,voth (only those cultures' furniture: a quick partial run)")
     ap.add_argument('--size', default='1280x800')
     sys.exit(asyncio.run(run(ap.parse_args())))

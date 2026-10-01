@@ -67,7 +67,8 @@ The placer calls four functions. That is the whole host coupling.
 const catalog = {
   list() {             // every piece, once (cache it): the placer filters it
     return [{ key, name, culture, type, setting /* indoor|outdoor|both */, rooms: [...],
-              anchor /* floor|wall|ceiling|surface */, clearance: { front, back, left, right }, variants }];
+              anchor /* floor|wall|ceiling|surface */, clearance: { front, back, left, right }, variants,
+              tier, wealth: [lo, hi] /* OPTIONAL: a piece in band for the room's wealth is tried first */ }];
   },
   dims(key, variant) { return { w, d, h }; },                    // declared footprint and height
   anchorY(key, variant, { floorY, surfaceY, ceilingY }) { return y; },
@@ -87,10 +88,11 @@ defines; the placer, the audit and the outline view all use it (`clearanceZones`
 `IX.ROLES` maps it to where a piece goes, `IX.PROGRAMS` to what a room needs.
 
 - **Master catalog**: `IX.catalogAdapter()` (`adapters/catalog-adapter.js`). It loads after
-  `krator-asset-engine.js`, `krator-master-furniture.js`, `krator-master-generic.js` and
-  `krator-master-fruit.js`. The last two are culture `generic` (containers, food, drink, supplies, biome
-  fruit), which ends every `IX.CULTURE_FAMILY` chain: a room reaches them after its own culture and family,
-  so tables and shelves in a thin culture still get something on them.
+  `krator-asset-engine.js`, `krator-master-furniture.js` and the per-culture files
+  (`krator-master-furniture-<culture>.js`). Two of those are culture `generic` goods with
+  `wealth: [0, 1]`: containers, food, drink and supplies (`-generic-goods.js`) and the biome fruit
+  (`-generic-fruit.js`). They are in band for any room, so a chain that reaches `generic` puts something
+  on its tables and shelves.
 - **Yuni lineage** (`settlements/yuni`, `locus`): the same four over the build's `FURN_BY_KEY` and
   `buildFurn` (same frame). Yuni's own `type` strings differ from the catalog's
   (`shelving hearth lighting tool decoration` vs `shelf stove lamp ...`): map them in `list()`.
@@ -100,6 +102,10 @@ defines; the placer, the audit and the outline view all use it (`clearanceZones`
 A build whose pieces need a different program or role edits the tables, not the placer:
 `IX.PROGRAMS[kind] = { require: [{ need, types, n }], optional: [{ types, max }], extra }`,
 `IX.ROLES[type] = 'back' | 'wall' | 'centre' | 'corner' | 'seat'`, `IX.CULTURE_FAMILY[culture] = [...]`.
+A descriptor's `wealth: [lo, hi]` (the catalog's tiers: poor, common, court) sorts the candidates: the
+chain's pieces whose band holds the room's wealth (margin `IX.WEALTH_MARGIN`, 0.1) come first, then the
+chain's other tiers, then any culture. `IX.CULTURE_FAMILY` ends most chains in `generic` (plain wood) or
+`scrap` (post-apoc salvage), the poor sets every culture shares.
 
 ## 3. Calling the placer
 

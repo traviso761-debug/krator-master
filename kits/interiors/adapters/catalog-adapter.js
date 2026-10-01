@@ -3,7 +3,8 @@
    registry and engine (kits/catalog/krator-asset-engine.js + krator-master-furniture.js,
    loaded first) onto the four calls the placer needs (45-placer.js header):
 
-     list()                    FURNS -> descriptors { key, name, culture, type, setting, rooms, anchor, clearance, variants }
+     list()                    FURNS -> descriptors { key, name, culture, type, setting, rooms, anchor, clearance, variants,
+                               tier, wealth: [lo, hi], role }   (tier and wealth: the catalog's wealth bands, 45-placer.js)
      dims(key, v)              entryDims(A, v)
      anchorY(key, v, at)       furnAnchorY(A, v, at)
      build(placement, room)    buildFurn(key, x, z, ry, { variant, seed, y, wealth }) -> THREE.Group in the engine's scene
@@ -67,6 +68,7 @@
         cache = FURNS.map(function (A) {
           return { key: A.key, name: A.name, culture: A.culture, type: A.type, setting: A.setting, rooms: A.rooms.slice(),
             anchor: A.anchor || 'floor', clearance: A.clearance || {},
+            tier: A.tier, wealth: A.wealth ? A.wealth.slice() : undefined, role: A.role,
             variants: variantsOf(A) };
         });
         return cache;

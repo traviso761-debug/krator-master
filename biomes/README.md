@@ -19,7 +19,7 @@ system on the shared biome core (`BIOME-API.md` inside each kit): `src/` fragmen
 | `nhighlands/` | the northern highlands: the Inner Wall's NW flank, old-growth temperate forest rising to boreal (great spruces and cedars, the old wood, spire spruce, birch, a burn, krummholz), great trumpet trees and trumpet colonies, bell-bulbs and lantern pods that glow at night, a stream from its tarn with two falls, crag pillars; the core's `waterH`, `cold` and `rock` fields and harvest tags |
 
 `FRUIT.md` gives one edible fruit for each fruiting plant the kits draw. Each is a catalog piece in
-`kits/catalog/krator-master-fruit.js`.
+`kits/catalog/krator-master-furniture-generic-fruit.js`.
 
 Build: `cd <kit> && python3 build.py`. Verify: `python3 verify.py dist/<kit>.html --assert --views "..."`.
 

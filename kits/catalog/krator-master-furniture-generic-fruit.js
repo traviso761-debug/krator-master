@@ -3,7 +3,7 @@
    One edible fruit (or nut, seed, pod or fungus) for each fruiting plant the
    biome kits draw, harvested and brought indoors. Culture 'generic', type
    'food' (one 'drink'), anchor 'surface': each fits a shelf board or a table
-   top like the pieces in krator-master-generic.js. Two variants each: as
+   top like the pieces in krator-master-furniture-generic-goods.js. Two variants each: as
    picked, and as served or prepared.
 
    Every entry carries two extra fields, outside the SPEC:
@@ -56,7 +56,7 @@ const FRUIT_ROOMS = ['kitchen', 'market', 'store', 'hall', 'tavern'];
 /* ================= Eastern Abyss (4 pieces) ================= */
 
 FURN({
-  key: 'generic_fruit_scalefruit', name: 'Scalefruit', culture: 'generic', type: 'food', setting: 'both',
+  key: 'generic_fruit_scalefruit', name: 'Scalefruit', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
   rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'timber'],
   biome: 'eastabyss', source: ['skyscale', 'forktree', 'bellbark'],
   w: 0.28, d: 0.27, h: 0.25, variants: 2, variantNames: ['whole pod', 'wedges on a leaf'],
@@ -76,7 +76,7 @@ FURN({
 });
 
 FURN({
-  key: 'generic_fruit_fern_egg', name: 'Fern-egg', culture: 'generic', type: 'food', setting: 'both',
+  key: 'generic_fruit_fern_egg', name: 'Fern-egg', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
   rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone'],
   biome: 'eastabyss', source: ['seedfern'],
   w: 0.25, d: 0.24, h: 0.11, variants: 2, variantNames: ['three in the husk', 'roasted and split'],
@@ -97,7 +97,7 @@ FURN({
 });
 
 FURN({
-  key: 'generic_fruit_tideheart', name: 'Tideheart', culture: 'generic', type: 'food', setting: 'both',
+  key: 'generic_fruit_tideheart', name: 'Tideheart', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
   rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'glass'],
   biome: 'eastabyss', source: ['waterpalm'],
   w: 0.27, d: 0.27, h: 0.25, variants: 2, variantNames: ['fruit head', 'jelly in a glass dish'],
@@ -113,7 +113,7 @@ FURN({
 });
 
 FURN({
-  key: 'generic_fruit_salt_cone', name: 'Salt-cone Kernels', culture: 'generic', type: 'food', setting: 'both',
+  key: 'generic_fruit_salt_cone', name: 'Salt-cone Kernels', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
   rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'timber'],
   biome: 'eastabyss', source: ['cycad'],
   w: 0.24, d: 0.22, h: 0.28, variants: 2, variantNames: ['seed cone', 'leached kernels'],
@@ -136,7 +136,7 @@ FURN({
 /* ================= Hyperjungle (3 pieces, and the pandan keys it shares with the North-western Lowlands) ================= */
 
 FURN({
-  key: 'generic_fruit_gatepod', name: 'Gatepod', culture: 'generic', type: 'food', setting: 'both',
+  key: 'generic_fruit_gatepod', name: 'Gatepod', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
   rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'timber'],
   biome: 'hyperjungle', source: ['baobab', 'swbay:baobab'],
   w: 0.37, d: 0.37, h: 0.11, variants: 2, variantNames: ['cut round of pod', 'gatepod chalk'],
@@ -156,7 +156,7 @@ FURN({
 });
 
 FURN({
-  key: 'generic_fruit_mahogany_nut', name: 'Mahogany Nut', culture: 'generic', type: 'food', setting: 'both',
+  key: 'generic_fruit_mahogany_nut', name: 'Mahogany Nut', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
   rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone'],
   biome: 'hyperjungle', source: ['mahogany'],
   w: 0.22, d: 0.22, h: 0.2, variants: 2, variantNames: ['capsule', 'roasted seeds'],
@@ -179,7 +179,7 @@ FURN({
 });
 
 FURN({
-  key: 'generic_fruit_silkpod', name: 'Silkpod', culture: 'generic', type: 'food', setting: 'both',
+  key: 'generic_fruit_silkpod', name: 'Silkpod', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
   rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food'],
   biome: 'hyperjungle', source: ['kapok'],
   w: 0.28, d: 0.2, h: 0.12, variants: 2, variantNames: ['young pods', 'ripe pod, burst'],
@@ -196,7 +196,7 @@ FURN({
 });
 
 FURN({
-  key: 'generic_fruit_pandan_keys', name: 'Pandan Keys', culture: 'generic', type: 'food', setting: 'both',
+  key: 'generic_fruit_pandan_keys', name: 'Pandan Keys', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
   rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone'],
   biome: 'nwlowlands', source: ['pandan', 'hyperjungle:screwpine'],
   w: 0.34, d: 0.28, h: 0.26, variants: 2, variantNames: ['fruit head', 'loose keys and paste'],
@@ -219,7 +219,7 @@ FURN({
 /* ================= Northern Highlands (5 pieces) ================= */
 
 FURN({
-  key: 'generic_fruit_yew_lantern', name: 'Yew-lantern Arils', culture: 'generic', type: 'food', setting: 'both',
+  key: 'generic_fruit_yew_lantern', name: 'Yew-lantern Arils', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
   rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'timber', 'stone'],
   biome: 'nhighlands', source: ['elderyew'],
   w: 0.29, d: 0.18, h: 0.12, variants: 2, variantNames: ['sprig', 'dish of arils'],
@@ -239,7 +239,7 @@ FURN({
 });
 
 FURN({
-  key: 'generic_fruit_rowan', name: 'Frost Rowan', culture: 'generic', type: 'food', setting: 'both',
+  key: 'generic_fruit_rowan', name: 'Frost Rowan', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
   rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'timber', 'glass', 'cloth'],
   biome: 'nhighlands', source: ['rowan'],
   w: 0.25, d: 0.19, h: 0.15, variants: 2, variantNames: ['berry cluster', 'rowan jelly'],
@@ -257,7 +257,7 @@ FURN({
 });
 
 FURN({
-  key: 'generic_fruit_bilberry', name: 'Wall Bilberries', culture: 'generic', type: 'food', setting: 'both',
+  key: 'generic_fruit_bilberry', name: 'Wall Bilberries', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
   rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'bark', 'stone'],
   biome: 'nhighlands', source: ['heath and bilberry'],
   w: 0.2, d: 0.2, h: 0.13, variants: 2, variantNames: ['birch-bark punnet', 'with cream'],
@@ -276,7 +276,7 @@ FURN({
 });
 
 FURN({
-  key: 'generic_fruit_lantern_pod', name: 'Lantern Pods', culture: 'generic', type: 'food', setting: 'both',
+  key: 'generic_fruit_lantern_pod', name: 'Lantern Pods', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
   rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'emissive', 'thatch', 'stone'],
   biome: 'nhighlands', source: ['lantern pod epiphyte'],
   w: 0.28, d: 0.28, h: 0.15, variants: 2, variantNames: ['basket of pods', 'sliced'],
@@ -297,7 +297,7 @@ FURN({
 });
 
 FURN({
-  key: 'generic_fruit_mast', name: 'Beechmast and Acorns', culture: 'generic', type: 'food', setting: 'both',
+  key: 'generic_fruit_mast', name: 'Beechmast and Acorns', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
   rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'timber'],
   biome: 'nhighlands', source: ['bluebeech', 'gnarloak'],
   w: 0.22, d: 0.22, h: 0.14, variants: 2, variantNames: ['beechmast in husks', 'acorns'],
@@ -314,7 +314,7 @@ FURN({
 /* ================= North-western Lowlands (1 piece; pandan keys above) ================= */
 
 FURN({
-  key: 'generic_fruit_candle_nectar', name: 'Candle Nectar', culture: 'generic', type: 'drink', setting: 'both',
+  key: 'generic_fruit_candle_nectar', name: 'Candle Nectar', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'drink', setting: 'both',
   rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone', 'glass'],
   biome: 'nwlowlands', source: ['banksia'],
   w: 0.26, d: 0.15, h: 0.23, variants: 2, variantNames: ['flower candles', 'steeping jug'],
@@ -341,7 +341,7 @@ FURN({
 /* ================= Rift (4 pieces; lantern fruit is shared with Xanadu) ================= */
 
 FURN({
-  key: 'generic_fruit_ballmelon', name: 'Ballmelon', culture: 'generic', type: 'food', setting: 'both',
+  key: 'generic_fruit_ballmelon', name: 'Ballmelon', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
   rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone', 'timber'],
   biome: 'rift', source: ['ball vine'],
   w: 0.28, d: 0.28, h: 0.26, variants: 2, variantNames: ['whole', 'slices'],
@@ -360,7 +360,7 @@ FURN({
 });
 
 FURN({
-  key: 'generic_fruit_frillpod', name: 'Frillpods', culture: 'generic', type: 'food', setting: 'both',
+  key: 'generic_fruit_frillpod', name: 'Frillpods', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
   rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'rope', 'stone'],
   biome: 'rift', source: ['carrotfrill'],
   w: 0.25, d: 0.18, h: 0.09, variants: 2, variantNames: ['tied bunch', 'coins in a bowl'],
@@ -378,7 +378,7 @@ FURN({
 });
 
 FURN({
-  key: 'generic_fruit_lantern_fruit', name: 'Lantern Fruit', culture: 'generic', type: 'food', setting: 'both',
+  key: 'generic_fruit_lantern_fruit', name: 'Lantern Fruit', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
   rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone', 'timber'],
   biome: 'rift', source: ['lanterntree', 'xanadu:lanterntree'],
   w: 0.26, d: 0.26, h: 0.18, variants: 2, variantNames: ['bowl of husks', 'husks peeled back'],
@@ -402,7 +402,7 @@ FURN({
 });
 
 FURN({
-  key: 'generic_fruit_bell_date', name: 'Bell Dates', culture: 'generic', type: 'food', setting: 'both',
+  key: 'generic_fruit_bell_date', name: 'Bell Dates', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
   rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'timber', 'stone'],
   biome: 'rift', source: ['bellpalm', 'cloudbell'],
   w: 0.35, d: 0.2, h: 0.11, variants: 2, variantNames: ['strand', 'pitted on a plate'],
@@ -422,7 +422,7 @@ FURN({
 /* ================= South-eastern Desert (3 pieces) ================= */
 
 FURN({
-  key: 'generic_fruit_mesquite', name: 'Mesquite Pods', culture: 'generic', type: 'food', setting: 'both',
+  key: 'generic_fruit_mesquite', name: 'Mesquite Pods', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
   rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'rope', 'stone', 'timber'],
   biome: 'sedesert', source: ['mesquite'],
   w: 0.35, d: 0.22, h: 0.09, variants: 2, variantNames: ['bundle of pods', 'mesquite cakes'],
@@ -445,7 +445,7 @@ FURN({
 });
 
 FURN({
-  key: 'generic_fruit_wadi_date', name: 'Wadi Dates', culture: 'generic', type: 'food', setting: 'both',
+  key: 'generic_fruit_wadi_date', name: 'Wadi Dates', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
   rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'thatch'],
   biome: 'sedesert', source: ['palm'],
   w: 0.31, d: 0.31, h: 0.13, variants: 2, variantNames: ['bunch on the strand', 'basket of dates'],
@@ -466,7 +466,7 @@ FURN({
 });
 
 FURN({
-  key: 'generic_fruit_tuna', name: 'Desert Tunas', culture: 'generic', type: 'food', setting: 'both',
+  key: 'generic_fruit_tuna', name: 'Desert Tunas', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
   rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'cloth', 'stone'],
   biome: 'sedesert', source: ['prickly pear', 'xanadu:opuntia'],
   w: 0.32, d: 0.24, h: 0.09, variants: 2, variantNames: ['on a cloth', 'peeled and sliced'],
@@ -490,7 +490,7 @@ FURN({
 /* ================= South-west Bay (1 piece; gatepod above) ================= */
 
 FURN({
-  key: 'generic_fruit_bay_fungi', name: 'Bay Fungi', culture: 'generic', type: 'food', setting: 'both',
+  key: 'generic_fruit_bay_fungi', name: 'Bay Fungi', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
   rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'metal', 'stone'],
   biome: 'swbay', source: ['coral', 'parasol'],
   w: 0.35, d: 0.3, h: 0.15, variants: 2, variantNames: ['coral clump', 'grilled parasol caps'],
@@ -520,7 +520,7 @@ FURN({
 /* ================= South-western Lowlands (4 pieces) ================= */
 
 FURN({
-  key: 'generic_fruit_madrone', name: 'Madrone Berries', culture: 'generic', type: 'food', setting: 'both',
+  key: 'generic_fruit_madrone', name: 'Madrone Berries', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
   rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone', 'timber'],
   biome: 'swlowlands', source: ['madrone', 'manzanita', 'toyon shrub'],
   w: 0.25, d: 0.2, h: 0.27, variants: 2, variantNames: ['bowl of berries', 'manzanita cider'],
@@ -538,7 +538,7 @@ FURN({
 });
 
 FURN({
-  key: 'generic_fruit_rattlepod', name: 'Rattlepods', culture: 'generic', type: 'food', setting: 'both',
+  key: 'generic_fruit_rattlepod', name: 'Rattlepods', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
   rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone', 'timber'],
   biome: 'swlowlands', source: ['rattlepod'],
   w: 0.28, d: 0.24, h: 0.12, variants: 2, variantNames: ['pod cluster', 'rattle coffee'],
@@ -561,7 +561,7 @@ FURN({
 });
 
 FURN({
-  key: 'generic_fruit_ember_tamarind', name: 'Ember Tamarind', culture: 'generic', type: 'food', setting: 'both',
+  key: 'generic_fruit_ember_tamarind', name: 'Ember Tamarind', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
   rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'timber'],
   biome: 'swlowlands', source: ['flame'],
   w: 0.34, d: 0.2, h: 0.07, variants: 2, variantNames: ['pods', 'cracked, with pulp cake'],
@@ -579,7 +579,7 @@ FURN({
 });
 
 FURN({
-  key: 'generic_fruit_pillar_fig', name: 'Pillar Figs', culture: 'generic', type: 'food', setting: 'both',
+  key: 'generic_fruit_pillar_fig', name: 'Pillar Figs', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
   rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone'],
   biome: 'swlowlands', source: ['pillarfig'],
   w: 0.26, d: 0.26, h: 0.1, variants: 2, variantNames: ['plate of figs', 'halved'],
@@ -598,7 +598,7 @@ FURN({
 /* ================= Xanadu (7 pieces; tunas and lantern fruit are shared) ================= */
 
 FURN({
-  key: 'generic_fruit_cacao', name: 'Cacao', culture: 'generic', type: 'food', setting: 'both',
+  key: 'generic_fruit_cacao', name: 'Cacao', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
   rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone', 'timber'],
   biome: 'xanadu', source: ['cacao'],
   w: 0.33, d: 0.21, h: 0.12, variants: 2, variantNames: ['two pods', 'split pod and a cup'],
@@ -619,7 +619,7 @@ FURN({
 });
 
 FURN({
-  key: 'generic_fruit_pitaya', name: 'Pitaya', culture: 'generic', type: 'food', setting: 'both',
+  key: 'generic_fruit_pitaya', name: 'Pitaya', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
   rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone'],
   biome: 'xanadu', source: ['pitaya'],
   w: 0.26, d: 0.26, h: 0.14, variants: 2, variantNames: ['whole', 'halved'],
@@ -643,7 +643,7 @@ FURN({
 });
 
 FURN({
-  key: 'generic_fruit_plantain', name: 'Violet Plantains', culture: 'generic', type: 'food', setting: 'both',
+  key: 'generic_fruit_plantain', name: 'Violet Plantains', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
   rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone'],
   biome: 'xanadu', source: ['violetplantain'],
   w: 0.32, d: 0.24, h: 0.08, variants: 2, variantNames: ['hand with its bract', 'fried slices'],
@@ -666,7 +666,7 @@ FURN({
 });
 
 FURN({
-  key: 'generic_fruit_wingnut', name: 'Wingnut Chains', culture: 'generic', type: 'food', setting: 'both',
+  key: 'generic_fruit_wingnut', name: 'Wingnut Chains', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
   rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'timber'],
   biome: 'xanadu', source: ['wingnut'],
   w: 0.38, d: 0.18, h: 0.13, variants: 2, variantNames: ['catkin chains', 'roasted nuts'],
@@ -690,7 +690,7 @@ FURN({
 });
 
 FURN({
-  key: 'generic_fruit_arbutus', name: 'Strawberry-tree Berries', culture: 'generic', type: 'food', setting: 'both',
+  key: 'generic_fruit_arbutus', name: 'Strawberry-tree Berries', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
   rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone', 'glass', 'cloth'],
   biome: 'xanadu', source: ['arbutus'],
   w: 0.22, d: 0.21, h: 0.15, variants: 2, variantNames: ['bowl of berries', 'arbutus jam'],
@@ -708,7 +708,7 @@ FURN({
 });
 
 FURN({
-  key: 'generic_fruit_whorl_olive', name: 'Whorl Olives', culture: 'generic', type: 'food', setting: 'both',
+  key: 'generic_fruit_whorl_olive', name: 'Whorl Olives', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
   rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone', 'glass', 'metal', 'timber'],
   biome: 'xanadu', source: ['whorlolive'],
   w: 0.28, d: 0.16, h: 0.21, variants: 2, variantNames: ['dish of olives', 'with pressed oil'],
@@ -724,7 +724,7 @@ FURN({
 });
 
 FURN({
-  key: 'generic_fruit_lotus_seed', name: 'Lotus Seeds', culture: 'generic', type: 'food', setting: 'both',
+  key: 'generic_fruit_lotus_seed', name: 'Lotus Seeds', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
   rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone'],
   biome: 'xanadu', source: ['lotus'],
   w: 0.23, d: 0.18, h: 0.13, variants: 2, variantNames: ['seed head', 'shelled seeds'],

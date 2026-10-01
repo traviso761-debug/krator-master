@@ -1,7 +1,7 @@
 # Biome fruit
 
 One edible fruit, nut, seed, pod or fungus for each fruiting plant the biome kits draw. Each is a
-catalog piece in `kits/catalog/krator-master-fruit.js` (culture `generic`, type `food`, anchor
+catalog piece in `kits/catalog/krator-master-furniture-generic-fruit.js` (culture `generic`, type `food`, anchor
 `surface`). It has two variants, as picked and as served, sized for a shelf board or a table top.
 Each entry carries `biome` and `source`, which link back to the species here.
 
@@ -10,6 +10,22 @@ berry, the fruit head). Where a pod hangs metres long on a hypertree, the piece 
 home: a sawn round, a handful of seeds, a jar.
 
 Where a species has no fruit drawn yet, this note says so ("not drawn").
+
+## To do: put the fruit in the biomes
+
+So far the fruit lives only in the catalog. Each kit's `KNOWN_ISSUES.md` has an open item for its own
+fruit. Across all kits that means:
+
+- [ ] **Draw what is missing:** figs on `pillarfig` (swlowlands), striped olives on `whorlolive` and lotus seed
+      heads (xanadu), tunas on the prickly pear scrub (sedesert), beechmast and acorns on `bluebeech` and
+      `gnarloak` (nhighlands), the pandan-key head on the hyperjungle screwpine, split ballmelons (rift).
+- [ ] **Harvest tags:** give every fruiting species a harvest tag naming its fruit and catalog key. Use
+      nhighlands' `HV()`, which already carries `['nuts']`, `['berries (cooked)']` and so on, so a world can
+      ask a plant what it yields.
+- [ ] **Vendored copies:** worlds that vendor a biome (`settlements/iziz`, `settlements/screamers`,
+      `kits/ancients`) pick up the change by re-copying from the kit (`build.py --vendor-check`).
+- [ ] **Verify:** re-verify every kit touched against its `baseline.json` (triangle budget: rift and
+      nhighlands are near their ceilings).
 
 ## Eastern Abyss
 
