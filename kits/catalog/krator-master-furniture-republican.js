@@ -14,7 +14,22 @@ FURN_CULTURE('republican', { name: 'Republicans', pack: 'republic', influences: 
     bambooStraw: 0xc8b070, bambooDark: 0x8a7a40, bambooPale: 0xe0d090, timberBirch: 0xc8a878, timberBirchDark: 0x8a6a48, timberBlack: 0x2a2420,
     clothRepublicRed: 0x7a2028, clothOchreBand: 0xc9963a, clothCream: 0xf0e6cc, clothTealInk: 0x2a8a86, clothBlue: 0x2a4a7a, clothGreen: 0x3a5a3a,
     brass: 0xb08432, steelSalvage: 0x7a8088, alloyWhite: 0xe6e4dc, glassSky: 0x5a9ec9, clayGlazed: 0x6a9a7a, stoneGrey: 0x7a7670,
-    ironBlack: 0x2a2a2a, flame: 0xffb04a, ember: 0xd9762c, electric: 0x6fd0ff
+    ironBlack: 0x2a2a2a, flame: 0xffb04a, ember: 0xd9762c, electric: 0x6fd0ff,
+    /* the Highlands kit's Republican branch (settlements/highlands HPAL, VPAL and the builders' literals) */
+    timberPine: 0xc08850, timberPineDark: 0xa87040, timberAged: 0x8a7e70, timberAgedDark: 0x7a6e60, timberTar: 0x4a3426,
+    timberRedwood: 0x5e2a1c, timberStump: 0x5a4632, timberOak: 0x6a4a30, timberRack: 0x5a4030, timberPell: 0x7a5a3e, sawdust: 0xd8c08a,
+    stoneRubble: 0x9a948a, stoneAshlar: 0xd8d0bc, stoneSlate: 0x565c66, stoneGrind: 0xb0a898, stoneMill: 0xb0aaa0,
+    rustSalvage: 0x8a5a3a, rustDark: 0x6e4a36, rustRed: 0x8a3a2a, steelCorrugate: 0x9a9488, steelOlive: 0x6a6a5a, ironSoot: 0x2e2a26,
+    copper: 0xc07a48, copperSamovar: 0xc8883a, brassDull: 0x9a7a4a, bronzeDark: 0x7a5a2a, gilt: 0xd4a03a, drumYellow: 0xb89a30,
+    paintTeal: 0x2e9488, paintRed: 0xb3322a, paintWhite: 0xefe7d6, paintBlack: 0x201a18, paintOchre: 0xd19a3a, paintBlue: 0x3a6aa8,
+    paperCream: 0xe8d9a8, paperRed: 0xc0302a, paperVermilion: 0xd84a2a, paperAmber: 0xe0a030, slateBoard: 0x2a3430,
+    clothSacking: 0xb8a080, clothSackingDark: 0xa89070, clothSackingPale: 0xc8b898, clothBurlap: 0xd8c8a0, leatherBrown: 0x6a4a30,
+    awningRed: 0xc03a2a, awningTeal: 0x2e8a88, awningSaffron: 0xd8a030, awningGreen: 0x6a8a3a,
+    thatchStraw: 0xb89a5a, thatchHay: 0xc8b070, mugBrown: 0x8a6a4a, clayRed: 0x9a5a38, clayTan: 0xb87a4a, clayDark: 0x7a4a30,
+    clayCream: 0xc8a060, clayGreen: 0x5a7a5a, produceRed: 0xc0302a, produceOrange: 0xe08a2a, produceGreen: 0x6a9a3a,
+    produceYellow: 0xd8c060, producePlum: 0x8a3a6a, glassGreen: 0x4a8a6a, glassOlive: 0x8a9a4a, glassBlue: 0x5a7a9a,
+    waterDark: 0x2a3a44, waterPond: 0x4a6874, waterFountain: 0x5a7a88, emberHot: 0xff7a2a, glowForge: 0xd8380a, coal: 0x262422,
+    scrapEarth: 0x5a4a3e
   } });
 /* END PALETTE */
 const REP_COMMON = {

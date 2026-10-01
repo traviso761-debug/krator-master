@@ -12,7 +12,17 @@ FURN_CULTURE('painted', { name: 'Painted Men', pack: null, influences: 'Tlingit'
     timberCedarRed: 0x8a4a30, timberCedarDark: 0x5a3020, timberCedarPale: 0xb08060, timberGreyWeathered: 0x8a8878,
     paintBlack: 0x1e1e1e, paintRed: 0xa82a22, paintTeal: 0x2a7a7a, paintOchre: 0xc89a3a, clothWoolWhite: 0xe8e0cc, hideElk: 0x9a7a52,
     boneIvory: 0xe8e0cc, copper: 0xb5723a, shellAbalone: 0x8ab0a8, stoneGrey: 0x7a7670, clayBlack: 0x3a3632, ropeCedar: 0x9a7a4a,
-    flame: 0xffb04a, ember: 0xd9762c
+    flame: 0xffb04a, ember: 0xd9762c,
+    /* harvested from settlements/highlands (the formline colours HFORM, HPAL and the Tribal builders' literals) */
+    formCedar: 0xb27a4c, formCedarDark: 0x8a5634, formGround: 0xd8cdb4, formWhite: 0xefe7d6, formBlack: 0x171311,
+    formRed: 0xb3322a, formTeal: 0x2e9488, formOchre: 0xd19a3a, formFrog: 0x3f8f5a, formMuzzle: 0xd9b48a,
+    timberAged: 0x8a7e70, timberTar: 0x4a3426, timberHatch: 0x5a4a3a, timberBench: 0x7a6a50, bamboo: 0xc8b870,
+    thatch: 0xb89a5a, thatchPale: 0xc4a66a, hay: 0xc4a86a, stoneRubble: 0x9a948a, stoneAshlar: 0xd8d0bc,
+    ironBrazier: 0x3a3430, ironBlack: 0x2e2a26, ironSpear: 0x5a5650, rust: 0x8a5a3a, rustDark: 0x7a4e34,
+    boneHorn: 0xe6dcc4, antler: 0xd8ccb0, gourd: 0xb08a4a, gourdOlive: 0x9a8a3a, gourdPale: 0xc0a060, gourdDark: 0xa08040,
+    herbGreen: 0x6a7a3a, herbOlive: 0x8a7a44, herbDark: 0x5a6a34, herbStraw: 0x9a8050, ropeFibre: 0x9a8a6a,
+    shieldPeach: 0xe8c0a0, shieldMint: 0xa0d0c8, shieldButter: 0xf0d890, shieldRose: 0xe0a098, sackBurlap: 0xb8a080,
+    hollowDark: 0x14110f
   } });
 /* END PALETTE */
 const PNT_COMMON = {
