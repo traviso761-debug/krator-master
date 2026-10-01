@@ -778,7 +778,18 @@ BIO.clearOf3=function(x,y,z,rad,vr){const O=BIO.host.obstacles;
 //   downFaces  normal.y < -minDown (soffits, ceilings)          -> mats, curtains
 //   sideFaces  |normal.y| < .35                                 -> vines, brackets
 // Each sample: {p:[x,y,z], n:[nx,ny,nz], a:area}
-BIO.faceSamples=function(geos,n,filt){const out=[];const F=[];let tot=0;
+// SHELLS: geos may hold {geos:[...], share} groups (a roof, the walls, the ledges) instead of
+// plain geometries. Area decides where samples go WITHIN a shell, so one huge roof plate no
+// longer takes a structure's moss from its small ledges: the n samples are split across the
+// shells by share (default: equal), then each shell is sampled by area. A list of plain
+// geometries is one shell and draws exactly as before.
+BIO.faceSamples=function(geos,n,filt){
+ if(geos.some(g=>g&&g.geos)){const S=geos.map(g=>g&&g.geos?g:{geos:[g],share:1});
+  const tot=S.reduce((s,x)=>s+(x.share==null?1:x.share),0)||1,out=[];let given=0;
+  S.forEach((x,i)=>{const w=(x.share==null?1:x.share)/tot,k=i===S.length-1?n-given:Math.round(n*w);given+=k;
+   if(k>0)out.push(...BIO.faceSamples(x.geos,k,filt));});
+  return out;}
+ const out=[];const F=[];let tot=0;
  for(const g of geos){const p=g.attributes.position;if(!p)continue;const idx=g.index?g.index.array:null;const cnt=idx?idx.length:p.count;
   for(let i=0;i<cnt;i+=3){const a=idx?idx[i]:i,b=idx?idx[i+1]:i+1,c=idx?idx[i+2]:i+2;
    const ax=p.getX(a),ay=p.getY(a),az=p.getZ(a),bx=p.getX(b),by=p.getY(b),bz=p.getZ(b),cx=p.getX(c),cy=p.getY(c),cz=p.getZ(c);

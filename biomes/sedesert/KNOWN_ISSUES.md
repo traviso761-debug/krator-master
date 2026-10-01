@@ -31,7 +31,7 @@ Read before changing anything here. `build.py` prints the open count.
       reads).
 - [ ] The candelabra's columns are individual instances (40-80 per tree at lv 2): the
       heaviest thing per tree in the kit. A merged column fan per tree would halve it.
-- [ ] Only one Girder tower dresses. `dress()` samples by triangle area (inherited).
+- [ ] Only one Girder tower dresses. `dress()` samples by triangle area within a shell: the core takes shells (`{geos, share}`: the roof, the walls, the ledges, each with its own share of the samples, `core/biome/40-core-place.js`), but this host's test structure still passes one list.
 - [ ] The fauna is a first pass: the kites glide (no flap), the swifts follow a Lissajous
       swarm rather than a boid flock, the striders' legs are two rods swinging fore and aft,
       and the lizards never move. Nothing reacts to the camera.

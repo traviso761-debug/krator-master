@@ -36,7 +36,7 @@ Read before changing anything here. `build.py` prints the open count.
 - [ ] Flowers are two-tone through the iridescence hook (a second colour away from
       the sun and at grazing angles), not painted in two colours: seen face-on in
       full sun a painted orchid shows mostly its first colour.
-- [ ] Only one test structure dresses (the dome ruin). `dress()` samples by triangle area (inherited).
+- [ ] Only one test structure dresses (the dome ruin). `dress()` samples by triangle area within a shell: the core takes shells (`{geos, share}`: the roof, the walls, the ledges, each with its own share of the samples, `core/biome/40-core-place.js`), but this host's test structure still passes one list.
 - [ ] No fauna yet.
 
 ## Done

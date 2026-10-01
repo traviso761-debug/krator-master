@@ -24,9 +24,6 @@ Read before changing anything here. `build.py` prints the open count.
 - [ ] The host's floor mesh is Lambert-lit with no shadow maps, so open floor
       between plants reads a shade too bright; the litter colour is painted dark
       to compensate. A world with shadows should lighten `MAT_GROUND`.
-- [ ] `dress()` samples by triangle area: a structure with one huge roof plate
-      and many small ledges puts most of its moss on the roof. Pass per-shell
-      geometry lists (roof, floors, walls) with their own counts if that matters.
 - [ ] Fauna: the herds' waypoints avoid boles, saplings, the host mask and its
       obstacles, but not logs or boulders (a strider can walk through a fallen
       trunk). The flyers' paths are tested against boles at their centre only:
@@ -37,6 +34,10 @@ Read before changing anything here. `build.py` prints the open count.
       and arctic biomes are to be written against the same core.
 
 ## Done
+
+- [x] `dress()` per shell (Oct 2026): `BIO.faceSamples` takes `{geos, share}` shells (roof, floors, walls), each
+      sampled by area with its own share of the count (`core/biome/40-core-place.js`, `test-place.js`). A plain
+      list draws as before; this host's tower still passes one.
 
 - [x] On the shared core (`core/biome/`, Oct 2026), with the core's helpers as globals in
       `41-hyperjungle-globals.js`. Geometry checked by mesh fingerprints against the kit's own core:
