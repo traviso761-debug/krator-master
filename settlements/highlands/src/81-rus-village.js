@@ -90,7 +90,7 @@ function buildHlRusHall(G,o){reseed(22211+(o.v|0));const TW=20,TD=36,TH=1.2,W=11
  for(const s of[-1,1])for(const z of[ZC-6,ZC+4]){vB('hRUBoardV',0,ridge-.4,z,1.2,1.1,1.2,0,tar);vnGableRoof(0,ridge+.7,z,1.6,1.4,.7,Math.PI/2,'vShingleB',sh,.25);}
  vnDoor(W/2,TH,ZC-6,Math.PI/2,1.1,2.1,'vWood',tar,tar,false);
  // tall horned poles at the front corners
- for(const s of[-1,1]){hlRngSkip(4);FURNISH('hl_rus_carved_pillar',s*(W/2+.45),TH,zf+.45,0,{v:1});}
+ for(const s of[-1,1]){hlRngSkip(5);FURNISH('hl_rus_carved_pillar',s*(W/2+.45),TH,zf+.45,0,{v:1});}   // the drawn pillar drew 5 numbers
  // arcaded porch: carved posts, keel arches, painted brackets, a steep gable with dragons
  const PZ=zf+3;for(let i=0;i<5;i++){const x=-3.2+i*1.6;hnTotemPost(x,TH,PZ-.2,.16,3.2,0);if(i<4)kput('hKeelW',[x+.8,TH+2.35,PZ-.2],null,[1.3,.85,.12],tar.clone().multiplyScalar(1.4));}
  for(const s of[-1,1])hnTotemPost(s*3.2,TH,zf+.4,.14,3.2,0);
