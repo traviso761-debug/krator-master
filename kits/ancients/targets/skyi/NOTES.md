@@ -88,3 +88,13 @@ On the street · The fallen strand · The hanging strand · Night.
   instanced lit openings.
 * Crossings sit at 104-232 m; the lowest crossing is behind the foot masses
   from some angles.
+
+## Design pass (2026-10-01): the crown
+Looked at hero, close (the braid, the foot) and ruin range. The weakest part
+was the top third: above ~300 m a bare 11 m needle, two pale fins hugging it,
+and a lit box stuck on the apex. `siCrown` (called where the shaft reaches the
+tip: intact, rehabilitated and the toppled upper body) adds a corbelled COLLAR
+on the chamfered plan wrapping both fins at 386-398 m (sized from `siEnv`),
+carried on 16 two-step brackets from the shaft; a cornice; three stepped tiers
+the knife rises from, with pinnacles at the broad faces' corners; lit slots in
+the collar; and a slim lit crystal finial in place of the box. No rng.

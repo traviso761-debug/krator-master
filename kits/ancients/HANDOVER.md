@@ -1,5 +1,14 @@
 # Krator Ancients — handover
 
+## ROUND 3 (2026-10-01, user-approved) — in flight, one agent each
+- Shared-code pass: soffit bounce kit-wide, holeFn height term, shared rbeam, meshMerged colours, apron
+  material override, new rubble shape, darker MAT.dark, one shared moulding() helper, kit row re-spacing.
+- Vashtir REBUILT as a Shimizu Mega-City Pyramid type arcology (refs: Shimizu diagram and render, user-supplied).
+- Hexahedron polish: real cells, more hypertree species, flank sag.
+- Skyscraper I/J/K design passes; restand of A-H (tighter stances, smaller podiums).
+- The Iziz spaceport ported into the kit with every decay (target `spaceport`).
+- Dalab: the user calls it settled ("looks good in the settlement"); its dome-size and room-fit-out items are closed.
+
 ## RESUMED 2026-10-01 on branch `ancients-resume` — state at end of day, read first
 All merged into `ancients-resume`, built, jscheck'ed and verified (full kit: error panel clean, every invariant
 PASS, showcase 17.4M tris OVER the 6M soft ceiling by the user's choice, worst draw calls ~620/900). Gallery

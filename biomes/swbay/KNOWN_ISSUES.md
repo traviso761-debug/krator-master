@@ -33,6 +33,8 @@ Read before changing anything here. `build.py` prints the open count.
       skips them.
 - [ ] Verified only under SwiftShader (headless); the iridescent prism-gum leaves and the
       gill texture at grazing angles are untested on real hardware.
+- [ ] **Put the biome fruit in the kit** (`biomes/FRUIT.md`): gatepod (savannah baobabs), bay fungi (coral fungus, parasol). Each has a catalog piece in
+      `kits/catalog/krator-master-furniture-generic-fruit.js` (`biome: 'swbay'`). Everything is drawn. Add harvest tags. The umbrella thorn's pods and the monkey-puzzle cones are not drawn.
 
 ## Done
 
