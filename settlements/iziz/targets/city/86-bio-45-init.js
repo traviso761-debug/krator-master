@@ -7,7 +7,9 @@ const RUIN_RECTS=[];           // ruined ancient clusters (world-space OBBs) whe
 function bioMaskFn(x,z){
  if(Math.abs(x)>CITY.WORLD/2-14||Math.abs(z)>CITY.WORLD/2-14)return 0;
  const p=polar(x,z),ro=p.r-wallR(p.t);
- if(ro>44){return maskAt(x,z)[0]>200?1:0;}                       // the jungle: everything not a road, pad or bunker
+ // the jungle: everything not a road, pad or bunker. In the belt the hypertrees are cleared from (ro < 130) the floor
+ // thins too — cut-over ground, not full jungle floor right up to the moat (Round 3 issue)
+ if(ro>44){return maskAt(x,z)[0]>200?(ro<130?.3+.7*smoothstep(60,130,ro):1):0;}
  if(ro>-20)return 0;                                              // the moat and the wall band
  const m=maskAt(x,z);if(m[1]>200&&m[0]<60)return .85;             // city parks: undergrowth only (the tree pass masks the city out)
  if(!canBuild(x,z))return 0;

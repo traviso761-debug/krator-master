@@ -22,7 +22,7 @@ The World Menagerie has its own Voth. It is **not** served: `/voth` is always Kr
 ## How it fits together
 
 ```
-krator-master/                     (this repository, branch host-server)
+krator-master/                     (this repository)
 ├── settlements/ kits/ biomes/     Krator's worlds, each built to a page in its dist/ folder
 ├── gallery/build_gallery.py       collects those pages into one gallery
 └── host/
@@ -59,7 +59,7 @@ All commands work the same in **Command Prompt** and in **PowerShell**. Or skip 
 ### 1. Download
 
 ```
-git clone -b host-server https://github.com/traviso761-debug/krator-master.git
+git clone https://github.com/traviso761-debug/krator-master.git
 cd krator-master
 ```
 
@@ -114,7 +114,7 @@ From PowerShell, `host\sitectl.bat serve` works as written. If you have changed 
 ## Linux
 
 ```
-git clone -b host-server https://github.com/traviso761-debug/krator-master.git
+git clone https://github.com/traviso761-debug/krator-master.git
 cd krator-master/host
 python3 sitectl.py setup                    # copy, build what is missing, check
 ./sitectl install && ./sitectl enable       # a systemd user service named "krator"
@@ -130,7 +130,7 @@ Day to day, see [Running it day to day](#running-it-day-to-day).
 ## macOS
 
 ```
-git clone -b host-server https://github.com/traviso761-debug/krator-master.git
+git clone https://github.com/traviso761-debug/krator-master.git
 cd krator-master
 python3 host/sitectl.py setup
 python3 host/sitectl.py serve
@@ -320,8 +320,7 @@ internet. It serves only the files its route table lists and nothing else, but i
 
 ## For maintainers
 
-- **Branch:** `host-server` on `traviso761-debug/krator-master`. It is proposed for `main` as pull request #3 and
-  is not merged.
+- **Branch:** `main` on `traviso761-debug/krator-master` (merged from `host-server`, pull request #3).
 - **The rule:** nothing a world is built from (`settlements/`, `kits/`, `biomes/`, `core/`) may name `host/` or the
   Menagerie. Run `python3 tools/check_insulation.py` before you commit.
 - **`host/server.py`** is a copy of `host/WorldMenagerie/server.py`, kept byte for byte identical. Fix it in the

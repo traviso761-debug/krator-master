@@ -25,9 +25,9 @@ function buildRsHykPearl(){reseed(72300);
  // two masts raked forward, great lateens
  const lateen=(mx,mh,tack,peak,clew,key,zs)=>{const base=dY(H.uAt(mx)),rk=.14,top=[mx+Math.sin(rk)*mh,base+mh,0];rsLink(B,'wood',[mx,base-.3,0],top,.34,0x6a4a2c,8,.2);
   // the two lateens hang on opposite sides of their masts and belly apart, so they never touch (sails-clear-sails)
-  const S=rsSail(B,{key,O:[0,base,.45*zs],U:[1,0,0],V:[0,1,0],belly:1.2*zs,nu:22,nv:12,A:t=>[lerp(tack[0],peak[0],t),lerp(tack[1],peak[1],t)+Math.sin(Math.PI*t)*.9],Bf:t=>[lerp(clew[0],peak[0],t)+Math.sin(Math.PI*t)*.8,lerp(clew[1],peak[1],t)],draw:rsHykPearlLateen});
+  rsRig(B,[[mx,base-.3,0],top]);const S=rsSail(B,{key,O:[0,base,.45*zs],U:[1,0,0],V:[0,1,0],belly:1.2*zs,nu:22,nv:12,A:t=>[lerp(tack[0],peak[0],t),lerp(tack[1],peak[1],t)+Math.sin(Math.PI*t)*.9],Bf:t=>[lerp(clew[0],peak[0],t)+Math.sin(Math.PI*t)*.8,lerp(clew[1],peak[1],t)],draw:rsHykPearlLateen});
   const yd=[];for(let k=0;k<=16;k++)yd.push(S.at(k/16,0));yd.unshift([yd[0][0]+1.4,yd[0][1]-.5,yd[0][2]]);rsTube(B,'wood',yd,t=>.24*(1-.5*Math.abs(t-.35)),0x7a5634,40,6);
-  rsRope(B,top,S.at(.45,0));rsRope(B,top,[mx-6,H.ys(H.uAt(mx-6)),-3.6]);rsRope(B,top,[mx-6,H.ys(H.uAt(mx-6)),3.6]);rsPennant(B,[top[0],top[1]+.3,0],4,.8,[TURQ,GOLD]);};
+  rsRope(B,top,S.at(.45,0));rsRope(B,top,[mx-6,H.ys(H.uAt(mx-6)),-3.6]);rsRope(B,top,[mx-6,H.ys(H.uAt(mx-6)),3.6]);rsPennant(B,[top[0],top[1]+.3,0],4,.8,[TURQ,GOLD]);rsRigEnd(B);};
  lateen(3,24,[18,2.6],[-13,30],[-7,2.4],'hyk-pearl',1);lateen(-9.5,15,[-3.5,4.6],[-19,19],[-14.5,4.4],'hyk-pearl',-1);
  // the diving booms: six spars out over the starboard side, each with a stone-weighted line; divers
  // in the water between dives; the hauling crew at the rail

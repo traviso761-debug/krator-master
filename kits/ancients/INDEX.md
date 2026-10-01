@@ -31,7 +31,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `46-bunker.js` | 5 |  |
 | `48-library.js` | 4 |  |
 | `50-registry.js` | <1 | v3: inspector registry + group transforms (1) |
-| `52-sky-abc.js` | 25 |  |
+| `52-sky-abc.js` | 26 |  |
 | `54-mat-concrete.js` | 4 | v4: concrete, brick, glass panes (1) |
 | `56-sky-d.js` | 5 |  |
 | `57-sky-e.js` | 3 |  |
@@ -71,7 +71,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `76-70-biome-hyperjungle.js` | <1 |  |
 | `76-campus.js` | 11 |  |
 | `77-dam.js` | 13 |  |
-| `77z-iziz-style.js` | 47 **big** | ANCIENT IZIZ STYLE (1) |
+| `77z-iziz-style.js` | 52 **big** | ANCIENT IZIZ STYLE (1) |
 | `78-factory-silo.js` | 2 |  |
 | `79-government.js` | 7 |  |
 | `80-aa-battery.js` | 1 |  |

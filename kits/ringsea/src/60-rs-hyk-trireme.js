@@ -46,13 +46,13 @@ function buildRsHykTrireme(){reseed(71000);
  rsOars(V,H,{name:'thranites',points:Array.from({length:25},(_,i)=>[lerp(H.xAt(.24,1),H.xAt(.76,1),i/24),H.ys(.5)+.1,H.hb(.5)+.65]),len:7.4,inb:2,r:.05,col:0x9a7a54,phase:.3});
  // three masts, braced yards, roundel sails
  const masts=[[-9.5,13],[1,16.5],[10.5,12]];masts.forEach(([mx,mh],i)=>{const base=cy+1.1+1.35;rsLink(B,'wood',[mx,base-1.5,0],[mx,base+mh,0],.2,0x7a5634,8,.13);
-  const w=mh*.8,a=.95,U=[Math.sin(a),0,Math.cos(a)];
+  rsRig(B,[mx,0]);const w=mh*.8,a=.95,U=[Math.sin(a),0,Math.cos(a)];
   const S=rsSail(B,{key:'hyk-roundel',O:[mx+.35,base+mh*.12,0],U,V:[0,1,0],belly:-1.1,
    A:t=>{const s=(t-.5)*w;return[s,mh*.84+Math.pow(Math.abs(s)/(w/2),1.6)*mh*.12];},Bf:t=>{const s=(t-.5)*w*.55;return[s,mh*.05*Math.abs(t-.5)];},draw:rsHykRoundel});
   rsSailEdge(B,S,0,.13,0x6a4a2c);rsSailEdge(B,S,1,.05,0x6a4a2c);
   const top=[mx,base+mh,0];rsRope(B,top,S.at(0,0));rsRope(B,top,S.at(1,0));rsRope(B,S.at(0,1),[mx-2.5,cy+1.2,-hw]);
   rsRope(B,top,[H.xAt(1,1),H.ys(1),0]);rsRope(B,top,[H.xAt(0,1)+1,H.ys(0)-.5,0]);
-  rsPennant(B,[mx,base+mh+.2,0],4,.7,[BLUE,0xf0e8d8]);});
+  rsPennant(B,[mx,base+mh+.2,0],4,.7,[BLUE,0xf0e8d8]);});rsRigEnd(B);
  // crew on the vault walk and the steersman aft; two steering oars
  for(const x of[-14,-6,4,9,14])rsFigure(B,[x,x>-10&&x<12?cy+2.45:dY(H.uAt(x)),rr(-.5,.5)],rr(-.6,.6),[0x3a5a78,0xe0d8c8,0x8a3020][Math.floor(rng()*3)]);
  for(const s of[-1,1]){const p=H.pt(.08,s,.9);rsLink(B,'wood',[p[0]+1,p[1]+.6,p[2]*1.05],[p[0]-2.4,-1.4,p[2]*1.25],.1,0x7a5634,6);rsBox(B,'wood',[1.6,.9,.08],[p[0]-2.1,-1.1,p[2]*1.24],[0,0,.55],0x7a5634);}

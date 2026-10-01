@@ -31,7 +31,7 @@ function inPrecinct(x,z,pad){for(const p of PRECINCTS)if(Math.hypot(x-p.x,z-p.z)
  const outer=[],inner=[],wallb=[];for(let i=0;i<=240;i++){const t=i/240*TAU;outer.push([(wallR(t)+48)*Math.cos(t),(wallR(t)+48)*Math.sin(t)]);inner.push([(wallR(t)+4)*Math.cos(t),(wallR(t)+4)*Math.sin(t)]);}
  cpoly(cg,outer,'#3a2818');cpoly(mg,outer,'#000');cpoly(cg,inner,'#b88a5a');cpoly(mg,inner,'#fff');
  cg.save();cg.beginPath();inner.forEach((q,i)=>i?cg.lineTo(px(q[0]),px(q[1])):cg.moveTo(px(q[0]),px(q[1])));cg.closePath();cg.clip();
- for(let i=0;i<3000;i++){const x=rr(-540,540),z=rr(-540,540);cg.beginPath();cg.arc(px(x),px(z),rr(5,34),0,7);cg.fillStyle=vPick(['rgba(160,100,50,.35)','rgba(110,60,30,.4)','rgba(190,130,70,.3)','rgba(80,50,30,.35)','rgba(120,100,60,.25)']);cg.fill();}
+ for(let i=0;i<3600;i++){const x=rr(-600,600),z=rr(-600,600);cg.beginPath();cg.arc(px(x),px(z),rr(5,34),0,7);cg.fillStyle=vPick(['rgba(160,100,50,.35)','rgba(110,60,30,.4)','rgba(190,130,70,.3)','rgba(80,50,30,.35)','rgba(120,100,60,.25)']);cg.fill();}
  cg.restore();
  // the wall band: nothing grows or builds from 16 m inside the wall to the far side of the moat
  const band=[];for(let i=0;i<=240;i++){const t=i/240*TAU;const r=wallR(t)+16;band.push([r*Math.cos(t),r*Math.sin(t)]);}cstroke(mg,band,66,'#000');cstroke(kg,band,66,KLCOL(KL.water));

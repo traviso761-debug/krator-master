@@ -15,10 +15,12 @@ says which build holds what.
 | `settlements/<name>/` | one world per folder: `src/`, `build.py`, `verify.py`, docs, `dist/` |
 | `kits/ancients/` | the Ancients building kit and its per-site targets |
 | `kits/ringsea/` | the Ring Sea watercraft kit: 21 vessels, one fragment each |
-| `kits/catalog/` | harvested master catalog: asset engine, 84 furniture pieces, plants, buildings (unverified) |
-| `kits/furniture/`, `kits/interiors/` | scaffolding only: read `SPEC.md` |
+| `kits/catalog/` | harvested master catalog: asset engine, 84 furniture pieces in the furniture SPEC shape, plants, buildings. Verified: `build.py`, `verify.py --assert` |
+| `kits/interiors/` | `ROOM()` and the furniture placer (engine-neutral, ported from Yuni), a catalog adapter, outline view and cut-away: a verified demo. Read `API.md` |
+| `kits/furniture/` | scaffolding only: read `SPEC.md` |
 | `biomes/<name>/` | flora and fauna kits on the shared biome core |
 | `core/materials/` | material fragments shared by the Ancients-lineage builds (`core/README.md`) |
+| `core/terrain/` | carve patches (overhangs on a heightfield), opt-in by any build through `CORE_TERRAIN` in its `build.py` |
 | `gallery/` | the shareable gallery page and the script that publishes it |
 | `host/` | the LAN site server: the gallery plus the World Menagerie's pages (`host/README.md`). The Menagerie is embedded at `host/WorldMenagerie/` as a git subtree. Core never references it: `tools/check_insulation.py` |
 | `archive/` | old scratch and exported snippets. Do not build from it |
@@ -60,6 +62,8 @@ the Krator Worlds gallery (see the end of `README.md` and `gallery/README.md`).
 - `core/materials/` holds one copy of the material fragments the Ancients-lineage
   builds share. Those builds' `build.py` read them from there. Edit them there,
   and rebuild every build that lists them.
+- `core/terrain/36-core-carve.js` is one shared copy too: a build lists it in `CORE_TERRAIN`.
+  Edit it there, run `node core/terrain/test-carve.js`, and rebuild every build that lists it.
 - Other shared fragments are **vendored**: each build keeps its own copy, and
   `python3 build.py --vendor-check` reports drift from the upstream. Some drift is
   deliberate and recorded in that build's `KNOWN_ISSUES.md`. Fix upstream, then
