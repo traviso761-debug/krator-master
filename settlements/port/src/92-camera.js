@@ -138,4 +138,9 @@ function frame(){const now=performance.now(),dt=Math.min(.1,(now-last)/1000);las
  try{renderer.render(scene,camera);}catch(e){if(!renderErr){renderErr=true;reportErr('render: '+e.stack);}}
  hud.textContent=`cam ${camera.position.x|0},${camera.position.y|0},${camera.position.z|0}  tgt ${ctl.target.x|0},${ctl.target.y|0},${ctl.target.z|0}\ncalls ${renderer.info.render.calls}  tris ${(renderer.info.render.triangles/1e6).toFixed(2)}M  inst ${window._instances}`;
  requestAnimationFrame(frame);}
+// LEVEL OF DETAIL (core/lod): 97-lod-auto.js takes over the finished scene with these options. Loose clutter
+// (rubble, moss, planks, tyres) drops out a little earlier than the default screen size; leaf cards are the tree
+// canopies, whose scatter is the hinterland's texture from the overview, so they stay down to half a pixel.
+window.LOD_OPTIONS={classify:o=>{const k=o.userData.kname||'';return /^(rubble|moss|plank|pkTyre)$/.test(k)?'clutter':k==='leafCard'?'foliage':null;},
+ classes:{clutter:{minPx:2},foliage:{minPx:.5}}};
 frame();window._ready=true;

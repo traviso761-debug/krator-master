@@ -54,6 +54,19 @@ sewer grates, lamps and fountains, InstancedMesh culling. One global (`ATMOS`) b
 three.js r128 build can take it. Read `atmos/README.md`. **Used by** `settlements/iziz` (city target; its `build.py`
 reads it through `TARGET_CORE`).
 
+## `lod/`
+
+Level of detail for any three.js r128 build: `09-lod.js` (the `LOD` global) and `97-lod-auto.js` (applies it to the
+build's `scene` once everything is built). It works on the finished scene: big merged meshes are cut into frustum-culled
+chunks that share the original vertex buffers and switch to clustered proxies with distance, InstancedMeshes keep one
+draw call and drop their smallest instances first, and the originals stay the raycast targets, so inspectors and
+probes see full detail. `LOD.enabled=false` restores the exact scene graph; `LOD.stats()` and `LOD.measure()` report
+draw calls and triangles with it off and on. Read `lod/README.md`.
+
+**Used by** `settlements/port`, `jimjam`, `reedlake`, `screamers` and `voth`. Each `build.py` adds the `core/lod/`
+files to its fragment list (a `src/` copy with the same name overrides) and lists both in `DETERMINISTIC` where it has
+one. A build passes options through `window.LOD_OPTIONS` (the port does). The other builds take it the same way.
+
 ## `sockets/`
 
 The cultural socket and banner/awning system: buildings declare sockets, a culture pack fills them (Iziz, Republic, Voth, Yuni, Beast Riders, generic). A worked example, `sockets/example/`,
