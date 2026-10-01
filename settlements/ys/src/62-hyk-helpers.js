@@ -82,12 +82,13 @@ function hykBridge(A,B,o){o=o||{};const w=o.w||2.6;const col=o.col||hC(hPick(HPA
  // opens where a branch leaves (o2.gaps, with a knuckle at each end) and a branch's rail starts on its parent's rail
  // line (o2.railStart), so railings meet instead of crossing.
  const run=(P0,P1,w,rise,own,kind,o2)=>{o2=o2||{};const M=o2.pre||mkPts(P0,P1,rise);const pts=M.pts,L=M.L,n=M.n;
-  hykPut('hkShell',hykDeck(pts,w,{col:dcol,camber:.08}));hykPut('hkShell',hykDeck(pts.map(p=>[p[0],p[1]-.5,p[2]]),w*.92,{col:dcol,flip:false}));
+  hykPut('hkShell',hykDeck(pts,w,{col:dcol,camber:.08,shear0:o2.shear0}));hykPut('hkShell',hykDeck(pts.map(p=>[p[0],p[1]-.5,p[2]]),w*.92,{col:dcol,flip:false,shear0:o2.shear0}));
   const tx=(P1.x-P0.x)/L,tz=(P1.z-P0.z)/L;const rx=-tz,rz=tx;
   hykPut('hkBone',hykTube(pts.map(p=>[p[0],p[1]-.78,p[2]]),t=>.3*(1+.3*Math.max(0,Math.cos(t*L/2.6*TAU))),{seg:9,col}));
   for(let i=2;i<n;i+=2){const p=pts[i];hykPut('hkBone',hykRib([p[0]-rx*w*.52,p[1]-.5,p[2]-rz*w*.52],[p[0]+rx*w*.52,p[1]-.5,p[2]+rz*w*.52],{rise:-.45,r0:.17,r1:.14,n:8,seg:6,col}));}
   const rails={};
   for(const s of [-1,1]){const edge=pts.map(p=>[p[0]+rx*s*w*.46,p[1]-.3,p[2]+rz*s*w*.46]);
+   if(o2.shear0){const sh=o2.shear0(s>0?1:0);edge[0]=[edge[0][0]+tx*sh,edge[0][1],edge[0][2]+tz*sh];}   // the curb starts on the mitre
    hykPut('hkBone',hykTube(edge,(t)=>.32*(1+.18*Math.max(0,Math.cos(t*TAU*4)))-.08*Math.sin(t*Math.PI),{seg:8,col}));
    const rail=edge.map(p=>[p[0],p[1]+1.25,p[2]]);if(o2.railStart&&o2.railStart[s])rail[0]=o2.railStart[s];rails[s]=rail;
    const gaps=(o2.gaps||[]).filter(g=>g.side===s).sort((a,b)=>a.s0-b.s0);const inGap=sa=>gaps.some(g=>sa>=g.s0&&sa<=g.s1);
@@ -105,16 +106,22 @@ function hykBridge(A,B,o){o=o||{};const w=o.w||2.6;const col=o.col||hC(hPick(HPA
  const tx0=(B.x-A.x)/L,tz0=(B.z-A.z)/L;const rx0=-tz0,rz0=tx0;
  // branches: a narrower run forking off the span at t toward a point (a perch, a landing). The parent's rail opens
  // over the branch's width and the branch's rails begin at the opening's ends, with a knuckle under the fork.
+ // A branch's start is MITRED: its two corners slide along its own direction until they lie on the parent's edge line,
+ // one cut back and one extended by the same amount, so neither curb clips the parent deck nor stops short of it;
+ // the parent's rail opens exactly between those corners.
  const brs=(o.branches||[]).map(br=>{const p=at(br.t);const side=Math.sign((br.to.x-p[0])*rx0+(br.to.z-p[2])*rz0)||1;const bw=br.w||w*.62;
-  return {br,p,side,bw,s0:br.t*L-bw*.75,s1:br.t*L+bw*.75};});
+  const P0={x:p[0]+rx0*side*w*.5,y:p[1]-.06,z:p[2]+rz0*side*w*.5};const dx=br.to.x-P0.x,dz=br.to.z-P0.z;const dl=Math.hypot(dx,dz)||1;const ux=dx/dl,uz=dz/dl;const rbx=-uz,rbz=ux;
+  const mpx=-tz0,mpz=tx0;const ratio=(rbx*mpx+rbz*mpz)/((ux*mpx+uz*mpz)||1e-6);   // along-branch slide per unit of sideways offset
+  const sm=-(bw/2)*ratio;const shear0=v=>sm*(2*v-1);
+  const ks=[-1,1].map(sg=>{const sx=P0.x+rbx*sg*bw/2+ux*sm*sg,sz=P0.z+rbz*sg*bw/2+uz*sm*sg;return (sx-p[0])*tx0+(sz-p[2])*tz0;});
+  return {br,p,side,bw,P0,ux,uz,rbx,rbz,shear0,s0:br.t*L+Math.min(ks[0],ks[1])-.15,s1:br.t*L+Math.max(ks[0],ks[1])+.15};});
  const main=run(A,B,w,rise,o.own,'bridge',{pre,gaps:brs.map(b=>({side:b.side,s0:b.s0,s1:b.s1}))});
- let nb=0;for(const b of brs){const P0={x:b.p[0]+rx0*b.side*w*.5,y:b.p[1]-.06,z:b.p[2]+rz0*b.side*w*.5};const to=b.br.to;
-  const dx=to.x-P0.x,dz=to.z-P0.z;const dl=Math.hypot(dx,dz)||1;const rbx=-dz/dl,rbz=dx/dl;   // the branch's own right vector
+ let nb=0;for(const b of brs){const P0=b.P0,to=b.br.to;const rbx=b.rbx,rbz=b.rbz;
   const E0=lerpPoly(main.rails[b.side],b.s0/L),E1=lerpPoly(main.rails[b.side],b.s1/L);const e0Right=(E0[0]-P0.x)*rbx+(E0[2]-P0.z)*rbz>0;
-  run(P0,to,b.bw,b.br.rise!=null?b.br.rise:0,b.br.own||((o.own||'bridge')+' branch'),'bridge',{railStart:{1:e0Right?E0:E1,[-1]:e0Right?E1:E0}});
+  run(P0,to,b.bw,b.br.rise!=null?b.br.rise:0,b.br.own||((o.own||'bridge')+' branch'),'bridge',{railStart:{1:e0Right?E0:E1,[-1]:e0Right?E1:E0},shear0:b.shear0});
   // the crotch: the branch's spine grows out of the parent's spine under the deck, through a knuckle, not a blob
   const sp=[b.p[0],b.p[1]-.78,b.p[2]],bs=[P0.x,P0.y-.78,P0.z];const mid=[(sp[0]+bs[0])/2,sp[1]-.12,(sp[2]+bs[2])/2];
-  hykPut('hkBone',hykTube([sp,mid,bs,[bs[0]+dx/dl*1.6,bs[1],bs[2]+dz/dl*1.6]],t=>.3*(1-.2*t),{seg:9,col}));kput('hkBall',sp,null,[.42,.38,.42],col);nb++;}
+  hykPut('hkBone',hykTube([sp,mid,bs,[bs[0]+b.ux*1.6,bs[1],bs[2]+b.uz*1.6]],t=>.3*(1-.2*t),{seg:9,col}));kput('hkBall',sp,null,[.42,.38,.42],col);nb++;}
  // runners: tendrils grown from the edge rib to the nearest member (a strut, a leg, a head) within reach, every so
  // many metres, one per side, sagging, knuckled, rooted on the member with a flare. One per member per stretch of span.
  let nr=0;if(o.runners&&o.runners.members&&o.runners.members.length){const Rn=o.runners;const reach=Rn.reach||12,every=Rn.every||6;const used=[];
@@ -131,7 +138,8 @@ function hykBridge(A,B,o){o=o||{};const w=o.w||2.6;const col=o.col||hC(hPick(HPA
     for(let i=0;i<=14;i++){const t=i/14,u=1-t;const w0=u*u*u,w1=3*u*u*t,w2=3*u*t*t,w3=t*t*t;pts.push([w0*a[0]+w1*c1[0]+w2*c2[0]+w3*h[0],w0*a[1]+w1*c1[1]+w2*c2[1]+w3*h[1],w0*a[2]+w1*c1[2]+w2*c2[2]+w3*h[2]]);}
     pts.push([q[0]+n[0]*.3,q[1]+n[1]*.3,q[2]+n[2]*.3],[q[0]-n[0]*.5,q[1]-n[1]*.5,q[2]-n[2]*.5]);
     const kn=Math.max(2,Math.round(dl/2.2));hykPut('hkBone',hykTube(pts,t=>(.26-.09*t)*(1+.2*Math.max(0,Math.cos(t*kn*TAU))),{seg:10,col}));
-    hykPut('hkBone',hykFlare(q,n,.3,.75,{col}));kput('hkBall',[a[0],a[1],a[2]],null,[.46,.4,.46],col);}}}
+    hykPut('hkBone',hykFlare([q[0]-n[0]*.3,q[1]-n[1]*.3,q[2]-n[2]*.3],n,.3,.7,{col}));   // set .3 m into the face: the rim is buried, the rib roots
+    kput('hkBall',[a[0],a[1],a[2]],null,[.46,.4,.46],col);}}}
  return {pts,runners:nr,branches:nb};}
 // the nearest point on a member's surface and the surface normal there. A member is a capsule {a,b,r} (a strut, a
 // leg) or a box {c,u,v,w,he} (a strut head): centre, three unit axes, half-extents. A runner ends half a metre
