@@ -57,7 +57,7 @@ function vsCtx(G,heading,parts){
  C.use=p=>{KXF={m:p.m,q:p.q};return p.g;};
  C.at=z=>C.use(C.part(z));
  C.wat=()=>C.use(C.water);
- C.reg=(name,x,z,r,h,y)=>{const v=new THREE.Vector3(x,y||0,z).applyMatrix4(C.part(z).m);REGISTER({name,x:v.x,z:v.z,r,h,y:v.y});};
+ C.reg=(name,x,z,r,h,y)=>{const v=new THREE.Vector3(x,y||0,z).applyMatrix4(C.part(z).m);REGISTER({name,x:v.x,z:v.z,r,h,y:v.y,xf:false});};
  return C;}
 
 // ---------------------------------------------------------------- hull lines

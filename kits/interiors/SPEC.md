@@ -1,4 +1,8 @@
-# kits/interiors/ — spec (scaffolding only)
+# kits/interiors/ — spec
+
+**Implemented first in Yuni** (`settlements/yuni/src/64-interiors.js`, runtime in `76-doors.js`, data contract in
+`settlements/yuni/GAME_EXPORT.md`). Start there before building interiors for another settlement: the planner
+fits rooms inside an asset's captured bodies, so it should port to any build that uses the same asset frame.
 
 Nothing is built here yet. The goal is to place furniture inside buildings, and
 later to let people walk in. Right now people stop at the door. Yuni's

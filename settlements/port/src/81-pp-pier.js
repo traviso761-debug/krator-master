@@ -50,10 +50,15 @@ function buildPpPier(scene,gx,gz,d,opt){reseed(20010+d);
  REGISTER({name:'Boat basin and slipway',x:72,z:-40,r:28,h:18,y:-10});
  // ---- the deck on columns, and the head
  const collapse=d>=1?[4,5]:[];
- const deck=portDeckOnPiles(G,X0,PP.MOLE,X1,PP.END,d,{collapse});
- pbBox(G,d>0?MAT.rust:MAT.white,(X0+X1)/2,D-.9,PP.END+.15,X1-X0+.6,2.1,.3,0,8);          // head fascia
- for(let x=X0+2.5;x<X1;x+=5)if(!(d===1&&rng()<.3))kput('pkGuard',[x,D,PP.END-.3],null,1,d>0?new THREE.Color(0x8a5a3a):null);
- for(let x=X0+6;x<X1;x+=12)if(!(d===1&&rng()<.5))kput('pkFender',[x,D-1.8,PP.END+.6],null,[1,5,1],null);
+ // a sea platform on the head's end (opt.nb.S, grid placement): the head's
+ // end is left open where the platform covers it (fascia, rail and fenders
+ // only either side); the platform bridges the 8 m to the deck end itself
+ const hs=opt.nb&&opt.nb.S&&opt.nb.S.kind==='seg',END=PP.END;
+ const hopen=hs?portSideOpen(opt.nb,'S',X0,X1):[[X0,X1]],hfree=x=>hopen.some(o=>x>o[0]&&x<o[1]);
+ const deck=portDeckOnPiles(G,X0,PP.MOLE,X1,END,d,{collapse});
+ for(const [a,b] of hopen)pbBox(G,d>0?MAT.rust:MAT.white,(a+b)/2,D-.9,END+.15,b-a+.6,2.1,.3,0,8);          // head fascia
+ for(let x=X0+2.5;x<X1;x+=5)if(!(d===1&&rng()<.3)&&hfree(x))kput('pkGuard',[x,D,END-.3],null,1,d>0?new THREE.Color(0x8a5a3a):null);
+ for(let x=X0+6;x<X1;x+=12)if(!(d===1&&rng()<.5)&&hfree(x))kput('pkFender',[x,D-1.8,END+.6],null,[1,5,1],null);
  REGISTER({name:'Great pier — mole',x:-30,z:75,r:56,h:18,y:-6});
  REGISTER({name:'Great pier — deck',x:-30,z:215,r:56,h:16,y:-14});
  REGISTER({name:'Great pier — outer deck',x:-30,z:300,r:40,h:16,y:-14});
@@ -69,7 +74,7 @@ function buildPpPier(scene,gx,gz,d,opt){reseed(20010+d);
  portContainerStack(-66,D,108,Math.PI/2,2,2,d,{big:false});
  REGISTER({name:'Mole container block',x:-36,z:106,r:34,h:9,y:D});
  for(let z=12;z<PP.MOLE;z+=34){portLamp(X0+6,D,z,-Math.PI/2,d);portLamp(X1-6,D,z,Math.PI/2,d);}
- for(let z=172;z<332;z+=40){const b=Math.floor((z-PP.MOLE)/((PP.END-PP.MOLE)/deck.bays));if(deck.collapsed.has(b))continue;
+ for(let z=172;z<332;z+=40){const b=Math.floor((z-PP.MOLE)/((END-PP.MOLE)/deck.bays));if(deck.collapsed.has(b))continue;
   portLamp(X0+3,D,z,-Math.PI/2,d);portLamp(X1-3,D,z,Math.PI/2,d);if(d===0)kput('planter',[-30,D+.4,z+20],null,[10,.8,2.4],null);}
  for(let x=-100;x<=30;x+=44)portLamp(x,D,-6.5,0,d);
  portRail(-110,40,-20,D,d);                                   // stops short of the boat basin
@@ -143,4 +148,6 @@ function ppTerminal(G,d){const D=PORT.DECK,HX=PP.HX,HZ=PP.HZ;
   kput('dot',[HX,D+top+mastH+1.8,HZ],null,[1.6,1.6,1.6],d===0?CYAN:WARM);}
  REGISTER({name:'Pier head terminal',x:HX,z:HZ,r:32,h:top+mastH+4,y:D});}
 
-PORT_SEG({key:'pier',name:'Great pier',cls:'seg',W:220,LAND:PP.LAND,SEA:PP.SEA,decays:[0,1,3],stamps:ppStamps,build:buildPpPier});
+// seaEnd: where a sea platform attaches (grid placement, portOff): the head's
+// centre line, x = -30 (the pier head spans x -90..30), on the z = SEA edge.
+PORT_SEG({key:'pier',name:'Great pier',cls:'seg',W:220,LAND:PP.LAND,SEA:PP.SEA,decays:[0,1,3],seaEnd:{x:(PP.X0+PP.X1)/2,w:PP.X1-PP.X0},stamps:ppStamps,build:buildPpPier});

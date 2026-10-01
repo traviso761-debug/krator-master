@@ -1,0 +1,30 @@
+{
+ "calls": 297,
+ "counters": {
+  "_bakeCalls": 1462,
+  "_biome": "(large)",
+  "_buildMs": 28033,
+  "_dress": {
+   "crags": {
+    "drapes": 59,
+    "ferns": 135,
+    "glow": 0,
+    "heath": 128,
+    "moss": 339,
+    "saplings": 34
+   },
+   "tower": {
+    "drapes": 3712,
+    "ferns": 274,
+    "glow": 1187,
+    "heath": 74,
+    "moss": 3209,
+    "saplings": 151
+   }
+  },
+  "_instances": 1896351,
+  "_ready": true,
+  "_registered": 13994
+ },
+ "tris": 5367546
+}

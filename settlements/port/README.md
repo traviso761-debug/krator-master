@@ -43,7 +43,10 @@ that finds footprint and junction mistakes.
    side case: steps of 40 and 20 m both ways, open sea, natural land.
 4. `python3 build.py --target <key>` + `jscheck.py` + `verify.py --assert`,
    read the shots, repeat. Commit after each verified milestone.
-5. The showcase needs no edit: it lays out whatever is registered.
+5. The showcase needs no edit: it lays out whatever is registered (coastal
+   segments in the runs, `place:'land'` blocks behind them, `place:'sea'`
+   platforms off the great pier). A land or sea key's dev target (the same
+   `segment` / `edges` copy) shows it behind / off plain quays and the pier.
 
 Do not edit the shared fragments (`00`-`74`, `90`-`99`) from a segment task.
 If a shared helper is wrong or missing, say so in `KNOWN_ISSUES.md` and
@@ -54,7 +57,20 @@ work around it inside your own fragment.
 * `CONTRACT.md` - the project contract every port agent reads.
 * `API.md` - coordinates, registration, stamps, helpers, budgets, seeds.
 * `NOTES.md` - what was done, round by round. `KNOWN_ISSUES.md` - what is not.
-* `src/` - fragments. `targets/` - `showcase`, `segment`, `edges`.
+* `src/` - fragments. `targets/` - `showcase`, `segment`, `edges`, `harbour`
+  (a Long-Beach-like composition: land blocks two deep, platforms off the
+  pier), and the agents' dev targets.
+
+## In the page
+
+Click anything to inspect it: a REGISTER volume's name when the point is in
+one, otherwise the segment or vessel that built what was hit, its decay and
+its part (every mesh and instance is tagged). `n` toggles night, `b` (or the
+"Segment bounds" button) the footprint overlay: every placed segment outlined
+at deck height, coloured by placement (coastal amber, land block green, sea
+platform cyan), land edge brown, sea edge blue, quay line white, labelled
+with its key. Presets may switch either (7th / 8th element); verify can call
+`_api.setBounds(true)` or `_api.inspectRay(...)`.
 * `refs/` - the reference contact sheets (mood, never copy).
 * `dist/`, `shots/`, logs, `.syntax-*`, manifests are build outputs and are
   git-ignored: parallel agents would otherwise conflict on every merge.
