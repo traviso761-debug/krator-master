@@ -3273,6 +3273,90 @@ const HEX_SITE={};
 MAT.hxSoff =new THREE.MeshStandardMaterial({map:TEX.concrete,roughnessMap:TEX.concreteRM,color:0xb8b3aa,emissive:0x77726a,emissiveMap:TEX.concrete,roughness:1,metalness:0,side:DS});
 MAT.hxSoffR=new THREE.MeshStandardMaterial({map:TEX.concrete,roughnessMap:TEX.concreteRM,color:0x6f6861,emissive:0x3f3b36,emissiveMap:TEX.concrete,roughness:1,metalness:0,side:DS});
 function hxNightDim(o,m){if(o)o.onBeforeRender=()=>{m.emissiveIntensity=NIGHT?.06:1;};}
+// THE DWELLING CELLS. KNOWN_ISSUES: "the terrace cells are still boxes on a
+// ring". Soleri's cells are not crates: each storey is a deep loggia between
+// party-wall fins with a planter on its lip, the terraces step back, the top
+// storey is often an apse vault open to the view, and the roof oversails with
+// a soffit. Five storey-sized modules, one kdef each, so a whole tier costs a
+// handful of draw calls however many cells it carries.
+// NOTHING HERE CASTS A SHADOW, so depth cannot come from light. Every module
+// is vertex-coloured: the loggia's inner faces and soffits are shaded down,
+// the glazing at the back of a recess is near black, the planter tops are
+// green. The instance colour then tints the whole cell (pour colour, ruin).
+// Unit module: x width, y one storey, z depth, +z is the outward face (qFacing
+// points local +z along the outward normal). Centred on the origin.
+MAT.hxCell=new THREE.MeshStandardMaterial({map:TEX.concrete,roughnessMap:TEX.concreteRM,color:0xd2cec6,roughness:1,metalness:0,side:DS,vertexColors:true});
+const hxGeo=build=>{const P=[],N=[],C=[],U=[];
+ // a quad a,b,c,d (in order round its edge) facing n, in colour col
+ const q=(a,b,c,d,n,col)=>{const e1=[b[0]-a[0],b[1]-a[1],b[2]-a[2]],e2=[c[0]-a[0],c[1]-a[1],c[2]-a[2]];
+  const cr=[e1[1]*e2[2]-e1[2]*e2[1],e1[2]*e2[0]-e1[0]*e2[2],e1[0]*e2[1]-e1[1]*e2[0]];
+  const V=cr[0]*n[0]+cr[1]*n[1]+cr[2]*n[2]<0?[a,d,c,b]:[a,b,c,d];
+  const lu=Math.hypot(V[1][0]-V[0][0],V[1][1]-V[0][1],V[1][2]-V[0][2])*3,lv=Math.hypot(V[3][0]-V[0][0],V[3][1]-V[0][1],V[3][2]-V[0][2])*3;
+  const T=[[0,0],[lu,0],[lu,lv],[0,lv]];
+  for(const i of [0,1,2,0,2,3]){P.push(V[i][0],V[i][1],V[i][2]);N.push(n[0],n[1],n[2]);
+   const k=typeof col==='number'?[col,col,col]:col;C.push(k[0],k[1],k[2]);U.push(T[i][0],T[i][1]);}};
+ // an axis-aligned box, faces chosen by letters: t b f k(back) l r
+ const box=(x0,x1,y0,y1,z0,z1,faces,col)=>{const c=f=>typeof col==='object'&&!Array.isArray(col)?col[f]:col;
+  if(faces.includes('t'))q([x0,y1,z0],[x1,y1,z0],[x1,y1,z1],[x0,y1,z1],[0,1,0],c('t'));
+  if(faces.includes('b'))q([x0,y0,z0],[x1,y0,z0],[x1,y0,z1],[x0,y0,z1],[0,-1,0],c('b'));
+  if(faces.includes('f'))q([x0,y0,z1],[x1,y0,z1],[x1,y1,z1],[x0,y1,z1],[0,0,1],c('f'));
+  if(faces.includes('k'))q([x0,y0,z0],[x1,y0,z0],[x1,y1,z0],[x0,y1,z0],[0,0,-1],c('k'));
+  if(faces.includes('l'))q([x0,y0,z0],[x0,y1,z0],[x0,y1,z1],[x0,y0,z1],[-1,0,0],c('l'));
+  if(faces.includes('r'))q([x1,y0,z0],[x1,y1,z0],[x1,y1,z1],[x1,y0,z1],[1,0,0],c('r'));};
+ build(q,box);
+ const g=new THREE.BufferGeometry();
+ g.setAttribute('position',new THREE.Float32BufferAttribute(P,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(N,3));
+ g.setAttribute('color',new THREE.Float32BufferAttribute(C,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(U,2));
+ return g;};
+const HXG=[.07,.075,.085],HXGR=[.42,.62,.26],HXIN=.56,HXSO=.66;   // glazing, planting, recess walls, soffit
+// a loggia storey: party-wall fins, spandrel, a recess 0.38 of the cell deep,
+// near-black glazing at its back, and a planter along its lip (28 tris)
+kdef('hxLog',hxGeo((q,box)=>{const F=.43,ZG=.12,YC=.36;
+ box(-.5,.5,-.5,.5,-.5,.5,'lrt',1);
+ box(-.5,-F,-.5,.5,ZG,.5,'f',1);box(F,.5,-.5,.5,ZG,.5,'f',1);
+ box(-F,F,YC,.5,ZG,.5,'f',1);
+ q([-F,YC,ZG],[F,YC,ZG],[F,YC,.5],[-F,YC,.5],[0,-1,0],HXSO);            // the loggia soffit
+ q([-F,-.5,ZG],[F,-.5,ZG],[F,-.5,.5],[-F,-.5,.5],[0,1,0],.6);            // its floor
+ q([-F,-.5,ZG],[-F,YC,ZG],[-F,YC,.5],[-F,-.5,.5],[1,0,0],HXIN);
+ q([F,-.5,ZG],[F,YC,ZG],[F,YC,.5],[F,-.5,.5],[-1,0,0],HXIN);
+ q([-F,-.5,ZG],[F,-.5,ZG],[F,YC,ZG],[-F,YC,ZG],[0,0,1],HXG);             // glazing
+ box(-F,F,-.5,-.29,.35,.5,'ftk',{f:.95,t:HXGR,k:.5});}),MAT.hxCell);    // planter on the lip
+// a closed storey: a deep punched window, reveals shaded, a hood over it (30)
+kdef('hxPun',hxGeo((q,box)=>{const X=.28,Y0=-.24,Y1=.22,ZG=.24;
+ box(-.5,.5,-.5,.5,-.5,.5,'lrt',1);
+ box(-.5,-X,-.5,.5,0,.5,'f',1);box(X,.5,-.5,.5,0,.5,'f',1);
+ box(-X,X,-.5,Y0,0,.5,'f',1);box(-X,X,Y1,.5,0,.5,'f',1);
+ q([-X,Y1,ZG],[X,Y1,ZG],[X,Y1,.5],[-X,Y1,.5],[0,-1,0],HXSO);
+ q([-X,Y0,ZG],[X,Y0,ZG],[X,Y0,.5],[-X,Y0,.5],[0,1,0],.7);
+ q([-X,Y0,ZG],[-X,Y1,ZG],[-X,Y1,.5],[-X,Y0,.5],[1,0,0],HXIN);
+ q([X,Y0,ZG],[X,Y1,ZG],[X,Y1,.5],[X,Y0,.5],[-1,0,0],HXIN);
+ q([-X,Y0,ZG],[X,Y0,ZG],[X,Y1,ZG],[-X,Y1,ZG],[0,0,1],HXG);
+ box(-X-.06,X+.06,Y1+.02,Y1+.08,.5,.64,'bft',{b:HXSO,f:.9,t:.9});}),MAT.hxCell);
+// THE APSE: Soleri's half-barrel vault, open to the view, the glazing set back
+// under the arch. Used as the top storey of a stack (42)
+kdef('hxVlt',hxGeo((q,box)=>{const S=6,ZG=.08,ri=.84,arc=(t,r)=>[-.5*r*Math.cos(t*Math.PI),-.5+r*Math.sin(t*Math.PI)];
+ for(let i=0;i<S;i++){const a=arc(i/S,1),b=arc((i+1)/S,1),ai=arc(i/S,ri),bi=arc((i+1)/S,ri);
+  const m=arc((i+.5)/S,1),n=[m[0]*2,m[1]+.5,0];
+  q([a[0],a[1],-.5],[b[0],b[1],-.5],[b[0],b[1],.5],[a[0],a[1],.5],n,1);                  // extrados
+  q([ai[0],ai[1],ZG],[bi[0],bi[1],ZG],[bi[0],bi[1],.5],[ai[0],ai[1],.5],[-n[0],-n[1],0],HXSO);  // intrados
+  q([a[0],a[1],.5],[b[0],b[1],.5],[bi[0],bi[1],.5],[ai[0],ai[1],.5],[0,0,1],.95);           // the arch ring
+  q([ai[0],ai[1],ZG],[bi[0],bi[1],ZG],[0,-.5,ZG],[0,-.5,ZG],[0,0,1],HXG);}}),MAT.hxCell);   // glazing (fan)
+// the roof: an oversailing slab with a pale soffit (10). Turned over, it is the
+// drip-edged underside of a cell hung from the lower city's soffits.
+kdef('hxEave',hxGeo((q,box)=>{box(-.56,.56,0,.09,-.5,.64,'tbflr',{t:.9,b:HXSO,f:.95,l:.95,r:.95});}),MAT.hxCell);
+// a planter box, top planted (10): on every setback terrace and on the roofs
+kdef('hxPlnt',hxGeo((q,box)=>{box(-.5,.5,-.5,.5,-.5,.5,'tfklr',{t:HXGR,f:.9,k:.8,l:.85,r:.85});}),MAT.hxCell);
+// the cells behind the front row, seen mostly from above: one dark band of
+// glazing on the face and a roof garden inside a parapet (24)
+kdef('hxBlk',hxGeo((q,box)=>{
+ box(-.5,.5,-.5,.5,-.5,.5,'lrk',1);
+ box(-.5,.5,-.5,.05,-.5,.5,'f',1);box(-.5,.5,.05,.32,-.5,.5,'f',HXG);box(-.5,.5,.32,.5,-.5,.5,'f',1);
+ box(-.5,.5,.5,.5,-.5,-.38,'t',.9);box(-.5,.5,.5,.5,.38,.5,'t',.9);
+ box(-.5,-.38,.5,.5,-.38,.38,'t',.9);box(.38,.5,.5,.5,-.38,.38,'t',.9);
+ box(-.38,.38,.5,.5,-.38,.38,'t',HXGR);}),MAT.hxCell);
+// lit glazing for the night, shown only after dark (setNight() toggles FIREKIT;
+// the builder registers it, because FIREKIT is declared in a later fragment)
+kdef('hxGlow',new THREE.PlaneGeometry(1,1),MAT.dot);
 function buildHexahedron(scene,gx,gz,d){reseed(9430+d);KOFF=[gx,0,gz];
  const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);
  const dd=d>0?1:0;
@@ -3283,6 +3367,43 @@ function buildHexahedron(scene,gx,gz,d){reseed(9430+d);KOFF=[gx,0,gz];
  REGISTER({name:'Hexahedron — the vertical structure',x:0,z:0,r:460,h:YB});
  REGISTER({name:'Hexahedron — automated industries',x:0,z:0,r:640,h:34});
  const SH=[],DK=[],GRD=[],SOF=[],CHAM=.055;
+ if(typeof FIREKIT!=='undefined'&&!FIREKIT.includes('hxGlow'))FIREKIT.push('hxGlow');
+ const KIT0={};for(const n of KIT.order)KIT0[n]=KIT.items[n].length;   // for the sag, at the foot
+
+ // ---- one dwelling cell, as architecture (the module kdefs at the top) -----
+ // Everything a cell varies by is HASHED off (a,b,salt), never rng(), so the
+ // draws the old boxes took are still taken in the same order and nothing
+ // placed after a cell moves. Type: 0 loggias, 1 terraced (each storey set
+ // back with a planter on the terrace it leaves), 2 loggias under an apse
+ // vault, 3 closed with punched windows. A hung cell (the lower city) stacks
+ // DOWN from its soffit and is closed underneath by a turned-over eave.
+ const hh=(a,b,sl)=>{const v=Math.sin(a*91.7+b*12.9898+sl*47.31)*43758.5;return v-Math.floor(v);};
+ const RUINK=d>0?.6:1;
+ const tint=(a,b)=>{const t=hh(a,b,7),c=t<.45?[1,1,1]:t<.72?[1,.95,.86]:t<.9?[.93,.95,.98]:[1,.9,.79];
+  return new THREE.Color(c[0]*RUINK,c[1]*RUINK*.98,c[2]*RUINK*.95);};
+ // a lit window's colour: lamp-warm, a little different in every flat
+ const hxLit=(a,b)=>{const t=hh(a,b,13);return new THREE.Color(0xffa957).lerp(new THREE.Color(0xffe2b0),t*.6).multiplyScalar(.55+.45*hh(a,b,17));};
+ const cell=(Q,N,q,yb,h,cw,cd,a,b,hang)=>{
+  const n=Math.max(1,Math.round(h/4.4)),hs=h/n,col=tint(a,b),ty=hh(a,b,1);
+  const T=ty<.40?0:ty<.68?1:ty<.88?2:3;
+  let px=Q[0],pz=Q[1],pd=cd,pf=cd*.5;
+  for(let i=0;i<n;i++){
+   const back=(T===1&&!hang)?Math.min(.52,i*.26):0,dz=cd*(1-back),off=(cd-dz)*.5;
+   const cx=Q[0]-N[0]*off,cz=Q[1]-N[1]*off,cy=hang?yb-(i+.5)*hs:yb+(i+.5)*hs;
+   const kind=T===3?'hxPun':(T===2&&i===n-1&&n>1&&!hang)?'hxVlt':(i%2===1&&hh(a,b,i+3)<.3)?'hxPun':'hxLog';
+   kput(kind,[cx,cy,cz],q,[cw,hs,dz],col);
+   // lit after dark: the glazing at the back of a loggia, or in a punched window
+   if(d===0&&kind!=='hxVlt'&&hh(a,b,i+11)<.72){const L=kind==='hxLog',f=dz*(L?.12:.24)+.06;
+    kput('hxGlow',[cx+N[0]*f,cy-hs*(L?.07:.01),cz+N[1]*f],q,L?[cw*.84,hs*.84,1]:[cw*.54,hs*.44,1],hxLit(a+i,b));}
+   // the terrace this storey's setback leaves, planted along its lip
+   if(back>0){const fz=pf-.8;                      // pf: the storey below's front
+    kput('hxPlnt',[Q[0]+N[0]*fz,yb+i*hs+.45,Q[1]+N[1]*fz],q,[cw*.84,.9,1.3],col);}
+   px=cx;pz=cz;pd=dz;pf=dz*.5-off;}
+  if(hang){kput('hxEave',[Q[0],yb-h,Q[1]],q.clone().multiply(qEuler(0,0,Math.PI)),[cw,hs,cd],col);return;}
+  if(T===2&&n>1)return;                            // the apse is its own roof
+  kput('hxEave',[px,yb+h,pz],q,[cw,hs,pd],col);
+  if(hh(a,b,5)<.5){const fz=-pd*.12;
+   kput('hxPlnt',[px+N[0]*fz,yb+h+hs*.09+.45,pz+N[1]*fz],q,[cw*.5,.9,pd*.32],col);}};
 
  // ---- the two plans --------------------------------------------------------
  const TH=75*Math.PI/180,BL=2*Math.cos(TH);        // leg = 1, base = 2 cos(TH)
@@ -3367,16 +3488,14 @@ function buildHexahedron(scene,gx,gz,d){reseed(9430+d);KOFF=[gx,0,gz];
    for(let row=0;row<3;row++){const Q=W(PU,p,lerp(s0,s1,.10+row*.30));
     const h=lerp(4,15,nb)*(row===0?1:.78)*rr(.86,1.14);
     const cw=rr(8,16),cd=rr(6,12);                 // same draws, same order as before
-    kput(BOXC(d),[Q[0],y0+RU+h*.5,Q[1]],q,[cw,h,cd],null);
-    // KNOWN_ISSUES: "the terrace cells are still boxes on a ring". The front
-    // row is the one every preset sees, so it gets a dwelling's face: a glazed
-    // band under a dark lintel on its outward side, one per storey it is tall.
-    // Hashed off (k,j) rather than rng(), so nothing after it moves.
-    if(row===0&&d!==2){const hs=Math.sin(k*91.7+j*12.9898)*43758.5,hk=hs-Math.floor(hs);
-     if(hk>.14)for(let st=0;st*4.4+3.6<h;st++){const wy=y0+RU+st*4.4+2.1,
-      fz=cd*.5+.08,ww=cw*(hk>.6?.72:.46);
-      kput(d===0?'pane':'paneD',[Q[0]+N[0]*fz,wy,Q[1]+N[1]*fz],q,[ww,2.2,1],null);
-      kput('boxD',[Q[0]+N[0]*(fz+.1),wy+1.45,Q[1]+N[1]*(fz+.1)],q,[ww+.8,.5,.6],null);}}}}
+    // The front row is the one every preset sees, so it is built as dwellings
+    // (cell(), above): loggias, setbacks, apses, roofs. The rows behind it are
+    // seen from above, so they get a glazed band and a roof garden (hxBlk).
+    if(row===0)cell(Q,N,q,y0+RU,h,cw,cd,k,j,false);
+    else{kput('hxBlk',[Q[0],y0+RU+h*.5,Q[1]],q,[cw,h,cd],tint(k+row*31,j));
+     // its glazed band (local y .05-.32) lit at night in about half the cells
+     if(d===0&&hh(k+row*31,j,11)<.5){const f=cd*.5+.05;
+      kput('hxGlow',[Q[0]+N[0]*f,y0+RU+h*.685,Q[1]+N[1]*f],q,[cw*.94,h*.24,1],hxLit(k+row*31,j));}}}}
   // Windows belong to the terrace WALL -- the vertical riser below the tread.
   // They used to sit at the tread height but the riser radius, i.e. outside the
   // building, so they read as panes hung in the air among the balcony boxes.
@@ -3480,8 +3599,10 @@ function buildHexahedron(scene,gx,gz,d){reseed(9430+d);KOFF=[gx,0,gz];
   for(let j=0;j<nc;j++){const p=(j+.5)/nc,N=pnorm(PL,p),q=qFacing([N[0],0,N[1]]);
    for(let row=0;row<2;row++){const Q=W(PL,p,lerp(s1,s0,.12+row*.34));
     if(crater(Q[0],Q[1]))continue;
-    const h=rr(4,9);
-    kput(BOXC(d),[Q[0],y0-h*.5,Q[1]],q,[rr(7,14),h,rr(6,11)],null);}}
+    const h=rr(4,9),cw=rr(7,14),cd=rr(6,11);        // same draws, same order as before
+    // hung from the soffit: the outer row as dwellings, the inner as blocks
+    if(row===0)cell(Q,N,q,y0,h,cw,cd,k+50,j,true);
+    else kput(BOXC(d),[Q[0],y0-h*.5,Q[1]],q,[cw,h,cd],null);}}
   {const nw=Math.max(12,Math.round(320*s1)),WIN=d===0?'pane':'paneD';
    for(let j=0;j<nw;j++){const p=(j+.5)/nw;
     const Q=W(PL,p,s1),N=pnorm(PL,p),q=qFacing([N[0],0,N[1]]);
@@ -3592,6 +3713,7 @@ function buildHexahedron(scene,gx,gz,d){reseed(9430+d);KOFF=[gx,0,gz];
  // height independently is how blocks end up floating or half-buried.
  const plateY=(x,z)=>12-2.2*Math.min(3,Math.floor(clamp(Math.hypot(x,z)/hexR(HEXR,Math.atan2(z,x)),0,.999)*4));
 
+ const KIT1={};for(const n of KIT.order)KIT1[n]=KIT.items[n].length;   // everything held up, and nothing after
  // ---- the vertical structure ------------------------------------------------
  // Four clusters. Each shaft runs from the ground to whatever height the
  // inverted pyramid's soffit has actually reached above it, so they lengthen
@@ -3677,6 +3799,24 @@ function buildHexahedron(scene,gx,gz,d){reseed(9430+d);KOFF=[gx,0,gz];
  for(let s2=0;s2<6;s2++){const a=s2/6*TAU+Math.PI/6;
   beam(d>0?'boxR':'boxD',[0,7.2,0],[Math.cos(a)*HEXR*.96,7.2,Math.sin(a)*HEXR*.96],16,.6);}
 
+ // ---- THE FAILED FLANK SAGS ------------------------------------------------
+ // KNOWN_ISSUES: "the collapsed flank tears the soffit, but the mass does not
+ // sag or tilt toward the hole". The nanomaterial spine holds -- nothing falls
+ // -- but a cantilever that has lost its props droops: zero over the surviving
+ // shafts (outside .95 rad of the failure's bearing, where they still stand),
+ // rising with distance from the centre of mass on the failed side to SAGA at
+ // the rim. Everything built above the soffit line moves: the merged shells,
+ // and every kit item placed before the shafts (KIT0..KIT1). The shafts, the
+ // ground works and the rubble come after KIT1 and stay put. No PRNG.
+ if(d===2){const SAGA=34,mx=COM[0]*SPAN,mz=COM[1]*SPAN;
+  const sag=(x,y,z)=>{const da=Math.abs(wrapA(Math.atan2(z-mz,x-mx)-FAILA)),r=Math.hypot(x-mx,z-mz);
+   const t=clamp((da-.35)/.6,0,1),wa=1-t*t*(3-2*t),u=clamp((y-(YB-40))/45,0,1);
+   return SAGA*wa*Math.pow(clamp((r-80)/520,0,1),1.3)*u*u*(3-2*u);};
+  for(const g of [...SH,...SOF,...DK]){const P=g.attributes.position,A=P.array;
+   for(let i=0;i<A.length;i+=3)A[i+1]-=sag(A[i],A[i+1],A[i+2]);P.needsUpdate=true;}
+  for(const n of KIT.order){const it=KIT.items[n],i1=KIT1[n]==null?0:KIT1[n];
+   for(let i=KIT0[n]==null?0:KIT0[n];i<i1;i++){const o=it[i];
+    o.p=[o.p[0],o.p[1]-sag(o.p[0]-gx,o.p[1],o.p[2]-gz),o.p[2]];}}}
  // ---- merge and dress --------------------------------------------------------
  meshMerged(SH,CONC(dd),G);hxNightDim(meshMerged(SOF,dd?MAT.hxSoffR:MAT.hxSoff,G),dd?MAT.hxSoffR:MAT.hxSoff);
  meshMerged(GRD,d>0?MAT.mud:MAT.slab,G);
@@ -3695,7 +3835,9 @@ function buildHexahedron(scene,gx,gz,d){reseed(9430+d);KOFF=[gx,0,gz];
   const kS=Math.round(NU*.6),shQ=W(PU,WB,su(kS));
   HEX_SITE[d]={UC:[(bb[0]+bb[1])/2,(bb[2]+bb[3])/2],BB:bb,COM:[COM[0]*SPAN,COM[1]*SPAN],
    CRATER:[CX,CZ],APEX:W(PU,.380,1.14),SUMMIT:[PU.O[0]*SPAN,PU.O[1]*SPAN],
-   SHEAR:[shQ[0],YW+kS*RU,shQ[1]],SHEARN:pnorm(PU,WB),YB,YW,YT};}
+   SHEAR:[shQ[0],YW+kS*RU,shQ[1]],SHEARN:pnorm(PU,WB),YB,YW,YT,
+   // a face of the hung lower city, for the close presets of its cells
+   LOWQ:(()=>{const Q=W(PL,.30,sl(10));return[Q[0],YB+10*RL,Q[1]];})(),LOWN:pnorm(PL,.30)};}
  KOFF=[0,0,0];return G;}
 // ---------------------------------------------------------------- v5 materials
 MAT.rock=new THREE.MeshStandardMaterial({map:TEX.concrete,color:0x8a5a42,roughness:1,side:DS});
@@ -4115,32 +4257,88 @@ function wornPass(G,lens0,plants,S){S=S||1;const W=wornMaterial();
   const tw=n+'~worn';if(!KIT.defs[tw])kdef(tw,def.geo,W);
   const tgt=KIT.items[tw];for(let i=i0;i<arr.length;i++)tgt.push(arr[i]);arr.length=i0;}}
 // ================================================================= HYPERTREE — imported from Mav's Refuge
-// A single Ironbark hypertree, for scale. The numbers are that project's own
-// SPECIES[0]: height 410-470 m, base radius 25-29 m, crown starting at half
-// height and reaching 170-215 m across. The trunk profile and the buttress
-// model below are ports of its trunkR()/butF()/lobeSum(); the branching keeps
-// its shape rules (golden-angle boughs, alternating secondaries, twigs off
-// those) but is re-expressed with this kit's instanced primitives, because
-// the original is written against its own merged-bucket tube builder.
+// An Ironbark hypertree, for scale, and (round 3) a grove of the other three
+// species behind it. The numbers are that project's own SPECIES table: the
+// Ironbark is 410-470 m, base radius 25-29 m, crown starting at half height
+// and reaching 170-215 m across. The trunk profile and the buttress model
+// below are ports of its trunkR()/butF()/lobeSum(); the branching keeps its
+// shape rules (golden-angle boughs, alternating secondaries, twigs off those)
+// but is re-expressed with this kit's instanced primitives, because the
+// original is written against its own merged-bucket tube builder.
 //
 // Nothing else from that project is imported -- no platforms, bridges, lifts
-// or buildings. Just the tree.
+// or buildings. Just the trees.
 kdef('bough',new THREE.CylinderGeometry(.5,.5,1,7),MAT.timber);
 kdef('frond',new THREE.IcosahedronGeometry(1,0),MAT.turf);
 const LEAFC=[0x1f3d24,0x254a2a,0x1a3520,0x2c5230];     // Ironbark needle greens
+// ---- THE OTHER THREE SPECIES (round 3) ---------------------------------------
+// KNOWN_ISSUES: "the imported hypertree is one species". Mav's Refuge grows
+// four, and biomes/hyperjungle carries all four as data (HYPERJUNGLE.SPECIES:
+// habit, bark and leaf palettes, hangings) plus their bark and leaf textures.
+// The sizes are Mav's Refuge's own SPECIES table (the biome's are half scale);
+// the habits are the biome's LOWER tiers and hab{} numbers. The grove's bark and
+// leaf CARDS are the biome's textures on this kit's instancing (kdefs made at
+// build time, because the biome fragments load after this one); without the
+// biome (a host that vendors this file alone) it falls back to timber and the
+// old icosahedron fronds. Nothing is charged to biome/0: these are kit items,
+// counted against this type.
+// tiers: [n, u0,u1, len0,len1 (x crown radius), el0,el1, curve, radius scale, bearing offset]
+const HYSP=[
+ {name:'Ironbark',H:[410,470],rb:[25,29],crown0:.50,crownR:[170,215],secUp:.18,secCurve:-.10,twigUp:.14,butA:1,lobes:7,flat:.50,
+  tiers:[[8,.855,.955,.62,.92,.22,.52,-.12,.62,0],[7,.72,.86,.62,.90,.18,.42,-.16,.46,1.2],[7,.52,.70,.50,.78,.02,.26,-.20,.40,2.4]]},
+ {name:'Ghostwood',H:[390,445],rb:[19,23],crown0:.46,crownR:[150,190],secUp:.55,secCurve:.16,twigUp:.40,butA:.45,lobes:5,flat:.80,hang:'raceme',
+  tiers:[[5,.88,.97,.28,.42,.80,1.20,.16,.55,0],[5,.70,.86,.48,.78,.60,.95,.10,.45,1.2],[7,.48,.72,.58,.92,.55,.95,.06,.45,.7]]},
+ {name:'Prism gum',H:[365,425],rb:[22,26],crown0:.52,crownR:[185,230],secUp:.22,secCurve:-.16,twigUp:.18,butA:.80,lobes:6,flat:.55,
+  tiers:[[5,.86,.96,.40,.70,.35,.70,-.10,.55,0],[5,.70,.85,.60,.95,.25,.55,-.14,.50,1.2],[7,.52,.70,.70,1.05,.18,.48,-.16,.50,.7]]},
+ {name:'Gate baobab',H:[285,312],rb:[36,40],crown0:.80,crownR:[120,150],secUp:.35,secCurve:.08,twigUp:.30,butA:.22,lobes:9,flat:.70,hang:'pod',
+  tiers:[[8,.80,.93,.60,1.00,.12,.55,.06,.50,0],[4,.90,.97,.30,.50,.60,1.00,0,.40,1.2]]}];
+// the kit items the grove is drawn with: per-species bark and leaf cards
+function hyKit(){if(KIT.defs.hyBark0)return true;
+ if(typeof HYPERJUNGLE==='undefined'||!HYPERJUNGLE.BARKTEX||!HYPERJUNGLE.LEAFTEX)return false;
+ for(let sp=0;sp<4;sp++){
+  MAT['hyBark'+sp]=new THREE.MeshStandardMaterial({map:HYPERJUNGLE.BARKTEX[sp],roughness:.95,metalness:0,side:DS});
+  kdef('hyBark'+sp,new THREE.CylinderGeometry(.5,.5,1,7,1,true),MAT['hyBark'+sp]);
+  // LAMBERT, never Standard, on a leaf card: the biome core's first lesson
+  kdef('hyLeaf'+sp,BIO.geo.clump(),new THREE.MeshLambertMaterial({map:HYPERJUNGLE.LEAFTEX[sp],alphaTest:.42,side:DS}));}
+ kdef('hyRaceme',BIO.geo.hang(),new THREE.MeshLambertMaterial({map:HYPERJUNGLE.FLOWERTEX,alphaTest:.4,side:DS}));
+ kdef('hyPod',BIO.geo.pod(),new THREE.MeshLambertMaterial({vertexColors:true}));
+ return true;}
 function buildHypertree(scene,gx,gz,d){reseed(9450+d);KOFF=[gx,0,gz];
  const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);
- const H=452,RB=27.5,CROWN0=.50,CR=196;
- REGISTER({name:'Ironbark hypertree — '+H+' m (Mav’s Refuge, for scale)',x:0,z:0,r:CR,h:H});
- REGISTER({name:'Ironbark hypertree — the bole',x:0,z:0,r:RB*2.2,h:H*CROWN0});
+ const BIOK=hyKit();
+ // the Ironbark first, with the exact draws it always took, so it does not move
+ hyTree(G,gx,gz,{sp:0,x:0,z:0,H:452,RB:27.5,CR:196,full:true,
+  label:'Ironbark hypertree — 452 m (Mav’s Refuge, for scale)'},BIOK);
+ // NO APRON. apron() lays a graded disc of pale rock (d=0) or mud, and under
+ // a tree either read as a paper disc laid on the plain in every preset. The
+ // buttress flare and the surface roots are the ground contact.
+ scatterMoss(0,0,0,27.5*1.2,196*.7,90,3.2);
+ figures(27.5*2.2,0,6,40);
+ // THE GROVE, after every draw above. Mav's Refuge stands its trees with
+ // crowns touching; these stand behind the Ironbark (west and north, away
+ // from the arcology and the presets' side), so it stays the one in front.
+ [[1,-390,-150],[2,-150,-430],[3,-500,250]].forEach(c=>{const S=HYSP[c[0]];
+  hyTree(G,gx,gz,{sp:c[0],x:c[1],z:c[2],H:rr(S.H[0],S.H[1]),RB:rr(S.rb[0],S.rb[1]),CR:rr(S.crownR[0],S.crownR[1]),full:false},BIOK);});
+ KOFF=[0,0,0];return G;}
+// One hypertree of species T.sp at builder-local (T.x,T.z). `full` is the
+// Ironbark's original detail and draw order; the grove's companions take
+// fewer bough segments and a coarser bole.
+function hyTree(G,gx,gz,T,BIOK){
+ const S=HYSP[T.sp],H=T.H,RB=T.RB,CR=T.CR,CROWN0=S.crown0,OX=T.x,OZ=T.z,FULL=T.full;
+ const BARK=BIOK?'hyBark'+T.sp:'bough',LEAF=BIOK?'hyLeaf'+T.sp:'frond';
+ REGISTER({name:T.label||(S.name+' hypertree — '+Math.round(H)+' m (Mav’s Refuge)'),x:OX,z:OZ,r:CR,h:H});
+ REGISTER({name:S.name+' hypertree — the bole',x:OX,z:OZ,r:RB*2.2,h:H*CROWN0});
  const sm=(a,b,x)=>{const t=clamp((x-a)/(b-a),0,1);return t*t*(3-2*t);};
- // trunk radius, verbatim from the source's trunkR() for species 0-2
+ // trunk radius, verbatim from the source's trunkR(): species 0-2 taper to a
+ // whip, the baobab is a bottle
  const trunkR=yy=>{const u=clamp(yy/H,0,1);
+  if(T.sp===3){const b=u<.15?1:u<.35?lerp(1,1.08,(u-.15)/.2):u<.60?lerp(1.08,.92,(u-.35)/.25)
+    :u<.78?lerp(.92,.64,(u-.60)/.18):lerp(.64,.10,sm(.78,1,u));return RB*b*(1+.38*Math.exp(-yy/9));}
   const t=u<.62?1-.42*u:lerp(.74,.07,sm(.62,1,u));
   return RB*t*(1+.80*Math.exp(-yy/15));};
  // buttresses: a handful of lobes that only exist in the bottom 45 m
- const NL=7,LOB=[];
- for(let k=0;k<NL;k++)LOB.push({a:k/NL*TAU+rr(-.22,.22),amp:rr(.55,1.2),p:rr(1.6,2.6)});
+ const NL=S.lobes,LOB=[];
+ for(let k=0;k<NL;k++)LOB.push({a:k/NL*TAU+rr(-.22,.22),amp:rr(.55,1.2)*S.butA,p:rr(1.6,2.6)});
  const lobeSum=ang=>{let s=0;for(const L of LOB){const c=Math.cos(ang-L.a);if(c>0)s+=L.amp*Math.pow(c,L.p);}return s;};
  const butF=yy=>yy<45?.55*Math.exp(-yy/16)*clamp((45-yy)/18,0,1):0;
 
@@ -4150,21 +4348,21 @@ function buildHypertree(scene,gx,gz,d){reseed(9450+d);KOFF=[gx,0,gz];
  const BOLE=[gridSurface((u,v)=>{const th=u*TAU,yy=Math.pow(v,.82)*H*.99;
   const r=trunkR(yy)*(1+butF(yy)*lobeSum(th)
    +.010*Math.sin(3*th+yy*.045)+.007*Math.sin(7*th-yy*.10));
-  return[r*Math.cos(th),yy,r*Math.sin(th)];},52,64,{uS:16,vS:38})];
- meshMerged(BOLE,MAT.timber,G);
+  return[OX+r*Math.cos(th),yy,OZ+r*Math.sin(th)];},FULL?52:40,FULL?64:44,{uS:16,vS:38*H/452})];
+ meshMerged(BOLE,BIOK?MAT['hyBark'+T.sp]:MAT.timber,G);
 
  // ---- surface roots, one off each buttress ---------------------------------
  LOB.forEach(L=>{const len=rr(45,120)*(.6+.4*L.amp),R0=trunkR(7)*(1+.19*L.amp);
   const r0=clamp(RB*.17*L.amp,1.6,5.2),wob=rr(0,TAU);
-  let px=Math.cos(L.a)*R0*.72,pz=Math.sin(L.a)*R0*.72,py=r0*1.6+5;
+  let px=OX+Math.cos(L.a)*R0*.72,pz=OZ+Math.sin(L.a)*R0*.72,py=r0*1.6+5;
   for(let k=1;k<=7;k++){const t=k/7,a=L.a+.32*Math.sin(wob+t*5.2)*t+.10*Math.sin(wob*2+t*11);
    const dist=R0*.72+len*t,r=lerp(r0,.4,Math.pow(t,.75));
-   const nx=Math.cos(a)*dist,nz=Math.sin(a)*dist,ny=terrainH(gx+nx,gz+nz)+r*.22;
-   beam('bough',[px,py,pz],[nx,ny,nz],r*2,r*2);
+   const nx=OX+Math.cos(a)*dist,nz=OZ+Math.sin(a)*dist,ny=terrainH(gx+nx,gz+nz)+r*.22;
+   beam(BARK,[px,py,pz],[nx,ny,nz],r*2,r*2);
    px=nx;py=ny;pz=nz;}});
 
  // ---- boughs ---------------------------------------------------------------
- const FOL=[];
+ const FOL=[],HANG=[];
  // one bough: a gravity/phototropic curve with a sideways wiggle, as the source
  const grow=(o,dir,len,rA,rB,n,curve,wig)=>{
   const sx=-dir[2],sz=dir[0],sl=Math.hypot(sx,sz)||1;
@@ -4173,9 +4371,9 @@ function buildHypertree(scene,gx,gz,d){reseed(9450+d);KOFF=[gx,0,gz];
    P.push([o[0]+dir[0]*len*t+sx/sl*w,o[1]+dir[1]*len*t+curve*len*t*t,
            o[2]+dir[2]*len*t+sz/sl*w,lerp(rA,rB,Math.pow(t,.8))]);}
   return P;};
- const skin=(P,seg)=>{for(let i=0;i<P.length-1;i++){
+ const skin=P=>{for(let i=0;i<P.length-1;i++){
   const r=(P[i][3]+P[i+1][3])*.5;
-  beam('bough',[P[i][0],P[i][1],P[i][2]],[P[i+1][0],P[i+1][1],P[i+1][2]],r*2,r*2);}};
+  beam(BARK,[P[i][0],P[i][1],P[i][2]],[P[i+1][0],P[i+1][1],P[i+1][2]],r*2,r*2);}};
  const side=(tx,ty,tz,s,a,b,c)=>{const sx=-tz*s,sz=tx*s,sl=Math.hypot(sx,sz)||1;
   const x=tx*a+sx/sl*b,y=ty*a+c,z=tz*a+sz/sl*b,l=Math.hypot(x,y,z)||1;return[x/l,y/l,z/l];};
  const clump=(p,s)=>{FOL.push([p[0],p[1],p[2],s]);};
@@ -4184,58 +4382,67 @@ function buildHypertree(scene,gx,gz,d){reseed(9450+d);KOFF=[gx,0,gz];
  const limbs=[];
  const addBough=(u,ang,len,el,curve,rScale)=>{
   const y=H*u,r0=trunkR(y)*(u>.93?.6:1);
-  const o=[Math.cos(ang)*Math.max(0,r0-1),y,Math.sin(ang)*Math.max(0,r0-1)];
+  const o=[OX+Math.cos(ang)*Math.max(0,r0-1),y,OZ+Math.sin(ang)*Math.max(0,r0-1)];
   const dir=[Math.cos(ang)*Math.cos(el),Math.sin(el),Math.sin(ang)*Math.cos(el)];
-  limbs.push(grow(o,dir,len,clamp(r0*rScale,.9,5.5),.5,8,curve,.06));};
+  limbs.push(grow(o,dir,len,clamp(r0*rScale,.9,5.5),.5,FULL?8:6,curve,.06));};
  // SPECIES[0].crown0 is 0.50, i.e. the crown starts at half height. In the
  // source most of the lower crown hangs off the city's own structural
  // branches, which are not imported, so without a third tier here the trunk
- // stands bare to 72% and the tree reads as a palm.
- for(let k=0;k<8;k++) addBough(rr(.855,.955),a0+k*GOLD+rr(-.3,.3),CR*rr(.62,.92),rr(.22,.52),-.12,.62);
- for(let k=0;k<7;k++) addBough(rr(.72,.86),a0+1.2+k*GOLD+rr(-.3,.3),CR*rr(.62,.90),rr(.18,.42),-.16,.46);
- for(let k=0;k<7;k++) addBough(rr(.52,.70),a0+2.4+k*GOLD+rr(-.3,.3),CR*rr(.50,.78),rr(.02,.26),-.20,.40);
+ // stands bare to 72% and the tree reads as a palm. Every species grows its
+ // own lower tier for the same reason (the biome's LOWER table).
+ for(const t of S.tiers)for(let k=0;k<t[0];k++)
+  addBough(rr(t[1],t[2]),a0+t[9]+k*GOLD+rr(-.3,.3),CR*rr(t[3],t[4]),rr(t[5],t[6]),t[7],t[8]);
  // the crown lower bound, so no foliage hangs below where the source starts it
- const yMinFol=H*CROWN0-28;
+ const yMinFol=H*CROWN0-28,NS=4;
 
  limbs.forEach(P=>{
-  skin(P,8);
+  skin(P);
   const n=P.length;let s=-1;
   for(let i=2;i<n;i++){                      // secondaries, alternating sides
    const t=i/(n-1);
    const tx=P[i][0]-P[i-1][0],ty=P[i][1]-P[i-1][1],tz=P[i][2]-P[i-1][2];
    const tl=Math.hypot(tx,ty,tz)||1;s=-s;
    const len1=Math.max(14,CR*rr(.16,.26)*(1-.5*t));
-   const d1=side(tx/tl,ty/tl,tz/tl,s,rr(.45,.8),rr(.7,1.1),.18+rr(-.12,.18));
+   const d1=side(tx/tl,ty/tl,tz/tl,s,rr(.45,.8),rr(.7,1.1),S.secUp+rr(-.12,.18));
    const rS=clamp(Math.min(P[i][3]*.62,len1*.032),.4,2.6);
-   const sec=grow([P[i][0],P[i][1],P[i][2]],d1,len1,rS,.22,4,-.10,.07);
-   skin(sec,5);
+   const sec=grow([P[i][0],P[i][1],P[i][2]],d1,len1,rS,.22,NS,S.secCurve,.07);
+   skin(sec);
    const spr=clamp(len1*.26,8,20);
-   for(let q=2;q<=4;q++)if(sec[q][1]>yMinFol)clump(sec[q],spr*(q===4?.9:1));
+   for(let q=2;q<=NS;q++)if(sec[q][1]>yMinFol)clump(sec[q],spr*(q===NS?.9:1));
    let s2=-1;
-   for(let j=1;j<=4;j++){                       // twigs off the secondary
+   for(let j=1;j<=NS;j++){                    // twigs off the secondary
     const ax=sec[j][0]-sec[j-1][0],ay=sec[j][1]-sec[j-1][1],az=sec[j][2]-sec[j-1][2];
     const al=Math.hypot(ax,ay,az)||1;s2=-s2;
     const len2=Math.max(8,len1*rr(.3,.5));
-    const d2=side(ax/al,ay/al,az/al,s2,rr(.5,.9),rr(.6,1.0),.14+rr(-.15,.25));
+    const d2=side(ax/al,ay/al,az/al,s2,rr(.5,.9),rr(.6,1.0),S.twigUp+rr(-.15,.25));
     const tw=grow([sec[j][0],sec[j][1],sec[j][2]],d2,len2,Math.max(.25,sec[j][3]*.6),.12,2,-.10,.05);
-    skin(tw,3);
+    skin(tw);
+    if(S.hang&&tw[2][1]>yMinFol)HANG.push(tw[2]);
     for(let q=1;q<=2;q++)if(tw[q][1]>yMinFol)clump(tw[q],clamp(len2*.42,6,13));}}});
 
  // ---- foliage --------------------------------------------------------------
- // Dark needle tiers. One blob per spot plus a couple of satellites, coloured
- // from the source's Ironbark leaf set.
+ // One clump per spot plus a couple of satellites, coloured from the species'
+ // leaf set. With the biome loaded they are its leaf CARDS (6 triangles, its
+ // texture, Lambert); without it, the old 20-triangle icosahedron fronds. The
+ // Ironbark takes the same draws either way, so nothing after it moves.
+ const LC=BIOK?HYPERJUNGLE.SPECIES[T.sp].leaf:LEAFC,LK=BIOK?1.35:1;
  FOL.forEach(f=>{const n=2+Math.floor(rng()*3);
   for(let i=0;i<n;i++){const s=f[3]*rr(.55,1.05);
-   kput('frond',[f[0]+rr(-.6,.6)*f[3],f[1]+rr(-.35,.35)*f[3],f[2]+rr(-.6,.6)*f[3]],
-    qEuler(rng()*3,rng()*3,rng()*3),[s,s*.62,s],
-    new THREE.Color(LEAFC[Math.floor(rng()*LEAFC.length)]));}});
-
- // NO APRON. apron() lays a graded disc of pale rock (d=0) or mud, and under
- // a tree either read as a paper disc laid on the plain in every preset. The
- // buttress flare and the surface roots are the ground contact.
- scatterMoss(0,0,0,RB*1.2,CR*.7,90,3.2);
- figures(RB*2.2,0,6,40);
- KOFF=[0,0,0];return G;}
+   const p=[f[0]+rr(-.6,.6)*f[3],f[1]+rr(-.35,.35)*f[3],f[2]+rr(-.6,.6)*f[3]];
+   const qq=qEuler(rng()*3,rng()*3,rng()*3),col=new THREE.Color(LC[Math.floor(rng()*LC.length)]).multiplyScalar(LK);
+   // a card is a tripod of quads about one unit across; a frond was a unit
+   // icosahedron, two across. Turned about y only, so the tripod stays upright.
+   if(BIOK){const c=s*2.3,ry=Math.atan2(qq.y,qq.w)*2;kput(LEAF,p,qEuler(0,ry,0),[c,c*(.45+.6*S.flat),c],col);}
+   else kput(LEAF,p,qq,[s,s*.62,s],col);}});
+ // ---- hangings: ghostwood racemes, baobab pods (the biome's own items) -----
+ if(BIOK&&S.hang)HANG.forEach(h=>{if(rng()<.45)return;
+  if(S.hang==='raceme'){const L=rr(9,16);
+   kput('hyRaceme',[h[0],h[1],h[2]],qEuler(0,rr(0,TAU),0),[L*.42,L,L*.42],
+    new THREE.Color(HYPERJUNGLE.SPECIES[1].flower[Math.floor(rng()*3)]).multiplyScalar(1.3));}
+  else{const L=rr(12,18);
+   kput('hyPod',[h[0],h[1],h[2]],qEuler(rr(-.08,.08),rr(0,TAU),rr(-.08,.08)),L,
+    new THREE.Color(HYPERJUNGLE.SPECIES[3].pod).multiplyScalar(rr(.85,1.15)));}});
+}
 // ================================================================= SKYSCRAPER G — "the Ward" (SUNY: concrete block stack + dark glass drum)
 function buildSkyG(scene,gx,gz,d){reseed(9160+d);KOFF=[gx,0,gz];const SM=skyShardMark();const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const dd=d>0?1:0;
  const H=210,Y0=6;REGISTER({name:'Skyscraper G — the Ward ('+(d===2?'toppled':STATE(d))+')',x:0,z:0,r:115,h:H+30});

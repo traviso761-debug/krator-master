@@ -314,7 +314,7 @@ veladiga/2 206 956.
   relief needs a finer local patch); ceiling well mouths read as shapes in
   'Coronal section'/'Head-on'; small pale passage portals on the back wall
   have no ledge under them ('The gardens' view).
-- **Hexahedron**: cells are still boxes (they now have faces); the hypertree
+- **Hexahedron**: (all three closed in Round 3, below) cells were boxes; the hypertree
   is one species (an import job); the flank sag (may be correct in-world).
 - **Dalab**: the dome size needs the Voth palace's dimensions; room fit-out
   needs the plates trimmed to the room ring inside the bite (~35-80k tris
@@ -329,3 +329,80 @@ veladiga/2 206 956.
 `61-spire`, `65-veladiga`, `89c-arcoindian2`. The recovered patch before this
 session also changed `63-canyon`, `70-hypertree`, `77-dam`, `89b-arcoindian`.
 Neither settlement was touched.
+
+---------------------------------------------------------------------------
+## Round 3: Hexahedron
+
+Fragments: `src/68-hexahedron.js`, `src/70-hypertree.js`; target files
+`targets/hexahedron/89z-rows.js` (hexlush dressing densities) and
+`91z-views.js` (three close presets). No shared fragment touched, no reseed
+changed. Every step: build, jscheck PARSES OK, `verify --assert`, error panel
+clean. Shots `shots/hx3_base`, `hx3_r2`..`hx3_r5`.
+
+| type/decay | before | after |
+|---|---|---|
+| hex/0 | 587 448 | 682 746 |
+| hex/2 | 385 634 | 492 344 |
+| hexlush/0 | 592 616 | 687 914 |
+| hexlush/2 | 428 298 | 535 008 |
+| mav/0 | 168 252 | 175 510 (four trees, was one) |
+| biome/0 | 1 550 085 **OVER** | 647 454 (PASS) |
+
+Every invariant PASSES, including the per-type budget for the first time in
+this target. Draw calls: worst sampled view 90 (was 68): seven cell kdefs and
+the grove's ten.
+
+- **Cells are architecture, not crates.** Five storey-sized modules, one kdef
+  each, built once as vertex-coloured BufferGeometry (`hxGeo`): `hxLog` loggia
+  (party-wall fins, spandrel, a recess 0.38 of the cell deep with a shaded
+  soffit and near-black glazing, planter on the lip; 28 tris), `hxPun` punched
+  window (reveals, hood; 30), `hxVlt` Soleri apse (half-barrel open to the
+  view, arch ring, glazing under it; 42), `hxEave` oversailing roof with pale
+  soffit (10; turned over, the underside of a hung cell), `hxPlnt` planter.
+  `cell()` stacks ~4.4 m storeys in one of four hashed types: loggias,
+  terraced (each storey set back 26% with a planter on the terrace it leaves),
+  loggias under an apse, closed. Roof planters on half. Per-cell pour tint
+  (white / ochre / grey); ruin darkens through the instance colour, so one kdef
+  serves both decays. Applied to the front row of EVERY upper tier and the
+  outer row of every hung lower tier (stacked down from the soffit, closed by a
+  turned eave). The rows behind are `hxBlk`: glazed band plus a roof garden in
+  a parapet. The round-2 band/lintel boxes are gone. Nothing casts shadows
+  here, so depth is carried by vertex colour. All hashed (k,j): the old rr()
+  draws are still taken in order, so nothing placed after a cell moved.
+- **Night.** `hxGlow` (a plane on MAT.dot, pushed into FIREKIT by the builder
+  because FIREKIT is declared in a later fragment) lights ~72% of loggia and
+  punched glazing and half the blocks' bands, lamp-warm and varied.
+- **The flank sags** (d=2). Decided it reads better: a cantilever that lost
+  its props should droop even if the spine holds. Shells (SH/SOF/DK) and the
+  kit items placed before the shafts (snapshot KIT0..KIT1) drop by 34 m x an
+  angular weight (zero beyond .95 rad of FAILA, where shafts stand) x a radial
+  ramp from the COM. Shafts, ground and rubble untouched. No PRNG. Subtle at
+  hero range; side-on (`hx3_r4/cam0` intact vs `cam1` ruin, same relative
+  camera) the failed lower point visibly dips.
+- **Hypertree: four species.** `hyTree()` is the old builder generalised by a
+  species table: Mav's Refuge sizes, biomes/hyperjungle habits (its LOWER
+  tiers, secUp/secCurve, buttress amplitude) and Mav's bottle trunkR for the
+  baobab. Bark = `HYPERJUNGLE.BARKTEX[sp]`, leaves = `BIO.geo.clump()` cards on
+  `HYPERJUNGLE.LEAFTEX[sp]` (Lambert, alphaTest), ghostwood racemes and baobab
+  pods: all kit kdefs made at build time (the biome loads after fragment 70),
+  so they count against mav/0, not biome/0. Falls back to timber and
+  icosahedron fronds when HYPERJUNGLE is absent (a vendor without the biome).
+  The Ironbark takes the identical draw sequence, so it is the same tree, now
+  cheaper (cards are 6 tris against 20), which paid for the grove. Ghostwood,
+  Prism gum and Gate baobab stand behind it, crowns touching.
+- **biome/0 brought under.** It was the hexlush dressing: 1.34M of the 1.55M.
+  Walls cut hardest (each bracket is 2-4 fungus half-spheres of 81 tris):
+  moss 9000->5000, plants 5200->2000, edges 3200->1300, walls 4000->700. The
+  soffits pass was given `mats/curtains` keys it never reads; now `n:400`,
+  which is what it always did.
+- **Views.** 'Terrace cells' (190 m off the +x+z leg), 'Terrace cells at
+  night', 'Hung cells' (the lower city from outside, the grove behind). The
+  builder exports `HEX_SITE[d].LOWQ/LOWN` for the last.
+
+Still open: the lower city's inner hung row is plain boxes; cell spacing along
+a tread is the old layout's (sparse at close range); 'Crater soffit' looks up
+the shafts more than into the hole; hex/0 and hexlush/0 are within 13-17k of
+their 700k budget, so further cell detail needs savings elsewhere.
+
+Fragments changed, for re-vendoring into `settlements/screamers`:
+`src/68-hexahedron.js`, `src/70-hypertree.js` (screamers not touched).

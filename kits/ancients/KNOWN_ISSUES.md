@@ -269,25 +269,34 @@ exceeded ceiling as `OVER`; `--strict-budget` makes it fail.
       where DECAYS omits 1: hexahedron and veladiga, both fixed (qa/arcB.md).
 - [x] ~~Windows were inserted into the balconies.~~ They sit on the terrace wall
       below each tread now, three storeys to a 20 m riser.
-- [ ] The terrace cells are still boxes on a ring, clustered by one fbm with
-      streets cut through, sky bridges out to pods, and gardens on the
-      promenade levels. The sheets' bridges span BETWEEN faces across open air;
-      these only cantilever outward.
-      *Improved (qa/arcB.md):* three sky bridges now cross ~100 m of air to lift
-      towers on the lower city; pods are strutted; the front row of cells has
-      a glazed band and lintel per storey. Cells are still boxes.
+- [x] ~~The terrace cells are still boxes on a ring.~~ Round 3 (qa/arcB.md):
+      the front row of every upper tier and the outer row of every hung lower
+      tier are built storey by storey from five instanced modules -- loggia
+      (fins, soffit, recessed glazing, planter lip), punched window with
+      reveals and hood, Soleri apse vault, oversailing eave, planter -- in four
+      hashed types (loggias, terraced setbacks, apse-topped, closed). The rows
+      behind are roof-garden blocks with a glazed band. Lit glazing at night.
+      Depth reads through vertex colour (nothing casts shadows). Still open:
+      the lower city's inner row is plain boxes; cells are sparse along a tread
+      (one front cell per ~26 m), which is the old layout's spacing.
 - [x] ~~No interiors behind the promenade bands, and the cultural centre at the
       summit is a single block.~~ The riser behind each promenade is an arcade;
       the summit is a ribbed parabolic vault hall (qa/arcB.md).
-- [ ] The imported hypertree is one species (Ironbark) and one specimen. Mav's
-      Refuge has four, and its lower crown hangs off structural branches that
-      were not imported, so this one's crown is grown rather than ported.
+- [x] ~~The imported hypertree is one species (Ironbark) and one specimen.~~
+      Round 3: a grove of all four (Ironbark, Ghostwood, Prism gum, Gate
+      baobab) at Mav's Refuge's sizes, habits from biomes/hyperjungle's
+      SPECIES/LOWER data, the biome's bark textures and leaf cards on kit
+      instancing, ghostwood racemes and baobab pods. Charged to mav/0, not
+      biome/0. The Ironbark's draws are unchanged. Crowns are still grown,
+      not ported (no structural branches).
 - [x] ~~Shafts did not reach the soffit.~~ They run to the waist inside the
       closed lower shell, so the connection cannot depend on a continuous
       inverse agreeing with a stepped surface. Capitals and footings added.
-- [ ] The collapsed flank tears the soffit above it, but the mass does not sag
-      or tilt toward the hole -- the survivors are drawn as though nothing
-      moved. In-world the nanomaterial spine holds, so this may be correct.
+- [x] ~~The collapsed flank does not sag.~~ Round 3: at d=2 everything held up
+      (merged shells, and kit items placed before the shafts) droops on the
+      failed side, zero over the surviving shafts, rising with distance from
+      the centre of mass to 34 m at the rim. The spine still holds: a droop,
+      not a fall. Subtle at hero range; reads as the lower point dipping.
 - [x] ~~Camera presets hard-code targets.~~ The builder exports `HEX_SITE[d]`
       and the views read it (qa/arcB.md).
 
