@@ -603,6 +603,23 @@ function makeFrame(x, z, ry, opt) {
   F.rod = (ax, ay, az, bx, by, bz, r, color, family) => { const [ax2, az2] = toWorld(ax, az), [bx2, bz2] = toWorld(bx, bz); mkRod(ax2, F.y + ay, az2, bx2, F.y + by, bz2, r, color, family); };
   F.lamp = (lx, ly, lz, amp, rad) => { const [x2, z2] = toWorld(lx, lz); const l = new THREE.PointLight(0xffb066, amp || 1, rad || 10); l.position.set(x2, F.y + ly, z2); _add(l); };
   F.tree = (lx, lz, kind, h, ly) => treeHelper(F, lx, lz, kind, h, ly || 0);
+  /* furniture a BUILDING places (an ASSET's build): a catalog piece at local (lx, ly, lz) turned lry, built
+     into the same group with its own frame, and recorded as data (F.furniture; buildAsset copies it to the
+     instance's userData.furniture). Everything a building puts in or around itself that is not its structure
+     goes through here, so it is the catalog's piece, tagged, and visible to the life layer. o: { v, seed, setting } */
+  F.furn = (key, lx, ly, lz, lry, o) => {
+    o = o || {};
+    const A = FURN_BY_KEY[key];
+    if (!A) { (F.missing || (F.missing = [])).push(key); return null; }
+    const [x2, z2] = toWorld(lx, lz), list = F.furniture || (F.furniture = []);
+    const rec = { key: key, variant: o.v || 0, seed: o.seed || (F.seed * 31 + list.length + 1), lx: lx, ly: ly || 0, lz: lz, lry: lry || 0,
+      x: x2, y: F.y + (ly || 0), z: z2, ry: F.ry + (lry || 0), setting: o.setting || 'outdoor' };
+    const F2 = makeFrame(x2, z2, rec.ry, { y: rec.y, seed: rec.seed, variant: rec.variant, wealth: F.wealth });
+    F2.asset = A;
+    A.build(F2);
+    list.push(rec);
+    return rec;
+  };
   return F;
 }
 
@@ -778,7 +795,8 @@ function _buildInstance(kind, registry, key, x, z, ry, opt) {
   g.userData = {
     kind: kind, key: key, asset: A, x: x, z: z, ry: ry || 0,
     opt: { variant: opt.variant || 0, seed: opt.seed || 1, wealth: opt.wealth == null ? 0.5 : opt.wealth, y: opt.y || 0 },
-    error: failed ? String(failed && failed.message || failed) : null
+    error: failed ? String(failed && failed.message || failed) : null,
+    furniture: F.furniture || [], missingFurniture: F.missing || []
   };
   scene.add(g);
   INSTANCES.push(g);
