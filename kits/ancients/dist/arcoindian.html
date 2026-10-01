@@ -28927,6 +28927,383 @@ function buildAltGovernment(scene,gx,gz,d){reseed(9917);KOFF=[gx,0,gz];const G=n
    fireWindow([sx*44+c*(BR+.5),BH-8,4+s*(BR+.5)],[c,0,s],qFacing([c,0,s]),2.4,3.4);}
   acReclaim(G,{up:70,side:30,r:80,stalls:14,plots:12,people:22,key:'altGov'});}
  KOFF=[0,0,0];return G;}
+// ================================================================= YUNI VARIANTS (1 of 5): the Cloisters
+// The Yuni settlement (settlements/yuni) runs a patched fork of this kit
+// (its tools/gen_ancients.py + tools/anc_kit_tail.js) and grew variants the
+// kit never had. They are ported here as kit builders of their own, so the
+// kit's originals are untouched and the fork's patches have a home upstream:
+//
+//   yvQuad   buildYvQuad        academic quadrangle, "the Cloisters"   (8am-yv-a)
+//   yvComb   buildYvCombShort   honeycomb apartments, short block      (8am-yv-b)
+//   yvTerr   buildYvTerrace     terrace-stack apartments, roofed       (8am-yv-c)
+//   yvDish   buildYvDish        the Ear with its dish intact           (8am-yv-d)
+//   yvHosp   buildYvHospital4   the Cloister hospital, four towers     (8am-yv-e)
+//
+// Decay is the kit's: 0 intact, 1 ruined, 3 repaired (HOLES .55 and
+// repairPass from the scene loop), 5 worn (wornPass from the scene loop).
+// Yuni's worn skin, rust and weather passes already live in 69w-worn.js, so
+// nothing of the worn decay is repeated here. Seeds: 9955+d, 9965+d, 9975+d,
+// and d>0?9986:9985 / d>0?9988:9987 (9950-9989 less the blocks Apartments,
+// Amphitheater, Fuel and Radar already claim). targets/yuni-variants/NOTES.md
+// says what each one was in Yuni and what changed.
+
+// ---------------------------------------------------------------- the Cloisters
+// Written for Yuni (not in the source kit): a closed court ringed by terraced
+// ranges, a deep parabolic cloister walk on all four sides, a lecture drum and
+// two stair towers breaking the skyline, a monumental arch on the +z side.
+// Metres, 120 x 100 m overall, court 84 x 64.
+// Upgrades over Yuni's: dead windows keep teeth of glass (civWin); the ruin
+// loses the middle of the terraced back range down to the ground storey (its
+// floors stand in section over a talus) and the cloister arcade in front of it;
+// the ruined lecture drum shows rooms behind its holes (civRooms); one draw
+// call per material (civFlatten).
+function buildYvQuad(scene,gx,gz,d){reseed(9955+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);
+ REGISTER({name:'Quadrangle — the Cloisters ('+STATE(d)+')',x:0,z:0,r:66,h:40});
+ civDef('qArchW',()=>arcShape(5.0,6.2,.85,3.4),MAT.white);civDef('qArchR',()=>arcShape(5.0,6.2,.85,3.4),MAT.rust);
+ civDef('qRibW',()=>arcShape(17,5.6,.7,.9),MAT.white);civDef('qRibR',()=>arcShape(17,5.6,.7,.9),MAT.rust);
+ civDef('qGateW',()=>arcShape(12,11.5,1.7,4.6),MAT.white);civDef('qGateR',()=>arcShape(12,11.5,1.7,4.6),MAT.rust);
+ const skin=SHELL(d),CB=BOXC(d),QA=d>0?'qArchR':'qArchW',QR=d>0?'qRibR':'qRibW',PL=PLATE(d),CO=d>0?'colR':'colW';
+ const HX=60,HZ=50,CX=42,CZ=32,SH=4.0,WALK=3.4;      // outer half-extents, court half-extents, storey, cloister depth
+ // THE BREACH (ruin): the terraced back range (-z) has lost its middle down to
+ // the ground storey. gap(f) is the x span missing at storey f: it widens
+ // upward, ragged by storey, so the cut reads as a collapse and not a slot.
+ const gap=f=>d>0&&f>=1?[-13-f*2.6+3*(h3(f,1,9956)-.5),5+f*1.8+3*(h3(f,2,9956)-.5)]:null;
+ const GC=[-6.2,6.2];
+ const inGap=(x,f)=>{const g=gap(f);return g&&x>g[0]-1&&x<g[1]+1;};
+ const W=(nm,p,q,s)=>d>0?civWin(nm,p,q,s,.5):kput(nm,p,q,s,null);
+ // court floor, with a shallow lobed basin at its centre
+ kput(CB,[0,.15,0],null,[CX*2,.3,CZ*2],null);
+ kput(SLABC(d),[0,.5,-2],null,[9,.8,9],null);kput(SLABC(d),[0,.95,-2],null,[6.6,.5,6.6],new THREE.Color(d>0?0x4a4a44:0x9fb0b4));
+ // --- the four ranges. [nx,nz] outward normal; L half length; nf storeys; c centre line; back = terraced
+ [[0,1,HX,2,41,false],[0,-1,HX,4,-41,true],[-1,0,HZ-18,3,-51,false],[1,0,HZ-18,3,51,false]].forEach(function(R,ri){
+  const nx=R[0],nz=R[1],L=R[2],nf=R[3],c=R[4],back=R[5];
+  const q=qEuler(0,nz?0:Math.PI/2,0);                           // box yaw for this range
+  const gate=(nz>0);                                            // the +z range carries the monumental arch
+  // a box along the range from a0 to a1 (along-range coordinate), centred on line cc
+  const seg=(a0,a1,y,h,cc,dd,item)=>{const m=(a0+a1)/2,l=a1-a0;if(l<.3)return;kput(item,[nz?m:cc,y,nz?cc:m],q,[l,h,dd],null);};
+  for(let f=0;f<nf;f++){const y=f*SH,st=back?f*2.2:0;          // st = setback away from the court on the back range
+   const dep=18-st,cc=c-nx*st/2-nz*st/2;
+   const inset=(f===0)?WALK:0,dd=dep-inset,ccf=cc+(nx?nx:nz)*inset/2;
+   const g=back?gap(f):gate?GC:null;
+   // the storey mass, hollowed on the court side at ground level to make the cloister walk
+   if(!g){seg(-L,L,y+SH/2,SH-.35,ccf,dd,CB);seg(-L-.3,L+.3,y+SH-.1,.45,ccf,dd+.6,PL);}
+   else{const m=gate?0:4,b0=gate?0:1.4,b1=gate?0:1.1;seg(-L,g[0]-m,y+SH/2,SH-.35,ccf,dd,CB);seg(g[1]+m,L,y+SH/2,SH-.35,ccf,dd,CB);
+    seg(-L-.3,g[0]+b0,y+SH-.1,.45,ccf,dd+.6,PL);seg(g[1]-b1,L+.3,y+SH-.1,.45,ccf,dd+.6,PL);
+    // the section: at each cut the last bay stands open, a room between the
+    // floor band below and the ceiling band above, its two facade walls torn
+    // off short, furnished (domRoom) and dark at the back, and the floor
+    // plate torn and sagging into the gap
+    if(!gate)for(const e of [[g[0],1],[g[1],-1]]){const x=e[0],sg=e[1];
+     kput('boxD',[x-sg*3.8,y+SH/2-.1,ccf],null,[.3,SH-.7,dd-1.4],null);
+     for(const s2 of [-1,1]){const fl=2.2+1.4*h3(f,s2,9957+sg);seg(sg>0?x-4:x+4-fl,sg>0?x-4+fl:x+4,y+SH/2,SH-.35,ccf+s2*(dd/2-.3),.6,CB);}
+     domRoom([x-sg*.5,y+.2,ccf],[sg,0,0],3.4,SH-.6,d,9957+f);
+     kput('plateR',[x+sg*1.6,y+.1-.6,ccf+dd*.15],qEuler(.08*sg,0,-.32*sg),[3.4,.35,dd*.7],null);
+     kput('rubble',[x+sg*2.2,y+.2,ccf-dd*.2],qEuler(.4,f,.2),[2.2,1.2,1.8],null);}}
+   // arched windows along the court face and the outer face (civWin leaves glass teeth in the dead ones)
+   const nw=Math.round(L/4.2);
+   for(let k=0;k<nw;k++){if(d>0&&rng()<.22)continue;
+    const t=(k+.5)/nw*2-1,a=t*L;
+    const cfx=nz?a:(cc-nx*dd/2-.1),cfz=nz?(cc-nz*dd/2-.1):a;
+    const skip=back?inGap(a,f):gate&&Math.abs(a)<7.5;
+    if(!(gate&&f===0&&Math.abs(a)<8)&&!skip)W(d>0?'winD':'winI',[cfx,y+1.9,cfz],qFacing([-nx,0,-nz]),[.95,.95,1]);
+    if(f>0||!gate){const ofx=nz?a:(cc+nx*dep/2+.1),ofz=nz?(cc+nz*dep/2+.1):a;
+     if(!(d>0&&rng()<.25)&&!skip)W(d>0?'winSmD':'winSmI',[ofx,y+2.2,ofz],qFacing([nx,0,nz]),[1.5,1.5,1]);}}
+   // glass gallery behind the court face on the first floor (while the structure is whole)
+   if(f===1&&d===0){const gx2=nz?0:(cc-nx*dep/2-.05),gz2=nz?(cc-nz*dep/2-.05):0;kput('pane',[gx2,y+2.6,gz2],q,[L*1.9,2.6,1],null);}
+   // terrace planting on the back range's setbacks
+   if(back&&f>0)for(let k=0;k<Math.round(L/7);k++){const t=(k+.5)/Math.round(L/7)*2-1;if(inGap(t*L,f))continue;
+    kput('hedge',[t*L,y+.55,cc+nz*(dep/2-1.2)],q,[5,.9,1.8],new THREE.Color().setHSL(.29,.5,d>0?.14:.22));}}
+  // roof: slab, parapets on the long sides, and a pergola of parabolic ribs on the side ranges
+  const ry=nf*SH,st=back?(nf-1)*2.2:0,dep=18-st,cc=c-(nx+nz)*st/2,rg=back?gap(nf-1):gate?GC:null;
+  const roofSeg=(a0,a1)=>{seg(a0,a1,ry+.25,.5,cc,dep+1,CB);
+   for(const s2 of [-1,1]){const m=(a0+a1)/2,l=a1-a0;if(l<.3)continue;
+    if(nz)kput(PL,[m,ry+1.1,cc+s2*dep/2],q,[l,1.2,.5],null);else kput(PL,[cc+s2*dep/2,ry+1.1,m],null,[.5,1.2,l],null);}};
+  if(!rg)roofSeg(-L-.5,L+.5);else{roofSeg(-L-.5,rg[0]);roofSeg(rg[1],L+.5);}
+  if(!nz)for(let k=0;k<Math.round(L/6);k++){const t=(k+.5)/Math.round(L/6)*2-1;if(d>0&&rng()<.3)continue;
+   kput(QR,[cc,ry+.5,t*L],qFacing([nx,0,nz]),[1,1,1],null);}
+  // the cloister walk: a parabolic arcade in front of the ground storey, with its own roof slab
+  const wc=c-(nx+nz)*(18/2)+(nx+nz)*(WALK/2),wcx=nz?0:wc,wcz=nz?wc:0;
+  const na=Math.round(L/2.6),g1=back?gap(1):null;
+  for(let k=0;k<na;k++){const t=(k+.5)/na*2-1,a=t*L;if(gate&&Math.abs(a)<8.5)continue;
+   if(d>0&&rng()<.16)continue;
+   if(g1&&a>g1[0]+3&&a<g1[1]-3){// brought down with the range above it: the arch lies on its face in the court
+    kput(QA,[a+(h3(k,3,9958)-.5)*2,.45,wc-(nx+nz)*4.2],qEuler(-Math.PI/2+.12,(h3(k,4,9958)-.5)*.5,0),[1,1,1],null);continue;}
+   kput(QA,[nz?a:wc,0,nz?wc:a],qFacing([nz?0:1,0,nz?1:0]),[1,1,1],null);}
+  if(gate){seg(-L,-8.5,6.3,.55,wc,WALK+1.2,CB);seg(8.5,L,6.3,.55,wc,WALK+1.2,CB);}
+  else if(!g1)kput(CB,[wcx,6.3,wcz],q,[L*2,.55,WALK+1.2],null);
+  else{seg(-L,g1[0]+3,6.3,.55,wc,WALK+1.2,CB);seg(g1[1]-3,L,6.3,.55,wc,WALK+1.2,CB);}
+  if(d>0&&ri<2)rubbleRing(nz?L*.7:c,.3,nz?c:L*.7,2,9,14,1.1);
+  // the monumental gate: the +z range bridges over a 12 m parabolic arch
+  // (the range is cut through at |x| < 6.2, storeys, roof and walk; three
+  // arches make a vaulted passage of the cut, and two pylons stand out front)
+  if(gate){for(const z of [c-6.7,c,c+6.7])kput(d>0?'qGateR':'qGateW',[0,0,z],qFacing([0,0,1]),[1,1,1],null);
+   for(let s2=-1;s2<=1;s2+=2)kput(CO,[s2*9.5,0,c+11],null,[1.3,14,1.3],null);}});
+ // --- the lecture drum: a fluted paraboloid in the back-left of the court, capped by a shallow dome
+ {const dx=-26,dz=-20,R=10.5,H=23,hole=holeFn(d*.7,4401,null,1.4);
+  mesh(lathe({rFn:y=>R*(1-.10*Math.pow(y/H,2)),H:H,flutes:8,amp:.09,sharp:2,nu:56,nv:16,hole,seed:4401}),skin,G,dx,0,dz);
+  if(d>0){mesh(lathe({rFn:y=>R*.6,H:H,nu:24,nv:2}),MAT.dark,G,dx,0,dz);    // the lecture hall's own wall, rooms in the band outside it
+   civRooms({cx:dx,cy:0,cz:dz,rFn:y=>R*(1-.10*Math.pow(y/H,2)),y0:4.6,y1:H-1,step:4.6,d,seed:4402,rIn:.62,dens:7});}
+  else mesh(lathe({rFn:y=>R*.9,H:H,nu:24,nv:2}),MAT.dark,G,dx,0,dz);
+  mesh(lathe({rFn:y=>(R+.8)*Math.sqrt(clamp(1-Math.pow(y/6.4,2),0,1)),H:6.4,nu:48,nv:10}),skin,G,dx,H,dz);
+  kput(SLABC(d),[dx,H-.3,dz],null,[R+1.1,.6,R+1.1],null);
+  for(let k=0;k<12;k++){const th=(k+.4)/12*TAU;if(d>0&&rng()<.25)continue;
+   W(d>0?'winD':'winI',[dx+R*Math.cos(th)*1.01,4.4,dz+R*Math.sin(th)*1.01],qFacing([Math.cos(th),0,Math.sin(th)]),[1.1,1.3,1]);
+   if(d===0)kput('pane',[dx+R*Math.cos(th)*1.02,11.5,dz+R*Math.sin(th)*1.02],qFacing([Math.cos(th),0,Math.sin(th)]),[4.6,5,1],null);}
+  kput('archOpen',[dx,0,dz+R-.2],qFacing([0,0,1]),[.75,.62,1],null);
+  stripRing(dx,H+.4,dz,R*.8,d,20);if(d>0){mossOnRing(dx,H+.2,dz,R,14,1.4);vinesOnRing(dx,H,dz,R,8,9);}}
+ // --- two stair towers at the court's +z corners
+ [[-36,25],[36,25]].forEach(function(p,i){const R=4.6,brk=d>0&&i===1,H=brk?19:31;
+  mesh(lathe({rFn:y=>R*(1-.22*Math.pow(y/H,1.6)),H:H,cut:brk?H:null,jag:brk?1.6:0,flutes:6,amp:.12,sharp:2,nu:36,nv:20,hole:holeFn(d*.6,4410+i,null,1.2),seed:4410+i}),skin,G,p[0],0,p[1]);
+  mesh(lathe({rFn:y=>R*.86*(1-.22*Math.pow(y/H,1.6)),H:H,nu:18,nv:4}),MAT.dark,G,p[0],0,p[1]);   // follows the taper (Yuni's liner poked through the top)
+  for(let y=3;y<H-3;y+=3.4){const th=Math.PI*(i?.25:.75);
+   W(d>0?'winSmD':'winSmI',[p[0]+R*Math.cos(th),y,p[1]+R*Math.sin(th)],qFacing([Math.cos(th),0,Math.sin(th)]),[1.4,1.6,1]);}
+  if(!brk){kput(SLABC(d),[p[0],H,p[1]],null,[R+1,.5,R+1],null);
+   mesh(lathe({rFn:y=>(R*.8)*Math.sqrt(clamp(1-Math.pow(y/3.4,2),0,1)),H:3.4,nu:28,nv:6}),skin,G,p[0],H+.3,p[1]);
+   if(d===0)kput('finial',[p[0],H+4.6,p[1]],null,[1.1,1.8,1.1],null);}
+  else rubbleRing(p[0],0,p[1],3,11,16,1.2);});
+ // --- weathering / ruin dressing
+ if(d>0){scatterMoss(0,.3,0,10,CX,60,1.1);rubbleRing(0,.3,0,CX-6,CX+14,40,1.4);
+  // the talus of the breach, both faces of the back range, and slabs of its roof among it
+  const g=gap(3);adRubbleLine([g[0]+2,-30],[g[1]-2,-30],0,1,9,70,2.6);adRubbleLine([g[0]+2,-51],[g[1]-2,-51],0,-1,10,60,2.6);
+  for(let k=0;k<5;k++){const x=lerp(g[0]+3,g[1]-3,(k+.5)/5),hh=h3(k,5,9959);
+   kput('boxCR',[x,k%2?4.5+hh:1.1+hh,k%2?-41+(hh-.5)*8:(hh<.5?-30:-52)],qEuler((hh-.5)*.9,hh*2,(h3(k,6,9959)-.5)*.8),[6+hh*4,.6,4+hh*3],null);}}
+ figures(0,0,5,26);civFlatten(G);KOFF=[0,0,0];return G;}
+// ================================================================= YUNI VARIANTS (2 of 5): the short honeycomb block
+// Yuni's stubby sibling of Apartments B: the same Beksinski hexagonal cell
+// lattice, wrapped round a squircle plan 58 x 48 and only five storeys, with a
+// real roof. A 5 m sandwich of two perforated skins holds the flats; the core
+// is closed under a cambered lid. Metres.
+// Upgrades over Yuni's (where every cell, strip and dot was forced dead):
+// intact, the lattice is glazed and the flats behind it are furnished and lit
+// (domRoom per bay, warm cells); ruined, the glass is gone but for teeth of it
+// in the cells (civShardAt), and the south-east corner has lost its top two
+// storeys, the floors standing in section over a talus; repaired is the ruin
+// re-roofed by repairPass. One draw call per material (civFlatten).
+function buildYvCombShort(scene,gx,gz,d){reseed(9965+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);
+ REGISTER({name:'Apartments — honeycomb block, short ('+STATE(d)+')',x:0,z:0,r:34,h:22});
+ const skin=SHELL(d),RX=29,RZ=24,H=17.5,NF=5,Y0=2.6,FS=(H-Y0)/NF;   // FS: one storey of flats
+ const rad=th=>se(th,4.5);                                  // squircle: flat-ish long faces, rounded corners
+ const pt=(th,r)=>[Math.cos(th)*RX*rad(th)*r,0,Math.sin(th)*RZ*rad(th)*r];
+ const nrm=th=>{const a=pt(th-.002,1),b=pt(th+.002,1),tx=b[0]-a[0],tz=b[2]-a[2],l=Math.hypot(tx,tz)||1;return[tz/l,0,-tx/l];};
+ const NU=42,NV=9;                                          // hex columns round the plan, rows up the skin
+ const hex=(u,v)=>{const cx=u*NU,cy=v*NV;const rowOff=(Math.floor(cy)%2)*.5;const fx=((cx+rowOff)%1)-.5,fy=(cy%1)-.5;
+  return Math.abs(fx)<.33&&Math.abs(fy)<.35&&Math.abs(fx)+Math.abs(fy)*1.15<.54;};
+ // THE BITE (ruin): the corner nearest the row camera has lost its top two
+ // storeys. bite(th) is the surviving height at bearing th.
+ const TB=.62,bite=th=>{const t=clamp(1-civDA(th,TB)/.5,0,1);return t>0?H-(2*FS+1.2)*Math.min(1,t*2.2)-1.6*(fbm(th*9,1.3,9966,2)-.5)*Math.min(1,t*3):H;};
+ const bit=(th,y)=>d>0&&y>bite(th);
+ const dh=holeFn(d*.8,4500,null,1.4);
+ const shellAt=(r,b)=>gridSurface((u,v)=>{const th=u*TAU,p=pt(th,r);return[p[0],Y0+v*(H-Y0),p[2]];},200,56,
+   {uS:26,vS:9,hole:(u,v)=>hex(u,v)||b&&bit(u*TAU,Y0+v*(H-Y0))||(dh?dh(u*3,v*H):false)});
+ // outer and inner skin. The bite takes the outer skin and the flats; the
+ // inner skin, the core and its lid stand, so the corner reads as the flats
+ // peeled off a core that held (cutting the core too opened an empty box).
+ const parts=[shellAt(1,true),shellAt(.80,false)];
+ parts.push(gridSurface((u,v)=>{const th=u*TAU,a=pt(th,.80),b=pt(th,1);return[lerp(a[0],b[0],v),H,lerp(a[2],b[2],v)];},110,3,{uS:20,vS:2,hole:(u,v)=>bit(u*TAU,H-.1)}));   // roof ring
+ for(let f=1;f<NF;f++){const y=Y0+f*FS;   // cell floors between the skins
+  parts.push(gridSurface((u,v)=>{const th=u*TAU,a=pt(th,.80),b=pt(th,1);return[lerp(a[0],b[0],v),y,lerp(a[2],b[2],v)];},80,2,
+   {hole:d>0?(u,v)=>fbm(u*10,f,4510+f,2)<.2||bit(u*TAU,y+1.2):null}));}
+ parts.push(gridSurface((u,v)=>{const th=u*TAU,p=pt(th,.80);return[p[0],H+v*1.5,p[2]];},110,2,{uS:20,vS:1}));      // parapet (on the inner skin, which the bite spares)
+ meshMerged(parts,skin,G);
+ mesh(gridSurface((u,v)=>{const th=u*TAU,p=pt(th,.78);return[p[0],Y0+v*(H-Y0),p[2]];},60,6,{}),MAT.dark,G);   // dark core wall
+ // the roof proper: a cambered lid over the core
+ mesh(gridSurface((u,v)=>{const th=u*TAU,p=pt(th,.80*v);return[p[0],H+1.1*(1-v*v),p[2]];},90,6,{uS:14,vS:6}),skin,G);
+ if(d===0)mesh(gridSurface((u,v)=>{const th=u*TAU,p=pt(th,.985);return[p[0],Y0+.2+v*(H-Y0-.4),p[2]];},100,1,{}),MAT.glass,G);   // the glazing behind the lattice
+ // the open ground storey: columns all round, court slab, the first floor slab
+ for(let k=0;k<30;k++){const th=(k+.5)/30*TAU,p=pt(th,.92);if(d>0&&rng()<.18)continue;
+  kput(d>0?'colR':'colW',[p[0],0,p[2]],null,[1.5,2.7,1.5],null);}
+ kput(SLABC(d),[0,1.4,0],null,[RX*.84,.5,RZ*.84],null);
+ kput(SLABC(d),[0,2.75,0],null,[RX*1.06,.55,RZ*1.06],null);
+ // cells behind the lattice: lit when whole, a few still lit in the ruin (Yuni forced them all dead)
+ for(let f=0;f<NF;f++)for(let k=0;k<22;k++){if(rng()>.5)continue;const th=(k+.5)/22*TAU,p=pt(th,.88),y=Y0+(f+.5)*FS;
+  if(bit(th,y))continue;const lit=d>0?h3(k,f,9967)<.08:h3(k,f,9967)<.7;
+  kput('cell',[p[0],y,p[2]],qFacing(nrm(th)),[1.9,1.5,1],lit?WARM.clone().multiplyScalar(.5+.5*h3(f,k,9968)):DEAD);}
+ for(let k=0;k<14;k++){const th=(k+.5)/14*TAU,p=pt(th,1.0);                                    // roof-edge finials
+  if(d>0&&rng()<.4)continue;if(bit(th,H))continue;kput(PLATE(d),[p[0]*.99,H+1.9,p[2]*.99],qEuler(0,-th,0),[1.4,1.1,1.4],null);}
+ if(d>0){mossOnRing(0,H+1.3,0,RX*.9,26,1.3);vinesOnRing(0,H,0,RX*.95,14,10);rubbleRing(0,0,0,RX+2,RX+16,40,1.5);scatterMoss(0,0,0,RX,RX+20,40,1.2);}
+ // --- everything below draws no rng(): hash-placed, so nothing above moves
+ // interiors: a room per bay per storey between the skins, lit ceiling strip, cabinet, panel
+ for(let f=0;f<NF;f++)for(let k=0;k<36;k++){const th=(k+.5)/36*TAU,y=Y0+.2+f*FS;
+  if(bit(th,y+2)||h3(k,f,9969)>.55)continue;const p=pt(th,.975),n=nrm(th);
+  domRoom([p[0],y,p[2]],n,(1-.80)*Math.min(RX,RZ)*rad(th)*.85,FS-.4,d,9969+f);}
+ // glass teeth left in the ruined lattice: one cell in four or so, by hash
+ if(d>0)for(let j=0;j<NV;j++)for(let i=0;i<NU;i++){const cy=j+.5,rowOff=(j%2)*.5,u=((i+.5-rowOff)/NU+1)%1,v=cy/NV;
+  const th=u*TAU,y=Y0+v*(H-Y0),hh=h3(i,j,9970);if(hh>.25||bit(th,y+1))continue;if(dh&&dh(u*3,v*H))continue;
+  const p=pt(th,1),n=nrm(th);civShardAt([p[0],y,p[2]],qFacing(n),TAU*RX/NU*.6,(H-Y0)/NV*.62,.06,hh*4);}
+ if(d>0){// the fallen storeys: a talus banked against the bitten corner, slabs of the roof ring among it
+  adRubbleArc(0,0,TB-.55,TB+.55,th=>Math.hypot(pt(th,1)[0],pt(th,1)[2]),12,90,2.4);
+  for(let k=0;k<6;k++){const hh=h3(k,1,9971),th=TB+(hh-.5)*.7,p=pt(th,1.12+hh*.25);
+   kput('boxCR',[p[0],.7+hh*1.2,p[2]],qEuler((hh-.5)*.9,hh*4,(h3(k,2,9971)-.5)*.9),[5+hh*3,.5,3+hh*2],null);}}
+ figures(0,0,4,RX+8);civFlatten(G);KOFF=[0,0,0];return G;}
+// ================================================================= YUNI VARIANTS (3 of 5): the roofed terrace stack
+// Apartments A (the midrise terrace stack in 82-apartments.js: eight lobed
+// trays, each shifted and shrunk, on a hyperboloid stem) as Yuni patched it:
+// every tray's terrace gets a parapet, a coping and a soffit, the gap up to the
+// next tray is closed, and the top tray is capped by a fluted lobed roof, so
+// the stack reads as roofed storeys rather than eight open floor plates.
+// Upgrades over Yuni's: Yuni kept the kit's ruin (tray 6 simply gone, tray 7
+// left hanging over the hole); here every tray stands and the ruin is in the
+// roof instead: the lid has caved in on the side facing the row camera, its
+// slab bitten out, a shell of it lying on the terrace below, and the top tray
+// opened up under it. Dead windows keep teeth of glass (civWin); the rooms
+// behind the holes are furnished (domRoom); one draw call per material.
+function buildYvTerrace(scene,gx,gz,d){reseed(9975+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const skin=SHELL(d);
+ REGISTER({name:'Apartments — terrace stack, roofed ('+STATE(d)+')',x:0,z:0,r:40,h:58});
+ mesh(lathe({rFn:y=>7*Math.sqrt(1+1.5*Math.pow((y-20)/20,2)),H:40,nu:32,nv:12}),skin,G);
+ const RS=Math.PI/2,NS=8;                   // RS: the bearing the roof caved in on (+z, toward the row camera)
+ const cave=(th,yy)=>d>0&&civDA(th,RS)<.95-.06*yy+.35*(fbm(th*5,yy*.2,9976,2)-.5);   // yy: height up the lid
+ const aSkin=[],aDark=[],aGuts=[];
+ const SLC=new THREE.Color(d>0?0x4a4038:0xcfcac2);
+ for(let s=0;s<NS;s++){const y=6+s*5.4,ox=Math.sin(s*1.3)*5,oz=Math.cos(s*.9)*5,R=24-s*1.6,top=s===NS-1;
+  const lobe=th=>R*(1+.28*(.5+.5*Math.cos(6*th)));
+  const h0=holeFn(d*.7,760+s,null,2.5);
+  // the top tray is opened up where the roof came down on it
+  const hole=h0||top&&d>0?(u,yy)=>(h0?h0(u,yy):false)||top&&d>0&&yy>1.2&&civDA(u*TAU,RS)<.42+.2*(fbm(u*9,yy*.3,9977,2)-.5):null;
+  kput('slab',[ox,y,oz],null,[R*.99,.35,R*.99],SLC);
+  if(!top||d===0)kput('slab',[ox,y+4.6,oz],null,[R*.99,.35,R*.99],SLC);
+  aSkin.push(lathe({rFn:()=>R,H:4.6,flutes:6,amp:.28,sharp:1,nu:72,nv:3,hole}).translate(ox,y,oz));
+  if(d>0)aDark.push(lathe({rFn:()=>R*.9,H:4.6,nu:24,nv:1,hole:top?(u,yy)=>civDA(u*TAU,RS)<.36:null}).translate(ox,y,oz));
+  // the terrace deck, then Yuni's parapet, coping and soffit round its lobed edge
+  aSkin.push(gridSurface((u,v)=>{const th=u*TAU;const r=lobe(th)*(1+v*.1);return[ox+r*Math.cos(th),y+4.6+.4*v,oz+r*Math.sin(th)];},72,1,{}));
+  aSkin.push(gridSurface((u,v)=>{const th=u*TAU,r=lobe(th)*1.1;return[ox+r*Math.cos(th),y+5.0+v*1.15,oz+r*Math.sin(th)];},72,2,{uS:14,vS:.4}));       // parapet
+  aSkin.push(gridSurface((u,v)=>{const th=u*TAU,r=lobe(th)*1.1-v*.45;return[ox+r*Math.cos(th),y+6.15,oz+r*Math.sin(th)];},72,1,{}));                  // coping
+  aSkin.push(gridSurface((u,v)=>{const th=u*TAU,r=lerp(R*.98,lobe(th)*1.1,v);return[ox+r*Math.cos(th),y+4.5-.25*v,oz+r*Math.sin(th)];},72,1,{}));    // soffit under the deck
+  if(!top)aSkin.push(gridSurface((u,v)=>{const th=u*TAU,r=lerp(R*.99,(R-1.6)*.99,v);const ox2=lerp(ox,Math.sin((s+1)*1.3)*5,v),oz2=lerp(oz,Math.cos((s+1)*.9)*5,v);
+   return[ox2+r*Math.cos(th),y+4.95+v*.45,oz2+r*Math.sin(th)];},72,1,{}));                                                                             // closes the gap up to the next tray
+  for(let k=0;k<18;k++){const th=(k+.5)/18*TAU;const r=lobe(th)+.1;if(hole&&hole(k/18,2.3))continue;civWin(d>0?'winSmD':'winSmI',[ox+r*Math.cos(th),y+2.3,oz+r*Math.sin(th)],qFacing([Math.cos(th),0,Math.sin(th)]),[2,1.7,1],null);}
+  if(hole)for(let k=0;k<36;k++){const th=(k+.5)/36*TAU;if(!hole((k+.5)/36,2.3))continue;const r=lobe(th);
+   domRoom([ox+r*.97*Math.cos(th),y+.2,oz+r*.97*Math.sin(th)],[Math.cos(th),0,Math.sin(th)],r*.97-R*.9,4.2,d,760+s);}
+  if(s%2===0)stripRing(ox,y+3.5,oz,R*.8,d,18);if(d>0)mossOnRing(ox,y+4.8,oz,R*1.1,10,1.5);
+  // planting along the parapet (whole) or gone wild over it (ruin)
+  for(let k=0;k<12;k++){const th=(k+.5)/12*TAU,r=lobe(th)*1.04,hh=h3(s,k,9978);if(hh>.5)continue;
+   kput('hedge',[ox+r*Math.cos(th),y+5.25,oz+r*Math.sin(th)],qEuler(0,-th,0),[1.4,.7+hh,3.2],new THREE.Color().setHSL(.27+hh*.08,.45,d>0?.13:.2));}}
+ // THE ROOF on the top tray: a fluted lobed lid, a slab under it, a finial; the ruin's has caved in
+ {const s=NS-1,ty=6+s*5.4,tR=24-s*1.6,tox=Math.sin(s*1.3)*5,toz=Math.cos(s*.9)*5,LH=7.4;
+  const rF=yy=>tR*1.03*Math.pow(clamp(1-Math.pow(yy/LH,2),0,1),.55);
+  const rh=holeFn(d*.5,9979,null,2);
+  aSkin.push(lathe({rFn:rF,H:LH,flutes:6,amp:.13,sharp:1.4,nu:56,nv:12,hole:(u,yy)=>(rh?rh(u,yy):false)||cave(u*TAU,yy)}).translate(tox,ty+4.95,toz));
+  if(d===0){kput('slab',[tox,ty+4.9,toz],null,[tR*1.02,.4,tR*1.02],SLC);kput('finial',[tox,ty+12.6,toz],null,[1.2,2,1.2],null);}
+  else{// the slab with the fallen sector bitten out, a dark attic under what stands, and the shell of the lid on the terrace below
+   aSkin.push(gridSurface((u,v)=>{const th=u*TAU,r=v*tR*1.02;return[tox+r*Math.cos(th),ty+4.9,toz+r*Math.sin(th)];},64,4,{hole:(u,v)=>v>.25&&civDA(u*TAU,RS)<.7-.25*v}));
+   aGuts.push(lathe({rFn:yy=>rF(yy)*.88,H:LH*.55,cut:LH*.55,jag:.8,nu:24,nv:3,seed:9979}).translate(tox,ty+4.95,toz));   // the attic's broken inner lining
+   const s6=NS-2,y6=6+s6*5.4,R6=24-s6*1.6,o6x=Math.sin(s6*1.3)*5,o6z=Math.cos(s6*.9)*5,F=new THREE.Group();
+   mesh(gridSurface((u,v)=>{const th=RS-.5+u*1.0,yy=v*LH*.8,r=rF(yy);return[r*Math.cos(th),yy,r*Math.sin(th)-tR*.8];},12,6,{uS:3,vS:2}),skin,F);
+   F.position.set(o6x+Math.cos(RS)*R6*.95,y6+5.2,o6z+Math.sin(RS)*R6*.95);F.rotation.set(.9,.25,.15);G.add(F);dropFragment(F,y6+5.0,.3);
+   for(let k=0;k<14;k++){const hh=h3(k,7,9979),th=RS+(hh-.5)*1.2,r=R6*(.95+hh*.15);
+    kput('rubble',[o6x+r*Math.cos(th),y6+5.3+hh*.6,o6z+r*Math.sin(th)],qEuler(hh*3,hh*5,hh*2),[1+hh*1.6,.6+hh,1+hh*1.2],new THREE.Color().setHSL(.05+hh*.04,.25,.32+hh*.15));}}}
+ meshMerged(aSkin,skin,G);meshMerged(aDark,MAT.dark,G);meshMerged(aGuts,MAT.guts,G);
+ if(d>0){mossOnSurface(aSkin,0,0,0,90,1.8);vinesFromLedge(aSkin,0,0,0,40,12);stainsFromLedge(aSkin,0,0,0,30,9);rubbleRing(0,0,0,26,40,30,2);}
+ kput('archOpen',[7,3.5,0],qFacing([1,0,0]),[.5,.5,1],null);
+ figures(0,0,5,30);civFlatten(G);KOFF=[0,0,0];return G;}
+// ================================================================= YUNI VARIANTS (4 of 5): the Ear, dish intact
+// The kit's satellite dish (86-dish.js) as Yuni's "reclaimed, dish intact"
+// asset showed it: the same rusted, re-occupied structure, but the reflector,
+// its twelve struts, the rim, the feed and the mount are whole and it still
+// points at the sky. In Yuni this was a flag (DISHOK) on the kit's own
+// builder; here it is a builder of its own, so the kit's dish is untouched.
+//   0 intact: the kit's intact dish.
+//   1 ruined: rust and holes in the legs and the hut, the bowl whole and
+//     aimed; nothing lies on the ground, nobody is there.
+//   3 repaired: Yuni's state proper. A later people keep it: shacks, gardens
+//     and fires on the pad and round the legs (adReclaim), a cable strung from
+//     the feed down a leg to the hut, a warm lamp on the feed and the hut lit
+//     inside. repairPass patches the fabric as for every kit type.
+// Upgrades over Yuni's: the ruined hut has a room behind its holes, and the
+// whole builder costs one draw call per material (civFlatten).
+function buildYvDish(scene,gx,gz,d){reseed(d>0?9988:9987);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const skin=SHELL(d);
+ REGISTER({name:'Satellite dish — the Ear, dish intact ('+STATE(d)+')',x:0,z:0,r:70,h:80});
+ const R=44;kput('slab',[0,1,0],null,[40,2,40],new THREE.Color(d>0?0x5a4a40:0xd8d4cc));
+ apron(G,0,0,39.6,50,d,2);
+ // pedestal: three leaning hyperboloid legs meeting at a yoke (holed when old)
+ const legs=[];
+ for(let k=0;k<3;k++){const th=k/3*TAU;const Lg=new THREE.Group();Lg.position.set(Math.cos(th)*26,2,Math.sin(th)*26);Lg.rotation.set(0,-th,0);Lg.rotateZ(Math.atan2(24,30));G.add(Lg);legs.push(Lg);
+  mesh(lathe({rFn:y=>3.2*Math.sqrt(1+1.5*Math.pow((y-19)/19,2)),H:38,nu:20,nv:8,hole:holeFn(d*.5,9987+k,null,3)}),skin,Lg);
+  if(d>0)mesh(lathe({rFn:y=>2.4*Math.sqrt(1+1.5*Math.pow((y-19)/19,2)),H:38,nu:12,nv:2}),MAT.dark,Lg);}
+ kput('tube',[0,32,0],null,[5,6,5],null);
+ const D=new THREE.Group();D.position.set(0,36,0);D.rotation.set(.55,0,0);G.add(D);useGroupXF(D);
+ const dishF=(u,v)=>{const a=u*TAU,r=v*R;return[r*Math.cos(a),r*r/(R*2.2),r*Math.sin(a)];};
+ mesh(gridSurface(dishF,72,18,{uS:12,vS:6}),skin,D);
+ mesh(gridSurface((u,v)=>{const p=dishF(u,v);return[p[0],p[1]-.6,p[2]];},72,18,{uS:12,vS:6}),MAT.dark,D);
+ for(let k=0;k<12;k++){const a=k/12*TAU;beam(d>0?'strutR':'strutW',[Math.cos(a)*4,0,Math.sin(a)*4],[Math.cos(a)*R*.95,R*R*.95*.95/(R*2.2),Math.sin(a)*R*.95],.9,1.2);}
+ const fy=R*.55;for(let k=0;k<3;k++){const a=k/3*TAU+.5;beam('tube',[Math.cos(a)*R*.7,R*R*.49/(R*2.2),Math.sin(a)*R*.7],[0,fy,0],.5,.5);}
+ kput('finial',[0,fy,0],null,[2.5,3.5,2.5],null);
+ kput(d>0?'ringR':'ringW',[0,R*R/(R*2.2)+.3,0],qEuler(Math.PI/2,0,0),[R,R,3],null);
+ // the keepers' lamp on the feed, and their cable down the feed tripod
+ if(d===3){kput('dot',[0,fy-2.2,0],null,[1.6,1.6,1.6],WARM);
+  const a=.5,p0=[Math.cos(a)*R*.7,R*R*.49/(R*2.2),Math.sin(a)*R*.7];
+  for(let i=1;i<6;i++){const t=i/6;kput('dot',[lerp(0,p0[0],t),lerp(fy,p0[1],t)-.6,lerp(0,p0[2],t)],null,[.5,.5,.5],WARM);}}
+ endGroupXF();
+ if(d>0){scatterMoss(0,0,0,12,70,50,2);trees(0,0,50,90,8);}
+ // control hut
+ const HC=[40,-10],hh=holeFn(d*.6,1110,null,2.5);
+ mesh(lathe({rFn:y=>6*Math.pow(clamp(1-Math.pow(y/6,2),0,1),.5),H:6,flutes:6,amp:.1,nu:28,nv:6,hole:hh}),skin,G,HC[0],0,HC[1]);kput('archOpen',[34.5,1.8,-10],qFacing([-1,0,0]),[.3,.35,1],null);
+ kput(d>0?'pipeR':'pipe',[20,.6,-4],qEuler(0,-.3,Math.PI/2),[.4,36,.4],null);
+ figures(0,40,3,4);
+ // --- below here draws rng() only after everything the kit's dish draws
+ if(d>0){// the hut's room: a floor, a liner behind the holes, the old consoles (lit when kept)
+  kput('slab',[HC[0],.25,HC[1]],null,[5.6,.3,5.6],CIV_FLOOR);mesh(lathe({rFn:y=>4.2*Math.pow(clamp(1-Math.pow(y/5.2,2),0,1),.5),H:5.2,nu:18,nv:3}),MAT.dark,G,HC[0],0,HC[1]);
+  for(let k=0;k<6;k++){const th=(k+.5)/6*TAU,on=d===3&&k%2===0;
+   kput('boxD',[HC[0]+Math.cos(th)*4.6,1.1,HC[1]+Math.sin(th)*4.6],qEuler(0,-th,0),[.8,1.8,1.8],null);
+   kput(on?'cell':'cellD',[HC[0]+Math.cos(th)*4.15,1.6,HC[1]+Math.sin(th)*4.15],qFacing([-Math.cos(th),0,-Math.sin(th)]),[.9,.6,1],on?CYAN:null);}}
+ if(d===3){// the keepers: a camp on the pad and round the legs; the cable from the leg foot to the hut
+  adReclaim(G,{up:70,minY:.5,ok:p=>p[1]<6&&Math.hypot(p[0],p[2])<48&&Math.hypot(p[0]-HC[0],p[2]-HC[1])>8,figs:6,spread:20});
+  kput('dot',[HC[0]-6.5,3.4,HC[1]],null,[.8,.8,.8],WARM);
+  beam('tube',[30,2.2,0],[HC[0]-5.6,2.2,HC[1]+.5],.18,.18);beam('tube',[30,2.2,0],[8.5,31.5,0],.18,.18);}
+ // The keepers keep the bowl clear: repairPass, run by the scene on the group
+ // this returns, would stand shacks on any upward face, the tilted bowl
+ // included. At decay 3 the bowl leaves G for the scene (same place), so the
+ // pass never sees it; it costs two draw calls of its own.
+ if(d===3){G.remove(D);D.position.set(gx,36,gz);scene.add(D);}
+ civFlatten(G);KOFF=[0,0,0];return G;}
+// ================================================================= YUNI VARIANTS (5 of 5): the Cloister, four towers
+// The kit's hospital (74-hospital.js) as Yuni patched it: four bed towers at
+// every decay level, not three (the kit's ruin drops the lobe facing the row
+// camera to a stump; Yuni keeps the quatrefoil), on a narrower podium
+// (150 x 104 instead of 170 x 110), the four wards pulled in toward the core
+// (radius 23.5 at 20 m out, not 26 at 24), and the entrance canopy and the
+// ambulance bays brought inside the plot instead of hanging past it.
+// The rest is the kit's current hospital, copied whole so the kit's is
+// untouched: wards and beds behind the podium ribbon, glass teeth in it
+// (civShardAt), oval windows with shards (civWin), rooms behind the holes in
+// the towers (civRooms), one draw call per material (civFlatten). The ruin
+// tears the camera-facing tower off at two thirds instead of felling it.
+function buildYvHospital4(scene,gx,gz,d){reseed(d>0?9986:9985);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);
+ REGISTER({name:'Hospital — the Cloister, four towers ('+STATE(d)+')',x:0,z:0,r:100,h:90});
+ // podium: 3 storeys, glass ribbons between concrete slabs
+ const PW=150,PD=104,SH=5;for(let f=0;f<=3;f++){kput(BOXC(d),[0,f*SH,0],null,[PW,.8,PD],null);if(f<3){if(d===0){kput('pane',[0,f*SH+2.8,PD/2],null,[PW-2,3.6,1],null);kput('pane',[0,f*SH+2.8,-PD/2],null,[PW-2,3.6,1],null);kput('pane',[PW/2,f*SH+2.8,0],qEuler(0,Math.PI/2,0),[PD-2,3.6,1],null);kput('pane',[-PW/2,f*SH+2.8,0],qEuler(0,Math.PI/2,0),[PD-2,3.6,1],null);}
+  // WARDS (round 2): the dark core is pulled back 7.5 m from the ribbon, and the
+  // band in front of it is cut into bays at the facade posts, a bed in each,
+  // so the ribbon (glass or empty frame) shows rooms instead of a grey box face
+  // 1.5 m behind it. Hash-placed: no rng draw moves.
+  kput('boxD',[0,f*SH+2.8,0],null,[PW-15,3.6,PD-15],null);
+  if(f<3){for(let x=-PW/2+5;x<PW/2;x+=10)for(const s of [-1,1]){const hh=h3(x,f,1911+s);kput(BOXC(d),[x,f*SH+2.8,s*(PD/2-4)],null,[.25,4.2,7],null);
+    if(x+5<PW/2){const tip=d>0&&hh>.72;kput(d>0?'boxR':'boxW',[x+5+(hh-.5)*3,f*SH+.4+(tip?.55:.45),s*(PD/2-6.2)],tip?qEuler(.2,hh*4,1.3):null,[2.2,tip?1:.6,1.1],null);
+     if(hh<.4)kput('boxD',[x+1,f*SH+1.4,s*(PD/2-6.9)],null,[1.2,2,.6],null);}}
+   for(let z=-PD/2+10;z<PD/2-5;z+=10)for(const sx of [-1,1])kput(BOXC(d),[sx*(PW/2-4),f*SH+2.8,z],null,[7,4.2,.25],null);}
+  // ruin: the ribbon glazing is gone but for teeth of it left in the frames
+  if(d>0)for(let x=-PW/2+10;x<PW/2;x+=10)for(const sd of [-1,1]){const hh=h3(x,f,1905+sd);if(hh<.5)civShardAt([x,f*SH+2.8,sd*PD/2],qFacing([0,0,sd]),8.6,3.6,.1,hh*2);}for(let x=-PW/2+5;x<PW/2;x+=10)for(const s of [-1,1])kput(BOXC(d),[x,f*SH+2.8,s*PD/2],null,[.8,4,.8],null);
+  for(let k=0;k<8;k++){const lit=d>0?rng()<.15:true;kput('strip',[-63+k*18,f*SH+4.4,PD/2-1],null,[11,1,1],lit?CYAN:DEAD);}}}
+ kput('archOpen',[0,2.2,PD/2],qFacing([0,0,1]),[1.2,.9,2],null);kput(BOXC(d),[0,5.5,PD/2+5],null,[30,.8,12],null);for(const s of [-1,1])kput(BOXC(d),[s*13,2.7,PD/2+9],null,[1,5.5,1],null);
+ // bed tower: four lobes cantilevered from a square core, oval windows in rows
+ const CY=3*SH,TH=42;kput(BOXC(d),[0,CY+TH/2-4,0],null,[22,TH-8,22],null);kput(BOXC(d),[0,CY+TH/2+4,0],null,[24,TH+8,8],null);kput(BOXC(d),[0,CY+TH/2+4,0],null,[8,TH+8,24],null);
+ const LR=23.5;for(let l=0;l<4;l++){const a=l*Math.PI/2+Math.PI/4;const cx=Math.cos(a)*20,cz=Math.sin(a)*20;const hole=holeFn(d*.8,1900+l,null,2);
+  // RUIN: all four wards stand (the variant's point); the one facing the row
+  // camera is torn off at two thirds, the others are only holed.
+  const lcut=d>0&&l===0?TH*.66:null;
+  mesh(lathe({rFn:y=>LR*(1-.35*Math.pow(clamp(1-y/8,0,1),2))*(1-.03*Math.pow(clamp((y-TH+6)/6,0,1),2)),H:TH,cut:lcut,jag:lcut?3:0,seed:1909,nu:48,nv:20,hole}),CONC(d),G,cx,CY+8,cz);
+  if(d>0){mesh(lathe({rFn:()=>LR*.62,H:lcut?lcut-4:TH-2,nu:24,nv:2}),MAT.dark,G,cx,CY+9,cz);   // wards behind the holes
+   civRooms({cx,cy:CY+8,cz,rFn:y=>LR*(1-.35*Math.pow(clamp(1-y/8,0,1),2)),y0:9.2,y1:TH-2,step:6.5,d,seed:1910+l,rIn:.62,dens:9,cut:lcut});}
+  else mesh(lathe({rFn:()=>LR*.9,H:TH-2,nu:24,nv:2}),MAT.dark,G,cx,CY+9,cz);if(!lcut)kput('slab',[cx,CY+8+TH,cz],null,[LR*.98,.8,LR*.98],new THREE.Color(d>0?0x5a4a40:0xd8d4cc));
+  for(let r=0;r<5;r++)for(let k=0;k<14;k++){const th=a-Math.PI*.55+k/13*Math.PI*1.1;const u=((th%TAU)+TAU)%TAU/TAU;const yy=12+r*6.5;if(hole&&hole(u,yy))continue;if(lcut&&yy>lcut-4)continue;civWin(d>0?'ovalD':'ovalI',[cx+LR*1.0*Math.cos(th),CY+8+yy,cz+LR*1.0*Math.sin(th)],qFacing([Math.cos(th),0,Math.sin(th)]),[1.5,1.9,1],null);}
+  const top=lcut?lcut-3:TH;if(!lcut)stripRing(cx,CY+8+TH-2,cz,LR*.85,d,24);if(d>0){vinesOnRing(cx,CY+8+top,cz,LR,12,16);if(!lcut)mossOnRing(cx,CY+8+TH+.4,cz,LR*.7,8,2);else rubbleRing(cx*1.9,CY+.4,cz*1.9,2,14,24,2.4);}}
+ // helipad + plant on the core
+ const RF=CY+8+TH;kput(SLABC(d),[0,RF+.9,0],null,[16,1,16],null);kput('boxD',[0,RF+1.45,0],null,[6,.12,1],null);kput('boxD',[0,RF+1.45,0],null,[1,.12,6],null);for(let k=0;k<12;k++){const a=k/12*TAU;const lit=d>0?rng()<.15:true;kput('strip',[Math.cos(a)*14,RF+1.5,Math.sin(a)*14],qEuler(0,-a,0),[3,1,1],lit?new THREE.Color(0xffb060):DEAD);}
+ for(let k=0;k<3;k++)kput(d>0?'pipeR':'pipe',[-16-k*2.5,RF+3,19],null,[.8,6,.8],null);
+ // ambulance apron
+ kput(SLABC(d),[0,.3,0],null,[130,.6,130],null);for(let k=0;k<5;k++)kput('boxD',[-34+k*17,.7,PD/2+8],null,[6,.1,8],null);
+ if(d>0){scatterMoss(0,3*SH+.4,0,0,80,60,2.5);rubbleRing(0,.6,0,60,120,50,2.5);trees(0,0,100,150,10);}
+ figures(0,90,5,10);civFlatten(G);KOFF=[0,0,0];return G;}
+
 // ---------------------------------------------------------------- scene
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);
 renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;document.body.appendChild(renderer.domElement);
@@ -29026,6 +29403,8 @@ const BUDGET={
 };
 // alternate domestic types (src/8ak-alt-*, target alt-domestic)
 Object.assign(BUDGET.type,{adWave:'small',adBridge:'small',adFuel:'small',adRadar:'small',adDish:'small',adFins:'medium',adAmph:'medium',adFac:'medium',adLab:'medium',adMega:'mega'});
+// the Yuni fork's variants (src/8am-yv-*, target yuni-variants)
+Object.assign(BUDGET.type,{yvQuad:'medium',yvComb:'medium',yvTerr:'medium',yvDish:'small',yvHosp:'medium'});
 
 // --- sample points, one pass over the scene ---------------------------------
 // An instanced item contributes its translation; a mesh contributes its world

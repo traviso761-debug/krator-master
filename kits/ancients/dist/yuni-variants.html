@@ -1,5 +1,5 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>The Blades — a flame of six slabs</title>
+<title>Ancients — the Yuni variants</title>
 <style>
 html,body{margin:0;height:100%;overflow:hidden;background:#3a2a24;font:13px/1.4 system-ui,sans-serif;color:#eee}
 canvas{display:block}
@@ -23231,25 +23231,31 @@ function buildLighthouse(scene,gx,gz,d){reseed(9790+d);KOFF=[gx,0,gz];
  {const x=4,z=58;site.lookUp=[x,landH(x,z)+1.7,z];}   // for the 'Looking up' preset: clear of the base block's lip
  LH_SITE[d]=site;
  KOFF=[0,0,0];return G;}
-// TARGET: blades — the Blades, six inhabited concrete slabs round a covered
-// plaza, curling outward at the top like a flame; intact and ruined.
+// TARGET: yuni-variants — the variants the Yuni settlement's fork of the kit
+// grew (settlements/yuni/tools/gen_ancients.py, anc_kit_tail.js), ported as
+// kit builders of their own (src/8am-yv-*.js). targets/yuni-variants/NOTES.md
+// says what each was in Yuni, what changed, and what it costs.
 //
-// Its own target because the tallest blade stands ~850 m and the ruin throws
-// its upper half ~850 m out onto the plain, and because it is a 700 k-triangle
-// megastructure on its own.
-const TITLE='The Blades — a flame of six slabs';
-const GROUND_C=0;
-const DECAYS=[0,1];
-// The plinth is ~600 m across; the curls reach ~300 m off the axis; the ruin's
-// north-west blade lies out to ~850 m NNW. s = 2 400 puts 4 800 m between the
-// two axes, so a hero camera ~1 500 m off one group does not frame the other.
-const ROWS={
- blades:{z:0,s:2400,r:1100},
-};
-// Intact at -s, ruin at +s. The ruin's plain has greened over further.
-const RUINS=[[-ROWS.blades.s,0,ROWS.blades.r*.55],
-             [ROWS.blades.s,0,ROWS.blades.r*1.0]];
-const EXTRA_BUILDERS={blades:buildBlades};
+// One row per builder, running north (+z). Along each row the four states
+// stand west to east:
+//   intact (x = -s) · repaired (x = 0) · ruined (x = +s) · worn (x = w = 2s)
+// Worn is decay 5 (69w-worn.js): the builder at decay 0, weathered by
+// wornPass. This is a dev target: the coordinator gives the types kit rows.
+const TITLE='Ancients — the Yuni variants';
+const DECAYS=[0,3,1,5];
+// [key, builder, name, z, s, r, height, radius of one site] (metres)
+const YV_ROWS=[
+ ['yvQuad', 'buildYvQuad',     'Quadrangle (the Cloisters)',        0,150, 75,40,66],
+ ['yvComb', 'buildYvCombShort','Honeycomb short block'  ,     260,100, 50,22,40],
+ ['yvTerr', 'buildYvTerrace',  'Terrace stack roofed' ,           470,100, 50,58,40],
+ ['yvDish', 'buildYvDish',     'Dish intact (the Ear)',            700,140, 70,62,62],
+ ['yvHosp', 'buildYvHospital4','Hospital four towers' ,          1050,280,140,70,80]];
+const ROWS={},EXTRA_BUILDERS={},YV_NAME={};
+for(const[k,f,nm,z,s,r,h,rs]of YV_ROWS){if(typeof self[f]!=='function')continue;
+ ROWS[k]={z,s,r,w:2*s,h,rs};EXTRA_BUILDERS[k]=self[f];YV_NAME[k]=nm;}
+const GROUND_C=500;
+// greening under every ruined site
+const RUINS=Object.values(ROWS).map(R=>[R.s,R.z,R.r*1.2]);
 // ================================================================= THE WING — a monument that is also a city
 // First of the memorial group. One figure against the sky: a coffered DRUM held
 // in a yoke on ONE pedestal, and two wings of stacked horizontal slabs lifting
@@ -29448,88 +29454,25 @@ window._api={
  setView:(cx,cy,cz,tx,ty,tz)=>setView(cx,cy,cz,tx,ty,tz),
  views:()=>Object.keys(VIEWS),
 };
-// Presets, DERIVED. 89z-rows.js loads before 90-scene.js and this file after it,
-// so both builders have run and left their dimensions in BL_SITE. BLDEF is the
-// fallback only if a builder threw.
-//
-// The camera is 50 degrees vertical, so a frame is 0.933 x the sight line tall:
-// the whole ~850 m group needs ~1 000 m of stand-off, more with the curls.
-const BLDEF={x:0,z:0,d:0,PY:24,YC0:118,YC1:125,RO:108,THF:Math.PI/2,THP:-Math.PI/2,RS:262,RP1F:296,PTY:60,PTR:172,
- blades:[{k:'north-east',phi:-1.1,top:750,face300:[80,300,-150],tip:[150,740,-300]},
-         {k:'east',phi:0,top:600,face300:[170,300,0],tip:[300,600,0]},
-         {k:'south-east',phi:.94,top:440,face300:[110,220,140],tip:[200,440,250]},
-         {k:'south-west',phi:2.23,top:520,face300:[-110,260,140],tip:[-200,520,250]},
-         {k:'west',phi:3.07,top:670,face300:[-170,300,10],tip:[-300,670,20]},
-         {k:'north-west',phi:4.16,top:850,face300:[-90,300,-150],tip:[-160,850,-300]}],
- fall:[{k:'north-west',dir:1,a:[-180,0,-300],b:[-420,0,-700]},{k:'south-west',dir:-1,a:[-80,24,110],b:[80,24,-100]}]};
-const BLA=Object.assign({},BLDEF,{x:-2400},BL_SITE[0]||{});
-const BLB=Object.assign({},BLDEF,{x:2400},BL_SITE[1]||{});
-const BLW=(S,x,y,z)=>[S.x+x,y,S.z+z];
-const BLP=(S,k)=>S.blades.find(b=>b.k===k)||S.blades[0];
-// a point on a radial axis th, rho out, at height y
-const BLR=(S,th,rho,y)=>BLW(S,Math.cos(th)*rho,y,Math.sin(th)*rho);
-// THE HERO: from the south-south-west, where the sun is, 1 500 m off and 330 m
-// up: the whole flame, the tall north-west blade curling away at the back, and
-// through the south entrance the canopy's lintel and the plaza under it.
-const RO_BL=S=>S.RO;
-const BLHERO=S=>BLW(S,-640,330,1380).concat(BLW(S,10,390,0));
-const VIEWS={
- 'The Blades':               BLHERO(BLA),
- // THE SILHOUETTE: low and far, from the south-south-east, 2 600 m off, the six
- // blades against the sky as one figure.
- 'The silhouette':           BLW(BLA,1350,70,2250).concat(BLW(BLA,0,400,0)),
- // INSIDE THE PLAZA, LOOKING UP: standing south of the pool, looking up and
- // north through the oculus between the blades to the tallest curling away.
- // THE SKY GARDEN on the canopy roof: from over the oculus, 70 m above the
- // lawn, looking out across the ring to the groves and the blades rising from it.
- 'The sky garden':           BLR(BLA,Math.PI*.15,40,BLA.YC1+70).concat(BLR(BLA,Math.PI*.15+.35,150,BLA.YC1+8)),
- 'The sky garden at night':  BLR(BLA,Math.PI*.15,40,BLA.YC1+70).concat(BLR(BLA,Math.PI*.15+.35,150,BLA.YC1+8)).concat([1]),
- // on the lawn itself, eye height, along a radial path toward a blade
- // Paths run on multiples of 30 degrees; this one is 180. Standing ON it keeps
- // the lens out of the groves, and the hedges either side frame the view.
- 'In the garden':            BLR(BLA,Math.PI,RO_BL(BLA)+24,BLA.YC1+1.7).concat(BLR(BLA,Math.PI,200,BLA.YC1+24)),
- 'Up between the blades':    BLW(BLA,-18,BLA.PY+1.7,72).concat(BLW(BLA,-30,720,-170)),
- // THE STAIR AND THE PORTAL, at a person's height at the foot of the flight:
- // 120 steps narrowing to the slot between the two tallest blades, the lintel.
- 'The stair and the portal': (function(S){const a=BLR(S,S.THP,34,S.PY+1.7),t=BLR(S,S.THP,200,S.PTY+26);
-                               a[0]+=7;return a.concat(t);})(BLA),
- // THE SOUTH STAIR from the avenue: the widest gap, the canopy lintel across it
- // 118 m up, the plaza and the portal stair beyond.
- 'The south stair':          (function(S){return BLR(S,S.THF,S.RS+190,1.8).concat(BLR(S,S.THF,S.RS-120,70));})(BLA),
- // A CONCAVE FACE, close: the north-east blade's inner face from inside the
- // ring, galleries every six storeys, fins, the window wall between.
- 'A concave face':           (function(S){const f=BLP(S,'north-east').face300;
-                               return BLW(S,f[0]*.05-70,f[1]-30,f[2]*.05+80).concat(BLW(S,f[0],f[1],f[2]));})(BLA),
- // THE CROWNS: high off the south-west, level with the curls.
- 'The crowns':               (function(S){const T=['north-west','west','north-east'].map(k=>BLP(S,k).tip);
-                               const cy=(T[0][1]+T[1][1]+T[2][1])/3,cx=(T[0][0]+T[1][0]+T[2][0])/3,cz=(T[0][2]+T[1][2]+T[2][2])/3;
-                               return BLW(S,-560,cy+70,460).concat(BLW(S,cx,cy-40,cz));})(BLA),
- // FROM ABOVE: nearly a plan — the ring, the gaps, the canopy and oculus.
- 'From above':               BLW(BLA,0,1900,260).concat(BLW(BLA,0,0,0)),
- // NIGHT: the hero after dark.
- 'Night':                    BLHERO(BLA).concat([1]),
- // THE PLAZA AT NIGHT: under the canopy, the lit ring beams, the stair lit up
- // to the portal.
- 'The plaza at night':       BLW(BLA,50,BLA.PY+30,120).concat(BLR(BLA,BLA.THP,190,70),[1]),
- 'Ruined':                   BLHERO(BLB),
- // THE FALLEN BLADE: the north-west blade's upper 490 m lying on the plain in
- // three pieces, the stump behind.
- 'The fallen blade':         (function(S){const f=S.fall.find(q=>q.dir>0)||S.fall[0];
-                               const mx=(f.a[0]+f.b[0])/2,mz=(f.a[2]+f.b[2])/2,dx=f.b[0]-f.a[0],dz=f.b[2]-f.a[2],L=Math.hypot(dx,dz);
-                               return BLW(S,mx-dz/L*620+dx/L*120,260,mz+dx/L*620+dz/L*120).concat(BLW(S,mx-dx/L*60,80,mz-dz/L*60));})(BLB),
- // THE BLADE ACROSS THE PLAZA: from 260 m up inside the ring, looking down on
- // the south-west blade lying where it came through the canopy.
- 'Across the plaza':         (function(S){const f=S.fall.find(q=>q.dir<0)||S.fall[0];
-                               return BLW(S,40,260,120).concat(BLW(S,(f.a[0]+f.b[0])/2,S.PY+16,(f.a[2]+f.b[2])/2));})(BLB),
- // THE CHOKED PLAZA from a person standing on a rubble heap in its south-east
- // quarter: the fallen blade, the talus, the canopy's slabs, the dead walls.
- 'The wild garden':          BLR(BLB,Math.PI*.15,40,BLB.YC1+70).concat(BLR(BLB,Math.PI*.15+.35,150,BLB.YC1+8)),
- 'The choked plaza':         BLW(BLB,70,BLB.PY+9,105).concat(BLW(BLB,-80,62,-60)),
- // THE BROKEN CROWNS: high off the south-east, the stumps and the lost curls.
- 'The broken crowns':        BLW(BLB,640,900,700).concat(BLW(BLB,-20,520,-40)),
- // THE RUIN FROM ABOVE.
- 'The ruin from above':      BLW(BLB,0,2000,300).concat(BLW(BLB,-80,0,-120)),
-};
+// Presets, five per type, written off ROWS so they follow any re-spacing:
+//   <name> — row     the four states west to east, by day
+//   <name> — intact  close on the intact one, by day
+//   <name> — ruined  close on the ruin, by day
+//   <name> — worn    close on the worn one, by day
+//   <name> — night   the repaired one at night, when its lights show
+const VIEWS={};
+VIEWS['Yuni variants']=[-900,820,1650,250,0,520];
+for(const k in ROWS){const R=ROWS[k],nm=YV_NAME[k],h=R.h,rs=R.rs;
+ const W=R.w+R.s+2*rs,cx=(R.w-R.s)/2;
+ // the row shot stands south of the row but short of the next one; when the
+ // gap is too small it climbs instead, keeping the same distance to the row
+ let gap=1e9;for(const j in ROWS)if(ROWS[j].z>R.z)gap=Math.min(gap,ROWS[j].z-ROWS[j].r-R.z);
+ const far=W*.72,dz=Math.min(far*.85,gap*.92),dy=Math.max(h*.6+W*.12,Math.sqrt(Math.max(0,far*far-dz*dz)));
+ VIEWS[nm+' — row']=[cx,dy,R.z+dz,cx,h*.3,R.z];
+ VIEWS[nm+' — intact']=[-R.s+rs*1.3,h*.55+rs*.45,R.z+rs*1.9,-R.s,h*.35,R.z];
+ VIEWS[nm+' — ruined']=[R.s+rs*1.3,h*.55+rs*.45,R.z+rs*1.9,R.s,h*.3,R.z];
+ VIEWS[nm+' — worn']=[R.w+rs*1.3,h*.55+rs*.45,R.z+rs*1.9,R.w,h*.35,R.z];
+ VIEWS[nm+' — night']=[-rs*1.3,h*.55+rs*.45,R.z+rs*1.9,0,h*.3,R.z,1];}
 // ---------------------------------------------------------------- camera control
 // ---------------------------------------------------------------- DAY / NIGHT
 // There was no scene-state toggle in this kit before The Project needed one, so

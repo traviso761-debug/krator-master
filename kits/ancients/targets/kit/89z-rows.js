@@ -69,11 +69,18 @@ const KIT_ALTS=[
  ['altHosp', 'buildAltHospital',     200, 140,'Linked Blocks hospital'],
  ['altCampus','buildAltCampus',      300, 220,'Garden Bowl campus'],
  ['altGov',  'buildAltGovernment',   220, 150,'The Citadel'],
+ // The Yuni fork's variants (src/8am-yv-*, built in targets/yuni-variants):
+ // decays 0, 1 and 3 only (their decay 2 is not defined), so no `t` site.
+ ['yvQuad',  'buildYvQuad',          150,  75,'Quadrangle (the Cloisters)',[0,1,3]],
+ ['yvComb',  'buildYvCombShort',     100,  50,'Honeycomb short block',[0,1,3]],
+ ['yvTerr',  'buildYvTerrace',       100,  50,'Terrace stack roofed',[0,1,3]],
+ ['yvDish',  'buildYvDish',          140,  70,'Dish intact (the Ear)',[0,1,3]],
+ ['yvHosp',  'buildYvHospital4',     280, 140,'Hospital four towers',[0,1,3]],
 ];
 const KIT_ALT_NAME={},KIT_ALT_BUILDERS={};
 {let z=ROWS.lighthouse.z,rp=ROWS.lighthouse.r;
- for(const[k,fn,s,r,name]of KIT_ALTS){if(typeof self[fn]!=='function')continue;
-  z+=rp+r+300;rp=r;ROWS[k]={z,s,r,t:2*s};KIT_ALT_BUILDERS[k]=self[fn];KIT_ALT_NAME[k]=name;}}
+ for(const[k,fn,s,r,name,ds]of KIT_ALTS){if(typeof self[fn]!=='function')continue;
+  z+=rp+r+300;rp=r;ROWS[k]=ds?{z,s,r,ds}:{z,s,r,t:2*s};KIT_ALT_BUILDERS[k]=self[fn];KIT_ALT_NAME[k]=name;}}
 const KIT_Z1=Math.max(...Object.values(ROWS).map(r=>r.z))+1500;
 const GROUND_C=(KIT_Z1-9000)/2, GROUND_S=Math.max(40000,KIT_Z1+9000+4000);
 const RUINS=Object.values(ROWS).flatMap(r=>(r.t?[[r.s,r.z,r.r],[r.t,r.z,r.r*1.4]]:[[r.s,r.z,r.r]])
