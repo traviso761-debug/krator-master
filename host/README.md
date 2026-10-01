@@ -4,6 +4,9 @@ The LAN site server for Krator. It serves the Krator Worlds gallery and, next to
 pages (its Iziz fork, the OpenStreetMap cities, the fan works, the Tongue), pulled from the copy of the
 Menagerie embedded at `host/WorldMenagerie/`. Nothing needs the internet: three.js is served locally.
 
+**To set it up and run it (Windows, Linux or macOS), read [HOSTING.md](HOSTING.md).** This file is the maintainers'
+reference.
+
 ## The rule
 
 The dependency runs one way: `host/` reads Krator's **built** pages and the Menagerie's files. Nothing a world is
@@ -32,7 +35,10 @@ model, say) is vendored into a build like any other shared fragment, converted t
 | `krator.toml` | yes | the hand-written config: server settings, Krator's routes, and `[sync]` (where the Menagerie is, what to drop) |
 | `sync.py` | yes | copies what the Menagerie's `site.toml` serves into `menagerie/`, then writes `site.toml` |
 | `server.py` | yes | **vendored** from the Menagerie, byte for byte. `./sitectl sync --check` reports drift. Fix it upstream, then copy it again |
-| `sitectl` | yes | adapted from the Menagerie's: the systemd user service `krator` |
+| `sitectl` | yes | adapted from the Menagerie's: the systemd user service `krator` (Linux) |
+| `sitectl.py` | yes | the same commands without systemd, for any system: `setup`, `serve`, `update`, … |
+| `sitectl.bat` | yes | Windows: finds Python 3.11+ and runs `sitectl.py`. Kept CRLF by `.gitattributes` |
+| `HOSTING.md` | yes | the setup guide for every system |
 | `WorldMenagerie/` | yes | the World Menagerie itself, with its history: a git subtree (see below). Its Voth is in the source but never served |
 | `menagerie.lock` | yes | the Menagerie tree last synced (its git tree hash), and whether it had uncommitted changes |
 | `site.toml` | no | generated: `krator.toml` followed by the Menagerie's routes and mounts |
