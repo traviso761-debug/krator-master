@@ -12,6 +12,7 @@ const VIEWS={
  'Mock — the branch junction':[_mA.x-16,34.5,_mA.z-78,_mA.x-1,36.6,_mA.z-67],
  'Mock — the way-in pod from above':[154,52,-57,145,40,-39],
  'Mock — the landing from above':[158,50,-44,141,36.6,-41],
+ 'Mock — the fork from above':[138,58,-50,138,37,-47],
  'Mock — the stair to the water':[_mA.x-70,7,_mA.z+50,_mA.x-20,5,_mA.z+18],
  'Mock — poor house':_front(-200,-10,20),
  'Mock — middle house':_front(-152,-8,24,3.2),

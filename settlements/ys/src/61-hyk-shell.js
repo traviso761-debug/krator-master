@@ -112,6 +112,7 @@ function hykDisc(cx,y,cz,R,o){o=o||{};const nu=o.nu||32,lob=o.lobes;
 // a ribbon deck along a polyline (a bridge, a walkway): width w, normal up
 function hykDeck(pts,w,o){o=o||{};const P=pts.map(p=>new THREE.Vector3(p[0],p[1],p[2]));const n=P.length;
  const fn=(u,v)=>{const i=Math.min(n-1,Math.round(u*(n-1)));const a=P[Math.max(0,i-1)],b=P[Math.min(n-1,i+1)];const t=new THREE.Vector3().subVectors(b,a);t.y=0;t.normalize();const r=new THREE.Vector3(-t.z,0,t.x);
-  const s=(v-.5)*w;const C=P[i];return [C.x+r.x*s,C.y+(o.camber||0)*(1-4*(v-.5)*(v-.5)),C.z+r.z*s];};
+  const s=(v-.5)*w;const C=P[i];const sh=(i===0&&o.shear0)?o.shear0(v):0;   // a mitred start: the first section's corners slide along the path
+  return [C.x+r.x*s+t.x*sh,C.y+(o.camber||0)*(1-4*(v-.5)*(v-.5)),C.z+r.z*s+t.z*sh];};
  let L=0;for(let i=1;i<n;i++)L+=P[i].distanceTo(P[i-1]);
  return hykSurf(fn,n-1,o.nv||2,{col:o.col,uS:L/4,vS:w/4,flip:o.flip!==undefined?o.flip:true});}

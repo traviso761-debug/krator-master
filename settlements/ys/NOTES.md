@@ -100,3 +100,8 @@ normal and goes straight in, so the flare is centred on the rib; a box is landed
 corner (the nearest point inside the face rectangle shrunk by the flare's radius, the top face preferred from
 above); the fork is a crotch tube from the parent's spine to the branch's spine through a knuckle, no ball.
 Travis's two viewpoints are presets now ("the way-in pod from above", "the landing from above").
+Fourth note (caps a little high, one curb clipping the parent and the other short, the branch clipping the
+landing): the flare is set .3 m into the face; a branch's start is mitred, its corners slid along its own
+direction onto the parent's edge line, one cut back and one extended by the same amount (Travis's "rotate the
+clipping piece and staple it to the other side"), and the parent's rail opens exactly between those corners;
+the branch leaves further along the span and the perch sits on the head's outer half, clear of the landing.
