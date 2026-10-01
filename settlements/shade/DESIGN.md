@@ -18,6 +18,8 @@ reconciled with the repo's rules. Where this departs from Gemini, the reason is 
   grade, from the floor to the plateau and the gatehouse. It is the only way up.
 
 Departures from the drafts:
+- The Cappadocian fairy chimneys were dropped (they read as cartoon cones in this basin): the
+  cliff dwellings take their share, and the basin's own walls were made sheer for them.
 - The switchback is on the **north** slope, not the east wall: the east side is the
   canyon mouth, and a 15% trail rising 50 m needs about 330 m of length and a slope
   ~64 m deep to fold into. The east wall has neither.
@@ -34,7 +36,7 @@ A hybrid, from the design page:
 | Family | Where | Share |
 |---|---|---|
 | **Petra-style carved facades**: classical columns and deep rooms cut into the sheer red sandstone | the south face (dwellings), the west lip beside the falls (the Shrine of the Deep Aquifer) | ~25% |
-| **Cappadocian fairy chimneys**: natural and carved tufa cones hollowed into warrens | along the switchback, the gatehouse on the plateau, the canyon watch | ~25% |
+| **Cliff dwellings** (Mesa Verde): rubble-stone and plaster rooms built against the sheer walls, stepping down to the floor, round and square towers | all round the rim (west, north, south and east walls); towers for the gatehouse and the canyon watch | ~25% |
 | **Pueblo blocks**: stepped adobe, flat roofs, projecting viga beams, ladder access | the pueblo quarter and round the Khan | ~35% |
 | **Haircloth tents** (Bedouin black tents) | the tent grounds | ~15% |
 

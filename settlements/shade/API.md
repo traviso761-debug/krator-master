@@ -56,10 +56,12 @@ A wall-backed piece has its back plane at z = 0 (the plan sets it 1 m inside the
 | `buildCaravanserai({w,d,seed})` | khan | walls, towers, a pishtaq gate at +z, arcades, rooms, a well; `userData.ring`, `gate` |
 | `buildBlackTent({w,d,poles,seed})` | tent | goat-hair roof sagging between pole peaks, ropes, a rug and a hearth |
 | `buildMarketStall({w,d,dye,seed})` | stall | four poles, a striped awning, a counter and its goods |
-| `buildFairyChimney({height,radius,twin,seed})` | fairy | an eroded tufa cone under a basalt cap, door, windows, a stair round its foot |
+| `buildCliffPueblo({length,rows,storeys,cell,tower,seed})` | cliffpueblo | rooms against a cliff (back at z = 0), stepping down to the floor; rubble stone and plaster; a tower in front |
+| `buildPuebloTower({storeys,round,radius,seed})` | tower | a round or square watch tower |
 
-Materials (`NOMAD.MAT`): `stone` (banded by world height with the cliff's strata),
-`adobe`, `tufa`, `cloth`, `canvas`, `wood`, `dark` (openings). Tints are sRGB hex,
+Materials (`NOMAD.MAT`): `stone` (the host's strata: `NOMAD.useStrata(BIO.strata())`, so a
+carving shows the bed lines of its face; level bands without one), `adobe`, `cloth`,
+`canvas`, `wood`, `dark` (openings). Tints are sRGB hex,
 converted to linear by the collector. Textures tile in metres.
 
 `SHADE_PLAN.plans` (44): `{id,family,placeId,x,z,yaw,lift,group?,access?,params}`;

@@ -8,6 +8,9 @@ Read before changing anything here. `build.py` prints the open count.
       built before the walkable grid (80), one mesh per material. Checked: inside their
       places, no overlap in plan and height, rock behind every carved front, every
       family and every plan placed, every entrance reachable (the upper row by its stair).
+- [ ] OVERHANGS. The ground is a heightfield (one height per x,z), so there are no alcoves,
+      caves or undercuts: the cliff dwellings stand against the face rather than in an
+      alcove under it. See NOTES.md for what it would take.
 - [ ] The carved fronts stand proud of a heightfield cliff: the niche round the hall and
       the shrine is geometry (wedge cheeks and a hood), not a recess in the rock, because
       the ground mesh has no overhangs. Interiors are dark planes, not rooms.

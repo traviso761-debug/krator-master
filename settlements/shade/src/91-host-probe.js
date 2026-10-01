@@ -97,7 +97,7 @@ const CHK={
    const sgn=((B.center[0]-a[0])*nx+(B.center[1]-a[1])*nz)>0?-1:1;
    for(let i=0;i<=8;i++){const t=i/8,x=mix(a[0],b[0],t)+nx*sgn*.6,z=mix(a[1],b[1],t)+nz*sgn*.6,margin=terrainH(x,z)-(B.baseY+B.lift+B.height*.9);if(margin<worst){worst=margin;at=B.id;}}}
   return{ok:walls.length>0&&worst>=0,detail:walls.length+' carved fronts; least rock above 90% of a front\'s height, 0.6 m behind it: '+worst.toFixed(1)+' m ('+at+')'};},
- buildingFamilies(B){const need=['treasury','tomb','stair','ledge','pueblo','khan','tent','stall','fairy'],missing=need.filter(k=>!B.byFamily||!B.byFamily[k]);
+ buildingFamilies(B){const need=['treasury','tomb','stair','ledge','pueblo','cliffpueblo','khan','tent','stall','tower'],missing=need.filter(k=>!B.byFamily||!B.byFamily[k]);
   return{ok:!!B.count&&!missing.length,detail:missing.length?'missing family: '+missing.join(', '):need.map(k=>k+' '+B.byFamily[k]).join(', ')};},
  buildingDoorsReachable(list){const N=LIFE.NAV,start=polyCentre(PLACES.find(p=>p.id==='khan').poly),seen=LIFE.reach(start[0],start[1]),bad=[];
   for(const B of list.filter(b=>b.family!=='ledge')){const d=B.door||[NaN,NaN],i=Math.round((d[0]-N.x0)/N.c),j=Math.round((d[1]-N.z0)/N.c),k=j*N.nx+i;
@@ -179,7 +179,7 @@ function shadeNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,det
  {const A=window._buildings.records[0],B=window._buildings.records[1];add('two buildings on the same footprint',CHK.buildingOverlap([A,Object.assign({},B,{footprint:A.footprint})]));}
  {const B=window._buildings.records.find(b=>b.backLine&&b.family==='treasury'),c=B.center,m=(p)=>[p[0]+(c[0]-B.backLine[0][0])*.0+(B.face?B.face[0]:0)*4,p[1]+(B.face?B.face[1]:0)*4];
   add('a carved front standing 4 m out from the cliff',CHK.wallContact([Object.assign({},B,{backLine:B.backLine.map(m),center:[c[0]+(B.face?B.face[0]:0)*4,c[1]+(B.face?B.face[1]:0)*4]})]));}
- {const B=Object.assign({},window._buildings,{byFamily:Object.assign({},window._buildings.byFamily,{fairy:0})});add('a building family omitted',CHK.buildingFamilies(B));}
+ {const B=Object.assign({},window._buildings,{byFamily:Object.assign({},window._buildings.byFamily,{tower:0})});add('a building family omitted',CHK.buildingFamilies(B));}
  {const B=window._buildings.records[0];add('a doorway beyond the walkable map',CHK.buildingDoorsReachable([Object.assign({},B,{door:[1000,1000]})]));}
  return R;}
 window._api={BUDGET,REG,

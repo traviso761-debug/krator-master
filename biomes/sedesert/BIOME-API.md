@@ -29,6 +29,11 @@ biome needed (an abyss or a hyperjungle fragment runs unchanged on it):
   carries its own (`SPECIES[i].depth`), the default keeps everything .3 m above it.
 - The default `mask` is depth-based (nothing roots under the local water).
 - `BIO.col = {shade, bright, vary, texMean, tint}`: the sRGB-aware colour maths.
+- `BIO.strata(opt)` (35-core-strata): the bedded-rock shader every host and kit shares. A
+  seeded column of beds (sandstone, shale, mudstone, bleached bands) of irregular thickness
+  that dip and warp, with laminae, cross-bedding and varnish streaks. `S.inject(shader)` in
+  an `onBeforeCompile`, then `strataColor(vSWP, vSWN)` in the fragment. The ideal host's
+  ground uses it; a settlement can hand the same object to its building kit.
 - `BIO.dynamic(name, geo, mat, count, {label})` and `BIO.tick(fn)`: the moving things
   (fauna) are InstancedMeshes the biome updates itself every frame.
 - The merged buckets and the instance stores are growable Float32 stores (`BIO.Store`)
@@ -131,6 +136,7 @@ This kit is `tropic`, `abyssal:false` throughout. A plant is never part of a bui
 
 ```
 10-core-head.js     BIO object, PRNG, noise, host binding (+ origin list, fields, waterH/depth), stats
+35-core-strata.js   the bedded-rock shader (BIO.strata), shared by the host's ground and any kit
 20-core-kit.js      instanced items (def/put), merged vertex-coloured buckets
 30-core-foliage.js  leaf cards, alpha textures, Lambert foliage hook, wind
 40-core-place.js    stands, jittered grids (+ box, noMask), keep-clear, face sampling

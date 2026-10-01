@@ -46,9 +46,10 @@ function kSouth(x,z){return smooth(-72,-60,x)*(1-smooth(0,12,x))*smooth(40,60,z)
 function kLip(x,z){return smooth(-60,-80,x)*smooth(-52,-40,z)*(1-smooth(20,32,z));}             // the waterfall lip and the shrine
 function kSwitch(x,z){return smooth(16,30,x)*(1-smooth(98,110,x))*smooth(-40,-60,z);}           // the switchback slope
 // the width of the wall face (floor to plateau, horizontally)
-function wallW(x,z){let W=12;W=mix(W,2,kSouth(x,z));W=mix(W,1.6,kLip(x,z));W=mix(W,64,kSwitch(x,z));return W;}
-function basinD(x,z){const straight=Math.max(kSouth(x,z),kLip(x,z),kSwitch(x,z));
- return smin(sdBox(x,z),sdCanyon(x,z),10)+(fbm(x*.03+7,z*.03-3,41,2)-.5)*7*(1-straight);}   // the ordinary walls wander; the special faces stay straight
+function kRow(x,z){return(1-kSwitch(x,z))*(1-smooth(126,134,x));}                              // the basin's own walls: the cliff dwellings stand against them
+function wallW(x,z){let W=12;W=mix(W,2.5,kRow(x,z));W=mix(W,2,kSouth(x,z));W=mix(W,1.6,kLip(x,z));W=mix(W,64,kSwitch(x,z));return W;}
+function basinD(x,z){const straight=Math.max(kSouth(x,z),kLip(x,z),kSwitch(x,z)),row=kRow(x,z)*(1-straight);
+ return smin(sdBox(x,z),sdCanyon(x,z),10)+(fbm(x*.03+7,z*.03-3,41,2)-.5)*7*(1-straight)*(1-row*.86);}   // the faces the dwellings stand against wander no more than half a metre
 // ---------------------------------------------------------------- the water
 // the lower stream's surface descends from the pool to the canyon; the floor
 // keeps at least 1.1 m above it so its banks always hide the ribbon's edges
@@ -155,11 +156,21 @@ const PLACES=[
   activities:['PATROL'],capacity:18,tags:{culture:'eastern-nomad',types:['infrastructure']}},
  {id:'switchback_gate',name:'The switchback gatehouse',kind:'plateau',poly:[[26,-176],[46,-176],[46,-160],[26,-160]],
   activities:['PATROL'],capacity:16,tags:{culture:'eastern-nomad',types:['infrastructure']}},
- {id:'warrens',name:'The chimney warrens',kind:'ground',poly:[[-28,-74],[24,-74],[24,-56],[-28,-56]],
-  activities:['SLEEP','CRAFT','REST'],capacity:70,tags:{culture:'eastern-nomad',types:['single-family dwelling']}},
  {id:'grazing',name:'The plateau grazing',kind:'plateau',poly:[[-40,-262],[80,-262],[80,-192],[-40,-192]],
   activities:['HERD'],capacity:120,tags:{types:['farm']},grows:true},
 ];
+// the cliff dwellings' runs: the foot of each sheer wall the pueblos stand against.
+// Each is a 'wall' place, reserved from 3 m inside the face to `out` metres onto the floor;
+// its facade line is the foot, its face the outward normal.
+const CLIFF_RUNS=[
+ {id:'cliff-w',name:'The west cliff dwellings',a:[BASIN.x0,30],b:[BASIN.x0,56],n:[1,0],out:16,rows:3,tower:true,capacity:90},
+ {id:'cliff-n',name:'The north cliff dwellings',a:[-71,BASIN.z0],b:[10,BASIN.z0],n:[0,1],out:16,rows:3,tower:true,capacity:220},
+ {id:'cliff-s',name:'The south cliff dwellings',a:[95,BASIN.z1],b:[4,BASIN.z1],n:[0,-1],out:13,rows:2,tower:true,capacity:240},
+ {id:'cliff-es',name:'The east cliff dwellings, south',a:[BASIN.x1,56],b:[BASIN.x1,34],n:[-1,0],out:10,rows:2,tower:false,capacity:80},
+ {id:'cliff-en',name:'The east cliff dwellings, north',a:[BASIN.x1,-34],b:[BASIN.x1,-56],n:[-1,0],out:10,rows:2,tower:false,capacity:80}];
+for(const C of CLIFF_RUNS){const n=C.n,a=C.a,b=C.b,P=(p,k)=>[p[0]+n[0]*k,p[1]+n[1]*k];
+ PLACES.push({id:C.id,name:C.name,kind:'wall',poly:[P(a,-3),P(b,-3),P(b,C.out),P(a,C.out)],facade:{a,b,face:n.slice()},
+  activities:['SLEEP','EAT','CRAFT','SOCIALIZE','REST','PLAY'],capacity:C.capacity,tags:{culture:'eastern-nomad',types:['multi-family dwelling']}});}
 // the edges of the settlement a traveller arrives from or leaves by (the life layer's ports)
 const PORTS={canyon_east:{x:440,z:zC(440),name:'The canyon, east'},plateau_north:{x:40,z:-270,name:'The plateau, north'}};
 function polyHas(poly,x,z){let a=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const xi=poly[i][0],zi=poly[i][1],xj=poly[j][0],zj=poly[j][1];
@@ -219,12 +230,17 @@ const SHADE_PLAN=(function(){
  {const pl=place('market').poly,taken=[];let n=0;
   for(const [zr,yaw] of [[-37,0],[-23,N]])for(let x=-31;x<=2;x+=4.7){const w=rr(3.2,4),d=rr(2.4,3),xx=x+rr(-.4,.4),zz=zr+rr(-.5,.5),yy=yaw+rr(-.08,.08),pts=rectAt(xx,zz,w+.4,d+.8,yy);
    if(!inside(pl,pts)||!clearOf(pts,taken,.5)){rejected.stall=(rejected.stall||0)+1;continue;}taken.push(pts);n++;add({id:'stall-'+n,family:'stall',placeId:'market',x:xx,z:zz,yaw:yy,params:{w,d}});}}
- // ---- the chimney warrens along the north wall, and the two watch chimneys
- {const pl=place('warrens').poly,taken=[];let tries=0,n=0;
-  while(n<8&&tries<500){tries++;const R0=rr(2.1,3.3),x=rr(-26,22),z=rr(-72,-58),r=R0*1.32,pts=[];for(let k=0;k<12;k++){const a=k/12*TAU;pts.push([x+Math.sin(a)*r,z+Math.cos(a)*r]);}
-   if(!inside(pl,pts)||!clearOf(pts,taken,2.2)){rejected.chimney=(rejected.chimney||0)+1;continue;}taken.push(pts);n++;
-   add({id:'chimney-'+n,family:'fairy',placeId:'warrens',x,z,yaw:rr(-.6,.6),params:{height:R0*3.6+rr(-1,2),radius:R0}});}
-  if(n<8)rejected.chimney_short=8-n;}
- add({id:'gatehouse',family:'fairy',placeId:'switchback_gate',x:36,z:-168,yaw:0,params:{height:13,radius:3.2,twin:true}});
- add({id:'canyon-watch',family:'fairy',placeId:'canyon_watch',x:120,z:-11.5,yaw:0,params:{height:9,radius:2}});
+ // ---- the cliff dwellings: along each run, blocks of 9-16 m with gaps, each turned to the
+ //      foot as it actually runs (found by bisection on basinD) and set 0.6 m into the rock
+ const footAt=(p,n)=>{let lo=-6,hi=6;for(let k=0;k<28;k++){const m=(lo+hi)/2;if(basinD(p[0]+n[0]*m,p[1]+n[1]*m)>0)lo=m;else hi=m;}return[p[0]+n[0]*hi,p[1]+n[1]*hi];};
+ for(const C of CLIFF_RUNS){const a=C.a,b=C.b,L=Math.hypot(b[0]-a[0],b[1]-a[1]),t=[(b[0]-a[0])/L,(b[1]-a[1])/L];let s0=rr(.5,2.5),k=0;
+  while(s0<L-8){const len=Math.min(rr(9,16),L-s0-.5);if(len<8)break;
+   const A=footAt([a[0]+t[0]*s0,a[1]+t[1]*s0],C.n),B=footAt([a[0]+t[0]*(s0+len),a[1]+t[1]*(s0+len)],C.n);
+   const ex=B[0]-A[0],ez=B[1]-A[1],el=Math.hypot(ex,ez);let nx=-ez/el,nz=ex/el;if(nx*C.n[0]+nz*C.n[1]<0){nx=-nx;nz=-nz;}
+   const back=.6+.5*Math.abs(((A[0]-B[0])*C.n[0]+(A[1]-B[1])*C.n[1]));
+   const rows=C.rows===3&&R()<.65?3:2,storeys=rows===3?(R()<.5?4:3):3;
+   add({id:C.id+'-'+(++k),family:'cliffpueblo',placeId:C.id,x:(A[0]+B[0])/2-nx*back,z:(A[1]+B[1])/2-nz*back,yaw:Math.atan2(nx,nz),params:{length:el,rows,storeys,cell:3.6,tower:C.tower}});
+   s0+=len+rr(1.5,4);}}
+ add({id:'gatehouse',family:'tower',placeId:'switchback_gate',x:36,z:-168,yaw:0,params:{storeys:5,round:true,radius:3.2}});
+ add({id:'canyon-watch',family:'tower',placeId:'canyon_watch',x:120,z:-11.5,yaw:0,params:{storeys:3,round:false,radius:1.9}});
  return{plans:P,rejected};})();

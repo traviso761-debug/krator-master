@@ -1,9 +1,7 @@
-// ================================================================= EASTERN NOMAD KIT — the camp: black tents, market stalls, fairy chimneys
+// ================================================================= EASTERN NOMAD KIT — the camp: black tents, market stalls
 //   buildBlackTent({w,d,poles,seed})       a beit al-sha'ar: goat-hair roof sagging between pole peaks,
 //                                          a back wall to the ground, the front propped open, guy ropes, a rug
 //   buildMarketStall({w,d,dye,seed})       four poles, a striped awning, a counter and its goods
-//   buildFairyChimney({height,radius,twin,seed})  an eroded tufa cone under a dark cap stone,
-//                                          hollowed: a door, windows, a stair cut round its foot
 (function(){
 const K0=NOMAD.kit,DYE=NOMAD.DYE,TAU=NOMAD.TAU,clamp=NOMAD.clamp;
 function buildBlackTent({w=9,d=5,poles=3,seed=1}={}){
@@ -43,24 +41,5 @@ function buildMarketStall({w=4,d=3,dye=null,seed=1}={}){
  K.color(dc,.9);K.block('canvas',hx*.5,0,-hz+.3,.9,.18,.5);
  return K.finish({kind:'building',name:'Market stall',culture:'eastern-nomad',types:['market/shop'],
   footprint:NOMAD.rect(W+.4,D+.8,false),height:hf+.1,family:'stall',seed:seed>>>0});}
-// Cappadocian tufa: buff to pale rose, never white
-const TUFA_WASH=[0xd2b08a,0xc9a27e,0xd8b994,0xc79c84,0xcdac8c];
-function buildFairyChimney({height=10,radius=3,twin=false,seed=1}={}){
- const K=K0(seed),r=K.rnd,H=Math.max(5,height),R=Math.max(1.6,radius);
- const cone=(x,z,h,rad)=>{const prof=[];const n=9;for(let i=0;i<=n;i++){const t=i/n,y=t*h*.86;const rr=rad*(1.28-.25*t-.55*t*t+.12*Math.sin(t*9+x))*(t>.92?.85:1);prof.push([Math.max(.25,rr),y]);}
-  K.color(TUFA_WASH[Math.floor(r()*TUFA_WASH.length)],.92+r()*.1);K.lathe('tufa',x,0,z,prof,18,.12);
-  // the cap: a dark basalt mushroom on a narrowed neck
-  K.color(0x6a5a52,1);K.lathe('stone',x,h*.86,z,[[rad*.35,0],[rad*.62,.15*h*.14],[rad*.78,.55*h*.14],[rad*.62,h*.14*.95],[0,h*.14]],12,.15);};
- cone(0,0,H,R);if(twin)cone(R*1.25,-R*.55,H*.72,R*.62);
- // the hollowed rooms: a door at the foot facing +z, windows round the upper body
- const rAt=t=>R*(1.28-.25*t-.55*t*t);
- K.color(null,1);K.block('dark',0,0,rAt(.05)-.12,1,2.1,.25);
- K.color(0xb89470,1);K.block('tufa',0,2.1,rAt(.2)-.05,1.5,.35,.5);
- for(let k=0;k<4;k++){const t=.32+k*.13,a=k*1.7+r()*.6,rr=rAt(t)-.1;K.color(null,1);K.box('dark',Math.sin(a)*rr,t*H*.86,Math.cos(a)*rr,.55,.75,.2,a);}
- // a stair cut round the foot to the first window
- K.color(0xb89470,.92);for(let k=0;k<8;k++){const a=-.5-k*.28,rr=rAt(.05+k*.03)+.25,y=k*.32;K.box('tufa',Math.sin(a)*rr,y+.16,Math.cos(a)*rr,.9,.32,.5,a);}
- const fr=R*1.32+(twin?R*1.1:0);
- return K.finish({kind:'building',name:twin?'Twin fairy chimney (gatehouse)':'Fairy chimney (rock-cut warren)',culture:'eastern-nomad',types:twin?['infrastructure','civic']:['single-family dwelling'],
-  footprint:NOMAD.circle(fr,16),height:H,family:'fairy',seed:seed>>>0});}
-window.buildBlackTent=buildBlackTent;window.buildMarketStall=buildMarketStall;window.buildFairyChimney=buildFairyChimney;
+window.buildBlackTent=buildBlackTent;window.buildMarketStall=buildMarketStall;
 })();

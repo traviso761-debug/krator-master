@@ -23,10 +23,9 @@ Read before changing anything here. `build.py` prints the open count.
       whose channel is wider must widen the ribbon (45-host-stage, `HW`).
 - [ ] The cataract's plunge pool is a flat fan at -703 m with the Abyss floor's rocks
       standing out of it; the rapids are foam in the ribbon's vertex colour, not geometry.
-- [ ] The strata are painted by the ground shader from world height (3.4 m bands,
-      weighted by the rock field): exact on mesas and canyon walls, but a rock outcrop
-      on a slope shows the same bands as a mesa, and the cliff and the mountains get
-      only the painter's coarse bands.
+- [ ] The strata (35-core-strata) are colour only: harder beds do not stand out as
+      ledges and soft ones are not recessed (that needs the heightfield's profile to read
+      the column), and the Abyss cliff and the mountains still get the painter's coarse bands.
 - [ ] The far impostors are the blob technique; the twist-candles stop at ~1.3 km from
       the LOD spine instead of becoming impostors (they stand in water, which no impostor
       reads).
@@ -43,6 +42,9 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Done
 
+- [x] The strata are the core's bedded-rock shader (35-core-strata): beds of irregular
+      thickness that dip and warp, laminae, cross-bedding and varnish streaks, instead of
+      six level 3.4 m bands. Shared with settlements/shade (its ground and its carved stone).
 - [x] Rocks scattered round a grid point (stones, boulders and their lichen, hoodoos and
       their apron stones) now test the host's mask at their own position (`putRooted` in 60):
       the grid tested only the centre, so a cluster spilled into the water here and onto

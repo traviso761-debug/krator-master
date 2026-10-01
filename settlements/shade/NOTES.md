@@ -69,3 +69,43 @@ wall-contact check that compared the floor with itself. The second pass:
   must stand above 90% of its height; its negative moves the hall 4 m out from the cliff.
 - The registry's occupancy check counted one point per mesh; merged buildings need
   their vertices counted (as the water already did).
+
+## Oct 2026: cliff dwellings and the strata
+
+- **The fairy chimneys went; the cliff dwellings came.** The basin's ordinary walls are now
+  sheer (2.5 m faces, wandering no more than half a metre) so a building can be backed
+  against the rock. Five runs round the rim (`CLIFF_RUNS` in 44) are 'wall' places; their
+  blocks are turned to the foot as it actually runs (found by bisection on `basinD`) and
+  set into the rock. The first run caught both east runs reaching into the canyon mouth's
+  rounded corner (the sheer check failed at 18.6 and 25.3 m of rise); they start at |z| 34.
+- **The strata are one shader in the biome core** (`35-core-strata.js`, backported to
+  biomes/sedesert): a seeded column of beds of irregular thickness, dipping and warping,
+  with laminae, cross-bedding and varnish streaks. The ground and the kit's carved stone
+  take the same object, so carvings show the bed lines of their face.
+- **A texture read through a custom sampler is not decoded from sRGB.** The first render
+  of the new strata was bleached pink: three.js decodes `map`, not a uniform. Decode in GLSL.
+
+## What overhangs would take (Oct 2026, not built)
+
+The ground is a heightfield: `terrainH(x,z)` is one height per point, and every consumer
+assumes it: the biome's rooting and fields, the walkable grid, the camera's ground clamp,
+water depth, the flora mask, every probe check. An overhang needs two surfaces at one x,z.
+
+1. **Carve patches** (recommended). Keep the heightfield as the walkable top surface; where a
+   feature needs rock above open space (a Mesa Verde alcove, the Treasury's true niche, the
+   plunge pool undercutting the lip), the heightfield cuts a recess back into the wall (the
+   floor runs into the alcove, which a heightfield can do) and a local signed-distance patch
+   (a box ~30 x 30 x 40 m round the feature) is meshed with surface nets at ~0.5 m to put the
+   rock back ABOVE the recess. The patch overlaps the cliff on all sides and takes the same
+   strata shader (world-space, so no UV seam), so the join does not show. Consumers barely
+   change: the floor is still `terrainH`; a patch adds `ceilingAt(x,z)` for the camera and,
+   later, for walkers' head room; the flora mask treats under-ceiling as unplantable. Cost:
+   a mesher (~300 lines), the patch registry, checks with negatives (the ceiling is above
+   the floor by the alcove's height; no gap at the patch's seam). A day of work, ~0.3 M
+   triangles for half a dozen patches. It belongs in the biome core beside 35-core-strata
+   (`BIO.carve`), backported so the sedesert ideal type can undercut the cataract's lip.
+2. **A volumetric wall band**: the whole basin wall (~800 m x 30 m x 60 m) as a 3-D field,
+   meshed and stitched to the heightfield. General (caves, arches anywhere along it), but
+   ~1.4 M voxels at 1 m (too coarse for alcoves) or 11 M at 0.5 m (too slow in the page),
+   and the walkable grid has to become 2.5-D. Only worth it if overhangs are everywhere.
+3. **Full 3-D terrain**: no; it rewrites every consumer for little gain over 1.
