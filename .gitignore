@@ -40,3 +40,6 @@ host/address.json.tmp
 
 # Agent worktrees (Claude Code): never committed.
 .claude/worktrees/
+
+# A kit's local three.js copy for verify.py (the CDN may be blocked); sedesert keeps a tracked one.
+biomes/*/three.min.js
