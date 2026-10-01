@@ -29,6 +29,90 @@ const HEX_SITE={};
 MAT.hxSoff =new THREE.MeshStandardMaterial({map:TEX.concrete,roughnessMap:TEX.concreteRM,color:0xb8b3aa,emissive:0x77726a,emissiveMap:TEX.concrete,roughness:1,metalness:0,side:DS});
 MAT.hxSoffR=new THREE.MeshStandardMaterial({map:TEX.concrete,roughnessMap:TEX.concreteRM,color:0x6f6861,emissive:0x3f3b36,emissiveMap:TEX.concrete,roughness:1,metalness:0,side:DS});
 function hxNightDim(o,m){if(o)o.onBeforeRender=()=>{m.emissiveIntensity=NIGHT?.06:1;};}
+// THE DWELLING CELLS. KNOWN_ISSUES: "the terrace cells are still boxes on a
+// ring". Soleri's cells are not crates: each storey is a deep loggia between
+// party-wall fins with a planter on its lip, the terraces step back, the top
+// storey is often an apse vault open to the view, and the roof oversails with
+// a soffit. Five storey-sized modules, one kdef each, so a whole tier costs a
+// handful of draw calls however many cells it carries.
+// NOTHING HERE CASTS A SHADOW, so depth cannot come from light. Every module
+// is vertex-coloured: the loggia's inner faces and soffits are shaded down,
+// the glazing at the back of a recess is near black, the planter tops are
+// green. The instance colour then tints the whole cell (pour colour, ruin).
+// Unit module: x width, y one storey, z depth, +z is the outward face (qFacing
+// points local +z along the outward normal). Centred on the origin.
+MAT.hxCell=new THREE.MeshStandardMaterial({map:TEX.concrete,roughnessMap:TEX.concreteRM,color:0xd2cec6,roughness:1,metalness:0,side:DS,vertexColors:true});
+const hxGeo=build=>{const P=[],N=[],C=[],U=[];
+ // a quad a,b,c,d (in order round its edge) facing n, in colour col
+ const q=(a,b,c,d,n,col)=>{const e1=[b[0]-a[0],b[1]-a[1],b[2]-a[2]],e2=[c[0]-a[0],c[1]-a[1],c[2]-a[2]];
+  const cr=[e1[1]*e2[2]-e1[2]*e2[1],e1[2]*e2[0]-e1[0]*e2[2],e1[0]*e2[1]-e1[1]*e2[0]];
+  const V=cr[0]*n[0]+cr[1]*n[1]+cr[2]*n[2]<0?[a,d,c,b]:[a,b,c,d];
+  const lu=Math.hypot(V[1][0]-V[0][0],V[1][1]-V[0][1],V[1][2]-V[0][2])*3,lv=Math.hypot(V[3][0]-V[0][0],V[3][1]-V[0][1],V[3][2]-V[0][2])*3;
+  const T=[[0,0],[lu,0],[lu,lv],[0,lv]];
+  for(const i of [0,1,2,0,2,3]){P.push(V[i][0],V[i][1],V[i][2]);N.push(n[0],n[1],n[2]);
+   const k=typeof col==='number'?[col,col,col]:col;C.push(k[0],k[1],k[2]);U.push(T[i][0],T[i][1]);}};
+ // an axis-aligned box, faces chosen by letters: t b f k(back) l r
+ const box=(x0,x1,y0,y1,z0,z1,faces,col)=>{const c=f=>typeof col==='object'&&!Array.isArray(col)?col[f]:col;
+  if(faces.includes('t'))q([x0,y1,z0],[x1,y1,z0],[x1,y1,z1],[x0,y1,z1],[0,1,0],c('t'));
+  if(faces.includes('b'))q([x0,y0,z0],[x1,y0,z0],[x1,y0,z1],[x0,y0,z1],[0,-1,0],c('b'));
+  if(faces.includes('f'))q([x0,y0,z1],[x1,y0,z1],[x1,y1,z1],[x0,y1,z1],[0,0,1],c('f'));
+  if(faces.includes('k'))q([x0,y0,z0],[x1,y0,z0],[x1,y1,z0],[x0,y1,z0],[0,0,-1],c('k'));
+  if(faces.includes('l'))q([x0,y0,z0],[x0,y1,z0],[x0,y1,z1],[x0,y0,z1],[-1,0,0],c('l'));
+  if(faces.includes('r'))q([x1,y0,z0],[x1,y1,z0],[x1,y1,z1],[x1,y0,z1],[1,0,0],c('r'));};
+ build(q,box);
+ const g=new THREE.BufferGeometry();
+ g.setAttribute('position',new THREE.Float32BufferAttribute(P,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(N,3));
+ g.setAttribute('color',new THREE.Float32BufferAttribute(C,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(U,2));
+ return g;};
+const HXG=[.07,.075,.085],HXGR=[.42,.62,.26],HXIN=.56,HXSO=.66;   // glazing, planting, recess walls, soffit
+// a loggia storey: party-wall fins, spandrel, a recess 0.38 of the cell deep,
+// near-black glazing at its back, and a planter along its lip (28 tris)
+kdef('hxLog',hxGeo((q,box)=>{const F=.43,ZG=.12,YC=.36;
+ box(-.5,.5,-.5,.5,-.5,.5,'lrt',1);
+ box(-.5,-F,-.5,.5,ZG,.5,'f',1);box(F,.5,-.5,.5,ZG,.5,'f',1);
+ box(-F,F,YC,.5,ZG,.5,'f',1);
+ q([-F,YC,ZG],[F,YC,ZG],[F,YC,.5],[-F,YC,.5],[0,-1,0],HXSO);            // the loggia soffit
+ q([-F,-.5,ZG],[F,-.5,ZG],[F,-.5,.5],[-F,-.5,.5],[0,1,0],.6);            // its floor
+ q([-F,-.5,ZG],[-F,YC,ZG],[-F,YC,.5],[-F,-.5,.5],[1,0,0],HXIN);
+ q([F,-.5,ZG],[F,YC,ZG],[F,YC,.5],[F,-.5,.5],[-1,0,0],HXIN);
+ q([-F,-.5,ZG],[F,-.5,ZG],[F,YC,ZG],[-F,YC,ZG],[0,0,1],HXG);             // glazing
+ box(-F,F,-.5,-.29,.35,.5,'ftk',{f:.95,t:HXGR,k:.5});}),MAT.hxCell);    // planter on the lip
+// a closed storey: a deep punched window, reveals shaded, a hood over it (30)
+kdef('hxPun',hxGeo((q,box)=>{const X=.28,Y0=-.24,Y1=.22,ZG=.24;
+ box(-.5,.5,-.5,.5,-.5,.5,'lrt',1);
+ box(-.5,-X,-.5,.5,0,.5,'f',1);box(X,.5,-.5,.5,0,.5,'f',1);
+ box(-X,X,-.5,Y0,0,.5,'f',1);box(-X,X,Y1,.5,0,.5,'f',1);
+ q([-X,Y1,ZG],[X,Y1,ZG],[X,Y1,.5],[-X,Y1,.5],[0,-1,0],HXSO);
+ q([-X,Y0,ZG],[X,Y0,ZG],[X,Y0,.5],[-X,Y0,.5],[0,1,0],.7);
+ q([-X,Y0,ZG],[-X,Y1,ZG],[-X,Y1,.5],[-X,Y0,.5],[1,0,0],HXIN);
+ q([X,Y0,ZG],[X,Y1,ZG],[X,Y1,.5],[X,Y0,.5],[-1,0,0],HXIN);
+ q([-X,Y0,ZG],[X,Y0,ZG],[X,Y1,ZG],[-X,Y1,ZG],[0,0,1],HXG);
+ box(-X-.06,X+.06,Y1+.02,Y1+.08,.5,.64,'bft',{b:HXSO,f:.9,t:.9});}),MAT.hxCell);
+// THE APSE: Soleri's half-barrel vault, open to the view, the glazing set back
+// under the arch. Used as the top storey of a stack (42)
+kdef('hxVlt',hxGeo((q,box)=>{const S=6,ZG=.08,ri=.84,arc=(t,r)=>[-.5*r*Math.cos(t*Math.PI),-.5+r*Math.sin(t*Math.PI)];
+ for(let i=0;i<S;i++){const a=arc(i/S,1),b=arc((i+1)/S,1),ai=arc(i/S,ri),bi=arc((i+1)/S,ri);
+  const m=arc((i+.5)/S,1),n=[m[0]*2,m[1]+.5,0];
+  q([a[0],a[1],-.5],[b[0],b[1],-.5],[b[0],b[1],.5],[a[0],a[1],.5],n,1);                  // extrados
+  q([ai[0],ai[1],ZG],[bi[0],bi[1],ZG],[bi[0],bi[1],.5],[ai[0],ai[1],.5],[-n[0],-n[1],0],HXSO);  // intrados
+  q([a[0],a[1],.5],[b[0],b[1],.5],[bi[0],bi[1],.5],[ai[0],ai[1],.5],[0,0,1],.95);           // the arch ring
+  q([ai[0],ai[1],ZG],[bi[0],bi[1],ZG],[0,-.5,ZG],[0,-.5,ZG],[0,0,1],HXG);}}),MAT.hxCell);   // glazing (fan)
+// the roof: an oversailing slab with a pale soffit (10). Turned over, it is the
+// drip-edged underside of a cell hung from the lower city's soffits.
+kdef('hxEave',hxGeo((q,box)=>{box(-.56,.56,0,.09,-.5,.64,'tbflr',{t:.9,b:HXSO,f:.95,l:.95,r:.95});}),MAT.hxCell);
+// a planter box, top planted (10): on every setback terrace and on the roofs
+kdef('hxPlnt',hxGeo((q,box)=>{box(-.5,.5,-.5,.5,-.5,.5,'tfklr',{t:HXGR,f:.9,k:.8,l:.85,r:.85});}),MAT.hxCell);
+// the cells behind the front row, seen mostly from above: one dark band of
+// glazing on the face and a roof garden inside a parapet (24)
+kdef('hxBlk',hxGeo((q,box)=>{
+ box(-.5,.5,-.5,.5,-.5,.5,'lrk',1);
+ box(-.5,.5,-.5,.05,-.5,.5,'f',1);box(-.5,.5,.05,.32,-.5,.5,'f',HXG);box(-.5,.5,.32,.5,-.5,.5,'f',1);
+ box(-.5,.5,.5,.5,-.5,-.38,'t',.9);box(-.5,.5,.5,.5,.38,.5,'t',.9);
+ box(-.5,-.38,.5,.5,-.38,.38,'t',.9);box(.38,.5,.5,.5,-.38,.38,'t',.9);
+ box(-.38,.38,.5,.5,-.38,.38,'t',HXGR);}),MAT.hxCell);
+// lit glazing for the night, shown only after dark (setNight() toggles FIREKIT;
+// the builder registers it, because FIREKIT is declared in a later fragment)
+kdef('hxGlow',new THREE.PlaneGeometry(1,1),MAT.dot);
 function buildHexahedron(scene,gx,gz,d){reseed(9430+d);KOFF=[gx,0,gz];
  const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);
  const dd=d>0?1:0;
@@ -39,6 +123,40 @@ function buildHexahedron(scene,gx,gz,d){reseed(9430+d);KOFF=[gx,0,gz];
  REGISTER({name:'Hexahedron — the vertical structure',x:0,z:0,r:460,h:YB});
  REGISTER({name:'Hexahedron — automated industries',x:0,z:0,r:640,h:34});
  const SH=[],DK=[],GRD=[],SOF=[],CHAM=.055;
+ if(typeof FIREKIT!=='undefined'&&!FIREKIT.includes('hxGlow'))FIREKIT.push('hxGlow');
+ const KIT0={};for(const n of KIT.order)KIT0[n]=KIT.items[n].length;   // for the sag, at the foot
+
+ // ---- one dwelling cell, as architecture (the module kdefs at the top) -----
+ // Everything a cell varies by is HASHED off (a,b,salt), never rng(), so the
+ // draws the old boxes took are still taken in the same order and nothing
+ // placed after a cell moves. Type: 0 loggias, 1 terraced (each storey set
+ // back with a planter on the terrace it leaves), 2 loggias under an apse
+ // vault, 3 closed with punched windows. A hung cell (the lower city) stacks
+ // DOWN from its soffit and is closed underneath by a turned-over eave.
+ const hh=(a,b,sl)=>{const v=Math.sin(a*91.7+b*12.9898+sl*47.31)*43758.5;return v-Math.floor(v);};
+ const RUINK=d>0?.6:1;
+ const tint=(a,b)=>{const t=hh(a,b,7),c=t<.45?[1,1,1]:t<.72?[1,.95,.86]:t<.9?[.93,.95,.98]:[1,.9,.79];
+  return new THREE.Color(c[0]*RUINK,c[1]*RUINK*.98,c[2]*RUINK*.95);};
+ const cell=(Q,N,q,yb,h,cw,cd,a,b,hang)=>{
+  const n=Math.max(1,Math.round(h/4.4)),hs=h/n,col=tint(a,b),ty=hh(a,b,1);
+  const T=ty<.40?0:ty<.68?1:ty<.88?2:3;
+  let px=Q[0],pz=Q[1],pd=cd,pf=cd*.5;
+  for(let i=0;i<n;i++){
+   const back=(T===1&&!hang)?Math.min(.52,i*.26):0,dz=cd*(1-back),off=(cd-dz)*.5;
+   const cx=Q[0]-N[0]*off,cz=Q[1]-N[1]*off,cy=hang?yb-(i+.5)*hs:yb+(i+.5)*hs;
+   const kind=T===3?'hxPun':(T===2&&i===n-1&&n>1&&!hang)?'hxVlt':(i%2===1&&hh(a,b,i+3)<.3)?'hxPun':'hxLog';
+   kput(kind,[cx,cy,cz],q,[cw,hs,dz],col);
+   if(kind==='hxLog'&&d===0&&hh(a,b,i+11)<.55){const f=dz*.12+.06;
+    kput('hxGlow',[cx+N[0]*f,cy-hs*.07,cz+N[1]*f],q,[cw*.82,hs*.8,1],WARM);}
+   // the terrace this storey's setback leaves, planted along its lip
+   if(back>0){const fz=pf-.8;                      // pf: the storey below's front
+    kput('hxPlnt',[Q[0]+N[0]*fz,yb+i*hs+.45,Q[1]+N[1]*fz],q,[cw*.84,.9,1.3],col);}
+   px=cx;pz=cz;pd=dz;pf=dz*.5-off;}
+  if(hang){kput('hxEave',[Q[0],yb-h,Q[1]],q.clone().multiply(qEuler(0,0,Math.PI)),[cw,hs,cd],col);return;}
+  if(T===2&&n>1)return;                            // the apse is its own roof
+  kput('hxEave',[px,yb+h,pz],q,[cw,hs,pd],col);
+  if(hh(a,b,5)<.5){const fz=-pd*.12;
+   kput('hxPlnt',[px+N[0]*fz,yb+h+hs*.09+.45,pz+N[1]*fz],q,[cw*.5,.9,pd*.32],col);}};
 
  // ---- the two plans --------------------------------------------------------
  const TH=75*Math.PI/180,BL=2*Math.cos(TH);        // leg = 1, base = 2 cos(TH)
@@ -123,16 +241,11 @@ function buildHexahedron(scene,gx,gz,d){reseed(9430+d);KOFF=[gx,0,gz];
    for(let row=0;row<3;row++){const Q=W(PU,p,lerp(s0,s1,.10+row*.30));
     const h=lerp(4,15,nb)*(row===0?1:.78)*rr(.86,1.14);
     const cw=rr(8,16),cd=rr(6,12);                 // same draws, same order as before
-    kput(BOXC(d),[Q[0],y0+RU+h*.5,Q[1]],q,[cw,h,cd],null);
-    // KNOWN_ISSUES: "the terrace cells are still boxes on a ring". The front
-    // row is the one every preset sees, so it gets a dwelling's face: a glazed
-    // band under a dark lintel on its outward side, one per storey it is tall.
-    // Hashed off (k,j) rather than rng(), so nothing after it moves.
-    if(row===0&&d!==2){const hs=Math.sin(k*91.7+j*12.9898)*43758.5,hk=hs-Math.floor(hs);
-     if(hk>.14)for(let st=0;st*4.4+3.6<h;st++){const wy=y0+RU+st*4.4+2.1,
-      fz=cd*.5+.08,ww=cw*(hk>.6?.72:.46);
-      kput(d===0?'pane':'paneD',[Q[0]+N[0]*fz,wy,Q[1]+N[1]*fz],q,[ww,2.2,1],null);
-      kput('boxD',[Q[0]+N[0]*(fz+.1),wy+1.45,Q[1]+N[1]*(fz+.1)],q,[ww+.8,.5,.6],null);}}}}
+    // The front row is the one every preset sees, so it is built as dwellings
+    // (cell(), above): loggias, setbacks, apses, roofs. The rows behind it are
+    // seen from above, so they get a glazed band and a roof garden (hxBlk).
+    if(row===0)cell(Q,N,q,y0+RU,h,cw,cd,k,j,false);
+    else kput('hxBlk',[Q[0],y0+RU+h*.5,Q[1]],q,[cw,h,cd],tint(k+row*31,j));}}
   // Windows belong to the terrace WALL -- the vertical riser below the tread.
   // They used to sit at the tread height but the riser radius, i.e. outside the
   // building, so they read as panes hung in the air among the balcony boxes.
@@ -236,8 +349,10 @@ function buildHexahedron(scene,gx,gz,d){reseed(9430+d);KOFF=[gx,0,gz];
   for(let j=0;j<nc;j++){const p=(j+.5)/nc,N=pnorm(PL,p),q=qFacing([N[0],0,N[1]]);
    for(let row=0;row<2;row++){const Q=W(PL,p,lerp(s1,s0,.12+row*.34));
     if(crater(Q[0],Q[1]))continue;
-    const h=rr(4,9);
-    kput(BOXC(d),[Q[0],y0-h*.5,Q[1]],q,[rr(7,14),h,rr(6,11)],null);}}
+    const h=rr(4,9),cw=rr(7,14),cd=rr(6,11);        // same draws, same order as before
+    // hung from the soffit: the outer row as dwellings, the inner as blocks
+    if(row===0)cell(Q,N,q,y0,h,cw,cd,k+50,j,true);
+    else kput(BOXC(d),[Q[0],y0-h*.5,Q[1]],q,[cw,h,cd],null);}}
   {const nw=Math.max(12,Math.round(320*s1)),WIN=d===0?'pane':'paneD';
    for(let j=0;j<nw;j++){const p=(j+.5)/nw;
     const Q=W(PL,p,s1),N=pnorm(PL,p),q=qFacing([N[0],0,N[1]]);
@@ -348,6 +463,7 @@ function buildHexahedron(scene,gx,gz,d){reseed(9430+d);KOFF=[gx,0,gz];
  // height independently is how blocks end up floating or half-buried.
  const plateY=(x,z)=>12-2.2*Math.min(3,Math.floor(clamp(Math.hypot(x,z)/hexR(HEXR,Math.atan2(z,x)),0,.999)*4));
 
+ const KIT1={};for(const n of KIT.order)KIT1[n]=KIT.items[n].length;   // everything held up, and nothing after
  // ---- the vertical structure ------------------------------------------------
  // Four clusters. Each shaft runs from the ground to whatever height the
  // inverted pyramid's soffit has actually reached above it, so they lengthen
@@ -433,6 +549,24 @@ function buildHexahedron(scene,gx,gz,d){reseed(9430+d);KOFF=[gx,0,gz];
  for(let s2=0;s2<6;s2++){const a=s2/6*TAU+Math.PI/6;
   beam(d>0?'boxR':'boxD',[0,7.2,0],[Math.cos(a)*HEXR*.96,7.2,Math.sin(a)*HEXR*.96],16,.6);}
 
+ // ---- THE FAILED FLANK SAGS ------------------------------------------------
+ // KNOWN_ISSUES: "the collapsed flank tears the soffit, but the mass does not
+ // sag or tilt toward the hole". The nanomaterial spine holds -- nothing falls
+ // -- but a cantilever that has lost its props droops: zero over the surviving
+ // shafts (outside .95 rad of the failure's bearing, where they still stand),
+ // rising with distance from the centre of mass on the failed side to SAGA at
+ // the rim. Everything built above the soffit line moves: the merged shells,
+ // and every kit item placed before the shafts (KIT0..KIT1). The shafts, the
+ // ground works and the rubble come after KIT1 and stay put. No PRNG.
+ if(d===2){const SAGA=34,mx=COM[0]*SPAN,mz=COM[1]*SPAN;
+  const sag=(x,y,z)=>{const da=Math.abs(wrapA(Math.atan2(z-mz,x-mx)-FAILA)),r=Math.hypot(x-mx,z-mz);
+   const t=clamp((da-.35)/.6,0,1),wa=1-t*t*(3-2*t),u=clamp((y-(YB-40))/45,0,1);
+   return SAGA*wa*Math.pow(clamp((r-80)/520,0,1),1.3)*u*u*(3-2*u);};
+  for(const g of [...SH,...SOF,...DK]){const P=g.attributes.position,A=P.array;
+   for(let i=0;i<A.length;i+=3)A[i+1]-=sag(A[i],A[i+1],A[i+2]);P.needsUpdate=true;}
+  for(const n of KIT.order){const it=KIT.items[n],i1=KIT1[n]==null?0:KIT1[n];
+   for(let i=KIT0[n]==null?0:KIT0[n];i<i1;i++){const o=it[i];
+    o.p=[o.p[0],o.p[1]-sag(o.p[0]-gx,o.p[1],o.p[2]-gz),o.p[2]];}}}
  // ---- merge and dress --------------------------------------------------------
  meshMerged(SH,CONC(dd),G);hxNightDim(meshMerged(SOF,dd?MAT.hxSoffR:MAT.hxSoff,G),dd?MAT.hxSoffR:MAT.hxSoff);
  meshMerged(GRD,d>0?MAT.mud:MAT.slab,G);
@@ -451,5 +585,7 @@ function buildHexahedron(scene,gx,gz,d){reseed(9430+d);KOFF=[gx,0,gz];
   const kS=Math.round(NU*.6),shQ=W(PU,WB,su(kS));
   HEX_SITE[d]={UC:[(bb[0]+bb[1])/2,(bb[2]+bb[3])/2],BB:bb,COM:[COM[0]*SPAN,COM[1]*SPAN],
    CRATER:[CX,CZ],APEX:W(PU,.380,1.14),SUMMIT:[PU.O[0]*SPAN,PU.O[1]*SPAN],
-   SHEAR:[shQ[0],YW+kS*RU,shQ[1]],SHEARN:pnorm(PU,WB),YB,YW,YT};}
+   SHEAR:[shQ[0],YW+kS*RU,shQ[1]],SHEARN:pnorm(PU,WB),YB,YW,YT,
+   // a face of the hung lower city, for the close presets of its cells
+   LOWQ:(()=>{const Q=W(PL,.30,sl(10));return[Q[0],YB+10*RL,Q[1]];})(),LOWN:pnorm(PL,.30)};}
  KOFF=[0,0,0];return G;}
