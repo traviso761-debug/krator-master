@@ -11,6 +11,8 @@ const JJ_ROWS=(()=>{const jjRows={};for(const jjK of JJ.order){const jjD=JJ.defs
 const SITES=[];
 const JJ_ROW_Z={};
 let GROUND_C=0;
+// rows sit JJ_ROW_GAP apart so a camera standing in front of a building is not inside the row before it
+const JJ_ROW_GAP=56;
 (()=>{let jjZ=0;const jjGap=16;
  for(const jjRow of JJ_ROWS){const jjDs=jjRow.keys.map(jjK=>JJ.defs[jjK]);const jjDepth=Math.max(...jjDs.map(jjD=>jjD.d||jjD.r*2||16));
   const jjTotal=jjDs.reduce((jjA,jjD)=>jjA+(jjD.w||jjD.r*2||16)+jjGap,0)-jjGap;let jjX=-jjTotal/2;
@@ -19,7 +21,7 @@ let GROUND_C=0;
    // ry = PI turns local +z (the front) to world -z (north); the plot centre sits on the row line
    // a def may fix its own world yaw (the temple aims its axis at the solstice sunset)
    SITES.push({key:jjD.key,x:jjX+jjW/2,z:jjZc,ry:jjD.ry!==undefined?jjD.ry:Math.PI,o:{v:0},row:jjRow.name});jjX+=jjW+jjGap;}
-  jjZ+=jjDepth+30;}
+  jjZ+=jjDepth+JJ_ROW_GAP;}
  GROUND_C=jjZ/2;})();
 // Furniture and flora rows, north of the buildings (z < 0), fronts facing north too.
 const JJ_FURN_SITES=[],JJ_FLORA_SITES=[];
