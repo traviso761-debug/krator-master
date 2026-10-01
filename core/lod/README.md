@@ -25,6 +25,14 @@ build output except for its own two fragments. `97-lod-auto.js` applies it to th
    time calls `LOD.init(...)` and `LOD.apply()` itself, and 97 then does nothing.
 4. Rebuild, and measure (below). Record the numbers in the build's README.
 
+**Adopted by** `settlements/port`, `jimjam`, `reedlake`, `screamers`, `voth` (measurements in each build's README,
+"Level of detail"). **Not yet:** `yuni` (close its "No LOD" item when done), `locus`, `iziz`, `highlands`, `xanadu`,
+`dalab`, `mavs-refuge`, `girder`, `kits/ancients`. For each: the `build.py` edit above, then check the build's animated
+objects (anything that moves its matrix or rewrites instance matrices is handed back automatically, but listing it in
+`skip` saves the work at apply time), any biome or flora with its own distance curve (give it a class with `minPx:0`,
+as screamers does), and where the panel lands against the build's own UI (`panelStyle`). Note that `highlands` owns the
+vendored `92-camera.js` reedlake copies: the LOD adoption needs no edit to it.
+
 ## What it does
 
 | Kind of object | What LOD does |
