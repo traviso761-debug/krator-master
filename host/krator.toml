@@ -41,6 +41,22 @@ title = "Voth: City of Cantons"
 scene = true
 blurb = "Krator's Voth: a city of cantons on an enclosed brackish bay."
 
+[[route]]
+path = "/share"
+aliases = ["/share.html", "/phone"]
+file = "share.html"
+title = "Open Krator on another device"
+# the address other devices use, with a code to scan: share.html reads it from address.json, which sitectl writes
+
+[[route]]
+path = "/address.json"
+file = "address.json"
+headers = { "Cache-Control" = "no-store" }
+
+[[route]]
+path = "/share/qrcode.js"
+file = "vendor/qrcode.js"
+
 [[mount]]
 prefix = "/worlds"      # every gallery page, and the local three.js they load
 dir = "site/worlds"

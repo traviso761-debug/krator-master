@@ -6,6 +6,10 @@ the city is laid out. It is built on a fork of the Yuni source tree (`locus/` = 
 `76-locus-anim.js` and a handful of small patches), because Locus is "mostly Yuni" and the city pass will need
 every Yuni asset anyway.
 
+**Oct 2026:** the abyssal and petroleum assets marked in `ABYSS-KIT-NOTES.md` (`stilt_poor`, `stilt_mid`, `tent_pavilion`,
+`sunshade_poles`, `farm_saltrice`, `infra_fishing_dock`, `ind_pumpjack`, `ind_oil_tank`, `prop_pipe_rack`, `prop_drum_stack`) are also
+on the Eastern Abyssal sheet (`abyss-kit.html`), with `kit:['locus','abyss']`; their rows here are unchanged.
+
 ## What is on the sheet (target `locus`, file `locus-kit.html`)
 
 | group | key | name | w x d x h | variants | culture · types |

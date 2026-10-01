@@ -13,7 +13,7 @@ var CATALOG = (TARGET==='furn' || TARGET==='flora') ? TARGET : null;
 /* KIT names a SUB-KIT laid out on its own building sheet ('locus': the Locus abyssal-desert +
    petroleum kit). On the plain 'sheet' target only assets with no kit are laid out; on a kit
    target only that kit's assets are, grouped by their own `group` field. */
-var KIT = TARGET==='locus' ? 'locus' : null;
+var KIT = TARGET==='locus' ? 'locus' : TARGET==='abyss' ? 'abyss' : null;   /* 'abyss': the Eastern Abyssal kit (65-abyss-*.js) */
 
 var SEED = 20260921;
 var seed = SEED;
@@ -112,7 +112,7 @@ function platXZ(P,r,a){ var t=a+(P.ry||0); return [P.x + r*Math.cos(t), P.z + r*
      the SE levees       a chain of hummocks the SE highway keeps to
      the east            marsh, then the slope up toward the shelf (jungle at the edge)      */
 var WORLD = 9000, HW = WORLD/2;
-var CITY_EXT = CATALOG ? 300 : KIT ? 520 : SHEET ? 1700 : 1500;              /* the detailed box: painted ground canvas + placement mask (metres, +-) */
+var CITY_EXT = CATALOG ? 300 : KIT==='abyss' ? 760 : KIT ? 520 : SHEET ? 1700 : 1500;              /* the detailed box: painted ground canvas + placement mask (metres, +-) */
 var MAP_R = 2600;                  /* the playable map: roads run to this edge, life enters and leaves here */
 var GROUND0 = 0;                   /* the water plane */
 var LOCUS_HILL = { x:0, z:0, R:480, H:19.0, sq:1.12 };   /* sq: the hill is longer N-S than E-W */

@@ -4,7 +4,8 @@
 Usage:  python host/sitectl.py <command>        (on Windows:  host\\sitectl.bat <command>)
 
   setup              first run on a fresh clone: sync, build, check, and print the site's URLs
-  run                setup if it has never been done, then serve (what double-clicking sitectl.bat does)
+  run                setup if it has never been done, then serve, and open the gallery in the browser (what the
+                     Start Krator launchers do)
   sync [--check]     pull the World Menagerie's pages into menagerie/ and write site.toml (--check: drift only)
   build [--all | --no-build]
                      build the gallery into site/ with local three.js. By default only worlds whose built page is
@@ -14,13 +15,16 @@ Usage:  python host/sitectl.py <command>        (on Windows:  host\\sitectl.bat 
   serve [--port N]   run the server in this terminal until Ctrl+C
   check              validate site.toml and list every URL
   url                print the site's URLs
+  share              print the address other devices on this network use, in plain words (and the /share page)
+  status             is the server up, and at which addresses
   health             ask the running server if it is up
+  address            write address.json, which the /share page reads (check and serve do it themselves)
   firewall           print the command that opens the port to the local network (Windows)
 
 Needs Python 3.11 or later and nothing else. On Linux, ./sitectl does the same and also runs the server as a
 systemd user service.
 """
-import os, socket, subprocess, sys, tomllib, urllib.request
+import json, os, socket, subprocess, sys, threading, tomllib, urllib.request, webbrowser
 
 DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(DIR)
@@ -61,7 +65,38 @@ def urls(p=None):
     return 0
 
 
+def address(p=None):
+    """Write address.json: the addresses other devices reach this server at. A browser cannot find out its own
+    computer's network address, so the /share page reads it from here. Rewritten at every check and start, so a
+    new address from the router is picked up."""
+    p = p or port()
+    host = socket.gethostname().split('.')[0]
+    data = {'port': p, 'local': 'http://localhost:%d/' % p,
+            'urls': ['http://%s:%d/' % (ip, p) for ip in lan_ips()],
+            'name': 'http://%s.local:%d/' % (host.lower(), p) if host else None}
+    tmp = os.path.join(DIR, 'address.json.tmp')
+    with open(tmp, 'w', encoding='utf-8') as f:
+        json.dump(data, f, indent=1)
+    os.replace(tmp, os.path.join(DIR, 'address.json'))
+    return data
+
+
+def share(p=None):
+    d = address(p)
+    if not d['urls']:
+        print('This computer is not on a network right now, so only it can open Krator: %s' % d['local'])
+        return 1
+    print('On a phone, tablet or another computer on the same Wi-Fi, open Chrome and go to:')
+    print()
+    for u in d['urls']:
+        print('    ' + u)
+    print()
+    print('Or open %sshare on this computer: it shows that address large, with a code to scan.' % d['local'])
+    return 0
+
+
 def check(quiet=False):
+    address()
     if not os.path.isfile(CONFIG):
         print('sitectl: no site.toml yet: run setup (or sync) first', file=sys.stderr)
         return 1
@@ -81,14 +116,21 @@ def sync(args):
 def build(args):
     mode = [] if '--all' in args else ['--no-build'] if '--no-build' in args else ['--build-missing']
     return run(os.path.join(ROOT, 'gallery', 'build_gallery.py'), *mode,
-               '--out', os.path.join(DIR, 'site'), '--local-three', '/worlds/three.min.js')
+               '--out', os.path.join(DIR, 'site'), '--local-three', '/worlds/three.min.js',
+               '--lod', os.path.join(DIR, 'lod.toml'))
 
 
-def serve(args):
+def serve(args, open_browser=False):
     if check(quiet=True):
         return 1
+    p = int(args[args.index('--port') + 1]) if '--port' in args[:-1] else None
+    address(p)
     print('Krator site: Ctrl+C stops it.')
-    urls(int(args[args.index('--port') + 1]) if '--port' in args[:-1] else None)
+    urls(p)
+    print()
+    share(p)
+    if open_browser:   # the launchers: show the gallery as soon as the server answers
+        threading.Timer(1.5, webbrowser.open, ['http://localhost:%d/' % (p or port())]).start()
     try:
         return run(os.path.join(DIR, 'server.py'), '--config', CONFIG, *args)
     except KeyboardInterrupt:
@@ -136,11 +178,17 @@ def main():
         if not os.path.isfile(CONFIG) or not os.path.isdir(os.path.join(DIR, 'site')):
             if main_setup():
                 return 1
-        return serve(args)
+        return serve(args, open_browser=True)
+    if cmd == 'status':
+        up = health()
+        print()
+        share()
+        return up
     if cmd == 'update':
         return sync([]) or build(args)
     simple = {'sync': lambda: sync(args), 'build': lambda: build(args), 'serve': lambda: serve(args),
-              'check': check, 'url': lambda: urls(), 'urls': lambda: urls(), 'health': health, 'firewall': firewall}
+              'check': check, 'url': lambda: urls(), 'urls': lambda: urls(), 'health': health, 'firewall': firewall,
+              'share': lambda: share(), 'address': lambda: print(json.dumps(address(), indent=1)) or 0}
     if cmd in simple:
         return simple[cmd]()
     if cmd in ('help', '-h', '--help'):
