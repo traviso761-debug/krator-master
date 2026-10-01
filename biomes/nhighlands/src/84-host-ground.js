@@ -95,7 +95,7 @@ function waterMat(flow){const m=new THREE.ShaderMaterial({fog:true,vertexColors:
   ' float fl=uFlow*(vUv.y*0.09-uT*1.4);',
   ' vec3 n=normalize(vec3(rk*(0.07*sin(vWP.x*0.41+uT*1.3+fl*6.0)+0.02*sin(vWP.z*0.63-uT*0.8+vWP.x*0.13)),1.0,rk*(0.035*cos(vWP.z*0.37+uT*1.1+fl*5.0)+0.02*sin(vWP.x*0.57+uT*1.5))));',
   ' vec3 V=normalize(cameraPosition-vWP);float fr=pow(1.0-max(dot(n,V),0.0),3.0);',
-  ' vec3 col=mix(vCol,uSky*1.25,0.12+fr*0.7);',
+  ' vec3 col=mix(vCol,uSky*1.15,0.10+fr*0.5);',
   ' float foam=uFlow*vUv.x*(0.6+0.4*sin(vUv.y*1.3-uT*7.0+sin(vWP.x*0.4)*2.0));',
   ' col=mix(col,vec3(1.1,1.12,1.12),clamp(foam,0.0,0.95));',
   ' vec3 H=normalize(uSun+V);col+=pow(max(dot(n,H),0.0),90.0)*0.9*vec3(1.0,0.96,0.88);',
@@ -106,7 +106,7 @@ function waterMat(flow){const m=new THREE.ShaderMaterial({fog:true,vertexColors:
 const STREAM_WATER=(function(){const P=STREAM.P,n=P.length,pos=[],col=[],uv=[],idx=[],c=new THREE.Color(),
  cShal=new THREE.Color(0x4a4630),cMid=new THREE.Color(0x242c24),cDeep=new THREE.Color(0x101614);const ACROSS=6;
  for(let i=0;i<n;i++){const a=P[Math.max(0,i-1)],b=P[Math.min(n-1,i+1)],dx=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dx,dz)||1,nx=-dz/l,nz=dx/l;
-  const half=STREAM.halfW(i)+2.2,lvl=STREAM.level[i],dep=STREAM.dep[i],foam=clamp(smooth(.2,.5,STREAM.drop[i])*.6+smooth(.7,1.2,STREAM.drop[i])+.35*smooth(.6,.9,Math.sin(STREAM.S[i]*.09)*Math.sin(STREAM.S[i]*.023+1)),0,1);   // the mean fall is ~.17: foam only where it steepens
+  const half=STREAM.halfW(i)+5.5,lvl=STREAM.level[i],dep=STREAM.dep[i],foam=clamp(smooth(.2,.5,STREAM.drop[i])*.6+smooth(.7,1.2,STREAM.drop[i])+.35*smooth(.6,.9,Math.sin(STREAM.S[i]*.09)*Math.sin(STREAM.S[i]*.023+1)),0,1);   // the mean fall is ~.17: foam only where it steepens
   for(let k=0;k<=ACROSS;k++){const t=k/ACROSS*2-1,x=P[i][0]+nx*half*t,z=P[i][1]+nz*half*t;
    pos.push(x,lvl,z);c.copy(cShal).lerp(cMid,smooth(.5,1.2,dep)*(1-.6*Math.abs(t))).lerp(cDeep,smooth(1.4,3,dep)*(1-Math.abs(t)));c.convertSRGBToLinear();col.push(c.r,c.g,c.b);uv.push(foam*(.55+.45*Math.abs(t)),STREAM.S[i]);}}
  for(let i=0;i<n-1;i++)for(let k=0;k<ACROSS;k++){const a=i*(ACROSS+1)+k,b=a+1,c2=a+ACROSS+1,d=c2+1;idx.push(a,c2,b,b,c2,d);}
@@ -123,7 +123,7 @@ const TARN_WATER=(function(){const g=new THREE.CircleGeometry(TARN.r+10,64);g.ro
 const MIST=(function(){const c=document.createElement('canvas');c.width=c.height=128;const g=c.getContext('2d'),id=g.createImageData(128,128);
  for(let y=0;y<128;y++)for(let x=0;x<128;x++){const dx=(x-64)/64,dy=(y-64)/64,r=Math.hypot(dx,dy),a=clamp(1-r,0,1)*(.55+.45*fbm(x/22,y/22,3,3));id.data[(y*128+x)*4]=id.data[(y*128+x)*4+1]=id.data[(y*128+x)*4+2]=255;id.data[(y*128+x)*4+3]=clamp(a*a*255,0,255);}
  g.putImageData(id,0,0);const tex=new THREE.CanvasTexture(c);
- const sheetM=new THREE.MeshBasicMaterial({map:tex,color:0xd0dada,transparent:true,opacity:.30,depthWrite:false,side:THREE.DoubleSide});
+ const sheetM=new THREE.MeshBasicMaterial({map:tex,color:0xd0dada,transparent:true,opacity:.22,depthWrite:false,side:THREE.DoubleSide});
  const spriteM=new THREE.SpriteMaterial({map:tex,color:0xd0dada,transparent:true,opacity:.22,depthWrite:false});
  const L=[];reseed(84031);
  const place=(kind,x,z,lift)=>{const h=FC.at(FC.a.h,x,z);let o;
@@ -134,7 +134,7 @@ const MIST=(function(){const c=document.createElement('canvas');c.width=c.height
  for(let k=0;k<26;k++){const i=Math.floor(rng()*STREAM.P.length),p=STREAM.P[i];place(k%2?'sheet':'sprite',p[0]+rr(-40,40),p[1]+rr(-40,40),rr(4,12));}
  STREAM.falls.forEach(i=>{const p=STREAM.P[Math.min(STREAM.P.length-1,i+4)];place('sprite',p[0],p[1],8);place('sprite',p[0]+rr(-20,20),p[1]+rr(-20,20),18);});
  // the hollows, and the cloud band up high
- let tries=0,n=0;while(n<44&&tries++<4000){const x=rr(TERR.X0+200,TERR.X1-200),z=rr(TERR.Z0+200,TERR.Z1-200),mi=FC.at(FC.a.mist,x,z);if(rng()>mi)continue;place(n%3?'sprite':'sheet',x,z,rr(6,26));n++;}
+ let tries=0,n=0;while(n<44&&tries++<4000){const x=rr(TERR.X0+200,TERR.X1-200),z=rr(TERR.Z0+200,TERR.Z1-200),mi=FC.at(FC.a.mist,x,z);if(rng()>mi)continue;place(n%3||FC.at(FC.a.valley,x,z)<.5?'sprite':'sheet',x,z,rr(6,26));n++;}   // sheets only in the hollows: on the open crest they read as snow
  tick((dt,t)=>{for(const m of L){const x=m.ax+Math.sin(t*m.sp+m.ph)*m.amp,z=m.az+Math.cos(t*m.sp*.7+m.ph)*m.amp*.6;m.o.position.x=x;m.o.position.z=z;m.o.position.y=FC.at(FC.a.h,x,z)+m.lift;}});
  return{L,sheetM,spriteM};})();
 // the water and the mist follow the light (day / dawn / night)

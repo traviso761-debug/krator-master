@@ -6,7 +6,7 @@
       only near the LOD spine (the stream, the tower, the old wood, a boreal stand, the crest).
       Beyond ~600 m the stands thin (the passes' `lodK`) and the impostors are drawn larger to
       make up for it. A world that shows a smaller area can raise the density (`quality`) there.
-- [ ] **Memory.** ~22M triangles held (trees ~12M, floor ~9M), ~1.5M instances. Plain-array
+- [ ] **Memory.** ~26M triangles held (trees ~17M, floor ~9M), ~1.9M instances. Plain-array
       buckets crashed the page at ~16M; the core now stores Float32 (BIOME-API.md). Software GL
       (SwiftShader) takes ~25 s to build and 20–60 s a screenshot.
 - [ ] Fauna deferred (a stub, as in the other kits).

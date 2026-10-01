@@ -97,5 +97,38 @@ up it, beard lichen replaces moss and the seedlings turn boreal (the probe count
 - 01, 07, 11, 12, 15, 44: the dark accents. 24: the bluebell glades. 16: the heath.
 - 28, 35: mountain cane, in small patches only. 02, 31: the stream. 06, 03: the morning fog.
 
+## The budget
+~26M triangles held (trees ~17M with their stand-ins, floor ~9M), ~1.9M instances, ~1450 LOD
+chunk meshes; 5–13M triangles and 200–480 draw calls at the preset views. Build ~27 s under
+SwiftShader. 35k trees: ~15k heroes near the spine, the rest impostors.
+
 ## Lessons this build cost
-(see the end of this file)
+- **A big map makes everything a hero.** With 22 spine points and a 1 km mid radius nearly every
+  tree on 43 km² was built in full (62k trees, 12k full heroes) and the page crashed. Fewer spine
+  points (13), hero/mid radii of 280/560 m, density that falls off with distance (`lodK`) and
+  impostors drawn larger where the stands thin.
+- **Plain JS arrays crash first.** Bucket vertices and instance matrices as arrays of doubles (8
+  bytes a float, plus a key string a triangle) killed the tab at ~16M triangles. Growable
+  Float32Arrays with the same `push()` halved it; the builders did not change.
+- **Count the tessellation of the small things.** A moss cushion was a 154-triangle sphere, a
+  boulder 320, a capped twig 24, a lantern pod 160: 4.3M triangles of cushions alone. Measure by
+  item (`BIO.baked` grouped by name) before cutting trees.
+- **An opaque funnel is black from below.** A wide lathe flaring upward has its outer normal
+  pointing at the ground; from under the canopy every trumpet was a black disc. The funnels are
+  their own bucket on the core's foliage material (normal bent skyward, back face lit through):
+  they read as thin pale leaf, which is what they are.
+- **A stream narrower than the ground mesh is cut into slabs.** At 9 m a vertex the ground's
+  triangles bridged the 4–13 m channel over the water. The ground is held under the surface across
+  the whole ribbon, and the ribbon is wider than the channel.
+- **A pool must not flood its banks.** The plunge pools lower the bed; the banks are built from the
+  bed without them.
+- **A mountain stream's mean gradient is already foam.** ~.17 on average: foam keyed to the drop
+  turned the whole stream white. Foam starts at .2 and is full only at the falls.
+- **Water is unlit in a ShaderMaterial.** It glowed at night until a light uniform followed the
+  mode.
+- **Horizontal mist sheets on an open crest read as snow from above.** Sheets only in the hollows;
+  sprites elsewhere.
+- **Tint every textured solid by its texture's mean** (boulders went black, then white, before
+  they went through `tint(colour, means().rock)`).
+- r128 names the fog varying `fogDepth`, not `vFogDepth`: a fog patch keyed to the newer name
+  silently does nothing.

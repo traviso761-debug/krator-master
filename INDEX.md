@@ -23,6 +23,7 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`kits/ringsea`](kits/ringsea/INDEX.md) | 36 | 183 | 10 | Ring Sea watercraft: 21 procedural vessels (warships, cargo ships, barges, canoes, outriggers, rafts) of the cultures round the Ring Sea. |
 | [`biomes/eastabyss`](biomes/eastabyss/INDEX.md) | 17 | 208 | 54 | Biome kit: see `biomes/README.md`. |
 | [`biomes/hyperjungle`](biomes/hyperjungle/INDEX.md) | 19 | 179 | 33 | Biome kit: see `biomes/README.md`. |
+| [`biomes/nhighlands`](biomes/nhighlands/INDEX.md) | 20 | 259 | 49 | Biome kit: see `biomes/README.md`. |
 | [`biomes/nwlowlands`](biomes/nwlowlands/INDEX.md) | 17 | 208 | 56 | Biome kit: see `biomes/README.md`. |
 | [`biomes/rift`](biomes/rift/INDEX.md) | 17 | 230 | 60 | Biome kit: see `biomes/README.md`. |
 | [`biomes/sedesert`](biomes/sedesert/INDEX.md) | 18 | 194 | 32 | Biome kit: see `biomes/README.md`. |
