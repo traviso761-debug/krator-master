@@ -3406,11 +3406,22 @@ var KRATOR_EXPORT = {
       lights:FIX.lights.map(function(o){ return fixOut('light', o); }) };
   },
   download: function(obj, filename){
-    var blob = new Blob([JSON.stringify(obj, null, 1)], { type:'application/json' }), a = document.createElement('a');
+    var text = JSON.stringify(obj, null, 1); filename = filename || 'krator-export.json';
+    /* inside a claude.ai artifact the viewer grants saves through the downloads capability; a plain link does nothing there */
+    if(window.claude && window.claude.use){
+      window.claude.use('downloads').then(function(dl){ if(dl) return dl.save({ filename:filename, data:text }); fixSave(text, filename); })
+        .catch(function(e){ if(e && e.code!=='declined') ERR('export: '+(e.message||e.code)); });
+      return; }
+    fixSave(text, filename);
+  }
+};
+function fixSave(text, filename){
+  {
+    var blob = new Blob([text], { type:'application/json' }), a = document.createElement('a');
     a.href = URL.createObjectURL(blob); a.download = filename || 'krator-export.json'; document.body.appendChild(a); a.click();
     setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 500);
   }
-};
+}
 window.KRATOR_EXPORT = KRATOR_EXPORT; window.FIX = FIX;
 /* ============================== 13. THE GRAND VAULT ==============================
    PLANNER-OWNED. The facade of the Ancient installation, standing in the slot cut into
