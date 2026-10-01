@@ -51,6 +51,14 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
 - [x] (Oct 1 2026) `hykPad` inside a builder: its geometry went through the frame but its deck record did not, and
       `HYK.placeOn`'s `o.landing` converted to world first, so a grown pod's landing stood at twice its coordinates
       (agents B, C, D). It draws in the current frame and records world now; `hykBridge` and the pontoon likewise.
+- [x] (Oct 1 2026) Doors blocked by the building's own skin (Travis: the barracks). 90 of 210 doors on the kit sheet
+      showed a wall through their lip: the base fillets, skirts and second skins were never holed. Every HYK building
+      now clears its own geometry out of each door's passage when it is done (`hykCutDoorways`, 62); 206 doors are
+      clear. Of the four a ray still meets: the Treasury's swung-open seal leaf, the quay's edge and the Amphitriton's
+      shrine-niche step are by design; the hanging tavern's store door faces along the host and the host's skin
+      stands in its passage (agent C's layout: turn the door, or move the store pod off the face).
+- [x] (Oct 1 2026) The Amphitriton's vault let the rain in (Travis): the petals part where they taper and the spire
+      is an open lathe. A webbing shell under the petal edges, holed at the L2 doors, and a crown disc close it.
 - [ ] `hykLatheAt` reads the bare profile, so on a lobed, fluted or ringed lathe its point is off the skin (up to the
       lobe amplitude: 0.85 m on the Citadel's wall) and a lip floats or sinks. Agents A, E and G each wrote a corrected
       copy (`hykHouseLatheAt`, `hykTideAt`, the `hykMil…` radius); the Citadel uses `hykTideAt`. Fix it in 61 and

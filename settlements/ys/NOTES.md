@@ -165,3 +165,13 @@ The Citadel (agent D's unwritten half) is written to the brief: it crowns the st
 (r 95 m, 62 m) as a ring arena-fortress, 84 k triangles; the one defect the shots found (the gate's wall seen through
 from inside: the lathe is one-sided) is fixed with an inner face across the cutting. The three mock houses left the
 sheet. Kit, mock and city all pass `--assert` with a clean error panel.
+
+## Travis's walk of the kit sheet (Oct 1 2026)
+Five notes. (1) The Amphitriton's roof had holes: a shell of revolution under the petals' edges and a disc under the
+calyx close it. (2) The barracks' doors were blocked; a ray probe through every door found 90 of 210 blocked the same
+way (the shells cut their holes, their fillets and second skins did not), so the frame now clears each building's own
+geometry from its doors' passages after the build, sampling seven points a triangle because a coarse fillet's triangle
+spans a doorway with its corners outside it. (3) Pods on one host stand at different heights: the sheet steps them a
+plate or two apart; they stay on plates, because the hosts' projecting plate rings cross a door set between two.
+(4) and (5) are P3 requirements now (PLAN P3 step 5, DESIGN §5): at least three refurbished full-height towers, one
+the Pharos; land-side reclaimed Ancients that are hosts too, with pods and roof growth at ground scale.
