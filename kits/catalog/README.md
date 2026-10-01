@@ -1,27 +1,32 @@
 # kits/catalog/ — the master catalog
 
 A harvest of reusable pieces pulled out of Voth, Iziz, Mav's Refuge, Girder,
-Yuni and the Ancients kit into one registry format. It is the starting point
-for `kits/furniture/` and the furniture source for `kits/interiors/`.
-The 2026-10 interiors pass added 38 indoor pieces: Yuni's interior set (64-interiors.js
-"NEW PIECES" plus three from 63-furniture.js), a bed and a hearth for every Yuni culture,
-Voth tavern and shrine furniture, an Ancients workstation, and `surface` pieces.
+Yuni and the Ancients kit into one registry format, plus the **interiors-phase
+furniture sets** (2026-10): a parametric furniture kit and one file per culture.
+It is the furniture source for `kits/interiors/` and the starting point for `kits/furniture/`.
 
-**Status: verified.** `build.py` builds `dist/catalog.html`, a contact sheet of
-every entry and every variant, and `verify.py --assert` passes: all 122
-furniture pieces, 48 plants and 26 buildings (301 instances, every variant,
-seeds 1–4) build without error, carry no NaN geometry, fit their declared size,
-keep their anchor's geometry, and carry their tags. The 122 furniture entries carry
-every field of `kits/furniture/SPEC.md` "The entry" and meet its style rules: `F.*`
-only, `F.shade`/`F.TAU`, and every colour a palette key. What is still open is in `KNOWN_ISSUES.md`.
+**Status: verified.** `build.py` builds `dist/catalog.html`, a contact sheet of every
+furniture entry and every variant plus the Beast Rider buildings, and `verify.py --assert`
+passes: all 853 furniture pieces (1129 instances, every variant, seeds 1–4) and 13 buildings
+build without error, carry no NaN geometry, fit their declared size, keep their anchor's
+geometry, and carry their tags. Every furniture entry carries every field of
+`kits/furniture/SPEC.md` "The entry" and meets its style rules. What is still open is in `KNOWN_ISSUES.md`.
+
+**Not on the sheet any more (2026-10):** the 48 plants (`krator-master-plants.js`) and the 13
+first-generation Voth buildings (`krator-master-buildings-voth.js`). Both files stay here, unbuilt:
+plants belong to their biome kits and each build's own plant sheet; the Voth buildings have their
+own sheet, `settlements/voth/catalog/index.html`, which loads that file by path. The main sheet
+is furniture (one row per culture and tier) and the Beast Rider buildings.
 
 | File | What |
 |---|---|
-| `krator-asset-engine.js` | scene, camera, geometry kit (`F.box/cyl/cone/dome/blob/ball/beam/rod/frustum/pyrRoof/hipRoof`, `F.shift`), the `FURN`/`PLANT`/`ASSET` registries with `buildFurn/buildPlant/buildAsset`, `CATALOG_MATERIALS`, `furnAnchorY`, the furniture palette `FPAL` (`F.col`), `BUILDING_TYPES` |
+| `krator-asset-engine.js` | scene, camera, geometry kit (`F.box/cyl/cone/dome/blob/ball/beam/rod/frustum/pyrRoof/hipRoof`, `F.shift`), the `FURN`/`PLANT`/`ASSET` registries with `buildFurn/buildPlant/buildAsset`, `CATALOG_MATERIALS` and `CORE_MATERIAL_MAP`, `furnAnchorY`, the furniture palette `FPAL` (`F.col`), `FURN_CULTURE()` and `FURN_TIERS`, `BUILDING_TYPES` |
+| `krator-furniture-kit.js` | **the furniture kit `FK`**: one parametric builder per role (bed, throne, hearth, tapestry, wall art ...) driven by a culture's style sheet, motif and finial helpers, `FK.ROLES` per tier and `FK.set()`, which registers a whole tier for a culture. Read its header before writing a set |
 | `inspector.js` | click-to-select inspector: measure, isolate, cycle variants, audit declared sizes |
-| `krator-master-furniture.js` | 122 `FURN({...})` pieces in the SPEC shape (Voth 35, Iziz 9, Beast-Rider 16, Yuni 58, Ancients 4) |
-| `krator-master-plants.js` | 48 `PLANT({...})` species, tagged by climate and aridity |
-| `krator-master-buildings-voth.js`, `-beast-rider.js` | 26 `ASSET({...})` buildings, tagged by culture, `types: [...]` (README vocabulary) and `family` |
+| `krator-master-furniture.js` | 122 harvested `FURN({...})` pieces in the SPEC shape (Voth 35, Iziz 9, Beast-Rider 16, Yuni 58, Ancients 4) |
+| `krator-master-furniture-<culture>.js` | **one file per culture** (17 files): its palette (`FURN_CULTURE`), its style sheets, `FK.set()` for its tiers and its bespoke pieces. `generic` and `scrap` are the poor-tier sets; `hykkousoi` is a palette only. See "Furniture by culture" |
+| `krator-master-buildings-beast-rider.js` | 13 `ASSET({...})` buildings, tagged by culture, `types: [...]` (README vocabulary) and `family` |
+| `krator-master-plants.js`, `krator-master-buildings-voth.js` | kept, **not built** (above) |
 | `src/` | only the page around them: head, sky, sheet layout, hover inspector, polygon tool, tail |
 | `three.min.js` | three.js r128, the copy every other build uses |
 
@@ -34,15 +39,20 @@ the inspector from here by path.
 ```
 cd kits/catalog && python3 build.py                 # dist/catalog.html, node --check, build-manifest.json
 python3 build.py --vendor-check                     # src/81-sky.js against settlements/iziz/src/81-sky.js
-python3 verify.py dist/catalog.html --assert        # the gate; exit 0 = pass
+python3 verify.py dist/catalog.html --assert        # the gate; exit 0 = pass (about 8 minutes: 1129 instances x 4 seeds)
 python3 verify.py dist/catalog.html --out shots     # screenshots: initial view + one per section
-python3 verify.py dist/catalog.html --out shots --rows   # + one per row (slow: about 10 s a row)
+python3 verify.py dist/catalog.html --out shots --rows   # + one per row (slow on the full sheet)
+python3 verify.py dist/catalog.html --sheet furniture --query cultures=xanadu,voth --out shots --rows   # a quick partial sheet
 ```
 
-The page: `dist/catalog.html` shows all three sections stacked; `?sheet=furniture`,
-`?sheet=plants` or `?sheet=buildings` shows one. Rows are grouped by culture
-(furniture, sorted by type), by climate and aridity (plants), and by culture
-(buildings, sorted by family). The toolbar jumps to a row. Press **T** (or the
+`build.py` reads `SOURCES`: the engine, the kit, the harvested furniture, then every
+`krator-master-furniture-*.js` in filename order, the Beast Rider buildings and the inspector.
+A new culture is one new file; nothing else changes.
+
+The page: `dist/catalog.html` shows both sections stacked; `?sheet=furniture` or
+`?sheet=buildings` shows one. Furniture rows are one per culture and tier (`Furniture · xanadu · court`),
+sorted by type; buildings by culture, sorted by family. The whole sheet is heavy (about 33 000 draw
+calls); `?sheet=buildings` is the quick page. The toolbar jumps to a row. Press **T** (or the
 toolbar button) for the hover inspector: name, class and tags of whatever is
 under the pointer. Click anything for the full inspector (measure, isolate,
 variants, size audit). Press **P** for the polygon tool: click the ground to lay
@@ -61,7 +71,8 @@ piece's own frame. The sky is the standard KratorSky, vendored.
 | palette | every palette key a piece names exists in its culture's `FPAL` |
 | tags | furniture: `culture type setting rooms anchor clearance materials`, valid values, and `materials` covers every material family the piece actually builds with; plants: `climate aridity`; buildings: `culture`, `family`, and `types` (non-empty, all in `BUILDING_TYPES`) |
 | spec-source | no furniture entry still declares the old `room:` key |
-| style-host-globals, style-helpers, style-colour | SPEC rules from the source: no `kput/BOX/FAMMAT/MAT/PAL/scene/THREE/mk*`, no bare `shade`/`TAU`, no literal colour (`0x...`) or literal colour array in any piece |
+| style-host-globals, style-helpers, style-colour | SPEC rules from the source of every furniture file: no `kput/BOX/FAMMAT/MAT/PAL/scene/THREE/mk*`, no bare `shade`/`TAU`, no literal colour (`0x...`) or literal colour array in any `FURN` block |
+| style-colour-kit | no literal colour in the kit or in a culture file outside its `/* PALETTE */ ... /* END PALETTE */` block (the one place literals belong) |
 
 It prints a WARN line (not a failure) for pieces that build more than 30 %
 smaller than they declare.
@@ -129,10 +140,84 @@ FURN({
   `iron`, `pewter`, `ember`, `flame`, `candle`). A host that wants another look
   replaces `FPAL[culture]` or single keys before building; a host with its own `F`
   must supply `F.col`/`F.cols`, a key-aware `F.pick` and a key-aware `F.shade`.
-- **Types.** `FURN_TYPES` gained `book` and `tool`; cups, jugs and bowls are `vessel`,
-  candles `lamp`. Buildings carry `types` from `BUILDING_TYPES` (`civic market shop
+- **Types.** `FURN_TYPES` gained `book`, `tool` and (2026-10) `art`, wall-mounted art: a mask,
+  a plate, a painted panel, a mounted skull. Tapestries and hangings are `banner`. Cups, jugs and
+  bowls are `vessel`, candles `lamp`.
+- **Tier.** `tier: 'poor' | 'common' | 'court'` and `wealth: [lo, hi]`; `FURN()` fills them in from
+  the culture name (`yuni-court`, `yuni-poor`) or `FURN_TIERS` when an entry leaves them out. Buildings carry `types` from `BUILDING_TYPES` (`civic market shop
   tavern inn industry farm dwelling-single dwelling-multi infrastructure religious
   funerary`, Yuni's slugs for the README's vocabulary) next to `family`.
+
+## Furniture by culture (the interiors-phase sets)
+
+Every culture in the table has at least one counterpart of every type the Yuni set has
+(table, seating, bench, chair, bed, storage, shelf, desk, lamp, stove, brazier, rug, screen,
+counter, workstation, loom, rack, ladder, board, vessel, book, statue), across two tiers, plus
+tapestries (`banner`) and wall art (`art`) for its rich and court rooms. The sets are built by
+`FK.set()` from a style sheet, so a culture is mostly data; bespoke pieces are plain `FURN()`.
+
+| Culture | Tiers | Influences | Materials | Socket pack |
+|---|---|---|---|---|
+| `generic` | poor | plain country joinery, any culture | softwood, undyed linen, hemp, terracotta, fieldstone | generic |
+| `scrap` | poor | post-apocalyptic salvage, any culture | rust, pipe, drum, tarpaulin, rag, plastic, concrete block | generic |
+| `voth` | common, court | Morrowind Dunmer; Aztec; Ottoman | walnut, ash-glazed stone, slate glass, brass; court: gilt, obsidian, lacquer | voth |
+| `iziz` | common, court | science fantasy; Roman; Art Deco | hyper-mahogany, bronze, glazed ceramic, salvaged electrics; court: gilt, marble | iziz |
+| `beast-rider` | common, court | Amerindian; Javan; big animal skulls | lashed hardwood, hide, bone and horn; court: hyper-mahogany, bone inlay, skulls | beast-rider |
+| `lizardmen` | common, court | reptilian motifs; Amerindian | driftwood, woven reed, basalt, olive clay, jade and turquoise scale inlay | – |
+| `eastabyss` | common, court | Maghrebi; Arab | cedar, reed, lime plaster, zellige tile, brass; court: gilt, indigo and saffron silk | – |
+| `nomad` | common, court | pueblo; Arab (the Eastern Nomads) | poplar, hide, felt, adobe, red clay, copper, bone | – |
+| `xanadu` | common, court | Mughal; Yuan; Tibetan | rosewood, celadon, turquoise tile, a little gold; court: red lacquer, gold, jade, marble | xanadu |
+| `screamer` | common, court | primitive; Amazonian; heavy scrap | bark timber, vine, hide, feathers, bone, rusted and plastic scrap | generic |
+| `islander` | common, court | Polynesian; Ashlander | koa, pandanus, tapa, coir, gourd, shell, lava stone; court: shell-pearl | ringsea-islander |
+| `republican` | common, court | Russian; Saxon; Tlingit; Korean; salvage | bamboo (common), birch and black timber, brass, celadon, Ancients alloy | republic |
+| `rustic` | common, court | Alpine; Tlingit (Rustic Highlanders / Clansmen) | larch, wool, horn, pewter, iron, fieldstone, antler | – |
+| `painted` | common, court | Tlingit (the Painted Men) | red cedar, painted hide, copper, abalone shell | – |
+| `reedlake` | common, court | the floating reed village | bundled reed, rush, driftwood, lake clay, fish silver, shell | – |
+| `post-apoc` | common, court | high-value salvaged Ancients goods | alloy, steel, glass, synthetic cloth, white ceramic; court: gilt | generic |
+| `hykkousoi` | (palette only) | Greek; Polynesian; organic | nacre and mother-of-pearl, olive wood, sea-linen, bronze | hykkousoi |
+
+The harvested cultures (`yuni-*`, `sahelian`, `order`, `ancient`, `ancients-salvage`) keep their
+pieces; Yuni's own tiers are its culture tags. Hykkousoi is in progress and has no pieces yet;
+its file says how to add them.
+
+**Tiers and wealth.** Every piece carries `tier` (`poor | common | court`) and `wealth: [lo, hi]`
+(`FURN_TIERS`: poor 0–0.35, common 0.3–0.75, court 0.7–1). The poor tier is the two generic sets:
+a culture's poor buildings pull from them through `kits/interiors`' culture chain
+(`IX.CULTURE_FAMILY`), and the placer tries a culture's in-band pieces before its other tiers.
+The sheet, the hover inspector (T) and the interiors adapter all carry the tier.
+
+**Materials.** The regional materials are canonical names in `CATALOG_MATERIALS` with their own
+render look (`MAT_FAMILY_LOOK`): `bamboo`, `reed`, `hyperMahogany`, `nacre`, `gold`, `bronze`,
+`lacquer`, `ceramic`, `obsidian`, `jade`, `bone`, `hide`, `wicker`, `plastic`. `CORE_MATERIAL_MAP`
+says which `MAT.*` (Ancients lineage, `core/materials/`) and `FAMMAT` family (Voth and Yuni lineage)
+each canonical name lands on, the bridge `core/README.md` "Planned: a material registry" asks for.
+
+**Socket packs.** `FURN_CULTURE_INFO[culture].pack` names the culture's pack in
+`core/sockets/80-cultures.js`; tapestries, hangings and cloth take the pack's banner colours
+(each palette's comment quotes them), so a building dressed by `fillSockets()` and the furniture
+inside it match. `FK.build.tapestry` draws the pack's device in blocks (`'sun'`, `'diamond'`,
+`'wheel'`, `'claw'`, `'moon'`, the hyperboloid is still to do); the canvas `SYMBOLS` of the pack
+file need the Post-Apoc engine and are not loaded here.
+
+**Adding a culture** is one file, `krator-master-furniture-<culture>.js`:
+
+```js
+/* PALETTE */
+FURN_CULTURE('newfolk', { name: 'New Folk', pack: 'generic', influences: '...', materials: '...',
+  palette: { timberX: 0x..., clothA: 0x..., ... } });      /* literals live only between the PALETTE markers */
+/* END PALETTE */
+const NF_COMMON = { wood: 'timberX', cloth: ['clothA', 'clothB'], accent: 'brass', accentFam: 'metal',
+  clay: 'clayX', stone: 'stoneX', legs: 'turned', motif: 'chevron', hearth: 'stone', fire: 'bowl', lamp: 'oil',
+  rug: 'woven', screen: 'lattice', store: 'jars', shelfFill: 'books', rack: 'tools', art: 'plate', statue: 'figure',
+  tapestry: 'medallion', canopy: true, board: 'slate', flame: 'flame', ember: 'ember' };
+FK.set({ culture: 'newfolk', tier: 'common', S: NF_COMMON, names: { bed: 'New Folk bed', ... },
+  dims: { table: { w: 2.0 } }, override: { throne: { build: function (F, S, o) { ... } } }, skip: ['loom'] });
+FURN({ key: 'newfolk_court_relic', ... });                   /* bespoke pieces as usual */
+```
+
+The kit's header lists every style-sheet field and value. `FK.set()` declares `materials` from the
+sheet's families and the role's extras (`FK.materialsFor`), keys the pieces `<culture>_<tier>_<role>`
+(or `prefix`), and names them from `names`. Build, then `verify.py --assert`.
 
 ### Pieces added in the 2026-10 interiors pass
 

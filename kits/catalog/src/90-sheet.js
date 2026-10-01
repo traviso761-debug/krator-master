@@ -1,18 +1,22 @@
 /* ======================== Catalog contact sheet ========================
    Catalog contact sheet
    Lays out every registered FURN / PLANT / ASSET entry, every variant, in
-   labelled rows on the engine's own scene. ?sheet=furniture|plants|buildings
-   shows one section; no parameter (or ?sheet=all) shows all three, stacked
-   front to back. Each instance is built at ry = 0, so local axes are world
+   labelled rows on the engine's own scene. ?sheet=furniture|buildings
+   shows one section; no parameter (or ?sheet=all) shows both, stacked
+   front to back. Furniture rows are one per culture and tier; ?cultures=a,b shows only those
+   cultures' furniture. Each instance is built at ry = 0, so local axes are world
    axes and verify.py can audit it against its declared box directly.
    Exposes window._catalog (rows, sections, audit()) and sets window._ready.
    ====================================================================== */
 (function () {
   'use strict';
   const qs = new URLSearchParams(location.search);
-  const SHEETS = ['all', 'furniture', 'plants', 'buildings'];
+  const SHEETS = ['all', 'furniture', 'buildings'];      /* plants left the main catalog (2026-10): their biome kits hold them */
   let sheet = (qs.get('sheet') || 'all').toLowerCase();
   if (SHEETS.indexOf(sheet) < 0) sheet = 'all';
+  /* ?cultures=xanadu,voth lays out only those cultures' furniture: a light page for one set */
+  const onlyCultures = (qs.get('cultures') || '').split(',').map(function (c) { return c.trim().toLowerCase(); }).filter(Boolean);
+  const cultureShown = function (c) { return !onlyCultures.length || onlyCultures.indexOf(c) >= 0; };
 
   /* --- labels: a ground plane sized to its slot, readable from the default orbit */
   const _labelCache = new Map();
@@ -51,10 +55,13 @@
   function groups(kind) {
     const out = [];
     if (kind === 'furniture') {
-      for (const c of FURN_CULTURES) {
-        const list = FURNS.filter(A => A.culture === c)
+      /* one row per culture and tier (poor, common, court), sorted by type */
+      for (const c of FURN_CULTURES) for (const tier of ['poor', 'common', 'court']) {
+        if (!cultureShown(c)) continue;
+        const list = FURNS.filter(A => A.culture === c && A.tier === tier)
           .sort((a, b) => (a.type || '').localeCompare(b.type || '') || a.key.localeCompare(b.key));
-        if (list.length) out.push({ title: 'Furniture · ' + c, items: list });
+        const tiers = new Set(FURNS.filter(A => A.culture === c).map(A => A.tier));
+        if (list.length) out.push({ title: 'Furniture · ' + c + (tiers.size > 1 ? ' · ' + tier : ''), items: list });
       }
     } else if (kind === 'plants') {
       for (const c of PLANT_CLIMATES) for (const a of PLANT_ARIDITY) {
@@ -73,7 +80,7 @@
   const BUILD = { furniture: buildFurn, plants: buildPlant, buildings: buildAsset };
   const GAP = { furniture: 1.6, plants: 2.5, buildings: 6 };
   function subLine(kind, A) {
-    if (kind === 'furniture') return [A.type, A.setting].filter(Boolean).join(' · ');
+    if (kind === 'furniture') return [A.type, A.setting, A.tier].filter(Boolean).join(' · ');
     if (kind === 'plants') return A.climate + ' / ' + A.aridity;
     return (A.types && A.types.length ? A.types.join(' + ') : (A.family || ''));
   }
@@ -81,7 +88,7 @@
   /* --- lay out: rows run along +x from x = 0; sections stack toward -z */
   const rows = [], sections = [];
   let z = 0, maxW = 0;
-  const kinds = sheet === 'all' ? ['furniture', 'plants', 'buildings'] : [sheet];
+  const kinds = sheet === 'all' ? ['furniture', 'buildings'] : [sheet];
   for (const kind of kinds) {
     const sec = { kind: kind, z0: z, rows: [] };
     for (const grp of groups(kind)) {

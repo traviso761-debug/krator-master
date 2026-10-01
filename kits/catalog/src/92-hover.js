@@ -17,6 +17,7 @@
     const A = u.asset, t = [];
     if (u.kind === 'furniture') {
       t.push('culture: ' + A.culture);
+      if (A.tier) t.push('tier: ' + A.tier + (A.wealth ? ' (' + A.wealth[0] + '–' + A.wealth[1] + ')' : ''));
       if (A.type) t.push('type: ' + A.type);
       if (A.setting) t.push(A.setting);
       if (A.rooms) t.push('rooms: ' + A.rooms.join(', '));

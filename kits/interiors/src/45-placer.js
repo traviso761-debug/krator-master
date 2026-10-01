@@ -174,12 +174,18 @@
     report.own = base.filter(function (d) { return d.culture === room.culture; }).length;
     report.thin = report.own < 3;
     report.candidates = base.length;
+    /* wealth band: a piece that declares one (catalog `wealth: [lo, hi]`, its tier) is tried first
+       when the room's wealth falls in it (with a 0.1 margin); the chain's out-of-band pieces come
+       after the whole in-band chain, so a poor room gets its culture's poor or generic pieces before
+       its court ones, and a court room never lacks a bed for want of a court bed. */
+    const BAND = IX.WEALTH_MARGIN == null ? 0.1 : IX.WEALTH_MARGIN;
+    function inBand(d) { return !d.wealth || (room.wealth >= d.wealth[0] - BAND && room.wealth <= d.wealth[1] + BAND); }
     function levels(scope) {
-      const L = chain.map(function (c) { return { culture: c, list: base.filter(function (d) { return d.culture === c; }) }; });
-      if (scope === 'none') return L.slice(0, 1);
-      if (scope === 'family') return L;
-      L.push({ culture: '*', list: base.filter(function (d) { return chain.indexOf(d.culture) < 0; }) });
-      return L;
+      const L = chain.map(function (c) { return { culture: c, list: base.filter(function (d) { return d.culture === c && inBand(d); }) }; });
+      const off = chain.map(function (c) { return { culture: c, offTier: true, list: base.filter(function (d) { return d.culture === c && !inBand(d); }) }; });
+      if (scope === 'none') return [L[0], off[0]];
+      if (scope === 'family') return L.concat(off);
+      return L.concat(off, [{ culture: '*', list: base.filter(function (d) { return chain.indexOf(d.culture) < 0; }) }]);
     }
     function pickVariant(d) {
       const n = d.variants || 1;
