@@ -62,7 +62,7 @@ FIREKIT.push('skLit','skGlow');
 // Presets are derived from this: targets/skyk/91z-views.js runs after the builders.
 const SK_SITE={};
 
-function buildSkyK(scene,gx,gz,d){reseed(9780+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const dd=d>0?1:0;
+function buildSkyK(scene,gx,gz,d){reseed(9780+d);KOFF=[gx,0,gz];const SM=skyShardMark();const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const dd=d>0?1:0;
  // ============================================================ THE NUMBERS
  const H=405,PH=2.5,ZB=-14,TX=22,PR=112,E0=.1;
  const CUT=150,HC1=372;                        // toppled cut; ruined snaps the prow off here
@@ -389,6 +389,7 @@ function buildSkyK(scene,gx,gz,d){reseed(9780+d);KOFF=[gx,0,gz];const G=new THRE
    kput('boxD',L(0,PH+1.3,dp/2+.08),qR,[1.7,2.6,.3],null);}}
  if(dd===0){people(LX,52,12,14,PH);people(40,30,5,10,PH);}
  else if(d!==2){vinesOnRing(0,PH,0,PR,40,8);}
+ if(dd>0)skyShards(SM,d===3?.25:.5);   // glass teeth in the dead openings (52-sky-abc.js)
  KOFF=[0,0,0];return G;}
 
 // THE CAMPANILE, built up its local +y from its foot at 0. `from`/`to` are

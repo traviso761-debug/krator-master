@@ -5,7 +5,7 @@
 // fire grid is 28 bays x one storey per ribbon, and it burns the RIBBON rather
 // than individual panes. The mask itself is the shared one (fireMask).
 function buildSkyD(scene,gx,gz,d){reseed(9130+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const dd=d>0?1:0;
- const PROJ=d===4;
+ const PROJ=d===4,FLM=PROJ?fireLightMark():null,SM=skyShardMark();
  const H=340,Y0=14;REGISTER({name:(PROJ?'Project D — the Monolith reoccupied whole (rehabilitated)':'Skyscraper D — the Monolith ('+(d===2?'toppled':STATE(d))+')'),x:0,z:0,r:120,h:H+20});
  // PLINTH. Nothing at all stands on this podium except the tower: the shell at
  // its foot is rFn(14)*se(th,3.2) = 34 m at the corners of the superellipse and
@@ -25,7 +25,8 @@ function buildSkyD(scene,gx,gz,d){reseed(9130+d);KOFF=[gx,0,gz];const G=new THRE
    mesh(lathe({rFn:y=>rFn(y+y0)*.86,H:H-y0,cut:cut!=null?L:null,jag:6,nu:64,nv:Math.max(8,Math.round(L/6)),hole,seed:47}),MAT.guts,P);
    for(let y=6;y<L-2;y+=6){const rp=rFn(y+y0);
     kput('slab',[0,y,0],null,[rp*.9,.6,rp*.9],new THREE.Color(0xbdb7ad));
-    kput('slab',[0,y-1.3,0],null,[rp*.87,.7,rp*.87],new THREE.Color(0x191b1f));}}
+    kput('slab',[0,y-1.3,0],null,[rp*.87,.7,rp*.87],new THREE.Color(0x191b1f));}
+   skyRooms({rFn:y=>rFn(y+y0)*.84,y0:6,y1:L-2,step:6,soff:1.3,hole,d,seed:47});}   // interiors behind the openings (52-sky-abc.js)
   const NB=28,burns=PROJ?fireMask('D',NB,Math.ceil(L/12),9134,9):null;
   const dRib=[];   // the ruined ribbons merge; the intact ones are glass, which does not
   for(let y=12-((y0)%12);y<L-4;y+=12){const yy=y+y0;const r0=rFn(yy)*.95; // glass ribbon in each recess
@@ -57,5 +58,7 @@ function buildSkyD(scene,gx,gz,d){reseed(9130+d);KOFF=[gx,0,gz];const G=new THRE
  if(PROJ){const hy=Y0+(H-Y0)+2.6;
   for(let k=0;k<6;k++){const a=rng()*TAU,r=rFn(H)*rr(.25,1.5);firePit('D',r*Math.cos(a),hy,r*Math.sin(a),rr(1.8,3.4));}
   for(let k=0;k<8;k++){const a=rng()*TAU,r=rr(34,PR*.9);firePit('D',r*Math.cos(a),5.4,r*Math.sin(a),rr(1.6,3));}}
- figures(-PR,PR*1.28,6,6);KOFF=[0,0,0];return G;}
+ if(d===3)skyHoist((y,a)=>rFn(y)*se(a,3.2),H-4,5,9130);
+ if(d>0&&!PROJ)skyShards(SM,d===3?.25:.5);
+ figures(-PR,PR*1.28,6,6);if(PROJ)fireLights(FLM,3);KOFF=[0,0,0];return G;}
 

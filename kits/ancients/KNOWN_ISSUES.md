@@ -33,7 +33,8 @@ and ticking it, not by deleting it.
       taper each side, which is what lets it sit exactly on an acute corner
       instead of overhanging both edges of it. Designed for the Screamers'
       Hexahedron and brought back here intact as a type in its own right.
-- [ ] Decay 2 shortens it but does not topple it, unlike the other towers.
+- [x] ~~Decay 2 shortens it but does not topple it, unlike the other towers.~~
+      Towers QA round 1: broken at the 8th setback, the upper storeys lie on the plain (`Toppled Flatiron`).
 
 ## The Hotel — what was overhanging what
 
@@ -61,16 +62,16 @@ and ticking it, not by deleting it.
 - [x] ~~**The court elevation was thirteen storeys of blank brick.**~~ The
       convex face has a full curtain wall and the concave one had not one
       opening. 24 windows a storey.
-- [ ] **The lens is now too small for the idea.** A sky lobby on a 165 m
+- [x] ~~**The lens is now too small for the idea.**~~ Towers QA round 1: a 105 m glazed barrel vault on the top slab. A sky lobby on a 165 m
       crescent wants a long pavilion following the arc, not a 14 m cupola; the
       top slab is only 12 m deep, which is all a 1.9 m setback per storey can
       ever leave, so a dome is the wrong form for the space available.
-- [ ] The porte-cochère canopy is 40 x 24 m on four converging legs at r=14 —
+- [x] ~~The porte-cochère canopy is 40 x 24 m~~ (towers QA round 1: laps onto the curtain wall, four front columns) on four converging legs at r=14 —
       a 20 m cantilever. Deliberate-looking, but it is the next thing on this
       type that will not stand up.
-- [ ] The two lift towers at the horns are blank cones with no openings and no
+- [x] ~~The two lift towers at the horns are blank cones~~ (towers QA round 1: fluted shafts, lift slots, windows, machine-room heads) with no openings and no
       top, and they read as cooling towers.
-- [ ] The pool deck is a bare 130 m disc and the crescent sits at the back of
+- [x] ~~The pool deck is a bare 130 m disc~~ (towers QA round 1: lagoon, loungers, lap pool, fountain, parterre) and the crescent sits at the back of
       it. It is the largest single surface in the type and carries one pool.
 
 ## Non-ground placement
@@ -155,7 +156,7 @@ exactly one instance (see the Skyscraper G item).
       the splay were allowed to come in — A's struts from 98, B's legs from 70,
       C's from 62 — those three podiums could halve like the other five did.
       That is a change to the buildings' stance and was not taken unasked.
-- [ ] `figures()` at the foot of each tower is now placed at `-PR, PR*1.28`
+- [x] `figures()` at the foot of each tower is now placed at `-PR, PR*1.28`
       rather than at a hardcoded `-100, 130`, so the crowd follows the podium.
       Nothing else in the eight builders referenced a plinth radius.
 
@@ -716,7 +717,7 @@ through 90 m of rock; void-black for the first 55 m of bore fixed it.
 - [ ] This works here because a 420 m cone has 80 m of diameter to cut through.
       It does not contradict the standing rule from Arcbeam — a thin-skinned
       form still has nothing to section.
-- [ ] Only Skyscraper A was done. The other seven towers all still have an
+- [x] ~~Only Skyscraper A was done.~~ Towers QA round 1: B, C and G punched too; D and H already were. The other seven towers all still have an
       unpunched `MAT.guts` inner lathe and dark floor plates, and will all read
       the same way. It is the same two-line change in each.
 
