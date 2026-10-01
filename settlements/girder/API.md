@@ -1,0 +1,211 @@
+# Girder — generator API (the contract)
+
+An outlying beast-rider village built into an ancient four-tower ruin in Krator's hyperjungle (sister build of Mav's Refuge, same engine), generated procedurally in Three.js
+r128 and built into ONE self-contained HTML file. `src/` fragments are
+concatenated by `build.py` inside a single `BUILD()` function, so **every
+top-level name is a global shared by every fragment**. Prefix your own
+helpers/locals (e.g. `fly…`, `FLY_…`) — a stray `var seed`, `var T`, `var P`
+at fragment top level WILL clobber someone else's. Wrap your fragment body in
+an IIFE where you can and export only what others need.
+
+**Units are metres.** `x` east, `z` south, `y` up. A person is 1.75 m.
+**The terrace the village stands on is at `SETTLE_Y` ≈ 34.6 — NOT y 0.** Tower floor k is at
+`T.floors[k].y` = SETTLE_Y+0.6+5k; roost decks ≈ y 180; the towers top out ≈ y 185 (+ stubs);
+hypertrees here are 150–270 m tall and keep out of the clearing. A small brook passes W and S of
+the palisade; the volcano lies NW, the gas giant hangs NE. Rotation convention (same as Voth): a plain number `ry` is
+`rotation.y`; local +x then points along world angle `-ry`
+(`loc(x,z,lx,lz,ry)` converts). To aim local +x along heading (dx,dz):
+`ry = Math.atan2(-dz, dx)`. To aim local +z along (dx,dz): `ry = Math.atan2(dx, dz)`.
+
+## Loop
+
+```
+python3 build.py                                   # rules + syntax check -> girder.html
+python3 verify.py girder.html --assert --all-views --out shots
+python3 verify.py girder.html --views "Roost decks" --hour 21.5 --out shots     # night
+python3 verify.py girder.html --cam "cx,cy,cz,tx,ty,tz" --cam-name mine --out shots
+python3 verify.py girder.html --eval "()=>window._myCounter"
+```
+Headless Chromium with software GL: a run takes 2–6 minutes once the world is dressed — run it in the background with `./run.sh <logname> <verify args…>` and poll `<logname>.done` / read `<logname>.txt` (a foreground tool call may time out). LOOK at your
+screenshots (Read the PNG). `build.py` fails on: a generative fragment that
+does not open with `reseed(N)` (N unique across fragments — use your fragment
+number ×10000+1), a colour array (`var X = [0x…`) outside `05-palette.js`, or
+a syntax error. `verify.py --assert` fails on a dirty error panel, an
+invariant, or a budget ceiling. `FAST` is true under the verifier (no shadows,
+no AA) — do not branch generation on it.
+
+## Fragments and owners
+
+| file | owner | what |
+|---|---|---|
+| 05-palette.js | planner, FROZEN | `PAL`, `FAMMAT`, `BUDGET`, colour aliases (new: `RUSTC`, `CONCRETEC`, `VINEC`, `PAL.rustStain`) |
+| 10-core.js | planner | RNG, noise, the brook (`RIVER…` API kept), `groundPlane`, `SETTLE_Y/SETTLE_R`, `terrainH`, `TICKS`, `PATHVIZ` |
+| 20-stage / 21-sky / 82-daynight | planner (ported) | scene, lights, Krator sky, the clock |
+| 30-layout.js | planner | towers, floors, dwelling lots, decks, bridges, lifts, roosts, terrace (palisade, gates, roads, plots, houses, stalls, hall), forest positions, NAV |
+| 32-branches.js | planner | `BRANCHES` limb skeletons (natural limbs only) |
+| 45-kit.js / 47-texture.js | planner | geometry kit, light volume, textures (new families `rust`, `concrete`) |
+| 50-structure.js | planner | towers, decks + stall frames, bridges, lift frames, palisade, watch posts, gatehouses, road slabs |
+| 55-arch.js | arch | dwellings in the towers, roost dressing, ground houses, farms, assembly hall, market |
+| 58-overgrowth.js | arch | vines and flora on the abandoned floors |
+| 60-trees.js / 62-jungle.js | forest | hypertrees + foliage; understorey, brook dressing |
+| 72-lights.js | planner | `LANTERN`, `LAMPPOST`, fixed lamps |
+| 75-terrain.js | planner | **emits the kit**, ground, brook |
+| 78-life.js | life | farm workers, villagers, sentries, lifts |
+| 84-flyers.js | flyers | flying beasts + riders, roost traffic |
+| 80/81/85/86/87/98 | planner | camera+loop, glow, probe, inspector, path viz, start |
+
+**Static fabric must be generated in a fragment numbered below 75** (the kit is emitted there; a later
+kit call raises an error-panel message). Fragments ≥ 76 create their own meshes.
+
+## Randomness
+
+`rnd() rr(a,b) ri(a,b) pick(arr) chance(p) shuffle(arr) reseed(n)` — one global
+LCG. `phash(x,y,z,salt)` is a position hash (0..1) for choices that must not
+move when someone else's code changes. Noise: `vn fbm sig(x,z,f)`.
+Maths: `clamp smooth mix smin TAU wrapPi angDist segDist polyNear cumLen loc`.
+Runtime behaviour (animation) uses `Math.random()`, never `rnd()`.
+
+## Fields
+
+| | |
+|---|---|
+| `terrainH(x,z)` | ground height. Flat (= `SETTLE_Y` ± 0.05) inside r < `SETTLE_R` (214) |
+| `groundPlane(x,z)` | the district's gentle SE tilt, before hills |
+| `riverDist(x,z)` | signed distance to the brook's waterline (>0 land). Brook ≈ 6.5 m wide |
+| `RIVER`, `RIVER_LEN`, `riverAt(s)`, `riverLevel(s)`, `riverHalfAt(s)`, `cataractK(s)`, `CATARACTS[1]` | the brook by arc length (0 = north/upstream). One small 3 m cascade near (-200,170) |
+| `trunkR(T,y)` | trunk radius of hypertree `T` at height `y` |
+| `towerAt(x,z,margin)` | the tower whose plan contains the point, or null |
+| `onRoad(x,z,margin)` | true on a road slab or the patrol walk |
+
+## Layout objects (READ ONLY)
+
+**The ruin.** `TOWERS[4]` `{id,name,x,z (centres ±60),sx,sz (signs),half:24,y0,top,floors[0..30],deck,lift,nav}`.
+Identical plans: 48×48 m, 16 columns 3.2 m square on `COL_LINES` = [-22.4,-8,8,22.4] (both axes), so nine
+16 m bays; the centre bay is the core (concrete walls on N/S/E, switchback stair, open to the WEST along
+z=T.z — keep that 3 m corridor from the core to the west gallery clear on every floor). Floor-to-floor 5 m,
+plates `SLAB`=1 m thick: `T.floors[k] = {k, y (floor TOP), H:4 (clear height), use (0..1 habitation
+density), kind:'inhabited'|'wild'|'roof', missing:['bi,bj'…] bays with no plate}`. Floors 0–5 and 25–29
+are inhabited (use falls toward the middle), 6–24 are wild, 30 is the ragged roof plate. There are NO
+walls or windows: every floor is open to the air between the columns — the cross-section is the look.
+Perimeter girders hang 0.9–1.5 m below each plate at the edge, so clear height at the rim is ~3.2 m.
+The open **gallery** runs round each floor between r=19.6 (`GALLERY_IN`) and the edge; walkers use
+the loop at ±22.
+
+`SLOTS[]` dwelling lots on inhabited floors: `{id,tower,k,x,z (centre),y,w (x-extent),d (z-extent),H,ox,oz
+(unit: the way its front/door faces = outward),kind:'home'|'store'|'workshop'|'common'|'shrine',high
+(k≥25),door (nav node, 0.9 m outside the front)}` — ~340 of them, 6–11 m across. Build ONLY inside the
+rectangle; the front wall is the face at `+ (ox,oz)`.
+
+`PLATS[4]` roost decks (Mav's-compatible records): `{name,kind:'roostdeck',tower,x,z,y (deck top ≈
+floor 30's level),half:39 (outer half-width),inner:24,R (bounding radius),yBottom,levels[1],heads[],nav}`
+— a square timber ring 15 m wide. `ROOSTS[68]` `{id,plat,x,y,z (perch point 1.4 m inside the outer
+edge),ox,oz (outward),ang,H:7,w (stall width ≈ 11 m),node}`: open stalls 9.2 m deep along the outer
+edge with posts, low partitions, a lean-to shingle roof (eave ≈ y+5.8 at the rim, ≈ y+7.4 at the back)
+and a perch beam projecting 3.4 m already built. The inner 5.5 m of the deck is the walkway.
+`BRIDGES[4]` `{id,a,b,L≈42,w,sag}` + `bridgeY(br,t)`; `LIFTS[4]` `{tower,plat,x,z,y0,y1,ox,oz,capstan
+{x,z,y,r},foot,head (nav nodes),edge}` — cage shaft on each tower's court-facing x-face, through a notch
+in the deck. `LADDERS`, `SPIRALS`, `SATS` exist but are empty.
+
+**The terrace.** `PALISADE {R:200,h,walk[72 nav nodes at r=192],posts[8]{x,y,z,a}}` (wall-walk ledge at
+SETTLE_Y+3.6, r 197.6–199.5), `GATES[2]` N and S `{name,x,z,a,node,out}`, `ROADS[]` `[x0,z0,x1,z1,w]`
+(N–S and E–W avenues to the hall's ring walk, a square ring road at ±92 round the towers, patrol walk),
+`HALL {x:0,z:0,R:15.5,doors[4 nav nodes at N,S,W,E]}` — the round assembly hall site in the centre of
+the court, `STALLS[]` `{x,z,ry,y,node}` market stall sites round it, `PLOTS[48]` `{id,x,z,w,d,y,kind:
+'crop'|'paddy'|'orchard'|'garden'|'pen',node,edge}` farm plots (26×20 m), `HOUSES[8]` `{id,x,z,w,d,y,kind:
+'roundhut'|'joglo'|'longhouse',ox,oz (door side),door}` house lots (build within w×d, door toward ox,oz).
+`CLEARINGS` `[[x,z,r]]` — forest passes keep out.
+
+**The forest.** `SPECIES[4]`, `TREES[46]` (none within 262 m of the centre), `FARTREES[260]`,
+`BRANCHES[]` `{tree,kind:'limb',pts:[{x,y,z,r}]}` — same contracts as Mav's Refuge, about 0.58× the size.
+
+`NAV` walk graph `{nodes[{id,x,y,z,plat,lvl,tag,…}],edges[{id,a,b,len,kind,bridge?,lift?}],adj}`. Edge
+kinds: `ground deck stair bridge lift`. Node tags: road patrol gate field housedoor halldoor market
+towerdoor gallery door core stair deckwalk bridgehead roost liftfoot lifthead. `field` nodes carry
+`.plot`, `door` nodes `.slot`, `housedoor` nodes `.house`. On a `bridge` edge height is
+`bridgeY(BRIDGES[e.bridge],t)`; a `lift` edge is ridden in the cage (vertical, ≈146 m); all others
+interpolate linearly. Every storey of every tower is linked by the core stair (`stairPts(T,k)` gives
+the four walking points of a storey). Fully connected.
+
+## Making geometry (fragments < 75)
+
+**A. Instanced kit** — one InstancedMesh per (shape, family):
+```
+BOX(x,y,z, w,h,d, rot, colour, family)     // y = BASE. rot: number (yaw) or [rx,ry,rz] Euler 'YXZ'
+FR8 FR5 PYR (same args)                    // battered box, strong taper, 4-sided pyramid
+CYL(x,y,z, r,h, rot, col, fam)  CONE(...)  DOME(...)  BLOB(...)   BALL(x,y,z,r,col,fam)
+BEAM(ax,ay,az, bx,by,bz, w,d, col, fam)    // box from a to b, no roll (w horizontal, d in the vertical plane)
+ROD (ax,ay,az, bx,by,bz, r, col, fam)      // 5-sided open cylinder: ropes, poles, spars
+```
+**B. Merged builder** — one Mesh per family, vertex-coloured, world-unit UVs:
+```
+SECTOR(fam, P, r0,r1, a0,a1, yb,yt, col, {faces:'tbios', step, colTop, colInner})
+        // annular-sector prism in P's polar frame. faces: t(op) b(ottom) i(nner) o(uter) s(ides)
+RING_HOLES(fam, P, r0,r1, yb,yt, col, holes[{a0,a1,r0,r1}], opt)
+SECTOR_ROOF(fam, P, r0,r1, a0,a1, yb,h, col, {over, ridge, noSoffit})   // hipped roof over a sector
+MCONE(fam, x,yb,z, rBase,rTop, h, col, seg, {under})                    // cone / frustum roof
+TUBE(fam, pts[{x,y,z,r,col?}], col, {seg, cap, rfn(i,ang,pt), vscale})  // smooth tube along a polyline
+MQUAD(fam, a,b,c,d, col)  MTRI(fam, a,b,c, col)      // [x,y,z] corners, CCW seen from outside
+platFrame(x,z,ry)                                   // a throw-away polar frame anywhere
+```
+Families (`FAMMAT`): `plank timber wall thatch shingle rope cloth rock rust concrete web leafy bark0..bark3 glowmat`.
+Textures are grayscale; the colour you pass tints them (bark2 is a colour texture — pass white-ish).
+`cloth` boxes sway (local y=1 is the hung edge). `glowmat` is unlit (lantern cores, embers).
+**A new family is a new draw call — ask the planner.** `shade(hex,f)` lightens(+)/darkens(−).
+Anything animated or alpha-blended is your own mesh in a fragment ≥ 76 (or your own static
+mesh in a fragment < 75 if the kit cannot express it — e.g. foliage cards — budget permitting).
+Any material you create yourself must be wrapped: `nlMaterial(mat, 'key', extraHook)` so it
+receives the night light volume (`extraHook(shader)` is your own onBeforeCompile body).
+
+**Lights.** `LANTERN(x,y,z, amp,rad, cool, hang)`, `LAMPPOST(x,y,z, h, amp,rad, cool)` (72-lights.js,
+function declarations — callable from any fragment) draw a lantern and register it.
+`nlLampAdd(x,y,z, amp,rad, cool)` registers a bare light (hearth, forge) with no geometry.
+`WINPANE(x,y,z, nx,nz, w,h, cool)` registers a window pane: centre, outward horizontal normal, size.
+Panes are drawn, lit on a staggered evening schedule and spill light automatically — you only
+build the dark frame/opening behind it. `cool` = the blue-green bioluminescent light of the
+Silk Loft and shrines. Registered lamps glow at night, pool light in the 3-D light volume and
+get a halo. Typical: amp 0.6–1.2, rad 10–18.
+
+**Inspector.** `REGISTER({name, kind, label, x,y,z, r, h, plat?})` — a vertical cylinder; the
+smallest one containing the cursor hit wins the tooltip. Register every building / notable thing.
+Own meshes: set `mesh.userData.inspectLabel = 'Giant bat'` (or
+`mesh.userData.inspectFn = function(instanceId){ return 'Beast-rider on a quetzal'; }`).
+
+**Animation.** `TICKS.push(function(dt, hour, nightK){ … })`. `skyHour()` 0–24. `SKY_STATE.keyDir`.
+**Path viz.** `PATHVIZ.push({ key, label, color, paths:function(){ return [ [[x,y,z],…], … ]; } })`
+(`var PATHVIZ` is declared in 10-core.js) — every moving population registers its routes.
+
+## Budget (whole build: 110 draw calls, 4.2 M triangles, 260k instances)
+
+| pass | triangles | instances | draw calls |
+|---|---|---|---|
+| structure (done) | 0.40 M | 10k | 29 |
+| arch + overgrowth | 0.75 M | 80k | ≤ 8 new |
+| forest (trees + jungle) | 1.60 M | 45k | ≤ 22 |
+| life | 0.12 M | — | ≤ 8 |
+| flyers | 0.09 M | — | ≤ 10 |
+
+## Pitfalls (each cost Voth a round)
+
+- One material object per InstancedMesh; never add an InstancedMesh with count 0.
+- Hand-built BufferGeometry needs UVs and CCW winding.
+- Coplanar faces z-fight: offset ≥ 0.05.
+- `Group.add()` returns the group, not the child.
+- Test an object's EXTENT, not its centre, against bays/streets/holes.
+- Two yaw conventions exist (see the top). A lintel that looks perpendicular is this.
+- Assert every scripted text edit applied.
+
+## Lessons folded in from Voth (read these)
+
+- **Bake order.** The kit is drained ONCE in 75-terrain.js. A kit call from a fragment ≥ 75 now raises an
+  error-panel message instead of silently vanishing — but check your instance counts anyway.
+- **Shared scope.** `build.py` rejects column-0 `var/function` names declared in two fragments, and short
+  generic names, unless the whole fragment is one IIFE. Keep your fragment one IIFE.
+- **GLSL that passes here and dies on a real GPU.** The verifier renders with SwiftShader, which forgives
+  undefined maths. On real drivers `pow(x<0, y)`, `sqrt(<0)`, `acos/asin(|x|>1)`, `normalize(vec3(0))`
+  and divide-by-zero are NaN = black or missing objects. Clamp every base/argument:
+  `pow(max(x,0.0), k)`, `acos(clamp(x,-1.0,1.0))`, `normalize(v + 1e-6)`.
+- **Merging stock geometries by hand**: Box/Cylinder/Sphere/Cone geometries are INDEXED — walk
+  `geometry.index` when present or you reassemble the wrong triangles.
+- **Probe scripts lie too**: select meshes by a tag (`userData`), never by instance count.
+- A check that fires on almost everything is usually too strict at a boundary (endpoints), not proof
+  the logic is wrong.

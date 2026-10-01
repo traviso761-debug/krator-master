@@ -1,0 +1,234 @@
+diff -ru '--exclude=64-locus-*' '--exclude=76-locus-*' yuni-src/yuni/src/05-palette.js locus-src/src/05-palette.js
+--- yuni-src/yuni/src/05-palette.js	2026-09-22 07:44:37.000000000 -0500
++++ locus-src/src/05-palette.js	2026-09-23 06:03:36.350958975 -0500
+@@ -104,6 +104,26 @@
+   /* the painted horizon: Outer Wall Mountains */
+   horizon : { near:0x8a8068, nearDark:0x6e6a58, mid:0x8c8f96, far:0xa3adb8, rim:0xc4ccd6, snow:0xf2f4f6, desert:0xd8c49a },
+ 
++  /* --- LOCUS: the abyssal-desert style (pastel washes, canvas, reed) and the petroleum works --- */
++  pastel   : [0xe9c3b4, 0xf1d3ad, 0xc3dcc6, 0xbdd2e2, 0xd3c2dc, 0xe8dcc0, 0xf3ecdf, 0xb9d6cf, 0xe5c9c9, 0xd9d9b6],
++             /* rose, apricot, mint, sky, lilac, sand, chalk, seafoam, blush, celadon-straw */
++  pastelDeep:[0xc9977f, 0xd9ad78, 0x8fb397, 0x8aa8c2, 0xa993b9, 0xc8b48a],   /* the same hues a stop darker, for bands and shadows */
++  canvas   : [0xe6dbc2, 0xdccfb0, 0xeee5d0, 0xd0c4a4, 0xc8b898],             /* unbleached / sun-faded canvas */
++  canvasDye: [0xd9a08a, 0xe2b98a, 0x9fbfa8, 0x9db4c9, 0xb8a1c4, 0xc9a64a],   /* dyed canvas stripes and sails */
++  reedMat  : [0xcdb98a, 0xc0ac7e, 0xd8c69a, 0xb49f72],                       /* woven reed / palm-mat walls */
++  pile     : [0x5e4a36, 0x6b5640, 0x4e3c2c, 0x7a6448],                       /* stilt piles, weathered grey-brown */
++  mudBrown : [0x8a6a44, 0x7c5e3c, 0x96764e, 0x6e5234, 0xa08258],             /* mud-brown Yuni banco for the works */
++  umber    : [0x6e4a2e, 0x7c5636, 0x5e3e26, 0x8a6240],                       /* raw umber: the Chapterhouse's dark tone */
++  sienna   : [0xa25a36, 0xb0663e, 0x92502e, 0xbe7448],                       /* burnt sienna */
++  steelDark: [0x4a4642, 0x3e3a36, 0x565250, 0x2e2b28],                       /* dark riveted plate, pipe, valve bodies */
++  pipeC    : [0x6c6660, 0x7a746c, 0x5c5650],                                 /* sun-bleached pipe grey */
++  oil      : [0x1a1612, 0x24201a, 0x14110d],                                 /* crude: near-black with a brown edge */
++  saltWater: [0x9fb9b0, 0xb3c8bf, 0x8daaa2],                                 /* brackish paddy water, milky with salt */
++  saltCrust: [0xe9e3d6, 0xf2ede2, 0xdcd4c4],
++  saltReed : [0x7f9a5e, 0x93a86a, 0xb9b48a, 0xcdc8a0, 0xd8cfa0],             /* marsh reed: green pair, silvered pair, seed head */
++  paddy    : [0x8aac52, 0x9cbc5e, 0x78a048, 0xb0c46c],                       /* salt-rice: yellower than upland rice */
++  geoBrown : [0x6a4a2c, 0x5e4226, 0x7a5834],                                 /* Geomancer uniform brown (life layer) */
++  flare    : 0xffb040,
+   pathviz : [0x46c8e6, 0xd76f9c, 0x86d24a, 0xd8a0ff, 0xffb347, 0x7fe0c0, 0xc2b280, 0xff7f7f],
+   /* the LIFE layers get their own six, chosen to stay apart from each other AND from the
+      street-network colours above, because the two sets are often drawn together */
+@@ -130,6 +150,7 @@
+   thatch : { tex:null, scale:[2.5,2.5] },
+   tile   : { tex:null, scale:[2.0,2.0] },
+   cloth  : { tex:null, scale:[2.0,2.0] },
++  canvas : { tex:null, scale:[2.5,2.5] },     /* LOCUS: taut canvas (sun shades, tents, awnings) — no sway */
+   leafy  : { tex:null, scale:[3.0,3.0] },
+   bark   : { tex:null, scale:[1.5,3.0] },
+   dark   : { tex:null, scale:[1,1] },         /* openings */
+@@ -138,6 +159,9 @@
+ 
+ var BUDGET = { drawCalls: 190, triangles: 7000000, instances: 460000 };
+ 
++var PASTELC=PAL.pastel, PASTELDC=PAL.pastelDeep, CANVASC=PAL.canvas, CANVASDYEC=PAL.canvasDye, REEDMATC=PAL.reedMat, PILEC=PAL.pile,
++    MUDBROWNC=PAL.mudBrown, UMBERC=PAL.umber, SIENNAC=PAL.sienna, STEELDC=PAL.steelDark, PIPEC=PAL.pipeC, OILC=PAL.oil,
++    SALTWATERC=PAL.saltWater, SALTCRUSTC=PAL.saltCrust, PADDYC=PAL.paddy, GEOBROWNC=PAL.geoBrown;
+ var GILDC=PAL.gild, BLUEGREYC=PAL.blueGrey, STONEC=PAL.stoneWarm, THORNC=PAL.thorn;
+ var ADOBEC=PAL.adobe, ADOBEREDC=PAL.adobeRed, WHITEC=PAL.whitewash, BLUELC=PAL.bluewashL, BLUEDC=PAL.bluewashD,
+     MOSBLUEC=PAL.mosaicBlue, MOSWARMC=PAL.mosaicWarm, MOSGREENC=PAL.mosaicGreen, METALC=PAL.metal, TARNC=PAL.metalTarn,
+diff -ru '--exclude=64-locus-*' '--exclude=76-locus-*' yuni-src/yuni/src/10-core.js locus-src/src/10-core.js
+--- yuni-src/yuni/src/10-core.js	2026-09-22 00:16:20.000000000 -0500
++++ locus-src/src/10-core.js	2026-09-23 06:00:29.899349953 -0500
+@@ -10,6 +10,10 @@
+    CATALOG names WHICH catalogue, so 70-sheet.js lays out buildings only on 'sheet'. */
+ var SHEET = TARGET!=='world';
+ var CATALOG = (TARGET==='furn' || TARGET==='flora') ? TARGET : null;
++/* KIT names a SUB-KIT laid out on its own building sheet ('locus': the Locus abyssal-desert +
++   petroleum kit). On the plain 'sheet' target only assets with no kit are laid out; on a kit
++   target only that kit's assets are, grouped by their own `group` field. */
++var KIT = TARGET==='locus' ? 'locus' : null;
+ 
+ var SEED = 20260921;
+ var seed = SEED;
+@@ -91,7 +95,7 @@
+ 
+ /* ============================== 2. WORLD CONSTANTS ============================== */
+ var WORLD = 8000, HW = WORLD/2;
+-var CITY_EXT = CATALOG ? 300 : SHEET ? 1700 : 1400;              /* the detailed box: painted ground canvas + placement mask (metres, +-) */
++var CITY_EXT = CATALOG ? 300 : KIT ? 520 : SHEET ? 1700 : 1400;              /* the detailed box: painted ground canvas + placement mask (metres, +-) */
+ 
+ var RW = 320;                      /* radius of the circular wall, centred on the origin */
+ var BUTTE = { x:0, z:572, H:400, rFoot:314, rTop:165 };    /* Devil's Tower x2 wide, x1.5 tall */
+diff -ru '--exclude=64-locus-*' '--exclude=76-locus-*' yuni-src/yuni/src/45-kit.js locus-src/src/45-kit.js
+--- yuni-src/yuni/src/45-kit.js	2026-09-22 00:16:25.000000000 -0500
++++ locus-src/src/45-kit.js	2026-09-23 06:00:29.899603976 -0500
+@@ -131,7 +131,7 @@
+ 
+    Channels: R = warm flames   G = window spill   B = cool (bioluminescent) lamps
+    Cost: zero draw calls, two texture fetches per fragment, ~10 MB of texture. */
+-var NLV_RES = 256, NLV_EXT = CATALOG ? 320 : SHEET ? 1700 : 1100, NLV_NS = 40, NLV_COLS = 8, NLV_ROWS = 5;
++var NLV_RES = 256, NLV_EXT = CATALOG ? 320 : KIT ? 540 : SHEET ? 1700 : 1100, NLV_NS = 40, NLV_COLS = 8, NLV_ROWS = 5;
+ var NLV_Y0 = -40, NLV_DY = 8;
+ var NLV_MAX = 3.0;                    /* byte 255 == this much summed intensity: also the blow-out ceiling */
+ var NLV_LAMP_GAIN = 0.55, NLV_WIN_GAIN = 0.30, NLV_COOL_GAIN = 0.50;
+diff -ru '--exclude=64-locus-*' '--exclude=76-locus-*' yuni-src/yuni/src/47-texture.js locus-src/src/47-texture.js
+--- yuni-src/yuni/src/47-texture.js	2026-09-21 13:49:28.000000000 -0500
++++ locus-src/src/47-texture.js	2026-09-23 05:50:19.911649034 -0500
+@@ -63,6 +63,11 @@
+   /* cloth: a plain weave with a border-ish band */
+   (function(){ var n=texNoise(S,16,61);
+     FAMMAT.cloth.tex = texFinish(texFill(S,function(x,y){ return 0.80 + 0.08*Math.sin(x*TAU/S*64)*Math.sin(y*TAU/S*64) + 0.12*(n(x,y)-0.5) - ((y%64)<6?0.22:0); })); })();
++  /* canvas (LOCUS): a coarse plain weave, a seam every 90 cm, a faint sun-fade stripe pattern (tinted) */
++  (function(){ var n=texNoise(S,20,301), m=texNoise(S,4,302);
++    FAMMAT.canvas.tex = texFinish(texFill(S,function(x,y){
++      var weave = 0.06*Math.sin(x*TAU/S*96)*Math.sin(y*TAU/S*96), seam = (x%92)<2 ? 0.80 : 1, band = (Math.floor(x/46)%2) ? 0.965 : 1;
++      return (0.86 + weave + 0.10*(n(x,y)-0.5) + 0.06*(m(x,y)-0.5)) * seam * band; })); })();
+   /* rock */
+   (function(){ var a=texNoise(S,6,71), b=texNoise(S,24,72), c=texNoise(S,64,73);
+     FAMMAT.rock.tex = texFinish(texFill(S,function(x,y){ var v=0.55*a(x,y)+0.3*b(x,y)+0.15*c(x,y); return 0.45+0.6*v - (Math.abs(b(x,y)-0.5)<0.025?0.25:0); })); })();
+diff -ru '--exclude=64-locus-*' '--exclude=76-locus-*' yuni-src/yuni/src/53-assets.js locus-src/src/53-assets.js
+--- yuni-src/yuni/src/53-assets.js	2026-09-22 00:16:56.000000000 -0500
++++ locus-src/src/53-assets.js	2026-09-23 05:50:46.943592960 -0500
+@@ -17,7 +17,18 @@
+    (the door side, the side that will face the street), y up from F.y (ground at the centre).
+    F.seed / F.variant / F.wealth drive variation; use F.rnd() (a private stream), never rnd().  */
+ var ASSETS = [], ASSET_BY_KEY = {};
+-function ASSET(o){ if(ASSET_BY_KEY[o.key]) ERR('asset key declared twice: '+o.key); o.variants=o.variants||1; ASSETS.push(o); ASSET_BY_KEY[o.key]=o; return o; }
++/* PROJECT TAGS (every kit asset carries them; the inspector shows them):
++     culture  who builds it: 'yuni' | 'abyssal-desert' | 'geomancer' | 'ancient' | 'sahelian' | 'order' | 'nomad'
++     types    building types, one or more of BUILDING_TYPES
++     kit      which sub-kit sheet it belongs to ('locus'); absent = the Yuni base kit
++     group    the row it is laid out in on its kit sheet (free text) */
++var BUILDING_TYPES = ['civic','market/shop','tavern/inn','industry','farm','single-family dwelling','multi-family dwelling','infrastructure','religious','funerary','prop'];
++function ASSET(o){ if(ASSET_BY_KEY[o.key]) ERR('asset key declared twice: '+o.key); o.variants=o.variants||1;
++  if(o.kit){ if(!o.culture) ERR('asset '+o.key+' (kit '+o.kit+') has no culture tag');
++    if(!o.types || !o.types.length) ERR('asset '+o.key+' (kit '+o.kit+') has no building-type tags');
++    else o.types.forEach(function(t){ if(BUILDING_TYPES.indexOf(t)<0) ERR('asset '+o.key+': unknown building type "'+t+'" (one of: '+BUILDING_TYPES.join(', ')+')'); }); }
++  ASSETS.push(o); ASSET_BY_KEY[o.key]=o; return o; }
++function assetTags(A){ return (A.culture ? 'culture: '+A.culture : '') + (A.types ? ' · type: '+A.types.join(' + ') : '') + (A.tags ? ' · '+A.tags.join(', ') : ''); }
+ 
+ /* ---------- 13b-ii. THE FURNITURE REGISTRY ----------------------------------------------
+    Interior furniture is registered SEPARATELY from buildings and laid out in its own
+@@ -58,8 +69,10 @@
+   if(PLANT_BY_KEY[o.key]) ERR('plant key declared twice: '+o.key);
+   if(PLANT_CLIMATES.indexOf(o.climate)<0) ERR('plant '+o.key+': climate must be one of '+PLANT_CLIMATES.join(', '));
+   if(PLANT_ARIDITY.indexOf(o.aridity)<0) ERR('plant '+o.key+': aridity must be one of '+PLANT_ARIDITY.join(', '));
++  /* project biome tags (optional, LOCUS onward): tags:{ wet:'arid'|'mild'|'wet', abyssal:true|false, riparian:'yes'|'no'|'both' } */
+   o.variants=o.variants||1; PLANTS.push(o); PLANT_BY_KEY[o.key]=o; return o;
+ }
++function plantTags(A){ var t=A.tags||{}; return A.climate+' · '+A.aridity+(t.wet?' · '+t.wet:'')+(t.abyssal!=null?(t.abyssal?' · abyssal':' · non-abyssal'):'')+(t.riparian?' · riparian: '+t.riparian:''); }
+ 
+ function assetFrame(x,z,ry,opt){
+   opt=opt||{};
+@@ -157,7 +170,7 @@
+   opt=opt||{}; var F=assetFrame(x,z,ry,opt); F.asset=A;
+   try{ A.build(F); }catch(e){ ERR('asset '+key+': '+(e&&e.stack||e)); }
+   var nm = A.name + (A.variantNames ? ' — '+A.variantNames[F.variant%A.variantNames.length] : (A.variants>1 ? ' · variant '+'ABCDEFGH'[F.variant%8] : ''));
+-  REGISTER({ name:nm, kind:'asset', label:A.family+' · '+A.w+' x '+A.d+' m · key '+A.key, x:x, y:F.y-1, z:z, r:Math.hypot(A.w,A.d)/2, h:(A.h||8)+3 });
++  REGISTER({ name:nm, kind:'asset', label:'building · '+(A.kit ? assetTags(A)+' · ' : A.family+' · ')+A.w+' x '+A.d+' m · key '+A.key, x:x, y:F.y-1, z:z, r:Math.hypot(A.w,A.d)/2, h:(A.h||8)+3 });
+   return { key:key, name:nm, x:x, z:z, ry:ry, w:A.w, d:A.d, doors:F.doors||[] };
+ }
+ 
+@@ -168,7 +181,7 @@
+   opt=opt||{}; var F=assetFrame(x,z,ry,opt); F.asset=A;
+   try{ A.build(F); }catch(e){ ERR(what+' '+key+': '+(e&&e.stack||e)); }
+   var nm = A.name + (A.variantNames ? ' — '+A.variantNames[F.variant%A.variantNames.length] : (A.variants>1 ? ' · variant '+'ABCDEFGH'[F.variant%8] : ''));
+-  var tag = A.culture ? (A.culture+' · '+A.room) : (A.climate+' · '+A.aridity);
++  var tag = A.culture ? ('furniture · culture: '+A.culture+' · '+A.room+(A.place?' · '+A.place:'')) : ('flora · '+plantTags(A));
+   REGISTER({ name:nm, kind:what, label:tag+' · '+A.w+' x '+A.d+' m · key '+A.key, x:x, y:F.y-0.2, z:z, r:Math.hypot(A.w,A.d)/2+0.4, h:(A.h||2)+0.6 });
+   return { key:key, name:nm, x:x, z:z, ry:ry, w:A.w, d:A.d };
+ }
+diff -ru '--exclude=64-locus-*' '--exclude=76-locus-*' yuni-src/yuni/src/70-sheet.js locus-src/src/70-sheet.js
+--- yuni-src/yuni/src/70-sheet.js	2026-09-22 00:16:25.000000000 -0500
++++ locus-src/src/70-sheet.js	2026-09-23 06:00:29.899820463 -0500
+@@ -7,9 +7,11 @@
+ (function(){
+   if(!SHEET || CATALOG) return;
+   var FAM_ORDER=['ancient','civic','rich','park','mid','trade','poor','prop'], FAM_NAME={ ancient:'Ancient (rehabilitated / ruined)', civic:'Civic & neo-African', rich:'Wealthy compounds', park:'Park pieces (Guell)', mid:'Middle-class houses', trade:'Shops, taverns, workshops, caravanserai', poor:'Poor quarters: mud & thatch', prop:'Street furniture' };
+-  var z=-CITY_EXT+260, LIM=CITY_EXT-420;
++  if(KIT){ /* a sub-kit sheet: its own rows, in the order the kit's fragments declared them */
++    FAM_ORDER=[]; FAM_NAME={}; ASSETS.forEach(function(A){ if(A.kit===KIT && FAM_ORDER.indexOf(A.group||'kit')<0){ FAM_ORDER.push(A.group||'kit'); FAM_NAME[A.group||'kit']=A.group||'kit'; } }); }
++  var z=-CITY_EXT+(KIT?70:260), LIM=CITY_EXT-(KIT?70:420);
+   FAM_ORDER.forEach(function(fam){
+-    var list=ASSETS.filter(function(A){ return A.family===fam; }); if(!list.length) return;
++    var list=ASSETS.filter(function(A){ return KIT ? (A.kit===KIT && (A.group||'kit')===fam) : (!A.kit && A.family===fam); }); if(!list.length) return;
+     var x=-LIM, rowD=0, row={ fam:fam, name:FAM_NAME[fam]||fam, z0:z, items:[] }; SHEET_ROWS.push(row);
+     list.forEach(function(A){ for(var v=0; v<A.variants; v++){
+       var cw=A.w+16, cd=A.d+16; if(x+cw > LIM){ x=-LIM; z+=rowD; rowD=0; }
+@@ -24,7 +26,7 @@
+   window._sheet = { assets:ASSETS.length, items:SHEET_ITEMS.length, rows:SHEET_ROWS.map(function(r){ return r.fam+':'+r.items.length; }) };
+   /* the ground: a 10 m grid, footprints outlined, family bands */
+   var g=GROUND_CANVAS.getContext('2d'), S=GC_RES/(2*CITY_EXT); g.save(); g.scale(S,S); g.translate(CITY_EXT,CITY_EXT);
+-  g.fillStyle='#b9a27a'; g.fillRect(-CITY_EXT,-CITY_EXT,2*CITY_EXT,2*CITY_EXT);
++  g.fillStyle= KIT==='locus' ? '#a9a98a' : '#b9a27a'; g.fillRect(-CITY_EXT,-CITY_EXT,2*CITY_EXT,2*CITY_EXT);   /* Locus: a marsh-edge tone */
+   g.strokeStyle='rgba(90,70,40,0.35)'; g.lineWidth=0.35; g.beginPath(); for(var k=-CITY_EXT;k<=CITY_EXT;k+=10){ g.moveTo(k,-CITY_EXT); g.lineTo(k,CITY_EXT); g.moveTo(-CITY_EXT,k); g.lineTo(CITY_EXT,k); } g.stroke();
+   SHEET_ROWS.forEach(function(r,i){ g.fillStyle=i%2?'rgba(255,255,255,0.10)':'rgba(0,0,0,0.06)'; g.fillRect(-CITY_EXT, r.z0-8, 2*CITY_EXT, r.z1-r.z0-10); });
+   SHEET_ITEMS.forEach(function(it){ g.fillStyle='rgba(205,191,159,0.9)'; g.fillRect(it.x-it.w/2-3, it.z-it.d/2-3, it.w+6, it.d+6); g.strokeStyle='rgba(40,60,110,0.8)'; g.lineWidth=0.5; g.strokeRect(it.x-it.w/2, it.z-it.d/2, it.w, it.d);
+diff -ru '--exclude=64-locus-*' '--exclude=76-locus-*' yuni-src/yuni/src/86-inspect.js locus-src/src/86-inspect.js
+--- yuni-src/yuni/src/86-inspect.js	2026-09-21 14:06:33.000000000 -0500
++++ locus-src/src/86-inspect.js	2026-09-23 05:50:19.911735358 -0500
+@@ -7,7 +7,7 @@
+      3. the material family of the kit / merged mesh that was hit               */
+ var INSPECT_FAM = { adobe:'Mud plaster (banco)', plaster:'Lime wash', mosaic:'Trencadis mosaic', paintbw:'Painted wall (black/white/red)', paintcol:'Painted relief (polychrome)',
+   relief:'Low-relief plaster', metal:'Ancient white metal', rust:'Ancient steel (rusted)', concrete:'Ancient concrete', glass:'Ancient blue glass', rock:'Rock', column:'Columnar rock',
+-  timber:'Timber', plank:'Planking', thatch:'Thatch', tile:'Terracotta tile', cloth:'Cloth', leafy:'Foliage', bark:'Tree trunk', dark:'Opening', glowmat:'Light' };
++  timber:'Timber', plank:'Planking', thatch:'Thatch', tile:'Terracotta tile', cloth:'Cloth', canvas:'Canvas', leafy:'Foliage', bark:'Tree trunk', dark:'Opening', glowmat:'Light' };
+ var inspectOn = false, inspectTip = document.getElementById('inspectTip'), inspectLast = 0;
+ function inspectSite(p){
+   var best=null, bv=1e18, lvl=null, lv=1e18;
+--- yuni-src/yuni/build.py	2026-09-22 00:19:24.000000000 -0500
++++ locus-src/build.py	2026-09-23 05:49:47.197122078 -0500
+@@ -27,11 +27,12 @@
+ OUT_SHEET = os.path.join(HERE, 'yuni-assets.html')
+ OUT_FURN = os.path.join(HERE, 'yuni-furniture.html')
+ OUT_FLORA = os.path.join(HERE, 'yuni-plants.html')
++OUT_LOCUS = os.path.join(HERE, 'locus-kit.html')
+ MANIFEST = os.path.join(HERE, 'build-manifest.json')
+ 
+ # fragments that legitimately contain no top-level generation
+ DETERMINISTIC = {'00-head.html', '05-palette.js', '10-core.js', '80-camera.js', '81-glow.js',
+-                 '85-probe.js', '86-inspect.js', '87-pathviz.js', '88-underview.js', '89-sheetui.js', '53-assets.js', '71-catalog.js', '98-start.js', '99-tail.html'}
++                 '85-probe.js', '86-inspect.js', '76-locus-anim.js', '87-pathviz.js', '88-underview.js', '89-sheetui.js', '53-assets.js', '71-catalog.js', '98-start.js', '99-tail.html'}
+ PALETTE_FILE = '05-palette.js'
+ 
+ RE_HEAD_SEED = re.compile(r'^reseed\(\s*(-?\d+)\s*\)\s*;')
+@@ -130,6 +131,9 @@
+     sheet = flavour('sheet', 'Yuni Building Kit', 'Yuni — building kit', 'Laying out the kit…')
+     furn  = flavour('furn',  'Yuni Furniture',    'Yuni — furniture',    'Laying out the furniture…')
+     flora = flavour('flora', 'Yuni Plants',       'Yuni — plants',       'Laying out the plants…')
++    locus = flavour('locus', 'Locus Building Kit', 'Locus — building kit', 'Laying out the Locus kit…')
++    with open(OUT_LOCUS, 'w') as fh:
++        fh.write(locus)
+     with open(OUT_SHEET, 'w') as fh:
+         fh.write(sheet)
+     with open(OUT_FURN, 'w') as fh:
+@@ -139,7 +143,7 @@
+     # artifact flavour: the publish skeleton supplies doctype/html/head/body, so strip ours
+     import re as _re
+     os.makedirs(os.path.join(HERE,'publish'), exist_ok=True)
+-    for src_html, name in ((html,'yuni.html'),(sheet,'yuni-building-kit.html'),(furn,'yuni-furniture.html'),(flora,'yuni-plants.html')):
++    for src_html, name in ((html,'yuni.html'),(sheet,'yuni-building-kit.html'),(furn,'yuni-furniture.html'),(flora,'yuni-plants.html'),(locus,'locus-building-kit.html')):
+         a_ = src_html
+         for tag in ('<!DOCTYPE html>','<html lang="en">','<head>','</head>','<body>','</body>','</html>','<meta charset="utf-8">','<meta name="viewport" content="width=device-width,initial-scale=1">'):
+             a_ = a_.replace(tag,'')
+--- yuni-src/yuni/verify.py	2026-09-22 14:40:25.000000000 -0500
++++ locus-src/verify.py	2026-09-23 06:15:24.393626566 -0500
+@@ -274,7 +274,7 @@
+                 fn = os.path.join(a.out, "%s%d.png" % (a.cam_name, i)); await pg.screenshot(path=fn); print("shot:", fn)
+             for ev in (a.eval or []):
+                 try:
+-                    print("eval:", json.dumps(await pg.evaluate(ev))[:3000])
++                    print("eval:", json.dumps(await pg.evaluate(ev))[:40000])
+                 except Exception as e:
+                     print("eval failed:", str(e)[:400])
+             if a.sweep:
