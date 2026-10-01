@@ -19,7 +19,7 @@ function buildDish(scene,gx,gz,d){reseed(9990+d);KOFF=[gx,0,gz];const G=new THRE
  const tear=u=>.42+.75*fbm(u*5,.5,1100,2)+(d===3?.3:0);
  const dHole=d>0?(u,v)=>v>tear(u)||(u>.64&&u<.78&&v>.6)||(v>.25&&fbm(u*16,v*9,1101,2)<.18):null;
  mesh(gridSurface(dishF,72,18,{uS:12,vS:6,hole:dHole}),skin,D);
- mesh(gridSurface((u,v)=>{const p=dishF(u,v);return[p[0],p[1]-.6,p[2]];},72,18,{uS:12,vS:6,hole:dHole}),MAT.dark,D);
+ mesh(gridSurface((u,v)=>{const p=dishF(u,v);return[p[0],p[1]-.6,p[2]];},72,18,{uS:12,vS:6,hole:dHole}),MAT.darkSurf,D);
  for(let k=0;k<12;k++){const a=k/12*TAU;if(d>0&&k===7)continue;beam(d>0?'strutR':'strutW',[Math.cos(a)*4,0,Math.sin(a)*4],[Math.cos(a)*R*.95,R*R*.95*.95/(R*2.2),Math.sin(a)*R*.95],.9,1.2);}
  // feed on a tripod of thin struts
  const fy=R*.55;for(let k=0;k<3;k++){const a=k/3*TAU+.5;beam('tube',[Math.cos(a)*R*.7,R*R*.49/(R*2.2),Math.sin(a)*R*.7],[0,fy,0],.5,.5);}

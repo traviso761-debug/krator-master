@@ -26,7 +26,7 @@ function buildYvDish(scene,gx,gz,d){reseed(d>0?9988:9987);KOFF=[gx,0,gz];const G
  const D=new THREE.Group();D.position.set(0,36,0);D.rotation.set(.55,0,0);G.add(D);useGroupXF(D);
  const dishF=(u,v)=>{const a=u*TAU,r=v*R;return[r*Math.cos(a),r*r/(R*2.2),r*Math.sin(a)];};
  mesh(gridSurface(dishF,72,18,{uS:12,vS:6}),skin,D);
- mesh(gridSurface((u,v)=>{const p=dishF(u,v);return[p[0],p[1]-.6,p[2]];},72,18,{uS:12,vS:6}),MAT.dark,D);
+ mesh(gridSurface((u,v)=>{const p=dishF(u,v);return[p[0],p[1]-.6,p[2]];},72,18,{uS:12,vS:6}),MAT.darkSurf,D);
  for(let k=0;k<12;k++){const a=k/12*TAU;beam(d>0?'strutR':'strutW',[Math.cos(a)*4,0,Math.sin(a)*4],[Math.cos(a)*R*.95,R*R*.95*.95/(R*2.2),Math.sin(a)*R*.95],.9,1.2);}
  const fy=R*.55;for(let k=0;k<3;k++){const a=k/3*TAU+.5;beam('tube',[Math.cos(a)*R*.7,R*R*.49/(R*2.2),Math.sin(a)*R*.7],[0,fy,0],.5,.5);}
  kput('finial',[0,fy,0],null,[2.5,3.5,2.5],null);
