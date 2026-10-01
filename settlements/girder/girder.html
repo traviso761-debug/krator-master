@@ -10582,13 +10582,15 @@ GIX.lastMerge = 0;
 function gixTick(){
   if(!GIX.jobs.length) return;
   if(!GIX.t0) GIX.t0 = performance.now();
-  var t0 = performance.now(), cam = camera.position, budget = window._walk && _walk.on ? 18 : 30;
+  /* a slice of each frame: ~30 ms (less while walking); more when frames are slow anyway (software GL) */
+  var t0 = performance.now(), cam = camera.position, gap = GIX.lastTick ? t0 - GIX.lastTick : 16;
+  var budget = clamp(gap*0.6, window._walk && _walk.on ? 18 : 30, 1200);
   while(GIX.jobs.length && performance.now() - t0 < budget){
     var bi = 0, bd = 1e18;
     for(var i=0;i<GIX.jobs.length;i++){ var J=GIX.jobs[i], d=(J.x-cam.x)*(J.x-cam.x)+(J.y-cam.y)*(J.y-cam.y)*4+(J.z-cam.z)*(J.z-cam.z); if(d<bd){ bd=d; bi=i; } }
     gixFurnish(GIX.jobs.splice(bi,1)[0]);
   }
-  GIX.ms += performance.now() - t0;
+  GIX.ms += performance.now() - t0; GIX.lastTick = performance.now();
   if(!GIX.jobs.length || performance.now() - GIX.lastMerge > 400){ gixMerge(); GIX.lastMerge = performance.now(); }
   if(!GIX.jobs.length) GIX.wall = +((performance.now()-GIX.t0)/1000).toFixed(1);
   gixReport();

@@ -8847,7 +8847,7 @@ function shGeneral(o){
  door(-.9,.3,fz,1.1,2.0,{step:false});win(1.6,1.0,fz,2.2,1.0,{lit:o.v===1});box('plank',1.6,.3,fz+.3,2.5,.08,.5,jc(0x8a6a44,.06));
  win(-4.9,1.0,fz,1.7,.9,{shutters:true});win(4.9,1.0,fz,1.7,.9,{bars:true});
  // goods: hanging on the porch beam, barrels, sacks, a bench, crates, a hitching post
- shHangSkip(12,'pots');for(const x of [-1.75,1.75])FURNISH('pa_goods_rail',x,.75,fz+3.25,0,{v:2});   // pots on the porch beambeam('plain',[-1.2,2.3,fz+3.25],[3.0,2.3,fz+3.25],.01,jc(0x6a5a44,.05));
+ shHangSkip(12,'pots');for(const x of [-1.75,1.75])FURNISH('pa_goods_rail',x,.75,fz+3.25,0,{v:2});/* pots on the porch beam */beam('plain',[-1.2,2.3,fz+3.25],[3.0,2.3,fz+3.25],.01,jc(0x6a5a44,.05));
  bottleString([px0+.3,2.25,fz+3.2],[px1-.3,2.25,fz+3.2],8);
  for(let k=0;k<3;k++){barrel(2.6+k*.02,.3,fz+2.4+k*.55,pick([0x8a3a2c,0x2f62b8,0x4d6f3c]));}sacks(-3.0,.3,fz+2.5,6,.1);shCrateProduce(2.9,.3,fz+.7,.6,.2);
  rngSkip(4);FURNISH('pa_porch_bench',.4,.3,fz+.6,0,{az:.065});
@@ -8912,7 +8912,7 @@ function inSmithy(o){
  for(let k=0;k<8;k++)box('iron',kx-2.5,3.9-k*.2,kz-.05+(k%2)*.03,.06,.14,.1,jc(0x5a5a56,.05),0,(k%2)*1.5);cone('iron',kx-2.5,2.35,kz,.09,.3,jc(0x3a3430,.05),5);
   rngSkip(6);FURNISH('pa_hand_cart',kx-2.5,0,kz,0,{v:1,ax:.1,az:-.175});   // the trolley with an engine block under the hoist
  // yard clutter: charcoal sacks, coal heap, barrels, lamp
- rngSkip(10);FURNISH('pa_sacks',-4.15,0,4.95,0,{v:2});   // charcoal sacksbarrel(-3.4,0,5.0);barrel(-2.9,0,5.2);lamp(3.6,0,4.6,3.4);
+ rngSkip(10);FURNISH('pa_sacks',-4.15,0,4.95,0,{v:2});/* charcoal sacks */barrel(-3.4,0,5.0);barrel(-2.9,0,5.2);lamp(3.6,0,4.6,3.4);
  // SOCKETS
  beam('wood',[-1.4,EY-.08,ZF+.1],[1.4,EY-.08,ZF+.1],.12,jc(inW,.06));sock('awning',0,EY-.1,ZF+.15,0,{w:4.6,d:1.9,drop:.5,h:2.8});
  beam('wood',[-6.5,0,5.2],[-6.5,5.6,5.2],.09,jc(inW,.06),true,6);sock('banner',-6.5,5.6,5.25,0,{w:.9,h:2.2});
@@ -9767,7 +9767,7 @@ function cpGround(G,placed){const zf=G.zf,zb=G.zb,xr=G.xr,v=G.v,zm=(zb+zf)/2;
  // pads under the placed buildings
  for(const p of placed){W(p.slot.x,0,p.slot.z,p.yaw,()=>{box('conc',0,.05,0,p.def.w+1.4,.04,p.def.d+1.4,jc(0x7a7264,.05));});}
  // yard furniture: fire pit with tyre seats, well, flagpole, lamps
- rngSkip(41+10);FURNISH('pa_camp_fire',0,.05,yzc,0,{v:2});smokeAt(0,.05+.6*1.6,yzc,{r:.54,kind:'fire'});   // the fire pit with its five tyre seats
+ rngSkip(41+30);FURNISH('pa_camp_fire',0,.05,yzc,0,{v:2});smokeAt(0,.05+.6*1.6,yzc,{r:.54,kind:'fire'});   // the fire pit with its five tyre seats
  const wx=v?-3.2:-6.2,wz=yz1-1.6;rngSkip(3*Math.max(3,Math.round(TAU*.95/(TYR.R*2*.98)))+2+8);FURNISH('pa_well',wx,0,wz,0,{v:2});   // the open well
  const fpz=G.L?7:v?2.2:-8.5,fpx=G.L?7.5:v?-3.6:0;cpPole(fpx,0,9.6,fpz,.09,jc(0x4a4038,.05));box('conc',fpx-.4,0,fpz-.4,.8,.3,.8,jc(0x8a8880,.05));sock('flag',fpx,9.7,fpz,0,{w:1.8,h:.9});
  for(const [lx,lz] of G.L?[[-9.2,4.2],[9.2,4.2],[-9.2,17.4],[9.2,17.4],[-3.8,27],[3.8,27],[-3.8,21.5],[3.8,21.5]]:v?[[-4.6,1.2],[4.6,5.8],[-2.6,8.5]]:[[-9.2,-3.2],[9.2,-3.2],[-9.2,7.2],[9.2,7.2],[-3.8,15],[3.8,15],[-3.8,10],[3.8,10]])lamp(lx,0,lz,3.6,{arm:lx>0?-.35:.35});
