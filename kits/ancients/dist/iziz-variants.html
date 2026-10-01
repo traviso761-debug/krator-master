@@ -23322,7 +23322,7 @@ const IZV_TRIPOD={awnings:IZV_AWN,post:'tpole',ball:'tbulb',rope:'tpole',col:izs
   for(const sx of[-1.7,1.7])for(const sz of[-1,1.3])kput('tpole',[sx,1.3,sz],null,[1,2.6,1],null);}};
 ROWS.mktC={z:IZV_FAMS.length*800,s:300,r:280,ds:[3]};
 EXTRA_BUILDERS.mktC=(scene,gx,gz,d)=>{const G=buildSkyC(scene,gx,gz,d);
- tripodMarket(G,{x:gx,z:gz},3.75,1,0,gx,gz,0,IZV_TRIPOD);
+ tripodMarket(G,{x:gx,z:gz,hx:120,hz:120,ry:0},3.75,1,0,gx,gz,0,IZV_TRIPOD);
  for(const w of IZV_AWN.splice(0)){const m=MAT.tarp.clone();m.color=izsC(w.c);const me=new THREE.Mesh(w.g,m);scene.add(me);}
  return G;};
 // ================================================================= THE WING — a monument that is also a city
