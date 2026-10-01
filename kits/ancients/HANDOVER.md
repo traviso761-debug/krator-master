@@ -104,6 +104,7 @@ expands `N+d` over decays 0-4.
 | `skyI` (89k) | 9760 | 38 980 / 65 844 / 69 746 / 71 468 | the Braid; kit row z=26400 |
 | `skyJ` (89l) | 9770 | 175 520 / 114 292 / 133 290 / 173 834 | the Whorl; kit row z=27200 |
 | `skyK` (89m) | 9780 | 160 499 / 174 692 / 229 042 / 197 700 | the Sail; kit row z=28000 |
+| `lighthouse` (89n) | 9790 | 117 568 / 90 460 / 118 678 / 118 560 | Skyscraper J as a lighthouse on an island in its own sea, swept beacon (`tick` hook); kit row z=28800; finished 2026-10-01, see `targets/lighthouse/NOTES.md` |
 
 The three towers keep dev targets (`skyi`/`skyj`/`skyk`) and also have kit
 rows. The kit is now **9 967 649** scene triangles (OVER the 6M soft ceiling
