@@ -1,0 +1,587 @@
+{
+  "name": "Iziz, the other bank",
+  "note": "A variant of Iziz built from the same engine: another default seed, a rounder wall, a shifted palette and more prints. Open with /?city=iziz-b. City parameters for iziz.html. Numbers are world units (metres); a string is an expression over the values above it, Math, and rad(degrees). Views may also use ground(x,z) for the terrain height.",
+  "WORLD": 1400,
+  "PLATEAU": 18,
+  "CHASM": -16,
+  "HILL": 42,
+  "PALACE": {
+    "x": 80,
+    "z": -60
+  },
+  "TEMPLE": {
+    "x": 170,
+    "z": 70
+  },
+  "ARENA": {
+    "x": -150,
+    "z": 2
+  },
+  "TPAD": {
+    "x": "TEMPLE.x+38",
+    "z": "TEMPLE.z-12",
+    "_": "shuttle pad by the temple"
+  },
+  "APAD": {
+    "x": "ARENA.x-2",
+    "z": "ARENA.z-50",
+    "_": "shuttle pad by the arena"
+  },
+  "AMPH": {
+    "x": -177,
+    "z": 66,
+    "_": "park amphitheatre"
+  },
+  "SPIRE": {
+    "x": -29.4,
+    "z": 20.4,
+    "_": "the crowned column beside the central square"
+  },
+  "NEEDLE": {
+    "x": -60,
+    "z": -40,
+    "_": "the observation tower"
+  },
+  "NEEDLE_H": 80,
+  "SPA": "rad(315)",
+  "SP": {
+    "x": "455*Math.cos(SPA)",
+    "z": "455*Math.sin(SPA)",
+    "_": "spaceport centre, on the north-west road"
+  },
+  "SPH": 4,
+  "SPR": 94,
+  "BPAD_T": "rad(15)",
+  "GATES": [
+    "rad(90)",
+    "rad(205)",
+    "rad(315)"
+  ],
+  "PGATES": [
+    "rad(148)",
+    "rad(302)"
+  ],
+  "wall": {
+    "base": 248,
+    "waves": [
+      [
+        14,
+        2,
+        0.6
+      ],
+      [
+        9,
+        5,
+        1.9
+      ],
+      [
+        5,
+        13,
+        0.2
+      ]
+    ],
+    "_": "radius(t) = base + sum of a*sin(f*t+p)"
+  },
+  "STATUES": [
+    [
+      0,
+      0,
+      30,
+      2,
+      "Math.PI"
+    ],
+    [
+      "TEMPLE.x-30",
+      "TEMPLE.z+34",
+      22,
+      0,
+      0
+    ],
+    [
+      "TEMPLE.x+30",
+      "TEMPLE.z+34",
+      22,
+      0,
+      0
+    ],
+    [
+      -125,
+      60,
+      18,
+      1,
+      1.2
+    ],
+    [
+      60,
+      150,
+      16,
+      2,
+      2.8
+    ],
+    [
+      -70,
+      -140,
+      18,
+      0,
+      4.1
+    ],
+    [
+      "PALACE.x-34",
+      "PALACE.z+30",
+      14,
+      1,
+      0.3,
+      "'terrace'"
+    ],
+    [
+      "PALACE.x+34",
+      "PALACE.z+30",
+      14,
+      0,
+      -0.3,
+      "'terrace'"
+    ],
+    [
+      -100,
+      -130,
+      14,
+      2,
+      0.7
+    ],
+    [
+      120,
+      -150,
+      14,
+      1,
+      3.3
+    ],
+    [
+      -40,
+      170,
+      14,
+      0,
+      5.1
+    ]
+  ],
+  "districts": {
+    "groups": {
+      "box": "houses",
+      "tier": "houses",
+      "domed": "houses",
+      "barrel": "vaults",
+      "tent": "vaults",
+      "pyr": "vaults",
+      "setback": "setback",
+      "tyrell": "brutalist",
+      "wedge": "brutalist",
+      "pent": "brutalist",
+      "hept": "brutalist",
+      "midrise": "midrise",
+      "hall": "halls",
+      "stave": "halls",
+      "pueblo": "pueblos",
+      "compound": "compounds"
+    },
+    "names": {
+      "houses": [
+        "Houses",
+        "#e0d2b8"
+      ],
+      "vaults": [
+        "Vaults and tents",
+        "#c8704f"
+      ],
+      "setback": [
+        "Setback towers",
+        "#5b8de0"
+      ],
+      "brutalist": [
+        "Brutalist blocks",
+        "#9a7fd0"
+      ],
+      "midrise": [
+        "Midrise",
+        "#4aa0d0"
+      ],
+      "halls": [
+        "Timber halls",
+        "#d08a5a"
+      ],
+      "pueblos": [
+        "Pueblos",
+        "#e3a13a"
+      ],
+      "compounds": [
+        "Compounds",
+        "#7bbf5a"
+      ]
+    }
+  },
+  "views": {
+    "Painting view": [
+      -30,
+      9,
+      440,
+      40,
+      52,
+      -10
+    ],
+    "Overview": [
+      0,
+      720,
+      620,
+      0,
+      20,
+      0
+    ],
+    "Palace": [
+      "PALACE.x-150",
+      140,
+      "PALACE.z+190",
+      "PALACE.x+10",
+      75,
+      "PALACE.z"
+    ],
+    "Temple plaza": [
+      "TEMPLE.x+30",
+      52,
+      "TEMPLE.z+130",
+      "TEMPLE.x",
+      40,
+      "TEMPLE.z"
+    ],
+    "Street level": [
+      6,
+      "PLATEAU+4",
+      196,
+      10,
+      "PLATEAU+7",
+      0
+    ],
+    "Bridge": [
+      52,
+      "PLATEAU+22",
+      296,
+      0,
+      "PLATEAU+4",
+      236
+    ],
+    "Spaceport": [
+      "SP.x+90",
+      60,
+      "SP.z+120",
+      "SP.x",
+      8,
+      "SP.z"
+    ],
+    "Arena": [
+      "ARENA.x-60",
+      "ground(ARENA.x-60,ARENA.z+80)+48",
+      "ARENA.z+80",
+      "ARENA.x",
+      "ground(ARENA.x,ARENA.z)+10",
+      "ARENA.z"
+    ],
+    "Arena floor": [
+      "ARENA.x-8",
+      "ground(ARENA.x,ARENA.z)+78",
+      "ARENA.z+34",
+      "ARENA.x",
+      "ground(ARENA.x,ARENA.z)+2",
+      "ARENA.z-4"
+    ],
+    "Temple top": [
+      "TEMPLE.x-40",
+      "ground(TEMPLE.x,TEMPLE.z)+68",
+      "TEMPLE.z+50",
+      "TEMPLE.x",
+      "ground(TEMPLE.x,TEMPLE.z)+54",
+      "TEMPLE.z+8"
+    ],
+    "Temple hall": [
+      "TEMPLE.x+44",
+      "ground(TEMPLE.x+44,TEMPLE.z)+5",
+      "TEMPLE.z",
+      "TEMPLE.x",
+      "ground(TEMPLE.x,TEMPLE.z)+9",
+      "TEMPLE.z"
+    ]
+  },
+  "constellations": [
+    {
+      "name": "Kalir (the Bridge)",
+      "s": [
+        [
+          30,
+          28
+        ],
+        [
+          38,
+          34
+        ],
+        [
+          46,
+          37
+        ],
+        [
+          54,
+          37
+        ],
+        [
+          62,
+          34
+        ],
+        [
+          70,
+          28
+        ]
+      ],
+      "l": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          4,
+          5
+        ]
+      ]
+    },
+    {
+      "name": "Fenis (the Lantern)",
+      "s": [
+        [
+          140,
+          48
+        ],
+        [
+          150,
+          48
+        ],
+        [
+          150,
+          58
+        ],
+        [
+          140,
+          58
+        ],
+        [
+          145,
+          64
+        ],
+        [
+          145,
+          52
+        ]
+      ],
+      "l": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          3,
+          4
+        ]
+      ]
+    },
+    {
+      "name": "Ush (the Serpent)",
+      "s": [
+        [
+          200,
+          22
+        ],
+        [
+          208,
+          30
+        ],
+        [
+          216,
+          25
+        ],
+        [
+          224,
+          33
+        ],
+        [
+          232,
+          28
+        ],
+        [
+          240,
+          36
+        ],
+        [
+          246,
+          44
+        ]
+      ],
+      "l": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          5,
+          6
+        ]
+      ]
+    },
+    {
+      "name": "Tor (the Crown)",
+      "s": [
+        [
+          290,
+          55
+        ],
+        [
+          298,
+          60
+        ],
+        [
+          306,
+          62
+        ],
+        [
+          314,
+          60
+        ],
+        [
+          322,
+          55
+        ],
+        [
+          306,
+          70
+        ]
+      ],
+      "l": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          2,
+          5
+        ]
+      ]
+    },
+    {
+      "name": "Lolo (the Twins)",
+      "s": [
+        [
+          95,
+          72
+        ],
+        [
+          97,
+          78
+        ],
+        [
+          99,
+          84
+        ],
+        [
+          108,
+          70
+        ],
+        [
+          110,
+          76
+        ],
+        [
+          112,
+          82
+        ]
+      ],
+      "l": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          1,
+          4
+        ]
+      ]
+    }
+  ],
+  "art": {
+    "src": "painting.jpg",
+    "count": 10,
+    "frame": "#1b1410",
+    "border": 0.035,
+    "_": "framed prints of the painting replace this many wall posters"
+  },
+  "defaultSeed": 90210
+}

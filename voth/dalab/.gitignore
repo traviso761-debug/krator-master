@@ -1,0 +1,4 @@
+shots/*.txt
+shots/*.done
+nohup.out
+__pycache__/

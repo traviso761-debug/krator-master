@@ -150,6 +150,7 @@ def main():
              '| `kits/catalog/` | harvested master catalog of furniture, plants and buildings (unverified) |',
              '| `kits/furniture/`, `kits/interiors/` | specs only |',
              '| `gallery/` | the shareable gallery of every built world |',
+             '| `host/` | the LAN site server: Krator Worlds plus the World Menagerie pages (`host/README.md`) |',
              '| `tools/` | repo-wide scripts: this index |',
              '| `archive/` | old scratch and screenshots; do not build from it |']
     with open(os.path.join(ROOT, 'INDEX.md'), 'w', encoding='utf-8') as fh:
