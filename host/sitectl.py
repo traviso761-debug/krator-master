@@ -81,7 +81,8 @@ def sync(args):
 def build(args):
     mode = [] if '--all' in args else ['--no-build'] if '--no-build' in args else ['--build-missing']
     return run(os.path.join(ROOT, 'gallery', 'build_gallery.py'), *mode,
-               '--out', os.path.join(DIR, 'site'), '--local-three', '/worlds/three.min.js')
+               '--out', os.path.join(DIR, 'site'), '--local-three', '/worlds/three.min.js',
+               '--lod', os.path.join(DIR, 'lod.toml'))
 
 
 def serve(args):
