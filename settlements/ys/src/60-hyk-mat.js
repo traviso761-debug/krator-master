@@ -87,9 +87,9 @@ hkMatPair('hkNacre',TEX.hkShell,{rough:.22,metal:.18});
 function hkNacreHook(sh){if(typeof portUWsh==='function')portUWsh(sh);
  sh.fragmentShader=sh.fragmentShader.replace('#include <normal_fragment_maps>',['#include <normal_fragment_maps>',
   '{ vec3 _nv=normalize(vViewPosition); float _f=1.0-clamp(abs(dot(normalize(normal),_nv)),0.0,1.0);',
-  '  float _t=_f*2.4+0.11*sin(vViewPosition.y*0.9)+0.07*cos(vViewPosition.x*1.3);',
+  '  float _t=_f*1.6+0.11*sin(vViewPosition.y*0.9)+0.07*cos(vViewPosition.x*1.3);',
   '  vec3 _ir=0.5+0.5*cos(6.28318*(vec3(0.0,0.33,0.67)+_t));',
-  '  diffuseColor.rgb=mix(diffuseColor.rgb,diffuseColor.rgb*(0.55+0.75*_ir),0.16+0.62*_f); }'].join('\n'));}
+  '  diffuseColor.rgb=mix(diffuseColor.rgb,diffuseColor.rgb*(0.74+0.40*_ir),0.10+0.46*_f); }'].join('\n'));}
 MAT.hkNacre.onBeforeCompile=hkNacreHook;MAT.hkNacre.customProgramCacheKey=()=>'hkNacre';
 MAT.hkNacreI.onBeforeCompile=hkNacreHook;MAT.hkNacreI.customProgramCacheKey=()=>'hkNacreI';
 MAT.hkGlow=new THREE.MeshBasicMaterial({color:0xffe6c0});                                     // pearl lamps: unlit, tinted per instance
