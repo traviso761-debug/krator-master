@@ -1,0 +1,1172 @@
+{
+ "_": "The Izani lexicon: one source for iziz.html (lexicon panel, inscriptions) and The-Izani-Tongue_2.html (regenerate its City lexicon tables with tools/build-tongue.py). Edit here, not in the pages.",
+ "words": [
+  {
+   "w": "fen",
+   "pos": "n",
+   "gloss": "fire, flame",
+   "build": "root",
+   "group": "Crafts, trade and food"
+  },
+  {
+   "w": "fenis",
+   "pos": "n",
+   "gloss": "lantern",
+   "build": "fen + -is, \"little fire\"",
+   "group": "Crafts, trade and food"
+  },
+  {
+   "w": "kor",
+   "pos": "n",
+   "gloss": "iron, metal",
+   "build": "root",
+   "group": "Crafts, trade and food"
+  },
+  {
+   "w": "koran",
+   "pos": "n",
+   "gloss": "smith",
+   "build": "kor + -an",
+   "group": "Crafts, trade and food"
+  },
+  {
+   "w": "koreth",
+   "pos": "n",
+   "gloss": "smithy, forge",
+   "build": "kor + -eth",
+   "group": "Crafts, trade and food"
+  },
+  {
+   "w": "mun",
+   "pos": "n",
+   "gloss": "bread; food",
+   "build": "root",
+   "group": "Crafts, trade and food"
+  },
+  {
+   "w": "muneth",
+   "pos": "n",
+   "gloss": "bakery",
+   "build": "mun + -eth",
+   "group": "Crafts, trade and food"
+  },
+  {
+   "w": "lu",
+   "pos": "n",
+   "gloss": "fish",
+   "build": "root",
+   "group": "Crafts, trade and food"
+  },
+  {
+   "w": "lulan",
+   "pos": "n",
+   "gloss": "fisher",
+   "build": "lu + -an",
+   "group": "Crafts, trade and food"
+  },
+  {
+   "w": "luleth",
+   "pos": "n",
+   "gloss": "fishmonger’s; fish market",
+   "build": "lu + -eth",
+   "group": "Crafts, trade and food"
+  },
+  {
+   "w": "vem",
+   "pos": "v",
+   "gloss": "to trade, exchange",
+   "build": "root",
+   "group": "Crafts, trade and food"
+  },
+  {
+   "w": "vemeth",
+   "pos": "n",
+   "gloss": "market",
+   "build": "vem + -eth",
+   "group": "Crafts, trade and food"
+  },
+  {
+   "w": "shol",
+   "pos": "n",
+   "gloss": "herb",
+   "build": "root",
+   "group": "Crafts, trade and food"
+  },
+  {
+   "w": "sholeth",
+   "pos": "n",
+   "gloss": "herbalist’s",
+   "build": "shol + -eth",
+   "group": "Crafts, trade and food"
+  },
+  {
+   "w": "fel",
+   "pos": "n",
+   "gloss": "cloth",
+   "build": "root",
+   "group": "Crafts, trade and food"
+  },
+  {
+   "w": "feleth",
+   "pos": "n",
+   "gloss": "weaver’s",
+   "build": "fel + -eth",
+   "group": "Crafts, trade and food"
+  },
+  {
+   "w": "zath",
+   "pos": "v",
+   "gloss": "to carve; to write",
+   "build": "root",
+   "group": "Crafts, trade and food"
+  },
+  {
+   "w": "zathan",
+   "pos": "n",
+   "gloss": "carver, scribe",
+   "build": "zath + -an",
+   "group": "Crafts, trade and food"
+  },
+  {
+   "w": "zatheth",
+   "pos": "n",
+   "gloss": "scribe’s house",
+   "build": "zath + -eth",
+   "group": "Crafts, trade and food"
+  },
+  {
+   "w": "salireth",
+   "pos": "n",
+   "gloss": "key-cutter’s",
+   "build": "salir \"key\" + -eth",
+   "group": "Crafts, trade and food"
+  },
+  {
+   "w": "vaelireth",
+   "pos": "n",
+   "gloss": "cup-maker’s",
+   "build": "vaelir \"cup\" + -eth",
+   "group": "Crafts, trade and food"
+  },
+  {
+   "w": "izireth",
+   "pos": "n",
+   "gloss": "axe-maker’s",
+   "build": "izir \"axe\" + -eth",
+   "group": "Crafts, trade and food"
+  },
+  {
+   "w": "nae",
+   "pos": "n",
+   "gloss": "boat",
+   "build": "root",
+   "group": "Water, boats and roads"
+  },
+  {
+   "w": "naelan",
+   "pos": "n",
+   "gloss": "boatman",
+   "build": "nae + -an",
+   "group": "Water, boats and roads"
+  },
+  {
+   "w": "naeleth",
+   "pos": "n",
+   "gloss": "docks, harbour",
+   "build": "nae + -eth",
+   "group": "Water, boats and roads"
+  },
+  {
+   "w": "naethur",
+   "pos": "n",
+   "gloss": "regatta, boat race",
+   "build": "nae \"boat\" + thur \"war\"",
+   "group": "Water, boats and roads"
+  },
+  {
+   "w": "hu",
+   "pos": "v",
+   "gloss": "to wash, bathe",
+   "build": "root",
+   "group": "Water, boats and roads"
+  },
+  {
+   "w": "huleth",
+   "pos": "n",
+   "gloss": "bathhouse",
+   "build": "hu + -eth",
+   "group": "Water, boats and roads"
+  },
+  {
+   "w": "dus",
+   "pos": "n",
+   "gloss": "filth, dirt",
+   "build": "root",
+   "group": "Water, boats and roads"
+  },
+  {
+   "w": "dusren",
+   "pos": "n",
+   "gloss": "sewer, drain",
+   "build": "dus + -ren \"flowing\"",
+   "group": "Water, boats and roads"
+  },
+  {
+   "w": "ten",
+   "pos": "n",
+   "gloss": "road, path",
+   "build": "root",
+   "group": "Water, boats and roads"
+  },
+  {
+   "w": "tenan",
+   "pos": "n",
+   "gloss": "traveller; trader",
+   "build": "ten + -an",
+   "group": "Water, boats and roads"
+  },
+  {
+   "w": "ka",
+   "pos": "v",
+   "gloss": "to cross",
+   "build": "root",
+   "group": "Water, boats and roads"
+  },
+  {
+   "w": "kalir",
+   "pos": "n",
+   "gloss": "bridge",
+   "build": "ka + -ir",
+   "group": "Water, boats and roads"
+  },
+  {
+   "w": "kalis",
+   "pos": "n",
+   "gloss": "footbridge",
+   "build": "ka + -is",
+   "group": "Water, boats and roads"
+  },
+  {
+   "w": "rol",
+   "pos": "n",
+   "gloss": "cart, wagon",
+   "build": "root",
+   "group": "Water, boats and roads"
+  },
+  {
+   "w": "norrol",
+   "pos": "n",
+   "gloss": "hover cart",
+   "build": "nor \"high\" + rol",
+   "group": "Water, boats and roads"
+  },
+  {
+   "w": "dom",
+   "pos": "n",
+   "gloss": "sleep, rest",
+   "build": "root",
+   "group": "Water, boats and roads"
+  },
+  {
+   "w": "dometh",
+   "pos": "n",
+   "gloss": "inn, waystation",
+   "build": "dom + -eth",
+   "group": "Water, boats and roads"
+  },
+  {
+   "w": "dun",
+   "pos": "n",
+   "gloss": "gate, door",
+   "build": "root",
+   "group": "Buildings and gathering"
+  },
+  {
+   "w": "wen",
+   "pos": "n",
+   "gloss": "song",
+   "build": "root",
+   "group": "Buildings and gathering"
+  },
+  {
+   "w": "weneth",
+   "pos": "n",
+   "gloss": "amphitheatre",
+   "build": "wen + -eth",
+   "group": "Buildings and gathering"
+  },
+  {
+   "w": "ron",
+   "pos": "v",
+   "gloss": "to gather",
+   "build": "root",
+   "group": "Buildings and gathering"
+  },
+  {
+   "w": "roneth",
+   "pos": "n",
+   "gloss": "assembly hall",
+   "build": "ron + -eth",
+   "group": "Buildings and gathering"
+  },
+  {
+   "w": "nor",
+   "pos": "adj",
+   "gloss": "tall, high",
+   "build": "root",
+   "group": "Buildings and gathering"
+  },
+  {
+   "w": "thuransa",
+   "pos": "n",
+   "gloss": "barracks",
+   "build": "thuran \"soldier\" + sa",
+   "group": "Buildings and gathering"
+  },
+  {
+   "w": "shaenae",
+   "pos": "n",
+   "gloss": "star-boat, spaceship",
+   "build": "shae + nae",
+   "group": "Buildings and gathering"
+  },
+  {
+   "w": "shaenaeleth",
+   "pos": "n",
+   "gloss": "spaceport",
+   "build": "shaenae + -eth",
+   "group": "Buildings and gathering"
+  },
+  {
+   "w": "hal",
+   "pos": "v",
+   "gloss": "to watch, to guard",
+   "build": "root",
+   "group": "Buildings and gathering"
+  },
+  {
+   "w": "halan",
+   "pos": "n",
+   "gloss": "watchman",
+   "build": "hal + -an",
+   "group": "Buildings and gathering"
+  },
+  {
+   "w": "halak",
+   "pos": "v",
+   "gloss": "to post the guard",
+   "build": "hal + -ak",
+   "group": "Buildings and gathering"
+  },
+  {
+   "w": "yol",
+   "pos": "n",
+   "gloss": "feast",
+   "build": "root",
+   "group": "Buildings and gathering"
+  },
+  {
+   "w": "fenshae",
+   "pos": "n",
+   "gloss": "fireworks",
+   "build": "fen \"fire\" + shae \"stars\"",
+   "group": "Buildings and gathering"
+  },
+  {
+   "w": "saliz",
+   "pos": "n",
+   "gloss": "broad shade tree",
+   "build": "sa + iz, linking l: \"house-tree\"",
+   "group": "Trees"
+  },
+  {
+   "w": "noriz",
+   "pos": "n",
+   "gloss": "tall tree",
+   "build": "nor + iz",
+   "group": "Trees"
+  },
+  {
+   "w": "vaeliz",
+   "pos": "n",
+   "gloss": "weeping tree",
+   "build": "vae + iz, linking l: \"water-tree\"",
+   "group": "Trees"
+  },
+  {
+   "w": "shaeliz",
+   "pos": "n",
+   "gloss": "blossom tree",
+   "build": "shae + iz, linking l: \"light-tree\"",
+   "group": "Trees"
+  },
+  {
+   "w": "kir",
+   "pos": "n",
+   "gloss": "bird",
+   "build": "root",
+   "group": "Creatures"
+  },
+  {
+   "w": "vaekir",
+   "pos": "n",
+   "gloss": "gull",
+   "build": "vae + kir, \"water-bird\"",
+   "group": "Creatures"
+  },
+  {
+   "w": "sakir",
+   "pos": "n",
+   "gloss": "pigeon",
+   "build": "sa + kir, \"house-bird\"",
+   "group": "Creatures"
+  },
+  {
+   "w": "nesh",
+   "pos": "n",
+   "gloss": "cat",
+   "build": "root",
+   "group": "Creatures"
+  },
+  {
+   "w": "ush",
+   "pos": "n",
+   "gloss": "snake",
+   "build": "root",
+   "group": "Creatures"
+  },
+  {
+   "w": "Naeten",
+   "pos": "prop. n",
+   "gloss": "the dock road",
+   "build": "nae \"boat\" + ten \"road\"",
+   "group": "Names of places"
+  },
+  {
+   "w": "Vaedun",
+   "pos": "prop. n",
+   "gloss": "the Water Gate (south)",
+   "build": "vae + dun",
+   "group": "Names of places"
+  },
+  {
+   "w": "Shaedun",
+   "pos": "prop. n",
+   "gloss": "the Star Gate (west)",
+   "build": "shae + dun",
+   "group": "Names of places"
+  },
+  {
+   "w": "Seldun",
+   "pos": "prop. n",
+   "gloss": "the Hill Gate (north-east)",
+   "build": "sel + dun",
+   "group": "Names of places"
+  },
+  {
+   "w": "Norsa",
+   "pos": "prop. n",
+   "gloss": "the observation tower",
+   "build": "nor \"tall\" + sa \"house\"",
+   "group": "Names of places"
+  },
+  {
+   "w": "Salor",
+   "pos": "prop. n",
+   "gloss": "the palace",
+   "build": "sa + -or \"great house\"",
+   "group": "Names of places"
+  },
+  {
+   "w": "Shaesa",
+   "pos": "prop. n",
+   "gloss": "the temple",
+   "build": "shae \"star\" + sa \"house\"",
+   "group": "Names of places"
+  },
+  {
+   "w": "Thuriseth",
+   "pos": "prop. n",
+   "gloss": "the arena",
+   "build": "thuris \"skirmish\" + -eth",
+   "group": "Names of places"
+  },
+  {
+   "w": "Thurvae",
+   "pos": "prop. n",
+   "gloss": "the moat",
+   "build": "thur \"war\" + vae \"water\"",
+   "group": "Names of places"
+  },
+  {
+   "w": "Shaevae",
+   "pos": "prop. n",
+   "gloss": "the lake",
+   "build": "shae \"star\" + vae \"water\"",
+   "group": "Names of places"
+  },
+  {
+   "w": "Yolshae",
+   "pos": "prop. n",
+   "gloss": "the Feast of Lights, the festival",
+   "build": "yol \"feast\" + shae \"lights\"",
+   "group": "Names of places"
+  },
+  {
+   "w": "sor",
+   "pos": "n",
+   "gloss": "sun; Sor, the red dwarf star Iziz orbits",
+   "build": "root",
+   "group": "Sky and stars"
+  },
+  {
+   "w": "nu",
+   "pos": "n",
+   "gloss": "moon; Nu, the green moon",
+   "build": "root",
+   "group": "Sky and stars"
+  },
+  {
+   "w": "Nuis",
+   "pos": "prop. n",
+   "gloss": "the pale moon",
+   "build": "nu + -is \"little moon\"",
+   "group": "Names of places"
+  },
+  {
+   "w": "tor",
+   "pos": "n",
+   "gloss": "crown; the Crown (constellation)",
+   "build": "root",
+   "group": "Sky and stars"
+  },
+  {
+   "w": "Lolo",
+   "pos": "prop. n",
+   "gloss": "the Twins (constellation)",
+   "build": "lo \"two\", doubled",
+   "group": "Names of places"
+  },
+  {
+   "w": "Izor",
+   "pos": "prop. n",
+   "gloss": "the great tree on the palace hill; also a given name",
+   "build": "iz + -or",
+   "group": "Names of places"
+  },
+  {
+   "w": "Shaelis",
+   "pos": "prop. n",
+   "gloss": "a given name: \"firefly\"",
+   "build": "shae + -is",
+   "group": "Names of places"
+  }
+ ],
+ "inscriptions": {
+  "izisa": {
+   "lines": [
+    "Izisa"
+   ],
+   "style": "carve",
+   "aspect": 7,
+   "means": "Izisa, the full name of the city",
+   "parts": "iz \"tree\" + sa \"house\""
+  },
+  "vaedun": {
+   "lines": [
+    "Vaedun"
+   ],
+   "style": "carve",
+   "aspect": 7,
+   "means": "the Water Gate (south)",
+   "parts": "vae \"water\" + dun \"gate\""
+  },
+  "shaedun": {
+   "lines": [
+    "Shaedun"
+   ],
+   "style": "carve",
+   "aspect": 7,
+   "means": "the Star Gate (west)",
+   "parts": "shae \"star\" + dun \"gate\""
+  },
+  "seldun": {
+   "lines": [
+    "Seldun"
+   ],
+   "style": "carve",
+   "aspect": 7,
+   "means": "the Hill Gate (north-east)",
+   "parts": "sel \"hill\" + dun \"gate\""
+  },
+  "motto": {
+   "lines": [
+    "Iziz iz"
+   ],
+   "style": "carve",
+   "aspect": 7,
+   "means": "\"The forest thrives.\" The city motto.",
+   "parts": "Iziz \"the forest, the city\" · iz \"grows, thrives\""
+  },
+  "proverb": {
+   "lines": [
+    "iz vae il iz"
+   ],
+   "style": "carve",
+   "aspect": 9,
+   "means": "\"A tree grows toward water.\" People go where life is.",
+   "parts": "iz \"tree\" · vae \"water\" · il \"toward\" · iz \"grows\""
+  },
+  "salor": {
+   "lines": [
+    "Salor"
+   ],
+   "style": "carve",
+   "aspect": 5,
+   "means": "Salor, the palace",
+   "parts": "sa \"house\" + -or \"great\" (l links the vowels)"
+  },
+  "dusren": {
+   "lines": [
+    "Dusren"
+   ],
+   "style": "carve",
+   "aspect": 7,
+   "px": 64,
+   "means": "Dusren, the sewer outfall",
+   "parts": "dus \"filth\" + -ren \"flowing\""
+  },
+  "st_temple": {
+   "lines": [
+    "Shaesa",
+    "izan izuz izak"
+   ],
+   "style": "carve",
+   "aspect": 1.8,
+   "px": 170,
+   "means": "Shaesa, the temple · \"The Izan plant the tree.\"",
+   "parts": "shae \"star\" + sa \"house\" · izan \"the Izan\" · izuz \"tree\" (object) · izak \"plant\""
+  },
+  "st_arena": {
+   "lines": [
+    "Thuriseth"
+   ],
+   "style": "carve",
+   "aspect": 2.6,
+   "px": 110,
+   "means": "Thuriseth, the arena",
+   "parts": "thur \"war\" + -is \"little\" + -eth \"place of\""
+  },
+  "st_tower": {
+   "lines": [
+    "Norsa",
+    "shaeshae"
+   ],
+   "style": "carve",
+   "aspect": 1.8,
+   "px": 170,
+   "means": "Norsa, the observation tower · \"constellations\"",
+   "parts": "nor \"tall\" + sa \"house\" · shaeshae \"a mass of stars\""
+  },
+  "st_dome": {
+   "lines": [
+    "Roneth"
+   ],
+   "style": "carve",
+   "aspect": 2.6,
+   "px": 110,
+   "means": "Roneth, the dome hall",
+   "parts": "ron \"gather\" + -eth \"place of\""
+  },
+  "st_amph": {
+   "lines": [
+    "Weneth"
+   ],
+   "style": "carve",
+   "aspect": 2.6,
+   "px": 110,
+   "means": "Weneth, the amphitheatre",
+   "parts": "wen \"song\" + -eth \"place of\""
+  },
+  "st_port": {
+   "lines": [
+    "Shaenaeleth",
+    "shaenae vesh"
+   ],
+   "style": "carve",
+   "aspect": 1.8,
+   "px": 170,
+   "means": "Shaenaeleth, the spaceport · \"Star-boats: hello and goodbye.\"",
+   "parts": "shae \"star\" + nae \"boat\" + -eth \"place of\" · vesh \"hale\" (greeting and farewell)"
+  },
+  "st_square": {
+   "lines": [
+    "Iziz iz",
+    "vesh"
+   ],
+   "style": "carve",
+   "aspect": 1.8,
+   "px": 170,
+   "means": "\"The forest thrives.\" · \"Hello.\"",
+   "parts": "the motto, and vesh \"still standing, hale\""
+  },
+  "st_lake": {
+   "lines": [
+    "Shaevae",
+    "iz vae il iz"
+   ],
+   "style": "carve",
+   "aspect": 1.8,
+   "px": 170,
+   "means": "Shaevae, the lake · \"A tree grows toward water.\"",
+   "parts": "shae \"star\" + vae \"water\": it holds the stars at night"
+  },
+  "st_falls": {
+   "lines": [
+    "Vaeren",
+    "vaeren vae"
+   ],
+   "style": "carve",
+   "aspect": 1.8,
+   "px": 170,
+   "means": "Vaeren, the river · \"The river flows.\" (Time passes.)",
+   "parts": "vae \"water\" + -ren \"flowing\" · vae \"flows\""
+  },
+  "st_izor": {
+   "lines": [
+    "Izor",
+    "Iziz iz"
+   ],
+   "style": "carve",
+   "aspect": 1.8,
+   "px": 170,
+   "means": "Izor, the great tree · \"The forest thrives.\"",
+   "parts": "iz \"tree\" + -or \"great\" · the motto"
+  },
+  "st_well": {
+   "lines": [
+    "Vaeleth"
+   ],
+   "style": "carve",
+   "aspect": 2.6,
+   "px": 90,
+   "means": "Vaeleth, a well",
+   "parts": "vae \"water\" + -eth \"place of\""
+  },
+  "kalis": {
+   "lines": [
+    "Kalis"
+   ],
+   "style": "paint",
+   "aspect": 4,
+   "px": 72,
+   "bg": "#5a3d26",
+   "means": "Kalis, the footbridge",
+   "parts": "ka \"cross\" + -is \"little\""
+  },
+  "thuransa": {
+   "lines": [
+    "Thuransa"
+   ],
+   "style": "paint",
+   "aspect": 4.5,
+   "px": 72,
+   "bg": "#7a3d2a",
+   "means": "Thuransa, barracks",
+   "parts": "thuran \"soldier\" + sa \"house\""
+  },
+  "vemeth": {
+   "lines": [
+    "Vemeth"
+   ],
+   "style": "paint",
+   "aspect": 4.5,
+   "px": 72,
+   "bg": "#2f5f5a",
+   "means": "Vemeth, the market",
+   "parts": "vem \"trade\" + -eth \"place of\""
+  },
+  "sp_docks": {
+   "lines": [
+    "Naeleth"
+   ],
+   "style": "paint",
+   "aspect": 5,
+   "px": 56,
+   "bg": "#8a6a45",
+   "means": "\"To the docks\"",
+   "parts": "nae \"boat\" + -eth \"place of\""
+  },
+  "sp_city": {
+   "lines": [
+    "Izisa"
+   ],
+   "style": "paint",
+   "aspect": 5,
+   "px": 56,
+   "bg": "#8a6a45",
+   "means": "\"To the city\"",
+   "parts": "iz \"tree\" + sa \"house\""
+  },
+  "dometh": {
+   "lines": [
+    "Dometh"
+   ],
+   "style": "paint",
+   "aspect": 5,
+   "px": 72,
+   "means": "Dometh, the waystation inn",
+   "parts": "dom \"sleep, rest\" + -eth \"place of\""
+  },
+  "naeleth": {
+   "lines": [
+    "Naeleth"
+   ],
+   "style": "paint",
+   "aspect": 6.5,
+   "px": 72,
+   "bg": "#2f8f8a",
+   "color": "#ffe0a0",
+   "means": "Naeleth, the docks",
+   "parts": "nae \"boat\" + -eth \"place of\""
+  },
+  "huleth": {
+   "lines": [
+    "Huleth"
+   ],
+   "style": "ink",
+   "aspect": 6,
+   "px": 64,
+   "color": "#0e3a40",
+   "means": "Huleth, the bathhouse",
+   "parts": "hu \"wash\" + -eth \"place of\" (l links the vowels)"
+  },
+  "koreth": {
+   "lines": [
+    "Koreth"
+   ],
+   "style": "paint",
+   "aspect": 4.5,
+   "px": 72,
+   "bg": "#3a3632",
+   "color": "#ffb070",
+   "means": "Koreth, the smithy",
+   "parts": "kor \"iron\" + -eth \"place of\""
+  },
+  "muneth": {
+   "lines": [
+    "Muneth"
+   ],
+   "style": "paint",
+   "aspect": 4.5,
+   "px": 72,
+   "means": "Muneth, a bakery",
+   "parts": "mun \"bread\" + -eth \"place of\""
+  },
+  "salireth": {
+   "lines": [
+    "Salireth"
+   ],
+   "style": "paint",
+   "aspect": 4.5,
+   "px": 72,
+   "bg": "#5a3d26",
+   "means": "Salireth, a key-cutter",
+   "parts": "salir \"key\" + -eth \"place of\""
+  },
+  "vaelireth": {
+   "lines": [
+    "Vaelireth"
+   ],
+   "style": "paint",
+   "aspect": 4.5,
+   "px": 72,
+   "bg": "#2f5f5a",
+   "means": "Vaelireth, a cup-maker",
+   "parts": "vaelir \"cup\" + -eth \"place of\""
+  },
+  "sholeth": {
+   "lines": [
+    "Sholeth"
+   ],
+   "style": "paint",
+   "aspect": 4.5,
+   "px": 72,
+   "bg": "#3f5a2e",
+   "means": "Sholeth, a herbalist",
+   "parts": "shol \"herb\" + -eth \"place of\""
+  },
+  "zatheth": {
+   "lines": [
+    "Zatheth"
+   ],
+   "style": "paint",
+   "aspect": 4.5,
+   "px": 72,
+   "bg": "#1e2a3a",
+   "means": "Zatheth, a scribe and carver",
+   "parts": "zath \"carve, write\" + -eth \"place of\""
+  },
+  "feleth": {
+   "lines": [
+    "Feleth"
+   ],
+   "style": "paint",
+   "aspect": 4.5,
+   "px": 72,
+   "bg": "#7a3d8a",
+   "means": "Feleth, a weaver",
+   "parts": "fel \"cloth\" + -eth \"place of\""
+  },
+  "izireth": {
+   "lines": [
+    "Izireth"
+   ],
+   "style": "paint",
+   "aspect": 4.5,
+   "px": 72,
+   "means": "Izireth, an axe-maker",
+   "parts": "izir \"axe\" + -eth \"place of\""
+  },
+  "luleth": {
+   "lines": [
+    "Luleth"
+   ],
+   "style": "paint",
+   "aspect": 4.5,
+   "px": 72,
+   "bg": "#2f5f5a",
+   "means": "Luleth, a fishmonger",
+   "parts": "lu \"fish\" + -eth \"place of\" (l links the vowels)"
+  },
+  "g_war": {
+   "lines": [
+    "thur un mae"
+   ],
+   "style": "graffiti",
+   "aspect": 4,
+   "px": 72,
+   "color": "#c9442a",
+   "means": "\"War: no good.\" Painted by someone who has seen the arena.",
+   "parts": "thur \"war\" · un mae \"no good, bad\""
+  },
+  "g_vesh": {
+   "lines": [
+    "vesh"
+   ],
+   "style": "graffiti",
+   "aspect": 2.4,
+   "px": 72,
+   "color": "#e0a030",
+   "means": "\"Hello.\" Painted large and cheerful.",
+   "parts": "vesh \"hale\", the greeting"
+  },
+  "g_names": {
+   "lines": [
+    "Shaelis Izor"
+   ],
+   "style": "graffiti",
+   "aspect": 4.5,
+   "px": 72,
+   "color": "#5fb0e0",
+   "means": "Two names painted side by side: Shaelis (\"firefly\") and Izor (\"great tree\").",
+   "parts": "shae + -is \"little star, firefly\" · iz + -or \"great tree\""
+  },
+  "g_iziz": {
+   "lines": [
+    "Iziz iz"
+   ],
+   "style": "graffiti",
+   "aspect": 3.4,
+   "px": 72,
+   "color": "#6fcf6a",
+   "means": "\"The forest thrives.\" The motto, painted with pride.",
+   "parts": "Iziz \"the forest, the city\" · iz \"thrives\""
+  },
+  "g_cats": {
+   "lines": [
+    "nesh mae"
+   ],
+   "style": "graffiti",
+   "aspect": 3.6,
+   "px": 72,
+   "color": "#f4f0e6",
+   "means": "\"Cats: good.\" Blunt, and true.",
+   "parts": "nesh \"cat\" · mae \"good\""
+  },
+  "g_bread": {
+   "lines": [
+    "mun un"
+   ],
+   "style": "graffiti",
+   "aspect": 3.2,
+   "px": 72,
+   "color": "#e8443a",
+   "means": "\"No bread.\" A complaint, painted near a bakery.",
+   "parts": "mun \"bread\" · un \"no\""
+  },
+  "g_watch": {
+   "lines": [
+    "halan un mae"
+   ],
+   "style": "graffiti",
+   "aspect": 4.2,
+   "px": 72,
+   "color": "#d070e0",
+   "means": "\"Watchmen: no good.\" Someone does not like the night watch.",
+   "parts": "halan \"watchman\" · un mae \"no good\""
+  },
+  "g_izis": {
+   "lines": [
+    "Izis"
+   ],
+   "style": "graffiti",
+   "aspect": 2.2,
+   "px": 72,
+   "color": "#ffd34a",
+   "means": "A name tag: Izis, \"sapling\".",
+   "parts": "iz \"tree\" + -is \"little\""
+  },
+  "g_vaelis": {
+   "lines": [
+    "Vaelis"
+   ],
+   "style": "graffiti",
+   "aspect": 2.6,
+   "px": 72,
+   "color": "#60c8ff",
+   "means": "A name tag: Vaelis, \"droplet\".",
+   "parts": "vae \"water\" + -is \"little\""
+  },
+  "g_days": {
+   "lines": [
+    "#12"
+   ],
+   "style": "graffiti",
+   "aspect": 2.4,
+   "px": 72,
+   "color": "#f4f0e6",
+   "means": "Twelve tally marks: someone counting days.",
+   "parts": "tallies, every fifth crossed"
+  },
+  "g_days2": {
+   "lines": [
+    "#23"
+   ],
+   "style": "graffiti",
+   "aspect": 3.6,
+   "px": 72,
+   "color": "#ffb070",
+   "means": "Twenty-three tally marks, a long count.",
+   "parts": "tallies, every fifth crossed"
+  },
+  "p_tree": {
+   "lines": [
+    "tree"
+   ],
+   "pic": "tree",
+   "style": "graffiti",
+   "aspect": 1.1,
+   "px": 96,
+   "color": "#6fcf6a",
+   "means": "A painted tree, the oldest Izan sign.",
+   "parts": "a picture, not a word"
+  },
+  "p_star": {
+   "lines": [
+    "star"
+   ],
+   "pic": "star",
+   "style": "graffiti",
+   "aspect": 1.1,
+   "px": 96,
+   "color": "#ffd34a",
+   "means": "A painted star.",
+   "parts": "a picture, not a word"
+  },
+  "p_boat": {
+   "lines": [
+    "boat"
+   ],
+   "pic": "boat",
+   "style": "graffiti",
+   "aspect": 1.3,
+   "px": 96,
+   "color": "#60c8ff",
+   "means": "A painted boat, sails up.",
+   "parts": "a picture, not a word"
+  },
+  "p_burst": {
+   "lines": [
+    "burst"
+   ],
+   "pic": "burst",
+   "style": "graffiti",
+   "aspect": 1.1,
+   "px": 96,
+   "color": "#ff6ab0",
+   "means": "A painted firework, from a festival night.",
+   "parts": "a picture, not a word"
+  },
+  "p_beast": {
+   "lines": [
+    "beast"
+   ],
+   "pic": "beast",
+   "style": "graffiti",
+   "aspect": 1.3,
+   "px": 96,
+   "color": "#f4f0e6",
+   "means": "A painted pack beast, horns and all.",
+   "parts": "a picture, not a word"
+  },
+  "p_fish": {
+   "lines": [
+    "fish"
+   ],
+   "pic": "fish",
+   "style": "graffiti",
+   "aspect": 1.3,
+   "px": 96,
+   "color": "#60e0d0",
+   "means": "A painted fish.",
+   "parts": "a picture, not a word"
+  }
+ },
+ "placeNames": {
+  "The Palace": "salor",
+  "The Temple": "st_temple",
+  "The Arena": "st_arena",
+  "The observation tower": "st_tower",
+  "The dome hall": "st_dome",
+  "The amphitheatre": "st_amph",
+  "The spaceport": "st_port",
+  "The central square": "st_square",
+  "The lake": "st_lake",
+  "The falls": "st_falls",
+  "The river": "st_falls",
+  "The sewer outfall": "dusren",
+  "The outer wall": "motto",
+  "The south gate": "vaedun",
+  "The west gate": "shaedun",
+  "The north-east gate": "seldun",
+  "The docks": "naeleth",
+  "The waystation": "dometh",
+  "The rope bridge": "kalis",
+  "Barracks": "thuransa",
+  "The dock road": "sp_docks"
+ },
+ "lore": [
+  "The Izan say their first word was iz, tree, and that every other word grew from it the way branches grow from a stem. So their letters are stems with branches, cut with a knife along the grain. Every child’s first carving is iz: one short stroke and one stem with two falling branches.",
+  "They do not say the city was built. They say it was planted: izak, not salak. The first house stood beside the first tree; that tree, Izor, still stands on the hill below the Salor, the great house, which came later. The city grew outward from its shade. The full name, Izisa, still means \"tree-house\". The old trees inside the walls (saliz, noriz, vaeliz, shaeliz) are never cut. Iziz iz, \"the forest thrives\", is cut over the inside of every gate.",
+  "Three gates open on the world. Vaedun, the Water Gate, faces south towards Vaeren and the lake. Shaedun, the Star Gate, faces west, towards the evening sky. Seldun, the Hill Gate, faces north-east, under the palace hill. Their doors drop at night, and the watchmen, halan, are posted (halak) at dawn and dusk.",
+  "Izani is blunt, and so are its walls. A sign is one word: the place. A bakery is muneth, bread-place; a smithy is koreth, iron-place. There are no signs that ask or warn, because there is no word for please. The sewer outfall is simply Dusren, filth-flow.",
+  "Paint is for the young. Soldiers’ children write thur un mae, \"war: no good\", on the wall walks. Lovers paint two names side by side. Girls are often named for small bright things, like Shaelis, firefly; boys for great ones, like Izor, great tree.",
+  "Above the city: Sor, the red dwarf; Nu, the green moon, which waxes and wanes over eight days; Nuis, the pale moon, which crosses the sky every twenty hours. The carvers’ constellations are Kalir the Bridge, Fenis the Lantern, Ush the Serpent, Tor the Crown and Lolo the Twins.",
+  "Every third evening is Yolshae, the Feast of Lights, with fenshae (fire-stars) over the Shaesa. On feast days the boatmen race, naethur, on Shaevae, the star-water, so called because it holds the stars at night. Its water runs out as Vaeren, and at the falls the carvers wrote vaeren vae: \"the river flows\", which is how the Izan say that time passes.",
+  "Trade comes by Naeten, the boat road, from Naeleth, the docks, to the Water Gate. Travellers, tenan, sleep at Dometh halfway along. The moat around the city is Thurvae, war-water, though no one alive remembers it being used for war."
+ ],
+ "canon": [
+  "Iziz is a forest world orbiting a red dwarf. Its light is low and red; the forest covers almost everything, and the city grew up inside it rather than in a clearing cut from it."
+ ]
+}

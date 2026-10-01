@@ -6,7 +6,14 @@ to gallery/site/worlds/<slug>.html, and writes gallery/site/index.html from
 index.template.html. Claude then publishes gallery/site/ as the Artifact named
 in gallery/README.md.
 
-Usage:  python3 gallery/build_gallery.py [--no-build]
+Usage:  python3 gallery/build_gallery.py [--no-build | --build-missing] [--out DIR --local-three URL]
+
+--build-missing rebuilds only the worlds whose built page is absent (a fresh clone lacks the port's, which are
+not committed) and reuses every other built page as it is: what host/sitectl.bat does on Windows, where the
+biome builds' node syntax check is usually unavailable.
+
+--out DIR writes the site somewhere else (host/sitectl writes host/site/), and --local-three URL points every page
+at that copy of three.js instead of cdnjs and puts the copy in DIR/worlds/, so the LAN server needs no internet.
 """
 import html, json, os, re, shutil, subprocess, sys
 
@@ -180,7 +187,7 @@ ENTRIES = [
 THREE_CDN = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'
 
 
-def bundle(path):
+def bundle(path, three=THREE_CDN):
     """The page as one self-contained file: a page that loads local scripts (the Voth catalog) gets each one
     inlined, and a local three.min.js becomes the same r128 build from cdnjs. Built worlds pass through as is."""
     html = open(path, encoding='utf-8').read()
@@ -190,16 +197,25 @@ def bundle(path):
         if src.startswith(('http:', 'https:', '//')):
             return m.group(0)
         if os.path.basename(src) == 'three.min.js':
-            return '<script src="%s"></script>' % THREE_CDN
+            return '<script src="%s"></script>' % three
         body = open(os.path.join(here, src.replace('%20', ' ')), encoding='utf-8').read()
         return '<script>\n' + body.replace('</script', '<\\/script') + '\n</script>'
-    return re.sub(r'<script src="([^"]+)"></script>', inline, html)
+    return re.sub(r'<script src="([^"]+)"></script>', inline, html).replace(THREE_CDN, three)
+
+
+def arg(name):
+    return sys.argv[sys.argv.index(name) + 1] if name in sys.argv else None
 
 
 def main():
+    site = os.path.abspath(arg('--out') or SITE)
+    three = arg('--local-three') or THREE_CDN
     if '--no-build' not in sys.argv:
+        missing = '--build-missing' in sys.argv
         dirs = []
         for _, _, path, _, _, *_ in ENTRIES:
+            if missing and os.path.exists(os.path.join(ROOT, path)):
+                continue
             d = os.path.dirname(path)
             while not os.path.exists(os.path.join(ROOT, d, 'build.py')):   # dist/, or a page beside its build (the Voth catalog)
                 d = os.path.dirname(d)
@@ -211,23 +227,25 @@ def main():
             print('built' if r.returncode == 0 else 'BUILD FAILED', d)
             if r.returncode:
                 sys.exit(r.stdout + r.stderr)
-    if os.path.isdir(SITE):
-        shutil.rmtree(SITE)
-    os.makedirs(os.path.join(SITE, 'worlds'))
+    if os.path.isdir(site):
+        shutil.rmtree(site)
+    os.makedirs(os.path.join(site, 'worlds'))
+    if three != THREE_CDN:   # the same r128 build every settlement vendors
+        shutil.copy(os.path.join(ROOT, 'settlements/voth/three.min.js'), os.path.join(site, 'worlds', 'three.min.js'))
     items = []
     for section, slug, path, name, blurb, *rest in ENTRIES:
         src = os.path.join(ROOT, path)
-        with open(os.path.join(SITE, 'worlds', slug + '.html'), 'w', encoding='utf-8') as fh:
-            fh.write(bundle(src))
+        with open(os.path.join(site, 'worlds', slug + '.html'), 'w', encoding='utf-8') as fh:
+            fh.write(bundle(src, three))
         items.append({'section': section, 'slug': slug, 'name': name, 'blurb': blurb,
                       'mb': round(os.path.getsize(src) / 1048576, 1), 'source': path,
                       'tag': rest[0] if rest else None})
     tpl = open(os.path.join(HERE, 'index.template.html'), encoding='utf-8').read()
     page = tpl.replace('/*ENTRIES*/[]', json.dumps(items, ensure_ascii=False))
-    with open(os.path.join(SITE, 'index.html'), 'w', encoding='utf-8') as fh:
+    with open(os.path.join(site, 'index.html'), 'w', encoding='utf-8') as fh:
         fh.write(page)
-    total = sum(os.path.getsize(os.path.join(SITE, 'worlds', i['slug'] + '.html')) for i in items)
-    print('wrote gallery/site/: %d pages, %.1f MB' % (len(items), total / 1048576))
+    total = sum(os.path.getsize(os.path.join(site, 'worlds', i['slug'] + '.html')) for i in items)
+    print('wrote %s/: %d pages, %.1f MB' % (os.path.relpath(site, ROOT), len(items), total / 1048576))
 
 
 if __name__ == '__main__':
