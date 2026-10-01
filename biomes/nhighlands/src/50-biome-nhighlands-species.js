@@ -136,6 +136,10 @@ NHL.SPECIES=[
  /*23*/{key:'rowan',name:'Rowan',habit:'broad',H:[6,12],rb:[.15,.3],crownR:[3,5],bk:2,bark:[0x8a8478,0x7e786c,0x969084],leaf:[0x5a8a34,0x6a9a3a,0x4e7a2e],item:'pinnate',
   form:{hB:.4,boughs:[4,6],el:[.75,1.1],L:[.7,1],wig:.1,curve:-.05,moss:.3,drape:0,bulbs:0,clump:[1.8,2.6],berries:true,stems:[1,3]},
   tags:TG('temperate','subhumid','no',HV('fuel',['berries (cooked)'],true,'Bitter raw; jelly and wine when cooked.'))},
+ // the low band's broadleaf canopy (Bialowieza's lime): a tall clean bole into a high dome, a skirt of suckers at the foot
+ /*24*/{key:'forestlime',name:'Forest lime',habit:'broad',H:[34,50],rb:[1.1,1.8],crownR:[10,14],bk:4,bark:[0x6a665a,0x5e5a50,0x76726a],leaf:[0x5a8e34,0x689c3a,0x4e8030,0x74a640],item:'broad',
+  form:{hB:.5,boughs:[6,8],el:[.6,1.0],L:[.75,1.0],wig:.14,curve:-.07,moss:.5,drape:.15,bulbs:.08,clump:[5,7.2],roots:true,suckers:true},
+  tags:TG('temperate','humid','no',HV('timber',['young leaves','flowers (tea)'],true,'Lime-blossom tea for fevers; bast for rope and shoes; soft wood for carving; the bees\' best tree.'))},
 ];
 NHL.SPECIES.forEach((S,i)=>{S.index=i;});
 // THE UNDERSTOREY PLANTS, for the inspector and the tags (the items carry the label)
