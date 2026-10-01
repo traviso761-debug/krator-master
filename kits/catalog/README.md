@@ -65,7 +65,7 @@ a hosted page sees only the hash). Indoor is the default. Every piece is on exac
 |---|---|---|
 | Indoor, Outdoor, Indoor & outdoor | household and civic furniture by `setting` (`both` is Indoor & outdoor) | one per culture and tier (`Furniture · xanadu · court`), sorted by type |
 | Rugs | every `type: 'rug'` piece, any culture, tier or setting | one per culture (`Rugs · eastabyss`), by tier then key |
-| Jobs | the work items: every jobs-file entry (`A.job`) and every culture's FK trade piece (`A.roleSet === 'trade'`) | one per job (`Jobs · fishing`, `FURN_JOBS` order), then one per culture for the trade pieces (`Jobs · trade · eastabyss`) |
+| Jobs | the work items: every jobs-file entry (`A.job`) and every culture's FK trade piece (`A.roleSet === 'trade'`) | one per job (`Jobs · fishing`, `FURN_JOBS` order; the FK trade pieces join their role's job), then one per culture for the trade pieces with no job: bunk, locker, altar (`Jobs · trade · eastabyss`) |
 
 The sheet's `pageOf(A)` decides it (`window._catalog.pageOf`): a work item goes to Jobs, else a rug to
 Rugs, else its setting's page. All of it on one page (`?page=all`) no longer builds in reasonable time
@@ -165,7 +165,7 @@ FURN({
   a plate, a painted panel, a mounted skull. Tapestries and hangings are `banner`. Cups, jugs and
   bowls are `vessel`, candles `lamp`.
 - **Job** (optional, 2026-10). `job: '<trade>'` from `FURN_JOBS` (`farming fishing salt oil smithing milling
-  warehousing brewing weaving tanning pottery carpentry mining herding`) marks a work item: the piece goes on the
+  warehousing brewing weaving tanning pottery carpentry mining herding trading`) marks a work item: the piece goes on the
   sheet's Jobs page, a row per job. Every entry of `krator-master-furniture-jobs.js` carries one; `verify.py`
   rejects a job not in the list. `KratorFurniture.FURN_JOBS` exposes the list to a host.
 - **Tier.** `tier: 'poor' | 'common' | 'court'` and `wealth: [lo, hi]`; `FURN()` fills them in from
@@ -383,8 +383,12 @@ The building sets' interiors (`kits/interiors/sets`) furnish shops, smithies, st
 tenements and shrines, which the per-tier roles did not cover. `FK.ROLES.trade` adds 20 parametric
 roles, each drawn in the culture's own style sheet, registered with
 `FK.set({ culture, tier, roles: 'trade', prefix, S })` and keyed `<culture>_trade_<role>` (`br_trade_*`
-for the Beast Riders). Each culture's trade pieces have their own row on the sheet's Jobs page
-(`Jobs · trade · <culture>`; `?keys=_trade_` shows only them).
+for the Beast Riders). Each trade piece carries the job of its role (`FK.TRADE_JOB`: forge, anvil,
+grindstone, armour stand and weapon rack `smithing`; trough and hay rack `herding`; stall and display
+`trading`; vat `weaving`; still and barrel rack `brewing`; bin and larder `warehousing`; lathe `carpentry`;
+press `milling`; kiln `pottery`), so the sheet's Jobs page shows them in the job rows beside the jobs file's
+pieces. The bunk, locker and altar have no job and keep a row per culture (`Jobs · trade · <culture>`;
+`?keys=_trade_` shows every trade piece).
 
 | Role | Type | Rooms | What |
 |---|---|---|---|
@@ -411,7 +415,8 @@ for the Beast Riders). Each culture's trade pieces have their own row on the she
 
 Registered for `generic` and `scrap` (tier poor, so every culture chain ending in them has them) and
 `republican`, `rustic`, `painted`, `post-apoc`, `beast-rider`, `eastabyss` (tier common): 160 pieces. They are
-on the sheet's Jobs page (2026-10), a row per culture: `Jobs · trade · <culture>`.
+on the sheet's Jobs page (2026-10), in the rows of their jobs (`FK.TRADE_JOB`); the bunk, locker and altar in a
+row per culture: `Jobs · trade · <culture>`.
 The new room kinds in their `rooms` (`smithy stable shop dormitory`) are the interiors kit's
 (`kits/interiors/src/30-programs.js`). A piece's `role` is what the interiors programmes read for food
 and item containers (`IX.FOOD_ROLES`, `IX.ITEM_ROLES`).

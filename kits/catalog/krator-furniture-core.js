@@ -270,7 +270,7 @@ const FURN_TYPES = ['table', 'chair', 'bench', 'seating', 'bed', 'storage', 'she
    roles FK.ROLES.trade registers (forge, anvil, vat ...) are work furniture too: they sit on the Jobs page
    by their roleSet, a row per culture, and carry no job. verify.py rejects a job not listed here. */
 const FURN_JOBS = ['farming', 'fishing', 'salt', 'oil', 'smithing', 'milling', 'warehousing', 'brewing',
-  'weaving', 'tanning', 'pottery', 'carpentry', 'mining', 'herding'];
+  'weaving', 'tanning', 'pottery', 'carpentry', 'mining', 'herding', 'trading'];
 const FURNS = [], FURN_BY_KEY = {};
 function FURN(o) {
   if (FURN_BY_KEY[o.key]) { console.error('duplicate furniture key', o.key); return; }
