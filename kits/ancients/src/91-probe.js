@@ -22,6 +22,8 @@ const BUDGET={
 };
 // alternate domestic types (src/8ak-alt-*, target alt-domestic)
 Object.assign(BUDGET.type,{adWave:'small',adBridge:'small',adFuel:'small',adRadar:'small',adDish:'small',adFins:'medium',adAmph:'medium',adFac:'medium',adLab:'medium',adMega:'mega'});
+// the Yuni fork's variants (src/8am-yv-*, target yuni-variants)
+Object.assign(BUDGET.type,{yvQuad:'medium',yvComb:'medium',yvTerr:'medium',yvDish:'small',yvHosp:'medium'});
 
 // --- sample points, one pass over the scene ---------------------------------
 // An instanced item contributes its translation; a mesh contributes its world
