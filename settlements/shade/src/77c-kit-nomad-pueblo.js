@@ -55,5 +55,55 @@ function buildPuebloCompound({cx=6,cz=6,cell=4,storeys=3,seed=1}={}){
  K.color(DYE.madder,1);for(let k=0;k<6;k++)K.block('canvas',rx-1.2+k*.48,1.2,rz,.25,.5,.04);   // chillies or cloth on the rack
  return K.finish({kind:'building',name:'Stepped adobe pueblo compound',culture:'eastern-nomad',types:['multi-family dwelling'],
   footprint:NOMAD.rect(W,D,false),height:storeys*SH+.6,family:'pueblo',seed:seed>>>0,cells,plaza:[0,z0+D*.62]});}
-window.buildPuebloCompound=buildPuebloCompound;
+// buildCliffPueblo({length,rows,storeys,cell,seed}): rooms built against a cliff
+// (Mesa Verde): the back row stands `storeys` high against the rock at z = 0
+// (the host sets z = 0 inside the face), each row in front a storey or two
+// lower, so the roofs step down to the floor as terraces. Now and then a back
+// room climbs a storey higher up the face, and a tower stands out in front.
+function buildCliffPueblo({length=12,rows=3,storeys=3,cell=3.6,tower=true,seed=1}={}){
+ const K=K0(seed),r=K.rnd,cx=Math.max(2,Math.round(length/cell)),cz=Math.max(1,rows),L=cx*cell,D=cz*cell,x0=-L/2;
+ const H=[];for(let i=0;i<cx;i++){H.push([]);for(let j=0;j<cz;j++){let h=storeys-Math.round(j*(storeys-1)/Math.max(1,cz-1)*.9)-(r()<.25?1:0);
+  if(j===0&&r()<.3)h+=1;                                   // a room that climbs the face
+  if(j===cz-1&&r()<.3)h=0;                                  // a gap in the front row: a court
+  H[i].push(Math.max(j===0?2:0,h));}}
+ const at=(i,j)=>i<0||j<0||i>=cx||j>=cz?(j<0?99:0):H[i][j];   // behind the back row is the rock
+ const wash=[0xc89a70,0xbf9068,0xcfa478,0xb88a62][Math.floor(r()*4)],cells=[];
+ // the masonry here is rough stone laid in mud: the walls take the carved stone's
+ // strata so they match the cliff they stand against, the plaster only patches
+ for(let i=0;i<cx;i++)for(let j=0;j<cz;j++){const h=at(i,j);if(!h)continue;const x=x0+cell*(i+.5),z=cell*(j+.5),top=h*SH+(r()-.5)*.25,stone=r()<.45;
+  cells.push([x-cell/2,z-cell/2,x+cell/2,z+cell/2]);
+  K.color(stone?null:wash,stone?.82+r()*.12:.9+r()*.14);K.block(stone?'stone':'adobe',x,0,z,cell+.02,top,cell+.02);
+  K.color(wash,1.02);const pt=.26,ph=.5;
+  if(at(i,j+1)<h)K.block('adobe',x,top,z+cell/2-pt/2,cell,ph,pt);
+  if(at(i-1,j)<h)K.block('adobe',x-cell/2+pt/2,top,z,pt,ph,cell);
+  if(at(i+1,j)<h)K.block('adobe',x+cell/2-pt/2,top,z,pt,ph,cell);
+  const fz=z+cell/2,front=at(i,j+1);
+  if(front<h){for(let s=front;s<h;s++){const yv=(s+1)*SH-.35;K.color(0x6a4a32,1);for(let k=0;k<3;k++)K.beam('wood',[x-cell*.3+k*cell*.3,yv,fz-.3],[x-cell*.3+k*cell*.3,yv-.05,fz+.5],.08,5);
+    K.color(null,1);
+    if(s===front&&(s===0||r()<.5)){K.block('dark',x,s*SH,fz+.02,.55,1.75,.08);K.block('dark',x,s*SH+.95,fz+.02,.95,.8,.08);}
+    else K.block('dark',x+(r()-.5)*1,s*SH+1.1,fz+.02,.45,.5,.08);}}
+  if(j>0&&at(i,j-1)>h&&r()<.55){const lx=x+(r()-.5)*cell*.4,lz=z-cell/2+.5,yA=h*SH,yB=yA+SH+.9;K.color(0x5a3e2a,1);
+   K.beam('wood',[lx-.28,yA,lz+.5],[lx-.28,yB,lz-.05],.045,5);K.beam('wood',[lx+.28,yA,lz+.5],[lx+.28,yB,lz-.05],.045,5);
+   for(let s2=1;s2<8;s2++){const t=s2/8;K.beam('wood',[lx-.28,yA+(yB-yA)*t,lz+.5-.55*t],[lx+.28,yA+(yB-yA)*t,lz+.5-.55*t],.03,4);}}}
+ // a tower in front: round (Mesa Verde's) or square, a storey above its neighbours
+ const hasTower=tower&&cx>=3&&r()<.6;
+ if(hasTower){const ti=1+Math.floor(r()*(cx-2)),tx=x0+cell*(ti+.5),tz=D+1.4,th=(storeys+1)*SH,round=r()<.6;K.color(null,.86);
+  if(round)K.cyl('stone',tx,0,tz,1.5,1.6,th,14);else K.block('stone',tx,0,tz,2.8,th,2.8);
+  K.color(wash,1);if(round)K.cyl('adobe',tx,th,tz,1.55,1.55,.4,14);else K.block('adobe',tx,th,tz,3,.4,3);
+  K.color(null,1);for(let s=0;s<storeys+1;s++)K.block('dark',tx,s*SH+1.2,tz+(round?1.52:1.42),.35,.4,.1);K.block('dark',tx,0,tz+(round?1.55:1.45),.6,1.6,.1);
+  cells.push([tx-1.6,tz-1.6,tx+1.6,tz+1.6]);}
+ return K.finish({kind:'building',name:'Cliff dwelling (pueblo against the rock)',culture:'eastern-nomad',types:['multi-family dwelling'],
+  footprint:NOMAD.rect(L,D+(tower?3.2:0),true),height:(storeys+1)*SH+.6,family:'cliffpueblo',seed:seed>>>0,cells});}
+// buildPuebloTower({storeys,round,radius,seed}): a watch tower, round or square, rough stone, a flat roof and parapet
+function buildPuebloTower({storeys=4,round=true,radius=2.6,seed=1}={}){
+ const K=K0(seed),r=K.rnd,th=storeys*SH,R=radius;K.color(null,.84);
+ if(round)K.cyl('stone',0,0,0,R,R*1.08,th,18);else K.block('stone',0,0,0,R*1.8,th,R*1.8);
+ K.color(0xc89a70,1);if(round){K.cyl('adobe',0,th,0,R*1.04,R*1.04,.5,18);for(let k=0;k<12;k++){const a=k/12*NOMAD.TAU;K.block('adobe',Math.sin(a)*R*.95,th+.5,Math.cos(a)*R*.95,.5,.45,.5,a);}}
+ else{K.block('adobe',0,th,0,R*1.9,.5,R*1.9);}
+ K.color(null,1);K.block('dark',0,0,R*1.07+.02,.7,1.8,.1);K.block('dark',0,1,R*1.07+.02,1.1,.8,.1);
+ for(let s=1;s<storeys;s++){const a=s*2.1;K.box('dark',Math.sin(a)*(R*1.02),s*SH+1.2,Math.cos(a)*(R*1.02),.4,.45,.12,a);}
+ K.color(0x6a4a32,1);for(let k=0;k<6;k++){const a=k/6*NOMAD.TAU+.3;K.beam('wood',[Math.sin(a)*R*.9,th-.4,Math.cos(a)*R*.9],[Math.sin(a)*(R+.5),th-.42,Math.cos(a)*(R+.5)],.08,5);}
+ return K.finish({kind:'building',name:(round?'Round':'Square')+' watch tower',culture:'eastern-nomad',types:['infrastructure'],
+  footprint:NOMAD.circle(R*1.3,16),height:th+.95,family:'tower',seed:seed>>>0});}
+window.buildPuebloCompound=buildPuebloCompound;window.buildCliffPueblo=buildCliffPueblo;window.buildPuebloTower=buildPuebloTower;
 })();

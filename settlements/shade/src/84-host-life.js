@@ -23,13 +23,13 @@ const FACTIONS={
 function sched(spans){const out=new Array(24);let a=spans[spans.length-1][1];
  for(let h=0;h<24;h++){for(const s of spans)if(s[0]===h)a=s[1];out[h]=a;}return out;}
 const JOBS={
- farmer:      {sub:'shade_clans',count:300,homes:['petra','pueblo','tents'],sched:sched([[0,'SLEEP'],[5,'FARM'],[11,'REST'],[15,'FARM'],[19,'EAT'],[20,'SOCIALIZE'],[22,'SLEEP']])},
+ farmer:      {sub:'shade_clans',count:300,homes:['petra','pueblo','tents','cliff-n','cliff-s'],sched:sched([[0,'SLEEP'],[5,'FARM'],[11,'REST'],[15,'FARM'],[19,'EAT'],[20,'SOCIALIZE'],[22,'SLEEP']])},
  herder:      {sub:'shade_clans',count:90, homes:['tents'],sched:sched([[0,'SLEEP'],[5,'HERD'],[12,'REST'],[14,'HERD'],[19,'EAT'],[21,'SLEEP']])},
  shopkeeper:  {sub:'shade_clans',count:90, homes:['pueblo','petra'],sched:sched([[0,'SLEEP'],[6,'TRADE'],[12,'EAT'],[13,'REST'],[16,'TRADE'],[20,'SOCIALIZE'],[22,'SLEEP']])},
- artisan:     {sub:'shade_clans',count:140,homes:['petra','pueblo'],sched:sched([[0,'SLEEP'],[6,'CRAFT'],[12,'EAT'],[13,'CRAFT'],[18,'SOCIALIZE'],[21,'SLEEP']])},
+ artisan:     {sub:'shade_clans',count:140,homes:['petra','pueblo','cliff-w','cliff-es'],sched:sched([[0,'SLEEP'],[6,'CRAFT'],[12,'EAT'],[13,'CRAFT'],[18,'SOCIALIZE'],[21,'SLEEP']])},
  water_carrier:{sub:'shade_clans',count:40,homes:['pueblo','tents'],sched:sched([[0,'SLEEP'],[5,'FETCH_WATER'],[10,'REST'],[16,'FETCH_WATER'],[19,'EAT'],[21,'SLEEP']])},
- child:       {sub:'shade_clans',count:170,homes:['petra','pueblo','tents'],sched:sched([[0,'SLEEP'],[7,'EAT'],[8,'PLAY'],[12,'EAT'],[13,'PLAY'],[19,'EAT'],[20,'SLEEP']])},
- elder:       {sub:'shade_clans',count:80, homes:['petra','pueblo'],sched:sched([[0,'SLEEP'],[6,'WORSHIP'],[8,'SOCIALIZE'],[12,'REST'],[16,'SOCIALIZE'],[19,'EAT'],[21,'SLEEP']])},
+ child:       {sub:'shade_clans',count:170,homes:['petra','pueblo','tents','cliff-n','cliff-s'],sched:sched([[0,'SLEEP'],[7,'EAT'],[8,'PLAY'],[12,'EAT'],[13,'PLAY'],[19,'EAT'],[20,'SLEEP']])},
+ elder:       {sub:'shade_clans',count:80, homes:['petra','pueblo','cliff-s','cliff-en'],sched:sched([[0,'SLEEP'],[6,'WORSHIP'],[8,'SOCIALIZE'],[12,'REST'],[16,'SOCIALIZE'],[19,'EAT'],[21,'SLEEP']])},
  priest:      {sub:'aquifer_wardens',count:6,homes:['shrine'],sched:sched([[0,'SLEEP'],[4,'WORSHIP'],[12,'TRADE'],[14,'REST'],[18,'WORSHIP'],[21,'SLEEP']])},
  acolyte:     {sub:'aquifer_wardens',count:24,homes:['shrine'],sched:sched([[0,'SLEEP'],[4,'WORSHIP'],[8,'FETCH_WATER'],[10,'CRAFT'],[18,'WORSHIP'],[21,'SLEEP']])},
  guard_day:   {sub:'canyon_guard',count:30,homes:['pueblo'],sched:sched([[0,'SLEEP'],[6,'PATROL'],[18,'EAT'],[19,'SOCIALIZE'],[22,'SLEEP']])},

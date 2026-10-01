@@ -130,14 +130,15 @@ const TEX_CRACK=BIO.canvasTex(256,256,(g,w,h)=>{g.fillStyle='#ffffff';g.fillRect
  const P=[];for(let i=0;i<16;i++)P.push([rng()*w,rng()*h]);
  for(let i=0;i<P.length;i++)for(let j=i+1;j<P.length;j++){const a=P[i],b=P[j];if(Math.hypot(a[0]-b[0],a[1]-b[1])>w*.4)continue;if(rng()<.45)continue;
   g.lineWidth=rr(1.2,2.6);for(let k=-1;k<=1;k++)for(let m=-1;m<=1;m++){g.beginPath();g.moveTo(a[0]+k*w,a[1]+m*h);g.quadraticCurveTo((a[0]+b[0])/2+rr(-18,18)+k*w,(a[1]+b[1])/2+rr(-18,18)+m*h,b[0]+k*w,b[1]+m*h);g.stroke();}}});
-// strata painted by the shader from world y (3.4 m bands), weighted per vertex by the rock field
-const STRATA=[0xb8683f,0x8f4f3a,0xd4a884,0xa4523a,0x7a4030,0xc98a5e].map(h=>new THREE.Color(h).convertSRGBToLinear());
+// strata: the core's bedded-rock shader (35-core-strata), shared with the building
+// kit's carved stone (80 hands it over), weighted per vertex by the rock field
+const STRATA=BIO.strata({seed:4711});
 const MAT_GROUND=new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0xa89e94});
-MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.uniforms.uCrack={value:TEX_CRACK};sh.uniforms.uBands={value:STRATA};
+MAT_GROUND.onBeforeCompile=sh=>{STRATA.inject(sh);sh.uniforms.uDetail={value:TEX_DETAIL};sh.uniforms.uCrack={value:TEX_CRACK};
  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute float aCrack;attribute float aRock;varying float vCrack;varying float vRock;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vCrack=aCrack;vRock=aRock;');
- sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail,uCrack;uniform vec3 uBands[6];varying vec3 vGWP;varying float vCrack;varying float vRock;')
+ sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail,uCrack;varying vec3 vGWP;varying float vCrack;varying float vRock;')
   .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 dt=texture2D(uDetail,vGWP.xz*0.165).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;vec3 ck=texture2D(uCrack,vGWP.xz*0.14).rgb;'+
-  'float bb=mod(floor(vGWP.y/3.4+0.3*dt2.r),6.0);vec3 bc=uBands[0];if(bb>0.5)bc=uBands[1];if(bb>1.5)bc=uBands[2];if(bb>2.5)bc=uBands[3];if(bb>3.5)bc=uBands[4];if(bb>4.5)bc=uBands[5];'+
+  'vec3 bc=strataColor(vSWP,vSWN);'+
   'diffuseColor.rgb=mix(diffuseColor.rgb,bc*(0.85+0.3*dt.r),vRock*0.9);'+
   'diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.85)*mix(vec3(1.0),ck,vCrack);}');};
 // the grid's coordinate at s in [0,1]: 1.25 m cells inside +-260 m, then growing to +-4.2 km

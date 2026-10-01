@@ -17,8 +17,9 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `10-core-head.js` | 7 | PRNG (14); noise (24); host binding (32); accounting (98) |
 | `20-core-kit.js` | 14 | merged buckets (58); bake (133); dynamic instances (158) |
 | `30-core-foliage.js` | 15 | alpha textures (18); card geometries (48); the foliage hook (110); colour (175) |
+| `35-core-strata.js` | 6 |  |
 | `40-core-place.js` | 7 | surface sampling (59) |
-| `45-host-stage.js` | 26 | the river, the canyon, the butte, the mesas (43); terrain (75); the host binding (120); the ground (129); the water (182) |
+| `45-host-stage.js` | 25 | the river, the canyon, the butte, the mesas (43); terrain (75); the host binding (120); the ground (129); the water (183) |
 | `50-biome-sedesert-species.js` | 29 | THE WATER COLOUR (17); the tree species (69); leaf textures (129); bark, rock, wood textures (205); geometries local to this biome (244); materials (298); instanced items (330) |
 | `55-biome-sedesert-trees.js` | 32 **big** | zones from the fields (15); colour (the maths is the core's, BIO.col) (36); polyline helpers (Girder's) (51); keep-clear between trees (59); foliage helpers (66); the builders (83); impostors (the far canopy) (260); the pass (284); the passes (data: species, cell, acceptance from (314) |
 | `60-biome-sedesert-floor.js` | 14 | fields local to the floor (27); small plants (37); the zone planters (94); the pass (145) |

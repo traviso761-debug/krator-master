@@ -17,7 +17,7 @@ canvas{display:block}
 #cap{position:fixed;left:10px;top:44px;background:rgba(0,0,0,.45);padding:4px 8px;border-radius:4px;font-size:12px;color:#f0dcc4;z-index:5;max-width:60vw}
 @media (max-width:700px){#cap{display:none}#insp{top:44px;max-width:90vw}#tools{top:auto;bottom:60px}}
 </style><div id="ui"></div>
-<div id="cap">Shade — a sunken basin of the Eastern Nomads in the eastern high desert: the falls, the pool, the carved face, the switchback, the slot canyon, the Khan, the pueblos, the tents and the warrens (52 buildings; the life layer is data) · hover to inspect · drag to orbit · wheel to zoom · right-drag / WASD to move</div>
+<div id="cap">Shade — a sunken basin of the Eastern Nomads in the eastern high desert: the falls, the pool, the carved face, the switchback, the slot canyon, the Khan, the pueblos, the tents and the cliff dwellings round the rim (60 buildings; the life layer is data) · hover to inspect · drag to orbit · wheel to zoom · right-drag / WASD to move</div>
 <div id="tools"></div>
 <div id="poly"><b>Polygon tool</b> — click the ground to add points<textarea id="polyout" readonly></textarea><button id="polyundo">Undo</button><button id="polyclear">Clear</button><button id="polycopy">Copy</button></div>
 <pre id="insp">inspector: hover the world</pre>
@@ -505,6 +505,82 @@ BIO.col=(function(){const T=()=>BIO.host.THREE,C=h=>new (T().Color)(h);let WHITE
 
 })();
 
+// ==================== 35-core-strata.js
+// ================================================================= BIOME CORE — strata (layered sedimentary rock)
+// One shader function for every surface that shows bedded rock: the host's
+// ground (the canyon and mesa walls), and anything carved from it (a host can
+// hand the same object to its building kit, so a carving shows the bands of
+// the face it is cut from). Engine-independent; a host calls BIO.strata()
+// after BIO.init and gets one shared object.
+//
+// What makes it read as rock rather than as a stack of paint:
+//   - a COLUMN of beds of irregular thickness (thick cross-bedded sandstones,
+//     thin dark shales and mudstones, bleached bands), seeded, baked into a
+//     1 x 1024 texture that repeats every `columnM` metres;
+//   - the beds DIP gently and WARP (two octaves of noise in plan), so a bed
+//     line wanders across a face instead of running level;
+//   - LAMINAE inside every bed and CROSS-BEDDING on the sandstones;
+//   - DESERT VARNISH: dark streaks hanging down faces, and a paler weathered
+//     rind where the surface faces up.
+//
+//   const S=BIO.strata({seed, columnM, dip:[dx,dz,slope], warp:[m1,m2], palette})
+//   S.uniforms                    merge into a material's uniforms (onBeforeCompile)
+//   S.parsVertex / S.vertex       declare and write vSWP, vSWN (world position, normal)
+//   S.parsFragment                the function strataColor(vec3 wp, vec3 wn) -> vec3
+//   S.inject(shader)              does all three for a stock material and returns the shader
+//   S.colorAt(y)                  the column's colour at a height (sRGB THREE.Color), for painters
+(function(){
+let ONE=null;
+BIO.strata=function(opt){if(ONE&&!opt)return ONE;opt=opt||{};const T=BIO.host.THREE,F=BIO.fn;
+ const seed=opt.seed||4711,colM=opt.columnM||180,N=1024;
+ const pal=opt.palette||{sand:[0xb8683f,0xc47a4a,0xa4523a,0xb36a44],shale:[0x7a4030,0x6e3a2e,0x5e3a34],bleach:[0xd4a884,0xdcb894,0xc98a5e],mud:[0x8f4f3a,0x94503c]};
+ // the column: beds bottom to top, thickness in metres, kind, colour
+ let s=seed>>>0;const R=()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};
+ const pick=a=>a[Math.floor(R()*a.length)%a.length];
+ const beds=[];let y=0;
+ while(y<colM){const u=R();let kind,th;
+  if(u<.46){kind='sand';th=2.5+R()*9;}else if(u<.7){kind='shale';th=.35+R()*1.4;}else if(u<.86){kind='mud';th=.8+R()*2.2;}else{kind='bleach';th=1+R()*3.5;}
+  th=Math.min(th,colM-y);beds.push({y0:y,th,kind,c:new T.Color(pick(pal[kind]))});y+=th;}
+ const c=document.createElement('canvas');c.width=1;c.height=N;const g=c.getContext('2d'),id=g.createImageData(1,N);
+ for(let i=0;i<N;i++){const yy=(i+.5)/N*colM;let b=beds[beds.length-1];for(const q of beds)if(yy<q.y0+q.th){b=q;break;}
+  const f=(yy-b.y0)/b.th,edge=Math.min(f*b.th,(1-f)*b.th);   // metres to the nearest bed boundary
+  let k=1-.18*F.smooth(.25,0,edge);                          // a dark seam where beds meet
+  if(b.kind==='sand')k*=.94+.1*f;                            // a sandstone bed pales upward
+  const o=(N-1-i)*4;id.data[o]=Math.min(255,b.c.r*255*k);id.data[o+1]=Math.min(255,b.c.g*255*k);id.data[o+2]=Math.min(255,b.c.b*255*k);
+  id.data[o+3]=b.kind==='sand'?255:b.kind==='bleach'?200:b.kind==='mud'?120:60;}       // alpha: how much cross-bedding shows
+ g.putImageData(id,0,0);
+ const col=new T.CanvasTexture(c);col.wrapS=T.ClampToEdgeWrapping;col.wrapT=T.RepeatWrapping;col.magFilter=T.LinearFilter;col.minFilter=T.LinearFilter;col.generateMipmaps=false;col.encoding=T.sRGBEncoding;
+ // a tiling value noise for the warp, the streaks and the cross-bedding
+ const nz=BIO.canvasTex(256,256,(gg,w,h)=>{const d=gg.createImageData(w,h);for(let yy=0;yy<h;yy++)for(let xx=0;xx<w;xx++){const v=F.fbm(xx/32,yy/32,seed%97,4);const o=(yy*w+xx)*4;d.data[o]=d.data[o+1]=d.data[o+2]=Math.round(v*255);d.data[o+3]=255;}gg.putImageData(d,0,0);});
+ nz.wrapS=nz.wrapT=T.RepeatWrapping;nz.encoding=T.LinearEncoding;
+ const dip=opt.dip||[.6,.8,.012],warp=opt.warp||[9,2.2];
+ const uniforms={uSCol:{value:col},uSNz:{value:nz},uSColH:{value:colM},uSDip:{value:new T.Vector3(dip[0],dip[1],dip[2])},uSWarp:{value:new T.Vector2(warp[0],warp[1])}};
+ const parsVertex='varying vec3 vSWP;varying vec3 vSWN;';
+ const vertex='vSWP=(modelMatrix*vec4(transformed,1.0)).xyz;vSWN=normalize(mat3(modelMatrix)*objectNormal);';
+ const parsFragment=['varying vec3 vSWP;varying vec3 vSWN;uniform sampler2D uSCol,uSNz;uniform float uSColH;uniform vec3 uSDip;uniform vec2 uSWarp;',
+  'vec3 strataColor(vec3 wp,vec3 wn){',
+  ' wn=normalize(wn);',
+  ' float w1=texture2D(uSNz,wp.xz*0.0019).r-0.5,w2=texture2D(uSNz,wp.xz*0.0087+0.37).r-0.5;',
+  ' float yy=wp.y+w1*uSWarp.x+w2*uSWarp.y+dot(wp.xz,uSDip.xy)*uSDip.z;',
+  ' vec4 bed=texture2D(uSCol,vec2(0.5,yy/uSColH));bed.rgb=pow(bed.rgb,vec3(2.2));',   // a custom sampler is not decoded from sRGB for us
+  ' vec2 fp=abs(wn.x)>abs(wn.z)?vec2(wp.z,wp.y):vec2(wp.x,wp.y);',             // the face's own plane
+  ' float lam=0.95+0.05*sin(yy*5.1+w2*31.0);',                                     // laminae
+  ' float xb=texture2D(uSNz,vec2(fp.x*0.06+yy*0.09,yy*0.55)).r;',                 // cross-bedding: sets of inclined lines
+  ' xb=mix(1.0,0.9+0.18*smoothstep(0.3,0.8,fract(xb*4.0)),bed.a);',
+  ' vec3 c=bed.rgb*lam*xb;',
+  ' float st=texture2D(uSNz,vec2(fp.x*0.19,wp.y*0.006+w1*0.2)).r;',                // varnish streaks down the faces
+  ' float steep=1.0-abs(wn.y);',
+  ' c=mix(c,c*vec3(0.42,0.36,0.33),smoothstep(0.56,0.82,st)*0.55*steep);',
+  ' c=mix(c,c*1.12+vec3(0.025),smoothstep(0.55,0.95,wn.y)*0.6);',                   // the weathered rind of a ledge
+  ' return c;}'].join('\n');
+ const inject=sh=>{Object.assign(sh.uniforms,uniforms);
+  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+parsVertex).replace('#include <worldpos_vertex>','#include <worldpos_vertex>\n'+vertex);
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+parsFragment);return sh;};
+ const colorAt=yy=>{const v=((yy%colM)+colM)%colM;for(const q of beds)if(v<q.y0+q.th)return q.c.clone();return beds[beds.length-1].c.clone();};
+ const S={uniforms,parsVertex,vertex,parsFragment,inject,colorAt,beds,columnM:colM};
+ if(!opt.private)ONE=S;return S;};
+})();
+
 // ==================== 40-core-place.js
 // ================================================================= BIOME CORE — placement
 // Where things go. Ported from the Hexahedron's forest rebuild (the forest is
@@ -650,9 +726,10 @@ function kSouth(x,z){return smooth(-72,-60,x)*(1-smooth(0,12,x))*smooth(40,60,z)
 function kLip(x,z){return smooth(-60,-80,x)*smooth(-52,-40,z)*(1-smooth(20,32,z));}             // the waterfall lip and the shrine
 function kSwitch(x,z){return smooth(16,30,x)*(1-smooth(98,110,x))*smooth(-40,-60,z);}           // the switchback slope
 // the width of the wall face (floor to plateau, horizontally)
-function wallW(x,z){let W=12;W=mix(W,2,kSouth(x,z));W=mix(W,1.6,kLip(x,z));W=mix(W,64,kSwitch(x,z));return W;}
-function basinD(x,z){const straight=Math.max(kSouth(x,z),kLip(x,z),kSwitch(x,z));
- return smin(sdBox(x,z),sdCanyon(x,z),10)+(fbm(x*.03+7,z*.03-3,41,2)-.5)*7*(1-straight);}   // the ordinary walls wander; the special faces stay straight
+function kRow(x,z){return(1-kSwitch(x,z))*(1-smooth(126,134,x));}                              // the basin's own walls: the cliff dwellings stand against them
+function wallW(x,z){let W=12;W=mix(W,2.5,kRow(x,z));W=mix(W,2,kSouth(x,z));W=mix(W,1.6,kLip(x,z));W=mix(W,64,kSwitch(x,z));return W;}
+function basinD(x,z){const straight=Math.max(kSouth(x,z),kLip(x,z),kSwitch(x,z)),row=kRow(x,z)*(1-straight);
+ return smin(sdBox(x,z),sdCanyon(x,z),10)+(fbm(x*.03+7,z*.03-3,41,2)-.5)*7*(1-straight)*(1-row*.86);}   // the faces the dwellings stand against wander no more than half a metre
 // ---------------------------------------------------------------- the water
 // the lower stream's surface descends from the pool to the canyon; the floor
 // keeps at least 1.1 m above it so its banks always hide the ribbon's edges
@@ -759,11 +836,21 @@ const PLACES=[
   activities:['PATROL'],capacity:18,tags:{culture:'eastern-nomad',types:['infrastructure']}},
  {id:'switchback_gate',name:'The switchback gatehouse',kind:'plateau',poly:[[26,-176],[46,-176],[46,-160],[26,-160]],
   activities:['PATROL'],capacity:16,tags:{culture:'eastern-nomad',types:['infrastructure']}},
- {id:'warrens',name:'The chimney warrens',kind:'ground',poly:[[-28,-74],[24,-74],[24,-56],[-28,-56]],
-  activities:['SLEEP','CRAFT','REST'],capacity:70,tags:{culture:'eastern-nomad',types:['single-family dwelling']}},
  {id:'grazing',name:'The plateau grazing',kind:'plateau',poly:[[-40,-262],[80,-262],[80,-192],[-40,-192]],
   activities:['HERD'],capacity:120,tags:{types:['farm']},grows:true},
 ];
+// the cliff dwellings' runs: the foot of each sheer wall the pueblos stand against.
+// Each is a 'wall' place, reserved from 3 m inside the face to `out` metres onto the floor;
+// its facade line is the foot, its face the outward normal.
+const CLIFF_RUNS=[
+ {id:'cliff-w',name:'The west cliff dwellings',a:[BASIN.x0,30],b:[BASIN.x0,56],n:[1,0],out:16,rows:3,tower:true,capacity:90},
+ {id:'cliff-n',name:'The north cliff dwellings',a:[-71,BASIN.z0],b:[10,BASIN.z0],n:[0,1],out:16,rows:3,tower:true,capacity:220},
+ {id:'cliff-s',name:'The south cliff dwellings',a:[95,BASIN.z1],b:[4,BASIN.z1],n:[0,-1],out:13,rows:2,tower:true,capacity:240},
+ {id:'cliff-es',name:'The east cliff dwellings, south',a:[BASIN.x1,56],b:[BASIN.x1,34],n:[-1,0],out:10,rows:2,tower:false,capacity:80},
+ {id:'cliff-en',name:'The east cliff dwellings, north',a:[BASIN.x1,-34],b:[BASIN.x1,-56],n:[-1,0],out:10,rows:2,tower:false,capacity:80}];
+for(const C of CLIFF_RUNS){const n=C.n,a=C.a,b=C.b,P=(p,k)=>[p[0]+n[0]*k,p[1]+n[1]*k];
+ PLACES.push({id:C.id,name:C.name,kind:'wall',poly:[P(a,-3),P(b,-3),P(b,C.out),P(a,C.out)],facade:{a,b,face:n.slice()},
+  activities:['SLEEP','EAT','CRAFT','SOCIALIZE','REST','PLAY'],capacity:C.capacity,tags:{culture:'eastern-nomad',types:['multi-family dwelling']}});}
 // the edges of the settlement a traveller arrives from or leaves by (the life layer's ports)
 const PORTS={canyon_east:{x:440,z:zC(440),name:'The canyon, east'},plateau_north:{x:40,z:-270,name:'The plateau, north'}};
 function polyHas(poly,x,z){let a=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const xi=poly[i][0],zi=poly[i][1],xj=poly[j][0],zj=poly[j][1];
@@ -823,14 +910,19 @@ const SHADE_PLAN=(function(){
  {const pl=place('market').poly,taken=[];let n=0;
   for(const [zr,yaw] of [[-37,0],[-23,N]])for(let x=-31;x<=2;x+=4.7){const w=rr(3.2,4),d=rr(2.4,3),xx=x+rr(-.4,.4),zz=zr+rr(-.5,.5),yy=yaw+rr(-.08,.08),pts=rectAt(xx,zz,w+.4,d+.8,yy);
    if(!inside(pl,pts)||!clearOf(pts,taken,.5)){rejected.stall=(rejected.stall||0)+1;continue;}taken.push(pts);n++;add({id:'stall-'+n,family:'stall',placeId:'market',x:xx,z:zz,yaw:yy,params:{w,d}});}}
- // ---- the chimney warrens along the north wall, and the two watch chimneys
- {const pl=place('warrens').poly,taken=[];let tries=0,n=0;
-  while(n<8&&tries<500){tries++;const R0=rr(2.1,3.3),x=rr(-26,22),z=rr(-72,-58),r=R0*1.32,pts=[];for(let k=0;k<12;k++){const a=k/12*TAU;pts.push([x+Math.sin(a)*r,z+Math.cos(a)*r]);}
-   if(!inside(pl,pts)||!clearOf(pts,taken,2.2)){rejected.chimney=(rejected.chimney||0)+1;continue;}taken.push(pts);n++;
-   add({id:'chimney-'+n,family:'fairy',placeId:'warrens',x,z,yaw:rr(-.6,.6),params:{height:R0*3.6+rr(-1,2),radius:R0}});}
-  if(n<8)rejected.chimney_short=8-n;}
- add({id:'gatehouse',family:'fairy',placeId:'switchback_gate',x:36,z:-168,yaw:0,params:{height:13,radius:3.2,twin:true}});
- add({id:'canyon-watch',family:'fairy',placeId:'canyon_watch',x:120,z:-11.5,yaw:0,params:{height:9,radius:2}});
+ // ---- the cliff dwellings: along each run, blocks of 9-16 m with gaps, each turned to the
+ //      foot as it actually runs (found by bisection on basinD) and set 0.6 m into the rock
+ const footAt=(p,n)=>{let lo=-6,hi=6;for(let k=0;k<28;k++){const m=(lo+hi)/2;if(basinD(p[0]+n[0]*m,p[1]+n[1]*m)>0)lo=m;else hi=m;}return[p[0]+n[0]*hi,p[1]+n[1]*hi];};
+ for(const C of CLIFF_RUNS){const a=C.a,b=C.b,L=Math.hypot(b[0]-a[0],b[1]-a[1]),t=[(b[0]-a[0])/L,(b[1]-a[1])/L];let s0=rr(.5,2.5),k=0;
+  while(s0<L-8){const len=Math.min(rr(9,16),L-s0-.5);if(len<8)break;
+   const A=footAt([a[0]+t[0]*s0,a[1]+t[1]*s0],C.n),B=footAt([a[0]+t[0]*(s0+len),a[1]+t[1]*(s0+len)],C.n);
+   const ex=B[0]-A[0],ez=B[1]-A[1],el=Math.hypot(ex,ez);let nx=-ez/el,nz=ex/el;if(nx*C.n[0]+nz*C.n[1]<0){nx=-nx;nz=-nz;}
+   const back=.6+.5*Math.abs(((A[0]-B[0])*C.n[0]+(A[1]-B[1])*C.n[1]));
+   const rows=C.rows===3&&R()<.65?3:2,storeys=rows===3?(R()<.5?4:3):3;
+   add({id:C.id+'-'+(++k),family:'cliffpueblo',placeId:C.id,x:(A[0]+B[0])/2-nx*back,z:(A[1]+B[1])/2-nz*back,yaw:Math.atan2(nx,nz),params:{length:el,rows,storeys,cell:3.6,tower:C.tower}});
+   s0+=len+rr(1.5,4);}}
+ add({id:'gatehouse',family:'tower',placeId:'switchback_gate',x:36,z:-168,yaw:0,params:{storeys:5,round:true,radius:3.2}});
+ add({id:'canyon-watch',family:'tower',placeId:'canyon_watch',x:120,z:-11.5,yaw:0,params:{storeys:3,round:false,radius:1.9}});
  return{plans:P,rejected};})();
 
 // ==================== 45-host-stage.js
@@ -966,14 +1058,15 @@ const TEX_CRACK=BIO.canvasTex(256,256,(g,w,h)=>{g.fillStyle='#ffffff';g.fillRect
  const P=[];for(let i=0;i<16;i++)P.push([rng()*w,rng()*h]);
  for(let i=0;i<P.length;i++)for(let j=i+1;j<P.length;j++){const a=P[i],b=P[j];if(Math.hypot(a[0]-b[0],a[1]-b[1])>w*.4)continue;if(rng()<.45)continue;
   g.lineWidth=rr(1.2,2.6);for(let k=-1;k<=1;k++)for(let m=-1;m<=1;m++){g.beginPath();g.moveTo(a[0]+k*w,a[1]+m*h);g.quadraticCurveTo((a[0]+b[0])/2+rr(-18,18)+k*w,(a[1]+b[1])/2+rr(-18,18)+m*h,b[0]+k*w,b[1]+m*h);g.stroke();}}});
-// strata painted by the shader from world y (3.4 m bands), weighted per vertex by the rock field
-const STRATA=[0xb8683f,0x8f4f3a,0xd4a884,0xa4523a,0x7a4030,0xc98a5e].map(h=>new THREE.Color(h).convertSRGBToLinear());
+// strata: the core's bedded-rock shader (35-core-strata), shared with the building
+// kit's carved stone (80 hands it over), weighted per vertex by the rock field
+const STRATA=BIO.strata({seed:4711});
 const MAT_GROUND=new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0xa89e94});
-MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.uniforms.uCrack={value:TEX_CRACK};sh.uniforms.uBands={value:STRATA};
+MAT_GROUND.onBeforeCompile=sh=>{STRATA.inject(sh);sh.uniforms.uDetail={value:TEX_DETAIL};sh.uniforms.uCrack={value:TEX_CRACK};
  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute float aCrack;attribute float aRock;varying float vCrack;varying float vRock;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vCrack=aCrack;vRock=aRock;');
- sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail,uCrack;uniform vec3 uBands[6];varying vec3 vGWP;varying float vCrack;varying float vRock;')
+ sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail,uCrack;varying vec3 vGWP;varying float vCrack;varying float vRock;')
   .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 dt=texture2D(uDetail,vGWP.xz*0.165).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;vec3 ck=texture2D(uCrack,vGWP.xz*0.14).rgb;'+
-  'float bb=mod(floor(vGWP.y/3.4+0.3*dt2.r),6.0);vec3 bc=uBands[0];if(bb>0.5)bc=uBands[1];if(bb>1.5)bc=uBands[2];if(bb>2.5)bc=uBands[3];if(bb>3.5)bc=uBands[4];if(bb>4.5)bc=uBands[5];'+
+  'vec3 bc=strataColor(vSWP,vSWN);'+
   'diffuseColor.rgb=mix(diffuseColor.rgb,bc*(0.85+0.3*dt.r),vRock*0.9);'+
   'diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.85)*mix(vec3(1.0),ck,vCrack);}');};
 // the grid's coordinate at s in [0,1]: 1.25 m cells inside +-260 m, then growing to +-4.2 km
@@ -2167,10 +2260,6 @@ const TEX_ADOBE=canvasTex(256,256,(g,w,h)=>{noiseFill(g,w,h,[226,214,200],18,R0)
 // carved sandstone: tool marks in diagonal bands (the strata come from the shader, by world height) (2 m tile)
 const TEX_CHISEL=canvasTex(256,256,(g,w,h)=>{noiseFill(g,w,h,[214,214,214],22,R0);
  for(let i=0;i<900;i++){const x=R0()*w,y=R0()*h;g.strokeStyle='rgba('+(R0()<.5?'170,170,170':'245,245,245')+',.35)';g.lineWidth=.8+R0();g.beginPath();g.moveTo(x,y);g.lineTo(x+5,y+3);g.stroke();}});
-// tufa: soft, streaked by run-off, pitted (4 m tile)
-const TEX_TUFA=canvasTex(256,256,(g,w,h)=>{noiseFill(g,w,h,[232,222,206],16,R0);
- for(let i=0;i<160;i++){const x=R0()*w,l=20+R0()*120,y=R0()*h;g.strokeStyle='rgba('+(R0()<.6?'200,178,150':'250,244,236')+','+(.12+R0()*.2).toFixed(2)+')';g.lineWidth=1+R0()*3;g.beginPath();g.moveTo(x,y);g.lineTo(x+(R0()-.5)*4,y+l);g.stroke();}
- for(let i=0;i<120;i++){g.fillStyle='rgba(150,130,110,'+(.2+R0()*.3).toFixed(2)+')';g.beginPath();g.arc(R0()*w,R0()*h,.6+R0()*1.8,0,TAU);g.fill();}});
 // black goat-hair cloth: woven strips a metre wide, sewn edge to edge (1 m tile across the strips)
 const TEX_CLOTH=canvasTex(128,128,(g,w,h)=>{noiseFill(g,w,h,[58,50,44],14,R0);
  for(let y=0;y<h;y+=2){g.fillStyle='rgba(0,0,0,'+(.08+R0()*.1).toFixed(2)+')';g.fillRect(0,y,w,1);}
@@ -2186,18 +2275,23 @@ const TEX_WOOD=canvasTex(64,256,(g,w,h)=>{noiseFill(g,w,h,[150,120,95],16,R0);
 // 3.4 m bands by world height): a facade cut from the face shows the same
 // bands as the rock round it, which is most of what makes it read as carved.
 const STRATA=[0xb8683f,0x8f4f3a,0xd4a884,0xa4523a,0x7a4030,0xc98a5e].map(h=>new THREE.Color(h).convertSRGBToLinear());
+// A host that has a strata shader hands it over (NOMAD.useStrata(S), before the
+// first frame): S.inject(shader) and strataColor(vSWP, vSWN), as the biome core's
+// BIO.strata provides. Without one, plain level bands stand in.
+let STRATA_IN=null;
 function stoneMat(){const m=new THREE.MeshLambertMaterial({map:TEX_CHISEL,vertexColors:true,side:THREE.DoubleSide});
- m.onBeforeCompile=sh=>{sh.uniforms.uBands={value:STRATA};
+ m.onBeforeCompile=sh=>{
+  if(STRATA_IN){STRATA_IN.inject(sh);sh.fragmentShader=sh.fragmentShader.replace('#include <map_fragment>','#include <map_fragment>\n{vec3 bc=strataColor(vSWP,vSWN);diffuseColor.rgb=bc*(0.55+0.55*diffuseColor.rgb);}');return;}
+  sh.uniforms.uBands={value:STRATA};
   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vKWP;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvKWP=(modelMatrix*vec4(transformed,1.0)).xyz;');
   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform vec3 uBands[6];varying vec3 vKWP;')
    .replace('#include <map_fragment>','#include <map_fragment>\n{float bb=mod(floor(vKWP.y/3.4),6.0);vec3 bc=uBands[0];if(bb>0.5)bc=uBands[1];if(bb>1.5)bc=uBands[2];if(bb>2.5)bc=uBands[3];if(bb>3.5)bc=uBands[4];if(bb>4.5)bc=uBands[5];'+
    'diffuseColor.rgb=bc*(0.55+0.55*diffuseColor.rgb);}');};
- m.customProgramCacheKey=()=>'nomad-stone';return m;}
+ m.customProgramCacheKey=()=>'nomad-stone'+(STRATA_IN?'-strata':'');return m;}
 const lam=(map,extra)=>new THREE.MeshLambertMaterial(Object.assign({map,vertexColors:true,side:THREE.DoubleSide},extra||{}));
 const MAT={
  stone:{m:stoneMat(),tile:2},
  adobe:{m:lam(TEX_ADOBE),tile:2},
- tufa:{m:lam(TEX_TUFA),tile:4},
  cloth:{m:lam(TEX_CLOTH),tile:1},
  canvas:{m:lam(TEX_CANVAS),tile:1.5},
  wood:{m:lam(TEX_WOOD),tile:1},
@@ -2260,7 +2354,7 @@ function kit(seed){
  return api;}
 const rect=(w,d,frontAtOrigin)=>frontAtOrigin?[[-w/2,0],[w/2,0],[w/2,d],[-w/2,d]]:[[-w/2,-d/2],[w/2,-d/2],[w/2,d/2],[-w/2,d/2]];
 const circle=(r,n)=>{const p=[];for(let i=0;i<n;i++){const a=i*TAU/n;p.push([Math.sin(a)*r,Math.cos(a)*r]);}return p;};
-return{kit,MAT,DYE,rect,circle,rngOf,clamp,mix,smooth,TAU};})();
+return{kit,MAT,DYE,rect,circle,rngOf,clamp,mix,smooth,TAU,useStrata:S=>{STRATA_IN=S;}};})();
 
 // ==================== 77b-kit-nomad-carved.js
 // ================================================================= EASTERN NOMAD KIT — the carved family (Petra)
@@ -2410,7 +2504,57 @@ function buildPuebloCompound({cx=6,cz=6,cell=4,storeys=3,seed=1}={}){
  K.color(DYE.madder,1);for(let k=0;k<6;k++)K.block('canvas',rx-1.2+k*.48,1.2,rz,.25,.5,.04);   // chillies or cloth on the rack
  return K.finish({kind:'building',name:'Stepped adobe pueblo compound',culture:'eastern-nomad',types:['multi-family dwelling'],
   footprint:NOMAD.rect(W,D,false),height:storeys*SH+.6,family:'pueblo',seed:seed>>>0,cells,plaza:[0,z0+D*.62]});}
-window.buildPuebloCompound=buildPuebloCompound;
+// buildCliffPueblo({length,rows,storeys,cell,seed}): rooms built against a cliff
+// (Mesa Verde): the back row stands `storeys` high against the rock at z = 0
+// (the host sets z = 0 inside the face), each row in front a storey or two
+// lower, so the roofs step down to the floor as terraces. Now and then a back
+// room climbs a storey higher up the face, and a tower stands out in front.
+function buildCliffPueblo({length=12,rows=3,storeys=3,cell=3.6,tower=true,seed=1}={}){
+ const K=K0(seed),r=K.rnd,cx=Math.max(2,Math.round(length/cell)),cz=Math.max(1,rows),L=cx*cell,D=cz*cell,x0=-L/2;
+ const H=[];for(let i=0;i<cx;i++){H.push([]);for(let j=0;j<cz;j++){let h=storeys-Math.round(j*(storeys-1)/Math.max(1,cz-1)*.9)-(r()<.25?1:0);
+  if(j===0&&r()<.3)h+=1;                                   // a room that climbs the face
+  if(j===cz-1&&r()<.3)h=0;                                  // a gap in the front row: a court
+  H[i].push(Math.max(j===0?2:0,h));}}
+ const at=(i,j)=>i<0||j<0||i>=cx||j>=cz?(j<0?99:0):H[i][j];   // behind the back row is the rock
+ const wash=[0xc89a70,0xbf9068,0xcfa478,0xb88a62][Math.floor(r()*4)],cells=[];
+ // the masonry here is rough stone laid in mud: the walls take the carved stone's
+ // strata so they match the cliff they stand against, the plaster only patches
+ for(let i=0;i<cx;i++)for(let j=0;j<cz;j++){const h=at(i,j);if(!h)continue;const x=x0+cell*(i+.5),z=cell*(j+.5),top=h*SH+(r()-.5)*.25,stone=r()<.45;
+  cells.push([x-cell/2,z-cell/2,x+cell/2,z+cell/2]);
+  K.color(stone?null:wash,stone?.82+r()*.12:.9+r()*.14);K.block(stone?'stone':'adobe',x,0,z,cell+.02,top,cell+.02);
+  K.color(wash,1.02);const pt=.26,ph=.5;
+  if(at(i,j+1)<h)K.block('adobe',x,top,z+cell/2-pt/2,cell,ph,pt);
+  if(at(i-1,j)<h)K.block('adobe',x-cell/2+pt/2,top,z,pt,ph,cell);
+  if(at(i+1,j)<h)K.block('adobe',x+cell/2-pt/2,top,z,pt,ph,cell);
+  const fz=z+cell/2,front=at(i,j+1);
+  if(front<h){for(let s=front;s<h;s++){const yv=(s+1)*SH-.35;K.color(0x6a4a32,1);for(let k=0;k<3;k++)K.beam('wood',[x-cell*.3+k*cell*.3,yv,fz-.3],[x-cell*.3+k*cell*.3,yv-.05,fz+.5],.08,5);
+    K.color(null,1);
+    if(s===front&&(s===0||r()<.5)){K.block('dark',x,s*SH,fz+.02,.55,1.75,.08);K.block('dark',x,s*SH+.95,fz+.02,.95,.8,.08);}
+    else K.block('dark',x+(r()-.5)*1,s*SH+1.1,fz+.02,.45,.5,.08);}}
+  if(j>0&&at(i,j-1)>h&&r()<.55){const lx=x+(r()-.5)*cell*.4,lz=z-cell/2+.5,yA=h*SH,yB=yA+SH+.9;K.color(0x5a3e2a,1);
+   K.beam('wood',[lx-.28,yA,lz+.5],[lx-.28,yB,lz-.05],.045,5);K.beam('wood',[lx+.28,yA,lz+.5],[lx+.28,yB,lz-.05],.045,5);
+   for(let s2=1;s2<8;s2++){const t=s2/8;K.beam('wood',[lx-.28,yA+(yB-yA)*t,lz+.5-.55*t],[lx+.28,yA+(yB-yA)*t,lz+.5-.55*t],.03,4);}}}
+ // a tower in front: round (Mesa Verde's) or square, a storey above its neighbours
+ const hasTower=tower&&cx>=3&&r()<.6;
+ if(hasTower){const ti=1+Math.floor(r()*(cx-2)),tx=x0+cell*(ti+.5),tz=D+1.4,th=(storeys+1)*SH,round=r()<.6;K.color(null,.86);
+  if(round)K.cyl('stone',tx,0,tz,1.5,1.6,th,14);else K.block('stone',tx,0,tz,2.8,th,2.8);
+  K.color(wash,1);if(round)K.cyl('adobe',tx,th,tz,1.55,1.55,.4,14);else K.block('adobe',tx,th,tz,3,.4,3);
+  K.color(null,1);for(let s=0;s<storeys+1;s++)K.block('dark',tx,s*SH+1.2,tz+(round?1.52:1.42),.35,.4,.1);K.block('dark',tx,0,tz+(round?1.55:1.45),.6,1.6,.1);
+  cells.push([tx-1.6,tz-1.6,tx+1.6,tz+1.6]);}
+ return K.finish({kind:'building',name:'Cliff dwelling (pueblo against the rock)',culture:'eastern-nomad',types:['multi-family dwelling'],
+  footprint:NOMAD.rect(L,D+(tower?3.2:0),true),height:(storeys+1)*SH+.6,family:'cliffpueblo',seed:seed>>>0,cells});}
+// buildPuebloTower({storeys,round,radius,seed}): a watch tower, round or square, rough stone, a flat roof and parapet
+function buildPuebloTower({storeys=4,round=true,radius=2.6,seed=1}={}){
+ const K=K0(seed),r=K.rnd,th=storeys*SH,R=radius;K.color(null,.84);
+ if(round)K.cyl('stone',0,0,0,R,R*1.08,th,18);else K.block('stone',0,0,0,R*1.8,th,R*1.8);
+ K.color(0xc89a70,1);if(round){K.cyl('adobe',0,th,0,R*1.04,R*1.04,.5,18);for(let k=0;k<12;k++){const a=k/12*NOMAD.TAU;K.block('adobe',Math.sin(a)*R*.95,th+.5,Math.cos(a)*R*.95,.5,.45,.5,a);}}
+ else{K.block('adobe',0,th,0,R*1.9,.5,R*1.9);}
+ K.color(null,1);K.block('dark',0,0,R*1.07+.02,.7,1.8,.1);K.block('dark',0,1,R*1.07+.02,1.1,.8,.1);
+ for(let s=1;s<storeys;s++){const a=s*2.1;K.box('dark',Math.sin(a)*(R*1.02),s*SH+1.2,Math.cos(a)*(R*1.02),.4,.45,.12,a);}
+ K.color(0x6a4a32,1);for(let k=0;k<6;k++){const a=k/6*NOMAD.TAU+.3;K.beam('wood',[Math.sin(a)*R*.9,th-.4,Math.cos(a)*R*.9],[Math.sin(a)*(R+.5),th-.42,Math.cos(a)*(R+.5)],.08,5);}
+ return K.finish({kind:'building',name:(round?'Round':'Square')+' watch tower',culture:'eastern-nomad',types:['infrastructure'],
+  footprint:NOMAD.circle(R*1.3,16),height:th+.95,family:'tower',seed:seed>>>0});}
+window.buildPuebloCompound=buildPuebloCompound;window.buildCliffPueblo=buildCliffPueblo;window.buildPuebloTower=buildPuebloTower;
 })();
 
 // ==================== 77d-kit-nomad-khan.js
@@ -2483,12 +2627,10 @@ window.buildCaravanserai=buildCaravanserai;
 })();
 
 // ==================== 77e-kit-nomad-camp.js
-// ================================================================= EASTERN NOMAD KIT — the camp: black tents, market stalls, fairy chimneys
+// ================================================================= EASTERN NOMAD KIT — the camp: black tents, market stalls
 //   buildBlackTent({w,d,poles,seed})       a beit al-sha'ar: goat-hair roof sagging between pole peaks,
 //                                          a back wall to the ground, the front propped open, guy ropes, a rug
 //   buildMarketStall({w,d,dye,seed})       four poles, a striped awning, a counter and its goods
-//   buildFairyChimney({height,radius,twin,seed})  an eroded tufa cone under a dark cap stone,
-//                                          hollowed: a door, windows, a stair cut round its foot
 (function(){
 const K0=NOMAD.kit,DYE=NOMAD.DYE,TAU=NOMAD.TAU,clamp=NOMAD.clamp;
 function buildBlackTent({w=9,d=5,poles=3,seed=1}={}){
@@ -2528,26 +2670,7 @@ function buildMarketStall({w=4,d=3,dye=null,seed=1}={}){
  K.color(dc,.9);K.block('canvas',hx*.5,0,-hz+.3,.9,.18,.5);
  return K.finish({kind:'building',name:'Market stall',culture:'eastern-nomad',types:['market/shop'],
   footprint:NOMAD.rect(W+.4,D+.8,false),height:hf+.1,family:'stall',seed:seed>>>0});}
-// Cappadocian tufa: buff to pale rose, never white
-const TUFA_WASH=[0xd2b08a,0xc9a27e,0xd8b994,0xc79c84,0xcdac8c];
-function buildFairyChimney({height=10,radius=3,twin=false,seed=1}={}){
- const K=K0(seed),r=K.rnd,H=Math.max(5,height),R=Math.max(1.6,radius);
- const cone=(x,z,h,rad)=>{const prof=[];const n=9;for(let i=0;i<=n;i++){const t=i/n,y=t*h*.86;const rr=rad*(1.28-.25*t-.55*t*t+.12*Math.sin(t*9+x))*(t>.92?.85:1);prof.push([Math.max(.25,rr),y]);}
-  K.color(TUFA_WASH[Math.floor(r()*TUFA_WASH.length)],.92+r()*.1);K.lathe('tufa',x,0,z,prof,18,.12);
-  // the cap: a dark basalt mushroom on a narrowed neck
-  K.color(0x6a5a52,1);K.lathe('stone',x,h*.86,z,[[rad*.35,0],[rad*.62,.15*h*.14],[rad*.78,.55*h*.14],[rad*.62,h*.14*.95],[0,h*.14]],12,.15);};
- cone(0,0,H,R);if(twin)cone(R*1.25,-R*.55,H*.72,R*.62);
- // the hollowed rooms: a door at the foot facing +z, windows round the upper body
- const rAt=t=>R*(1.28-.25*t-.55*t*t);
- K.color(null,1);K.block('dark',0,0,rAt(.05)-.12,1,2.1,.25);
- K.color(0xb89470,1);K.block('tufa',0,2.1,rAt(.2)-.05,1.5,.35,.5);
- for(let k=0;k<4;k++){const t=.32+k*.13,a=k*1.7+r()*.6,rr=rAt(t)-.1;K.color(null,1);K.box('dark',Math.sin(a)*rr,t*H*.86,Math.cos(a)*rr,.55,.75,.2,a);}
- // a stair cut round the foot to the first window
- K.color(0xb89470,.92);for(let k=0;k<8;k++){const a=-.5-k*.28,rr=rAt(.05+k*.03)+.25,y=k*.32;K.box('tufa',Math.sin(a)*rr,y+.16,Math.cos(a)*rr,.9,.32,.5,a);}
- const fr=R*1.32+(twin?R*1.1:0);
- return K.finish({kind:'building',name:twin?'Twin fairy chimney (gatehouse)':'Fairy chimney (rock-cut warren)',culture:'eastern-nomad',types:twin?['infrastructure','civic']:['single-family dwelling'],
-  footprint:NOMAD.circle(fr,16),height:H,family:'fairy',seed:seed>>>0});}
-window.buildBlackTent=buildBlackTent;window.buildMarketStall=buildMarketStall;window.buildFairyChimney=buildFairyChimney;
+window.buildBlackTent=buildBlackTent;window.buildMarketStall=buildMarketStall;
 })();
 
 // ==================== 80-host-buildings.js
@@ -2562,8 +2685,9 @@ window.buildBlackTent=buildBlackTent;window.buildMarketStall=buildMarketStall;wi
 //   (one draw call per material, not per building).
 // It runs before 84, so the grid blocks what the builders actually built.
 const BUILDINGS=(function(){
+ NOMAD.useStrata(STRATA);   // carvings show the bed lines of the face they are cut from
  const BUILD={treasury:buildTreasury,tomb:buildCrowTomb,stair:buildRockStair,ledge:buildLedge,pueblo:buildPuebloCompound,
-  khan:buildCaravanserai,tent:buildBlackTent,stall:buildMarketStall,fairy:buildFairyChimney};
+  khan:buildCaravanserai,tent:buildBlackTent,stall:buildMarketStall,cliffpueblo:buildCliffPueblo,tower:buildPuebloTower};
  const records=[],byFamily={},merged=new Map(),t0=performance.now();
  const W=(g,p)=>{const v=new THREE.Vector3(p[0],0,p[1]).applyMatrix4(g.matrixWorld);return[+v.x.toFixed(3),+v.z.toFixed(3)];};
  const rectL=(x0,z0,x1,z1)=>[[x0,z0],[x1,z0],[x1,z1],[x0,z1]];
@@ -2586,11 +2710,12 @@ const BUILDINGS=(function(){
    door=[0,hz+U.portalDepth+1.2];}
   else if(P.family==='tent'){nav=[rectL(-q.w/2,-q.d/2,q.w/2,q.d/2)];door=[-q.w*.28,q.d/2+1.1];}
   else if(P.family==='stall'){nav=[rectL(-q.w/2,-q.d/2,q.w/2,q.d/2)];door=[0,q.d/2+1];}
-  else if(P.family==='fairy'){const R=q.radius;nav=[circL(0,0,R*1.32)];if(q.twin)nav.push(circL(R*1.25,-R*.55,R*.82));door=[0,R*1.32+.8];}
+  else if(P.family==='cliffpueblo'){nav=U.cells.map(c=>rectL(c[0],c[1],c[2],c[3]));const L=U.footprint[1][0]-U.footprint[0][0];door=[-L/2+q.cell/2,q.rows*q.cell+.9];}
+  else if(P.family==='tower'){nav=[circL(0,0,q.radius*1.3)];door=[0,q.radius*1.3+.8];}
   const cx=foot.reduce((a,p)=>a+p[0],0)/foot.length,cz=foot.reduce((a,p)=>a+p[1],0)/foot.length,r=Math.max(...foot.map(p=>Math.hypot(p[0]-cx,p[1]-cz)));
   const types=(place.tags&&place.tags.types&&!/stair|ledge/.test(P.family)?place.tags.types:U.types).slice();
   const yTop=y0+(P.family==='ledge'?0:U.height),yBot=y0+(P.family==='ledge'?-.6:0);
-  const back=place.kind==='wall'&&P.lift>=0&&/treasury|tomb/.test(P.family)?[W(g,U.footprint[0]),W(g,U.footprint[1])]:null;
+  const back=place.kind==='wall'&&P.lift>=0&&/treasury|tomb|cliffpueblo/.test(P.family)?[W(g,U.footprint[0]),W(g,U.footprint[1])]:null;
   const R={id:P.id,name:U.name+(P.family==='stair'||P.family==='ledge'?' ('+place.name+')':' — '+place.name),family:P.family,placeId:place.id,placePoly:place.poly,placeKind:place.kind,
    types,footprint:foot,poly:foot,navPolys:nav.map(p=>p.map(v=>W(g,v))),door:door?W(g,door):null,access:P.access||null,group:P.group||null,
    backLine:back,face:place.facade?place.facade.face.slice():null,baseY:base,lift:P.lift,y0:yBot,y1:yTop,height:U.height,center:[cx,cz],radius:r};
@@ -2847,13 +2972,13 @@ const FACTIONS={
 function sched(spans){const out=new Array(24);let a=spans[spans.length-1][1];
  for(let h=0;h<24;h++){for(const s of spans)if(s[0]===h)a=s[1];out[h]=a;}return out;}
 const JOBS={
- farmer:      {sub:'shade_clans',count:300,homes:['petra','pueblo','tents'],sched:sched([[0,'SLEEP'],[5,'FARM'],[11,'REST'],[15,'FARM'],[19,'EAT'],[20,'SOCIALIZE'],[22,'SLEEP']])},
+ farmer:      {sub:'shade_clans',count:300,homes:['petra','pueblo','tents','cliff-n','cliff-s'],sched:sched([[0,'SLEEP'],[5,'FARM'],[11,'REST'],[15,'FARM'],[19,'EAT'],[20,'SOCIALIZE'],[22,'SLEEP']])},
  herder:      {sub:'shade_clans',count:90, homes:['tents'],sched:sched([[0,'SLEEP'],[5,'HERD'],[12,'REST'],[14,'HERD'],[19,'EAT'],[21,'SLEEP']])},
  shopkeeper:  {sub:'shade_clans',count:90, homes:['pueblo','petra'],sched:sched([[0,'SLEEP'],[6,'TRADE'],[12,'EAT'],[13,'REST'],[16,'TRADE'],[20,'SOCIALIZE'],[22,'SLEEP']])},
- artisan:     {sub:'shade_clans',count:140,homes:['petra','pueblo'],sched:sched([[0,'SLEEP'],[6,'CRAFT'],[12,'EAT'],[13,'CRAFT'],[18,'SOCIALIZE'],[21,'SLEEP']])},
+ artisan:     {sub:'shade_clans',count:140,homes:['petra','pueblo','cliff-w','cliff-es'],sched:sched([[0,'SLEEP'],[6,'CRAFT'],[12,'EAT'],[13,'CRAFT'],[18,'SOCIALIZE'],[21,'SLEEP']])},
  water_carrier:{sub:'shade_clans',count:40,homes:['pueblo','tents'],sched:sched([[0,'SLEEP'],[5,'FETCH_WATER'],[10,'REST'],[16,'FETCH_WATER'],[19,'EAT'],[21,'SLEEP']])},
- child:       {sub:'shade_clans',count:170,homes:['petra','pueblo','tents'],sched:sched([[0,'SLEEP'],[7,'EAT'],[8,'PLAY'],[12,'EAT'],[13,'PLAY'],[19,'EAT'],[20,'SLEEP']])},
- elder:       {sub:'shade_clans',count:80, homes:['petra','pueblo'],sched:sched([[0,'SLEEP'],[6,'WORSHIP'],[8,'SOCIALIZE'],[12,'REST'],[16,'SOCIALIZE'],[19,'EAT'],[21,'SLEEP']])},
+ child:       {sub:'shade_clans',count:170,homes:['petra','pueblo','tents','cliff-n','cliff-s'],sched:sched([[0,'SLEEP'],[7,'EAT'],[8,'PLAY'],[12,'EAT'],[13,'PLAY'],[19,'EAT'],[20,'SLEEP']])},
+ elder:       {sub:'shade_clans',count:80, homes:['petra','pueblo','cliff-s','cliff-en'],sched:sched([[0,'SLEEP'],[6,'WORSHIP'],[8,'SOCIALIZE'],[12,'REST'],[16,'SOCIALIZE'],[19,'EAT'],[21,'SLEEP']])},
  priest:      {sub:'aquifer_wardens',count:6,homes:['shrine'],sched:sched([[0,'SLEEP'],[4,'WORSHIP'],[12,'TRADE'],[14,'REST'],[18,'WORSHIP'],[21,'SLEEP']])},
  acolyte:     {sub:'aquifer_wardens',count:24,homes:['shrine'],sched:sched([[0,'SLEEP'],[4,'WORSHIP'],[8,'FETCH_WATER'],[10,'CRAFT'],[18,'WORSHIP'],[21,'SLEEP']])},
  guard_day:   {sub:'canyon_guard',count:30,homes:['pueblo'],sched:sched([[0,'SLEEP'],[6,'PATROL'],[18,'EAT'],[19,'SOCIALIZE'],[22,'SLEEP']])},
@@ -3014,7 +3139,9 @@ const VIEWS={
  'The Khan gate':look(22,4,4,30,22,5),
  'The market':look(-28,-8,4,-12,-32,1.5),
  'The tent grounds':look(36,-12,6,74,-44,1),
- 'The chimney warrens':look(10,-40,5,-2,-66,5),
+ 'The north cliff dwellings':look(-30,-40,6,-30,BASIN.z0,9),
+ 'The south cliff dwellings':look(50,40,8,50,BASIN.z1,9),
+ 'The gatehouse tower':look(10,-150,8,36,-168,8),
  'The upper stream':look(LIPX-130,zU(LIPX-130)+26,16,LIPX-10,zU(LIPX-10),-2),
  'Over the basin':look(-10,-260,190,15,0,0),
  'From afar':look(-460,420,210,10,0,10),
@@ -3233,7 +3360,7 @@ const CHK={
    const sgn=((B.center[0]-a[0])*nx+(B.center[1]-a[1])*nz)>0?-1:1;
    for(let i=0;i<=8;i++){const t=i/8,x=mix(a[0],b[0],t)+nx*sgn*.6,z=mix(a[1],b[1],t)+nz*sgn*.6,margin=terrainH(x,z)-(B.baseY+B.lift+B.height*.9);if(margin<worst){worst=margin;at=B.id;}}}
   return{ok:walls.length>0&&worst>=0,detail:walls.length+' carved fronts; least rock above 90% of a front\'s height, 0.6 m behind it: '+worst.toFixed(1)+' m ('+at+')'};},
- buildingFamilies(B){const need=['treasury','tomb','stair','ledge','pueblo','khan','tent','stall','fairy'],missing=need.filter(k=>!B.byFamily||!B.byFamily[k]);
+ buildingFamilies(B){const need=['treasury','tomb','stair','ledge','pueblo','cliffpueblo','khan','tent','stall','tower'],missing=need.filter(k=>!B.byFamily||!B.byFamily[k]);
   return{ok:!!B.count&&!missing.length,detail:missing.length?'missing family: '+missing.join(', '):need.map(k=>k+' '+B.byFamily[k]).join(', ')};},
  buildingDoorsReachable(list){const N=LIFE.NAV,start=polyCentre(PLACES.find(p=>p.id==='khan').poly),seen=LIFE.reach(start[0],start[1]),bad=[];
   for(const B of list.filter(b=>b.family!=='ledge')){const d=B.door||[NaN,NaN],i=Math.round((d[0]-N.x0)/N.c),j=Math.round((d[1]-N.z0)/N.c),k=j*N.nx+i;
@@ -3315,7 +3442,7 @@ function shadeNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,det
  {const A=window._buildings.records[0],B=window._buildings.records[1];add('two buildings on the same footprint',CHK.buildingOverlap([A,Object.assign({},B,{footprint:A.footprint})]));}
  {const B=window._buildings.records.find(b=>b.backLine&&b.family==='treasury'),c=B.center,m=(p)=>[p[0]+(c[0]-B.backLine[0][0])*.0+(B.face?B.face[0]:0)*4,p[1]+(B.face?B.face[1]:0)*4];
   add('a carved front standing 4 m out from the cliff',CHK.wallContact([Object.assign({},B,{backLine:B.backLine.map(m),center:[c[0]+(B.face?B.face[0]:0)*4,c[1]+(B.face?B.face[1]:0)*4]})]));}
- {const B=Object.assign({},window._buildings,{byFamily:Object.assign({},window._buildings.byFamily,{fairy:0})});add('a building family omitted',CHK.buildingFamilies(B));}
+ {const B=Object.assign({},window._buildings,{byFamily:Object.assign({},window._buildings.byFamily,{tower:0})});add('a building family omitted',CHK.buildingFamilies(B));}
  {const B=window._buildings.records[0];add('a doorway beyond the walkable map',CHK.buildingDoorsReachable([Object.assign({},B,{door:[1000,1000]})]));}
  return R;}
 window._api={BUDGET,REG,

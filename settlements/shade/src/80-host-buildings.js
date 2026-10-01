@@ -9,8 +9,9 @@
 //   (one draw call per material, not per building).
 // It runs before 84, so the grid blocks what the builders actually built.
 const BUILDINGS=(function(){
+ NOMAD.useStrata(STRATA);   // carvings show the bed lines of the face they are cut from
  const BUILD={treasury:buildTreasury,tomb:buildCrowTomb,stair:buildRockStair,ledge:buildLedge,pueblo:buildPuebloCompound,
-  khan:buildCaravanserai,tent:buildBlackTent,stall:buildMarketStall,fairy:buildFairyChimney};
+  khan:buildCaravanserai,tent:buildBlackTent,stall:buildMarketStall,cliffpueblo:buildCliffPueblo,tower:buildPuebloTower};
  const records=[],byFamily={},merged=new Map(),t0=performance.now();
  const W=(g,p)=>{const v=new THREE.Vector3(p[0],0,p[1]).applyMatrix4(g.matrixWorld);return[+v.x.toFixed(3),+v.z.toFixed(3)];};
  const rectL=(x0,z0,x1,z1)=>[[x0,z0],[x1,z0],[x1,z1],[x0,z1]];
@@ -33,11 +34,12 @@ const BUILDINGS=(function(){
    door=[0,hz+U.portalDepth+1.2];}
   else if(P.family==='tent'){nav=[rectL(-q.w/2,-q.d/2,q.w/2,q.d/2)];door=[-q.w*.28,q.d/2+1.1];}
   else if(P.family==='stall'){nav=[rectL(-q.w/2,-q.d/2,q.w/2,q.d/2)];door=[0,q.d/2+1];}
-  else if(P.family==='fairy'){const R=q.radius;nav=[circL(0,0,R*1.32)];if(q.twin)nav.push(circL(R*1.25,-R*.55,R*.82));door=[0,R*1.32+.8];}
+  else if(P.family==='cliffpueblo'){nav=U.cells.map(c=>rectL(c[0],c[1],c[2],c[3]));const L=U.footprint[1][0]-U.footprint[0][0];door=[-L/2+q.cell/2,q.rows*q.cell+.9];}
+  else if(P.family==='tower'){nav=[circL(0,0,q.radius*1.3)];door=[0,q.radius*1.3+.8];}
   const cx=foot.reduce((a,p)=>a+p[0],0)/foot.length,cz=foot.reduce((a,p)=>a+p[1],0)/foot.length,r=Math.max(...foot.map(p=>Math.hypot(p[0]-cx,p[1]-cz)));
   const types=(place.tags&&place.tags.types&&!/stair|ledge/.test(P.family)?place.tags.types:U.types).slice();
   const yTop=y0+(P.family==='ledge'?0:U.height),yBot=y0+(P.family==='ledge'?-.6:0);
-  const back=place.kind==='wall'&&P.lift>=0&&/treasury|tomb/.test(P.family)?[W(g,U.footprint[0]),W(g,U.footprint[1])]:null;
+  const back=place.kind==='wall'&&P.lift>=0&&/treasury|tomb|cliffpueblo/.test(P.family)?[W(g,U.footprint[0]),W(g,U.footprint[1])]:null;
   const R={id:P.id,name:U.name+(P.family==='stair'||P.family==='ledge'?' ('+place.name+')':' — '+place.name),family:P.family,placeId:place.id,placePoly:place.poly,placeKind:place.kind,
    types,footprint:foot,poly:foot,navPolys:nav.map(p=>p.map(v=>W(g,v))),door:door?W(g,door):null,access:P.access||null,group:P.group||null,
    backLine:back,face:place.facade?place.facade.face.slice():null,baseY:base,lift:P.lift,y0:yBot,y1:yTop,height:U.height,center:[cx,cz],radius:r};

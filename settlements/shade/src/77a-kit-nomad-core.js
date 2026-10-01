@@ -27,10 +27,6 @@ const TEX_ADOBE=canvasTex(256,256,(g,w,h)=>{noiseFill(g,w,h,[226,214,200],18,R0)
 // carved sandstone: tool marks in diagonal bands (the strata come from the shader, by world height) (2 m tile)
 const TEX_CHISEL=canvasTex(256,256,(g,w,h)=>{noiseFill(g,w,h,[214,214,214],22,R0);
  for(let i=0;i<900;i++){const x=R0()*w,y=R0()*h;g.strokeStyle='rgba('+(R0()<.5?'170,170,170':'245,245,245')+',.35)';g.lineWidth=.8+R0();g.beginPath();g.moveTo(x,y);g.lineTo(x+5,y+3);g.stroke();}});
-// tufa: soft, streaked by run-off, pitted (4 m tile)
-const TEX_TUFA=canvasTex(256,256,(g,w,h)=>{noiseFill(g,w,h,[232,222,206],16,R0);
- for(let i=0;i<160;i++){const x=R0()*w,l=20+R0()*120,y=R0()*h;g.strokeStyle='rgba('+(R0()<.6?'200,178,150':'250,244,236')+','+(.12+R0()*.2).toFixed(2)+')';g.lineWidth=1+R0()*3;g.beginPath();g.moveTo(x,y);g.lineTo(x+(R0()-.5)*4,y+l);g.stroke();}
- for(let i=0;i<120;i++){g.fillStyle='rgba(150,130,110,'+(.2+R0()*.3).toFixed(2)+')';g.beginPath();g.arc(R0()*w,R0()*h,.6+R0()*1.8,0,TAU);g.fill();}});
 // black goat-hair cloth: woven strips a metre wide, sewn edge to edge (1 m tile across the strips)
 const TEX_CLOTH=canvasTex(128,128,(g,w,h)=>{noiseFill(g,w,h,[58,50,44],14,R0);
  for(let y=0;y<h;y+=2){g.fillStyle='rgba(0,0,0,'+(.08+R0()*.1).toFixed(2)+')';g.fillRect(0,y,w,1);}
@@ -46,18 +42,23 @@ const TEX_WOOD=canvasTex(64,256,(g,w,h)=>{noiseFill(g,w,h,[150,120,95],16,R0);
 // 3.4 m bands by world height): a facade cut from the face shows the same
 // bands as the rock round it, which is most of what makes it read as carved.
 const STRATA=[0xb8683f,0x8f4f3a,0xd4a884,0xa4523a,0x7a4030,0xc98a5e].map(h=>new THREE.Color(h).convertSRGBToLinear());
+// A host that has a strata shader hands it over (NOMAD.useStrata(S), before the
+// first frame): S.inject(shader) and strataColor(vSWP, vSWN), as the biome core's
+// BIO.strata provides. Without one, plain level bands stand in.
+let STRATA_IN=null;
 function stoneMat(){const m=new THREE.MeshLambertMaterial({map:TEX_CHISEL,vertexColors:true,side:THREE.DoubleSide});
- m.onBeforeCompile=sh=>{sh.uniforms.uBands={value:STRATA};
+ m.onBeforeCompile=sh=>{
+  if(STRATA_IN){STRATA_IN.inject(sh);sh.fragmentShader=sh.fragmentShader.replace('#include <map_fragment>','#include <map_fragment>\n{vec3 bc=strataColor(vSWP,vSWN);diffuseColor.rgb=bc*(0.55+0.55*diffuseColor.rgb);}');return;}
+  sh.uniforms.uBands={value:STRATA};
   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vKWP;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvKWP=(modelMatrix*vec4(transformed,1.0)).xyz;');
   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform vec3 uBands[6];varying vec3 vKWP;')
    .replace('#include <map_fragment>','#include <map_fragment>\n{float bb=mod(floor(vKWP.y/3.4),6.0);vec3 bc=uBands[0];if(bb>0.5)bc=uBands[1];if(bb>1.5)bc=uBands[2];if(bb>2.5)bc=uBands[3];if(bb>3.5)bc=uBands[4];if(bb>4.5)bc=uBands[5];'+
    'diffuseColor.rgb=bc*(0.55+0.55*diffuseColor.rgb);}');};
- m.customProgramCacheKey=()=>'nomad-stone';return m;}
+ m.customProgramCacheKey=()=>'nomad-stone'+(STRATA_IN?'-strata':'');return m;}
 const lam=(map,extra)=>new THREE.MeshLambertMaterial(Object.assign({map,vertexColors:true,side:THREE.DoubleSide},extra||{}));
 const MAT={
  stone:{m:stoneMat(),tile:2},
  adobe:{m:lam(TEX_ADOBE),tile:2},
- tufa:{m:lam(TEX_TUFA),tile:4},
  cloth:{m:lam(TEX_CLOTH),tile:1},
  canvas:{m:lam(TEX_CANVAS),tile:1.5},
  wood:{m:lam(TEX_WOOD),tile:1},
@@ -120,4 +121,4 @@ function kit(seed){
  return api;}
 const rect=(w,d,frontAtOrigin)=>frontAtOrigin?[[-w/2,0],[w/2,0],[w/2,d],[-w/2,d]]:[[-w/2,-d/2],[w/2,-d/2],[w/2,d/2],[-w/2,d/2]];
 const circle=(r,n)=>{const p=[];for(let i=0;i<n;i++){const a=i*TAU/n;p.push([Math.sin(a)*r,Math.cos(a)*r]);}return p;};
-return{kit,MAT,DYE,rect,circle,rngOf,clamp,mix,smooth,TAU};})();
+return{kit,MAT,DYE,rect,circle,rngOf,clamp,mix,smooth,TAU,useStrata:S=>{STRATA_IN=S;}};})();
