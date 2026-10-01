@@ -19,7 +19,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `30-core-foliage.js` | 15 | alpha textures (18); card geometries (48); the foliage hook (110); colour (175) |
 | `35-core-strata.js` | 9 |  |
 | `40-core-place.js` | 7 | surface sampling (59) |
-| `45-host-stage.js` | 25 | the river, the canyon, the butte, the mesas (43); terrain (75); the host binding (120); the ground (129); the water (183) |
+| `45-host-stage.js` | 30 **big** | the river, the canyon, the butte, the mesas (44); terrain (83); the host binding (138); the ground (148); the water (223) |
 | `50-biome-sedesert-species.js` | 29 | THE WATER COLOUR (17); the tree species (69); leaf textures (129); bark, rock, wood textures (205); geometries local to this biome (244); materials (298); instanced items (330) |
 | `55-biome-sedesert-trees.js` | 32 **big** | zones from the fields (15); colour (the maths is the core's, BIO.col) (36); polyline helpers (Girder's) (51); keep-clear between trees (59); foliage helpers (66); the builders (83); impostors (the far canopy) (260); the pass (284); the passes (data: species, cell, acceptance from (314) |
 | `60-biome-sedesert-floor.js` | 14 | fields local to the floor (29); small plants (39); the zone planters (96); the pass (147) |
@@ -29,6 +29,6 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `82-host-sky.js` | 13 | the Inner Wall painter (8) |
 | `85-host-tower.js` | 5 |  |
 | `88-host-build.js` | <1 |  |
-| `90-host-camera.js` | 8 |  |
-| `91-host-probe.js` | 2 |  |
+| `90-host-camera.js` | 9 |  |
+| `91-host-probe.js` | 6 |  |
 | `99-tail.html` | <1 |  |

@@ -40,12 +40,31 @@ Read before changing anything here. `build.py` prints the open count.
       The bottle tree / desert rose and puya / agave builders could share a caudex and a
       rosette helper the way the fork and column trees do.
 
-- [ ] The ideal host loads the carve patches but declares none: the cataract's lip into the
-      Abyss is the obvious undercut, and the wadi gorge could take alcoves. Not started.
+- [ ] TODO (the undercut lip): the ground's refinement is separable, so the 1.5 m columns and
+      rows of the lip's window run the width of the whole map (~100k vertices more than the
+      ~15k the window needs). A local patch of fine ground, stitched to the coarse grid's edges, would not.
+- [ ] TODO: the cave's paint comes from the 19.5 m field cache, which reads the recessed
+      heightfield: the cave and the cap's top are painted as Abyss wall (dark brown) rather
+      than as the canyon floor above them, and the cave's interior shows no strata.
+- [ ] TODO: `waterH` still reports the river's surface over the cave (canyonU < 1.1, x < RIM+40),
+      so the cave floor counts as 63 m under water (it keeps plants off it; nothing else reads it).
+- [ ] TODO: the cataract is a flat ribbon dropping off the lip; the water does not arc off the cap,
+      and no spray rises from the cave's floor behind it.
+- [ ] TODO: meshing and baking the undercut takes ~0.9 s at load, on the main thread; the finer
+      ground's own cost is not measured.
+- [ ] TODO: the wadi gorge could take alcoves (Shade's are the model); not started.
 - [ ] The ground's detail texture is still projected on x-z (Shade's is triplanar now), so
       the gorge and butte faces may show vertical grain. Not checked here.
 
 ## Done
+
+- [x] THE UNDERCUT LIP. The canyon floor runs out as a sheer promontory to where the
+      cataract leaves it (the Abyss face is ~8:1 there, too shallow for the water to clear it
+      from the plateau's own edge: the fall used to start 30 m out over air), and a cave is
+      carved under its 18 m cap behind the curtain (`core/terrain/36-core-carve.js`). The
+      ground is refined to 1.5 m in a window round the lip. Checked, with negatives: the
+      curtain leaves from rock and stays clear of it, the cave is open under rock, nothing
+      grows under the cap, no camera inside rock. Views: 'The undercut lip', 'Behind the cataract'.
 
 - [x] A cluster (`around()` in 60-floor: reeds, grass, stones...) tested the mask at its
       centre only, so a reed clump at a reserved place's edge put outliers inside it (Shade's

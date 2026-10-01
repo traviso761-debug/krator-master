@@ -865,7 +865,8 @@ BIO.ledgePoints=function(geos,n,gap){gap=gap||2.5;const S=BIO.upFaces(geos,n*4,.
 //   (720,1180) r 620   THE BUTTE south of the river; a pond in a hollow on its
 //                      north-western foot (260,700): the rain-shadow oasis
 //   x > 3130           THE ABYSS: the plateau ends in a cliff; the river leaves
-//                      through its notch as a cataract 700 m high
+//                      through its notch as a cataract 700 m high, off a sheer
+//                      promontory undercut by a cave behind the curtain (LIP)
 const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,fbm,qEuler,qFacing,qUp}=BIO.fn;
 // THE WATER COLOUR. One hue (the wadi pools' teal-green), set by the host
 // before the biome loads: the river, the pond, the reed stands' accents and
@@ -902,6 +903,13 @@ function canyonU(x,z){return Math.abs(z-zR(x))/Wc(x);}
 function wallK(u){return u<1.6?.55*smooth(1.0,.8,u)+.45*smooth(.72,.5,u):0;}
 // the Abyss: 0 on the plateau, 1 past the cliff's edge (the edge wobbles with z)
 function abyssK(x,z){return smooth(3130,3260,x+60*Math.sin(z*.003)+20*Math.sin(z*.011));}
+// THE LIP: the canyon floor runs out over the Abyss as a sheer promontory to where the
+// cataract leaves it (the Abyss face is ~8:1 here, too shallow for water to clear it from
+// the plateau's own edge), and the promontory's face is undercut by a cave behind the
+// curtain (a carve patch, core/terrain/36-core-carve). lipD: signed distance to its plan.
+const LIP={x:TERR.RIM+34,back:3060,hw:52,r:18,floorY:-70};LIP.z=zR(LIP.x);
+function lipD(x,z){const cx=(LIP.back+LIP.x)/2,ex=(LIP.x-LIP.back)/2,qx=Math.abs(x-cx)-ex+LIP.r,qz=Math.abs(z-LIP.z)-LIP.hw+LIP.r;
+ return Math.hypot(Math.max(qx,0),Math.max(qz,0))+Math.min(Math.max(qx,qz),0)-LIP.r+1.6+.8*Math.sin(z*.13)+.6*Math.sin(x*.21+z*.07);}   // the front 1-3 m behind the fall's start
 // where the world's one structure stands: on the canyon's north rim, back from the edge
 const TOWER={x:1450,z:0};
 const POND={x:230,z:640,r:110};
@@ -925,8 +933,10 @@ function WL(x){return floorC(x)-1.2;}
 // terrainH is memoised one point deep: the biome's zoning, the mask and the depth
 // test all ask for the same point in a row (about half of all calls repeat the last)
 const _tm={x:NaN,z:NaN,h:0};
-function terrainH(x,z){if(x===_tm.x&&z===_tm.z)return _tm.h;const h=terrainH0(x,z);_tm.x=x;_tm.z=z;_tm.h=h;return h;}
-function terrainH0(x,z){
+function terrainH(x,z){if(x===_tm.x&&z===_tm.z)return _tm.h;const h=terrainH0(x,z,true);_tm.x=x;_tm.z=z;_tm.h=h;return h;}
+// the ground without the carve patch's recess (the patch's own rock top)
+function terrainBase(x,z){return terrainH0(x,z,false);}
+function terrainH0(x,z,carved){
  const dC=Math.abs(z-zR(x)),u=dC/Wc(x),wall=wallK(u);
  const und=(fbm(x*.0006+3,z*.0006-1,17,3)-.5)*9+(fbm(x*.004,z*.004,29,2)-.5)*1.6;
  let h=trend(x)+mtnH(x,z)+mesaH(x,z)+und*(1-wall);
@@ -935,8 +945,16 @@ function terrainH0(x,z){
  const dp=pondD(x,z);if(dp<160)h-=12*smooth(125,35,dp);
  if(u<1.6){h+=3*smooth(.92,1.1,u)*smooth(1.5,1.15,u);                                   // the rim's lip
   h=mix(h,floorC(x)+(fbm(x*.02,z*.02,88,2)-.5)*.6,wall)-2.6*smooth(16,5,dC)*wall;}      // the flat floor, the channel
- const ab=abyssK(x,z);if(ab>0)h=mix(h,-720+(fbm(x*.002,z*.002,91,2)-.5)*40,Math.pow(ab,.9));   // the Abyss
+ const ab=abyssK(x,z);if(ab>0){const hp=h;h=mix(h,-720+(fbm(x*.002,z*.002,91,2)-.5)*40,Math.pow(ab,.9));   // the Abyss
+  if(x>LIP.back&&x<LIP.x+20&&Math.abs(z-LIP.z)<LIP.hw+20){const k=smooth(1.5,-1.5,lipD(x,z));if(k>0)h=mix(h,hp,k);}}   // the lip's promontory, sheer
+ // the undercut: the floor runs in under the cap (the recess, 3 m behind the void's walls, steep at 12:1)
+ if(carved){const rd=BIO.carve.recessD(x,z);if(rd<12)h=Math.min(h,LIP.floorY+Math.max(0,rd)*12);}
  return h;}
+// the cave behind the curtain: 34 m either side of the river, 30 m into the promontory, 46 m high at
+// the mouth under an 18 m cap. margin 10 > pad 3 + the recess's climb (64 m at 12:1); a wider margin
+// duplicates the Abyss face beside the promontory, where the ground's cells cannot match it
+const UNDERCUT=BIO.carve.add({id:'cataract-undercut',name:'The cave behind the cataract',kind:'undercut',c:[LIP.x-1,LIP.z],n:[1,0],
+ hw:34,depth:30,h:46,floorY:LIP.floorY,base:terrainBase,margin:10,pad:3,cell:1});
 const PL=(function(){const b=terrainH(POND.x,POND.z);return b+6.2;})();   // the pond's surface: 6 m of water in a 12 m hollow
 function waterH(x,z){if(canyonU(x,z)<1.1&&x<TERR.RIM+40)return WL(x);if(pondD(x,z)<170)return PL;return -1e9;}
 // the climate fields the biome asks for (cached below; these are the definitions)
@@ -971,7 +989,8 @@ const OBSTACLES=[];
 // the LOD spine: a row of origins along the river, plus the pond and the butte's foot
 TOWER.z=zR(TOWER.x)-Wc(TOWER.x)*2.1;
 const SPINE=[];for(let x=-3000;x<=3200;x+=700)SPINE.push([x,zR(x)]);SPINE.push([POND.x,POND.z],[BUTTE.x-300,BUTTE.z-500],[TOWER.x,TOWER.z]);
-BIO.init({THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,   // the core's default mask: nothing rooted under the local water
+BIO.init({THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,
+ mask:(x,z)=>{if(BIO.carve.topAt(x,z)!==null)return 0;const d=terrainH(x,z)-waterH(x,z);return d<.15?0:d<.7?(d-.15)/.55:1;},   // the core's default (nothing rooted under the local water), and nothing in the carve patch
  obstacles:OBSTACLES,ticks:tick,seed:11,origin:SPINE,center:[0,0],fields:FIELD,register:REGISTER,err:reportErr,
  windows:{water:[-TERR.R,-700,TERR.R,1000]}});   // the river strip and the pond: the water-bound passes look nowhere else
 BIO.setSun([-1000,1150,-560]);
@@ -1017,17 +1036,38 @@ const TEX_CRACK=BIO.canvasTex(256,256,(g,w,h)=>{g.fillStyle='#ffffff';g.fillRect
 const STRATA=BIO.strata({seed:4711});
 const MAT_GROUND=new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0xa89e94});
 MAT_GROUND.onBeforeCompile=sh=>{STRATA.inject(sh);sh.uniforms.uDetail={value:TEX_DETAIL};sh.uniforms.uCrack={value:TEX_CRACK};
- sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute float aCrack;attribute float aRock;varying float vCrack;varying float vRock;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vCrack=aCrack;vRock=aRock;');
- sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail,uCrack;varying vec3 vGWP;varying float vCrack;varying float vRock;')
+ sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute float aCrack;attribute float aRock;attribute float aOcc;attribute float aSun;varying float vCrack;varying float vRock;varying float vOcc;varying float vSun;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvOcc=aOcc;vSun=aSun;vGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vCrack=aCrack;vRock=aRock;');
+ sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail,uCrack;varying vec3 vGWP;varying float vCrack;varying float vRock;varying float vOcc;varying float vSun;').replace('getShadowMask();','getShadowMask()*vSun;')
   .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 dt=texture2D(uDetail,vGWP.xz*0.165).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;vec3 ck=texture2D(uCrack,vGWP.xz*0.14).rgb;'+
   'vec3 bc=strataColor(vSWP,vSWN);'+
   'diffuseColor.rgb=mix(diffuseColor.rgb,bc*(0.85+0.3*dt.r),vRock*0.9);'+
-  'diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.85)*mix(vec3(1.0),ck,vCrack);}');};
-(function(){const N=420,S=TERR.R*2.2,g=new THREE.PlaneGeometry(S,S,N,N);g.rotateX(-Math.PI/2);
- const p=g.attributes.position,ck=new Float32Array(p.count),rk=new Float32Array(p.count);for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i);p.setY(i,terrainH(x,z));
-  ck[i]=FC.at(FC.a.crack,x,z);rk[i]=FC.at(FC.a.strata,x,z);}   // mud cracks and fine strata are fields (fieldsAt)
- g.setAttribute('aCrack',new THREE.BufferAttribute(ck,1));g.setAttribute('aRock',new THREE.BufferAttribute(rk,1));
- g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The high desert';scene.add(m);})();
+  'diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.85)*mix(vec3(1.0),ck,vCrack)*pow(vOcc,1.6);}');};   // the cave: occlusion, steepened (ambient is all the light there)
+// The grid: 420 cells of 17.8 m, each cell within the lip's window split 12 ways (1.5 m) in x and in z,
+// so the promontory's sheer faces and the cave's recess are resolved (the patch's pad, 3 m, must
+// exceed the cell's diagonal). Outside the window the lattice is the plain 420 x 420 one.
+const SUNV=[sun.position.x,sun.position.y,sun.position.z];
+const GROUND=(function(){const N=420,S=TERR.R*2.2,cs=S/N,M=12;
+ const axis=(lo,hi)=>{const o=[];for(let i=0;i<=N;i++){const a=-S/2+i*cs;o.push(a);if(i<N&&a+cs>lo&&a<hi)for(let k=1;k<M;k++)o.push(a+cs*k/M);}return o;};
+ const X=axis(3040,3230),Z=axis(LIP.z-90,LIP.z+90),nx=X.length,nz=Z.length;
+ const pos=new Float32Array(nx*nz*3),uv=new Float32Array(nx*nz*2),ck=new Float32Array(nx*nz),rk=new Float32Array(nx*nz),oc=new Float32Array(nx*nz),sn=new Float32Array(nx*nz);
+ for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const k=j*nx+i,x=X[i],z=Z[j],y=terrainH(x,z);pos[k*3]=x;pos[k*3+1]=y;pos[k*3+2]=z;uv[k*2]=x/S+.5;uv[k*2+1]=.5-z/S;
+  ck[k]=FC.at(FC.a.crack,x,z);rk[k]=FC.at(FC.a.strata,x,z);   // mud cracks and fine strata are fields (fieldsAt)
+  oc[k]=BIO.carve.floorOcc(x,z);sn[k]=BIO.carve.floorSun(x,y,z,SUNV);}
+ const idx=new Uint32Array((nx-1)*(nz-1)*6);let t=0;
+ for(let j=0;j<nz-1;j++)for(let i=0;i<nx-1;i++){const a=j*nx+i,b=a+nx,c=b+1,d=a+1;idx[t++]=a;idx[t++]=b;idx[t++]=d;idx[t++]=b;idx[t++]=c;idx[t++]=d;}
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));
+ g.setAttribute('aCrack',new THREE.BufferAttribute(ck,1));g.setAttribute('aRock',new THREE.BufferAttribute(rk,1));g.setAttribute('aOcc',new THREE.BufferAttribute(oc,1));g.setAttribute('aSun',new THREE.BufferAttribute(sn,1));
+ g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The high desert';scene.add(m);return m;})();
+// the undercut's rock, put back above the cave: the ground's own material, both sides, with the
+// ground's attributes (uv on the painted map, the ground's own rock weight: the Abyss wall is painted, not strata)
+const MAT_CARVE=MAT_GROUND.clone();MAT_CARVE.side=THREE.DoubleSide;MAT_CARVE.onBeforeCompile=MAT_GROUND.onBeforeCompile;MAT_CARVE.customProgramCacheKey=()=>'sedesert-carve';
+const CARVE_MESHES=(function(){const S=TERR.R*2.2,M=BIO.carve.mesh(MAT_CARVE,{sun:SUNV});
+ for(const m of M){const g=m.geometry,P=g.attributes.position,Nr=g.attributes.normal,n=P.count,uv=new Float32Array(n*2),rk=new Float32Array(n);
+  for(let v=0;v<n;v++){const x=P.getX(v),z=P.getZ(v);uv[v*2]=x/S+.5;uv[v*2+1]=.5-z/S;rk[v]=FC.at(FC.a.strata,x,z);}
+  g.setAttribute('uv',new THREE.BufferAttribute(uv,2));g.setAttribute('aRock',new THREE.BufferAttribute(rk,1));g.setAttribute('aCrack',new THREE.BufferAttribute(new Float32Array(n),1));
+  scene.add(m);}
+ for(const Q of BIO.carve.patches)REGISTER({name:Q.name,cls:'carve',x:Q.c[0]-Q.n[0]*Q.depth*.5,z:Q.c[1]-Q.n[1]*Q.depth*.5,y:Q.floorY,r:Q.hw+2,h:Q.h+6});
+ window._carve=BIO.carve.patches.map(Q=>Object.assign({id:Q.id},Q.stats));return M;})();
 
 // ---------------------------------------------------------------- the water
 // The river is a ribbon at WL(x) following its channel, the pond a disc at PL,
@@ -1091,7 +1131,7 @@ const FALL={x:TERR.RIM+34,z:zR(TERR.RIM+34),y:WL(TERR.RIM+34),floor:-700};
   for(let k=-1;k<=1;k+=2){pos.push(x,y,FALL.z+k*w);uv.push(k<0?0:1,t);}}
  for(let i=0;i<NS;i++){const a=i*2,b=a+1,c2=a+2,d=a+3;idx.push(a,c2,d,a,d,b);}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setIndex(idx);g.computeVertexNormals();
- const m=new THREE.Mesh(g,MAT_FALL);m.userData.probeSkip=true;m.userData.inspectLabel='The cataract';m.renderOrder=2;scene.add(m);
+ const m=new THREE.Mesh(g,MAT_FALL);m.userData.probeSkip=true;m.userData.inspectLabel='The cataract';m.renderOrder=2;scene.add(m);FALL.mesh=m;
  // mist: soft sprites at the plunge and up the fall; the rising column drifts
  const mistTex=BIO.canvasTex(128,128,(gg,w,h)=>{const gr=gg.createRadialGradient(64,64,0,64,64,64);gr.addColorStop(0,'rgba(255,255,255,.9)');gr.addColorStop(.45,'rgba(240,246,250,.45)');gr.addColorStop(1,'rgba(240,246,250,0)');gg.fillStyle=gr;gg.fillRect(0,0,w,h);});
  const SPR=[];
@@ -2470,7 +2510,9 @@ window._biome=null;
 const ctl={target:new THREE.Vector3(0,0,0),theta:0,phi:1.1,radius:600};
 function setView(cx,cy,cz,tx,ty,tz){ctl.target.set(tx,ty,tz);const dx=cx-tx,dy=cy-ty,dz=cz-tz;ctl.radius=Math.sqrt(dx*dx+dy*dy+dz*dz);ctl.theta=Math.atan2(dx,dz);ctl.phi=Math.acos(clamp(dy/ctl.radius,-1,1));}
 function applyCam(){const r=ctl.radius,sp=Math.sin(ctl.phi);camera.position.set(ctl.target.x+r*sp*Math.sin(ctl.theta),ctl.target.y+r*Math.cos(ctl.phi),ctl.target.z+r*sp*Math.cos(ctl.theta));
- const g=terrainH(camera.position.x,camera.position.z)+1.8;if(camera.position.y<g)camera.position.y=g;camera.lookAt(ctl.target);}
+ const cp=camera.position,g=terrainH(cp.x,cp.z)+1.8;if(cp.y<g)cp.y=g;
+ if(BIO.carve.rockAt(cp.x,cp.y,cp.z))cp.y=(BIO.carve.topAt(cp.x,cp.z)??cp.y)+1.8;   // inside the cap's rock: out on top of it
+ camera.lookAt(ctl.target);}
 // the presets are found on the map rather than typed: the river meanders, and
 // the scrub's stands (candelabra / cardon / Joshua) are an fbm field
 const gh=(x,z,dy)=>terrainH(x,z)+(dy||0);
@@ -2515,6 +2557,8 @@ const VIEWS={
  'Swifts over the water':[FL.x-FL.r*.9,FL.y0+2,FL.z+FL.r*.7,FL.x,FL.y0,FL.z],
  'Sand striders':look(BD.x-24,BD.z+18,2.4,BD.x,BD.z,2.2),
  'The cataract':[FALL.x+420,FALL.y-110,FALL.z+300,FALL.x+60,FALL.y-260,FALL.z],
+ 'The undercut lip':[LIP.x+150,LIP.floorY+18,LIP.z+110,LIP.x-8,LIP.floorY+24,LIP.z],
+ 'Behind the cataract':[LIP.x-18,LIP.floorY+9,LIP.z-10,LIP.x+300,LIP.floorY-25,LIP.z+28],
  'Into the Abyss':[3060,gh(3060,zR(3060)-220,26),zR(3060)-220,3700,-140,zR(3150)+60],
  'From afar':look(-2500,2550,360,0,0,40),
  'Krator rising':[-600,gh(-600,600,30),600,1900,900,-2100],
@@ -2582,7 +2626,40 @@ function nanSweep(){const bad=[];let badInst=0;
   if(o.isInstancedMesh){const a=o.instanceMatrix.array;for(let i=0;i<a.length;i++)if(!isFinite(a[i])){badInst++;break;}}});
  return {meshes:bad.length,first:bad.slice(0,8),instances:badInst,firstInstances:[]};}
 function typeStats(){const out={};for(const k in BIO.stats){const t=BIO.stats[k],cls=BUDGET.type[k]||'pass';out[k]={tris:t.tris,inst:t.inst,meshes:t.meshes,cls,limit:BUDGET.cls[cls],over:t.tris>BUDGET.cls[cls]};}return out;}
-window._api={BUDGET,REG,
+// The host's own checks (verify.py runs them when present), each with a broken input that must fail.
+// the cataract leaves from rock, its curtain clear of the rock; the cave open under its cap; nothing grows
+// under the cap; no preset camera inside rock
+const rockTop=(x,z)=>{const t=BIO.carve.topAt(x,z);return t===null?terrainH(x,z):t;};
+const buried=(x,y,z,e)=>terrainH(x,z)>y+e||(BIO.carve.rockAt(x,y,z)&&BIO.carve.rockAt(x,y+e,z)&&BIO.carve.rockAt(x+e,y,z)&&BIO.carve.rockAt(x-e,y,z)&&BIO.carve.rockAt(x,y,z+e)&&BIO.carve.rockAt(x,y,z-e));
+const worldV=m=>{const a=m.geometry.attributes.position,o=[];m.updateMatrixWorld(true);const v=new THREE.Vector3();for(let i=0;i<a.count;i++){v.fromBufferAttribute(a,i).applyMatrix4(m.matrixWorld);o.push([v.x,v.y,v.z]);}return o;};
+// the instanced items only (what the biome roots): a mesh's bounding-box centre is not a plant
+const instPoints=()=>{const o=[],m=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3();
+ scene.traverse(M=>{if(!M.isInstancedMesh)return;for(let i=0;i<M.count;i++){M.getMatrixAt(i,m);m.decompose(p,q,sc);o.push([p.x,p.y,p.z]);}});return o;};
+const HCHK={
+ // the curtain: no vertex buried in rock, and its top row stands on rock (the river does not run out over air)
+ curtain(V,name){const inRock=V.filter(v=>buried(v[0],v[1],v[2],.3)).length,top=Math.max(...V.map(v=>v[1])),T=V.filter(v=>v[1]>top-.01);
+  const air=T.filter(v=>rockTop(v[0]-4,v[2])<v[1]-3).length;
+  return{ok:!inRock&&!air,detail:name+': '+V.length+' vertices, '+inRock+' inside the rock; '+air+'/'+T.length+' of the top row over air 4 m back'};},
+ carveOpen(Q){const q=Q.depth*.45,x=Q.c[0]-Q.n[0]*q,z=Q.c[1]-Q.n[1]*q,ym=Q.floorY+Q.h*.45,c=BIO.carve.covered(x,z);
+  const open=!BIO.carve.rockAt(x,ym,z)&&terrainH(x,z)<ym,hood=c!==null&&BIO.carve.rockAt(x,c+2,z);
+  return{ok:open&&hood,detail:Q.id+': the void at '+ym.toFixed(0)+' m '+(open?'open':'IN ROCK')+'; 2 m over its ceiling '+(c===null?'no ceiling':hood?'rock':'AIR')};},
+ noHoodFlora(P){const bad=P.filter(p=>BIO.carve.topAt(p[0],p[2])!==null&&p[1]<(BIO.carve.covered(p[0],p[2])??1e9));
+  return{ok:!bad.length,detail:bad.length?bad.length+' rooted under the cap (first at '+bad[0].map(v=>v|0)+')':P.length+' instances, none under the cap'};},
+ camerasOut(C){const bad=C.filter(c=>buried(c.x,c.y,c.z,.3));return{ok:!bad.length,detail:bad.length?'in the rock: '+bad.map(c=>c.view).join(', '):C.length+' cameras in the open'};}};
+function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r));
+ add('cataract-leaves-from-rock-clear-of-it',HCHK.curtain(worldV(FALL.mesh),'the cataract'));
+ for(const Q of BIO.carve.patches)add('carve: '+Q.id+' open under rock',HCHK.carveOpen(Q));
+ add('carve: nothing grows under the cap',HCHK.noHoodFlora(instPoints().filter(p=>Math.abs(p[0]-LIP.x)<80&&Math.abs(p[2]-LIP.z)<80)));
+ add('preset-cameras-out-of-the-rock',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
+ return R;}
+function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail});
+ const V=worldV(FALL.mesh);add('the cataract pushed 12 m back into the promontory',HCHK.curtain(V.map(v=>[v[0]-12,v[1],v[2]]),'curtain-12'));
+ add('the cataract started 30 m out over the Abyss',HCHK.curtain(V.map(v=>[v[0]+30,v[1],v[2]]),'curtain+30'));
+ const Q=BIO.carve.patches[0];add('the cave probed 40 m above its floor',HCHK.carveOpen(Object.assign({},Q,{floorY:Q.floorY+40})));
+ add('a plant on the cave floor',HCHK.noHoodFlora([[Q.c[0]-10,Q.floorY,Q.c[1]]]));
+ add('a camera inside the cap',HCHK.camerasOut([{view:'in-cap',x:Q.c[0]-12,y:BIO.carve.covered(Q.c[0]-12,Q.c[1])+4,z:Q.c[1]}]));
+ return R;}
+window._api={BUDGET,REG,hostChecks,hostNegatives,
  get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
  typeStats,regOccupancy,nanSweep,
  setView:(cx,cy,cz,tx,ty,tz)=>setView(cx,cy,cz,tx,ty,tz),views:()=>Object.keys(VIEWS),
