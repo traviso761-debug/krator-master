@@ -30,3 +30,6 @@ shots-*/
 host/site/
 host/site.toml
 host/menagerie/
+
+# Agent worktrees made by the Claude Code harness: nested checkouts, never part of the tree.
+.claude/worktrees/
