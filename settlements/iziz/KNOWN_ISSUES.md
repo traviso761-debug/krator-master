@@ -192,4 +192,9 @@ saying what fixed it.
       more lights to cones and glow.
 - [ ] The weather's `apply` multiplies the sun after the sky tick has set it, so the order of FRAME_HOOKS matters. The
       atmosphere fragment must stay after 90a.
+- [ ] Sprite sizes now count the pixel ratio (`pixelRatio` in `ATMOS.init`). Before, on a screen with a ratio of 1.5 or
+      more, every glow, smoke puff, firefly and fog sprite drew at 2/3 of its size. The harness runs at ratio 1, so its
+      shots are unchanged, but on a HiDPI screen the sprites are now 1.5x what they were. Check by eye there.
+- [ ] Moths circle only the `ATMOS.lamp` heads (the gate-road and thoroughfare lamps, 70). The kit's own lamps (the
+      224 `cityGlows`) have no moths.
 
