@@ -939,8 +939,18 @@ function buildLaunch(scene,gx,gz,d,pad){reseed(9520+d);KOFF=[gx,0,gz];
   for(let i=0;i<8;i++){const y=SY0+10+i*17;
    DKG.push(gridSurface((u,v)=>{const a=u*TAU,r=rS(y)*.78*(1-v*.14);
      return[Math.cos(a)*r,y,Math.sin(a)*r];},40,2,{uS:14,vS:2}));}
+  // The payload stack was one smooth lathe — a grey bottle inside the frames.
+  // Its skin now comes in panels with whole bays missing (a hash per 3 x 2.5
+  // cells, so nothing here draws from the stream), and a spine with six
+  // spokes at every frame holds it to the ring frames, so the opened shroud
+  // shows a structure with an inside rather than a second, darker shroud.
   DKG.push(gridSurface((u,v)=>{const a=u*TAU,y=lerp(SY0,SY1-24,v);
-    return[Math.cos(a)*rS(y)*.62,y,Math.sin(a)*rS(y)*.62];},48,20,{uS:18,vS:12}));
+    return[Math.cos(a)*rS(y)*.62,y,Math.sin(a)*rS(y)*.62];},48,20,{uS:18,vS:12,
+    hole:(u,v)=>h3(Math.floor(u*16),Math.floor(v*8),9531)<.38}));
+  beam(PL,[0,SY0+4,0],[0,SY1-30,0],7,7);
+  for(let i=0;i<8;i++){const y=SY0+10+i*17;
+   for(let k=0;k<6;k++){const a=(k+.5*(i%2))/6*TAU;
+    beam(PL,[0,y,0],[Math.cos(a)*rS(y)*.78,y,Math.sin(a)*rS(y)*.78],1.6,2.2);}}
   for(let k=0;k<12;k++){const a=k/12*TAU;
    for(let i=0;i<7;i++){const y0=SY0+10+i*17,y1=y0+17;
     beam(PL,[Math.cos(a)*rS(y0)*.78,y0,Math.sin(a)*rS(y0)*.78],
