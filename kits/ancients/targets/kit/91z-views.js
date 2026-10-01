@@ -6,13 +6,13 @@
 // Since the shared-code round's re-spacing (89z-rows.js) the rows are laid out
 // so that cap never binds: each row's z gap is derived from these distances.
 // A row whose `s` was widened is framed as before: the distance and height
-// scale by s/s0 (s0 = the row's s before the re-spacing).
-const ROWV=(k,dist,h,ty,dx)=>{const R=ROWS[k];const rowF=Math.max(1,R.s/(R.s0||R.s));
+// scale by rowFrame(k), its new half-width over its old (89z-rows.js).
+const ROWV=(k,dist,h,ty,dx)=>{const R=ROWS[k];const rowF=rowFrame(k);
  const nz=Math.min(...Object.values(ROWS).map(o=>o.z).filter(z=>z>R.z),Infinity);
  const d=Math.min(dist*rowF,nz-R.z-90);
  return[dx||0,h*rowF,R.z+d,dx||0,ty,R.z];};
 const VIEWS={
- 'Overview':[0,1400,ROWS.lab.z+2600,0,150,(ROWS.fac.z+ROWS.port.z)/2+300],
+ 'Overview':[0,1500,ROWS.port.z+3000,0,120,ROWS.mega.z],   // the first rows, from ~6.6 km (the re-spaced kit is 58 km long)
  'Skyscraper A':ROWV('skyA',900,300,210),'Skyscraper B':ROWV('skyB',800,260,160),'Skyscraper C':ROWV('skyC',900,300,200),
  // THE PROJECT. A seventh element on a preset means "night" — see setNight in
  // src/92-camera.js. Day first, because you have to see the patched fabric
