@@ -1273,7 +1273,7 @@ const clear3=(x,y,z,rad,vr)=>BIO.clearOf3(x,y,z,rad,vr);
 // trees. Order along the field = which stands border which.
 const SHARE=[.22,.17,.22,.11,.17,.11];   // ironbark, ghostwood, prism gum, baobab, mahogany, kapok
 let QUANT=null;
-function standQuantiles(R){const v=[],o=BIO.host.origin,n=64;
+function standQuantiles(R){const v=[],o=BIO.center(),n=64;   // the grids' centre, [x,z] (the core keeps host.origin as a list)
  for(let iz=0;iz<n;iz++)for(let ix=0;ix<n;ix++){const x=o[0]+(ix/(n-1)-.5)*2*R,z=o[1]+(iz/(n-1)-.5)*2*R;if(Math.hypot(x-o[0],z-o[1])>R)continue;v.push(BIO.standAt(x,z,4000)/4000);}
  v.sort((a,b)=>a-b);QUANT=[];let acc=0;for(let k=0;k<NSP-1;k++){acc+=SHARE[k]||(1/NSP);QUANT.push(v[Math.min(v.length-1,Math.floor(acc*v.length))]);}return QUANT;}
 function standSp(x,z,off){if(rng()<(off==null?.26:off))return ri(0,NSP-1);const v=BIO.standAt(x,z,4000)/4000;let k=0;while(k<QUANT.length&&v>=QUANT[k])k++;return k;}
@@ -1647,7 +1647,7 @@ function pickTarget(H,A){for(let t=0;t<12;t++){const a=rr(0,TAU),d=H.r*Math.sqrt
 HYPERJUNGLE.buildFauna=function(R,heroR,q){
  reseed(580101);q=q==null?1:q;R=R||3000;heroR=heroR||1500;
  const st={rays:0,flocks:0,darts:0,dartGroups:0,flies:0,motes:0,swarms:0,striders:0,herds:0,sloths:0};
- const o=BIO.host.origin,canopy=(x,z)=>HYPERJUNGLE._canopyH?HYPERJUNGLE._canopyH(x,z):120;
+ const o=BIO.center(),canopy=(x,z)=>HYPERJUNGLE._canopyH?HYPERJUNGLE._canopyH(x,z):120;
  // 1. SKY RAYS: flocks wheeling above the canopy of the hero disc
  const nFlock=Math.round(8*q);
  BIO.scatter(nFlock,150,heroR-150,420,(x,y,z)=>{const rad=rr(90,220);if(!BIO.clearOf(x,z,rad+40))return;
