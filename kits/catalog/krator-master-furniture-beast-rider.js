@@ -69,3 +69,8 @@ FURN({
     for (let i = 0; i < 5; i++) F.ball(-0.2 + i * 0.1, 1.11, -0.5, 0.02, bone, 'bone');
   }
 });
+
+/* trades and households (FK.ROLES.trade, the 2026-10 interiors-sets pass): forge, anvil, stall, vat, still,
+   bins, larder, bunk, locker ... in this culture's style sheet, keyed br_trade_<role> */
+FK.set({ culture: 'beast-rider', tier: 'common', roles: 'trade', prefix: 'br_trade_', S: BR_COMMON, names: {
+  forge: 'Clay-hood forge', anvil: 'Anvil on a root stump', trough: 'Dugout trough', stall: 'Beast stall', hayrack: 'Fodder rack', display: 'Lashed display steps', armour_stand: 'Hide-and-bone armour on a post', weapon_rack: 'Lance rack', vat: 'Dye vat', still: 'Gourd still', bin: 'Woven grain bins', larder: 'Hanging larder', bunk: 'Lashed bunk', locker: 'Hide locker', lathe: 'Bow lathe', press: 'Fruit press', kiln: 'Clay kiln', grindstone: 'Grindstone', barrel: 'Gourd and cask cradle', altar: 'Beast-spirit altar' } });

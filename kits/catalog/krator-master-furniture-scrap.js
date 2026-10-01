@@ -70,3 +70,8 @@ FURN({
     F.cyl(0, 0.72, 0, 0.1, 0.004, 0, F.col('rustRed'), 'rust');
   }
 });
+
+/* trades and households (FK.ROLES.trade, the 2026-10 interiors-sets pass): forge, anvil, stall, vat, still,
+   bins, larder, bunk, locker ... in this culture's style sheet, keyed scrap_trade_<role> */
+FK.set({ culture: 'scrap', tier: 'poor', roles: 'trade', prefix: 'scrap_trade_', S: SCRAP_STYLE, names: {
+  forge: 'Drum-and-brick forge', anvil: 'Rail-iron anvil', trough: 'Cut-tank trough', stall: 'Pallet stall', hayrack: 'Mesh hay rack', display: 'Crate display', armour_stand: 'Scrap-plate armour on a pipe', weapon_rack: 'Pipe weapon rack', vat: 'Drum vat', still: 'Jerrycan still', bin: 'Drum bins', larder: 'Fridge-shell larder', bunk: 'Strut bunk', locker: 'Steel locker', lathe: 'Salvaged lathe', press: 'Jack press', kiln: 'Brick-and-drum kiln', grindstone: 'Pedal grinder', barrel: 'Drum rack', altar: 'Scrap shrine' } });

@@ -62,3 +62,8 @@ FURN({
     F.lamp(0, 0.9, -0.9, 0.5, 4);
   }
 });
+
+/* trades and households (FK.ROLES.trade, the 2026-10 interiors-sets pass): forge, anvil, stall, vat, still,
+   bins, larder, bunk, locker ... in this culture's style sheet, keyed post-apoc_trade_<role> */
+FK.set({ culture: 'post-apoc', tier: 'common', roles: 'trade', prefix: 'post-apoc_trade_', S: PA_COMMON, names: {
+  forge: 'Arc-forge', anvil: 'Alloy anvil', trough: 'Coolant trough', stall: 'Alloy stall', hayrack: 'Feed hopper', display: 'Salvage display', armour_stand: 'Ancients plate on a mannequin', weapon_rack: 'Locked weapon rack', vat: 'Process tank', still: 'Glass-coil still', bin: 'Sealed bins', larder: 'Cold cabinet', bunk: 'Crew bunk', locker: 'Alloy locker', lathe: 'Salvaged machine lathe', press: 'Hydraulic press', kiln: 'Ceramic furnace', grindstone: 'Belt grinder', barrel: 'Canister rack', altar: 'Salvage reliquary' } });

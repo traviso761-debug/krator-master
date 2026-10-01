@@ -59,3 +59,8 @@ FURN({
     for (const s of [-1, 1]) F.ball(s * 0.18, 0.84, 0.02, 0.03, F.col('shellAbalone'), 'nacre');
   }
 });
+
+/* trades and households (FK.ROLES.trade, the 2026-10 interiors-sets pass): forge, anvil, stall, vat, still,
+   bins, larder, bunk, locker ... in this culture's style sheet, keyed painted_trade_<role> */
+FK.set({ culture: 'painted', tier: 'common', roles: 'trade', prefix: 'painted_trade_', S: PNT_COMMON, names: {
+  forge: "Copper-smith's hearth", anvil: 'Stone anvil', trough: 'Cedar trough', stall: 'Cedar stall', hayrack: 'Fodder rack', display: 'Trade steps', armour_stand: 'Slat armour on a post', weapon_rack: 'War-club rack', vat: 'Steaming box', still: 'Smoke-pot still', bin: 'Bent-box bins', larder: 'Cedar store box', bunk: 'Plank-house bunk', locker: 'Bent-wood chest-press', lathe: 'Bow lathe', press: 'Fish-oil press', kiln: 'Pit kiln', grindstone: 'Whetstone frame', barrel: 'Oil-box rack', altar: 'Crest altar' } });

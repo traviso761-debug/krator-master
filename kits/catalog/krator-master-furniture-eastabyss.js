@@ -78,3 +78,8 @@ FURN({
     F.box(0, 0.08, 0.0, 1.5, 0.08, 0.1, 0, F.col('gilt'), 'gold');
   }
 });
+
+/* trades and households (FK.ROLES.trade, the 2026-10 interiors-sets pass): forge, anvil, stall, vat, still,
+   bins, larder, bunk, locker ... in this culture's style sheet, keyed eastabyss_trade_<role> */
+FK.set({ culture: 'eastabyss', tier: 'common', roles: 'trade', prefix: 'eastabyss_trade_', S: EA_COMMON, names: {
+  forge: 'Tiled forge', anvil: "Brass-smith's anvil", trough: 'Zellige trough', stall: 'Cedar stall', hayrack: 'Reed fodder rack', display: 'Souk display steps', armour_stand: 'Lamellar on a stand', weapon_rack: 'Spear and blade rack', vat: "Dyer's vat", still: 'Rosewater alembic', bin: 'Salt and grain bins', larder: 'Screened larder', bunk: 'Caravan bunk', locker: 'Cedar locker', lathe: 'Bow lathe', press: 'Olive and date press', kiln: "Potter's kiln", grindstone: 'Grindstone', barrel: 'Jar and cask rack', altar: 'Altar niche' } });

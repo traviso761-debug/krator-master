@@ -63,3 +63,8 @@ FURN({
     F.lamp(0, 1.3, 0.3, 0.6, 5);
   }
 });
+
+/* trades and households (FK.ROLES.trade, the 2026-10 interiors-sets pass): forge, anvil, stall, vat, still,
+   bins, larder, bunk, locker ... in this culture's style sheet, keyed republican_trade_<role> */
+FK.set({ culture: 'republican', tier: 'common', roles: 'trade', prefix: 'republican_trade_', S: REP_COMMON, names: {
+  forge: 'Iron Republic forge', anvil: 'Guild anvil', trough: 'Quench trough', stall: 'Bamboo stall', hayrack: 'Bamboo hay rack', display: 'Shop display steps', armour_stand: 'Lamellar on a stand', weapon_rack: 'Musket and blade rack', vat: "Brewer's vat", still: "Alchemists' still", bin: 'Grain bins', larder: 'Celadon larder', bunk: 'Barracks bunk', locker: 'Brass-pinned locker', lathe: "Mechanics' treadle lathe", press: 'Mint and printing press', kiln: 'Glaze kiln', grindstone: 'Grindstone', barrel: 'Beer barrel cradle', altar: 'Altar of the Pantheon' } });

@@ -6,7 +6,7 @@ furniture sets** (2026-10): a parametric furniture kit and one file per culture.
 It is the furniture source for `kits/interiors/` and the starting point for `kits/furniture/`.
 
 **Status: verified.** `build.py` builds `dist/catalog.html`, a contact sheet of every
-furniture entry and every variant, and `verify.py --assert` passes: all 853 furniture pieces
+furniture entry and every variant, and `verify.py --assert` passes: all 1013 furniture pieces
 (1129 instances, every variant, seeds 1–4) build without error, carry no NaN geometry, fit
 their declared size, keep their anchor's geometry, and carry their tags. Every furniture entry carries every field of
 `kits/furniture/SPEC.md` "The entry" and meets its style rules. What is still open is in `KNOWN_ISSUES.md`.
@@ -232,6 +232,44 @@ sheet's families and the role's extras (`FK.materialsFor`), keys the pieces `<cu
 | ancient | ancients_workstation (wall) |
 | voth | tavern_table, tavern_bench, tavern_stool, tavern_bar, offering_table, candle_stand, prayer_mat, lantern_bracket (wall); tableware, candles (surface) |
 | beast-rider | br_tool_set (surface) |
+
+### Trades and households (the 2026-10 interiors-sets pass)
+
+The building sets' interiors (`kits/interiors/sets`) furnish shops, smithies, stables, workshops,
+tenements and shrines, which the per-tier roles did not cover. `FK.ROLES.trade` adds 20 parametric
+roles, each drawn in the culture's own style sheet, registered with
+`FK.set({ culture, tier, roles: 'trade', prefix, S })` and keyed `<culture>_trade_<role>` (`br_trade_*`
+for the Beast Riders). Each culture's trade pieces have their own row on the sheet
+(`Furniture · <culture> · trade`; `?keys=_trade_` shows only them).
+
+| Role | Type | Rooms | What |
+|---|---|---|---|
+| `forge` | stove (wall) | smithy, workshop | masonry hearth block, coals, hood and flue, bellows, tongs; a light |
+| `anvil` | workstation | smithy, workshop | anvil on its stump, hammer, tool bucket |
+| `trough` | vessel | smithy, stable, workshop, yard | quenching or watering trough |
+| `stall` | pen (wall) | stable, yard, roost | two boarded partitions, manger, straw; a beast stall and a small one |
+| `hayrack` | rack (wall) | stable, store, yard | slatted rack over a feed trough |
+| `display` | stack | shop, market, store | stepped display of wares, or of cloth bolts |
+| `armour_stand` | rack | shop, smithy, barracks | plate or leather armour on a stand |
+| `weapon_rack` | weapon (wall) | shop, smithy, barracks | the rack builder, weapons on it |
+| `vat` | storage | workshop, store, tavern, kitchen | staved vat with its liquor and paddle (brewing, dyeing, tanning) |
+| `still` | workstation (wall) | workshop, shop, study | pot over a fire box, swan neck, worm tub, receiver, flask shelf |
+| `bin` | storage (wall) | store, kitchen, shop, stable | lidded grain and feed bins (a FOOD container) |
+| `larder` | storage (wall) | kitchen, store, hall | tall food cupboard, screened door, crocks, onions (a FOOD container) |
+| `bunk` | bed | dormitory, barracks, bedroom | two-tier bunk with a ladder (counts as two beds) |
+| `locker` | storage (wall) | dormitory, barracks, bedroom, workshop | tall two-door locker (an ITEM container) |
+| `lathe` | workstation (wall) | workshop | treadle lathe with its flywheel and tool board |
+| `press` | workstation | workshop, shop | screw press (mint, printing, cider, oil) |
+| `kiln` | stove | workshop, smithy | beehive kiln with a glowing mouth and chimney |
+| `grindstone` | workstation | smithy, workshop, yard | stone in its frame over a trough, with a crank |
+| `altar` | altar | shrine | stepped plinth, cloth, image board, candles and offering bowls |
+| `barrel` | storage (wall) | tavern, store, kitchen, shop | barrels in a cradle, taps to the front (a FOOD container) |
+
+Registered for `generic` and `scrap` (tier poor, so every culture chain ending in them has them) and
+`republican`, `rustic`, `painted`, `post-apoc`, `beast-rider`, `eastabyss` (tier common): 160 pieces.
+The new room kinds in their `rooms` (`smithy stable shop dormitory`) are the interiors kit's
+(`kits/interiors/src/30-programs.js`). A piece's `role` is what the interiors programmes read for food
+and item containers (`IX.FOOD_ROLES`, `IX.ITEM_ROLES`).
 
 Yuni keys are `yuni_<culture>_<name>` (`yuni_common_rope_bed`, `yuni_nomad_rug_pile`);
 harvested from `settlements/yuni/src/64-interiors.js` "NEW PIECES": rope_bed, canopy_bed,
