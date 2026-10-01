@@ -85,7 +85,10 @@
   document.head.appendChild(s);
 })();
 var _errBox=document.getElementById('errs'), _errN=0;
-function ERR(m){ if(_errN++>14) return; _errBox.textContent += (_errBox.textContent?'\n':'')+m; }
+function ERR(m){ if(_errN++>14) return; _errBox.textContent += (_errBox.textContent?'\n':'')+m;
+  /* the loading screen (z 30) covers the error panel (z 20): an error during the build used to hide behind
+     "Laying out…" and read as a hang. Take the loading screen down so the error shows. */
+  var L=document.getElementById('load'); if(L && L.style.display!=='none') L.style.display='none'; }
 window.onerror=function(m,u,l,c,e){ ERR('error: '+m+' @'+l+':'+c+(e&&e.stack?'\n'+e.stack:'')); };
 window.addEventListener('unhandledrejection',function(e){ ERR('promise: '+(e.reason&&e.reason.stack||e.reason)); });
 </script>
