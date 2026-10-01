@@ -173,7 +173,10 @@
       if (!lg.from.length || !lg.to.length) return { ok: false, why: lg.room + ': nowhere to ' + (lg.from.length ? 'leave by' : 'enter by') };
       const ks = g.route(lg.from, lg.to);
       if (!ks) return { ok: false, why: lg.room + ': the grid does not connect its way in to its way out' };
-      const P = g.smooth(ks.map(function (k) { return g.centre(k); }));
+      /* smooth on the points as they will be STORED (rounded to a mm, below): the audit re-samples
+         the stored route with the same clearLine, and a sample that sat a fraction of a mm inside a
+         free cell before rounding could land in the blocked cell beside it after it */
+      const P = g.smooth(ks.map(function (k) { const c = g.centre(k); return [R3(c[0]), R3(c[1])]; }));
       for (const c of P) pts.push({ x: c[0], y: y, z: c[1], room: lg.room, kind: 'walk' });
       if (lg.link) {
         const a = lg.exit.point, b = lg.enter.point;

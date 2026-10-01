@@ -81,3 +81,27 @@ Looking up · The fallen body · Night · The terraces at night. Derived from
 * "Looking up" is taken from the plaza, so the base block hides the first
   plates; the tower soffits read brown-orange from the ground bounce light.
 * Five canvas textures are generated at load in every target (~0.8 M px).
+
+## Design pass (2026-10-01): junctions and crown
+* **Junctions.** Every meeting of ribs is now a made thing in the same stone,
+  derived from the ribs' own paths (no rng): a lens-shaped CLASP with a boss
+  wherever two neighbours kiss (found as the local minima of their centre
+  distance where the bands overlap); a COLLAR (the rib drawn fatter for 4 m)
+  at every terrace plate it passes, at the base roof's lip for the roots and at
+  each hoop of the spire; a flared SHOE where a rib roots on the roof or the
+  plaza. A ruin keeps exactly the junctions on the pieces it keeps (a clasp
+  needs both ribs standing unsplayed there, a collar needs its plate).
+  `ribGeo` gained an optional `sx(t)` scale for this.
+* **Crown** (`crown()`, used standing and for the fallen spire): a lipped
+  coronet where the ribs leave the roof plate; four hoops (13/29/47/66 m), each
+  clasping every rib it crosses; a glazed lantern 57 m tall, banded every two
+  storeys (lit at night by sjWin's emissive); a stone spindle to the knot at
+  424 m; an ovoid boss on the knot; a banded needle to 457 m. Registered
+  heights follow (+20 m).
+* **Toppled.** The fallen spire was the bare ribs and one hoop; it is now the
+  whole crown, broken (hoops sectored, lantern glass mostly gone).
+* Weaknesses struck: "rib junctions intersect", "spire fragment is small".
+  Still: the fallen spire lies near the body's line, so the 'Toppled' preset
+  sees it end-on; 'The fallen body' shows it well.
+* The lighthouse (89n) has its own copy of the body code and calls only the
+  shared helpers, which are unchanged; it builds and looks as before.

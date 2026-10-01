@@ -30,23 +30,23 @@
   IX.TABLE_TYPES = ['table', 'desk', 'counter'];           /* a seat may stand in these pieces' clearance */
   IX.SURFACE_HOSTS = ['table', 'counter', 'shelf', 'desk', 'storage'];
   /* types that need no walk-up access (decor, light, partitions); everything else must be reachable */
-  IX.NO_ACCESS_TYPES = ['rug', 'screen', 'lamp', 'banner', 'debris', 'planter', 'monument'];
+  IX.NO_ACCESS_TYPES = ['rug', 'screen', 'lamp', 'banner', 'debris', 'planter', 'monument', 'art'];
 
   const SURFACE = { anchor: 'surface', max: 2 };
   IX.SURFACE_GROUP = SURFACE;
 
   IX.PROGRAMS = {
     hall:     { require: [{ need: 'table', types: ['table'], n: 1 }, { need: 'seats', types: SEATS, n: 2 }],
-                optional: [{ types: ['lamp', 'brazier'], max: 2 }, { types: ['storage', 'shelf', 'rack'], max: 2 }, { types: ['screen', 'statue', 'banner'], max: 1 }, SURFACE],
+                optional: [{ types: ['lamp', 'brazier'], max: 2 }, { types: ['storage', 'shelf', 'rack'], max: 2 }, { types: ['screen', 'statue', 'banner'], max: 1 }, { types: ['art', 'banner'], max: 2 }, SURFACE],
                 extra: 7 },
     bedroom:  { require: [{ need: 'bed', types: ['bed'], n: 1 }],
-                optional: [{ types: ['storage'], max: 2 }, { types: ['lamp'], max: 1 }, { types: ['screen'], max: 1 }, { types: ['chair', 'desk'], max: 1 }, SURFACE],
+                optional: [{ types: ['storage'], max: 2 }, { types: ['lamp'], max: 1 }, { types: ['screen'], max: 1 }, { types: ['chair', 'desk'], max: 1 }, { types: ['art', 'banner'], max: 1 }, SURFACE],
                 extra: 5 },
     kitchen:  { require: [{ need: 'hearth', types: ['stove'], n: 1 }, { need: 'storage', types: ['storage', 'shelf', 'vessel'], n: 1 }],
                 optional: [{ types: ['storage', 'shelf', 'rack', 'stack'], max: 2 }, { types: ['table'], max: 1 }, SURFACE],
                 extra: 5 },
     tavern:   { require: [{ need: 'counter', types: ['counter'], n: 1 }, { need: 'table', types: ['table'], n: 1 }, { need: 'seats', types: SEATS, n: 2 }],
-                optional: [{ types: ['table'], max: 2 }, { types: SEATS, max: 4 }, { types: ['storage', 'stack', 'rack'], max: 1 }, { types: ['lamp', 'brazier'], max: 2 }, SURFACE],
+                optional: [{ types: ['table'], max: 2 }, { types: SEATS, max: 4 }, { types: ['storage', 'stack', 'rack'], max: 1 }, { types: ['lamp', 'brazier'], max: 2 }, { types: ['art', 'banner'], max: 1 }, SURFACE],
                 extra: 6 },
     workshop: { require: [{ need: 'workstation', types: ['workstation', 'loom'], n: 1 }],
                 optional: [{ types: ['workstation', 'loom'], max: 2 }, { types: ['rack', 'shelf', 'storage'], max: 2 }, { types: ['chair', 'bench'], max: 1 }, SURFACE],
@@ -55,7 +55,7 @@
                 optional: [{ types: ['storage', 'shelf', 'stack', 'rack'], max: 3 }, SURFACE],
                 extra: 4 },
     shrine:   { require: [{ need: 'altar', types: ['altar', 'shrine'], n: 1 }],
-                optional: [{ types: ['desk'], max: 1 }, { types: ['lamp', 'brazier'], max: 2 }, { types: ['statue', 'banner'], max: 1 }, SURFACE],
+                optional: [{ types: ['desk'], max: 1 }, { types: ['lamp', 'brazier'], max: 2 }, { types: ['statue', 'banner'], max: 1 }, { types: ['art', 'banner'], max: 2 }, SURFACE],
                 extra: 8 },
     study:    { require: [{ need: 'desk', types: ['desk'], n: 1 }, { need: 'seat', types: ['chair'], n: 1 }],
                 optional: [{ types: ['shelf', 'statue', 'table'], max: 2 }, { types: ['lamp'], max: 1 }, SURFACE],
@@ -69,7 +69,7 @@
     barracks: { require: [{ need: 'beds', types: ['bed'], n: 2 }, { need: 'rack', types: ['rack', 'weapon'], n: 1 }],
                 optional: [{ types: ['bed'], max: 4 }, { types: ['storage', 'rack', 'banner'], max: 2 }],
                 extra: 4 },
-    antechamber: { require: [], optional: [{ types: ['lamp', 'bench', 'screen'], max: 3 }], extra: 6 }
+    antechamber: { require: [], optional: [{ types: ['lamp', 'bench', 'screen'], max: 3 }, { types: ['art', 'banner', 'statue'], max: 2 }], extra: 6 }
   };
   /* how big a room of each kind wants to be, relative to the others (the planner's area split) */
   IX.KIND_WEIGHT = { hall: 1.6, tavern: 2.2, shrine: 1.4, workshop: 1.6, library: 1.5, school: 1.6, barracks: 1.6,
@@ -93,24 +93,40 @@
   IX.ROLES = {
     bed: 'back', stove: 'back', altar: 'back', shrine: 'back', counter: 'back', board: 'back',
     storage: 'wall', shelf: 'wall', rack: 'wall', stack: 'wall', loom: 'wall', workstation: 'wall', desk: 'wall',
-    screen: 'wall', banner: 'wall', ladder: 'wall', vessel: 'wall', weapon: 'wall',
+    screen: 'wall', banner: 'wall', ladder: 'wall', vessel: 'wall', weapon: 'wall', art: 'wall',
     table: 'centre', statue: 'centre', rug: 'centre', fountain: 'centre', well: 'centre',
     lamp: 'corner', brazier: 'corner',
     seating: 'seat', bench: 'seat', chair: 'seat'
   };
 
-  /* culture fallback chains: own culture first, then its family, then any culture (opts.fallback) */
+  /* culture fallback chains: own culture first, then its family, then any culture (opts.fallback).
+     'generic' (plain wood) and 'scrap' (post-apoc salvage) are the poor-tier sets every culture's
+     poor buildings draw on (kits/catalog/krator-master-furniture-generic.js, -scrap.js), so they
+     end most chains; a culture's own tiers are told apart by the wealth band (45-placer.js). */
   IX.CULTURE_FAMILY = {
-    'yuni-common': ['yuni-court', 'yuni-poor', 'sahelian', 'nomad', 'order'],
+    'yuni-common': ['yuni-court', 'yuni-poor', 'sahelian', 'nomad', 'order', 'generic'],
     'yuni-court': ['yuni-common', 'order', 'sahelian'],
-    'yuni-poor': ['yuni-common', 'sahelian', 'nomad'],
-    'sahelian': ['yuni-common', 'nomad', 'yuni-poor'],
-    'nomad': ['sahelian', 'yuni-common', 'yuni-poor'],
-    'order': ['yuni-court', 'yuni-common'],
-    'ancient': ['ancients-salvage'],
-    'ancients-salvage': ['ancient'],
-    'voth': ['iziz'],
-    'iziz': ['voth'],
-    'beast-rider': []
+    'yuni-poor': ['yuni-common', 'sahelian', 'nomad', 'generic'],
+    'sahelian': ['yuni-common', 'nomad', 'yuni-poor', 'generic'],
+    'nomad': ['sahelian', 'eastabyss', 'yuni-common', 'yuni-poor', 'generic'],
+    'order': ['yuni-court', 'yuni-common', 'generic'],
+    'ancient': ['ancients-salvage', 'post-apoc'],
+    'ancients-salvage': ['ancient', 'post-apoc', 'scrap'],
+    'voth': ['iziz', 'generic'],
+    'iziz': ['voth', 'generic'],
+    'beast-rider': ['lizardmen', 'generic'],
+    'generic': [],
+    'scrap': ['generic'],
+    'lizardmen': ['beast-rider', 'generic'],
+    'eastabyss': ['nomad', 'reedlake', 'generic'],
+    'xanadu': ['eastabyss', 'generic'],
+    'screamer': ['scrap', 'beast-rider', 'generic'],
+    'islander': ['reedlake', 'hykkousoi', 'generic'],
+    'republican': ['rustic', 'post-apoc', 'generic', 'scrap'],
+    'rustic': ['republican', 'painted', 'generic'],
+    'painted': ['rustic', 'generic'],
+    'reedlake': ['islander', 'eastabyss', 'generic'],
+    'post-apoc': ['scrap', 'ancients-salvage', 'generic'],
+    'hykkousoi': ['islander', 'generic']
   };
 })(KratorInteriors);
