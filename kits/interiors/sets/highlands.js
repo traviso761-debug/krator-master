@@ -70,6 +70,12 @@
     bodies: [{ id: 'house', poly: rect(10, 8), y: 2.6, levels: [{ h: 3 }], wall: 0.3, roof: 'gable', pitch: pt(1.0),
       doors: [{ at: [5, 0.4], w: 1 }], program: ['living', 'kitchen', 'bedroom'] }],
     note: 'the log house on its stone storey, entered from the kryltso landing on the +x end; the storerooms below (podklet) have windows but no door drawn and are left out' });
+  add({ key: 'hl_rep_house_mid_c', name: 'Arcaded tenement', culture: 'republican', wealth: MID, types: MF, units: 2, lot: [19, 13],
+    bodies: [{ id: 'tenement', poly: rect(14, 10), y: 0, wall: 0.35, roof: 'gable', pitch: pt(1.45),
+      levels: [{ h: 3.6, poly: rect(14, 7.3, 0, -1.35) }, { h: 3.2 }, { h: 2.9 }],
+      doors: [{ at: [-6.05, 2.3], w: 1 }, { at: [-2.55, 2.3], w: 1 }, { at: [0.95, 2.3], w: 1 }, { at: [4.45, 2.3], w: 1 }, { at: [-1.75, -5], w: 1 }, { at: [5.25, -5], w: 1 }],
+      program: [['shop', 'shop', 'shop', 'shop'], ['living', 'kitchen', 'bedroom', 'bedroom'], ['living', 'kitchen', 'bedroom', 'bedroom']] }],
+    note: 'four shops behind the arcade (the Laube, open), a flat on each upper floor (the jettied top floor planned on the footprint below); the plan stairs the flats inside, the builder serves them from the stair tower at +x (left out); the dormer attic is left out' });
   add({ key: 'hl_rep_house_rich_a', name: 'Peles villa', culture: 'republican', wealth: RICH, types: SF, lot: [22, 20],
     bodies: [{ id: 'villa', poly: rect(16, 11), y: 1.2, levels: [{ h: 3.8 }, { h: 3.2 }], wall: 0.35, roof: 'gable', pitch: pt(1.3),
       doors: [{ at: [0, 5.5], w: 1.5 }], program: [['hall', 'living', 'kitchen', 'store'], ['bedroom', 'bedroom', 'study', 'bedroom']] }],
@@ -373,7 +379,7 @@
   add({ key: 'hl_rep_silo_house', name: 'Silo house', culture: 'republican', wealth: POOR, types: SF, lot: [17, 12],
     bodies: [{ id: 'annex', poly: rect(3.6, 4.2, -5.4, -1), y: 3.2, levels: [{ h: 2.6 }], wall: 0.2, roof: 'gable', pitch: pt(1.7),
       doors: [{ at: [-5.4, 1.1], w: 0.8 }], program: ['bedroom'] }],
-    rooms: [{ id: 'silo', kind: 'cottage', poly: circle(2.85, 16), y: 0.4, h: 2.8, doors: [{ at: [-2.81, 0.48], w: 1 }] }],
+    rooms: [{ id: 'silo', kind: 'cottage', poly: circle(2.85, 16), y: 0.4, h: 2.8, doors: [{ at: [-2.795, 0.483], w: 1 }] }],
     note: 'the silo\'s ground floor as a round cottage (its upper ring of windows: an upper floor with no stair drawn, left out), the upper storey of the frame annex up its outside stair (the annex ground floor has no door drawn)' });
   add({ key: 'hl_rep_tank_row', name: 'Tank-cluster row', culture: 'republican', wealth: POOR, types: MF, units: 3, lot: [22, 8],
     rooms: [{ id: 'tank1', kind: 'cottage', poly: circle(2.4, 16, -6.5, 0), y: 0.35, h: 2.6, doors: [{ at: [-6.5, 2.4], w: 0.9 }] },
@@ -609,7 +615,7 @@
   const CLIFF = [['hl_tri_small_a', -34, 5, -1.32], ['hl_tri_large_b', -12, 4, 0.04], ['hl_tri_small_b', 7, 6, -0.55], ['hl_tri_large_a', 28, 4, 1.07],
     ['hl_tri_small_c', -24, 15, -2], ['hl_tri_small_a', -1, 15, -1.9], ['hl_tri_small_a', 5.5, 15, -1.9], ['hl_tri_small_b', 22, 16, -2.04],
     ['hl_tri_large_a', -14, 25, -0.07], ['hl_tri_small_a', 14, 27, -3.47], ['hl_tri_small_c', 30, 26, -3.76], ['hl_tri_small_b', -33, 31, -2.92]];
-  add(Object.assign({ key: 'hl_tri_cliff_village', name: 'Cliff settlement', culture: 'painted', wealth: POOR, types: MF, units: 17, lot: [88, 30],
+  add(Object.assign({ key: 'hl_tri_cliff_village', name: 'Cliff settlement', culture: 'painted', wealth: POOR, types: MF, units: 16, lot: [88, 30],
     note: 'the twelve houses the builder hangs on the rock (their own items at the placements and depths it computes); the walkways and stairs are open' },
     merge(CLIFF.map(function (h, i) { return place(h[0], h[1], h[3], 0, 'h' + (i + 1) + '.', h[2] + (h[0] === 'hl_tri_small_c' ? 0.2 : 0)); }))));
 
