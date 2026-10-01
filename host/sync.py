@@ -30,7 +30,10 @@ def sha(path):
 
 
 def git(src, *args):
-    r = subprocess.run(['git', '-C', src, *args], capture_output=True, text=True)
+    try:   # no git at all (a ZIP download): there is then no tree to record, and nothing else needs one
+        r = subprocess.run(['git', '-C', src, *args], capture_output=True, text=True)
+    except OSError:
+        return ''
     return r.stdout.strip() if r.returncode == 0 else ''
 
 
