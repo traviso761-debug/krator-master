@@ -400,13 +400,32 @@ function buildPlymouth(scene,gx,gz,d){reseed(9510+d);KOFF=[gx,0,gz];
    else{
     const r2=rng(),t2=rr(2.6,Math.max(3.4,dep-2.6));
     const ox=B[0]+BN[0]*t2,oz=B[1]+BN[1]*t2;
-    if(r2<.20)kput('plyTank',[ox,y1+1.8,oz],null,[1.5,3.6,1.5],tinC());
+    // QA arcA: at 16 000 bays seven items on one roll repeat — the same water
+    // butt every few metres. A hash per bay (no draw, so the stream is
+    // untouched) now picks a variant inside each item and puts something in
+    // the bays the roll left empty: a squat butt or a pair for the tank, a
+    // bench, a pergola. tx/tz is the terrace's own tangent.
+    // Colours for the added pieces come off the same hash: stoneC()/tinC()
+    // draw from the stream, so only an item that already drew one may call them.
+    const hv=h3(j,k,9533),tx=-BN[1],tz=BN[0];
+    const hC=(q,h0,h1,s0,s1,l0,l1)=>new THREE.Color().setHSL(lerp(h0,h1,h3(j,q,k)),lerp(s0,s1,h3(k,q,j)),
+      lerp(l0,l1,h3(q,j,k)));
+    const hStone=q=>hC(q,.06,.10,.03,.12,d>0?.14:.44,d>0?.24:.58),hTin=q=>hC(q,.035,.11,.06,.30,d>0?.12:.22,d>0?.24:.44);
+    if(r2<.20){if(hv<.35)kput('plyTank',[ox,y1+.9,oz],null,[2.5,1.8,2.5],tinC());
+     else if(hv<.6){kput('plyTank',[ox+tx*1.2,y1+1.8,oz+tz*1.2],null,[1.5,3.6,1.5],tinC());
+      kput('plyTank',[ox-tx*1.2,y1+1.4,oz-tz*1.2],null,[1.3,2.8,1.3],hTin(1));}
+     else kput('plyTank',[ox,y1+1.8,oz],null,[1.5,3.6,1.5],tinC());}
     else if(r2<.38)kput('planter',[ox,y1+.55,oz],bq,[rr(2,4.4),1.1,rr(1.1,2)],soilC);
     else if(r2<.54)plyScrub(ox,y1,oz,rr(1.4,3.2));
     else if(r2<.66)kput('plyWash',[ox,y1+3.2,oz],bq,[rr(3.5,6),2.4,1],clothC());
     else if(r2<.76)kput('plyTinBox',[ox,y1+1.5,oz],bq,[rr(2.4,4.4),3,rr(2,3.4)],tinC());
     else if(r2<.84)kput('plyBrk',[ox,y1+.35,oz],bq,[rr(3,7),.7,rr(1.4,2.6)],stoneC());
-    else if(d===0&&r2<.95)person(ox,y1,oz);}}
+    else if(d===0&&r2<.95)person(ox,y1,oz);
+    else if(hv<.30)kput('plyBrk',[ox,y1+.45,oz],bq,[3.4,.9,.9],hStone(2));          // a bench
+    else if(hv<.48&&dep>8){const pc=hStone(3);                                  // a pergola
+     for(const a of [-1,1])for(const b of [-1,1])
+      kput('plyBrk',[ox+tx*a*2+BN[0]*b*1.4,y1+1.4,oz+tz*a*2+BN[1]*b*1.4],null,[.3,2.8,.3],pc);
+     if(d===0||hv<.40)kput('plyTinBox',[ox,y1+2.9,oz],bq,[4.6,.25,3.4],hTin(4));}}}
 
   // ---- community buildings on the terrace -----------------------------------
   // A settlement of seventeen thousand homes is not made only of homes, and the

@@ -8,15 +8,22 @@ intermediate rounds `qa_<t>_r1..r5/`). Seeds unchanged.
 
 Triangles are scene triangles per decay (d0 / d1), ceiling 700 000.
 
+**Resumed 2026-10-01 (second agent).** The first agent was stopped mid-pass
+and its diff recovered as commit 8fafcd2. Re-verified on `ancients-resume`
+before anything else: all seven targets build, `jscheck` PARSES OK, `verify.py
+--assert` error panel clean and every invariant PASS (shots `qa_<t>_v1/`, hero,
+ruin and the views this pass touched). Nothing the recovered code did was
+broken. Placeholders it left in this file are filled from those runs.
+
 | type | before | after |
 |---|---|---|
 | ring | 540 922 / 502 668 | 575 366 / 532 580 |
-| arcbeam | 488 454 / 472 468 | 499 174 / 483 780 |
-| plymouth | 449 262 / 378 270 | 454 530 / 460 890 |
-| launch | LAUNCH_BEFORE | 415 200 / 416 058 |
-| darco | 248 560 / 236 100 | DARCO_AFTER |
+| arcbeam | 488 454 / 472 468 | 565 462 / 550 068 |
+| plymouth | 449 262 / 378 270 | 460 002 / 470 262 |
+| launch | not recorded (417 072 / 473 360 at build) | 415 200 / 419 154 |
+| darco | 248 560 / 236 100 | 248 560 / 250 836 |
 | forest | 530 538 / 512 152 | 530 538 / 514 598 |
-| hill | 533 256 / 486 016 | HILL_AFTER |
+| hill | 533 256 / 486 016 | 533 726 / 486 486 |
 
 ## Forest Ring (`ring`)
 Fixed:
@@ -161,12 +168,61 @@ geometrically unachievable (as logged).
   1.9, and the slope material carries `lxBounce(...,3.2)`. Measured on 'The cut
   wall', column x=900: band was ~75 px at (65,30,18); now ~24 px at
   (110,60,35) before the stronger bounce (r4), see r5/after for the final.
-  HILL_REMAINS
+  The recovered state still showed a red-brown band (bounce-lit underside) above a pale shoulder in that shot: see the second pass below.
+
+## Second pass (resumed agent), verified build -> jscheck -> verify --assert -> shots
+Rounds `qa_<t>_r1..r3/`. Seeds unchanged; no new draws anywhere (hashes only,
+or the old draws re-used in their old order), so nothing already placed moved.
+- **Hill, the cut-lip band — FIXED.** The bounce had only lifted it from maroon
+  to red-brown, still a stripe over the sunlit shoulder in 'The cut wall'. The
+  slope materials now flip any downward shading normal before the lights run
+  (`hillUpLit`, replaces `lxBounce` on them): terrain has an up side only, so a
+  sliver seen from below shades exactly like the ground beside it. The shot now
+  reads as one tan slope over the rock face (`qa_hill_r1/view_The_cut_wall.png`).
+- **Hill, ruin's toe fringe — FIXED.** The toe skirt ran 0.2-0.35 m over the
+  ground plane for 260 m and z-fought it at 2-3 km (stair-stepped fringe, seen
+  on the green ruin). It now dives under the plain within 27 m and ends 3 m
+  down (`qa_hill_r2/view_Ruined.png`).
+- **Arcbeam, soft canyon walls — FIXED.** Inner wall grid 240x68 -> 420x80
+  (11 m -> 6 m columns against 50 m gullies); +66k triangles a decay, 81% / 79%.
+- **Launch, payload stack — FIXED.** The smooth inner lathe is in panels with
+  whole bays out (hash, no draws), with a spine and six spokes at every frame.
+- **Launch, fallen mast head and downed towers — FIXED.** Box lattices lying on
+  their side, kinked, crushed toward the torn end, members missing; they take
+  the old chains' draws in the old order (`qa_launch_r3/`).
+- **Plymouth, clutter repetition — FIXED.** A hash per bay picks a squat butt or
+  a pair of tanks for the tank, and puts a bench or a pergola in the bays the
+  roll left empty; colours for added pieces come off the hash.
+- KNOWN_ISSUES entries for ring, arcbeam, plymouth, launch and the Forest Tower
+  ticked where fixed.
+
+## Still open, per arcology
+- **ring**: the wheel hides the barrel's belly; the crown section cannot read
+  (no deep fabric); a stepped crown cannot be seen into below 36 deg (all three
+  are the brief's geometry). Ruined shell thinning toward the foot wants a
+  height term in shared `holeFn`. Decay 2 unsupported.
+- **arcbeam**: 'Section across' (nowhere to stand, no deep fabric); 'Both' is
+  hazy by fog at 3.5 km (scene setting).
+- **plymouth**: silhouette wants a spur or saddle (a replan of the octagon the
+  streets and stations key off, not a QA fix); light court and overall
+  brightness are kit-wide (no shadows); crown's near end sparse; chamfer
+  correspondence approximate. The secondary failures read from a distance as
+  flat dark slots; a closer look at their dressing would help.
+- **launch**: trench volumes thin in the registry (pass); 'look down off the top
+  terrace' unachievable as logged. Downward brown is fixed here only; kit-wide
+  request below.
+- **darco**: nothing logged open. (Second pass: the fallen horn's skin grid
+  96x40 -> 168x70, so its eaten holes have fine edges, not stair steps;
+  darco/1 236 546 -> 250 836.)
+- **forest**: nothing logged open.
+- **hill**: no KNOWN_ISSUES section. From the shots: the summit city and
+  terraces are only hazily legible from the hero (fog at 1.5-2 km, by design
+  per the views file).
 
 ## Requests for shared code (not done — outside this group's files)
 - Move `lxBounce` into shared materials (22/54) and apply it to BOXC/SLABC/
   PLATE: every soffit in the kit (balconies, galleries, decks) is brown for
   the same reason. The Forest Ring's balcony soffits show it (qa_ring_r1
-  `view_The_terraces.png`). hill already borrows it from 87-launch.js.
+  `view_The_terraces.png`). (The hill no longer uses it: see its second pass.)
 - `holeFn` wants an optional height term (ring's shell thins toward the foot).
 - A roll-fixed `beam()` (the ring's `rbeam`) belongs in 38-helpers2.

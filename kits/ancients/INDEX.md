@@ -82,16 +82,16 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `85-radar.js` | 3 |  |
 | `86-dish.js` | 3 |  |
 | `86b-darco.js` | 27 |  |
-| `87-launch.js` | 71 **big** |  |
+| `87-launch.js` | 73 **big** |  |
 | `87-mega.js` | 10 |  |
 | `88-factory.js` | 9 |  |
-| `88-plymouth.js` | 57 **big** |  |
+| `88-plymouth.js` | 58 **big** |  |
 | `89-arcbeam.js` | 59 **big** |  |
 | `89-lab.js` | 7 |  |
 | `89b-arcoindian.js` | 81 **big** |  |
 | `89c-arcoindian2.js` | 80 **big** |  |
 | `89d-arcube.js` | 89 **big** | the dwelling grid (112); krShard (248) |
-| `89e-hill.js` | 64 **big** | materials (64); kit (150); the landform and the route (163) |
+| `89e-hill.js` | 65 **big** | materials (64); kit (159); the landform and the route (172) |
 | `89f-trigon.js` | 52 **big** |  |
 | `89g-monolith.js` | 49 **big** |  |
 | `89h-crescent.js` | 51 **big** | the skins (45) |
