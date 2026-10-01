@@ -58,6 +58,10 @@ function hykPad(x,y,z,R,o){o=o||{};const col=o.col||hC(hPick(HPAL.shell));const 
  hykPut(mk,hykDisc(x,y,z,R,{col,lobes:{n:o.lobes||9,amp:.08}}));hykPut(mk,hykDisc(x,y-.3,z,R*.97,{col,sag:-R*.22,down:true,lobes:{n:o.lobes||9,amp:.08}}));
  kput('hkLip',[x,y+.02,z],qEuler(Math.PI/2,0,0),[R*1.0,R*1.0,.9],col);
  if(o.stalk){const yb=o.stalk===true?terrainH(x,z)-1:o.stalk;kput('hkPost',[x,(yb+y)/2,z],null,[R*.14,y-yb,R*.14],col);}
+ // a rail round the rim on posts, open over `gap` radians centred on `a0` (the approach), for a perch people stand on
+ if(o.rail){const rr=R*.9,a0=o.rail.a0||0,gap=o.rail.gap||0;const n=Math.max(12,Math.round((TAU-gap)*rr/1.2));const bc=o.rail.col||hC(hPick(HPAL.bone));const pts=[];
+  for(let i=0;i<=n;i++){const a=a0+gap/2+(TAU-gap)*i/n;pts.push([x+rr*Math.cos(a),y+1.15,z+rr*Math.sin(a)]);}
+  hykPut('hkBone',hykTube(pts,()=>.07,{seg:6,col:bc}));for(let i=0;i<=n;i+=2){const p=pts[i];kput('hkPost',[p[0],y+.58,p[2]],null,[.06,1.15,.06],bc);}}
  ysDeck({x0:x-R,z0:z-R,x1:x+R,z1:z+R,w:R*2,y,kind:'pad',own:o.own||null});return {x,y,z,r:R};}
 // a spiral stair hugging a round host from y0 down to y1: treads on the face, a rail tube on the outer edge
 function hykStairSpiral(cx,cz,rAt,y0,y1,o){o=o||{};const w=o.w||1.1,rise=.19,run=.64,dir=o.dir||1;const col=o.col||hC(hPick(HPAL.bone));const rail=[];
@@ -70,40 +74,68 @@ function hykStairSpiral(cx,cz,rAt,y0,y1,o){o=o||{};const w=o.w||1.1,rise=.19,run
  return {a1:a,y1:y+rise};}
 // a rib bridge: an arched deck between two landings with two bone ribs under its edges and lip rails
 function hykBridge(A,B,o){o=o||{};const w=o.w||2.6;const col=o.col||hC(hPick(HPAL.bone));const dcol=o.deckCol||hC(hPick(HPAL.shell));
+ const lerpPoly=(P,t)=>{const i=Math.max(0,Math.min(1,t))*(P.length-1);const k=Math.min(P.length-2,Math.floor(i)),f=i-k;const a=P[k],b=P[k+1];return [a[0]+(b[0]-a[0])*f,a[1]+(b[1]-a[1])*f,a[2]+(b[2]-a[2])*f];};
+ const mkPts=(P0,P1,rise)=>{const L=Math.hypot(P1.x-P0.x,P1.z-P0.z)||1;const n=Math.max(8,Math.round(L/4));const pts=[];
+  for(let i=0;i<=n;i++){const t=i/n;pts.push([P0.x+(P1.x-P0.x)*t,P0.y+(P1.y-P0.y)*t+rise*4*t*(1-t),P0.z+(P1.z-P0.z)*t]);}return {pts,L,n};};
  // one run of deck: the plates, a spine under the centre line with a knuckle every 2.6 m, vertebrae across it every
- // other sample, a knuckled rib along each edge with the rail on posts. A span is a backbone, not a plank.
- const run=(P0,P1,w,rise,own,kind)=>{const L=Math.hypot(P1.x-P0.x,P1.z-P0.z)||1;const n=Math.max(8,Math.round(L/4));const pts=[];
-  for(let i=0;i<=n;i++){const t=i/n;pts.push([P0.x+(P1.x-P0.x)*t,P0.y+(P1.y-P0.y)*t+rise*4*t*(1-t),P0.z+(P1.z-P0.z)*t]);}
+ // other sample, a knuckled rib along each edge with the rail on posts. A span is a backbone, not a plank. The rail
+ // opens where a branch leaves (o2.gaps, with a knuckle at each end) and a branch's rail starts on its parent's rail
+ // line (o2.railStart), so railings meet instead of crossing.
+ const run=(P0,P1,w,rise,own,kind,o2)=>{o2=o2||{};const M=o2.pre||mkPts(P0,P1,rise);const pts=M.pts,L=M.L,n=M.n;
   hykPut('hkShell',hykDeck(pts,w,{col:dcol,camber:.08}));hykPut('hkShell',hykDeck(pts.map(p=>[p[0],p[1]-.5,p[2]]),w*.92,{col:dcol,flip:false}));
   const tx=(P1.x-P0.x)/L,tz=(P1.z-P0.z)/L;const rx=-tz,rz=tx;
   hykPut('hkBone',hykTube(pts.map(p=>[p[0],p[1]-.78,p[2]]),t=>.3*(1+.3*Math.max(0,Math.cos(t*L/2.6*TAU))),{seg:9,col}));
   for(let i=2;i<n;i+=2){const p=pts[i];hykPut('hkBone',hykRib([p[0]-rx*w*.52,p[1]-.5,p[2]-rz*w*.52],[p[0]+rx*w*.52,p[1]-.5,p[2]+rz*w*.52],{rise:-.45,r0:.17,r1:.14,n:8,seg:6,col}));}
+  const rails={};
   for(const s of [-1,1]){const edge=pts.map(p=>[p[0]+rx*s*w*.46,p[1]-.3,p[2]+rz*s*w*.46]);
    hykPut('hkBone',hykTube(edge,(t)=>.32*(1+.18*Math.max(0,Math.cos(t*TAU*4)))-.08*Math.sin(t*Math.PI),{seg:8,col}));
-   hykPut('hkBone',hykTube(edge.map(p=>[p[0],p[1]+1.25,p[2]]),()=>.07,{seg:6,col}));
-   for(let i=0;i<=n;i+=2){const p=edge[i];kput('hkPost',[p[0],p[1]+.62,p[2]],null,[.06,1.25,.06],col);}}
+   const rail=edge.map(p=>[p[0],p[1]+1.25,p[2]]);if(o2.railStart&&o2.railStart[s])rail[0]=o2.railStart[s];rails[s]=rail;
+   const gaps=(o2.gaps||[]).filter(g=>g.side===s).sort((a,b)=>a.s0-b.s0);const inGap=sa=>gaps.some(g=>sa>=g.s0&&sa<=g.s1);
+   let seg=[];const flush=()=>{if(seg.length>1)hykPut('hkBone',hykTube(seg,()=>.07,{seg:6,col}));seg=[];};
+   let gi=0;for(let i=0;i<=n;i++){const sa=i/n*L;
+    while(gi<gaps.length&&gaps[gi].s1<sa){seg.push(lerpPoly(rail,gaps[gi].s0/L));flush();seg.push(lerpPoly(rail,gaps[gi].s1/L));gi++;}
+    if(inGap(sa))continue;seg.push(rail[i]);}
+   while(gi<gaps.length){seg.push(lerpPoly(rail,gaps[gi].s0/L));flush();seg.push(lerpPoly(rail,gaps[gi].s1/L));gi++;}flush();
+   for(const g of gaps)for(const sg of [g.s0,g.s1]){const q=lerpPoly(rail,sg/L);kput('hkBall',q,null,[.2,.18,.2],col);}
+   for(let i=0;i<=n;i+=2){if(inGap(i/n*L))continue;const p=edge[i];kput('hkPost',[p[0],p[1]+.62,p[2]],null,[.06,1.25,.06],col);}}
   ysDeck({x0:Math.min(P0.x,P1.x)-w,z0:Math.min(P0.z,P1.z)-w,x1:Math.max(P0.x,P1.x)+w,z1:Math.max(P0.z,P1.z)+w,w,y:Math.max(P0.y,P1.y)+rise,kind:kind||'bridge',own:own||null,a:[P0.x,P0.y,P0.z],b:[P1.x,P1.y,P1.z]});
-  return {pts,L,rx,rz};};
- const L=Math.hypot(B.x-A.x,B.z-A.z);const rise=o.rise!=null?o.rise:Math.min(9,L*.07);
- const main=run(A,B,w,rise,o.own,'bridge');const pts=main.pts;
- const at=t=>{const i=Math.max(0,Math.min(1,t))*(pts.length-1);const k=Math.min(pts.length-2,Math.floor(i)),f=i-k;const a=pts[k],b=pts[k+1];return [a[0]+(b[0]-a[0])*f,a[1]+(b[1]-a[1])*f,a[2]+(b[2]-a[2])*f];};
- // branches: a narrower run forking off the span at t toward a point (a perch, a landing), a knuckle where it leaves
- let nb=0;for(const br of (o.branches||[])){const p=at(br.t);const side=Math.sign((br.to.x-p[0])*main.rx+(br.to.z-p[2])*main.rz)||1;const bw=br.w||w*.62;
-  const P0={x:p[0]+main.rx*side*w*.5,y:p[1]-.02,z:p[2]+main.rz*side*w*.5};run(P0,br.to,bw,br.rise!=null?br.rise:0,br.own||((o.own||'bridge')+' branch'),'bridge');
-  kput('hkBall',[P0.x,P0.y-.4,P0.z],null,[bw*.5,bw*.4,bw*.5],col);nb++;}
- // runners: tendrils sent from the deck's edge to the nearest member (a strut, a leg, a head) within reach, every so
- // many metres, sagging, knuckled, rooted on the member with a flare. One per member per stretch of span.
+  return {pts,L,rx,rz,rails};};
+ const rise=o.rise!=null?o.rise:Math.min(9,Math.hypot(B.x-A.x,B.z-A.z)*.07);
+ const pre=mkPts(A,B,rise);const pts=pre.pts,L=pre.L;const at=t=>lerpPoly(pts,t);
+ const tx0=(B.x-A.x)/L,tz0=(B.z-A.z)/L;const rx0=-tz0,rz0=tx0;
+ // branches: a narrower run forking off the span at t toward a point (a perch, a landing). The parent's rail opens
+ // over the branch's width and the branch's rails begin at the opening's ends, with a knuckle under the fork.
+ const brs=(o.branches||[]).map(br=>{const p=at(br.t);const side=Math.sign((br.to.x-p[0])*rx0+(br.to.z-p[2])*rz0)||1;const bw=br.w||w*.62;
+  return {br,p,side,bw,s0:br.t*L-bw*.75,s1:br.t*L+bw*.75};});
+ const main=run(A,B,w,rise,o.own,'bridge',{pre,gaps:brs.map(b=>({side:b.side,s0:b.s0,s1:b.s1}))});
+ let nb=0;for(const b of brs){const P0={x:b.p[0]+rx0*b.side*w*.5,y:b.p[1]-.06,z:b.p[2]+rz0*b.side*w*.5};const to=b.br.to;
+  const dx=to.x-P0.x,dz=to.z-P0.z;const dl=Math.hypot(dx,dz)||1;const rbx=-dz/dl,rbz=dx/dl;   // the branch's own right vector
+  const E0=lerpPoly(main.rails[b.side],b.s0/L),E1=lerpPoly(main.rails[b.side],b.s1/L);const e0Right=(E0[0]-P0.x)*rbx+(E0[2]-P0.z)*rbz>0;
+  run(P0,to,b.bw,b.br.rise!=null?b.br.rise:0,b.br.own||((o.own||'bridge')+' branch'),'bridge',{railStart:{1:e0Right?E0:E1,[-1]:e0Right?E1:E0}});
+  kput('hkBall',[P0.x,P0.y-.4,P0.z],null,[b.bw*.5,b.bw*.4,b.bw*.5],col);nb++;}
+ // runners: tendrils grown from the edge rib to the nearest member (a strut, a leg, a head) within reach, every so
+ // many metres, one per side, sagging, knuckled, rooted on the member with a flare. One per member per stretch of span.
  let nr=0;if(o.runners&&o.runners.members&&o.runners.members.length){const Rn=o.runners;const reach=Rn.reach||12,every=Rn.every||6;const used=[];
   for(let s=every*.5;s<L-every*.5;s+=every){const p=at(s/L);const best={};
-   for(const m of Rn.members){const q=hykSegNearest(m,p);const d=Math.hypot(q[0]-p[0],q[1]-p[1],q[2]-p[2]);if(d>=reach)continue;
-    const sd=Math.sign((q[0]-p[0])*main.rx+(q[2]-p[2])*main.rz)||1;if(!best[sd]||d<best[sd].d)best[sd]={m,q,d};}
+   for(const m of Rn.members){const nq=hykSegNearest(m,p);const q=nq.q;const d=Math.hypot(q[0]-p[0],q[1]-p[1],q[2]-p[2]);if(d>=reach)continue;
+    const sd=Math.sign((q[0]-p[0])*rx0+(q[2]-p[2])*rz0)||1;if(!best[sd]||d<best[sd].d)best[sd]={m,q,n:nq.n,d};}
    for(const sd of [-1,1]){const b=best[sd];if(!b)continue;if(used.some(u=>u.m===b.m&&Math.hypot(u.q[0]-b.q[0],u.q[1]-b.q[1],u.q[2]-b.q[2])<every*1.5))continue;used.push(b);nr++;
-    const a=[p[0]+main.rx*sd*w*.46,p[1]-.5,p[2]+main.rz*sd*w*.46];
+    const a=[p[0]+rx0*sd*w*.46,p[1]-.3,p[2]+rz0*sd*w*.46];   // on the edge rib's centre line: the runner grows out of the rib
     const dx=b.q[0]-a[0],dy=b.q[1]-a[1],dz=b.q[2]-a[2];const dl=Math.hypot(dx,dy,dz)||1;
-    hykPut('hkBone',hykRib(a,[b.q[0]-dx/dl*.2,b.q[1]-dy/dl*.2,b.q[2]-dz/dl*.2],{rise:-Math.min(2.5,dl*.18),r0:.26,r1:.17,knuckles:Math.max(2,Math.round(dl/2.2)),n:16,col}));
-    hykPut('hkBone',hykFlare(b.q,[-dx/dl,-dy/dl,-dz/dl],.3,.75,{col}));kput('hkBall',[a[0],a[1],a[2]],null,[.42,.36,.42],col);}}}
+    hykPut('hkBone',hykRib(a,[b.q[0]-b.n[0]*.5,b.q[1]-b.n[1]*.5,b.q[2]-b.n[2]*.5],{rise:-Math.min(2.5,dl*.18),r0:.26,r1:.17,knuckles:Math.max(2,Math.round(dl/2.2)),n:16,col}));   // ends inside the member
+    hykPut('hkBone',hykFlare(b.q,b.n,.3,.75,{col}));kput('hkBall',[a[0],a[1],a[2]],null,[.46,.4,.46],col);}}}
  return {pts,runners:nr,branches:nb};}
-// the nearest point on a member's surface (a capsule {a,b,r}) to p
-function hykSegNearest(m,p){const ax=m.a[0],ay=m.a[1],az=m.a[2];const bx=m.b[0]-ax,by=m.b[1]-ay,bz=m.b[2]-az;const L2=bx*bx+by*by+bz*bz||1;
- let t=((p[0]-ax)*bx+(p[1]-ay)*by+(p[2]-az)*bz)/L2;t=Math.max(0,Math.min(1,t));const r=m.r||0;const q=[ax+bx*t,ay+by*t,az+bz*t];
- const dx=p[0]-q[0],dy=p[1]-q[1],dz=p[2]-q[2];const d=Math.hypot(dx,dy,dz)||1;return [q[0]+dx/d*r,q[1]+dy/d*r,q[2]+dz/d*r];}
+// the nearest point on a member's surface and the surface normal there. A member is a capsule {a,b,r} (a strut, a
+// leg) or a box {c,u,v,w,he} (a strut head): centre, three unit axes, half-extents. A runner ends half a metre
+// inside the member and its flare lies on the member's face with that normal, so the join is a join.
+function hykSegNearest(m,p){
+ if(m.c){const d=[p[0]-m.c[0],p[1]-m.c[1],p[2]-m.c[2]];const ax=[m.u,m.v,m.w];const l=ax.map(a=>d[0]*a[0]+d[1]*a[1]+d[2]*a[2]);
+  const inside=l.every((x,i)=>Math.abs(x)<m.he[i]);const c=l.map((x,i)=>Math.max(-m.he[i],Math.min(m.he[i],x)));let n;
+  if(inside){let k=0,best=1e9;for(let i=0;i<3;i++){const gap=m.he[i]-Math.abs(l[i]);if(gap<best){best=gap;k=i;}}c[k]=Math.sign(l[k]||1)*m.he[k];n=ax[k].map(x=>x*Math.sign(l[k]||1));}
+  const q=[m.c[0]+c[0]*m.u[0]+c[1]*m.v[0]+c[2]*m.w[0],m.c[1]+c[0]*m.u[1]+c[1]*m.v[1]+c[2]*m.w[1],m.c[2]+c[0]*m.u[2]+c[1]*m.v[2]+c[2]*m.w[2]];
+  if(!inside){const e=[p[0]-q[0],p[1]-q[1],p[2]-q[2]];const el=Math.hypot(e[0],e[1],e[2])||1;n=[e[0]/el,e[1]/el,e[2]/el];}
+  return {q,n};}
+ const ax=m.a[0],ay=m.a[1],az=m.a[2];const bx=m.b[0]-ax,by=m.b[1]-ay,bz=m.b[2]-az;const L2=bx*bx+by*by+bz*bz||1;
+ let t=((p[0]-ax)*bx+(p[1]-ay)*by+(p[2]-az)*bz)/L2;t=Math.max(0,Math.min(1,t));const r=m.r||0;const o=[ax+bx*t,ay+by*t,az+bz*t];
+ const dx=p[0]-o[0],dy=p[1]-o[1],dz=p[2]-o[2];const d=Math.hypot(dx,dy,dz)||1;const n=[dx/d,dy/d,dz/d];
+ return {q:[o[0]+n[0]*r,o[1]+n[1]*r,o[2]+n[2]*r],n};}

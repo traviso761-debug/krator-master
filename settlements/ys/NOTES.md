@@ -83,3 +83,15 @@ was. Logged in the kit: the towers have no stairs between their plates (`kits/an
 `verify.py dist/mock.html --assert`: error panel clean, 0.49 M triangles, 43–85 draw calls across sixteen views,
 all eleven invariants pass (5 volumes at their true positions, 59 marks, 2 hosts each with a way in, 7 residence
 rooms, 30 spots). `_mock`: 4 pods, 4 landings, 2 ways, 2 runners, 1 branch, 42 members on A.
+
+### Round 3 (Travis's notes on the second sheet)
+Railings meet now: the parent's rail opens over a branch's width with a knuckle at each end and the branch's rails
+start on those ends; runners grow out of the edge rib. The perch is a 3.4 m railed pad with the rail open toward
+the branch. Beside a way-in pod the satellites sit further round, clear of the wall hole, and are hollow, so the
+inside of the host sees their inner skin and not their culled back faces (the "inverted geometry" in Travis's
+shot); a bedded pod's fillet is shallower (its lip had shown as a torn collar round the pod). Host volumes shrink
+to their caps: the kit's 130 m radius had B's volume reaching A's pod, and the inspector named it after B.
+The runners' far ends had floated (Travis's second shot): a strut head was a vertical capsule whose crown stood
+above the kit's box, and the flare lay on a plane across the runner. A member is now a capsule or a box with its
+axes, `hykSegNearest` returns the surface point and its normal, the rib ends half a metre inside the member and
+the flare lies on its face: runners land on the strut heads' tops.

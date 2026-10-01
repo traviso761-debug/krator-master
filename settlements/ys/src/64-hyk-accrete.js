@@ -19,8 +19,11 @@ function ysPlaceHost(scene,o){const d=o.d==null?1:o.d;const G=new THREE.Group();
  let H=null;try{H=withFlatGround(()=>o.builder(G,0,0,d));}catch(e){reportErr('host '+o.key+' '+e.stack);}
  YS_CUT=null;HOLES=1;BIOME.lush=lush;endGroupXF();KOFF=[0,0,0];TSTAT.cur=null;
  for(const n of ['trunk','leafCard'])if(KIT.items[n])KIT.items[n].length=snap[n]||0;    // a plant is never part of a building
- // the port's REGISTER already carries the group transform (KXF), so the volumes are in world space here
- for(let i=r0;i<REG.length;i++){const r=REG[i];r.cls='host';r.key=o.key;r.id=i;
+ // the port's REGISTER already carries the group transform (KXF), so the volumes are in world space here; the kit's
+ // generous radius (130 for A) shrinks to the host's cap so neighbouring hosts' volumes stop overlapping (the
+ // inspector named A's pod after B, whose volume reached it)
+ const capHw=o.cap&&o.cap.hw!=null?o.cap.hw:(o.podium!=null?o.podium:60)+6;
+ for(let i=r0;i<REG.length;i++){const r=REG[i];r.cls='host';r.key=o.key;r.id=i;r.r=Math.min(r.r,capHw+4);
   r.tags=Object.assign({culture:'ancients',type:['civic'],wealth:'civic',decay:d,host:o.name||o.key},r.tags||{});}
  const host={n:o.name||o.key,key:o.key,x:o.x,z:o.z,ry,y:sink,cap:o.cap||{hw:(o.podium!=null?o.podium:60)+6},podium:o.podium!=null?o.podium:null,cutY:o.cutY!=null?o.cutY+sink:null,
   rAt,floors:[],landings:[],heads:[],piers:[],ways,members:[],ring:o.ring||1,lit:false,G,reg:r0};
@@ -31,10 +34,13 @@ function ysPlaceHost(scene,o){const d=o.d==null?1:o.d;const G=new THREE.Group();
 // The host's members in world space, {n,a,b,r} capsules: the struts and legs a runner can reach for. They mirror the
 // kit's own constants (52-sky-abc.js: A's 24 struts from r 98 at y 5 to r rFn(64)*.96 at y 70, three gone when ruined;
 // B's 12 legs at r 70 from y 5 to 32 with struts in to r rFn(30)*1.15, two gone) and must be re-read if the kit changes.
-function ysHostMembers(h,d){const M=[];const W=(lx,ly,lz)=>{const p=loc(h.x,h.z,lx,lz,h.ry);return [p[0],ly+h.y,p[1]];};
+function ysHostMembers(h,d){const M=[];const W=(lx,ly,lz)=>{const p=loc(h.x,h.z,lx,lz,h.ry);return [p[0],ly+h.y,p[1]];};const V=(lx,lz)=>{const p=loc(0,0,lx,lz,h.ry);return [p[0],0,p[1]];};
  const seg=(n,a,b,r,extra)=>M.push(Object.assign({n,a:W(a[0],a[1],a[2]),b:W(b[0],b[1],b[2]),r},extra||{}));
+ // a strut's shaft is a 5.5 x 4 beam, modelled as a capsule of r 2.75 (its corners stand .65 m proud of that); a strut
+ // head is the kit's 7 x 9 x 6 box at the strut's top, 3 m down from the beam's end, its long axis radial
  if(h.key==='skyA'){const rT=(40+26*Math.pow(.42/.58,1.7))*.96;for(let k=0;k<24;k++){if(d>0&&(k===5||k===13||k===19))continue;const th=(k+.5)/24*TAU;const c=Math.cos(th),s=Math.sin(th);
-   seg('strut '+k,[c*98,5,s*98],[c*rT,70,s*rT],2.75);seg('strut head '+k,[c*rT,62.5,s*rT],[c*rT,71.5,s*rT],3.5,{head:true});}}
+   seg('strut '+k,[c*98,5,s*98],[c*rT,70,s*rT],2.75);
+   M.push({n:'strut head '+k,c:W(c*rT,67,s*rT),u:V(c,s),v:[0,1,0],w:V(-s,c),he:[3.5,4.5,3],head:true});}}
  else if(h.key==='skyB'){const r30=(26+10*Math.pow(.1,1.4))*1.15;for(let k=0;k<12;k++){if(d>0&&(k===3||k===8))continue;const th=k/12*TAU;const c=Math.cos(th),s=Math.sin(th);
    seg('leg '+k,[c*70,5,s*70],[c*70,32,s*70],2.25);seg('leg strut '+k,[c*70,31,s*70],[c*r30,32,s*r30],2.5);}}
  return M;}
@@ -68,15 +74,20 @@ function hykAccrete(host,pods){const out=[];for(const pd of pods){
   if(op.kind==='door'&&op.back){back=op;hykDoor(op,{level:pd.level||'L1',nacre:rich,name:host.n+' way in',into:host.n});}
   else if(op.kind==='door'){door=op;hykDoor(op,{level:pd.level||'L1',nacre:rich,name:host.n+' pod'});}else hykWin(op,{nacre:rich,lit:rich,name:host.n+' pod'});}
  const contact=[host.x+(rs+.05)*nx,pd.y,host.z+(rs+.05)*nz];
- hykPut(mat,hykFlare(contact,[nx,0,nz],R*.9,R*.45,{col}));   // the fillet also hides the ragged edge of a way-in hole
+ // the fillet: for a proud pod it reaches .45 R out from the wall at radius .9 R, inside the pod's surface there; a
+ // bedded pod is narrower that far out, so its fillet is shallower (.3 R out at .86 R) or its lip would show as a torn
+ // collar round the pod. Either way the fillet's outer edge hides the ragged edge of a way-in hole.
+ hykPut(mat,hykFlare(contact,[nx,0,nz],R*(way?.86:.9),R*(way?.3:.45),{col}));
  const nd=Math.round(R*2.4),aw=R*.62/Math.max(1,rs);for(let i=0;i<nd;i++){const a2=pd.a+rr(-aw,aw);const ro=rs+rr(.25,R*.5);const h=rr(.35,1.1)*R*.3,w=h*.3;
   const dy0=pd.y-Math.sqrt(Math.max(0,R*R*.74-Math.pow(ro-(rs+depth),2)*.9))*.86;   // on the pod's underside at that radius
   kput('hkDrip',[host.x+ro*Math.cos(a2),dy0-h/2+.15,host.z+ro*Math.sin(a2)],qEuler(Math.PI,0,0),[w,h,w],col);}
  // satellites: two smaller pods grown beside the main one (a colony, not a lone blob), windows only, rooted alike
- if(pd.cluster!==false){for(const sp of [{da:R*1.05/Math.max(1,rs),dy:-.6,k:.5},{da:-R*.95/Math.max(1,rs),dy:1.4,k:.36}]){const R2=R*sp.k;const a3=pd.a+sp.da;const n3x=Math.cos(a3),n3z=Math.sin(a3);const rs3=host.rAt(pd.y+sp.dy,a3);
+ // (beside a way-in pod they sit further round, clear of the hole in the wall, and are hollow like the main pod: through
+ // the hole the inside of the host sees their inner skin, not their culled back faces)
+ if(pd.cluster!==false){for(const sp of [{da:R*(way?1.75:1.05)/Math.max(1,rs),dy:-.6,k:.5},{da:-R*(way?1.65:.95)/Math.max(1,rs),dy:1.4,k:.36}]){const R2=R*sp.k;const a3=pd.a+sp.da;const n3x=Math.cos(a3),n3z=Math.sin(a3);const rs3=host.rAt(pd.y+sp.dy,a3);
   const c3x=host.x+(rs3+R2*.35)*n3x,c3z=host.z+(rs3+R2*.35)*n3z;const th3=Math.atan2(n3x,n3z);
-  const p3=hykPod({a:R2,b:R2*.9,c:R2,e1:.92,e2:.95,cy:pd.y+sp.dy,nu:36,nv:20,noise:{amp:.03,su:4,sv:3,seed:(a3*7|0)+1},col,openings:[{th:th3,el:.1,r:R2*.22,kind:'window'},{th:th3+1.1,el:.35,r:R2*.16,kind:'window'}]});
-  p3.geo.translate(c3x,0,c3z);hykPut(mat,p3.geo);for(const op of p3.openings){op.p=[op.p[0]+c3x,op.p[1],op.p[2]+c3z];hykWin(op,{nacre:rich,name:host.n+' pod'});}
+  const p3=hykPod({a:R2,b:R2*.9,c:R2,e1:.92,e2:.95,cy:pd.y+sp.dy,nu:36,nv:20,noise:{amp:.03,su:4,sv:3,seed:(a3*7|0)+1},col,openings:[{th:th3,el:.1,r:R2*.22,kind:'window'},{th:th3+1.1,el:.35,r:R2*.16,kind:'window'}],hollow:{t:.08,col}});
+  p3.geo.translate(c3x,0,c3z);hykPut(mat,p3.geo);if(p3.inner){p3.inner.translate(c3x,0,c3z);hykPut('hkIn',p3.inner,true);}for(const op of p3.openings){op.p=[op.p[0]+c3x,op.p[1],op.p[2]+c3z];hykWin(op,{nacre:rich,name:host.n+' pod'});}
   hykPut(mat,hykFlare([host.x+(rs3+.05)*n3x,pd.y+sp.dy,host.z+(rs3+.05)*n3z],[n3x,0,n3z],R2*.92,R2*.5,{col}));
   for(let i=0;i<3;i++){const a4=a3+rr(-.2,.2)*R2/Math.max(1,rs3);const ro=rs3+rr(.2,R2*.5);const h=rr(.3,.8)*R2*.3;kput('hkDrip',[host.x+ro*Math.cos(a4),pd.y+sp.dy-R2*.9*.7-h/2,host.z+ro*Math.sin(a4)],qEuler(Math.PI,0,0),[h*.3,h,h*.3],col);}}}
  // the room: the pod's chamber, with the residence's three spots; a way-in pod keeps its axis clear between its doors

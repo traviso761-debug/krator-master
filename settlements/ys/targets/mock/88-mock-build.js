@@ -30,10 +30,10 @@ YS_BUILD.push(function(scene){
  // ---- the backbone bridge between the two way-in landings: runners to A's strut heads, a branch to a perch on head 17
  const la=gA[1].pad,lb=gB[0].pad;const dx=lb.x-la.x,dz=lb.z-la.z;const dl=Math.hypot(dx,dz);
  const P0={x:la.x+dx/dl*la.r*.6,y:la.y,z:la.z+dz/dl*la.r*.6},P1={x:lb.x-dx/dl*lb.r*.6,y:lb.y,z:lb.z-dz/dl*lb.r*.6};
- const head=A.members.find(m=>m.n==='strut head 17');const perch={x:head.b[0]-1.2,y:head.b[1]+.3,z:head.b[2]};
+ const head=A.members.find(m=>m.n==='strut head 17');const perch={x:head.c[0]-1.2,y:head.c[1]+head.he[1]+.3,z:head.c[2]};   // on the head box's top
  const tp=clamp(((perch.x-P0.x)*dx+(perch.z-P0.z)*dz)/(dl*dl),.1,.9);const sp=[P0.x+dx*tp,P0.z+dz*tp];let ux=sp[0]-perch.x,uz=sp[1]-perch.z;const ul=Math.hypot(ux,uz)||1;ux/=ul;uz/=ul;
- const br=hykBridge(P0,P1,{w:2.6,rise:3,own:'bridge A-B',runners:{members:A.members.concat(B.members),reach:14,every:6},branches:[{t:tp,to:{x:perch.x+ux*2.2,y:perch.y,z:perch.z+uz*2.2},w:1.6,own:'strut perch branch'}]});
- hykPad(perch.x,perch.y,perch.z,2.6,{own:'strut perch'});hykLight(perch.x-ux*1.6,perch.y+1.4,perch.z-uz*1.6,{r:.2,cool:true,bare:true,level:'L2'});
+ const PR=3.4;const br=hykBridge(P0,P1,{w:2.6,rise:3,own:'bridge A-B',runners:{members:A.members.concat(B.members),reach:14,every:6},branches:[{t:tp,to:{x:perch.x+ux*(PR-.4),y:perch.y,z:perch.z+uz*(PR-.4)},w:1.6,own:'strut perch branch'}]});
+ hykPad(perch.x,perch.y,perch.z,PR,{own:'strut perch',rail:{a0:Math.atan2(uz,ux),gap:2*Math.asin(Math.min(1,1.1/PR))+.1}});hykLight(perch.x-ux*1.6,perch.y+1.4,perch.z-uz*1.6,{r:.2,cool:true,bare:true,level:'L2'});
  // ---- the spiral stair from A's L1 west landing down the face to a wet landing, and a skiff
  const l1=gA[0].pad;const st=hykStairSpiral(A.x,A.z,rA,l1.y-.1,1.1,{a0:Math.PI+.42,dir:1,w:1.1});
  const wr=rA(1)+.1+1.1+3.2;const wx=A.x+wr*Math.cos(st.a1),wz=A.z+wr*Math.sin(st.a1);

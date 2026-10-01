@@ -31,6 +31,8 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
 - [ ] `ysHostMembers` mirrors the kit's strut and leg constants for Skyscrapers A and B (positions, counts,
       which are gone when ruined). Re-read `kits/ancients/src/52-sky-abc.js` whenever the kit is re-vendored,
       and add C, D–K as hosts of those kinds are placed.
+- [ ] A strut's shaft is modelled as a capsule (r 2.75) though the kit draws a 5.5 x 4 beam: a runner rooted on a
+      shaft lands up to .65 m proud of or inside the beam's corners. Heads are boxes and land exactly.
 - [ ] The kit's towers have no stairs between their floor plates (`kits/ancients/KNOWN_ISSUES.md`, "Found by
       Ys"): from a way-in pod only its own plate is reachable on foot. Grow Hykkousoi stairs inside the hosts
       in phase 3, or re-vendor the kit once it has stairs.
