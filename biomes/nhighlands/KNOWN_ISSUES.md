@@ -22,6 +22,17 @@
 - [ ] The far country's lake shore is a little polygonal (its grid is ~460 m out there), and
       the Outer Wall reads as an even band (82-host-sky.js).
 - [ ] The night is very dark on open ground away from the glow (by design: the glow carries it).
+- [ ] **Snow reads as one band down the valley, not patches** (found in review, Oct 2026). `cold` includes valley
+      cold-air pooling (`45-host-stage.js:155`) and snow is gated on `cold>.94*alpine` (`84-host-ground.js:50`), so the
+      default SE-crest overview shows a continuous white band on the valley floor. Near trees also read as bare poles.
+- [ ] **The test tower draws from a stream the mist reseeds** (found in review). `45-host-stage.js:24` hands the biome's
+      `rng` to the host; the mist (`84-host-ground.js:128`) reseeds it and `buildTestTower` (`85-host-tower.js:20-38`)
+      draws without its own reseed, so changing the mist changes the tower's missing panels and rubble. Reseed at the
+      top of `buildTestTower` (this moves the current panels and rubble once).
+- [ ] **Core drift from upstream (xanadu) is not recorded.** Deliberate and additive: `waterH`/`register`/`depth` (from
+      sedesert), `cold`/`rock` field defaults, Float32 stores, `opt.depth` in `BIO.grid`. Not deliberate: the vertex
+      merge hashes all 11 words (`20-core-kit.js:162`; upstream 99e5acf hashes 6, same output, slower). The noise cache
+      was re-vendored in d4f8cd0.
 
 ## Done
 
