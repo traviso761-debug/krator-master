@@ -4,12 +4,13 @@
 Usage:
   python3 verify.py dist/catalog.html [--assert] [--seeds 4] [--sheet all|furniture|buildings]
                                       [--query cultures=xanadu,voth] [--out ./shots] [--rows [words]]
-                                      [--dump r.json] [--eval "()=>..."] [--page indoor|outdoor|both|all]
+                                      [--dump r.json] [--eval "()=>..."] [--page indoor|outdoor|both|rugs|jobs|all]
 
 What it does:
   1. Serves this folder over HTTP and routes three.min.js to the local r128 copy.
   2. Loads the sheet in headless Chromium with software WebGL (SwiftShader). The furniture sheet is
-     split into pages by setting (indoor, outdoor, both); a full run loads each page in turn.
+     split into pages (indoor, outdoor, both by setting; rugs; jobs: the work items); a full run loads
+     each page in turn.
   3. Prints the error panel (#errs) and page errors; either fails the run.
   4. --assert, measured inside the page for EVERY instance (every entry, every variant):
        builds            no build exception, at least one mesh
@@ -23,12 +24,16 @@ What it does:
                          lowest point at y = 0 (ANCHOR_AUDIT)
        palette           every palette key a piece names is in its culture's FPAL
        tags              furniture: culture, type, setting, rooms, anchor, clearance,
-                         materials (kits/furniture/SPEC.md "The entry"), and the
+                         materials (kits/furniture/SPEC.md "The entry"), a job (when given) from
+                         FURN_JOBS, and the
                          materials it declares cover every material family it builds with;
                          plants: climate + aridity; buildings: culture, family, and types
                          (non-empty, every one in BUILDING_TYPES)
+       page-coverage     (once per run, from the first page loaded) every furniture piece is on exactly
+                         one page and one row of the sheet (window._catalog.pageRows(): every page's rows)
      plus static checks on krator-master-furniture.js and every krator-master-furniture-<culture>.js:
        spec-source       no entry still declares the old `room:` key
+       jobs-field        every entry of krator-master-furniture-jobs.js declares a `job:`
        style-*           SPEC "No host globals", F.shade/F.TAU not bare shade/TAU, and
                          "Colour": no literal colour (0x...) or literal colour array in any
                          FURN block; style-colour-kit: none in the kit or a culture file outside
@@ -153,6 +158,15 @@ def static_checks():
                 'detail': ('%d of %d pieces carry %d literal colours (%d build literal arrays): %s'
                            % (len(lit), len(blocks), sum(n for _, n in lit), len(arr), ', '.join(k for k, _ in lit[:10])))
                 if lit or arr else '%d pieces, 0 literal colours: every colour is a palette key (FPAL)' % len(blocks)})
+    jf = os.path.join(HERE, 'krator-master-furniture-jobs.js')
+    if os.path.exists(jf):
+        jsrc = PALETTE_BLOCK.sub('', open(jf, encoding='utf-8').read())
+        jstarts = [m.start() for m in re.finditer(r'^FURN\(\{', jsrc, re.M)] + [len(jsrc)]
+        jb = [jsrc[a:b] for a, b in zip(jstarts, jstarts[1:])]
+        nojob = [re.search(r"key\s*:\s*'([^']+)'", b).group(1) for b in jb if not re.search(r"\bjob\s*:\s*'[^']+'", b[:b.find('build')])]
+        res.append({'name': 'jobs-field', 'ok': not nojob,
+                    'detail': ('%d jobs-file entries declare no job: %s' % (len(nojob), ', '.join(nojob))) if nojob
+                    else '%d jobs-file entries, every one declares its job' % len(jb)})
     res += kit_checks()
     keys = {k: palette_keys(body) for k, _, body in blocks}
     return res, keys
@@ -262,6 +276,7 @@ for(const g of INSTANCES.slice()){
     else{const miss=r.families.map(f=>FAMILY_TO_MATERIAL[f]||('?'+f)).filter(k=>A.materials.indexOf(k)<0);
       if(miss.length)r.fail.push('materials missing '+[...new Set(miss)].join(','));}
     if(A.variantNames&&A.variantNames.length!==A.variants)r.fail.push('variantNames length');
+    if(A.job!=null&&FURN_JOBS.indexOf(A.job)<0)r.fail.push('bad job '+A.job);
     /* every palette key the piece names exists in its culture's palette */
     const pal=FPAL[A.culture]||{}, miss=(cfg.palKeys[u.key]||[]).filter(k=>pal[k]==null);
     if(!FPAL[A.culture])r.fail.push('palette: no FPAL for culture '+A.culture);
@@ -279,6 +294,25 @@ for(const g of INSTANCES.slice()){
 }
 out.counts={furniture:FURNS.length,plants:PLANTS.length,buildings:ASSETS.length,instances:INSTANCES.length};
 return out;}"""
+
+
+async def page_coverage(pg):
+    """every furniture piece on exactly one page and one row: the sheet's own grouping of every page
+    (window._catalog.pageRows(), which ignores ?cultures and ?keys), against the FURN registry"""
+    res = await pg.evaluate("""()=>{const C=window._catalog; if(!C||!C.pageRows) return null;
+      const rows=C.pageRows(), at={}; for(const r of rows) for(const k of r.keys) (at[k]=at[k]||[]).push(r.page+' / '+r.title);
+      const none=FURNS.filter(A=>!at[A.key]).map(A=>A.key), many=FURNS.filter(A=>at[A.key]&&at[A.key].length>1).map(A=>A.key+' ('+at[A.key].join('; ')+')');
+      const per={}; for(const r of rows) per[r.page]=(per[r.page]||0)+r.keys.length;
+      return {n:FURNS.length, none, many, per, pages:C.pages};}""")
+    if res is None:
+        return {'name': 'page-coverage', 'ok': False, 'detail': 'the sheet exposes no window._catalog.pageRows()'}
+    ok = not res['none'] and not res['many']
+    per = ', '.join('%s %d' % (p, res['per'].get(p, 0)) for p in res['pages'])
+    if ok:
+        return {'name': 'page-coverage', 'ok': True, 'detail': '%d furniture pieces, each on exactly one page and row (%s)' % (res['n'], per)}
+    return {'name': 'page-coverage', 'ok': False,
+            'detail': '%d on no page%s; %d on more than one%s' % (len(res['none']), (': ' + ', '.join(res['none'][:12])) if res['none'] else '',
+                                                               len(res['many']), (': ' + '; '.join(res['many'][:8])) if res['many'] else '')}
 
 
 async def run_one(a, page, first):
@@ -364,6 +398,8 @@ async def run_one(a, page, first):
                         print('          %s #%d [%s]: %s' % (r['key'], r['variant'] + 1, r['kind'], '; '.join(fs)))
                     if not ok:
                         fails.append('assert ' + name)
+                if first and a.sheet in ('all', 'furniture'):
+                    sres = [await page_coverage(pg)] + sres
                 for r in sres:
                     print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + r['detail'])
                     if not r['ok']:
@@ -409,12 +445,12 @@ async def run_one(a, page, first):
     return [(page + ': ' if page else '') + f for f in fails]
 
 
-FURN_PAGES = ['indoor', 'outdoor', 'both']
+FURN_PAGES = ['indoor', 'outdoor', 'both', 'rugs', 'jobs']
 
 
 async def run(a):
-    """The furniture sheet is split into pages by setting (indoor, outdoor, both): all ~2200 instances on
-    one page do not build in reasonable time. A full run loads each page in turn; --query (a partial run)
+    """The furniture sheet is split into pages (indoor, outdoor, both by setting; rugs; jobs): all ~2200
+    instances on one page do not build in reasonable time. A full run loads each page in turn; --query (a partial run)
     loads one page with all of its pieces unless --page names one."""
     if a.page:
         pages = [] if a.page == 'all' and a.sheet not in ('all', 'furniture') else [a.page]
@@ -444,7 +480,7 @@ if __name__ == '__main__':
     ap.add_argument('--seeds', type=int, default=4, help='with --assert: audit seeds 1..N of every instance (default 4)')
     ap.add_argument('--eval', action='append')
     ap.add_argument('--query', default='', help="extra page query, e.g. cultures=xanadu,voth (only those cultures' furniture: a quick partial run)")
-    ap.add_argument('--page', default='', choices=['', 'indoor', 'outdoor', 'both', 'all'],
-                    help='furniture page by setting (default: every page in turn; with --query: all of it on one page)')
+    ap.add_argument('--page', default='', choices=['', 'indoor', 'outdoor', 'both', 'rugs', 'jobs', 'all'],
+                    help='furniture page: a setting, rugs or jobs (default: every page in turn; with --query: all of it on one page)')
     ap.add_argument('--size', default='1280x800')
     sys.exit(asyncio.run(run(ap.parse_args())))

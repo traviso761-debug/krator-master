@@ -4,10 +4,14 @@
    labelled rows on the engine's own scene. The catalog registers furniture only, so
    the page is the furniture sheet; ?sheet=plants|buildings lay out those registries
    for a page that loads them. Furniture rows are one per culture and tier; ?cultures=a,b
-   shows only those cultures' furniture. The furniture sheet is split into PAGES by setting
-   (indoor, outdoor, both: "indoor & outdoor"), one page at a time, chosen by ?page= or the
-   location hash (#indoor, #outdoor, #both, #all; a hosted page sees only the hash); the
-   default is indoor. All of it on one page is too heavy to build: ~2200 instances. Each instance is built at ry = 0, so local axes are world
+   shows only those cultures' furniture. The furniture sheet is split into PAGES, one page at a
+   time, chosen by ?page= or the location hash (#indoor, #outdoor, #both, #rugs, #jobs, #all; a
+   hosted page sees only the hash); the default is indoor. Every piece is on exactly ONE page
+   (pageOf): a work item (a jobs-file entry, A.job, or a culture's FK trade piece, A.roleSet
+   'trade') on Jobs, a rug (type 'rug') on Rugs, the rest by setting: Indoor, Outdoor, Indoor &
+   outdoor ('both'). The setting pages hold household and civic furniture, a row per culture
+   and tier; Rugs a row per culture; Jobs a row per job, then the trade pieces a row per culture.
+   All of it on one page is too heavy to build: ~2200 instances. Each instance is built at ry = 0, so local axes are world
    axes and verify.py can audit it against its declared box directly.
    Exposes window._catalog (rows, sections, audit()) and sets window._ready.
    ====================================================================== */
@@ -24,11 +28,12 @@
   /* ?cultures=xanadu,voth lays out only those cultures' furniture: a light page for one set */
   const onlyCultures = (qs.get('cultures') || '').split(',').map(function (c) { return c.trim().toLowerCase(); }).filter(Boolean);
   const cultureShown = function (c) { return !onlyCultures.length || onlyCultures.indexOf(c) >= 0; };
-  /* the page: one setting's furniture (indoor | outdoor | both), or all of it (?page=all, for a partial run) */
-  const PAGES = [['indoor', 'Indoor'], ['outdoor', 'Outdoor'], ['both', 'Indoor & outdoor']];
+  /* the page: one setting's furniture (indoor | outdoor | both), the rugs, the work items (jobs), or all of
+     it (?page=all, for a partial run). pageOf() puts every piece on exactly one page. */
+  const PAGES = [['indoor', 'Indoor'], ['outdoor', 'Outdoor'], ['both', 'Indoor & outdoor'], ['rugs', 'Rugs'], ['jobs', 'Jobs']];
+  const pageOf = function (A) { return A.job || A.roleSet === 'trade' ? 'jobs' : A.type === 'rug' ? 'rugs' : (A.setting || 'both'); };
   let page = (qs.get('page') || location.hash.replace(/^#/, '') || (qs.get('cultures') || qs.get('keys') ? 'all' : 'indoor')).toLowerCase();
   if (page !== 'all' && !PAGES.some(function (p) { return p[0] === page; })) page = 'indoor';
-  const settingShown = function (A) { return sheet !== 'furniture' || page === 'all' || (A.setting || 'both') === page; };
   /* ?keys=_trade_,forge lays out only the pieces whose key holds one of these strings */
   const onlyKeys = (qs.get('keys') || '').split(',').map(function (c) { return c.trim().toLowerCase(); }).filter(Boolean);
   const keyShown = function (k) { return !onlyKeys.length || onlyKeys.some(function (s) { return k.toLowerCase().indexOf(s) >= 0; }); };
@@ -67,18 +72,45 @@
   }
 
   /* --- grouping */
+  /* the furniture rows of one page (pg; 'all': every page's rows in turn). every: ignore ?cultures and ?keys
+     (verify.py's page-coverage check reads every page's rows through window._catalog.pageRows) */
+  const TIER_ORDER = { poor: 0, common: 1, court: 2 };
+  const byType = (a, b) => (a.type || '').localeCompare(b.type || '') || a.key.localeCompare(b.key);
+  function furnGroups(pg, every) {
+    const out = [], shown = function (A) { return every || (cultureShown(A.culture) && keyShown(A.key)); };
+    const on = function (p) { return pg === 'all' || pg === p; };
+    /* the setting pages: one row per culture and tier (poor, common, court), sorted by type */
+    for (const p of ['indoor', 'outdoor', 'both']) if (on(p)) for (const c of FURN_CULTURES) {
+      const mine = FURNS.filter(A => A.culture === c && pageOf(A) === p && shown(A));
+      const tiers = new Set(mine.map(A => A.tier));
+      for (const tier of ['poor', 'common', 'court']) {
+        const list = mine.filter(A => A.tier === tier).sort(byType);
+        if (list.length) out.push({ page: p, title: 'Furniture · ' + c + (tiers.size > 1 ? ' · ' + tier : ''), items: list });
+      }
+    }
+    /* Rugs: one row per culture, every tier and setting, by tier then key */
+    if (on('rugs')) for (const c of FURN_CULTURES) {
+      const list = FURNS.filter(A => A.culture === c && pageOf(A) === 'rugs' && shown(A))
+        .sort((a, b) => (TIER_ORDER[a.tier] || 0) - (TIER_ORDER[b.tier] || 0) || a.key.localeCompare(b.key));
+      if (list.length) out.push({ page: 'rugs', title: 'Rugs · ' + c, items: list });
+    }
+    /* Jobs: one row per job (FURN_JOBS order), then a culture's trade pieces (FK.ROLES.trade) a row per culture */
+    if (on('jobs')) {
+      for (const j of FURN_JOBS) {
+        const list = FURNS.filter(A => A.job === j && shown(A)).sort(byType);
+        if (list.length) out.push({ page: 'jobs', title: 'Jobs · ' + j, items: list });
+      }
+      for (const c of FURN_CULTURES) {
+        const list = FURNS.filter(A => A.culture === c && !A.job && A.roleSet === 'trade' && shown(A)).sort(byType);
+        if (list.length) out.push({ page: 'jobs', title: 'Jobs · trade · ' + c, items: list });
+      }
+    }
+    return out;
+  }
   function groups(kind) {
     const out = [];
     if (kind === 'furniture') {
-      /* one row per culture and tier (poor, common, court), sorted by type; a culture's trade pieces
-         (FK.ROLES.trade, A.roleSet 'trade') get a row of their own after its tiers */
-      for (const c of FURN_CULTURES) for (const tier of ['poor', 'common', 'court', 'trade']) {
-        if (!cultureShown(c)) continue;
-        const list = FURNS.filter(A => A.culture === c && keyShown(A.key) && settingShown(A) && (tier === 'trade' ? A.roleSet === 'trade' : A.tier === tier && A.roleSet !== 'trade'))
-          .sort((a, b) => (a.type || '').localeCompare(b.type || '') || a.key.localeCompare(b.key));
-        const tiers = new Set(FURNS.filter(A => A.culture === c).map(A => A.roleSet === 'trade' ? 'trade' : A.tier));
-        if (list.length) out.push({ title: 'Furniture · ' + c + (tiers.size > 1 ? ' · ' + tier : ''), items: list });
-      }
+      return furnGroups(page, false);
     } else if (kind === 'plants') {
       for (const c of PLANT_CLIMATES) for (const a of PLANT_ARIDITY) {
         const list = PLANTS.filter(A => A.climate === c && A.aridity === a).sort((x, y) => x.key.localeCompare(y.key));
@@ -96,7 +128,7 @@
   const BUILD = { furniture: buildFurn, plants: buildPlant, buildings: buildAsset };
   const GAP = { furniture: 1.6, plants: 2.5, buildings: 6 };
   function subLine(kind, A) {
-    if (kind === 'furniture') return [A.type, A.setting, A.tier].filter(Boolean).join(' · ');
+    if (kind === 'furniture') return [A.job, A.type, A.setting, A.tier].filter(Boolean).join(' · ');
     if (kind === 'plants') return A.climate + ' / ' + A.aridity;
     return (A.types && A.types.length ? A.types.join(' + ') : (A.family || ''));
   }
@@ -164,7 +196,7 @@
   if (sheet === 'furniture') {
     const pb = document.getElementById('pageBtns');
     for (const p of PAGES.concat(page === 'all' ? [['all', 'All']] : [])) {
-      const n = FURNS.filter(function (A) { return p[0] === 'all' || (A.setting || 'both') === p[0]; }).length;
+      const n = FURNS.filter(function (A) { return p[0] === 'all' || pageOf(A) === p[0]; }).length;
       const b = document.createElement('button'); b.textContent = p[1] + ' ' + n; b.className = p[0] === page ? 'on' : '';
       b.onclick = function () { if (p[0] === page) return; location.hash = p[0]; location.reload(); };
       pb.appendChild(b);
@@ -191,6 +223,9 @@
   /* --- start on the first row */
   if (rows.length) gotoRow(0);
 
-  window._catalog = { sheet: sheet, page: page, rows: rows, sections: sections, width: maxW, perKind: per, gotoRow: gotoRow };
+  window._catalog = { sheet: sheet, page: page, pages: PAGES.map(function (p) { return p[0]; }), pageOf: pageOf,
+    /* every page's rows, ignoring ?cultures and ?keys, as { page, title, keys }: verify.py's page-coverage check */
+    pageRows: function () { return furnGroups('all', true).map(function (g) { return { page: g.page, title: g.title, keys: g.items.map(function (A) { return A.key; }) }; }); },
+    rows: rows, sections: sections, width: maxW, perKind: per, gotoRow: gotoRow };
   window._ready = true;
 })();

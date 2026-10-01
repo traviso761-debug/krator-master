@@ -153,8 +153,7 @@ reseed(647001);
       /* ---- the buried tanks (fill caps, two vents) and the lamp-oil drum cradle ---- */
       [3.2, 4.6, 6.0].forEach(function(cx){ F.cyl(cx, 0.08, -4.6, 0.34, 0.12, 0, STEELDC[1], 'rust'); F.cyl(cx, 0.2, -4.6, 0.12, 0.1, 0, BRASSC[0], 'metal'); });
       [9.6, 10.4].forEach(function(vx){ F.cyl(vx, 0, -7.8, 0.09, 5.6, 0, STEELDC[0], 'rust'); F.cone(vx, 5.6, -7.8, 0.2, 0.3, 0, STEELDC[2], 'rust'); });
-      [-7.3, -6.1].forEach(function(cz){ F.box(5.6, 0, cz, 3.4, 0.45, 0.25, 0, TIMBERC[0], 'timber'); });
-      for(var dr=0;dr<3;dr++){ LOCUS.drum(F, 4.6+dr*1.0, 0.42, -6.3, RUSTC[(dr+2)%5], true, 0); F.box(4.6+dr*1.0, 0.6, -5.75, 0.12, 0.14, 0.2, 0, BRASSC[0], 'metal'); }
+      FURNISH('job_oil_drum_rack', 5.6,0,-6.2, 0, { v:1 });                                                             /* the cradle of three, taps out: FURNITURE (catalog, Jobs) */
       FURNISH('yuni_poor_clay_pots', 8.1,0,-6.3, -0.8);                                                                         /* the lamp-oil jars: FURNITURE (catalog) */
       /* ---- the pole sign at the kerb: a brown disc with a brass rim and a brass flame ---- */
       F.cyl(10.6, 0, 8.2, 0.12, 6.2, 0, STEELDC[0], 'rust');
