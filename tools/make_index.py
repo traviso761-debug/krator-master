@@ -7,7 +7,7 @@ files. The root INDEX.md lists every build.
 
 Usage:  python3 tools/make_index.py      (from anywhere; rewrites every INDEX.md)
 """
-import os, re
+import ast, os, re
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BIG = 30 * 1024          # CLAUDE.md: never read a fragment this size whole
@@ -57,10 +57,15 @@ def kb(n):
 def core_files(build):
     """Files a build pulls from core/materials/ (see srcpath() in its build.py)."""
     bp = os.path.join(ROOT, build, 'build.py')
-    if 'CORE_FILES' not in open(bp).read():
+    text = open(bp).read()
+    if 'CORE_FILES' not in text:
         return []
     d = os.path.join(ROOT, 'core', 'materials')
-    return sorted(f for f in os.listdir(d) if f[0].isdigit())
+    out = [f for f in os.listdir(d) if f[0].isdigit()]
+    m = re.search(r'^CORE_OPT_FILES\s*=\s*(\[[^\]]*\])', text, re.M)   # opt-in files from core/materials/opt/
+    if m:
+        out += ['opt/' + f for f in ast.literal_eval(m.group(1))]
+    return sorted(out, key=lambda f: f.split('/')[-1])
 
 
 def frag_table(build, folder, rel):

@@ -20,7 +20,7 @@ MAT.xGlass=new THREE.MeshBasicMaterial({map:TEX.xGlass,side:THREE.DoubleSide});
 TEX.xBTile=canvasTex(128,128,(g,w,h)=>{const c=32,n=w/c;g.fillStyle='#e8942c';g.fillRect(0,0,w,h);
  for(let j=0;j<n;j++)for(let i=0;i<=n;i++){g.fillStyle=(i+j)%2?'#c8262a':'#4a2a9c';g.beginPath();g.arc(i*c,j*c+c/2,c/2,0,TAU);g.fill();}
  g.strokeStyle='rgba(70,25,10,.55)';g.lineWidth=2;for(let k=0;k<=w;k+=c){g.beginPath();g.moveTo(k,0);g.lineTo(k,h);g.stroke();g.beginPath();g.moveTo(0,k);g.lineTo(w,k);g.stroke();}},[1,1]);
-MAT.xBTile=xStd({map:TEX.xBTile,roughness:.22,metalness:.05});xWorldUV(MAT.xBTile,.7,.7);
+MAT.xBTile=xStd({map:TEX.xBTile,roughness:.22,metalness:.05});vWorldUV(MAT.xBTile,.7,.7);
 kdef('xGlass',VPLANE,MAT.xGlass);kdef('xBTileB',VBOX,MAT.xBTile);
 // emerald pool water, a little brighter than the kit's canal water
 MAT.xEmerald=xStd({color:0x117a62,roughness:.08,metalness:.25,transparent:true,opacity:.96});kdef('xEmeraldB',VBOX,MAT.xEmerald);kdef('xEmeraldDisc',XDISC,MAT.xEmerald);kdef('xEmeraldOct',XOCT,MAT.xEmerald);

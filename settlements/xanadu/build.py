@@ -42,19 +42,24 @@ except Exception:
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))   # repo root: biomes/, core/, kits/, settlements/
-UPSTREAM = {'highlands': os.path.join(ROOT, 'settlements', 'highlands')}
+UPSTREAM = {'highlands': os.path.join(ROOT, 'settlements', 'highlands'), 'iziz': os.path.join(ROOT, 'settlements', 'iziz')}
 SRC = os.path.join(HERE, 'src')
 TARGETS = os.path.join(HERE, 'targets')
 DIST = os.path.join(HERE, 'dist')
 CORE = os.path.join(ROOT, 'core', 'materials')   # shared material fragments (core/README.md)
 CORE_FILES = sorted(f for f in os.listdir(CORE) if f[0].isdigit())
+CORE_OPT = os.path.join(CORE, 'opt')   # opt-in shared fragments: a build takes only the ones it names
+CORE_OPT_FILES = ['69a-world-uv.js']   # vWorldUV, the world-unit UV hook (core/README.md)
 
 
 def srcpath(f, base=None):
-    """Path of fragment f in base (default src/), falling back to core/materials/.
+    """Path of fragment f in base (default src/), falling back to core/materials/ (and to
+    core/materials/opt/ for the opt-in files in CORE_OPT_FILES).
     A local copy with the same name overrides the shared one."""
     p = os.path.join(base or SRC, f)
-    return p if os.path.exists(p) or f not in CORE_FILES else os.path.join(CORE, f)
+    if os.path.exists(p) or f not in CORE_FILES + CORE_OPT_FILES:
+        return p
+    return os.path.join(CORE if f in CORE_FILES else CORE_OPT, f)
 
 # A target is a showcase built from the shared src/ fragments plus its own site
 # table and view list, merged into the one sorted filename order.
@@ -65,6 +70,7 @@ TARGET_OUT = {
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
 DETERMINISTIC = {
+    '69a-world-uv.js',                                 # core/materials/opt: the shared world-UV hook
     '00-head.html', '10-core.js', '12-stats.js', '20-textures.js', '22-materials.js',
     '30-kit.js', '32-surfaces.js', '34-kitdefs.js', '36-decor.js', '38-helpers2.js',
     '50-registry.js', '54-mat-concrete.js', '68-mat-v5.js', '69-mat-salvage.js',
@@ -189,6 +195,7 @@ def build_one(target, do_checks):
 
     src = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
     src.update({f: os.path.join(CORE, f) for f in CORE_FILES if f not in src})
+    src.update({f: os.path.join(CORE_OPT, f) for f in CORE_OPT_FILES if f not in src})
     tgt = {f: os.path.join(tdir, f) for f in os.listdir(tdir) if f[0].isdigit()}
     clash = set(src) & set(tgt)
     if clash:
@@ -251,8 +258,12 @@ def vendor_check():
         print('vendor-check: ../highlands/src not found; skipped')
         return
     files = VENDORED + IZIZ_VENDORED
-    drift = [f for f in files if not os.path.exists(srcpath(f, up))
-             or open(srcpath(f, up), 'rb').read() != open(srcpath(f), 'rb').read()]
+    # Highlands keeps no src/ copy of 81-sky.js (its sky is a target fragment), so a file it lacks is
+    # compared with ../iziz/src, where it comes from
+    iz = os.path.join(UPSTREAM['iziz'], 'src')
+    upf = lambda f: srcpath(f, up) if os.path.exists(srcpath(f, up)) else srcpath(f, iz)
+    drift = [f for f in files if not os.path.exists(upf(f))
+             or open(upf(f), 'rb').read() != open(srcpath(f), 'rb').read()]
     print('vendor-check highlands: %s' % ('all %d identical' % len(files) if not drift
                                           else 'DRIFT in ' + ', '.join(drift)))
 
