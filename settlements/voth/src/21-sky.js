@@ -534,7 +534,7 @@ var _skEclRim = new THREE.Color(SKYC_ECL_RIM), _skGlare = new THREE.Color(SKYC_S
 /* a totalised eclipse keeps this fraction of daylight in the mood (fog,
    hemisphere, water, night-light gate) and this much key light from the
    giant's refracted rim — deep twilight, never black. */
-var SKY_ECL_FLOOR = 0.15, SKY_ECL_KEY = 0.34;
+var SKY_ECL_FLOOR = 0.15, SKY_ECL_KEY = 0.34, SKY_SHINE_KEY = 0.15;
 /* strength of the giant's own atmospheric extinction at 2.0 atm; scaled by
    pk*pk so a plateau city (0.8 atm) gets none at all and a lowland city gets
    a visible but gentle wash on the lower limb. */
@@ -726,7 +726,10 @@ function updateSky(){
      the phase, warm (refracted, not reflected), and still coming from the
      giant's direction, so the shadows stay northern. */
   var sunI   = S.sunK;
-  var shineI = 0.30*S.lit*(1 - S.sunUp) + SKY_ECL_KEY*ecl;
+  /* (2026-10-01) planetshine key 0.30 -> 0.15 of full sun-key units: at 21:00
+     under a full giant the bay read as late dusk. The giant still throws the
+     shadows, but the lamps are what you see by. */
+  var shineI = SKY_SHINE_KEY*S.lit*(1 - S.sunUp) + SKY_ECL_KEY*ecl;
   var w = shineI/(sunI + shineI + 1e-6);
   _skKey.copy(S.sunDir);
   S.keyDir.copy(_skKey);

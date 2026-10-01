@@ -9,6 +9,7 @@
 
 ## Other open items
 
+- [x] Night at 21:00 is too bright under the gas giant (21-sky / 82-daynight). 2026-10-01: the Mav's Refuge / Girder fix, ported. Night floors hemi 0.30 -> 0.07, ambient 0.22 -> 0.035, planetshine fill 0.15/0.08 -> 0.07/0.03; a separate eclipse fill (DN_ECL_HEMI/AMB 0.16/0.10); the night fill lerps to a deep wet blue-grey sky (0x566a8c) over dark silt (0x221f1c); the giant's key 0.44 -> 0.18 x phase (SKY_SHINE_KEY); a full giant cuts the lamps by 8 % instead of 28 % (DN_SHINE_NL_CUT 0.28 -> 0.08), so the electric street lamps and wired windows are the main light. 21:00 under a full giant: hemi ~0.52 -> 0.161, ambient ~0.37 -> 0.086, key ~0.51 -> 0.209, nightK 0.72 -> 0.92. Noon unchanged.
 - [ ] People are plain capsules (body, head, pack, hat) with no limbs; walking is a bob, not a gait.
 - [ ] Caravan pack-lizards trail their leader on a straight line behind him, so on a bend the string cuts the corner.
 - [ ] The riders' route is a 12 m grid path smoothed once; out in the marsh it can wade a pool edge that a road would skirt.
