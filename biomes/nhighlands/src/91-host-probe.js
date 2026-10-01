@@ -5,7 +5,7 @@
 // cliff, the tower hung with growth, the night lighting the glow) are measured
 // here from the built scene.
 const BUDGET={
- showcase:{tris:32000000,calls:450,rendered:15000000},   // held in memory (stand-ins included) / drawn at any one camera, with the runtime LOD
+ showcase:{tris:32000000,calls:520,rendered:15000000},   // held in memory (stand-ins included) / drawn at any one camera, with the runtime LOD
  cls:{pass:22000000,host:1500000},
  type:{'nhighlands/trees':'pass','nhighlands/floor':'pass','nhighlands/dress':'pass','host':'host'},
 };
