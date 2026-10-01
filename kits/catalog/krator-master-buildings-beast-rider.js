@@ -657,7 +657,7 @@ ASSET({
       }
       F.cone(0, 3.6, frontZ - 0.25, 0.6, 1.1, 0, 0x1a1712, 'bark');
       F.rod(-5.4, 3.6, frontZ + 0.05, 5.4, 3.6, frontZ + 0.05, 0.028, rope, 'cloth');
-      F.cyl(5.2, floorT, frontZ + 0.5, 0.34, 0.85, 0, 0x4a3f2c, 'wood');
+      F.furn('br_h_water_butt', 5.2, 0, frontZ + 0.55, 0, { v: 0 });
     }
   }
 });
