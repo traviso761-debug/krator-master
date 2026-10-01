@@ -9397,6 +9397,23 @@ function buildLaunch(scene,gx,gz,d,pad){reseed(9520+d);KOFF=[gx,0,gz];
     beam(PL,[A[0],yb,A[1]],[B[0],yb,B[1]],1.8,1.8);
     beam(PL,[A[0],ya,A[1]],[B[0],yb,B[1]],1.3,1.3);}}
   return cor;};
+ // A LATTICE LYING DOWN. The fallen mast head and the two downed service towers
+ // were a chain of single jittered beams: wreckage at distance, a scribble up
+ // close. They are now the same box lattice as the standing ones, on its side,
+ // its axis kinking where it hit, its section crushed toward the torn end and
+ // members missing. J holds the draws the old chain made, in the order it made
+ // them (dy0, dx, dy1, dz per segment), so the stream after it is unchanged.
+ const lyingLattice=(fa,r0,L,w,J,ylo,yhi)=>{const n=J.length,ux=Math.cos(fa),uz=Math.sin(fa),px=-uz,pz=ux;
+  const ax=[];let off=0;
+  for(let i=0;i<=n;i++){const j=J[Math.min(i,n-1)];off+=(i?j[1]+j[3]:0)*.18;
+   const r=r0+i/n*L,cr=lerp(1,.55,Math.pow(i/n,1.6))*(1-.08*(j[0]-ylo)/(yhi-ylo));
+   ax.push([ux*r+px*off,uz*r+pz*off,cr,j[2]]);}
+  const C=(i,c)=>{const A=ax[i],k=[[-1,-1],[1,-1],[1,1],[-1,1]][c],ww=w*A[2];
+   return[A[0]+px*k[0]*ww,APY+ww*(1+k[1])+.6,A[1]+pz*k[0]*ww];};
+  for(let i=0;i<n;i++)for(let c=0;c<4;c++){const gone=h3(i,c,9532+Math.round(fa*100))<.18;
+   if(!gone)beam(PL,C(i,c),C(i+1,c),2.6,2.6);
+   if(i%2===0&&h3(c,i,9533)>.25)beam(PL,C(i,c),C(i,(c+1)%4),1.8,1.8);
+   if(h3(i+7,c,9534)>.4)beam(PL,C(i,c),C(i+1,(c+1)%4),1.3,1.3);}};
 
  // ---- six gantry masts and the collar ---------------------------------------
  const mastBroke=k=>dd&&Math.abs(wrapA(SBEAR(k)-LA))<.2;
@@ -9410,10 +9427,9 @@ function buildLaunch(scene,gx,gz,d,pad){reseed(9520+d);KOFF=[gx,0,gz];
     kput(GRT,[ca*MSTR+Math.cos(th)*19,y+2.4,sa*MSTR+Math.sin(th)*19],TAN(th),[38,3.2,1.4],null);}
    if(!dd||rng()<.25)kput('strip',[ca*MSTR,y+3.4,sa*MSTR],TAN(a),[26,1.6,1.6],litC(true,.4,.9));}
   if(mastBroke(k)){                          // the head, down on the pad
-   const fa=a+rr(-.3,.3),fr=rr(140,230);
-   for(let i=0;i<16;i++){const t=i/16;
-    beam(PL,[Math.cos(fa)*(fr+t*110),APY+rr(1,9),Math.sin(fa)*(fr+t*110)],
-             [Math.cos(fa)*(fr+(t+1/16)*110)+rr(-9,9),APY+rr(1,9),Math.sin(fa)*(fr+(t+1/16)*110)+rr(-9,9)],3,3);}
+   const fa=a+rr(-.3,.3),fr=rr(140,230),J=[];
+   for(let i=0;i<16;i++){const y0=rr(1,9),dx=rr(-9,9),y1=rr(1,9),dz=rr(-9,9);J.push([y0,dx,y1,dz]);}
+   lyingLattice(fa,fr,110,15,J,1,9);
    lxRubble(Math.cos(fa)*(fr+55),APY,Math.sin(fa)*(fr+55),8,70,70,4.2);
    continue;}
   // the arm that carries the collar ring in from the mast
@@ -9471,9 +9487,9 @@ function buildLaunch(scene,gx,gz,d,pad){reseed(9520+d);KOFF=[gx,0,gz];
   // so the ring is not obviously symmetrical from any single view
   const down=dd&&(k===0||k===3);
   if(down){const fa=a+rr(-.25,.25);
-   for(let i=0;i<14;i++){const t=i/14;
-    beam(PL,[Math.cos(fa)*(SVR-20+t*150),APY+rr(1,7),Math.sin(fa)*(SVR-20+t*150)],
-             [Math.cos(fa)*(SVR-20+(t+1/14)*150)+rr(-8,8),APY+rr(1,7),Math.sin(fa)*(SVR-20+(t+1/14)*150)+rr(-8,8)],2.6,2.6);}
+   const J=[];
+   for(let i=0;i<14;i++){const y0=rr(1,7),dx=rr(-8,8),y1=rr(1,7),dz=rr(-8,8);J.push([y0,dx,y1,dz]);}
+   lyingLattice(fa,SVR-20,150,11,J,1,7);
    lxRubble(ca*SVR,APY,sa*SVR,6,46,44,3.6);
    continue;}
   // SIX-FOLD SYMMETRY WAS EXACT: from overhead the ground works were a perfect
@@ -9838,8 +9854,18 @@ function buildLaunch(scene,gx,gz,d,pad){reseed(9520+d);KOFF=[gx,0,gz];
   for(let i=0;i<8;i++){const y=SY0+10+i*17;
    DKG.push(gridSurface((u,v)=>{const a=u*TAU,r=rS(y)*.78*(1-v*.14);
      return[Math.cos(a)*r,y,Math.sin(a)*r];},40,2,{uS:14,vS:2}));}
+  // The payload stack was one smooth lathe — a grey bottle inside the frames.
+  // Its skin now comes in panels with whole bays missing (a hash per 3 x 2.5
+  // cells, so nothing here draws from the stream), and a spine with six
+  // spokes at every frame holds it to the ring frames, so the opened shroud
+  // shows a structure with an inside rather than a second, darker shroud.
   DKG.push(gridSurface((u,v)=>{const a=u*TAU,y=lerp(SY0,SY1-24,v);
-    return[Math.cos(a)*rS(y)*.62,y,Math.sin(a)*rS(y)*.62];},48,20,{uS:18,vS:12}));
+    return[Math.cos(a)*rS(y)*.62,y,Math.sin(a)*rS(y)*.62];},48,20,{uS:18,vS:12,
+    hole:(u,v)=>h3(Math.floor(u*16),Math.floor(v*8),9531)<.38}));
+  beam(PL,[0,SY0+4,0],[0,SY1-30,0],7,7);
+  for(let i=0;i<8;i++){const y=SY0+10+i*17;
+   for(let k=0;k<6;k++){const a=(k+.5*(i%2))/6*TAU;
+    beam(PL,[0,y,0],[Math.cos(a)*rS(y)*.78,y,Math.sin(a)*rS(y)*.78],1.6,2.2);}}
   for(let k=0;k<12;k++){const a=k/12*TAU;
    for(let i=0;i<7;i++){const y0=SY0+10+i*17,y1=y0+17;
     beam(PL,[Math.cos(a)*rS(y0)*.78,y0,Math.sin(a)*rS(y0)*.78],
@@ -10620,13 +10646,32 @@ function buildPlymouth(scene,gx,gz,d){reseed(9510+d);KOFF=[gx,0,gz];
    else{
     const r2=rng(),t2=rr(2.6,Math.max(3.4,dep-2.6));
     const ox=B[0]+BN[0]*t2,oz=B[1]+BN[1]*t2;
-    if(r2<.20)kput('plyTank',[ox,y1+1.8,oz],null,[1.5,3.6,1.5],tinC());
+    // QA arcA: at 16 000 bays seven items on one roll repeat — the same water
+    // butt every few metres. A hash per bay (no draw, so the stream is
+    // untouched) now picks a variant inside each item and puts something in
+    // the bays the roll left empty: a squat butt or a pair for the tank, a
+    // bench, a pergola. tx/tz is the terrace's own tangent.
+    // Colours for the added pieces come off the same hash: stoneC()/tinC()
+    // draw from the stream, so only an item that already drew one may call them.
+    const hv=h3(j,k,9533),tx=-BN[1],tz=BN[0];
+    const hC=(q,h0,h1,s0,s1,l0,l1)=>new THREE.Color().setHSL(lerp(h0,h1,h3(j,q,k)),lerp(s0,s1,h3(k,q,j)),
+      lerp(l0,l1,h3(q,j,k)));
+    const hStone=q=>hC(q,.06,.10,.03,.12,d>0?.14:.44,d>0?.24:.58),hTin=q=>hC(q,.035,.11,.06,.30,d>0?.12:.22,d>0?.24:.44);
+    if(r2<.20){if(hv<.35)kput('plyTank',[ox,y1+.9,oz],null,[2.5,1.8,2.5],tinC());
+     else if(hv<.6){kput('plyTank',[ox+tx*1.2,y1+1.8,oz+tz*1.2],null,[1.5,3.6,1.5],tinC());
+      kput('plyTank',[ox-tx*1.2,y1+1.4,oz-tz*1.2],null,[1.3,2.8,1.3],hTin(1));}
+     else kput('plyTank',[ox,y1+1.8,oz],null,[1.5,3.6,1.5],tinC());}
     else if(r2<.38)kput('planter',[ox,y1+.55,oz],bq,[rr(2,4.4),1.1,rr(1.1,2)],soilC);
     else if(r2<.54)plyScrub(ox,y1,oz,rr(1.4,3.2));
     else if(r2<.66)kput('plyWash',[ox,y1+3.2,oz],bq,[rr(3.5,6),2.4,1],clothC());
     else if(r2<.76)kput('plyTinBox',[ox,y1+1.5,oz],bq,[rr(2.4,4.4),3,rr(2,3.4)],tinC());
     else if(r2<.84)kput('plyBrk',[ox,y1+.35,oz],bq,[rr(3,7),.7,rr(1.4,2.6)],stoneC());
-    else if(d===0&&r2<.95)person(ox,y1,oz);}}
+    else if(d===0&&r2<.95)person(ox,y1,oz);
+    else if(hv<.30)kput('plyBrk',[ox,y1+.45,oz],bq,[3.4,.9,.9],hStone(2));          // a bench
+    else if(hv<.48&&dep>8){const pc=hStone(3);                                  // a pergola
+     for(const a of [-1,1])for(const b of [-1,1])
+      kput('plyBrk',[ox+tx*a*2+BN[0]*b*1.4,y1+1.4,oz+tz*a*2+BN[1]*b*1.4],null,[.3,2.8,.3],pc);
+     if(d===0||hv<.40)kput('plyTinBox',[ox,y1+2.9,oz],bq,[4.6,.25,3.4],hTin(4));}}}
 
   // ---- community buildings on the terrace -----------------------------------
   // A settlement of seventeen thousand homes is not made only of homes, and the
@@ -11335,7 +11380,7 @@ function buildArcbeam(scene,gx,gz,d){reseed(9560+d);KOFF=[gx,0,gz];
               +6*Math.round(Math.sin(y*.058+fbm(z*.006,0,9583,2)*4)*2)/2
               +9*fbm(z*.034,y*.030,9584,3);
      x=lerp(x,WX+dp+13*fbm(z*.022,y*.022,9581,2)-6+bed,k);}}
-   return[x,y,z];},240,68,{uS:LEN/30,vS:CANY/30,
+   return[x,y,z];},420,80,{uS:LEN/30,vS:CANY/30,      // 240x68 was 11 m columns against 50 m gullies (now 6 m): soft at close range (QA arcA)
    hole:(u,v)=>{const z=-LEN*.5+u*LEN;return inPortal(z,v*rimY(z));}}));
   // the portal linings: a sill and two reveals, so the mouth is a cutting driven
   // into the rock and not a rectangle of missing wall with daylight behind it
@@ -16132,12 +16177,21 @@ MAT.hillSlope =new THREE.MeshStandardMaterial({map:TEX.hillGround,color:0xa39a76
 MAT.hillSlopeR=new THREE.MeshStandardMaterial({map:TEX.hillGround,color:0x74905a,roughness:1,metalness:0,side:DS});
 // Belt and braces for the dark band at the lip. The hill is a DoubleSide
 // surface, so wherever any sliver of it is seen from BELOW its back face takes
-// only the hemisphere's ground colour and renders maroon. lxBounce (defined in
-// 87-launch.js, which loads first) gives a downward-facing fragment a neutral
-// bounce from the same hemisphere term, so a stray underside reads as shaded
-// ground rather than as a dark stripe. Terrain never faces down on purpose, so
-// nothing else about the hill changes.
-lxBounce(MAT.hillSlope,3.2);lxBounce(MAT.hillSlopeR,3.2);   // stronger than the vehicle's: this should read as ground, not shade
+// only the hemisphere's ground colour and renders maroon. The first cut gave it
+// lxBounce (87-launch.js), a neutral bounce on downward-facing fragments.
+// SECOND CUT (QA arcA): the bounce lifted the band from maroon to a dull
+// red-brown, still a stripe against the sunlit shoulder below it in 'The cut
+// wall'. A terrain surface has an up side and nothing else, so the slope now
+// shades EVERY fragment with its upward normal: wherever the shading normal
+// points down (a back face seen from below, or a grid whose winding runs the
+// other way) it is flipped before the lights run. An underside then takes the
+// same sun and sky as the ground beside it and the band is gone, not dimmed.
+// The rock faces of the cut are another material and keep their own normals.
+function hillUpLit(m){m.onBeforeCompile=sh=>{
+  sh.fragmentShader=sh.fragmentShader.replace('#include <normal_fragment_begin>',
+   '#include <normal_fragment_begin>\n{vec3 hlN=inverseTransformDirection(normal,viewMatrix);if(hlN.y<0.)normal=-normal;}');};
+ m.customProgramCacheKey=()=>'hillUpLit';return m;}
+hillUpLit(MAT.hillSlope);hillUpLit(MAT.hillSlopeR);
 // The cut walls are rock, not mud: Arcoindian II's cliff read as smeared brown
 // at close range and this one stands right beside every terrace preset. Kept a
 // good deal darker than the city so 990 m of contact between the two reads as a
@@ -16518,8 +16572,14 @@ function buildHill(scene,gx,gz,d){reseed(9660+d);KOFF=[gx,0,gz];
       if(c<1.3&&hillNat(r,th)>hillFloorR(r)+1.5)inside=true;}
      return inside;}}));
   // the toe skirt, out to the plain, so the 40 km ground plane never shows a seam
+  // It used to run out FLAT, 0.3 -> 0.15 m over a ground plane at -0.05: a
+  // 260 m annulus 0.2-0.35 m off the plane, which at 2-3 km (depth step ~0.5 m
+  // with near=1) z-fought it in a stair-stepped fringe — invisible on the
+  // intact hill, whose slope is the plain's colour, glaring on the green ruin.
+  // It now dives under the plane within ~27 m of the toe and ends 3 m down, so
+  // the seam is a crisp intersection, not a fight.
   GR.push(gridSurface((u,v)=>{const th=u*TAU,r=lerp(C.RTOE,C.RTOE+260,v);
-    return pol(r,th,lerp(hillNat(C.RTOE,th),.15,Math.pow(v,.7)));},NU,4,{uS:490,vS:11}));
+    return pol(r,th,hillNat(C.RTOE,th)-3.3*v);},NU,6,{uS:490,vS:11}));
   // the flattened summit, with a 3 m crown on it so it is not dead level
   PV.push(gridSurface((u,v)=>{const th=u*TAU,r=C.RSUM*(1-Math.pow(v,.8));
     return pol(r,th,C.SUMY+3*(1-v)*(1-v));},112,12,{uS:260,vS:80}));}
