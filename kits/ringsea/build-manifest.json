@@ -4,7 +4,7 @@
  "12-stats.js": "36c73fdcde3d",
  "20-textures.js": "bf2447777724",
  "22-materials.js": "c044d8ebde78",
- "30-kit.js": "19f7b2276329",
+ "30-kit.js": "4592dfcb03bb",
  "40-rs-core.js": "5e7aee50da72",
  "41-rs-tex.js": "2aa96ca3e885",
  "42-rs-hull.js": "8a0457af36e8",
@@ -35,7 +35,7 @@
  "90-rs-scene.js": "2e967572f92c",
  "91-rs-probe.js": "8ff6f7e90e81",
  "92-camera.js": "0531122f0862",
- "93-labels.js": "ef41d4f4d8b4",
+ "93-labels.js": "6d97d130ad74",
  "94-rs-anim.js": "10dd5c64e649",
  "99-tail.html": "d3aaf402992e"
 }

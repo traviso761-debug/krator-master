@@ -11,7 +11,7 @@ Built output (never open it; edit `src/` and rebuild): `dist/reedlake-village.ht
 Build: `cd settlements/reedlake && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
-From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-materials.js`, `68-mat-v5.js`
+From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-materials.js`, `68-mat-v5.js`, `opt/69a-world-uv.js`
 
 ## src/
 
@@ -23,15 +23,15 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `30-kit.js` | 3 | instancing kit (1) |
 | `32-surfaces.js` | 7 | surfaces (1) |
 | `34-kitdefs.js` | 7 | kit definitions (shared geometry) (1); THE LEAF CARD (32) |
-| `36-decor.js` | 11 | decoration helpers (1) |
-| `38-helpers2.js` | 2 | v2 helpers (1) |
+| `36-decor.js` | 13 | decoration helpers (1); THE BIOME (127) |
+| `38-helpers2.js` | 3 | v2 helpers (1) |
 | `50-registry.js` | <1 | v3: inspector registry + group transforms (1) |
 | `54-mat-concrete.js` | 4 | v4: concrete, brick, glass panes (1) |
-| `69-mat-salvage.js` | 5 | salvage (decay level 3) (1) |
-| `69b-vern-mat.js` | 14 | textures (world units: a 128px tile = 2 m) (30); world-unit UVs (93); materials (116); geometry (133); kit items (153) |
-| `69c-vern-helpers.js` | 19 | primitives (local frame; y = BASE of the piece) (51); walls, frames, plinths (60); roofs (ridge along local x unless noted) (87); openings (108); porches, stairs, yards (134) |
+| `69-mat-salvage.js` | 12 | salvage (decay level 3) (1); FIRELIGHT (44) |
+| `69b-vern-mat.js` | 14 | textures (world units: a 128px tile = 2 m) (30); world-unit UVs (93); materials (97); geometry (114); kit items (139) |
+| `69c-vern-helpers.js` | 22 | primitives (local frame; y = BASE of the piece) (51); walls, frames, plinths (60); roofs (ridge along local x unless noted) (88); openings (128); porches, stairs, yards (154) |
 | `70-hl-tex.js` | 27 | formline palette (NW-coast inspired) (13); wood: round logs (horizontal), 2 m tile, 6 cours (16); fish-scale shingle / slate: 2 m tile, 0.25 m sca (26); fieldstone (rubble) socle: 4 m tile (35); turf (sod roofs): 2 m tile (45); bamboo: culm (vertical, nodes every ~0.45 m) and (53); the painted carving: formline primitives (67); the animals (the kit's default subjects) (122); crest panels (colour-carrying, plane UV 0..1) (170); totem column (colour-carrying, wraps a cylinder) (194) |
-| `71-hl-mat.js` | 9 | world UV with separate u/v tile sizes (26); materials (41); geometry (60); kit items (80) |
+| `71-hl-mat.js` | 8 | world UV with separate u/v tile sizes (26); materials (32); geometry (51); kit items (71) |
 | `71b-hl-motif.js` | 33 **big** | Celtic drawing kit (16); motifs (unit box 100 x 100 unless noted) (50); shop-sign symbols (unit 100, drawn inside a roun (148); composing the textures (193); the textures and kit items (238) |
 | `72-hl-helpers.js` | 14 | vectors in the local frame (23); walls (39); roofs (113) |
 | `73-hl-carve.js` | 30 | totems and painted posts (9); round 2: branch rules, pillars, signs, emblem (30); dougong (painted bracket sets under eaves) (74); bargeboards, gable finials, horns (94); windows, porches, balconies (119); towers (Peles, clocktowers, wall towers) (152); bamboo (tribal and the poorest Republican/Rustic (181); cliff walkways (tribal cliff settlements) (194); yard furniture of the highlands (218); round 4: fitting murals and bracket rows (hlFlus (228) |
@@ -46,7 +46,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `91-probe.js` | 3 | probe (window._api) — same contract as the Ancie (1) |
 | `91a-rl-budget.js` | <1 | budgets: the composite village and the great mud (1) |
 | `92-camera.js` | 10 | camera, inspector, polygon tool, walk mode (1) |
-| `93-labels.js` | 4 | floating building labels (standard new-world pac (1) |
+| `93-labels.js` | 6 | floating building labels (standard new-world pac (1) |
 | `94-rl-anim.js` | <1 | animation: the lake's ripples drift (the water m (1) |
 | `99-tail.html` | <1 |  |
 
