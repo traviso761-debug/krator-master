@@ -272,29 +272,52 @@ reseed(570001);
       pot(F,1.2,0.06,1.3,1.2,ADOBEREDC[1]); pot(F,0.55,0.06,1.6,0.9,ADOBEREDC[2]); pot(F,-1.3,0.06,1.2,1.0,ADOBEREDC[0]);
     } });
 
-  ASSET({ key:'poor_shack', name:'Lean-to shack of salvage', family:'poor', districts:['poor'], wealth:[0,0.15], w:5, d:4, h:3, variants:2,
+  ASSET({ key:'poor_shack', name:'Lean-to shack of salvage', family:'poor', districts:['poor'], wealth:[0,0.15], w:5, d:4, h:3.4, variants:2,
     build:function(F){
-      var v=F.variant, col=F.pick(PAL.adobeDark);
-      F.fr8(0,0,-1.55, 4.7,2.4,0.6, 0, col,'adobe');
-      [-1.95,1.95].forEach(function(x){ F.rod(x,0,1.35, x,1.85,1.35, 0.06,TIMBERC[1],'timber'); }); F.rod(-2.2,1.82,1.35, 2.2,1.86,1.35, 0.05,TIMBERC[0],'timber');
-      if(v===0){ /* a tarnished Ancient panel for a roof, matting for walls */
-        F.beam(0,2.42,-1.6, 0,1.9,1.75, 4.4,0.07, F.pick(TARNC),'metal'); F.beam(0,2.47,-0.5, 0,2.29,0.55, 4.46,0.05, TARNC[3],'metal');
-        F.box(-2.05,0,-0.05, 0.08,1.9,2.7, 0, THATCHC[3],'thatch'); F.box(2.05,0,-0.5, 0.08,1.85,1.7, 0, THATCHC[1],'thatch');
-        F.box(-1.0,0,1.38, 1.9,1.7,0.07, 0, THATCHC[4],'thatch');
-        F.box(1.05,0.75,1.4, 1.1,1.05,0.04, 0, F.pick(CLOTHC),'cloth');
-        rockAt(F,-1.2,0.2,0.3); F.fr5(-1.3,2.1,0.4, 0.4,0.25,0.35, 0.4, ROCKC[0],'rock'); F.fr5(1.4,2.22,-0.3, 0.45,0.25,0.35, 1.0, ROCKC[2],'rock'); }
-      else { /* rusted panels for walls, thatch thrown over poles */
-        F.box(-2.05,0,-0.1, 0.07,2.1,2.8, 0, F.pick(RUSTC),'rust'); F.box(-2.0,0.9,-0.1, 0.1,0.12,2.84, 0, PAL.rustStain[0],'rust');
-        F.box(1.0,0,1.38, 2.0,1.75,0.07, 0, RUSTC[3],'rust'); F.box(1.0,1.2,1.4, 2.04,0.1,0.1, 0, PAL.rustStain[1],'rust');
-        F.box(2.05,0,-0.3, 0.08,1.85,2.2, 0, THATCHC[3],'thatch');
-        /* loose thatch thrown over the poles: every strip sags and overhangs by a different amount */
+      /* DETAIL PASS. A lean-to built against its own mud back wall (the "host"), tall enough to
+         stand in: a timber frame (corner posts, top plate, sill rail) carries walls with real
+         thickness, the roof is laid on purlins and lashed and weighted, and the joins are made —
+         a mud fillet where the roof meets the back wall, cover strips over the panel seams.
+         It declares its room (F.mass), so 64-interiors.js plans and furnishes it. */
+      var v=F.variant, col=F.pick(PAL.adobeDark), HB=3.1, HF=2.72, ZB=-1.25, ZF=1.38, XW=2.05;
+      function roofY(z){ return HB + (HF-HB)*(z-ZB)/(ZF-ZB); }
+      F.fr8(0,0,-1.55, 4.7,HB+0.25,0.62, 0, col,'adobe');                                      /* the mud back wall */
+      F.box(0,HB+0.22,-1.55, 4.5,0.12,0.5, 0, shade(col,-0.08),'adobe');                       /* its capping */
+      [-1,1].forEach(function(s){ F.box(s*2.1,0,0.05, 0.32,0.12,2.9, 0, shade(col,-0.12),'adobe'); });   /* a mud kerb under the walls */
+      F.box(0,0,ZF+0.04, 4.5,0.12,0.3, 0, shade(col,-0.12),'adobe');
+      F.box(0,0,0.05, 3.9,0.012,2.4, 0, VOIDC[1],'dark');                                       /* the shadowed floor (under the room's own) */
+      /* the frame: four corner posts, a top plate front and sides, a sill rail */
+      [[-XW,ZF],[XW,ZF],[-XW,ZB+0.05],[XW,ZB+0.05]].forEach(function(p){ F.rod(p[0],0,p[1], p[0],roofY(p[1])-0.02,p[1], 0.075,TIMBERC[1],'timber'); });
+      F.rod(-XW-0.15,HF-0.04,ZF, XW+0.15,HF-0.02,ZF, 0.065,TIMBERC[0],'timber');
+      [-XW,XW].forEach(function(x){ F.beam(x,HB-0.06,ZB, x,HF-0.06,ZF, 0.11,0.11, TIMBERC[2],'timber'); F.box(x,0.12,0.05, 0.1,0.1,2.7, 0, TIMBERC[0],'timber'); });
+      F.box(0,0.12,ZF, 4.1,0.1,0.1, 0, TIMBERC[0],'timber');
+      /* the roof: three purlins, the covering, a mud fillet sealing it to the back wall, lashings and stones */
+      for(var p=0;p<3;p++){ var zp=ZB+0.35+p*(ZF-ZB-0.5)/2; F.rod(-XW-0.25,roofY(zp)+0.02,zp, XW+0.25,roofY(zp)+0.02,zp, 0.05,TIMBERC[p%3],'timber'); }
+      F.beam(0,HB+0.05,-1.32, 0,HB-0.05,-1.0, 4.5,0.22, shade(col,0.05),'adobe');             /* the fillet where roof meets wall */
+      if(v===0){ /* a tarnished Ancient panel for a roof, matting walls in a frame */
+        F.beam(0,HB+0.10,-1.4, 0,HF+0.06,ZF+0.35, 4.5,0.08, F.pick(TARNC),'metal');
+        F.beam(-1.1,HB+0.16,-1.2, -1.1,HF+0.12,ZF+0.3, 0.12,0.04, TARNC[3],'metal'); F.beam(1.1,HB+0.16,-1.2, 1.1,HF+0.12,ZF+0.3, 0.12,0.04, TARNC[3],'metal');   /* seam cover strips */
+        F.box(-XW,0.22,-0.05, 0.14,HF-0.3,2.6, 0, THATCHC[3],'thatch'); F.box(XW,0.22,-0.05, 0.14,HF-0.3,2.6, 0, THATCHC[1],'thatch');
+        F.box(-0.72,0.22,ZF, 2.55,HF-0.3,0.14, 0, THATCHC[4],'thatch'); F.box(1.8,0.22,ZF, 0.42,HF-0.3,0.14, 0, THATCHC[3],'thatch');
+        F.box(1.05,1.92,ZF, 0.9,HF-1.95,0.14, 0, THATCHC[2],'thatch'); F.rod(0.6,1.9,ZF+0.08, 1.5,1.9,ZF+0.08, 0.05,TIMBERC[0],'timber');   /* over the door, and its lintel */
+        for(var w=0;w<3;w++) F.rod(-XW-0.02,0.6+w*0.6,-1.2, -XW-0.02,0.6+w*0.6,1.3, 0.025,TIMBERC[2],'timber');   /* binding withies */
+        F.box(-0.9,0.9,ZF+0.09, 0.8,0.7,0.03, 0, F.pick(CLOTHC),'cloth');
+        rockAt(F,-1.2,1.85,0.3); F.fr5(-1.3,HB-0.2,-0.4, 0.4,0.25,0.35, 0.4, ROCKC[0],'rock'); F.fr5(1.4,roofY(0.4)+0.1,0.4, 0.45,0.25,0.35, 1.0, ROCKC[2],'rock'); }
+      else { /* rusted panels for walls, riveted and seamed, thatch thrown over the purlins */
+        F.box(-XW,0.22,-0.05, 0.12,HF-0.25,2.7, 0, F.pick(RUSTC),'rust'); F.box(XW,0.22,-0.05, 0.12,HF-0.3,2.6, 0, THATCHC[3],'thatch');
+        F.box(-XW-0.07,0.9,-0.05, 0.04,0.12,2.74, 0, PAL.rustStain[0],'rust'); F.box(-XW-0.07,1.75,-0.05, 0.04,0.1,2.74, 0, PAL.rustStain[1],'rust');
+        F.box(-XW-0.07,0.22,-0.05, 0.04,HF-0.3,0.1, 0, PAL.rustStain[1],'rust');                 /* a seam cover strip */
+        F.box(0.9,0.22,ZF, 2.3,HF-0.3,0.12, 0, RUSTC[3],'rust'); F.box(0.9,1.2,ZF+0.07, 2.34,0.1,0.04, 0, PAL.rustStain[1],'rust');
+        F.box(-1.8,0.22,ZF, 0.45,HF-0.3,0.12, 0, RUSTC[1],'rust'); F.box(-1.0,1.92,ZF, 0.9,HF-1.95,0.12, 0, RUSTC[2],'rust');
         for(var t=0;t<7;t++){ var x=-1.80+t*0.60+F.rr(-0.05,0.05), wq=F.rr(0.55,0.82), sag=F.rr(0.10,0.30), ov=F.rr(0.0,0.30);
-          F.beam(x,2.46-sag*0.5,-1.60-F.rr(0,0.22), x+F.rr(-0.10,0.10),2.02-sag,1.60+ov, wq,F.rr(0.09,0.16), F.pick(THATCHC),'thatch');
-          if(F.chance(0.6)) F.beam(x+F.rr(-0.18,0.18),2.30-sag*0.4,F.rr(-0.9,0.3), x+F.rr(-0.22,0.22),1.94-sag,1.66+ov*0.5, F.rr(0.3,0.5),0.07, shade(F.pick(THATCHC),-0.18),'thatch'); }
-        F.beam(-2.25,2.48,-1.0, 2.25,2.40,-1.05, 0.14,0.12, TIMBERC[0],'timber');                 /* the ridge pole, showing through */
-        for(var t2=0;t2<4;t2++){ var xr=-1.5+t2*1.0; F.beam(xr,2.38-F.rr(0,0.1),1.50, xr+F.rr(-0.2,0.2),1.86,1.82+F.rr(0,0.14), F.rr(0.18,0.34),0.06, shade(F.pick(THATCHC),-0.28),'thatch'); }
-        F.box(-1.0,0.8,1.4, 1.0,1.0,0.04, 0, F.pick(CLOTHC),'cloth'); }
-      F.box(0,0,0, 3.6,0.04,2.2, 0, VOIDC[1],'dark');                                       /* the shadowed floor */
-      pot(F,1.5,0,0.5,0.9,ADOBEREDC[1]); doorPt(F,v?-1.0:1.05,1.4,0,1);
+          F.beam(x,HB+0.08-sag*0.3,-1.45-F.rr(0,0.15), x+F.rr(-0.10,0.10),HF+0.06-sag*0.5,ZF+0.2+ov, wq,F.rr(0.09,0.16), F.pick(THATCHC),'thatch');
+          if(F.chance(0.6)) F.beam(x+F.rr(-0.18,0.18),HB-sag*0.3,F.rr(-0.9,0.3), x+F.rr(-0.22,0.22),HF-sag*0.5,ZF+0.3+ov*0.5, F.rr(0.3,0.5),0.07, shade(F.pick(THATCHC),-0.18),'thatch'); }
+        for(var t2=0;t2<4;t2++){ var xr=-1.5+t2*1.0; F.beam(xr,HF+0.02,ZF+0.1, xr+F.rr(-0.2,0.2),HF-0.45,ZF+0.42+F.rr(0,0.14), F.rr(0.18,0.34),0.06, shade(F.pick(THATCHC),-0.28),'thatch'); }
+        F.box(-1.0,0.8,ZF+0.08, 0.9,1.0,0.03, 0, F.pick(CLOTHC),'cloth'); }
+      /* the rope lashings over the roof, pegged to the kerb */
+      [-1.5,1.5].forEach(function(x){ F.rod(x,HB+0.2,-1.3, x,HF+0.12,ZF+0.3, 0.018,PAL.thatch[3],'timber'); F.rod(x,HF+0.12,ZF+0.3, x,0.1,ZF+0.45, 0.018,PAL.thatch[3],'timber'); });
+      pot(F,1.5,0,ZF+0.5,0.9,ADOBEREDC[1]);
+      doorPt(F, v?-1.0:1.05, ZF+0.02, 0,1, 0.85, 1.85);
+      F.mass({ k:'box', x:0, y:0, z:0.05, w:4.3, d:2.9, h:2.95, r:0 });                           /* the room inside */
     } });
 })();
