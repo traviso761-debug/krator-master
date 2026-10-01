@@ -20,8 +20,8 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 | `00-head.html` | 2 |  |
 | `35-core-strata.js` | 9 |  |
 | `45-host-stage.js` | 30 **big** | the river, the canyon, the butte, the mesas (44); terrain (83); the host binding (138); the ground (148); the water (223) |
-| `50-biome-sedesert-species.js` | 29 | THE WATER COLOUR (18); the tree species (70); leaf textures (130); bark, rock, wood textures (206); geometries local to this biome (245); materials (299); instanced items (331) |
-| `55-biome-sedesert-trees.js` | 32 **big** | zones from the fields (15); colour (the maths is the core's, BIO.col) (36); polyline helpers (Girder's) (51); keep-clear between trees (59); foliage helpers (66); the builders (83); impostors (the far canopy) (260); the pass (284); the passes (data: species, cell, acceptance from (314) |
+| `50-biome-sedesert-species.js` | 29 | THE WATER COLOUR (18); the tree species (70); leaf textures (131); bark, rock, wood textures (207); geometries local to this biome (246); materials (300); instanced items (332) |
+| `55-biome-sedesert-trees.js` | 35 **big** | zones from the fields (16); colour (the maths is the core's, BIO.col) (37); polyline helpers (Girder's) (52); keep-clear between trees (60); foliage helpers (67); the builders (84); impostors (the far canopy) (261); the pass (313); the passes (data: species, cell, acceptance from (343) |
 | `60-biome-sedesert-floor.js` | 14 | fields local to the floor (29); small plants (39); the zone planters (96); the pass (147) |
 | `65-biome-sedesert-dress.js` | 5 |  |
 | `70-biome-sedesert.js` | <1 |  |
@@ -30,5 +30,5 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 | `85-host-tower.js` | 5 |  |
 | `88-host-build.js` | <1 |  |
 | `90-host-camera.js` | 9 |  |
-| `91-host-probe.js` | 6 |  |
+| `91-host-probe.js` | 8 |  |
 | `99-tail.html` | <1 |  |

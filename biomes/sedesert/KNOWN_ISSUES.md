@@ -26,9 +26,8 @@ Read before changing anything here. `build.py` prints the open count.
 - [ ] The strata (35-core-strata) are colour only: harder beds do not stand out as
       ledges and soft ones are not recessed (that needs the heightfield's profile to read
       the column), and the Abyss cliff and the mountains still get the painter's coarse bands.
-- [ ] The far impostors are the blob technique; the twist-candles stop at ~1.3 km from
-      the LOD spine instead of becoming impostors (they stand in water, which no impostor
-      reads).
+- [ ] The far impostors are the blob technique (icosahedron crowns on a lathe pole, 100-200
+      triangles) for every species but the twist-candles, whose spires follow the hero's habit.
 - [ ] The candelabra's columns are individual instances (40-80 per tree at lv 2): the
       heaviest thing per tree in the kit. A merged column fan per tree would halve it.
 - [ ] Only one Girder tower dresses. `dress()` samples by triangle area within a shell: the core takes shells (`{geos, share}`: the roof, the walls, the ledges, each with its own share of the samples, `core/biome/40-core-place.js`), but this host's test structure still passes one list.
@@ -55,8 +54,31 @@ Read before changing anything here. `build.py` prints the open count.
 - [ ] TODO: the wadi gorge could take alcoves (Shade's are the model); not started.
 - [ ] The ground's detail texture is still projected on x-z (Shade's is triplanar now), so
       the gorge and butte faces may show vertical grain. Not checked here.
+- [ ] THE RIVER IS NOT DRAWN FROM ABOVE. The ribbon's triangles (45, `idx.push(a,cc,dd,a,dd,b)`)
+      wind clockwise seen from above, so they face down, and `MAT_WATER` is single-sided: every
+      camera above the river culls it and sees the bed (the silt and the mud cracks), the reeds
+      and candles standing on it. The pond's fan faces up and shows. Found while checking the
+      candles' impostor (with the material made double-sided for one shot the teal river and the
+      gorge's rapids appear). The fix is one line (wind it `a,dd,cc,a,b,dd`, or `side:DoubleSide`),
+      not made here: it changes every river view and wants its own look at the ribbon's colours
+      and at where the drawn ground's chords (below) rise through the water.
+- [ ] The ground's 17.8 m triangles cut chords across the river's 2.6 m channel: up to ~1.5 m
+      off terrainH on the banks. 55 of the 1665 hero candle columns float over the drawn ground
+      (up to 0.43 m) and 164 end under it (none over 2 m tall: the mint feet and short side
+      columns). The far spires carry a 1.5 m skirt for it. A finer strip of ground along the
+      river would fix both (the lip's window shows the cost of doing it by refining the grid).
 
 ## Done
+
+- [x] The twist-candles have a far impostor (`far:{spires:3}` on the species record;
+      `spiresOf` / `farSpires` in 55), where past the mid radius they used to stop: three
+      twisted three-sided spires (9 triangles each) set out as the hero sets its columns, rooted
+      in the bed with the hero's top, so the part above the LOCAL water (`BIO.waterH`) is the
+      hero's; a spire the water drowns is not built. The probe lays the spires out for every
+      clump and checks them against the drawn ground ('candles: far spires neither float nor
+      sink', two negatives). This spine runs the river, so no candle reaches the mid radius here
+      (176 clumps, all heroes; the baked scene hashes the same as before); with the spine cut to
+      the pond, 72 of 139 clumps are impostors (+1,638 triangles) and the candles run on.
 
 - [x] THE UNDERCUT LIP. The canyon floor runs out as a sheer promontory to where the
       cataract leaves it (the Abyss face is ~8:1 there, too shallow for the water to clear it
