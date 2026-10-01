@@ -347,6 +347,19 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
     stable: ['yard', 'store', 'roost']
   };
   IX.roomKinds = function (kind) { return [kind].concat(IX.KIND_ALIAS[kind] || []); };
+  /* a catalog piece's role, for the FOOD and ITEM container slots: its own `role` (FK.set() pieces and
+     harvested pieces that declare one), else guessed from its key and name (harvested pieces without one) */
+  IX.ROLE_GUESS = [
+    [/chest|trunk|locker|coffer|strongbox|cabinet|wardrobe|press/, 'chest'],
+    [/sack|grain|pot|jar|crate|barrel|bin|basket|larder|pantry|goods|stack|churn|crock/, 'store'],
+    [/forge|anvil/, 'forge']
+  ];
+  IX.guessRole = function (A) {
+    if (A.role) return A.role;
+    const k = (A.key + ' ' + (A.name || '')).toLowerCase();
+    for (const g of IX.ROLE_GUESS) if (g[0].test(k)) return g[1];
+    return undefined;
+  };
 
   IX.PROGRAMS = {
     hall:     { require: [{ need: 'table', types: ['table'], n: 1 }, { need: 'seats', types: SEATS, n: 2 }],
@@ -2378,6 +2391,23 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
     });
     return out;
   };
+
+  /* furnish a PLACED building in one call (a kit page, a settlement): instantiate the item at the building's
+     placement, furnish every room through `catalog` (an adapter: IX.runtimeAdapter for a batch), build them.
+     o: { baseY, seed, prefix, register (default false: a world of many buildings need not fill IX.rooms) }
+     -> { inst, plans: { roomId: plan }, residence: IX.sets.auditResidence(...) } */
+  S.furnish = function (item, ox, oz, ry, catalog, o) {
+    o = o || {};
+    const inst = S.instantiate(item, ox, oz, ry, { baseY: o.baseY || 0, register: !!o.register, seed: o.seed || 0, prefix: o.prefix });
+    const plans = {};
+    inst.rooms.forEach(function (R) {
+      const P = IX.furnishRoom(R, catalog, { seed: o.seed || 0 });
+      IX.buildRoom(P, catalog, R);
+      plans[R.id] = P;
+    });
+    return { inst: inst, plans: plans, residence: S.auditResidence(inst, plans) };
+  };
+  S.find = function (key) { for (const set of S.list) if (set.byKey[key]) return set.byKey[key]; return null; };
 
   /* the residence check: per unit a bed (a bunk counts two), a FOOD container and an ITEM container somewhere in the building */
   S.auditResidence = function (inst, plans) {

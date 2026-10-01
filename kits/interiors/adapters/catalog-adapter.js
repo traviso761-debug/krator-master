@@ -5,7 +5,7 @@
 
      list()                    FURNS -> descriptors { key, name, culture, type, setting, rooms, anchor, clearance, variants,
                                tier, wealth: [lo, hi], role }   (tier and wealth: the catalog's wealth bands, 45-placer.js;
-                               role: the catalog's, else guessed from the key: ROLE_GUESS below)
+                               role: the catalog's, else guessed from the key: IX.guessRole)
      dims(key, v)              entryDims(A, v)
      anchorY(key, v, at)       furnAnchorY(A, v, at)
      build(placement, room)    buildFurn(key, x, z, ry, { variant, seed, y, wealth }) -> THREE.Group in the engine's scene
@@ -39,20 +39,8 @@
     for (const q of QUIRKS) if (q.key === A.key && q.when(A)) n = Math.min(n, q.variants);
     return n;
   }
-  /* the role of a harvested piece that carries none (FK.set() pieces carry FK.ROLES' role): what the
-     interiors programmes' FOOD and ITEM container slots read (30-programs.js). Named here, not in the
-     catalog, so a catalog entry that later declares `role` wins over the guess. */
-  const ROLE_GUESS = [
-    [/chest|trunk|locker|coffer|strongbox|cabinet|wardrobe|press/, 'chest'],
-    [/sack|grain|pot|jar|crate|barrel|bin|basket|larder|pantry|goods|stack|churn|crock/, 'store'],
-    [/forge|anvil/, 'forge']
-  ];
-  function roleOf(A) {
-    if (A.role) return A.role;
-    const k = (A.key + ' ' + (A.name || '')).toLowerCase();
-    for (const g of ROLE_GUESS) if (g[0].test(k)) return g[1];
-    return undefined;
-  }
+  /* a piece's role (its own, else guessed: IX.guessRole, 30-programs.js) is what the FOOD and ITEM slots read */
+  const roleOf = IX.guessRole;
   IX.catalogRoleOf = roleOf;
   function stripLights(g) {
     const out = [];
