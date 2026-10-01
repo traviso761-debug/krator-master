@@ -124,6 +124,7 @@ def main():
         if not m.get('enabled', True):
             continue
         m = dict(m)
+        m['dir'] = os.path.normpath(m['dir']).replace(os.sep, '/')   # "./data" must match the walk's "data/..."
         root = os.path.join(src, m['dir'])
         excl = [os.path.join(m['dir'], x).replace(os.sep, '/') for x in m.get('exclude', [])]
         for d, subdirs, files in os.walk(root):
