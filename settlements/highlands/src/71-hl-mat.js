@@ -24,19 +24,10 @@ const HPAL={
 };
 
 // ---------------------------------------------------------------- world UV with separate u/v tile sizes
-// vWorldUV (69b) uses one K for both axes; the lace and frieze maps are not square, so they need Ku != Kv.
-function hWorldUV(mat,Ku,Kv){mat.onBeforeCompile=sh=>{sh.vertexShader=sh.vertexShader.replace('#include <uv_vertex>',
-`#ifdef USE_UV
-#ifdef USE_INSTANCING
-mat4 _im=instanceMatrix;
-vec3 _sc=vec3(length(_im[0].xyz),length(_im[1].xyz),length(_im[2].xyz));
-vec3 _an=abs(normal);
-vec2 _sw=(_an.y>0.5)?vec2(_sc.x,_sc.z):((_an.x>0.5)?vec2(_sc.z,_sc.y):vec2(_sc.x,_sc.y));
-vUv=uv*_sw*vec2(${Ku.toFixed(4)},${Kv.toFixed(4)});
-#else
-vUv=uv;
-#endif
-#endif`);};return mat;}
+// The lace and frieze maps are not square, so they need Ku != Kv: the shared vWorldUV (core/materials/opt/
+// 69a-world-uv.js) takes the second K. This used to be its own closure, and like the old vWorldUV it gave every
+// Ku/Kv the same shader program (three.js keys on the hook's source text), so all of them drew at one scale.
+function hWorldUV(mat,Ku,Kv){return vWorldUV(mat,Ku,Kv);}
 
 // ---------------------------------------------------------------- materials
 const hStd=(o)=>new THREE.MeshStandardMaterial(Object.assign({color:0xffffff,roughness:.92,metalness:0,side:DS},o));
