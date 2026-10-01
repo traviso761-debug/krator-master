@@ -20,14 +20,15 @@ scale Krator map for rough placement, not in this repo.
 | southwestern lowlands | `swlowlands` | nwlowlands, shighlands (gentle) |
 | East Rift Highlands | `xanadu` | rift |
 | northwestern lowlands | `nwlowlands` | swlowlands, nhighlands, korona |
-| northern highlands | `nhighlands` | nwlowlands, hyperjungle (steep), "nw bay" (steep), korona |
+| northern highlands | `nhighlands` | nwlowlands, hyperjungle (steep), nwbay (steep), korona |
+| *in progress* northwest bay | `nwbay` | nhighlands (steep) |
 | *planned* eastern badlands | `ebadlands` | sedesert |
 | *planned* Korona | `korona` | nwlowlands, nhighlands |
 | *planned* southern highlands | `shighlands` | swbay (steep), hyperjungle (steep), swlowlands, sedesert |
 | *possible* | `ehighlands`, `sbadlands`, micro-biomes | |
 
-To confirm: the nwlowlands row reads "nwhighlands ... swhighlands and nihighlands" in the
-note it came from; "nw bay" is not a kit.
+A new kit starts on the shared core: list the core in `CORE_BIOME` in its `build.py`
+(`core/biome/`, `core/README.md`) rather than copying a core into its `src/`.
 
 ## Two kinds of border
 
