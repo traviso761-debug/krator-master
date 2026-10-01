@@ -1,0 +1,5 @@
+# Search-only ignore (ripgrep, and Claude Code's Grep/Glob): repo-wide searches skip these. Git ignores this
+# file, so everything here stays tracked. Search a path inside one explicitly to reach it.
+#
+# The World Menagerie subtree: its own project, ~84 MB, mostly city map data. Krator never reads it.
+host/WorldMenagerie/
