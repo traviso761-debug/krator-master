@@ -1470,6 +1470,7 @@ SEDESERT.SPECIES=[
   tags:{climate:'tropic',aridity:'arid',abyssal:false,riparian:'no'}},
  /*12*/{key:'candle',name:'Twist-candles',H:[2,7],rb:[.3,.6],crownR:[2,4],barkK:2,bark:[0x9a8a78],
   leaf:PAL.candle,depth:[-.6,1.4],   // stands in the shallows
+  far:{spires:3},                    // the impostor: three twisted three-sided spires rooted in the bed (55)
   tags:{climate:'tropic',aridity:'humid',abyssal:false,riparian:'yes'}},
 ];
 SEDESERT.byKey={};SEDESERT.SPECIES.forEach(S=>SEDESERT.byKey[S.key]=S);
@@ -1714,9 +1715,10 @@ BIO.def('stone',new T3.IcosahedronGeometry(1,0),BIO.solidMat(SEDESERT.ROCKTEX),{
 // upland / canyon / rim / rock / dune / oasis / slope) and terrainH. The zone
 // weights are computed HERE from those fields, never from the host's map: a
 // world that binds the same fields gets the same zoning. Beyond the LOD spine
-// the big species become blob impostors in the 'far' bucket; the small ones
-// thin out with distance and stop. Every count scales with q; the core
-// charges BIO.cur.
+// a tree (not a mesquite shrub) becomes an impostor in the 'far' bucket: blobs
+// on a pole, or for the twist-candles spires standing in the local water. The
+// small ones thin out with distance as well. Every count scales with q; the
+// core charges BIO.cur.
 (function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm,qEuler,qFacing,qUp}=BIO.fn;
 const SP=SEDESERT.SPECIES,PAL=SEDESERT.PAL,GOLD=2.399963;
 const T3=BIO.host.THREE,C=SEDESERT.C;
@@ -1968,9 +1970,37 @@ B[12]=function(T,st,lv){const S=SP[T.sp],H=T.H,n=lv===2?ri(3,8):ri(2,4),a0=rr(0,
  };
 
 // ---------------------------------------------------------------- impostors (the far canopy)
+// far:{spires:n} (the twist-candles): the clump as n twisted three-sided spires, 9 triangles each, set out as
+// the hero sets its columns (the main one at the clump's foot, the rest round it). Each stands where the hero's
+// column does: rooted in the bed under the LOCAL water (BIO.waterH: the river descends, the pond has its own
+// level), its top at the bed + h, so what shows above the water is the hero's. The foot has a 1.5 m skirt: a
+// host may draw its ground coarser than terrainH (the ideal host's 17.8 m triangles dip up to ~1.5 m under it on
+// a bank), or its water clear, or not at all. A spire the water drowns, or that shows less than 0.8 m over the
+// water and the ground, is not built. spiresOf(T) is the layout as data ({x,z,yb,h,foot,top,w,c,q}); it hashes
+// the tree's own seed, not the biome's stream, so building one moves nothing else, and a host can lay it out
+// for any clump to check it.
+function spiresOf(T){const S=SP[T.sp],H=T.H,base=T.y0+.5,o=[];
+ const hr=(k,a,b)=>a+(b-a)*h3(T.seed%9973,k,4.7),a0=hr(.5,0,TAU);
+ for(let k=0,n=S.far&&S.far.spires||0;k<n;k++){const a=a0+k*GOLD,d=k?T.crownR*hr(k+.1,.2,.9):0,x=T.x+Math.cos(a)*d,z=T.z+Math.sin(a)*d;
+  const g=BIO.terrainH(x,z),h=H*(k?hr(k+.2,.4,.9):1),yb=Math.min(g,base)-.2,top=yb+h*1.03;
+  if(top-Math.max(BIO.waterH(x,z),g)<.8)continue;
+  o.push({x,z,yb,h,foot:yb-1.5,top,w:T.rb*hr(k+.3,.7,1.3)*(.5+.5*h/H),c:(T.seed+k*3)%S.leaf.length,q:hr(k+.4,0,TAU)});}
+ return o;}
+SEDESERT.spiresOf=spiresOf;
+function farSpires(T,st){const K=BIO.bucket('far'),S=SP[T.sp],kk=BIO._lodKey(T.x,T.z);let tris=0;
+ const vtx=v=>{K.pos.push(v[0],v[1],v[2]);K.nor.push(v[3],v[4],v[5]);K.uv.push(0,0);K.col.push(v[6],v[7],v[8]);};
+ const tri=(a,b,c)=>{vtx(a);vtx(b);vtx(c);K.k.push(kk);tris++;};   // a, b, c counter-clockwise from outside
+ for(const P of spiresOf(T)){const c=bright(S.leaf[P.c],1.15).convertSRGBToLinear();
+  // a ring at y: three corners on the lobes (the hero's radius x 1.28), turning 1.2 rad over the height as its lobes do
+  const ring=y=>{const t=Math.max(0,(y-P.yb)/P.h),r=1.28*P.w*Math.pow(1-.72*t,.7),s=lerp(.66,1,t),o=[];
+   for(let j=0;j<3;j++){const an=P.q-1.2*t+j*TAU/3,cx=Math.cos(an),cz=Math.sin(an);o.push([P.x+cx*r,y,P.z+cz*r,cx*.75,.66,cz*.75,c.r*s,c.g*s,c.b*s]);}return o;};
+  const A=ring(P.foot),B=ring(P.yb+P.h*.55),tip=[P.x,P.top,P.z,0,1,0,c.r,c.g,c.b];   // the foot, the waist, the tip
+  for(let j=0;j<3;j++){const j1=(j+1)%3;tri(A[j],B[j],A[j1]);tri(A[j1],B[j],B[j1]);tri(B[j],tip,B[j1]);}}
+ K.tris+=tris;BIO.tally(tris,0,0);st.far+=tris;}
 let ICO=null;
-function buildFar(T,fi,st){const K=BIO.bucket('far');if(!ICO)ICO=new T3.IcosahedronGeometry(1,1).attributes.position.array;const ip=ICO;
- const S=SP[T.sp],cheap=BIO.lodD(T.x,T.z)>BIO.LOD().far;let tris=0;
+function buildFar(T,fi,st){const S=SP[T.sp];if(S.far&&S.far.spires)return farSpires(T,st);
+ const K=BIO.bucket('far');if(!ICO)ICO=new T3.IcosahedronGeometry(1,1).attributes.position.array;const ip=ICO;
+ const cheap=BIO.lodD(T.x,T.z)>BIO.LOD().far;let tris=0;
  function vtx(x,y,z,nx,ny,nz,r,g,b){K.pos.push(x,y,z);K.nor.push(nx,ny,nz);K.uv.push(0,0);K.col.push(r,g,b);}
  function blob(x,y,z,rx,ry,colA,colB,sd){const ca=C(colA).convertSRGBToLinear(),cb=C(colB).convertSRGBToLinear(),k1=sd*7.3,k2=sd*3.1;
   for(let i=0;i<ip.length;i+=3){const dx=ip[i],dy=ip[i+1],dz=ip[i+2];
@@ -2824,13 +2854,24 @@ function nanSweep(){const bad=[];let badInst=0;
 function typeStats(){const out={};for(const k in BIO.stats){const t=BIO.stats[k],cls=BUDGET.type[k]||'pass';out[k]={tris:t.tris,inst:t.inst,meshes:t.meshes,cls,limit:BUDGET.cls[cls],over:t.tris>BUDGET.cls[cls]};}return out;}
 // The host's own checks (verify.py runs them when present), each with a broken input that must fail.
 // the cataract leaves from rock, its curtain clear of the rock; the cave open under its cap; nothing grows
-// under the cap; no preset camera inside rock
+// under the cap; no preset camera inside rock; the candles' far spires neither float nor sink
 const rockTop=(x,z)=>{const t=BIO.carve.topAt(x,z);return t===null?terrainH(x,z):t;};
 const buried=(x,y,z,e)=>terrainH(x,z)>y+e||(BIO.carve.rockAt(x,y,z)&&BIO.carve.rockAt(x,y+e,z)&&BIO.carve.rockAt(x+e,y,z)&&BIO.carve.rockAt(x-e,y,z)&&BIO.carve.rockAt(x,y,z+e)&&BIO.carve.rockAt(x,y,z-e));
 const worldV=m=>{const a=m.geometry.attributes.position,o=[];m.updateMatrixWorld(true);const v=new THREE.Vector3();for(let i=0;i<a.count;i++){v.fromBufferAttribute(a,i).applyMatrix4(m.matrixWorld);o.push([v.x,v.y,v.z]);}return o;};
 // the instanced items only (what the biome roots): a mesh's bounding-box centre is not a plant
 const instPoints=()=>{const o=[],m=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3();
  scene.traverse(M=>{if(!M.isInstancedMesh)return;for(let i=0;i<M.count;i++){M.getMatrixAt(i,m);m.decompose(p,q,sc);o.push([p.x,p.y,p.z]);}});return o;};
+// the surface as DRAWN: the ground's own triangles (terrainH holds only at their vertices, 17.8 m apart), or the
+// pond's disc at PL where it covers them. Not the river's ribbon: it faces down, so from above it is culled and
+// the river shows its bed (KNOWN_ISSUES); a foot under the ground is under the ribbon too
+const drawnH=(function(){let P=null,X,Z,nx;const at=(A,v)=>{let lo=0,hi=A.length-2;while(lo<hi){const m=(lo+hi+1)>>1;if(A[m]<=v)lo=m;else hi=m-1;}return lo;};
+ return (x,z)=>{if(!P){P=GROUND.geometry.attributes.position.array;nx=1;while(P[nx*3+2]===P[2])nx++;X=[];Z=[];
+   for(let i=0;i<nx;i++)X.push(P[i*3]);for(let j=0;j<P.length/3/nx;j++)Z.push(P[j*nx*3+2]);}
+  const i=at(X,x),j=at(Z,z),u=(x-X[i])/(X[i+1]-X[i]),v=(z-Z[j])/(Z[j+1]-Z[j]),h=(a,b)=>P[((j+b)*nx+i+a)*3+1];   // each cell split on its (i,j+1)-(i+1,j) diagonal (45, GROUND)
+  const g=u+v<=1?h(0,0)+u*(h(1,0)-h(0,0))+v*(h(0,1)-h(0,0)):h(1,1)+(1-u)*(h(0,1)-h(1,1))+(1-v)*(h(1,0)-h(1,1));
+  return Math.hypot(x-POND.x,z-POND.z)<163?Math.max(g,PL):g;};})();
+// the twist-candles' far spires, laid out for every clump (SEDESERT.spiresOf: this spine keeps all of them heroes)
+const candleSpires=()=>{const sp=SEDESERT.SPECIES.indexOf(SEDESERT.byKey.candle);return SEDESERT.TREES.filter(T=>T.sp===sp).flatMap(T=>SEDESERT.spiresOf(T));};
 const HCHK={
  // the curtain: no vertex buried in rock, and its top row stands on rock (the river does not run out over air)
  curtain(V,name){const inRock=V.filter(v=>buried(v[0],v[1],v[2],.3)).length,top=Math.max(...V.map(v=>v[1])),T=V.filter(v=>v[1]>top-.01);
@@ -2841,12 +2882,18 @@ const HCHK={
   return{ok:open&&hood,detail:Q.id+': the void at '+ym.toFixed(0)+' m '+(open?'open':'IN ROCK')+'; 2 m over its ceiling '+(c===null?'no ceiling':hood?'rock':'AIR')};},
  noHoodFlora(P){const bad=P.filter(p=>BIO.carve.topAt(p[0],p[2])!==null&&p[1]<(BIO.carve.covered(p[0],p[2])??1e9));
   return{ok:!bad.length,detail:bad.length?bad.length+' rooted under the cap (first at '+bad[0].map(v=>v|0)+')':P.length+' instances, none under the cap'};},
- camerasOut(C){const bad=C.filter(c=>buried(c.x,c.y,c.z,.3));return{ok:!bad.length,detail:bad.length?'in the rock: '+bad.map(c=>c.view).join(', '):C.length+' cameras in the open'};}};
+ camerasOut(C){const bad=C.filter(c=>buried(c.x,c.y,c.z,.3));return{ok:!bad.length,detail:bad.length?'in the rock: '+bad.map(c=>c.view).join(', '):C.length+' cameras in the open'};},
+ // a spire stands in the water: its foot at or under the ground as drawn (it does not float over the bed), its
+ // top 0.5 m clear of the water and of terrainH (it does not sink; the drawn ground's chords are KNOWN_ISSUES')
+ spires(S,name){let fl=0,sk=0,hi=-1e9,lo=1e9;for(const s of S){const f=s.foot-drawnH(s.x,s.z),c=s.top-Math.max(terrainH(s.x,s.z),waterH(s.x,s.z));
+   if(f>.05)fl++;if(c<.5)sk++;hi=Math.max(hi,f);lo=Math.min(lo,c);}
+  return{ok:S.length>0&&!fl&&!sk,detail:name+': '+S.length+' spires; '+fl+' feet over the drawn ground (highest '+hi.toFixed(2)+' m), '+sk+' tops under 0.5 m clear (lowest '+lo.toFixed(2)+' m)'};}};
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r));
  add('cataract-leaves-from-rock-clear-of-it',HCHK.curtain(worldV(FALL.mesh),'the cataract'));
  for(const Q of BIO.carve.patches)add('carve: '+Q.id+' open under rock',HCHK.carveOpen(Q));
  add('carve: nothing grows under the cap',HCHK.noHoodFlora(instPoints().filter(p=>Math.abs(p[0]-LIP.x)<80&&Math.abs(p[2]-LIP.z)<80)));
  add('preset-cameras-out-of-the-rock',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
+ add('candles: far spires neither float nor sink',HCHK.spires(candleSpires(),'the twist-candles'));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail});
  const V=worldV(FALL.mesh);add('the cataract pushed 12 m back into the promontory',HCHK.curtain(V.map(v=>[v[0]-12,v[1],v[2]]),'curtain-12'));
@@ -2854,6 +2901,8 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  const Q=BIO.carve.patches[0];add('the cave probed 40 m above its floor',HCHK.carveOpen(Object.assign({},Q,{floorY:Q.floorY+40})));
  add('a plant on the cave floor',HCHK.noHoodFlora([[Q.c[0]-10,Q.floorY,Q.c[1]]]));
  add('a camera inside the cap',HCHK.camerasOut([{view:'in-cap',x:Q.c[0]-12,y:BIO.carve.covered(Q.c[0]-12,Q.c[1])+4,z:Q.c[1]}]));
+ const S=candleSpires();add('the candle spires footed on the water, not the bed',HCHK.spires(S.map(s=>Object.assign({},s,{foot:Math.max(waterH(s.x,s.z),terrainH(s.x,s.z))})),'spires on the water'));
+ add('the candle spires sunk to their tips',HCHK.spires(S.map(s=>Object.assign({},s,{foot:2*s.foot-s.top,top:s.foot})),'spires sunk'));
  return R;}
 window._api={BUDGET,REG,hostChecks,hostNegatives,
  get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
