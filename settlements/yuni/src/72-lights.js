@@ -20,7 +20,7 @@ function LANTERN(x,y,z, amp, rad, cool, hang){
   BOX(x, y-0.20, z, 0.26, 0.34, 0.26, 0.78, cool ? PAL.glowCool : PAL.glowWarm, 'glowmat');
   PYR(x, y+0.22, z, 0.50, 0.26, 0.50, 0, BRASSC[2], 'metal');
   if(hang) BOX(x, y+0.4, z, 0.04, hang, 0.04, 0, TIMBERC[3], 'timber');
-  nlLampAdd(x, y, z, amp==null?1:amp, rad==null?15:rad, cool);
+  nlLampAdd(x, y, z, amp==null?1:amp, rad==null?15:rad, cool, cool?'electric-lantern':'oil-lantern');
 }
 function LAMPPOST(x,y,z, h, amp, rad, cool){
   BOX(x, y, z, 0.20, h, 0.20, 0, TIMBERC[0], 'timber');
@@ -32,7 +32,7 @@ function ARCPOST(x,y,z, h, amp, rad){
   CYL(x, y, z, 0.17, h, 0, METALC[1], 'metal');
   TUBE('metal', [{x:x,y:y+h,z:z,r:0.17},{x:x,y:y+h+0.62,z:z,r:0.52},{x:x,y:y+h+0.92,z:z,r:0.14}], METALC[2], { seg:8 });
   BALL(x, y+h+0.34, z, 0.34, PAL.electric, 'glowmat');
-  nlLampAdd(x, y+h*0.5, z, amp==null?1.3:amp, rad==null?20:rad, true);
+  nlLampAdd(x, y+h*0.5, z, amp==null?1.3:amp, rad==null?20:rad, true, 'arc-standard');
 }
 /* WHO IS ON THE GRID. Inside the wall, and the market district with its circle and
    the caravanserai yard. Nothing else — the cable stops where the money does. */
