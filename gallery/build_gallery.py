@@ -186,6 +186,7 @@ ENTRIES = [
     ('biome', 'swlowlands', 'biomes/swlowlands/dist/swlowlands.html', 'Southwestern lowlands', 'Sprawl oaks, an oak avenue, cork grove, crown-flowering trees.'),
     ('biome', 'nwlowlands', 'biomes/nwlowlands/dist/nwlowlands.html', 'Northwestern lowlands', 'Lake shore, Mediterranean foothills, bamboo groves, glow-willows.'),
     ('biome', 'xanadu', 'biomes/xanadu/dist/xanadu.html', 'Xanadu', 'An enclosed mountain lake and a sacred river; ornamental wildwood.'),
+    ('biome', 'nhighlands', 'biomes/nhighlands/dist/nhighlands.html', 'Northern highlands', 'Old-growth temperate to boreal forest, trumpet trees, glowing bell-bulbs, a stream from its tarn.'),
 ]
 
 
