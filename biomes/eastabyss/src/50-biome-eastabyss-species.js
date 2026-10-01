@@ -284,7 +284,8 @@ EASTABYSS.TEX=TX;
 // ---------------------------------------------------------------- an iridescent bark
 // The sky scale-tree's cushions shimmer red-green with the view angle (and
 // slowly, with the wind): green facing the eye, a coppery red at grazing angles.
-BIO.iridBarkMat=function(tex){const m=BIO.barkMat(tex);
+// key names the variant in the program cache (the impostor ring's untextured copy is 'far').
+BIO.iridBarkMat=function(tex,key){const m=BIO.barkMat(tex);
  m.onBeforeCompile=sh=>{sh.uniforms.uWindT=BIO.WIND.t;
   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vIWP;varying vec3 vIWN;')
    .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvIWP=(modelMatrix*vec4(transformed,1.0)).xyz;vIWN=normalize(mat3(modelMatrix)*objectNormal);');
@@ -292,7 +293,7 @@ BIO.iridBarkMat=function(tex){const m=BIO.barkMat(tex);
    .replace('#include <color_fragment>','#include <color_fragment>\n{vec3 V=normalize(cameraPosition-vIWP);vec3 N=normalize(vIWN);float fr=1.0-abs(dot(N,V));'+
     'float sh=0.5+0.5*sin(dot(vIWP,vec3(0.21,0.37,0.29))+uWindT*0.35);float k=smoothstep(0.12,0.82,fr*0.85+sh*0.3);'+
     'diffuseColor.rgb*=mix(vec3(0.78,1.18,0.92),vec3(1.45,0.82,0.74),k);}');};
- const ck='bioiridbark|'+BIO.kitKey('x');m.customProgramCacheKey=function(){return ck;};BIO._tickWind();return m;};
+ const ck='bioiridbark|'+BIO.kitKey(key||'x');m.customProgramCacheKey=function(){return ck;};BIO._tickWind();return m;};
 
 
 // ---------------------------------------------------------------- bark textures
@@ -448,6 +449,8 @@ BIO.bucket('bark0i',M.barkIrid,{label:'Sky scale-tree bark (iridescent)',uvScale
 BIO.bucket('wood',M.wood,{label:'Dead wood',uvScale:[3,4]});
 BIO.bucket('rock',M.rock,{label:'Boulders',uvScale:[6,6]});
 BIO.bucket('far',BIO.barkMat(null),{label:'Far trees (impostors)'});
+// the sky scale-trees' impostor boles: the same view-angle shimmer as their hero bark, untextured
+BIO.bucket('fari',BIO.iridBarkMat(null,'far'),{label:'Far sky scale-trees (impostors, iridescent)'});
 
 // ---------------------------------------------------------------- instanced items
 BIO.def('strap',BIO.geo.clump(),M.strap,{attrs:['aN'],label:'Scale-tree tufts'});
