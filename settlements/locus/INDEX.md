@@ -53,8 +53,8 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `65-abyss-80-military.js` | 12 | 16X-M. ABYSS — military: the wall system, the fo (1) |
 | `65-abyss-90-farm.js` | 12 | 16X-G. ABYSS — farming and storage (1) |
 | `68-place.js` | 16 | 18b. THE PLACEMENT PASS — LOCUS (1) |
-| `69a1-bio-core-head.js` | 5 | PRNG (14); noise (24); host binding (32); accounting (72) |
-| `69a2-bio-core-kit.js` | 12 | merged buckets (46); bake (121) |
+| `69a1-bio-core-head.js` | 6 | PRNG (14); noise (24); host binding (41); accounting (81) |
+| `69a2-bio-core-kit.js` | 13 | merged buckets (46); indexed buckets (121); bake (144) |
 | `69a3-bio-core-foliage.js` | 13 | alpha textures (18); card geometries (48); the foliage hook (110) |
 | `69a4-bio-core-place.js` | 6 | surface sampling (53) |
 | `69b-locus-biohost.js` | 4 | 19H. LOCUS — the biome host binding (1) |
