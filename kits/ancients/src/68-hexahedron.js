@@ -137,6 +137,8 @@ function buildHexahedron(scene,gx,gz,d){reseed(9430+d);KOFF=[gx,0,gz];
  const RUINK=d>0?.6:1;
  const tint=(a,b)=>{const t=hh(a,b,7),c=t<.45?[1,1,1]:t<.72?[1,.95,.86]:t<.9?[.93,.95,.98]:[1,.9,.79];
   return new THREE.Color(c[0]*RUINK,c[1]*RUINK*.98,c[2]*RUINK*.95);};
+ // a lit window's colour: lamp-warm, a little different in every flat
+ const hxLit=(a,b)=>{const t=hh(a,b,13);return new THREE.Color(0xffa957).lerp(new THREE.Color(0xffe2b0),t*.6).multiplyScalar(.55+.45*hh(a,b,17));};
  const cell=(Q,N,q,yb,h,cw,cd,a,b,hang)=>{
   const n=Math.max(1,Math.round(h/4.4)),hs=h/n,col=tint(a,b),ty=hh(a,b,1);
   const T=ty<.40?0:ty<.68?1:ty<.88?2:3;
@@ -146,8 +148,9 @@ function buildHexahedron(scene,gx,gz,d){reseed(9430+d);KOFF=[gx,0,gz];
    const cx=Q[0]-N[0]*off,cz=Q[1]-N[1]*off,cy=hang?yb-(i+.5)*hs:yb+(i+.5)*hs;
    const kind=T===3?'hxPun':(T===2&&i===n-1&&n>1&&!hang)?'hxVlt':(i%2===1&&hh(a,b,i+3)<.3)?'hxPun':'hxLog';
    kput(kind,[cx,cy,cz],q,[cw,hs,dz],col);
-   if(kind==='hxLog'&&d===0&&hh(a,b,i+11)<.55){const f=dz*.12+.06;
-    kput('hxGlow',[cx+N[0]*f,cy-hs*.07,cz+N[1]*f],q,[cw*.82,hs*.8,1],WARM);}
+   // lit after dark: the glazing at the back of a loggia, or in a punched window
+   if(d===0&&kind!=='hxVlt'&&hh(a,b,i+11)<.72){const L=kind==='hxLog',f=dz*(L?.12:.24)+.06;
+    kput('hxGlow',[cx+N[0]*f,cy-hs*(L?.07:.01),cz+N[1]*f],q,L?[cw*.84,hs*.84,1]:[cw*.54,hs*.44,1],hxLit(a+i,b));}
    // the terrace this storey's setback leaves, planted along its lip
    if(back>0){const fz=pf-.8;                      // pf: the storey below's front
     kput('hxPlnt',[Q[0]+N[0]*fz,yb+i*hs+.45,Q[1]+N[1]*fz],q,[cw*.84,.9,1.3],col);}
@@ -245,7 +248,10 @@ function buildHexahedron(scene,gx,gz,d){reseed(9430+d);KOFF=[gx,0,gz];
     // (cell(), above): loggias, setbacks, apses, roofs. The rows behind it are
     // seen from above, so they get a glazed band and a roof garden (hxBlk).
     if(row===0)cell(Q,N,q,y0+RU,h,cw,cd,k,j,false);
-    else kput('hxBlk',[Q[0],y0+RU+h*.5,Q[1]],q,[cw,h,cd],tint(k+row*31,j));}}
+    else{kput('hxBlk',[Q[0],y0+RU+h*.5,Q[1]],q,[cw,h,cd],tint(k+row*31,j));
+     // its glazed band (local y .05-.32) lit at night in about half the cells
+     if(d===0&&hh(k+row*31,j,11)<.5){const f=cd*.5+.05;
+      kput('hxGlow',[Q[0]+N[0]*f,y0+RU+h*.685,Q[1]+N[1]*f],q,[cw*.94,h*.24,1],hxLit(k+row*31,j));}}}}
   // Windows belong to the terrace WALL -- the vertical riser below the tread.
   // They used to sit at the tread height but the riser radius, i.e. outside the
   // building, so they read as panes hung in the air among the balcony boxes.

@@ -48,7 +48,7 @@ const VIEWS={
  'Terrace cells at night':(()=>{const S=HS.SHEAR,Nn=HS.SHEARN||[.6,.8];
    return[HX+S[0]+Nn[0]*190,S[1]+40,S[2]+Nn[1]*190,HX+S[0],S[1]-5,S[2],1];})(),
  'Hung cells':(()=>{const L=HS.LOWQ||[300,460,300],Nn=HS.LOWN||[.7,.7];
-   return[HX+L[0]+Nn[0]*420,L[1]-95,L[2]+Nn[1]*420,HX+L[0],L[1]-15,L[2]];})(),
+   return[HX+L[0]+Nn[0]*720,L[1]-170,L[2]+Nn[1]*720,HX+L[0],L[1]-15,L[2]];})(),
  'The hypertree':[-ROWS.mav.s+520,180,ROWS.mav.z+700,-ROWS.mav.s,220,ROWS.mav.z],
  'Tree and arcology':[-ROWS.mav.s-900,420,ROWS.mav.z+1900,HX+CXL-300,400,CZL],
  'Both':[(HX+HR)/2,1100,5400,(HX+HR)/2,480,239],
