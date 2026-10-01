@@ -4,7 +4,7 @@
 
 Ys: the half-drowned Hykkousoi capital on the ruins of an Ancient city at the head of the north-west bay of the Ring Sea (phase 0: harness and empty world).
 
-Docs: `AGENT-BRIEF.md`, `API.md`, `DESIGN.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PLAN.md`, `README.md`
+Docs: `AGENT-BRIEF.md`, `API.md`, `DESIGN.md`, `HANDOFF.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PLAN.md`, `README.md`
 
 Built output (never open it; edit `src/` and rebuild): `dist/kit.html`, `dist/mock.html`, `dist/ys.html`
 
@@ -34,15 +34,30 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `61-hyk-shell.js` | 13 | the surface builder (26); lathe: the shell body (38); pod: a superellipsoid with real openings (55); conch: a tapering tube along a log spiral (74); tube along a polyline (parallel-transport frames (90); fillet: roots a shell into a face or the ground (104); disc: floors, landings, lily pads (normal up unl (111) |
 | `62-hyk-helpers.js` | 21 | openings: a hole in a shell gets a lip and a rev (40); rooms and the spots the later placer fills (kits (65); landings, stairs, ladders (world frame unless in (76) |
 | `64-hyk-accrete.js` | 14 | the tideline: crust, weed, barnacle specks, foam (49); accretion: pods grown onto a host's face (60) |
+| `65-hyk-spans.js` | 27 | shared bits (18); the rib bridges (51); the drawbridge (built DOWN: closed) (77); stairs (109); the ladder (140); the lily-pad landing (150); the grown walkway (152); the pontoon walkway (163) |
 | `66-hyk-furniture.js` | 25 | the helpers (all through F) (10); the pieces (63) |
 | `69-mat-salvage.js` | 12 | salvage (decay level 3) (1); FIRELIGHT (44) |
 | `69b-vern-mat.js` | 14 | textures (world units: a 128px tile = 2 m) (30); world-unit UVs (93); materials (116); geometry (133); kit items (153) |
 | `69c-vern-helpers.js` | 19 | primitives (local frame; y = BASE of the piece) (51); walls, frames, plinths (60); roofs (ridge along local x unless noted) (87); openings (108); porches, stairs, yards (134) |
+| `70-hyk-housing.js` | 69 **big** | shared helpers (prefix hykHouse…) (7); POOR 1: the clam house. A low ribbed body, a rib (128); POOR 2: the stilt pod. A small pod carried 2.6 m (146); POOR 3: the limpet house. One ringed limpet cone (166); MIDDLE 1: the barnacle tower. One tall twisted b (183); MIDDLE 2: the pod cluster. Three pods of graded  (206); MIDDLE 3: the stair drum. A lobed drum with a st (232); RICH 1: the conch stair house. A nacre conch who (246); RICH 2: the urchin house. A lobed nacre dome rin (311); RICH 3: the scallop court. A ribbed scallop valv (346) |
 | `70-port-core.js` | 38 **big** | registry (24); layout (53); vessels (272); stats keys (308); geometry batching (316); inspector tags (434); the salvage pass, port edition (469) |
+| `71-hyk-shops.js` | 51 **big** | helpers (12); the free-standing base (61); the grown-on base (the G frame: origin on the ho (108); the trade dressings (F from a base: at(th,y,out) (135); the free-standing stores (row 'Shops') (296); the grown-on stores (row 'Grown-on shops', the G (367) |
 | `71-port-terrain.js` | 22 | the natural coast (7); stamps (24); materials (103); the terrain grid (196) |
+| `72-hyk-hospitality.js` | 34 **big** | shared helpers (7) |
 | `72-port-kit.js` | 9 | materials (11); geometry (56) |
+| `73-hyk-sacred.js` | 14 | shared bits (7) |
 | `73-port-edges.js` | 17 | paving (11); the quay wall (27); revetment (92); side closure (115); deck on columns (151); land blocks and sea platforms (190) |
 | `74-port-dress.js` | 12 | the stacked-container house (23); lamps, rails, boats (60); the shed (118) |
+| `74a-hyk-amphitriton.js` | 29 | the builder (35) |
+| `74c-hyk-tides.js` | 21 | the temple (45) |
+| `74d-hyk-winds.js` | 10 | the temple (16) |
+| `74e-hyk-pharos.js` | 12 | the crown (20) |
+| `74f-hyk-civic-minor.js` | 33 **big** | helpers shared by the three (prefixed hykLib…) (8); the Library of Ys: a nautilus of reading galleri (29); a barnacle cone: the Wet Cells' unit (and the Tr (154); the Treasury: the strongroom in the Citadel's co (167); the Wet Cells: the prison, a barnacle island rea (219) |
+| `75-hyk-harbour.js` | 37 **big** | shared bits (12) |
+| `76-hyk-industry.js` | 46 **big** | shared helpers (8); the armoured hall (73); warehouses: armoured halls with lipped cart door (124); the scrap smithies (157); the shipwright: a slipway under an open shed, a  (232); the granary: sealed silos on a raised pad, the s (274); the windmill: a sail-wheel of weed-cloth fins on (307); the generator: an Ancient machine reclaimed insi (350) |
+| `77-hyk-military.js` | 30 **big** | shared helpers (used by 78-hyk-agri.js too) (7); the barracks (90); the ballista emplacement (160); the mustering ground (208) |
+| `78-hyk-agri.js` | 15 | the farm field (18); farmhouse 1: fused barnacle cones with a byre (48); farmhouse 2: a long pod with a drying-rack yard (86) |
+| `79-hyk-markets.js` | 18 | shared bits (7) |
 | `81-sky.js` | 10 |  |
 | `90-ys-scene.js` | 6 | the sky and the clock (16); the port: stamps, terrain, sea, builders, bake (32) |
 | `91-ys-probe.js` | 8 | probe (window._api) (1) |
