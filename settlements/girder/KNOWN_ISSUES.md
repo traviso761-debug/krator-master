@@ -19,6 +19,13 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
 - [ ] Forest: no trodden-ground tone on gate tracks; fireflies hard to see; brook bed strip only inside |x|,|z|<1200; FAST-off (shadows) build never run
 - [ ] Forest: 62-jungle hard-codes four camera positions from 80-camera to keep them clear — publish viewpoints from the layout instead
 - [ ] Night at 21:00 is too bright under the gas giant (shared with Mav's Refuge)
+- [ ] Interiors are furnished AFTER load (56-interiors.js): ~16 s of placer time in a desktop browser (118 s headless), nearest the camera first; frames drop while it runs. The interiors placer (kits/interiors 45-placer.js, its geometry tests) is the cost: a faster placer or cached plans would let it run at load
+- [ ] Interior lamps, hearths and braziers are data only (their lights are on the placements, not in the night light volume): furnished rooms are lit at night only by the window spill
+- [ ] Furniture budget (BUDGET.furniture, measured + 15 %): HEAVY_PIECES
+- [ ] Walk mode: closed door leaves are drawn in the shells' doorways and the walker passes through them; no head collisions; no ladders (watch posts, wall-walk and orchard ladders are not climbable); no rail on the gallery or deck edges, so the walker can fall off; the stairwell beside each half landing is open
+- [ ] Woodpiles are the catalog's stave stack: the beast-rider culture file has no log pile (br_woodpile is only in the harvested registry, krator-master-furniture.js, which the bundle leaves out)
+- [ ] Still geometry that is arguably furniture: 72-lights.js LAMPPOSTs on the roads and deck corners (planner-owned; the culture file has no lantern post), the hides hung across workshop fronts, gallery banners, prayer flags, roost pennants and plaques (kept as facade dressing)
+- [ ] The Beast Rider set's Girder items (kits/interiors/sets/beast-rider.js) describe the catalog's buildings, not Girder's shells (sizes, door widths, floor heights differ; Girder sizes every slot and house itself): 56-interiors.js derives each building's item from its real shell instead. The roost deck item's keeper's shelter did not exist in Girder: 55-arch now draws one on each deck's outer corner apron
 
 Catalog verify pass (2026-10), not synced back here: kits/catalog recentred `br_bldg_girder_palisade` by 0.40 m and
 raised the sizes of the beast-rider hypertree plants. Girder's palisade is a ring of radius `PALISADE.R` built
