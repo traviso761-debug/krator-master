@@ -129,9 +129,10 @@ var FAMMAT = {
 
 var BUDGET = { drawCalls: 110, triangles: 4200000, instances: 260000,
   /* the catalog furniture's OWN budget (53-furnish.js outdoor pieces + 56-interiors.js rooms), counted apart from
-     the world's (verify.py subtracts the userData.furniture meshes): measured 2026-10 at 29 draw calls and
-     1.47 M triangles with every interior furnished, + ~15 % headroom. The heavy pieces: KNOWN_ISSUES.md */
-  furniture: { drawCalls: 34, triangles: 1690000 } };
+     the world's (verify.py subtracts the userData.furniture meshes): measured 2026-10 at 39 draw calls (29 render
+     families + 10 painted-panel materials) and 1.47 M triangles with every interior furnished, + ~15 % headroom.
+     The heavy pieces: KNOWN_ISSUES.md */
+  furniture: { drawCalls: 45, triangles: 1690000 } };
 
 /* aliases */
 var PLANKC = PAL.plank, TIMBERC = PAL.timber, WALLC = PAL.wall, WALLDARKC = PAL.wallDark,
