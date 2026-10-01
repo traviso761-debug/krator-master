@@ -14653,15 +14653,30 @@ function brfInterior(key, x, z, ry, baseY, site){
   BRF.buildings.push(rec); if(site) site.interior = rec;
   return rec;
 }
-/* the batch becomes meshes once, when the kit is emitted (75-terrain.js), and takes the night light volume */
+/* the batch becomes meshes once, when the kit is emitted (75-terrain.js). Shaded like the kit: the kit's surfaces
+   are vertex colour x a grayscale sRGB texture, the catalog's are bare vertex colour, so each furniture family is
+   a Lambert material tinted by the mean (linear) brightness of the kit family it reads as, and takes the night
+   light volume */
+var BRF_FAM = { wood:'timber', plank:'plank', cloth:'cloth', hide:'cloth', stone:'rock', thatch:'thatch', leafy:'leafy', rope:'rope' };
+function brfTexMean(fam){
+  var t = FAMMAT[fam] && FAMMAT[fam].tex, c = t && t.image;
+  if(!c || !c.getContext) return 0.5;
+  var d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data, sum = 0, n = 0;
+  for(var i=0;i<d.length;i+=32){ var v = d[i]/255; sum += v <= 0.04045 ? v/12.92 : Math.pow((v+0.055)/1.055, 2.4); n++; }
+  return n ? sum/n : 0.5;
+}
 var brfEmit0 = emitBuckets;
 emitBuckets = function(){
-  var g = BRF.batch.flush(scene); BRF.group = g;
+  var g = BRF.batch.flush(scene), tint = {}; BRF.group = g;
   g.children.forEach(function(m){
-    var fam = m.material.userData.family;
-    if(fam !== 'glow') nlMaterial(m.material, 'furn-'+fam);
+    var fam = m.material.userData.family, kf = BRF_FAM[fam] || 'timber';
+    if(fam !== 'glow'){
+      var k = tint[kf] || (tint[kf] = brfTexMean(kf)), mt = new THREE.MeshLambertMaterial({ vertexColors:true, color:new THREE.Color(k, k, k) });
+      mt.userData.family = fam; m.material.dispose(); m.material = nlMaterial(mt, 'furn-'+fam);
+    }
     m.castShadow = m.receiveShadow = !FAST; m.frustumCulled = false; m.userData.fam = 'Furniture';
   });
+  BRF.tint = tint;
   var tris = 0; g.children.forEach(function(m){ tris += m.geometry.attributes.position.count/3; });
   window._furniture = { placed:BRF.placed.length, tris:tris|0, meshes:g.children.length, lights:BRF.lights, missing:BRF.missing,
                         interiors:BRF.buildings.length, interiorPieces:BRF.buildings.reduce(function(a,b){ return a+b.pieces; }, 0),

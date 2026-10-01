@@ -78,10 +78,10 @@ function gfFlush(){
 }
 /* a small summary for the verifier (window._* is printed whole), the full state for the console */
 function gfReport(){
-  var keys={}; GFURN.placed.forEach(function(r){ keys[r.key]=(keys[r.key]||0)+1; });
+  var keys={}, kv={}; GFURN.placed.forEach(function(r){ keys[r.key]=(keys[r.key]||0)+1; kv[r.key+'|'+r.variant]=(kv[r.key+'|'+r.variant]||0)+1; });
   window._furniture = { on:GFURN.on, placed:GFURN.placed.length, keys:Object.keys(keys).length, missing:GFURN.missing,
     tris:GFURN.tris||0, meshes:GFURN.meshes||0, lights:GFURN.lights };
-  window.girderFurniture = { GFURN:GFURN, byKey:keys, GWALK:GWALK };
+  window.girderFurniture = { GFURN:GFURN, byKey:keys, byKeyVariant:kv, GWALK:GWALK, GIX:typeof GIX!=='undefined'?GIX:null };
 }
 
 /* ---------------------------------------------------------------- walk-mode solids (83-walk.js)

@@ -20782,9 +20782,11 @@ window._locf = LOCF;   /* for probes: the records, LOCF.missing, LOCF.buildings 
    variant n `<key>#n` ONLY: no fallback to `<key>`, whose rooms are measured on variant 0's body */
 LOCF.itemOf = function(key, v){ return KratorInteriors.sets.find(v ? key+'#'+v : key); };
 LOCF.item = function(key, v){ var it=LOCF.itemOf(key, v); return it && !it.skip ? it : null; };
-/* why a top-level building gets no interior: 'skip' (its item says so), 'noItem' (a variant > 0 whose key has an item but
-   the variant has none of its own), 'none' (the key has no item at all) */
-LOCF.why = function(key, v){ var it=LOCF.itemOf(key, v); return it ? 'skip' : (v && KratorInteriors.sets.find(key) ? 'noItem' : 'none'); };
+/* why a top-level building gets no interior: 'skip' (its item says so, or the base item of a key skipped as a whole: an open
+   shade, a jetty, a prop), 'noItem' (a variant > 0 of a key whose base item plans rooms, with no item of its own: a gap
+   in the set), 'none' (the key has no item at all) */
+LOCF.why = function(key, v){ var it=LOCF.itemOf(key, v), base=v?KratorInteriors.sets.find(key):null;
+  return it ? 'skip' : (base ? (base.skip ? 'skip' : 'noItem') : 'none'); };
 /* place a catalog piece at (lx,ly,lz) in frame F (the catalog origin: the footprint centre), turned lry */
 function furnishAt(F, key, lx,ly,lz, lry, o){ o=o||{};
   var F0=LOCF.stack[0]||F, top=F0.asset?F0.asset.key:'', setting=o.setting||'outdoor';

@@ -64,10 +64,19 @@ R.push({name:'nav-connected', ok:A.NAV.reachable===A.NAV.nodes.length, detail:A.
   R.push({name:'farms-inside-palisade', ok:!bad.length, detail: bad.length?JSON.stringify(bad.slice(0,8)):A.PLOTS.length+' plots, '+A.HOUSES.length+' houses'}); }
 { const n=A.ROOSTS.length, per={}; A.ROOSTS.forEach(r=>{per[r.plat.id]=(per[r.plat.id]||0)+1;});
   R.push({name:'roosts-on-every-deck', ok:Object.keys(per).length===4 && n>=40, detail:n+' roost stalls: '+JSON.stringify(per)}); }
+{ const F=window._furniture; if(F){ const miss=Object.keys(F.missing||{});
+  R.push({name:'furniture-catalog-keys', ok:!miss.length && F.placed>0, detail:F.placed+' pieces placed with FURNISH, '+F.keys+' catalog keys'+(miss.length?', MISSING '+miss.join(','):', none missing')}); } }
+{ const I=window._interiors; if(I && I.on){
+  R.push({name:'interiors-furnished', ok:I.done===I.total && I.total>0 && !I.dropped && !I.residenceFails && !Object.keys(I.missingItems||{}).length,
+    detail:I.done+'/'+I.total+' buildings, '+I.rooms+' rooms, '+I.pieces+' pieces, '+I.partitions+' partitions, residence fails '+I.residenceFails+', dropped rooms '+I.dropped}); } }
 return R;}"""
 
+# The catalog furniture (53-furnish.js, 56-interiors.js: meshes flagged userData.furniture) has its own budget
+# line (BUDGET.furniture); the world budget is measured without it.
 BUDGET_JS = """()=>{const B=(typeof BUDGET!=='undefined')?BUDGET:(window._api&&window._api.BUDGET); if(!B) return null;
-return {budget:B, calls:renderer.info.render.calls, tris:renderer.info.render.triangles,
+let fc=0, ft=0; scene.traverseVisible(o=>{ if(!o.isMesh||!o.userData.furniture) return; const g=o.geometry;
+  const n=g.index?g.index.count:g.attributes.position.count, dr=g.drawRange; fc++; ft+=Math.floor(Math.min(n, dr.count===Infinity?n:dr.count)/3); });
+return {budget:B, calls:renderer.info.render.calls-fc, tris:renderer.info.render.triangles-ft, furnCalls:fc, furnTris:ft,
         instances:(window._stats&&window._stats.instances)||0};}"""
 
 
@@ -98,6 +107,13 @@ async def run(a):
             except Exception as e:
                 print("timed out waiting for the world to build")
             await pg.wait_for_timeout(2500)
+            # the interiors are furnished after load, a few buildings a frame (56-interiors.js): wait for all
+            try:
+                await pg.wait_for_function("!window._interiors || !window._interiors.on || window._interiors.done===window._interiors.total",
+                                           timeout=1500000, polling=2000)
+                print("interiors:", json.dumps(await pg.evaluate("window._interiors||null"))[:900])
+            except Exception as e:
+                print("timed out waiting for the interiors to be furnished")
             if a.hour is not None:
                 await pg.evaluate("(h)=>{ if(window._api) _api.skySetHour(h); const p=document.getElementById('dnPause'); if(p && !/Resume/.test(p.textContent)) p.click(); }", a.hour)
                 await pg.wait_for_timeout(1200)
@@ -127,9 +143,12 @@ async def run(a):
                 bg = await pg.evaluate(BUDGET_JS)
                 if bg:
                     print("\n--- budget ---")
-                    for k, cur in (("drawCalls", bg["calls"]), ("triangles", bg["tris"]),
-                                   ("instances", bg["instances"])):
-                        lim = bg["budget"][k]
+                    fb = bg["budget"].get("furniture") or {}
+                    rows = [("drawCalls", bg["calls"], bg["budget"]["drawCalls"]), ("triangles", bg["tris"], bg["budget"]["triangles"]),
+                            ("instances", bg["instances"], bg["budget"]["instances"])]
+                    if fb:
+                        rows += [("furn.calls", bg["furnCalls"], fb["drawCalls"]), ("furn.tris", bg["furnTris"], fb["triangles"])]
+                    for k, cur, lim in rows:
                         ok = cur <= lim
                         print("  %s  %-10s %9d / %9d  (%d%%)" % ("PASS" if ok else "OVER", k, cur, lim, 100 * cur // lim))
                         if not ok:
