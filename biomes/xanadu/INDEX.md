@@ -14,8 +14,8 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 2 |  |
-| `10-core-head.js` | 5 | PRNG (14); noise (24); host binding (32); accounting (74) |
-| `20-core-kit.js` | 15 | merged buckets (46); runtime LOD (xanadu-1, additive) (121); bake (145) |
+| `10-core-head.js` | 6 | PRNG (14); noise (24); host binding (41); accounting (83) |
+| `20-core-kit.js` | 17 | merged buckets (46); runtime LOD (xanadu-1, additive) (121); indexed buckets (145); bake (168) |
 | `30-core-foliage.js` | 13 | alpha textures (18); card geometries (48); the foliage hook (110) |
 | `40-core-place.js` | 6 | surface sampling (53) |
 | `45-host-stage.js` | 18 | the map (46); the sacred river (100); terrain (133); the climate fields (151); the field cache (18 m lattice; terrainH stays ex (174); the host binding (182) |

@@ -164,6 +164,46 @@ function texFill(S, fn){
     FAMMAT.tile.tex = texFinish(texFill(S,function(x,y){
       var r=Math.floor(y/rh), lx=(x%sw)/sw, ly=(y%rh)/rh, tone=h2(Math.floor(x/sw)%8, r+40);
       return (0.62 + 0.24*tone + 0.22*Math.sin(lx*Math.PI) + 0.10*(n(x,y)-0.5)) * (ly<0.10?0.55:1); })); })();
+  /* corrugate (ABYSS): ribbed sheet — a rib every ~8 cm along u, sheet laps every ~0.9 m, patchy weathering */
+  (function(){ var a=texNoise(S,6,311), b=texNoise(S,30,312);
+    FAMMAT.corrugate.tex = texFinish(texFill(S,function(x,y){
+      var rib = 0.5+0.5*Math.cos(x*TAU/S*20), lap = (x%128)<3 ? 0.62 : 1;
+      return (0.66 + 0.26*rib + 0.16*(a(x,y)-0.5) + 0.10*(b(x,y*0.2)-0.5)) * lap; })); })();
+  /* tinmirror (ABYSS): a patchwork of flattened cans and foil — jittered tiles of differing brightness, dark seams,
+     round bottle bottoms with a bright rim, and a few hard specks of mirror. COLOUR texture (mostly grey, some gold foil and painted cans), tinted abTin; Phong adds the glint. */
+  (function(){ var n=texNoise(S,40,321), cell=S/10;
+    FAMMAT.tinmirror.tex = texFinish(texFill(S,function(x,y){
+      var r=Math.floor(y/cell), off=(r%2)*cell*0.5, xx=(x+off)%S, c=Math.floor(xx/cell), lx=(xx%cell)/cell, ly=(y%cell)/cell;
+      var id=(c%10)*31+r*7, tone=h2(id,3), v=0.62+0.40*tone;
+      if(lx<0.05||ly<0.06) v=0.30;                                                  /* seams between the pieces */
+      else if(h2(id,5)>0.80){ var d=Math.hypot(lx-0.5,ly-0.5); v = d<0.26 ? 0.40+0.5*d : d<0.34 ? 1.0 : v; }   /* a bottle bottom */
+      else if(h2(id,9)>0.86 && Math.abs(lx-ly)<0.08) v=1.0;                          /* a mirror shard's edge */
+      else v += 0.10*Math.sin(ly*TAU*6)*(h2(id,7)>0.5?1:0);                         /* ribbed can wall */
+      var hue=h2(id,11), tint = hue>0.86 ? [1.0,0.80,0.48] : hue>0.76 ? [0.62,0.92,0.92] : hue>0.70 ? [1.0,0.58,0.52] : [1,1,1];   /* gold foil, teal and red cans */
+      var w=v*(0.93+0.14*(n(x,y)-0.5)); return [w*tint[0], w*tint[1], w*tint[2]]; })); })();
+  /* rubble (ABYSS): rough fieldstone in pale mortar — Voronoi stones, each with its own tone and a rounded face */
+  (function(){ var cells=7, pts=[], n=texNoise(S,48,331);
+    for(var j=0;j<cells;j++) for(var i=0;i<cells;i++) pts.push([(i+0.15+0.7*h2(i*3+11,j*5+12))/cells*S, (j+0.15+0.7*h2(i*7+13,j*11+14))/cells*S, h2(i*13+15,j*17+16)]);
+    FAMMAT.rubble.tex = texFinish(texFill(S,function(x,y){
+      var ci=Math.floor(x/S*cells), cj=Math.floor(y/S*cells), d1=1e9, d2=1e9, tone=0;
+      for(var dj=-1;dj<=1;dj++) for(var di=-1;di<=1;di++){
+        var ii=((ci+di)%cells+cells)%cells, jj=((cj+dj)%cells+cells)%cells, P=pts[jj*cells+ii];
+        var px=P[0]+(ci+di-ii)/cells*S, py=P[1]+(cj+dj-jj)/cells*S, d=Math.hypot(x-px,(y-py)*1.4);
+        if(d<d1){ d2=d1; d1=d; tone=P[2]; } else if(d<d2) d2=d; }
+      var e=d2-d1; if(e<2.5) return 0.88+0.08*(n(x,y)-0.5);                          /* mortar */
+      return (0.50 + 0.34*tone + 0.12*smooth(2.5,14,e) + 0.16*(n(x,y)-0.5)); })); })();
+  /* pattern (ABYSS): the sail band — a strip of red-on-orange triangles between two zigzags. COLOUR texture whose ground
+     is white and whose motif is abSailRed/abSailOrange per channel, so a band tinted abSailOrange shows red on orange
+     and any other tint shows its own colour with a darker motif. */
+  (function(){ var n=texNoise(S,24,341), cr=new THREE.Color(PAL.abSailRed), co=new THREE.Color(PAL.abSailOrange);
+    var M=[cr.r/co.r, cr.g/co.g, cr.b/co.b].map(function(v){ return Math.min(1,v); }), W=[1,1,1], K=[M[0]*0.55,M[1]*0.55,M[2]*0.55];
+    FAMMAT.pattern.tex = texFinish(texFill(S,function(x,y){
+      var u=(x%64)/64, v=y/S, c=W;
+      var zz=Math.abs(((x%32)/32)-0.5)*2;                                           /* 0..1 zigzag profile */
+      if(Math.abs(v-(0.08+0.08*zz))<0.03 || Math.abs(v-(0.84+0.08*zz))<0.03) c=K;    /* the two zigzag lines */
+      else if(v>0.24 && v<0.76){ var t=(v-0.24)/0.52; c = (Math.abs(u-0.5)*2 < 1-t) ? M : W; if(Math.abs(Math.abs(u-0.5)*2-(1-t))<0.05) c=K; }   /* triangles */
+      else if(v<0.04 || v>0.96) c=M;
+      var w=0.94+0.10*(n(x,y)-0.5); return [c[0]*w,c[1]*w,c[2]*w]; })); })();
   /* bark */
   (function(){ var n1=texNoise(S,48,291), n2=texNoise(S,6,292);
     FAMMAT.bark.tex = texFinish(texFill(S,function(x,y){ var g=0.5+0.5*Math.sin(x*TAU/S*14 + n1(x,y*0.2)*6);
