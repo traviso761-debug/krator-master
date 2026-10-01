@@ -335,10 +335,10 @@
 
 ## Carried over from ancients
 
-- [ ] `build.py` cannot check syntax -- no node on THIS machine. `verify.py`
-      reading the on-screen error panel is the only syntax check here. (The
-      flora pass was built in a sandbox that does have node, and `node --check`
-      passed on every build there.)
+- [x] `build.py` cannot check syntax -- no node on THIS machine. **Fixed (Oct 2026):**
+      `find_node()` looks in `$NODE`, PATH, `/opt/node*/bin`, `~/.nvm` and `~/.volta`;
+      `node --check` passes on both targets. With no node anywhere the build still
+      says "syntax NOT CHECKED" (every `build.py` shares the lookup).
 - [ ] The crater's inner shell is still bare: the growth pass plants round its
       rim and down the torn strip, but nothing inside the bowl.
 - [ ] `FLORA.dressSoffit` and `FLORA.dressLedge` are the generic area-sampled
