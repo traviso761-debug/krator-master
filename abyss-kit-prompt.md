@@ -1,6 +1,11 @@
-# Prompt for Gemini: flesh out the Eastern Abyssal building kit
+# Prompt for an AI coding assistant (ChatGPT, Codex or Gemini): flesh out the Eastern Abyssal building kit
 
-*(Copy everything below the line into Gemini. Attach the eight reference images from `abyss.zip` with it, and keep their filenames so the prompt's references match. If Gemini cannot read the GitHub repo `traviso761-debug/krator-master` directly, also attach the files listed in section 2.)*
+*(Copy everything below the line into the assistant. Attach the eight reference images from `abyss.zip` with it, and keep their filenames so the prompt's references match.*
+
+*Which assistant, best first:*
+- ***ChatGPT Codex** (the coding agent, connected to GitHub): it clones the repo and runs commands itself. Point it at `traviso761-debug/krator-master` and tell it to work on a new branch.*
+- ***ChatGPT with code execution:** zip `settlements/locus/` (leave out `*.html`, `publish/`, `shots/`), `core/`, `tools/`, `gallery/build_gallery.py`, `README.md`, `CLAUDE.md` and `painting-to-3d-world.skill`, and upload the zip with the images. It can run `build.py`, but it has no browser, so you run `verify.py` and `kitshots.py` and paste back the output and screenshots.*
+- ***An assistant that can't run code** (Gemini, in your experience): it writes code and you run everything.)*
 
 ---
 
@@ -270,6 +275,19 @@ ASSET({ key:'abyss_…', name:'…', family:'poor'|'mid'|'rich'|'trade'|'civic'|
 
 ---
 
+## 10a. Your environment: say which mode you are in before round 1
+
+Work out which of these you are in, and **tell me in your read-back**:
+
+- **Mode A: you have the repo and a shell** (for example, Codex). Run every command yourself: `build.py`, `verify.py`, `kitshots.py`. Look at the screenshots. Commit each round on a branch with a clear message. Check whether Playwright and Chromium are installed (`python3 -c "import playwright"`). If they aren't, you are in mode B for verification only.
+- **Mode B: you can run Python but have no browser** (for example, ChatGPT's code sandbox with my uploaded zip). Do this:
+  1. Unzip and work on the files in the sandbox.
+  2. Run `python3 build.py` yourself after every change. It uses only the standard library.
+  3. **Warning:** if Node is missing, `build.py` prints `NOTE: node not found, skipping the syntax check` and then **still prints "syntax OK". That "syntax OK" is false.** Run `node --version` first. If Node exists, the check is real. If it doesn't, tell me, and treat syntax as **unchecked** until I run `verify.py`.
+  4. You cannot run `verify.py` or `kitshots.py` (they need a headless browser). At the end of each round, give me the exact commands, then wait for me to paste back the output and the screenshots. **Look at the screenshots I send** and say what is wrong in them before moving on.
+  5. Hand back each round as **a zip of only the files you changed or created**, at their repo paths (for example `settlements/locus/src/65-abyss-core.js`), plus a list of them. I will unzip it over my copy.
+- **Mode C: you cannot run anything.** Write the code, give me full new files and exact edits as described below, give me the commands, and wait for my output. Never describe a result you haven't seen.
+
 ## 10. How to work: small rounds, verified each time
 
 **Do not try to write all of this in one reply.** You will run out of room and produce broken, half-finished files. Work in rounds and **stop at the end of each one** so I can check it:
@@ -288,13 +306,13 @@ ASSET({ key:'abyss_…', name:'…', family:'poor'|'mid'|'rich'|'trade'|'civic'|
 In **every** round:
 1. List the files you are creating or changing.
 2. For a **new** file, give its **complete contents**. For an **existing** file, give an **exact, minimal edit**: the exact old lines and the exact new lines. Never write "… rest unchanged …" inside a code block I'm meant to paste. Never regenerate an existing file to change part of it.
-3. Build: `cd settlements/locus && python3 build.py`.
-4. Verify: `python3 verify.py abyss-kit.html --assert --out shots` and `python3 verify.py locus-kit.html --assert` (the old sheet must not break).
+3. Build: `cd settlements/locus && python3 build.py` (mode A or B: you run it; mode C: I do).
+4. Verify (mode A: you run it; modes B and C: I do and paste back the output): `python3 verify.py abyss-kit.html --assert --out shots` and `python3 verify.py locus-kit.html --assert` (the old sheet must not break).
 5. Close-ups: `python3 kitshots.py shots --sheet abyss-kit.html --dump`, then `python3 kitshots.py shots --sheet abyss-kit.html <key>:<variant>:f <key>:<variant>:c …` for **every new asset and variant**, front (`f`) and eye-level close (`c`), and `n` (night) for anything lit.
 6. **Look at the shots.** Proportion errors only show up at eye level: doors taller than 2.5 m, stairs that don't reach the deck, piles not reaching the ground, roofs floating above walls, sails passing through walls, vessels intersecting each other. No automated check catches these.
 7. End the round with: what you built, what you checked, what you **could not** check, and any known problems. Add those problems to `ABYSS-KIT-KNOWN-ISSUES.md`.
 
-**Be honest about what you ran.** If you cannot run Python or a headless browser in your environment, **say so plainly**, give me the exact commands, and wait for my output. Never write "verified", "tested" or "renders correctly" about something you did not run and look at.
+**Be honest about what you ran.** Say which commands you ran yourself and which you are handing to me. For anything you can't run, give me the exact commands and wait for my output. Never write "verified", "tested" or "renders correctly" about something you did not run and look at.
 
 ---
 
@@ -327,4 +345,4 @@ In **every** round:
 6. Add `settlements/locus/abyss-kit.html` to `ENTRIES` in `gallery/build_gallery.py` and run `python3 gallery/build_gallery.py` (see `gallery/README.md`). Publishing the gallery is my job; tell me it's ready.
 7. Add any new lessons (pitfalls you hit and how you solved them) to `painting-to-3d-world/SKILL.md` inside the skill zip.
 
-Before you start round 1, **read back to me** in a short bullet list: the files you will change in round 1, the IIFE/`ABYSS` naming rule, the seed block, which old assets go on the abyss sheet and which don't, how you will handle `group` for assets on two sheets, the three shops you picked, the ruler's title question, and anything in this prompt you found unclear. Then wait for my go-ahead.
+Before you start round 1, **read back to me** in a short bullet list: which mode (A, B or C) you are in, and why; the files you will change in round 1, the IIFE/`ABYSS` naming rule, the seed block, which old assets go on the abyss sheet and which don't, how you will handle `group` for assets on two sheets, the three shops you picked, the ruler's title question, and anything in this prompt you found unclear. Then wait for my go-ahead.
