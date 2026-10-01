@@ -107,20 +107,22 @@ and ticking it, not by deleting it.
       (bay, storey), frayed at their edges by an fbm. Counted rather than
       asserted — `window._projectFire` reports **1 111 of 2 284 cells, 49%**,
       which `verify.py` prints in its counters line.
-- [ ] **The fire does not light anything.** It is emissive cards and additive
+- [x] ~~**The fire does not light anything.**~~ Towers QA round 2: three PointLights per Project at
+      k-means centroids of its own fires (`fireLights`, 69-mat-salvage.js), visible only at night, flickering. It is emissive cards and additive
       spill; there is no point light, so the fabric around a window is lit by
       the night hemisphere and not by the fire in it. One `PointLight` per
       territory would fix it and would cost a shader recompile for the whole
       scene, which is why it was not done. Same root cause as the kit-wide
       "lit windows cannot out-shine a sunlit wall" complaint, from the other end.
-- [ ] **The fires do not flicker and never will without an animation hook.**
-      Nothing in this kit animates.
+- [x] ~~**The fires do not flicker and never will without an animation hook.**~~
+      Towers QA round 2: `TICKS`/`tick()` (10-core.js, same hunk as the lighthouse patch) drives one
+      uniform; `MAT.flame`/`MAT.ember` pulse per instance, phase from position.
 - [x] ~~Projects D and H had builder code but no rows or presets.~~ Rows at
       `j=-1150` with `ds:[0,1,2,3,4]`; presets `Project D`/`Project H`, each with
       `at night` and `close`. Fire coverage (`window._projectFire`): A 1 111 of
       2 284 cells (49%), D 430 of 727 (59%), H 376 of 560 (67%). D and H burn
       hotter than the 50% the brief asked for.
-- [ ] The Project's plinth can only come in to 110 because the 24 splayed
+- [x] ~~The Project's plinth can only come in to 110~~ Towers QA round 2: struts' feet 98 -> 80, podium 92. The Project's plinth can only come in to 110 because the 24 splayed
       struts land at r=98 (see below). It is still the loosest podium of the
       eight.
 
@@ -134,13 +136,13 @@ exactly one instance (see the Skyscraper G item).
 
 | | was | now | what sets the floor |
 |---|---|---|---|
-| A | 120 | 110 | 24 splayed struts land at r=98 |
-| B | 110 | 82 | twelve legs at r=70, columns 4.5 wide |
-| C | 115 | 96 | three hyperboloid legs at r=62, ~24 wide at the foot |
+| A | 120 | 110 -> 92 (round 2) | 24 splayed struts land at r=98 -> 80 |
+| B | 110 | 82 -> 66 | twelve legs at r=70 -> 56, columns 4.5 wide |
+| C | 115 | 96 -> 80 | three hyperboloid legs at r=62 -> 50 |
 | D | 110 | 48 | nothing but the shell: 34 at the superellipse corners |
 | E | 105 | 48 | the lens is 68 across, its edge fins add 3 |
 | F | 105 | 48 | widest tray 38.4 (registered volume 120 → 56) |
-| G | 130 | 130 | genuinely full — see below |
+| G | 130 | 130 -> 116 | stack and drum moved together (round 2) |
 | H | 110 | 56 | keep 43.5 at the corners, lowest setback ledge 45 |
 
 - [x] ~~**Skyscraper G's podium bar floated.**~~ 240 m long at z=90, so its ends
@@ -148,11 +150,13 @@ exactly one instance (see the Skyscraper G item).
       the podium's top. Both ends hung five metres clear of the apron. This is
       exactly the hardcoded per-builder podium decor that does NOT follow `R`.
       It starts at the ground now and rises through the podium.
-- [ ] **Skyscraper G cannot shrink.** Its block stack's outer stilts stand at
+- [x] ~~**Skyscraper G cannot shrink.**~~ Towers QA round 2: stack (x 70 -> 50) and drum (-70 -> -52) moved
+      toward each other, bridges 67 -> 29 m, podium 130 -> 116. Its block stack's outer stilts stand at
       (115, 30) and the block corners reach r=127.6, so `skyPlinth`'s column
       ring at `R*.93` is already grazing them at R=130. Coming in means moving
       the stack, which is the building.
-- [ ] **A, B and C are limited by their own legs, not by their podiums.** If
+- [x] ~~**A, B and C are limited by their own legs, not by their podiums.**~~ Towers QA round 2:
+      A struts 98 -> 80 (podium 110 -> 92), B legs 70 -> 56 (82 -> 66), C legs 62 -> 50 (96 -> 80). If
       the splay were allowed to come in — A's struts from 98, B's legs from 70,
       C's from 62 — those three podiums could halve like the other five did.
       That is a change to the buildings' stance and was not taken unasked.
@@ -289,7 +293,8 @@ exceeded ceiling as `OVER`; `--strict-budget` makes it fail.
       next row, so nine row shots (skyscrapers A, B, D, E, G, H, Megastructure,
       Starport, Lab) are tighter than they were designed. They frame the
       intact, rehabilitated and ruined sites; the toppled one sits off frame.
-- [ ] The repaired pass dresses **every** type identically. A police station and
+- [ ] The repaired pass dresses **every** type identically. (Partly: the Starport has tents, and the
+      towers A, B, C, D, G, H get a hoist gantry, cable, load, winch house and scaffold cages, `skyHoist`.) A police station and
       a cathedral-scale laboratory get the same vocabulary of lean-tos and water
       butts; some types would read better with their own accretion (a factory
       wants scrap yards, a starport wants tents on the aprons).
@@ -321,14 +326,17 @@ exceeded ceiling as `OVER`; `--strict-budget` makes it fail.
       onBeforeCompile).
 - [ ] No Gaudí bone-work yet: window mouldings, finials, bulb tops, bone-rib
       buttresses, and the `moulding(profile, path)` sweep helper they need.
-- [ ] Interiors are floor slabs only — no corridor light strips, touchpad
+- [ ] Interiors are floor slabs only — DONE for civic (`civRooms`) and towers (`skyRooms`, in the
+      bays that are actually open). Interiors are floor slabs only — no corridor light strips, touchpad
       panels, conduit bundles or machinery silhouettes behind the openings.
 - [x] ~~Decay is uniform rings.~~ Round 5: `rubbleRing` now banks rubble against
       the wall it fell from (same signature, so all 33 types improved at once);
       `upFaces`/`ledgePoints` sample a structure's own flat surfaces so moss
       lands only where something faces the sky and vines and water-staining come
       off real ledges. Applied to the Laboratory, Hotel and Apartments A.
-- [ ] **Glass shards in ruined window openings** — the one decay sub-item still
+- [ ] **Glass shards in ruined window openings** — DONE for the civic group (`civWin`) and the towers
+      group (`skyShardMark`/`skyShards` in 52-sky-abc.js: A-D, G, H, Hotel, Cultural, Flatiron, K).
+      Still open for the other groups. The one decay sub-item still
       outstanding. Unlike the rest it cannot be done in a shared helper: the
       windows are `kput` directly at ~15 call sites, so it needs either a
       `deadWindow()` wrapper threaded through them or shards baked into the
