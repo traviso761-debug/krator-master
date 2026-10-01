@@ -24,15 +24,24 @@ function buildGround(){
   const pr=R/SX*SN,pi=(cx-TERR.X0)/SX*SN,pj=(cz-TERR.Z0)/SZ*SN;
   for(let j=Math.max(0,Math.floor(pj-pr));j<=Math.min(SN-1,Math.ceil(pj+pr));j++)for(let i=Math.max(0,Math.floor(pi-pr));i<=Math.min(SN-1,Math.ceil(pi+pr));i++){const d=Math.hypot(i-pi,j-pj)/Math.max(.5,pr);if(d<1)SH[j*SN+i]=1-(1-SH[j*SN+i])*(1-k*(1-d*d));}}
  const sat=(u,v)=>{const fu=clamp(u*SN-.5,0,SN-1.001),fv=clamp(v*SN-.5,0,SN-1.001),i=Math.floor(fu),j=Math.floor(fv),a=fu-i,b=fv-j;return SH[j*SN+i]*(1-a)*(1-b)+SH[j*SN+i+1]*a*(1-b)+SH[(j+1)*SN+i]*(1-a)*b+SH[(j+1)*SN+i+1]*a*b;};
- const TEX=BIO.canvasTex(TW,TW,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;const c=new THREE.Color(),t=new THREE.Color();
+ const TEX=BIO.canvasTex(TW,TW,(g0,W0,H0)=>{
+  // PAINTED AT HALF THE TEXTURE'S SIZE (6.4 m a pixel) and scaled up by the canvas: every input (the zones, the fields,
+  // the shade, the noises) is smoother than that, so the paint is the same to the eye for a quarter of the pixels
+  const w=W0/2,h=H0/2,cv=document.createElement('canvas');cv.width=w;cv.height=h;const g=cv.getContext('2d'),id=g.createImageData(w,h),d=id.data;const c=new THREE.Color(),t=new THREE.Color();
   const MOSS=new THREE.Color(0x3e5a24),MOSS2=new THREE.Color(0x52702a),FERNSH=new THREE.Color(0x26381c),LITTER=new THREE.Color(0x4a3a2a),NEEDLE=new THREE.Color(0x5a4232),
    GLADE=new THREE.Color(0x6e8e3c),BELL=new THREE.Color(0x5a5ab0),HEATH=new THREE.Color(0x52603a),HEATH2=new THREE.Color(0x4a3e44),LICHEN=new THREE.Color(0x8a9274),
    MOSSD=new THREE.Color(0x46602e),CHAR=new THREE.Color(0x2e2a26),FIRE=new THREE.Color(0x7a4a54),ROCK=new THREE.Color(0x7a7b74),ROCK2=new THREE.Color(0x63655f),
    SNOW=new THREE.Color(0xe6ecf2),GRAV=new THREE.Color(0x8a887c),PEAT=new THREE.Color(0x3a3428),DARKV=new THREE.Color(0x3a3048);
+  // the per-pixel loop allocates nothing: the constant mixes once, a scratch colour for the rest
+  const ROCKMOSS=ROCK.clone().lerp(MOSS,.45),BANK=MOSS2.clone().lerp(MOSS,.5),q=new THREE.Color();
+  // the two noises on lattices (6.4 m and 12.8 m; their features are 90 m and 300 m)
+  const NL=(n,f,sd)=>{const A=new Float32Array((n+1)*(n+1));for(let j=0;j<=n;j++)for(let i=0;i<=n;i++)A[j*(n+1)+i]=fbm((TERR.X0+i/n*SX)*f,(TERR.Z0+j/n*SZ)*f,sd,2)-.5;return A;};
+  const N2=w,N3=w/2,L2=NL(N2,.011,4.1),L3=NL(N3,.0032,5.3);
+  const lat=(A,n,u,v)=>{const fu=u*n,fv=v*n,i=Math.min(n-1,Math.floor(fu)),j=Math.min(n-1,Math.floor(fv)),a=fu-i,b=fv-j,r=n+1;return A[j*r+i]*(1-a)*(1-b)+A[j*r+i+1]*a*(1-b)+A[(j+1)*r+i]*(1-a)*b+A[(j+1)*r+i+1]*a*b;};
   for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,u=(x+.5)/w,v=(y+.5)/h,wx=TERR.X0+u*SX,wz=TERR.Z0+v*SZ;
-   const n=(BIO.fn.h3(x,y,3)-.5),n2=fbm(wx*.011,wz*.011,4.1,2)-.5,n3=fbm(wx*.0032,wz*.0032,5.3,2)-.5;
+   const n=(BIO.fn.h3(x,y,3)-.5),n2=lat(L2,N2,u,v),n3=lat(L3,N3,u,v);
    const tem=zat('temperate',u,v),mon=zat('montane',u,v),bor=zat('boreal',u,v),alp=zat('alpine',u,v),rip=zat('rip',u,v),gl=zat('glade',u,v),ow=zat('oldwood',u,v),brn=zat('burn',u,v),dk=zat('dark',u,v),rk=zat('rock',u,v);
-   const sl=FC.at(FC.a.slope,wx,wz),hh=FC.at(FC.a.h,wx,wz),north=FC.at(FC.a.north,wx,wz);
+   const sl=FC.at(FC.a.slope,wx,wz),north=FC.at(FC.a.north,wx,wz);
    // the temperate floor: a moss carpet, fern shadow, a little litter
    c.copy(MOSS).lerp(MOSS2,clamp(.5+n2*2.4,0,1)).lerp(FERNSH,smooth(.05,.3,n3)*.55).lerp(LITTER,clamp(smooth(.0,.3,-n3)*.55+smooth(.2,.5,n2)*.3,0,.7));
    // the montane: needle litter through the moss
@@ -41,20 +50,20 @@ function buildGround(){
    t.copy(MOSSD).lerp(HEATH,clamp(.5+n2*2.2,0,.7)).lerp(HEATH2,smooth(.1,.3,n2)*.3).lerp(LICHEN,smooth(.0,.22,n3)*.7);c.lerp(t,bor);
    if(brn>0){t.copy(CHAR).lerp(FIRE,clamp(.5+n2*2.5,0,1)*.7);c.lerp(t,brn*.8);}
    // the glades: grass, and bluebells in the temperate ones
-   c.lerp(GLADE.clone().lerp(BELL,tem*smooth(.0,.25,n2+.1)*.45),gl*.75);
+   if(gl>0)c.lerp(q.copy(GLADE).lerp(BELL,tem*smooth(.0,.25,n2+.1)*.45),gl*.75);
    if(dk>0)c.lerp(DARKV,dk*tem*.18*smooth(-.1,.2,n2));
    // the old wood and the crags: grey stone through the moss, granite on the steep
-   c.lerp(ROCK.clone().lerp(MOSS,.45),ow*smooth(.0,.3,n2+.15)*.5);
-   const rockK=Math.max(smooth(.62,1.05,sl),rk*.35);c.lerp(ROCK.clone().lerp(ROCK2,clamp(.5+n3*2.5,0,1)),rockK);
+   if(ow>0)c.lerp(ROCKMOSS,ow*smooth(.0,.3,n2+.15)*.5);
+   const rockK=Math.max(smooth(.62,1.05,sl),rk*.35);if(rockK>0)c.lerp(q.copy(ROCK).lerp(ROCK2,clamp(.5+n3*2.5,0,1)),rockK);
    // the top: snow on the north faces and in the hollows
    c.lerp(SNOW,smooth(.72,.92,.35*Math.max(0,north)+n3*3.2+.25*n2*4)*smooth(.95,.5,sl)*smooth(.94,1,zat('cold',u,v))*alp*.8);   // patches, never a whole face   // patches: the north faces and the hollows hold it
    // the banks: gravel and wet moss; the tarn's peat
-   const fl=FC.at(FC.a.flow,wx,wz);c.lerp(MOSS2.clone().lerp(MOSS,.5),rip*.45);c.lerp(GRAV,smooth(.86,.98,fl)*.7);
+   const fl=FC.at(FC.a.flow,wx,wz);c.lerp(BANK,rip*.45);c.lerp(GRAV,smooth(.86,.98,fl)*.7);
    if(Math.hypot(wx-TARN.x,wz-TARN.z)<TARN.r+30)c.lerp(PEAT,smooth(TARN.r+30,TARN.r,Math.hypot(wx-TARN.x,wz-TARN.z))*.6);
    // the canopy's shade
    const sh=sat(u,v);c.multiplyScalar(1-.62*sh);
    const k=1+n*.08;d[i]=clamp(c.r*255*k,0,255);d[i+1]=clamp(c.g*255*k,0,255);d[i+2]=clamp(c.b*255*k,0,255);d[i+3]=255;}
-  g.putImageData(id,0,0);});
+  g.putImageData(id,0,0);g0.imageSmoothingEnabled=true;g0.imageSmoothingQuality='high';g0.drawImage(cv,0,0,W0,H0);});
  const DET=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
   for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,v=232+(fbm(x/9,y/9,5,2)-.5)*40+(BIO.fn.h3(x,y,9)-.5)*24;d[i]=d[i+1]=d[i+2]=clamp(v,0,255);d[i+3]=255;}
   g.putImageData(id,0,0);});
