@@ -6,7 +6,7 @@ The Ancients kit: ruined megastructures of the ancient civilisation, 33 structur
 
 Docs: `API.md`, `DESIGN.md`, `HANDOVER.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `README.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/ancients-kit.html`, `dist/arcbeam.html`, `dist/arcoindian.html`, `dist/arcoindian2.html`, `dist/arcube.html`, `dist/blades.html`, `dist/canyon.html`, `dist/crescent.html`, `dist/dalab.html`, `dist/darco.html`, `dist/drum.html`, `dist/engines.html`, `dist/forest.html`, `dist/hexahedron.html`, `dist/hill.html`, `dist/iziz-style.html`, `dist/launch.html`, `dist/ledge.html`, `dist/monolith.html`, `dist/plymouth.html`, `dist/ring.html`, `dist/skyi.html`, `dist/skyj.html`, `dist/skyk.html`, `dist/spire.html`, `dist/theodiga.html`, `dist/trigon.html`, `dist/veladiga.html`, `dist/wheel.html`, `dist/wing.html`, `dist/worn.html`
+Built output (never open it; edit `src/` and rebuild): `dist/ancients-kit.html`, `dist/arcbeam.html`, `dist/arcoindian.html`, `dist/arcoindian2.html`, `dist/arcube.html`, `dist/blades.html`, `dist/canyon.html`, `dist/crescent.html`, `dist/dalab.html`, `dist/darco.html`, `dist/drum.html`, `dist/engines.html`, `dist/forest.html`, `dist/hexahedron.html`, `dist/hill.html`, `dist/iziz-style.html`, `dist/launch.html`, `dist/ledge.html`, `dist/lighthouse.html`, `dist/monolith.html`, `dist/plymouth.html`, `dist/ring.html`, `dist/skyi.html`, `dist/skyj.html`, `dist/skyk.html`, `dist/spire.html`, `dist/theodiga.html`, `dist/trigon.html`, `dist/veladiga.html`, `dist/wheel.html`, `dist/wing.html`, `dist/worn.html`
 
 Build: `cd kits/ancients && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -37,24 +37,24 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `57-sky-e.js` | 3 |  |
 | `58-sky-f.js` | 4 |  |
 | `60-gate.js` | 7 |  |
-| `61-spire.js` | 15 |  |
+| `61-spire.js` | 17 |  |
 | `62-robotics.js` | 8 |  |
-| `63-canyon.js` | 15 |  |
+| `63-canyon.js` | 18 |  |
 | `64-dalab.js` | 11 |  |
 | `64-houses-def.js` | 5 |  |
-| `65-veladiga.js` | 13 |  |
+| `65-veladiga.js` | 15 |  |
 | `66-office-c.js` | 2 |  |
 | `66b-flatiron.js` | 8 |  |
 | `67-cultural.js` | 5 |  |
-| `68-hexahedron.js` | 22 |  |
+| `68-hexahedron.js` | 28 |  |
 | `69-mat-salvage.js` | 12 | salvage (decay level 3) (1); FIRELIGHT (44) |
 | `69w-worn.js` | 12 | the WORN variant (decay 5) (1) |
 | `70-hypertree.js` | 7 |  |
 | `70-sky-g.js` | 6 |  |
 | `70b-perch.js` | 4 |  |
 | `71-sky-h.js` | 5 |  |
-| `71b-forest.js` | 47 **big** |  |
-| `71c-ring.js` | 62 **big** |  |
+| `71b-forest.js` | 49 **big** |  |
+| `71c-ring.js` | 73 **big** |  |
 | `72-datacenter.js` | 7 |  |
 | `73-police.js` | 5 |  |
 | `74-hospital.js` | 5 |  |
@@ -70,7 +70,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `76-65-biome-hyperjungle-dress.js` | 7 |  |
 | `76-70-biome-hyperjungle.js` | <1 |  |
 | `76-campus.js` | 9 |  |
-| `77-dam.js` | 11 |  |
+| `77-dam.js` | 13 |  |
 | `77z-iziz-style.js` | 47 **big** | ANCIENT IZIZ STYLE (1) |
 | `78-factory-silo.js` | 2 |  |
 | `79-government.js` | 4 |  |
@@ -81,17 +81,17 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `84-fuel.js` | 4 |  |
 | `85-radar.js` | 3 |  |
 | `86-dish.js` | 3 |  |
-| `86b-darco.js` | 25 |  |
-| `87-launch.js` | 67 **big** |  |
+| `86b-darco.js` | 27 |  |
+| `87-launch.js` | 71 **big** |  |
 | `87-mega.js` | 10 |  |
 | `88-factory.js` | 9 |  |
-| `88-plymouth.js` | 51 **big** |  |
-| `89-arcbeam.js` | 52 **big** |  |
+| `88-plymouth.js` | 57 **big** |  |
+| `89-arcbeam.js` | 59 **big** |  |
 | `89-lab.js` | 6 |  |
-| `89b-arcoindian.js` | 70 **big** |  |
-| `89c-arcoindian2.js` | 73 **big** |  |
+| `89b-arcoindian.js` | 81 **big** |  |
+| `89c-arcoindian2.js` | 80 **big** |  |
 | `89d-arcube.js` | 89 **big** | the dwelling grid (112); krShard (248) |
-| `89e-hill.js` | 62 **big** | materials (64); kit (142); the landform and the route (155) |
+| `89e-hill.js` | 64 **big** | materials (64); kit (150); the landform and the route (163) |
 | `89f-trigon.js` | 52 **big** |  |
 | `89g-monolith.js` | 49 **big** |  |
 | `89h-crescent.js` | 51 **big** | the skins (45) |
@@ -100,6 +100,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `89k-sky-i.js` | 43 **big** | the skins (27); the form (108); geometry accumulators (165); the shaft (206); a strand (256); the builder (344) |
 | `89l-sky-j.js` | 25 |  |
 | `89m-sky-k.js` | 36 **big** |  |
+| `89n-lighthouse.js` | 43 **big** | materials (39); the beacon (81); hulls (103) |
 | `8ae-wing.js` | 46 **big** |  |
 | `8af-drum.js` | 48 **big** | the skins (38) |
 | `8ag-blades.js` | 56 **big** |  |
@@ -123,17 +124,18 @@ Each target adds its own fragments to `src/` and builds one output.
 | `blades` | `89z-rows.js`, `91z-views.js` | 7 |
 | `canyon` | `89z-rows.js`, `91z-views.js` | 1 |
 | `crescent` | `89z-rows.js`, `91z-views.js` | 5 |
-| `dalab` | `89z-rows.js`, `91z-views.js` | 3 |
+| `dalab` | `89z-rows.js`, `91z-views.js` | 4 |
 | `darco` | `89z-rows.js`, `91z-views.js` | 2 |
 | `drum` | `89z-rows.js`, `91z-views.js` | 6 |
 | `engines` | `89z-rows.js`, `91z-views.js` | 4 |
 | `forest` | `89z-rows.js`, `91z-views.js` | 5 |
-| `hexahedron` | `89z-rows.js`, `91z-views.js` | 5 |
+| `hexahedron` | `89z-rows.js`, `91z-views.js` | 7 |
 | `hill` | `89z-rows.js`, `91z-views.js` | 13 |
 | `iziz-style` | `89z-rows.js`, `91z-views.js` | 6 |
 | `kit` | `89z-rows.js`, `91z-views.js` | 13 |
 | `launch` | `89z-rows.js`, `91z-views.js` | 13 |
 | `ledge` | `89z-rows.js`, `91z-views.js` | 5 |
+| `lighthouse` | `89z-rows.js`, `91z-views.js` | 3 |
 | `monolith` | `89z-rows.js`, `91z-views.js` | 4 |
 | `plymouth` | `89z-rows.js`, `91z-views.js` | 6 |
 | `ring` | `89z-rows.js`, `91z-views.js` | 10 |
