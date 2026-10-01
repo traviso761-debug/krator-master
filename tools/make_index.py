@@ -27,7 +27,7 @@ ABOUT = {
     'kits/ringsea': 'Ring Sea watercraft: 21 procedural vessels (warships, cargo ships, barges, canoes, outriggers, rafts) of the cultures round the Ring Sea.',
     'kits/post-apoc': 'The Post-Apoc set: reclaimed and recycled buildings (containers, silos, tanks, buses, bulkheads, tyre and bottle walls) with sockets for any culture\'s marks.',
     'kits/ancients': 'The Ancients kit: ruined megastructures of the ancient civilisation, 33 structure types, one target per site.',
-    'kits/interiors': 'Interiors: ROOM() registration and an engine-neutral furniture placer (ported from Yuni) with a catalog adapter; a verified demo of 23 furnished rooms with outline view and cut-away.',
+    'kits/interiors': 'Interiors: ROOM() registration and an engine-neutral furniture placer (ported from Yuni) with a catalog adapter; building planner (storeys, partitions, stairs), walkers and a light budget; a verified demo of planned buildings and furnished rooms with outline view and storey cut-away.',
     'kits/catalog': 'The master catalog: asset engine, 84 furniture pieces (kits/furniture SPEC shape), 48 plants and 26 buildings, harvested from six builds; a verified contact sheet.',
 }
 # Files that are generated or duplicated elsewhere: never edit or read them whole.

@@ -21,7 +21,7 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`settlements/yuni`](settlements/yuni/INDEX.md) | 47 | 972 | 195 | Yuni: the city, plus its building-kit, furniture and plant sheets. |
 | [`kits/ancients`](kits/ancients/INDEX.md) | 92 | 1726 | 89 | The Ancients kit: ruined megastructures of the ancient civilisation, 33 structure types, one target per site. |
 | [`kits/catalog`](kits/catalog/INDEX.md) | 12 | 491 | 174 | The master catalog: asset engine, 84 furniture pieces (kits/furniture SPEC shape), 48 plants and 26 buildings, harvested from six builds; a verified contact sheet. |
-| [`kits/interiors`](kits/interiors/INDEX.md) | 18 | 108 | 21 | Interiors: ROOM() registration and an engine-neutral furniture placer (ported from Yuni) with a catalog adapter; a verified demo of 23 furnished rooms with outline view and cut-away. |
+| [`kits/interiors`](kits/interiors/INDEX.md) | 22 | 209 | 32 | Interiors: ROOM() registration and an engine-neutral furniture placer (ported from Yuni) with a catalog adapter; building planner (storeys, partitions, stairs), walkers and a light budget; a verified demo of planned buildings and furnished rooms with outline view and storey cut-away. |
 | [`kits/post-apoc`](kits/post-apoc/INDEX.md) | 24 | 356 | 34 | The Post-Apoc set: reclaimed and recycled buildings (containers, silos, tanks, buses, bulkheads, tyre and bottle walls) with sockets for any culture's marks. |
 | [`kits/ringsea`](kits/ringsea/INDEX.md) | 36 | 192 | 12 | Ring Sea watercraft: 21 procedural vessels (warships, cargo ships, barges, canoes, outriggers, rafts) of the cultures round the Ring Sea. |
 | [`biomes/eastabyss`](biomes/eastabyss/INDEX.md) | 17 | 208 | 54 | Biome kit: see `biomes/README.md`. |
