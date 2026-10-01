@@ -57,7 +57,7 @@ How the biome zones itself from those (55-trees, `NHL.zones`):
 
 | zone | reads | flora |
 |---|---|---|
-| temperate | cold < ~.36 | great spruce, cathedral cedar, shadow hemlock, moss maple, blue beech, silver fir; GREAT TRUMPETS; UNDERSTOREY TRUMPET colonies; sword and lady ferns, moss, sorrel, lace fern, the dark accents, mountain cane |
+| temperate | cold < ~.36 | great spruce, cathedral cedar, shadow hemlock, moss maple, blue beech, forest lime, silver fir (low in the band, `low`: the broadleaves lead and the conifer giants are emergents); GREAT TRUMPETS; UNDERSTOREY TRUMPET colonies; sword and lady ferns, moss, sorrel, lace fern, the dark accents, mountain cane |
 | montane | cold ~.24–.74 | Norway spruce, silver fir, mountain maple, blue beech, great trumpets; ferns, moss, bilberry |
 | boreal | cold > ~.64 | spire spruce, frost fir, larch, birch stands, crag pines, boreal trumpets; heath, bilberry, reindeer lichen, fly agarics |
 | alpine (treeline) | cold > ~.9 | wind spruce (krummholz), snow on the crowns; heath and lichen among stones; snow patches (host paint) |
@@ -116,7 +116,7 @@ Then `BIO.bake()` once.
 20-core-kit.js      instanced items (def/put), merged buckets (Float32 stores), runtime LOD, bake
 30-core-foliage.js  leaf cards, alpha textures, Lambert foliage hook (+ iridescence), wind
 40-core-place.js    stands, jittered grids (+ box, noMask, depth window), keep-clear, face sampling
-50-biome-nhighlands-species.js   palettes, 24 species + 27 understorey plants (tagged), textures, the glow materials, items
+50-biome-nhighlands-species.js   palettes, 25 species + 27 understorey plants (tagged), textures, the glow materials, items
 55-biome-nhighlands-trees.js     zones from the fields; builders by habit (conifer, broad, gnarl, yew, birch, pine,
                                  snag, krumm, willow, great trumpet, trumpet); impostors; the passes; treeAt
 60-biome-nhighlands-floor.js     the floor by zone; stepping stones; the fallen giants (nurse logs)

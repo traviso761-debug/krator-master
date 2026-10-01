@@ -1129,6 +1129,10 @@ NHL.SPECIES=[
  /*23*/{key:'rowan',name:'Rowan',habit:'broad',H:[6,12],rb:[.15,.3],crownR:[3,5],bk:2,bark:[0x8a8478,0x7e786c,0x969084],leaf:[0x5a8a34,0x6a9a3a,0x4e7a2e],item:'pinnate',
   form:{hB:.4,boughs:[4,6],el:[.75,1.1],L:[.7,1],wig:.1,curve:-.05,moss:.3,drape:0,bulbs:0,clump:[1.8,2.6],berries:true,stems:[1,3]},
   tags:TG('temperate','subhumid','no',HV('fuel',['berries (cooked)'],true,'Bitter raw; jelly and wine when cooked.'))},
+ // the low band's broadleaf canopy (Bialowieza's lime): a tall clean bole into a high dome, a skirt of suckers at the foot
+ /*24*/{key:'forestlime',name:'Forest lime',habit:'broad',H:[34,50],rb:[1.1,1.8],crownR:[10,14],bk:4,bark:[0x6a665a,0x5e5a50,0x76726a],leaf:[0x5a8e34,0x689c3a,0x4e8030,0x74a640],item:'broad',
+  form:{hB:.5,boughs:[6,8],el:[.6,1.0],L:[.75,1.0],wig:.14,curve:-.07,moss:.5,drape:.15,bulbs:.08,clump:[5,7.2],roots:true,suckers:true},
+  tags:TG('temperate','humid','no',HV('timber',['young leaves','flowers (tea)'],true,'Lime-blossom tea for fevers; bast for rope and shoes; soft wood for carving; the bees\' best tree.'))},
 ];
 NHL.SPECIES.forEach((S,i)=>{S.index=i;});
 // THE UNDERSTOREY PLANTS, for the inspector and the tags (the items carry the label)
@@ -1528,7 +1532,8 @@ function zones(x,z){const cold=BIO.field('cold',x,z),wet=BIO.field('wet',x,z),fl
  const grove=smooth(.54,.64,fbm(x*.0044+5,z*.0044+41,4404,2));                                   // birch stands
  const cane=smooth(.68,.74,fbm(x*.008+2,z*.008-12,4405,2))*temperate*(1-glade);                  // mountain cane patches
  const dark=smooth(.56,.66,fbm(x*.0055-17,z*.0055+3,4406,2))*smooth(.75,.4,cold);                 // where the dark understorey seeps in
- return{cold,wet,flow,mist,rock,up,temperate,montane,boreal,alpine,rip,glade,oldwood,crag,burn,colony,grove,cane,dark};}
+ const low=smooth(.34,.12,cold);                                                                  // the foot of the temperate band: broadleaf country
+ return{cold,wet,flow,mist,rock,up,temperate,montane,boreal,alpine,rip,glade,oldwood,crag,burn,colony,grove,cane,dark,low};}
 NHL.zones=zones;
 
 // ---------------------------------------------------------------- colour
@@ -1682,6 +1687,8 @@ B.broad=function(T,st,lv){const S=SP[T.sp],f=S.form,H=T.H,rb=T.rb;const ns=f.ste
  const cnt=lv===2?2:1,cx=T.x,cy=T.y0+H*.72;
  spots.forEach(p=>{for(let c=0;c<cnt;c++){const sz=rr(f.clump[0],f.clump[1]);clumpAt(S.item,p.x+rr(-1.2,1.2),p.y+rr(-.3,1.2),p.z+rr(-1.2,1.2),sz,.58,hc,cx,cy,T.z,T.crownR,H*.28);st.clumps++;
   if(f.berries&&lv>=1&&rng()<.6)for(let b=0,m=lv===2?ri(5,10):3;b<m;b++)BIO.put('berry',[p.x+rr(-1,1),p.y+rr(-.6,.4),p.z+rr(-1,1)],null,rr(.06,.09),bright(C(pick(PAL.berry)),1.1));}});
+ // SUCKERS: the old lime's skirt of leafy shoots round its foot
+ if(f.suckers&&lv===2)for(let k=0,m=ri(5,9);k<m;k++){const a=rr(0,TAU),d=rb*rr(1.1,1.7);clumpAt(S.item,T.x+Math.cos(a)*d,T.y0+rr(.6,2.6),T.z+Math.sin(a)*d,rr(1.1,1.9),.7,shade(hc,.05),T.x,T.y0+1.5,T.z,rb*2,2);st.clumps++;}
  T.spread=T.crownR;reg(S,T);};
 
 // GNARL: the gnarled oak (one or two contorted stems, low twisting limbs, mossed to the tips) and the fog
@@ -1883,21 +1890,26 @@ NHL.buildTrees=function(R,q){
  // off with distance from the spine (lodK) and the far trees' impostors are drawn larger to close the canopy.
  const BIG={hero:280,mid:560,far:true,lodK:1},SMALL={hero:240,mid:460,far:false,lodK:.6};
  const o=(base,more)=>Object.assign({},base,more);
- pass('greatspruce',54,Z=>Z.temperate*.6*(1-.5*Z.rip)*(1-Z.oldwood),o(BIG,{pad:5,own:5,patch:.3}));
- pass('cathedralcedar',56,Z=>Z.temperate*(.42+.3*Z.rip)*(1-Z.oldwood)+Z.montane*.06,o(BIG,{pad:5,own:5,patch:.3}));
+ // BROADLEAF COUNTRY LOW DOWN (Z.low: the foot of the temperate band): the conifer giants thin to emergents over a
+ // broadleaf canopy -- the forest lime, the moss maple, the blue beech, the mountain maple, alder in the wet hollows.
+ // Higher in the band the mix comes back to the conifers; the montane and boreal weights are unchanged.
+ pass('greatspruce',54,Z=>Z.temperate*(.6-.36*Z.low)*(1-.5*Z.rip)*(1-Z.oldwood),o(BIG,{pad:5,own:5,patch:.3}));
+ pass('cathedralcedar',56,Z=>Z.temperate*(.42-.22*Z.low+.3*Z.rip*(1-.5*Z.low))*(1-Z.oldwood)+Z.montane*.06,o(BIG,{pad:5,own:5,patch:.3}));
  pass('greattrumpet',92,Z=>(Z.temperate*.66+Z.montane*.34)*(1-Z.rip*.5)*(1-Z.alpine),o(BIG,{hero:420,mid:820,pad:9,own:6,patch:.25}));
- pass('silverfir',50,Z=>Z.montane*.55+Z.temperate*.14,o(BIG,{pad:3.5,patch:.4}));
- pass('mossmaple',54,Z=>Z.temperate*(.26+.5*Z.rip+.2*Z.mist)*(1-Z.oldwood*.6),o(BIG,{pad:4,own:3,patch:.35}));
- pass('bluebeech',50,Z=>(Z.temperate*.34+Z.montane*.26)*(1-Z.oldwood),o(BIG,{pad:3.5,patch:.6,patchScale:.006}));
- pass('shadowhemlock',40,Z=>Z.temperate*.4+Z.montane*.16,o(BIG,{pad:2.5,patch:.4}));
+ pass('forestlime',58,Z=>Z.temperate*(.16+.34*Z.low)*(1-.6*Z.rip)*(1-Z.oldwood),o(BIG,{pad:4.5,own:4,patch:.4,patchScale:.008}));
+ pass('silverfir',50,Z=>Z.montane*.55+Z.temperate*.14*(1-.6*Z.low),o(BIG,{pad:3.5,patch:.4}));
+ pass('mossmaple',54,Z=>Z.temperate*(.36+.16*Z.low+.5*Z.rip+.2*Z.mist)*(1-Z.oldwood*.6),o(BIG,{pad:4,own:3,patch:.35}));
+ pass('bluebeech',50,Z=>(Z.temperate*(.44+.2*Z.low)+Z.montane*.26)*(1-Z.oldwood),o(BIG,{pad:3.5,patch:.6,patchScale:.006}));
+ pass('shadowhemlock',40,Z=>Z.temperate*(.4-.3*Z.low)+Z.montane*.16,o(BIG,{pad:2.5,patch:.4}));
  // the old wood on the boulder fields
  pass('gnarloak',24,Z=>Z.oldwood*.62,o(BIG,{pad:2.5,own:2,patch:.25}));
  pass('foglaurel',26,Z=>Z.oldwood*.3+Z.temperate*Z.mist*.08,o(SMALL,{pad:2,patch:.4}));
  pass('elderyew',70,Z=>Z.temperate*.08+Z.oldwood*.14,o(SMALL,{far:true,pad:3,patch:.5}));
  // the montane mix
  pass('normanspruce',38,Z=>Z.montane*.6+Z.boreal*.16*(1-Z.alpine),o(BIG,{pad:2.5,patch:.4}));
- pass('mountainmaple',52,Z=>Z.montane*.24+Z.temperate*Z.glade*.08,o(BIG,{pad:3,patch:.5}));
- // the boreal band
+ pass('mountainmaple',52,Z=>Z.montane*.24+Z.temperate*(.12+.1*Z.glade),o(BIG,{pad:3,patch:.5}));
+ // the boreal band, on its own stream: what the lower bands place never moves it
+ reseed(550061);
  pass('spirespruce',26,Z=>Z.boreal*(.62-.25*Z.alpine)*(1-Z.burn*.85),o(BIG,{pad:1.8,patch:.4}));
  pass('frostfir',30,Z=>Z.boreal*.4*smooth(.7,.9,Z.cold)*(1-Z.burn*.85),o(BIG,{pad:1.8,patch:.45}));
  pass('larch',48,Z=>(Z.boreal*.22+Z.montane*.05)*(1-Z.alpine)*(1-Z.burn*.5),o(BIG,{pad:2.5,patch:.6,patchScale:.006}));
@@ -1906,13 +1918,14 @@ NHL.buildTrees=function(R,q){
  pass('cragpine',34,Z=>Z.crag*.6+Z.boreal*Z.rock*.2,o(BIG,{pad:2,patch:.4,mod:(T,Z)=>{T.lean=rr(0,TAU);}}));
  pass('windspruce',22,Z=>Z.alpine*.75,o(SMALL,{pad:1.2,patch:.4}));
  // the stream's banks
- pass('greyalder',26,Z=>Z.rip*.55*(1-Z.alpine),o(BIG,{pad:2.5,patch:.35}));
+ pass('greyalder',26,Z=>Z.rip*.55*(1-Z.alpine)+Z.temperate*Z.low*Z.mist*.12*(1-Z.oldwood),o(BIG,{pad:2.5,patch:.35}));
  pass('brookwillow',18,Z=>Z.rip*.45*(1-Z.alpine*.5),o(SMALL,{pad:1.6,patch:.4}));
  pass('rowan',48,Z=>(Z.temperate+Z.montane)*(.04+.25*Z.glade)+Z.boreal*Z.grove*.06,o(SMALL,{pad:2,patch:.5}));
  // build
  // runtime LOD: a hero tree is drawn in full while the camera is within NHL.LOD.tree metres of its chunk
- // and as a stand-in impostor past that; a far tree is only ever its impostor
- TREES.forEach((T,i)=>{BIO.owner=[T.x,T.z];const S=SP[T.sp];
+ // and as a stand-in impostor past that; a far tree is only ever its impostor. Each tree draws from its own
+ // seed, so its form does not change when another tree (or another band's mix) does.
+ TREES.forEach((T,i)=>{BIO.owner=[T.x,T.z];const S=SP[T.sp];reseed(T.seed*7919+17);
   if(T.lv===0){BIO.range=null;BIO.minRange=0;buildFar(T,i,st,false);st.fars++;}
   else{BIO.range=NHL.LOD.tree;BIO.minRange=0;B[S.habit](T,st,T.lv);st.heroes++;
    if(T.H>7){BIO.range=1e9;BIO.minRange=NHL.LOD.tree;buildFar(T,i,st,true);}}

@@ -49,15 +49,26 @@ changed about a tenth of it. Nothing of it is in this build except the polygon /
   snowy peaks; NE and SW, receding blue ridges. Day, dawn and night modes.
 
 ## The flora
-Twenty-four tree species by habit (55):
+Twenty-five tree species by habit (55):
 - **conifer** (one builder, the form record makes the difference): the great spruce (60–90 m,
   buttressed, fluted, plated rust-to-teal bark), the cathedral cedar (fibrous red bole,
   drooping sprays, a candelabra top), the shadow hemlock (a nodding leader), the silver fir
   (a flat "stork's nest" top when old), the Norway spruce (curtain branchlets), the spire spruce
   and frost fir (the narrow boreal spires), the larch. Dead lower branches under the crown hung
   with moss (temperate) or beard lichen (boreal); snow on the upper side of the high crowns.
+  BUSHY, NOT TWIGGY (Oct 2026, Travis): a needle mass round the bole at every tier, four to six
+  arms a tier clothed to the bole in large overlapping masses, the arm itself (a rod) only on the
+  long ones and only part-way out; the mid-range (lv1) trees at 2.2x the hero's tier step.
 - **broad**: the moss maple (the Hoh's bigleaf: wide gnarled boughs mossed on top and hung with
-  curtains of moss), the blue beech (ref 18), the mountain maple, the grey alder, the rowan.
+  curtains of moss), the blue beech (ref 18), the mountain maple, the grey alder, the rowan, and the
+  **forest lime** (Bialowieza's lime, Oct 2026: a tall clean bole into a high dome, a skirt of
+  suckers round its foot).
+- **Broadleaf country low down** (Oct 2026, Travis): at the foot of the temperate band (`low` in
+  `NHL.zones`, 1 below cold ~.12, 0 above ~.34) the conifer giants thin to emergents over a
+  broadleaf canopy (lime, moss maple, blue beech, mountain maple, alder in the wet hollows).
+  Broadleaves are ~56% of the temperate and montane trees by count (29% before); higher in the
+  band the mix returns to the conifers. The montane and boreal weights did not change, and the
+  boreal band draws its placement from its own stream, so the lower bands' mix never moves it.
 - **gnarl**: the gnarled oak (Wistman's Wood) and the fog laurel (the laurisilva); the **yew**
   (a hollow, fluted, purple-red bole, near-black needles).
 - **birch** (white stems in stands, in the boreal band and on the old burn), the **crag pine**
@@ -132,3 +143,8 @@ SwiftShader. 35k trees: ~15k heroes near the spine, the rest impostors.
   they went through `tint(colour, means().rock)`).
 - r128 names the fog varying `fogDepth`, not `vFogDepth`: a fog patch keyed to the newer name
   silently does nothing.
+- **A foliage card must hold its alpha down the mips.** The needle card was thin strokes (1.8 px
+  on 512): two mip levels down they averaged under the alpha test, and at mid range every conifer
+  was a pole with a few twigs, its full-length arm rods (solid, never alpha-tested) the most
+  visible thing on it. Each tuft now has a shaded core under its needles, so a card stays a mass
+  at range, and the rods stop inside the masses.
