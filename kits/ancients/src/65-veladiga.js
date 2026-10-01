@@ -65,9 +65,12 @@ function buildVeladiga(scene,gx,gz,d){reseed(9380+d);KOFF=[gx,0,gz];
  // terrace steps the flood cut through instead of leaving them standing in it.
  const scourK=(x,z)=>{if(d!==2)return 0;const w=150+Math.max(0,z-bz0)*.42;
   return Math.exp(-Math.pow((x-bx0)/w,2))*clamp((z-bz0+60)/220,0,1);};
+ // the braid phase: 0 in a channel thread, 1 on a bar between threads
+ const brd=(x,z)=>{const w=150+Math.max(0,z-bz0)*.42,dx=(x-bx0)/w;
+  return Math.abs(Math.sin(dx*4.4+z*.0045+fbm(x*.004,z*.003,9390,2)*4.5));};
  const scour=(x,z)=>{if(d!==2)return 0;
   const w=150+Math.max(0,z-bz0)*.42,dx=(x-bx0)/w,k=scourK(x,z);
-  const br=Math.abs(Math.sin(dx*4.4+z*.0045+fbm(x*.004,z*.003,9390,2)*4.5));
+  const br=brd(x,z);
   const fan=11*Math.exp(-Math.pow((z-bz0-980)/190,2))*Math.exp(-dx*dx*.45);
   return-30*k*(.45+.55*br)*clamp(1-(z-bz0-780)/500,.25,1)+fan;};
  const REC=46,FACE=[],PANEL=[],REV=[],PIER=[],DK=[];
@@ -179,6 +182,14 @@ function buildVeladiga(scene,gx,gz,d){reseed(9380+d);KOFF=[gx,0,gz];
   const sc=scour(x,z);return Math.max(.8,sc<0?b+sc*Math.max(0,b-1.6)/30:b+sc);};
  mesh(gridSurface((u,v)=>{const x=(u-.5)*2160,z=150+v*1340;return[x,pY(x,z),z];},d===2?96:54,d===2?76:42,{uS:32,vS:24}),
   d===2?MAT.mud:MAT.lawn,G);
+ // THE BRAIDS CARRY WATER. The breached reservoir still drains through the
+ // notch, and the braided washout is relief of a few metres on a kilometre of
+ // one mud material in a kit with no shadows: from any height it read as a
+ // flat sand sheet. Shallow threads of water lying in the braid troughs are
+ // what make a braided channel legible from above. No PRNG.
+ if(d===2)mesh(gridSurface((u,v)=>{const x=(u-.5)*2160,z=150+v*1340;return[x,pY(x,z)+.35,z];},
+  216,134,{hole:(u,v)=>{const x=(u-.5)*2160,z=150+v*1340;
+   return !(scourK(x,z)>.28&&brd(x,z)<.30*clamp(scourK(x,z)*1.4,0,1)+.06);}}),MAT.water,G);
  if(d!==2)mesh(gridSurface((u,v)=>{const x=(u-.5)*126+bx0*.35,z=170+v*1300;
   return[x,12+pTerr(z)-pCh(z)*.42,z];},10,34,{}),MAT.water,G);
  // ---- breach aftermath ----------------------------------------------------
