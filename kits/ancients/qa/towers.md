@@ -163,3 +163,124 @@ was bought with flat-shaded quads, not triangles.
   "soffit" option or a bluer ground colour would fix it kit-wide.
 - `KNOWN_ISSUES.md`: the "figures()" plinth item and the Cutaways item can be
   ticked; the Rehabilitated row-preset item wants a z-spacing decision.
+
+---
+
+# Round 2 (2026-10-01)
+
+Rendered on two scratch targets holding only this group's kit rows at their
+kit positions (A-D, G, H; then E, F, Hotel, Cultural, Perch, Flatiron, I, J,
+K); shots read for every changed type/decay. Every invariant PASS, error
+panel clean, `jscheck` PARSES OK on each. Seeds unchanged and no new rng()
+draws anywhere (everything added is placed by position hash or derived), so
+nothing already placed moved except where a stance was changed on purpose.
+
+## Shared-file edits (please merge)
+
+- `src/10-core.js` + `src/92-camera.js`: **the frame hook `TICKS`/`tick(fn)`**.
+  It did not exist on this branch; I applied the lighthouse patch's hunks
+  (commit 3897037 on `ancients-resume`) **byte for byte**, so merging with
+  that branch should leave one copy. Nothing else in either file.
+- `src/69-mat-salvage.js`, FIRELIGHT section only (appended after `firePit`):
+  flicker shader, `fireLightMark`/`fireLights`, one `tick`. `repairPass` untouched.
+- `KNOWN_ISSUES.md`: ticked the round-1 and round-2 fixes listed here.
+
+## OPEN items from round 1
+
+- FIXED **"The fires do not flicker"**: `MAT.flame` and `MAT.ember` get an
+  `onBeforeCompile` (kbake re-attaches it to its clones) reading one shared
+  time uniform; each instance takes its phase from its own position, so no
+  two windows pulse together. Driven by `tick`.
+- FIXED **"The fire does not light anything"**: each Project gets 3
+  PointLights at k-means centroids of its own burning windows and pits
+  (`fireLightMark()` at the builder's start, `fireLights(mark,3)` at its end),
+  16 m off the facade, warm, flickering. `visible=false` by day, so day views
+  pay nothing; the first switch to night compiles one extra program variant
+  per material and later switches reuse it. 9 lights in the kit. In the
+  Project night shots the fabric round the burning floors and the podium is
+  lit orange now, not hemisphere-grey.
+- FIXED **"The Project's plinth can only come in to 110"** and **"A, B and C
+  are limited by their own legs"** (stance changes, now asked for): A's strut
+  feet 98 -> 80, podium 110 -> 92 (also the Project's); B's legs 70 -> 56,
+  podium 82 -> 66; C's legs 62 -> 50 (their heads still meet the shaft at
+  r=20, so they stand steeper; the sky bridges follow), podium 96 -> 80.
+  Registered radii A 130 -> 110, B 120 -> 100.
+- FIXED **"Skyscraper G cannot shrink"**: the stack and the drum moved toward
+  each other (stack centre x 70 -> 50, drum -70 -> -52; bridges 67 -> 29 m),
+  outer stilts at r=99.6, block corners at 104.2; podium 130 -> 116. The
+  podium bar at z=90 still runs past the podium at both ends, on the ground,
+  as before.
+- PARTLY **"The repaired pass dresses every type identically"**: the towers
+  carry their own accretion at decay 3, in their own builders (`skyHoist`,
+  52-sky-abc.js): a gantry off the top, a cable with a load on it, a winch
+  house at the foot, and two scaffold cages (poles and plank decks) up the
+  face; on A, B, C, D, G (about the drum's own axis) and H. `repairPass`
+  itself is untouched; the Hotel, Cultural centre, Perch and Flatiron are
+  still dressed only by it.
+- STILL OPEN: "Patches sample the wall faces" (shared `repairPass`); "The row
+  presets had to be pulled in" (kit row spacing in z, shared layout); "Only
+  these two builders take the parameters" (no caller, would be dead code).
+
+## Kit-wide detail items, for these types
+
+- **Glass shards in ruined window openings** — DONE. `skyShardMark()` at a
+  builder's start, `skyShards(mark, frac)` at its end put the civic group's
+  `civShardAt` teeth in every dead opening placed in between (`winSmD`,
+  `winD`, `winBigD`, `ovalD`, `paneD`, `cellD`, K's `skWinD`), including those
+  the shared `windowsOnLathe` places, without touching it. Half the openings
+  at decay 1/2, a quarter at 3, none on the Projects. A, B, C, D, G, H,
+  Hotel, Cultural, Flatiron, K. (E and F have no instanced dead openings; I
+  and J bake their windows into merged meshes.)
+- **Dead cells were pale grey at night**: A's and G's dead window cells were
+  `cell` in the `DEAD` colour (MeshBasic, ~60/255 whatever the light); they
+  are `cellD` now, dark at night as by day.
+- **Interiors visible behind openings** — DONE for A, B, C, D, G, H
+  (`skyRooms`): per storey, ONLY in bays where the shell is open or next to
+  an open bay, a ceiling fitting under the soffit (5% lit warm in a ruin, 22%
+  rehabilitated), cabinets and machine silhouettes, a radial partition every
+  third bay, conduit risers, the odd dead touch panel. The scars now read as
+  rooms rather than a bare stack of plates.
+- **Mouldings**: the Hotel's court windows have a projecting sill and a hood
+  (a shadow line per opening on the brick court elevation); the Cultural
+  centre's halls have a cornice band under the cap and a string course
+  between window tiers (a lathed 18-sided band, 108 triangles: the first cut
+  used the kit's torus ring and nearly doubled the type).
+- skyJ **night glow** (NOTES weakness): the terrace-lip emissive was
+  `0xff9440` at .6, which tone-maps to cream; `0xff5212` at .85 reads amber.
+
+## Not changed, and why
+
+- skyK "rib section swept with a z-up frame twists": the frame is orthonormal
+  (N = z x T, B = T x N) and keeps the rib's broad axis in the xy plane by
+  construction, which is the intended read. Left.
+- skyI/skyJ/Hotel soffits brown: the hemisphere ground colour (shared lighting).
+- Toppled A's fallen body is tilted 5 degrees by `toppledUpper` (shared by
+  the eight towers), so its crown end bears only on its strut ring. Left.
+- skyJ rib junctions, small spire fragment; skyK belly / regular grid: design
+  passes, not QA fixes.
+
+## Triangles per type/decay (scratch targets, round 1 -> round 2)
+
+| | 0 | 1 | 2 | 3 | 4 |
+|---|---|---|---|---|---|
+| cult | 62 436 -> 74 532 | 64 808 -> 71 270 |  | 73 190 -> 81 062 |  |
+| flat | 33 148 | 29 630 -> 31 466 | 37 476 -> 39 474 | 42 224 -> 42 938 |  |
+| hotel | 87 412 -> 95 476 | 79 744 -> 86 836 |  | 91 546 -> 99 658 |  |
+| perch | 89 184 | 77 032 |  | 94 976 |  |
+| skyA | 101 460 | 107 212 -> 122 790 | 156 130 -> 173 414 | 144 742 -> 150 230 | 140 918 -> 142 458 |
+| skyB | 241 492 | 182 038 -> 195 764 | 261 528 -> 273 006 | 275 330 -> 277 454 |  |
+| skyC | 189 384 -> 186 264 | 179 796 -> 187 572 | 212 454 -> 217 372 | 223 326 -> 221 338 |  |
+| skyD | 65 184 | 74 716 -> 83 136 | 96 092 -> 104 138 | 107 206 -> 107 802 | 104 276 -> 104 444 |
+| skyE | 66 108 | 63 558 | 75 714 | 79 002 |  |
+| skyF | 74 052 | 65 854 | 81 308 | 80 302 |  |
+| skyG | 80 676 -> 80 292 | 97 356 -> 102 970 | 109 276 -> 115 122 | 115 062 -> 115 070 |  |
+| skyH | 98 184 | 90 594 -> 98 540 | 128 774 -> 134 602 | 142 304 -> 143 170 | 171 408 |
+| skyI | 40 716 | 67 044 | 71 166 | 73 174 |  |
+| skyJ | 175 520 | 114 292 | 116 976 | 173 834 |  |
+| skyK | 162 787 | 175 894 -> 179 218 | 230 244 -> 233 634 | 199 892 -> 201 860 |  |
+
+Group total 6 947 161 -> 7 127 847 (+180 686, +2.6%); about +1.8% of the kit
+showcase. The biggest single line is Toppled A (+17k: interiors in both the
+stump and the fallen body). Draw calls: +2 never-culled kit meshes (civShard
+was already there; cultBandW/R are new). The 9 PointLights cost nothing by day;
+at night they add per-fragment lighting cost, not draw calls.

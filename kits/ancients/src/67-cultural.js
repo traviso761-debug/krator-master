@@ -64,10 +64,13 @@ function buildCultural(scene,gx,gz,d){reseed(9390+d);KOFF=[gx,0,gz];const SM=sky
    // MOULDINGS (round 2): a cornice where the drum meets its cap and a string
    // course between the window tiers. A broken drum keeps only the courses
    // under its break. The torus is the kit's ring, flattened into a band.
-   const ringN=d>0?'ringR':'ringW',rq=qEuler(Math.PI/2,0,0);
-   // (the flute crests stand at 1.22 of the radius, so the bands go outside them)
-   if(!brk)kput(ringN,[bxp,py+hh-.4,bzp],rq,[bwk*1.27,bwk*1.27,5],null);
-   for(let row=1,nr=tall?3:2;row<nr;row++)kput(ringN,[bxp,py+hh*(row+.05)/nr,bzp],rq,[bwk*1.25,bwk*1.25,3],null);
+   // A flat band (a lathed annulus with an outer face, 18 sides, 108
+   // triangles: the kit's torus ring was 480 and doubled the type). The flute
+   // crests stand at 1.22 of the radius, so the outer face is at 1.26 and the
+   // top annulus runs back inside the crests to close the gap.
+   const ringN=civDef(d>0?'cultBandR':'cultBandW',()=>new THREE.LatheGeometry([new THREE.Vector2(.92,.5),new THREE.Vector2(1,.5),new THREE.Vector2(1,-.5),new THREE.Vector2(.92,-.5)],18),d>0?MAT.rust:MAT.white);
+   if(!brk)kput(ringN,[bxp,py+hh-.5,bzp],null,[bwk*1.27,1,bwk*1.27],null);
+   for(let row=1,nr=tall?3:2;row<nr;row++)kput(ringN,[bxp,py+hh*(row+.05)/nr,bzp],null,[bwk*1.26,.6,bwk*1.26],null);
    if(d===0)kput('strip',[bxp,py+hh-2,bzp+bwk*1.03],qFacing([0,0,1]),[bwk*1.2,1,1],CYAN);
    // the spoke running back to the core
    beam(BOXC(d),[bxp*.42,py+2,bzp*.42],[bxp*.9,py+2,bzp*.9],6,3.4);}});
