@@ -159,9 +159,11 @@ wind. For one world:
 5. The export contract (`biomes/GODOT.md`) and `BIO.export(tile)`, proven on one kit by
    loading a tile in Godot; then the bake pipeline over a gradual pair and a steep pair.
 
-Runtime LOD, far impostors and impostor colour in three.js (items 2, 3 and 8 of the Oct 2026
-review) now serve the previews only: in the world, Godot's visibility ranges and the
-exported LOD levels do that work.
+The Godot port comes later (Travis, Oct 2026). Until then the three.js previews keep being
+optimised (runtime LOD, far impostors, impostor colour: items 2, 3 and 8 of the Oct 2026
+review), and the Godot side gets SCAFFOLDING only: the contract (`biomes/GODOT.md`) and
+`BIO.export()` in the core, so what a page places can already be written out as data in
+the contract's shape, and nothing built now has to be torn up for the port.
 
 Prototype pairs, proposed: **nwlowlands and swlowlands** (gradual; one kit was cloned from
 the other, so the core work is tested without species surprises) and **sedesert and
