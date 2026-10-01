@@ -66,12 +66,13 @@ const LAYOUT_COL={land:0xd9c9a1,awash:0xbfe3e8,canal:0x6fb7cf,open:0x2f6f9a,amph
  citadel:0xe07b39,military_harbour:0x9aaaaa,wet_cells:0x555555,main_market:0xff6b6b,civilian_harbour:0x8888aa,fishing_docks:0x8888aa,river_mouth:0x44aadd,headland_military:0xbb5555,foreign:0xd9b3ff,industry:0xaa6688,aquaculture:0x77ffdd,farm:0x99cc66};
 const LAYOUT_NAMES={amphitriton:'The Amphitriton',temple_tides:'Temple of the Tides',library:'Library of Ys',grown_plaza:'The grown plaza',temple_winds:'Temple of the Winds',pharos:'The Pharos',citadel:"The Archon's Citadel",military_harbour:'Military harbour',wet_cells:'The Wet Cells',main_market:'Main market',civilian_harbour:'Civilian harbour',fishing_docks:'Fishing docks',river_mouth:'River mouth',headland_military:'The headland: barracks',foreign:'Foreign quarter',industry:'Industry',aquaculture:'Aquaculture pens'};
 const YS_BUILD=[];   // the city's build hooks (the scene runs them after the terrain, before the bake); 88 pushes the placer
-YS_BUILD.push(function(scene){if(!CITY.LAYOUT_DEBUG)return;
+function ysLayoutOverlay(on){on=!!on;if(window._layoutMesh)window._layoutMesh.visible=on;return on;}
+YS_BUILD.push(function(scene){   // built always (a few hundred quads), shown when CITY.LAYOUT_DEBUG or by the Layout button
  const pos=[],col=[],idx=[];const U=LAYOUT.U,V=LAYOUT.V,h=LAYOUT.P*.46;let n=0;
  for(const b of LAYOUT.blocks){const c=new THREE.Color(LAYOUT_COL[b.use]||LAYOUT_COL[b.kind]);const y=Math.max(terrainH(b.x,b.z),0)+.8;
   for(const [du,dv] of [[-1,-1],[1,-1],[1,1],[-1,1]]){pos.push(b.x+U[0]*du*h+V[0]*dv*h,y,b.z+U[1]*du*h+V[1]*dv*h);col.push(c.r,c.g,c.b);}
   idx.push(n,n+2,n+1,n,n+3,n+2);n+=4;
   }   // (no REG entries for the overlay: the labels pack shows buildings only, and an empty volume would fail the probe; the names are in LAYOUT_NAMES for the placer)
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));g.setIndex(idx);g.computeVertexNormals();
- const m=new THREE.Mesh(g,new THREE.MeshBasicMaterial({vertexColors:true,transparent:true,opacity:.78,side:THREE.DoubleSide,depthWrite:false,fog:false}));m.renderOrder=3;scene.add(m);
+ const m=new THREE.Mesh(g,new THREE.MeshBasicMaterial({vertexColors:true,transparent:true,opacity:.78,side:THREE.DoubleSide,depthWrite:false,fog:false}));m.renderOrder=3;m.visible=!!CITY.LAYOUT_DEBUG;m.userData.probeSkip=true;scene.add(m);window._layoutMesh=m;
  window._layout=ysLayoutCensus();});

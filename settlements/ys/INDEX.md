@@ -4,9 +4,9 @@
 
 Ys: the half-drowned Hykkousoi capital on the ruins of an Ancient city at the head of the north-west bay of the Ring Sea (phase 0: harness and empty world).
 
-Docs: `DESIGN.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PLAN.md`, `README.md`
+Docs: `AGENT-BRIEF.md`, `API.md`, `DESIGN.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PLAN.md`, `README.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/ys.html`
+Built output (never open it; edit `src/` and rebuild): `dist/kit.html`, `dist/mock.html`, `dist/ys.html`
 
 Build: `cd settlements/ys && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -23,11 +23,17 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `30-kit.js` | 3 | instancing kit (1) |
 | `32-surfaces.js` | 7 | surfaces (1) |
 | `34-kitdefs.js` | 7 | kit definitions (shared geometry) (1); THE LEAF CARD (32) |
+| `35-furn-frame.js` | 6 |  |
 | `36-decor.js` | 13 | decoration helpers (1); THE BIOME (127) |
 | `38-helpers2.js` | 3 | v2 helpers (1) |
 | `50-registry.js` | <1 | v3: inspector registry + group transforms (1) |
+| `52-sky-abc.js` | 20 |  |
 | `54-mat-concrete.js` | 4 | v4: concrete, brick, glass panes (1) |
-| `60-ys-registries.js` | 3 | the Hykkousoi kit registry (the kit sheet lays o (26) |
+| `60-hyk-mat.js` | 10 | textures (256 px = 4 m) (25); materials (67); kit items (instanced; colour per instance) (99) |
+| `60-ys-registries.js` | 4 | the Hykkousoi kit registry (the kit sheet lays o (26) |
+| `61-hyk-shell.js` | 13 | the surface builder (26); lathe: the shell body (38); pod: a superellipsoid with real openings (55); conch: a tapering tube along a log spiral (74); tube along a polyline (parallel-transport frames (90); fillet: roots a shell into a face or the ground (104); disc: floors, landings, lily pads (normal up unl (111) |
+| `62-hyk-helpers.js` | 21 | openings: a hole in a shell gets a lip and a rev (40); rooms and the spots the later placer fills (kits (65); landings, stairs, ladders (world frame unless in (76) |
+| `64-hyk-accrete.js` | 14 | the tideline: crust, weed, barnacle specks, foam (49); accretion: pods grown onto a host's face (60) |
 | `69-mat-salvage.js` | 12 | salvage (decay level 3) (1); FIRELIGHT (44) |
 | `69b-vern-mat.js` | 14 | textures (world units: a 128px tile = 2 m) (30); world-unit UVs (93); materials (116); geometry (133); kit items (153) |
 | `69c-vern-helpers.js` | 19 | primitives (local frame; y = BASE of the piece) (51); walls, frames, plinths (60); roofs (ridge along local x unless noted) (87); openings (108); porches, stairs, yards (134) |
@@ -37,9 +43,11 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `73-port-edges.js` | 17 | paving (11); the quay wall (27); revetment (92); side closure (115); deck on columns (151); land blocks and sea platforms (190) |
 | `74-port-dress.js` | 12 | the stacked-container house (23); lamps, rails, boats (60); the shed (118) |
 | `81-sky.js` | 10 |  |
-| `91-ys-probe.js` | 6 | probe (window._api) (1) |
-| `92-camera.js` | 14 | camera, inspector, polygon tool, walk mode, comp (1) |
+| `90-ys-scene.js` | 6 | the sky and the clock (16); the port: stamps, terrain, sea, builders, bake (32) |
+| `91-ys-probe.js` | 8 | probe (window._api) (1) |
+| `92-camera.js` | 15 | camera, inspector, polygon tool, walk mode, comp (1) |
 | `93-labels.js` | 4 | floating building labels (standard new-world pac (1) |
+| `93-ys-ui.js` | 4 |  |
 | `99-tail.html` | <1 |  |
 
 ## targets/
@@ -48,4 +56,6 @@ Each target adds its own fragments to `src/` and builds one output.
 
 | Target | Fragments | KB |
 |---|---|---|
-| `city` | `84-city-geo.js`, `89z-rows.js`, `90-ys-scene.js`, `91z-views.js`, `93-ys-ui.js` | 10 |
+| `city` | `84-city-geo.js`, `84b-city-shore.js`, `87-city-layout.js`, `87a-city-paint.js`, `87b-city-nav.js`, `89z-rows.js`, `91z-views.js` | 47 |
+| `kit` | `84-kit-geo.js`, `86-kit-mock-houses.js`, `89z-rows.js`, `91z-views.js` | 22 |
+| `mock` | `84-mock-geo.js`, `86-mock-houses.js`, `88-mock-build.js`, `89z-rows.js`, `91z-views.js` | 22 |

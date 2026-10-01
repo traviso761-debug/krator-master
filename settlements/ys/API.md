@@ -204,6 +204,29 @@ The lattice (12 m cells over the city core) is classified once after the build f
 `NAV_EXTRA` records; before that, `landDist` falls back to the design shoreline. `_api.city.surf()` counts the classes;
 `_api.city.surfAt(x,z)` and `_api.city.landDist(x,z)` read them.
 
+## The painted ground (targets/city/87a-city-paint.js, PLAN §3 P3 step 2)
+
+Everything the layout decides about the ground is painted before anything builds, and placement reads it. Three
+2048 px canvases over `PAINT` (a 2400 m window about (600, 100), 0.85 px/m): the albedo (RGBA; the terrain wears it
+through `ysGroundHook`, a per-pixel overlay on `MAT.pkGround` mixed in after the vertex colour, so the port's 10 m
+vertex paint cannot blur a 14 m street), the mask (white = buildable) and the class canvas (`KL`, drawn 20 apart and
+snapped on bake so an anti-aliased edge never reads as a third class).
+```js
+road(pts,w,cls,{zone,col})      // albedo (col null = none: a boat lane), mask w+3, class w+1.5, pushed onto ROADS {pts,w,cls,id,zone,len}
+disc(x,z,r,cls,col)  footprint(pts,col)  precinct(x,z,r,name,use)  inPrecinct(x,z,pad)  blockPoly(block,inset)
+ysPaintBake()                   // after the last paint; the placer calls it again after its footprints (the overlay texture updates)
+maskAt(x,z) canBuild(x,z) klass(x,z) -> KL id   isRoad(x,z)   zoneAt(x,z) -> the layout block's use
+nearestRoadPt(x,z,cls?) -> {x,z,d,t,road,tx,tz}
+ysShorePt(s) ysShoreArcOf(x,z)  // the design shoreline by arc length (n points inland); RIVER {pts,w,len}
+ysPaintOverlay(on)  ysPaintCensus()   // the Paint button; _api.city.paint(), .klass(x,z), .canBuild(x,z)
+```
+`KL`: `none highway street lane market plaza quay river field precinct building canal`. What is painted now: the
+lattice's block edges (slabs on land and awash, `canal` lanes under water, bent a little inland by `ysBend`, a field of
+position so corners agree), the three highways out of the main market (the coast roads 120 m inland of the shore,
+the inland road against the head's seaward normal), the market disc, the river's course (reserved 18 m either side;
+84 carves the channel from `RIVER` later), the landmarks' precincts (r 92) and blocks (harbours `quay`, the rest
+`precinct`), and strips on every farm block. Seeds: 31980 (31981–31989 are the placer's).
+
 ## Animation
 
 A builder that moves something (the Pharos beam, a windmill's sails) pushes `fn(dt,t)` onto `window.YS_TICKS`

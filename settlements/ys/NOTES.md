@@ -147,3 +147,13 @@ the bucketed deck records, the host caps and the placed footprints; A* with a he
 flood-fill connectivity). On the empty city: 36 800 lattice cells (17 154 land, 1 762 shallows, 3 499 canal, 14 385
 open), the head 76 m from the real waterline, the Amphitriton block 508 m under it; a foot path 860 m inland in 17 ms,
 a boat path across the bay, the head connected to the far shore on foot. Nobody walks it until P5.
+Then the painted ground (`87a-city-paint.js`, numbered after the layout it reads): three 2048 px canvases over a 2400 m
+window about the core; the terrain wears the albedo through a per-pixel shader overlay on the port's ground material
+(its 10 m vertex colours cannot draw a 14 m street), mixed in after the vertex colour so the seabed's depth tint and
+the underwater fade still apply: the awash streets show through the sea. 278 roads: 171 lattice streets on land and
+awash (bent up to 16 m inland by a displacement field of position, so corners agree), 104 boat lanes under water, the
+three highways out of the main market to the map's edge (1.7–2.0 km each), the market disc, the river's course (2.4 km,
+reserved, not yet carved), 14 precincts, strips on 24 farm blocks. The class canvas draws its ids 20 apart and snaps the
+anti-aliased edge pixels on bake: without that a street's edge read as a highway and a lane's as a plaza (0.1–0.2 % of
+the core, enough to mislead a placer). The layout overlay is now a Layout button beside a Paint button (the class
+canvas as a sheet). `ground-painted` joins the invariants.

@@ -40,6 +40,9 @@ function ysChecks(){const R=[];
  // the sea is where the map says it is: the bay head is on land, the SE corner is under water
  if(typeof CITY!=='undefined'&&CITY.HEAD){const h1=terrainH(CITY.HEAD[0],CITY.HEAD[1]),h2=terrainH(1400,1400),h3=terrainH(-1400,-1400);
   R.push({name:'coast-as-designed',ok:h1>0&&h2<-5&&h3>2,detail:'head of the bay '+h1.toFixed(1)+' m, SE corner '+h2.toFixed(1)+' m, NW corner '+h3.toFixed(1)+' m'});}
+ // the painted ground (city target): three highways out of the main market to the map's edge, lattice streets on land, nothing reserved on air
+ if(typeof ysPaintCensus==='function'){const c=ysPaintCensus();const hw=c.highways||[];const ok=hw.length===3&&hw.every(h=>h.atMarket&&h.edge)&&(c.byClass.street||{n:0}).n>40&&(c.byClass.canal||{n:0}).n>40&&c.river>1500;
+  R.push({name:'ground-painted',ok,detail:hw.length+' highways '+hw.map(h=>h.zone.split(':')[1]+(h.atMarket&&h.edge?'':'!')).join(' ')+', '+(c.byClass.street||{n:0}).n+' streets, '+(c.byClass.canal||{n:0}).n+' lanes, river '+c.river+' m, cover '+JSON.stringify(c.coverPct)});}
  // the tag audit
  {const t=tagAudit();R.push({name:'tags-complete',ok:t.bad===0,detail:t.bad?t.bad+' untagged: '+t.first.join(' | '):REG.length+' volumes tagged'});}
  // marks and rooms: every registered building has a door; every room has its polygon; every residence its three spots

@@ -22,6 +22,13 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
 - [ ] The foreign quarter's buildings (Iziz, Republic, Voth, the chapterhouse) will carry no ROOM records until
       their own kits register them (DESIGN §7).
 - [ ] The Ancients hosts get door marks only at their accreted landings (DESIGN §7).
+- [ ] The painted ground covers a 2400 m window about (600, 100) at 0.85 px/m: the highways run on past it to the map's
+      edge as ROADS records but unpainted; a street's edge is soft at eye level (one pixel is 1.2 m). A finer or
+      larger canvas is a one-line change (`PAINT.CS`, `PAINT.W`) at four times the memory per doubling. The class
+      snap leaves ~0.1 % of the core at crossings reading as a class nobody painted (plaza, lane).
+- [ ] The river is painted and reserved (`RIVER`) but not carved: the channel, the travertine terraces and the karst are
+      P3 step 1 work in `84-city-geo.js`, and the coast highways cross the river without a bridge until the placer
+      puts one there.
 - [ ] The ground painter is the port's (red soil in patches, dry grass): re-key it to the bay's lush ground and
       the karst when the NW-bay biome is bound (phase 3).
 - [ ] The nacre material fades underwater only through its own hook (`hkNacreHook` calls `portUWsh` first);

@@ -143,7 +143,7 @@ eye-level shot of every building before reporting.
 ### P3 — The city (planner, two to three sessions; a layout fragment that builds no geometry first)
 1. `84-city-geo.js`: constants, the coast, the karst field, the travertine river, the sink (plane tilt +
    step), `terrainH` through the port stamp system, the far country (volcano SE, Inner Wall N/W).
-2. `85-city-paint.js`: albedo / mask / class canvases; roads, precincts, footprints reserved before
+2. `87a-city-paint.js` (after the layout it reads): albedo / mask / class canvases; roads, precincts, footprints reserved before
    anything builds (the one rule that prevents every overlap bug).
 3. `87-city-layout.js`: the old lattice from land into the water; the three highways through the main
    market; the harbours; districts and wealth rings about the Amphitriton; the river and its terraces;
