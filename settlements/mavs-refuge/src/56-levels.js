@@ -367,39 +367,35 @@ function lvlRoost(Ro, idx){
   var lipL = big ? rr(3.0,3.6) : main ? rr(2.1,3.0) : 1.6, lipW = big ? 5.0 : main ? 3.0 : 2.0;
   /* landing lip + perch log */
   lvlFBox('plank',F,lipL/2+0.2,0,-0.30,lipL,0.30,lipW,shade(pick(PLANKC),-0.1),'tbflr');
-  [-1,1].forEach(function(s){ lvlFBeam('timber',F,-1.4,s*lipW*0.36,-0.42,lipL+0.35,s*lipW*0.36,-0.42,0.32,0.30,TIMBERC[0],false);
-    lvlFBox('timber',F,lipL+0.05,s*lipW*0.42,0,0.24,0.75,0.24,TIMBERC[1],'fklr'); });
+  [-1,1].forEach(function(s){ lvlFBeam('timber',F,-1.4,s*lipW*0.36,-0.42,lipL+0.35,s*lipW*0.36,-0.42,0.32,0.30,TIMBERC[0],false); });
   lvlFBeam('timber',F,-0.2,0,-2.8,lipL-0.2,0,-0.55,0.3,0.3,TIMBERC[2],false);
-  lvlFRod(F,lipL+0.05,-lipW*0.5,0.72,lipL+0.05,lipW*0.5,0.72,big?0.2:0.15,TIMBERC[3],'timber');
+  lvlFur('br_h_perch_bar',F,lipL+0.05,0,0,lvlTan(F),{v:big?2:main?1:0});                              /* furniture: the perch log (its posts with it) */
   /* guano-streaked floor edge */
   SECTOR('plank',P,Lv.Rout-1.7,Lv.Rout-0.05,Ro.ang-(lipW*0.6)/Lv.Rout,Ro.ang+(lipW*0.6)/Lv.Rout,y,y+0.04,shade(PLANKC[3],-0.35),{faces:'t',step:30});
   LVL.perches++;
   if(!main){
-    var cn=lvlAt(F,-Lv.Rout*0.5,0,0); MCONE('thatch',cn[0],y,cn[2],1.3,1.0,0.3,pick(THATCHC),7); lvlDisc('thatch',cn[0],y+0.22,cn[2],1.0,shade(THATCHC[3],-0.25),7);
-    lvlFBox('thatch',F,-Lv.Rout*0.5,1.8,0,0.9,0.55,0.6,THATCHC[2],'tfklr');
+    brfSkip(1); lvlFur('br_h_nest',F,-Lv.Rout*0.5,0,0,lvlOut(F),{v:0});                               /* furniture: a nest bundle and a bale */
+    lvlFur('br_h_hay_bales',F,-Lv.Rout*0.5,1.8,0,lvlTan(F),{v:0});
     return;
   }
   var sg = (idx%2)?1:-1, uIn = -(Lv.gw+0.4), band = big ? 5.5 : 2.6;       /* furniture band sits inside the walkway */
   /* nest */
-  var nr = big ? 2.4 : 1.55, nn=lvlAt(F,uIn-nr-0.1,0,0);
-  MCONE('thatch',nn[0],y,nn[2],nr+0.35,nr-0.1,0.42,pick(THATCHC),6); lvlDisc('thatch',nn[0],y+0.28,nn[2],nr-0.1,shade(THATCHC[3],-0.3),6);
+  var nr = big ? 2.4 : 1.55;
+  brfSkip(1); lvlFur('br_h_nest',F,uIn-nr-0.1,0,0,lvlOut(F),{v:big?2:1});                               /* furniture: the nest */
   function ok(v,half){ return lvlClear(P,Lv.Rout-4,Ro.ang+v/(Lv.Rout-4),half); }
   /* trough + water butt */
-  if(ok(sg*3.4,0.9)){ lvlFBox('plank',F,uIn-0.6,sg*3.4,0,0.6,0.62,1.7,PLANKC[3],'tfklr');
-    lvlFBox('thatch',F,uIn-0.6,sg*3.4,0.62,0.45,0.05,1.5,CROPC[2],'t'); }
+  if(ok(sg*3.4,0.9)) lvlFur('br_h_trough',F,uIn-0.6,sg*3.4,0,lvlTan(F),{v:0});                      /* furniture: the fodder trough */
   if(ok(sg*4.4,0.5) && chance(0.7)) lvlBarrel(F,uIn-1.9,sg*4.3,0,0.5,1.05,TIMBERC[2]);
   /* tack rack with saddles */
   if(ok(-sg*3.6,1.1)){ var tv=-sg*3.6, tu=uIn-0.5-rr(0,band-1.2);
-    lvlFBox('timber',F,tu,tv-0.9,0,0.14,1.35,0.14,TIMBERC[1],'fl'); lvlFBox('timber',F,tu,tv+0.9,0,0.14,1.35,0.14,TIMBERC[1],'fr');
-    lvlFBeam('timber',F,tu,tv-1.0,1.3,tu,tv+1.0,1.3,0.16,0.16,TIMBERC[3],false);
-    lvlFBox('wall',F,tu,tv-0.4,1.38,0.6,0.2,0.5,shade(CLOTHC[1],-0.25),'tflr'); if(chance(0.7)) lvlFBox('wall',F,tu,tv+0.4,1.38,0.6,0.2,0.5,shade(pick(CLOTHC),-0.3),'tflr'); }
+    if(chance(0.7)) brfSkip(1); lvlFur('br_h_tack_rack',F,tu,tv,0,lvlTan(F),{v:1}); }                 /* furniture: the tack rack */
   /* chained post */
-  if(chance(0.6) && ok(sg*1.9,0.3)){ lvlFBox('timber',F,uIn+0.1,sg*1.9,0,0.28,1.2,0.28,TIMBERC[0],'fklr'); lvlFRod(F,uIn+0.1,sg*1.9,1.05,uIn-0.9,sg*0.9,0.05,0.025,shade(ROCKC[3],-0.5),'timber'); }
+  if(chance(0.6) && ok(sg*1.9,0.3)) lvlFur('br_h_hitching_rail',F,uIn+0.1,sg*1.9,0,lvlOut(F),{v:1});   /* furniture: the chained post */
   /* hay bales */
   var nb = ri(0,2) + (big?2:0);
   for(var b=0;b<nb;b++){ var hv=-sg*(1.8+rr(0,0.5))+rr(-0.3,0.3), hu=uIn-0.7-rr(0,band-1.0)-(Math.abs(hv)<nr+0.6 ? 2*nr : 0);
     if(hu < -(Lv.gw+Lv.depth)+1.5) continue; if(!ok(hv,0.8)) continue;
-    lvlFBox('thatch',F,hu,hv,0,0.8,0.6,1.2,pick(THATCHC),'tflr'); if(chance(0.35)) lvlFBox('thatch',F,hu,hv+0.1,0.6,0.8,0.55,1.1,pick(THATCHC),'tflr'); }
+    brfSkip(1); var two=chance(0.35); if(two) brfSkip(1); lvlFur('br_h_hay_bales',F,hu,hv,0,lvlTan(F),{v:two?1:0}); }   /* furniture: hay */
   if(big){
     /* hoist + harness frame */
     if(ok(sg*6.0,1.6)){ var hvv=sg*6.0;
@@ -511,7 +507,7 @@ function lvlSatRoost(P,R,Lv){
     if(near) continue;
     var p0=platXZ(P,r,a0), p1=platXZ(P,r,a1); ROD(p0[0],Lv.y+1.25,p0[1],p1[0],Lv.y+1.25,p1[1],0.09,TIMBERC[3],'timber'); }
   var F=lvlFrame(P,Math.min(2.2,Lv.Rout*0.3),rr(0,TAU),Lv.y);
-  lvlFBox('timber',F,0,0,0,0.2,1.5,0.2,TIMBERC[1],'tfklr'); lvlFBox('wall',F,0,0,1.5,0.55,0.2,0.5,shade(CLOTHC[1],-0.25),'tfklr');
+  lvlFur('br_court_saddle_stand',F,0,0,0,lvlOut(F));                                                  /* furniture: a saddle on its stand */
   lvlReg({ name:P.name, kind:'roost', label:'Open perch ring', plat:P.id, lvl:R.lvl, x:P.x, z:P.z, y:Lv.y, h:Lv.H, r:Lv.Rout });
 }
 
@@ -779,22 +775,19 @@ function gtFacade(S,T,F,a,y,kind,W,H,K,yCap){
     /* guard niche cut beside the door: stool, leaning spear, a shield */
     var nv = sd*(dw/2+0.75); if(Math.abs(nv)+0.45 < W/2-jw+0.05){
       SECTOR('wall',F,rP,rP+0.03,a+(nv-0.42)/r,a+(nv+0.42)/r,y+0.05,y+2.1,shade(col,-0.8),{faces:'o',step:30}); }
-    f1=fr(sd*(W/2-0.2),1.35); lvlFBox('timber',f1,0,0,0,0.38,0.45,0.38,TIMBERC[1],'tfklr');
+    f1=fr(sd*(W/2-0.2),1.35); lvlFur('br_common_stool',f1,0,0,0,lvlOut(f1));                          /* furniture: the guard's stool */
     lvlFRod(f1,-0.25,0.35,0,-0.32,0.35,2.4,0.025,TIMBERC[3],'timber');
     lvlShield(wall(-sd*(W/2-jw/2),GT_FRONT+0.06,1.7),0,0,0,0.3,CLOTHC[0]);
   }else if(kind==='shrine'){
     /* idol or sapling on a drum to one side of the arch, offering bowls at its foot, cool lamps both sides */
-    f1=fr(sd*(dw/2+0.55),1.55); var ip=lvlAt(f1,0,0,0);
-    lvlDrum('timber',ip[0],ip[1],ip[2],0.42,0.7,shade(col,0.08),6,0.36);
-    if(chance(0.5)){ lvlFRod(f1,0,0,0.7,0.04,0.03,1.5,0.04,DEADWOODC[0],'timber'); lvlSac('wall',ip[0],ip[1]+1.75,ip[2],0.5,0.42,pick(PAL.sapling),5); }
-    else { lvlDrum('timber',ip[0],ip[1]+0.7,ip[2],0.22,0.6,shade(col,-0.2),5,0.13); lvlSac('timber',ip[0],ip[1]+1.5,ip[2],0.2,0.2,shade(col,-0.1),5); }
-    for(k2=0;k2<3;k2++){ var bp=lvlAt(f1,0.55,(k2-1)*0.45,0); lvlDrum('timber',bp[0],bp[1],bp[2],0.1,0.13,shade(ORNATEC[1],-0.1),5,0.2,k2===1?PAL.glowCool:shade(ORNATEC[1],-0.5)); }
+    f1=fr(sd*(dw/2+0.55),1.55);                                                                     /* furniture: idol or sapling on its drum, bowls */
+    var sap=chance(0.5); if(sap) brfSkip(1); lvlFur('br_h_shrine_drum',f1,0,0,0,lvlOut(f1),{v:sap?1:0});
     var l2=gtP(T,r+1.2,a-lv/r,ly-0.3); lvlLamp(l2[0],l2[1],l2[2],0.7,11,true,0);
     lvlFBeam('timber',wall(-lv,0,0),GT_FRONT-0.1,0,ly-y+0.1,1.3,0,ly-y+0.1,0.09,0.09,TIMBERC[0],true);
     LVL.shrines=(LVL.shrines||0)+1;
   }else if(kind==='guardpost'){
     lvlSpearRack(fr(sd*side*0.7,1.4),0,0,3);
-    f1=fr(-sd*side*0.7,1.4); lvlFBox('timber',f1,0,0,0,0.38,0.45,0.38,TIMBERC[1],'tfklr');
+    f1=fr(-sd*side*0.7,1.4); lvlFur('br_common_stool',f1,0,0,0,lvlOut(f1));
     lvlShield(wall(-sd*(W/2-jw/2),GT_FRONT+0.06,1.75),0,0,0,0.3,CLOTHC[2]);
   }
 
@@ -872,10 +865,7 @@ function gtLanding(S,Lf){
 
   /* signal brazier */
   var bz=lvlAt(L,5.4,-d*5.4,0);
-  lvlDrum('wall',bz[0],bz[1],bz[2],0.6,1.15,ROCKC[1],6,0.42);
-  lvlDrum('timber',bz[0],bz[1]+1.15,bz[2],0.38,0.35,gtIron(),6,0.7,PAL.glowWarm);
-  BOX(bz[0],bz[1]+1.45,bz[2],0.5,0.3,0.5,0.6,PAL.glowWarm,'glowmat');
-  lvlLamp(bz[0],bz[1]+1.95,bz[2],1.3,20,false,0);
+  FURNISH_AT('br_h_signal_brazier',bz[0],bz[1],bz[2],lvlOut(L),{v:0,lamp:[1.3,20,false]}); LVL.lamps++;   /* furniture: the stone-drum brazier */
   lvlReg({ name:S.plat.name, kind:'brazier', label:'Signal brazier', x:bz[0], y:Ld.y, z:bz[2], r:0.9, h:2.6 });
   lvlSpearRack(L,1.4,d*7.3,4);
 
@@ -888,7 +878,7 @@ function gtLanding(S,Lf){
   lvlFBox('timber',L,wu-1.05,wv,0,0.16,1.45,0.5,TIMBERC[0],'tfklr'); lvlFBox('timber',L,wu+1.05,wv,0,0.16,1.45,0.5,TIMBERC[0],'tfklr');
   var wk=lvlAt(L,wu+1.18,wv,1.05); lvlDiscV('timber',wk[0],wk[1],wk[2],L.ox,L.oz,0.62,TIMBERC[2],8);
   var w0=lvlAt(L,wu,wv,1.4); ROD(w0[0],w0[1],w0[2],Lf.x-Math.cos(Lf.a)*0.3,Lf.y1+6.7,Lf.z-Math.sin(Lf.a)*0.3,0.045,ROPEC[0],'rope');
-  lvlFBox('plank',L,wu-0.2,wv+d*0.9,0,0.7,0.6,0.7,pick(CRATEC),'tfklr');
+  brfSkip(1); lvlFur('br_h_crate_stack',L,wu-0.2,wv+d*0.9,0,L.ry,{v:1});                                 /* furniture: a crate */
   lvlReg({ name:S.plat.name, kind:'winch', label:'Winch house', x:lvlAt(L,wu,wv,0)[0], y:Ld.y, z:lvlAt(L,wu,wv,0)[2], r:2.0, h:4 });
   /* a few stores waiting for the lift */
   var st=lvlFreeFrame(lvlAt(L,5.6,-d*1.0,0)[0],lvlAt(L,5.6,-d*1.0,0)[2],Ld.y,Ld.a);
@@ -899,11 +889,9 @@ function gtLanding(S,Lf){
   lvlBox('plank',Lf.x,gy-0.75,Lf.z,5,0.72,5,-Lf.a,pick(PLANKC),'tfklr');
   [[-1,-1],[1,-1],[1,1],[-1,1]].forEach(function(c){ var qx=Lf.x+o[0]*c[0]*2.5+p[0]*c[1]*2.5, qz=Lf.z+o[1]*c[0]*2.5+p[1]*c[1]*2.5; lvlBox('timber',qx,terrainH(qx,qz)-0.4,qz,0.3,gy-terrainH(qx,qz)+0.75,0.3,-Lf.a,TIMBERC[2],'tfklr'); });
   var hx=cx+o[0]*8.3, hz=cz+o[1]*8.3, hy2=terrainH(hx,hz);
-  [-1,1].forEach(function(sg){ var qx=hx+p[0]*sg*1.9, qz=hz+p[1]*sg*1.9; lvlBox('timber',qx,terrainH(qx,qz)-0.3,qz,0.24,1.55,0.24,-Lf.a,TIMBERC[0],'tfklr'); });
-  lvlBeam('timber',[hx+p[0]*2.3,hy2+1.05,hz+p[1]*2.3],[hx-p[0]*2.3,hy2+1.05,hz-p[1]*2.3],0.16,0.16,TIMBERC[1],true);
+  FURNISH_AT('br_h_hitching_rail',hx,hy2,hz,brfAlong(p[0],p[1]),{v:0});                                /* furniture: the hitching rail */
   var tx=cx+p[0]*d*8.4+o[0]*1.5, tz=cz+p[1]*d*8.4+o[1]*1.5, ty=terrainH(tx,tz);
-  lvlBox('timber',tx,ty-0.3,tz,0.9,0.95,2.8,-Lf.a,TIMBERC[3],'fklr');
-  lvlBox('plank',tx,ty-0.3,tz,0.7,0.82,2.6,-Lf.a,PAL.riverShallow,'t');
+  FURNISH_AT('br_h_trough',tx,ty,tz,brfAlong(p[0],p[1]),{v:2});                                          /* and the great water trough */
   lvlReg({ name:S.plat.name, kind:'yard', label:'Hitching rail', x:hx, y:hy2, z:hz, r:2.6, h:2 });
   lvlReg({ name:S.plat.name, kind:'yard', label:'Water trough', x:tx, y:ty, z:tz, r:1.6, h:1.2 });
 }
