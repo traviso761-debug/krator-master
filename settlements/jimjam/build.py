@@ -7,6 +7,32 @@ import re
 import subprocess
 import sys
 
+
+def find_node():
+    """node for the syntax check: $NODE, then PATH, then the usual install places
+    (/opt/node*/bin, /usr/local/bin, ~/.nvm, ~/.volta; the newest first). None when
+    there is none: the build then says plainly that the syntax was NOT checked.
+    Every build.py carries this same function; a fix belongs in all of them."""
+    import glob as _g, shutil as _sh
+    env = os.environ.get('NODE')
+    if env:
+        hit = _sh.which(env) or (env if os.path.isfile(env) else None)
+        if hit:
+            return hit
+        print('NOTE: $NODE=%s is not a node binary; looking elsewhere' % env)
+    hit = _sh.which('node')
+    if hit:
+        return hit
+    ver = lambda p: [int(x) for x in re.findall(r'\d+', p)]
+    for pat in ('/opt/node*/bin/node', '/usr/local/bin/node',
+                os.path.expanduser('~/.nvm/versions/node/*/bin/node'),
+                os.path.expanduser('~/.volta/bin/node')):
+        hits = [h for h in sorted(_g.glob(pat), key=ver, reverse=True) if os.access(h, os.X_OK)]
+        if hits:
+            return hits[0]
+    return None
+
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
 SRC = os.path.join(HERE, 'src')
@@ -96,7 +122,7 @@ def build():
         json.dump({f: hashlib.sha1(body.encode()).hexdigest()[:12] for f, body in bodies.items()}, dst, indent=2, sort_keys=True)
         dst.write('\n')
     write_vendor_manifest()
-    node = os.environ.get('NODE', 'node')
+    node = find_node() or 'node'
     script = html.rsplit('<script>', 1)[1].rsplit('</script>', 1)[0]
     scratch = os.path.join(HERE, '.syntax-jimjam.js')
     with open(scratch, 'w', encoding='utf-8') as dst:
