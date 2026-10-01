@@ -352,20 +352,18 @@ FURN({
   w: 2.0, d: 2.0, h: 1.05, variants: 2, variantNames: ['small', 'large'],
   variantDims: [{ w: 2.0, d: 2.0, h: 1.05 }, { w: 2.8, d: 2.8, h: 1.2 }],
   build: function (F) {
-    /* sheets, rods, tyres, black boxes, open drums and planks, heaped higher toward the middle */
+    /* sheets, rods, tyres, black boxes, open drums and planks, heaped higher toward the middle (the kit tilts the sheets and planks every way; here they lie flat) */
     const r = F.variant ? 1.4 : 1.0, n = F.variant ? 10 : 7;
     const at = (m) => { const a = F.rnd() * F.TAU, d = Math.sqrt(F.rnd()) * Math.max(0, r - m); return [Math.cos(a) * d, Math.sin(a) * d, (1 - d / r) * r * 0.35]; };
     for (let k = 0; k < n; k++) {
       const t = F.rnd();
-      if (t < 0.3) { const [px, pz, py] = at(0.6), s = F.rr(0.4, 0.8), a = F.rnd() * F.TAU, hx = Math.cos(a) * s / 2, hz = Math.sin(a) * s / 2;
-        F.beam(px - hx, py, pz - hz, px + hx, py + F.rr(0, 0.3), pz + hz, F.rr(0.03, 0.06), F.rr(0.4, 0.8), F.pick(['rustOrange', 'rustRed', 'galv', 'galvDull']), 'rust'); }
+      if (t < 0.3) { const [px, pz, py] = at(0.6); F.box(px, py, pz, F.rr(0.4, 0.8), F.rr(0.03, 0.06), F.rr(0.4, 0.8), F.rnd() * F.TAU, F.pick(['rustOrange', 'rustRed', 'galv', 'galvDull']), 'rust'); }
       else if (t < 0.5) { const [px, pz, py] = at(0.7);
-        F.rod(px, py, pz, px + F.rr(-0.6, 0.6), py + F.rr(0.1, 0.6), pz + F.rr(-0.6, 0.6), F.rr(0.04, 0.09), F.pick(['rustOrange', 'rustRed']), 'metal'); }
+        F.rod(px, py + 0.09, pz, px + F.rr(-0.6, 0.6), py + F.rr(0.2, 0.6), pz + F.rr(-0.6, 0.6), F.rr(0.04, 0.09), F.pick(['rustOrange', 'rustRed']), 'metal'); }
       else if (t < 0.65) { const [px, pz, py] = at(0.4); PA_tyre(F, px, py + 0.12, pz, 0.36, 0.12, F.col('tyreBlack'), 'h', 10, F.rr(0, F.TAU)); }
       else if (t < 0.8) { const [px, pz, py] = at(0.36); F.box(px, py, pz, F.rr(0.2, 0.5), F.rr(0.15, 0.4), F.rr(0.2, 0.5), F.rnd() * F.TAU, F.pick(['ironBlack', 'ragBlack']), 'metal'); }
       else if (t < 0.9) { const [px, pz] = at(0.35); PA_drum(F, px, 0, pz, F.pick(PA_DRUM_COLS), true); }
-      else { const [px, pz, py] = at(0.55), s = F.rr(0.6, 1.0), a = F.rnd() * F.TAU, hx = Math.cos(a) * s / 2, hz = Math.sin(a) * s / 2;
-        F.beam(px - hx, py, pz - hz, px + hx, py + F.rr(0, 0.3), pz + hz, 0.05, F.rr(0.1, 0.2), F.col('postBrown'), 'plank'); }
+      else { const [px, pz, py] = at(0.55); F.box(px, py, pz, F.rr(0.6, 1.0), 0.05, F.rr(0.1, 0.2), F.rnd() * F.TAU, F.col('postBrown'), 'plank'); }
     }
   }
 });
@@ -413,7 +411,7 @@ FURN({
   rooms: ['living', 'yard', 'bedroom', 'hall'], anchor: 'floor', clearance: { front: 0.6, back: 0.3 },
   materials: ['timber', 'cloth'],
   source: 'kits/post-apoc/src/50-farm.js fmRocker',
-  w: 0.62, d: 0.86, h: 1.02, variants: 1,
+  w: 0.62, d: 0.86, h: 1.1, variants: 1,
   build: function (F) {
     /* painted frame on two rockers, slat seat, a mustard back board, a cushion */
     const c = F.pick(['rockerBrown', 'rockerBlue', 'paintOrange']);
@@ -624,9 +622,10 @@ FURN({
 FURN({
   key: 'pa_goods_rail', name: 'Hanging rail of goods', culture: 'scrap', tier: 'poor', type: 'rack', setting: 'both',
   rooms: ['shop', 'market', 'kitchen', 'store', 'workshop'], anchor: 'ceiling', clearance: { front: 0.5 },
-  materials: ['metal', 'rope', 'skin', 'glass'],
+  materials: ['metal', 'rope', 'skin', 'glass', 'timber'],
   source: 'kits/post-apoc/src/46-shops.js shHang (fish and meat, tools and wire, pots and bottles)',
-  w: 2.7, d: 0.44, h: 1.6, variants: 3, variantNames: ['fish and meat', 'tools and wire', 'pots and bottles'],
+  w: 2.7, d: 0.36, h: 1.6, variants: 3, variantNames: ['fish and meat', 'tools and wire', 'pots and bottles'],
+  variantDims: [{ w: 2.7, d: 0.36, h: 1.6 }, { w: 2.7, d: 0.14, h: 1.6 }, { w: 2.7, d: 0.38, h: 1.6 }],
   build: function (F) {
     /* an iron rail on two hangers from the ceiling, goods on strings */
     const y = 1.3, L = 2.6, v = F.variant;
@@ -667,7 +666,7 @@ FURN({
 FURN({
   key: 'pa_lean_to_stall', name: 'Lean-to stall', culture: 'scrap', tier: 'poor', type: 'stall', setting: 'outdoor',
   rooms: ['market', 'street', 'plaza', 'dock'], anchor: 'floor', clearance: { front: 1.0 },
-  materials: ['timber', 'rustSteel', 'skin'],
+  materials: ['timber', 'rustSteel', 'metal', 'skin'],
   source: 'kits/post-apoc/src/54-compound.js cpGround (toll stall); 56-arena.js arEntry and 58-dock.js dkLand (food and fish stalls)',
   w: 3.4, d: 2.5, h: 2.64, variants: 3, variantNames: ['toll booth', 'food stall', 'fish stall'],
   variantDims: [{ w: 3.4, d: 2.5, h: 2.64 }, { w: 4.4, d: 2.62, h: 2.94 }, { w: 4.4, d: 2.62, h: 2.94 }],
@@ -785,9 +784,9 @@ FURN({
   materials: ['timber', 'metal'],
   source: 'kits/post-apoc/src/46-shops.js shWeapon (the racks along the fence: spears, blades and pipe clubs, hung blades)',
   w: 1.6, d: 0.3, h: 2.8, variants: 3, variantNames: ['spears', 'blades and pipe clubs', 'hung blades'],
-  variantDims: [{ w: 1.6, d: 0.3, h: 2.8 }, { w: 2.7, d: 0.3, h: 1.65 }, { w: 2.56, d: 0.3, h: 1.5 }],
+  variantDims: [{ w: 1.6, d: 0.3, h: 2.8 }, { w: 2.7, d: 0.3, h: 1.65 }, { w: 2.56, d: 0.16, h: 1.5 }],
   build: function (F) {
-    const z0 = -0.15, v = F.variant;
+    const v = F.variant, z0 = v === 2 ? -0.08 : -0.15;
     if (v === 0) {
       /* a rail on the wall, seven spears leaning back on it */
       F.box(0, 0.9, z0 + 0.04, 1.6, 0.06, 0.08, 0, F.col('postBrown'), 'wood');
@@ -816,7 +815,7 @@ FURN({
 FURN({
   key: 'pa_spear_drum', name: 'Drum of spears', culture: 'scrap', tier: 'poor', type: 'weapon', setting: 'both',
   rooms: ['shop', 'barracks', 'yard'], anchor: 'floor', clearance: { front: 0.5 },
-  materials: ['rustSteel', 'metal', 'timber'],
+  materials: ['rustSteel', 'metal', 'plastic', 'timber'],
   source: 'kits/post-apoc/src/46-shops.js shWeapon (barrel with shSpear)',
   w: 0.68, d: 0.68, h: 2.2, variants: 1,
   build: function (F) {
@@ -859,7 +858,7 @@ FURN({
   materials: ['timber', 'plastic', 'metal', 'thatch'],
   source: 'kits/post-apoc/src/46-shops.js shTinker (cart); 48-industry.js inSmithy (engine trolley); 50-farm.js fmFarmhouse (hay cart)',
   w: 2.98, d: 1.48, h: 1.5, variants: 3, variantNames: ['tinker\'s cart', 'trolley with an engine block', 'hay cart'],
-  variantDims: [{ w: 2.98, d: 1.48, h: 1.5 }, { w: 1.3, d: 1.25, h: 1.11 }, { w: 1.74, d: 3.04, h: 1.28 }],
+  variantDims: [{ w: 2.98, d: 1.48, h: 1.5 }, { w: 1.5, d: 1.25, h: 1.11 }, { w: 1.74, d: 3.04, h: 1.28 }],
   build: function (F) {
     const v = F.variant;
     if (v === 0) {
@@ -874,7 +873,7 @@ FURN({
       for (let k = 0; k < 5; k++) F.box(-0.5 + F.rr(-0.4, 0.4), 0.74 + (k % 2) * 0.3, F.rr(-0.25, 0.25), F.rr(0.3, 0.55), F.rr(0.25, 0.45), F.rr(0.3, 0.45), F.rnd() * F.TAU, F.pick(['drumRed', 'bottleBlue', 'steelMid', 'capBrass']), 'plastic');
     } else if (v === 1) {
       /* a low plank deck on two small tyres, an engine block on it */
-      F.shift(0, -0.175);
+      F.shift(0.1, -0.175);
       F.box(0, 0.55, 0, 1.3, 0.1, 0.9, 0, F.col('timberDark'), 'plank');
       for (const s of [-1, 1]) PA_tyre(F, s * 0.5, 0.3, 0.5, 0.3, 0.09, F.col('tyreBlack'), 'x', 10);
       F.box(-0.4, 0.65, -0.2, 0.9, 0.4, 0.5, 0, F.col('steelBlock'), 'metal');
@@ -933,7 +932,7 @@ FURN({
   materials: ['plaster', 'plastic', 'metal', 'rustSteel', 'emissive'],
   source: 'kits/post-apoc/src/48-industry.js inSmithy (tyre-and-earth forge); 46-shops.js shArmor (brick forge in the lean-to)',
   w: 3.1, d: 2.84, h: 5.0, variants: 2, variantNames: ['tyre-and-earth forge', 'brick forge'],
-  variantDims: [{ w: 3.1, d: 2.84, h: 5.0 }, { w: 2.1, d: 2.2, h: 4.46 }],
+  variantDims: [{ w: 3.1, d: 2.84, h: 5.0 }, { w: 2.1, d: 2.3, h: 4.46 }],
   build: function (F) {
     /* the kit's flues run 6-9 m up through the roof; here they stop at 4.5 m with their caps */
     if (F.variant === 0) {
@@ -959,7 +958,7 @@ FURN({
       return;
     }
     /* a brick body under an iron top, coals and a flame, an iron hood, the flue kinked back to the wall */
-    F.shift(0, -0.65);
+    F.shift(0, -0.605);
     F.box(0, 0, 0.7, 1.7, 0.95, 1.1, 0, F.col('earthBrick'), 'plaster');
     F.box(0, 0.95, 0.7, 1.8, 0.07, 1.2, 0, F.col('ironDark'), 'metal');
     F.box(0, 0.98, 0.75, 0.9, 0.06, 0.6, 0, F.col('glowCoal'), 'glow');
@@ -1258,14 +1257,14 @@ FURN({
   materials: ['timber', 'metal', 'rustSteel', 'thatch', 'plastic'],
   source: 'kits/post-apoc/src/52-defence.js dfCage (on skids, on stilts, on wheels)',
   w: 2.5, d: 2.56, h: 2.37, variants: 3, variantNames: ['on skids', 'on stilts', 'on wheels'],
-  variantDims: [{ w: 2.5, d: 2.56, h: 2.37 }, { w: 2.4, d: 2.46, h: 3.45 }, { w: 3.8, d: 2.3, h: 2.35 }],
+  variantDims: [{ w: 2.5, d: 2.56, h: 2.37 }, { w: 2.4, d: 2.46, h: 3.45 }, { w: 3.96, d: 2.3, h: 2.35 }],
   build: function (F) {
     /* welded rebar bars round a plank floor, barrel hoops at three heights, a rebar roof half lidded with sheet, a barred door
        with a padlocked hasp at the front (+z); straw and a bucket inside */
     const v = F.variant, w = [2.4, 2.3, 2.2][v], d = [2.4, 2.3, 1.8][v], h = [2.2, 2.1, 1.8][v], y = [0.12, 1.3, 0.5][v];
     const bar = (ax, ay, az, bx, by, bz, r) => F.rod(ax, ay, az, bx, by, bz, r || 0.03, F.pick(['ironUmber', 'rustRebar', 'ironBrown', 'rustPipe']), 'metal');
     const hoop = F.col('ironDark'), wd = F.col('postBrown');
-    if (v === 2) F.shift(-0.7475, 0);
+    if (v === 2) F.shift(-0.6675, 0);
     F.box(0, y - 0.12, 0, w + 0.1, 0.12, d + 0.1, 0, F.col('timberDark'), 'plank');
     if (v === 1) {
       for (const sx of [-1, 1]) for (const sz of [-1, 1]) F.beam(sx * (w / 2 - 0.1), 0, sz * (d / 2 - 0.1), sx * (w / 2 - 0.1), y - 0.12, sz * (d / 2 - 0.1), 0.13, 0.13, wd, 'wood');
