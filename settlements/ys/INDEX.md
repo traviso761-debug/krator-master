@@ -31,8 +31,8 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `54-mat-concrete.js` | 4 | v4: concrete, brick, glass panes (1) |
 | `60-hyk-mat.js` | 10 | textures (256 px = 4 m) (25); materials (67); kit items (instanced; colour per instance) (99) |
 | `60-ys-registries.js` | 4 | the Hykkousoi kit registry (the kit sheet lays o (26) |
-| `61-hyk-shell.js` | 13 | the surface builder (26); lathe: the shell body (38); pod: a superellipsoid with real openings (55); conch: a tapering tube along a log spiral (74); tube along a polyline (parallel-transport frames (90); fillet: roots a shell into a face or the ground (104); disc: floors, landings, lily pads (normal up unl (111) |
-| `62-hyk-helpers.js` | 21 | openings: a hole in a shell gets a lip and a rev (40); rooms and the spots the later placer fills (kits (65); landings, stairs, ladders (world frame unless in (76) |
+| `61-hyk-shell.js` | 14 | the surface builder (26); lathe: the shell body (38); pod: a superellipsoid with real openings (55); conch: a tapering tube along a log spiral (74); tube along a polyline (parallel-transport frames (90); fillet: roots a shell into a face or the ground (104); disc: floors, landings, lily pads (normal up unl (111) |
+| `62-hyk-helpers.js` | 23 | openings: a hole in a shell gets a lip and a rev (60); rooms and the spots the later placer fills (kits (85); landings, stairs, ladders (world frame unless in (96) |
 | `64-hyk-accrete.js` | 14 | the tideline: crust, weed, barnacle specks, foam (49); accretion: pods grown onto a host's face (60) |
 | `65-hyk-spans.js` | 27 | shared bits (18); the rib bridges (51); the drawbridge (built DOWN: closed) (77); stairs (109); the ladder (140); the lily-pad landing (150); the grown walkway (152); the pontoon walkway (163) |
 | `66-hyk-furniture.js` | 25 | the helpers (all through F) (10); the pieces (63) |
@@ -48,7 +48,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `73-hyk-sacred.js` | 14 | shared bits (7) |
 | `73-port-edges.js` | 17 | paving (11); the quay wall (27); revetment (92); side closure (115); deck on columns (151); land blocks and sea platforms (190) |
 | `74-port-dress.js` | 12 | the stacked-container house (23); lamps, rails, boats (60); the shed (118) |
-| `74a-hyk-amphitriton.js` | 28 | the builder (35) |
+| `74a-hyk-amphitriton.js` | 29 | the builder (35) |
 | `74b-hyk-citadel.js` | 12 |  |
 | `74c-hyk-tides.js` | 21 | the temple (45) |
 | `74d-hyk-winds.js` | 10 | the temple (16) |
@@ -56,7 +56,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `74f-hyk-civic-minor.js` | 33 **big** | helpers shared by the three (prefixed hykLib…) (8); the Library of Ys: a nautilus of reading galleri (29); a barnacle cone: the Wet Cells' unit (and the Tr (154); the Treasury: the strongroom in the Citadel's co (167); the Wet Cells: the prison, a barnacle island rea (219) |
 | `75-hyk-harbour.js` | 37 **big** | shared bits (12) |
 | `76-hyk-industry.js` | 46 **big** | shared helpers (8); the armoured hall (73); warehouses: armoured halls with lipped cart door (124); the scrap smithies (157); the shipwright: a slipway under an open shed, a  (232); the granary: sealed silos on a raised pad, the s (274); the windmill: a sail-wheel of weed-cloth fins on (307); the generator: an Ancient machine reclaimed insi (350) |
-| `77-hyk-military.js` | 30 **big** | shared helpers (used by 78-hyk-agri.js too) (7); the barracks (90); the ballista emplacement (160); the mustering ground (208) |
+| `77-hyk-military.js` | 31 **big** | shared helpers (used by 78-hyk-agri.js too) (7); the barracks (93); the ballista emplacement (163); the mustering ground (211) |
 | `78-hyk-agri.js` | 15 | the farm field (18); farmhouse 1: fused barnacle cones with a byre (48); farmhouse 2: a long pod with a drying-rack yard (86) |
 | `79-hyk-markets.js` | 18 | shared bits (7) |
 | `81-sky.js` | 10 |  |
