@@ -8166,14 +8166,14 @@ reseed(659001);
         ABYSS.furn(F, 'abyss_lantern_post', 15.6,8.4, PI, { variant:0 }); }
     } });
 })();
-/* kits/catalog furniture bundle (furniture_bundle.py): krator-furniture-core.js, krator-furniture-kit.js, krator-master-furniture.js, krator-master-furniture-eastabyss.js, krator-master-furniture-generic.js, krator-master-furniture-nomad.js, krator-master-furniture-reedlake.js, krator-master-furniture-scrap.js, krator-furniture-runtime.js. GENERATED; edit the catalog files. */
+/* kits/catalog furniture bundle (furniture_bundle.py): krator-furniture-core.js, krator-symbols.js, krator-furniture-kit.js, krator-master-furniture.js, krator-master-furniture-eastabyss.js, krator-master-furniture-generic.js, krator-master-furniture-nomad.js, krator-master-furniture-reedlake.js, krator-master-furniture-scrap.js, krator-furniture-runtime.js. GENERATED; edit the catalog files. */
 var KratorFurniture = (function () {
 /* ---- kits/catalog/krator-furniture-core.js ---- */
 /* ======================================================================
    Krator Furniture Core: the half of the catalog engine with no page in it
    (split out of krator-asset-engine.js, 2026-10, so any build can carry the
    catalog's furniture). It needs only THREE. It holds TAU and shade(), the
-   material cache mat() and its family looks, the geometry kit mk* (which adds
+   material cache mat() and its family looks, the geometry kit mk* (mkDecal included: a painted canvas panel; all add
    to _target, else to a global `scene` when one exists), the FURN / PLANT /
    ASSET registries and their vocabularies, CATALOG_MATERIALS, the furniture
    palettes FPAL and furnCol(), the build frame makeFrame(), the instantiation
@@ -8311,6 +8311,31 @@ function mkFrustum(x, y, z, rBottom, rTop, h, ry, color, family, sides) {
    The 4-sided cone is a diamond in plan, so the geometry is turned 45 deg first and
    then scaled, which makes the covered footprint exactly w by d rather than w+d over
    root two — and keeps a non-square roof square to its building. */
+/* a painted panel: a plane of w by h facing +z (turned by ry), bottom-centre at (x, y, z), with a
+   canvas texture painted ONCE per key by paint(ctx, W, H) and cached. Canvas pixels map 128 per metre
+   (clamped 32..512), so an emblem stays round on a tall banner and a wide frieze alike. The material
+   carries `family` like any other (cloth, hide, plaster ...). Deterministic as long as paint() is. */
+const _texCache = new Map();
+function mkDecal(x, y, z, w, h, ry, key, paint, family) {
+  let m = _texCache.get(key);
+  if (!m) {
+    const c = document.createElement('canvas');
+    c.width = Math.max(32, Math.min(512, Math.round(w * 128)));
+    c.height = Math.max(32, Math.min(512, Math.round(h * 128)));
+    paint(c.getContext('2d'), c.width, c.height);
+    const t = new THREE.CanvasTexture(c);
+    t.anisotropy = 4;
+    const rough = family === 'metal' || family === 'gold' ? 0.45 : 0.92;
+    m = new THREE.MeshStandardMaterial({ map: t, roughness: rough, metalness: family === 'gold' ? 0.6 : 0, side: THREE.DoubleSide });
+    m.userData.family = family || '';
+    _texCache.set(key, m);
+  }
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(w, h), m);
+  mesh.position.set(x, y + h / 2, z); mesh.rotation.y = ry || 0;
+  return _add(mesh);
+}
+/* a colour number as a CSS colour, for canvas painting */
+function cssCol(c) { return '#' + ('000000' + (c >>> 0 & 0xffffff).toString(16)).slice(-6); }
 function mkPyrRoof(x, y, z, w, h, d, ry, color, family) {
   const geo = new THREE.ConeGeometry(0.5, Math.max(h, 0.02), 4);
   geo.rotateY(Math.PI / 4);
@@ -8408,7 +8433,7 @@ const FURN_ANCHORS = ['floor', 'wall', 'ceiling', 'surface'];
 const FURN_TYPES = ['table', 'chair', 'bench', 'seating', 'bed', 'storage', 'shelf', 'desk', 'lamp', 'stove',
   'altar', 'shrine', 'fountain', 'statue', 'monument', 'planter', 'rug', 'screen', 'banner', 'counter',
   'stall', 'rack', 'workstation', 'loom', 'well', 'pen', 'tomb', 'vessel', 'shelter', 'weapon', 'debris',
-  'ladder', 'board', 'stack', 'brazier', 'book', 'tool', 'art'];
+  'ladder', 'board', 'stack', 'brazier', 'book', 'tool', 'art', 'food', 'drink', 'supply'];
 /* 'art' is wall-mounted art (a mask, a plate, a painted panel, a mounted skull): anchor wall,
    no walk-up access. Tapestries and hangings are 'banner'. */
 const FURNS = [], FURN_BY_KEY = {};
@@ -8453,6 +8478,7 @@ const CATALOG_MATERIALS = {
   foliage:   { tags: ['organic'], families: ['leafy', 'plant'] },
   skin:      { tags: ['organic'], families: ['skin'] },
   emissive:  { tags: ['glow'], families: ['glow'] },
+  food:      { tags: ['organic'], families: ['food'] },
   /* the interiors-phase regional materials (kits/furniture/README.md "Materials by culture") */
   bamboo:    { tags: ['wood', 'organic'], families: ['bamboo'] },
   reed:      { tags: ['organic', 'fabric'], families: ['reed'] },
@@ -8772,6 +8798,8 @@ function makeFrame(x, z, ry, opt) {
     }
   };
   F.rod = (ax, ay, az, bx, by, bz, r, color, family) => { const [ax2, az2] = toWorld(ax, az), [bx2, bz2] = toWorld(bx, bz); mkRod(ax2, F.y + ay, az2, bx2, F.y + by, bz2, r, color, family); };
+  F.decal = (lx, ly, lz, w, h, ry2, key, paint, family) => { const [x2, z2] = toWorld(lx, lz); mkDecal(x2, F.y + ly, z2, w, h, F.ry + (ry2 || 0), key, paint, family); };
+  F.css = cssCol;
   F.lamp = (lx, ly, lz, amp, rad) => { const [x2, z2] = toWorld(lx, lz); const l = new THREE.PointLight(0xffb066, amp || 1, rad || 10); l.position.set(x2, F.y + ly, z2); _add(l); };
   F.tree = (lx, lz, kind, h, ly) => treeHelper(F, lx, lz, kind, h, ly || 0);
   /* furniture a BUILDING places (an ASSET's build): a catalog piece at local (lx, ly, lz) turned lry, built
@@ -9015,6 +9043,71 @@ function measureInstance(g) {
 }
 
 
+/* ---- kits/catalog/krator-symbols.js ---- */
+// ---------------------------------------------------------------- CULTURE SYMBOLS (shared: core/sockets/38-symbols.js)
+// The emblem of every culture as a 2D canvas drawing: (g, cx, cy, R, ink, ink2) draws inside a box of half-size R. Pure canvas, no engine:
+// core/sockets/80-cultures.js draws them on banners, flags and plates; kits/catalog's furniture kit draws the same ones on tapestries,
+// banners, friezes and scrolls (vendored there as kits/catalog/krator-symbols.js, build.py --vendor-check), so a dressed building and the
+// furniture in it carry one emblem. A new culture adds one function here. SYMBOL_OF names each pack's symbol for anyone without a pack.
+const SYM_TAU = Math.PI * 2, SYM_PI = Math.PI;
+function drawTriskele(g,cx,cy,R,cols,lw){g.lineCap='round';g.lineWidth=lw;for(let k=0;k<3;k++){g.strokeStyle=cols[k%cols.length];g.beginPath();const a0=k*SYM_TAU/3-SYM_PI/2;
+ for(let i=0;i<=24;i++){const t=i/24;const a=a0+t*2.5;const r=R*(.12+.86*t);const x=cx+Math.cos(a)*r,y=cy+Math.sin(a)*r;if(i)g.lineTo(x,y);else g.moveTo(x,y);}g.stroke();
+  const ae=a0+2.5;g.fillStyle=cols[k%cols.length];g.beginPath();g.arc(cx+Math.cos(ae)*R*.98,cy+Math.sin(ae)*R*.98,lw*.75,0,SYM_TAU);g.fill();}}
+// ------------------------------------------------------------------ symbols: each draws in the box (cx,cy,R) with two ink colours
+const SYMBOLS={
+ sun:(g,cx,cy,R,c1,c2)=>{g.fillStyle=c1;g.beginPath();g.arc(cx,cy,R*.92,0,SYM_TAU);g.fill();g.fillStyle=c2;g.beginPath();g.arc(cx,cy,R*.54,0,SYM_TAU);g.fill();g.fillStyle=c1;g.beginPath();g.arc(cx,cy,R*.24,0,SYM_TAU);g.fill();
+  for(let k=0;k<12;k++){const a=k*SYM_TAU/12;g.fillStyle=c1;g.beginPath();g.moveTo(cx+Math.cos(a-.11)*R*.98,cy+Math.sin(a-.11)*R*.98);g.lineTo(cx+Math.cos(a)*R*1.18,cy+Math.sin(a)*R*1.18);g.lineTo(cx+Math.cos(a+.11)*R*.98,cy+Math.sin(a+.11)*R*.98);g.fill();}},
+ triskele:(g,cx,cy,R,c1,c2)=>{drawTriskele(g,cx,cy,R*.82,[c1,c2,'#c9963a'],Math.max(3,R*.27));},
+ diamond:(g,cx,cy,R,c1,c2)=>{g.strokeStyle=c1;g.lineWidth=Math.max(2,R*.11);g.lineJoin='round';g.beginPath();g.moveTo(cx,cy-R);g.lineTo(cx+R*.75,cy);g.lineTo(cx,cy+R);g.lineTo(cx-R*.75,cy);g.closePath();g.stroke();g.fillStyle=c1;g.beginPath();g.arc(cx,cy,R*.16,0,SYM_TAU);g.fill();},
+ // hyperboloid of one sheet: the cooling-tower profile with its ruling lines (Yuni)
+ hyperboloid:(g,cx,cy,R,c1,c2)=>{const a=R*.4,hh=R*.92,b=hh*.55;const xw=t=>a*Math.sqrt(1+(t*hh/b)*(t*hh/b));const rx=xw(1),ry=R*.13;
+  g.strokeStyle=c1;g.lineCap='round';g.lineWidth=Math.max(2,R*.05);
+  for(let k=0;k<7;k++){const th=k*SYM_TAU/7;g.beginPath();g.moveTo(cx+Math.cos(th)*rx,cy-hh+Math.sin(th)*ry);g.lineTo(cx+Math.cos(th+1.05)*rx,cy+hh+Math.sin(th+1.05)*ry);g.stroke();}
+  g.lineWidth=Math.max(2.5,R*.1);for(const sx of [-1,1]){g.beginPath();for(let i=0;i<=28;i++){const t=-1+2*i/28;const x=cx+sx*xw(t),y=cy+t*hh;if(i)g.lineTo(x,y);else g.moveTo(x,y);}g.stroke();}
+  for(const [yy,r_x] of [[cy-hh,rx],[cy,a],[cy+hh,rx]]){g.beginPath();g.ellipse(cx,yy,r_x,ry*(r_x===a?.8:1),0,0,SYM_TAU);g.stroke();}},
+ // three parallel talon slashes (Beast Riders)
+ claw:(g,cx,cy,R,c1,c2)=>{g.fillStyle=c1;for(let k=-1;k<=1;k++){const x0=cx+k*R*.5;g.beginPath();g.moveTo(x0-R*.2,cy-R*.95);g.quadraticCurveTo(x0+R*.62,cy-R*.15,x0+R*.08,cy+R*1.0);g.quadraticCurveTo(x0+R*.2,cy-R*.05,x0-R*.2,cy-R*.95);g.closePath();g.fill();}},
+ // a half sun rising over three waves (Hykkousoi; the hexareme's sail in kits/ringsea): c1 the sun, c2 the waves
+ wavesun:(g,cx,cy,R,c1,c2)=>{const y0=cy-R*.1;g.fillStyle=c1;g.beginPath();g.arc(cx,y0,R*.5,Math.PI,0);g.fill();g.strokeStyle=c1;g.lineWidth=Math.max(2,R*.07);
+  for(let i=0;i<9;i++){const a=Math.PI+i/8*Math.PI;g.beginPath();g.moveTo(cx+Math.cos(a)*R*.62,y0+Math.sin(a)*R*.62);g.lineTo(cx+Math.cos(a)*R*.9,y0+Math.sin(a)*R*.9);g.stroke();}
+  g.strokeStyle=c2;g.lineWidth=Math.max(2,R*.1);for(let k=0;k<3;k++){g.beginPath();for(let i=0;i<=24;i++){const x=-R+2*R*i/24,y=y0+R*.12+k*R*.24+Math.sin(x/R*SYM_TAU)*R*.07;if(i)g.lineTo(cx+x,y);else g.moveTo(cx+x,y);}g.stroke();}},
+ // the eight-spoked wheel (Xanadu; the carrack's sails): c1 rim and spokes, c2 the hub
+ wheel:(g,cx,cy,R,c1,c2)=>{g.strokeStyle=c1;g.lineWidth=Math.max(2,R*.12);g.beginPath();g.arc(cx,cy,R*.78,0,SYM_TAU);g.stroke();g.lineWidth=Math.max(2,R*.07);
+  for(let i=0;i<8;i++){const a=i/8*SYM_TAU;g.beginPath();g.moveTo(cx+Math.cos(a)*R*.18,cy+Math.sin(a)*R*.18);g.lineTo(cx+Math.cos(a)*R*.95,cy+Math.sin(a)*R*.95);g.stroke();}
+  g.fillStyle=c2;g.beginPath();g.arc(cx,cy,R*.2,0,SYM_TAU);g.fill();},
+ // the white moon of the islands (the oruwa's sail): a full disc, a thin ring round it
+ moon:(g,cx,cy,R,c1,c2)=>{g.fillStyle=c1;g.beginPath();g.arc(cx,cy,R*.62,0,SYM_TAU);g.fill();g.strokeStyle=c1;g.lineWidth=Math.max(1.5,R*.04);g.beginPath();g.arc(cx,cy,R*.86,0,SYM_TAU);g.stroke();},
+};
+// ---- symbols added for the furniture sets (cultures without a socket pack yet; a pack that arrives later picks its symbol from here)
+Object.assign(SYMBOLS, {
+ // a coiled serpent, head out (Lizardmen)
+ serpent:(g,cx,cy,R,c1,c2)=>{g.strokeStyle=c1;g.lineCap='round';g.lineWidth=Math.max(2,R*.16);g.beginPath();for(let i=0;i<=60;i++){const t=i/60,a=t*SYM_TAU*1.75,r=R*(.15+.72*t);const x=cx+Math.cos(a)*r,y=cy+Math.sin(a)*r;if(i)g.lineTo(x,y);else g.moveTo(x,y);}g.stroke();
+  const ae=SYM_TAU*1.75,hx=cx+Math.cos(ae)*R*.87,hy=cy+Math.sin(ae)*R*.87;g.fillStyle=c1;g.beginPath();g.ellipse(hx,hy,R*.2,R*.13,ae,0,SYM_TAU);g.fill();g.fillStyle=c2;g.beginPath();g.arc(hx+Math.cos(ae+1.3)*R*.07,hy+Math.sin(ae+1.3)*R*.07,R*.035,0,SYM_TAU);g.fill();},
+ // an eight-pointed star of two squares, a disc at the heart (East Abyss)
+ star:(g,cx,cy,R,c1,c2)=>{g.fillStyle=c1;for(const rot of [0,SYM_PI/4]){g.beginPath();for(let k=0;k<4;k++){const a=rot+k*SYM_PI/2;g.lineTo(cx+Math.cos(a)*R*.95,cy+Math.sin(a)*R*.95);}g.closePath();g.fill();}
+  g.fillStyle=c2;g.beginPath();g.arc(cx,cy,R*.3,0,SYM_TAU);g.fill();g.fillStyle=c1;g.beginPath();g.arc(cx,cy,R*.12,0,SYM_TAU);g.fill();},
+ // a pair of curling ram's horns over a disc (Eastern Nomads)
+ horns:(g,cx,cy,R,c1,c2)=>{g.strokeStyle=c1;g.lineCap='round';g.lineWidth=Math.max(2,R*.17);for(const s of [-1,1]){g.beginPath();for(let i=0;i<=30;i++){const t=i/30,a=-SYM_PI/2+s*t*SYM_PI*1.15,r=R*(.9-.55*t);const x=cx+s*R*.1+Math.cos(a)*r,y=cy+R*.1+Math.sin(a)*r;if(i)g.lineTo(x,y);else g.moveTo(x,y);}g.stroke();}
+  g.fillStyle=c2;g.beginPath();g.arc(cx,cy+R*.15,R*.24,0,SYM_TAU);g.fill();},
+ // a fir tree on a mountain line (Rustic Highlanders)
+ fir:(g,cx,cy,R,c1,c2)=>{g.fillStyle=c1;for(let k=0;k<3;k++){const y=cy-R*.9+k*R*.42,w=R*(.35+k*.25);g.beginPath();g.moveTo(cx,y);g.lineTo(cx+w,y+R*.55);g.lineTo(cx-w,y+R*.55);g.closePath();g.fill();}
+  g.fillRect(cx-R*.08,cy+R*.4,R*.16,R*.35);g.strokeStyle=c2;g.lineWidth=Math.max(2,R*.08);g.beginPath();g.moveTo(cx-R,cy+R*.95);g.lineTo(cx-R*.5,cy+R*.6);g.lineTo(cx-R*.25,cy+R*.85);g.moveTo(cx+R*.25,cy+R*.85);g.lineTo(cx+R*.5,cy+R*.6);g.lineTo(cx+R,cy+R*.95);g.stroke();},
+ // a formline raven's head: the ovoid eye in a beaked outline (Painted Men)
+ raven:(g,cx,cy,R,c1,c2)=>{g.fillStyle=c1;g.beginPath();g.moveTo(cx-R*.9,cy);g.quadraticCurveTo(cx-R*.9,cy-R*.85,cx,cy-R*.8);g.quadraticCurveTo(cx+R*.7,cy-R*.75,cx+R*.98,cy-R*.1);g.lineTo(cx+R*.3,cy+R*.2);g.quadraticCurveTo(cx+R*.5,cy+R*.75,cx-R*.1,cy+R*.8);g.quadraticCurveTo(cx-R*.9,cy+R*.8,cx-R*.9,cy);g.closePath();g.fill();
+  g.fillStyle=c2;g.beginPath();g.ellipse(cx-R*.25,cy-R*.1,R*.36,R*.26,0,0,SYM_TAU);g.fill();g.fillStyle=c1;g.beginPath();g.ellipse(cx-R*.25,cy-R*.1,R*.14,R*.12,0,0,SYM_TAU);g.fill();g.strokeStyle=c2;g.lineWidth=Math.max(2,R*.06);g.beginPath();g.moveTo(cx+R*.2,cy-R*.05);g.lineTo(cx+R*.85,cy-R*.1);g.stroke();},
+ // a fish in a ring of reeds (Reed Lake)
+ fish:(g,cx,cy,R,c1,c2)=>{g.strokeStyle=c2;g.lineWidth=Math.max(2,R*.06);for(let k=0;k<12;k++){const a=k*SYM_TAU/12;g.beginPath();g.moveTo(cx+Math.cos(a)*R*.78,cy+Math.sin(a)*R*.78);g.lineTo(cx+Math.cos(a)*R*.98,cy+Math.sin(a)*R*.98);g.stroke();}
+  g.fillStyle=c1;g.beginPath();g.ellipse(cx-R*.08,cy,R*.5,R*.24,0,0,SYM_TAU);g.fill();g.beginPath();g.moveTo(cx+R*.35,cy);g.lineTo(cx+R*.68,cy-R*.3);g.lineTo(cx+R*.68,cy+R*.3);g.closePath();g.fill();g.fillStyle=c2;g.beginPath();g.arc(cx-R*.38,cy-R*.05,R*.06,0,SYM_TAU);g.fill();},
+ // a skull, teeth and all (Screamers)
+ skull:(g,cx,cy,R,c1,c2)=>{g.fillStyle=c1;g.beginPath();g.arc(cx,cy-R*.15,R*.62,0,SYM_TAU);g.fill();g.fillRect(cx-R*.4,cy+R*.2,R*.8,R*.5);g.fillStyle=c2;for(const s of [-1,1]){g.beginPath();g.ellipse(cx+s*R*.26,cy-R*.15,R*.17,R*.2,0,0,SYM_TAU);g.fill();}
+  g.beginPath();g.moveTo(cx,cy+R*.05);g.lineTo(cx-R*.1,cy+R*.28);g.lineTo(cx+R*.1,cy+R*.28);g.closePath();g.fill();for(let k=0;k<5;k++)g.fillRect(cx-R*.36+k*R*.16,cy+R*.42,R*.06,R*.26);},
+ // a toothed gear (post-apoc salvage and scrap)
+ gear:(g,cx,cy,R,c1,c2)=>{g.fillStyle=c1;g.beginPath();for(let k=0;k<32;k++){const a=k*SYM_TAU/32,r=(k%4<2)?R*.95:R*.75;g.lineTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r);}g.closePath();g.fill();g.fillStyle=c2;g.beginPath();g.arc(cx,cy,R*.45,0,SYM_TAU);g.fill();g.fillStyle=c1;g.beginPath();g.arc(cx,cy,R*.2,0,SYM_TAU);g.fill();},
+});
+// the symbol each culture pack draws (mkCulture's `sym`), for code that has a culture key and no pack
+const SYMBOL_OF = { iziz:'sun', republic:'triskele', voth:'diamond', yuni:'hyperboloid', 'beast-rider':'claw', hykkousoi:'wavesun', xanadu:'wheel',
+ 'ringsea-islander':'moon', lizardmen:'serpent', eastabyss:'star', nomad:'horns', rustic:'fir', painted:'raven', reedlake:'fish', screamer:'skull', 'post-apoc':'gear', scrap:'gear' };
+
 /* ---- kits/catalog/krator-furniture-kit.js ---- */
 /* ======================================================================
    Krator Furniture Kit (FK)
@@ -9053,6 +9146,8 @@ function measureInstance(g) {
      statue    'figure' 'idol' 'totem' 'urn' 'globe' 'skullpole' 'obelisk' 'vase' 'guardian'
      tapestry  'medallion' 'stripes' 'chevrons' 'grid' 'sun' 'waves' 'diamond' 'wheel' 'claw' 'moon' 'spiral' 'figure'
      canopy    true | false (court bed: posts and hangings, or a dais with a tall head)
+     sym?      a SYMBOLS key (core/sockets/38-symbols.js); default: the culture's pack's symbol (SYMBOL_OF)
+     emblem?   { field, edge, band, disc?, ink, ink2? } palette keys for painted hangings: the pack's banner colours
      board     'slate' 'hide' 'bark' 'panel' 'plastic'
      lampCol?  palette key of the lamp's glass or shade; cushionsOn? extra cushions on seats
 
@@ -9242,6 +9337,43 @@ const FK = (function () {
     else if (k === 'disc') { F.cyl(x, y, z, r * 1.3, r * 0.35, 0, P.acc, P.af); F.ball(x, y + r * 0.7, z, r * 0.5, P.acc, P.af); }
     else if (k === 'skull') { F.ball(x, y + r, z, r, P.acc, P.af); F.box(x, y, z, r * 1.2, r * 0.6, r, 0, F.shade(P.acc, -0.1), P.af); }
   };
+  /* ------------------------------------------------------------ emblems
+     The culture's device, drawn with the socket packs' own SYMBOLS (core/sockets/38-symbols.js,
+     vendored as krator-symbols.js) so a tapestry matches the banner on the building. K.symbolOf
+     picks the symbol: the sheet's `sym`, else the culture's pack's (SYMBOL_OF), else the culture's own. */
+  K.symbolOf = function (S, culture) {
+    if (S && S.sym) return S.sym;
+    const info = (typeof FURN_CULTURE_INFO !== 'undefined' && FURN_CULTURE_INFO[culture]) || {};
+    const table = typeof SYMBOL_OF !== 'undefined' ? SYMBOL_OF : {};
+    return (info.pack && table[info.pack]) || table[culture] || null;
+  };
+  K.hasSym = function (sym) { return !!(sym && typeof SYMBOLS !== 'undefined' && SYMBOLS[sym]); };
+  /* the emblem colours as CSS, from the sheet's `emblem` keys or its cloth and accent */
+  K.emblemCols = function (F, S) {
+    const e = S.emblem || {}, c = (k, alt) => F.css(F.col(k != null ? k : alt));
+    const cl = S.cloth;
+    return { field: c(e.field, cl[0]), edge: c(e.edge, cl[1 % cl.length]), band: c(e.band, cl[2 % cl.length]),
+      disc: e.disc ? c(e.disc) : null, ink: c(e.ink, S.accent || cl[3 % cl.length]), ink2: c(e.ink2, e.ink != null ? e.ink : (S.accent || cl[3 % cl.length])) };
+  };
+  /* paint a banner field: edges, end bands, an optional disc and the symbol (the packs' drawBan, minus its grain) */
+  K.paintBanner = function (g, W, H, E, sym, o) {
+    o = o || {};
+    g.fillStyle = E.field; g.fillRect(0, 0, W, H);
+    const e = Math.min(W, H) * (o.edge == null ? 0.09 : o.edge);
+    if (e > 0) {
+      g.fillStyle = E.edge;
+      if (H > W) { g.fillRect(0, 0, e, H); g.fillRect(W - e, 0, e, H); g.fillStyle = E.band; g.fillRect(0, 0, W, e * 0.8); g.fillRect(0, H - e * 0.8, W, e * 0.8); }
+      else { g.fillRect(0, 0, W, e); g.fillRect(0, H - e, W, e); g.fillStyle = E.band; g.fillRect(0, 0, e * 0.8, H); g.fillRect(W - e * 0.8, 0, e * 0.8, H); }
+    }
+    const R = Math.min(W * 0.4, H * 0.32) * (o.scale || 1), cx = o.cx != null ? o.cx * W : W / 2, cy = o.cy != null ? o.cy * H : (H > W * 1.25 ? H * 0.38 : H * 0.5);
+    if (E.disc) { g.fillStyle = E.disc; g.beginPath(); g.arc(cx, cy, R * 1.06, 0, Math.PI * 2); g.fill(); }
+    if (K.hasSym(sym)) SYMBOLS[sym](g, cx, cy, R * 0.94, E.ink, E.ink2);
+    else { g.fillStyle = E.ink; g.beginPath(); g.arc(cx, cy, R * 0.5, 0, Math.PI * 2); g.fill(); }
+    if (o.bands && H > W * 1.25) { g.fillStyle = E.band; for (let k = 0; k < 3; k++) g.fillRect(W * 0.24, H * 0.66 + k * H * 0.06, W * 0.52, H * 0.025); }
+  };
+  /* a seeded number stream for painting (canvas paint runs once per key, never from the piece's own stream) */
+  K.paintRng = function (seed) { let st = (seed * 2654435761) >>> 0; return () => { st = (Math.imul(st, 1664525) + 1013904223) >>> 0; return st / 4294967296; }; };
+
   /* a cushion (flattened ellipsoid) */
   K.cushion = function (F, P, x, y, z, w, d, t, col) {
     F.blob(x, y + t / 2, z, Math.min(w, d) / 2, t, 0, col || P.pick(), P.cf);
@@ -10020,7 +10152,30 @@ const FK = (function () {
   /* tapestry: a rod, a field, borders and the culture's device in the middle. Wall anchor. */
   B.tapestry = function (F, S, o) {
     const P = K.pal(F, S), W = o.w, D = o.d, H = o.h, v = o.variant || 0;
-    const kind = S.tapestry || 'medallion', zb = -D / 2;
+    const zb = -D / 2;
+    const sym = K.symbolOf(S, o.culture);
+    if (v !== 2) {
+      /* painted: the emblem on the pack colours (v 0), on the sheet's second cloth (v 1), or a banded field with a row of small emblems (v 3) */
+      F.rod(-W / 2, H - 0.04, zb + 0.05, W / 2, H - 0.04, zb + 0.05, 0.02, P.woodD, P.wf);
+      for (const s of [-1, 1]) K.finial(F, P, S, s * (W / 2 - 0.03), H - 0.08, zb + 0.05, 0.03);
+      const E = K.emblemCols(F, S);
+      if (v === 1) { const t = E.field; E.field = F.css(P.cloth[1 % P.cloth.length]); E.band = t; }
+      const top = H - 0.08, bot = 0.12, fh = top - bot;
+      const key = 'tap:' + o.culture + ':' + (sym || 'none') + ':' + v + ':' + W.toFixed(2) + 'x' + fh.toFixed(2) + ':' + E.field + E.ink;
+      F.decal(0, bot, zb + 0.03, W - 0.1, fh, 0, key, function (g, cw, ch) {
+        if (v === 3) {
+          const n = 7, bh = ch / n;
+          for (let i = 0; i < n; i++) { g.fillStyle = i % 2 ? E.band : E.field; g.fillRect(0, i * bh, cw, bh + 1); }
+          g.fillStyle = E.edge; g.fillRect(0, 0, cw, bh * 0.4); g.fillRect(0, ch - bh * 0.4, cw, bh * 0.4);
+          const R = Math.min(bh * 1.3, cw / 8);
+          for (let i = 0; i < 3; i++) if (K.hasSym(sym)) SYMBOLS[sym](g, cw * (0.2 + i * 0.3), ch * 0.5, R, E.ink, E.ink2);
+        } else K.paintBanner(g, cw, ch, E, sym, { bands: true });
+      }, P.cf);
+      const fr = F.col(S.emblem && S.emblem.band ? S.emblem.band : S.cloth[2 % S.cloth.length]);
+      for (let i = 0; i < Math.floor((W - 0.2) / 0.1); i++) F.box(-W / 2 + 0.15 + i * 0.1, 0.03, zb + 0.03, 0.04, 0.09, 0.01, 0, fr, P.cf);   /* fringe */
+      return;
+    }
+    const kind = S.tapestry || 'medallion';
     const field = P.cloth[v % P.cloth.length], edge = P.cloth[(v + 1) % P.cloth.length], band = P.cloth[(v + 2) % P.cloth.length];
     const ink = P.acc, inkF = P.af;
     F.rod(-W / 2, H - 0.04, zb + 0.05, W / 2, H - 0.04, zb + 0.05, 0.02, P.woodD, P.wf);
@@ -10072,6 +10227,155 @@ const FK = (function () {
       K.motifAt(F, P, S, 0, cy, zf + 0.012, R * 0.5, 0);
       for (const sx of [-1, 1]) for (const sy of [-1, 1]) K.motifAt(F, P, S, sx * (W / 2 - 0.26), cy + sy * (fh / 2 - 0.26), zf, 0.14, 0);
     }
+  };
+
+  /* a tall banner on a crossbar: the emblem at the top, bands below, a swallow-tail or fringed end */
+  B.banner = function (F, S, o) {
+    const P = K.pal(F, S), W = o.w, D = o.d, H = o.h, v = o.variant || 0;
+    const zb = -D / 2, sym = K.symbolOf(S, o.culture), E = K.emblemCols(F, S);
+    if (v === 1) { const t = E.field; E.field = E.band; E.band = t; }
+    F.rod(-W / 2, H - 0.05, zb + 0.06, W / 2, H - 0.05, zb + 0.06, 0.018, P.acc, P.af);
+    for (const s of [-1, 1]) K.finial(F, P, S, s * (W / 2 - 0.02), H - 0.1, zb + 0.06, 0.025);
+    F.rod(0, H - 0.05, zb + 0.06, 0, H - 0.01, zb + 0.015, 0.008, P.metal, P.mf);           /* hung from a hook on the wall */
+    const top = H - 0.07, bot = 0.22, fh = top - bot;
+    const key = 'ban:' + o.culture + ':' + (sym || 'none') + ':' + v + ':' + W.toFixed(2) + 'x' + fh.toFixed(2) + ':' + E.field;
+    F.decal(0, bot, zb + 0.035, W - 0.04, fh, 0, key, function (g, cw, ch) {
+      K.paintBanner(g, cw, ch, E, sym, { bands: true, cy: 0.3, scale: 1.1 });
+      g.fillStyle = E.edge; for (let k = 0; k < 2; k++) g.fillRect(0, ch * (0.62 + k * 0.14), cw, ch * 0.05);
+    }, P.cf);
+    const fc = F.col(S.emblem && S.emblem.field ? S.emblem.field : S.cloth[0]);
+    if (v === 0) { for (const s of [-1, 1]) F.beam(s * W * 0.22, bot, zb + 0.035, s * W * 0.4, 0.02, zb + 0.035, W * 0.3, 0.012, v === 1 ? F.col(S.cloth[2 % S.cloth.length]) : fc, P.cf); }
+    else for (let i = 0; i < Math.floor((W - 0.08) / 0.06); i++) F.box(-W / 2 + 0.06 + i * 0.06, bot - 0.18, zb + 0.035, 0.03, 0.18, 0.008, 0, F.col(S.cloth[2 % S.cloth.length]), P.cf);
+  };
+
+  /* a long low frieze on a rail: lozenges and a row of small emblems */
+  B.frieze = function (F, S, o) {
+    const P = K.pal(F, S), W = o.w, D = o.d, H = o.h, v = o.variant || 0;
+    const zb = -D / 2, sym = K.symbolOf(S, o.culture), E = K.emblemCols(F, S);
+    F.box(0, H - 0.05, zb + 0.03, W, 0.05, 0.06, 0, P.woodD, P.wf);
+    F.box(0, 0, zb + 0.03, W, 0.04, 0.06, 0, P.woodD, P.wf);
+    const fh = H - 0.09;
+    const key = 'frz:' + o.culture + ':' + (sym || 'none') + ':' + v + ':' + W.toFixed(2) + 'x' + fh.toFixed(2) + ':' + E.field;
+    F.decal(0, 0.04, zb + 0.035, W - 0.04, fh, 0, key, function (g, cw, ch) {
+      g.fillStyle = v ? E.band : E.field; g.fillRect(0, 0, cw, ch);
+      g.fillStyle = E.edge; g.fillRect(0, 0, cw, ch * 0.1); g.fillRect(0, ch * 0.9, cw, ch * 0.1);
+      const n = Math.max(3, Math.round(cw / ch * 1.2)), R = ch * 0.3;
+      for (let i = 0; i < n; i++) {
+        const cx = cw * (i + 0.5) / n, cy = ch / 2;
+        if (i % 2 === 0 && K.hasSym(sym)) SYMBOLS[sym](g, cx, cy, R, v ? E.field : E.ink, E.ink2);
+        else { g.fillStyle = v ? E.field : E.band; g.beginPath(); g.moveTo(cx, cy - R); g.lineTo(cx + R * 0.7, cy); g.lineTo(cx, cy + R); g.lineTo(cx - R * 0.7, cy); g.closePath(); g.fill(); }
+      }
+    }, P.cf);
+    if (o.court) K.band(F, P, S, 0, H - 0.025, zb + 0.06, W - 0.3, 0.04, 0);
+  };
+
+  /* a hanging scroll: rollers top and bottom, a paper or hide field of glyph columns and a seal, or a painted scene */
+  B.scroll = function (F, S, o) {
+    const P = K.pal(F, S), W = o.w, D = o.d, H = o.h, v = o.variant || 0;
+    const zb = -D / 2, sym = K.symbolOf(S, o.culture), E = K.emblemCols(F, S);
+    const hide = S.clothFam === 'hide' || S.clothFam === 'reed';
+    const paper = hide ? F.css(F.col(S.cloth[3 % S.cloth.length])) : F.css(F.shade(P.clothL, 0.4)), ink = hide ? E.ink : F.css(F.shade(P.woodD, -0.5));
+    const fam = hide ? P.cf : 'plaster';
+    for (const y of [H - 0.04, 0.0]) { F.rod(-W / 2, y + 0.02, zb + 0.05, W / 2, y + 0.02, zb + 0.05, 0.022, P.woodD, P.wf); for (const s of [-1, 1]) F.ball(s * (W / 2 - 0.03), y + 0.02, zb + 0.05, 0.028, P.acc, P.af); }
+    F.rod(-W * 0.35, H - 0.02, zb + 0.05, 0, H - 0.005, zb + 0.015, 0.006, P.rope, 'rope');
+    F.rod(W * 0.35, H - 0.02, zb + 0.05, 0, H - 0.005, zb + 0.015, 0.006, P.rope, 'rope');
+    const fh = H - 0.1;
+    const key = 'scr:' + o.culture + ':' + (sym || 'none') + ':' + v + ':' + W.toFixed(2) + 'x' + fh.toFixed(2) + ':' + E.ink + paper;
+    F.decal(0, 0.05, zb + 0.03, W - 0.06, fh, 0, key, function (g, cw, ch) {
+      const r = K.paintRng(17 + v * 7 + (sym || '').length);
+      g.fillStyle = paper; g.fillRect(0, 0, cw, ch);
+      g.fillStyle = E.edge; g.fillRect(0, 0, cw, ch * 0.03); g.fillRect(0, ch * 0.97, cw, ch * 0.03);
+      if (v === 0) {
+        g.strokeStyle = ink; g.lineCap = 'round';
+        const cols = Math.max(2, Math.floor(cw / 22));
+        for (let c = 0; c < cols; c++) {
+          const x = cw * (c + 0.5) / cols;
+          let y = ch * 0.1;
+          while (y < ch * 0.8) {
+            const n = 1 + Math.floor(r() * 3);
+            for (let k = 0; k < n; k++) { g.lineWidth = 1.2 + r() * 1.6; g.beginPath(); g.moveTo(x - 6 + r() * 4, y + k * 4); g.lineTo(x + 2 + r() * 5, y + 1 + k * 4 + r() * 3); g.stroke(); }
+            y += 8 + n * 4 + r() * 6;
+          }
+        }
+        if (K.hasSym(sym)) { g.fillStyle = E.field; g.fillRect(cw * 0.6, ch * 0.84, cw * 0.3, cw * 0.3); SYMBOLS[sym](g, cw * 0.75, ch * 0.84 + cw * 0.15, cw * 0.11, E.ink, E.ink2); }
+      } else {
+        if (K.hasSym(sym)) SYMBOLS[sym](g, cw / 2, ch * 0.28, cw * 0.3, E.ink, E.ink2);
+        g.strokeStyle = ink; g.lineWidth = 2; g.beginPath(); g.moveTo(cw * 0.08, ch * 0.62); g.lineTo(cw * 0.92, ch * 0.62); g.stroke();
+        g.fillStyle = ink;
+        for (let i = 0; i < 4; i++) { const x = cw * (0.2 + i * 0.2), y = ch * 0.62; g.beginPath(); g.arc(x, y - 22, 4, 0, Math.PI * 2); g.fill(); g.fillRect(x - 3, y - 17, 6, 14); g.fillRect(x - 5, y - 3, 3, 3); g.fillRect(x + 2, y - 3, 3, 3); }
+        g.fillStyle = E.band; for (let i = 0; i < 6; i++) g.fillRect(cw * 0.1 + i * cw * 0.14, ch * 0.72, cw * 0.09, ch * 0.04);
+      }
+    }, fam);
+  };
+
+  /* a knotted rug hung on the wall: border, guard of lozenges, a medallion of the emblem, fringe at the foot */
+  B.wallRug = function (F, S, o) {
+    const P = K.pal(F, S), W = o.w, D = o.d, H = o.h, v = o.variant || 0;
+    const zb = -D / 2, sym = K.symbolOf(S, o.culture), E = K.emblemCols(F, S);
+    F.rod(-W / 2, H - 0.03, zb + 0.04, W / 2, H - 0.03, zb + 0.04, 0.016, P.woodD, P.wf);
+    const fh = H - 0.14;
+    const key = 'rug:' + o.culture + ':' + (sym || 'none') + ':' + v + ':' + W.toFixed(2) + 'x' + fh.toFixed(2) + ':' + E.field;
+    F.decal(0, 0.1, zb + 0.025, W - 0.04, fh, 0, key, function (g, cw, ch) {
+      const r = K.paintRng(31 + v);
+      g.fillStyle = v ? E.band : E.edge; g.fillRect(0, 0, cw, ch);
+      const b = Math.min(cw, ch) * 0.1;
+      g.fillStyle = E.ink2; g.fillRect(b * 0.5, b * 0.5, cw - b, ch - b);
+      g.fillStyle = v ? E.edge : E.field; g.fillRect(b, b, cw - 2 * b, ch - 2 * b);
+      g.fillStyle = E.band;
+      for (let x = b * 1.5; x < cw - b * 1.5; x += b * 1.2) for (const y of [b * 1.3, ch - b * 1.3]) { g.beginPath(); g.moveTo(x, y - b * 0.35); g.lineTo(x + b * 0.35, y); g.lineTo(x, y + b * 0.35); g.lineTo(x - b * 0.35, y); g.closePath(); g.fill(); }
+      const R = Math.min(cw, ch) * 0.26;
+      g.fillStyle = E.band; g.beginPath(); g.moveTo(cw / 2, ch / 2 - R * 1.3); g.lineTo(cw / 2 + R * 1.3, ch / 2); g.lineTo(cw / 2, ch / 2 + R * 1.3); g.lineTo(cw / 2 - R * 1.3, ch / 2); g.closePath(); g.fill();
+      if (E.disc) { g.fillStyle = E.disc; g.beginPath(); g.arc(cw / 2, ch / 2, R * 1.05, 0, Math.PI * 2); g.fill(); }
+      if (K.hasSym(sym)) SYMBOLS[sym](g, cw / 2, ch / 2, R * 0.9, E.ink, E.ink2);
+      for (let i = 0; i < 60; i++) { g.fillStyle = 'rgba(0,0,0,' + (0.03 + r() * 0.06).toFixed(3) + ')'; g.fillRect(r() * cw, r() * ch, 2 + r() * 3, 1 + r() * 2); }
+    }, P.cf);
+    for (let i = 0; i < Math.floor((W - 0.1) / 0.05); i++) F.box(-W / 2 + 0.07 + i * 0.05, 0.0, zb + 0.025, 0.02, 0.1, 0.008, 0, P.clothL, P.cf);
+  };
+
+  /* a string of pennants along a cord: alternating fields, the emblem on every second one */
+  B.pennants = function (F, S, o) {
+    const P = K.pal(F, S), W = o.w, D = o.d, H = o.h, v = o.variant || 0;
+    const zb = -D / 2, sym = K.symbolOf(S, o.culture), E = K.emblemCols(F, S);
+    F.rod(-W / 2, H - 0.02, zb + 0.06, W / 2, H - 0.02, zb + 0.06, 0.006, P.rope, 'rope');
+    for (const s of [-1, 1]) F.rod(s * (W / 2 - 0.01), H - 0.02, zb + 0.06, s * (W / 2 - 0.01), H - 0.01, zb + 0.012, 0.006, P.metal, P.mf);
+    const n = Math.max(3, Math.floor(W / 0.34)), pw = (W - 0.06) / n, ph = H - 0.05;
+    const fields = [E.field, E.band, E.edge];
+    for (let i = 0; i < n; i++) {
+      const x = -W / 2 + 0.03 + pw * (i + 0.5), f = fields[(i + v) % fields.length], withSym = i % 2 === 0;
+      const key = 'pen:' + o.culture + ':' + (sym || 'none') + ':' + f + ':' + (withSym ? 1 : 0) + ':' + pw.toFixed(2) + 'x' + ph.toFixed(2);
+      F.decal(x, H - 0.03 - ph, zb + 0.045, pw - 0.02, ph, 0, key, function (g, cw, ch) {
+        g.fillStyle = f; g.beginPath(); g.moveTo(0, 0); g.lineTo(cw, 0); g.lineTo(cw / 2, ch); g.closePath(); g.fill();
+        g.fillStyle = E.edge; g.fillRect(0, 0, cw, ch * 0.08);
+        if (withSym && K.hasSym(sym)) SYMBOLS[sym](g, cw / 2, ch * 0.32, cw * 0.26, f === E.ink ? E.field : E.ink, E.ink2);
+      }, P.cf);
+    }
+  };
+
+  /* a painted hide or cloth stretched on a frame of poles: the emblem large, a procession or a hunt under it */
+  B.paintedHanging = function (F, S, o) {
+    const P = K.pal(F, S), W = o.w, D = o.d, H = o.h, v = o.variant || 0;
+    const zb = -D / 2, sym = K.symbolOf(S, o.culture), E = K.emblemCols(F, S);
+    const hideCol = F.css(F.col(S.cloth[3 % S.cloth.length]));
+    for (const s of [-1, 1]) F.cyl(s * (W / 2 - 0.03), 0, zb + 0.05, 0.03, H, 0, P.woodD, P.wf);
+    for (const y of [H - 0.06, 0.03]) F.rod(-W / 2 + 0.02, y + 0.03, zb + 0.05, W / 2 - 0.02, y + 0.03, zb + 0.05, 0.025, P.wood, P.wf);
+    const fh = H - 0.3, fw = W - 0.24;
+    for (let i = 0; i < 6; i++) { const t = (i + 0.5) / 6; F.rod(-fw / 2, 0.15 + t * fh, zb + 0.05, -W / 2 + 0.03, 0.17 + t * fh, zb + 0.05, 0.006, P.rope, 'rope'); F.rod(fw / 2, 0.15 + t * fh, zb + 0.05, W / 2 - 0.03, 0.17 + t * fh, zb + 0.05, 0.006, P.rope, 'rope'); }
+    for (let i = 0; i < 5; i++) { const t = (i + 0.5) / 5; F.rod(-fw / 2 + t * fw, 0.15 + fh, zb + 0.05, -fw / 2 + t * fw + 0.02, H - 0.03, zb + 0.05, 0.006, P.rope, 'rope'); }
+    const key = 'hid:' + o.culture + ':' + (sym || 'none') + ':' + v + ':' + fw.toFixed(2) + 'x' + fh.toFixed(2) + ':' + E.ink;
+    F.decal(0, 0.15, zb + 0.05, fw, fh, 0, key, function (g, cw, ch) {
+      const r = K.paintRng(53 + v * 3);
+      g.fillStyle = hideCol; g.beginPath(); g.moveTo(cw * 0.04, ch * 0.08); g.lineTo(cw * 0.3, 0); g.lineTo(cw * 0.7, ch * 0.02); g.lineTo(cw * 0.97, ch * 0.1); g.lineTo(cw, ch * 0.6); g.lineTo(cw * 0.94, ch); g.lineTo(cw * 0.1, ch * 0.97); g.lineTo(0, ch * 0.5); g.closePath(); g.fill();
+      for (let i = 0; i < 80; i++) { g.fillStyle = 'rgba(60,30,10,' + (0.03 + r() * 0.07).toFixed(3) + ')'; g.beginPath(); g.arc(r() * cw, r() * ch, 2 + r() * 6, 0, Math.PI * 2); g.fill(); }
+      if (K.hasSym(sym)) SYMBOLS[sym](g, cw / 2, ch * 0.36, Math.min(cw, ch) * 0.26, E.ink, E.ink2);
+      g.fillStyle = E.ink;
+      const n = 5 + Math.floor(r() * 3);
+      for (let i = 0; i < n; i++) {
+        const x = cw * (0.12 + 0.76 * i / (n - 1)), y = ch * 0.8;
+        if (v === 1 && i % 2) { g.fillRect(x - 10, y - 10, 20, 8); g.fillRect(x - 9, y - 2, 3, 7); g.fillRect(x + 6, y - 2, 3, 7); g.beginPath(); g.arc(x + 11, y - 12, 4, 0, Math.PI * 2); g.fill(); }
+        else { g.beginPath(); g.arc(x, y - 16, 3.5, 0, Math.PI * 2); g.fill(); g.fillRect(x - 2.5, y - 12, 5, 9); g.fillRect(x - 4, y - 3, 2.5, 6); g.fillRect(x + 1.5, y - 3, 2.5, 6); g.fillRect(x + 3, y - 14, 1.5, 9); }
+      }
+      g.fillStyle = E.ink2; for (let i = 0; i < 3; i++) { g.beginPath(); g.arc(cw * (0.2 + i * 0.3), ch * 0.12, 3, 0, Math.PI * 2); g.fill(); }
+    }, S.clothFam === 'hide' ? 'hide' : P.cf);
   };
 
   /* wall art: a mask, a mounted skull, a plate, a painted panel, a mosaic, a shield, antlers, a relief ... */
@@ -10503,6 +10807,9 @@ const FK = (function () {
       { role: 'ladder', type: 'ladder', rooms: ['store', 'workshop', 'library', 'hall'], anchor: 'wall', clear: { front: 0.5 }, w: 0.5, d: 0.5, h: 2.3, uses: ['wood'], build: 'ladder' },
       { role: 'board', type: 'board', rooms: ['school', 'workshop', 'study', 'library'], anchor: 'wall', clear: { front: 0.8 }, w: 1.3, d: 0.14, h: 1.6, uses: ['wood', 'stone', 'cloth', 'accent'], plaster: true, plastic: true, build: 'board' },
       { role: 'art', type: 'art', rooms: ['hall', 'bedroom', 'tavern', 'shrine', 'antechamber', 'study'], anchor: 'wall', clear: {}, w: 0.7, d: 0.3, h: 0.7, variants: 2, variantNames: ['first', 'second'], uses: ['wood', 'clay', 'cloth', 'accent', 'metal', 'stone'], bone: true, ceramic: true, build: 'art' },
+      { role: 'banner', type: 'banner', rooms: ['hall', 'tavern', 'shrine', 'antechamber', 'barracks', 'market'], anchor: 'wall', clear: {}, w: 0.7, d: 0.12, h: 2.0, variants: 2, variantNames: ['swallow-tail', 'fringed'], uses: ['wood', 'cloth', 'accent', 'metal'], build: 'banner' },
+      { role: 'scroll', type: 'banner', rooms: ['hall', 'study', 'library', 'shrine', 'bedroom', 'school'], anchor: 'wall', clear: {}, w: 0.7, d: 0.12, h: 1.6, variants: 2, variantNames: ['glyph columns', 'painted scene'], uses: ['wood', 'cloth', 'accent', 'rope'], plaster: true, build: 'scroll' },
+      { role: 'pennants', type: 'banner', rooms: ['hall', 'tavern', 'market', 'yard', 'antechamber'], setting: 'both', anchor: 'wall', clear: {}, w: 2.4, d: 0.12, h: 0.55, variants: 2, variantNames: ['first colours', 'second colours'], uses: ['cloth', 'metal', 'rope'], build: 'pennants' },
       { role: 'bowl', type: 'vessel', rooms: ['hall', 'kitchen', 'tavern'], anchor: 'surface', clear: {}, w: 0.34, d: 0.34, h: 0.2, variants: 2, variantNames: ['fruit', 'flatbread'], uses: ['clay', 'cloth', 'accent'], plant: true, build: 'bowl' },
       { role: 'jug', type: 'vessel', rooms: ['hall', 'kitchen', 'tavern', 'bedroom'], anchor: 'surface', clear: {}, w: 0.44, d: 0.28, h: 0.34, uses: ['clay', 'accent'], build: 'jug' },
       { role: 'books', type: 'book', rooms: ['library', 'study', 'school', 'shrine', 'hall'], anchor: 'surface', clear: {}, w: 0.42, d: 0.32, h: 0.26, uses: ['cloth', 'accent', 'stone'], plaster: true, build: 'books' }
@@ -10523,7 +10830,12 @@ const FK = (function () {
       { role: 'hanging', type: 'lamp', rooms: ['hall', 'court', 'shrine', 'antechamber', 'bedroom', 'library'], anchor: 'ceiling', clear: {}, w: 0.7, d: 0.7, h: 1.2, uses: ['metal', 'accent', 'rope'], fire: true, glass: true, plaster: true, build: 'hanging' },
       { role: 'carpet', type: 'rug', rooms: ['hall', 'bedroom', 'court', 'shrine', 'study', 'antechamber'], clear: {}, w: 3.0, d: 2.1, h: 0.03, variants: 2, variantNames: ['first colours', 'second colours'], uses: ['cloth', 'accent'], reed: true, build: 'rug', opts: { court: true } },
       { role: 'screen', type: 'screen', rooms: ['hall', 'bedroom', 'antechamber', 'court'], clear: { front: 0.4 }, w: 1.8, d: 0.55, h: 2.0, uses: ['wood', 'cloth', 'accent', 'rope'], reed: true, build: 'screen', opts: { court: true } },
-      { role: 'tapestry', type: 'banner', rooms: ['hall', 'court', 'bedroom', 'shrine', 'antechamber', 'library'], anchor: 'wall', clear: {}, w: 1.6, d: 0.12, h: 2.1, variants: 2, variantNames: ['first field', 'second field'], uses: ['wood', 'cloth', 'accent'], build: 'tapestry' },
+      { role: 'tapestry', type: 'banner', rooms: ['hall', 'court', 'bedroom', 'shrine', 'antechamber', 'library'], anchor: 'wall', clear: {}, w: 1.6, d: 0.12, h: 2.1, variants: 4, variantNames: ['emblem', 'emblem, second field', 'woven device', 'banded, emblem row'], uses: ['wood', 'cloth', 'accent'], build: 'tapestry' },
+      { role: 'banner', type: 'banner', rooms: ['hall', 'court', 'shrine', 'antechamber', 'library'], anchor: 'wall', clear: {}, w: 0.8, d: 0.12, h: 2.4, variants: 2, variantNames: ['swallow-tail', 'fringed'], uses: ['wood', 'cloth', 'accent', 'metal'], build: 'banner' },
+      { role: 'frieze', type: 'banner', rooms: ['hall', 'court', 'antechamber', 'library', 'shrine'], anchor: 'wall', clear: {}, w: 2.6, d: 0.1, h: 0.7, variants: 2, variantNames: ['on the field', 'on the band'], uses: ['wood', 'cloth', 'accent'], build: 'frieze' },
+      { role: 'wall_rug', type: 'banner', rooms: ['hall', 'court', 'bedroom', 'antechamber'], anchor: 'wall', clear: {}, w: 2.0, d: 0.1, h: 1.6, variants: 2, variantNames: ['first colours', 'second colours'], uses: ['wood', 'cloth', 'accent'], build: 'wallRug' },
+      { role: 'scroll', type: 'banner', rooms: ['hall', 'court', 'study', 'library', 'shrine', 'bedroom'], anchor: 'wall', clear: {}, w: 0.8, d: 0.12, h: 1.9, variants: 2, variantNames: ['glyph columns', 'painted scene'], uses: ['wood', 'cloth', 'accent', 'rope'], plaster: true, build: 'scroll' },
+      { role: 'painted_hanging', type: 'banner', rooms: ['hall', 'court', 'shrine', 'antechamber'], anchor: 'wall', clear: {}, w: 1.8, d: 0.12, h: 2.0, variants: 2, variantNames: ['procession', 'hunt'], uses: ['wood', 'cloth', 'accent', 'rope'], hide: true, build: 'paintedHanging' },
       { role: 'art', type: 'art', rooms: ['hall', 'court', 'bedroom', 'shrine', 'antechamber', 'study'], anchor: 'wall', clear: {}, w: 0.9, d: 0.4, h: 0.9, variants: 2, variantNames: ['first', 'second'], uses: ['wood', 'clay', 'cloth', 'accent', 'metal', 'stone'], bone: true, ceramic: true, build: 'art' },
       { role: 'statue', type: 'statue', rooms: ['hall', 'court', 'shrine', 'antechamber', 'library', 'yard'], setting: 'both', clear: { front: 0.5 }, w: 0.7, d: 0.7, h: 1.7, uses: ['stone', 'accent', 'wood', 'clay', 'metal', 'cloth'], bone: true, plant: true, build: 'statue' },
       { role: 'jug', type: 'vessel', rooms: ['hall', 'court', 'bedroom'], anchor: 'surface', clear: {}, w: 0.5, d: 0.3, h: 0.36, uses: ['clay', 'accent'], build: 'jug', opts: { court: true } },
@@ -10575,6 +10887,7 @@ const FK = (function () {
     if (R.bone) fams.add('bone');
     if (R.ceramic) fams.add('ceramic');
     if (R.plastic) fams.add('plastic');
+    if (R.hide) fams.add('hide');
     if (S.tile && (R.build === 'hearth' || R.build === 'art')) fams.add('ceramic');
     if ((R.uses || []).indexOf('wood') >= 0 && (S.woodFam === 'bamboo' || S.legs === 'lashed' || S.motif === 'lash')) fams.add('rope');
     const out = new Set();
@@ -10607,7 +10920,7 @@ const FK = (function () {
         variantNames: o.variantNames || R.variantNames,
         variantDims: o.variantDims || (R.variantDims && !o.w ? R.variantDims.map(function (vd) { return Object.assign({ w: d.w, d: d.d, h: d.h }, vd); }) : undefined),
         role: R.role, kit: true, roleSet: spec.roles || null,
-        build: function (F) { const vd = entry.variantDims && entry.variantDims[F.variant] || d; build(F, S, Object.assign({ w: vd.w, d: vd.d, h: vd.h, variant: F.variant, court: tier === 'court' }, opts)); }
+        build: function (F) { const vd = entry.variantDims && entry.variantDims[F.variant] || d; build(F, S, Object.assign({ w: vd.w, d: vd.d, h: vd.h, variant: F.variant, court: tier === 'court', culture: culture }, opts)); }
       };
       if (entry.variantNames && entry.variantNames.length !== entry.variants) entry.variantNames = undefined;
       FURN(entry);
@@ -15187,6 +15500,7 @@ FURN_CULTURE('eastabyss', { name: 'East Abyss', pack: null, influences: 'Maghreb
   } });
 /* END PALETTE */
 const EA_COMMON = {
+  emblem: { field: 'clothIndigo', edge: 'clothMadder', band: 'clothSaffron', ink: 'clothWhite', ink2: 'clothSaffron' },
   wood: 'timberCedar', woodDark: 'timberCedarDark', woodLight: 'timberCedarLight', woodFam: 'wood',
   cloth: ['clothIndigo', 'clothSaffron', 'clothMadder', 'clothWhite'], clothFam: 'cloth',
   accent: 'brass', accentFam: 'metal', metal: 'iron', metalFam: 'metal',
@@ -15984,6 +16298,7 @@ FURN_CULTURE('nomad', { name: 'Eastern Nomads', pack: null, influences: 'pueblo;
   } });
 /* END PALETTE */
 const NOMAD_COMMON = {
+  emblem: { field: 'clothMadder', edge: 'timberSepia', band: 'clothSaffron', ink: 'clothCream', ink2: 'copper' },
   wood: 'timberUmber', woodDark: 'timberSepia', woodLight: 'timberPoplar', woodFam: 'wood',
   cloth: ['clothMadder', 'clothIndigo', 'clothSaffron', 'clothMud'], clothFam: 'cloth',
   accent: 'copper', accentFam: 'bronze', metal: 'blackIron', metalFam: 'metal',
@@ -16063,6 +16378,7 @@ FURN_CULTURE('reedlake', { name: 'Reed Lake', pack: null, influences: 'floating 
   } });
 /* END PALETTE */
 const RL_COMMON = {
+  emblem: { field: 'clothLakeBlue', edge: 'reedDark', band: 'clothRush', ink: 'clothWhite', ink2: 'reedGold' },
   wood: 'reedGold', woodDark: 'reedDark', woodLight: 'reedPale', woodFam: 'reed',
   cloth: ['clothLakeBlue', 'clothRush', 'clothMadder', 'clothWhite'], clothFam: 'cloth',
   accent: 'fishSilver', accentFam: 'metal', metal: 'fishSilver', metalFam: 'metal',
@@ -17551,7 +17867,8 @@ FURN({
    A BATCH builds pieces through the catalog's own frame (makeFrame: the same build code,
    the same palettes) and MERGES them: every mesh's triangles go, in world space with its
    colour as a vertex colour, into one bucket per render family, so a whole settlement's
-   furniture is about 20 draw calls. Lights the pieces add (F.lamp) are kept as DATA.
+   furniture is about 20 draw calls. Painted panels (F.decal: a canvas map) are kept as their
+   own meshes, sharing the cached material per painted key. Lights the pieces add (F.lamp) are kept as DATA.
 
      const B = KF.batch();
      const rec = B.place(key, x, y, z, ry, { variant, seed, wealth, building, room, setting });
@@ -17607,6 +17924,7 @@ const KF_API = (function () {
     this.opt = opt || {};
     this.buckets = {};
     this.placements = [];
+    this.textured = [];      /* painted panels (F.decal): kept as their own meshes, their canvas map shared */
     this.tris = 0;
   }
   /* a growable typed buffer: positions and normals as float32, colours as uint8 (a settlement holds millions
@@ -17627,6 +17945,13 @@ const KF_API = (function () {
       if (!o.isMesh || !o.geometry || !o.geometry.attributes.position) return;
       const geo = o.geometry, pos = geo.attributes.position, nor = geo.attributes.normal, idx = geo.index;
       const mt = o.material, c = mt.color || new THREE.Color(1, 1, 1);
+      if (mt.map) {
+        const m = new THREE.Mesh(geo.clone(), mt);
+        o.matrixWorld.decompose(m.position, m.quaternion, m.scale);
+        m.name = 'furniture:decal'; m.userData.furniture = true;
+        self.textured.push(m); self.tris += (idx ? idx.count : pos.count) / 3;
+        return;
+      }
       const b = self.bucket(mt.userData.family || '');
       _m.copy(o.matrixWorld); _n.getNormalMatrix(_m);
       const n = idx ? idx.count : pos.count;
@@ -17673,7 +17998,8 @@ const KF_API = (function () {
       m.userData.furniture = true;
       grp.add(m);
     }
-    this.buckets = {};
+    for (const m of this.textured) grp.add(m);
+    this.buckets = {}; this.textured = [];
     if (parent) parent.add(grp);
     return grp;
   };
