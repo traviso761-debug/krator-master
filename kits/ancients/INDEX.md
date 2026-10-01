@@ -37,7 +37,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `57-sky-e.js` | 3 |  |
 | `58-sky-f.js` | 5 |  |
 | `60-gate.js` | 7 |  |
-| `61-spire.js` | 18 |  |
+| `61-spire.js` | 30 |  |
 | `62-robotics.js` | 8 |  |
 | `63-canyon.js` | 18 |  |
 | `64-dalab.js` | 12 |  |
@@ -177,7 +177,7 @@ Each target adds its own fragments to `src/` and builds one output.
 | `skyj` | `89z-rows.js`, `91z-views.js` | 3 |
 | `skyk` | `89z-rows.js`, `91z-views.js` | 2 |
 | `spaceport` | `89z-rows.js`, `91z-views.js` | 2 |
-| `spire` | `89z-rows.js`, `91z-views.js` | 2 |
+| `spire` | `89z-rows.js`, `91z-views.js` | 4 |
 | `theodiga` | `89z-rows.js`, `91z-views.js` | 1 |
 | `trigon` | `89z-rows.js`, `91z-views.js` | 5 |
 | `veladiga` | `89z-rows.js`, `91z-views.js` | 1 |
