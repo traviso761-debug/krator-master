@@ -68,7 +68,11 @@ function buildCultural(scene,gx,gz,d){reseed(9390+d);KOFF=[gx,0,gz];const SM=sky
    // triangles: the kit's torus ring was 480 and doubled the type). The flute
    // crests stand at 1.22 of the radius, so the outer face is at 1.26 and the
    // top annulus runs back inside the crests to close the gap.
-   const ringN=civDef(d>0?'cultBandR':'cultBandW',()=>new THREE.LatheGeometry([new THREE.Vector2(.92,.5),new THREE.Vector2(1,.5),new THREE.Vector2(1,-.5),new THREE.Vector2(.92,-.5)],18),d>0?MAT.rust:MAT.white);
+   // Shared-code round: the shared moulding(), a square crown with an ogee under
+   // it on a unit circle (n in radii, u in metres before the instance scale),
+   // 216 triangles; the back still runs in to .92 behind the crests.
+   const ringN=civDef(d>0?'cultBandR':'cultBandW',()=>moulding([[-.08,.5],[.022,.5],[.022,.22],[.012,.02],[0,-.18],[0,-.5],[-.08,-.5]],
+    t=>{const a=-t*TAU;return[Math.cos(a),0,Math.sin(a)];},{wn:t=>{const a=-t*TAU;return[Math.cos(a),0,Math.sin(a)];},nu:18,up:[0,1,0]}),d>0?MAT.rust:MAT.white);
    if(!brk)kput(ringN,[bxp,py+hh-.5,bzp],null,[bwk*1.27,1,bwk*1.27],null);
    for(let row=1,nr=tall?3:2;row<nr;row++)kput(ringN,[bxp,py+hh*(row+.05)/nr,bzp],null,[bwk*1.26,.6,bwk*1.26],null);
    if(d===0)kput('strip',[bxp,py+hh-2,bzp+bwk*1.03],qFacing([0,0,1]),[bwk*1.2,1,1],CYAN);

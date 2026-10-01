@@ -229,13 +229,8 @@ function buildForestRing(scene,gx,gz,d){reseed(9480+d);KOFF=[gx,0,gz];
  // the beam's DEPTH exactly as in beam()) is held in the vertical plane through
  // the beam and local Z (`dp`, its width) is horizontal, so every strut in the
  // wheel presents the same face to the same light.
- const _rbX=new THREE.Vector3(),_rbY=new THREE.Vector3(),_rbZ=new THREE.Vector3(),_rbM=new THREE.Matrix4();
- const rbeam=(a,b,w,dp,c)=>{_rbY.set(b[0]-a[0],b[1]-a[1],b[2]-a[2]);const L=_rbY.length();
-  if(!(L>1e-6))return;_rbY.multiplyScalar(1/L);
-  _rbZ.set(-_rbY.z,0,_rbY.x);if(_rbZ.lengthSq()<1e-8)_rbZ.set(0,0,1);_rbZ.normalize();
-  _rbX.crossVectors(_rbY,_rbZ);_rbM.makeBasis(_rbX,_rbY,_rbZ);
-  kput(BX,[(a[0]+b[0])*.5,(a[1]+b[1])*.5,(a[2]+b[2])*.5],
-   new THREE.Quaternion().setFromRotationMatrix(_rbM),[w,L,dp],c||null);};
+ // (the roll-fixed beam is the shared rbeam() in 38-helpers2.js now)
+ const rbm=(a,b,w,dp,c)=>rbeam(BX,a,b,w,dp,c);
  // THE BRIDGES' BEARINGS, needed before the shell is built because each one now
  // lands at a GATE in the barrel instead of at a balcony on a blank wall. The
  // offset BRO is TAU/48 = 4 of the shell lathe's 192 columns exactly, so every
@@ -276,6 +271,12 @@ function buildForestRing(scene,gx,gz,d){reseed(9480+d);KOFF=[gx,0,gz];
  // with one notch in it. 0.96 at scale 0.55 punches patches tens of metres
  // across, which is what a failing 500 m wall actually loses.
  const rot=holeFn(d*.96,9482,null,.55);
+ // THE FOOT THINS (QA arcA; holeFn's height term, shared-code round). The lower
+ // 280 m carried the whole drum and weathered first: below the waist the same
+ // field eats progressively more, up to +.2 at the arcade. rotF is a superset of
+ // rot (same noise, higher threshold). The windows still test `rot` where they
+ // always did and `rotF` only after their rng() draws, so nothing downstream moves.
+ const rotF=holeFn(d*.96,9482,null,.55,{y:60,h:220,k:.2});
 
  // ---- registry ---------------------------------------------------------------
  REGISTER({name:'Forest Ring ('+STATE(d)+')',x:0,z:0,r:WR1*1.06,h:LANTOP+24});
@@ -402,7 +403,7 @@ function buildForestRing(scene,gx,gz,d){reseed(9480+d);KOFF=[gx,0,gz];
    if(y>hy+3&&y<hy+16&&f>.24&&f<.76)return true;}
   if(notch(th,y))return true;
   if(y>GY0&&y<GY1&&nearBr(th,GHW))return true;               // the four bridge gates
-  return rot?rot(u,y):false;};
+  return rotF?rotF(u,y):false;};
  SH.push(lathe({rFn:BRf,H:HB,flutes:NBAY,amp:.022,sharp:2,nu:192,nv:72,hole:shellHole}));
  // The inner mass, so every one of those openings looks onto something — but
  // NOT across the notch. Left closed there it stood 24 m behind the tear and
@@ -432,9 +433,9 @@ function buildForestRing(scene,gx,gz,d){reseed(9480+d);KOFF=[gx,0,gz];
    // MAT.dot is unlit, so a pale instance colour is a sticker on the wall
    // rather than a window. The unlit ones are the near-black DEAD and the lit
    // ones stay well under 1 so ACES leaves them cyan instead of cream.
-   const lit=d>0?rng()<.04:rng()<.52;
-   kput('cell',[Math.cos(th)*(rn+.5),y,Math.sin(th)*(rn+.5)],OUT(th),[4.6,3.0,1],
-    lit?CYAN.clone().multiplyScalar(rr(.22,.52)):DEAD);}}
+   const lit=d>0?rng()<.04:rng()<.52,wc=lit?CYAN.clone().multiplyScalar(rr(.22,.52)):DEAD;
+   if(rotF&&rotF(th/TAU,y))continue;
+   kput('cell',[Math.cos(th)*(rn+.5),y,Math.sin(th)*(rn+.5)],OUT(th),[4.6,3.0,1],wc);}}
 
  // ---- the bridge gates ----------------------------------------------------------
  // Each bridge used to arrive at a corbelled balcony on a blank stretch of drum:
@@ -572,7 +573,7 @@ function buildForestRing(scene,gx,gz,d){reseed(9480+d);KOFF=[gx,0,gz];
    if(wgone(th))continue;
    for(let j=0;j<6;j++){const p0=j/6*Math.PI,p1=(j+1)/6*Math.PI;
     const r0=WRC+WRT*1.012*Math.cos(p0),r1=WRC+WRT*1.012*Math.cos(p1);
-    rbeam([Math.cos(th)*r0,WY-WRT*1.012*Math.sin(p0),Math.sin(th)*r0],
+    rbm([Math.cos(th)*r0,WY-WRT*1.012*Math.sin(p0),Math.sin(th)*r0],
          [Math.cos(th)*r1,WY-WRT*1.012*Math.sin(p1),Math.sin(th)*r1],3.0,4.0);}}}
  // THE SPOKES. Three cones: a radial strut in the plane of the deck, one stay
  // rising from 100 m below the hub and one falling from 110 m above it, so the
@@ -588,10 +589,10 @@ function buildForestRing(scene,gx,gz,d){reseed(9480+d);KOFF=[gx,0,gz];
   const rR=WR0+20,rL=WR0+44;
   const rE=snap?lerp(BRf(WY),rR,rr(.22,.62)):rR;
   const yE=snap?WY-26:wSurf(rR)+9;
-  rbeam([cs*BRf(WY)*.99,WY-26,sn*BRf(WY)*.99],[cs*rE,yE,sn*rE],9,11);
+  rbm([cs*BRf(WY)*.99,WY-26,sn*BRf(WY)*.99],[cs*rE,yE,sn*rE],9,11);
   if(snap)continue;
-  rbeam([cs*BRf(WY-100)*.99,WY-100,sn*BRf(WY-100)*.99],[cs*rL,wSurf(rL)+8,sn*rL],6,7);
-  rbeam([cs*BRf(WY+110)*.99,WY+110,sn*BRf(WY+110)*.99],[cs*(WR0+3),WY-2,sn*(WR0+3)],5.5,6.5);}
+  rbm([cs*BRf(WY-100)*.99,WY-100,sn*BRf(WY-100)*.99],[cs*rL,wSurf(rL)+8,sn*rL],6,7);
+  rbm([cs*BRf(WY+110)*.99,WY+110,sn*BRf(WY+110)*.99],[cs*(WR0+3),WY-2,sn*(WR0+3)],5.5,6.5);}
  // ---- THE BRIDGES ---------------------------------------------------------------
  // Four of them, level, on the quarter bearings — 15 degrees clear of the
  // nearest pylon, which stands every 30 starting at 15. Until these went in the
@@ -616,7 +617,7 @@ function buildForestRing(scene,gx,gz,d){reseed(9480+d);KOFF=[gx,0,gz];
   SH.push(gridSurface((u,v)=>{const a=th+(u-.5)*.20,rn=lerp(BRf(WY)+16,BRf(WY)-10,v);
    return[Math.cos(a)*rn,WY-7-5*Math.sin(Math.PI*v),Math.sin(a)*rn];},10,3,{uS:6,vS:3}));
   for(let j=0;j<5;j++){const a=th+(j/4-.5)*.19;
-   rbeam([Math.cos(a)*(BRf(WY)-14),WY-30,Math.sin(a)*(BRf(WY)-14)],
+   rbm([Math.cos(a)*(BRf(WY)-14),WY-30,Math.sin(a)*(BRf(WY)-14)],
         [Math.cos(a)*(BRf(WY)+15),WY-2,Math.sin(a)*(BRf(WY)+15)],2.6,3.4);}
   // the deck and its soffit
   SH.push(gridSurface((u,v)=>{const rn=span(u),w=(v-.5)*BRW;
@@ -630,11 +631,11 @@ function buildForestRing(scene,gx,gz,d){reseed(9480+d);KOFF=[gx,0,gz];
    for(let j=0;j<nS3;j++){const u0=j/nS3,u1=(j+1)/nS3;
     if(dead((u0+u1)*.5))continue;
     const sag=u2=>WY-4-26*Math.sin(Math.PI*u2);
-    rbeam([cs*span(u0)+tx*w,sag(u0),sn*span(u0)+tz*w],
+    rbm([cs*span(u0)+tx*w,sag(u0),sn*span(u0)+tz*w],
          [cs*span(u1)+tx*w,sag(u1),sn*span(u1)+tz*w],2.4,3.0);}
    for(let j=1;j<nS3;j++){const u2=j/nS3;
     if(dead(u2))continue;
-    rbeam([cs*span(u2)+tx*w,WY-26*Math.sin(Math.PI*u2)-4,sn*span(u2)+tz*w],
+    rbm([cs*span(u2)+tx*w,WY-26*Math.sin(Math.PI*u2)-4,sn*span(u2)+tz*w],
          [cs*span(u2)+tx*w,WY-3.4,sn*span(u2)+tz*w],1.8,2.2);}
    // THE DIAGONALS. Chord and verticals alone are a mechanism, not a truss —
    // the old under-truss was a sagging line of boxes the deck would fold
@@ -644,13 +645,13 @@ function buildForestRing(scene,gx,gz,d){reseed(9480+d);KOFF=[gx,0,gz];
     if(dead((u0+u1)*.5))continue;
     const lo=u2=>[cs*span(u2)+tx*w,WY-26*Math.sin(Math.PI*u2)-4,sn*span(u2)+tz*w];
     const hi=u2=>[cs*span(u2)+tx*w,WY-3.4,sn*span(u2)+tz*w];
-    if(j<nS3/2)rbeam(hi(u0),lo(u1),1.4,1.8);else rbeam(lo(u0),hi(u1),1.4,1.8);}}
+    if(j<nS3/2)rbm(hi(u0),lo(u1),1.4,1.8);else rbm(lo(u0),hi(u1),1.4,1.8);}}
   // and the two trusses tied to each other at every panel point, so the pair
   // is a box and not two fences
   for(let j=1;j<10;j++){const u2=j/10;
    if(dead(u2))continue;
    const yl=WY-26*Math.sin(Math.PI*u2)-4,w=BRW*.42;
-   rbeam([cs*span(u2)-tx*w,yl,sn*span(u2)-tz*w],[cs*span(u2)+tx*w,yl,sn*span(u2)+tz*w],1.4,1.4);}
+   rbm([cs*span(u2)-tx*w,yl,sn*span(u2)-tz*w],[cs*span(u2)+tx*w,yl,sn*span(u2)+tz*w],1.4,1.4);}
   // parapets, lamps and people on the crossing
   {const nP2=Math.round((rB-rA)/7);
    for(let s=-1;s<=1;s+=2)for(let j=0;j<nP2;j++){const u2=(j+.5)/nP2;
@@ -683,8 +684,8 @@ function buildForestRing(scene,gx,gz,d){reseed(9480+d);KOFF=[gx,0,gz];
   kput(BX,[cs*rp,WY+PH*.5,sn*rp],TAN(th),[15,PH,13],null);
   kput(BX,[cs*rp,WY+PH*.5,sn*rp],TAN(th),[9,PH*1.02,19],null);
   kput(SL,[cs*rp,WY+PH+2,sn*rp],null,[11,4,11],CAPC);
-  rbeam([cs*rp,WY+PH,sn*rp],[cs*BRf(WY+130)*.99,WY+130,sn*BRf(WY+130)*.99],4.4,5);
-  rbeam([cs*rp,WY+PH,sn*rp],[cs*(WR1-34),WY,sn*(WR1-34)],4.4,5);
+  rbm([cs*rp,WY+PH,sn*rp],[cs*BRf(WY+130)*.99,WY+130,sn*BRf(WY+130)*.99],4.4,5);
+  rbm([cs*rp,WY+PH,sn*rp],[cs*(WR1-34),WY,sn*(WR1-34)],4.4,5);
   if(d===0){kput('strip',[cs*rp,WY+PH+4.8,sn*rp],TAN(th),[10,1,1],CYAN);
    kput('finial',[cs*rp,WY+PH+9,sn*rp],null,[3,7,3],null);}}
  // parapets on both rims
@@ -937,7 +938,7 @@ function buildForestRing(scene,gx,gz,d){reseed(9480+d);KOFF=[gx,0,gz];
     // the rails and their posts, a metre inside each cheek
     for(const sg of [-1,1]){if(d>0&&rng()<.45)continue;
      const tr=rn=>th0+sg*(hw-1.1/rn),yr=u=>yA+dy*u+dy/NS+1.1;
-     rbeam(PP(rA,tr(rA),yr(0)),PP(rA-run,tr(rA-run),yr(1)),.35,.35,CAPC);
+     rbm(PP(rA,tr(rA),yr(0)),PP(rA-run,tr(rA-run),yr(1)),.35,.35,CAPC);
      for(let q=0;q<=4;q++){const u=q/4,rn=rA-run*u;
       kput(BX,PP(rn,tr(rn),yr(u)-.55),null,[.3,1.1,.3],null);}}
     if(d===0&&k===0)kput('strip',PP(rA+.6,th0,yA+.5),TAN(th0),[2*hw*rA*.8,1,1],CYAN);}
