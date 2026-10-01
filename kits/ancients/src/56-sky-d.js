@@ -6,12 +6,16 @@
 // than individual panes. The mask itself is the shared one (fireMask).
 function buildSkyD(scene,gx,gz,d){reseed(9130+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const dd=d>0?1:0;
  const PROJ=d===4,FLM=PROJ?fireLightMark():null,SM=skyShardMark();
- const H=340,Y0=14;REGISTER({name:(PROJ?'Project D — the Monolith reoccupied whole (rehabilitated)':'Skyscraper D — the Monolith ('+(d===2?'toppled':STATE(d))+')'),x:0,z:0,r:120,h:H+20});
+ const H=340,Y0=14;REGISTER({name:(PROJ?'Project D — the Monolith reoccupied whole (rehabilitated)':'Skyscraper D — the Monolith ('+(d===2?'toppled':STATE(d))+')'),x:0,z:0,r:60,h:H+20});
  // PLINTH. Nothing at all stands on this podium except the tower: the shell at
  // its foot is rFn(14)*se(th,3.2) = 34 m at the corners of the superellipse and
  // the lift-core spine reaches 32. 110 was more than three times the building.
  // 48 puts skyPlinth's column ring at 44.6, clear of both.
- const PR=48;
+ // RESTAND (A-H): 44, ring at 40.9 — 6 m outboard of the corners, which is
+ // as close as the 1.8 m columns should stand to a 340 m wall. The Velasca
+ // head reaches 41.7 at its corners 300 m up, so the podium now matches the
+ // widest thing above it. Registered radius 120 -> 60 (the head, plus margin).
+ const PR=44;
  skyPlinth(G,dd,PR);
  const rFn=y=>{const t=clamp(y/H,0,1);return 30*(1-.12*t)+(t>.84?9*Math.pow((t-.84)/.16,.7):0);};
  const build=(P,dx,y0,y1,upper)=>{const cut=(dx>0&&!upper&&y1!=null)?y1:(dx>0&&d===1?H*.76:null);const L=(cut!=null?cut:H)-y0;let hole=holeFn(dx,47+(upper?1:0),cut!=null?L:null,1.2);if(d===1&&!upper)hole=skyScarHole(hole,.3,.13,L*.38,L,47);   // the collapse scar (52-sky-abc.js)
@@ -57,7 +61,7 @@ function buildSkyD(scene,gx,gz,d){reseed(9130+d);KOFF=[gx,0,gz];const G=new THRE
  // the one floor on this building open to the sky, and the podium.
  if(PROJ){const hy=Y0+(H-Y0)+2.6;
   for(let k=0;k<6;k++){const a=rng()*TAU,r=rFn(H)*rr(.25,1.5);firePit('D',r*Math.cos(a),hy,r*Math.sin(a),rr(1.8,3.4));}
-  for(let k=0;k<8;k++){const a=rng()*TAU,r=rr(34,PR*.9);firePit('D',r*Math.cos(a),5.4,r*Math.sin(a),rr(1.6,3));}}
+  for(let k=0;k<8;k++){const a=rng()*TAU,r=rr(36.5,PR*.92);firePit('D',r*Math.cos(a),5.4,r*Math.sin(a),rr(1.6,3));}}
  if(d===3)skyHoist((y,a)=>rFn(y)*se(a,3.2),H-4,5,9130);
  if(d>0&&!PROJ)skyShards(SM,d===3?.25:.5);
  figures(-PR,PR*1.28,6,6);if(PROJ)fireLights(FLM,3);KOFF=[0,0,0];return G;}

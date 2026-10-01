@@ -8,11 +8,14 @@
 // "exposed decks" in the kit: four real terraces up the height of the keep.
 function buildSkyH(scene,gx,gz,d){reseed(9170+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const dd=d>0?1:0;
  const PROJ=d===4,FLM=PROJ?fireLightMark():null,SM=skyShardMark();
- const H=330,Y0=8;REGISTER({name:(PROJ?'Project H — the Warden reoccupied whole (rehabilitated)':'Skyscraper H — the Warden ('+(d===2?'toppled':STATE(d))+')'),x:0,z:0,r:120,h:H+30});
+ const H=330,Y0=8;REGISTER({name:(PROJ?'Project H — the Warden reoccupied whole (rehabilitated)':'Skyscraper H — the Warden ('+(d===2?'toppled':STATE(d))+')'),x:0,z:0,r:65,h:H+30});
  // PLINTH. The keep is half(0)*se(th,7) = 43.5 at its corners and the lowest
  // setback ledge reaches 45. Nothing else stands on the podium. 56 puts
  // skyPlinth's column ring at 52 — outboard of the ledge, half the old 110.
- const PR=56;
+ // RESTAND (A-H): only the keep's foot stands among the columns (the ledge is
+ // 66 m up), so 52, ring at 48.4, 4 m outboard of the corners. The lowest
+ // ledge's corners (48.6) now sit plumb over the ring. Registered 120 -> 65.
+ const PR=52;
  skyPlinth(G,dd,PR);
  const half=y=>{const t=clamp(y/H,0,1);const step=Math.floor(t*5)/5;return 34*(1-.45*step)-2*(t*5-step*5)*.3;};
  const build=(P,dx,y0,y1,upper)=>{const cut=(dx>0&&!upper&&y1!=null)?y1:(dx>0&&d===1?H*.7:null);const L=(cut!=null?cut:H)-y0;let hole=holeFn(dx*.9,87+(upper?1:0),cut!=null?L:null,1.1);if(d===1&&!upper)hole=skyScarHole(hole,.3,.12,L*.4,L,87);   // the collapse scar (52-sky-abc.js)
@@ -49,7 +52,7 @@ function buildSkyH(scene,gx,gz,d){reseed(9170+d);KOFF=[gx,0,gz];const G=new THRE
  if(dd>0)vinesOnRing(0,Y0+H/5,0,half(H/5)*1.05,20,30);
  if(PROJ){const ht=half(H);
   for(let k=0;k<4;k++)firePit('H',rr(-ht,ht),Y0+(H-Y0)+2.4,rr(-ht,ht),rr(1.6,2.8));   // the crown slab
-  for(let k=0;k<8;k++){const a=rng()*TAU,r=rr(40,PR*.9);firePit('H',r*Math.cos(a),5.4,r*Math.sin(a),rr(1.6,3));}}
+  for(let k=0;k<8;k++){const a=rng()*TAU,r=rr(44.5,PR*.9);firePit('H',r*Math.cos(a),5.4,r*Math.sin(a),rr(1.6,3));}}
  if(d===3)skyHoist((y,a)=>half(y)*se(a,7),H-2,5,9170);
  if(d>0&&!PROJ)skyShards(SM,d===3?.25:.5);
  figures(-PR,PR*1.28,6,6);if(PROJ)fireLights(FLM,3);KOFF=[0,0,0];return G;}
