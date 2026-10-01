@@ -34,7 +34,7 @@ dead glass ruined.
 | members | 588 tubes, r 5 m, sleeved at both ends, two dark bands each |
 | nodes | 140 spheres, r 13 m, darker steel than the tubes |
 | cells | 55 octahedral cells (layers 1-5) + 36 half-cells at the base |
-| lagoon | 1 580 m square, water at 3 m, a 6.5 m concrete quay and a turf slope |
+| lagoon | 1 800 m square, water at 3 m, a 6.5 m concrete quay and a turf slope; site 1 940 m, rows at s = 2 100 |
 
 Against the neighbours: Plymouth 732 x 524 x 267 m, the Crescent 1 112 m
 tall, Arcube a 1 km cube. The Hanging City sits between them: wider than any
@@ -75,10 +75,16 @@ second stream (`9319`) so ruined and rehabilitated lose the same sector.
 
 - **0 intact**: white tubes, steel nodes, cyan node lamps, lit curtain walls
   (warm, a few cool office whites), PRT glass, cabs, robots.
-- **1 ruined**: rust. A sector of the +x face round CC = (262, 430, 160), r 225,
-  has failed: 3-6 nodes and every member through it gone, stubs left drooping
-  at the surviving nodes, the members, nodes and the towers hung in it lying in
-  the lagoon (towers broken in two, eaten through). 8.5% of the other members
+- **1 ruined**: rust (the rust tube's UVs are swapped so the drip bands run
+  along the member; wrapped round it they read as a corrugated hose). The
+  north-east corner round CC = (400, 250, -400), r 300, has failed from the
+  piers to ~420 m: its nodes and every member through it gone, stubs drooping
+  at the surviving nodes, the corner piers snapped, the corner podium blocks
+  crushed to two steps, and the members, nodes and the towers that stood or hung
+  in it lying in the lagoon outside (towers broken in two, eaten through). A
+  hole in the middle of a face was tried first (rounds 2-3) and did not read:
+  the octet lattice is so redundant that the layers behind fill it in. A missing
+  corner changes the silhouette: it is the hero's right-hand foot. 8.5% of the other members
   snapped into drooping stubs; one in five of the other hung towers gone (its
   head remains), one in six swung off plumb; glass gone, towers holed through
   to dark cores and floor plates; the lagoon green with algae mats; vines off
@@ -94,12 +100,36 @@ second stream (`9319`) so ruined and rehabilitated lose the same sector.
 
 | decay | before (Vashtir) | after |
 |---|---|---|
-| 0 intact | 125 438 | TBD |
-| 1 ruined | 86 410 | TBD |
-| 3 rehabilitated | (not shown) | TBD |
+| 0 intact | 125 438 | 289 060 (6 376 instances, 7 meshes) |
+| 1 ruined | 86 410 | 316 134 (7 066 instances, 52 meshes) |
+| 3 rehabilitated | (not shown) | 314 034 (6 486 instances, 52 meshes) |
 
-Budget class `mega`, 700 000.
+Budget class `mega`, 700 000. Draw calls for the whole target: 57 at the
+intact hero, 52 close in, worst 164 at the ruined hero (three sites in view;
+each fallen tower piece is its own group of up to four meshes).
 
 ## Weaknesses (open)
 
-- See the shots: notes to be filled from the verify round.
+- **Debris only lands on water.** A piece that would fall on a podium block is
+  moved (rejection sampling) rather than laid across it, so nothing is seen
+  crushed except the corner blocks, which are cut down by rule.
+- **Fallen tower pieces cost draw calls**: ~12 pieces x up to 4 meshes. Merging
+  them needs their transforms baked; not done.
+- **The ruin's collapse is the one event.** Elsewhere the ruin is snapped stubs
+  and missing towers, which read close up, not from the hero distance.
+- **'Fallen in the lagoon' preset** stands low among the podium blocks; the
+  debris is at the left of the frame, and the podium dominates.
+- **Night**: the cyan node lamps are small (2.6 m) and barely read at the hero
+  distance; the lit curtain walls carry the night shot.
+- **The rehabilitated state reads close up only**: from the hero it is the ruin
+  with cleaner water. repairPass dresses the meshes (towers, podium, decks),
+  not the instanced lattice, so the frame itself carries no salvage.
+- No interiors beyond a dark core and floor plates behind a ruined tower's holes.
+- Not placed in the `kit` target (Vashtir never was).
+
+## Vendored copies
+
+`settlements/screamers/src/61-spire.js` is an independent fork of the OLD
+Vashtir builder (it defines `buildSpire` but places no `spire` row; only its
+`91-probe.js` budget table names the type). Yuni dropped `61-spire` from its
+slice (`settlements/yuni/ANCIENTS-SYNC.md`). Neither was edited.
