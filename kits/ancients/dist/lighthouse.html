@@ -1,5 +1,5 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>The Wing — a monument that is also a city</title>
+<title>Lighthouse island</title>
 <style>
 html,body{margin:0;height:100%;overflow:hidden;background:#3a2a24;font:13px/1.4 system-ui,sans-serif;color:#eee}
 canvas{display:block}
@@ -22654,26 +22654,15 @@ function buildLighthouse(scene,gx,gz,d){reseed(9790+d);KOFF=[gx,0,gz];
  {const x=4,z=58;site.lookUp=[x,landH(x,z)+1.7,z];}   // for the 'Looking up' preset: clear of the base block's lip
  LH_SITE[d]=site;
  KOFF=[0,0,0];return G;}
-// TARGET: wing — the Wing, first of the memorial group, intact and ruined.
-//
-// A coffered drum held in a yoke on one pedestal, and two wings of five stacked
-// dwelling slabs in echelon cantilevering out of it: 468 m high, 1 380 m tip to
-// tip, on a 900 x 500 m three-tier plinth.
-//
-// Its own target because it is a 700 k-triangle megastructure on its own and a
-// 1.4 km gesture needs its own stand-off.
-const TITLE='The Wing — a monument that is also a city';
+// TARGET: lighthouse — the Lighthouse island (a modified Skyscraper J) on its
+// own: intact, rehabilitated and ruined share one sea along the row; the
+// toppled one has a sea of its own out at x=1250.
+const TITLE='Lighthouse island';
 const GROUND_C=0;
-const DECAYS=[0,1];
-// The intact span is 1 380 m; the ruin throws its east wing out to x = +1 250.
-// s = 2 600 puts 5 200 m between the axes, so a hero 1 400 m off one site has
-// the other only as a far speck.
-const ROWS={
- wing:{z:0,s:2600,r:1300},
-};
-const RUINS=[[-ROWS.wing.s,0,ROWS.wing.r*.7],
-             [ROWS.wing.s,0,ROWS.wing.r*1.05]];
-const EXTRA_BUILDERS={wing:buildWing};
+const DECAYS=[0,1,2,3];
+const ROWS={lighthouse:{z:0,s:320,r:300,t:1250}};   // intact -320, ruined +320, rehab 0, toppled 1250
+const RUINS=[[320,0,300],[1250,0,420],[0,0,300]];
+const EXTRA_BUILDERS={lighthouse:buildLighthouse};
 // ================================================================= THE WING — a monument that is also a city
 // First of the memorial group. One figure against the sky: a coffered DRUM held
 // in a yoke on ONE pedestal, and two wings of stacked horizontal slabs lifting
@@ -25819,64 +25808,36 @@ window._api={
  setView:(cx,cy,cz,tx,ty,tz)=>setView(cx,cy,cz,tx,ty,tz),
  views:()=>Object.keys(VIEWS),
 };
-// Presets, DERIVED from WG_SITE, which buildWing fills before this runs: the
-// site origin and the slab numbers are the builder's own, so a camera aimed at a
-// gap follows the gap if the wing is ever re-proportioned.
-//
-// The camera is 50 degrees vertical and the frame 1.49 x the sight line wide:
-// 1 400 m of span wants ~1 300 m of stand-off to sit comfortably in frame.
-const WGDEF={x:0,z:0,R:142,YC:242,PY:100,PL:32.4,Y0:252,SP:46.8,TS:28.8,GP:18,K:5,YTOP:468,
- XR:[300,355,410,465,520],XT:[470,525,580,635,690],XG:[280,335,390,445,500],
- W:x=>{const a=Math.abs(x);return a<=160?50:50-16*Math.min(1,(a-160)/540);},FALLEN:[{x:700,z:60},{x:960,z:-230},{x:1150,z:40}]};
-const WGA=Object.assign({},WGDEF,{x:-2600},WG_SITE[0]||{});
-const WGB=Object.assign({},WGDEF,{x:2600},WG_SITE[1]||{});
-// camera and target in site coordinates, optional night flag
-const WGV=(S,c,t,n)=>[S.x+c[0],c[1],S.z+c[2],S.x+t[0],t[1],S.z+t[2]].concat(n?[1]:[]);
-// THE HERO: south-south-east, a little above the drum, so the lit coffered face,
-// both wings and the lean of their slab ends are all in one frame.
-const WGHERO=(S,n)=>WGV(S,[560,330,1250],[0,262,0],n);
-const WGFRONT=S=>WGV(S,[0,250,1380],[0,258,0]);
-const WGSPIRAL=S=>WGV(S,[70,250,430],[0,242,60]);
+// Presets for the Lighthouse island. Derived from LH_SITE, which
+// buildLighthouse fills per decay; LHDEF is the fallback if a builder threw.
+const LHDEF={x:0,z:0,YK:30,YTOP:202,YL1:217,YAP:228,YLP:210,CUT:88,WL:2.5,RS:270,cove:80,jetty:[74,124],fall:{ang:0,D0:26,DE:110,DB:115,LB:40}};
+const LHS=d=>Object.assign({},LHDEF,{x:SITEX(ROWS.lighthouse,d)},LH_SITE[d]||{});
+const LHI=LHS(0),LHR=LHS(1),LHT=LHS(2),LHH=LHS(3);
+const LHV=(S,c,t,n)=>[S.x+c[0],c[1],S.z+c[2],S.x+t[0],t[1],S.z+t[2]].concat(n?[1]:[]);
+const LHHERO=(S,n)=>LHV(S,[-330,95,520],[0,105,0],n);
+const LHF=LHT.fall||LHDEF.fall;
+const lhFP=(s,h,o)=>{o=o||0;return[Math.cos(LHF.ang)*s-Math.sin(LHF.ang)*o,h,Math.sin(LHF.ang)*s+Math.cos(LHF.ang)*o];};
+const LHW=LHR.wreck||{x:-200,z:0};
 const VIEWS={
- 'The Wing':               WGHERO(WGA),
- // THE WHOLE GESTURE, square on from the south: pedestal, drum, yoke, and the
- // two stepped wings as one silhouette.
- 'The whole gesture':      WGFRONT(WGA),
- // THE SPIRAL: the south lens, 1 848 stepped coffers on two families of spirals
- // closing on the oculus.
- 'The spiral':             WGSPIRAL(WGA),
- // ALONG THE SLAB GAPS: from beyond the east tips, looking back along the
- // stack — five slabs, four dark gaps, each slab 55 m longer than the last.
- 'Along the slab gaps':    WGV(WGA,[WGA.XT[4]+150,390,WGA.W(700)+120],[WGA.XG[3]-40,WGA.Y0+3*WGA.SP+WGA.TS,0]),
- // UNDER THE CANTILEVER: standing on the plain under the east wing, looking up
- // the tapering soffits to the tips 470 m up.
- 'Under the cantilever':   WGV(WGA,[390,3,262],[500,290,-10]),
- // THE HAUNCH: from the lowest tier, the concave spring of the lever off the
- // pedestal's capital.
- 'The haunch':             WGV(WGA,[300,34.1,160],[170,175,0]),
- // THE PLINTH, at a person's height: people on the top tier, the portal of the
- // pedestal, and the drum over it.
- 'The plinth':             WGV(WGA,[96,34.1,172],[0,64,20]),
- // INSIDE A GAP: on the deck of slab 3 under slab 4, looking back toward the
- // gap's root wall between the houses and trees.
- 'Inside a gap':           (function(S){const y=S.Y0+3*S.SP+S.TS;return WGV(S,[S.XT[3]-6,y+4,-28],[S.XG[3]+10,y+5,-18]);})(WGA),
- // FROM ABOVE: the plan, to check every lid is on.
- 'From above':             WGV(WGA,[380,1500,760],[0,240,0]),
- 'The Wing at night':      WGHERO(WGA,1),
- // THE RUIN, turned a little east so the fallen wing is in the frame with its stump.
- 'Ruined':                 WGV(WGB,[820,360,1380],[280,215,0]),
- // THE RUIN SQUARE ON: the symmetry broken — one wing gone at the root, the
- // other sagging.
- 'The broken gesture':     WGFRONT(WGB),
- // THE STUMP: the break beside the drum, floors hanging out of it.
- 'The stump':              WGV(WGB,[460,300,360],[170,270,0]),
- // THE FALLEN WING: three pieces of the east wing across the plain.
- 'The fallen wing':        (function(S){const F=S.FALLEN;const cx=(F[0].x+F[1].x+F[2].x)/3,cz=(F[0].z+F[1].z+F[2].z)/3;
-                             return WGV(S,[cx+420,300,cz+760],[cx-40,40,cz]);})(WGB),
- // THE SAGGING WING: the west slabs pancaked onto one another at their tips.
- 'The sagging wing':       WGV(WGB,[-900,330,760],[-560,300,0]),
- // THE BROKEN SPIRAL: coffers fallen out in clusters, the gutted drum behind.
- 'The broken spiral':      WGSPIRAL(WGB),
+ // THE ROW: intact, rehabilitated and ruined in one channel, the toppled one beyond
+ 'Lighthouse island':       [470,430,1560,470,40,0],
+ 'The lighthouse':          LHHERO(LHI),
+ 'Ruined':                  LHHERO(LHR),
+ 'Rehabilitated':           LHHERO(LHH),
+ 'Toppled':                 LHV(LHT,lhFP(95,120,-330),lhFP(110,20)),
+ // THE LANTERN: gallery, glazing, lens and the rib cage over the dome
+ 'The lantern':             LHV(LHI,[-46,LHI.YTOP+12,40],[0,LHI.YTOP+9,0]),
+ 'The smashed lantern':     LHV(LHR,[-46,LHR.YTOP+12,40],[0,LHR.YTOP+6,0]),
+ // THE HARBOUR from a boat outside the mole, looking up the cove to the tower
+ 'The harbour':             LHV(LHI,[-18,LHI.WL+7,LHI.jetty[1]+26],[4,34,40]),
+ // the cove from the sea: the ravine path, the lodges, the tower over them
+ 'The cove':                LHV(LHI,[40,26,LHI.RS-10],[0,40,40]),
+ 'The wreck':               LHV(LHR,[LHW.x-40,20,LHW.z+70],[LHW.x,4,LHW.z]),
+ 'Looking up':              LHV(LHI,LHI.lookUp||[4,12,58],[0,LHI.YTOP-10,0]),
+ 'The fallen tower':        LHV(LHT,lhFP(LHF.DB+LHF.LB+70,30,60),lhFP(LHF.D0+30,20)),
+ // NIGHT: the beams sweep (a preset re-aims them at a fixed angle to the camera)
+ 'Lighthouse at night':     LHV(LHI,[-560,150,760],[0,120,0],1),
+ 'The fire basket at night':LHV(LHH,[-150,LHH.YTOP+40,230],[0,LHH.YTOP,0],1),
 };
 // ---------------------------------------------------------------- camera control
 // ---------------------------------------------------------------- DAY / NIGHT
