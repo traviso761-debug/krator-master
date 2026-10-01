@@ -6,6 +6,8 @@ const VIEWS={
  'The bay from the sea':[1300,220,700,350,10,-150],
  'The shore at eye level':_ysEye(120,-380,600,-100,3),
  'Night on the water':[1000,60,500,200,8,-200,22.2],
+ 'The river terraces':[-330,30,380,-620,8,110],
+ 'The Citadel stack from the water':[1150,30,950,842,40,652],
  'The layout from above':[820,1500,101,820,0,100],
  'The drowned grid from the south-east':[1500,260,900,850,0,100],
  'The head of the bay — compass':[CITY.HEAD[0]+260,140,CITY.HEAD[1]+260,CITY.HEAD[0],4,CITY.HEAD[1],null,true],

@@ -48,6 +48,7 @@ function ysHash(i,j){let h=2166136261;const s=i+','+j;for(let k=0;k<s.length;k++
   if(L){b.use=b.s>560?'farm':'neighbourhood';b.tag=b.use==='farm'?'f':'n';}
   else{const r=ysHash(b.i,b.j);b.use=r<.75?'host':'homegrown';b.tag=r<.75?'H':'g';if(b.use==='host')b.host=b.kind==='open'?'tall':b.kind==='canal'?'mid':'low';}}
  for(const b of LAYOUT.blocks)if(b.use&&!/^(host|homegrown|neighbourhood|farm|foreign|industry|aquaculture)$/.test(b.use))LAYOUT.landmarks[b.use]=b;
+ if(typeof ysLoopCircle==='function')ysLoopCircle('the Amphitriton island',A.x,A.z,80,32,{island:true});
 })();
 // the sink under the drowned grid: the old city plane where the grid lies, blended into the natural seabed over the
 // grid's outer streets. Read by YS_NAT (84-city-geo.js) through this hook.

@@ -57,9 +57,9 @@ function portStampAdd(s,gx,gz,owner){
   o.x0=Math.min(...o.poly.map(p=>p[0]));o.x1=Math.max(...o.poly.map(p=>p[0]));
   o.z0=Math.min(...o.poly.map(p=>p[1]));o.z1=Math.max(...o.poly.map(p=>p[1]));}
  else{o.x0=Math.min(s.x0,s.x1)+gx;o.x1=Math.max(s.x0,s.x1)+gx;o.z0=Math.min(s.z0,s.z1)+gz;o.z1=Math.max(s.z0,s.z1)+gz;}
- if(['flat','dig','fill','ramp'].indexOf(o.kind)<0){reportErr('stamp from '+owner+': unknown kind '+o.kind);return;}
+ if(['flat','dig','fill','ramp','paint'].indexOf(o.kind)<0){reportErr('stamp from '+owner+': unknown kind '+o.kind);return;}   // Ys: 'paint' colours the ground and leaves its shape
  if(o.kind==='ramp'){if(!isFinite(o.ya)||!isFinite(o.yb)){reportErr('ramp stamp from '+owner+' needs ya, yb');return;}o.axis=o.axis==='x'?'x':'z';}
- else if(!isFinite(o.y)){reportErr('stamp from '+owner+' has no y');return;}
+ else if(o.kind!=='paint'&&!isFinite(o.y)){reportErr('stamp from '+owner+' has no y');return;}   // Ys: a paint stamp has no height
  if(o.paint===undefined&&o.kind==='flat'&&o.y>=PORT.DECK-.5)o.paint='pave';
  o.i=PORT_ST.list.length;PORT_ST.list.push(o);
  const b0=Math.floor((o.x0-o.soft-1)/PORT_ST.BK),b1=Math.floor((o.x1+o.soft+1)/PORT_ST.BK);
@@ -75,6 +75,7 @@ function portSD(s,x,z){
   const d=Math.hypot(x-a[0]-t*ex,z-a[1]-t*ez);if(d<best)best=d;}
  return inside?-best:best;}
 function portOp(s,h,x,z){
+ if(s.kind==='paint')return h;
  if(s.kind==='dig')return Math.min(h,s.y);
  if(s.kind==='fill')return Math.max(h,s.y);
  if(s.kind==='ramp'){const t=s.axis==='x'?clamp((x-s.x0)/Math.max(1e-6,s.x1-s.x0),0,1):clamp((z-s.z0)/Math.max(1e-6,s.z1-s.z0),0,1);return lerp(s.ya,s.yb,t);}

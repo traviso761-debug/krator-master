@@ -72,7 +72,7 @@
  "71-port-terrain.js": {
   "adapted": true,
   "from": "settlements/port/src",
-  "sha1": "ce2781c3842d"
+  "sha1": "a39178080e3b"
  },
  "72-port-kit.js": {
   "adapted": false,
