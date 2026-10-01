@@ -62,16 +62,36 @@ function gfSRGBHook(sh){
   sh.vertexShader = sh.vertexShader.replace('#include <color_vertex>',
     '#include <color_vertex>\n#ifdef USE_COLOR\n  vColor.rgb = pow(max(vColor.rgb, vec3(0.0)), vec3(2.2));\n#endif');
 }
+/* painted panels (the catalog's F.decal: a canvas map) leave a batch as one mesh each; they are merged per
+   material, so each painted pattern is one draw call. gfDecal(m) -> its geometry in world space, non-indexed */
+function gfDecal(m){ m.updateMatrix(); var g = m.geometry.index ? m.geometry.toNonIndexed() : m.geometry.clone(); g.applyMatrix4(m.matrix); m.geometry.dispose(); return g; }
+function gfDecalMaterial(mt){
+  if(!mt.userData.gfDone){ if(mt.map){ mt.map.encoding = THREE.sRGBEncoding; mt.map.needsUpdate = true; } nlMaterial(mt, 'decal|'+(mt.userData.family||'')); mt.userData.gfDone = true; }
+  return mt;
+}
+function gfMergeGeos(geos){
+  var n=0; geos.forEach(function(g){ n += g.attributes.position.count; });
+  var out = new THREE.BufferGeometry(), at = {};
+  [['position',3],['normal',3],['uv',2]].forEach(function(s){ var a=new Float32Array(n*s[1]), o=0;
+    geos.forEach(function(g){ var b=g.attributes[s[0]]; if(b) a.set(b.array, o); o += g.attributes.position.count*s[1]; });
+    out.setAttribute(s[0], new THREE.BufferAttribute(a, s[1])); });
+  geos.forEach(function(g){ g.dispose(); });
+  out.computeBoundingSphere();
+  return out;
+}
 function gfFlush(){
   if(GFURN.group) return GFURN.group;
   GFURN.tris = GFURN.batch.tris|0;
-  var g = GFURN.batch.flush(scene); GFURN.group = g; g.userData.inspectLabel = 'Furniture (catalog)';
-  g.children.forEach(function(m){
+  var g = GFURN.batch.flush(scene), decals = {}; GFURN.group = g; g.userData.inspectLabel = 'Furniture (catalog)';
+  g.children.slice().forEach(function(m){
+    if(m.material.map){ var k=m.material.uuid; (decals[k]||(decals[k]={ mt:m.material, geos:[] })).geos.push(gfDecal(m)); g.remove(m); return; }
     m.geometry.computeBoundingSphere();
     if(m.material.isMeshBasicMaterial) m.material.onBeforeCompile = gfSRGBHook;
     else nlMaterial(m.material, 'furn|'+m.material.userData.family, gfSRGBHook);   /* + the lamp pools at night */
     m.castShadow = !FAST; m.receiveShadow = !FAST; m.frustumCulled = false;
   });
+  Object.keys(decals).forEach(function(k){ var D=decals[k], m=new THREE.Mesh(gfMergeGeos(D.geos), gfDecalMaterial(D.mt));
+    m.name='furniture:decals'; m.userData.furniture=true; m.castShadow=!FAST; m.receiveShadow=!FAST; m.frustumCulled=false; g.add(m); });
   GFURN.meshes = g.children.length;
   gfReport();
   return g;

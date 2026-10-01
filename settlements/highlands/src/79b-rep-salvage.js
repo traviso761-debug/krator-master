@@ -40,10 +40,9 @@ function buildHlRepTankHouse(G,o){reseed(21801+(o.v|0));const R=2.1,L=9.4,yc=.6+
  // the wind charger and the cistern
  const mx=-L/2-1.3;vPst('vPipeR',mx,0,1.6,.09,11.2,null);for(let k=1;k<4;k++)vB('vIron',mx,k*2.6,1.6,.5,.06,.06,0,iron);hnRotor(mx,11.2,1.6+.2,0,1.9,rust);
  hnCable([mx,10.6,1.6],[mx-3,0,4],null);hnCable([mx,10.6,1.6],[mx-2.6,0,-2.2],null);
- for(const sx of[-1,1])for(const sz of[-1,1])vPst('vPipeR',3.4+sx*.7,0,-4.2+sz*.7,.06,3.4,null);
- vB('vWood',3.4,3.4,-4.2,1.8,.14,1.8,0,log);kput('hTankC',[3.4,3.54+.75,-4.2],null,[.8,1.5,.8],rust);hnCable([3.4,4.5,-3.4],[2.2,y2+1,-2.7],hC(0x4a4038));
- vnBarrel(-1.4,0,R+.9,.3,.8,hC(0x5a4a3e));hnWoodpile(-4.2,0,R+.7,0,1.4,1);
- kput('hRCHeap',[5.8,-.05,2.8],null,[1.2,.5,1],hC(0x5a4a3e));for(let k=0;k<5;k++)kput(vPick(['vPlate','vSheet']),[5.8+rr(-.8,.8),.4,2.8+rr(-.6,.6)],qEuler(-Math.PI/2+rr(-.3,.3),rng()*TAU,0),[rr(.8,1.4),rr(.6,1),1],null);}
+ FURNISH('hl_rep_cistern',3.4,0,-4.2,0,{v:0});hnCable([3.4,4.5,-3.4],[2.2,y2+1,-2.7],hC(0x4a4038));
+ hnBarrel(-1.4,0,R+.9,.3,.8);hnWoodpile(-4.2,0,R+.7,0,1.4,1);
+ hlRngSkip(35);FURNISH('hl_rep_scrap_heap',5.8,0,2.8,0,{v:0});}   // a small heap of salvage (35 numbers)
 
 // ---------------------------------------------------------------- R2 — the hull-plate tower house
 // A shattered block of Ancient concrete (rebar sprouting from the break) is the plinth; two frame storeys stand on it,
@@ -71,7 +70,7 @@ function buildHlRepHulkTower(G,o){reseed(21811+(o.v|0));const S=3.2,W=6.8,W2=7.6
  const ax=-4.4,az=-4.4;vPst('vPipeR',ax,0,az,.1,top+4,null);for(let k=1;k<7;k++){const y=k*(top+4)/7;vB('vIron',ax,y,az,.9,.05,.05,.78,iron);}
  kput('vDomeS',[ax+.2,top+2.6,az+.45],qEuler(Math.PI/2+.35,0,.2),[1.3,.4,1.3],hC(0xb8b4a8));vPst('vIron',ax+.2,top+2.6,az+.9,.03,.8,iron);
  hnCable([ax,top+3.6,az],[ax-3,0,az+1],null);hnCable([ax,top+3.6,az],[ax+1,0,az-3],null);
- vnBarrel(3.6,0,5.4,.32,.85,hC(0x4a5a4e));vnBarrel(4.2,0,5.9,.32,.85,hC(0x5a4a3e));}
+ hnBarrel(3.6,0,5.4,.32,.85);hnBarrel(4.2,0,5.9,.32,.85);}
 
 // ---------------------------------------------------------------- I1 — the powder works
 // Roketstad's trade: three plank sheds (frame walls, steep corrugated gables) separated by earthen blast berms; a boiler
@@ -83,7 +82,7 @@ function buildHlRepPowderWorks(G,o){reseed(21821+(o.v|0));
  for(const x of[-11,0,11]){vB('vStone',x,0,-1,7.6,.3,14.6,0,hC(vPick(HSV.conc)));hnFachBox(x,.3,-1,7,3.2,14,0,null,null,lit);
   hnGable(x,3.5,-1,14,7,1.4,Math.PI/2,'vCorr',corr,.6,'vGableW',log);
   vB('hPlankB',x,.3,6.1,2.8,2.6,.12,0,hC(vPick(HFRAME.plank)));vB('vIron',x,2.95,6.2,3.4,.1,.1,0,iron);                   // the sliding door on its rail
-  for(let k=0;k<5;k++)vnBarrel(x+rr(-3,3),0,7.3+rr(0,.8),.3,.8,hC(vPick([0x5a4a3e,0x6a5040,0x4a4038])));
+  for(let k=0;k<5;k++)hnBarrel(x+rr(-3,3),0,7.3+rr(0,.8),.3,.8,hC(vPick([0x5a4a3e,0x6a5040,0x4a4038])));
   vPst('vPipe',x+3.2,0,7.6,.04,5,iron);vB('hPaint',x+3.2+.45,4.3,7.6,.9,.6,.03,0,red);}                                    // red warning flags
  for(const x of[-5.5,5.5])kput('hBatterRub',[x,0,-1],null,[3.4,3.8,15],turf);                                            // blast berms
  // the boiler house: rubble firebox, the tank, the glowing mouth, the pipe stack on guys
@@ -95,8 +94,7 @@ function buildHlRepPowderWorks(G,o){reseed(21821+(o.v|0));
  for(const [dx,dz] of[[5,3],[4,-4],[-3,-5]])hnCable([sx,14,bz],[sx+dx,0,bz+dz],null);
  // the rail and the powder cart
  for(const s of[-1,1])vB('vIron',0,.02,9.2+s*.5,34,.12,.08,0,iron);for(let k=0;k<42;k++)vB('vWood',-16.4+k*.8,0,9.2,.22,.06,1.5,0,log);
- vB('vWood',4,.45,9.2,1.8,.7,1.2,0,log);for(const u of[-.6,.6])for(const s of[-1,1])kput('vHoop',[4+u,.35,9.2+s*.55],null,[.28,.28,2],iron);
- for(let k=0;k<3;k++)vnBarrel(3.5+k*.5,1.15,9.2,.22,.5,hC(0x5a4a3e));
+ FURNISH('hl_rep_rail_tub',4,0,9.2,0,{v:1});   // the powder cart on the rail, with its kegs
  // the watch post over the gate
  const wx=15,wz=10;for(const a of[-1,1])for(const b of[-1,1])kput('hCol',[wx+a*1,0,wz+b*1],null,[.12,4.5,.12],post);
  vB('vWood',wx,4.5,wz,2.6,.16,2.6,0,log);kput('hRailC',[wx,4.95,wz+1.25],null,[2.4,.7,1],log);kput('hRailC',[wx+1.25,4.95,wz],qEuler(0,Math.PI/2,0),[2.4,.7,1],log);
@@ -129,11 +127,10 @@ function buildHlRepHullYard(G,o){reseed(21831+(o.v|0));
  vB('vIron',3,10.6,cz,1.4,.4,1,0,iron);for(const s of[-1,1])hnCable([3,10.6,cz+s*.35],[3+s*1.8,6.4,cz],iron);
  kput('hHullSeg',[3,4.4,cz],qEuler(0,0,Math.PI/2).multiply(qEuler(0,-Math.PI*.31,0)),[3,7,3],rust);
  // heaps, the pipe rack, the engine bell, a trolley line of plates
- for(const [x,z,r] of[[-9,3,2.4],[-5,9,2],[9,10,2.2]]){kput('hRCHeap',[x,-.05,z],qEuler(0,rng()*TAU,0),[r,r*.45,r],hC(vPick([0x5a4a3e,0x6a5040])));
-  for(let k=0;k<14;k++){const a=rng()*TAU,d=Math.sqrt(rng())*r*.85;kput(vPick(['vPlate','vSheet','vPlateW']),[x+Math.cos(a)*d,Math.max(.1,r*.45*(1-d/r))+.05,z+Math.sin(a)*d],qEuler(-Math.PI/2+rr(-.4,.4),rng()*TAU,0),[rr(.8,1.8),rr(.6,1.3),1],null);}}
+ for(const [x,z] of[[-9,3],[-5,9],[9,10]]){hlRngSkip(100);FURNISH('hl_rep_scrap_heap',x,0,z,0,{v:1});}   // heaps of plate (100 numbers each)
  for(const x of[7,11]){vB('vWood',x,0,1.5,.2,1,.2,0,log);vB('vWood',x,0,-1.5,.2,1,.2,0,log);vB('vWood',x,1,0,.24,.14,3.4,0,log);}
  for(let k=0;k<7;k++)kput('spipe',[9,1.24+Math.floor(k/4)*.3,-1.2+(k%4)*.8],qEuler(0,0,Math.PI/2),[.14,5.6,.14],rust);
- kput('vConeI',[-10,1.9,11],qEuler(0,.4,Math.PI/2),[1.9,4.4,1.9],rust);kput('spipe',[-12.3,1.9,11],qEuler(0,.4,Math.PI/2),[.6,1.2,.6],rust);
+ FURNISH('hl_rep_engine_bell',-12.02,0,11.86,.4);   // the spent engine bell on its side, its wide end where the drawn one's was
  // the breaker's office: a small frame house by the gate
  vB('vStone',-11,0,-1,5,.3,4,0,hC(vPick(HSV.conc)));hnFachBox(-11,.3,-1,4.6,2.8,3.6,0,null,beamC,lit);hnGable(-11,3.1,-1,4.6,3.6,1.5,0,'vCorr',corr,.5,'vGableW',log);
  vnChimney(-12.2,2.6,-1.6,2.6,.12,true);

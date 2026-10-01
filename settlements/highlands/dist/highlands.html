@@ -12690,12 +12690,19 @@ function hnMenhir(x,y,z,ry,h,c,carved){hlRngSkip(c?2:3);return FURNISH('hl_tri_m
 // A free-standing carved post (by a door, a ladder, a deck corner), not one that carries a roof (hnTotemPost)
 function hnTotemPole(x,y,z,r,h,ry,painted){hlRngSkip(1);return FURNISH('hl_tri_totem_post',x,y,z,ry,{v:h>=4.5?2:painted?1:0});}
 // The Iziz Vernacular yard kit (vendored 69c draws them), placed instead: same arguments as vnBarrel, vnWaterButt,
-// vnCrate, vnSacks, vnDryingRack
+// vnCrate, vnSacks, vnDryingRack, vnPlanter, vnLampPost, vnLamp
 function hnBarrel(x,y,z,r,h){return FURNISH('iziz_vern_barrel',x,y,z,0,{v:r>.37?1:0});}
 function hnWaterButt(x,y,z,r,h){return FURNISH('iziz_vern_water_butt',x,y,z,0,{v:r>.42?1:0});}
 function hnCrate(x,y,z,s,ry,c){if(!c)rng();return FURNISH('iziz_vern_crate',x,y,z,ry||0,{v:s<.65?0:s<.9?1:2});}
 function hnSacks(x,y,z,n){hlRngSkip(4*n);return FURNISH('iziz_vern_sacks',x,y,z,0,{v:n>3?1:0});}
 function hnDryingRack(x,y,z,ry,L){hlRngSkip(Math.round(L/.9));return FURNISH('iziz_vern_drying_rack',x,y,z,ry,{v:L>3.3?1:0});}
+// ... and vnPlanter (its plants drew 6 numbers each), vnLampPost and vnLamp (electric: the callers keep their vLit() test).
+// A lamp post takes the catalog standard nearest the height asked for: the yard post (3.2, 3.8 m) or the Republic's
+// own lamp standard (3.4, 4.2 m), the Republic's on a tie. The wall lamp's arm is at y, as vnLamp's.
+function hnPlanter(x,y,z,w,d,ry,c){hlRngSkip(6*Math.max(1,Math.round(w*d/1.2)));return FURNISH('iziz_vern_planter',x,y,z,ry||0,{v:w*d>3?0:1});}
+function hnLampPost(x,y,z,h){const L=[[3.4,'hl_rep_lamp_standard',0],[4.2,'hl_rep_lamp_standard',1],[3.2,'iziz_vern_lamp_post',0],[3.8,'iziz_vern_lamp_post',1]];
+ let b=L[0];for(const l of L)if(Math.abs(l[0]-h)<Math.abs(b[0]-h)-1e-6)b=l;return FURNISH(b[1],x,y,z,0,{v:b[2]});}
+function hnWallLamp(x,y,z,ry){return hnFurn('iziz_vern_wall_lamp',x,y-.3,z,ry,{},0,.36);}
 
 // ---------------------------------------------------------------- round 4: fitting murals and bracket rows (hlFlush)
 // Travis: murals over entrances cut into the architecture (jetties, consoles, lintels — the Saxon buildings worst)
@@ -13115,7 +13122,7 @@ function buildHlRepPoorA(G,o){reseed(20101+(o.v|0));const W=6.4,D=6.8,H=2.7,F=.4
  for(const s of[-1,1])vPst('vPost',W/2+1.45,F,1.3+s*.85,.08,2.2,log);vnShedRoof(W/2+.9,F+2.2,1.3,1.8,2,.35,-Math.PI/2,'vShingleB',sh,.2,.1);
  if(rng()<.6){kput('vSheet',[-1.2,F+H+1.3,-1.1],vQ(Math.PI,-Math.atan(1.25),0),[2.2,1.6,1],null);}   // a salvage sheet over a leak (the Iziz note)
  hnStoneChimney(-1.2,F+H+.6,-.9,2.1,.6);
- hnWoodpile(-W/2-.8,0,-.6,Math.PI/2,2.6,1.4);vnBarrel(W/2+.9,0,-1.9,.35,.9,log);
+ hnWoodpile(-W/2-.8,0,-.6,Math.PI/2,2.6,1.4);hnBarrel(W/2+.9,0,-1.9,.35,.9);
  vnFence(0,0,1.2,W+6,D+6.5,0,hC(vPick(HPAL.aged)),2.2,1.1);vnFolk(1.5,D/2+2.2,1,1);}
 // B — two-room log house with a lean-to workshop and a plank roof held by poles: the poorest urban housing
 function buildHlRepPoorB(G,o){reseed(20111+(o.v|0));const W=8.2,D=5.4,H=2.6,F=.35;
@@ -13127,8 +13134,8 @@ function buildHlRepPoorB(G,o){reseed(20111+(o.v|0));const W=8.2,D=5.4,H=2.6,F=.3
  vnDoor(-1.2,F,D/2,0,.95,1.9,'vWood',log,hC(0x5a4a3a),false);hnNal(1.4,F+.95,D/2,0,.75,.95,'shut',trim);hnNal(-3.1,F+.95,D/2,0,.7,.9,'open',trim);
  // lean-to workshop: board walls, salvage roof
  vnFrame(W/2+1.4,0,0,2.6,2.3,D-.6,0,log,.1);vB('vWood',W/2+1.4,0,-D/2+.4,2.6,2.2,.1,0,log);vnShedRoof(W/2+1.4,2.3,0,2.8,D-.2,.6,Math.PI/2,'vCorr',null,.3,.1);
- vnPatch(W/2+2.7,0,0,Math.PI/2,D-.8,2.1,2);vnCrate(W/2+1.2,0,1,.8,.2);vnBarrel(W/2+2,0,-.8,.3,.8,log);
- hnStoneChimney(2.6,F+H+.3,-.6,2.2,.55);vnDryingRack(-W/2-1.3,0,1.2,Math.PI/2,2.6);vnFolk(0,D/2+2.4,2,1.5);}
+ vnPatch(W/2+2.7,0,0,Math.PI/2,D-.8,2.1,2);hlRngSkip(1);   // the lean-to is a room (interiors): its crate (one colour) and barrel are gone
+ hnStoneChimney(2.6,F+H+.3,-.6,2.2,.55);hnDryingRack(-W/2-1.3,0,1.2,Math.PI/2,2.6);vnFolk(0,D/2+2.4,2,1.5);}
 
 // ---------------------------------------------------------------- MIDDLE
 // A — Saxon townhouse: gable to the street, painted render below, jettied half-timber above, scale roof
@@ -13153,7 +13160,7 @@ function buildHlRepMidA(G,o){reseed(20201+(o.v|0));const W=8,D=11,S=.7,H1=3.3,H2
  // a dormer on the long side, a stone chimney through the ridge
  vB('vPlaster',W/2-.9,y3+.6,-1.5,1.6,1.2,1.6,0,hC(vPick(HPAL.stucco)));vnWin(W/2-.1,y3+.8,-1.5,Math.PI/2,.6,.7,'glass','vWood',trim);vnGableRoof(W/2-.9,y3+1.8,-1.5,1.6,1.8,.8,Math.PI/2,'hGableSc',roof,.15);
  hnStoneChimney(-.8,top-1.2,-2.8,1.9,.7);
- vnBarrel(-W/2-.6,0,D/2-1,.35,.9);vnFolk(0,D/2+2.5,2,2);}
+ hnBarrel(-W/2-.6,0,D/2-1,.35,.9);vnFolk(0,D/2+2.5,2,2);}
 // B — merchant's log house: a two-storey log house on a stone ground floor, a carved gallery (gulbishche) along
 // the front and a kryltso porch; the Russian side of the Republic's middle class
 function buildHlRepMidB(G,o){reseed(20211+(o.v|0));const W=10,D=8,S=2.6,H=3;
@@ -13197,7 +13204,7 @@ function buildHlRepRichA(G,o){reseed(20301+(o.v|0));const W=16,D=11,S=1.2,H1=3.8
  hnStoneChimney(4.5,y3+1.4,-1.8,2.8,.9);hnStoneChimney(-3,y3+1.4,-1.8,2.8,.9);
  // garden wall with gate piers, lamps
  for(const s of[-1,1]){vB('hRubB',s*(W/2+2.5),0,D/2+5.5,.6,1.3,.6,0);vB('hRubB',s*(W/2+2.5)/2+s*2.1,0,D/2+5.5,(W/2+2.5)-2.6,.9,.45,0);}
- if(vLit())for(const s of[-1,1])vnLampPost(s*2.4,0,D/2+5.2,3.2);
+ if(vLit())for(const s of[-1,1])hnLampPost(s*2.4,0,D/2+5.2,3.2);
  vnFolk(1,D/2+7,2,2);}
 
 // C — bamboo row: three one-room cottages under one roof on a log sill, the poorest urban housing of the hill
@@ -13221,7 +13228,7 @@ function buildHlRepPoorC(G,o){reseed(20121+(o.v|0));const N=3,U=3.8,W=U*N,D=5,F=
   const dx=x-U*.22;vnDoor(dx,F,D/2+.08,0,.85,1.85,'vWood',bam,hC(vPick([0x6a5040,0x5a4a3a,HPAL.teal])),false);
   vB('vWood',dx,0,D/2+.45,1.1,F,.7,0,log);                                                        // plank step
   if(kind===0){vnShedRoof(x,F+1.82,D/2+.85,U-.4,1.7,.28,0,'vCorr',null,.08,.05);for(const s of[-1,1])vPst('hBamboo',x+s*(U/2-.35),0,D/2+1.6,.06,F+1.84,bam);   // a salvaged-sheet awning on culms
-   vB('vWood',x+.5,0,D/2+1.1,1.4,.42,.36,0,log);}
+   FURNISH('hl_rep_door_bench',x+.5,0,D/2+1.1,0,{v:0});}
   else{vnShedRoof(dx,F+2.02,D/2+.3,1.3,.42,.12,0,'hBMatB',mat,.08,.05);for(const s of[-1,1])beam('hBambooC',[dx+s*.55,F+1.45,D/2+.08],[dx+s*.55,F+2.02,D/2+.48],.06,.06,bam);}
   vnWin(x+U*.24,F+.9,D/2+.08,0,.75,.75,rng()<.5?'shut':'open','vWood',bam,rng()<.6);
   vnWin(x,F+.9,-D/2-.08,Math.PI,.6,.6,'shut','vWood',bam);
@@ -13229,10 +13236,9 @@ function buildHlRepPoorC(G,o){reseed(20121+(o.v|0));const N=3,U=3.8,W=U*N,D=5,F=
   if(kind===2||(i===0&&rng()<.7))hnRARoofPatch('vCorr',0,Y,0,0,sp,P,1,x+rr(-.4,.4),rr(1.2,1.6),rr(1.8,2.6),rr(1.4,1.9));}
  hnRARoofPatch('vRustB',0,Y,0,0,sp,P,-1,rr(-2,2),1.5,2.2,1.6);
  // yard life: a drying line, hand cart, water butt, a bamboo lean-to store at the end
- vnDryingRack(1,0,-D/2-1.6,0,4);vnWaterButt(W/2+.6,0,D/2-.8,.38,.95);
+ hnDryingRack(1,0,-D/2-1.6,0,4);hnWaterButt(W/2+.6,0,D/2-.8,.38,.95);
  {const lx=-W/2-1.1;hnBambooBox(lx,0,0,1.9,2.1,D-1,0,bam,mat);vnShedRoof(lx,2.1,0,2.1,D-.6,.35,-Math.PI/2,'vCorr',null,.25,.08);hnWoodpile(lx-1.3,0,0,Math.PI/2,2.6,1.2);}
- {const cx=W/2+1.4,cz=1.2;vB('vWood',cx,.55,cz,1,.08,1.6,.25,log);for(const s of[-1,1]){const p=loc(cx,cz,s*.58,.2,.25);kput('vHoop',[p[0],.42,p[1]],qEuler(0,.25+Math.PI/2,0),[.42,.42,1.4],hC(0x3a3028));}
-  for(const s of[-1,1]){const a=loc(cx,cz,s*.3,-.8,.25),b=loc(cx,cz,s*.3,-1.9,.25);beam('vWood',[a[0],.6,a[1]],[b[0],.15,b[1]],.05,.05,log);}}
+ hnFurn('hl_rep_hand_cart',W/2+1.4,0,1.2,.25,{},0,-.565);   // the hand cart (the piece is centred on its footprint, the drawing on its bed)
  vnFolk(0,D/2+3.4,3,2.5);}
 
 // C — the Saxon corner tenement: an arcaded ground floor (the Laube) of stone round arches with shops behind, a
@@ -13268,7 +13274,7 @@ function buildHlRepMidC(G,o){reseed(20221+(o.v|0));const W=14,D=10,H1=3.6,H2=3.2
  // stair tower serving the flats, with a spire, and its street door
  const tx=W/2+1.35,tz=-1.4;hnTower(tx,0,tz,2.8,H1+H2+H3+2.6,0,{shaft:'stucco',roof:'spire',roofC:roof,c:wall2,qC:ash,trimC:trim});
  vnDoor(tx,0,tz+1.4,0,1,2.1,'vStone',ash,hC(vPick(HPAL.tar)),true);
- vnBarrel(-W/2-.7,0,D/2-1.2,.35,.9);vnCrate(-2.1,0,D/2-1.3,.7,.3);vnSacks(3.4,0,D/2-1.4,3);
+ hnBarrel(-W/2-.7,0,D/2-1.2,.35,.9);hnCrate(-2.1,0,D/2-1.3,.7,.3);hnSacks(3.4,0,D/2-1.4,3);
  vnFolk(0,D/2+2.2,4,3);vnFolk(0,D/2-AD/2,2,4);}
 
 // ---------------------------------------------------------------- RICH (cont.)
@@ -13318,7 +13324,7 @@ function buildHlRepRichB(G,o){reseed(20311+(o.v|0));const S=2.2;
  vnDoor(0,S,A.z+A.d/2,0,1.3,2.2,'hPaint',trim,dark,false);
  const run=hnRAKryltso(0,0,A.z+A.d/2,0,2.4,S,dark,'hKeelSc',roofB,trim,2.7);
  for(const s of[-1,1])hnTotemPost(s*2.1,0,A.z+A.d/2+run+.6,.22,2.8,0,true);
- if(vLit())for(const s of[-1,1])vnLampPost(s*3.6,0,A.z+A.d/2+run+.4,3.2);
+ if(vLit())for(const s of[-1,1])hnLampPost(s*3.6,0,A.z+A.d/2+run+.4,3.2);
  // chimneys, a carved fence with a gate, a tall totem at the corner
  hnStoneChimney(-2.6,ya+2.6,-3.5,3.4,.8);hnStoneChimney(B.x+1,yb+1.8,B.z-2,3,.7);
  vnFence(0,0,1.4,A.w+B.w+C.w+6,A.d+14,0,dark,4.5,1.3);hnTotem(B.x-1.4,0,B.z+B.d/2+3.4,.34,7.5,0,{wings:1.6,painted:true});
@@ -13362,11 +13368,10 @@ function buildHlRepRichC(G,o){reseed(20321+(o.v|0));const W=16,D=12,H1=3.9,H2=3.
    vB('vPlaster',mx,0,mz,L,wh,.5,ry,wc);vnGableRoof(mx,wh,mz,L+.3,.7,.3,ry,'vShingleB',sh,.12);}
   vB('hRubB',cx+cw/2,0,D/2-2,1.2,wh+.7,1.2,0);vB('vStone',cx+cw/2,wh+.7,D/2-2,1.4,.2,1.4,0,ash);            // gate pier at the street
   vB('vPlaster',(W/2+cx+cw/2)/2,0,D/2-2,cx+cw/2-W/2,wh,.5,0,wc);vnGableRoof((W/2+cx+cw/2)/2,wh,D/2-2,cx+cw/2-W/2,.7,.3,0,'vShingleB',sh,.12);
-  const wx=cx+3,wz=cz;for(let k=0;k<10;k++){const a=k/10*TAU;kput('vStone',[wx+Math.cos(a)*.75,.4,wz+Math.sin(a)*.75],qEuler(0,-a,0),[.3,.8,.5],ash);}
-  for(const s of[-1,1])vPst('vPost',wx+s*.8,0,wz,.07,2.2,tar);vnGableRoof(wx,2.2,wz,1.9,1.2,.5,0,'vShingleB',sh,.2);
+  FURNISH('hl_rep_roofed_well',cx+3,0,cz,0);   // the courtyard well
   vPst('vPost',cx-5,0,cz,.22,3.2,hC(0x5a4632));for(let k=0;k<6;k++)kput('vLeaf',[cx-5+rr(-1.6,1.6),rr(3.6,5.6),cz+rr(-1.6,1.6)],null,[rr(1.2,1.9),rr(1,1.5),rr(1.2,1.9)],hC(vPick([0x3f7a34,0x4f8a3a,0x356a2a])));
   vB('vWood',cx,0,cz-cd/2+1.7,7,2.6,2.8,0,tar);vnShedRoof(cx,2.6,cz-cd/2+1.7,7,2.8,.7,0,'vShingleB',sh,.3);}
- if(vLit()){vnLampPost(gx-3,0,D/2+1.6,3.2);vnLampPost(gx+3.2,0,D/2+1.6,3.2);}
+ if(vLit()){hnLampPost(gx-3,0,D/2+1.6,3.2);hnLampPost(gx+3.2,0,D/2+1.6,3.2);}
  vnFolk(-2,D/2+2.6,3,3);}
 
 const HTAG_SF={type:['single-family dwelling']},HTAG_MF={type:['multi-family dwelling']};
@@ -13393,45 +13398,30 @@ HL.def({key:'hl_rep_house_rich_c',name:'Patrician house',branch:'republican',fam
 function hnRASignboard(x,y,z,ry,w,h,bgC,frameC){hnSignBoard(x,y,z,ry,w,Math.max(h,.6),null,bgC);}   // round 2: the trade's symbol between knot panels
 // Hanging sign on an iron bracket out of a wall (the board hangs across the street, crest on both faces).
 function hnRAHangSign(x,y,z,ry,c,s){hnSign(x,y,z,ry,null,s||1);}   // round 2: the trade's symbol roundel
-// A trestle table with two benches (length along local x of ry) and a few mugs.
-function hnRATable(x,z,ry,L,c){vB('vWood',x,.7,z,L,.07,.85,ry,c);for(const s of[-1,1]){const p=loc(x,z,s*(L/2-.35),0,ry);vB('vWood',p[0],0,p[1],.1,.7,.7,ry,c);
-  const b=loc(x,z,0,s*.75,ry);vB('vWood',b[0],.4,b[1],L,.06,.3,ry,c);for(const t of[-1,1]){const q=loc(x,z,t*(L/2-.35),s*.75,ry);vB('vWood',q[0],0,q[1],.08,.4,.26,ry,c);}}
- for(let k=0;k<Math.round(L);k++){const p=loc(x,z,rr(-L/2+.3,L/2-.3),rr(-.25,.25),ry);vPst('vStave',p[0],.77,p[1],.05,.15,hC(vPick([0x8a6a4a,0xb8a080,0x6a4a30])));}}
+// The trade furniture is PLACED from the master catalog (FURNISH, 89y): these helpers keep their names and arguments,
+// pick the harvested piece (kits/catalog, hl_rep_*) and its variant nearest the size asked for, and burn the random
+// numbers their drawing used to draw (hlRngSkip), so the structure built after them does not move.
+// A trestle table with two benches (length along local x of ry) and a few mugs (each mug drew 3 numbers).
+function hnRATable(x,z,ry,L,c){hlRngSkip(3*Math.round(L));return FURNISH('hl_rep_trestle_table',x,0,z,ry,{v:L<3.3?0:L<4.7?1:2});}
 // A barrel lying on its side, axis along local x of ry, centred at (x,z), bottom at y.
-function hnRABarrelLying(x,y,z,ry,r,L,c){const p=loc(x,z,L/2,0,ry);kput('vBarrel',[p[0],y+r,p[1]],qEuler(0,ry,0).multiply(qEuler(0,0,Math.PI/2)),[r,L,r],c||null);
- for(const t of[.22,.78]){const q=loc(x,z,L/2-L*t,0,ry);kput('vHoop',[q[0],y+r,q[1]],qEuler(0,ry+Math.PI/2,0),[r*1.02,r*1.02,1],hC(0x2e2a26));}}
-// A pyramid of lying barrels (rows n, n-1, …), axis along local z of ry
-function hnRABarrelStack(x,z,ry,n,r,c){for(let k=0;k<n;k++)for(let i=0;i<n-k;i++){const p=loc(x,z,(i-(n-k-1)/2)*r*2.05,0,ry);hnRABarrelLying(p[0],k*r*1.75,p[1],ry+Math.PI/2,r,r*2.4,c);}}
-// A heap of salvage: rusted plate, pipe offcuts, corrugated sheet and white Ancient panel scraps, heaped highest in the middle.
-function hnRAScrap(x,z,w,d,n){for(let i=0;i<n;i++){const px=x+rr(-w/2,w/2),pz=z+rr(-d/2,d/2);const e=Math.max(0,1-Math.hypot((px-x)/(w/2),(pz-z)/(d/2)));const hg=e*rr(.3,1.2);const r=rng();
- if(r<.3)kput('vRustB',[px,hg+.05,pz],qEuler(rr(-.6,.6),rng()*TAU,rr(-.6,.6)),[rr(.5,1.3),rr(.03,.07),rr(.4,1.0)],null);
- else if(r<.5)kput('vPipeR',[px,hg+.1,pz],qEuler(Math.PI/2+rr(-.3,.3),rng()*TAU,0),[rr(.05,.14),rr(.8,2.2),rr(.05,.14)],null);
- else if(r<.72)kput(vPick(['vSheet','vPlate','vPlateW','vPlate']),[px,hg+.3,pz],qEuler(rr(-1.3,-.4),rng()*TAU,rr(-.4,.4)),[rr(.7,1.6),rr(.5,1.2),1],null);
- else if(r<.86)kput('vPanelB',[px,hg+.05,pz],qEuler(rr(-.5,.5),rng()*TAU,rr(-.5,.5)),[rr(.5,1.1),.06,rr(.5,1.1)],null);
- else kput('vIron',[px,hg+.1,pz],qEuler(rng(),rng()*TAU,rng()),[rr(.2,.6),rr(.15,.4),rr(.2,.6)],hC(0x3a3430));}}
-function hnRAAnvil(x,z,ry){const I=hC(0x2e2a26);vPst('vPostB',x,0,z,.3,.6,hC(0x5a4632));vB('vIron',x,.6,z,.28,.16,.5,ry,I);vB('vIron',x,.76,z,.18,.12,.3,ry,I);vB('vIron',x,.88,z,.3,.14,.72,ry,I);
- const h=loc(x,z,0,.34,ry);kput('vConeI',[h[0],.95,h[1]],vQ(ry,Math.PI/2,0),[.1,.32,.1],I);}
+function hnRABarrelLying(x,y,z,ry,r,L,c){return FURNISH('hl_rep_barrel_lying',x,y,z,ry);}
+// A pyramid of lying barrels (rows n, n-1, …), axis along local z of ry: three or six barrels
+function hnRABarrelStack(x,z,ry,n,r,c){return FURNISH('hl_rep_barrel_stack',x,0,z,ry,{v:n>=3?1:0});}
+// A heap of salvage: rusted plate, pipe offcuts, corrugated sheet and white Ancient panel scraps, heaped highest in the
+// middle (the small heap, or the smithy's yard heap for a big one). Each scrap drew 9 to 10 numbers, by its kind.
+function hnRAScrap(x,z,w,d,n){for(let i=0;i<n;i++){hlRngSkip(3);const r=rng();hlRngSkip(r<.3?6:r<.5?5:r<.72?6:r<.86?5:6);}
+ return FURNISH('hl_rep_scrap_heap',x,0,z,0,{v:w*d>9?1:0});}
+function hnRAAnvil(x,z,ry){return hnFurn('hl_rep_anvil',x,0,z,ry,{v:0},0,.14);}   // the piece is centred on its footprint, the stump .14 behind
 // quench trough: a stone box with dark water (local x of ry = length)
-function hnRATrough(x,z,ry,L,c){vB('vStone',x,0,z,L,.7,.8,ry,c||hC(vPick(HPAL.rubble)));vB('vWinGlass',x,.64,z,L-.2,.07,.6,ry);}
-// forge hearth against a wall (back toward -z of ry): stone block, ember bed, iron hood, stack of reclaimed pipe
-function hnRAHearth(x,z,ry,stackH,w){w=w||1.8;const p=loc(x,z,0,0,ry);vB('vStone',p[0],0,p[1],w,.95,1.3,ry,hC(vPick(HPAL.rubble)));vB('vDarkB',p[0],.95,p[1],w-.4,.08,.9,ry);
- for(let k=0;k<5;k++){const q=loc(x,z,rr(-w/2+.4,w/2-.4),rr(-.3,.3),ry);vBall('vEmber',q[0],1.02,q[1],rr(.08,.16),null,.09);}
- kput('vRustB',[p[0],2.35,p[1]],qEuler(0,ry,0),[w-.2,.9,1.1],null);kput('vRustB',[p[0],1.85,p[1]],qEuler(0,ry,0),[w+.2,.14,1.4],null);vnChimney(p[0],2.8,p[1],stackH,.3,true);
- const b=loc(x,z,-w/2-.55,.1,ry);kput('vTarpB',[b[0],.85,b[1]],qEuler(0,ry,.18),[.9,.3,.7],hC(0x6a4a30));vB('vWood',b[0],.45,b[1],.9,.25,.7,ry,hC(0x5a4632));   // bellows
-}
-// cartwheel standing in the plane of local z of ry (axle along local x), centre at height y
-function hnRAWheel(x,y,z,ry,r,c){kput('vHoop',[x,y,z],qEuler(0,ry+Math.PI/2,0),[r,r,2],hC(0x3a3028));
- for(let k=0;k<8;k++){const a=k/8*TAU;const p=loc(x,z,0,Math.sin(a)*r*.96,ry);beam('vWood',[x,y,z],[p[0],y+Math.cos(a)*r*.96,p[1]],.045,.045,c);}
- const h=loc(x,z,-.1,0,ry);kput('vBarrel',[h[0],y,h[1]],qEuler(0,ry,0).multiply(qEuler(0,0,-Math.PI/2)),[.1,.2,.1],c);}
-// wagon: bed along local z of ry (shafts toward +z); load: 'hay' | 'barrels' | 'sacks' | 'wheel' (a wheel off)
-function hnRAWagon(x,z,ry,c,load){const B=(u,o)=>loc(x,z,u,o,ry);let p=B(0,0);vB('vWood',p[0],.72,p[1],1.4,.1,3,ry,c);
- for(const s of[-1,1]){const q=B(s*.68,0);vB('vWood',q[0],.82,q[1],.08,.42,3,ry,c);const e=B(0,s*1.46);vB('vWood',e[0],.82,e[1],1.36,.42,.08,ry,c);}
- for(const [o,r] of[[-.95,.58],[.95,.46]]){const a=B(0,o);vB('vWood',a[0],r-.04,a[1],1.9,.08,.08,ry,c);for(const s of[-1,1]){if(load==='wheel'&&o<0&&s>0)continue;const q=B(s*.86,o);hnRAWheel(q[0],r,q[1],ry,r,c);}}
- for(const s of[-1,1]){const a=B(s*.32,1.4),b=B(s*.36,3.7);beam('vWood',[a[0],.62,a[1]],[b[0],.45,b[1]],.07,.07,c);}
- if(load==='hay')kput('vThatchB',[p[0],1.35,p[1]],qEuler(0,ry,0),[1.5,1.1,3.1],hC(vPick(VPAL.thatch)));
- else if(load==='barrels'){for(const o of[-.8,.8])for(const s of[-1,1]){const q=B(s*.33,o);vnBarrel(q[0],.77,q[1],.3,.75,c);}}
- else if(load==='sacks')vnSacks(p[0],.72,p[1],5);
- else if(load==='wheel'){const q=B(.95,-.3);kput('vWood',[q[0],.2,q[1]],null,[.25,.4,.25],c);}}
+function hnRATrough(x,z,ry,L,c){if(!c)rng();return FURNISH('hl_rep_quench_trough',x,0,z,ry,{v:L>1.9?1:0});}
+// forge hearth against a wall (back toward -z of ry): the catalog's (stone block, ember bed, hood, bellows, a short
+// stack to 3.5 m); the reclaimed-pipe stack on up through the shed roof is the shed's own. The drawing drew 16 numbers.
+function hnRAHearth(x,z,ry,stackH,w){w=w||1.8;hlRngSkip(16);const r=hnFurn('hl_rep_forge_hearth',x,0,z,ry,{v:w>=1.9?1:0},-.45,0);
+ vnChimney(x,3.5,z,stackH-.7,.3,true);return r;}
+// wagon: bed along local z of ry (shafts toward +z); load: 'hay' | 'barrels' | 'sacks' | 'wheel' (a wheel off). Its hay
+// drew a colour, its sacks 20 numbers.
+function hnRAWagon(x,z,ry,c,load){hlRngSkip(load==='hay'?1:load==='sacks'?20:0);
+ return hnFurn('hl_rep_wagon',x,0,z,ry,{v:{hay:0,barrels:1,sacks:2,wheel:3}[load]|0},0,1.105);}
 // a horse, standing, facing +z of ry (colour c)
 function hnRAHorse(x,z,ry,c){const B=(u,o)=>loc(x,z,u,o,ry),q=qEuler(0,ry,0);let p=B(0,0);kput('hPaintBall',[p[0],1.28,p[1]],q,[.3,.34,.82],c);
  for(const o of[-.55,.5])for(const s of[-1,1]){const l=B(s*.15,o);vB('hPaint',l[0],0,l[1],.1,1.12,.12,ry,c);vB('hPaint',l[0],0,l[1],.12,.12,.14,ry,hC(0x2a2420));}
@@ -13479,7 +13469,7 @@ function buildHlRepTavernA(G,o){reseed(20401+(o.v|0));const W=11,D=20,Y0=.6,H=3.
  vnGableRoof(0,yw+rise+.7,ZC-3,2.8,2,1,Math.PI/2,'vShingleB',sh,.25);
  // outside: long tables and benches, a fire, barrels, a hanging sign
  const tz=zf+PD+4.4;for(const x of[-3.4,3.4])hnRATable(x,tz,Math.PI/2,5.2,pine);hnFirepit(0,0,tz+.6,.7);
- hnRABarrelStack(-W/2-1.7,zf-2.4,0,3,.36,pine);for(let k=0;k<3;k++)vnBarrel(W/2+1,0,zf-1-k*1.2,.38,.95,pine);
+ hnRABarrelStack(-W/2-1.7,zf-2.4,0,3,.36,pine);for(let k=0;k<3;k++)hnBarrel(W/2+1,0,zf-1-k*1.2,.38,.95);
  hnRAHangSign(PW/2-.2,Y0+2.4,zf+PD-.2,0,trim,.8);vnBannerPole(-W/2-1.2,0,zf+2.2,0,6.5,hC(HPAL.red));
  vnFolk(0,tz,6,3.4);vnFolk(2,zf+PD+1.5,2,1.5);}
 // B — the Saxon tavern: rendered ground storey on a socle with cellar hatches, a hanging sign and a painted board
@@ -13510,7 +13500,7 @@ function buildHlRepTavernB(G,o){reseed(20411+(o.v|0));const HX=-4,W=12,D=9,S=.5,
  for(let k=0;k<16;k++)kput('vLeaf',[gx+rr(-3.4,3.4),2.95+rr(0,.2),gz+rr(-2.8,2.8)],null,[rr(.6,1.1),rr(.18,.3),rr(.6,1.1)],hC(vPick([0x3f7a34,0x4f8a3a,0x5a9a40])));
  for(const s of[-1,1])for(const i of[-1,1])for(let k=0;k<2;k++)kput('vLeaf',[gx+i*3.2+rr(-.2,.2),.6+k*.9,gz+s*2.6],null,[.3,.5,.3],hC(0x3f7a34));
  for(const z of[-1.3,1.3])hnRATable(gx,gz+z,0,4.2,pine);vnFence(gx,0,gz,GW,GD,0,pine,1.6,1.05);
- hnRABarrelStack(HX-W/2-1.2,-1,0,2,.36,pine);vnBarrel(HX+W/2+.5,0,D/2-.5,.36,.9,pine);
+ hnRABarrelStack(HX-W/2-1.2,-1,0,2,.36,pine);hnBarrel(HX+W/2+.5,0,D/2-.5,.36,.9);
  vnFolk(gx,gz,4,2.5);vnFolk(HX,D/2+2.6,2,2);}
 // C — the traktir: a two-storey log tea-house, gable to the street with lace, a painted signboard across the
 // ground floor, a gallery along the side, a kryltso climbing to the upper rooms; a hitching rail with a horse.
@@ -13535,9 +13525,9 @@ function buildHlRepTavernC(G,o){reseed(20421+(o.v|0));const W=10,D=10,S=.45,H1=2
  const kx=W/2-1.4;vnDoor(kx,S+H1,zf,0,.95,1.95,'hPaint',trim,dark,false);hnRAKryltso(kx,0,zf,0,1.5,S+H1,dark,'hKeelSc',roof,trim,2.4);
  // chimney, hitching rail, horse, tables, samovar table
  hnStoneChimney(-2,yw+2,ZC-1,3,.7);
- const hz=zf+3.4;for(const x of[-5.8,-3])vPst('vPost',x,0,hz,.08,1.1,log);vB('vWood',-4.4,1,hz,3,.1,.1,0,log);hnRAHorse(-4.6,hz+.1,Math.PI/2*.1+Math.PI,hC(vPick(HRA_HORSE)));
- hnRATable(-.8,zf+2.6,0,2.4,log);vPst('vPipeC',-.8,.77,zf+2.6,.14,.36,hC(0xc8883a));vBall('hGold',-.8,1.16,zf+2.6,.08,hC(HPAL.gold[0]));
- vnWaterButt(-W/2-.6,0,zf-1,.4,1);hnWoodpile(-W/2-.9,0,ZC-2.5,Math.PI/2,3.2,1.5);
+ const hz=zf+3.4;FURNISH('hl_rep_hitching_rail',-4.4,0,hz,0);hnRAHorse(-4.6,hz+.1,Math.PI/2*.1+Math.PI,hC(vPick(HRA_HORSE)));
+ hlRngSkip(6);FURNISH('hl_rep_samovar_table',-.8,0,zf+2.6,0);   // the table with its samovar (its mugs drew 6 numbers)
+ hnWaterButt(-W/2-.6,0,zf-1,.4,1);hnWoodpile(-W/2-.9,0,ZC-2.5,Math.PI/2,3.2,1.5);
  vnFolk(0,zf+3.2,4,2.6);}
 // D — the coaching inn: three storeys around a yard. A front range over an arched carriage passage (ashlar and render
 // below, jettied half-timber above, a bell cupola on the ridge), two wings with galleries on the yard side, a
@@ -13588,8 +13578,8 @@ function buildHlRepInn(G,o){reseed(20431+(o.v|0));const W=26,H1=3.4,H2=3,S=.4,yT
  // the yard: paving, a coach, horses at a trough, a well, lamps
  vnPaving(0,.02,-1,13,9.5,0,hC(vPick(HPAL.rubble)),30);hnRAWagon(-1.8,-.8,Math.PI*.1,log,'barrels');
  hnRATrough(2.6,-5,0,2.4);for(const x of[1.8,3.5])hnRAHorse(x,-3.8,Math.PI,hC(vPick(HRA_HORSE)));hnRAHorse(-1.6,2.4,Math.PI*.95,hC(vPick(HRA_HORSE)));
- if(vLit()){vnLamp(-3.2,S+2.8,fz+fd/2,0);vnLamp(3.2,S+2.8,fz+fd/2,0);vnLampPost(3.5,0,1.5,3);vnLampPost(-3.5,0,-4.5,3);}
- for(const s of[-1,1])vB('vWood',s*4.6,0,fz+fd/2+.6,1.8,.45,.4,0,log);
+ if(vLit()){hnWallLamp(-3.2,S+2.8,fz+fd/2,0);hnWallLamp(3.2,S+2.8,fz+fd/2,0);hnLampPost(3.5,0,1.5,3);hnLampPost(-3.5,0,-4.5,3);}
+ for(const s of[-1,1])FURNISH('hl_rep_door_bench',s*4.6,0,fz+fd/2+.6,0,{v:1});
  vnFolk(0,fz+fd/2+2.5,4,4);vnFolk(0,-1,3,4);}
 
 // ---------------------------------------------------------------- SHOPS AND WORKSHOPS
@@ -13621,7 +13611,7 @@ function buildHlRepShops(G,o){reseed(20441+(o.v|0));const U=4.8,N=3,W=U*N,D=9,H1
   vnWin(x,yr+.5,dz/2+.02,0,.6,.8,'shut','vWood',wood);vB('vWood',x,yr+P*(U/2)-1.1,dz/2+.5,.16,.16,1.1,0,wood);   // loft door and hoist beam
   vnWin(x,1.1,-D/2,Math.PI,.8,1,'shut','vWood',wood);}
  for(const s of[-1,1])vB('vStone',s*(W/2+.05),0,D/2-.05,.2,H1,.3,0,ash);
- vnBarrel(-W/2-.7,0,D/2-1,.36,.9);vnSacks(W/2+1,0,D/2-1.3,3);vnFolk(0,D/2+2.8,5,4);}
+ hnBarrel(-W/2-.7,0,D/2-1,.36,.9);hnSacks(W/2+1,0,D/2-1.3,3);vnFolk(0,D/2+2.8,5,4);}
 // market hall: an open arcade of stone round arches on all four sides, the council's hall above in half-timber, a
 // steep scale roof with painted dougong along the front and a tent-roofed bell turret; stalls under the arches.
 function buildHlRepMarketHall(G,o){reseed(20451+(o.v|0));const W=18,D=11,H1=4.2,H2=3.4;
@@ -13647,11 +13637,11 @@ function buildHlRepMarketHall(G,o){reseed(20451+(o.v|0));const W=18,D=11,H1=4.2,
  vnStairs(-W/2-1,0,1.2,0,1.3,H1+.2,22,'vStone',ash);vB('vStone',-W/2-1,0,-4.4,1.6,H1+.2,1.6,0,ash);vnDoor(-W/2,H1+.2,-4.4,-Math.PI/2,1.1,2.1,'hPaint',trim,beamC,false);
  for(let k=0;k<3;k++)vB('vIron',-W/2-1.75,H1+.2,-4.8+k*.4,.05,1,.05,0,hC(0x2e2a26));
  // stalls under the arches: counters and goods, a weighing beam
- for(let i=0;i<nb;i++){const x=-W/2+bw*(i+.5);vB('vWood',x,0,D/2-1.4,bw-1.2,.9,.7,0,log);for(let k=0;k<3;k++){const gx=x-(bw-1.6)/2+(bw-1.6)*k/2;const r=rng();
-  if(r<.35)vnCrate(gx,.9,D/2-1.4,.38,rr(-.3,.3));else if(r<.65)kput('vSack',[gx,1.1,D/2-1.4],null,[.22,.2,.22],hC(vPick([0xb8a080,0xa89070])));else vPst('vClayPot',gx,.9,D/2-1.4,.14,.36,hC(vPick([0x9a5a38,0xb87a4a])));}}
- vPst('vPost',3,0,-1.5,.08,2.4,log);vB('vWood',3,2.3,-1.5,1.6,.08,.08,0,log);for(const s of[-1,1])vB('vIron',3+s*.7,1.6,-1.5,.4,.04,.4,0,hC(0x9a7a4a));
- vnSacks(-5,0,-2,5);vnSacks(5.5,0,-2.5,4);vnCrate(-2,0,-3,.8,.2);
- if(vLit())for(const sx of[-1,1])for(const sz of[-1,1])vnLampPost(sx*(W/2+1.2),0,sz*(D/2+1.2),3.4);
+ for(let i=0;i<nb;i++){FURNISH('hl_rep_market_counter',-W/2+bw*(i+.5),0,D/2-1.4,0,{v:0});   // its three goods drew 2 or 3 numbers each
+  for(let k=0;k<3;k++){const r=rng();hlRngSkip(r<.35?2:1);}}
+ FURNISH('hl_rep_weighing_beam',3,0,-1.5,0);
+ hnSacks(-5,0,-2,5);hnSacks(5.5,0,-2.5,4);hnCrate(-2,0,-3,.8,.2);
+ if(vLit())for(const sx of[-1,1])for(const sz of[-1,1])hnLampPost(sx*(W/2+1.2),0,sz*(D/2+1.2),3.4);
  vnFolk(0,0,8,6);vnFolk(0,D/2+2.4,4,5);}
 // A — carpenter and wheelwright: a log shop, its back half closed, its front open on posts under one shingle
 // roof; benches, a wheel on the stand, finished wheels, a wagon awaiting a wheel; timber stacks and a sawpit.
@@ -13665,18 +13655,16 @@ function buildHlRepWorkshopA(G,o){reseed(20461+(o.v|0));const W=12,D=8,H=3.3,Y0=
  hnRARoofPatch('vCorr',0,Y0+H,0,0,D,.95,1,rr(-3,3),1.8,2.4,1.8);
  vnDoor(-2,Y0,0,0,1,2.1,'vWood',log,aged,false);vnWin(2.5,Y0+1.1,0,0,1,.9,'shut','vWood',log);
  // benches, tools on the wall, a wheel on its stand, finished wheels leaning on the posts
- vB('vWood',-3.6,Y0,1.1,3,.85,.8,0,aged);for(let k=0;k<7;k++)vB('vIron',-4.6+k*.3,Y0+1.3,.1,.05,.6,.04,0,hC(0x2e2a26));
- vB('vWood',1.2,Y0,1.6,.4,.8,.4,0,aged);hnRAWheel(1.2,Y0+1.3,1.6,Math.PI/2,.62,log);
+ FURNISH('hl_rep_workbench',-3.6,Y0,1.1,0,{v:0});FURNISH('hl_rep_tool_rail',-3.7,Y0,.1,0);
+ FURNISH('hl_rep_wheel_stand',1.2,Y0,1.6,0);
  for(let k=0;k<3;k++){const x=W/2-1-k*.3;kput('vHoop',[x,.72,D/2-.7],qEuler(0,Math.PI/2,.12),[.6,.6,2],hC(0x3a3028));}
- for(let k=0;k<3;k++)hnRAWheel(-W/2+.9+k*.5,.6,2.6,.1+k*.1,.55,log);
+ FURNISH('hl_rep_cartwheels',-W/2+1.4,Y0,2.6,.2,{v:0});
  // outside: a wagon waiting for its wheel, timber stacks under a lean-to, a sawpit with a log on trestles
  hnRAWagon(3.2,D/2+2.8,Math.PI/2,log,'wheel');
- {const tx=-W/2-2;for(let k=0;k<4;k++)for(let i=0;i<5;i++)kput('hLogX',[tx,.18+k*.33,-2.2+i*.36],qEuler(0,Math.PI/2,0),[D-.4,.16,.16],aged.clone().multiplyScalar(rr(.9,1.15)));
+ {const tx=-W/2-2;hlRngSkip(20);FURNISH('hl_rep_timber_stack',tx,0,-1.48,Math.PI/2,{v:0});   // the logs (their shades drew 20 numbers)
   for(const z of[-3.4,3.4])vPst('vPost',tx+1.1,0,z,.08,2.4,aged);vnShedRoof(tx+.2,2.2,0,D-1,2.4,.4,-Math.PI/2,'vShingleB',sh,.2);
-  for(let k=0;k<8;k++)kput('vWood',[tx,.1+k*.12,2.4],qEuler(0,Math.PI/2+rr(-.04,.04),0),[3.6,.1,.4],log.clone().multiplyScalar(rr(.9,1.15)));}
- {const px=-2.2,pz=D/2+3;vB('vDarkB',px,-.02,pz,1.1,.06,3.4,0);for(const s of[-1,1])vB('vWood',px+s*.7,0,pz,.2,.22,3.8,0,aged);
-  for(const s of[-1,1])for(const t of[-1,1])kput('vWood',[px+s*.35,.5,pz+t*1.1],vQ(0,0,s*.3),[.08,1.1,.08],aged);kput('hLogX',[px,1.1,pz],qEuler(0,Math.PI/2,0),[4.4,.3,.3],aged);
-  kput('vClayB',[px+1.6,.02,pz],null,[1.6,.05,1.4],hC(0xd8c08a));}
+  hlRngSkip(16);FURNISH('hl_rep_timber_stack',tx-1.2,0,2.4,Math.PI/2,{v:1});}   // the sawn planks beside them (16 numbers)
+ hnFurn('hl_rep_sawpit',-2.2,0,D/2+3,0,{},.8,0);   // the sawpit, a log on its trestles, the sawdust
  hnRAHangSign(W/2-.15,Y0+2.6,D/2-.15,0,trim,.8);vnFolk(-1,D/2+1.6,3,2);}
 // B — brewery and cooperage: a stone brewhouse with a log loft, a malt kiln tower whose steep roof ends in a
 // vented cowl, a copper under an open shed, and the cooper's yard of barrels, staves and hoops.
@@ -13697,11 +13685,10 @@ function buildHlRepWorkshopB(G,o){reseed(20471+(o.v|0));const W=12,D=9,H1=3.6,H2
   vnPyrRoof('vPyrSh',kx,cy+1.2,kz,1.1,1.1,.9,0,sh,.25);vPst('vIron',kx,cy+2,kz,.03,.9,hC(0x2e2a26));kput('vIron',[kx+.25,cy+2.7,kz],null,[.6,.2,.02],hC(0x2e2a26));}
  // the copper under an open shed at −x
  {const cx=-W/2-3.2;for(const sx of[-1,1])for(const sz of[-1,1])vPst('vPost',cx+sx*1.5,0,sz*1.6,.1,3,log);vnShedRoof(cx,3,0,3.4,3.6,.5,-Math.PI/2,'vShingleB',sh,.3);
-  vB('vStone',cx,0,0,1.8,.8,1.8,0,rub);vB('vDarkB',cx,.2,.91,.6,.4,.02,0);vBall('vEmber',cx,.35,.9,.12);vPst('vPipeC',cx,.8,0,.8,1.1,cu);kput('vDomeC',[cx,1.9,0],null,[.8,.5,.8],cu);vPst('vPipeC',cx,2.3,0,.12,1.9,cu);}
+  FURNISH('hl_rep_brew_copper',cx,0,0,0);vPst('vPipeC',cx,3.5,0,.12,.7,cu);}   // the copper; its flue on up through the shed roof
  // cooper's yard: barrels lying and standing, staves, hoops, a barrel being raised round a fire basket
- hnRABarrelStack(-4,D/2+3,0,3,.4,log);for(let k=0;k<4;k++)vnBarrel(1.4+k*.9,0,D/2+1.6+(k%2)*.8,.38,.95,log);
- {const bx=3.6,bz=D/2+4.4;for(let k=0;k<16;k++){const a=k/16*TAU;kput('vWood',[bx+Math.cos(a)*.44,.5,bz+Math.sin(a)*.44],qEuler(0,-a,Math.cos(a)*0+.12),[.05,1,.14],log);}
-  kput('vHoop',[bx,.9,bz],qEuler(Math.PI/2,0,0),[.5,.5,1.4],hC(0x2e2a26));kput('vIron',[bx,.12,bz],null,[.5,.25,.5],hC(0x2e2a26));vBall('vEmber',bx,.3,bz,.16);}
+ hnRABarrelStack(-4,D/2+3,0,3,.4,log);for(let k=0;k<4;k++)hnBarrel(1.4+k*.9,0,D/2+1.6+(k%2)*.8,.38,.95);
+ FURNISH('hl_rep_cooper_fire',3.6,0,D/2+4.4,0);
  for(let k=0;k<6;k++)kput('vWood',[-.6+rr(-.2,.2),.08+k*.06,D/2+3.6],qEuler(0,rr(-.1,.1),0),[1.3,.05,.6],log);
  for(let k=0;k<4;k++)kput('vHoop',[W/2-1.4+k*.08,.5,D/2+.3],qEuler(0,0,.1),[.46,.46,1.4],hC(0x2e2a26));
  hnRAWagon(-10.4,D/2+3.5,Math.PI*.55,log,'barrels');vnFolk(-1,D/2+3,4,3);}
@@ -13720,8 +13707,7 @@ function buildHlRepSmithySmall(G,o){reseed(20481+(o.v|0));const W=6.4,D=5.2,H=2.
  // back wall: low rubble with salvage plates above, patched
  vB('hRubB',0,0,-D/2+.15,W-.4,1.1,.4,0);kput('vRustB',[0,1.1+(H-1.3)/2,-D/2+.15],null,[W-.4,H-1.3,.1],null);vnPatch(0,1.1,-D/2+.2,0,W-.6,H-1.2,3);
  hnRAHearth(-1.5,-D/2+1,0,H+2.6,1.6);hnRAAnvil(.6,.1,.3);hnRATrough(1.9,-1.4,0,1.4);
- vB('vWood',2.2,0,1.2,1.2,.85,.6,0,aged);for(let k=0;k<4;k++)vB('vIron',1.8+k*.26,.85,1.2,.04,.5,.04,0,hC(0x2e2a26));
- {const gx=-W/2-.8,gz=1.4;for(const s of[-1,1])vB('vWood',gx,0,gz+s*.3,.12,.9,.12,0,aged);kput('vStone',[gx,.85,gz],qEuler(0,0,Math.PI/2),[.55,.12,.55],hC(0xb0a898));}
+ FURNISH('hl_rep_workbench',2.2,0,1.2,0,{v:1});FURNISH('hl_rep_grindstone',-W/2-.8,0,1.4,0);
  hnRAScrap(W/2+2.4,-.2,3.6,4.6,46);for(let k=0;k<4;k++)kput('vPanelB',[-W/2-.4,.7,-1.6+k*.18],qEuler(0,Math.PI/2,-.2),[1.8,1.3,.06],null);
  vnFolk(.9,1.2,1,.3);vnFolk(0,D/2+2,2,1.5);}
 // large scrap smithy: a stone-and-log forge hall open to the yard, two hearths with tall iron stacks, a bellows
@@ -13738,22 +13724,24 @@ function buildHlRepSmithyLarge(G,o){reseed(20491+(o.v|0));const W=16,D=10,H=4.4,
  const P=.85,top=hnGable(HX,H,0,W,D,P,0,'vShingleB',sh,.8,'vGableW',log);
  for(const [s,u,t] of[[1,-5,1.6],[1,2,2.4],[1,5.5,1.4],[-1,-3,1.8],[-1,4,2]])hnRARoofPatch(vPick(['vCorr','vCorr','vRustB']),HX,H,0,0,D,P,s,u,t,rr(2.2,3.4),rr(1.6,2.4));
  vB('vWood',HX,top-.3,0,6,.9,1.4,0,log);for(const s of[-1,1])vB('vDarkB',HX,top+.05,s*.71,5.6,.4,.02,0);vnGableRoof(HX,top+.6,0,6.4,2.2,.7,0,'vCorr',null,.25);
- // two hearths on the back wall, tall stacks; anvils and troughs; racks of bar stock
- for(const u of[-3.6,2.8]){hnRAHearth(HX+u,-D/2+1.2,0,H+5.5,2);hnRAAnvil(HX+u+.4,-.6,.2);hnRATrough(HX+u+2,-1.8,Math.PI/2,1.5);}
- for(let k=0;k<3;k++)vB('vWood',HX+W/2-1.2,.6+k*.7,-1,.9,.08,4,0,log);for(let k=0;k<14;k++)vB('vIron',HX+W/2-1.2+rr(-.3,.3),.68+(k%3)*.7,-1,.05,.05,3.8,0,I);
+ // the forge hall is a room (kits/interiors/sets/highlands.js): the interiors place its forges, anvils, troughs and
+ // racks. Its two tall iron stacks stay, rising from the roof as they did (the hearths, troughs and racks drew 16+1
+ // numbers each hearth and 14 for the bar stock)
+ for(const u of[-3.6,2.8]){hlRngSkip(16);vnChimney(HX+u,5.3,-D/2+1.2,H+5.5-2.5,.3,true);rng();}
+ hlRngSkip(14);
  // bellows house at −x: a log shed, the great bellows seen through its open side, the rocker beam through the wall
  {const bx=HX-W/2-2.2;hnLogBox(bx,0,-1.5,3.6,3,4.4,0,log,.2);vnShedRoof(bx,3,-1.5,4,4.8,.7,-Math.PI/2,'vCorr',null,.3);
   vB('vDarkB',bx,.4,-1.5+2.21,2.4,2.2,.04,0);kput('vTarpB',[bx,1.2,.9],qEuler(-.25,0,0),[1.8,.35,1.3],hC(0x6a4a30));vB('vWood',bx,.8,.9,1.9,.12,1.4,0,log);
   beam('vWood',[bx+1.8,2.6,-1.2],[bx-.6,2.2,.6],.14,.14,log);vPst('vRope',bx-.6,1.2,.6,.03,1,hC(0xa89878));kput('vStone',[bx-.6,1.05,.6],null,[.4,.3,.4],rub);}
  // jib crane over the yard, hoisting a salvaged panel
  hnRACrane(HX+4,D/2+2.2,Math.PI/2,5.2,3.4,log,true);kput('vPanelB',[HX+4,1.9,D/2+2.2+3.4],null,[1.4,.06,1],null);
- for(let k=0;k<2;k++)hnRAWheel(HX-2+k*.3,.6,D/2+1.6,.2,.58,log);
+ FURNISH('hl_rep_cartwheels',HX-1.85,0,D/2+1.6,.2,{v:0});   // wheels in the yard
  // the scrap yard: posts and corrugated sheet, heaps inside, a stack of white Ancient panels
  {const yx=HX+W/2+4.6,yw=8,yd=10;const pts=[[yx-yw/2,-yd/2],[yx+yw/2,-yd/2],[yx+yw/2,yd/2],[yx+1.2,yd/2]];
   for(let i=0;i+1<pts.length;i++){const [x0,z0]=pts[i],[x1,z1]=pts[i+1];const L=Math.hypot(x1-x0,z1-z0),ry=Math.atan2(z1-z0,x1-x0),n=Math.max(1,Math.round(L/2));
    for(let k=0;k<=n;k++)vPst('vPipeR',lerp(x0,x1,k/n),0,lerp(z0,z1,k/n),.07,2.1,null);
    for(let k=0;k<n;k++){const t=(k+.5)/n;kput(vPick(['vSheet','vSheet','vPlate','vPlateW']),[lerp(x0,x1,t),1.02,lerp(z0,z1,t)],qEuler(0,-ry,rr(-.05,.05)),[L/n+.1,1.9,1],null);}}
-  hnRAScrap(yx-.6,-1.8,5,4.2,60);hnRAScrap(yx+1.2,2.6,3.6,3.2,34);for(let k=0;k<5;k++)kput('vPanelB',[yx+yw/2-.7,.08+k*.1,-3.6],qEuler(0,rr(-.1,.1),0),[1.2,.08,2],null);}
+  hnRAScrap(yx-.6,-1.8,5,4.2,60);hnRAScrap(yx+1.2,2.6,3.6,3.2,34);hlRngSkip(5);FURNISH('hl_rep_plate_stack',yx+yw/2-1.3,0,-3.6,Math.PI,{v:1});}   // the stack of white Ancient panels
  vnFolk(HX,1,3,4);vnFolk(HX+5,D/2+3,2,1.5);}
 
 // ---------------------------------------------------------------- STABLES AND WAREHOUSES
@@ -13776,8 +13764,9 @@ function buildHlRepStables(G,o){reseed(20501+(o.v|0));const W=30,D=24,WH=3.2,T=.
  // stall ranges on the two sides: lean-to roofs from the wall top toward the court, partitions, mangers, horses
  for(const s of[-1,1]){const x0=s*(W/2-T/2),xin=s*(W/2-4.2),z0=-D/2+6,z1=D/2-1;const L=z1-z0,zc=(z0+z1)/2;
   vnShedRoof((x0+xin)/2,2.4,zc,L,Math.abs(x0-xin)+.2,.8,s*Math.PI/2,'vShingleB',sh,.35);
-  const n=Math.round(L/2.6);for(let i=0;i<=n;i++){const z=z0+L*i/n;vPst('vPost',xin,0,z,.1,2.45,log);if(i<n)vB('vWood',(x0+xin)/2,0,z,Math.abs(x0-xin)-.2,1.5,.08,0,aged);}
-  vB('vWood',xin,2.3,zc,.2,.2,L,0,log);for(let i=0;i<n;i++){const z=z0+L*(i+.5)/n;vB('vWood',x0-s*.6,.7,z,.5,.4,1.6,0,aged);if(rng()<.55)hnRAHorse(xin+s*1.6,z,s>0?-Math.PI/2:Math.PI/2,hC(vPick(HRA_HORSE)));}}
+  const n=Math.round(L/2.6);for(let i=0;i<=n;i++){const z=z0+L*i/n;vPst('vPost',xin,0,z,.1,2.45,log);}
+  vB('vWood',xin,2.3,zc,.2,.2,L,0,log);for(let i=0;i<n;i++){const z=z0+L*(i+.5)/n;FURNISH('hl_rep_horse_stall',(x0+xin)/2,0,z,-s*Math.PI/2);   // partitions and manger, open to the court
+   if(rng()<.55)hnRAHorse(xin+s*1.6,z,s>0?-Math.PI/2:Math.PI/2,hC(vPick(HRA_HORSE)));}}
  // the stable and hay-loft range across the back
  {const bz=-D/2+3,bd=6-T,bw=W-T*2;vB('hRubB',0,0,bz,bw,2.8,bd,0,rub);hnLogBox(0,2.8,bz,bw,2.6,bd,0,log,0);
   hnGable(0,5.4,bz,bw+.2,bd,1.1,0,'vShingleB',sh,.5,'hGableLog',log);
@@ -13788,8 +13777,8 @@ function buildHlRepStables(G,o){reseed(20501+(o.v|0));const W=30,D=24,WH=3.2,T=.
  vnPaving(0,.02,1,W-10,D-8,0,hC(vPick(HPAL.rubble)),40);
  hnRAWagon(-5.2,1.2,Math.PI*.08,log,'hay');hnRAWagon(-1.4,-.6,-Math.PI*.06,log,'sacks');hnRAWagon(4.2,.8,Math.PI*1.1,log,'barrels');
  hnRATrough(3,6.6,0,3,ash);for(const x of[2,4])hnRAHorse(x,7.6,Math.PI,hC(vPick(HRA_HORSE)));
- kput('vThatchB',[8.4,1.4,-4.2],qEuler(0,.3,0),[3,2.8,3.4],hC(vPick(VPAL.thatch)));vnGableRoof(8.4,2.6,-4.2,3.2,3.6,1.2,.3,'vThatchB',hC(vPick(VPAL.thatch)),.1);
- vnWaterButt(-W/2+5.2,0,D/2-2,.45,1.1);vnFolk(0,3,5,6);vnFolk(0,D/2+3,2,2);}
+ hlRngSkip(2);FURNISH('hl_rep_haystack',8.4,0,-4.2,.3,{v:1});   // the hay rick (its hay drew 2 colours)
+ hnWaterButt(-W/2+5.2,0,D/2-2,.45,1.1);vnFolk(0,3,5,6);vnFolk(0,D/2+3,2,2);}
 // A — log warehouse on a stone base: two log storeys and a loft, gable to the street, a column of loading doors
 // under a hoist gable that projects from the apex, a loading platform with steps and a cart of sacks.
 function buildHlRepWarehouseA(G,o){reseed(20511+(o.v|0));const W=10,D=16,S=1.4,H=3,P=1.3;
@@ -13805,7 +13794,7 @@ function buildHlRepWarehouseA(G,o){reseed(20511+(o.v|0));const W=10,D=16,S=1.4,H
  for(const s of[-1,1])for(const z of[-5.5,-2,2,5.5])for(const f of[0,1])vnWin(s*W/2,S+f*H+1.1,z,s*Math.PI/2,.7,.7,'shut','vWood',tar);
  // loading platform and steps, a cart, sacks, a lamp bracket
  vB('vStone',0,0,zf+1.4,W,S,2.8,0,rub);vB('vStone',0,S-.12,zf+1.4,W+.2,.14,3,0,ash);vnStairs(W/2-1.2,0,zf+3.35,0,1.4,S,6,'vStone',ash);
- vnSacks(-2.6,S,zf+1.4,5);vnCrate(2,S,zf+1.2,.9,.2,log);hnRAWagon(-1,zf+4.5,0,log,'sacks');hnRAHorse(-1,zf+7.5,0,hC(vPick(HRA_HORSE)));
+ hnSacks(-2.6,S,zf+1.4,5);hnCrate(2,S,zf+1.2,.9,.2,log);hnRAWagon(-1,zf+4.5,0,log,'sacks');hnRAHorse(-1,zf+7.5,0,hC(vPick(HRA_HORSE)));
  hnRASignboard(0,S+H-.95,zf+.02,0,3.4,.5,hC(vPick([HPAL.ochre,HPAL.white])),tar);
  vnFolk(2,zf+4,3,2);}
 // B — stone-and-iron warehouse: rubble walls with ashlar quoins and pilasters, riveted plate doors in iron frames, a
@@ -13833,7 +13822,7 @@ function buildHlRepWarehouseB(G,o){reseed(20521+(o.v|0));const W=20,D=12,H=6,S=1
  for(const x of[-8,-4,0,4,8]){beam('vIron',[x,H-.9,D/2+.12],[x,H-1.6,D/2+2.9],.1,.1,I);beam('vIron',[x,H-2.4,D/2+.12],[x,H-1.62,D/2+1.6],.07,.07,I);}
  vnShedRoof(0,H-1.9,D/2+1.6,W-1,3,.55,0,'vCorr',hC(0x98948a),.2);
  hnRACrane(W/2-1.3,D/2+2.4,.4,5,2.6,log,true);
- for(let k=0;k<5;k++)vnCrate(-6+k*2.2+rr(-.3,.3),S,D/2+1.2,rr(.8,1.1),rr(-.2,.2),log);vnSacks(3,S,D/2+2,4);vnBarrel(6.5,S,D/2+1.2,.4,1,log);vnBarrel(7.4,S,D/2+1.4,.4,1,log);
+ for(let k=0;k<5;k++)hnCrate(-6+k*2.2+rr(-.3,.3),S,D/2+1.2,rr(.8,1.1),rr(-.2,.2),log);hnSacks(3,S,D/2+2,4);hnBarrel(6.5,S,D/2+1.2,.4,1);hnBarrel(7.4,S,D/2+1.4,.4,1);
  hnRAWagon(-3,D/2+4.9,0,log,'barrels');hnRAHorse(-3,D/2+7.9,0,hC(vPick(HRA_HORSE)));
  vnFolk(0,D/2+1.6,3,5);vnFolk(4,D/2+5,2,2);}
 
@@ -13910,7 +13899,7 @@ function hnRBIronDoor(x,y,z,ry,w,h,frame,c,leafC){frame=frame||'vStone';const f=
   const r=loc(x,z,s*.12,.16,ry);vBall('vBall',r[0],y+h*.5,r[1],.08,I);}
  for(const s of[-1,1]){const q=loc(x,z,s*(w/2+.12),.12,ry);vB(frame,q[0],y,q[1],.24,h+.2,.24,ry,c);}
  const p=loc(x,z,0,.12,ry);vB(frame,p[0],y+h+.08,p[1],w+.6,.26,.3,ry,c);
- if(vLit())vnLamp(x,y+h+.6,z,ry);
+ if(vLit())hnWallLamp(x,y+h+.6,z,ry);
  if(window.DOORS&&VERN.cur){const C=VERN.cur,sc=C.o.scale||1;const wp=loc(C.x,C.z,x*sc,z*sc,C.ry);DOORS.push({x:wp[0],z:wp[1],ry:ry+C.ry,y:(C.o.y||0)+y*sc,key:C.D.key});}}
 // a bell hung from (x,y,z): headstock beam, bronze bell below
 function hnRBBell(x,y,z,r,ry,c){kput('hRBBell',[x,y-.1-r*1.25,z],null,[r,r*1.25,r],c||hC(0xa0783a));vB('vWood',x,y-.12,z,r*1.8,.2,.22,ry||0,hC(0x3a2a20));
@@ -13924,20 +13913,16 @@ function hnRBFlag(x,y,z,ry,h,c,crest){vPst('vPipe',x,y,z,.07,h,hC(hRBIRON));vBal
  if(crest!==false)for(const s of[-1,1]){const q=loc(x,z,1.05,s*.03,ry);kput('hFormA',[q[0],y+h-.8,q[1]],qEuler(0,ry+(s<0?Math.PI:0),0),[1.4,.7,1],null);}}
 // hazard pennant: a thin pole with a triangular pennant pointing along ry
 function hnRBPennant(x,y,z,ry,h,c){vPst('vPost',x,y,z,.05,h,hC(0x4a3a2a));kput('hGablePaint',[x,y+h-.4,z],qEuler(0,ry,0).multiply(qEuler(Math.PI/2,0,0)),[.03,1.3,.6],c||hC(HPAL.red));}
-// a round painted target facing ry
-function hnRBTarget(x,y,z,ry,r){const cs=[0xefe7d6,0xb3322a,0xefe7d6,0x201a18];cs.forEach((c,i)=>{const p=loc(x,z,0,.02+i*.02,ry);kput('hRBDisc',[p[0],y,p[1]],qEuler(0,ry,0),[r*(1-i*.24),r*(1-i*.24),.04],hC(c));});}
-// weapon rack: two trestles, a rail, spears leaning on it and a few round shields
-function hnRBRack(x,z,ry,L){const c=hC(0x5a4030);for(const s of[-1,1]){const p=loc(x,z,s*L/2,0,ry);vPst('vPost',p[0],0,p[1],.06,1.6,c);}
- const a=loc(x,z,-L/2,0,ry),b=loc(x,z,L/2,0,ry);vBeam([a[0],1.5,a[1]],[b[0],1.5,b[1]],.08,c);vBeam([a[0],.3,a[1]],[b[0],.3,b[1]],.08,c);
- for(let i=0;i<Math.round(L/.3);i++){const p=loc(x,z,-L/2+.2+i*.3,.1,ry);kput('vWood',[p[0],1.2,p[1]],vQ(ry,-.12,0),[.04,2.5,.04],c);kput('vConeI',[hnOn(x,0,z,ry,-L/2+.2+i*.3,-.06)[0],2.45,hnOn(x,0,z,ry,-L/2+.2+i*.3,-.06)[2]],vQ(ry,-.12,0),[.04,.25,.04]);}
- for(let i=0;i<Math.floor(L/1.2);i++){const p=loc(x,z,-L/2+.7+i*1.2,.3,ry);kput('hRBDisc',[p[0],.75,p[1]],vQ(ry,-.2,0),[.36,.36,.05],hC(vPick([HPAL.red,HPAL.teal,HPAL.black])));}}
+// weapon rack: two trestles, a rail, spears leaning on it and a few round shields. Furniture, placed from the catalog
+// (2.4 or 3.4 m); its shields drew a colour each.
+function hnRBRack(x,z,ry,L){hlRngSkip(Math.floor(L/1.2));return hnFurn('hl_rep_weapon_rack',x,0,z,ry,{v:L>2.9?1:0},0,.155);}
 // ranks of soldiers (the kit figure, in the Republic's dark red), n x m, facing +z of ry
 function hnRBRanks(x,z,ry,n,m,dx,dz,c){c=c||hC(0x7a2a22);for(let i=0;i<n;i++)for(let j=0;j<m;j++){const p=loc(x,z,(i-(n-1)/2)*dx,(j-(m-1)/2)*dz,ry);
  kput('figB',[p[0],0,p[1]],qEuler(0,ry,0),1,c);kput('figH',[p[0],0,p[1]],null,1,hC(0xc9a17e));const g=loc(p[0],p[1],.24,.05,ry);kput('vWood',[g[0],1.2,g[1]],null,[.04,1.3,.04],hC(0x3a2a20));}}
 // a tree: trunk and a few leaf masses
 function hnRBTree(x,z,h){vPst('vPostB',x,0,z,.16,h*.55,hC(0x5a4632));for(let k=0;k<5;k++)kput('vLeaf',[x+rr(-.8,.8),h*rr(.55,.85),z+rr(-.8,.8)],null,[rr(1,1.5),rr(.9,1.3),rr(1,1.5)],hC(vPick([0x3f7a34,0x4f8a3a,0x2f6a2a])));}
-// lamp posts at a list of local points (electric: only under vLit)
-function hnRBLamps(pts,h){if(!vLit())return;for(const [x,z] of pts)vnLampPost(x,0,z,h||3.4);}
+// lamp posts at a list of local points (electric: only under vLit): the Republic's lamp standard from the catalog
+function hnRBLamps(pts,h){if(!vLit())return;for(const [x,z] of pts)FURNISH('hl_rep_lamp_standard',x,0,z,0,{v:(h||3.4)>=3.8?1:0});}
 
 // ================================================================= TEMPLE
 // Round 7b (Travis: "redesign grand temple so it's more like this structure from the Izmailovo kremlin"): the
@@ -14086,7 +14071,7 @@ function buildHlRepTownHall(G,o){reseed(20711+(o.v|0));const HX=-4,W=22,D=13,S=.
  hnRBClockTower(TX,TZ,{B,TH,roof,oak,tar,rub,ash});
  // the square: paving, a fountain, flags of the Republic, lamps
  vnPaving(HX+2,0,14,20,6,0,ash,14);
- kput('hOctS',[HX+2,0,14.2],null,[2,.7,2],ash);kput('hOctS',[HX+2,.7,14.2],null,[.35,1.2,.35],ash);vBall('hGold',HX+2,2.1,14.2,.3,hC(HPAL.gold[0]));kput('vTankW',[HX+2,.66,14.2],null,[1.75,.06,1.75],hC(0x5a7a88));
+ FURNISH('hl_rep_fountain',HX+2,0,14.2,0);
  for(const s of[-1,1])hnRBFlag(HX+s*5.2,0,11.2,0,8,hC(vPick([HPAL.red,HPAL.teal])));
  hnRBLamps([[HX-3.4,11],[HX+3.4,11],[TX,TZ+5.2]],3.4);
  vnFolk(HX+2,15,4,4);}
@@ -14112,9 +14097,9 @@ function buildHlRepHospital(G,o){reseed(20721+(o.v|0));const S=.6,H1=3.6,H2=3.2,
  // the court: an arcaded wall either side of the chapel, paths, beds, trees, a well
  for(const s of[-1,1]){for(const u of[-1.62,1.62])hnRBArch(s*6.75+u,0,9.6,0,3.25,3.3,.5,'hRBArchP',cream);vB('vStone',s*6.75,3.3,9.6,6.6,.22,.8,0,ash);vnGableRoof(s*6.75,3.52,9.6,6.5,.8,.35,0,'hGableSc',roof,.12);}
  vnPaving(0,0,1.5,3,15,0,ash,8);vnPaving(0,0,1.5,18,2.4,0,ash,8);
- for(const sx of[-1,1])for(const sz of[-1,1]){vnPlanter(sx*5,0,1.5+sz*4.2,4,2.4,0,oak);hnRBTree(sx*7.5,1.5+sz*5.6,5);}
- kput('hOctS',[0,0,1.5],null,[1,.8,1],ash);for(const s of[-1,1])vPst('vPost',s*.8,.8,1.5,.07,1.6,oak);vnGableRoof(0,2.4,1.5,2,1.6,.7,Math.PI/2,'hGableSc',roof,.2);
- for(const s of[-1,1])vB('vWood',s*3.2,0,-6.8,2,.45,.45,0,oak);
+ for(const sx of[-1,1])for(const sz of[-1,1]){hnPlanter(sx*5,0,1.5+sz*4.2,4,2.4,0,oak);hnRBTree(sx*7.5,1.5+sz*5.6,5);}
+ FURNISH('hl_rep_civic_well',0,0,1.5,0,{v:0});
+ for(const s of[-1,1])FURNISH('hl_rep_door_bench',s*3.2,0,-6.8,0,{v:1});
  // the chapel pavilion: stucco cube, keel gables, a green onion; porch on carved posts
  hnSocle(0,0,10.2,7,S,7);hnStucco(0,S,10.2,7,5,7,0,white,ash);
  for(let k=0;k<4;k++){const a=k*Math.PI/2,p=loc(0,10.2,0,3.62,a);hnKokoshnik(p[0],S+5,p[1],a,5,2.8,'hKeelSc',grn);
@@ -14153,9 +14138,7 @@ function buildHlRepWatch(G,o){reseed(20731+(o.v|0));const BX=2.5,W=13,D=9,H1=3.8
  const tip=hnTent(TX,FY+2.6,TZ,3.7,6.4,'hTentSh',sh);vPst('vIron',TX,tip-.3,TZ,.04,1.2,hC(hRBIRON));vBall('hGold',TX,tip+.3,TZ,.15,hC(HPAL.gold[0]));
  kput('figB',[TX+1.6,FY,TZ+1.8],qEuler(0,.4,0),1,hC(0x7a2a22));kput('figH',[TX+1.6,FY,TZ+1.8],null,1,hC(0xc9a17e));
  // the yard: stocks, a notice board, a rack of halberds, a lamp
- const oak=hC(0x6a4a30);for(const s of[-1,1])vPst('vPost',BX+8+s*.9,0,6.5,.09,1.2,oak);vB('vWood',BX+8,.7,6.5,2.2,.35,.18,0,oak);
- for(const s of[-1,1])vPst('vPost',BX+5.3+s*.7,0,D/2+1.3,.07,2.1,oak);vB('vWood',BX+5.3,1.1,D/2+1.3,1.6,1,.08,0,oak);vnHipRoof('hHipSc',BX+5.3,2.15,D/2+1.3,1.4,.3,.25,0,slate,.2);
- kput('hPaint',[BX+5.1,1.6,D/2+1.36],null,[.5,.6,.02],hC(0xefe7d6));kput('hPaint',[BX+5.6,1.5,D/2+1.36],null,[.4,.5,.02],hC(0xe8d9a8));
+ FURNISH('hl_rep_stocks',BX+8,0,6.5,0);FURNISH('hl_rep_notice_board',BX+5.3,0,D/2+1.3,0);
  hnRBRack(TX+2.8,TZ+4.2,0,2.4);hnRBLamps([[BX-3,D/2+2.5],[BX+10,3]],3.2);vnFolk(BX,D/2+3,2,2);}
 
 // Theatre: a round timber playhouse — a galleried sixteen-sided drum with formline friezes and dougong under a
@@ -14215,11 +14198,8 @@ function buildHlRepSchool(G,o){reseed(20751+(o.v|0));const W=16,D=8,S=.7,H=3.4,Z
  hnStoneChimney(4.5,S+H+2,Z-1.2,3.6,.6);
  // the yard
  vnFence(0,0,2.5,25,19,0,log,2.4,1.2);vnPaving(0,0,8.5,2,6,0,hC(vPick(HPAL.ashlar)),5);
- vPst('vPost',-6,0,7,.12,.5,oak);kput('vWood',[-6,.62,7],qEuler(0,0,.18),[4,.08,.35],oak);                       // seesaw
- for(const s of[-1,1]){kput('vWood',[6+s*1.1,1.2,7],qEuler(0,0,s*.18),[.1,2.5,.1],oak);}vB('vWood',6,2.35,7,2.6,.12,.12,0,oak);
- for(const s of[-1,1])beam('vRope',[6+s*.25,2.35,7],[6+s*.25,.55,7],.02,.02,hC(0xb8a888));vB('vWood',6,.5,7,.7,.06,.3,0,oak);
- for(const s of[-1,1])kput('vWood',[3.2+s*.5,.8,9.6],vQ(0,s*.2,0),[.06,1.7,.06],oak);kput('hPaint',[3.2,1.2,9.62],qEuler(-.1,0,0),[1.2,.8,.04],hC(0x2a3430));
- for(const x of[-9,9])vB('vWood',x,0,4.5,2.2,.45,.4,0,oak);hnRBTree(-9.5,-8,5.5);hnWoodpile(9.6,0,Z-1,Math.PI/2,4,1.4);
+ FURNISH('hl_rep_swing',-6,0,7,0,{v:1});FURNISH('hl_rep_swing',6,0,7,0,{v:0});FURNISH('hl_rep_slate_board',3.2,0,9.6,0);   // seesaw, swing, slate board
+ for(const x of[-9,9])FURNISH('hl_rep_door_bench',x,0,4.5,0,{v:2});hnRBTree(-9.5,-8,5.5);hnWoodpile(9.6,0,Z-1,Math.PI/2,4,1.4);
  for(let i=0;i<7;i++){const x=rr(-8,8),z=rr(4,10);kput('figB',[x,0,z],qEuler(0,rng()*TAU,0),.66,hC(vPick([0xc9442a,0x2f8f8a,0x3b4a8a,0xe0a030,0xe8d9b8])));kput('figH',[x,0,z],null,.66,hC(0xc9a17e));}
  vnFolk(2.4,8.6,1,.3);hnRBLamps([[-1.8,12.5],[1.8,12.5]],3);}
 
@@ -14252,7 +14232,7 @@ function buildHlRepBarracks(G,o){reseed(20761+(o.v|0));const H1=3.4,H2=3,P=1.1;
  vB('hRubB',7,0,-4,8,3.6,5,0,rub);hnRBQuoins(7,0,-4,8,3.6,5,0,ash);vnHipRoof('hHipSc',7,3.6,-4,8,5,2.4,0,slate,.4);
  hnRBIronDoor(3,0,-4,-Math.PI/2,1.6,2.4,'vStone',ash);for(const z of[-5.6,-2.4]){vnWin(3,1.8,z,-Math.PI/2,.35,.8,'open','vStone',ash);}hnForm('hFormA',3,2.75,-4,-Math.PI/2,1.8,.6);
  // the yard: well, racks, a company at drill, lamps
- kput('hOctS',[-6,0,-4],null,[1,.8,1],ash);for(const s of[-1,1])vPst('vPost',-6+s*.8,.8,-4,.07,1.6,tar);vnGableRoof(-6,2.4,-4,2,1.6,.7,0,'hGableSc',slate,.2);
+ FURNISH('hl_rep_civic_well',-6,0,-4,0,{v:0});
  hnRBRack(-10.4,-7,Math.PI/2,3);hnRBRack(10.4,5,-Math.PI/2,3);hnRBRanks(-1,4,0,6,3,1.1,1.1);kput('figB',[-1,0,7.2],qEuler(0,Math.PI,0),1,hC(0x3a2a3a));kput('figH',[-1,0,7.2],null,1,hC(0xc9a17e));
  hnRBLamps([[-4.2,17],[4.2,17],[-9,-9],[9,9]],3.4);}
 
@@ -14281,7 +14261,7 @@ function buildHlRepMuster(G,o){reseed(20771+(o.v|0));const FX=25.5,FZ0=-15.6,FZ1
  [-20,-12,12,20].forEach((x,i)=>hnRBFlag(x,0,14.8,0,7.5,hC([HPAL.red,HPAL.teal,HPAL.ochre,HPAL.red][i])));
  for(const z of[-7,-1,5,11])hnRBRack(-23.6,z,Math.PI/2,3.4);
  kput('hRBBerm',[23.2,0,1],qEuler(0,Math.PI/2,0),[22,3,3.2],hC(vPick(HPAL.turf)));
- for(const z of[-7,-2.5,2,6.5,11]){vB('vThatchB',21.2,0,z,.6,1.5,1.5,0,hC(0xc8b070));hnRBTarget(20.88,1.05,z,-Math.PI/2,.55);}
+ for(const z of[-7,-2.5,2,6.5,11])hnFurn('hl_rep_training_butt',21.2,0,z,-Math.PI/2,{v:0},0,.05);   // straw butts with their targets
  for(const z of[-7,-2.5,2,6.5,11]){vB('vWood',8,.22,z,.3,.03,1.2,0,white);kput('figB',[7.4,0,z],qEuler(0,Math.PI/2,0),1,hC(0x7a2a22));kput('figH',[7.4,0,z],null,1,hC(0xc9a17e));
   kput('vWood',[7.7,1.35,z],qEuler(0,0,-Math.PI/2+.1),[.04,1.1,.04],hC(0x2e2a26));}
  // two field guns (the Republic's trade), a company in ranks with an officer
@@ -14326,8 +14306,7 @@ function buildHlRepArsenal(G,o){reseed(22001+(o.v|0));const W=46,D=34,S=.5,H1=4.
  // the magazine: a turf vault behind a stone portal
  kput('hBatterRub',[0,S,-D/2+5],null,[W-18,5.5,9],hC(0x6a7a4a));vB('vStone',0,S,-D/2+9.6,8,4.2,1.2,0,stone);vB('vDarkB',0,S,-D/2+10.22,3,3,.08,0);vB('vIron',0,S+3,-D/2+10.3,3.4,.2,.1,0,rust);
  // the drill court: rocket racks on trestles
- for(let r=0;r<3;r++){const z=-2+r*4;for(const s of[-1,1])vB('vWood',s*4,S,z,.3,1.1,1.4,0,hC(vPick(HPAL.aged)));for(let k=0;k<4;k++){const x=-5+k*3.3;
-  kput('hTankC',[x,S+1.35,z],qEuler(0,0,Math.PI/2),[.28,2.6,.28],hC(vPick([0x6a6a5a,0x8a3a2a])));kput('vConeI',[x+1.3,S+1.35,z],qEuler(0,0,-Math.PI/2),[.28,.6,.28],red);}}
+ for(let r=0;r<3;r++){hlRngSkip(6);hnFurn('hl_rep_rocket_rack',0,S,-2+r*4,0,{},.25,0);}   // (the trestles and rockets drew 6 colours)
  vnFolk(0,D/2+6,4,3);}
 // ---------------------------------------------------------------- 2. the Mint and Treasury
 // Rusticated stone below (the coin must feel safe), a piano nobile of lattice curtain wall and caihua on bracketed
@@ -14408,8 +14387,8 @@ function buildHlRepGuildMerc(G,o){reseed(21001+(o.v|0));const HX=-4,HZ=-3,W=18,D
  for(const s of[-1,1])kput('vWood',[s*1.2,1.9,9.9],qEuler(0,s*1.3,0),[1.9,3.8,.14],tar);
  vnPaving(HX,0,6.5,3,7,0,ash,6);[-12,-8,4,8].forEach((x,i)=>hnRBFlag(x,0,7.2,0,7,hC([HPAL.red,HPAL.teal,HPAL.black,HPAL.ochre][i])));
  // the sparring yard
- vB('hRBDirt',10,0,-.7,8,.05,11.5,0,hC(0xe0c8a0));for(const z of[-6,-3,0])vPst('vPostB',12.6,0,z,.2,1.9,hC(0x7a5a3e));
- hnRBRack(7,-4,Math.PI/2,3);vB('vWood',7.2,0,2.6,.45,.45,2.4,0,tar);
+ vB('hRBDirt',10,0,-.7,8,.05,11.5,0,hC(0xe0c8a0));for(const z of[-6,-3,0])FURNISH('hl_rep_training_butt',12.6,0,z,0,{v:1});   // the pells
+ hnRBRack(7,-4,Math.PI/2,3);FURNISH('hl_rep_door_bench',7.2,0,2.6,Math.PI/2,{v:2});
  for(const [x,z,r] of[[9.4,-1.4,.9],[10.6,-.6,-2.2]]){kput('figB',[x,0,z],qEuler(0,r,0),1,hC(0x7a2a22));kput('figH',[x,0,z],null,1,hC(0xc9a17e));
   const p=[x+Math.sin(r)*.5,1.2,z+Math.cos(r)*.5];kput('vWood',p,qEuler(Math.PI/2.4,r,0),[.05,1.2,.05],hC(0x9a9a9a));}
  hnRBLamps([[-4.2,12.2],[4.2,12.2],[HX-2.4,FZ+1.6],[HX+2.4,FZ+1.6]],3.2);vnFolk(HX,7,3,3);}
@@ -14443,8 +14422,8 @@ function buildHlRepGuildAlch(G,o){reseed(21011+(o.v|0));const LX=-12,LZ=3,W=20,D
  rod(LX-W/2-.4,top-.6,LZ,3);rod(LX+W/2+.4,top-.6,LZ,3);
  // acid shed on the west end: salvage roof, carboys and barrels
  vnFrame(LX-W/2-2,0,LZ,3.6,2.8,D-1,0,tar,.12);vnShedRoof(LX-W/2-2,2.8,LZ,4,D,.8,-Math.PI/2,'vCorr',null,.3,.1);
- for(let i=0;i<5;i++){vnBarrel(LX-W/2-1.2-rr(0,1.6),0,LZ-3+i*1.3,.32,.85,hC(vPick([0x6a5a48,0x8a3a2a,0x3a5a4a])));}
- for(let i=0;i<6;i++){const x=LX-W/2-3.2+(i%2)*.7,z=LZ-2+Math.floor(i/2)*.9;vB('vWood',x,0,z,.6,.3,.6,0,tar);vBall('hPaintBall',x,.62,z,.28,hC(vPick([0x4a8a6a,0x8a9a4a,0x5a7a9a])),.34);}
+ for(let i=0;i<5;i++){hnBarrel(LX-W/2-1.2-rr(0,1.6),0,LZ-3+i*1.3,.32,.85,hC(vPick([0x6a5a48,0x8a3a2a,0x3a5a4a])));}
+ hlRngSkip(6);FURNISH('hl_rep_carboys',LX-W/2-2.85,0,LZ-1.1,0,{v:0});   // six carboys in their crates (6 colours)
  // the magazines: bermed cells, stone portals, iron doors, blast walls, lightning masts, a fence with pennants
  const MZ=-14;for(const x of[4,13,22]){kput('hRBBerm',[x,0,MZ],null,[7.6,3.3,7],turf);vB('vStone',x,0,MZ+3.1,3.8,2.9,1.3,0,ash);vB('vStone',x,2.9,MZ+3.1,4.2,.3,1.5,0,ash);
   vB('vIron',x,0,MZ+3.78,1.5,2.2,.08,0,hC(0x4a4640));for(const y of[.5,1.7])vB('vIron',x,y,MZ+3.84,1.5,.1,.04,0,hC(hRBIRON));
@@ -14485,9 +14464,8 @@ function buildHlRepGuildFarm(G,o){reseed(21021+(o.v|0));const HX=-6,HZ=-2,W=11,D
  // market porch
  vB('vStone',HX,0,FZ+2.1,W+.4,.25,4.2,0,ash);const posts=[-5,-1.7,1.7,5];for(const u of posts)hnTotemPost(HX+u,.25,FZ+3.8,.18,2.65,0,Math.abs(u)<3);
  hnBracketRow(HX,2.9,FZ+3.8,0,W,4,.5);vnShedRoof(HX,3.35,FZ+2.1,W+.2,4.2,1.1,0,'hGableSc',roof,.4);
- const prod=[0xc0302a,0xe08a2a,0x6a9a3a,0xd8c060,0x8a3a6a];for(const u of[-3.4,0,3.4]){vB('vWood',HX+u,.25,FZ+2.4,2.2,.85,.9,0,tar);
-  for(let k=0;k<9;k++)vBall('hPaintBall',HX+u+rr(-.9,.9),1.2,FZ+2.4+rr(-.3,.3),rr(.1,.16),hC(vPick(prod)));}
- vnSacks(HX-4.6,.25,FZ+1.1,4);vnCrate(HX+4.6,.25,FZ+1.2,.8,.2);
+ for(const u of[-3.4,0,3.4]){hlRngSkip(36);FURNISH('hl_rep_produce_counter',HX+u,.25,FZ+2.4,0);}   // its produce drew 36 numbers
+ hnSacks(HX-4.6,.25,FZ+1.1,4);hnCrate(HX+4.6,.25,FZ+1.2,.8,.2);
  hnTotem(HX+W/2+1.2,0,FZ+3.9,.34,6,0,{hat:true});
  // the grain store on staddle stones
  const GX=8,GZ=-3,GF=.9;for(const u of[-2.4,0,2.4])for(const v of[-2.4,0,2.4]){vPst('vPostS',GX+u,0,GZ+v,.18,GF-.12,ash);vB('vStone',GX+u,GF-.14,GZ+v,.62,.14,.62,0,ash);}
@@ -14497,9 +14475,8 @@ function buildHlRepGuildFarm(G,o){reseed(21021+(o.v|0));const HX=-6,HZ=-2,W=11,D
  hnFrieze(GX,gt-.55,GZ+3.02,0,6,.5);
  const tp=hnTent(GX,gt,GZ,4.7,5.4,'hTentSh',sh);vPst('vIron',GX,tp-.3,GZ,.04,.9,hC(hRBIRON));vBall('hGold',GX,tp+.35,GZ,.2,gold);
  // cart, hay rick
- const CX=8,CZ=4.6;vB('vWood',CX,.7,CZ,1.8,.5,3,0,tar);for(const s of[-1,1])kput('hRBDiscW',[CX+s*1,.65,CZ-.4],qEuler(0,Math.PI/2,0),[.62,.62,.08],tar);
- for(const s of[-1,1])beam('vWood',[CX+s*.5,.9,CZ+1.5],[CX+s*.5,.5,CZ+3.4],.08,.08,tar);vnSacks(CX,1.2,CZ,5);
- kput('vConeT',[14,0,-6],null,[2,3.6,2],hC(vPick(VPAL.thatch)));vPst('vPost',14,3.4,-6,.05,.8,tar);
+ const CX=8,CZ=4.6;hlRngSkip(20);hnFurn('hl_rep_farm_cart',CX,0,CZ,0,{v:0},0,1.025);   // the loaded cart (its sacks drew 20 numbers)
+ rng();FURNISH('hl_rep_haystack',14,0,-6,0,{v:1});   // the hay rick
  hnRBLamps([[HX-3,FZ+5.5],[HX+3,FZ+5.5]],3.2);vnFolk(HX,FZ+4.6,4,3.5);vnFolk(CX,CZ+1,1,1);}
 
 // ---------------------------------------------------------------- Guild of Smiths
@@ -14522,14 +14499,11 @@ function buildHlRepGuildSmith(G,o){reseed(21031+(o.v|0));const HZ=-3,W=18,D=11,H
  const top=hnGable(0,H,HZ,W,D,1.2,0,'hGableSc',slate,.7,'vGableSt',ash);hnBarge(0,H,HZ,W,D,1.2*D/2,0,.7,tar,'lace');
  for(const x of[-5.5,0,5.5]){hnStoneChimney(x,top-2.4,HZ-.6,6.4,1.4);vBall('vEmber',x,top+4.05,HZ-.6,.36,null,.06);vB('vIron',x,top+4.6,HZ-.6,1.1,.08,1.1,0,hC(hRBIRON));for(const sx of[-1,1])vB('vIron',x+sx*.5,top+4.1,HZ-.6,.06,.5,.06,0,hC(hRBIRON));}
  // the giant anvil and hammer
- const AX=-6.2,AZ=FZ+5.2,K=1.05;hnSocle(AX-.3,0,AZ,7.4,.8,2.6,0,rub,ash);const P=(x,y,w,h,d,c)=>vB(c?'hGoldB':'hPaint',AX+x*K,.8+y*K,AZ,w*K,h*K,d*K,0,c?gold:iron);
- P(0,0,1.9,.6,1.5);P(0,.6,1,.9,.9);P(-.15,1.5,3,.62,1.3);P(-.15,2.12,3,.06,1.3,1);P(-1.85,1.65,.4,.47,.9);
- kput('vConeI',[AX+1.35*K,.8+1.82*K,AZ],qEuler(0,0,-Math.PI/2),[.5*K,1.3*K,.5*K],iron);
- const HXh=AX-2.9;vB('hPaint',HXh,.8,AZ,1.1,.8,.8,0,iron);vB('hGoldB',HXh,1.6,AZ,1.14,.07,.84,0,gold);vPst('vPost',HXh,1.67,AZ,.13,2.6,tar);vBall('hGold',HXh,4.3,AZ,.17,gold);
+ const AX=-6.2,AZ=FZ+5.2;FURNISH('hl_rep_giant_anvil',AX-.3,0,AZ,0);   // the giant anvil and hammer on their plinth
  // the forge shed
  const SX=12.2;for(const z of[HZ-4,HZ,HZ+4])vPst('vPost',SX+1.6,0,z,.14,2.9,tar);vnShedRoof(SX,2.9,HZ,9,3.6,1,-Math.PI/2,'vShingleB',hC(vPick(HPAL.shingle)),.3);
- vB('hRubB',SX,0,HZ-1.6,1.6,1,1.6,0,rub);vBall('vEmber',SX,1.02,HZ-1.6,.5,null,.08);kput('hPyrSc',[SX,2.1,HZ-1.6],null,[1.4,.9,1.4],slate);vnChimney(SX,3,HZ-1.6,2.6,.18);
- vB('vIron',SX,0,HZ+1,.5,.7,.45,0,iron);vB('vIron',SX,.7,HZ+1,.9,.25,.35,0,iron);vnBarrel(SX+.6,0,HZ+2.4,.35,.8,tar);vB('vWood',SX-.2,.5,HZ-3.2,.8,.3,1.2,0,hC(0x6a4a30));
+ FURNISH('hl_rep_hooded_forge',SX,0,HZ-1.6,0,{v:0});   // the hooded forge, its stack through the shed roof
+ FURNISH('hl_rep_anvil',SX,0,HZ+1,0,{v:1});hnBarrel(SX+.6,0,HZ+2.4,.35,.8);vB('vWood',SX-.2,.5,HZ-3.2,.8,.3,1.2,0,hC(0x6a4a30));
  kput('figB',[SX+.8,0,HZ-.2],qEuler(0,-1.2,0),1,hC(0x4a3a30));kput('figH',[SX+.8,0,HZ-.2],null,1,hC(0xc9a17e));
  vnPaving(0,0,FZ+2.4,6,3,0,ash,5);hnRBLamps([[-3.4,FZ+4.2],[3.4,FZ+4.2]],3.4);vnFolk(2.5,AZ+2.5,3,2.5);}
 
@@ -14561,7 +14535,7 @@ function buildHlRepGuildMech(G,o){reseed(21041+(o.v|0));const HX=-1,HZ=-2,W=18,D
  hnRBClockTower(TX,TZ,{B:6.5,TH:9.5,roof:grn,oak:tar.clone().multiplyScalar(1.15),tar,rub:hC(vPick(HPAL.rubble)),ash,bigGear:true});
  // yard
  vnPaving(HX,0,FZ+2.6,5,3,0,ash,5);hnTotem(HX-4,0,FZ+2.2,.34,6,0,{painted:true,hat:true});
- vB('vWood',HX+5.5,0,FZ+1.6,2.2,.9,.9,0,tar);hnRBGear(HX+5.5,1.6,FZ+1.6,Math.PI/2,.62,.12,true,.3);vnCrate(HX+7.2,0,FZ+1.4,.8,.3);
+ FURNISH('hl_rep_workbench',HX+5.5,0,FZ+1.6,0,{v:2});hnCrate(HX+7.2,0,FZ+1.4,.8,.3);
  hnRBLamps([[HX-2.6,FZ+4],[HX+2.6,FZ+4],[TX-1.5,TZ+5.6]],3.4);vnFolk(HX,FZ+4,3,3);}
 
 const HRB_GUILD={wealth:'civic',lit:true};
@@ -14651,10 +14625,7 @@ function buildHlRepGuildAstro(G,o){reseed(21101+(o.v|0));const HX=-4,HZ=-1,W=16,
  kput('hBulbSc',[TX,BY+PH+.4,TZ],null,[4.6,4.4,4.6],cu);const tp=BY+PH+4.8;vPst('vIron',TX,tp-.3,TZ,.05,1.6,iron);hnRBGear(TX,tp+1.5,TZ,0,.4,.07,false,0,hC(HPAL.gold[0]));
  // the court: a sundial and an armillary sphere
  vnPaving(HX+4,0,FZ+3,12,4,0,ash,10);
- kput('hOctS',[HX+5,0,FZ+3],null,[.7,.9,.7],ash);kput('hRBDisc',[HX+5,.95,FZ+3],null,[.75,.05,.75],hC(0xb8903a));
- kput('vPipeC',[HX+5,.95,FZ+3.1],qEuler(-.8,0,0),[.03,.7,.03],hC(0x7a5a2a));
- kput('hOctS',[HX-1.5,0,FZ+3],null,[.5,1.1,.5],ash);{const c=[HX-1.5,1.9,FZ+3];vBall('hGold',c[0],c[1],c[2],.1,hC(HPAL.gold[0]));
-  for(const q of[qEuler(0,0,0),qEuler(Math.PI/2,0,0),qEuler(Math.PI/2,Math.PI/2,0),qEuler(.4,0,.4)])kput('hRBHoop',c,q,[.7,.7,1]);}
+ FURNISH('hl_rep_sundial',HX+5,0,FZ+3,0,{v:0});FURNISH('hl_rep_sundial',HX-1.5,0,FZ+3,0,{v:1});   // the sundial, the armillary sphere
  hnRBLamps([[HX-2.6,FZ+4.6],[HX+2.6,FZ+4.6],[TX-2,TZ+5.8]],3.4);vnFolk(HX+1,FZ+4.4,3,3);}
 
 // Round 10 (Travis: "make scavenger guild larger and more elaborate and move it just outside the port gate"): the guild
@@ -14720,7 +14691,7 @@ function buildHlRepGuildScav(G,o){reseed(21111+(o.v|0));
  vB('vIron',GX,0,YZ1-5,3.4,.14,5,0,iron);vB('vIron',GX,.14,YZ1-5,3.2,.02,4.8,0,hC(0x6a6258));
  vB('hPlankB',GX+4.2,0,YZ1-4,1.8,2.4,1.8,0,plank);vnShedRoof(GX+4.2,2.4,YZ1-4,2,2,.35,0,'vCorr',null,.2,.08);vnWin(GX+4.2,1,YZ1-3.08,0,.7,.6,'open','vWood',tar);
  hnRCCart(8,14,.4,tar,true);hnRCCart(24,16,-.3,tar,true);hnRCCart(GX,YZ1-5,0,tar,true);
- for(let k=0;k<8;k++)kput('vPanelB',[1+k*.14,.08+k*.1,14],qEuler(0,rr(-.1,.1),0),[1.4,.08,2.4],null);
+ hlRngSkip(8);FURNISH('hl_rep_plate_stack',1.49,0,14,0,{v:1});   // the stack of Ancient panels
  // ---- the salvage market along the road front
  for(let k=0;k<4;k++)hnStall(HX-9+k*6,0,FZ+8.5,0,hC(vPick(HPAL.aged)));
  hnBunting([HX-12,3,FZ+9.6],[HX+10,3,FZ+9.6],12);
@@ -14819,11 +14790,11 @@ function hnRCJib(x,z,h,L,a,c,load){const iron=hC(0x2e2a26);vB('vStone',x,0,z,1.4
  const e=[x+Math.sin(a)*L,jy,z+Math.cos(a)*L];vBeam([x,jy,z],e,.26,c);vBeam([x,h+.4,z],[e[0],e[1]+.1,e[2]],.05,iron,'vRope');vBeam([x+Math.sin(a)*L*.5,jy-1.6,z+Math.cos(a)*L*.5],[x,jy-3.2,z],.2,c);
  vB('vIron',e[0],jy-.4,e[2],.4,.4,.4,a,iron);const hy=Math.max(1.4,jy*.35);vBeam([e[0],jy-.4,e[2]],[e[0],hy+.5,e[2]],.04,iron,'vRope');vB('vIron',e[0],hy+.2,e[2],.3,.3,.3,a,iron);
  if(load)kput(load,[e[0],hy-.4,e[2]],qEuler(0,a,0),[1.8,.7,.9],null);}
-// Scattered salvage: sheets, plates, white Ancient panels, rusted pipe and boxes (the Iziz note).
-function hnRCScrap(x,z,rx,rz,n){const IT=['vSheet','vPlate','vPlateW','vSheet','vPlate'];for(let i=0;i<n;i++){const px=x+rr(-rx,rx),pz=z+rr(-rz,rz),r=rng();
- if(r<.5)kput(vPick(IT),[px,rr(.3,1.2),pz],qEuler(rr(-1.2,1.2),rng()*TAU,rr(-.6,.6)),[rr(1,2.6),rr(.8,2),1],null);
- else if(r<.75)kput('vPipeR',[px,rr(.15,.6),pz],qEuler(Math.PI/2+rr(-.3,.3),rng()*TAU,0),[rr(.1,.3),rr(1.5,4),rr(.1,.3)],null);
- else kput('vRustB',[px,rr(.2,.5),pz],qEuler(rr(-.3,.3),rng()*TAU,rr(-.3,.3)),[rr(.5,1.4),rr(.4,.9),rr(.5,1.2)],null);}}
+// Scattered salvage (the Iziz note): heaps of Ancient salvage from the catalog, one per ~20 scraps asked for, spread
+// along the area's long side. Each scrap drew 10 numbers (9 for a pipe).
+function hnRCScrap(x,z,rx,rz,n){for(let i=0;i<n;i++){hlRngSkip(2);const r=rng();hlRngSkip(r<.5?7:r<.75?6:7);}
+ const m=Math.max(1,Math.round(n/20)),X=rx>=rz;for(let k=0;k<m;k++){const t=m>1?-1+2*k/(m-1):0;
+  FURNISH('hl_rep_scrap_heap',x+(X?t*(rx-1.8):0),0,z+(X?0:t*(rz-1.8)),X?0:Math.PI/2,{v:1});}}
 // A tapering brick stack from y: three stages, iron bands, a soot cap. Returns the top.
 function hnRCStack(x,y,z,b,h,c){c=c||hC(vPick([0x8a4a36,0x7a4232,0x965640]));let yy=y,w=b;const iron=hC(0x2e2a26);for(let k=0;k<3;k++){const hh=h/3;vB('vStone',x,yy,z,w,hh+.02,w,0,c);
  vB('vIron',x,yy+hh-.5,z,w+.08,.14,w+.08,0,iron);yy+=hh;w*=.84;}
@@ -14832,9 +14803,8 @@ function hnRCStack(x,y,z,b,h,c){c=c||hC(vPick([0x8a4a36,0x7a4232,0x965640]));let
 function hnRCRails(a,b,gauge){gauge=gauge||1.0;const dx=b[0]-a[0],dz=b[1]-a[1],L=Math.hypot(dx,dz),ry=Math.atan2(dx,dz),iron=hC(0x3a3632),wd=hC(vPick(HPAL.aged));
  for(const s of[-1,1]){const p=loc((a[0]+b[0])/2,(a[1]+b[1])/2,s*gauge/2,0,ry);vB('vIron',p[0],.1,p[1],.08,.1,L,ry,iron);}
  const n=Math.round(L/.8);for(let i=0;i<=n;i++){vB('vWood',a[0]+dx*i/n,0,a[1]+dz*i/n,gauge+.6,.1,.22,ry,wd);}}
-// An ore tub on the rails at (x,z) heading ry, with a load (coal / ore colour).
-function hnRCTub(x,z,ry,loadC){vB('vRustB',x,.45,z,1.0,.8,1.5,ry,null);for(const sx of[-1,1])for(const sz of[-1,1]){const p=loc(x,z,sx*.5,sz*.45,ry);kput('vHoop',[p[0],.3,p[1]],qEuler(0,ry+Math.PI/2,0),[.24,.24,2],hC(0x2e2a26));}
- if(loadC)kput('hRCHeap',[x,1.2,z],qEuler(0,ry,0),[.6,.45,.8],loadC);}
+// An ore tub on the rails at (x,z) heading ry, loaded: furniture, the catalog's coal tub.
+function hnRCTub(x,z,ry,loadC){return FURNISH('hl_rep_rail_tub',x,0,z,ry,{v:0});}
 
 // ---------------------------------------------------------------- the Peles tower (wall towers, gate, fortress)
 // o: {roof:'spire'|'tent'|'tiers', tiers, loggia(default true), clock, lit, rubbleTo (fraction), cream, roofC,
@@ -14903,7 +14873,7 @@ function hnRCWallRun(x,z,len,ry,o){o=o||{};const H=o.H||9,T=o.T||3.2,rub=o.c||hC
   for(let i=0;i<nm;i++){const q=P(-len/2+len*(i+.5)/nm,T/2-.3);vB('hRubB',q[0],H+1.0,q[1],1.2,1.1,.6,ry,rub);vB('vStone',q[0],H+2.1,q[1],1.36,.16,.74,ry,ash);}
   p=P(0,-T/2+.2);vB('vStone',p[0],H,p[1],len,.9,.4,ry,ash);}
  if(o.stair){const s=o.stair,n=Math.round((H+.1)/.26),tr=.3;for(let k=0;k<n;k++){const u=s*(len/2-.6)-s*(k+.5)*tr;const q=P(u,-T/2-.75);vB('vStone',q[0],0,q[1],tr+.01,(H+.1)*(k+1)/n,1.5,ry,ash.clone().multiplyScalar(.92));}}
- if(o.lamps&&vLit()){const nl=Math.max(1,Math.round(len/14));for(let i=0;i<nl;i++){const q=P(-len/2+len*(i+.5)/nl,-T/2);vnLamp(q[0],H-1.4,q[1],ry+Math.PI);}}}
+ if(o.lamps&&vLit()){const nl=Math.max(1,Math.round(len/14));for(let i=0;i<nl;i++){const q=P(-len/2+len*(i+.5)/nl,-T/2);hnWallLamp(q[0],H-1.4,q[1],ry+Math.PI);}}}
 // Gable slabs with the ridge along local x and SEPARATE overhangs: `over` at the eaves, `overX` along the run (0 so
 // that runs tile without overlapping slabs); optional end wedges. (vnGableRoof uses one overhang for both.)
 function hnRCGableX(x,y,z,w,d,rise,ry,slabItem,slabC,over,overX,endItem,endC){const thick=.22;if(endItem)kput(endItem,[x,y,z],ry?qEuler(0,ry,0):null,[w,rise,d],endC||null);
@@ -14932,7 +14902,7 @@ function hnRCGate(x,z,ry,o){o=o||{};const TW=o.tw||8.5,TH=o.th||17,BW=10,BD=10,R
   p=P(0,0);vB('vStone',p[0],0,p[1],2*R,.04,BD+2,ry,hC(vPick(HPAL.rubble)).multiplyScalar(.8));}
  // over the arch on the field side: the painted crest, the clock, lamps
  {const f=P(0,BD/2);hnForm('hFormA',f[0],8.5,f[1],ry,4.4,2.2);if(o.clock!==false){const q=P(0,BD/2+.06);vB('vStone',q[0],10.9,q[1],2.9,2.2*1.3,.1,ry,ash);const c2=P(0,BD/2+.14);kput('hClock',[c2[0],12.0,c2[1]],qEuler(0,ry,0),[2.4,2.4,1],null);}
-  if(lit)for(const s of[1,-1])for(const t of[-1,1]){const q=P(t*(R+1.1),s*BD/2);vnLamp(q[0],4.2,q[1],ry+(s>0?0:Math.PI));}
+  if(lit)for(const s of[1,-1])for(const t of[-1,1]){const q=P(t*(R+1.1),s*BD/2);hnWallLamp(q[0],4.2,q[1],ry+(s>0?0:Math.PI));}
   const b=P(0,-BD/2);hnForm('hFormA',b[0],8.6,b[1],ry+Math.PI,3.6,1.8);}
  // jettied half-timber storey and the steep gable, gable end to the field, with a flèche on the ridge
  p=P(0,0);vB('vStone',p[0],top,p[1],BW+.6,.25,BD+.6,ry,ash);hnJetty(p[0],top+.6,p[1],BW,BD,ry,wood,.4);
@@ -14943,7 +14913,7 @@ function hnRCGate(x,z,ry,o){o=o||{};const TW=o.tw||8.5,TH=o.th||17,BW=10,BD=10,R
  // the twin towers, pushed a little toward the field
  for(const s of[-1,1]){const q=P(s*(BW/2+TW/2),.8);hnRCTower(q[0],0,q[1],TW,TH,ry,{roof:'spire',tile:o.tile,lit,roofC,beamC:wood,cream,flag:s>0});}
  if(o.stubs){for(const s of[-1,1]){const q=P(s*(BW/2+TW+o.stubs/2-.4),0);hnRCWallRun(q[0],q[1],o.stubs+.8,ry,{roofC,wood,c:rub,ends:true});}}
- if(lit)for(const s of[-1,1]){const q=P(s*(BW/2+1.2),BD/2+4);vnLampPost(q[0],0,q[1],4.2);}}
+ if(lit)for(const s of[-1,1]){const q=P(s*(BW/2+1.2),BD/2+4);hnLampPost(q[0],0,q[1],4.2);}}
 
 // ================================================================= MONUMENTS
 // ---------------------------------------------------------------- Hall of the Republic
@@ -14961,7 +14931,7 @@ function buildHlRepHallRepublic(G,o){reseed(21201+(o.v|0));
  hnRCPave(0,44,34,13.6,0,hC(vPick(HPAL.ashlar)).multiplyScalar(.95),2.6);
  for(const s of[-1,1]){vB('vStone',s*16.5,0,39.6,2.6,1.3,2.6,0,ash);vB('vStone',s*16.5,1.3,39.6,2.2,.2,2.2,0,rub);hnTotem(s*16.5,1.5,39.6,.62,12.5,0,{wings:3.4,wingAt:.8,hat:true,painted:s>0});
   for(let k=0;k<2;k++){vB('vStone',s*(8+k*9),0,48.6,1.1,.6,1.1,0,ash);vnBannerPole(s*(8+k*9),.6,48.6,0,9,k%2?flagC:hC(HPAL.teal));}
-  if(vLit())for(let k=0;k<2;k++)vnLampPost(s*(5+k*8),0,41.5,4.2);}
+  if(vLit())for(let k=0;k<2;k++)hnLampPost(s*(5+k*8),0,41.5,4.2);}
  // ---- the ring hall: cream stucco with quoins and pilasters, arched lit windows, a cornice with dougong
  const RW=62,RD=52,RH=7.5,rz0=ZC-RD/2,rz1=ZC+RD/2;hnStucco(0,FL,ZC,RW,RH,RD,0,cream,ash);vB('vStone',0,FL+RH-.4,ZC,RW+.3,.4,RD+.3,0,ash);
  vB('vStone',0,FL,ZC,RW+.3,.6,RD+.3,0,rub);
@@ -14999,7 +14969,7 @@ function buildHlRepHallRepublic(G,o){reseed(21201+(o.v|0));
   vB('vStone',0,FL,fz+.02,11,7.6,.12,0,ash);kput('hKeelP',[0,FL+6.1,fz+.04],null,[11,3.0,.12],ash);
   vB('vDarkB',0,FL,fz+.1,8.2,6.2,.1,0);kput('hKeelDark',[0,FL+6.1,fz+.12],null,[8.2,2.4,.1]);hnForm('hFormW',0,FL+5.95,fz+.1,0,5.2,2.0);
   for(const s of[-1,1])hnForm('hFormV',s*2.05,FL+.15,fz+.12,0,3.9,5.7);
-  if(vLit())for(const s of[-1,1])vnLamp(s*6.4,FL+4.8,fz,0);
+  if(vLit())for(const s of[-1,1])hnWallLamp(s*6.4,FL+4.8,fz,0);
   for(const s of[-1,1])for(const z of[EZ-3,EZ+3]){const q=[s*EW/2,z];vnWin(q[0],FL+2.2,q[1],s*Math.PI/2,1.3,2.8,lit,'vStone',ash);}
   // flanking spire-pavilions in front of the veranda
   for(const s of[-1,1]){const px=s*(EW/2+4.2),pz=fz-2.5;hnSocle(px,FL,pz,5.6,1.0,5.6,0,rub,ash);hnStucco(px,FL+1.0,pz,5.2,6.2,5.2,0,cream,ash);
@@ -15073,19 +15043,21 @@ function buildHlRepFortress(G,o){reseed(21211+(o.v|0));const X=36,Z=32,TW=10,TH=
   for(const z of[-8,-3,3,8]){vnWin(bx+BW/2,1.6,bz+z,Math.PI/2,.9,1.3,'glass','vStone',ash);hnNal(bx+BW/2,4.3,bz+z,Math.PI/2,.8,1.1,'glass',hC(HPAL.white));}
   vnDoor(bx+BW/2,.6,bz+.5,Math.PI/2,1.3,2.3,'vWood',log,tar,false);vnStairs(bx+BW/2+.9,0,bz+.5,Math.PI/2,1.6,.6,3,'vStone',ash);
   hnForm('hFormA',bx+BW/2+.02,3.05,bz+.5,Math.PI/2,1.8,.5);
-  for(let k=0;k<4;k++){vPst('vPost',bx+BW/2+5,0,bz-6+k*1.6,.12,1.9,log);kput('hPaintBall',[bx+BW/2+5,1.7,bz-6+k*1.6],null,[.3,.35,.3],hC(0xc8b890));}}
+  for(let k=0;k<4;k++)FURNISH('hl_rep_training_butt',bx+BW/2+5,0,bz-6+k*1.6,0,{v:1});}   // the pells
  // stables and the smithy lean-to along the east wall
  {const sx=27.5,sz=6,SL=22,wood=hC(vPick(HPAL.aged));for(let k=0;k<=5;k++)vPst('vPostB',sx-2.6,0,sz-SL/2+k*SL/5,.14,3.1,wood);vB('vWood',sx+2.8,0,sz,.2,4.4,SL,0,wood);
   vnShedRoof(sx,3.1,sz,SL,5.6,1.4,-Math.PI/2,'vShingleB',hC(vPick(HPAL.shingle)),.4);
   for(let k=0;k<4;k++){vB('vWood',sx,0,sz-SL/2+2.8+k*4.6,5,1.3,.12,0,wood);}
   for(let k=0;k<3;k++){const z=sz-SL/2+5+k*4.6;vB('vWood',sx+.4,.9,z,1.9,.9,.8,Math.PI/2,hC(vPick([0x5a3a28,0x3a2a22,0x7a5a3a])));vB('vWood',sx-.7,1.4,z,.7,.55,.4,Math.PI/2,hC(0x4a3224));
    for(const dx of[-.6,1.2])for(const dz of[-.25,.25])vPst('vPost',sx+dx,0,z+dz,.07,.95,hC(0x3a2a20));}
-  const fz=sz+SL/2-2.4;vB('vStone',sx+.8,0,fz,1.8,1.0,1.8,0,ash);for(let k=0;k<4;k++)vBall('vEmber',sx+.8+rr(-.4,.4),1.08,fz+rr(-.4,.4),rr(.1,.18));
-  vPst('vIron',sx-.8,0,fz,.2,.75,hC(0x3a3632));vB('vIron',sx-.8,.75,fz,.7,.24,.26,0,hC(0x2e2a26));vnChimney(sx+1.3,1.0,fz-.5,6.4,.25,true);}
+  // the smithy: the bailey forge and an iron block anvil from the catalog (the embers drew 12 numbers); its stack on
+  // up through the lean-to roof is the lean-to's own
+  const fz=sz+SL/2-2.4;hlRngSkip(12);FURNISH('hl_rep_hooded_forge',sx+.8,0,fz,0,{v:1});FURNISH('hl_rep_anvil',sx-.8,0,fz,0,{v:1});
+  vnChimney(sx+1.3,4.08,fz-.5,3.32,.25,true);}
  // the bailey: a well, a cart, barrels, a pell-post and the garrison
- vPst('vPostS',6,0,2,1.1,.9,ash);vB('vDarkB',6,.9,2,1.4,.04,1.4,0);for(const s of[-1,1])vPst('vPost',6+s*1.05,.9,2,.08,1.9,red);vB('vWood',6,2.8,2,2.6,.14,.14,0,red);
+ FURNISH('hl_rep_civic_well',6,0,2,0,{v:1});   // the windlass well
  hnRCPave(0,22,8,14,0,hC(vPick(HPAL.rubble)),2.2);
- for(let k=0;k<4;k++)vnBarrel(20+k*.8,0,-10+(k%2)*.8,.35,.9);vnCrate(18,0,-9,1,.3);
+ for(let k=0;k<4;k++)hnBarrel(20+k*.8,0,-10+(k%2)*.8,.35,.9);hnCrate(18,0,-9,1,.3);
  vnFolk(0,14,8,8);vnFolk(-18,4,4,3);}
 
 // ================================================================= WALLS AND GATES
@@ -15105,8 +15077,8 @@ function buildHlRepGate(G,o){reseed(21241+(o.v|0));
 
 // ================================================================= INDUSTRY
 // The glowing hearth seen through a doorway (face at z, facing +z): a stone hearth, its fire, embers, an iron hood.
-function hnRCHearth(x,y,z,big){const w=big?2.6:1.8;vB('vStone',x,y,z+.1,w+.6,.9,.3,0,hC(vPick(HPAL.rubble)));vB('hRCGlow',x,y+.9,z+.02,w,.55,.12,0);
- for(let k=0;k<5;k++)vBall('vEmber',x+rr(-w/2+.2,w/2-.2),y+.95,z+.18,rr(.08,.16));kput('vRustB',[x,y+2.2,z+.12],null,[w+.4,.9,.3],null);vB('vIron',x,y+2.6,z+.08,.5,1.6,.16,0,hC(0x2e2a26));}
+// Furniture: the catalog's Forgehouse hearth, standing in the doorway against its dark (the drawing drew 11 numbers).
+function hnRCHearth(x,y,z,big){hlRngSkip(11);return hnFurn('hl_rep_wall_forge',x,y,z,0,{v:big?1:0},0,.145);}
 // ---------------------------------------------------------------- the Forgehouse
 // The Republic's great smithy: a long stone-and-timber forge hall with a clerestory lantern on the ridge and iron
 // stacks through the roof, a perpendicular finishing hall, two masonry furnaces with brick stacks and glowing tap
@@ -15137,7 +15109,7 @@ function buildHlRepForgehouse(G,o){reseed(21301+(o.v|0));
   vB('vDarkB',px,S1,fz+.12,5,4.6,.08,0);kput('hKeelDark',[px,S1+4.6,fz+.14],null,[5,1.3,.08]);
   if(i%2){hnRCHearth(px,S1,fz+.16,true);for(const s of[-1,1])kput('vWood',[px+s*3.1,S1+2.25,fz+1.1],qEuler(0,s*1.2,0),[2.4,4.5,.12],tar);}
   else{for(const s of[-1,1])vB('vWood',px+s*1.26,S1,fz+.2,2.4,4.5,.12,0,tar);for(const yy of[1,3.2])vB('vIron',px,S1+yy,fz+.28,4.9,.14,.06,0,iron);}
-  hnRCFlight(px,0,fz+2.8,0,6,S1,'vStone',ash);if(vLit())vnLamp(px+3.5,S1+3.2,fz+.1,0);}
+  hnRCFlight(px,0,fz+2.8,0,6,S1,'vStone',ash);if(vLit())hnWallLamp(px+3.5,S1+3.2,fz+.1,0);}
  hnForm('hFormA',MX,H1+H2-1.7,MZ+MD/2+.02,0,4,1.6);
  // iron stacks through the roof, guyed
  for(const u of[-20,-2,16]){const x=MX+u,z=MZ-3;vPst('vPipeR',x,Y2,z,.75,24,null);for(const yy of[Y2+6,Y2+12,Y2+18])kput('vHoop',[x,yy,z],qEuler(Math.PI/2,0,0),[.78,.78,2],iron);
@@ -15152,7 +15124,7 @@ function buildHlRepForgehouse(G,o){reseed(21301+(o.v|0));
   for(const s of[-1,1])vnWin(FX+s*6,S1+1.4,fz,0,1.4,2.2,lit,'vStone',ash);hnForm('hFormT',FX,y3+1.4,fz+.45,0,3.2,1.6);vnWin(FX,y3+4.2,fz+.42,0,1,1.1,lit,'hPaint',red);
   for(let z=-15;z<=15;z+=5)for(const s of[-1,1])vnWin(FX+s*FW/2,S1+1.4,FZ+z,s*Math.PI/2,1.4,2.2,lit,'vStone',ash);
   vPst('vPipeR',FX+4,y3+2,FZ-8,.5,14,null);vB('vIron',FX+4,y3+16,FZ-8,1.4,.14,1.4,0,iron);
-  if(vLit())vnLamp(FX+3.3,S1+3.4,fz+.1,0);}
+  if(vLit())hnWallLamp(FX+3.3,S1+3.4,fz+.1,0);}
  // ---- the water wheel on its stone race at the west end, driving the hammer shaft into the hall
  {const RX=-41,RW=4.4;for(const s of[-1,1])vB('hRubB',RX+s*(RW/2+.4),0,-8,.8,1.5,34,0,rub);vB('hRCWater',RX,0,-8,RW,.45,34,0,hC(0x4a6874));
   for(let k=0;k<9;k++)vBall('vBallW',RX+rr(-1.6,1.6),.46,-8+rr(-3,3),rr(.15,.35),hC(0xe8eef0),.04);
@@ -15172,7 +15144,7 @@ function buildHlRepForgehouse(G,o){reseed(21301+(o.v|0));
  hnRCScrap(14,24,8,4,40);hnRCHeap(7,0,26,3,1.8,hC(0x7a5040),4);kput('vPlateW',[22,2.0,28],qEuler(-.25,.3,0),[4.2,4.4,1],null);kput('vPlateW',[19.5,1.6,28.6],qEuler(-.3,-.2,.1),[3,3.4,1],null);
  // ---- jib cranes, lamps, the smiths
  hnRCJib(-3,12,9,7,.9,red,'vRustB');hnRCJib(25,14,8,6,-.5,red,'vRustB');
- if(vLit()){for(const x of[-40,-20,0,20,40])vnLampPost(x,0,31,4.4);vnLampPost(-8,0,8,4.4);}
+ if(vLit()){for(const x of[-40,-20,0,20,40])hnLampPost(x,0,31,4.4);hnLampPost(-8,0,8,4.4);}
  vnFolk(0,8,5,3.5);vnFolk(-18,23,3,2);vnFolk(14,20,3,4);vnFolk(32,16,2,3);}
 
 // ---------------------------------------------------------------- the generator
@@ -15191,7 +15163,7 @@ function buildHlRepGenerator(G,o){reseed(21311+(o.v|0));
   kput('vPipeC',[HX,S+1.1,f-.2],qEuler(0,0,Math.PI/2),[.8,2.4,.8],null);vB('vIron',HX,S,f-.2,2.6,.5,1.2,0,iron);
   for(const s of[-1,1])kput('vWood',[HX+s*2.2,S+2,f+.8],qEuler(0,s*1.25,0),[1.6,4,.1],red);hnRCFlight(HX,0,f+2.6,0,4.4,S,'vStone',ash);
   hnForm('hFormA',HX,S+5.6,f+.02,0,2.4,1.2);vB('vStone',HX,top-3.4,f+.02,1.8,1.8,.1,0,ash);vB('vWinLit',HX,top-3.2,f+.06,1.4,1.4,.06,0);
-  if(vLit())for(const s of[-1,1])vnLamp(HX+s*2.6,S+3.4,f,0);}
+  if(vLit())for(const s of[-1,1])hnWallLamp(HX+s*2.6,S+3.4,f,0);}
  // ridge vent
  vB('vWood',HX,top-.4,HZ,1.8,1.2,8,0,aged);vnGableRoof(HX,top+.8,HZ,8,1.8,.7,Math.PI/2,'hScaleB',slate,.35);
  // boiler house lean-to, coal, the brick stack
@@ -15210,8 +15182,8 @@ function buildHlRepGenerator(G,o){reseed(21311+(o.v|0));
   vBeam([HX+HW/2,S+H-.6,HZ+4],[tx+3,7.9,tz-5],.03,iron,'vRope');vBeam([HX+HW/2,S+H-.6,HZ+5],[tx+3,7.9,tz-3],.03,iron,'vRope');
   let last=[tx+3,7.9,tz+5];for(const [px,pz] of [[18,7],[17,13]]){vPst('vPost',px,0,pz,.14,8.6,aged);vB('vWood',px,8.0,pz,1.8,.14,.14,0,aged);for(const s of[-1,1])vBall('vBallW',px+s*.7,8.25,pz,.09,por,.12);
    vBeam(last,[px-.7,8.25,pz],.025,iron,'vRope');last=[px-.7,8.25,pz];}}
- if(vLit()){vnLampPost(HX+6,0,HZ+HD/2+3,4);vnLampPost(HX-6,0,HZ+HD/2+3,4);vnLampPost(16,0,-5,4);}
- vnCrate(HX-8,0,HZ+8,1,.3);vnBarrel(HX+7,0,HZ-8,.4,1);vnFolk(HX,HZ+HD/2+4,2,2);}
+ if(vLit()){hnLampPost(HX+6,0,HZ+HD/2+3,4);hnLampPost(HX-6,0,HZ+HD/2+3,4);hnLampPost(16,0,-5,4);}
+ hnCrate(HX-8,0,HZ+8,1,.3);hnBarrel(HX+7,0,HZ-8,.4,1);vnFolk(HX,HZ+HD/2+4,2,2);}
 // the stoker's fire-door in the boiler house wall (face toward -x)
 function hnRCStoke(x,z){vB('hRCGlow',x,.5,z,.06,.7,1.2,0);for(let k=0;k<3;k++)vBall('vEmber',x-.15,.6+rr(0,.3),z+rr(-.4,.4),.1);}
 
@@ -15239,14 +15211,12 @@ MAT.rcRock=hStd({map:TEX.rock,roughness:1});vWorldUV(MAT.rcRock,.125);kdef('hRCR
 // Post-and-rail fence from a to b (local [x,z]); split rails, posts every ~2.4 m.
 function hnRCRailFence(a,b,c,h){h=h||1.2;const dx=b[0]-a[0],dz=b[1]-a[1],L=Math.hypot(dx,dz);const n=Math.max(1,Math.round(L/2.4));
  for(let i=0;i<=n;i++)vPst('vPost',a[0]+dx*i/n,0,a[1]+dz*i/n,.08,h+.1,c);for(const yy of[h*.45,h*.9])vBeam([a[0],yy,a[1]],[b[0],yy,b[1]],.08,c);}
-// A farm cart: bed, sides, two spoked wheels, shafts on the ground; load 'sacks' | 'hay' | 'stone' | 'logs'.
-function hnRCCart(x,z,ry,c,load){const P=(u,v)=>loc(x,z,u,v,ry);let p=P(0,0);vB('vWood',p[0],.85,p[1],1.5,.14,2.8,ry,c);for(const s of[-1,1]){const q=P(s*.72,0);vB('vWood',q[0],.99,q[1],.08,.4,2.8,ry,c);}
- for(const s of[-1,1]){const q=P(s*.9,-.2);hnRCWheel(q[0],.6,q[1],.6,.1,ry,c,8,0,hC(0x3a3632));}
- for(const s of[-1,1]){const a=P(s*.4,1.4),b=P(s*.35,3.6);vBeam([a[0],.85,a[1]],[b[0],.08,b[1]],.1,c);}
- p=P(0,0);if(load==='sacks')for(let i=0;i<5;i++)kput('vSack',[p[0]+rr(-.4,.4),1.2+(i>2?.35:0),p[1]+rr(-.9,.9)],qEuler(0,rng()*TAU,0),[.4,.3,.36],hC(vPick([0xb8a080,0xa89070,0xc8b898])));
- else if(load==='hay')kput('vThatchB',[p[0],1.5,p[1]],qEuler(0,ry,0),[1.8,1.2,2.6],hC(vPick(VPAL.thatch)));
- else if(load==='stone')vB('vPlaster',p[0],.92,p[1],1.0,.7,1.4,ry,hC(0xd8d0bc));
- else if(load==='logs')for(let i=0;i<5;i++){const q=P(-.45+(i%3)*.45,0);kput('hLogX',[q[0],1.1+Math.floor(i/3)*.3,q[1]],qEuler(0,ry+Math.PI/2,0),[3.2,.15,.15],hC(vPick(HPAL.pine)));}}
+// The farm furniture is PLACED from the master catalog (FURNISH, 89y: the harvested hl_rep_* pieces); the helpers keep
+// their names and arguments and burn the random numbers their drawing drew (hlRngSkip).
+// A farm cart: bed, sides, two spoked wheels, shafts on the ground; load 'sacks' | 'hay' | 'stone' | 'logs' (else empty).
+// Its sacks drew 20 numbers, its hay 1, its logs 5.
+function hnRCCart(x,z,ry,c,load){const v={sacks:0,hay:1,stone:2,logs:3}[load];hlRngSkip(load==='sacks'?20:load==='hay'?1:load==='logs'?5:0);
+ return hnFurn('hl_rep_farm_cart',x,0,z,ry,{v:v==null?4:v},0,1.025);}
 // Livestock from boxes and balls, heading toward +z of ry: 'cow' | 'ox' | 'sheep' | 'pig' | 'hen'.
 function hnRCBeast(x,z,ry,kind){const P=(u,v)=>loc(x,z,u,v,ry);let p;
  if(kind==='cow'||kind==='ox'){const c=hC(vPick(kind==='ox'?[0x6a4a32,0x5a3e2a,0x8a6a4a]:[0x7a5238,0xe8e0d4,0x4a3a30,0x9a6a44,0xd8c8b0]));
@@ -15260,16 +15230,15 @@ function hnRCBeast(x,z,ry,kind){const P=(u,v)=>loc(x,z,u,v,ry);let p;
  if(kind==='pig'){const c=hC(vPick([0xe0a898,0xd89888,0xc88a7a]));vB('hPaint',x,.28,z,.48,.46,1.0,ry,c);p=P(0,.56);vB('hPaint',p[0],.36,p[1],.22,.18,.14,ry,c.clone().multiplyScalar(.85));
   for(const sx of[-1,1])for(const sz of[-1,1]){const l=P(sx*.15,sz*.34);vPst('vPost',l[0],0,l[1],.05,.3,c);}return;}
  if(kind==='hen'){kput('hPaintBall',[x,.22,z],null,[.13,.12,.16],hC(vPick([0xf0ece0,0xa05a30,0x5a4030])));p=P(0,.12);vBall('hPaintBall',p[0],.36,p[1],.06,hC(HPAL.red));}}
-// Water trough: a hollowed log on two blocks.
-function hnRCTrough(x,z,ry,L,c){vB('vWood',x,.18,z,L,.42,.62,ry,c);vB('hRCWater',x,.5,z,L-.2,.12,.42,ry,hC(0x4a6874));for(const s of[-1,1]){const p=loc(x,z,s*(L/2-.3),0,ry);vB('vStone',p[0],0,p[1],.3,.2,.8,ry,hC(vPick(HPAL.rubble)));}}
+// Water trough: a hollowed log on two blocks (2.4 or 3 m; the blocks drew a colour each).
+function hnRCTrough(x,z,ry,L,c){hlRngSkip(2);return FURNISH('hl_rep_log_trough',x,0,z,ry,{v:L>2.7?1:0});}
 // A fruit tree: trunk and a rounded low-poly crown.
 function hnRCTree(x,z,h){vPst('vPostB',x,0,z,.16,h*.5,hC(0x5a4632));for(let k=0;k<5;k++)kput('hRCLeaf',[x+rr(-.8,.8),h*.62+rr(-.3,.6),z+rr(-.8,.8)],qEuler(rng(),rng(),0),[rr(1,1.5),rr(.9,1.2),rr(1,1.5)],hC(vPick([0x4a7a34,0x5a8a3a,0x3f6a2e])));}
-// Haystack: a thatched cone over a rounded base on a centre pole.
-function hnRCHaystack(x,z,r,h){const c=hC(vPick(VPAL.thatch));kput('hPaintBall',[x,h*.3,z],null,[r,h*.36,r],c);kput('vConeT',[x,h*.3,z],null,[r*1.02,h*.72,r*1.02],c);vPst('vPost',x,h*.9,z,.05,.8,hC(0x5a4632));}
-// Russian crane-well (zhuravl): a stone well, a forked post and a long counterweighted sweep with a bucket.
-function hnRCSweepWell(x,z,ry,c){vPst('vPostS',x,0,z,.8,.8,hC(vPick(HPAL.rubble)));vB('vDarkB',x,.8,z,1.0,.03,1.0,0);const p=loc(x,z,2.4,0,ry);vPst('vPostB',p[0],0,p[1],.16,3.6,c);
- const a=loc(x,z,-.2,0,ry),b=loc(x,z,6.2,0,ry);vBeam([a[0],5.6,a[1]],[b[0],1.6,b[1]],.1,c);vB('vStone',b[0],1.2,b[1],.5,.5,.5,ry,hC(vPick(HPAL.rubble)));
- vBeam([a[0],5.6,a[1]],[x,1.4,z],.03,c,'vRope');vPst('vBarrel',x,1.0,z,.2,.4,c);}
+// Haystack: a thatched cone over a rounded base on a centre pole (the stooked stack; its hay drew a colour).
+function hnRCHaystack(x,z,r,h){rng();return FURNISH('hl_rep_haystack',x,0,z,0,{v:0});}
+// Russian crane-well (zhuravl): a stone well, a forked post and a long counterweighted sweep with a bucket. The piece is
+// centred on its footprint, the drawing on the well (2.8 m toward the post); its stones drew 2 colours.
+function hnRCSweepWell(x,z,ry,c){hlRngSkip(2);return hnFurn('hl_rep_sweep_well',x,0,z,ry,{},2.825,0);}
 
 // ================================================================= FARMS AND MILLS
 // ---------------------------------------------------------------- granary: a log crib raised on staddle stones
@@ -15288,7 +15257,7 @@ function buildHlRepGranary(G,o){reseed(21501+(o.v|0));const W=7,D=10,F=1.25,H=3.
  // detached steps (a gap before the door) and a loose plank to bridge it
  hnRCFlight(0,0,D/2+3.0,0,1.4,F-.05,'vStone',rub);vB('vWood',0,F-.02,D/2+.35,1.2,.08,.9,0,aged);
  // threshing floor, sacks, a cart
- vPst('vPostS',-6.5,0,4,2.8,.05,hC(0xa08a6a));vnSacks(-6.5,.05,4,5);vnSacks(2.2,0,D/2+1.6,4);hnRCCart(6,2,-.4,aged,'sacks');
+ vPst('vPostS',-6.5,0,4,2.8,.05,hC(0xa08a6a));hnSacks(-6.5,.05,4,5);hnSacks(2.2,0,D/2+1.6,4);hnRCCart(6,2,-.4,aged,'sacks');
  for(let k=0;k<5;k++)hnRCBeast(rr(-3,3),D/2+rr(2.5,4),rng()*TAU,'hen');vnFolk(-3.5,D/2+4.5,2,1);}
 
 // ---------------------------------------------------------------- farmhouse: the Saxon courtyard farmstead
@@ -15321,7 +15290,7 @@ function buildHlRepFarmhouse(G,o){reseed(21511+(o.v|0));const ZS=15;
   hnGable(0,.5+H,BZ,BW,BD,1.1,0,'vShingleB',sh,.7,'hGableLog',aged);hnBarge(0,.5+H,BZ,BW,BD,5.5,0,.7,aged,'lace');
   for(const s of[-1,1])kput('vWood',[s*2.4,2.3,BZ+BD/2+1.2],qEuler(0,-s*1.1,0),[2.3,3.6,.12],aged);vB('vDarkB',0,.5,BZ+BD/2+.02,4.6,3.6,.06,0);vB('vWood',0,4.15,BZ+BD/2+.06,5.2,.24,.14,0,aged);
   vnWin(-9,2.0,BZ+BD/2,0,.9,.9,'shut','vWood',aged);vnWin(9,2.0,BZ+BD/2,0,.9,.9,'shut','vWood',aged);
-  kput('vThatchB',[0,1.8,BZ+BD/2+2.1],qEuler(0,.1,0),[3,1.3,1.8],hC(vPick(VPAL.thatch)));}
+  rng();FURNISH('hl_tri_haycock',0,0,BZ+BD/2+2.1,.1,{v:1});}   // hay before the barn doors
  // ---- stables and byre down the east side, half-timber over stone, shed roof to the yard
  {const SX=13,SZ=1,SW=5.5,SL=20;hnSocle(SX,0,SZ,SW,.5,SL,0,rub,ash);vB('hRubB',SX,.5,SZ,SW,1.4,SL,0,rub);hnFachBox(SX,1.9,SZ,SW,2.2,SL,0,hC(vPick(HPAL.stucco)),red,'shut');
   vnShedRoof(SX,4.1,SZ,SL+.4,SW,1.4,-Math.PI/2,'hScaleB',tile,.5);
@@ -15345,12 +15314,12 @@ function buildHlRepFarm(G,o){reseed(21521+(o.v|0));const FW=60,FD=40;
   for(let x=x0+.6;x<x1;x+=1.1,r++){const beet=r%4>=2;vB('hPaint',x,.05,0,.34,.14,FD-1,0,soil.clone().multiplyScalar(1.15));
    for(let z=-FD/2+1.2;z<FD/2-1;z+=beet?1.4:1.9){if(beet)kput('hRCLeaf',[x+rr(-.05,.05),.26,z],qEuler(0,rng()*TAU,0),[.2,.18,.2],hC(vPick([0x4a7a3a,0x6a3040])));
     else kput('hRCLeaf',[x+rr(-.05,.05),.3,z],qEuler(rng(),rng()*TAU,0),[.34,.26,.34],hC(vPick([0x8aa870,0x7a9a64,0x9ab87e])));}}
-  vPst('vPost',2,0,-3,.06,2.2,aged);vB('vWood',2,1.6,-3,1.6,.08,.08,0,aged);kput('vCloth',[2,1.2,-2.95],null,[.9,.9,1],hC(HPAL.red));vBall('hPaintBall',2,2.25,-3,.18,hC(0xd8c8a0));kput('vConeT',[2,2.35,-3],null,[.36,.3,.36],th);}
+  FURNISH('hl_rep_scarecrow',2,0,-3,0);}
  // ---- ploughed strip: furrow ridges, the plough and its ox in mid-furrow
  {const x0=10,x1=30;vB('hPaint',(x0+x1)/2,0,0,x1-x0,.05,FD,0,soil.clone().multiplyScalar(.8));
   for(let x=x0+.35;x<x1;x+=.7){const z0=x>18.8?-8.5:-FD/2+.5,z1=x<19?FD/2-.5:(x<19.7?6.6:z0);if(z1>z0)vB('hPaint',x,.05,(z0+z1)/2,.36,.16,z1-z0,0,soil.clone().multiplyScalar(rr(.95,1.1)));
    else vB('vThatchB',x,.05,(z0+FD/2-.5)/2,.3,.1,FD/2-.5-z0,0,th.clone().multiplyScalar(.75));}
-  hnRCBeast(19.3,9.5,0,'ox');const pz=7.4;vBeam([19.3,.8,pz+.9],[19.3,.3,pz-.6],.1,aged);vB('vIron',19.3,0,pz-.9,.3,.3,.9,0,hC(0x3a3632));for(const s of[-1,1])vBeam([19.3,.3,pz-.6],[19.3+s*.5,1.0,pz-2.0],.06,aged);vnFolk(19.3,pz-2.6,1,.1);}
+  hnRCBeast(19.3,9.5,0,'ox');const pz=7.4;hnFurn('hl_rep_plough',19.3,0,pz,0,{},0,-.54);vnFolk(19.3,pz-2.6,1,.1);}
  // ---- the pole hay barn in the corner
  {const bx=24,bz=-14.5,W=9,D=7;for(const sx of[-1,1])for(const sz of[-1,0,1])vPst('vPostB',bx+sx*W/2,0,bz+sz*D/2,.16,4.2,aged);
   for(const s of[-1,1])vB('vWood',bx,4.0,bz+s*D/2,W+.4,.24,.24,0,aged);hnGable(bx,4.2,bz,W,D,1.1,0,'vShingleB',hC(vPick(HPAL.shingle)),.6,'vGableW',aged);
@@ -15373,13 +15342,13 @@ function buildHlRepPens(G,o){reseed(21531+(o.v|0));
  for(const s of[-1,1])vPst('vPostB',-4+s*1.2,0,11,.14,1.6,aged);kput('vWood',[-3.18,.8,12.03],qEuler(0,-1.92,0),[2.2,.9,.08],aged);
  // the cattle shelter: open-fronted shed on posts, board back wall, a hay rack
  {const sx=-8.5,sz=-8.4;for(let k=0;k<=4;k++)vPst('vPostB',sx-6.5+k*3.25,0,sz+2.2,.15,2.6,aged);vB('vWood',sx,0,sz-2.2,13,3.4,.14,0,aged);for(const s of[-1,1])vB('vWood',sx+s*6.5,0,sz,.14,3.0,4.4,0,aged);
-  vnShedRoof(sx,2.6,sz,13.4,4.8,1.1,0,'vShingleB',sh,.4);vB('vWood',sx,1.0,sz-1.7,8,.12,.12,0,aged);for(let k=0;k<9;k++)vB('vWood',sx-4+k,1.0,sz-1.9,.05,.9,.05,0,aged);
-  kput('vThatchB',[sx,1.5,sz-1.8],null,[7.8,.8,.5],hC(vPick(VPAL.thatch)));}
+  vnShedRoof(sx,2.6,sz,13.4,4.8,1.1,0,'vShingleB',sh,.4);
+  rng();FURNISH('hl_rep_hay_rack',sx,0,sz-1.85,0,{v:0});}   // the hay rack along the back wall
  // the pigsty: a low rubble hut with a shed roof, a mud wallow
  {const px=12,pz=-8.5;vB('hRubB',px,0,pz,6.5,1.7,3.6,0,rub);vB('vDarkB',px-1.5,0,pz+1.82,.9,1.0,.04,0);vnShedRoof(px,1.7,pz,6.9,3.8,.6,0,'vShingleB',sh,.3);
   vB('hPaint',11.5,0,-2.8,6,.06,4.6,0,mud);}
  // troughs, a water butt, feed sacks
- hnRCTrough(-7,1,0,3,aged);hnRCTrough(3,-4,Math.PI/2,2.4,aged);hnRCTrough(11,-5,0,2.4,aged);vnWaterButt(-2.2,0,-9.5,.45,1);vnSacks(-12,0,9,3);
+ hnRCTrough(-7,1,0,3,aged);hnRCTrough(3,-4,Math.PI/2,2.4,aged);hnRCTrough(11,-5,0,2.4,aged);hnWaterButt(-2.2,0,-9.5,.45,1);hnSacks(-12,0,9,3);
  // the beasts
  for(const [x,z,a] of [[-12,2,.4],[-8,5,2.6],[-5,-1,-1.2],[-11,-3,1.9],[-6.5,7.5,.1]])hnRCBeast(x,z,a,'cow');
  for(let k=0;k<7;k++)hnRCBeast(rr(.5,6.5),rr(-9.5,1.5),rng()*TAU,'sheep');for(let k=0;k<4;k++)hnRCBeast(rr(9,15),rr(-5,1.5),rng()*TAU,'pig');
@@ -15412,7 +15381,7 @@ function buildHlRepWindmill(G,o){reseed(21541+(o.v|0));const BW=4.4,BD=5.6,BY=5.
    for(const off of[.3,SW]){kput('vWood',[dx*(R+1.8)/2+px*off,hy+dy*(R+1.8)/2+py*off,hz+.18],Q,[R-1.8,.07,.07],aged);}
    for(let r=1.8;r<=R+.01;r+=.8)kput('vWood',[dx*r+px*(SW+.3)/2,hy+dy*r+py*(SW+.3)/2,hz+.18],Q,[.06,SW-.2,.06],aged);
    if(k%2===0)kput('vTarp',[dx*(R+1.8)/2+px*(SW+.3)/2,hy+dy*(R+1.8)/2+py*(SW+.3)/2,hz+.24],Q,[R-1.9,SW-.25,1],cloth);}}
- hnRCCart(5,5,-.6,aged,'sacks');vnSacks(-3,0,-6,4);vnFolk(3,-7,2,2);}
+ hnRCCart(5,5,-.6,aged,'sacks');hnSacks(-3,0,-6,4);vnFolk(3,-7,2,2);}
 
 // ---------------------------------------------------------------- watermill: a log mill on its race
 function buildHlRepWatermill(G,o){reseed(21551+(o.v|0));const W=8,D=11,S=1.2,H=3.6,RX=8.2,RW=3.2;
@@ -15435,8 +15404,8 @@ function buildHlRepWatermill(G,o){reseed(21551+(o.v|0));const W=8,D=11,S=1.2,H=3
  vnShedRoof(W/2+1,S+H-.5,0,5.6,2,.6,Math.PI/2,'vShingleB',sh,.25);for(const z of[-2.6,2.6])vPst('vPost',W/2+1.7,0,z,.1,S+H-.2,aged);
  // footbridge across the race, millstones, sacks, a cart
  vB('vWood',RX,1.1,-5.4,RW+1.6,.14,1.3,0,aged);for(const s of[-1,1])hnDeckRail([RX-RW/2-.8,1.24,-5.4+s*.6],[RX+RW/2+.8,1.24,-5.4+s*.6],1.24,aged,.9);
- for(let k=0;k<2;k++)kput('vPostS',[-W/2-.5,.75,4-k*.4],qEuler(0,0,Math.PI/2+.12),[.75,.24,.75],hC(0xb0aaa0));
- vnSacks(-3,0,D/2+2,5);hnRCCart(-5.5,-1,.5,aged,'sacks');vnFolk(-4.5,D/2+4,2,1);}
+ FURNISH('hl_rep_millstones',-W/2-.5,0,3.8,Math.PI/2);   // leaning on the wall
+ hnSacks(-3,0,D/2+2,5);hnRCCart(-5.5,-1,.5,aged,'sacks');vnFolk(-4.5,D/2+4,2,1);}
 
 // ================================================================= MINES AND QUARRIES
 // ---------------------------------------------------------------- the mine
@@ -15474,7 +15443,7 @@ function buildHlRepMine(G,o){reseed(21561+(o.v|0));
   for(let k=0;k<5;k++){const x=sx-2.4+k*1.2,lift=(k%2)*.3;vB('vIron',x,1.0+lift,sz-.4,.14,2.0,.14,0,iron);vB('vIron',x,1.0+lift,sz-.4,.36,.34,.36,0,iron);vB('vIron',x,2.4+lift,sz-.4,.3,.14,.24,0,iron);}
   vB('vWood',sx,1.8,sz-1.6,W-1.4,1.8,.9,0,aged);hnRCHeap(sx+2,1.8+1.8,sz-1.6,.6,.3,ore,0);hnRCHeap(sx-2,0,sz+1.6,1.2,.6,hC(0x9a928a),2);}
  hnWoodpile(16,0,6,0,4,1.4);for(let k=0;k<5;k++)kput('hLogX',[3+k*.1,.2+(k%2)*.25,13+k*.3],qEuler(0,.2,0),[3.4,.14,.14],aged);
- vnBarrel(-4,0,-4,.35,.9);vnCrate(-3,0,-5,.9,.2);vnFolk(-5,0,3,2);vnFolk(8,6,2,2);}
+ hnBarrel(-4,0,-4,.35,.9);hnCrate(-3,0,-5,.9,.2);vnFolk(-5,0,3,2);vnFolk(8,6,2,2);}
 
 // ---------------------------------------------------------------- the quarry
 // A stepped cut face of pale stone, drill lines on every bench, cut blocks on the floor and the benches, a timber
@@ -15494,18 +15463,18 @@ function buildHlRepQuarry(G,o){reseed(21571+(o.v|0));
  vnLadder(-8,0,-1.2,0,5.2,aged);vnLadder(4,5,-4.6,0,4.8,aged);kput('vWood',[10,2.5,.4],qEuler(Math.atan2(5,5.8),0,0),[1.4,.12,7.7],aged);
  // the floor: gravel, stacked cut blocks, rubble heaps, a stone sledge
  vB('hRCRockB',0,0,8,44,.03,18,0,rock.clone().multiplyScalar(.72));
- for(let i=0;i<3;i++)for(let j=0;j<3-i;j++)for(let k=0;k<2;k++)vB('vPlaster',-12+j*1.7+i*.85,i*.82,5+k*1.1,1.6,.8,1.0,0,stone.clone().multiplyScalar(rr(.95,1.05)));
+ hlRngSkip(12);FURNISH('hl_rep_stone_blocks',-10.3,0,5.55,0,{v:0});   // the stacked cut blocks (12 shades)
  hnRCHeap(-16,0,10,3.2,1.8,stone.clone().multiplyScalar(.9),8);hnRCHeap(16,0,11,2.4,1.3,stone.clone().multiplyScalar(.85),6);
- vB('vWood',-3,0,11,1.4,.3,2.6,.3,aged);vB('vPlaster',-3,.3,11,1.1,.7,1.5,.3,stone);hnRCCart(3,13,-.3,aged,'stone');
+ FURNISH('hl_rep_stone_blocks',-3,0,11,.3,{v:1});hnRCCart(3,13,-.3,aged,'stone');   // a block on its sledge
  // the derrick: mast on a stone foot, a boom, guys to stakes, topping lift, hoist rope and a block on the hook, winch
  {const dx=8,dz=4,MH=12;vB('vStone',dx,0,dz,1.6,.5,1.6,0,rub);vPst('vPostB',dx,.5,dz,.3,MH,aged);
   for(const [gx,gz] of [[-9,-4],[9,-3],[-7,9],[8,9]]){vBeam([dx,MH+.4,dz],[dx+gx,.2,dz+gz],.04,hC(0x6a5a48),'vRope');vPst('vPost',dx+gx,0,dz+gz,.1,.6,aged);}
   const be=[dx-7.2,8.2,dz+3.2];vBeam([dx,1.2,dz],be,.26,aged);vBeam([dx,MH+.2,dz],be,.05,iron,'vRope');vBeam(be,[be[0],3.6,be[2]],.04,iron,'vRope');
   vB('vIron',be[0],3.3,be[2],.3,.34,.3,0,iron);for(const s of[-1,1])vBeam([be[0],3.3,be[2]],[be[0]+s*.6,2.4,be[2]],.03,iron,'vRope');vB('vPlaster',be[0],1.4,be[2],1.8,1.0,1.1,.2,stone);
-  vB('vWood',dx+1.4,0,dz+1.2,1.6,1.0,1.0,0,aged);kput('vPipe',[dx+1.4,1.1,dz+1.2],qEuler(0,0,Math.PI/2),[.3,1.2,.3],iron);for(const s of[-1,1])vB('vIron',dx+1.4+s*.75,.9,dz+1.7,.06,.5,.06,0,iron);}
+  FURNISH('hl_rep_winch',dx+1.4,0,dz+1.2,0,{v:0});}
  // the quarrymen's shed
  {const qx=-15,qz=13,W=6,D=4;vB('vWood',qx,0,qz,W,2.6,D,0,aged);vnShedRoof(qx,2.6,qz,W+.4,D+.2,.8,0,'vShingleB',sh,.45);vnDoor(qx+1.2,0,qz+D/2,0,.9,1.9,'vWood',aged,aged,false);
-  vnWin(qx-1.4,1.1,qz+D/2,0,.7,.7,'shut','vWood',aged);vB('vWood',qx+4.2,0,qz+1,.5,.45,1.8,0,aged);vPst('vPostS',qx+4.2,.7,qz-.6,.5,.14,hC(0xb0a898));}
+  vnWin(qx-1.4,1.1,qz+D/2,0,.7,.7,'shut','vWood',aged);FURNISH('hl_rep_door_bench',qx+4.2,0,qz+1,Math.PI/2,{v:1});FURNISH('hl_rep_grindstone',qx+4.2,0,qz-.6,0);}
  vnFolk(-4,6,3,3);vnFolk(6,9,2,2);}
 
 const HTAG_RC_FARM=(wealth,more)=>({type:['farm'].concat(more||[]),wealth,lit:false});
@@ -15559,10 +15528,9 @@ function buildHlRepTankHouse(G,o){reseed(21801+(o.v|0));const R=2.1,L=9.4,yc=.6+
  // the wind charger and the cistern
  const mx=-L/2-1.3;vPst('vPipeR',mx,0,1.6,.09,11.2,null);for(let k=1;k<4;k++)vB('vIron',mx,k*2.6,1.6,.5,.06,.06,0,iron);hnRotor(mx,11.2,1.6+.2,0,1.9,rust);
  hnCable([mx,10.6,1.6],[mx-3,0,4],null);hnCable([mx,10.6,1.6],[mx-2.6,0,-2.2],null);
- for(const sx of[-1,1])for(const sz of[-1,1])vPst('vPipeR',3.4+sx*.7,0,-4.2+sz*.7,.06,3.4,null);
- vB('vWood',3.4,3.4,-4.2,1.8,.14,1.8,0,log);kput('hTankC',[3.4,3.54+.75,-4.2],null,[.8,1.5,.8],rust);hnCable([3.4,4.5,-3.4],[2.2,y2+1,-2.7],hC(0x4a4038));
- vnBarrel(-1.4,0,R+.9,.3,.8,hC(0x5a4a3e));hnWoodpile(-4.2,0,R+.7,0,1.4,1);
- kput('hRCHeap',[5.8,-.05,2.8],null,[1.2,.5,1],hC(0x5a4a3e));for(let k=0;k<5;k++)kput(vPick(['vPlate','vSheet']),[5.8+rr(-.8,.8),.4,2.8+rr(-.6,.6)],qEuler(-Math.PI/2+rr(-.3,.3),rng()*TAU,0),[rr(.8,1.4),rr(.6,1),1],null);}
+ FURNISH('hl_rep_cistern',3.4,0,-4.2,0,{v:0});hnCable([3.4,4.5,-3.4],[2.2,y2+1,-2.7],hC(0x4a4038));
+ hnBarrel(-1.4,0,R+.9,.3,.8);hnWoodpile(-4.2,0,R+.7,0,1.4,1);
+ hlRngSkip(35);FURNISH('hl_rep_scrap_heap',5.8,0,2.8,0,{v:0});}   // a small heap of salvage (35 numbers)
 
 // ---------------------------------------------------------------- R2 — the hull-plate tower house
 // A shattered block of Ancient concrete (rebar sprouting from the break) is the plinth; two frame storeys stand on it,
@@ -15590,7 +15558,7 @@ function buildHlRepHulkTower(G,o){reseed(21811+(o.v|0));const S=3.2,W=6.8,W2=7.6
  const ax=-4.4,az=-4.4;vPst('vPipeR',ax,0,az,.1,top+4,null);for(let k=1;k<7;k++){const y=k*(top+4)/7;vB('vIron',ax,y,az,.9,.05,.05,.78,iron);}
  kput('vDomeS',[ax+.2,top+2.6,az+.45],qEuler(Math.PI/2+.35,0,.2),[1.3,.4,1.3],hC(0xb8b4a8));vPst('vIron',ax+.2,top+2.6,az+.9,.03,.8,iron);
  hnCable([ax,top+3.6,az],[ax-3,0,az+1],null);hnCable([ax,top+3.6,az],[ax+1,0,az-3],null);
- vnBarrel(3.6,0,5.4,.32,.85,hC(0x4a5a4e));vnBarrel(4.2,0,5.9,.32,.85,hC(0x5a4a3e));}
+ hnBarrel(3.6,0,5.4,.32,.85);hnBarrel(4.2,0,5.9,.32,.85);}
 
 // ---------------------------------------------------------------- I1 — the powder works
 // Roketstad's trade: three plank sheds (frame walls, steep corrugated gables) separated by earthen blast berms; a boiler
@@ -15602,7 +15570,7 @@ function buildHlRepPowderWorks(G,o){reseed(21821+(o.v|0));
  for(const x of[-11,0,11]){vB('vStone',x,0,-1,7.6,.3,14.6,0,hC(vPick(HSV.conc)));hnFachBox(x,.3,-1,7,3.2,14,0,null,null,lit);
   hnGable(x,3.5,-1,14,7,1.4,Math.PI/2,'vCorr',corr,.6,'vGableW',log);
   vB('hPlankB',x,.3,6.1,2.8,2.6,.12,0,hC(vPick(HFRAME.plank)));vB('vIron',x,2.95,6.2,3.4,.1,.1,0,iron);                   // the sliding door on its rail
-  for(let k=0;k<5;k++)vnBarrel(x+rr(-3,3),0,7.3+rr(0,.8),.3,.8,hC(vPick([0x5a4a3e,0x6a5040,0x4a4038])));
+  for(let k=0;k<5;k++)hnBarrel(x+rr(-3,3),0,7.3+rr(0,.8),.3,.8,hC(vPick([0x5a4a3e,0x6a5040,0x4a4038])));
   vPst('vPipe',x+3.2,0,7.6,.04,5,iron);vB('hPaint',x+3.2+.45,4.3,7.6,.9,.6,.03,0,red);}                                    // red warning flags
  for(const x of[-5.5,5.5])kput('hBatterRub',[x,0,-1],null,[3.4,3.8,15],turf);                                            // blast berms
  // the boiler house: rubble firebox, the tank, the glowing mouth, the pipe stack on guys
@@ -15614,8 +15582,7 @@ function buildHlRepPowderWorks(G,o){reseed(21821+(o.v|0));
  for(const [dx,dz] of[[5,3],[4,-4],[-3,-5]])hnCable([sx,14,bz],[sx+dx,0,bz+dz],null);
  // the rail and the powder cart
  for(const s of[-1,1])vB('vIron',0,.02,9.2+s*.5,34,.12,.08,0,iron);for(let k=0;k<42;k++)vB('vWood',-16.4+k*.8,0,9.2,.22,.06,1.5,0,log);
- vB('vWood',4,.45,9.2,1.8,.7,1.2,0,log);for(const u of[-.6,.6])for(const s of[-1,1])kput('vHoop',[4+u,.35,9.2+s*.55],null,[.28,.28,2],iron);
- for(let k=0;k<3;k++)vnBarrel(3.5+k*.5,1.15,9.2,.22,.5,hC(0x5a4a3e));
+ FURNISH('hl_rep_rail_tub',4,0,9.2,0,{v:1});   // the powder cart on the rail, with its kegs
  // the watch post over the gate
  const wx=15,wz=10;for(const a of[-1,1])for(const b of[-1,1])kput('hCol',[wx+a*1,0,wz+b*1],null,[.12,4.5,.12],post);
  vB('vWood',wx,4.5,wz,2.6,.16,2.6,0,log);kput('hRailC',[wx,4.95,wz+1.25],null,[2.4,.7,1],log);kput('hRailC',[wx+1.25,4.95,wz],qEuler(0,Math.PI/2,0),[2.4,.7,1],log);
@@ -15648,11 +15615,10 @@ function buildHlRepHullYard(G,o){reseed(21831+(o.v|0));
  vB('vIron',3,10.6,cz,1.4,.4,1,0,iron);for(const s of[-1,1])hnCable([3,10.6,cz+s*.35],[3+s*1.8,6.4,cz],iron);
  kput('hHullSeg',[3,4.4,cz],qEuler(0,0,Math.PI/2).multiply(qEuler(0,-Math.PI*.31,0)),[3,7,3],rust);
  // heaps, the pipe rack, the engine bell, a trolley line of plates
- for(const [x,z,r] of[[-9,3,2.4],[-5,9,2],[9,10,2.2]]){kput('hRCHeap',[x,-.05,z],qEuler(0,rng()*TAU,0),[r,r*.45,r],hC(vPick([0x5a4a3e,0x6a5040])));
-  for(let k=0;k<14;k++){const a=rng()*TAU,d=Math.sqrt(rng())*r*.85;kput(vPick(['vPlate','vSheet','vPlateW']),[x+Math.cos(a)*d,Math.max(.1,r*.45*(1-d/r))+.05,z+Math.sin(a)*d],qEuler(-Math.PI/2+rr(-.4,.4),rng()*TAU,0),[rr(.8,1.8),rr(.6,1.3),1],null);}}
+ for(const [x,z] of[[-9,3],[-5,9],[9,10]]){hlRngSkip(100);FURNISH('hl_rep_scrap_heap',x,0,z,0,{v:1});}   // heaps of plate (100 numbers each)
  for(const x of[7,11]){vB('vWood',x,0,1.5,.2,1,.2,0,log);vB('vWood',x,0,-1.5,.2,1,.2,0,log);vB('vWood',x,1,0,.24,.14,3.4,0,log);}
  for(let k=0;k<7;k++)kput('spipe',[9,1.24+Math.floor(k/4)*.3,-1.2+(k%4)*.8],qEuler(0,0,Math.PI/2),[.14,5.6,.14],rust);
- kput('vConeI',[-10,1.9,11],qEuler(0,.4,Math.PI/2),[1.9,4.4,1.9],rust);kput('spipe',[-12.3,1.9,11],qEuler(0,.4,Math.PI/2),[.6,1.2,.6],rust);
+ FURNISH('hl_rep_engine_bell',-12.02,0,11.86,.4);   // the spent engine bell on its side, its wide end where the drawn one's was
  // the breaker's office: a small frame house by the gate
  vB('vStone',-11,0,-1,5,.3,4,0,hC(vPick(HSV.conc)));hnFachBox(-11,.3,-1,4.6,2.8,3.6,0,null,beamC,lit);hnGable(-11,3.1,-1,4.6,3.6,1.5,0,'vCorr',corr,.5,'vGableW',log);
  vnChimney(-12.2,2.6,-1.6,2.6,.12,true);
@@ -15699,7 +15665,8 @@ function hnSolar(x,y,z,ry,w,d){for(const s of[-1,1]){const p=loc(x,z,s*(w/2-.2),
 function hnDish(x,y,z,ry,r){vPst('vIron',x,y,z,.05,r*.8,hC(0x3a3430));kput('vDomeS',[x,y+r*.8,z],qEuler(0,ry,0).multiply(qEuler(Math.PI/2+.45,0,0)),[r,r*.32,r],hC(0xd8d4c8));}
 function hnMast(x,y,z,w,h,c){c=c||hC(0x4a4440);for(const sx of[-1,1])for(const sz of[-1,1])beam('vIron',[x+sx*w/2,y,z+sz*w/2],[x+sx*w*.2,y+h,z+sz*w*.2],.08,.08,c);
  const n=Math.round(h/2.2);for(let k=1;k<n;k++){const t=k/n,hw=w/2*(1-.8*t)+w*.1*t,yy=y+h*t;for(const [a,b] of[[[-1,-1],[1,-1]],[[1,-1],[1,1]],[[1,1],[-1,1]],[[-1,1],[-1,-1]]])beam('vIron',[x+a[0]*hw,yy,z+a[1]*hw],[x+b[0]*hw,yy,z+b[1]*hw],.05,.05,c);}}
-function hnLantern(x,y,z){vPst('vRope',x,y,z,.01,.3,hC(0x2e2a26));kput('hPaintBall',[x,y-.18,z],null,[.2,.27,.2],hC(vPick([0xc0302a,0xd84a2a,0xe0a030])));vBall('vBulb',x,y-.2,z,.1);}
+// a paper lantern hung from (x,y,z): furniture, the catalog's (its paper drew a colour); its hook rope ends at y+.3
+function hnLantern(x,y,z){rng();return FURNISH('hl_rep_paper_lantern',x,y-.45,z,0,{v:0});}
 function hnBunting(a,b,n){hnCable(a,b,hC(0x3a3028));for(let i=1;i<n;i++){const t=i/n,p=[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t-Math.sin(t*Math.PI)*.4,a[2]+(b[2]-a[2])*t];
  kput('hPaint',[p[0],p[1]-.18,p[2]],qEuler(0,Math.atan2(b[0]-a[0],b[2]-a[2])+Math.PI/2,0),[.3,.36,.02],hC(vPick([0xc0302a,0xd8a030,0x2e8a88,0x3a6aa8,0xefe7d6])));}}
 function hnPole(x,z,h,to){vPst('vPost',x,0,z,.14,h,hC(0x5a4636));vB('vWood',x,h-.6,z,1.4,.12,.12,0,hC(0x5a4636));for(const t of to||[])hnCable([x,h-.55,z],t,null);}
@@ -15721,7 +15688,7 @@ function buildHlRepHullVault(G,o){reseed(21841+(o.v|0));const L=26,R=8.2,arc=Mat
  const fx=L/2+.05;vB('vDarkB',fx,.4,0,.08,5.2,6,0);for(const s of[-1,1])vB('hPlankB',fx+.1,.4,s*2.4,.1,5.2,1.8,0,plank.clone().multiplyScalar(1.15));vB('vIron',fx+.2,5.7,0,.1,.12,8,0,iron);
  hnSignBoard(fx+.08,6.4,0,Math.PI/2,5,1.1,'rocket');
  for(const x of[-6,6]){vnBarrel(x,.4+yc+R-.05,0,.5,.8,rust);kput('vConeI',[x,.4+yc+R+.75,0],null,[.6,.35,.6],iron);}
- for(let k=0;k<4;k++){const x=L/2+2.5,z=-hw+1+k*1.4;for(let j=0;j<hri(3,6);j++)kput(vPick(['vPlate','vPlateW','vSheet']),[x+rr(-.4,.4),.3+j*.05,z],qEuler(-Math.PI/2+rr(-.1,.1),rr(-.3,.3),0),[2.2,1.2,1],null);}}
+ for(let k=0;k<4;k++)for(let j=0;j<hri(3,6);j++)hlRngSkip(4);FURNISH('hl_rep_plate_stack',L/2+2.5,0,-hw+3.1,Math.PI/2,{v:0});}   // the plates stacked by the doors
 
 // ---------------------------------------------------------------- 2. the Scrap Kontor
 // Where salvage is weighed, priced and paid for: two containers are the ground floor and the strongroom; a frame storey
@@ -15831,12 +15798,11 @@ function buildHlRepGarage(G,o){reseed(21901+(o.v|0));const lit=vLit()?'lit':'gla
  kput('vCorr',[3.8,3.2,0],qEuler(0,0,-.16),[6,.1,6.2],corr);
  vB('vRustB',4,.55,0,4.2,.9,1.9,0,rust);vB('vRustB',3.7,1.45,0,2.2,.7,1.8,0,rust);vB('vDarkB',3.7,1.5,0,2.3,.5,1.82,0);
  for(const x of[2.6,5.4])for(const z of[-.95,.95]){vB('boxCR',x,0,z,.4,.4,.4,0,hC(0x8a8478));}
- for(let k=0;k<4;k++)kput('vHoop',[7.6,.12+k*.22,-2],qEuler(Math.PI/2,0,0),[.42,.42,3],hC(0x201c1a));
+ FURNISH('pa_tyre_stack',7.6,0,-2,0,{v:1});   // tyres
  // the water tank on its stand, drums, the tool chest, the sign, a lamp
- for(const sx of[-1,1])for(const sz of[-1,1])beam('vIron',[-2.4+sx*1,0,-3.8+sz*1],[-2.4+sx*.8,8.2,-3.8+sz*.8],.08,.08,iron);vB('vIron',-2.4,8.2,-3.8,2,.12,2,0,iron);
- kput('hTankC',[-2.4,8.32+.9,-3.8],null,[.85,1.8,.85],rust);kput('hTankCap',[-2.4,10.1,-3.8],null,[.85,.3,.85],rust);
- vnBarrel(.4,0,2.6,.3,.85,hC(0x5a4a3e));vnBarrel(.9,0,3.1,.3,.85,hC(0xb89a30));vB('hPaint',-.2,0,-2.4,.6,1,.9,0,hC(0xb3322a));
- hnSign(.1,2.6,1.6,Math.PI/2,'gear');vnLampPost(8,0,3,4);}
+ FURNISH('hl_rep_cistern',-2.4,0,-3.8,0,{v:1});   // the water tank on its steel stand
+ hnBarrel(.4,0,2.6,.3,.85);hnBarrel(.9,0,3.1,.3,.85);   // (the red tool chest stood inside the tower's walls: the interiors' room)
+ hnSign(.1,2.6,1.6,Math.PI/2,'gear');hnLampPost(8,0,3,4);}
 
 // ---------------------------------------------------------------- 8. the container shop row
 // Three containers opened as shops under striped awnings, counters out front, goods piled, a hanging sign each; a frame
@@ -15845,7 +15811,7 @@ function buildHlRepContShops(G,o){reseed(21911+(o.v|0));const lit=vLit()?'lit':'
  vnReg('Container shops',0,0,10,9);
  const syms=['bread','key','boot','fish','candle','flask'];
  for(const [i,x] of[[0,-6.3],[1,0],[2,6.3]]){hnCont(x,0,0,0,6,hContC(),{shop:true});hnSign(x+2.6,2.3,1.3,0,syms[(i*2+hri(0,1))%syms.length]);
-  for(let k=0;k<4;k++){const u=x+rr(-2.2,2.2);if(rng()<.5)vnBarrel(u,0,2.2,.25,.7,hC(vPick([0x5a4a3e,0x6a5040])));else vB('vWood',u,0,2.2,.6,.5,.5,rr(0,1),log);}
+  for(let k=0;k<4;k++){const u=x+rr(-2.2,2.2);if(rng()<.5)hnBarrel(u,0,2.2,.25,.7,hC(vPick([0x5a4a3e,0x6a5040])));else hnCrate(u,0,2.2,.6,rr(0,1),log);}
   if(i!==1)vnShedRoof(x,2.6,0,6.2,2.6,.4,0,'vCorr',corr,.3);}
  hnFachBox(0,2.6,0,6,2.6,2.8,0,null,null,lit);hnGable(0,5.2,0,6,2.8,1.6,0,'vCorr',corr,.5,'vGableW',log);hnBarge(0,5.2,0,6,2.8,1.6*1.4,0,.5,hC(HPAL.white),'lace');
  hnBunting([-9.3,2.8,1.4],[-3,4.8,1.4],6);hnBunting([3,4.8,1.4],[9.3,2.8,1.4],6);for(const x of[-7.8,-4.8,4.8,7.8])hnLantern(x,2.55,2.4);}
@@ -15858,13 +15824,13 @@ function buildHlRepLanternStall(G,o){reseed(21921+(o.v|0));const lit=vLit()?'lit
  vnReg('Lantern stall',0,0,6,11);
  vB('hPlankB',0,0,-1.6,7,3,.12,0,plank);for(const s of[-1,1])vB('hPlankB',s*3.44,0,0,.12,3,3.3,0,plank);vB('vDarkB',0,.05,-1.5,6.7,2.9,.05,0);
  for(const x of[-3.4,-1.1,1.1,3.4])kput('hCol',[x,0,1.62],null,[.12,3,.12],post);vB('hPaint',0,2.9,1.62,7.1,.22,.2,0,post);
- for(let s=0;s<3;s++){vB('vWood',0,.6+s*.8,-1.35,6.4,.06,.5,0,log);for(let k=0;k<9;k++)kput(vPick(['vClayPot','vGourd','vBarrel']),[-3+k*.75,.66+s*.8,-1.35],null,[.16,.24,.16],hC(vPick([0x9a5a3a,0xc8a060,0x5a7a5a,0xb3322a,0xefe7d6])));}
- vB('vWood',0,0,.9,5.2,.95,.6,0,log);for(let k=0;k<7;k++)hnLantern(-3+k,2.75,1.9);
+ hlRngSkip(54);   // the shelves of pots and the counter stood in the stall: the interiors' room (the pots drew 54 numbers)
+ for(let k=0;k<7;k++)hnLantern(-3+k,2.75,1.9);
  kput('vCorr',[0,3.25,2.2],qEuler(.28,0,0),[7.6,.08,1.9],red);
  vB('vPlaster',0,3,0,6.2,2.8,3.6,0,hC(0xe8e2d4));hnLatWin(-1.5,3.8,1.82,0,1.1,1.1,lit,null);hnLatWin(1.5,3.8,1.82,0,1.1,1.1,lit,null);hnLatWin(3.12,3.8,0,Math.PI/2,.8,.9,lit,null);
  const top=hnGable(0,5.8,0,6.2,3.6,1.8,0,'hGableSc',red,.6,'vGablePl',hC(0xe8e2d4));hnBarge(0,5.8,0,6.2,3.6,1.8*1.8,0,.6,hC(HPAL.white),'lace');
  hnSignBoard(0,5,1.84,0,3,.7,'candle');
- hnStoneChimney(-3.6,0,-.6,9.6,.8);vB('vWood',1.6,top-.2,.2,1.6,.35,.8,0,log);for(let k=0;k<6;k++)kput('vLeaf',[1+k*.24,top+.25,.2+rr(-.2,.2)],null,[.2,.2,.2],hC(0x4a7a34));
+ hnStoneChimney(-3.6,0,-.6,9.6,.8);hlRngSkip(6);FURNISH('iziz_vern_planter',1.6,top-.2,.2,0,{v:1});   // the rooftop box of greens
  const px=4.8,pz=2.4;kput('vPost',[px,0,pz],qEuler(0,0,-.05),[.14,7.5,.14],hC(0x5a4636));vB('vWood',px+.3,6.8,pz,1.4,.12,.12,0,hC(0x5a4636));
  hnCable([px,6.9,pz],[3.1,5.4,1.8]);hnCable([px,6.9,pz],[9,6.4,4]);for(const y of[5.4,4.2])hnLantern(px+.5,y,pz);}
 
@@ -15896,11 +15862,10 @@ HL.def({key:'hl_rep_radome_tower',name:'Radome tower house',branch:'republican',
 // Travis: "Create more salvage-forward buildings and use them and the recently made scrap buildings to flesh out the
 // port-ward side of town as a large scrap and industrial district." Five more, built on the biggest wrecks: a rocket
 // stage, a furnace of hull plate, a fuselage over a market, a sawtooth press shed, a gasholder. Born reclaimed.
-// a market stall: four posts, a striped cloth roof, a trestle table and goods (used here and on the town's plazas)
-function hnStall(x,y,z,ry,c){const w=2.4,d=1.8,post=hC(0x5a4636);for(const sx of[-1,1])for(const sz of[-1,1]){const p=loc(x,z,sx*(w/2-.08),sz*(d/2-.08),ry);vPst('vPost',p[0],y,p[1],.05,2.2+(sz<0?.3:0),post);}
- kput('vClothB',[x,y+2.45,z],qEuler(0,ry,0).multiply(qEuler(-.16,0,0)),[w+.3,.04,d+.4],c||hC(vPick([0xc03a2a,0x2e8a88,0xd8a030,0x3a6aa8,0x6a8a3a])));
- const t=loc(x,z,0,d/2-.45,ry);vB('vWood',t[0],y+.75,t[1],w-.3,.08,.7,ry,hC(0x7a6248));for(const s of[-1,1]){const p=loc(t[0],t[1],s*(w/2-.4),0,ry);vB('vWood',p[0],y,p[1],.08,.75,.6,ry,post);}
- for(let k=0;k<5;k++){const p=loc(t[0],t[1],rr(-w/2+.4,w/2-.4),rr(-.2,.2),ry);kput(vPick(['vClayPot','vGourd','vSack','vBarrel']),[p[0],y+.83,p[1]],null,[rr(.12,.2),rr(.16,.3),rr(.12,.2)],hC(vPick([0x9a5a3a,0xc8a060,0x5a7a5a,0xb3322a,0xefe7d6,0x8a6a3a])));}}
+// a market stall: four posts, a striped cloth roof, a trestle table and goods (used here and on the town's plazas).
+// Furniture, the catalog's striped market stall; its cloth (unless given) and goods drew 1 + 35 numbers. Outside any
+// builder (Roketstad's open-air markets) it is placed in world coordinates.
+function hnStall(x,y,z,ry,c){hlRngSkip((c?0:1)+35);return FURNISH('hl_rep_market_stall',x,y,z,ry,VERN.cur?{}:{world:'rk_market'});}
 
 // ---------------------------------------------------------------- 1. the stage tenement
 // A spent rocket stage lying on concrete cradles — fins at the tail, the engine bell still on — made a row of homes:
@@ -15929,7 +15894,7 @@ function buildHlRepSmelter(G,o){reseed(22111+(o.v|0));const rust=hC(vPick(HSV.ru
  for(const x of[-5.6,-.4]){vPst('vPipeR',x,7,-2.5,.7,11,null);for(let k=1;k<4;k++)kput('vHoop',[x,7+k*2.8,-2.5],qEuler(Math.PI/2,0,0),[.72,.72,2],iron);}
  kput('hTankC',[-3,8.2,1.4],null,[1.6,2.4,1.6],rust);kput('vConeI',[-3,6.4,1.4],qEuler(Math.PI,0,0),[1.6,1.2,1.6],rust);                             // the charging hopper
  beam('vWood',[8,1.2,3],[-1.4,9.2,1.4],.9,.12,log);for(let k=0;k<4;k++){const t=(k+.5)/4;vB('vWood',8-9.4*t,0,3-1.6*t,.2,1.2+8*t,.2,0,log);}   // the conveyor on trestles
- for(let k=0;k<3;k++){vB('vWood',8+k*2.2,0,5,2,1,2,0,log);kput('hRCHeap',[8+k*2.2,1,5],null,[.9,.6,.9],hC(0x5a4a3e));}
+ for(let k=0;k<3;k++)FURNISH('hl_rep_scrap_bin',8+k*2.2,0,5,0);   // the scrap bins at the conveyor's foot
  hnFachBox(6,0,-3,7,3.4,6,0,null,null,lit);hnGable(6,3.4,-3,7,6,1.5,0,'vCorr',corr,.6,'vGableW',log);}
 
 // ---------------------------------------------------------------- 3. the wreck market hall
@@ -15953,7 +15918,7 @@ function buildHlRepPressWorks(G,o){reseed(22131+(o.v|0));const W=24,D=14,H=4.4,c
  for(let k=0;k<5;k++){const x=-W/2+W*(k+.5)/5;kput('vCorr',[x,H+1.1,0],qEuler(0,0,.55),[W/5*1.12,.1,D+.4],corr);vB('vWinGlass',x+W/10-.15,H,0,.08,2.1,D-.4,0);}   // sawtooth roofs, glazed north lights
  vB('vDarkB',0,0,D/2+.03,5,3.6,.06,0);vB('vIron',0,3.8,D/2+.1,6,.2,.12,0,iron);
  for(const s of[-1,1]){beam('vIron',[s*9,0,D/2+2],[s*9,6,D/2+5],.25,.25,iron);beam('vIron',[s*9,0,D/2+8],[s*9,6,D/2+5],.25,.25,iron);}vB('vIron',0,6,D/2+5,19,.4,.5,0,rust);
- for(let k=0;k<3;k++)for(let j=0;j<5;j++)kput('vPlate',[-5+k*5,.1+j*.06,D/2+5],qEuler(-Math.PI/2,rr(-.1,.1),0),[3.4,2,1],null);
+ for(let k=0;k<3;k++){hlRngSkip(5);FURNISH('hl_rep_plate_stack',-5+k*5,0,D/2+5,0,{v:0});}   // plate stacks under the gantry
  hnFachBox(W/2+2.6,0,-2,4.2,2.8,5,0,null,null,lit);hnGable(W/2+2.6,2.8,-2,5,4.2,1.5,Math.PI/2,'vCorr',corr,.4,'vGableW',log);}
 
 // ---------------------------------------------------------------- 5. the gasholder tenement
@@ -16076,7 +16041,7 @@ function buildHlRepArcoQuarter(G,o){reseed(22201+(o.v|0));
   const n=ax(B,-4,B.yc+R-.2,0);hnBunting([m[0],m[1]+5,m[2]],[n[0],n[1]+1.5,n[2]],12);}
  // the mouth of the cleft: small houses, a stall, a lamp
  for(const [key,x,z,ry] of[['hl_rep_house_poor_a',-12,24,0],['hl_rep_lantern_stall',12,24.5,0],['hl_rep_house_poor_b',-23,26,.1]]){if(VERN.defs[key])hnSub(key,x,0,z,ry);}
- hnStall(0,0,19,0);vnLampPost(3,0,17,3.8);vnFolk(0,18,4,4);}
+ hnStall(0,0,19,0);hnLampPost(3,0,17,3.8);vnFolk(0,18,4,4);}
 HL.def({key:'hl_rep_arco_quarter',name:'The Fallen Arcology',branch:'republican',family:'Monuments',tags:{type:['multi-family dwelling','ruin'],wealth:'poor',lit:true,salvage:true,landmark:true},w:118,d:70,h:34,build:buildHlRepArcoQuarter});
 // ================================================================= REPUBLICAN — the shipbreakers' yards (round 10c)
 // Travis: "add a couple of crashed space ships in the process of deconstruction just northeast of the spaceport outside
@@ -16132,13 +16097,12 @@ function hlShipBreak(G,o,V){   // the shared body; the two builders below seed i
  {const ex=XS+(V?6:9),n=V?2:4;for(let k=0;k<n;k++){const z=(k-(n-1)/2)*(V?5:5.6),s=V?2.1:k%3===0?3:2.3;
    for(const dx of[-s,s])vB('hPlankB',ex+dx*.6,0,z,.5,.5,s*2.2,0,log);kput('hShipBell',[ex,s+.5,z],qEuler(0,0,Math.PI/2),[s,s*2.2,s],bell.clone().multiplyScalar(rr(.8,1.1)));}
   kput('hShipDisc',[ex+(V?6:8),0,V?-7:-12],qEuler(Math.PI/2-.12,.3,0),[R-.4,1,R-.4],hull.clone().multiplyScalar(.7));}
- for(let k=0;k<(V?3:5);k++){const x=X0+4+k*5.4,z=R*2+5;for(let i=0;i<hri(4,8);i++)kput('hShipB',[x+rr(-.2,.2),.18+i*.28,z+rr(-.2,.2)],qEuler(0,rr(-.08,.08),0),[4.2,.26,2.8],hull.clone().multiplyScalar(rr(.75,.95)));}
+ for(let k=0;k<(V?3:5);k++){for(let i=0;i<hri(4,8);i++)hlRngSkip(4);FURNISH('hl_rep_plate_stack',X0+4+k*5.4,0,R*2+5,0,{v:2});}   // stacks of hull plates
  for(let k=0;k<(V?2:3);k++){const x=X0+2+k*6,z=R*2+11;for(let i=0;i<4;i++)kput('hHullSeg',[x,1.2+i*.5,z],qEuler(0,0,Math.PI/2),[2.2,4,2.2],hull.clone().multiplyScalar(rr(.75,.95)));}
  // the camp: sheds of their own salvage, a forge fire under a lean-to, a winch hauling on the hull, carts, lamps, folk
  {const cx=V?16:28,cz=-15;for(const [dx,w,d] of[[0,6,4],[7.5,4.4,3.6]]){vB('vCorr',cx+dx,0,cz,w,2.6,d,0,corr);vnShedRoof(cx+dx,2.6,cz,w+.4,d+.4,.5,0,'vCorr',rust,.3,.08);vnDoor(cx+dx,0,cz+d/2+.02,0,1,2.1,'vWood',log,log,false);vnWin(cx+dx+w/4,1,cz+d/2+.02,0,.8,.6,lit,'vWood',log);}
-  const fx=cx-6;for(const [sx,sz] of[[-1,-1],[1,-1],[-1,1],[1,1]])vPst('vPipeR',fx+sx*1.4,0,cz+sz*1.2,.06,2.4,null);vnShedRoof(fx,2.4,cz,3.2,2.8,.4,0,'vCorr',rust,.2,.06);
-  vB('hRubB',fx,0,cz,1.4,.8,1.2,0,hC(vPick(HPAL.rubble)));vBall('vEmber',fx,.85,cz,.35,null,.1);vnChimney(fx+.4,.8,cz-.3,3.6,.12,true);
-  const wx=XC-4,wz=-(R+6);vB('hPlankB',wx,0,wz,3,.4,2,0,log);kput('hTankC',[wx,1.1,wz],qEuler(Math.PI/2,0,0),[.7,1.8,.7],iron);hnCable([wx,1.1,wz+.5],A(XC-4,0,-R+.2),iron);
+  const fx=cx-6;rng();FURNISH('hl_rep_salvage_forge',fx,0,cz,0);   // the forge fire under its lean-to
+  const wx=XC-4,wz=-(R+6);FURNISH('hl_rep_winch',wx,0,wz,0,{v:1});hnCable([wx,1.1,wz+.5],A(XC-4,0,-R+.2),iron);
   hnRCCart(cx-2,cz+7,.3,log,true);hnRCCart(XS+2,-(R+4),-.6,log,true);hnRBLamps([[cx-3,cz+4],[XC,R+5],[X0,-(R+4)]],3.6);vnFolk((X0+XS)/2,-(R+5),V?5:8,8);vnFolk(cx,cz+5,3,4);}}
 function buildHlRepShipBreak(G,o){reseed(22401+(o.v|0));hlShipBreak(G,o,0);}
 function buildHlRepShipBreakL(G,o){reseed(22411+(o.v|0));hlShipBreak(G,o,1);}
@@ -17685,8 +17649,9 @@ KratorFurniture.setDetail(.5);   // settlement-scale: half the segments on round
 const HLF={on:!/[?&]furniture=0\b/.test(location.search),interiors:/[?&]interiors=1\b/.test(location.search),
  batch:KratorFurniture.batch(),placed:[],missing:{},buildings:[]};
 HLF.adapter=KratorInteriors.runtimeAdapter(KratorFurniture,HLF.batch);
-function FURNISH(key,lx,ly,lz,lry,o){const c=VERN.cur;if(!c){reportErr('FURNISH '+key+' outside a builder');return null;}o=o||{};
+function FURNISH(key,lx,ly,lz,lry,o){const c=VERN.cur;o=o||{};if(!c&&!o.world){reportErr('FURNISH '+key+' outside a builder');return null;}
  if(!KratorFurniture.has(key)){HLF.missing[key]=(HLF.missing[key]||0)+1;return null;}
+ if(!c)return hlfWorld(key,lx,ly,lz,lry||0,o);
  const s=c.o.scale||1,p=loc(c.x,c.z,lx*s,lz*s,c.ry);
  const rec={key,variant:o.v|0,seed:o.seed||(HLF.placed.length+1),lx,ly,lz,lry:lry||0,x:p[0],y:(c.o.y||0)+ly*s,z:p[1],ry:c.ry+(lry||0),
   building:c.D.key,setting:o.setting||'outdoor'};
@@ -17696,6 +17661,12 @@ function FURNISH(key,lx,ly,lz,lry,o){const c=VERN.cur;if(!c){reportErr('FURNISH 
  // a builder's pieces stand outside, seen whole: full detail (at half, a disc drawn as a rod, a shield or a target face,
  // is a 4-sided diamond); the interiors' many pieces keep the half detail set above
  if(HLF.on){KratorFurniture.setDetail(1);HLF.batch.place(key,rec.x,rec.y,rec.z,rec.ry,{variant:rec.variant,seed:rec.seed,wealth:hlfWealth(c.D),building:c.D.key,setting:rec.setting});KratorFurniture.setDetail(.5);}
+ return rec;}
+// outside any builder (a town's own furniture, placed by its layout: Roketstad's market stalls), with {world: a name for
+// the record's `building`}: (x, y, z, ry) are world coordinates; the record goes on HLF.placed only
+function hlfWorld(key,x,y,z,ry,o){const rec={key,variant:o.v|0,seed:o.seed||(HLF.placed.length+1),lx:x,ly:y,lz:z,lry:ry,x,y,z,ry,building:o.world,setting:o.setting||'outdoor'};
+ HLF.placed.push(rec);
+ if(HLF.on){KratorFurniture.setDetail(1);HLF.batch.place(key,x,y,z,ry,{variant:rec.variant,seed:rec.seed,wealth:o.wealth!=null?o.wealth:.5,building:o.world,setting:rec.setting});KratorFurniture.setDetail(.5);}
  return rec;}
 function hlfWealth(D){const w=D.tags&&D.tags.wealth;return w==='poor'?.2:w==='rich'?.8:w==='civic'?.65:.5;}
 // the interiors hook: a TOP-LEVEL placement (not a sub-building a compound places) with an interior set item

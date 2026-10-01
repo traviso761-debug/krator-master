@@ -2,11 +2,10 @@
 // Travis: "Create more salvage-forward buildings and use them and the recently made scrap buildings to flesh out the
 // port-ward side of town as a large scrap and industrial district." Five more, built on the biggest wrecks: a rocket
 // stage, a furnace of hull plate, a fuselage over a market, a sawtooth press shed, a gasholder. Born reclaimed.
-// a market stall: four posts, a striped cloth roof, a trestle table and goods (used here and on the town's plazas)
-function hnStall(x,y,z,ry,c){const w=2.4,d=1.8,post=hC(0x5a4636);for(const sx of[-1,1])for(const sz of[-1,1]){const p=loc(x,z,sx*(w/2-.08),sz*(d/2-.08),ry);vPst('vPost',p[0],y,p[1],.05,2.2+(sz<0?.3:0),post);}
- kput('vClothB',[x,y+2.45,z],qEuler(0,ry,0).multiply(qEuler(-.16,0,0)),[w+.3,.04,d+.4],c||hC(vPick([0xc03a2a,0x2e8a88,0xd8a030,0x3a6aa8,0x6a8a3a])));
- const t=loc(x,z,0,d/2-.45,ry);vB('vWood',t[0],y+.75,t[1],w-.3,.08,.7,ry,hC(0x7a6248));for(const s of[-1,1]){const p=loc(t[0],t[1],s*(w/2-.4),0,ry);vB('vWood',p[0],y,p[1],.08,.75,.6,ry,post);}
- for(let k=0;k<5;k++){const p=loc(t[0],t[1],rr(-w/2+.4,w/2-.4),rr(-.2,.2),ry);kput(vPick(['vClayPot','vGourd','vSack','vBarrel']),[p[0],y+.83,p[1]],null,[rr(.12,.2),rr(.16,.3),rr(.12,.2)],hC(vPick([0x9a5a3a,0xc8a060,0x5a7a5a,0xb3322a,0xefe7d6,0x8a6a3a])));}}
+// a market stall: four posts, a striped cloth roof, a trestle table and goods (used here and on the town's plazas).
+// Furniture, the catalog's striped market stall; its cloth (unless given) and goods drew 1 + 35 numbers. Outside any
+// builder (Roketstad's open-air markets) it is placed in world coordinates.
+function hnStall(x,y,z,ry,c){hlRngSkip((c?0:1)+35);return FURNISH('hl_rep_market_stall',x,y,z,ry,VERN.cur?{}:{world:'rk_market'});}
 
 // ---------------------------------------------------------------- 1. the stage tenement
 // A spent rocket stage lying on concrete cradles — fins at the tail, the engine bell still on — made a row of homes:
@@ -35,7 +34,7 @@ function buildHlRepSmelter(G,o){reseed(22111+(o.v|0));const rust=hC(vPick(HSV.ru
  for(const x of[-5.6,-.4]){vPst('vPipeR',x,7,-2.5,.7,11,null);for(let k=1;k<4;k++)kput('vHoop',[x,7+k*2.8,-2.5],qEuler(Math.PI/2,0,0),[.72,.72,2],iron);}
  kput('hTankC',[-3,8.2,1.4],null,[1.6,2.4,1.6],rust);kput('vConeI',[-3,6.4,1.4],qEuler(Math.PI,0,0),[1.6,1.2,1.6],rust);                             // the charging hopper
  beam('vWood',[8,1.2,3],[-1.4,9.2,1.4],.9,.12,log);for(let k=0;k<4;k++){const t=(k+.5)/4;vB('vWood',8-9.4*t,0,3-1.6*t,.2,1.2+8*t,.2,0,log);}   // the conveyor on trestles
- for(let k=0;k<3;k++){vB('vWood',8+k*2.2,0,5,2,1,2,0,log);kput('hRCHeap',[8+k*2.2,1,5],null,[.9,.6,.9],hC(0x5a4a3e));}
+ for(let k=0;k<3;k++)FURNISH('hl_rep_scrap_bin',8+k*2.2,0,5,0);   // the scrap bins at the conveyor's foot
  hnFachBox(6,0,-3,7,3.4,6,0,null,null,lit);hnGable(6,3.4,-3,7,6,1.5,0,'vCorr',corr,.6,'vGableW',log);}
 
 // ---------------------------------------------------------------- 3. the wreck market hall
@@ -59,7 +58,7 @@ function buildHlRepPressWorks(G,o){reseed(22131+(o.v|0));const W=24,D=14,H=4.4,c
  for(let k=0;k<5;k++){const x=-W/2+W*(k+.5)/5;kput('vCorr',[x,H+1.1,0],qEuler(0,0,.55),[W/5*1.12,.1,D+.4],corr);vB('vWinGlass',x+W/10-.15,H,0,.08,2.1,D-.4,0);}   // sawtooth roofs, glazed north lights
  vB('vDarkB',0,0,D/2+.03,5,3.6,.06,0);vB('vIron',0,3.8,D/2+.1,6,.2,.12,0,iron);
  for(const s of[-1,1]){beam('vIron',[s*9,0,D/2+2],[s*9,6,D/2+5],.25,.25,iron);beam('vIron',[s*9,0,D/2+8],[s*9,6,D/2+5],.25,.25,iron);}vB('vIron',0,6,D/2+5,19,.4,.5,0,rust);
- for(let k=0;k<3;k++)for(let j=0;j<5;j++)kput('vPlate',[-5+k*5,.1+j*.06,D/2+5],qEuler(-Math.PI/2,rr(-.1,.1),0),[3.4,2,1],null);
+ for(let k=0;k<3;k++){hlRngSkip(5);FURNISH('hl_rep_plate_stack',-5+k*5,0,D/2+5,0,{v:0});}   // plate stacks under the gantry
  hnFachBox(W/2+2.6,0,-2,4.2,2.8,5,0,null,null,lit);hnGable(W/2+2.6,2.8,-2,5,4.2,1.5,Math.PI/2,'vCorr',corr,.4,'vGableW',log);}
 
 // ---------------------------------------------------------------- 5. the gasholder tenement
