@@ -4,7 +4,7 @@
 // baked) and before the views. Order: street furniture, the evening lights, the glow over the city's own lamps,
 // particles, weather, the dressing on buildings, the sewer, then finish (bake + glow) and the culling pass.
 reseed(SEED_CITY+50);
-ATMOS.init({THREE,scene,camera,hour:()=>CITYSKY.hour,onFrame:fn=>FRAME_HOOKS.push(fn),ground:(x,z)=>terrainH(x,z),seed:SEED_CITY+50,err:reportErr});
+ATMOS.init({THREE,scene,camera,hour:()=>CITYSKY.hour,onFrame:fn=>FRAME_HOOKS.push(fn),ground:(x,z)=>terrainH(x,z),seed:SEED_CITY+50,err:reportErr,pixelRatio:()=>renderer.getPixelRatio()});
 const CITY_ATM={t0:performance.now()};
 // the top of whatever stands at (x,z): a ray down through the scene, ignoring the ground, the jungle and the module's own
 function cityTopAt(x,z,from){const rc=new THREE.Raycaster(new THREE.Vector3(x,from||400,z),new THREE.Vector3(0,-1,0),0,1000);
@@ -42,6 +42,7 @@ const cityClear=(x,z,r)=>insideWall(x,z,18)&&!isRoad(x,z)&&!inPrecinct(x,z,0)&&o
 {const c=[];for(const p of PARKS)for(let k=0;k<6;k++){const a=k/6*TAU,r=p.r*.6;c.push([p.x+r*Math.cos(a),terrainH(p.x+r*Math.cos(a),p.z+r*Math.sin(a)),p.z+r*Math.sin(a)]);}
  for(const R of RUIN_RECTS)c.push([R.x,terrainH(R.x,R.z),R.z]);for(let k=0;k<70;k++){const t=k/70*TAU,r=wallR(t)+rr(70,130),x=r*Math.cos(t),z=r*Math.sin(t);c.push([x,terrainH(x,z),z]);}
  ATMOS.fireflies(c,{n:6,spread:6});}
+CITY_ATM.moths=(ATMOS.moths({p:.6,max:700})||{geometry:{instanceCount:0}}).geometry.instanceCount;   // moths round the street lamps at night
 ATMOS.mistRing(t=>wallR(t),{inner:8,outer:40,y0:CITY.CHASM+7.5,y1:CITY.CHASM+13});
 {const pts=[];for(let i=0;i<700;i++){const t=rng()*TAU,r=Math.sqrt(rng())*(wallR(t)+30),x=r*Math.cos(t),z=r*Math.sin(t);pts.push([x,Math.max(terrainH(x,z),CITY.CHASM+7),z]);}ATMOS.fogBank(pts);}
 // ---------------------------------------------------------------- 4. weather: what it does to the city's own scene (fog, sun, the wet ground, a lightning flash)
