@@ -15,7 +15,7 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`settlements/mavs-refuge`](settlements/mavs-refuge/INDEX.md) | 28 | 616 | 69 | Mav's Refuge: a refuge in the hypertropic jungle on the lee shore of the Ring Sea. |
 | [`settlements/port`](settlements/port/INDEX.md) | 48 | 718 | 39 |  |
 | [`settlements/reedlake`](settlements/reedlake/INDEX.md) | 32 | 311 | 33 | Reed Lake: a floating reed-lake village and its kit. |
-| [`settlements/screamers`](settlements/screamers/INDEX.md) | 72 | 542 | 45 | Hexahedron: the Screamers' tribal village in and under a ruined arcology, forked from the Ancients kit. |
+| [`settlements/screamers`](settlements/screamers/INDEX.md) | 72 | 564 | 63 | Hexahedron: the Screamers' tribal village in and under a ruined arcology, forked from the Ancients kit. |
 | [`settlements/shade`](settlements/shade/INDEX.md) | 28 | 319 | 32 | Shade: the Eastern Nomads' sunken basin in the eastern high desert (falls, pool, carved face, switchback, slot canyon) on the sedesert biome kit: rock-cut and pueblo buildings, cliff dwellings round the rim, alcoves and an undercut behind the falls, the life layer's data and walkable grid. |
 | [`settlements/voth`](settlements/voth/INDEX.md) | 62 | 1787 | 70 | Voth: a Venice/Vivec-like Dunmer city on an enclosed brackish bay, with the most complete life layer and collision system. |
 | [`settlements/xanadu`](settlements/xanadu/INDEX.md) | 51 | 599 | 66 | Xanadu: the building kit of the southern Sultanate (Tibetan massing, Indian, Turkish and Persian detail) and the city of Erewhon. |
