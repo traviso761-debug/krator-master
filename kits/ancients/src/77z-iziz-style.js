@@ -296,12 +296,16 @@ function izsRustSkin(G){G.traverse(m=>{if(m.isMesh&&(m.material===MAT.concreteR|
 // THE TRIPOD MARKET (Travis): a reclaimed Skyscraper C hangs a great awning from each side of its leg triangle, sloping out to
 // a mast at the opposite point, so from above the legs' triangle and the three awnings make a six-pointed star; market
 // stalls stand in the shade under each awning and in the open triangle between the legs.
+// The legs' foot radius is read off the built tower: Skyscraper C's three leg groups stand at y=5 on its podium, 62 m out
+// until the towers QA round 2 and 50 m since (their heads still meet the shaft at r=20, 150 m up). Hardcoding 62 hung
+// every awning, mast and stall 12 m off the legs once they moved.
+function tripodLegR(G){let r=0;G.traverse(c=>{if(r||!c.isGroup||c===G||c.position.y!==5||!c.children.length)return;const h=Math.hypot(c.position.x,c.position.z);if(h>20&&h<120)r=h;});return r||62;}
 // DENSER (Travis, round 4): the great awnings reach half again further out; their stalls stand on a lattice that fills the
 // shade, not on one line; and a ring of smaller canopies — a sloping cloth on four poles over a stall each — fills the
 // star's notches and the ground round it out to the lot's edge, clear of the leg feet, the masts and their guy ropes.
 // The whole market registers as ONE market (type market/shop, tags.market, tags.destination 'market').
-function tripodMarket(G,o,y,scale,ry,gx,gz,y0,T){const legAt=(k,ly)=>{const th=k/3*TAU+Math.PI/6,r=62-42*(ly-5)/150;return loc2(gx,gz,Math.cos(th)*r*scale,Math.sin(th)*r*scale,ry);};
- const hb=38,rb=62-42*(hb-5)/150;const Y=ly=>y0+ly*scale;const cols=[0xe07a2a,0xc9442a,0xe0a030];const yg=y+1.55;
+function tripodMarket(G,o,y,scale,ry,gx,gz,y0,T){const LR=tripodLegR(G),legAt=(k,ly)=>{const th=k/3*TAU+Math.PI/6,r=LR-(LR-20)*(ly-5)/150;return loc2(gx,gz,Math.cos(th)*r*scale,Math.sin(th)*r*scale,ry);};
+ const hb=38,rb=LR-(LR-20)*(hb-5)/150;const Y=ly=>y0+ly*scale;const cols=[0xe07a2a,0xc9442a,0xe0a030];const yg=y+1.55;
  const tris=[],masts=[],feet=[0,1,2].map(k=>legAt(k,5));let nStall=0;
  const stallAt=(x,z,face,c)=>{const Gs=new THREE.Group();Gs.position.set(x,yg,z);Gs.rotation.y=face;scene.add(Gs);useGroupXF(Gs);try{T.stall(c,Gs);}finally{endGroupXF();}
   nStall++;if(T.stalls)T.stalls.push({x,y:yg,z,face});};
