@@ -26,8 +26,8 @@ function buildGround(){
  const sat=(u,v)=>{const fu=clamp(u*SN-.5,0,SN-1.001),fv=clamp(v*SN-.5,0,SN-1.001),i=Math.floor(fu),j=Math.floor(fv),a=fu-i,b=fv-j;return SH[j*SN+i]*(1-a)*(1-b)+SH[j*SN+i+1]*a*(1-b)+SH[(j+1)*SN+i]*(1-a)*b+SH[(j+1)*SN+i+1]*a*b;};
  const TEX=BIO.canvasTex(TW,TW,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;const c=new THREE.Color(),t=new THREE.Color();
   const MOSS=new THREE.Color(0x3e5a24),MOSS2=new THREE.Color(0x52702a),FERNSH=new THREE.Color(0x26381c),LITTER=new THREE.Color(0x4a3a2a),NEEDLE=new THREE.Color(0x5a4232),
-   GLADE=new THREE.Color(0x6e8e3c),BELL=new THREE.Color(0x5a5ab0),HEATH=new THREE.Color(0x3e4a30),HEATH2=new THREE.Color(0x4a3e44),LICHEN=new THREE.Color(0xa2aa8c),
-   MOSSD=new THREE.Color(0x34482a),CHAR=new THREE.Color(0x2e2a26),FIRE=new THREE.Color(0x7a4a54),ROCK=new THREE.Color(0x7a7b74),ROCK2=new THREE.Color(0x63655f),
+   GLADE=new THREE.Color(0x6e8e3c),BELL=new THREE.Color(0x5a5ab0),HEATH=new THREE.Color(0x52603a),HEATH2=new THREE.Color(0x4a3e44),LICHEN=new THREE.Color(0xa2aa8c),
+   MOSSD=new THREE.Color(0x46602e),CHAR=new THREE.Color(0x2e2a26),FIRE=new THREE.Color(0x7a4a54),ROCK=new THREE.Color(0x7a7b74),ROCK2=new THREE.Color(0x63655f),
    SNOW=new THREE.Color(0xe6ecf2),GRAV=new THREE.Color(0x8a887c),PEAT=new THREE.Color(0x3a3428),DARKV=new THREE.Color(0x3a3048);
   for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,u=(x+.5)/w,v=(y+.5)/h,wx=TERR.X0+u*SX,wz=TERR.Z0+v*SZ;
    const n=(BIO.fn.h3(x,y,3)-.5),n2=fbm(wx*.011,wz*.011,4.1,2)-.5,n3=fbm(wx*.0032,wz*.0032,5.3,2)-.5;
@@ -38,7 +38,7 @@ function buildGround(){
    // the montane: needle litter through the moss
    t.copy(NEEDLE).lerp(MOSS,clamp(.45+n2*2,0,1));c.lerp(t,mon*.65);
    // the boreal: heath, lichen, dark moss; the burn charcoal and fireweed
-   t.copy(HEATH).lerp(HEATH2,clamp(.5+n2*2.2,0,.6)).lerp(LICHEN,smooth(.08,.25,n3)*.6).lerp(MOSSD,smooth(.1,.3,-n3)*.5);c.lerp(t,bor);
+   t.copy(MOSSD).lerp(HEATH,clamp(.5+n2*2.2,0,.7)).lerp(HEATH2,smooth(.1,.3,n2)*.3).lerp(LICHEN,smooth(.0,.22,n3)*.7);c.lerp(t,bor);
    if(brn>0){t.copy(CHAR).lerp(FIRE,clamp(.5+n2*2.5,0,1)*.7);c.lerp(t,brn*.8);}
    // the glades: grass, and bluebells in the temperate ones
    c.lerp(GLADE.clone().lerp(BELL,tem*smooth(.0,.25,n2+.1)*.45),gl*.75);
@@ -84,27 +84,27 @@ function buildGround(){
  GROUND=m;return m;}
 
 // ---------------------------------------------------------------- the water
-const WATER_SKY={value:new THREE.Color(0x5e6e66)};   // a forest stream mirrors the banks and the canopy, not the open sky
+const WATER_SKY={value:new THREE.Color(0x7a8c8c)},WATER_LIGHT={value:1};   // a forest stream mirrors the banks and the canopy, not the open sky
 function waterMat(flow){const m=new THREE.ShaderMaterial({fog:true,vertexColors:true,transparent:false,
- uniforms:THREE.UniformsUtils.merge([THREE.UniformsLib.fog,{uT:{value:0},uSun:{value:new THREE.Vector3(SUN_POS[0],SUN_POS[1],SUN_POS[2]).normalize()},uSky:{value:new THREE.Color(0xc8d4d4)},uFlow:{value:flow?1:0}}]),
+ uniforms:THREE.UniformsUtils.merge([THREE.UniformsLib.fog,{uLight:{value:1},uT:{value:0},uSun:{value:new THREE.Vector3(SUN_POS[0],SUN_POS[1],SUN_POS[2]).normalize()},uSky:{value:new THREE.Color(0xc8d4d4)},uFlow:{value:flow?1:0}}]),
  vertexShader:['#include <fog_pars_vertex>','varying vec3 vWP;varying vec3 vCol;varying vec2 vUv;',
   'void main(){vCol=color;vUv=uv;vec4 wp=modelMatrix*vec4(position,1.0);vWP=wp.xyz;vec4 mvPosition=viewMatrix*wp;gl_Position=projectionMatrix*mvPosition;','#include <fog_vertex>','}'].join('\n'),
- fragmentShader:['#include <fog_pars_fragment>','uniform float uT,uFlow;uniform vec3 uSun,uSky;varying vec3 vWP;varying vec3 vCol;varying vec2 vUv;',
+ fragmentShader:['#include <fog_pars_fragment>','uniform float uT,uFlow,uLight;uniform vec3 uSun,uSky;varying vec3 vWP;varying vec3 vCol;varying vec2 vUv;',
   'void main(){',
   ' float dcam=length(cameraPosition-vWP);float rk=1.0-smoothstep(80.0,420.0,dcam);',
   ' float fl=uFlow*(vUv.y*0.09-uT*1.4);',
   ' vec3 n=normalize(vec3(rk*(0.035*sin(vWP.x*0.41+uT*1.3+fl*6.0)+0.02*sin(vWP.z*0.63-uT*0.8+vWP.x*0.13)),1.0,rk*(0.035*cos(vWP.z*0.37+uT*1.1+fl*5.0)+0.02*sin(vWP.x*0.57+uT*1.5))));',
   ' vec3 V=normalize(cameraPosition-vWP);float fr=pow(1.0-max(dot(n,V),0.0),3.0);',
-  ' vec3 col=mix(vCol,uSky,0.06+fr*0.38)*(0.92+0.16*sin(vWP.x*0.21+vWP.z*0.17+uT*0.6));',
+  ' vec3 col=mix(vCol,uSky,0.10+fr*0.5)*(0.9+0.2*sin(vWP.x*0.21+vWP.z*0.17+uT*0.6));',
   ' float foam=uFlow*vUv.x*(0.6+0.4*sin(vUv.y*1.3-uT*7.0+sin(vWP.x*0.4)*2.0));',
   ' col=mix(col,vec3(0.92,0.94,0.93),clamp(foam,0.0,0.92));',
   ' vec3 H=normalize(uSun+V);col+=pow(max(dot(n,H),0.0),140.0)*0.5*vec3(1.0,0.96,0.88);',
-  ' gl_FragColor=vec4(col,1.0);','#include <fog_fragment>','}'].join('\n')});
- m.uniforms.fogColor.value=scene.fog.color;m.uniforms.fogDensity.value=scene.fog.density;m.uniforms.uSky=WATER_SKY;TICKS.push(dt=>{m.uniforms.uT.value+=dt;m.uniforms.fogDensity.value=scene.fog.density;});return m;}
+  ' gl_FragColor=vec4(col*uLight,1.0);','#include <fog_fragment>','}'].join('\n')});
+ m.uniforms.fogColor.value=scene.fog.color;m.uniforms.fogDensity.value=scene.fog.density;m.uniforms.uSky=WATER_SKY;m.uniforms.uLight=WATER_LIGHT;TICKS.push(dt=>{m.uniforms.uT.value+=dt;m.uniforms.fogDensity.value=scene.fog.density;});return m;}
 // the stream: a ribbon across the channel at every point, its level the stream's; uv.y runs downstream (the ripples
 // follow it), uv.x carries the foam (the cascades, the falls)
 const STREAM_WATER=(function(){const P=STREAM.P,n=P.length,pos=[],col=[],uv=[],idx=[],c=new THREE.Color(),
- cShal=new THREE.Color(0x8a7e58),cMid=new THREE.Color(0x4e5640),cDeep=new THREE.Color(0x1e2a26);const ACROSS=6;
+ cShal=new THREE.Color(0x5e5838),cMid=new THREE.Color(0x323a2c),cDeep=new THREE.Color(0x141c1a);const ACROSS=6;
  for(let i=0;i<n;i++){const a=P[Math.max(0,i-1)],b=P[Math.min(n-1,i+1)],dx=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dx,dz)||1,nx=-dz/l,nz=dx/l;
   const half=STREAM.halfW(i)+2.2,lvl=STREAM.level[i],dep=STREAM.dep[i],foam=clamp(smooth(.2,.5,STREAM.drop[i])*.6+smooth(.7,1.2,STREAM.drop[i])+.35*smooth(.6,.9,Math.sin(STREAM.S[i]*.09)*Math.sin(STREAM.S[i]*.023+1)),0,1);   // the mean fall is ~.17: foam only where it steepens
   for(let k=0;k<=ACROSS;k++){const t=k/ACROSS*2-1,x=P[i][0]+nx*half*t,z=P[i][1]+nz*half*t;
@@ -139,6 +139,6 @@ const MIST=(function(){const c=document.createElement('canvas');c.width=c.height
  return{L,sheetM,spriteM};})();
 // the water and the mist follow the light (day / dawn / night)
 if(typeof LIGHT_HOOKS!=='undefined')LIGHT_HOOKS.push(mode=>{
- const S={day:[0x5e6e66,0xd0dada,.30,.22],dawn:[0x9a7a58,0xffd6a8,.40,.34],night:[0x18202a,0x4a5868,.24,.18]}[mode]||[0x5e6e66,0xd0dada,.3,.22];
+ const S={day:[0x7a8c8c,0xd0dada,.30,.22,1],dawn:[0xb08a62,0xffd6a8,.40,.34,.75],night:[0x2a3442,0x4a5868,.24,.18,.14]}[mode]||[0x7a8c8c,0xd0dada,.3,.22,1];WATER_LIGHT.value=S[4];
  WATER_SKY.value.set(S[0]);MIST.sheetM.color.set(S[1]);MIST.spriteM.color.set(S[1]);MIST.sheetM.opacity=S[2];MIST.spriteM.opacity=S[3];
  if(typeof NHL!=='undefined')NHL.setNight(mode==='night'?1:0);});

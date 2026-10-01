@@ -22,7 +22,7 @@ const VIEWS={};
  {const a=Math.atan2(TARN.z-STREAM.P[20][1],TARN.x-STREAM.P[20][0]),cx=TARN.x+Math.cos(a)*(TARN.r+40),cz=TARN.z+Math.sin(a)*(TARN.r+40);add('The tarn',[cx,G(cx,cz)+6,cz,TARN.x,TARN.level+2,TARN.z]);}
  if(TOWER.top){const y=TOWER.y0,a=Math.atan2(TOWER.z-STREAM.P[sIdx(TOWER.s)][1],TOWER.x-STREAM.P[sIdx(TOWER.s)][0])+Math.PI,cx=TOWER.x+Math.cos(a)*120,cz=TOWER.z+Math.sin(a)*120;
   add('The tower',[cx,Math.max(G(cx,cz),y)+38,cz,TOWER.x,y+55,TOWER.z]);
-  {const ux=Math.cos(a),uz=Math.sin(a),cx3=TOWER.x+ux*33,cz3=TOWER.z+uz*33;add('Up the tower',[cx3,Math.max(G(cx3,cz3),y)+1.8,cz3,TOWER.x+ux*20,y+75,TOWER.z+uz*20]);}   // from outside its foot, up the face it turns to the stream
+  {const ux=Math.cos(a),uz=Math.sin(a),cx3=TOWER.x+ux*58,cz3=TOWER.z+uz*58;add('Up the tower',[cx3,Math.max(G(cx3,cz3),y)+2,cz3,TOWER.x+ux*24,y+62,TOWER.z+uz*24]);}   // from outside its foot, up the face it turns to the stream
   const cx2=TOWER.x+Math.cos(a)*62,cz2=TOWER.z+Math.sin(a)*62;add('Night: the tower',[cx2,Math.max(G(cx2,cz2),y)+18,cz2,TOWER.x,y+30,TOWER.z],'night');}
  add('Night: the stream',streamView(-1800,3,6,2,7),'night');
  // trees found in the scene
@@ -47,7 +47,7 @@ const VIEWS={};
   if(T){const cx=T.x-28,cz=T.z-22;add('Treeline and snow',[cx,G(cx,cz)+4,cz,T.x+60,G(T.x+60,T.z+50)+8,T.z+50]);}}
  if(PILLARS.length){const Pl=PILLARS.slice().sort((a,b)=>BIO.lodD(a.x,a.z)-BIO.lodD(b.x,b.z))[0],a=Math.atan2(-Pl.z,-Pl.x),cx=Pl.x+Math.cos(a)*130,cz=Pl.z+Math.sin(a)*130;add('Crag pillars',[cx,G(cx,cz)+30,cz,Pl.x,Pl.top-6,Pl.z]);}
  // MORNING FOG: low among the temperate giants, looking toward the low sun through the trunks (the amber-fog reference)
- {const C=heroesOf('greatspruce').concat(heroesOf('shadowhemlock'));const T=C.sort((a,b)=>BIO.lodD(a.x,a.z)-BIO.lodD(b.x,b.z))[3]||C[0];
+ {const C=heroesOf('greatspruce').concat(heroesOf('shadowhemlock'));const T=C.filter(T=>Math.hypot(T.x-TOWER.x,T.z-TOWER.z)>200&&BIO.clearOf(T.x,T.z,60)).sort((a,b)=>BIO.lodD(a.x,a.z)-BIO.lodD(b.x,b.z))[2]||C[0];
   if(T){const sd=new THREE.Vector3(-SUN_POS[0],0,-SUN_POS[2]).normalize(),cx=T.x+sd.x*45,cz=T.z+sd.z*45;add('Morning fog',[cx,G(cx,cz)+2.2,cz,T.x-sd.x*60,G(T.x,T.z)+12,T.z-sd.z*60],'dawn');}}
 })();
 const ui=document.getElementById('ui');const sel=document.createElement('select');sel.id='viewsel';for(const k in VIEWS){const o=document.createElement('option');o.textContent=k;sel.appendChild(o);}

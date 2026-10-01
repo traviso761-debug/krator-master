@@ -399,8 +399,8 @@ NHL.buildTrees=function(R,q){
  pass('normanspruce',38,Z=>Z.montane*.6+Z.boreal*.16*(1-Z.alpine),o(BIG,{pad:2.5,patch:.4}));
  pass('mountainmaple',52,Z=>Z.montane*.24+Z.temperate*Z.glade*.08,o(BIG,{pad:3,patch:.5}));
  // the boreal band
- pass('spirespruce',32,Z=>Z.boreal*(.62-.25*Z.alpine)*(1-Z.burn*.85),o(BIG,{pad:1.8,patch:.4}));
- pass('frostfir',36,Z=>Z.boreal*.4*smooth(.7,.9,Z.cold)*(1-Z.burn*.85),o(BIG,{pad:1.8,patch:.45}));
+ pass('spirespruce',26,Z=>Z.boreal*(.62-.25*Z.alpine)*(1-Z.burn*.85),o(BIG,{pad:1.8,patch:.4}));
+ pass('frostfir',30,Z=>Z.boreal*.4*smooth(.7,.9,Z.cold)*(1-Z.burn*.85),o(BIG,{pad:1.8,patch:.45}));
  pass('larch',48,Z=>(Z.boreal*.22+Z.montane*.05)*(1-Z.alpine)*(1-Z.burn*.5),o(BIG,{pad:2.5,patch:.6,patchScale:.006}));
  pass('birch',28,Z=>(Z.boreal*Z.grove*.6+Z.burn*.45+Z.montane*Z.grove*.12)*(1-Z.alpine),o(BIG,{pad:1.5,patch:.25}));
  pass('burnsnag',30,Z=>Z.burn*.6,o(BIG,{pad:1.5,patch:.2}));

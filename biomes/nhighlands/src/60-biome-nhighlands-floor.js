@@ -68,7 +68,7 @@ function cane(x,y,z,lv,st){const n=lv===2?ri(8,18):4,hc=C(0x5a8a3a);
   if(lv>=1)for(let k=0;k<(lv===2?3:1);k++){const u=rr(.5,1);BIO.put('lance',[px+(tx-px)*u,y+h*u,pz+(tz-pz)*u],qEuler(rr(-.4,.4),rr(0,TAU),rr(-.4,.4)),[rr(.8,1.3),rr(.4,.6),rr(.8,1.3)],bright(vary(hc,.02,.06,.05),1.2),{n:[0,1,0]});}}
  st.cane++;}
 function boulder(x,y,z,lv,st,big,mossK){const s=(big?rr(1.4,3.6):rr(.5,1.4)),it=rng()<.5?'boulderA':'boulderB';
- BIO.put(it,[x,y-s*.3,z],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),[s*rr(.9,1.3),s*rr(.6,.9),s*rr(.9,1.3)],tint(vary(pick(PAL.rock),.02,.04,.05),means().rock,rr(.85,1.05)));st.boulders++;
+ BIO.put(it,[x,y-s*.3,z],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),[s*rr(.9,1.3),s*rr(.6,.9),s*rr(.9,1.3)],tint(vary(pick(PAL.rock),.02,.04,.05),means().rock,rr(.5,.7)));st.boulders++;
  const mk=mossK==null?.75:mossK;
  if(rng()<mk){mossCushion(x+rr(-.2,.2)*s,y+s*.45,z+rr(-.2,.2)*s,s*rr(.75,1.1));st.moss++;}
  if(lv===2&&rng()<mk*.6){swordFern(x+rr(-1,1)*s,Y(x,z),z+rr(-1,1)*s,lv,.8);}}
@@ -176,7 +176,7 @@ NHL.buildFloor=function(R,q){
  BIO.range=NHL.LOD.floor;
  // stepping stones in the stream: mossy boulders standing in the water (the depth window)
  O.forEach((o,oi)=>{BIO.grid(5,0,1e9,(x,z)=>{if(nearest(x,z)!==oi||Math.hypot(x-o[0],z-o[1])>900)return 0;return .16*q;},
-  (x,y,z)=>{const s=rr(.5,1.6);BIO.put(rng()<.5?'boulderA':'boulderB',[x,y-s*.25,z],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),[s*rr(.9,1.3),s*rr(.7,1),s*rr(.9,1.3)],tint(vary(pick(PAL.rock),.02,.04,.05),means().rock,.8));
+  (x,y,z)=>{const s=rr(.5,1.6);BIO.put(rng()<.5?'boulderA':'boulderB',[x,y-s*.25,z],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),[s*rr(.9,1.3),s*rr(.7,1),s*rr(.9,1.3)],tint(vary(pick(PAL.rock),.02,.04,.05),means().rock,.45));
    if(rng()<.55)BIO.put('mossmat',[x,y+s*.5,z],qEuler(rr(-.1,.1),rr(0,TAU),rr(-.1,.1)),[s*.8,1,s*.8],bright(vary(pick(PAL.moss),.03,.08,.05),.95));st.stones++;},
   {patch:.4,patchScale:.03,noMask:true,depth:[.15,1.6],pad:.3,center:[0,0],box:[o[0]-900,o[1]-900,o[0]+900,o[1]+900]});});
  BIO.range=NHL.LOD.logs;
