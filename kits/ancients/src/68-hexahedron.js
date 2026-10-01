@@ -17,6 +17,18 @@
 // share a centroid. Each pyramid therefore tapers about ITS OWN centre -- if
 // both scaled about the world origin they would lean into each other -- so
 // every plan point is (P.O + outline*s), never outline*s alone.
+// Filled by the builder, read by targets/hexahedron/91z-views.js: see the foot.
+const HEX_SITE={};
+// THE SOFFITS ARE PAINTED. A downward face sees only the hemisphere's ground
+// colour (0x6a3a2a), so the lower city's sixteen stepped undersides and the
+// 1 km great soffit under the upper city all rendered brown from every preset
+// that looks up -- which is most of them, on a building held 300 m in the air.
+// The same answer as the Ledge's: a little emissive through the concrete's own
+// map, so the undersides read as pale concrete lit by bounce off the ground.
+// hxNightDim() drops it at night, or the whole underside would glow.
+MAT.hxSoff =new THREE.MeshStandardMaterial({map:TEX.concrete,roughnessMap:TEX.concreteRM,color:0xb8b3aa,emissive:0x77726a,emissiveMap:TEX.concrete,roughness:1,metalness:0,side:DS});
+MAT.hxSoffR=new THREE.MeshStandardMaterial({map:TEX.concrete,roughnessMap:TEX.concreteRM,color:0x6f6861,emissive:0x3f3b36,emissiveMap:TEX.concrete,roughness:1,metalness:0,side:DS});
+function hxNightDim(o,m){if(o)o.onBeforeRender=()=>{m.emissiveIntensity=NIGHT?.06:1;};}
 function buildHexahedron(scene,gx,gz,d){reseed(9430+d);KOFF=[gx,0,gz];
  const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);
  const dd=d>0?1:0;
@@ -26,7 +38,7 @@ function buildHexahedron(scene,gx,gz,d){reseed(9430+d);KOFF=[gx,0,gz];
  REGISTER({name:'Hexahedron — the lower city',x:0,z:0,y:YB,r:740,h:YW-YB});
  REGISTER({name:'Hexahedron — the vertical structure',x:0,z:0,r:460,h:YB});
  REGISTER({name:'Hexahedron — automated industries',x:0,z:0,r:640,h:34});
- const SH=[],DK=[],GRD=[],CHAM=.055;
+ const SH=[],DK=[],GRD=[],SOF=[],CHAM=.055;
 
  // ---- the two plans --------------------------------------------------------
  const TH=75*Math.PI/180,BL=2*Math.cos(TH);        // leg = 1, base = 2 cos(TH)
@@ -119,6 +131,17 @@ function buildHexahedron(scene,gx,gz,d){reseed(9430+d);KOFF=[gx,0,gz];
     if(cut(p,y0+RU*.5))continue;
     if(d>0&&rng()<.34)continue;
     const Q=W(PU,p,s0),N=pnorm(PU,p),q=qFacing([N[0],0,N[1]]);
+    // THE WALL BEHIND A PROMENADE IS AN ARCADE. It used to carry the same
+    // three rows of panes as every other riser, so the promenade grooves read
+    // as one more step with nothing behind it (KNOWN_ISSUES: "no interiors
+    // behind the promenade bands"). A 9 x 14 m arch every third bay, a lamp
+    // in each while the city is lit, and one row of panes over the top.
+    // Draws no PRNG, so nothing after it moves.
+    if(BAND(k)){if(j%3===0){
+      kput('archOpen',[Q[0]+N[0]*.5,y0+7.6,Q[1]+N[1]*.5],q,[1.5,1.6,1.4],null);
+      if(d===0)kput('strip',[Q[0]+N[0]*.95,y0+12.4,Q[1]+N[1]*.95],q,[5.5,1.2,1.2],WARM);}
+     else kput(WIN,[Q[0]+N[0]*.35,y0+RU*.76,Q[1]+N[1]*.35],q,[2.5,3.1,1],null);
+     continue;}
     for(let row=0;row<3;row++)
      kput(WIN,[Q[0]+N[0]*.35,y0+RU*(.20+row*.28),Q[1]+N[1]*.35],q,[2.5,3.1,1],null);}}
   // sky bridges out to cantilevered pods off the promenade grooves
@@ -128,6 +151,11 @@ function buildHexahedron(scene,gx,gz,d){reseed(9430+d);KOFF=[gx,0,gz];
    const ex=Q[0]+N[0]*48,ez=Q[1]+N[1]*48;
    beam(BOXC(d),[Q[0],y0+RU+3,Q[1]],[ex,y0+RU+3,ez],5,2.4);
    kput(SLABC(d),[ex,y0+RU+3,ez],null,[15,2.4,15],null);
+   // a raking strut back to the riser below, so the pod is a bracketed
+   // balcony and not a disc floating 48 m off the face (seen from under it,
+   // all you saw of the old one was its brown underside)
+   {const Qb=W(PU,p,s0);for(const sg of [-1,1]){const tx=-N[1]*sg*5,tz=N[0]*sg*5;
+    beam(BOXC(d),[ex+tx*.8,y0+RU+1.6,ez+tz*.8],[Qb[0]+tx,y0+3,Qb[1]+tz],2.6,2.6);}}
    kput(BOXC(d),[ex,y0+RU+9,ez],qFacing([N[0],0,N[1]]),[16,9,13],null);}}
 
  // ---- the summit: a ridge, not a point --------------------------------------
@@ -138,11 +166,24 @@ function buildHexahedron(scene,gx,gz,d){reseed(9430+d);KOFF=[gx,0,gz];
   const CXs=PU.O[0]*SPAN,CZs=PU.O[1]*SPAN;
   SH.push(gridSurface((u,v)=>{const Q=W(PU,u,lerp(ST,0,v));return[Q[0],YT+lerp(0,7,Math.min(1,v*1.3)),Q[1]];},
    72,4,{uS:24,vS:4}));
-  if(d!==2){for(let i=0;i<7;i++){const t=(i/6-.5)*1.5*RA;
-    const h=22+16*Math.cos(i/6*Math.PI-Math.PI/2);
-    kput(BOXC(d),[CXs+Math.cos(ang)*t,YT+7+h*.5,CZs+Math.sin(ang)*t],qEuler(0,-ang,0),
-     [RA*.30,h,38-Math.abs(i-3)*4],null);}
-   kput('finial',[CXs,YT+53,CZs],null,[7,18,7],null);}
+  // THE CULTURAL CENTRE IS A HALL. It was seven boxes in a row, which read as
+  // a skyline of blocks rather than the one long room the sections draw. Now a
+  // parabolic vault along the ridge on a plinth, ribbed, closed at both ends
+  // with a portal in each, and slotted along its crown for light.
+  if(d!==2){const L=1.3*RA,HW=17,HV=28,ca=Math.cos(ang),sa=Math.sin(ang),Y0=YT+11;
+   const hp=(t,w,y)=>[CXs+ca*t-sa*w,y,CZs+sa*t+ca*w];
+   const vy=w=>Y0+HV*(1-Math.pow(w/HW,2));
+   kput(BOXC(d),[CXs,YT+9,CZs],qEuler(0,-ang,0),[L+18,4,2*HW+16],null);
+   SH.push(gridSurface((u,v)=>{const t=(u-.5)*L,w=(v*2-1)*HW;return hp(t,w,vy(w));},26,14,
+    {uS:L/10,vS:5,hole:(u,v)=>Math.abs(v-.5)<.05&&Math.floor(u*26)%2===0}));
+   for(const e of [-.5,.5])SH.push(gridSurface((u,v)=>{const w=(u*2-1)*HW;
+     return hp(e*L,w,Y0+(vy(w)-Y0)*v);},14,5,{uS:4,vS:3}));
+   for(let i=0;i<=13;i++){const t=(i/13-.5)*L;
+    for(let sgm=0;sgm<6;sgm++){const w0=(sgm/6*2-1)*HW,w1=((sgm+1)/6*2-1)*HW;
+     beam(BOXC(d),hp(t,w0*1.02,vy(w0)+.9),hp(t,w1*1.02,vy(w1)+.9),1.8,2.2);}}
+   for(const e of [-1,1])kput('archOpen',hp(e*(L*.5+.7),0,Y0+9),qFacing([ca*e,0,sa*e]),[2.4,2.3,1.4],null);
+   if(d===0)for(let i=0;i<13;i++)kput('strip',hp(((i+.5)/13-.5)*L,0,Y0+HV-1.5),qEuler(0,-ang,0),[L/15,1.4,1.4],WARM);
+   kput('finial',[CXs,Y0+HV+8,CZs],null,[7,18,7],null);}
   for(let i=0;i<3;i++){if(d===2&&i===1)continue;
    const C=[triU[i][0]-cU[0],triU[i][1]-cU[1]];
    kput(BOXC(d),[CXs+C[0]*ST*SPAN*.8,YT+52,CZs+C[1]*ST*SPAN*.8],null,[8,96,8],null);}}
@@ -179,7 +220,7 @@ function buildHexahedron(scene,gx,gz,d){reseed(9430+d);KOFF=[gx,0,gz];
   SH.push(gridSurface((u,v)=>{const Q=W(PL,u,s1);return[Q[0],y0+v*RL,Q[1]];},
    112,2,{uS:52,vS:2,hole:u=>{const Q=W(PL,u,s1);return crater(Q[0],Q[1]);}}));
   // soffit, v running outward-to-inward so the normal points DOWN at the ground
-  SH.push(gridSurface((u,v)=>{const Q=W(PL,u,lerp(s1,s0,v));return[Q[0],y0,Q[1]];},
+  SOF.push(gridSurface((u,v)=>{const Q=W(PL,u,lerp(s1,s0,v));return[Q[0],y0,Q[1]];},
    112,2,{uS:52,vS:2,hole:(u,v)=>{const Q=W(PL,u,lerp(s1,s0,v));return crater(Q[0],Q[1]);}}));
   const nc=Math.max(6,Math.round(86*s1));
   for(let j=0;j<nc;j++){const p=(j+.5)/nc,N=pnorm(PL,p),q=qFacing([N[0],0,N[1]]);
@@ -219,11 +260,11 @@ function buildHexahedron(scene,gx,gz,d){reseed(9430+d);KOFF=[gx,0,gz];
  // one. Three caps: the great soffit under the upper city, the deck over the
  // lower city, and the floor of its truncated apex. They sit 2 m apart rather
  // than coplanar so the overlap cannot z-fight.
- SH.push(gridSurface((u,v)=>{const Q=W(PU,u,1-v);return[Q[0],YW,Q[1]];},
+ SOF.push(gridSurface((u,v)=>{const Q=W(PU,u,1-v);return[Q[0],YW,Q[1]];},
   112,6,{uS:52,vS:8,hole:(u,v)=>cut(u,YW+2)}));
  SH.push(gridSurface((u,v)=>{const Q=W(PL,u,1-v);return[Q[0],YW-2,Q[1]];},
   112,6,{uS:52,vS:8,hole:(u,v)=>{const Q=W(PL,u,1-v);return crater(Q[0],Q[1]);}}));
- SH.push(gridSurface((u,v)=>{const Q=W(PL,u,SB*(1-v));return[Q[0],YB,Q[1]];},
+ SOF.push(gridSurface((u,v)=>{const Q=W(PL,u,SB*(1-v));return[Q[0],YB,Q[1]];},
   72,3,{uS:24,vS:3,hole:(u,v)=>{const Q=W(PL,u,SB*(1-v));return crater(Q[0],Q[1]);}}));
  // The lower city's roof is open sky wherever the upper pyramid does not cover
  // it, which on a 120 deg turn is most of one point. That is the park and
@@ -236,6 +277,33 @@ function buildHexahedron(scene,gx,gz,d){reseed(9430+d);KOFF=[gx,0,gz];
   if(rng()<.42){const h=rr(5,17);
    kput(BOXC(d),[Q[0],YW-2+h*.5,Q[1]],qEuler(0,rng()*TAU,0),[rr(10,26),h,rr(9,22)],null);}
   else if(d!==2)VEG.tree(Q[0],YW-2,Q[1],i%3,rr(5,10));}
+ // SKY BRIDGES ACROSS THE AIR. KNOWN_ISSUES: the sheets' bridges span BETWEEN
+ // faces across open air, and every bridge here only cantilevered outward to
+ // a pod. The one piece of open air this form has between two of its own
+ // faces is over the lower city's exposed point, where the upper pyramid's
+ // flank rises out of the park. Three level bridges leave the fifth-level
+ // promenade and cross 100 m above that park to lift towers standing on it.
+ // Placement is solved, not typed in: the point of the lower plan furthest
+ // from the upper one, then the nearest promenade edge to each landing.
+ {const Yp=YW+5*RU,sP=su(4),UO=[PU.O[0]*SPAN,PU.O[1]*SPAN];
+  let pA=0,best=-1;for(let i=0;i<400;i++){const Q=W(PL,i/400,1),dd2=Math.hypot(Q[0]-UO[0],Q[1]-UO[1]);
+   if(dd2>best){best=dd2;pA=i/400;}}
+  for(let b=-1;b<=1;b++){const T=W(PL,pA+b*.018,.70);
+   const vx=T[0]/SPAN-PU.O[0],vz=T[1]/SPAN-PU.O[1],m=Math.hypot(vx,vz)||1e-6;
+   if(m<planR(PU,vx/m,vz/m)*1.04||crater(T[0],T[1]))continue;        // must stand in the open
+   let pS=0,bd=1e9;for(let i=0;i<400;i++){const Q=W(PU,i/400,sP),q=Math.hypot(Q[0]-T[0],Q[1]-T[1]);
+    if(q<bd){bd=q;pS=i/400;}}
+   if(bd<60||bd>460||cut(pS,Yp))continue;
+   const S=W(PU,pS,sP),ang=Math.atan2(T[1]-S[1],T[0]-S[0]),nx=-Math.sin(ang),nz=Math.cos(ang);
+   beam(BOXC(d),[S[0],Yp+3,S[1]],[T[0],Yp+3,T[1]],5,9);
+   for(const sg of [-1,1])beam(BOXC(d),[S[0]+nx*sg*4.2,Yp+6.6,S[1]+nz*sg*4.2],
+    [T[0]+nx*sg*4.2,Yp+6.6,T[1]+nz*sg*4.2],1,.8);
+   const hT=Yp+6-(YW-2);
+   kput(BOXC(d),[T[0],YW-2+hT*.5,T[1]],qEuler(0,-ang,0),[15,hT,15],null);
+   kput(BOXC(d),[T[0],YW-2+7,T[1]],qEuler(0,-ang,0),[30,14,26],null);
+   kput(SLABC(d),[T[0],Yp+7,T[1]],null,[13,2,13],null);
+   if(d===0)for(let j=0;j<8;j++)kput('strip',[T[0]+Math.cos(ang)*7.7,YW+10+j*11,T[1]+Math.sin(ang)*7.7],
+    qFacing([Math.cos(ang),0,Math.sin(ang)]),[4,1.2,1.2],WARM);}}
  // coffer ribs across the great soffit, so it is not a blank 1 km plate
  for(let j=0;j<30;j++){const p=j/30,Q=W(PU,p,.99),Qi=W(PU,p+.5,.99);
   if(cut(p,YW+2))continue;
@@ -356,10 +424,22 @@ function buildHexahedron(scene,gx,gz,d){reseed(9430+d);KOFF=[gx,0,gz];
   beam(d>0?'boxR':'boxD',[0,7.2,0],[Math.cos(a)*HEXR*.96,7.2,Math.sin(a)*HEXR*.96],16,.6);}
 
  // ---- merge and dress --------------------------------------------------------
- meshMerged(SH,CONC(dd),G);meshMerged(GRD,d>0?MAT.mud:MAT.slab,G);
+ meshMerged(SH,CONC(dd),G);hxNightDim(meshMerged(SOF,dd?MAT.hxSoffR:MAT.hxSoff,G),dd?MAT.hxSoffR:MAT.hxSoff);
+ meshMerged(GRD,d>0?MAT.mud:MAT.slab,G);
  if(DK.length)meshMerged(DK,MAT.guts,G);
  if(d>0){mossOnSurface(SH,0,0,0,300,4);vinesFromLedge(SH,0,0,0,140,26);stainsFromLedge(SH,0,0,0,160,24);
   scatterMoss(0,0,0,180,HEXR,320,4);rubbleRing(0,0,0,HEXR*.4,HEXR,240,7);trees(0,0,220,HEXR*1.2,80);}
  else{trees(0,0,HEXR*.55,HEXR*1.25,52);figures(0,300,10,160);}
  figures(CX,CZ,8,140);
+ // ---- what the presets are derived from ------------------------------------
+ // KNOWN_ISSUES: "presets hard-code targets", and three had to be re-aimed by
+ // hand after the plan or the failure moved. The camera fragment runs after
+ // 90-scene.js, so it reads these instead: builder-local metres, per decay.
+ {const bb=[1e9,-1e9,1e9,-1e9];
+  for(const P of [PU,PL])for(let i=0;i<=240;i++){const Q=W(P,i/240,P===PU?1.14:1.12);   // the decks' reach
+   bb[0]=Math.min(bb[0],Q[0]);bb[1]=Math.max(bb[1],Q[0]);bb[2]=Math.min(bb[2],Q[1]);bb[3]=Math.max(bb[3],Q[1]);}
+  const kS=Math.round(NU*.6),shQ=W(PU,WB,su(kS));
+  HEX_SITE[d]={UC:[(bb[0]+bb[1])/2,(bb[2]+bb[3])/2],BB:bb,COM:[COM[0]*SPAN,COM[1]*SPAN],
+   CRATER:[CX,CZ],APEX:W(PU,.380,1.14),SUMMIT:[PU.O[0]*SPAN,PU.O[1]*SPAN],
+   SHEAR:[shQ[0],YW+kS*RU,shQ[1]],SHEARN:pnorm(PU,WB),YB,YW,YT};}
  KOFF=[0,0,0];return G;}

@@ -122,12 +122,22 @@ function buildCanyon(scene,gx,gz,d){reseed(9320+d);KOFF=[gx,0,gz];
  const GAP=700,WALL=460,CH=900,LEN=1900;
  const SH=[],GL=[],DK=[];
  // ---------------------------------------------------------------- the gorge
+ // THE GORGE IS A SOLID. It was three sheets per side: the inner face, a top
+ // plate running from -0.8 to +0.8 WALL about the wall centre, and a flat
+ // outer face -- so the top overhung the inner face by up to 140 m as a
+ // floating brown ceiling seen from the gorge floor, and both ends of each
+ // wall were open, so from down the gorge the rock read as painted card. The
+ // top now starts ON the inner face's own crest line, and each wall is capped
+ // at both ends from that face to the outer one.
+ const innerX=(s,u,v)=>-s*(WALL/2-52*fbm(u*11,v*7,9321+s,3)-34*(1-v)*(1-v)-18*fbm(u*29,v*3,9322,2));
  for(const s of [-1,1]){const CX=s*(GAP+WALL/2);
   mesh(gridSurface((u,v)=>{const z=-LEN/2+u*LEN,y=v*CH;
-   const inner=-s*(WALL/2-52*fbm(u*11,v*7,9321+s,3)-34*(1-v)*(1-v)-18*fbm(u*29,v*3,9322,2));
-   return[CX+inner,y,z];},70,26,{uS:46,vS:16}),MAT.rock,G);
-  mesh(gridSurface((u,v)=>{const z=-LEN/2+u*LEN;return[CX+(v-.5)*WALL*1.6,CH+26*fbm(u*9,v*9,9323+s,2),z];},54,10,{uS:46,vS:22}),MAT.rock,G);
-  mesh(gridSurface((u,v)=>{const z=-LEN/2+u*LEN;return[CX+s*WALL*.8,v*CH,z];},32,6,{}),MAT.rock,G);}
+   return[CX+innerX(s,u,v),y,z];},70,26,{uS:46,vS:16}),MAT.rock,G);
+  mesh(gridSurface((u,v)=>{const z=-LEN/2+u*LEN,x0=CX+innerX(s,u,1),x1=CX+s*WALL*.8;
+   return[lerp(x0,x1,v),CH+26*fbm(u*9,v*9,9323+s,2)*Math.min(1,v*6),z];},54,10,{uS:46,vS:22}),MAT.rock,G);
+  mesh(gridSurface((u,v)=>{const z=-LEN/2+u*LEN;return[CX+s*WALL*.8,v*CH,z];},32,6,{}),MAT.rock,G);
+  for(const e of [0,1])mesh(gridSurface((u,v)=>{const y=v*CH,x0=CX+innerX(s,e,v),x1=CX+s*WALL*.8;
+   return[lerp(x0,x1,u),y+(v>.999?26*fbm(e*9,u*9,9323+s,2)*Math.min(1,u*6):0),-LEN/2+e*LEN];},12,20,{uS:10,vS:16}),MAT.rock,G);}
  mesh(gridSurface((u,v)=>{const x=(u-.5)*GAP*2.1,z=-LEN/2+v*LEN;
   return[x,2+9*fbm(u*7,v*7,9324,3)-4*Math.exp(-Math.pow(x/260,2)),z];},40,40,{uS:26,vS:26}),d>0?MAT.mud:MAT.rock,G);
  // ---------------------------------------------------------------- the spans
@@ -184,14 +194,43 @@ function buildCanyon(scene,gx,gz,d){reseed(9320+d);KOFF=[gx,0,gz];
     // the snapped cable still hanging from the pipe
     beam('boxD',[ax,ay,az],[ax+rr(-30,30),ay-o.drop*rr(.5,.9),az+rr(-30,30)],2.2,2.2);
     rubbleRing(F.position.x,0,F.position.z,o.R*.5,o.R*2.4,70,3);
+    // THE DEBRIS FIELD. A 50 m pod off a 600 m drop does not leave a tidy ring
+    // of pebbles round itself: it bursts and throws its skin downrange. Torn
+    // shell plates (tilted where they came to rest), dark interior fittings
+    // thrown out of the breach, and a heavy spray of rubble, all elongated
+    // along one bearing, which is the way it was travelling.
+    {const fa=rng()*TAU,fx=Math.cos(fa),fz=Math.sin(fa),PX=F.position.x,PZ=F.position.z;
+     for(let k=0;k<26;k++){const t=Math.pow(rng(),.8),along=o.R*(.6+t*4.2),side=o.R*rr(-1.3,1.3)*(.4+t);
+      const px=PX+fx*along-fz*side,pz=PZ+fz*along+fx*side,L=o.R*rr(.18,.55)*(1-t*.5);
+      kput(k%3?'boxR':'boxD',[px,L*.12,pz],qEuler(rr(-.6,.6),rng()*TAU,rr(-.6,.6)),[L,L*rr(.05,.12),L*rr(.4,.9)],null);}
+     for(let k=0;k<150;k++){const t=Math.pow(rng(),1.3),along=o.R*(.3+t*5),side=o.R*rr(-1.6,1.6)*(.3+t);
+      const sc=rr(.8,o.R*.13)*(1-t*.6);
+      kput('rubble',[PX+fx*along-fz*side,sc*.35,PZ+fz*along+fx*side],qEuler(rng()*3,rng()*3,rng()*3),
+       [sc*rr(.7,1.5),sc*rr(.4,.9),sc*rr(.7,1.5)],new THREE.Color().setHSL(rr(.04,.09),rr(.15,.4),rr(.18,.4)));}}
     return;}
-   // hung: slight sway when rusted, plumb when intact
-   const tilt=d>0?rr(-.09,.09):0;
-   const M=new THREE.Matrix4().compose(new THREE.Vector3(ax,ay-o.drop,az),
-    qEuler(tilt,rng()*TAU,tilt*.7),new THREE.Vector3(1,1,1));
+   // THE HANG ANGLE COMES FROM THE CABLES. It used to be a random fixed tilt.
+   // A payload hangs from a pair of cables a=0.16R either side of its head,
+   // with its centre of mass c below them. Intact: equal cables, plumb. Rusted:
+   // one cable of the pair has crept by dL, which turns the head through
+   // atan(dL/2a). And on the prison one cable has PARTED, so it hangs from the
+   // other alone and swings until its centre of mass is under that one anchor:
+   // atan(a/c) -- small, because the pair is close-set against a deep payload,
+   // which is exactly why the guys are there. Both are rotations about the
+   // bottom of a real cable, and the cables are drawn to where the head went.
+   const COMD={pod:2.1,prism:3.0,drum:2.3,ring:1.9,cluster:1.9,prison:2.4};
+   const ca=o.R*.16,cc=o.R*(COMD[o.t]||2),snap=d===1&&o.t==='prison'?1:0;
+   const th=snap?Math.atan2(ca,cc):d>0?Math.atan2(rr(-1,1)*o.R*.05,2*ca):0;
+   const qT=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,0,1),th);
+   const H0=new THREE.Vector3(ax,ay-o.drop,az);
+   const piv=snap?new THREE.Vector3(ax+ca,ay-o.drop,az):H0.clone();
+   const head=H0.clone().sub(piv).applyQuaternion(qT).add(piv);
+   const M=new THREE.Matrix4().compose(head,qT.clone().multiply(qEuler(0,rng()*TAU,0)),new THREE.Vector3(1,1,1));
    hangEmit(P,M,SH,GL,DK);
-   // the cables: one heavy pair, plus guys to steady it
-   for(const sg of [-1,1])beam(d>0?'strutR':'strutW',[ax+sg*o.R*.10,ay,az],[ax+sg*o.R*.16,ay-o.drop,az],2.6,2.6);
+   // the cables: one heavy pair to where the head's anchors actually are,
+   // plus guys to steady it
+   for(const sg of [-1,1]){const bot=new THREE.Vector3(sg*ca,0,0).applyQuaternion(qT).add(head);
+    if(snap&&sg<0){beam('boxD',[ax+sg*o.R*.10,ay,az],[ax+sg*o.R*.10+6,ay-o.drop*.38,az+4],2.2,2.2);continue;}
+    beam(d>0?'strutR':'strutW',[ax+sg*o.R*.10,ay,az],[bot.x,bot.y,bot.z],2.6,2.6);}
    for(let k=0;k<3;k++){const th=k/3*TAU+.4;
     beam('boxD',[ax,ay-2,az],[ax+Math.cos(th)*o.R*.8,ay-o.drop+o.R*.2,az+Math.sin(th)*o.R*.8],1.1,1.1);}
    if(d>0){vinesOnRing(ax,ay-o.drop+o.R*.3,az,o.R*.95,Math.round(o.R*.5),o.R*1.3);

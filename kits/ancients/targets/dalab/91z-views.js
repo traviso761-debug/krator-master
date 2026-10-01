@@ -24,7 +24,12 @@ const VIEWS={
  // stand-off rather than sitting back at it
  'The breach':        T([210,90,150,40,55,10],.55),
  'Section':           T([150,70,95,20,45,5],.5),
- 'Inside the breach': T([95,52,58,0,44,0],.45),
+ // INSIDE, OVER THE STACK. The old stand-in (0.45 of the scaled stand-off) put
+ // the camera between two floor plates 4.6 m apart: a slit of floor and soffit.
+ // The one open volume inside the dome is above the floor stack (it stops at
+ // 0.86 H) and under the crown, so the camera stands there on the break's
+ // bearing (1.005 rad) and looks out and down the stepped plate edges.
+ 'Inside the breach': [120*.536,372,120*.844, 330*.536,200,330*.844],
  // straight up the cut face: 330 m of floor plates stacked in one frame, which
  // is the shot the rescale exists for and did not exist at the old size
  // Explicit metres in the NEW scale, not scaled-up old ones — the first
@@ -38,9 +43,15 @@ const VIEWS={
  // still nearly closed and fills the frame; the floors only show where the
  // opening is actually wide.
  'The storeys':       [472,340,743, 38,275,59],
- 'The chamber':       S([0,34,140,0,14,0]),
+ // IN the chamber hall. The scaled-up preset stood outside the dome looking
+ // through its opaque shell; the chamber had a floor plate through it and no
+ // way in for a camera. It now has a three-storey hall (see sectionInterior's
+ // hallR), and the camera stands in it.
+ 'The chamber':       [40,13,122, 0,4,0],   // off the axis of the radial pipe at k=4
  'Satellite domes':   S([230,80,190,120,30,60]),
- 'A passageway':      T([150,26,60,80,14,20],.7),
+ // Beside the passage to dome 2, not inside it: the scaled preset put the
+ // camera in the tube. 130 m off its midpoint, square on.
+ 'A passageway':      [515,40,-15, 479,22,-140],
  'The wall':          S([330,22,190,180,16,80]),
  'From the plain':    S([0,110,900,0,70,0]),
 };
