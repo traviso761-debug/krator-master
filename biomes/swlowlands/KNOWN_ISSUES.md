@@ -28,9 +28,6 @@ Read before changing anything here. `build.py` prints the open count.
 - [ ] The zone weights (SWLOW.zones) are thresholds on six fields. A world with
       differently scaled fields will want to retune the `smooth()` bands in 55-trees.
       `tropic` in particular: the rainforest proper starts where it passes ~.7.
-- [ ] Mangroves root on the bed in the shallows (`inWater` -1.7 .. .3 in the pass). With
-      a world whose water is not at y=0, that band must move. So must the knee-cypress
-      band (-1.9 .. 3.5) and the lily/duckweed y (.03–.08).
 - [ ] The two-tone bark's second colour is per BUCKET, not per species: every
       `bk_flay` tree (madrone) shares one underbark green-white, every `bk_furrow` tree
       one lichen. A species that needs its own second colour needs its own bucket
@@ -51,12 +48,16 @@ Read before changing anything here. `build.py` prints the open count.
 - [ ] The Inner and Outer Walls are painted on the sky dome: 5.5° and 8.5° square-on,
       sinking toward NW and SE. Their distance and height are an assumption, not canon.
       A world that draws the walls as geometry does not need them.
-- [ ] Only one Girder tower dresses. `dress()` samples by triangle area (inherited).
+- [ ] Only one Girder tower dresses. `dress()` samples by triangle area within a shell: the core takes shells (`{geos, share}`: the roof, the walls, the ledges, each with its own share of the samples, `core/biome/40-core-place.js`), but this host's tower still passes one list.
 - [ ] No fauna yet.
 - [ ] verify.py: under `--assert` a page that never initialised raises in the per-type
       table instead of reporting (inherited). The error panel line above it says why.
 
 ## Done
+
+- [x] Water-bound heights read the local water (`BIO.waterH`, Oct 2026): the mangroves' and knee-cypresses'
+      `inWater` bands, the keep-out above the water, the lilies, hyacinth and duckweed, the shallows' reeds and the
+      water band of the floor. With this host's level of 0 the geometry is the same bit for bit (mesh fingerprints).
 
 - [x] Runtime LOD (xanadu's, through the core): heroes drawn within `SWLOW.LOD.tree` of
       their chunk and as lite stand-ins past it, ranges on the floor bands, understorey,
