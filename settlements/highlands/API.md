@@ -129,6 +129,10 @@ FURNISH(key, lx, ly, lz, lry, {v, seed, setting})   -> the placement record, or 
   the scene once, at `kbake`.
 * The piece's box is added to the builder's instance record, so murals fitted after the build (`hlFlush`) keep
   clear of it as they kept clear of the drawn furniture.
+* A builder's pieces are built at full detail (at half, a disc drawn as a rod, a shield or a target face, is a
+  4-sided diamond); the interiors' pieces at half. The catalog's colours are sRGB values: the furniture meshes
+  linearise them in the vertex shader (`hlfSRGB`), as `hC()` does for the kit's own colours. Being flat colours,
+  the pieces still read a little lighter than the kit's textured wood and stone.
 * `?furniture=0` places nothing (the records are still kept). `?interiors=1` plans and furnishes the rooms of
   every top-level building that has an item in `kits/interiors/sets/highlands.js` without `skip`
   (`G.userData.interior`, `HLF.buildings`). Indoor furniture is the interiors' job: builders draw none.
