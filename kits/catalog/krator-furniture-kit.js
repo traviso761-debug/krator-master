@@ -1787,6 +1787,11 @@ const FK = (function () {
   /* FK.set({ culture, tier, S, names?, dims?, override?, skip?, rooms?, prefix?, roles? }):
      registers every role of the tier as FURN entries keyed <culture>_<tier>_<role>; with
      roles: 'trade' it registers FK.ROLES.trade instead (keyed <culture>_trade_<role>) at the tier given. */
+  /* the job (FURN_JOBS) of each trade role: the catalog's Jobs page groups work pieces by job. Roles left out
+     (bunk, locker, altar) are a trade set's household and shrine pieces: they keep a `Jobs · trade · <culture>` row. */
+  K.TRADE_JOB = { forge: 'smithing', anvil: 'smithing', grindstone: 'smithing', armour_stand: 'smithing', weapon_rack: 'smithing',
+    trough: 'herding', hayrack: 'herding', stall: 'trading', display: 'trading', vat: 'weaving', still: 'brewing', barrel: 'brewing',
+    bin: 'warehousing', larder: 'warehousing', lathe: 'carpentry', press: 'milling', kiln: 'pottery' };
   K.set = function (spec) {
     const culture = spec.culture, tier = spec.tier || 'common', S = spec.S;
     const prefix = spec.prefix || (culture + '_' + (spec.roles || tier) + '_');
@@ -1812,6 +1817,8 @@ const FK = (function () {
         build: function (F) { const vd = entry.variantDims && entry.variantDims[F.variant] || d; build(F, S, Object.assign({ w: vd.w, d: vd.d, h: vd.h, variant: F.variant, court: tier === 'court', culture: culture }, opts)); }
       };
       if (entry.variantNames && entry.variantNames.length !== entry.variants) entry.variantNames = undefined;
+      const job = o.job || R.job || (spec.roles === 'trade' ? K.TRADE_JOB[R.role] : null);
+      if (job) entry.job = job;
       FURN(entry);
       made.push(entry.key);
     }
