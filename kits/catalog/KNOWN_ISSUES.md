@@ -101,3 +101,9 @@ Girder carry no size declarations, so there is nothing there to sync. The catalo
   the declared crown: iziz_palm, yuni_olive_valley, the beast-rider hypertrees, the Voth park exotics, succulents).
 - **ancients_rubble_pile** no longer sinks below ground: blobs are lifted by half their height, and the propped slabs
   rest on a corner instead of burying it.
+
+## Open (2026-10-01): not addressed
+- [ ] Yuni's interiors pass (settlements/yuni, 64-interiors) added six furniture pieces (`poor_lidded_basket`,
+      `poor_food_pot`, `poor_sleeping_mat`, `common_grain_bin`, `poor_reed_mat`, `common_kilim`) and replaced the
+      `storage` type with `container-item` / `container-food` plus `capacity`. The harvested Yuni set in
+      `krator-master-furniture.js` predates both. Re-harvest Yuni. See settlements/yuni/KNOWN_ISSUES.md.

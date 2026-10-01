@@ -17,3 +17,9 @@ URL (files a call leaves out are kept, so later calls only need the rest). `gall
 
 To add a world, add a line to `ENTRIES` in `build_gallery.py`. The page itself
 is `index.template.html`; the script fills in the entry list.
+
+## Open (2026-10-01)
+
+The published gallery predates the 2026-10-01 known-issues sweep merged to `main` (`ed2e893`): every build changed
+(LOD, night lighting, Locus bridges/paddies/grid, Yuni interiors and caravans, Abyss kit fixes, materials and
+vendoring). `gallery/site/` was rebuilt (98 pages, 118.9 MB) but not republished. Republish it to the URL above.
