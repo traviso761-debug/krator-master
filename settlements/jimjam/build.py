@@ -41,6 +41,8 @@ DIST = os.path.join(HERE, 'dist')
 CORE = os.path.join(ROOT, 'core', 'materials')
 SHARED_MATERIALS = ['20-textures.js', '22-materials.js', '68-mat-v5.js']
 SOCKETS = os.path.join(ROOT, 'core', 'sockets')
+LOD_DIR = os.path.join(ROOT, 'core', 'lod')        # shared level of detail (core/lod/README.md)
+LOD_FILES = sorted(f for f in os.listdir(LOD_DIR) if f[:1].isdigit())
 MANIFEST_FILES = [
     '10-core.js', '12-stats.js', '30-kit.js', '32-surfaces.js', '34-kitdefs.js',
     '36-decor.js', '38-helpers2.js', '50-registry.js', '54-mat-concrete.js',
@@ -57,6 +59,9 @@ def source_paths():
     for f in SHARED_MATERIALS:
         if f not in files:
             files[f] = os.path.join(CORE, f)
+    for f in LOD_FILES:
+        if f not in files:
+            files[f] = os.path.join(LOD_DIR, f)
     target_files = {f: os.path.join(TARGET, f) for f in os.listdir(TARGET) if f[:1].isdigit()}
     overlap = set(files) & set(target_files)
     if overlap:

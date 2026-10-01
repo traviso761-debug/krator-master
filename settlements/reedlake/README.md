@@ -22,3 +22,24 @@ python build.py --vendor-check          # vendored fragments still identical to 
 * `DESIGN.md` — the brief: the culture, the materials, the painted vocabulary, the building list.
 * `API.md` — the contract: registry, palette, kit items, helpers, how to put a building on an island.
 * `NOTES.md` — round by round. `KNOWN_ISSUES.md` — what is open.
+
+## Level of detail
+
+The page takes the shared LOD from `core/lod/` (read `core/lod/README.md`): `build.py` adds `09-lod.js` and
+`97-lod-auto.js` to the fragment list, and 97 applies it to the finished scene. Big merged meshes are cut into
+frustum-culled chunks that switch to clustered proxies with distance; instanced sets keep one draw call and drop their
+smallest instances by screen size. The originals stay the raycast targets, so the inspector and `_api` see full detail.
+The `LOD` panel (bottom right; `l` toggles it, `measure` renders the view both ways) reads draw calls and triangles.
+`LOD.enabled=false` (or `?lod=0`) puts back the exact scene the build made; `LOD.stats()` and `LOD.measure()` are
+there for verify.
+
+Measured 2026-10-01, 1000x640, SwiftShader on a shared 4-core machine (`LOD.flush()` then `LOD.measure()`; triangles and
+draw calls as three.js counts them. Frame times were too noisy under the shared load to quote):
+
+| View | LOD off: calls / triangles | LOD on: calls / triangles |
+|---|---|---|
+| village: Opening | 148 / 223k | 148 / 200k |
+| village: Overview | 148 / 223k | 127 / 72k |
+| village: Floating village | 148 / 223k | 149 / 196k |
+
+The village is small, so close views barely change; the overview drops to a third.

@@ -8,3 +8,8 @@ Open items are `- [ ]` lines; build.py prints them.
 - [ ] Row labels overlap in the whole-kit overview (the label atlas is the vendored Highlands one; per-row views are clean). 2026-10-01: the re-vendored `93-labels.js` brings Iziz's declutter (overlapping labels are hidden, landmarks and the nearest first); not yet checked against the whole-kit overview, so left open.
 - [x] Vendored fragments had drifted behind `../highlands/src` (`--vendor-check` listed 30-kit 36-decor 38-helpers2 54-mat-concrete 69-mat-salvage 69b-vern-mat 69c-vern-helpers 73-hl-carve 93-labels). — 2026-10-01: all re-vendored verbatim from Highlands, plus `71-hl-mat.js` (its `hWorldUV` fix); `--vendor-check`: all 23 identical. Brings the Iziz thatch dress, frame rails, `KIT.meshes`, the concrete topple fix, the `hnKryltso` run fix and the label declutter.
 - [x] World-UV materials all drew at one K (the `vWorldUV` and `hWorldUV` closures gave every K the same shader program). — 2026-10-01: Reedlake takes the shared `vWorldUV` from `core/materials/opt/69a-world-uv.js` (`CORE_OPT_FILES` in build.py); its 69b no longer carries a copy, and `hWorldUV` (71-hl-mat) now calls the shared one with its second K.
+
+## Level of detail (core/lod)
+
+- [x] No LOD: `core/lod` now takes over both pages (README, "Level of detail"). The village is small: the overview
+      drops from 223k to 72k triangles, close views by about 10%.

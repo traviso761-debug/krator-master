@@ -13,3 +13,13 @@ Open items start with `- [ ]` (build.py prints them after every build).
 - [ ] Vessels moored by the layout (`portMoor`: the showcase's Panamax and feeder alongside the platform chain) float free at d=1 in deep water - the ruined vessel's own list and settle only; nothing grounds them.
 - [ ] The segment-boundary labels are screen-sized sprites: at showcase overview distance neighbouring labels overlap.
 - [ ] A coastal segment does not finish its N (land) edge: with no land block behind, its apron meets natural ground through its stamp's soft ring, as before; with a block behind, the two decks are flush (nothing needed).
+
+## Level of detail (core/lod)
+
+- [x] No LOD: every triangle was drawn at every distance. `core/lod` now takes over the scene (README, "Level of
+      detail"): 9.06 M to 1.08 M triangles at the showcase overview, 8.98 M to 1.97 M at eye level on the quay.
+- [ ] LOD cuts the terrain's 29 strips into chunks so they can be culled and simplified one by one, which costs up to
+      110 more draw calls (693 to 803 at eye level; the overview stays near 900, the showcase's soft ceiling). Building
+      the terrain as fewer, squarer tiles (instead of 23 km strips) would take that back.
+- [ ] The first zoom-out builds the terrain's proxies, one strip per frame (tens of ms each on a normal machine, about
+      10 s in all on the shared SwiftShader box). A verify count should call `LOD.flush()` first.

@@ -17,3 +17,8 @@
 - [ ] Life layer: none yet. Defs carry no activity/capacity data; add it with the city phase (README project rule).
 - [ ] The coplanar-face resolver (`63-jj-zfix.js`) scans instanced boxes and flat cylinders only; a plain mesh laid flush on another surface can still z-fight. Builders should still offset details by 1–2 cm themselves; the resolver is a net, not a licence.
 - [x] Vendored `10-core.js` and `54-mat-concrete.js` had drifted behind `kits/ancients/src` (`--vendor-check`: iziz/10-core, iziz/54-mat-concrete, ancients/10-core, ancients/54-mat-concrete). — 2026-10-01: re-vendored from the kit (the exact vnoise lattice cache, the toppled-tower `bodyGroup` call); `--vendor-check`: all available upstream fragments match.
+
+## Level of detail (core/lod)
+
+- [x] No LOD: `core/lod` now takes over the kit sheet (README, "Level of detail"): 1.78 M to 0.39 M triangles at the
+      overview, 0.61 M at eye level, with fewer draw calls.
