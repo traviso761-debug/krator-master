@@ -7,12 +7,12 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | Build | Fragments | src KB | Largest KB | What |
 |---|---|---|---|---|
 | [`settlements/dalab`](settlements/dalab/INDEX.md) | 46 | 631 | 57 | Dalab: the mound settlement of the southwestern lowlands, and its building set. |
-| [`settlements/girder`](settlements/girder/INDEX.md) | 26 | 504 | 88 | Girder: an outlying Beast Rider village in the central-crater hyperjungle. |
+| [`settlements/girder`](settlements/girder/INDEX.md) | 26 | 506 | 88 | Girder: an outlying Beast Rider village in the central-crater hyperjungle. |
 | [`settlements/highlands`](settlements/highlands/INDEX.md) | 45 | 746 | 53 | Highlands: Republican, Rustic and Tribal building kits for the temperate highlands of the Inner Wall, and the town of Roketstad. |
 | [`settlements/iziz`](settlements/iziz/INDEX.md) | 51 | 504 | 52 | Iziz: the city rebuilt on the Iziz Vernacular style and the Ancients kit. |
 | [`settlements/jimjam`](settlements/jimjam/INDEX.md) | 32 | 412 | 56 |  |
-| [`settlements/locus`](settlements/locus/INDEX.md) | 67 | 1021 | 84 | Locus: a fork of the Yuni engine in the eastern abyss, with its own kit sheet and plant catalogue. |
-| [`settlements/mavs-refuge`](settlements/mavs-refuge/INDEX.md) | 28 | 616 | 69 | Mav's Refuge: a refuge in the hypertropic jungle on the lee shore of the Ring Sea. |
+| [`settlements/locus`](settlements/locus/INDEX.md) | 67 | 1028 | 84 | Locus: a fork of the Yuni engine in the eastern abyss, with its own kit sheet and plant catalogue. |
+| [`settlements/mavs-refuge`](settlements/mavs-refuge/INDEX.md) | 28 | 629 | 79 | Mav's Refuge: a refuge in the hypertropic jungle on the lee shore of the Ring Sea. |
 | [`settlements/port`](settlements/port/INDEX.md) | 48 | 718 | 39 |  |
 | [`settlements/reedlake`](settlements/reedlake/INDEX.md) | 32 | 311 | 33 | Reed Lake: a floating reed-lake village and its kit. |
 | [`settlements/screamers`](settlements/screamers/INDEX.md) | 72 | 542 | 45 | Hexahedron: the Screamers' tribal village in and under a ruined arcology, forked from the Ancients kit. |
