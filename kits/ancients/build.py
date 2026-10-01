@@ -99,6 +99,7 @@ TARGET_OUT = {
     'ring': 'ring.html',                       # the barrel arcology, circular toruses
     'arcoindian': 'arcoindian.html',           # the cliff-topography arcology
     'engines': 'engines.html',                 # five cyclopean machines of unclear purpose
+    'alt-civic': 'alt-civic.html',             # civic alternates (arco1/arco2), all decays
 }
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
