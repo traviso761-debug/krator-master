@@ -1,0 +1,102 @@
+#!/usr/bin/env bash
+# Manage the World Menagerie site server. Run ./sitectl help for commands.
+# Wraps the systemd *user* service "menagerie", so never run this with sudo.
+set -euo pipefail
+
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+UNIT=menagerie
+CONFIG="$DIR/site.toml"
+UNIT_FILE="$HOME/.config/systemd/user/$UNIT.service"
+
+if [[ $EUID -eq 0 ]]; then
+  echo "sitectl: don't run with sudo; it manages $USER's user service" >&2
+  exit 1
+fi
+
+sc() { systemctl --user "$@"; }
+
+check() { python3 "$DIR/tools/build-page.py" >/dev/null && python3 "$DIR/server.py" --config "$CONFIG" --check; }
+
+port() { python3 -c 'import sys,tomllib;print(tomllib.load(open(sys.argv[1],"rb")).get("server",{}).get("port",8000))' "$CONFIG"; }
+
+urls() {
+  local p; p="$(port)"
+  echo "http://127.0.0.1:$p/"
+  for ip in $(hostname -I); do [[ $ip == *:* ]] || echo "http://$ip:$p/"; done
+}
+
+install_unit() {
+  mkdir -p "$(dirname "$UNIT_FILE")"
+  cat > "$UNIT_FILE" <<EOF
+[Unit]
+Description=World Menagerie site server (routes in $CONFIG)
+After=network.target
+
+[Service]
+WorkingDirectory=$DIR
+ExecStartPre=/usr/bin/python3 $DIR/server.py --config $CONFIG --check
+ExecStart=/usr/bin/python3 $DIR/server.py --config $CONFIG
+ExecReload=/bin/kill -HUP \$MAINPID
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=default.target
+EOF
+  sc daemon-reload
+  echo "wrote $UNIT_FILE"
+}
+
+cmd="${1:-help}"; shift || true
+case "$cmd" in
+  status)   sc status "$UNIT" --no-pager || true; echo; urls ;;
+  start)    check && sc start "$UNIT" && urls ;;
+  stop)     sc stop "$UNIT" ;;
+  restart)  check && sc restart "$UNIT" && sc is-active "$UNIT" && urls ;;
+  reload|apply)
+            check && sc reload "$UNIT" && sleep 0.5 && journalctl --user -u "$UNIT" -n 3 --no-pager -o cat ;;
+  check)    check ;;
+  build)    python3 "$DIR/tools/build-page.py" ;;
+  logs)     journalctl --user -u "$UNIT" -n "${1:-50}" --no-pager ;;
+  follow|tail)
+            journalctl --user -fu "$UNIT" ;;
+  enable)   check && sc enable --now "$UNIT" && urls ;;
+  disable)  sc disable --now "$UNIT" ;;
+  install)  install_unit; echo "now run: $0 enable" ;;
+  url|urls) urls ;;
+  health)   curl -fsS "http://127.0.0.1:$(port)/healthz" ;;
+  boot)     echo "Starting at boot needs root once:"; echo "  sudo loginctl enable-linger $USER"
+            loginctl show-user "$USER" -p Linger ;;
+  test)     # 1. pure modules under gjs; 2. every page in headless Firefox against its golden (tools/test-pages.py)
+            rc=0; if command -v gjs >/dev/null; then gjs -m "$DIR/tests/run.js" || rc=1; else echo "gjs not installed: skipping module tests"; fi
+            python3 "$DIR/server.py" --config "$CONFIG" --check >/dev/null || exit 1   # not check(): that would rebuild a stale build.js instead of failing on it
+            python3 "$DIR/tools/test-pages.py" "$@" || rc=1
+            exit $rc ;;
+  probe)    python3 "$DIR/tools/probe.py" "$@" ;;
+  help|-h|--help)
+    cat <<EOF
+Usage: ./sitectl <command>
+
+  status     service state and site URLs
+  start      check config, then start
+  stop       stop the server
+  restart    check config, then restart (after editing server.py, host or port)
+  reload     check config, then apply site.toml without downtime (alias: apply)
+  check      validate site.toml and list every URL
+  logs [N]   last N log lines (default 50)
+  follow     live log (Ctrl+C to quit)
+  enable     start now and at every login
+  disable    stop now and don't start at login
+  install    (re)write the systemd unit for this folder
+  url        print the site URLs
+  health     ask the running server if it's up
+  boot       how to start the site at boot without a login
+  test [P..] headless check: every page builds with no errors and its layout matches tests/golden (P: only pages
+             whose name starts with P; -j N pages at a time)
+  probe ...  run tools/probe.py with the given arguments (metrics for one page load)
+
+Editing an HTML page or image needs no command: files are read on every request.
+EOF
+    ;;
+  *) echo "unknown command: $cmd (try ./sitectl help)" >&2; exit 2 ;;
+esac

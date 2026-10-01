@@ -1,4 +1,11 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Windows batch files need CRLF; the bash sitectl must keep LF.
+*.bat text eol=crlf
+host/sitectl text eol=lf
+# The macOS and Linux launchers must keep LF.
+*.command text eol=lf
+*.sh text eol=lf
 core/materials/**/*.png filter=lfs diff=lfs merge=lfs -text
 core/materials/**/*.jpg filter=lfs diff=lfs merge=lfs -text

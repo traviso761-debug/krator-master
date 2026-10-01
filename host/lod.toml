@@ -1,0 +1,53 @@
+# Level of detail (LOD) for each Krator world on the LAN site. The Menagerie's pages are not affected.
+#
+# Edit this file, then rebuild the gallery:   ./sitectl build --no-build   (Windows: host\sitectl.bat build)
+# No restart is needed: the next page load uses it.
+#
+# Each world also gets a bar at the top: Scenes (every Krator world), LOD (pick a level; the page reloads and that
+# browser remembers it for that world) and Home. For one visit, ?lod=low (or medium, high) at the end of the address.
+# gallery/krator-bar.js does the work; its header explains each setting.
+
+# The level a world starts at when [worlds] below does not name it.
+default = "high"
+
+# Links listed under "Elsewhere on this site" at the end of the Scenes panel.
+extra = [
+  { name = "World Menagerie", href = "/menagerie", blurb = "The Menagerie's own worlds" },
+  { name = "Krator Worlds gallery", href = "/", blurb = "Every Krator world, with pictures" },
+]
+
+# ---- the levels: the LOD menu lists them in this order ----
+# Settings (leave one out to keep the page's own choice):
+#   pixelRatio  cap on drawing resolution: 1 = one pixel per screen pixel, 0.75 = three quarters (blurrier, faster)
+#   antialias   false turns edge smoothing off
+#   shadows     false turns shadows off
+#   shadowMax   largest shadow map, in pixels (smaller = softer, cheaper shadows)
+#   cullPx      hide anything smaller than this many pixels on screen (0 = never). Use with care: most worlds build
+#               a structure from many small meshes, so this takes buildings apart (windows, trim, small houses)
+#   fps         most frames drawn per second (0 = no cap); lower keeps a weak GPU cool and responsive
+
+[levels.high]          # exactly as built: nothing is changed
+
+[levels.medium]
+pixelRatio = 1
+shadowMax = 1024
+
+[levels.low]
+pixelRatio = 0.75
+antialias = false
+shadows = false
+fps = 30
+
+# ---- each world's starting level, by its name in the gallery (the file name under /worlds/) ----
+# The heaviest worlds start at medium. Anything not listed starts at `default`.
+[worlds]
+dalab = "medium"
+roketstad = "medium"
+locus = "medium"
+xanadu = "medium"
+eastabyss = "medium"
+nwlowlands = "medium"
+rift = "medium"
+sedesert = "medium"
+swbay = "medium"
+swlowlands = "medium"
