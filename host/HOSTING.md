@@ -1,6 +1,7 @@
 # Hosting Krator Worlds on your network
 
-This guide is for anyone who wants to run the Krator site on their own computer and open it from other devices on
+**Not technical? Start with [START-HERE-WINDOWS.md](../START-HERE-WINDOWS.md)**: Windows and Chrome, step by step,
+no command line. This guide is for anyone who wants to run the Krator site on their own computer and open it from other devices on
 the same network (phones, tablets, other PCs). It covers Windows, Linux and macOS. The short reference for
 maintainers is [README.md](README.md).
 
