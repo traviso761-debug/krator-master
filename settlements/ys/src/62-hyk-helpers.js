@@ -28,7 +28,7 @@ HYK.placeOn=function(scene,key,host,o){const D=HYK.defs[key];if(!D){reportErr('H
  let way=null;if(o.into){way=(host.ways||[]).find(w=>Math.abs(Math.atan2(Math.sin(w.a-a),Math.cos(w.a-a)))<.05)||null;if(!way)reportErr('HYK.placeOn: '+key+' asks to open '+host.n+' but no way is declared at that bearing');}
  const ho={host,a,rs,y:o.y,level:o.level,v:o.v,way,
   faceZ:(lx,ly)=>{const r=host.rAt(o.y+(ly||0),a);return Math.sqrt(Math.max(0,r*r-lx*lx))-r;},
-  landing:(lx,ly,lz,R,opt)=>{const w=hykW(lx,ly,lz);const pad=hykPad(w[0],w[1],w[2],R,Object.assign({own:host.n},opt||{}));host.landings.push({x:w[0],y:w[1],z:w[2],r:R,level:o.level,a});return pad;}};
+  landing:(lx,ly,lz,R,opt)=>{const w=hykW(lx,ly,lz);const pad=hykPad(lx,ly,lz,R,Object.assign({own:host.n},opt||{}));host.landings.push({x:w[0],y:w[1],z:w[2],r:R,level:o.level,a});return pad;}};
  try{D.build(G,ho);}catch(e){reportErr(key+' '+e.stack);}
  endGroupXF();HYK.cur=null;const f=ysHostInhabit(host,o.y,.6);if(f&&way)f.way=true;return G;};
 // local -> world for a point and for a direction (the same rotation as loc(), 69c)
@@ -74,16 +74,17 @@ function hykCirclePoly(cx,cz,r,n){const P=[];n=n||14;for(let i=0;i<n;i++){const 
 // the floor plate of a room: a chord disc at y, into the interior bucket
 function hykFloor(cx,cz,y,R,o){o=o||{};return hykPut('hkFloor',hykDisc(cx,y,cz,R,{col:o.col||hC(hPick(HPAL.floor)),lobes:o.lobes,nu:o.nu||28}),true);}
 // ---------------------------------------------------------------- landings, stairs, ladders (world frame unless inside a building)
-// a lily-pad landing: a lobed disc with a domed underside, on a stalk down to the ground if o.stalk
+// a lily-pad landing: a lobed disc with a domed underside, on a stalk down to the ground if o.stalk. Drawn in the CURRENT
+// frame (local inside a builder, world outside one); its deck record is always world
 function hykPad(x,y,z,R,o){o=o||{};const col=o.col||hC(hPick(HPAL.shell));const mk=o.mat||'hkShell';
  hykPut(mk,hykDisc(x,y,z,R,{col,lobes:{n:o.lobes||9,amp:.08}}));hykPut(mk,hykDisc(x,y-.3,z,R*.97,{col,sag:-R*.22,down:true,lobes:{n:o.lobes||9,amp:.08}}));
  kput('hkLip',[x,y+.02,z],qEuler(Math.PI/2,0,0),[R*1.0,R*1.0,.9],col);
- if(o.stalk){const yb=o.stalk===true?terrainH(x,z)-1:o.stalk;kput('hkPost',[x,(yb+y)/2,z],null,[R*.14,y-yb,R*.14],col);}
+ const w=hykW(x,y,z);if(o.stalk){const yb=o.stalk===true?terrainH(w[0],w[2])-1-(w[1]-y):o.stalk;kput('hkPost',[x,(yb+y)/2,z],null,[R*.14,y-yb,R*.14],col);}
  // a rail round the rim on posts, open over `gap` radians centred on `a0` (the approach), for a perch people stand on
  if(o.rail){const rr=R*.9,a0=o.rail.a0||0,gap=o.rail.gap||0;const n=Math.max(12,Math.round((TAU-gap)*rr/1.2));const bc=o.rail.col||hC(hPick(HPAL.bone));const pts=[];
   for(let i=0;i<=n;i++){const a=a0+gap/2+(TAU-gap)*i/n;pts.push([x+rr*Math.cos(a),y+1.15,z+rr*Math.sin(a)]);}
   hykPut('hkBone',hykTube(pts,()=>.07,{seg:6,col:bc}));for(let i=0;i<=n;i+=2){const p=pts[i];kput('hkPost',[p[0],y+.58,p[2]],null,[.06,1.15,.06],bc);}}
- ysDeck({x0:x-R,z0:z-R,x1:x+R,z1:z+R,w:R*2,y,kind:'pad',own:o.own||null});return {x,y,z,r:R};}
+ ysDeck({x0:w[0]-R,z0:w[2]-R,x1:w[0]+R,z1:w[2]+R,w:R*2,y:w[1],kind:'pad',own:o.own||null});return {x,y,z,r:R};}
 // a spiral stair hugging a round host from y0 down to y1: treads on the face, a rail tube on the outer edge
 function hykStairSpiral(cx,cz,rAt,y0,y1,o){o=o||{};const w=o.w||1.1,rise=.19,run=.64,dir=o.dir||1;const col=o.col||hC(hPick(HPAL.bone));const rail=[];
  let a=o.a0||0,y=y0;const nst=Math.max(1,Math.round((y0-y1)/rise));
