@@ -17,7 +17,7 @@ canvas{display:block}
 #cap{position:fixed;left:10px;top:44px;background:rgba(0,0,0,.45);padding:4px 8px;border-radius:4px;font-size:12px;color:#f0dcc4;z-index:5;max-width:60vw}
 @media (max-width:700px){#cap{display:none}#insp{top:44px;max-width:90vw}#tools{top:auto;bottom:60px}}
 </style><div id="ui"></div>
-<div id="cap">Shade — a sunken basin of the Eastern Nomads in the eastern high desert: the falls, the pool, the carved face, the switchback, the slot canyon, the Khan, the pueblos, the tents and the cliff dwellings round the rim (60 buildings; the life layer is data) · hover to inspect · drag to orbit · wheel to zoom · right-drag / WASD to move</div>
+<div id="cap">Shade — a sunken basin of the Eastern Nomads in the eastern high desert: the falls, the pool, the carved face, the switchback, the slot canyon, the Khan, the pueblos, the tents and the cliff dwellings round the rim (64 buildings, three alcoves; the life layer is data) · hover to inspect · drag to orbit · wheel to zoom · right-drag / WASD to move</div>
 <div id="tools"></div>
 <div id="poly"><b>Polygon tool</b> — click the ground to add points<textarea id="polyout" readonly></textarea><button id="polyundo">Undo</button><button id="polyclear">Clear</button><button id="polycopy">Copy</button></div>
 <pre id="insp">inspector: hover the world</pre>
@@ -520,10 +520,16 @@ BIO.col=(function(){const T=()=>BIO.host.THREE,C=h=>new (T().Color)(h);let WHITE
 //   - the beds DIP gently and WARP (two octaves of noise in plan), so a bed
 //     line wanders across a face instead of running level;
 //   - LAMINAE inside every bed and CROSS-BEDDING on the sandstones;
-//   - DESERT VARNISH: dark streaks hanging down faces, and a paler weathered
-//     rind where the surface faces up.
+//   - COLOUR THAT DRIFTS ALONG A BED: iron staining warms and cools each bed
+//     in patches tens of metres long, so no band is one flat colour;
+//   - DESERT VARNISH: dark streaks hanging from the top of each bed and fading
+//     down it (the water that leaves them runs off the ledge above);
+//   - SAND: dust settles on every up-facing ledge and banks against the foot;
+//     a bleached CAP (the white Navajo-like top of a mesa) where the host asks.
 //
-//   const S=BIO.strata({seed, columnM, dip:[dx,dz,slope], warp:[m1,m2], palette})
+//   const S=BIO.strata({seed, columnM, dip:[dx,dz,slope], warp:[m1,m2], palette,
+//                       cap:[y0,y1] (bleaching from y0 to y1; off by default),
+//                       foot:y (the floor the dust banks on; off by default), dust:0xhex})
 //   S.uniforms                    merge into a material's uniforms (onBeforeCompile)
 //   S.parsVertex / S.vertex       declare and write vSWP, vSWN (world position, normal)
 //   S.parsFragment                the function strataColor(vec3 wp, vec3 wn) -> vec3
@@ -533,31 +539,39 @@ BIO.col=(function(){const T=()=>BIO.host.THREE,C=h=>new (T().Color)(h);let WHITE
 let ONE=null;
 BIO.strata=function(opt){if(ONE&&!opt)return ONE;opt=opt||{};const T=BIO.host.THREE,F=BIO.fn;
  const seed=opt.seed||4711,colM=opt.columnM||180,N=1024;
- const pal=opt.palette||{sand:[0xb8683f,0xc47a4a,0xa4523a,0xb36a44],shale:[0x7a4030,0x6e3a2e,0x5e3a34],bleach:[0xd4a884,0xdcb894,0xc98a5e],mud:[0x8f4f3a,0x94503c]};
+ // the palette: Wingate/Kayenta reds and oranges, purple-brown shales, buff and cream
+ // bleached sandstones, chocolate mudstones, and the rare grey-green of a reduced bed
+ const pal=opt.palette||{sand:[0xb5643a,0xc2723f,0xa85a36,0xbd7a4e,0xc98a58],shale:[0x7b4a3e,0x6f4a44,0x80503c],
+  bleach:[0xd9b48a,0xe0c39a,0xcfa27a],mud:[0x93553f,0x8a5a48,0x9c6248],green:[0x8c8a6e,0x9a9478]};
  // the column: beds bottom to top, thickness in metres, kind, colour
  let s=seed>>>0;const R=()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};
  const pick=a=>a[Math.floor(R()*a.length)%a.length];
  const beds=[];let y=0;
  while(y<colM){const u=R();let kind,th;
-  if(u<.46){kind='sand';th=2.5+R()*9;}else if(u<.7){kind='shale';th=.35+R()*1.4;}else if(u<.86){kind='mud';th=.8+R()*2.2;}else{kind='bleach';th=1+R()*3.5;}
-  th=Math.min(th,colM-y);beds.push({y0:y,th,kind,c:new T.Color(pick(pal[kind]))});y+=th;}
+  if(u<.46){kind='sand';th=2.5+R()*9;}else if(u<.68){kind='shale';th=.35+R()*1.4;}else if(u<.83){kind='mud';th=.8+R()*2.2;}else if(u<.95){kind='bleach';th=1+R()*3.5;}else{kind='green';th=.3+R()*.9;}
+  th=Math.min(th,colM-y);beds.push({y0:y,th,kind,c:new T.Color(pick(pal[kind]||pal.mud))});y+=th;}
  const c=document.createElement('canvas');c.width=1;c.height=N;const g=c.getContext('2d'),id=g.createImageData(1,N);
+ const c2=document.createElement('canvas');c2.width=1;c2.height=N;const g2=c2.getContext('2d'),id2=g2.createImageData(1,N);
  for(let i=0;i<N;i++){const yy=(i+.5)/N*colM;let b=beds[beds.length-1];for(const q of beds)if(yy<q.y0+q.th){b=q;break;}
   const f=(yy-b.y0)/b.th,edge=Math.min(f*b.th,(1-f)*b.th);   // metres to the nearest bed boundary
-  let k=1-.18*F.smooth(.25,0,edge);                          // a dark seam where beds meet
+  let k=1-.1*F.smooth(.25,0,edge);                          // a dark seam where beds meet
   if(b.kind==='sand')k*=.94+.1*f;                            // a sandstone bed pales upward
   const o=(N-1-i)*4;id.data[o]=Math.min(255,b.c.r*255*k);id.data[o+1]=Math.min(255,b.c.g*255*k);id.data[o+2]=Math.min(255,b.c.b*255*k);
-  id.data[o+3]=b.kind==='sand'?255:b.kind==='bleach'?200:b.kind==='mud'?120:60;}       // alpha: how much cross-bedding shows
- g.putImageData(id,0,0);
+  id.data[o+3]=b.kind==='sand'?255:b.kind==='bleach'?200:b.kind==='mud'?120:60;       // alpha: how much cross-bedding shows
+  // the second column: R how far up its bed (varnish hangs from the top), G how much the bed holds varnish
+  id2.data[o]=Math.round(f*255);id2.data[o+1]=b.kind==='sand'||b.kind==='bleach'?255:90;id2.data[o+2]=0;id2.data[o+3]=255;}
+ g.putImageData(id,0,0);g2.putImageData(id2,0,0);
  const col=new T.CanvasTexture(c);col.wrapS=T.ClampToEdgeWrapping;col.wrapT=T.RepeatWrapping;col.magFilter=T.LinearFilter;col.minFilter=T.LinearFilter;col.generateMipmaps=false;col.encoding=T.sRGBEncoding;
+ const bedT=new T.CanvasTexture(c2);bedT.wrapS=T.ClampToEdgeWrapping;bedT.wrapT=T.RepeatWrapping;bedT.magFilter=T.NearestFilter;bedT.minFilter=T.NearestFilter;bedT.generateMipmaps=false;
  // a tiling value noise for the warp, the streaks and the cross-bedding
  const nz=BIO.canvasTex(256,256,(gg,w,h)=>{const d=gg.createImageData(w,h);for(let yy=0;yy<h;yy++)for(let xx=0;xx<w;xx++){const v=F.fbm(xx/32,yy/32,seed%97,4);const o=(yy*w+xx)*4;d.data[o]=d.data[o+1]=d.data[o+2]=Math.round(v*255);d.data[o+3]=255;}gg.putImageData(d,0,0);});
  nz.wrapS=nz.wrapT=T.RepeatWrapping;nz.encoding=T.LinearEncoding;
  const dip=opt.dip||[.6,.8,.012],warp=opt.warp||[9,2.2];
- const uniforms={uSCol:{value:col},uSNz:{value:nz},uSColH:{value:colM},uSDip:{value:new T.Vector3(dip[0],dip[1],dip[2])},uSWarp:{value:new T.Vector2(warp[0],warp[1])}};
+ const cap=opt.cap||[1e5,1e5+1],dust=new T.Color(opt.dust||0xc9a27e).convertSRGBToLinear();
+ const uniforms={uSBed:{value:bedT},uSCap:{value:new T.Vector2(cap[0],cap[1])},uSFoot:{value:opt.foot===undefined?-1e5:opt.foot},uSDust:{value:new T.Vector3(dust.r,dust.g,dust.b)},uSCol:{value:col},uSNz:{value:nz},uSColH:{value:colM},uSDip:{value:new T.Vector3(dip[0],dip[1],dip[2])},uSWarp:{value:new T.Vector2(warp[0],warp[1])}};
  const parsVertex='varying vec3 vSWP;varying vec3 vSWN;';
  const vertex='vSWP=(modelMatrix*vec4(transformed,1.0)).xyz;vSWN=normalize(mat3(modelMatrix)*objectNormal);';
- const parsFragment=['varying vec3 vSWP;varying vec3 vSWN;uniform sampler2D uSCol,uSNz;uniform float uSColH;uniform vec3 uSDip;uniform vec2 uSWarp;',
+ const parsFragment=['varying vec3 vSWP;varying vec3 vSWN;uniform sampler2D uSCol,uSNz,uSBed;uniform float uSColH,uSFoot;uniform vec2 uSCap;uniform vec3 uSDust;uniform vec3 uSDip;uniform vec2 uSWarp;',
   'vec3 strataColor(vec3 wp,vec3 wn){',
   ' wn=normalize(wn);',
   ' float w1=texture2D(uSNz,wp.xz*0.0019).r-0.5,w2=texture2D(uSNz,wp.xz*0.0087+0.37).r-0.5;',
@@ -568,10 +582,21 @@ BIO.strata=function(opt){if(ONE&&!opt)return ONE;opt=opt||{};const T=BIO.host.TH
   ' float xb=texture2D(uSNz,vec2(fp.x*0.06+yy*0.09,yy*0.55)).r;',                 // cross-bedding: sets of inclined lines
   ' xb=mix(1.0,0.9+0.18*smoothstep(0.3,0.8,fract(xb*4.0)),bed.a);',
   ' vec3 c=bed.rgb*lam*xb;',
-  ' float st=texture2D(uSNz,vec2(fp.x*0.19,wp.y*0.006+w1*0.2)).r;',                // varnish streaks down the faces
+  ' vec4 bi=texture2D(uSBed,vec2(0.5,yy/uSColH));',                                 // r: how far up its bed; g: holds varnish
+  // iron staining: each bed warms and cools along its length (patches of 20-80 m), a little brighter or darker
+  ' float iv=texture2D(uSNz,vec2(dot(wp.xz,vec2(0.0061,0.0043)),yy*0.0137)).r,ib=texture2D(uSNz,vec2(dot(wp.xz,vec2(-0.0047,0.0069))+0.5,yy*0.029)).r;',
+  ' c*=mix(vec3(1.09,0.97,0.88),vec3(0.92,0.98,1.07),smoothstep(0.3,0.7,iv))*(0.9+0.2*ib);',
+  // the bleached cap
+  ' float cp=smoothstep(uSCap.x,uSCap.y,yy);c=mix(c,c*vec3(1.2,1.14,1.06)+vec3(0.05,0.042,0.03),cp*0.6);',
+  // desert varnish: streaks of several widths hanging from the top of the bed and fading down it
   ' float steep=1.0-abs(wn.y);',
-  ' c=mix(c,c*vec3(0.42,0.36,0.33),smoothstep(0.56,0.82,st)*0.55*steep);',
-  ' c=mix(c,c*1.12+vec3(0.025),smoothstep(0.55,0.95,wn.y)*0.6);',                   // the weathered rind of a ledge
+  ' float s1=texture2D(uSNz,vec2(fp.x*0.21,wp.y*0.004+w1*0.15)).r,s2=texture2D(uSNz,vec2(fp.x*0.071+0.3,wp.y*0.002)).r;',
+  ' float hang=mix(0.3,1.0,bi.r*bi.r)*bi.g;',
+  ' float vn=max(smoothstep(0.6,0.78,s1)*0.8,smoothstep(0.62,0.85,s2))*hang*steep*steep;',
+  ' c=mix(c,c*vec3(0.36,0.3,0.28)+vec3(0.012,0.009,0.008),vn*0.62);',
+  // sand: on every ledge, banked against the foot
+  ' float up=smoothstep(0.62,0.93,wn.y),ft=smoothstep(uSFoot+5.0,uSFoot+0.5,wp.y);',
+  ' c=mix(c,c*1.08+vec3(0.02),up*0.35);c=mix(c,uSDust,clamp(up*0.38+ft*0.45*(1.0+0.8*w2),0.0,0.75));',
   ' return c;}'].join('\n');
  const inject=sh=>{Object.assign(sh.uniforms,uniforms);
   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+parsVertex).replace('#include <worldpos_vertex>','#include <worldpos_vertex>\n'+vertex);
@@ -579,6 +604,117 @@ BIO.strata=function(opt){if(ONE&&!opt)return ONE;opt=opt||{};const T=BIO.host.TH
  const colorAt=yy=>{const v=((yy%colM)+colM)%colM;for(const q of beds)if(v<q.y0+q.th)return q.c.clone();return beds[beds.length-1].c.clone();};
  const S={uniforms,parsVertex,vertex,parsFragment,inject,colorAt,beds,columnM:colM};
  if(!opt.private)ONE=S;return S;};
+})();
+
+// ==================== 36-core-carve.js
+// ================================================================= BIOME CORE — carve patches (overhangs on a heightfield)
+// The ground stays a heightfield (one height per x,z: everything that roots,
+// walks or clamps a camera reads it). A PATCH is where a feature needs rock
+// ABOVE open space: an alcove in a cliff, a niche round a carved front, the
+// undercut behind a waterfall. Inside its plan the host lowers the heightfield
+// to the floor (BIO.carve.recessD gives the distance the host folds into its
+// own wall function), and the patch is meshed (surface nets) to put the rock
+// back above the void's ceiling. The patch overlaps the cliff round it, sinks
+// its top 3 cm under the heightfield wherever the two coincide, and takes the
+// strata shader (world space), so the join does not show.
+//
+// The heightfield's recess runs `pad` (2 m) BEHIND the void's walls, inside the
+// patch's rock: a ground triangle (1.25 m) spanning the recess's edge would
+// otherwise cut a ramp of spikes into the void. The patch's `margin` must be
+// wider than pad + the host's wall width, or the ramp shows beyond the patch.
+// Each patch vertex carries `aOcc` (ambient occlusion marched through the
+// density field) and `aSun` (1 lit, 0 in the hood's shadow, given the sun's
+// direction); floorOcc() and floorSun() give the same for the ground under a hood.
+//
+//   BIO.carve.add({id, kind:'alcove'|'niche'|'undercut', c:[x,z], n:[nx,nz] (out of the rock,
+//                  toward the open floor), hw (half-width along the wall), depth (into the rock),
+//                  h (void height at the mouth above floorY), floorY, base:(x,z)=>y (the ground
+//                  WITHOUT the patch), margin (5.5), pad (2), cell (.5)})
+//   BIO.carve.recessD(x,z)      signed distance to the nearest patch's plan grown by its pad (negative inside)
+//   BIO.carve.covered(x,z)      the lowest ceiling over (x,z), or null
+//   BIO.carve.topAt(x,z)        the patch's top over (x,z), within its plan + margin (the ground without it), or null
+//   BIO.carve.rockAt(x,y,z)     is (x,y,z) inside a patch's rock
+//   BIO.carve.floorOcc(x,z)     how much sky the ground at (x,z) sees under a hood (1 in the open)
+//   BIO.carve.floorSun(x,y,z,sun) 0 where a patch's rock stands between (x,y,z) and the sun ([x,y,z], toward it), else 1
+//   BIO.carve.mesh(material,sun) surface-nets meshes, one per patch, with aOcc and aSun (call after BIO.init)
+(function(){
+const P=[];
+const local=(Q,x,z)=>{const dx=x-Q.c[0],dz=z-Q.c[1];return{u:dx*Q.n[1]-dz*Q.n[0],q:-(dx*Q.n[0]+dz*Q.n[1])};};   // u along the wall, q into the rock
+function planSD(Q,x,z){const L=local(Q,x,z);
+ if(Q.kind==='niche'){const ax=Math.abs(L.u)-Q.hw,aq=Math.max(L.q-Q.depth,-L.q-2);return Math.hypot(Math.max(ax,0),Math.max(aq,0))+Math.min(Math.max(ax,aq),0);}
+ if(L.q<0)return Math.max(Math.abs(L.u)-Q.hw,-L.q-2.5);                  // in front of the foot: the open mouth, 2.5 m of it
+ return(Math.hypot(L.u/Q.hw,L.q/Q.depth)-1)*Math.min(Q.hw,Q.depth);}
+// the void's ceiling above (u, q)
+function ceil(Q,u,q){const a=Math.abs(u)/Q.hw,b=Math.max(0,q)/Q.depth;
+ if(Q.kind==='niche')return Q.floorY+Q.h*(1-.12*a*a);
+ return Q.floorY+Q.h*Math.sqrt(Math.max(0,1-b*b))*Math.sqrt(Math.max(0,1-a*a*a*a));}
+// rock is negative: under the original surface, inside the patch's region, outside the void
+function dens(Q,x,y,z,base){const sd=planSD(Q,x,z),reg=sd-Q.margin,band=sd>0?.03:0;let f=Math.max(y-(base-band),reg);
+ if(sd<0){const L=local(Q,x,z),cy=ceil(Q,L.u,L.q),v=Math.max(sd,y-cy,Q.floorY-.5-y);f=Math.max(f,-v);}
+ return f;}
+// five rays round the sun's direction (a 3-degree penumbra: the grids' shadow edges come out soft)
+const soft=D=>{const ax=Math.abs(D[1])<.9?[0,1,0]:[1,0,0],u=[D[1]*ax[2]-D[2]*ax[1],D[2]*ax[0]-D[0]*ax[2],D[0]*ax[1]-D[1]*ax[0]],ul=Math.hypot(...u);u[0]/=ul;u[1]/=ul;u[2]/=ul;
+ const w=[D[1]*u[2]-D[2]*u[1],D[2]*u[0]-D[0]*u[2],D[0]*u[1]-D[1]*u[0]],e=.052;return[[0,0],[1,0],[-1,0],[0,1],[0,-1]].map(([a,b])=>[D[0]+(u[0]*a+w[0]*b)*e,D[1]+(u[1]*a+w[1]*b)*e,D[2]+(u[2]*a+w[2]*b)*e]);};
+const C={patches:P,
+ add(o){const Q=Object.assign({margin:5.5,pad:2,cell:.5,kind:'alcove'},o);const l=Math.hypot(Q.n[0],Q.n[1]);Q.n=[Q.n[0]/l,Q.n[1]/l];P.push(Q);return Q;},
+ planSD,
+ recessD(x,z){let d=1e9;for(const Q of P){if(Math.abs(x-Q.c[0])>Q.hw+Q.depth+8||Math.abs(z-Q.c[1])>Q.hw+Q.depth+8)continue;d=Math.min(d,planSD(Q,x,z)-Q.pad);}return d;},
+ covered(x,z){let c=null;for(const Q of P){if(Math.abs(x-Q.c[0])>Q.hw+Q.depth+4||Math.abs(z-Q.c[1])>Q.hw+Q.depth+4)continue;const sd=planSD(Q,x,z);if(sd>0)continue;
+  const L=local(Q,x,z);if(L.q<0)continue;const y=ceil(Q,L.u,L.q);if(c===null||y<c)c=y;}return c;},
+ topAt(x,z){for(const Q of P){if(Math.abs(x-Q.c[0])>Q.hw+Q.depth+Q.margin+2||Math.abs(z-Q.c[1])>Q.hw+Q.depth+Q.margin+2)continue;if(planSD(Q,x,z)<Q.margin)return Q.base(x,z);}return null;},
+ floorOcc(x,z){let o=1;for(const Q of P){if(Math.abs(x-Q.c[0])>Q.hw+Q.depth+4||Math.abs(z-Q.c[1])>Q.hw+Q.depth+4)continue;const L=local(Q,x,z),sd=planSD(Q,x,z);if(sd>0)continue;
+  // the hood hides more of the sky the further in: a third at the mouth, most of it at the back
+  const a=Math.abs(L.u)/Q.hw,b=Math.max(0,L.q)/Q.depth,k=Q.kind==='niche'?.5:1;o=Math.min(o,1-k*(.62*Math.min(1,.35+b*1.1)*(1-.5*a*a))*Math.min(1,(L.q+2)/2));}return Math.max(.25,o);},
+ floorSun(x,y,z,sun){const l=Math.hypot(...sun);let near=false;
+  for(const Q of P)if(Math.abs(x-Q.c[0])<Q.hw+Q.depth+Q.margin+40&&Math.abs(z-Q.c[1])<Q.hw+Q.depth+Q.margin+40){near=true;break;}if(!near)return 1;
+  // the ground only under the hood or in its mouth, fading out over the 2.5 m in front (the plain cliff casts no shadow)
+  let fade=0;for(const Q of P){const sd=planSD(Q,x,z);if(sd<0){const L=local(Q,x,z);fade=Math.max(fade,Math.min(1,(L.q+2.5)/2.5));}}if(!fade)return 1;
+  let lit=0;const S=soft([sun[0]/l,sun[1]/l,sun[2]/l]);
+  for(const D of S){let l1=1;for(let t=1;t<48&&l1;t+=1.2){const px=x+D[0]*t,py=y+.3+D[1]*t,pz=z+D[2]*t;for(const Q of P)if(planSD(Q,px,pz)<0&&dens(Q,px,py,pz,Q.base(px,pz))<0){l1=0;break;}}lit+=l1/S.length;}return 1-(1-lit)*fade;},
+ rockAt(x,y,z){for(const Q of P){if(Math.abs(x-Q.c[0])>Q.hw+Q.depth+Q.margin+2||Math.abs(z-Q.c[1])>Q.hw+Q.depth+Q.margin+2)continue;if(dens(Q,x,y,z,Q.base(x,z))<0)return true;}return false;},
+ // surface nets: one vertex per sign-changing cell (the mean of its edge crossings), one quad per sign-changing edge
+ mesh(material,sun){const T=BIO.host.THREE,out=[],sl=sun?Math.hypot(...sun):1,SD=sun?[sun[0]/sl,sun[1]/sl,sun[2]/sl]:null;
+  for(const Q of P){const t0=performance.now(),c=Q.cell,R=Q.hw+Q.depth+Q.margin+1,x0=Q.c[0]-R,z0=Q.c[1]-R,nx=Math.ceil(2*R/c),nz=nx;
+   let ymax=-1e9;for(let i=0;i<=nx;i+=2)for(let k=0;k<=nz;k+=2)ymax=Math.max(ymax,Q.base(x0+i*c,z0+k*c));
+   const y0=Q.floorY-1.5,ny=Math.ceil((ymax+1.5-y0)/c),W=nx+1,H=ny+1,F=new Float32Array(W*H*(nz+1)),B=new Float32Array(W*(nz+1));
+   for(let k=0;k<=nz;k++)for(let i=0;i<=nx;i++)B[k*W+i]=Q.base(x0+i*c,z0+k*c);
+   const id=(i,j,k)=>(k*H+j)*W+i;
+   for(let k=0;k<=nz;k++)for(let j=0;j<=ny;j++)for(let i=0;i<=nx;i++)F[id(i,j,k)]=dens(Q,x0+i*c,y0+j*c,z0+k*c,B[k*W+i]);
+   const V=new Int32Array(nx*ny*nz).fill(-1),pos=[],nrm=[],idx=[];
+   const cid=(i,j,k)=>(k*ny+j)*nx+i;
+   const corner=[[0,0,0],[1,0,0],[0,1,0],[1,1,0],[0,0,1],[1,0,1],[0,1,1],[1,1,1]],edges=[[0,1],[2,3],[4,5],[6,7],[0,2],[1,3],[4,6],[5,7],[0,4],[1,5],[2,6],[3,7]];
+   for(let k=0;k<nz;k++)for(let j=0;j<ny;j++)for(let i=0;i<nx;i++){const v=corner.map(o=>F[id(i+o[0],j+o[1],k+o[2])]);let m=0;for(let a=0;a<8;a++)if(v[a]<0)m|=1<<a;if(m===0||m===255)continue;
+    let sx=0,sy=0,sz=0,n=0;for(const [a,b] of edges){if((v[a]<0)===(v[b]<0))continue;const t=v[a]/(v[a]-v[b]),A=corner[a],Bc=corner[b];sx+=A[0]+(Bc[0]-A[0])*t;sy+=A[1]+(Bc[1]-A[1])*t;sz+=A[2]+(Bc[2]-A[2])*t;n++;}
+    const X=x0+(i+sx/n)*c,Y=y0+(j+sy/n)*c,Z=z0+(k+sz/n)*c;V[cid(i,j,k)]=pos.length/3;pos.push(X,Y,Z);
+    const e=c*.5,bx=Q.base(X,Z),g=[dens(Q,X+e,Y,Z,Q.base(X+e,Z))-dens(Q,X-e,Y,Z,Q.base(X-e,Z)),dens(Q,X,Y+e,Z,bx)-dens(Q,X,Y-e,Z,bx),dens(Q,X,Y,Z+e,Q.base(X,Z+e))-dens(Q,X,Y,Z-e,Q.base(X,Z-e))],gl=Math.hypot(...g)||1;
+    nrm.push(g[0]/gl,g[1]/gl,g[2]/gl);}
+   // ambient occlusion: 14 directions round the normal, marched through the field. Only the rock
+   // round the void (within 3 m of its plan, above its floor) occludes: the heightfield beside the
+   // patch has no occlusion either, so an open face of the patch must not darken (the join would show)
+   const Fat=(X,Y,Z)=>{const fi=(X-x0)/c,fj=(Y-y0)/c,fk=(Z-z0)/c;if(fi<0||fj<0||fk<0||fi>=nx||fj>=ny||fk>=nz)return 1;
+    const i=fi|0,j=fj|0,k=fk|0,u=fi-i,v=fj-j,w=fk-k,L=(a,b,t)=>a+(b-a)*t;
+    return L(L(L(F[id(i,j,k)],F[id(i+1,j,k)],u),L(F[id(i,j+1,k)],F[id(i+1,j+1,k)],u),v),L(L(F[id(i,j,k+1)],F[id(i+1,j,k+1)],u),L(F[id(i,j+1,k+1)],F[id(i+1,j+1,k+1)],u),v),w);};
+   const DIRS=[];for(let d=0;d<14;d++){const yv=1-(d+.5)/14*2,r=Math.sqrt(1-yv*yv),a=d*2.39996;DIRS.push([Math.cos(a)*r,yv,Math.sin(a)*r]);}
+   const SOFT=SD?soft(SD):null,occ=new Float32Array(pos.length/3),sunA=new Float32Array(pos.length/3).fill(1);
+   for(let v=0;v<occ.length;v++){const X=pos[v*3],Y=pos[v*3+1],Z=pos[v*3+2],nX=nrm[v*3],nY=nrm[v*3+1],nZ=nrm[v*3+2];let seen=0,tot=0;
+    for(const D of DIRS){let dx=D[0],dy=D[1],dz=D[2],dn=dx*nX+dy*nY+dz*nZ;if(dn<0){dx=-dx;dy=-dy;dz=-dz;dn=-dn;}
+     let open=1;for(const t of [1,2.2,4,7,11,16,23,32]){const px=X+dx*t,py=Y+dy*t,pz=Z+dz*t;if(py>Q.floorY+.3&&Fat(px,py,pz)<0&&planSD(Q,px,pz)<3){open=0;break;}}
+     seen+=open*dn;tot+=dn;}
+    occ[v]=Math.max(.22,seen/tot);
+    // the sun: marched through the whole field (the hood shades the floor and back wall)
+    // only the HOOD (rock inside the plan, over the void) casts: the rest of the patch stands in for
+    // the plain cliff, which casts no shadow in this world, so it must not here either
+    if(SD&&nX*SD[0]+nY*SD[1]+nZ*SD[2]>0){let lit=0;for(const J of SOFT){let l=1;for(let t=.8;t<60;t+=.9){const px=X+nX*.3+J[0]*t,py=Y+nY*.3+J[1]*t,pz=Z+nZ*.3+J[2]*t;if(Fat(px,py,pz)<0&&planSD(Q,px,pz)<0){l=0;break;}}lit+=l/SOFT.length;}sunA[v]=lit;}}
+   // quads: an edge between grid points (i,j,k)-(i+1,j,k) that changes sign is shared by the four cells round it
+   const quad=(a,b,c2,d,flip)=>{if(a<0||b<0||c2<0||d<0)return;if(flip)idx.push(a,b,c2,a,c2,d);else idx.push(a,c2,b,a,d,c2);};
+   for(let k=1;k<nz;k++)for(let j=1;j<ny;j++)for(let i=0;i<nx;i++){const s0=F[id(i,j,k)]<0,s1=F[id(i+1,j,k)]<0;if(s0===s1)continue;quad(V[cid(i,j-1,k-1)],V[cid(i,j,k-1)],V[cid(i,j,k)],V[cid(i,j-1,k)],s0);}
+   for(let k=1;k<nz;k++)for(let j=0;j<ny;j++)for(let i=1;i<nx;i++){const s0=F[id(i,j,k)]<0,s1=F[id(i,j+1,k)]<0;if(s0===s1)continue;quad(V[cid(i-1,j,k-1)],V[cid(i-1,j,k)],V[cid(i,j,k)],V[cid(i,j,k-1)],s0);}
+   for(let k=0;k<nz;k++)for(let j=1;j<ny;j++)for(let i=1;i<nx;i++){const s0=F[id(i,j,k)]<0,s1=F[id(i,j,k+1)]<0;if(s0===s1)continue;quad(V[cid(i-1,j-1,k)],V[cid(i,j-1,k)],V[cid(i,j,k)],V[cid(i-1,j,k)],s0);}
+   const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(pos,3));g.setAttribute('normal',new T.Float32BufferAttribute(nrm,3));g.setAttribute('aOcc',new T.Float32BufferAttribute(occ,1));g.setAttribute('aSun',new T.Float32BufferAttribute(sunA,1));g.setIndex(idx);g.computeBoundingSphere();
+   const m=new T.Mesh(g,material);m.name='carve:'+Q.id;m.userData.carve=Q.id;m.userData.inspectLabel=Q.name||Q.id;out.push(m);
+   Q.stats={verts:pos.length/3,tris:idx.length/3,ms:Math.round(performance.now()-t0)};}
+  return out;}};
+BIO.carve=C;
 })();
 
 // ==================== 40-core-place.js
@@ -700,7 +836,7 @@ BIO.ledgePoints=function(geos,n,gap){gap=gap||2.5;const S=BIO.upFaces(geos,n*4,.
 //   THE SWITCHBACK    six legs up the north slope with hairpins: the only way up
 const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,fbm}=BIO.fn;
 const TERR={R:1300,FLOOR:10,GROUND:4200};
-const BASIN={x0:-95,x1:119,z0:-80,z1:80,rc:22};
+const BASIN={x0:-95,x1:119,z0:-80,z1:80,r:{nw:32,ne:26,sw:34,se:38}};   // corner radii: as round as the straight faces allow
 const POOL={x:-83,z:0,r:14,y:9.3,depth:3.8};
 const LIPX=-96.6;                       // the top edge of the sheer west lip; its foot is x -95
 // ---------------------------------------------------------------- the plateau
@@ -715,8 +851,10 @@ function plateauH(x,z){return 59.4+6*fbm(x*.004+3,z*.004-2,17,3)+.8*(fbm(x*.03,z
 // basinD: signed distance to the edge of the floor (negative on the floor). A
 // rounded box for the basin, a half-strip for the canyon, joined by a smooth
 // minimum so the mouth has a fillet instead of a notch.
-function sdBox(x,z){const cx=(BASIN.x0+BASIN.x1)/2,cz=(BASIN.z0+BASIN.z1)/2,hx=(BASIN.x1-BASIN.x0)/2-BASIN.rc,hz=(BASIN.z1-BASIN.z0)/2-BASIN.rc;
- const qx=Math.abs(x-cx)-hx,qz=Math.abs(z-cz)-hz;return Math.hypot(Math.max(qx,0),Math.max(qz,0))+Math.min(Math.max(qx,qz),0)-BASIN.rc;}
+// a box with its own radius at each corner (north is -z)
+function sdBox(x,z){const cx=(BASIN.x0+BASIN.x1)/2,cz=(BASIN.z0+BASIN.z1)/2,hx=(BASIN.x1-BASIN.x0)/2,hz=(BASIN.z1-BASIN.z0)/2,px=x-cx,pz=z-cz;
+ const r=px>0?(pz>0?BASIN.r.se:BASIN.r.ne):(pz>0?BASIN.r.sw:BASIN.r.nw),qx=Math.abs(px)-hx+r,qz=Math.abs(pz)-hz+r;
+ return Math.hypot(Math.max(qx,0),Math.max(qz,0))+Math.min(Math.max(qx,qz),0)-r;}
 function zC(x){return 9*Math.sin(.0065*(x-119))*smooth(119,200,x)+4*Math.sin(.017*x+.5)*smooth(150,260,x);}   // the canyon's centreline
 function cW(x){return 17+4*Math.sin(.011*x+1)+3*Math.sin(.031*x);}                                             // its half-width
 function sdCanyon(x,z){return Math.max(Math.abs(z-zC(x))-cW(x),100-x);}
@@ -724,12 +862,18 @@ function smin(a,b,k){const h=clamp(.5+.5*(b-a)/k,0,1);return mix(b,a,h)-k*h*(1-h
 // the faces: how much of each special wall a point is in (0..1, smooth, so no fins where they meet)
 function kSouth(x,z){return smooth(-72,-60,x)*(1-smooth(0,12,x))*smooth(40,60,z);}              // the carved face
 function kLip(x,z){return smooth(-60,-80,x)*smooth(-52,-40,z)*(1-smooth(20,32,z));}             // the waterfall lip and the shrine
-function kSwitch(x,z){return smooth(16,30,x)*(1-smooth(98,110,x))*smooth(-40,-60,z);}           // the switchback slope
+function kSwitch(x,z){return smooth(10,24,x)*(1-smooth(92,104,x))*smooth(-40,-60,z);}           // the switchback slope
 // the width of the wall face (floor to plateau, horizontally)
 function kRow(x,z){return(1-kSwitch(x,z))*(1-smooth(126,134,x));}                              // the basin's own walls: the cliff dwellings stand against them
 function wallW(x,z){let W=12;W=mix(W,2.5,kRow(x,z));W=mix(W,2,kSouth(x,z));W=mix(W,1.6,kLip(x,z));W=mix(W,64,kSwitch(x,z));return W;}
-function basinD(x,z){const straight=Math.max(kSouth(x,z),kLip(x,z),kSwitch(x,z)),row=kRow(x,z)*(1-straight);
- return smin(sdBox(x,z),sdCanyon(x,z),10)+(fbm(x*.03+7,z*.03-3,41,2)-.5)*7*(1-straight)*(1-row*.86);}   // the faces the dwellings stand against wander no more than half a metre
+// basinD0: the wall without the carve patches. The ordinary walls bulge OUTWARD by up to
+// 7 m on a long wavelength (only outward: no place on the floor is ever cut into), so the
+// depression is not a box; the special faces (the lip, the carved face, the switchback)
+// stay straight. The faces the dwellings stand against wander no more than half a metre.
+function basinD0(x,z){const straight=Math.max(kSouth(x,z),kLip(x,z),kSwitch(x,z)),row=kRow(x,z)*(1-straight);
+ return smin(sdBox(x,z),sdCanyon(x,z),10)-7*fbm(x*.0065+11,z*.0065-5,51,2)*(1-straight)+(fbm(x*.03+7,z*.03-3,41,2)-.5)*7*(1-straight)*(1-row*.86);}
+// basinD: with the carve patches' recesses (alcoves, niches, the undercut) let into the walls
+function basinD(x,z){return Math.min(basinD0(x,z),BIO.carve.recessD(x,z));}
 // ---------------------------------------------------------------- the water
 // the lower stream's surface descends from the pool to the canyon; the floor
 // keeps at least 1.1 m above it so its banks always hide the ribbon's edges
@@ -747,7 +891,7 @@ const STREAM={lowHW:2.0,lowBank:4.5,upHW:1.6,upBank:4.5,bed:.7};
 // the slope's own height is the leg's middle height, so it cuts in at one end
 // and is built out at the other by about half a leg's rise; legs are kept at
 // least SWB.gap apart so the cut of one never reaches the next.
-const SWB={x0:36,x1:90,legs:6,zEdge:BASIN.z0,W:64,half:1.6,bank:3.5,gap:7.4,pts:null,len:0,y0:0,y1:0,grade:0,spacing:[]};
+const SWB={x0:30,x1:84,legs:6,zEdge:BASIN.z0,W:64,half:1.6,bank:3.5,gap:7.4,pts:null,len:0,y0:0,y1:0,grade:0,spacing:[]};
 (function(){const F=TERR.FLOOR,xm=(SWB.x0+SWB.x1)/2,W=SWB.W;
  const P=plateauH(xm,SWB.zEdge-W-6);
  const U=d=>F+(P-F)*(t=>t*t*(3-2*t))(clamp(d/W,0,1));              // the slope's height d metres in
@@ -786,9 +930,11 @@ function swNear(x,z){const L=SWB.bucket.get(SWB.key(Math.floor(x/SWB.cell),Math.
  return{d:bd,y:by};}
 // ---------------------------------------------------------------- terrain
 const _tm={x:NaN,z:NaN,h:0};
-function terrainH(x,z){if(x===_tm.x&&z===_tm.z)return _tm.h;const h=terrainH0(x,z);_tm.x=x;_tm.z=z;_tm.h=h;return h;}
-function terrainH0(x,z){
- const d=basinD(x,z);let h;
+function terrainH(x,z){if(x===_tm.x&&z===_tm.z)return _tm.h;const h=terrainH0(x,z,true);_tm.x=x;_tm.z=z;_tm.h=h;return h;}
+// the ground as it would be without the carve patches: their rock is rebuilt from this
+function terrainBase(x,z){return terrainH0(x,z,false);}
+function terrainH0(x,z,carved){
+ const d=carved?basinD(x,z):basinD0(x,z);let h;
  if(d<=0)h=floorH(x,z);
  else{const P=plateauH(x,z),W=wallW(x,z);if(d>=W)h=P;else{const F=floorH(x,z),t=d/W;h=F+(P-F)*t*t*(3-2*t);}}
  // the switchback: a flat trail 3.2 m wide, cut in or built out to its own height
@@ -812,9 +958,9 @@ function waterH(x,z){const dp=Math.hypot(x-POOL.x,z-POOL.z);if(dp<POOL.r+3&&x>BA
 // water), 'plateau' (up top). Polygons are [x,z]; capacity is people present.
 // Activities are the life layer's (84); a place offers them, a job asks for them.
 const PLACES=[
- {id:'shrine',name:'Shrine of the Deep Aquifer',kind:'wall',poly:[[-97,-42],[-80,-42],[-80,-24],[-97,-24]],
+ {id:'shrine',name:'Shrine of the Deep Aquifer',kind:'wall',poly:[[-100,-42],[-80,-42],[-80,-24],[-100,-24]],
   facade:{a:[-95,-40],b:[-95,-26],face:[1,0]},activities:['WORSHIP','SLEEP'],capacity:120,tags:{culture:'eastern-nomad',types:['religious']}},
- {id:'petra',name:'The carved dwellings (Petra face)',kind:'wall',poly:[[-58,66],[-2,66],[-2,82],[-58,82]],
+ {id:'petra',name:'The carved dwellings (Petra face)',kind:'wall',poly:[[-58,66],[-2,66],[-2,86],[-58,86]],
   facade:{a:[-58,80],b:[-2,80],face:[0,-1]},activities:['SLEEP','EAT','CRAFT','SOCIALIZE','REST','PLAY'],capacity:260,tags:{culture:'eastern-nomad',types:['multi-family dwelling']}},
  {id:'pool_shore',name:'The pool shore (watering place)',kind:'shore',poly:[[-72,-12],[-58,-12],[-58,12],[-72,12]],
   activities:['WATER_CAMELS','FETCH_WATER','PLAY'],capacity:60,tags:{types:['infrastructure']}},
@@ -824,7 +970,7 @@ const PLACES=[
   activities:['TRADE','SOCIALIZE','PLAY'],capacity:160,tags:{culture:'eastern-nomad',types:['market/shop']}},
  {id:'khan',name:'The Khan (caravanserai)',kind:'ground',poly:[[8,18],[52,18],[52,58],[8,58]],
   activities:['TRADE','SLEEP','EAT','SOCIALIZE','REST'],capacity:180,tags:{culture:'eastern-nomad',types:['tavern/inn','market/shop']}},
- {id:'pueblo',name:'The pueblo quarter',kind:'ground',poly:[[58,14],[108,14],[108,66],[58,66]],
+ {id:'pueblo',name:'The pueblo quarter',kind:'ground',poly:[[58,14],[100,14],[100,60],[58,60]],
   activities:['SLEEP','EAT','CRAFT','SOCIALIZE','REST','PLAY'],capacity:480,tags:{culture:'eastern-nomad',types:['multi-family dwelling']}},
  {id:'tents',name:'The tent grounds',kind:'ground',poly:[[40,-62],[104,-62],[104,-24],[40,-24]],
   activities:['SLEEP','EAT','REST','HERD','SOCIALIZE','PLAY'],capacity:220,tags:{culture:'eastern-nomad',types:['single-family dwelling']}},
@@ -839,18 +985,55 @@ const PLACES=[
  {id:'grazing',name:'The plateau grazing',kind:'plateau',poly:[[-40,-262],[80,-262],[80,-192],[-40,-192]],
   activities:['HERD'],capacity:120,tags:{types:['farm']},grows:true},
 ];
-// the cliff dwellings' runs: the foot of each sheer wall the pueblos stand against.
-// Each is a 'wall' place, reserved from 3 m inside the face to `out` metres onto the floor;
-// its facade line is the foot, its face the outward normal.
+// ---------------------------------------------------------------- the foot of the wall, traced
+// The nominal rounded box walked clockwise from above (north edge west to east,
+// the NE arc, east edge north to south, ...) every metre, each point pushed along
+// its inward normal to where basinD0 crosses zero: the foot as it actually runs,
+// bulges and all. n points from the rock toward the floor.
+const CONTOUR=(function(){const B=BASIN,r=B.r,pts=[];
+ const seg=(ax,az,bx,bz)=>{const L=Math.hypot(bx-ax,bz-az),n=Math.max(1,Math.round(L));for(let k=0;k<n;k++)pts.push([ax+(bx-ax)*k/n,az+(bz-az)*k/n]);};
+ const arc=(cx,cz,rad,a0,a1)=>{const n=Math.max(2,Math.round(Math.abs(a1-a0)*rad));for(let k=0;k<n;k++){const a=a0+(a1-a0)*k/n;pts.push([cx+Math.cos(a)*rad,cz+Math.sin(a)*rad]);}};
+ seg(B.x0+r.nw,B.z0,B.x1-r.ne,B.z0);arc(B.x1-r.ne,B.z0+r.ne,r.ne,-Math.PI/2,0);
+ seg(B.x1,B.z0+r.ne,B.x1,B.z1-r.se);arc(B.x1-r.se,B.z1-r.se,r.se,0,Math.PI/2);
+ seg(B.x1-r.se,B.z1,B.x0+r.sw,B.z1);arc(B.x0+r.sw,B.z1-r.sw,r.sw,Math.PI/2,Math.PI);
+ seg(B.x0,B.z1-r.sw,B.x0,B.z0+r.nw);arc(B.x0+r.nw,B.z0+r.nw,r.nw,Math.PI,Math.PI*1.5);
+ const N=pts.length,out=[];
+ for(let i=0;i<N;i++){const a=pts[(i+N-1)%N],b=pts[(i+1)%N],tx=b[0]-a[0],tz=b[1]-a[1],tl=Math.hypot(tx,tz),nx=-tz/tl,nz=tx/tl;   // clockwise: (-tz,tx) points inward
+  const p=pts[i];let lo=-14,hi=14;for(let k=0;k<30;k++){const m=(lo+hi)/2;if(basinD0(p[0]+nx*m,p[1]+nz*m)>0)lo=m;else hi=m;}
+  out.push([p[0]+nx*hi,p[1]+nz*hi,nx,nz]);}
+ let s=0;out[0].push(0);for(let i=1;i<N;i++){s+=Math.hypot(out[i][0]-out[i-1][0],out[i][1]-out[i-1][1]);out[i].push(s);}
+ return out;})();
+// the stretch of the traced foot from the sample nearest `a` forward to the one nearest `b`
+function footRun(a,b){const near=p=>{let bi=0,bd=1e9;CONTOUR.forEach((q,i)=>{const d=Math.hypot(q[0]-p[0],q[1]-p[1]);if(d<bd){bd=d;bi=i;}});return bi;};
+ const i0=near(a),i1=near(b),N=CONTOUR.length,o=[];for(let i=i0;;i=(i+1)%N){o.push(CONTOUR[i]);if(i===i1)break;}
+ let s=0;return o.map((q,k)=>{if(k)s+=Math.hypot(q[0]-o[k-1][0],q[1]-o[k-1][1]);return[q[0],q[1],q[2],q[3],s];});}
+// the cliff dwellings' runs along the foot: 'wall' places reserved from 3 m inside the face
+// to `out` metres onto the floor; the facade is the traced foot itself (its points and normals)
 const CLIFF_RUNS=[
- {id:'cliff-w',name:'The west cliff dwellings',a:[BASIN.x0,30],b:[BASIN.x0,56],n:[1,0],out:16,rows:3,tower:true,capacity:90},
- {id:'cliff-n',name:'The north cliff dwellings',a:[-71,BASIN.z0],b:[10,BASIN.z0],n:[0,1],out:16,rows:3,tower:true,capacity:220},
- {id:'cliff-s',name:'The south cliff dwellings',a:[95,BASIN.z1],b:[4,BASIN.z1],n:[0,-1],out:13,rows:2,tower:true,capacity:240},
- {id:'cliff-es',name:'The east cliff dwellings, south',a:[BASIN.x1,56],b:[BASIN.x1,34],n:[-1,0],out:10,rows:2,tower:false,capacity:80},
- {id:'cliff-en',name:'The east cliff dwellings, north',a:[BASIN.x1,-34],b:[BASIN.x1,-56],n:[-1,0],out:10,rows:2,tower:false,capacity:80}];
-for(const C of CLIFF_RUNS){const n=C.n,a=C.a,b=C.b,P=(p,k)=>[p[0]+n[0]*k,p[1]+n[1]*k];
- PLACES.push({id:C.id,name:C.name,kind:'wall',poly:[P(a,-3),P(b,-3),P(b,C.out),P(a,C.out)],facade:{a,b,face:n.slice()},
+ {id:'cliff-nw',name:'The north-west cliff dwellings',a:[BASIN.x0,-56],b:[8,BASIN.z0],out:16,rows:3,tower:true,capacity:300},
+ {id:'cliff-en',name:'The east cliff dwellings',a:[BASIN.x1,-50],b:[BASIN.x1,-34],out:10,rows:2,tower:false,capacity:60},
+ {id:'cliff-se',name:'The south-east cliff dwellings',a:[BASIN.x1,34],b:[4,BASIN.z1],out:10,rows:2,tower:true,capacity:300},
+ {id:'cliff-sw',name:'The south-west cliff dwellings',a:[-66,BASIN.z1],b:[BASIN.x0,28],out:12,rows:2,tower:true,capacity:140}];
+for(const C of CLIFF_RUNS){C.path=footRun(C.a,C.b);C.len=C.path[C.path.length-1][4];
+ const inner=C.path.map(q=>[q[0]-q[2]*3,q[1]-q[3]*3]),outer=C.path.map(q=>[q[0]+q[2]*C.out,q[1]+q[3]*C.out]).reverse();
+ const fac=C.path.filter((q,k)=>k%4===0);
+ PLACES.push({id:C.id,name:C.name,kind:'wall',poly:inner.concat(outer),facade:{pts:fac.map(q=>[q[0],q[1],q[2],q[3]])},
   activities:['SLEEP','EAT','CRAFT','SOCIALIZE','REST','PLAY'],capacity:C.capacity,tags:{culture:'eastern-nomad',types:['multi-family dwelling']}});}
+// ---------------------------------------------------------------- the carve patches (overhangs; BIO.carve, 36-core-carve)
+// Three Mesa Verde alcoves in the cliff-dwelling walls, a niche round the hall in the
+// carved face and round the shrine, and the undercut behind the falls. Each is let
+// into the heightfield (basinD) and its rock put back above the void (45 meshes them).
+const ALCOVES=[];
+(function(){const at=(run,x,z)=>{const R0=CLIFF_RUNS.find(c=>c.id===run);let b=null,bd=1e9;for(const q of R0.path){const d=Math.hypot(q[0]-x,q[1]-z);if(d<bd){bd=d;b=q;}}return b;};
+ for(const [id,run,x,z] of [['alcove-n1','cliff-nw',-38,BASIN.z0],['alcove-n2','cliff-nw',-8,BASIN.z0],['alcove-s1','cliff-se',34,BASIN.z1]]){const q=at(run,x,z);
+  ALCOVES.push(BIO.carve.add({id,name:'An alcove in the cliff ('+id+')',kind:'alcove',run,s:q[4],c:[q[0],q[1]],n:[q[2],q[3]],hw:12,depth:10,h:19,floorY:TERR.FLOOR-.4,base:terrainBase}));}
+ // a run's place reaches back into its alcoves (3 m behind the alcove's back wall)
+ for(const C of CLIFF_RUNS){const As=ALCOVES.filter(A=>A.run===C.id);if(!As.length)continue;
+  const dIn=q=>3+As.reduce((m,A)=>{const t=(q[4]-A.s)/(A.hw+1.5);return Math.abs(t)<1?Math.max(m,A.depth*Math.sqrt(1-t*t)):m;},0);
+  PLACES.find(p=>p.id===C.id).poly=C.path.map(q=>[q[0]-q[2]*dIn(q),q[1]-q[3]*dIn(q)]).concat(C.path.map(q=>[q[0]+q[2]*C.out,q[1]+q[3]*C.out]).reverse());}
+ BIO.carve.add({id:'niche-hall',name:'The niche of the hall',kind:'niche',c:[-30,BASIN.z1],n:[0,-1],hw:10.5,depth:4.2,h:33,floorY:TERR.FLOOR-.4,base:terrainBase});
+ BIO.carve.add({id:'niche-shrine',name:'The niche of the shrine',kind:'niche',c:[BASIN.x0,-33],n:[1,0],hw:6.5,depth:3.4,h:25,floorY:TERR.FLOOR-.4,base:terrainBase});
+ BIO.carve.add({id:'undercut-falls',name:'The undercut behind the falls',kind:'undercut',c:[BASIN.x0,0],n:[1,0],hw:9,depth:6.5,h:13,floorY:POOL.y-POOL.depth-.4,base:terrainBase});})();
 // the edges of the settlement a traveller arrives from or leaves by (the life layer's ports)
 const PORTS={canyon_east:{x:440,z:zC(440),name:'The canyon, east'},plateau_north:{x:40,z:-270,name:'The plateau, north'}};
 function polyHas(poly,x,z){let a=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const xi=poly[i][0],zi=poly[i][1],xj=poly[j][0],zj=poly[j][1];
@@ -880,7 +1063,7 @@ const SHADE_PLAN=(function(){
  // ---- the carved face (south wall): the hall in the middle, a house front each side at the
  //      foot, a rock-cut stair at each end up to a gallery, and a row of house fronts on it
  const FZ=BASIN.z1+1,LIFT=12,N=Math.PI;
- add({id:'hall',family:'treasury',placeId:'petra',x:-30,z:FZ,yaw:N,params:{width:18,height:30}});
+ add({id:'hall',family:'treasury',placeId:'petra',x:-30,z:BASIN.z1+4.0,yaw:N,inNiche:'niche-hall',params:{width:18,height:30,niche:false}});
  add({id:'house-w0',family:'tomb',placeId:'petra',x:-44,z:FZ,yaw:N,params:{width:5,height:8.5}});
  add({id:'house-e0',family:'tomb',placeId:'petra',x:-16,z:FZ,yaw:N,params:{width:5,height:8.5}});
  // under yaw PI the builder's +x is the world's -x: dir 1 rises westward
@@ -891,9 +1074,9 @@ const SHADE_PLAN=(function(){
  for(const [id,x,g,w] of [['house-w1',-53.5,'petra-w',5.2],['house-w2',-47.5,'petra-w',5.2],['house-e1',-5.3,'petra-e',4.8],['house-e2',-10.6,'petra-e',4.8],['house-e3',-15.9,'petra-e',4.8]])
   add({id,family:'tomb',placeId:'petra',x,z:FZ,yaw:N,lift:LIFT,group:g,access:g==='petra-w'?'stair-w':'stair-e',params:{width:w,height:7.6}});
  // ---- the shrine: a smaller temple front in the lip beside the falls, facing east
- add({id:'shrine',family:'treasury',placeId:'shrine',x:BASIN.x0-1,z:-33,yaw:Math.PI/2,params:{width:12,height:22}});
+ add({id:'shrine',family:'treasury',placeId:'shrine',x:BASIN.x0-3.2,z:-33,yaw:Math.PI/2,inNiche:'niche-shrine',params:{width:12,height:22,niche:false}});
  // ---- the pueblo quarter: four U compounds, the north pair opening north, the south pair south
- for(const [id,x,z,cx,cz,st,yaw] of [['pueblo-nw',70,26,6,6,3,N],['pueblo-ne',96.5,27,5,5,2,N],['pueblo-sw',70.5,54,5,6,3,0],['pueblo-se',96,54,6,5,3,0]])
+ for(const [id,x,z,cx,cz,st,yaw] of [['pueblo-nw',70,26,6,6,3,N],['pueblo-ne',91.5,27,4,5,2,N],['pueblo-sw',70.5,50,5,5,3,0],['pueblo-se',91.5,50,4,5,3,0]])
   add({id,family:'pueblo',placeId:'pueblo',x,z,yaw,params:{cx,cz,cell:4,storeys:st}});
  // ---- the Khan, its gate toward the market and the stream
  add({id:'khan',family:'khan',placeId:'khan',x:30,z:37.5,yaw:N,params:{w:38,d:32}});
@@ -910,17 +1093,29 @@ const SHADE_PLAN=(function(){
  {const pl=place('market').poly,taken=[];let n=0;
   for(const [zr,yaw] of [[-37,0],[-23,N]])for(let x=-31;x<=2;x+=4.7){const w=rr(3.2,4),d=rr(2.4,3),xx=x+rr(-.4,.4),zz=zr+rr(-.5,.5),yy=yaw+rr(-.08,.08),pts=rectAt(xx,zz,w+.4,d+.8,yy);
    if(!inside(pl,pts)||!clearOf(pts,taken,.5)){rejected.stall=(rejected.stall||0)+1;continue;}taken.push(pts);n++;add({id:'stall-'+n,family:'stall',placeId:'market',x:xx,z:zz,yaw:yy,params:{w,d}});}}
- // ---- the cliff dwellings: along each run, blocks of 9-16 m with gaps, each turned to the
- //      foot as it actually runs (found by bisection on basinD) and set 0.6 m into the rock
- const footAt=(p,n)=>{let lo=-6,hi=6;for(let k=0;k<28;k++){const m=(lo+hi)/2;if(basinD(p[0]+n[0]*m,p[1]+n[1]*m)>0)lo=m;else hi=m;}return[p[0]+n[0]*hi,p[1]+n[1]*hi];};
- for(const C of CLIFF_RUNS){const a=C.a,b=C.b,L=Math.hypot(b[0]-a[0],b[1]-a[1]),t=[(b[0]-a[0])/L,(b[1]-a[1])/L];let s0=rr(.5,2.5),k=0;
-  while(s0<L-8){const len=Math.min(rr(9,16),L-s0-.5);if(len<8)break;
-   const A=footAt([a[0]+t[0]*s0,a[1]+t[1]*s0],C.n),B=footAt([a[0]+t[0]*(s0+len),a[1]+t[1]*(s0+len)],C.n);
-   const ex=B[0]-A[0],ez=B[1]-A[1],el=Math.hypot(ex,ez);let nx=-ez/el,nz=ex/el;if(nx*C.n[0]+nz*C.n[1]<0){nx=-nx;nz=-nz;}
-   const back=.6+.5*Math.abs(((A[0]-B[0])*C.n[0]+(A[1]-B[1])*C.n[1]));
-   const rows=C.rows===3&&R()<.65?3:2,storeys=rows===3?(R()<.5?4:3):3;
-   add({id:C.id+'-'+(++k),family:'cliffpueblo',placeId:C.id,x:(A[0]+B[0])/2-nx*back,z:(A[1]+B[1])/2-nz*back,yaw:Math.atan2(nx,nz),params:{length:el,rows,storeys,cell:3.6,tower:C.tower}});
+ // ---- the cliff dwellings: along each traced run, blocks of 9-16 m with gaps. A block's
+ //      back is the chord between its two foot points, pushed into the rock until every
+ //      foot point between them is in front of it (the sagitta of a curved wall), +0.6 m.
+ const runAt=(C,sv)=>{const p=C.path;let k=1;while(k<p.length-1&&p[k][4]<sv)k++;const a=p[k-1],b=p[k],t=clamp((sv-a[4])/((b[4]-a[4])||1),0,1);return[mix(a[0],b[0],t),mix(a[1],b[1],t),a[2],a[3]];};
+ const runTaken=[];
+ for(const C of CLIFF_RUNS){const holes=ALCOVES.filter(A=>A.run===C.id).map(A=>[A.s-A.hw-2.5,A.s+A.hw+2.5]);let s0=rr(.5,2.5),k=0;
+  while(s0<C.len-8){const len=Math.min(rr(9,16),C.len-s0-.5);if(len<8)break;
+   const hit=holes.find(h=>s0<h[1]&&s0+len>h[0]);if(hit){s0=hit[1]+rr(.5,2);continue;}
+   const A=runAt(C,s0),B=runAt(C,s0+len),ex=B[0]-A[0],ez=B[1]-A[1],el=Math.hypot(ex,ez);let nx=-ez/el,nz=ex/el;if(nx*A[2]+nz*A[3]<0){nx=-nx;nz=-nz;}
+   let mf=0;for(const q of C.path){if(q[4]<s0||q[4]>s0+len)continue;mf=Math.min(mf,(q[0]-A[0])*nx+(q[1]-A[1])*nz);}
+   const back=.6-mf,rows=C.rows===3&&R()<.65?3:2,storeys=rows===3?(R()<.5?4:3):3,Lr=Math.max(2,Math.floor(el/3.6))*3.6;
+   // the block's footprint as 80 will place it (back at the origin, rooms toward the floor): clear of the last one
+   const ox=(A[0]+B[0])/2-nx*back,oz=(A[1]+B[1])/2-nz*back,D=rows*3.6+(C.tower?3.2:0),tx=nz,tz=-nx;
+   const foot=[[-Lr/2,0],[Lr/2,0],[Lr/2,D],[-Lr/2,D]].map(p=>[ox+tx*p[0]+nx*p[1],oz+tz*p[0]+nz*p[1]]);
+   if(!clearOf(foot,runTaken,.8)){s0+=1;rejected.cliff_crowded=(rejected.cliff_crowded||0)+1;continue;}
+   if(!inside(place(C.id).poly,foot)){s0+=1;rejected.cliff_outside=(rejected.cliff_outside||0)+1;continue;}
+   runTaken.push(foot);
+   add({id:C.id+'-'+(++k),family:'cliffpueblo',placeId:C.id,x:ox,z:oz,yaw:Math.atan2(nx,nz),params:{length:Lr,rows,storeys,cell:3.6,tower:C.tower}});
    s0+=len+rr(1.5,4);}}
+ // ---- in each alcove: a block of two rows, three storeys, its back against the alcove's
+ //      curved back wall at the chord that fits (no room climbs: the ceiling is above)
+ for(const A of ALCOVES){const L=Math.floor(A.hw*1.44/3.6)*3.6,qb=A.depth*Math.sqrt(1-(L/2/A.hw)**2)-.25,nx=A.n[0],nz=A.n[1];
+  add({id:A.id+'-dwelling',family:'cliffpueblo',placeId:A.run,x:A.c[0]-nx*qb,z:A.c[1]-nz*qb,yaw:Math.atan2(nx,nz),inAlcove:A.id,params:{length:L,rows:2,storeys:3,cell:3.6,tower:false,climb:false}});}
  add({id:'gatehouse',family:'tower',placeId:'switchback_gate',x:36,z:-168,yaw:0,params:{storeys:5,round:true,radius:3.2}});
  add({id:'canyon-watch',family:'tower',placeId:'canyon_watch',x:120,z:-11.5,yaw:0,params:{storeys:3,round:false,radius:1.9}});
  return{plans:P,rejected};})();
@@ -948,6 +1143,7 @@ const scene=new THREE.Scene();const HAZE=new THREE.Color(0xd9c3a6);scene.fog=new
 const camera=new THREE.PerspectiveCamera(50,innerWidth/innerHeight,.5,16000);
 scene.add(new THREE.HemisphereLight(0xc8d4e4,0x6a4030,.58));
 const sun=new THREE.DirectionalLight(0xfff2dc,1.55);sun.position.set(-1000,1150,-560);scene.add(sun);
+const SUNV=[sun.position.x,sun.position.y,sun.position.z];   // toward the sun: the carve patches bake their shadow from it
 const fill=new THREE.DirectionalLight(0xd8b8a0,.22);fill.position.set(900,300,900);scene.add(fill);
 
 // ---------------------------------------------------------------- the climate fields
@@ -1008,7 +1204,8 @@ function cliffMask(x,z){if(FC.at(FC.a.slope,x,z)>.9)return 0;let m=1;
   m=Math.min(m,Math.max(smooth(.89,.85,u),smooth(1.0,1.05,u)));}
  if(x<=BASIN.x0){const dU=Math.abs(z-zU(x));if(dU<STREAM.upBank+1)m=Math.min(m,Math.max(smooth(STREAM.upHW,STREAM.upHW-.6,dU),smooth(STREAM.upBank,STREAM.upBank+1,dU)));}
  return m;}
-function floraMask(x,z){const d=terrainH(x,z)-waterH(x,z),w=d<.15?0:d<.7?(d-.15)/.55:1;return w===0?0:Math.min(w,placeMask(x,z),cliffMask(x,z));}
+function floraMask(x,z){if(BIO.carve.topAt(x,z)!==null)return 0;   // nothing grows under a hood or in a patch's rock (a tree would come up through it)
+ const d=terrainH(x,z)-waterH(x,z),w=d<.15?0:d<.7?(d-.15)/.55:1;return w===0?0:Math.min(w,placeMask(x,z),cliffMask(x,z));}
 
 // ---------------------------------------------------------------- the host binding
 const OBSTACLES=[];
@@ -1060,27 +1257,47 @@ const TEX_CRACK=BIO.canvasTex(256,256,(g,w,h)=>{g.fillStyle='#ffffff';g.fillRect
   g.lineWidth=rr(1.2,2.6);for(let k=-1;k<=1;k++)for(let m=-1;m<=1;m++){g.beginPath();g.moveTo(a[0]+k*w,a[1]+m*h);g.quadraticCurveTo((a[0]+b[0])/2+rr(-18,18)+k*w,(a[1]+b[1])/2+rr(-18,18)+m*h,b[0]+k*w,b[1]+m*h);g.stroke();}}});
 // strata: the core's bedded-rock shader (35-core-strata), shared with the building
 // kit's carved stone (80 hands it over), weighted per vertex by the rock field
-const STRATA=BIO.strata({seed:4711});
+const STRATA=BIO.strata({seed:4711,cap:[TERR.FLOOR+38,TERR.FLOOR+54],foot:TERR.FLOOR});   // a bleached top to the rim, dust banked at the foot
+// the detail textures, triplanar: projected on x-z alone they smear into vertical grain down every face
+const ROCK_DETAIL='vec3 triDetail(sampler2D t,vec3 p,vec3 n,float s,float o){vec3 w=pow(abs(normalize(n)),vec3(4.0));w/=w.x+w.y+w.z;'+
+ 'return texture2D(t,p.zy*s+o).rgb*w.x+texture2D(t,p.xz*s+o).rgb*w.y+texture2D(t,p.xy*s+o).rgb*w.z;}';
 const MAT_GROUND=new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0xa89e94});
 MAT_GROUND.onBeforeCompile=sh=>{STRATA.inject(sh);sh.uniforms.uDetail={value:TEX_DETAIL};sh.uniforms.uCrack={value:TEX_CRACK};
- sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute float aCrack;attribute float aRock;varying float vCrack;varying float vRock;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vCrack=aCrack;vRock=aRock;');
- sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail,uCrack;varying vec3 vGWP;varying float vCrack;varying float vRock;')
-  .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 dt=texture2D(uDetail,vGWP.xz*0.165).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;vec3 ck=texture2D(uCrack,vGWP.xz*0.14).rgb;'+
+ sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute float aCrack;attribute float aRock;attribute float aOcc;attribute float aSun;varying float vCrack;varying float vRock;varying float vOcc;varying float vSun;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vCrack=aCrack;vRock=aRock;vOcc=aOcc;vSun=aSun;');
+ if(sh.fragmentShader.indexOf('getShadowMask();')<0)reportErr('ground shader: no getShadowMask() to put the hoods\' shadow on');
+ sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail,uCrack;varying vec3 vGWP;varying float vCrack;varying float vRock;varying float vOcc;varying float vSun;\n'+ROCK_DETAIL).replace('getShadowMask();','getShadowMask()*vSun;')
+  .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 dt=triDetail(uDetail,vGWP,vSWN,0.165,0.0);vec3 dt2=triDetail(uDetail,vGWP,vSWN,0.021,0.37);vec3 ck=texture2D(uCrack,vGWP.xz*0.14).rgb;'+
   'vec3 bc=strataColor(vSWP,vSWN);'+
   'diffuseColor.rgb=mix(diffuseColor.rgb,bc*(0.85+0.3*dt.r),vRock*0.9);'+
-  'diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.85)*mix(vec3(1.0),ck,vCrack);}');};
+  'diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.85)*mix(vec3(1.0),ck,vCrack)*pow(vOcc,1.6);}');};   // the occlusion steepened: on a face out of the sun, ambient is all the light there is
 // the grid's coordinate at s in [0,1]: 1.25 m cells inside +-260 m, then growing to +-4.2 km
 const GRID={N:560,inner:260,fi:416/560};
 function gridX(s){const u=s*2-1,a=Math.abs(u);if(a<=GRID.fi)return u/GRID.fi*GRID.inner;
  const t=(a-GRID.fi)/(1-GRID.fi),lin=1.25*GRID.N*(1-GRID.fi)/2;   // the first outer cells are as fine as the inner ones
  return Math.sign(u)*(GRID.inner+lin*t+(TERR.GROUND-GRID.inner-lin)*Math.pow(t,2.4));}
 const GROUND=(function(){const N=GRID.N,S=FC.S,g=new THREE.PlaneGeometry(1,1,N,N);g.rotateX(-Math.PI/2);
- const p=g.attributes.position,uv=g.attributes.uv,ck=new Float32Array(p.count),rk=new Float32Array(p.count);
+ const p=g.attributes.position,uv=g.attributes.uv,ck=new Float32Array(p.count),rk=new Float32Array(p.count),oc=new Float32Array(p.count),sn=new Float32Array(p.count);
  for(let iy=0;iy<=N;iy++)for(let ix=0;ix<=N;ix++){const k=iy*(N+1)+ix,x=gridX(ix/N),z=gridX(iy/N);
-  p.setXYZ(k,x,terrainH(x,z),z);uv.setXY(k,x/S+.5,.5-z/S);ck[k]=FC.at(FC.a.crack,x,z);rk[k]=FC.at(FC.a.strata,x,z);}
- g.setAttribute('aCrack',new THREE.BufferAttribute(ck,1));g.setAttribute('aRock',new THREE.BufferAttribute(rk,1));
+  p.setXYZ(k,x,terrainH(x,z),z);uv.setXY(k,x/S+.5,.5-z/S);ck[k]=FC.at(FC.a.crack,x,z);rk[k]=FC.at(FC.a.strata,x,z);oc[k]=BIO.carve.floorOcc(x,z);sn[k]=BIO.carve.floorSun(x,terrainH(x,z),z,SUNV);}
+ g.setAttribute('aCrack',new THREE.BufferAttribute(ck,1));g.setAttribute('aRock',new THREE.BufferAttribute(rk,1));g.setAttribute('aOcc',new THREE.BufferAttribute(oc,1));g.setAttribute('aSun',new THREE.BufferAttribute(sn,1));
  g.computeVertexNormals();g.computeBoundingSphere();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The ground';m.name='ground';scene.add(m);return m;})();
 
+// ---------------------------------------------------------------- the carve patches (the rock put back above alcoves, niches and the undercut)
+// One rock material on the shared strata: the hood's beds are the face's beds.
+// The ground's own material (both sides): the same map, strata and detail, so the join
+// does not show. Each vertex gets the ground's attributes: uv on the painted map, the
+// rock field (a face of the patch is all rock), no cracks, and the patch's occlusion.
+const MAT_CARVE=MAT_GROUND.clone();MAT_CARVE.side=THREE.DoubleSide;MAT_CARVE.onBeforeCompile=MAT_GROUND.onBeforeCompile;
+MAT_CARVE.customProgramCacheKey=()=>'shade-carve';
+const CARVE_MESHES=(function(){const M=BIO.carve.mesh(MAT_CARVE,SUNV);const prior=BIO.cur;BIO.cur='host';
+ for(const m of M){const g=m.geometry,P=g.attributes.position,Nr=g.attributes.normal,n=P.count,uv=new Float32Array(n*2),rk=new Float32Array(n);
+  for(let v=0;v<n;v++){const x=P.getX(v),z=P.getZ(v);uv[v*2]=x/FC.S+.5;uv[v*2+1]=.5-z/FC.S;rk[v]=Math.max(FC.at(FC.a.strata,x,z),smooth(.25,.6,1-Math.abs(Nr.getY(v))));}
+  g.setAttribute('uv',new THREE.BufferAttribute(uv,2));g.setAttribute('aRock',new THREE.BufferAttribute(rk,1));g.setAttribute('aCrack',new THREE.BufferAttribute(new Float32Array(n),1));}
+ for(const m of M){scene.add(m);BIO.tally(m.geometry.index.count/3,0,1);}BIO.cur=prior;
+ for(const Q of BIO.carve.patches){const cx=Q.c[0]-Q.n[0]*Q.depth*.5,cz=Q.c[1]-Q.n[1]*Q.depth*.5;
+  REGISTER({name:Q.name,cls:'carve',x:cx,z:cz,y:Q.floorY,r:Q.hw+2,h:Q.h+6,tags:{kind:Q.kind,depth_m:Q.depth,ceiling_m:+Q.h.toFixed(1)}});}
+ return M;})();
+window._carve=BIO.carve.patches.map(Q=>Object.assign({id:Q.id},Q.stats));
 // ---------------------------------------------------------------- the water
 // The streams are ribbons at their own descending surfaces, the pool a disc at
 // POOL.y; one vertex-coloured ripple material (the kit's). The falls are a
@@ -1113,7 +1330,7 @@ function ribbon(x0,x1,step,cz,cy,HW,label){const pos=[],col=[],c=new THREE.Color
 const WATER={};
 // the lip's real edge: where the face drops below the upper stream's bed (the
 // channel cuts a shelf across the top of the lip, so it is east of LIPX)
-const LIPEDGE=(function(){for(let x=LIPX-1;x<BASIN.x0;x+=.02)if(terrainH(x,0)<WLU(x)-STREAM.bed-.05)return x;return LIPX;})();
+const LIPEDGE=(function(){for(let x=LIPX-1;x<BASIN.x0;x+=.02)if(terrainBase(x,0)<WLU(x)-STREAM.bed-.05)return x;return LIPX;})();   // the uncarved lip: the undercut's hood is rebuilt from it
 WATER.upper=ribbon(-TERR.GROUND*.4,LIPEDGE-.05,3,zU,WLU,2.6,'The upper stream');
 WATER.lower=ribbon(POOL.x+12,TERR.GROUND*.4,3,zS,WLL,3.4,'The lower stream');
 (function(){const pos=[POOL.x,POOL.y,POOL.z],col=[],c=new THREE.Color(),PN=48,idx=[];waterColorAt(POOL.x,POOL.z,c);c.convertSRGBToLinear();col.push(c.r,c.g,c.b);
@@ -1886,7 +2103,9 @@ const rodCol=(hex)=>shade(vary(hex,.02,.08,.06),rr(-.45,-.2));
 // the floor's blooms lie flat on the ground, small, one colour per patch
 const blooms=(x,y,z,r,n,set,sz)=>SEDESERT.blooms(x,y,z,r,n,set,sz,{flat:true,tilt:.4,s0:.16,s1:.34});
 // a RING SCATTER: n things round (x,z), the first at the centre, the rest dLo..dHi out (two draws each)
-function around(x,z,n,dLo,dHi,fn){for(let i=0;i<n;i++){const a=rr(0,TAU),d=i?rr(dLo,dHi):0;fn(x+Math.cos(a)*d,z+Math.sin(a)*d,i,a);}}
+// a cluster round a point the mask accepted: each satellite tests the mask itself (a reed
+// clump at a reserved place's edge put its outliers inside the place)
+function around(x,z,n,dLo,dHi,fn){for(let i=0;i<n;i++){const a=rr(0,TAU),d=i?rr(dLo,dHi):0,px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d;if(i&&BIO.mask(px,pz)<=0)continue;fn(px,pz,i,a);}}
 
 // ---------------------------------------------------------------- fields local to the floor
 const echK=(x,z)=>smooth(.5,.64,fbm(x*.0048+3,z*.0048-8,2121,2));      // the tower-of-jewels stands
@@ -2371,15 +2590,16 @@ const K0=NOMAD.kit,MAT=NOMAD.MAT;
 // a column: base, shaft (slight entasis), a flared capital and its abacus
 function column(K,x,z,y0,h,r){K.color(null,1);K.cyl('stone',x,y0,z,r*1.32,r*1.4,h*.04,12);K.cyl('stone',x,y0+h*.04,z,r*.9,r,h*.82,12);
  K.cyl('stone',x,y0+h*.86,z,r*1.5,r*.95,h*.1,12);K.block('stone',x,y0+h*.96,z,r*3.2,h*.04,r*3.2);}
-function buildTreasury({width=24,height=36,seed=1}={}){
+// niche:false when the host cuts a real niche into the rock (a carve patch): no cheeks, no hood
+function buildTreasury({width=24,height=36,niche=true,seed=1}={}){
  const W=Math.max(10,width),H=Math.max(14,height),u=W/24,K=K0(seed),D=3.4*u;   // D: how far the niche's mouth stands out from its back
  // the niche: the rock bulges round a recess. Cheeks and a hood, wedge-shaped so
  // their outer edges die back into the face (a box would read as a crate).
  const m=2.6*u;
  K.color(null,.94);
- K.prism('stone',[[-W/2,0],[-W/2,D],[-W/2-m,0]],0,H+2.6*u);
- K.prism('stone',[[W/2,0],[W/2+m,0],[W/2,D]],0,H+2.6*u);
- K.extrudeX('stone',[[0,H],[D,H],[D,H+.8*u],[0,H+4.2*u]],-W/2-m*.6,W/2+m*.6);
+ if(niche){K.prism('stone',[[-W/2,0],[-W/2,D],[-W/2-m,0]],0,H+2.6*u);
+  K.prism('stone',[[W/2,0],[W/2+m,0],[W/2,D]],0,H+2.6*u);
+  K.extrudeX('stone',[[0,H],[D,H],[D,H+.8*u],[0,H+4.2*u]],-W/2-m*.6,W/2+m*.6);}
  K.color(null,.8);K.block('stone',0,0,.15,W,H,.3);                              // the niche's back, a shade darker
  // LOWER ORDER: steps, a portico of six columns, entablature, pediment
  const h1=H*.46,cz=D-.9*u,cr=.52*u;
@@ -2409,7 +2629,7 @@ function buildTreasury({width=24,height=36,seed=1}={}){
   // the broken pediment: each half rises toward the tholos
   const x0=sx<0?px-pw*.54:px+pw*.54,x1=sx<0?px+pw*.2:px-pw*.2;K.pediment('stone',Math.min(x0,x1),Math.max(x0,x1),yt+ht*.7+.7*u,H*.06,cz-1.3*u,cz+.4*u,x1);}
  return K.finish({kind:'building',name:'Rock-cut temple front (the Treasury)',culture:'eastern-nomad',types:['religious','civic'],
-  footprint:NOMAD.rect(W+2*m,D,true),height:H+2.6*u,family:'treasury',seed:seed>>>0});}
+  footprint:NOMAD.rect(niche?W+2*m:W,D,true),height:niche?H+2.6*u:H,family:'treasury',seed:seed>>>0});}
 function buildCrowTomb({width=7,height=10,ledge=false,seed=1}={}){
  const W=Math.max(4,width),H=Math.max(6,height),K=K0(seed),r=K.rnd,dp=.9,sh=.9+r()*.12;
  // the panel, cut a little proud, framed by pilasters
@@ -2509,10 +2729,10 @@ function buildPuebloCompound({cx=6,cz=6,cell=4,storeys=3,seed=1}={}){
 // (the host sets z = 0 inside the face), each row in front a storey or two
 // lower, so the roofs step down to the floor as terraces. Now and then a back
 // room climbs a storey higher up the face, and a tower stands out in front.
-function buildCliffPueblo({length=12,rows=3,storeys=3,cell=3.6,tower=true,seed=1}={}){
+function buildCliffPueblo({length=12,rows=3,storeys=3,cell=3.6,tower=true,climb=true,seed=1}={}){
  const K=K0(seed),r=K.rnd,cx=Math.max(2,Math.round(length/cell)),cz=Math.max(1,rows),L=cx*cell,D=cz*cell,x0=-L/2;
  const H=[];for(let i=0;i<cx;i++){H.push([]);for(let j=0;j<cz;j++){let h=storeys-Math.round(j*(storeys-1)/Math.max(1,cz-1)*.9)-(r()<.25?1:0);
-  if(j===0&&r()<.3)h+=1;                                   // a room that climbs the face
+  if(j===0&&r()<.3&&climb)h+=1;                           // a room that climbs the face (not under an alcove's ceiling)
   if(j===cz-1&&r()<.3)h=0;                                  // a gap in the front row: a court
   H[i].push(Math.max(j===0?2:0,h));}}
  const at=(i,j)=>i<0||j<0||i>=cx||j>=cz?(j<0?99:0):H[i][j];   // behind the back row is the rock
@@ -2542,7 +2762,7 @@ function buildCliffPueblo({length=12,rows=3,storeys=3,cell=3.6,tower=true,seed=1
   K.color(null,1);for(let s=0;s<storeys+1;s++)K.block('dark',tx,s*SH+1.2,tz+(round?1.52:1.42),.35,.4,.1);K.block('dark',tx,0,tz+(round?1.55:1.45),.6,1.6,.1);
   cells.push([tx-1.6,tz-1.6,tx+1.6,tz+1.6]);}
  return K.finish({kind:'building',name:'Cliff dwelling (pueblo against the rock)',culture:'eastern-nomad',types:['multi-family dwelling'],
-  footprint:NOMAD.rect(L,D+(tower?3.2:0),true),height:(storeys+1)*SH+.6,family:'cliffpueblo',seed:seed>>>0,cells});}
+  footprint:NOMAD.rect(L,D+(tower?3.2:0),true),height:(storeys+(climb?1:0))*SH+.6,family:'cliffpueblo',seed:seed>>>0,cells});}
 // buildPuebloTower({storeys,round,radius,seed}): a watch tower, round or square, rough stone, a flat roof and parapet
 function buildPuebloTower({storeys=4,round=true,radius=2.6,seed=1}={}){
  const K=K0(seed),r=K.rnd,th=storeys*SH,R=radius;K.color(null,.84);
@@ -2718,13 +2938,19 @@ const BUILDINGS=(function(){
   const back=place.kind==='wall'&&P.lift>=0&&/treasury|tomb|cliffpueblo/.test(P.family)?[W(g,U.footprint[0]),W(g,U.footprint[1])]:null;
   const R={id:P.id,name:U.name+(P.family==='stair'||P.family==='ledge'?' ('+place.name+')':' — '+place.name),family:P.family,placeId:place.id,placePoly:place.poly,placeKind:place.kind,
    types,footprint:foot,poly:foot,navPolys:nav.map(p=>p.map(v=>W(g,v))),door:door?W(g,door):null,access:P.access||null,group:P.group||null,
-   backLine:back,face:place.facade?place.facade.face.slice():null,baseY:base,lift:P.lift,y0:yBot,y1:yTop,height:U.height,center:[cx,cz],radius:r};
+   backLine:back,face:place.kind==='wall'?[+Math.sin(P.yaw).toFixed(4),+Math.cos(P.yaw).toFixed(4)]:null,inAlcove:P.inAlcove||null,inNiche:P.inNiche||null,baseY:base,lift:P.lift,y0:yBot,y1:yTop,height:U.height,center:[cx,cz],radius:r};
   records.push(R);byFamily[P.family]=(byFamily[P.family]||0)+1;
   OBSTACLES.push({x:cx,z:cz,r:r+.8,y0:yBot,y1:yTop});
   REGISTER({id:P.id,name:R.name,cls:'building',x:cx,z:cz,y:yBot,r:Math.max(1.5,r*.92),h:yTop-yBot+.5,tags:{culture:U.culture,types:types.join(', '),family:P.family,place:place.id}});
   // merge: this building's meshes, in world space, onto the settlement's one mesh per material
   for(const m of g.children){const k=m.userData.nomadMat,G=m.geometry.clone().applyMatrix4(g.matrixWorld);let M=merged.get(k);if(!M){M={pos:[],nrm:[],uv:[],col:[]};merged.set(k,M);}
    const a=G.attributes;for(const [src,dst] of [['position','pos'],['normal','nrm'],['uv','uv'],['color','col']]){const arr=a[src].array;for(let i=0;i<arr.length;i++)M[dst].push(arr[i]);}
+   // under a hood: the hood's shadow and occlusion, baked into the tint (the world casts no other shadow)
+   //  (the shadow only on faces turned to the sun: a face turned away has no direct light to lose)
+   if(P.inAlcove){const pa=a.position,na=a.normal,c=a.color,sl=Math.hypot(...SUNV),at=new Map();for(let v=0;v<pa.count;v++){const x=pa.getX(v),y=pa.getY(v),z=pa.getZ(v),
+     lit=(na.getX(v)*SUNV[0]+na.getY(v)*SUNV[1]+na.getZ(v)*SUNV[2])/sl>.05,kk=Math.round(x*2)+','+Math.round(y*2)+','+Math.round(z*2)+(lit?'s':'');
+     let f=at.get(kk);if(f===undefined){f=(lit?.32+.68*BIO.carve.floorSun(x,y,z,SUNV):1)*Math.pow(BIO.carve.floorOcc(x,z),1.1);at.set(kk,f);}
+     const o=M.col.length-c.count*3+v*3;M.col[o]*=f;M.col[o+1]*=f;M.col[o+2]*=f;}}
    G.dispose();m.geometry.dispose();}}
  // walk the doors of the upper row from their stairs
  for(const R of records)if(R.access){const S=records.find(s=>s.id===R.access);R.door=S?S.door:null;}
@@ -2972,13 +3198,13 @@ const FACTIONS={
 function sched(spans){const out=new Array(24);let a=spans[spans.length-1][1];
  for(let h=0;h<24;h++){for(const s of spans)if(s[0]===h)a=s[1];out[h]=a;}return out;}
 const JOBS={
- farmer:      {sub:'shade_clans',count:300,homes:['petra','pueblo','tents','cliff-n','cliff-s'],sched:sched([[0,'SLEEP'],[5,'FARM'],[11,'REST'],[15,'FARM'],[19,'EAT'],[20,'SOCIALIZE'],[22,'SLEEP']])},
+ farmer:      {sub:'shade_clans',count:300,homes:['petra','pueblo','tents','cliff-nw','cliff-se'],sched:sched([[0,'SLEEP'],[5,'FARM'],[11,'REST'],[15,'FARM'],[19,'EAT'],[20,'SOCIALIZE'],[22,'SLEEP']])},
  herder:      {sub:'shade_clans',count:90, homes:['tents'],sched:sched([[0,'SLEEP'],[5,'HERD'],[12,'REST'],[14,'HERD'],[19,'EAT'],[21,'SLEEP']])},
  shopkeeper:  {sub:'shade_clans',count:90, homes:['pueblo','petra'],sched:sched([[0,'SLEEP'],[6,'TRADE'],[12,'EAT'],[13,'REST'],[16,'TRADE'],[20,'SOCIALIZE'],[22,'SLEEP']])},
- artisan:     {sub:'shade_clans',count:140,homes:['petra','pueblo','cliff-w','cliff-es'],sched:sched([[0,'SLEEP'],[6,'CRAFT'],[12,'EAT'],[13,'CRAFT'],[18,'SOCIALIZE'],[21,'SLEEP']])},
+ artisan:     {sub:'shade_clans',count:140,homes:['petra','pueblo','cliff-sw','cliff-se'],sched:sched([[0,'SLEEP'],[6,'CRAFT'],[12,'EAT'],[13,'CRAFT'],[18,'SOCIALIZE'],[21,'SLEEP']])},
  water_carrier:{sub:'shade_clans',count:40,homes:['pueblo','tents'],sched:sched([[0,'SLEEP'],[5,'FETCH_WATER'],[10,'REST'],[16,'FETCH_WATER'],[19,'EAT'],[21,'SLEEP']])},
- child:       {sub:'shade_clans',count:170,homes:['petra','pueblo','tents','cliff-n','cliff-s'],sched:sched([[0,'SLEEP'],[7,'EAT'],[8,'PLAY'],[12,'EAT'],[13,'PLAY'],[19,'EAT'],[20,'SLEEP']])},
- elder:       {sub:'shade_clans',count:80, homes:['petra','pueblo','cliff-s','cliff-en'],sched:sched([[0,'SLEEP'],[6,'WORSHIP'],[8,'SOCIALIZE'],[12,'REST'],[16,'SOCIALIZE'],[19,'EAT'],[21,'SLEEP']])},
+ child:       {sub:'shade_clans',count:170,homes:['petra','pueblo','tents','cliff-nw','cliff-se'],sched:sched([[0,'SLEEP'],[7,'EAT'],[8,'PLAY'],[12,'EAT'],[13,'PLAY'],[19,'EAT'],[20,'SLEEP']])},
+ elder:       {sub:'shade_clans',count:80, homes:['petra','pueblo','cliff-se','cliff-en'],sched:sched([[0,'SLEEP'],[6,'WORSHIP'],[8,'SOCIALIZE'],[12,'REST'],[16,'SOCIALIZE'],[19,'EAT'],[21,'SLEEP']])},
  priest:      {sub:'aquifer_wardens',count:6,homes:['shrine'],sched:sched([[0,'SLEEP'],[4,'WORSHIP'],[12,'TRADE'],[14,'REST'],[18,'WORSHIP'],[21,'SLEEP']])},
  acolyte:     {sub:'aquifer_wardens',count:24,homes:['shrine'],sched:sched([[0,'SLEEP'],[4,'WORSHIP'],[8,'FETCH_WATER'],[10,'CRAFT'],[18,'WORSHIP'],[21,'SLEEP']])},
  guard_day:   {sub:'canyon_guard',count:30,homes:['pueblo'],sched:sched([[0,'SLEEP'],[6,'PATROL'],[18,'EAT'],[19,'SOCIALIZE'],[22,'SLEEP']])},
@@ -3003,7 +3229,8 @@ const NAV={x0:-170,z0:-285,x1:450,z1:170,c:1.5,maxGrade:.36};
 NAV.nx=Math.round((NAV.x1-NAV.x0)/NAV.c)+1;NAV.nz=Math.round((NAV.z1-NAV.z0)/NAV.c)+1;
 const N=NAV.nx*NAV.nz,H=new Float32Array(N),BLK=new Uint8Array(N),WET=new Uint8Array(N);
 for(let j=0;j<NAV.nz;j++)for(let i=0;i<NAV.nx;i++){const x=NAV.x0+i*NAV.c,z=NAV.z0+j*NAV.c,k=j*NAV.nx+i,h=terrainH(x,z),dw=waterH(x,z)-h;
- H[k]=h;if(dw>.9)BLK[k]=1;else if(dw>0)WET[k]=1;}
+ H[k]=h;if(dw>.9)BLK[k]=1;else if(dw>0)WET[k]=1;
+ if(BIO.carve.rockAt(x,h+1,z))BLK[k]=1;}   // the floor a carve patch's recess runs on behind the void's walls is inside its rock
 // Building footprints are declared in 44 before this grid is made. A plan may
 // contain several navigation shadows (the Khan's arcades) while its measured
 // building footprint remains one polygon for containment and overlap checks.
@@ -3121,6 +3348,10 @@ const look=(cx,cz,dyc,tx,tz,dyt)=>[cx,gh(cx,cz,dyc),cz,tx,gh(tx,tz,dyt),tz];
 const PC=id=>polyCentre(PLACES.find(p=>p.id===id).poly);
 const SWmid=SWB.pts[Math.floor(SWB.pts.length*.55)];
 const GD=new THREE.Vector3(Math.sin(66*Math.PI/180)*Math.cos(25*Math.PI/180),Math.sin(25*Math.PI/180),-Math.cos(66*Math.PI/180)*Math.cos(25*Math.PI/180));
+// a view of a carve patch: from `d` m out of its mouth (negative: inside it), `dy` above its floor
+const CV=(id,d,dy,tq,tdy)=>{const Q=BIO.carve.patches.find(q=>q.id===id),x=Q.c[0]+Q.n[0]*d,z=Q.c[1]+Q.n[1]*d,tx=Q.c[0]-Q.n[0]*tq,tz=Q.c[1]-Q.n[1]*tq;
+ return[x,Math.max(Q.floorY,d>0?terrainH(x,z):Q.floorY)+dy,z,tx,Q.floorY+tdy,tz];};
+const UF=BIO.carve.patches.find(q=>q.id==='undercut-falls');
 const VIEWS={
  'The basin from the lip':look(LIPX-40,zU(LIPX-40)+34,22,30,0,4),
  'The falls and the pool':[POOL.x+34,POOL.y+10,POOL.z+26,LIPX,POOL.y+22,0],
@@ -3141,6 +3372,9 @@ const VIEWS={
  'The tent grounds':look(36,-12,6,74,-44,1),
  'The north cliff dwellings':look(-30,-40,6,-30,BASIN.z0,9),
  'The south cliff dwellings':look(50,40,8,50,BASIN.z1,9),
+ 'The north alcove':CV('alcove-n1',42,10,6,9),
+ 'The south alcove':CV('alcove-s1',42,10,6,9),
+ 'Behind the falls':[UF.c[0]-UF.n[0]*2.6,POOL.y+2.4,UF.c[1]-UF.n[1]*2.6,POOL.x+20,POOL.y+3,POOL.z+8],
  'The gatehouse tower':look(10,-150,8,36,-168,8),
  'The upper stream':look(LIPX-130,zU(LIPX-130)+26,16,LIPX-10,zU(LIPX-10),-2),
  'Over the basin':look(-10,-260,190,15,0,0),
@@ -3172,7 +3406,9 @@ window._biome=null;
 const ctl={target:new THREE.Vector3(0,0,0),theta:0,phi:1.1,radius:600};
 function setView(cx,cy,cz,tx,ty,tz){ctl.target.set(tx,ty,tz);const dx=cx-tx,dy=cy-ty,dz=cz-tz;ctl.radius=Math.sqrt(dx*dx+dy*dy+dz*dz);ctl.theta=Math.atan2(dx,dz);ctl.phi=Math.acos(clamp(dy/ctl.radius,-1,1));}
 function applyCam(){const r=ctl.radius,sp=Math.sin(ctl.phi);camera.position.set(ctl.target.x+r*sp*Math.sin(ctl.theta),ctl.target.y+r*Math.cos(ctl.phi),ctl.target.z+r*sp*Math.cos(ctl.theta));
- const g=terrainH(camera.position.x,camera.position.z)+1.7;if(camera.position.y<g)camera.position.y=g;camera.lookAt(ctl.target);}
+ const cp=camera.position,g=terrainH(cp.x,cp.z)+1.7;if(cp.y<g)cp.y=g;
+ if(BIO.carve.rockAt(cp.x,cp.y,cp.z))cp.y=(BIO.carve.topAt(cp.x,cp.z)??cp.y)+1.7;   // inside a hood's rock: out on top of it
+ camera.lookAt(ctl.target);}
 // ---------------------------------------------------------------- the panel
 const INITIAL_VIEW='The market and the Khan';
 const ui=document.getElementById('ui');const sel=document.createElement('select');sel.id='viewsel';for(const k in VIEWS){const o=document.createElement('option');o.textContent=k;sel.appendChild(o);}sel.value=INITIAL_VIEW;sel.onchange=()=>setView(...VIEWS[sel.value]);ui.appendChild(sel);
@@ -3285,7 +3521,8 @@ function regOccupancy(){const n=new Array(REG.length).fill(0);const P=_probePoin
  const W=[];for(const k in WATER){const a=WATER[k].geometry.attributes.position;for(let i=0;i<a.count;i+=3)W.push([a.getX(i),a.getY(i),a.getZ(i)]);}
  // the buildings are merged into one mesh per material: count their own vertices too
  const Bv=[];for(const m of (BUILDINGS.meshes||[])){const a=m.geometry.attributes.position;for(let i=0;i<a.count;i+=9)Bv.push([a.getX(i),a.getY(i),a.getZ(i)]);}
- REG.forEach((r,i)=>{for(const p of (r.cls==='water'?W:r.cls==='building'?Bv:P))if(regHas(r,p[0],p[1],p[2]))n[i]++;});
+ const Cv=[];for(const m of (typeof CARVE_MESHES!=='undefined'?CARVE_MESHES:[])){const a=m.geometry.attributes.position;for(let i=0;i<a.count;i+=7)Cv.push([a.getX(i),a.getY(i),a.getZ(i)]);}
+ REG.forEach((r,i)=>{for(const p of (r.cls==='water'?W:r.cls==='building'?Bv:r.cls==='carve'?Cv:P))if(regHas(r,p[0],p[1],p[2]))n[i]++;});
  return REG.map((r,i)=>({name:r.name,n:n[i]}));}
 function nanSweep(){const bad=[];let badInst=0;
  scene.traverse(o=>{if(!o.isMesh&&!o.isInstancedMesh)return;if(o.userData&&o.userData.probeSkip)return;
@@ -3296,23 +3533,30 @@ function typeStats(){const out={};for(const k in BIO.stats){const t=BIO.stats[k]
 
 // ---------------------------------------------------------------- the Shade checks
 const worldVerts=m=>{m.updateMatrixWorld(true);const a=m.geometry.attributes.position,v=new THREE.Vector3(),out=[];for(let i=0;i<a.count;i++){v.fromBufferAttribute(a,i).applyMatrix4(m.matrixWorld);out.push([v.x,v.y,v.z]);}return out;};
+// the rock's top at (x,z): over a carve patch, the patch's top; elsewhere the ground
+const rockTop=(x,z)=>{const t=BIO.carve.topAt(x,z);return t===null?terrainH(x,z):t;};
+// a point buried in rock (a carve patch's or the ground's) by more than `e` up and out
+const buried=(x,y,z,e)=>terrainH(x,z)>y+e||(BIO.carve.rockAt(x,y,z)&&BIO.carve.rockAt(x,y+e,z)&&BIO.carve.rockAt(x+e,y,z)&&BIO.carve.rockAt(x-e,y,z)&&BIO.carve.rockAt(x,y,z+e)&&BIO.carve.rockAt(x,y,z-e));
+// a facade's sample points [x,z,fx,fz]: a straight line {a,b,face} or a traced foot {pts}
+const facadePts=(F,n)=>F.pts?F.pts:Array.from({length:n+1},(_,i)=>[mix(F.a[0],F.b[0],i/n),mix(F.a[1],F.b[1],i/n),F.face[0],F.face[1]]);
 const CHK={
  // the falls: every vertex of the curtain in front of the rock, the lowest ones inside the pool at its surface
  falls(V){const minY=Math.min(...V.map(v=>v[1]));const low=V.filter(v=>v[1]<minY+.01);
-  const inRock=V.filter(v=>terrainH(v[0],v[2])>v[1]+.15).length,out=low.filter(v=>Math.hypot(v[0]-POOL.x,v[2]-POOL.z)>POOL.r-1||waterH(v[0],v[2])<v[1]-.05).length;
+  const inRock=V.filter(v=>buried(v[0],v[1],v[2],.15)).length,out=low.filter(v=>Math.hypot(v[0]-POOL.x,v[2]-POOL.z)>POOL.r-1||waterH(v[0],v[2])<v[1]-.05).length;
   return{ok:inRock===0&&out===0,detail:V.length+' curtain vertices; '+inRock+' inside the rock; '+out+'/'+low.length+' of the lowest outside the pool'};},
  // a stream ribbon: its centre above the bed everywhere, its edges hidden under the banks (a stream on a dyke shows its edges)
  ribbon(V,NW,name){let bed=0,edge=0,rows=0,worst=9;for(let r=0;r*(NW+1)<V.length;r++){const row=V.slice(r*(NW+1),(r+1)*(NW+1));if(row.length<NW+1)break;rows++;
-  const c=row[NW>>1],dh=c[1]-terrainH(c[0],c[2]);worst=Math.min(worst,dh);if(dh<.3)bed++;for(const e of [row[0],row[NW]])if(terrainH(e[0],e[2])<e[1]-.05)edge++;}
+  const c=row[NW>>1],dh=c[1]-terrainH(c[0],c[2]);worst=Math.min(worst,dh);if(dh<.3)bed++;for(const e of [row[0],row[NW]])if(rockTop(e[0],e[2])<e[1]-.05)edge++;}
   return{ok:bed===0&&edge<=rows*.02,detail:name+': '+rows+' rows; centre within .3 m of the bed '+bed+' (least depth '+worst.toFixed(2)+' m); edges showing '+edge};},
  // a trail: the steepest grade of the GROUND along its centreline, every half metre
  grade(P,lim){let mg=0,at=null;for(let k=0;k<P.length-1;k++){const a=P[k],b=P[k+1],l=Math.hypot(b[0]-a[0],b[1]-a[1]),n=Math.max(1,Math.ceil(l/.5));let px=a[0],pz=a[1],py=terrainH(px,pz);
   for(let i=1;i<=n;i++){const x=mix(a[0],b[0],i/n),z=mix(a[1],b[1],i/n),y=terrainH(x,z),g=Math.abs(y-py)/Math.hypot(x-px,z-pz);if(g>mg){mg=g;at=[x|0,z|0];}px=x;pz=z;py=y;}}
   return{ok:mg<=lim,detail:'steepest '+mg.toFixed(3)+' (limit '+lim+') at '+JSON.stringify(at)};},
  // a facade line lies on a sheer face: 1 m out on the floor, 3 m in at the top, at least 30 m apart (84 degrees)
- sheer(F,name){const n=12;let worst=1e9;for(let i=0;i<=n;i++){const x=mix(F.a[0],F.b[0],i/n),z=mix(F.a[1],F.b[1],i/n),fx=F.face[0],fz=F.face[1];
-  const rise=terrainH(x-fx*3,z-fz*3)-terrainH(x+fx*1,z+fz*1);worst=Math.min(worst,rise);}
-  return{ok:worst>=30,detail:name+': least rise over 4 m '+worst.toFixed(1)+' m'};},
+ // a wall place: 3 m into the rock the rock's top stands 30 m over the floor 1 m out (over a carve patch, the patch's top)
+ sheer(F,name){let worst=1e9,at=null;for(const [x,z,fx,fz] of facadePts(F,12)){
+  const rise=rockTop(x-fx*3,z-fz*3)-terrainH(x+fx*1,z+fz*1);if(rise<worst){worst=rise;at=[x|0,z|0];}}
+  return{ok:worst>=30,detail:name+': least rise over 4 m '+worst.toFixed(1)+' m at '+JSON.stringify(at)};},
  // a place on open ground: flat (grade <= .2 over 1 m) and dry, sampled on a 2 m grid inside it
  flat(poly,name){let n=0,steep=0,wet=0,worst=0;const xs=poly.map(p=>p[0]),zs=poly.map(p=>p[1]);
   for(let x=Math.min(...xs)+1;x<Math.max(...xs);x+=2)for(let z=Math.min(...zs)+1;z<Math.max(...zs);z+=2){if(!polyHas(poly,x,z))continue;n++;const y=terrainH(x,z),g=Math.max(Math.abs(terrainH(x+1,z)-y),Math.abs(terrainH(x,z+1)-y));
@@ -3354,12 +3598,25 @@ const CHK={
    if(hit)bad.push(P.id+'/'+Q.id);}
   return{ok:!bad.length,detail:bad.length?bad.slice(0,8).join(', '):list.length+' footprints, none overlapping in plan and height'};},
  // the back edge of every carved facade touches the wall line at its terrain height
- wallContact(list){const walls=list.filter(B=>B.backLine);let worst=1e9,at=null;
+ wallContact(list){const walls=list.filter(B=>B.backLine&&!B.inAlcove);let worst=1e9,at=null;
   for(const B of walls){const a=B.backLine[0],b=B.backLine[1],ex=b[0]-a[0],ez=b[1]-a[1],l=Math.hypot(ex,ez),nx=-ez/l,nz=ex/l;
    // the outward normal is the side the building's centre is on; the rock is on the other side
    const sgn=((B.center[0]-a[0])*nx+(B.center[1]-a[1])*nz)>0?-1:1;
-   for(let i=0;i<=8;i++){const t=i/8,x=mix(a[0],b[0],t)+nx*sgn*.6,z=mix(a[1],b[1],t)+nz*sgn*.6,margin=terrainH(x,z)-(B.baseY+B.lift+B.height*.9);if(margin<worst){worst=margin;at=B.id;}}}
+   for(let i=0;i<=8;i++){const t=i/8,x=mix(a[0],b[0],t)+nx*sgn*.6,z=mix(a[1],b[1],t)+nz*sgn*.6,y=B.baseY+B.lift+B.height*.9,margin=BIO.carve.rockAt(x,y,z)?0:terrainH(x,z)-y;if(margin<worst){worst=margin;at=B.id;}}}
   return{ok:walls.length>0&&worst>=0,detail:walls.length+' carved fronts; least rock above 90% of a front\'s height, 0.6 m behind it: '+worst.toFixed(1)+' m ('+at+')'};},
+ // the alcove dwellings stand under their hoods: every footprint point under the void's
+ // ceiling with half a metre of head room over the building's top, and the back line covered
+ underHood(list){const A=list.filter(B=>B.inAlcove);let worst=1e9,at=null,open=0;
+  for(const B of A){const pts=B.footprint.concat(B.backLine.map(p=>p));const top=B.y1;
+   for(const p of pts){const c=BIO.carve.covered(p[0],p[1]);if(c===null){if(B.backLine.includes(p))open++;continue;}if(c-top<worst){worst=c-top;at=B.id;}}}
+  return{ok:A.length>0&&!open&&worst>=.5,detail:A.length+' alcove dwellings; back corners in the open '+open+'; least head room '+worst.toFixed(1)+' m ('+at+')'};},
+ // each carve patch: the void open at mid height half way in, rock 2 m over its ceiling, nothing rooted under its hood
+ carveOpen(Q){const q=Q.depth*.45,x=Q.c[0]-Q.n[0]*q,z=Q.c[1]-Q.n[1]*q,ym=Q.floorY+Q.h*.45,c=BIO.carve.covered(x,z);
+  const voidOpen=!BIO.carve.rockAt(x,ym,z)&&terrainH(x,z)<ym,hood=c!==null&&BIO.carve.rockAt(x,c+2,z);
+  return{ok:voidOpen&&hood,detail:Q.id+': void at '+ym.toFixed(1)+' m '+(voidOpen?'open':'IN ROCK')+'; 2 m over the ceiling '+(c===null?'no ceiling':hood?'rock':'AIR')};},
+ noHoodFlora(trees){const bad=trees.filter(r=>BIO.carve.covered(r.x,r.z)!==null);
+  return{ok:!bad.length,detail:bad.length?bad.length+' under a hood (first '+bad[0].name+' at '+[bad[0].x|0,bad[0].z|0]+')':trees.length+' plants, none under a hood'};},
+ camerasOutOfRock(cams){const bad=cams.filter(c=>buried(c.x,c.y,c.z,.3));return{ok:!bad.length,detail:bad.length?'in the rock: '+bad.map(c=>c.view).join(', '):cams.length+' cameras in the open'};},
  buildingFamilies(B){const need=['treasury','tomb','stair','ledge','pueblo','cliffpueblo','khan','tent','stall','tower'],missing=need.filter(k=>!B.byFamily||!B.byFamily[k]);
   return{ok:!!B.count&&!missing.length,detail:missing.length?'missing family: '+missing.join(', '):need.map(k=>k+' '+B.byFamily[k]).join(', ')};},
  buildingDoorsReachable(list){const N=LIFE.NAV,start=polyCentre(PLACES.find(p=>p.id==='khan').poly),seen=LIFE.reach(start[0],start[1]),bad=[];
@@ -3406,6 +3663,7 @@ function shadeChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r));
  add('buildings: footprints inside places',CHK.buildingInside(B.records));
  add('buildings: footprints do not overlap',CHK.buildingOverlap(B.records));
  add('buildings: wall backs meet the cliff',CHK.wallContact(B.records));
+ add('buildings: alcove dwellings under their hoods',CHK.underHood(B.records));
  add('buildings: every family represented',CHK.buildingFamilies(B));
  add('buildings: entrances remain reachable',CHK.buildingDoorsReachable(B.records));
  {const sh=Object.keys(B.rejected||{}).filter(k=>/_short$/.test(k));add('buildings: every plan placed in full',{ok:!sh.length,detail:sh.length?sh.map(k=>k+' '+B.rejected[k]).join(', '):B.count+' buildings ('+Object.keys(B.byFamily).map(k=>k+' '+B.byFamily[k]).join(', ')+'), '+B.drawCalls+' draw calls'});}
@@ -3413,6 +3671,9 @@ function shadeChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r));
  add('canyon-mouth-open',CHK.canyonOpen());
  {const P=[],m=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3();scene.traverse(o=>{if(!o.isInstancedMesh||!o.userData.biome||o.instanceMatrix.usage===THREE.DynamicDrawUsage)return;for(let i=0;i<o.count;i++){o.getMatrixAt(i,m);m.decompose(p,q,sc);if(Math.abs(p.x)<700&&Math.abs(p.z)<700)P.push([p.x,p.y,p.z]);}});
   add('no-flora-on-cliffs',CHK.noCliffFlora(P,REG.filter(r=>r.cls==='flora'&&r.r<60&&Math.abs(r.x)<700&&Math.abs(r.z)<700)));}
+ for(const Q of BIO.carve.patches)add('carve: '+Q.id+' open under rock',CHK.carveOpen(Q));
+ add('carve: nothing grows under a hood',CHK.noHoodFlora(REG.filter(r=>r.cls==='flora'&&r.r<60)));
+ add('preset-cameras-out-of-the-rock',CHK.camerasOutOfRock(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
  add('preset-cameras-clear-of-trees',CHK.camerasClear(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
  const L=LIFE.OUT;
  add('life: every place reachable',{ok:!L.unreachable.length,detail:L.unreachable.length?'unreachable: '+L.unreachable.join(', '):L.places+' places and '+Object.keys(PORTS).length+' ports reachable from the Khan'});
@@ -3429,8 +3690,14 @@ function shadeNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,det
  add('lower stream sunk 1 m',CHK.ribbon(worldVerts(WATER.lower).map(v=>[v[0],v[1]-1,v[2]]),WATER.lower.userData.NW,'lower-1'));
  add('a trail straight up the north slope',CHK.grade([[60,SWB.zEdge+2],[60,SWB.zEdge-SWB.W-4]],.15));
  const pe=PLACES.find(p=>p.id==='petra').facade;add('the carved face moved 20 m onto the floor',CHK.sheer({a:[pe.a[0],pe.a[1]-20],b:[pe.b[0],pe.b[1]-20],face:pe.face},'petra-20'));
+ {const F=PLACES.find(p=>p.id==='cliff-nw').facade;add('a cliff run traced 15 m onto the floor',CHK.sheer({pts:F.pts.map(q=>[q[0]+q[2]*15,q[1]+q[3]*15,q[2],q[3]])},'cliff-nw+15'));}
+ {const A=window._buildings.records.find(b=>b.inAlcove);add('an alcove dwelling lifted 12 m into the hood',CHK.underHood([Object.assign({},A,{y1:A.y1+12})]));
+  add('an alcove dwelling pushed out of its alcove',CHK.underHood([Object.assign({},A,{footprint:A.footprint.map(p=>[p[0]+A.face[0]*14,p[1]+A.face[1]*14]),backLine:A.backLine.map(p=>[p[0]+A.face[0]*14,p[1]+A.face[1]*14])})]));}
+ {const Q=BIO.carve.patches[0];add('a carve patch probed 25 m above its floor',CHK.carveOpen(Object.assign({},Q,{floorY:Q.floorY+25})));
+  const x=Q.c[0]-Q.n[0]*Q.depth*.5,z=Q.c[1]-Q.n[1]*Q.depth*.5;add('a tree under an alcove\'s hood',CHK.noHoodFlora([{name:'test tree',x,z,r:3}]));
+  const c=BIO.carve.covered(x,z);add('a camera inside a hood',CHK.camerasOutOfRock([{view:'in-hood',x,y:c+3,z}]));}
  {const F=PLACES.find(p=>p.id==='petra').facade,P=[];for(let i=0;i<=10;i++){const x=mix(F.a[0],F.b[0],i/10),z=F.a[1]+1;P.push([x,terrainH(x,z),z]);}add('plants on the carved face',CHK.noCliffFlora(P));}
- add('a place across the north wall',CHK.flat([[-20,-90],[0,-90],[0,-70],[-20,-70]],'across the wall'));
+ add('a place across the north wall',CHK.flat([[-72,-90],[-60,-90],[-60,-70],[-72,-70]],'across the wall'));
  add('a place across the lower stream',CHK.flat([[-10,-8],[10,-8],[10,8],[-10,8]],'across the stream'));
  add('a shore place with no water',CHK.shore([[-35,-46],[5,-46],[5,-14],[-35,-14]],'the market as a shore'));
  add('a reserved box over planted plateau',CHK.noFlora([[[-600,-150],[-300,-150],[-300,150],[-600,150]]]));

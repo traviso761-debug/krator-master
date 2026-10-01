@@ -23,13 +23,13 @@ const FACTIONS={
 function sched(spans){const out=new Array(24);let a=spans[spans.length-1][1];
  for(let h=0;h<24;h++){for(const s of spans)if(s[0]===h)a=s[1];out[h]=a;}return out;}
 const JOBS={
- farmer:      {sub:'shade_clans',count:300,homes:['petra','pueblo','tents','cliff-n','cliff-s'],sched:sched([[0,'SLEEP'],[5,'FARM'],[11,'REST'],[15,'FARM'],[19,'EAT'],[20,'SOCIALIZE'],[22,'SLEEP']])},
+ farmer:      {sub:'shade_clans',count:300,homes:['petra','pueblo','tents','cliff-nw','cliff-se'],sched:sched([[0,'SLEEP'],[5,'FARM'],[11,'REST'],[15,'FARM'],[19,'EAT'],[20,'SOCIALIZE'],[22,'SLEEP']])},
  herder:      {sub:'shade_clans',count:90, homes:['tents'],sched:sched([[0,'SLEEP'],[5,'HERD'],[12,'REST'],[14,'HERD'],[19,'EAT'],[21,'SLEEP']])},
  shopkeeper:  {sub:'shade_clans',count:90, homes:['pueblo','petra'],sched:sched([[0,'SLEEP'],[6,'TRADE'],[12,'EAT'],[13,'REST'],[16,'TRADE'],[20,'SOCIALIZE'],[22,'SLEEP']])},
- artisan:     {sub:'shade_clans',count:140,homes:['petra','pueblo','cliff-w','cliff-es'],sched:sched([[0,'SLEEP'],[6,'CRAFT'],[12,'EAT'],[13,'CRAFT'],[18,'SOCIALIZE'],[21,'SLEEP']])},
+ artisan:     {sub:'shade_clans',count:140,homes:['petra','pueblo','cliff-sw','cliff-se'],sched:sched([[0,'SLEEP'],[6,'CRAFT'],[12,'EAT'],[13,'CRAFT'],[18,'SOCIALIZE'],[21,'SLEEP']])},
  water_carrier:{sub:'shade_clans',count:40,homes:['pueblo','tents'],sched:sched([[0,'SLEEP'],[5,'FETCH_WATER'],[10,'REST'],[16,'FETCH_WATER'],[19,'EAT'],[21,'SLEEP']])},
- child:       {sub:'shade_clans',count:170,homes:['petra','pueblo','tents','cliff-n','cliff-s'],sched:sched([[0,'SLEEP'],[7,'EAT'],[8,'PLAY'],[12,'EAT'],[13,'PLAY'],[19,'EAT'],[20,'SLEEP']])},
- elder:       {sub:'shade_clans',count:80, homes:['petra','pueblo','cliff-s','cliff-en'],sched:sched([[0,'SLEEP'],[6,'WORSHIP'],[8,'SOCIALIZE'],[12,'REST'],[16,'SOCIALIZE'],[19,'EAT'],[21,'SLEEP']])},
+ child:       {sub:'shade_clans',count:170,homes:['petra','pueblo','tents','cliff-nw','cliff-se'],sched:sched([[0,'SLEEP'],[7,'EAT'],[8,'PLAY'],[12,'EAT'],[13,'PLAY'],[19,'EAT'],[20,'SLEEP']])},
+ elder:       {sub:'shade_clans',count:80, homes:['petra','pueblo','cliff-se','cliff-en'],sched:sched([[0,'SLEEP'],[6,'WORSHIP'],[8,'SOCIALIZE'],[12,'REST'],[16,'SOCIALIZE'],[19,'EAT'],[21,'SLEEP']])},
  priest:      {sub:'aquifer_wardens',count:6,homes:['shrine'],sched:sched([[0,'SLEEP'],[4,'WORSHIP'],[12,'TRADE'],[14,'REST'],[18,'WORSHIP'],[21,'SLEEP']])},
  acolyte:     {sub:'aquifer_wardens',count:24,homes:['shrine'],sched:sched([[0,'SLEEP'],[4,'WORSHIP'],[8,'FETCH_WATER'],[10,'CRAFT'],[18,'WORSHIP'],[21,'SLEEP']])},
  guard_day:   {sub:'canyon_guard',count:30,homes:['pueblo'],sched:sched([[0,'SLEEP'],[6,'PATROL'],[18,'EAT'],[19,'SOCIALIZE'],[22,'SLEEP']])},
@@ -54,7 +54,8 @@ const NAV={x0:-170,z0:-285,x1:450,z1:170,c:1.5,maxGrade:.36};
 NAV.nx=Math.round((NAV.x1-NAV.x0)/NAV.c)+1;NAV.nz=Math.round((NAV.z1-NAV.z0)/NAV.c)+1;
 const N=NAV.nx*NAV.nz,H=new Float32Array(N),BLK=new Uint8Array(N),WET=new Uint8Array(N);
 for(let j=0;j<NAV.nz;j++)for(let i=0;i<NAV.nx;i++){const x=NAV.x0+i*NAV.c,z=NAV.z0+j*NAV.c,k=j*NAV.nx+i,h=terrainH(x,z),dw=waterH(x,z)-h;
- H[k]=h;if(dw>.9)BLK[k]=1;else if(dw>0)WET[k]=1;}
+ H[k]=h;if(dw>.9)BLK[k]=1;else if(dw>0)WET[k]=1;
+ if(BIO.carve.rockAt(x,h+1,z))BLK[k]=1;}   // the floor a carve patch's recess runs on behind the void's walls is inside its rock
 // Building footprints are declared in 44 before this grid is made. A plan may
 // contain several navigation shadows (the Khan's arcades) while its measured
 // building footprint remains one polygon for containment and overlap checks.

@@ -15,7 +15,7 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`settlements/port`](settlements/port/INDEX.md) | 41 | 525 | 39 |  |
 | [`settlements/reedlake`](settlements/reedlake/INDEX.md) | 32 | 310 | 33 | Reed Lake: a floating reed-lake village and its kit. |
 | [`settlements/screamers`](settlements/screamers/INDEX.md) | 72 | 538 | 45 | Hexahedron: the Screamers' tribal village in and under a ruined arcology, forked from the Ancients kit. |
-| [`settlements/shade`](settlements/shade/INDEX.md) | 28 | 298 | 32 | Shade: the Eastern Nomads' sunken basin in the eastern high desert (falls, pool, carved face, switchback, slot canyon) on the sedesert biome kit, with the life layer's data and walkable grid; buildings next. |
+| [`settlements/shade`](settlements/shade/INDEX.md) | 29 | 327 | 32 | Shade: the Eastern Nomads' sunken basin in the eastern high desert (falls, pool, carved face, switchback, slot canyon) on the sedesert biome kit, with the life layer's data and walkable grid; buildings next. |
 | [`settlements/voth`](settlements/voth/INDEX.md) | 62 | 1786 | 70 | Voth: a Venice/Vivec-like Dunmer city on an enclosed brackish bay, with the most complete life layer and collision system. |
 | [`settlements/xanadu`](settlements/xanadu/INDEX.md) | 51 | 596 | 66 | Xanadu: the building kit of the southern Sultanate (Tibetan massing, Indian, Turkish and Persian detail) and the city of Erewhon. |
 | [`settlements/yuni`](settlements/yuni/INDEX.md) | 44 | 876 | 194 | Yuni: the city, plus its building-kit, furniture and plant sheets. |
@@ -25,7 +25,7 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`biomes/hyperjungle`](biomes/hyperjungle/INDEX.md) | 19 | 176 | 33 | Biome kit: see `biomes/README.md`. |
 | [`biomes/nwlowlands`](biomes/nwlowlands/INDEX.md) | 17 | 205 | 56 | Biome kit: see `biomes/README.md`. |
 | [`biomes/rift`](biomes/rift/INDEX.md) | 17 | 228 | 60 | Biome kit: see `biomes/README.md`. |
-| [`biomes/sedesert`](biomes/sedesert/INDEX.md) | 19 | 198 | 32 | Biome kit: see `biomes/README.md`. |
+| [`biomes/sedesert`](biomes/sedesert/INDEX.md) | 20 | 212 | 32 | Biome kit: see `biomes/README.md`. |
 | [`biomes/swbay`](biomes/swbay/INDEX.md) | 19 | 211 | 46 | Biome kit: see `biomes/README.md`. |
 | [`biomes/swlowlands`](biomes/swlowlands/INDEX.md) | 17 | 226 | 57 | Biome kit: see `biomes/README.md`. |
 | [`biomes/xanadu`](biomes/xanadu/INDEX.md) | 19 | 246 | 66 | Biome kit: see `biomes/README.md`. |

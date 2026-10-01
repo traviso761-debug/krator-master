@@ -19,27 +19,28 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `10-core-head.js` | 7 | PRNG (14); noise (24); host binding (32); accounting (98) |
 | `20-core-kit.js` | 14 | merged buckets (58); bake (133); dynamic instances (158) |
 | `30-core-foliage.js` | 15 | alpha textures (18); card geometries (48); the foliage hook (110); colour (175) |
-| `35-core-strata.js` | 6 |  |
+| `35-core-strata.js` | 9 |  |
+| `36-core-carve.js` | 11 |  |
 | `40-core-place.js` | 7 | surface sampling (59) |
-| `44-host-layout.js` | 22 | the plateau (26); the basin and the canyon (34); the water (53); the switchback (63); terrain (107); the places (128); the building plan (182) |
-| `45-host-stage.js` | 22 | the climate fields (25); the flora mask (reserve before you build) (57); the host binding (85); the ground (95); the water (156) |
+| `44-host-layout.js` | 28 | the plateau (26); the basin and the canyon (34); the water (61); the switchback (71); terrain (115); the places (138); the foot of the wall, traced (172); the carve patches (overhangs; BIO.carve, 36-core (206); the building plan (229) |
+| `45-host-stage.js` | 25 | the climate fields (26); the flora mask (reserve before you build) (58); the host binding (87); the ground (97); the carve patches (the rock put back above alcov (162); the water (178) |
 | `50-biome-sedesert-species.js` | 29 | THE WATER COLOUR (17); the tree species (69); leaf textures (129); bark, rock, wood textures (205); geometries local to this biome (244); materials (298); instanced items (330) |
 | `55-biome-sedesert-trees.js` | 32 **big** | zones from the fields (15); colour (the maths is the core's, BIO.col) (36); polyline helpers (Girder's) (51); keep-clear between trees (59); foliage helpers (66); the builders (83); impostors (the far canopy) (260); the pass (284); the passes (data: species, cell, acceptance from (314) |
-| `60-biome-sedesert-floor.js` | 14 | fields local to the floor (27); small plants (37); the zone planters (94); the pass (145) |
+| `60-biome-sedesert-floor.js` | 14 | fields local to the floor (29); small plants (39); the zone planters (96); the pass (147) |
 | `65-biome-sedesert-dress.js` | 5 |  |
 | `70-biome-sedesert.js` | <1 |  |
 | `75-biome-sedesert-fauna.js` | 11 | geometries (unit, vertex-coloured) (23); materials (53); the pass (60) |
 | `77a-kit-nomad-core.js` | 13 | textures (canvas, grey or neutral so the tint ca (17); materials (40); the collector (70) |
 | `77b-kit-nomad-carved.js` | 7 |  |
-| `77c-kit-nomad-pueblo.js` | 9 |  |
+| `77c-kit-nomad-pueblo.js` | 10 |  |
 | `77d-kit-nomad-khan.js` | 6 |  |
 | `77e-kit-nomad-camp.js` | 5 |  |
-| `80-host-buildings.js` | 6 |  |
+| `80-host-buildings.js` | 7 |  |
 | `82-host-sky.js` | 13 | the Inner Wall painter (8) |
-| `84-host-life.js` | 13 | the walkable grid (47); the checks the probe reads (96) |
+| `84-host-life.js` | 13 | the walkable grid (47); the checks the probe reads (97) |
 | `86-host-overlay.js` | 3 |  |
-| `87-host-views.js` | 2 |  |
+| `87-host-views.js` | 3 |  |
 | `88-host-build.js` | <1 |  |
-| `90-host-camera.js` | 10 | the panel (10); picking (25); the polygon tool (63); input (69) |
-| `91-host-probe.js` | 21 | the Shade checks (34) |
+| `90-host-camera.js` | 10 | the panel (12); picking (27); the polygon tool (65); input (71) |
+| `91-host-probe.js` | 25 | the Shade checks (35) |
 | `99-tail.html` | <1 |  |

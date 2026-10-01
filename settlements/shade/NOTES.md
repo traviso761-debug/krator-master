@@ -85,7 +85,35 @@ wall-contact check that compared the floor with itself. The second pass:
 - **A texture read through a custom sampler is not decoded from sRGB.** The first render
   of the new strata was bleached pink: three.js decodes `map`, not a uniform. Decode in GLSL.
 
-## What overhangs would take (Oct 2026, not built)
+## Oct 2026: carve patches, round corners, the rock's colour
+
+- **Option 1 below is built** (`36-core-carve.js` in the biome core, vendored): three Mesa
+  Verde alcoves with a dwelling block under each, true niches round the hall and the shrine
+  (the Treasury builder takes `niche:false`), and the undercut behind the falls (a view
+  stands inside it, looking out through the curtain). Six patches, 0.33 M triangles, ~4 s to mesh and bake at load.
+- **The heightfield's recess must run behind the void.** The first render had a row of
+  spikes at every alcove's foot: ground triangles (1.25 m) spanning the recess edge cut a
+  ramp into the void. The recess now reaches 2 m past the void's wall (inside the patch's
+  rock), and the patch's margin (5.5 m) is wider than that plus the wall's blend.
+- **An alcove does not read without its shadow.** The world casts none, so the first
+  alcoves were flat arches. Each patch bakes occlusion (rays through its own density field,
+  only the rock round the void counting, or the open face beside it would darken and the
+  join show) and the HOOD's sun shadow (only the hood casts: the rest of the patch stands in
+  for a cliff that casts nothing). The ground under a hood and the dwellings in it take the
+  same, the dwellings only on faces turned to the sun.
+- **One material for the ground and the patch**, or the seam shows: the patch takes the
+  ground's map, rock weight and detail. The detail is triplanar now: projected on x-z it
+  smeared down every face into vertical grain, which read as wood.
+- **The corners are round and uneven**: each corner of the basin has its own radius
+  (26-38 m), the walls bulge outward a few metres and wobble; the cliff runs follow the
+  traced foot round the corners and their blocks are kept clear of each other (the first
+  pass overlapped where the wall turns).
+- **The rock's colour** (35-core-strata): buff and cream bleached bands instead of grey-white,
+  purple-brown shales instead of near-black, a rare grey-green bed, each bed warming and
+  cooling along its length, varnish hanging from the bed tops, sand on every ledge and
+  banked at the foot, a bleached cap on the rim.
+
+## What overhangs would take (Oct 2026; option 1 is now built)
 
 The ground is a heightfield: `terrainH(x,z)` is one height per point, and every consumer
 assumes it: the biome's rooting and fields, the walkable grid, the camera's ground clamp,

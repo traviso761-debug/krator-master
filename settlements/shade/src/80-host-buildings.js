@@ -42,13 +42,19 @@ const BUILDINGS=(function(){
   const back=place.kind==='wall'&&P.lift>=0&&/treasury|tomb|cliffpueblo/.test(P.family)?[W(g,U.footprint[0]),W(g,U.footprint[1])]:null;
   const R={id:P.id,name:U.name+(P.family==='stair'||P.family==='ledge'?' ('+place.name+')':' — '+place.name),family:P.family,placeId:place.id,placePoly:place.poly,placeKind:place.kind,
    types,footprint:foot,poly:foot,navPolys:nav.map(p=>p.map(v=>W(g,v))),door:door?W(g,door):null,access:P.access||null,group:P.group||null,
-   backLine:back,face:place.facade?place.facade.face.slice():null,baseY:base,lift:P.lift,y0:yBot,y1:yTop,height:U.height,center:[cx,cz],radius:r};
+   backLine:back,face:place.kind==='wall'?[+Math.sin(P.yaw).toFixed(4),+Math.cos(P.yaw).toFixed(4)]:null,inAlcove:P.inAlcove||null,inNiche:P.inNiche||null,baseY:base,lift:P.lift,y0:yBot,y1:yTop,height:U.height,center:[cx,cz],radius:r};
   records.push(R);byFamily[P.family]=(byFamily[P.family]||0)+1;
   OBSTACLES.push({x:cx,z:cz,r:r+.8,y0:yBot,y1:yTop});
   REGISTER({id:P.id,name:R.name,cls:'building',x:cx,z:cz,y:yBot,r:Math.max(1.5,r*.92),h:yTop-yBot+.5,tags:{culture:U.culture,types:types.join(', '),family:P.family,place:place.id}});
   // merge: this building's meshes, in world space, onto the settlement's one mesh per material
   for(const m of g.children){const k=m.userData.nomadMat,G=m.geometry.clone().applyMatrix4(g.matrixWorld);let M=merged.get(k);if(!M){M={pos:[],nrm:[],uv:[],col:[]};merged.set(k,M);}
    const a=G.attributes;for(const [src,dst] of [['position','pos'],['normal','nrm'],['uv','uv'],['color','col']]){const arr=a[src].array;for(let i=0;i<arr.length;i++)M[dst].push(arr[i]);}
+   // under a hood: the hood's shadow and occlusion, baked into the tint (the world casts no other shadow)
+   //  (the shadow only on faces turned to the sun: a face turned away has no direct light to lose)
+   if(P.inAlcove){const pa=a.position,na=a.normal,c=a.color,sl=Math.hypot(...SUNV),at=new Map();for(let v=0;v<pa.count;v++){const x=pa.getX(v),y=pa.getY(v),z=pa.getZ(v),
+     lit=(na.getX(v)*SUNV[0]+na.getY(v)*SUNV[1]+na.getZ(v)*SUNV[2])/sl>.05,kk=Math.round(x*2)+','+Math.round(y*2)+','+Math.round(z*2)+(lit?'s':'');
+     let f=at.get(kk);if(f===undefined){f=(lit?.32+.68*BIO.carve.floorSun(x,y,z,SUNV):1)*Math.pow(BIO.carve.floorOcc(x,z),1.1);at.set(kk,f);}
+     const o=M.col.length-c.count*3+v*3;M.col[o]*=f;M.col[o+1]*=f;M.col[o+2]*=f;}}
    G.dispose();m.geometry.dispose();}}
  // walk the doors of the upper row from their stairs
  for(const R of records)if(R.access){const S=records.find(s=>s.id===R.access);R.door=S?S.door:null;}

@@ -11,8 +11,11 @@ vendored), the standard Krator sky, the reserved places, the life layer's data a
 walkable grid, and the Eastern Nomad building kit: a rock-cut hall and shrine,
 house fronts on two galleries with rock-cut stairs, four stepped pueblo compounds,
 the walled Khan, black tents, market stalls, cliff dwellings round the whole rim and two
-watch towers (60 buildings, 6 draw calls). The rock is the core's bedded strata
-(`35-core-strata.js`), shared by the ground and the carved stone. `API.md` is the builder contract, `KNOWN_ISSUES.md`
+watch towers (64 buildings, 6 draw calls). The basin's corners are round and uneven; three
+alcoves overhang dwellings in the north and south walls, the hall and the shrine stand in true
+niches, and the pool undercuts the lip behind the falls (carve patches, `36-core-carve.js`).
+The rock is the core's bedded strata (`35-core-strata.js`), shared by the ground, the patches
+and the carved stone. `API.md` is the builder contract, `KNOWN_ISSUES.md`
 what remains open.
 
 The concept started as a design page and four terrain drafts from Gemini; what
@@ -38,9 +41,9 @@ passes its negative cannot fail, and fails the run.
 | Fragment | What |
 |---|---|
 | `00-head.html`, `99-tail.html` | page shell (tools panel, polygon box, inspector, HUD, error panel) |
-| `10..40-core-*` | biome core, vendored from `biomes/sedesert/src` (35: the bedded-rock strata shader) |
-| `44-host-layout.js` | WHERE: the map, `terrainH`, `waterH`, the streams, the switchback, `PLACES`, `PORTS`, `SHADE_PLAN` (the seeded building plan) |
-| `45-host-stage.js` | renderer, the climate fields, the flora mask (places reserved), `BIO.init`, the ground, the water and the falls |
+| `10..40-core-*` | biome core, vendored from `biomes/sedesert/src` (35: the bedded-rock strata shader; 36: carve patches, the overhangs) |
+| `44-host-layout.js` | WHERE: the map, `terrainH`, `waterH`, the streams, the switchback, the traced foot and cliff runs, the carve patches, `PLACES`, `PORTS`, `SHADE_PLAN` (the seeded building plan) |
+| `45-host-stage.js` | renderer, the climate fields, the flora mask (places reserved), `BIO.init`, the ground, the carve patches' meshes (baked occlusion and hood shadow), the water and the falls |
 | `50..75-biome-sedesert-*` | the eastern high desert's flora and fauna, vendored |
 | `77a-kit-nomad-core.js` | the kit's collector (planar metre UVs, vertex tints) and materials (strata-banded carved stone, adobe, tufa, goat-hair cloth, canvas, timber) |
 | `77b..e-kit-nomad-*.js` | the builders: carved (Treasury, crow-step house, rock stair, gallery), pueblo compound, caravanserai, black tent, market stall, cliff pueblo, watch tower |

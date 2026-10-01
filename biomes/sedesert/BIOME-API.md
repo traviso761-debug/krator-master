@@ -33,7 +33,16 @@ biome needed (an abyss or a hyperjungle fragment runs unchanged on it):
   seeded column of beds (sandstone, shale, mudstone, bleached bands) of irregular thickness
   that dip and warp, with laminae, cross-bedding and varnish streaks. `S.inject(shader)` in
   an `onBeforeCompile`, then `strataColor(vSWP, vSWN)` in the fragment. The ideal host's
-  ground uses it; a settlement can hand the same object to its building kit.
+  ground uses it; a settlement can hand the same object to its building kit. Each bed's
+  colour drifts along it (iron staining), varnish hangs from the bed tops, sand lies on
+  ledges; `cap:[y0,y1]` bleaches the top of the column and `foot:y` banks dust at a floor.
+- `BIO.carve` (36-core-carve): overhangs on a heightfield. `add({id, kind:'alcove'|'niche'|
+  'undercut', c, n, hw, depth, h, floorY, base})` declares a patch; the host folds
+  `recessD(x,z)` into its wall function (the floor runs in under the hood) and meshes the
+  rock back above the void with `mesh(material, sunDir)` (surface nets, `aOcc`/`aSun` per
+  vertex). Queries: `covered` (the ceiling over a point), `topAt` (the rock's top over a
+  patch), `rockAt(x,y,z)`, `floorOcc`, `floorSun`. With no patches every query is a no-op,
+  so the ideal host loads it and declares none.
 - `BIO.dynamic(name, geo, mat, count, {label})` and `BIO.tick(fn)`: the moving things
   (fauna) are InstancedMeshes the biome updates itself every frame.
 - The merged buckets and the instance stores are growable Float32 stores (`BIO.Store`)
@@ -137,6 +146,7 @@ This kit is `tropic`, `abyssal:false` throughout. A plant is never part of a bui
 ```
 10-core-head.js     BIO object, PRNG, noise, host binding (+ origin list, fields, waterH/depth), stats
 35-core-strata.js   the bedded-rock shader (BIO.strata), shared by the host's ground and any kit
+36-core-carve.js    carve patches: alcoves, niches and undercuts on a heightfield (BIO.carve)
 20-core-kit.js      instanced items (def/put), merged vertex-coloured buckets
 30-core-foliage.js  leaf cards, alpha textures, Lambert foliage hook, wind
 40-core-place.js    stands, jittered grids (+ box, noMask), keep-clear, face sampling

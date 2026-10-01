@@ -21,7 +21,7 @@ import hashlib, json, os, re, subprocess, sys
 HERE = os.path.dirname(os.path.abspath(__file__)); SRC = os.path.join(HERE, 'src'); DIST = os.path.join(HERE, 'dist')
 UP = os.path.normpath(os.path.join(HERE, '..', '..', 'biomes', 'sedesert', 'src'))
 OUT = 'shade.html'
-VENDORED = ['10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '35-core-strata.js', '40-core-place.js',
+VENDORED = ['10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '35-core-strata.js', '36-core-carve.js', '40-core-place.js',
             '50-biome-sedesert-species.js', '55-biome-sedesert-trees.js', '60-biome-sedesert-floor.js',
             '65-biome-sedesert-dress.js', '70-biome-sedesert.js', '75-biome-sedesert-fauna.js',
             '82-host-sky.js', '99-tail.html']

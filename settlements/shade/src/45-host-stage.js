@@ -20,6 +20,7 @@ const scene=new THREE.Scene();const HAZE=new THREE.Color(0xd9c3a6);scene.fog=new
 const camera=new THREE.PerspectiveCamera(50,innerWidth/innerHeight,.5,16000);
 scene.add(new THREE.HemisphereLight(0xc8d4e4,0x6a4030,.58));
 const sun=new THREE.DirectionalLight(0xfff2dc,1.55);sun.position.set(-1000,1150,-560);scene.add(sun);
+const SUNV=[sun.position.x,sun.position.y,sun.position.z];   // toward the sun: the carve patches bake their shadow from it
 const fill=new THREE.DirectionalLight(0xd8b8a0,.22);fill.position.set(900,300,900);scene.add(fill);
 
 // ---------------------------------------------------------------- the climate fields
@@ -80,7 +81,8 @@ function cliffMask(x,z){if(FC.at(FC.a.slope,x,z)>.9)return 0;let m=1;
   m=Math.min(m,Math.max(smooth(.89,.85,u),smooth(1.0,1.05,u)));}
  if(x<=BASIN.x0){const dU=Math.abs(z-zU(x));if(dU<STREAM.upBank+1)m=Math.min(m,Math.max(smooth(STREAM.upHW,STREAM.upHW-.6,dU),smooth(STREAM.upBank,STREAM.upBank+1,dU)));}
  return m;}
-function floraMask(x,z){const d=terrainH(x,z)-waterH(x,z),w=d<.15?0:d<.7?(d-.15)/.55:1;return w===0?0:Math.min(w,placeMask(x,z),cliffMask(x,z));}
+function floraMask(x,z){if(BIO.carve.topAt(x,z)!==null)return 0;   // nothing grows under a hood or in a patch's rock (a tree would come up through it)
+ const d=terrainH(x,z)-waterH(x,z),w=d<.15?0:d<.7?(d-.15)/.55:1;return w===0?0:Math.min(w,placeMask(x,z),cliffMask(x,z));}
 
 // ---------------------------------------------------------------- the host binding
 const OBSTACLES=[];
@@ -132,27 +134,47 @@ const TEX_CRACK=BIO.canvasTex(256,256,(g,w,h)=>{g.fillStyle='#ffffff';g.fillRect
   g.lineWidth=rr(1.2,2.6);for(let k=-1;k<=1;k++)for(let m=-1;m<=1;m++){g.beginPath();g.moveTo(a[0]+k*w,a[1]+m*h);g.quadraticCurveTo((a[0]+b[0])/2+rr(-18,18)+k*w,(a[1]+b[1])/2+rr(-18,18)+m*h,b[0]+k*w,b[1]+m*h);g.stroke();}}});
 // strata: the core's bedded-rock shader (35-core-strata), shared with the building
 // kit's carved stone (80 hands it over), weighted per vertex by the rock field
-const STRATA=BIO.strata({seed:4711});
+const STRATA=BIO.strata({seed:4711,cap:[TERR.FLOOR+38,TERR.FLOOR+54],foot:TERR.FLOOR});   // a bleached top to the rim, dust banked at the foot
+// the detail textures, triplanar: projected on x-z alone they smear into vertical grain down every face
+const ROCK_DETAIL='vec3 triDetail(sampler2D t,vec3 p,vec3 n,float s,float o){vec3 w=pow(abs(normalize(n)),vec3(4.0));w/=w.x+w.y+w.z;'+
+ 'return texture2D(t,p.zy*s+o).rgb*w.x+texture2D(t,p.xz*s+o).rgb*w.y+texture2D(t,p.xy*s+o).rgb*w.z;}';
 const MAT_GROUND=new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0xa89e94});
 MAT_GROUND.onBeforeCompile=sh=>{STRATA.inject(sh);sh.uniforms.uDetail={value:TEX_DETAIL};sh.uniforms.uCrack={value:TEX_CRACK};
- sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute float aCrack;attribute float aRock;varying float vCrack;varying float vRock;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vCrack=aCrack;vRock=aRock;');
- sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail,uCrack;varying vec3 vGWP;varying float vCrack;varying float vRock;')
-  .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 dt=texture2D(uDetail,vGWP.xz*0.165).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;vec3 ck=texture2D(uCrack,vGWP.xz*0.14).rgb;'+
+ sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute float aCrack;attribute float aRock;attribute float aOcc;attribute float aSun;varying float vCrack;varying float vRock;varying float vOcc;varying float vSun;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vCrack=aCrack;vRock=aRock;vOcc=aOcc;vSun=aSun;');
+ if(sh.fragmentShader.indexOf('getShadowMask();')<0)reportErr('ground shader: no getShadowMask() to put the hoods\' shadow on');
+ sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail,uCrack;varying vec3 vGWP;varying float vCrack;varying float vRock;varying float vOcc;varying float vSun;\n'+ROCK_DETAIL).replace('getShadowMask();','getShadowMask()*vSun;')
+  .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 dt=triDetail(uDetail,vGWP,vSWN,0.165,0.0);vec3 dt2=triDetail(uDetail,vGWP,vSWN,0.021,0.37);vec3 ck=texture2D(uCrack,vGWP.xz*0.14).rgb;'+
   'vec3 bc=strataColor(vSWP,vSWN);'+
   'diffuseColor.rgb=mix(diffuseColor.rgb,bc*(0.85+0.3*dt.r),vRock*0.9);'+
-  'diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.85)*mix(vec3(1.0),ck,vCrack);}');};
+  'diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.85)*mix(vec3(1.0),ck,vCrack)*pow(vOcc,1.6);}');};   // the occlusion steepened: on a face out of the sun, ambient is all the light there is
 // the grid's coordinate at s in [0,1]: 1.25 m cells inside +-260 m, then growing to +-4.2 km
 const GRID={N:560,inner:260,fi:416/560};
 function gridX(s){const u=s*2-1,a=Math.abs(u);if(a<=GRID.fi)return u/GRID.fi*GRID.inner;
  const t=(a-GRID.fi)/(1-GRID.fi),lin=1.25*GRID.N*(1-GRID.fi)/2;   // the first outer cells are as fine as the inner ones
  return Math.sign(u)*(GRID.inner+lin*t+(TERR.GROUND-GRID.inner-lin)*Math.pow(t,2.4));}
 const GROUND=(function(){const N=GRID.N,S=FC.S,g=new THREE.PlaneGeometry(1,1,N,N);g.rotateX(-Math.PI/2);
- const p=g.attributes.position,uv=g.attributes.uv,ck=new Float32Array(p.count),rk=new Float32Array(p.count);
+ const p=g.attributes.position,uv=g.attributes.uv,ck=new Float32Array(p.count),rk=new Float32Array(p.count),oc=new Float32Array(p.count),sn=new Float32Array(p.count);
  for(let iy=0;iy<=N;iy++)for(let ix=0;ix<=N;ix++){const k=iy*(N+1)+ix,x=gridX(ix/N),z=gridX(iy/N);
-  p.setXYZ(k,x,terrainH(x,z),z);uv.setXY(k,x/S+.5,.5-z/S);ck[k]=FC.at(FC.a.crack,x,z);rk[k]=FC.at(FC.a.strata,x,z);}
- g.setAttribute('aCrack',new THREE.BufferAttribute(ck,1));g.setAttribute('aRock',new THREE.BufferAttribute(rk,1));
+  p.setXYZ(k,x,terrainH(x,z),z);uv.setXY(k,x/S+.5,.5-z/S);ck[k]=FC.at(FC.a.crack,x,z);rk[k]=FC.at(FC.a.strata,x,z);oc[k]=BIO.carve.floorOcc(x,z);sn[k]=BIO.carve.floorSun(x,terrainH(x,z),z,SUNV);}
+ g.setAttribute('aCrack',new THREE.BufferAttribute(ck,1));g.setAttribute('aRock',new THREE.BufferAttribute(rk,1));g.setAttribute('aOcc',new THREE.BufferAttribute(oc,1));g.setAttribute('aSun',new THREE.BufferAttribute(sn,1));
  g.computeVertexNormals();g.computeBoundingSphere();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The ground';m.name='ground';scene.add(m);return m;})();
 
+// ---------------------------------------------------------------- the carve patches (the rock put back above alcoves, niches and the undercut)
+// One rock material on the shared strata: the hood's beds are the face's beds.
+// The ground's own material (both sides): the same map, strata and detail, so the join
+// does not show. Each vertex gets the ground's attributes: uv on the painted map, the
+// rock field (a face of the patch is all rock), no cracks, and the patch's occlusion.
+const MAT_CARVE=MAT_GROUND.clone();MAT_CARVE.side=THREE.DoubleSide;MAT_CARVE.onBeforeCompile=MAT_GROUND.onBeforeCompile;
+MAT_CARVE.customProgramCacheKey=()=>'shade-carve';
+const CARVE_MESHES=(function(){const M=BIO.carve.mesh(MAT_CARVE,SUNV);const prior=BIO.cur;BIO.cur='host';
+ for(const m of M){const g=m.geometry,P=g.attributes.position,Nr=g.attributes.normal,n=P.count,uv=new Float32Array(n*2),rk=new Float32Array(n);
+  for(let v=0;v<n;v++){const x=P.getX(v),z=P.getZ(v);uv[v*2]=x/FC.S+.5;uv[v*2+1]=.5-z/FC.S;rk[v]=Math.max(FC.at(FC.a.strata,x,z),smooth(.25,.6,1-Math.abs(Nr.getY(v))));}
+  g.setAttribute('uv',new THREE.BufferAttribute(uv,2));g.setAttribute('aRock',new THREE.BufferAttribute(rk,1));g.setAttribute('aCrack',new THREE.BufferAttribute(new Float32Array(n),1));}
+ for(const m of M){scene.add(m);BIO.tally(m.geometry.index.count/3,0,1);}BIO.cur=prior;
+ for(const Q of BIO.carve.patches){const cx=Q.c[0]-Q.n[0]*Q.depth*.5,cz=Q.c[1]-Q.n[1]*Q.depth*.5;
+  REGISTER({name:Q.name,cls:'carve',x:cx,z:cz,y:Q.floorY,r:Q.hw+2,h:Q.h+6,tags:{kind:Q.kind,depth_m:Q.depth,ceiling_m:+Q.h.toFixed(1)}});}
+ return M;})();
+window._carve=BIO.carve.patches.map(Q=>Object.assign({id:Q.id},Q.stats));
 // ---------------------------------------------------------------- the water
 // The streams are ribbons at their own descending surfaces, the pool a disc at
 // POOL.y; one vertex-coloured ripple material (the kit's). The falls are a
@@ -185,7 +207,7 @@ function ribbon(x0,x1,step,cz,cy,HW,label){const pos=[],col=[],c=new THREE.Color
 const WATER={};
 // the lip's real edge: where the face drops below the upper stream's bed (the
 // channel cuts a shelf across the top of the lip, so it is east of LIPX)
-const LIPEDGE=(function(){for(let x=LIPX-1;x<BASIN.x0;x+=.02)if(terrainH(x,0)<WLU(x)-STREAM.bed-.05)return x;return LIPX;})();
+const LIPEDGE=(function(){for(let x=LIPX-1;x<BASIN.x0;x+=.02)if(terrainBase(x,0)<WLU(x)-STREAM.bed-.05)return x;return LIPX;})();   // the uncarved lip: the undercut's hood is rebuilt from it
 WATER.upper=ribbon(-TERR.GROUND*.4,LIPEDGE-.05,3,zU,WLU,2.6,'The upper stream');
 WATER.lower=ribbon(POOL.x+12,TERR.GROUND*.4,3,zS,WLL,3.4,'The lower stream');
 (function(){const pos=[POOL.x,POOL.y,POOL.z],col=[],c=new THREE.Color(),PN=48,idx=[];waterColorAt(POOL.x,POOL.z,c);c.convertSRGBToLinear();col.push(c.r,c.g,c.b);
