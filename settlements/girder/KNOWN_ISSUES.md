@@ -20,3 +20,26 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
 - [ ] Forest: 62-jungle hard-codes four camera positions from 80-camera to keep them clear — publish viewpoints from the layout instead
 - [x] Night at 21:00 is too bright under the gas giant (shared with Mav's Refuge)
   2026-10-01: night floors cut (hemi 0.30 -> 0.07, ambient 0.22 -> 0.035, planetshine fill 0.15/0.08 -> 0.07/0.03) and the night fill turned cool blue-grey instead of a dimmed day colour (82-daynight); the giant's key 0.44 -> 0.18 x phase (21-sky); a full giant now cuts the lamps by 8 % instead of 28 %, so lamps, windows and fires are the main light. An eclipse keeps its own fill (DN_ECL_*) so it still reads as twilight. 21:00 lights: hemi 0.53 -> ~0.17, ambient 0.38 -> ~0.09, key 0.45 -> ~0.19. Same code in both builds.
+
+## Level of detail (core/lod)
+
+The page takes the shared LOD from `core/lod/` (read `core/lod/README.md`): `build.py` adds `09-lod.js` and
+`97-lod-auto.js` to the fragment list, and 97 applies it to the finished scene. Big merged meshes are cut into chunks
+that switch to clustered proxies with distance and are drawn combined (one draw per level in view); instanced sets keep
+one draw call, drop their smallest instances by screen size and switch detailed shapes to a simplified version far off.
+The originals stay the raycast targets, so the inspector and `_api` see full detail (checked: the inspector names the
+same thing at nine screen points per view with LOD on and off). The panel (`l`, `measure`) reads draw calls and
+triangles; `LOD.enabled=false` or `?lod=0` puts back the exact scene. `verify.py --assert` passes with LOD on.
+
+Left out by default: the life layer (`userData.life`) and the flyers (`userData.flyers`, interleaved instance data).
+
+Measured 2026-10-01, 1000x640, SwiftShader (`LOD.flush()` then `LOD.measure()`: one render of the main scene, so
+calls and triangles as three.js counts them; sky passes not included):
+
+| View | LOD off: calls / triangles | LOD on: calls / triangles |
+|---|---|---|
+| Opening | 54 / 2.69 M | 62 / 2.56 M |
+| Overview | 54 / 2.69 M | 58 / 2.23 M |
+| Forest floor | 54 / 2.69 M | 60 / 2.33 M |
+
+LOD adds up to 8 draw calls; verify's opening view reads 64 of a budget of 110.

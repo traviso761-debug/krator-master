@@ -5,6 +5,6 @@
 (function(){
  if(typeof LOD==='undefined'||LOD.root)return;
  const opt=(typeof window.LOD_OPTIONS==='undefined')?{}:window.LOD_OPTIONS;if(opt===false)return;
- try{LOD.init(Object.assign({THREE,scene,camera,renderer},opt));window._lod=LOD.apply();}
+ try{LOD.init(Object.assign({THREE,scene,camera,renderer},opt));LOD.applied=LOD.apply();}
  catch(e){const m='LOD: '+(e&&e.stack||e);if(typeof reportErr==='function')reportErr(m);else if(typeof ERR==='function')ERR(m);else console.error(m);}
 })();

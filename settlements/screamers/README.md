@@ -43,8 +43,8 @@ draw calls as three.js counts them. Frame times were too noisy under the shared 
 
 | View | LOD off: calls / triangles | LOD on: calls / triangles |
 |---|---|---|
-| Plan from above | 82 / 3.27 M | 128 / 2.73 M |
-| The plaza | 84 / 3.28 M | 126 / 2.83 M |
-| The village | 83 / 3.27 M | 134 / 2.81 M |
+| Plan from above | 82 / 3.27 M | 79 / 2.88 M |
+| The plaza | 84 / 3.28 M | 87 / 3.13 M |
+| The village | 83 / 3.27 M | 81 / 2.94 M |
 
-The gain is small here (14-17% of triangles) because the biome already has its own LOD; see `KNOWN_ISSUES.md`.
+The gain is small here (5-12% of triangles) because the biome already has its own LOD; see `KNOWN_ISSUES.md`.

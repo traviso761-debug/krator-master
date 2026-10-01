@@ -1,5 +1,6 @@
 {
  "00-head.html": "8349b85cfd5a",
+ "09-lod.js": "e1f7db612b83",
  "10-core.js": "0244449ece09",
  "12-stats.js": "36c73fdcde3d",
  "20-textures.js": "bf2447777724",
@@ -55,5 +56,6 @@
  "91z-views.js": "e2c3c8d27975",
  "92-camera.js": "0e63b2bcf4b2",
  "93-labels.js": "d78e5d807c2d",
+ "97-lod-auto.js": "88ec9e581127",
  "99-tail.html": "d3aaf402992e"
 }

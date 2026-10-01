@@ -25,21 +25,22 @@ build output except for its own two fragments. `97-lod-auto.js` applies it to th
    time calls `LOD.init(...)` and `LOD.apply()` itself, and 97 then does nothing.
 4. Rebuild, and measure (below). Record the numbers in the build's README.
 
-**Adopted by** `settlements/port`, `jimjam`, `reedlake`, `screamers`, `voth` (measurements in each build's README,
-"Level of detail"). **Not yet:** `yuni` (close its "No LOD" item when done), `locus`, `iziz`, `highlands`, `xanadu`,
-`dalab`, `mavs-refuge`, `girder`, `kits/ancients`. For each: the `build.py` edit above, then check the build's animated
-objects (anything that moves its matrix or rewrites instance matrices is handed back automatically, but listing it in
-`skip` saves the work at apply time), any biome or flora with its own distance curve (give it a class with `minPx:0`,
-as screamers does), and where the panel lands against the build's own UI (`panelStyle`). Note that `highlands` owns the
-vendored `92-camera.js` reedlake copies: the LOD adoption needs no edit to it.
+**Adopted by every build:** `settlements/port`, `jimjam`, `reedlake`, `screamers`, `voth`, `yuni`, `locus`, `iziz`,
+`highlands`, `xanadu`, `dalab`, `mavs-refuge`, `girder` and `kits/ancients` (measurements in each build's README or
+KNOWN_ISSUES, "Level of detail"). A new build: the `build.py` edit above, then check its animated objects (anything
+flagged or declared dynamic is left out, and anything that moves anyway is handed back on its first move, but naming
+it in `skip`/`skipUnder` saves the work at apply time), any flora with its own distance curve (the biome core's sets
+default to `minPx:0`; screamers names its jungle the same way), where the panel lands against the build's UI
+(`panelStyle`), and the build's draw-call budget in `verify.py --assert`.
 
 ## What it does
 
 | Kind of object | What LOD does |
 |---|---|
-| Merged static `Mesh` (pbFlush batches, terrain strips, biome far meshes) | cut into chunks by a k-d split on triangle centroids (at most `maxTris` triangles, and at most about `maxExtent` m unless the chunk is already under `minChunkTris`, so sparse far ground stays one chunk). Chunks share the original's vertex buffers (only the index is new), so three.js frustum-culls each one. A chunk switches to a clustered proxy when its grid (`levels`, metres) is under `errPx` on screen, and is dropped when the whole chunk is under `minPx`. |
+| Merged static `Mesh` (pbFlush batches, terrain strips, biome far meshes) | cut into chunks by a k-d split on triangle centroids (at most `maxTris` triangles, and at most about `maxExtent` m unless the chunk is already under `minChunkTris`, so sparse far ground stays one chunk). Chunks share the original's vertex buffers (only the index is new). A chunk switches to a clustered proxy when its grid (`levels`, metres) is under `errPx` on screen, and is dropped when the whole chunk is under `minPx`. The chunks are drawn **combined**: one copy per level in use, whose index buffer is the concatenation of the chunks at that level (rebuilt when a chunk changes level), with a bounding sphere round just those chunks. So a split mesh costs one draw call per level in view (usually two or three), not one per chunk. |
 | `InstancedMesh` | stays ONE draw call. Instances are bucketed in `cell`-metre cells and sorted by size inside each cell. Each update copies, cell by cell, the instances still larger than `minPx` on screen into the copy's buffers (one contiguous copy per cell), so small detail drops first. A base geometry of `instFarMinTris` triangles or more gets a clustered far version (one more draw call) beyond `errPx`. The copy has a real bounding sphere, so it is frustum-culled (the kits' `kbake` turns culling off on the originals). |
 | Transparent, `depthWrite:false`, back-side (sky), skinned, morphed, multi-material meshes, sprites, points, lines | left alone. |
+| Anything the build animates by contract: an instanced set whose `instanceMatrix` (or an instanced attribute) uses `DynamicDrawUsage` or is interleaved, a mesh whose positions are dynamic, and anything flagged `userData.life`, `lifeLabel`, `flyers`, `noPick` or `lodSkip` | left alone. |
 
 **Proxies are vertex clustering:** every vertex is snapped to a world grid of `s` metres, vertices whose normals face
 different ways stay apart, positions, normals and colours are averaged per cell, other attributes come from the first
@@ -54,14 +55,14 @@ best one that is.
 **Originals stay the truth.** Every object it manages is moved to layer 30, which the camera does not draw, and a copy
 under `LOD.root` draws instead. `Raycaster.intersectObject(s)` is patched to see layer 30, and the copies never
 raycast, so the inspector, picking, the polygon tool, labels and every `_api` probe see full detail. The copies carry
-`userData.lodCopy` and `userData.probeSkip` and the original's other userData. Each update the copies follow their
+`userData.lodCopy` and `userData.probeSkip` and the original's other userData. Every frame the copies follow their
 original's `visible` (and its parents') and `material`, so night toggles keep working. An original whose matrix,
 geometry, instance matrices or count change after `apply()` is animated: it is handed back (its layer restored, its
 copies removed) and draws exactly as before. A changed `instanceColor` is re-copied.
 
 **Cost:** `apply()` is one pass over the scene (k-d split of the big meshes, bucketing of the instances). After that a
-still camera costs, per managed object and frame, one matrix compare and two version reads (to catch animation), plus a
-visibility sync every 250 ms. Bands are recomputed at most every
+still camera costs, per managed object and frame, one matrix compare and two version reads (to catch animation) and a
+walk up its parents (so a hidden original hides its copy the same frame: cutaways, night toggles, underground views). Bands are recomputed at most every
 `throttle` ms and only after the camera moves `moveEps` m, with hysteresis `hyst` on every threshold.
 
 ## API
@@ -69,7 +70,7 @@ visibility sync every 250 ms. Bands are recomputed at most every
 | Call | What |
 |---|---|
 | `LOD.init(opt)` | binds `THREE`, `scene`, `camera`, `renderer` and the options below; patches the Raycaster once |
-| `LOD.apply(root?)` | takes over every eligible mesh under `root` (default the scene); returns `LOD.stats()` |
+| `LOD.apply(root?)` | takes over every eligible mesh under `root` (default the scene); returns `LOD.stats()`, which 97 keeps in `LOD.applied` (not on `window._*`, so verify's counter baselines do not change) |
 | `LOD.update(force?)` | the per-frame update (called for you from `scene.onBeforeRender` unless `auto:false`) |
 | `LOD.enabled` | get / set. `false` removes `LOD.root` from the scene and restores the originals' layers: the scene graph is exactly the build's. Also the panel button, the `l` key, and `?lod=0` / `?lod=1` in the URL |
 | `LOD.stats()` | `{enabled, managed, applyMs, chunks, chunksFar, chunksOff, instances, instancesDrawn, managedTris, managedTrisDrawn, visibleCopies, pending, live:{calls,tris}, measured}`. `managedTris*` are before frustum culling |
@@ -85,16 +86,17 @@ For a verify assert that counts full-detail triangles: `LOD.enabled=false`, rend
 | Option | Default | What |
 |---|---|---|
 | `cell` | 64 | instance cell size, m |
-| `maxTris`, `maxExtent`, `minChunkTris` | 60000, 800, 20000 | chunk limits for merged meshes |
+| `maxTris`, `maxExtent`, `minChunkTris` | 40000, 400, 10000 | chunk limits for merged meshes |
 | `errPx` | 3 | screen error a proxy may make, px |
 | `minPx` | 1 | an object or chunk smaller than this on screen (radius, px) is dropped |
 | `levels` | `[1,4,16,64]` | clustering grids for merged-mesh proxies, m |
 | `simplifyMinTris` | 64 | meshes with fewer triangles are only dropped, never simplified |
-| `instFarMinTris`, `instFarDiv` | 48, 6 | instanced base geometry with this many triangles gets a far version clustered at radius/`instFarDiv` |
+| `instFarMinTris`, `instFarMinTotal`, `instFarDiv` | 48, 20000, 6 | an instanced set whose base geometry has `instFarMinTris` triangles, and `instFarMinTotal` in all, gets a far version (one more draw call) clustered at radius/`instFarDiv` |
 | `throttle`, `moveEps`, `hyst` | 200, 0.5, 1.12 | ms between band updates, m of camera travel, hysteresis factor |
 | `buildMs` | 10 | proxy building per frame, ms |
 | `skip(o)` | | `true` leaves an object alone (something the build animates per frame) |
-| `classify(o)`, `classes` | | name a class per object and give it `{minPx, maxDist, simplify}`: e.g. clutter `{minPx:2}`, figures `{maxDist:400}` |
+| `skipUnder` | | objects (or a function returning them) whose whole subtree is left alone: turning sails, orreries, windmills |
+| `classify(o)`, `classes` | | name a class per object and give it `{minPx, maxDist, simplify}`: e.g. clutter `{minPx:2}`, figures `{maxDist:400}`. Instanced sets of the shared biome core (`userData.biome`) default to class `biome`, `{minPx:0}`: the biome thins its own flora with distance, so LOD only culls and simplifies them |
 | `ui`, `key`, `panelStyle` | true, `'l'`, `''` | the panel (bottom right, outside `#ui` so view sweeps never click it), its key, and CSS appended to its style to move it |
 | `render` | `renderer.render(scene,camera)` | what `measure()` draws |
 | `auto` | true | hook `scene.onBeforeRender` |

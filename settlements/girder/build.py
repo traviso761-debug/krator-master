@@ -49,11 +49,12 @@ def find_node():
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(HERE, 'src')
+LOD_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'lod')   # shared level of detail (core/lod/README.md)
 OUT = os.path.join(HERE, 'girder.html')
 MANIFEST = os.path.join(HERE, 'build-manifest.json')
 
 # fragments that legitimately contain no top-level generation
-DETERMINISTIC = {'00-head.html', '05-palette.js', '10-core.js', '80-camera.js', '81-glow.js',
+DETERMINISTIC = {'00-head.html', '05-palette.js', '09-lod.js', '97-lod-auto.js', '10-core.js', '80-camera.js', '81-glow.js',
                  '85-probe.js', '86-inspect.js', '87-pathviz.js', '98-start.js', '99-tail.html'}
 PALETTE_FILE = '05-palette.js'
 
@@ -128,10 +129,14 @@ def check(order, bodies):
 
 def main():
     do_checks = '--no-checks' not in sys.argv
-    order = sorted(f for f in os.listdir(SRC) if f[0].isdigit())
+    paths = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
+    for f in os.listdir(LOD_DIR):          # a src/ copy with the same name overrides
+        if f[0].isdigit() and f not in paths:
+            paths[f] = os.path.join(LOD_DIR, f)
+    order = sorted(paths)
     bodies = {}
     for f in order:
-        with open(os.path.join(SRC, f)) as fh:
+        with open(paths[f]) as fh:
             bodies[f] = fh.read()
 
     if do_checks:

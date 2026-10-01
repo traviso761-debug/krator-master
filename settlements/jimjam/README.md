@@ -41,8 +41,8 @@ draw calls as three.js counts them. Frame times were too noisy under the shared 
 
 | View | LOD off: calls / triangles | LOD on: calls / triangles |
 |---|---|---|
-| Overview | 538 / 1.78 M | 335 / 0.39 M |
-| Furniture and flora, eye level | 537 / 1.78 M | 405 / 0.61 M |
+| Overview | 538 / 1.78 M | 344 / 0.56 M |
+| Furniture and flora, eye level | 537 / 1.78 M | 401 / 0.86 M |
 
 The kit sheet is mostly instanced detail (furniture, ornament, plants) spread over a long sheet, so far rows drop their
 small pieces and simplify their bigger ones. The eye-level view looks the same with LOD on and off.

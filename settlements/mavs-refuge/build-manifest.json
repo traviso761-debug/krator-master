@@ -1,6 +1,7 @@
 {
  "00-head.html": "5c6fd71e68ac",
  "05-palette.js": "0d1abb17afd6",
+ "09-lod.js": "e1f7db612b83",
  "10-core.js": "5aa423680a7f",
  "20-stage.js": "1dbee40c412a",
  "21-sky.js": "fed0736e044d",
@@ -25,6 +26,7 @@
  "85-probe.js": "6f9d2107d599",
  "86-inspect.js": "313a88ef9414",
  "87-pathviz.js": "0e170507edef",
+ "97-lod-auto.js": "88ec9e581127",
  "98-start.js": "03f796a2b3d8",
  "99-tail.html": "7501a65f821c"
 }

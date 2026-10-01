@@ -12,4 +12,4 @@ Open items are `- [ ]` lines; build.py prints them.
 ## Level of detail (core/lod)
 
 - [x] No LOD: `core/lod` now takes over both pages (README, "Level of detail"). The village is small: the overview
-      drops from 223k to 72k triangles, close views by about 10%.
+      drops from 223k to 78k triangles, close views by about 4%.

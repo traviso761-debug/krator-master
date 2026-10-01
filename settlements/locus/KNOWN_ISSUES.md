@@ -22,3 +22,27 @@
 - [ ] Town grid: poles stand one per street edge, so spacing follows the edge lengths (17-45 m); spans may cross a yard corner at a bend; service drops end at the house's nearest wall point, not a fitted bracket.
 - [ ] Fauna ignores the life layer (flamingos don't flush from boats; emus don't avoid riders).
 - [ ] The kit's own open items (LOCUS-KIT-KNOWN-ISSUES.md) still stand, except the chapterhouse wall/fountain, now fixed.
+
+## Level of detail (core/lod)
+
+The page takes the shared LOD from `core/lod/` (read `core/lod/README.md`): `build.py` adds `09-lod.js` and
+`97-lod-auto.js` to the fragment list, and 97 applies it to the finished scene. Big merged meshes are cut into chunks
+that switch to clustered proxies with distance and are drawn combined (one draw per level in view); instanced sets keep
+one draw call, drop their smallest instances by screen size and switch detailed shapes to a simplified version far off.
+The originals stay the raycast targets, so the inspector and `_api` see full detail (checked: the inspector names the
+same thing at nine screen points per view with LOD on and off). The panel (`l`, `measure`) reads draw calls and
+triangles; `LOD.enabled=false` or `?lod=0` puts back the exact scene. `verify.py --assert` passes with LOD on.
+
+Left out by default: the life layer and the fauna (dynamic instance buffers). The town grid's lamps are kit instances
+whose night glow is a material uniform, so they need nothing.
+
+Measured 2026-10-01, 1000x640, SwiftShader (`LOD.flush()` then `LOD.measure()`: one render of the main scene, so
+calls and triangles as three.js counts them; sky passes not included):
+
+| View | LOD off: calls / triangles | LOD on: calls / triangles |
+|---|---|---|
+| Opening | 158 / 6.87 M | 136 / 5.73 M |
+| Overview | 153 / 6.84 M | 116 / 5.43 M |
+| Street level | 163 / 6.87 M | 168 / 6.39 M |
+
+The gain is modest: most of Locus is dense instanced flora and stone close to every view.

@@ -1,6 +1,7 @@
 {
  "00-head.html": "72e2bc629d33",
  "05-palette.js": "11723bc3e0ac",
+ "09-lod.js": "e1f7db612b83",
  "10-core.js": "938b27ad2ab3",
  "20-stage.js": "00270fcf358b",
  "21-sky.js": "8c06bbea9725",
@@ -44,6 +45,7 @@
  "87-pathviz.js": "417c2e0dd419",
  "88-underview.js": "229047c6be84",
  "89-sheetui.js": "416fe0e54eea",
+ "97-lod-auto.js": "88ec9e581127",
  "98-start.js": "05665ea7386d",
  "99-tail.html": "7501a65f821c"
 }
