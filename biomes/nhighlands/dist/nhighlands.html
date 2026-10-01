@@ -2450,7 +2450,7 @@ function buildGround(){
    c.lerp(ROCK.clone().lerp(MOSS,.45),ow*smooth(.0,.3,n2+.15)*.5);
    const rockK=Math.max(smooth(.62,1.05,sl),rk*.35);c.lerp(ROCK.clone().lerp(ROCK2,clamp(.5+n3*2.5,0,1)),rockK);
    // the top: snow on the north faces and in the hollows
-   c.lerp(SNOW,smooth(.45,.7,.6*north+n3*2.6)*smooth(.95,.5,sl)*smooth(.94,1,zat('cold',u,v))*alp*.85);   // patches: the north faces and the hollows hold it
+   c.lerp(SNOW,smooth(.72,.92,.35*Math.max(0,north)+n3*3.2+.25*n2*4)*smooth(.95,.5,sl)*smooth(.94,1,zat('cold',u,v))*alp*.8);   // patches, never a whole face   // patches: the north faces and the hollows hold it
    // the banks: gravel and wet moss; the tarn's peat
    const fl=FC.at(FC.a.flow,wx,wz);c.lerp(MOSS2.clone().lerp(MOSS,.5),rip*.45);c.lerp(GRAV,smooth(.86,.98,fl)*.7);
    if(Math.hypot(wx-TARN.x,wz-TARN.z)<TARN.r+30)c.lerp(PEAT,smooth(TARN.r+30,TARN.r,Math.hypot(wx-TARN.x,wz-TARN.z))*.6);
