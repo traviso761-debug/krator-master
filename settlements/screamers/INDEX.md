@@ -45,9 +45,9 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `65-veladiga.js` | 13 |  |
 | `66-office-c.js` | 2 |  |
 | `67-cultural.js` | 4 |  |
-| `68-hexahedron.js` | 45 **big** |  |
+| `68-hexahedron.js` | 63 **big** |  |
 | `69-mat-salvage.js` | 7 | salvage (decay level 3) (1); Screamer retint (85) |
-| `70-hypertree.js` | 7 |  |
+| `70-hypertree.js` | 12 |  |
 | `70-sky-g.js` | 5 |  |
 | `70c-furniture.js` | 7 | catalogue (106) |
 | `71-sky-h.js` | 3 |  |

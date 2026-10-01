@@ -230,9 +230,17 @@ function buildDarco(scene,gx,gz,d){reseed(9650+d);KOFF=[gx,0,gz];
   // A shaft, two collapsed floor plates and a floor, so the break is a hollow.
   DK.push(gridSurface((u,w)=>P(u,lerp(cutV(u),VCUT-.118,w),.87),72,7,{uS:14,vS:7}));
   DK.push(gridSurface((u,w)=>P(u,VCUT-.118,lerp(.88,.04,w)),56,3,{uS:12,vS:3}));
-  for(let f=0;f<2;f++){const vf=VCUT-.040-f*.030;
-   DK.push(gridSurface((u,w)=>P(u,vf,lerp(.88,.08,w)),48,3,
-    {uS:10,vS:3,hole:(u,w)=>fbm(u*7+f,w*4,9659+f,3)<.34}));}
+  // THE FLOORS, and they are PALE. Two void-black plates in a void-black shaft
+  // read from 'The break' as one smooth dark cap: depth, but no building. Six
+  // plates in the skin's own stone, each with a black soffit a metre under it
+  // and holes eaten out of it, turn the hollow into a section — pale slab, dark
+  // room, pale slab — which is the one read the kit's other breaks have taught.
+  // Four, not six, and eaten hard — from 'The break' you look straight down the
+  // tube, and six plates with modest holes stacked into one unbroken pale lid.
+  for(let f=0;f<4;f++){const vf=VCUT-.024-f*.024,dv=1.1/LEN;
+   const hl=(u,w)=>vf>cutV(u)-.004||h3(Math.floor(u*14),Math.floor(w*4),9659)<.66-.14*f;   // NESTED holes: independent ones on four plates stacked into one unbroken lid
+   SH.push(gridSurface((u,w)=>P(u,vf,lerp(.87,.10,w)),56,4,{uS:10,vS:3,hole:hl}));
+   DK.push(gridSurface((u,w)=>P(u,vf-dv,lerp(.87,.10,w)),56,4,{uS:10,vS:3,hole:hl}));}
   // the teeth left standing round the rim
   {const nt=44;for(let i=0;i<nt;i++){const u=(i+.5)/nt;if(rng()<.48)continue;
     const v0=cutV(u);beam(DBOX,P(u,v0-.022,1.0),P(u,v0+rr(.002,.018),1.0),rr(2,5),rr(2,5));}}}
@@ -367,9 +375,17 @@ function buildDarco(scene,gx,gz,d){reseed(9650+d);KOFF=[gx,0,gz];
   // plane, so the z rotation that LAYS IT DOWN is +.36, not the 1.52 that
   // stood it on its point like a paper cone. Measured, not guessed.
   const fv=v=>lerp(VCUT+.012,.995,v);
-  const fg=gridSurface((u,v)=>P(u,fv(v),1),96,40,{uS:30,vS:16});
+  // The piece used to lie there WHOLE: a clean perpendicular cut at its root
+  // and an unbroken skin, which from its own preset read as an intact pod set
+  // down on the plain. Its root is now torn on the SAME ragged line the stump
+  // was cut on (cutV), with the lip ring following that line, and its skin is
+  // eaten harder than the standing fabric — it hit the ground from 250 m — so
+  // the black inner mass shows through it in patches tens of metres across.
+  const fHole=holeFn(.95,9658,null,1.3);
+  const fg=gridSurface((u,v)=>P(u,fv(v),1),168,70,{uS:30,vS:16,   // 96x40 left the eaten holes stair-stepped (QA arcA)
+   hole:(u,v)=>fv(v)<cutV(u)+.010||fHole(u,fv(v)*LEN)});
   const fi=gridSurface((u,v)=>P(u,fv(v),INS),56,22,{uS:16,vS:9});
-  const fk=gridSurface((u,w)=>P(u,fv(0),lerp(1,INS,w)),56,3,{uS:14,vS:2});
+  const fk=gridSurface((u,w)=>P(u,Math.max(fv(0),cutV(u)+.010),lerp(1,INS,w)),56,3,{uS:14,vS:2});
   fg.computeBoundingBox();const bc=fg.boundingBox.getCenter(new THREE.Vector3());
   [fg,fi,fk].forEach(g=>g.translate(-bc.x,-bc.y,-bc.z));
   const F=new THREE.Group();F.position.set(-318,0,104);
@@ -386,7 +402,7 @@ function buildDarco(scene,gx,gz,d){reseed(9650+d);KOFF=[gx,0,gz];
   useGroupXF(F);
   for(let j=0;j<26;j++){const v=fv((j+.5)/26),n=Math.round(clamp(TAU*RM(v)/4.8,8,60));
    for(let i=0;i<n;i++){const u=(i+((j%2)?.25:.75))/n;
-    if(rng()>.55)continue;
+    if(rng()>.55||v<cutV(u)+.012||fHole(u,v*LEN))continue;
     const q=P(u,v,1),nn=NRM(u,v);
     kput('cell',[q[0]-bc.x+nn[0]*.3,q[1]-bc.y+nn[1]*.3,q[2]-bc.z+nn[2]*.3],qFacing(nn),[3.3,2.2,1],
      rng()<.03?DARCO_EMBER.clone().multiplyScalar(rr(.14,.4)):DARCO_COAL);}}

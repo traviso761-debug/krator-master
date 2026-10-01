@@ -51,7 +51,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `65-abyss-70-palace.js` | 8 | 16X-K. ABYSS — the Headman's palace and its plaz (1) |
 | `65-abyss-80-military.js` | 12 | 16X-M. ABYSS — military: the wall system, the fo (1) |
 | `65-abyss-90-farm.js` | 12 | 16X-G. ABYSS — farming and storage (1) |
-| `66-locus-furnish.js` | 7 | 16Y. FURNITURE — placed from the catalog (FURNIS (1) |
+| `66-locus-furnish.js` | 8 | 16Y. FURNITURE — placed from the catalog (FURNIS (1) |
 | `68-place.js` | 16 | 18b. THE PLACEMENT PASS — LOCUS (1) |
 | `69a1-bio-core-head.js` | 6 | PRNG (14); noise (24); host binding (41); accounting (81) |
 | `69a2-bio-core-kit.js` | 13 | merged buckets (46); indexed buckets (121); bake (144) |

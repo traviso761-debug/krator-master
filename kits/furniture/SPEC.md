@@ -16,6 +16,7 @@ type, and count outdoor fixtures (fountains, statues, benches) as furniture.
 | `kits/catalog/krator-master-furniture.js` | 122 `FURN({...})` pieces, harvested from six builds plus the 2026-10 interior set. **Start here.** |
 | `kits/catalog/krator-furniture-kit.js` | the furniture kit `FK`: parametric role builders driven by a culture style sheet, and `FK.set()` |
 | `kits/catalog/krator-master-furniture-<culture>.js` | the interiors-phase sets, one file per culture (731 pieces over 15 cultures plus the two generic poor sets); read `kits/catalog/README.md` "Furniture by culture" |
+| `kits/catalog/krator-master-furniture-generic-goods.js`, `-generic-fruit.js` | 86 `generic` goods: containers, food, drink, supplies and biome fruit, sized to sit on the furniture; `kits/catalog/README.md` "Generic goods and biome fruit" |
 | `settlements/yuni/src/63-furniture.js`, `53-assets.js` | Yuni's own `FURN` seed set (same shape as the catalog) |
 | `settlements/yuni/src/61e-ancients-furniture.js` | Ancients furniture ported into Yuni |
 | `settlements/screamers/src/70c-furniture.js` | a different shape: `FURN.bunk(x,y,z,rot,s)` built from kit items |
@@ -84,6 +85,10 @@ mounts it (`kits/catalog/README.md`, and `furnAnchorY()` in the engine).
   keys (`krator-furniture-kit.js`, header). A kit piece is still a `FURN` entry with every field
   above, built only through `F.*`; the kit ships with the registry, not the host, so a host that
   supplies `F` runs kit pieces unchanged. Bespoke pieces are plain `FURN()` calls.
+- **Painted panels.** `F.decal(lx, ly, lz, w, h, ry, key, paint, family)` is a plane with a canvas texture
+  painted once per key; the kit's hangings paint the culture's emblem with the socket packs' `SYMBOLS`
+  (`core/sockets/38-symbols.js`, vendored as `kits/catalog/krator-symbols.js`). A paint function uses CSS
+  colours from palette keys (`F.css(F.col(key))`) and its own seeded stream (`FK.paintRng`).
 - **Palettes.** A culture file registers its palette with `FURN_CULTURE(key, { palette })`
   between `/* PALETTE */` and `/* END PALETTE */`: the one place a literal colour may appear.
   `verify.py` asserts no literal anywhere else, kit included.

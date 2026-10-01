@@ -17,14 +17,18 @@
 // space one used to need. Every existing caller passes nothing and is unchanged.
 function buildSkyF(scene,gx,gz,d,gy,noPlinth,hcut,slim){reseed(9150+d);gy=gy||0;
  const PS=slim||1;KOFF=[gx,gy,gz];const G=new THREE.Group();G.position.set(gx,gy,gz);scene.add(G);const dd=d>0?1:0;
- const H=290,Y0=10,TS=12;REGISTER({name:'Skyscraper F — the Trays ('+(d===2?'toppled':STATE(d))+')',x:0,y:gy,z:0,r:(noPlinth?46:56)*PS,h:H+20});
+ const H=290,Y0=10,TS=12;REGISTER({name:'Skyscraper F — the Trays ('+(d===2?'toppled':STATE(d))+')',x:0,y:gy,z:0,r:(noPlinth?46:50)*PS,h:H+20});
  // PLINTH. The note above was written when 105 was still the radius; it is now
  // 48. The widest tray is RT(y)*1.22 = 38.4 at PS=1, so 48 puts skyPlinth's
  // column ring at 44.6 just outboard of it, and the registered radius below
  // stops being three times the building. Everything in skyPlinth derives from
  // this one number, so the columns, the cornice ring, the apron and the moss,
  // rubble and tree rings all move with it.
- const PR=48*PS;
+ // RESTAND (A-H): 44*PS, ring at 40.9. The trays are cantilevered off the
+ // core and the lowest one (19 m up, above the cornice ring at 17.3) reaches
+ // only 34.8; the 38.4 tray is mid-height, where overhanging the podium edge
+ // is what a cantilevered tray does.
+ const PR=44*PS;
  if(!noPlinth)skyPlinth(G,dd,PR);
  const RT=y=>(28*(1-.2*clamp(y/H,0,1))+6*Math.sin(Math.PI*clamp(y/H,0,1)))*PS;
  const build=(P,dx,y0,y1,upper)=>{const cut=(dx>0&&!upper&&y1!=null)?y1:(dx>0&&(d===1||(d===3&&hcut))?H*(hcut||.8):null);const L=(cut!=null?cut:H)-y0;

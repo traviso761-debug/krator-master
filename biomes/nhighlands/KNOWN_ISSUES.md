@@ -33,6 +33,8 @@
       sedesert), `cold`/`rock` field defaults, Float32 stores, `opt.depth` in `BIO.grid`. Not deliberate: the vertex
       merge hashes all 11 words (`20-core-kit.js:162`; upstream 99e5acf hashes 6, same output, slower). The noise cache
       was re-vendored in d4f8cd0.
+- [ ] **Put the biome fruit in the kit** (`biomes/FRUIT.md`): yew-lantern arils, frost rowan, wall bilberries, lantern pods, beechmast and acorns. Each has a catalog piece in
+      `kits/catalog/krator-master-furniture-generic-fruit.js` (`biome: 'nhighlands'`). The arils, rowan berries, bilberries and lantern pods are drawn and tagged. Draw beechmast on `bluebeech` and acorns on `gnarloak` (both tagged, neither drawn), and point the `HV()` notes at the catalog keys.
 
 ## Done
 

@@ -6,8 +6,8 @@ furniture sets** (2026-10): a parametric furniture kit and one file per culture.
 It is the furniture source for `kits/interiors/` and the starting point for `kits/furniture/`.
 
 **Status: verified.** `build.py` builds `dist/catalog.html`, a contact sheet of every
-furniture entry and every variant, and `verify.py --assert` passes: all 1013 furniture pieces
-(1313 instances, every variant, seeds 1–4) build without error, carry no NaN geometry, fit
+furniture entry and every variant, and `verify.py --assert` passes: all 1492 furniture pieces
+(2249 instances over three pages, every variant, seeds 1–4) build without error, carry no NaN geometry, fit
 their declared size, keep their anchor's geometry, and carry their tags. Every furniture entry carries every field of
 `kits/furniture/SPEC.md` "The entry" and meets its style rules. What is still open is in `KNOWN_ISSUES.md`.
 
@@ -17,14 +17,20 @@ first-generation Voth buildings (`krator-master-buildings-voth.js`) and the 13 B
 biome kits and each build's own plant sheet; the Voth buildings have their own sheet,
 `settlements/voth/catalog/index.html`, which loads that file by path; the Beast Rider buildings
 are in Mav's Refuge and Girder. The catalog is the furniture sheet, one row per culture and tier.
+The Beast Rider buildings place their furniture as catalog pieces with `F.furn` (2026-10; see
+"Furniture in a kit build").
 
 | File | What |
 |---|---|
-| `krator-asset-engine.js` | scene, camera, geometry kit (`F.box/cyl/cone/dome/blob/ball/beam/rod/frustum/pyrRoof/hipRoof`, `F.shift`), the `FURN`/`PLANT`/`ASSET` registries with `buildFurn/buildPlant/buildAsset`, `CATALOG_MATERIALS` and `CORE_MATERIAL_MAP`, `furnAnchorY`, the furniture palette `FPAL` (`F.col`), `FURN_CULTURE()` and `FURN_TIERS`, `BUILDING_TYPES` |
+| `krator-symbols.js` | VENDORED from `core/sockets/38-symbols.js`: the culture symbols (`SYMBOLS`, `SYMBOL_OF`) the hangings paint |
+| `krator-furniture-core.js` | the half of the engine with no page in it (split out 2026-10): `TAU`/`shade`, `mat()`, the geometry kit `mk*` (and `mkDecal`), the registries and vocabularies, `CATALOG_MATERIALS`, `FPAL`, the frame `makeFrame()` (`F.*`, `F.furn`), `buildFurn/buildPlant/buildAsset`, `rebuildInstance`, `measureInstance`. Loaded BEFORE the engine |
+| `krator-furniture-runtime.js`, `furniture_bundle.py` | the catalog's furniture inside another build: `furniture_bundle.bundle(cultures)` wraps the core, the symbols, the kit, the culture files and the runtime in one closure exposing only `KratorFurniture` (batches merged per render family). See "Furniture in a kit build" |
+| `krator-asset-engine.js` | the page: scene, camera, controls, ground, labels, frame loop; with the core: geometry kit (`F.box/cyl/cone/dome/blob/ball/beam/rod/frustum/pyrRoof/hipRoof`, `F.shift`, and `F.decal`: a painted canvas panel, cached per key), the `FURN`/`PLANT`/`ASSET` registries with `buildFurn/buildPlant/buildAsset`, `CATALOG_MATERIALS` and `CORE_MATERIAL_MAP`, `furnAnchorY`, the furniture palette `FPAL` (`F.col`), `FURN_CULTURE()` and `FURN_TIERS`, `BUILDING_TYPES` |
 | `krator-furniture-kit.js` | **the furniture kit `FK`**: one parametric builder per role (bed, throne, hearth, tapestry, wall art ...) driven by a culture's style sheet, motif and finial helpers, `FK.ROLES` per tier and `FK.set()`, which registers a whole tier for a culture. Read its header before writing a set |
 | `inspector.js` | click-to-select inspector: measure, isolate, cycle variants, audit declared sizes |
 | `krator-master-furniture.js` | 122 harvested `FURN({...})` pieces in the SPEC shape (Voth 35, Iziz 9, Beast-Rider 16, Yuni 58, Ancients 4) |
 | `krator-master-furniture-<culture>.js` | **one file per culture** (17 files): its palette (`FURN_CULTURE`), its style sheets, `FK.set()` for its tiers and its bespoke pieces. `generic` and `scrap` are the poor-tier sets; `hykkousoi` is a palette only. See "Furniture by culture" |
+| `krator-master-furniture-generic-goods.js`, `-generic-fruit.js` | `generic` **goods** (53: storage containers, food, drink, supplies) and **biome fruit** (33, one per fruiting plant the biome kits draw: `biomes/FRUIT.md`). Tier `common`, `wealth: [0, 1]`. See "Generic goods and biome fruit" |
 | `krator-master-plants.js`, `krator-master-buildings-voth.js`, `krator-master-buildings-beast-rider.js` | kept, **not built** (above); the building files carry `ASSET({...})` entries tagged by culture, `types: [...]` and `family` for the pages that load them |
 | `src/` | only the page around them: head, sky, sheet layout, hover inspector, polygon tool, tail |
 | `three.min.js` | three.js r128, the copy every other build uses |
@@ -38,19 +44,23 @@ the inspector from here by path.
 ```
 cd kits/catalog && python3 build.py                 # dist/catalog.html, node --check, build-manifest.json
 python3 build.py --vendor-check                     # src/81-sky.js against settlements/iziz/src/81-sky.js
-python3 verify.py dist/catalog.html --assert        # the gate; exit 0 = pass (about 10 minutes: 1313 instances x 4 seeds)
+python3 verify.py dist/catalog.html --assert        # the gate: each page in turn (indoor, outdoor, both); exit 0 = pass
+python3 verify.py dist/catalog.html --assert --page outdoor   # one page
 python3 verify.py dist/catalog.html --out shots     # screenshots: initial view + one per section
 python3 verify.py dist/catalog.html --out shots --rows   # + one per row (slow on the full sheet)
 python3 verify.py dist/catalog.html --sheet furniture --query cultures=xanadu,voth --out shots --rows   # a quick partial sheet
 ```
 
-`build.py` reads `SOURCES`: the engine, the kit, the harvested furniture, then every
+`build.py` reads `SOURCES`: the engine, the symbols, the kit, the harvested furniture, then every
 `krator-master-furniture-*.js` in filename order, and the inspector. A new culture is one new
 file; nothing else changes.
 
 The page: `dist/catalog.html` is the furniture sheet, one row per culture and tier
-(`Furniture · xanadu · court`), sorted by type. The whole sheet is heavy (about 33 000 draw
-calls); `?cultures=xanadu,voth` is the quick page. The sheet code still lays out plants and
+(`Furniture · xanadu · court`), sorted by type, split into **pages by setting**: Indoor, Outdoor and
+Indoor & outdoor (`setting: 'both'`), one at a time, switched from the toolbar, by `?page=` or by the
+hash (`#indoor`, `#outdoor`, `#both`; a hosted page sees only the hash). Indoor is the default. All of
+it on one page (`?page=all`) no longer builds in reasonable time (about 2200 instances, 2026-10);
+`?cultures=xanadu,voth` is the quick page (with `cultures` or `keys` the page shows every setting). The sheet code still lays out plants and
 buildings (`?sheet=plants|buildings`) for a page that registers them. The toolbar jumps to a row. Press **T** (or the
 toolbar button) for the hover inspector: name, class and tags of whatever is
 under the pointer. Click anything for the full inspector (measure, isolate,
@@ -78,7 +88,7 @@ smaller than they declare.
 
 ## Using catalog pieces in another build
 
-Load, in order, three.js r128, `krator-asset-engine.js`, then any of the
+Load, in order, three.js r128, `krator-furniture-core.js`, `krator-asset-engine.js`, `krator-symbols.js`, then any of the
 registry files, as `<script>`s or concatenated into one script (the build does
 the latter). The engine needs a `<div id="app">` for its renderer. Then:
 
@@ -147,6 +157,73 @@ FURN({
   tavern inn industry farm dwelling-single dwelling-multi infrastructure religious
   funerary`, Yuni's slugs for the README's vocabulary) next to `family`.
 
+## Furniture in a kit build (2026-10)
+
+Everything a kit building places inside or outside itself that is not the main structure or an
+outbuilding is **furniture**: a catalog piece placed as data and built by the catalog's own code.
+
+- **A settlement or kit build** carries the bundle as one generated fragment (never in its `src/`):
+  `furniture_bundle.bundle([cultures])` defines the single global `KratorFurniture`
+  (`krator-furniture-runtime.js`: `KF.batch()`, `B.place(key, x, y, z, ry, {variant, seed, building,
+  setting})`, `B.flush(scene)`, `KF.setDetail(k)`, `KF.has`, `KF.entryDims`, `KF.furnAnchorY`). Nothing
+  else leaks: the core's names stay inside the closure. A batch merges every piece's triangles into one
+  mesh per render family (vertex colours), keeps the lights as data, and keeps painted panels
+  (`F.decal`) as their own meshes. The build's glue defines `FURNISH(key, lx, ly, lz, lry, {v, seed,
+  setting})` in its builders' local frame; with `?interiors=1` it also furnishes the rooms from
+  `kits/interiors` (`kit_bundle.py`, `IX.sets`). Worked examples: `settlements/highlands`
+  (`89y-hl-furnish.js`), `settlements/locus` (`66-locus-furnish.js`), `settlements/girder`,
+  `settlements/mavs-refuge`, `kits/post-apoc`.
+- **An `ASSET` builder in this catalog** calls `F.furn(key, lx, ly, lz, lry, {v, seed})`: the piece is
+  built into the building's group on a frame at that local point, its own seed (default
+  `F.seed * 31 + n + 1`, so the building's random stream does not move), and recorded in
+  `userData.furniture` (`userData.missingFurniture` for a key the catalog lacks: nothing drawn).
+  **The height is the caller's**: `F.furn` does not apply the piece's anchor, so pass the floor, the
+  top it stands on, or the beam a hanging piece meets.
+
+### Harvested from the kits (2026-10)
+
+Each kit's own furniture, ported into its culture file under a `Harvested from <kit>` header, every
+entry naming its `source:` helper or builder:
+
+| Culture file | Keys | Pieces | From |
+|---|---|---|---|
+| `-eastabyss.js` | `abyss_*` | 35 | `settlements/locus` Eastern Abyssal kit |
+| `-beast-rider.js` | `br_h_*` | 61 | the Beast Rider buildings, Girder `55-arch.js`, Mav's Refuge `55/56/72` |
+| `-rustic.js` | `hl_rus_*` | 25 | `settlements/highlands` Rustic (73, 80, 81, 81b) |
+| `-painted.js` | `hl_tri_*` | 26 | `settlements/highlands` Tribal (73, 84, 85, 85b) |
+| `-republican.js` | `hl_rep_*` | 62 | `settlements/highlands` Republican (74-79f) |
+| `-iziz.js` | `iziz_vern_*` | 8 | `settlements/iziz/src/69c-vern-helpers.js` (the vernacular yard helpers Highlands vendors) |
+| `-scrap.js`, `-post-apoc.js` | `pa_*` | 61 + 3 | `kits/post-apoc` |
+
+Types the vocabulary lacks were mapped to the nearest (carts are `tool` or `stall` or `stack`, a dais is
+`seating`, beast nests are `bed` limited to `roost` and `stable`); the harvest reports are summarised in
+`KNOWN_ISSUES.md`.
+
+## Generic goods and biome fruit (2026-10)
+
+These are the culture-neutral things that go on and beside the furniture. Their colours join `FPAL['generic']`
+through the PALETTE block in `-generic-goods.js`, using role + name keys (`bread*`, `cheese*`, `meat*`, `fruit*`,
+`veg*`, `drink*`). `FURN_TYPES` gained `food`, `drink` and `supply`, and `CATALOG_MATERIALS` gained `food`. Every
+piece is tier `common` with `wealth: [0, 1]`, so `kits/interiors` keeps them in band for any room whose chain
+reaches `generic`.
+
+**Sizing.** A surface piece is at most 0.36 m deep and 0.42 m tall. That fits a board of
+`yuni_common_wall_shelves` (0.38 m deep, 0.44 m between boards) or of `generic_pantry_shelf`, any counter
+and any table. Three are for tables only (0.38 to 0.42 m across): `generic_roast`, the `generic_fish` platter
+and the `generic_basket` flat tray. Floor containers stand beside a 0.8 m table or a 1.05 m counter.
+
+| Group | Pieces (anchor) |
+|---|---|
+| storage | barrel, crate, chest, floor_basket, sack, storage_jar, bottle_crate, meal_ark, churn, fuel (floor); pantry_shelf (wall, `empty`/`stocked`); keg, strongbox, basket, crock, canister_set, spice_box, pantry_boxes (surface) |
+| food | bread, bread_basket, cheese, cured_meat, roast, fish, fruit_bowl, veg_basket, produce, eggs, pie, cake, stew_pot, meal, preserves, dairy, snack_bowl, pastries, condiments, mushrooms (surface); hanging_larder (ceiling) |
+| drink | wine, ale, spirits, tea_set, water (surface) |
+| supply | candle_supply, lamp_oil, soap, medicine, herb_bundles, tobacco, writing_supplies, sewing, rations (surface) |
+| biome fruit | 33 `generic_fruit_*` (surface). Each has `biome` and `source` fields naming the kit and the species: `biomes/FRUIT.md`. Putting the fruit into the biome kits themselves is still open (each kit's `KNOWN_ISSUES.md`) |
+
+Shared shapes are `KGEN` (bottle, jar, cloth-capped jar, plate, bowl, mug, goblet, crate, heap, fish, capsule,
+fruit) at the top of `-generic-goods.js`, and `KFRUIT` (leaf, half, ridged pod, wedge, studded head) at the
+top of the fruit file. They take colours, never palette keys, so each piece still names its own colours.
+
 ## Furniture by culture (the interiors-phase sets)
 
 Every culture in the table has at least one counterpart of every type the Yuni set has
@@ -180,7 +257,8 @@ pieces; Yuni's own tiers are its culture tags. Hykkousoi is in progress and has 
 its file says how to add them.
 
 **Tiers and wealth.** Every piece carries `tier` (`poor | common | court`) and `wealth: [lo, hi]`
-(`FURN_TIERS`: poor 0–0.35, common 0.3–0.75, court 0.7–1). The poor tier is the two generic sets:
+(`FURN_TIERS`: poor 0–0.35, common 0.3–0.75, court 0.7–1). The sheet is 1051 pieces: 86 generic goods and biome fruit, 731 kit and bespoke
+pieces of the first pass, 112 hangings of the second, and the 122 harvested ones. The poor tier is the two generic sets:
 a culture's poor buildings pull from them through `kits/interiors`' culture chain
 (`IX.CULTURE_FAMILY`), and the placer tries a culture's in-band pieces before its other tiers.
 The sheet, the hover inspector (T) and the interiors adapter all carry the tier.
@@ -191,12 +269,23 @@ render look (`MAT_FAMILY_LOOK`): `bamboo`, `reed`, `hyperMahogany`, `nacre`, `go
 says which `MAT.*` (Ancients lineage, `core/materials/`) and `FAMMAT` family (Voth and Yuni lineage)
 each canonical name lands on, the bridge `core/README.md` "Planned: a material registry" asks for.
 
-**Socket packs.** `FURN_CULTURE_INFO[culture].pack` names the culture's pack in
-`core/sockets/80-cultures.js`; tapestries, hangings and cloth take the pack's banner colours
-(each palette's comment quotes them), so a building dressed by `fillSockets()` and the furniture
-inside it match. `FK.build.tapestry` draws the pack's device in blocks (`'sun'`, `'diamond'`,
-`'wheel'`, `'claw'`, `'moon'`, the hyperboloid is still to do); the canvas `SYMBOLS` of the pack
-file need the Post-Apoc engine and are not loaded here.
+**Socket packs and emblems.** `FURN_CULTURE_INFO[culture].pack` names the culture's pack in
+`core/sockets/80-cultures.js`, and the hangings carry the pack's own emblem: the packs' canvas
+`SYMBOLS` live in `core/sockets/38-symbols.js`, vendored here as `krator-symbols.js`
+(`build.py --vendor-check`), and `F.decal` paints them onto a plane. `FK.symbolOf(S, culture)`
+picks the symbol (the sheet's `sym`, else the pack's through `SYMBOL_OF`, else the culture's own:
+the symbols file gained `serpent star horns fir raven fish skull gear` for the cultures without a
+pack); the sheet's `emblem: { field, edge, band, disc?, ink, ink2? }` keys are the pack's banner
+colours, so a building dressed by `fillSockets()` and the tapestry inside it match.
+
+**Wall hangings.** Every culture has, in its common tier, a `banner` (crossbar, emblem, swallow-tail
+or fringed), a `scroll` (rollers; glyph columns and a seal, or a painted scene) and a string of
+`pennants`; in its court tier a four-variant `tapestry` (emblem on the pack colours, emblem on the
+second cloth, the woven block device, a banded field with an emblem row), a taller `banner`, a long
+`frieze` (emblems and lozenges on a rail), a knotted `wall_rug` with the emblem as its medallion, a
+`scroll` and a `painted_hanging` (a hide or cloth on a frame of poles: the emblem over a procession
+or a hunt). All are type `banner`, anchor `wall`, and the placer hangs them in halls, shrines,
+bedrooms, taverns and antechambers.
 
 **Adding a culture** is one file, `krator-master-furniture-<culture>.js`:
 

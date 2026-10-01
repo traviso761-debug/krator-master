@@ -14,7 +14,7 @@ BIG = 30 * 1024          # CLAUDE.md: never read a fragment this size whole
 
 ABOUT = {
     'settlements/voth': 'Voth: a Venice/Vivec-like Dunmer city on an enclosed brackish bay, with the most complete life layer and collision system.',
-    'settlements/yuni': 'Yuni: the city, plus its building-kit, furniture and plant sheets.',
+    'settlements/yuni': 'Yuni: the city, plus its building-kit and plant sheets (its furniture is in kits/catalog).',
     'settlements/dalab': 'Dalab: the mound settlement of the southwestern lowlands, and its building set.',
     'settlements/highlands': 'Highlands: Republican, Rustic and Tribal building kits for the temperate highlands of the Inner Wall, and the town of Roketstad.',
     'settlements/iziz': 'Iziz: the city rebuilt on the Iziz Vernacular style and the Ancients kit.',
@@ -23,13 +23,14 @@ ABOUT = {
     'settlements/locus': 'Locus: a fork of the Yuni engine in the eastern abyss, with its own kit sheet and plant catalogue.',
     'settlements/girder': 'Girder: an outlying Beast Rider village in the central-crater hyperjungle.',
     'settlements/mavs-refuge': "Mav's Refuge: a refuge in the hypertropic jungle on the lee shore of the Ring Sea.",
+    'settlements/ys': 'Ys: the half-drowned Hykkousoi capital on the ruins of an Ancient city at the head of the north-west bay of the Ring Sea (phase 0: harness and empty world).',
     'settlements/xanadu': 'Xanadu: the building kit of the southern Sultanate (Tibetan massing, Indian, Turkish and Persian detail) and the city of Erewhon.',
     'settlements/shade': "Shade: the Eastern Nomads' sunken basin in the eastern high desert (falls, pool, carved face, switchback, slot canyon) on the sedesert biome kit: rock-cut and pueblo buildings, cliff dwellings round the rim, alcoves and an undercut behind the falls, the life layer's data and walkable grid.",
     'kits/ringsea': 'Ring Sea watercraft: 21 procedural vessels (warships, cargo ships, barges, canoes, outriggers, rafts) of the cultures round the Ring Sea.',
     'kits/post-apoc': 'The Post-Apoc set: reclaimed and recycled buildings (containers, silos, tanks, buses, bulkheads, tyre and bottle walls) with sockets for any culture\'s marks.',
     'kits/ancients': 'The Ancients kit: ruined megastructures of the ancient civilisation, 33 structure types, one target per site.',
     'kits/interiors': 'Interiors: ROOM() registration and an engine-neutral furniture placer (ported from Yuni) with a catalog adapter; building planner (storeys, partitions, stairs), walkers and a light budget; the building SETS (Highlands, Post-Apoc, Beast Rider, Locus, Abyss: every building\'s rooms as data, the residence rule checked); a verified demo, a sets sheet, and a walkable mockup of furnished rooms inside the real buildings.',
-    'kits/catalog': 'The master catalog: asset engine, the parametric furniture kit and 1013 furniture pieces (kits/furniture SPEC shape, palette-keyed, tiered poor/common/court, plus trade and household pieces: forge, anvil, stall, vat, still, bunk, larder ...) over 24 cultures, one file per culture; a verified contact sheet.',
+    'kits/catalog': 'The master catalog: asset engine, the parametric furniture kit and 1492 furniture pieces (kits/furniture SPEC shape, palette-keyed, tiered poor/common/court, plus trade and household pieces: forge, anvil, stall, vat, still, bunk, larder ..., and the furniture harvested from the Highlands, Post-Apoc, Beast Rider and Abyss kits) over 24 cultures, one file per culture, with generic goods (containers, food, drink, supplies) and biome fruit; a verified contact sheet.',
 }
 # Files that are generated or duplicated elsewhere: never edit or read them whole.
 GENERATED = {

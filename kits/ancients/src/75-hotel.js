@@ -1,5 +1,5 @@
 // ================================================================= HOTEL — "the Terraces"
-function buildHotel(scene,gx,gz,d){reseed(9250+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);
+function buildHotel(scene,gx,gz,d){reseed(9250+d);KOFF=[gx,0,gz];const SM=skyShardMark();const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);
  REGISTER({name:'Hotel — the Terraces ('+STATE(d)+')',x:0,z:0,r:110,h:80});
  const NS=14,SH=4.2,R=90,a0=-.9,a1=.9;const depth=f=>34-f*1.9;   // crescent, each storey shallower (terraces step back uphill)
  // WHAT WAS OVERHANGING WHAT — three separate radii that were never derived
@@ -48,7 +48,16 @@ function buildHotel(scene,gx,gz,d){reseed(9250+d);KOFF=[gx,0,gz];const G=new THR
    // The court elevation was thirteen storeys of blank brick — the convex face
    // has a full curtain wall and the concave one had not one opening.
    for(let k=0;k<24;k++){const a=lerp(a0,a1,(k+.5)/24);if(lost((k+.5)/24))continue;
-    kput(d>0?'winSmD':'winSmI',[Math.sin(a)*(WR-.35),y+2.1,Math.cos(a)*(WR-.35)-R*.7],qFacing([-Math.sin(a),0,-Math.cos(a)]),[1.5,1.5,1],null);}
+    kput(d>0?'winSmD':'winSmI',[Math.sin(a)*(WR-.35),y+2.1,Math.cos(a)*(WR-.35)-R*.7],qFacing([-Math.sin(a),0,-Math.cos(a)]),[1.5,1.5,1],null);
+    // MOULDINGS (round 2): a projecting sill under each court window and a
+    // hood over it, so the brick elevation has a shadow line per opening.
+    // Shared-code round: the shared moulding(), following the wall's curve
+    // (they were straight boxes on a curved wall), a weathered sill with a drip
+    // and a label hood, merged into the concrete mesh (no instances, no calls).
+    const ws=WR-.01,hw=1.3/ws,cw=k=>t=>{const b=a+k*hw*(1-2*t);return[-Math.sin(b),0,-Math.cos(b)];},
+     arcAt=(yy,k)=>t=>{const b=a+k*hw*(1-2*t);return[Math.sin(b)*ws,yy,Math.cos(b)*ws-R*.7];};
+    hConc.push(moulding(MOULD.sill(.75,.24),arcAt(y+.34,.93),{wn:cw(.93),nu:3,up:[0,1,0],caps:true}));
+    hConc.push(moulding(MOULD.hood(.85,.3),arcAt(y+3.6,1),{wn:cw(1),nu:3,up:[0,1,0],caps:true}));}
    // terrace: a parapet on the inner edge of the slab, planters standing on it
    if(f>0){const pr=deckR(f)+.35,pl=pr*(a1-a0)/24*.94;
     for(let k=0;k<24;k++){const a=lerp(a0,a1,(k+.5)/24);if(lost((k+.5)/24))continue;
@@ -158,5 +167,6 @@ function buildHotel(scene,gx,gz,d){reseed(9250+d);KOFF=[gx,0,gz];const G=new THR
   for(let k=0;k<9;k++){const a=lerp(a0,a1,rr(.74,.99)),r=rr(R-30,R+8);
    kput(SLABC(d),[Math.sin(a)*r,rr(1,6),Math.cos(a)*r-R*.7],qEuler(rr(-.6,.6),rng()*TAU,rr(-.6,.6)),[rr(4,9),.7,rr(3,7)],null);}}
  if(d>0){scatterMoss(0,.6,0,20,120,80,2.4);rubbleRing(0,.6,R*.3-R*.7,10,70,40,2.5);trees(0,0,110,160,12);}
+ if(d>0)skyShards(SM,d===3?.25:.5);   // glass teeth in the dead openings (52-sky-abc.js)
  figures(0,60,6,12);KOFF=[0,0,0];return G;}
 

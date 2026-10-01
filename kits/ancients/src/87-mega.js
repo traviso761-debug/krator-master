@@ -17,11 +17,16 @@ function buildMega(scene,gx,gz,d){reseed(9995+d);KOFF=[gx,0,gz];const G=new THRE
  const crownDrop=uw=>.42*H*Math.pow(clamp((.42-uw)/.42,0,1),.8);
  const crownTop=(uw,j)=>{const dr=crownDrop(uw);return H-dr+Math.min(1,dr/10)*18*(fbm(uw*9+j,1.7,1260,2)-.5);};
  const mcut=(u,v,side)=>d>0&&side!==2&&v*H>crownTop(side===3?0:u,side===3?u*3:0);
- for(let side=0;side<4;side++){mesh(gridSurface((u,v)=>P(u,v,side),side<2?230:90,130,{uS:side<2?40:15,vS:36,hole:(u,v)=>cellHole(u,v,side)||mcut(u,v,side)}),skin,G);
-  mesh(gridSurface((u,v)=>{const p=P(u,v,side);const f=frame(v*H);return[f.ox+(p[0]-f.ox)*.94,p[1],p[2]*.94];},side<2?60:24,40,{hole:(u,v)=>mcut(u,v,side)}),MAT.dark,G);
+ // THE EYE is a void, so both long faces and their dark liners are cut where it
+ // passes (round 2: it was a capped kit tube, which read as a grey disc stuck on
+ // the face rather than a hole you see the sky through). eyeCut draws no rng.
+ const EYE_Y=H*.62,EYE_X=lean*EYE_Y,EYE_R=34;
+ const eyeCut=(u,v,side)=>{if(side>1)return false;const p=P(u,v,side);return Math.hypot(p[0]-EYE_X,p[1]-EYE_Y)<EYE_R-.4;};
+ for(let side=0;side<4;side++){mesh(gridSurface((u,v)=>P(u,v,side),side<2?230:90,130,{uS:side<2?40:15,vS:36,hole:(u,v)=>cellHole(u,v,side)||mcut(u,v,side)||eyeCut(u,v,side)}),skin,G);
+  mesh(gridSurface((u,v)=>{const p=P(u,v,side);const f=frame(v*H);return[f.ox+(p[0]-f.ox)*.94,p[1],p[2]*.94];},side<2?60:24,40,{hole:(u,v)=>mcut(u,v,side)||eyeCut(u,v,side)}),MAT.dark,G);
   const n=side<2?46:17;for(let j=0;j<60;j++)for(let i=0;i<n;i++){if(!cellHole((i+.5)/n,(j+.5)/60,side))continue;if(rng()>.5)continue;const p=P((i+.5)/n,(j+.5)/60,side);const q=P((i+.5)/n,(j+.5)/60+.001,side);
    const lit=d>0?rng()<.02:rng()<.35;const nrm=side===0?[Math.sin(frame(p[1]).rot),0,Math.cos(frame(p[1]).rot)]:side===1?[-Math.sin(frame(p[1]).rot),0,-Math.cos(frame(p[1]).rot)]:side===2?[Math.cos(frame(p[1]).rot),0,-Math.sin(frame(p[1]).rot)]:[-Math.cos(frame(p[1]).rot),0,Math.sin(frame(p[1]).rot)];
-   if(mcut((i+.5)/n,(j+.5)/60,side))continue;
+   if(mcut((i+.5)/n,(j+.5)/60,side)||eyeCut((i+.5)/n,(j+.5)/60,side))continue;
    kput('cell',[p[0]-nrm[0]*2,p[1],p[2]-nrm[2]*2],qFacing(nrm),[3.5,2.6,1],lit?new THREE.Color(0x9fd8ff).multiplyScalar(rr(.3,.8)):DEAD);}}
  // top: a shallow sagging roof and a forest of stubby fins
  mesh(gridSurface((u,v)=>{const f=frame(H);const s=u*2-1,t=v*2-1;const c=Math.cos(f.rot),sn=Math.sin(f.rot);const lx=s*f.w/2,lz=t*f.dp/2;return[f.ox+lx*c-lz*sn,H-8*(1-s*s)*(1-t*t),lx*sn+lz*c];},40,14,{uS:30,vS:10,hole:(()=>{const hf=holeFn(d*.6,1230,null,2);return(u,v)=>(hf&&hf(u,v))||(d>0&&crownDrop(u)>1);})()}),skin,G);
@@ -29,7 +34,7 @@ function buildMega(scene,gx,gz,d){reseed(9995+d);KOFF=[gx,0,gz];const G=new THRE
   if(d>0&&rng()<.4)continue;if(d>0&&crownDrop((s+1)/2)>0)continue;kput(d>0?'strutR':'strutW',[x,H-2+h/2,z],qEuler(0,-f.rot,rr(-.1,.1)),[rr(3,7),h,rr(1.5,3)],null);}
  // the eye: a great circular void punched through the mass, ringed
  const ey=H*.62,ex=lean*ey;const ER=34;
- kput('tube',[ex,ey,0],qEuler(Math.PI/2,0,0),[ER,Dp*1.02,ER],null);kput(d>0?'ringR':'ringW',[ex,ey,Dp/2+1],null,[ER+4,ER+4,20],null);kput(d>0?'ringR':'ringW',[ex,ey,-Dp/2-1],null,[ER+4,ER+4,20],null);
+ mesh(lathe({rFn:()=>ER,H:Dp*1.1,nu:64,nv:4}).rotateX(Math.PI/2).translate(ex,ey,-Dp*.55),skin,G);kput(d>0?'ringR':'ringW',[ex,ey,Dp/2+1],null,[ER+4,ER+4,20],null);kput(d>0?'ringR':'ringW',[ex,ey,-Dp/2-1],null,[ER+4,ER+4,20],null);
  // the outrigger: a second, smaller block hung off the east face on three colossal struts, joined by a bridge
  // In the ruin the outrigger has torn off its struts and lies toppled east of
  // the mass (placed with dropFragment once its meshes exist).

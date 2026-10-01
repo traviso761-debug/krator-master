@@ -45,6 +45,8 @@ Read before changing anything here. `build.py` prints the open count.
       for the wall alone. A world that already draws its horizon as geometry does not need it.
 - [ ] The iridescent bark is a view-angle hue shift on the sky scale-tree's bucket only;
       it does not reach the impostor ring (flat colour beyond ~1.1 km).
+- [ ] **Put the biome fruit in the kit** (`biomes/FRUIT.md`): scalefruit, fern-egg, tideheart, salt-cone kernels. Each has a catalog piece in
+      `kits/catalog/krator-master-furniture-generic-fruit.js` (`biome: 'eastabyss'`). Scalefruit pods already hang on skyscale, forktree and bellbark, and the fern-eggs, the waterpalm fruit head and the cycad cone are drawn too. What is missing is harvest tags (nhighlands' `HV()`) linking each species to its catalog piece.
 
 ## Done
 
