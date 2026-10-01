@@ -192,3 +192,10 @@
       compound furnishes only the hut behind its door; furnishing its other huts would place them.
 - [ ] Over a long headless fast-forward (`_life.sim(1200)`) pedestrian route failures climb into the
       hundreds (939 in 20 simulated minutes); `life-layer-alive` only checks them at load. Not looked into.
+- [x] Night at 21:00 is too bright under the gas giant (21-sky / 82-daynight)
+      2026-10-01: the Mav's Refuge / Girder fix, ported. Night floors hemi 0.30 -> 0.07, ambient 0.22 -> 0.035,
+      planetshine fill 0.15/0.08 -> 0.07/0.03; a separate eclipse fill (DN_ECL_HEMI/AMB 0.16/0.10) so an
+      eclipse still reads as twilight; the night fill lerps to a cool blue-grey sky (0x5f7193) over dark sand
+      (0x2e2519) instead of a dimmed day colour; the giant's key 0.44 -> 0.18 x phase (SKY_SHINE_KEY); a full
+      giant cuts the lamps by 8 % instead of 28 % (DN_SHINE_NL_CUT 0.28 -> 0.08). 21:00 under a full giant:
+      hemi ~0.44 -> 0.136, ambient ~0.31 -> 0.073, key ~0.58 -> 0.238, nightK 0.72 -> 0.92. Noon unchanged.

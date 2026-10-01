@@ -59,6 +59,7 @@ var SKY_TINT_NIGHT = new THREE.Color(0x475374);
 var WATER_SKY_DAY = new THREE.Color(0xc6c8c2);      /* waterUni's own original default */
 var WATER_SKY_NIGHT = new THREE.Color(0x232c42);
 var _dnFog = new THREE.Color(), _dnSky = new THREE.Color(), _dnWaterSky = new THREE.Color();
+var WATER_BODY_NIGHT = 0.30, WATER_SPEC_DAY = new THREE.Color(1.0, 0.95, 0.84), _dnWaterSpec = new THREE.Color();
 
 function smoothstep(lo,hi,x){ var t=Math.max(0,Math.min(1,(x-lo)/(hi-lo))); return t*t*(3-2*t); }
 
@@ -66,12 +67,20 @@ function smoothstep(lo,hi,x){ var t=Math.max(0,Math.min(1,(x-lo)/(hi-lo))); retu
    the night floors below are the ones the owner already asked for ("it's
    too dark in there"), lifted a little further under a full giant and used
    as the twilight floor during an eclipse too. */
-var DN_SHINE_HEMI = 0.13, DN_SHINE_AMB = 0.07;
+/* (2026-10-01) 0.13 / 0.07 -> 0.05 / 0.02: on top of the floors and the 1.6 atm
+   multiplier that made a full-giant night read as dusk. The floors themselves
+   (HEMI_NIGHT_I / AMB_NIGHT_I) are the owner's and stay; the lamp gains in
+   45-kit.js are tuned against them. An eclipse never had this term (lit ~0
+   while eclipsed), so eclipse twilight is unchanged. */
+var DN_SHINE_HEMI = 0.05, DN_SHINE_AMB = 0.02;
 /* how much the full giant suppresses the city's own night lighting. Under a
    few hundred lux of planetshine the lamps and lit windows are still on but
    are no longer the only light in the scene, so they read a notch softer —
    the "windows lit against a bright twilight" failure this guards against. */
-var DN_SHINE_NL_CUT = 0.28;
+var DN_SHINE_NL_CUT = 0.08;   /* (2026-10-01) 0.28 -> 0.08: the lamps stay the main light */
+/* the night fill's colour: a cool sea-mist blue-grey above, dark brackish mud below,
+   instead of a dimmed copy of the day's ashen sky */
+var DN_HEMI_SKY_NIGHT = new THREE.Color(0x56698a), DN_HEMI_GND_NIGHT = new THREE.Color(0x27241f);
 var DN_SKY_SAMPLE = 0.45, DN_SOIL_SAMPLE = 0.40;
 
 function updateDayNight(){
@@ -109,6 +118,8 @@ function updateDayNight(){
      whole city was lit against them. */
   hemiLight.color.setHex(PAL.hemiSky).lerp(S.hemiSky, DN_SKY_SAMPLE);
   hemiLight.groundColor.setHex(PAL.hemiGround).lerp(S.hemiGround, DN_SOIL_SAMPLE);
+  hemiLight.color.lerp(DN_HEMI_SKY_NIGHT, 1 - daylight);
+  hemiLight.groundColor.lerp(DN_HEMI_GND_NIGHT, 1 - daylight);
 
   _dnFog.copy(HAZE_NIGHT).lerp(HAZE_DAY, daylight);
   scene.fog.color.copy(_dnFog);
@@ -126,6 +137,14 @@ function updateDayNight(){
   waterUni.uFogDen.value = scene.fog.density;
   _dnWaterSky.copy(WATER_SKY_NIGHT).lerp(WATER_SKY_DAY, daylight);
   waterUni.uSky.value.copy(_dnWaterSky);
+  /* (2026-10-01) the water body and its glitter were lit at full day strength
+     around the clock, so at night the bay was the brightest thing in the frame.
+     Night: the body keeps WATER_BODY_NIGHT of its colour, the glitter follows the
+     key (the giant's cool path across the bay, a fifth of the sun's). Day: 1 and
+     the original warm white, unchanged. */
+  waterUni.uBodyK.value = WATER_BODY_NIGHT + (1 - WATER_BODY_NIGHT)*daylight;
+  _dnWaterSpec.copy(sun.color).multiplyScalar(Math.min(1, S.keyI));
+  waterUni.uSpecCol.value.copy(_dnWaterSpec).lerp(WATER_SPEC_DAY, daylight);
 
   /* sunSprite/sunDisc visibility is 21-sky.js's business now (it has the
      eclipse test); only the two small moons are still driven from here. */
