@@ -4,7 +4,7 @@
 //
 // Two kinds of surface:
 //
-//   the kit       the rooms, galleries, stairs and bridges that hang in the void, seen close. Real geometry
+//   the kit       the rooms, galleries, stairs and bridges that hang in the hall, seen close. Real geometry
 //                 with real textures, each texture one repeat of what it is: a metre of dark wood, two tatami
 //                 mats (one ken, 1.82 m, square), one shoji panel, four fusuma panels with a painting across
 //                 them, a metre of roof tiles. The kit's geometry carries its UVs in those units (kit.js).

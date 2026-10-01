@@ -10,7 +10,7 @@
 //                         other, a lean-to roof
 //   stair                 one flight: sixteen open risers, 3.04 m up and 4.16 along, a rail on one side
 //   landing               a square of floor between flights
-//   bridge                two ken of plank bridge with rails; laid end to end across the void
+//   bridge                two ken of plank bridge with rails; laid end to end across the hall
 //   post                  a square post eight ken long, hung under a cluster or run up past it
 //   stairW, landingW      the wide flight and its landing: boxed stringers, spindle rails, a lantern at the top
 //   platform              seven metres of floor square, thick-edged, for stairs to go off every side of

@@ -18,6 +18,8 @@ export function warmode(api){
     for(const o of ctx.warParts||[])o.visible=on;
     for(const o of ctx.peaceParts||[])o.visible=!on;
     if(ctx.details)ctx.details.mode=on?'war':'peace';
+    // anything that changed the war while it ran - a gate broken, ships moored - puts itself back here
+    for(const f of ctx.onWar||[])try{f(on);}catch(e){api.report&&api.report('war',e);}
   };
   const off=/(^|&)war=off/.test(HASH0||'');
   set(!off);

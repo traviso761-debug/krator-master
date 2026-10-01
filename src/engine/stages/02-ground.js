@@ -104,12 +104,21 @@ section('ground',()=>{
     const H_AT=Math.max(120,TER_RELIEF*0.35),SLOPE_K=1.2*Math.max(1,WORLD*0.3);
     const HOLE=C.groundHole?[C.groundHole.at[0],C.groundHole.at[1],C.groundHole.r]:null;   // [x, z, radius]: ground that is not there
     const TC=C.terrainColours||{},terM=new THREE.MeshLambertMaterial({vertexColors:true}),CH=48,   // a city may set its own earth colours
-      low=col(TC.low||'#5c5a53'),high=col(TC.high||'#4a5a42'),steepC=col(TC.steep||'#6a6052'),cc=new THREE.Color();
+      low=col(TC.low||'#5c5a53'),high=col(TC.high||'#4a5a42'),steepC=col(TC.steep||'#6a6052'),cc=new THREE.Color(),
+      SNOW=typeof C.snow==='number'?C.snow:0,snowC=col(TC.snow||'#eef1f4'),
+      // tints: a colour worked into the rock of one place, strongest on the steep faces - Caradhras is the Redhorn
+      TINTS=(C.terrainTints||[]).map(t=>{const [x,z]=P(t.at);return {x,z,r:t.r,c:col(t.colour),k:t.strength===undefined?0.7:t.strength};});
+    const LODD=Array.isArray(C.terrainLOD)?C.terrainLOD:null,LODS=[];
     for(let cj=0;cj<TER.nz-1;cj+=CH)for(let ci=0;ci<TER.nx-1;ci+=CH){const w=Math.min(CH,TER.nx-1-ci),d=Math.min(CH,TER.nz-1-cj),pos=[],colr=[],idx=[];
       for(let j=0;j<=d;j++)for(let i=0;i<=w;i++){const gi=ci+i,gj=cj+j,x=TER.x0+gi*TER.step,z=TER.z0+gj*TER.step,y=TER.h[gj*TER.nx+gi];
         const gx=(TER.h[gj*TER.nx+Math.min(TER.nx-1,gi+1)]-TER.h[gj*TER.nx+Math.max(0,gi-1)])/(2*TER.step),
               gz=(TER.h[Math.min(TER.nz-1,gj+1)*TER.nx+gi]-TER.h[Math.max(0,gj-1)*TER.nx+gi])/(2*TER.step),slope=Math.hypot(gx,gz);
-        pos.push(x,y,z);cc.copy(low).lerp(high,Math.min(1,y/H_AT)).lerp(steepC,Math.min(1,slope*SLOPE_K));colr.push(cc.r,cc.g,cc.b);}
+        pos.push(x,y,z);cc.copy(low).lerp(high,Math.min(1,y/H_AT)).lerp(steepC,Math.min(1,slope*SLOPE_K));
+        // a city with mountains in it can have snow on them (C.snow, the snow-line): white above it, ragged at the
+        // edge, and off the steepest faces, where the rock shows through
+        for(const t of TINTS){const d=Math.hypot(x-t.x,z-t.z);if(d<t.r)cc.lerp(t.c,t.k*(1-d/t.r)*(0.35+0.65*Math.min(1,slope*SLOPE_K)));}
+        if(SNOW){const k=Math.max(0,Math.min(1,(y-SNOW+140*Math.sin(x*0.004)*Math.cos(z*0.0035))/260));if(k>0)cc.lerp(snowC,k*(1-Math.min(1,slope*(C.snowShed||1.1))*0.7));}
+        colr.push(cc.r,cc.g,cc.b);}
       // A heightfield cannot have a hole in it, so a city that needs one says where: quads whose middle falls
       // inside it are simply not drawn. The Flesh Pit's orifice is the only one - without it the funnel floor
       // is a lid over the shaft, and from the rim you look down at a flat disc rather than into the pit.
@@ -117,7 +126,29 @@ section('ground',()=>{
         if(HOLE){const hx=TER.x0+(ci+i+0.5)*TER.step,hz=TER.z0+(cj+j+0.5)*TER.step;if(Math.hypot(hx-HOLE[0],hz-HOLE[1])<HOLE[2])continue;}
         idx.push(a,a+w+1,a+1,a+1,a+w+1,a+w+2);}
       const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(colr,3));g.setIndex(idx);g.computeVertexNormals();g.computeBoundingSphere();
-      const m=new THREE.Mesh(g,terM);m.name='terrain';m.userData.wireCat='ground';m.receiveShadow=true;m.castShadow=TER_RELIEF>40;scene.add(m);}
+      const m=new THREE.Mesh(g,terM);m.name='terrain';m.userData.wireCat='ground';m.receiveShadow=true;m.castShadow=TER_RELIEF>40;scene.add(m);
+      // A country-sized map can ask for its ground in levels of detail (C.terrainLOD: [d1, d2] metres): each
+      // chunk again at every second and every fourth point, and the camera's distance to the chunk picks which
+      // is drawn. The coarse levels carry a skirt hung from their edges, so that where a fine chunk meets a
+      // coarse one the crack between them is closed from below. (The full level has none: given one, the
+      // full-detail chunks round the camera stopped drawing at all.) Yellowstone's ground was a million triangles drawn
+      // from everywhere; this makes it a fraction of that without touching any map that does not ask.
+      if(LODD){const levels=[m];
+        const skirt=(P,Cc,I,W,D,depth)=>{const edge=[];for(let i=0;i<=W;i++)edge.push(i);for(let j=1;j<=D;j++)edge.push(j*(W+1)+W);for(let i=W-1;i>=0;i--)edge.push(D*(W+1)+i);for(let j=D-1;j>=0;j--)edge.push(j*(W+1));
+          const base=P.length/3;for(const v of edge){P.push(P[v*3],P[v*3+1]-depth,P[v*3+2]);Cc.push(Cc[v*3],Cc[v*3+1],Cc[v*3+2]);}
+          for(let k=0;k+1<edge.length;k++){const a=edge[k],b=edge[k+1],c=base+k,d=base+k+1;I.push(a,c,b,b,c,d);}return {edge,base};};
+        for(const st of [2,4]){if(w%st||d%st)break;const W=w/st,D=d/st,P=[],Cc=[],I=[];
+          for(let j=0;j<=D;j++)for(let i=0;i<=W;i++){const v=(j*st)*(w+1)+i*st;P.push(pos[v*3],pos[v*3+1],pos[v*3+2]);Cc.push(colr[v*3],colr[v*3+1],colr[v*3+2]);}
+          for(let j=0;j<D;j++)for(let i=0;i<W;i++){const a=j*(W+1)+i;I.push(a,a+W+1,a+1,a+1,a+W+1,a+W+2);}
+          // the surface's own normals first, and then the skirt, lit as the edge it hangs from: computed with the
+          // skirt in place, the edge's normals tipped over and every chunk had a dark band round it
+          const gs=new THREE.BufferGeometry();gs.setAttribute('position',new THREE.Float32BufferAttribute(P,3));gs.setIndex(I.slice());gs.computeVertexNormals();const NS=Array.from(gs.attributes.normal.array);gs.dispose();
+          const sk=skirt(P,Cc,I,W,D,TER.step*st*1.5);for(const v of sk.edge)NS.push(NS[v*3],NS[v*3+1],NS[v*3+2]);
+          const gl=new THREE.BufferGeometry();gl.setAttribute('position',new THREE.Float32BufferAttribute(P,3));gl.setAttribute('color',new THREE.Float32BufferAttribute(Cc,3));gl.setAttribute('normal',new THREE.Float32BufferAttribute(NS,3));gl.setIndex(I);gl.computeBoundingSphere();
+          const ml=new THREE.Mesh(gl,terM);ml.name='terrain';ml.userData.wireCat='ground';ml.userData.lod=st;ml.receiveShadow=true;ml.visible=false;scene.add(ml);levels.push(ml);}
+        LODS.push({x:TER.x0+(ci+w/2)*TER.step,z:TER.z0+(cj+d/2)*TER.step,levels});}}
+    if(LODS.length){let t=0;animHooks.push(now=>{if(now-t<250)return;t=now;const p=camera.position;
+      for(const c of LODS){const dist=Math.hypot(c.x-p.x,c.z-p.z),k=dist<LODD[0]?0:dist<LODD[1]?1:2,L=Math.min(k,c.levels.length-1);c.levels.forEach((m,i)=>{m.visible=i===L;});}});}
     // land beyond the map, so distant hills and mountains have something to stand on
     // The ring used to start at the map's circumscribed radius, which leaves a gap over the middle of each map
     // edge where the background showed through as a pale slab on the horizon. It now starts inside the box and
@@ -143,6 +174,8 @@ section('ground',()=>{
 // reads as a pale slab against the horizon. Open water gets a duller sheen than a river does.
 const WSHINE=C.seaLevelWater?26:90;
 const waterM=new THREE.MeshPhongMaterial({color:0x2a5f8c,specular:C.seaLevelWater?0x40627a:0x9fc4e0,shininess:WSHINE,polygonOffset:true,polygonOffsetFactor:-3,polygonOffsetUnits:-6});
+// still, dark water - a mountain tarn, not a river under a blue sky - is lakeColour, and a duller sheen
+if(C.lakeColour){waterM.color.set(C.lakeColour);waterM.specular.set(C.lakeSheen||0x4a5a68);}
 section('water',()=>{
   // a city with no ground of its own floats on one sheet of open water the size of the map
   if(C.landFromCity){const sea=new THREE.Mesh(new THREE.PlaneGeometry(B.w+6000,B.d+6000),waterM);
@@ -209,7 +242,9 @@ section('streets',()=>{
       continue;}
     const pts=TER?resample(r.pts,14*WORLD):r.pts;   // follow the ground, at a step that suits the size of the map
     if(r.c==='trail'){trail.ribbon(pts,r.w,gY(0.09),TRAIL_PALE.test(r.name)?namedTrail:c);continue;}
-    if(WALKED.has(r.c))walk.ribbon(pts,r.w+5,gY(0.06),walkC);
+    // a city whose roads have no pavements (sidewalks: false) - a paved plain, a mountain track - leaves the pale
+    // strip out; drawn under Isengard's roads it put a white edge along every one
+    if(WALKED.has(r.c)&&C.sidewalks!==false)walk.ribbon(pts,r.w+5,gY(0.06),walkC);
     (r.c==='alley'?walk:road).ribbon(pts,r.w,gY(0.08),c);}
   const rail=tiledBuffer(groundMat(4));for(const r of RAILS)if(!r.elevated&&r.type==='rail')rail.ribbon(TER?resample(r.pts,14):r.pts,5,gY(0.07),col('#5a534a'));
   walk.build('sidewalks');road.build('streets');trail.build('trails');deck.build('bridges');rail.build('rail');

@@ -19,7 +19,7 @@
 import { mkRng } from '../core/rng.js';
 import { createHappenings } from '../core/happenings.js';
 import { makeThopter, makeCarryall, makeMaw } from './machines.js';
-import { createDust } from './dust.js';
+import { createDust } from '../core/dust.js';
 
 export function events(api){
   const {THREE,ctx,scene,groundH,sun,ambient,hemi,renderer}=api;

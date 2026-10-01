@@ -18,5 +18,6 @@ starshipPage({
     'The jump gate off the bow is the only reason anything stops in this system at all.',
     'The planet below is Epsilon III. Nobody lives on it, as far as anybody knows.',
     'The last of the Babylon stations. The first three were sabotaged; the fourth vanished.',
+    'Press Raiders for condition red: the gate opens, and the defence grid and the Starfuries answer.',
   ],
 });

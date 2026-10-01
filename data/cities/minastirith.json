@@ -104,8 +104,8 @@
     5.00118
    ],
    "model": "whitetower",
-   "height": 130,
-   "info": "Fifty fathoms of white stone on the Citadel, and the Citadel is seven hundred feet over the Pelennor, so the standard at its top stands a thousand feet above the fields. The banner is black, and there is no king to put a white tree on it.",
+   "height": 91,
+   "info": "Fifty fathoms of white stone on the Citadel, and the Citadel is seven hundred feet over the Pelennor, so the standard at its top stands a thousand feet above the fields: \"a spike of pearl and silver\", with a gallery near the top and a spire to a silver point. The banner is black, and there is no king to put a white tree on it.",
    "clear": [
     60,
     0
@@ -123,19 +123,16 @@
    ],
    "model": "keel",
    "turn": 0.0,
-   "top": 286,
-   "width": 80,
-   "east": 450,
-   "west": -1100,
+   "top": 286.3,
    "base": 76,
    "lift": 30,
    "tunnels": [
     [
-     430,
+     431,
      2
     ],
     [
-     365,
+     366,
      3
     ],
     [
@@ -143,24 +140,42 @@
      4
     ],
     [
-     243,
+     236,
      5
     ],
     [
-     177,
+     163,
      6
     ]
    ],
-   "info": "A shoulder of Mindolluin that comes out through the middle of the city and stands over the Citadel itself, so the seven circles are horseshoes rather than rings. Its east end stops dead in mid-air above the first circle, and the road up goes through it twice."
+   "info": "\"Its edge sharp as a ship-keel facing east\": a shoulder of Mindolluin that comes out through the middle of the city level with the Citadel, so the circles above the first are horseshoes. It narrows to a point that leans out over the court behind the Great Gate, and its top is crowned with a battlement, so from the Citadel you look straight down on the Gate seven hundred feet below. The Way goes through it by tunnels.",
+   "width": 120,
+   "east": 450,
+   "root": 160,
+   "west": 140,
+   "lean": 60
   },
   {
    "name": "The Court of the Fountain",
    "at": [
     43.0,
-    4.99975
+    4.99972
    ],
    "model": "whitetree",
-   "info": "The high court behind the Tower: a sward, a fountain, and the White Tree that died and was left standing because no one would cut it down."
+   "info": "The Place of the Fountain, before the door of the Hall: a paved court, a green sward, and a pool with a jet - and drooping over the pool the White Tree, dead, and left standing because no one would cut it down."
+  },
+  {
+   "name": "The Hall of the Kings",
+   "aka": [
+    "The Tower Hall"
+   ],
+   "at": [
+    43.0,
+    5.00069
+   ],
+   "model": "kingshall",
+   "length": 56,
+   "info": "The great hall at the Tower's foot, its door on the Court of the Fountain. Inside, pillars of black marble and the kings of old in stone between them, and at the far end the empty throne under its canopy, with the Steward's black chair on the lowest step below it."
   },
   {
    "name": "The Great Gate",
@@ -428,6 +443,9 @@
    "ringStep": 60,
    "towers": 14,
    "firePart": 0.4,
+   "overWall": 0.5,
+   "defendOn": "towers",
+   "cityR": 500,
    "grond": {
     "at": [
      660,
@@ -453,16 +471,15 @@
  "streetFurniture": false,
  "life": {
   "seed": 3019,
-  "outer": 520,
   "step": 60,
   "tiers": 7,
   "base": 76,
   "lift": 30,
-  "chimneys": 420,
+  "chimneys": 1000,
   "stalls": 150,
   "_": "banners on every circle, cooking smoke, market stalls and fire on the walls after dark",
-  "burning": 34,
-  "damaged": 90
+  "burning": 60,
+  "damaged": 160
  },
  "beacons": false,
  "areaColours": {

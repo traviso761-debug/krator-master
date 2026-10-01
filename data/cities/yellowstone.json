@@ -876,9 +876,18 @@
   "datum": 1550,
   "forestNear": 3200,
   "forestTile": 800,
-  "forestPerTile": 3400,
+  "forestPerTile": 2600,
   "steamPerBasin": 90,
   "magmaTop": 5000,
-  "magmaBottom": 17000
- }
+  "magmaBottom": 17000,
+  "forestFull": 900,
+  "clouds": 110,
+  "cloudBase": 2450
+ },
+ "lakeColour": "#1f4a6a",
+ "lakeSheen": "#9ab8d0",
+ "terrainLOD": [
+  9000,
+  22000
+ ]
 }

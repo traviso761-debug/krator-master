@@ -49,11 +49,13 @@ Page-only keys: the Backrooms' N (noclip), M (sound), R (start again); the City'
 | `/dredd2012` | `/dredd2012.html`, `/peachtrees` | `dredd2012.html` | Mega-City One as the 2012 film has it (fan work) |
 | `/mordor` | `/mordor.html`, `/sauron` | `mordor.html` | Mordor: the whole land (fan work) |
 | `/minastirith` | `/minastirith.html`, `/mt`, `/gondor` | `minastirith.html` | Minas Tirith: the seven circles (fan work) |
+| `/isengard` | `/isengard.html`, `/orthanc`, `/saruman` | `isengard.html` | Isengard: the Ring and Orthanc (fan work) |
+| `/moria` | `/moria.html`, `/khazad-dum`, `/dwarrowdelf` | `moria.html` | Moria: Khazad-dûm under the mountains (fan work) |
+| `/infinitycastle` | `/infinitycastle.html`, `/mugenjo`, `/infinity-castle`, `/nakime` | `infinitycastle.html` | The Infinity Castle (fan work) |
 | `/fleshpit` | `/fleshpit.html`, `/mfpnp`, `/pit` | `fleshpit.html` | Mystery Flesh Pit National Park (fan work) |
 | `/yellowstone` | `/yellowstone.html`, `/ynp`, `/caldera` | `yellowstone.html` | Yellowstone National Park: the real ground and the caldera |
 | `/backrooms` | `/backrooms.html`, `/level0`, `/noclip` | `backrooms.html` | The Backrooms (fan work) |
 | `/city` | `/blame.html`, `/blame`, `/megastructure`, `/killy` | `blame.html` | The City, after *Blame!* (fan work) |
-| `/infinitycastle` | `/infinitycastle.html`, `/mugenjo`, `/infinity-castle`, `/nakime` | `infinitycastle.html` | The Infinity Castle (fan work) |
 | `/rivendell` | `/rivendell.html`, `/imladris` | `rivendell.html` | Rivendell: the cleft of the Bruinen (fan work) |
 | `/shire` | `/shire.html`, `/hobbiton`, `/bagend` | `shire.html` | The Shire: Hobbiton and Bywater (fan work) |
 | `/arrakeen` | `/arrakeen.html`, `/arrakis`, `/dune` | `arrakeen.html` | Arrakeen: the city in the basin (fan work) |
@@ -62,6 +64,7 @@ Page-only keys: the Backrooms' N (noclip), M (sound), R (start again); the City'
 | `/voyager` | `/voyager.html`, `/ncc74656`, `/intrepid` | `voyager.html` | Voyager: Intrepid class (fan work) |
 | `/ds9` | `/ds9.html`, `/deepspace9`, `/terok-nor` | `ds9.html` | Deep Space 9 (fan work) |
 | `/babylon5` | `/babylon5.html`, `/b5`, `/babylon` | `babylon5.html` | Babylon 5 (fan work) |
+| `/homeworld` | `/homeworld.html`, `/kharak`, `/hw` | `homeworld.html` | Homeworld: the Kharak system, missions 1 and 3 (fan work) |
 | `/kyrene` | `/hab.html`, `/habitat`, `/cylinder` | `hab.html` | Kyrene: a rotating habitat |
 | `/krator` | `/krator.html` | `krator.html` | Krator: A Primer |
 | `/voth` | `/voth.html`, `/cantons` | `voth.html` | Voth: City of Cantons (built from `src/voth/`) |
@@ -526,15 +529,23 @@ The description is unusually exact, and what it describes is a piece of engineer
 it literally. Seven walls, each on its own tier, each tier a hundred feet above the one below, so the
 Citadel stands seven hundred feet over the Pelennor and the White Tower three hundred feet over that.
 
-- **The keel** (`keel`, in `src/minastirith/landmarks.js`). A shoulder of Mindolluin comes out through the
-  city level with the Citadel, so the seven circles are horseshoes rather than rings, and its east end stops
-  dead in mid-air over the lower circles with the point overhanging. A fifty-metre grid cannot hold a cliff,
-  so the faces are built here — and the thing every picture of the place agrees on is that it is a **blade**:
-  one unbroken sheer face to each side, smooth, fluted vertically, coming to a point. The first two versions
-  were slabs and then crags, and both read as rubble tipped through the middle of the city. It is now a
-  continuous mesh built to exactly the half-width function the terrain uses (`keel_half` in the generator),
-  with thin flutes laid on the faces for scale, scree at the foot, the prow leaning out past its own foot
-  with the parapet on top, and the tunnel mouths where the Way crosses.
+- **The keel** (`keel`, in `src/minastirith/landmarks.js`). "A vast pier of rock whose huge out-thrust bulk
+  divided in two all the circles of the City save the first... its edge sharp as a ship-keel facing east",
+  crowned by a battlement, so that from the Citadel you look sheer down on the Gate seven hundred feet below.
+  So in plan it is a ship's bow: 120 m across where it comes out of the Citadel, drawing in along a curve to
+  a point, and the stem leans out 60 m over its own foot so the point hangs over the court behind the Great
+  Gate. Its top is the Citadel's pavement carried out to that point, with a battlement along both edges that
+  meets there. Earlier versions got the one thing that matters wrong — the east end was a thirty-metre wall
+  with a platform on it, and from the Pelennor it read as a causeway; the faces were boxes stood against a
+  slab, which read as grey skyscrapers; and it ran a kilometre west as a free-standing wall, cutting the
+  western circles in two. Now the faces are one mesh, fluted by noise stretched up the face and stained by
+  vertex colour, built to exactly `keel_half` in the generator; it rises out of the Citadel; and it is no
+  longer in the heightfield, whose fifty-metre ridge stuck out through the faces as a sawtooth of grass.
+- **The mountain behind it.** The city stands at the foot of Mindolluin on a spur: the mountain's skirt stops
+  at a front behind the city (it used to carry on past it, so levelling the city left it in a crater with a
+  steep rim all round), a steep bank climbs from behind the outer wall into the mountain, and each tier's step
+  up is made just inside its wall, where the wall hides it, rather than under it, where on a fifty-metre grid
+  it spilled out in front as a pale skirt.
 - **The circles are horseshoes**, which is the whole point of the rock: a wall or a ring street that carried
   straight on across it hangs in mid-air off a cliff. Each ring is cut where it meets the rock (`ring_runs`
   in the generator), and the Way is cut where it crosses with a tunnel mouth at each end of the gap — draped
@@ -546,15 +557,24 @@ Citadel stands seven hundred feet over the Pelennor and the White Tower three hu
   was inside it, and the whole place read as a multi-storey car park.
 - **The city is a kilometre across** and 250 m tall, packed with terraces of white stone under slate: about
   1,700 buildings inside the walls, thinning as they climb, and nothing lived in on the seventh circle.
-- **A city with people in it** (`src/minastirith/life.js`): 190 banners hung from the parapet of every
+- **A city with people in it** (`src/minastirith/life.js`; a chimney, a fire or a broken roof goes only where
+  a point is inside a house's own outline — `roofAt` answers open ground with the tallest roof within twenty
+  metres, which hung chimneys in the air beside every hall and wall): 190 banners hung from the parapet of every
   circle, waving with a wave that runs down each one, black for the Steward and silver on the seventh; the
   cooking smoke of 420 chimneys, all leaning the same way because it is the same wind, which is the one
   thing that makes a stone city look inhabited from a mile away; 150 market stalls on the wider stretches of
   the lower circles, because the Pelennor has been emptied into the city; and fire in 63 braziers on the
   walls, which comes up as the light goes.
-- **The White Tower, the Court of the Fountain and the Great Gate** are modelled (`src/minastirith/landmarks.js`):
-  a slender fluted octagon with slit windows, pinnacles and the Steward's black banner; the court with its
-  fountain, the dead White Tree and the guard; and the gate with its towers and the steel doors thrown back.
+- **The Citadel** (`src/minastirith/landmarks.js`). The **White Tower** at the book's fifty fathoms, "a spike
+  of pearl and silver": a stepped plinth, a shaft in courses with pilasters up its angles and lancets in its
+  faces, a corbelled gallery with a battlement near the top, a belfry stage with pinnacles at its angles, and a
+  spire to a silver point, with the Steward's black banner over it. The **Hall of the Kings** against the
+  Tower's foot — a nave under a lead roof with a clerestory, aisles lit between buttresses, and a portico of six
+  columns under a pediment — where the generator used to put a box a hundred and twenty metres long across the
+  seventh wall. The **Court of the Fountain** before its door: a paved square, the sward, the pool and its jet,
+  benches, the guard in black and silver, and the White Tree dead and drooping over the water. The seventh
+  circle is one level court to its own wall (the tier steps are made inside each wall, except this one), and the
+  Closed Door to the Hallows is in its rear wall. And **the Great Gate**, black, with its towers.
 - **A city built before glass.** `windows: false` in the city file turns off the engine's window texture,
   which is a grid of lit offices and turns white stone grey. `streetFurniture: false` does the same for
   painted road markings and lamp standards. Mordor sets both as well.
@@ -578,8 +598,203 @@ Citadel stands seven hundred feet over the Pelennor and the White Tower three hu
   something warlike pushes it onto `ctx.warParts` as it builds, and peace hides that list, stops its
   animation hooks, and brings the White Tree into flower. `#war=off` opens on the other one. The city's own
   life — its banners, its cooking smoke, its market stalls — belongs to both and never moves.
+- **What the siege has done** (`src/minastirith/decals.js`): the Pelennor cratered and scorched in front of
+  the host, trodden to mud under every block and up the lane Grond was dragged along, and stuck with spent
+  arrows under the wall; the white walls blackened where fire was thrown at them and the black one scarred
+  pale by stones, worst round the Gate. Half the lit stones now clear the wall and come down in the streets
+  and on the roofs (`overWall` in the siege config; Mordor's does not set it), and where one lands on open
+  ground it leaves a scorch. Soft-edged canvas textures on instanced quads: 565 marks, a handful of draw
+  calls, all of it hidden in peace.
+- **The Mountains of Shadow, and the Darkness** (`src/minastirith/shadow.js`). The Ephel Duath closes the
+  east: a jagged range across the whole horizon beyond the Anduin, with the notch of the Morgul Vale, drawn at
+  the angle the real range would stand at from forty-five kilometres - grey-blue in the haze in peace, black
+  in the war. In the war the sky is a roof of brown cloud blown out of Mordor, drifting west over the city and
+  the mountain to a ragged edge low in the western sky, lit red from underneath in the east where the mountain
+  is burning and glowing behind the skyline; the light under it goes brown and short. Neither fits in the map
+  (the camera sees twenty-four kilometres), so both are backdrops that travel with the camera, drawn after the
+  sky and before everything else, so the land and the city are always in front of them.
+- **The garrison** (`src/minastirith/garrison.js`). In the war every circle's wall is manned by the Guard in
+  black with silver helms: shoulder to shoulder along the first wall on the side the host is on, spearmen and
+  companies of archers under white standards; a watch on each wall above, along the battlement of the rock and
+  on the towers of the Gate; and patrols walking the walls between the posts — about 2,400 men, instanced,
+  each standing on the top of the wall he belongs to.
+- **The Great Gate is shut in the siege** and thrown open in peace; each leaf is its own object, so it can be
+  broken in, and `ctx.onWar` puts it back up.
+- **Events** (`src/minastirith/events.js`, on the shared `src/core/happenings.js`), every minute or two on
+  their own or from the **Events** button, and only in war — peace stops them, puts back what they moved and
+  hides the button. **The Steward**: Denethor on fire, out of the Citadel and along the crest of the rock at a
+  run (`ctx.keel`, from the landmark, so he is on it), over the parapet at the point and down the whole height
+  of the city in a streak of fire and smoke. **The horns of Rohan**: the six thousand riders on the north of the
+  field charge the host (`ctx.siege`, from hosts.js), the blocks in the way are pushed off the line, and they
+  wheel and re-form. **A Nazgul on the walls**, stooping out of the east and along the first circle, and the
+  light going out of the day as it passes. **The White Rider** coming out of the Gate to meet Faramir's company
+  with the Nazgul on it, and the light that drives them off. **Mumakil** out of the south with towers on their
+  backs. **Black sails** on the Anduin — until the first ship breaks out a banner with a White Tree, seven stars
+  and a crown; the ships stay moored until peace. **The Gate broken**: Grond's three strokes, the doors bursting
+  in at the third, the Captain of the Nazgul riding in under the arch to find one rider waiting for him — and
+  then a cock crows, horns answer out of the north, and the Rohirrim charge. **A siege tower** rolled up to
+  the first wall, its bridge let down on the parapet and men going over, and then fired from the wall until
+  it goes over backwards and burns. Whatever moves, **Go and look** now follows (`follow` in happenings.js,
+  on the engine's camera stack): the target moves with it and the turn and zoom stay yours, until it is
+  over, you pick a viewpoint, or press Stop. **The Dead**: once the black ships are in, the Dead Men of
+  Dunharrow come off them — two and a half thousand pale figures gathering on the bank — and go across the
+  Pelennor like a tide, faster than horses, to the Mumakil (sent for if they are not on the field, and held
+  there); they swarm up each beast until it goes over on its side, the host round them breaks, and when the
+  last is down, their oath kept, they fade. The ships bring them; asking for them first sends the ships.
+  `#event=steward&eventlook` fires one on arrival and follows it; `#evspeed=4` runs every event's clock four
+  times faster, for watching a long chain through while working on it.
+- **In peace: the Coronation**, from the peace-time Events button (the war's hides in peace, and this one in
+  war). The people come up and fill the Court of the Fountain and the Guard lines the way; the King comes
+  through them in black mail and a white mantle with the green jewel at his throat, round the pool to the
+  steps of the Hall, where the Steward, the Ring-bearer and Mithrandir wait. The crown goes from the Ring-bearer
+  to Mithrandir, the King kneels, it is set on his head — and the King's banner breaks out on the Tower (in
+  peace it flies the White Tree, the stars and the crown; in war the Steward's black), the Tree sheds blossom
+  over the court, and the people bow. Then the court empties.
 
 Regenerate with `python3 tools/make-minastirith.py`, then `./sitectl build`.
+
+### `/isengard`: Isengard
+
+Fan work. Tolkien's world belongs to the Tolkien Estate; nothing from any book, film or game is used. The valley
+of Nan Curunir is generated by `tools/make-isengard.py`; the Ring, Orthanc and everything on the plain are
+modelled in `src/isengard/`. It is taken from the description in *The Two Towers*, which is exact about it.
+
+- **The land.** Nan Curunir runs south from Methedras, the last peak of the Misty Mountains, which stands 3,600 m
+  over the Ring to the north; the Isen comes down its flank in a glen, in under the Ring-wall at the north-east,
+  round the plain in a stone cut and out beside the gate, and on south towards the Fords. The engine draws water
+  at one level, which is wrong for a river coming down a mountain, so its surface is drawn by the page
+  (`isen.js`), falling with its bed. The valley floor is cut down to stumps; **Fangorn** stands on the hills to the
+  east as a dark wall of 14,000 trees (`fangorn.js` — the engine's trees are drawn only near the camera), its eaves
+  ragged where they have been cut.
+- **The Ring** (`ringwall` in `landmarks.js`): "a great ring-wall of stone, like towering cliffs", a mile across
+  inside and 55 m high, of black rock — one mesh, fluted by noise up the face like the keel of Minas Tirith, and not
+  in the heightfield at all. One way in: a tunnel under an arch in the south wall, lined, with doors of iron at both
+  ends; the Isen's gratings at the north-east and beside the gate. Its inner face is cut with 2,600 windows and dark
+  doors, some of them lit at night.
+- **Orthanc** (`orthanc`): the book's 500 ft is the model's default, and the page raises it to 240 m (`height` in
+  `isengard.json`), because against a Ring a mile across it read as a stump. Black rock with a hard shine — four many-sided piers, ribbed up their angles
+  and flared at the foot into the plain, welded round a core and opening near the top into four horns that splay
+  out to points, with the polished floor between them 500 ft up. A stair of 27 steps to the door, the window and
+  balcony above it, and a high window where the palantir glows.
+- **Saruman's works** (`works.js`): the plain paved dark, 70 forges between the roads, 150 domes over the shafts
+  with vents that steam and glow red or blue or green at night, 38 iron chimneys smoking with fire at their mouths,
+  and pillars of marble, copper and iron joined by sagging chains along every road to the centre; gangs of orcs
+  about the forges and files of them on the roads; 2,600 stumps across the valley. The hosts march the Isen Road
+  (`hosts.js`, the same module as Mordor's and Minas Tirith's, with white banners).
+- **Saruman or the Treegarth** (`mode.js` — Minas Tirith's war switch under another name, driving the same flags).
+  The Treegarth of Orthanc is what the Ents made of it afterwards: the works gone, the plain green, avenues of
+  fruit trees along the old roads and groves between them, pools, and Ents walking among them (`treegarth.js`).
+  `#war=off` opens on it. The Ring-wall is built as 48 segments, each whole and broken (its top torn down to a
+  jagged stump, tapering back to full height at its ends, with rubble either side and its windows gone); the
+  Treegarth has it thrown down in ten places.
+- **Saruman's dam** (`dam.js`): across the Isen's glen above the Ring, a gravity dam — straight on the water
+  side, stepped down its face — with its ends built into rock shoulders the generator leaves, a parapet along
+  the crest, sluice towers and the great iron wheels of its machine-house, three sluices spouting down its face,
+  and the reservoir behind it in a basin the generator digs. It is built in seventeen lengths so the middle can be
+  broken; the reservoir is a sheet the banks hide, so draining it is lowering one number. In the Treegarth it is
+  broken and the basin empty.
+- **The smaller things** (`details.js`): torches along the top of the Ring and orcs walking it, the White Hand hung
+  on its inner face (all of which goes with a length of wall when it breaks); a paved forecourt at the gate with
+  watch-fires, a guard and standards; window slits up the piers of Orthanc and Saruman's banner under his
+  balcony; on the plain, fire pits, iron wheels turning over the shafts, timber cranes, warg pens, stacks of
+  timber and carts on the roads; outside, the camp of the Uruk-hai south-west of the gate, timber along the
+  Fangorn track, burned trunks at the eaves, the great old trees at the very edge of Fangorn and mist under them;
+  and Treebeard, in the Treegarth, by the tower.
+- **The farmsteads**: ruined steadings down the valley by the road and the river, from before Saruman — the map's
+  buildings, which the engine keeps in both Isengards (everything of Saruman's is the page's, so it can go).
+  The roads have no pavements (`sidewalks: false`, an engine option): drawn under a paved plain they were a white
+  edge along every road.
+- **Events** (`events.js`, on `src/core/happenings.js`), in Saruman's Isengard: **the Uruk-hai go to war** —
+  Saruman speaks from the balcony to a host drawn up in column on the Way of the Gate, and it marches out through
+  the tunnel and down the Isen Road with torches and the White Hand; **the Ents** come out of Fangorn and batter the
+  Ring-wall — each tears down the length it has been battering — while five more go to the dam; when the others
+  are at the walls they tear its middle out, the reservoir goes down the glen in one wave along the Isen's course,
+  and when it reaches the grating the Ring floods until the furnaces go out in steam and Orthanc stands in a
+  lake (it stays drowned until the Treegarth); **a Nazgul** comes to Orthanc and circles the horns; **the
+  palantir** glows red in the high window; and **felling at the eaves**, trees coming down at the edge of Fangorn.
+
+Regenerate with `python3 tools/make-isengard.py`, then `./sitectl build`.
+
+### `/moria`: Moria
+
+Fan work. Tolkien's world belongs to the Tolkien Estate; nothing from any book, film or game is used. The
+mountains are generated by `tools/make-moria.py`; the gates, the halls under the mountain and everything in them
+are modelled in `src/moria/`. The page is outside and inside at once: the engine draws the mountains, and the
+halls are closed rooms in the rock beneath them, which the viewpoints go into.
+
+The layout follows the Fellowship's road through the mountain as the book gives it (*A Journey in the Dark* and
+*The Bridge of Khazad-dûm*), gathered into `plan.js`.
+
+- **Outside.** Caradhras, Celebdil and Fanuidhol, craggy (ridged noise, only on the high mountain) and with snow
+  on them (`snow`, an engine option: the snow-line, above which the ground whitens raggedly; `snowShed` sets how
+  much of it the steep faces shed). Caradhras is the Redhorn: `terrainTints` works a red into its rock. On the
+  west the Walls of Moria (`westgate`): a fluted cliff, tapering into the slope at its ends, and in it the
+  **Doors of Durin** between two hollies, with the ithildin — the arch, the crown and seven stars, the anvil and
+  hammer, the two trees with their moons, the star of Feanor — coming up as the light goes; the dark pool before
+  them (`lakeColour`: still, dark water). On the east the **Dimrill Gate** (`eastgate`) in its own face, its
+  doors thrown down on the threshold, and the **Dimrill Stair** going down from it in cut steps, with a stream
+  beside it falling to the Mirrormere. The **Dimrill Dale** is closed in by the mountains' arms north and south;
+  in **Kheled-zâram** the stars show even by day, and over against **Durin's Stone**, a crown of seven.
+  **Durin's Tower** on the summit of Zirakzigil. Each gate stands on a flat the generator leaves right up to the
+  cliff line, and the cliff reaches down to wherever the ground in front falls away.
+- **The road from the West-gate** (`halls.js`): a stair of two hundred steps inside the Doors; the long road
+  east, with a fissure across its floor; the **guard-room** with the well in it; and the **fork of three
+  arches**, where the right-hand way goes up and the other two end in fallen rock.
+- **The halls**, at the level of the Gates. The **Dwarrowdelf**, a hall a kilometre long carried on six rows of
+  pillars eight metres through, its walls black and polished, with a **gallery for every level** — ledges,
+  flights of steps between them, and arched doors going off into the dark. The **Second Hall**, its double line
+  of black tree-pillars, and right across its floor near the feet of two of them a **fissure of fire**, whose red
+  light runs in the polished pillars. The **chasm**, fifty feet across and four hundred metres deep, with fire at
+  the bottom and mithril in its walls, and the **Bridge of Khazad-dûm**, one curving spring without kerb or rail.
+  The **First Hall** out to the gate.
+- **The Seventh Level**, six above the Gates: up a stair from the great hall, the pillared **Twenty-first Hall of
+  the North-end**, lit by shafts high in its east wall, and beside it the **Chamber of Mazarbul** — recesses in
+  the walls with iron-bound chests broken open, bones and broken weapons, the Book, and Balin's tomb with runes on
+  its slab, in the light from the window. From Mazarbul a stair goes down south to the Second Hall. The daylight
+  in the shafts follows the hour.
+- **The city** (`city.js`, this project's own inventions, made to sit with the book's "dwarf-city"). Down the
+  **Grand Stair** from the great hall, the **Hall of the Mansions** in the Third Deep: a vault 150 m high over a
+  city of some nine hundred stone houses - an avenue with a canal, a plaza with a fountain, streets and lanes,
+  street lamps and great crystal lamps hung from the vault - and on both long walls six storeys of house-fronts
+  on terraces with flights of steps between them; **Durin the Deathless**, sixty metres of him, at the west end.
+  Through its east wall the **Great Forges**: two rows of hearths under hoods and chimneys, anvils throwing
+  sparks, the great furnace and its channel of metal. Down the miners' stair, the **Delvings** in the Tenth Deep:
+  the pit of the mithril lode with a headframe lowering its cage, scaffolds down its sides, ore-carts on a rail
+  round the rim, mine galleries, and mithril shining in the rock. Up the **Kings' Stair**, the **Hall of Durin's
+  Throne** on the Third Level: pillars, the throne on its dais, the crown and seven stars on the wall, and the
+  **Seven Fathers** of the Dwarves in stone; through its west wall the **Great Cistern**, pillars in black water
+  with causeways across it and a fall of water out of the rock. In Khazad-dum the windows are lit and the
+  hearths burn; in Moria the windows are dark and the forges cold. The hall lights follow you: three lights,
+  moved a few times a second to the nearest places a light belongs.
+- **Getting about** (`walk.js`, on the engine's camera stack). **Walk** at a Dwarf's eye height on the floors the
+  halls were carved with (`carve.js` records every floor and everything standing on one): W A S D, drag to look,
+  Shift to hurry. Stairs are climbed by walking up them; walls, pillars, houses and hearths stop you, and so
+  does the edge of a terrace, the pit, and the Bridge once it has fallen. **Fly** goes anywhere (Q and E down and
+  up; F switches between the two). The **Map** (M) is the plan of the city, every floor coloured by its level,
+  with you on it: hover for the name and level of a floor, click to be walking there; the places are buttons.
+  Three **tours** walk themselves: the Fellowship's road (the great hall, up to Mazarbul, down to the Bridge, out
+  to the gate), down into the city (the Mansions, the forges, the mines), and the throne and the cistern. A
+  viewpoint chosen while walking puts you on the floor under it. `#walk`, `#walk=<place>`, `#fly`, `#tour=<fellowship|city|kings>`
+  and `#map` open that way. The readout names the level: the Seventh Level, the Third Deep.
+- **Drawing only what can be seen** (`deep.js`). Everything under the mountain is one group, drawn only when the
+  camera is under the ground, at the Dimrill Gate (or the Doors, when they stand open), or with See inside on;
+  under the mountain, away from the gates, the mountains are not drawn; the Endless Stair is drawn only with See
+  inside. The terrain is on a 100 m grid. Before this the page drew some 630,000 triangles from everywhere and
+  could bring a laptop's browser down; now it is 130,000 to 280,000.
+- **Under the mountain** (`deep.js`): when the camera is under the ground the sun goes out, the fog closes in
+  black, and a light goes with you. **See inside** (`#xray`) makes the mountain glass, to see the halls where they
+  lie, and the **Endless Stair**: twelve thousand steps in unbroken spiral from the Deeps to Durin's Tower.
+- **Moria or Khazad-dum** (`realm.js`): the dark, orcs round their fires in the great halls, bones in the
+  passages (thickest in Mazarbul), pillars thrown down — or Durin's day, the lamps of crystal lit on every pillar,
+  wall and gallery, Dwarves in the halls, and the Doors standing open. `#war=off` opens on Khazad-dum.
+- **Events** (`events.js`), in Moria: **the Watcher in the Water** — arms out of the pool, the hollies torn down,
+  and the Doors blocked with rock; **drums in the deep**, orcs pouring through the great hall and up the stair to
+  the door of Mazarbul; **Durin's Bane** — the Balrog across the Second Hall to the Bridge, Gandalf's light, and
+  the Bridge broken under it; **the Battle of the Peak** on Zirakzigil, the tower broken; **Caradhras**, a storm
+  on the Redhorn Pass; and **a little more light**, the whole Dwarrowdelf seen for a moment. What they break stays
+  broken until Khazad-dum.
+
+Regenerate with `python3 tools/make-moria.py`, then `./sitectl build`.
 
 ### `/rivendell`: Rivendell
 
@@ -947,18 +1162,116 @@ modules, built by the lowest bidder.
   match its spin before they go in; five flights of four Starfuries on patrol loops round the station; and a
   launch out of the Cobra bays. At this scale a Starfury is fifteen metres on a station of eight thousand, so
   every ship carries an engine light drawn at a fixed size on screen, and the hull is there for close up.
-- **The jump gate** a few kilometres off the bow: four trusses in a square with the corners open, and every
-  forty seconds a vortex tears open in it - orange at the rim, blue and white at the throat - and a transport
-  comes through.
+- **The defence grid:** pulse cannon turrets (a dome, a base, twin barrels) in rings round the sphere and either
+  side of the carousel's trench bands, particle beam blisters on the sphere's waist, and a ring round the
+  reactor. Those on the sphere and the drum turn with them.
+- **The observation domes:** Dome 1 on the sphere's forward face is C&C, glass over its lit floor and consoles;
+  Dome 2, the backup, is across the axis from it.
+- **The Core Shuttle:** two cars running the length of the Garden's axis beside the sun, one each way, stopping
+  thirteen times (seen in the cutaway or from inside).
+- **The jump gate** a few kilometres off the bow: four trusses in a square with the corners open. Every forty
+  seconds the lights chase down its prongs, it flashes, and a vortex turns open in front of it (spiral discs,
+  orange at the rim and blue-white at the throat), and a transport comes through.
+- **Visitors** (`visitors.js`): an Earthforce **Omega-class destroyer** holding station off the carousel, with
+  its hammerhead, its own turning drum amidships and its engines and blue radiators aft; and further off a
+  Minbari **Sharlin war cruiser**, a glossy blue-green blade of a hull with its great crest. Both have cards.
+- **Raiders** (the button, or `#raid`): the gate opens out of turn and eight raiders come through and make runs
+  down the carousel, shooting at it. It is condition red: eight Starfuries come off the sphere onto their tails,
+  the defence grid opens up (orange pulse fire; the raiders' is green), and the raiders break up one by one
+  until the last is gone and the fighters go home. Notices at the foot of the screen, and the count in the HUD.
 - **Epsilon III** below, dusty and brown, with a moon, and the system's star behind the station.
 - **Click any part** for its card: the sphere, the bay, the Cobra bays, the drum, the bearings, the Garden, the
   reactor, the arrays, the stern, the gate. (Cards are new on the ship page; the three starships do not hang
   any, so nothing changes for them.)
 
-Views: three-quarter, side on, head on at the docking bay, the approach lane, the Cobra bays, the drum, the
-Garden, the reactor, the solar arrays, the jump gate, Epsilon III below, far off. The page also takes a closer
+Views: three-quarter, side on, head on at the docking bay, the approach lane, the Cobra bays, the observation
+domes, the drum, the raid, the Garden, the reactor, the solar arrays, the jump gate (from in front, to see the
+vortex), the destroyer, the Minbari cruiser, Epsilon III below, far off. The star is Epsilon Eridani's, an orange
+dwarf, so the light on the hull is warm. The page also takes a closer
 minimum distance than the ships (`minD`) and moves its near plane out with the camera distance, so the
 panelling does not fight itself in the depth buffer from twenty kilometres off.
+
+### `/homeworld`: Homeworld, the Kharak system
+
+Fan work. Homeworld belongs to its makers (Relic Entertainment, and now Gearbox); nothing from the game, its
+models, its art or its sound is used, and every shape is this project's own geometry (`src/homeworld/`), after
+the general silhouettes. It runs on the starship page, the way Babylon 5 does, and takes that page's lessons: a
+fighter at this scale is a few pixels, so every small craft carries an engine light drawn at a fixed size on
+screen and a trail of light behind it (which is how the game drew them too); fire is a streak close to and a
+point far off; anything that moves is left out of the model's fingerprint, so the golden holds whichever
+mission is showing.
+
+Two missions of the campaign, and a switch between them (**Mission 1** and **Mission 3**, or `#mission=1|3`):
+
+- **The Mothership** stands upright. Her art director made her a tall tower against the flat band of the
+  galaxy so that the player could always see which way was up, and she is curved (the players call her the
+  Banana): here a hull 3 km tall swept section by section up a spine that bows forward amidships, sharp at the
+  prow with a keel-blade down it, blunt aft with the engines stacked up the aft face (the great ones low down),
+  the one great hangar through her middle with its mouth and drawn-back doors on both flanks, a small dock low
+  on the starboard side, the core and its masts on top, and big blocks of colour on her flanks in the manner
+  of the paperback-cover painters the game's art took after (Chris Foss, Peter Elson).
+  The fourth pass builds in what the Kushan's own technical briefing says of her. She was laid up in layers
+  from the centre outward until the last layer of ceramic armour went on: so the hull here is an inner hull
+  showing the honeycomb of her storage (under 65 per cent of her armour, the briefing says) wherever a bay of
+  armour is still off, and over it the armour, plate by plate, stood proud with gaps between. The hangar holds
+  the cryo trays and the hyperspace core and is open on both flanks: the capital-ship door drawn up, docking
+  sleeves reaching out of the mouth. A row of parallel production bays low on the starboard flank. The
+  hyperspace drive heavily shielded in the lower aft of her, banded armour with the core's violet glow through
+  its slots. Fusion drives venting through shaped magnetic bottles (rings round every plume), manoeuvring jets
+  in clusters fore and aft that fire in short bursts, auxiliary fusion pylons out from her flanks. The bow of
+  her is deeper than before.
+- **The Scaffold** is, in the game, shorter than she is - she stood in its clutches, and in the end parts of it
+  went into her: four laced trusses, square frames and bracing, the docking arms open on the face towards her,
+  the materials plants clamped to its sides with their fusion torches burning inward, and at its head the
+  **Phased Disassembler Array**, a ring of emitters round a chunk of planetoid, cutting it apart with sparks
+  flying. Its corner lamps blink.
+- **The cryo trays**, "long mechanical cargo containers": a frame of rails and ribs half a kilometre long with a
+  thousand Rack Modules racked on its four faces (a hundred sleepers to a module, a hundred thousand to a tray,
+  six trays), power units at both ends, a docking clamp, lamps down its back. In the first mission all six wait
+  in stable orbit beside the Scaffold, not yet loaded - nobody would risk them before the hyperspace test - and
+  **Heavy Lifters** come up from Kharak one after another to dock a module at each. In the third they are the
+  same six, out where the Scaffold was.
+- **The sky** is the galaxy edge-on, a level band right round the horizon, thicker and brighter toward the core,
+  with a dust lane down it: the Kharak system is out on the rim, where that band is the one thing that says
+  which way is level. Gold in the first mission, red in the third.
+- **Mission 1, the Kharak System.** The Mothership is just out of the **Scaffold**, the orbital cradle of
+  girders she was built in (Kharak's only moon), standing upright behind her with its docking arms open, the
+  six cryo trays beside it and the Heavy Lifters coming up to them.
+  Kharak below: sand seas in bands across the equator, the rock between, salt flats, cooler grey-green lands
+  toward the poles, and the poles. The **Research Ship** is being built: its hub, then a module every eight
+  seconds, counted in the HUD.
+  The trials, on a loop: target drones come out of hyperspace through their windows of light; the seven
+  **Scouts** leave their patrol in formation, go in, circle and destroy them one by one, and a **Salvage
+  Corvette** takes the last in tow back to the hangar. A **Resource Collector** goes out to the asteroid field,
+  chews at a rock with its beam until the rock is smaller, and brings the load home; the **Research Ship**
+  stands off with its modules round its hub.
+- **Mission 3, Return to Kharak.** The Mothership comes out of hyperspace, a window of light sweeping down her
+  length from the prow and the ship appearing behind it; the Scaffold is a wreck of girders tumbling and
+  burning, and **Kharak is burning** - fronts of fire crawling across a charred world, embers behind them, smoke
+  over the day side, the night side glowing, a red halo in the air. Six **cryo trays** hold the sleepers; the
+  first fails as she arrives and breaks up. Taiidan corvettes and interceptors come through their own window in
+  waves - four in the first, as in the game - and circle the trays firing; the first corvette of each wave is
+  taken, not destroyed, and a Salvage Corvette tows it into the hangar; the Mothership's interceptors go after them; and pairs of Salvage Corvettes
+  latch on to the trays one by one and tow them into the hangar. When the last is in, it begins again.
+- **Sensors:** the game's tactical map over the scene - rings and spokes on the Mothership's plane, every ship
+  a dot on a stalk down to it (`#sensors`).
+- The HUD keeps the trials' score, or the trays recovered and the
+  hostiles left. Click any ship for its card.
+
+- **Close to** (the third pass): the hull is plated in long courses of plates, each a shade off the next, with
+  dark seams, insets and louvres, lit ports along some courses, the orange livery, and grime streaked down it;
+  over that, in bands, a few thousand instanced housings, conduits, radiator fins and blisters. The hangar
+  mouths have the inside of the hangar painted into them - the deck going back in lamplit perspective - and
+  guide lamps that chase in toward the opening; the engines are bells with lit throats and plumes that breathe;
+  the running lights, mast lamps and the Scaffold's corner lamps blink. Kharak has the lights of its cities on
+  the night side along the cooler belts, and a layer of dust storms drawn out along the latitudes that turns to
+  smoke when it burns; a few bright stars carry crosses of light. Engine lights are soft and sized by the ship;
+  the trails are ribbons, tapering and fading, never thinner than a couple of pixels; an explosion is a
+  fireball, a ring of shock, and sparks. Every craft is baked into a mesh per material, so the whole scene is
+  about 110 to 180 draw calls and 110,000 to 145,000 triangles (it was up to 721 calls before).
+
+Views: three-quarter, the Mothership side on, the prow, the engines, the hangar bay, the Scaffold, the trials,
+the asteroid field, the cryo trays, the wreck of the Scaffold, Kharak below, far off.
 
 ### `/fleshpit`: Mystery Flesh Pit National Park
 
@@ -1085,9 +1398,30 @@ does).
   the valley floors (Hayden, Lamar, Pelican), sage in the dry north, wetland, rock and snow on the Absarokas and
   Gallatins, the bare sinter of the thermal basins, and the 1988 burn as a patchwork of young pine and grey
   snags. The walls of the Grand Canyon are yellow, pink and white in bands, which is what hot water did to them.
+- **The ground's surface** (the ground's shader, from per-vertex land-cover weights): close to, each kind of
+  ground has a texture of its own, faded out before it is finer than a pixel - the lodgepole's crowns and gaps,
+  grass mottled green and straw, sage in grey-green bushes, sinter cracked into plates with the orange and brown
+  bacterial mats run out across it in channels and grey where the runoff is wet, rock in strata, the burn's grey
+  snags over young green, standing water in the wetlands, drifted snow. The forest's edges are torn by noise
+  rather than blurred by the 150 m grid, which used to paint every meadow edge as a soft ink blot.
+- **The clouds:** a hundred-odd fair-weather cumulus a couple of kilometres over the plateau, heaped with flat
+  bases, whiter on top, warm when the sun is low, drifting on the wind and wrapping round the map. Their shadows
+  go over the ground with them (one map-sized texture slid under the ground's shader), thrown off to the side
+  away from the sun.
 - **The forest** is grown in 800 m tiles round the camera as it moves, thinned with distance and dropped when
-  the camera has gone: eighty per cent of the park is lodgepole, which is a hundred million trees. From high up
-  the ground's colour carries it, with the crowns speckled in by the ground's shader.
+  the camera has gone: eighty per cent of the park is lodgepole, which is a hundred million trees. Four kinds
+  now: lodgepole; spruce-fir, a dark spire in tiers, high up and in the wet draws; Douglas-fir in the lower,
+  drier north; and aspen in clones at the edges of the northern meadows, with the burn's snags. Within 900 m
+  each is the whole tree; beyond, a three-sided spike of its own colour, a twentieth of the triangles. From high
+  up the ground's colour carries it.
+- **Drawing it at a tolerable cost:** the park used to be 1.0 to 2.2 million triangles a frame, which is more
+  than a laptop's graphics should be asked for. Now it is 0.3 to 0.85 million: the ground in levels of detail
+  (the engine's `terrainLOD`, below: full within 9 km, half to 22 km, a quarter beyond); the Grand Canyon's fine
+  patch in three levels (full within 3 km); the far trees as spikes; the small streams drawn only within 10 km,
+  in tiles, the rivers always; the small springs with fewer sides.
+- **Fixed:** the thermal basins were a flat near-white sheet (the sinter is darker and textured now); the yellow
+  and pink of the canyon walls bled out onto the plateau either side (it is on the walls now); the lakes were a
+  saturated flat blue (`lakeColour`, deeper and duller).
 - **The geysers erupt** (`src/yellowstone/landmarks.js`): Old Faithful, Castle, Grand, Beehive, Riverside,
   Daisy, Great Fountain, Steamboat, Echinus, Clepsydra and Lone Star, each with its own height, interval and
   duration - compressed, because Old Faithful's ninety minutes would mean nobody saw it, but in proportion, so
@@ -1317,6 +1651,7 @@ src/
   core/   diag.js rng.js env.js data.js      error reporting + staged loading, randomness/noise, shader environment, data expressions
           shell.js hash.js                  the page shell (renderer, resize, context loss, buttons, loop, boot) and the address (merged, never wiped)
           input.js cylinder.js happenings.js  the site's controls, the drum walker, and events that come round on their own
+          dust.js                           anything thrown into the air: dust, smoke, embers (Arrakeen's, Minas Tirith's and Isengard's)
   izani/  glyphs.js draw.js atlas.js          the script: strokes/layout/SVG (pure), canvas drawing, the texture atlas
   iziz/   main.js imports.js stages/*.js build.js   the Iziz build: 56 stage files, assembled into build.js
   engine/ imports.js stages/*.js build.js    the shared engine: 11 stage files, assembled into build.js.
@@ -1336,17 +1671,20 @@ src/
   backrooms/ main.js level.js textures.js sound.js   the Backrooms: its own renderer, the generator and baked light, the canvases, the hum
   blame/    main.js city.js detail.js builders.js figures.js mats.js sphere.js   the City: its own renderer, camera, section and tour; the 25 km block; the Megastructure's structure and the layers' furniture; the Builders and the lifts; Killy and Cibo; the patterns and the poché; the whole of it round the Sun
   infinitycastle/ main.js mats.js kit.js castle.js places.js biwa.js   the Infinity Castle: its own renderer, camera and fall; the canvases and the facade shader; the kit and its clusters; the shaft, its walls and the void; the places; the biwa
-  minastirith/ main.js landmarks.js life.js  Minas Tirith: the Tower, the Court, the Gate, the rock, the banners
+  moria/    main.js plan.js carve.js landmarks.js halls.js city.js deep.js realm.js walk.js events.js   Moria: the plan; carving rooms, passages and floors; the gates and the tower; the halls; the city; the dark and See inside; Moria or Khazad-dum; walking, flying, the map and the tours; what happens
+  isengard/ main.js plan.js landmarks.js works.js isen.js fangorn.js treegarth.js mode.js events.js   Isengard: the plan of the Ring; the Ring and Orthanc; Saruman's works; the Isen; Fangorn; the Treegarth; the switch; what happens
+  minastirith/ main.js landmarks.js life.js war.js events.js decals.js shadow.js   Minas Tirith: the Tower, the Hall, the Court, the Gate, the rock, the banners; war and peace; what happens in the siege; what it has left; the Ephel Duath and the Darkness
   kowloon/  main.js section.js kaitak.js life.js   the Walled City: the section, the approach, the washing
   starship/ page.js parts.js                 the page the ships and Babylon 5 share: renderer, sky, turntable, cards; the hull pieces
-  babylon5/ main.js station.js               Babylon 5: the sphere, the Cobra bays, the drum and the Garden, the arrays, the traffic, the gate
+  babylon5/ main.js station.js visitors.js   Babylon 5: the sphere, the Cobra bays, the drum and the Garden, the arrays, the defence grid, the traffic, the gate; the destroyer, the Minbari, the raid
+  homeworld/ main.js ships.js kharak.js fleet.js   Homeworld: the Mothership, the Scaffold and the craft; Kharak and the sky; the two missions, the trails, the hyperspace windows, Sensors
   hab/      main.js world.js               Kyrene: its own renderer, and a world in cylinder coordinates
   shire/    main.js ground.js water.js country.js holes.js buildings.js fields.js life.js party.js   the Shire: fields and lanes, the Water, hedges and trees, the holes, the mill, farms and the rest, the work in the fields, what moves, Bilbo's party
   voth/     imports.js stages/*.js build.js   Voth: 51 recovered stages, assembled into build.js (voth.html runs it)
 vendor/three/three.min.js     three.js r128 (pinned)
 tools/  build-page.py build-tongue.py probe.py check-city.py
         fetch-osm.py fetch-terrain.py build-osm-city.py make-city17.py make-nightcity.py
-        make-megacity.py make-mordor.py make-dredd2012.py make-yellowstone.py
+        make-megacity.py make-mordor.py make-minastirith.py make-isengard.py make-moria.py make-dredd2012.py make-yellowstone.py
         build-krator.py test-pages.py
 tests/  run.js *.test.js golden/ fixtures/
 server.py  site.toml  sitectl
@@ -1495,7 +1833,7 @@ A city config may set, besides its geography: `sky` (`day`/`dusk`/`night`, each 
 `far`), `litWindows` (how much of the city lights up at night), `streetTrees`, `parkedCars`, `traffic`
 and `people` (0-1 densities), `palette` (`"drab"` puts vehicles and coats in rust, grey and olive),
 `attribution` (the credit line in the corner), `bridgeDeck` and `bridgeHeights`, `smog`, `toxicWater` and
-`waterColour`, `seaLevelWater` (see New York), `lowRiseFar` (how far buildings under 30 m are drawn) and
+`waterColour`, `lakeColour` and `lakeSheen` (still dark water, see Moria and Yellowstone), `terrainLOD` (`[d1, d2]`: the ground in three levels of detail by distance, with skirts on the coarse ones - Yellowstone), `terrainTints` (a colour worked into the rock round a point), `snow` and `snowShed`, `seaLevelWater` (see New York), `lowRiseFar` (how far buildings under 30 m are drawn) and
 `defaultHour` (a city only seen after dark opens there), `quality` (`low` drops shadows entirely, which on a weak GPU is worth more than everything else together;
 `?quality=low` in the URL overrides it). A `combine` block (`striders`, `manhacks`, `scanners`, `dropships`,
 `apcs`, `barriers`, `smartBarriers`, `turrets`, `fires`, `debris`, `sentries`) turns on the occupation stage,
