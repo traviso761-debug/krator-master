@@ -37,6 +37,13 @@ material families, instanced per family under a draw-call budget. The catalog
 in `kits/catalog/` uses family strings (`'wood'`, `'cloth'`, `'plank'`…) plus a
 colour. Neither is compatible with `MAT`.
 
+## `atmos/`
+
+The atmosphere and street-dressing module: evening lights and a glow layer, particles, weather, ivy and window boxes,
+sewer grates, lamps and fountains, InstancedMesh culling. One global (`ATMOS`) behind a five-item host binding, so any
+three.js r128 build can take it. Read `atmos/README.md`. **Used by** `settlements/iziz` (city target; its `build.py`
+reads it through `TARGET_CORE`).
+
 ## `sockets/`
 
 The cultural socket and banner/awning system: buildings declare sockets, a culture pack fills them (Iziz, Republic, Voth, Yuni, Beast Riders, generic). A worked example, `sockets/example/`,

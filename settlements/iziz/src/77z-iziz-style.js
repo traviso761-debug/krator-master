@@ -54,6 +54,17 @@ const DEADNAME={winI:'winD',winBigI:'winBigD',winSmI:'winSmD',ovalI:'ovalD',mull
 // ---- generic post-build passes: 'ruin' and 'rehab' ---------------------------------------------------------------
 // P is the (possibly transformed) group the pair built into; `root` is an IDENTITY group in the scene that receives
 // the cut geometry (which is computed in world space). ranges = KIT.items lengths before the pair ran.
+// SLIVERS (Travis: the Tyrell block read as see-through). The cut keeps or drops whole triangles, and a lathed shell's
+// triangles are long and thin (the Tyrell's are 0.6 x 2.5 m): dropping one of a quad's pair left a vertical slit, and a
+// shell full of them read as a basket of slats you could see through. Every triangle is split along its longest edge
+// until no edge is over `maxE` metres, so holes come out as ragged blobs. (UVs are rebuilt in metres after the cut.)
+function wreckRefine(p,maxE){const out=[];const m2=maxE*maxE;const st=[];
+ for(let i=0;i<p.length;i+=9){st.push([p[i],p[i+1],p[i+2],p[i+3],p[i+4],p[i+5],p[i+6],p[i+7],p[i+8],0]);
+  while(st.length){const t=st.pop();const e=[0,3,6].map(k=>{const a=k,b=(k+3)%9;return (t[a]-t[b])**2+(t[a+1]-t[b+1])**2+(t[a+2]-t[b+2])**2;});
+   const k=e[0]>=e[1]&&e[0]>=e[2]?0:e[1]>=e[2]?1:2;if(e[k]<=m2||t[9]>=6){for(let j=0;j<9;j++)out.push(t[j]);continue;}
+   const a=k*3,b=((k+1)%3)*3,c=((k+2)%3)*3,mx=(t[a]+t[b])/2,my=(t[a+1]+t[b+1])/2,mz=(t[a+2]+t[b+2])/2;
+   st.push([t[a],t[a+1],t[a+2],mx,my,mz,t[c],t[c+1],t[c+2],t[9]+1],[mx,my,mz,t[b],t[b+1],t[b+2],t[c],t[c+1],t[c+2],t[9]+1]);}}
+ return new Float32Array(out);}
 function wreck(P,root,ranges,mode,cx,cz,seed){reseed(seed);const rehab=mode==='rehab';
  const bb=new THREE.Box3();P.updateMatrixWorld(true);const meshes=[];P.traverse(o=>{if(o.isMesh)meshes.push(o);});
  for(const m of meshes){m.geometry.computeBoundingBox();bb.union(m.geometry.boundingBox.clone().applyMatrix4(m.matrixWorld));}
@@ -75,7 +86,7 @@ function wreck(P,root,ranges,mode,cx,cz,seed){reseed(seed);const rehab=mode==='r
  const hf=clamp(2.6/R,.07,.5);const holeT=rehab?.17:.25;const hole=(x,y,z)=>fbm(x*hf+seed*.7,y*hf,z*hf,3)<holeT;let topKept=y0;
  const gone=[],cutGeos=[];
  for(const m of meshes){if(m.material===MAT.glass){m.parent.remove(m);continue;}
-  const g=(m.geometry.index?m.geometry.toNonIndexed():m.geometry).clone();g.applyMatrix4(m.matrixWorld);const p=g.attributes.position.array,uv=g.attributes.uv?g.attributes.uv.array:null;
+  const g=(m.geometry.index?m.geometry.toNonIndexed():m.geometry).clone();g.applyMatrix4(m.matrixWorld);const p=wreckRefine(g.attributes.position.array,2.4),uv=null;
   const np=[],nu=[];for(let i=0;i<p.length;i+=9){const x=(p[i]+p[i+3]+p[i+6])/3,y=(p[i+1]+p[i+4]+p[i+7])/3,z=(p[i+2]+p[i+5]+p[i+8])/3;
    const keep=y<cut+jag(x,z)&&!hole(x,y,z);
    if(keep){for(let k=0;k<9;k++)np.push(p[i+k]);for(let k=1;k<9;k+=3)if(p[i+k]>topKept&&Math.hypot(p[i+k-1]-cx,p[i+k+1]-cz)<R*.8)topKept=p[i+k];
@@ -280,27 +291,57 @@ MAT.concRust=MAT.rust.clone();MAT.concRust.color=new THREE.Color(1,.93,.86);if(M
 // Skyscraper D is bare concrete in the kit: its ruined and reclaimed skins go to rust-streaked steel (Travis)
 function izsRustSkin(G){G.traverse(m=>{if(m.isMesh&&(m.material===MAT.concreteR||m.material===MAT.concrete))m.material=MAT.concRust;});}
 // T: {awnings (array the caller bakes), post, ball, rope (kit item names), col (hex -> Color), stall(col) (builds
-// one stall at the current group transform; the group is passed too), culture (REG tag)}
+// one stall at the current group transform; the group is passed too), culture (REG tag), stalls (optional array: every
+// stall's {x,y,z,face} is pushed to it — the life layer's market destinations), maxCanopies (default 90)}
 // THE TRIPOD MARKET (Travis): a reclaimed Skyscraper C hangs a great awning from each side of its leg triangle, sloping out to
 // a mast at the opposite point, so from above the legs' triangle and the three awnings make a six-pointed star; market
 // stalls stand in the shade under each awning and in the open triangle between the legs.
+// DENSER (Travis, round 4): the great awnings reach half again further out; their stalls stand on a lattice that fills the
+// shade, not on one line; and a ring of smaller canopies — a sloping cloth on four poles over a stall each — fills the
+// star's notches and the ground round it out to the lot's edge, clear of the leg feet, the masts and their guy ropes.
+// The whole market registers as ONE market (type market/shop, tags.market, tags.destination 'market').
 function tripodMarket(G,o,y,scale,ry,gx,gz,y0,T){const legAt=(k,ly)=>{const th=k/3*TAU+Math.PI/6,r=62-42*(ly-5)/150;return loc2(gx,gz,Math.cos(th)*r*scale,Math.sin(th)*r*scale,ry);};
- const hb=38,rb=62-42*(hb-5)/150;const Y=ly=>y0+ly*scale;const cols=[0xe07a2a,0xc9442a,0xe0a030];
- for(let k=0;k<3;k++){const a=legAt(k,hb),b=legAt((k+1)%3,hb);const tm=(k+.5)/3*TAU+Math.PI/6;const ap=loc2(gx,gz,Math.cos(tm)*rb*scale*1.05,Math.sin(tm)*rb*scale*1.05,ry);
-  const ya=Y(hb),yp=y+6.5;
-  // the awning: a sagging cloth triangle, 6 x 6 subdivided so the fall line reads
-  const pos=[],uv=[],N=6;const P=(u,v)=>{const w=1-u-v;const sag=-1.4*Math.sin(Math.PI*Math.min(1,u+v))*(1-Math.abs(u-v));return[a[0]*w+b[0]*u+ap[0]*v,ya*(w+u)+yp*v+sag,a[1]*w+b[1]*u+ap[1]*v];};
+ const hb=38,rb=62-42*(hb-5)/150;const Y=ly=>y0+ly*scale;const cols=[0xe07a2a,0xc9442a,0xe0a030];const yg=y+1.55;
+ const tris=[],masts=[],feet=[0,1,2].map(k=>legAt(k,5));let nStall=0;
+ const stallAt=(x,z,face,c)=>{const Gs=new THREE.Group();Gs.position.set(x,yg,z);Gs.rotation.y=face;scene.add(Gs);useGroupXF(Gs);try{T.stall(c,Gs);}finally{endGroupXF();}
+  nStall++;if(T.stalls)T.stalls.push({x,y:yg,z,face});};
+ const clothQuad=(c,P)=>{const pos=[],uv=[],N=3;const at=(u,v)=>P(u,v);for(let i=0;i<N;i++)for(let j=0;j<N;j++){for(const[a,b]of[[0,0],[1,0],[0,1],[1,0],[1,1],[0,1]]){const q=at((i+a)/N,(j+b)/N);pos.push(...q);uv.push(q[0]*.5,q[2]*.5);}}
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.computeVertexNormals();T.awnings.push({g,c});};
+ for(let k=0;k<3;k++){const a=legAt(k,hb),b=legAt((k+1)%3,hb);const tm=(k+.5)/3*TAU+Math.PI/6;const ap=loc2(gx,gz,Math.cos(tm)*rb*scale*1.5,Math.sin(tm)*rb*scale*1.5,ry);
+  const ya=Y(hb),yp=y+6.5;tris.push([a,b,ap]);masts.push(ap);
+  // the awning: a sagging cloth triangle, 8 x 8 subdivided so the fall line reads
+  const pos=[],uv=[],N=8;const P=(u,v)=>{const w=1-u-v;const sag=-1.8*Math.sin(Math.PI*Math.min(1,u+v))*(1-Math.abs(u-v));return[a[0]*w+b[0]*u+ap[0]*v,ya*(w+u)+yp*v+sag,a[1]*w+b[1]*u+ap[1]*v];};
   for(let i=0;i<N;i++)for(let j=0;j<N-i;j++){const q=[[i,j],[i+1,j],[i,j+1]];const add=t=>{for(const[ii,jj]of t){const p=P(ii/N,jj/N);pos.push(...p);uv.push(p[0]*.5,p[2]*.5);}};add(q);if(i+j<N-1)add([[i+1,j],[i+1,j+1],[i,j+1]]);}
   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.computeVertexNormals();
   T.awnings.push({g,c:cols[k]});
   // the mast at the point, guy ropes, a valance along the leading edges
   kput(T.post,[ap[0],y,ap[1]],null,[.35,yp-y+.4,.35],T.col(0xe2b676));kput(T.ball,[ap[0],yp+.5,ap[1]],null,[.4,.4,.4],T.col(0x8a6a2a));
   for(const s2 of[-1,1]){const g2=loc2(ap[0],ap[1],s2*3,0,tm);beam(T.rope,[ap[0],yp+.3,ap[1]],[g2[0]+(ap[0]-gx)*.15,y,g2[1]+(ap[1]-gz)*.15],.05,.05,T.col(0xa89878));}
-  // stalls in the shade: three per awning along the triangle's centre line
-  for(let t=0;t<3;t++){const f=.25+t*.22;const m=[(a[0]+b[0])/2*(1-f)+ap[0]*f,(a[1]+b[1])/2*(1-f)+ap[1]*f];const Gs=new THREE.Group();Gs.position.set(m[0],y+1.55,m[1]);Gs.rotation.y=Math.atan2(ap[0]-gx,ap[1]-gz)+Math.PI/2;scene.add(Gs);useGroupXF(Gs);try{T.stall(T.col(cols[(k+t)%3]),Gs);}finally{endGroupXF();}}}
+  // stalls in the shade: a lattice over the awning's footprint, each facing along the fall line
+  const face=Math.atan2(ap[0]-gx,ap[1]-gz)+Math.PI/2,L=6;
+  for(let i=1;i<L;i++)for(let j=1;i+j<L;j++){const u=i/L,v=j/L,w=1-u-v;if(w<.1)continue;const x=a[0]*w+b[0]*u+ap[0]*v,z=a[1]*w+b[1]*u+ap[1]*v;
+   if(feet.some(f=>Math.hypot(x-f[0],z-f[1])<6))continue;if(Math.hypot(x-ap[0],z-ap[1])<5)continue;stallAt(x,z,face,T.col(cols[(k+i+j)%3]));}}
  // and the open triangle between the legs
- for(let t=0;t<3;t++){const th=t/3*TAU+Math.PI/2,r=rb*scale*.3;const Gs=new THREE.Group();Gs.position.set(o.x+Math.cos(th)*r,y+1.55,o.z+Math.sin(th)*r);Gs.rotation.y=-th;scene.add(Gs);useGroupXF(Gs);try{T.stall(undefined,Gs);}finally{endGroupXF();}}
- REG.push({name:'Tripod market',x:o.x,y:y,z:o.z,r:rb*scale*1.1,h:12,cls:'building',key:'city_tripod_market',tags:{culture:T.culture,type:['market/shop'],wealth:'middle',lit:true,note:'awnings hung from a reclaimed Skyscraper C'}});}
+ for(let t=0;t<3;t++){const th=t/3*TAU+Math.PI/2,r=rb*scale*.3;stallAt(o.x+Math.cos(th)*r,o.z+Math.sin(th)*r,-th,undefined);}
+ // the ring of canopies: on rings 7.6 m apart from just outside the leg triangle to the lot's edge (or the star's reach
+ // plus a margin, whichever is nearer), every 8 m round each ring; a canopy goes where none of its corners is under a
+ // great awning, near a leg foot or a mast, or off the lot
+ const inTri=(x,z,t)=>{const s=(p,q,r)=>(p[0]-r[0])*(q[1]-r[1])-(q[0]-r[0])*(p[1]-r[1]);const P=[x,z],d1=s(P,t[0],t[1]),d2=s(P,t[1],t[2]),d3=s(P,t[2],t[0]);return!((d1<0||d2<0||d3<0)&&(d1>0||d2>0||d3>0));};
+ const oc=Math.cos(o.ry||0),os=Math.sin(o.ry||0);const onLot=(x,z)=>{const dx=x-o.x,dz=z-o.z;return Math.abs(dx*oc-dz*os)<o.hx-1.5&&Math.abs(dx*os+dz*oc)<o.hz-1.5;};
+ const reach=Math.min(Math.hypot(o.hx,o.hz),rb*scale*1.5+14),CW=3.4,CD=2.7,ccols=[0xe07a2a,0xc9442a,0xe0a030,0xd8623a,0xb8862a,0x3a7a5a];let nc=0;const maxC=T.maxCanopies||90;
+ for(let R=rb*scale*.62+4;R<=reach&&nc<maxC;R+=7.6){const n=Math.max(6,Math.floor(TAU*R/8));const off=R*.37;
+  for(let i=0;i<n&&nc<maxC;i++){const th=i/n*TAU+off,x=o.x+R*Math.cos(th),z=o.z+R*Math.sin(th),cry=Math.atan2(o.x-x,o.z-z);
+   const cs=[[-CW,-CD],[CW,-CD],[CW,CD],[-CW,CD]].map(c=>loc2(x,z,c[0],c[1],cry));
+   if(!cs.every(c=>onLot(c[0],c[1])))continue;
+   if(cs.concat([[x,z]]).some(c=>tris.some(t=>inTri(c[0],c[1],t))))continue;
+   if(feet.some(f=>Math.hypot(x-f[0],z-f[1])<CW+4.5))continue;if(masts.some(m=>Math.hypot(x-m[0],z-m[1])<CW+5))continue;
+   const c=ccols[(i+Math.round(R))%ccols.length],hi=yg+3.7,lo=yg+2.7;
+   // the cloth: high on the side facing the tripod, low on the outside, a little sag
+   clothQuad(c,(u,v)=>{const p=loc2(x,z,(u*2-1)*(CW+.3),(v*2-1)*(CD+.3),cry);return[p[0],lo+(hi-lo)*v-.25*Math.sin(Math.PI*u)*Math.sin(Math.PI*v),p[1]];});
+   for(const q of cs){const h=(q===cs[2]||q===cs[3])?hi:lo;kput(T.post,[q[0],yg,q[1]],null,[.16,h-yg,.16],T.col(0xe2b676));}
+   stallAt(x,z,cry+Math.PI,T.col(c));nc++;}}
+ REG.push({name:'Tripod market',x:o.x,y:y,z:o.z,r:Math.max(rb*scale*1.6,reach),h:12,cls:'building',key:'city_tripod_market',
+  tags:{culture:T.culture,type:['market/shop'],wealth:'middle',lit:true,market:true,destination:'market',stalls:nStall,canopies:nc,note:'awnings hung from a reclaimed Skyscraper C; a life-layer market destination'}});}
 // an instanced item's world-space box: the def geometry's own bounds through the item's scale and rotation (a torus or
 // cylinder is radius 1, a box half-size .5 — measuring by the scale alone got every ring half its real size)
 const _defBB={};function itemBox(n,q){let bb=_defBB[n];if(!bb){const g=KIT.defs[n]&&KIT.defs[n].geo;if(!g){return null;}g.computeBoundingBox();bb=_defBB[n]=g.boundingBox.clone();}
@@ -327,14 +368,17 @@ function measureKit(cat){if(cat.meas)return cat.meas;const parts=kitBuildParts(c
  // a tower's PODIUM top: the highest low part wider than the shaft. Everything at or under it is the kit's podium and goes;
  // the shaft is lowered so that level lands on the city's own square plinth.
  let baseY=0;if(cat.kind==='sky'){const cw=Math.max(core.max.x-core.min.x,core.max.z-core.min.z);for(const b of parts){if(b.max.y>bb.max.y*.12||b.max.y<0)continue;if(Math.max(b.max.x-b.min.x,b.max.z-b.min.z)<cw*1.1)continue;baseY=Math.max(baseY,b.max.y);}}
- cat.meas={cx:(core.min.x+core.max.x)/2,cz:(core.min.z+core.max.z)/2,hx:Math.max(4,(core.max.x-core.min.x)/2),hz:Math.max(4,(core.max.z-core.min.z)/2),h:bb.max.y,th:cat.kind==='sky'?coreTh:th,baseY,
-  full:{hx:(bb.max.x-bb.min.x)/2,hz:(bb.max.z-bb.min.z)/2}};return cat.meas;}
+ // the SHAFT: everything above the podium, legs included (Skyscraper A's legs lean out past its core; a placer that must
+ // keep them on the lot fits by this, measured about the core centre)
+ const cxm=(core.min.x+core.max.x)/2,czm=(core.min.z+core.max.z)/2;let shx=0,shz=0;for(const b of parts){if(b.max.y<=baseY+1)continue;shx=Math.max(shx,Math.abs(b.min.x-cxm),Math.abs(b.max.x-cxm));shz=Math.max(shz,Math.abs(b.min.z-czm),Math.abs(b.max.z-czm));}
+ cat.meas={cx:cxm,cz:czm,hx:Math.max(4,(core.max.x-core.min.x)/2),hz:Math.max(4,(core.max.z-core.min.z)/2),h:bb.max.y,th:cat.kind==='sky'?coreTh:th,baseY,
+  full:{hx:(bb.max.x-bb.min.x)/2,hz:(bb.max.z-bb.min.z)/2},shaft:{hx:Math.max(4,shx),hz:Math.max(4,shz)}};return cat.meas;}
 // drop what a kit builder laid BEYOND the plot below the plinth line (plinths, plazas, aprons, the colonnade round a
 // tower's podium): an instanced item or a mesh goes when it is low and any part of it leaves the plot by more than 2 m.
-// `keep` (an OBB) protects a region — the toppled tower's fallen body.
+// `keep` (an OBB, or a list of them) protects a region — the toppled tower's fallen body (both pieces of a broken one).
 function trimPlinths(G,snap,o,y,scale,th,keep,podY){const c=Math.cos(o.ry),s=Math.sin(o.ry);const pod=podY!=null?podY:-1e9;
  const outOf=(wx,wz,e,B)=>{const dx=wx-B.x,dz=wz-B.z,cc=Math.cos(B.ry),ss=Math.sin(B.ry);const lx=cc*dx-ss*dz,lz=ss*dx+cc*dz;return Math.abs(lx)+e>B.hx+2||Math.abs(lz)+e>B.hz+2;};
- const kept=(wx,wz)=>keep&&!outOf(wx,wz,0,keep);const lowY=y+th*scale*.9;
+ const K=keep?(Array.isArray(keep)?keep:[keep]):[];const kept=(wx,wz)=>K.some(B=>!outOf(wx,wz,0,B));const lowY=y+th*scale*.9;   // keep: one OBB or a list
  for(const n in KIT.items){const it=KIT.items[n];const a=snap[n]||0;if(it.length<=a)continue;let w=a;
   for(let i=a;i<it.length;i++){const q=it[i],b=itemBox(n,q);if(!b){it[w++]=q;continue;}const cx=(b.min.x+b.max.x)/2,cz=(b.min.z+b.max.z)/2,e=Math.max(b.max.x-b.min.x,b.max.z-b.min.z)/2;
    if(((b.max.y<lowY&&outOf(cx,cz,e,o))||b.max.y<pod+.3)&&!kept(cx,cz))continue;it[w++]=q;}it.length=w;}
