@@ -1,0 +1,18 @@
+{
+  "10-core.js": "e3edbbeee86a",
+  "12-stats.js": "36c73fdcde3d",
+  "20-textures.js": "bf2447777724",
+  "22-materials.js": "c044d8ebde78",
+  "30-kit.js": "4592dfcb03bb",
+  "32-surfaces.js": "f41847f87f7c",
+  "34-kitdefs.js": "7347254ffed9",
+  "36-decor.js": "ed924131e430",
+  "37-sockets.js": "1faa40c3d211",
+  "38-helpers2.js": "97d25c565adf",
+  "50-registry.js": "d0f77add9a31",
+  "54-mat-concrete.js": "29e42e7083f5",
+  "68-mat-v5.js": "67b714b0f87c",
+  "80-cultures.js": "8e968f8a4dcd",
+  "81-sky.js": "b13975f23277",
+  "three.min.js": "7a7802bf4f08"
+}

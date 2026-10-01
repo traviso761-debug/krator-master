@@ -84,7 +84,8 @@ reseed(580001);
     F.lathe(fam||'adobe', x,z, [[R*1.07,0,shade(col,-0.1)],[R,1.0],[R*0.93,H],[R*0.9,H+0.5],[R*0.84,H+0.54]], col, { seg:seg }); }
   function drumBand(F,x,z,R,H,y0,y1,fam,col,seg){ function rr_(y){ return R*(1.0-0.07*(y-1)/(H-1))+0.05; } F.lathe(fam, x,z, [[rr_(y0),y0],[rr_(y1),y1]], col, { seg:seg||14 }); }
   function drumR(R,H,y){ return y<1 ? R*(1.07-0.07*y) : R*(1.0-0.07*(y-1)/(H-1)); }
-  function gatePoint(F,lx,lz){ var q=F.p(lx,lz); (F.doors||(F.doors=[])).unshift([q[0],F.y,q[1]]); }
+  /* the compound gate: a leafless opening into the court, listed FIRST so the life layer prefers it */
+  function gatePoint(F,lx,lz){ F.opening(lx,lz-0.9, 0,1, 2.4, 3.0, 0, { style:'gate', to:'court' }); F.doors.unshift(F.doors.pop()); F.doorIds.unshift(F.doorIds.pop()); }
 
   /* =====================================================================================
      1. FAMILY COMPOUND  30 x 26 */

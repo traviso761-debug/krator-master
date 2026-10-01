@@ -39,10 +39,14 @@ const giantDir=new THREE.Vector3(Math.sin(66*Math.PI/180)*Math.cos(25*Math.PI/18
 portUnderwaterPatch();   // the underwater fade on every MAT material (71-port-terrain.js)
 const PORT_LAYOUT=(typeof PORT_LAYOUT_DEF!=='undefined'&&PORT_LAYOUT_DEF)||{items:[],stamps:[],runs:[]};
 function portOptFor(it){const R=portRegOf(it.key)||{};
- return {key:it.key,d:it.d,gx:it.gx,gz:it.gz,nb:it.nb||{W:{kind:'land',dz:0},E:{kind:'land',dz:0}},slot:it.slot||0,run:it.run||0,
-  ctx:!!it.ctx,W:R.W,LAND:R.LAND,SEA:R.SEA,vessels:PORT_LAYOUT.vessels||[],heading:it.heading||0,
-  // a layout item may name the vessel a berth holds, and pass any extra fields
-  vessel:it.vessel||null,...(it.opt||{})};}
+ const nb=Object.assign({W:{kind:'land',dz:0},E:{kind:'land',dz:0},N:{kind:'land',dz:0},S:{kind:'sea',dz:0}},it.nb||{});
+ return {key:it.key,d:it.d,gx:it.gx,gz:it.gz,nb,slot:it.slot||0,run:it.run||0,
+  ctx:!!it.ctx,W:R.W,LAND:R.LAND,SEA:R.SEA,place:portPlaceOf(it.key),vessels:PORT_LAYOUT.vessels||[],heading:it.heading||0,
+  // a layout item may name the vessel a berth holds (vessel) or several
+  // (fleet: [key per portVesselFor index]), and pass any extra fields (opt)
+  vessel:(typeof it.vessel==='string')?it.vessel:null,fleet:it.fleet||null,...(it.opt||{})};}
+// 0. every item's neighbours on all four sides, from the footprints (70-port-core.js)
+try{portLinkNb(PORT_LAYOUT.items);}catch(e){reportErr('layout nb '+e.stack);}
 // 1. stamps
 for(const it of PORT_LAYOUT.items){const R=portRegOf(it.key);if(!R){reportErr('layout names unregistered key '+it.key);continue;}
  let st=[];try{st=R.stamps(portOptFor(it))||[];}catch(e){reportErr(it.key+' stamps d='+it.d+' '+e.stack);}
@@ -56,17 +60,23 @@ TSTAT.cur=null;
 // 3. builders (segments, then any free-standing vessels the layout places)
 for(const it of PORT_LAYOUT.items){const R=portRegOf(it.key);if(!R)continue;const d=it.d;
  const key=portStatKey(it.key,d);it.stat=key;TSTAT.cur=key;const _r0=REG.length;
+ PORT_OWN[key]={key:it.key,d,name:R.name,place:it.vessel===true?'vessel':portPlaceOf(it.key)};
+ if(it.vessel===true)PORT_VPLACED.push({key:it.key,d,x:it.gx,z:it.gz,heading:it.heading||0,host:null,stat:key});
  HOLES=(d>=3)?.55:1;KOFF=[0,0,0];KXF=null;
  const opt=portOptFor(it);
  let _G=null;
  PORT_CUR=opt;
  try{_G=R.build(scene,it.gx,it.gz,d,opt);}catch(e){reportErr(it.key+' d='+d+' '+e.stack);}
- PORT_CUR=null;
+ PORT_CUR=null;PORT_PART=null;
  try{pbFlush();}catch(e){reportErr(it.key+' flush '+e.stack);}
  HOLES=1;
  if(d>=3&&_G&&!R.norepair){KOFF=[it.gx,0,it.gz];try{portRepair(_G,d);}catch(e){reportErr(it.key+' repair '+e.stack);}}
  KOFF=[0,0,0];KXF=null;
- for(let i=_r0;i<REG.length;i++)if(!REG[i].type)REG[i].type=it.key;
+ // anything the builder made without mesh() is still its own (the inspector)
+ if(_G&&_G.isObject3D){if(!_G.userData.own)_G.userData.own=key;_G.traverse(o=>{if((o.isMesh||o.isInstancedMesh)&&!o.userData.own)o.userData.own=key;});}
+ for(let i=_r0;i<REG.length;i++){if(!REG[i].type)REG[i].type=it.key;if(!REG[i].own)REG[i].own=key;}
  TSTAT.cur=null;}
 window._registered=REG.length;
 kbake(scene);
+// per-instance owners for the inspector: instanceId i of KIT.meshes[name] is KIT.items[name][i]
+for(const n in KIT.meshes){const m=KIT.meshes[n];m.userData.kname=n;m.userData.owns=KIT.items[n];}
