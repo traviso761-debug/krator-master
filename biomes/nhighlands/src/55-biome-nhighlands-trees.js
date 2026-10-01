@@ -21,7 +21,7 @@ const T3=BIO.host.THREE,C=h=>new T3.Color(h);
 const KEY={};SP.forEach((S,i)=>KEY[S.key]=i);NHL.KEY=KEY;
 NHL.TREES=[];NHL.COLONIES=[];NHL.STANDS=[];
 // the runtime LOD ranges (metres from the camera to a chunk)
-NHL.LOD={tree:1300,floor:650,farFloor:3200,dress:1300,logs:1300};
+NHL.LOD={tree:1300,floor:650,farFloor:2400,dress:1300,logs:1300,glow:650};
 
 // ---------------------------------------------------------------- zones from the fields
 const Y=(x,z)=>BIO.terrainH(x,z);
@@ -90,10 +90,15 @@ function sprayAt(x,y,z,a,L,pitch,col){BIO.put('spray',[x,y,z],qEuler(rr(-.25,.25
 function drape(x,y,z,len,lichen){const it=lichen?'beard':'drape',set=lichen?PAL.lichen:PAL.drape;
  BIO.put(it,[x,y,z],qEuler(0,rr(0,TAU),0),[rr(.7,1.4)*(lichen?.7:1),len,1],bright(vary(pick(set),.02,.06,.05),lichen?1.2:1.25));}
 // a cluster of BELL-BULBS (and now and then LANTERN PODS) hung off a point; one halo in two clusters, for the night
-function glowCluster(x,y,z,n,st,podK){const pods=rng()<(podK==null?.25:podK);
+// Fewer far from the spine (a bulb is a few pixels past ~150 m), and drawn only within NHL.LOD.glow of the camera:
+// the halo, what the night shows at range, keeps the tree's range and every second cluster
+function glowCluster(x,y,z,n,st,podK){const pods=rng()<(podK==null?.25:podK),r0=BIO.range;
+ n=Math.max(1,Math.round(n*lerp(1,.3,smooth(150,420,BIO.lodD(x,z)))));
+ if(r0!=null)BIO.range=Math.min(r0,NHL.LOD.glow);
  for(let i=0;i<n;i++){const a=rr(0,TAU),d=rr(0,.7),L=rr(.6,2.4),s=rr(.85,1.35);
   if(pods)BIO.put('lantern',[x+Math.cos(a)*d,y,z+Math.sin(a)*d],qEuler(rr(-.1,.1),rr(0,TAU),rr(-.1,.1)),[s*.9,L*.8,s*.9],bright(vary(pick(PAL.pod),.02,.06,.05),1.1));
   else BIO.put('bulb',[x+Math.cos(a)*d,y,z+Math.sin(a)*d],qEuler(0,rr(0,TAU),0),[s,L,s],bright(vary(pick(PAL.bulb),.015,.05,.04),1.05));}
+ BIO.range=r0;
  if(rng()<.5)BIO.put(pods?'haloV':'halo',[x,y-1.6,z],qEuler(0,rr(0,TAU),0),rr(2.4,3.6),null);
  st.glow+=n;}
 function mossOn(p,st,R){BIO.put('mossmat',[p.x,p.y+p.r*.85,p.z],qEuler(rr(-.15,.15),rr(0,TAU),rr(-.15,.15)),[R,1,R],bright(vary(pick(PAL.moss),.03,.08,.05),.95));st.moss++;}
@@ -287,7 +292,7 @@ B.willow=function(T,st,lv){const S=SP[T.sp],H=T.H,ns=lv===2?ri(5,9):3,hc=vary(pi
 // THE TRUMPETS
 // a funnel at p (a point on the arm's tip): a ribbed lathe flaring from the arm's radius r0 to R, the rim
 // turned out, a fringe of fins round it, the floor closed in violet. dead: a broken, rimless ring.
-function funnel(p,r0,R,depth,S,st,lv,dead,o){o=o||{};const nR=lv===2?(S.ribs||12):Math.min(7,S.ribs||12),seg=nR*3,ph=rr(0,TAU),n=lv===2?5:3;   // three segments a rib (the Rift's lesson); fewer ribs at mid range
+function funnel(p,r0,R,depth,S,st,lv,dead,o){o=o||{};const nR=lv===2?(S.ribs||12):Math.min(7,S.ribs||12),seg=nR*3,ph=rr(0,TAU),n=lv===2?(R>4?5:4):3;   // three segments a rib (the Rift's lesson); fewer ribs at mid range
  const leaf=vary(pick(o.leaf||S.leaf),.015,.05,.04),rim=C(pick(o.rim||PAL.trumpetRim)),throat=C(pick(PAL.throat)),stalk=barkCol(S,1);
  const rings=[];
  for(let i=0;i<=n;i++){const u=i/n,fl=Math.pow(u,1.9),r=lerp(r0,R,fl),yy=depth*u;let c=stalk.clone().lerp(leaf,smooth(.15,.7,u));if(u>.8)c.lerp(rim,smooth(.8,1,u)*.8);if(dead)c.lerp(C(0x6a5a40),.55);
@@ -341,7 +346,7 @@ B.trumpet=function(T,st,lv){const S=SP[T.sp],H=T.H,frost=!!S.frost,ns=frost?1:(r
 // Each tree past the spine: a trunk of a few quads and one to three blobs by its habit
 const HABIT=S=>S.habit==='conifer'?(S.form.crown==='spire'?'spire':S.form.crown==='dome'?'tall':'cone'):S.habit==='greattrumpet'?'cups':S.habit==='trumpet'?'cup':S.habit==='snag'?'snag':S.habit==='krumm'?'lump':S.habit==='pine'?'umbrella':S.habit==='gnarl'||S.habit==='yew'?'low':'dome';
 let ICO=null,ICO0=null;
-function buildFar(T,fi,st,lite){const K=BIO.bucket('nfar');if(!ICO){ICO=new T3.IcosahedronGeometry(1,1).attributes.position.array;ICO0=new T3.IcosahedronGeometry(1,0).attributes.position.array;}const ip=(lite||BIO.lodD(T.x,T.z)>1000)?ICO0:ICO;
+function buildFar(T,fi,st,lite){const K=BIO.bucket('nfar');if(!ICO){ICO=new T3.IcosahedronGeometry(1,1).attributes.position.array;ICO0=new T3.IcosahedronGeometry(1,0).attributes.position.array;}const ip=(lite||BIO.lodD(T.x,T.z)>700)?ICO0:ICO;
  const S=SP[T.sp],hb=HABIT(S);let tris=0;
  function vtx(x,y,z,nx,ny,nz,r,g,b){K.pos.push(x,y,z);K.nor.push(nx,ny,nz);K.uv.push(0,0);K.col.push(r,g,b);}
  function blob(x,y,z,rx,ry,colA,colB,sd){const ca=C(colA).convertSRGBToLinear(),cb=C(colB).convertSRGBToLinear(),k1=sd*7.3,k2=sd*3.1;
@@ -369,7 +374,7 @@ function buildFar(T,fi,st,lite){const K=BIO.bucket('nfar');if(!ICO){ICO=new T3.I
  K.tris+=tris;BIO.tally(tris,0,0);st.far+=tris;}
 
 // ---------------------------------------------------------------- the pass
-NHL.buildTrees=function(R,q){
+NHL.buildTrees=function(R,q,box){
  reseed(550031);q=q==null?1:q;R=R||3300;means();
  const st={trunk:0,limb:0,far:0,clumps:0,sprays:0,snow:0,moss:0,drapes:0,glow:0,fins:0,heroes:0,fars:0,colonies:0,byS:SP.map(()=>0)};
  const TREES=NHL.TREES;TREES.length=0;NHL.COLONIES.length=0;for(const k in HASH)delete HASH[k];
@@ -380,10 +385,11 @@ NHL.buildTrees=function(R,q){
    (x,y,z)=>{if(BIO.depth(x,z)>-.25||blocked(x,z,opt.pad==null?4:opt.pad))return;if(!BIO.clearOf(x,z,(opt.pad==null?4:opt.pad)+2))return;
     const T=mk(x,y,z,sp);if(opt.mod)opt.mod(T,zones(x,z));
     T.lv=lvOf(x,z,opt.hero,opt.mid);if(T.lv===0&&!opt.far)return;
-    TREES.push(T);hadd({x,z,r:T.rb*1.4+(opt.own||1)});n++;},{patch:opt.patch==null?.55:opt.patch,patchScale:opt.patchScale||.01,pad:1});
+    TREES.push(T);hadd({x,z,r:T.rb*1.4+(opt.own||1)});n++;},{patch:opt.patch==null?.55:opt.patch,patchScale:opt.patchScale||.01,pad:1,box});
   return n;}
  // THE TRUMPET COLONIES: five to thirty understorey trumpets round one spot, suckering; the boreal trumpet in small knots
- BIO.grid(110,0,R,(x,z)=>{if(BIO.lodD(x,z)>520)return 0;const Z=zones(x,z);return ((Z.temperate*.8+Z.montane*.5)*(.15+.85*Z.colony)+Z.rip*.35*Z.temperate)*q;},(x,y,z)=>{
+ // (its own small weight in the boreal band: it came only from the band's lower edge, a score of trees in all)
+ BIO.grid(110,0,R,(x,z)=>{if(BIO.lodD(x,z)>520)return 0;const Z=zones(x,z);return ((Z.temperate*.8+Z.montane*.5)*(.15+.85*Z.colony)+Z.rip*.35*Z.temperate+Z.boreal*(1-Z.alpine)*.06*(.3+.7*Z.colony))*q;},(x,y,z)=>{
   const Z=zones(x,z),boreal=Z.boreal>.5&&Z.alpine<.4,sp=boreal?KEY.frosttrumpet:KEY.trumpet;if(Z.alpine>.4)return;
   const lvC=lvOf(x,z,300,520),nT=boreal?ri(3,8):(lvC===2?ri(8,28):ri(4,10)),rad=boreal?rr(6,12):rr(10,26),col={x,z,r:rad,n:0,sp,lv:lvC};if(lvC===0)return;
   for(let k=0;k<nT*2&&col.n<nT;k++){const a=rr(0,TAU),d=rad*Math.sqrt(rng()),px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d;

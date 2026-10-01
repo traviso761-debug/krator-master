@@ -2,9 +2,9 @@
 // The biome's public surface (BIOME-API.md). The passes live in 55 (trees),
 // 60 (floor) and 65 (dress); this file only orders them and reports.
 NHL.build=function(opt){opt=opt||{};const R=opt.R||3300,q=opt.quality==null?1:opt.quality;
- const out={R,quality:q,trees:0,heroes:0,far:0};
- if(NHL.buildTrees){BIO.cur='nhighlands/trees';Object.assign(out,NHL.buildTrees(R,q));}
- if(NHL.buildFloor){BIO.cur='nhighlands/floor';Object.assign(out,NHL.buildFloor(R,q));}
+ const out={R,quality:q,trees:0,heroes:0,far:0,ms:{}},now=()=>performance.now();let t=now();
+ if(NHL.buildTrees){BIO.cur='nhighlands/trees';Object.assign(out,NHL.buildTrees(R,q,opt.box));out.ms.trees=Math.round(now()-t);t=now();}
+ if(NHL.buildFloor){BIO.cur='nhighlands/floor';Object.assign(out,NHL.buildFloor(R,q,opt.box));out.ms.floor=Math.round(now()-t);}
  BIO.cur=null;BIO.range=null;BIO.owner=null;BIO.minRange=0;return out;};
 // growth on a structure: opt {kind:'crag'} for rock, else a building ({y0,h,coldTop,ledges,soffits,walls})
 NHL.dress=function(geos,opt){if(!NHL.dressGeos)return null;BIO.cur='nhighlands/dress';const st=NHL.dressGeos(geos,opt||{});BIO.cur=null;return st;};
