@@ -1,0 +1,46 @@
+# Krator site server: the hand-written half of the configuration. See host/README.md.
+#
+# host/sync.py writes site.toml (the file the server reads) as this file followed by the World Menagerie's
+# routes and mounts. Edit this file, then:  ./sitectl sync && ./sitectl reload
+#
+# Relative file and dir paths are resolved from host/.
+
+[sync]
+menagerie = "../../WorldMenagerie"   # the World Menagerie checkout to pull from
+menagerie_index = "/menagerie"       # the Menagerie's front page moves here: / is Krator's
+drop_routes = ["/voth"]              # the Menagerie's Voth is not served: Krator's is (route below)
+drop_paths = ["voth.html", "src/voth", "css/voth.css"]   # and its files are not copied
+
+[server]
+host = "0.0.0.0"        # "127.0.0.1" = this machine only
+port = 8001             # the menagerie service has 8000 until this one replaces it
+log_requests = true
+health = "/healthz"
+name = "Krator"
+scenes = "/scenes.json"  # the scene list the Menagerie pages' menu reads: Krator's entries and the Menagerie's
+
+[server.headers]
+"Cache-Control" = "no-cache"
+"X-Content-Type-Options" = "nosniff"
+
+# ---- Krator: the gallery, built into host/site/ by ./sitectl build -------
+
+[[route]]
+path = "/"
+aliases = ["/index.html", "/krator-worlds"]   # not /worlds: on /worlds/ the cards' relative links would miss
+file = "site/index.html"
+title = "Krator Worlds"
+scene = true
+blurb = "Every Krator settlement, kit, arcology and biome."
+
+[[route]]
+path = "/voth"
+aliases = ["/voth.html", "/cantons"]
+file = "site/worlds/voth.html"
+title = "Voth: City of Cantons"
+scene = true
+blurb = "Krator's Voth: a city of cantons on an enclosed brackish bay."
+
+[[mount]]
+prefix = "/worlds"      # every gallery page, and the local three.js they load
+dir = "site/worlds"
