@@ -110,6 +110,22 @@ The stumps keep most of a tower's triangles because the podium, legs, base
 blocks and dressing are the bulk of each type; C keeps its whole tripod by design.
 `mktC/3` (the tripod market check row: repaired C + market) is 230 094.
 
+## Round 2 (after the merge into ancients-resume)
+
+- FIXED the floating block in 'Stump G': the break took G's top-tier core and
+  bridges but kept the one surviving top-tier block whole, 10 m above the tier
+  under it. Step 2b of `skyStump` is a support check for every stump: a mesh whose
+  kept fabric starts more than 8 m up must have another kept mesh or instanced
+  item reaching from at/below its underside to within 6 m of it, over its
+  footprint, or it falls (repeated until stable). What it carried goes with it
+  and it leaves rubble below. Across all eleven families at decays 0 and 3 only
+  G drops anything (that one block). A first try with a 3 m gap also dropped
+  E's and F's whole shafts, which stand 5 m clear of the podium top on their
+  cores; 6 m keeps them and still drops G's 10 m gap. Verified on the merged
+  base: invariants PASS, error panel clean, shots read (G from the kit's angle, E, F, A, H).
+- Not mine: the ruined Skyscraper G itself keeps a top-tier block over the 10 m
+  tier gap (the builder's own stack design).
+
 ## Open
 
 - Re-verify on `ancients-resume` (see BASE WARNING). Expect the stumps to carry
