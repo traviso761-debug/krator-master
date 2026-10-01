@@ -123,7 +123,8 @@ hykLight(lx,ly,lz,{...,bracket:[lx,ly,lz]})            // a tube from an anchor 
   explicitly. `holes` scales the kit's decay holes for this host (default .4: the kit's full decay eats most of a
   skin, a reclaimed host keeps its wall). `rAt(y,a)` may take the bearing: a lobed host is wider at a crest.
 - `floors`: plate k's top is at `y0 + k*pitch + top` in the builder's own y (`first` replaces `k*pitch+top` for
-  k = 0), plus the sink. Pods must sit on plates: a pod's floor is the plate's top.
+  k = 0), plus the sink. A pod's floor is a plate's top, but pods round one host may take different plates. A pod between
+  plates is possible only where the host has no projecting plate rings: a ring crosses its door.
 - **Ways in.** A host must be declared with at least one way: `{a (bearing), y (the plate's top, world), R}`.
   The adapted builders cut that pod's hole through the skin and the lining (`52-sky-abc ysWallHole`), and the
   matching `hykAccrete` pod (`into:true`, same `a` and `R`, `y` optional) is bedded a fifth into the face with a
@@ -185,7 +186,7 @@ with `hykW` first. `FURN_PLACED` records every placed piece.
 The sheet lays every `HYK.def` out by `row`: free-standing rows march north from z = −75 on a land shelf at
 +3.2 m, the Harbour row stands at the shore (z = 8, the water at z > 30) and the Spans row just inland of it;
 grown-on rows hang on Scallop Stack hosts in the sea to the east (x = 560), one host per eleven pieces, pods on
-the plate at +37.25 in the lobe troughs, each host with its own way-in pod. Presets are generated:
+plates from +27.25 to +47.25 in the lobe troughs (a plate or two apart), each host with its own way-in pod. Presets are generated:
 `'<name> — front'`, `'<name> — eye level'`, `'<name> inside'` (for dwellings, taverns and barracks, or
 `inside:true` on the def), `'<row> — row'` (back and up with the row's width), `'<host> — the host'`, `'<host> — the
 pods'` and `'<host> — the far pods'`, `'Kit — overview'`. The mock houses live only in the `mock` target now. A
