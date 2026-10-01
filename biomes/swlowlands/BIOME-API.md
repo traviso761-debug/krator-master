@@ -93,7 +93,10 @@ SWLOW.dress(geometries, opt)     // growth on a structure: Spanish moss, strangl
 SWLOW.canopyH(x,z)               // approximate canopy top
 SWLOW.SPECIES                    // the 27 tree species (tagged), SWLOW.PAL the palettes
 SWLOW.zones(x,z)                 // the zone weights a world can reuse for its own placement
-SWLOW.barkMat2(tex,key,{alt,gloss,gain})   // the two-tone bark material
+SWLOW.barkMat2(tex,key,{alt,gloss,gain})   // the two-tone bark material (.barkLook: {alt, gloss, mask})
+SWLOW.BARKLOOK                   // each bark bucket's look by name; the far impostors' trunks carry it
+SWLOW.farMat()                   // the impostors' material: vertex colours + the bark's sun highlight (gloss in uv.x)
+SWLOW.LOD                        // the runtime LOD ranges (below)
 ```
 
 Two planted stands a world can ask for. The world owns the ground (a road, a clearing)
@@ -108,8 +111,29 @@ groves:[{center:[x,z], r:70, spacing:16, angle:.35, species:'corkoak', stripped:
   // ONLY stripped cork oaks: a wild cork oak always keeps its cork.
 ```
 
-Then `BIO.bake()` once. Draw calls: one per instanced item + one per merged family (~57).
-`quality` scales every count; the ideal-type host reads it from `?q=` (or `window.KRATOR_Q`).
+Then `BIO.bake()` once. `quality` scales every count; the ideal-type host reads it from
+`?q=` (or `window.KRATOR_Q`).
+
+**Runtime LOD** (the core's, as xanadu uses it). The passes build under `BIO.range`, so bake
+splits every item and bucket into one mesh per 1200 m chunk and range, and the host calls
+`BIO.lodTick(camera)` every frame (after `camera.updateMatrixWorld()`): a chunk's mesh is
+drawn only while the camera is within its range of the chunk and the chunk is in view.
+The ranges are `SWLOW.LOD` (metres; `BIO.LOD.scale` multiplies them all):
+
+| key | what | m |
+|---|---|---|
+| `tree` | a hero tree in full (its foot keys it: limbs, foliage, moss, knees...) | 1200 |
+| `avenue` | the avenue's and the grove's rows (`avenues`, `groves`) | 2000 |
+| `floor`, `floorMid`, `farFloor` | the floor's near / mid / far bands (grass and water: near / mid) | 800, 1200, 1200 |
+| `under` | the understorey under each crown (keyed by its tree) | 800 |
+| `logs` | fallen trees | 1200 |
+| `dress` | `SWLOW.dress` on a world's structures (`opt.range` overrides) | 1200 |
+
+Behind every hero stands a lite impostor (`minRange` = its range), drawn only past it; a far
+tree (beyond the spine's mid ring) is only its impostor, always drawn. The scene therefore
+HOLDS more than before (the stand-ins) and DRAWS far less: `BIO.lodShown` reports the chunk
+meshes and triangles drawn. Draw calls rise to one per item per chunk in view (KNOWN_ISSUES).
+`SWLOW.treeAt` keys its tree by its foot too, under whatever `BIO.range` the world sets.
 
 ## Flowers (project rule for this biome)
 
