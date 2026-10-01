@@ -39,27 +39,41 @@ market/shop, tavern/inn, industry, farm, single-family dwelling, multi-family
 dwelling, infrastructure, religious, funerary. Each place carries the types its
 buildings should have.
 
-## The builder contract (for the building kit)
+## The building kit (77a-e) and the plan (44, 80)
 
-Each family is one standalone function, with no terrain, scene or global in it:
+Every builder is host-free (THREE and the DOM only; `build.py` greps the 10..79
+range for host names) and returns a `THREE.Group`, base at y = 0, front facing +z,
+with `userData = {kind:'building', name, culture:'eastern-nomad', types, footprint, height, family, seed}`.
+A wall-backed piece has its back plane at z = 0 (the plan sets it 1 m inside the face).
 
-```js
-buildPetraFacade({width, height, depth, seed})  // a THREE.Group, base at y=0, front facing +z, its back plane at z=0
-buildFairyChimney({height, radius, seed})
-buildPuebloBlock({w, d, storeys, seed})
-buildHairclothTent({w, d, seed})
-// each returns a Group with userData = {kind:'building', name, culture:'eastern-nomad', types:[...], footprint:[[x,z],...]}
-```
+| Builder | Family | Notes |
+|---|---|---|
+| `buildTreasury({width,height,seed})` | treasury | the Khazneh: two orders, tholos, broken pediment, in a niche of wedge cheeks and a hood |
+| `buildCrowTomb({width,height,ledge,seed})` | tomb | a Hegra house front: pilasters, two cornices, crow-steps, a pedimented door |
+| `buildRockStair({run,rise,width,dir,seed})` | stair | steps cut along the face, rising toward +x (dir 1) |
+| `buildLedge({length,depth,seed})` | ledge | the gallery an upper row stands on |
+| `buildPuebloCompound({cx,cz,cell,storeys,seed})` | pueblo | a U of rooms stepping down to a plaza at +z; `userData.cells`, `plaza` |
+| `buildCaravanserai({w,d,seed})` | khan | walls, towers, a pishtaq gate at +z, arcades, rooms, a well; `userData.ring`, `gate` |
+| `buildBlackTent({w,d,poles,seed})` | tent | goat-hair roof sagging between pole peaks, ropes, a rug and a hearth |
+| `buildMarketStall({w,d,dye,seed})` | stall | four poles, a striped awning, a counter and its goods |
+| `buildFairyChimney({height,radius,twin,seed})` | fairy | an eroded tufa cone under a basalt cap, door, windows, a stair round its foot |
 
-The host places them: it rotates +z onto the place's `facade.face` (or the facing
-the place wants), sets the base to `terrainH`, pushes `OBSTACLES` and `REGISTER`s each
-one with `cls:'building'` and its tags, all **before** `SEDESERT.build` in 88.
+Materials (`NOMAD.MAT`): `stone` (banded by world height with the cliff's strata),
+`adobe`, `tufa`, `cloth`, `canvas`, `wood`, `dark` (openings). Tints are sRGB hex,
+converted to linear by the collector. Textures tile in metres.
+
+`SHADE_PLAN.plans` (44): `{id,family,placeId,x,z,yaw,lift,group?,access?,params}`;
+`SHADE_PLAN.rejected` counts what did not fit (a `*_short` entry fails the probe).
+80 builds every plan before the walkable grid (84) and publishes `BUILDINGS.records`
+(world footprint, the cells the grid blocks, the door, base and lift) and
+`BUILDINGS.meshes` (one per material). To add a building: add a plan in 44; to add a
+family: a builder in 77, an entry in 80's `BUILD` table and its nav/door rule.
 
 ## Hooks
 
 | Name | What |
 |---|---|
-| `REGISTER({name,cls,x,z,y,r,h,tags})` | a volume the inspector names on hover (cls: building, flora, fauna, place, water, terrain) |
+| `REGISTER({name,cls,x,z,y,r,h,tags})` | a volume the inspector names on hover (cls: building, flora, fauna, place, water, terrain); 80 registers every building |
 | `TICKS.push(fn(dt,t))` | per-frame work |
 | `OBSTACLES.push({x,z,r,y0,y1})` | a cylinder nothing grows inside (the biome reads it) |
 | `LIFE` | `ACTIVITIES`, `FACTIONS`, `JOBS` (schedule per hour), `PEOPLE`, `EVENTS`, `NAV`, `route(ax,az,bx,bz,block)`, `reach(x,z,block)`, `offering(activity,x,z)`, `ROUTES`, `OUT` (the checks' results) |

@@ -20,7 +20,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `20-core-kit.js` | 14 | merged buckets (58); bake (133); dynamic instances (158) |
 | `30-core-foliage.js` | 15 | alpha textures (18); card geometries (48); the foliage hook (110); colour (175) |
 | `40-core-place.js` | 7 | surface sampling (59) |
-| `44-host-layout.js` | 14 | the plateau (26); the basin and the canyon (34); the water (52); the switchback (62); terrain (106); the places (127) |
+| `44-host-layout.js` | 21 | the plateau (26); the basin and the canyon (34); the water (52); the switchback (62); terrain (106); the places (127); the building plan (171) |
 | `45-host-stage.js` | 22 | the climate fields (25); the flora mask (reserve before you build) (57); the host binding (85); the ground (95); the water (155) |
 | `50-biome-sedesert-species.js` | 29 | THE WATER COLOUR (17); the tree species (69); leaf textures (129); bark, rock, wood textures (205); geometries local to this biome (244); materials (298); instanced items (330) |
 | `55-biome-sedesert-trees.js` | 32 **big** | zones from the fields (15); colour (the maths is the core's, BIO.col) (36); polyline helpers (Girder's) (51); keep-clear between trees (59); foliage helpers (66); the builders (83); impostors (the far canopy) (260); the pass (284); the passes (data: species, cell, acceptance from (314) |
@@ -28,11 +28,17 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `65-biome-sedesert-dress.js` | 5 |  |
 | `70-biome-sedesert.js` | <1 |  |
 | `75-biome-sedesert-fauna.js` | 11 | geometries (unit, vertex-coloured) (23); materials (53); the pass (60) |
+| `77a-kit-nomad-core.js` | 13 | textures (canvas, grey or neutral so the tint ca (17); materials (44); the collector (69) |
+| `77b-kit-nomad-carved.js` | 7 |  |
+| `77c-kit-nomad-pueblo.js` | 5 |  |
+| `77d-kit-nomad-khan.js` | 6 |  |
+| `77e-kit-nomad-camp.js` | 6 |  |
+| `80-host-buildings.js` | 6 |  |
 | `82-host-sky.js` | 13 | the Inner Wall painter (8) |
-| `84-host-life.js` | 12 | the walkable grid (47); the checks the probe reads (83) |
+| `84-host-life.js` | 13 | the walkable grid (47); the checks the probe reads (96) |
 | `86-host-overlay.js` | 3 |  |
 | `87-host-views.js` | 2 |  |
 | `88-host-build.js` | <1 |  |
-| `90-host-camera.js` | 10 | the panel (10); picking (24); the polygon tool (62); input (68) |
-| `91-host-probe.js` | 16 | the Shade checks (32) |
+| `90-host-camera.js` | 10 | the panel (10); picking (25); the polygon tool (63); input (69) |
+| `91-host-probe.js` | 21 | the Shade checks (34) |
 | `99-tail.html` | <1 |  |

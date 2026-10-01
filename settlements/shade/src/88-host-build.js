@@ -1,7 +1,6 @@
 // ================================================================= HOST — build
-// The order: the places are already reserved in the flora mask (45); no
-// structures stand yet (the building kit comes next), so the biome runs, then
-// one bake. A structure added later goes BEFORE the biome and pushes OBSTACLES.
+// The order: 87b places structures and pushes OBSTACLES before the biome grows;
+// the places were reserved in the flora mask (45), then one bake collects both.
 window._biome=null;
 (function(){
  const t0=performance.now();

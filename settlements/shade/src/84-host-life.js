@@ -55,6 +55,19 @@ NAV.nx=Math.round((NAV.x1-NAV.x0)/NAV.c)+1;NAV.nz=Math.round((NAV.z1-NAV.z0)/NAV
 const N=NAV.nx*NAV.nz,H=new Float32Array(N),BLK=new Uint8Array(N),WET=new Uint8Array(N);
 for(let j=0;j<NAV.nz;j++)for(let i=0;i<NAV.nx;i++){const x=NAV.x0+i*NAV.c,z=NAV.z0+j*NAV.c,k=j*NAV.nx+i,h=terrainH(x,z),dw=waterH(x,z)-h;
  H[k]=h;if(dw>.9)BLK[k]=1;else if(dw>0)WET[k]=1;}
+// Building footprints are declared in 44 before this grid is made. A plan may
+// contain several navigation shadows (the Khan's arcades) while its measured
+// building footprint remains one polygon for containment and overlap checks.
+for(const B of NAV_BLOCK)for(const P of (B.navPolys||[B.poly])){const xs=P.map(p=>p[0]),zs=P.map(p=>p[1]);
+ const i0=Math.max(0,Math.floor((Math.min(...xs)-NAV.x0)/NAV.c)),i1=Math.min(NAV.nx-1,Math.ceil((Math.max(...xs)-NAV.x0)/NAV.c));
+ const j0=Math.max(0,Math.floor((Math.min(...zs)-NAV.z0)/NAV.c)),j1=Math.min(NAV.nz-1,Math.ceil((Math.max(...zs)-NAV.z0)/NAV.c));
+ for(let j=j0;j<=j1;j++)for(let i=i0;i<=i1;i++){const x=NAV.x0+i*NAV.c,z=NAV.z0+j*NAV.c;if(polyHas(P,x,z))BLK[j*NAV.nx+i]=1;}}
+// Restore each doorway's short approach so the blocked building footprints do
+// not seal their own entrances. The route still stops at the room threshold.
+for(const B of NAV_BLOCK)for(const P of (B.navOpenPolys||[])){const xs=P.map(p=>p[0]),zs=P.map(p=>p[1]);
+ const i0=Math.max(0,Math.floor((Math.min(...xs)-NAV.x0)/NAV.c)),i1=Math.min(NAV.nx-1,Math.ceil((Math.max(...xs)-NAV.x0)/NAV.c));
+ const j0=Math.max(0,Math.floor((Math.min(...zs)-NAV.z0)/NAV.c)),j1=Math.min(NAV.nz-1,Math.ceil((Math.max(...zs)-NAV.z0)/NAV.c));
+ for(let j=j0;j<=j1;j++)for(let i=i0;i<=i1;i++){const x=NAV.x0+i*NAV.c,z=NAV.z0+j*NAV.c;if(polyHas(P,x,z))BLK[j*NAV.nx+i]=0;}}
 const cellOf=(x,z)=>{const i=Math.round((x-NAV.x0)/NAV.c),j=Math.round((z-NAV.z0)/NAV.c);return i<0||j<0||i>=NAV.nx||j>=NAV.nz?-1:j*NAV.nx+i;};
 const xzOf=k=>[NAV.x0+(k%NAV.nx)*NAV.c,NAV.z0+Math.floor(k/NAV.nx)*NAV.c];
 const DIRS=[[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]];
@@ -113,5 +126,6 @@ for(const E of EVENTS){let x=PORTS[E.from].x,z=PORTS[E.from].z;const legs=[],mis
 for(const j in JOBS){const J=JOBS[j],home=byId[J.homes[0]],h=target(home),seen={};let bad=0,len=0;
  for(const a of J.sched){if(seen[a])continue;seen[a]=1;if(home.activities.indexOf(a)>=0)continue;const p=offering(a,h.x,h.z);if(!p){bad++;continue;}const t=target(p),r=route(h.x,h.z,t.x,t.z);if(!r)bad++;else{len+=r.len;if(j==='herder'||j==='guard_day'||j==='farmer')ROUTES.push({key:'commute',label:j+': '+home.id+' to '+p.id,pts:r.pts,color:0x3cc8ff});}}
  OUT.routes[j]={unrouted:bad,metres:Math.round(len)};}
+NAV.blocked=BLK;
 return{ACTIVITIES,FACTIONS,JOBS,PEOPLE,EVENTS,NAV,route,reach,offering,ROUTES,OUT,sched};})();
 window._life=LIFE.OUT;
