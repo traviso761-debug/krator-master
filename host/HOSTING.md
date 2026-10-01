@@ -50,7 +50,9 @@ krator-master/                     (this repository, branch host-server)
 
 ## Windows
 
-All commands work the same in **Command Prompt** and in **PowerShell**.
+All commands work the same in **Command Prompt** and in **PowerShell**. Or skip the commands: after step 1,
+**double-click `host\sitectl.bat`** in Explorer. It sets up the site the first time, then runs it in that window
+(close the window to stop it). If something goes wrong, the window stays open to show why.
 
 ### 1. Download
 
@@ -141,6 +143,7 @@ once whether Python may accept incoming connections; allow it.
 | Windows (`host\sitectl.bat …`) or any system (`python3 host/sitectl.py …`) | Linux service (`host/sitectl …`) | What it does |
 |---|---|---|
 | `setup` | (`sync`, `build`, `check`) | first run: copy the Menagerie pages, build the gallery, check every route |
+| `run` (or double-click the `.bat`) | | `setup` if it has never been done, then `serve` |
 | `serve [--port N]` | `serve`, or `install` + `enable` | run the site; on Linux, `enable` runs it as a service that starts at login |
 | `update` | `update` | after a `git pull`: copy and build again (the Linux service also reloads) |
 | `sync [--check]` | `sync [--check]` | copy only the Menagerie pages; `--check` reports what has changed and copies nothing |

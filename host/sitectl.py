@@ -4,6 +4,7 @@
 Usage:  python host/sitectl.py <command>        (on Windows:  host\\sitectl.bat <command>)
 
   setup              first run on a fresh clone: sync, build, check, and print the site's URLs
+  run                setup if it has never been done, then serve (what double-clicking sitectl.bat does)
   sync [--check]     pull the World Menagerie's pages into menagerie/ and write site.toml (--check: drift only)
   build [--all | --no-build]
                      build the gallery into site/ with local three.js. By default only worlds whose built page is
@@ -117,14 +118,25 @@ def firewall():
     return 0
 
 
+def main_setup():
+    for step in (lambda: sync([]), lambda: build([]), lambda: check(quiet=True)):
+        if step():
+            return 1
+    return 0
+
+
 def main():
     cmd, args = (sys.argv[1], sys.argv[2:]) if len(sys.argv) > 1 else ('help', [])
     if cmd == 'setup':
-        for step in (lambda: sync([]), lambda: build([]), lambda: check(quiet=True)):
-            if step():
-                return 1
+        if main_setup():
+            return 1
         print('\nReady. Start the site with:  sitectl serve   (sitectl.bat on Windows)\nIt will answer at:')
         return urls()
+    if cmd == 'run':
+        if not os.path.isfile(CONFIG) or not os.path.isdir(os.path.join(DIR, 'site')):
+            if main_setup():
+                return 1
+        return serve(args)
     if cmd == 'update':
         return sync([]) or build(args)
     simple = {'sync': lambda: sync(args), 'build': lambda: build(args), 'serve': lambda: serve(args),
