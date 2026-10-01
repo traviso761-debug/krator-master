@@ -2,7 +2,7 @@
    furnishRoom(room, catalog, opts) -> plan. Pure data; nothing is built (IX.buildRoom does that).
 
    SPEC "Placement", in its fixed order:
-   1. FILTER  setting in {indoor, both}, rooms contains room.kind, fits under the ceiling;
+   1. FILTER  setting in {indoor, both}, rooms contains room.kind (or one of IX.KIND_ALIAS[kind]), fits under the ceiling;
               culture tried along the chain own -> CULTURE_FAMILY -> any (opts.fallback:
               'any' default | 'family' | 'none'); every step down the chain is reported.
    2. REQUIRE the room kind's PROGRAMS[kind].require slots first, then its optional pieces.
@@ -38,7 +38,8 @@
                                                   frame [{ lx, ly, lz, color, intensity, distance }]
 
    plan = { room, kind, culture, seed, placements[], lights[], grid, zones{ doors[][], windows[] }, report, stats }
-   placement = { id, key, variant, seed, x, z, ry, y, anchor, type, role, culture, need, host, lights? }
+   placement = { id, key, variant, seed, x, z, ry, y, anchor, type, role, catRole, culture, need, host, lights? }
+               (role: the slot it took, back/wall/centre/seat/...; catRole: the catalog's role, chest/store/...)
    plan.lights = every placement's lights in world terms, { placement, x, y, z, color, intensity, distance }:
    a host lights the room from this data (or a budget of it) instead of one real light per lamp.
    ====================================================================== */
@@ -167,8 +168,12 @@
 
     /* ---- 1. FILTER */
     const all = catalog.list();
+    const kinds = IX.roomKinds ? IX.roomKinds(room.kind) : [room.kind];   /* the kind and its aliases (30-programs.js) */
     const base = all.filter(function (d) {
-      return (d.setting === 'indoor' || d.setting === 'both') && (d.rooms || []).indexOf(room.kind) >= 0;
+      if (d.setting !== 'indoor' && d.setting !== 'both') return false;
+      const rs = d.rooms || [];
+      for (const k of kinds) if (rs.indexOf(k) >= 0) return true;
+      return false;
     });
     const chain = [room.culture].concat(IX.CULTURE_FAMILY[room.culture] || []);
     report.own = base.filter(function (d) { return d.culture === room.culture; }).length;
@@ -416,7 +421,7 @@
     let nItem = 0;
     for (const rq of reqs) {
       const L = levels(fallback).map(function (lv) {
-        return { culture: lv.culture, list: lv.list.filter(function (d) { return rq.types.indexOf(d.type) >= 0; }) };
+        return { culture: lv.culture, list: lv.list.filter(function (d) { return rq.types.indexOf(d.type) >= 0 && (!rq.roles || rq.roles.indexOf(d.role) >= 0); }) };
       }).filter(function (lv) { return lv.list.length; });
       const rec = { need: rq.need, types: rq.types, n: rq.n || 1, placed: 0 };
       report.required.push(rec);
@@ -471,7 +476,7 @@
       const hostQ = Q.host ? placed.filter(function (H) { return H.id === Q.host; })[0] : null;
       const y = catalog.anchorY(P.key, P.variant, { floorY: room.y, surfaceY: hostQ ? hostQ.top : null, ceilingY: room.y + room.h });
       const p = { id: Q.id, key: P.key, variant: P.variant, seed: 1 + ((seed + i * 7919) % 99991), x: Q.x, z: Q.z, ry: Q.ry, y: R3(y),
-        anchor: P.anchor, type: P.type, role: Q.role, culture: P.culture, need: Q.need || null, host: Q.host,
+        anchor: P.anchor, type: P.type, role: Q.role, catRole: P.desc.role || null, culture: P.culture, need: Q.need || null, host: Q.host,
         w: R3(P.w), d: R3(P.d), h: R3(P.h), clearance: P.clear };
       const L = catalog.lights ? catalog.lights(P.key, P.variant, { seed: p.seed, wealth: room.wealth }) : null;
       if (L && L.length) {
