@@ -17,13 +17,13 @@ function buildAltCult(scene,gx,gz,d){reseed(9840+d);KOFF=[gx,0,gz];
  const dd=d>0?1:0,brk=d===1||d===2,rec=d===2,stone=CONC(dd),skin=SHELL(d);
  const RW=82,PY=1.6;
  REGISTER({name:'The Bloom — cultural centre ('+ALT_STATE[d]+')',x:0,z:0,r:RW+30,h:70});
- REGISTER({name:'The Bloom: the flower',x:0,z:0,r:40,h:70});
+ REGISTER({name:'The Bloom: the flower',x:0,z:0,r:52,h:84});
  const ST=[],WS=[],GL=[];
  // THE PETALS: outer face, inner face, edges, a 1.6 m thick shell
  const NPET=4,BROKE=brk?1:-1;
  const petal=(a,v0,v1,hole,ox,oy,oz)=>{const dir=[Math.cos(a),Math.sin(a)],tg=[-Math.sin(a),Math.cos(a)],A=[];
-  const P=(s,v,inn)=>{const c=4+32*Math.pow(v,1.6),w=2.5+14*Math.pow(Math.sin(Math.PI*Math.min(1,v*.85)),.8),y=PY+5+58*v-6*v*v;
-   const rad=c-.55*s*s*w*v*(1+v)-(inn?1.6:0),t=s*w*(inn?.97:1);
+  const P=(s,v,inn)=>{const c=5+44*Math.pow(v,1.6),w=3.2+19*Math.pow(Math.sin(Math.PI*Math.min(1,v*.85)),.8),y=PY+5+80*v-8*v*v;
+   const rad=c-.55*s*s*w*v*(1+v)-(inn?2:0),t=s*w*(inn?.97:1);
    return[dir[0]*rad+tg[0]*t-(ox||0),y-(oy||0),dir[1]*rad+tg[1]*t-(oz||0)];};
   const vv=v=>lerp(v0,v1,v);
   for(const inn of[0,1])A.push(gridSurface((u,v)=>P(u*2-1,vv(v),inn),16,24,{uS:4,vS:8,hole:hole?(u,v)=>hole(u,vv(v)):null}));
@@ -34,13 +34,13 @@ function buildAltCult(scene,gx,gz,d){reseed(9840+d);KOFF=[gx,0,gz];
   if(i!==BROKE){ST.push(...petal(a,0,1,hole));continue;}
   ST.push(...petal(a,0,.52,hole));
   // the blade, down across the seats
-  const F=new THREE.Group();F.rotation.set(0,-a+Math.PI,0);F.position.set(46*Math.cos(a),0,46*Math.sin(a));G.add(F);
+  const F=new THREE.Group();F.rotation.set(0,-a+Math.PI,0);F.position.set(58*Math.cos(a),0,58*Math.sin(a));G.add(F);
   const H=new THREE.Group();H.rotation.set(0,0,1.25);F.add(H);
-  meshMerged(petal(a,.55,1,hole,32*Math.cos(a)*.62,40,32*Math.sin(a)*.62),MAT.concreteR,H);
+  meshMerged(petal(a,.55,1,hole,44*Math.cos(a)*.62,55,44*Math.sin(a)*.62),MAT.concreteR,H);
   H.rotation.y=a;dropFragment(F,0,1.2);
-  REGISTER({name:'The Bloom: fallen petal',x:46*Math.cos(a),y:0,z:46*Math.sin(a),r:26,h:22});}
+  REGISTER({name:'The Bloom: fallen petal',x:58*Math.cos(a),y:0,z:58*Math.sin(a),r:34,h:28});}
  // the stem
- ST.push(lathe({rFn:y=>4.6+6*Math.pow(clamp(1-y/12,0,1),2),H:12,nu:24,nv:6}).translate(0,PY,0));
+ ST.push(lathe({rFn:y=>5.6+7*Math.pow(clamp(1-y/12,0,1),2),H:12,nu:24,nv:6}).translate(0,PY,0));
  // THE SEATS: fourteen steps rising outward under the petals, a gap on the axis
  const prof=[[22,0]];for(let k=0;k<14;k++){const r=24+k*2.3,y=.4+k*.9;prof.push([r-2.3+.01,y],[r,y]);}
  prof.push([58,13],[58.5,0]);
@@ -105,7 +105,7 @@ function buildAltCult(scene,gx,gz,d){reseed(9840+d);KOFF=[gx,0,gz];
    if(k%3===0){const n=[-Math.cos(a),0,-Math.sin(a)];fireWindow([(r-1.65)*Math.cos(a),PY+1.4,(r-1.65)*Math.sin(a)],n,qFacing(n),1,.8);}}
   // lines strung between the petal tips, a ladder up the first petal's back
   for(let i=0;i<NPET;i++){const a=i/NPET*TAU+Math.PI/4,b=(i+1)/NPET*TAU+Math.PI/4;if(i===BROKE||i+1===BROKE)continue;
-   altSag([30*Math.cos(a),PY+50,30*Math.sin(a)],[30*Math.cos(b),PY+50,30*Math.sin(b)],8,10,.08);}
-  {const a=Math.PI/4+Math.PI;altLadder([20*Math.cos(a),PY+.5,20*Math.sin(a)],[24*Math.cos(a),PY+40,24*Math.sin(a)],[-Math.sin(a),0,Math.cos(a)]);}
+   altSag([40*Math.cos(a),PY+68,40*Math.sin(a)],[40*Math.cos(b),PY+68,40*Math.sin(b)],10,10,.08);}
+  {const a=Math.PI/4+Math.PI;altLadder([26*Math.cos(a),PY+.5,26*Math.sin(a)],[33*Math.cos(a),PY+52,33*Math.sin(a)],[-Math.sin(a),0,Math.cos(a)]);}
   KOFF=[gx,0,gz];altReclaim(G,160,PY+.5,'altCult');figures(0,60,30,50);}
  KOFF=[0,0,0];return G;}

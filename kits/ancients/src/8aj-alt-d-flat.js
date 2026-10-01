@@ -16,10 +16,10 @@
 function buildAltFlat(scene,gx,gz,d){reseed(9830+d);KOFF=[gx,0,gz];
  const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);
  const dd=d>0?1:0,brk=d===1||d===2,rec=d===2,stone=CONC(dd);
- const NF=30,GF=6.2,FH=4.2,HT=GF+(NF-1)*FH;
+ const NF=34,GF=6.2,FH=4.2,HT=GF+(NF-1)*FH;
  REGISTER({name:'The Undulant — flatiron ('+ALT_STATE[d]+')',x:-10,z:0,r:78,h:HT+16});
  // THE PLAN: a filleted triangle, resampled evenly by arc length
- const C=[[72,0],[-52,43],[-52,-43]],RAD=[9,15,15],dense=[];
+ const C=[[62,0],[-44,37],[-44,-37]],RAD=[8,13,13],dense=[];
  for(let i=0;i<3;i++){const A=C[(i+2)%3],B=C[i],D=C[(i+1)%3];
   const n=v=>{const L=Math.hypot(v[0],v[1]);return[v[0]/L,v[1]/L];};
   const u1=n([A[0]-B[0],A[1]-B[1]]),u2=n([D[0]-B[0],D[1]-B[1]]),ph=Math.acos(u1[0]*u2[0]+u1[1]*u2[1])/2,r=RAD[i];
@@ -35,16 +35,16 @@ function buildAltFlat(scene,gx,gz,d){reseed(9830+d);KOFF=[gx,0,gz];
   const tx=b[0]-a[0],tz=b[1]-a[1],tl=Math.hypot(tx,tz);return{x:lerp(a[0],b[0],t),z:lerp(a[1],b[1],t),nx:tz/tl,nz:-tx/tl,tx:tx/tl,tz:tz/tl};};
  const NP=200,PS=[];for(let i=0;i<=NP;i++)PS.push(at(i/NP));
  const P=u=>PS[Math.round(((u%1)+1)%1*NP)];
- const CX=-10.7;
+ const CX=-8.7;
  // the swelling wall, the waving floor edge, the rolling parapet
- const wall=(u,y)=>.9*Math.sin(u*LP/14*TAU+y*.09);
- const edge=(u,f)=>Math.max(.6,1.8+1.3*Math.sin(u*LP/24*TAU+f*.8)+.8*Math.sin(u*LP/9*TAU-f*1.3));
+ const wall=(u,y)=>1.5*Math.sin(u*LP/16*TAU+y*.08);
+ const edge=(u,f)=>Math.max(.8,2.4+2.1*Math.sin(u*LP/26*TAU+f*.7)+1.0*Math.sin(u*LP/11*TAU-f*1.2));
  const pdist=u=>{u=((u%1)+1)%1;return Math.min(u,1-u)*LP;};                       // metres along the facade from the prow tip
  const topY=u=>{let t=HT+2.6+2.2*Math.sin(u*LP/30*TAU);
   if(brk){const ds=pdist(u);if(ds<46)t=Math.min(t,50+34*Math.pow(ds/46,1.6)+5*(fbm(u*40,.5,9831,2)*2-1));}
   return t;};
  const hw=holeFn(dd*.75,9832,null,1.4);
- const SK=[],WH=[],FL=[],DGL=[];
+ const SK=[],WH=[],FL=[],DGL=[],LIP=[];
  // THE FACADE above the arcade
  SK.push(gridSurface((u,v)=>{const p=P(u),y=lerp(GF,topY(u),v),w=wall(u,y);return[p.x+p.nx*w,y,p.z+p.nz*w];},NP,64,
   {uS:LP/8,vS:HT/8,hole:hw?(u,v)=>hw(u,lerp(GF,HT,v))&&v<.97:null}));
@@ -54,15 +54,15 @@ function buildAltFlat(scene,gx,gz,d){reseed(9830+d);KOFF=[gx,0,gz];
   kput(BOXC(d),[p.x-p.nx*.4,GF/2,p.z-p.nz*.4],qFacing([p.nx,0,p.nz]),[2.4,GF,2.8],null);}
  // THE FLOOR EDGES: lip and deck per floor, each waving out of phase with the last
  for(let f=1;f<NF;f++){const y=GF+(f-1)*FH,gone=u=>y>topY(u)-1;
-  SK.push(gridSurface((u,v)=>{const p=P(u),e=edge(u,f);return[p.x+p.nx*e,y-.9+v*1.3,p.z+p.nz*e];},NP,1,{uS:LP/8,vS:.3,hole:brk?u=>gone(u):null}));
-  SK.push(gridSurface((u,v)=>{const p=P(u),e=lerp(wall(u,y)-.2,edge(u,f),v);return[p.x+p.nx*e,y+.4,p.z+p.nz*e];},NP,1,{uS:LP/8,vS:.5,hole:brk?u=>gone(u):null}));
+  LIP.push(gridSurface((u,v)=>{const p=P(u),e=Math.max(edge(u,f),wall(u,y)+.7);return[p.x+p.nx*e,y-.9+v*1.3,p.z+p.nz*e];},NP,1,{uS:LP/8,vS:.3,hole:brk?u=>gone(u):null}));
+  LIP.push(gridSurface((u,v)=>{const p=P(u),e=lerp(wall(u,y)-.2,Math.max(edge(u,f),wall(u,y)+.7),v);return[p.x+p.nx*e,y+.4,p.z+p.nz*e];},NP,1,{uS:LP/8,vS:.5,hole:brk?u=>gone(u):null}));
   // floors inside, which only the ruin shows
   if(brk)FL.push(gridSurface((u,v)=>{const p=P(u),w=wall(u,y)-.3;return[lerp(CX,p.x+p.nx*w,v),y-.2,lerp(0,p.z+p.nz*w,v)];},NP/2,3,
    {uS:LP/8,vS:3,hole:(u,v)=>gone(u)&&v>.15+.6*fbm(u*30,f*.7,9833,2)}));
   // windows between this floor and the next, and the iron where the edge reaches out
-  for(let i=0;i<NP;i+=3){const u=(i+.5*(f%2))/NP,p=P(u),yy=y+2.3;if(yy>topY(u)-2)continue;if(hw&&hw(u,yy))continue;
+  for(let i=0;i<NP;i+=4){const u=(i+1.5*(f%2))/NP,p=P(u),yy=y+2.3;if(yy>topY(u)-2)continue;if(hw&&hw(u,yy))continue;
    const w=wall(u,yy)+.2,n=[p.nx,0,p.nz],q=qFacing(n),pp=[p.x+p.nx*w,yy,p.z+p.nz*w],ww=rr(1.8,2.6);
-   kput('darkPane',pp,q,[ww,2.7,1],null);
+   kput('darkPane',pp,q,[ww,2.3,1],null);
    if(d===0){if(rng()<.3)kput('cell',[pp[0]+n[0]*.12,yy-.5,pp[2]+n[2]*.12],q,[ww*.8,1.1,1],CYAN.clone().multiplyScalar(.8));}
    else altWin([pp[0]+n[0]*.12,yy,pp[2]+n[2]*.12],n,ww*.85,2.3,d);
    const e=edge(u,f);
@@ -84,12 +84,12 @@ function buildAltFlat(scene,gx,gz,d){reseed(9830+d);KOFF=[gx,0,gz];
   kput(dd?'postR':'postW',[x,HT+12,z],null,[.3,4,.3],null);}
  if(!brk)for(let i=0;i<30;i++){const t=rng(),p=P(t),k=rr(.3,.85);kput('hedge',[lerp(CX,p.x,k),HT+1.1,lerp(0,p.z,k)],qEuler(0,rng()*3,0),[rr(1.5,3),1,1],null);}
  apron(G,CX,0,80,104,dd,.6);
- meshMerged(SK,stone,G);meshMerged(WH,dd?MAT.whiteWorn||MAT.rust:MAT.white,G);meshMerged(DGL,MAT.darkGlass,G);
+ meshMerged(SK,stone,G);meshMerged(LIP,SHELL(d),G);meshMerged(WH,dd?MAT.whiteWorn||MAT.rust:MAT.white,G);meshMerged(DGL,MAT.darkGlass,G);
  if(FL.length)meshMerged(FL,MAT.concreteR,G);
  if(brk){// the prow heap, spilled out over the street
   for(let i=0;i<60;i++){const a=rr(-.8,.8),r=rr(64,110);kput(i%3?'rubble':'boxCR',[r*Math.cos(a),rr(.5,4),r*Math.sin(a)],qEuler(rng()*3,rng()*3,rng()*3),[rr(1.5,5),rr(1,3),rr(1.5,5)],
    i%3?new THREE.Color().setHSL(.07,.15,rr(.35,.5)):null);}
-  rubbleRing(CX,0,0,60,110,150,3.5);vinesFromLedge(SK,0,0,0,160,18,CX,0);mossOnSurface([roof],0,0,0,80,2.5);
+  rubbleRing(CX,0,0,60,110,150,3.5);vinesFromLedge(LIP,0,0,0,160,18,CX,0);mossOnSurface([roof],0,0,0,80,2.5);
   trees(CX,0,85,170,30);}
  else{trees(CX,0,92,150,12);figures(CX,74,14,20);}
  if(rec){

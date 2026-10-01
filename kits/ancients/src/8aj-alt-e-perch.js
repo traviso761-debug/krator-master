@@ -58,6 +58,16 @@ function buildAltPerch(scene,gx,gz,d){reseed(9835+d);KOFF=[gx,0,gz];
     altWin([x+nx*(W/2+.2)+(nz?o:0),y,z+nz*(W/2+.2)+(nx?o:0)],[nx,0,nz],2.2,1.6,d);}}
   if(brk&&i===4){for(let k=0;k<6;k++)kput('plateR',[x+rr(-8,8),y0+top+rr(0,2),z+rr(-6,6)],qEuler(rr(-1,1),rng()*3,rr(-1,1)),[rr(3,6),rr(2,4),.6],null);}
   if(!brk&&rng()<.6)kput(dd?'boxR':'boxW',[x+rr(-w/4,w/4),y0+h+1.2,z+rr(-dp/4,dp/4)],null,[rr(3,6),2.4,rr(3,6)],null);});
+ // the accretion: smaller rooms piled on the blocks and on the deck, rooms cantilevered off its edges
+ for(let j=0;j<30;j++){const x=rr(-HX+6,HX-6),z=rr(-HZ+6,HZ-6),w=rr(5,12),h=rr(3.5,9),dp=rr(5,11);
+  let y0=0;for(const b of BL)if(Math.abs(x-b[0])<b[2]/2-1&&Math.abs(z-b[1])<b[4]/2-1)y0=Math.max(y0,b[5]+b[3]);
+  if(brk&&y0>14&&rng()<.5)continue;altBox(SK,x,y0+h/2,z,w,h,dp,rng()<.3?.2:0);
+  const n=[0,0,z>0?1:-1];altWin([x,y0+h*.55,z+n[2]*(dp/2+.15)],n,w*.6,1.4,d);}
+ for(let j=0;j<16;j++){const side=j%4,t=rr(-.8,.8),w=rr(7,13),h=rr(5,8),o=rr(3,6),y=rr(-14,-4);if(brk&&j%5===0)continue;
+  const x=side<2?t*HX:(side===2?HX+o:-HX-o),z=side<2?(side?HZ+o:-HZ-o):t*HZ;
+  altBox(SK,x,y,z,side<2?w:2*o+2,h,side<2?2*o+2:w);
+  beam(strut,[x,y-h/2,z],[side<2?x:x*.93,-16,side<2?z*.93:z],.6,.6);
+  const n=side<2?[0,0,side?1:-1]:[side===2?1:-1,0,0];altWin([x+n[0]*(o+1.2),y,z+n[2]*(o+1.2)],n,4,1.6,d);}
  // two capped stacks
  for(const[x,z,h,snap]of[[-6,-31,72,false],[26,31,56,brk]]){const H=snap?30:h;
   SK.push(lathe({rFn:y=>4.6+1.6*Math.pow(1-y/h,3),H:h,cut:H,jag:snap?3:0,nu:18,nv:8,seed:9836}).translate(x,0,z));
