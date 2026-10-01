@@ -377,6 +377,28 @@ function rsRoof(B,mk,w,d,h,pos,rot,col,flare,top){top=top==null?.08:top;flare=fl
 function rsFigure(B,pos,yaw,cloth,sit,skin){const q=qEuler(0,yaw||0,0),s=skin||0x8a5a3c;const P=(dx,dy,dz)=>{const v=new THREE.Vector3(dx,dy,dz).applyQuaternion(q);return[pos[0]+v.x,pos[1]+v.y,pos[2]+v.z];};
  if(sit){rsCyl(B,'cloth',.17,.2,.62,P(0,.55,0),q,cloth,7);rsBox(B,'cloth',[.42,.16,.34],P(.18,.26,0),q,cloth);rsSphere(B,'paint',.12,P(.02,.98,0),null,s,8,6);}
  else{rsCyl(B,'cloth',.17,.21,.72,P(0,1.12,0),q,cloth,7);rsCyl(B,'paint',.07,.08,.8,P(0,.4,-.1),q,s,5);rsCyl(B,'paint',.07,.08,.8,P(0,.4,.1),q,s,5);rsSphere(B,'paint',.12,P(0,1.6,0),null,s,8,6);}}
+
+// ---------------------------------------------------------------- the swell, the wind, riding
+// ONE wave function drives the sea's vertex shader and every hull's heave, pitch and roll, so a hull
+// sits in the water it is drawn on. RS_SWELL.waves are travelling sines [kx,kz,A,omega,phase] (deep-water
+// dispersion, omega=sqrt(g k)); rsSwellSet replaces them, fade {cx,cz,r0,r1} flattens the sea beyond r0..r1.
+// RS_U.uTime is the one clock every animated shader reads (seconds); the host sets it each frame.
+// A host world with its own sea skips the RS sea: it calls rsRide with its own seaH(x,z,t).
+const RS_U={uTime:{value:0}};
+const RS_SWELL={waves:[],fade:null};
+function rsSwellSet(list,fade){RS_SWELL.waves=list.map(([A,lam,deg,ph])=>{const k=TAU/lam,a=deg*Math.PI/180;return[k*Math.cos(a),k*Math.sin(a),A,Math.sqrt(9.81*k),ph||0];});RS_SWELL.fade=fade||null;}
+function rsSwellFade(x,z){const F=RS_SWELL.fade;if(!F)return 1;const d=Math.hypot(x-F.cx,z-F.cz);const s=clamp((d-F.r0)/(F.r1-F.r0),0,1);return 1-s*s*(3-2*s);}
+function rsSeaH(x,z,t){let h=0;for(const w of RS_SWELL.waves)h+=w[2]*Math.sin(w[0]*x+w[1]*z-w[3]*t+w[4]);return h*rsSwellFade(x,z);}
+// the same function in GLSL: vec3 rsSwell(vec2 worldXZ) = (height, dh/dx, dh/dz); needs uniform uRsTime
+function rsSwellGLSL(){const f=n=>(+n).toFixed(6);let s='uniform float uRsTime;\nvec3 rsSwell(vec2 p){vec3 r=vec3(0.);float a;\n';
+ for(const w of RS_SWELL.waves)s+=` a=${f(w[0])}*p.x+${f(w[1])}*p.y-${f(w[3])}*uRsTime+${f(w[4])};r+=vec3(sin(a),cos(a)*${f(w[0])},cos(a)*${f(w[1])})*${f(w[2])};\n`;
+ const F=RS_SWELL.fade;if(F)s+=` r*=1.-smoothstep(${f(F.r0)},${f(F.r1)},length(p-vec2(${f(F.cx)},${f(F.cz)})));\n`;return s+' return r;}\n';}
+// ride: pose a vessel group G (definition D: L, B) at world x,z, heading yaw, on the sea seaH at time t.
+// Heave is the mean of five samples (amidships, bow, stern, both beams); pitch and roll are the slopes
+// between them, so a long hull averages short waves out and a canoe follows them.
+function rsRide(G,D,x,z,yaw,t,seaH){seaH=seaH||rsSeaH;const lx=D.L*.36,bz=clamp(D.B*.28,.5,6),c=Math.cos(yaw||0),s=Math.sin(yaw||0);
+ const at=(f,q)=>seaH(x+c*f+s*q,z-s*f+c*q,t);const h0=at(0,0),hb=at(lx,0),hs=at(-lx,0),hst=at(0,bz),hp=at(0,-bz);
+ G.position.set(x,(2*h0+hb+hs+hst+hp)/6,z);G.rotation.set(-Math.atan2(hst-hp,2*bz),yaw||0,Math.atan2(hb-hs,2*lx),'YXZ');}
 // ---------------------------------------------------------------- ring sea textures (surfaces)
 // All near-white or mid-grey so the vertex colour carries the hue. World tiles: plank 4 m (hull),
 // 3 m (deck); thatch and tile 2 m; the turtle's hex plate and the chitin scale 3 m.
@@ -433,7 +455,15 @@ rsDefMat('woodI',RSMAT.wood.clone());
 // edges (the Dalab key-border, the Voth roundels). rsSailMat caches one material per key.
 function rsSailMat(key,W,H,draw,outline){const mk='sail:'+key;if(RSMAT[mk])return mk;
  const t=canvasTex(W,H,(g,w,h)=>draw(g,w,h,outline));t.wrapS=t.wrapT=THREE.ClampToEdgeWrapping;
- rsDefMat(mk,new THREE.MeshStandardMaterial({map:t,roughness:.92,side:DS,alphaTest:.5}));return mk;}   // alphaTest: a painter may cut the cloth (the crab-claw's hollow leech)
+ const m=rsDefMat(mk,new THREE.MeshStandardMaterial({map:t,roughness:.92,side:DS,alphaTest:.5}));m.onBeforeCompile=rsSailWind;return mk;}   // alphaTest: a painter may cut the cloth (the crab-claw's hollow leech)
+// wind: the cloth breathes and flutters in the vertex shader. rsSail stores each vertex's flutter vector in
+// its (otherwise unused) colour, 0.5+0.5*D with |D|<=1: D runs along the belly side, scaled by the belly
+// profile (0 on the edge spars, the luff and the battens), so spars stay put and the cloth never swings
+// back through its mast. White (|D|>1) means rigid. The geometry stays the rest pose the probes check.
+function rsSailWind(sh){sh.uniforms.uRsTime=RS_U.uTime;
+ sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nuniform float uRsTime;\n#ifndef USE_COLOR\nattribute vec3 color;\n#endif')
+  .replace('#include <begin_vertex>','#include <begin_vertex>\n{vec3 rsD=color*2.-1.;if(dot(rsD,rsD)<1.01){vec3 rsP=(modelMatrix*vec4(position,1.)).xyz;'+
+   'float rsF=.55+.3*sin(uRsTime*1.3+rsP.x*.11+rsP.z*.07)+.15*sin(uRsTime*4.1+rsP.x*.7-rsP.y*.9+rsP.z*.5);transformed+=rsD*rsF;}}');}
 // helpers the sail painters share
 function rsPolyPath(g,P){g.beginPath();P.forEach((p,i)=>i?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1]));g.closePath();}
 function rsInset(P,d){let cx=0,cy=0;for(const p of P){cx+=p[0];cy+=p[1];}cx/=P.length;cy/=P.length;return P.map(p=>{const dx=p[0]-cx,dy=p[1]-cy,l=Math.hypot(dx,dy)||1;return[p[0]-dx/l*d,p[1]-dy/l*d];});}
@@ -559,6 +589,9 @@ function rsSail(B,o){const nu=o.nu||20,nv=o.nv||12;const U=rsV(o.U).normalize(),
    let off=bel*Math.sin(Math.PI*v)*smooth01(u/.25);if(sc)off*=.55+.45*Math.abs(Math.sin(Math.PI*u*sc));
    return[o.O[0]+U.x*s+Vv.x*t+N.x*off,o.O[1]+U.y*s+Vv.y*t+N.y*off,o.O[2]+U.z*s+Vv.z*t+N.z*off];},nu,nv,
   (u,v)=>{const i=Math.round(u*nu);const a=A[i],b=Bf[i];return[(lerp(a[0],b[0],v)-s0)/dS,(lerp(a[1],b[1],v)-t0)/dT];});
+ {const amp=Math.min(.12,.04+.06*Math.abs(bel)),D=N.clone().multiplyScalar((bel<0?-1:1)*amp),c=[];   // the wind's flutter vector (41-rs-tex.js rsSailWind)
+  for(let j=0;j<=nv;j++)for(let i=0;i<=nu;i++){const u=i/nu,v=j/nv;let w=Math.sin(Math.PI*v)*smooth01(u/.25);if(sc)w*=Math.abs(Math.sin(Math.PI*u*sc));c.push(.5+.5*D.x*w,.5+.5*D.y*w,.5+.5*D.z*w);}
+  g.setAttribute('color',new THREE.Float32BufferAttribute(c,3));}
  rsPut(B,mk,g,null,null,null,0xffffff);
  {const pa=g.attributes.position,sid=B.sailN=(B.sailN||0)+1;for(let i=0;i<pa.count;i+=3)B.sail.push([pa.getX(i),pa.getY(i),pa.getZ(i),sid]);}
  // a point on the sail in the vessel frame (for battens, sheets, spars that follow the cloth)
@@ -1638,11 +1671,22 @@ const giantTex=canvasTex(512,512,(g,w,h)=>{g.clearRect(0,0,w,h);const grd=g.crea
 giantTex.wrapS=giantTex.wrapT=THREE.ClampToEdgeWrapping;
 const giant=new THREE.Sprite(new THREE.SpriteMaterial({map:giantTex,fog:false,transparent:true,depthWrite:false}));giant.scale.set(1500,1500,1);giant.userData.probeSkip=true;scene.add(giant);
 
-// ---- the sea: one plane, scrolled normal map (94-rs-anim.js), the waterline at y=0
+// ---- the sea: one plane, displaced in its vertex shader by the swell (40-rs-core.js rsSwell, the same
+// function the hulls ride, 94-rs-anim.js), with the scrolled normal map for the ripples; the waterline at y=0.
+// The grid is fine (6 m) over the roadstead and stretches toward the horizon, where the swell fades out.
 TEX.rsWater.repeat.set(260,260);
-const RS_SEA=new THREE.MeshStandardMaterial({color:0x06222e,roughness:.24,metalness:.45,normalMap:TEX.rsWater,normalScale:new THREE.Vector2(.55,.55)});
 const RS_CZ=(Math.ceil(RS.order.length/RS_COLS)-1)*RS_PZ/2;
-const groundM=new THREE.Mesh(new THREE.PlaneGeometry(12000,12000),RS_SEA);groundM.rotation.x=-Math.PI/2;groundM.position.set(0,0,RS_CZ);groundM.userData.probeSkip=true;groundM.userData.isGround=true;scene.add(groundM);
+rsSwellSet([[.28,70,18,0],[.16,43,-34,1.7],[.09,27,71,4.1],[.05,17,-8,2.6]],{cx:0,cz:RS_CZ,r0:440,r1:600});
+const RS_SEA=new THREE.MeshStandardMaterial({color:0x06222e,roughness:.24,metalness:.45,normalMap:TEX.rsWater,normalScale:new THREE.Vector2(.55,.55)});
+RS_SEA.onBeforeCompile=sh=>{sh.uniforms.uRsTime=RS_U.uTime;
+ sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+rsSwellGLSL())
+  .replace('#include <beginnormal_vertex>','#include <beginnormal_vertex>\nvec3 rsS=rsSwell((modelMatrix*vec4(position,1.)).xz);objectNormal=normalize(vec3(-rsS.y,rsS.z,1.));')
+  .replace('#include <begin_vertex>','#include <begin_vertex>\ntransformed.z+=rsS.x;');};   // the plane is rotated flat: its local z is world up, local y is world -z
+const RS_SEAGEO=(()=>{const SN=240,sg=new THREE.PlaneGeometry(2,2,SN,SN),p=sg.attributes.position,uv=sg.attributes.uv;
+ const warp=s=>{const a=Math.abs(s);return Math.sign(s)*(a<=.8?a/.8*620:620+5380*((a-.8)/.2)**2);};
+ for(let i=0;i<p.count;i++){const x=warp(p.getX(i)),y=warp(p.getY(i));p.setXY(i,x,y);uv.setXY(i,(x+6000)/12000,(y+6000)/12000);}
+ sg.computeBoundingSphere();return sg;})();
+const groundM=new THREE.Mesh(RS_SEAGEO,RS_SEA);groundM.rotation.x=-Math.PI/2;groundM.position.set(0,0,RS_CZ);groundM.userData.probeSkip=true;groundM.userData.isGround=true;scene.add(groundM);
 // ---- the far shore: the volcano NW across the sea, low islands, all unfogged and pre-hazed
 {reseed(79001);const far=(col,x,z,r,h,seg)=>{const m=new THREE.Mesh(new THREE.ConeGeometry(r,h,seg||24,1,true),new THREE.MeshBasicMaterial({color:col,fog:false}));m.position.set(x,h/2-2,z);m.userData.probeSkip=true;scene.add(m);return m;};
  const vx=-3000,vz=-3900;far(0x7d93a4,vx,vz,1100,620,32);far(0x8499a8,vx+520,vz+260,520,260,20);
@@ -1660,7 +1704,7 @@ const groundM=new THREE.Mesh(new THREE.PlaneGeometry(12000,12000),RS_SEA);ground
   const t=tcur();if(t){t.tris+=tris;t.meshes+=G.children.length;t.inst+=V.oars||0;}TSTAT.cur=null;
   const bb=new THREE.Box3().setFromObject(G);
   REG.push({name:D.name,cls:'vessel',key:k,x,y:bb.min.y,z,r:Math.max(D.L,D.B)/2+1,h:bb.max.y-bb.min.y,tags:Object.assign({culture:D.culture},D.tags)});
-  RS_PLACED.push({k,D,V,G,x,z,ph:h3(i,3,7)*TAU,bb});});
+  RS_PLACED.push({k,D,V,G,x,z,ph:h3(i,3,7)*TAU,bb,reg:REG[REG.length-1]});});
  window._registered=REG.length;window._instances=RS_PLACED.reduce((a,p)=>a+(p.V.oars||0),0)||1;window._vessels=RS_PLACED.length;}
 
 // ---- preset views: an opening, an overview, then each vessel from its starboard bow and abeam
@@ -1839,15 +1883,54 @@ function labelsBuild(){
  FRAME_HOOKS.push(()=>{mat.uniforms.uPxToWorld.value=2*Math.tan(camera.fov*Math.PI/360)/innerHeight;});
  window._labels=list.length;return m;}
 labelsBuild();
-// ---------------------------------------------------------------- animation: the swell, the oars, the sea's normal map
-// Each vessel heaves, rolls and pitches on its own phase; its builder's anims (oar strokes) run on
-// the same clock. window._api.pause(t) freezes the clock at t seconds (verify.py shots are then
-// repeatable).
-FRAME_HOOKS.push((dt,now)=>{const t=window._rsPause!=null?window._rsPause:now/1000;
+// ---------------------------------------------------------------- animation: the swell, the wind, the oars, under way
+// One clock t (seconds) drives everything: RS_U.uTime feeds the sea's and the sails' vertex shaders,
+// rsRide (40-rs-core.js) poses each hull on the same swell, and each builder's anims (oar strokes,
+// wheels) run on it. window._api.pause(t) freezes the clock at t seconds (verify.py shots are then
+// repeatable). Every pose is a pure function of t (and, under way, of the time the toggle was set).
+//
+// Under way (toolbar button, off by default so the sheet and its preset views stay put): every vessel
+// makes RS_WAY.speed m/s east, easing up over RS_WAY.ease s, and wraps round its row (RS_COLS*RS_PX m)
+// so the spacing never changes; a Kelvin wake (one InstancedMesh, riding the swell) streams astern.
+// A preset view of a vessel follows it while it is under way; turning it off returns all to station.
+const RS_WAY={on:false,t0:0,speed:1.8,ease:8,span:RS_COLS*RS_PX,follow:null,last:0};
+function rsWayDist(t){if(!RS_WAY.on)return 0;const s=Math.max(0,t-RS_WAY.t0),T=RS_WAY.ease;return RS_WAY.speed*(s-T*(1-Math.exp(-s/T)));}
+function rsWayX(p,t){if(!RS_WAY.on)return p.x;const W=RS_WAY.span,x0=-W/2;let u=(p.x-x0+rsWayDist(t))%W;if(u<0)u+=W;return x0+u;}
+const rsClock=()=>window._rsPause!=null?window._rsPause:performance.now()/1000;
+
+// ---- the wake: a foam texture (Kelvin arms from the bow, churn from the stern) on a strip that rides the swell
+const RS_WAKE=(()=>{const tex=canvasTex(256,512,(g,W,H)=>{g.clearRect(0,0,W,H);   // canvas y = distance astern of the bow, x = across
+  const arm=(sd)=>{for(let i=0;i<260;i++){const t=i/260,y=t*H,x=W/2+sd*t*W*.49;const a=.55*(1-t)*(1-t)*Math.min(1,t*14);
+    g.fillStyle=`rgba(235,245,248,${a})`;g.beginPath();g.ellipse(x,y,2+t*7,3+t*4,sd*.35,0,TAU);g.fill();
+    if(i%9===0){g.fillStyle=`rgba(225,238,242,${a*.6})`;for(let k=1;k<5;k++){g.beginPath();g.arc(x-sd*k*t*9,y+k*2,1+t*3,0,TAU);g.fill();}}}};
+  arm(-1);arm(1);
+  for(let i=0;i<900;i++){const t=.38+.62*h3(i,5,1),x=W/2+(h3(i,6,2)-.5)*(10+t*70),y=t*H;const a=.5*(1-(t-.38)/.62)**1.5;
+   g.fillStyle=`rgba(240,248,250,${a*(.4+.6*h3(i,7,3))})`;g.beginPath();g.arc(x,y,1+h3(i,8,4)*4,0,TAU);g.fill();}});
+ tex.wrapS=tex.wrapT=THREE.ClampToEdgeWrapping;
+ const mat=new THREE.MeshBasicMaterial({map:tex,transparent:true,depthWrite:false,opacity:0,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2});
+ mat.onBeforeCompile=sh=>{sh.uniforms.uRsTime=RS_U.uTime;sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+rsSwellGLSL())
+  .replace('#include <project_vertex>','vec4 rsW=modelMatrix*instanceMatrix*vec4(transformed,1.);rsW.y+=rsSwell(rsW.xz).x+.05;vec4 mvPosition=viewMatrix*rsW;gl_Position=projectionMatrix*mvPosition;');};
+ // unit strip: x from 0 (the bow) to -1 (astern), z +-0.36; scaled per vessel by 2.6 L
+ const geo=new THREE.PlaneGeometry(1,.72,24,10);geo.rotateX(-Math.PI/2);geo.translate(-.5,0,0);
+ {const uv=geo.attributes.uv,p=geo.attributes.position;for(let i=0;i<p.count;i++)uv.setXY(i,.5+p.getZ(i)/.72,1+p.getX(i));}   // v=1 at the bow (canvas top)
+ const im=new THREE.InstancedMesh(geo,mat,Math.max(1,RS_PLACED.length));im.frustumCulled=false;im.visible=false;im.userData.probeSkip=true;im.name='wakes';scene.add(im);return im;})();
+const _rsWM=new THREE.Matrix4(),_rsWQ=new THREE.Quaternion(),_rsWP=new THREE.Vector3(),_rsWS=new THREE.Vector3();
+
+FRAME_HOOKS.push((dt,now)=>{const t=rsClock();RS_U.uTime.value=t;
  TEX.rsWater.offset.x=(t*.004)%1;TEX.rsWater.offset.y=(t*.0025)%1;
- for(const p of RS_PLACED){const k=1/Math.sqrt(Math.max(8,p.D.L)/12);const a=t*.55+p.ph;
-  p.G.position.y=.18*k*Math.sin(a);p.G.rotation.set(.035*k*Math.sin(a*.8+1.3),0,.018*k*Math.sin(a*.6+.4),'YXZ');
-  for(const f of p.V.anims)f(t);}});
+ RS_PLACED.forEach((p,i)=>{const x=rsWayX(p,t);rsRide(p.G,p.D,x,p.z,0,t);if(p.reg)p.reg.x=x;
+  for(const f of p.V.anims)f(t);
+  if(RS_WAY.on){const L=Math.max(6,p.D.L)*2.6;_rsWP.set(x+p.D.L*.5,0,p.z);_rsWS.set(L,1,L);_rsWM.compose(_rsWP,_rsWQ,_rsWS);RS_WAKE.setMatrixAt(i,_rsWM);}});
+ RS_WAKE.visible=RS_WAY.on;if(RS_WAY.on){RS_WAKE.instanceMatrix.needsUpdate=true;RS_WAKE.material.opacity=.85*(1-Math.exp(-Math.max(0,t-RS_WAY.t0)/RS_WAY.ease));}
+ // a preset view of a vessel follows it east (and round the wrap) while it is under way
+ if(!WALK.on){const f=RS_WAY.follow,off=f?rsWayX(f,t)-f.x:0;ctl.target.x+=off-RS_WAY.last;RS_WAY.last=off;}});
+// which vessel a preset view looks at (re-armed whenever a view is picked: setView puts the camera back at station)
+function rsFollowView(name){RS_WAY.follow=RS_PLACED.find(p=>name===p.D.name||name===p.D.name+' — abeam')||null;RS_WAY.last=0;}
+sel.addEventListener('change',()=>rsFollowView(sel.value));for(const b of hb.querySelectorAll('button'))b.addEventListener('click',()=>rsFollowView(b.textContent));
+rsFollowView(Object.keys(VIEWS)[0]);
+function rsUnderWay(on,t0){RS_WAY.on=on==null?!RS_WAY.on:!!on;RS_WAY.t0=t0==null?rsClock():t0;for(const b of ui.querySelectorAll('button'))if(b.textContent==='Under way')b.classList.toggle('on',RS_WAY.on);return RS_WAY.on;}
+uiButton('Under way',false,()=>rsUnderWay());
+window._api.underWay=rsUnderWay;
 // labels start hidden on this sheet (the Labels button shows them): twelve names over one roadstead crowd every wide shot
 if(LABELS)LABELS.visible=false;
 </script>

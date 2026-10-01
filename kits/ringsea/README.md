@@ -1,7 +1,8 @@
 # Ring Sea watercraft
 
-Twenty-one procedural vessels for the Ring Sea, each tagged by culture, riding at anchor
-on one sheet and rowing in place. Built on the Ancients-lineage fragment contract
+Twenty-one procedural vessels for the Ring Sea, each tagged by culture, riding a live swell
+on one sheet with their sails breathing in the wind and their oars stroking. The **Under way**
+button (off by default, so the preset views stay put) sets the whole fleet sailing east with wakes. Built on the Ancients-lineage fragment contract
 (`core/materials/` + vendored shell), one vessel per fragment.
 
 ```
@@ -47,8 +48,10 @@ from `10-core.js`), plus the vessel's own fragment. Then:
 ```js
 const V = RS.defs.vothTrireme.build();   // {group, anims, deckY, oars}
 V.group.position.set(x, 0, z); V.group.rotation.y = heading; scene.add(V.group);
-// each frame: for (const f of V.anims) f(seconds);
+// each frame: RS_U.uTime.value=t; rsRide(V.group, RS.defs.vothTrireme, x, z, heading, t, seaH); for (const f of V.anims) f(t);
 ```
+
+`seaH(x,z,t)` is your sea's height; leave it out to ride the kit's own swell (`rsSeaH`). `RS_U.uTime` drives the sails' flutter.
 
 See `API.md` for the vessel frame and the builders.
 

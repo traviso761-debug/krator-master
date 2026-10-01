@@ -30,11 +30,22 @@ const giantTex=canvasTex(512,512,(g,w,h)=>{g.clearRect(0,0,w,h);const grd=g.crea
 giantTex.wrapS=giantTex.wrapT=THREE.ClampToEdgeWrapping;
 const giant=new THREE.Sprite(new THREE.SpriteMaterial({map:giantTex,fog:false,transparent:true,depthWrite:false}));giant.scale.set(1500,1500,1);giant.userData.probeSkip=true;scene.add(giant);
 
-// ---- the sea: one plane, scrolled normal map (94-rs-anim.js), the waterline at y=0
+// ---- the sea: one plane, displaced in its vertex shader by the swell (40-rs-core.js rsSwell, the same
+// function the hulls ride, 94-rs-anim.js), with the scrolled normal map for the ripples; the waterline at y=0.
+// The grid is fine (6 m) over the roadstead and stretches toward the horizon, where the swell fades out.
 TEX.rsWater.repeat.set(260,260);
-const RS_SEA=new THREE.MeshStandardMaterial({color:0x06222e,roughness:.24,metalness:.45,normalMap:TEX.rsWater,normalScale:new THREE.Vector2(.55,.55)});
 const RS_CZ=(Math.ceil(RS.order.length/RS_COLS)-1)*RS_PZ/2;
-const groundM=new THREE.Mesh(new THREE.PlaneGeometry(12000,12000),RS_SEA);groundM.rotation.x=-Math.PI/2;groundM.position.set(0,0,RS_CZ);groundM.userData.probeSkip=true;groundM.userData.isGround=true;scene.add(groundM);
+rsSwellSet([[.28,70,18,0],[.16,43,-34,1.7],[.09,27,71,4.1],[.05,17,-8,2.6]],{cx:0,cz:RS_CZ,r0:440,r1:600});
+const RS_SEA=new THREE.MeshStandardMaterial({color:0x06222e,roughness:.24,metalness:.45,normalMap:TEX.rsWater,normalScale:new THREE.Vector2(.55,.55)});
+RS_SEA.onBeforeCompile=sh=>{sh.uniforms.uRsTime=RS_U.uTime;
+ sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+rsSwellGLSL())
+  .replace('#include <beginnormal_vertex>','#include <beginnormal_vertex>\nvec3 rsS=rsSwell((modelMatrix*vec4(position,1.)).xz);objectNormal=normalize(vec3(-rsS.y,rsS.z,1.));')
+  .replace('#include <begin_vertex>','#include <begin_vertex>\ntransformed.z+=rsS.x;');};   // the plane is rotated flat: its local z is world up, local y is world -z
+const RS_SEAGEO=(()=>{const SN=240,sg=new THREE.PlaneGeometry(2,2,SN,SN),p=sg.attributes.position,uv=sg.attributes.uv;
+ const warp=s=>{const a=Math.abs(s);return Math.sign(s)*(a<=.8?a/.8*620:620+5380*((a-.8)/.2)**2);};
+ for(let i=0;i<p.count;i++){const x=warp(p.getX(i)),y=warp(p.getY(i));p.setXY(i,x,y);uv.setXY(i,(x+6000)/12000,(y+6000)/12000);}
+ sg.computeBoundingSphere();return sg;})();
+const groundM=new THREE.Mesh(RS_SEAGEO,RS_SEA);groundM.rotation.x=-Math.PI/2;groundM.position.set(0,0,RS_CZ);groundM.userData.probeSkip=true;groundM.userData.isGround=true;scene.add(groundM);
 // ---- the far shore: the volcano NW across the sea, low islands, all unfogged and pre-hazed
 {reseed(79001);const far=(col,x,z,r,h,seg)=>{const m=new THREE.Mesh(new THREE.ConeGeometry(r,h,seg||24,1,true),new THREE.MeshBasicMaterial({color:col,fog:false}));m.position.set(x,h/2-2,z);m.userData.probeSkip=true;scene.add(m);return m;};
  const vx=-3000,vz=-3900;far(0x7d93a4,vx,vz,1100,620,32);far(0x8499a8,vx+520,vz+260,520,260,20);
@@ -52,7 +63,7 @@ const groundM=new THREE.Mesh(new THREE.PlaneGeometry(12000,12000),RS_SEA);ground
   const t=tcur();if(t){t.tris+=tris;t.meshes+=G.children.length;t.inst+=V.oars||0;}TSTAT.cur=null;
   const bb=new THREE.Box3().setFromObject(G);
   REG.push({name:D.name,cls:'vessel',key:k,x,y:bb.min.y,z,r:Math.max(D.L,D.B)/2+1,h:bb.max.y-bb.min.y,tags:Object.assign({culture:D.culture},D.tags)});
-  RS_PLACED.push({k,D,V,G,x,z,ph:h3(i,3,7)*TAU,bb});});
+  RS_PLACED.push({k,D,V,G,x,z,ph:h3(i,3,7)*TAU,bb,reg:REG[REG.length-1]});});
  window._registered=REG.length;window._instances=RS_PLACED.reduce((a,p)=>a+(p.V.oars||0),0)||1;window._vessels=RS_PLACED.length;}
 
 // ---- preset views: an opening, an overview, then each vessel from its starboard bow and abeam
