@@ -18,13 +18,14 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`settlements/screamers`](settlements/screamers/INDEX.md) | 72 | 538 | 45 | Hexahedron: the Screamers' tribal village in and under a ruined arcology, forked from the Ancients kit. |
 | [`settlements/voth`](settlements/voth/INDEX.md) | 62 | 1786 | 70 | Voth: a Venice/Vivec-like Dunmer city on an enclosed brackish bay, with the most complete life layer and collision system. |
 | [`settlements/xanadu`](settlements/xanadu/INDEX.md) | 51 | 596 | 66 | Xanadu: the building kit of the southern Sultanate (Tibetan massing, Indian, Turkish and Persian detail) and the city of Erewhon. |
-| [`settlements/ys`](settlements/ys/INDEX.md) | 24 | 224 | 38 | Ys: the half-drowned Hykkousoi capital on the ruins of an Ancient city at the head of the north-west bay of the Ring Sea (phase 0: harness and empty world). |
+| [`settlements/ys`](settlements/ys/INDEX.md) | 33 | 346 | 38 | Ys: the half-drowned Hykkousoi capital on the ruins of an Ancient city at the head of the north-west bay of the Ring Sea (phase 0: harness and empty world). |
 | [`settlements/yuni`](settlements/yuni/INDEX.md) | 44 | 876 | 194 | Yuni: the city, plus its building-kit, furniture and plant sheets. |
 | [`kits/ancients`](kits/ancients/INDEX.md) | 92 | 1722 | 89 | The Ancients kit: ruined megastructures of the ancient civilisation, 33 structure types, one target per site. |
 | [`kits/post-apoc`](kits/post-apoc/INDEX.md) | 24 | 355 | 34 | The Post-Apoc set: reclaimed and recycled buildings (containers, silos, tanks, buses, bulkheads, tyre and bottle walls) with sockets for any culture's marks. |
 | [`kits/ringsea`](kits/ringsea/INDEX.md) | 36 | 183 | 10 | Ring Sea watercraft: 21 procedural vessels (warships, cargo ships, barges, canoes, outriggers, rafts) of the cultures round the Ring Sea. |
 | [`biomes/eastabyss`](biomes/eastabyss/INDEX.md) | 17 | 205 | 54 | Biome kit: see `biomes/README.md`. |
 | [`biomes/hyperjungle`](biomes/hyperjungle/INDEX.md) | 19 | 176 | 33 | Biome kit: see `biomes/README.md`. |
+| [`biomes/nwbay`](biomes/nwbay/INDEX.md) | 19 | 261 | 61 | Biome kit: see `biomes/README.md`. |
 | [`biomes/nwlowlands`](biomes/nwlowlands/INDEX.md) | 17 | 205 | 56 | Biome kit: see `biomes/README.md`. |
 | [`biomes/rift`](biomes/rift/INDEX.md) | 17 | 228 | 60 | Biome kit: see `biomes/README.md`. |
 | [`biomes/sedesert`](biomes/sedesert/INDEX.md) | 18 | 192 | 32 | Biome kit: see `biomes/README.md`. |
