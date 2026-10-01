@@ -184,6 +184,21 @@ the plate at +37.25 in the lobe troughs, each host with its own way-in pod. Pres
 `inside:true` on the def), `'<row> — row'`, `'<host> — the host'`, `'Kit — overview'`. The three mock houses sit
 in the housing rows as worked examples until the merge.
 
+## The city's land–sea model (targets/city/84b-city-shore.js, DESIGN §3)
+
+```js
+ysLoopAdd(name,pts,closed) / ysLoopCircle(name,cx,cz,r)   // shore loops: the mainland, islands, stacks
+shoreAt(loop,s) -> {x,z,tx,tz,nx,nz}                      // the point at arc length s; n points to the water
+ysNearestLoop(x,z) -> {loop,s,d,x,z,tx,tz,nx,nz}
+landDist(x,z)   // signed distance to the waterline, > 0 inland, < 0 under water; sees decks once the lattice is built
+waterDepth(x,z) surfAt(x,z) -> 'land'|'shallows'|'canal'|'open'|'deck'|'cliff'   surfLevel(x,z)
+hostEdge(h,dx,dz) hostBlocks(h,x,z,margin) NAV_MARGIN steerMargin(r)
+YS_AFTER.push(fn)   // city hooks run after every builder and the shell flush, before the bake (the lattice builds here)
+```
+The lattice (12 m cells over the city core) is classified once after the build from the real terrain and the real
+`NAV_EXTRA` records; before that, `landDist` falls back to the design shoreline. `_api.city.surf()` counts the classes;
+`_api.city.surfAt(x,z)` and `_api.city.landDist(x,z)` read them.
+
 ## Animation
 
 A builder that moves something (the Pharos beam, a windmill's sails) pushes `fn(dt,t)` onto `window.YS_TICKS`
