@@ -21,7 +21,7 @@
    ====================================================================== */
 
 ASSET({
-  key: 'voth_bldg_townhouse', name: 'Townhouse', culture: 'voth', family: 'housing',
+  key: 'voth_bldg_townhouse', name: 'Townhouse', culture: 'voth', family: 'housing', types: ['dwelling-single', 'shop'],
   districts: ['poor', 'common', 'wealthy'], wealth: [0, 1],
   w: 20, d: 15, h: 23.5, variants: 4,
   /* a velothi tower and a one-storey hovel should not claim the same slot */
@@ -358,7 +358,7 @@ ASSET({
 });
 
 ASSET({
-  key: 'voth_bldg_clan_compound', name: 'Clan Compound', culture: 'voth', family: 'housing',
+  key: 'voth_bldg_clan_compound', name: 'Clan Compound', culture: 'voth', family: 'housing', types: ['dwelling-multi'],
   districts: ['estate', 'manor'], wealth: [0.7, 1],
   /* the four corner bastions deliberately oversail the curtain wall by ~3.7 m */
   w: 78, d: 68, h: 19, variants: 1,
@@ -467,7 +467,7 @@ ASSET({
 });
 
 ASSET({
-  key: 'voth_bldg_guild_hall', name: 'Guild Hall', culture: 'voth', family: 'guild',
+  key: 'voth_bldg_guild_hall', name: 'Guild Hall', culture: 'voth', family: 'guild', types: ['civic', 'industry'],
   districts: ['canton', 'guild-row'], wealth: [0.3, 0.8],
   w: 29.5, d: 20.5, h: 23, variants: 3,
   variantDims: [
@@ -662,7 +662,7 @@ ASSET({
 });
 
 ASSET({
-  key: 'voth_bldg_palace', name: 'Palace', culture: 'voth', family: 'civic',
+  key: 'voth_bldg_palace', name: 'Palace', culture: 'voth', family: 'civic', types: ['civic', 'dwelling-single'],
   districts: ['canton'], wealth: [1, 1], w: 60, d: 62, h: 58, variants: 1,
   build: function (F) {
     const gilt = 0xd0a53c, basalt = 0x2b2a28, stone = 0x9d9484, glow = 0xffcf87;
@@ -749,7 +749,7 @@ ASSET({
 });
 
 ASSET({
-  key: 'voth_bldg_temple', name: 'Temple', culture: 'voth', family: 'religious',
+  key: 'voth_bldg_temple', name: 'Temple', culture: 'voth', family: 'religious', types: ['religious'],
   districts: ['canton'], wealth: [1, 1], w: 58, d: 60, h: 59, variants: 1,
   build: function (F) {
     const gold = 0xc9a227, stone = 0x9a8f78;
@@ -836,7 +836,7 @@ ASSET({
 });
 
 ASSET({
-  key: 'voth_bldg_arena', name: 'Arena', culture: 'voth', family: 'civic',
+  key: 'voth_bldg_arena', name: 'Arena', culture: 'voth', family: 'civic', types: ['civic'],
   districts: ['canton'], wealth: [0.5, 1], w: 77, d: 77, h: 27.5, variants: 1,
   build: function (F) {
     const stone = 0x958c78, doorC = 0x1c1a16;
@@ -903,7 +903,7 @@ ASSET({
 });
 
 ASSET({
-  key: 'voth_bldg_warehouse', name: 'Warehouse', culture: 'voth', family: 'industrial',
+  key: 'voth_bldg_warehouse', name: 'Warehouse', culture: 'voth', family: 'industrial', types: ['industry', 'market'],
   districts: ['harbour', 'market'], wealth: [0.2, 0.6], w: 16, d: 13.5, h: 10, variants: 1,
   build: function (F) {
     const c = 0x7a7062, cornice = shade(c, -0.18), roofC = 0x5a5248;
@@ -1000,7 +1000,7 @@ ASSET({
 });
 
 ASSET({
-  key: 'voth_bldg_customs_house', name: 'Customs House', culture: 'voth', family: 'civic',
+  key: 'voth_bldg_customs_house', name: 'Customs House', culture: 'voth', family: 'civic', types: ['civic', 'market', 'infrastructure'],
   districts: ['harbour'], wealth: [0.6, 0.9], w: 21.5, d: 20, h: 15.5, variants: 1,
   build: function (F) {
     F.shift(0, -1.37); /* centre the footprint on the origin (verify.py declared-size) */
@@ -1097,7 +1097,7 @@ ASSET({
 });
 
 ASSET({
-  key: 'voth_bldg_house_of_healing', name: 'House of Healing', culture: 'voth', family: 'civic',
+  key: 'voth_bldg_house_of_healing', name: 'House of Healing', culture: 'voth', family: 'civic', types: ['civic'],
   districts: ['canton'], wealth: [0.6, 0.9], w: 57, d: 61, h: 23, variants: 1,
   build: function (F) {
     const c = F.pick([0x8c8579, 0x958e80]), cornice = shade(c, -0.13);
@@ -1206,7 +1206,7 @@ ASSET({
 });
 
 ASSET({
-  key: 'voth_bldg_tavern', name: 'Tavern', culture: 'voth', family: 'civic',
+  key: 'voth_bldg_tavern', name: 'Tavern', culture: 'voth', family: 'civic', types: ['tavern', 'inn'],
   districts: ['common'], wealth: [0.3, 0.6], w: 22, d: 33, h: 20.5, variants: 1,
   build: function (F) {
     const c = F.pick([0x8c8579, 0x958e80, 0x8b8069]), cornice = shade(c, -0.13);
@@ -1298,7 +1298,7 @@ ASSET({
 });
 
 ASSET({
-  key: 'voth_bldg_monastery_chapel', name: 'Monastery Chapel', culture: 'voth', family: 'religious',
+  key: 'voth_bldg_monastery_chapel', name: 'Monastery Chapel', culture: 'voth', family: 'religious', types: ['religious', 'funerary'],
   districts: ['monastery'], wealth: [0.5, 0.8], w: 37.5, d: 28.5, h: 32, variants: 1,
   build: function (F) {
     const stone = 0x958c78, cornice = shade(stone, -0.13);
@@ -1366,7 +1366,7 @@ ASSET({
 });
 
 ASSET({
-  key: 'voth_bldg_monastery_dorm', name: 'Monastery Dormitory', culture: 'voth', family: 'religious',
+  key: 'voth_bldg_monastery_dorm', name: 'Monastery Dormitory', culture: 'voth', family: 'religious', types: ['religious', 'dwelling-multi'],
   districts: ['monastery'], wealth: [0.4, 0.6], w: 27.5, d: 27.5, h: 22.5, variants: 1,
   build: function (F) {
     const stone = 0x8f8977, cornice = shade(stone, -0.13), doorC = 0x1c1a16;
@@ -1429,7 +1429,7 @@ ASSET({
 });
 
 ASSET({
-  key: 'voth_bldg_monastery_hall', name: 'Monastery Assembly Hall', culture: 'voth', family: 'religious',
+  key: 'voth_bldg_monastery_hall', name: 'Monastery Assembly Hall', culture: 'voth', family: 'religious', types: ['religious', 'civic'],
   districts: ['monastery'], wealth: [0.5, 0.8],
   /* the cloister block used to sit off to one side at bx=-26, which put a third
      of the building outside its declared footprint. It is now attached behind

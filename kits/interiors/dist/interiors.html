@@ -36,6 +36,8 @@
   <button id="olBtn" title="O: room outlines, doors, swings, footprints, clearance">Outline (O)</button>
   <button id="gridBtn" title="G: walk grid and paths from the door">Grid (G)</button>
   <button id="cutBtn" title="C: cycle the cut-away">Cut-away: cut (C)</button>
+  <button id="levelBtn" title="L: show storeys up to this one (planned buildings)">Storey: all (L)</button>
+  <button id="walkBtn" class="on" title="V: walkers (the life layer)">Walkers (V)</button>
   <button id="hoverBtn" title="T: hover inspector (name, class, tags)">Hover tags (T)</button>
   <button id="polyBtn" title="P: polygon tool, click the ground to add points">Polygon (P)</button>
   <button id="seedBtn" title="R: furnish every room with the next seed">Seed 0 (R)</button>
@@ -202,6 +204,45 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
     const e = r.hw * Math.abs(A[0][0] * ax[0] + A[0][1] * ax[1]) + r.hd * Math.abs(A[1][0] * ax[0] + A[1][1] * ax[1]);
     return [c - e, c + e];
   }
+  /* ---------- convex polygons (door swing quarter-discs, fixtures): SAT overlap depth > tol */
+  G.rectPoly = function (r) { return G.corners(r); };
+  G.convexOverlap = function (A, B, tol) {
+    let minPen = Infinity;
+    for (const P of [A, B]) for (let i = 0, n = P.length; i < n; i++) {
+      const p = P[i], q = P[(i + 1) % n], ex = q[0] - p[0], ez = q[1] - p[1], l = Math.hypot(ex, ez);
+      if (l < 1e-9) continue;
+      const ax = -ez / l, az = ex / l;
+      let a0 = Infinity, a1 = -Infinity, b0 = Infinity, b1 = -Infinity;
+      for (const v of A) { const d = v[0] * ax + v[1] * az; if (d < a0) a0 = d; if (d > a1) a1 = d; }
+      for (const v of B) { const d = v[0] * ax + v[1] * az; if (d < b0) b0 = d; if (d > b1) b1 = d; }
+      const pen = Math.min(a1, b1) - Math.max(a0, b0);
+      if (pen <= (tol || 0)) return false;
+      if (pen < minPen) minPen = pen;
+    }
+    return minPen;
+  };
+  /* a quarter disc (a door leaf's sweep): hinge h, radius r, from unit direction c (closed leaf)
+     to unit direction o (open leaf), as a convex polygon that CONTAINS the true arc (n segments,
+     vertices pushed out to r / cos(step / 2)) */
+  G.quarterDisc = function (h, r, c, o, n) {
+    n = n || 6;
+    const step = Math.PI / 2 / n, R = r / Math.cos(step / 2), out = [[h[0], h[1]]];
+    out.push([h[0] + c[0] * r, h[1] + c[1] * r]);
+    for (let i = 0; i < n; i++) {
+      const a = (i + 0.5) * step, ca = Math.cos(a), sa = Math.sin(a);
+      out.push([h[0] + (c[0] * ca + o[0] * sa) * R, h[1] + (c[1] * ca + o[1] * sa) * R]);
+    }
+    out.push([h[0] + o[0] * r, h[1] + o[1] * r]);
+    return out;
+  };
+  G.polyInside = function (poly, pts, m) {      /* every point inside poly, m metres clear of its edges */
+    for (const c of pts) {
+      if (!G.inside(poly, c[0], c[1])) return false;
+      if (m && G.edgeDist(poly, c[0], c[1]) < m - 1e-9) return false;
+    }
+    return true;
+  };
+
   /* a rectangle lies inside a polygon: its corners are inside (by margin m from every edge)
      and no polygon edge crosses it (an L-shaped room's reflex corner cannot poke into it) */
   G.rectInPoly = function (poly, r, m) {
@@ -225,13 +266,18 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
      ROOM({ building, kind, poly: [[x,z],...], y, h,
             doors:   [{ at:[x,z], w, to: 'street' | '<room id>', swing?, hinge? }],
             windows: [{ at:[x,z], w, sill, h? }],
-            culture, wealth, id?, seed? })
+            culture, wealth, id?, seed?, level?, fixtures? })
 
    poly is the floor outline at the INNER face of the walls, either winding. A door or window
    is snapped onto the nearest wall of the polygon; `at` may sit anywhere within 0.6 m of it.
    Door extras this kit adds (all optional): swing 'in' (default) | 'out' | 'none' (an open
    doorway or curtain), hinge 'left' | 'right' (seen from inside, looking out; default 'left'),
    h (opening height, 2.1), leaf: false (another room draws this door's leaf: a shared door).
+
+   fixtures: [{ id?, kind, x, z, ry, w, d, h?, clearance: { front, ... }, reach? }] are things the
+   building already put in the room (a stair's flight, the well a stair rises through): the placer
+   keeps furniture off them and out of their clearance, and keeps their front reachable unless
+   reach: false. The planner (46-planner.js) writes them; level is the storey (0 = ground).
 
    ROOM() returns the normalised room. What the placer reads from it:
      id, building, kind, culture, wealth, y, h, seed
@@ -240,6 +286,7 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
                        backed onto this wall faces the room at this heading) }
      doors[]         { at, w, to, swing, hinge, wall, u (metres along the wall from a), n, ry }
      windows[]       { at, w, sill, h, wall, u, n }
+     fixtures[]      { id, kind, x, z, ry, w, d, h, clearance, reach, stair?, end? }
    Registered rooms live in KratorInteriors.rooms / roomById; IX.normRoom() normalises without
    registering (the placer accepts either).
    ====================================================================== */
@@ -274,7 +321,7 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
       wealth: o.wealth == null ? 0.5 : Math.max(0, Math.min(1, +o.wealth)),
       y: +(o.y || 0), h: +(o.h || 3.0),
       poly: poly, area: Math.abs(sa), centroid: G.centroid(poly), bbox: G.bbox(poly),
-      walls: [], doors: [], windows: [], src: o
+      walls: [], doors: [], windows: [], fixtures: [], level: o.level == null ? 0 : +o.level, src: o
     };
     R.seed = o.seed != null ? (o.seed >>> 0) : IX.hash(R.id);
     for (let i = 0; i < poly.length; i++) {
@@ -285,12 +332,17 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
     }
     (o.doors || []).forEach(function (d, k) {
       const s = snap(R, d.at, 'door ' + k);
-      R.doors.push({ i: k, at: s.at, w: +(d.w || 1.0), to: d.to || 'street', swing: d.swing || 'in', hinge: d.hinge || 'left',
+      R.doors.push({ i: k, id: d.id || null, at: s.at, w: +(d.w || 1.0), to: d.to || 'street', swing: d.swing || 'in', hinge: d.hinge || 'left',
         h: +(d.h || 2.1), leaf: d.leaf !== false, wall: s.W.i, u: s.u, n: s.W.n, ry: s.W.ry });
     });
     (o.windows || []).forEach(function (w, k) {
       const s = snap(R, w.at, 'window ' + k);
       R.windows.push({ i: k, at: s.at, w: +(w.w || 0.9), sill: w.sill == null ? 0.9 : +w.sill, h: +(w.h || 1.1), wall: s.W.i, u: s.u, n: s.W.n });
+    });
+    (o.fixtures || []).forEach(function (f, k) {
+      R.fixtures.push({ i: k, id: f.id || (R.id + '.fx' + k), kind: f.kind || 'fixture', x: +f.x, z: +f.z, ry: +(f.ry || 0),
+        w: +f.w, d: +f.d, h: f.h == null ? R.h : +f.h, clearance: f.clearance || {}, reach: f.reach !== false,
+        stair: f.stair || null, end: f.end || null });
     });
     return R;
   };
@@ -313,6 +365,9 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
                                            FURN types (kits/catalog krator-asset-engine.js FURN_TYPES)
      optional:[{ types:[...], max }]       filled after, while there is room, from the room's
                                            culture and its family only (never 'any')
+              { anchor:'surface', max }    a group may filter by anchor instead of (or as well
+                                           as) type: SURFACE below puts whatever the catalog has
+                                           for a table, counter or shelf top into most rooms
      extra:    m2 per optional piece       wealth scales it: a rich room fills more
    }
    A candidate for either list must pass SPEC "Placement" 1: setting in {indoor, both}, rooms
@@ -335,33 +390,36 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
   /* types that need no walk-up access (decor, light, partitions); everything else must be reachable */
   IX.NO_ACCESS_TYPES = ['rug', 'screen', 'lamp', 'banner', 'debris', 'planter', 'monument'];
 
+  const SURFACE = { anchor: 'surface', max: 2 };
+  IX.SURFACE_GROUP = SURFACE;
+
   IX.PROGRAMS = {
     hall:     { require: [{ need: 'table', types: ['table'], n: 1 }, { need: 'seats', types: SEATS, n: 2 }],
-                optional: [{ types: ['lamp', 'brazier'], max: 2 }, { types: ['storage', 'shelf', 'rack'], max: 2 }, { types: ['screen', 'statue', 'banner'], max: 1 }],
+                optional: [{ types: ['lamp', 'brazier'], max: 2 }, { types: ['storage', 'shelf', 'rack'], max: 2 }, { types: ['screen', 'statue', 'banner'], max: 1 }, SURFACE],
                 extra: 7 },
     bedroom:  { require: [{ need: 'bed', types: ['bed'], n: 1 }],
-                optional: [{ types: ['storage'], max: 2 }, { types: ['lamp'], max: 1 }, { types: ['screen'], max: 1 }, { types: ['chair', 'desk'], max: 1 }],
+                optional: [{ types: ['storage'], max: 2 }, { types: ['lamp'], max: 1 }, { types: ['screen'], max: 1 }, { types: ['chair', 'desk'], max: 1 }, SURFACE],
                 extra: 5 },
     kitchen:  { require: [{ need: 'hearth', types: ['stove'], n: 1 }, { need: 'storage', types: ['storage', 'shelf', 'vessel'], n: 1 }],
-                optional: [{ types: ['storage', 'shelf', 'rack', 'stack'], max: 2 }, { types: ['table'], max: 1 }],
+                optional: [{ types: ['storage', 'shelf', 'rack', 'stack'], max: 2 }, { types: ['table'], max: 1 }, SURFACE],
                 extra: 5 },
     tavern:   { require: [{ need: 'counter', types: ['counter'], n: 1 }, { need: 'table', types: ['table'], n: 1 }, { need: 'seats', types: SEATS, n: 2 }],
-                optional: [{ types: ['table'], max: 2 }, { types: SEATS, max: 4 }, { types: ['storage', 'stack', 'rack'], max: 1 }, { types: ['lamp', 'brazier'], max: 2 }],
+                optional: [{ types: ['table'], max: 2 }, { types: SEATS, max: 4 }, { types: ['storage', 'stack', 'rack'], max: 1 }, { types: ['lamp', 'brazier'], max: 2 }, SURFACE],
                 extra: 6 },
     workshop: { require: [{ need: 'workstation', types: ['workstation', 'loom'], n: 1 }],
-                optional: [{ types: ['workstation', 'loom'], max: 2 }, { types: ['rack', 'shelf', 'storage'], max: 2 }, { types: ['chair', 'bench'], max: 1 }],
+                optional: [{ types: ['workstation', 'loom'], max: 2 }, { types: ['rack', 'shelf', 'storage'], max: 2 }, { types: ['chair', 'bench'], max: 1 }, SURFACE],
                 extra: 8 },
     store:    { require: [{ need: 'storage', types: ['storage', 'shelf', 'stack'], n: 2 }],
-                optional: [{ types: ['storage', 'shelf', 'stack', 'rack'], max: 3 }],
+                optional: [{ types: ['storage', 'shelf', 'stack', 'rack'], max: 3 }, SURFACE],
                 extra: 4 },
     shrine:   { require: [{ need: 'altar', types: ['altar', 'shrine'], n: 1 }],
-                optional: [{ types: ['desk'], max: 1 }, { types: ['lamp', 'brazier'], max: 2 }, { types: ['statue', 'banner'], max: 1 }],
+                optional: [{ types: ['desk'], max: 1 }, { types: ['lamp', 'brazier'], max: 2 }, { types: ['statue', 'banner'], max: 1 }, SURFACE],
                 extra: 8 },
     study:    { require: [{ need: 'desk', types: ['desk'], n: 1 }, { need: 'seat', types: ['chair'], n: 1 }],
-                optional: [{ types: ['shelf', 'statue', 'table'], max: 2 }, { types: ['lamp'], max: 1 }],
+                optional: [{ types: ['shelf', 'statue', 'table'], max: 2 }, { types: ['lamp'], max: 1 }, SURFACE],
                 extra: 6 },
     library:  { require: [{ need: 'shelves', types: ['shelf'], n: 2 }, { need: 'reading', types: ['table', 'desk'], n: 1 }],
-                optional: [{ types: ['shelf'], max: 3 }, { types: ['desk', 'statue', 'ladder'], max: 2 }],
+                optional: [{ types: ['shelf'], max: 3 }, { types: ['desk', 'statue', 'ladder'], max: 2 }, SURFACE],
                 extra: 6 },
     school:   { require: [{ need: 'desks', types: ['desk'], n: 2 }, { need: 'board', types: ['board'], n: 1 }],
                 optional: [{ types: ['desk'], max: 4 }, { types: ['chair', 'rack'], max: 2 }],
@@ -371,6 +429,23 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
                 extra: 4 },
     antechamber: { require: [], optional: [{ types: ['lamp', 'bench', 'screen'], max: 3 }], extra: 6 }
   };
+  /* how big a room of each kind wants to be, relative to the others (the planner's area split) */
+  IX.KIND_WEIGHT = { hall: 1.6, tavern: 2.2, shrine: 1.4, workshop: 1.6, library: 1.5, school: 1.6, barracks: 1.6,
+    kitchen: 1.0, bedroom: 1.0, study: 0.9, store: 0.7, antechamber: 0.6 };
+  /* what a building of a given type is divided into, per storey (Yuni's ROOM_PROGRAM table,
+     64-interiors.js): fn(level, area, shell) -> [kind, ...], the first kind holds the street door
+     (ground floor) or the stair's top (upper floors). planBuilding() takes a name from here, an
+     array (every storey), an array of arrays (one per storey) or a function. */
+  IX.BUILDING_PROGRAMS = {
+    dwelling: function (l, a) { return l ? (a >= 40 ? ['bedroom', 'bedroom', 'store'] : ['bedroom', 'store']) : (a >= 45 ? ['hall', 'kitchen', 'bedroom'] : ['hall', 'kitchen']); },
+    tavern:   function (l, a) { return l ? (a >= 30 ? ['bedroom', 'bedroom'] : ['bedroom']) : ['tavern', 'kitchen', 'store']; },
+    shop:     function (l) { return l ? ['bedroom', 'store'] : ['hall', 'store']; },
+    workshop: function (l) { return l ? ['study', 'store'] : ['workshop', 'store']; },
+    civic:    function (l) { return l ? ['study', 'library'] : ['hall', 'study']; },
+    temple:   function () { return ['shrine']; },
+    farm:     function () { return ['store']; }
+  };
+
   IX.DEFAULT_PROGRAM = { require: [], optional: [{ types: ['table', 'storage', 'lamp'], max: 3 }], extra: 6 };
 
   IX.ROLES = {
@@ -403,26 +478,46 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
    room polygon, at least `agent` metres from every wall (except in a doorway's mouth), and
    not under a floor piece's footprint grown by `agent`. Ceiling and surface pieces do not
    block. The placer keeps every door connected to every usable piece on this grid; a life
-   layer can take the same grid for its nav (API.md "Reading the grid").
+   layer takes the same grid for its nav (API.md "Reading the grid", 47-life.js).
 
-     const g = IX.makeGrid(room, { cell: 0.2, agent: 0.2 });
-     g.nx, g.nz, g.cell, g.x0, g.z0          cell (i, j) has centre (x0 + (i + .5) cell, z0 + (j + .5) cell)
+     const g = IX.makeGrid(room, { cell: 0.1, agent: 0.2, nbr: 8, cutCorners: false });
+     g.nx, g.nz, g.cell, g.nbr               cell (i, j) has centre (x0 + (i + .5) cell, z0 + (j + .5) cell)
      g.k(i, j) / g.ij(k) / g.centre(k) / g.at(x, z)  index helpers (at() is -1 outside the grid)
      g.walkable(k)                            base free and no footprint on it
      g.stamp(rect, +1 | -1)                   block / unblock a footprint (rect: IX.geom.rect)
      g.cellsIn(rect)                          cells whose centre lies in rect
-     g.doorCells(door)                        the walkable cells just inside a door (BFS starts)
-     g.bfs(starts) -> { dist: Int32Array (-1 = unreached), prev: Int32Array }
-     g.path(bfs, k) -> [[x, z], ...]          door -> cell k, along the BFS tree
-     g.toJSON()                               { cell, x0, z0, nx, nz, rows: ['0101..', ...] } 1 = blocked
+     g.doorCells(door)                        the walkable cells just inside a door (walk starts)
+     g.bfs(starts) -> { dist: Int32Array (-1 = unreached, in moves), prev: Int32Array }
+     g.path(bfs, k) -> [[x, z], ...]          start -> cell k, along the BFS tree
+     g.reaches(starts, groups) -> bool        every group (an array of cells) has a cell reached
+                                              (early exit, no allocation: what the placer calls)
+     g.route(starts, goals) -> [k, ...]|null  cheapest path (octile cost) from any start to any goal
+     g.smooth([[x, z], ...]) -> [[x, z], ...] drops waypoints a straight walk can skip
+     g.toJSON()                               { cell, x0, z0, nx, nz, nbr, rows: ['0101..', ...] } 1 = blocked
+
+   Moves: nbr 8 (default) moves diagonally only when both cells it passes between are walkable
+   (no corner cutting), so what is CONNECTED is exactly what 4-neighbour moves connect: the
+   reach checks run 4-neighbour and nbr only shapes the paths. cutCorners: true lets a diagonal
+   squeeze past a corner (then reach runs 8-neighbour too). { cell: 0.2, nbr: 4 } is the old grid.
    ====================================================================== */
 (function (IX) {
   'use strict';
   const G = IX.geom;
+  IX.GRID_DEFAULTS = { cell: 0.1, agent: 0.2, nbr: 8, cutCorners: false };
 
-  IX.doorZone = function (room, d) {           /* the swing (or approach) a door keeps free */
-    const depth = d.swing === 'in' ? Math.max(d.w, 0.9) + 0.1 : 0.7;
-    return G.rect(d.at[0] + d.n[0] * depth / 2, d.at[1] + d.n[1] * depth / 2, d.ry, d.w + 0.2, depth);
+  /* The area a door keeps free, as CONVEX polygons (each [[x, z], ...]):
+       swing 'in'           the leaf's true quarter disc (hinge, radius = leaf width) plus a
+                            threshold band 0.45 m deep across the opening
+       swing 'out' | 'none' an approach band 0.7 m deep across the opening (w + 0.2 wide)       */
+  IX.doorZones = function (room, d) {
+    const left = [-d.n[1], d.n[0]], w = d.w;
+    const band = function (depth, wide) {
+      return G.corners(G.rect(d.at[0] + d.n[0] * depth / 2, d.at[1] + d.n[1] * depth / 2, d.ry, wide, depth));
+    };
+    if (d.swing !== 'in') return [band(0.7, w + 0.2)];
+    const hs = d.hinge === 'right' ? -1 : 1;
+    const h = [d.at[0] + left[0] * hs * w / 2, d.at[1] + left[1] * hs * w / 2];
+    return [G.quarterDisc(h, w + 0.05, [-left[0] * hs, -left[1] * hs], [d.n[0], d.n[1]]), band(0.45, w + 0.1)];
   };
   IX.windowZone = function (room, w) {         /* kept clear of anything taller than the sill */
     return G.rect(w.at[0] + w.n[0] * 0.175, w.at[1] + w.n[1] * 0.175, room.walls[w.wall].ry, w.w + 0.1, 0.35);
@@ -430,14 +525,16 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
 
   IX.makeGrid = function (room, opts) {
     opts = opts || {};
-    const cell = opts.cell || 0.2, agent = opts.agent == null ? 0.2 : opts.agent;
+    const D = IX.GRID_DEFAULTS;
+    const cell = opts.cell || D.cell, agent = opts.agent == null ? D.agent : opts.agent;
+    const nbr = (opts.nbr || D.nbr) === 4 ? 4 : 8, cutCorners = opts.cutCorners == null ? D.cutCorners : !!opts.cutCorners;
     const bb = room.bbox, x0 = bb[0] - cell, z0 = bb[1] - cell;
     const nx = Math.ceil((bb[2] - bb[0]) / cell) + 2, nz = Math.ceil((bb[3] - bb[1]) / cell) + 2, N = nx * nz;
     const base = new Uint8Array(N), occ = new Uint16Array(N);
     const mouths = room.doors.map(function (d) {
       return G.localRect(d.at[0], d.at[1], d.ry, -(d.w / 2 - 0.08), d.w / 2 - 0.08, -0.3, agent + cell);
     });
-    const g = { cell: cell, agent: agent, x0: x0, z0: z0, nx: nx, nz: nz, base: base, occ: occ, room: room.id };
+    const g = { cell: cell, agent: agent, nbr: nbr, cutCorners: cutCorners, x0: x0, z0: z0, nx: nx, nz: nz, base: base, occ: occ, room: room.id };
     g.k = function (i, j) { return j * nx + i; };
     g.ij = function (k) { return [k % nx, Math.floor(k / nx)]; };
     g.centre = function (k) { return [x0 + (k % nx + 0.5) * cell, z0 + (Math.floor(k / nx) + 0.5) * cell]; };
@@ -451,7 +548,8 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
       if (blocked) for (const m of mouths) if (G.containsPt(m, c[0], c[1])) { blocked = false; break; }
       base[k] = blocked ? 1 : 0;
     }
-    g.walkable = function (k) { return k >= 0 && base[k] === 0 && occ[k] === 0; };
+    function free(k) { return base[k] === 0 && occ[k] === 0; }
+    g.walkable = function (k) { return k >= 0 && k < N && free(k); };
     g.cellsIn = function (r) {
       const cs = G.corners(r), b = G.bbox(cs), out = [];
       const i0 = Math.max(0, Math.floor((b[0] - x0) / cell)), i1 = Math.min(nx - 1, Math.floor((b[2] - x0) / cell));
@@ -467,14 +565,38 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
       const r = G.localRect(d.at[0], d.at[1], d.ry, -(d.w / 2 - 0.08), d.w / 2 - 0.08, 0, agent + 2 * cell);
       return g.cellsIn(r).filter(g.walkable);
     };
+    /* the neighbours of k that a walker may step to, written into out[]; returns the count.
+       diag[] (if given) gets 1 for a diagonal move. */
+    function neighbours(k, out, diag, eight) {
+      const i = k % nx, j = (k - i) / nx;
+      let n = 0;
+      const W = i > 0 && free(k - 1), E = i < nx - 1 && free(k + 1), S = j > 0 && free(k - nx), Nn = j < nz - 1 && free(k + nx);
+      if (W) { out[n] = k - 1; if (diag) diag[n] = 0; n++; }
+      if (E) { out[n] = k + 1; if (diag) diag[n] = 0; n++; }
+      if (S) { out[n] = k - nx; if (diag) diag[n] = 0; n++; }
+      if (Nn) { out[n] = k + nx; if (diag) diag[n] = 0; n++; }
+      if (eight) {
+        const cand = [[i > 0 && j > 0, k - nx - 1, W, S], [i < nx - 1 && j > 0, k - nx + 1, E, S],
+          [i > 0 && j < nz - 1, k + nx - 1, W, Nn], [i < nx - 1 && j < nz - 1, k + nx + 1, E, Nn]];
+        for (const c of cand) {
+          if (!c[0] || !free(c[1])) continue;
+          if (!cutCorners && !(c[2] && c[3])) continue;
+          if (cutCorners && !(c[2] || c[3])) continue;     /* never through two blocked cells */
+          out[n] = c[1]; if (diag) diag[n] = 1; n++;
+        }
+      }
+      return n;
+    }
+    g.neighbours = function (k) { const o = [0, 0, 0, 0, 0, 0, 0, 0], n = neighbours(k, o, null, nbr === 8); return o.slice(0, n); };
+    /* reach-only moves: with corner cutting off, 8-neighbour connectivity IS 4-neighbour connectivity */
+    const reachEight = nbr === 8 && cutCorners;
     g.bfs = function (starts) {
-      const dist = new Int32Array(N).fill(-1), prev = new Int32Array(N).fill(-1), q = new Int32Array(N);
+      const dist = new Int32Array(N).fill(-1), prev = new Int32Array(N).fill(-1), q = new Int32Array(N), nb = new Int32Array(8);
       let h = 0, t = 0;
       for (const s of starts) if (g.walkable(s) && dist[s] < 0) { dist[s] = 0; q[t++] = s; }
       while (h < t) {
-        const k = q[h++], i = k % nx, j = (k - i) / nx;
-        const nb = [i > 0 ? k - 1 : -1, i < nx - 1 ? k + 1 : -1, j > 0 ? k - nx : -1, j < nz - 1 ? k + nx : -1];
-        for (const m of nb) if (m >= 0 && dist[m] < 0 && base[m] === 0 && occ[m] === 0) { dist[m] = dist[k] + 1; prev[m] = k; q[t++] = m; }
+        const k = q[h++], n = neighbours(k, nb, null, nbr === 8);
+        for (let a = 0; a < n; a++) { const m = nb[a]; if (dist[m] < 0) { dist[m] = dist[k] + 1; prev[m] = k; q[t++] = m; } }
       }
       return { dist: dist, prev: prev };
     };
@@ -484,10 +606,97 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
       for (let c = k; c >= 0; c = B.prev[c]) out.push(g.centre(c));
       return out.reverse();
     };
+    /* scratch for reaches(): a generation stamp per cell, so nothing is cleared or allocated */
+    let seen = null, gen = 0, rq = null, rnb = null;
+    g.reaches = function (starts, groups) {
+      if (!seen) { seen = new Uint32Array(N); rq = new Int32Array(N); rnb = new Int32Array(8); }
+      gen++;
+      if (gen === 0xffffffff) { seen.fill(0); gen = 1; }
+      /* an empty group can never be reached: report it unreached */
+      for (const cells of groups) if (!cells.length) return false;
+      let left = groups.length;
+      const tag = new Map();
+      groups.forEach(function (cells, gi) { for (const k of cells) { let a = tag.get(k); if (!a) tag.set(k, a = []); a.push(gi); } });
+      const done = new Uint8Array(groups.length);
+      if (!left) return true;
+      let h = 0, t = 0;
+      function visit(k) {
+        seen[k] = gen; rq[t++] = k;
+        const a = tag.get(k);
+        if (a) for (const gi of a) if (!done[gi]) { done[gi] = 1; left--; }
+      }
+      for (const s of starts) if (g.walkable(s) && seen[s] !== gen) { visit(s); if (!left) return true; }
+      while (h < t) {
+        const k = rq[h++], n = neighbours(k, rnb, null, reachEight);
+        for (let a = 0; a < n; a++) { const m = rnb[a]; if (seen[m] !== gen) { visit(m); if (!left) return true; } }
+      }
+      return left === 0;
+    };
+    /* Dijkstra, octile costs (10 straight, 14 diagonal), stops at the first goal reached */
+    g.route = function (starts, goals) {
+      const goal = new Uint8Array(N);
+      for (const k of goals) if (k >= 0 && k < N) goal[k] = 1;
+      const dist = new Int32Array(N).fill(0x7fffffff), prev = new Int32Array(N).fill(-1);
+      const heap = [], nb = new Int32Array(8), dg = new Uint8Array(8);
+      function push(k, d) {
+        heap.push([d, k]);
+        let i = heap.length - 1;
+        while (i > 0) { const p = (i - 1) >> 1; if (heap[p][0] < d || (heap[p][0] === d && heap[p][1] <= k)) break; heap[i] = heap[p]; i = p; }
+        heap[i] = [d, k];
+      }
+      function pop() {
+        const top = heap[0], last = heap.pop();
+        if (heap.length) {
+          let i = 0;
+          for (;;) {
+            const l = 2 * i + 1, r = l + 1;
+            let m = i, mv = last;
+            if (l < heap.length && (heap[l][0] < mv[0] || (heap[l][0] === mv[0] && heap[l][1] < mv[1]))) { m = l; mv = heap[l]; }
+            if (r < heap.length && (heap[r][0] < mv[0] || (heap[r][0] === mv[0] && heap[r][1] < mv[1]))) { m = r; mv = heap[r]; }
+            if (m === i) break;
+            heap[i] = heap[m]; i = m;
+          }
+          heap[i] = last;
+        }
+        return top;
+      }
+      for (const s of starts) if (g.walkable(s) && dist[s] > 0) { dist[s] = 0; push(s, 0); }
+      while (heap.length) {
+        const e = pop(), k = e[1];
+        if (e[0] > dist[k]) continue;
+        if (goal[k]) { const out = []; for (let c = k; c >= 0; c = prev[c]) out.push(c); return out.reverse(); }
+        const n = neighbours(k, nb, dg, nbr === 8);
+        for (let a = 0; a < n; a++) {
+          const m = nb[a], d = dist[k] + (dg[a] ? 14 : 10);
+          if (d < dist[m]) { dist[m] = d; prev[m] = k; push(m, d); }
+        }
+      }
+      return null;
+    };
+    /* is the straight walk a -> b on walkable cells? (sampled at a third of a cell) */
+    g.clearLine = function (a, b) {
+      const L = Math.hypot(b[0] - a[0], b[1] - a[1]), n = Math.max(1, Math.ceil(L / (cell / 3)));
+      for (let s = 0; s <= n; s++) {
+        const t = s / n, k = g.at(a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t);
+        if (!g.walkable(k)) return false;
+      }
+      return true;
+    };
+    g.smooth = function (pts) {
+      if (!pts || pts.length < 3) return pts;
+      const out = [pts[0]];
+      let i = 0;
+      while (i < pts.length - 1) {
+        let j = pts.length - 1;
+        while (j > i + 1 && !g.clearLine(pts[i], pts[j])) j--;
+        out.push(pts[j]); i = j;
+      }
+      return out;
+    };
     g.toJSON = function () {
       const rows = [];
-      for (let j = 0; j < nz; j++) { let s = ''; for (let i = 0; i < nx; i++) s += g.walkable(j * nx + i) ? '0' : '1'; rows.push(s); }
-      return { room: room.id, cell: cell, agent: agent, x0: IX.round(x0), z0: IX.round(z0), nx: nx, nz: nz, rows: rows };
+      for (let j = 0; j < nz; j++) { let s = ''; for (let i = 0; i < nx; i++) s += free(j * nx + i) ? '0' : '1'; rows.push(s); }
+      return { room: room.id, cell: cell, agent: agent, nbr: nbr, cutCorners: cutCorners, x0: IX.round(x0), z0: IX.round(z0), nx: nx, nz: nz, rows: rows };
     };
     return g;
   };
@@ -509,6 +718,15 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
               reaches every other door and every usable piece's use zone.
    4. SEED    rng = IX.rng(room.seed ^ opts.seed); room.seed defaults to a hash of the room id,
               so a room furnishes the same on every load.
+   Greedy, then bounded backtracking: each piece takes the first slot that passes. When a
+   required piece then finds no fit, the room is furnished again with that requirement first
+   (opts.passes orders, default 3), and then by LIMITED-DISCREPANCY SEARCH over the required
+   pieces placed before the one that failed: a discrepancy tells piece i to refuse the first
+   slot(s) greedy gave it (and anything within 0.6 m of them), so it lands somewhere else and
+   leaves room. Discrepancy vectors are tried in a fixed order (fewest first, earliest piece
+   first), at most opts.backtrack runs (default 48; 0 = greedy only). Deterministic: every run
+   reseeds from the room. plan.stats = { ms, runs } says what it cost (not exported: timing).
+   A room's fixtures (a stair, a stairwell: 20-rooms.js) are in place before anything else.
    Ported from Yuni's furnishGroup (settlements/yuni/src/64-interiors.js): its anchors (back,
    left/right, corner, run, centre, grid) become wall slots on ANY polygon edge and a centre
    search, its rectangle keep-outs become oriented rectangles, and its door keep-out becomes
@@ -520,8 +738,13 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
      catalog.anchorY(key, variant, { floorY, surfaceY, ceilingY }) -> y
      catalog.build(placement, room)               -> host object (only IX.buildRoom calls it)
 
-   plan = { room, kind, culture, seed, placements[], grid, zones{ doors[], windows[] }, report }
-   placement = { id, key, variant, seed, x, z, ry, y, anchor, type, role, culture, need, host }
+     catalog.lights(key, variant, { seed, wealth })  OPTIONAL: the lights a piece carries, in its own
+                                                  frame [{ lx, ly, lz, color, intensity, distance }]
+
+   plan = { room, kind, culture, seed, placements[], lights[], grid, zones{ doors[][], windows[] }, report, stats }
+   placement = { id, key, variant, seed, x, z, ry, y, anchor, type, role, culture, need, host, lights? }
+   plan.lights = every placement's lights in world terms, { placement, x, y, z, color, intensity, distance }:
+   a host lights the room from this data (or a budget of it) instead of one real light per lamp.
    ====================================================================== */
 (function (IX) {
   'use strict';
@@ -530,7 +753,9 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
   const WALL_GAP = 0.03;             /* a wall piece's back stands this far off the wall */
   const MIN_USE = 0.45;              /* a usable piece keeps at least this much free in front */
 
-  /* ---------- the piece model: one candidate = descriptor + variant + pose */
+  /* ---------- the piece model: one candidate = descriptor + variant + pose.
+     Clearance sides in the piece's frame (kits/furniture/SPEC.md): front +z, back -z,
+     left -x, right +x, left and right as seen standing in front of the piece, facing it. */
   function clearanceZones(P, x, z, ry, forUse) {
     const c = P.clear, hw = P.w / 2, hd = P.d / 2, out = [];
     const f = forUse && P.usable ? Math.max(c.front || 0, MIN_USE) : (c.front || 0);
@@ -560,36 +785,87 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
       usable: IX.NO_ACCESS_TYPES.indexOf(type) < 0 && (d.anchor || 'floor') !== 'ceiling' && d.anchor !== 'surface' };
   }
 
+  function now() { return typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now(); }
+  function nofitOf(plan) { return plan.report.missing.filter(function (m) { return m.reason === 'no-fit'; }); }
+
+  /* discrepancy vectors over items [0, m): fewest discrepancies first, then earliest items,
+     each entry 1..K skips. Deterministic order; the caller stops at its run budget. */
+  function discrepancies(m, K, maxD, limit) {
+    const out = [];
+    function rec(start, left, vec) {
+      if (out.length >= limit) return;
+      if (left === 0) { out.push(Object.assign({}, vec)); return; }
+      for (let i = start; i < m && out.length < limit; i++) for (let k = 1; k <= Math.min(K, left) && out.length < limit; k++) {
+        vec[i] = k; rec(i + 1, left - k, vec); delete vec[i];
+      }
+    }
+    for (let d = 1; d <= maxD && out.length < limit; d++) rec(0, d, {});
+    return out;
+  }
+
   /* Greedy placement can box itself in (a bar's clearance eats the depth a table needed). When a
-     required piece finds no fit, furnish again from scratch with that requirement moved first;
-     up to three orders, keep the first with nothing missing (else the one missing least). */
+     required piece finds no fit, furnish again from scratch with that requirement moved first
+     (up to opts.passes orders), then backtrack by limited discrepancy (header). Keep the first
+     plan with nothing missing, else the one missing least. */
   IX.furnishRoom = function (roomIn, catalog, opts) {
     opts = opts || {};
+    const t0 = now();
     const room = roomIn.walls ? roomIn : (IX.roomById[roomIn.id] || IX.normRoom(roomIn));
-    let order = ((IX.PROGRAMS[room.kind] || IX.DEFAULT_PROGRAM).require).slice(), best = null;
-    for (let pass = 0; pass < 3; pass++) {
-      const plan = furnishOnce(room, catalog, opts, order);
-      const nofit = plan.report.missing.filter(function (m) { return m.reason === 'no-fit'; });
+    let order = ((IX.PROGRAMS[room.kind] || IX.DEFAULT_PROGRAM).require).slice(), best = null, runs = 0;
+    const passes = opts.passes == null ? 3 : Math.max(1, opts.passes);
+    for (let pass = 0; pass < passes; pass++) {
+      const plan = furnishOnce(room, catalog, opts, order, null); runs++;
+      const nofit = nofitOf(plan);
       plan.report.passes = pass + 1;
-      if (!best || nofit.length < best.nofit) best = { plan: plan, nofit: nofit.length };
+      if (!best || nofit.length < best.nofit) best = { plan: plan, nofit: nofit.length, order: order };
       if (!nofit.length) break;
       const need = nofit[0].need;
       order = order.filter(function (r) { return r.need === need; }).concat(order.filter(function (r) { return r.need !== need; }));
     }
+    const budget = opts.backtrack == null ? 48 : Math.max(0, opts.backtrack | 0);
+    if (best.nofit && budget) {
+      const first = nofitOf(best.plan)[0];
+      const vecs = discrepancies(first.item, 2, 3, budget);
+      for (const vec of vecs) {
+        const plan = furnishOnce(room, catalog, opts, best.order, vec); runs++;
+        const nf = nofitOf(plan).length;
+        if (nf < best.nofit) {
+          plan.report.passes = best.plan.report.passes;
+          plan.report.backtrack = { skips: vec };
+          best = { plan: plan, nofit: nf, order: best.order };
+          if (!nf) break;
+        }
+      }
+      if (!best.plan.report.backtrack) best.plan.report.backtrack = { skips: null, tried: vecs.length };
+    }
+    best.plan.stats = { ms: Math.round((now() - t0) * 100) / 100, runs: runs };
     return best.plan;
   };
 
-  function furnishOnce(room, catalog, opts, reqs) {
+  function furnishOnce(room, catalog, opts, reqs, skips) {
     const seed = ((room.seed ^ (opts.seed || 0)) >>> 0);
     const rng = IX.rng(seed);
     const fallback = opts.fallback || 'any';
-    const grid = IX.makeGrid(room, { cell: opts.cell, agent: opts.agent });
-    const doorZones = room.doors.map(function (d) { return IX.doorZone(room, d); });
+    const grid = IX.makeGrid(room, { cell: opts.cell, agent: opts.agent, nbr: opts.nbr, cutCorners: opts.cutCorners });
+    const doorZones = room.doors.map(function (d) { return IX.doorZones(room, d); });
+    const doorPolys = [].concat.apply([], doorZones);
     const winZones = room.windows.map(function (w) { return { sill: w.sill, r: IX.windowZone(room, w) }; });
     const placed = [];
     const report = { culture: room.culture, own: 0, thin: false, fallbacks: [], missing: [], required: [], optional: 0, tries: 0 };
     const prog = IX.PROGRAMS[room.kind] || IX.DEFAULT_PROGRAM;
+    /* the room's fixtures (a stair, a stairwell) stand before any furniture does */
+    (room.fixtures || []).forEach(function (f) {
+      const P = { key: f.id, w: f.w, d: f.d, h: Math.min(f.h, room.h), type: 'fixture', anchor: 'floor', clear: f.clearance || {}, usable: !!f.reach, fixture: true };
+      const fp = G.rect(f.x, f.z, f.ry, f.w, f.d);
+      const Q = { id: f.id, P: P, x: f.x, z: f.z, ry: f.ry, fp: fp, zones: clearanceZones(P, f.x, f.z, f.ry, false), layer: 'floor', host: null, fixture: true };
+      Q.top = room.y + P.h;
+      placed.push(Q);
+      grid.stamp(fp, +1);
+    });
+    let nFurn = 0;
     const doorStarts = room.doors.map(function (d) { return grid.doorCells(d); });
+    /* the ways in: every door, and every fixture's front (a stair's foot, the landing at a well's top) */
+    const entries = doorStarts.concat(placed.filter(function (Q) { return Q.fixture && Q.P.usable; }).map(function (Q) { return useCells(Q); }));
     if (!room.doors.length) report.noDoors = true;
     doorStarts.forEach(function (s, i) { if (!s.length) report.missing.push({ need: 'door ' + i, reason: 'door has no walkable cell inside it' }); });
 
@@ -640,7 +916,8 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
         }
         return { fp: fp, zones: [] };
       }
-      for (const dz of doorZones) if (G.overlap(fp, dz, EPS)) return null;
+      const fpPoly = G.corners(fp);
+      for (const dz of doorPolys) if (G.convexOverlap(fpPoly, dz, EPS)) return null;
       for (const wz of winZones) if (P.h > wz.sill - 0.02 && G.overlap(fp, wz.r, EPS)) return null;
       const zones = clearanceZones(P, x, z, ry, true);
       for (const zn of zones) if (!G.rectInPoly(room.poly, zn.r, 0)) return null;
@@ -654,18 +931,18 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
       }
       return { fp: fp, zones: zones };
     }
+    function useCells(Q) {
+      if (Q._use) return Q._use;
+      const out = [];
+      for (const zr of useZones(Q)) for (const k of grid.cellsIn(zr)) out.push(k);
+      return (Q._use = out);
+    }
     function reachAll(extra) {
-      if (!room.doors.length) return true;
-      const B = grid.bfs(doorStarts[0]);
-      for (let i = 1; i < doorStarts.length; i++) if (!doorStarts[i].some(function (k) { return B.dist[k] >= 0; })) return false;
+      if (!entries.length) return true;
+      const groups = entries.slice(1);
       const list = placed.concat(extra ? [extra] : []);
-      for (const Q of list) {
-        if (Q.layer !== 'floor' || !Q.P.usable) continue;
-        let ok = false;
-        for (const zr of useZones(Q)) { for (const k of grid.cellsIn(zr)) if (B.dist[k] >= 0) { ok = true; break; } if (ok) break; }
-        if (!ok) return false;
-      }
-      return true;
+      for (const Q of list) if (Q.layer === 'floor' && Q.P.usable && !Q.fixture) groups.push(useCells(Q));
+      return grid.reaches(entries[0], groups);
     }
     function tryPose(P, x, z, ry, extra) {
       report.tries++;
@@ -673,15 +950,20 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
       const hostQ = extra && extra.host || null, paired = extra && extra.paired ? hostQ : null;
       const g = geomOK(P, x, z, ry, hostQ, paired);
       if (!g) return null;
-      const Q = { id: room.id + '.f' + placed.length, P: P, x: x, z: z, ry: ry, fp: g.fp, zones: g.zones, layer: layerOf(P),
+      const Q = { id: room.id + '.f' + nFurn, P: P, x: x, z: z, ry: ry, fp: g.fp, zones: g.zones, layer: layerOf(P),
         host: hostQ ? hostQ.id : null, pairedHost: !!paired, role: extra && extra.role };
       if (Q.layer === 'floor') {
         grid.stamp(Q.fp, +1);
         if (!reachAll(Q)) { grid.stamp(Q.fp, -1); return null; }
       }
       Q.top = (Q.layer === 'surface' ? hostQ.top : room.y) + P.h;
-      placed.push(Q);
+      placed.push(Q); nFurn++;
       return Q;
+    }
+    function unplace(Q) {                     /* undo the last tryPose (backtracking) */
+      if (placed[placed.length - 1] !== Q) throw new Error('unplace: not the last piece');
+      placed.pop(); nFurn--;
+      if (Q.layer === 'floor') grid.stamp(Q.fp, -1);
     }
     function normAng(a) { const T = Math.PI * 2; a = a % T; if (a > Math.PI) a -= T; if (a <= -Math.PI) a += T; return a; }
 
@@ -736,7 +1018,7 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
     function seatSlots(P) {
       const out = [];
       for (const H of placed) {
-        if (H.layer !== 'floor' || ['table', 'desk'].indexOf(H.P.type) < 0) continue;
+        if (H.layer !== 'floor' || H.fixture || ['table', 'desk'].indexOf(H.P.type) < 0) continue;
         const hw = H.P.w / 2, hd = H.P.d / 2, gap = 0.06;
         const sides = [
           { lx: 0, lz: hd + gap + P.d / 2, rot: Math.PI, span: hw },      /* in front of the table, facing it */
@@ -761,7 +1043,7 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
     function surfaceSlots(P) {
       const out = [];
       for (const H of placed) {
-        if (H.layer !== 'floor' || IX.SURFACE_HOSTS.indexOf(H.P.type) < 0) continue;
+        if (H.layer !== 'floor' || H.fixture || IX.SURFACE_HOSTS.indexOf(H.P.type) < 0) continue;
         for (const o of [0, -0.3, 0.3]) {
           const c = Math.cos(H.ry), s = Math.sin(H.ry), lx = o * H.P.w;
           out.push({ x: H.x + lx * c, z: H.z - lx * s, ry: H.ry, host: H, s: rng() });
@@ -776,7 +1058,13 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
       if (P.anchor === 'wall') return r === 'back' ? 'back' : 'wall';
       return r;
     }
-    function place(P) {
+    /* ban = { left: fits still to refuse, poses: [[x, z, ry], ...] refused } (backtracking) */
+    function banned(ban, S) {
+      if (!ban) return false;
+      for (const b of ban.poses) if (Math.hypot(S.x - b[0], S.z - b[1]) < 0.6) return true;
+      return false;
+    }
+    function place(P, ban) {
       const role = roleOf(P);
       const order = {
         back: ['back', 'wall'], wall: ['wall', 'centre'], corner: ['corner', 'centre'], centre: ['centre', 'wall'],
@@ -791,8 +1079,11 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
         else if (r === 'surface') slots = surfaceSlots(P);
         else slots = centreSlots(P, r);
         for (const S of slots) {
+          if (banned(ban, S)) continue;
           const Q = tryPose(P, S.x, S.z, S.ry, { host: S.host, paired: S.paired, role: r });
-          if (Q) return Q;
+          if (!Q) continue;
+          if (ban && ban.left > 0) { unplace(Q); ban.left--; ban.poses.push([Q.x, Q.z, Q.ry]); continue; }
+          return Q;
         }
       }
       return null;
@@ -801,7 +1092,7 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
     /* ---- 2. REQUIRE, then optional */
     const used = {};
     function offRole(d) { return d.anchor === 'wall' && (IX.ROLES[d.type] || 'centre') === 'centre' ? 1 : 0; }
-    function attempt(list, need, preferKey) {
+    function attempt(list, need, preferKey, ban) {
       const order = rng.shuffle(list.slice());
       if (preferKey) order.sort(function (a, b) { return (b.key === preferKey) - (a.key === preferKey); });
       else order.sort(function (a, b) { return (used[a.key] || 0) - (used[b.key] || 0); });   /* variety first */
@@ -814,30 +1105,33 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
         for (let v = 0; v < (d.variants || 1); v++) if (v !== v0) others.push(v);
         others.sort(function (a, b) { const A = catalog.dims(d.key, a), B = catalog.dims(d.key, b); return A.w * A.d - B.w * B.d || a - b; });
         for (const v of vs.concat(others)) {
-          const Q = place(describe(catalog, d, v, room));
+          const Q = place(describe(catalog, d, v, room), ban);
           if (Q) { Q.need = need; used[d.key] = (used[d.key] || 0) + 1; return Q; }
         }
       }
       return null;
     }
+    let nItem = 0;
     for (const rq of reqs) {
       const L = levels(fallback).map(function (lv) {
         return { culture: lv.culture, list: lv.list.filter(function (d) { return rq.types.indexOf(d.type) >= 0; }) };
       }).filter(function (lv) { return lv.list.length; });
       const rec = { need: rq.need, types: rq.types, n: rq.n || 1, placed: 0 };
       report.required.push(rec);
-      if (!L.length) { report.missing.push({ need: rq.need, types: rq.types, reason: 'none-in-catalog', scope: fallback }); continue; }
+      if (!L.length) { report.missing.push({ need: rq.need, types: rq.types, reason: 'none-in-catalog', scope: fallback }); nItem += rec.n; continue; }
       let lastKey = null;
       for (let i = 0; i < rec.n; i++) {
         let Q = null;
+        const item = nItem++;
+        const ban = skips && skips[item] ? { left: skips[item], poses: [] } : null;
         for (const lv of L) {
-          Q = attempt(lv.list, rq.need, lastKey);
+          Q = attempt(lv.list, rq.need, lastKey, ban);
           if (Q) {
             if (lv.culture !== room.culture) report.fallbacks.push({ need: rq.need, wanted: room.culture, used: Q.P.culture, key: Q.P.key });
             break;
           }
         }
-        if (!Q) { report.missing.push({ need: rq.need, types: rq.types, reason: 'no-fit', index: i }); break; }
+        if (!Q) { report.missing.push({ need: rq.need, types: rq.types, reason: 'no-fit', index: i, item: item }); nItem += rec.n - i - 1; break; }
         lastKey = Q.P.key; rec.placed++;
       }
     }
@@ -855,7 +1149,9 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
           any = true;
           let Q = null;
           for (const lv of own) {
-            const list = lv.list.filter(function (d) { return O.types.indexOf(d.type) >= 0; });
+            const list = lv.list.filter(function (d) {
+              return (!O.types || O.types.indexOf(d.type) >= 0) && (!O.anchor || (d.anchor || 'floor') === O.anchor);
+            });
             if (list.length && (Q = attempt(list, null))) break;
           }
           if (Q) { counts[gi]++; added++; } else dead[gi] = true;
@@ -866,20 +1162,860 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
     }
 
     /* ---- the plan, as data */
-    const placements = placed.map(function (Q, i) {
+    const furn = placed.filter(function (Q) { return !Q.fixture; });
+    const lights = [];
+    const placements = furn.map(function (Q, i) {
       const P = Q.P;
       const hostQ = Q.host ? placed.filter(function (H) { return H.id === Q.host; })[0] : null;
       const y = catalog.anchorY(P.key, P.variant, { floorY: room.y, surfaceY: hostQ ? hostQ.top : null, ceilingY: room.y + room.h });
-      return { id: Q.id, key: P.key, variant: P.variant, seed: 1 + ((seed + i * 7919) % 99991), x: Q.x, z: Q.z, ry: Q.ry, y: R3(y),
+      const p = { id: Q.id, key: P.key, variant: P.variant, seed: 1 + ((seed + i * 7919) % 99991), x: Q.x, z: Q.z, ry: Q.ry, y: R3(y),
         anchor: P.anchor, type: P.type, role: Q.role, culture: P.culture, need: Q.need || null, host: Q.host,
         w: R3(P.w), d: R3(P.d), h: R3(P.h), clearance: P.clear };
+      const L = catalog.lights ? catalog.lights(P.key, P.variant, { seed: p.seed, wealth: room.wealth }) : null;
+      if (L && L.length) {
+        const c = Math.cos(p.ry), s = Math.sin(p.ry);
+        p.lights = L.map(function (l) {
+          const o = { placement: p.id, x: R3(p.x + l.lx * c + l.lz * s), y: R3(p.y + l.ly), z: R3(p.z - l.lx * s + l.lz * c),
+            color: l.color == null ? 0xffb066 : l.color, intensity: l.intensity == null ? 1 : l.intensity, distance: l.distance == null ? 10 : l.distance };
+          lights.push(o);
+          return o;
+        });
+      }
+      return p;
     });
     report.placed = placements.length;
-    const B = room.doors.length ? grid.bfs(doorStarts[0]) : null;
-    return { room: room.id, kind: room.kind, culture: room.culture, seed: seed, placements: placements, grid: grid, reach: B,
-      opts: { seed: opts.seed || 0, fallback: fallback, cell: grid.cell, agent: grid.agent, optional: opts.optional !== false },
+    report.lights = lights.length;
+    const B = entries.length ? grid.bfs(entries[0]) : null;
+    return { room: room.id, kind: room.kind, culture: room.culture, seed: seed, placements: placements, lights: lights, grid: grid, reach: B,
+      opts: { seed: opts.seed || 0, fallback: fallback, cell: grid.cell, agent: grid.agent, nbr: grid.nbr, cutCorners: grid.cutCorners,
+        optional: opts.optional !== false, passes: opts.passes, backtrack: opts.backtrack },
       zones: { doors: doorZones, windows: winZones.map(function (w) { return w.r; }) }, report: report, _placed: placed };
   }
+})(KratorInteriors);
+/* ---------- src/46-planner.js ---------- */
+/* ======================== The planner: planBuilding() ========================
+   planBuilding(shell, program, opts) -> building plan. Pure data, engine-neutral: it FINDS the
+   rooms inside a building, as Yuni's planner does (settlements/yuni/src/64-interiors.js,
+   planGroup / emitGroup / navGroup), and hands back ROOM() inputs the placer furnishes.
+
+     shell = { id, poly: [[x,z],...]  footprint, the OUTER face of the exterior walls (world metres)
+               y: 0                   ground floor height (floor top)
+               levels: 2 | [{ h, poly? }, ...]   storeys (h: clear height, default shell.h or 3.0)
+               doors: [{ at:[x,z], w }]          street doors on the footprint edge (ground floor);
+                                                 none given: one in the middle of edge `front` (0)
+               culture, wealth, wall: 0.25, partition: 0.12, slab: 0.25,
+               roof: 'gable' | 'hip' | 'flat', pitch: 0.6 (radians) }
+     program = a name in IX.BUILDING_PROGRAMS | [kind, ...] (every storey) | [[kinds of storey 0], [storey 1], ...]
+               | fn(level, area, shell) -> [kind, ...].  The first kind of a storey gets the street
+               door (ground floor) or the top of the stair (upper floors).
+     opts    = { seed, register: false (true: ROOM() every room), door: 0.9 (interior door width),
+               stair: { w: 1.0, riser: 0.19, tread: 0.27 }, minWidth: 2.2 }
+
+   How (Yuni's planGroup on any footprint): the building gets a frame (V = inward from the street
+   door, U along its wall); every storey's inner outline (the footprint inset by the wall) is
+   cut in two, again and again, perpendicular to its longer side, at the point that gives each
+   side its share of the area (IX.KIND_WEIGHT); the side holding the street door (or the stair
+   top) takes the first kinds. A cut snaps to a reflex corner of an L, never crosses a stair or
+   its landings, never lands on a street door, and never leaves a room narrower than minWidth;
+   when no cut fits, the storey has fewer rooms (report.dropped). Each cut becomes one
+   PARTITION with one interior DOOR (every cut joins its two sides, so every room is reachable),
+   swinging into the deeper room. A STAIR (a straight flight, else a ladder) rises along an
+   exterior wall from a room of storey k to the room above; in the lower room it is a fixture
+   (the flight, its foot kept reachable), in the upper one a fixture too (the well, its top
+   landing kept reachable). Windows go on the exterior walls of every room.
+
+   Returns B = {
+     id, culture, wealth, y, frame: { O, U, V }, outer, wall, partition, slab,
+     levels: [{ k, y, h, inner, rooms: [id] }],
+     rooms:  [normalised room (IX.normRoom / ROOM), with .level],   roomDefs: [ROOM() inputs]
+     walls:  [{ id, kind: 'exterior' | 'partition', level, a, b, thick, y, h, out?, openings: [{ u, w, y0, y1, door?, window? }] }]
+     doors:  [{ id, kind: 'street' | 'interior', level, at, w, rooms: [a, b | 'street'], into }]
+     stairs: [{ id, kind: 'stair' | 'ladder', from, to, rooms: [lower, upper], w, run, rise, risers,
+                foot, top, centre, dir, ry, y0, y1 }]
+     floors: [{ level, y, poly, holes: [[[x,z] x4]] }],  roof: { kind, pitch, y, parts },
+     graph:  { nodes: [{ id, tag: street|door|room|stairfoot|stairtop, x, y, z, level, ref }], edges: [{ a, b, kind, len }] },
+     report: { dropped: [], warnings: [], unreached: [] } }
+   ====================================================================== */
+(function (IX) {
+  'use strict';
+  const G = IX.geom, R3 = IX.round;
+
+  /* ---------- polygon helpers in the building frame (u, v): axis 0 = u, 1 = v */
+  function clean(poly) {
+    let P = poly.slice(), changed = true;
+    while (changed && P.length > 3) {
+      changed = false;
+      for (let i = 0; i < P.length && P.length > 3; i++) {
+        const a = P[(i + P.length - 1) % P.length], b = P[i], c = P[(i + 1) % P.length];
+        const dup = Math.hypot(b[0] - a[0], b[1] - a[1]) < 1e-6;
+        const cr = (b[0] - a[0]) * (c[1] - b[1]) - (b[1] - a[1]) * (c[0] - b[0]);
+        const col = Math.abs(cr) < 1e-7 * (1 + Math.hypot(c[0] - a[0], c[1] - a[1]));
+        if (dup || col) { P.splice(i, 1); changed = true; i--; }
+      }
+    }
+    return P;
+  }
+  function clipAxis(poly, ax, c, low) {
+    const out = [], ins = function (p) { return low ? p[ax] <= c + 1e-9 : p[ax] >= c - 1e-9; };
+    for (let i = 0; i < poly.length; i++) {
+      const p = poly[i], q = poly[(i + 1) % poly.length], pi = ins(p), qi = ins(q);
+      if (pi) out.push(p);
+      if (pi !== qi) { const t = (c - p[ax]) / (q[ax] - p[ax]); out.push([p[0] + (q[0] - p[0]) * t, p[1] + (q[1] - p[1]) * t]); }
+    }
+    return out.length >= 3 ? clean(out) : [];
+  }
+  function areaOf(p) { return p.length >= 3 ? Math.abs(G.area(p)) : 0; }
+  function crossings(poly, ax, c) {           /* where the line axis = c crosses the outline */
+    const o = 1 - ax, hits = [];
+    for (let i = 0; i < poly.length; i++) {
+      const p = poly[i], q = poly[(i + 1) % poly.length];
+      if ((p[ax] < c) !== (q[ax] < c)) { const t = (c - p[ax]) / (q[ax] - p[ax]); hits.push(p[o] + (q[o] - p[o]) * t); }
+    }
+    return hits.sort(function (a, b) { return a - b; });
+  }
+  function bboxF(p) { return G.bbox(p); }
+  /* inset each edge i by d[i] (inward), vertices at the intersections of the moved edges */
+  function insetEdges(poly, d) {
+    const n = poly.length, s = G.area(poly) > 0 ? 1 : -1, L = [];
+    for (let i = 0; i < n; i++) {
+      const a = poly[i], b = poly[(i + 1) % n], dx = b[0] - a[0], dz = b[1] - a[1], l = Math.hypot(dx, dz) || 1;
+      const nI = [-dz / l * s, dx / l * s];                   /* inward normal */
+      L.push({ p: [a[0] + nI[0] * d[i], a[1] + nI[1] * d[i]], t: [dx / l, dz / l], n: nI });
+    }
+    const out = [];
+    for (let i = 0; i < n; i++) {
+      const A = L[(i + n - 1) % n], B = L[i], den = A.t[0] * B.t[1] - A.t[1] * B.t[0];
+      if (Math.abs(den) < 1e-9) { out.push([B.p[0], B.p[1]]); continue; }
+      const t = ((B.p[0] - A.p[0]) * B.t[1] - (B.p[1] - A.p[1]) * B.t[0]) / den;
+      out.push([A.p[0] + A.t[0] * t, A.p[1] + A.t[1] * t]);
+    }
+    return out;
+  }
+  function boxHit(b, ax, c, s0, s1, m) {      /* does the cut axis = c, from s0 to s1, pass through box b (grown by m)? */
+    const o = 1 - ax;
+    return c > b[ax] - m && c < b[ax + 2] + m && s1 > b[o] - m && s0 < b[o + 2] + m;
+  }
+  function boxesTouch(a, b, m) { return a[0] < b[2] + m && a[2] > b[0] - m && a[1] < b[3] + m && a[3] > b[1] - m; }
+
+  function resolveProgram(program, k, area, shell) {
+    if (typeof program === 'string') program = IX.BUILDING_PROGRAMS[program] || [program];
+    if (typeof program === 'function') return program(k, area, shell).slice();
+    if (Array.isArray(program) && Array.isArray(program[0])) return program[Math.min(k, program.length - 1)].slice();
+    if (Array.isArray(program)) return program.slice();
+    return ['hall'];
+  }
+
+  IX.planBuilding = function (shell, program, opts) {
+    opts = opts || {};
+    const id = shell.id || ('building.' + IX.hash(JSON.stringify(shell.poly)));
+    const rng = IX.rng((IX.hash(id) ^ (opts.seed || 0)) >>> 0);
+    const wallT = shell.wall || 0.25, partT = shell.partition || 0.12, slab = shell.slab == null ? 0.25 : shell.slab;
+    const minW = opts.minWidth || 2.2, doorW = opts.door || 0.9;
+    const SO = Object.assign({ w: 1.0, riser: 0.19, tread: 0.25 }, opts.stair || {});
+    const report = { dropped: [], warnings: [], unreached: [] };
+    let outer = shell.poly.map(function (p) { return [+p[0], +p[1]]; });
+    if (G.area(outer) < 0) outer = outer.slice().reverse();     /* CCW in (x, z) from here on */
+
+    /* ---- street doors and the frame */
+    let sdoors = (shell.doors || []).map(function (d) { return { at: [+d.at[0], +d.at[1]], w: +(d.w || 1.0), swing: d.swing, hinge: d.hinge }; });
+    if (!sdoors.length) {
+      const e = (shell.front || 0) % outer.length, a = outer[e], b = outer[(e + 1) % outer.length];
+      sdoors = [{ at: [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2], w: 1.0 }];
+    }
+    let fe = 0, fd = Infinity;
+    for (let i = 0; i < outer.length; i++) { const d = G.segDist(sdoors[0].at[0], sdoors[0].at[1], outer[i], outer[(i + 1) % outer.length]); if (d < fd) { fd = d; fe = i; } }
+    const ea = outer[fe], eb = outer[(fe + 1) % outer.length], el = Math.hypot(eb[0] - ea[0], eb[1] - ea[1]);
+    const U = [(eb[0] - ea[0]) / el, (eb[1] - ea[1]) / el], V = [-U[1], U[0]];   /* CCW: the inward normal is left of the edge */
+    const O = ea;
+    const toF = function (p) { const dx = p[0] - O[0], dz = p[1] - O[1]; return [dx * U[0] + dz * U[1], dx * V[0] + dz * V[1]]; };
+    const toW = function (q) { return [R3(O[0] + U[0] * q[0] + V[0] * q[1]), R3(O[1] + U[1] * q[0] + V[1] * q[1])]; };
+    const dirW = function (q) { return [U[0] * q[0] + V[0] * q[1], U[1] * q[0] + V[1] * q[1]]; };
+    const sdF = sdoors.map(function (d) { return toF(d.at); });
+
+    /* ---- storeys */
+    const lvSpec = typeof shell.levels === 'number' || shell.levels == null
+      ? Array.from({ length: Math.max(1, shell.levels | 0 || 1) }, function () { return {}; }) : shell.levels;
+    const levels = [];
+    let y = +(shell.y || 0);
+    lvSpec.forEach(function (L, k) {
+      const h = +(L.h || shell.h || 3.0);
+      let po = L.poly ? L.poly.map(function (p) { return [+p[0], +p[1]]; }) : outer;
+      if (G.area(po) < 0) po = po.slice().reverse();
+      const inner = G.offset(po, -wallT);
+      levels.push({ k: k, y: R3(y), h: h, outer: po, innerF: clean(inner.map(toF)), inner: inner.map(function (p) { return [R3(p[0]), R3(p[1])]; }), rooms: [], keep: [], cuts: [] });
+      y += h + slab;
+    });
+
+    /* ---- stairs: storey k -> k + 1 along an exterior wall (Yuni: along the left wall, front to back) */
+    const stairs = [];
+    for (let k = 0; k + 1 < levels.length; k++) {
+      const L0 = levels[k], L1 = levels[k + 1], rise = L1.y - L0.y;
+      const risers = Math.ceil(rise / SO.riser - 1e-9);
+      const kinds = [{ kind: 'stair', w: SO.w, run: (risers - 1) * SO.tread, land: 1.0 }, { kind: 'ladder', w: 0.7, run: 1.2, land: 0.9 }];
+      let best = null;
+      const cands = [];
+      for (const K of kinds) {
+        const P = L0.innerF;
+        for (let i = 0; i < P.length; i++) {
+          const a = P[i], b = P[(i + 1) % P.length], len = Math.hypot(b[0] - a[0], b[1] - a[1]);
+          const t = [(b[0] - a[0]) / len, (b[1] - a[1]) / len], nI = [-t[1], t[0]];
+          for (const sgn of [1, -1]) {
+            const dir = [t[0] * sgn, t[1] * sgn], start = sgn > 0 ? a : b;
+            for (let s = K.land + 0.05; s + K.run + K.land <= len + 1e-6; s += 0.25) {
+              const off = 0.03 + K.w / 2;
+              const c = [start[0] + dir[0] * (s + K.run / 2) + nI[0] * off, start[1] + dir[1] * (s + K.run / 2) + nI[1] * off];
+              const ry = Math.atan2(dir[0], dir[1]);
+              const rect = G.rect(c[0], c[1], ry, K.w, K.run);
+              const foot = G.rect(c[0] - dir[0] * (K.run / 2 + K.land / 2), c[1] - dir[1] * (K.run / 2 + K.land / 2), ry, K.w, K.land);
+              const top = G.rect(c[0] + dir[0] * (K.run / 2 + K.land / 2), c[1] + dir[1] * (K.run / 2 + K.land / 2), ry, K.w, K.land);
+              if (!G.rectInPoly(L0.innerF, rect, 0.01) || !G.rectInPoly(L0.innerF, foot, 0.01)) continue;
+              if (!G.rectInPoly(L1.innerF, rect, 0.01) || !G.rectInPoly(L1.innerF, top, 0.01)) continue;
+              const box = G.bbox(G.corners(rect).concat(G.corners(foot), G.corners(top)));
+              let bad = false;
+              if (k === 0) for (const d of sdF) if (d[0] > box[0] - 1.6 && d[0] < box[2] + 1.6 && d[1] > box[1] - 1.6 && d[1] < box[3] + 1.6) bad = true;
+              for (const kb of L0.keep.concat(L1.keep)) if (boxesTouch(kb, box, 0.3)) bad = true;
+              if (bad) continue;
+              /* prefer: a side wall (not the street wall), the foot near the street door, a long free wall */
+              const fp = [c[0] - dir[0] * K.run / 2, c[1] - dir[1] * K.run / 2];
+              const side = Math.abs(dir[1]) > 0.7 ? 1 : 0;
+              const dd = Math.hypot(fp[0] - sdF[0][0], fp[1] - sdF[0][1]);
+              const sc = side * 0.5 - dd * 0.15 + rng() * 0.2;
+              cands.push({ sc: sc, K: K, c: c, dir: dir, ry: ry, box: box, fp: fp });
+            }
+          }
+        }
+        if (cands.length) break;
+      }
+      /* of the best-scoring dozen, take the one that leaves both storeys their full programme */
+      cands.sort(function (p, q) { return q.sc - p.sc; });
+      for (const cd of cands.slice(0, 16)) {
+        let lost = 0;
+        for (const Lv of [L0, L1]) {
+          const dry = { k: Lv.k, innerF: Lv.innerF, keep: Lv.keep.concat([cd.box]), cuts: [] }, rp = { dropped: [] };
+          splitStorey(dry, resolveProgram(program, Lv.k, areaOf(Lv.innerF), shell), Lv.k === 0 ? sdF[0] : null, rp);
+          lost += rp.dropped.reduce(function (a, d) { return a + d.kinds.length; }, 0);
+        }
+        if (!best || lost < best.lost) { best = cd; best.lost = lost; }
+        if (!lost) break;
+      }
+      if (!best) { report.warnings.push('no room for a stair or ladder from storey ' + k + ' to ' + (k + 1)); continue; }
+      const K = best.K, sid = id + '.stair.' + k;
+      const S = { id: sid, kind: K.kind, from: k, to: k + 1, w: K.w, run: R3(K.run), rise: R3(rise), risers: K.kind === 'stair' ? risers : Math.ceil(rise / 0.3),
+        cF: best.c, dirF: best.dir, ry: best.ry, land: K.land, box: best.box, y0: L0.y, y1: L1.y, rooms: [null, null] };
+      stairs.push(S);
+      L0.keep.push(best.box); L1.keep.push(best.box);
+    }
+
+    /* ---- split each storey into rooms */
+    function weight(kind) { return IX.KIND_WEIGHT[kind] || 1; }
+    function splitStorey(Lv, kinds, anchor, report) {
+      const leaves = [];
+      const doorAvoid = Lv.k === 0 ? sdF : [];
+      function rec(poly, ks, anc) {
+        if (ks.length === 1) { leaves.push({ poly: poly, kind: ks[0], anchor: anc }); return; }
+        const total = areaOf(poly), wsum = ks.reduce(function (a, k) { return a + weight(k); }, 0);
+        let m = 1, md = Infinity;
+        for (let i = 1; i < ks.length; i++) {
+          const wa = ks.slice(0, i).reduce(function (a, k) { return a + weight(k); }, 0), d = Math.abs(wa - wsum / 2);
+          if (d < md - 1e-9) { md = d; m = i; }
+        }
+        const fA = ks.slice(0, m).reduce(function (a, k) { return a + weight(k); }, 0) / wsum;
+        const bb = bboxF(poly), ext = [bb[2] - bb[0], bb[3] - bb[1]];
+        const axes = ext[0] >= ext[1] ? [0, 1] : [1, 0];
+        const reflex = [];
+        for (let i = 0; i < poly.length; i++) if (!G.convexAt(poly, i)) reflex.push(poly[i]);
+        let pick = null;
+        for (const ax of axes) {
+          const lo = bb[ax], hi = bb[ax + 2];
+          const lowArea = function (c) { return areaOf(clipAxis(poly, ax, c, true)); };
+          const solve = function (target) {
+            let a = lo, b = hi;
+            for (let it = 0; it < 48; it++) { const mid = (a + b) / 2; if (lowArea(mid) < target) a = mid; else b = mid; }
+            return (a + b) / 2;
+          };
+          const opts2 = [{ c: solve(fA * total), aLow: true }, { c: solve((1 - fA) * total), aLow: false }];
+          for (const op of opts2) {
+            const cands = [];
+            for (const r of reflex) if (Math.abs(r[ax] - op.c) < 1.4) cands.push({ c: r[ax], pen: Math.abs(r[ax] - op.c) * 0.5 });
+            for (let i = 0; i <= 16; i++) for (const sg of i ? [1, -1] : [1]) cands.push({ c: op.c + sg * i * 0.1, pen: i * 0.1 });
+            for (const kb of Lv.keep) for (const e of [kb[ax] - 0.12, kb[ax + 2] + 0.12]) cands.push({ c: e, pen: Math.abs(e - op.c) + 0.05 });
+            cands.sort(function (p, q) { return p.pen - q.pen || p.c - q.c; });
+            for (const cd of cands) {
+              const c = cd.c;
+              if (c <= lo + minW - 1e-6 || c >= hi - minW + 1e-6) continue;
+              const hits = crossings(poly, ax, c);
+              if (hits.length !== 2) continue;
+              const s0 = hits[0], s1 = hits[1];
+              if (s1 - s0 < doorW + 0.6) continue;
+              const A = clipAxis(poly, ax, c, op.aLow), B = clipAxis(poly, ax, c, !op.aLow);
+              if (A.length < 3 || B.length < 3) continue;
+              const ba = bboxF(A), bbb = bboxF(B);
+              if (ba[2] - ba[0] < minW || ba[3] - ba[1] < minW || bbb[2] - bbb[0] < minW || bbb[3] - bbb[1] < minW) continue;
+              if (areaOf(A) < 0.55 * fA * total || areaOf(B) < 0.55 * (1 - fA) * total) continue;
+              if (anc && (op.aLow ? anc[ax] > c - 0.6 : anc[ax] < c + 0.6)) continue;
+              let bad = false;
+              for (const kb of Lv.keep) if (boxHit(kb, ax, c, s0, s1, 0.1)) { bad = true; break; }
+              for (const d of doorAvoid) if (Math.abs(d[ax] - c) < 1.0 && d[1 - ax] > s0 - 0.3 && d[1 - ax] < s1 + 0.3) bad = true;
+              if (bad) continue;
+              pick = { ax: ax, c: c, s0: s0, s1: s1, A: A, B: B, pen: cd.pen };
+              break;
+            }
+            if (pick) break;
+          }
+          if (pick) break;
+        }
+        if (!pick) {
+          report.dropped.push({ level: Lv.k, kinds: ks.slice(1), why: 'no cut fits' });
+          leaves.push({ poly: poly, kind: ks[0], anchor: anc });
+          return;
+        }
+        const mid = pick.ax === 0 ? [pick.c, (pick.s0 + pick.s1) / 2] : [(pick.s0 + pick.s1) / 2, pick.c];
+        const cut = { ax: pick.ax, c: pick.c, s0: pick.s0, s1: pick.s1, a: [], b: [] };
+        Lv.cuts.push(cut);
+        const n0 = leaves.length;
+        rec(pick.A, ks.slice(0, m), anc);
+        const n1 = leaves.length;
+        rec(pick.B, ks.slice(m), mid);
+        for (let i = n0; i < n1; i++) cut.a.push(i);
+        for (let i = n1; i < leaves.length; i++) cut.b.push(i);
+      }
+      rec(Lv.innerF, kinds, anchor);
+      return leaves;
+    }
+
+    const rooms = [], roomDefs = [], doors = [], walls = [], used = {};
+    function roomId(kind) { used[kind] = (used[kind] || 0) + 1; return id + '.' + kind + (used[kind] > 1 ? used[kind] : ''); }
+    function onCut(Lv, p, q) {
+      for (const c of Lv.cuts) if (Math.abs(p[c.ax] - c.c) < 1e-6 && Math.abs(q[c.ax] - c.c) < 1e-6) return c;
+      return null;
+    }
+    function intervalsOn(poly, cut) {
+      const o = 1 - cut.ax, out = [];
+      for (let i = 0; i < poly.length; i++) {
+        const p = poly[i], q = poly[(i + 1) % poly.length];
+        if (Math.abs(p[cut.ax] - cut.c) < 1e-6 && Math.abs(q[cut.ax] - cut.c) < 1e-6) out.push([Math.min(p[o], q[o]), Math.max(p[o], q[o])]);
+      }
+      return out;
+    }
+
+    levels.forEach(function (Lv) {
+      const area = areaOf(Lv.innerF);
+      const kinds = resolveProgram(program, Lv.k, area, shell);
+      if (!kinds.length) kinds.push('hall');
+      const upStair = stairs.filter(function (s) { return s.to === Lv.k; })[0];
+      const anchor = Lv.k === 0 ? sdF[0] : upStair ? [upStair.cF[0] + upStair.dirF[0] * (upStair.run / 2 + upStair.land / 2), upStair.cF[1] + upStair.dirF[1] * (upStair.run / 2 + upStair.land / 2)] : null;
+      const leaves = splitStorey(Lv, kinds, anchor, report);
+      Lv.leaves = leaves;
+      leaves.forEach(function (lf) {
+        lf.id = roomId(lf.kind);
+        lf.doors = []; lf.windows = []; lf.fixtures = [];
+        Lv.rooms.push(lf.id);
+      });
+      /* interior doors: one per cut, between a room on each side whose walls share the cut */
+      Lv.cuts.forEach(function (cut, ci) {
+        const pairs = [];
+        for (const ia of cut.a) for (const ib of cut.b) {
+          const A = leaves[ia], B = leaves[ib];
+          for (const p of intervalsOn(A.poly, cut)) for (const q of intervalsOn(B.poly, cut)) {
+            const s0 = Math.max(p[0], q[0]), s1 = Math.min(p[1], q[1]);
+            if (s1 - s0 >= doorW + 0.5) pairs.push({ ia: ia, ib: ib, s0: s0, s1: s1,
+              sc: (s1 - s0) * 0.1 + (ia === cut.a[0] ? 2 : 0) + (ib === cut.b[0] ? 1 : 0) });
+          }
+        }
+        pairs.sort(function (p, q) { return q.sc - p.sc || p.ia - q.ia || p.ib - q.ib; });
+        let made = null;
+        for (const P of pairs) {
+          const mid = (P.s0 + P.s1) / 2, lo = P.s0 + doorW / 2 + 0.25, hi = P.s1 - doorW / 2 - 0.25;
+          for (let i = 0; i <= 20 && !made; i++) for (const sg of i ? [1, -1] : [1]) {
+            const s = mid + sg * i * 0.15;
+            if (s < lo || s > hi) continue;
+            const box = cut.ax === 0 ? [cut.c - doorW - 0.15, s - doorW / 2 - 0.15, cut.c + doorW + 0.15, s + doorW / 2 + 0.15]
+              : [s - doorW / 2 - 0.15, cut.c - doorW - 0.15, s + doorW / 2 + 0.15, cut.c + doorW + 0.15];
+            if (Lv.keep.some(function (kb) { return boxesTouch(kb, box, 0); })) continue;
+            made = { P: P, s: s }; break;
+          }
+          if (made) break;
+        }
+        if (!made) { report.warnings.push('storey ' + Lv.k + ': no door fits across cut ' + ci); return; }
+        const at = toW(cut.ax === 0 ? [cut.c, made.s] : [made.s, cut.c]);
+        const A = leaves[made.P.ia], B = leaves[made.P.ib], did = id + '.door.' + doors.length;
+        doors.push({ id: did, kind: 'interior', level: Lv.k, at: at, w: doorW, rooms: [A.id, B.id], into: B.id, cut: ci });
+        A.doors.push({ id: did, at: at, w: doorW, to: B.id, swing: 'out', hinge: 'left', leaf: false });
+        B.doors.push({ id: did, at: at, w: doorW, to: A.id, swing: 'in', hinge: 'left' });
+        cut.door = { id: did, s: made.s, w: doorW };
+      });
+      /* street doors (ground floor): the room whose exterior wall holds them */
+      if (Lv.k === 0) sdoors.forEach(function (d, i) {
+        const f = sdF[i];
+        let best = null, bd = Infinity;
+        for (const lf of leaves) { const dd = G.edgeDist(lf.poly, f[0], f[1]) + (G.inside(lf.poly, f[0], f[1]) ? 0 : 0.001); if (dd < bd) { bd = dd; best = lf; } }
+        const did = id + '.street.' + i;
+        doors.push({ id: did, kind: 'street', level: 0, at: [R3(d.at[0]), R3(d.at[1])], w: d.w, rooms: [best.id, 'street'], into: best.id });
+        best.doors.push({ id: did, at: d.at, w: d.w, to: 'street', swing: d.swing || 'in', hinge: d.hinge || 'left' });
+      });
+    });
+
+    /* ---- stairs into rooms: the flight in the lower room, the well in the upper */
+    stairs.forEach(function (S) {
+      const L0 = levels[S.from], L1 = levels[S.to];
+      const find = function (Lv) { for (const lf of Lv.leaves) if (G.inside(lf.poly, S.cF[0], S.cF[1])) return lf; return null; };
+      const lo = find(L0), up = find(L1);
+      const cW = toW(S.cF), d = dirW(S.dirF);
+      S.centre = cW; S.dir = [R3(d[0], 4), R3(d[1], 4)]; S.ry = R3(Math.atan2(d[0], d[1]), 4);
+      S.foot = [R3(cW[0] - d[0] * S.run / 2), R3(cW[1] - d[1] * S.run / 2)];
+      S.top = [R3(cW[0] + d[0] * S.run / 2), R3(cW[1] + d[1] * S.run / 2)];
+      S.rooms = [lo ? lo.id : null, up ? up.id : null];
+      if (!lo || !up) { report.warnings.push(S.id + ' is not inside one room on each storey'); return; }
+      const ryFoot = R3(Math.atan2(-d[0], -d[1]), 4);
+      lo.fixtures.push({ id: S.id + '.flight', kind: S.kind, x: cW[0], z: cW[1], ry: ryFoot, w: S.w, d: S.run, clearance: { front: S.land - 0.1 }, reach: true, stair: S.id, end: 'foot' });
+      up.fixtures.push({ id: S.id + '.well', kind: 'stairwell', x: cW[0], z: cW[1], ry: S.ry, w: S.w, d: S.run, clearance: { front: S.land - 0.1 }, reach: true, stair: S.id, end: 'top' });
+    });
+
+    /* ---- room polygons (cut edges inset by half a partition), windows, ROOM() inputs */
+    levels.forEach(function (Lv) {
+      Lv.leaves.forEach(function (lf) {
+        const P = lf.poly, n = P.length, d = [];
+        for (let i = 0; i < n; i++) d.push(onCut(Lv, P[i], P[(i + 1) % n]) ? partT / 2 : 0);
+        const polyF = insetEdges(P, d);
+        const poly = polyF.map(toW);
+        /* windows: on the exterior walls, clear of doors and corners */
+        for (let i = 0; i < n; i++) {
+          if (d[i]) continue;
+          const a = toW(P[i]), b = toW(P[(i + 1) % n]), len = Math.hypot(b[0] - a[0], b[1] - a[1]);
+          if (len < 1.8) continue;
+          const cnt = len >= 5.5 ? 2 : 1;
+          for (let j = 0; j < cnt; j++) {
+            const u = len * (j + 1) / (cnt + 1), at = [a[0] + (b[0] - a[0]) * u / len, a[1] + (b[1] - a[1]) * u / len];
+            if (u < 0.8 || u > len - 0.8) continue;
+            if (lf.doors.some(function (dd) { return Math.hypot(dd.at[0] - at[0], dd.at[1] - at[1]) < dd.w / 2 + 1.0; })) continue;
+            if (S_near(at, Lv)) continue;
+            lf.windows.push({ at: [R3(at[0]), R3(at[1])], w: 0.9, sill: Lv.k ? 0.9 : 0.95, h: 1.1 });
+          }
+        }
+        const def = { id: lf.id, building: id, kind: lf.kind, culture: shell.culture || null, wealth: shell.wealth == null ? 0.5 : shell.wealth,
+          poly: poly, y: Lv.y, h: Lv.h, level: Lv.k, doors: lf.doors, windows: lf.windows, fixtures: lf.fixtures };
+        roomDefs.push(def);
+        const R = opts.register ? IX.ROOM(def) : IX.normRoom(def);
+        rooms.push(R);
+      });
+    });
+    function S_near(at, Lv) {                   /* a window over a stair flight or its landing: skip it */
+      const f = toF(at);
+      return Lv.keep.some(function (kb) { return f[0] > kb[0] - 0.5 && f[0] < kb[2] + 0.5 && f[1] > kb[1] - 0.5 && f[1] < kb[3] + 0.5; });
+    }
+
+    /* ---- walls: exterior (per storey and footprint edge) and partitions (one per cut, drawn once) */
+    const roomById = {};
+    rooms.forEach(function (R) { roomById[R.id] = R; });
+    levels.forEach(function (Lv) {
+      const top = Lv.k + 1 < levels.length ? levels[Lv.k + 1].y - Lv.y : Lv.h;
+      const po = Lv.outer;
+      for (let i = 0; i < po.length; i++) {
+        const a = po[i], b = po[(i + 1) % po.length], len = Math.hypot(b[0] - a[0], b[1] - a[1]);
+        if (len < 1e-6) continue;
+        const t = [(b[0] - a[0]) / len, (b[1] - a[1]) / len], out = [t[1], -t[0]];
+        const ops = [];
+        Lv.rooms.forEach(function (rid) {
+          const R = roomById[rid];
+          R.doors.forEach(function (dd) {
+            if (dd.to !== 'street') return;
+            if (G.segDist(dd.at[0], dd.at[1], a, b) > wallT + 0.15) return;
+            const u = (dd.at[0] - a[0]) * t[0] + (dd.at[1] - a[1]) * t[1];
+            ops.push({ u: R3(u), w: dd.w, y0: 0, y1: Math.min(dd.h, Lv.h - 0.1), door: dd.id || true });
+          });
+          R.windows.forEach(function (w) {
+            if (G.segDist(w.at[0], w.at[1], a, b) > wallT + 0.15) return;
+            const u = (w.at[0] - a[0]) * t[0] + (w.at[1] - a[1]) * t[1];
+            ops.push({ u: R3(u), w: w.w, y0: w.sill, y1: Math.min(w.sill + w.h, Lv.h - 0.1), window: true });
+          });
+        });
+        ops.sort(function (p, q) { return p.u - q.u; });
+        walls.push({ id: id + '.wall.' + walls.length, kind: 'exterior', level: Lv.k, a: [R3(a[0]), R3(a[1])], b: [R3(b[0]), R3(b[1])],
+          out: [R3(out[0], 4), R3(out[1], 4)], thick: wallT, y: Lv.y, h: R3(top), openings: ops });
+      }
+      Lv.cuts.forEach(function (cut) {
+        const a = toW(cut.ax === 0 ? [cut.c, cut.s0] : [cut.s0, cut.c]), b = toW(cut.ax === 0 ? [cut.c, cut.s1] : [cut.s1, cut.c]);
+        const ops = cut.door ? [{ u: R3(cut.door.s - cut.s0), w: cut.door.w, y0: 0, y1: Math.min(2.1, Lv.h - 0.1), door: cut.door.id }] : [];
+        walls.push({ id: id + '.wall.' + walls.length, kind: 'partition', level: Lv.k, a: a, b: b, thick: partT, y: Lv.y, h: Lv.h, openings: ops });
+      });
+    });
+
+    /* ---- floors (an upper floor has the stair's well cut out) and the roof */
+    const floors = levels.map(function (Lv) {
+      const holes = stairs.filter(function (S) { return S.to === Lv.k && S.centre; }).map(function (S) {
+        return G.corners(G.rect(S.centre[0], S.centre[1], S.ry, S.w, S.run)).map(function (p) { return [R3(p[0]), R3(p[1])]; });
+      });
+      return { level: Lv.k, y: Lv.y, thick: slab, poly: Lv.outer.map(function (p) { return [R3(p[0]), R3(p[1])]; }), holes: holes };
+    });
+    const topL = levels[levels.length - 1];
+    const roof = { kind: shell.roof || 'gable', pitch: shell.pitch || 0.6, y: R3(topL.y + topL.h), overhang: shell.overhang == null ? 0.35 : shell.overhang, parts: [] };
+    (function () {                              /* rectangles that tile the footprint (cut at reflex corners) */
+      const parts = [];
+      function dec(P, depth) {
+        P = clean(P);
+        const bb = bboxF(P);
+        if (Math.abs(areaOf(P) - (bb[2] - bb[0]) * (bb[3] - bb[1])) < 1e-3 * (1 + areaOf(P))) { parts.push(bb); return true; }
+        if (depth > 3) return false;
+        for (let i = 0; i < P.length; i++) {
+          if (G.convexAt(P, i)) continue;
+          for (const ax of [0, 1]) {
+            const c = P[i][ax];
+            if (crossings(P, ax, c).length !== 2) continue;
+            const A = clipAxis(P, ax, c, true), B = clipAxis(P, ax, c, false);
+            if (A.length >= 3 && B.length >= 3 && Math.abs(areaOf(A) + areaOf(B) - areaOf(P)) < 1e-3) { return dec(A, depth + 1) && dec(B, depth + 1); }
+          }
+        }
+        return false;
+      }
+      const ok = dec(topL.outer.map(toF), 0);
+      if (!ok) { roof.kind = roof.kind === 'flat' ? 'flat' : 'pyramid'; roof.poly = topL.outer.map(function (p) { return [R3(p[0]), R3(p[1])]; }); return; }
+      roof.parts = parts.map(function (bb) {
+        const c = toW([(bb[0] + bb[2]) / 2, (bb[1] + bb[3]) / 2]);
+        return { centre: c, U: [R3(U[0], 6), R3(U[1], 6)], V: [R3(V[0], 6), R3(V[1], 6)], hu: R3((bb[2] - bb[0]) / 2), hv: R3((bb[3] - bb[1]) / 2) };
+      });
+    })();
+
+    /* ---- the walk graph (Yuni's navGroup): street, door, room, stairfoot, stairtop nodes */
+    const graph = { nodes: [], edges: [] }, nodeOf = {};
+    function node(tag, x, yy, z, level, ref) {
+      const n = { id: id + '.n' + graph.nodes.length, tag: tag, x: R3(x), y: R3(yy), z: R3(z), level: level, ref: ref };
+      graph.nodes.push(n); return n;
+    }
+    function edge(a, b, kind) { graph.edges.push({ a: a.id, b: b.id, kind: kind, len: R3(Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z)) }); }
+    rooms.forEach(function (R) { nodeOf[R.id] = node('room', R.centroid[0], R.y, R.centroid[1], R.level, R.id); });
+    doors.forEach(function (d) {
+      const lv = levels[d.level], dn = node('door', d.at[0], lv.y, d.at[1], d.level, d.id);
+      if (d.kind === 'street') {
+        const R = roomById[d.rooms[0]], rd = R.doors.filter(function (x) { return x.id === d.id; })[0];
+        const sn = node('street', d.at[0] - rd.n[0] * 1.2, lv.y, d.at[1] - rd.n[1] * 1.2, 0, d.id);
+        edge(sn, dn, 'door'); edge(dn, nodeOf[R.id], 'room');
+      } else d.rooms.forEach(function (rid) { if (nodeOf[rid]) edge(dn, nodeOf[rid], 'room'); });
+    });
+    stairs.forEach(function (S) {
+      if (!S.rooms[0] || !S.rooms[1]) return;
+      const fo = node('stairfoot', S.foot[0], S.y0, S.foot[1], S.from, S.id), to = node('stairtop', S.top[0], S.y1, S.top[1], S.to, S.id);
+      edge(fo, to, S.kind); edge(fo, nodeOf[S.rooms[0]], 'room'); edge(to, nodeOf[S.rooms[1]], 'room');
+    });
+    /* every room reachable from the street? */
+    (function () {
+      const adj = {};
+      graph.edges.forEach(function (e) { (adj[e.a] = adj[e.a] || []).push(e.b); (adj[e.b] = adj[e.b] || []).push(e.a); });
+      const seen = {}, q = graph.nodes.filter(function (n) { return n.tag === 'street'; }).map(function (n) { return n.id; });
+      q.forEach(function (k) { seen[k] = 1; });
+      while (q.length) { const k = q.shift(); for (const m of adj[k] || []) if (!seen[m]) { seen[m] = 1; q.push(m); } }
+      rooms.forEach(function (R) { if (!seen[nodeOf[R.id].id]) report.unreached.push(R.id); });
+    })();
+
+    return {
+      id: id, culture: shell.culture || null, wealth: shell.wealth == null ? 0.5 : shell.wealth, y: levels[0].y,
+      frame: { O: [R3(O[0]), R3(O[1])], U: [R3(U[0], 6), R3(U[1], 6)], V: [R3(V[0], 6), R3(V[1], 6)] },
+      outer: outer.map(function (p) { return [R3(p[0]), R3(p[1])]; }), wall: wallT, partition: partT, slab: slab,
+      levels: levels.map(function (Lv) { return { k: Lv.k, y: Lv.y, h: Lv.h, inner: Lv.inner, outer: Lv.outer.map(function (p) { return [R3(p[0]), R3(p[1])]; }), rooms: Lv.rooms.slice() }; }),
+      rooms: rooms, roomDefs: roomDefs, walls: walls, doors: doors,
+      stairs: stairs.map(function (S) {
+        return { id: S.id, kind: S.kind, from: S.from, to: S.to, rooms: S.rooms, w: S.w, run: S.run, rise: S.rise, risers: S.risers,
+          land: S.land, foot: S.foot, top: S.top, centre: S.centre, dir: S.dir, ry: S.ry, y0: S.y0, y1: S.y1 };
+      }),
+      floors: floors, roof: roof, graph: graph, report: report
+    };
+  };
+
+  /* the plan as plain JSON (rooms as their ROOM() inputs) */
+  IX.exportBuilding = function (B) {
+    return { id: B.id, culture: B.culture, wealth: B.wealth, frame: B.frame, outer: B.outer, wall: B.wall, partition: B.partition, slab: B.slab,
+      levels: B.levels, rooms: B.roomDefs, walls: B.walls, doors: B.doors, stairs: B.stairs, floors: B.floors, roof: B.roof,
+      graph: B.graph, report: B.report };
+  };
+})(KratorInteriors);
+/* ---------- src/47-life.js ---------- */
+/* ======================== Life layer: walkers through doors ========================
+   SPEC "What to build first" 3: doors joined to agents. Engine-neutral, deterministic in time:
+   a walker's pose is a pure function of t (no per-frame state), so any host can draw it, skip
+   frames, scrub time or run it on a server.
+
+     const N = IX.life.nav({ rooms, plans, stairs });   rooms: normalised rooms; plans: furnishRoom()
+                                                        plans (array or { roomId: plan }); stairs: the
+                                                        stairs of IX.planBuilding() plans (optional)
+     N.rooms[id] = { room, plan, grid, links: [...] }   one walk grid per room (the placer's own grid,
+                                                        every footprint and fixture stamped)
+     N.links  = [{ kind: 'door' | 'stair' | 'street', a, b, ... }]   how rooms join: interior doors
+                (a door listed in both rooms, matched by id or by position), stairs (a flight's foot
+                in one room, its well's top landing in the room above), street doors
+     IX.life.targets(N)  -> [{ room, placement, type, cells, final }]  what a walker can go and use:
+                seats, beds, workstations, counters, stoves, desks, altars (TARGET_TYPES)
+     IX.life.route(N, from, to) -> { ok, pts: [{ x, y, z, room, kind }], len } | { ok: false, why }
+                from / to: { street: doorId } | { room, cells: [k...], final?: [x, z] }. Rooms are
+                chained by a breadth-first search over the links; inside each room the grid's
+                cheapest 8-neighbour path (40-grid.js route) from the cells it enters by to the
+                cells it leaves by, smoothed. kind: 'street' (outside), 'door' (a threshold),
+                'stair' (on a flight), 'walk' (on the grid), 'use' (the last step onto a seat)
+     IX.life.walker(N, { id, entry: streetDoorId, target, t0, speed: 1.2, dwell: 25, period? })
+                -> W = { id, ok, route, t0, tArrive, tLeave, tEnd, at(t) -> { x, y, z, heading,
+                   state: 'away' | 'in' | 'dwell' | 'out', room } }
+                spawns outside the street door at t0, walks in, dwells at its target, walks back out
+                and is 'away'; with period, the whole visit repeats every period seconds
+     IX.life.populate(N, { count, seed, t0, spacing, period, speed, dwell }) -> [W, ...]
+                picks targets in a fixed order from the seed, each entered by the street door
+                nearest it (fewest rooms away)
+   ====================================================================== */
+(function (IX) {
+  'use strict';
+  const G = IX.geom, R3 = IX.round;
+  const L = IX.life = {};
+  L.TARGET_TYPES = ['chair', 'bench', 'seating', 'bed', 'workstation', 'loom', 'counter', 'stove', 'desk', 'altar', 'shrine', 'table'];
+  L.SPEED = 1.2;
+
+  function useQ(p) {                          /* the placer's piece model, rebuilt from a placement */
+    return { P: { w: p.w, d: p.d }, x: p.x, z: p.z, ry: p.ry, host: p.host,
+      pairedHost: !!(p.host && IX.SEAT_TYPES.indexOf(p.type) >= 0),
+      zones: IX.clearanceZones({ w: p.w, d: p.d, clear: p.clearance || {}, usable: true }, p.x, p.z, p.ry) };
+  }
+  function fixtureCells(grid, f) {
+    const P = { w: f.w, d: f.d, clear: f.clearance || {}, usable: true };
+    const out = [];
+    for (const z of IX.clearanceZones(P, f.x, f.z, f.ry)) if (z.side === 'front') for (const k of grid.cellsIn(z.r)) if (grid.walkable(k)) out.push(k);
+    return out;
+  }
+  function frontEnd(f) { return [f.x + Math.sin(f.ry) * f.d / 2, f.z + Math.cos(f.ry) * f.d / 2]; }
+
+  L.nav = function (o) {
+    const N = { rooms: {}, links: [], order: [] };
+    const plans = o.plans || [];
+    (o.rooms || []).forEach(function (R, i) {
+      const plan = Array.isArray(plans) ? plans[i] : plans[R.id];
+      if (!plan || !plan.grid) return;
+      N.rooms[R.id] = { room: R, plan: plan, grid: plan.grid, links: [] };
+      N.order.push(R.id);
+    });
+    function add(Lk) { N.links.push(Lk); if (N.rooms[Lk.a]) N.rooms[Lk.a].links.push(Lk); if (Lk.b && N.rooms[Lk.b]) N.rooms[Lk.b].links.push(Lk); }
+    const done = {};
+    N.order.forEach(function (rid) {
+      const E = N.rooms[rid], R = E.room;
+      R.doors.forEach(function (d) {
+        if (d.to === 'street' || !N.rooms[d.to]) {
+          if (d.to === 'street') add({ kind: 'street', id: d.id || (rid + '.door' + d.i), a: rid, da: d, b: null });
+          return;
+        }
+        const other = N.rooms[d.to].room;
+        let m = null;
+        for (const e of other.doors) if (e.to === rid && ((d.id && e.id === d.id) || Math.hypot(e.at[0] - d.at[0], e.at[1] - d.at[1]) < 0.6)) { m = e; break; }
+        if (!m) return;
+        const key = [rid, d.i, d.to, m.i].join('|'), rkey = [d.to, m.i, rid, d.i].join('|');
+        if (done[rkey]) return;
+        done[key] = 1;
+        add({ kind: 'door', id: d.id || key, a: rid, da: d, b: d.to, db: m });
+      });
+    });
+    (o.stairs || []).forEach(function (S) {
+      const lo = N.rooms[S.rooms[0]], up = N.rooms[S.rooms[1]];
+      if (!lo || !up) return;
+      const ff = lo.room.fixtures.filter(function (f) { return f.stair === S.id && f.end === 'foot'; })[0];
+      const ft = up.room.fixtures.filter(function (f) { return f.stair === S.id && f.end === 'top'; })[0];
+      if (!ff || !ft) return;
+      add({ kind: 'stair', id: S.id, a: lo.room.id, b: up.room.id, fa: ff, fb: ft, stair: S });
+    });
+    return N;
+  };
+
+  /* cells of room `rid` by which link Lk is entered or left, and the crossing points */
+  function linkSide(N, Lk, rid) {
+    const E = N.rooms[rid], g = E.grid;
+    if (Lk.kind === 'stair') {
+      const f = rid === Lk.a ? Lk.fa : Lk.fb;
+      const end = frontEnd(f);
+      return { cells: fixtureCells(g, f), point: [end[0], E.room.y, end[1]] };
+    }
+    const d = rid === Lk.a ? Lk.da : Lk.db;
+    return { cells: g.doorCells(d), point: [d.at[0], E.room.y, d.at[1]], door: d };
+  }
+
+  L.targets = function (N) {
+    const out = [];
+    N.order.forEach(function (rid) {
+      const E = N.rooms[rid];
+      E.plan.placements.forEach(function (p) {
+        if (L.TARGET_TYPES.indexOf(p.type) < 0 || p.anchor === 'ceiling' || p.anchor === 'surface') return;
+        const cells = [];
+        for (const r of IX.useZones(useQ(p))) for (const k of E.grid.cellsIn(r)) if (E.grid.walkable(k)) cells.push(k);
+        if (!cells.length) return;
+        const seat = IX.SEAT_TYPES.indexOf(p.type) >= 0;
+        out.push({ room: rid, placement: p.id, key: p.key, type: p.type, cells: cells, final: seat ? [p.x, p.z] : null, face: [p.x, p.z],
+          seatY: seat ? p.y + Math.min(0.45, p.h * 0.5) : null });
+      });
+    });
+    return out;
+  };
+
+  /* breadth-first over rooms; ties broken by link order, so it is deterministic */
+  function roomChain(N, a, b) {
+    if (a === b) return [];
+    const prev = {}, q = [a];
+    prev[a] = null;
+    while (q.length) {
+      const r = q.shift();
+      for (const Lk of N.rooms[r].links) {
+        if (Lk.kind === 'street') continue;
+        const o = Lk.a === r ? Lk.b : Lk.a;
+        if (!N.rooms[o] || o in prev) continue;
+        prev[o] = { from: r, link: Lk };
+        if (o === b) { const out = []; for (let c = b; prev[c]; c = prev[c].from) out.push({ from: prev[c].from, to: c, link: prev[c].link }); return out.reverse(); }
+        q.push(o);
+      }
+    }
+    return null;
+  }
+
+  L.route = function (N, from, to) {
+    let startRoom, startCells, pts = [];
+    if (from.street) {
+      const Lk = N.links.filter(function (l) { return l.kind === 'street' && l.id === from.street; })[0];
+      if (!Lk) return { ok: false, why: 'no street door ' + from.street };
+      const E = N.rooms[Lk.a], d = Lk.da, y = E.room.y, lat = from.offset || 0, t = [-d.n[1], d.n[0]];
+      pts.push({ x: d.at[0] - d.n[0] * 2.2 + t[0] * lat, y: y, z: d.at[1] - d.n[1] * 2.2 + t[1] * lat, room: null, kind: 'street' });
+      pts.push({ x: d.at[0] - d.n[0] * 0.6, y: y, z: d.at[1] - d.n[1] * 0.6, room: null, kind: 'street' });
+      pts.push({ x: d.at[0], y: y, z: d.at[1], room: Lk.a, kind: 'door' });
+      startRoom = Lk.a; startCells = E.grid.doorCells(d);
+    } else { startRoom = from.room; startCells = from.cells; }
+    let endRoom, endCells, tail = [];
+    if (to.street) {
+      const Lk = N.links.filter(function (l) { return l.kind === 'street' && l.id === to.street; })[0];
+      if (!Lk) return { ok: false, why: 'no street door ' + to.street };
+      const E = N.rooms[Lk.a], d = Lk.da, y = E.room.y;
+      endRoom = Lk.a; endCells = E.grid.doorCells(d);
+      tail = [{ x: d.at[0], y: y, z: d.at[1], room: Lk.a, kind: 'door' }, { x: d.at[0] - d.n[0] * 2.2, y: y, z: d.at[1] - d.n[1] * 2.2, room: null, kind: 'street' }];
+    } else {
+      endRoom = to.room; endCells = to.cells;
+      if (to.final) tail = [{ x: to.final[0], y: N.rooms[endRoom].room.y + (to.seatY != null ? to.seatY - N.rooms[endRoom].room.y : 0), z: to.final[1], room: endRoom, kind: 'use' }];
+    }
+    if (!N.rooms[startRoom] || !N.rooms[endRoom]) return { ok: false, why: 'room not in the nav' };
+    const chain = roomChain(N, startRoom, endRoom);
+    if (!chain) return { ok: false, why: 'no chain of doors and stairs from ' + startRoom + ' to ' + endRoom };
+    const legs = [];
+    let cur = startRoom, cells = startCells;
+    for (const step of chain) {
+      const out = linkSide(N, step.link, cur), inn = linkSide(N, step.link, step.to);
+      legs.push({ room: cur, from: cells, to: out.cells, exit: out, enter: inn, link: step.link });
+      cur = step.to; cells = inn.cells;
+    }
+    legs.push({ room: cur, from: cells, to: endCells });
+    for (const lg of legs) {
+      const E = N.rooms[lg.room], g = E.grid, y = E.room.y;
+      if (!lg.from.length || !lg.to.length) return { ok: false, why: lg.room + ': nowhere to ' + (lg.from.length ? 'leave by' : 'enter by') };
+      const ks = g.route(lg.from, lg.to);
+      if (!ks) return { ok: false, why: lg.room + ': the grid does not connect its way in to its way out' };
+      const P = g.smooth(ks.map(function (k) { return g.centre(k); }));
+      for (const c of P) pts.push({ x: c[0], y: y, z: c[1], room: lg.room, kind: 'walk' });
+      if (lg.link) {
+        const a = lg.exit.point, b = lg.enter.point;
+        if (lg.link.kind === 'stair') {
+          pts.push({ x: a[0], y: a[1], z: a[2], room: lg.room, kind: 'stair' });
+          pts.push({ x: b[0], y: b[1], z: b[2], room: lg.link.a === lg.room ? lg.link.b : lg.link.a, kind: 'stair' });
+        } else {
+          pts.push({ x: a[0], y: a[1], z: a[2], room: lg.room, kind: 'door' });
+          pts.push({ x: b[0], y: b[1], z: b[2], room: lg.link.a === lg.room ? lg.link.b : lg.link.a, kind: 'door' });
+        }
+      }
+    }
+    pts = pts.concat(tail);
+    /* drop repeats; measure */
+    const P2 = [];
+    for (const p of pts) { const q = P2[P2.length - 1]; if (q && Math.hypot(p.x - q.x, p.y - q.y, p.z - q.z) < 1e-6) continue; P2.push({ x: R3(p.x), y: R3(p.y), z: R3(p.z), room: p.room, kind: p.kind }); }
+    const cum = [0];
+    for (let i = 1; i < P2.length; i++) cum.push(cum[i - 1] + Math.hypot(P2[i].x - P2[i - 1].x, P2[i].y - P2[i - 1].y, P2[i].z - P2[i - 1].z));
+    return { ok: true, pts: P2, cum: cum, len: cum[cum.length - 1], rooms: [startRoom].concat(chain.map(function (s) { return s.to; })) };
+  };
+
+  function along(Rt, s) {                       /* point and heading at arc length s */
+    const P = Rt.pts, C = Rt.cum;
+    if (s <= 0) return { p: P[0], i: 0, f: 0 };
+    if (s >= Rt.len) return { p: P[P.length - 1], i: P.length - 2, f: 1 };
+    let lo = 0, hi = C.length - 1;
+    while (hi - lo > 1) { const m = (lo + hi) >> 1; if (C[m] <= s) lo = m; else hi = m; }
+    const a = P[lo], b = P[lo + 1], f = (s - C[lo]) / Math.max(1e-9, C[lo + 1] - C[lo]);
+    return { p: { x: a.x + (b.x - a.x) * f, y: a.y + (b.y - a.y) * f, z: a.z + (b.z - a.z) * f, room: f < 0.5 ? a.room : b.room }, i: lo, f: f };
+  }
+  function headingOf(Rt, i, rev) {
+    const P = Rt.pts;
+    for (let k = i; k >= 0 && k < P.length - 1; rev ? k-- : k++) {
+      const a = P[k], b = P[k + 1], dx = (b.x - a.x) * (rev ? -1 : 1), dz = (b.z - a.z) * (rev ? -1 : 1);
+      if (Math.hypot(dx, dz) > 1e-4) return Math.atan2(dx, dz);
+    }
+    return 0;
+  }
+
+  L.walker = function (N, o) {
+    const speed = o.speed || L.SPEED, dwell = o.dwell == null ? 25 : o.dwell, t0 = o.t0 || 0;
+    const T = o.target;
+    const Rt = L.route(N, { street: o.entry, offset: o.offset || 0 }, { room: T.room, cells: T.cells, final: T.final, seatY: T.seatY });
+    const W = { id: o.id, target: T, entry: o.entry, ok: !!Rt.ok, why: Rt.why || null, route: Rt, t0: t0, speed: speed, dwell: dwell, period: o.period || 0 };
+    if (!Rt.ok) { W.at = function () { return { state: 'away' }; }; return W; }
+    const dur = Rt.len / speed;
+    W.tArrive = t0 + dur; W.tLeave = W.tArrive + dwell; W.tEnd = W.tLeave + dur;
+    const end = Rt.pts[Rt.pts.length - 1];
+    const faceH = T.face ? Math.atan2(T.face[0] - end.x, T.face[1] - end.z) : headingOf(Rt, Rt.pts.length - 2, false);
+    W.at = function (tIn) {
+      let t = tIn;
+      if (W.period > 0) { const span = W.period; t = t0 + ((((tIn - t0) % span) + span) % span); }
+      if (t < t0 || t > W.tEnd) return { state: 'away' };
+      if (t <= W.tArrive) { const A = along(Rt, (t - t0) * speed); return { x: A.p.x, y: A.p.y, z: A.p.z, room: A.p.room, heading: headingOf(Rt, A.i, false), state: 'in' }; }
+      if (t <= W.tLeave) return { x: end.x, y: end.y, z: end.z, room: end.room, heading: Math.hypot(T.face[0] - end.x, T.face[1] - end.z) > 0.05 ? faceH : headingOf(Rt, Rt.pts.length - 2, false), state: 'dwell' };
+      const A = along(Rt, Rt.len - (t - W.tLeave) * speed);
+      return { x: A.p.x, y: A.p.y, z: A.p.z, room: A.p.room, heading: headingOf(Rt, A.i, true), state: 'out' };
+    };
+    return W;
+  };
+
+  /* the street door fewest rooms away from a room */
+  L.nearestStreet = function (N, rid) {
+    const seen = {}, q = [rid];
+    seen[rid] = 1;
+    while (q.length) {
+      const r = q.shift();
+      for (const Lk of N.rooms[r].links) if (Lk.kind === 'street') return Lk.id;
+      for (const Lk of N.rooms[r].links) {
+        if (Lk.kind === 'street') continue;
+        const o = Lk.a === r ? Lk.b : Lk.a;
+        if (N.rooms[o] && !seen[o]) { seen[o] = 1; q.push(o); }
+      }
+    }
+    return null;
+  };
+
+  L.populate = function (N, o) {
+    o = o || {};
+    const rng = IX.rng(o.seed || 1), all = L.targets(N).filter(function (T) { return !o.rooms || o.rooms.indexOf(T.room) >= 0; });
+    rng.shuffle(all);
+    const out = [], count = Math.min(o.count == null ? 8 : o.count, all.length);
+    for (let i = 0; i < count; i++) {
+      const T = all[i], entry = L.nearestStreet(N, T.room);
+      if (!entry) continue;
+      out.push(L.walker(N, { id: 'walker.' + i, entry: entry, target: T, t0: (o.t0 || 0) + i * (o.spacing == null ? 4 : o.spacing),
+        speed: o.speed, dwell: o.dwell, period: o.period, offset: (rng() - 0.5) * 1.2 }));
+    }
+    return out;
+  };
+
+  /* does every walker reach its target, and stay on walkable cells while it walks? */
+  L.audit = function (N, walkers) {
+    const fails = [];
+    walkers.forEach(function (W) {
+      if (!W.ok) { fails.push(W.id + ': no route (' + W.why + ')'); return; }
+      const end = W.route.pts[W.route.pts.length - 1], mid = W.at((W.tArrive + W.tLeave) / 2);
+      if (mid.state !== 'dwell' || Math.hypot(mid.x - end.x, mid.z - end.z) > 1e-6) fails.push(W.id + ': not at its target while it dwells');
+      const T = W.target, last = W.route.pts.filter(function (p) { return p.kind === 'walk'; }).pop();
+      const E = N.rooms[T.room], k = E.grid.at(last.x, last.z);
+      if (T.cells.indexOf(k) < 0) fails.push(W.id + ': its walk ends outside ' + T.placement + "'s use zone");
+      const P = W.route.pts;
+      for (let i = 0; i + 1 < P.length; i++) {
+        const a = P[i], b = P[i + 1];
+        if (a.kind !== 'walk' || b.kind !== 'walk' || a.room !== b.room) continue;
+        if (!N.rooms[a.room].grid.clearLine([a.x, a.z], [b.x, b.z])) { fails.push(W.id + ': walks through a blocked cell in ' + a.room); break; }
+      }
+      const away = W.at(W.tEnd + 1), before = W.at(W.t0 - 1);
+      if (!W.period && (away.state !== 'away' || before.state !== 'away')) fails.push(W.id + ': present outside its visit');
+    });
+    return fails;
+  };
 })(KratorInteriors);
 /* ---------- src/48-audit.js ---------- */
 /* ======================== Plan audit (declared geometry) ========================
@@ -897,7 +2033,18 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
                   door and to a use zone of every usable piece
      required     every PROGRAMS[kind].require slot is filled, or reported 'none-in-catalog'
      determinism  (with catalog) furnishing again gives byte-identical placements
+   A room's fixtures (a stair, a stairwell) count as floor footprints for overlap, clearance and
+   reach (their front must be reached from the doors).
    Returns { room, pieces, fails: [{ check, msg }], ok }.
+
+   IX.auditBuilding(B, plansByRoom?) checks a planBuilding() plan:
+     rooms-inside   every room inside the storey's inner outline, no two rooms of a storey overlap
+     doors          every interior door joins two rooms of one storey, listed in both
+     stairs         every stair joins storey k to k + 1, its flight and well are fixtures of a room
+                    on each, inside them
+     reach-graph    every room reachable from the street over doors and stairs (the walk graph)
+     reach-grid     (with plans) the same on the walk GRIDS: from a street door, through every door
+                    and stair, every room's grid is entered (IX.life.route to each room)
    ====================================================================== */
 (function (IX) {
   'use strict';
@@ -927,7 +2074,12 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
     const byId = {};
     plan.placements.forEach(function (p) { byId[p.id] = p; });
     const Qs = plan.placements.map(function (p) { return asQ(p, byId); });
-    const doorZones = room.doors.map(function (d) { return IX.doorZone(room, d); });
+    const fixQs = (room.fixtures || []).map(function (f) {
+      const Q = asQ({ id: f.id, key: f.kind, type: 'fixture', anchor: 'floor', x: f.x, z: f.z, ry: f.ry, w: f.w, d: f.d, h: f.h, y: room.y, clearance: f.clearance }, byId);
+      Q.P.usable = !!f.reach; Q.fixture = true;
+      return Q;
+    });
+    const doorZones = room.doors.map(function (d) { return IX.doorZones(room, d); });
 
     for (const Q of Qs) {
       const p = Q.p;
@@ -935,10 +2087,12 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
       if (p.y < room.y - 1e-6 || p.y + p.h > room.y + room.h + 1e-6)
         fail('height', p.id + ' ' + p.key + ' spans y ' + p.y + '..' + (p.y + p.h).toFixed(3) + ', room ' + room.y + '..' + (room.y + room.h));
       if (Q.layer === 'floor') for (let i = 0; i < doorZones.length; i++)
-        if (G.overlap(Q.fp, doorZones[i], EPS)) fail('door', p.id + ' ' + p.key + ' stands in door ' + i + "'s swing");
+        if (doorZones[i].some(function (z) { return G.convexOverlap(G.corners(Q.fp), z, EPS); })) fail('door', p.id + ' ' + p.key + ' stands in door ' + i + "'s swing");
     }
-    for (let i = 0; i < Qs.length; i++) for (let j = i + 1; j < Qs.length; j++) {
-      const A = Qs[i], B = Qs[j];
+    const QF = Qs.concat(fixQs);
+    for (let i = 0; i < QF.length; i++) for (let j = i + 1; j < QF.length; j++) {
+      const A = QF[i], B = QF[j];
+      if (A.fixture && B.fixture) continue;
       if (A.layer === B.layer && A.layer !== 'surface' && G.overlap(A.fp, B.fp, EPS))
         fail('overlap', A.p.id + ' ' + A.p.key + ' overlaps ' + B.p.id + ' ' + B.p.key);
       if (A.layer === 'surface' && B.layer === 'surface' && A.host === B.host && G.overlap(A.fp, B.fp, EPS))
@@ -954,14 +2108,22 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
       if (!H) fail('overlap', Q.p.id + ' surface piece has no host');
     }
     /* reach, on a grid built from the plan alone */
-    const grid = IX.makeGrid(room, { cell: plan.grid ? plan.grid.cell : 0.2, agent: plan.grid ? plan.grid.agent : 0.2 });
-    for (const Q of Qs) if (Q.layer === 'floor') grid.stamp(Q.fp, +1);
+    const go = plan.grid ? { cell: plan.grid.cell, agent: plan.grid.agent, nbr: plan.grid.nbr, cutCorners: plan.grid.cutCorners } : {};
+    const grid = IX.makeGrid(room, go);
+    for (const Q of QF) if (Q.layer === 'floor') grid.stamp(Q.fp, +1);
     const starts = room.doors.map(function (d) { return grid.doorCells(d); });
+    const names = room.doors.map(function (d, i) { return 'door ' + i; });
+    fixQs.forEach(function (Q) {                  /* a stair's foot or top landing is a way in too */
+      if (!Q.P.usable) return;
+      const cells = [];
+      for (const r of IX.useZones(Q)) for (const k of grid.cellsIn(r)) cells.push(k);
+      starts.push(cells); names.push(Q.p.id);
+    });
     let reached = 0, usable = 0;
     if (starts.length) {
       const B = grid.bfs(starts[0]);
-      for (let i = 0; i < starts.length; i++) if (!starts[i].some(function (k) { return B.dist[k] >= 0; })) fail('reach', 'door ' + i + ' is cut off from door 0');
-      for (const Q of Qs) {
+      for (let i = 0; i < starts.length; i++) if (!starts[i].some(function (k) { return B.dist[k] >= 0; })) fail('reach', names[i] + ' is cut off from ' + names[0]);
+      for (const Q of QF) {
         if (Q.layer !== 'floor' || !Q.P.usable) continue;
         usable++;
         const ok = IX.useZones(Q).some(function (r) { return grid.cellsIn(r).some(function (k) { return B.dist[k] >= 0; }); });
@@ -983,13 +2145,77 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
     return { room: room.id, kind: room.kind, culture: room.culture, pieces: Qs.length, usable: usable, reached: usable ? reached : 0,
       fails: fails, ok: !fails.length };
   };
+
+  IX.auditBuilding = function (B, plans) {
+    const fails = [];
+    function fail(check, msg) { fails.push({ check: check, msg: B.id + ': ' + msg }); }
+    const byId = {};
+    B.rooms.forEach(function (R) { byId[R.id] = R; });
+    B.levels.forEach(function (Lv) {
+      const rs = Lv.rooms.map(function (id) { return byId[id]; });
+      let sum = 0;
+      rs.forEach(function (R) {
+        sum += R.area;
+        for (const p of R.poly) if (!G.inside(Lv.inner, p[0], p[1]) && G.edgeDist(Lv.inner, p[0], p[1]) > 0.01)
+          fail('rooms-inside', R.id + ' corner [' + p + '] leaves storey ' + Lv.k + "'s inner outline");
+        if (R.level !== Lv.k) fail('rooms-inside', R.id + ' says storey ' + R.level + ', listed on ' + Lv.k);
+      });
+      for (let i = 0; i < rs.length; i++) for (let j = i + 1; j < rs.length; j++) {
+        const A = rs[i], C = rs[j];
+        const inA = C.poly.some(function (p) { return G.inside(A.poly, p[0], p[1]) && G.edgeDist(A.poly, p[0], p[1]) > 0.02; });
+        const inC = A.poly.some(function (p) { return G.inside(C.poly, p[0], p[1]) && G.edgeDist(C.poly, p[0], p[1]) > 0.02; });
+        if (inA || inC || G.inside(A.poly, C.centroid[0], C.centroid[1])) fail('rooms-inside', A.id + ' and ' + C.id + ' overlap');
+      }
+      const inner = Math.abs(G.area(Lv.inner));
+      if (sum > inner + 0.01) fail('rooms-inside', 'storey ' + Lv.k + ' rooms cover ' + sum.toFixed(2) + ' m2 of ' + inner.toFixed(2));
+    });
+    B.doors.forEach(function (d) {
+      if (d.kind === 'street') { if (!byId[d.rooms[0]] || byId[d.rooms[0]].level !== 0) fail('doors', d.id + ' street door not on a ground-floor room'); return; }
+      const A = byId[d.rooms[0]], C = byId[d.rooms[1]];
+      if (!A || !C) { fail('doors', d.id + ' joins a missing room'); return; }
+      if (A.level !== C.level) fail('doors', d.id + ' joins two storeys');
+      if (!A.doors.some(function (x) { return x.id === d.id; }) || !C.doors.some(function (x) { return x.id === d.id; })) fail('doors', d.id + ' is not listed in both rooms');
+    });
+    B.stairs.forEach(function (S) {
+      const lo = byId[S.rooms[0]], up = byId[S.rooms[1]];
+      if (!lo || !up) { fail('stairs', S.id + ' does not land in a room on each storey'); return; }
+      if (lo.level !== S.from || up.level !== S.to || S.to !== S.from + 1) fail('stairs', S.id + ' joins storeys ' + lo.level + ' and ' + up.level);
+      if (Math.abs((S.y1 - S.y0) - S.rise) > 1e-3 || Math.abs(up.y - lo.y - S.rise) > 1e-3) fail('stairs', S.id + ' rise ' + S.rise + ' does not match the storeys');
+      const ff = lo.fixtures.filter(function (f) { return f.stair === S.id && f.end === 'foot'; })[0];
+      const ft = up.fixtures.filter(function (f) { return f.stair === S.id && f.end === 'top'; })[0];
+      if (!ff || !ft) { fail('stairs', S.id + ' has no flight or no well fixture'); return; }
+      if (!G.rectInPoly(lo.poly, G.rect(ff.x, ff.z, ff.ry, ff.w, ff.d), 0)) fail('stairs', S.id + ' flight leaves ' + lo.id);
+      if (!G.rectInPoly(up.poly, G.rect(ft.x, ft.z, ft.ry, ft.w, ft.d), 0)) fail('stairs', S.id + ' well leaves ' + up.id);
+    });
+    if (B.levels.length > 1 && B.stairs.length < B.levels.length - 1) fail('stairs', (B.levels.length - 1 - B.stairs.length) + ' storey(s) without a stair up');
+    (B.report.unreached || []).forEach(function (r) { fail('reach-graph', r + ' cannot be reached from the street'); });
+    (B.report.warnings || []).forEach(function (w) { fail('plan', w); });
+    let routes = 0;
+    if (plans) {
+      const N = IX.life.nav({ rooms: B.rooms, plans: plans, stairs: B.stairs });
+      const street = B.doors.filter(function (d) { return d.kind === 'street'; });
+      if (!street.length) fail('reach-grid', 'no street door');
+      B.rooms.forEach(function (R) {
+        const E = N.rooms[R.id];
+        if (!E) { fail('reach-grid', R.id + ' has no plan'); return; }
+        const cells = [];
+        for (let k = 0; k < E.grid.nx * E.grid.nz; k++) if (E.grid.walkable(k)) cells.push(k);
+        const rt = street.length ? IX.life.route(N, { street: street[0].id }, { room: R.id, cells: cells }) : { ok: false, why: 'no street door' };
+        if (!rt.ok) fail('reach-grid', R.id + ' cannot be walked to from the street: ' + rt.why); else routes++;
+      });
+    }
+    return { building: B.id, rooms: B.rooms.length, levels: B.levels.length, stairs: B.stairs.length, doors: B.doors.length, routes: routes, fails: fails, ok: !fails.length };
+  };
+
 })(KratorInteriors);
 /* ---------- src/49-exports.js ---------- */
 /* ======================== Build, export and the global names ========================
    IX.buildRoom(plan, catalog, room?) builds every placement through catalog.build() and
    returns the host objects in placement order (plan.objects keeps them too).
-   IX.exportPlan(plan) is the plan as plain JSON for a game export: placements, the grid as
-   rows of 0/1, the door swing zones as rectangles, and the report.
+   IX.exportPlan(plan) is the plan as plain JSON for a game export: placements, the lights the
+   pieces carry (data, not lights: a host lights the room from them), the grid as rows of 0/1,
+   each door's keep-free zone as convex polygons (a quarter disc and a threshold band for an
+   inward door), and the report. IX.exportBuilding (46-planner.js) does the same for a building.
    Globals: ROOM() and furnishRoom() (SPEC), and KratorInteriors.
    ====================================================================== */
 (function (IX) {
@@ -999,15 +2225,16 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
     plan.objects = plan.placements.map(function (p) { return catalog.build(p, room); });
     return plan.objects;
   };
-  function rectJSON(r) { return { x: IX.round(r.x), z: IX.round(r.z), ry: IX.round(r.ry, 4), w: IX.round(r.hw * 2), d: IX.round(r.hd * 2) }; }
+  function polyJSON(P) { return P.map(function (p) { return [IX.round(p[0]), IX.round(p[1])]; }); }
   IX.exportPlan = function (plan) {
     return {
       room: plan.room, kind: plan.kind, culture: plan.culture, seed: plan.seed, opts: plan.opts,
       placements: plan.placements.map(function (p) {
         return { id: p.id, key: p.key, variant: p.variant, seed: p.seed, x: p.x, z: p.z, ry: p.ry, y: p.y, anchor: p.anchor,
-          type: p.type, culture: p.culture, need: p.need, host: p.host };
+          type: p.type, culture: p.culture, need: p.need, host: p.host, lights: p.lights };
       }),
-      doorZones: plan.zones.doors.map(rectJSON),
+      lights: plan.lights || [],
+      doorZones: plan.zones.doors.map(function (zs) { return zs.map(polyJSON); }),
       grid: plan.grid.toJSON(),
       report: plan.report
     };
@@ -1026,20 +2253,59 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
      dims(key, v)              entryDims(A, v)
      anchorY(key, v, at)       furnAnchorY(A, v, at)
      build(placement, room)    buildFurn(key, x, z, ry, { variant, seed, y, wealth }) -> THREE.Group in the engine's scene
+     lights(key, v, { seed, wealth })   the PointLights the piece's build adds (F.lamp), in its own
+                               frame: found by building it once at the origin (cached per key,
+                               variant, seed and wealth), so the plan carries them as DATA
+
+   LIGHT BUDGET. three.js r128 compiles every light into every lit material, so a room of lamps
+   (or a city of rooms) must not add one real light per lamp. By default build() STRIPS every
+   PointLight a piece adds (the plan's `lights` keep where they were) and the host lights rooms
+   its own way (the demo: a small fixed pool, 70-demo.js). IX.catalogAdapter({ lights: 'keep' })
+   keeps the catalog's real lights.
 
    A Yuni-lineage build writes the same four over its own FURN_BY_KEY / buildFurn (its pieces
    are in the same frame); an Ancients-lineage build over its kit's furniture registry. See
    API.md "Writing an adapter".
 
-   Catalog quirks handled here rather than in the catalog (kits/catalog/KNOWN_ISSUES.md):
-     voth_lantern_fixture   variant 1 is a wall bracket under a floor anchor: offered as 1 variant
+   Catalog quirks handled here rather than in the catalog (kits/catalog/KNOWN_ISSUES.md), each
+   applied only while the catalog still has the quirk, so a catalog fix needs no change here:
+     voth_lantern_fixture   while it is floor-anchored with more than one variant, variant 1 (a
+                            wall bracket) is not offered; once the catalog moves the bracket to a
+                            wall-anchored key of its own, that key is offered like any other piece
    ====================================================================== */
 (function (IX) {
   'use strict';
-  const VARIANT_LIMIT = { voth_lantern_fixture: 1 };
+  const QUIRKS = [
+    { key: 'voth_lantern_fixture', when: function (A) { return (A.anchor || 'floor') === 'floor' && (A.variants || 1) > 1; }, variants: 1 }
+  ];
+  function variantsOf(A) {
+    let n = A.variants || 1;
+    for (const q of QUIRKS) if (q.key === A.key && q.when(A)) n = Math.min(n, q.variants);
+    return n;
+  }
+  function stripLights(g) {
+    const out = [];
+    g.traverse(function (o) { if (o.isPointLight) out.push(o); });
+    out.forEach(function (l) { if (l.parent) l.parent.remove(l); });
+    return out;
+  }
   IX.catalogAdapter = function (opt) {
     opt = opt || {};
+    const keep = opt.lights === 'keep';
     let cache = null;
+    const lightCache = {}, hasLights = {};
+    function probe(key, v, seed, wealth) {      /* build once at the origin, read its lights, throw it away */
+      const g = buildFurn(key, 0, 0, 0, { variant: v, seed: seed, y: 0, wealth: wealth });
+      if (!g) return [];
+      const L = stripLights(g).map(function (l) {
+        return { lx: IX.round(l.position.x), ly: IX.round(l.position.y), lz: IX.round(l.position.z),
+          color: l.color.getHex(), intensity: l.intensity, distance: l.distance };
+      });
+      scene.remove(g);
+      const i = INSTANCES.indexOf(g); if (i >= 0) INSTANCES.splice(i, 1);
+      g.traverse(function (o) { if (o.geometry) o.geometry.dispose(); });
+      return L;
+    }
     return {
       name: 'kits/catalog',
       list: function () {
@@ -1047,17 +2313,31 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
         cache = FURNS.map(function (A) {
           return { key: A.key, name: A.name, culture: A.culture, type: A.type, setting: A.setting, rooms: A.rooms.slice(),
             anchor: A.anchor || 'floor', clearance: A.clearance || {},
-            variants: Math.min(A.variants || 1, VARIANT_LIMIT[A.key] || 99) };
+            variants: variantsOf(A) };
         });
         return cache;
       },
       dims: function (key, v) { return entryDims(FURN_BY_KEY[key], v); },
       anchorY: function (key, v, at) { return furnAnchorY(FURN_BY_KEY[key], v, at); },
+      lights: function (key, v, o) {
+        o = o || {};
+        const w = o.wealth == null ? 0.5 : o.wealth;
+        const hk = key + '|' + v;
+        if (!(hk in hasLights)) hasLights[hk] = probe(key, v, 1, w).length > 0;
+        if (!hasLights[hk]) return [];
+        const ck = hk + '|' + (o.seed || 1) + '|' + w;
+        if (!lightCache[ck]) lightCache[ck] = probe(key, v, o.seed || 1, w);
+        return lightCache[ck];
+      },
       build: function (p, room) {
         const g = buildFurn(p.key, p.x, p.z, p.ry, { variant: p.variant, seed: p.seed, y: p.y, wealth: room ? room.wealth : 0.5 });
-        if (g) g.userData.interior = { room: room ? room.id : null, placement: p.id, need: p.need, role: p.role };
+        if (g) {
+          g.userData.interior = { room: room ? room.id : null, placement: p.id, need: p.need, role: p.role };
+          if (!keep) g.userData.interior.strippedLights = stripLights(g).length;
+        }
         return g;
       },
+      keepsLights: keep,
       measure: function (g) { return measureInstance(g); }
     };
   };
@@ -1182,12 +2462,216 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
     return grp;
   };
 })(KratorInteriors);
+/* ---------- src/51-building.js ---------- */
+/* ======================== View: planned building shells (THREE) ========================
+   IX.view.building(B, { palette }) draws an IX.planBuilding() plan: per storey a floor slab (the
+   storey above has the stair's well cut out), the exterior walls (standing inside the footprint,
+   the footprint is their outer face), the PARTITIONS (one wall per cut, drawn once, centred on
+   the cut, with its door opening), the stairs (a solid flight, or a ladder), the door leaves
+   (each drawn once, by the room it swings into) and a pitched roof:
+     gable   per rectangle of the footprint, ridge along its longer side, gable ends in wall colour
+     hip     per rectangle, four slopes (a pyramid on a square)
+     pyramid a footprint that is not rectilinear: every eave rises to one apex
+     flat    a slab
+   userData.shell = { building, roof, walls: [{ level, out|null, mid, full, stub, partition }],
+   levels: [{ k, group }], mats, top }: what IX.view.cutaway reads (55-cutaway.js), so the cut
+   and the level selector work on it as on the single-room shells (50-shell.js).
+   ====================================================================== */
+(function (IX) {
+  'use strict';
+  const G = IX.geom, V = IX.view = IX.view || {};
+  const DEFAULT_PAL = { wall: 0xd8d0c0, floor: 0x8a8070, roof: 0x9a9080, trim: 0x5a5040 };
+
+  function slab(poly, holes, y0, y1, mat) {
+    const sh = new THREE.Shape(poly.map(function (p) { return new THREE.Vector2(p[0], -p[1]); }));
+    (holes || []).forEach(function (h) { sh.holes.push(new THREE.Path(h.map(function (p) { return new THREE.Vector2(p[0], -p[1]); }))); });
+    const m = new THREE.Mesh(new THREE.ExtrudeGeometry(sh, { depth: y1 - y0, bevelEnabled: false }), mat);
+    m.rotation.x = -Math.PI / 2; m.position.y = y0;
+    return m;
+  }
+  /* a box along a -> b from u0 to u1, y0..y1, offset `off` along n (centre line), thickness thick */
+  function box(a, t, n, off, u0, u1, y0, y1, thick, mat) {
+    const len = u1 - u0, h = y1 - y0;
+    if (len < 0.01 || h < 0.01) return null;
+    const m = new THREE.Mesh(new THREE.BoxGeometry(len, h, thick), mat);
+    const uc = (u0 + u1) / 2;
+    m.position.set(a[0] + t[0] * uc + n[0] * off, y0 + h / 2, a[1] + t[1] * uc + n[1] * off);
+    m.rotation.y = Math.atan2(-t[1], t[0]);
+    return m;
+  }
+  function tris(pos, mat) {                    /* a non-indexed triangle soup, flat shaded */
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    g.computeVertexNormals();
+    return new THREE.Mesh(g, mat);
+  }
+
+  /* one rectangle of roof: centre c, axes U V, half extents hu hv, eave y, overhang o */
+  function roofRect(P, kind, pitch, y, o, mats) {
+    const grp = new THREE.Group();
+    const along = P.hu >= P.hv;                 /* ridge along the longer side */
+    const A = (along ? P.hu : P.hv) + o, Bh = (along ? P.hv : P.hu) + o, wallA = along ? P.hu : P.hv;
+    const ax = along ? P.U : P.V, bx = along ? P.V : P.U, H = Bh * Math.tan(pitch);
+    const W = function (a, b, h) { return [P.centre[0] + ax[0] * a + bx[0] * b, y + h, P.centre[1] + ax[1] * a + bx[1] * b]; };
+    const pos = [], wall = [];
+    function quad(p, q, r, s, out) { out.push.apply(out, p.concat(q, r, p, r, s)); }
+    function tri(p, q, r, out) { out.push.apply(out, p.concat(q, r)); }
+    if (kind === 'flat') {
+      const m = slab([W(-A, -Bh, 0), W(A, -Bh, 0), W(A, Bh, 0), W(-A, Bh, 0)].map(function (p) { return [p[0], p[2]]; }), null, y, y + 0.22, mats.roof);
+      grp.add(m); return grp;
+    }
+    if (kind === 'hip') {
+      const r = Math.max(0, A - Bh);
+      quad(W(-A, -Bh, 0), W(A, -Bh, 0), W(r, 0, H), W(-r, 0, H), pos);
+      quad(W(A, Bh, 0), W(-A, Bh, 0), W(-r, 0, H), W(r, 0, H), pos);
+      tri(W(A, -Bh, 0), W(A, Bh, 0), W(r, 0, H), pos);
+      tri(W(-A, Bh, 0), W(-A, -Bh, 0), W(-r, 0, H), pos);
+    } else {                                     /* gable */
+      quad(W(-A, -Bh, 0), W(A, -Bh, 0), W(A, 0, H), W(-A, 0, H), pos);
+      quad(W(A, Bh, 0), W(-A, Bh, 0), W(-A, 0, H), W(A, 0, H), pos);
+      const hb = Bh - o, Hg = hb * Math.tan(pitch) + o * Math.tan(pitch);
+      tri(W(wallA, -hb, 0), W(wallA, hb, 0), W(wallA, 0, Hg), wall);
+      tri(W(-wallA, hb, 0), W(-wallA, -hb, 0), W(-wallA, 0, Hg), wall);
+    }
+    grp.add(tris(pos, mats.roofDS));
+    if (wall.length) grp.add(tris(wall, mats.wallDS));
+    return grp;
+  }
+  function roofPyramid(poly, pitch, y, o, mats) {
+    const out = G.offset(poly, o), c = G.centroid(poly);
+    let r = Infinity;
+    for (let i = 0; i < poly.length; i++) r = Math.min(r, G.segDist(c[0], c[1], poly[i], poly[(i + 1) % poly.length]));
+    const H = (r + o) * Math.tan(pitch), pos = [];
+    for (let i = 0; i < out.length; i++) {
+      const p = out[i], q = out[(i + 1) % out.length];
+      pos.push(p[0], y, p[1], q[0], y, q[1], c[0], y + H, c[1]);
+    }
+    return tris(pos, mats.roofDS);
+  }
+
+  V.building = function (B, opt) {
+    opt = opt || {};
+    const pal = Object.assign({}, DEFAULT_PAL, (V.PALETTES || {})[B.culture] || {}, opt.palette || {});
+    const grp = new THREE.Group();
+    grp.name = 'building:' + B.id;
+    const mats = { wall: V.lambert(pal.wall), floor: V.lambert(pal.floor), roof: V.lambert(pal.roof), trim: V.lambert(pal.trim),
+      part: V.lambert(new THREE.Color(pal.wall).multiplyScalar(0.92).getHex()),
+      stair: V.lambert(pal.trim),
+      roofDS: V.lambert(pal.roof, { side: THREE.DoubleSide }), wallDS: V.lambert(pal.wall, { side: THREE.DoubleSide }),
+      glass: V.lambert(0x9fc4d8, { transparent: true, opacity: 0.35, depthWrite: false }),
+      fade: V.lambert(pal.wall, { transparent: true, opacity: 0.16, depthWrite: false }) };
+    const tag = function (o, part, level) { o.traverse(function (m) { m.userData.building = B.id; m.userData.part = part; m.userData.level = level; }); return o; };
+    const levels = B.levels.map(function (Lv) { const g = new THREE.Group(); g.name = 'level:' + Lv.k; grp.add(g); return { k: Lv.k, group: g }; });
+    /* floors */
+    B.floors.forEach(function (F) {
+      const m = slab(F.poly, F.holes, F.y - (F.level ? F.thick : 0.25), F.y, mats.floor);
+      levels[F.level].group.add(tag(m, 'floor', F.level));
+    });
+    /* walls */
+    const walls = [];
+    B.walls.forEach(function (Wl) {
+      const a = Wl.a, b = Wl.b, len = Math.hypot(b[0] - a[0], b[1] - a[1]);
+      if (len < 1e-6) return;
+      const t = [(b[0] - a[0]) / len, (b[1] - a[1]) / len];
+      const ext = Wl.kind === 'exterior';
+      const n = ext ? [-Wl.out[0], -Wl.out[1]] : [-t[1], t[0]], off = ext ? Wl.thick / 2 : 0;
+      let ea = 0, eb = 0;
+      if (ext) {                                 /* overlap at a reflex corner of the footprint, so no notch shows */
+        const po = B.levels[Wl.level].outer, ia = indexOf(po, a), ib = indexOf(po, b);
+        if (ia >= 0 && !G.convexAt(po, ia)) ea = Wl.thick;
+        if (ib >= 0 && !G.convexAt(po, ib)) eb = Wl.thick;
+      }
+      const y0 = Wl.y, top = Wl.y + Wl.h, H = Wl.h, mat = ext ? mats.wall : mats.part;
+      const full = new THREE.Group(), stub = new THREE.Group(), SH = Math.min(0.45, H);
+      const add = function (g, m) { if (m) g.add(m); };
+      let u = -ea;
+      for (const o of Wl.openings.slice().sort(function (p, q) { return p.u - q.u; })) {
+        const u0 = o.u - o.w / 2, u1 = o.u + o.w / 2;
+        add(full, box(a, t, n, off, u, u0, y0, top, Wl.thick, mat));
+        add(stub, box(a, t, n, off, u, u0, y0, y0 + SH, Wl.thick, mat));
+        add(full, box(a, t, n, off, u0, u1, y0 + o.y1, top, Wl.thick, mat));
+        if (o.y0 > 0) {
+          add(full, box(a, t, n, off, u0, u1, y0, y0 + o.y0, Wl.thick, mat));
+          add(stub, box(a, t, n, off, u0, u1, y0, y0 + Math.min(o.y0, SH), Wl.thick, mat));
+          add(full, box(a, t, n, off, u0, u1, y0 + o.y0, y0 + o.y1, 0.04, mats.glass));
+        }
+        u = u1;
+      }
+      add(full, box(a, t, n, off, u, len + eb, y0, top, Wl.thick, mat));
+      add(stub, box(a, t, n, off, u, len + eb, y0, y0 + SH, Wl.thick, mat));
+      stub.visible = false;
+      tag(full, 'wall', Wl.level); tag(stub, 'wall', Wl.level);
+      levels[Wl.level].group.add(full); levels[Wl.level].group.add(stub);
+      walls.push({ wall: Wl.id, level: Wl.level, partition: !ext, out: ext ? Wl.out : null,
+        mid: [a[0] + t[0] * len / 2 + n[0] * off, a[1] + t[1] * len / 2 + n[1] * off], full: full, stub: stub });
+    });
+    function indexOf(po, p) { for (let i = 0; i < po.length; i++) if (Math.abs(po[i][0] - p[0]) < 1e-3 && Math.abs(po[i][1] - p[1]) < 1e-3) return i; return -1; }
+    /* stairs: a solid flight of steps, or a ladder */
+    B.stairs.forEach(function (S) {
+      if (!S.centre) return;
+      const g = new THREE.Group(), d = S.dir, side = [-d[1], d[0]];
+      if (S.kind === 'stair') {
+        const n = S.risers, tread = S.run / Math.max(1, n - 1), rise = (S.y1 - S.y0) / n;
+        for (let i = 0; i < n - 1; i++) {
+          const m = new THREE.Mesh(new THREE.BoxGeometry(S.w, rise * (i + 1), tread), mats.stair);
+          const s = i * tread + tread / 2;
+          m.position.set(S.foot[0] + d[0] * s, S.y0 + rise * (i + 1) / 2, S.foot[1] + d[1] * s);
+          m.rotation.y = S.ry;
+          g.add(m);
+        }
+      } else {
+        const L = Math.hypot(S.run, S.y1 - S.y0), rungs = Math.floor(L / 0.3);
+        for (const sg of [-1, 1]) {
+          const a = new THREE.Vector3(S.foot[0] + side[0] * sg * S.w / 2, S.y0, S.foot[1] + side[1] * sg * S.w / 2);
+          const b = new THREE.Vector3(S.top[0] + side[0] * sg * S.w / 2, S.y1, S.top[1] + side[1] * sg * S.w / 2);
+          const m = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, a.distanceTo(b), 6), mats.stair);
+          m.position.copy(a).add(b).multiplyScalar(0.5);
+          m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), b.clone().sub(a).normalize());
+          g.add(m);
+        }
+        for (let i = 1; i < rungs; i++) {
+          const f = i / rungs, m = new THREE.Mesh(new THREE.BoxGeometry(S.w, 0.04, 0.05), mats.stair);
+          m.position.set(S.foot[0] + (S.top[0] - S.foot[0]) * f, S.y0 + (S.y1 - S.y0) * f, S.foot[1] + (S.top[1] - S.foot[1]) * f);
+          m.rotation.y = S.ry;
+          g.add(m);
+        }
+      }
+      levels[S.from].group.add(tag(g, 'stair', S.from));
+    });
+    /* door leaves: drawn by the room each door swings into (a shared door has leaf: false in the other) */
+    B.rooms.forEach(function (R) {
+      R.doors.forEach(function (d) {
+        if (d.swing === 'none' || !d.leaf) return;
+        const left = [-d.n[1], d.n[0]], hs = d.hinge === 'right' ? -1 : 1;
+        const hx = d.at[0] + left[0] * hs * d.w / 2, hz = d.at[1] + left[1] * hs * d.w / 2;
+        const dir = d.swing === 'out' ? -1 : 1, a = 75 * Math.PI / 180;
+        const cx = -left[0] * hs, cz = -left[1] * hs, ox = d.n[0] * dir, oz = d.n[1] * dir;
+        const vx = cx * Math.cos(a) + ox * Math.sin(a), vz = cz * Math.cos(a) + oz * Math.sin(a);
+        const leafH = Math.min(d.h, R.h - 0.1) - 0.02;
+        const m = new THREE.Mesh(new THREE.BoxGeometry(d.w - 0.04, leafH, 0.05), mats.trim);
+        m.position.set(hx + vx * (d.w / 2), R.y + leafH / 2 + 0.01, hz + vz * (d.w / 2));
+        m.rotation.y = Math.atan2(-vz, vx);
+        levels[R.level].group.add(tag(m, 'door', R.level));
+      });
+    });
+    /* roof */
+    const roof = new THREE.Group(), RF = B.roof;
+    if (RF.kind === 'pyramid' && RF.poly) roof.add(roofPyramid(RF.poly, RF.pitch, RF.y, RF.overhang, mats));
+    else RF.parts.forEach(function (P) { roof.add(roofRect(P, RF.kind, RF.pitch, RF.y, RF.overhang, mats)); });
+    tag(roof, 'roof', B.levels.length - 1);
+    grp.add(roof);
+    grp.userData.shell = { room: B.id, building: B.id, roof: roof, walls: walls, levels: levels, mats: mats, top: B.levels.length - 1 };
+    return grp;
+  };
+})(KratorInteriors);
 /* ---------- src/52-outline.js ---------- */
 /* ======================== View: room-outline debug view (THREE) ========================
    SPEC "What to build first" 1. IX.view.outline(room, plan?, { grid, paths }) -> THREE.Group,
    drawn over everything (no depth test) just above the floor:
      yellow   the room polygon (the inner face of its walls)
-     green    each door's opening, its swing arc and the zone the placer keeps free
+     green    each door's opening, its swing arc and the zone the placer keeps free (a
+              quarter disc and a threshold band; an outward door: a band 0.7 m deep)
+     violet   fixtures: a stair's flight, the well it rises through
      blue     each window's opening
      orange   footprints of the pieces the room kind REQUIRES; white: optional pieces
      cyan     every piece's declared clearance zone (filled)
@@ -1211,13 +2695,20 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
     m.rotation.order = 'YXZ'; m.rotation.y = r.ry; m.rotation.x = -Math.PI / 2;
     m.position.set(r.x, y, r.z); m.renderOrder = 9; return m;
   }
+  function fillPoly(P, y, mat) {                 /* a convex polygon, as a triangle fan */
+    const pos = [];
+    for (let i = 1; i + 1 < P.length; i++) pos.push(P[0][0], y, P[0][1], P[i][0], y, P[i][1], P[i + 1][0], y, P[i + 1][1]);
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    const m = new THREE.Mesh(geo, mat); m.renderOrder = 9; return m;
+  }
   V.outline = function (room, plan, opt) {
     opt = opt || {};
     const g = new THREE.Group(), y = room.y + 0.04;
     g.name = 'outline:' + room.id;
     const M = {
       poly: lineMat(0xffd84a), door: lineMat(0x5cff7a), win: lineMat(0x6ab8ff), req: lineMat(0xff9a3a), opt: lineMat(0xffffff, 0.9),
-      path: lineMat(0xff5ad8, 0.85),
+      path: lineMat(0xff5ad8, 0.85), fix: lineMat(0xb07aff),
       clear: new THREE.MeshBasicMaterial({ color: 0x46d8e8, transparent: true, opacity: 0.18, depthTest: false, depthWrite: false, side: THREE.DoubleSide }),
       dz: new THREE.MeshBasicMaterial({ color: 0x5cff7a, transparent: true, opacity: 0.14, depthTest: false, depthWrite: false, side: THREE.DoubleSide })
     };
@@ -1235,7 +2726,12 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
         arc.push([hx, hz]);
         g.add(line(arc, y, M.door));
       }
-      g.add(fill(IX.doorZone(room, d), y - 0.005, M.dz));
+      for (const P of IX.doorZones(room, d)) g.add(fillPoly(P, y - 0.005, M.dz));
+    });
+    (room.fixtures || []).forEach(function (f) {   /* a stair's flight or well: violet, its landing filled */
+      g.add(loop(G.corners(G.rect(f.x, f.z, f.ry, f.w, f.d)), y + 0.01, M.fix));
+      const c = f.clearance || {};
+      if (c.front > 0) g.add(fill(G.localRect(f.x, f.z, f.ry, -f.w / 2, f.w / 2, f.d / 2, f.d / 2 + c.front), y - 0.01, M.clear));
     });
     room.windows.forEach(function (w) {
       const t = room.walls[w.wall].t;
@@ -1286,38 +2782,98 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
   };
 })(KratorInteriors);
 /* ---------- src/55-cutaway.js ---------- */
-/* ======================== View: cut-away (THREE) ========================
+/* ======================== View: cut-away and level selector (THREE) ========================
    SPEC "What to build first" 4, after Yuni's Cutaway control (settlements/yuni/src/76-doors.js),
    which clips the whole city at 2.4 m. Here each shell decides per wall, every frame:
-     'cut'   (default) roofs hidden; every wall whose outer face looks toward the camera drops
-             to a knee-high stub, so you look over it into the room; the far walls stay whole
+     'cut'   (default) roofs hidden; every exterior wall whose outer face looks toward the camera
+             drops to a knee-high stub, so you look over it into the room; the far walls stay
+             whole; partitions drop to stubs too
      'fade'  roofs hidden; camera-facing walls turn 16 % opaque glass
      'roof'  roofs hidden, walls whole
      'off'   everything drawn
-   IX.view.cutaway.add(shellGroup); .setMode(m); .update(camera) once per frame (cheap: one dot
-   product per wall). A wall counts as facing the camera when the camera is on its outer side.
+   LEVEL: setLevel(k) hides every storey above k (its floor, walls, stairs, doors, and anything
+   tagged with tag(obj, k)); the cut applies to the highest storey still shown, the storeys under
+   it stay whole. setLevel(Infinity) (the default) shows every storey. A roof shows only in 'off'
+   with every storey shown.
+   IX.view.cutaway.add(shellGroup); .setMode(m); .setLevel(k); .tag(obj, level); .update(camera)
+   once per frame (cheap: one dot product per wall). A shell is a single room (50-shell.js) or a
+   planned building (51-building.js); a single-room shell is storey 0.
    ====================================================================== */
 (function (IX) {
   'use strict';
   const V = IX.view = IX.view || {};
   const MODES = ['cut', 'fade', 'roof', 'off'];
-  const C = V.cutaway = { mode: 'cut', shells: [], MODES: MODES };
+  const C = V.cutaway = { mode: 'cut', level: Infinity, shells: [], tagged: [], MODES: MODES };
   C.add = function (grp) { if (grp && grp.userData.shell) C.shells.push(grp.userData.shell); };
   C.setMode = function (m) { if (MODES.indexOf(m) >= 0) C.mode = m; C._dirty = true; return C.mode; };
   C.next = function () { return C.setMode(MODES[(MODES.indexOf(C.mode) + 1) % MODES.length]); };
+  C.setLevel = function (k) { C.level = k == null ? Infinity : k; return C.level; };
+  C.maxLevel = function () { let m = 0; for (const S of C.shells) m = Math.max(m, S.top || 0); return m; };
+  C.tag = function (obj, level) { if (obj) C.tagged.push({ obj: obj, level: level || 0 }); };
+  C.untag = function (obj) { C.tagged = C.tagged.filter(function (t) { return t.obj !== obj; }); };
+  C.shows = function (level) { return (level || 0) <= C.level; };
   function setMat(g, m) { g.traverse(function (o) { if (o.isMesh && o.material !== m && o.userData.part === 'wall' && !o.material.transparent) { o.userData._solid = o.material; o.material = m; } }); }
   function restore(g) { g.traverse(function (o) { if (o.isMesh && o.userData._solid) { o.material = o.userData._solid; o.userData._solid = null; } }); }
   C.update = function (cam) {
     const px = cam.position.x, pz = cam.position.z, mode = C.mode;
     for (const S of C.shells) {
-      S.roof.visible = mode === 'off';
+      const top = S.top || 0, shown = Math.min(top, C.level);
+      S.roof.visible = mode === 'off' && C.level >= top;
+      if (S.levels) for (const L of S.levels) L.group.visible = L.k <= C.level;
       for (const W of S.walls) {
-        const facing = (px - W.mid[0]) * W.out[0] + (pz - W.mid[1]) * W.out[1] > 0;
-        const cut = facing && mode === 'cut', fade = facing && mode === 'fade';
+        const lv = W.level || 0;
+        if (lv > C.level) continue;               /* its storey's group is hidden */
+        const atTop = lv === shown;
+        const facing = W.partition ? true : (px - W.mid[0]) * W.out[0] + (pz - W.mid[1]) * W.out[1] > 0;
+        const cut = atTop && facing && mode === 'cut', fade = atTop && facing && !W.partition && mode === 'fade';
         W.full.visible = !cut; W.stub.visible = cut;
         if (fade !== !!W._faded) { if (fade) setMat(W.full, S.mats.fade); else restore(W.full); W._faded = fade; }
       }
     }
+    for (const T of C.tagged) T.obj.visible = T.level <= C.level;
+  };
+})(KratorInteriors);
+/* ---------- src/57-figures.js ---------- */
+/* ======================== View: walker figures (THREE) ========================
+   IX.view.figures(walkers) -> THREE.Group of simple capsule figures (a body, a head, a nose
+   that shows the heading), one per IX.life walker. group.userData.update(t, shows) poses every
+   figure at time t from W.at(t) (47-life.js: a pure function of t); shows(pose) -> false hides a
+   figure (the demo hides figures on storeys the level selector hides). A dwelling figure on a
+   seat sits lower.
+   ====================================================================== */
+(function (IX) {
+  'use strict';
+  const V = IX.view = IX.view || {};
+  const COLS = [0x6a4a8a, 0x2f6f8f, 0x8a3a2a, 0x3f7a3a, 0x9a7a2a, 0x5a5a6a, 0x8a5a3a, 0x2a5a5a];
+  V.figures = function (walkers) {
+    const grp = new THREE.Group();
+    grp.name = 'walkers';
+    const skin = V.lambert(0xd8a888), bodyG = new THREE.CylinderGeometry(0.2, 0.22, 1.0, 10), capG = new THREE.SphereGeometry(0.2, 10, 6),
+      headG = new THREE.SphereGeometry(0.15, 10, 8), noseG = new THREE.BoxGeometry(0.06, 0.06, 0.12);
+    const figs = walkers.map(function (W, i) {
+      const f = new THREE.Group(), mat = V.lambert(COLS[i % COLS.length]);
+      const body = new THREE.Mesh(bodyG, mat); body.position.y = 0.72; f.add(body);
+      const cap = new THREE.Mesh(capG, mat); cap.position.y = 1.2; cap.scale.y = 0.6; f.add(cap);
+      const foot = new THREE.Mesh(capG, mat); foot.position.y = 0.24; foot.scale.set(1.05, 0.6, 1.05); f.add(foot);
+      const head = new THREE.Mesh(headG, skin); head.position.y = 1.47; f.add(head);
+      const nose = new THREE.Mesh(noseG, skin); nose.position.set(0, 1.47, 0.15); f.add(nose);
+      f.userData.walker = W.id;
+      f.traverse(function (o) { o.userData.walker = W.id; });
+      grp.add(f);
+      return f;
+    });
+    grp.userData.update = function (t, shows) {
+      walkers.forEach(function (W, i) {
+        const f = figs[i], p = W.at(t);
+        if (p.state === 'away' || (shows && !shows(p, W))) { f.visible = false; return; }
+        f.visible = true;
+        const sit = p.state === 'dwell' && W.target && W.target.final;
+        f.position.set(p.x, p.y - (sit ? 0.5 : 0), p.z);
+        f.rotation.y = p.heading || 0;
+      });
+    };
+    grp.userData.figures = figs;
+    return grp;
   };
 })(KratorInteriors);
 /* ---------- src/70-demo.js ---------- */
@@ -1325,14 +2881,22 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
    The demo, not the kit: sample rooms on a sheet, one row per room kind, each a procedural
    shell (50-shell.js) around a ROOM(), furnished by furnishRoom() from the master catalog
    through adapters/catalog-adapter.js. Shapes: rectangles, L-shapes, trapezoids, an
-   irregular pentagon, a rotated room and a two-room house joined by an interior door.
-   Exposes window._interiors (rooms, plans, gotoRoom, reseed, ...) and sets window._ready.
+   irregular pentagon, a rotated room. Then a row of PLANNED buildings (planBuilding,
+   46-planner.js; drawn by 51-building.js): a two-room house, a two-storey town house, an
+   L-shaped inn and a three-storey tower, furnished end to end, with WALKERS (47-life.js,
+   57-figures.js) coming in from the street, through doors and up stairs, to a seat, bed or
+   bench, and out again. LIGHTS: the adapter strips the catalog's PointLights (their data is in
+   each plan's lights) and a fixed pool of LIGHT_POOL lights is moved to the rooms nearest the
+   camera; ?lights=keep keeps the catalog's real lights instead.
+   Exposes window._interiors (rooms, plans, buildings, walkers, gotoRoom, setLevel, setTime,
+   reseed, ...) and sets window._ready.
    ====================================================================== */
 (function () {
   'use strict';
   const IX = KratorInteriors, G = IX.geom;
-  const catalog = IX.catalogAdapter();
-  const FLOOR_Y = 0.2;
+  const KEEP_LIGHTS = /[?&]lights=keep\b/.test(location.search);
+  const catalog = IX.catalogAdapter({ lights: KEEP_LIGHTS ? 'keep' : 'strip' });
+  const FLOOR_Y = 0.2, LIGHT_POOL = 6;
 
   /* ---------- shapes, in plot-local metres; edge 0 is the back (-z), the camera sits at +z */
   function rect(w, d) { return [[-w / 2, -d / 2], [w / 2, -d / 2], [w / 2, d / 2], [-w / 2, d / 2]]; }
@@ -1407,28 +2971,44 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
       } });
     });
   });
-  /* a two-room house: a salvage hall and bedroom sharing a wall and an interior door */
-  (function () {
-    const ri = ROWS.length, oz = -ri * DZ, ox = 0;
-    const hall = [[-6, -2.6], [0, -2.6], [0, 2.6], [-6, 2.6]].map(function (p) { return xf(p, ox + 2, oz, 0); });
-    const bed = [[0, -2.6], [4.4, -2.6], [4.4, 2.6], [0, 2.6]].map(function (p) { return xf(p, ox + 2, oz, 0); });
-    const shared = xf([0, -0.9], ox + 2, oz, 0);
-    defs.push({ plot: { ox: ox, oz: oz, row: ri, col: 0, rot: 0, house: true }, room: {
-      id: 'house.hall', building: 'demo_house', kind: 'hall', culture: 'ancients-salvage', poly: hall, y: FLOOR_Y, h: 3.0, wealth: 0.45,
-      doors: [{ at: xf([-3.6, 2.6], ox + 2, oz, 0), w: 1.0, to: 'street' }, { at: shared, w: 0.9, to: 'house.bedroom', swing: 'in', hinge: 'right' }],
-      windows: [{ at: xf([-3, -2.6], ox + 2, oz, 0), w: 1.2, sill: 0.95 }, { at: xf([-6, 0], ox + 2, oz, 0), w: 1.0, sill: 0.95 }] } });
-    defs.push({ plot: { ox: ox, oz: oz, row: ri, col: 1, rot: 0, house: true }, room: {
-      id: 'house.bedroom', building: 'demo_house', kind: 'bedroom', culture: 'ancients-salvage', poly: bed, y: FLOOR_Y, h: 3.0, wealth: 0.45,
-      doors: [{ at: shared, w: 0.9, to: 'house.hall', swing: 'out', hinge: 'left', leaf: false }],
-      windows: [{ at: xf([4.4, 0], ox + 2, oz, 0), w: 1.0, sill: 0.95 }] } });
-  })();
+  /* ---------- planned buildings (planBuilding): the footprint is the OUTER face of the walls */
+  function brect(cx, cz, w, d, rot) {
+    const c = Math.cos(rot || 0), sn = Math.sin(rot || 0);
+    return [[-w / 2, -d / 2], [w / 2, -d / 2], [w / 2, d / 2], [-w / 2, d / 2]].map(function (p) { return [IX.round(cx + p[0] * c + p[1] * sn), IX.round(cz - p[0] * sn + p[1] * c)]; });
+  }
+  const BZ = -ROWS.length * DZ;
+  const BUILDINGS = [
+    { label: 'house', sub: 'hall + bedroom, one storey', program: ['hall', 'bedroom'],
+      shell: { id: 'house', poly: brect(1.2, BZ, 10.9, 5.7), y: FLOOR_Y, levels: [{ h: 3.0 }], doors: [{ at: [-1.2, BZ + 2.85], w: 1.0 }],
+        culture: 'ancients-salvage', wealth: 0.45, roof: 'gable', pitch: 0.55 } },
+    { label: 'town house', sub: 'two storeys, programme "dwelling"', program: 'dwelling',
+      shell: { id: 'townhouse', poly: brect(19, BZ, 10.5, 8.5), y: FLOOR_Y, levels: [{ h: 3.0 }, { h: 2.8 }], doors: [{ at: [17.5, BZ + 4.25], w: 1.1 }],
+        culture: 'yuni-common', wealth: 0.55, roof: 'gable', pitch: 0.6 } },
+    { label: 'inn', sub: 'L-shaped, one storey, hip roof', program: ['tavern', 'kitchen', 'store'],
+      shell: { id: 'inn', poly: [[32, BZ - 5], [45, BZ - 5], [45, BZ + 0.5], [38.5, BZ + 0.5], [38.5, BZ + 5.5], [32, BZ + 5.5]].map(function (p) { return [p[0], p[1]]; }),
+        y: FLOOR_Y, levels: [{ h: 3.4 }], doors: [{ at: [35.2, BZ + 5.5], w: 1.4 }], culture: 'voth', wealth: 0.6, roof: 'hip', pitch: 0.5 } },
+    { label: 'tower', sub: 'three storeys, rotated, hip roof', program: [['workshop', 'store'], ['study', 'bedroom'], ['bedroom']],
+      shell: { id: 'tower', poly: brect(55, BZ, 9.5, 7.5, 0.3), y: FLOOR_Y, levels: [{ h: 3.2 }, { h: 3.0 }, { h: 3.0 }], front: 2,
+        culture: 'ancient', wealth: 0.6, roof: 'hip', pitch: 0.65 } }
+  ];
 
   /* ---------- register, shell, furnish, build */
-  const rooms = defs.map(function (d) { return ROOM(d.room); });
-  const shells = rooms.map(function (R) { const s = IX.view.shell(R); scene.add(s); IX.view.cutaway.add(s); return s; });
-  let seed = 0, plans = [], outlines = [];
-  const S = { outline: false, grid: false };
+  const single = defs.map(function (d) { return ROOM(d.room); });
+  const shells = single.map(function (R) { const s = IX.view.shell(R); scene.add(s); IX.view.cutaway.add(s); return s; });
+  const buildings = BUILDINGS.map(function (b) {
+    const B = IX.planBuilding(b.shell, b.program, { register: true });
+    const s = IX.view.building(B); scene.add(s); IX.view.cutaway.add(s); shells.push(s);
+    B.label = b.label; B.sub = b.sub;
+    return B;
+  });
+  const rooms = single.concat([].concat.apply([], buildings.map(function (B) { return B.rooms; })));
+  const stairs = [].concat.apply([], buildings.map(function (B) { return B.stairs; }));
+  const buildingOf = {};
+  buildings.forEach(function (B) { B.rooms.forEach(function (R) { buildingOf[R.id] = B; }); });
+  let seed = 0, plans = [], outlines = [], nav = null, walkers = [], figures = null;
+  const S = { outline: false, grid: false, walkers: true };
   function clearFurniture() {
+    IX.view.cutaway.tagged = [];
     for (const P of plans) for (const g of (P.objects || [])) {
       if (!g) continue;
       scene.remove(g);
@@ -1441,20 +3021,71 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
     plans = rooms.map(function (R) {
       const P = furnishRoom(R, catalog, { seed: seed });
       IX.buildRoom(P, catalog, R);
+      if (R.level) for (const g of P.objects) IX.view.cutaway.tag(g, R.level);
       return P;
     });
+    populate();
     drawOutlines();
     report();
   }
+  /* ---------- the life layer: a nav over every room, a few walkers per planned building */
+  function populate() {
+    if (figures) { scene.remove(figures); figures = null; }
+    nav = IX.life.nav({ rooms: rooms, plans: plans, stairs: stairs });
+    walkers = makeWalkers(nav);
+    figures = IX.view.figures(walkers);
+    figures.visible = S.walkers;
+    scene.add(figures);
+  }
+  function makeWalkers(nv) {
+    let out = [];
+    buildings.forEach(function (B, bi) {
+      const ws = IX.life.populate(nv, { rooms: B.rooms.map(function (R) { return R.id; }), count: B.levels.length > 1 ? 5 : 3,
+        seed: 11 + bi * 7 + seed, t0: bi * 3, spacing: 7, dwell: 30, period: 120 });
+      ws.forEach(function (W) { W.id = B.id + '.' + W.id; });
+      out = out.concat(ws);
+    });
+    return out;
+  }
+  const levelOfRoom = {};
+  rooms.forEach(function (R) { levelOfRoom[R.id] = R.level || 0; });
+  function figureShows(p) { return p.room == null || IX.view.cutaway.shows(levelOfRoom[p.room]); }
   function drawOutlines() {
-    for (const o of outlines) scene.remove(o);
+    for (const o of outlines) { scene.remove(o); IX.view.cutaway.untag(o); }
     outlines = [];
     if (!S.outline && !S.grid) return;
     rooms.forEach(function (R, i) {
       const o = IX.view.outline(R, plans[i], { grid: S.grid, paths: S.grid });
       scene.add(o); outlines.push(o);
+      if (R.level) IX.view.cutaway.tag(o, R.level);
     });
   }
+
+  /* ---------- light budget: a fixed pool of point lights, moved to the rooms nearest the camera.
+     The count never changes, so three.js never recompiles a material for it. */
+  const pool = [];
+  if (!KEEP_LIGHTS) for (let i = 0; i < LIGHT_POOL; i++) { const l = new THREE.PointLight(0xffc488, 0, 9, 2); l.name = 'interiors-pool-' + i; scene.add(l); pool.push(l); }
+  let poolFrame = 0;
+  function assignLights() {
+    if (!pool.length) return;
+    const tx = ctl.target.x, tz = ctl.target.z, cand = [];
+    rooms.forEach(function (R, i) {
+      if (!IX.view.cutaway.shows(R.level)) return;
+      const d = Math.hypot(R.centroid[0] - tx, R.centroid[1] - tz);
+      cand.push({ i: i, d: d });
+    });
+    cand.sort(function (a, b) { return a.d - b.d || a.i - b.i; });
+    pool.forEach(function (l, k) {
+      const c = cand[k];
+      if (!c || c.d > 40) { l.intensity = 0; return; }
+      const R = rooms[c.i], P = plans[c.i], n = P && P.lights ? P.lights.length : 0;
+      const b = R.bbox, span = Math.max(b[2] - b[0], b[3] - b[1]);
+      l.position.set(R.centroid[0], R.y + R.h * 0.8, R.centroid[1]);
+      l.distance = span * 1.4 + 2; l.intensity = 0.55 + 0.25 * Math.min(2, n);
+      l.userData.room = R.id;
+    });
+  }
+  function pointLights() { let n = 0; scene.traverse(function (o) { if (o.isPointLight && o.visible !== false) n++; }); return n; }
 
   /* ---------- labels (the catalog sheet's ground labels) */
   function labelTex(text, sub, dark) {
@@ -1487,6 +3118,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
     for (const m of labels) { scene.remove(m); m.material.map.dispose(); }
     labels.length = 0;
     rooms.forEach(function (R, i) {
+      if (buildingOf[R.id]) return;
       const P = plans[i], rp = P.report, b = R.bbox;
       const bits = [P.placements.length + ' pieces', R.area.toFixed(1) + ' m²'];
       if (rp.fallbacks.length) bits.push(rp.fallbacks.length + ' fallback');
@@ -1495,7 +3127,12 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
       label(R.kind + ' · ' + R.culture, bits.join(' · '), (b[0] + b[2]) / 2, b[3] + 1.5, 7.5, false);
     });
     ROWS.forEach(function (row, ri) { label(row[0], row[1].length + ' rooms', -11, -ri * DZ, 7, true); });
-    label('house', 'hall + bedroom', -11, -ROWS.length * DZ, 7, true);
+    label('buildings', 'planned: rooms, doors, stairs', -11, BZ, 7, true);
+    buildings.forEach(function (B) {
+      const bb = G.bbox(B.outer), n = B.rooms.reduce(function (a, R) { return a + plans[rooms.indexOf(R)].placements.length; }, 0);
+      label(B.label + ' · ' + B.culture, B.levels.length + ' storey(s) · ' + B.rooms.length + ' rooms · ' + n + ' pieces · roof ' + B.roof.kind,
+        (bb[0] + bb[2]) / 2, bb[3] + 1.8, 8.5, false);
+    });
   }
 
   /* ---------- the standard Krator sky, mid-morning (vendored 81-sky.js) */
@@ -1504,9 +3141,14 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
     KratorSky.update(camera.position, 10.5, 200, 1.6);
     scene.fog.color.copy(KratorSky.lighting().fog);
   }
-  (window._frameHooks = window._frameHooks || []).push(function () {
+  let simT = 0, frozen = null, lastNow = null;
+  (window._frameHooks = window._frameHooks || []).push(function (now) {
     if (window.KratorSky) KratorSky.update(camera.position, 10.5, 200, 1.6);
+    if (lastNow != null && frozen == null) simT += Math.min(0.1, (now - lastNow) / 1000);
+    lastNow = now;
     IX.view.cutaway.update(camera);
+    if (figures && S.walkers) figures.userData.update(frozen != null ? frozen : simT, figureShows);
+    if ((poolFrame++ % 15) === 0) assignLights();
   });
 
   /* ---------- toolbar */
@@ -1518,6 +3160,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
     const R = rooms[i]; if (!R) return;
     current = i;
     if (ctl.walk) window._setWalk(false);
+    setLevel(buildingOf[R.id] ? R.level : null);
     const b = R.bbox, span = Math.max(b[2] - b[0], b[3] - b[1]);
     ctl.target.set((b[0] + b[2]) / 2, R.y + 0.6, (b[1] + b[3]) / 2);
     ctl.dist = Math.max(9, span * 1.45 + R.h); ctl.az = 0.35; ctl.el = 0.82;
@@ -1525,8 +3168,20 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
     rs.value = String(i);
     report();
   }
+  function gotoBuilding(i, level) {
+    const B = buildings[i]; if (!B) return;
+    current = -1;
+    if (ctl.walk) window._setWalk(false);
+    setLevel(level);
+    const b = G.bbox(B.outer), span = Math.max(b[2] - b[0], b[3] - b[1]);
+    const lv = B.levels[Math.min(level == null ? 0 : level, B.levels.length - 1)];
+    ctl.target.set((b[0] + b[2]) / 2, lv.y + 0.6, (b[1] + b[3]) / 2);
+    ctl.dist = Math.max(10, span * 1.35 + 3); ctl.az = 0.4; ctl.el = 0.85;
+    updateCamera(); assignLights(); rs.value = ''; report();
+  }
   function overview() {
     current = -1;
+    setLevel(null);
     ctl.target.set(24, 0, -24); ctl.dist = 72; ctl.az = 0.3; ctl.el = 1.05; updateCamera();
     rs.value = '';
     report();
@@ -1537,9 +3192,14 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
     const el = $('rep');
     const tot = plans.reduce(function (a, P) { return a + P.placements.length; }, 0);
     $('count').textContent = rooms.length + ' rooms · ' + tot + ' pieces · seed ' + seed;
-    if (current < 0) { el.innerHTML = '<span class="n">Pick a room for its report. O outlines, G walk grid, C cut-away, T tags, P polygon tool, F walk.</span>'; return; }
+    const nl = plans.reduce(function (a, P) { return a + (P.lights ? P.lights.length : 0); }, 0);
+    const ms = plans.reduce(function (a, P) { return a + (P.stats ? P.stats.ms : 0); }, 0);
+    $('count').textContent += ' · ' + walkers.length + ' walkers · ' + nl + ' lamp lights as data, ' + (KEEP_LIGHTS ? 'kept real' : pool.length + ' pooled') + ' · placed in ' + Math.round(ms) + ' ms';
+    if (current < 0) { el.innerHTML = '<span class="n">Pick a room for its report. O outlines, G walk grid, C cut-away, L storey, V walkers, T tags, P polygon tool, F walk.</span>'; return; }
     const R = rooms[current], P = plans[current], rp = P.report, h = [];
-    h.push('<b>' + esc(R.id) + '</b> ' + R.kind + ' · ' + R.culture + ' · wealth ' + R.wealth + ' · ' + R.area.toFixed(1) + ' m² · ' + R.doors.length + ' door(s)');
+    h.push('<b>' + esc(R.id) + '</b> ' + R.kind + ' · ' + R.culture + ' · wealth ' + R.wealth + ' · ' + R.area.toFixed(1) + ' m² · ' + R.doors.length + ' door(s)' +
+      (buildingOf[R.id] ? ' · storey ' + R.level + ' of ' + buildingOf[R.id].id : '') + (R.fixtures.length ? ' · ' + R.fixtures.map(function (f) { return f.kind; }).join(', ') : '') +
+      ' · ' + (P.lights || []).length + ' light(s) · ' + (P.stats ? P.stats.ms + ' ms, ' + P.stats.runs + ' run(s)' : ''));
     h.push(rp.required.map(function (q) { return '<span class="' + (q.placed >= q.n ? 'ok' : 'miss') + '">' + q.need + ' ' + q.placed + '/' + q.n + '</span>'; }).join(' · ') +
       ' · optional ' + rp.optional + (rp.thin ? ' · <span class="fb">thin culture: ' + rp.own + ' own pieces</span>' : ''));
     rp.fallbacks.forEach(function (f) { h.push('<span class="fb">fallback: ' + f.need + ' from ' + f.used + ' (' + f.key + ')</span>'); });
@@ -1551,6 +3211,19 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
   $('olBtn').onclick = function () { toggle('olBtn', 'outline'); };
   $('gridBtn').onclick = function () { toggle('gridBtn', 'grid'); };
   function cutLabel() { $('cutBtn').textContent = 'Cut-away: ' + IX.view.cutaway.mode + ' (C)'; }
+  function setLevel(k) {
+    const v = IX.view.cutaway.setLevel(k == null ? Infinity : k);
+    $('levelBtn').textContent = 'Storey: ' + (v === Infinity ? 'all' : v) + ' (L)';
+    $('levelBtn').classList.toggle('on', v !== Infinity);
+    return v;
+  }
+  function nextLevel() {
+    const m = IX.view.cutaway.maxLevel(), v = IX.view.cutaway.level;
+    setLevel(v === Infinity ? 0 : v >= m ? null : v + 1);
+  }
+  $('levelBtn').onclick = nextLevel;
+  function toggleWalkers() { S.walkers = !S.walkers; $('walkBtn').classList.toggle('on', S.walkers); if (figures) figures.visible = S.walkers; }
+  $('walkBtn').onclick = toggleWalkers;
   $('cutBtn').onclick = function () { IX.view.cutaway.next(); cutLabel(); };
   function reseed(s) { seed = s == null ? seed + 1 : s; $('seedBtn').textContent = 'Seed ' + seed + ' (R)'; furnishAll(); roomLabels(); }
   $('seedBtn').onclick = function () { reseed(); };
@@ -1562,6 +3235,8 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
     else if (k === 'g') toggle('gridBtn', 'grid');
     else if (k === 'c') { IX.view.cutaway.next(); cutLabel(); }
     else if (k === 'r') reseed();
+    else if (k === 'l') nextLevel();
+    else if (k === 'v') toggleWalkers();
   });
 
   furnishAll();
@@ -1569,6 +3244,10 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
   overview();
   window._interiors = {
     rooms: rooms, get plans() { return plans; }, catalog: catalog, shells: shells, gotoRoom: gotoRoom, overview: overview,
+    buildings: buildings, buildingSpecs: BUILDINGS, makeWalkers: makeWalkers, stairs: stairs, gotoBuilding: gotoBuilding, setLevel: setLevel,
+    get nav() { return nav; }, get walkers() { return walkers; }, get pickables() { return figures ? [figures] : []; },
+    setTime: function (t) { frozen = t; if (figures) figures.userData.update(t, figureShows); return t; }, time: function () { return frozen != null ? frozen : simT; },
+    lightBudget: KEEP_LIGHTS ? null : LIGHT_POOL, keepLights: KEEP_LIGHTS, pointLights: pointLights, assignLights: assignLights,
     reseed: reseed, setOutline: function (on, grid) { S.outline = !!on; S.grid = !!grid; $('olBtn').classList.toggle('on', S.outline); $('gridBtn').classList.toggle('on', S.grid); drawOutlines(); },
     cutaway: function (m) { const r = IX.view.cutaway.setMode(m); cutLabel(); return r; }
   };
@@ -1581,6 +3260,8 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
      furniture   the catalog entry (culture, type, setting, rooms, anchor) plus the room it
                  furnishes, the requirement it fills and the role it was placed in
      room        a demo shell's floor, wall, roof or door: room kind, culture, wealth, size
+     building    a planned building's floor, wall, stair, door or roof: storeys, rooms, roof
+     walker      a figure of the life layer
    The click inspector (kits/catalog/inspector.js) still measures and audits pieces.
    ====================================================================== */
 (function () {
@@ -1609,6 +3290,15 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
         (A.variants > 1 ? ' <span style="opacity:.6">#' + (u.opt.variant + 1) + '/' + A.variants + '</span>' : '') +
         '<br>' + furnTags(hit.g).map(function (s) { return '<span class="tag">' + s + '</span>'; }).join('');
     }
+    if (hit.kind === 'building') {
+      const I = window._interiors, B = I && I.buildings ? I.buildings.filter(function (b) { return b.id === hit.building; })[0] : null;
+      if (!B) return '<div class="cls">building</div><b>' + hit.building + '</b>';
+      const t = [B.levels.length + ' storey(s)', B.rooms.length + ' rooms', B.stairs.length + ' stair(s)', 'roof: ' + B.roof.kind, 'culture: ' + B.culture,
+        'part: ' + hit.part + (hit.level != null ? ' (storey ' + hit.level + ')' : '')];
+      return '<div class="cls">planned building</div><b>' + B.id + '</b><br>' + t.map(function (s) { return '<span class="tag">' + s + '</span>'; }).join('') +
+        '<br><span style="opacity:.7">' + B.rooms.map(function (R) { return R.kind + '@' + R.level; }).join(' · ') + '</span>';
+    }
+    if (hit.kind === 'walker') return '<div class="cls">walker</div><b>' + hit.walker + '</b>';
     const R = IX.roomById[hit.room];
     const t = ['kind: ' + R.kind, 'culture: ' + R.culture, 'wealth: ' + R.wealth, R.area.toFixed(1) + ' m²', 'h ' + R.h + ' m',
       R.doors.length + ' door(s)', R.windows.length + ' window(s)', 'part: ' + hit.part];
@@ -1620,7 +3310,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
     ndc.x = ((cx - r.left) / r.width) * 2 - 1;
     ndc.y = -((cy - r.top) / r.height) * 2 + 1;
     ray.setFromCamera(ndc, camera);
-    const shells = (window._interiors ? window._interiors.shells : []);
+    const shells = (window._interiors ? window._interiors.shells.concat(window._interiors.pickables || []) : []);
     const hits = ray.intersectObjects(INSTANCES.concat(shells), true);
     for (const h of hits) {
       let o = h.object;
@@ -1629,6 +3319,8 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
       for (let p = o; p; p = p.parent) if (!p.visible) { vis = false; break; }
       if (!vis) continue;
       if (o.userData.room && o.userData.part) return { kind: 'room', room: o.userData.room, part: o.userData.part };
+      if (o.userData.building && o.userData.part) return { kind: 'building', building: o.userData.building, part: o.userData.part, level: o.userData.level };
+      if (o.userData.walker) return { kind: 'walker', walker: o.userData.walker };
       while (o && INSTANCES.indexOf(o) < 0) o = o.parent;
       if (o) return { kind: 'furniture', g: o };
     }
@@ -1665,6 +3357,16 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
      builds            the catalog built it without error, with at least one mesh, no NaN
    TOL = max(0.06 m, 4 % of the dimension): the catalog's own declared-size tolerance
    (kits/catalog verify.py) plus a centimetre.
+   Then the planned buildings, the walkers and the light budget:
+     building      IX.auditBuilding (48-audit.js): rooms inside the footprint and apart, doors,
+                   stairs joining storeys, every room reachable from the street on the graph AND
+                   walked to on the grids through doors and up stairs
+     plan-determinism  planning every building again gives the same JSON
+     walkers       IX.life.audit: every walker routes, reaches its target's use zone and dwells
+                   there, never walks through a blocked cell; and the walkers made again from a
+                   fresh nav stand at the same places at the same times
+     lights        the scene holds at most the pool's point lights (the adapter strips the
+                   catalog's), and the plans carry the stripped lights as data
    ====================================================================== */
 (function () {
   'use strict';
@@ -1720,6 +3422,42 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
         thin: P.report.thin, fails: fails.length });
       out.fails = out.fails.concat(fails);
     });
+    /* planned buildings */
+    const byRoom = {};
+    I.rooms.forEach(function (R, i) { byRoom[R.id] = I.plans[i]; });
+    out.buildings = I.buildings.map(function (B, bi) {
+      const A = IX.auditBuilding(B, byRoom);
+      A.fails.forEach(function (f) { out.fails.push({ check: 'building', msg: f.check + ': ' + f.msg }); });
+      const sp = I.buildingSpecs[bi], again = IX.planBuilding(sp.shell, sp.program, {});
+      if (JSON.stringify(IX.exportBuilding(again)) !== JSON.stringify(IX.exportBuilding(B)))
+        out.fails.push({ check: 'plan-determinism', msg: B.id + ': planning again gives a different plan' });
+      return { id: B.id, levels: B.levels.length, rooms: B.rooms.length, stairs: B.stairs.map(function (S) { return S.kind + ' ' + S.from + '>' + S.to; }).join(', '),
+        doors: B.doors.length, walls: B.walls.length, partitions: B.walls.filter(function (w) { return w.kind === 'partition'; }).length,
+        roof: B.roof.kind, routes: A.routes, dropped: B.report.dropped.length, fails: A.fails.length };
+    });
+    /* walkers */
+    const W = I.walkers, wf = IX.life.audit(I.nav, W);
+    wf.forEach(function (m) { out.fails.push({ check: 'walkers', msg: m }); });
+    const W2 = I.makeWalkers(IX.life.nav({ rooms: I.rooms, plans: I.plans, stairs: I.stairs }));
+    let same = W2.length === W.length;
+    for (let t = 0; t <= 240 && same; t += 3.7) for (let i = 0; i < W.length && same; i++) if (JSON.stringify(W[i].at(t)) !== JSON.stringify(W2[i].at(t))) same = false;
+    if (!same) out.fails.push({ check: 'walkers', msg: 'walkers made again stand elsewhere at the same time' });
+    out.walkers = W.map(function (w) {
+      return { id: w.id, ok: w.ok, target: w.target.placement, type: w.target.type, rooms: w.route.rooms ? w.route.rooms.length : 0,
+        storeys: w.route.pts ? new Set(w.route.pts.filter(function (p) { return p.room; }).map(function (p) { return I.rooms.filter(function (R) { return R.id === p.room; })[0].level || 0; })).size : 0,
+        len: w.route.len ? Math.round(w.route.len * 10) / 10 : 0, arrive: w.tArrive != null ? Math.round((w.tArrive - w.t0) * 10) / 10 : null };
+    });
+    /* lights */
+    const nData = I.plans.reduce(function (a, P) { return a + (P.lights ? P.lights.length : 0); }, 0);
+    const nReal = I.pointLights();
+    out.lights = { budget: I.lightBudget, pointLights: nReal, data: nData, kept: I.keepLights };
+    if (!I.keepLights && nReal > I.lightBudget) out.fails.push({ check: 'lights', msg: nReal + ' point lights in the scene, budget ' + I.lightBudget });
+    if (!nData) out.fails.push({ check: 'lights', msg: 'no lamp light exported as data' });
+    if (I.keepLights && nReal !== nData) out.fails.push({ check: 'lights', msg: 'kept ' + nReal + ' real lights but the plans carry ' + nData + ' as data' });
+    out.ms = I.plans.reduce(function (a, P) { return a + (P.stats ? P.stats.ms : 0); }, 0);
+    out.runs = I.plans.reduce(function (a, P) { return a + (P.stats ? P.stats.runs : 0); }, 0);
+    out.backtracked = I.plans.filter(function (P) { return P.report.backtrack && P.report.backtrack.skips; }).map(function (P) { return P.room; });
+    out.surface = I.plans.reduce(function (a, P) { return a + P.placements.filter(function (p) { return p.anchor === 'surface'; }).length; }, 0);
     return out;
   }
   window._interiors.audit = audit;

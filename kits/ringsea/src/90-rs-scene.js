@@ -30,17 +30,30 @@ const giantTex=canvasTex(512,512,(g,w,h)=>{g.clearRect(0,0,w,h);const grd=g.crea
 giantTex.wrapS=giantTex.wrapT=THREE.ClampToEdgeWrapping;
 const giant=new THREE.Sprite(new THREE.SpriteMaterial({map:giantTex,fog:false,transparent:true,depthWrite:false}));giant.scale.set(1500,1500,1);giant.userData.probeSkip=true;scene.add(giant);
 
-// ---- the sea: one plane, displaced in its vertex shader by the swell (40-rs-core.js rsSwell, the same
+// ---- the sea: one plane, displaced in its vertex shader by the Gerstner swell (40-rs-core.js: the same
 // function the hulls ride, 94-rs-anim.js), with the scrolled normal map for the ripples; the waterline at y=0.
-// The grid is fine (6 m) over the roadstead and stretches toward the horizon, where the swell fades out.
+// The grid is fine (6.5 m) over the roadstead and stretches toward the horizon. Out there the cells are too
+// coarse to draw a wave, so each wave's DISPLACEMENT fades out beyond ~600 m (lod), but the surface normal and
+// the whitecaps are computed per pixel from the same waves at the rest point (vRsP0), each wave faded only
+// where it is finer than a pixel: the swell runs to the horizon in the shading at no geometry cost.
 TEX.rsWater.repeat.set(260,260);
 const RS_CZ=(Math.ceil(RS.order.length/RS_COLS)-1)*RS_PZ/2;
-rsSwellSet([[.28,70,18,0],[.16,43,-34,1.7],[.09,27,71,4.1],[.05,17,-8,2.6]],{cx:0,cz:RS_CZ,r0:440,r1:600});
+rsSwellSet([[.28,70,18,0,.32],[.16,43,-34,1.7,.26],[.09,27,71,4.1,.18],[.05,17,-8,2.6,.12]]);
+const RS_SEALOD={cx:0,cz:RS_CZ,r:[[600,680],[590,650],[580,630],[570,620]]};
 const RS_SEA=new THREE.MeshStandardMaterial({color:0x06222e,roughness:.24,metalness:.45,normalMap:TEX.rsWater,normalScale:new THREE.Vector2(.55,.55)});
-RS_SEA.onBeforeCompile=sh=>{sh.uniforms.uRsTime=RS_U.uTime;
- sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+rsSwellGLSL())
-  .replace('#include <beginnormal_vertex>','#include <beginnormal_vertex>\nvec3 rsS=rsSwell((modelMatrix*vec4(position,1.)).xz);objectNormal=normalize(vec3(-rsS.y,rsS.z,1.));')
-  .replace('#include <begin_vertex>','#include <begin_vertex>\ntransformed.z+=rsS.x;');};   // the plane is rotated flat: its local z is world up, local y is world -z
+RS_SEA.onBeforeCompile=sh=>{sh.uniforms.uRsTime=RS_U.uTime;const G=rsSwellGLSL(RS_SEALOD);
+ sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+G+'varying vec2 vRsP0;')
+  .replace('#include <begin_vertex>','#include <begin_vertex>\nvec2 rsP0=(modelMatrix*vec4(position,1.)).xz;vec3 rsD=rsSwellD(rsP0);vRsP0=rsP0;transformed+=vec3(rsD.x,-rsD.z,rsD.y);');   // the plane is rotated flat: local z is world up, local y is world -z
+ sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+G+'varying vec2 vRsP0;\n'+
+   'float rsHash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}\n'+
+   'float rsNoise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(rsHash(i),rsHash(i+vec2(1.,0.)),f.x),mix(rsHash(i+vec2(0.,1.)),rsHash(i+vec2(1.,1.)),f.x),f.y);}')
+  .replace('#include <color_fragment>','#include <color_fragment>\nfloat rsMpp=length(fwidth(vRsP0));vec4 rsNJ=rsSwellNJ(vRsP0,rsMpp);'+
+   // whitecaps: where the crests crowd the water together (the Jacobian drops), broken up by drifting noise
+   'float rsFoam=smoothstep(.56,.34,rsNJ.w)*smoothstep(.5,.85,rsNoise(vRsP0*.16+vec2(uRsTime*.05,-uRsTime*.03))*.55+rsNoise(vRsP0*.9-uRsTime*.2)*.45);'+
+   'rsFoam*=mix(1.,.45,smoothstep(1.,6.,rsMpp));diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.72,.80,.82),rsFoam);')
+  .replace('#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\nroughnessFactor=mix(roughnessFactor,.85,rsFoam);')
+  .replace('#include <metalnessmap_fragment>','#include <metalnessmap_fragment>\nmetalnessFactor*=1.-rsFoam;')
+  .replace('#include <normal_fragment_begin>','#include <normal_fragment_begin>\nnormal=normalize((viewMatrix*vec4(rsNJ.xyz,0.)).xyz);');};
 const RS_SEAGEO=(()=>{const SN=240,sg=new THREE.PlaneGeometry(2,2,SN,SN),p=sg.attributes.position,uv=sg.attributes.uv;
  const warp=s=>{const a=Math.abs(s);return Math.sign(s)*(a<=.8?a/.8*620:620+5380*((a-.8)/.2)**2);};
  for(let i=0;i<p.count;i++){const x=warp(p.getX(i)),y=warp(p.getY(i));p.setXY(i,x,y);uv.setXY(i,(x+6000)/12000,(y+6000)/12000);}

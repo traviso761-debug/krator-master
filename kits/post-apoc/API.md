@@ -83,10 +83,22 @@ If you need a helper twice, add it at the top of YOUR fragment with your prefix.
 
 ## Night, and the invisible front door
 **Night:** the `Time` select (Day / Dusk / Night) or `?night=0..1` or `window._api.setNight(v)` drives sky (stars, dusk glow, moon), sun/moon light, hemisphere, fog, lit windows, lamp and fire glow, and a pool of six real point lights that follows the camera to the nearest lamps and fires.
-Nothing to author: about half of all `glass` panes are lit windows (deterministic, by position), and every `glow` piece (lamp bulbs, fires, `lit` windows) becomes a halo and a candidate light. To make something glow at night, draw it in `glow`.
+Nothing to author: every light `glass` pane is a window the evening schedule can light (below), and every `glow` piece (lamp bulbs, fires, `lit` windows) becomes a halo and a candidate light. To make something glow at night, draw it in `glow`.
 **Front door:** every placed building carries `rec.front = {source, local:{x,z,yaw}, world:{x,y,z,yaw}}`, invisible data (the `Doors` button draws a debug arrow at each). It is picked from the builder's `door()` calls (the widest door facing within 50 degrees of +z),
 else a def may declare `front:{x,z,yaw}`, else the default (centre of the +z edge). `frontOf(key)` returns a def's local front; `placeFacing(key,x,z,tx,tz,o)` places a building so its front door faces a point (a road, a plaza). `_api.doors()` lists them all.
 Keep a building's main entrance a `door()` call, or declare `front`.
+
+## Night and animation (nothing to author for the defaults)
+**Window schedule:** every window pane (light `glass`, and the `winlit` half) carries a per-pane order (`aWin`, a position hash). A sim clock sets the share lit (`winFrac(h)`: ~85% at dusk,
+~55% at 23:30, ~20% at 02:30, a few early risers before dawn); panes go dark one by one. `nightSet(v)` sets the clock from v (Day 13:00, Dusk 19:30, Night 23:30); `nightClock(h)` sets the hour
+(and the sky from it); the **Clock** button or `?clock=N` runs it. **Light volumes:** an additive cone under every lamp bulb (a warm-white `glow` sphere over 1.4 m) and a spill out of every
+front door (`rec.front`) that the schedule has lit; unshadowed, depth-tested, two instanced draw calls, off by day.
+**Animation time:** `?t=12.5` pins it, `?anim=0` sets 0; `window._anim` = `{time(), pin(t), play(), stats()}`. Shader-side only: nothing moves a building vertex on the CPU.
+**Cloth:** awnings, banners and flags drawn by a culture pack flutter, pinned at their anchor (the wall edge, the rod, the pole); `tarp()` lifts in the middle. The geometry engine writes the weights
+(`aFlut`) while a rule is set: to make your own cloth flutter, draw it inside `withCloth(rule, () => {...})` where `rule(p, out)` sets `out` (a displacement vector in the current frame) from the
+vertex `p` in that frame (`clothRule('banner', {h})`, `clothRule('flag', {w})`, `clothRule('awning', {w,d})` and `clothTarp(x,z,w,d)` are ready-made). Only the `cloth`, `awn:*` and `ban:*` materials move.
+**Smoke:** `smokeAt(x,y,z,{r,kind:'stove'|'fire'|'stack'})` in a builder's frame adds a source (`stovepipe()` and `fire()` call it). Puffs are one instanced billboard mesh outside the registry.
+**Fire:** anything drawn in `glow` flickers (cones the most, spheres less, boxes a little), and so do the pool lights that sit on fires and lamps.
 
 ## Flora is a placeholder, always
 A building never models a plant. Anything living (crops, planter fill, kitchen garden, shrubs, vines, moss, a shade tree) is `plant(kind,x,y,z,{h,r,s,ry,moisture,riparian,tags})`

@@ -2,7 +2,9 @@
    SPEC "What to build first" 1. IX.view.outline(room, plan?, { grid, paths }) -> THREE.Group,
    drawn over everything (no depth test) just above the floor:
      yellow   the room polygon (the inner face of its walls)
-     green    each door's opening, its swing arc and the zone the placer keeps free
+     green    each door's opening, its swing arc and the zone the placer keeps free (a
+              quarter disc and a threshold band; an outward door: a band 0.7 m deep)
+     violet   fixtures: a stair's flight, the well it rises through
      blue     each window's opening
      orange   footprints of the pieces the room kind REQUIRES; white: optional pieces
      cyan     every piece's declared clearance zone (filled)
@@ -26,13 +28,20 @@
     m.rotation.order = 'YXZ'; m.rotation.y = r.ry; m.rotation.x = -Math.PI / 2;
     m.position.set(r.x, y, r.z); m.renderOrder = 9; return m;
   }
+  function fillPoly(P, y, mat) {                 /* a convex polygon, as a triangle fan */
+    const pos = [];
+    for (let i = 1; i + 1 < P.length; i++) pos.push(P[0][0], y, P[0][1], P[i][0], y, P[i][1], P[i + 1][0], y, P[i + 1][1]);
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    const m = new THREE.Mesh(geo, mat); m.renderOrder = 9; return m;
+  }
   V.outline = function (room, plan, opt) {
     opt = opt || {};
     const g = new THREE.Group(), y = room.y + 0.04;
     g.name = 'outline:' + room.id;
     const M = {
       poly: lineMat(0xffd84a), door: lineMat(0x5cff7a), win: lineMat(0x6ab8ff), req: lineMat(0xff9a3a), opt: lineMat(0xffffff, 0.9),
-      path: lineMat(0xff5ad8, 0.85),
+      path: lineMat(0xff5ad8, 0.85), fix: lineMat(0xb07aff),
       clear: new THREE.MeshBasicMaterial({ color: 0x46d8e8, transparent: true, opacity: 0.18, depthTest: false, depthWrite: false, side: THREE.DoubleSide }),
       dz: new THREE.MeshBasicMaterial({ color: 0x5cff7a, transparent: true, opacity: 0.14, depthTest: false, depthWrite: false, side: THREE.DoubleSide })
     };
@@ -50,7 +59,12 @@
         arc.push([hx, hz]);
         g.add(line(arc, y, M.door));
       }
-      g.add(fill(IX.doorZone(room, d), y - 0.005, M.dz));
+      for (const P of IX.doorZones(room, d)) g.add(fillPoly(P, y - 0.005, M.dz));
+    });
+    (room.fixtures || []).forEach(function (f) {   /* a stair's flight or well: violet, its landing filled */
+      g.add(loop(G.corners(G.rect(f.x, f.z, f.ry, f.w, f.d)), y + 0.01, M.fix));
+      const c = f.clearance || {};
+      if (c.front > 0) g.add(fill(G.localRect(f.x, f.z, f.ry, -f.w / 2, f.w / 2, f.d / 2, f.d / 2 + c.front), y - 0.01, M.clear));
     });
     room.windows.forEach(function (w) {
       const t = room.walls[w.wall].t;

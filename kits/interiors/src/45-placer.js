@@ -14,6 +14,15 @@
               reaches every other door and every usable piece's use zone.
    4. SEED    rng = IX.rng(room.seed ^ opts.seed); room.seed defaults to a hash of the room id,
               so a room furnishes the same on every load.
+   Greedy, then bounded backtracking: each piece takes the first slot that passes. When a
+   required piece then finds no fit, the room is furnished again with that requirement first
+   (opts.passes orders, default 3), and then by LIMITED-DISCREPANCY SEARCH over the required
+   pieces placed before the one that failed: a discrepancy tells piece i to refuse the first
+   slot(s) greedy gave it (and anything within 0.6 m of them), so it lands somewhere else and
+   leaves room. Discrepancy vectors are tried in a fixed order (fewest first, earliest piece
+   first), at most opts.backtrack runs (default 48; 0 = greedy only). Deterministic: every run
+   reseeds from the room. plan.stats = { ms, runs } says what it cost (not exported: timing).
+   A room's fixtures (a stair, a stairwell: 20-rooms.js) are in place before anything else.
    Ported from Yuni's furnishGroup (settlements/yuni/src/64-interiors.js): its anchors (back,
    left/right, corner, run, centre, grid) become wall slots on ANY polygon edge and a centre
    search, its rectangle keep-outs become oriented rectangles, and its door keep-out becomes
@@ -25,8 +34,13 @@
      catalog.anchorY(key, variant, { floorY, surfaceY, ceilingY }) -> y
      catalog.build(placement, room)               -> host object (only IX.buildRoom calls it)
 
-   plan = { room, kind, culture, seed, placements[], grid, zones{ doors[], windows[] }, report }
-   placement = { id, key, variant, seed, x, z, ry, y, anchor, type, role, culture, need, host }
+     catalog.lights(key, variant, { seed, wealth })  OPTIONAL: the lights a piece carries, in its own
+                                                  frame [{ lx, ly, lz, color, intensity, distance }]
+
+   plan = { room, kind, culture, seed, placements[], lights[], grid, zones{ doors[][], windows[] }, report, stats }
+   placement = { id, key, variant, seed, x, z, ry, y, anchor, type, role, culture, need, host, lights? }
+   plan.lights = every placement's lights in world terms, { placement, x, y, z, color, intensity, distance }:
+   a host lights the room from this data (or a budget of it) instead of one real light per lamp.
    ====================================================================== */
 (function (IX) {
   'use strict';
@@ -35,7 +49,9 @@
   const WALL_GAP = 0.03;             /* a wall piece's back stands this far off the wall */
   const MIN_USE = 0.45;              /* a usable piece keeps at least this much free in front */
 
-  /* ---------- the piece model: one candidate = descriptor + variant + pose */
+  /* ---------- the piece model: one candidate = descriptor + variant + pose.
+     Clearance sides in the piece's frame (kits/furniture/SPEC.md): front +z, back -z,
+     left -x, right +x, left and right as seen standing in front of the piece, facing it. */
   function clearanceZones(P, x, z, ry, forUse) {
     const c = P.clear, hw = P.w / 2, hd = P.d / 2, out = [];
     const f = forUse && P.usable ? Math.max(c.front || 0, MIN_USE) : (c.front || 0);
@@ -65,36 +81,87 @@
       usable: IX.NO_ACCESS_TYPES.indexOf(type) < 0 && (d.anchor || 'floor') !== 'ceiling' && d.anchor !== 'surface' };
   }
 
+  function now() { return typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now(); }
+  function nofitOf(plan) { return plan.report.missing.filter(function (m) { return m.reason === 'no-fit'; }); }
+
+  /* discrepancy vectors over items [0, m): fewest discrepancies first, then earliest items,
+     each entry 1..K skips. Deterministic order; the caller stops at its run budget. */
+  function discrepancies(m, K, maxD, limit) {
+    const out = [];
+    function rec(start, left, vec) {
+      if (out.length >= limit) return;
+      if (left === 0) { out.push(Object.assign({}, vec)); return; }
+      for (let i = start; i < m && out.length < limit; i++) for (let k = 1; k <= Math.min(K, left) && out.length < limit; k++) {
+        vec[i] = k; rec(i + 1, left - k, vec); delete vec[i];
+      }
+    }
+    for (let d = 1; d <= maxD && out.length < limit; d++) rec(0, d, {});
+    return out;
+  }
+
   /* Greedy placement can box itself in (a bar's clearance eats the depth a table needed). When a
-     required piece finds no fit, furnish again from scratch with that requirement moved first;
-     up to three orders, keep the first with nothing missing (else the one missing least). */
+     required piece finds no fit, furnish again from scratch with that requirement moved first
+     (up to opts.passes orders), then backtrack by limited discrepancy (header). Keep the first
+     plan with nothing missing, else the one missing least. */
   IX.furnishRoom = function (roomIn, catalog, opts) {
     opts = opts || {};
+    const t0 = now();
     const room = roomIn.walls ? roomIn : (IX.roomById[roomIn.id] || IX.normRoom(roomIn));
-    let order = ((IX.PROGRAMS[room.kind] || IX.DEFAULT_PROGRAM).require).slice(), best = null;
-    for (let pass = 0; pass < 3; pass++) {
-      const plan = furnishOnce(room, catalog, opts, order);
-      const nofit = plan.report.missing.filter(function (m) { return m.reason === 'no-fit'; });
+    let order = ((IX.PROGRAMS[room.kind] || IX.DEFAULT_PROGRAM).require).slice(), best = null, runs = 0;
+    const passes = opts.passes == null ? 3 : Math.max(1, opts.passes);
+    for (let pass = 0; pass < passes; pass++) {
+      const plan = furnishOnce(room, catalog, opts, order, null); runs++;
+      const nofit = nofitOf(plan);
       plan.report.passes = pass + 1;
-      if (!best || nofit.length < best.nofit) best = { plan: plan, nofit: nofit.length };
+      if (!best || nofit.length < best.nofit) best = { plan: plan, nofit: nofit.length, order: order };
       if (!nofit.length) break;
       const need = nofit[0].need;
       order = order.filter(function (r) { return r.need === need; }).concat(order.filter(function (r) { return r.need !== need; }));
     }
+    const budget = opts.backtrack == null ? 48 : Math.max(0, opts.backtrack | 0);
+    if (best.nofit && budget) {
+      const first = nofitOf(best.plan)[0];
+      const vecs = discrepancies(first.item, 2, 3, budget);
+      for (const vec of vecs) {
+        const plan = furnishOnce(room, catalog, opts, best.order, vec); runs++;
+        const nf = nofitOf(plan).length;
+        if (nf < best.nofit) {
+          plan.report.passes = best.plan.report.passes;
+          plan.report.backtrack = { skips: vec };
+          best = { plan: plan, nofit: nf, order: best.order };
+          if (!nf) break;
+        }
+      }
+      if (!best.plan.report.backtrack) best.plan.report.backtrack = { skips: null, tried: vecs.length };
+    }
+    best.plan.stats = { ms: Math.round((now() - t0) * 100) / 100, runs: runs };
     return best.plan;
   };
 
-  function furnishOnce(room, catalog, opts, reqs) {
+  function furnishOnce(room, catalog, opts, reqs, skips) {
     const seed = ((room.seed ^ (opts.seed || 0)) >>> 0);
     const rng = IX.rng(seed);
     const fallback = opts.fallback || 'any';
-    const grid = IX.makeGrid(room, { cell: opts.cell, agent: opts.agent });
-    const doorZones = room.doors.map(function (d) { return IX.doorZone(room, d); });
+    const grid = IX.makeGrid(room, { cell: opts.cell, agent: opts.agent, nbr: opts.nbr, cutCorners: opts.cutCorners });
+    const doorZones = room.doors.map(function (d) { return IX.doorZones(room, d); });
+    const doorPolys = [].concat.apply([], doorZones);
     const winZones = room.windows.map(function (w) { return { sill: w.sill, r: IX.windowZone(room, w) }; });
     const placed = [];
     const report = { culture: room.culture, own: 0, thin: false, fallbacks: [], missing: [], required: [], optional: 0, tries: 0 };
     const prog = IX.PROGRAMS[room.kind] || IX.DEFAULT_PROGRAM;
+    /* the room's fixtures (a stair, a stairwell) stand before any furniture does */
+    (room.fixtures || []).forEach(function (f) {
+      const P = { key: f.id, w: f.w, d: f.d, h: Math.min(f.h, room.h), type: 'fixture', anchor: 'floor', clear: f.clearance || {}, usable: !!f.reach, fixture: true };
+      const fp = G.rect(f.x, f.z, f.ry, f.w, f.d);
+      const Q = { id: f.id, P: P, x: f.x, z: f.z, ry: f.ry, fp: fp, zones: clearanceZones(P, f.x, f.z, f.ry, false), layer: 'floor', host: null, fixture: true };
+      Q.top = room.y + P.h;
+      placed.push(Q);
+      grid.stamp(fp, +1);
+    });
+    let nFurn = 0;
     const doorStarts = room.doors.map(function (d) { return grid.doorCells(d); });
+    /* the ways in: every door, and every fixture's front (a stair's foot, the landing at a well's top) */
+    const entries = doorStarts.concat(placed.filter(function (Q) { return Q.fixture && Q.P.usable; }).map(function (Q) { return useCells(Q); }));
     if (!room.doors.length) report.noDoors = true;
     doorStarts.forEach(function (s, i) { if (!s.length) report.missing.push({ need: 'door ' + i, reason: 'door has no walkable cell inside it' }); });
 
@@ -145,7 +212,8 @@
         }
         return { fp: fp, zones: [] };
       }
-      for (const dz of doorZones) if (G.overlap(fp, dz, EPS)) return null;
+      const fpPoly = G.corners(fp);
+      for (const dz of doorPolys) if (G.convexOverlap(fpPoly, dz, EPS)) return null;
       for (const wz of winZones) if (P.h > wz.sill - 0.02 && G.overlap(fp, wz.r, EPS)) return null;
       const zones = clearanceZones(P, x, z, ry, true);
       for (const zn of zones) if (!G.rectInPoly(room.poly, zn.r, 0)) return null;
@@ -159,18 +227,18 @@
       }
       return { fp: fp, zones: zones };
     }
+    function useCells(Q) {
+      if (Q._use) return Q._use;
+      const out = [];
+      for (const zr of useZones(Q)) for (const k of grid.cellsIn(zr)) out.push(k);
+      return (Q._use = out);
+    }
     function reachAll(extra) {
-      if (!room.doors.length) return true;
-      const B = grid.bfs(doorStarts[0]);
-      for (let i = 1; i < doorStarts.length; i++) if (!doorStarts[i].some(function (k) { return B.dist[k] >= 0; })) return false;
+      if (!entries.length) return true;
+      const groups = entries.slice(1);
       const list = placed.concat(extra ? [extra] : []);
-      for (const Q of list) {
-        if (Q.layer !== 'floor' || !Q.P.usable) continue;
-        let ok = false;
-        for (const zr of useZones(Q)) { for (const k of grid.cellsIn(zr)) if (B.dist[k] >= 0) { ok = true; break; } if (ok) break; }
-        if (!ok) return false;
-      }
-      return true;
+      for (const Q of list) if (Q.layer === 'floor' && Q.P.usable && !Q.fixture) groups.push(useCells(Q));
+      return grid.reaches(entries[0], groups);
     }
     function tryPose(P, x, z, ry, extra) {
       report.tries++;
@@ -178,15 +246,20 @@
       const hostQ = extra && extra.host || null, paired = extra && extra.paired ? hostQ : null;
       const g = geomOK(P, x, z, ry, hostQ, paired);
       if (!g) return null;
-      const Q = { id: room.id + '.f' + placed.length, P: P, x: x, z: z, ry: ry, fp: g.fp, zones: g.zones, layer: layerOf(P),
+      const Q = { id: room.id + '.f' + nFurn, P: P, x: x, z: z, ry: ry, fp: g.fp, zones: g.zones, layer: layerOf(P),
         host: hostQ ? hostQ.id : null, pairedHost: !!paired, role: extra && extra.role };
       if (Q.layer === 'floor') {
         grid.stamp(Q.fp, +1);
         if (!reachAll(Q)) { grid.stamp(Q.fp, -1); return null; }
       }
       Q.top = (Q.layer === 'surface' ? hostQ.top : room.y) + P.h;
-      placed.push(Q);
+      placed.push(Q); nFurn++;
       return Q;
+    }
+    function unplace(Q) {                     /* undo the last tryPose (backtracking) */
+      if (placed[placed.length - 1] !== Q) throw new Error('unplace: not the last piece');
+      placed.pop(); nFurn--;
+      if (Q.layer === 'floor') grid.stamp(Q.fp, -1);
     }
     function normAng(a) { const T = Math.PI * 2; a = a % T; if (a > Math.PI) a -= T; if (a <= -Math.PI) a += T; return a; }
 
@@ -241,7 +314,7 @@
     function seatSlots(P) {
       const out = [];
       for (const H of placed) {
-        if (H.layer !== 'floor' || ['table', 'desk'].indexOf(H.P.type) < 0) continue;
+        if (H.layer !== 'floor' || H.fixture || ['table', 'desk'].indexOf(H.P.type) < 0) continue;
         const hw = H.P.w / 2, hd = H.P.d / 2, gap = 0.06;
         const sides = [
           { lx: 0, lz: hd + gap + P.d / 2, rot: Math.PI, span: hw },      /* in front of the table, facing it */
@@ -266,7 +339,7 @@
     function surfaceSlots(P) {
       const out = [];
       for (const H of placed) {
-        if (H.layer !== 'floor' || IX.SURFACE_HOSTS.indexOf(H.P.type) < 0) continue;
+        if (H.layer !== 'floor' || H.fixture || IX.SURFACE_HOSTS.indexOf(H.P.type) < 0) continue;
         for (const o of [0, -0.3, 0.3]) {
           const c = Math.cos(H.ry), s = Math.sin(H.ry), lx = o * H.P.w;
           out.push({ x: H.x + lx * c, z: H.z - lx * s, ry: H.ry, host: H, s: rng() });
@@ -281,7 +354,13 @@
       if (P.anchor === 'wall') return r === 'back' ? 'back' : 'wall';
       return r;
     }
-    function place(P) {
+    /* ban = { left: fits still to refuse, poses: [[x, z, ry], ...] refused } (backtracking) */
+    function banned(ban, S) {
+      if (!ban) return false;
+      for (const b of ban.poses) if (Math.hypot(S.x - b[0], S.z - b[1]) < 0.6) return true;
+      return false;
+    }
+    function place(P, ban) {
       const role = roleOf(P);
       const order = {
         back: ['back', 'wall'], wall: ['wall', 'centre'], corner: ['corner', 'centre'], centre: ['centre', 'wall'],
@@ -296,8 +375,11 @@
         else if (r === 'surface') slots = surfaceSlots(P);
         else slots = centreSlots(P, r);
         for (const S of slots) {
+          if (banned(ban, S)) continue;
           const Q = tryPose(P, S.x, S.z, S.ry, { host: S.host, paired: S.paired, role: r });
-          if (Q) return Q;
+          if (!Q) continue;
+          if (ban && ban.left > 0) { unplace(Q); ban.left--; ban.poses.push([Q.x, Q.z, Q.ry]); continue; }
+          return Q;
         }
       }
       return null;
@@ -306,7 +388,7 @@
     /* ---- 2. REQUIRE, then optional */
     const used = {};
     function offRole(d) { return d.anchor === 'wall' && (IX.ROLES[d.type] || 'centre') === 'centre' ? 1 : 0; }
-    function attempt(list, need, preferKey) {
+    function attempt(list, need, preferKey, ban) {
       const order = rng.shuffle(list.slice());
       if (preferKey) order.sort(function (a, b) { return (b.key === preferKey) - (a.key === preferKey); });
       else order.sort(function (a, b) { return (used[a.key] || 0) - (used[b.key] || 0); });   /* variety first */
@@ -319,30 +401,33 @@
         for (let v = 0; v < (d.variants || 1); v++) if (v !== v0) others.push(v);
         others.sort(function (a, b) { const A = catalog.dims(d.key, a), B = catalog.dims(d.key, b); return A.w * A.d - B.w * B.d || a - b; });
         for (const v of vs.concat(others)) {
-          const Q = place(describe(catalog, d, v, room));
+          const Q = place(describe(catalog, d, v, room), ban);
           if (Q) { Q.need = need; used[d.key] = (used[d.key] || 0) + 1; return Q; }
         }
       }
       return null;
     }
+    let nItem = 0;
     for (const rq of reqs) {
       const L = levels(fallback).map(function (lv) {
         return { culture: lv.culture, list: lv.list.filter(function (d) { return rq.types.indexOf(d.type) >= 0; }) };
       }).filter(function (lv) { return lv.list.length; });
       const rec = { need: rq.need, types: rq.types, n: rq.n || 1, placed: 0 };
       report.required.push(rec);
-      if (!L.length) { report.missing.push({ need: rq.need, types: rq.types, reason: 'none-in-catalog', scope: fallback }); continue; }
+      if (!L.length) { report.missing.push({ need: rq.need, types: rq.types, reason: 'none-in-catalog', scope: fallback }); nItem += rec.n; continue; }
       let lastKey = null;
       for (let i = 0; i < rec.n; i++) {
         let Q = null;
+        const item = nItem++;
+        const ban = skips && skips[item] ? { left: skips[item], poses: [] } : null;
         for (const lv of L) {
-          Q = attempt(lv.list, rq.need, lastKey);
+          Q = attempt(lv.list, rq.need, lastKey, ban);
           if (Q) {
             if (lv.culture !== room.culture) report.fallbacks.push({ need: rq.need, wanted: room.culture, used: Q.P.culture, key: Q.P.key });
             break;
           }
         }
-        if (!Q) { report.missing.push({ need: rq.need, types: rq.types, reason: 'no-fit', index: i }); break; }
+        if (!Q) { report.missing.push({ need: rq.need, types: rq.types, reason: 'no-fit', index: i, item: item }); nItem += rec.n - i - 1; break; }
         lastKey = Q.P.key; rec.placed++;
       }
     }
@@ -360,7 +445,9 @@
           any = true;
           let Q = null;
           for (const lv of own) {
-            const list = lv.list.filter(function (d) { return O.types.indexOf(d.type) >= 0; });
+            const list = lv.list.filter(function (d) {
+              return (!O.types || O.types.indexOf(d.type) >= 0) && (!O.anchor || (d.anchor || 'floor') === O.anchor);
+            });
             if (list.length && (Q = attempt(list, null))) break;
           }
           if (Q) { counts[gi]++; added++; } else dead[gi] = true;
@@ -371,18 +458,33 @@
     }
 
     /* ---- the plan, as data */
-    const placements = placed.map(function (Q, i) {
+    const furn = placed.filter(function (Q) { return !Q.fixture; });
+    const lights = [];
+    const placements = furn.map(function (Q, i) {
       const P = Q.P;
       const hostQ = Q.host ? placed.filter(function (H) { return H.id === Q.host; })[0] : null;
       const y = catalog.anchorY(P.key, P.variant, { floorY: room.y, surfaceY: hostQ ? hostQ.top : null, ceilingY: room.y + room.h });
-      return { id: Q.id, key: P.key, variant: P.variant, seed: 1 + ((seed + i * 7919) % 99991), x: Q.x, z: Q.z, ry: Q.ry, y: R3(y),
+      const p = { id: Q.id, key: P.key, variant: P.variant, seed: 1 + ((seed + i * 7919) % 99991), x: Q.x, z: Q.z, ry: Q.ry, y: R3(y),
         anchor: P.anchor, type: P.type, role: Q.role, culture: P.culture, need: Q.need || null, host: Q.host,
         w: R3(P.w), d: R3(P.d), h: R3(P.h), clearance: P.clear };
+      const L = catalog.lights ? catalog.lights(P.key, P.variant, { seed: p.seed, wealth: room.wealth }) : null;
+      if (L && L.length) {
+        const c = Math.cos(p.ry), s = Math.sin(p.ry);
+        p.lights = L.map(function (l) {
+          const o = { placement: p.id, x: R3(p.x + l.lx * c + l.lz * s), y: R3(p.y + l.ly), z: R3(p.z - l.lx * s + l.lz * c),
+            color: l.color == null ? 0xffb066 : l.color, intensity: l.intensity == null ? 1 : l.intensity, distance: l.distance == null ? 10 : l.distance };
+          lights.push(o);
+          return o;
+        });
+      }
+      return p;
     });
     report.placed = placements.length;
-    const B = room.doors.length ? grid.bfs(doorStarts[0]) : null;
-    return { room: room.id, kind: room.kind, culture: room.culture, seed: seed, placements: placements, grid: grid, reach: B,
-      opts: { seed: opts.seed || 0, fallback: fallback, cell: grid.cell, agent: grid.agent, optional: opts.optional !== false },
+    report.lights = lights.length;
+    const B = entries.length ? grid.bfs(entries[0]) : null;
+    return { room: room.id, kind: room.kind, culture: room.culture, seed: seed, placements: placements, lights: lights, grid: grid, reach: B,
+      opts: { seed: opts.seed || 0, fallback: fallback, cell: grid.cell, agent: grid.agent, nbr: grid.nbr, cutCorners: grid.cutCorners,
+        optional: opts.optional !== false, passes: opts.passes, backtrack: opts.backtrack },
       zones: { doors: doorZones, windows: winZones.map(function (w) { return w.r; }) }, report: report, _placed: placed };
   }
 })(KratorInteriors);

@@ -24,8 +24,8 @@ function buildRsIzizLighter(){reseed(73000);
  const wT=rsCabin(B,{x:-11,y:dY(.1),w:3.4,d:3.6,h:2.3,mk:'paint',wall:CREAM,win:2,winCol:0x101418,roof:'gable',roofMk:'paint',roofCol:OR,rh:.8,over:.25});
  rsLink(B,'wood',[-11,wT,0],[-11,wT+2.4,0],.04,DK,4);rsPennant(B,[-11,wT+2.4,0],2.4,.7,[OR,TEAL]);
  const mx=-6.2,mb=dY(H.uAt(mx)),mh=15;rsLink(B,'wood',[mx,mb-.3,0],[mx,mb+mh,0],.22,0x6a4a2c,8,.14);
- const S=rsSail(B,{key:'iziz-lug',O:[mx+.3,mb+3.2,.35],U:[1,0,0],V:[0,1,0],belly:-.9,nu:14,nv:10,A:t=>[lerp(-2.6,-3.4,t),lerp(0,11,t)],Bf:t=>[lerp(6,5.6,t),lerp(0,8.6,t)],draw:rsIzizLug});
- rsLink(B,'wood',S.at(1,0),S.at(1,1),.1,0x6a4a2c,6);rsLink(B,'wood',S.at(0,0),S.at(0,1),.09,0x6a4a2c,6);rsRope(B,[mx,mb+mh,0],S.at(1,.2));rsRope(B,[mx,mb+mh,0],[H.xAt(1,1),H.ys(1),0]);
+ rsRig(B,[mx,0]);const S=rsSail(B,{key:'iziz-lug',O:[mx+.3,mb+3.2,.35],U:[1,0,0],V:[0,1,0],belly:-.9,nu:14,nv:10,A:t=>[lerp(-2.6,-3.4,t),lerp(0,11,t)],Bf:t=>[lerp(6,5.6,t),lerp(0,8.6,t)],draw:rsIzizLug});
+ rsLink(B,'wood',S.at(1,0),S.at(1,1),.1,0x6a4a2c,6);rsLink(B,'wood',S.at(0,0),S.at(0,1),.09,0x6a4a2c,6);rsRope(B,[mx,mb+mh,0],S.at(1,.2));rsRope(B,[mx,mb+mh,0],[H.xAt(1,1),H.ys(1),0]);rsRigEnd(B);
  for(const [x,z] of[[-11,1.2],[8.5,2],[9.2,-2.4],[2,3.8]])rsFigure(B,[x,dY(H.uAt(x)),z],rr(0,TAU),[OR,TEAL,CREAM][Math.floor(rng()*3)]);
  rsBake(B,V.group,'izizLighter');V.deckY=hy;return V;}
 RS_VESSEL({key:'izizLighter',name:'Iziz Salvage Lighter',culture:'iziz-vernacular',L:34,B:13,H:20,

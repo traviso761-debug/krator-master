@@ -72,8 +72,10 @@ const fill = new THREE.DirectionalLight(0x8ea6cc, 0.28);
 fill.position.set(-140, 90, -120);
 scene.add(fill);
 
+/* subdivided: one 8 km quad interpolates depth badly in software GL (SwiftShader), and
+   hid anything within ~3 cm of the ground (labels, rugs, mats) a few metres off the origin */
 const ground = new THREE.Mesh(
-  new THREE.PlaneGeometry(8000, 8000),
+  new THREE.PlaneGeometry(8000, 8000, 100, 100),
   new THREE.MeshLambertMaterial({ color: 0x9b9472 })
 );
 ground.rotation.x = -Math.PI / 2;
@@ -365,6 +367,12 @@ const FURN_CULTURES = ['ancient', 'ancients-salvage', 'yuni-court', 'yuni-common
 const PLANT_CLIMATES = ['hypertropic', 'tropic', 'temperate', 'cold'];
 const PLANT_ARIDITY = ['arid', 'semiarid', 'subhumid', 'humid'];
 const ASSET_CULTURES = ['voth', 'beast-rider'];
+/* building types (repo README): civic, market/shop, tavern/inn, industry, farm,
+   single-family dwelling, multi-family dwelling, infrastructure, religious, funerary.
+   Same slugs as Yuni's BUILDING_TAGS. A building carries several in types: [...];
+   `family` stays as its one-word grouping (housing civic religious industrial defensive trade guild). */
+const BUILDING_TYPES = ['civic', 'market', 'shop', 'tavern', 'inn', 'industry', 'farm', 'dwelling-single',
+  'dwelling-multi', 'infrastructure', 'religious', 'funerary'];
 
 /* The furniture entry (kits/furniture/SPEC.md "The entry"):
      FURN({ key, name, culture, type, setting, rooms: [...], w, d, h, variants, variantNames,
@@ -384,7 +392,7 @@ const FURN_ANCHORS = ['floor', 'wall', 'ceiling', 'surface'];
 const FURN_TYPES = ['table', 'chair', 'bench', 'seating', 'bed', 'storage', 'shelf', 'desk', 'lamp', 'stove',
   'altar', 'shrine', 'fountain', 'statue', 'monument', 'planter', 'rug', 'screen', 'banner', 'counter',
   'stall', 'rack', 'workstation', 'loom', 'well', 'pen', 'tomb', 'vessel', 'shelter', 'weapon', 'debris',
-  'ladder', 'board', 'stack', 'brazier'];
+  'ladder', 'board', 'stack', 'brazier', 'book', 'tool'];
 const FURNS = [], FURN_BY_KEY = {};
 function FURN(o) {
   if (FURN_BY_KEY[o.key]) { console.error('duplicate furniture key', o.key); return; }
@@ -445,6 +453,7 @@ function ASSET(o) {
   if (ASSET_BY_KEY[o.key]) { console.error('duplicate asset key', o.key); return; }
   if (!o.culture || ASSET_CULTURES.indexOf(o.culture) < 0) { console.error('asset ' + o.key + ': bad culture ' + o.culture); return; }
   o.variants = o.variants || 1; o.family = o.family || 'other'; o.districts = o.districts || []; o.wealth = o.wealth || [0, 1];
+  o.types = o.types || [];
   ASSETS.push(o); ASSET_BY_KEY[o.key] = o;
 }
 /* declared size of one variant: its own entry if given, else the entry's overall box.
@@ -455,6 +464,214 @@ function entryDims(A, v) {
 }
 const assetDims = entryDims;
 
+/* ------------------------------------------------- furniture palette
+   kits/furniture/SPEC.md "Colour": a piece names its colours, the host owns them.
+   FPAL[culture] maps a named key to a colour; a piece asks for F.col('timber') and
+   gets its own culture's timber. F.cols([...keys]) resolves a list, and F.pick() of
+   an array of palette keys returns the picked key's colour (one draw from the seed,
+   like any pick). F.shade(keyOrColour, amt) takes either. A host that wants another
+   look for a culture replaces FPAL[culture] (or single keys) before building.
+   Keys are role + hue + tone: timber, timberDark, ironDeep, clothRed, flameLight ...
+   Tone bands by lightness: Black < Deep < Dark < (none) < Light < Pale < White.
+   Generated from the harvested pieces' literals (nearest-colour clustering per
+   culture, so a key may stand for a few near-identical originals); edit freely. */
+const FPAL = {
+  'ancient': {
+    alloy: 0xe6e4dc,
+    amber: 0xffb755,
+    blackIron: 0x1c1c1c, blackIronLight: 0x2a2a2a,
+    clothMadder: 0xb5432f, clothTurquoise: 0x4a7a9c, clothOchre: 0xc9a24a, clothBirch: 0xc9a878,
+    clothBone: 0xe8dcc0,
+    electric: 0x6fd0ff,
+    glassBlack: 0x14161a, glassSky: 0x5a9ec9,
+    ice: 0xbfe8ff,
+    pewter: 0x8a8f92,
+    redCopper: 0xa0522d,
+    silver: 0xb4b0a2,
+    steel: 0x5a5f62, steelLight: 0x6e7376,
+    stoneGraphite: 0x3a3f3e, stoneGranite: 0x6e6a5e, stoneClay: 0xb56a42, stoneTaupe: 0x8a8478,
+    timberOak: 0x8a6a4e,
+    unlit: 0x2a2f2e,
+    verdigris: 0x6fe8e0,
+    whiteHot: 0xfff2c9
+  },
+  'ancients-salvage': {
+    blackIronDark: 0x1c1c1c, blackIron: 0x2a2a2a,
+    clothTan: 0xb08a5a, clothOchre: 0xc9a24a, clothBone: 0xe8dcc0,
+    fire: 0xff6a2e,
+    gilt: 0xc9a227,
+    pewter: 0x8a8f92,
+    plasterTan: 0xb08250, plasterTanLight: 0xbc8e58, plasterTanLight2: 0xc89a62, plasterBirch: 0xd4a66e,
+    redCopper: 0x8a3a2a,
+    rustRusset: 0x7a3b22,
+    silver: 0xb4b0a2, silverLight: 0xc0bcae,
+    steel: 0x6e7376,
+    stoneClay: 0xb56a42, stoneBirch: 0xc9a878, stoneGrey: 0xb0aaa0,
+    timberOak: 0x8a6a4e,
+    whiteHot: 0xfff2c9
+  },
+  'yuni-court': {
+    amber: 0xffb755,
+    blackIron: 0x1c1c1c,
+    brass: 0xc29a44,
+    clothViolet: 0x6a3a7a, clothIndigo: 0x2e5a8a, clothJade: 0x2f8a6a, clothCrimson: 0x9c3024,
+    clothMadder: 0xb5432f, clothSaffron: 0xd8a030, clothIvory: 0xf0ece0,
+    copper: 0xc8642a,
+    ember: 0xd9762c,
+    fire: 0xff8a3a,
+    gilt: 0xc9a227,
+    iron: 0x4a4038,
+    plasterIvory: 0xf2eee2,
+    stoneBlack: 0x14161a, stoneMoss: 0x3a6a3a, stoneNavy: 0x1e4e90, stoneTurquoise: 0x2c8aa0,
+    stoneCobalt: 0x2a6ab0, stoneTurquoiseLight: 0x4a7a9c, stoneAzure: 0x3a86c8, stoneOchre: 0xc9a24a,
+    stoneSky: 0x58a8d8, stoneBone: 0xe8dcc0,
+    timberWalnut: 0x5c432c, timberTeak: 0x9a7a4e,
+    whiteHot: 0xfff2c9
+  },
+  'yuni-common': {
+    amber: 0xffb755,
+    brass: 0xb08432,
+    clothViolet: 0x6a3a7a, clothIndigo: 0x2e5a8a, clothJade: 0x2f8a6a, clothMustard: 0x94824a,
+    clothMadder: 0xb83a2e, clothTurquoise: 0x4a7a9c, clothOrange: 0xc8642a, clothFlax: 0xa89256,
+    clothSaffron: 0xd8a030, clothTan: 0xb08a5a, clothOchre: 0xc9a24a, clothStraw: 0xc8b272,
+    clothIvory: 0xf2eee2,
+    ember: 0xd9762c,
+    gilt: 0xc9a227,
+    plasterMadder: 0xb5432f, plasterTan: 0xbc8e58, plasterTanLight: 0xc89a62, plasterBirch: 0xd4a66e,
+    plasterBone: 0xe8dcc0,
+    produceLeaf: 0x7a9a3e,
+    ropeMustard: 0x85743e, ropeFlax: 0xb8a262,
+    silver: 0xb4b0a2,
+    stoneBlack: 0x14161a, stoneNavy: 0x1e4e90, stoneTurquoise: 0x2c8aa0, stoneLaterite: 0xa85832,
+    stoneCobalt: 0x2a6ab0, stoneClay: 0xb8633a, stoneAzure: 0x3a86c8, stoneClayLight: 0xc47044,
+    stoneSky: 0x58a8d8, stoneIvory: 0xf0ece0,
+    timberWalnut: 0x5c432c, timberChestnutDark: 0x6a4e34, timberChestnut: 0x7a5a3c, timberOak: 0x8a6a4e,
+    timberTeak: 0x9a7a4e, timberPine: 0xa8865c
+  },
+  'yuni-poor': {
+    clothIndigo: 0x2e5a8a, clothMadder: 0xb83a2e, clothOrange: 0xc8642a, clothSaffron: 0xd8a030,
+    clothIvory: 0xf0ece0,
+    ember: 0xd9762c,
+    plasterTan: 0xb08250,
+    stoneBlack: 0x14161a, stoneLaterite: 0xa85832, stoneGranite: 0x7e7a72, stoneClay: 0xb4683e,
+    stoneClayLight: 0xc07448,
+    thatchFlax: 0xb8a262, thatchStraw: 0xc8b272,
+    timberWalnut: 0x5c432c
+  },
+  'sahelian': {
+    clothIndigo: 0x2e5a8a, clothBone: 0xe8dcc0, clothIvory: 0xf0ece0,
+    ember: 0xd9762c,
+    plasterSoot: 0x1c1c1c, plasterLaterite: 0xa85c36, plasterMadder: 0xb5432f, plasterClayDark: 0xb4683e,
+    plasterClay: 0xc07448,
+    stoneBlack: 0x14161a, stoneTaupe: 0x8a8172,
+    thatchStraw: 0xc8b272,
+    timberSepia: 0x4a3624, timberOak: 0x8a6a4e, timberTeak: 0x9a7a4e
+  },
+  'order': {
+    blackIron: 0x2a2622,
+    brass: 0xb08432,
+    clothGraphite: 0x3c362c, clothForest: 0x2e4a3a, clothWine: 0x5a2a2a, clothDusk: 0x3a3a5a,
+    clothWalnut: 0x6a3a2a, clothMoss: 0x3a6a3a, clothTeak: 0x7a5a2a, clothRusset: 0x8a3a2a,
+    clothGranite: 0x7a7466, clothMadder: 0xb5432f, clothTurquoise: 0x4a7a9c, clothBone: 0xe8dcc0,
+    clothIvory: 0xe8e4d6,
+    ember: 0xd9762c,
+    gilt: 0xc9a227,
+    stoneSoot: 0x1c1c1c, stoneOchre: 0xc9a24a, stoneGrey: 0x9a9080, stoneChalk: 0xe8e8e8,
+    timberWalnut: 0x5c432c, timberOak: 0x8a6a4e, timberTeak: 0x9a7a4e, timberStraw: 0xd8c48a,
+    whiteHot: 0xfff2c9
+  },
+  'nomad': {
+    amber: 0xffb755,
+    blackIron: 0x2a2622,
+    clothViolet: 0x6a3a7a, clothIndigo: 0x2e5a8a, clothJade: 0x2f8a6a, clothMud: 0x8a7a54,
+    clothMadder: 0xb83a2e, clothOrange: 0xc8642a, clothSaffron: 0xd8a030,
+    ember: 0xd9762c,
+    hideWalnut: 0x4e3222, hideChestnut: 0x6a4630, hideOak: 0x8a5c3c,
+    ropeMustard: 0x85743e,
+    stoneBlack: 0x14161a, stoneGranite: 0x7a7264,
+    timberSepia: 0x4e3a28, timberUmber: 0x5e5236
+  },
+  'voth': {
+    amber: 0xe89a3c, amberLight: 0xffb04a,
+    blackIron: 0x2a2a2a,
+    brass: 0xa88a3c,
+    candle: 0xffe0a0,
+    clothPlum: 0x8a2d6a, clothIndigo: 0x2d6a8a, clothTeal: 0x2f8f8a, clothJade: 0x2f8f6a,
+    clothCrimson: 0x9c2d2d, clothMud: 0x8a7a5c, clothGold: 0xc9a227, clothTaupe: 0x8a8a78,
+    clothKhaki: 0x9a8a6c, clothOrange: 0xe07a2a, clothPine: 0xa88868, clothGreyDark: 0x9a8a78,
+    clothGrey: 0x9a9a88, clothBirch: 0xc0a878, clothSand: 0xc9b58a, clothLinenDark: 0xd8c9a0,
+    clothLinen: 0xd8cdb0, clothLinenLight: 0xdad0b8, clothBone: 0xe8e0c8,
+    coal: 0xb8461f,
+    copper: 0xb5723a,
+    ember: 0xd9762c,
+    fireDark: 0xff6a2e, fire: 0xff8a3c,
+    flameDark: 0xffd23c, flame: 0xffc861,
+    gilt: 0xd8b34a,
+    glassCharcoal: 0x1a2028, glassSlate: 0x3a5a68, glassCrimson: 0x8a2020, glassGranite: 0x6a6a52,
+    glassMud: 0x7a6a4a, glassMist: 0x8fb8c4, glassChalk: 0xcfe3e8,
+    ironDark: 0x3a3630, iron: 0x4a443c,
+    leafMoss: 0x54632f, leafMossLight: 0x5e6b3a, leafOlive: 0x6a7a3a, leafOliveLight: 0x7a8a42,
+    leaf: 0x7a9a3a, leafMustard: 0x8a7a4a, leafMadder: 0xb23a2a, leafOchreDark: 0xc9a24a,
+    leafOchre: 0xd8c060,
+    pewter: 0x8a8a8a,
+    plasterBone: 0xe6dcc0,
+    steel: 0x6b6258, steelLight: 0x7a6f5c,
+    stoneSoot: 0x1a1512, stoneEbony: 0x2a2620, stoneGraphite: 0x3c362c, stoneUmber: 0x4a443a,
+    stoneWine: 0x6b1f1f, stoneUmberLight: 0x6a5248, stoneMud: 0x8a7454, stoneGranite: 0x7a7466,
+    stoneJade: 0x5a8a7a, stoneTaupe: 0x8a8474, stoneKhaki: 0x9a8464, stoneKhakiLight: 0x9d9278,
+    stoneGrey: 0x9a9484, stoneMist: 0x6ecbe0, stoneLinen: 0xc8bfa6, stoneLinenLight: 0xd8d0be,
+    timberWalnut: 0x5a4028, timberUmber: 0x5a4a38, timberUmberLight: 0x6a5c48, timberChestnut: 0x7a5a3a,
+    timberTeak: 0x8a6a3a, timberMud: 0x7a6a52, timberMudLight: 0x877558, timberTeakLight: 0x9a7a4a,
+    timberTaupe: 0x8b8069, timberKhaki: 0x9a8a68, timberTaupeLight: 0x8c8579, timberGrey: 0x958e80,
+    timberBirch: 0xc8a878, timberSand: 0xd8cca0
+  },
+  'iziz': {
+    amber: 0xffb04a,
+    blackIron: 0x2a2018,
+    bronzeDark: 0x6e5428, bronze: 0x8a6a3a, bronzeLight: 0x9a7a3c,
+    candleDark: 0xffd28a, candle: 0xffe9a8,
+    clothTeal: 0x2f8f8a, clothCrimson: 0x9c2d2d, clothCobalt: 0x3a6fb0, clothViolet: 0x7a4fa0,
+    clothOrange: 0xe07a2a, clothGold: 0xd4af37, clothBone: 0xe8dcc4,
+    electricDark: 0x5cc4ff, electric: 0x8fd4ff,
+    flame: 0xffd34a,
+    gilt: 0xd9b23c, giltLight: 0xe8c14a,
+    glassChalk: 0xd8ecf0,
+    iceDark: 0x9fdfff, ice: 0xbfe8ff,
+    leaf: 0x3a8a46, leafOlive: 0x4a8a50, leafVermilion: 0xc9442a,
+    stoneGranite: 0x6a6052, stoneMud: 0x8c8068, stoneKhaki: 0x9a8e74, stoneLinen: 0xc8bfa6,
+    timberSepia: 0x4a3a2a, timberChestnut: 0x6a4a2a, timberFlax: 0xc2a165,
+    whiteHot: 0xfff0c0
+  },
+  'beast-rider': {
+    amber: 0xffb066,
+    barkUmber: 0x5a4a38,
+    brass: 0xa88a3c,
+    candle: 0xffd28a,
+    clothTeal: 0x2f8f8a, clothVermilion: 0xc9442a, clothSaffron: 0xd8a23a, clothTaupe: 0x9a8878,
+    clothGrey: 0xa89a86, clothSand: 0xc9b58a, clothIvory: 0xe8ded0,
+    glassLeaf: 0x6a8a3a,
+    hideOak: 0x8a6a48,
+    ice: 0x4ac8b0,
+    iron: 0x3a362e,
+    leafMoss: 0x3a6a2c, leafOlive: 0x4a7a32, leaf: 0x8a9a46, leafMadder: 0xb8342a,
+    leafMadderLight: 0xb84a2a, leafVermilion: 0xd2542a, leafOchre: 0xc9a24a,
+    pewter: 0x8a8f92,
+    plasterSlate: 0x3a5a68,
+    redCopper: 0x9c2d2d,
+    steel: 0x5a5a5a,
+    stoneCharcoal: 0x2a2f38, stoneTaupe: 0x8a8478,
+    timberEbony: 0x2a2620, timberSepia: 0x4a3f30, timberWalnut: 0x6a3a2a, timberUmber: 0x6a5c48,
+    timberMudDark: 0x7a6a4e, timberMud: 0x8a7558, timberStraw: 0xc9a86a
+  }
+};
+/* the colour a palette key names for a culture; throws on an unknown key so a typo fails the build */
+function furnCol(culture, key) {
+  if (typeof key === 'number') return key;
+  const p = FPAL[culture];
+  if (p && p[key] != null) return p[key];
+  throw new Error('no palette key "' + key + '" for culture ' + culture);
+}
+
 /* local frame: origin at footprint centre on the ground; +z is FRONT */
 function makeFrame(x, z, ry, opt) {
   opt = opt || {};
@@ -462,10 +679,15 @@ function makeFrame(x, z, ry, opt) {
   let st = (F.seed * 2654435761) >>> 0;
   F.rnd = () => { st = (Math.imul(st, 1664525) + 1013904223) >>> 0; return st / 4294967296; };
   F.rr = (a, b) => a + (b - a) * F.rnd();
-  F.pick = (arr) => arr[Math.floor(F.rnd() * arr.length) % arr.length];
+  F.col = (key) => furnCol(F.asset ? F.asset.culture : '', key);
+  F.cols = (keys) => keys.map(F.col);
+  F.pick = (arr) => {
+    const v = arr[Math.floor(F.rnd() * arr.length) % arr.length];
+    return (typeof v === 'string' && F.asset && FPAL[F.asset.culture] && FPAL[F.asset.culture][v] != null) ? F.col(v) : v;
+  };
   F.chance = (p) => F.rnd() < p;
   /* engine helpers on the frame, so a piece need not reach for host globals */
-  F.shade = shade; F.TAU = TAU;
+  F.shade = (c, amt) => shade(typeof c === 'string' ? F.col(c) : c, amt); F.TAU = TAU;
   const toWorld = (lx, lz) => {
     const c = Math.cos(F.ry), s = Math.sin(F.ry);
     return [F.x + lx * c + lz * s, F.z - lx * s + lz * c];

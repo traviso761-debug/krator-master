@@ -3,7 +3,8 @@
 
 Outputs (both deterministic; build-manifest.json holds a sha1 per input):
 
-  dist/interiors-core.js   src/10-49 only: ROOM(), furnishRoom(), the grid, the audit.
+  dist/interiors-core.js   src/10-49 only: ROOM(), furnishRoom(), planBuilding(), the life layer,
+                           the walk grid, the audits.
                            No THREE, no DOM, no catalog. Load it by path or vendor it.
   dist/interiors.html      the demo: sample rooms furnished from the master catalog.
 
@@ -13,7 +14,8 @@ build"), so nothing of the catalog is copied. Then ONE inline <script>:
 
   src/10-49*.js                  the core (engine-neutral)
   adapters/catalog-adapter.js    the only file that knows kits/catalog
-  src/50-59*.js                  THREE views: shells, outline debug view, cut-away
+  src/50-59*.js                  THREE views: shells, planned buildings, outline debug view,
+                                 cut-away and storey selector, walker figures
   src/70-98*.js                  the demo sheet, hover inspector, page audit, polygon tool
   src/80-sky-hash.js, 81-sky.js  VENDORED (see VENDORED below; --vendor-check)
 
