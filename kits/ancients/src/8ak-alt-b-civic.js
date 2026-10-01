@@ -15,6 +15,10 @@
 //        a round plinth, cupping a ribbed sphere that carries the dish.
 
 // ---------------------------------------------------------------- helpers
+// the lawn gone rank: darker, untextured like MAT.lawn (a textured turf shows
+// the concrete map's boards as rings on a polar grid)
+MAT.adLawn=new THREE.MeshStandardMaterial({color:0x557a34,roughness:1,metalness:0,side:DS});
+MAT.adLawnR=new THREE.MeshStandardMaterial({color:0x3a5626,roughness:1,metalness:0,side:DS});
 // A loft through closed rings of equal count [[x,y,z],...], flat-shaded, with
 // fan caps on the first and last ring (rings must be convex for the caps).
 function adLoft(acc,rings,noCaps){const P=[];const tri=(a,b,c)=>P.push(a[0],a[1],a[2],b[0],b[1],b[2],c[0],c[1],c[2]);
@@ -55,7 +59,10 @@ function buildAltAmphitheater(scene,gx,gz,d){reseed(9865+d);KOFF=[gx,0,gz];
  const slope=r=>r<14?0:r<62?(r-14)/48*RIM:r<72?RIM:r<106?RIM*Math.pow(1-(r-72)/34,1.4):0;
  const hf=(a,r)=>.4+slope(r)*wN(a);
  // THE LAWN: one polar height field round the stage
- mesh(gridSurface((u,v)=>{const a=u*TAU,r=v*106,p=PT(a,r);return[p[0],hf(a,r),p[1]];},96,44,{uS:30,vS:14}),dd?MAT.turfR:MAT.lawn,G);
+ // it runs out to the berm's foot on the north and only 46 m south of the stage,
+ // and its last ring comes down to the ground so it has no lip
+ const rMax=a=>lerp(46,106,wN(a));
+ mesh(gridSurface((u,v)=>{const a=u*TAU,r=v*rMax(a),p=PT(a,r);return[p[0],v>.97?.02:hf(a,r),p[1]];},96,44),dd?MAT.adLawnR:MAT.adLawn,G);
  const solid=[],brick=[],shell=[],dark=[];
  const hold=holeFn(dd,9865,null,1.5);
  // SEAT RIBBONS: a riser and a tread, on a wobbling radius, base on the lawn
@@ -201,7 +208,7 @@ function buildAltRadar(scene,gx,gz,d){reseed(9875+d);KOFF=[gx,0,gz];
  REGISTER({name:'The Rotor radar tower ('+AD_STATE[d]+')',x:0,z:0,r:36,h:70});
  const NT=14,TH=3.4,GP=.5,Y0=1.4,yK=k=>Y0+k*(TH+GP),YH=yK(NT),NK=brk?10:NT;
  const plus=(L,h,rot)=>[[L,-h],[L,h],[h,h],[h,L],[-h,L],[-h,h],[-L,h],[-L,-h],[-h,-h],[-h,-L],[h,-L],[h,-h]].map(p=>[p[0]*Math.cos(rot)-p[1]*Math.sin(rot),p[0]*Math.sin(rot)+p[1]*Math.cos(rot)]);
- const solid=[],block=k=>{const L=6.2+.9*Math.sin(k*.9),h=1.9+.25*Math.cos(k*1.3);return adPrism(null,plus(L,h,k*Math.PI/12),0,TH);};
+ const solid=[],block=k=>{const L=6.6+.9*Math.sin(k*.9),h=1.25+.2*Math.cos(k*1.3);return adPrism(null,plus(L,h,k*Math.PI/12),0,TH);};
  kput(dd?'boxCR':'boxC',[0,.7,0],qEuler(0,0,0),[18,1.4,18],null);
  solid.push(lathe({rFn:()=>2.3,H:brk?yK(NK)+1:YH,nu:16,nv:2}));
  for(let k=0;k<NK;k++){const g=block(k);let ry=0,dx=0,dz=0;
@@ -218,7 +225,7 @@ function buildAltRadar(scene,gx,gz,d){reseed(9875+d);KOFF=[gx,0,gz];
   kput(dd?'boxR':'boxW',[0,YH+17.4,0],qEuler(0,.6,0),[14,2.2,.7],null);kput('boxD',[0,YH+17.4,.4],qEuler(0,.6,0),[13,1.6,.2],null);
   kput('dot',[0,YH+19,0],null,[.6,.6,.6],d===0?new THREE.Color(0xff5040):DEAD);
   for(let i=0;i<16;i++){const a=i/16*TAU;kput('strip',[8.6*Math.cos(a),YH+6.4,8.6*Math.sin(a)],qEuler(0,-a+Math.PI/2,0),[3,1,1],d===0||(d===3&&i%2)?CYAN:DEAD);}}
- else{const M=new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(0,.5,1.45)).setPosition(19,8.6,14);head.forEach(g=>g.applyMatrix4(M));solid.push(...head);
+ else{const M=new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(.2,.5,2.7)).setPosition(18,9.5,13);head.forEach(g=>g.applyMatrix4(M));solid.push(...head);
   const dm=mesh(dome,skin,G);dm.position.set(-14,0,15);dm.rotation.set(.3,1,2.3);dropFragment(dm,0,1.2);
   // the fallen blocks, scattered where they landed
   for(let k=NK;k<NT;k++){const g=block(k);g.translate(0,-TH/2,0);g.applyMatrix4(new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(rr(-1.4,1.4),rng()*3,rr(-.4,.4))).setPosition(rr(-22,22),3,rr(4,24)*(k%2?1:-1)));solid.push(g);}
@@ -278,7 +285,7 @@ function buildAltDish(scene,gx,gz,d){reseed(9880+d);KOFF=[gx,0,gz];
   return out;};
  for(let i=0;i<4;i++){const a=Math.PI/4+i*Math.PI/2;
   if(brk&&i===0){solid.push(...petal(a,0,.46));const fr=petal(a,.46,1);const m=meshMerged(fr.map(g=>adUV(g)),MAT.concreteR,G);
-   m.position.set(6,0,10);m.rotation.set(1.3,.4,.2);dropFragment(m,0,.5);}
+   m.position.set(26,0,22);m.rotation.set(1.3,.4,.2);dropFragment(m,0,.5);}
   else solid.push(...petal(a,0,1));}
  // THE STEM AND THE SPHERE
  solid.push(lathe({rFn:y=>2.4+1.2*Math.pow(1-y/20,2),H:20,nu:16,nv:3}));
@@ -292,7 +299,7 @@ function buildAltDish(scene,gx,gz,d){reseed(9880+d);KOFF=[gx,0,gz];
  const DR=19,F=11,Dg=new THREE.Group();G.add(Dg);
  if(!brk){Dg.position.set(0,SY+SR-.5,0);Dg.rotation.x=.44;}
  else if(d===1){Dg.position.set(-12,0,24);Dg.rotation.set(1.25,-.5,.15);}   // on its rim against two petals
- else{Dg.position.set(4,0,20);Dg.rotation.set(.32,0,.12);}                  // bowl-up, its rim propped on the snapped petal
+ else{Dg.position.set(-6,0,34);Dg.rotation.set(.3,0,.1);}                  // bowl-up, its rim propped on the snapped petal
  const dishHole=d===1?(u,v)=>v>.35&&fbm(u*6,v*3,9882,2)<.45:d===2?(u,v)=>v>.55&&fbm(u*6,v*3,9882,2)<.4:(hold?(u,v)=>v>.5&&hold(u,v*10):null);
  mesh(gridSurface((u,v)=>{const th=u*TAU,r=v*DR;return[r*Math.cos(th),r*r/(4*F),r*Math.sin(th)];},48,10,{uS:12,vS:3,hole:dishHole}),skin,Dg);
  // the fallen dish is placed BEFORE its ribs are, so the instanced ribs follow it
@@ -304,7 +311,9 @@ function buildAltDish(scene,gx,gz,d){reseed(9880+d);KOFF=[gx,0,gz];
  useGroupXF(Dg);
  for(let k=0;k<16;k++){const th=k/16*TAU;if(brk&&k%3===0)continue;
   for(let j=0;j<4;j++){const r0=j/4*DR,r1=(j+1)/4*DR;beam(dd?'strutR':'strutW',[r0*Math.cos(th),r0*r0/(4*F)-.5,r0*Math.sin(th)],[r1*Math.cos(th),r1*r1/(4*F)-.5,r1*Math.sin(th)],.4,.6);}}
- kput(dd?'ringR':'ringW',[0,DR*DR/(4*F),0],qEuler(Math.PI/2,0,0),DR,null);
+ // the rim: a ring of straight members (a kit torus this big would be 1.7 m thick)
+ for(let k=0;k<24;k++){const a0=k/24*TAU,a1=(k+1)/24*TAU,y=DR*DR/(4*F);if(d===1&&k%5===0)continue;
+  beam(dd?'strutR':'strutW',[DR*Math.cos(a0),y,DR*Math.sin(a0)],[DR*Math.cos(a1),y,DR*Math.sin(a1)],.6,.9);}
  if(!brk){for(let k=0;k<4;k++){const th=k/4*TAU+.4;beam(dd?'strutR':'strutW',[17*Math.cos(th),17*17/(4*F),17*Math.sin(th)],[0,F,0],.35,.35);}
   kput(dd?'boxR':'boxW',[0,F+.8,0],null,[2.2,2.6,2.2],null);kput(dd?'pipeR':'pipe',[0,F-.9,0],null,[.9,1.4,.9],null);}
  endGroupXF();
