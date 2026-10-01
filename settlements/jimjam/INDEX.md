@@ -27,6 +27,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `60-jj-mat.js` | 16 |  |
 | `61-jj-helpers.js` | 24 |  |
 | `62-jj-culture.js` | 15 | JIMJAM CULTURE PACK (sockets: awning, banner, fl (1) |
+| `63-jj-zfix.js` | 7 |  |
 | `70-jj-housing.js` | 56 **big** | geometry cache and small utilities (16); masses: blocks, cornices, parapets, wall runs (25); arched wall panels and colonnades (real openings (58); windows, doors, lamps, portholes (100); domes, vaults, finials (131); stairs, oriels, kiosks, spire (142); planting spots (local points; plants are never p (200); POOR A: party-wall pair (212); POOR B: narrow house, external stair (242); POOR C: L-plan round a yard (266) |
 | `71-jj-shops.js` | 42 **big** | JIMJAM SHOPS (row 'Shops', seeds 9200-9299, pref (1) |
 | `72-jj-hospitality.js` | 30 | - (82); - (145); - (185) |
