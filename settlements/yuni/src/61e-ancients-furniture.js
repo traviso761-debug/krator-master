@@ -128,7 +128,7 @@
         oilLamp(F, 1.18, 0.78, 0.05); } } });
 
   FURN({ key:'ancient_socket_rack', name:'Instrument rack of sockets', culture:'ancient', room:'workshop',
-    w:1.45, d:0.62, h:1.95, variants:2, variantNames:['worn','stripped for parts'],
+    w:1.45, d:0.82, h:1.95, variants:2, variantNames:['worn','stripped for parts'],
     build:function(F){ var c=F.pick(TARN), stripped=(F.variant===1), s, r, k;
       for(s=-1;s<=1;s+=2){ F.box(s*0.66, 0, 0, 0.09, 1.86, 0.50, 0, c, 'metal');                /* the frame uprights */
         F.rod(s*0.66,1.86,0, s*0.66,1.92,0, 0.05, shade(c,0.05), 'metal'); }

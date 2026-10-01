@@ -19,3 +19,8 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
 - [ ] Forest: no trodden-ground tone on gate tracks; fireflies hard to see; brook bed strip only inside |x|,|z|<1200; FAST-off (shadows) build never run
 - [ ] Forest: 62-jungle hard-codes four camera positions from 80-camera to keep them clear — publish viewpoints from the layout instead
 - [ ] Night at 21:00 is too bright under the gas giant (shared with Mav's Refuge)
+
+Catalog verify pass (2026-10), not synced back here: kits/catalog recentred `br_bldg_girder_palisade` by 0.40 m and
+raised the sizes of the beast-rider hypertree plants. Girder's palisade is a ring of radius `PALISADE.R` built
+in world coordinates (30-layout), not a 16 m section with an origin, and Girder declares no plant sizes. Nothing
+here maps onto the catalog's correction. The catalog copy is the centred one.
