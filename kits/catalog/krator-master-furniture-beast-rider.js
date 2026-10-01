@@ -12,7 +12,29 @@ FURN_CULTURE('beast-rider', { name: 'Beast Riders', pack: 'beast-rider', influen
   palette: {
     boneIvory: 0xe8e0cc, boneDark: 0xc8b898, mahoganyRed: 0x6a2a1e, mahoganyDark: 0x44190f, mahoganyLight: 0x8a4030,
     clothClawGreen: 0x3f7a3a, clothClawPale: 0xe6dcc2, clothMossDark: 0x2e5a2c, flame: 0xff8a3c, ember: 0xd9762c,
-    gourdOchre: 0xb89040
+    gourdOchre: 0xb89040,
+    /* the harvested br_h_* pieces: Mav's Refuge and Girder's own palette (05-palette.js) and the
+       Beast Rider building file's literals, where no key above already matches */
+    plankHoney: 0x9a7a52, plankTan: 0x8a6c48, plankSand: 0xa8865c, plankDark: 0x7c6040,
+    timberBistre: 0x5e4630, timberCocoa: 0x6a5038, timberSmoke: 0x4e3a28, timberTawny: 0x745a3e,
+    timberBark: 0x6a5238, timberLeather: 0x7a6248, timberDoor: 0x40331f, leatherBrown: 0x5a4630,
+    wallWicker: 0xb89a6c, wallReed: 0xa88a5e, wallFlax: 0xc4a878, wallKhaki: 0x9a7e56, wallCream: 0xd0b88a,
+    wallTar: 0x6e5238, wallTarRed: 0x7a5c40,
+    thatchStraw: 0xb09a5a, thatchHay: 0xa08a4e, thatchPale: 0xc0aa68, thatchOld: 0x8e7a44, thatchDun: 0x9a8a52,
+    shingleBrown: 0x6a5a44, shingleDark: 0x5a4c3a,
+    lacquerRed: 0x8a2f2a, gilt: 0xb08432, verdigris: 0x2f6a5a, lacquerDeep: 0x7a2028,
+    ropeHemp: 0xa8966a, ropeJute: 0x98865c, ropeTwine: 0x9a8a62,
+    clothRust: 0x8a5a2a, clothForest: 0x2f5a3a, clothMustard: 0xc2a24e, clothPlum: 0x4a3a6a, clothTerracotta: 0xb8683e,
+    clothSage: 0x8a9a5a, clothMauve: 0x7a4a6a, clothBrick: 0xa85040, clothWheat: 0xb0894a,
+    silkWhite: 0xe8ecec, silkGrey: 0xd8dede,
+    cropGreen: 0x5c8a3a, cropLeaf: 0x7a9a3e, cropPale: 0x9aa848, cropDeep: 0x4e7a32,
+    fernGreen: 0x2e5a2a, fernMoss: 0x3a6a30, saplingGreen: 0x3a6a34, leafJade: 0x3a7a4c,
+    fruitOrange: 0xe0862a, fruitAmber: 0xd06a20, fruitGold: 0xf0a040, flowerViolet: 0x9a6ad8,
+    gourdGreen: 0x8a9a4a, gourdRust: 0xb07a3a, gourdPale: 0xc2a05a,
+    crateTan: 0x877558, crateDark: 0x6d5e45,
+    stoneSlate: 0x6d665c, stoneDusk: 0x5c574f, stoneAsh: 0x7b7468, stoneCoal: 0x4f4a44, stonePlinth: 0x9a9484,
+    ironDark: 0x2a2620, ironGrey: 0x6a655a, ironPot: 0x4a4038,
+    waterGreen: 0x6f8f6a, glowWarm: 0xffb347, glowCool: 0x7fd8ff
   } });
 /* END PALETTE */
 const BR_COMMON = {
