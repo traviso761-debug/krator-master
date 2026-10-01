@@ -35,7 +35,8 @@ and ticking it, not by deleting it.
       taper each side, which is what lets it sit exactly on an acute corner
       instead of overhanging both edges of it. Designed for the Screamers'
       Hexahedron and brought back here intact as a type in its own right.
-- [ ] Decay 2 shortens it but does not topple it, unlike the other towers.
+- [x] ~~Decay 2 shortens it but does not topple it, unlike the other towers.~~
+      Towers QA round 1: broken at the 8th setback, the upper storeys lie on the plain (`Toppled Flatiron`).
 
 ## The Hotel — what was overhanging what
 
@@ -63,16 +64,16 @@ and ticking it, not by deleting it.
 - [x] ~~**The court elevation was thirteen storeys of blank brick.**~~ The
       convex face has a full curtain wall and the concave one had not one
       opening. 24 windows a storey.
-- [ ] **The lens is now too small for the idea.** A sky lobby on a 165 m
+- [x] ~~**The lens is now too small for the idea.**~~ Towers QA round 1: a 105 m glazed barrel vault on the top slab. A sky lobby on a 165 m
       crescent wants a long pavilion following the arc, not a 14 m cupola; the
       top slab is only 12 m deep, which is all a 1.9 m setback per storey can
       ever leave, so a dome is the wrong form for the space available.
-- [ ] The porte-cochère canopy is 40 x 24 m on four converging legs at r=14 —
+- [x] ~~The porte-cochère canopy is 40 x 24 m~~ (towers QA round 1: laps onto the curtain wall, four front columns) on four converging legs at r=14 —
       a 20 m cantilever. Deliberate-looking, but it is the next thing on this
       type that will not stand up.
-- [ ] The two lift towers at the horns are blank cones with no openings and no
+- [x] ~~The two lift towers at the horns are blank cones~~ (towers QA round 1: fluted shafts, lift slots, windows, machine-room heads) with no openings and no
       top, and they read as cooling towers.
-- [ ] The pool deck is a bare 130 m disc and the crescent sits at the back of
+- [x] ~~The pool deck is a bare 130 m disc~~ (towers QA round 1: lagoon, loungers, lap pool, fountain, parterre) and the crescent sits at the back of
       it. It is the largest single surface in the type and carries one pool.
 
 ## Non-ground placement
@@ -108,20 +109,22 @@ and ticking it, not by deleting it.
       (bay, storey), frayed at their edges by an fbm. Counted rather than
       asserted — `window._projectFire` reports **1 111 of 2 284 cells, 49%**,
       which `verify.py` prints in its counters line.
-- [ ] **The fire does not light anything.** It is emissive cards and additive
+- [x] ~~**The fire does not light anything.**~~ Towers QA round 2: three PointLights per Project at
+      k-means centroids of its own fires (`fireLights`, 69-mat-salvage.js), visible only at night, flickering. It is emissive cards and additive
       spill; there is no point light, so the fabric around a window is lit by
       the night hemisphere and not by the fire in it. One `PointLight` per
       territory would fix it and would cost a shader recompile for the whole
       scene, which is why it was not done. Same root cause as the kit-wide
       "lit windows cannot out-shine a sunlit wall" complaint, from the other end.
-- [ ] **The fires do not flicker and never will without an animation hook.**
-      Nothing in this kit animates.
+- [x] ~~**The fires do not flicker and never will without an animation hook.**~~
+      Towers QA round 2: `TICKS`/`tick()` (10-core.js, same hunk as the lighthouse patch) drives one
+      uniform; `MAT.flame`/`MAT.ember` pulse per instance, phase from position.
 - [x] ~~Projects D and H had builder code but no rows or presets.~~ Rows at
       `j=-1150` with `ds:[0,1,2,3,4]`; presets `Project D`/`Project H`, each with
       `at night` and `close`. Fire coverage (`window._projectFire`): A 1 111 of
       2 284 cells (49%), D 430 of 727 (59%), H 376 of 560 (67%). D and H burn
       hotter than the 50% the brief asked for.
-- [ ] The Project's plinth can only come in to 110 because the 24 splayed
+- [x] ~~The Project's plinth can only come in to 110~~ Towers QA round 2: struts' feet 98 -> 80, podium 92. The Project's plinth can only come in to 110 because the 24 splayed
       struts land at r=98 (see below). It is still the loosest podium of the
       eight.
 
@@ -135,13 +138,13 @@ exactly one instance (see the Skyscraper G item).
 
 | | was | now | what sets the floor |
 |---|---|---|---|
-| A | 120 | 110 | 24 splayed struts land at r=98 |
-| B | 110 | 82 | twelve legs at r=70, columns 4.5 wide |
-| C | 115 | 96 | three hyperboloid legs at r=62, ~24 wide at the foot |
+| A | 120 | 110 -> 92 (round 2) | 24 splayed struts land at r=98 -> 80 |
+| B | 110 | 82 -> 66 | twelve legs at r=70 -> 56, columns 4.5 wide |
+| C | 115 | 96 -> 80 | three hyperboloid legs at r=62 -> 50 |
 | D | 110 | 48 | nothing but the shell: 34 at the superellipse corners |
 | E | 105 | 48 | the lens is 68 across, its edge fins add 3 |
 | F | 105 | 48 | widest tray 38.4 (registered volume 120 → 56) |
-| G | 130 | 130 | genuinely full — see below |
+| G | 130 | 130 -> 116 | stack and drum moved together (round 2) |
 | H | 110 | 56 | keep 43.5 at the corners, lowest setback ledge 45 |
 
 - [x] ~~**Skyscraper G's podium bar floated.**~~ 240 m long at z=90, so its ends
@@ -149,15 +152,17 @@ exactly one instance (see the Skyscraper G item).
       the podium's top. Both ends hung five metres clear of the apron. This is
       exactly the hardcoded per-builder podium decor that does NOT follow `R`.
       It starts at the ground now and rises through the podium.
-- [ ] **Skyscraper G cannot shrink.** Its block stack's outer stilts stand at
+- [x] ~~**Skyscraper G cannot shrink.**~~ Towers QA round 2: stack (x 70 -> 50) and drum (-70 -> -52) moved
+      toward each other, bridges 67 -> 29 m, podium 130 -> 116. Its block stack's outer stilts stand at
       (115, 30) and the block corners reach r=127.6, so `skyPlinth`'s column
       ring at `R*.93` is already grazing them at R=130. Coming in means moving
       the stack, which is the building.
-- [ ] **A, B and C are limited by their own legs, not by their podiums.** If
+- [x] ~~**A, B and C are limited by their own legs, not by their podiums.**~~ Towers QA round 2:
+      A struts 98 -> 80 (podium 110 -> 92), B legs 70 -> 56 (82 -> 66), C legs 62 -> 50 (96 -> 80). If
       the splay were allowed to come in — A's struts from 98, B's legs from 70,
       C's from 62 — those three podiums could halve like the other five did.
       That is a change to the buildings' stance and was not taken unasked.
-- [ ] `figures()` at the foot of each tower is now placed at `-PR, PR*1.28`
+- [x] `figures()` at the foot of each tower is now placed at `-PR, PR*1.28`
       rather than at a hardcoded `-100, 130`, so the crowd follows the podium.
       Nothing else in the eight builders referenced a plinth radius.
 
@@ -290,7 +295,8 @@ exceeded ceiling as `OVER`; `--strict-budget` makes it fail.
       next row, so nine row shots (skyscrapers A, B, D, E, G, H, Megastructure,
       Starport, Lab) are tighter than they were designed. They frame the
       intact, rehabilitated and ruined sites; the toppled one sits off frame.
-- [ ] The repaired pass dresses **every** type identically. A police station and
+- [ ] The repaired pass dresses **every** type identically. (Partly: the Starport has tents, and the
+      towers A, B, C, D, G, H get a hoist gantry, cable, load, winch house and scaffold cages, `skyHoist`.) A police station and
       a cathedral-scale laboratory get the same vocabulary of lean-tos and water
       butts; some types would read better with their own accretion (a factory
       wants scrap yards, a starport wants tents on the aprons).
@@ -328,7 +334,8 @@ exceeded ceiling as `OVER`; `--strict-budget` makes it fail.
       in `64-houses-def.js` sweeps a knuckled bone roll along a path and returns
       a geometry to merge (no draw call). Used on the Foundry's end-wall arches,
       the Amphitheater's vomitoria and House D's apse edge.
-- [ ] Interiors are floor slabs only — no corridor light strips, touchpad
+- [ ] Interiors are floor slabs only — DONE for civic (`civRooms`) and towers (`skyRooms`, in the
+      bays that are actually open). Interiors are floor slabs only — no corridor light strips, touchpad
       panels, conduit bundles or machinery silhouettes behind the openings.
       *Done for the civic builders (`civRooms`) and for the domestic ones whose
       shells are eaten through (`domRoom`): Laboratory storeys, Apartments A
@@ -338,7 +345,9 @@ exceeded ceiling as `OVER`; `--strict-budget` makes it fail.
       `upFaces`/`ledgePoints` sample a structure's own flat surfaces so moss
       lands only where something faces the sky and vines and water-staining come
       off real ledges. Applied to the Laboratory, Hotel and Apartments A.
-- [ ] **Glass shards in ruined window openings** — the one decay sub-item still
+- [ ] **Glass shards in ruined window openings** — DONE for the civic group (`civWin`) and the towers
+      group (`skyShardMark`/`skyShards` in 52-sky-abc.js: A-D, G, H, Hotel, Cultural, Flatiron, K).
+      Still open for the other groups. The one decay sub-item still
       outstanding. Unlike the rest it cannot be done in a shared helper: the
       windows are `kput` directly at ~15 call sites, so it needs either a
       `deadWindow()` wrapper threaded through them or shards baked into the
@@ -769,7 +778,7 @@ volumes; the beam's `rotation.y` advances frame to frame. Details in
 - [ ] This works here because a 420 m cone has 80 m of diameter to cut through.
       It does not contradict the standing rule from Arcbeam — a thin-skinned
       form still has nothing to section.
-- [ ] Only Skyscraper A was done. The other seven towers all still have an
+- [x] ~~Only Skyscraper A was done.~~ Towers QA round 1: B, C and G punched too; D and H already were. The other seven towers all still have an
       unpunched `MAT.guts` inner lathe and dark floor plates, and will all read
       the same way. It is the same two-line change in each.
 

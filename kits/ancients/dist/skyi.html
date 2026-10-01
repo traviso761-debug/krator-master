@@ -1021,6 +1021,66 @@ function skyPlinth(G,d,R){mesh(lathe({rFn:()=>R,H:5,nu:96,nv:1}),SHELL(d),G);kpu
 function skyScarHole(hole,u0,w,yN,L,seed){return(u,y)=>{if(hole&&hole(u,y))return true;if(y<yN)return false;
  let e=Math.abs(u-u0)%1;if(e>.5)e=1-e;const t=Math.pow((y-yN)/Math.max(1,L-yN),.75);
  return e<w*t*(.75+.5*fbm(y*.05,u*9,seed||5,2));};}
+// GLASS SHARDS (towers QA, round 2). The civic group's civShardAt
+// (42-offices.js) leaves a few jagged teeth of glass standing in a dead
+// opening. The towers place their dead openings at ~20 call sites, one of them
+// the shared windowsOnLathe, so instead of threading civWin through each, a
+// builder takes a MARK of the dead-window kit lists when it starts and calls
+// skyShards(mark) when it ends: every dead opening placed in between gets the
+// same position-hashed chance of shards (no rng draw, so nothing moves). The
+// items are already in world space, so KOFF and KXF are cleared round it.
+const SKY_SHARD_W={winSmD:[1.1,2,.4,1],winD:[2.2,4.2,.7,1],winBigD:[3,3.6,.7,1],ovalD:[2,2,.6,.68],paneD:[1,1,.12,1],cellD:[1,1,.5,1],skWinD:[1,1,.4,1]};
+function skyShardMark(){const m={};for(const k in SKY_SHARD_W)m[k]=KIT.items[k]?KIT.items[k].length:0;return m;}
+function skyShards(m,frac){const K0=KOFF,X0=KXF;KOFF=[0,0,0];KXF=null;frac=frac==null?.5:frac;
+ for(const k in m){const it=KIT.items[k];if(!it)continue;const W=SKY_SHARD_W[k],n=it.length;
+  for(let i=m[k];i<n;i++){const o=it[i];if(!o.q)continue;
+   const h=h3(o.p[0]*.173+.3,o.p[1]*.291+.7,o.p[2]*.117+.1);if(h>frac)continue;
+   const S=typeof o.s==='number'?[o.s,o.s,o.s]:o.s;
+   civShardAt(o.p,o.q,W[0]*S[0]*W[3],W[1]*S[1]*W[3],W[2]*S[2]/2+.04,h);}}
+ KOFF=K0;KXF=X0;}
+// INTERIORS BEHIND THE OPENINGS (towers QA, round 2). The cut sections already
+// show pale plates over dark soffits; this furnishes the storeys between them
+// the way civRooms (42-offices.js) furnishes the civic shells — ceiling
+// fittings (a few still lit, warm: later people), cabinets and machinery
+// silhouettes, radial partitions so the floor reads as rooms, conduit risers
+// — but ONLY in the bays where the shell is actually open or the bay beside
+// it, the only place anyone can see in. A tower is mostly wall, and furnishing
+// all of it would cost more triangles than the tower. civRooms puts its strip
+// .7 m under the next floor; the towers hang a soffit 1.2-1.5 m under each
+// plate, so the fitting goes under the soffit (`soff`). No rng().
+// o: {rFn(y) clear radius inside the lining, y0, y1, step, soff, hole(u,y), d, seed, rIn=.62, dens=7}
+function skyRooms(o){const rIn=o.rIn||.62,step=o.step,soff=o.soff||1.4,seed=o.seed||0,hole=o.hole,dd=o.d;if(!hole)return;
+ const litP=dd>=3?.22:.05;
+ for(let y=o.y0,f=0;y+step<o.y1;y+=step,f++){const ym=y+step*.5,R=o.rFn(ym),n=Math.max(10,Math.round(R*TAU/(o.dens||7)));
+  for(let k=0;k<n;k++){const u=(k+.5)/n;
+   if(!(hole(u,ym)||hole((u+.7/n)%1,ym)||hole((u+1-.7/n)%1,ym)))continue;
+   const th=u*TAU,c=Math.cos(th),s=Math.sin(th),hh=h3(k*1.31+seed,f*2.17,seed*.013),rm=R*(1+rIn)/2,ch=step-soff-.6;
+   if(hh<litP)kput('strip',[c*rm,y+ch,s*rm],qEuler(0,-th-Math.PI/2,0),[R*TAU/n*.5,1,1],WARM);
+   else kput('boxD',[c*rm,y+ch,s*rm],qEuler(0,-th,0),[.5,.25,R*TAU/n*.45],null);
+   if(hh<.6){const hg=Math.min(ch-.6,1.1+hh*2.4),w=1+hh*2.6,rb=R*(rIn+.05)+.5;
+    kput('boxD',[c*rb,y+.4+hg/2,s*rb],qEuler(0,-th,0),[1+hh*1.2,hg,w],null);}
+   if(k%3===0){const ra=R*(rIn+1)/2;kput(BOXC(1),[Math.cos(th-Math.PI/n)*ra,y+.4+ch/2,Math.sin(th-Math.PI/n)*ra],qEuler(0,-(th-Math.PI/n),0),[R*(1-rIn)*.9,ch,.35],null);}
+   if(hh>.85)kput('cellD',[c*R*(rIn+.01),y+1.6,s*R*(rIn+.01)],qFacing([c,0,s]),[.6,.8,1],null);
+   if(k%5===2)kput('tube',[c*R*(rIn+.03),ym,s*R*(rIn+.03)],null,[.25,step,.25],null);}}}
+// The rehabilitated towers (decay 3) are no longer dressed only by the shared
+// repairPass, which gives a 300 m tower the vocabulary of a house: lean-tos
+// and water butts. A tower that people climb wants HOISTS — a gantry jutting
+// off the top, a cable and a hanging load down to a winch house on the podium
+// — and scaffold cages lashed up the face where they are patching. One per
+// tower, on the side the row camera sees (+z). Positions only: no rng().
+function skyHoist(rFn,top,yFoot,seed){const a=Math.PI*.5+(h3(seed,1.7,2.3)-.5)*.9,c=Math.cos(a),s=Math.sin(a),rTop=rFn(top-1,a);
+ const x1=c*(rTop+16),z1=s*(rTop+16);
+ beam('strutR',[c*rTop*.6,top,s*rTop*.6],[x1,top+3,z1],1.4,1.4);beam('strutR',[c*rTop*.3,top+9,s*rTop*.3],[x1,top+3,z1],.8,.8);
+ kput('strutR',[c*rTop*.3,top+4.5,s*rTop*.3],null,[.9,9,.9],null);
+ const yb=yFoot+(top-yFoot)*(.25+.5*h3(seed,4.1,.3));
+ beam('tube',[x1,top+3,z1],[x1,yFoot+1,z1],.14,.14);
+ kput('shantyBox',[x1,yb,z1],qEuler(0,-a,0),[2.2,2.4,2.2],null);
+ const xf=c*(rTop+20),zf=s*(rTop+20);kput('shantyBox',[xf,yFoot+2,zf],qEuler(0,-a,0),[6,4,5],null);kput('shantyRoof',[xf,yFoot+4.2,zf],qEuler(.12,-a,0),[7.5,1,6.5],null);
+ // the scaffold cages: two stacks of poles and decks on the face either side of the hoist
+ for(const o of [-.22,.2]){const b=a+o,cb=Math.cos(b),sb=Math.sin(b);const y0=yFoot+(top-yFoot)*(.3+.25*h3(seed,o*7,1)),hS=18+20*h3(seed,o,5),rf=rFn(y0+hS/2,b);
+  for(const e of [-3,3]){const px=-sb*e,pz=cb*e;
+   for(const r of [0,2.4])kput('strutR',[cb*(rf+1+r)+px,y0+hS/2,sb*(rf+1+r)+pz],null,[.3,hS,.3],null);}
+  for(let yy=y0;yy<y0+hS;yy+=3.5)kput('plank',[cb*(rf+2.2),yy,sb*(rf+2.2)],qEuler(0,-b,0),[2.6,.2,6.4],null);}}
 // --- A: the Conocylinder (Soleri Babel IID) ---------------------------------------------------
 // DECAY 4 IS "PROJECT A": rehabilitated and STILL STANDING. It was written when
 // level 3 was built as a stump (the standing test was `d<2`; it is `d!==2` now,
@@ -1033,19 +1093,22 @@ function skyScarHole(hole,u0,w,yN,L,seed){return(u,y)=>{if(hole&&hole(u,y))retur
 // firelight mask is shared (fireMask, src/69-mat-salvage.js) and only the
 // window grid differs between the three.
 function buildSkyA(scene,gx,gz,d){reseed(9100+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const dd=d>0?1:0;const skin=SHELL(dd);
- const PROJ=d===4;
+ const PROJ=d===4,FLM=PROJ?fireLightMark():null,SM=skyShardMark();
  const H=420,Y0=64;const rFn=y=>{const t=clamp((y-Y0)/(H-Y0),0,1);return 40+26*Math.pow(Math.abs(t-.42)/.58,1.7)*(t<.42?1:1.15);};
- REGISTER({name:(PROJ?'Project A — Skyscraper A reoccupied whole (rehabilitated)':'Skyscraper A — the Conocylinder ('+(d===2?'toppled':STATE(d))+')'),x:0,z:0,r:130,h:H+60});
+ REGISTER({name:(PROJ?'Project A — Skyscraper A reoccupied whole (rehabilitated)':'Skyscraper A — the Conocylinder ('+(d===2?'toppled':STATE(d))+')'),x:0,z:0,r:110,h:H+60});
  // PLINTH. 120 was set by nothing: the 24 splayed struts land at r=98 and
  // skyPlinth's own column ring sits at R*.93, so 110 is the smallest circle
  // that still carries them with the columns outboard of the strut feet. The
  // apron, the column ring, the cornice ring and every moss/rubble/tree ring
  // derive from R inside the helper, so they all follow.
- const PR=110;
+ // STANCE (round 2): the struts' feet came in from 98 to 80 — steeper legs,
+ // the same tower — so the podium comes in from 110 to 92 (ring at 85.6,
+ // outboard of the 5.5 m strut feet). This was the Project's loosest podium.
+ const SF=80,PR=92;
  skyPlinth(G,dd,PR);
  mesh(lathe({rFn:y=>22-4*y/Y0,H:Y0,nu:48,nv:6,hole:holeFn(dd*.5,3,null,1.5)}),skin,G,0,5,0);
  const NS=24;for(let k=0;k<NS;k++){const th=(k+.5)/NS*TAU;const gone=dd>0&&(k===5||k===13||k===19);
-  const a=[Math.cos(th)*98,5,Math.sin(th)*98],b=[Math.cos(th)*rFn(Y0)*.96,Y0+6,Math.sin(th)*rFn(Y0)*.96];
+  const a=[Math.cos(th)*SF,5,Math.sin(th)*SF],b=[Math.cos(th)*rFn(Y0)*.96,Y0+6,Math.sin(th)*rFn(Y0)*.96];
   if(!gone)beam(dd>0?'strutR':'strutW',a,b,5.5,4);else{beam('strutR',[a[0],2.6,a[2]],[(a[0]+b[0])/2+rr(-8,8),3.2,(a[2]+b[2])/2+rr(-8,8)],5.5,4);}
   kput(dd>0?'strutR':'strutW',[b[0],b[1]-3,b[2]],qEuler(0,-th,0),[7,9,6],null);}
  kput('slab',[0,Y0+1,0],null,[rFn(Y0)*.97,3,rFn(Y0)*.97],new THREE.Color(dd>0?0x4a3f38:0xcfcac2));kput(dd>0?'ringR':'ringW',[0,Y0+3,0],qEuler(Math.PI/2,0,0),[rFn(Y0),rFn(Y0),10],null);
@@ -1070,7 +1133,8 @@ function buildSkyA(scene,gx,gz,d){reseed(9100+d);KOFF=[gx,0,gz];const G=new THRE
    for(let y=8;y<L-2;y+=8){const rp=rFn(y+y0);
     kput('slab',[0,y,0],null,[rp*.93,.7,rp*.93],new THREE.Color(0xbdb7ad));
     kput('slab',[0,y-1.5,0],null,[rp*.90,.8,rp*.90],new THREE.Color(0x191b1f));}
-   for(let k=0;k<60;k++){const th=rng()*TAU,yy=rr(10,L-10),r=rFn(yy+y0)*.86;kput('pipeR',[r*Math.cos(th),yy,r*Math.sin(th)],null,[.5,rr(8,30),.5],null);}}
+   for(let k=0;k<60;k++){const th=rng()*TAU,yy=rr(10,L-10),r=rFn(yy+y0)*.86;kput('pipeR',[r*Math.cos(th),yy,r*Math.sin(th)],null,[.5,rr(8,30),.5],null);}
+   skyRooms({rFn:y=>rFn(y+y0)*.88,y0:8,y1:L-2,step:8,soff:1.5,hole,d,seed:7});}
   // window cells — and, on Project A, the fires. 20 gangs over 32 bays and ~80
   // storeys lands at ~50% of cells; the mask and the tally are shared.
   const NB=32,NSTO=Math.ceil((L-20)/4.2);
@@ -1082,7 +1146,8 @@ function buildSkyA(scene,gx,gz,d){reseed(9100+d);KOFF=[gx,0,gz];const G=new THRE
    if(PROJ){kput('cellD',[r*Math.cos(th),y,r*Math.sin(th)],fq,[2.8,2.3,1],null);
     if(burns(k,sy))fireWindow([r*Math.cos(th),y,r*Math.sin(th)],nrm,fq,2.5,2.1);continue;}
    const lit=dx>0?rng()<.03:rng()<.85;
-   kput('cell',[r*Math.cos(th),y,r*Math.sin(th)],fq,[2.8,2.3,1],lit?WARM.clone().multiplyScalar(rr(.5,1)):(dx>0?DEAD:new THREE.Color(0x14283c)));}}
+   const wc=lit?WARM.clone().multiplyScalar(rr(.5,1)):(dx>0?null:new THREE.Color(0x14283c));   // a dead cell is cellD, dark at night too
+   kput(wc?'cell':'cellD',[r*Math.cos(th),y,r*Math.sin(th)],fq,[2.8,2.3,1],wc);}}
   // The occupied floors also burn INSIDE, so the fire shows through the holes
   // in the shell and not only in the window openings. One pit per lit storey,
   // dropped on the floor plate, at a bay that storey actually occupies.
@@ -1114,18 +1179,22 @@ function buildSkyA(scene,gx,gz,d){reseed(9100+d);KOFF=[gx,0,gz];const G=new THRE
   for(let k=0;k<7;k++){const a=rng()*TAU,r=rr(8,rFn(Y0)*.8);firePit('A',r*Math.cos(a),Y0+2.6,r*Math.sin(a),rr(2,3.6));}
   for(let k=0;k<9;k++){const a=rng()*TAU,r=rr(26,PR*.88);firePit('A',r*Math.cos(a),5.4,r*Math.sin(a),rr(1.8,3.4));}
   for(let k=0;k<5;k++){const a=rng()*TAU,r=rFn(cy)*rr(.25,.8);firePit('A',r*Math.cos(a),cy,r*Math.sin(a),rr(2,4));}}
- figures(-PR,PR*1.28,7,6);KOFF=[0,0,0];return G;}
+ if(d===3)skyHoist(y=>rFn(y),H-8,5,9100);
+ if(d>0&&!PROJ)skyShards(SM,d===3?.25:.5);
+ figures(-PR,PR*1.28,7,6);if(PROJ)fireLights(FLM,3);KOFF=[0,0,0];return G;}
 // --- B: the Scallop Stack (Goldberg lobes, widening upward) -------------------------------------
-function buildSkyB(scene,gx,gz,d){reseed(9110+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const dd=d>0?1:0;const skin=SHELL(dd);
+function buildSkyB(scene,gx,gz,d){reseed(9110+d);KOFF=[gx,0,gz];const SM=skyShardMark();const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const dd=d>0?1:0;const skin=SHELL(dd);
  const H=300,NL=12;const rFn=y=>26+10*Math.pow(clamp(y/H,0,1),1.4);const lobe=(th,y)=>rFn(y)*(1+.3*(.5+.5*Math.cos(NL*th)));
- REGISTER({name:'Skyscraper B — the Scallop Stack ('+(d===2?'toppled':STATE(d))+')',x:0,z:0,r:120,h:H+40});
+ REGISTER({name:'Skyscraper B — the Scallop Stack ('+(d===2?'toppled':STATE(d))+')',x:0,z:0,r:100,h:H+40});
  // 110 carried nothing past r=72: the twelve legs stand at 70 and their columns
  // are 4.5 wide. 82 puts skyPlinth's column ring at 76.3, just outboard of them.
- const PR=82;
+ // STANCE (round 2): the legs came in from 70 to 56 (the struts off them are
+ // steeper), so the podium is 66 with its ring at 61.4.
+ const LR=56,PR=66;
  skyPlinth(G,dd,PR);
  // core + 12 lobed legs spreading out to the plinth
  mesh(lathe({rFn:y=>16,H:30,nu:32,nv:2}),skin,G,0,5,0);
- for(let k=0;k<NL;k++){const th=k/NL*TAU;const gone=dd>0&&(k===3||k===8);const a=[Math.cos(th)*70,5,Math.sin(th)*70],b=[Math.cos(th)*rFn(30)*1.15,32,Math.sin(th)*rFn(30)*1.15];
+ for(let k=0;k<NL;k++){const th=k/NL*TAU;const gone=dd>0&&(k===3||k===8);const a=[Math.cos(th)*LR,5,Math.sin(th)*LR],b=[Math.cos(th)*rFn(30)*1.15,32,Math.sin(th)*rFn(30)*1.15];
   if(!gone){kput(dd>0?'colR':'colW',[a[0],5,a[2]],null,[4.5,27,4.5],null);beam(dd>0?'strutR':'strutW',[a[0],31,a[2]],b,5,4);}else rubbleRing(a[0],5,a[2],2,16,30,2.2);}
  const body=(P,dx,y0,y1,upper)=>{const cut=(dx>0&&!upper&&y1!=null)?y1:(dx>0&&d===1?H*.8:null);const L=(cut!=null?cut:H)-y0;let hole=holeFn(dx,17+(upper?1:0),cut!=null?L:null,1.5);if(d===1&&!upper)hole=skyScarHole(hole,.3,.08,L*.45,L,17);
   mesh(lathe({rFn:y=>rFn(y+y0),H:H-y0,cut:cut!=null?L:null,jag:cut?4:0,flutes:NL,amp:.3,sharp:1,nu:144,nv:60,hole,seed:17}),SHELL(dx),P);
@@ -1134,7 +1203,8 @@ function buildSkyB(scene,gx,gz,d){reseed(9110+d);KOFF=[gx,0,gz];const G=new THRE
   // the floors) on a grid that lines up with it, and each plate is pale with a
   // dark soffit under it instead of dark on a dark lining.
   if(dx>0){mesh(lathe({rFn:y=>rFn(y+y0)*.85,H:H-y0,cut:cut!=null?L:null,jag:cut?4:0,nu:72,nv:30,hole,seed:17}),MAT.guts,P);
-   for(let y=5;y<L-2;y+=5){const rp=rFn(y+y0);kput('slab',[0,y,0],null,[rp*.9,.5,rp*.9],new THREE.Color(0xbdb7ad));kput('slab',[0,y-1.2,0],null,[rp*.87,.6,rp*.87],new THREE.Color(0x191b1f));}}
+   for(let y=5;y<L-2;y+=5){const rp=rFn(y+y0);kput('slab',[0,y,0],null,[rp*.9,.5,rp*.9],new THREE.Color(0xbdb7ad));kput('slab',[0,y-1.2,0],null,[rp*.87,.6,rp*.87],new THREE.Color(0x191b1f));}
+   skyRooms({rFn:y=>rFn(y+y0)*.84,y0:5,y1:L-2,step:5,soff:1.2,hole,d,seed:17,dens:6});}
   const bands=[];   // one mesh for the whole stack, not two per storey
   for(let s=0;s*5<L-4;s++){const y=s*5;const bh=dx>0?(u,v)=>fbm(u*10+s,2,18+s,2)<.25*dx||(d===1&&!upper&&hole(u,y)):null;
    bands.push(gridSurface((u,v)=>{const th=u*TAU;const r=lerp(lobe(th,y+y0)*.97,lobe(th,y+y0)*1.1,v);return[r*Math.cos(th),y+3.9,r*Math.sin(th)];},144,2,{hole:bh}));
@@ -1148,30 +1218,36 @@ function buildSkyB(scene,gx,gz,d){reseed(9110+d);KOFF=[gx,0,gz];const G=new THRE
    if(dx===0){mesh(lathe({rFn:y=>rFn(H)*.72*Math.pow(clamp(1-Math.pow(y/30,2),0,1),.6),H:30,nu:48,nv:14}),MAT.glass,P,0,L+1,0);kput('finial',[0,L+38,0],null,[4,7,4],null);}}};
  const P=new THREE.Group();P.position.set(0,32,0);G.add(P);useGroupXF(P);if(d!==2)body(P,dd,32,null,false);else body(P,1,32,32+55,false);endGroupXF();
  if(d===2)toppledUpper(G,0,0,87,rFn(87)*1.3,(U,dx,y0)=>body(U,1,87,null,true),d);
+ if(d===3)skyHoist(y=>rFn(y)*1.25,H+32-6,5,9110);
+ if(d>0)skyShards(SM,d===3?.25:.5);
  figures(-PR,PR*1.28,6,6);KOFF=[0,0,0];return G;}
 // --- C: the Tripod (three hyperboloid legs fusing into one fluted shaft) ---------------------------
-function buildSkyC(scene,gx,gz,d){reseed(9120+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const dd=d>0?1:0;const skin=SHELL(dd);
+function buildSkyC(scene,gx,gz,d){reseed(9120+d);KOFF=[gx,0,gz];const SM=skyShardMark();const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const dd=d>0?1:0;const skin=SHELL(dd);
  const H=380,YM=150;REGISTER({name:'Skyscraper C — the Tripod ('+(d===2?'toppled':STATE(d))+')',x:0,z:0,r:130,h:H+30});
  // The three hyperboloid legs stand at r=62 and are ~24 wide at the foot, so
  // the outermost fabric on the podium is at ~86. 96 puts the column ring at
  // 89.3 — outboard of the legs and 19 m tighter than the old 115.
- const PR=96;
+ // STANCE (round 2): the legs' feet came in from 62 to 50 (their heads still
+ // meet the shaft at r=20, so they stand steeper), outermost fabric ~72, and
+ // the podium is 80 with its ring at 74.4.
+ const LR=50,PR=80;
  skyPlinth(G,dd,PR);
  const legR=y=>15*Math.sqrt(1+1.2*Math.pow((y-YM*.5)/(YM*.5),2));
- for(let k=0;k<3;k++){const th=k/3*TAU+Math.PI/6;const Lg=new THREE.Group();Lg.position.set(Math.cos(th)*62,5,Math.sin(th)*62);const tilt=Math.atan2(62-20,YM);Lg.rotation.set(0,-th,0);Lg.rotateZ(tilt);G.add(Lg);useGroupXF(Lg);
+ for(let k=0;k<3;k++){const th=k/3*TAU+Math.PI/6;const Lg=new THREE.Group();Lg.position.set(Math.cos(th)*LR,5,Math.sin(th)*LR);const tilt=Math.atan2(LR-20,YM);Lg.rotation.set(0,-th,0);Lg.rotateZ(tilt);G.add(Lg);useGroupXF(Lg);
   const LL=YM/Math.cos(tilt);mesh(lathe({rFn:legR,H:LL,flutes:10,amp:.1,sharp:2,nu:60,nv:30,hole:holeFn(dd*.8,27+k,null,1.5)}),skin,Lg);
   if(dd>0)mesh(lathe({rFn:y=>legR(y)*.85,H:LL,nu:24,nv:4}),MAT.guts,Lg);
   for(let y=8;y<LL-8;y+=6)for(let j=0;j<10;j++){const u=(j+.5)/10;const a=u*TAU,r=legR(y)+.1;kput(dd>0?'winSmD':'winSmI',[r*Math.cos(a),y,r*Math.sin(a)],qFacing([Math.cos(a),0,Math.sin(a)]),[1.6,2.4,1],null);}
   for(let yy=20;yy<LL-10;yy+=30)stripRing(0,yy,0,legR(yy)*.9,dd,20);endGroupXF();}
  // sky bridges between legs
- for(const yb of [60,110]){for(let k=0;k<3;k++){const t1=k/3*TAU+Math.PI/6,t2=(k+1)/3*TAU+Math.PI/6;const r=62-42*yb/YM;const gone=dd>0&&yb===60&&k===1;
+ for(const yb of [60,110]){for(let k=0;k<3;k++){const t1=k/3*TAU+Math.PI/6,t2=(k+1)/3*TAU+Math.PI/6;const r=LR-(LR-20)*yb/YM;const gone=dd>0&&yb===60&&k===1;
   const a=[Math.cos(t1)*r,yb+5,Math.sin(t1)*r],b=[Math.cos(t2)*r,yb+5,Math.sin(t2)*r];if(!gone){beam(dd>0?'strutR':'strutW',a,b,3,4);beam('tube',[a[0],a[1]+2.5,a[2]],[b[0],b[1]+2.5,b[2]],2.6,2.6);}}}
  const rFn=y=>{const t=clamp((y-YM)/(H-YM),0,1);return 34*(1-.35*t)*(1+.12*Math.sin(Math.PI*t));};
  const body=(P,dx,y0,y1,upper)=>{const cut=(dx>0&&!upper&&y1!=null)?y1:(dx>0&&d===1?H*.9:null);const L=(cut!=null?cut:H)-y0;let hole=holeFn(dx,37+(upper?1:0),cut!=null?L:null,1.2);if(d===1&&!upper)hole=skyScarHole(hole,.3,.08,L*.4,L,37);
   const o={rFn:y=>rFn(y+y0),H:H-y0,cut:cut!=null?L:null,jag:cut?8:0,flutes:15,amp:.22,sharp:3,nu:120,nv:80,hole,seed:37};mesh(lathe(o),SHELL(dx),P);
   // the cut section, as on A and B: punched lining, pale plates, dark soffits
   if(dx>0){mesh(lathe({rFn:y=>rFn(y+y0)*.88,H:H-y0,cut:o.cut,jag:o.jag,nu:60,nv:40,hole,seed:37}),MAT.guts,P);
-   for(let y=7;y<L-2;y+=7){const rp=rFn(y+y0);kput('slab',[0,y,0],null,[rp*.9,.5,rp*.9],new THREE.Color(0xbdb7ad));kput('slab',[0,y-1.4,0],null,[rp*.87,.6,rp*.87],new THREE.Color(0x191b1f));}}
+   for(let y=7;y<L-2;y+=7){const rp=rFn(y+y0);kput('slab',[0,y,0],null,[rp*.9,.5,rp*.9],new THREE.Color(0xbdb7ad));kput('slab',[0,y-1.4,0],null,[rp*.87,.6,rp*.87],new THREE.Color(0x191b1f));}
+   skyRooms({rFn:y=>rFn(y+y0)*.86,y0:7,y1:L-2,step:7,soff:1.4,hole,d,seed:37});}
   windowsOnLathe({rFn:y=>rFn(y+y0),hole,cut:o.cut},dx,6,L-14,7,15,0,0,0,false);
   const scarY=d===1&&!upper?L*.4:1e9;
   for(let yy=14;yy<Math.min(L-16,scarY);yy+=21)stripRing(0,yy,0,rFn(yy+y0)*.9,dx,24);
@@ -1181,6 +1257,8 @@ function buildSkyC(scene,gx,gz,d){reseed(9120+d);KOFF=[gx,0,gz];const G=new THRE
  kput('slab',[0,YM+4,0],null,[42,4,42],new THREE.Color(dd>0?0x4a3f38:0xcfcac2));kput(dd>0?'ringR':'ringW',[0,YM+6,0],qEuler(Math.PI/2,0,0),[42,42,10],null);
  const P=new THREE.Group();P.position.set(0,YM+6,0);G.add(P);useGroupXF(P);if(d!==2)body(P,dd,YM+6,null,false);else body(P,1,YM+6,YM+40,false);endGroupXF();
  if(d===2)toppledUpper(G,0,0,YM+40,rFn(YM+40),(U,dx,y0)=>body(U,1,YM+40,null,true),d,1,-Math.PI/6);   // between the legs
+ if(d===3)skyHoist(y=>rFn(y),H-6,YM+6,9120);
+ if(d>0)skyShards(SM,d===3?.25:.5);
  figures(-PR,PR*1.28,6,6);KOFF=[0,0,0];return G;}
 
 // ---------------------------------------------------------------- v4: concrete, brick, glass panes
@@ -1246,7 +1324,7 @@ function bodyGroup(G,y0,d,dd,build,cutY,topR,stand){const P=new THREE.Group();P.
 // fire grid is 28 bays x one storey per ribbon, and it burns the RIBBON rather
 // than individual panes. The mask itself is the shared one (fireMask).
 function buildSkyD(scene,gx,gz,d){reseed(9130+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const dd=d>0?1:0;
- const PROJ=d===4;
+ const PROJ=d===4,FLM=PROJ?fireLightMark():null,SM=skyShardMark();
  const H=340,Y0=14;REGISTER({name:(PROJ?'Project D — the Monolith reoccupied whole (rehabilitated)':'Skyscraper D — the Monolith ('+(d===2?'toppled':STATE(d))+')'),x:0,z:0,r:120,h:H+20});
  // PLINTH. Nothing at all stands on this podium except the tower: the shell at
  // its foot is rFn(14)*se(th,3.2) = 34 m at the corners of the superellipse and
@@ -1266,7 +1344,8 @@ function buildSkyD(scene,gx,gz,d){reseed(9130+d);KOFF=[gx,0,gz];const G=new THRE
    mesh(lathe({rFn:y=>rFn(y+y0)*.86,H:H-y0,cut:cut!=null?L:null,jag:6,nu:64,nv:Math.max(8,Math.round(L/6)),hole,seed:47}),MAT.guts,P);
    for(let y=6;y<L-2;y+=6){const rp=rFn(y+y0);
     kput('slab',[0,y,0],null,[rp*.9,.6,rp*.9],new THREE.Color(0xbdb7ad));
-    kput('slab',[0,y-1.3,0],null,[rp*.87,.7,rp*.87],new THREE.Color(0x191b1f));}}
+    kput('slab',[0,y-1.3,0],null,[rp*.87,.7,rp*.87],new THREE.Color(0x191b1f));}
+   skyRooms({rFn:y=>rFn(y+y0)*.84,y0:6,y1:L-2,step:6,soff:1.3,hole,d,seed:47});}   // interiors behind the openings (52-sky-abc.js)
   const NB=28,burns=PROJ?fireMask('D',NB,Math.ceil(L/12),9134,9):null;
   const dRib=[];   // the ruined ribbons merge; the intact ones are glass, which does not
   for(let y=12-((y0)%12);y<L-4;y+=12){const yy=y+y0;const r0=rFn(yy)*.95; // glass ribbon in each recess
@@ -1298,7 +1377,9 @@ function buildSkyD(scene,gx,gz,d){reseed(9130+d);KOFF=[gx,0,gz];const G=new THRE
  if(PROJ){const hy=Y0+(H-Y0)+2.6;
   for(let k=0;k<6;k++){const a=rng()*TAU,r=rFn(H)*rr(.25,1.5);firePit('D',r*Math.cos(a),hy,r*Math.sin(a),rr(1.8,3.4));}
   for(let k=0;k<8;k++){const a=rng()*TAU,r=rr(34,PR*.9);firePit('D',r*Math.cos(a),5.4,r*Math.sin(a),rr(1.6,3));}}
- figures(-PR,PR*1.28,6,6);KOFF=[0,0,0];return G;}
+ if(d===3)skyHoist((y,a)=>rFn(y)*se(a,3.2),H-4,5,9130);
+ if(d>0&&!PROJ)skyShards(SM,d===3?.25:.5);
+ figures(-PR,PR*1.28,6,6);if(PROJ)fireLights(FLM,3);KOFF=[0,0,0];return G;}
 
 // ================================================================= SKYSCRAPER E — "the Sail" (shaped glass lens, diagrid, twisting)
 // NON-GROUND PLACEMENT. gy lifts the whole tower, noPlinth drops the ground
@@ -2601,7 +2682,7 @@ function officeC(G,d){const cx=330;REGISTER({name:'Office C — the Comb ('+STAT
 // storeys lie on the plain on one broad side face, tipped by their own taper so
 // the break end and the crown both bear on the ground. Levels 0, 1 and 3 draw
 // the PRNG in exactly the order they always did.
-function buildFlatiron(scene,gx,gz,d){reseed(9465+d);KOFF=[gx,0,gz];
+function buildFlatiron(scene,gx,gz,d){reseed(9465+d);KOFF=[gx,0,gz];const SM=skyShardMark();
  const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);
  const dd=d>0?1:0,skin=SHELL(d);
  const L=168,W=L*.536,H=250,NF=18,RF=H/NF,TOPS=.34,ch=.10,KC=d===2?8:NF;
@@ -2708,6 +2789,7 @@ function buildFlatiron(scene,gx,gz,d){reseed(9465+d);KOFF=[gx,0,gz];
   stainsFromLedge(SH,0,0,0,90,18);rubbleRing(0,0,0,big*.58,big*1.0,90,3.4);
   trees(0,0,big*.7,big*1.3,16);}
  else figures(0,big*.72,10,44);
+ if(d>0)skyShards(SM,d===3?.25:.5);   // glass teeth in the dead openings (52-sky-abc.js)
  KOFF=[0,0,0];return G;}
 // ================================================================= CULTURAL CENTRE — "the Wheel"
 // Lifted out of Veladiga, where it sat in the park below the dam and read as a
@@ -2715,7 +2797,7 @@ function buildFlatiron(scene,gx,gz,d){reseed(9465+d);KOFF=[gx,0,gz];
 // it can be what the sheet actually draws: a radial city — three concentric
 // rings of halls on a stepped platform, radial spokes running out from a domed
 // core, and a colonnaded plaza between them.
-function buildCultural(scene,gx,gz,d){reseed(9390+d);KOFF=[gx,0,gz];
+function buildCultural(scene,gx,gz,d){reseed(9390+d);KOFF=[gx,0,gz];const SM=skyShardMark();
  const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const skin=SHELL(d);
  REGISTER({name:'Cultural centre — the Wheel ('+STATE(d)+')',x:0,z:0,r:250,h:96});
  REGISTER({name:'Cultural centre — the great hall',x:0,z:0,r:78,h:96});
@@ -2772,6 +2854,16 @@ function buildCultural(scene,gx,gz,d){reseed(9390+d);KOFF=[gx,0,gz];
    for(let row=0,nr=tall?3:2;row<nr;row++)for(let j=0;j<6;j++){const t2=(j+.5)/6*TAU,yw=py+hh*((row+.55)/nr);
     kput(d>0?'paneD':'darkPane',[bxp+bwk*1.015*Math.cos(t2),yw,bzp+bwk*1.015*Math.sin(t2)],
      qFacing([Math.cos(t2),0,Math.sin(t2)]),[bwk*.24,hh/nr*.62,1],null);}
+   // MOULDINGS (round 2): a cornice where the drum meets its cap and a string
+   // course between the window tiers. A broken drum keeps only the courses
+   // under its break. The torus is the kit's ring, flattened into a band.
+   // A flat band (a lathed annulus with an outer face, 18 sides, 108
+   // triangles: the kit's torus ring was 480 and doubled the type). The flute
+   // crests stand at 1.22 of the radius, so the outer face is at 1.26 and the
+   // top annulus runs back inside the crests to close the gap.
+   const ringN=civDef(d>0?'cultBandR':'cultBandW',()=>new THREE.LatheGeometry([new THREE.Vector2(.92,.5),new THREE.Vector2(1,.5),new THREE.Vector2(1,-.5),new THREE.Vector2(.92,-.5)],18),d>0?MAT.rust:MAT.white);
+   if(!brk)kput(ringN,[bxp,py+hh-.5,bzp],null,[bwk*1.27,1,bwk*1.27],null);
+   for(let row=1,nr=tall?3:2;row<nr;row++)kput(ringN,[bxp,py+hh*(row+.05)/nr,bzp],null,[bwk*1.26,.6,bwk*1.26],null);
    if(d===0)kput('strip',[bxp,py+hh-2,bzp+bwk*1.03],qFacing([0,0,1]),[bwk*1.2,1,1],CYAN);
    // the spoke running back to the core
    beam(BOXC(d),[bxp*.42,py+2,bzp*.42],[bxp*.9,py+2,bzp*.9],6,3.4);}});
@@ -2785,6 +2877,7 @@ function buildCultural(scene,gx,gz,d){reseed(9390+d);KOFF=[gx,0,gz];
  meshMerged(SH,skin,G);meshMerged(DK,MAT.guts,G);
  if(d>0){mossOnSurface(SH,0,0,0,150,2.4);vinesFromLedge(SH,0,0,0,60,16);stainsFromLedge(SH,0,0,0,50,12);
   scatterMoss(0,0,0,60,300,120,2.6);rubbleRing(0,0,0,240,330,80,2.6);trees(0,0,270,380,22);}
+ if(d>0)skyShards(SM,d===3?.25:.5);   // glass teeth in the dead slots (52-sky-abc.js)
  figures(0,170,8,40);figures(120,-120,5,30);
  KOFF=[0,0,0];return G;}
 // ================================================================= HEXAHEDRON — the double pyramid
@@ -3396,6 +3489,48 @@ function firePit(key,x,y,z,s){
   new THREE.Color().setHSL(rr(.03,.065),1,.50));
  kput('emberB',[x,y+s*1.5,z],qEuler(0,rng()*TAU,0),[s*2.8,s*2.3,s*2.8],
   new THREE.Color().setHSL(rr(.04,.09),1,.19));}
+// FLICKER (towers QA, round 2). The frame hook `tick` (10-core.js) drives one
+// shared time uniform; each fire instance takes its own phase from its own
+// position (instanceMatrix), so no two windows pulse together and nothing is
+// rebuilt. kbake re-attaches onBeforeCompile to its material clones, and the
+// uniform object is shared, so one write per frame reaches every clone.
+const FIRE_T={value:0};
+function fireFlickerOBC(sh){sh.uniforms.uFT=FIRE_T;
+ sh.vertexShader='uniform float uFT;\nvarying float vFl;\n'+sh.vertexShader.replace('#include <begin_vertex>',
+  '#include <begin_vertex>\n#ifdef USE_INSTANCING\n vec3 fP=instanceMatrix[3].xyz;\n#else\n vec3 fP=vec3(0.);\n#endif\n'+
+  ' float fPh=dot(fP,vec3(.131,.217,.173));\n vFl=.80+.13*sin(uFT*6.3+fPh)+.07*sin(uFT*15.7+fPh*2.3);');
+ sh.fragmentShader='varying float vFl;\n'+sh.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\n diffuseColor.rgb*=vFl;');}
+MAT.flame.onBeforeCompile=fireFlickerOBC;MAT.ember.onBeforeCompile=fireFlickerOBC;
+// FIRELIGHT THAT LIGHTS SOMETHING. One PointLight per territory was the
+// reason this was never done: every lit material recompiles per light. So a
+// Project gets a FEW lights (n, 3 by default), at the centroids of clusters
+// of its own fires — its burning windows and pits, taken from the kit items it
+// placed since `fireLightMark()` — set a few metres off the facade. They are
+// invisible by day, so day views pay nothing; at night the first switch
+// compiles one extra program variant per material and every later switch
+// reuses it. They flicker with the cards. No rng(): the clustering is
+// deterministic and nothing in any builder's stream moves.
+const FIRELIGHTS=[];
+function fireLightMark(){return[KIT.items.fireWin.length,KIT.items.emberB.length,KOFF.slice()];}
+function fireLights(M,n){n=n||3;const P=[];
+ for(let i=M[0];i<KIT.items.fireWin.length;i++)P.push(KIT.items.fireWin[i].p);
+ for(let i=M[1];i<KIT.items.emberB.length;i+=2)P.push(KIT.items.emberB[i].p);
+ if(P.length<n)return;
+ // farthest-point seeds, then a few Lloyd steps
+ const C=[P[0].slice()];while(C.length<n){let bi=0,bd=-1;for(let i=0;i<P.length;i++){let m=1e18;for(const c of C)m=Math.min(m,(P[i][0]-c[0])**2+(P[i][1]-c[1])**2+(P[i][2]-c[2])**2);if(m>bd){bd=m;bi=i;}}C.push(P[bi].slice());}
+ for(let it=0;it<6;it++){const S=C.map(()=>[0,0,0,0]);
+  for(const p of P){let bi=0,bd=1e18;C.forEach((c,j)=>{const m=(p[0]-c[0])**2+(p[1]-c[1])**2+(p[2]-c[2])**2;if(m<bd){bd=m;bi=j;}});S[bi][0]+=p[0];S[bi][1]+=p[1];S[bi][2]+=p[2];S[bi][3]++;}
+  S.forEach((s,j)=>{if(s[3])C[j]=[s[0]/s[3],s[1]/s[3],s[2]/s[3]];});}
+ // A cluster's centroid lies INSIDE a round tower (its windows wrap the
+ // shell), so each light goes out along the cluster's mean bearing to the
+ // cluster's mean radius, then 16 m beyond it: outside the skin it lights.
+ const O=M[2],RR=C.map(()=>[0,0]);
+ for(const p of P){let bi=0,bd=1e18;C.forEach((c,j)=>{const m=(p[0]-c[0])**2+(p[1]-c[1])**2+(p[2]-c[2])**2;if(m<bd){bd=m;bi=j;}});RR[bi][0]+=Math.hypot(p[0]-O[0],p[2]-O[2]);RR[bi][1]++;}
+ C.forEach((c,j)=>{const dx=c[0]-O[0],dz=c[2]-O[2],l=Math.hypot(dx,dz)||1,rm=(RR[j][1]?RR[j][0]/RR[j][1]:l)+16;
+  const L=new THREE.PointLight(0xff7a32,0,190,2);L.position.set(O[0]+dx/l*rm,c[1]+4,O[2]+dz/l*rm);L.visible=false;scene.add(L);
+  FIRELIGHTS.push({l:L,ph:j*1.9+c[0]*.01});});}
+tick((dt,t)=>{FIRE_T.value=t%1000;const on=!!NIGHT;
+ for(const F of FIRELIGHTS){F.l.visible=on;if(on)F.l.intensity=1.7*(.84+.10*Math.sin(t*5.1+F.ph)+.06*Math.sin(t*13.3+F.ph*1.7));}});
 
 // THE REPAIRED PASS.
 //
@@ -3730,14 +3865,19 @@ function buildHypertree(scene,gx,gz,d){reseed(9450+d);KOFF=[gx,0,gz];
  figures(RB*2.2,0,6,40);
  KOFF=[0,0,0];return G;}
 // ================================================================= SKYSCRAPER G — "the Ward" (SUNY: concrete block stack + dark glass drum)
-function buildSkyG(scene,gx,gz,d){reseed(9160+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const dd=d>0?1:0;
+function buildSkyG(scene,gx,gz,d){reseed(9160+d);KOFF=[gx,0,gz];const SM=skyShardMark();const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const dd=d>0?1:0;
  const H=210,Y0=6;REGISTER({name:'Skyscraper G — the Ward ('+(d===2?'toppled':STATE(d))+')',x:0,z:0,r:150,h:H+30});
  // PLINTH. This is the ONE skyscraper whose podium is genuinely full: the block
  // stack's outer stilts stand at (115, 30) and the block corners reach r=127.6,
  // so skyPlinth's column ring at R*.93 is already grazing them at R=130. It
  // cannot come in without moving the stack, which is the building. Left alone,
  // deliberately — see the plinth note in KNOWN_ISSUES.
- const PR=130;
+ // ROUND 2: it can, by moving the stack and the drum toward each other rather
+ // than shrinking either: the stack's centre from x=70 to 50 and the drum's
+ // from -70 to -52 (the bridges between them shorten from 67 to 29 m). The
+ // outer stilts are then at r=99.6 and the block corners at 104.2, so the
+ // podium comes in from 130 to 116 with its column ring at 107.9.
+ const PR=116;
  skyPlinth(G,dd,PR);
  // podium: long low concrete bar with a glass ribbon.
  // IT USED TO FLOAT. The bar is 240 long at z=90, so its ends are at r=150 —
@@ -3753,16 +3893,17 @@ function buildSkyG(scene,gx,gz,d){reseed(9160+d);KOFF=[gx,0,gz];const G=new THRE
   const drum=lathe({rFn:()=>R,H:L,nu:64,nv:Math.round(L/4),hole:hole,seed:77});mesh(drum,dx>0?MAT.guts:MAT.darkGlass,P);
   // pale plates with a dark soffit under each, so the torn drum reads as a
   // building sliced open and not as one dark field (the Skyscraper A lesson)
-  if(dx>0){for(let y=4;y<L-2;y+=4){kput('slab',[0,y,0],null,[R*.95,.4,R*.95],new THREE.Color(0xbdb7ad));kput('slab',[0,y-1,0],null,[R*.92,.5,R*.92],new THREE.Color(0x191b1f));}mesh(lathe({rFn:()=>R*.6,H:L,nu:24,nv:2}),MAT.guts,P);}
-  for(let y=6;y<L-4;y+=8)for(let k=0;k<18;k++){const th=(k+.5)/18*TAU;if(hole&&hole(th/TAU,y))continue;if(rng()<.55)continue;const lit=dx>0?rng()<.04:true;kput('cell',[R*1.01*Math.cos(th),y,R*1.01*Math.sin(th)],qFacing([Math.cos(th),0,Math.sin(th)]),[3,2.2,.5],lit?WARM.clone().multiplyScalar(rr(.4,.9)):DEAD);}
+  if(dx>0){for(let y=4;y<L-2;y+=4){kput('slab',[0,y,0],null,[R*.95,.4,R*.95],new THREE.Color(0xbdb7ad));kput('slab',[0,y-1,0],null,[R*.92,.5,R*.92],new THREE.Color(0x191b1f));}mesh(lathe({rFn:()=>R*.6,H:L,nu:24,nv:2}),MAT.guts,P);
+   skyRooms({rFn:()=>R*.94,y0:4,y1:L-2,step:4,soff:1,hole,d,seed:77,rIn:.66,dens:6});}   // interiors behind the openings (52-sky-abc.js)
+  for(let y=6;y<L-4;y+=8)for(let k=0;k<18;k++){const th=(k+.5)/18*TAU;if(hole&&hole(th/TAU,y))continue;if(rng()<.55)continue;const lit=dx>0?rng()<.04:true;const wc=lit?WARM.clone().multiplyScalar(rr(.4,.9)):null;kput(wc?'cell':'cellD',[R*1.01*Math.cos(th),y,R*1.01*Math.sin(th)],qFacing([Math.cos(th),0,Math.sin(th)]),[3,2.2,.5],wc);}
   for(let y=0;y<L;y+=4)kput(dx>0?'ringR':'ringW',[0,y,0],qEuler(Math.PI/2,0,0),[R+.2,R+.2,1.5],null);
   if(cut==null){mesh(lathe({rFn:()=>R+1.5,H:8,nu:64,nv:1}),CONC(dx),P,0,L,0);kput(SLABC(dx),[0,L+8,0],null,[R+1.6,.8,R+1.6],null);kput(BOXC(dx),[0,L+11,0],null,[10,6,10],null);}};
- const CX=-70;const D=new THREE.Group();D.position.set(CX,Y0,0);G.add(D);useGroupXF(D);if(d!==2)build(D,dd,Y0,null,false);else build(D,1,Y0,Y0+60,false);endGroupXF();
+ const CX=-52;const D=new THREE.Group();D.position.set(CX,Y0,0);G.add(D);useGroupXF(D);if(d!==2)build(D,dd,Y0,null,false);else build(D,1,Y0,Y0+60,false);endGroupXF();
  // The drum falls WEST, away from its own block stack. Toppling it east dropped
  // 200 m of tower straight through the stack it is meant to stand beside.
  if(d===2)toppledUpper(G,CX,0,Y0+60,R,(U)=>build(U,1,Y0+60,null,true),d,-1);
  // block stack: 2×2 concrete blocks in two tiers on stilts, porthole strips, service cores between
- const BX=70,BW=42,BH=34,gap=10;const tiers=[[26,0],[26+BH+gap,1]];
+ const BX=50,BW=42,BH=34,gap=10;const tiers=[[26,0],[26+BH+gap,1]];
  // Which blocks have come down. One gone out of eight read as barely touched;
  // the stack now loses most of its top tier, and a lower corner as well once
  // the tower itself has fallen. A lower block never goes without the one above
@@ -3787,6 +3928,8 @@ function buildSkyG(scene,gx,gz,d){reseed(9160+d);KOFF=[gx,0,gz];const G=new THRE
    for(let x=CX+R+4;x<BX-BW-gap/2;x+=5)kput(dd>0?'mullR':'mullW',[x,y1+1.5,bz+3.2],null,[.4,4,.4],null);}});
  kput('archOpen',[CX+R-1,Y0+5,0],qFacing([1,0,0]),[.7,.7,1],null);
  if(dd>0){vinesOnRing(CX,Y0+40,0,R,20,20);}
+ if(d===3){useGroupXF(D);skyHoist(()=>R,H-Y0-2,5-Y0,9160);endGroupXF();}   // about the drum's own axis
+ if(d>0)skyShards(SM,d===3?.25:.5);
  figures(-PR,PR*1.28,6,6);   // follows the podium, like the other seven (was a hardcoded -100,140)
 KOFF=[0,0,0];return G;}
 
@@ -3854,7 +3997,7 @@ function buildPerch(scene,gx,gz,d){reseed(9460+d);KOFF=[gx,0,gz];
 // The mask is the shared one (fireMask). Its setback ledges are the best
 // "exposed decks" in the kit: four real terraces up the height of the keep.
 function buildSkyH(scene,gx,gz,d){reseed(9170+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const dd=d>0?1:0;
- const PROJ=d===4;
+ const PROJ=d===4,FLM=PROJ?fireLightMark():null,SM=skyShardMark();
  const H=330,Y0=8;REGISTER({name:(PROJ?'Project H — the Warden reoccupied whole (rehabilitated)':'Skyscraper H — the Warden ('+(d===2?'toppled':STATE(d))+')'),x:0,z:0,r:120,h:H+30});
  // PLINTH. The keep is half(0)*se(th,7) = 43.5 at its corners and the lowest
  // setback ledge reaches 45. Nothing else stands on the podium. 56 puts
@@ -3872,7 +4015,8 @@ function buildSkyH(scene,gx,gz,d){reseed(9170+d);KOFF=[gx,0,gz];const G=new THRE
    mesh(gridSurface((u,v)=>{const th=u*TAU,y=v*L;const r=half(y+y0)*.86*se(th,7);return[r*Math.cos(th),y,r*Math.sin(th)];},64,Math.max(8,Math.round(L/6)),{hole:hole?(u,v)=>hole(u,v*L):null}),MAT.guts,P);
    for(let y=6;y<L-2;y+=6){const hp=half(y+y0);
     kput('slab',[0,y,0],null,[hp*.9,.6,hp*.9],new THREE.Color(0xbdb7ad));
-    kput('slab',[0,y-1.3,0],null,[hp*.87,.7,hp*.87],new THREE.Color(0x191b1f));}}
+    kput('slab',[0,y-1.3,0],null,[hp*.87,.7,hp*.87],new THREE.Color(0x191b1f));}
+   skyRooms({rFn:y=>half(y+y0)*.84,y0:6,y1:L-2,step:6,soff:1.3,hole,d,seed:87});}   // interiors behind the openings (52-sky-abc.js)
   // setback ledges + corner turrets, slit windows sparse
   for(let s=1;s<5;s++){const ys=H*s/5-y0;if(ys<2||ys>L-2)continue;const h1=half(H*s/5-.1),h2=half(H*s/5+.1);kput(BOXC(dx),[0,ys,0],null,[h1*2+2,1.6,h1*2+2],null);
    for(const cx of [-1,1])for(const cz of [-1,1])kput(BOXC(dx),[cx*(h1-3),ys+4,cz*(h1-3)],null,[6,8,6],null);
@@ -3896,7 +4040,9 @@ function buildSkyH(scene,gx,gz,d){reseed(9170+d);KOFF=[gx,0,gz];const G=new THRE
  if(PROJ){const ht=half(H);
   for(let k=0;k<4;k++)firePit('H',rr(-ht,ht),Y0+(H-Y0)+2.4,rr(-ht,ht),rr(1.6,2.8));   // the crown slab
   for(let k=0;k<8;k++){const a=rng()*TAU,r=rr(40,PR*.9);firePit('H',r*Math.cos(a),5.4,r*Math.sin(a),rr(1.6,3));}}
- figures(-PR,PR*1.28,6,6);KOFF=[0,0,0];return G;}
+ if(d===3)skyHoist((y,a)=>half(y)*se(a,7),H-2,5,9170);
+ if(d>0&&!PROJ)skyShards(SM,d===3?.25:.5);
+ figures(-PR,PR*1.28,6,6);if(PROJ)fireLights(FLM,3);KOFF=[0,0,0];return G;}
 
 // ================================================================= FOREST TOWER — "the Canopy"
 // Named the Forest TOWER since the Forest Ring joined the kit: that one is a
@@ -6572,7 +6718,7 @@ BIO.init({THREE:THREE,terrainH:terrainH,
  stat:(k,tris,inst)=>{const t=TSTAT.by['biome/0']||(TSTAT.by['biome/0']={tris:0,inst:0,meshes:0});
   t.tris+=tris;t.inst+=inst;}});
 // ================================================================= HOTEL — "the Terraces"
-function buildHotel(scene,gx,gz,d){reseed(9250+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);
+function buildHotel(scene,gx,gz,d){reseed(9250+d);KOFF=[gx,0,gz];const SM=skyShardMark();const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);
  REGISTER({name:'Hotel — the Terraces ('+STATE(d)+')',x:0,z:0,r:110,h:80});
  const NS=14,SH=4.2,R=90,a0=-.9,a1=.9;const depth=f=>34-f*1.9;   // crescent, each storey shallower (terraces step back uphill)
  // WHAT WAS OVERHANGING WHAT — three separate radii that were never derived
@@ -6621,7 +6767,12 @@ function buildHotel(scene,gx,gz,d){reseed(9250+d);KOFF=[gx,0,gz];const G=new THR
    // The court elevation was thirteen storeys of blank brick — the convex face
    // has a full curtain wall and the concave one had not one opening.
    for(let k=0;k<24;k++){const a=lerp(a0,a1,(k+.5)/24);if(lost((k+.5)/24))continue;
-    kput(d>0?'winSmD':'winSmI',[Math.sin(a)*(WR-.35),y+2.1,Math.cos(a)*(WR-.35)-R*.7],qFacing([-Math.sin(a),0,-Math.cos(a)]),[1.5,1.5,1],null);}
+    kput(d>0?'winSmD':'winSmI',[Math.sin(a)*(WR-.35),y+2.1,Math.cos(a)*(WR-.35)-R*.7],qFacing([-Math.sin(a),0,-Math.cos(a)]),[1.5,1.5,1],null);
+    // MOULDINGS (round 2): a projecting sill under each court window and a
+    // hood over it, so the brick elevation has a shadow line per opening
+    const wq=qEuler(0,a,0),ws=WR-.38;
+    kput(BOXC(d),[Math.sin(a)*ws,y+.45,Math.cos(a)*ws-R*.7],wq,[2.4,.22,.75],null);
+    kput(BOXC(d),[Math.sin(a)*ws,y+3.75,Math.cos(a)*ws-R*.7],wq,[2.6,.3,.85],null);}
    // terrace: a parapet on the inner edge of the slab, planters standing on it
    if(f>0){const pr=deckR(f)+.35,pl=pr*(a1-a0)/24*.94;
     for(let k=0;k<24;k++){const a=lerp(a0,a1,(k+.5)/24);if(lost((k+.5)/24))continue;
@@ -6731,6 +6882,7 @@ function buildHotel(scene,gx,gz,d){reseed(9250+d);KOFF=[gx,0,gz];const G=new THR
   for(let k=0;k<9;k++){const a=lerp(a0,a1,rr(.74,.99)),r=rr(R-30,R+8);
    kput(SLABC(d),[Math.sin(a)*r,rr(1,6),Math.cos(a)*r-R*.7],qEuler(rr(-.6,.6),rng()*TAU,rr(-.6,.6)),[rr(4,9),.7,rr(3,7)],null);}}
  if(d>0){scatterMoss(0,.6,0,20,120,80,2.4);rubbleRing(0,.6,R*.3-R*.7,10,70,40,2.5);trees(0,0,110,160,12);}
+ if(d>0)skyShards(SM,d===3?.25:.5);   // glass teeth in the dead openings (52-sky-abc.js)
  figures(0,60,6,12);KOFF=[0,0,0];return G;}
 
 // ================================================================= HYPERJUNGLE — species (data + kit items)
@@ -21714,7 +21866,10 @@ MAT.sjPave=new THREE.MeshStandardMaterial({map:TEX.concrete,roughnessMap:TEX.con
 MAT.sjCore=new THREE.MeshStandardMaterial({map:TEX.concrete,roughnessMap:TEX.concreteRM,color:0x3c3733,roughness:1,metalness:0,side:DS});
 // the warm line under each terrace lip: stone by day, lit at night (NIGHT is
 // read at render time, so nothing is rebuilt when the view flips)
-MAT.sjGlow=new THREE.MeshStandardMaterial({color:0xe9d8b8,emissive:0xff9440,emissiveIntensity:0,roughness:.8,metalness:0,side:DS});
+// (round 2: the emissive was 0xff9440 at .6, which is linear here, so after
+// ACES and the sRGB encode its green and blue lifted it to a pale cream; a
+// redder emissive with less green lands on amber)
+MAT.sjGlow=new THREE.MeshStandardMaterial({color:0xe9d8b8,emissive:0xff5212,emissiveIntensity:0,roughness:.8,metalness:0,side:DS});
 MAT.sjPaveR=new THREE.MeshStandardMaterial({map:TEX.concrete,roughnessMap:TEX.concreteRM,color:0x8c7c66,roughness:1,metalness:0,side:DS});
 
 // gridSurface with a UV function, which is also handed the point it maps
@@ -21751,7 +21906,7 @@ function sjPlate(y,reF,riF,prof,nu,hole,wv){const nv=prof.length-1;
   nu,nv,(u,v,p)=>[u*Math.max(4,Math.round(TAU*reF(0)/10)),(Math.hypot(p[0],p[2])+p[1]-y)/8],hole);}
 // What the presets need: filled per decay by the builder.
 const SJ_SITE={};
-function sjGlowOn(m){if(m)m.onBeforeRender=()=>{MAT.sjGlow.emissiveIntensity=NIGHT?.6:0;};}
+function sjGlowOn(m){if(m)m.onBeforeRender=()=>{MAT.sjGlow.emissiveIntensity=NIGHT?.85:0;};}
 
 function buildSkyJ(scene,gx,gz,d){reseed(9770+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const dd=d>0?1:0;
  const HO=dd*HOLES;                                  // 1 ruined/toppled, .55 rehabilitated
@@ -22003,7 +22158,7 @@ FIREKIT.push('skLit','skGlow');
 // Presets are derived from this: targets/skyk/91z-views.js runs after the builders.
 const SK_SITE={};
 
-function buildSkyK(scene,gx,gz,d){reseed(9780+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const dd=d>0?1:0;
+function buildSkyK(scene,gx,gz,d){reseed(9780+d);KOFF=[gx,0,gz];const SM=skyShardMark();const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const dd=d>0?1:0;
  // ============================================================ THE NUMBERS
  const H=405,PH=2.5,ZB=-14,TX=22,PR=112,E0=.1;
  const CUT=150,HC1=372;                        // toppled cut; ruined snaps the prow off here
@@ -22330,6 +22485,7 @@ function buildSkyK(scene,gx,gz,d){reseed(9780+d);KOFF=[gx,0,gz];const G=new THRE
    kput('boxD',L(0,PH+1.3,dp/2+.08),qR,[1.7,2.6,.3],null);}}
  if(dd===0){people(LX,52,12,14,PH);people(40,30,5,10,PH);}
  else if(d!==2){vinesOnRing(0,PH,0,PR,40,8);}
+ if(dd>0)skyShards(SM,d===3?.25:.5);   // glass teeth in the dead openings (52-sky-abc.js)
  KOFF=[0,0,0];return G;}
 
 // THE CAMPANILE, built up its local +y from its foot at 0. `from`/`to` are
