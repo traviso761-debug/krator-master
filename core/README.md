@@ -96,7 +96,14 @@ builds a sheet of the same wall in every pack. Read `sockets/README.md`. **Used 
 ## Planned: a material registry
 
 This comes later, with the furniture kit and the Blender export. The plan is not
-to merge the three systems into one implementation. Instead:
+to merge the three systems into one implementation. **The seed of steps 1 and 2 exists** in
+`kits/catalog/krator-asset-engine.js`: `CATALOG_MATERIALS` is the canonical list (timber, stone,
+plaster, metal, rustSteel, glass, cloth, rope, thatch, foliage, skin, emissive, and since the
+interiors furniture pass bamboo, reed, hyperMahogany, nacre, gold, bronze, lacquer, ceramic,
+obsidian, jade, bone, hide, wicker, plastic), each with tags and the catalog family strings it
+covers; `CORE_MATERIAL_MAP` says which `MAT.*` here and which `FAMMAT` family each name lands on.
+Every catalog furniture piece declares its canonical names and `kits/catalog/verify.py` checks
+them against what it builds. Instead:
 
 1. **One list of canonical material names** (`slate`, `glazedTile`, `rustSteel`,
    `timber`, `cloth`…), each with tags (stone, metal, wood, fabric, glass,

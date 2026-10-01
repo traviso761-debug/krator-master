@@ -6,7 +6,8 @@ loads the engine, the Voth buildings and the inspector by path), so they are
 NOT moved into src/. src/ holds only the page around them:
 
   src/00-head.html          page head, toolbar, error panel, three.js r128 loader
-  <registries, in order>    SOURCES below (top-level .js files of this folder)
+  <registries, in order>    SOURCES below (top-level .js files of this folder; a pattern
+                            expands in filename order, so one file per culture just drops in)
   src/80-sky-hash.js        h3(), which KratorSky reads
   src/81-sky.js             KratorSky, VENDORED from settlements/iziz/src
   src/90-sheet.js           lays out every entry and variant in labelled rows
@@ -22,7 +23,7 @@ Every build is deterministic: build-manifest.json holds a sha1 per input.
 
 Usage:  python3 build.py [--no-checks] [--vendor-check]
 """
-import hashlib, json, os, re, subprocess, sys
+import fnmatch, hashlib, json, os, re, subprocess, sys
 
 try:
     sys.stdout.reconfigure(encoding='utf-8')
@@ -35,14 +36,29 @@ SRC = os.path.join(HERE, 'src')
 DIST = os.path.join(HERE, 'dist')
 OUT = 'catalog'
 
+# The furniture kit loads after the engine, then the harvested furniture, then every
+# interiors-phase culture file (krator-master-furniture-<culture>.js, in filename order).
+# Not built here any more: krator-master-plants.js (plants live in their biome kits and
+# in each build's own sheet) and krator-master-buildings-voth.js (the Voth buildings have
+# their own sheet, settlements/voth/catalog, which loads that file by path). Both files stay.
 SOURCES = [
     'krator-asset-engine.js',
+    'krator-furniture-kit.js',
     'krator-master-furniture.js',
-    'krator-master-plants.js',
-    'krator-master-buildings-voth.js',
+    'krator-master-furniture-*.js',
     'krator-master-buildings-beast-rider.js',
     'inspector.js',
 ]
+
+
+def sources():
+    out = []
+    for s in SOURCES:
+        if '*' in s:
+            out += sorted(f for f in os.listdir(HERE) if fnmatch.fnmatch(f, s) and f not in out)
+        else:
+            out.append(s)
+    return out
 VENDORED = {'81-sky.js': os.path.join(ROOT, 'settlements', 'iziz', 'src', '81-sky.js')}
 
 RE_DECL = re.compile(r'^(?:const|let|var|function|class)\s+([A-Za-z_$][\w$]*)', re.M)
@@ -93,7 +109,7 @@ def main():
     head = [f for f in frags if f.endswith('.html') and f < '50']
     tail = [f for f in frags if f.endswith('.html') and f >= '50']
     js = [f for f in frags if f.endswith('.js')]
-    parts = [(f, read(os.path.join(HERE, f))) for f in SOURCES] + [(f, read(os.path.join(SRC, f))) for f in js]
+    parts = [(f, read(os.path.join(HERE, f))) for f in sources()] + [(f, read(os.path.join(SRC, f))) for f in js]
     if '--no-checks' not in sys.argv:
         errs = check(parts)
         if errs:

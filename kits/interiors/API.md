@@ -67,7 +67,8 @@ The placer calls four functions. That is the whole host coupling.
 const catalog = {
   list() {             // every piece, once (cache it): the placer filters it
     return [{ key, name, culture, type, setting /* indoor|outdoor|both */, rooms: [...],
-              anchor /* floor|wall|ceiling|surface */, clearance: { front, back, left, right }, variants }];
+              anchor /* floor|wall|ceiling|surface */, clearance: { front, back, left, right }, variants,
+              tier, wealth: [lo, hi] /* OPTIONAL: a piece in band for the room's wealth is tried first */ }];
   },
   dims(key, variant) { return { w, d, h }; },                    // declared footprint and height
   anchorY(key, variant, { floorY, surfaceY, ceilingY }) { return y; },
@@ -97,6 +98,10 @@ defines; the placer, the audit and the outline view all use it (`clearanceZones`
 A build whose pieces need a different program or role edits the tables, not the placer:
 `IX.PROGRAMS[kind] = { require: [{ need, types, n }], optional: [{ types, max }], extra }`,
 `IX.ROLES[type] = 'back' | 'wall' | 'centre' | 'corner' | 'seat'`, `IX.CULTURE_FAMILY[culture] = [...]`.
+A descriptor's `wealth: [lo, hi]` (the catalog's tiers: poor, common, court) sorts the candidates: the
+chain's pieces whose band holds the room's wealth (margin `IX.WEALTH_MARGIN`, 0.1) come first, then the
+chain's other tiers, then any culture. `IX.CULTURE_FAMILY` ends most chains in `generic` (plain wood) or
+`scrap` (post-apoc salvage), the poor sets every culture shares.
 
 ## 3. Calling the placer
 
