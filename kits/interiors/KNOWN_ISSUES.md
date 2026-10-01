@@ -1,10 +1,30 @@
 # kits/interiors — known issues
 
-`verify.py --assert` passes (37 rooms: 21 single rooms and 16 in 4 planned buildings, about 200
+`verify.py --assert` passes on the demo, and `verify.py --sets --assert` on the building sets (978 rooms in 282
+items of five sets, every residence holding a bed, a food container and an item container per household).
+The demo: (37 rooms: 21 single rooms and 16 in 4 planned buildings, about 200
 pieces a seed, 16 walkers; seeds 0–2, and seeds 0–7 with `--seeds 8`) with nothing deferred.
 What follows is what the checks do not cover, or what the kit does not do yet.
 
 ## Open
+- [ ] **Building sets: geometry that precludes or bends rooms.** `sets/GEOMETRY.md` lists, for the kits' author,
+  the buildings skipped because their geometry has no room (a drum with no floor, a solid trunk, cabins with no
+  door) and the rooms planned on an assumption the builder does not draw (an assumed door, a floor laid in a
+  lying tank, a stair the builder omits). Nothing in the kits was changed.
+- [ ] **Building sets: fallbacks.** No set reports `none-in-catalog`, but poor rooms of every culture furnish
+  largely from `generic` (the wealth band puts the poor sets first), `eastabyss` common is thin for homes
+  (beds, chests, hearths fall back), and no Highland culture had an altar until the trade altar. The sets sheet
+  prints every fallback per room (`verify.py --sets --assert --verbose`).
+- [ ] **Building sets: the planner's limits show.** A storey cut never lands within about 1 m of a street door,
+  so a centred door on a short front forbids splitting it; a straight stair blocks every cut across a narrow
+  front (shop-row units are one room a storey); a straight flight needs about 6 m of wall. The set files work
+  round these (two-kind ground floors, one body per storey with its own door) and say so in each `note`.
+- [ ] **The walk mockup is a mockup.** `dist/interiors-walk.html` shows 14 buildings in their real geometry,
+  cut out of each kit's page as flat-coloured triangles (`tools/export_shells.py`: textures dropped). The real
+  buildings draw no partitions or stairs, so the planner's are overlaid; their door leaves are drawn shut and the
+  walker passes through them; a raised doorway (a stilt house, a deck) lifts the walker to its floor from the
+  ground in front of it; collision is the rooms' walk grids, the door passages and the footprints, not the real
+  geometry (porches, posts and outside stairs are walked through). Re-export after a kit changes a building.
 
 - [ ] **The catalog is thin indoors, so many rooms run on fallbacks.** At seed 0, 10 required pieces
   come from another culture and 14 of 37 rooms are `thin` (fewer than 3 own-culture pieces for

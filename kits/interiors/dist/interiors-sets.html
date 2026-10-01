@@ -445,8 +445,10 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
        piece). A one-room home is a `cottage`; a home's main room with the hearth is `living`; the
        sleeping rooms are `bedroom`s (each with a chest). KIND_ALIAS lets catalog pieces listing
        hall / kitchen / bedroom qualify for them. */
+    /* the chest before the food: a food slot has compact pieces (jars, a larder) as well as wide ones (bins,
+       a barrel cradle), and a small hut has room for a chest only if the food slot leaves it */
     cottage:  { require: [{ need: 'bed', types: ['bed'], n: 1 }, { need: 'hearth', types: ['stove', 'brazier'], n: 1 },
-                          { need: 'food', types: ['storage', 'vessel', 'stack'], roles: FOOD, n: 1 }, { need: 'chest', types: ['storage'], roles: ITEM, n: 1 }],
+                          { need: 'chest', types: ['storage'], roles: ITEM, n: 1 }, { need: 'food', types: ['storage', 'vessel', 'stack'], roles: FOOD, n: 1 }],
                 optional: [{ types: ['table'], max: 1 }, { types: SEATS, max: 2 }, { types: ['shelf', 'rack'], max: 1 }, { types: ['lamp'], max: 1 }, { types: ['rug'], max: 1 }, { types: ['art', 'banner'], max: 1 }, SURFACE],
                 extra: 5 },
     living:   { require: [{ need: 'hearth', types: ['stove', 'brazier'], n: 1 }, { need: 'table', types: ['table'], n: 1 }, { need: 'seats', types: SEATS, n: 2 },
@@ -1303,7 +1305,7 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
                doors: [{ at:[x,z], w }]          street doors on the footprint edge (ground floor);
                                                  none given: one in the middle of edge `front` (0)
                culture, wealth, wall: 0.25, partition: 0.12, slab: 0.25,
-               roof: 'gable' | 'hip' | 'flat', pitch: 0.6 (radians) }
+               roof: 'gable' | 'hip' | 'flat', pitch: 0.6 (radians), windows: false (none; default on every exterior wall) }
      program = a name in IX.BUILDING_PROGRAMS | [kind, ...] (every storey) | [[kinds of storey 0], [storey 1], ...]
                | fn(level, area, shell) -> [kind, ...].  The first kind of a storey gets the street
                door (ground floor) or the top of the stair (upper floors).
@@ -1677,8 +1679,9 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
         for (let i = 0; i < n; i++) d.push(onCut(Lv, P[i], P[(i + 1) % n]) ? partT / 2 : 0);
         const polyF = insetEdges(P, d);
         const poly = polyF.map(toW);
-        /* windows: on the exterior walls, clear of doors and corners */
-        for (let i = 0; i < n; i++) {
+        /* windows: on the exterior walls, clear of doors and corners (shell.windows === false: none, a
+           container, a byre, a store with no openings drawn) */
+        for (let i = 0; i < n && shell.windows !== false; i++) {
           if (d[i]) continue;
           const a = toW(P[i]), b = toW(P[(i + 1) % n]), len = Math.hypot(b[0] - a[0], b[1] - a[1]);
           if (len < 1.8) continue;
@@ -2430,7 +2433,7 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
       if (b.h) shell.h = b.h;
       if (b.doors) shell.doors = b.doors.map(door);
       if (b.front != null) shell.front = b.front;
-      ['wall', 'partition', 'slab'].forEach(function (k) { if (b[k] != null) shell[k] = b[k]; });
+      ['wall', 'partition', 'slab', 'windows'].forEach(function (k) { if (b[k] != null) shell[k] = b[k]; });
       const po = { seed: o.seed || 0, register: o.register !== false };
       if (b.stair) po.stair = b.stair;
       if (b.minWidth) po.minWidth = b.minWidth;
@@ -4228,11 +4231,11 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
     rooms: [{ id: 'tank', kind: 'cottage', poly: rect(8.2, 3), y: 1.15, h: 2.3, doors: [{ at: [1, 1.5], w: 0.9 }] }],
     note: 'the fuel tank lying on its footing (4.2 m across) holds one room on a floor laid 0.7 m above its bottom (3 m wide there), entered through the log vestibule on its flank (the vestibule itself is not planned)' });
   add({ key: 'hl_rus_cont_chalet', name: 'Container chalet', culture: 'rustic', wealth: MID, types: ['multi-family dwelling', 'farm'], units: 2, lot: [20, 16],
-    bodies: [{ id: 'byre', poly: rect(12, 2.44, 0, 1.25), y: 0, levels: [{ h: 2.45 }], wall: 0.06, roof: 'flat',
-      doors: [{ at: [1.2, 2.47], w: 1.1 }], program: ['stable', 'store'] },
+    bodies: [{ id: 'byre', poly: rect(12, 2.44, 0, 1.25), y: 0, levels: [{ h: 2.45 }], wall: 0.06, roof: 'flat', windows: false,
+      doors: [{ at: [1.2, 2.47], w: 1.1 }], program: ['stable'] },
       { id: 'house', poly: rect(12.4, 5.4), y: 2.8, levels: [{ h: 2.6 }], wall: 0.3, roof: 'gable', pitch: pt(0.6),
         doors: [{ at: [-2, 2.7], w: 0.9 }], program: ['living', 'bedroom', 'kitchen', 'bedroom'] }],
-    note: 'the front container (byre and store) and the log storey on the pair, off its balcony; the back container has no door drawn' });
+    note: 'the front container (one byre: 12 m by 2.3 m inside is too narrow to split and keep a stall) and the log storey on the pair, off its balcony; the back container has no door drawn' });
   add({ key: 'hl_rus_hull_naust', name: 'Hull naust', culture: 'rustic', wealth: MID, types: ['industry', 'warehouse'], lot: [14, 26],
     bodies: [{ id: 'naust', poly: rect(8.9, 16), y: 0, levels: [{ h: 2.2 }], wall: 0.9, roof: 'gable', pitch: pt(0.9),
       doors: [{ at: [0, 8], w: 5 }], program: ['workshop', 'store'] }],
