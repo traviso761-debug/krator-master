@@ -21206,16 +21206,16 @@ const ROWS={
  adFuel:  {z:1100,s: 110,t: 220,r: 55},
  adRadar: {z:1330,s:  90,t: 180,r: 45},
  adDish:  {z:1580,s: 120,t: 240,r: 60},
- adMega:  {z:2350,s: 900,t:1800,r:420},
- adFac:   {z:3200,s: 380,t: 760,r:200},
- adLab:   {z:3800,s: 230,t: 460,r:120},
+ adMega:  {z:3700,s: 900,t:1800,r:420},
+ adFac:   {z:2150,s: 380,t: 760,r:200},
+ adLab:   {z:2750,s: 230,t: 460,r:120},
 };
 const EXTRA_BUILDERS={};
 for(const[k,f]of[['adWave','buildAltWaveHouse'],['adBridge','buildAltBridgeHouse'],['adFins','buildAltFinApartments'],
  ['adAmph','buildAltAmphitheater'],['adFuel','buildAltFuelStation'],['adRadar','buildAltRadar'],['adDish','buildAltDish'],
  ['adMega','buildAltMega'],['adFac','buildAltFactory'],['adLab','buildAltLab']])
  if(typeof self[f]==='function')EXTRA_BUILDERS[k]=self[f];else delete ROWS[k];
-const GROUND_C=1900;
+const GROUND_C=1850;
 // greening under every ruined and reclaimed site
 const RUINS=Object.values(ROWS).flatMap(r=>[[r.s,r.z,r.r],[r.t,r.z,r.r*1.2]]);
 // ================================================================= THE WING — a monument that is also a city
@@ -24541,8 +24541,8 @@ function buildAltFinApartments(scene,gx,gz,d){reseed(9860+d);KOFF=[gx,0,gz];
 // ---------------------------------------------------------------- helpers
 // the lawn gone rank: darker, untextured like MAT.lawn (a textured turf shows
 // the concrete map's boards as rings on a polar grid)
-MAT.adLawn=new THREE.MeshStandardMaterial({color:0x557a34,roughness:1,metalness:0,side:DS});
-MAT.adLawnR=new THREE.MeshStandardMaterial({color:0x3a5626,roughness:1,metalness:0,side:DS});
+MAT.adLawn=new THREE.MeshStandardMaterial({color:0x3a5a20,roughness:1,metalness:0,side:DS});
+MAT.adLawnR=new THREE.MeshStandardMaterial({color:0x2a3e1c,roughness:1,metalness:0,side:DS});
 // A loft through closed rings of equal count [[x,y,z],...], flat-shaded, with
 // fan caps on the first and last ring (rings must be convex for the caps).
 function adLoft(acc,rings,noCaps){const P=[];const tri=(a,b,c)=>P.push(a[0],a[1],a[2],b[0],b[1],b[2],c[0],c[1],c[2]);
@@ -25270,7 +25270,7 @@ const AD_VIEWSPEC={adWave:['Undulant house',18,24],adBridge:['Bridge house',12,2
 const VIEWS={};
 for(const k in ROWS){const R=ROWS[k],V=AD_VIEWSPEC[k];if(!V)continue;const[nm,h,rs]=V;
  const W=R.t+R.s+2*rs,cx=(R.t-R.s)/2;
- if(Object.keys(VIEWS).length===0)VIEWS['Alternate domestic types']=[-2300,1300,1900,350,0,1900];
+ if(Object.keys(VIEWS).length===0)VIEWS['Alternate domestic types']=[-2600,1500,1850,350,0,1850];
  // the row shot stands south of the row but short of the next one; when the
  // gap is too small it climbs instead, keeping the same distance to the row
  let gap=1e9;for(const j in ROWS)if(ROWS[j].z>R.z)gap=Math.min(gap,ROWS[j].z-ROWS[j].r-R.z);

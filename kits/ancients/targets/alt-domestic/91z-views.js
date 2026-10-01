@@ -10,7 +10,7 @@ const AD_VIEWSPEC={adWave:['Undulant house',18,24],adBridge:['Bridge house',12,2
 const VIEWS={};
 for(const k in ROWS){const R=ROWS[k],V=AD_VIEWSPEC[k];if(!V)continue;const[nm,h,rs]=V;
  const W=R.t+R.s+2*rs,cx=(R.t-R.s)/2;
- if(Object.keys(VIEWS).length===0)VIEWS['Alternate domestic types']=[-2300,1300,1900,350,0,1900];
+ if(Object.keys(VIEWS).length===0)VIEWS['Alternate domestic types']=[-2600,1500,1850,350,0,1850];
  // the row shot stands south of the row but short of the next one; when the
  // gap is too small it climbs instead, keeping the same distance to the row
  let gap=1e9;for(const j in ROWS)if(ROWS[j].z>R.z)gap=Math.min(gap,ROWS[j].z-ROWS[j].r-R.z);

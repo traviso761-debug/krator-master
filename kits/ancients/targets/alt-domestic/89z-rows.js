@@ -18,15 +18,15 @@ const ROWS={
  adFuel:  {z:1100,s: 110,t: 220,r: 55},
  adRadar: {z:1330,s:  90,t: 180,r: 45},
  adDish:  {z:1580,s: 120,t: 240,r: 60},
- adMega:  {z:2350,s: 900,t:1800,r:420},
- adFac:   {z:3200,s: 380,t: 760,r:200},
- adLab:   {z:3800,s: 230,t: 460,r:120},
+ adMega:  {z:3700,s: 900,t:1800,r:420},
+ adFac:   {z:2150,s: 380,t: 760,r:200},
+ adLab:   {z:2750,s: 230,t: 460,r:120},
 };
 const EXTRA_BUILDERS={};
 for(const[k,f]of[['adWave','buildAltWaveHouse'],['adBridge','buildAltBridgeHouse'],['adFins','buildAltFinApartments'],
  ['adAmph','buildAltAmphitheater'],['adFuel','buildAltFuelStation'],['adRadar','buildAltRadar'],['adDish','buildAltDish'],
  ['adMega','buildAltMega'],['adFac','buildAltFactory'],['adLab','buildAltLab']])
  if(typeof self[f]==='function')EXTRA_BUILDERS[k]=self[f];else delete ROWS[k];
-const GROUND_C=1900;
+const GROUND_C=1850;
 // greening under every ruined and reclaimed site
 const RUINS=Object.values(ROWS).flatMap(r=>[[r.s,r.z,r.r],[r.t,r.z,r.r*1.2]]);
