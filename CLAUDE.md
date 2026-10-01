@@ -29,7 +29,7 @@ says which build holds what.
 These files are big and generated. **Do not open or grep them:**
 `dist/`, `voth.html`, `yuni*.html`, `.syntax*.js`, `.origin.html`,
 `three.min.js`, `*.zip`, `shots/`, `archive/`, `host/site/`, `host/menagerie/`,
-`host/WorldMenagerie/` (the Menagerie's own source: work on it only when asked).
+`host/WorldMenagerie/` (the Menagerie's own source: work on it only when asked; `.ignore` keeps it out of repo-wide searches, so name the path to search it).
 Pass `--glob '!**/dist/**'` (or search a `src/` folder) when using Grep.
 
 - **Edit only in `src/` and `targets/`.** The HTML is rebuilt from them.
