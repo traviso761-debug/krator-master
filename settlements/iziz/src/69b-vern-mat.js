@@ -91,27 +91,8 @@ TEX.dirt=canvasTex(512,512,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data; 
  g.putImageData(id,0,0);});
 
 // ---------------------------------------------------------------- world-unit UVs
-// Instances share one geometry, so a box's 0..1 UVs would stretch one texture
-// tile over a 20 m wall and squash it on a 0.2 m beam. This hook reads the
-// instance scale in the vertex shader and picks, per face normal, the two axes
-// that face spans, so every map tiles in metres whatever the instance size.
-// K = 1 / (metres per texture tile). kbake() carries onBeforeCompile across
-// its material clone.
-function vWorldUV(mat,K){mat.userData.uvK=K;mat.onBeforeCompile=sh=>{sh.vertexShader=sh.vertexShader.replace('#include <uv_vertex>',
-`#ifdef USE_UV
-#ifdef USE_INSTANCING
-mat4 _im=instanceMatrix;
-vec3 _sc=vec3(length(_im[0].xyz),length(_im[1].xyz),length(_im[2].xyz));
-vec3 _an=abs(normal);
-vec2 _sw=(_an.y>0.5)?vec2(_sc.x,_sc.z):((_an.x>0.5)?vec2(_sc.z,_sc.y):vec2(_sc.x,_sc.y));
-vUv=uv*_sw*${K.toFixed(4)};
-#else
-vUv=uv;
-#endif
-#endif`);};return mat;}
-// A plain mesh keeps the UVs its geometry carries (the kit's lathes and grids are drawn in 8 m tile units, the
-// vernacular ones in the material's own tile); only INSTANCES are re-tiled by their scale. Before this the hook
-// re-scaled the kit's skyscraper shells by K too, so their panels tiled every 64 m and read as untextured.
+// vWorldUV(mat,K) lives in core/materials/opt/69a-world-uv.js, the one shared copy (each build opts in through
+// CORE_OPT_FILES). It gives every K its own shader program; the copy that used to sit here did not.
 
 // ---------------------------------------------------------------- materials
 MAT.wood=new THREE.MeshStandardMaterial({map:TEX.wood,color:0xffffff,roughness:.92,metalness:0,side:DS});

@@ -32,12 +32,40 @@ page's start-up. The pixels are the same either way.
 seeded stream shifts and the world changes. Screamers' `TEX.thatch`, `TEX.lash`, `flBarkTex` and `skyTex` do.
 Painters that use only `h3`/`vnoise`/`fbm`, or `Math.random`, need nothing.
 
+### `materials/opt/`: opt-in shared fragments
+
+Every digit-named file in `materials/` goes into every build that reads it (kits/ringsea takes them all). A
+fragment only some builds want lives in `materials/opt/` instead, and a build takes it by naming it in
+`CORE_OPT_FILES` in its `build.py` (`srcpath()` and `build_one()` fall back to it; a local copy still wins).
+
+| File | What | Opted in by |
+|---|---|---|
+| `opt/69a-world-uv.js` | `vWorldUV(mat,K[,Kv])`: world-unit UVs for instanced boxes, re-tiled by instance scale per face. One shader program per K | `kits/ancients`, `settlements/iziz`, `highlands`, `xanadu` |
+
+**The world-UV fix (2026-10-01).** The hook used to be a closure copied into several places (`69b-vern-mat.js` in
+Iziz, Highlands, Xanadu, Reedlake and Dalab; `izsWorldUV` in `77z-iziz-style.js`). three.js keys a compiled program
+on `onBeforeCompile.toString()`, and a closure prints the same source whatever K it captured, so every world-UV
+material in a page rendered at the K of whichever compiled first. Xanadu worked round it (`xUVKey`). The shared copy
+builds the hook with `Function()`, so K is in the hook's source text (the key differs per K and survives `kbake`'s
+material clone, so `30-kit.js` needs no change), and sets `customProgramCacheKey` as well.
+
+**Still on the old closure:** `settlements/reedlake` and `settlements/dalab` keep their own `69b-vern-mat.js` (left
+out of this pass; Dalab's drift is deliberate). To move one over: delete `vWorldUV` from its `69b`, add
+`CORE_OPT_FILES` and the `srcpath`/`build_one` fallback to its `build.py` (copy them from `settlements/highlands`),
+and rebuild. `settlements/jimjam` has its own `jjWorldUV`, already keyed per K; it also scales plain meshes, so it
+is a different function.
+
 ### What is not here yet
 
 These material fragments drifted between builds, so they stay vendored:
-- `54-mat-concrete.js`: three versions (ancients+highlands, dalab, iziz+reedlake+screamers)
-- `69-mat-salvage.js`: three versions (ancients+dalab+highlands, iziz+reedlake, screamers)
+- `54-mat-concrete.js`: four versions (ancients+highlands+iziz+port+xanadu, dalab, reedlake+screamers, jimjam)
+- `69-mat-salvage.js`: three versions (ancients+dalab+highlands+iziz+port+xanadu, reedlake, screamers)
 - the local layers `69b-vern-mat`, `71-hl-mat`, `74-rl-mat`, `69d-dalab-mat`
+
+The Ancients versions of `54` and `69` are byte-identical in six builds and belong in `materials/opt/`, but Dalab,
+Port and Reedlake vendor-check them against `kits/ancients/src` and `settlements/highlands/src`: take the copies out
+of those folders and those checks report the files as missing upstream. Move them in a pass that may also change
+those builds' `build.py`.
 
 Merge a drifted file only once its differences have been read and the merged
 version renders correctly in every build that uses it.

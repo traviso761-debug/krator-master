@@ -4,7 +4,11 @@
 // cycads, sub-canopy trees in the gaps, mossy boulders, mushrooms in the damp
 // patches, fallen hypertree logs with their root plates and everything that
 // grows on a log, lianas and moss beards on the hero boles, bracket fungi on
-// their lower twenty metres. The brook, cascade, footbridge and gates of the
+// their lower twenty metres; and the belt's own additions: giant tree ferns,
+// stilt-rooted screwpines in the damp, heliconia / ginger clumps with their
+// hanging bracts in the openings, and EPIPHYTE GARDENS (bromeliad rosettes,
+// moss, hanging strands) on the hero boughs and up the boles, off the perch
+// points the tree pass exports. The brook, cascade, footbridge and gates of the
 // source are the host's business (its mask keeps the bed clear) and are not
 // here. The floor is PLACEMENT: jittered grids with an fbm patch mask and an
 // "openings" field, so it is dense thickets and stretches of open litter, not
@@ -35,7 +39,7 @@ function texMean(tex,fb){const im=tex&&tex.image;if(!im||!im.getContext)return f
  for(let i=0;i<d.length;i+=4*13){r+=d[i];g+=d[i+1];b+=d[i+2];n++;}
  if(!n)return fb;const c=C(0).setRGB(r/n/255,g/n/255,b/n/255).convertSRGBToLinear();return[c.r,c.g,c.b];}
 let MEAN=null;
-function means(){if(MEAN)return MEAN;MEAN={trunk:texMean(HYPERJUNGLE.BARKTEX[4],[.30,.21,.14]),rock:texMean(HYPERJUNGLE.ROCKTEX,[.156,.147,.127]),wood:texMean(HYPERJUNGLE.WOODTEX,[.09,.06,.035])};return MEAN;}
+function means(){if(MEAN)return MEAN;MEAN={trunk:texMean(HYPERJUNGLE.LIMBTEX,[.30,.21,.14]),rock:texMean(HYPERJUNGLE.ROCKTEX,[.156,.147,.127]),wood:texMean(HYPERJUNGLE.WOODTEX,[.09,.06,.035])};return MEAN;}
 // the sRGB tint that renders `hex` (scaled by k) on a texture of linear mean m
 function tint(hex,m,k){const c=hex.isColor?hex.clone():C(hex);c.convertSRGBToLinear();k=k==null?1:k;
  c.setRGB(Math.min(1,c.r*k/Math.max(.02,m[0])),Math.min(1,c.g*k/Math.max(.02,m[1])),Math.min(1,c.b*k/Math.max(.02,m[2])));return c.convertLinearToSRGB();}
@@ -157,6 +161,51 @@ function boulder(x,y,z,lv,st){const n=lv===2?ri(1,2):1,Rb=rr(1.2,3.4);
   if(lv>=1){BIO.put('mossmat',[bx+rr(-.15,.15)*r,by+h*1.08,bz+rr(-.15,.15)*r],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),r*rr(.6,.9),leafCol(PAL.moss,.95));st.moss++;}
   if(lv===2&&i===0&&rng()<.6){frondCrown(bx+r*.5,by+h*.5,bz+r*.3,rr(1.2,2.2),5,.1,.45,leafCol(PAL.fern,1.7));st.ferns++;}}}
 
+// ---------------------------------------------------------------- the belt's own understorey
+// a GIANT TREE FERN: a fibrous trunk 4-11 m, old fronds arching down, a ring
+// of young ones rising, a crozier tuft, dead fronds skirting the crown
+function treeFern(x,y,z,lv){const H=lv===2?rr(4,11):rr(4,8),r=.28+H*.04,la=rr(0,TAU),lk=rr(0,.05),hc=vary(pick(PAL.treefern),.05,.12,.06);
+ BIO.put('trunk',[x,y-.6,z],qUp([Math.cos(la)*lk,1,Math.sin(la)*lk]),[r/.4*1.3,H+.6,r/.4*1.3],trunkTint(0x4a3a2c,.7));
+ const tx=x+Math.cos(la)*lk*H,tz=z+Math.sin(la)*lk*H,ty=y+H;
+ frondCrown(tx,ty-.2,tz,rr(4.5,7.5),lv===2?ri(8,11):6,-.05,.35,bright(hc,1.55));
+ frondCrown(tx,ty+.3,tz,rr(3,4.5),lv===2?ri(5,7):4,.5,.95,bright(shade(hc,.1),1.6));
+ if(lv===2){card(tx,ty+1.2,tz,2.2,1.8,bright(shade(hc,.25),1.5),.2);
+  for(let k=0,n=ri(2,4);k<n;k++){const a=rr(0,TAU);BIO.put('ribbon',[tx+Math.cos(a)*r*1.2,ty-.6,tz+Math.sin(a)*r*1.2],qEuler(0,rr(0,TAU),0),[rr(.8,1.4),rr(2,4),1],shade(vary(0x8a7a4a,.03,.1,.06),-.2));}}}
+// a SCREWPINE: a short trunk on a cone of stilt roots, heads of stiff strap
+// leaves (old ones out and drooping, young ones upright), a hanging fruit head
+function screwpine(x,y,z,lv){const H=rr(3,8),r=.22+H*.05,hc=vary(pick(PAL.screwpine),.04,.12,.06),tt=trunkTint(0x6a5a44,.8);
+ BIO.put('trunk',[x,y+H*.3-.2,z],qUp([0,1,0]),[r/.4,H*.7+.2,r/.4],tt);
+ const tc=rodCol();for(let k=0,n=lv===2?ri(5,8):4;k<n;k++){const a=k/n*TAU+rr(-.3,.3),d=H*rr(.35,.6),gx=x+Math.cos(a)*d,gz=z+Math.sin(a)*d;
+  BIO.beam('rod',[x+Math.cos(a)*r*.6,y+H*rr(.28,.42),z+Math.sin(a)*r*.6],[gx,Y(gx,gz)-.4,gz],r*.32,r*.22,tc);}
+ const heads=[[x,y+H,z]];
+ if(H>5.5&&lv===2){const a=rr(0,TAU),fk=H*.55;heads.push([x+Math.cos(a)*H*.3,y+fk+H*.35,z+Math.sin(a)*H*.3]);BIO.beam('rod',[x,y+fk,z],heads[1],r*.7,r*.5,tt);}
+ heads.forEach(h=>{const L=rr(3,5.5);frondCrown(h[0],h[1],h[2],L,lv===2?ri(9,12):6,-.35,.05,bright(hc,1.5));
+  frondCrown(h[0],h[1]+.4,h[2],L*.7,lv===2?6:4,.55,1.05,bright(shade(hc,.08),1.55));
+  if(lv===2&&rng()<.4)BIO.put('fungus',[h[0]+rr(-.5,.5),h[1]-.6,h[2]+rr(-.5,.5)],qEuler(Math.PI,rr(0,TAU),0),[.9,1.3,.9],shade(0xd08a3a,-.15));});}
+// a HELICONIA / GINGER clump: tall paddle leaves in a loose fan, the
+// inflorescences (zigzag bracts, 'bract' item) hanging off short stems
+function ginger(x,y,z,lv){const hc=vary(pick(PAL.ginger),.04,.12,.06),S=rr(4,8),n=lv===2?ri(4,6):3,a0=rr(0,TAU);
+ for(let k=0;k<n;k++){const a=a0+k/n*TAU+rr(-.4,.4),s=S*rr(.8,1.15);
+  BIO.put('ucard',[x+Math.cos(a)*s*.22,y+s*.55,z+Math.sin(a)*s*.22],qEuler(rr(-.12,.12),a+rr(-.3,.3),rr(.1,.35)),[s*.5,s*1.1,s*.5],bright(vary(hc,.03,.08,.06),1.4));}
+ if(lv===2){for(let k=0,nb=ri(1,3);k<nb;k++){const a=rr(0,TAU),d=S*rr(.1,.3),L=rr(1.6,3.2),hy=y+S*rr(.55,.85),bx=x+Math.cos(a)*d,bz=z+Math.sin(a)*d;
+   BIO.beam('rod',[x,y+S*.2,z],[bx,hy,bz],.07,.05,shade(hc,-.3));
+   BIO.put('bract',[bx,hy,bz],qEuler(0,rr(0,TAU),0),[L*.42,L,L*.42],bright(pick(PAL.bract),rr(.9,1.15)));}}
+ else if(rng()<.5)BIO.put('bract',[x,y+S*.65,z],qEuler(0,rr(0,TAU),0),[1.1,2.4,1.1],bright(pick(PAL.bract),1));}
+// a BROMELIAD: a rosette of stiff strap leaves round a coloured heart, sitting
+// on a surface with unit normal n (a bough top, a bole flank)
+function bromeliad(x,y,z,n,s){const hc=vary(pick(PAL.bromeliad),.04,.12,.06),q=qUp(n);
+ for(let k=0,m=ri(5,8);k<m;k++){const a=k/m*TAU+rr(-.3,.3),L=s*rr(.8,1.2);
+  BIO.put('frond',[x,y,z],q.clone().multiply(qEuler(0,-a,rr(.4,.85))),[L,L*.9,L*rr(1.1,1.5)],bright(vary(hc,.02,.06,.05),1.5));}
+ if(rng()<.7)BIO.put('bloom',[x+n[0]*s*.25,y+n[1]*s*.25,z+n[2]*s*.25],q.clone().multiply(qEuler(0,rr(0,TAU),0)),s*.45,bright(pick(PAL.bromCentre),1.1));}
+// an EPIPHYTE GARDEN on a bough perch: bromeliads and moss along the top,
+// strands and moss beards hanging under it
+function garden(P,near,st){const s=clamp(P.r*.9,.8,2.6),nB=near?ri(1,3):1,a0=rr(0,TAU);
+ for(let k=0;k<nB;k++){const a=a0+rr(-.6,.6),ox=Math.cos(a)*P.r*.5,oz=Math.sin(a)*P.r*.5;
+  bromeliad(P.x+ox,P.y+P.r*.92,P.z+oz,[ox/P.r*.4,1,oz/P.r*.4],s*rr(.8,1.2));st.epiphytes++;}
+ if(rng()<.8){BIO.put('mossmat',[P.x+rr(-.3,.3)*P.r,P.y+P.r*.95,P.z+rr(-.3,.3)*P.r],qEuler(rr(-.1,.1),rr(0,TAU),rr(-.1,.1)),P.r*rr(.7,1.1),leafCol(PAL.moss,.95));st.moss++;}
+ if(near)for(let k=0,n=ri(1,3);k<n;k++){const a=rr(0,TAU),L=rr(3,9);
+  BIO.put(rng()<.5?'strand':'ribbon',[P.x+Math.cos(a)*P.r*.9,P.y-P.r*.2,P.z+Math.sin(a)*P.r*.9],qUp([rr(-.1,.1),1,rr(-.1,.1)]).multiply(qEuler(0,rr(0,TAU),0)),[rr(.5,1.4),L,L*.12],leafCol(PAL.vine,1.4,.06));}}
+
 // ---------------------------------------------------------------- fallen hypertrees
 function facingTri(a,b,c,dir,col){const ux=b[0]-a[0],uy=b[1]-a[1],uz=b[2]-a[2],vx=c[0]-a[0],vy=c[1]-a[1],vz=c[2]-a[2];
  const nx=uy*vz-uz*vy,ny=uz*vx-ux*vz,nz=ux*vy-uy*vx;if(nx*dir[0]+ny*dir[1]+nz*dir[2]>=0)BIO.tri('wood',a,b,c,col);else BIO.tri('wood',a,c,b,col);}
@@ -219,12 +268,12 @@ function lianaRun(a,b,r,col,leafy){BIO.beam('rod',a,b,r,r*.85,col);
 // ---------------------------------------------------------------- the pass
 HYPERJUNGLE.buildFloor=function(R,q){
  reseed(600001);q=q==null?1:q;R=R||3000;means();
- const st={ferns:0,shrubs:0,aroids:0,palms:0,subtrees:0,boulders:0,fungi:0,logs:0,lianas:0,moss:0,brackets:0,tufts:0,
-  tris:{ferns:0,shrubs:0,aroids:0,palms:0,subtrees:0,boulders:0,fungi:0,logs:0,logDress:0,lianas:0,moss:0,brackets:0,tufts:0,far:0}};
+ const st={ferns:0,shrubs:0,aroids:0,palms:0,subtrees:0,boulders:0,fungi:0,logs:0,lianas:0,moss:0,brackets:0,tufts:0,treeferns:0,screwpines:0,gingers:0,epiphytes:0,
+  tris:{ferns:0,shrubs:0,aroids:0,palms:0,subtrees:0,boulders:0,fungi:0,logs:0,logDress:0,lianas:0,moss:0,brackets:0,tufts:0,far:0,treeferns:0,screwpines:0,gingers:0,epiphytes:0}};
  const cur=()=>{const t=BIO.stats[BIO.cur||'biome'];return t?t.tris:0;};
  const charge=(k,fn)=>{const t0=cur();fn();st.tris[k]+=cur()-t0;};
  const TREES=HYPERJUNGLE.TREES||[],SAPS=HYPERJUNGLE.SAPLINGS||[],heroes=TREES.filter(T=>T.hero);
- const lodR=Math.min(1500,R*.6);
+ const lodR=Math.min(1800,R*.6),nearR=650;
  for(const k in HASH)delete HASH[k];LOGS.length=0;
  // ---- keep-clear discs: hero boles on their real footprint, impostor boles, sapling stems ----
  const PROF=new Map();
@@ -251,6 +300,9 @@ HYPERJUNGLE.buildFloor=function(R,q){
   const t=rng(),patch=fbm(x*.006-11,z*.006+5,31,2);
   if(t<.05){if(lv>=1&&nearHero(x,z)>12&&okGround(x,z,4)){charge('subtrees',()=>subTree(x,y,z,lv));st.subtrees++;}else{charge('shrubs',()=>shrub(x,y,z,lv,false));st.shrubs++;}}
   else if(t<.12){if(lv===2||rng()<.5){charge('palms',()=>palm(x,y,z,lv));st.palms++;}else{charge('ferns',()=>fern(x,y,z,lv));st.ferns++;}}
+  else if(t<.155){if(okGround(x,z,3)){charge('treeferns',()=>treeFern(x,y,z,lv));st.treeferns++;}else{charge('ferns',()=>fern(x,y,z,lv));st.ferns++;}}
+  else if(t<.18){if(dampK(x,z)>.45&&okGround(x,z,3)){charge('screwpines',()=>screwpine(x,y,z,lv));st.screwpines++;}else{charge('gingers',()=>ginger(x,y,z,lv));st.gingers++;}}
+  else if(t<.215+.06*(openK(x,z)-.6)){charge('gingers',()=>ginger(x,y,z,lv));st.gingers++;}
   else if(t<.44+.1*(patch-.5)){charge('ferns',()=>fern(x,y,z,lv));st.ferns++;}
   else if(t<.60){const big=rng()<.2;charge('shrubs',()=>shrub(x,y,z,lv,big));st.shrubs++;}
   else if(t<.76){charge('aroids',()=>aroid(x,y,z,lv));st.aroids++;}
@@ -259,14 +311,14 @@ HYPERJUNGLE.buildFloor=function(R,q){
   else if(t<.945){charge('boulders',()=>boulder(x,y,z,lv,st));}
   else{charge('shrubs',()=>shrub(x,y,z,lv,false));st.shrubs++;}}
  // near: full detail; mid: fewer parts; both patchy, thinner (never bare) in the openings
- BIO.grid(7.4,0,500,(x,z,d)=>.92*openK(x,z)*q,(x,y,z,d)=>plant(x,y,z,d,2),{patch:.9,patchScale:.016,pad:1.5});
- BIO.grid(15,500,lodR,(x,z,d)=>mix(.6,.3,smooth(500,lodR,d))*openK(x,z)*q,(x,y,z,d)=>plant(x,y,z,d,1),{patch:.9,patchScale:.016,pad:1.5});
+ BIO.grid(7.4,0,nearR,(x,z,d)=>.92*openK(x,z)*q,(x,y,z,d)=>plant(x,y,z,d,2),{patch:.9,patchScale:.016,pad:1.5});
+ BIO.grid(15,nearR,lodR,(x,z,d)=>mix(.6,.3,smooth(nearR,lodR,d))*openK(x,z)*q,(x,y,z,d)=>plant(x,y,z,d,1),{patch:.9,patchScale:.016,pad:1.5});
  // ground cover between the plants: squashed cards and moss in the damp, cheap, so the litter is never a lawn
  const cover=(x,y,z,s)=>{if(!okGround(x,z,.5))return;
   if(dampK(x,z)>.52&&rng()<.3){charge('moss',()=>groundMoss(x,y,z,rr(1.2,2.8)));st.moss++;}
   else{charge('tufts',()=>tuft(x,y,z,s));st.tufts++;}};
- BIO.grid(5.5,0,500,(x,z,d)=>.5*openK(x,z)*q,(x,y,z,d)=>cover(x,y,z,rr(1.8,3.6)),{patch:.95,patchScale:.02,pad:.5});
- BIO.grid(13,500,lodR,(x,z,d)=>.42*openK(x,z)*q,(x,y,z,d)=>cover(x,y,z,rr(2.2,4)),{patch:.95,patchScale:.02,pad:.5});
+ BIO.grid(5.5,0,nearR,(x,z,d)=>.5*openK(x,z)*q,(x,y,z,d)=>cover(x,y,z,rr(1.8,3.6)),{patch:.95,patchScale:.02,pad:.5});
+ BIO.grid(13,nearR,lodR,(x,z,d)=>.42*openK(x,z)*q,(x,y,z,d)=>cover(x,y,z,rr(2.2,4)),{patch:.95,patchScale:.02,pad:.5});
  // far ring: the cheap mix out to R -- big squashed cards, small ferns, card shrubs -- at a coarser cell
  BIO.grid(24,lodR,R,(x,z,d)=>mix(.7,.4,smooth(lodR,R,d))*(.55+.45*openK(x,z))*q,(x,y,z,d)=>{
   if(blockedAt(x,z,1))return;const t=rng();
@@ -292,6 +344,11 @@ HYPERJUNGLE.buildFloor=function(R,q){
    const nf=Math.round(ri(2,5)*q*lk);
    for(let i=0;i<nf;i++){const a5=rr(0,TAU),y5=gy0+rr(1,7),Rs=prof.at(a5,y5-T.y0)-.4;
     frondCrown(T.x+Math.cos(a5)*Rs,y5,T.z+Math.sin(a5)*Rs,rr(1.4,2.6),5,.15,.5,leafCol(PAL.fern,1.7));st.ferns++;}});
+  // epiphyte gardens: bromeliads up the bole flanks (8-60 m) and along the bough perches
+  if(d0<1500)charge('epiphytes',()=>{const near=d0<800,nb=Math.round(ri(3,7)*q*lk);
+   for(let i=0;i<nb;i++){const a=rr(0,TAU),yy=rr(8,60),Rs=(yy<33?prof.at(a,yy):trunkR(T,T.y0+yy))+.1,nx=Math.cos(a),nz=Math.sin(a);
+    bromeliad(T.x+nx*Rs,T.y0+yy,T.z+nz*Rs,[nx*.75,.62,nz*.75],rr(1,2.2));st.epiphytes++;}
+   (T.perch||[]).forEach(P=>{if(P.r<1.3||rng()>(near?.55:.3)*q)return;garden(P,near,st);});});
   const nl=Math.round(ri(3,6)*q*lk),leafy=d0<900;
   charge('lianas',()=>{for(let i=0;i<nl;i++){const a=rr(0,TAU),yT=T.y0+rr(30,80),Rt=trunkR(T,yT)+.4;
    const top=[T.x+Math.cos(a)*Rt,yT,T.z+Math.sin(a)*Rt],a2=a+rr(-.3,.3),gd=prof.ground+rr(3,14);
@@ -306,5 +363,5 @@ HYPERJUNGLE.buildFloor=function(R,q){
 
  const tt=st.tris;let total=0;for(const k in tt)total+=tt[k];tt.total=total;
  return{under:{ferns:st.ferns,shrubs:st.shrubs,aroids:st.aroids,palms:st.palms,subtrees:st.subtrees,boulders:st.boulders,fungi:st.fungi,logs:st.logs,
-  lianas:st.lianas,moss:st.moss,brackets:st.brackets,tufts:st.tufts},tris:tt};};
+  lianas:st.lianas,moss:st.moss,brackets:st.brackets,tufts:st.tufts,treeferns:st.treeferns,screwpines:st.screwpines,gingers:st.gingers,epiphytes:st.epiphytes},tris:tt};};
 })();

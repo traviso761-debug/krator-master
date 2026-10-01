@@ -85,7 +85,8 @@ is weighted to Iziz orange, and `VPAL.trim` is painted-timber orange for fascias
 middle and rich buildings so the vernacular reads as Iziz from the air. Every textured material
 carries `vWorldUV(mat,K)`: UVs are scaled by the instance's size per face
 normal, so maps tile in metres on any box (K = 1/tile-metres: wood/plaster/
-thatch 2 m, stone/copper 4 m, Ancient panel 8 m).
+thatch 2 m, stone/copper 4 m, Ancient panel 8 m). `vWorldUV` lives in `core/materials/opt/69a-world-uv.js` (shared;
+this build opts in through `CORE_OPT_FILES`); since 2026-10-01 every K gets its own shader program.
 
 ### Building blocks — `69c-vern-helpers.js` (prefix `vn`, local frame, y = base)
 
