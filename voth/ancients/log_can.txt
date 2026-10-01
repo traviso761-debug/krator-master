@@ -1,0 +1,39 @@
+127.0.0.1 - - [21/Sep/2026 10:37:13] "GET /canyon.html HTTP/1.1" 200 -
+ERROR PANEL: clean
+draw calls: 33 triangles: 280266
+counters: {"_instances": 3268, "_ready": true, "_registered": 3}
+
+--- invariants ---
+  PASS  registered-volumes-non-empty : 3 volumes; thinnest: Canyon works — the Span (intact) (545), Canyon works — the Span (ruined) (1334), Canyon works — the Span (fallen) (1368)
+  PASS  no-nan-geometry : clean
+  PASS  per-type-triangle-budget : 3 type/decay pairs, heaviest canyon/1 132520/250000
+  PASS  showcase-triangle-budget : 344364 / 6000000 scene triangles
+  PASS  showcase-draw-calls : 33 / 900 draw calls at this camera
+  PASS  registry-and-bake-ran : 3 registered volumes, 3268 baked instances
+
+--- per type (scene triangles, instances, meshes) ---
+  canyon/1        132520 /  250000  medium  inst    1322  meshes    12
+  canyon/2        122872 /  250000  medium  inst    1415  meshes    16
+  canyon/0         88972 /  250000  medium  inst     531  meshes    12
+shot: ./shots/can\view_The_Span.png   calls 33  tris 0.28M
+shot: ./shots/can\view_Down_the_gorge.png   calls 33  tris 0.28M
+shot: ./shots/can\view_The_prison.png   calls 31  tris 0.28M
+shot: ./shots/can\view_Prison_beneath.png   calls 29  tris 0.28M
+shot: ./shots/can\view_Pod_cluster.png   calls 29  tris 0.28M
+shot: ./shots/can\view_The_lift.png   calls 30  tris 0.28M
+shot: ./shots/can\view_Canyon_floor.png   calls 30  tris 0.28M
+shot: ./shots/can\view_Rusted_span.png   calls 33  tris 0.28M
+shot: ./shots/can\view_Rusted_close.png   calls 38  tris 0.32M
+shot: ./shots/can\view_Fallen.png   calls 37  tris 0.27M
+shot: ./shots/can\view_Fallen_floor.png   calls 34  tris 0.27M
+shot: ./shots/can\view_Both.png   calls 37  tris 0.31M
+
+--- worst draw calls over 12 views ---
+  Rusted close                 calls    38  tris 0.32M
+  Fallen                       calls    37  tris 0.27M
+  Both                         calls    37  tris 0.31M
+  Fallen floor                 calls    34  tris 0.27M
+  The Span                     calls    33  tris 0.28M
+  Down the gorge               calls    33  tris 0.28M
+
+OK

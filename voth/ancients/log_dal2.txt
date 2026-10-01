@@ -1,0 +1,21 @@
+127.0.0.1 - - [21/Sep/2026 10:45:18] "GET /dalab.html HTTP/1.1" 200 -
+ERROR PANEL: clean
+draw calls: 20 triangles: 644166
+counters: {"_instances": 5299, "_ready": true, "_registered": 9}
+
+--- invariants ---
+  PASS  registered-volumes-non-empty : 9 volumes; thinnest: Dalab — dome 7 (200), Dalab — dome 5 (204), Dalab — dome 8 (216)
+  PASS  no-nan-geometry : clean
+  PASS  per-type-triangle-budget : 1 type/decay pairs, heaviest dalab/1 643204/700000
+  PASS  showcase-triangle-budget : 643204 / 6000000 scene triangles
+  PASS  showcase-draw-calls : 20 / 900 draw calls at this camera
+  PASS  registry-and-bake-ran : 9 registered volumes, 5299 baked instances
+
+--- per type (scene triangles, instances, meshes) ---
+  dalab/1         643204 /  700000  mega    inst    5299  meshes     3
+shot: ./shots/dal2\view_Great_dome.png   calls 20  tris 0.64M
+
+--- worst draw calls over 1 views ---
+  Great dome                   calls    20  tris 0.64M
+
+OK
