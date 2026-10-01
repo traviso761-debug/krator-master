@@ -49,9 +49,10 @@ reseed(651001);
       F.rod(-S,H-0.3,-S, -S,H-0.3,S, 0.012, PAL.paintBlack[0], 'rust'); F.rod(S,H-0.3,-S, S,H-0.3,S, 0.012, PAL.paintBlack[0], 'rust');
       var cols=[PAL.abBrightYellow, PAL.abBrightTeal, PAL.abBrightPink, PAL.abSailOrange, PAL.abTarpBlue, PAL.abSailRed];
       wires.forEach(function(z,wi){ for(var k=0;k<5;k++){ var x=mix(-S,S,(k+0.5)/5)+F.rr(-0.3,0.3), y=H-0.85+F.rr(-0.25,0.25), c=F.pick(cols), r=F.rr(0.7,0.85);
-          F.edome(x,y,z+F.rr(-0.2,0.2), r, r*0.42, r, [PI+F.rr(-0.25,0.25), F.rr(0,TAU), F.rr(-0.25,0.25)], c, 'canvas');   /* hung upside down: the canopy is open below */
-          F.edome(x,y+0.02,z, r*0.98, r*0.40, r*0.98, [PI,0,0], shade(c,-0.25), 'canvas');
-          F.rod(x,y-0.1,z, x,H-0.3,z, 0.012, PAL.paintBlack[0], 'rust');
+          var tx=F.rr(-0.25,0.25), tz=F.rr(-0.25,0.25);
+          F.edome(x,y,z, r, r*0.42, r, [tx, F.rr(0,TAU), tz], c, 'canvas');                                /* the open umbrella, tilted a little on its wire */
+          F.cyl(x,y-0.02,z, r*0.96, 0.02, [tx,0,tz], shade(c,-0.3), 'canvas');                              /* its underside, seen from the street */
+          F.rod(x,y-0.75,z, x,y+r*0.42+0.12,z, 0.015, PAL.paintBlack[0], 'rust'); F.rod(x,y+r*0.42,z, x,H-0.3,z, 0.01, PAL.paintBlack[0], 'rust');
           if(F.variant===1 && (k+wi)%2===0){ F.ball(x+0.6,y-0.4,z, 0.16, PAL.glowWarm, 'glowmat'); if((k+wi)%4===0) F.lamp(x+0.6,y-0.4,z, 0.4, 8); } } }); } });
 
   /* ---------- shop and work furniture ---------- */
