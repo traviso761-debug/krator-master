@@ -21,6 +21,18 @@ function ancDress(F, walls, W, D, light){
     var white=F.chance(0.6), col=white?F.pick(WHITEC):F.pick(ADOBEC), fam=white?'plaster':'adobe'; used.push(s);
     F.box(cx,0,cz, w,h,dd, yaw, col, fam); F.box(cx,h,cz, w+0.25,0.32,dd+0.25, yaw, shade(col,-0.10), fam);
     if(white) F.box(cx,0,cz, w+0.1,0.7,dd+0.1, yaw, PAL.paintBlack[1], 'plaster');
+    /* THE JOIN TO THE HOST. Mud fillets packed into the angle at both sides, a mud roll sealing the
+       roof to the Ancient wall, a render patch where the wall was made good above it, and a
+       footing course round the three free sides, so the lean-to reads as built ONTO the old fabric. */
+    var jc=shade(col,-0.07), mud=F.pick(ADOBEC);
+    for(var e0=-1;e0<=1;e0+=2){ F.box(s[0]+tx*e0*(w/2+0.12)+nx*0.12, 0, s[2]+tz*e0*(w/2+0.12)+nz*0.12, 0.34, h+0.18, 0.62, yaw, jc, fam);
+      F.box(s[0]+tx*e0*(w/2+0.12)+nx*0.5, 0, s[2]+tz*e0*(w/2+0.12)+nz*0.5, 0.24, h*0.55, 0.3, yaw, shade(jc,-0.05), fam); }
+    F.beam(s[0]+nx*0.05, h+0.32, s[2]+nz*0.05, s[0]+nx*0.42, h+0.30, s[2]+nz*0.42, w+0.6, 0.26, shade(mud,-0.08), 'adobe');
+    F.box(s[0]+nx*0.03+tx*F.rr(-0.6,0.6), h+0.55, s[2]+nz*0.03+tz*F.rr(-0.6,0.6), w*F.rr(0.45,0.7), F.rr(0.7,1.3), 0.08, yaw, mud, 'adobe');
+    [[0, dd-0.6+0.08, w+0.16, 0.16],[-1, 0, 0.16, dd],[1, 0, 0.16, dd]].forEach(function(q){
+      var ox = q[0] ? q[0]*(w/2+0.02) : 0, oz = q[0] ? (dd/2-0.6) : q[1];
+      F.box(s[0]+tx*ox+nx*oz, 0, s[2]+tz*ox+nz*oz, q[2], 0.32, q[3], yaw, F.pick(ROCKC), 'rock'); });
+    F.box(fx+nx*0.03, h-0.9, fz+nz*0.03, 0.12, 0.9, 0.06, yaw, shade(col,-0.25), fam);       /* the drip stain under the spout */
     if(i%3===1){ /* an upper room, set back against the ancient wall, with its own lit window and a laundry line */
       var uw=w*0.6, ux=cx-tx*w*0.18-nx*0.3, uz=cz-tz*w*0.18-nz*0.3, uc=white?F.pick(BLUELC):F.pick(ADOBEREDC);
       F.box(ux,h+0.3,uz, uw,2.5,dd-0.5, yaw, uc, fam); F.box(ux,h+2.8,uz, uw+0.2,0.28,dd-0.3, yaw, shade(uc,-0.1), fam);

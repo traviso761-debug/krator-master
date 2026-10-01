@@ -50,15 +50,19 @@ function ROOM_PROGRAM(type, fn){ ROOM_PROGRAMS[type] = fn; }
   /* ============================ FURNITURE TAGS ============================
      README rule: furniture is tagged by culture, TYPE and SETTING (indoor/outdoor/both).
      The pieces registered before this fragment get their type + setting here. */
-  var T = { common_low_table:'table', common_floor_seating:'seating', common_storage_chest:'storage', common_water_jars:'storage',
+  /* CONTAINERS are typed by what they hold, because the game reads them as loot and inventory:
+       container-item  chests, presses, lockers, baskets, cell walls: tools, cloth, coin, belongings
+       container-food  grain sacks, clay pots, water jars, grain bins: what a kitchen or store keeps
+     `capacity` is a rough number of inventory slots, so an engine can size the inventory. */
+  var T = { common_low_table:'table', common_floor_seating:'seating', common_storage_chest:'container-item', common_water_jars:'container-food',
     court_mosaic_divan:'seating', court_brass_brazier:'lighting', court_writing_desk:'table', sahelian_carved_stool:'seating',
     sahelian_loom:'tool', order_reading_desk:'table', order_shelf_run:'shelving', poor_reed_mat_bed:'bed', poor_hearth_stones:'hearth',
-    salvage_panel_table:'table', ancient_moulded_bench:'seating', ancient_glass_console:'table', ancient_cell_wall:'storage',
+    salvage_panel_table:'table', ancient_moulded_bench:'seating', ancient_glass_console:'table', ancient_cell_wall:'container-item',
     ancient_berth:'bed', ancient_light_stem:'lighting', ancient_refectory_run:'table', ancient_socket_rack:'shelving',
-    salvage_strut_bed:'bed', salvage_panel_screen:'screen', salvage_locker_press:'storage', salvage_hearth_hood:'hearth',
+    salvage_strut_bed:'bed', salvage_panel_screen:'screen', salvage_locker_press:'container-item', salvage_hearth_hood:'hearth',
     salvage_lamp_stand:'lighting', order_bookcase:'shelving', order_reading_table:'table', order_lectern:'table',
     order_library_ladder:'tool', order_globe_stand:'decoration', order_pupil_desk:'table', order_master_chair:'seating',
-    order_writing_board:'decoration', order_mat_rack:'storage' };
+    order_writing_board:'decoration', order_mat_rack:'container-item' };
   var OUT = { court_mosaic_divan:'both', sahelian_carved_stool:'both', poor_hearth_stones:'both', court_brass_brazier:'both', sahelian_loom:'both' };
   FURNS.forEach(function(f){ if(!f.type) f.type = T[f.key] || 'decoration'; if(!f.setting) f.setting = OUT[f.key] || 'indoor'; });
 
@@ -96,25 +100,66 @@ function ROOM_PROGRAM(type, fn){ ROOM_PROGRAMS[type] = fn; }
   FURN({ key:'common_workbench', name:'Workbench with tools', culture:'yuni-common', room:'workshop', type:'table', setting:'both', w:2.2, d:0.9, h:1.0, variants:1,
     build:function(F){ F.box(0,0.82,0, 2.2,0.12,0.85, 0, PLANKC[3], 'plank'); legs(F, 2.1,0.75, 0.82, 0.07, TIMBERC[2]);
       F.box(0,0.12,0, 1.9,0.05,0.6, 0, PLANKC[2], 'plank'); F.box(-0.6,0.94,0.1, 0.5,0.05,0.12, 0.3, METALC[2], 'metal'); F.box(0.4,0.94,-0.1, 0.06,0.05,0.4, 0, TIMBERC[0], 'timber'); } });
-  FURN({ key:'common_grain_sacks', name:'Stacked grain sacks', culture:'yuni-common', room:'store', type:'storage', setting:'both', w:1.4, d:0.9, h:0.9, variants:1,
+  FURN({ key:'common_grain_sacks', name:'Stacked grain sacks', culture:'yuni-common', room:'store', type:'container-food', setting:'both', w:1.4, d:0.9, h:0.9, variants:1,
     build:function(F){ for(var k=0;k<4;k++) F.edome(-0.38+(k%2)*0.76, (k>>1)*0.42, (k>>1)?0:0.1, 0.34,0.42,0.30, F.rr(-0.3,0.3), F.pick(PAL.thatch||THATCHC), 'cloth'); } });
   FURN({ key:'court_carpet', name:'Knotted carpet', culture:'yuni-court', room:'hall', type:'rug', setting:'indoor', w:2.8, d:2.0, h:0.03, variants:2,
     build:function(F){ F.box(0,0.005,0, 2.8,0.022,2.0, 0, F.pick(CLOTHC), 'cloth'); F.box(0,0.012,0, 2.3,0.022,1.5, 0, F.variant?MOSBLUEC[1]:PAL.paintRed[1], 'cloth'); } });
-  FURN({ key:'poor_clay_pots', name:'Clay storage pots', culture:'yuni-poor', room:'store', type:'storage', setting:'both', w:1.1, d:0.8, h:0.9, variants:1,
+  FURN({ key:'poor_clay_pots', name:'Clay storage pots', culture:'yuni-poor', room:'store', type:'container-food', setting:'both', w:1.1, d:0.8, h:0.9, variants:1,
     build:function(F){ for(var k=0;k<3;k++){ var x=-0.32+k*0.32, s=F.rr(0.8,1.1);
       F.lathe('tile', x, F.rr(-0.12,0.12), [[0.08*s,0],[0.17*s,0.25*s],[0.16*s,0.55*s],[0.08*s,0.75*s],[0.10*s,0.82*s]], F.pick(ADOBEREDC), {seg:8}); } } });
   FURN({ key:'nomad_rug_pile', name:'Pile of rugs and saddle-bags', culture:'nomad', room:'hall', type:'seating', setting:'both', w:2.2, d:1.6, h:0.6, variants:1,
     build:function(F){ for(var k=0;k<3;k++) F.box(F.rr(-0.1,0.1), k*0.07, F.rr(-0.1,0.1), 2.1-k*0.2, 0.07, 1.5-k*0.15, F.rr(-0.1,0.1), F.pick(CLOTHC), 'cloth');
       F.edome(-0.6,0.21,-0.4, 0.35,0.3,0.25, 0, F.pick(CLOTHC), 'cloth'); F.edome(0.5,0.21,-0.45, 0.3,0.26,0.22, 0, F.pick(CLOTHC), 'cloth'); } });
+  /* the minimum kit's small pieces: something a poor house keeps its things in, a big grain store for
+     a compound, and the floor coverings every main room gets */
+  FURN({ key:'poor_lidded_basket', name:'Lidded storage basket', culture:'yuni-poor', room:'hut', type:'container-item', setting:'indoor', w:0.55, d:0.55, h:0.74, variants:2, variantNames:['plain','bundle on the lid'],
+    build:function(F){ var c=F.pick(THATCHC);
+      F.lathe('thatch', 0,0, [[0.15,0],[0.24,0.08],[0.26,0.36],[0.23,0.48]], c, {seg:9});
+      F.lathe('thatch', 0,0, [[0.25,0.47],[0.26,0.52],[0.15,0.58],[0.04,0.61]], shade(c,-0.12), {seg:9});
+      F.box(0,0.24,0.25, 0.04,0.05,0.04, 0, TIMBERC[0], 'timber');
+      if(F.variant===1) F.edome(0.02,0.58,0, 0.17,0.14,0.13, 0.3, F.pick(CLOTHC), 'cloth'); } });
+  /* the smallest of each, for a hut too tight for the usual piece */
+  FURN({ key:'poor_food_pot', name:'Covered food pot', culture:'yuni-poor', room:'hut', type:'container-food', setting:'both', w:0.55, d:0.55, h:0.78, variants:1,
+    build:function(F){ var c=F.pick(ADOBEREDC);
+      F.lathe('adobe', 0,0, [[0.12,0],[0.25,0.22],[0.24,0.5],[0.14,0.64],[0.17,0.7]], c, {seg:9});
+      F.cyl(0,0.7,0, 0.19,0.05, 0, F.pick(THATCHC), 'thatch'); F.box(0,0,0, 0.5,0.04,0.5, 0, shade(c,-0.2), 'adobe'); } });
+  FURN({ key:'poor_sleeping_mat', name:'Rolled-out sleeping mat', culture:'yuni-poor', room:'hut', type:'bed', setting:'indoor', w:1.85, d:0.8, h:0.12, variants:1,
+    build:function(F){ var c=F.pick(THATCHC); F.box(0,0,0, 1.85,0.05,0.8, 0, shade(c,0.08), 'thatch');
+      F.box(0,0.05,0.05, 1.7,0.04,0.66, 0, F.pick(CLOTHC), 'cloth'); F.cyl(-0.72,0.1,0, 0.08,0.6, [Math.PI/2,0,0], PAL.whitewash[1], 'cloth'); } });
+  FURN({ key:'common_grain_bin', name:'Mud-brick grain bin', culture:'yuni-common', room:'store', type:'container-food', setting:'both', w:1.3, d:1.3, h:1.75, variants:1,
+    build:function(F){ var c=F.pick(ADOBEC);
+      F.lathe('adobe', 0,0, [[0.48,0],[0.62,0.25],[0.62,1.15],[0.46,1.45],[0.2,1.55]], c, {seg:10});
+      F.cone(0,1.5,0, 0.42,0.28, 0, F.pick(THATCHC), 'thatch');
+      F.box(0,0.85,0.55, 0.36,0.36,0.1, 0, PLANKC[1], 'plank'); F.box(0,0,0.0, 1.0,0.12,1.0, 0, shade(c,-0.15), 'adobe'); } });
+  FURN({ key:'poor_reed_mat', name:'Woven reed floor mat', culture:'yuni-poor', room:'hut', type:'rug', setting:'indoor', w:2.2, d:1.5, h:0.03, variants:2,
+    build:function(F){ var c=F.pick(THATCHC); F.box(0,0.005,0, 2.2,0.018,1.5, 0, shade(c,0.10), 'thatch');
+      for(var k=0;k<5;k++) F.box(0,0.012,-0.6+k*0.3, 2.1,0.016,0.07, 0, shade(c,-0.18), 'thatch');
+      if(F.variant===1) F.box(0,0.014,0, 0.5,0.016,1.4, 0, F.pick(PAL.paintRed), 'cloth'); } });
+  FURN({ key:'common_kilim', name:'Flat-woven kilim', culture:'yuni-common', room:'hall', type:'rug', setting:'indoor', w:2.6, d:1.7, h:0.03, variants:2,
+    build:function(F){ var c=F.pick(CLOTHC), r0=F.variant ? MOSBLUEC[3] : PAL.paintRed[0];
+      F.box(0,0.005,0, 2.6,0.018,1.7, 0, PAL.whitewash[2], 'cloth'); F.box(0,0.011,0, 2.3,0.018,1.4, 0, c, 'cloth');
+      F.box(0,0.017,0, 0.9,0.016,0.9, Math.PI/4, r0, 'cloth'); F.box(0,0.021,0, 0.42,0.016,0.42, Math.PI/4, PAL.whitewash[0], 'cloth');
+      [-1,1].forEach(function(s){ F.box(s*0.85,0.017,0, 0.3,0.016,0.3, Math.PI/4, r0, 'cloth'); }); } });
+  var CAP = { common_storage_chest:12, common_water_jars:3, common_grain_sacks:8, poor_clay_pots:6, ancient_cell_wall:24, salvage_locker_press:16,
+              order_mat_rack:6, poor_lidded_basket:4, common_grain_bin:24, poor_food_pot:3 };
+  FURNS.forEach(function(f){ if(f.type==='container-item' || f.type==='container-food') f.capacity = CAP[f.key] || 6; });
 
   /* ============================ FINISHES ============================ */
-  FINISH({ key:'mud_plain',     cultures:['yuni-poor'],               wealth:[0,1],    wall:{fam:'adobe',  cols:ADOBEC},  floor:{fam:'adobe', cols:PAL.lane},   ceil:{fam:'thatch', cols:THATCHC}, beams:true });
-  FINISH({ key:'mud_banco',     cultures:['sahelian','nomad'],        wealth:[0,1],    wall:{fam:'adobe',  cols:ADOBEREDC}, floor:{fam:'adobe', cols:PAL.lane},  ceil:{fam:'plank', cols:PLANKC},  beams:true });
-  FINISH({ key:'lime_wash',     cultures:['yuni-common'],             wealth:[0,0.55], wall:{fam:'plaster',cols:WHITEC},  floor:{fam:'adobe', cols:PAL.paving}, ceil:{fam:'plank', cols:PLANKC},  beams:true });
-  FINISH({ key:'blue_wash',     cultures:['yuni-common'],             wealth:[0.4,1],  wall:{fam:'plaster',cols:BLUELC},  floor:{fam:'tile',  cols:TILEC},      ceil:{fam:'plank', cols:PLANKC},  beams:true });
-  FINISH({ key:'court_mosaic',  cultures:['yuni-court'],              wealth:[0,1],    wall:{fam:'plaster',cols:WHITEC},  floor:{fam:'mosaic',cols:MOSBLUEC},   ceil:{fam:'plaster',cols:BLUELC}, beams:false, dado:{fam:'mosaic', cols:MOSWARMC} });
-  FINISH({ key:'order_stone',   cultures:['order'],                   wealth:[0,1],    wall:{fam:'plaster',cols:WHITEC},  floor:{fam:'rock',  cols:PAL.pavingRich}, ceil:{fam:'plank', cols:PLANKC}, beams:true });
-  FINISH({ key:'ancient_panel', cultures:['ancient','ancients-salvage'],wealth:[0,1],  wall:{fam:'metal',  cols:TARNC},   floor:{fam:'concrete',cols:CONCRETEC}, ceil:{fam:'metal', cols:TARNC},  beams:false });
+  /* FLOORS READ. A floor is a light base, a pattern drawn over it and a border band, by culture and
+     class: beaten earth with swept patches (the poor, the Sahelian banco, the salvage lean-tos),
+     planks (the plain common house), fired tile (the washed townhouse), a cream mosaic with a blue
+     border and medallion (the court), flagstones (the Order, the Ancients). The base colours are
+     the LIGHT end of each palette: an interior is lit at a quarter of the sun, and a mid-tone floor
+     there reads as black. `pattern` is exported on each room as `floor`. */
+  FINISH({ key:'mud_plain',     cultures:['yuni-poor'],               wealth:[0,1],    wall:{fam:'adobe',  cols:ADOBEC},  floor:{fam:'adobe', cols:PAL.paving, pattern:'earth'},   ceil:{fam:'thatch', cols:THATCHC}, beams:true });
+  FINISH({ key:'mud_banco',     cultures:['sahelian','nomad'],        wealth:[0,1],    wall:{fam:'adobe',  cols:ADOBEREDC}, floor:{fam:'adobe', cols:[ADOBEC[2], ADOBEC[4]], pattern:'earth'},  ceil:{fam:'plank', cols:PLANKC},  beams:true });
+  FINISH({ key:'lime_wash',     cultures:['yuni-common'],             wealth:[0,0.55], wall:{fam:'plaster',cols:WHITEC},  floor:{fam:'plank', cols:[PLANKC[0], PLANKC[2]], pattern:'plank'}, ceil:{fam:'plank', cols:PLANKC},  beams:true });
+  FINISH({ key:'blue_wash',     cultures:['yuni-common'],             wealth:[0.4,1],  wall:{fam:'plaster',cols:BLUELC},  floor:{fam:'tile',  cols:[TILEC[0], TILEC[2]], pattern:'tile'},      ceil:{fam:'plank', cols:PLANKC},  beams:true });
+  FINISH({ key:'court_mosaic',  cultures:['yuni-court'],              wealth:[0,1],    wall:{fam:'plaster',cols:WHITEC},  floor:{fam:'mosaic',cols:PAL.pavingRich, pattern:'mosaic', accent:MOSBLUEC},   ceil:{fam:'plaster',cols:BLUELC}, beams:false, dado:{fam:'mosaic', cols:MOSWARMC} });
+  FINISH({ key:'order_stone',   cultures:['order'],                   wealth:[0,1],    wall:{fam:'plaster',cols:WHITEC},  floor:{fam:'rock',  cols:PAL.pavingRich, pattern:'flag'}, ceil:{fam:'plank', cols:PLANKC}, beams:true });
+  FINISH({ key:'ancient_panel', cultures:['ancient'],                 wealth:[0,1],    wall:{fam:'metal',  cols:TARNC},   floor:{fam:'concrete',cols:[CONCRETEC[2], CONCRETEC[0]], pattern:'flag'}, ceil:{fam:'metal', cols:TARNC},  beams:false });
+  /* the lean-tos against the Ancients' buildings: mud walls, swept earth, the tarnished panel they roofed it with */
+  FINISH({ key:'salvage_mud',   cultures:['ancients-salvage'],        wealth:[0,1],    wall:{fam:'adobe',  cols:ADOBEC},  floor:{fam:'adobe', cols:PAL.paving, pattern:'earth'}, ceil:{fam:'metal', cols:TARNC}, beams:true });
 
   /* ============================ PARTITIONS ============================ */
   PARTITION({ key:'mud_partition',  cultures:['yuni-poor','sahelian'], thick:0.22, fam:'adobe',   door:{ style:'mat',    w:0.85, h:1.9 } });
@@ -151,8 +196,8 @@ function ROOM_PROGRAM(type, fn){ ROOM_PROGRAMS[type] = fn; }
   /* ============================ LAYOUTS ============================ */
   var C='yuni-common', P='yuni-poor', K='yuni-court', S='sahelian', O='order', N='nomad';
   LAYOUT({ key:'living_common', room:'living', cultures:[C,S], wealth:[0,1], items:[ {furn:'common_rope_bed',at:'back'}, {furn:'common_floor_seating',at:'left'}, {furn:'common_low_table',at:'centre',opt:1}, {furn:'common_water_jars',at:'corner'}, {furn:'common_storage_chest',at:'right',opt:1} ] });
-  LAYOUT({ key:'hut_poor',      room:'hut',    cultures:[P], wealth:[0,1], items:[ {furn:'poor_reed_mat_bed',at:'back'}, {furn:'poor_hearth_stones',at:'centre'}, {furn:'poor_clay_pots',at:'corner'}, {furn:'common_floor_seating',at:'left',opt:1,variant:0} ] });
-  LAYOUT({ key:'living_poor',   room:'living', cultures:[P], wealth:[0,1], items:[ {furn:'poor_reed_mat_bed',at:'back'}, {furn:'poor_hearth_stones',at:'centre'}, {furn:'poor_clay_pots',at:'corner'} ] });
+  LAYOUT({ key:'hut_poor',      room:'hut',    cultures:[P], wealth:[0,1], items:[ {furn:'poor_reed_mat_bed',at:'back'}, {furn:'poor_hearth_stones',at:'centre'}, {furn:'poor_clay_pots',at:'corner'}, {furn:'poor_lidded_basket',at:'corner'}, {furn:'common_floor_seating',at:'left',opt:1,variant:0} ] });
+  LAYOUT({ key:'living_poor',   room:'living', cultures:[P], wealth:[0,1], items:[ {furn:'poor_reed_mat_bed',at:'back'}, {furn:'poor_hearth_stones',at:'centre'}, {furn:'poor_clay_pots',at:'corner'}, {furn:'poor_lidded_basket',at:'corner'} ] });
   LAYOUT({ key:'hall_common',   room:'hall',   cultures:[C], wealth:[0,1], items:[ {furn:'common_floor_seating',at:'back',variant:1}, {furn:'common_low_table',at:'centre'}, {furn:'common_floor_seating',at:'left',opt:1}, {furn:'common_water_jars',at:'corner',opt:1} ] });
   LAYOUT({ key:'hall_sahelian', room:'hall',   cultures:[S,N], wealth:[0,1], items:[ {furn:'nomad_rug_pile',at:'back'}, {furn:'common_low_table',at:'centre'}, {furn:'sahelian_carved_stool',at:'centre',opt:1}, {furn:'sahelian_carved_stool',at:'centre',opt:1}, {furn:'sahelian_loom',at:'right',opt:1} ] });
   LAYOUT({ key:'hall_court',    room:'hall',   cultures:[K], wealth:[0,1], items:[ {furn:'court_carpet',at:'centre'}, {furn:'court_mosaic_divan',at:'back',variant:1}, {furn:'court_mosaic_divan',at:'left',opt:1}, {furn:'court_brass_brazier',at:'corner'}, {furn:'court_brass_brazier',at:'corner',opt:1}, {furn:'common_low_table',at:'centre',opt:1,variant:1} ] });
@@ -168,6 +213,13 @@ function ROOM_PROGRAM(type, fn){ ROOM_PROGRAMS[type] = fn; }
   LAYOUT({ key:'tavern_common', room:'tavern', cultures:[C,K,S,N,P], wealth:[0,1], items:[ {furn:'common_shop_counter',at:'back',variant:1}, {furn:'common_tavern_table',at:'grid'}, {furn:'common_water_jars',at:'corner',opt:1} ] });
   LAYOUT({ key:'workshop_common',room:'workshop',cultures:[C,K,S,N,P], wealth:[0,1], items:[ {furn:'common_workbench',at:'back'}, {furn:'common_wall_shelves',at:'left',variant:0}, {furn:'sahelian_carved_stool',at:'centre',opt:1}, {furn:'common_grain_sacks',at:'corner',opt:1} ] });
   LAYOUT({ key:'study_order',   room:'study',  cultures:[O,K,C], wealth:[0,1], items:[ {furn:'order_reading_desk',at:'back'}, {furn:'order_shelf_run',at:'run-left'}, {furn:'order_master_chair',at:'centre',opt:1} ] });
+  /* the salvage lean-tos against the Ancients: one room, furnished from what the building shed */
+  var V='ancients-salvage';
+  LAYOUT({ key:'living_salvage',room:'living', cultures:[V], wealth:[0,1], items:[ {furn:'salvage_strut_bed',at:'back'}, {furn:'salvage_locker_press',at:'left'}, {furn:'poor_clay_pots',at:'corner'}, {furn:'salvage_lamp_stand',at:'corner',opt:1}, {furn:'salvage_panel_table',at:'right',opt:1} ] });
+  LAYOUT({ key:'hut_salvage',   room:'hut',    cultures:[V], wealth:[0,1], items:[ {furn:'salvage_strut_bed',at:'back'}, {furn:'poor_clay_pots',at:'corner'}, {furn:'poor_lidded_basket',at:'corner'}, {furn:'salvage_lamp_stand',at:'corner',opt:1} ] });
+  /* the caravanserai's cells: a guest room is a bed and a chest, a storeroom is sacks and bales */
+  LAYOUT({ key:'guest_nomad',   room:'bedroom',cultures:[N], wealth:[0,1], items:[ {furn:'common_rope_bed',at:'back',variant:1}, {furn:'common_storage_chest',at:'left'}, {furn:'nomad_rug_pile',at:'right',opt:1} ] });
+  LAYOUT({ key:'store_caravan', room:'store',  cultures:[N], wealth:[0,1], items:[ {furn:'common_grain_sacks',at:'run-back'}, {furn:'common_water_jars',at:'corner'}, {furn:'common_storage_chest',at:'left'}, {furn:'poor_clay_pots',at:'corner',opt:1} ] });
 })();
 
 /* ============================ THE PLANNER ============================ */
@@ -210,29 +262,81 @@ function interiorPlan(bid){
   INTERIOR_CACHE[bid] = P; return P;
 }
 
+/* INTERIOR_CUSTOM[assetKey] = function(b, rng) -> plan | null: a hand-written planner for a building
+   the automatic one cannot read (the caravanserai's rooms sit behind galleries, with no F.door) */
+var INTERIOR_CUSTOM = {};
 function planBuilding(b){
-  var A = ASSET_BY_KEY[b.asset];
-  if(!A || INTERIOR_SKIP[A.key] || !INTERIOR_FAMS[A.family] || !b.doors || !b.bodies.length) return null;
-  var rng = intRng(b.seed*7+b.variant*131+3), plan = { bid:b.id, asset:b.asset, culture:b.culture, types:b.types,
+  var A = ASSET_BY_KEY[b.asset]; if(!A) return null;
+  if(INTERIOR_CUSTOM[A.key]){ var rc = intRng(b.seed*7+b.variant*131+3), Pc = INTERIOR_CUSTOM[A.key](b, rc); if(Pc) ensureKit(Pc, b, rc); return Pc; }
+  /* AN ANCIENT BUILDING is not fitted out, but the lean-tos its new owners built against it are:
+     a door into a small captured body (61d-ancients-assets.js) is planned as a salvage dwelling */
+  var lean = A.family==='ancient';
+  if(INTERIOR_SKIP[A.key] || !(INTERIOR_FAMS[A.family] || lean) || !b.doors || !b.bodies.length) return null;
+  var bp = lean ? planView(b, 'ancients-salvage', ['dwelling-single']) : b;
+  var rng = intRng(b.seed*7+b.variant*131+3), plan = { bid:b.id, asset:b.asset, culture:bp.culture, types:bp.types,
     levels:[], rooms:[], walls:[], doors:[], stairs:[], furniture:[], groups:[], nav:{ nodes:[], edges:[] } };
-  var finish = intPickMod(rng, FINISHES, b), part = intPickMod(rng, PARTITIONS_LIST(), b);
-  plan.finish = finish.key; plan.partition = part.key;
+  var finish = intPickMod(rng, FINISHES, bp), part = intPickMod(rng, PARTITIONS_LIST(), bp);
+  plan.finish = finish.key; plan.partition = part.key; plan.floor = finish.floor.pattern || 'earth';
   var used = [];
   b.doors.forEach(function(did){
     var D = FIX.byId[did]; if(!D || D.to!=='interior') return;
     var p = intToLocal(b, D.x, D.z), ly = D.y - b.y, yawL = D.yaw - b.yaw, nx=Math.sin(yawL), nz=Math.cos(yawL);
     var B = intBodyAt(b, p[0]-nx*0.7, p[1]-nz*0.7, ly); if(!B) return;
+    if(lean && !(B.k==='box' && B.w*B.d < 45)) return;
     var gi = used.indexOf(B);
-    if(gi<0){ used.push(B); gi = plan.groups.length; plan.groups.push(planGroup(plan, b, B, { p:p, nx:nx, nz:nz, ly:ly, D:D }, rng, finish, part)); }
+    if(gi<0){ used.push(B); gi = plan.groups.length; plan.groups.push(planGroup(plan, bp, B, { p:p, nx:nx, nz:nz, ly:ly, D:D }, rng, finish, part)); }
     else plan.groups[gi].extraDoors.push({ p:p, nx:nx, nz:nz, ly:ly, D:D });
   });
   plan.groups = plan.groups.filter(function(g){ return g && g.ok; });
   if(!plan.groups.length) return null;
-  plan.groups.forEach(function(g){ emitGroup(plan, b, g, rng, part); });
+  plan.groups.forEach(function(g){ emitGroup(plan, bp, g, rng, part); });
   plan.levels = plan.groups[0].levels;
   if(INTERIOR_PLANS[b.asset]) INTERIOR_PLANS[b.asset](plan, { building:b, rng:rng });
+  ensureKit(plan, b, rng);
   return plan;
 }
+/* the building as the planner should read it (a lean-to is a salvage dwelling, whatever its host is) */
+function planView(b, culture, types){ var o = Object.create(b); o.culture = culture; o.types = types; return o; }
+
+/* THE CARAVANSERAI (56-mid.js, 96 x 72): its rooms are the cells of the ranges round the court, each
+   behind one of the dark doorways under the gallery. Those doorways are painted, not F.door, so the
+   automatic planner sees nothing; this lays one room per doorway along the back range (stores, the
+   kitchen, the common room, guest rooms) and the right-hand range (guest rooms and a store), on the
+   court level. The left range is the stables. Rooms are data first, like every other plan: they
+   draw in the cutaway, and their beds and containers export. */
+INTERIOR_CUSTOM.trade_caravanserai = function(b, rng){
+  var X=47, Z=35, RB=4.7, G=7.5, xi=X-G, zi=Z-G, LB=2*xi, LS=2*zi, y0=0.08, H=3.7, DEP=RB-0.6;
+  var plan = { bid:b.id, asset:b.asset, culture:b.culture, types:b.types, levels:[], rooms:[], walls:[], doors:[], stairs:[], furniture:[], groups:[], nav:{ nodes:[], edges:[] } };
+  var finish = intPickMod(rng, FINISHES, b), part = PARTITIONS.cloth_screen;
+  plan.finish = finish.key; plan.partition = part.key; plan.floor = finish.floor.pattern || 'earth';
+  var cells = [];
+  var back = ['store','kitchen','store','tavern','bedroom','bedroom','bedroom','store'];
+  for(var i=0;i<15;i+=2) cells.push({ c:[(i-7)*LB/15, -Z+RB+0.3], V:[0,-1], hw:LB/15-0.2, kind:back[i/2] });
+  var right = ['bedroom','bedroom','store','bedroom','bedroom','bedroom'];
+  for(i=0;i<11;i+=2) cells.push({ c:[X-RB-0.3, (i-5)*LS/11], V:[1,0], hw:LS/11-0.2, kind:right[i/2] });
+  cells.forEach(function(C, n){
+    var V=C.V, U=[-V[1], V[0]], O=C.c, gid=plan.groups.length;
+    var g = { ok:true, body:null, door:null, extraDoors:[], levels:[], zones:[], round:false, hv0:DEP/2,
+              frame:{ O:O, U:U, V:V, C:[O[0]+V[0]*DEP/2, O[1]+V[1]*DEP/2] } };
+    g.RF = function(u,v){ return [O[0]+U[0]*u+V[0]*v, O[1]+U[1]*u+V[1]*v]; };
+    var L = { k:0, y:y0, H:H, hu:C.hw, v0:0, v1:DEP }, z = { kind:C.kind, u0:-C.hw, u1:C.hw, v0:0, v1:DEP };
+    L.zones=[z]; g.levels.push(L); plan.groups.push(g);
+    var id = plan.bid+'.room.'+plan.rooms.length, poly=[g.RF(z.u0,z.v0), g.RF(z.u1,z.v0), g.RF(z.u1,z.v1), g.RF(z.u0,z.v1)];
+    z.id=id; z.lvl=0; z.group=gid;
+    plan.rooms.push({ id:id, lvl:0, kind:z.kind, group:gid, poly:poly.map(function(p){ return [+p[0].toFixed(3), +p[1].toFixed(3)]; }), y:y0, h:H, finish:plan.finish, floor:plan.floor, layout:null, _z:z });
+    /* the doorway to the gallery, in the middle of the court face */
+    var dp = g.RF(0, -0.15), did = plan.bid+'.cell.'+n+'.door';
+    plan.doors.push({ id:did, kind:'interior', style:'open', at:[+dp[0].toFixed(3), +dp[1].toFixed(3)], y:y0, yaw:+Math.atan2(-V[0], -V[1]).toFixed(4),
+      w:1.1, h:2.1, rooms:[id, 'court'], group:gid, wall:null, lvl:0 });
+    var pd = { p:dp, nx:-V[0], nz:-V[1], ly:y0, D:{ id:did, w:1.1, h:2.1 } };
+    var c4 = [[-L.hu,L.v0],[L.hu,L.v0],[L.hu,L.v1],[-L.hu,L.v1]];
+    for(var j=0;j<4;j++) addShell(plan, b, g, L, g.RF(c4[j][0],c4[j][1]), g.RF(c4[(j+1)%4][0],c4[(j+1)%4][1]), [pd]);
+    furnishGroup(plan, b, g, rng);
+    navGroup(plan, b, g);
+  });
+  plan.levels = plan.groups[0].levels;
+  return plan;
+};
 function PARTITIONS_LIST(){ var o=[]; for(var k in PARTITIONS) o.push(PARTITIONS[k]); return o; }
 
 /* one body -> a group: frame, levels, zones */
@@ -314,7 +418,7 @@ function emitGroup(plan, b, g, rng, part){
       if(g.round){ poly=[]; var ad=Math.atan2(-f.V[1], -f.V[0]); for(var i=0;i<10;i++){ var a=ad+(i-0.5)/10*TAU; poly.push([f.C[0]+Math.cos(a)*g.R, f.C[1]+Math.sin(a)*g.R]); } }
       else poly = [RF(z.u0,z.v0), RF(z.u1,z.v0), RF(z.u1,z.v1), RF(z.u0,z.v1)];
       z.id = id; z.lvl = L.k; z.group = gid;
-      plan.rooms.push({ id:id, lvl:L.k, kind:z.kind, group:gid, poly:poly.map(function(p){ return [+p[0].toFixed(3), +p[1].toFixed(3)]; }), y:L.y, h:L.H, finish:plan.finish, layout:null, _z:z });
+      plan.rooms.push({ id:id, lvl:L.k, kind:z.kind, group:gid, poly:poly.map(function(p){ return [+p[0].toFixed(3), +p[1].toFixed(3)]; }), y:L.y, h:L.H, finish:plan.finish, floor:plan.floor, layout:null, _z:z });
     });
     /* partitions (internal splits). A wall the stair passes through stops short of it. */
     if(zones.length>1){
@@ -381,13 +485,12 @@ function addShell(plan, b, g, L, A, B, doors){
 
 /* ---- the furniture placer: anchors resolved in each zone's own (u,v) rectangle ---- */
 function furnishGroup(plan, b, g, rng){
+  var gid = plan.groups.indexOf(g);
   plan.rooms.forEach(function(R){
-    if(R.group !== plan.groups.indexOf(g)) return;
-    var z = R._z, cand = LAYOUTS.filter(function(l){ return l.room===z.kind && l.cultures.indexOf(b.culture)>=0 && b.wealth>=l.wealth[0] && b.wealth<=l.wealth[1]; });
+    if(R.group !== gid) return;
+    var z = R._z, cand = LAYOUTS.filter(function(l){ return l.room===z.kind && l.cultures.indexOf(plan.culture)>=0 && b.wealth>=l.wealth[0] && b.wealth<=l.wealth[1]; });
     if(!cand.length) cand = LAYOUTS.filter(function(l){ return l.room===z.kind && l.cultures.indexOf('yuni-common')>=0; });
     if(!cand.length) cand = LAYOUTS.filter(function(l){ return l.room===z.kind; });
-    if(!cand.length) return;
-    var lay = intPick(rng, cand); R.layout = lay.key;
     var U0=z.u0+0.08, U1=z.u1-0.08, V0=z.v0+0.08, V1=z.v1-0.08, placed=[], keep=[];
     if(g.round){ var r2=g.R*0.70; U0=-r2; U1=r2; V0=g.R-r2; V1=g.R+r2; }
     /* keep-outs: every door's swing and approach, the stair and its landing */
@@ -397,13 +500,38 @@ function furnishGroup(plan, b, g, rng){
     if(g.stair){ var s=g.stair; keep.push([s.u0-0.1, s.va-1.0, s.u1+0.1, s.vb+1.0]); }
     function free(r){ if(r[0]<U0-1e-6||r[2]>U1+1e-6||r[1]<V0-1e-6||r[3]>V1+1e-6) return false;
       var all=placed.concat(keep); for(var i=0;i<all.length;i++){ var q=all[i]; if(r[0]<q[2]-0.02 && r[2]>q[0]+0.02 && r[1]<q[3]-0.02 && r[3]>q[1]+0.02) return false; } return true; }
+    function record(it, Fd, u, v, face, extra){
+      var fw = [g.frame.U[0]*face[0]+g.frame.V[0]*face[1], g.frame.U[1]*face[0]+g.frame.V[1]*face[1]], p=g.RF(u,v);
+      var rec = { id:R.id+'.f'+plan.furniture.length, furn:Fd.key, variant:it.variant!=null?it.variant%Fd.variants:Math.floor(rng()*Fd.variants), room:R.id,
+        at:[+p[0].toFixed(3), +p[1].toFixed(3)], y:R.y, yaw:+Math.atan2(fw[0], fw[1]).toFixed(4), seed:Math.floor(rng()*1e6) };
+      if(extra) for(var k in extra) rec[k]=extra[k];
+      plan.furniture.push(rec); return rec; }
     function tryAt(it, Fd, u, v, face){ /* face: unit (fu,fv) the piece's front looks along */
       var along = Math.abs(face[1])>0.5, ew = along?Fd.w:Fd.d, ed = along?Fd.d:Fd.w, r=[u-ew/2, v-ed/2, u+ew/2, v+ed/2];
-      if(!free(r)) return false; placed.push(r);
-      var fw = [g.frame.U[0]*face[0]+g.frame.V[0]*face[1], g.frame.U[1]*face[0]+g.frame.V[1]*face[1]], p=g.RF(u,v);
-      plan.furniture.push({ id:R.id+'.f'+plan.furniture.length, furn:Fd.key, variant:it.variant!=null?it.variant%Fd.variants:Math.floor(rng()*Fd.variants), room:R.id,
-        at:[+p[0].toFixed(3), +p[1].toFixed(3)], y:R.y, yaw:+Math.atan2(fw[0], fw[1]).toFixed(4), seed:Math.floor(rng()*1e6) });
-      return true; }
+      if(!free(r)) return false; placed.push(r); record(it, Fd, u, v, face); return true; }
+    /* anywhere it fits: against each wall in turn, sliding along it, then out in the room */
+    function fitAnywhere(Fd, it){
+      var st=0.3, u, v;
+      for(var k=0; k<=Math.ceil((U1-U0)/st); k++){ u=U0+Fd.w/2+k*st; if(u>U1-Fd.w/2+1e-6) break; if(tryAt(it,Fd, u, V1-Fd.d/2, [0,-1])) return true; }
+      for(k=0; k<=Math.ceil((V1-V0)/st); k++){ v=V1-Fd.w/2-k*st; if(v<V0+Fd.w/2-1e-6) break; if(tryAt(it,Fd, U0+Fd.d/2, v, [1,0])) return true; if(tryAt(it,Fd, U1-Fd.d/2, v, [-1,0])) return true; }
+      for(k=0; k<=Math.ceil((U1-U0)/st); k++){ u=U0+Fd.w/2+k*st; if(u>U1-Fd.w/2+1e-6) break; if(tryAt(it,Fd, u, V0+Fd.d/2, [0,1])) return true; }
+      for(u=U0+Fd.w/2; u<=U1-Fd.w/2+1e-6; u+=st) for(v=V0+Fd.d/2; v<=V1-Fd.d/2+1e-6; v+=st) if(tryAt(it,Fd, u, v, [0,-1])) return true;
+      return false; }
+    R._fit = { fitAnywhere:fitAnywhere, record:record };
+    /* THE FLOOR COVERING. The room you walk into gets a rug or a mat, laid first and outside
+       the collision test (furniture stands on it). Culture picks it; size picks whether it fits. */
+    var main = R.lvl===0 && plan.rooms.filter(function(q){ return q.group===gid && q.lvl===0; })[0]===R;
+    if(main && !(cand.length===1 && cand[0].items.some(function(it){ var F0=FURN_BY_KEY[it.furn]; return F0 && F0.type==='rug'; }))){
+      var rugs = RUG_BY_CULTURE[plan.culture] || RUG_BY_CULTURE['yuni-common'];
+      for(var ri=0; ri<rugs.length; ri++){ var RF0=FURN_BY_KEY[rugs[ri]]; if(!RF0) continue;
+        var spanU=U1-U0, spanV=V1-V0, rot = (spanU < RF0.w+0.3 && spanV >= RF0.w+0.3);
+        var ew=rot?RF0.d:RF0.w, ed=rot?RF0.w:RF0.d;
+        if(ew+0.3 <= spanU && ed+0.3 <= spanV){ record({}, RF0, (U0+U1)/2, (V0+V1)/2, rot?[1,0]:[0,-1], { cover:true }); break; } } }
+    if(!cand.length) return;
+    var lay = intPick(rng, cand); R.layout = lay.key;
+    /* THE KIT IS NEVER DROPPED. Items go down in the layout's order (the room's main piece — the
+       hearth, the counter — first); a required bed or container that misses its anchor goes
+       wherever it fits, and ensureKit() tops up whatever is still missing after every room. */
     lay.items.forEach(function(it){
       var Fd = FURN_BY_KEY[it.furn]; if(!Fd) return;
       var W=U1-U0, um=(U0+U1)/2, vm=(V0+V1)/2, ok=false, at=it.at, i, list;
@@ -417,8 +545,109 @@ function furnishGroup(plan, b, g, rng){
         if(rng()<0.5) cs=[cs[1],cs[0],cs[3],cs[2]]; for(i=0;i<cs.length && !ok;i++) ok=tryAt(it,Fd, cs[i][0], cs[i][1], cs[i][2]); }
       else if(at==='grid'){ var sx=Fd.w+1.1, sz=Fd.d+1.1; for(var gu=U0+Fd.w/2+0.4; gu<=U1-Fd.w/2-0.4; gu+=sx) for(var gv=V0+Fd.d/2+0.9; gv<=V1-Fd.d/2-0.4; gv+=sz) tryAt(it,Fd, gu, gv, [0,-1]); }
       else { list=[[0,0],[0.18,0],[-0.18,0],[0,0.15],[0,-0.15],[0.22,0.2],[-0.22,0.2]]; for(i=0;i<list.length && !ok;i++) ok=tryAt(it,Fd, um+list[i][0]*W, vm+list[i][1]*(V1-V0), [0,-1]); }
+      /* a required kit piece that missed its anchor goes wherever it fits */
+      if(!ok && !it.opt && KIT_TYPES[Fd.type] && at!=='grid' && at.indexOf('run-')<0) fitAnywhere(Fd, it);
     });
   });
+}
+
+/* ============================ THE MINIMUM KIT ============================
+   Every building has to hold things, and every home has to be slept in and eaten from, because
+   the game reads these slots as beds, loot and inventory:
+     dwelling (dwelling-single / dwelling-multi)  a bed per bedroom (and at least 1; 2 in a
+        multi-family building), a food container (2 in a compound, a multi-family building or a
+        wealthy house) and an item container (2 in a compound or multi-family building)
+     every building  at least one item container
+     food            a food container in every kitchen, store, shop and tavern room, and in every
+                     building typed shop, tavern, inn or farm (granaries, farmsteads, the caravanserai)
+   ensureKit() runs after a plan is furnished and places what the layouts did not, in the room
+   that suits it, wherever it fits. A slot that fits nowhere is still recorded, `virtual:true`,
+   with no geometry, so the game always has it. Buildings with no planned interior get a
+   minimal data-only plan of virtual slots (buildingKit()). */
+var KIT_TYPES = { 'bed':1, 'container-item':1, 'container-food':1 };
+var KIT_PIECES = {
+  'yuni-poor':        { bed:['poor_reed_mat_bed','poor_sleeping_mat'], food:['poor_clay_pots','common_water_jars','poor_food_pot'], item:['poor_lidded_basket','common_storage_chest'], store:['common_grain_bin','common_grain_sacks','poor_food_pot'] },
+  'yuni-common':      { bed:['common_rope_bed','poor_reed_mat_bed','poor_sleeping_mat'], food:['common_grain_sacks','common_water_jars','poor_clay_pots','poor_food_pot'], item:['common_storage_chest','poor_lidded_basket'], store:['common_grain_bin','common_grain_sacks','poor_food_pot'] },
+  'yuni-court':       { bed:['court_canopy_bed','common_rope_bed','poor_reed_mat_bed','poor_sleeping_mat'], food:['common_water_jars','common_grain_sacks','poor_clay_pots','poor_food_pot'], item:['common_storage_chest','poor_lidded_basket'], store:['common_grain_bin','common_grain_sacks','poor_food_pot'] },
+  'sahelian':         { bed:['common_rope_bed','poor_reed_mat_bed','poor_sleeping_mat'], food:['poor_clay_pots','common_grain_sacks','common_water_jars','poor_food_pot'], item:['common_storage_chest','poor_lidded_basket'], store:['common_grain_bin','common_grain_sacks','poor_food_pot'] },
+  'nomad':            { bed:['common_rope_bed','poor_reed_mat_bed','poor_sleeping_mat'], food:['common_grain_sacks','common_water_jars','poor_clay_pots','poor_food_pot'], item:['common_storage_chest','poor_lidded_basket'], store:['common_grain_sacks','common_grain_bin','poor_food_pot'] },
+  'order':            { bed:['common_rope_bed','poor_reed_mat_bed','poor_sleeping_mat'], food:['common_water_jars','common_grain_sacks','poor_clay_pots','poor_food_pot'], item:['common_storage_chest','poor_lidded_basket'], store:['common_grain_sacks','common_grain_bin','poor_food_pot'] },
+  'ancients-salvage': { bed:['salvage_strut_bed','poor_reed_mat_bed','poor_sleeping_mat'], food:['poor_clay_pots','common_water_jars','poor_food_pot'], item:['salvage_locker_press','poor_lidded_basket'], store:['common_grain_sacks','poor_clay_pots','poor_food_pot'] },
+  'ancient':          { bed:['ancient_berth','salvage_strut_bed','poor_reed_mat_bed','poor_sleeping_mat'], food:['poor_clay_pots','common_water_jars','poor_food_pot'], item:['ancient_cell_wall','salvage_locker_press','poor_lidded_basket'], store:['common_grain_sacks','poor_clay_pots','poor_food_pot'] }
+};
+var RUG_BY_CULTURE = { 'yuni-poor':['poor_reed_mat'], 'ancients-salvage':['poor_reed_mat'], 'yuni-court':['court_carpet','common_kilim','poor_reed_mat'],
+  'yuni-common':['common_kilim','poor_reed_mat'], 'sahelian':['common_kilim','poor_reed_mat'], 'nomad':['common_kilim','poor_reed_mat'], 'order':['poor_reed_mat'] };
+var FOOD_ROOMS = { kitchen:1, store:1, shop:1, tavern:1 };
+var FOOD_TYPES = { shop:1, tavern:1, inn:1, farm:1 };
+function kitPieces(culture){ return KIT_PIECES[culture] || KIT_PIECES['yuni-common']; }
+function isDwelling(b){ return b.types.some(function(t){ return t==='dwelling-single' || t==='dwelling-multi'; }); }
+function kitNeeds(b, P){
+  var dw = isDwelling(b), multi = b.types.indexOf('dwelling-multi')>=0, compound = multi || /compound|apartments/.test(b.asset);
+  var bedrooms = P ? P.rooms.filter(function(r){ return r.kind==='bedroom'; }).length : 0;
+  return { bed: dw ? Math.max(1, bedrooms, multi?2:1) : 0,
+           food: dw ? ((compound || b.wealth>0.7) ? 2 : 1) : (b.types.some(function(t){ return FOOD_TYPES[t]; }) ? 1 : 0),
+           item: compound ? 2 : 1, dwelling:dw, compound:compound };
+}
+function kitKind(type){ return type==='bed' ? 'bed' : type==='container-food' ? 'food' : type==='container-item' ? 'item' : null; }
+function ensureKit(plan, b, rng){
+  var need = kitNeeds(b, plan), K = kitPieces(plan.culture);
+  function inRoom(kind, rid){ return plan.furniture.filter(function(f){ var F0=FURN_BY_KEY[f.furn]; return F0 && kitKind(F0.type)===kind && (!rid || f.room===rid); }).length; }
+  function place(keys, R){ if(!R || !R._fit) return false;
+    for(var i=0;i<keys.length;i++){ var Fd=FURN_BY_KEY[keys[i]]; if(Fd && R._fit.fitAnywhere(Fd, {})) return true; } return false; }
+  function virtualSlot(keys, R){ var R0 = R || plan.rooms[0], c=[0,0]; R0.poly.forEach(function(p){ c[0]+=p[0]/R0.poly.length; c[1]+=p[1]/R0.poly.length; });
+    plan.furniture.push({ id:R0.id+'.f'+plan.furniture.length, furn:keys[0], variant:0, room:R0.id, at:[+c[0].toFixed(3), +c[1].toFixed(3)], y:R0.y, yaw:0, seed:0, virtual:true }); }
+  function rank(prefer){ return plan.rooms.slice().sort(function(p,q){ return (prefer.indexOf(p.kind)<0?9:prefer.indexOf(p.kind)) - (prefer.indexOf(q.kind)<0?9:prefer.indexOf(q.kind)); }); }
+  /* per room: a bed in each bedroom, food where food is kept */
+  plan.rooms.forEach(function(R){
+    if(R.kind==='bedroom' && !inRoom('bed', R.id) && !place(K.bed, R)) virtualSlot(K.bed, R);
+    if(FOOD_ROOMS[R.kind] && !inRoom('food', R.id) && !place(R.kind==='store' && need.compound ? K.store.concat(K.food) : K.food, R)) virtualSlot(K.food, R);
+  });
+  /* per building: the totals */
+  [['bed', need.bed, K.bed, ['bedroom','hut','living','hall']],
+   ['food', need.food, need.compound ? K.store.concat(K.food) : K.food, ['kitchen','store','hut','living','shop','tavern','hall']],
+   ['item', need.item, K.item, ['bedroom','store','hut','living','hall','study','workshop','shop']]].forEach(function(n){
+    var guard=0;
+    while(inRoom(n[0]) < n[1] && guard++ < 6){
+      var rooms = rank(n[3]), ok=false;
+      for(var i=0;i<rooms.length && !ok;i++) ok = place(n[2], rooms[i]);
+      if(!ok){ virtualSlot(n[2], rooms[0]); }
+    } });
+}
+/* the kit of any building, planned or not: { bid, needs, slots[], minimal } — slots are the beds and
+   containers by kind, with their furniture id when a planned room holds them */
+var KIT_CACHE = {};
+function buildingKit(bid){
+  if(bid in KIT_CACHE) return KIT_CACHE[bid];
+  var b = FIX.byId[bid]; if(!b) return null;
+  var P = interiorPlan(bid), need = kitNeeds(b, P), out = { bid:bid, needs:{ bed:need.bed, food:need.food, item:need.item }, slots:[], minimal:!P };
+  if(P){ P.furniture.forEach(function(f){ var F0=FURN_BY_KEY[f.furn], k=F0 && kitKind(F0.type); if(!k) return;
+    out.slots.push({ id:f.id, kind:k, type:F0.type, furn:f.furn, capacity:F0.capacity||0, room:f.room, at:f.at, y:f.y, virtual:!!f.virtual }); }); }
+  else {
+    /* MINIMAL PLAN: no room could be fitted (an open shed, a megastructure, a hut whose mouth is not a
+       door), so the slots stand at the footprint centre, data only, in the building's own frame */
+    var K = kitPieces(b.culture === 'ancient' && need.dwelling ? 'ancients-salvage' : b.culture), n=0;
+    function add(kind, keys, count){ for(var i=0;i<count;i++){ var F0=FURN_BY_KEY[keys[0]];
+      out.slots.push({ id:bid+'.slot.'+(n++), kind:kind, type:F0.type, furn:F0.key, capacity:F0.capacity||0, room:null, at:[0,0], y:0, virtual:true }); } }
+    add('bed', K.bed, need.bed); add('food', need.compound ? K.store : K.food, need.food); add('item', K.item, need.item);
+  }
+  KIT_CACHE[bid] = out; return out;
+}
+/* THE AUDIT. Counts what the rules above promise; every number but the totals should read 0. */
+function kitAudit(){
+  var r = { buildings:0, dwellings:0, planned:0, dwellingsMissingKit:0, buildingsMissingItem:0, foodPlacesMissingFood:0, bedroomsWithoutBed:0,
+            slots:0, virtualSlots:0, minimalPlans:0, plannedDwellingsWithVirtualSlots:0 };
+  FIX.buildings.forEach(function(b){
+    var P = interiorPlan(b.id), K = buildingKit(b.id); if(!K) return; r.buildings++; if(P) r.planned++; else r.minimalPlans++;
+    var c = { bed:0, food:0, item:0 }, virt=0; K.slots.forEach(function(s){ c[s.kind]++; r.slots++; if(s.virtual){ r.virtualSlots++; virt++; } });
+    if(K.needs.bed){ r.dwellings++; if(c.bed < K.needs.bed || c.food < K.needs.food || c.item < K.needs.item) r.dwellingsMissingKit++; if(P && virt) r.plannedDwellingsWithVirtualSlots++; }
+    if(c.item < 1) r.buildingsMissingItem++;
+    if(c.food < K.needs.food) r.foodPlacesMissingFood++;
+    if(P) P.rooms.forEach(function(R){
+      var has = function(kind){ return K.slots.some(function(s){ return s.room===R.id && s.kind===kind; }); };
+      if(R.kind==='bedroom' && !has('bed')) r.bedroomsWithoutBed++;
+      if(FOOD_ROOMS[R.kind] && !has('food')) r.foodPlacesMissingFood++; });
+  });
+  return r;
 }
 
 /* ---- the interior walk graph, in Mav's Refuge's vocabulary ---- */
@@ -444,19 +673,19 @@ function interiorExport(P){
   function clean(o){ var r={}; for(var k in o){ if(k.charAt(0)==='_') continue; r[k]=o[k]; } return r; }
   var lights = interiorLights(P);
   return { frame:'building-local (parent under the building node)', levels:P.levels.map(function(L){ return { k:L.k, y:L.y, H:L.H }; }),
-    finish:P.finish, partition:P.partition,
+    finish:P.finish, floor:P.floor||null, partition:P.partition,
     rooms:P.rooms.map(function(r){ var c=clean(r); c.node='Room.'+P.bid+'.'+r.id.split('.').pop(); return c; }),
     walls:P.walls.map(function(w){ var c=clean(w); c.node='Wall.'+P.bid+'.'+w.id.split('.').pop()+'-col'; return c; }),
     doors:P.doors.map(function(d){ var c=clean(d); c.node = d.kind==='exterior' ? fixNodeName('door', FIX.byId[d.fixture]) : 'InteriorDoor.'+P.bid+'.'+d.id.split('.').slice(-3).join('_'); return c; }),
     stairs:P.stairs.map(function(s){ return { id:s.id, module:s.module, kind:s.kind, lvl0:s.lvl0, lvl1:s.lvl1, w:s.w, rise:+s.rise.toFixed(3), run:+s.run.toFixed(3),
       foot:P.groups[s.group].RF(s.u, s.va).map(function(v){ return +v.toFixed(3); }), top:P.groups[s.group].RF(s.u, s.vb).map(function(v){ return +v.toFixed(3); }), node:'Stair.'+P.bid+'.'+s.id.split('.').pop()+'-col' }; }),
-    furniture:P.furniture.map(function(f){ var F=FURN_BY_KEY[f.furn], c=clean(f); c.culture=F.culture; c.type=F.type; c.setting=F.setting; c.node='Furniture.'+P.bid+'.'+f.id.split('.').pop(); return c; }),
+    furniture:P.furniture.map(function(f){ var F=FURN_BY_KEY[f.furn], c=clean(f); c.culture=F.culture; c.type=F.type; c.setting=F.setting; if(F.capacity) c.capacity=F.capacity; c.node='Furniture.'+P.bid+'.'+f.id.split('.').pop(); return c; }),
     lights:lights, nav:P.nav };
 }
 /* lights come from the furniture's own build (hearths, braziers): build it into a throwaway sink */
 function interiorLights(P){
   var b = FIX.byId[P.bid], out=[];
-  intWithSink(function(){ P.furniture.forEach(function(f){ var p=intToWorld(b, f.at[0], f.at[1]);
+  intWithSink(function(){ P.furniture.forEach(function(f){ if(f.virtual) return; var p=intToWorld(b, f.at[0], f.at[1]);
     buildFurn(f.furn, p[0], p[1], b.yaw+f.yaw, { variant:f.variant, seed:f.seed, y:b.y+f.y }); }); }, function(S){
     S.lights.forEach(function(L, i){ var q=intToLocal(b, L.x, L.z); out.push({ id:P.bid+'.light.'+i, kind:L.kind, at:[+q[0].toFixed(3), +q[1].toFixed(3)], y:+(L.y-b.y).toFixed(3), amp:L.amp, radius:L.radius, node:'Light.'+P.bid+'.interior.'+i }); }); });
   return out;
@@ -494,17 +723,53 @@ function buildInteriorGeo(P, matFn){
           [u0-0.04, u1+0.04].forEach(function(uj){ F.box(ax+tx*uj+nx*jc, y+o.y0, az+tz*uj+nz*jc, 0.08, o.y1-o.y0, dd, r, col, fam); });
           F.box(ax+tx*(u0+u1)/2+nx*jc, y+o.y1, az+tz*(u0+u1)/2+nz*jc, u1-u0+0.16, 0.08, dd, r, col, fam);
           if(o.y0>0.05) F.box(ax+tx*(u0+u1)/2+nx*jc, y+o.y0-0.06, az+tz*(u0+u1)/2+nz*jc, u1-u0+0.16, 0.06, dd, r, shade(col,-0.06), fam);
-          else F.box(ax+tx*(u0+u1)/2+nx*(jc+0.1), y-0.08, az+tz*(u0+u1)/2+nz*(jc+0.1), u1-u0+0.16, 0.08, dd+0.2, r, floorCol, fin.floor.fam); }   /* the threshold */
+          else F.box(ax+tx*(u0+u1)/2+nx*(jc+0.1), y-0.08, az+tz*(u0+u1)/2+nz*(jc+0.1), u1-u0+0.16, 0.08, dd+0.2, r, shade(floorCol,-0.12), 'fl-'+fin.floor.fam); }   /* the threshold */
         cur=u1; });
       piece(cur, L, 0, H);
       return { tx:tx, tz:tz, r:r, nx:nx, nz:nz };
     }
     /* floors and ceilings per room; slabs between levels with the stair cut out */
+    /* FLOOR FINISHES (see FINISH): a light base under a pattern and a border band, drawn in the
+       'fl-' families, which the interior shader lifts (76-doors.js) so a floor reads at a quarter
+       of the sun and stays apart from a dark plinth. Pattern pieces stand 4-8 mm proud of the base. */
+    var FP = fin.floor.pattern || 'earth', FL = 'fl-'+fin.floor.fam, prng = intRng(b.seed*29+11);
+    var grout = shade(floorCol, FP==='plank' ? -0.32 : -0.24), band = fin.floor.accent ? intPick(prng, fin.floor.accent) : shade(floorCol, -0.16);
+    function floorPattern(R, g, list, z, slab){
+      var y = R.y;
+      function ps(u0,v0,u1,v1, col, h, fam){ if(u1-u0<0.01 || v1-v0<0.01) return; slab([u0,v0,u1,v1], y-0.004, 0.004+(h||0.004), fam||FL, col); }
+      list.forEach(function(r4){ var u0=r4[0], v0=r4[1], u1=r4[2], v1=r4[3], u, v, k;
+        if(FP==='tile' || FP==='mosaic'){ var s = FP==='tile' ? 0.5 : 0.4, gw = 0.03;
+          for(u=Math.ceil((u0-z.u0)/s)*s+z.u0; u<u1-0.05; u+=s) if(u>u0+0.05) ps(u-gw/2, v0, u+gw/2, v1, grout);
+          for(v=Math.ceil((v0-z.v0)/s)*s+z.v0; v<v1-0.05; v+=s) if(v>v0+0.05) ps(u0, v-gw/2, u1, v+gw/2, grout); }
+        else if(FP==='flag'){ var fs = 0.8, fg = 0.035;
+          for(v=z.v0, k=0; v<v1; v+=fs, k++){ var va=Math.max(v,v0), vb=Math.min(v+fs,v1); if(vb<=va) continue;
+            if(v>v0+0.05) ps(u0, v-fg/2, u1, v+fg/2, grout);
+            for(u=z.u0+(k%2?fs/2:0)+fs; u<u1-0.05; u+=fs) if(u>u0+0.05) ps(u-fg/2, va, u+fg/2, vb, grout); } }
+        else if(FP==='plank'){ var bw = 0.2; ps(u0, v0, u1, v1, grout, 0.001);                        /* the gaps */
+          for(u=z.u0; u<u1; u+=bw){ var ua=Math.max(u+0.012,u0), ub=Math.min(u+bw-0.012,u1); if(ub-ua<0.03) continue;
+            ps(ua, v0, ub, v1, shade(floorCol, 0.10+prng()*0.10-0.05), 0.005); } }
+        else { /* beaten earth: swept patches, lighter and darker, never quite the same twice */
+          var area=(u1-u0)*(v1-v0), np=Math.min(12, Math.max(3, Math.round(area/2.2)));
+          for(k=0;k<np;k++){ var rr0=0.35+prng()*0.55, pu=u0+rr0+prng()*Math.max(0,(u1-u0)-2*rr0), pv=v0+rr0+prng()*Math.max(0,(v1-v0)-2*rr0);
+            if(u1-u0 < 2*rr0 || v1-v0 < 2*rr0) continue; var pc=g.RF(pu,pv);
+            F.cyl(pc[0], y-0.004, pc[1], rr0, 0.006+k*0.0004, 0, shade(floorCol, (k%2?0.07:-0.06)), FL); } }
+      });
+      /* the border band, along the room's own four edges */
+      var bwid = FP==='mosaic' ? 0.32 : FP==='plank' ? 0 : 0.2;
+      if(bwid){ ps(z.u0, z.v0, z.u1, z.v0+bwid, band, 0.007, FP==='mosaic'?'fl-mosaic':FL); ps(z.u0, z.v1-bwid, z.u1, z.v1, band, 0.007, FP==='mosaic'?'fl-mosaic':FL);
+        ps(z.u0, z.v0+bwid, z.u0+bwid, z.v1-bwid, band, 0.007, FP==='mosaic'?'fl-mosaic':FL); ps(z.u1-bwid, z.v0+bwid, z.u1, z.v1-bwid, band, 0.007, FP==='mosaic'?'fl-mosaic':FL); }
+      /* the court's medallion */
+      if(FP==='mosaic'){ var mc=g.RF((z.u0+z.u1)/2,(z.v0+z.v1)/2), ms=Math.min(z.u1-z.u0, z.v1-z.v0)*0.42, ry=Math.atan2(-g.frame.V[1], g.frame.V[0]);
+        if(ms>0.6){ F.box(mc[0], y-0.004, mc[1], ms, 0.013, ms, ry+Math.PI/4, band, 'fl-mosaic'); F.box(mc[0], y-0.004, mc[1], ms*0.55, 0.016, ms*0.55, ry+Math.PI/4, intPick(prng, MOSWARMC), 'fl-mosaic'); } }
+    }
     P.rooms.forEach(function(R){ var g=P.groups[R.group], poly=R.poly, n=poly.length;
       if(g.round || n!==4){ var c=[0,0]; poly.forEach(function(p){ c[0]+=p[0]/n; c[1]+=p[1]/n; });
         for(var i=0;i<n;i++){ var a=poly[i], q=poly[(i+1)%n];
-          F.tri(fin.floor.fam, [c[0],R.y,c[1]], [a[0],R.y,a[1]], [q[0],R.y,q[1]], floorCol, [0,1,0]);
+          F.tri(FL, [c[0],R.y,c[1]], [a[0],R.y,a[1]], [q[0],R.y,q[1]], floorCol, [0,1,0]);
           F.tri(fin.ceil.fam, [c[0],R.y+R.h,c[1]], [a[0],R.y+R.h,a[1]], [q[0],R.y+R.h,q[1]], ceilCol, [0,-1,0]); }
+        /* a round floor: swept rings of earth (or of tile), darker toward the wall, the centre kept clean */
+        var Rr = g.R || 1.5, rings = [[0.94, -0.14, 0.004], [0.72, 0.06, 0.008], [0.42, -0.05, 0.012], [0.2, 0.08, 0.016]];
+        rings.forEach(function(rg){ F.cyl(c[0], R.y-0.004, c[1], Rr*rg[0], rg[2], 0, shade(floorCol, rg[1]), FL); });
         if(fin.beams) for(var k=0;k<6;k++){ var a2=k/6*Math.PI; F.beam(c[0]+Math.cos(a2)*g.R, R.y+R.h-0.12, c[1]+Math.sin(a2)*g.R, c[0]-Math.cos(a2)*g.R, R.y+R.h-0.12, c[1]-Math.sin(a2)*g.R, 0.14, 0.14, TORONC[0], 'timber'); }
         return; }
       var z=R._z, holes = (g.stair) ? [[g.stair.u0-0.05, g.stair.va, g.stair.u1+0.05, g.stair.vb+0.15]] : [];
@@ -515,7 +780,9 @@ function buildInteriorGeo(P, matFn){
         /* box local x along V (depth), z along U */
         F.box(c[0], y, c[1], r4[3]-r4[1], t, r4[2]-r4[0], ry, col, fam); }
       var lvlUp = P.levels.length>1 && R.lvl===0, top = R.lvl===P.levels.length-1;
-      rects(z.u0,z.v0,z.u1,z.v1, R.lvl===1?holes[0]:null).forEach(function(r4){ slab(r4, R.y-0.06, 0.06, fin.floor.fam, floorCol); });
+      var fl = rects(z.u0,z.v0,z.u1,z.v1, R.lvl===1?holes[0]:null);
+      fl.forEach(function(r4){ slab(r4, R.y-0.06, 0.06, FL, floorCol); });
+      floorPattern(R, g, fl, z, slab);
       rects(z.u0,z.v0,z.u1,z.v1, lvlUp?holes[0]:null).forEach(function(r4){ slab(r4, R.y+R.h, lvlUp?(P.levels[1].y-0.06-(R.y+R.h)):0.08, fin.ceil.fam, ceilCol); });
       if(fin.beams){ var nb=Math.floor((z.u1-z.u0)/0.95);
         for(var j=1;j<=nb;j++){ var u=z.u0+j*(z.u1-z.u0)/(nb+1); if(lvlUp && u>holes[0][0]-0.1 && u<holes[0][2]+0.1) continue;
@@ -551,7 +818,7 @@ function buildInteriorGeo(P, matFn){
       if(s.kind==='stair'){ /* a rail round the stairwell on the upper floor */ var L1=P.levels[1], hy=L1.y+0.95;
         G.beam(s.u1+0.05, hy, s.va, s.u1+0.05, hy, s.vb, 0.06, 0.06, TIMBERC[1], 'timber'); } });
     /* furniture */
-    P.furniture.forEach(function(f){ var p=intToWorld(b, f.at[0], f.at[1]); buildFurn(f.furn, p[0], p[1], b.yaw+f.yaw, { variant:f.variant, seed:f.seed, y:b.y+f.y }); });
+    P.furniture.forEach(function(f){ if(f.virtual) return; var p=intToWorld(b, f.at[0], f.at[1]); buildFurn(f.furn, p[0], p[1], b.yaw+f.yaw, { variant:f.variant, seed:f.seed, y:b.y+f.y }); });
   }, function(sink, BK, MK){
     var group = new THREE.Group(); group.name = 'Interior.'+P.bid; group.userData.bid = P.bid;
     emitBuckets({ buckets:BK, target:group, mat:matFn }); emitMerged({ buckets:MK, target:group, mat:matFn });
@@ -559,4 +826,8 @@ function buildInteriorGeo(P, matFn){
     return { group:group, leaves:leaves, lights:sink.lights, sites:sink.sites, BK:BK };
   });
 }
-window._interiors = { plan:function(bid){ return interiorPlan(bid); } };
+window._interiors = { plan:function(bid){ return interiorPlan(bid); }, kit:function(bid){ return buildingKit(bid); }, audit:function(){ return kitAudit(); } };
+/* THE KIT AUDIT as a counter: verify.py prints every small window._* value, so the numbers land in its
+   counters line without a new invariant. Planned on first read (about 2 s for the whole city), then cached. */
+(function(){ var cache=null; try{ Object.defineProperty(window, '_kitAudit', { enumerable:true, configurable:true,
+  get:function(){ if(!cache && typeof FIX!=='undefined' && FIX.buildings.length) cache = kitAudit(); return cache; } }); }catch(e){} })();
