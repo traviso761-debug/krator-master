@@ -13,7 +13,7 @@
 // builders are converted.
 function hnTotem(x,y,z,r,h,ry,o){o=o||{};const br=VERN.cur&&VERN.cur.D.branch;
  if(br==='republican')return hnPillar(x,y,z,Math.max(.2,r*1.1),h,ry,{free:true});
- if(br==='rustic'){hlRngSkip(4);return FURNISH('hl_rus_carved_pillar',x,y,z,ry,{v:0});}   // hnPillar drew 4 numbers
+ if(br==='rustic'){hlRngSkip(5);return FURNISH('hl_rus_carved_pillar',x,y,z,ry,{v:0});}   // hnPillar drew 5 numbers
  const [key,v,dz]=h>=8?['hl_tri_great_totem',o.painted?0:1,o.painted?.27:.204]:o.wings?(o.painted?['hl_tri_totem',1,.168]:h>=6?['hl_tri_great_totem',1,.204]:['hl_tri_totem',0,.18])
   :(o.hat||r>=.3)?['hl_tri_totem',2,.216]:['hl_tri_totem_post',o.painted?1:0,0];   // dz: the catalog piece is centred on its footprint, not on its pole
  return hnFurn(key,x,y,z,ry,{v},0,dz);}
