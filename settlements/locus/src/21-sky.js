@@ -245,6 +245,24 @@ skyMesh.material.onBeforeCompile = function(sh){
 skyMesh.material.customProgramCacheKey = function(){ return 'kratorDomeMav'; };
 skyMesh.material.needsUpdate = true;
 
+/* ---- LOCUS: the cliff in front (KNOWN_ISSUES 2026-10-01) ----------------
+   The abyss shelf is painted INTO layer 0, so everything drawn after it (the
+   giant, its ring, the stars, the sun disc and glare) landed on top of the
+   cliff. skyFront draws the same dome a second time, through the shelf's
+   silhouette mask from 20-stage.js (alphaMap), as the LAST thing in the sky
+   pass: same texture, same tint, same shader (it shares SKY_DOME_U), so it is
+   invisible except that the cliff now occludes whatever is behind it. One
+   extra draw call; the geometry is shared. Its map and colour are re-synced
+   in skyRender() (the eruption swap and 82-daynight.js's tint). */
+var skyFrontMat = new THREE.MeshBasicMaterial({ map:skyMesh.material.map, alphaMap:volcTex.idle.silMask,
+  side:THREE.BackSide, fog:false, depthWrite:false, depthTest:false, transparent:true });
+skyFrontMat.onBeforeCompile = skyMesh.material.onBeforeCompile;
+skyFrontMat.customProgramCacheKey = function(){ return 'kratorDomeFront'; };
+var skyFront = new THREE.Mesh(skyMesh.geometry, skyFrontMat);
+skyFront.renderOrder = 50;
+skyFront.frustumCulled = false;
+skyScene.add(skyFront);
+
 /* ---- layer 1: the stars ------------------------------------------------
    Positions from a PRIVATE LCG (skyRnd), never the shared rnd() stream —
    SUBAGENT.md section 6: any rr()/chance()/pick() call here would advance
@@ -784,6 +802,8 @@ function skyRender(){
   if(skyCam.fov !== camera.fov || skyCam.aspect !== camera.aspect){
     skyCam.fov = camera.fov; skyCam.aspect = camera.aspect; skyCam.updateProjectionMatrix();
   }
+  skyFrontMat.color.copy(skyMesh.material.color);
+  if(skyFrontMat.map !== skyMesh.material.map){ skyFrontMat.map = skyMesh.material.map; skyFrontMat.needsUpdate = true; }
   renderer.render(skyScene, skyCam);
 }
 

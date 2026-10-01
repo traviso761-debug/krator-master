@@ -10,11 +10,13 @@ the artifact copies.
 | fragment | what it owns |
 |---|---|
 | `10-core.js` | the world field: `terrainH`, the lake shore (`lakeShoreX`), river / distributaries / canal splines and distance queries, the hill, the strand ridge, the SE hummocks, `LOCUS_FIELDS` (wet/salt/upland/flow), centred noise `nfb`/`nsig` |
-| `20-stage.js`, `21-sky.js` | the painted horizon: abyss shelf in the east, far lake shore in the west |
+| `20-stage.js`, `21-sky.js` | the painted horizon: abyss shelf in the east, far lake shore in the west; `skyFront` redraws the shelf through its silhouette mask after the sun, giant, ring and stars, so the cliff occludes them |
 | `30-layout.js` | the schedule (refinery, 3 tanks, both chapterhouses, school, warehouse, caravanserai, rich band, market, park), ring road + 8 crooked avenues + concentric rings + alleys, the ROUTE GRID (`RG`, 12 m cells, A* with a binary heap) that lays the two highways, the dock road, 24 pumpjack tracks; the riverside (docks, fishers' stilt houses, farms, lane); `NAV` walk graph and `NAV.roadEnds` |
 | `40-ground.js` | ground canvas + category mask (`maskAt`) |
 | `64-locus-*.js` | the Locus kit (see LOCUS-KIT-NOTES.md) + `64-locus-infra.js`: warehouse, fishing dock, and the culture/type tags applied to every Yuni asset Locus places |
 | `68-place.js` | placement: scheduled sites, bridges, refinery-yard clutter, market, park, frontage/back-lot fill to ~2,650 people |
+| `68c-locus-crossings.js` | (2026-10-01) plank bridges and earth causeways wherever a street-graph edge runs under the water plane; publishes the deck surface through `XING_AT` (read by `bridgeDeckAt`) |
+| `71g-locus-grid.js` | (2026-10-01) the generator house's distribution line: poles, crossarms, catenary wires, service drops, electric street lamps; `GRID_EDGE`, `gridNear()` |
 | `69a*/69c*` | the eastern-abyss biome kit, ported unchanged except one API addition (below) |
 | `69b-locus-biohost.js` | the host binding: footprint raster `LOCUS_FP`, mask, LOD spine |
 | `69z-locus-flora.js` | plants the biome; **town trees** (see below); inspector tags on biome meshes |
@@ -48,7 +50,7 @@ decaying offset from the route.
 | townspeople | 170 | ramble between market, park, shops, taverns, civic buildings, the refinery ring, the caravanserai and home; go indoors at home |
 | Geomancers | 56 | brown uniform + canvas pack; work the refinery, tanks, pumpjacks (walking the tracks), the chapterhouse, the warehouse, 06:00–18:30 |
 | merchants | 34 | market, warehouse, shops, caravanserai |
-| salt-rice farmers | 12 | work legs INTO the paddies, bent over |
+| salt-rice farmers | 30 | work legs INTO the paddies (the three farms and the nine paddy blocks), bent over |
 | fishermen | 14 | walk to their dock, board their boat (moored alongside the jetty), sail to fishing spots on the river and the lake, fish, come home before dusk |
 | carts | 20 | warehouse / market / refinery / caravanserai / docks / shops |
 | caravans | 5 | in from a highway end, through the gate passage into the caravanserai court, rest, out the same road; some start in the court, some on the road |
@@ -83,3 +85,31 @@ kit sheet lists only Locus's own kit. Removing it leaves `locus.html` and `locus
 static scene (identical mesh, instance and triangle counts and instance transforms; only the animated life
 layer differs between any two runs) and cuts `locus.html` from 1.08 MB to 0.82 MB. To place an Ancient
 building in Locus later, vendor the parts from `kits/ancients/` rather than restoring the old port.
+
+## October 2026: crossings, paddies, the cliff, the town grid
+
+**Pool crossings (`68c-locus-crossings.js`).** Every `ST.edges` edge is sampled every 2 m; a sample is wet when
+`terrainH < 0.3` away from the lake, the river channels and the canal (those keep their own bridges). Wet runs are
+grouped across edges that meet at a wet node; a group with <= 30 m of open water becomes a plank bridge on piles
+(deck 1.05 m), a longer one an earth causeway (crest 0.85 m, battered sides, a stone-headed culvert every ~22 m).
+Ends ramp to the bank over 4 m (bridge) / 8 m (causeway). `bridgeDeckAt(x,z)` now falls through to `XING_AT`, so the
+walkers, riders, highway ribbons and street lamps all stand on the deck; NAV and RG are unchanged (the routes always
+crossed there). `_xings.stats` / `_api.XINGS` report them.
+
+**Paddy blocks (`30-layout.js` 7b, `64-locus-farm.js`).** `farm_saltrice_paddies` (48 x 38, same frame as the farm:
+channel at -z toward the water, verge at +z) holds eight paddies (field-detail rice: `salt_rice_stand` variants 2-3, 12 stands a paddy, for the triangle budget); nine are laid on low dry ground 30-110 m from the
+river/canal, off every road cell, site and circle, levelled, with a lane to the nearest street node. 18 + 72 = 90
+paddies, five times the three farms' 18. They are FARMS (mask 7) but their POI category is `paddy`: farmers work them,
+nobody lives in them. `_api.PADDY_FIELDS`.
+
+**The cliff in front of the sky (`20-stage.js`, `21-sky.js`).** `makeSkyTexture` records the shelf's skyline and
+paints a half-res silhouette mask (`tex.silMask`). `skyFront` draws the same dome again through it as an alphaMap
+(same texture, tint, shader uniforms), renderOrder 50, after everything else in the sky scene. One extra draw call.
+
+**The town grid (`71g-locus-grid.js`).** One pole per electrified edge (ring, boulevards inside 470 m, streets inside
+330 m), spans chosen by Kruskal over poles of adjacent edges plus a relayed feeder from the generator's own pole;
+only poles reachable from the generator are built. Each pole: crossarm, two insulators, a bracket lamp (cool, in
+`NL_LAMPS`). Wires are 5-piece catenaries (`ROD`, sag 2.5% + 0.15 m); up to two service drops per pole.
+`72-lights.js` skips its oil posts on `GRID_EDGE` edges and wires every window within 34 m of a pole (cool panes,
+later off-times, one in seven all night). `_grid.stats`.
+

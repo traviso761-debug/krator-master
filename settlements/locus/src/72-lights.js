@@ -36,18 +36,22 @@ function ARCPOST(x,y,z, h, amp, rad){
 }
 /* WHO IS ON THE GRID. In Locus there is no Order cable: the only electric light is the
    Geomancers' own, run off their batteries — the refinery ring, the tank row and the forecourt of
-   their Chapterhouse. Everything else, the whole town, burns oil (its own oil). */
-function onTheGrid(x,z){ if(Math.hypot(x,z) < RING0_R + 12) return true; if(GEOCHAPTER && Math.hypot(x-GEOCHAPTER.x, z-GEOCHAPTER.z) < 40) return true; return false; }
+   their Chapterhouse. Everything else, the whole town, burns oil (its own oil).
+   2026-10-01: the generator house's line now runs out into the town (71g-locus-grid.js), so a window within
+   reach of a pole on that line is wired too, and an electrified street carries the line's own lamps
+   instead of oil posts. */
+function onTheGrid(x,z){ if(Math.hypot(x,z) < RING0_R + 12) return true; if(GEOCHAPTER && Math.hypot(x-GEOCHAPTER.x, z-GEOCHAPTER.z) < 40) return true; return gridNear(x,z,34); }
+function lampY(x,z){ var d=bridgeDeckAt(x,z); return d!=null ? d : terrainH(x,z); }
 var FIXED_LAMPS = 0, ELECTRIC_LAMPS = 0;
 (function(){
   if(SHEET) return;
   ST.edges.forEach(function(e){ var A=ST.nodes[e.a], B=ST.nodes[e.b], mid=Math.hypot((A.x+B.x)/2,(A.z+B.z)/2);
     var want = e.cls==='ring' || (e.cls==='boulevard' && mid < 460) || (e.cls==='street' && mid < 300 && phash(A.x,1,B.z,3)<0.6) || (e.cls==='road' && phash(A.x,2,B.z,4)<0.35) || (A.tag==='riverlane' && B.tag==='riverlane' && phash(A.x,5,B.z,6)<0.5);
-    if(!want) return; var n=Math.floor(e.len/(e.cls==='ring'?26:36)), px=-(B.z-A.z)/e.len, pz=(B.x-A.x)/e.len;
+    if(!want || GRID_EDGE[e.id]) return; var n=Math.floor(e.len/(e.cls==='ring'?26:36)), px=-(B.z-A.z)/e.len, pz=(B.x-A.x)/e.len;
     for(var k=0;k<=n;k++){ var t=(k+0.5)/(n+1), sg=((k+e.id)%2?1:-1), x=mix(A.x,B.x,t)+px*sg*(e.w/2+0.7), z=mix(A.z,B.z,t)+pz*sg*(e.w/2+0.7);
       if(maskAt(x,z)===4 || placedAt(x,z,0.6)) continue;
-      if(e.cls==='ring' && Math.hypot(x,z) < RING0_R){ ARCPOST(x, terrainH(x,z), z, 5.0, 1.5, 22); ELECTRIC_LAMPS++; }
-      else LAMPPOST(x, terrainH(x,z), z, 3.6, 1.0, 16, false);
+      if(e.cls==='ring' && Math.hypot(x,z) < RING0_R){ ARCPOST(x, lampY(x,z), z, 5.0, 1.5, 22); ELECTRIC_LAMPS++; }
+      else LAMPPOST(x, lampY(x,z), z, 3.6, 1.0, 16, false);
       FIXED_LAMPS++; } });
   /* the refinery ring's inner verge: the Geomancers' arc standards, cool white */
   for(var m=0;m<12;m++){ var a=m/12*TAU+0.13, x=Math.cos(a)*(RING0_R-RING_W/2-1.2), z=Math.sin(a)*(RING0_R-RING_W/2-1.2);
@@ -55,7 +59,10 @@ var FIXED_LAMPS = 0, ELECTRIC_LAMPS = 0;
   /* the market square: oil lanterns on posts round the rim */
   for(m=0;m<10;m++){ var a2=m/10*TAU, x2=MARKET.x+Math.cos(a2)*(MARKET.r-2), z2=MARKET.z+Math.sin(a2)*(MARKET.r-2);
     if(placedAt(x2,z2,0.5)) continue; LAMPPOST(x2, terrainH(x2,z2), z2, 3.8, 1.2, 18, false); FIXED_LAMPS++; }
-  var wired=0; NL_WINDOWS.forEach(function(W){ if(onTheGrid(W[0], W[2])){ W[10] = 1; wired++; } });
+  /* a wired window is cool-white, and electric light is cheap to the Geomancers' tenants: it goes out later
+     (the off-time hash is pushed into the late half) and one in seven burns till dawn */
+  var wired=0; NL_WINDOWS.forEach(function(W){ if(onTheGrid(W[0], W[2])){ W[10] = 1; wired++; W[8] = 0.45 + 0.55*W[8]; if(phash(W[0],W[1],W[2],23.1) < 0.14) W[9] = true; } });
+  ELECTRIC_LAMPS += GRID_STATS.lamps; FIXED_LAMPS += GRID_STATS.lamps;
   window._wiredWindows = wired;
 })();
 window._fixedLamps = FIXED_LAMPS; window._electricLamps = ELECTRIC_LAMPS;
