@@ -8,7 +8,7 @@
 const BUDGET={
  showcase:{tris:6000000,calls:120},
  cls:{pass:3500000,host:900000},
- type:{'desert/trees':'pass','desert/floor':'pass','desert/fauna':'pass','desert/dress':'pass','host':'host'},
+ type:{'desert/trees':'pass','desert/floor':'pass','desert/fauna':'pass','desert/dress':'pass','host':'host','buildings':'host'},
 };
 function _probePoints(){
  const pts=[],m=new THREE.Matrix4(),pos=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3(),bb=new THREE.Box3();
@@ -20,7 +20,9 @@ function _probePoints(){
 function regOccupancy(){const n=new Array(REG.length).fill(0);const P=_probePoints();
  // the water volumes are drawn by probeSkip meshes: count their own vertices
  const W=[];for(const k in WATER){const a=WATER[k].geometry.attributes.position;for(let i=0;i<a.count;i+=3)W.push([a.getX(i),a.getY(i),a.getZ(i)]);}
- REG.forEach((r,i)=>{for(const p of (r.cls==='water'?W:P))if(regHas(r,p[0],p[1],p[2]))n[i]++;});
+ // the buildings are merged into one mesh per material: count their own vertices too
+ const Bv=[];for(const m of (BUILDINGS.meshes||[])){const a=m.geometry.attributes.position;for(let i=0;i<a.count;i+=9)Bv.push([a.getX(i),a.getY(i),a.getZ(i)]);}
+ REG.forEach((r,i)=>{for(const p of (r.cls==='water'?W:r.cls==='building'?Bv:P))if(regHas(r,p[0],p[1],p[2]))n[i]++;});
  return REG.map((r,i)=>({name:r.name,n:n[i]}));}
 function nanSweep(){const bad=[];let badInst=0;
  scene.traverse(o=>{if(!o.isMesh&&!o.isInstancedMesh)return;if(o.userData&&o.userData.probeSkip)return;
@@ -69,6 +71,38 @@ const CHK={
   for(let i=0;i<list.length;i++)for(let j=i+1;j<list.length;j++){const A=list[i].poly,B=list[j].poly;let hit=A.some(p=>polyHas(B,p[0],p[1]))||B.some(p=>polyHas(A,p[0],p[1]));
    for(let a=0;a<A.length&&!hit;a++)for(let b=0;b<B.length&&!hit;b++)if(X(A[a],A[(a+1)%A.length],B[b],B[(b+1)%B.length]))hit=true;if(hit)bad.push(list[i].id+'/'+list[j].id);}
   return{ok:!bad.length,detail:bad.length?bad.join(', '):list.length+' places, none overlapping'};},
+ // each placed building is measured against its reserved place, including edge midpoints
+ buildingInside(list){const bad=[],inside=(P,p)=>{if(polyHas(P,p[0],p[1]))return true;
+   for(let i=0;i<P.length;i++){const a=P[i],b=P[(i+1)%P.length],dx=b[0]-a[0],dz=b[1]-a[1],l2=dx*dx+dz*dz;
+    const t=l2?Math.max(0,Math.min(1,((p[0]-a[0])*dx+(p[1]-a[1])*dz)/l2)):0;
+    if(Math.hypot(p[0]-a[0]-dx*t,p[1]-a[1]-dz*t)<=.02)return true;}return false;};
+  for(const B of list){const P=B.placePoly,F=B.footprint,samples=[];
+   for(let i=0;i<F.length;i++){const a=F[i],b=F[(i+1)%F.length];samples.push(a,[(a[0]+b[0])*.5,(a[1]+b[1])*.5]);}
+   samples.push(polyCentre(F));if(samples.some(p=>!inside(P,p)))bad.push(B.id+' outside '+B.placeId);}
+  return{ok:!bad.length,detail:bad.length?bad.join(', '):list.length+' building footprints lie inside their places'};},
+ // simple polygon intersection; touching edges are permitted, interior overlap is not
+ buildingOverlap(list){const bad=[],cross=(a,b,c,d)=>{const o=(p,q,r)=>(q[0]-p[0])*(r[1]-p[1])-(q[1]-p[1])*(r[0]-p[0]);
+   return o(a,b,c)*o(a,b,d)<-1e-8&&o(c,d,a)*o(c,d,b)<-1e-8;};
+  // plan overlap AND height overlap; the parts of one assembly (group: a stair, its gallery, the houses on it) are designed to meet
+  for(let i=0;i<list.length;i++)for(let j=i+1;j<list.length;j++){const P=list[i],Q=list[j];if(P.group&&P.group===Q.group)continue;
+   if(Math.min(P.y1,Q.y1)-Math.max(P.y0,Q.y0)<=.05)continue;
+   const A=P.footprint,B=Q.footprint;let hit=A.some(p=>polyHas(B,p[0],p[1]))||B.some(p=>polyHas(A,p[0],p[1]));
+   for(let a=0;a<A.length&&!hit;a++)for(let b=0;b<B.length&&!hit;b++)if(cross(A[a],A[(a+1)%A.length],B[b],B[(b+1)%B.length]))hit=true;
+   if(hit)bad.push(P.id+'/'+Q.id);}
+  return{ok:!bad.length,detail:bad.length?bad.slice(0,8).join(', '):list.length+' footprints, none overlapping in plan and height'};},
+ // the back edge of every carved facade touches the wall line at its terrain height
+ wallContact(list){const walls=list.filter(B=>B.backLine);let worst=1e9,at=null;
+  for(const B of walls){const a=B.backLine[0],b=B.backLine[1],ex=b[0]-a[0],ez=b[1]-a[1],l=Math.hypot(ex,ez),nx=-ez/l,nz=ex/l;
+   // the outward normal is the side the building's centre is on; the rock is on the other side
+   const sgn=((B.center[0]-a[0])*nx+(B.center[1]-a[1])*nz)>0?-1:1;
+   for(let i=0;i<=8;i++){const t=i/8,x=mix(a[0],b[0],t)+nx*sgn*.6,z=mix(a[1],b[1],t)+nz*sgn*.6,margin=terrainH(x,z)-(B.baseY+B.lift+B.height*.9);if(margin<worst){worst=margin;at=B.id;}}}
+  return{ok:walls.length>0&&worst>=0,detail:walls.length+' carved fronts; least rock above 90% of a front\'s height, 0.6 m behind it: '+worst.toFixed(1)+' m ('+at+')'};},
+ buildingFamilies(B){const need=['treasury','tomb','stair','ledge','pueblo','khan','tent','stall','fairy'],missing=need.filter(k=>!B.byFamily||!B.byFamily[k]);
+  return{ok:!!B.count&&!missing.length,detail:missing.length?'missing family: '+missing.join(', '):need.map(k=>k+' '+B.byFamily[k]).join(', ')};},
+ buildingDoorsReachable(list){const N=LIFE.NAV,start=polyCentre(PLACES.find(p=>p.id==='khan').poly),seen=LIFE.reach(start[0],start[1]),bad=[];
+  for(const B of list.filter(b=>b.family!=='ledge')){const d=B.door||[NaN,NaN],i=Math.round((d[0]-N.x0)/N.c),j=Math.round((d[1]-N.z0)/N.c),k=j*N.nx+i;
+   if(i<0||j<0||i>=N.nx||j>=N.nz||N.blocked[k]||!seen[k])bad.push(B.id);}
+  return{ok:!bad.length,detail:bad.length?bad.join(', ')+' have blocked or unreachable entrances':list.length+' entrances clear and reachable from the Khan'};},
  // a water surface faces UP: every triangle's normal has y > 0 (a ribbon wound the other way is culled from above)
  facesUp(meshes){const bad=[];for(const m of meshes){const g=m.geometry,P=g.attributes.position,I=g.index?g.index.array:null,n=I?I.length:P.count;let down=0,tot=0;
   const A=new THREE.Vector3(),B=new THREE.Vector3(),C=new THREE.Vector3();
@@ -105,6 +139,13 @@ function shadeChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r));
  for(const p of PLACES){if(p.kind==='wall')add('sheer-face: '+p.id,CHK.sheer(p.facade,p.id));
   else if(p.kind==='ground'||p.kind==='plateau')add('flat-and-dry: '+p.id,CHK.flat(p.poly,p.id));else if(p.kind==='shore')add('on-the-shore: '+p.id,CHK.shore(p.poly,p.id));}
  add('places-do-not-overlap',CHK.overlap(PLACES));
+ const B=window._buildings;
+ add('buildings: footprints inside places',CHK.buildingInside(B.records));
+ add('buildings: footprints do not overlap',CHK.buildingOverlap(B.records));
+ add('buildings: wall backs meet the cliff',CHK.wallContact(B.records));
+ add('buildings: every family represented',CHK.buildingFamilies(B));
+ add('buildings: entrances remain reachable',CHK.buildingDoorsReachable(B.records));
+ {const sh=Object.keys(B.rejected||{}).filter(k=>/_short$/.test(k));add('buildings: every plan placed in full',{ok:!sh.length,detail:sh.length?sh.map(k=>k+' '+B.rejected[k]).join(', '):B.count+' buildings ('+Object.keys(B.byFamily).map(k=>k+' '+B.byFamily[k]).join(', ')+'), '+B.drawCalls+' draw calls'});}
  add('no-flora-in-reserved-places',CHK.noFlora(RESERVED.filter(p=>p.kind!=='shore').map(p=>p.poly)));
  add('canyon-mouth-open',CHK.canyonOpen());
  {const P=[],m=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3();scene.traverse(o=>{if(!o.isInstancedMesh||!o.userData.biome||o.instanceMatrix.usage===THREE.DynamicDrawUsage)return;for(let i=0;i<o.count;i++){o.getMatrixAt(i,m);m.decompose(p,q,sc);if(Math.abs(p.x)<700&&Math.abs(p.z)<700)P.push([p.x,p.y,p.z]);}});
@@ -133,6 +174,13 @@ function shadeNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,det
  const m=PLACES.find(p=>p.id==='market');add('two places overlapping',CHK.overlap([m,{id:'market+5',poly:m.poly.map(p=>[p[0]+5,p[1]+5])}]));
  {const T=REG.find(r=>r.cls==='flora'&&r.r<60);if(T)add('a camera inside a tree',CHK.camerasClear([{view:'in-tree',x:T.x,y:(T.y||0)+2,z:T.z}]));}
  {const N=LIFE.NAV,b=new Uint8Array(N.nx*N.nz);for(let j=0;j<N.nz;j++)for(let i=0;i<N.nx;i++){const x=N.x0+i*N.c;if(x>=150&&x<=153)b[j*N.nx+i]=1;}add('a wall across the canyon',CHK.canyonOpen(b));}
+ {const B=window._buildings.records[0],moved=Object.assign({},B,{footprint:B.footprint.map(p=>[p[0]+1000,p[1]+1000])});
+  add('a building outside its reserved place',CHK.buildingInside([moved]));}
+ {const A=window._buildings.records[0],B=window._buildings.records[1];add('two buildings on the same footprint',CHK.buildingOverlap([A,Object.assign({},B,{footprint:A.footprint})]));}
+ {const B=window._buildings.records.find(b=>b.backLine&&b.family==='treasury'),c=B.center,m=(p)=>[p[0]+(c[0]-B.backLine[0][0])*.0+(B.face?B.face[0]:0)*4,p[1]+(B.face?B.face[1]:0)*4];
+  add('a carved front standing 4 m out from the cliff',CHK.wallContact([Object.assign({},B,{backLine:B.backLine.map(m),center:[c[0]+(B.face?B.face[0]:0)*4,c[1]+(B.face?B.face[1]:0)*4]})]));}
+ {const B=Object.assign({},window._buildings,{byFamily:Object.assign({},window._buildings.byFamily,{fairy:0})});add('a building family omitted',CHK.buildingFamilies(B));}
+ {const B=window._buildings.records[0];add('a doorway beyond the walkable map',CHK.buildingDoorsReachable([Object.assign({},B,{door:[1000,1000]})]));}
  return R;}
 window._api={BUDGET,REG,
  get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},

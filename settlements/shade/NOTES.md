@@ -41,3 +41,31 @@ Lessons this pass cost (or saved):
   the views now live in 87, before the build, and every camera spot is an obstacle).
 - The field cache is 4.5 m (the kit's is 19 m): the walls here are 2 m wide. The
   ground grid is 1.25 m inside ±260 m and opens out to 4.2 km.
+
+## Oct 2026: the building pass (Codex's first draft, then a second pass)
+
+Codex's draft (23 buildings) got the structure right, and that is kept: standalone
+builders in `77-kit-*` that the build greps for host names, building footprints
+declared before the walkable grid so doors stay reachable, and checks with
+negatives. It read as a C-: everything was too small (an 8 m facade on a 50 m
+cliff), untextured colours given as sRGB hex to a linear pipeline (bleached white),
+the carved stone a different colour from the cliff, buildings in rows, and a
+wall-contact check that compared the floor with itself. The second pass:
+
+- **Carved stone takes the cliff's own strata** (the ground shader's six colours,
+  3.4 m bands by world height, in the kit's material): the bands run straight
+  across the hall from the rock beside it, which is most of what makes it read cut.
+- **Scale from the reference**: the hall is 30 m on a 50 m face (the Khazneh is 39 m);
+  house fronts on two levels, galleries and rock-cut stairs between them.
+- **Colours are converted** (`convertSRGBToLinear`) into vertex tints over grey textures
+  tiled in metres (UVs per triangle by its normal), so one material serves many washes.
+- **Plans are generated, not typed**: a seeded generator in 44 (rejection sampling for
+  tents, stalls and chimneys, with achieved-vs-asked counted), and the buildings are
+  built in 80, before the grid, so the grid blocks the builders' real footprints;
+  Codex's duplicated footprint formulas (and the assert that they matched) are gone.
+- **One mesh per material for the whole settlement**: 52 buildings in 7 draw calls
+  (Codex's 23 took 55 meshes).
+- **The wall check now fails when it should**: 0.6 m behind every carved front the rock
+  must stand above 90% of its height; its negative moves the hall 4 m out from the cliff.
+- The registry's occupancy check counted one point per mesh; merged buildings need
+  their vertices counted (as the water already did).

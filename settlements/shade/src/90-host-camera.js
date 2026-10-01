@@ -8,7 +8,8 @@ function setView(cx,cy,cz,tx,ty,tz){ctl.target.set(tx,ty,tz);const dx=cx-tx,dy=c
 function applyCam(){const r=ctl.radius,sp=Math.sin(ctl.phi);camera.position.set(ctl.target.x+r*sp*Math.sin(ctl.theta),ctl.target.y+r*Math.cos(ctl.phi),ctl.target.z+r*sp*Math.cos(ctl.theta));
  const g=terrainH(camera.position.x,camera.position.z)+1.7;if(camera.position.y<g)camera.position.y=g;camera.lookAt(ctl.target);}
 // ---------------------------------------------------------------- the panel
-const ui=document.getElementById('ui');const sel=document.createElement('select');sel.id='viewsel';for(const k in VIEWS){const o=document.createElement('option');o.textContent=k;sel.appendChild(o);}sel.onchange=()=>setView(...VIEWS[sel.value]);ui.appendChild(sel);
+const INITIAL_VIEW='The market and the Khan';
+const ui=document.getElementById('ui');const sel=document.createElement('select');sel.id='viewsel';for(const k in VIEWS){const o=document.createElement('option');o.textContent=k;sel.appendChild(o);}sel.value=INITIAL_VIEW;sel.onchange=()=>setView(...VIEWS[sel.value]);ui.appendChild(sel);
 // hidden buttons, one per preset: verify.py drives the views through these
 const _hb=document.createElement('div');_hb.style.display='none';ui.appendChild(_hb);for(const k in VIEWS){const b=document.createElement('button');b.textContent=k;b.onclick=()=>setView(...VIEWS[k]);_hb.appendChild(b);}
 const tools=document.getElementById('tools'),insp=document.getElementById('insp'),polyBox=document.getElementById('poly'),polyOut=document.getElementById('polyout');
@@ -66,7 +67,7 @@ function drawPoly(){if(polyMesh){scene.remove(polyMesh);polyMesh.geometry.dispos
  if(POLY.length>1){const pts=[];const P=POLY.length>2?POLY.concat([POLY[0]]):POLY;for(let i=0;i<P.length-1;i++){const a=P[i],b=P[i+1],n=Math.max(1,Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/2));for(let k=0;k<n;k++){const x=mix(a[0],b[0],k/n),z=mix(a[1],b[1],k/n);pts.push([x,terrainH(x,z),z]);}}
   const l=P[P.length-1];pts.push([l[0],terrainH(l[0],l[1]),l[1]]);polyMesh=ribbonPath(pts,.9,0xff2a6a,false,.5);scene.add(polyMesh);}}
 // ---------------------------------------------------------------- input
-setView(...VIEWS[Object.keys(VIEWS)[0]]);
+setView(...VIEWS[INITIAL_VIEW]);
 const cv=renderer.domElement;let drag=null;const keys={};
 cv.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,sx:e.clientX,sy:e.clientY,b:e.button};cv.setPointerCapture(e.pointerId);});
 cv.addEventListener('pointerup',e=>{if(drag&&drag.b===0&&Math.abs(e.clientX-drag.sx)<4&&Math.abs(e.clientY-drag.sy)<4)clickAt(e.clientX,e.clientY);drag=null;});cv.addEventListener('contextmenu',e=>e.preventDefault());

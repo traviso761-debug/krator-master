@@ -131,9 +131,9 @@ function waterH(x,z){const dp=Math.hypot(x-POOL.x,z-POOL.z);if(dp<POOL.r+3&&x>BA
 // water), 'plateau' (up top). Polygons are [x,z]; capacity is people present.
 // Activities are the life layer's (84); a place offers them, a job asks for them.
 const PLACES=[
- {id:'shrine',name:'Shrine of the Deep Aquifer',kind:'wall',poly:[[-95,-42],[-80,-42],[-80,-24],[-95,-24]],
+ {id:'shrine',name:'Shrine of the Deep Aquifer',kind:'wall',poly:[[-97,-42],[-80,-42],[-80,-24],[-97,-24]],
   facade:{a:[-95,-40],b:[-95,-26],face:[1,0]},activities:['WORSHIP','SLEEP'],capacity:120,tags:{culture:'eastern-nomad',types:['religious']}},
- {id:'petra',name:'The carved dwellings (Petra face)',kind:'wall',poly:[[-58,66],[-2,66],[-2,80],[-58,80]],
+ {id:'petra',name:'The carved dwellings (Petra face)',kind:'wall',poly:[[-58,66],[-2,66],[-2,82],[-58,82]],
   facade:{a:[-58,80],b:[-2,80],face:[0,-1]},activities:['SLEEP','EAT','CRAFT','SOCIALIZE','REST','PLAY'],capacity:260,tags:{culture:'eastern-nomad',types:['multi-family dwelling']}},
  {id:'pool_shore',name:'The pool shore (watering place)',kind:'shore',poly:[[-72,-12],[-58,-12],[-58,12],[-72,12]],
   activities:['WATER_CAMELS','FETCH_WATER','PLAY'],capacity:60,tags:{types:['infrastructure']}},
@@ -155,6 +155,8 @@ const PLACES=[
   activities:['PATROL'],capacity:18,tags:{culture:'eastern-nomad',types:['infrastructure']}},
  {id:'switchback_gate',name:'The switchback gatehouse',kind:'plateau',poly:[[26,-176],[46,-176],[46,-160],[26,-160]],
   activities:['PATROL'],capacity:16,tags:{culture:'eastern-nomad',types:['infrastructure']}},
+ {id:'warrens',name:'The chimney warrens',kind:'ground',poly:[[-28,-74],[24,-74],[24,-56],[-28,-56]],
+  activities:['SLEEP','CRAFT','REST'],capacity:70,tags:{culture:'eastern-nomad',types:['single-family dwelling']}},
  {id:'grazing',name:'The plateau grazing',kind:'plateau',poly:[[-40,-262],[80,-262],[80,-192],[-40,-192]],
   activities:['HERD'],capacity:120,tags:{types:['farm']},grows:true},
 ];
@@ -166,3 +168,63 @@ function polyCentre(poly){let x=0,z=0;for(const p of poly){x+=p[0];z+=p[1];}retu
 // distance from a point outside a polygon to its edge (0 inside)
 function polyDist(poly,x,z){if(polyHas(poly,x,z))return 0;let b=1e9;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const a=poly[j],c=poly[i],ex=c[0]-a[0],ez=c[1]-a[1],l2=ex*ex+ez*ez;
  const t=clamp(((x-a[0])*ex+(z-a[1])*ez)/l2,0,1);b=Math.min(b,Math.hypot(x-a[0]-ex*t,z-a[1]-ez*t));}return b;}
+// ---------------------------------------------------------------- the building plan
+// WHAT stands WHERE, as data: family, place, position, facing (yaw: the builder's
+// +z front turned by rotation.y), height above the floor (lift), the builder's
+// parameters. 80-host-buildings builds from it before the walkable grid exists,
+// so the grid blocks the builders' own footprints. Seeded: the same every load.
+// A plan that does not fit its place is rejected here and counted (SHADE_PLAN.rejected).
+const SHADE_PLAN=(function(){
+ let _ps=90210;const R=()=>{_ps|=0;_ps=_ps+0x6D2B79F5|0;let t=Math.imul(_ps^_ps>>>15,1|_ps);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};
+ const rr=(a,b)=>a+(b-a)*R(),P=[],rejected={};
+ const add=o=>{o.lift=o.lift||0;o.params.seed=o.params.seed||(1+Math.floor(R()*1e6));P.push(o);return o;};
+ const place=id=>PLACES.find(p=>p.id===id);
+ // a rotated rectangle's corners (centre x,z; w along local x; d along local z)
+ const rectAt=(x,z,w,d,yaw)=>{const c=Math.cos(yaw),s=Math.sin(yaw);return[[-w/2,-d/2],[w/2,-d/2],[w/2,d/2],[-w/2,d/2]].map(p=>[x+p[0]*c+p[1]*s,z-p[0]*s+p[1]*c]);};
+ const inside=(poly,pts)=>pts.every(p=>polyHas(poly,p[0],p[1]));
+ // clear of every polygon taken so far by `pad` metres: points every 0.5 m along BOTH outlines
+ // (corners alone pass two rectangles crossing in an X: the probe caught exactly that)
+ const dense=pts=>{const o=[];for(let i=0;i<pts.length;i++){const a=pts[i],b=pts[(i+1)%pts.length],n=Math.max(1,Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/.5));for(let k=0;k<n;k++)o.push([a[0]+(b[0]-a[0])*k/n,a[1]+(b[1]-a[1])*k/n]);}return o;};
+ const clearOf=(pts,taken,pad)=>{const A=dense(pts);return taken.every(q=>A.every(p=>polyDist(q,p[0],p[1])>pad)&&dense(q).every(p=>polyDist(pts,p[0],p[1])>pad));};
+ // ---- the carved face (south wall): the hall in the middle, a house front each side at the
+ //      foot, a rock-cut stair at each end up to a gallery, and a row of house fronts on it
+ const FZ=BASIN.z1+1,LIFT=12,N=Math.PI;
+ add({id:'hall',family:'treasury',placeId:'petra',x:-30,z:FZ,yaw:N,params:{width:18,height:30}});
+ add({id:'house-w0',family:'tomb',placeId:'petra',x:-44,z:FZ,yaw:N,params:{width:5,height:8.5}});
+ add({id:'house-e0',family:'tomb',placeId:'petra',x:-16,z:FZ,yaw:N,params:{width:5,height:8.5}});
+ // under yaw PI the builder's +x is the world's -x: dir 1 rises westward
+ add({id:'stair-w',family:'stair',placeId:'petra',x:-52.5,z:FZ,yaw:N,group:'petra-w',params:{run:11,rise:LIFT,width:1.8,dir:1}});
+ add({id:'stair-e',family:'stair',placeId:'petra',x:-7.5,z:FZ,yaw:N,group:'petra-e',params:{run:11,rise:LIFT,width:1.8,dir:-1}});
+ add({id:'gallery-w',family:'ledge',placeId:'petra',x:-49.75,z:FZ,yaw:N,lift:LIFT,group:'petra-w',params:{length:16.5,depth:2.2}});
+ add({id:'gallery-e',family:'ledge',placeId:'petra',x:-10.75,z:FZ,yaw:N,lift:LIFT,group:'petra-e',params:{length:16.5,depth:2.2}});
+ for(const [id,x,g,w] of [['house-w1',-53.5,'petra-w',5.2],['house-w2',-47.5,'petra-w',5.2],['house-e1',-5.3,'petra-e',4.8],['house-e2',-10.6,'petra-e',4.8],['house-e3',-15.9,'petra-e',4.8]])
+  add({id,family:'tomb',placeId:'petra',x,z:FZ,yaw:N,lift:LIFT,group:g,access:g==='petra-w'?'stair-w':'stair-e',params:{width:w,height:7.6}});
+ // ---- the shrine: a smaller temple front in the lip beside the falls, facing east
+ add({id:'shrine',family:'treasury',placeId:'shrine',x:BASIN.x0-1,z:-33,yaw:Math.PI/2,params:{width:12,height:22}});
+ // ---- the pueblo quarter: four U compounds, the north pair opening north, the south pair south
+ for(const [id,x,z,cx,cz,st,yaw] of [['pueblo-nw',70,26,6,6,3,N],['pueblo-ne',96.5,27,5,5,2,N],['pueblo-sw',70.5,54,5,6,3,0],['pueblo-se',96,54,6,5,3,0]])
+  add({id,family:'pueblo',placeId:'pueblo',x,z,yaw,params:{cx,cz,cell:4,storeys:st}});
+ // ---- the Khan, its gate toward the market and the stream
+ add({id:'khan',family:'khan',placeId:'khan',x:30,z:37.5,yaw:N,params:{w:38,d:32}});
+ // ---- the tent grounds: tents scattered, not gridded; each faces roughly south, toward the water
+ {const pl=place('tents').poly,taken=[];let tries=0,n=0;
+  const doors=[];
+  while(n<12&&tries<2000){tries++;const w=rr(7,10.5),d=rr(4.4,5.6),yaw=rr(-.4,.4),x=rr(43,101),z=rr(-59,-27),pts=rectAt(x,z,w+.6,d+3.4,yaw);
+   const c=Math.cos(yaw),sn=Math.sin(yaw),dx=-w*.28,dz=d/2+1.1,door=[x+dx*c+dz*sn,z-dx*sn+dz*c];   // the door 80 will record
+   if(!inside(pl,pts)){rejected.tent_outside=(rejected.tent_outside||0)+1;continue;}
+   if(!clearOf(pts,taken,1.1)||taken.some(q=>polyDist(q,door[0],door[1])<1)||doors.some(o=>polyDist(pts,o[0],o[1])<1)){rejected.tent_crowded=(rejected.tent_crowded||0)+1;continue;}
+   taken.push(pts);doors.push(door);n++;add({id:'tent-'+n,family:'tent',placeId:'tents',x,z,yaw,params:{w,d,poles:w>9?4:w>7.8?3:2}});}
+  if(n<12)rejected.tent_short=12-n;}
+ // ---- the market: two crooked rows of stalls facing a lane
+ {const pl=place('market').poly,taken=[];let n=0;
+  for(const [zr,yaw] of [[-37,0],[-23,N]])for(let x=-31;x<=2;x+=4.7){const w=rr(3.2,4),d=rr(2.4,3),xx=x+rr(-.4,.4),zz=zr+rr(-.5,.5),yy=yaw+rr(-.08,.08),pts=rectAt(xx,zz,w+.4,d+.8,yy);
+   if(!inside(pl,pts)||!clearOf(pts,taken,.5)){rejected.stall=(rejected.stall||0)+1;continue;}taken.push(pts);n++;add({id:'stall-'+n,family:'stall',placeId:'market',x:xx,z:zz,yaw:yy,params:{w,d}});}}
+ // ---- the chimney warrens along the north wall, and the two watch chimneys
+ {const pl=place('warrens').poly,taken=[];let tries=0,n=0;
+  while(n<8&&tries<500){tries++;const R0=rr(2.1,3.3),x=rr(-26,22),z=rr(-72,-58),r=R0*1.32,pts=[];for(let k=0;k<12;k++){const a=k/12*TAU;pts.push([x+Math.sin(a)*r,z+Math.cos(a)*r]);}
+   if(!inside(pl,pts)||!clearOf(pts,taken,2.2)){rejected.chimney=(rejected.chimney||0)+1;continue;}taken.push(pts);n++;
+   add({id:'chimney-'+n,family:'fairy',placeId:'warrens',x,z,yaw:rr(-.6,.6),params:{height:R0*3.6+rr(-1,2),radius:R0}});}
+  if(n<8)rejected.chimney_short=8-n;}
+ add({id:'gatehouse',family:'fairy',placeId:'switchback_gate',x:36,z:-168,yaw:0,params:{height:13,radius:3.2,twin:true}});
+ add({id:'canyon-watch',family:'fairy',placeId:'canyon_watch',x:120,z:-11.5,yaw:0,params:{height:9,radius:2}});
+ return{plans:P,rejected};})();

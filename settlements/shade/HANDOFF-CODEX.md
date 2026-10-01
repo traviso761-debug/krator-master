@@ -1,3 +1,6 @@
+> **Done (Oct 2026).** Codex's first pass and the second pass that followed are in
+> `NOTES.md`; this brief is kept as the record of what was asked.
+
 # Handoff: the Shade building kit (for Codex)
 
 You are adding the buildings to an existing, verified world. The ground, water,
