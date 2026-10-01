@@ -28,6 +28,24 @@
 - **The sheet is split into pages by setting** (indoor, outdoor, both; 2026-10). With the kit harvests the catalog
   has about 2200 instances and the one-page sheet no longer loaded in 20 minutes under SwiftShader (each third
   loads in 1.5–5 minutes). `verify.py --assert` loads each page in turn; `?page=all` still exists for a partial run.
+- **Rugs and Jobs pages** (2026-10, owner's call): rugs (`type: 'rug'`) and work items (a jobs-file entry's `job`, a
+  culture's FK trade pieces) left the setting pages for pages of their own; `verify.py` asserts every piece is on
+  exactly one page (`page-coverage`). Decisions: a work item goes to Jobs before a rug goes to Rugs (the winnowing mat
+  is `type: 'tool'`, not a rug); the trade pieces carry no `job` (their row is per culture, `Jobs · trade · <culture>`);
+  giving each FK trade role a job (forge, anvil: smithing; vat: brewing or dyeing ...) would let them join the job rows.
+- **The jobs file's pieces keep their culture's palette** (`eastabyss`, `yuni-common`): its PALETTE block gives every
+  key its pieces name as a DEFAULT (`Object.assign({ ...keys }, FPAL[c])`), so the culture's own file wins for a key
+  both define, in either load order, and a bundle of `'jobs'` alone still builds (checked in node: 10 pieces, 14
+  variants). The copies of eastabyss keys there (`rustDeep ... fishPale`) only matter without the eastabyss file.
+- **Harvest shortcuts in the jobs pieces:** the lying drums are `F.rod`s (8 sides: they read as octagons; the kit's
+  were round) and carry the standing drum's two rolling hoops (the kit's lying drum had none); the fuel station's back
+  cradle bearer stood 0.6 m behind the drums' ends in the kit and is under them here; the warehouse bales gained two
+  cords; the fish tray is a rimmed tray (the kit drew a solid plank box) with a `with the catch` variant; the salt heap is
+  a smooth dome (the kit's 7-sided blob was faceted). The tent rug draws the kit's `paintcol` texture in slabs: the
+  motifs are squares, diamonds and discs, not the texture's knots and spirals, and it gained a border.
+- **Left out of the Jobs pass:** the Locus `prop_drum_stack` (the asset IS the stack) and the other Locus leftovers
+  (`settlements/locus/LOCUS-KIT-KNOWN-ISSUES.md`: the coiled-net stand, the gnomon, the fuel pumps, the battery boxes,
+  the bracket lamps).
 - **Gaps the kit harvests worked around** (no engine change made): no torus (tyres, hoops, wheels are rings of
   rods or beams), no tilted cone or box (`F.box` turns about y only: tilted slabs are `F.beam`), `F.rod` has 8
   sides (horizontal rounds read as octagons), no disc facing z, no gable roof (two `F.beam` slabs). No FURN type

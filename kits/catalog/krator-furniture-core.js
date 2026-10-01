@@ -265,6 +265,12 @@ const FURN_TYPES = ['table', 'chair', 'bench', 'seating', 'bed', 'storage', 'she
   'ladder', 'board', 'stack', 'brazier', 'book', 'tool', 'art', 'food', 'drink', 'supply'];
 /* 'art' is wall-mounted art (a mask, a plate, a painted panel, a mounted skull): anchor wall,
    no walk-up access. Tapestries and hangings are 'banner'. */
+/* the trade or occupation a work item serves (2026-10): every entry of krator-master-furniture-jobs.js
+   carries `job: '<one of these>'` next to its type, and the sheet's Jobs page has a row per job. The trade
+   roles FK.ROLES.trade registers (forge, anvil, vat ...) are work furniture too: they sit on the Jobs page
+   by their roleSet, a row per culture, and carry no job. verify.py rejects a job not listed here. */
+const FURN_JOBS = ['farming', 'fishing', 'salt', 'oil', 'smithing', 'milling', 'warehousing', 'brewing',
+  'weaving', 'tanning', 'pottery', 'carpentry', 'mining', 'herding'];
 const FURNS = [], FURN_BY_KEY = {};
 function FURN(o) {
   if (FURN_BY_KEY[o.key]) { console.error('duplicate furniture key', o.key); return; }

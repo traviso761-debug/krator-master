@@ -24,7 +24,7 @@
    ====================================================================== */
 const KF_API = (function () {
   const API = {};
-  API.FURNS = FURNS; API.FURN_BY_KEY = FURN_BY_KEY; API.FPAL = FPAL; API.FURN_TYPES = FURN_TYPES;
+  API.FURNS = FURNS; API.FURN_BY_KEY = FURN_BY_KEY; API.FPAL = FPAL; API.FURN_TYPES = FURN_TYPES; API.FURN_JOBS = FURN_JOBS;
   API.entryDims = entryDims; API.furnAnchorY = furnAnchorY; API.CATALOG_MATERIALS = CATALOG_MATERIALS;
   API.has = function (key) { return !!FURN_BY_KEY[key]; };
   /* round primitives' detail for everything built after the call (1 = the catalog page's; 0.5 halves the

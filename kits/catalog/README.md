@@ -6,9 +6,9 @@ furniture sets** (2026-10): a parametric furniture kit and one file per culture.
 It is the furniture source for `kits/interiors/` and the starting point for `kits/furniture/`.
 
 **Status: verified.** `build.py` builds `dist/catalog.html`, a contact sheet of every
-furniture entry and every variant, and `verify.py --assert` passes: all 1492 furniture pieces
-(2249 instances over three pages, every variant, seeds 1–4) build without error, carry no NaN geometry, fit
-their declared size, keep their anchor's geometry, and carry their tags. Every furniture entry carries every field of
+furniture entry and every variant, and `verify.py --assert` passes: all 1503 furniture pieces
+(2266 instances over five pages, every variant, seeds 1–4) build without error, carry no NaN geometry, fit
+their declared size, keep their anchor's geometry, carry their tags, and sit on exactly one page. Every furniture entry carries every field of
 `kits/furniture/SPEC.md` "The entry" and meets its style rules. What is still open is in `KNOWN_ISSUES.md`.
 
 **Not on the sheet any more (2026-10):** the 48 plants (`krator-master-plants.js`), the 13
@@ -31,6 +31,7 @@ The Beast Rider buildings place their furniture as catalog pieces with `F.furn` 
 | `krator-master-furniture.js` | 122 harvested `FURN({...})` pieces in the SPEC shape (Voth 35, Iziz 9, Beast-Rider 16, Yuni 58, Ancients 4) |
 | `krator-master-furniture-<culture>.js` | **one file per culture** (17 files): its palette (`FURN_CULTURE`), its style sheets, `FK.set()` for its tiers and its bespoke pieces. `generic` and `scrap` are the poor-tier sets; `hykkousoi` is a palette only. See "Furniture by culture" |
 | `krator-master-furniture-generic-goods.js`, `-generic-fruit.js` | `generic` **goods** (53: storage containers, food, drink, supplies) and **biome fruit** (33, one per fruiting plant the biome kits draw: `biomes/FRUIT.md`). Tier `common`, `wealth: [0, 1]`. See "Generic goods and biome fruit" |
+| `krator-master-furniture-jobs.js` | **work items by trade** (2026-10): not a culture file; each entry keeps its real `culture` and carries `job` (`FURN_JOBS`). 10 pieces harvested from Locus (oil drums lying, sheaf racks, salt heap and tubs, bales, net frames, fish tray). See "Rugs and Jobs" |
 | `krator-master-plants.js`, `krator-master-buildings-voth.js`, `krator-master-buildings-beast-rider.js` | kept, **not built** (above); the building files carry `ASSET({...})` entries tagged by culture, `types: [...]` and `family` for the pages that load them |
 | `src/` | only the page around them: head, sky, sheet layout, hover inspector, polygon tool, tail |
 | `three.min.js` | three.js r128, the copy every other build uses |
@@ -44,23 +45,32 @@ the inspector from here by path.
 ```
 cd kits/catalog && python3 build.py                 # dist/catalog.html, node --check, build-manifest.json
 python3 build.py --vendor-check                     # src/81-sky.js against settlements/iziz/src/81-sky.js
-python3 verify.py dist/catalog.html --assert        # the gate: each page in turn (indoor, outdoor, both); exit 0 = pass
-python3 verify.py dist/catalog.html --assert --page outdoor   # one page
+python3 verify.py dist/catalog.html --assert        # the gate: each page in turn (indoor, outdoor, both, rugs, jobs); exit 0 = pass
+python3 verify.py dist/catalog.html --assert --page outdoor   # one page (indoor | outdoor | both | rugs | jobs)
+python3 verify.py dist/catalog.html --page jobs --out shots --rows   # one page's rows
 python3 verify.py dist/catalog.html --out shots     # screenshots: initial view + one per section
 python3 verify.py dist/catalog.html --out shots --rows   # + one per row (slow on the full sheet)
 python3 verify.py dist/catalog.html --sheet furniture --query cultures=xanadu,voth --out shots --rows   # a quick partial sheet
 ```
 
 `build.py` reads `SOURCES`: the engine, the symbols, the kit, the harvested furniture, then every
-`krator-master-furniture-*.js` in filename order, and the inspector. A new culture is one new
-file; nothing else changes.
+`krator-master-furniture-*.js` in filename order (the category files `-generic-goods`, `-generic-fruit`
+and `-jobs` among them), and the inspector. A new culture is one new file; nothing else changes.
 
-The page: `dist/catalog.html` is the furniture sheet, one row per culture and tier
-(`Furniture · xanadu · court`), sorted by type, split into **pages by setting**: Indoor, Outdoor and
-Indoor & outdoor (`setting: 'both'`), one at a time, switched from the toolbar, by `?page=` or by the
-hash (`#indoor`, `#outdoor`, `#both`; a hosted page sees only the hash). Indoor is the default. All of
-it on one page (`?page=all`) no longer builds in reasonable time (about 2200 instances, 2026-10);
-`?cultures=xanadu,voth` is the quick page (with `cultures` or `keys` the page shows every setting). The sheet code still lays out plants and
+The page: `dist/catalog.html` is the furniture sheet, split into **five pages**, one at a time,
+switched from the toolbar, by `?page=` or by the hash (`#indoor`, `#outdoor`, `#both`, `#rugs`, `#jobs`;
+a hosted page sees only the hash). Indoor is the default. Every piece is on exactly one page:
+
+| Page | What | Rows |
+|---|---|---|
+| Indoor, Outdoor, Indoor & outdoor | household and civic furniture by `setting` (`both` is Indoor & outdoor) | one per culture and tier (`Furniture · xanadu · court`), sorted by type |
+| Rugs | every `type: 'rug'` piece, any culture, tier or setting | one per culture (`Rugs · eastabyss`), by tier then key |
+| Jobs | the work items: every jobs-file entry (`A.job`) and every culture's FK trade piece (`A.roleSet === 'trade'`) | one per job (`Jobs · fishing`, `FURN_JOBS` order), then one per culture for the trade pieces (`Jobs · trade · eastabyss`) |
+
+The sheet's `pageOf(A)` decides it (`window._catalog.pageOf`): a work item goes to Jobs, else a rug to
+Rugs, else its setting's page. All of it on one page (`?page=all`) no longer builds in reasonable time
+(about 2200 instances, 2026-10); `?cultures=xanadu,voth` is the quick page (with `cultures` or `keys`
+the page shows every page's rows). The sheet code still lays out plants and
 buildings (`?sheet=plants|buildings`) for a page that registers them. The toolbar jumps to a row. Press **T** (or the
 toolbar button) for the hover inspector: name, class and tags of whatever is
 under the pointer. Click anything for the full inspector (measure, isolate,
@@ -78,7 +88,9 @@ piece's own frame. The sky is the standard KratorSky, vendored.
 | declared-size | the built geometry, over seeds 1..N (`--seeds`, default 4), fits the declared `w × d × h` **centred on the origin**: x in ±w/2, z in ±d/2, y in 0..h, each side within max(0.05 m, 4 %). Plants may sink up to 10 % of h below ground (root flare). |
 | anchor-geometry | `wall`: nothing behind `z = -d/2`, and real geometry on that plane (or touching it at the top: a leaning ladder); `ceiling`: reaches `y = h`; `surface`: lowest point at `y = 0`. Thresholds: `ANCHOR_AUDIT` |
 | palette | every palette key a piece names exists in its culture's `FPAL` |
-| tags | furniture: `culture type setting rooms anchor clearance materials`, valid values, and `materials` covers every material family the piece actually builds with; plants: `climate aridity`; buildings: `culture`, `family`, and `types` (non-empty, all in `BUILDING_TYPES`) |
+| tags | furniture: `culture type setting rooms anchor clearance materials`, valid values, a `job` (when given) in `FURN_JOBS`, and `materials` covers every material family the piece actually builds with; plants: `climate aridity`; buildings: `culture`, `family`, and `types` (non-empty, all in `BUILDING_TYPES`) |
+| page-coverage | once per run: every furniture piece is on exactly one page and one row of the sheet (`window._catalog.pageRows()`, every page's rows, ignoring `?cultures`/`?keys`); a piece on no page or on two is a FAIL |
+| jobs-field | every entry of `krator-master-furniture-jobs.js` declares a `job:` |
 | spec-source | no furniture entry still declares the old `room:` key |
 | style-host-globals, style-helpers, style-colour | SPEC rules from the source of every furniture file: no `kput/BOX/FAMMAT/MAT/PAL/scene/THREE/mk*`, no bare `shade`/`TAU`, no literal colour (`0x...`) or literal colour array in any `FURN` block |
 | style-colour-kit | no literal colour in the kit or in a culture file outside its `/* PALETTE */ ... /* END PALETTE */` block (the one place literals belong) |
@@ -103,7 +115,7 @@ rebuildInstance(g, { variant: 1 });            // rebuild in place with new opti
 ```
 
 Registries: `FURNS` / `FURN_BY_KEY`, `PLANTS` / `PLANT_BY_KEY`, `ASSETS` /
-`ASSET_BY_KEY`. Vocabularies: `FURN_CULTURES`, `FURN_TYPES`, `FURN_SETTINGS`,
+`ASSET_BY_KEY`. Vocabularies: `FURN_CULTURES`, `FURN_TYPES`, `FURN_JOBS`, `FURN_SETTINGS`,
 `FURN_ANCHORS`, `PLANT_CLIMATES`, `PLANT_ARIDITY`, `ASSET_CULTURES`,
 `CATALOG_MATERIALS` (canonical material name → tags and the catalog family
 strings it covers; `FAMILY_TO_MATERIAL` is the reverse).
@@ -152,6 +164,10 @@ FURN({
 - **Types.** `FURN_TYPES` gained `book`, `tool` and (2026-10) `art`, wall-mounted art: a mask,
   a plate, a painted panel, a mounted skull. Tapestries and hangings are `banner`. Cups, jugs and
   bowls are `vessel`, candles `lamp`.
+- **Job** (optional, 2026-10). `job: '<trade>'` from `FURN_JOBS` (`farming fishing salt oil smithing milling
+  warehousing brewing weaving tanning pottery carpentry mining herding`) marks a work item: the piece goes on the
+  sheet's Jobs page, a row per job. Every entry of `krator-master-furniture-jobs.js` carries one; `verify.py`
+  rejects a job not in the list. `KratorFurniture.FURN_JOBS` exposes the list to a host.
 - **Tier.** `tier: 'poor' | 'common' | 'court'` and `wealth: [lo, hi]`; `FURN()` fills them in from
   the culture name (`yuni-court`, `yuni-poor`) or `FURN_TIERS` when an entry leaves them out. Buildings carry `types` from `BUILDING_TYPES` (`civic market shop
   tavern inn industry farm dwelling-single dwelling-multi infrastructure religious
@@ -163,7 +179,8 @@ Everything a kit building places inside or outside itself that is not the main s
 outbuilding is **furniture**: a catalog piece placed as data and built by the catalog's own code.
 
 - **A settlement or kit build** carries the bundle as one generated fragment (never in its `src/`):
-  `furniture_bundle.bundle([cultures])` defines the single global `KratorFurniture`
+  `furniture_bundle.bundle([cultures])` (a name is a FILE SUFFIX, `krator-master-furniture-<name>.js`: a culture,
+  or a category file: `'generic-goods'`, `'generic-fruit'`, `'jobs'`) defines the single global `KratorFurniture`
   (`krator-furniture-runtime.js`: `KF.batch()`, `B.place(key, x, y, z, ry, {variant, seed, building,
   setting})`, `B.flush(scene)`, `KF.setDetail(k)`, `KF.has`, `KF.entryDims`, `KF.furnAnchorY`). Nothing
   else leaks: the core's names stay inside the closure. A batch merges every piece's triangles into one
@@ -199,6 +216,43 @@ Types the vocabulary lacks were mapped to the nearest (carts are `tool` or `stal
 `seating`, beast nests are `bed` limited to `roost` and `stable`); the harvest reports are summarised in
 `KNOWN_ISSUES.md`.
 
+## Rugs and Jobs (2026-10)
+
+The owner's call: rugs are a furniture category of their own, and work items (job-related things: what a
+farm, a fishing dock, a salt pan or an oil yard keeps outside its buildings) get their own file, so the catalog
+can be subdivided by trade as well as by culture.
+
+**Rugs.** Every `type: 'rug'` piece, in whatever culture file, is on the sheet's Rugs page (33: the FK mats,
+rugs and carpets of each culture, the harvested rugs and carpets, and `eastabyss_tent_rug`). New in this pass:
+`eastabyss_tent_rug`, the Locus pavilion tent's polychrome rug (`settlements/locus/src/64-locus-dwellings.js`,
+the kit's `paintcol` painting: a gold field ruled in green into 1 m cells of rosettes, lozenges, roundels and
+hashes, in a green border with a red line), variants `pavilion, 7.5 x 4.6`, `bell tent, 5.5 square` and
+`hall, 3.6 x 2.4`; its colours are the `rug*` keys in the eastabyss PALETTE block.
+
+**Jobs.** `krator-master-furniture-jobs.js` is a category file like `-generic-goods.js`: each entry keeps its
+real `culture` and adds `job`. Its own PALETTE block gives each culture every key its pieces name, as defaults
+(`FURN_CULTURE('eastabyss', { palette: Object.assign({...}, FPAL['eastabyss']) })`: the culture's own file wins for
+a key both define), and it draws only through `F`, so it loads in any order and a bundle may carry it with no
+culture file: `furniture_bundle.bundle([..., 'jobs'])` (the name is the file's suffix). The Jobs
+page also takes every culture's FK trade pieces (forge, anvil, vat, still ..., `A.roleSet === 'trade'`), which
+until now had a row per culture on the setting pages: the setting pages hold household and civic furniture.
+
+| Key | Name | Culture | Job | Type | Variants | Source (`settlements/locus/src/`) |
+|---|---|---|---|---|---|---|
+| `job_oil_drum_lying` | Oil drum, lying | eastabyss | oil | storage (`role: 'barrel'`) | 1 | `64-locus-petroleum.js` refinery fitters' yard, `65-abyss-90-farm.js` warehouse yard: `LOCUS.drum(..., lying)` |
+| `job_oil_drum_rack` | Lying oil drums | eastabyss | oil | stack | row of four on the ground; cradle of three with brass taps | `64-locus-petroleum.js` loading bay; `64-locus-power.js` fuel station |
+| `job_sheaf_rack` | Sheaf-drying rack | eastabyss | farming | rack | 1 (3.5 m, six sheaves) | `64-locus-farm.js` farm_saltrice |
+| `job_winnowing_tub` | Winnowing tub | eastabyss | farming | vessel | 1 | `64-locus-farm.js` threshing floor |
+| `job_winnowing_mat` | Winnowing mat | eastabyss | farming | tool | 1 | `64-locus-farm.js` threshing floor |
+| `job_salt_heap` | Salt heap | eastabyss | salt | stack | 1 (3.2 m mound) | `64-locus-farm.js` |
+| `job_salt_tub` | Salt tub | eastabyss | salt | vessel | heaped with salt; empty | `64-locus-farm.js` |
+| `job_bales` | Thatch bales | yuni-common | warehousing | stack | one bale; row of three | `64-locus-infra.js` locus_warehouse |
+| `job_net_frame` | Net-drying frame | eastabyss | fishing | rack | 1 (2.6 m, a hung net) | `64-locus-infra.js` infra_fishing_dock |
+| `job_fish_tray` | Fish tray | eastabyss | fishing | vessel | empty; with the catch | `64-locus-infra.js` infra_fishing_dock |
+
+Keys are `job_<name>`. A new work item goes in this file with its building's culture and a `job`; a new trade
+joins `FURN_JOBS` in `krator-furniture-core.js`.
+
 ## Generic goods and biome fruit (2026-10)
 
 These are the culture-neutral things that go on and beside the furniture. Their colours join `FPAL['generic']`
@@ -227,7 +281,7 @@ top of the fruit file. They take colours, never palette keys, so each piece stil
 ## Furniture by culture (the interiors-phase sets)
 
 Every culture in the table has at least one counterpart of every type the Yuni set has
-(table, seating, bench, chair, bed, storage, shelf, desk, lamp, stove, brazier, rug, screen,
+(table, seating, bench, chair, bed, storage, shelf, desk, lamp, stove, brazier, rug (on the Rugs page), screen,
 counter, workstation, loom, rack, ladder, board, vessel, book, statue), across two tiers, plus
 tapestries (`banner`) and wall art (`art`) for its rich and court rooms. The sets are built by
 `FK.set()` from a style sheet, so a culture is mostly data; bespoke pieces are plain `FURN()`.
@@ -258,7 +312,8 @@ its file says how to add them.
 
 **Tiers and wealth.** Every piece carries `tier` (`poor | common | court`) and `wealth: [lo, hi]`
 (`FURN_TIERS`: poor 0–0.35, common 0.3–0.75, court 0.7–1). The sheet is 1051 pieces: 86 generic goods and biome fruit, 731 kit and bespoke
-pieces of the first pass, 112 hangings of the second, and the 122 harvested ones. The poor tier is the two generic sets:
+pieces of the first pass, 112 hangings of the second, and the 122 harvested ones (the interiors pass; with the
+kit harvests, the trade roles, the tent rug and the jobs file it is 1503). The poor tier is the two generic sets:
 a culture's poor buildings pull from them through `kits/interiors`' culture chain
 (`IX.CULTURE_FAMILY`), and the placer tries a culture's in-band pieces before its other tiers.
 The sheet, the hover inspector (T) and the interiors adapter all carry the tier.
@@ -328,8 +383,8 @@ The building sets' interiors (`kits/interiors/sets`) furnish shops, smithies, st
 tenements and shrines, which the per-tier roles did not cover. `FK.ROLES.trade` adds 20 parametric
 roles, each drawn in the culture's own style sheet, registered with
 `FK.set({ culture, tier, roles: 'trade', prefix, S })` and keyed `<culture>_trade_<role>` (`br_trade_*`
-for the Beast Riders). Each culture's trade pieces have their own row on the sheet
-(`Furniture · <culture> · trade`; `?keys=_trade_` shows only them).
+for the Beast Riders). Each culture's trade pieces have their own row on the sheet's Jobs page
+(`Jobs · trade · <culture>`; `?keys=_trade_` shows only them).
 
 | Role | Type | Rooms | What |
 |---|---|---|---|
@@ -355,7 +410,8 @@ for the Beast Riders). Each culture's trade pieces have their own row on the she
 | `barrel` | storage (wall) | tavern, store, kitchen, shop | barrels in a cradle, taps to the front (a FOOD container) |
 
 Registered for `generic` and `scrap` (tier poor, so every culture chain ending in them has them) and
-`republican`, `rustic`, `painted`, `post-apoc`, `beast-rider`, `eastabyss` (tier common): 160 pieces.
+`republican`, `rustic`, `painted`, `post-apoc`, `beast-rider`, `eastabyss` (tier common): 160 pieces. They are
+on the sheet's Jobs page (2026-10), a row per culture: `Jobs · trade · <culture>`.
 The new room kinds in their `rooms` (`smithy stable shop dormitory`) are the interiors kit's
 (`kits/interiors/src/30-programs.js`). A piece's `role` is what the interiors programmes read for food
 and item containers (`IX.FOOD_ROLES`, `IX.ITEM_ROLES`).
