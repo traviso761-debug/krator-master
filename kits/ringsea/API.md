@@ -22,8 +22,27 @@ Seeds: 71000 + 100·n per vessel (71000 trireme … 73000 lighter); 79001 is the
   `rsSailEdge rsBamboo rsRope rsPennant rsShield`.
 - Parts: `rsCabin rsVault rsRam rsDragonHead rsScroll`.
 
+## Animation: swell, wind, under way (`40-rs-core.js`, `94-rs-anim.js`)
+One clock `t` (seconds) drives everything; each frame the host sets `RS_U.uTime.value=t`, poses each hull and runs its anims.
+- **Swell**: `rsSwellSet([[A, wavelength, dirDeg, phase], ...], {cx,cz,r0,r1})` sets travelling sines (deep-water speed)
+  and a radial fade to flat. `rsSeaH(x,z,t)` is the height on the CPU; `rsSwellGLSL()` returns the same function as GLSL
+  (`uniform float uRsTime; vec3 rsSwell(vec2 worldXZ)` = height, d/dx, d/dz) for a material's `onBeforeCompile`
+  (the sea in `90-rs-scene.js` and the wake strip in `94-rs-anim.js` both use it).
+- **Riding**: `rsRide(G, D, x, z, yaw, t, seaH?)` puts the vessel group on the water: heave is the mean of five samples
+  (amidships, bow and stern at +-0.36 L, both beams at +-0.28 B), pitch and roll are their slopes. A host world with its
+  own sea passes its own `seaH(x,z,t)`; for hulls to sit in the water it draws, its water shader must displace by the
+  same function.
+- **Wind**: every sail material (`rsSailMat`) has `onBeforeCompile=rsSailWind`, which reads `RS_U.uTime`. `rsSail` writes
+  each vertex's flutter vector into the sail's colour (`0.5+0.5*D`, |D| <= 0.12 m along the belly side, zero on the edge
+  spars, the u=0 edge and the battens of a scalloped sail); white means rigid. Nothing else is needed: a host that copies
+  the kit gets fluttering sails as long as it sets `RS_U.uTime`. The baked geometry stays the rest pose.
+- **Under way**: toolbar button, or `window._api.underWay(on, t0)`. Off by default. Every vessel makes `RS_WAY.speed`
+  (1.8 m/s) east, easing up over `RS_WAY.ease` (8 s) from `t0`, wrapping round its row (`RS_COLS*RS_PX`); positions are
+  `rsWayX(p,t)`, a pure function of `t` and `t0`. A Kelvin-wake strip (one `InstancedMesh`, 1 draw call, length 2.6 L
+  from the bow, riding the swell) shows only under way. A preset view of a vessel follows it while it is under way.
+
 ## Probe
-`window._api`: `totals typeStats regOccupancy nanSweep tagAudit extra views setView pause(t) defs`.
+`window._api`: `totals typeStats regOccupancy nanSweep tagAudit extra views setView pause(t) underWay(on,t0) defs`.
 `extra()` asserts: vessels float, no two vessel boxes overlap, declared size matches, every oar bank
 dips at the catch, no two sails within 0.3 m of each other (`sails-clear-sails`), no sail vertex inside a cabin (`rsCabin` registers its box; `rsSolid` adds one by hand), tags complete.
 

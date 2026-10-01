@@ -37,6 +37,9 @@ function rsSail(B,o){const nu=o.nu||20,nv=o.nv||12;const U=rsV(o.U).normalize(),
    let off=bel*Math.sin(Math.PI*v)*smooth01(u/.25);if(sc)off*=.55+.45*Math.abs(Math.sin(Math.PI*u*sc));
    return[o.O[0]+U.x*s+Vv.x*t+N.x*off,o.O[1]+U.y*s+Vv.y*t+N.y*off,o.O[2]+U.z*s+Vv.z*t+N.z*off];},nu,nv,
   (u,v)=>{const i=Math.round(u*nu);const a=A[i],b=Bf[i];return[(lerp(a[0],b[0],v)-s0)/dS,(lerp(a[1],b[1],v)-t0)/dT];});
+ {const amp=Math.min(.12,.04+.06*Math.abs(bel)),D=N.clone().multiplyScalar((bel<0?-1:1)*amp),c=[];   // the wind's flutter vector (41-rs-tex.js rsSailWind)
+  for(let j=0;j<=nv;j++)for(let i=0;i<=nu;i++){const u=i/nu,v=j/nv;let w=Math.sin(Math.PI*v)*smooth01(u/.25);if(sc)w*=Math.abs(Math.sin(Math.PI*u*sc));c.push(.5+.5*D.x*w,.5+.5*D.y*w,.5+.5*D.z*w);}
+  g.setAttribute('color',new THREE.Float32BufferAttribute(c,3));}
  rsPut(B,mk,g,null,null,null,0xffffff);
  {const pa=g.attributes.position,sid=B.sailN=(B.sailN||0)+1;for(let i=0;i<pa.count;i+=3)B.sail.push([pa.getX(i),pa.getY(i),pa.getZ(i),sid]);}
  // a point on the sail in the vessel frame (for battens, sheets, spars that follow the cloth)

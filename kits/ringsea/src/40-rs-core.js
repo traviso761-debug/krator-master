@@ -99,3 +99,25 @@ function rsRoof(B,mk,w,d,h,pos,rot,col,flare,top){top=top==null?.08:top;flare=fl
 function rsFigure(B,pos,yaw,cloth,sit,skin){const q=qEuler(0,yaw||0,0),s=skin||0x8a5a3c;const P=(dx,dy,dz)=>{const v=new THREE.Vector3(dx,dy,dz).applyQuaternion(q);return[pos[0]+v.x,pos[1]+v.y,pos[2]+v.z];};
  if(sit){rsCyl(B,'cloth',.17,.2,.62,P(0,.55,0),q,cloth,7);rsBox(B,'cloth',[.42,.16,.34],P(.18,.26,0),q,cloth);rsSphere(B,'paint',.12,P(.02,.98,0),null,s,8,6);}
  else{rsCyl(B,'cloth',.17,.21,.72,P(0,1.12,0),q,cloth,7);rsCyl(B,'paint',.07,.08,.8,P(0,.4,-.1),q,s,5);rsCyl(B,'paint',.07,.08,.8,P(0,.4,.1),q,s,5);rsSphere(B,'paint',.12,P(0,1.6,0),null,s,8,6);}}
+
+// ---------------------------------------------------------------- the swell, the wind, riding
+// ONE wave function drives the sea's vertex shader and every hull's heave, pitch and roll, so a hull
+// sits in the water it is drawn on. RS_SWELL.waves are travelling sines [kx,kz,A,omega,phase] (deep-water
+// dispersion, omega=sqrt(g k)); rsSwellSet replaces them, fade {cx,cz,r0,r1} flattens the sea beyond r0..r1.
+// RS_U.uTime is the one clock every animated shader reads (seconds); the host sets it each frame.
+// A host world with its own sea skips the RS sea: it calls rsRide with its own seaH(x,z,t).
+const RS_U={uTime:{value:0}};
+const RS_SWELL={waves:[],fade:null};
+function rsSwellSet(list,fade){RS_SWELL.waves=list.map(([A,lam,deg,ph])=>{const k=TAU/lam,a=deg*Math.PI/180;return[k*Math.cos(a),k*Math.sin(a),A,Math.sqrt(9.81*k),ph||0];});RS_SWELL.fade=fade||null;}
+function rsSwellFade(x,z){const F=RS_SWELL.fade;if(!F)return 1;const d=Math.hypot(x-F.cx,z-F.cz);const s=clamp((d-F.r0)/(F.r1-F.r0),0,1);return 1-s*s*(3-2*s);}
+function rsSeaH(x,z,t){let h=0;for(const w of RS_SWELL.waves)h+=w[2]*Math.sin(w[0]*x+w[1]*z-w[3]*t+w[4]);return h*rsSwellFade(x,z);}
+// the same function in GLSL: vec3 rsSwell(vec2 worldXZ) = (height, dh/dx, dh/dz); needs uniform uRsTime
+function rsSwellGLSL(){const f=n=>(+n).toFixed(6);let s='uniform float uRsTime;\nvec3 rsSwell(vec2 p){vec3 r=vec3(0.);float a;\n';
+ for(const w of RS_SWELL.waves)s+=` a=${f(w[0])}*p.x+${f(w[1])}*p.y-${f(w[3])}*uRsTime+${f(w[4])};r+=vec3(sin(a),cos(a)*${f(w[0])},cos(a)*${f(w[1])})*${f(w[2])};\n`;
+ const F=RS_SWELL.fade;if(F)s+=` r*=1.-smoothstep(${f(F.r0)},${f(F.r1)},length(p-vec2(${f(F.cx)},${f(F.cz)})));\n`;return s+' return r;}\n';}
+// ride: pose a vessel group G (definition D: L, B) at world x,z, heading yaw, on the sea seaH at time t.
+// Heave is the mean of five samples (amidships, bow, stern, both beams); pitch and roll are the slopes
+// between them, so a long hull averages short waves out and a canoe follows them.
+function rsRide(G,D,x,z,yaw,t,seaH){seaH=seaH||rsSeaH;const lx=D.L*.36,bz=clamp(D.B*.28,.5,6),c=Math.cos(yaw||0),s=Math.sin(yaw||0);
+ const at=(f,q)=>seaH(x+c*f+s*q,z-s*f+c*q,t);const h0=at(0,0),hb=at(lx,0),hs=at(-lx,0),hst=at(0,bz),hp=at(0,-bz);
+ G.position.set(x,(2*h0+hb+hs+hst+hp)/6,z);G.rotation.set(-Math.atan2(hst-hp,2*bz),yaw||0,Math.atan2(hb-hs,2*lx),'YXZ');}
