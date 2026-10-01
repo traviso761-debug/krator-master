@@ -34,7 +34,9 @@ FURN_CULTURE('eastabyss', { name: 'East Abyss', pack: null, influences: 'Maghreb
     sackTan: 0xc8b080, netBrown: 0x8a7a5a, fishDried: 0xb8a070, fishSmoked: 0x9a8058, fishPale: 0xc0a888, fishSilver: 0x9aa8b0, riceGreen: 0xb0c46c,
     glassGreen: 0x6aa84a, glassMagenta: 0xc84a8a, bindingBrown: 0x6a4a2a, bindingSlate: 0x3a4a6a, soilDark: 0x3a2a1a,
     voidBlack: 0x14161a, ashCold: 0x2a2622, coalBed: 0x3a1a0a, coalDeep: 0x2a1810, forgeGlow: 0xff7a30, flameFlare: 0xffb040, glowWarm: 0xffb755,
-    lanternDark: 0x6a5a3a, bulbDark: 0x8a7a52
+    lanternDark: 0x6a5a3a, bulbDark: 0x8a7a52,
+    /* the Locus tent rug: the kit's 'paintcol' polychrome (47-texture.js) under the rug's 0xf0e6d0 tint */
+    rugGold: 0xdfb84b, rugBlue: 0x266896, rugRed: 0xad2e21, rugGreen: 0x226e3e, rugIvory: 0xe6d8b7, rugTeal: 0x188f89
   } });
 /* END PALETTE */
 const EA_COMMON = {
@@ -752,5 +754,49 @@ FURN({
     F.box(0, 0, -0.65, 3.4, 0.55, 0.1, 0, c, 'rust'); F.box(0, 0, 0.65, 3.4, 0.55, 0.1, 0, c, 'rust');
     F.box(-1.65, 0, 0, 0.1, 0.55, 1.4, 0, c, 'rust'); F.box(1.65, 0, 0, 0.1, 0.55, 1.4, 0, c, 'rust');
     F.box(0, 0.38, 0, 3.2, 0.08, 1.2, 0, F.col('waterSalt'), 'plaster');
+  }
+});
+
+/* ======== Harvested from settlements/locus/src/64-locus-dwellings.js (1 piece, 2026-10) ======== */
+/* The Locus kit's great pavilion tent (culture abyssal-desert -> eastabyss) floors its hall with a polychrome rug:
+   one box in the kit's 'paintcol' texture, the Hausa zanko painting (47-texture.js: a gold ground ruled in green
+   into 1 m cells, each with a rosette, a lozenge, a roundel or a hash, in the order the texture repeats). Drawn
+   here in thin slabs: a green border with a red line, the gold field, the green rules, a motif per cell. */
+FURN({
+  key: 'eastabyss_tent_rug', name: 'Polychrome tent rug', culture: 'eastabyss', tier: 'common', type: 'rug', setting: 'indoor',
+  rooms: ['hall', 'tavern', 'court', 'antechamber', 'shrine'], anchor: 'floor', clearance: {},
+  materials: ['cloth'], source: 'settlements/locus/src/64-locus-dwellings.js tent_pavilion (the rug: 7.5 x 4.6 in the ridge tents, 5.5 m square in the bell tent)',
+  w: 7.5, d: 4.6, h: 0.05, variants: 3, variantNames: ['pavilion, 7.5 x 4.6', 'bell tent, 5.5 square', 'hall, 3.6 x 2.4'],
+  variantDims: [{ w: 7.5, d: 4.6, h: 0.05 }, { w: 5.5, d: 5.5, h: 0.05 }, { w: 3.6, d: 2.4, h: 0.05 }],
+  build: function (F) {
+    /* every layer is a 2 cm slab (the engine's thinnest box) whose top steps up 5 mm on the one under it */
+    const W = [7.5, 5.5, 3.6][F.variant], D = [4.6, 5.5, 2.4][F.variant], T = 0.02;
+    const top = function (t) { return t - T; };
+    const gold = F.col('rugGold'), blue = F.col('rugBlue'), red = F.col('rugRed'), green = F.col('rugGreen'), ivory = F.col('rugIvory'), teal = F.col('rugTeal');
+    F.box(0, 0, 0, W, T, D, 0, green, 'cloth');                                       /* the border, top 0.02 */
+    F.box(0, top(0.025), 0, W - 0.2, T, D - 0.2, 0, red, 'cloth');                    /* its red line */
+    const FW = W - 0.3, FD = D - 0.3, nx = Math.max(1, Math.round(FW)), nz = Math.max(1, Math.round(FD)), cw = FW / nx, cd = FD / nz, m = Math.min(cw, cd);
+    F.box(0, top(0.03), 0, FW, T, FD, 0, gold, 'cloth');                              /* the gold field */
+    for (let i = 1; i < nx; i++) F.box(-FW / 2 + i * cw, top(0.035), 0, 0.05, T, FD, 0, green, 'cloth');
+    for (let j = 1; j < nz; j++) F.box(0, top(0.035), -FD / 2 + j * cd, FW, T, 0.05, 0, green, 'cloth');
+    const L1 = top(0.04), L2 = top(0.045), L3 = top(0.05);
+    for (let i = 0; i < nx; i++) for (let j = 0; j < nz; j++) {
+      const x = -FW / 2 + (i + 0.5) * cw, z = -FD / 2 + (j + 0.5) * cd, id = (i + 2 * j) % 4;
+      if (id === 0) {                                                                 /* rosette: a blue star, an ivory ring, a red heart */
+        F.box(x, L1, z, 0.5 * m, T, 0.5 * m, 0, blue, 'cloth'); F.box(x, L1, z, 0.5 * m, T, 0.5 * m, Math.PI / 4, blue, 'cloth');
+        F.box(x, L2, z, 0.3 * m, T, 0.3 * m, Math.PI / 8, ivory, 'cloth'); F.box(x, L3, z, 0.14 * m, T, 0.14 * m, 0, red, 'cloth');
+      } else if (id === 1) {                                                          /* lozenge: red diamond, teal square, green heart */
+        F.box(x, L1, z, 0.56 * m, T, 0.56 * m, Math.PI / 4, red, 'cloth');
+        F.box(x, L2, z, 0.4 * m, T, 0.4 * m, 0, teal, 'cloth'); F.box(x, L3, z, 0.2 * m, T, 0.2 * m, 0, green, 'cloth');
+      } else if (id === 2) {                                                          /* roundel: blue, ivory, red */
+        F.cyl(x, L1, z, 0.38 * m, T, 0, blue, 'cloth'); F.cyl(x, L2, z, 0.26 * m, T, 0, ivory, 'cloth'); F.cyl(x, L3, z, 0.13 * m, T, 0, red, 'cloth');
+      } else {                                                                        /* hash: green bars across the cell, a red heart */
+        for (const s of [-1, 1]) {
+          F.box(x + s * 0.22 * m, L1, z, 0.07 * m, T, cd * 0.96, 0, green, 'cloth');
+          F.box(x, L1, z + s * 0.22 * m, cw * 0.96, T, 0.07 * m, 0, green, 'cloth');
+        }
+        F.box(x, L2, z, 0.16 * m, T, 0.16 * m, Math.PI / 4, red, 'cloth');
+      }
+    }
   }
 });

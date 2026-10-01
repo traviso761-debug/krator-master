@@ -11,6 +11,11 @@ registry (krator-master-furniture.js) when `harvested` is True, the culture file
 runtime. Their top-level names (TAU, shade, mat, PAL, FURN, FK, ...) stay inside the closure, so
 they never meet the host build's own. A culture file's fallback chain (kits/interiors
 IX.CULTURE_FAMILY) usually ends in `generic` and `scrap`: list them too.
+
+A name in `cultures` is a FILE SUFFIX: 'eastabyss' picks krator-master-furniture-eastabyss.js. The category
+files are picked the same way and only when named: 'generic-goods', 'generic-fruit' (not by 'generic') and
+'jobs' (krator-master-furniture-jobs.js, the work items by trade: each keeps its own culture and adds its colours
+to that culture's palette itself, so it needs no culture file beside it). Files load in filename order.
 """
 import os
 

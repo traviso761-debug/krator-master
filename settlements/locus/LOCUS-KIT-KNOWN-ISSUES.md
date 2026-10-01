@@ -19,18 +19,23 @@
 
 ## Furniture from the catalog (Oct 2026; `API.md` "Furniture")
 
-- [ ] **Left as geometry, no catalog piece fits** (Oct 2026 second pass; nearest catalog piece in brackets): the LYING oil drums
-      (`LOCUS.drum(..., true)`: refinery loading bay's row of four and the fitters' yard's one, the fuel station's cradle of
-      three) [none: `pa_drum` only stands]; `prop_drum_stack` (the asset IS the stack: left drawn); the tent's 7.5 x 4.6
-      polychrome rug and the bell tent's 5.5 m one [`eastabyss_court_carpet`, 3.0 x 2.1]; the farm's two sheaf-drying racks
-      (3.4 m, sheaves hung) [`hl_rus_hay_rack` 5.1 m, rustic; `eastabyss_trade_hayrack` a 1.4 m fodder rack]; its winnowing
-      basket (one 0.34 m tub) and reed mat (1.6 x 0.8) [`eastabyss_common_rug` 'Reed mat', 2.2 x 1.5]; its salt heap (a 3.2 m
-      mound 1.0 high) [`abyss_salt_cone`, a 2.1 m cone 1.6 high] and the heap's two wooden tubs [`abyss_baskets`, a row of four
-      wicker baskets of fish and rice]; the warehouse's three thatch bales (1.0 x 0.8 x 0.9) [`pa_hay_bales` 0.6 x 0.36 x 0.36;
-      `br_h_hay_bales` 1.2 x 0.8 x 0.6, beast-rider, not in the bundle]; the fishing dock's two net-drying frames (2.4 m, a
-      hung net) [`abyss_smoking_rack` 'nets and fish', four-post; `pa_fish_rack` 4.4 m] and its fish tray (a 1.2 x 0.7 plank
-      tray) [none]; the poor stilt house's coiled-net stand; the chapterhouse gnomon (an instrument) and core rack (the trade
-      sign); the fuel pumps, the control shed's battery boxes and the electric bracket lamps (fittings).
+- [x] **The leftovers are catalog pieces now** (Oct 2026 third pass): the catalog gained a Jobs category,
+      `kits/catalog/krator-master-furniture-jobs.js` (work items by trade, `job` field), and the tent rug, and the kit places
+      them through FURNISH at the same spots and headings: the LYING oil drums (`job_oil_drum_lying`: the refinery fitters'
+      yard's one; `job_oil_drum_rack` variant 0: the loading bay's row of four; variant 1: the fuel station's cradle of three
+      with its bearers and brass taps), the tent's 7.5 x 4.6 polychrome rug and the bell tent's 5.5 m one (`eastabyss_tent_rug`
+      variants 0 and 1), the farm's two sheaf-drying racks (`job_sheaf_rack`), its winnowing tub and mat (`job_winnowing_tub`,
+      `job_winnowing_mat`), its salt heap and the heap's two tubs (`job_salt_heap`, `job_salt_tub` heaped / empty), the
+      warehouse's three thatch bales (`job_bales` variant 1), the fishing dock's two net-drying frames (`job_net_frame`) and its
+      fish tray (`job_fish_tray` variant 1, with the catch). None of them drew from `F.rnd()`: no burn was needed.
+- [ ] **Still left as geometry:** `prop_drum_stack` (the asset IS the stack); the poor stilt house's coiled-net stand; the
+      chapterhouse gnomon (an instrument) and core rack (the trade sign); the fuel pumps, the control shed's battery boxes and
+      the electric bracket lamps (fittings).
+- [ ] **The Jobs pieces are not one-for-one either** (`kits/catalog/KNOWN_ISSUES.md`): the lying drums are 8-sided rods with
+      the standing drum's hoops; the fuel station's back cradle bearer, 0.6 m behind the drums' ends in the kit, is under them;
+      the bales have cords; the fish tray is a rimmed tray of fish (the kit's was a solid plank box); the salt heap is a smooth
+      dome; the rugs draw the kit's `paintcol` painting in slabs, with a border, and stand 0.05 m (their top at 0.07, where the
+      kit's box was).
 - [x] The STANDING oil drums are the catalog's `pa_drum` (scrap culture, sealed) through FURNISH: the warehouse plinth's six,
       the refinery fitters' yard's three and the loading bay's grid of fifteen with five stacked, the generator house's six.
       They take the catalog's painted colours (red, blue, olive, ochre, grey, mustard), not the kit's rust tones.

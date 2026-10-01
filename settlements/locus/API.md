@@ -13,7 +13,9 @@ catalog's own code. Nothing in the two kits draws furniture any more, and the ki
 
 The build carries two GENERATED fragments as one virtual file, `65z-furniture-bundle.js` (never in `src/`;
 `build.py` `virtual_bodies()`): `kits/catalog/furniture_bundle.py` `bundle(['eastabyss', 'nomad', 'reedlake',
-'generic', 'scrap'], harvested=True)` (scrap for `pa_drum`, the standing oil drum) (the single global `KratorFurniture`; the harvested registry carries the Yuni pieces,
+'generic', 'scrap', 'jobs'], harvested=True)` (scrap for `pa_drum`, the standing oil drum; `jobs` for the catalog's work
+items, `kits/catalog/krator-master-furniture-jobs.js`: the lying oil drums, the farm's sheaf racks, winnowing tub and mat,
+salt heap and tubs, the warehouse's bales, the dock's net frames and fish tray) (the single global `KratorFurniture`; the harvested registry carries the Yuni pieces,
 `yuni_<culture>_<name>`) and `kits/interiors/kit_bundle.py` `bundle(['locus', 'abyss'])` (`KratorInteriors`,
 `ROOM`, `furnishRoom` and the two interior sets). The glue is `src/66-locus-furnish.js`.
 
@@ -33,7 +35,8 @@ ABYSS.lantern(F, x,y,z, lit, amp)  LOCUS.lantern(F, x,y,z, amp, rad)  // the hun
 - **setting**: `'outdoor'` (default), `'indoor'` (inside, where the interior set plans no room: the library's reading
   crescents), `'room'` (in an OPEN room the interior set plans: a stall under a sail, the tavern deck, the open tent):
   such a piece is placed only while the interiors do not furnish that building, so `?interiors=1` never doubles it.
-  Furniture that stood inside an ENCLOSED planned room was deleted (the interiors furnish it).
+  Furniture that stood inside an ENCLOSED planned room was deleted (the interiors furnish it). The tents' polychrome rugs
+  (`eastabyss_tent_rug`) are the hall's floor covering: `'indoor'`, so they stay under the interiors' pieces.
 - **Lights**: a piece's lights (catalog `F.lamp`, kept as data) become this engine's night lamps (`nlLampAdd`);
   `lamp: [amp, radius]` overrides them (the lanterns keep the amp and radius they had).
 - **Batch**: `KratorFurniture.batch()` at detail `0.5`, flushed ONCE into the scene when the kit emits its instances

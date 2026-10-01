@@ -110,8 +110,8 @@ reseed(659001);
         var C=[[-16.4,9.4,-9.2],[0,10.4,-9.2],[16.4,9.4,-9.2],[16.4,7.0,2.6],[0,8.0,2.6],[-16.4,7.0,2.6]]; C.forEach(function(q){ ABYSS.mast(F, q[0],q[2], q[1], { r:0.16 }); });
         ABYSS.sail(F, [C[0],C[1],C[4],C[5]], F.pick(CANVASC), { swoop:1.0, band:PAL.abSailRed, bandW:0.6 }); ABYSS.sail(F, [C[1],C[2],C[3],C[4]], F.pick(CANVASC), { swoop:1.0, band:PAL.abSailRed, bandW:0.6 });
         /* the yard: crates and drums */
-        for(var d=0;d<6;d++){ ABYSS.burn(F, 1); FURNISH('pa_drum', -14+d*0.75,0.1,5.5, 0); }   /* FURNITURE (catalog pa_drum; the drawn drum's colour pick burnt); the two lying drums are still drawn */
-        LOCUS.drum(F, -9,0.1,6.6, null, true, 0.3); LOCUS.drum(F, -8.2,0.1,7.4, null, true, 0.5);
+        for(var d=0;d<6;d++){ ABYSS.burn(F, 1); FURNISH('pa_drum', -14+d*0.75,0.1,5.5, 0); }   /* FURNITURE (catalog pa_drum; the drawn drum's colour pick burnt) */
+        ABYSS.burn(F, 1); FURNISH('job_oil_drum_lying', -9,0.1,6.6, 0.3); ABYSS.burn(F, 1); FURNISH('job_oil_drum_lying', -8.2,0.1,7.4, 0.5);   /* the two lying drums (Jobs; colour picks burnt) */
         ABYSS.furn(F, 'abyss_crates', -3,6, 0, { variant:0 }); ABYSS.furn(F, 'abyss_crates', 1,6.4, 0.4, { variant:1 }); ABYSS.furn(F, 'abyss_crates', 6,5.8, -0.3, { variant:2 }); ABYSS.furn(F, 'abyss_crates', 11,6.6, 0, { variant:0 });
         ABYSS.furn(F, 'abyss_lantern_post', 15.6,8.4, PI, { variant:0 }); }
     } });
