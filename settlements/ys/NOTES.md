@@ -22,3 +22,13 @@ the NE corner, `ysShoreDist`, `YS_NAT`: beach, hinterland rising ~18 m per km, s
 `91z-views` (five presets, the night one at 22.2 h), `93-ys-ui` (hour slider, `_api.city`).
 
 Tooling in this container: `pip install playwright==1.56.0 pillow`; the pre-installed Chromium 1194 matches.
+
+### Verified (Oct 1 2026)
+`verify.py dist/ys.html --assert` on the empty world: error panel clean, 8 draw calls, 126 k triangles
+(all terrain and sea), all ten invariants pass (the six Ancients ones, the coast as designed: bay head +3.5 m,
+SE corner -29.6 m, NW corner +43 m; tags, doors and residence spots trivially), `_api.setCompass(true)` lights
+the button and the gizmo, `--marks` writes an empty list. A run of five views takes about a minute here.
+What the shots said: the bay bites north-west as drawn; the sea's glitter and fresnel read; night has stars;
+the rose and the ground gizmo agree with the geometry (looking NW puts N at upper right). Fixed from them:
+a preset without an hour had inherited the previous preset's night (now: no hour means the default day); the
+bake invariant failed on a world with nothing to bake; the first opening camera stood too low to see the bay.

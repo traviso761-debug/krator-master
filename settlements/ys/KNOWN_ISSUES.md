@@ -17,3 +17,7 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
 - [ ] The foreign quarter's buildings (Iziz, Republic, Voth, the chapterhouse) will carry no ROOM records until
       their own kits register them (DESIGN §7).
 - [ ] The Ancients hosts get door marks only at their accreted landings (DESIGN §7).
+- [ ] The ground painter is the port's (red soil in patches, dry grass): re-key it to the bay's lush ground and
+      the karst when the NW-bay biome is bound (phase 3).
+- [ ] The view select does not follow a preset chosen by the harness or by `_api.setView` (cosmetic; the port
+      behaves the same).
