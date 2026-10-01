@@ -14,7 +14,7 @@
       houses open at night); the brief lights only rich, civic, sacred and palace buildings. Say if they should be unlit.
 - [ ] `ind_oil_tank` variant C is "banco-clad in the Yuni manner" and sits on this sheet as the brief allows; it is not
       abyssal in style. Left unchanged.
-- [ ] `locus.html --assert` crashes in `verify.py` (`A.GATES` is undefined: the Yuni-inherited world invariants), on the
+- [x] **Fixed (Oct 2026): `verify.py`'s world invariants are Locus's own (highways, crossings, schedule, life, farms, pumpjacks); `--assert` passes.** `locus.html --assert` crashes in `verify.py` (`A.GATES` is undefined: the Yuni-inherited world invariants), on the
       commit before this kit as well as after. The world was checked by its counters instead (identical).
 - [ ] A long dark line can cross the sheet near the palace and plaza in high views: it is not geometry (nothing long
       stands there; checked by walking the instance matrices) — most likely the sun's shadow-map edge on the large sheet.
