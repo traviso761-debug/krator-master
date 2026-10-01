@@ -4692,9 +4692,14 @@ function nearestSettle(x,z){let best=null,bd=1e9;for(const S of SETTLE){const d=
 // Everything the layout decides is painted here first (the Iziz city's scheme); placement then READS these canvases
 // and the ROADS list, and the terrain mesh wears the albedo. 2048 px over WORLD m ≈ 0.47 px/m.
 const CS=2048,PXS=CS/CITY.WORLD,px=v=>(v+CITY.WORLD/2)*PXS;
-const gcv=document.createElement('canvas');gcv.width=gcv.height=CS;const cg=gcv.getContext('2d');
-const mv=document.createElement('canvas');mv.width=mv.height=CS;const mg=mv.getContext('2d');
-const kv=document.createElement('canvas');kv.width=kv.height=CS;const kg=kv.getContext('2d');
+// DETERMINISM: placement thresholds these canvases' anti-aliased edges (canBuild: >235), so the pixels must not depend
+// on the machine. A GPU-accelerated 2D canvas rasterises paths differently from the CPU one (a real browser and a
+// headless run placed 882 / 875 from the same build). willReadFrequently keeps every one of them on Chromium's CPU
+// rasteriser, which is the same everywhere; it is also the right hint for canvases read back with getImageData.
+const CANVAS_CPU={willReadFrequently:true};
+const gcv=document.createElement('canvas');gcv.width=gcv.height=CS;const cg=gcv.getContext('2d',CANVAS_CPU);
+const mv=document.createElement('canvas');mv.width=mv.height=CS;const mg=mv.getContext('2d',CANVAS_CPU);
+const kv=document.createElement('canvas');kv.width=kv.height=CS;const kg=kv.getContext('2d',CANVAS_CPU);
 const KL={none:0,plaza:1,park:2,highway:3,street:4,lane:5,avenue:6,farm:7,water:8,court:9,building:10,rock:11,field:12,mound:13};
 const KLCOL=k=>'rgb('+k+','+k+','+k+')';
 const ROADS=[];const PRECINCTS=[];
@@ -6998,7 +7003,7 @@ for(const S of SETTLE){const key=S.main?'dalab_palace_mound':'dalab_mound';const
 // An annulus from the terrain's edge out to 9 km painted with fields, hedges and forest blocks, and a merged mesh of
 // far-tree blobs in the forest belt. KratorSky (81, attached in 94) gives the giant, its rings, the sun, stars and moon.
 (function horizon(){reseed(SEED_CITY+7);const R0=CITY.WORLD/2-40,R1=9000;
- const cv=document.createElement('canvas');cv.width=cv.height=1024;const g=cv.getContext('2d');const S=R1*2/1024,pxh=v=>(v+R1)/S;
+ const cv=document.createElement('canvas');cv.width=cv.height=1024;const g=cv.getContext('2d',CANVAS_CPU);const S=R1*2/1024,pxh=v=>(v+R1)/S;
  g.fillStyle='#3a4a26';g.fillRect(0,0,1024,1024);
  // clearings with fields: a few dozen discs of farmland with strip fields, more toward the map
  for(let i=0;i<70;i++){const a=rng()*TAU,r=rr(R0*.9,R1*.85),x=Math.cos(a)*r,z=Math.sin(a)*r,rad=rr(260,900);g.save();g.beginPath();g.arc(pxh(x),pxh(z),rad/S,0,7);g.clip();
