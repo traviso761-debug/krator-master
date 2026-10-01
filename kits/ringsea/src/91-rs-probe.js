@@ -39,9 +39,9 @@ function rsExtra(){const R=[];const P=RS_PLACED;
    let top=-1e9;for(const f of[0,.12,-.12,.25,-.25]){   // walk north across the vessel on a few lines from the water south of it
     let v=-1,x=p.way.x+f*p.D.L,z=p.way.z+(p.bb.max.z-p.z)+2,fy=rsSeaH(x,z,RS_U.uTime.value),n=0;const z1=p.way.z+(p.bb.min.z-p.z)-2;
     while(z>z1&&n++<3000){const r=rsWalkResolve(x,z-.1,fy,v);if(r.blocked)break;z-=.1;v=r.v;fy=r.y;if(v>=0)top=Math.max(top,r.ly);}}
-   if(top<D.deckY-1.2||top>D.deckY+1.6)bad.push(p.D.name+(top<-1e8?' never boards':' stands at '+top.toFixed(2)+' (deck '+D.deckY.toFixed(2)+')'));
-   for(const m of D.masts){const g=rsDeckCell(D,m.x+m.ax*(D.deckY-m.y),m.z+m.az*(D.deckY-m.y),D.deckY,false);if(g&&!g.blocked)bm.push(p.D.name+' mast at '+m.x);}}
-  R.push({name:'decks-walkable',ok:!bad.length,detail:bad.length?bad.join(' | '):P.length+' vessels board from the water onto their decks; least walkable deck '+minA.toFixed(0)+' m2 ('+minK+')'});
+   if(top<D.deckY-1.2||top>D.deckY+2.2)bad.push(p.D.name+(top<-1e8?' never boards':' stands at '+top.toFixed(2)+' (deck '+D.deckY.toFixed(2)+')'));
+   for(const m of D.masts){const mx=m.x+m.ax*(D.deckY-m.y),mz=m.z+m.az*(D.deckY-m.y),g0=rsDeckCell(D,mx,mz,D.deckY,true),g=g0&&rsDeckCell(D,mx,mz,g0.y,false);/* standing on the deck at the mast's foot */if(g&&!g.blocked)bm.push(p.D.name+' mast at '+m.x);}}
+  R.push({name:'decks-walkable',ok:!bad.length,detail:bad.length?bad.join(' | '):P.length+' vessels board from the water onto their decks (or a roof within 2.2 m: the chitin carapace); least walkable deck '+minA.toFixed(0)+' m2 ('+minK+')'});
   R.push({name:'masts-block-walker',ok:!bm.length,detail:bm.length?bm.join(' | '):'every mast stops the walker'});}
  // 6. project tags
  {const t=tagAudit();R.push({name:'tags-complete',ok:!t.bad,detail:t.bad?t.first.join(' | '):REG.length+' vessels tagged culture/type/wealth/propulsion/hull'});}

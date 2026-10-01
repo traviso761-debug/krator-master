@@ -22,9 +22,9 @@ function buildRsXanaduCarrack(){reseed(72900);
  for(const a of rsAlong(H,.25,.8,26,1))rsLink(B,'metal',a.p,[a.p[0],a.p[1]+1,a.p[2]],.04,GOLD,5);
  // masts: fore (square), main (course + topsail, fighting top), mizzen (lateen above the aftcastle)
  const mast=(mx,mh,r)=>{const b=dY(H.uAt(mx));rsLink(B,'wood',[mx,b-.5,0],[mx,b+mh,0],r,WOOD,10,r*.6);return b;};
- const sq=(mx,y0,y1,w,a,key,bel)=>{rsRig(B,[mx,0]);const U=[Math.sin(a),0,Math.cos(a)];const S=rsSail(B,{key,O:[mx+.5,y0,0],U,V:[0,1,0],belly:bel,A:t=>[(t-.5)*w,y1-y0],Bf:t=>[(t-.5)*w*.92,0],draw:rsXanaduWheel});
+ const sq=(mx,y0,y1,w,a,key,bel,gain)=>{rsRig(B,[mx,0],{gain});const U=[Math.sin(a),0,Math.cos(a)];const S=rsSail(B,{key,O:[mx+.5,y0,0],U,V:[0,1,0],belly:bel,A:t=>[(t-.5)*w,y1-y0],Bf:t=>[(t-.5)*w*.92,0],draw:rsXanaduWheel});
   rsSailEdge(B,S,0,.17,WOOD);rsSailEdge(B,S,1,.1,WOOD);rsRigEnd(B);return S;};
- const fb=mast(11,20,.3);sq(11,fTop+1.4,fb+17,11,1,'xanadu-wheel',-1.2);
+ const fb=mast(11,20,.3);sq(11,fTop+1.4,fb+17,11,1,'xanadu-wheel',-1.2,.7);   // the fore course trims less: braced as far as the main, it meets the main's leech
  const mb=mast(0,31,.42);const cT=mb+21;sq(0,mb+5,cT,15,1,'xanadu-wheel',-1.6);sq(0,cT+1.4,mb+29,10,1,'xanadu-wheel',-.9);
  rsCyl(B,'wood',1.1,.9,1.1,[0,cT+.7,0],null,MAR,14);rsCyl(B,'wood',.9,.75,.9,[11,fb+17.6,0],null,MAR,12);
  const zb=mast(-12,17,.24);rsRig(B,[-12,0],{gain:.5});const S3=rsSail(B,{key:'xanadu-wheel',O:[0,0,.35],U:[1,0,0],V:[0,1,0],belly:.8,nu:16,nv:8,

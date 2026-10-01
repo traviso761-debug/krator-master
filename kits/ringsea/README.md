@@ -1,14 +1,17 @@
 # Ring Sea watercraft
 
 Twenty-one procedural vessels for the Ring Sea, each tagged by culture, riding a live swell
-on one sheet with their sails breathing in the wind and their oars stroking. The **Under way**
-button (off by default, so the preset views stay put) sets the whole fleet sailing east with wakes. Built on the Ancients-lineage fragment contract
+on one sheet (a Gerstner swell with whitecaps, to the horizon) with their sails and pennants breathing in
+the wind and their oars stroking. The **Under way** button (off by default, so the preset views stay put) sets
+each row sailing a racetrack course with wakes, heeling into the turns and trimming to the wind; off again, they
+run home to station in a few seconds. Walk mode (F) stands on the decks and rides with the ship. Built on the Ancients-lineage fragment contract
 (`core/materials/` + vendored shell), one vessel per fragment.
 
 ```
 python3 build.py                                    # -> dist/ringsea.html (deterministic; manifest in build-manifest.json)
 python3 verify.py dist/ringsea.html --assert --views "Opening,Overview" --out shots
-python3 verify.py dist/ringsea.html --views "Voth Brackwater Trireme,Voth Brackwater Trireme — abeam" --out shots
+python3 verify.py dist/ringsea.html --views "Voth Ordinator Flagship" --out shots \
+  --shot "aboard=()=>_api.walkAboard('vothFlagship',9,1.5,Math.PI)"   # --shot NAME=JS: pose, then screenshot
 ```
 
 Every vessel has two preset views: `<name>` (starboard bow quarter) and `<name> — abeam`.
@@ -49,9 +52,11 @@ from `10-core.js`), plus the vessel's own fragment. Then:
 const V = RS.defs.vothTrireme.build();   // {group, anims, deckY, oars}
 V.group.position.set(x, 0, z); V.group.rotation.y = heading; scene.add(V.group);
 // each frame: RS_U.uTime.value=t; rsRide(V.group, RS.defs.vothTrireme, x, z, heading, t, seaH); for (const f of V.anims) f(t);
+// optional: V.group.userData.rsU.uRsTrim.value = rig angle (rad), .uRsFlag.value = pennant swing (0 = as built)
 ```
 
-`seaH(x,z,t)` is your sea's height; leave it out to ride the kit's own swell (`rsSeaH`). `RS_U.uTime` drives the sails' flutter.
+`seaH(x,z,t)` is your sea's height; leave it out to ride the kit's own swell (`rsSeaH`). `RS_U.uTime` drives the sails' and pennants' flutter.
+For a life layer, `95-rs-deck.js` (`rsDeckData`) turns any placed vessel into deck heights, a walk outline and obstacles.
 
 See `API.md` for the vessel frame and the builders.
 

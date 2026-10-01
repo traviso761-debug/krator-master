@@ -1684,9 +1684,9 @@ function buildRsXanaduCarrack(){reseed(72900);
  for(const a of rsAlong(H,.25,.8,26,1))rsLink(B,'metal',a.p,[a.p[0],a.p[1]+1,a.p[2]],.04,GOLD,5);
  // masts: fore (square), main (course + topsail, fighting top), mizzen (lateen above the aftcastle)
  const mast=(mx,mh,r)=>{const b=dY(H.uAt(mx));rsLink(B,'wood',[mx,b-.5,0],[mx,b+mh,0],r,WOOD,10,r*.6);return b;};
- const sq=(mx,y0,y1,w,a,key,bel)=>{rsRig(B,[mx,0]);const U=[Math.sin(a),0,Math.cos(a)];const S=rsSail(B,{key,O:[mx+.5,y0,0],U,V:[0,1,0],belly:bel,A:t=>[(t-.5)*w,y1-y0],Bf:t=>[(t-.5)*w*.92,0],draw:rsXanaduWheel});
+ const sq=(mx,y0,y1,w,a,key,bel,gain)=>{rsRig(B,[mx,0],{gain});const U=[Math.sin(a),0,Math.cos(a)];const S=rsSail(B,{key,O:[mx+.5,y0,0],U,V:[0,1,0],belly:bel,A:t=>[(t-.5)*w,y1-y0],Bf:t=>[(t-.5)*w*.92,0],draw:rsXanaduWheel});
   rsSailEdge(B,S,0,.17,WOOD);rsSailEdge(B,S,1,.1,WOOD);rsRigEnd(B);return S;};
- const fb=mast(11,20,.3);sq(11,fTop+1.4,fb+17,11,1,'xanadu-wheel',-1.2);
+ const fb=mast(11,20,.3);sq(11,fTop+1.4,fb+17,11,1,'xanadu-wheel',-1.2,.7);   // the fore course trims less: braced as far as the main, it meets the main's leech
  const mb=mast(0,31,.42);const cT=mb+21;sq(0,mb+5,cT,15,1,'xanadu-wheel',-1.6);sq(0,cT+1.4,mb+29,10,1,'xanadu-wheel',-.9);
  rsCyl(B,'wood',1.1,.9,1.1,[0,cT+.7,0],null,MAR,14);rsCyl(B,'wood',.9,.75,.9,[11,fb+17.6,0],null,MAR,12);
  const zb=mast(-12,17,.24);rsRig(B,[-12,0],{gain:.5});const S3=rsSail(B,{key:'xanadu-wheel',O:[0,0,.35],U:[1,0,0],V:[0,1,0],belly:.8,nu:16,nv:8,
@@ -1785,7 +1785,7 @@ RS_SEA.onBeforeCompile=sh=>{sh.uniforms.uRsTime=RS_U.uTime;const G=rsSwellGLSL(R
    'float rsNoise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(rsHash(i),rsHash(i+vec2(1.,0.)),f.x),mix(rsHash(i+vec2(0.,1.)),rsHash(i+vec2(1.,1.)),f.x),f.y);}')
   .replace('#include <color_fragment>','#include <color_fragment>\nfloat rsMpp=length(fwidth(vRsP0));vec4 rsNJ=rsSwellNJ(vRsP0,rsMpp);'+
    // whitecaps: where the crests crowd the water together (the Jacobian drops), broken up by drifting noise
-   'float rsFoam=smoothstep(.56,.34,rsNJ.w)*smoothstep(.5,.85,rsNoise(vRsP0*.16+vec2(uRsTime*.05,-uRsTime*.03))*.55+rsNoise(vRsP0*.9-uRsTime*.2)*.45);'+
+   'float rsFoam=.8*smoothstep(.5,.3,rsNJ.w)*smoothstep(.55,.85,rsNoise(vRsP0*.16+vec2(uRsTime*.05,-uRsTime*.03))*.55+rsNoise(vRsP0*.9-uRsTime*.2)*.45);'+
    'rsFoam*=mix(1.,.45,smoothstep(1.,6.,rsMpp));diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.72,.80,.82),rsFoam);')
   .replace('#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\nroughnessFactor=mix(roughnessFactor,.85,rsFoam);')
   .replace('#include <metalnessmap_fragment>','#include <metalnessmap_fragment>\nmetalnessFactor*=1.-rsFoam;')
@@ -1866,9 +1866,9 @@ function rsExtra(){const R=[];const P=RS_PLACED;
    let top=-1e9;for(const f of[0,.12,-.12,.25,-.25]){   // walk north across the vessel on a few lines from the water south of it
     let v=-1,x=p.way.x+f*p.D.L,z=p.way.z+(p.bb.max.z-p.z)+2,fy=rsSeaH(x,z,RS_U.uTime.value),n=0;const z1=p.way.z+(p.bb.min.z-p.z)-2;
     while(z>z1&&n++<3000){const r=rsWalkResolve(x,z-.1,fy,v);if(r.blocked)break;z-=.1;v=r.v;fy=r.y;if(v>=0)top=Math.max(top,r.ly);}}
-   if(top<D.deckY-1.2||top>D.deckY+1.6)bad.push(p.D.name+(top<-1e8?' never boards':' stands at '+top.toFixed(2)+' (deck '+D.deckY.toFixed(2)+')'));
-   for(const m of D.masts){const g=rsDeckCell(D,m.x+m.ax*(D.deckY-m.y),m.z+m.az*(D.deckY-m.y),D.deckY,false);if(g&&!g.blocked)bm.push(p.D.name+' mast at '+m.x);}}
-  R.push({name:'decks-walkable',ok:!bad.length,detail:bad.length?bad.join(' | '):P.length+' vessels board from the water onto their decks; least walkable deck '+minA.toFixed(0)+' m2 ('+minK+')'});
+   if(top<D.deckY-1.2||top>D.deckY+2.2)bad.push(p.D.name+(top<-1e8?' never boards':' stands at '+top.toFixed(2)+' (deck '+D.deckY.toFixed(2)+')'));
+   for(const m of D.masts){const mx=m.x+m.ax*(D.deckY-m.y),mz=m.z+m.az*(D.deckY-m.y),g0=rsDeckCell(D,mx,mz,D.deckY,true),g=g0&&rsDeckCell(D,mx,mz,g0.y,false);/* standing on the deck at the mast's foot */if(g&&!g.blocked)bm.push(p.D.name+' mast at '+m.x);}}
+  R.push({name:'decks-walkable',ok:!bad.length,detail:bad.length?bad.join(' | '):P.length+' vessels board from the water onto their decks (or a roof within 2.2 m: the chitin carapace); least walkable deck '+minA.toFixed(0)+' m2 ('+minK+')'});
   R.push({name:'masts-block-walker',ok:!bm.length,detail:bm.length?bm.join(' | '):'every mast stops the walker'});}
  // 6. project tags
  {const t=tagAudit();R.push({name:'tags-complete',ok:!t.bad,detail:t.bad?t.first.join(' | '):REG.length+' vessels tagged culture/type/wealth/propulsion/hull'});}
