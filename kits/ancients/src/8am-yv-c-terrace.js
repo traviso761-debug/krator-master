@@ -15,7 +15,7 @@ function buildYvTerrace(scene,gx,gz,d){reseed(9975+d);KOFF=[gx,0,gz];const G=new
  mesh(lathe({rFn:y=>7*Math.sqrt(1+1.5*Math.pow((y-20)/20,2)),H:40,nu:32,nv:12}),skin,G);
  const RS=Math.PI/2,NS=8;                   // RS: the bearing the roof caved in on (+z, toward the row camera)
  const cave=(th,yy)=>d>0&&civDA(th,RS)<.95-.06*yy+.35*(fbm(th*5,yy*.2,9976,2)-.5);   // yy: height up the lid
- const aSkin=[],aDark=[];
+ const aSkin=[],aDark=[],aGuts=[];
  const SLC=new THREE.Color(d>0?0x4a4038:0xcfcac2);
  for(let s=0;s<NS;s++){const y=6+s*5.4,ox=Math.sin(s*1.3)*5,oz=Math.cos(s*.9)*5,R=24-s*1.6,top=s===NS-1;
   const lobe=th=>R*(1+.28*(.5+.5*Math.cos(6*th)));
@@ -48,13 +48,13 @@ function buildYvTerrace(scene,gx,gz,d){reseed(9975+d);KOFF=[gx,0,gz];const G=new
   if(d===0){kput('slab',[tox,ty+4.9,toz],null,[tR*1.02,.4,tR*1.02],SLC);kput('finial',[tox,ty+12.6,toz],null,[1.2,2,1.2],null);}
   else{// the slab with the fallen sector bitten out, a dark attic under what stands, and the shell of the lid on the terrace below
    aSkin.push(gridSurface((u,v)=>{const th=u*TAU,r=v*tR*1.02;return[tox+r*Math.cos(th),ty+4.9,toz+r*Math.sin(th)];},64,4,{hole:(u,v)=>v>.25&&civDA(u*TAU,RS)<.7-.25*v}));
-   aDark.push(lathe({rFn:yy=>rF(yy)*.9,H:LH*.8,nu:24,nv:3}).translate(tox,ty+4.95,toz));
+   aGuts.push(lathe({rFn:yy=>rF(yy)*.88,H:LH*.55,cut:LH*.55,jag:.8,nu:24,nv:3,seed:9979}).translate(tox,ty+4.95,toz));   // the attic's broken inner lining
    const s6=NS-2,y6=6+s6*5.4,R6=24-s6*1.6,o6x=Math.sin(s6*1.3)*5,o6z=Math.cos(s6*.9)*5,F=new THREE.Group();
    mesh(gridSurface((u,v)=>{const th=RS-.5+u*1.0,yy=v*LH*.8,r=rF(yy);return[r*Math.cos(th),yy,r*Math.sin(th)-tR*.8];},12,6,{uS:3,vS:2}),skin,F);
    F.position.set(o6x+Math.cos(RS)*R6*.95,y6+5.2,o6z+Math.sin(RS)*R6*.95);F.rotation.set(.9,.25,.15);G.add(F);dropFragment(F,y6+5.0,.3);
    for(let k=0;k<14;k++){const hh=h3(k,7,9979),th=RS+(hh-.5)*1.2,r=R6*(.95+hh*.15);
-    kput('rubble',[o6x+r*Math.cos(th),y6+5.3+hh*.6,o6z+r*Math.sin(th)],qEuler(hh*3,hh*5,hh*2),[1+hh*1.6,.6+hh,1+hh*1.2],null);}}}
- meshMerged(aSkin,skin,G);meshMerged(aDark,MAT.dark,G);
+    kput('rubble',[o6x+r*Math.cos(th),y6+5.3+hh*.6,o6z+r*Math.sin(th)],qEuler(hh*3,hh*5,hh*2),[1+hh*1.6,.6+hh,1+hh*1.2],new THREE.Color().setHSL(.05+hh*.04,.25,.32+hh*.15));}}}
+ meshMerged(aSkin,skin,G);meshMerged(aDark,MAT.dark,G);meshMerged(aGuts,MAT.guts,G);
  if(d>0){mossOnSurface(aSkin,0,0,0,90,1.8);vinesFromLedge(aSkin,0,0,0,40,12);stainsFromLedge(aSkin,0,0,0,30,9);rubbleRing(0,0,0,26,40,30,2);}
  kput('archOpen',[7,3.5,0],qFacing([1,0,0]),[.5,.5,1],null);
  figures(0,0,5,30);civFlatten(G);KOFF=[0,0,0];return G;}

@@ -23,18 +23,21 @@ function buildYvCombShort(scene,gx,gz,d){reseed(9965+d);KOFF=[gx,0,gz];const G=n
  const TB=.62,bite=th=>{const t=clamp(1-civDA(th,TB)/.5,0,1);return t>0?H-(2*FS+1.2)*Math.min(1,t*2.2)-1.6*(fbm(th*9,1.3,9966,2)-.5)*Math.min(1,t*3):H;};
  const bit=(th,y)=>d>0&&y>bite(th);
  const dh=holeFn(d*.8,4500,null,1.4);
- const shellAt=r=>gridSurface((u,v)=>{const th=u*TAU,p=pt(th,r);return[p[0],Y0+v*(H-Y0),p[2]];},200,56,
-   {uS:26,vS:9,hole:(u,v)=>hex(u,v)||bit(u*TAU,Y0+v*(H-Y0))||(dh?dh(u*3,v*H):false)});
- const parts=[shellAt(1),shellAt(.80)];                     // outer and inner skin
+ const shellAt=(r,b)=>gridSurface((u,v)=>{const th=u*TAU,p=pt(th,r);return[p[0],Y0+v*(H-Y0),p[2]];},200,56,
+   {uS:26,vS:9,hole:(u,v)=>hex(u,v)||b&&bit(u*TAU,Y0+v*(H-Y0))||(dh?dh(u*3,v*H):false)});
+ // outer and inner skin. The bite takes the outer skin and the flats; the
+ // inner skin, the core and its lid stand, so the corner reads as the flats
+ // peeled off a core that held (cutting the core too opened an empty box).
+ const parts=[shellAt(1,true),shellAt(.80,false)];
  parts.push(gridSurface((u,v)=>{const th=u*TAU,a=pt(th,.80),b=pt(th,1);return[lerp(a[0],b[0],v),H,lerp(a[2],b[2],v)];},110,3,{uS:20,vS:2,hole:(u,v)=>bit(u*TAU,H-.1)}));   // roof ring
  for(let f=1;f<NF;f++){const y=Y0+f*FS;   // cell floors between the skins
   parts.push(gridSurface((u,v)=>{const th=u*TAU,a=pt(th,.80),b=pt(th,1);return[lerp(a[0],b[0],v),y,lerp(a[2],b[2],v)];},80,2,
    {hole:d>0?(u,v)=>fbm(u*10,f,4510+f,2)<.2||bit(u*TAU,y+1.2):null}));}
- parts.push(gridSurface((u,v)=>{const th=u*TAU,p=pt(th,.80);return[p[0],H+v*1.5,p[2]];},110,2,{uS:20,vS:1,hole:(u,v)=>bit(u*TAU,H-.1)}));      // parapet
+ parts.push(gridSurface((u,v)=>{const th=u*TAU,p=pt(th,.80);return[p[0],H+v*1.5,p[2]];},110,2,{uS:20,vS:1}));      // parapet (on the inner skin, which the bite spares)
  meshMerged(parts,skin,G);
- mesh(gridSurface((u,v)=>{const th=u*TAU,p=pt(th,.78);return[p[0],Y0+v*(H-Y0),p[2]];},60,6,{hole:(u,v)=>bit(u*TAU,Y0+v*(H-Y0))}),MAT.dark,G);   // dark core wall
- // the roof proper: a cambered lid over the core (the bite takes its rim)
- mesh(gridSurface((u,v)=>{const th=u*TAU,p=pt(th,.80*v);return[p[0],H+1.1*(1-v*v),p[2]];},90,6,{uS:14,vS:6,hole:d>0?(u,v)=>v>.55&&civDA(u*TAU,TB)<.32*(v-.4)/.6+.05:null}),skin,G);
+ mesh(gridSurface((u,v)=>{const th=u*TAU,p=pt(th,.78);return[p[0],Y0+v*(H-Y0),p[2]];},60,6,{}),MAT.dark,G);   // dark core wall
+ // the roof proper: a cambered lid over the core
+ mesh(gridSurface((u,v)=>{const th=u*TAU,p=pt(th,.80*v);return[p[0],H+1.1*(1-v*v),p[2]];},90,6,{uS:14,vS:6}),skin,G);
  if(d===0)mesh(gridSurface((u,v)=>{const th=u*TAU,p=pt(th,.985);return[p[0],Y0+.2+v*(H-Y0-.4),p[2]];},100,1,{}),MAT.glass,G);   // the glazing behind the lattice
  // the open ground storey: columns all round, court slab, the first floor slab
  for(let k=0;k<30;k++){const th=(k+.5)/30*TAU,p=pt(th,.92);if(d>0&&rng()<.18)continue;
