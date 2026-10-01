@@ -1,4 +1,5 @@
-// ================================================================= YS MOCK — three houses: poor barnacle, middle pod, rich conch
+// ================================================================= YS KIT — the three mock houses, on the sheet as worked examples (a copy of targets/mock/86-mock-houses.js;
+// the housing agent's set supersedes them and this file goes at the merge)
 // The first Hykkousoi builders, written to prove the kit (DESIGN §4): no box anywhere, every opening a hole with a lip,
 // every shell rooted with a fillet, every house hollow with its floor, its room and the residence's three spots
 // (DESIGN §7). The housing agent's set supersedes these in phase 2; the keys stay so the sheet can still show them.
@@ -104,3 +105,27 @@ function buildHykMockRich(G,o){reseed(31953+(o.v|0));const col=hC(hPick(HPAL.nac
  hykSpot(an,'hearth',ax+nx*.95,az+nz*.95,0,.8,.8);hykSpot(an,'table',ax-nz*.95,az+nx*.95,0,1.0,1.0);hykSpot(an,'shrine',ax+nz*.9,az-nx*.9,Math.atan2(nx,nz),.7,.5);
  hykReg('Conch house',0,-1,9.5,9.8);}
 HYK.def({key:'mock_rich_conch',name:'Conch house',family:'housing',row:'Housing — rich',w:19,d:17,h:10.5,tags:{type:['single-family dwelling'],wealth:'rich',lit:true},build:buildHykMockRich});
+// ---- grown-on example: a middle pod built in the G FRAME (origin on the host's face at the floor datum, +z out of the
+// face, x along it). Bedded a fifth into the face when it is the host's way in (o.way), else 70 % proud; the back door
+// then opens onto the plate. The landing is a lily pad on a rib; the lamp sits on the shell on a bracket.
+function buildHykMockGrown(G,o){reseed(31954+(o.v|0));const R=4.2,way=o.way;const col=hC(hPick(HPAL.shell));
+ const cz=way?-R*.2:R*.3,cy=R*.447;   // the pod's centre: z along the face normal, y so its floor meets the datum
+ const openings=[{th:0,el:-.06,r:1.25,ky:1.3,kind:'door'},{th:.8,el:.12,r:.65,kind:'window'},{th:-.8,el:.12,r:.65,kind:'window'},{th:.25,el:.78,r:.5,kind:'window'}];
+ if(way)openings.push({th:Math.PI,el:-.06,r:1.2,ky:1.3,kind:'door',back:true});
+ const pod=hykPod({a:R,b:R*.86,c:R,e1:.9,e2:.94,cy,nu:52,nv:28,noise:{amp:.028,su:4,sv:3,seed:4},col,openings,hollow:{t:.07,col}});
+ pod.geo.translate(0,0,cz);hykPut('hkShell',pod.geo);pod.inner.translate(0,0,cz);hykPut('hkIn',pod.inner,true);
+ const floorY=way?.05:cy-R*.86*.52;hykFloor(0,cz,floorY,R*.82,{});
+ let door=null;for(const op of pod.openings){op.p=[op.p[0],op.p[1],op.p[2]+cz];
+  if(op.kind==='door'&&op.back)hykDoor(op,{level:o.level,name:o.host.n+' way in',into:o.host.n});
+  else if(op.kind==='door'){door=op;hykDoor(op,{level:o.level});}else hykWin(op,{});}
+ hykPut('hkShell',hykFlare([0,cy,0],[0,0,1],R*(way?.86:.9),R*(way?.3:.45),{col}));   // rooted into the face
+ const padY=door.p[1]-door.r*door.ky+.12,padZ=door.p[2]+2.6;o.landing(0,padY,padZ,2.9,{});
+ hykPut('hkBone',hykRib([0,-3.4,.1],[0,padY-.45,padZ],{rise:-1.4,r0:.36,r1:.26,knuckles:3,col:hC(hPick(HPAL.bone))}));
+ const sp=pod.surf(((.34/TAU)%1+1)%1,clamp((.36)/Math.PI+.5,.02,.98));const A=[sp[0],sp[1],sp[2]+cz];const vl=Math.hypot(A[0],A[1]-cy,A[2]-cz)||1;
+ hykLight(A[0]+A[0]/vl*.5,A[1]+(A[1]-cy)/vl*.5+.12,A[2]+(A[2]-cz)/vl*.5,{r:.2,level:o.level,bracket:A});
+ // the room and the residence's three spots (a way-in pod keeps its axis clear between its two doors)
+ const room=hykRoom('bedroom',hykCirclePoly(0,cz,R*.78,14),floorY,R*.86*1.3,{doors:[[0,cz+R,2.5]],residence:true,wealth:.5});
+ if(way){hykSpot(room,'bed',-R*.45,cz,Math.PI/2,2.1,1.0);hykSpot(room,'store',R*.45,cz+R*.3,Math.PI/2,1.2,.7);hykSpot(room,'food',R*.45,cz-R*.3,Math.PI/2,.8,.8);}
+ else{hykSpot(room,'bed',0,cz-R*.42,0,2.1,1.0);hykSpot(room,'store',R*.5,cz,Math.PI/2,1.2,.7);hykSpot(room,'food',-R*.5,cz,Math.PI/2,.8,.8);}
+ hykReg('Grown pod',0,cz,R*1.1,R*1.8);}
+HYK.def({key:'mock_grown_pod',name:'Grown pod',family:'housing',row:'Grown-on housing',grown:true,into:true,w:8.4,d:8.4,h:7.6,tags:{type:['single-family dwelling'],wealth:'middle',lit:true},build:buildHykMockGrown});

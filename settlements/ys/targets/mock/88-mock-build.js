@@ -7,7 +7,7 @@
 // onto B at its plate at +37.25 (the way in, in a lobe trough facing A); a backbone bridge joins the two way-in
 // landings, sends runners to A's strut heads and branches to a perch on one of them; a spiral stair joins A's L1
 // landing to a wet landing on the water with a skiff tied up. The tideline dresses both.
-reseed(30200);
+reseed(31970);
 const MOCK_A={x:140,z:20,sink:-36,cut:120,podium:64};const MOCK_B={x:140,z:-140,sink:-25,cut:80,podium:52};
 const YS_BUILD=[];
 YS_BUILD.push(function(scene){
@@ -22,7 +22,7 @@ YS_BUILD.push(function(scene){
  const B_L2=37.25,B_A=5*Math.PI/12;   // the plate nearest A's, in a lobe trough on the side facing A
  const B=ysPlaceHost(scene,{key:'skyB',builder:buildSkyB,x:MOCK_B.x,z:MOCK_B.z,y:MOCK_B.sink,d:1,cutY:MOCK_B.cut,podium:MOCK_B.podium,cap:{hw:74},rAt:rB,name:'The Scallop stump',
   floors:{y0:37,pitch:5,top:.25},ways:[{a:B_A,y:B_L2,R:4.0}],ring:2});
- reseed(30210);
+ reseed(31971);
  hykTideline(A);hykTideline(B);
  // ---- growth on A: a middle pod at L1 facing the houses (west), the rich way-in pod at the first plate (north), a poor one at L1 east
  const gA=hykAccrete(A,[{y:A_L1+4.2*.447,a:Math.PI,R:4.2,wealth:'middle',level:'L1'},{a:-Math.PI/2,R:4.6,wealth:'rich',level:'L2',into:true},{y:A_L1+3.1*.447+1,a:.35,R:3.1,wealth:'poor',level:'L1'}]);

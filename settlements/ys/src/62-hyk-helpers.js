@@ -12,6 +12,25 @@ HYK.place=function(scene,key,x,z,ry,o){const D=HYK.defs[key];if(!D){reportErr('H
  HYK.cur={D,G,x,z,ry:ry||0,o,r0:REG.length,id,key,name:D.name};
  try{D.build(G,o);}catch(e){reportErr(key+' '+e.stack);}
  endGroupXF();HYK.cur=null;return G;};
+// A GROWN-ON building: HYK.placeOn(scene,key,host,{y,a,level,into,v}) builds a `grown:true` def in the G frame: origin
+// on the host's face at bearing `a` (world, 0 = +x) and height `y` (the pod's floor datum: a plate top for a way-in),
+// +z pointing OUT of the face, x along it, y up. The builder gets o = {host,a,rs,y,level,v,way,faceZ,landing}: `faceZ(lx,ly)`
+// is the face's local z at local x (the host curves away behind: ≤ 0), `way` the host's declared way when `into`, and
+// `landing(lx,ly,lz,R,opt)` makes a lily-pad landing in the local frame and records it on the host. Everything else
+// (hykPut, hykDoor, hykWin, hykLight, hykRoom, hykSpot, hykFloor, hykFlare, hykReg) works in the local frame as in
+// HYK.place; hykPad and hykStairSpiral take world coordinates (convert with hykW).
+HYK.placeOn=function(scene,key,host,o){const D=HYK.defs[key];if(!D){reportErr('HYK.placeOn: no such key '+key);return null;}
+ if(!D.grown)reportErr('HYK.placeOn: '+key+' is not a grown-on def');o=Object.assign({v:0,level:'L1',a:0,y:12},o||{});
+ const a=o.a,nx=Math.cos(a),nz=Math.sin(a);const rs=host.rAt(o.y,a);const x=host.x+rs*nx,z=host.z+rs*nz;const ry=Math.atan2(nx,nz);
+ const G=new THREE.Group();G.position.set(x,o.y,z);G.rotation.y=ry;scene.add(G);G.updateMatrix();KOFF=[0,0,0];useGroupXF(G);
+ const id=HYK_PLACED.length;const rec={key,x,z,ry,o:{v:o.v,y:o.y,scale:1},id,name:D.name,host:host.n,a,level:o.level};HYK_PLACED.push(rec);
+ HYK.cur={D,G,x,z,ry,o:rec.o,r0:REG.length,id,key,name:D.name,host};
+ let way=null;if(o.into){way=(host.ways||[]).find(w=>Math.abs(Math.atan2(Math.sin(w.a-a),Math.cos(w.a-a)))<.05)||null;if(!way)reportErr('HYK.placeOn: '+key+' asks to open '+host.n+' but no way is declared at that bearing');}
+ const ho={host,a,rs,y:o.y,level:o.level,v:o.v,way,
+  faceZ:(lx,ly)=>{const r=host.rAt(o.y+(ly||0),a);return Math.sqrt(Math.max(0,r*r-lx*lx))-r;},
+  landing:(lx,ly,lz,R,opt)=>{const w=hykW(lx,ly,lz);const pad=hykPad(w[0],w[1],w[2],R,Object.assign({own:host.n},opt||{}));host.landings.push({x:w[0],y:w[1],z:w[2],r:R,level:o.level,a});return pad;}};
+ try{D.build(G,ho);}catch(e){reportErr(key+' '+e.stack);}
+ endGroupXF();HYK.cur=null;const f=ysHostInhabit(host,o.y,.6);if(f&&way)f.way=true;return G;};
 // local -> world for a point and for a direction (the same rotation as loc(), 69c)
 function hykW(lx,ly,lz){const c=HYK.cur;if(!c)return [lx,ly,lz];const s=c.o.scale||1;const p=loc(c.x,c.z,lx*s,lz*s,c.ry);return [p[0],(c.o.y||0)+ly*s,p[1]];}
 function hykN(nx,ny,nz){const c=HYK.cur;if(!c)return [nx,ny,nz];const ry=c.ry;return [nx*Math.cos(ry)+nz*Math.sin(ry),ny,-nx*Math.sin(ry)+nz*Math.cos(ry)];}
@@ -39,6 +58,8 @@ function hykWin(op,o){return hykOpening(op,Object.assign({kind:'window'},o||{}))
 function hykLight(lx,ly,lz,o){o=o||{};const cool=!!o.cool;const r=o.r||.22;
  kput(cool?'hkPearlC':'hkPearl',[lx,ly,lz],null,r,cool?hC(0x9ff4e4):hC(0xffe2b0));
  if(!o.bare)kput('hkBall',[lx,ly-r*.7,lz],null,[r*1.6,r*.9,r*1.6],hC(hPick(o.nacre?HPAL.nacre:HPAL.shell)));
+ // a bracket from an anchor on the shell to the lamp's socket, so no lamp floats (o.bracket=[lx,ly,lz], same frame)
+ if(o.bracket){const A=o.bracket;hykPut('hkBone',hykTube([[A[0],A[1],A[2]],[lx,ly-r*.7,lz]],()=>.05,{seg:6,col:hC(hPick(HPAL.bone))}));}
  const w=hykW(lx,ly,lz);const c=HYK.cur;
  return ysMark({bld:c?c.id:null,key:c?c.key:null,name:c?c.name:null,kind:'light',x:w[0],y:w[1],z:w[2],nx:0,nz:0,w:r*2,h:r*2,level:o.level||'ground',warm:!cool,lightKind:o.kind||(cool?'jar':'pearl')});}
 // ---------------------------------------------------------------- rooms and the spots the later placer fills (kits/interiors/SPEC.md)

@@ -55,6 +55,8 @@ function hykTideline(host,o){o=o||{};const yb=-1.7,yt=1.3;const R=y=>host.rAt(y)
   kput('hkBarnB',[host.x+r*Math.cos(a),y,host.z+r*Math.sin(a)],null,[s,s*.7,s],hC(hPick(HPAL.barnacle)));}
  const f=hykSurf((u,v)=>{const th=u*TAU;const r=R(0)+.1+v*(o.foam||2.4)*(1+.3*Math.sin(th*7));return [host.x+r*Math.cos(th),.06,host.z+r*Math.sin(th)];},84,2,{col:HYK_WHITE,flip:true});
  const fm=new THREE.Mesh(f,MAT.hkFoam);fm.userData.probeSkip=true;fm.renderOrder=2;scene.add(fm);}
+// the depth of a superellipsoid pod's underside below its centre at a horizontal offset (dx,dz), or null outside it
+function hykPodUnder(a,b,c,e1,e2,dx,dz){const q=Math.pow(Math.abs(dx)/a,2/e2)+Math.pow(Math.abs(dz)/c,2/e2);const t=Math.pow(q,e2/e1);if(t>=1)return null;return b*Math.pow(1-t,e1/2);}
 // ---------------------------------------------------------------- accretion: pods grown onto a host's face
 // pods: [{y, a (azimuth, world: 0 = +x, pi/2 = +z), R, wealth:'poor'|'middle'|'rich', level:'L1'|'L2', pad:true}]
 function hykAccrete(host,pods){const out=[];for(const pd of pods){
@@ -78,9 +80,11 @@ function hykAccrete(host,pods){const out=[];for(const pd of pods){
  // bedded pod is narrower that far out, so its fillet is shallower (.3 R out at .86 R) or its lip would show as a torn
  // collar round the pod. Either way the fillet's outer edge hides the ragged edge of a way-in hole.
  hykPut(mat,hykFlare(contact,[nx,0,nz],R*(way?.86:.9),R*(way?.3:.45),{col}));
+ // drips hang from the pod's underside, read off the superellipsoid itself, their bases .22 m up inside the shell (the
+ // growth noise is ±3 %), so every spike is rooted
  const nd=Math.round(R*2.4),aw=R*.62/Math.max(1,rs);for(let i=0;i<nd;i++){const a2=pd.a+rr(-aw,aw);const ro=rs+rr(.25,R*.5);const h=rr(.35,1.1)*R*.3,w=h*.3;
-  const dy0=pd.y-Math.sqrt(Math.max(0,R*R*.74-Math.pow(ro-(rs+depth),2)*.9))*.86;   // on the pod's underside at that radius
-  kput('hkDrip',[host.x+ro*Math.cos(a2),dy0-h/2+.15,host.z+ro*Math.sin(a2)],qEuler(Math.PI,0,0),[w,h,w],col);}
+  const px=host.x+ro*Math.cos(a2),pz=host.z+ro*Math.sin(a2);const under=hykPodUnder(R,R*.86,R,.9,.94,px-cx,pz-cz);if(under==null)continue;
+  kput('hkDrip',[px,pd.y-under-h/2+.22,pz],qEuler(Math.PI,0,0),[w,h,w],col);}
  // satellites: two smaller pods grown beside the main one (a colony, not a lone blob), windows only, rooted alike
  // (beside a way-in pod they sit further round, clear of the hole in the wall, and are hollow like the main pod: through
  // the hole the inside of the host sees their inner skin, not their culled back faces)
@@ -89,7 +93,8 @@ function hykAccrete(host,pods){const out=[];for(const pd of pods){
   const p3=hykPod({a:R2,b:R2*.9,c:R2,e1:.92,e2:.95,cy:pd.y+sp.dy,nu:36,nv:20,noise:{amp:.03,su:4,sv:3,seed:(a3*7|0)+1},col,openings:[{th:th3,el:.1,r:R2*.22,kind:'window'},{th:th3+1.1,el:.35,r:R2*.16,kind:'window'}],hollow:{t:.08,col}});
   p3.geo.translate(c3x,0,c3z);hykPut(mat,p3.geo);if(p3.inner){p3.inner.translate(c3x,0,c3z);hykPut('hkIn',p3.inner,true);}for(const op of p3.openings){op.p=[op.p[0]+c3x,op.p[1],op.p[2]+c3z];hykWin(op,{nacre:rich,name:host.n+' pod'});}
   hykPut(mat,hykFlare([host.x+(rs3+.05)*n3x,pd.y+sp.dy,host.z+(rs3+.05)*n3z],[n3x,0,n3z],R2*.92,R2*.5,{col}));
-  for(let i=0;i<3;i++){const a4=a3+rr(-.2,.2)*R2/Math.max(1,rs3);const ro=rs3+rr(.2,R2*.5);const h=rr(.3,.8)*R2*.3;kput('hkDrip',[host.x+ro*Math.cos(a4),pd.y+sp.dy-R2*.9*.7-h/2,host.z+ro*Math.sin(a4)],qEuler(Math.PI,0,0),[h*.3,h,h*.3],col);}}}
+  for(let i=0;i<3;i++){const a4=a3+rr(-.2,.2)*R2/Math.max(1,rs3);const ro=rs3+rr(.2,R2*.5);const h=rr(.3,.8)*R2*.3;const px=host.x+ro*Math.cos(a4),pz=host.z+ro*Math.sin(a4);
+   const under=hykPodUnder(R2,R2*.9,R2,.92,.95,px-c3x,pz-c3z);if(under==null)continue;kput('hkDrip',[px,pd.y+sp.dy-under-h/2+.2,pz],qEuler(Math.PI,0,0),[h*.3,h,h*.3],col);}}}
  // the room: the pod's chamber, with the residence's three spots; a way-in pod keeps its axis clear between its doors
  const doors=[];if(door)doors.push({at:[door.p[0],door.p[2]],w:door.r*2,to:'landing'});if(back)doors.push({at:[back.p[0],back.p[2]],w:back.r*2,to:'host'});
  const room=ysRoom({building:host.n+' pod',bld:null,key:'accreted_pod',kind:'bedroom',poly:hykCirclePoly(cx,cz,R*.78,14),y:floorY,h:R*.86*1.3,
@@ -105,7 +110,9 @@ function hykAccrete(host,pods){const out=[];for(const pd of pods){
  let pad=null;if(door&&pd.pad!==false){const dy=door.p[1]-door.r*door.ky+.12;const padR=Math.max(2.6,R*.72);const px=door.p[0]+door.n[0]*(padR*.9),pz=door.p[2]+door.n[2]*(padR*.9);
   pad=hykPad(px,dy,pz,padR,{col,mat:poor?'hkBarn':'hkShell',own:host.n});
   hykPut('hkBone',hykRib([host.x+(rs+.1)*nx,dy-3.6,host.z+(rs+.1)*nz],[px,dy-.45,pz],{rise:-1.4,r0:.36,r1:.26,knuckles:3,col:hC(hPick(HPAL.bone))}));
-  if(rich)hykLight(door.p[0]+door.n[0]*.5-nz*1.3,door.p[1]+door.r*door.ky+.25,door.p[2]+door.n[2]*.5+nx*1.3,{r:.2,nacre:true,level:pd.level||'L1'});
+  // the rich pod's lamp: anchored on the shell beside and above the door (the pod's own surface), on a short bracket
+  if(rich){const lu=(((th+.34)/TAU)%1+1)%1,lv=clamp((-.06+.42)/Math.PI+.5,.02,.98);const sp=pod.surf(lu,lv);const A=[sp[0]+cx,sp[1],sp[2]+cz];
+   const vx=A[0]-cx,vy=A[1]-pd.y,vz=A[2]-cz;const vl=Math.hypot(vx,vy,vz)||1;hykLight(A[0]+vx/vl*.5,A[1]+vy/vl*.5+.12,A[2]+vz/vl*.5,{r:.2,nacre:true,level:pd.level||'L1',bracket:A});}
   host.landings.push({x:px,y:dy,z:pz,r:padR,level:pd.level||'L1',a:pd.a});}
  // a way in: the host's plate at that floor joins the walk plan, and the floor is inhabited
  if(way){const pr=host.rAt(way.y,pd.a)*.9;ysDeck({kind:'hostfloor',host:host.n,x:host.x,z:host.z,r:pr,x0:host.x-pr,z0:host.z-pr,x1:host.x+pr,z1:host.z+pr,w:pr*2,y:way.y,own:host.n,level:pd.level||'L2'});

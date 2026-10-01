@@ -114,3 +114,13 @@ knuckle and the flare-to-rib step is gone. Seventh: a second ball at the flare's
 the face: the root. (A concave fillet always lies inside the sphere on its rim, so the bell is now the hidden
 transition between the two balls; the look is rib, knuckle, root.) Eighth: the flare slid half its length up the rib,
 the root ball fixed by q and n alone, so the bell's lip end stands out of the root; rib, knuckle, bell, root.
+
+## Phase 2 (Oct 2026): the fan-out
+The gate passed. Before the agents: `targets/kit` (the sheet: every `HYK.def` by row with generated presets, grown
+defs on Scallop Stack hosts in the sea, a Furniture row), `HYK.placeOn` and the G frame (62), `35-furn-frame.js`
+(the Ancients-lineage `F` adapter, `FURN`, `placeFurn`), a grown-on worked example beside the three mock houses on
+the sheet, and two of Travis's notes fixed in the shared code: the accreted pod's lamp on a bracket, the drips read
+off the pod's own surface. The mock's seeds moved to 31950–31979 so the agents' blocks are free. Eleven agents in
+worktrees: A housing, B shops, C hospitality/sacred/markets, D Amphitriton and Citadel, E Tides, Winds, Pharos,
+F spans and harbour, F2 industry, G military and agriculture, H library, treasury, prison, I furniture, and the
+biome agent on `biomes/nwbay`.

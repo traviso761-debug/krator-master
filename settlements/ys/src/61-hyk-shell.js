@@ -10,6 +10,9 @@ function hykPut(matKey,geo,inside){if(!geo)return null;if(!MAT[matKey]){reportEr
  const F=HYK.cur;if(F&&F.G)geo.applyMatrix4(F.G.matrix);
  const t=tcur();if(t)t.tris+=triOf(geo);
  const side=inside?'in':'out';(HYK_BK[side][matKey]||(HYK_BK[side][matKey]=[])).push(geo);return geo;}
+// the same without the current building's frame: for geometry already in world space (the furniture frame builds there)
+function hykPutRaw(matKey,geo,inside){if(!geo)return null;if(!MAT[matKey]){reportErr('hykPutRaw: no material '+matKey);return null;}
+ const t=tcur();if(t)t.tris+=triOf(geo);const side=inside?'in':'out';(HYK_BK[side][matKey]||(HYK_BK[side][matKey]=[])).push(geo);return geo;}
 function hykMerge(geos){let nv=0,ni=0;for(const g of geos){nv+=g.attributes.position.count;ni+=g.index?g.index.count:g.attributes.position.count;}
  const P=new Float32Array(nv*3),N=new Float32Array(nv*3),U=new Float32Array(nv*2),C=new Float32Array(nv*3);const I=nv>65535?new Uint32Array(ni):new Uint16Array(ni);let vo=0,io=0;
  for(const g of geos){const A=g.attributes,c=A.position.count;P.set(A.position.array,vo*3);if(A.normal)N.set(A.normal.array,vo*3);if(A.uv)U.set(A.uv.array,vo*2);
