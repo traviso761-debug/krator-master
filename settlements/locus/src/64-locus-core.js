@@ -113,6 +113,11 @@ var LOCUS = {}, LOCUS_ANIM = [];
   /* a flame: an unlit glow cone + ball; plus a real warm lamp for the night volume */
   LOCUS.flame = function(F, x,y,z, s, amp){ F.cone(x,y,z, s*0.5, s*2.2, 0, PAL.flare, 'glowmat'); F.ball(x,y+s*0.4,z, s*0.55, PAL.glowWarm, 'glowmat'); F.lamp(x,y+s,z, amp||2.0, 40); };
   /* an oil stain on the ground */
+  /* the kit's hung oil lantern is FURNITURE: the catalog's abyss_hanging_lantern (harvested from 72-lights.js LANTERN, which
+     F.lantern draws), lit, placed through FURNISH (66-locus-furnish.js) with this lantern's own night lamp. (x,y,z) is the
+     lantern's centre, as F.lantern took it; the catalog piece carries its own short hanger. */
+  LOCUS.lantern = function(F, x,y,z, amp, rad){ return furnishAt(F, 'abyss_hanging_lantern', x,y-0.28,z, 0, { v:1, lamp:[amp==null?1:amp, rad==null?15:rad] }); };
+  LOCUS.burn = function(F, n){ for(var i=0;i<n;i++) F.rnd(); };   /* drop n numbers: see ABYSS.burn */
   LOCUS.stain = function(F, x,z, r){ F.cyl(x,0.02,z, r, 0.03, 0, OILC[1], 'adobe'); };
   /* an Ancient steel drum (oil barrel), standing or on its side */
   LOCUS.drum = function(F, x,y,z, col, lying, yaw){ col=col!=null?col:F.pick(RUSTC); if(lying){ F.cyl(x-Math.sin(yaw||0)*0.44,y+0.30,z-Math.cos(yaw||0)*0.44, 0.30,0.88, [PI/2,yaw||0,0], col, 'rust'); }

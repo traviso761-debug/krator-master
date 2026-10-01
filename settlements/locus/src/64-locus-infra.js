@@ -28,9 +28,9 @@ reseed(646001);
       F.rod(19.2, 7.2, 7.6, 19.2, 3.0, 7.6, 0.02, PAL.people.hair[2], 'timber'); F.box(18.9, 2.3, 7.3, 0.9, 0.7, 0.9, 0.3, CANVASC[3], 'canvas');
       /* the stock on the plinth: drums, salt sacks, bales */
       for(var d=0;d<6;d++) LOCUS.drum(F, -17.5+d*0.72, 1.1, 6.6, RUSTC[d%5]);
-      for(var b=0;b<5;b++) F.box(8+b*1.05, 1.1, 6.4, 0.9, 0.55+((b*3)%2)*0.5, 0.7, 0.2*b, b%2?SALTCRUSTC[0]:CANVASC[2], 'canvas');
+      FURNISH('yuni_common_grain_sacks', 8.7,1.1,6.4, 0.2); FURNISH('yuni_common_grain_sacks', 11.5,1.1,6.4, -0.3);       /* the salt sacks: FURNITURE (catalog) */
       for(var b2=0;b2<3;b2++) F.box(-8+b2*1.2, 1.1, 6.7, 1.0, 0.8, 0.9, 0, THATCHC[b2%4], 'thatch');
-      F.lantern(-9, 3.4, bz+D/2*0.98+0.3, 0.8, 12, 0); F.lantern(9, 3.4, bz+D/2*0.98+0.3, 0.8, 12, 0);
+      LOCUS.lantern(F, -9, 3.4, bz+D/2*0.98+0.3, 0.8, 12); LOCUS.lantern(F, 9, 3.4, bz+D/2*0.98+0.3, 0.8, 12);
     } });
 
   /* =============================================================== 2. FISHING DOCK */
@@ -55,8 +55,8 @@ reseed(646001);
       for(var r=0;r<2;r++){ var rx=-4.3, rz=12.2+r*2.6; F.cyl(rx-1.2, Y, rz, 0.05, 1.9, 0, TIMBERC[1], 'timber'); F.cyl(rx+1.2, Y, rz, 0.05, 1.9, 0, TIMBERC[1], 'timber');
         F.rod(rx-1.25, Y+1.8, rz, rx+1.25, Y+1.8, rz, 0.03, TIMBERC[1], 'timber'); F.box(rx, Y+0.7, rz, 2.3, 1.1, 0.04, 0, 0x6a7a6c, 'cloth'); }
       /* baskets, a fish tray, a lantern at the head of the jetty */
-      F.cyl(-2.4, Y, 15.8, 0.36, 0.45, 0, THATCHC[2], 'thatch'); F.cyl(-1.6, Y, 16.3, 0.32, 0.38, 0, THATCHC[1], 'thatch'); F.box(2.2, Y, 16.2, 1.2, 0.18, 0.7, 0.3, pk, 'plank');
-      F.cyl(0.9, Y, z1+0.6, 0.06, 2.3, 0, TIMBERC[0], 'timber'); F.lantern(0.9, Y+2.2, z1+0.6, 0.6, 10, 0.3);
+      FURNISH('abyss_baskets', -2.0,Y,16.0, 0.2); F.box(2.2, Y, 16.2, 1.2, 0.18, 0.7, 0.3, pk, 'plank');                      /* the baskets: FURNITURE (catalog) */
+      F.cyl(0.9, Y, z1+0.6, 0.06, 2.3, 0, TIMBERC[0], 'timber'); LOCUS.lantern(F, 0.9, Y+2.2, z1+0.6, 0.6, 10);
       (F.doors||(F.doors=[])).push([F.P(0,0,18.2).x, F.y, F.P(0,0,18.2).z]);
       F.dockHead = [F.P(0,0,z1-1.5).x, F.P(0,0,z1-1.5).z];
     } });

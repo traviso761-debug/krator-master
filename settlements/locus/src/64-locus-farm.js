@@ -49,7 +49,7 @@ reseed(643001);
       /* drying racks with sheaves hung over them, a row of water jars, the salt heap and its baskets */
       for(var r=0;r<2;r++){ var rx=X(r?22.0:11.2), rz=14.2; F.cyl(rx-1.6,0,rz,0.06,1.9,0,TIMBERC[1],'timber'); F.cyl(rx+1.6,0,rz,0.06,1.9,0,TIMBERC[1],'timber');
         F.rod(rx-1.7,1.75,rz, rx+1.7,1.75,rz, 0.04, TIMBERC[1], 'timber'); for(var k=0;k<6;k++) F.box(rx-1.4+k*0.56, 1.05, rz, 0.34, 0.75, 0.25, 0, k%2?PADDYC[3]:PADDYC[1], 'leafy'); }
-      for(var j=0;j<4;j++) F.lathe('adobe', X(21.6), 4.4+j*1.1, [[0.22,0],[0.38,0.35],[0.32,0.8],[0.2,0.95],[0.24,1.05]], ADOBEREDC[j%4], { seg:8 });
+      FURNISH('yuni_poor_clay_pots', X(21.6),0,5.0, PI/2); FURNISH('yuni_poor_clay_pots', X(21.6),0,7.2, PI/2);      /* the row of water jars: FURNITURE (catalog) */
       F.blob(X(21.0), -0.05, -12.5, 1.6, 1.0, 0.3, SALTCRUSTC[0], 'rock'); F.cyl(X(18.6), 0, -13.2, 0.4, 0.55, 0, PLANKC[3], 'plank'); F.cyl(X(19.4), 0, -14.0, 0.36, 0.5, 0, PLANKC[2], 'plank');
       F.cyl(X(18.6), 0.55, -13.2, 0.36, 0.12, 0, SALTCRUSTC[1], 'rock');
       /* a sun shade over the yard between house and threshing floor, and the marsh planting */
@@ -57,6 +57,6 @@ reseed(643001);
       for(var q=0;q<7;q++) LOCUS.plant(F, 'salt_reed', X(-21.5+q*7.2+F.rr(-0.8,0.8)), cz-2.2-F.rr(0,0.6), F.rr(0,TAU), { variant:q%2 });
       LOCUS.plant(F, 'marsh_palmetto', X(22.6), 9.4, 0.4, { variant:1 }); LOCUS.plant(F, 'marsh_palmetto', X(11.2), 1.2, 2.1, { variant:0 });
       LOCUS.plant(F, 'salt_reed', X(-22.4), 15.4, 0.7, { variant:0 }); LOCUS.plant(F, 'salt_reed', X(5.6), 16.6, 1.9, { variant:1 });
-      F.lantern(hx-2.0, 2.4, 11.6, 0.6, 9, 0);
+      LOCUS.lantern(F, hx-2.0, 2.4, 11.6, 0.6, 9);
     } });
 })();
