@@ -53,7 +53,7 @@ function buildHouses2(scene,gx,gz,d){reseed(9410+d);KOFF=[gx,0,gz];const G=new T
   if(d>0)domShards([0,.6,0],qFacing([0,0,1]),[[-6,2.4],[-3.6,2.4],[-1.2,2.4],[1.2,2.4],[6,2.4]],x=>R*.95*Math.sqrt(clamp(1-Math.pow((Math.abs(x)+1.2)/R,2),0,1)),2.4,.5);
   // the transoms the teeth hang from (the front had mullions only, so a tooth
   // at a pane's head hung in mid-air)
-  if(d>0)for(let j=1;j<4;j++){const y=j*2.4,w=2*R*Math.sqrt(clamp(1-Math.pow(y/(R*.95),2),0,1));kput('mullR',[0,.6+y,0],qEuler(0,0,Math.PI/2),[.4,w,.4],null);}
+  if(d>0)for(let j=1;j<4;j++){const y=j*2.4,w=1.9*R*Math.sqrt(clamp(1-Math.pow(y/(R*.95),2),0,1));kput('mullR',[0,.6+y,0],qEuler(0,0,Math.PI/2),[.4,w,.4],null);}
   kput(BOXC(d),[-7,1.6,3],null,[4,.5,5],null);for(let k=0;k<6;k++){const a=Math.PI+(k+.5)/6*Math.PI;const lit=d>0?rng()<.15:true;kput('strip',[Math.cos(a)*4.5,5,Math.sin(a)*4.5],qEuler(0,-a,0),[2,1,1],lit?CYAN:DEAD);}if(d>0){mossOnRing(0,.7,0,9,14,1.2);vinesOnRing(0,7,0,5,6,6);}KOFF=[gx,0,gz];}
  // E — bridge house: a glass box spanning two concrete piers
  {const bx=65;REGISTER({name:'House E — bridge house ('+STATE(d)+')',x:bx,z:0,r:16,h:12});
