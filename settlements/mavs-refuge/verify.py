@@ -78,10 +78,15 @@ return R;}"""
 
 # The catalog furniture (53-furnish.js: the 'catalog-furniture' group, meshes tagged userData.furniture) has
 # its own budget line: BUDGET.triangles keeps guarding the world's own fabric as it did before the furniture
-# moved into the catalog, so its count EXCLUDES the furniture meshes (drawn whole: frustumCulled is off).
+# moved into the catalog, so its count EXCLUDES the furniture the camera draws. The furniture's own line counts it at
+# full detail: core/lod keeps each original on layer 30 (unseen; mask bit 0x40000000) and draws copies (userData.lodCopy,
+# carrying the original's userData), so the originals give a figure that does not move with the view.
 BUDGET_JS = """()=>{const B=(typeof BUDGET!=='undefined')?BUDGET:(window._api&&window._api.BUDGET); if(!B) return null;
-let ft=0, fc=0; scene.traverse(o=>{ if(o.isMesh && o.userData.furniture && o.visible){ const g=o.geometry; ft+=(g.index?g.index.count:g.attributes.position.count)/3; fc++; } });
-return {budget:B, calls:renderer.info.render.calls, tris:renderer.info.render.triangles-ft, furnTris:ft, furnCalls:fc,
+const L30=0x40000000, tri=g=>{ const n=g.index?g.index.count:g.attributes.position.count, dr=g.drawRange; return Math.floor(Math.min(n, dr.count===Infinity?n:dr.count)/3); };
+let ft=0, fd=0, fc=0; scene.traverseVisible(o=>{ if(!o.isMesh||!o.userData.furniture) return;
+  if(!o.userData.lodCopy) ft+=tri(o.geometry);                  /* the furniture at full detail: its budget */
+  if(!(o.layers.mask&L30)){ fd+=tri(o.geometry); fc++; } });    /* what the camera draws of it: taken off the world's count */
+return {budget:B, calls:renderer.info.render.calls, tris:renderer.info.render.triangles-fd, furnTris:ft, furnCalls:fc,
         instances:(window._stats&&window._stats.instances)||0};}"""
 
 
