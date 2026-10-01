@@ -164,3 +164,117 @@ talus, fallen outrigger, warts), `shots/qa_dom_c/view_Amphitheater.png`
   row-filtered copy, whose per-type accounting is identical. Net change to the
   full kit over the three decays: about +72 000 triangles (mega +67k, amph
   +31k, fuel/radar +7k, dish −32k), under 1% of the showcase.
+
+## Round 2 — 2026-10-01
+
+Same rules as round 1: built, `jscheck`ed (PARSES OK), `verify.py --assert`
+(error panel clean, every invariant PASS) and the shots read, on a scratch
+target that builds only this group's ten rows (`targets/qadom/`, not
+committed). No seed changed; the new code draws no rng at all (shards, rooms
+and mouldings choose by position hash), so nothing already placed moved.
+
+Tris per decay (0 · 1 · 3), round 1 → round 2:
+
+| Type | Round 1 | Round 2 |
+|---|---|---|
+| Megastructure | 221 750 · 220 354 · 235 586 | 217 918 · 218 970 · 228 326 |
+| Factory | 165 315 · 171 876 · 128 674 | 167 619 · 175 704 · 131 722 |
+| Apartments | 128 076 · 115 650 · 81 256 | 128 076 · 116 392 · 81 694 |
+| Laboratory | 57 826 · 64 146 · 59 066 | 57 826 · 66 418 · 62 232 |
+| Amphitheater | 9 440 · 13 814 · 17 434 (*) | 49 152 · 53 304 · 56 944 |
+| Houses A–C | 21 317 · 18 858 · 12 584 | 21 317 · 18 930 · 12 848 |
+| Houses D–F | 3 852 · 4 462 · 6 652 | 4 620 · 5 344 · 7 440 |
+| Fuel station | 11 040 · 12 186 · 14 524 | unchanged |
+| Radar | 9 252 · 9 490 · 11 120 | unchanged |
+| Dish | 8 572 · 10 156 · 13 860 | 8 572 · 9 372 · 14 262 |
+
+(*) what was actually on the branch: round 1's amphitheater work had been lost
+(below). Meshes unchanged except Megastructure +1 (the eye's bore) and House D
++1 (its moulding).
+
+### Found: round 1's amphitheater was lost
+
+The cavea wall, its vomitoria and the ruin's slump (round 1, commit 9358ef5)
+were committed under `voth/ancients/` while the tree was being flattened into
+`kits/`, and only reached the old path. The other ten fragments of this group
+match round 1 byte for byte; `83-amphitheater.js` alone was the pre-QA bowl
+again (open under the rake, ruin = intact with holes). Restored by targeted
+edits, keeping Iziz's strut fix that landed since (struts meet the rim wall's
+outer face). Worth a check by whoever owns the other groups: `voth/ancients/`
+still exists in the tree as a stale copy.
+
+### "Still open" from round 1
+
+- **Glass shards, mouldings, interiors** — no longer blocked; done below.
+- **Vomitoria quad-stepped** — FIXED. The wall is two bands: the arcade band
+  (0–9.2 m) on a fine grid, so the arches are curves, and the plain band above
+  on the old grid. Each arch also carries a bone moulding (jambs and head).
+  +~32 000 tris per decay; well inside the 250 000 budget.
+- **Houses A–C 25–28 meshes** (`petalRing`/`luceShells` one mesh per piece) —
+  still open: shared code, unchanged reason.
+- **`Rehabilitated factory` view** — already fixed by the coordinator.
+
+### KNOWN_ISSUES
+
+- Ticked: **Seed collision Megastructure/Gate** (fixed in the civic pass; the
+  exceptions set in `build.py` is empty).
+- Noted as partly done, left open: **glass shards** (civic + domestic done),
+  **interiors** (civic + domestic), **Gaudí bone-work** (helper exists, three
+  uses), **repaired pass identical everywhere** (Foundry scrap yard, Starport
+  tents), **Unnamed warts** (done round 1, inside a multi-part item).
+
+### Old low-priority requests
+
+- **Dish floating wreckage** — FIXED. The ruin's holes were fbm bands across
+  the paraboloid, leaving concentric rings of skin hanging in the air joined to
+  nothing. Panels now tear away from the rim inward along a ragged line, so
+  every surviving piece runs back to the hub; the rim torus went with them and
+  the ribs end bare; a few punctures stay. The fallen panel is smaller (it read
+  as a 55 m ramp). The rehabilitated dish (d=3) used the ruin's 1.1 rad droop,
+  so repairPass's shacks perched on ring fragments in mid-air; it now keeps the
+  intact tilt and loses only its outer panels, and the shacks sit in the bowl.
+- **Shrink podiums for density** — fuel forecourt 52 → 48 m, Apartments C pad
+  50 → 44 m (moss radii follow). The Foundry plinth is already tight to its
+  tank farm and towers; the dish and radar pads carry their legs; the mega's
+  mound and the houses' slabs are not podiums. Nothing else to take.
+
+### Kit-wide detail
+
+- **Glass shards.** Every dead kit window in the group now goes through civic's
+  `civWin()` (Houses A, B, C; Apartments A and C; the Foundry's clover silos and the great silo's ring; the
+  Lab's 105 big windows). The glazing that is mesh, not kit, gets the new
+  `domShards()` (pane grid over an opening, teeth on ~half the panes by hash):
+  House D's glass front, House E's surviving box, House F's trays, the
+  Foundry's two great arched end walls. House D and the Foundry got transoms
+  in the ruin, since a tooth at a pane head otherwise hung in mid-air.
+- **Interiors.** `domRoom()` puts a ceiling strip, a cabinet or machine, now
+  and then a touch panel and a conduit wherever the skin is eaten through:
+  every Lab storey (plus a floor plate in the band between skin and liner, in
+  the existing guts mesh), Apartments A's trays, House A's drum and House C's
+  lobes (their dark liners pulled in from 0.4 m to 1.6 m / 1.3 m behind the
+  skin so there is a room to see). Kit instances only.
+- **Mouldings.** `domMould(pathFn, wallNormal, r, knots)` sweeps a knuckled
+  bone roll along a path and returns a geometry to merge: the Foundry's
+  archivolts, the Amphitheater's vomitoria, House D's apse edge.
+
+### Found in the shots and fixed
+
+- **Megastructure: the eye was a grey disc.** "A great circular void punched
+  through the mass" was a capped kit cylinder over unbroken skin. Both faces
+  and liners are now cut and the bore is an open lathe: you see sky through it.
+- **Foundry: the furnace shells stood in the hall's end wall.** 60 × 48 m at
+  z=96, they began 8 m inside the south end wall and filled its great arched
+  opening from every southern view. Now 44 × 32 at z=104, clear of the wall,
+  the cooling towers and the plinth edge.
+- **Apartments A windows** tested the decay hole at the tray's world height
+  instead of its local one, so windows were dropped and kept against the wrong
+  part of the hole pattern. Fixed (no rng involved).
+
+### Still open, and why
+
+- Houses A–C mesh count (shared `petalRing`/`luceShells`).
+- `voth/ancients/` stale copy in the tree (not this group's to delete).
+- Helpers live at the top of `64-houses-def.js`; if civic's `civShardAt`
+  changes signature, `domShards` follows it.
+- Not rendered on the full kit page (load > 300 s under nine agents); per-type
+  numbers above are from the scratch target, whose accounting is the same.
