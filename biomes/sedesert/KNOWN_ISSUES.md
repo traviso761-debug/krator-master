@@ -40,14 +40,19 @@ Read before changing anything here. `build.py` prints the open count.
       The bottle tree / desert rose and puya / agave builders could share a caudex and a
       rosette helper the way the fork and column trees do.
 
+- [ ] The ideal host loads the carve patches but declares none: the cataract's lip into the
+      Abyss is the obvious undercut, and the wadi gorge could take alcoves. Not started.
+- [ ] The ground's detail texture is still projected on x-z (Shade's is triplanar now), so
+      the gorge and butte faces may show vertical grain. Not checked here.
+
 ## Done
 
 - [x] A cluster (`around()` in 60-floor: reeds, grass, stones...) tested the mask at its
       centre only, so a reed clump at a reserved place's edge put outliers inside it (Shade's
       canyon watch). Each satellite now tests the mask itself.
-- [x] Carve patches (36-core-carve, `BIO.carve`): alcoves, niches and undercuts on the
-      heightfield, meshed by surface nets with baked occlusion and hood shadow. The ideal
-      host declares none (the cataract's lip is a candidate); Shade uses six.
+- [x] Carve patches (`BIO.carve`, now shared in `core/terrain/36-core-carve.js`): alcoves,
+      niches and undercuts on the heightfield, meshed by surface nets with baked occlusion
+      and hood shadow. Shade uses six.
 - [x] The strata's colour pass: a warmer palette (buff bleached bands, purple-brown shales,
       rare grey-green reduced beds), colour drifting along each bed, varnish hanging from the
       bed tops, sand on ledges, an optional bleached cap and dust at a foot.
