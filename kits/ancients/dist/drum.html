@@ -29450,7 +29450,7 @@ function skyStump(scene,gx,gz,d,fam,o){const F=STUMP_FAM[fam];o=o||{};const sd=d
   for(let i=a;i<it.length;i++){const q=it[i],cut=cutAt(q.p[0],q.p[2]);if(q.p[1]>cut||topOf(n,q)>cut+3){if(t){t.inst--;t.tris-=ktri(n);}continue;}it[w++]=q;}it.length=w;}
  // meshes: triangle by triangle, in world space. The band just above the break is kept aside for the fallen pieces.
  const band=o.band||F.band,chunks={};   // material uuid -> {mat, pos[], uv[], ang[]}
- const dead=[],v=new THREE.Vector3();
+ const dead=[],v=new THREE.Vector3(),mboxes=[];
  if(G){G.updateMatrixWorld(true);G.traverse(m=>{if(!m.isMesh||!m.geometry||!m.geometry.attributes.position)return;
   const g=m.geometry;
   const P=g.attributes.position,UV=g.attributes.uv,nv=P.count,W=new Float32Array(nv*3);
@@ -29462,11 +29462,36 @@ function skyStump(scene,gx,gz,d,fam,o){const F=STUMP_FAM[fam];o=o||{};const sd=d
    const cut=cutAt(cx,cz);if(ym<=cut){keep.push(a,b,c);continue;}
    if(toChunk&&yc<cut+band){let C=chunks[mat.uuid];if(!C)C=chunks[mat.uuid]={mat,pos:[],uv:[],ang:[]};
     const an=Math.atan2(cz-gz,cx-gx);for(const j of[a,b,c]){C.pos.push(W[j*3],W[j*3+1],W[j*3+2]);C.uv.push(UV?UV.getX(j):0,UV?UV.getY(j):0);}C.ang.push(an);}}
-  const lost=nt-keep.length/3;if(!lost)return;if(t)t.tris-=lost;
+  const lost=nt-keep.length/3;
+  if(keep.length){const B=[1e9,1e9,1e9,-1e9,-1e9,-1e9];for(const j of keep)for(let e=0;e<3;e++){B[e]=Math.min(B[e],W[j*3+e]);B[e+3]=Math.max(B[e+3],W[j*3+e]);}mboxes.push({m,B,tris:keep.length/3});}
+  if(!lost)return;if(t)t.tris-=lost;
   if(!keep.length){dead.push(m);return;}
   // a new geometry on the same attributes: the source is never edited, whoever else may share it
   const g2=new THREE.BufferGeometry();for(const k in g.attributes)g2.setAttribute(k,g.attributes[k]);g2.setIndex(keep);m.geometry=g2;});
   for(const m of dead){m.parent.remove(m);if(t)t.meshes--;}}
+ // --- 2b. nothing may hang in the air ---------------------------------------
+ // The break can take away what held a piece up without touching the piece: G's surviving top-tier block kept
+ // whole while the core and bridges beside it went, and floated. A mesh whose kept fabric starts more than 8 m up
+ // must have something (another kept mesh, or an instanced item: a stilt, a strut, a slab) reaching from at or
+ // below its underside to within 6 m of it (E and F stand 5 m clear of their podium top on their own cores), overlapping its footprint; otherwise it fell. Repeated until nothing
+ // more drops, since one fall can strand the next. What it carried (windows, rings, slabs inside its box) goes too.
+ const iboxes=[];
+ const boxOf=(n,q)=>{const g=KIT.defs[n]&&KIT.defs[n].geo;if(!g)return null;if(!g.boundingBox)g.computeBoundingBox();const bb=g.boundingBox;
+  const sc=typeof q.s==='number'?[q.s,q.s,q.s]:(q.s||[1,1,1]);const B=[1e9,1e9,1e9,-1e9,-1e9,-1e9];
+  for(const x of[bb.min.x,bb.max.x])for(const y of[bb.min.y,bb.max.y])for(const z of[bb.min.z,bb.max.z]){vb.set(x*sc[0],y*sc[1],z*sc[2]);if(q.q)vb.applyQuaternion(q.q);
+   const w=[vb.x+q.p[0],vb.y+q.p[1],vb.z+q.p[2]];for(let e=0;e<3;e++){B[e]=Math.min(B[e],w[e]);B[e+3]=Math.max(B[e+3],w[e]);}}return B;};
+ for(const n in KIT.items){const it=KIT.items[n];for(let i=snap[n]||0;i<it.length;i++){const B=boxOf(n,it[i]);if(B)iboxes.push({n,q:it[i],B});}}
+ const holds=(o,B)=>o[1]<B[1]-.5&&o[4]>=B[1]-6&&o[0]<=B[3]+1&&o[3]>=B[0]-1&&o[2]<=B[5]+1&&o[5]>=B[2]-1;
+ const fell=[];
+ for(let pass=0;pass<4;pass++){let n0=fell.length;
+  for(const mb of mboxes){if(mb.gone||mb.B[1]<8)continue;const B=mb.B;
+   if(mboxes.some(o=>o!==mb&&!o.gone&&holds(o.B,B))||iboxes.some(o=>!o.gone&&holds(o.B,B)))continue;
+   mb.gone=true;mb.m.parent&&mb.m.parent.remove(mb.m);if(t){t.meshes--;t.tris-=mb.tris;}
+   for(const o of iboxes){if(o.gone)continue;const c=[(o.B[0]+o.B[3])/2,(o.B[1]+o.B[4])/2,(o.B[2]+o.B[5])/2];
+    if(c[0]>B[0]-1.5&&c[0]<B[3]+1.5&&c[1]>B[1]-1.5&&c[1]<B[4]+1.5&&c[2]>B[2]-1.5&&c[2]<B[5]+1.5){o.gone=true;o.q._gone=true;if(t){t.inst--;t.tris-=ktri(o.n);}}}
+   fell.push([(B[0]+B[3])/2,(B[2]+B[5])/2,Math.max(B[3]-B[0],B[5]-B[2])/2]);}
+  if(fell.length===n0)break;}
+ if(fell.length)for(const n in KIT.items){const it=KIT.items[n];const a=snap[n]||0;let w=a;for(let i=a;i<it.length;i++){if(it[i]._gone)continue;it[w++]=it[i];}it.length=w;}
  // --- 3. the fallen band: two or three pieces of the tower's own fabric -----
  // split by bearing into sectors; each rolls outward off its own side and lies on the ground beside the foot
  const NS=Hb*(o.f||F.f)>90?3:2,a0=rng()*TAU;
@@ -29494,6 +29519,9 @@ function skyStump(scene,gx,gz,d,fam,o){const F=STUMP_FAM[fam];o=o||{};const sd=d
  for(let k=0;k<(d===2?14:8);k++){const a=rng()*TAU,r=R*rr(1,2.2);
   kput('slabCR',[r*Math.cos(a),rr(.5,2),r*Math.sin(a)],qEuler(rr(-.5,.5),rng()*TAU,rr(-.5,.5)),[rr(4,9),rr(.5,.9),rr(4,9)],null);}
  KOFF=[0,0,0];
+ // what fell in 2b lies under where it stood (drawn last, so a stump that lost nothing keeps its stream)
+ for(const f of fell)rubbleRing(f[0],0,f[1],2,f[2]*1.4,Math.round(20+f[2]*2),3.6);
+ if(fell.length)(window._stumpFell=window._stumpFell||[]).push([fam,d,fell.length]);
  // --- 4. the registered volumes follow the break ----------------------------
  for(let i=REG.length-1;i>=r0;i--){const r=REG[i];const y=r.y||0;
   if(y>=topMax){REG.splice(i,1);continue;}r.h=Math.min(r.h,topMax-y+4);}
