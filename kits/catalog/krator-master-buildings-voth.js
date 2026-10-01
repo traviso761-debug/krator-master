@@ -32,6 +32,7 @@ ASSET({
     { w: 20, d: 12.5, h: 11.5 }
   ],
   build: function (F) {
+    if (F.variant === 3) F.shift(-1.22, -0.32); /* centre the footprint on the origin (verify.py declared-size) */
     const stoneTones = [0x8c8579, 0x958e80, 0x8b8069];
     const roofTones = [0xb35a3a, 0xa04f32, 0xc36a42, 0x6b7a4a, 0x7a5a72, 0xc4813f];
     const plasterTones = [0x8b8069, 0x7e7460, 0x968b73];
@@ -475,6 +476,7 @@ ASSET({
     { w: 24, d: 20.5, h: 23 }
   ],
   build: function (F) {
+    if (F.variant === 0) F.shift(1.45, -0.69); /* centre the footprint on the origin (verify.py declared-size) */
     const doorC = 0x1c1a16, timber = 0x4a3a28, glow = 0xffcf87;
     function nrm(s) { return s === 0 ? [0, 1] : s === 1 ? [0, -1] : s === 2 ? [1, 0] : [-1, 0]; }
     function windowRow(faceZ, y, count, halfW, wallC, trim) {
@@ -1001,6 +1003,7 @@ ASSET({
   key: 'voth_bldg_customs_house', name: 'Customs House', culture: 'voth', family: 'civic',
   districts: ['harbour'], wealth: [0.6, 0.9], w: 21.5, d: 20, h: 15.5, variants: 1,
   build: function (F) {
+    F.shift(0, -1.37); /* centre the footprint on the origin (verify.py declared-size) */
     const c = F.pick([0x8c8579, 0x958e80, 0x8b8069]), cornice = shade(c, -0.13);
     const doorC = 0x1c1a16, timber = 0x4a3a28, glow = 0xffcf87;
     function nrm(s) { return s === 0 ? [0, 1] : s === 1 ? [0, -1] : s === 2 ? [1, 0] : [-1, 0]; }
@@ -1433,6 +1436,7 @@ ASSET({
      the hall, on the centre line, and the declared depth covers it. */
   w: 33.5, d: 46.5, h: 38, variants: 1,
   build: function (F) {
+    F.shift(0, 8.2); /* centre the footprint on the origin (verify.py declared-size) */
     const stone = 0x93897a, cornice = shade(stone, -0.13);
     const mutedRed = shade(0x9c2d2d, 0.08), doorC = 0x1c1a16;
     F.box(0, 0, 0, 30.8, 0.55, 25.8, 0, shade(stone, -0.26), 'stone');

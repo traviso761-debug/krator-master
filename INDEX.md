@@ -20,6 +20,7 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`settlements/xanadu`](settlements/xanadu/INDEX.md) | 51 | 599 | 66 | Xanadu: the building kit of the southern Sultanate (Tibetan massing, Indian, Turkish and Persian detail) and the city of Erewhon. |
 | [`settlements/yuni`](settlements/yuni/INDEX.md) | 47 | 972 | 195 | Yuni: the city, plus its building-kit, furniture and plant sheets. |
 | [`kits/ancients`](kits/ancients/INDEX.md) | 92 | 1726 | 89 | The Ancients kit: ruined megastructures of the ancient civilisation, 33 structure types, one target per site. |
+| [`kits/catalog`](kits/catalog/INDEX.md) | 12 | 491 | 174 | The master catalog: asset engine, 84 furniture pieces (kits/furniture SPEC shape), 48 plants and 26 buildings, harvested from six builds; a verified contact sheet. |
 | [`kits/post-apoc`](kits/post-apoc/INDEX.md) | 24 | 356 | 34 | The Post-Apoc set: reclaimed and recycled buildings (containers, silos, tanks, buses, bulkheads, tyre and bottle walls) with sockets for any culture's marks. |
 | [`kits/ringsea`](kits/ringsea/INDEX.md) | 36 | 192 | 12 | Ring Sea watercraft: 21 procedural vessels (warships, cargo ships, barges, canoes, outriggers, rafts) of the cultures round the Ring Sea. |
 | [`biomes/eastabyss`](biomes/eastabyss/INDEX.md) | 17 | 208 | 54 | Biome kit: see `biomes/README.md`. |
@@ -37,7 +38,6 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | Path | What |
 |---|---|
 | `core/` | shared code: `core/materials/` (see `core/README.md`) and `core/sockets/` (cultural sockets, banners and awnings, with a runnable example) |
-| `kits/catalog/` | harvested master catalog of furniture, plants and buildings (unverified) |
 | `kits/furniture/`, `kits/interiors/` | specs only |
 | `gallery/` | the shareable gallery of every built world |
 | `host/` | the LAN site server: Krator Worlds plus the World Menagerie pages (`host/README.md`) |

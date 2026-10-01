@@ -27,6 +27,7 @@ ABOUT = {
     'kits/ringsea': 'Ring Sea watercraft: 21 procedural vessels (warships, cargo ships, barges, canoes, outriggers, rafts) of the cultures round the Ring Sea.',
     'kits/post-apoc': 'The Post-Apoc set: reclaimed and recycled buildings (containers, silos, tanks, buses, bulkheads, tyre and bottle walls) with sockets for any culture\'s marks.',
     'kits/ancients': 'The Ancients kit: ruined megastructures of the ancient civilisation, 33 structure types, one target per site.',
+    'kits/catalog': 'The master catalog: asset engine, 84 furniture pieces (kits/furniture SPEC shape), 48 plants and 26 buildings, harvested from six builds; a verified contact sheet.',
 }
 # Files that are generated or duplicated elsewhere: never edit or read them whole.
 GENERATED = {
@@ -107,6 +108,17 @@ def build_index(build):
     cf = core_files(build)
     if cf:
         lines += ['From `core/materials/` (shared; see `core/README.md`): ' + ', '.join('`%s`' % f for f in cf), '']
+    top = [f for f in sorted(os.listdir(d)) if f.endswith('.js') and not f.startswith('.') and f != 'three.min.js']
+    if top:
+        lines += ['## Top-level sources', '',
+                  'Read by `build.py` in its own order (`SOURCES`), and loaded by path by other builds, so they stay here.', '',
+                  '| File | KB | Sections (line) |', '|---|---|---|']
+        for f in top:
+            p = os.path.join(d, f)
+            size = os.path.getsize(p)
+            lines.append('| `%s` | %s%s | %s |' % (f, kb(size), ' **big**' if size >= BIG else '',
+                                                  '; '.join([t for t in sections(p) if not t.startswith('= (')][:10])))
+        lines += ['']
     lines += ['## src/', '', '| Fragment | KB | Sections (line) |', '|---|---|---|']
     lines += frag_table(build, src, 'src')
     tdir = os.path.join(d, 'targets')
@@ -123,6 +135,7 @@ def build_index(build):
     with open(os.path.join(d, 'INDEX.md'), 'w', encoding='utf-8') as fh:
         fh.write('\n'.join(lines) + '\n')
     sizes = [os.path.getsize(os.path.join(src, f)) for f in os.listdir(src) if f[0].isdigit()]
+    sizes += [os.path.getsize(os.path.join(d, f)) for f in top]
     return len(sizes), sum(sizes), max(sizes), outs
 
 
@@ -147,7 +160,6 @@ def main():
              '', '## Not builds', '',
              '| Path | What |', '|---|---|',
              '| `core/` | shared code: `core/materials/` (see `core/README.md`) and `core/sockets/` (cultural sockets, banners and awnings, with a runnable example) |',
-             '| `kits/catalog/` | harvested master catalog of furniture, plants and buildings (unverified) |',
              '| `kits/furniture/`, `kits/interiors/` | specs only |',
              '| `gallery/` | the shareable gallery of every built world |',
              '| `host/` | the LAN site server: Krator Worlds plus the World Menagerie pages (`host/README.md`) |',

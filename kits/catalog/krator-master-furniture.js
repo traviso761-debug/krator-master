@@ -5,12 +5,20 @@
    Every piece is tagged with culture: one of ancient, ancients-salvage,
    yuni-court, yuni-common, yuni-poor, sahelian, order, voth, iziz, beast-rider.
    Build any instance with: buildFurn(key, x, z, ry, {variant, seed, y, wealth})
+
+   Every entry carries the kits/furniture/SPEC.md fields: type, setting
+   (indoor|outdoor|both), rooms [...], anchor (floor|wall|ceiling|surface),
+   clearance {front,back,left,right} in metres, materials [...] (canonical
+   names, CATALOG_MATERIALS in the engine). verify.py --assert checks them,
+   and that the built geometry fits w x d x h centred on the origin.
    ====================================================================== */
 
 /* ================= Voth (25 pieces) ================= */
 
 FURN({
-  key: 'voth_bench', name: 'Street Bench', culture: 'voth', room: 'outdoor',
+  key: 'voth_bench', name: 'Street Bench', culture: 'voth', type: 'bench', setting: 'outdoor',
+  rooms: ['street', 'plaza', 'yard'], anchor: 'floor', clearance: { front: 0.7 },
+  materials: ['timber'],
   w: 3.4, d: 1.0, h: 1.2, variants: 2,
   variantDims: [{ w: 3.4, d: 1.0, h: 0.66 }, { w: 3.4, d: 1.0, h: 1.2 }],
   build: function (F) {
@@ -52,7 +60,9 @@ FURN({
 });
 
 FURN({
-  key: 'voth_street_brazier', name: 'Street Brazier', culture: 'voth', room: 'outdoor',
+  key: 'voth_street_brazier', name: 'Street Brazier', culture: 'voth', type: 'brazier', setting: 'outdoor',
+  rooms: ['street', 'plaza'], anchor: 'floor', clearance: { front: 0.8, back: 0.8, left: 0.8, right: 0.8 },
+  materials: ['stone', 'metal', 'emissive'],
   w: 1.45, d: 1.45, h: 2.1, variants: 2,
   variantDims: [{ w: 1.3, d: 1.3, h: 1.45 }, { w: 1.45, d: 1.45, h: 2.1 }],
   build: function (F) {
@@ -108,7 +118,9 @@ FURN({
 });
 
 FURN({
-  key: 'voth_wayside_shrine', name: 'Wayside Shrine (Triptych)', culture: 'voth', room: 'outdoor',
+  key: 'voth_wayside_shrine', name: 'Wayside Shrine (Triptych)', culture: 'voth', type: 'shrine', setting: 'outdoor',
+  rooms: ['street', 'plaza'], anchor: 'floor', clearance: { front: 1.5 },
+  materials: ['stone', 'plaster', 'emissive'],
   w: 8, d: 3.2, h: 4.2, variants: 1,
   build: function (F) {
     const stone = 0x9d9278, dark = shade(stone, -0.1), deep = 0x3c362c;
@@ -140,7 +152,9 @@ FURN({
 });
 
 FURN({
-  key: 'voth_statue', name: 'Abstract Robed Statue', culture: 'voth', room: 'outdoor',
+  key: 'voth_statue', name: 'Abstract Robed Statue', culture: 'voth', type: 'statue', setting: 'outdoor',
+  rooms: ['plaza', 'court', 'garden'], anchor: 'floor', clearance: { front: 1 },
+  materials: ['stone', 'metal', 'foliage', 'emissive'],
   w: 1.8, d: 1.8, h: 5.5, variants: 2,
   variantDims: [{ w: 1.8, d: 1.8, h: 5.5 }, { w: 1.28, d: 1.28, h: 3.8 }],
   build: function (F) {
@@ -190,7 +204,9 @@ FURN({
 });
 
 FURN({
-  key: 'voth_obelisk', name: 'Obelisk', culture: 'voth', room: 'outdoor',
+  key: 'voth_obelisk', name: 'Obelisk', culture: 'voth', type: 'monument', setting: 'outdoor',
+  rooms: ['plaza'], anchor: 'floor', clearance: { front: 2, back: 2, left: 2, right: 2 },
+  materials: ['stone', 'metal'],
   w: 4, d: 4, h: 16, variants: 1,
   build: function (F) {
     const stone = 0x9a9484, cut = 0x4a443a;
@@ -226,9 +242,12 @@ FURN({
 });
 
 FURN({
-  key: 'voth_strider_station', name: "Silt Strider Transit Station", culture: 'voth', room: 'outdoor',
+  key: 'voth_strider_station', name: "Silt Strider Transit Station", culture: 'voth', type: 'shelter', setting: 'outdoor',
+  rooms: ['street', 'plaza'], anchor: 'floor', clearance: { front: 3 },
+  materials: ['timber', 'cloth'],
   w: 10, d: 16, h: 5.6, variants: 1,
   build: function (F) {
+    F.shift(0, -0.83); /* centre the footprint on the origin (verify.py declared-size) */
     const wood = 0x5a4028, deckC = 0x7a6a52, roofC = 0x4a3c28, rail = 0x6a5a44;
     const posts = [[-4, -6], [4, -6], [-4, 0], [4, 0], [-4, 6], [4, 6]];
     for (const p of posts) {
@@ -268,7 +287,9 @@ FURN({
 });
 
 FURN({
-  key: 'voth_canoe', name: 'Canoe', culture: 'voth', room: 'outdoor',
+  key: 'voth_canoe', name: 'Canoe', culture: 'voth', type: 'vessel', setting: 'outdoor',
+  rooms: ['dock'], anchor: 'floor', clearance: { left: 0.6, right: 0.6 },
+  materials: ['timber', 'cloth'],
   w: 1.3, d: 5.5, h: 1.6, variants: 1,
   build: function (F) {
     const hull = 0x6b5942, trim = shade(hull, -0.15), pale = shade(hull, 0.12);
@@ -303,7 +324,9 @@ FURN({
 });
 
 FURN({
-  key: 'voth_ferry', name: 'Ferry', culture: 'voth', room: 'outdoor',
+  key: 'voth_ferry', name: 'Ferry', culture: 'voth', type: 'vessel', setting: 'outdoor',
+  rooms: ['dock'], anchor: 'floor', clearance: { left: 1, right: 1 },
+  materials: ['timber', 'metal', 'glass', 'cloth'],
   w: 6, d: 16, h: 5, variants: 1,
   build: function (F) {
     const hull = 0x6b5942, deckC = 0x8a7a5c, cabinC = 0x5a4a38, trim = 0x4a3c28;
@@ -351,7 +374,9 @@ FURN({
 });
 
 FURN({
-  key: 'voth_market_stall', name: 'Market Stall (Produce)', culture: 'voth', room: 'outdoor',
+  key: 'voth_market_stall', name: 'Market Stall (Produce)', culture: 'voth', type: 'stall', setting: 'outdoor',
+  rooms: ['market', 'street'], anchor: 'floor', clearance: { front: 1.5 },
+  materials: ['timber', 'stone', 'metal', 'cloth', 'foliage'],
   w: 4.5, d: 4.5, h: 3.45, variants: 2,
   build: function (F) {
     const exotic = F.variant === 1;
@@ -406,7 +431,9 @@ FURN({
 });
 
 FURN({
-  key: 'voth_forge_station', name: "Blacksmith Forge Station", culture: 'voth', room: 'outdoor',
+  key: 'voth_forge_station', name: "Blacksmith Forge Station", culture: 'voth', type: 'workstation', setting: 'both',
+  rooms: ['workshop', 'yard'], anchor: 'floor', clearance: { front: 1.5 },
+  materials: ['timber', 'stone', 'metal', 'glass', 'emissive'],
   w: 4, d: 3, h: 2.6, variants: 1,
   build: function (F) {
     const soot = 0x2a2a2a, metal = 0x3a3a3a, brick = 0x6a5248, wood = 0x5a4a38;
@@ -450,7 +477,9 @@ FURN({
 });
 
 FURN({
-  key: 'voth_still_cluster', name: "Alchemist's Still Cluster", culture: 'voth', room: 'outdoor',
+  key: 'voth_still_cluster', name: "Alchemist's Still Cluster", culture: 'voth', type: 'workstation', setting: 'both',
+  rooms: ['workshop', 'yard'], anchor: 'floor', clearance: { front: 1 },
+  materials: ['timber', 'stone', 'metal', 'glass', 'cloth', 'emissive'],
   w: 2.5, d: 1.2, h: 1.45, variants: 1,
   build: function (F) {
     const stone = 0x9a9484, jade = 0x5a8a7a, metal = 0x6b6258, glass = 0x8fb8c4;
@@ -491,7 +520,9 @@ FURN({
 });
 
 FURN({
-  key: 'voth_mason_yard', name: "Mason's Yard", culture: 'voth', room: 'outdoor',
+  key: 'voth_mason_yard', name: "Mason's Yard", culture: 'voth', type: 'workstation', setting: 'outdoor',
+  rooms: ['yard', 'workshop'], anchor: 'floor', clearance: { front: 1.5 },
+  materials: ['timber', 'stone', 'metal', 'cloth'],
   w: 5, d: 5, h: 4, variants: 1,
   build: function (F) {
     const stoneC = 0xc8bfa6, wood = 0x5a4a38;
@@ -526,9 +557,12 @@ FURN({
 });
 
 FURN({
-  key: 'voth_guild_banners', name: "Warrior's Guild Banners & Rack", culture: 'voth', room: 'outdoor',
+  key: 'voth_guild_banners', name: "Warrior's Guild Banners & Rack", culture: 'voth', type: 'rack', setting: 'both',
+  rooms: ['street', 'hall', 'barracks'], anchor: 'wall', clearance: { front: 1 },
+  materials: ['timber', 'stone', 'metal', 'cloth'],
   w: 3, d: 1, h: 2.8, variants: 1,
   build: function (F) {
+    F.shift(0, -0.13); /* centre the footprint on the origin (verify.py declared-size) */
     const wood = 0x5a4028, iron = 0x4a443c;
     for (let s = -1; s <= 1; s += 2) {
       const px = s * 1.2;
@@ -557,7 +591,9 @@ FURN({
 });
 
 FURN({
-  key: 'voth_sawyer_yard', name: "Carpenter's Sawyer Yard", culture: 'voth', room: 'outdoor',
+  key: 'voth_sawyer_yard', name: "Carpenter's Sawyer Yard", culture: 'voth', type: 'workstation', setting: 'outdoor',
+  rooms: ['yard', 'workshop'], anchor: 'floor', clearance: { front: 1.2, left: 0.8, right: 0.8 },
+  materials: ['timber', 'bark', 'metal'],
   w: 4, d: 3, h: 1.8, variants: 1,
   build: function (F) {
     const wood = 0x6a5c48, legC = 0x5a4c38;
@@ -587,9 +623,12 @@ FURN({
 });
 
 FURN({
-  key: 'voth_loom_display', name: "Weaver's Loom & Cloth Display", culture: 'voth', room: 'outdoor',
+  key: 'voth_loom_display', name: "Weaver's Loom & Cloth Display", culture: 'voth', type: 'loom', setting: 'both',
+  rooms: ['workshop', 'market'], anchor: 'floor', clearance: { front: 1 },
+  materials: ['timber', 'cloth'],
   w: 3.4, d: 3, h: 2.2, variants: 1,
   build: function (F) {
+    F.shift(0, -0.36); /* centre the footprint on the origin (verify.py declared-size) */
     const wood = 0x5a4a38, warm = shade(wood, 0.15);
     const hues = [0xe07a2a, 0x9c2d2d, 0x2f8f8a, 0xc9a227];
     /* upright loom: two side frames set apart in z, cross members between them */
@@ -625,9 +664,12 @@ FURN({
 });
 
 FURN({
-  key: 'voth_craft_fisher', name: 'Guild-row Craft Yard - Fisher', culture: 'voth', room: 'outdoor',
+  key: 'voth_craft_fisher', name: 'Guild-row Craft Yard - Fisher', culture: 'voth', type: 'workstation', setting: 'outdoor',
+  rooms: ['yard', 'dock', 'street'], anchor: 'floor', clearance: { front: 1 },
+  materials: ['timber', 'cloth'],
   w: 3.5, d: 3, h: 2.2, variants: 1,
   build: function (F) {
+    F.shift(0, -0.26); /* centre the footprint on the origin (verify.py declared-size) */
     const wood = 0x5a4a38;
     /* net drying frame at the back, with cords hung off the rail */
     F.cyl(-1.4, 0, -1.2, 0.09, 2.1, 0, wood, 'wood');
@@ -661,9 +703,12 @@ FURN({
 });
 
 FURN({
-  key: 'voth_craft_miner', name: 'Guild-row Craft Yard - Miner', culture: 'voth', room: 'outdoor',
+  key: 'voth_craft_miner', name: 'Guild-row Craft Yard - Miner', culture: 'voth', type: 'workstation', setting: 'outdoor',
+  rooms: ['yard', 'street'], anchor: 'floor', clearance: { front: 1 },
+  materials: ['timber', 'stone', 'metal', 'cloth'],
   w: 3.5, d: 3, h: 2.2, variants: 1,
   build: function (F) {
+    F.shift(0, -0.28); /* centre the footprint on the origin (verify.py declared-size) */
     const wood = 0x5a4a38, metal = 0x6b6258;
     /* headframe with a hoist wheel and a rope down to a kibble */
     F.cyl(-1.2, 0, -1.1, 0.1, 2.05, 0, wood, 'wood');
@@ -698,7 +743,9 @@ FURN({
 });
 
 FURN({
-  key: 'voth_craft_brewer', name: 'Guild-row Craft Yard - Brewer', culture: 'voth', room: 'outdoor',
+  key: 'voth_craft_brewer', name: 'Guild-row Craft Yard - Brewer', culture: 'voth', type: 'workstation', setting: 'both',
+  rooms: ['yard', 'workshop', 'street'], anchor: 'floor', clearance: { front: 1 },
+  materials: ['timber', 'stone', 'metal', 'glass', 'emissive'],
   w: 3.5, d: 3, h: 2.4, variants: 1,
   build: function (F) {
     const wood = 0x5a4a38, copper = 0xb5723a, barrel = 0x6a5c48;
@@ -736,8 +783,10 @@ FURN({
 });
 
 FURN({
-  key: 'voth_craft_tanner', name: 'Guild-row Craft Yard - Tanner', culture: 'voth', room: 'outdoor',
-  w: 3.5, d: 3, h: 1.8, variants: 1,
+  key: 'voth_craft_tanner', name: 'Guild-row Craft Yard - Tanner', culture: 'voth', type: 'workstation', setting: 'outdoor',
+  rooms: ['yard', 'street'], anchor: 'floor', clearance: { front: 1 },
+  materials: ['timber', 'stone', 'metal', 'glass', 'cloth'],
+  w: 3.5, d: 3.3, h: 1.8, variants: 1,
   build: function (F) {
     const dark = 0x2a2620, rim = 0x9a9484, wood = 0x5a4a38;
     /* two sunken lime pits with kerbs and scummed liquor */
@@ -776,7 +825,9 @@ FURN({
 });
 
 FURN({
-  key: 'voth_craft_scribe', name: 'Guild-row Craft Yard - Scribe', culture: 'voth', room: 'outdoor',
+  key: 'voth_craft_scribe', name: 'Guild-row Craft Yard - Scribe', culture: 'voth', type: 'workstation', setting: 'both',
+  rooms: ['yard', 'study', 'street'], anchor: 'floor', clearance: { front: 1 },
+  materials: ['timber', 'stone', 'cloth'],
   w: 3, d: 2.5, h: 1.8, variants: 1,
   build: function (F) {
     const wood = 0x5a4a38, pale = 0xe8e0c8;
@@ -808,9 +859,12 @@ FURN({
 });
 
 FURN({
-  key: 'voth_sacrifice_altar', name: 'Temple Sacrifice Altar', culture: 'voth', room: 'outdoor',
+  key: 'voth_sacrifice_altar', name: 'Temple Sacrifice Altar', culture: 'voth', type: 'altar', setting: 'both',
+  rooms: ['temple', 'shrine', 'court'], anchor: 'floor', clearance: { front: 2 },
+  materials: ['timber', 'stone', 'metal', 'glass', 'emissive'],
   w: 6, d: 5, h: 3.5, variants: 1,
   build: function (F) {
+    F.shift(0, -0.35); /* centre the footprint on the origin (verify.py declared-size) */
     const stone = 0x9a9484, cut = 0x4a443a, wood = 0x5a4028, gold = 0xc9a227;
     /* three-step approach at the front */
     F.box(0, 0, 2.6, 4.2, 0.3, 0.6, 0, shade(stone, -0.05), 'stone');
@@ -843,7 +897,9 @@ FURN({
 });
 
 FURN({
-  key: 'voth_grave_tomb', name: 'Grave Marker / Family Tomb', culture: 'voth', room: 'outdoor',
+  key: 'voth_grave_tomb', name: 'Grave Marker / Family Tomb', culture: 'voth', type: 'tomb', setting: 'outdoor',
+  rooms: ['graveyard'], anchor: 'floor', clearance: { front: 1 },
+  materials: ['stone', 'plaster', 'glass', 'foliage', 'emissive'],
   w: 6, d: 6, h: 5, variants: 2,
   variantDims: [{ w: 1.7, d: 1.7, h: 1.45 }, { w: 6, d: 6, h: 5 }],
   build: function (F) {
@@ -909,7 +965,9 @@ FURN({
 });
 
 FURN({
-  key: 'voth_well', name: 'Well (Monastery/Canton)', culture: 'voth', room: 'outdoor',
+  key: 'voth_well', name: 'Well (Monastery/Canton)', culture: 'voth', type: 'well', setting: 'outdoor',
+  rooms: ['court', 'yard', 'plaza'], anchor: 'floor', clearance: { front: 1, back: 1, left: 1, right: 1 },
+  materials: ['timber', 'stone', 'metal', 'glass', 'cloth'],
   w: 3, d: 3, h: 3, variants: 1,
   build: function (F) {
     const stone = 0x9a9484, wood = 0x5a4028, iron = 0x4a443c;
@@ -945,7 +1003,9 @@ FURN({
 });
 
 FURN({
-  key: 'voth_pen_coop', name: 'Animal Pen & Chicken Coop', culture: 'voth', room: 'outdoor',
+  key: 'voth_pen_coop', name: 'Animal Pen & Chicken Coop', culture: 'voth', type: 'pen', setting: 'outdoor',
+  rooms: ['yard'], anchor: 'floor', clearance: { front: 1 },
+  materials: ['timber', 'stone', 'plaster', 'foliage'],
   w: 5, d: 5, h: 2.2, variants: 1,
   build: function (F) {
     const wood = 0x5a4028;
@@ -991,10 +1051,13 @@ FURN({
 });
 
 FURN({
-  key: 'voth_lantern_fixture', name: 'Static Lantern Fixture', culture: 'voth', room: 'outdoor',
+  key: 'voth_lantern_fixture', name: 'Static Lantern Fixture', culture: 'voth', type: 'lamp', setting: 'both',
+  rooms: ['street', 'court', 'hall'], anchor: 'floor', clearance: { front: 0.3 },
+  materials: ['timber', 'stone', 'metal', 'glass', 'emissive'],
   w: 0.6, d: 0.9, h: 2.4, variants: 2,
-  variantDims: [{ w: 0.6, d: 0.6, h: 2.4 }, { w: 0.55, d: 0.9, h: 0.72 }],
+  variantDims: [{ w: 0.6, d: 0.6, h: 2.4 }, { w: 0.55, d: 0.9, h: 2.05 }],
   build: function (F) {
+    if (F.variant === 1) F.shift(0, -0.39); /* centre the footprint on the origin (verify.py declared-size) */
     const iron = 0x3a3630, wood = 0x5a4028, brass = 0xa88a3c;
     /* the lantern proper: pan, corner bars, glazed panels, flame, cap and finial */
     const cage = function (cx, cy, cz, r, hh) {
@@ -1049,7 +1112,9 @@ FURN({
   key: 'iziz_lamp_boulevard',
   name: 'Boulevard Lamp Post',
   culture: 'iziz',
-  room: 'outdoor',
+  type: 'lamp', setting: 'outdoor',
+  rooms: ['street', 'plaza'], anchor: 'floor', clearance: { front: 0.4, back: 0.4, left: 0.4, right: 0.4 },
+  materials: ['timber', 'stone', 'metal', 'glass', 'emissive'],
   w: 0.8, d: 0.8, h: 6,
   variants: 1,
   build: function (F) {
@@ -1096,7 +1161,9 @@ FURN({
   key: 'iziz_lamp_rooftop',
   name: 'Rooftop Beacon Lamp',
   culture: 'iziz',
-  room: 'outdoor',
+  type: 'lamp', setting: 'outdoor',
+  rooms: ['rooftop'], anchor: 'floor', clearance: { front: 0.3 },
+  materials: ['metal', 'glass', 'emissive'],
   w: 1.2, d: 1.2, h: 0.7,
   variants: 1,
   build: function (F) {
@@ -1133,10 +1200,13 @@ FURN({
   key: 'iziz_banner',
   name: 'Street Banner',
   culture: 'iziz',
-  room: 'outdoor',
+  type: 'banner', setting: 'outdoor',
+  rooms: ['street', 'plaza'], anchor: 'floor', clearance: { front: 0.5 },
+  materials: ['timber', 'stone', 'metal', 'cloth'],
   w: 2.5, d: 0.6, h: 11.5,
   variants: 3,
   build: function (F) {
+    F.shift(-0.92, 0); /* centre the footprint on the origin (verify.py declared-size) */
     const pole = 0x4a3a2a, gilt = 0xd9b23c;
     const colors = [0xe07a2a, 0x9c2d2d, 0x2f8f8a];
     const col = colors[F.variant] !== undefined ? colors[F.variant] : colors[0];
@@ -1170,7 +1240,9 @@ FURN({
   key: 'iziz_planter',
   name: 'Terracotta Planter',
   culture: 'iziz',
-  room: 'outdoor',
+  type: 'planter', setting: 'both',
+  rooms: ['street', 'court', 'plaza'], anchor: 'floor', clearance: { front: 0.4 },
+  materials: ['stone', 'plaster', 'foliage'],
   w: 2.2, d: 1.4, h: 1.2,
   variants: 1,
   build: function (F) {
@@ -1204,7 +1276,9 @@ FURN({
   key: 'iziz_market_stall',
   name: 'Market Stall',
   culture: 'iziz',
-  room: 'outdoor',
+  type: 'stall', setting: 'outdoor',
+  rooms: ['market', 'street'], anchor: 'floor', clearance: { front: 1.5 },
+  materials: ['timber', 'stone', 'metal', 'cloth', 'foliage'],
   w: 5.5, d: 4, h: 4.2,
   variants: 2,
   build: function (F) {
@@ -1278,7 +1352,9 @@ FURN({
   key: 'iziz_fountain',
   name: 'Fountain',
   culture: 'iziz',
-  room: 'outdoor',
+  type: 'fountain', setting: 'outdoor',
+  rooms: ['plaza'], anchor: 'floor', clearance: { front: 2, back: 2, left: 2, right: 2 },
+  materials: ['stone', 'emissive'],
   w: 20, d: 20, h: 11,
   variants: 2,
   variantDims: [{ w: 8.4, d: 8.4, h: 4.4 }, { w: 20, d: 20, h: 11 }],
@@ -1362,7 +1438,9 @@ FURN({
   key: 'iziz_statue',
   name: 'Statue',
   culture: 'iziz',
-  room: 'outdoor',
+  type: 'statue', setting: 'outdoor',
+  rooms: ['plaza'], anchor: 'floor', clearance: { front: 2, back: 1, left: 1, right: 1 },
+  materials: ['stone', 'metal', 'emissive'],
   w: 6, d: 6, h: 22,
   variants: 3,
   variantDims: [{ w: 6, d: 6, h: 20.2 }, { w: 6, d: 6, h: 16.3 }, { w: 6, d: 6, h: 18.6 }],
@@ -1432,7 +1510,9 @@ FURN({
   key: 'iziz_obelisk',
   name: 'Obelisk',
   culture: 'iziz',
-  room: 'outdoor',
+  type: 'monument', setting: 'outdoor',
+  rooms: ['plaza'], anchor: 'floor', clearance: { front: 2, back: 2, left: 2, right: 2 },
+  materials: ['timber', 'stone', 'metal', 'emissive'],
   w: 10, d: 10, h: 34,
   variants: 1,
   build: function (F) {
@@ -1488,7 +1568,9 @@ FURN({
   key: 'iziz_bench',
   name: 'Plaza Bench',
   culture: 'iziz',
-  room: 'outdoor',
+  type: 'bench', setting: 'outdoor',
+  rooms: ['plaza', 'street', 'garden'], anchor: 'floor', clearance: { front: 0.7 },
+  materials: ['timber', 'stone'],
   w: 3.5, d: 1, h: 1,
   variants: 1,
   build: function (F) {
@@ -1522,9 +1604,12 @@ FURN({
 /* ================= Beast-Rider (Mav's Refuge / Girder) (15 pieces) ================= */
 
 FURN({
-  key: 'br_market_stall', name: 'Market Stall', culture: 'beast-rider', room: 'market',
+  key: 'br_market_stall', name: 'Market Stall', culture: 'beast-rider', type: 'stall', setting: 'outdoor',
+  rooms: ['market'], anchor: 'floor', clearance: { front: 1.5 },
+  materials: ['timber', 'stone', 'metal', 'cloth', 'foliage', 'emissive'],
   w: 3.6, d: 2.2, h: 2.6, variants: 1,
   build: function (F) {
+    F.shift(0.04, -0.14); /* centre the footprint on the origin (verify.py declared-size) */
     const postColor = 0x6a5c48;
     const counterColor = F.pick([0x7a6a4e, 0x877558, 0x6d5e45]);
     const awningColors = [0xc9442a, 0xd8a23a, 0x2f8f8a];
@@ -1570,9 +1655,12 @@ FURN({
 });
 
 FURN({
-  key: 'br_shopfront_display', name: 'Shopfront Goods Display', culture: 'beast-rider', room: 'market',
+  key: 'br_shopfront_display', name: 'Shopfront Goods Display', culture: 'beast-rider', type: 'stall', setting: 'both',
+  rooms: ['market', 'street'], anchor: 'wall', clearance: { front: 1.2 },
+  materials: ['timber', 'metal', 'cloth', 'foliage', 'emissive'],
   w: 3.0, d: 1.0, h: 2.8, variants: 1,
   build: function (F) {
+    F.shift(0, -0.09); /* centre the footprint on the origin (verify.py declared-size) */
     const frameColor = 0x6a5c48;
     const shelfColor = F.pick([0x7a6a4e, 0x877558, 0x6d5e45]);
     const stackShelves = function (sx) {
@@ -1620,7 +1708,9 @@ FURN({
 });
 
 FURN({
-  key: 'br_tavern_bar', name: 'Tavern Bar Counter', culture: 'beast-rider', room: 'tavern',
+  key: 'br_tavern_bar', name: 'Tavern Bar Counter', culture: 'beast-rider', type: 'counter', setting: 'indoor',
+  rooms: ['tavern'], anchor: 'floor', clearance: { front: 1.2, back: 0.9 },
+  materials: ['timber', 'metal', 'glass', 'cloth', 'emissive'],
   w: 3.8, d: 1.5, h: 2.6, variants: 2,
   build: function (F) {
     const plank = 0x8a7550;
@@ -1682,9 +1772,12 @@ FURN({
 });
 
 FURN({
-  key: 'br_storehouse_goods', name: 'Storehouse Crates, Barrels & Hoist', culture: 'beast-rider', room: 'storehouse',
-  w: 3.0, d: 3.0, h: 3.5, variants: 1,
+  key: 'br_storehouse_goods', name: 'Storehouse Crates, Barrels & Hoist', culture: 'beast-rider', type: 'storage', setting: 'both',
+  rooms: ['store', 'yard'], anchor: 'floor', clearance: { front: 1 },
+  materials: ['timber', 'metal', 'cloth'],
+  w: 3.5, d: 3.9, h: 3.5, variants: 1,
   build: function (F) {
+    F.shift(0.07, -0.37); /* centre the footprint on the origin (verify.py declared-size) */
     const crateTones = [0x7a6a4e, 0x877558, 0x6d5e45];
     const barrelColor = 0x6a5c48;
     const sackColor = 0xc9b58a;
@@ -1724,7 +1817,9 @@ FURN({
 });
 
 FURN({
-  key: 'br_weapon_rack', name: 'Weapon Rack & Shield', culture: 'beast-rider', room: 'barracks',
+  key: 'br_weapon_rack', name: 'Weapon Rack & Shield', culture: 'beast-rider', type: 'rack', setting: 'indoor',
+  rooms: ['barracks', 'hall'], anchor: 'wall', clearance: { front: 0.9 },
+  materials: ['timber', 'metal'],
   w: 2.6, d: 0.55, h: 1.6, variants: 1,
   build: function (F) {
     const timber = 0x4a3f30, pale = shade(timber, 0.2);
@@ -1755,7 +1850,9 @@ FURN({
 });
 
 FURN({
-  key: 'br_loom_frame', name: 'Silk-House Loom Frame', culture: 'beast-rider', room: 'workshop',
+  key: 'br_loom_frame', name: 'Silk-House Loom Frame', culture: 'beast-rider', type: 'loom', setting: 'indoor',
+  rooms: ['workshop'], anchor: 'floor', clearance: { front: 0.9 },
+  materials: ['timber', 'stone', 'cloth'],
   w: 2.6, d: 1.4, h: 2.4, variants: 1,
   build: function (F) {
     const timber = 0x6a5c48;
@@ -1797,9 +1894,11 @@ FURN({
 });
 
 FURN({
-  key: 'br_shrine_altar', name: 'Shrine Altar / Idol', culture: 'beast-rider', room: 'shrine',
+  key: 'br_shrine_altar', name: 'Shrine Altar / Idol', culture: 'beast-rider', type: 'altar', setting: 'both',
+  rooms: ['shrine'], anchor: 'floor', clearance: { front: 1.5 },
+  materials: ['timber', 'stone', 'plaster', 'cloth', 'foliage', 'emissive'],
   w: 2.2, d: 2.2, h: 2.3, variants: 2,
-  variantDims: [{ w: 2.2, d: 2.2, h: 1.8 }, { w: 2.2, d: 2.2, h: 2.3 }],
+  variantDims: [{ w: 2.2, d: 2.2, h: 1.9 }, { w: 2.2, d: 2.2, h: 2.3 }],
   build: function (F) {
     if (F.variant === 1) {
       const red = 0x9c2d2d, gold = 0xd8a23a;
@@ -1863,9 +1962,12 @@ FURN({
 });
 
 FURN({
-  key: 'br_roost_fittings', name: 'Roost Fittings', culture: 'beast-rider', room: 'roost',
-  w: 4.0, d: 3.0, h: 2.8, variants: 1,
+  key: 'br_roost_fittings', name: 'Roost Fittings', culture: 'beast-rider', type: 'rack', setting: 'outdoor',
+  rooms: ['roost'], anchor: 'floor', clearance: { front: 1.5 },
+  materials: ['timber', 'stone', 'plaster', 'metal', 'cloth', 'foliage'],
+  w: 4, d: 3.35, h: 2.8, variants: 1,
   build: function (F) {
+    F.shift(0.10, 0.24); /* centre the footprint on the origin (verify.py declared-size) */
     const timber = 0x6a5c48;
     const strawTone = 0xc9a24a;
     /* perch gantry: two posts, a cross head and the roost bar itself */
@@ -1908,7 +2010,9 @@ FURN({
 });
 
 FURN({
-  key: 'br_bench', name: 'Bench', culture: 'beast-rider', room: 'generic',
+  key: 'br_bench', name: 'Bench', culture: 'beast-rider', type: 'bench', setting: 'both',
+  rooms: ['hall', 'tavern', 'yard', 'street'], anchor: 'floor', clearance: { front: 0.6 },
+  materials: ['timber'],
   w: 1.8, d: 0.6, h: 0.45, variants: 1,
   build: function (F) {
     const plank = 0x8a7550, legC = shade(plank, -0.14), pegC = shade(plank, -0.3);
@@ -1934,7 +2038,9 @@ FURN({
 });
 
 FURN({
-  key: 'br_table', name: 'Table', culture: 'beast-rider', room: 'generic',
+  key: 'br_table', name: 'Table', culture: 'beast-rider', type: 'table', setting: 'both',
+  rooms: ['hall', 'tavern', 'yard'], anchor: 'floor', clearance: { front: 0.7, back: 0.7, left: 0.5, right: 0.5 },
+  materials: ['timber', 'foliage'],
   w: 4.2, d: 2.7, h: 1.1, variants: 2,
   variantDims: [{ w: 1.6, d: 0.9, h: 0.82 }, { w: 4.2, d: 2.7, h: 1.1 }],
   build: function (F) {
@@ -1995,8 +2101,10 @@ FURN({
 });
 
 FURN({
-  key: 'br_well', name: 'Village Well', culture: 'beast-rider', room: 'street',
-  w: 2.6, d: 2.6, h: 2.6, variants: 1,
+  key: 'br_well', name: 'Village Well', culture: 'beast-rider', type: 'well', setting: 'outdoor',
+  rooms: ['street', 'yard', 'plaza'], anchor: 'floor', clearance: { front: 1, back: 1, left: 1, right: 1 },
+  materials: ['timber', 'stone', 'metal', 'foliage'],
+  w: 2.85, d: 2.6, h: 2.6, variants: 1,
   build: function (F) {
     const timber = 0x6a5c48;
     /* stave-built kerb: barrel drum, hoops, and a boarded rim */
@@ -2033,7 +2141,9 @@ FURN({
 });
 
 FURN({
-  key: 'br_lamppost', name: 'Lantern Post', culture: 'beast-rider', room: 'street',
+  key: 'br_lamppost', name: 'Lantern Post', culture: 'beast-rider', type: 'lamp', setting: 'outdoor',
+  rooms: ['street', 'yard'], anchor: 'floor', clearance: { front: 0.3 },
+  materials: ['timber', 'stone', 'glass', 'cloth', 'foliage', 'emissive'],
   w: 0.6, d: 0.6, h: 2.4, variants: 1,
   build: function (F) {
     const timber = 0x6a5c48, dark = 0x4a3f30;
@@ -2066,7 +2176,9 @@ FURN({
 });
 
 FURN({
-  key: 'br_drying_rack', name: 'Drying Rack', culture: 'beast-rider', room: 'yard',
+  key: 'br_drying_rack', name: 'Drying Rack', culture: 'beast-rider', type: 'rack', setting: 'outdoor',
+  rooms: ['yard'], anchor: 'floor', clearance: { front: 0.8, back: 0.8 },
+  materials: ['timber', 'stone', 'cloth', 'foliage'],
   w: 2.2, d: 0.8, h: 2.0, variants: 1,
   build: function (F) {
     const timber = 0x6a5c48, lash = 0x3a362e;
@@ -2109,8 +2221,10 @@ FURN({
 });
 
 FURN({
-  key: 'br_fruit_stack', name: 'Fruit Stack', culture: 'beast-rider', room: 'market',
-  w: 2.0, d: 1.6, h: 1.2, variants: 1,
+  key: 'br_fruit_stack', name: 'Fruit Stack', culture: 'beast-rider', type: 'stack', setting: 'both',
+  rooms: ['market', 'store'], anchor: 'floor', clearance: { front: 0.8 },
+  materials: ['timber', 'cloth', 'foliage'],
+  w: 2.05, d: 1.85, h: 1.2, variants: 1,
   build: function (F) {
     const plinthTone = 0xc9b58a;
     const crate = 0x7a6a4e;
@@ -2152,7 +2266,9 @@ FURN({
 });
 
 FURN({
-  key: 'br_woodpile', name: 'Woodpile', culture: 'beast-rider', room: 'yard',
+  key: 'br_woodpile', name: 'Woodpile', culture: 'beast-rider', type: 'stack', setting: 'outdoor',
+  rooms: ['yard'], anchor: 'floor', clearance: { front: 0.6 },
+  materials: ['timber', 'bark', 'cloth'],
   w: 2.0, d: 1.4, h: 1.3, variants: 1,
   build: function (F) {
     const logColor = 0x5a4a38, cut = 0xc9a86a;
@@ -2195,7 +2311,9 @@ FURN({
 /* ================= Yuni (32 pieces) ================= */
 
 FURN({
-  key: 'yuni_common_low_table', name: 'Low round table', culture: 'yuni-common', room: 'hall',
+  key: 'yuni_common_low_table', name: 'Low round table', culture: 'yuni-common', type: 'table', setting: 'indoor',
+  rooms: ['hall'], anchor: 'floor', clearance: { front: 0.6, back: 0.6, left: 0.6, right: 0.6 },
+  materials: ['timber', 'plaster'],
   w: 1.12, d: 1.12, h: 0.47, variants: 2,
   variantDims: [
     { w: 1.12, d: 1.12, h: 0.43 },
@@ -2228,7 +2346,9 @@ FURN({
 });
 
 FURN({
-  key: 'yuni_common_floor_seating', name: 'Floor mat and cushions', culture: 'yuni-common', room: 'hall',
+  key: 'yuni_common_floor_seating', name: 'Floor mat and cushions', culture: 'yuni-common', type: 'seating', setting: 'indoor',
+  rooms: ['hall'], anchor: 'floor', clearance: { front: 0.6 },
+  materials: ['cloth'],
   w: 2.35, d: 1.55, h: 0.34, variants: 2,
   build: function (F) {
     const matA = 0xb08a5a, matB = 0x9a7648;
@@ -2256,7 +2376,9 @@ FURN({
 });
 
 FURN({
-  key: 'yuni_common_storage_chest', name: 'Banded storage chest', culture: 'yuni-common', room: 'bedroom',
+  key: 'yuni_common_storage_chest', name: 'Banded storage chest', culture: 'yuni-common', type: 'storage', setting: 'indoor',
+  rooms: ['bedroom', 'store'], anchor: 'floor', clearance: { front: 0.7 },
+  materials: ['timber', 'metal'],
   w: 1.28, d: 0.68, h: 0.72, variants: 2,
   build: function (F) {
     const wood = 0x8a6a4e;
@@ -2283,7 +2405,9 @@ FURN({
 });
 
 FURN({
-  key: 'yuni_common_water_jars', name: 'Water jar stand', culture: 'yuni-common', room: 'kitchen',
+  key: 'yuni_common_water_jars', name: 'Water jar stand', culture: 'yuni-common', type: 'storage', setting: 'indoor',
+  rooms: ['kitchen', 'court'], anchor: 'floor', clearance: { front: 0.6 },
+  materials: ['timber', 'stone'],
   w: 1.0, d: 0.7, h: 1.25, variants: 2,
   build: function (F) {
     const wood = 0x8a6a4e, standY = 0.75;
@@ -2309,7 +2433,9 @@ FURN({
 });
 
 FURN({
-  key: 'yuni_court_mosaic_divan', name: 'Mosaic divan', culture: 'yuni-court', room: 'court',
+  key: 'yuni_court_mosaic_divan', name: 'Mosaic divan', culture: 'yuni-court', type: 'seating', setting: 'both',
+  rooms: ['court', 'hall'], anchor: 'floor', clearance: { front: 0.8 },
+  materials: ['stone', 'cloth'],
   w: 2.6, d: 1.0, h: 0.95, variants: 2,
   build: function (F) {
     const base = 0xc9a24a;
@@ -2336,7 +2462,9 @@ FURN({
 });
 
 FURN({
-  key: 'yuni_court_brass_brazier', name: 'Standing brazier', culture: 'yuni-court', room: 'hall',
+  key: 'yuni_court_brass_brazier', name: 'Standing brazier', culture: 'yuni-court', type: 'brazier', setting: 'indoor',
+  rooms: ['hall', 'court'], anchor: 'floor', clearance: { front: 0.5, back: 0.5, left: 0.5, right: 0.5 },
+  materials: ['metal', 'emissive'],
   w: 0.84, d: 0.84, h: 1.15, variants: 2,
   build: function (F) {
     const brass = 0xc9a227, iron = 0x2a2119;
@@ -2374,7 +2502,9 @@ FURN({
 });
 
 FURN({
-  key: 'yuni_court_writing_desk', name: 'Curved writing desk', culture: 'yuni-court', room: 'study',
+  key: 'yuni_court_writing_desk', name: 'Curved writing desk', culture: 'yuni-court', type: 'desk', setting: 'indoor',
+  rooms: ['study'], anchor: 'floor', clearance: { front: 0.9 },
+  materials: ['timber'],
   w: 1.7, d: 1.1, h: 0.78, variants: 1,
   build: function (F) {
     const wood = 0x9a7a4e;
@@ -2393,7 +2523,9 @@ FURN({
 });
 
 FURN({
-  key: 'yuni_sahelian_carved_stool', name: 'Carved stool', culture: 'sahelian', room: 'hall',
+  key: 'yuni_sahelian_carved_stool', name: 'Carved stool', culture: 'sahelian', type: 'chair', setting: 'indoor',
+  rooms: ['hall', 'workshop'], anchor: 'floor', clearance: { front: 0.4 },
+  materials: ['timber', 'plaster'],
   w: 0.5, d: 0.5, h: 0.46, variants: 3,
   build: function (F) {
     const wood = 0x9a7a4e;
@@ -2434,7 +2566,9 @@ FURN({
 });
 
 FURN({
-  key: 'yuni_sahelian_loom', name: 'Narrow-strip loom', culture: 'sahelian', room: 'workshop',
+  key: 'yuni_sahelian_loom', name: 'Narrow-strip loom', culture: 'sahelian', type: 'loom', setting: 'both',
+  rooms: ['workshop', 'yard'], anchor: 'floor', clearance: { front: 0.8 },
+  materials: ['timber', 'cloth'],
   w: 1.4, d: 2.6, h: 1.5, variants: 1,
   build: function (F) {
     const wood = 0x8a6a4e;
@@ -2454,7 +2588,9 @@ FURN({
 });
 
 FURN({
-  key: 'yuni_order_reading_desk', name: 'Reading desk', culture: 'order', room: 'study',
+  key: 'yuni_order_reading_desk', name: 'Reading desk', culture: 'order', type: 'desk', setting: 'indoor',
+  rooms: ['study', 'library'], anchor: 'floor', clearance: { front: 0.8 },
+  materials: ['timber', 'metal', 'cloth', 'emissive'],
   w: 1.3, d: 0.86, h: 1.45, variants: 2,
   variantDims: [
     { w: 1.3, d: 0.86, h: 1.15 },
@@ -2489,7 +2625,9 @@ FURN({
 });
 
 FURN({
-  key: 'yuni_order_shelf_run', name: 'Archive shelf run', culture: 'order', room: 'library',
+  key: 'yuni_order_shelf_run', name: 'Archive shelf run', culture: 'order', type: 'shelf', setting: 'indoor',
+  rooms: ['library', 'store'], anchor: 'wall', clearance: { front: 0.9 },
+  materials: ['timber', 'cloth'],
   w: 2.2, d: 0.55, h: 2.4, variants: 2,
   build: function (F) {
     const wood = 0x8a6a4e;
@@ -2514,7 +2652,9 @@ FURN({
 });
 
 FURN({
-  key: 'yuni_order_lectern', name: 'Reading lectern', culture: 'order', room: 'library',
+  key: 'yuni_order_lectern', name: 'Reading lectern', culture: 'order', type: 'desk', setting: 'indoor',
+  rooms: ['library', 'shrine'], anchor: 'floor', clearance: { front: 0.8 },
+  materials: ['timber', 'metal', 'cloth'],
   w: 0.92, d: 0.94, h: 1.42, variants: 2,
   variantDims: [
     { w: 0.92, d: 0.94, h: 1.32 },
@@ -2554,7 +2694,9 @@ FURN({
 });
 
 FURN({
-  key: 'yuni_order_library_ladder', name: 'Library ladder', culture: 'order', room: 'library',
+  key: 'yuni_order_library_ladder', name: 'Library ladder', culture: 'order', type: 'ladder', setting: 'indoor',
+  rooms: ['library'], anchor: 'wall', clearance: { front: 0.6 },
+  materials: ['timber'],
   w: 0.75, d: 1.15, h: 4.20, variants: 1,
   build: function (F) {
     const wood = 0x8a6a4e;
@@ -2578,7 +2720,9 @@ FURN({
 });
 
 FURN({
-  key: 'yuni_order_globe_stand', name: 'Gilded globe on its pedestal', culture: 'order', room: 'library',
+  key: 'yuni_order_globe_stand', name: 'Gilded globe on its pedestal', culture: 'order', type: 'statue', setting: 'indoor',
+  rooms: ['library', 'study'], anchor: 'floor', clearance: { front: 0.8, back: 0.8, left: 0.8, right: 0.8 },
+  materials: ['timber', 'stone', 'metal'],
   w: 2.2, d: 2.2, h: 3.85, variants: 2,
   build: function (F) {
     const wood = 0x8a6a4e, gold = 0xc9a227, mosaic = 0xc9a24a;
@@ -2620,7 +2764,9 @@ FURN({
 });
 
 FURN({
-  key: 'yuni_order_pupil_desk', name: "Pupils' bench-desk", culture: 'order', room: 'school',
+  key: 'yuni_order_pupil_desk', name: "Pupils' bench-desk", culture: 'order', type: 'desk', setting: 'indoor',
+  rooms: ['school'], anchor: 'floor', clearance: { front: 0.5, back: 0.7 },
+  materials: ['timber', 'stone', 'cloth'],
   w: 2.45, d: 1.0, h: 0.78, variants: 2,
   build: function (F) {
     const wood = 0x9a7a4e;
@@ -2643,7 +2789,9 @@ FURN({
 });
 
 FURN({
-  key: 'yuni_order_master_chair', name: "Master's chair", culture: 'order', room: 'school',
+  key: 'yuni_order_master_chair', name: "Master's chair", culture: 'order', type: 'chair', setting: 'indoor',
+  rooms: ['school', 'study'], anchor: 'floor', clearance: { front: 0.6 },
+  materials: ['timber', 'stone', 'metal'],
   w: 0.85, d: 0.95, h: 1.45, variants: 1,
   build: function (F) {
     const wood = 0x8a6a4e;
@@ -2662,7 +2810,9 @@ FURN({
 });
 
 FURN({
-  key: 'yuni_order_writing_board', name: 'Slate writing board', culture: 'order', room: 'school',
+  key: 'yuni_order_writing_board', name: 'Slate writing board', culture: 'order', type: 'board', setting: 'indoor',
+  rooms: ['school'], anchor: 'wall', clearance: { front: 1.2 },
+  materials: ['timber', 'stone'],
   w: 2.3, d: 0.75, h: 1.95, variants: 2,
   build: function (F) {
     const wood = 0x8a6a4e;
@@ -2691,13 +2841,16 @@ FURN({
 });
 
 FURN({
-  key: 'yuni_order_mat_rack', name: 'Rack of rolled mats', culture: 'order', room: 'school',
+  key: 'yuni_order_mat_rack', name: 'Rack of rolled mats', culture: 'order', type: 'rack', setting: 'indoor',
+  rooms: ['school', 'store'], anchor: 'wall', clearance: { front: 0.7 },
+  materials: ['timber', 'cloth'],
   w: 2.1, d: 0.70, h: 1.52, variants: 2,
   variantDims: [
     { w: 1.75, d: 0.70, h: 1.52 },
     { w: 2.1, d: 0.70, h: 1.52 }
   ],
   build: function (F) {
+    if (F.variant === 1) F.shift(-0.19, -0.05); /* centre the footprint on the origin (verify.py declared-size) */
     const wood = 0x8a6a4e;
     F.box(-0.8, 0, 0, 0.1, 1.4, 0.5, 0, wood, 'wood');
     F.box(0.8, 0, 0, 0.1, 1.4, 0.5, 0, wood, 'wood');
@@ -2726,7 +2879,9 @@ FURN({
 });
 
 FURN({
-  key: 'yuni_order_bookcase', name: 'Library bookcase', culture: 'order', room: 'library',
+  key: 'yuni_order_bookcase', name: 'Library bookcase', culture: 'order', type: 'shelf', setting: 'indoor',
+  rooms: ['library'], anchor: 'wall', clearance: { front: 1 },
+  materials: ['timber', 'stone'],
   w: 3.4, d: 0.85, h: 5.45, variants: 2,
   variantDims: [
     { w: 3.4, d: 0.85, h: 5.45 },
@@ -2758,7 +2913,9 @@ FURN({
 });
 
 FURN({
-  key: 'yuni_order_reading_table', name: 'Reading table and benches', culture: 'order', room: 'library',
+  key: 'yuni_order_reading_table', name: 'Reading table and benches', culture: 'order', type: 'table', setting: 'indoor',
+  rooms: ['library'], anchor: 'floor', clearance: { front: 0.6, back: 0.6, left: 0.6, right: 0.6 },
+  materials: ['timber', 'metal', 'emissive'],
   w: 2.65, d: 2.7, h: 1.02, variants: 2,
   variantDims: [
     { w: 2.65, d: 2.7, h: 0.82 },
@@ -2792,7 +2949,9 @@ FURN({
 });
 
 FURN({
-  key: 'yuni_ancient_moulded_bench', name: 'Moulded seating pod', culture: 'ancient', room: 'hall',
+  key: 'yuni_ancient_moulded_bench', name: 'Moulded seating pod', culture: 'ancient', type: 'bench', setting: 'indoor',
+  rooms: ['hall'], anchor: 'floor', clearance: { front: 0.7 },
+  materials: ['metal', 'cloth'],
   w: 2.0, d: 1.05, h: 0.92, variants: 2,
   variantDims: [
     { w: 2.0, d: 1.05, h: 0.72 },
@@ -2819,7 +2978,9 @@ FURN({
 });
 
 FURN({
-  key: 'yuni_ancient_glass_console', name: 'Glass-topped console', culture: 'ancient', room: 'study',
+  key: 'yuni_ancient_glass_console', name: 'Glass-topped console', culture: 'ancient', type: 'table', setting: 'indoor',
+  rooms: ['study', 'hall'], anchor: 'wall', clearance: { front: 0.7 },
+  materials: ['timber', 'metal', 'glass', 'cloth', 'emissive'],
   w: 1.6, d: 0.72, h: 0.9, variants: 2,
   variantDims: [
     { w: 1.6, d: 0.72, h: 0.78 },
@@ -2850,7 +3011,9 @@ FURN({
 });
 
 FURN({
-  key: 'yuni_ancient_cell_wall', name: 'Wall of storage cells', culture: 'ancient', room: 'store',
+  key: 'yuni_ancient_cell_wall', name: 'Wall of storage cells', culture: 'ancient', type: 'storage', setting: 'indoor',
+  rooms: ['store'], anchor: 'wall', clearance: { front: 0.8 },
+  materials: ['metal', 'cloth'],
   w: 2.2, d: 0.46, h: 2.05, variants: 2,
   build: function (F) {
     const metal = 0x8a8f92;
@@ -2878,7 +3041,9 @@ FURN({
 });
 
 FURN({
-  key: 'yuni_ancient_berth', name: 'Sleeping berth shell', culture: 'ancient', room: 'bedroom',
+  key: 'yuni_ancient_berth', name: 'Sleeping berth shell', culture: 'ancient', type: 'bed', setting: 'indoor',
+  rooms: ['bedroom'], anchor: 'floor', clearance: { front: 0.7 },
+  materials: ['metal', 'cloth'],
   w: 2.3, d: 1.15, h: 1.1, variants: 2,
   build: function (F) {
     const metal = 0x8a8f92;
@@ -2903,7 +3068,9 @@ FURN({
 });
 
 FURN({
-  key: 'yuni_ancient_light_stem', name: 'Luminous ring on a stem', culture: 'ancient', room: 'antechamber',
+  key: 'yuni_ancient_light_stem', name: 'Luminous ring on a stem', culture: 'ancient', type: 'lamp', setting: 'indoor',
+  rooms: ['antechamber', 'hall'], anchor: 'floor', clearance: { front: 0.3, back: 0.3, left: 0.3, right: 0.3 },
+  materials: ['metal', 'emissive'],
   w: 0.86, d: 0.86, h: 2.30, variants: 2,
   build: function (F) {
     const metal = 0x8a8f92;
@@ -2937,7 +3104,9 @@ FURN({
 });
 
 FURN({
-  key: 'yuni_ancient_refectory_run', name: 'Fixed refectory run', culture: 'ancient', room: 'hall',
+  key: 'yuni_ancient_refectory_run', name: 'Fixed refectory run', culture: 'ancient', type: 'table', setting: 'indoor',
+  rooms: ['hall'], anchor: 'floor', clearance: { front: 0.7, back: 0.7 },
+  materials: ['stone', 'metal', 'glass', 'cloth'],
   w: 3.2, d: 1.70, h: 0.95, variants: 2,
   variantDims: [
     { w: 3.2, d: 1.70, h: 0.78 },
@@ -2973,13 +3142,16 @@ FURN({
 });
 
 FURN({
-  key: 'yuni_ancient_socket_rack', name: 'Instrument rack of sockets', culture: 'ancient', room: 'workshop',
+  key: 'yuni_ancient_socket_rack', name: 'Instrument rack of sockets', culture: 'ancient', type: 'rack', setting: 'indoor',
+  rooms: ['workshop'], anchor: 'wall', clearance: { front: 0.8 },
+  materials: ['timber', 'metal', 'glass'],
   w: 1.9, d: 0.9, h: 1.95, variants: 2,
   variantDims: [
     { w: 1.45, d: 0.62, h: 1.95 },
     { w: 1.9, d: 0.9, h: 1.95 }
   ],
   build: function (F) {
+    if (F.variant === 0) F.shift(0, 0.17); else F.shift(-0.23, 0); /* centre the footprint on the origin (verify.py declared-size) */
     const metal = 0x8a8f92;
     F.box(-0.65, 0, -0.2, 0.12, 1.95, 0.5, 0, metal, 'metal');
     F.box(0.65, 0, -0.2, 0.12, 1.95, 0.5, 0, metal, 'metal');
@@ -3008,7 +3180,9 @@ FURN({
 });
 
 FURN({
-  key: 'yuni_salvage_strut_bed', name: 'Bed frame of strut stock', culture: 'ancients-salvage', room: 'bedroom',
+  key: 'yuni_salvage_strut_bed', name: 'Bed frame of strut stock', culture: 'ancients-salvage', type: 'bed', setting: 'indoor',
+  rooms: ['bedroom'], anchor: 'floor', clearance: { front: 0.6, left: 0.5 },
+  materials: ['timber', 'metal', 'cloth'],
   w: 2.1, d: 1.3, h: 0.72, variants: 2,
   variantDims: [
     { w: 2.1, d: 1.3, h: 0.66 },
@@ -3041,7 +3215,9 @@ FURN({
 });
 
 FURN({
-  key: 'yuni_salvage_panel_screen', name: 'Room screen of cut panel', culture: 'ancients-salvage', room: 'hall',
+  key: 'yuni_salvage_panel_screen', name: 'Room screen of cut panel', culture: 'ancients-salvage', type: 'screen', setting: 'indoor',
+  rooms: ['hall', 'bedroom'], anchor: 'floor', clearance: { front: 0.4, back: 0.4 },
+  materials: ['timber', 'stone', 'metal', 'cloth'],
   w: 1.85, d: 0.40, h: 2.0, variants: 2,
   variantDims: [
     { w: 1.85, d: 0.40, h: 1.72 },
@@ -3072,7 +3248,9 @@ FURN({
 });
 
 FURN({
-  key: 'yuni_salvage_locker_press', name: 'Storage press on a mud plinth', culture: 'ancients-salvage', room: 'store',
+  key: 'yuni_salvage_locker_press', name: 'Storage press on a mud plinth', culture: 'ancients-salvage', type: 'storage', setting: 'indoor',
+  rooms: ['store', 'bedroom'], anchor: 'wall', clearance: { front: 0.8 },
+  materials: ['timber', 'stone', 'metal', 'cloth'],
   w: 1.50, d: 0.62, h: 1.80, variants: 2,
   build: function (F) {
     const adobe = 0xc9a878, metal = 0x8a8f92, wood = 0x8a6a4e;
@@ -3099,9 +3277,12 @@ FURN({
 });
 
 FURN({
-  key: 'yuni_salvage_hearth_hood', name: 'Hearth hood of ducting', culture: 'ancients-salvage', room: 'kitchen',
+  key: 'yuni_salvage_hearth_hood', name: 'Hearth hood of ducting', culture: 'ancients-salvage', type: 'stove', setting: 'indoor',
+  rooms: ['kitchen'], anchor: 'wall', clearance: { front: 1 },
+  materials: ['timber', 'stone', 'metal', 'emissive'],
   w: 1.45, d: 1.15, h: 2.25, variants: 2,
   build: function (F) {
+    F.shift(-0.17, 0); /* centre the footprint on the origin (verify.py declared-size) */
     const adobe = 0xc9a878, metal = 0x8a8f92, rust = 0x8a3a2a, wood = 0x8a6a4e;
     F.cyl(0, 0, 0, 0.55, 0.08, 0, adobe, 'stone');
     F.cyl(0, 0.08, 0, 0.5, 0.04, 0, shade(adobe, -0.05), 'stone');
@@ -3127,7 +3308,9 @@ FURN({
 });
 
 FURN({
-  key: 'yuni_salvage_lamp_stand', name: 'Lamp stand from a light stem', culture: 'ancients-salvage', room: 'hall',
+  key: 'yuni_salvage_lamp_stand', name: 'Lamp stand from a light stem', culture: 'ancients-salvage', type: 'lamp', setting: 'indoor',
+  rooms: ['hall', 'bedroom'], anchor: 'floor', clearance: { front: 0.3 },
+  materials: ['stone', 'metal', 'emissive'],
   w: 0.58, d: 0.58, h: 1.92, variants: 2,
   variantDims: [
     { w: 0.58, d: 0.58, h: 1.75 },
@@ -3164,8 +3347,10 @@ FURN({
 /* ================= Ancients kit extras (3 pieces) ================= */
 
 FURN({
-  key: 'ancients_light_strip_ring', name: 'Corridor light-strip ring', culture: 'ancient', room: 'antechamber',
-  w: 2.4, d: 2.4, h: 0.3, variants: 2,
+  key: 'ancients_light_strip_ring', name: 'Corridor light-strip ring', culture: 'ancient', type: 'lamp', setting: 'indoor',
+  rooms: ['antechamber', 'hall'], anchor: 'ceiling', clearance: {},
+  materials: ['stone', 'metal', 'emissive'],
+  w: 2.6, d: 2.6, h: 0.3, variants: 2,
   build: function (F) {
     const CYAN = 0x6fe8e0, DEAD = 0x2a2f2e, RIM = 0x8a8f92, CASE = 0x5a5f62;
     const lit = F.variant === 1;
@@ -3203,9 +3388,12 @@ FURN({
 });
 
 FURN({
-  key: 'ancients_aa_battery', name: 'Rooftop AA gun battery', culture: 'ancient', room: 'rooftop',
+  key: 'ancients_aa_battery', name: 'Rooftop AA gun battery', culture: 'ancient', type: 'weapon', setting: 'outdoor',
+  rooms: ['rooftop'], anchor: 'floor', clearance: { front: 1, back: 1, left: 1, right: 1 },
+  materials: ['metal', 'glass', 'emissive'],
   w: 2.7, d: 2.9, h: 2.6, variants: 2,
   build: function (F) {
+    F.shift(0, -0.37); /* centre the footprint on the origin (verify.py declared-size) */
     const TARN = 0x8a8f92, DARK = 0x5a5f62, RUST = 0xa0522d, GLASS = 0x6fe8e0;
     const ruined = F.variant === 1;
     const skin = ruined ? shade(TARN, -0.25) : TARN;
@@ -3266,16 +3454,19 @@ FURN({
 });
 
 FURN({
-  key: 'ancients_rubble_pile', name: 'Rubble and debris pile', culture: 'ancient', room: 'outdoor',
-  w: 2.6, d: 2.6, h: 0.7, variants: 1,
+  key: 'ancients_rubble_pile', name: 'Rubble and debris pile', culture: 'ancient', type: 'debris', setting: 'outdoor',
+  rooms: ['street', 'yard', 'plaza'], anchor: 'floor', clearance: {},
+  materials: ['stone', 'metal'],
+  w: 3.15, d: 3.1, h: 0.85, variants: 1,
   build: function (F) {
     const tones = [0x8a8478, 0x7a7466, 0x93897a, 0x6e6a5e];
     const metal = [0x8a8f92, 0x5a5f62, 0xa0522d];
     /* a spread of broken masonry, densest toward the middle of the heap */
     for (let i = 0; i < 10; i++) {
-      const a = F.rnd() * TAU, r = F.rr(0.15, 1.18), s = F.rr(0.16, 0.44);
-      const y = Math.max(0.05, 0.44 * (1 - r / 1.25));
-      F.blob(Math.cos(a) * r, y, Math.sin(a) * r, s, s * F.rr(0.7, 1.15), F.rnd() * TAU, F.pick(tones), 'stone');
+      const a = F.rnd() * TAU, r = F.rr(0.15, 1.18), s = F.rr(0.16, 0.44), bh = s * F.rr(0.7, 1.15);
+      /* a blob is centred at y: keep its underside at the ground, not below it */
+      const y = Math.max(bh / 2 - 0.03, 0.44 * (1 - r / 1.25));
+      F.blob(Math.cos(a) * r, y, Math.sin(a) * r, s, bh, F.rnd() * TAU, F.pick(tones), 'stone');
     }
     /* angular slabs and snapped-off block corners */
     for (let i = 0; i < 5; i++) {
@@ -3286,9 +3477,10 @@ FURN({
     }
     /* a couple of larger tilted slabs propped against the heap */
     for (let i = 0; i < 2; i++) {
-      const a = F.rnd() * TAU;
-      F.beam(Math.cos(a) * 0.95, 0.04, Math.sin(a) * 0.95, Math.cos(a) * 0.25, 0.44, Math.sin(a) * 0.25,
-        F.rr(0.4, 0.6), 0.09, F.pick(tones), 'stone');
+      const a = F.rnd() * TAU, sw = F.rr(0.4, 0.6);
+      /* the slab rests on its lower corner: lift its foot so no corner goes under the ground */
+      F.beam(Math.cos(a) * 0.95, 0.04 + sw * 0.45, Math.sin(a) * 0.95, Math.cos(a) * 0.25, 0.44 + sw * 0.2, Math.sin(a) * 0.25,
+        sw, 0.09, F.pick(tones), 'stone');
     }
     /* bent reinforcement and torn panel scrap poking out of it */
     for (let i = 0; i < 3; i++) {

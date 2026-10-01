@@ -234,6 +234,7 @@ function mat(color, family) {
   const m = family === 'glow'
     ? new THREE.MeshBasicMaterial({ color, transparent, opacity })
     : new THREE.MeshStandardMaterial({ color, roughness, metalness, transparent, opacity });
+  m.userData.family = family || '';
   _matCache.set(key, m);
   return m;
 }
@@ -365,13 +366,68 @@ const PLANT_CLIMATES = ['hypertropic', 'tropic', 'temperate', 'cold'];
 const PLANT_ARIDITY = ['arid', 'semiarid', 'subhumid', 'humid'];
 const ASSET_CULTURES = ['voth', 'beast-rider'];
 
+/* The furniture entry (kits/furniture/SPEC.md "The entry"):
+     FURN({ key, name, culture, type, setting, rooms: [...], w, d, h, variants, variantNames,
+            variantDims, anchor, clearance: {front, back, left, right}, materials: [...], build(F) })
+   setting: indoor | outdoor | both.  anchor: floor | wall | ceiling | surface.
+   Every piece is authored in the FLOOR frame (origin = footprint centre at the
+   bottom of the piece, +z front); anchor tells a placer where it mounts:
+     floor   — stands on the floor at y = floorY
+     wall    — stands at floor level, back face (local z = -d/2) flush to a wall
+     ceiling — hangs: its top (local y = h) meets the ceiling, see furnAnchorY()
+     surface — stands on a table, shelf or counter top at y = surfaceY
+   materials are canonical names from CATALOG_MATERIALS below.
+   Back-compat: an old entry with room: 'x' is normalised to rooms: ['x'], and
+   room always holds rooms[0] for code that still reads it. */
+const FURN_SETTINGS = ['indoor', 'outdoor', 'both'];
+const FURN_ANCHORS = ['floor', 'wall', 'ceiling', 'surface'];
+const FURN_TYPES = ['table', 'chair', 'bench', 'seating', 'bed', 'storage', 'shelf', 'desk', 'lamp', 'stove',
+  'altar', 'shrine', 'fountain', 'statue', 'monument', 'planter', 'rug', 'screen', 'banner', 'counter',
+  'stall', 'rack', 'workstation', 'loom', 'well', 'pen', 'tomb', 'vessel', 'shelter', 'weapon', 'debris',
+  'ladder', 'board', 'stack', 'brazier'];
 const FURNS = [], FURN_BY_KEY = {};
 function FURN(o) {
   if (FURN_BY_KEY[o.key]) { console.error('duplicate furniture key', o.key); return; }
   if (!o.culture || FURN_CULTURES.indexOf(o.culture) < 0) { console.error('furniture ' + o.key + ': bad culture ' + o.culture); return; }
-  o.variants = o.variants || 1; o.room = o.room || 'hall';
+  o.variants = o.variants || 1;
+  if (!o.rooms) o.rooms = o.room ? [o.room] : ['hall'];
+  else if (typeof o.rooms === 'string') o.rooms = [o.rooms];
+  o.room = o.rooms[0];
   FURNS.push(o); FURN_BY_KEY[o.key] = o;
 }
+/* the y at which to build a furniture piece so it sits on its anchor:
+   at = { floorY, surfaceY, ceilingY }; variant picks variantDims. */
+function furnAnchorY(A, variant, at) {
+  at = at || {};
+  const floorY = at.floorY || 0;
+  if (A.anchor === 'surface') return at.surfaceY != null ? at.surfaceY : floorY;
+  if (A.anchor === 'ceiling' && at.ceilingY != null) return at.ceilingY - entryDims(A, variant).h;
+  return floorY;
+}
+
+/* Canonical material names (the seed of the planned registry in core/README.md
+   "Planned: a material registry"). Each catalog family string maps onto one
+   canonical name; a piece's `materials` lists the canonical names it uses. */
+const CATALOG_MATERIALS = {
+  timber:    { tags: ['wood'], families: ['wood', 'plank'] },
+  bark:      { tags: ['wood', 'organic'], families: ['bark'] },
+  stone:     { tags: ['stone'], families: ['stone'] },
+  plaster:   { tags: ['stone'], families: ['plaster'] },
+  concrete:  { tags: ['stone'], families: ['concrete'] },
+  roofTile:  { tags: ['stone'], families: ['roof', 'dome'] },
+  metal:     { tags: ['metal'], families: ['metal'] },
+  rustSteel: { tags: ['metal', 'weathered'], families: ['rust'] },
+  glass:     { tags: ['glass'], families: ['glass'] },
+  cloth:     { tags: ['fabric'], families: ['cloth'] },
+  rope:      { tags: ['fabric', 'organic'], families: ['rope'] },
+  thatch:    { tags: ['organic'], families: ['thatch'] },
+  foliage:   { tags: ['organic'], families: ['leafy', 'plant'] },
+  skin:      { tags: ['organic'], families: ['skin'] },
+  emissive:  { tags: ['glow'], families: ['glow'] },
+  unassigned:{ tags: [], families: [''] }
+};
+const FAMILY_TO_MATERIAL = {};
+for (const k in CATALOG_MATERIALS) for (const f of CATALOG_MATERIALS[k].families) FAMILY_TO_MATERIAL[f] = k;
 const PLANTS = [], PLANT_BY_KEY = {};
 function PLANT(o) {
   if (PLANT_BY_KEY[o.key]) { console.error('duplicate plant key', o.key); return; }
@@ -408,10 +464,15 @@ function makeFrame(x, z, ry, opt) {
   F.rr = (a, b) => a + (b - a) * F.rnd();
   F.pick = (arr) => arr[Math.floor(F.rnd() * arr.length) % arr.length];
   F.chance = (p) => F.rnd() < p;
+  /* engine helpers on the frame, so a piece need not reach for host globals */
+  F.shade = shade; F.TAU = TAU;
   const toWorld = (lx, lz) => {
     const c = Math.cos(F.ry), s = Math.sin(F.ry);
     return [F.x + lx * c + lz * s, F.z - lx * s + lz * c];
   };
+  /* move the frame origin to local (lx, lz). A piece authored off-centre calls
+     F.shift(-cx, -cz) first, so its footprint centre lands on the origin. */
+  F.shift = (lx, lz) => { const [x2, z2] = toWorld(lx, lz); F.x = x2; F.z = z2; };
   F.box = (lx, ly, lz, w, h, d, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkBox(x2, F.y + ly, z2, w, h, d, F.ry + (ry2 || 0), color, family); };
   F.cyl = (lx, ly, lz, r, h, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkCyl(x2, F.y + ly, z2, r, h, F.ry + (ry2 || 0), color, family); };
   F.cone = (lx, ly, lz, r, h, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkCone(x2, F.y + ly, z2, r, h, F.ry + (ry2 || 0), color, family); };
@@ -689,6 +750,7 @@ function animate(now) {
   requestAnimationFrame(animate);
   _moveStep(now || performance.now());
   if (window._inspectorTick) window._inspectorTick();
+  if (window._frameHooks) for (const fh of window._frameHooks) fh(now || performance.now());
   renderer.render(scene, camera);
 }
 animate();

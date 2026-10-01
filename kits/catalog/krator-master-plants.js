@@ -58,7 +58,7 @@ PLANT({
 
 PLANT({
   key: 'voth_fungal_cluster', name: 'Fungal Cluster', climate: 'temperate', aridity: 'semiarid',
-  w: 5, d: 5, h: 3, variants: 1,
+  w: 5.6, d: 5.5, h: 3, variants: 1,
   build: function (F) {
     const stalkCols = [0xbdb49c, 0xaca38c, 0xc8bfa6];
     const capCols = [0x8d6a5e, 0x9a7a5c, 0x8a7a52];
@@ -142,7 +142,7 @@ PLANT({
 
 PLANT({
   key: 'voth_ashland_scrub', name: 'Ashland Scrub', climate: 'temperate', aridity: 'semiarid',
-  w: 4, d: 4, h: 2, variants: 1,
+  w: 5.1, d: 5, h: 2, variants: 1,
   build: function (F) {
     const cols = [0x4e5a34, 0x616a41, 0x6a6c46];
     const woodC = 0x5a4e40;
@@ -231,7 +231,7 @@ PLANT({
 
 PLANT({
   key: 'voth_reed_succulent_cluster', name: 'Reed / Spiky Succulent Cluster', climate: 'temperate', aridity: 'semiarid',
-  w: 4, d: 4, h: 5, variants: 1,
+  w: 4.5, d: 4.5, h: 5, variants: 1,
   build: function (F) {
     const cols = [0x616a41, 0x6a6c46, 0x4e5a34];
     const H = F.rr(4.6, 5.0);
@@ -264,7 +264,7 @@ PLANT({
 
 PLANT({
   key: 'voth_orchard_tree', name: 'Orchard Fruit Tree', climate: 'temperate', aridity: 'subhumid',
-  w: 5, d: 5, h: 6, variants: 1,
+  w: 5.7, d: 5.7, h: 6, variants: 1,
   build: function (F) {
     const trunkC = 0x5a4b3a;
     const leafC = F.pick([0x6f7d42, 0x9a9a5a, 0x76854a]);
@@ -356,7 +356,7 @@ PLANT({
 
 PLANT({
   key: 'voth_giant_groundsel', name: 'Giant Groundsel', climate: 'temperate', aridity: 'subhumid',
-  w: 4, d: 4, h: 7, variants: 1,
+  w: 4.8, d: 5.1, h: 7, variants: 1,
   build: function (F) {
     const trunkC = 0x5a4b3a;
     const leafC = 0x5a6a34;
@@ -405,7 +405,7 @@ PLANT({
 
 PLANT({
   key: 'voth_birch', name: 'Birch', climate: 'temperate', aridity: 'subhumid',
-  w: 6, d: 6, h: 14, variants: 1,
+  w: 6.6, d: 6.8, h: 14, variants: 1,
   build: function (F) {
     const barkCols = [0xe3ded0, 0xd5cfbe, 0xece7da];
     const barkC = F.pick(barkCols);
@@ -489,7 +489,7 @@ PLANT({
 
 PLANT({
   key: 'voth_shrub_cushion', name: 'Shrub Cushion', climate: 'temperate', aridity: 'subhumid',
-  w: 2.3, d: 2.3, h: 1.2, variants: 1,
+  w: 2.6, d: 2.5, h: 1.3, variants: 1,
   build: function (F) {
     const cols = [0x4e5a34, 0x616a41, 0x6a6c46];
     const R = F.rr(1.08, 1.2), H = F.rr(1.05, 1.2);
@@ -515,7 +515,7 @@ PLANT({
 
 PLANT({
   key: 'voth_shrub_broom', name: 'Shrub Broom', climate: 'temperate', aridity: 'subhumid',
-  w: 2, d: 2, h: 1.4, variants: 1,
+  w: 2, d: 2, h: 1.5, variants: 1,
   build: function (F) {
     const cols = [0x616a41, 0x6a6c46, 0x58643c];
     const H = F.rr(1.3, 1.4), R = F.rr(0.85, 0.98);
@@ -575,7 +575,7 @@ PLANT({
 
 PLANT({
   key: 'voth_succulent_paddle', name: 'Succulent - Paddle (Prickly-Pear)', climate: 'temperate', aridity: 'arid',
-  w: 2, d: 2, h: 1.8, variants: 1,
+  w: 3.2, d: 3.2, h: 1.8, variants: 1,
   build: function (F) {
     const cols = [0x7e9a8a, 0x8fa898, 0x6b8879];
     /* a pad plus its areole spines; pads chain off one another in a fan */
@@ -611,7 +611,7 @@ PLANT({
 
 PLANT({
   key: 'voth_succulent_finger', name: 'Succulent - Finger', climate: 'temperate', aridity: 'arid',
-  w: 1.5, d: 1.5, h: 1.5, variants: 1,
+  w: 1.9, d: 1.9, h: 1.5, variants: 1,
   build: function (F) {
     const cols = [0x7e9a8a, 0x8fa898, 0x6b8879];
     const R = F.rr(0.6, 0.72), H = F.rr(1.4, 1.5);
@@ -640,7 +640,7 @@ PLANT({
 
 PLANT({
   key: 'voth_succulent_barrel', name: 'Succulent - Barrel', climate: 'temperate', aridity: 'arid',
-  w: 1.2, d: 1.2, h: 1, variants: 1,
+  w: 1.4, d: 1.4, h: 1, variants: 1,
   build: function (F) {
     const cols = [0x7e9a8a, 0x8fa898, 0x6b8879];
     const c = F.pick(cols);
@@ -670,7 +670,7 @@ PLANT({
 
 PLANT({
   key: 'voth_park_baobab', name: 'Park Exotic - Baobab', climate: 'temperate', aridity: 'subhumid',
-  w: 10, d: 10, h: 18, variants: 1,
+  w: 11.6, d: 11.2, h: 18, variants: 1,
   build: function (F) {
     const trunkC = 0x8a7a66;
     const leafC = 0x6f7d42;
@@ -714,7 +714,7 @@ PLANT({
 
 PLANT({
   key: 'voth_park_dragon_tree', name: 'Park Exotic - Dragon Tree', climate: 'temperate', aridity: 'subhumid',
-  w: 7, d: 7, h: 12, variants: 1,
+  w: 8.4, d: 8.3, h: 12, variants: 1,
   build: function (F) {
     const trunkC = 0x6a5c48;
     const leafC = 0x2e4a2e;
@@ -758,7 +758,7 @@ PLANT({
 
 PLANT({
   key: 'voth_park_cherry_blossom', name: 'Park Exotic - Cherry Blossom', climate: 'temperate', aridity: 'subhumid',
-  w: 7, d: 7, h: 10, variants: 1,
+  w: 7.9, d: 8.1, h: 10, variants: 1,
   build: function (F) {
     const trunkC = 0x5a4b3a;
     const pinks = [0xf3d6de, 0xecc3cf, 0xe8b3c2];
@@ -874,7 +874,7 @@ PLANT({
   name: 'Jungle Palm',
   climate: 'tropic',
   aridity: 'subhumid',
-  w: 7, d: 7, h: 14,
+  w: 8.4, d: 8.2, h: 14,
   variants: 1,
   build: function (F) {
     const trunkColor = 0x5a3d26;
@@ -928,7 +928,7 @@ PLANT({
   name: 'Broadleaf Tree',
   climate: 'tropic',
   aridity: 'subhumid',
-  w: 7, d: 7, h: 9,
+  w: 8.2, d: 8.4, h: 9,
   variants: 1,
   build: function (F) {
     const greens = [0x2e7a3a, 0x3a8a46, 0x276e34];
@@ -1101,7 +1101,7 @@ PLANT({
   name: 'Pond Lily Pad',
   climate: 'tropic',
   aridity: 'humid',
-  w: 3, d: 3, h: 0.8,
+  w: 3.8, d: 3.7, h: 0.8,
   variants: 1,
   build: function (F) {
     const padCols = [0x3f9a4a, 0x358a42, 0x4aa653];
@@ -1147,7 +1147,7 @@ PLANT({
   name: 'Pond Reed',
   climate: 'tropic',
   aridity: 'humid',
-  w: 1.8, d: 1.8, h: 3.2,
+  w: 3.1, d: 3.4, h: 3.5,
   variants: 1,
   build: function (F) {
     const stemCols = [0x6a9a3a, 0x5e8c34, 0x76a344];
@@ -1189,7 +1189,7 @@ PLANT({
 
 PLANT({
   key: 'br_ironbark', name: 'Ironbark', climate: 'hypertropic', aridity: 'humid',
-  w: 14, d: 14, h: 45, variants: 1,
+  w: 15.9, d: 15.7, h: 45, variants: 1,
   build: function (F) {
     const barkTones = [0x7a4630, 0x6a3a28, 0x8a5236];
     const darkGreens = [0x1f3d24, 0x254a2a, 0x1a3520];
@@ -1245,7 +1245,7 @@ PLANT({
 
 PLANT({
   key: 'br_ghostwood', name: 'Ghostwood', climate: 'hypertropic', aridity: 'humid',
-  w: 12, d: 12, h: 42, variants: 1,
+  w: 13.4, d: 13.6, h: 42, variants: 1,
   build: function (F) {
     const trunkTones = [0xe6e2d4, 0xd8d3c2, 0xf0ece0];
     const branchTones = [0x8aa83e, 0x9ab848, 0x7d9c38];
@@ -1349,7 +1349,7 @@ PLANT({
 
 PLANT({
   key: 'br_gate_baobab', name: 'Gate Baobab', climate: 'hypertropic', aridity: 'humid',
-  w: 12, d: 12, h: 30, variants: 1,
+  w: 13, d: 13.7, h: 30, variants: 1,
   build: function (F) {
     const tones = [0x8a7a66, 0x7a6c5a, 0x9a8a74];
     const crownGreens = [0x4a6a2a, 0x567a30, 0x3f5f26];
@@ -1402,7 +1402,7 @@ PLANT({
 
 PLANT({
   key: 'br_undergrowth_shrub', name: 'Undergrowth Shrub', climate: 'hypertropic', aridity: 'humid',
-  w: 4, d: 4, h: 3, variants: 1,
+  w: 4.7, d: 4.8, h: 3, variants: 1,
   build: function (F) {
     const greens = [0x1a2e1e, 0x223a24, 0x18281c, 0x2a4428];
     const woodC = 0x3a2e22;
@@ -1481,7 +1481,7 @@ PLANT({
 
 PLANT({
   key: 'br_aroid_heliconia', name: 'Aroid / Heliconia Clump', climate: 'hypertropic', aridity: 'humid',
-  w: 4, d: 4, h: 6, variants: 1,
+  w: 4.5, d: 4.8, h: 6, variants: 1,
   build: function (F) {
     const greens = [0x1e5a2e, 0x2a6a38, 0x18461e, 0x357a3e];
     const bracts = [0xd8402a, 0xe0862a, 0xc9442a];
@@ -1556,7 +1556,7 @@ PLANT({
 
 PLANT({
   key: 'br_bracket_fungus', name: 'Bracket Fungus Clump', climate: 'hypertropic', aridity: 'humid',
-  w: 1.9, d: 1.9, h: 2, variants: 1,
+  w: 2.3, d: 2.2, h: 2, variants: 1,
   build: function (F) {
     const tones = [0x8d6a5e, 0xa08464, 0xc8a070, 0x7a4a6a];
     const woodC = 0x5a4636;
@@ -1597,7 +1597,7 @@ PLANT({
 
 PLANT({
   key: 'br_fallen_hypertree_log', name: 'Fallen Hypertree Log', climate: 'hypertropic', aridity: 'humid',
-  w: 3.6, d: 16, h: 3.4, variants: 1,
+  w: 4.7, d: 16.4, h: 3.8, variants: 1,
   build: function (F) {
     const barkColor = 0x6a4630;
     const mossCols = [0x2e5a2a, 0x3a6a30, 0x4a7a36];
@@ -1653,7 +1653,7 @@ PLANT({
 
 PLANT({
   key: 'br_vine_curtain', name: 'Vine Curtain', climate: 'hypertropic', aridity: 'humid',
-  w: 4, d: 1.4, h: 13, variants: 1,
+  w: 5.2, d: 1.9, h: 13.1, variants: 1,
   build: function (F) {
     const greens = [0x2e5a2a, 0x3a6a30, 0x274e26, 0x4a7a36, 0x1e4220];
     const accentTones = [0xd8a23a, 0xc9442a, 0x8d6a5e];
@@ -1703,8 +1703,8 @@ PLANT({
   key: 'yuni_cypress', name: 'Yuni cypress', climate: 'temperate', aridity: 'semiarid',
   w: 5.6, d: 5.6, h: 20.4, variants: 3,
   variantDims: [
-    { w: 2.8, d: 2.8, h: 9.3 },
-    { w: 4.0, d: 4.0, h: 15.4 },
+    { w: 3.1, d: 3, h: 9.3 },
+    { w: 4.7, d: 4.5, h: 15.4 },
     { w: 5.6, d: 5.6, h: 20.4 }
   ],
   build: function (F) {
@@ -1715,11 +1715,11 @@ PLANT({
 
 PLANT({
   key: 'yuni_pine_maritime', name: 'Maritime pine', climate: 'temperate', aridity: 'semiarid',
-  w: 18, d: 18, h: 22.5, variants: 3,
+  w: 20.1, d: 20.2, h: 22.5, variants: 3,
   variantDims: [
     { w: 7.0, d: 7.0, h: 8.2 },
     { w: 14, d: 14, h: 16.4 },
-    { w: 18, d: 18, h: 22.5 }
+    { w: 20.1, d: 20.2, h: 22.5 }
   ],
   build: function (F) {
     const h = [8, 16, 22][F.variant];
@@ -1729,11 +1729,11 @@ PLANT({
 
 PLANT({
   key: 'yuni_olive_valley', name: 'Valley olive', climate: 'temperate', aridity: 'arid',
-  w: 8.6, d: 8.6, h: 6.0, variants: 3,
+  w: 11.1, d: 10.4, h: 6.6, variants: 3,
   variantDims: [
-    { w: 5.6, d: 5.6, h: 3.6 },
-    { w: 7.0, d: 7.0, h: 4.9 },
-    { w: 8.6, d: 8.6, h: 6.0 }
+    { w: 7, d: 6.6, h: 4.2 },
+    { w: 9.5, d: 9, h: 5.7 },
+    { w: 11.1, d: 10.4, h: 6.6 }
   ],
   build: function (F) {
     const h = [4.4, 6.0, 7.0][F.variant];
@@ -1749,11 +1749,11 @@ PLANT({
 
 PLANT({
   key: 'yuni_scrub_thorn', name: 'Thorn scrub', climate: 'temperate', aridity: 'arid',
-  w: 4.4, d: 4.4, h: 2.9, variants: 3,
+  w: 4.6, d: 4.8, h: 2.9, variants: 3,
   variantDims: [
     { w: 2.0, d: 2.0, h: 1.15 },
     { w: 3.0, d: 3.0, h: 1.95 },
-    { w: 4.4, d: 4.4, h: 2.9 }
+    { w: 4.6, d: 4.8, h: 2.9 }
   ],
   build: function (F) {
     const size = [1.2, 2.0, 2.9][F.variant];
@@ -1798,11 +1798,11 @@ PLANT({
 
 PLANT({
   key: 'yuni_date_palm', name: 'Date palm', climate: 'temperate', aridity: 'arid',
-  w: 12.5, d: 12.5, h: 15.7, variants: 3,
+  w: 13.9, d: 13.5, h: 16.1, variants: 3,
   variantDims: [
     { w: 5.4, d: 5.4, h: 6.6 },
     { w: 10.0, d: 10.0, h: 11.9 },
-    { w: 12.5, d: 12.5, h: 15.7 }
+    { w: 13.9, d: 13.5, h: 16.1 }
   ],
   build: function (F) {
     const h = [7, 13, 17][F.variant];
@@ -1818,10 +1818,10 @@ PLANT({
 
 PLANT({
   key: 'yuni_fig_courtyard', name: 'Courtyard fig', climate: 'temperate', aridity: 'subhumid',
-  w: 7.6, d: 7.6, h: 7.0, variants: 2,
+  w: 8.5, d: 8.2, h: 7, variants: 2,
   variantDims: [
-    { w: 4.9, d: 4.9, h: 4.5 },
-    { w: 7.6, d: 7.6, h: 7.0 }
+    { w: 5.6, d: 5.4, h: 4.6 },
+    { w: 8.5, d: 8.2, h: 7 }
   ],
   build: function (F) {
     const h = [5.2, 7.9][F.variant];
@@ -1864,10 +1864,10 @@ PLANT({
 
 PLANT({
   key: 'yuni_canal_poplar', name: 'Canal poplar', climate: 'temperate', aridity: 'humid',
-  w: 3.8, d: 3.8, h: 19, variants: 2,
+  w: 4.4, d: 4, h: 19, variants: 2,
   variantDims: [
     { w: 2.8, d: 2.8, h: 13 },
-    { w: 3.8, d: 3.8, h: 19 }
+    { w: 4.4, d: 4, h: 19 }
   ],
   build: function (F) {
     const h = [13, 19][F.variant];
@@ -1910,10 +1910,10 @@ PLANT({
 
 PLANT({
   key: 'yuni_oleander', name: 'Oleander', climate: 'temperate', aridity: 'semiarid',
-  w: 3.2, d: 3.2, h: 2.9, variants: 2,
+  w: 3.6, d: 3.5, h: 2.9, variants: 2,
   variantDims: [
     { w: 2.2, d: 2.2, h: 1.8 },
-    { w: 3.2, d: 3.2, h: 2.9 }
+    { w: 3.6, d: 3.5, h: 2.9 }
   ],
   build: function (F) {
     const H = [1.9, 2.9][F.variant];
