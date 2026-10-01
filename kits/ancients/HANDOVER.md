@@ -1,19 +1,21 @@
 # Krator Ancients — handover
 
-## RESUMED 2026-10-01 on branch `ancients-resume` — read first
-- Recovered from `wip/` (applied to `kits/ancients/` paths, all targets build and parse): QA arcologies
-  set A, QA arcologies set B, lighthouse island. The four Port patches in `wip/` are still unapplied.
-- User's queue changes: items 4 (machines — the Engines target stands as is) and 5 (port arcology) are
-  SCRATCHED. Priority: the quality pass on the original kit types (towers, civic, domestic), then arcology
-  QA sets A/B, the lighthouse, and item 3 (arco1/arco2 alternates).
-- In flight, one agent each, in worktrees: QA round 2 for towers, civic, domestic (`qa/<group>.md`);
-  QA arcA, arcB (verify recovered work, complete `qa/arcA.md`, `qa/arcB.md`); lighthouse finish;
-  item 3 alternates in three groups with fixed allocations — towers `src/8aj-alt-*`, seeds 9800-9849,
-  target `alt-towers`; domestic `src/8ak-alt-*`, 9850-9899, `alt-domestic`; civic `src/8al-alt-*`,
-  9900-9949, `alt-civic`. Kit rows for the alternates are added by the coordinator after merge.
-- Full-resolution arco1/arco2 references were uploaded by the user (not committed: ~48 MB).
-- After all that: reconcile the Ancient buildings in the Yuni kit and the Yuni settlement
-  (`settlements/yuni`, its `61-ancients.js`) to the new builds.
+## RESUMED 2026-10-01 on branch `ancients-resume` — state at end of day, read first
+All merged into `ancients-resume`, built, jscheck'ed and verified (full kit: error panel clean, every invariant
+PASS, showcase 17.4M tris OVER the 6M soft ceiling by the user's choice, worst draw calls ~620/900). Gallery
+republished (https://claude.ai/artifact/UhTfQ2kioZEbrzZR1agHv9, version 23).
+- QA round 2 on the original types: towers, civic, domestic (`qa/<group>.md`); Houses A-C petals restored.
+- QA arcologies set A and B recovered from `wip/` and continued (`qa/arcA.md`, `qa/arcB.md`).
+- Lighthouse island finished (`targets/lighthouse/NOTES.md`).
+- Item 3 done: 29 arco1/arco2 alternates (`alt-towers`, `alt-domestic`, `alt-civic`), PLUS kit rows north of the
+  Lighthouse (decay 2 = reclaimed at t=2s), one overview preset per group.
+- Yuni-only variants ported into the kit (`yuni-variants`, src/8am-yv-*), with kit rows (decays 0/1/3).
+- Tower stumps (src/8an-iz-stumps.js, `iziz-variants`), with kit rows at x=t+650 in each tower's row.
+  Open: a floating block on Stump G (agent asked to fix).
+- Yuni's Ancients port now generated from the live kit (`settlements/yuni/ANCIENTS-SYNC.md`,
+  `tools/gen_ancients.py --check`); Yuni sheet and city verified.
+- Items 4 (machines) and 5 (port arcology) were SCRATCHED by the user. The stale root `voth/` tree was deleted.
+- NOT done: re-vendoring the kit into settlements/iziz, dalab and screamers (each needs its own verify).
 
 ## PAUSED 2026-09-29 (user stopped to save usage) — resume here
 - Merged and published: QA domestic, towers, civic, this month's arcologies (arcC). Kit artifact https://claude.ai/artifact/FSKTzZ3duwQ2zrbdEEqYYf.
