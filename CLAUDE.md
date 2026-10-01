@@ -16,7 +16,8 @@ says which build holds what.
 | `kits/ancients/` | the Ancients building kit and its per-site targets |
 | `kits/ringsea/` | the Ring Sea watercraft kit: 21 vessels, one fragment each |
 | `kits/catalog/` | harvested master catalog: asset engine, 84 furniture pieces in the furniture SPEC shape, plants, buildings. Verified: `build.py`, `verify.py --assert` |
-| `kits/furniture/`, `kits/interiors/` | scaffolding only: read `SPEC.md` |
+| `kits/interiors/` | `ROOM()` and the furniture placer (engine-neutral, ported from Yuni), a catalog adapter, outline view and cut-away: a verified demo. Read `API.md` |
+| `kits/furniture/` | scaffolding only: read `SPEC.md` |
 | `biomes/<name>/` | flora and fauna kits on the shared biome core |
 | `core/materials/` | material fragments shared by the Ancients-lineage builds (`core/README.md`) |
 | `gallery/` | the shareable gallery page and the script that publishes it |

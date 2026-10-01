@@ -1,0 +1,1874 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Krator Interiors</title>
+<style>
+  html,body{margin:0;height:100%;overflow:hidden;background:#d8dccb;font-family:Georgia,serif}
+  #app{position:fixed;inset:0}
+  #bar{position:fixed;left:14px;top:14px;z-index:30;background:rgba(24,21,15,0.88);color:#f3ecd8;
+       border-radius:8px;padding:9px 12px;font-size:12px;max-width:min(600px,calc(100vw - 28px));line-height:1.5}
+  #bar b{color:#e0c98a;letter-spacing:.06em;text-transform:uppercase;font-size:11.5px}
+  #bar select,#bar button{background:rgba(255,255,255,0.1);color:#f3ecd8;border:none;border-radius:5px;
+       padding:4px 8px;font:inherit;font-size:11.5px;margin:3px 3px 0 0;cursor:pointer}
+  #bar select option{background:#2a2518}
+  #bar button.on{background:#c9a227;color:#2a2416}
+  #bar .n{opacity:.6;font-size:11px}
+  #rep{margin-top:5px;font-size:11.5px;opacity:.9;max-height:30vh;overflow:auto}
+  #rep .fb{color:#e3b55e} #rep .miss{color:#e88a7a} #rep .ok{color:#8fca7a}
+  #hover{position:fixed;z-index:40;pointer-events:none;display:none;background:rgba(24,21,15,0.92);color:#f3ecd8;
+       border-radius:6px;padding:6px 9px;font:12px/1.45 Georgia,serif;max-width:340px;box-shadow:0 3px 12px rgba(0,0,0,.3)}
+  #hover b{font-size:13px}
+  #hover .cls{color:#9fe8ff;font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+  #hover .tag{display:inline-block;background:rgba(184,232,160,.16);color:#b8e8a0;border-radius:3px;padding:0 5px;margin:2px 3px 0 0;font-size:11px}
+  #poly{position:fixed;right:14px;bottom:14px;z-index:30;display:none;background:rgba(24,21,15,0.9);color:#f3ecd8;border-radius:8px;
+       padding:8px 10px;font:11.5px ui-monospace,monospace;max-width:420px;white-space:pre-wrap;word-break:break-all}
+  #errs{position:fixed;right:10px;top:10px;max-width:60vw;max-height:30vh;overflow:auto;background:rgba(120,0,0,.88);color:#fff;
+       padding:6px 9px;border-radius:4px;font:12px ui-monospace,monospace;white-space:pre-wrap;display:none;z-index:50}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="bar">
+  <b>Krator interiors</b> <span class="n" id="count"></span><br>
+  <select id="roomSel"><option value="">go to room…</option></select>
+  <button id="olBtn" title="O: room outlines, doors, swings, footprints, clearance">Outline (O)</button>
+  <button id="gridBtn" title="G: walk grid and paths from the door">Grid (G)</button>
+  <button id="cutBtn" title="C: cycle the cut-away">Cut-away: cut (C)</button>
+  <button id="hoverBtn" title="T: hover inspector (name, class, tags)">Hover tags (T)</button>
+  <button id="polyBtn" title="P: polygon tool, click the ground to add points">Polygon (P)</button>
+  <button id="seedBtn" title="R: furnish every room with the next seed">Seed 0 (R)</button>
+  <div id="rep"></div>
+</div>
+<div id="hover"></div>
+<pre id="poly"></pre>
+<pre id="errs"></pre>
+<script>
+/* error panel: verify.py fails the run when this has any text */
+(function(){
+  const el=document.getElementById('errs');
+  window.reportErr=function(m){el.style.display='block';el.textContent+=String(m).slice(0,600)+'\n';};
+  window.onerror=function(m,s,l,c,e){reportErr((e&&e.stack)||(m+' @'+l+':'+c));};
+  window.addEventListener('unhandledrejection',function(e){reportErr('promise: '+(e.reason&&e.reason.stack||e.reason));});
+  const ce=console.error.bind(console);
+  console.error=function(){ce.apply(null,arguments);reportErr([].map.call(arguments,function(a){return a&&a.stack?a.stack:String(a);}).join(' '));};
+})();
+</script>
+<!-- the master catalog, loaded by path (kits/catalog/README.md "Using catalog pieces in another build") -->
+<script src="../../catalog/three.min.js"></script>
+<script src="../../catalog/krator-asset-engine.js"></script>
+<script src="../../catalog/krator-master-furniture.js"></script>
+<script src="../../catalog/inspector.js"></script>
+<script>
+/* ---------- src/10-core.js ---------- */
+/* ======================== Interiors core: namespace, rng, geometry ========================
+   ENGINE-NEUTRAL. Fragments 10-49 use no THREE, no DOM and no host global: they run in a
+   page, in a worker or in node (build.py also writes them alone as dist/interiors-core.js).
+   Everything hangs off one namespace, KratorInteriors; the only other globals are the two
+   names kits/interiors/SPEC.md asks for, ROOM() and furnishRoom() (bound in 49-exports.js).
+
+   Coordinates are the polygon tool's: world x and z in metres, y up. A piece's frame is the
+   catalog's (kits/catalog/README.md "Frame"): origin = footprint centre on the floor, +z the
+   front, and rotation ry maps local (lx, lz) to world (x + lx cos ry + lz sin ry,
+   z - lx sin ry + lz cos ry), so the front faces (sin ry, cos ry).
+   ====================================================================== */
+var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors) || {};
+(function (IX) {
+  'use strict';
+  IX.version = 1;
+
+  /* ---------- seeded randomness (same LCG as the catalog's frame and Yuni's intRng) */
+  IX.hash = function (s) {                      /* FNV-1a over a string -> uint32 */
+    s = String(s);
+    let h = 2166136261 >>> 0;
+    for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
+    return h >>> 0;
+  };
+  IX.rng = function (seed) {
+    let st = ((seed >>> 0) * 2654435761 + 97) >>> 0;
+    const r = function () { st = (Math.imul(st, 1664525) + 1013904223) >>> 0; return st / 4294967296; };
+    r.int = function (n) { return Math.floor(r() * n) % n; };
+    r.pick = function (a) { return a[r.int(a.length)]; };
+    r.shuffle = function (a) { for (let i = a.length - 1; i > 0; i--) { const j = r.int(i + 1); const t = a[i]; a[i] = a[j]; a[j] = t; } return a; };
+    return r;
+  };
+  IX.round = function (v, n) { const k = Math.pow(10, n == null ? 3 : n); return Math.round(v * k) / k; };
+
+  /* ---------- polygons: [[x,z], ...], either winding */
+  const G = IX.geom = {};
+  G.area = function (poly) {                    /* signed: > 0 when counter-clockwise in (x, z) */
+    let a = 0;
+    for (let i = 0, n = poly.length; i < n; i++) { const p = poly[i], q = poly[(i + 1) % n]; a += p[0] * q[1] - q[0] * p[1]; }
+    return a / 2;
+  };
+  G.centroid = function (poly) {
+    let cx = 0, cz = 0, a = 0;
+    for (let i = 0, n = poly.length; i < n; i++) {
+      const p = poly[i], q = poly[(i + 1) % n], c = p[0] * q[1] - q[0] * p[1];
+      a += c; cx += (p[0] + q[0]) * c; cz += (p[1] + q[1]) * c;
+    }
+    if (Math.abs(a) < 1e-9) return [poly[0][0], poly[0][1]];
+    return [cx / (3 * a), cz / (3 * a)];
+  };
+  G.bbox = function (pts) {
+    let x0 = Infinity, z0 = Infinity, x1 = -Infinity, z1 = -Infinity;
+    for (const p of pts) { if (p[0] < x0) x0 = p[0]; if (p[0] > x1) x1 = p[0]; if (p[1] < z0) z0 = p[1]; if (p[1] > z1) z1 = p[1]; }
+    return [x0, z0, x1, z1];
+  };
+  G.inside = function (poly, x, z) {            /* even-odd ray cast */
+    let c = false;
+    for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+      const a = poly[i], b = poly[j];
+      if ((a[1] > z) !== (b[1] > z) && x < (b[0] - a[0]) * (z - a[1]) / (b[1] - a[1]) + a[0]) c = !c;
+    }
+    return c;
+  };
+  G.segDist = function (x, z, a, b) {           /* distance from (x,z) to segment a-b */
+    const dx = b[0] - a[0], dz = b[1] - a[1], L2 = dx * dx + dz * dz;
+    let t = L2 ? ((x - a[0]) * dx + (z - a[1]) * dz) / L2 : 0;
+    t = Math.max(0, Math.min(1, t));
+    return Math.hypot(x - a[0] - dx * t, z - a[1] - dz * t);
+  };
+  G.edgeDist = function (poly, x, z) {
+    let d = Infinity;
+    for (let i = 0, n = poly.length; i < n; i++) d = Math.min(d, G.segDist(x, z, poly[i], poly[(i + 1) % n]));
+    return d;
+  };
+  function cross(ax, az, bx, bz) { return ax * bz - az * bx; }
+  G.segsCross = function (p, q, r, s) {         /* proper crossing of p-q and r-s (touching does not count) */
+    const d1 = cross(q[0] - p[0], q[1] - p[1], r[0] - p[0], r[1] - p[1]);
+    const d2 = cross(q[0] - p[0], q[1] - p[1], s[0] - p[0], s[1] - p[1]);
+    const d3 = cross(s[0] - r[0], s[1] - r[1], p[0] - r[0], p[1] - r[1]);
+    const d4 = cross(s[0] - r[0], s[1] - r[1], q[0] - r[0], q[1] - r[1]);
+    const e = 1e-9;
+    return ((d1 > e && d2 < -e) || (d1 < -e && d2 > e)) && ((d3 > e && d4 < -e) || (d3 < -e && d4 > e));
+  };
+
+  /* polygon offset with mitred corners: d > 0 moves every edge OUTWARD by d */
+  G.offset = function (poly, d) {
+    const n = poly.length, s = G.area(poly) > 0 ? 1 : -1, out = [];
+    for (let i = 0; i < n; i++) {
+      const p0 = poly[(i + n - 1) % n], p1 = poly[i], p2 = poly[(i + 1) % n];
+      const e1 = norm(p1[0] - p0[0], p1[1] - p0[1]), e2 = norm(p2[0] - p1[0], p2[1] - p1[1]);
+      const o1 = [e1[1] * s, -e1[0] * s], o2 = [e2[1] * s, -e2[0] * s];    /* outward normals */
+      const bx = o1[0] + o2[0], bz = o1[1] + o2[1], bl = Math.hypot(bx, bz) || 1;
+      const k = d / Math.max(0.2, (bx * o1[0] + bz * o1[1]) / bl);
+      out.push([p1[0] + bx / bl * k, p1[1] + bz / bl * k]);
+    }
+    return out;
+  };
+  function norm(x, z) { const l = Math.hypot(x, z) || 1; return [x / l, z / l]; }
+  /* is vertex i convex (interior angle < 180)? */
+  G.convexAt = function (poly, i) {
+    const n = poly.length, s = G.area(poly) > 0 ? 1 : -1, a = poly[(i + n - 1) % n], b = poly[i], c = poly[(i + 1) % n];
+    return s * cross(b[0] - a[0], b[1] - a[1], c[0] - b[0], c[1] - b[1]) > 0;
+  };
+
+  /* ---------- oriented rectangles: { x, z, ry, hw, hd } (centre, heading, half extents along local x / z) */
+  G.rect = function (x, z, ry, w, d) { return { x: x, z: z, ry: ry, hw: w / 2, hd: d / 2 }; };
+  G.axes = function (r) { const c = Math.cos(r.ry), s = Math.sin(r.ry); return [[c, -s], [s, c]]; };  /* local x, local z in world */
+  G.corners = function (r) {
+    const A = G.axes(r), out = [];
+    for (const sg of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) {
+      out.push([r.x + A[0][0] * r.hw * sg[0] + A[1][0] * r.hd * sg[1], r.z + A[0][1] * r.hw * sg[0] + A[1][1] * r.hd * sg[1]]);
+    }
+    return out;
+  };
+  G.grow = function (r, m) { return { x: r.x, z: r.z, ry: r.ry, hw: Math.max(0, r.hw + m), hd: Math.max(0, r.hd + m) }; };
+  /* a rectangle given in a piece's LOCAL frame (lx0..lx1, lz0..lz1), returned in world terms */
+  G.localRect = function (px, pz, ry, lx0, lx1, lz0, lz1) {
+    const cx = (lx0 + lx1) / 2, cz = (lz0 + lz1) / 2, c = Math.cos(ry), s = Math.sin(ry);
+    return { x: px + cx * c + cz * s, z: pz - cx * s + cz * c, ry: ry, hw: (lx1 - lx0) / 2, hd: (lz1 - lz0) / 2 };
+  };
+  G.containsPt = function (r, x, z, m) {        /* point inside the rectangle grown by m */
+    const A = G.axes(r), dx = x - r.x, dz = z - r.z;
+    return Math.abs(dx * A[0][0] + dz * A[0][1]) <= r.hw + (m || 0) && Math.abs(dx * A[1][0] + dz * A[1][1]) <= r.hd + (m || 0);
+  };
+  /* separating-axis overlap depth: > tol means the two rectangles truly overlap */
+  G.overlap = function (a, b, tol) {
+    const axes = G.axes(a).concat(G.axes(b));
+    let minPen = Infinity;
+    for (const ax of axes) {
+      const pa = proj(a, ax), pb = proj(b, ax);
+      const pen = Math.min(pa[1], pb[1]) - Math.max(pa[0], pb[0]);
+      if (pen <= (tol || 0)) return false;
+      if (pen < minPen) minPen = pen;
+    }
+    return minPen;
+  };
+  function proj(r, ax) {
+    const A = G.axes(r), c = r.x * ax[0] + r.z * ax[1];
+    const e = r.hw * Math.abs(A[0][0] * ax[0] + A[0][1] * ax[1]) + r.hd * Math.abs(A[1][0] * ax[0] + A[1][1] * ax[1]);
+    return [c - e, c + e];
+  }
+  /* a rectangle lies inside a polygon: its corners are inside (by margin m from every edge)
+     and no polygon edge crosses it (an L-shaped room's reflex corner cannot poke into it) */
+  G.rectInPoly = function (poly, r, m) {
+    const cs = G.corners(r);
+    for (const c of cs) {
+      if (!G.inside(poly, c[0], c[1])) return false;
+      if (m && G.edgeDist(poly, c[0], c[1]) < m - 1e-9) return false;
+    }
+    for (let i = 0, n = poly.length; i < n; i++) {
+      const p = poly[i], q = poly[(i + 1) % n];
+      if (G.containsPt(r, p[0], p[1], -1e-6)) return false;    /* a reflex vertex strictly inside */
+      for (let k = 0; k < 4; k++) if (G.segsCross(p, q, cs[k], cs[(k + 1) % 4])) return false;
+    }
+    return true;
+  };
+})(KratorInteriors);
+/* ---------- src/20-rooms.js ---------- */
+/* ======================== ROOM(): room registration ========================
+   kits/interiors/SPEC.md "What a building exposes":
+
+     ROOM({ building, kind, poly: [[x,z],...], y, h,
+            doors:   [{ at:[x,z], w, to: 'street' | '<room id>', swing?, hinge? }],
+            windows: [{ at:[x,z], w, sill, h? }],
+            culture, wealth, id?, seed? })
+
+   poly is the floor outline at the INNER face of the walls, either winding. A door or window
+   is snapped onto the nearest wall of the polygon; `at` may sit anywhere within 0.6 m of it.
+   Door extras this kit adds (all optional): swing 'in' (default) | 'out' | 'none' (an open
+   doorway or curtain), hinge 'left' | 'right' (seen from inside, looking out; default 'left'),
+   h (opening height, 2.1), leaf: false (another room draws this door's leaf: a shared door).
+
+   ROOM() returns the normalised room. What the placer reads from it:
+     id, building, kind, culture, wealth, y, h, seed
+     poly            as given (copied), area, centroid, bbox
+     walls[]         { i, a, b, len, t:[tx,tz] (a->b), n:[nx,nz] (INWARD unit normal), ry (a piece
+                       backed onto this wall faces the room at this heading) }
+     doors[]         { at, w, to, swing, hinge, wall, u (metres along the wall from a), n, ry }
+     windows[]       { at, w, sill, h, wall, u, n }
+   Registered rooms live in KratorInteriors.rooms / roomById; IX.normRoom() normalises without
+   registering (the placer accepts either).
+   ====================================================================== */
+(function (IX) {
+  'use strict';
+  const G = IX.geom;
+  IX.rooms = [];
+  IX.roomById = {};
+  IX.ROOM_KINDS_KNOWN = ['hall', 'bedroom', 'kitchen', 'store', 'workshop', 'shrine', 'tavern', 'library', 'school',
+    'study', 'barracks', 'court', 'yard', 'rooftop', 'antechamber'];
+
+  function snap(room, at, what) {
+    let best = null, bd = Infinity;
+    for (const W of room.walls) {
+      const d = G.segDist(at[0], at[1], W.a, W.b);
+      if (d < bd) { bd = d; best = W; }
+    }
+    if (!best || bd > 0.6) throw new Error('ROOM ' + room.id + ': ' + what + ' at [' + at + '] is ' + bd.toFixed(2) + ' m from every wall');
+    const u = Math.max(0, Math.min(best.len, (at[0] - best.a[0]) * best.t[0] + (at[1] - best.a[1]) * best.t[1]));
+    return { W: best, u: u, at: [best.a[0] + best.t[0] * u, best.a[1] + best.t[1] * u] };
+  }
+
+  IX.normRoom = function (o) {
+    if (!o || !Array.isArray(o.poly) || o.poly.length < 3) throw new Error('ROOM needs poly: [[x,z], ...] with 3+ points');
+    const poly = o.poly.map(function (p) { return [+p[0], +p[1]]; });
+    const sa = G.area(poly);
+    if (Math.abs(sa) < 0.5) throw new Error('ROOM ' + (o.id || o.building) + ': polygon area ' + sa.toFixed(2) + ' m2 is too small');
+    const sign = sa > 0 ? 1 : -1;
+    const R = {
+      id: o.id || ((o.building || 'room') + '.room.' + IX.rooms.length),
+      building: o.building || null, kind: o.kind || 'hall', culture: o.culture || null,
+      wealth: o.wealth == null ? 0.5 : Math.max(0, Math.min(1, +o.wealth)),
+      y: +(o.y || 0), h: +(o.h || 3.0),
+      poly: poly, area: Math.abs(sa), centroid: G.centroid(poly), bbox: G.bbox(poly),
+      walls: [], doors: [], windows: [], src: o
+    };
+    R.seed = o.seed != null ? (o.seed >>> 0) : IX.hash(R.id);
+    for (let i = 0; i < poly.length; i++) {
+      const a = poly[i], b = poly[(i + 1) % poly.length], dx = b[0] - a[0], dz = b[1] - a[1], len = Math.hypot(dx, dz);
+      if (len < 1e-6) continue;
+      const t = [dx / len, dz / len], n = [-t[1] * sign, t[0] * sign];
+      R.walls.push({ i: R.walls.length, a: a, b: b, len: len, t: t, n: n, ry: Math.atan2(n[0], n[1]) });
+    }
+    (o.doors || []).forEach(function (d, k) {
+      const s = snap(R, d.at, 'door ' + k);
+      R.doors.push({ i: k, at: s.at, w: +(d.w || 1.0), to: d.to || 'street', swing: d.swing || 'in', hinge: d.hinge || 'left',
+        h: +(d.h || 2.1), leaf: d.leaf !== false, wall: s.W.i, u: s.u, n: s.W.n, ry: s.W.ry });
+    });
+    (o.windows || []).forEach(function (w, k) {
+      const s = snap(R, w.at, 'window ' + k);
+      R.windows.push({ i: k, at: s.at, w: +(w.w || 0.9), sill: w.sill == null ? 0.9 : +w.sill, h: +(w.h || 1.1), wall: s.W.i, u: s.u, n: s.W.n });
+    });
+    return R;
+  };
+
+  IX.ROOM = function (o) {
+    const R = IX.normRoom(o);
+    if (IX.roomById[R.id]) throw new Error('ROOM ' + R.id + ' registered twice');
+    IX.rooms.push(R); IX.roomById[R.id] = R;
+    return R;
+  };
+  IX.clearRooms = function () { IX.rooms.length = 0; for (const k in IX.roomById) delete IX.roomById[k]; };
+})(KratorInteriors);
+/* ---------- src/30-programs.js ---------- */
+/* ======================== Room programs: what each room kind needs ========================
+   The data the placer reads. Swap or extend any table here without touching the placer.
+
+   PROGRAMS[kind] = {
+     require: [{ need, types:[...], n }]   placed FIRST, in this order (SPEC "Placement" 2).
+                                           need names the slot in reports; types are catalog
+                                           FURN types (kits/catalog krator-asset-engine.js FURN_TYPES)
+     optional:[{ types:[...], max }]       filled after, while there is room, from the room's
+                                           culture and its family only (never 'any')
+     extra:    m2 per optional piece       wealth scales it: a rich room fills more
+   }
+   A candidate for either list must pass SPEC "Placement" 1: setting in {indoor, both}, rooms
+   contains the kind, and it fits under the ceiling. Culture is tried in FALLBACK order.
+
+   ROLES says where a piece of a type goes (Yuni's LAYOUT anchors, generalised):
+     back    against a wall, preferring the wall farthest from the doors (Yuni 'back')
+     wall    against any wall, side walls and corners first (Yuni 'left' 'right' 'corner' 'run-*')
+     centre  free-standing, near the middle (Yuni 'centre'), repeated pieces on a grid ('grid')
+     seat    beside a placed table, desk or counter, facing it; else against a wall
+     ceiling hung from the ceiling;  surface  on a placed table, counter, shelf or desk top
+   A piece's anchor overrides its type: anchor 'wall' always backs onto a wall.
+   ====================================================================== */
+(function (IX) {
+  'use strict';
+  const SEATS = ['seating', 'bench', 'chair'];
+  IX.SEAT_TYPES = SEATS;
+  IX.TABLE_TYPES = ['table', 'desk', 'counter'];           /* a seat may stand in these pieces' clearance */
+  IX.SURFACE_HOSTS = ['table', 'counter', 'shelf', 'desk', 'storage'];
+  /* types that need no walk-up access (decor, light, partitions); everything else must be reachable */
+  IX.NO_ACCESS_TYPES = ['rug', 'screen', 'lamp', 'banner', 'debris', 'planter', 'monument'];
+
+  IX.PROGRAMS = {
+    hall:     { require: [{ need: 'table', types: ['table'], n: 1 }, { need: 'seats', types: SEATS, n: 2 }],
+                optional: [{ types: ['lamp', 'brazier'], max: 2 }, { types: ['storage', 'shelf', 'rack'], max: 2 }, { types: ['screen', 'statue', 'banner'], max: 1 }],
+                extra: 7 },
+    bedroom:  { require: [{ need: 'bed', types: ['bed'], n: 1 }],
+                optional: [{ types: ['storage'], max: 2 }, { types: ['lamp'], max: 1 }, { types: ['screen'], max: 1 }, { types: ['chair', 'desk'], max: 1 }],
+                extra: 5 },
+    kitchen:  { require: [{ need: 'hearth', types: ['stove'], n: 1 }, { need: 'storage', types: ['storage', 'shelf', 'vessel'], n: 1 }],
+                optional: [{ types: ['storage', 'shelf', 'rack', 'stack'], max: 2 }, { types: ['table'], max: 1 }],
+                extra: 5 },
+    tavern:   { require: [{ need: 'counter', types: ['counter'], n: 1 }, { need: 'table', types: ['table'], n: 1 }, { need: 'seats', types: SEATS, n: 2 }],
+                optional: [{ types: ['table'], max: 2 }, { types: SEATS, max: 4 }, { types: ['storage', 'stack', 'rack'], max: 1 }, { types: ['lamp', 'brazier'], max: 2 }],
+                extra: 6 },
+    workshop: { require: [{ need: 'workstation', types: ['workstation', 'loom'], n: 1 }],
+                optional: [{ types: ['workstation', 'loom'], max: 2 }, { types: ['rack', 'shelf', 'storage'], max: 2 }, { types: ['chair', 'bench'], max: 1 }],
+                extra: 8 },
+    store:    { require: [{ need: 'storage', types: ['storage', 'shelf', 'stack'], n: 2 }],
+                optional: [{ types: ['storage', 'shelf', 'stack', 'rack'], max: 3 }],
+                extra: 4 },
+    shrine:   { require: [{ need: 'altar', types: ['altar', 'shrine'], n: 1 }],
+                optional: [{ types: ['desk'], max: 1 }, { types: ['lamp', 'brazier'], max: 2 }, { types: ['statue', 'banner'], max: 1 }],
+                extra: 8 },
+    study:    { require: [{ need: 'desk', types: ['desk'], n: 1 }, { need: 'seat', types: ['chair'], n: 1 }],
+                optional: [{ types: ['shelf', 'statue', 'table'], max: 2 }, { types: ['lamp'], max: 1 }],
+                extra: 6 },
+    library:  { require: [{ need: 'shelves', types: ['shelf'], n: 2 }, { need: 'reading', types: ['table', 'desk'], n: 1 }],
+                optional: [{ types: ['shelf'], max: 3 }, { types: ['desk', 'statue', 'ladder'], max: 2 }],
+                extra: 6 },
+    school:   { require: [{ need: 'desks', types: ['desk'], n: 2 }, { need: 'board', types: ['board'], n: 1 }],
+                optional: [{ types: ['desk'], max: 4 }, { types: ['chair', 'rack'], max: 2 }],
+                extra: 4 },
+    barracks: { require: [{ need: 'beds', types: ['bed'], n: 2 }, { need: 'rack', types: ['rack', 'weapon'], n: 1 }],
+                optional: [{ types: ['bed'], max: 4 }, { types: ['storage', 'rack', 'banner'], max: 2 }],
+                extra: 4 },
+    antechamber: { require: [], optional: [{ types: ['lamp', 'bench', 'screen'], max: 3 }], extra: 6 }
+  };
+  IX.DEFAULT_PROGRAM = { require: [], optional: [{ types: ['table', 'storage', 'lamp'], max: 3 }], extra: 6 };
+
+  IX.ROLES = {
+    bed: 'back', stove: 'back', altar: 'back', shrine: 'back', counter: 'back', board: 'back',
+    storage: 'wall', shelf: 'wall', rack: 'wall', stack: 'wall', loom: 'wall', workstation: 'wall', desk: 'wall',
+    screen: 'wall', banner: 'wall', ladder: 'wall', vessel: 'wall', weapon: 'wall',
+    table: 'centre', statue: 'centre', rug: 'centre', fountain: 'centre', well: 'centre',
+    lamp: 'corner', brazier: 'corner',
+    seating: 'seat', bench: 'seat', chair: 'seat'
+  };
+
+  /* culture fallback chains: own culture first, then its family, then any culture (opts.fallback) */
+  IX.CULTURE_FAMILY = {
+    'yuni-common': ['yuni-court', 'yuni-poor', 'sahelian', 'nomad', 'order'],
+    'yuni-court': ['yuni-common', 'order', 'sahelian'],
+    'yuni-poor': ['yuni-common', 'sahelian', 'nomad'],
+    'sahelian': ['yuni-common', 'nomad', 'yuni-poor'],
+    'nomad': ['sahelian', 'yuni-common', 'yuni-poor'],
+    'order': ['yuni-court', 'yuni-common'],
+    'ancient': ['ancients-salvage'],
+    'ancients-salvage': ['ancient'],
+    'voth': ['iziz'],
+    'iziz': ['voth'],
+    'beast-rider': []
+  };
+})(KratorInteriors);
+/* ---------- src/40-grid.js ---------- */
+/* ======================== Occupancy grid and walk search ========================
+   One grid per room, at the room's floor. A cell is walkable when its centre is inside the
+   room polygon, at least `agent` metres from every wall (except in a doorway's mouth), and
+   not under a floor piece's footprint grown by `agent`. Ceiling and surface pieces do not
+   block. The placer keeps every door connected to every usable piece on this grid; a life
+   layer can take the same grid for its nav (API.md "Reading the grid").
+
+     const g = IX.makeGrid(room, { cell: 0.2, agent: 0.2 });
+     g.nx, g.nz, g.cell, g.x0, g.z0          cell (i, j) has centre (x0 + (i + .5) cell, z0 + (j + .5) cell)
+     g.k(i, j) / g.ij(k) / g.centre(k) / g.at(x, z)  index helpers (at() is -1 outside the grid)
+     g.walkable(k)                            base free and no footprint on it
+     g.stamp(rect, +1 | -1)                   block / unblock a footprint (rect: IX.geom.rect)
+     g.cellsIn(rect)                          cells whose centre lies in rect
+     g.doorCells(door)                        the walkable cells just inside a door (BFS starts)
+     g.bfs(starts) -> { dist: Int32Array (-1 = unreached), prev: Int32Array }
+     g.path(bfs, k) -> [[x, z], ...]          door -> cell k, along the BFS tree
+     g.toJSON()                               { cell, x0, z0, nx, nz, rows: ['0101..', ...] } 1 = blocked
+   ====================================================================== */
+(function (IX) {
+  'use strict';
+  const G = IX.geom;
+
+  IX.doorZone = function (room, d) {           /* the swing (or approach) a door keeps free */
+    const depth = d.swing === 'in' ? Math.max(d.w, 0.9) + 0.1 : 0.7;
+    return G.rect(d.at[0] + d.n[0] * depth / 2, d.at[1] + d.n[1] * depth / 2, d.ry, d.w + 0.2, depth);
+  };
+  IX.windowZone = function (room, w) {         /* kept clear of anything taller than the sill */
+    return G.rect(w.at[0] + w.n[0] * 0.175, w.at[1] + w.n[1] * 0.175, room.walls[w.wall].ry, w.w + 0.1, 0.35);
+  };
+
+  IX.makeGrid = function (room, opts) {
+    opts = opts || {};
+    const cell = opts.cell || 0.2, agent = opts.agent == null ? 0.2 : opts.agent;
+    const bb = room.bbox, x0 = bb[0] - cell, z0 = bb[1] - cell;
+    const nx = Math.ceil((bb[2] - bb[0]) / cell) + 2, nz = Math.ceil((bb[3] - bb[1]) / cell) + 2, N = nx * nz;
+    const base = new Uint8Array(N), occ = new Uint16Array(N);
+    const mouths = room.doors.map(function (d) {
+      return G.localRect(d.at[0], d.at[1], d.ry, -(d.w / 2 - 0.08), d.w / 2 - 0.08, -0.3, agent + cell);
+    });
+    const g = { cell: cell, agent: agent, x0: x0, z0: z0, nx: nx, nz: nz, base: base, occ: occ, room: room.id };
+    g.k = function (i, j) { return j * nx + i; };
+    g.ij = function (k) { return [k % nx, Math.floor(k / nx)]; };
+    g.centre = function (k) { return [x0 + (k % nx + 0.5) * cell, z0 + (Math.floor(k / nx) + 0.5) * cell]; };
+    g.at = function (x, z) {
+      const i = Math.floor((x - x0) / cell), j = Math.floor((z - z0) / cell);
+      return (i < 0 || j < 0 || i >= nx || j >= nz) ? -1 : j * nx + i;
+    };
+    for (let k = 0; k < N; k++) {
+      const c = g.centre(k);
+      let blocked = !G.inside(room.poly, c[0], c[1]) || G.edgeDist(room.poly, c[0], c[1]) < agent;
+      if (blocked) for (const m of mouths) if (G.containsPt(m, c[0], c[1])) { blocked = false; break; }
+      base[k] = blocked ? 1 : 0;
+    }
+    g.walkable = function (k) { return k >= 0 && base[k] === 0 && occ[k] === 0; };
+    g.cellsIn = function (r) {
+      const cs = G.corners(r), b = G.bbox(cs), out = [];
+      const i0 = Math.max(0, Math.floor((b[0] - x0) / cell)), i1 = Math.min(nx - 1, Math.floor((b[2] - x0) / cell));
+      const j0 = Math.max(0, Math.floor((b[1] - z0) / cell)), j1 = Math.min(nz - 1, Math.floor((b[3] - z0) / cell));
+      for (let j = j0; j <= j1; j++) for (let i = i0; i <= i1; i++) {
+        const k = j * nx + i, c = g.centre(k);
+        if (G.containsPt(r, c[0], c[1])) out.push(k);
+      }
+      return out;
+    };
+    g.stamp = function (r, s) { for (const k of g.cellsIn(G.grow(r, agent))) occ[k] += s; };
+    g.doorCells = function (d) {
+      const r = G.localRect(d.at[0], d.at[1], d.ry, -(d.w / 2 - 0.08), d.w / 2 - 0.08, 0, agent + 2 * cell);
+      return g.cellsIn(r).filter(g.walkable);
+    };
+    g.bfs = function (starts) {
+      const dist = new Int32Array(N).fill(-1), prev = new Int32Array(N).fill(-1), q = new Int32Array(N);
+      let h = 0, t = 0;
+      for (const s of starts) if (g.walkable(s) && dist[s] < 0) { dist[s] = 0; q[t++] = s; }
+      while (h < t) {
+        const k = q[h++], i = k % nx, j = (k - i) / nx;
+        const nb = [i > 0 ? k - 1 : -1, i < nx - 1 ? k + 1 : -1, j > 0 ? k - nx : -1, j < nz - 1 ? k + nx : -1];
+        for (const m of nb) if (m >= 0 && dist[m] < 0 && base[m] === 0 && occ[m] === 0) { dist[m] = dist[k] + 1; prev[m] = k; q[t++] = m; }
+      }
+      return { dist: dist, prev: prev };
+    };
+    g.path = function (B, k) {
+      if (k < 0 || B.dist[k] < 0) return null;
+      const out = [];
+      for (let c = k; c >= 0; c = B.prev[c]) out.push(g.centre(c));
+      return out.reverse();
+    };
+    g.toJSON = function () {
+      const rows = [];
+      for (let j = 0; j < nz; j++) { let s = ''; for (let i = 0; i < nx; i++) s += g.walkable(j * nx + i) ? '0' : '1'; rows.push(s); }
+      return { room: room.id, cell: cell, agent: agent, x0: IX.round(x0), z0: IX.round(z0), nx: nx, nz: nz, rows: rows };
+    };
+    return g;
+  };
+})(KratorInteriors);
+/* ---------- src/45-placer.js ---------- */
+/* ======================== The placer: furnishRoom() ========================
+   furnishRoom(room, catalog, opts) -> plan. Pure data; nothing is built (IX.buildRoom does that).
+
+   SPEC "Placement", in its fixed order:
+   1. FILTER  setting in {indoor, both}, rooms contains room.kind, fits under the ceiling;
+              culture tried along the chain own -> CULTURE_FAMILY -> any (opts.fallback:
+              'any' default | 'family' | 'none'); every step down the chain is reported.
+   2. REQUIRE the room kind's PROGRAMS[kind].require slots first, then its optional pieces.
+              Each piece goes where its anchor and ROLES ask: against a wall (back to the wall,
+              clear of its back clearance), free-standing, beside a table, hung, or on a top.
+   3. KEEP    no footprint in a door's swing, in a window's sill zone (if taller than the sill),
+              in another piece's clearance zone, or overlapping another footprint; every
+              clearance zone inside the room; and on the occupancy grid (40-grid.js) every door
+              reaches every other door and every usable piece's use zone.
+   4. SEED    rng = IX.rng(room.seed ^ opts.seed); room.seed defaults to a hash of the room id,
+              so a room furnishes the same on every load.
+   Ported from Yuni's furnishGroup (settlements/yuni/src/64-interiors.js): its anchors (back,
+   left/right, corner, run, centre, grid) become wall slots on ANY polygon edge and a centre
+   search, its rectangle keep-outs become oriented rectangles, and its door keep-out becomes
+   the door's swing zone plus the grid walk check.
+
+   The catalog is an ADAPTER (API.md "Writing an adapter"):
+     catalog.list()                               -> [{ key, name, culture, type, setting, rooms[], anchor, clearance{}, variants }]
+     catalog.dims(key, variant)                   -> { w, d, h }
+     catalog.anchorY(key, variant, { floorY, surfaceY, ceilingY }) -> y
+     catalog.build(placement, room)               -> host object (only IX.buildRoom calls it)
+
+   plan = { room, kind, culture, seed, placements[], grid, zones{ doors[], windows[] }, report }
+   placement = { id, key, variant, seed, x, z, ry, y, anchor, type, role, culture, need, host }
+   ====================================================================== */
+(function (IX) {
+  'use strict';
+  const G = IX.geom, R3 = IX.round;
+  const EPS = 0.005;                 /* overlap tolerance, metres */
+  const WALL_GAP = 0.03;             /* a wall piece's back stands this far off the wall */
+  const MIN_USE = 0.45;              /* a usable piece keeps at least this much free in front */
+
+  /* ---------- the piece model: one candidate = descriptor + variant + pose */
+  function clearanceZones(P, x, z, ry, forUse) {
+    const c = P.clear, hw = P.w / 2, hd = P.d / 2, out = [];
+    const f = forUse && P.usable ? Math.max(c.front || 0, MIN_USE) : (c.front || 0);
+    if (f > 0) out.push({ side: 'front', r: G.localRect(x, z, ry, -hw, hw, hd, hd + f) });
+    if (c.back > 0) out.push({ side: 'back', r: G.localRect(x, z, ry, -hw, hw, -hd - c.back, -hd) });
+    if (c.left > 0) out.push({ side: 'left', r: G.localRect(x, z, ry, -hw - c.left, -hw, -hd, hd) });
+    if (c.right > 0) out.push({ side: 'right', r: G.localRect(x, z, ry, hw, hw + c.right, -hd, hd) });
+    return out;
+  }
+  IX.clearanceZones = function (P, x, z, ry) { return clearanceZones(P, x, z, ry, true); };
+  /* where someone stands to use a piece (the grid must reach one of these cells) */
+  function useZones(Q) {
+    const hw = Q.P.w / 2, hd = Q.P.d / 2, D = 0.5;
+    if (Q.host && Q.pairedHost) {           /* a seat drawn up to a table: get in from its back or ends */
+      return [G.localRect(Q.x, Q.z, Q.ry, -hw, hw, -hd - D, -hd), G.localRect(Q.x, Q.z, Q.ry, -hw - D, -hw, -hd, hd),
+        G.localRect(Q.x, Q.z, Q.ry, hw, hw + D, -hd, hd)];
+    }
+    return Q.zones.map(function (zn) { return zn.r; });
+  }
+  IX.useZones = useZones;
+
+  function describe(catalog, d, v, room) {
+    const dm = catalog.dims(d.key, v);
+    const type = d.type || 'other';
+    return { key: d.key, desc: d, variant: v, w: dm.w, d: dm.d, h: dm.h, type: type, anchor: d.anchor || 'floor',
+      culture: d.culture, clear: d.clearance || {},
+      usable: IX.NO_ACCESS_TYPES.indexOf(type) < 0 && (d.anchor || 'floor') !== 'ceiling' && d.anchor !== 'surface' };
+  }
+
+  /* Greedy placement can box itself in (a bar's clearance eats the depth a table needed). When a
+     required piece finds no fit, furnish again from scratch with that requirement moved first;
+     up to three orders, keep the first with nothing missing (else the one missing least). */
+  IX.furnishRoom = function (roomIn, catalog, opts) {
+    opts = opts || {};
+    const room = roomIn.walls ? roomIn : (IX.roomById[roomIn.id] || IX.normRoom(roomIn));
+    let order = ((IX.PROGRAMS[room.kind] || IX.DEFAULT_PROGRAM).require).slice(), best = null;
+    for (let pass = 0; pass < 3; pass++) {
+      const plan = furnishOnce(room, catalog, opts, order);
+      const nofit = plan.report.missing.filter(function (m) { return m.reason === 'no-fit'; });
+      plan.report.passes = pass + 1;
+      if (!best || nofit.length < best.nofit) best = { plan: plan, nofit: nofit.length };
+      if (!nofit.length) break;
+      const need = nofit[0].need;
+      order = order.filter(function (r) { return r.need === need; }).concat(order.filter(function (r) { return r.need !== need; }));
+    }
+    return best.plan;
+  };
+
+  function furnishOnce(room, catalog, opts, reqs) {
+    const seed = ((room.seed ^ (opts.seed || 0)) >>> 0);
+    const rng = IX.rng(seed);
+    const fallback = opts.fallback || 'any';
+    const grid = IX.makeGrid(room, { cell: opts.cell, agent: opts.agent });
+    const doorZones = room.doors.map(function (d) { return IX.doorZone(room, d); });
+    const winZones = room.windows.map(function (w) { return { sill: w.sill, r: IX.windowZone(room, w) }; });
+    const placed = [];
+    const report = { culture: room.culture, own: 0, thin: false, fallbacks: [], missing: [], required: [], optional: 0, tries: 0 };
+    const prog = IX.PROGRAMS[room.kind] || IX.DEFAULT_PROGRAM;
+    const doorStarts = room.doors.map(function (d) { return grid.doorCells(d); });
+    if (!room.doors.length) report.noDoors = true;
+    doorStarts.forEach(function (s, i) { if (!s.length) report.missing.push({ need: 'door ' + i, reason: 'door has no walkable cell inside it' }); });
+
+    /* ---- 1. FILTER */
+    const all = catalog.list();
+    const base = all.filter(function (d) {
+      return (d.setting === 'indoor' || d.setting === 'both') && (d.rooms || []).indexOf(room.kind) >= 0;
+    });
+    const chain = [room.culture].concat(IX.CULTURE_FAMILY[room.culture] || []);
+    report.own = base.filter(function (d) { return d.culture === room.culture; }).length;
+    report.thin = report.own < 3;
+    report.candidates = base.length;
+    function levels(scope) {
+      const L = chain.map(function (c) { return { culture: c, list: base.filter(function (d) { return d.culture === c; }) }; });
+      if (scope === 'none') return L.slice(0, 1);
+      if (scope === 'family') return L;
+      L.push({ culture: '*', list: base.filter(function (d) { return chain.indexOf(d.culture) < 0; }) });
+      return L;
+    }
+    function pickVariant(d) {
+      const n = d.variants || 1;
+      if (n === 1) return 0;
+      let v = Math.floor(room.wealth * n + (rng() - 0.5) * 0.8);
+      return Math.max(0, Math.min(n - 1, v));
+    }
+
+    /* ---- 3. KEEP: the geometric test, then the walk test */
+    function layerOf(P) { return P.anchor === 'ceiling' ? 'ceiling' : P.anchor === 'surface' ? 'surface' : 'floor'; }
+    function exempt(P, Q, pairedHost) {      /* a seat and the table it is drawn up to ignore each other's clearance */
+      return pairedHost && pairedHost === Q;
+    }
+    function geomOK(P, x, z, ry, hostQ, pairedHost) {
+      const fp = G.rect(x, z, ry, P.w, P.d), layer = layerOf(P);
+      if (layer === 'surface') {
+        if (!hostQ) return null;
+        const top = G.grow(hostQ.fp, -0.03);
+        for (const c of G.corners(fp)) if (!G.containsPt(top, c[0], c[1])) return null;
+        for (const Q of placed) if (Q.layer === 'surface' && Q.host === hostQ.id && G.overlap(fp, Q.fp, EPS)) return null;
+        if (hostQ.top + P.h > room.y + room.h - 0.02) return null;
+        return { fp: fp, zones: [] };
+      }
+      if (!G.rectInPoly(room.poly, fp, 0.02)) return null;
+      if (P.h > room.h - 0.02) return null;
+      if (layer === 'ceiling') {
+        for (const Q of placed) {
+          if (Q.layer === 'ceiling' && G.overlap(fp, Q.fp, EPS)) return null;
+          if (Q.layer === 'floor' && Q.P.h > room.h - P.h - 0.05 && G.overlap(fp, Q.fp, EPS)) return null;
+        }
+        return { fp: fp, zones: [] };
+      }
+      for (const dz of doorZones) if (G.overlap(fp, dz, EPS)) return null;
+      for (const wz of winZones) if (P.h > wz.sill - 0.02 && G.overlap(fp, wz.r, EPS)) return null;
+      const zones = clearanceZones(P, x, z, ry, true);
+      for (const zn of zones) if (!G.rectInPoly(room.poly, zn.r, 0)) return null;
+      for (const Q of placed) {
+        if (Q.layer === 'ceiling') { if (P.h > room.h - Q.P.h - 0.05 && G.overlap(fp, Q.fp, EPS)) return null; continue; }
+        if (Q.layer !== 'floor') continue;
+        if (G.overlap(fp, Q.fp, EPS)) return null;
+        if (exempt(P, Q, pairedHost)) continue;
+        for (const zn of Q.zones) if (G.overlap(fp, zn.r, EPS)) return null;
+        for (const zn of zones) if (G.overlap(zn.r, Q.fp, EPS)) return null;
+      }
+      return { fp: fp, zones: zones };
+    }
+    function reachAll(extra) {
+      if (!room.doors.length) return true;
+      const B = grid.bfs(doorStarts[0]);
+      for (let i = 1; i < doorStarts.length; i++) if (!doorStarts[i].some(function (k) { return B.dist[k] >= 0; })) return false;
+      const list = placed.concat(extra ? [extra] : []);
+      for (const Q of list) {
+        if (Q.layer !== 'floor' || !Q.P.usable) continue;
+        let ok = false;
+        for (const zr of useZones(Q)) { for (const k of grid.cellsIn(zr)) if (B.dist[k] >= 0) { ok = true; break; } if (ok) break; }
+        if (!ok) return false;
+      }
+      return true;
+    }
+    function tryPose(P, x, z, ry, extra) {
+      report.tries++;
+      x = R3(x); z = R3(z); ry = R3(normAng(ry), 4);
+      const hostQ = extra && extra.host || null, paired = extra && extra.paired ? hostQ : null;
+      const g = geomOK(P, x, z, ry, hostQ, paired);
+      if (!g) return null;
+      const Q = { id: room.id + '.f' + placed.length, P: P, x: x, z: z, ry: ry, fp: g.fp, zones: g.zones, layer: layerOf(P),
+        host: hostQ ? hostQ.id : null, pairedHost: !!paired, role: extra && extra.role };
+      if (Q.layer === 'floor') {
+        grid.stamp(Q.fp, +1);
+        if (!reachAll(Q)) { grid.stamp(Q.fp, -1); return null; }
+      }
+      Q.top = (Q.layer === 'surface' ? hostQ.top : room.y) + P.h;
+      placed.push(Q);
+      return Q;
+    }
+    function normAng(a) { const T = Math.PI * 2; a = a % T; if (a > Math.PI) a -= T; if (a <= -Math.PI) a += T; return a; }
+
+    /* ---- slot generators (Yuni's anchors on arbitrary polygons) */
+    function minDoorDist(x, z) {
+      let m = 1e9;
+      for (const d of room.doors) m = Math.min(m, Math.hypot(x - d.at[0], z - d.at[1]));
+      return room.doors.length ? m : 5;
+    }
+    function wallSlots(P, role) {
+      const back = (P.clear.back || 0) + WALL_GAP, out = [];
+      for (const W of room.walls) {
+        const lo = P.w / 2 + 0.03, hi = W.len - P.w / 2 - 0.03;
+        if (hi < lo) continue;
+        const us = [];
+        for (const f of [0.5, 0.3, 0.7, 0.15, 0.85, 0, 1]) us.push(lo + (hi - lo) * f);
+        for (let u = lo; u <= hi + 1e-6; u += 0.25) us.push(u);
+        for (const u of us) {
+          const off = back + P.d / 2;
+          const x = W.a[0] + W.t[0] * u + W.n[0] * off, z = W.a[1] + W.t[1] * u + W.n[1] * off;
+          const endness = Math.min(u - lo, hi - u);
+          let s;
+          if (role === 'back') s = minDoorDist(x, z) * 1.2 - Math.abs(u - W.len / 2) * 0.6;
+          else if (role === 'corner') s = -endness * 2 + minDoorDist(x, z) * 0.4;
+          else s = minDoorDist(x, z) * 0.5 - endness * 0.4;
+          out.push({ x: x, z: z, ry: W.ry, s: s + rng() * 0.6 });
+        }
+      }
+      return out.sort(function (a, b) { return b.s - a.s; });
+    }
+    let mainRy = 0;
+    (function () { let L = -1; for (const W of room.walls) if (W.len > L + 1e-6) { L = W.len; mainRy = W.ry; } })();
+    function centreSlots(P, role) {
+      const out = [], bb = room.bbox, c = room.centroid, step = 0.3;
+      const target = role === 'corner' ? null : c, minEdge = Math.min(P.w, P.d) / 2;
+      for (let x = bb[0] + 0.15; x < bb[2]; x += step) for (let z = bb[1] + 0.15; z < bb[3]; z += step) {
+        if (!G.inside(room.poly, x, z) || G.edgeDist(room.poly, x, z) < minEdge) continue;
+        let s;
+        if (target) s = -Math.hypot(x - target[0], z - target[1]);
+        else {                             /* Yuni's 'corner': as near a room corner as it fits, away from the doors */
+          let dc = 1e9;
+          for (const v of room.poly) dc = Math.min(dc, Math.hypot(x - v[0], z - v[1]));
+          s = -dc * 2 + minDoorDist(x, z) * 0.3;
+        }
+        s += rng() * 0.25;
+        out.push({ x: x, z: z, ry: mainRy, s: s + 0.05 });
+        out.push({ x: x, z: z, ry: mainRy + Math.PI / 2, s: s });
+      }
+      out.sort(function (a, b) { return b.s - a.s; });
+      return out.slice(0, 400);
+    }
+    function seatSlots(P) {
+      const out = [];
+      for (const H of placed) {
+        if (H.layer !== 'floor' || ['table', 'desk'].indexOf(H.P.type) < 0) continue;
+        const hw = H.P.w / 2, hd = H.P.d / 2, gap = 0.06;
+        const sides = [
+          { lx: 0, lz: hd + gap + P.d / 2, rot: Math.PI, span: hw },      /* in front of the table, facing it */
+          { lx: 0, lz: -hd - gap - P.d / 2, rot: 0, span: hw },           /* behind it */
+          { lx: hw + gap + P.d / 2, lz: 0, rot: -Math.PI / 2, span: hd },  /* its right (+x) end */
+          { lx: -hw - gap - P.d / 2, lz: 0, rot: Math.PI / 2, span: hd }   /* its left (-x) end */
+        ];
+        for (const S of sides) {
+          if (S.span * 2 < P.w * 0.7) continue;
+          const offs = [0];
+          if (S.span - P.w / 2 > 0.2) offs.push(S.span - P.w / 2, -(S.span - P.w / 2));
+          for (const o of offs) {
+            const lx = S.lx + (S.lz !== 0 ? o : 0), lz = S.lz + (S.lx !== 0 ? o : 0);
+            const c = Math.cos(H.ry), s = Math.sin(H.ry);
+            out.push({ x: H.x + lx * c + lz * s, z: H.z - lx * s + lz * c, ry: H.ry + S.rot, host: H, paired: true,
+              s: (S.lz !== 0 ? 1 : 0.5) - Math.abs(o) * 0.2 + rng() * 0.5 });
+          }
+        }
+      }
+      return out.sort(function (a, b) { return b.s - a.s; });
+    }
+    function surfaceSlots(P) {
+      const out = [];
+      for (const H of placed) {
+        if (H.layer !== 'floor' || IX.SURFACE_HOSTS.indexOf(H.P.type) < 0) continue;
+        for (const o of [0, -0.3, 0.3]) {
+          const c = Math.cos(H.ry), s = Math.sin(H.ry), lx = o * H.P.w;
+          out.push({ x: H.x + lx * c, z: H.z - lx * s, ry: H.ry, host: H, s: rng() });
+        }
+      }
+      return out.sort(function (a, b) { return b.s - a.s; });
+    }
+    function roleOf(P) {
+      if (P.anchor === 'ceiling') return 'ceiling';
+      if (P.anchor === 'surface') return 'surface';
+      const r = IX.ROLES[P.type] || 'centre';
+      if (P.anchor === 'wall') return r === 'back' ? 'back' : 'wall';
+      return r;
+    }
+    function place(P) {
+      const role = roleOf(P);
+      const order = {
+        back: ['back', 'wall'], wall: ['wall', 'centre'], corner: ['corner', 'centre'], centre: ['centre', 'wall'],
+        seat: ['seat', 'wall', 'centre'], ceiling: ['ceiling'], surface: ['surface']
+      }[role];
+      for (const r of order) {
+        if (P.anchor === 'wall' && (r === 'centre' || r === 'seat')) continue;
+        let slots;
+        if (r === 'back' || r === 'wall') slots = wallSlots(P, r);
+        else if (r === 'corner') slots = P.anchor === 'wall' ? wallSlots(P, 'corner') : centreSlots(P, 'corner');
+        else if (r === 'seat') slots = seatSlots(P);
+        else if (r === 'surface') slots = surfaceSlots(P);
+        else slots = centreSlots(P, r);
+        for (const S of slots) {
+          const Q = tryPose(P, S.x, S.z, S.ry, { host: S.host, paired: S.paired, role: r });
+          if (Q) return Q;
+        }
+      }
+      return null;
+    }
+
+    /* ---- 2. REQUIRE, then optional */
+    const used = {};
+    function offRole(d) { return d.anchor === 'wall' && (IX.ROLES[d.type] || 'centre') === 'centre' ? 1 : 0; }
+    function attempt(list, need, preferKey) {
+      const order = rng.shuffle(list.slice());
+      if (preferKey) order.sort(function (a, b) { return (b.key === preferKey) - (a.key === preferKey); });
+      else order.sort(function (a, b) { return (used[a.key] || 0) - (used[b.key] || 0); });   /* variety first */
+      /* a type that stands free (a table) prefers pieces that can: a wall-anchored console comes last */
+      order.sort(function (a, b) { return offRole(a) - offRole(b); });
+      for (const d of order) {
+        /* the wealth-picked variant first, then the others, smallest footprint first */
+        const v0 = pickVariant(d), vs = [v0];
+        const others = [];
+        for (let v = 0; v < (d.variants || 1); v++) if (v !== v0) others.push(v);
+        others.sort(function (a, b) { const A = catalog.dims(d.key, a), B = catalog.dims(d.key, b); return A.w * A.d - B.w * B.d || a - b; });
+        for (const v of vs.concat(others)) {
+          const Q = place(describe(catalog, d, v, room));
+          if (Q) { Q.need = need; used[d.key] = (used[d.key] || 0) + 1; return Q; }
+        }
+      }
+      return null;
+    }
+    for (const rq of reqs) {
+      const L = levels(fallback).map(function (lv) {
+        return { culture: lv.culture, list: lv.list.filter(function (d) { return rq.types.indexOf(d.type) >= 0; }) };
+      }).filter(function (lv) { return lv.list.length; });
+      const rec = { need: rq.need, types: rq.types, n: rq.n || 1, placed: 0 };
+      report.required.push(rec);
+      if (!L.length) { report.missing.push({ need: rq.need, types: rq.types, reason: 'none-in-catalog', scope: fallback }); continue; }
+      let lastKey = null;
+      for (let i = 0; i < rec.n; i++) {
+        let Q = null;
+        for (const lv of L) {
+          Q = attempt(lv.list, rq.need, lastKey);
+          if (Q) {
+            if (lv.culture !== room.culture) report.fallbacks.push({ need: rq.need, wanted: room.culture, used: Q.P.culture, key: Q.P.key });
+            break;
+          }
+        }
+        if (!Q) { report.missing.push({ need: rq.need, types: rq.types, reason: 'no-fit', index: i }); break; }
+        lastKey = Q.P.key; rec.placed++;
+      }
+    }
+    if (opts.optional !== false) {
+      const budget = Math.max(0, Math.floor(room.area / prog.extra * (0.5 + room.wealth)));
+      const own = levels('family');
+      const counts = prog.optional.map(function () { return 0; });
+      const dead = prog.optional.map(function () { return false; });
+      let added = 0, guard = 0;
+      while (added < budget && guard++ < 60) {
+        let any = false;
+        for (let gi = 0; gi < prog.optional.length && added < budget; gi++) {
+          const O = prog.optional[gi];
+          if (dead[gi] || counts[gi] >= O.max) continue;
+          any = true;
+          let Q = null;
+          for (const lv of own) {
+            const list = lv.list.filter(function (d) { return O.types.indexOf(d.type) >= 0; });
+            if (list.length && (Q = attempt(list, null))) break;
+          }
+          if (Q) { counts[gi]++; added++; } else dead[gi] = true;
+        }
+        if (!any) break;
+      }
+      report.optional = added;
+    }
+
+    /* ---- the plan, as data */
+    const placements = placed.map(function (Q, i) {
+      const P = Q.P;
+      const hostQ = Q.host ? placed.filter(function (H) { return H.id === Q.host; })[0] : null;
+      const y = catalog.anchorY(P.key, P.variant, { floorY: room.y, surfaceY: hostQ ? hostQ.top : null, ceilingY: room.y + room.h });
+      return { id: Q.id, key: P.key, variant: P.variant, seed: 1 + ((seed + i * 7919) % 99991), x: Q.x, z: Q.z, ry: Q.ry, y: R3(y),
+        anchor: P.anchor, type: P.type, role: Q.role, culture: P.culture, need: Q.need || null, host: Q.host,
+        w: R3(P.w), d: R3(P.d), h: R3(P.h), clearance: P.clear };
+    });
+    report.placed = placements.length;
+    const B = room.doors.length ? grid.bfs(doorStarts[0]) : null;
+    return { room: room.id, kind: room.kind, culture: room.culture, seed: seed, placements: placements, grid: grid, reach: B,
+      opts: { seed: opts.seed || 0, fallback: fallback, cell: grid.cell, agent: grid.agent, optional: opts.optional !== false },
+      zones: { doors: doorZones, windows: winZones.map(function (w) { return w.r; }) }, report: report, _placed: placed };
+  }
+})(KratorInteriors);
+/* ---------- src/48-audit.js ---------- */
+/* ======================== Plan audit (declared geometry) ========================
+   IX.audit(room, plan, catalog?, opts?) re-checks a plan from its DATA alone, the way a game
+   import would see it: footprints are the declared w x d at (x, z, ry). verify.py runs it on
+   every demo room and adds the measured-geometry checks the page can make (75-audit.js).
+
+     inside       every floor/ceiling footprint inside the room polygon
+     height       y >= floor and y + h <= ceiling
+     overlap      no two footprints on one layer overlap (a surface piece sits on its host)
+     door         no floor footprint in a door's swing zone
+     clearance    no footprint in another piece's DECLARED clearance zone (a seat and the table
+                  it is drawn up to excepted: that zone is what the seat is for)
+     reach        a fresh grid (all floor footprints stamped) connects every door to every other
+                  door and to a use zone of every usable piece
+     required     every PROGRAMS[kind].require slot is filled, or reported 'none-in-catalog'
+     determinism  (with catalog) furnishing again gives byte-identical placements
+   Returns { room, pieces, fails: [{ check, msg }], ok }.
+   ====================================================================== */
+(function (IX) {
+  'use strict';
+  const G = IX.geom, EPS = 0.005;
+  function asQ(p, byId) {
+    const usable = IX.NO_ACCESS_TYPES.indexOf(p.type) < 0 && p.anchor !== 'ceiling' && p.anchor !== 'surface';
+    const P = { w: p.w, d: p.d, h: p.h, type: p.type, usable: usable, clear: p.clearance || {} };
+    const host = p.host ? byId[p.host] : null;
+    const Q = { p: p, P: P, x: p.x, z: p.z, ry: p.ry, fp: G.rect(p.x, p.z, p.ry, p.w, p.d), host: p.host,
+      pairedHost: !!(host && IX.SEAT_TYPES.indexOf(p.type) >= 0 && IX.TABLE_TYPES.indexOf(host.type) >= 0),
+      layer: p.anchor === 'ceiling' ? 'ceiling' : p.anchor === 'surface' ? 'surface' : 'floor' };
+    Q.zones = IX.clearanceZones(P, p.x, p.z, p.ry);
+    const c = P.clear, hw = p.w / 2, hd = p.d / 2, L = G.localRect;
+    Q.declared = [];
+    if (c.front > 0) Q.declared.push(L(p.x, p.z, p.ry, -hw, hw, hd, hd + c.front));
+    if (c.back > 0) Q.declared.push(L(p.x, p.z, p.ry, -hw, hw, -hd - c.back, -hd));
+    if (c.left > 0) Q.declared.push(L(p.x, p.z, p.ry, -hw - c.left, -hw, -hd, hd));
+    if (c.right > 0) Q.declared.push(L(p.x, p.z, p.ry, hw, hw + c.right, -hd, hd));
+    return Q;
+  }
+
+  IX.audit = function (roomIn, plan, catalog, opts) {
+    opts = opts || {};
+    const room = roomIn.walls ? roomIn : IX.normRoom(roomIn);
+    const fails = [];
+    function fail(check, msg) { fails.push({ check: check, msg: room.id + ': ' + msg }); }
+    const byId = {};
+    plan.placements.forEach(function (p) { byId[p.id] = p; });
+    const Qs = plan.placements.map(function (p) { return asQ(p, byId); });
+    const doorZones = room.doors.map(function (d) { return IX.doorZone(room, d); });
+
+    for (const Q of Qs) {
+      const p = Q.p;
+      if (Q.layer !== 'surface' && !G.rectInPoly(room.poly, Q.fp, 0)) fail('inside', p.id + ' ' + p.key + ' footprint leaves the room');
+      if (p.y < room.y - 1e-6 || p.y + p.h > room.y + room.h + 1e-6)
+        fail('height', p.id + ' ' + p.key + ' spans y ' + p.y + '..' + (p.y + p.h).toFixed(3) + ', room ' + room.y + '..' + (room.y + room.h));
+      if (Q.layer === 'floor') for (let i = 0; i < doorZones.length; i++)
+        if (G.overlap(Q.fp, doorZones[i], EPS)) fail('door', p.id + ' ' + p.key + ' stands in door ' + i + "'s swing");
+    }
+    for (let i = 0; i < Qs.length; i++) for (let j = i + 1; j < Qs.length; j++) {
+      const A = Qs[i], B = Qs[j];
+      if (A.layer === B.layer && A.layer !== 'surface' && G.overlap(A.fp, B.fp, EPS))
+        fail('overlap', A.p.id + ' ' + A.p.key + ' overlaps ' + B.p.id + ' ' + B.p.key);
+      if (A.layer === 'surface' && B.layer === 'surface' && A.host === B.host && G.overlap(A.fp, B.fp, EPS))
+        fail('overlap', A.p.id + ' overlaps ' + B.p.id + ' on one top');
+      if (A.layer !== 'floor' || B.layer !== 'floor') continue;
+      const pair = (A.pairedHost && A.host === B.p.id) || (B.pairedHost && B.host === A.p.id);
+      if (pair) continue;
+      for (const z of B.declared) if (G.overlap(A.fp, z, EPS)) fail('clearance', A.p.id + ' ' + A.p.key + " is in the clearance of " + B.p.id + ' ' + B.p.key);
+      for (const z of A.declared) if (G.overlap(B.fp, z, EPS)) fail('clearance', B.p.id + ' ' + B.p.key + " is in the clearance of " + A.p.id + ' ' + A.p.key);
+    }
+    for (const Q of Qs) if (Q.layer === 'surface') {
+      const H = Q.host && Qs.filter(function (o) { return o.p.id === Q.host; })[0];
+      if (!H) fail('overlap', Q.p.id + ' surface piece has no host');
+    }
+    /* reach, on a grid built from the plan alone */
+    const grid = IX.makeGrid(room, { cell: plan.grid ? plan.grid.cell : 0.2, agent: plan.grid ? plan.grid.agent : 0.2 });
+    for (const Q of Qs) if (Q.layer === 'floor') grid.stamp(Q.fp, +1);
+    const starts = room.doors.map(function (d) { return grid.doorCells(d); });
+    let reached = 0, usable = 0;
+    if (starts.length) {
+      const B = grid.bfs(starts[0]);
+      for (let i = 0; i < starts.length; i++) if (!starts[i].some(function (k) { return B.dist[k] >= 0; })) fail('reach', 'door ' + i + ' is cut off from door 0');
+      for (const Q of Qs) {
+        if (Q.layer !== 'floor' || !Q.P.usable) continue;
+        usable++;
+        const ok = IX.useZones(Q).some(function (r) { return grid.cellsIn(r).some(function (k) { return B.dist[k] >= 0; }); });
+        if (ok) reached++; else fail('reach', Q.p.id + ' ' + Q.p.key + ' cannot be reached from the doors');
+      }
+    }
+    /* required pieces */
+    const rep = plan.report;
+    for (const r of rep.required) {
+      if (r.placed >= r.n) continue;
+      const why = rep.missing.filter(function (m) { return m.need === r.need; })[0];
+      if (!why || why.reason !== 'none-in-catalog') fail('required', 'needs ' + r.n + ' x ' + r.need + ', placed ' + r.placed + (why ? ' (' + why.reason + ')' : ''));
+    }
+    /* determinism */
+    if (catalog) {
+      const again = IX.furnishRoom(room, catalog, opts.furnishOpts || plan.opts || {});
+      if (JSON.stringify(again.placements) !== JSON.stringify(plan.placements)) fail('determinism', 'furnishing twice gave different placements');
+    }
+    return { room: room.id, kind: room.kind, culture: room.culture, pieces: Qs.length, usable: usable, reached: usable ? reached : 0,
+      fails: fails, ok: !fails.length };
+  };
+})(KratorInteriors);
+/* ---------- src/49-exports.js ---------- */
+/* ======================== Build, export and the global names ========================
+   IX.buildRoom(plan, catalog, room?) builds every placement through catalog.build() and
+   returns the host objects in placement order (plan.objects keeps them too).
+   IX.exportPlan(plan) is the plan as plain JSON for a game export: placements, the grid as
+   rows of 0/1, the door swing zones as rectangles, and the report.
+   Globals: ROOM() and furnishRoom() (SPEC), and KratorInteriors.
+   ====================================================================== */
+(function (IX) {
+  'use strict';
+  IX.buildRoom = function (plan, catalog, room) {
+    room = room || IX.roomById[plan.room];
+    plan.objects = plan.placements.map(function (p) { return catalog.build(p, room); });
+    return plan.objects;
+  };
+  function rectJSON(r) { return { x: IX.round(r.x), z: IX.round(r.z), ry: IX.round(r.ry, 4), w: IX.round(r.hw * 2), d: IX.round(r.hd * 2) }; }
+  IX.exportPlan = function (plan) {
+    return {
+      room: plan.room, kind: plan.kind, culture: plan.culture, seed: plan.seed, opts: plan.opts,
+      placements: plan.placements.map(function (p) {
+        return { id: p.id, key: p.key, variant: p.variant, seed: p.seed, x: p.x, z: p.z, ry: p.ry, y: p.y, anchor: p.anchor,
+          type: p.type, culture: p.culture, need: p.need, host: p.host };
+      }),
+      doorZones: plan.zones.doors.map(rectJSON),
+      grid: plan.grid.toJSON(),
+      report: plan.report
+    };
+  };
+})(KratorInteriors);
+var ROOM = KratorInteriors.ROOM;
+var furnishRoom = KratorInteriors.furnishRoom;
+if (typeof module !== 'undefined' && module.exports) module.exports = KratorInteriors;
+/* ---------- adapters/catalog-adapter.js ---------- */
+/* ======================== Adapter: kits/catalog ========================
+   The ONLY file in kits/interiors that knows the master catalog. It maps the catalog's
+   registry and engine (kits/catalog/krator-asset-engine.js + krator-master-furniture.js,
+   loaded first) onto the four calls the placer needs (45-placer.js header):
+
+     list()                    FURNS -> descriptors { key, name, culture, type, setting, rooms, anchor, clearance, variants }
+     dims(key, v)              entryDims(A, v)
+     anchorY(key, v, at)       furnAnchorY(A, v, at)
+     build(placement, room)    buildFurn(key, x, z, ry, { variant, seed, y, wealth }) -> THREE.Group in the engine's scene
+
+   A Yuni-lineage build writes the same four over its own FURN_BY_KEY / buildFurn (its pieces
+   are in the same frame); an Ancients-lineage build over its kit's furniture registry. See
+   API.md "Writing an adapter".
+
+   Catalog quirks handled here rather than in the catalog (kits/catalog/KNOWN_ISSUES.md):
+     voth_lantern_fixture   variant 1 is a wall bracket under a floor anchor: offered as 1 variant
+   ====================================================================== */
+(function (IX) {
+  'use strict';
+  const VARIANT_LIMIT = { voth_lantern_fixture: 1 };
+  IX.catalogAdapter = function (opt) {
+    opt = opt || {};
+    let cache = null;
+    return {
+      name: 'kits/catalog',
+      list: function () {
+        if (cache) return cache;
+        cache = FURNS.map(function (A) {
+          return { key: A.key, name: A.name, culture: A.culture, type: A.type, setting: A.setting, rooms: A.rooms.slice(),
+            anchor: A.anchor || 'floor', clearance: A.clearance || {},
+            variants: Math.min(A.variants || 1, VARIANT_LIMIT[A.key] || 99) };
+        });
+        return cache;
+      },
+      dims: function (key, v) { return entryDims(FURN_BY_KEY[key], v); },
+      anchorY: function (key, v, at) { return furnAnchorY(FURN_BY_KEY[key], v, at); },
+      build: function (p, room) {
+        const g = buildFurn(p.key, p.x, p.z, p.ry, { variant: p.variant, seed: p.seed, y: p.y, wealth: room ? room.wealth : 0.5 });
+        if (g) g.userData.interior = { room: room ? room.id : null, placement: p.id, need: p.need, role: p.role };
+        return g;
+      },
+      measure: function (g) { return measureInstance(g); }
+    };
+  };
+})(KratorInteriors);
+/* ---------- src/50-shell.js ---------- */
+/* ======================== View: procedural room shells (THREE) ========================
+   THREE.js from here on (fragments 50-59); still no catalog. A build with real buildings
+   does not need this: it is the demo's stand-in for a building around a ROOM().
+
+   IX.view.shell(room, { thick, palette }) -> THREE.Group, userData.shell = {
+     floor, roof, walls: [{ wall, out:[x,z], mid:[x,z], full: Group, stub: Group }] }
+   Walls stand OUTSIDE the polygon (the polygon is the inner face), with openings for every
+   door (to its h) and window (sill .. sill + h). A wall is drawn twice: `full`, and `stub`,
+   a knee-high cut of it the cut-away shows instead of a wall that faces the camera.
+   Door leaves hang from their hinge, opened 75 degrees the way they swing.
+   ====================================================================== */
+(function (IX) {
+  'use strict';
+  const G = IX.geom;
+  const V = IX.view = IX.view || {};
+  V.PALETTES = {
+    'ancient':          { wall: 0x9aa3a8, floor: 0x6f7880, roof: 0x5d656b, trim: 0x46525c },
+    'ancients-salvage': { wall: 0x8f8573, floor: 0x5f5a50, roof: 0x6e5a48, trim: 0x7a4a30 },
+    'yuni-common':      { wall: 0xe8dfcc, floor: 0xb06d47, roof: 0xc9b89a, trim: 0x8a6a48 },
+    'yuni-court':       { wall: 0xf1ece0, floor: 0x3f6f8f, roof: 0xd8cdb5, trim: 0x2f5f7f },
+    'yuni-poor':        { wall: 0xc9a77f, floor: 0x9a7a58, roof: 0xb79a6a, trim: 0x6a5038 },
+    'order':            { wall: 0xece6d8, floor: 0x8c8478, roof: 0xbdb3a2, trim: 0x5c5448 },
+    'sahelian':         { wall: 0xc08a5c, floor: 0x9a6f4a, roof: 0xa98058, trim: 0x6a4a30 },
+    'nomad':            { wall: 0xc9b48a, floor: 0x8a6f4f, roof: 0xb09a72, trim: 0x6a5a40 },
+    'voth':             { wall: 0x6e6658, floor: 0x4e4a42, roof: 0x3f3a33, trim: 0x8a7350 },
+    'iziz':             { wall: 0xd8d0c0, floor: 0x7a7468, roof: 0xa49a88, trim: 0x5a5448 },
+    'beast-rider':      { wall: 0x8a6a4a, floor: 0x6a5238, roof: 0x5a7a3a, trim: 0x4a3626 }
+  };
+  const DEFAULT_PAL = { wall: 0xd8d0c0, floor: 0x8a8070, roof: 0x9a9080, trim: 0x5a5040 };
+  V.lambert = function (c, extra) { return new THREE.MeshLambertMaterial(Object.assign({ color: c }, extra || {})); };
+
+  function slab(poly, y0, y1, mat) {           /* a prism over a polygon, from y0 to y1 */
+    const sh = new THREE.Shape(poly.map(function (p) { return new THREE.Vector2(p[0], -p[1]); }));
+    const geo = new THREE.ExtrudeGeometry(sh, { depth: y1 - y0, bevelEnabled: false });
+    const m = new THREE.Mesh(geo, mat);
+    m.rotation.x = -Math.PI / 2; m.position.y = y0;
+    return m;
+  }
+  /* a box from u0..u1 along a wall, y0..y1, standing outside it (thick) */
+  function wallBox(W, u0, u1, y0, y1, thick, mat) {
+    const len = u1 - u0, h = y1 - y0;
+    if (len < 0.01 || h < 0.01) return null;
+    const m = new THREE.Mesh(new THREE.BoxGeometry(len, h, thick), mat);
+    const uc = (u0 + u1) / 2;
+    m.position.set(W.a[0] + W.t[0] * uc - W.n[0] * thick / 2, y0 + h / 2, W.a[1] + W.t[1] * uc - W.n[1] * thick / 2);
+    m.rotation.y = Math.atan2(-W.t[1], W.t[0]);
+    return m;
+  }
+
+  V.shell = function (room, opt) {
+    opt = opt || {};
+    const thick = opt.thick || 0.22, pal = Object.assign({}, DEFAULT_PAL, V.PALETTES[room.culture] || {}, opt.palette || {});
+    const y0 = room.y, H = room.h, top = y0 + H;
+    const grp = new THREE.Group();
+    grp.name = 'shell:' + room.id;
+    const mats = { wall: V.lambert(pal.wall), floor: V.lambert(pal.floor), roof: V.lambert(pal.roof), trim: V.lambert(pal.trim),
+      glass: V.lambert(0x9fc4d8, { transparent: true, opacity: 0.35, depthWrite: false }),
+      fade: V.lambert(pal.wall, { transparent: true, opacity: 0.16, depthWrite: false }) };
+    const outer = G.offset(room.poly, thick);
+    const floor = slab(outer, y0 - 0.25, y0, mats.floor);
+    floor.userData.room = room.id; floor.userData.part = 'floor';
+    grp.add(floor);
+    const roof = new THREE.Group();
+    roof.add(slab(G.offset(room.poly, thick + 0.25), top, top + 0.22, mats.roof));
+    roof.add(slab(G.offset(room.poly, thick + 0.05), top + 0.22, top + 0.42, mats.trim));
+    roof.traverse(function (o) { o.userData.room = room.id; o.userData.part = 'roof'; });
+    grp.add(roof);
+    const walls = [];
+    const n = room.poly.length;
+    room.walls.forEach(function (W) {
+      /* extend past a CONVEX corner so neighbours meet; at a reflex corner the boxes already overlap */
+      const ia = room.poly.indexOf(W.a), ib = (ia + 1) % n;
+      const ea = G.convexAt(room.poly, ia) ? thick : 0, eb = G.convexAt(room.poly, ib) ? thick : 0;
+      const ops = [];
+      room.doors.forEach(function (d) { if (d.wall === W.i) ops.push({ u0: d.u - d.w / 2, u1: d.u + d.w / 2, y0: 0, y1: Math.min(d.h, H - 0.1), door: d }); });
+      room.windows.forEach(function (w) { if (w.wall === W.i) ops.push({ u0: w.u - w.w / 2, u1: w.u + w.w / 2, y0: w.sill, y1: Math.min(w.sill + w.h, H - 0.1), win: w }); });
+      ops.sort(function (p, q) { return p.u0 - q.u0; });
+      const full = new THREE.Group(), stub = new THREE.Group(), SH = Math.min(0.45, H);
+      let u = -ea;
+      function add(g, m) { if (m) g.add(m); }
+      for (const o of ops) {
+        add(full, wallBox(W, u, o.u0, y0, top, thick, mats.wall));
+        add(stub, wallBox(W, u, o.u0, y0, y0 + SH, thick, mats.wall));
+        add(full, wallBox(W, o.u0, o.u1, y0 + o.y1, top, thick, mats.wall));            /* lintel */
+        if (o.y0 > 0) {
+          add(full, wallBox(W, o.u0, o.u1, y0, y0 + o.y0, thick, mats.wall));          /* under a window */
+          add(stub, wallBox(W, o.u0, o.u1, y0, y0 + Math.min(o.y0, SH), thick, mats.wall));
+          add(full, wallBox(W, o.u0, o.u1, y0 + o.y0, y0 + o.y1, 0.04, mats.glass));
+        }
+        u = o.u1;
+      }
+      add(full, wallBox(W, u, W.len + eb, y0, top, thick, mats.wall));
+      add(stub, wallBox(W, u, W.len + eb, y0, y0 + SH, thick, mats.wall));
+      stub.visible = false;
+      const mid = [W.a[0] + W.t[0] * W.len / 2, W.a[1] + W.t[1] * W.len / 2];
+      const rec = { wall: W.i, out: [-W.n[0], -W.n[1]], mid: mid, full: full, stub: stub };
+      [full, stub].forEach(function (g) { g.traverse(function (o) { o.userData.room = room.id; o.userData.part = 'wall'; }); grp.add(g); });
+      walls.push(rec);
+    });
+    /* door leaves, hung from the hinge and opened 75 degrees */
+    room.doors.forEach(function (d) {
+      if (d.swing === 'none' || !d.leaf) return;
+      const left = [-d.n[1], d.n[0]], hs = d.hinge === 'right' ? -1 : 1;
+      const hx = d.at[0] + left[0] * hs * d.w / 2, hz = d.at[1] + left[1] * hs * d.w / 2;
+      const dir = d.swing === 'out' ? -1 : 1, a = 75 * Math.PI / 180;
+      /* closed: from the hinge toward the other jamb (-left*hs); open: rotated toward +n*dir */
+      const cx = -left[0] * hs, cz = -left[1] * hs, ox = d.n[0] * dir, oz = d.n[1] * dir;
+      const vx = cx * Math.cos(a) + ox * Math.sin(a), vz = cz * Math.cos(a) + oz * Math.sin(a);
+      const leafH = Math.min(d.h, H - 0.1) - 0.02;
+      const m = new THREE.Mesh(new THREE.BoxGeometry(d.w - 0.04, leafH, 0.05), mats.trim);
+      m.position.set(hx + vx * (d.w / 2), y0 + leafH / 2 + 0.01, hz + vz * (d.w / 2));
+      m.rotation.y = Math.atan2(-vz, vx);
+      m.userData.room = room.id; m.userData.part = 'door';
+      grp.add(m);
+    });
+    grp.userData.shell = { room: room.id, floor: floor, roof: roof, walls: walls, mats: mats };
+    return grp;
+  };
+})(KratorInteriors);
+/* ---------- src/52-outline.js ---------- */
+/* ======================== View: room-outline debug view (THREE) ========================
+   SPEC "What to build first" 1. IX.view.outline(room, plan?, { grid, paths }) -> THREE.Group,
+   drawn over everything (no depth test) just above the floor:
+     yellow   the room polygon (the inner face of its walls)
+     green    each door's opening, its swing arc and the zone the placer keeps free
+     blue     each window's opening
+     orange   footprints of the pieces the room kind REQUIRES; white: optional pieces
+     cyan     every piece's declared clearance zone (filled)
+   With plan and { grid: true }: the walkable cells (green dots: reached from a door; red:
+   walkable but cut off) and, with { paths: true }, the walk from door 0 to every usable piece.
+   ====================================================================== */
+(function (IX) {
+  'use strict';
+  const G = IX.geom, V = IX.view = IX.view || {};
+  function lineMat(c, op) { return new THREE.LineBasicMaterial({ color: c, transparent: true, opacity: op || 1, depthTest: false }); }
+  function loop(pts, y, mat) {
+    const g = new THREE.BufferGeometry().setFromPoints(pts.map(function (p) { return new THREE.Vector3(p[0], y, p[1]); }));
+    const l = new THREE.LineLoop(g, mat); l.renderOrder = 10; return l;
+  }
+  function line(pts, y, mat) {
+    const g = new THREE.BufferGeometry().setFromPoints(pts.map(function (p) { return new THREE.Vector3(p[0], y, p[1]); }));
+    const l = new THREE.Line(g, mat); l.renderOrder = 10; return l;
+  }
+  function fill(r, y, mat) {
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(r.hw * 2, r.hd * 2), mat);
+    m.rotation.order = 'YXZ'; m.rotation.y = r.ry; m.rotation.x = -Math.PI / 2;
+    m.position.set(r.x, y, r.z); m.renderOrder = 9; return m;
+  }
+  V.outline = function (room, plan, opt) {
+    opt = opt || {};
+    const g = new THREE.Group(), y = room.y + 0.04;
+    g.name = 'outline:' + room.id;
+    const M = {
+      poly: lineMat(0xffd84a), door: lineMat(0x5cff7a), win: lineMat(0x6ab8ff), req: lineMat(0xff9a3a), opt: lineMat(0xffffff, 0.9),
+      path: lineMat(0xff5ad8, 0.85),
+      clear: new THREE.MeshBasicMaterial({ color: 0x46d8e8, transparent: true, opacity: 0.18, depthTest: false, depthWrite: false, side: THREE.DoubleSide }),
+      dz: new THREE.MeshBasicMaterial({ color: 0x5cff7a, transparent: true, opacity: 0.14, depthTest: false, depthWrite: false, side: THREE.DoubleSide })
+    };
+    g.add(loop(room.poly, y, M.poly));
+    room.doors.forEach(function (d) {
+      const t = room.walls[d.wall].t;
+      g.add(line([[d.at[0] - t[0] * d.w / 2, d.at[1] - t[1] * d.w / 2], [d.at[0] + t[0] * d.w / 2, d.at[1] + t[1] * d.w / 2]], y, M.door));
+      if (d.swing !== 'none') {
+        const left = [-d.n[1], d.n[0]], hs = d.hinge === 'right' ? -1 : 1, dir = d.swing === 'out' ? -1 : 1;
+        const hx = d.at[0] + left[0] * hs * d.w / 2, hz = d.at[1] + left[1] * hs * d.w / 2, arc = [[hx, hz]];
+        for (let i = 0; i <= 12; i++) {
+          const a = i / 12 * Math.PI / 2, cx = -left[0] * hs, cz = -left[1] * hs;
+          arc.push([hx + (cx * Math.cos(a) + d.n[0] * dir * Math.sin(a)) * d.w, hz + (cz * Math.cos(a) + d.n[1] * dir * Math.sin(a)) * d.w]);
+        }
+        arc.push([hx, hz]);
+        g.add(line(arc, y, M.door));
+      }
+      g.add(fill(IX.doorZone(room, d), y - 0.005, M.dz));
+    });
+    room.windows.forEach(function (w) {
+      const t = room.walls[w.wall].t;
+      g.add(line([[w.at[0] - t[0] * w.w / 2, w.at[1] - t[1] * w.w / 2], [w.at[0] + t[0] * w.w / 2, w.at[1] + t[1] * w.w / 2]], y + 0.01, M.win));
+    });
+    if (plan) {
+      plan.placements.forEach(function (p) {
+        const yy = p.anchor === 'ceiling' ? y + 0.02 : p.anchor === 'surface' ? p.y + 0.02 : y + 0.01;
+        g.add(loop(G.corners(G.rect(p.x, p.z, p.ry, p.w, p.d)), yy, p.need ? M.req : M.opt));
+        const c = p.clearance || {}, hw = p.w / 2, hd = p.d / 2;
+        if (c.front > 0) g.add(fill(G.localRect(p.x, p.z, p.ry, -hw, hw, hd, hd + c.front), y - 0.01, M.clear));
+        if (c.back > 0) g.add(fill(G.localRect(p.x, p.z, p.ry, -hw, hw, -hd - c.back, -hd), y - 0.01, M.clear));
+        if (c.left > 0) g.add(fill(G.localRect(p.x, p.z, p.ry, -hw - c.left, -hw, -hd, hd), y - 0.01, M.clear));
+        if (c.right > 0) g.add(fill(G.localRect(p.x, p.z, p.ry, hw, hw + c.right, -hd, hd), y - 0.01, M.clear));
+        /* a tick toward the front */
+        const f = [Math.sin(p.ry), Math.cos(p.ry)];
+        g.add(line([[p.x, p.z], [p.x + f[0] * (hd + 0.25), p.z + f[1] * (hd + 0.25)]], yy, p.need ? M.req : M.opt));
+      });
+      if (opt.grid && plan.grid) {
+        const gr = plan.grid, B = plan.reach, pos = [], col = [];
+        for (let k = 0; k < gr.nx * gr.nz; k++) {
+          if (!gr.walkable(k)) continue;
+          const c = gr.centre(k), ok = !B || B.dist[k] >= 0;
+          pos.push(c[0], y + 0.005, c[1]);
+          col.push(ok ? 0.35 : 1, ok ? 0.95 : 0.25, ok ? 0.45 : 0.25);
+        }
+        const geo = new THREE.BufferGeometry();
+        geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+        geo.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
+        const pts = new THREE.Points(geo, new THREE.PointsMaterial({ size: 0.07, vertexColors: true, depthTest: false, transparent: true, opacity: 0.85 }));
+        pts.renderOrder = 8; g.add(pts);
+        if (opt.paths && B) {
+          plan.placements.forEach(function (p) {
+            const Q = { P: { w: p.w, d: p.d }, x: p.x, z: p.z, ry: p.ry, host: p.host,
+              pairedHost: !!(p.host && IX.SEAT_TYPES.indexOf(p.type) >= 0),
+              zones: IX.clearanceZones({ w: p.w, d: p.d, clear: p.clearance || {}, usable: true }, p.x, p.z, p.ry) };
+            if (p.anchor === 'ceiling' || p.anchor === 'surface' || IX.NO_ACCESS_TYPES.indexOf(p.type) >= 0) return;
+            let best = -1;
+            for (const r of IX.useZones(Q)) for (const k of gr.cellsIn(r)) if (B.dist[k] >= 0 && (best < 0 || B.dist[k] < B.dist[best])) best = k;
+            const path = gr.path(B, best);
+            if (path && path.length > 1) g.add(line(path, y + 0.02, M.path));
+          });
+        }
+      }
+    }
+    g.userData.outline = room.id;
+    return g;
+  };
+})(KratorInteriors);
+/* ---------- src/55-cutaway.js ---------- */
+/* ======================== View: cut-away (THREE) ========================
+   SPEC "What to build first" 4, after Yuni's Cutaway control (settlements/yuni/src/76-doors.js),
+   which clips the whole city at 2.4 m. Here each shell decides per wall, every frame:
+     'cut'   (default) roofs hidden; every wall whose outer face looks toward the camera drops
+             to a knee-high stub, so you look over it into the room; the far walls stay whole
+     'fade'  roofs hidden; camera-facing walls turn 16 % opaque glass
+     'roof'  roofs hidden, walls whole
+     'off'   everything drawn
+   IX.view.cutaway.add(shellGroup); .setMode(m); .update(camera) once per frame (cheap: one dot
+   product per wall). A wall counts as facing the camera when the camera is on its outer side.
+   ====================================================================== */
+(function (IX) {
+  'use strict';
+  const V = IX.view = IX.view || {};
+  const MODES = ['cut', 'fade', 'roof', 'off'];
+  const C = V.cutaway = { mode: 'cut', shells: [], MODES: MODES };
+  C.add = function (grp) { if (grp && grp.userData.shell) C.shells.push(grp.userData.shell); };
+  C.setMode = function (m) { if (MODES.indexOf(m) >= 0) C.mode = m; C._dirty = true; return C.mode; };
+  C.next = function () { return C.setMode(MODES[(MODES.indexOf(C.mode) + 1) % MODES.length]); };
+  function setMat(g, m) { g.traverse(function (o) { if (o.isMesh && o.material !== m && o.userData.part === 'wall' && !o.material.transparent) { o.userData._solid = o.material; o.material = m; } }); }
+  function restore(g) { g.traverse(function (o) { if (o.isMesh && o.userData._solid) { o.material = o.userData._solid; o.userData._solid = null; } }); }
+  C.update = function (cam) {
+    const px = cam.position.x, pz = cam.position.z, mode = C.mode;
+    for (const S of C.shells) {
+      S.roof.visible = mode === 'off';
+      for (const W of S.walls) {
+        const facing = (px - W.mid[0]) * W.out[0] + (pz - W.mid[1]) * W.out[1] > 0;
+        const cut = facing && mode === 'cut', fade = facing && mode === 'fade';
+        W.full.visible = !cut; W.stub.visible = cut;
+        if (fade !== !!W._faded) { if (fade) setMat(W.full, S.mats.fade); else restore(W.full); W._faded = fade; }
+      }
+    }
+  };
+})(KratorInteriors);
+/* ---------- src/70-demo.js ---------- */
+/* ======================== Demo sheet: sample rooms ========================
+   The demo, not the kit: sample rooms on a sheet, one row per room kind, each a procedural
+   shell (50-shell.js) around a ROOM(), furnished by furnishRoom() from the master catalog
+   through adapters/catalog-adapter.js. Shapes: rectangles, L-shapes, trapezoids, an
+   irregular pentagon, a rotated room and a two-room house joined by an interior door.
+   Exposes window._interiors (rooms, plans, gotoRoom, reseed, ...) and sets window._ready.
+   ====================================================================== */
+(function () {
+  'use strict';
+  const IX = KratorInteriors, G = IX.geom;
+  const catalog = IX.catalogAdapter();
+  const FLOOR_Y = 0.2;
+
+  /* ---------- shapes, in plot-local metres; edge 0 is the back (-z), the camera sits at +z */
+  function rect(w, d) { return [[-w / 2, -d / 2], [w / 2, -d / 2], [w / 2, d / 2], [-w / 2, d / 2]]; }
+  function ell(w, d, cw, cd) {     /* a w x d rectangle with its back-right cw x cd corner taken out */
+    return [[-w / 2, -d / 2], [w / 2 - cw, -d / 2], [w / 2 - cw, -d / 2 + cd], [w / 2, -d / 2 + cd], [w / 2, d / 2], [-w / 2, d / 2]];
+  }
+  function trap(wb, wf, d) { return [[-wb / 2, -d / 2], [wb / 2, -d / 2], [wf / 2, d / 2], [-wf / 2, d / 2]]; }
+  const PENT = [[-3.4, -2.4], [1.6, -3.1], [3.6, 0.2], [2.4, 3.0], [-3.2, 2.6]];
+
+  /* ---------- the sheet: rows of [kind, culture, shape, opts]. Doors and windows are [edge, fraction, width]. */
+  const F = 2;   /* the front edge of rect/trap */
+  const ROWS = [
+    ['hall', [
+      ['yuni-common', rect(7, 5.5), { doors: [[F, 0.5, 1.0]], windows: [[1, 0.5], [3, 0.5]], wealth: 0.4 }],
+      ['ancient', ell(8.5, 7, 3.5, 3), { doors: [[5, 0.75, 1.2], [3, 0.5, 1.2]], windows: [[0, 0.5]], wealth: 0.7, h: 3.4 }],
+      ['beast-rider', rect(9, 6.5), { doors: [[F, 0.3, 1.2], [1, 0.6, 1.0]], windows: [[0, 0.3], [0, 0.7]], wealth: 0.5, rot: 0.42 }],
+      ['yuni-court', PENT, { doors: [[4, 0.5, 1.1]], windows: [[1, 0.5], [2, 0.5]], wealth: 0.85 }]
+    ]],
+    ['bedroom', [
+      ['ancients-salvage', rect(5, 4.2), { doors: [[F, 0.75, 0.9]], windows: [[0, 0.5]], wealth: 0.3 }],
+      ['ancient', ell(6, 5.5, 2.5, 2.2), { doors: [[5, 0.6, 1.0]], windows: [[1, 0.5]], wealth: 0.6 }],
+      ['yuni-common', rect(4.6, 4.2), { doors: [[3, 0.5, 0.9, 'right']], windows: [[0, 0.5]], wealth: 0.5 }]
+    ]],
+    ['kitchen', [
+      ['ancients-salvage', rect(5.2, 4.2), { doors: [[F, 0.3, 0.9]], windows: [[1, 0.5]], wealth: 0.4 }],
+      ['yuni-common', trap(5.5, 4.2, 4.6), { doors: [[F, 0.5, 0.9]], windows: [[0, 0.3]], wealth: 0.5 }]
+    ]],
+    ['tavern', [
+      ['beast-rider', rect(10, 7.5), { doors: [[F, 0.5, 1.4], [1, 0.75, 1.0, 'right', 'out']], windows: [[3, 0.5], [0, 0.25]], wealth: 0.5, h: 3.4 }],
+      ['voth', ell(11, 8.5, 4, 3), { doors: [[5, 0.6, 1.4]], windows: [[4, 0.5]], wealth: 0.6, h: 3.6 }]
+    ]],
+    ['workshop', [
+      ['voth', rect(9, 7), { doors: [[F, 0.5, 1.6]], windows: [[1, 0.5], [3, 0.5]], wealth: 0.5, h: 3.6 }],
+      ['beast-rider', rect(6.5, 5.5), { doors: [[F, 0.25, 1.1]], windows: [[0, 0.5]], wealth: 0.4 }],
+      ['ancient', trap(8, 6, 6), { doors: [[F, 0.5, 1.2]], windows: [[0, 0.5]], wealth: 0.6, h: 3.4, rot: -0.3 }]
+    ]],
+    ['store', [
+      ['beast-rider', rect(7, 6), { doors: [[F, 0.5, 1.4]], windows: [], wealth: 0.5, h: 3.8 }],
+      ['ancient', rect(5.5, 4.5), { doors: [[F, 0.5, 1.0]], windows: [], wealth: 0.5 }],
+      ['order', ell(6, 5.5, 2.2, 2.2), { doors: [[5, 0.5, 1.0]], windows: [[0, 0.5]], wealth: 0.5 }]
+    ]],
+    ['shrine', [
+      ['beast-rider', rect(6.5, 6.5), { doors: [[F, 0.5, 1.2]], windows: [[1, 0.5], [3, 0.5]], wealth: 0.5, h: 3.6 }],
+      ['voth', rect(10, 9.5), { doors: [[F, 0.5, 1.8]], windows: [[1, 0.4], [3, 0.4]], wealth: 0.7, h: 4.6 }]
+    ]],
+    ['study', [
+      ['order', rect(6, 5), { doors: [[F, 0.25, 1.0]], windows: [[0, 0.5]], wealth: 0.6, h: 4.2 }]
+    ]],
+    ['library', [
+      ['order', rect(10, 8), { doors: [[F, 0.5, 1.4]], windows: [[1, 0.5], [3, 0.5]], wealth: 0.7, h: 6.0 }]
+    ]]
+  ];
+  const DX = 16, DZ = 17;
+
+  function xf(p, ox, oz, rot) {       /* plot-local -> world (rot turns the plot like a building's yaw) */
+    const c = Math.cos(rot), s = Math.sin(rot);
+    return [IX.round(ox + p[0] * c + p[1] * s), IX.round(oz - p[0] * s + p[1] * c)];
+  }
+  function onEdge(poly, e, f) { const a = poly[e], b = poly[(e + 1) % poly.length]; return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f]; }
+
+  const defs = [];   /* { room, plot } */
+  ROWS.forEach(function (row, ri) {
+    const kind = row[0], oz = -ri * DZ;
+    row[1].forEach(function (it, ci) {
+      const cul = it[0], shape = it[1], o = it[2], ox = ci * DX, rot = o.rot || 0;
+      const poly = shape.map(function (p) { return xf(p, ox, oz, rot); });
+      const id = kind + '.' + cul;
+      defs.push({ plot: { ox: ox, oz: oz, row: ri, col: ci, rot: rot, shape: shape }, room: {
+        id: id, building: 'demo_' + kind + '_' + ci, kind: kind, culture: cul, poly: poly, y: FLOOR_Y, h: o.h || 3.0, wealth: o.wealth,
+        doors: (o.doors || []).map(function (d) { return { at: onEdge(poly, d[0], d[1]), w: d[2] || 1.0, hinge: d[3] || 'left', swing: d[4] || 'in', to: 'street' }; }),
+        windows: (o.windows || []).map(function (w) { return { at: onEdge(poly, w[0], w[1]), w: w[2] || 1.0, sill: 0.95, h: 1.1 }; })
+      } });
+    });
+  });
+  /* a two-room house: a salvage hall and bedroom sharing a wall and an interior door */
+  (function () {
+    const ri = ROWS.length, oz = -ri * DZ, ox = 0;
+    const hall = [[-6, -2.6], [0, -2.6], [0, 2.6], [-6, 2.6]].map(function (p) { return xf(p, ox + 2, oz, 0); });
+    const bed = [[0, -2.6], [4.4, -2.6], [4.4, 2.6], [0, 2.6]].map(function (p) { return xf(p, ox + 2, oz, 0); });
+    const shared = xf([0, -0.9], ox + 2, oz, 0);
+    defs.push({ plot: { ox: ox, oz: oz, row: ri, col: 0, rot: 0, house: true }, room: {
+      id: 'house.hall', building: 'demo_house', kind: 'hall', culture: 'ancients-salvage', poly: hall, y: FLOOR_Y, h: 3.0, wealth: 0.45,
+      doors: [{ at: xf([-3.6, 2.6], ox + 2, oz, 0), w: 1.0, to: 'street' }, { at: shared, w: 0.9, to: 'house.bedroom', swing: 'in', hinge: 'right' }],
+      windows: [{ at: xf([-3, -2.6], ox + 2, oz, 0), w: 1.2, sill: 0.95 }, { at: xf([-6, 0], ox + 2, oz, 0), w: 1.0, sill: 0.95 }] } });
+    defs.push({ plot: { ox: ox, oz: oz, row: ri, col: 1, rot: 0, house: true }, room: {
+      id: 'house.bedroom', building: 'demo_house', kind: 'bedroom', culture: 'ancients-salvage', poly: bed, y: FLOOR_Y, h: 3.0, wealth: 0.45,
+      doors: [{ at: shared, w: 0.9, to: 'house.hall', swing: 'out', hinge: 'left', leaf: false }],
+      windows: [{ at: xf([4.4, 0], ox + 2, oz, 0), w: 1.0, sill: 0.95 }] } });
+  })();
+
+  /* ---------- register, shell, furnish, build */
+  const rooms = defs.map(function (d) { return ROOM(d.room); });
+  const shells = rooms.map(function (R) { const s = IX.view.shell(R); scene.add(s); IX.view.cutaway.add(s); return s; });
+  let seed = 0, plans = [], outlines = [];
+  const S = { outline: false, grid: false };
+  function clearFurniture() {
+    for (const P of plans) for (const g of (P.objects || [])) {
+      if (!g) continue;
+      scene.remove(g);
+      const i = INSTANCES.indexOf(g); if (i >= 0) INSTANCES.splice(i, 1);
+      g.traverse(function (o) { if (o.geometry) o.geometry.dispose(); });
+    }
+  }
+  function furnishAll() {
+    clearFurniture();
+    plans = rooms.map(function (R) {
+      const P = furnishRoom(R, catalog, { seed: seed });
+      IX.buildRoom(P, catalog, R);
+      return P;
+    });
+    drawOutlines();
+    report();
+  }
+  function drawOutlines() {
+    for (const o of outlines) scene.remove(o);
+    outlines = [];
+    if (!S.outline && !S.grid) return;
+    rooms.forEach(function (R, i) {
+      const o = IX.view.outline(R, plans[i], { grid: S.grid, paths: S.grid });
+      scene.add(o); outlines.push(o);
+    });
+  }
+
+  /* ---------- labels (the catalog sheet's ground labels) */
+  function labelTex(text, sub, dark) {
+    const c = document.createElement('canvas');
+    c.width = 640; c.height = sub ? 120 : 76;
+    const g = c.getContext('2d');
+    g.fillStyle = dark ? 'rgba(30,26,18,0.94)' : 'rgba(58,52,40,0.88)';
+    g.fillRect(0, 0, c.width, c.height);
+    g.fillStyle = dark ? '#e0c98a' : '#f5efdd';
+    g.textAlign = 'center';
+    let fs = 42;
+    g.font = (dark ? 'bold ' : '') + fs + 'px Georgia, serif';
+    while (g.measureText(text).width > 610 && fs > 14) { fs -= 2; g.font = (dark ? 'bold ' : '') + fs + 'px Georgia, serif'; }
+    g.fillText(text, 320, 52);
+    if (sub) {
+      let s2 = 26; g.font = s2 + 'px Georgia, serif';
+      while (g.measureText(sub).width > 620 && s2 > 12) { s2 -= 1; g.font = s2 + 'px Georgia, serif'; }
+      g.globalAlpha = 0.75; g.fillText(sub, 320, 98);
+    }
+    return new THREE.CanvasTexture(c);
+  }
+  const labels = [];
+  function label(text, sub, x, z, w, dark) {
+    const tex = labelTex(text, sub, dark), aspect = tex.image.height / tex.image.width;
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(w, w * aspect), new THREE.MeshBasicMaterial({ map: tex, transparent: true }));
+    m.rotation.x = -Math.PI / 2; m.position.set(x, 0.03, z); m.userData.label = true;
+    scene.add(m); labels.push(m); return m;
+  }
+  function roomLabels() {
+    for (const m of labels) { scene.remove(m); m.material.map.dispose(); }
+    labels.length = 0;
+    rooms.forEach(function (R, i) {
+      const P = plans[i], rp = P.report, b = R.bbox;
+      const bits = [P.placements.length + ' pieces', R.area.toFixed(1) + ' m²'];
+      if (rp.fallbacks.length) bits.push(rp.fallbacks.length + ' fallback');
+      const miss = rp.missing.filter(function (m) { return m.reason; });
+      if (miss.length) bits.push('missing: ' + miss.map(function (m) { return m.need; }).join(', '));
+      label(R.kind + ' · ' + R.culture, bits.join(' · '), (b[0] + b[2]) / 2, b[3] + 1.5, 7.5, false);
+    });
+    ROWS.forEach(function (row, ri) { label(row[0], row[1].length + ' rooms', -11, -ri * DZ, 7, true); });
+    label('house', 'hall + bedroom', -11, -ROWS.length * DZ, 7, true);
+  }
+
+  /* ---------- the standard Krator sky, mid-morning (vendored 81-sky.js) */
+  if (window.KratorSky) {
+    KratorSky.attach(scene, 4200);
+    KratorSky.update(camera.position, 10.5, 200, 1.6);
+    scene.fog.color.copy(KratorSky.lighting().fog);
+  }
+  (window._frameHooks = window._frameHooks || []).push(function () {
+    if (window.KratorSky) KratorSky.update(camera.position, 10.5, 200, 1.6);
+    IX.view.cutaway.update(camera);
+  });
+
+  /* ---------- toolbar */
+  const $ = function (id) { return document.getElementById(id); };
+  const rs = $('roomSel');
+  rooms.forEach(function (R, i) { const o = document.createElement('option'); o.value = String(i); o.textContent = R.kind + ' · ' + R.culture + '  (' + R.id + ')'; rs.appendChild(o); });
+  let current = -1;
+  function gotoRoom(i) {
+    const R = rooms[i]; if (!R) return;
+    current = i;
+    if (ctl.walk) window._setWalk(false);
+    const b = R.bbox, span = Math.max(b[2] - b[0], b[3] - b[1]);
+    ctl.target.set((b[0] + b[2]) / 2, R.y + 0.6, (b[1] + b[3]) / 2);
+    ctl.dist = Math.max(9, span * 1.45 + R.h); ctl.az = 0.35; ctl.el = 0.82;
+    updateCamera();
+    rs.value = String(i);
+    report();
+  }
+  function overview() {
+    current = -1;
+    ctl.target.set(24, 0, -24); ctl.dist = 72; ctl.az = 0.3; ctl.el = 1.05; updateCamera();
+    rs.value = '';
+    report();
+  }
+  rs.onchange = function () { if (rs.value === '') overview(); else gotoRoom(+rs.value); };
+  function esc(s) { return String(s).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); }
+  function report() {
+    const el = $('rep');
+    const tot = plans.reduce(function (a, P) { return a + P.placements.length; }, 0);
+    $('count').textContent = rooms.length + ' rooms · ' + tot + ' pieces · seed ' + seed;
+    if (current < 0) { el.innerHTML = '<span class="n">Pick a room for its report. O outlines, G walk grid, C cut-away, T tags, P polygon tool, F walk.</span>'; return; }
+    const R = rooms[current], P = plans[current], rp = P.report, h = [];
+    h.push('<b>' + esc(R.id) + '</b> ' + R.kind + ' · ' + R.culture + ' · wealth ' + R.wealth + ' · ' + R.area.toFixed(1) + ' m² · ' + R.doors.length + ' door(s)');
+    h.push(rp.required.map(function (q) { return '<span class="' + (q.placed >= q.n ? 'ok' : 'miss') + '">' + q.need + ' ' + q.placed + '/' + q.n + '</span>'; }).join(' · ') +
+      ' · optional ' + rp.optional + (rp.thin ? ' · <span class="fb">thin culture: ' + rp.own + ' own pieces</span>' : ''));
+    rp.fallbacks.forEach(function (f) { h.push('<span class="fb">fallback: ' + f.need + ' from ' + f.used + ' (' + f.key + ')</span>'); });
+    rp.missing.forEach(function (m) { h.push('<span class="miss">missing: ' + m.need + ' — ' + m.reason + '</span>'); });
+    h.push('<span class="n">' + P.placements.map(function (p) { return p.key + (p.variant ? '#' + (p.variant + 1) : ''); }).join(', ') + '</span>');
+    el.innerHTML = h.join('<br>');
+  }
+  function toggle(btn, k) { S[k] = !S[k]; $(btn).classList.toggle('on', S[k]); drawOutlines(); }
+  $('olBtn').onclick = function () { toggle('olBtn', 'outline'); };
+  $('gridBtn').onclick = function () { toggle('gridBtn', 'grid'); };
+  function cutLabel() { $('cutBtn').textContent = 'Cut-away: ' + IX.view.cutaway.mode + ' (C)'; }
+  $('cutBtn').onclick = function () { IX.view.cutaway.next(); cutLabel(); };
+  function reseed(s) { seed = s == null ? seed + 1 : s; $('seedBtn').textContent = 'Seed ' + seed + ' (R)'; furnishAll(); roomLabels(); }
+  $('seedBtn').onclick = function () { reseed(); };
+  window.addEventListener('keydown', function (e) {
+    const t = e.target;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+    const k = e.key.toLowerCase();
+    if (k === 'o') toggle('olBtn', 'outline');
+    else if (k === 'g') toggle('gridBtn', 'grid');
+    else if (k === 'c') { IX.view.cutaway.next(); cutLabel(); }
+    else if (k === 'r') reseed();
+  });
+
+  furnishAll();
+  roomLabels();
+  overview();
+  window._interiors = {
+    rooms: rooms, get plans() { return plans; }, catalog: catalog, shells: shells, gotoRoom: gotoRoom, overview: overview,
+    reseed: reseed, setOutline: function (on, grid) { S.outline = !!on; S.grid = !!grid; $('olBtn').classList.toggle('on', S.outline); $('gridBtn').classList.toggle('on', S.grid); drawOutlines(); },
+    cutaway: function (m) { const r = IX.view.cutaway.setMode(m); cutLabel(); return r; }
+  };
+  window._ready = true;
+})();
+/* ---------- src/72-hover.js ---------- */
+/* ======================== Hover inspector ========================
+   The standard inspector toggle (repo README "DEV TOOLS"), after kits/catalog/src/92-hover.js:
+   T or the toolbar button. When on, the pointer names what is under it, its class and tags:
+     furniture   the catalog entry (culture, type, setting, rooms, anchor) plus the room it
+                 furnishes, the requirement it fills and the role it was placed in
+     room        a demo shell's floor, wall, roof or door: room kind, culture, wealth, size
+   The click inspector (kits/catalog/inspector.js) still measures and audits pieces.
+   ====================================================================== */
+(function () {
+  'use strict';
+  const IX = KratorInteriors;
+  const tip = document.getElementById('hover'), btn = document.getElementById('hoverBtn');
+  const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+  let on = false, pending = null;
+
+  function furnTags(g) {
+    const u = g.userData, A = u.asset, t = [], it = u.interior || {};
+    t.push('culture: ' + A.culture);
+    if (A.type) t.push('type: ' + A.type);
+    if (A.setting) t.push(A.setting);
+    t.push('rooms: ' + A.rooms.join(', '));
+    t.push('anchor: ' + (A.anchor || 'floor'));
+    if (it.room) t.push('in: ' + it.room);
+    t.push(it.need ? 'required: ' + it.need : 'optional');
+    if (it.role) t.push('placed: ' + it.role);
+    return t;
+  }
+  function describe(hit) {
+    if (hit.kind === 'furniture') {
+      const u = hit.g.userData, A = u.asset;
+      return '<div class="cls">furniture</div><b>' + A.name + '</b>' +
+        (A.variants > 1 ? ' <span style="opacity:.6">#' + (u.opt.variant + 1) + '/' + A.variants + '</span>' : '') +
+        '<br>' + furnTags(hit.g).map(function (s) { return '<span class="tag">' + s + '</span>'; }).join('');
+    }
+    const R = IX.roomById[hit.room];
+    const t = ['kind: ' + R.kind, 'culture: ' + R.culture, 'wealth: ' + R.wealth, R.area.toFixed(1) + ' m²', 'h ' + R.h + ' m',
+      R.doors.length + ' door(s)', R.windows.length + ' window(s)', 'part: ' + hit.part];
+    return '<div class="cls">room</div><b>' + R.id + '</b> <span style="opacity:.6">' + (R.building || '') + '</span><br>' +
+      t.map(function (s) { return '<span class="tag">' + s + '</span>'; }).join('');
+  }
+  function pick(cx, cy) {
+    const r = renderer.domElement.getBoundingClientRect();
+    ndc.x = ((cx - r.left) / r.width) * 2 - 1;
+    ndc.y = -((cy - r.top) / r.height) * 2 + 1;
+    ray.setFromCamera(ndc, camera);
+    const shells = (window._interiors ? window._interiors.shells : []);
+    const hits = ray.intersectObjects(INSTANCES.concat(shells), true);
+    for (const h of hits) {
+      let o = h.object;
+      if (!o.visible) continue;
+      let vis = true;
+      for (let p = o; p; p = p.parent) if (!p.visible) { vis = false; break; }
+      if (!vis) continue;
+      if (o.userData.room && o.userData.part) return { kind: 'room', room: o.userData.room, part: o.userData.part };
+      while (o && INSTANCES.indexOf(o) < 0) o = o.parent;
+      if (o) return { kind: 'furniture', g: o };
+    }
+    return null;
+  }
+  function setOn(v) { on = v; btn.classList.toggle('on', on); if (!on) tip.style.display = 'none'; }
+  renderer.domElement.addEventListener('mousemove', function (e) { if (on) pending = [e.clientX, e.clientY]; });
+  (window._frameHooks = window._frameHooks || []).push(function () {
+    if (!on || !pending) return;
+    const x = pending[0], y = pending[1]; pending = null;
+    const h = pick(x, y);
+    if (!h) { tip.style.display = 'none'; return; }
+    tip.innerHTML = describe(h);
+    tip.style.display = 'block';
+    tip.style.left = Math.min(x + 16, innerWidth - 360) + 'px';
+    tip.style.top = (y + 16) + 'px';
+  });
+  btn.onclick = function () { setOn(!on); };
+  window.addEventListener('keydown', function (e) {
+    const t = e.target;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+    if (e.key.toLowerCase() === 't') setOn(!on);
+  });
+  window._hover = { setOn: setOn, pick: pick, describe: describe };
+})();
+/* ---------- src/75-audit.js ---------- */
+/* ======================== Page audit: plan + measured geometry ========================
+   window._interiors.audit() is what verify.py --assert runs. For every demo room it runs
+   IX.audit() (48-audit.js: declared footprints, doors, clearance, reach, required pieces,
+   determinism by furnishing again), then measures the BUILT pieces:
+     measured-inside   every vertex, taken into the piece's own frame, gives a box whose four
+                       corners lie inside the room polygon (within TOL of its edges)
+     measured-height   that box spans floor - TOL .. ceiling + TOL
+     builds            the catalog built it without error, with at least one mesh, no NaN
+   TOL = max(0.06 m, 4 % of the dimension): the catalog's own declared-size tolerance
+   (kits/catalog verify.py) plus a centimetre.
+   ====================================================================== */
+(function () {
+  'use strict';
+  const IX = KratorInteriors, G = IX.geom;
+  const v = new THREE.Vector3();
+  function localBox(g, p) {
+    g.updateMatrixWorld(true);
+    const c = Math.cos(p.ry), s = Math.sin(p.ry);
+    let x0 = Infinity, x1 = -Infinity, z0 = Infinity, z1 = -Infinity, y0 = Infinity, y1 = -Infinity, n = 0, nan = false;
+    g.traverse(function (o) {
+      const geo = o.geometry;
+      if (!geo || !geo.attributes || !geo.attributes.position || o.isPoints || o.isLine) return;
+      n++;
+      const pos = geo.attributes.position;
+      for (let i = 0; i < pos.count; i++) {
+        v.fromBufferAttribute(pos, i).applyMatrix4(o.matrixWorld);
+        if (!isFinite(v.x) || !isFinite(v.y) || !isFinite(v.z)) { nan = true; continue; }
+        const dx = v.x - p.x, dz = v.z - p.z, lx = dx * c - dz * s, lz = dx * s + dz * c;
+        if (lx < x0) x0 = lx; if (lx > x1) x1 = lx; if (lz < z0) z0 = lz; if (lz > z1) z1 = lz;
+        if (v.y < y0) y0 = v.y; if (v.y > y1) y1 = v.y;
+      }
+    });
+    return { n: n, nan: nan, x0: x0, x1: x1, z0: z0, z1: z1, y0: y0, y1: y1 };
+  }
+  function audit() {
+    const I = window._interiors, out = { rooms: 0, pieces: 0, usable: 0, reached: 0, fails: [], perRoom: [], fallbacks: 0, missing: [] };
+    I.rooms.forEach(function (R, i) {
+      const P = I.plans[i];
+      const A = IX.audit(R, P, I.catalog);
+      const fails = A.fails.slice();
+      P.placements.forEach(function (p, k) {
+        const g = P.objects && P.objects[k];
+        if (!g || g.userData.error) { fails.push({ check: 'builds', msg: R.id + ': ' + p.id + ' ' + p.key + ' did not build' + (g ? ': ' + g.userData.error : '') }); return; }
+        const B = localBox(g, p);
+        if (!B.n || B.nan) { fails.push({ check: 'builds', msg: R.id + ': ' + p.id + ' ' + p.key + (B.nan ? ' has NaN geometry' : ' has no mesh') }); return; }
+        const tw = Math.max(0.06, 0.04 * p.w / 2 * 2), td = Math.max(0.06, 0.04 * p.d), th = Math.max(0.06, 0.04 * p.h);
+        if (p.anchor !== 'surface') {
+          /* the measured box, shrunk by the tolerance, must sit inside the polygon */
+          const r = G.localRect(p.x, p.z, p.ry, Math.min(0, B.x0 + tw), Math.max(0, B.x1 - tw), Math.min(0, B.z0 + td), Math.max(0, B.z1 - td));
+          for (const c of G.corners(r)) if (!G.inside(R.poly, c[0], c[1]))
+            fails.push({ check: 'measured-inside', msg: R.id + ': ' + p.id + ' ' + p.key + ' built geometry leaves the room near [' + c[0].toFixed(2) + ', ' + c[1].toFixed(2) + ']' });
+        }
+        if (B.y0 < R.y - th || B.y1 > R.y + R.h + th)
+          fails.push({ check: 'measured-height', msg: R.id + ': ' + p.id + ' ' + p.key + ' built y ' + B.y0.toFixed(2) + '..' + B.y1.toFixed(2) + ' vs room ' + R.y + '..' + (R.y + R.h) });
+      });
+      out.rooms++; out.pieces += P.placements.length; out.usable += A.usable; out.reached += A.reached;
+      out.fallbacks += P.report.fallbacks.length;
+      P.report.missing.forEach(function (m) { out.missing.push(R.id + ': ' + m.need + ' (' + m.reason + ')'); });
+      out.perRoom.push({ id: R.id, kind: R.kind, culture: R.culture, pieces: P.placements.length, usable: A.usable, reached: A.reached,
+        required: P.report.required.map(function (q) { return q.need + ' ' + q.placed + '/' + q.n; }).join(', '),
+        fallbacks: P.report.fallbacks.map(function (f) { return f.need + '<-' + f.used; }).join(', '),
+        missing: P.report.missing.map(function (m) { return m.need + ':' + m.reason; }).join(', '),
+        thin: P.report.thin, fails: fails.length });
+      out.fails = out.fails.concat(fails);
+    });
+    return out;
+  }
+  window._interiors.audit = audit;
+  window._interiors.localBox = localBox;
+})();
+/* ---------- src/78-polytool.js ---------- */
+/* ======================== Polygon tool ========================
+   Repo README "DEV TOOLS": P (or the toolbar button) turns it on. Each click on the ground
+   (a click, not a drag) adds a point, snapped to 5 cm, at floor height; Backspace drops the
+   last one, Escape clears. The panel shows the outline as [[x,z], ...] — ROOM()'s poly
+   format — ready to copy, with its area. Its points are drawn as a yellow line.
+   ====================================================================== */
+(function () {
+  'use strict';
+  const IX = KratorInteriors;
+  const panel = document.getElementById('poly'), btn = document.getElementById('polyBtn');
+  const ray = new THREE.Raycaster(), ndc = new THREE.Vector2(), plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -0.2), hit = new THREE.Vector3();
+  const pts = [];
+  let on = false, line = null, down = null;
+  function redraw() {
+    if (line) { scene.remove(line); line.geometry.dispose(); line = null; }
+    if (pts.length) {
+      const g = new THREE.BufferGeometry().setFromPoints(pts.concat(pts.length > 2 ? [pts[0]] : []).map(function (p) { return new THREE.Vector3(p[0], 0.26, p[1]); }));
+      line = new THREE.Line(g, new THREE.LineBasicMaterial({ color: 0xffe14a, depthTest: false }));
+      line.renderOrder = 11; scene.add(line);
+    }
+    const area = pts.length > 2 ? Math.abs(IX.geom.area(pts)).toFixed(2) + ' m²' : '';
+    panel.textContent = 'polygon tool — click to add, Backspace undo, Esc clear\n' + JSON.stringify(pts) + (area ? '\narea ' + area : '');
+  }
+  function setOn(v) { on = v; btn.classList.toggle('on', on); panel.style.display = on ? 'block' : 'none'; if (on) redraw(); else if (line) { scene.remove(line); line = null; } }
+  renderer.domElement.addEventListener('mousedown', function (e) { down = [e.clientX, e.clientY]; });
+  renderer.domElement.addEventListener('mouseup', function (e) {
+    if (!on || !down || e.button !== 0 || Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 4) return;
+    const r = renderer.domElement.getBoundingClientRect();
+    ndc.x = ((e.clientX - r.left) / r.width) * 2 - 1; ndc.y = -((e.clientY - r.top) / r.height) * 2 + 1;
+    ray.setFromCamera(ndc, camera);
+    if (!ray.ray.intersectPlane(plane, hit)) return;
+    pts.push([Math.round(hit.x * 20) / 20, Math.round(hit.z * 20) / 20]);
+    redraw();
+  });
+  btn.onclick = function () { setOn(!on); };
+  window.addEventListener('keydown', function (e) {
+    const t = e.target;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+    const k = e.key.toLowerCase();
+    if (k === 'p') setOn(!on);
+    else if (on && k === 'backspace') { pts.pop(); redraw(); e.preventDefault(); }
+    else if (on && k === 'escape') { pts.length = 0; redraw(); }
+  });
+  window._polytool = { points: pts, setOn: setOn };
+})();
+/* ---------- src/80-sky-hash.js ---------- */
+/* ======================== h3 hash for KratorSky ========================
+   h3: the hash KratorSky (81-sky.js, vendored from settlements/iziz/src)
+   reads for its star field and gas-giant bands. In the Ancients-lineage
+   builds it lives in 10-core.js; the catalog has no core, so it is here.
+   ====================================================================== */
+function h3(x, y, z) { const s = Math.sin(x * 12.9898 + y * 78.233 + z * 37.719) * 43758.5453; return s - Math.floor(s); }
+/* ---------- src/81-sky.js ---------- */
+// ================================================================= KratorSky — the Krator skybox module (from claude/krator-sky.html, verbatim logic)
+// Canon (krator-notes): tidally-locked moon of a Neptune–Saturn-class giant, 24 h day, ~40° S, giant fixed at
+// altitude 25° azimuth 66° (NE, over Korona), obliquity ~23°, eclipse seasons round each equinox.
+// Coordinates: x = east, y = up, z = south (north is −z). Azimuth clockwise from north.
+// A target that wants it calls KratorSky.attach(scene,R) once and KratorSky.update(camPos,hour,day,dens) per frame,
+// then applies KratorSky.lighting() to its sun / hemi / fog. A target that does not call attach pays nothing.
+const KratorSky=(function(){
+ const D=Math.PI/180;const LAT=-40*D,OBL=23*D,YEAR=360;
+ const GIANT_ALT=25*D,GIANT_AZ=66*D,GIANT_ANG=14*D;
+ const giantDir=new THREE.Vector3(Math.sin(GIANT_AZ)*Math.cos(GIANT_ALT),Math.sin(GIANT_ALT),-Math.cos(GIANT_AZ)*Math.cos(GIANT_ALT));
+ function sunDir(hour,day){const dec=OBL*Math.sin(2*Math.PI*(day-80)/YEAR);const H=(hour-12)*15*D;
+  const e=-Math.cos(dec)*Math.sin(H),n=Math.sin(dec)*Math.cos(LAT)-Math.cos(dec)*Math.sin(LAT)*Math.cos(H),u=Math.sin(dec)*Math.sin(LAT)+Math.cos(dec)*Math.cos(LAT)*Math.cos(H);
+  return new THREE.Vector3(e,u,-n).normalize();}
+ function altAz(v){return{alt:Math.asin(v.y)/D,az:((Math.atan2(v.x,-v.z)/D)+360)%360};}
+ const skyMat=new THREE.ShaderMaterial({side:THREE.BackSide,depthWrite:false,fog:false,
+  uniforms:{sun:{value:new THREE.Vector3(0,1,0)},giant:{value:giantDir.clone()},dens:{value:1.6},ecl:{value:0},night:{value:0}},
+  vertexShader:'varying vec3 vP;void main(){vP=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
+  fragmentShader:`varying vec3 vP;uniform vec3 sun,giant;uniform float dens,ecl,night;
+  void main(){vec3 d=normalize(vP);float h=clamp(d.y,-0.1,1.0);float sh=sun.y;
+   float dayF=smoothstep(-0.12,0.18,sh);float dusk=exp(-pow((sh-0.02)/0.16,2.0));
+   float thick=clamp(dens/1.6,0.3,1.6);
+   vec3 zenDay=mix(vec3(0.20,0.36,0.62),vec3(0.36,0.46,0.66),clamp((thick-0.7)*1.2,0.,1.));
+   vec3 horDay=mix(vec3(0.78,0.84,0.90),vec3(0.86,0.70,0.52),clamp(thick-0.5,0.,1.));
+   vec3 zenNight=vec3(0.015,0.02,0.045);vec3 horNight=vec3(0.06,0.05,0.09)*thick;
+   float hp=pow(1.0-h,2.2+1.2*thick);
+   vec3 day=mix(zenDay,horDay,hp);vec3 nite=mix(zenNight,horNight,hp);
+   vec3 c=mix(nite,day,dayF);
+   float sd=max(dot(d,normalize(sun)),0.0);
+   vec3 duskCol=vec3(1.0,0.45,0.18);c+=duskCol*dusk*pow(sd,3.0)*(0.55+0.5*hp)*(1.0-0.6*ecl);
+   c+=vec3(1.0,0.9,0.75)*pow(sd,64.0)*dayF*0.9*(1.0-ecl);c+=vec3(1.0,0.85,0.6)*pow(sd,8.0)*dayF*0.18*thick;
+   float gd=max(dot(d,giant),0.0);c+=vec3(0.55,0.5,0.7)*pow(gd,10.0)*(1.0-dayF)*0.12;
+   c*=1.0-0.75*ecl*smoothstep(-0.05,0.3,h);
+   c=mix(c,c*0.6+vec3(0.12,0.08,0.06)*thick,(1.0-dayF)*0.4*(1.0-h));
+   gl_FragColor=vec4(c,1.0);}`});
+ const giantTex=(function(){const c=document.createElement('canvas');c.width=64;c.height=512;const g=c.getContext('2d');
+  const bands=[[0.00,'#7d8fb0'],[0.08,'#9aa8c4'],[0.15,'#c7c2b6'],[0.22,'#8a98b8'],[0.30,'#dcd4c2'],[0.36,'#7e8db0'],[0.45,'#b9b2a6'],[0.52,'#6f80a6'],[0.60,'#d8cfbb'],[0.68,'#8896b6'],[0.76,'#c4bdb0'],[0.84,'#7688aa'],[0.92,'#a9b0c2'],[1.0,'#6f80a2']];
+  const grd=g.createLinearGradient(0,0,0,512);bands.forEach(b=>grd.addColorStop(b[0],b[1]));g.fillStyle=grd;g.fillRect(0,0,64,512);
+  for(let i=0;i<200;i++){g.fillStyle='rgba(255,255,255,'+(h3(i,1,2)*.08)+')';g.fillRect(h3(i,2,3)*64,h3(i,3,4)*512,h3(i,4,5)*30+4,h3(i,5,6)*3+1);}
+  g.fillStyle='rgba(230,225,215,.35)';g.beginPath();g.ellipse(40,300,9,4,0,0,6.28);g.fill();
+  const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;return t;})();
+ const giantMat=new THREE.ShaderMaterial({transparent:true,depthWrite:false,fog:false,
+  uniforms:{map:{value:giantTex},L:{value:new THREE.Vector3(0,0,1)},haze:{value:0.3},ring:{value:1},tilt:{value:0.35},t:{value:0}},
+  vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
+  fragmentShader:`varying vec2 vUv;uniform sampler2D map;uniform vec3 L;uniform float haze,ring,tilt,t;
+  void main(){vec2 p=(vUv-0.5)*2.0;
+   float R=0.62;vec2 q=p/R;float r2=dot(q,q);vec3 col=vec3(0.);float a=0.;
+   float cs=cos(tilt),sn=sin(tilt);vec2 rp=vec2(q.x,q.y/max(sn,0.08));float rr=length(rp);
+   float inRing=ring*smoothstep(1.35,1.4,rr)*(1.0-smoothstep(2.1,2.2,rr))*(0.55+0.45*sin(rr*40.0));
+   float behind=step(0.0,q.y)*step(rr,1.0);
+   if(r2<1.0){vec3 n=vec3(q.x,q.y,sqrt(max(0.0,1.0-r2)));
+    float lat=asin(clamp(n.y,-1.,1.));float lon=atan(n.x,n.z);
+    vec3 base=texture2D(map,vec2(lon/6.2832+t*0.02,lat/3.1416+0.5)).rgb;
+    float lit=clamp(dot(n,normalize(L)),-1.0,1.0);float day=smoothstep(-0.08,0.25,lit);
+    float limb=pow(max(0.0,n.z),0.45);
+    col=base*(0.05+0.95*day)*limb+vec3(0.35,0.3,0.4)*0.05*(1.0-day);
+    a=1.0;}
+   else{a=0.0;}
+   vec3 ringCol=vec3(0.85,0.82,0.78);float ringA=inRing*(1.0-behind)*(r2<1.0?0.0:1.0);
+   float ringLit=clamp(dot(vec3(0.,1.,0.),normalize(L))*0.5+0.6,0.15,1.0);
+   col=mix(col,ringCol*ringLit,ringA*0.7);a=max(a,ringA*0.7);
+   float front=step(q.y,0.0)*step(rr,1.0)*inRing;col=mix(col,ringCol*ringLit,front*0.6);
+   a*=1.0-haze;
+   gl_FragColor=vec4(col,a);}`});
+ const giant=new THREE.Mesh(new THREE.PlaneGeometry(1,1),giantMat);
+ const sunTex=(function(){const c=document.createElement('canvas');c.width=c.height=128;const g=c.getContext('2d');const gr=g.createRadialGradient(64,64,0,64,64,64);gr.addColorStop(0,'rgba(255,250,235,1)');gr.addColorStop(0.18,'rgba(255,240,200,1)');gr.addColorStop(0.3,'rgba(255,200,120,0.35)');gr.addColorStop(1,'rgba(255,160,80,0)');g.fillStyle=gr;g.fillRect(0,0,128,128);return new THREE.CanvasTexture(c);})();
+ const sun=new THREE.Sprite(new THREE.SpriteMaterial({map:sunTex,fog:false,depthWrite:false,transparent:true,blending:THREE.AdditiveBlending}));
+ const starGeo=new THREE.BufferGeometry();{const p=[],c=[];for(let i=0;i<2600;i++){const u=h3(i,7,1)*2-1,th=h3(i,8,2)*6.2832;const r=Math.sqrt(1-u*u);p.push(r*Math.cos(th),u,r*Math.sin(th));const k=h3(i,9,3);c.push(0.7+0.3*k,0.75+0.2*k,0.9);}
+  starGeo.setAttribute('position',new THREE.Float32BufferAttribute(p,3));starGeo.setAttribute('color',new THREE.Float32BufferAttribute(c,3));}
+ const stars=new THREE.Points(starGeo,new THREE.PointsMaterial({size:2.2,sizeAttenuation:false,vertexColors:true,transparent:true,opacity:0,fog:false,depthWrite:false}));
+ const moon=new THREE.Sprite(new THREE.SpriteMaterial({map:(function(){const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d');g.fillStyle='#cfc8bc';g.beginPath();g.arc(32,32,28,0,6.28);g.fill();g.fillStyle='rgba(90,80,80,.35)';for(let i=0;i<8;i++){g.beginPath();g.arc(20+h3(i,1,9)*24,20+h3(i,2,9)*24,2+h3(i,3,9)*4,0,6.28);g.fill();}return new THREE.CanvasTexture(c);})(),fog:false,depthWrite:false,transparent:true}));
+ const group=new THREE.Group();const dome=new THREE.Mesh(new THREE.SphereGeometry(1,48,24),skyMat);group.add(dome,giant,sun,stars,moon);group.traverse(o=>{o.userData.probeSkip=true;});
+ const state={hour:12,day:200,dens:1.6,sun:new THREE.Vector3(),eclipse:0,ring:true};
+ function attach(scene,R){group.scale.setScalar(R);group.userData.R=R;scene.add(group);return group;}
+ function update(camPos,hour,day,dens){state.hour=hour;state.day=day;state.dens=dens;group.position.copy(camPos);
+  const s=sunDir(hour,day);state.sun.copy(s);skyMat.uniforms.sun.value.copy(s);skyMat.uniforms.dens.value=dens;
+  const ang=Math.acos(Math.max(-1,Math.min(1,s.dot(giantDir))));const ecl=s.y>0?Math.max(0,1-ang/GIANT_ANG):0;const eclF=ecl>0?Math.min(1,ecl*1.6):0;state.eclipse=eclF;skyMat.uniforms.ecl.value=eclF*0.9;
+  giant.position.copy(giantDir).multiplyScalar(0.96);giant.lookAt(new THREE.Vector3(0,0,0));const size=2*0.96*Math.tan(GIANT_ANG)/0.62;giant.scale.set(size,size,1);
+  const right=new THREE.Vector3().crossVectors(new THREE.Vector3(0,1,0),giantDir).normalize();const upB=new THREE.Vector3().crossVectors(giantDir,right).normalize();
+  giantMat.uniforms.L.value.set(s.dot(right),s.dot(upB),-s.dot(giantDir));giantMat.uniforms.haze.value=0.15+0.35*Math.max(0,dens-1)*0.7;giantMat.uniforms.ring.value=state.ring?1:0;giantMat.uniforms.t.value=hour/24;
+  sun.position.copy(s).multiplyScalar(0.95);const ss=0.11*(1+0.5*Math.max(0,0.15-s.y)*6);sun.scale.set(ss,ss,1);sun.material.opacity=s.y>-0.08?1-eclF*0.85:0;
+  const night=1-Math.min(1,Math.max(0,(s.y+0.1)/0.28));stars.material.opacity=night*0.9;stars.rotation.set(0,0,0);stars.rotateOnAxis(new THREE.Vector3(0,Math.sin(-LAT),Math.cos(-LAT)).normalize(),hour/24*6.2832);
+  const ma=hour/6*6.2832;const md=new THREE.Vector3(Math.cos(ma)*0.9,0.25+0.2*Math.sin(ma*0.5),Math.sin(ma)*0.9).normalize();moon.position.copy(md).multiplyScalar(0.93);moon.scale.set(0.02,0.02,1);moon.material.opacity=md.y>0.05?0.9:0;
+  return state;}
+ function lighting(){const s=state.sun;const dayF=Math.min(1,Math.max(0,(s.y+0.12)/0.3));const dusk=Math.exp(-Math.pow((s.y-0.02)/0.16,2));const e=state.eclipse;
+  const sunCol=new THREE.Color(1,0.96,0.9).lerp(new THREE.Color(1,0.55,0.3),dusk).multiplyScalar(1-0.85*e);
+  const thick=Math.min(1.6,Math.max(0.3,state.dens/1.6));const hor=new THREE.Color(0.78,0.84,0.90).lerp(new THREE.Color(0.86,0.70,0.52),Math.min(1,Math.max(0,thick-0.5)));
+  const fog=new THREE.Color(0.06,0.05,0.09).lerp(hor,dayF).lerp(new THREE.Color(1,0.5,0.25),dusk*0.5).multiplyScalar(1-0.6*e*dayF);
+  return{sunDir:s.clone(),sunIntensity:1.7*dayF*(1-0.85*e),sunColor:sunCol,ambient:0.18+0.55*dayF*(1-0.6*e)+0.08*(1-dayF),fog,giantDir:giantDir.clone(),eclipse:e,isNight:dayF<0.05,dayF,dusk};}
+ return{attach,update,lighting,sunDir,altAz,giantDir,state,GIANT_ANG};})();
+window.KratorSky=KratorSky;
+</script>
+</body>
+</html>
