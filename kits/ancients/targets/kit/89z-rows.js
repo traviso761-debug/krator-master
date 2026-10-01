@@ -128,7 +128,11 @@ const ROW_V={skyA:900,skyB:800,skyC:900,mega:1300,fac:760,port:1250,gov:480,lib:
  fuel:110,radar:150,dish:150,house:120,lab:820,house2:120,skyD:900,skyE:900,skyF:900,arc:1000,robo:600,campus:900,
  skyG:800,skyH:900,dc:420,police:170,hosp:260,hotel:260,cult:620,perch:900,flat:620,skyI:900,skyJ:900,skyK:900,lighthouse:1000};
 const ROW_B={amph:330,hotel:190,off:80};
-// the ROWV rows: their preset distance scales with s/s0 (see 91z-views)
+// the ROWV rows: their preset distance scales with the row's new half-width
+// over its old one (the outer sites' far edges, s + the site's half-width), so
+// a widened row is framed as it was (see 91z-views)
+function rowFrame(k){const R=ROWS[k];if(R.s0==null)return 1;const F=ROW_FP[k]||[-R.r,R.r],hw=Math.max(-F[0],F[1]);
+ return Math.max(1,(R.s+hw)/(R.s0+hw));}
 const ROWV_KEYS=new Set(['skyA','skyB','skyC','mega','fac','port','gov','lib','bunk','off','lab','skyD','skyE','skyF','robo','skyG','skyH','skyI','skyJ','skyK','lighthouse']);
 {const c10=v=>Math.ceil(v/10)*10;
  for(const k in ROWS){const R=ROWS[k];R.s0=R.s;if(/^stump/.test(k)||k==='lighthouse')continue;
@@ -142,7 +146,7 @@ const ROWV_KEYS=new Set(['skyA','skyB','skyC','mega','fac','port','gov','lib','b
  const FZ=k=>{const R=ROWS[k],F=ROW_FP[k]||[-R.r,R.r,-R.r,R.r],S=ROWS['stump'+k.slice(3)];let z0=F[2],z1=F[3];
   if(/^sky/.test(k)&&S){const G=ROW_FP['stump'+k.slice(3)]||[0,0,-S.r,S.r];z0=Math.min(z0,G[2]);z1=Math.max(z1,G[3]);}return[z0,z1];};
  const V=k=>{const R=ROWS[k];if(KIT_ALT_NAME[k])return Math.max(420,R.r*3.4,R.t?Math.max(260,R.r*2.2):0);
-  return (ROW_V[k]||R.r*2)*(ROWV_KEYS.has(k)?Math.max(1,R.s/R.s0):1);};
+  return (ROW_V[k]||R.r*2)*(ROWV_KEYS.has(k)?rowFrame(k):1);};
  const order=Object.keys(ROWS).filter(k=>!/^stump/.test(k));let z=0;
  for(let i=0;i<order.length;i++){const k=order[i];
   if(i){const p=order[i-1],P=FZ(p),N=FZ(k);
