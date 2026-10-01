@@ -1,9 +1,11 @@
 # Biomes in one open world
 
 Every biome kit today is its own page: one kit, one host, built whole at load. Krator is
-meant to become one open-world map, crossed without a load screen, so several kits must
-be resident at once and hand over to each other at their borders. This file is the plan
-and the contract changes it needs. Nothing here is built yet.
+meant to become one open-world map, crossed without a load screen, **in Godot** (Travis,
+Oct 2026). The three.js kits stay what generates the flora and previews it; Godot runs the
+world: streaming, LOD, culling, physics. So several kits must run together **when the world
+is baked**, hand over to each other at their borders, and write what they placed as data a
+Godot project loads tile by tile. This file is the plan and the contract changes it needs.
 
 ## The regions (Travis, Oct 2026)
 
@@ -84,9 +86,9 @@ wind. For one world:
   it keeps `BIO.WIND`. This changes the motion, not the geometry.
 - **Altitude in the air.** A steep border is also a pressure drop: haze and fog density
   should follow height (thicker below the scarp), which is the weather's business.
-- **Export.** `ATMOS.export()` is the contract for a Godot port (`core/atmos/GODOT.md`:
-  instanced sets as MultiMeshes). If the open world goes the same way, the biome core needs
-  the same: each item's instances (full matrices, colours, extras) and each bucket's mesh.
+- **In Godot** the clock and the wind are global shader parameters (`atm_time`, `atm_wind`,
+  `atm_gust_amp`, `core/atmos/GODOT.md`), so the ported foliage shader reads them and the
+  world has one wind by construction. The three.js change above is for the previews (Iziz).
 
 ## What blocks it today (checked in the code, Oct 2026)
 
@@ -128,18 +130,38 @@ wind. For one world:
 - **Placement seeded by cell.** A grid cell's draws seeded from its coordinates and the
   pass, so any region builds the same whatever was built before it. This moves every
   plant in every kit once: baselines and gallery shots change with it.
-- **Streaming.** The runtime-LOD chunk (1200 m in xanadu) becomes the unit built when the
-  camera comes near and freed when it leaves, far chunks drawn as stand-in impostors, under
-  one budget for the world.
+- **Export by tile, for Godot.** Godot streams, culls and fades; the kits only have to say
+  what is where, tile by tile, as data (the conventions of `settlements/yuni/GAME_EXPORT.md`
+  and `core/atmos/GODOT.md`: metres, +Y up, x east, z south; stable ids; tags in glTF extras):
+  - **items** as one MultiMesh per item per tile: a Transform3D, the colour, and the foliage
+    extras (`aN`, `aC2`). Those are nine floats and a MultiMesh carries eight (`COLOR`,
+    `INSTANCE_CUSTOM`), so the normal goes octahedron-packed into two;
+  - **buckets** as one glTF mesh per family per tile (indexed, vertex colours);
+  - **materials as data**: each leaf, bark and fauna material's texture (the procedural
+    canvases, as PNG) and its hook's options (sway, two-tone, iridescence), so the Godot
+    side writes a handful of shaders once (foliage card, bark, iridescent bark, glow, animated
+    fauna) instead of porting every kit's;
+  - **LOD as data**: the hero tree and its stand-in (xanadu's runtime LOD already pairs them)
+    become LOD levels with Godot visibility ranges; a far impostor is one more level;
+  - **tags**: species, class, harvest and Köppen per instance group, for the inspector's
+    successor in the game.
+- **A bake pipeline.** A headless run (the `verify.py` harness already loads a kit in
+  Chromium) builds each tile with every kit whose weight reaches it and writes the files. One
+  terrain: the heightfield the kits plant on must be the one Godot draws, so the world's
+  terrain and its ground paint need one source both read.
 
 ## Order
 
 1. `core/biome/`, kits switched one at a time and proven unchanged (mesh fingerprints).
 2. Namespaces and the cache-key fix in the core.
 3. `waterH` in every kit; the shared fields contract.
-4. Runtime LOD in every kit.
-5. Cell seeding, chunk build and free, weights, the occupancy index: proven on one gradual
-   pair and one steep pair.
+4. Cell seeding (moves every plant once), then weights and the occupancy index.
+5. The export contract (`biomes/GODOT.md`) and `BIO.export(tile)`, proven on one kit by
+   loading a tile in Godot; then the bake pipeline over a gradual pair and a steep pair.
+
+Runtime LOD, far impostors and impostor colour in three.js (items 2, 3 and 8 of the Oct 2026
+review) now serve the previews only: in the world, Godot's visibility ranges and the
+exported LOD levels do that work.
 
 Prototype pairs, proposed: **nwlowlands and swlowlands** (gradual; one kit was cloned from
 the other, so the core work is tested without species surprises) and **sedesert and
