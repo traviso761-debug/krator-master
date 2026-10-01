@@ -29,7 +29,7 @@ ABOUT = {
     'kits/post-apoc': 'The Post-Apoc set: reclaimed and recycled buildings (containers, silos, tanks, buses, bulkheads, tyre and bottle walls) with sockets for any culture\'s marks.',
     'kits/ancients': 'The Ancients kit: ruined megastructures of the ancient civilisation, 33 structure types, one target per site.',
     'kits/interiors': 'Interiors: ROOM() registration and an engine-neutral furniture placer (ported from Yuni) with a catalog adapter; building planner (storeys, partitions, stairs), walkers and a light budget; a verified demo of planned buildings and furnished rooms with outline view and storey cut-away.',
-    'kits/catalog': 'The master catalog: asset engine, the parametric furniture kit and 853 furniture pieces (kits/furniture SPEC shape, palette-keyed, tiered poor/common/court) over 24 cultures, one file per culture, plus the Beast Rider buildings; a verified contact sheet.',
+    'kits/catalog': 'The master catalog: asset engine, the parametric furniture kit and 853 furniture pieces (kits/furniture SPEC shape, palette-keyed, tiered poor/common/court) over 24 cultures, one file per culture; a verified contact sheet.',
 }
 # Files that are generated or duplicated elsewhere: never edit or read them whole.
 GENERATED = {

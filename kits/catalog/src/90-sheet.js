@@ -1,19 +1,23 @@
 /* ======================== Catalog contact sheet ========================
    Catalog contact sheet
    Lays out every registered FURN / PLANT / ASSET entry, every variant, in
-   labelled rows on the engine's own scene. ?sheet=furniture|buildings
-   shows one section; no parameter (or ?sheet=all) shows both, stacked
-   front to back. Furniture rows are one per culture and tier; ?cultures=a,b shows only those
-   cultures' furniture. Each instance is built at ry = 0, so local axes are world
+   labelled rows on the engine's own scene. The catalog registers furniture only, so
+   the page is the furniture sheet; ?sheet=plants|buildings lay out those registries
+   for a page that loads them. Furniture rows are one per culture and tier; ?cultures=a,b
+   shows only those cultures' furniture. Each instance is built at ry = 0, so local axes are world
    axes and verify.py can audit it against its declared box directly.
    Exposes window._catalog (rows, sections, audit()) and sets window._ready.
    ====================================================================== */
 (function () {
   'use strict';
   const qs = new URLSearchParams(location.search);
-  const SHEETS = ['all', 'furniture', 'buildings'];      /* plants left the main catalog (2026-10): their biome kits hold them */
-  let sheet = (qs.get('sheet') || 'all').toLowerCase();
-  if (SHEETS.indexOf(sheet) < 0) sheet = 'all';
+  /* the catalog is the furniture sheet (2026-10): plants went to their biome kits, the Voth and Beast
+     Rider buildings to their own sheets. The plant and building layouts below still work for a page
+     that registers them, with ?sheet=plants or ?sheet=buildings. */
+  const SHEETS = ['furniture', 'plants', 'buildings'];
+  let sheet = (qs.get('sheet') || 'furniture').toLowerCase();
+  if (sheet === 'all') sheet = 'furniture';
+  if (SHEETS.indexOf(sheet) < 0) sheet = 'furniture';
   /* ?cultures=xanadu,voth lays out only those cultures' furniture: a light page for one set */
   const onlyCultures = (qs.get('cultures') || '').split(',').map(function (c) { return c.trim().toLowerCase(); }).filter(Boolean);
   const cultureShown = function (c) { return !onlyCultures.length || onlyCultures.indexOf(c) >= 0; };
@@ -88,7 +92,7 @@
   /* --- lay out: rows run along +x from x = 0; sections stack toward -z */
   const rows = [], sections = [];
   let z = 0, maxW = 0;
-  const kinds = sheet === 'all' ? ['furniture', 'buildings'] : [sheet];
+  const kinds = [sheet];
   for (const kind of kinds) {
     const sec = { kind: kind, z0: z, rows: [] };
     for (const grp of groups(kind)) {
@@ -133,14 +137,17 @@
   const count = document.getElementById('count');
   const per = {};
   for (const g of INSTANCES) per[g.userData.kind] = (per[g.userData.kind] || 0) + 1;
-  count.textContent = FURNS.length + ' furniture · ' + PLANTS.length + ' plants · ' + ASSETS.length +
-    ' buildings — ' + INSTANCES.length + ' instances';
+  count.textContent = FURNS.length + ' furniture' + (PLANTS.length ? ' · ' + PLANTS.length + ' plants' : '') +
+    (ASSETS.length ? ' · ' + ASSETS.length + ' buildings' : '') + ' — ' + INSTANCES.length + ' instances';
   const ss = document.getElementById('sheetSel');
+  const have = { furniture: FURNS.length, plants: PLANTS.length, buildings: ASSETS.length };
   for (const s of SHEETS) {
+    if (!have[s]) continue;
     const o = document.createElement('option'); o.value = s; o.textContent = 'sheet: ' + s;
     if (s === sheet) o.selected = true; ss.appendChild(o);
   }
-  ss.onchange = function () { location.search = ss.value === 'all' ? '' : '?sheet=' + ss.value; };
+  if (ss.options.length < 2) ss.style.display = 'none';
+  ss.onchange = function () { location.search = ss.value === 'furniture' ? '' : '?sheet=' + ss.value; };
   const rs = document.getElementById('rowSel');
   rows.forEach(function (r, i) {
     const o = document.createElement('option'); o.value = String(i); o.textContent = r.title; rs.appendChild(o);
