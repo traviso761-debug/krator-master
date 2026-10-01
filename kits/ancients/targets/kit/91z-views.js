@@ -3,12 +3,16 @@
 // camera deeper than the row spacing stood inside the NEXT row's building: the
 // Skyscraper A shot was a wall of rusted drums 100 m off the lens. The distance
 // is capped to stop 90 m short of the next row, which leaves it behind the camera.
-const ROWV=(k,dist,h,ty,dx)=>{const R=ROWS[k];
+// Since the shared-code round's re-spacing (89z-rows.js) the rows are laid out
+// so that cap never binds: each row's z gap is derived from these distances.
+// A row whose `s` was widened is framed as before: the distance and height
+// scale by rowFrame(k), its new half-width over its old (89z-rows.js).
+const ROWV=(k,dist,h,ty,dx)=>{const R=ROWS[k];const rowF=rowFrame(k);
  const nz=Math.min(...Object.values(ROWS).map(o=>o.z).filter(z=>z>R.z),Infinity);
- const d=Math.min(dist,nz-R.z-90);
- return[dx||0,h,R.z+d,dx||0,ty,R.z];};
+ const d=Math.min(dist*rowF,nz-R.z-90);
+ return[dx||0,h*rowF,R.z+d,dx||0,ty,R.z];};
 const VIEWS={
- 'Overview':[0,1400,ROWS.lab.z+2600,0,150,5000],
+ 'Overview':[0,1500,ROWS.port.z+3000,0,120,ROWS.mega.z],   // the first rows, from ~6.6 km (the re-spaced kit is 58 km long)
  'Skyscraper A':ROWV('skyA',900,300,210),'Skyscraper B':ROWV('skyB',800,260,160),'Skyscraper C':ROWV('skyC',900,300,200),
  // THE PROJECT. A seventh element on a preset means "night" — see setNight in
  // src/92-camera.js. Day first, because you have to see the patched fabric
@@ -55,7 +59,7 @@ const VIEWS={
  'Houses DEF intact':[-ROWS.house2.s+65,22,ROWS.house2.z+120,-ROWS.house2.s+65,6,ROWS.house2.z],'Houses DEF ruined':[ROWS.house2.s+65,22,ROWS.house2.z+120,ROWS.house2.s+65,6,ROWS.house2.z],
  'Skyscraper D':ROWV('skyD',900,300,180),'Skyscraper E':ROWV('skyE',900,300,190),'Skyscraper F':ROWV('skyF',900,300,160),
  'Toppled D':[ROWS.skyD.t-200,120,ROWS.skyD.z+420,ROWS.skyD.t+120,40,ROWS.skyD.z],'Toppled E':[ROWS.skyE.t-200,120,ROWS.skyE.z+420,ROWS.skyE.t+120,40,ROWS.skyE.z],'Toppled F':[ROWS.skyF.t-200,120,ROWS.skyF.z+420,ROWS.skyF.t+120,40,ROWS.skyF.z],
- 'The Gate':[-ROWS.arc.s,380,ROWS.arc.z+700,-ROWS.arc.s,170,ROWS.arc.z],'The Gate ruin':[ROWS.arc.s-500,20,ROWS.arc.z+560,ROWS.arc.s,160,ROWS.arc.z],
+ 'The Gate':[-ROWS.arc.s,330,ROWS.arc.z+1000,-ROWS.arc.s,235,ROWS.arc.z],'The Gate ruin':[ROWS.arc.s-500,20,ROWS.arc.z+560,ROWS.arc.s,160,ROWS.arc.z],
  'Robotics factory':ROWV('robo',600,220,30),'Robotics yard':[-ROWS.robo.s-60,6,ROWS.robo.z+230,-ROWS.robo.s+60,25,ROWS.robo.z-30],
  'Campus':[0,420,ROWS.campus.z+900,0,40,ROWS.campus.z],'Campus intact':[-ROWS.campus.s+40,90,ROWS.campus.z+560,-ROWS.campus.s-40,40,ROWS.campus.z+60],'Campus ruined':[ROWS.campus.s+40,90,ROWS.campus.z+560,ROWS.campus.s-40,40,ROWS.campus.z+60],'Campus lawn':[-ROWS.campus.s-60,14,ROWS.campus.z+400,-ROWS.campus.s-60,30,ROWS.campus.z+200],'Campus courtyard':[-ROWS.campus.s-70,60,ROWS.campus.z+250,-ROWS.campus.s-70,15,ROWS.campus.z+170],
  'Skyscraper G':ROWV('skyG',800,200,110),'Skyscraper H':ROWV('skyH',900,300,170),'Toppled G':[ROWS.skyG.t-250,120,ROWS.skyG.z+450,ROWS.skyG.t+60,40,ROWS.skyG.z],'Toppled H':[ROWS.skyH.t-200,120,ROWS.skyH.z+420,ROWS.skyH.t+120,40,ROWS.skyH.z],
@@ -81,6 +85,27 @@ const VIEWS={
  'Wheel core':[-ROWS.cult.s+130,90,ROWS.cult.z+230,-ROWS.cult.s,50,ROWS.cult.z],
  'Skyscraper I':ROWV('skyI',900,300,210),'Skyscraper J':ROWV('skyJ',900,300,200),'Skyscraper K':ROWV('skyK',900,300,200),
  'Toppled I':[ROWS.skyI.t-200,120,ROWS.skyI.z+420,ROWS.skyI.t+120,40,ROWS.skyI.z],'Toppled J':[ROWS.skyJ.t-200,120,ROWS.skyJ.z+420,ROWS.skyJ.t+120,40,ROWS.skyJ.z],'Toppled K':[ROWS.skyK.t-200,120,ROWS.skyK.z+420,ROWS.skyK.t+120,40,ROWS.skyK.z],
+ 'Lighthouse':ROWV('lighthouse',1000,300,70),
+ 'Lighthouse at night':[-ROWS.lighthouse.s-560,150,ROWS.lighthouse.z+760,-ROWS.lighthouse.s,120,ROWS.lighthouse.z,1],
  // Theodiga's views moved to targets/theodiga/91z-views.js with the site.
- 'Office C':[-ROWS.off.s+330,20,ROWS.off.z+120,-ROWS.off.s+330,10,ROWS.off.z-20],
+ 'Office C':[-ROWS.off.s+160,22,ROWS.off.z-5,-ROWS.off.s+95,10,ROWS.off.z-75],
 };
+// THE ALTERNATES (rows in 89z-rows.js): per type a row shot, the reclaimed site
+// (decay 2, at t) by day and by night, framed off the row's own radius.
+for(const k in KIT_ALT_NAME){const R=ROWS[k],n=KIT_ALT_NAME[k],ty=Math.max(25,R.r*.45);
+ VIEWS[n]=ROWV(k,Math.max(420,R.r*3.4),Math.max(90,R.r*1.1),ty);
+ if(!R.t)continue;
+ VIEWS[n+' reclaimed']=[R.t-R.r*.6,Math.max(40,R.r*.5),R.z+Math.max(260,R.r*2.2),R.t,ty*.8,R.z];
+ VIEWS[n+' reclaimed at night']=VIEWS[n+' reclaimed'].concat([1]);}
+// The Iziz spaceport: all six states, then the toppled tower and the reclaimed port at night.
+VIEWS['Iziz spaceport']=[-200,520,ROWS.izPort.z+1100,170,0,ROWS.izPort.z];
+VIEWS['Iziz spaceport toppled']=[ROWS.izPort.t-190,119,ROWS.izPort.z+250,ROWS.izPort.t,8,ROWS.izPort.z];
+VIEWS['Iziz spaceport reclaimed at night']=[ROWS.izPort.j-190,119,ROWS.izPort.z+250,ROWS.izPort.j,8,ROWS.izPort.z,1];
+// The stumps: a three-quarter view of each from its row's front.
+for(const k in KIT_STUMPS){const R=ROWS[k];VIEWS['Stump '+k.slice(5)]=[R.s-260,110,R.z+420,R.s,45,R.z];}
+// One overview per group, from the east and above, so each group's rows fill the frame.
+for(const[n,test]of[['The alternates: towers',k=>/^alt(Bole|Stack|Hotel|Flat|Perch|Cult)$/.test(k)],
+ ['The alternates: domestic',k=>/^ad/.test(k)],['The Yuni variants',k=>/^yv/.test(k)],['The alternates: civic',k=>/^alt/.test(k)&&!/^alt(Bole|Stack|Hotel|Flat|Perch|Cult)$/.test(k)]]){
+ const zs=Object.keys(KIT_ALT_NAME).filter(test).map(k=>ROWS[k].z);if(!zs.length)continue;
+ const z0=Math.min(...zs),z1=Math.max(...zs),L=z1-z0+800;
+ VIEWS[n]=[L*.75+600,L*.45+300,(z0+z1)/2+L*.18,300,40,(z0+z1)/2];}

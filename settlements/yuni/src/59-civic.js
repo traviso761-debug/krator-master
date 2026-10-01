@@ -869,7 +869,9 @@ reseed(590001);
       if(F.variant===1){ for(var r=0;r<4;r++){ F.rod(-0.85,1.05+r*0.20,0.14, 0.85,1.05+r*0.20,0.14, 0.02, BRASSC[0], 'metal');
         for(var b=0;b<6;b++) F.ball(-0.75+b*0.28, 1.05+r*0.20, 0.14, 0.055, F.pick([MOSBLUEC[0],MOSWARMC[0],MOSGREENC[0]]), 'mosaic'); } } } });
 
-  FURN({ key:'order_mat_rack', name:'Rack of rolled mats', culture:'order', room:'school', w:1.75, d:0.70, h:1.40, variants:2,
+  /* w covers x -1.20..+0.87 centred (the mat rolls grow from their base along -x and hang 0.29 m out of the
+     left end: KNOWN_ISSUES.md); h covers the basket on variant 1. */
+  FURN({ key:'order_mat_rack', name:'Rack of rolled mats', culture:'order', room:'school', w:2.4, d:0.70, h:1.70, variants:2,
     variantNames:['four mats','six mats and a basket'],
     build:function(F){ [-1,1].forEach(function(sg){ F.box(sg*0.82,0,0, 0.10,1.35,0.62, 0, TIMBERC[0], 'timber'); });
       F.box(0,0.55,0, 1.70,0.08,0.58, 0, PLANKC[2], 'plank'); F.box(0,1.25,0, 1.74,0.09,0.62, 0, PLANKC[0], 'plank');

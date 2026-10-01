@@ -62,7 +62,7 @@ FIREKIT.push('skLit','skGlow');
 // Presets are derived from this: targets/skyk/91z-views.js runs after the builders.
 const SK_SITE={};
 
-function buildSkyK(scene,gx,gz,d){reseed(9780+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const dd=d>0?1:0;
+function buildSkyK(scene,gx,gz,d){reseed(9780+d);KOFF=[gx,0,gz];const SM=skyShardMark();const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const dd=d>0?1:0;
  // ============================================================ THE NUMBERS
  const H=405,PH=2.5,ZB=-14,TX=22,PR=112,E0=.1;
  const CUT=150,HC1=372;                        // toppled cut; ruined snaps the prow off here
@@ -159,17 +159,70 @@ function buildSkyK(scene,gx,gz,d){reseed(9780+d);KOFF=[gx,0,gz];const G=new THRE
    meshMerged(plates,MAT.skPlate,P);meshMerged(soffs,MAT.skSoffit,P);
    for(let k=0;k<50;k++){const y=rr(yBot+8,yTop-8);if(y>RY-RR-5&&y<RY+RR+5)continue;const x=rr(xL(y)+6,xR(y)-6);if(xR(y)-xL(y)<14)continue;
     kput('pipeR',[x,y-y0,rr(ZB+2,frontZ(x,y)-3)],null,[.5,rr(6,20),.5],null);}}
-  // ---- WINDOWS: ribbon lights in bays across both faces; night cards behind a third
+  // ---- WINDOWS. (Design pass, 2026-10.) The old grid's rng draws are
+  // replayed first, draw for draw, so everything placed after it (the rose's
+  // ruin, the campanile, the houses) is exactly where it was; the facade
+  // itself is placed by position hash.
   const NBF=18,NBB=15;
   for(let y=PH+5;y<H-6;y+=4.5){if(y<yBot+2.5||y>yTop-3)continue;
    for(const face of [0,2]){const NB=face===0?NBF:NBB;const a=xL(y),b=xR(y);const ww=(b-a)/NB*.8;if(ww<.9)continue;
     for(let k=0;k<NB;k++){if(k%3===1)continue;const s=(k+.5)/NB;const x=a+(b-a)*s;const up=face===0?s*.46:.5+(1-s)*.46;
      if(y>topAt(up)-3||y<botAt(up)+2)continue;if(sHole(face,up,x,y,false))continue;if(inRose(x,y,10))continue;if(face===0&&inLancet(x,y,4.5))continue;
-     let p,n;if(face===0){n=fNrm(x,y);p=[x+n[0]*.1,y-y0,frontZ(x,y)+n[2]*.1];}else{n=[0,0,-1];p=[x,y-y0,ZB-.1];}
-     const q=qFacing(n);
-     if(dx>0){if(rng()<.3)continue;kput('skWinD',p,q,[ww,2.3,1],null);continue;}
-     kput('skWin',p,q,[ww,2.3,1],null);
-     if(rng()<.3)kput('skLit',[p[0]+n[0]*.25,p[1]+n[1]*.25,p[2]+n[2]*.25],q,[ww*.92,2.0,1],WARM.clone().multiplyScalar(rr(.55,1)));}}}
+     if(dx>0)rng();else if(rng()<.3)rng();}}}
+  // THE FACADE: a rhythm that changes with height, so the sail reads as a
+  // made thing at every range (the regular 18-bay ribbon grid read as graph
+  // paper). From the foot up, on the bellied front:
+  //   the base (to 124 m): two-storey openings under deep hoods;
+  //   the belly (to 212 m): bays of three under one sunshade, piers between,
+  //     every third storey a sky-lobby band of recessed loggias with balconies,
+  //     the bays shifting half a bay every six storeys;
+  //   the rose zone (to 292 m): nearly blank, small square openings staggered;
+  //   the upper sail (to 372 m): narrow vertical slits, staggered;
+  //   the prow: blank.
+  // On the flat back, vertical strips of windows, banded every fourth storey.
+  // Margins along the luff and leech widen with height.
+  const BX=dx>0?'boxR':'boxW';
+  const onF=(face,x,y,out)=>{if(face===0){const n=fNrm(x,y);return{p:[x+n[0]*out,y-y0,frontZ(x,y)+n[2]*out],n};}return{p:[x,y-y0,ZB-out],n:[0,0,-1]};};
+  const upOf=(face,x,y)=>{const f=clamp((x-xL(y))/Math.max(xR(y)-xL(y),1),0,1);return face===0?f*.46:.5+(1-f)*.46;};
+  const okAt=(face,x,y,h,m)=>{const up=upOf(face,x,y);if(y+h/2>topAt(up)-1.5||y-h/2<botAt(up)+1.5)return false;
+   if(sHole(face,up,x,y,false))return false;if(inRose(x,y,m==null?10:m))return false;if(face===0&&inLancet(x,y,4.5))return false;return true;};
+  const win=(face,x,y,w,h)=>{if(!okAt(face,x,y,h))return false;const o=onF(face,x,y,.1),q=qFacing(o.n),hs=h3(x*.31,y*.17,face+7.7);
+   if(dx>0){if(hs<.3)return true;kput('skWinD',o.p,q,[w,h,1],null);return true;}
+   kput('skWin',o.p,q,[w,h,1],null);
+   if(hs<.3)kput('skLit',[o.p[0]+o.n[0]*.25,o.p[1]+o.n[1]*.25,o.p[2]+o.n[2]*.25],q,[w*.92,h*.87,1],WARM.clone().multiplyScalar(.55+hs*1.5));return true;};
+  const box=(name,face,x,y,s,out,brk)=>{if(!okAt(face,x,y,s[1],8))return;if(dx>0&&brk&&h3(x*.7,y*.3,4.4)<brk)return;const o=onF(face,x,y,out);kput(name,o.p,qFacing(o.n),s,null);};
+  const nearBatten=y=>{for(let yb=PH+36;yb<H-30;yb+=36)if(Math.abs(y-yb-.8)<3.2)return true;return false;};
+  const Z1=124,Z2=RY-RR-12,Z3=RY+RR+16,Z4=HC1;
+  for(let n=0,y=PH+5;y<Z4;n++,y+=4.5){if(y<yBot+2.5||y>yTop-3||nearBatten(y))continue;
+   const a=xL(y),b=xR(y),W=b-a,m=W*(.05+.07*tq(y))+2.5,L=a+m,R=b-m;if(R-L<6)continue;
+   const row=(pitch,shift,fn)=>{const N=Math.floor((R-L)/pitch);if(N<1)return;const x0=(L+R)/2-(N-1)/2*pitch+shift*pitch;for(let g=0;g<N;g++){const x=x0+g*pitch;if(x>L-1&&x<R+1)fn(x,g);}};
+   // the bellied front
+   if(y<Z1){if(n%2===0)row(7.4,0,x=>{if(win(0,x,y+2.25,4.4,6.4))box(BX,0,x,y+5.9,[5.8,.45,1.9],.95,.5);});}
+   else if(y<Z2){const sh=(Math.floor(n/6)%2)*.5;
+    if(n%3===2)row(12.8,sh,(x,g)=>{if(((g+Math.floor(n/3))&1)===0)return;
+      box('boxD',0,x,y+1,[10.4,3.1,.3],.06,0);box(BX,0,x,y-.65,[11,.5,2.6],1.3,.35);box(BX,0,x,y+.1,[11,1.1,.16],2.55,.5);});
+    else row(12.8,sh,x=>{let k=0;for(const o of [-3.5,0,3.5])if(win(0,x+o,y+1,2.7,3.1))k++;if(k)box(BX,0,x,y+2.95,[11.4,.35,1.5],.75,.45);});}
+   else if(y<Z3){if(n%2===0)row(8.6,(n%4)?.5:0,x=>{win(0,x,y+1,1.9,1.9);});}
+   else row(5.4,n%2?.5:0,x=>{win(0,x,y+1.2,1.15,3.9);});
+   // the flat back
+   if(y<Z2){if(n%4!==3)row(10.6,0,x=>{win(2,x,y+1,3.6,2.8);});else row(10.6,0,x=>{box(BX,2,x,y+.4,[9.4,.5,1.2],.6,.4);});}
+   else if(y<Z3){if(n%2===1)row(10.6,0,x=>{win(2,x,y+1,1.7,2.4);});}
+   else row(6.2,n%2?.5:0,x=>{win(2,x,y+1.2,1.15,3.9);});}
+  // THE KEEL: a blade standing out of the belly along its deepest line (the
+  // draft, 42% back from the luff), springing from the porch's apex and
+  // broken only by the rose's collar. Square-on from the south the front
+  // was a flat silhouette; the keel and its shadow draw the belly's crest.
+  {const sm=y=>{const t=clamp((y-LAP)/46,0,1);return t*t*(3-2*t);},xk=y=>lerp(LX,xL(y)+.42*(xR(y)-xL(y)),sm(y));
+   for(const sp of [[LAP-1,RY-RR-9.5],[RY+RR+9.5,HC1-6]]){const ya=Math.max(sp[0],yBot+1.5),yb=Math.min(sp[1],yTop-1.5);if(yb-ya<8)continue;
+    const dep=v=>{const y=lerp(sp[0],sp[1],v);return(1.6+5.4*Math.pow(Math.sin(Math.PI*clamp((y-sp[0])/(sp[1]-sp[0]),0,1)),.6))*(1-.45*tq(y));};
+    shell.push(skGrid((u,v)=>{const y=lerp(ya,yb,v),x=xk(y),n=fNrm(x,y),z=frontZ(x,y),a=u*Math.PI,t=[n[2],0,-n[0]],w=2.3*(1-.4*tq(y)),D=dep((y-sp[0])/(sp[1]-sp[0]));
+      return[x+t[0]*w*Math.cos(a)+n[0]*D*Math.sin(a)-n[0]*.4,y-y0+n[1]*D*Math.sin(a),z+t[2]*w*Math.cos(a)+n[2]*D*Math.sin(a)-n[2]*.4];},8,Math.max(6,Math.round((yb-ya)/3)),
+     (u,v,p)=>{const y=p[1]+y0,x=xk(y),up=upOf(0,x,y);return y>topAt(up)-1||y<botAt(up)+1||(hole&&hole(up,y-y0))||(tear&&tear(0,x,y));},6));}}
+  // THE BOLT ROPES: a rounded edge along the luff and the leech of the belly,
+  // so the sail's outline is drawn as a line (broken where the skin is)
+  for(const e of [0,1]){let seg=[];const flush=()=>{if(seg.length>2)shell.push(skTube(seg,1.25,seg.length*2,false));seg=[];};
+   for(let y=yBot+1;y<=yTop-1;y+=4){const up=e?.46:0,x=e?xR(y):xL(y),z=ZB+DZ(y)*E0+.2;
+    if(y>topAt(up)-1||y<botAt(up)+1||(hole&&hole(up,y-y0))){flush();continue;}seg.push([x+(e?.3:-.3),y-y0,z]);}flush();}
   // ---- THE ROSE: a tunnel through the sail, collars on both faces, a spoked glazed disc
   if(RY-RR-10>yBot&&RY+RR+10<yTop){const ry=RY-y0;
    shell.push(skGrid((u,v)=>{const th=u*TAU;const x=RX+RR*Math.cos(th),y=RY+RR*Math.sin(th);const zf=frontZ(x,y);return[x,y-y0,zf+(ZB-zf)*v];},96,8,null,6));
@@ -389,6 +442,7 @@ function buildSkyK(scene,gx,gz,d){reseed(9780+d);KOFF=[gx,0,gz];const G=new THRE
    kput('boxD',L(0,PH+1.3,dp/2+.08),qR,[1.7,2.6,.3],null);}}
  if(dd===0){people(LX,52,12,14,PH);people(40,30,5,10,PH);}
  else if(d!==2){vinesOnRing(0,PH,0,PR,40,8);}
+ if(dd>0)skyShards(SM,d===3?.25:.5);   // glass teeth in the dead openings (52-sky-abc.js)
  KOFF=[0,0,0];return G;}
 
 // THE CAMPANILE, built up its local +y from its foot at 0. `from`/`to` are

@@ -76,7 +76,10 @@ MAT.sjPave=new THREE.MeshStandardMaterial({map:TEX.concrete,roughnessMap:TEX.con
 MAT.sjCore=new THREE.MeshStandardMaterial({map:TEX.concrete,roughnessMap:TEX.concreteRM,color:0x3c3733,roughness:1,metalness:0,side:DS});
 // the warm line under each terrace lip: stone by day, lit at night (NIGHT is
 // read at render time, so nothing is rebuilt when the view flips)
-MAT.sjGlow=new THREE.MeshStandardMaterial({color:0xe9d8b8,emissive:0xff9440,emissiveIntensity:0,roughness:.8,metalness:0,side:DS});
+// (round 2: the emissive was 0xff9440 at .6, which is linear here, so after
+// ACES and the sRGB encode its green and blue lifted it to a pale cream; a
+// redder emissive with less green lands on amber)
+MAT.sjGlow=new THREE.MeshStandardMaterial({color:0xe9d8b8,emissive:0xff5212,emissiveIntensity:0,roughness:.8,metalness:0,side:DS});
 MAT.sjPaveR=new THREE.MeshStandardMaterial({map:TEX.concrete,roughnessMap:TEX.concreteRM,color:0x8c7c66,roughness:1,metalness:0,side:DS});
 
 // gridSurface with a UV function, which is also handed the point it maps
@@ -113,13 +116,13 @@ function sjPlate(y,reF,riF,prof,nu,hole,wv){const nv=prof.length-1;
   nu,nv,(u,v,p)=>[u*Math.max(4,Math.round(TAU*reF(0)/10)),(Math.hypot(p[0],p[2])+p[1]-y)/8],hole);}
 // What the presets need: filled per decay by the builder.
 const SJ_SITE={};
-function sjGlowOn(m){if(m)m.onBeforeRender=()=>{MAT.sjGlow.emissiveIntensity=NIGHT?.6:0;};}
+function sjGlowOn(m){if(m)m.onBeforeRender=()=>{MAT.sjGlow.emissiveIntensity=NIGHT?.85:0;};}
 
 function buildSkyJ(scene,gx,gz,d){reseed(9770+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const dd=d>0?1:0;
  const HO=dd*HOLES;                                  // 1 ruined/toppled, .55 rehabilitated
  const YB=32,BS=6.4,HS=4.6,YS0=YB+6.2,NP=64,YTOP=YS0+(NP-1)*HS,YSP=424,NR=8,YF=112,CUT=150,RP=122;
  const STONE=dd?MAT.sjStoneR:MAT.sjStone,WINM=dd?MAT.sjWinR:MAT.sjWin;
- REGISTER({name:'Skyscraper J — the Whorl ('+(d===2?'toppled':STATE(d))+')',x:0,z:0,r:RP,h:(d===2?CUT+30:YSP+14)});
+ REGISTER({name:'Skyscraper J — the Whorl ('+(d===2?'toppled':STATE(d))+')',x:0,z:0,r:RP,h:(d===2?CUT+30:YSP+34)});
  REGISTER({name:'the Whorl — base block',x:0,z:0,r:98,h:YB+2});
  // ENVELOPE. Et is the mean plate radius: a trunk flare off the base roof, a
  // slight belly, a waist, and a cap flaring just under the roof plate.
@@ -145,10 +148,64 @@ function buildSkyJ(scene,gx,gz,d){reseed(9770+d);KOFF=[gx,0,gz];const G=new THRE
  const ribW=(nd,sc)=>(3.0+2.6*nd)*sc;
  const ribPt=(i,y)=>{const t=ribTh(i,y),r=ribR(i,y);return[r*Math.cos(t.th),y,r*Math.sin(t.th)];};
  // one rib piece between heights a and b, optionally carried through a matrix
- const ribGeo=(i,a,b,oy,M,c0,c1)=>{if(b-a<1)return null;const n=Math.max(2,Math.ceil((b-a)/(a>YTOP?1.6:2.4)));const P=[],W=[],H=[],v=new THREE.Vector3();
-  for(let k=0;k<=n;k++){const y=a+(b-a)*k/n,p=ribPt(i,y),t=ribTh(i,y),sc=ribSc(y);v.set(p[0],p[1],p[2]);if(M)v.applyMatrix4(M);
-   P.push([v.x,v.y+oy,v.z]);W.push(ribW(t.nd,sc));H.push((1.5+.45*t.nd)*sc);}
+ // `sx(t)`, optional, -> [kW, addW, kH, addH] along the piece (t 0..1): the
+ // same path drawn fatter, for the collars and shoes of the junctions below
+ const ribGeo=(i,a,b,oy,M,c0,c1,sx)=>{if(b-a<1)return null;const n=Math.max(2,Math.ceil((b-a)/(a>YTOP?1.6:2.4)));const P=[],W=[],H=[],v=new THREE.Vector3();
+  for(let k=0;k<=n;k++){const y=a+(b-a)*k/n,p=ribPt(i,y),t=ribTh(i,y),sc=ribSc(y),s=sx?sx(k/n):null;v.set(p[0],p[1],p[2]);if(M)v.applyMatrix4(M);
+   P.push([v.x,v.y+oy,v.z]);W.push(s?ribW(t.nd,sc)*s[0]+s[1]:ribW(t.nd,sc));H.push(s?(1.5+.45*t.nd)*sc*s[2]+s[3]:(1.5+.45*t.nd)*sc);}
   return sjSweep(P,W,H,null,c0,c1);};
+ // ---- THE JUNCTIONS (design pass, 2026-10). The ribs were bare tubes: where
+ // two kissed they ran through each other in a crease, where they crossed a
+ // terrace plate they simply pierced it, and they stopped dead on the roof and
+ // the plaza. Now every meeting is a made thing, in the same laminated stone:
+ //  * a CLASP where two neighbours kiss: a lens-shaped sleeve round both,
+ //    swelling to its middle, with a boss on its outer face;
+ //  * a COLLAR where a rib passes a terrace plate (and the base roof's lip, and
+ //    each hoop of the spire): the rib drawn a little fatter for 4 m, so the
+ //    plate reads as clamped in it;
+ //  * a SHOE where a rib roots: the rib flaring into a broad footing.
+ // All are derived from the ribs' own paths, so a ruin keeps exactly those on
+ // the pieces it keeps. No rng: the ruin plan's stream is untouched.
+ const COL=()=>[1.16,.7,1.22,.55];
+ const SHOE=t=>{const f=1-t;return[1+.55*f*f,.5+1.6*f*f,1+.7*f*f,.4+1.4*f*f];};
+ // the kisses: for each pair of neighbours, the heights where their centre
+ // lines come closest and the two bands overlap
+ const KISS=[];
+ for(let i=0;i<NR;i++){const j=(i+1)%NR;let p2=1e9,p1=1e9,y1=0,w1=0;
+  for(let y=YF+4;y<=YTOP-4;y+=.5){const ti=ribTh(i,y),tj=ribTh(j,y);let s=((tj.th-ti.th)%TAU+TAU)%TAU;if(s>Math.PI)s=TAU-s;
+   const dist=s*Et(y);if(p1<p2&&p1<=dist&&p1<w1)KISS.push([i,j,y1]);
+   p2=p1;p1=dist;y1=y;w1=ribW(ti.nd,1)+ribW(tj.nd,1);}}
+ const angMid=(i,j,y)=>{const ti=ribTh(i,y),tj=ribTh(j,y);let s=((tj.th-ti.th)%TAU+TAU)%TAU;if(s>Math.PI)s-=TAU;return[ti.th+s/2,Math.abs(s),ti,tj];};
+ const kissGeo=(i,j,y0,oy)=>{const P=[],W=[],H=[],L=6.5,n=8;
+  for(let k=0;k<=n;k++){const y=y0+(k/n-.5)*2*L,m=angMid(i,j,y),r=Et(y),e=Math.sin(Math.PI*k/n);
+   P.push([r*Math.cos(m[0]),y+oy,r*Math.sin(m[0])]);
+   W.push(m[1]*r/2+Math.max(ribW(m[2].nd,1),ribW(m[3].nd,1))*(.78+.32*e)+.5);H.push((1.5+.45*Math.max(m[2].nd,m[3].nd))*(1+.32*e)+.45);}
+  return sjSweep(P,W,H,null,true,true);};
+ // an ellipsoid boss: centre c, radial direction th, radii across / up / out
+ const boss=(c,th,ra,ru,ro,oy,nu,nv)=>{const n=[Math.cos(th),Math.sin(th)],t=[-n[1],n[0]];
+  return sjGrid((u,v)=>{const a=u*TAU,b=(v-.5)*Math.PI,cb=Math.cos(b),x=Math.cos(a)*cb*ra,y=Math.sin(b)*ru,z=Math.sin(a)*cb*ro;
+   return[c[0]+t[0]*x+n[0]*z,c[1]+y+oy,c[2]+t[1]*x+n[1]*z];},nu||12,nv||8,(u,v)=>[u*2,v]);};
+ const kissBoss=(i,j,y,oy)=>{const m=angMid(i,j,y),r=Et(y)+(1.5+.45*Math.max(m[2].nd,m[3].nd))*1.32+.2;
+  return boss([r*Math.cos(m[0]),y,r*Math.sin(m[0])],m[0],2.6,3.8,1.5,oy);};
+ // THE CROWN, standing (`oy` drops it into its group) or as the fallen spire.
+ // A coronet where the ribs leave the roof plate; four hoops, each clasping
+ // every rib it crosses; a tall glazed lantern, banded every two storeys,
+ // inside the cage; over it a stone spindle rising to the knot where the ribs
+ // meet; a boss on the knot and a banded needle out of it.
+ // `tops[i]` is how high rib i still reaches (a hoop collar needs its rib);
+ // `hole` breaks the hoops, `ghole` the glass. Pushes into st (stone) and gl.
+ const CR_H=[13,29,47,66],CR_L=YTOP+56;
+ const crLr=y=>Rs(y)*.55;
+ const crown=(oy,st,gl,tops,hole,ghole)=>{
+  st.push(sjPlate(YTOP+6+oy,th=>Rs(YTOP+6)*1.1,th=>Rs(YTOP+6)*1.1-3.6,SJ_PT,72,hole));                // the coronet
+  CR_H.forEach(h=>{const y=YTOP+h;st.push(sjPlate(y+oy,th=>Rs(y)*1.06,th=>Rs(y)*1.06-2.8,SJ_PM,64,hole));
+   for(let i=0;i<NR;i++)if(tops[i]>y+2)st.push(ribGeo(i,y-1.7,y+1.7,oy,null,true,true,COL));});
+  gl.push(sjGrid((u,v)=>{const th=u*TAU,y=YTOP-1+v*(CR_L-YTOP+1);return[crLr(y)*Math.cos(th),y+oy,crLr(y)*Math.sin(th)];},48,12,(u,v)=>[u*4,(YTOP-1+v*(CR_L-YTOP+1)-YS0)/(4*HS)],ghole));
+  for(let y=YTOP+8.2;y<CR_L-2;y+=9.2)st.push(sjPlate(y+oy,th=>crLr(y)+.9,th=>crLr(y)-.6,SJ_PM,40,null));
+  st.push(sjPlate(CR_L+oy,th=>crLr(CR_L)+1.3,()=>0,SJ_PT,40,null));                                 // the lantern's cap
+  st.push(sjGrid((u,v)=>{const th=u*TAU,y=CR_L+.8+v*(YSP-4-CR_L),r=lerp(crLr(CR_L)*.82,2.3,Math.pow(v,.75));return[r*Math.cos(th),y+oy,r*Math.sin(th)];},24,10,(u,v)=>[u*3,v*6]));
+  st.push(sjGrid((u,v)=>{const th=u*TAU,b=(v-.5)*Math.PI,r=4.2*Math.pow(Math.cos(b),.8)+.01;return[r*Math.cos(th),YSP+1+Math.sin(b)*7.5+oy,r*Math.sin(th)];},20,10,(u,v)=>[u*2,v*2]));   // the knot's boss
+  st.push(sjGrid((u,v)=>{const th=u*TAU,y=YSP+7+v*26,r=lerp(1.5,.08,Math.pow(v,.9))+(Math.abs(v-.3)<.025||Math.abs(v-.55)<.02?.6:0);return[r*Math.cos(th),y+oy,r*Math.sin(th)];},10,40,(u,v)=>[u*2,v*7]));};
  // THE RUIN PLAN, per rib (level 1 only): kept pieces [a,b,splay], and what fell.
  const PLAN=[],FELL=[];
  for(let i=0;i<NR;i++){const y0=i%2===0?-1.5:YB+.4;
@@ -218,18 +275,25 @@ function buildSkyJ(scene,gx,gz,d){reseed(9770+d);KOFF=[gx,0,gz];const G=new THRE
     // above the roof plate a rib belongs to the spire's mesh (split with no
     // cap at the join, so the tube stays continuous)
     if(part==='all'&&a<YTOP&&b>YTOP+1){const g1=ribGeo(i,a,YTOP,oy,M,a>0,false),g2=ribGeo(i,YTOP,b,oy,M,false,b<YSP-1);if(g1)stone.push(g1);if(g2)spire.push(g2);}
-    else{const g=ribGeo(i,a,b,oy,M,a>0,b<YSP-1);if(g)(part==='all'&&a>=YTOP?spire:stone).push(g);}}}
+    else{const g=ribGeo(i,a,b,oy,M,a>0,b<YSP-1);if(g)(part==='all'&&a>=YTOP?spire:stone).push(g);}
+    // its junctions: the shoe where it roots (if its foot still stands), a
+    // collar at the base roof's lip (the roots), and one at every terrace plate
+    // it still passes (the plate must stand there too)
+    if(a<=pc[0]+.01&&pc[0]<YB+1)stone.push(ribGeo(i,a,a+6,oy,M,true,true,SHOE));
+    if(i%2===0&&a<YB-3&&b>YB+3)stone.push(ribGeo(i,YB-2.6,YB+1.8,oy,M,true,true,COL));
+    for(let k=0;k<NP;k+=3){const y=YS0+k*HS,jag=(h3(k*1.9,3.1,5.7)-.5)*14;
+     if(y<a+2.5||y>b-2.5||y>YTOP-1||gone(k))continue;if(part==='lower'&&y>yb+jag)continue;if(part==='upper'&&y<=ya+jag)continue;
+     stone.push(ribGeo(i,y-2.3,y+1.7,oy,M,true,true,COL));}}}
+  // the clasps where neighbours kiss, if both ribs still stand there unsplayed
+  const ribHas=(i,y)=>{const jr=(h3(i*4.1,2.2,6.6)-.5)*18;for(const pc of PLAN[i]){let a=pc[0],b=pc[1];
+    if(part==='lower')b=Math.min(b,yb+jr);else if(part==='upper'){a=Math.max(a,ya+jr);b=Math.min(b,YTOP+7);}
+    if(!pc[2]&&y>a+7&&y<b-7)return true;}return false;};
+  for(const q of KISS)if(ribHas(q[0],q[2])&&ribHas(q[1],q[2])){stone.push(kissGeo(q[0],q[1],q[2],oy));stone.push(kissBoss(q[0],q[1],q[2],oy));}
   // THE SPIRE: hoops tying the ribs, a glazed lantern, the needle. Its own
   // mesh, so its bounding box (and the inspector's probe) sits in the spire.
   if(part==='all'){
    // (a ruin keeps none of this: its roof plate, which carried the lantern, is gone)
-   if(d!==1)[13,29,47].forEach((h,q)=>{const y=YTOP+h;
-    spire.push(sjPlate(y+oy,th=>Rs(y)*1.04,th=>Rs(y)*1.04-2.8,SJ_PM,64,null));});
-   const l1=YTOP+22,lr=y=>Rs(y)*.55;
-   if(d!==1)win.push(sjGrid((u,v)=>{const th=u*TAU,y=YTOP-1+v*(l1-YTOP+1);return[lr(y)*Math.cos(th),y+oy,lr(y)*Math.sin(th)];},48,5,(u,v)=>[u*4,(YTOP-1+v*(l1-YTOP+1)-YS0)/(4*HS)],
-    dx>0?(u,v)=>fbm(u*7,v*2,74,2)<.5*HO:null));
-   if(d!==1)spire.push(sjPlate(l1+oy,th=>lr(l1)+.8,()=>0,SJ_PM,48,null));
-   if(d!==1)spire.push(sjGrid((u,v)=>{const th=u*TAU,y=YSP-44+v*56,r=lerp(2.4,.1,Math.pow(v,.8));return[r*Math.cos(th),y+oy,r*Math.sin(th)];},12,10,(u,v)=>[u*2,v*7]));}
+   if(d!==1)crown(oy,spire,win,PLAN.map(()=>YSP),null,dx>0?(u,v)=>fbm(u*7,v*2,74,2)<.5*HO:null);}
   meshMerged(stone,dx>0?MAT.sjStoneR:MAT.sjStone,P);meshMerged(spire,dx>0?MAT.sjStoneR:MAT.sjStone,P);meshMerged(win,dx>0?MAT.sjWinR:MAT.sjWin,P);meshMerged(dark,MAT.sjCore,P);sjGlowOn(meshMerged(glow,MAT.sjGlow,P));
   if(dx>0){mossOnSurface(plates,0,0,0,part==='all'?320:160,2.2);vinesFromLedge(plates,0,0,0,part==='all'?160:80,16);}
   return plates;};
@@ -263,10 +327,13 @@ function buildSkyJ(scene,gx,gz,d){reseed(9770+d);KOFF=[gx,0,gz];const G=new THRE
   const U=new THREE.Group();U.position.set(Math.cos(ang)*D0,r0-1.2,Math.sin(ang)*D0);U.rotation.set(0,-ang,-(Math.PI/2+tau));G.add(U);
   useGroupXF(U);body(U,1,CUT,YTOP+8,'upper');endGroupXF();
   // the spire, snapped off at the cap and thrown on past the body
-  const S=new THREE.Group(),sp=[];
-  for(let i=0;i<NR;i++){const top=YSP-rr(0,50)*(i%3===0?1:0);const g=ribGeo(i,YTOP+rr(2,9),top,-YTOP,null,true,top<YSP-1);if(g)sp.push(g);}
-  sp.push(sjPlate(13,th=>Rs(YTOP+13)*1.04,th=>Rs(YTOP+13)*1.04-2.8,SJ_PM,64,(u,v)=>fbm(u*6,1,73,2)<.4));
-  meshMerged(sp,MAT.sjStoneR,S);
+  // (design pass: it was the bare ribs and one hoop, a small cage that hardly
+  // read on the plain; now it is the whole crown, broken: coronet, hoops and
+  // their clasps, the lantern with its glass mostly gone, spindle, knot, needle)
+  const S=new THREE.Group(),sp=[],sg=[],tops=[];
+  for(let i=0;i<NR;i++){const top=YSP-rr(0,50)*(i%3===0?1:0);tops.push(top);const g=ribGeo(i,YTOP+rr(2,9),top,-YTOP,null,true,top<YSP-1);if(g)sp.push(g);}
+  crown(-YTOP,sp,sg,tops,(u,v)=>fbm(u*6,1,73,2)<.4,(u,v)=>fbm(u*7,v*2,74,2)<.62);
+  meshMerged(sp,MAT.sjStoneR,S);meshMerged(sg,MAT.sjWinR,S);
   const Ld=D0+L*Math.cos(tau)+rr(60,80),a2=ang+(rng()<.5?-1:1)*rr(.2,.3);
   // yaw * lay-down * roll about its own axis, so the roll cannot tip it off the ground plane
   S.quaternion.copy(new THREE.Quaternion().setFromAxisAngle(_UP,-a2+rr(-.3,.3)).multiply(qAxis(0,0,1,-Math.PI/2+.12)).multiply(qAxis(0,1,0,rr(0,TAU))));
@@ -276,7 +343,7 @@ function buildSkyJ(scene,gx,gz,d){reseed(9770+d);KOFF=[gx,0,gz];const G=new THRE
   rubbleRing(Math.cos(a2)*Ld,0,Math.sin(a2)*Ld,8,40,40,2.5);
   const mid=D0+L/2;REGISTER({name:'the Whorl — fallen upper body',x:Math.cos(ang)*mid,z:Math.sin(ang)*mid,r:L/2+12,h:r0*2+8});
   site.fall={ang,D0,L,r0,Ld,a2};}
- else REGISTER({name:'the Whorl — open-ribbed spire'+(d===1?' (broken)':''),x:0,z:0,y:YTOP,r:Et(YTOP)*1.2,h:d===1?60:YSP+12-YTOP});
+ else REGISTER({name:'the Whorl — open-ribbed spire'+(d===1?' (broken)':''),x:0,z:0,y:YTOP,r:Et(YTOP)*1.2,h:d===1?60:YSP+34-YTOP});
  // ------------------------------------------------------------- fallen ribs (level 1)
  if(d===1){
   for(const f of FELL){const i=f[0],Lr=clamp(f[1]*.6,12,70),a=ribTh(i,YB).th+rr(-.4,.4),r=rr(RP*.8,RP*1.35),dir=a+Math.PI/2+rr(-.8,.8);

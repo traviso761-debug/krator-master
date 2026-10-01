@@ -14,8 +14,14 @@ function buildLab(scene,gx,gz,d){reseed(d>0?9301:9300);KOFF=[gx,0,gz];REGISTER({
   // windows / ground-floor arcade
   const n=s===0?14:21;for(let k=0;k<n;k++){const th=(k+.3)/n*TAU;const u=th/TAU;if(hole&&hole(u,y0+2+s*40))continue;const r=rW(th,s)+.1;
    if(s===0)kput('archOpen',[r*Math.cos(th),4.6,r*Math.sin(th)],qFacing([Math.cos(th),0,Math.sin(th)]),[.7,.7,1],null);
-   else kput(d>0?'winBigD':'winBigI',[r*Math.cos(th),y0+2.3,r*Math.sin(th)],qFacing([Math.cos(th),0,Math.sin(th)]),1,null);}
+   else civWin(d>0?'winBigD':'winBigI',[r*Math.cos(th),y0+2.3,r*Math.sin(th)],qFacing([Math.cos(th),0,Math.sin(th)]),1,null);}
   if(s>0)stripRing(0,y0+3.9,0,rW(0,s)*.88,d,28);
+  // ROOMS behind the holes (round 2): a floor plate in the band between the
+  // skin and the dark liner, and furnishing wherever the skin is eaten through,
+  // so a hole shows a room rather than a flat dark wall 3 m back.
+  if(d>0&&hole){lGuts.push(gridSurface((u,v)=>{const th=u*TAU,r=rW(th,s)*lerp(.9,.985,v);return[r*Math.cos(th),y0+.32,r*Math.sin(th)];},112,1,{}));
+   for(let k=0;k<56;k++){const th=(k+.5)/56*TAU,u=th/TAU;if(!hole(u,y0+SH*.5+s*40))continue;const r=rW(th,s)*.975;
+    domRoom([r*Math.cos(th),y0+.35,r*Math.sin(th)],[Math.cos(th),0,Math.sin(th)],rW(th,s)*.07,SH-.4,d,61+s);}}
   }
  meshMerged(lSkin,skin,G);meshMerged(lGuts,MAT.guts,G);
  apron(G,0,0,32,50,d,1.1);

@@ -54,13 +54,88 @@
 // bottom of each one a pale disc is laid on the chamber floor, which is what a
 // shaft of daylight actually looks like from inside when nothing else can cast
 // one.
-MAT.aiRock =new THREE.MeshStandardMaterial({map:TEX.concrete,roughnessMap:TEX.concreteRM,color:0x8d6146,roughness:1,metalness:0,side:DS});
+// ROCK, NOT CONCRETE. All three rock materials used to carry TEX.concrete: a
+// board-formed map with 0.65 m boards and a form-tie grid. Tinted brown over
+// 1 900 m of cliff that is what read as plywood from the hero and as smeared
+// mud up close (both logged in KNOWN_ISSUES, here and against Arcoindian II,
+// which shares these materials). This is bedded sandstone instead: courses of
+// uneven thickness, each its own tone, a dark parting under each and a lit
+// ledge on top; vertical joints that step between courses; desert-varnish
+// streaks hanging off the ledges. The lattice noise WRAPS, so the tile has no
+// seam at the ~74 m repeat the face UVs use. Mean brightness is held near the
+// concrete map's ~0.73 so the three tints below keep their meaning.
+TEX.aiRockTx=canvasTex(512,512,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
+ const pv=(x,y,Px,Py,s)=>{const xi=Math.floor(x),yi=Math.floor(y),xf=x-xi,yf=y-yi;
+  const H=(a,b)=>h3(((a%Px)+Px)%Px,((b%Py)+Py)%Py,s);
+  const u=xf*xf*(3-2*xf),v=yf*yf*(3-2*yf);
+  return lerp(lerp(H(xi,yi),H(xi+1,yi),u),lerp(H(xi,yi+1),H(xi+1,yi+1),u),v);};
+ const pf=(x,y,Px,Py,s,o)=>{let a=0,f=1,t=0;
+  for(let i=0;i<o;i++){a+=pv(x*f,y*f,Px*f,Py*f,s+i*7.3)/f;t+=1/f;f*=2;}return a/t;};
+ // Course boundaries, periodic in y: 11 courses of uneven thickness summing
+ // to h. The first cut used 19 thin courses with strong tone steps and a wavy
+ // warp, and on a curved vault that is exactly the figure of WOOD GRAIN.
+ // Fewer, thicker courses broken into jointed blocks read as stone.
+ const NC=11,CB=[0];{const th=[];let s=0;for(let i=0;i<NC;i++){const t=.5+h3(i,3.3,9.1)*1.3;th.push(t);s+=t;}
+  for(let i=0;i<NC;i++)CB.push(CB[i]+th[i]/s*h);}
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,fx=x/w,fy=y/h;
+  const yw=((y+9*(pf(fx*3,fy*2,3,2,4.1,2)-.5)+h)%h);
+  let c=0;while(c<NC-1&&CB[c+1]<=yw)c++;
+  const c0=CB[c],c1=CB[c+1],ty=(yw-c0)/(c1-c0),ct=c1-c0;
+  // joints: 3-6 per course at hashed x, leaning a little, stepping between
+  // courses; each block between two joints takes its own tone
+  const nj=3+Math.floor(h3(c,8.8,1.1)*4);let jd=1e9,blk=0;
+  for(let j=0;j<nj;j++){const jx=h3(c,j,4.4)*w+(ty-.5)*ct*.30;
+   let dx=x-jx;dx-=Math.round(dx/w)*w;const ad=Math.abs(dx);if(ad<jd)jd=ad;if(dx>0)blk+=1<<j;}
+  let v=.75+(h3(c,1.7,2.9)-.5)*.10+(h3(c,blk,5.5)-.5)*.10;
+  v+=(pf(fx*4,fy*4,4,4,5.2,3)-.5)*.26;                       // lichen and varnish patches
+  v+=(pf(fx*16,fy*16,16,16,6.1,2)-.5)*.10;                   // weathering at block scale
+  v+=(h3(x,y,6.6)-.5)*.06;                                    // grit
+  // canvas y runs DOWN the face (flipY puts row 0 at the top), so c0 is the
+  // course's upper edge: a thin parting, then the lit lip of its ledge
+  const tp=yw-c0,ep=c1-yw;
+  if(tp<1.3)v-=.17;else if(tp<3)v+=.06;
+  if(ep<3)v-=.06*(3-ep)/3;
+  if(jd<1)v-=.20;else if(jd<2.2)v-=.06;
+  // desert varnish: dark streaks hanging off the ledges, fading downward
+  const st=pf(fx*40,fy*1.5,40,1,7.7,2);
+  if(st>.62)v-=(st-.62)*.9*(1-ty);
+  const r=clamp(v,0,1);
+  d[i]=r*248;d[i+1]=r*238;d[i+2]=r*224;d[i+3]=255;}
+ g.putImageData(id,0,0);});
+// THE PLATEAU TOP is not a cliff face. On the bedded map a horizontal surface
+// shows its courses as contour stripes and the whole tabletop read as paving.
+// This is weathered caprock seen from above: a polygonal crack network (a
+// wrapped Voronoi on an 8 x 8 lattice, so it tiles), two scales of mottle,
+// and dark specks of scrub in the low patches.
+TEX.aiTopTx=canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data,N=8,cs=w/N;
+ const P=[];for(let j=0;j<N;j++)for(let i=0;i<N;i++)P.push([(i+.15+.7*h3(i,j,1.3))*cs,(j+.15+.7*h3(i,j,2.9))*cs]);
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;let d1=1e9,d2=1e9,ci=0;
+  const gi=Math.floor(x/cs),gj=Math.floor(y/cs);
+  for(let dj=-1;dj<=1;dj++)for(let di=-1;di<=1;di++){const ii=(gi+di+N)%N,jj=(gj+dj+N)%N,Q=P[jj*N+ii];
+   const qx=Q[0]+(gi+di-ii)*cs,qy=Q[1]+(gj+dj-jj)*cs,dd2=Math.hypot(x-qx,y-qy);
+   if(dd2<d1){d2=d1;d1=dd2;ci=jj*N+ii;}else if(dd2<d2)d2=dd2;}
+  const m1=fbm(x/22,y/22,3.3,3),m2=fbm(x/6,y/6,8.8,2);
+  let v=.74+(h3(ci,.5,4.4)-.5)*.06+(m1-.5)*.30+(m2-.5)*.10+(h3(x,y,2.2)-.5)*.06;
+  // cracks faint and broken: at full strength and unbroken the cells came
+  // back as a flagstone pavement laid over the whole plateau
+  const cr=d2-d1,brk=fbm(x/9,y/9,6.4,2);if(brk>.45){if(cr<1)v-=.13;else if(cr<2.2)v-=.04;}
+  if(m1<.40&&h3(x*.37,y*.41,7.1)<.10)v-=.30;                  // scrub in the low patches
+  const r=clamp(v,0,1);d[i]=r*246;d[i+1]=r*236;d[i+2]=r*220;d[i+3]=255;}
+ g.putImageData(id,0,0);});
+MAT.aiTop  =new THREE.MeshStandardMaterial({map:TEX.aiTopTx,color:0x8d6146,roughness:1,metalness:0,side:DS});
+MAT.aiRock =new THREE.MeshStandardMaterial({map:TEX.aiRockTx,color:0x8d6146,roughness:1,metalness:0,side:DS});
 // The cavern's own shell. Three stops down on the same rock: this is the shade.
-MAT.aiShade=new THREE.MeshStandardMaterial({map:TEX.concrete,roughnessMap:TEX.concreteRM,color:0x4a372c,roughness:1,metalness:0,side:DS});
+MAT.aiShade=new THREE.MeshStandardMaterial({map:TEX.aiRockTx,color:0x4a372c,roughness:1,metalness:0,side:DS});
 // The cut face at x = 150. A shade lighter and cleaner than the weathered face,
 // because a joint plane is fresh rock and has to read as a cut, not as a cliff.
-MAT.aiCut  =new THREE.MeshStandardMaterial({map:TEX.concrete,roughnessMap:TEX.concreteRM,color:0xa2795a,roughness:1,metalness:0,side:DS});
+MAT.aiCut  =new THREE.MeshStandardMaterial({map:TEX.aiRockTx,color:0xa2795a,roughness:1,metalness:0,side:DS});
 MAT.aiVoid =new THREE.MeshStandardMaterial({color:0x0b0c0f,roughness:1,metalness:0,side:DS});
+// A LIGHT WELL'S BORE, seen from under the vault. Pale lining read as a saucer
+// stuck to the ceiling; void-black read as a blue-grey one, because 300 m of
+// fog lifts black toward the sky colour while the brown ceiling round it stays
+// brown, and the hue break is what the eye takes for an object. A near-black
+// in the ceiling's own hue is a deep hole in the same rock.
+MAT.aiBore =new THREE.MeshStandardMaterial({map:TEX.aiRockTx,color:0x21170f,roughness:1,metalness:0,side:DS});
 // What an excavated chamber is lined with. Not black: a chamber the eye cannot
 // read is the same as no chamber at all, and the section depends on reading it.
 MAT.aiRoom =new THREE.MeshStandardMaterial({color:0x453c31,roughness:.94,metalness:.12,side:DS});
@@ -97,6 +172,19 @@ kdef('aiDrum',new THREE.CylinderGeometry(1,1,1,16),MAT.aiKit);
 kdef('aiHex',new THREE.CylinderGeometry(1,1,1,6),MAT.aiKit);
 kdef('aiPortal',arcWindowGeo(8,12,1.8),MAT.aiVoid);
 kdef('aiPool',new THREE.PlaneGeometry(1,1).rotateX(-Math.PI/2),MAT.aiPool);
+// FALLEN ROCK. The kit's 'rubble' is a regular dodecahedron on an untextured
+// white material; at the 20-70 m these cliffs shed, twelve identical pentagons
+// have no edge to read and every talus here came back as a heap of pale eggs.
+// A block off a bedded cliff is a hexahedron with its corners knocked about:
+// eight jittered corners (hashed on the corner, so the faces stay welded), flat
+// shaded, and UNTEXTURED: on the bedded map they came back as wooden crates. 12 triangles to the
+// dodecahedron's 36, and the same volume as the item it replaces at scale 1.
+MAT.aiBlk=new THREE.MeshStandardMaterial({color:0xa49482,roughness:1,metalness:0});   // a step down: bare white came back as crumpled paper
+kdef('aiBlock',(()=>{const g=new THREE.BoxGeometry(1.45,1.45,1.45),p=g.attributes.position;
+ for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i),z=p.getZ(i),
+   k=h3(Math.sign(x)*3.1,Math.sign(y)*5.3,Math.sign(z)*7.7);
+  p.setXYZ(i,x*(1+(k-.5)*.5),y*(1+(h3(k,2.2,1)-.5)*.45),z*(1+(h3(k,4.4,3)-.5)*.5));}
+ const n=g.toNonIndexed();n.computeVertexNormals();return n;})(),MAT.aiBlk);
 // plymQuadGeo is shared (src/88-plymouth.js). A balcony is a floor, a front and
 // two ends; a box apiece would be three times the triangles for a solid nobody
 // can see the inside of. Cross-cutting note in KNOWN_ISSUES says reuse beats
@@ -123,7 +211,7 @@ function buildArcoindian(scene,gx,gz,d){reseed(9580+d);KOFF=[gx,0,gz];
  const dd=d>0?1:0;
  const wallM=dd?MAT.aiWallR:MAT.aiWall, deckM=dd?MAT.aiDeckR:MAT.aiDeck;
  const BX='aiBox', BXD='aiBoxD';
- const ROCK=[],SHADE=[],CUT=[],RM=[],SH=[],DK=[],GRD=[];
+ const BORE=[],ROCK=[],TOP=[],SHADE=[],CUT=[],RM=[],SH=[],DK=[],GRD=[];
 
  // ---- the numbers ----------------------------------------------------------
  const XW=-1560,XS=150;             // the model's west taper; the section cut
@@ -153,7 +241,11 @@ function buildArcoindian(scene,gx,gz,d){reseed(9580+d);KOFF=[gx,0,gz];
  // ---- the rock -------------------------------------------------------------
  // ctop tapers the plateau away at the west end so the cliff grades into the
  // plain instead of stopping as a sheer mesa wall.
- const ctop=x=>CT0*clamp(1-Math.pow(clamp((-x-620)/820,0,1),1.5),.07,1);
+ // The taper comes down in BENCHES, not as one ramp: s-t/(2 pi n) is a smooth
+ // staircase whose treads are flat where its derivative 1-cos vanishes. On a
+ // single ramp the west half of the plateau read as a loaf's sloping end.
+ const ctop=x=>{const t=clamp((-x-620)/820,0,1),ts=t-.78*Math.sin(t*TAU*3)/(TAU*3);
+  return CT0*clamp(1-Math.pow(ts,1.5),.07,1);};
  // THE OVERHANG, as one function. The nominal face leans out 232 m between the
  // foot and y=470 and then pulls back into a caprock. Everything else — the
  // cavern, the shelf, the lift towers — is measured off this line.
@@ -174,7 +266,20 @@ function buildArcoindian(scene,gx,gz,d){reseed(9580+d);KOFF=[gx,0,gz];
    +30*Math.pow(Math.abs(fbm(x*.021,y*.004,9587,3)-.5)*2,2.1)
    +13*Math.pow(Math.abs(fbm(x*.038,y*.011,9588,2)-.5)*2,1.5)
    +28*fbm(x*.0095,y*.012,9589,4)+13*fbm(x*.031,y*.021,9591,3);
- const faceZ=(x,y)=>brow(y)-rel(x,y)
+ // RE-ENTRANTS. 1 900 m of escarpment on one line read as a rectangular loaf
+ // from the hero view (KNOWN_ISSUES' "single biggest remaining weakness"). A
+ // real scarp retreats unevenly: amphitheatre-headed bays eaten back into it,
+ // leaving spurs standing between them. Four bays, all WEST of the cavern and
+ // faded to nothing by x = -640, so the city, its shelf and the lift towers
+ // are measured off exactly the face they were before. Bays only ever cut IN,
+ // which keeps the foot clear of the viaduct at z = -26; they deepen toward
+ // the top because a scarp retreats from its rim. Fixed constants, no PRNG, so
+ // nothing else in the builder moves.
+ const BAYS=[[-790,78,92],[-1010,64,138],[-1215,96,104],[-1420,70,76]];
+ const bay=(x,y)=>{if(x>-640)return 0;
+  let s=0;for(const b of BAYS)s+=b[2]*Math.exp(-Math.pow((x-b[0])/b[1],2));
+  return s*clamp((-640-x)/110,0,1)*(.62+.38*clamp(y/(ctop(x)+1),0,1));};
+ const faceZ=(x,y)=>brow(y)-rel(x,y)-bay(x,y)
    +44*Math.pow(clamp(1-y/190,0,1),1.7)                       // talus banking out at the foot
    +11*Math.pow(clamp((y-ctop(x)*.88)/(ctop(x)*.12+1),0,1),1.2);  // the caprock lip
 
@@ -361,7 +466,12 @@ function buildArcoindian(scene,gx,gz,d){reseed(9580+d);KOFF=[gx,0,gz];
    if(r3<wr+RPLZ*.6)continue;
    wx=PCX+Math.cos(a3)*r3;wz=PCZ+Math.sin(a3)*r3;
    got=!TPOS.some(t=>Math.hypot(wx-t[0],wz-t[1])<t[2]+wr+14);}
-  if(got)WELL.push({x:wx,z:wz,r:wr,y0:roofY(wx,wz)-4,cav:true});}
+  // The bore starts at the LOWEST point of the roof round its rim, not 4 m
+  // under the roof at its centre: that 4 m stub of lining was a 28 m drum
+  // hanging below the vault, which is what every preset looking up saw.
+  if(got){let ry=1e9;for(let k=0;k<8;k++){const a=k/8*TAU;
+    const q=roofY(wx+Math.cos(a)*wr,wz+Math.sin(a)*wr);if(q>0)ry=Math.min(ry,q);}
+   WELL.push({x:wx,z:wz,r:wr,y0:Math.min(ry,roofY(wx,wz))-.5,cav:true});}}
  const wellY1=W=>platY(W.x,W.z)+2;
  const inWell=(x,z,pad)=>{for(let i=0;i<WELL.length;i++){const W=WELL[i];
    const dx=x-W.x,dz=z-W.z,rr2=W.r+(pad||0);
@@ -403,7 +513,7 @@ function buildArcoindian(scene,gx,gz,d){reseed(9580+d);KOFF=[gx,0,gz];
    hole:(u,v)=>mouthHole(lerp(XW,XS,u),v*ctop(lerp(XW,XS,u)))}));
  // the plateau, lapping 3 m forward over the face top and grading to the plain
  // at the back of the model
- ROCK.push(gridSurface((u,v)=>{const x=lerp(XW,XS,u);
+ TOP.push(gridSurface((u,v)=>{const x=lerp(XW,XS,u);
    const z0=faceZ(x,ctop(x))+3,z=lerp(z0,ZBK,Math.pow(v,.82));
    return[x,platY(x,z),z];},
    160,48,{uS:(XS-XW)/78,vS:16,
@@ -420,7 +530,7 @@ function buildArcoindian(scene,gx,gz,d){reseed(9580+d);KOFF=[gx,0,gz];
  // talus banked against the foot of the cliff, largest at the wall
  for(let i=0;i<260;i++){const x=rr(XW+80,XS),t=Math.pow(rng(),1.9);
   const bx=faceZ(x,10)+t*150,sc=rr(4,24)*(1-t*.45);
-  kput('rubble',[x,sc*.4+(1-t)*(1-t)*20,bx],qEuler(rng()*3,rng()*3,rng()*3),
+  kput('aiBlock',[x,sc*.4+(1-t)*(1-t)*20,bx],qEuler(rng()*3,rng()*3,rng()*3),
    [sc*rr(.7,1.5),sc*rr(.5,1),sc*rr(.7,1.5)],new THREE.Color().setHSL(rr(.05,.10),rr(.12,.32),rr(.11,.24)));}
 
  // ---- the cavern shell -----------------------------------------------------
@@ -461,14 +571,27 @@ function buildArcoindian(scene,gx,gz,d){reseed(9580+d);KOFF=[gx,0,gz];
      new THREE.Color().setHSL(rr(.06,.10),rr(.10,.20),rr(.10,.17)));}}
   WELL.forEach(W=>{if(W.half||W.cav||rng()<.45)return;
    for(let i=0;i<18;i++){const a3=rng()*TAU,r4=W.r*rr(1.5,3.4),sc=rr(3,11);
-    kput('rubble',[W.x+Math.cos(a3)*r4,wellY1(W)-1+sc*.35,W.z+Math.sin(a3)*r4],
+    kput('aiBlock',[W.x+Math.cos(a3)*r4,wellY1(W)-1+sc*.35,W.z+Math.sin(a3)*r4],
      qEuler(rng()*3,rng()*3,rng()*3),[sc*rr(.8,1.6),sc*rr(.4,.8),sc*rr(.8,1.6)],
      new THREE.Color().setHSL(rr(.05,.10),rr(.14,.32),rr(.10,.22)));}});
   for(let i=0;i<(dd?120:80);i++){const px5=rr(XW+400,XS-20),pz5=rr(-1180,-120);
    const py5=platY(px5,pz5);
-   if(py5<40||inWell(px5,pz5,26))continue;
+   // and not out over a bay, where the rim has retreated behind z = -120
+   if(py5<40||inWell(px5,pz5,26)||pz5>faceZ(px5,ctop(px5))-6)continue;
    kput('hedge',[px5,py5+.5,pz5],qEuler(0,rng()*TAU,0),[rr(2,5),rr(.8,1.5),rr(1.4,3)],
-    new THREE.Color().setHSL(rr(.14,.26),rr(.18,.34),dd?rr(.06,.12):rr(.07,.14)));}}
+    new THREE.Color().setHSL(rr(.14,.26),rr(.18,.34),dd?rr(.06,.12):rr(.07,.14)));}
+  // TORS. The plateau's own relief was 16 m of smooth noise, and from the
+  // plateau preset it was a tabletop with manholes in it. Knots of harder
+  // caprock stand out of it -- clusters of angular blocks, largest at the
+  // middle -- set by a HASH, not the PRNG, so nothing after them moves.
+  for(let k=0;k<16;k++){const tx=lerp(XW+320,XS-60,h3(k,1.1,5.5)),tz=lerp(-1150,-260,h3(k,2.7,6.1));
+   if(tz>faceZ(tx,ctop(tx))-40||inWell(tx,tz,40)||platY(tx,tz)<60)continue;
+   const n=8+Math.floor(h3(k,3.3,7.3)*9),R0=14+20*h3(k,4.9,8.1);
+   for(let j=0;j<n;j++){const a=h3(k,j,1.9)*TAU,t=Math.sqrt(h3(k,j,2.8)),r=R0*t;
+    const bx=tx+Math.cos(a)*r,bz=tz+Math.sin(a)*r,sc=lerp(15,5,t)*(.7+.6*h3(k,j,3.7));
+    kput('aiBlock',[bx,platY(bx,bz)+sc*.25,bz],qEuler(h3(j,k,1)*.6,h3(j,k,2)*TAU,h3(j,k,3)*.6),
+     [sc*(1+h3(j,k,4)),sc*(.5+.5*h3(j,k,5)),sc*(1+h3(j,k,6))],
+     new THREE.Color().setHSL(.06+.04*h3(j,k,7),.2+.12*h3(j,k,8),.12+.10*h3(j,k,9)));}}}
  // ---- the rock shelf the city stands on ------------------------------------
  // Its outer edge is shelfE(): the weathered face where that reaches far
  // enough forward, a projecting buttress of rock where it does not. Under that
@@ -491,10 +614,28 @@ function buildArcoindian(scene,gx,gz,d){reseed(9580+d);KOFF=[gx,0,gz];
   const ry=roofY(XS,z);return ry>0&&y<ry-11;};
  const cutX=(y,z)=>XS+((fbm(z*.0062,y*.0062,9604,3)*2-1)*11
    +(fbm(z*.021,y*.021,9627,2)*2-1)*4.5);
+ // THE CAVERN'S EDGE ON THE CUT. gridSurface drops whole quads, so the top of
+ // the cavern opening came back as a flight of 8 m stairs across the section
+ // preset. The main face now leaves a band CB m above the roof edge open as
+ // well, and a conformal strip is laid over that band whose lower edge IS the
+ // roof curve and which laps 0.9 m proud over the stepped quads above it. Its
+ // UVs are recomputed from the main face's own (u,v) so the bedding runs on
+ // across the join instead of jumping.
+ const CB=15,cZa=ZB(XS)+11,cZb=lipZ(XS)-4;
+ const cutU=(y,z)=>Math.pow(clamp((cutZ(y,0)-z)/(cutZ(y,0)+900),0,1),1/.85);
+ const cutSX=(y,z)=>{const b=Math.min(1,cutU(y,z)*6);return cutX(y,z)*b+XS*(1-b);};
+ const inCavBand=(y,z)=>{if(z<=cZa||z>=cZb)return false;
+  const ry=roofY(XS,z);return ry>0&&y>=ry-11&&y<ry-11+CB;};
  CUT.push(gridSurface((u,v)=>{const y=v*ctop(XS),z=lerp(cutZ(y,0),-900,Math.pow(u,.85));
    return[cutX(y,z)*Math.min(1,u*6)+XS*(1-Math.min(1,u*6)),y,z];},128,80,{uS:18,vS:CT0/70,
    hole:(u,v)=>{const y=v*ctop(XS),z=lerp(cutZ(y,0),-900,Math.pow(u,.85));
-    return inCavCut(y,z)||inCutO(z,y);}}));
+    return inCavCut(y,z)||inCavBand(y,z)||inCutO(z,y);}}));
+ {const g=gridSurface((u,v)=>{const z=lerp(cZa,cZb,u),y=roofY(XS,z)-11+v*(CB+11);
+    return[cutSX(y,z)+.9*Math.min(1,v*3),y,z];},90,5,{uS:1,vS:1});
+  const P=g.attributes.position,UV=g.attributes.uv;
+  for(let i=0;i<P.count;i++){const y=P.getY(i),z=P.getZ(i);
+   UV.setXY(i,cutU(y,z)*18,y/ctop(XS)*CT0/70);}
+  CUT.push(g);}
  // REVEALS. The chamber openings were rectangles cut in a plane with no
  // thickness, so 900 m of rock read as a sheet of card. Each opening gets four
  // returning faces 17 m deep — a sill, a head and two cheeks — which is what
@@ -508,7 +649,7 @@ function buildArcoindian(scene,gx,gz,d){reseed(9580+d);KOFF=[gx,0,gz];
    [cutX(yy,lerp(z0,z1,u))-v*RVD,yy,lerp(z0,z1,u)],12,3,{uS:6,vS:3}));});
  // blocks along the crest, so the plateau does not meet the cut on a drawn line
  for(let i=0;i<70;i++){const z=rr(-880,cutZ(CT0*.9,0)),sc=rr(6,22);
-  kput('rubble',[XS+rr(-14,16),ctop(XS)-rr(0,10)+sc*.3,z],qEuler(rng()*3,rng()*3,rng()*3),
+  kput('aiBlock',[XS+rr(-14,16),ctop(XS)-rr(0,10)+sc*.3,z],qEuler(rng()*3,rng()*3,rng()*3),
    [sc*rr(.7,1.6),sc*rr(.5,1),sc*rr(.7,1.6)],new THREE.Color().setHSL(rr(.05,.10),rr(.14,.32),rr(.16,.32)));}
  // quarry-like benches at its foot, and the spoil of the joint's own failure
  for(let b=0;b<3;b++){const by=40+b*46,bd=16+b*9;
@@ -516,7 +657,7 @@ function buildArcoindian(scene,gx,gz,d){reseed(9580+d);KOFF=[gx,0,gz];
   CUT.push(gridSurface((u,v)=>[XS+bd,lerp(by,by-46,v),lerp(cutZ(by,0),-860,Math.pow(u,.85))],40,4,{uS:24,vS:5}));}
  for(let i=0;i<150;i++){const t=Math.pow(rng(),1.7),z=rr(-880,cutZ(20,0));
   const sc=rr(4,26)*(1-t*.5);
-  kput('rubble',[XS+8+t*190,sc*.4+(1-t)*(1-t)*30,z],qEuler(rng()*3,rng()*3,rng()*3),
+  kput('aiBlock',[XS+8+t*190,sc*.4+(1-t)*(1-t)*30,z],qEuler(rng()*3,rng()*3,rng()*3),
    [sc*rr(.7,1.6),sc*rr(.5,1),sc*rr(.7,1.6)],new THREE.Color().setHSL(rr(.05,.10),rr(.14,.34),rr(.14,.30)));}
 
  // ---- the excavated half ---------------------------------------------------
@@ -648,6 +789,13 @@ function buildArcoindian(scene,gx,gz,d){reseed(9580+d);KOFF=[gx,0,gz];
   if(!(H>10))return;
   if(W.half){RM.push(gridSurface((u,v)=>{const th=Math.PI*.5+u*Math.PI;
     return[W.x+Math.cos(th)*W.r,W.y0+v*H,W.z+Math.sin(th)*W.r];},12,20,{uS:6,vS:18}));}
+  // A cavern well's bore is BLACK for its first 55 m. Arcoindian II found what
+  // four attempts at a rim here never did: MAT.aiRoom is a mid-brown that the
+  // hemisphere lights through any depth of rock, so the lining itself, seen
+  // up through the hole, was the pale "saucer stuck to the ceiling". The rim
+  // was never what you were looking at.
+  else if(W.cav){BORE.push(lathe({rFn:()=>W.r,H:Math.min(55,H),nu:16,nv:5}).translate(W.x,W.y0,W.z));
+   if(H>55)RM.push(lathe({rFn:()=>W.r,H:H-55,nu:16,nv:12}).translate(W.x,W.y0+55,W.z));}
   else RM.push(lathe({rFn:()=>W.r,H:H,nu:16,nv:18}).translate(W.x,W.y0,W.z));
   if(!W.half){
    // the collar on the plateau: an upstand and its own dark reveal
@@ -670,14 +818,12 @@ function buildArcoindian(scene,gx,gz,d){reseed(9580+d);KOFF=[gx,0,gz];
   // mostly ABOVE the roof plane leaves a rimmed hole with a lit bore behind it,
   // which is what a light well looks like from underneath.
   if(W.cav){
-   // DARK rim, bright bore. A pale lip under a dark vault is lit from outside
-   // by a sun nothing occludes and reads as a saucer stuck to the ceiling
-   // whatever its profile; a dark one reads as the hole it is, and the disc set
-   // high in the shaft gives the bore something to show when you look up it.
-   DK.push(lathe({rFn:()=>W.r*1.05,H:7,nu:22,nv:2}).translate(W.x,W.y0-1.2,W.z));
+   // NOTHING BELOW THE ROOF PLANE: no rim, no lit ring. Every one of those
+   // hung under the vault and was lit from outside by a sun nothing occludes.
+   // The shell's own hole, the black bore above it, and a bright disc set high
+   // in the shaft so the hole has something to show when you look up it.
    kput('aiPool',[W.x,W.y0+(y1-W.y0)*.82,W.z],null,[W.r*1.9,1,W.r*1.9],
-    new THREE.Color(dd?0x8e887a:0xcfc8b6));
-   if(!dd)lring(W.x,W.y0-.6,W.z,W.r*1.02,Math.max(8,Math.round(TAU*W.r/9)));}
+    new THREE.Color(dd?0x8e887a:0xcfc8b6));}
   // the pool of daylight at the foot
   const py2=W.cav?PY+.6:(W.room?W.room.y0+.5:SHELF+.5);
   kput('aiPool',[W.x,py2,W.z],null,[W.r*4.2,1,W.r*4.2],
@@ -922,7 +1068,7 @@ function buildArcoindian(scene,gx,gz,d){reseed(9580+d);KOFF=[gx,0,gz];
   ROCK.push(gridSurface((u,v)=>{const a=u*TAU,r=lerp(stR(a,1),0,Math.pow(v,.9));
     return[P.x+Math.cos(a)*r,P.ty,P.z+Math.sin(a)*r];},40,5,{uS:14,vS:5}));
   for(let i=0;i<34;i++){const a=rng()*TAU,t=Math.pow(rng(),1.6),r=P.sr*(1.36+t*1.5),sc=rr(3,14)*(1-t*.4);
-   kput('rubble',[P.x+Math.cos(a)*r,sc*.4+(1-t)*10,P.z+Math.sin(a)*r],
+   kput('aiBlock',[P.x+Math.cos(a)*r,sc*.4+(1-t)*10,P.z+Math.sin(a)*r],
     qEuler(rng()*3,rng()*3,rng()*3),[sc*rr(.7,1.5),sc*rr(.5,1),sc*rr(.7,1.5)],
     new THREE.Color().setHSL(rr(.05,.10),rr(.13,.32),rr(.12,.26)));}
   // the pod: a hexagonal drum in two storeys with a ring gallery
@@ -1043,12 +1189,20 @@ function buildArcoindian(scene,gx,gz,d){reseed(9580+d);KOFF=[gx,0,gz];
   // angular, tilted where they came to rest — so the big pieces are boxes at
   // random attitudes and everything is four stops darker.
   const fallY=(bx,bz)=>{const th=Math.atan2(bz-PCZ,bx-PCX),r4=Math.hypot(bx-PCX,bz-PCZ);
-   let by=PY;for(let k=1;k<=NT;k++)if(r4>RT(k-1,th))by=TY(k);return by;};
+   let by=PY;for(let k=1;k<=NT;k++)if(r4>RT(k-1,th))by=TY(k);
+   return r4>RT(NT,th)?SHELF:by;};                // past the last terrace: the bare shelf
   const dkC=()=>new THREE.Color().setHSL(rr(.05,.10),rr(.14,.32),rr(.05,.13));
-  for(let i=0;i<130;i++){const t=Math.pow(rng(),1.5),a=rng()*TAU;
-   const r=IMP.r*(.18+t*1.4),sc=rr(4,17)*(1-t*.42);
+  // NOT A RING. The heap used to be radially symmetric with sizes uniform in
+  // a band, which read as a sprinkled circle. A fall off a vault lands and
+  // RUNS OUT downslope -- out toward the mouth (+z) and down the terraces -- so
+  // most pieces are thrown into a fan on that bearing and travel further along
+  // it, and the sizes are a power law: a few huge, many small.
+  const FA=Math.PI/2;
+  for(let i=0;i<130;i++){const t=Math.pow(rng(),1.5),a=rng()<.72?FA+(rng()-.5)*2.3:rng()*TAU;
+   const r=IMP.r*(.18+t*1.4)*(1+.75*Math.max(0,Math.cos(a-FA))),sc=(4+26*Math.pow(rng(),3))*(1-t*.42);
    const bx=IMP.x+Math.cos(a)*r,bz=IMP.z+Math.sin(a)*r;
-   kput('rubble',[bx,fallY(bx,bz)+sc*.42+(1-t)*(1-t)*14,bz],qEuler(rng()*3,rng()*3,rng()*3),
+   if(bz>shelfE(bx)-4)continue;                    // ran off the shelf: it is on the plain now
+   kput('aiBlock',[bx,fallY(bx,bz)+sc*.42+(1-t)*(1-t)*14,bz],qEuler(rng()*3,rng()*3,rng()*3),
     [sc*rr(.7,1.6),sc*rr(.4,.8),sc*rr(.7,1.6)],dkC());}
   for(let i=0;i<22;i++){const t=Math.pow(rng(),1.3),a=rng()*TAU;
    const r=IMP.r*(.12+t*1.25),bx=IMP.x+Math.cos(a)*r,bz=IMP.z+Math.sin(a)*r;
@@ -1057,18 +1211,19 @@ function buildArcoindian(scene,gx,gz,d){reseed(9580+d);KOFF=[gx,0,gz];
     qEuler(rr(-.9,.9),rng()*TAU,rr(-.9,.9)),[L2,rr(4,11),L2*rr(.5,1.1)],dkC());}
   // and the dust of it thrown off the shelf onto the plain below
   for(let i=0;i<90;i++){const t=Math.pow(rng(),1.6),sc=rr(4,22)*(1-t*.5);
-   kput('rubble',[IMP.x+rr(-190,190),sc*.4+(1-t)*16,rr(-120,150)],
+   kput('aiBlock',[IMP.x+rr(-190,190),sc*.4+(1-t)*16,rr(-120,150)],
     qEuler(rng()*3,rng()*3,rng()*3),[sc*rr(.7,1.5),sc*rr(.5,1),sc*rr(.7,1.5)],
     new THREE.Color().setHSL(rr(.05,.10),rr(.14,.32),rr(.06,.15)));}}
 
  // ---- merge and dress ------------------------------------------------------
- meshMerged(ROCK,MAT.aiRock,G);
+ meshMerged(ROCK,MAT.aiRock,G);meshMerged(TOP,MAT.aiTop,G);
  meshMerged(SHADE,MAT.aiShade,G);
  meshMerged(CUT,MAT.aiCut,G);
  meshMerged(RM,MAT.aiRoom,G);
  meshMerged(SH,wallM,G);
  meshMerged(GRD,deckM,G);
  if(DK.length)meshMerged(DK,MAT.aiVoid,G);
+ meshMerged(BORE,MAT.aiBore,G);
  if(dd){
   // stainsFromLedge() aims each streak radially about the BUILDER's origin,
   // which is 300 m from this city's own centre, so it would lay its decals
@@ -1078,7 +1233,7 @@ function buildArcoindian(scene,gx,gz,d){reseed(9580+d);KOFF=[gx,0,gz];
     kput('stain',[f.p[0]+Math.cos(a)*.7,f.p[1]-L*.5,f.p[2]+Math.sin(a)*.7],
      qFacing([Math.cos(a),0,Math.sin(a)]),[rr(1.4,4.2),L,1],null);}};
   mossOnSurface(GRD,0,0,0,130,3.6);mossOnSurface(SH,0,0,0,90,3.2);
-  mossOnSurface(ROCK,0,0,0,110,4.2);
+  mossOnSurface(ROCK,0,0,0,110,4.2);mossOnSurface(TOP,0,0,0,60,4.2);
   vinesFromLedge(GRD,0,0,0,130,26);aiStain(SH,150,22);
   for(let i=0;i<150;i++){const th=rng()*TAU;if(tf(th)<.1)continue;
    const k=1+((rng()*NT)|0),r=RT(k-1,th);

@@ -48,6 +48,8 @@ Read before changing anything here. `build.py` prints the open count.
       palms' yellow-green is lost in the blobs.
 - [ ] Only one Girder tower dresses. `dress()` samples by triangle area within a shell: the core takes shells (`{geos, share}`: the roof, the walls, the ledges, each with its own share of the samples, `core/biome/40-core-place.js`), but this host's tower still passes one list.
 - [ ] No fauna yet.
+- [ ] **Put the biome fruit in the kit** (`biomes/FRUIT.md`): ballmelon, frillpods, lantern fruit, bell dates. Each has a catalog piece in
+      `kits/catalog/krator-master-furniture-generic-fruit.js` (`biome: 'rift'`). All are drawn. Add harvest tags. The ballmelon should show its yellow flesh where one has split (a few cut halves on the vine). The stone pine's nuts and the acacia pods are not drawn.
 
 ## Done
 

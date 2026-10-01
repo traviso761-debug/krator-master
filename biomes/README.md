@@ -22,6 +22,9 @@ system on the shared biome core (`core/biome/`, read through `CORE_BIOME` in eac
 **One open world.** The kits are meant to be resident together and hand over at their borders.
 `WORLD.md` has the regions and their neighbours, what blocks it today and the plan.
 
+`FRUIT.md` gives one edible fruit for each fruiting plant the kits draw. Each is a catalog piece in
+`kits/catalog/krator-master-furniture-generic-fruit.js`.
+
 Build: `cd <kit> && python3 build.py`. Verify: `python3 verify.py dist/<kit>.html --assert --views "..."`.
 
 Worlds that use a biome (`settlements/iziz/`, `settlements/screamers/`, `kits/ancients/`) carry their own vendored copies
