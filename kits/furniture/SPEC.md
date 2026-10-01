@@ -20,6 +20,13 @@ type, and count outdoor fixtures (fountains, statues, benches) as furniture.
 
 Standardise on the catalog's `FURN({...})` shape and port the Screamers pieces into it.
 
+**The catalog now conforms to "The entry" below.** All 84 pieces carry `type`, `setting`, `rooms`, `anchor`,
+`clearance` and `materials`, and the old `room` key is gone (the engine still accepts it and normalises it to
+`rooms`). `kits/catalog/verify.py --assert` checks every field, and that each piece builds within its declared
+`w × d × h` centred on the origin. The style rules below ("No host globals", "Colour") are reported as warnings,
+not yet met: see `kits/catalog/KNOWN_ISSUES.md`. Canonical material names are `CATALOG_MATERIALS` in
+`kits/catalog/krator-asset-engine.js` until the core registry exists.
+
 ## The entry
 
 ```js
@@ -40,9 +47,11 @@ FURN({
 });
 ```
 
-Differences from the catalog as it stands: `room` becomes `rooms` (an array),
+Compared with the catalog as first harvested: `room` became `rooms` (an array),
 and `type`, `setting`, `anchor`, `clearance` and `materials` are new. Each is
-needed by interior placement or by the Blender export.
+needed by interior placement or by the Blender export. The catalog has them all
+now. Every piece is authored in the floor frame; `anchor` says where a placer
+mounts it (`kits/catalog/README.md`, and `furnAnchorY()` in the engine).
 
 ## Rules
 

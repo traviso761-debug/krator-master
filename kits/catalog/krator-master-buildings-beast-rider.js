@@ -179,7 +179,7 @@ ASSET({
 ASSET({
   key: 'br_bldg_nature_shrine', name: 'Nature shrine (open pavilion)', culture: 'beast-rider',
   family: 'religious', districts: ['mavs-refuge'], wealth: [0, 1],
-  w: 10, d: 10, h: 9, variants: 1,
+  w: 10, d: 10, h: 9.9, variants: 1,
   build: function (F) {
     const timber = 0x5e4630, red = 0x8a2f2a, rope = 0x9a8a62;
     const postH = 3.0, ringR = 4.0, n = 9;
@@ -572,14 +572,15 @@ ASSET({
 ASSET({
   key: 'br_bldg_room_front', name: 'Lower-level room front', culture: 'beast-rider',
   family: 'trade', districts: ['mavs-refuge'], wealth: [0, 1],
-  w: 12.5, d: 4.6, h: 5, variants: 4,
+  w: 12.5, d: 4.6, h: 5.3, variants: 4,
   variantDims: [
     { w: 12.5, d: 4.3, h: 5 },
     { w: 12.5, d: 3.9, h: 5 },
     { w: 12.5, d: 4.6, h: 5 },
-    { w: 12.5, d: 4.3, h: 5 }
+    { w: 12.5, d: 4.3, h: 5.3 }
   ],
   build: function (F) {
+    F.shift(0, -[0.38, 0.30, 0.52, 0.36][F.variant % 4]); /* centre the footprint on the origin (verify.py declared-size) */
     /* A room cut into the deck level below a platform: real shell — floor,
        ceiling, back and side walls — with the shopfront on the +z face. */
     const hw = 6, hd = 1.5, wallT = 0.2;
@@ -1220,6 +1221,7 @@ ASSET({
   family: 'defensive', districts: ['girder'], wealth: [0, 1],
   w: 16, d: 4.5, h: 12, variants: 1,
   build: function (F) {
+    F.shift(0, 0.40); /* centre the footprint on the origin (verify.py declared-size) */
     const timber = 0x5e4630, rope = 0x9a8a62;
     const nStake = 16;
     for (let i = 0; i < nStake; i++) {
