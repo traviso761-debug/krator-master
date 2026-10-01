@@ -25,7 +25,7 @@ reseed(641001);
     F.rod(cx-w/2-over-0.1, y+h, cz, cx+w/2+over+0.1, y+h, cz, 0.06, F.pick(TIMBERC), 'timber'); }
 
   /* =============================================================== 1. POOR STILT HOUSE */
-  ASSET({ key:'stilt_poor', name:'Marsh stilt house', family:'poor', kit:'locus', group:GROUP_H, culture:'abyssal-desert', types:['single-family dwelling'],
+  ASSET({ key:'stilt_poor', name:'Marsh stilt house', family:'poor', kit:['locus','abyss'], group:GROUP_H, kitGroup:{ abyss:'Housing — poor' }, culture:'abyssal-desert', types:['single-family dwelling'],
     districts:['poor'], wealth:[0,0.35], w:11, d:10, h:8, variants:3, variantNames:['reed mats, thatch hip','washed mud, canvas gable','two rooms, flat roof and sail'],
     build:function(F){
       var v=F.variant, H=[2.1,2.4,2.0][v]+F.rr(-0.15,0.15), pc=F.pick(PILEC), pk=F.pick(PLANKC);
@@ -69,7 +69,7 @@ reseed(641001);
     } });
 
   /* =============================================================== 2. MIDDLE-CLASS STILT HOUSE */
-  ASSET({ key:'stilt_mid', name:'Pastel stilt house', family:'mid', kit:'locus', group:GROUP_H, culture:'abyssal-desert', types:['single-family dwelling'],
+  ASSET({ key:'stilt_mid', name:'Pastel stilt house', family:'mid', kit:['locus','abyss'], group:GROUP_H, kitGroup:{ abyss:'Housing — middle' }, culture:'abyssal-desert', types:['single-family dwelling'],
     districts:['prosper','market','poor'], wealth:[0.3,0.75], w:16, d:16, h:12, variants:3, variantNames:['wind-catcher and loggia','two storeys under a sail','L-plan with wrapping verandah'],
     build:function(F){
       var v=F.variant, H=2.8+F.rr(-0.1,0.2), pc=PILEC[3], pk=F.pick(PLANKC), tc=F.pick(TIMBERC);
@@ -126,7 +126,7 @@ reseed(641001);
     } });
 
   /* =============================================================== 3. THE GREAT PAVILION TENT */
-  ASSET({ key:'tent_pavilion', name:'Great pavilion tent', family:'prop', kit:'locus', group:GROUP_T, culture:'abyssal-desert', types:['prop','tavern/inn'],
+  ASSET({ key:'tent_pavilion', name:'Great pavilion tent', family:'prop', kit:['locus','abyss'], group:GROUP_T, kitGroup:{ abyss:'Hospitality' }, culture:'abyssal-desert', types:['prop','tavern/inn'],
     districts:['market','poor'], wealth:[0.1,0.7], w:18, d:14, h:7, variants:3, variantNames:['striped ridge tent','sand-and-rose with rolled walls','round bell tent'],
     build:function(F){
       var v=F.variant, tc=F.pick(TIMBERC), c1=[CANVASDYEC[0],PASTELC[5],CANVASC[0]][v], c2=[CANVASC[2],PASTELC[0],CANVASDYEC[3]][v];
@@ -160,7 +160,7 @@ reseed(641001);
     } });
 
   /* =============================================================== 4. SUN SHADES */
-  ASSET({ key:'sunshade_poles', name:'Four-pole sun shade', family:'prop', kit:'locus', group:GROUP_T, culture:'abyssal-desert', types:['prop'],
+  ASSET({ key:'sunshade_poles', name:'Four-pole sun shade', family:'prop', kit:['locus','abyss'], group:GROUP_T, kitGroup:{ abyss:'Street furniture and docks' }, culture:'abyssal-desert', types:['prop'],
     districts:['core','prosper','market','poor'], wealth:[0,1], w:9, d:9, h:4.5, variants:3, variantNames:['square canvas','twin sails','striped with a bench'],
     build:function(F){
       var v=F.variant, tc=F.pick(TIMBERC), h=3.4, c1=past(F, v*2), c2=v===2 ? CANVASC[0] : past(F, v*2+5);
