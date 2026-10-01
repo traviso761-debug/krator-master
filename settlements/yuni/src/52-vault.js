@@ -28,7 +28,7 @@ var VAULT_LAMPS = [];                      /* [x,y,z] of every electric fitting 
   function vx(lx){ return VAULT.x - lx; }
   function vz(lz){ return ZF - lz; }
   function slotTopAbs(lx){ return GROUND0 + vaultSlotTop(lx); }
-  function ELEC(x,y,z, amp, rad){ nlLampAdd(x,y,z, amp, rad, true); VAULT_LAMPS.push([x,y,z]); }
+  function ELEC(x,y,z, amp, rad){ nlLampAdd(x,y,z, amp, rad, true, 'electric'); VAULT_LAMPS.push([x,y,z]); }
   var MET=TARNC, NEW=METALC, CON=CONCRETEC;
 
   /* ---------------------------------------------------------------- geometry helpers */

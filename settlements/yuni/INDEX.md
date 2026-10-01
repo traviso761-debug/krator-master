@@ -4,7 +4,7 @@
 
 Yuni: the city, plus its building-kit, furniture and plant sheets.
 
-Docs: `API.md`, `KNOWN_ISSUES.md`, `NOTES.md`
+Docs: `API.md`, `GAME_EXPORT.md`, `KNOWN_ISSUES.md`, `NOTES.md`
 
 Built output (never open it; edit `src/` and rebuild): `yuni-assets.html`, `yuni-furniture.html`, `yuni-plants.html`, `yuni.html`
 
@@ -23,11 +23,12 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `21-sky.js` | 55 **big** | 5b. KRATOR SKY (1) |
 | `30-layout.js` | 33 **big** | 8. LAYOUT (1); THE INNER-CITY PLOT SCHEDULE (67); STREET NETWORK (202); WALK GRAPH (life-layer framework) (430) |
 | `40-ground.js` | 10 | 9. GROUND CANVAS + MASK (1) |
-| `45-kit.js` | 25 | 10. KIT (1); NIGHT LIGHT VOLUME (123) |
+| `45-kit.js` | 28 | 10. KIT (1); NIGHT LIGHT VOLUME (130) |
 | `47-texture.js` | 11 | 11. TEXTURES (1) |
 | `50-structure.js` | 15 | 12. STRUCTURE (massing) (1) |
+| `51-fixtures.js` | 10 | 13a. FIXTURES: BUILDINGS, DOORS, WINDOWS, LIGHTS (1); EXPORT (104) |
 | `52-vault.js` | 15 | 13. THE GRAND VAULT (1) |
-| `53-assets.js` | 15 | 13b. ASSET REGISTRY + BUILD FRAME (1) |
+| `53-assets.js` | 20 | 13b. ASSET REGISTRY + BUILD FRAME (1) |
 | `54-under.js` | 7 | 14. UNDERGROUND (test wing) (1) |
 | `55-mid-example.js` | 3 | 16a. ASSETS: reference example (1) |
 | `56-mid.js` | 63 **big** | 16b. ASSETS: middle-class houses + trade (1) |
@@ -42,6 +43,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `61e-ancients-furniture.js` | 20 |  |
 | `62-plants.js` | 4 | 15b. THE PLANT CATALOGUE — SPECIES (1) |
 | `63-furniture.js` | 10 | 15c. THE FURNITURE CATALOGUE — SEED SET (1) |
+| `64-interiors.js` | 51 **big** | 15d. INTERIORS (1); THE PLANNER (173); GEOMETRY (474) |
 | `65-summit.js` | 2 | 17. THE SUMMIT (1) |
 | `66-canal.js` | 7 | 16b. THE CANAL WORKS (1) |
 | `68-place.js` | 40 **big** | 18b. THE INNER-CITY PLACEMENT PASS (1) |
@@ -49,10 +51,11 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `71-catalog.js` | 4 | 19b. THE FURNITURE + PLANT CATALOGUES (1) |
 | `72-lights.js` | 5 | 18. FIXED LAMPS (1) |
 | `75-terrain.js` | 16 | 20. EMIT + GROUND + RIVER (1) |
+| `76-doors.js` | 25 | 20b. WORKING DOORS, INTERIORS, WALKING (1) |
 | `80-camera.js` | 13 | 25. CAMERA, CONTROLS, FRAME LOOP (1); RENDER LOOP (160) |
 | `81-glow.js` | 5 | 26. NIGHT GLOW (1) |
 | `82-daynight.js` | 5 | 27. DAY / NIGHT (1) |
-| `84-life.js` | 24 | 20. THE LIFE LAYER (1) |
+| `84-life.js` | 25 | 20. THE LIFE LAYER (1) |
 | `85-probe.js` | 1 | 29. PROBE (1) |
 | `86-inspect.js` | 4 | 27. DEV INSPECTOR (1) |
 | `87-pathviz.js` | 4 | 28. PATH VISUALIZER (1) |

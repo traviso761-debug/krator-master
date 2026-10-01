@@ -97,7 +97,25 @@
       path-less and was sent to ask for a new destination instead of finishing. Carts went 20 → 57 corridors.
 - [x] `gridRy` gained an 11-entry nudge table (along and across the frontage). Refused district candidates fell
       from 667 to 165 and the city grew from 1700 to 1822 buildings.
-- [ ] The life layer has no collision between agents and no interiors — people stand at the door, not inside.
+- [ ] The life layer has no collision between agents.
+- [x] WORKING DOORS AND INTERIORS. Doors swing, open doorways show the room behind them, and 60 of the
+      sheet's buildings get a planned interior: rooms, partitions with doors, a stair or ladder to a second level,
+      furniture by layout, and a walk graph. Walk mode goes in through the door and up the stairs. Townspeople open
+      doors and go inside. Everything is tagged for Blender and Godot (`GAME_EXPORT.md`).
+- [ ] Interiors are only planned for the Yuni vernacular (poor, mid, trade, rich, civic). The Ancients
+      megastructures, the parks, the props, the Library and the School (which draw their own interiors), the
+      Emir's palace and the caravanserai get none. Open-sided sheds (smithy, craft shed, market hall) and the
+      salvage shacks have no body to fit a room in.
+- [ ] Only the body behind each door is furnished. A compound's other wings, and upper floors reached only from
+      a roof terrace, are solid. Two levels at most, and only in rectangular bodies.
+- [ ] Rooms are fitted inside the captured body with a flat ceiling. Domes and cones read as a plain drum with a
+      beamed ceiling inside, and rounded corners (`rbody`) can leave a corner of a room a few centimetres
+      outside the shell. You only see that from inside, since the portal limits the view from outside.
+- [ ] The doorway portal is a rectangle. Parabolic arch heads show a little of the dark plug above it.
+- [ ] Interior lighting is a uniform indoor term (dimmed sun by day, warm lamp glow by night). Interior hearths
+      and braziers are exported as lights but do not light the room individually.
+- [ ] The egg hut's registered opening is its forecourt gap, so it has no interior. Its mouth needs an F.opening.
+- [ ] Walk-mode collision outside uses the captured bodies only. Compound walls and fences can be walked through.
 - [ ] CARAVANS DO NOT MOVE. Nine are spawned and drawn as four-beast carts with a caravanserai bias, but they
       register zero corridors and `want` reads null even on the cart code path they now share. Tried: their own
       `destFn`, a synchronous vehicle route, an off-map road-end state machine, and finally unifying them onto

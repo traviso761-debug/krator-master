@@ -2460,6 +2460,8 @@ function push(shape, fam, rec){
   var k = shape+'|'+fam;
   (BUCKET[k] || (BUCKET[k] = { shape:shape, fam:fam, list:[] })).list.push(rec);
 }
+/* the index the NEXT record pushed to (shape, fam) will take — a handle for re-posing it after emit */
+function kitIndex(shape, fam){ var B=BUCKET[shape+'|'+fam]; return { key:shape+'|'+fam, i:B?B.list.length:0 }; }
 function BOX (x,y,z,w,h,d,rot,c,f){ push('box',  f||'timber',[x,y,z,w,h,d,rot||0,c]); }
 function FR8 (x,y,z,w,h,d,rot,c,f){ push('fr8',  f||'timber',[x,y,z,w,h,d,rot||0,c]); }   /* gentle batter */
 function FR5 (x,y,z,w,h,d,rot,c,f){ push('fr5',  f||'timber',[x,y,z,w,h,d,rot||0,c]); }   /* strong taper */
@@ -2520,7 +2522,12 @@ var SHAPES = {
   cone: function(){ return new THREE.ConeGeometry(1,1,10).translate(0,0.5,0); },
   dome: function(){ return new THREE.SphereGeometry(1,12,6,0,Math.PI*2,0,Math.PI*0.5); },
   blob: function(){ return new THREE.SphereGeometry(1,7,4,0,Math.PI*2,0,Math.PI*0.5); },
-  ball: function(){ return new THREE.SphereGeometry(1,7,5).translate(0,1,0); }
+  ball: function(){ return new THREE.SphereGeometry(1,7,5).translate(0,1,0); },
+  /* a door leaf hung from its HINGE edge: x 0..1 from the hinge, y 0..1 up, z centred.
+     Its own bucket, so 76-doors.js can swing one instance without touching the rest. */
+  leaf: function(){ return new THREE.BoxGeometry(1,1,1).translate(0.5,0.5,0); },
+  /* an opening's dark reveal: a plain box in its own bucket, hidden when the door stands open */
+  rvl : function(){ return new THREE.BoxGeometry(1,1,1).translate(0,0.5,0); }
 };
 
 /* world-unit texture tiling for instanced primitives (see Voth 45-kit.js) */
@@ -2573,13 +2580,23 @@ var NLV_LAMP_GAIN = 0.55, NLV_WIN_GAIN = 0.30, NLV_COOL_GAIN = 0.50;
 var NLV_WIN_AMP = 0.5, NLV_WIN_RAD = 11;
 var NL_LAMPS = [];                    /* [x,y,z, amp, radius, cool(0|1)] — every static flame */
 var NL_WINDOWS = [];                  /* [x,y,z, nx,nz, w,h, hOn, hOff, allNight, cool] */
-function nlLampAdd(x,y,z,amp,rad,cool){ NL_LAMPS.push([x,y,z, amp==null?1:amp, rad==null?16:rad, cool?1:0]); }
+/* kind tags the fitting for the game export (51-fixtures.js LIGHT_KINDS). While an interior is
+   being built lazily (64-interiors.js) its lamps go to that interior, not to the baked volume. */
+function nlLampAdd(x,y,z,amp,rad,cool,kind){
+  if(typeof INTERIOR_SINK!=='undefined' && INTERIOR_SINK){ INTERIOR_SINK.lights.push({ x:x, y:y, z:z, amp:amp==null?1:amp, radius:rad==null?16:rad, electric:!!cool, kind:kind||(cool?'electric':'flame') }); return; }
+  NL_LAMPS.push([x,y,z, amp==null?1:amp, rad==null?16:rad, cool?1:0]);
+  if(typeof FIX!=='undefined' && FIX) FIX_LIGHT({ kind:kind||(cool?'electric':'flame'), x:x, y:y, z:z, amp:amp==null?1:amp, radius:rad==null?16:rad, electric:!!cool });
+}
 /* a lit window pane: centre, outward horizontal normal, size. Registered by
    WINPANE (below) — every window in the build goes through it. */
 function nlWinAdd(x,y,z,nx,nz,w,h,cool){
   NL_WINDOWS.push([x,y,z,nx,nz,w,h, phash(x,y,z,1.7), phash(x,y,z,5.3), phash(x,y,z,11.9) < 0.05, cool?1:0]);
 }
-function WINPANE(x,y,z,nx,nz,w,h,cool){ nlWinAdd(x,y,z,nx,nz,w,h,cool); }
+function WINPANE(x,y,z,nx,nz,w,h,cool){
+  if(typeof INTERIOR_SINK!=='undefined' && INTERIOR_SINK) return;
+  nlWinAdd(x,y,z,nx,nz,w,h,cool);
+  if(typeof FIX!=='undefined' && FIX) FIX_WINDOW({ x:x, y:y, z:z, yaw:Math.atan2(nx,nz), w:w, h:h, _nl:NL_WINDOWS.length-1 });
+}
 
 var nlvTex = new THREE.DataTexture(new Uint8Array(NLV_RES*NLV_COLS*NLV_RES*NLV_ROWS*4),
                                    NLV_RES*NLV_COLS, NLV_RES*NLV_ROWS, THREE.RGBAFormat);
@@ -2665,18 +2682,34 @@ function nlMaterial(mat, key, extraHook, wpName){
 }
 
 var _dm = new THREE.Object3D(), _col = new THREE.Color();
-function emitBuckets(){
-  var total=0, meshes=0;
-  for(var k in BUCKET){
-    var B = BUCKET[k];
+/* the instance matrix of one kit record (also used by 76-doors.js to re-pose a door leaf) */
+function kitMatrix(r, out){
+  var rot = r[6];
+  _dm.position.set(r[0],r[1],r[2]);
+  _dm.scale.set(r[3],r[4],r[5]);
+  if(typeof rot === 'number') _dm.rotation.set(0,rot,0,'YXZ');
+  else if(rot.q) _dm.quaternion.set(rot.q[0],rot.q[1],rot.q[2],rot.q[3]);
+  else _dm.rotation.set(rot[0],rot[1],rot[2],'YXZ');
+  _dm.updateMatrix();
+  return out ? out.copy(_dm.matrix) : _dm.matrix;
+}
+/* opt (all optional, for the lazy interior builder in 64-interiors.js):
+     buckets  the bucket table to drain (default the city's BUCKET)
+     target   where the meshes go (default the scene)
+     mat(B)   a material factory: return a material to use instead of the family default */
+function emitBuckets(opt){
+  opt = opt || {};
+  var total=0, meshes=0, BK = opt.buckets || BUCKET, target = opt.target || scene;
+  for(var k in BK){
+    var B = BK[k];
     if(!B.list.length) continue;
     var geo = SHAPES[B.shape]();
     var fm  = FAMMAT[B.fam] || {};
-    var mat = fm.basic ? new THREE.MeshBasicMaterial({ color:0xffffff })
+    var mat = opt.mat ? opt.mat(B) : fm.basic ? new THREE.MeshBasicMaterial({ color:0xffffff })
             : new THREE.MeshLambertMaterial({ color:0xffffff, map: fm.tex || null,
                   transparent:false, alphaTest: fm.alpha ? 0.35 : 0, side: (fm.alpha || B.shape==='cyl6') ? THREE.DoubleSide : THREE.FrontSide });
     mat.userData.fam = B.fam;
-    if(!fm.basic){
+    if(!fm.basic && !opt.mat){
       (function(needsUV, needsSway, sc){
         mat.onBeforeCompile = function(sh){ if(needsUV) applyWorldUV(sh, sc); if(needsSway) applyClothSway(sh); applyNightGlow(sh); };
         mat.customProgramCacheKey = function(){ return (needsUV ? 'wuv'+sc[0].toFixed(2)+'_'+sc[1].toFixed(2) : '') + (needsSway?'|sway':'') + '|nlv'; };
@@ -2686,20 +2719,15 @@ function emitBuckets(){
     im.userData.shape = B.shape; im.userData.fam = B.fam; im.userData.kit = true;
     im.castShadow = !FAST && !fm.basic; im.receiveShadow = !FAST && !fm.basic;
     for(var i=0;i<B.list.length;i++){
-      var r = B.list[i], rot = r[6];
-      _dm.position.set(r[0],r[1],r[2]);
-      _dm.scale.set(r[3],r[4],r[5]);
-      if(typeof rot === 'number') _dm.rotation.set(0,rot,0,'YXZ');
-      else if(rot.q) _dm.quaternion.set(rot.q[0],rot.q[1],rot.q[2],rot.q[3]);
-      else _dm.rotation.set(rot[0],rot[1],rot[2],'YXZ');
-      _dm.updateMatrix();
-      im.setMatrixAt(i,_dm.matrix);
+      var r = B.list[i];
+      im.setMatrixAt(i,kitMatrix(r));
       im.setColorAt(i,_col.set(r[7]).convertSRGBToLinear());
     }
     if(im.instanceColor) im.instanceColor.needsUpdate = true;
     im.instanceMatrix.needsUpdate = true;
     im.frustumCulled = false;
-    scene.add(im);
+    B.mesh = im;
+    target.add(im);
     total += B.list.length; meshes++;
   }
   return { instances:total, meshes:meshes };
@@ -2853,10 +2881,11 @@ function TUBE(fam, pts, col, opt){
   }
 }
 var MB_MESHES = {};
-function emitMerged(){
-  var tris=0, meshes=0;
-  for(var fam in MBK){
-    var K = MBK[fam]; if(!K.pos.length) continue;
+function emitMerged(opt){
+  opt = opt || {};
+  var tris=0, meshes=0, MK = opt.buckets || MBK, target = opt.target || scene;
+  for(var fam in MK){
+    var K = MK[fam]; if(!K.pos || !K.pos.length) continue;
     var g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.Float32BufferAttribute(K.pos,3));
     g.setAttribute('normal',   new THREE.Float32BufferAttribute(K.nor,3));
@@ -2864,14 +2893,14 @@ function emitMerged(){
     g.setAttribute('color',    new THREE.Float32BufferAttribute(K.col,3));
     g.computeBoundingSphere();
     var fm = FAMMAT[fam] || {};
-    var mat = fm.basic ? new THREE.MeshBasicMaterial({ color:0xffffff, vertexColors:true })
+    var mat = opt.mat ? opt.mat({ fam:fam, shape:'merged' }) : fm.basic ? new THREE.MeshBasicMaterial({ color:0xffffff, vertexColors:true })
             : new THREE.MeshLambertMaterial({ color:0xffffff, vertexColors:true, map:fm.tex||null,
                   alphaTest: fm.alpha?0.35:0, side: fm.alpha ? THREE.DoubleSide : THREE.FrontSide });
-    if(!fm.basic) nlMaterial(mat, 'mb'+fam);
+    if(!fm.basic && !opt.mat) nlMaterial(mat, 'mb'+fam);
     var m = new THREE.Mesh(g, mat);
     m.userData.fam = fam; m.userData.merged = true;
     m.castShadow = !FAST; m.receiveShadow = !FAST; m.frustumCulled = false;
-    scene.add(m); MB_MESHES[fam] = m; tris += K.tris; meshes++;
+    target.add(m); if(!opt.buckets) MB_MESHES[fam] = m; tris += K.tris; meshes++;
     K.pos = K.nor = K.uv = K.col = null;
   }
   return { tris:tris, meshes:meshes };
@@ -2882,7 +2911,7 @@ function emitMerged(){
    whatever is under the cursor: REGISTER({name, kind, x,y,z, r, h, plat}) —
    a vertical cylinder of radius r from y to y+h. Most specific (smallest) wins. */
 var SITES = [];
-function REGISTER(o){ SITES.push(o); return o; }
+function REGISTER(o){ if(typeof INTERIOR_SINK!=='undefined' && INTERIOR_SINK){ INTERIOR_SINK.sites.push(o); return o; } SITES.push(o); return o; }
 /* ============================== 11. TEXTURES ==============================
    Procedural, seamless-tiling canvases. GRAYSCALE is the rule (the vertex /
    instance colour does the tinting) — the one exception is bark2, the Prism
@@ -3238,6 +3267,151 @@ BRIDGES.forEach(function(B){
     [-1,1].forEach(function(sd){ BLUNT_TOWER(mix(ax,bx,t2)+nx*sd*(B.w/2+0.9), deckY-0.5, mix(az,bz,t2)+nz*sd*(B.w/2+0.9), 1.0, 4.6, { flutes:6, windows:[], finial:false, seg:10 }); }); }
   REGISTER({ name:B.name, kind:'bridge', label:'four parabolic arches', x:B.x, y:wl-3, z:B.z, r:B.L/2, h:deckY-wl+10 });
 });
+/* ============================== 13a. FIXTURES: BUILDINGS, DOORS, WINDOWS, LIGHTS ==============================
+   PLANNER-OWNED. The game-port layer. Everything a game engine has to KNOW about a building, as
+   opposed to merely draw, is registered here as plain data with a stable id, so it can be exported
+   to Blender or Godot without reading any geometry code:
+
+     FIX.buildings[]  one per placed ASSET instance:  id 'bld_00042', asset key, culture, types[]
+     FIX.doors[]      every door, gate and open doorway: hinge, swing, size, which room it opens to
+     FIX.windows[]    every window pane (WINPANE), with its outward normal and size
+     FIX.lights[]     every flame or electric fitting (nlLampAdd), with its kind
+
+   Ids are assigned in build order, which is deterministic, so the same id names the same door on
+   every load. Interiors (64-interiors.js) add rooms, walls, interior doors and furniture with ids
+   in the same scheme; KRATOR_EXPORT (bottom) serialises any of it. The schema is documented in
+   GAME_EXPORT.md beside this build.
+
+   COORDINATES: metres, Y up, right-handed — exactly glTF's convention, so the numbers drop
+   straight into a glTF node (Blender converts to Z-up on import; Godot is Y-up already).
+   x east, z south. `yaw` is radians about +Y. Every fixture's LOCAL +Z is its outward normal
+   (the street side of a door, the outside of a window): in Godot that is the node's basis.z.  */
+
+var FIX_SCHEMA = 'krator.fixtures/1';
+var FIX = { buildings:[], doors:[], windows:[], lights:[], byId:{} };
+var FIX_CTX = null;               /* the building being built (set by buildAsset), or null for street fixtures */
+
+/* the kinds a fixture may take — the vocabulary the export and the engines key on */
+var DOOR_STYLES  = ['plank', 'double', 'carved', 'studded', 'mat', 'hatch', 'gate', 'open'];
+var LIGHT_KINDS  = ['oil-lantern', 'electric-lantern', 'arc-standard', 'hearth', 'brazier', 'electric', 'flame'];
+
+function fixPad(n){ return ('00000'+n).slice(-5); }
+function fixReg(list, prefix, o){
+  o.id = prefix + '_' + fixPad(list.length);
+  o.building = FIX_CTX ? FIX_CTX.id : null;
+  list.push(o); FIX.byId[o.id] = o;
+  if(FIX_CTX) (FIX_CTX[prefix+'s'] || (FIX_CTX[prefix+'s']=[])).push(o.id);
+  return o;
+}
+/* Game-engine node name. CamelCase type, building, ordinal: 'Door.bld_00042.0'. Blender keeps
+   the dots; Godot's glTF importer keeps them too. Collision hints use Godot's suffixes
+   (-col, -colonly) and are added only to walls and floors, never to these. */
+function fixNodeName(type, o){
+  var host = o.building || 'street', n = 0;
+  if(o.building && FIX.byId[o.building]){ var L = FIX.byId[o.building][type+'s'] || []; n = L.indexOf(o.id); if(n<0) n = L.length; }
+  else n = parseInt(o.id.split('_')[1],10);
+  return type.charAt(0).toUpperCase() + type.slice(1) + '.' + host + '.' + n;
+}
+
+/* ---- DOORS ----
+   FIX_DOOR({ x,y,z, yaw, w,h, style, leaves, hinge, swing, to, ly })
+     x,y,z   the centre of the threshold, on the outer face of the wall (y = sill)
+     yaw     direction of the OUTWARD normal (atan2(nx,nz))
+     style   one of DOOR_STYLES; 'open' has no leaf (an archway or gate gap)
+     leaves  1 | 2 ; hinge 'left'|'right' seen from outside ; swing 'in'|'out'
+     to      'interior' (a room of this building) | 'court' (its own yard) | 'street'
+   The renderer's handles (leaf/reveal bucket indices) are attached by F.door, not exported. */
+function FIX_DOOR(o){
+  o.style = o.style || 'plank'; o.leaves = o.leaves || 1; o.hinge = o.hinge || 'left'; o.swing = o.swing || 'in';
+  o.to = o.to || 'interior'; o.open = 0; o.want = 0;
+  return fixReg(FIX.doors, 'door', o);
+}
+function FIX_WINDOW(o){ return fixReg(FIX.windows, 'window', o); }
+function FIX_LIGHT(o){ o.kind = o.kind || 'flame'; return fixReg(FIX.lights, 'light', o); }
+
+/* ---- BUILDING TAGS ----
+   README rule: every building is tagged by CULTURE and TYPE. `culture` uses the furniture
+   vocabulary (FURN_CULTURES), so an interior can furnish itself from the culture that built it.
+   types: civic shop tavern inn industry farm dwelling-single dwelling-multi infrastructure
+          religious funerary park (a building may carry several).                              */
+var BUILDING_TAGS = {
+  mid_washed_house:['yuni-common',['dwelling-single']], mid_bluewash_townhouse:['yuni-common',['dwelling-single']],
+  mid_djenne_house:['sahelian',['dwelling-single']], mid_stacked_cubes:['yuni-common',['dwelling-multi']],
+  mid_round_tower_house:['yuni-common',['dwelling-single']], mid_courtyard_house:['yuni-common',['dwelling-single']],
+  trade_shop_house:['yuni-common',['shop','dwelling-single']], trade_tavern:['yuni-common',['tavern','inn']],
+  trade_potter_yard:['yuni-common',['industry']], trade_smithy:['yuni-common',['industry']],
+  trade_dyer_yard:['yuni-common',['industry']], trade_craft_shed:['yuni-common',['industry','shop']],
+  trade_caravanserai:['nomad',['inn','shop','infrastructure']], trade_market_hall:['yuni-common',['shop']],
+  prop_market_stall:['yuni-common',['shop']], prop_market_tent:['nomad',['shop']], prop_fountain_kiosk:['yuni-common',['infrastructure']],
+  poor_musgum:['yuni-poor',['dwelling-single']], poor_egg_hut:['yuni-poor',['dwelling-single']], poor_cone_cluster:['yuni-poor',['dwelling-single']],
+  poor_mud_house:['yuni-poor',['dwelling-single']], poor_compound:['yuni-poor',['dwelling-multi','farm']], poor_shack:['yuni-poor',['dwelling-single']],
+  prop_granary:['yuni-poor',['farm']], prop_hangar:['yuni-poor',['farm']], prop_animal_pen:['yuni-poor',['farm']], prop_well:['yuni-poor',['infrastructure']],
+  rich_family_compound:['yuni-court',['dwelling-multi']], rich_merchant_palace:['yuni-court',['dwelling-single','shop']],
+  rich_terrace_apartments:['yuni-court',['dwelling-multi']], rich_emir_palace:['yuni-court',['civic','dwelling-single']], rich_tower_house:['yuni-court',['dwelling-single']],
+  civic_archive:['order',['civic','religious']], civic_chapter_house:['order',['civic','religious']], civic_hall_records:['order',['civic']],
+  civic_sankore_spire:['sahelian',['religious']], civic_bathhouse:['yuni-common',['civic']], civic_bell_tower:['yuni-common',['civic','infrastructure']],
+  civic_library:['order',['civic']], civic_school:['order',['civic']]
+};
+function buildingTags(A){
+  var t = BUILDING_TAGS[A.key];
+  if(t) return { culture:t[0], types:t[1].slice() };
+  if(A.family==='ancient') return { culture:'ancient', types:[/apart|comb|cob/.test(A.key)?'dwelling-multi':/fuel|dish|radar|silo/.test(A.key)?'infrastructure':'industry'] };
+  if(A.family==='park') return { culture:'yuni-court', types:['park'] };
+  return { culture:'yuni-common', types:[{ poor:'dwelling-single', mid:'dwelling-single', rich:'dwelling-single', trade:'shop', civic:'civic' }[A.family] || 'infrastructure'] };
+}
+
+/* open a building record; buildAsset closes it */
+function FIX_BUILDING_BEGIN(A, F){
+  var tg = buildingTags(A);
+  var b = { id:'bld_'+fixPad(FIX.buildings.length), asset:A.key, name:A.name, family:A.family,
+            culture:tg.culture, types:tg.types, variant:F.variant, seed:F.seed, wealth:+F.wealth.toFixed(3),
+            x:F.x, y:F.y, z:F.z, yaw:F.ry, w:A.w, d:A.d, h:A.h||8, bodies:[] };
+  FIX.buildings.push(b); FIX.byId[b.id] = b; FIX_CTX = b; return b;
+}
+function FIX_BUILDING_END(){ FIX_CTX = null; }
+
+/* ============================== EXPORT ==============================
+   KRATOR_EXPORT.building(id)  one building: tags, transform, its doors/windows/lights, and its
+                               interior (levels, rooms, walls, doors, stairs, furniture, nav) when
+                               64-interiors.js can plan one
+   KRATOR_EXPORT.fixtures()    every fixture in the world, flat
+   KRATOR_EXPORT.download(obj, filename)                                                       */
+function fixClean(o){
+  var out = {}; for(var k in o){ if(k.charAt(0)==='_' || k==='open' || k==='want') continue; var v=o[k];
+    out[k] = (typeof v==='number') ? +v.toFixed(4) : v; }
+  return out;
+}
+function fixOut(type, o){ var c = fixClean(o); c.type = type; c.node = fixNodeName(type, o); return c; }
+var KRATOR_EXPORT = {
+  schema: FIX_SCHEMA,
+  building: function(id){
+    var b = FIX.byId[id]; if(!b) return null;
+    var c = fixClean(b); delete c.bodies; delete c.doors; delete c.windows; delete c.lights;
+    c.type = 'building'; c.node = 'Building.'+b.id;
+    var out = { schema:FIX_SCHEMA, coords:'glTF: metres, +Y up, right-handed; x east, z south; yaw about +Y; local +Z = outward',
+      building:c,
+      doors:(b.doors||[]).map(function(i){ return fixOut('door', FIX.byId[i]); }),
+      windows:(b.windows||[]).map(function(i){ return fixOut('window', FIX.byId[i]); }),
+      lights:(b.lights||[]).map(function(i){ return fixOut('light', FIX.byId[i]); }) };
+    if(typeof interiorPlan==='function'){ var P = interiorPlan(id); if(P) out.interior = interiorExport(P); }
+    return out;
+  },
+  fixtures: function(){
+    return { schema:FIX_SCHEMA, coords:'glTF: metres, +Y up, right-handed; x east, z south; yaw about +Y; local +Z = outward',
+      buildings:FIX.buildings.map(function(b){ return { id:b.id, asset:b.asset, name:b.name, culture:b.culture, types:b.types,
+        x:+b.x.toFixed(3), y:+b.y.toFixed(3), z:+b.z.toFixed(3), yaw:+b.yaw.toFixed(4), w:b.w, d:b.d, h:b.h,
+        doors:b.doors||[], windows:b.windows||[], lights:b.lights||[] }; }),
+      doors:FIX.doors.map(function(o){ return fixOut('door', o); }),
+      windows:FIX.windows.map(function(o){ return fixOut('window', o); }),
+      lights:FIX.lights.map(function(o){ return fixOut('light', o); }) };
+  },
+  download: function(obj, filename){
+    var blob = new Blob([JSON.stringify(obj, null, 1)], { type:'application/json' }), a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = filename || 'krator-export.json'; document.body.appendChild(a); a.click();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+  }
+};
+window.KRATOR_EXPORT = KRATOR_EXPORT; window.FIX = FIX;
 /* ============================== 13. THE GRAND VAULT ==============================
    PLANNER-OWNED. The facade of the Ancient installation, standing in the slot cut into
    the butte's north face (10-core.js: VAULT).
@@ -3268,7 +3442,7 @@ var VAULT_LAMPS = [];                      /* [x,y,z] of every electric fitting 
   function vx(lx){ return VAULT.x - lx; }
   function vz(lz){ return ZF - lz; }
   function slotTopAbs(lx){ return GROUND0 + vaultSlotTop(lx); }
-  function ELEC(x,y,z, amp, rad){ nlLampAdd(x,y,z, amp, rad, true); VAULT_LAMPS.push([x,y,z]); }
+  function ELEC(x,y,z, amp, rad){ nlLampAdd(x,y,z, amp, rad, true, 'electric'); VAULT_LAMPS.push([x,y,z]); }
   var MET=TARNC, NEW=METALC, CON=CONCRETEC;
 
   /* ---------------------------------------------------------------- geometry helpers */
@@ -3592,11 +3766,13 @@ function assetFrame(x,z,ry,opt){
   F.tower=function(lx,ly,lz, R,h, o){ var q=F.p(lx,lz); BLUNT_TOWER(q[0],F.y+ly,q[1], R,h, o); };
   /* fittings */
   F.lantern=function(lx,ly,lz, amp,rad, hang){ var q=F.p(lx,lz); LANTERN(q[0],F.y+ly,q[1], amp,rad, false, hang||0); };
-  F.lamp=function(lx,ly,lz, amp,rad){ var q=F.p(lx,lz); nlLampAdd(q[0],F.y+ly,q[1], amp,rad, false); };
+  F.lamp=function(lx,ly,lz, amp,rad, kind){ var q=F.p(lx,lz); nlLampAdd(q[0],F.y+ly,q[1], amp,rad, false, kind||'hearth'); };
   /* a window: dark reveal + a pane that lights on the evening schedule. nlx,nlz = the LOCAL outward normal of the wall it is in */
-  F.window=function(lx,ly,lz, nlx,nlz, w,h, opt){ var q=F.p(lx,lz), n=F.dir(nlx,nlz), a=Math.atan2(n[0],n[1]); opt=opt||{};
-    if(!opt.noReveal) BOX(q[0]-n[0]*0.10, F.y+ly-h/2, q[1]-n[1]*0.10, w+0.16, h+0.16, 0.30, a, VOIDC[0], 'dark');
-    WINPANE(q[0]+n[0]*0.06, F.y+ly, q[1]+n[1]*0.06, n[0],n[1], w,h, !!opt.cool); };
+  /* the reveal goes in the 'rvl' bucket so 76-doors.js can hide it while you stand inside and look out */
+  F.window=function(lx,ly,lz, nlx,nlz, w,h, opt){ var q=F.p(lx,lz), n=F.dir(nlx,nlz), a=Math.atan2(n[0],n[1]), rv=null; opt=opt||{};
+    if(!opt.noReveal){ rv=kitIndex('rvl','dark'); push('rvl','dark',[q[0]-n[0]*0.10, F.y+ly-h/2, q[1]-n[1]*0.10, w+0.16, h+0.16, 0.30, a, VOIDC[0]]); }
+    WINPANE(q[0]+n[0]*0.06, F.y+ly, q[1]+n[1]*0.06, n[0],n[1], w,h, !!opt.cool);
+    if(FIX_CTX && FIX.windows.length){ var W=FIX.windows[FIX.windows.length-1]; W.sill=+(ly-h/2).toFixed(3); if(rv) W._rvl=rv; } };
   /* a disc lying in a wall: oculus, medallion, round-window frame. nlx,nlz = LOCAL outward normal; it stands OUT from (lx,lz) by `thick`. */
   F.disc=function(lx,ly,lz, nlx,nlz, r0, thick, col, fam){ var q=F.p(lx,lz), n=F.dir(nlx,nlz), y=F.y+ly, t=thick||0.3;
     push('cyl', fam||'plaster', [q[0],y,q[1], r0,t,r0, beamQuat(q[0],y,q[1], q[0]+n[0],y,q[1]+n[1]), col]); };
@@ -3629,10 +3805,49 @@ function assetFrame(x,z,ry,opt){
       CYL(q[0],y,q[1], 0.16+h*0.008, h*0.22, 0, PAL.trunk[1], 'bark');
       CONE(q[0], y+h*0.10, q[1], R, h*0.62, 0, c, 'leafy');
       CONE(q[0], y+h*0.40, q[1], R*0.78, h*0.60, 0, shade(c,0.06), 'leafy'); } };
-  /* a door: dark reveal, plank leaf, optional parabolic head; registers the door point for the future life layer */
-  F.door=function(lx,lz, nlx,nlz, w,h, col, ly){ var q=F.p(lx,lz), n=F.dir(nlx,nlz), a=Math.atan2(n[0],n[1]), y0=F.y+(ly||0);   /* ly: sill height, for doors up on a plinth */
-    BOX(q[0]-n[0]*0.12, y0, q[1]-n[1]*0.12, w+0.3, h+0.2, 0.34, a, VOIDC[1], 'dark'); BOX(q[0]+n[0]*0.04, y0, q[1]+n[1]*0.04, w, h, 0.10, a, col!=null?col:PLANKC[3], 'plank');
-    (F.doors||(F.doors=[])).push([q[0]+n[0]*0.9, y0, q[1]+n[1]*0.9]); };
+  /* A WORKING DOOR. Dark reveal (own bucket, hidden while open) + hinged leaf or leaves (own bucket,
+     swung by 76-doors.js) + a FIX_DOOR record for the game export + the doorstep point for the life
+     layer. ly: sill height, for doors up on a plinth. o (optional):
+       style  plank | double | carved | studded | mat | hatch   (default: double when w > 1.75)
+       hinge  left | right (seen from outside; default from a position hash, NOT F.rnd, so adding
+              doors never moves anything else in the asset)    swing  in | out    to  interior | court | street */
+  F.door=function(lx,lz, nlx,nlz, w,h, col, ly, o){ o=o||{};
+    var q=F.p(lx,lz), n=F.dir(nlx,nlz), a=Math.atan2(n[0],n[1]), y0=F.y+(ly||0), ux=Math.cos(a), uz=-Math.sin(a);
+    var style=o.style||(w>1.75?'double':'plank'), fam=style==='mat'?'cloth':'plank', c=col!=null?col:PLANKC[3];
+    var hinge=o.hinge||(phash(q[0],y0,q[1],3.1)<0.5?'left':'right'), leaves=style==='double'?2:1, sw=o.swing==='out'?-1:1;
+    var rv=kitIndex('rvl','dark'); push('rvl','dark',[q[0]-n[0]*0.12, y0, q[1]-n[1]*0.12, w+0.3, h+0.2, 0.34, a, VOIDC[1]]);
+    var L=[], hz=[q[0]+n[0]*0.04, q[1]+n[1]*0.04];
+    function leaf(side, lw){ /* side -1: hinge on the viewer's left, leaf runs +x; +1: hinge right, leaf runs -x */
+      var hx=hz[0]+ux*side*w/2, hzz=hz[1]+uz*side*w/2, base=side<0?a:a+Math.PI, k=kitIndex('leaf',fam);
+      push('leaf', fam, [hx, y0, hzz, lw, h, style==='mat'?0.04:0.10, base, c]);
+      L.push({ key:'leaf|'+fam, i:k.i, base:base, dir:(side<0?1:-1)*sw, roll:style==='mat' }); }
+    if(leaves===2){ leaf(-1, w/2-0.01); leaf(1, w/2-0.01); } else leaf(hinge==='left'?-1:1, w);
+    var D=FIX_DOOR({ x:q[0], y:y0, z:q[1], yaw:a, w:w, h:h, style:style, leaves:leaves, hinge:leaves===2?'both':hinge, swing:o.swing||'in', to:o.to||'interior' });
+    D._leaves=L; D._rvl=rv; D._lid=FIX_CTX?FIX_CTX.id:null;
+    (F.doors||(F.doors=[])).push([q[0]+n[0]*0.9, y0, q[1]+n[1]*0.9]); (F.doorIds||(F.doorIds=[])).push(D.id); return D; };
+  /* an OPENING with no leaf of its own — a gateway, an archway, a hut mouth the builder drew itself.
+     Registered exactly like a door (style 'open'), so it exports and the life layer can use it. */
+  F.opening=function(lx,lz, nlx,nlz, w,h, ly, o){ o=o||{};
+    var q=F.p(lx,lz), n=F.dir(nlx,nlz), a=Math.atan2(n[0],n[1]), y0=F.y+(ly||0);
+    var D=FIX_DOOR({ x:q[0], y:y0, z:q[1], yaw:a, w:w, h:h, style:o.style||'open', leaves:0, hinge:'none', swing:'none', to:o.to||'interior' });
+    D._lid=FIX_CTX?FIX_CTX.id:null; D.open=1;
+    (F.doors||(F.doors=[])).push([q[0]+n[0]*0.9, y0, q[1]+n[1]*0.9]); (F.doorIds||(F.doorIds=[])).push(D.id); return D; };
+  /* BODY CAPTURE. While a building is being built, the big solid volumes it draws (walls you could
+     stand inside) are recorded in LOCAL coordinates, so 64-interiors.js can fit rooms inside them
+     without any asset having to describe its own interior. Nothing here changes what is drawn. */
+  /* F.mass({k:'box', x,z, y, w,d,h, r, tk}) — DECLARE a solid volume an interior may be fitted into, for
+     bodies an asset builds from quads or lathes the capture cannot see. tk = how much the half-width
+     shrinks by the top (0.16 for fr8). Free outside the capture; never draws anything. */
+  F.mass=function(o){ if(opt.capture) opt.capture.push(o); };
+  if(opt.capture){ var CAP=opt.capture, WALLF={adobe:1,plaster:1,mosaic:1,paintbw:1,paintcol:1,relief:1,metal:1,rust:1,concrete:1,rock:1};
+    ['box','fr8','fr5'].forEach(function(k){ var f0=F[k]; F[k]=function(lx,ly,lz,w,h,d,r,c,f){
+      if(WALLF[f] && h>=2.2 && Math.min(w,d)>=2.4 && (r==null||typeof r==='number')) CAP.push({ k:'box', x:lx, y:ly, z:lz, w:w, h:h, d:d, r:r||0, tk:k==='fr8'?0.16:k==='fr5'?0.5:0 });
+      f0(lx,ly,lz,w,h,d,r,c,f); }; });
+    var cy0=F.cyl; F.cyl=function(lx,ly,lz,r0,h,r,c,f){ if(WALLF[f] && h>=1.7 && r0>=1.4 && (r==null||typeof r==='number')) CAP.push({ k:'cyl', x:lx, y:ly, z:lz, r:r0, h:h }); cy0(lx,ly,lz,r0,h,r,c,f); };
+    var dm0=F.dome; F.dome=function(lx,ly,lz,r0,h,r,c,f){ if(WALLF[f] && h>=2.2 && r0>=1.6) CAP.push({ k:'dome', x:lx, y:ly, z:lz, r:r0, h:h }); dm0(lx,ly,lz,r0,h,r,c,f); };
+    var ed0=F.edome; F.edome=function(lx,ly,lz,sx,sy,sz,r,c,f){ if(WALLF[f] && sy>=2.2 && Math.min(sx,sz)>=1.6) CAP.push({ k:'dome', x:lx, y:ly, z:lz, r:Math.min(sx,sz), h:sy }); ed0(lx,ly,lz,sx,sy,sz,r,c,f); };
+    var la0=F.lathe; F.lathe=function(fam,lx,lz,prof,col,o2){ if(WALLF[fam] && prof.length>1 && prof[prof.length-1][1]-prof[0][1]>=2.2 && prof[0][0]>=1.6) CAP.push({ k:'lathe', x:lx, z:lz, prof:prof.map(function(p){ return [p[0],p[1]]; }) }); la0(fam,lx,lz,prof,col,o2); };
+  }
   /* toron: the projecting timber posts of Sahelian walls — rows of them on a wall plane */
   F.toron=function(lx,ly,lz, nlx,nlz, len, r0){ var q=F.p(lx,lz), n=F.dir(nlx,nlz); ROD(q[0]-n[0]*0.3,F.y+ly,q[1]-n[1]*0.3, q[0]+n[0]*(len||1.1),F.y+ly-0.05,q[1]+n[1]*(len||1.1), r0||0.09, TORONC[0], 'timber'); };
   return F;
@@ -3640,11 +3855,18 @@ function assetFrame(x,z,ry,opt){
 /* build one instance; returns its record (name, footprint, door points) and registers it with the inspector */
 function buildAsset(key, x,z,ry, opt){
   var A=ASSET_BY_KEY[key]; if(!A){ ERR('no such asset: '+key); return null; }
-  opt=opt||{}; var F=assetFrame(x,z,ry,opt); F.asset=A;
+  opt=opt||{}; var cap=[], o2={}; for(var k in opt) o2[k]=opt[k]; o2.capture=cap;
+  var F=assetFrame(x,z,ry,o2); F.asset=A;
+  var B=FIX_BUILDING_BEGIN(A, F); B.bodies=cap;
+  var len0={}; for(var bk in BUCKET) len0[bk]=BUCKET[bk].list.length;
   try{ A.build(F); }catch(e){ ERR('asset '+key+': '+(e&&e.stack||e)); }
+  FIX_BUILDING_END();
+  /* which kit instances this building owns, so 76-doors.js can hide its shell while you are inside it */
+  B._ranges=[]; for(var bk2 in BUCKET){ var n0=len0[bk2]||0, n1=BUCKET[bk2].list.length; if(n1>n0 && BUCKET[bk2].shape!=='leaf' && BUCKET[bk2].shape!=='rvl') B._ranges.push([bk2,n0,n1]); }
   var nm = A.name + (A.variantNames ? ' — '+A.variantNames[F.variant%A.variantNames.length] : (A.variants>1 ? ' · variant '+'ABCDEFGH'[F.variant%8] : ''));
-  REGISTER({ name:nm, kind:'asset', label:A.family+' · '+A.w+' x '+A.d+' m · key '+A.key, x:x, y:F.y-1, z:z, r:Math.hypot(A.w,A.d)/2, h:(A.h||8)+3 });
-  return { key:key, name:nm, x:x, z:z, ry:ry, w:A.w, d:A.d, doors:F.doors||[] };
+  B.label=nm;
+  REGISTER({ name:nm, kind:'asset', label:A.family+' · '+B.culture+' · '+B.types.join('+')+' · '+A.w+' x '+A.d+' m · key '+A.key+' · '+B.id, x:x, y:F.y-1, z:z, r:Math.hypot(A.w,A.d)/2, h:(A.h||8)+3, bid:B.id });
+  return { key:key, name:nm, x:x, z:z, ry:ry, w:A.w, d:A.d, doors:F.doors||[], doorIds:F.doorIds||[], bid:B.id };
 }
 
 /* build one furniture piece or one plant anywhere in the world, through the same frame.
@@ -3674,7 +3896,7 @@ var UNDER_MESHES = [];
   if(SHEET) return;
   var savedB=BUCKET, savedM=MBK, n0=scene.children.length; BUCKET={}; MBK={};
   var A=ANTE, T=TUNNEL, FY=A.floorY, PF=platFrame(A.x,A.z,0), MET=METALC, LIT=PAL.electric, BLU=PAL.electricBlue;
-  function ELEC(x,y,z,amp,rad){ nlLampAdd(x,y,z,amp,rad,true); }
+  function ELEC(x,y,z,amp,rad){ nlLampAdd(x,y,z,amp,rad,true,'electric'); }
 
   /* ---- antechamber: floor, drum wall, ribbed parabolic dome with an oculus of light ---- */
   SECTOR('metal', PF, 0, A.R, 0, TAU, FY-1, FY, MET[1], { faces:'t', step:6 });
@@ -3798,6 +4020,7 @@ reseed(560001);
       else F.quad(fam, L0[i],L0[j],L1[j],L1[i], col, [mx,0.1,mz]);
       if(par>0){ F.quad(fam, L1[i],L1[j],L2[j],L2[i], shade(col,0.05), [0,1,0]); F.quad(fam, L2[i],L2[j],L3[j],L3[i], shade(col,-0.08), [-mx,0,-mz]); }
       F.tri(o.deckFam||'adobe', par>0?L3[i]:L1[i], par>0?L3[j]:L1[j], [cx,par>0?H:yt,cz], o.deck!=null?o.deck:PAL.lane[1], [0,1,0]); }
+    F.mass({ k:'box', x:cx, z:cz, y:y0, w:o.W, d:o.D, h:yt-y0, r:0, tk:1-k });      /* for the interior planner (64-interiors.js) */
     return { zf:function(y){ return cz+b0*sc(y); }, zb:function(y){ return cz-b0*sc(y); }, xr:function(y){ return cx+a0*sc(y); }, xl:function(y){ return cx-a0*sc(y); }, sc:sc, o:o };
   }
   /* a band hugging a rounded body between y1 and y2, standing `off` proud (frieze of relief / paint / tile) */
@@ -4379,7 +4602,8 @@ reseed(570001);
 (function(){
   var PI=Math.PI;
   /* ---------------------------------------------------------------- helpers */
-  function doorPt(F,lx,lz,nx,nz){ var q=F.p(lx+nx*0.9, lz+nz*0.9); (F.doors||(F.doors=[])).push([q[0],F.y,q[1]]); }
+  /* the hut mouths are drawn by hand below; register each as a leafless opening (tagged, exported, walkable) */
+  function doorPt(F,lx,lz,nx,nz,w,h,ly,to){ F.opening(lx,lz, nx,nz, w||0.8, h||1.6, ly||0, { style:'open', to:to||'interior' }); }
   function pot(F,x,y,z,s,col){ F.lathe('adobe',x,z,[[0.15*s,y],[0.34*s,y+0.24*s],[0.27*s,y+0.52*s],[0.13*s,y+0.64*s],[0.19*s,y+0.72*s]],col,{seg:6,cap:true,capCol:VOIDC[1]}); }
   function rockAt(F,x,z,s,F2){ F.fr5(x,-0.05,z, s*1.3,s*0.8,s, F.rr(0,3), F.pick(ROCKC), 'rock'); }
   function fire(F,x,z){
@@ -4419,7 +4643,7 @@ reseed(570001);
     F.cone(x,ry0+hc-0.5,z, 0.13,0.85, 0, shade(tc,-0.2), 'thatch');                        /* topknot */
     var c=Math.cos(da), s=Math.sin(da);
     F.box(x+c*(r-0.12),y0,z+s*(r-0.12), 0.72,1.5,0.34, PI/2-da, VOIDC[1], 'dark');
-    if(o.doorReg) doorPt(F, x+c*r, z+s*r, c, s);
+    if(o.doorReg!==false) doorPt(F, x+c*r, z+s*r, c, s, 0.72, 1.5, y0);     /* every hut mouth is a doorway (51-fixtures.js) */
   }
   /* a flat-roofed battered mud room. Local room frame: +z = its front, turned by yaw. o:{door:x|null, par, horns, torons, spouts, win, band} */
   function mudRoom(F,cx,cz,yaw,W,D,H,col,o){
@@ -4519,7 +4743,7 @@ reseed(570001);
       if(v===2) F.archband(painted?'paintbw':'adobe',0,spr,zF+0.25,0, ow+1.66,oh+0.86-spr, 0.30,0.2, painted?0xffffff:shade(col,-0.1), {seg:12});
       [-1,1].forEach(function(sd){ F.lathe('adobe', sd*(ow/2+0.60), zF-0.16,
         [[0.26,0],[0.31,0.7],[0.22,1.9]], shade(pcol,-0.04), {seg:6}); });                  /* the two jamb rolls */
-      doorPt(F,0,zF,0,1);
+      doorPt(F,0,zF,0,1, ow-0.1, oh-0.1);
       if(F.chance(0.7)) pot(F,2.6,0,zF-0.6,1.0,ADOBEREDC[2]);
     } });
 
@@ -4535,7 +4759,7 @@ reseed(570001);
         return (1+0.045*Math.sin(a*3+v)+0.03*Math.sin(a*5)) / Math.sqrt(Math.pow(c/ovZ,2)+Math.pow(sn/ovX,2)); }
       F.lathe('rock',0,0,[[1,0],[0.94,0.3],[0.80,0.44]],ROCKC[1],{seg:20,cap:true, rfn:oval});
       L.huts.forEach(function(h,i){ var r=h[2], y0=0.4+F.rr(0.05,0.55), da=Math.atan2(1.2-h[1], 0.2-h[0]);
-        coneHut(F,h[0],h[1],r, F.rr(1.7,2.1), r*F.rr(2.0,2.5)+0.6, y0, da, i%2?F.pick(ADOBEC):PAL.adobeDark[i%3], 'adobe', {stone:i%2===0, doorReg:i===0}); });
+        coneHut(F,h[0],h[1],r, F.rr(1.7,2.1), r*F.rr(2.0,2.5)+0.6, y0, da, i%2?F.pick(ADOBEC):PAL.adobeDark[i%3], 'adobe', {stone:i%2===0, doorReg:true}); });
       L.gran.forEach(function(g){ granary(F,g[0],g[1],0.72,0.38,F.pick(ADOBEC),true); });
       for(var k=0;k<6;k++){ var a=F.rr(0,TAU), rr2=F.rr(5.0,5.5); rockAt(F,Math.cos(a)*rr2,Math.sin(a)*rr2,F.rr(0.5,0.9)); }
     } });
@@ -4577,7 +4801,7 @@ reseed(570001);
       F.sector('adobe',0,0, RW-0.36,RW-0.04, PI/2-g,PI/2+g, 0,0.4, shade(wc,-0.1), {faces:'tio',step:2.0});       /* the stile */
       [-1,1].forEach(function(s){ var a=PI/2+s*(g+0.035); F.fr5(Math.cos(a)*(RW-0.2),0,Math.sin(a)*(RW-0.2), 0.8,1.7,0.8, 0, wc,'adobe'); F.dome(Math.cos(a)*(RW-0.2),1.62,Math.sin(a)*(RW-0.2),0.3,0.34,0,wc,'adobe'); });
       if(F.wealth>0.2) F.sector('paintbw',0,0, RW,RW+0.03, PI/2+g+0.12,PI/2+1.25, 0.45,1.15, 0xffffff, {faces:'o',step:2.0}), F.sector('paintbw',0,0, RW,RW+0.03, PI/2-1.25,PI/2-g-0.12, 0.45,1.15, 0xffffff, {faces:'o',step:2.0});
-      doorPt(F,0,RW,0,1);
+      doorPt(F,0,RW,0,1, 1.2,1.8,0,'court');                                   /* the stile into the yard */
       if(v===0){ [[-PI/2,2.3,4.4],[PI+0.35,2.0,4.6],[-0.3,1.85,4.75]].forEach(function(h,i){ var x=Math.cos(h[0])*h[2], z=Math.sin(h[0])*h[2];
           coneHut(F,x,z,h[1], 2.1, h[1]*2.0+0.8, 0, h[0]+PI, i===1?F.pick(ADOBEREDC):col, 'adobe', {}); });
         granary(F,3.8,-4.8,0.72,0,shade(col,0.05),false); }
@@ -4756,7 +4980,8 @@ reseed(580001);
     F.lathe(fam||'adobe', x,z, [[R*1.07,0,shade(col,-0.1)],[R,1.0],[R*0.93,H],[R*0.9,H+0.5],[R*0.84,H+0.54]], col, { seg:seg }); }
   function drumBand(F,x,z,R,H,y0,y1,fam,col,seg){ function rr_(y){ return R*(1.0-0.07*(y-1)/(H-1))+0.05; } F.lathe(fam, x,z, [[rr_(y0),y0],[rr_(y1),y1]], col, { seg:seg||14 }); }
   function drumR(R,H,y){ return y<1 ? R*(1.07-0.07*y) : R*(1.0-0.07*(y-1)/(H-1)); }
-  function gatePoint(F,lx,lz){ var q=F.p(lx,lz); (F.doors||(F.doors=[])).unshift([q[0],F.y,q[1]]); }
+  /* the compound gate: a leafless opening into the court, listed FIRST so the life layer prefers it */
+  function gatePoint(F,lx,lz){ F.opening(lx,lz-0.9, 0,1, 2.4, 3.0, 0, { style:'gate', to:'court' }); F.doors.unshift(F.doors.pop()); F.doorIds.unshift(F.doorIds.pop()); }
 
   /* =====================================================================================
      1. FAMILY COMPOUND  30 x 26 */
@@ -5162,9 +5387,7 @@ reseed(590001);
   function rwin(F, lx,ly,lz, nx,nz, r, ringCol){ hdisc(F,lx,ly,lz,nx,nz, r*1.38, 0.14, ringCol, 'relief'); hdisc(F,lx,ly,lz,nx,nz, r, 0.20, VOIDC[0], 'dark');
     var p=F.P(lx+nx*0.27,ly,lz+nz*0.27), n=F.dir(nx,nz); WINPANE(p.x,p.y,p.z, n[0],n[1], r*1.25, r*1.25, false); }
   /* a door at any height (F.door is ground-only) */
-  function doorAt(F, lx,ly,lz, nx,nz, w,h, col){ var a=Math.atan2(nx,nz);
-    F.box(lx-nx*0.12, ly, lz-nz*0.12, w+0.3, h+0.2, 0.34, a, VOIDC[1], 'dark'); F.box(lx+nx*0.04, ly, lz+nz*0.04, w, h, 0.10, a, col, 'plank');
-    var q=F.p(lx+nx*0.9, lz+nz*0.9); (F.doors||(F.doors=[])).push([q[0], F.y+ly, q[1]]); }
+  function doorAt(F, lx,ly,lz, nx,nz, w,h, col){ return F.door(lx,lz, nx,nz, w,h, col, ly); }   /* the working, tagged door (53-assets.js) */
   /* brass studs on a door leaf facing +z */
   function studs(F, lx,ly,lz, w,h, col){ for(var i=0;i<3;i++) for(var j=0;j<4;j++) F.box(lx+(i-1)*w*0.3, ly+h*(0.14+j*0.22), lz+0.06, 0.10,0.10,0.09, 0, col!=null?col:GILDC[0], 'metal'); }
   /* parameters at equal arc length round an ellipse */
@@ -9107,6 +9330,568 @@ reseed(630001);
       else { for(var k=0;k<4;k++){ var sx=k<2?-1:1, sz=k%2?-1:1;
         F.rod(sx*0.74, 0, sz*0.36, sx*0.62, 0.74, sz*0.28, 0.045, PAL.metalTarn[2], 'metal'); } } } });
 })();
+/* ============================== 15d. INTERIORS ==============================
+   PLANNER-OWNED. Rooms inside Yuni's buildings: modular, data first, built lazily.
+
+   THREE LAYERS, each swappable without touching the others:
+
+   1. MODULES (registries below — add or swap entries, nothing else changes)
+        FINISH({ key, cultures, wealth, wall:{fam,cols}, floor:{fam,cols}, ceil:{fam,cols}, beams })
+        PARTITION({ key, cultures, thick, fam, cols, door:{style,w,h} })   an interior wall + its door
+        STAIR({ key, cultures, kind:'stair'|'ladder', w, build(G, s) })      how one level reaches the next
+        LAYOUT({ key, room, cultures, wealth, items:[{ furn, at, opt, variant }] })
+              a furniture list for one room kind; `at` is an ANCHOR, not a coordinate:
+              back left right front centre corner grid run-back run-left run-right
+        ROOM_PROGRAM(type, fn)  which room kinds a building of a given type is divided into
+
+   2. THE PLAN (interiorPlan(bid) — pure data, cached, exported by KRATOR_EXPORT)
+        No asset describes its own interior. buildAsset (53-assets.js) records every big solid
+        volume an asset draws (its BODIES, in local coordinates); each exterior door is traced
+        to the body behind it, and rooms are fitted INSIDE that body, inset from its faces:
+          levels[] { k, y, H }                  (Mav's Refuge vocabulary: y = floor top, H = clear height)
+          rooms[]  { id, lvl, kind, poly, y, h, finish, layout }
+          walls[]  { id, kind:'shell'|'partition', module, a, b, lvl, y, h, thick, openings[] }
+          doors[]  { id, kind:'exterior'|'interior', fixture, style, at, yaw, w, h, rooms }
+          stairs[] { id, module, kind, lvl0, lvl1, foot, top, w }
+          furniture[] { id, furn, variant, room, at, y, yaw }
+          nav      { nodes[{id,x,y,z,lvl,tag,room?,door?}], edges[{a,b,kind}] }   tags as Mav's:
+                   door doorway room stairfoot stairtop; edge kinds door room stair ladder
+        All positions are BUILDING-LOCAL (origin at the footprint centre on the ground, +z the
+        front), so an engine parents the interior under the building node and nothing moves.
+
+   3. GEOMETRY (buildInteriorGeo(plan) — runtime, by 76-doors.js, only for buildings near you)
+        Draws the plan into its own small kit buckets and emits a THREE.Group. Interiors are
+        never part of the static city: they cost nothing until you walk up to a door.
+
+   Overriding one building: INTERIOR_PLANS[assetKey] = function(plan, ctx){ ...edit plan... }
+   runs after the automatic planner, so a hand-tuned interior is a few lines here, not a fork. */
+reseed(640001);
+
+var INTERIOR_SINK = null;            /* while non-null, lamps/windows/sites go to the interior being built */
+var INTERIOR_SKIP = { civic_library:1, civic_school:1, trade_caravanserai:1, rich_emir_palace:1, civic_bell_tower:1 };
+var INTERIOR_FAMS = { poor:1, mid:1, trade:1, rich:1, civic:1 };
+var INTERIOR_PLANS = {};
+var FINISHES = [], PARTITIONS = {}, STAIRS = {}, LAYOUTS = [], LAYOUT_BY_KEY = {}, ROOM_PROGRAMS = {};
+function FINISH(o){ FINISHES.push(o); return o; }
+function PARTITION(o){ PARTITIONS[o.key] = o; return o; }
+function STAIR(o){ STAIRS[o.key] = o; return o; }
+function LAYOUT(o){ if(LAYOUT_BY_KEY[o.key]) ERR('layout declared twice: '+o.key); LAYOUTS.push(o); LAYOUT_BY_KEY[o.key] = o; return o; }
+function ROOM_PROGRAM(type, fn){ ROOM_PROGRAMS[type] = fn; }
+
+(function(){
+  /* ============================ FURNITURE TAGS ============================
+     README rule: furniture is tagged by culture, TYPE and SETTING (indoor/outdoor/both).
+     The pieces registered before this fragment get their type + setting here. */
+  var T = { common_low_table:'table', common_floor_seating:'seating', common_storage_chest:'storage', common_water_jars:'storage',
+    court_mosaic_divan:'seating', court_brass_brazier:'lighting', court_writing_desk:'table', sahelian_carved_stool:'seating',
+    sahelian_loom:'tool', order_reading_desk:'table', order_shelf_run:'shelving', poor_reed_mat_bed:'bed', poor_hearth_stones:'hearth',
+    salvage_panel_table:'table', ancient_moulded_bench:'seating', ancient_glass_console:'table', ancient_cell_wall:'storage',
+    ancient_berth:'bed', ancient_light_stem:'lighting', ancient_refectory_run:'table', ancient_socket_rack:'shelving',
+    salvage_strut_bed:'bed', salvage_panel_screen:'screen', salvage_locker_press:'storage', salvage_hearth_hood:'hearth',
+    salvage_lamp_stand:'lighting', order_bookcase:'shelving', order_reading_table:'table', order_lectern:'table',
+    order_library_ladder:'tool', order_globe_stand:'decoration', order_pupil_desk:'table', order_master_chair:'seating',
+    order_writing_board:'decoration', order_mat_rack:'storage' };
+  var OUT = { court_mosaic_divan:'both', sahelian_carved_stool:'both', poor_hearth_stones:'both', court_brass_brazier:'both', sahelian_loom:'both' };
+  FURNS.forEach(function(f){ if(!f.type) f.type = T[f.key] || 'decoration'; if(!f.setting) f.setting = OUT[f.key] || 'indoor'; });
+
+  /* ============================ NEW PIECES ============================
+     What a lived-in house needs and the seed set lacked: beds, a cooking hearth, shelving,
+     a shop counter, tavern tables, a workbench, a carpet, sacks and pots. */
+  function legs(F, w,d, h, r0, col){ [[-1,-1],[1,-1],[-1,1],[1,1]].forEach(function(s){ F.cyl(s[0]*(w/2-r0*1.6), 0, s[1]*(d/2-r0*1.6), r0, h, 0, col, 'timber'); }); }
+  FURN({ key:'common_rope_bed', name:'Rope-strung bed', culture:'yuni-common', room:'bedroom', type:'bed', setting:'indoor', w:1.1, d:2.0, h:0.62, variants:2, variantNames:['plain','with blanket'],
+    build:function(F){ legs(F, 1.1,2.0, 0.40, 0.05, TIMBERC[0]); F.box(0,0.36,0, 1.06,0.08,1.96, 0, TIMBERC[1], 'timber');
+      F.box(0,0.44,0, 0.98,0.10,1.88, 0, F.pick(CLOTHC), 'cloth'); F.box(0,0.44,-0.78, 0.70,0.16,0.30, 0, PAL.whitewash[0], 'cloth');
+      if(F.variant===1) F.box(0,0.50,0.28, 1.02,0.05,1.2, 0, F.pick(CLOTHC), 'cloth'); } });
+  FURN({ key:'court_canopy_bed', name:'Canopied bed', culture:'yuni-court', room:'bedroom', type:'bed', setting:'indoor', w:1.7, d:2.2, h:2.3, variants:1,
+    build:function(F){ F.box(0,0,0, 1.66,0.42,2.16, 0, PLANKC[0], 'plank'); F.box(0,0.42,0, 1.56,0.16,2.06, 0, F.pick(CLOTHC), 'cloth');
+      for(var k=0;k<3;k++) F.edome((k-1)*0.48, 0.58, -0.82, 0.24,0.12,0.18, 0, F.pick(CLOTHC), 'cloth');
+      [[-1,-1],[1,-1],[-1,1],[1,1]].forEach(function(s){ F.cyl(s[0]*0.78,0,s[1]*1.03, 0.045, 2.25, 0, BRASSC[1], 'metal'); });
+      F.box(0,2.18,0, 1.66,0.10,2.16, 0, F.pick(CLOTHC), 'cloth'); F.box(0,1.15,-1.06, 1.6,1.05,0.04, 0, F.pick(CLOTHC), 'cloth'); } });
+  FURN({ key:'common_cooking_hearth', name:'Raised cooking hearth', culture:'yuni-common', room:'kitchen', type:'hearth', setting:'indoor', w:1.6, d:0.9, h:1.9, variants:1,
+    build:function(F){ F.box(0,0,0, 1.6,0.75,0.9, 0, ADOBEC[1], 'adobe'); F.box(-0.35,0.75,0.05, 0.5,0.1,0.5, 0, VOIDC[0], 'dark');
+      F.ball(-0.35,0.86,0.05, 0.12, PAL.glowWarm[0], 'glowmat'); F.lathe('tile', -0.35,0.05, [[0.16,0.86],[0.24,0.98],[0.22,1.12],[0.15,1.18]], TILEC[1], {seg:9});
+      F.fr5(0,0.75,-0.18, 1.2,1.15,0.5, 0, ADOBEC[2], 'adobe'); F.lamp(-0.35, 1.0, 0.1, 0.8, 6, 'hearth'); } });
+  FURN({ key:'common_wall_shelves', name:'Plank wall shelves', culture:'yuni-common', room:'store', type:'shelving', setting:'indoor', w:1.8, d:0.4, h:1.9, variants:2, variantNames:['pots','bolts of cloth'],
+    build:function(F){ for(var s=0;s<2;s++) F.box(s?0.86:-0.86,0,0, 0.06,1.9,0.38, 0, TIMBERC[2], 'timber');
+      for(var k=0;k<4;k++){ var y=0.25+k*0.5; F.box(0,y,0, 1.8,0.04,0.38, 0, PLANKC[1], 'plank');
+        for(var j=0;j<3;j++){ var x=-0.55+j*0.55+F.rr(-0.1,0.1);
+          if(F.variant===0) F.lathe('tile', x,0, [[0.07,y+0.04],[0.13,y+0.16],[0.09,y+0.30],[0.06,y+0.34]], F.pick(TILEC), {seg:7});
+          else F.cyl(x,y+0.04,0, 0.12,0.30, [Math.PI/2,0,0], F.pick(CLOTHC), 'cloth'); } } } });
+  FURN({ key:'common_shop_counter', name:'Shop counter', culture:'yuni-common', room:'shop', type:'counter', setting:'both', w:2.4, d:0.8, h:1.05, variants:2, variantNames:['plain','tiled front'],
+    build:function(F){ F.box(0,0,0, 2.4,0.95,0.7, 0, ADOBEC[0], 'adobe'); F.box(0,0.95,0, 2.5,0.08,0.8, 0, PLANKC[0], 'plank');
+      if(F.variant===1) F.box(0,0.1,0.36, 2.2,0.7,0.02, 0, F.pick(MOSBLUEC), 'mosaic');
+      for(var j=0;j<3;j++) F.lathe('tile', -0.8+j*0.8,0, [[0.08,1.03],[0.13,1.12],[0.09,1.24]], F.pick(TILEC), {seg:7}); } });
+  FURN({ key:'common_tavern_table', name:'Tavern table and benches', culture:'yuni-common', room:'tavern', type:'table', setting:'both', w:1.8, d:1.9, h:0.8, variants:1,
+    build:function(F){ F.box(0,0.72,0, 1.8,0.07,0.8, 0, PLANKC[2], 'plank'); legs(F, 1.6,0.6, 0.72, 0.05, TIMBERC[1]);
+      [-1,1].forEach(function(s){ F.box(0,0.42,s*0.72, 1.7,0.06,0.3, 0, PLANKC[1], 'plank'); F.box(-0.7,0,s*0.72, 0.08,0.42,0.26, 0, TIMBERC[0], 'timber'); F.box(0.7,0,s*0.72, 0.08,0.42,0.26, 0, TIMBERC[0], 'timber'); });
+      F.lathe('tile', 0.3,0.1, [[0.06,0.79],[0.10,0.86],[0.07,0.98]], TILEC[2], {seg:7}); } });
+  FURN({ key:'common_workbench', name:'Workbench with tools', culture:'yuni-common', room:'workshop', type:'table', setting:'both', w:2.2, d:0.9, h:1.0, variants:1,
+    build:function(F){ F.box(0,0.82,0, 2.2,0.12,0.85, 0, PLANKC[3], 'plank'); legs(F, 2.1,0.75, 0.82, 0.07, TIMBERC[2]);
+      F.box(0,0.12,0, 1.9,0.05,0.6, 0, PLANKC[2], 'plank'); F.box(-0.6,0.94,0.1, 0.5,0.05,0.12, 0.3, METALC[2], 'metal'); F.box(0.4,0.94,-0.1, 0.06,0.05,0.4, 0, TIMBERC[0], 'timber'); } });
+  FURN({ key:'common_grain_sacks', name:'Stacked grain sacks', culture:'yuni-common', room:'store', type:'storage', setting:'both', w:1.4, d:0.9, h:0.9, variants:1,
+    build:function(F){ for(var k=0;k<4;k++) F.edome(-0.38+(k%2)*0.76, (k>>1)*0.42, (k>>1)?0:0.1, 0.34,0.42,0.30, F.rr(-0.3,0.3), F.pick(PAL.thatch||THATCHC), 'cloth'); } });
+  FURN({ key:'court_carpet', name:'Knotted carpet', culture:'yuni-court', room:'hall', type:'rug', setting:'indoor', w:2.8, d:2.0, h:0.03, variants:2,
+    build:function(F){ F.box(0,0.005,0, 2.8,0.022,2.0, 0, F.pick(CLOTHC), 'cloth'); F.box(0,0.012,0, 2.3,0.022,1.5, 0, F.variant?MOSBLUEC[1]:PAL.paintRed[1], 'cloth'); } });
+  FURN({ key:'poor_clay_pots', name:'Clay storage pots', culture:'yuni-poor', room:'store', type:'storage', setting:'both', w:1.1, d:0.8, h:0.9, variants:1,
+    build:function(F){ for(var k=0;k<3;k++){ var x=-0.32+k*0.32, s=F.rr(0.8,1.1);
+      F.lathe('tile', x, F.rr(-0.12,0.12), [[0.08*s,0],[0.17*s,0.25*s],[0.16*s,0.55*s],[0.08*s,0.75*s],[0.10*s,0.82*s]], F.pick(ADOBEREDC), {seg:8}); } } });
+  FURN({ key:'nomad_rug_pile', name:'Pile of rugs and saddle-bags', culture:'nomad', room:'hall', type:'seating', setting:'both', w:2.2, d:1.6, h:0.6, variants:1,
+    build:function(F){ for(var k=0;k<3;k++) F.box(F.rr(-0.1,0.1), k*0.07, F.rr(-0.1,0.1), 2.1-k*0.2, 0.07, 1.5-k*0.15, F.rr(-0.1,0.1), F.pick(CLOTHC), 'cloth');
+      F.edome(-0.6,0.21,-0.4, 0.35,0.3,0.25, 0, F.pick(CLOTHC), 'cloth'); F.edome(0.5,0.21,-0.45, 0.3,0.26,0.22, 0, F.pick(CLOTHC), 'cloth'); } });
+
+  /* ============================ FINISHES ============================ */
+  FINISH({ key:'mud_plain',     cultures:['yuni-poor'],               wealth:[0,1],    wall:{fam:'adobe',  cols:ADOBEC},  floor:{fam:'adobe', cols:PAL.lane},   ceil:{fam:'thatch', cols:THATCHC}, beams:true });
+  FINISH({ key:'mud_banco',     cultures:['sahelian','nomad'],        wealth:[0,1],    wall:{fam:'adobe',  cols:ADOBEREDC}, floor:{fam:'adobe', cols:PAL.lane},  ceil:{fam:'plank', cols:PLANKC},  beams:true });
+  FINISH({ key:'lime_wash',     cultures:['yuni-common'],             wealth:[0,0.55], wall:{fam:'plaster',cols:WHITEC},  floor:{fam:'adobe', cols:PAL.paving}, ceil:{fam:'plank', cols:PLANKC},  beams:true });
+  FINISH({ key:'blue_wash',     cultures:['yuni-common'],             wealth:[0.4,1],  wall:{fam:'plaster',cols:BLUELC},  floor:{fam:'tile',  cols:TILEC},      ceil:{fam:'plank', cols:PLANKC},  beams:true });
+  FINISH({ key:'court_mosaic',  cultures:['yuni-court'],              wealth:[0,1],    wall:{fam:'plaster',cols:WHITEC},  floor:{fam:'mosaic',cols:MOSBLUEC},   ceil:{fam:'plaster',cols:BLUELC}, beams:false, dado:{fam:'mosaic', cols:MOSWARMC} });
+  FINISH({ key:'order_stone',   cultures:['order'],                   wealth:[0,1],    wall:{fam:'plaster',cols:WHITEC},  floor:{fam:'rock',  cols:PAL.pavingRich}, ceil:{fam:'plank', cols:PLANKC}, beams:true });
+  FINISH({ key:'ancient_panel', cultures:['ancient','ancients-salvage'],wealth:[0,1],  wall:{fam:'metal',  cols:TARNC},   floor:{fam:'concrete',cols:CONCRETEC}, ceil:{fam:'metal', cols:TARNC},  beams:false });
+
+  /* ============================ PARTITIONS ============================ */
+  PARTITION({ key:'mud_partition',  cultures:['yuni-poor','sahelian'], thick:0.22, fam:'adobe',   door:{ style:'mat',    w:0.85, h:1.9 } });
+  PARTITION({ key:'lime_partition', cultures:['yuni-common','order'],  thick:0.18, fam:'plaster', door:{ style:'plank',  w:0.9,  h:2.05 } });
+  PARTITION({ key:'court_partition',cultures:['yuni-court'],           thick:0.20, fam:'plaster', door:{ style:'double', w:1.5,  h:2.4 } });
+  PARTITION({ key:'cloth_screen',   cultures:['nomad'],                thick:0.06, fam:'cloth',   door:{ style:'open',   w:1.1,  h:2.0 } });
+  PARTITION({ key:'panel_partition',cultures:['ancient','ancients-salvage'], thick:0.12, fam:'metal', door:{ style:'plank', w:1.0, h:2.1 } });
+
+  /* ============================ STAIRS ============================
+     s = { lvl0, lvl1, foot:[u,v], top:[u,v], w, rise, run, y0, y1 } in the ROOM FRAME; G draws. */
+  STAIR({ key:'timber_stair', cultures:['yuni-common','yuni-court','order','ancients-salvage','ancient'], kind:'stair', w:0.95, tread:0.27,
+    build:function(G, s){ var n=Math.max(6, Math.round(s.rise/0.19)), dv=s.run/n, dy=s.rise/n;
+      for(var i=0;i<n;i++) G.box(s.u, s.y0+dy*(i+1)-0.05, s.v0+dv*(i+0.5), s.w, 0.05, dv+0.02, G.plankCol, 'plank');
+      [-1,1].forEach(function(e){ G.beam(s.u+e*(s.w/2-0.04), s.y0, s.v0, s.u+e*(s.w/2-0.04), s.y1, s.v0+s.run, 0.07, 0.24, G.timberCol, 'timber'); }); } });
+  STAIR({ key:'mud_stair', cultures:['sahelian','yuni-poor','nomad'], kind:'stair', w:0.9, tread:0.30,
+    build:function(G, s){ var n=Math.max(6, Math.round(s.rise/0.2)), dv=s.run/n, dy=s.rise/n;
+      for(var i=0;i<n;i++) G.box(s.u, s.y0, s.v0+dv*(i+0.5), s.w, dy*(i+1), dv+0.01, G.wallCol, 'adobe'); } });
+  STAIR({ key:'ladder', cultures:['yuni-poor','yuni-common','sahelian','nomad'], kind:'ladder', w:0.6, tread:0,
+    build:function(G, s){ [-1,1].forEach(function(e){ G.rod(s.u+e*0.24, s.y0, s.v0+0.15, s.u+e*0.24, s.y1+0.9, s.v0+s.run, 0.04, G.timberCol); });
+      var n=Math.round((s.y1-s.y0)/0.32); for(var i=1;i<=n;i++){ var t=i/(n+1); G.rod(s.u-0.24, s.y0+(s.y1+0.9-s.y0)*t, s.v0+0.15+(s.run-0.15)*t, s.u+0.24, s.y0+(s.y1+0.9-s.y0)*t, s.v0+0.15+(s.run-0.15)*t, 0.025, G.timberCol); } } });
+
+  /* ============================ ROOM PROGRAMS ============================
+     fn(b, lvl, area) -> room kinds, the first is the one you enter. One per building TYPE
+     (51-fixtures.js BUILDING_TAGS); the first type a building carries that has a program wins. */
+  ROOM_PROGRAM('tavern',   function(b,l,a){ return l ? (a>=24?['bedroom','bedroom']:['bedroom']) : ['tavern','kitchen']; });
+  ROOM_PROGRAM('shop',     function(b,l,a){ return l ? ['bedroom','store'] : ['shop','store']; });
+  ROOM_PROGRAM('industry', function(b,l,a){ return l ? ['store'] : ['workshop','store']; });
+  ROOM_PROGRAM('civic',    function(b,l,a){ return l ? ['study'] : (b.culture==='order' ? ['hall','study'] : ['hall']); });
+  ROOM_PROGRAM('religious',function(b,l,a){ return ['hall']; });
+  ROOM_PROGRAM('dwelling-single', function(b,l,a){ return l ? ['bedroom','store'] : (b.culture==='yuni-poor' ? (a<26?['hut']:['hut','store']) : ['hall','kitchen','bedroom']); });
+  ROOM_PROGRAM('dwelling-multi',  function(b,l,a){ return l ? ['bedroom','bedroom'] : (b.culture==='yuni-poor' ? ['hut','store'] : ['hall','kitchen','bedroom']); });
+  ROOM_PROGRAM('farm',     function(b,l,a){ return ['store']; });
+
+  /* ============================ LAYOUTS ============================ */
+  var C='yuni-common', P='yuni-poor', K='yuni-court', S='sahelian', O='order', N='nomad';
+  LAYOUT({ key:'living_common', room:'living', cultures:[C,S], wealth:[0,1], items:[ {furn:'common_rope_bed',at:'back'}, {furn:'common_floor_seating',at:'left'}, {furn:'common_low_table',at:'centre',opt:1}, {furn:'common_water_jars',at:'corner'}, {furn:'common_storage_chest',at:'right',opt:1} ] });
+  LAYOUT({ key:'hut_poor',      room:'hut',    cultures:[P], wealth:[0,1], items:[ {furn:'poor_reed_mat_bed',at:'back'}, {furn:'poor_hearth_stones',at:'centre'}, {furn:'poor_clay_pots',at:'corner'}, {furn:'common_floor_seating',at:'left',opt:1,variant:0} ] });
+  LAYOUT({ key:'living_poor',   room:'living', cultures:[P], wealth:[0,1], items:[ {furn:'poor_reed_mat_bed',at:'back'}, {furn:'poor_hearth_stones',at:'centre'}, {furn:'poor_clay_pots',at:'corner'} ] });
+  LAYOUT({ key:'hall_common',   room:'hall',   cultures:[C], wealth:[0,1], items:[ {furn:'common_floor_seating',at:'back',variant:1}, {furn:'common_low_table',at:'centre'}, {furn:'common_floor_seating',at:'left',opt:1}, {furn:'common_water_jars',at:'corner',opt:1} ] });
+  LAYOUT({ key:'hall_sahelian', room:'hall',   cultures:[S,N], wealth:[0,1], items:[ {furn:'nomad_rug_pile',at:'back'}, {furn:'common_low_table',at:'centre'}, {furn:'sahelian_carved_stool',at:'centre',opt:1}, {furn:'sahelian_carved_stool',at:'centre',opt:1}, {furn:'sahelian_loom',at:'right',opt:1} ] });
+  LAYOUT({ key:'hall_court',    room:'hall',   cultures:[K], wealth:[0,1], items:[ {furn:'court_carpet',at:'centre'}, {furn:'court_mosaic_divan',at:'back',variant:1}, {furn:'court_mosaic_divan',at:'left',opt:1}, {furn:'court_brass_brazier',at:'corner'}, {furn:'court_brass_brazier',at:'corner',opt:1}, {furn:'common_low_table',at:'centre',opt:1,variant:1} ] });
+  LAYOUT({ key:'hall_order',    room:'hall',   cultures:[O], wealth:[0,1], items:[ {furn:'order_reading_table',at:'grid'}, {furn:'order_shelf_run',at:'run-back'}, {furn:'order_lectern',at:'front',opt:1} ] });
+  LAYOUT({ key:'bed_common',    room:'bedroom',cultures:[C,S,N], wealth:[0,1], items:[ {furn:'common_rope_bed',at:'back',variant:1}, {furn:'common_storage_chest',at:'left'}, {furn:'common_floor_seating',at:'right',opt:1,variant:0} ] });
+  LAYOUT({ key:'bed_court',     room:'bedroom',cultures:[K], wealth:[0,1], items:[ {furn:'court_canopy_bed',at:'back'}, {furn:'common_storage_chest',at:'left',variant:1}, {furn:'court_writing_desk',at:'right',opt:1}, {furn:'court_brass_brazier',at:'corner',opt:1} ] });
+  LAYOUT({ key:'bed_poor',      room:'bedroom',cultures:[P], wealth:[0,1], items:[ {furn:'poor_reed_mat_bed',at:'back'}, {furn:'poor_clay_pots',at:'corner',opt:1} ] });
+  LAYOUT({ key:'kitchen_common',room:'kitchen',cultures:[C,K,S,N], wealth:[0,1], items:[ {furn:'common_cooking_hearth',at:'back'}, {furn:'common_wall_shelves',at:'left'}, {furn:'common_water_jars',at:'corner'}, {furn:'common_grain_sacks',at:'corner',opt:1} ] });
+  LAYOUT({ key:'kitchen_poor',  room:'kitchen',cultures:[P], wealth:[0,1], items:[ {furn:'poor_hearth_stones',at:'centre'}, {furn:'poor_clay_pots',at:'corner'} ] });
+  LAYOUT({ key:'store_any',     room:'store',  cultures:[C,K,S,N,O], wealth:[0,1], items:[ {furn:'common_wall_shelves',at:'run-back'}, {furn:'common_grain_sacks',at:'corner'}, {furn:'common_storage_chest',at:'left',opt:1}, {furn:'common_water_jars',at:'corner',opt:1} ] });
+  LAYOUT({ key:'store_poor',    room:'store',  cultures:[P], wealth:[0,1], items:[ {furn:'poor_clay_pots',at:'corner'}, {furn:'poor_clay_pots',at:'corner',opt:1}, {furn:'common_grain_sacks',at:'back',opt:1} ] });
+  LAYOUT({ key:'shop_common',   room:'shop',   cultures:[C,K,S,N,P], wealth:[0,1], items:[ {furn:'common_shop_counter',at:'centre'}, {furn:'common_wall_shelves',at:'run-back'}, {furn:'common_grain_sacks',at:'corner',opt:1} ] });
+  LAYOUT({ key:'tavern_common', room:'tavern', cultures:[C,K,S,N,P], wealth:[0,1], items:[ {furn:'common_shop_counter',at:'back',variant:1}, {furn:'common_tavern_table',at:'grid'}, {furn:'common_water_jars',at:'corner',opt:1} ] });
+  LAYOUT({ key:'workshop_common',room:'workshop',cultures:[C,K,S,N,P], wealth:[0,1], items:[ {furn:'common_workbench',at:'back'}, {furn:'common_wall_shelves',at:'left',variant:0}, {furn:'sahelian_carved_stool',at:'centre',opt:1}, {furn:'common_grain_sacks',at:'corner',opt:1} ] });
+  LAYOUT({ key:'study_order',   room:'study',  cultures:[O,K,C], wealth:[0,1], items:[ {furn:'order_reading_desk',at:'back'}, {furn:'order_shelf_run',at:'run-left'}, {furn:'order_master_chair',at:'centre',opt:1} ] });
+})();
+
+/* ============================ THE PLANNER ============================ */
+var INTERIOR_CACHE = {};
+function intRng(seed){ var st=(seed*2654435761+97)>>>0; return function(){ st=(Math.imul(st,1664525)+1013904223)>>>0; return st/4294967296; }; }
+function intPick(rng, arr){ return arr[Math.floor(rng()*arr.length)%arr.length]; }
+function intPickMod(rng, list, b){ /* prefer modules made by the building's culture, then yuni-common */
+  var m = list.filter(function(o){ return o.cultures.indexOf(b.culture)>=0 && (!o.wealth || (b.wealth>=o.wealth[0] && b.wealth<=o.wealth[1])); });
+  if(!m.length) m = list.filter(function(o){ return o.cultures.indexOf(b.culture)>=0; });
+  if(!m.length) m = list.filter(function(o){ return o.cultures.indexOf('yuni-common')>=0; });
+  return m.length ? intPick(rng, m) : list[0];
+}
+/* building-local <-> world, matching loc() in 10-core.js (a node with rotation.y = yaw) */
+function intToLocal(b, x, z){ var dx=x-b.x, dz=z-b.z, c=Math.cos(b.yaw), s=Math.sin(b.yaw); return [dx*c-dz*s, dx*s+dz*c]; }
+function intToWorld(b, lx, lz){ return loc(b.x, b.z, lx, lz, b.yaw); }
+
+/* the solid that holds a point: returns { body, inside(p) } in the body's own terms */
+function intBodyAt(b, lx, lz, ly){
+  var best=null, ba=0;
+  b.bodies.forEach(function(B){
+    var top, base=B.y||0, area, ok=false;
+    if(B.k==='lathe'){ base=B.prof[0][1]; top=B.prof[B.prof.length-1][1]; }
+    else top=base+B.h;
+    if(base > ly+0.45 || top < ly+(B.k==='box'?2.3:1.7)) return;
+    if(B.k==='box'){ var c=Math.cos(B.r), s=Math.sin(B.r), dx=lx-B.x, dz=lz-B.z, qx=dx*c-dz*s, qz=dx*s+dz*c;
+      ok = Math.abs(qx) < B.w/2 && Math.abs(qz) < B.d/2; area=B.w*B.d; }
+    else { var r0 = B.k==='lathe' ? latheRmax(B.prof, 2.2) : B.r; ok = Math.hypot(lx-B.x, lz-B.z) < r0; area=Math.PI*r0*r0; }
+    if(ok && area>ba){ ba=area; best=B; } });
+  return best;
+}
+function latheRmax(prof, h){ var m=0, y0=prof[0][1]; for(var y=y0; y<=y0+h; y+=0.2) m=Math.max(m, latheR(prof, y)); return m; }
+function latheR(prof, y){ for(var i=0;i<prof.length-1;i++){ var a=prof[i], c=prof[i+1]; if(y>=a[1] && y<=c[1]) return a[0]+(c[0]-a[0])*(y-a[1])/Math.max(1e-6,c[1]-a[1]); } return y<prof[0][1]?prof[0][0]:prof[prof.length-1][0]; }
+/* half-width of a battered body at height y above its base */
+function taperK(B, y){ return 1-(B.tk||0)*y/B.h; }
+
+function interiorPlan(bid){
+  if(bid in INTERIOR_CACHE) return INTERIOR_CACHE[bid];
+  var b = FIX.byId[bid], P = null;
+  try{ P = b ? planBuilding(b) : null; }catch(e){ ERR('interior '+bid+': '+(e&&e.stack||e)); P = null; }
+  INTERIOR_CACHE[bid] = P; return P;
+}
+
+function planBuilding(b){
+  var A = ASSET_BY_KEY[b.asset];
+  if(!A || INTERIOR_SKIP[A.key] || !INTERIOR_FAMS[A.family] || !b.doors || !b.bodies.length) return null;
+  var rng = intRng(b.seed*7+b.variant*131+3), plan = { bid:b.id, asset:b.asset, culture:b.culture, types:b.types,
+    levels:[], rooms:[], walls:[], doors:[], stairs:[], furniture:[], groups:[], nav:{ nodes:[], edges:[] } };
+  var finish = intPickMod(rng, FINISHES, b), part = intPickMod(rng, PARTITIONS_LIST(), b);
+  plan.finish = finish.key; plan.partition = part.key;
+  var used = [];
+  b.doors.forEach(function(did){
+    var D = FIX.byId[did]; if(!D || D.to!=='interior') return;
+    var p = intToLocal(b, D.x, D.z), ly = D.y - b.y, yawL = D.yaw - b.yaw, nx=Math.sin(yawL), nz=Math.cos(yawL);
+    var B = intBodyAt(b, p[0]-nx*0.7, p[1]-nz*0.7, ly); if(!B) return;
+    var gi = used.indexOf(B);
+    if(gi<0){ used.push(B); gi = plan.groups.length; plan.groups.push(planGroup(plan, b, B, { p:p, nx:nx, nz:nz, ly:ly, D:D }, rng, finish, part)); }
+    else plan.groups[gi].extraDoors.push({ p:p, nx:nx, nz:nz, ly:ly, D:D });
+  });
+  plan.groups = plan.groups.filter(function(g){ return g && g.ok; });
+  if(!plan.groups.length) return null;
+  plan.groups.forEach(function(g){ emitGroup(plan, b, g, rng, part); });
+  plan.levels = plan.groups[0].levels;
+  if(INTERIOR_PLANS[b.asset]) INTERIOR_PLANS[b.asset](plan, { building:b, rng:rng });
+  return plan;
+}
+function PARTITIONS_LIST(){ var o=[]; for(var k in PARTITIONS) o.push(PARTITIONS[k]); return o; }
+
+/* one body -> a group: frame, levels, zones */
+function planGroup(plan, b, B, door, rng, finish, part){
+  var g = { ok:false, body:B, door:door, extraDoors:[], levels:[], zones:[], round:false };
+  var y0 = Math.max(door.ly, B.k==='lathe'?B.prof[0][1]:B.y||0) + 0.02, top = B.k==='lathe' ? B.prof[B.prof.length-1][1] : (B.y||0)+B.h;
+  /* ON A SLOPE the ground under the uphill side stands above the building's origin: lift the ground
+     floor clear of it (both the terrain field and the coarser rendered mesh), by at most 0.9 m */
+  if(!SHEET){ var ext = B.k==='box' ? [B.w/2, B.d/2] : null, R0 = B.k==='lathe' ? B.prof[0][0] : B.r, gmax=-1e9;
+    for(var gi=-1; gi<=1; gi++) for(var gj=-1; gj<=1; gj++){ var lx, lz;
+      if(ext){ var c=Math.cos(B.r||0), s2=Math.sin(B.r||0), px=gi*ext[0]*0.85, pz=gj*ext[1]*0.85; lx=B.x+px*c+pz*s2; lz=B.z-px*s2+pz*c; }
+      else { lx=B.x+gi*R0*0.7; lz=B.z+gj*R0*0.7; }
+      var w=intToWorld(b, lx, lz), h=Math.max(terrainH(w[0],w[1]), typeof terrMeshH==='function'?terrMeshH(w[0],w[1]):-1e9); gmax=Math.max(gmax, h-b.y); }
+    if(gmax+0.05 > y0) y0 = Math.min(gmax+0.05, y0+0.9); }
+  if(B.k==='box'){
+    /* room frame: V = the body axis most aligned with "inward from the door", U = right seen from outside */
+    var ex=[Math.cos(B.r), -Math.sin(B.r)], ez=[Math.sin(B.r), Math.cos(B.r)], inw=[-door.nx,-door.nz], cand=[[ex,1,'x'],[[-ex[0],-ex[1]],1,'x'],[ez,1,'z'],[[-ez[0],-ez[1]],1,'z']], bestV=null, bd=-2;
+    cand.forEach(function(c){ var d=c[0][0]*inw[0]+c[0][1]*inw[1]; if(d>bd){ bd=d; bestV=c; } });
+    var V=bestV[0], U=[-V[1], V[0]], alongX = bestV[2]==='x';
+    var wallT = 0.30, twoLv = (top - y0) >= 6.2 && B.w>=4.2 && B.d>=4.2;
+    var H0 = twoLv ? 2.9 : Math.min(top - y0 - 0.35, 3.3);
+    if(H0 < 2.2) return g;
+    function half(yc){ var k=taperK(B, yc-(B.y||0)); var hx=B.w/2*k-wallT, hz=B.d/2*k-wallT; return alongX ? { hu:hz, hv:hx } : { hu:hx, hv:hz }; }
+    var e0 = half(y0+H0); if(e0.hu<0.9 || e0.hv<0.9) return g;
+    var O = [B.x - V[0]*e0.hv, B.z - V[1]*e0.hv];
+    g.frame = { O:O, U:U, V:V, C:[B.x,B.z] }; g.hv0 = e0.hv;
+    g.levels.push({ k:0, y:+y0.toFixed(3), H:+H0.toFixed(3), hu:e0.hu, v0:0, v1:2*e0.hv });
+    if(twoLv){ var y1=y0+H0+0.3, H1=Math.min(top-y1-0.35, 3.0);
+      if(H1 >= 2.2){ var e1=half(y1+H1); if(e1.hu>=0.9 && e1.hv>=0.9) g.levels.push({ k:1, y:+y1.toFixed(3), H:+H1.toFixed(3), hu:e1.hu, v0:e0.hv-e1.hv, v1:e0.hv+e1.hv }); } }
+  } else {
+    /* round body: an inscribed polygon, one level */
+    var H = Math.min(top - y0 - 0.25, 3.2), R;
+    if(B.k==='cyl'){ R = B.r - 0.30; H = Math.max(H, Math.min(2.1, top - y0 + 0.4)); }   /* a hut's thatch gives headroom over its low drum */
+    else if(B.k==='dome'){ H = Math.min(B.h*0.62, 3.1); R = B.r*Math.sqrt(Math.max(0,1-Math.pow((H+(y0-(B.y||0)))/B.h,2))) - 0.25; }
+    else { R = 1e9; for(var yy=y0; yy<=y0+H+0.01; yy+=0.25) R = Math.min(R, latheR(B.prof, yy)); R -= 0.28; }
+    if(H < 1.8 || !(R >= 1.1)) return g;
+    var Vr=[-door.nx,-door.nz], Ur=[-Vr[1], Vr[0]];
+    g.round = true; g.R = R; g.frame = { O:[B.x - Vr[0]*R, B.z - Vr[1]*R], U:Ur, V:Vr, C:[B.x,B.z] }; g.hv0 = R;
+    g.levels.push({ k:0, y:+y0.toFixed(3), H:+H.toFixed(3), hu:R, v0:0, v1:2*R });
+  }
+  g.ok = true; return g;
+}
+
+/* zones, walls, doors, stairs, furniture and nav for one group, appended to the plan */
+function emitGroup(plan, b, g, rng, part){
+  var f = g.frame, gid = plan.groups.indexOf(g), RF = function(u,v){ return [f.O[0]+f.U[0]*u+f.V[0]*v, f.O[1]+f.U[1]*u+f.V[1]*v]; };
+  g.RF = RF;
+  var area0 = (2*g.levels[0].hu)*(g.levels[0].v1-g.levels[0].v0);
+  function program(lvl, area){
+    for(var i=0;i<b.types.length;i++){ var fn=ROOM_PROGRAMS[b.types[i]]; if(fn) return fn(b, lvl, area); }
+    return ['hall'];
+  }
+  var stair = null;
+  /* the stair: along the left wall, rising from the front toward the back */
+  if(g.levels.length > 1){
+    var L0=g.levels[0], L1=g.levels[1], rise=L1.y-L0.y, mod=(b.culture==='yuni-poor') ? STAIRS.ladder : intPickMod(rng, stairList().filter(function(m){ return m.kind==='stair'; }), b);
+    var uL = Math.max(-L0.hu, -L1.hu) + 0.05, run = rise/0.19*(mod.tread||0.27), vA = 1.3;
+    if(mod.kind==='stair' && vA+run > Math.min(L0.v1, L1.v1)-0.3) mod = STAIRS.ladder;
+    if(mod.kind==='ladder'){ run = 1.1; vA = Math.min(L0.v1, L1.v1) - 1.4; }
+    var w = mod.w, u = uL + w/2;
+    stair = { id:plan.bid+'.stair.'+plan.stairs.length, module:mod.key, kind:mod.kind, lvl0:0, lvl1:1, u:u, w:w, v0:vA, run:run, y0:L0.y, y1:L1.y, rise:rise, group:gid,
+              u0:u-w/2, u1:u+w/2, va:vA, vb:vA+run };
+    plan.stairs.push(stair); g.stair = stair;
+  }
+  g.levels.forEach(function(L){
+    var W = 2*L.hu, D = L.v1-L.v0, prog = program(L.k, W*D), zones = [];
+    var single = prog.length===1 || W*D < 30 || D < 5.0 || g.round;
+    if(single){ var k1 = prog[0]; if(prog.length>1 && k1==='hall' && b.types.join().indexOf('dwelling')>=0) k1='living'; zones.push({ kind:k1, u0:-L.hu, u1:L.hu, v0:L.v0, v1:L.v1 }); }
+    else {
+      var vs = L.v0 + D*0.55;
+      zones.push({ kind:prog[0], u0:-L.hu, u1:L.hu, v0:L.v0, v1:vs });
+      if(prog.length>=3 && W>=7){ zones.push({ kind:prog[1], u0:-L.hu, u1:0, v0:vs, v1:L.v1 }); zones.push({ kind:prog[2], u0:0, u1:L.hu, v0:vs, v1:L.v1 }); }
+      else zones.push({ kind:prog[1], u0:-L.hu, u1:L.hu, v0:vs, v1:L.v1 });
+    }
+    L.zones = zones;
+    zones.forEach(function(z){
+      var id = plan.bid+'.room.'+plan.rooms.length, poly;
+      /* round: 10 sides, turned so the entrance falls in the middle of a side */
+      if(g.round){ poly=[]; var ad=Math.atan2(-f.V[1], -f.V[0]); for(var i=0;i<10;i++){ var a=ad+(i-0.5)/10*TAU; poly.push([f.C[0]+Math.cos(a)*g.R, f.C[1]+Math.sin(a)*g.R]); } }
+      else poly = [RF(z.u0,z.v0), RF(z.u1,z.v0), RF(z.u1,z.v1), RF(z.u0,z.v1)];
+      z.id = id; z.lvl = L.k; z.group = gid;
+      plan.rooms.push({ id:id, lvl:L.k, kind:z.kind, group:gid, poly:poly.map(function(p){ return [+p[0].toFixed(3), +p[1].toFixed(3)]; }), y:L.y, h:L.H, finish:plan.finish, layout:null, _z:z });
+    });
+    /* partitions (internal splits). A wall the stair passes through stops short of it. */
+    if(zones.length>1){
+      var vs2 = zones[1].v0, pd = PARTITIONS[plan.partition].door, ops=[];
+      var su = (stair && stair.va < vs2 && stair.vb > vs2) ? stair.u1+0.05 : -L.hu;
+      zones.slice(1).forEach(function(z){ var uc = Math.min(Math.max((z.u0+z.u1)/2, su + pd.w/2 + 0.15), z.u1 - pd.w/2 - 0.1);
+        if(uc - pd.w/2 > su + 0.05) ops.push({ u:uc, w:pd.w, room:z.id }); });
+      addWall(plan, g, 'partition', L, [su, vs2], [L.hu, vs2], ops.map(function(o){ return { u:o.u-su, w:o.w, y0:0, y1:pd.h, door:true, room:o.room }; }), PARTITIONS[plan.partition].thick, pd, zones[0].id);
+      if(zones.length===3) addWall(plan, g, 'partition', L, [0, vs2], [0, L.v1], [], PARTITIONS[plan.partition].thick, pd);
+    }
+    /* the shell: the four faces of the level (round bodies: the polygon) */
+    var doorsHere = (L.k===0) ? [g.door].concat(g.extraDoors) : [];
+    if(g.round){ var room0 = plan.rooms[plan.rooms.length-1];
+      var poly2 = room0.poly; for(var i2=0;i2<poly2.length;i2++){ var A2=poly2[i2], B2=poly2[(i2+1)%poly2.length];
+        addShell(plan, b, g, L, A2, B2, doorsHere); } }
+    else { var c4 = [[-L.hu,L.v0],[L.hu,L.v0],[L.hu,L.v1],[-L.hu,L.v1]];
+      for(var j=0;j<4;j++) addShell(plan, b, g, L, RF(c4[j][0],c4[j][1]), RF(c4[(j+1)%4][0],c4[(j+1)%4][1]), doorsHere); }
+  });
+  /* exterior door records */
+  [g.door].concat(g.extraDoors).forEach(function(d){
+    var z0 = zoneAt(g, 0, d.p[0]-d.nx*0.9, d.p[1]-d.nz*0.9);
+    plan.doors.push({ id:d.D.id, kind:'exterior', fixture:d.D.id, style:d.D.style, at:[+d.p[0].toFixed(3), +d.p[1].toFixed(3)], y:+d.ly.toFixed(3), yaw:+Math.atan2(d.nx,d.nz).toFixed(4),
+      w:d.D.w, h:d.D.h, rooms:[z0?z0.id:null, 'outside'], group:gid }); });
+  furnishGroup(plan, b, g, rng);
+  navGroup(plan, b, g);
+}
+function stairList(){ var o=[]; for(var k in STAIRS) o.push(STAIRS[k]); return o.filter(function(s){ return s.kind==='stair'; }).concat([STAIRS.ladder]); }
+function zoneAt(g, lvl, lx, lz){
+  var L=g.levels[lvl]; if(!L||!L.zones) return null; var f=g.frame, dx=lx-f.O[0], dz=lz-f.O[1], u=dx*f.U[0]+dz*f.U[1], v=dx*f.V[0]+dz*f.V[1];
+  for(var i=0;i<L.zones.length;i++){ var z=L.zones[i]; if(u>=z.u0-0.3 && u<=z.u1+0.3 && v>=z.v0-0.6 && v<=z.v1+0.3) return z; }
+  return L.zones[0];
+}
+/* a wall in room-frame coordinates (partitions) */
+function addWall(plan, g, kind, L, a, b2, ops, thick, pd, roomA){
+  var A=g.RF(a[0],a[1]), B=g.RF(b2[0],b2[1]), id=plan.bid+'.wall.'+plan.walls.length;
+  var openings = ops.map(function(o, i){
+    var dId = id+'.door.'+i, len=Math.hypot(B[0]-A[0],B[1]-A[1]), t=o.u/len, at=[A[0]+(B[0]-A[0])*t, A[1]+(B[1]-A[1])*t];
+    if(o.door){ plan.doors.push({ id:dId, kind:'interior', style:pd.style, at:[+at[0].toFixed(3),+at[1].toFixed(3)], y:L.y, yaw:+Math.atan2(-(B[1]-A[1]), B[0]-A[0]).toFixed(4) /* not used: normal is the wall's */,
+      w:o.w, h:pd.h, rooms:[roomA||null, o.room||null], group:plan.groups.indexOf(g), wall:id, lvl:L.k }); }
+    return { u:+o.u.toFixed(3), w:o.w, y0:o.y0, y1:o.y1, door:o.door?dId:null }; });
+  plan.walls.push({ id:id, kind:kind, module:plan.partition, a:[+A[0].toFixed(3),+A[1].toFixed(3)], b:[+B[0].toFixed(3),+B[1].toFixed(3)], lvl:L.k, y:L.y, h:L.H, thick:thick, openings:openings, group:plan.groups.indexOf(g) });
+}
+/* a shell face between two LOCAL points, with the exterior doors and windows that pierce it */
+function addShell(plan, b, g, L, A, B, doors){
+  var dx=B[0]-A[0], dz=B[1]-A[1], len=Math.hypot(dx,dz); if(len<0.3) return;
+  var tx=dx/len, tz=dz/len, nx=tz, nz=-tx, mx=(A[0]+B[0])/2, mz=(A[1]+B[1])/2, C=g.frame.C;
+  if((mx-C[0])*nx+(mz-C[1])*nz < 0){ nx=-nx; nz=-nz; }                       /* outward */
+  var ops = [];
+  function project(px, pz, qnx, qnz, w, y0, y1, ref){
+    if(qnx*nx+qnz*nz < 0.82) return;
+    var dist=(px-A[0])*nx+(pz-A[1])*nz, u=(px-A[0])*tx+(pz-A[1])*tz;
+    if(dist < -0.2 || dist > 1.6 || u < w/2+0.02 || u > len-w/2-0.02) return;
+    ops.push({ u:+u.toFixed(3), w:+w.toFixed(3), y0:+Math.max(0,y0).toFixed(3), y1:+Math.min(L.H-0.12, y1).toFixed(3), depth:+Math.max(0.05,dist).toFixed(3), door:ref.door||null, window:ref.window||null });
+  }
+  doors.forEach(function(d){ project(d.p[0], d.p[1], d.nx, d.nz, d.D.w+0.04, 0, d.D.h, { door:d.D.id }); });
+  (b.windows||[]).forEach(function(wid){ var W=FIX.byId[wid]; if(!W) return; var p=intToLocal(b, W.x, W.z), yl=W.y-b.y-L.y, yawL=W.yaw-b.yaw;
+    if(yl-W.h/2 < 0.2 || yl+W.h/2 > L.H-0.1) return;
+    project(p[0], p[1], Math.sin(yawL), Math.cos(yawL), W.w, yl-W.h/2, yl+W.h/2, { window:wid }); });
+  ops.sort(function(p,q){ return p.u-q.u; });
+  for(var i=1;i<ops.length;i++) if(ops[i].u-ops[i].w/2 < ops[i-1].u+ops[i-1].w/2+0.12){ ops.splice(i,1); i--; }
+  plan.walls.push({ id:plan.bid+'.wall.'+plan.walls.length, kind:'shell', module:plan.finish, a:[+A[0].toFixed(3),+A[1].toFixed(3)], b:[+B[0].toFixed(3),+B[1].toFixed(3)],
+    out:[+nx.toFixed(4),+nz.toFixed(4)], lvl:L.k, y:L.y, h:L.H, thick:0.12, openings:ops, group:plan.groups.indexOf(g) });
+}
+
+/* ---- the furniture placer: anchors resolved in each zone's own (u,v) rectangle ---- */
+function furnishGroup(plan, b, g, rng){
+  plan.rooms.forEach(function(R){
+    if(R.group !== plan.groups.indexOf(g)) return;
+    var z = R._z, cand = LAYOUTS.filter(function(l){ return l.room===z.kind && l.cultures.indexOf(b.culture)>=0 && b.wealth>=l.wealth[0] && b.wealth<=l.wealth[1]; });
+    if(!cand.length) cand = LAYOUTS.filter(function(l){ return l.room===z.kind && l.cultures.indexOf('yuni-common')>=0; });
+    if(!cand.length) cand = LAYOUTS.filter(function(l){ return l.room===z.kind; });
+    if(!cand.length) return;
+    var lay = intPick(rng, cand); R.layout = lay.key;
+    var U0=z.u0+0.08, U1=z.u1-0.08, V0=z.v0+0.08, V1=z.v1-0.08, placed=[], keep=[];
+    if(g.round){ var r2=g.R*0.70; U0=-r2; U1=r2; V0=g.R-r2; V1=g.R+r2; }
+    /* keep-outs: every door's swing and approach, the stair and its landing */
+    plan.doors.forEach(function(d){ if(d.group!==R.group) return; if(d.kind==='interior' && d.lvl!==R.lvl) return; if(d.kind==='exterior' && R.lvl!==0) return;
+      var f=g.frame, dx=d.at[0]-f.O[0], dz=d.at[1]-f.O[1], u=dx*f.U[0]+dz*f.U[1], v=dx*f.V[0]+dz*f.V[1], hw=d.w/2+0.35;
+      keep.push([u-hw, v-1.3, u+hw, v+1.3]); });
+    if(g.stair){ var s=g.stair; keep.push([s.u0-0.1, s.va-1.0, s.u1+0.1, s.vb+1.0]); }
+    function free(r){ if(r[0]<U0-1e-6||r[2]>U1+1e-6||r[1]<V0-1e-6||r[3]>V1+1e-6) return false;
+      var all=placed.concat(keep); for(var i=0;i<all.length;i++){ var q=all[i]; if(r[0]<q[2]-0.02 && r[2]>q[0]+0.02 && r[1]<q[3]-0.02 && r[3]>q[1]+0.02) return false; } return true; }
+    function tryAt(it, Fd, u, v, face){ /* face: unit (fu,fv) the piece's front looks along */
+      var along = Math.abs(face[1])>0.5, ew = along?Fd.w:Fd.d, ed = along?Fd.d:Fd.w, r=[u-ew/2, v-ed/2, u+ew/2, v+ed/2];
+      if(!free(r)) return false; placed.push(r);
+      var fw = [g.frame.U[0]*face[0]+g.frame.V[0]*face[1], g.frame.U[1]*face[0]+g.frame.V[1]*face[1]], p=g.RF(u,v);
+      plan.furniture.push({ id:R.id+'.f'+plan.furniture.length, furn:Fd.key, variant:it.variant!=null?it.variant%Fd.variants:Math.floor(rng()*Fd.variants), room:R.id,
+        at:[+p[0].toFixed(3), +p[1].toFixed(3)], y:R.y, yaw:+Math.atan2(fw[0], fw[1]).toFixed(4), seed:Math.floor(rng()*1e6) });
+      return true; }
+    lay.items.forEach(function(it){
+      var Fd = FURN_BY_KEY[it.furn]; if(!Fd) return;
+      var W=U1-U0, um=(U0+U1)/2, vm=(V0+V1)/2, ok=false, at=it.at, i, list;
+      if(at==='back'||at==='run-back'){ list=[0,-0.28,0.28,-0.42,0.42]; for(i=0;i<list.length && !ok;i++) ok=tryAt(it,Fd, um+list[i]*W, V1-Fd.d/2, [0,-1]);
+        if(at==='run-back') for(i=0;i<8;i++) tryAt(it,Fd, U0+Fd.w/2+i*(Fd.w+0.3), V1-Fd.d/2, [0,-1]); }
+      else if(at==='left'||at==='run-left'){ list=[0.5,0.7,0.3,0.85]; for(i=0;i<list.length && !ok;i++) ok=tryAt(it,Fd, U0+Fd.d/2, V0+(V1-V0)*list[i], [1,0]);
+        if(at==='run-left') for(i=0;i<8;i++) tryAt(it,Fd, U0+Fd.d/2, V1-Fd.w/2-i*(Fd.w+0.3), [1,0]); }
+      else if(at==='right'||at==='run-right'){ list=[0.5,0.7,0.3,0.85]; for(i=0;i<list.length && !ok;i++) ok=tryAt(it,Fd, U1-Fd.d/2, V0+(V1-V0)*list[i], [-1,0]); }
+      else if(at==='front'){ list=[0.35,-0.35,0.2,-0.2]; for(i=0;i<list.length && !ok;i++) ok=tryAt(it,Fd, um+list[i]*W, V0+Fd.d/2, [0,1]); }
+      else if(at==='corner'){ var cs=[[U0+Fd.w/2,V1-Fd.d/2,[0,-1]],[U1-Fd.w/2,V1-Fd.d/2,[0,-1]],[U0+Fd.w/2,V0+Fd.d/2,[0,1]],[U1-Fd.w/2,V0+Fd.d/2,[0,1]]];
+        if(rng()<0.5) cs=[cs[1],cs[0],cs[3],cs[2]]; for(i=0;i<cs.length && !ok;i++) ok=tryAt(it,Fd, cs[i][0], cs[i][1], cs[i][2]); }
+      else if(at==='grid'){ var sx=Fd.w+1.1, sz=Fd.d+1.1; for(var gu=U0+Fd.w/2+0.4; gu<=U1-Fd.w/2-0.4; gu+=sx) for(var gv=V0+Fd.d/2+0.9; gv<=V1-Fd.d/2-0.4; gv+=sz) tryAt(it,Fd, gu, gv, [0,-1]); }
+      else { list=[[0,0],[0.18,0],[-0.18,0],[0,0.15],[0,-0.15],[0.22,0.2],[-0.22,0.2]]; for(i=0;i<list.length && !ok;i++) ok=tryAt(it,Fd, um+list[i][0]*W, vm+list[i][1]*(V1-V0), [0,-1]); }
+    });
+  });
+}
+
+/* ---- the interior walk graph, in Mav's Refuge's vocabulary ---- */
+function navGroup(plan, b, g){
+  var N = plan.nav, gid = plan.groups.indexOf(g);
+  function node(x,y,z,lvl,tag,extra){ var n={ id:plan.bid+'.n'+N.nodes.length, x:+x.toFixed(3), y:+y.toFixed(3), z:+z.toFixed(3), lvl:lvl, tag:tag }; if(extra) for(var k in extra) n[k]=extra[k]; N.nodes.push(n); return n; }
+  function edge(a,c,kind){ N.edges.push({ a:a.id, b:c.id, kind:kind, len:+Math.hypot(a.x-c.x,a.y-c.y,a.z-c.z).toFixed(3) }); }
+  var roomNode = {};
+  plan.rooms.forEach(function(R){ if(R.group!==gid) return; var z=R._z, c=g.round ? g.frame.C : g.RF((z.u0+z.u1)/2, (z.v0+z.v1)/2);
+    roomNode[R.id] = node(c[0], R.y, c[1], R.lvl, 'room', { room:R.id }); });
+  plan.doors.forEach(function(d){ if(d.group!==gid) return;
+    if(d.kind==='exterior'){ var nx=Math.sin(d.yaw), nz=Math.cos(d.yaw);
+      var o=node(d.at[0]+nx*0.9, d.y, d.at[1]+nz*0.9, 0, 'door', { door:d.id, links:'street' }), i=node(d.at[0]-nx*0.9, plan.levels.length?g.levels[0].y:d.y, d.at[1]-nz*0.9, 0, 'doorway', { door:d.id });
+      edge(o, i, 'door'); if(d.rooms[0] && roomNode[d.rooms[0]]) edge(i, roomNode[d.rooms[0]], 'room'); }
+    else { var dn=node(d.at[0], d.y, d.at[1], d.lvl, 'doorway', { door:d.id }); d.rooms.forEach(function(r){ if(r && roomNode[r]) edge(dn, roomNode[r], 'room'); }); } });
+  if(g.stair){ var s=g.stair, fpt=g.RF(s.u, s.va-0.4), tpt=g.RF(s.u, s.vb+0.3);
+    var fo=node(fpt[0], s.y0, fpt[1], 0, 'stairfoot'), to=node(tpt[0], s.y1, tpt[1], 1, 'stairtop'); edge(fo, to, s.kind);
+    var z0=zoneAt(g,0,fpt[0],fpt[1]), z1=zoneAt(g,1,tpt[0],tpt[1]); if(z0&&roomNode[z0.id]) edge(fo, roomNode[z0.id], 'room'); if(z1&&roomNode[z1.id]) edge(to, roomNode[z1.id], 'room'); }
+}
+
+/* ---- export: the plan minus its private handles ---- */
+function interiorExport(P){
+  function clean(o){ var r={}; for(var k in o){ if(k.charAt(0)==='_') continue; r[k]=o[k]; } return r; }
+  var lights = interiorLights(P);
+  return { frame:'building-local (parent under the building node)', levels:P.levels.map(function(L){ return { k:L.k, y:L.y, H:L.H }; }),
+    finish:P.finish, partition:P.partition,
+    rooms:P.rooms.map(function(r){ var c=clean(r); c.node='Room.'+P.bid+'.'+r.id.split('.').pop(); return c; }),
+    walls:P.walls.map(function(w){ var c=clean(w); c.node='Wall.'+P.bid+'.'+w.id.split('.').pop()+'-col'; return c; }),
+    doors:P.doors.map(function(d){ var c=clean(d); c.node = d.kind==='exterior' ? fixNodeName('door', FIX.byId[d.fixture]) : 'InteriorDoor.'+P.bid+'.'+d.id.split('.').slice(-3).join('_'); return c; }),
+    stairs:P.stairs.map(function(s){ return { id:s.id, module:s.module, kind:s.kind, lvl0:s.lvl0, lvl1:s.lvl1, w:s.w, rise:+s.rise.toFixed(3), run:+s.run.toFixed(3),
+      foot:P.groups[s.group].RF(s.u, s.va).map(function(v){ return +v.toFixed(3); }), top:P.groups[s.group].RF(s.u, s.vb).map(function(v){ return +v.toFixed(3); }), node:'Stair.'+P.bid+'.'+s.id.split('.').pop()+'-col' }; }),
+    furniture:P.furniture.map(function(f){ var F=FURN_BY_KEY[f.furn], c=clean(f); c.culture=F.culture; c.type=F.type; c.setting=F.setting; c.node='Furniture.'+P.bid+'.'+f.id.split('.').pop(); return c; }),
+    lights:lights, nav:P.nav };
+}
+/* lights come from the furniture's own build (hearths, braziers): build it into a throwaway sink */
+function interiorLights(P){
+  var b = FIX.byId[P.bid], out=[];
+  intWithSink(function(){ P.furniture.forEach(function(f){ var p=intToWorld(b, f.at[0], f.at[1]);
+    buildFurn(f.furn, p[0], p[1], b.yaw+f.yaw, { variant:f.variant, seed:f.seed, y:b.y+f.y }); }); }, function(S){
+    S.lights.forEach(function(L, i){ var q=intToLocal(b, L.x, L.z); out.push({ id:P.bid+'.light.'+i, kind:L.kind, at:[+q[0].toFixed(3), +q[1].toFixed(3)], y:+(L.y-b.y).toFixed(3), amp:L.amp, radius:L.radius, node:'Light.'+P.bid+'.interior.'+i }); }); });
+  return out;
+}
+/* run fn with the kit redirected into private buckets; done(sink, buckets, merged) gets them */
+function intWithSink(fn, done){
+  var sB=BUCKET, sM=MBK, sE=KIT_EMITTED, sL=KIT_LATE, sink={ lights:[], sites:[] };
+  BUCKET={}; MBK={}; KIT_EMITTED=false; INTERIOR_SINK=sink;
+  var BK, MK;
+  try{ fn(); } catch(e){ ERR('interior build: '+(e&&e.stack||e)); }
+  finally{ BK=BUCKET; MK=MBK; BUCKET=sB; MBK=sM; KIT_EMITTED=sE; KIT_LATE=sL; INTERIOR_SINK=null; }
+  return done(sink, BK, MK);
+}
+
+/* ============================ GEOMETRY ============================
+   Draws a plan into private buckets. Returns { group, doors:[{rec, leaves}], lights, sites }.  */
+function buildInteriorGeo(P, matFn){
+  var b = FIX.byId[P.bid], rng = intRng(b.seed*13+5), fin = null;
+  FINISHES.forEach(function(f){ if(f.key===P.finish) fin=f; });
+  var wallCol = intPick(rng, fin.wall.cols), floorCol = intPick(rng, fin.floor.cols), ceilCol = intPick(rng, fin.ceil.cols);
+  var part = PARTITIONS[P.partition], partCol = part.fam===fin.wall.fam ? wallCol : intPick(rng, part.fam==='adobe'?ADOBEC:part.fam==='cloth'?CLOTHC:part.fam==='metal'?TARNC:WHITEC);
+  var leaves = [];
+  return intWithSink(function(){
+    var F = assetFrame(b.x, b.z, b.yaw, { y:b.y, seed:b.seed });
+    function wallBox(ax,az, bx,bz, y, H, T, off, ops, col, fam){
+      var dx=bx-ax, dz=bz-az, L=Math.hypot(dx,dz); if(L<0.05) return; var tx=dx/L, tz=dz/L, r=Math.atan2(-dz, dx), nx=tz, nz=-tx;
+      if(off && off.n){ nx=off.n[0]; nz=off.n[1]; }
+      var oc = off ? off.d : 0;
+      function piece(u0,u1,y0,y1){ if(u1-u0<0.02 || y1-y0<0.02) return; var um=(u0+u1)/2;
+        F.box(ax+tx*um+nx*oc, y+y0, az+tz*um+nz*oc, u1-u0, y1-y0, T, r, col, fam); }
+      var cur=0; ops.forEach(function(o){ var u0=Math.max(cur,o.u-o.w/2), u1=Math.min(L,o.u+o.w/2);
+        piece(cur, u0, 0, H); piece(u0, u1, 0, o.y0); piece(u0, u1, o.y1, H);
+        if(o.depth){ /* reveals between the room and the outer face */
+          var dd=o.depth+0.02, jc=dd/2;
+          [u0-0.04, u1+0.04].forEach(function(uj){ F.box(ax+tx*uj+nx*jc, y+o.y0, az+tz*uj+nz*jc, 0.08, o.y1-o.y0, dd, r, col, fam); });
+          F.box(ax+tx*(u0+u1)/2+nx*jc, y+o.y1, az+tz*(u0+u1)/2+nz*jc, u1-u0+0.16, 0.08, dd, r, col, fam);
+          if(o.y0>0.05) F.box(ax+tx*(u0+u1)/2+nx*jc, y+o.y0-0.06, az+tz*(u0+u1)/2+nz*jc, u1-u0+0.16, 0.06, dd, r, shade(col,-0.06), fam);
+          else F.box(ax+tx*(u0+u1)/2+nx*(jc+0.1), y-0.08, az+tz*(u0+u1)/2+nz*(jc+0.1), u1-u0+0.16, 0.08, dd+0.2, r, floorCol, fin.floor.fam); }   /* the threshold */
+        cur=u1; });
+      piece(cur, L, 0, H);
+      return { tx:tx, tz:tz, r:r, nx:nx, nz:nz };
+    }
+    /* floors and ceilings per room; slabs between levels with the stair cut out */
+    P.rooms.forEach(function(R){ var g=P.groups[R.group], poly=R.poly, n=poly.length;
+      if(g.round || n!==4){ var c=[0,0]; poly.forEach(function(p){ c[0]+=p[0]/n; c[1]+=p[1]/n; });
+        for(var i=0;i<n;i++){ var a=poly[i], q=poly[(i+1)%n];
+          F.tri(fin.floor.fam, [c[0],R.y,c[1]], [a[0],R.y,a[1]], [q[0],R.y,q[1]], floorCol, [0,1,0]);
+          F.tri(fin.ceil.fam, [c[0],R.y+R.h,c[1]], [a[0],R.y+R.h,a[1]], [q[0],R.y+R.h,q[1]], ceilCol, [0,-1,0]); }
+        if(fin.beams) for(var k=0;k<6;k++){ var a2=k/6*Math.PI; F.beam(c[0]+Math.cos(a2)*g.R, R.y+R.h-0.12, c[1]+Math.sin(a2)*g.R, c[0]-Math.cos(a2)*g.R, R.y+R.h-0.12, c[1]-Math.sin(a2)*g.R, 0.14, 0.14, TORONC[0], 'timber'); }
+        return; }
+      var z=R._z, holes = (g.stair) ? [[g.stair.u0-0.05, g.stair.va, g.stair.u1+0.05, g.stair.vb+0.15]] : [];
+      function rects(u0,v0,u1,v1, hole){ if(!hole || hole[2]<=u0 || hole[0]>=u1 || hole[3]<=v0 || hole[1]>=v1) return [[u0,v0,u1,v1]];
+        var o=[]; var hu0=Math.max(u0,hole[0]), hu1=Math.min(u1,hole[2]), hv0=Math.max(v0,hole[1]), hv1=Math.min(v1,hole[3]);
+        if(hv0>v0) o.push([u0,v0,u1,hv0]); if(hv1<v1) o.push([u0,hv1,u1,v1]); if(hu0>u0) o.push([u0,hv0,hu0,hv1]); if(hu1<u1) o.push([hu1,hv0,u1,hv1]); return o; }
+      function slab(r4, y, t, fam, col){ var c=g.RF((r4[0]+r4[2])/2, (r4[1]+r4[3])/2), V=g.frame.V, ry=Math.atan2(-V[1], V[0]);
+        /* box local x along V (depth), z along U */
+        F.box(c[0], y, c[1], r4[3]-r4[1], t, r4[2]-r4[0], ry, col, fam); }
+      var lvlUp = P.levels.length>1 && R.lvl===0, top = R.lvl===P.levels.length-1;
+      rects(z.u0,z.v0,z.u1,z.v1, R.lvl===1?holes[0]:null).forEach(function(r4){ slab(r4, R.y-0.06, 0.06, fin.floor.fam, floorCol); });
+      rects(z.u0,z.v0,z.u1,z.v1, lvlUp?holes[0]:null).forEach(function(r4){ slab(r4, R.y+R.h, lvlUp?(P.levels[1].y-0.06-(R.y+R.h)):0.08, fin.ceil.fam, ceilCol); });
+      if(fin.beams){ var nb=Math.floor((z.u1-z.u0)/0.95);
+        for(var j=1;j<=nb;j++){ var u=z.u0+j*(z.u1-z.u0)/(nb+1); if(lvlUp && u>holes[0][0]-0.1 && u<holes[0][2]+0.1) continue;
+          var a3=g.RF(u,z.v0), b3=g.RF(u,z.v1); F.beam(a3[0], R.y+R.h-0.09, a3[1], b3[0], R.y+R.h-0.09, b3[1], 0.13, 0.15, TORONC[j%2], 'timber'); } }
+      if(fin.dado){ /* a tiled dado round the room's four faces */ }
+    });
+    /* walls */
+    P.walls.forEach(function(W){
+      if(W.kind==='shell'){
+        wallBox(W.a[0],W.a[1], W.b[0],W.b[1], W.y, W.h, 0.12, { d:0.06, n:W.out }, W.openings, wallCol, fin.wall.fam);
+        if(fin.dado){ var dc=intPick(rng, fin.dado.cols); wallBox(W.a[0]-W.out[0]*0.03,W.a[1]-W.out[1]*0.03, W.b[0]-W.out[0]*0.03,W.b[1]-W.out[1]*0.03, W.y, 0.9, 0.03, { d:-0.0, n:W.out },
+          W.openings.map(function(o){ return { u:o.u, w:o.w, y0:o.y0, y1:Math.max(o.y0, 0.9+0.01) }; }), dc, fin.dado.fam); }
+        /* skirting: a dark band at the foot, so the floor/wall join reads */
+        wallBox(W.a[0]-W.out[0]*0.02,W.a[1]-W.out[1]*0.02, W.b[0]-W.out[0]*0.02,W.b[1]-W.out[1]*0.02, W.y, 0.14, 0.03, { d:0, n:W.out }, W.openings.filter(function(o){ return o.y0<0.1; }), shade(wallCol,-0.25), fin.wall.fam);
+      } else {
+        var info = wallBox(W.a[0],W.a[1], W.b[0],W.b[1], W.y, W.h, W.thick, null, W.openings, partCol, part.fam);
+        W.openings.forEach(function(o){ if(!o.door) return; var D=null; P.doors.forEach(function(d){ if(d.id===o.door) D=d; }); if(!D || D.style==='open') return;
+          /* interior leaves: hinged at the opening's start, swinging into the room the wall faces */
+          var fam = D.style==='mat'?'cloth':'plank', hu=o.u-o.w/2, base=info.r, hl=[W.a[0]+info.tx*hu, W.a[1]+info.tz*hu], wp=F.p(hl[0],hl[1]);
+          var nl = D.style==='double' ? 2 : 1, lw = o.w/nl - 0.02;
+          for(var k=0;k<nl;k++){ var hp = k ? F.p(W.a[0]+info.tx*(o.u+o.w/2), W.a[1]+info.tz*(o.u+o.w/2)) : wp, by = F.ry + base + (k?Math.PI:0), ki=kitIndex('leaf',fam);
+            push('leaf', fam, [hp[0], b.y+W.y, hp[1], lw, D.h-0.02, D.style==='mat'?0.04:0.07, by, D.style==='mat'?intPick(rng,CLOTHC):PLANKC[(k+2)%4]]);
+            leaves.push({ door:D.id, key:'leaf|'+fam, i:ki.i, base:by, dir:k?-1:1, roll:D.style==='mat' }); } });
+      }
+    });
+    /* stairs */
+    P.stairs.forEach(function(s){ var g=P.groups[s.group], M=STAIRS[s.module];
+      var G = { wallCol:wallCol, plankCol:PLANKC[1], timberCol:TIMBERC[1],
+        box:function(u,y,v, w,h,d, col,fam){ var p=g.RF(u,v), V=g.frame.V; F.box(p[0], y, p[1], d, h, w, Math.atan2(-V[1],V[0]), col, fam); },
+        beam:function(u0,y0,v0, u1,y1,v1, w,d, col,fam){ var a=g.RF(u0,v0), c=g.RF(u1,v1); F.beam(a[0],y0,a[1], c[0],y1,c[1], w,d, col,fam); },
+        rod:function(u0,y0,v0, u1,y1,v1, r0, col){ var a=g.RF(u0,v0), c=g.RF(u1,v1); F.rod(a[0],y0,a[1], c[0],y1,c[1], r0, col, 'timber'); } };
+      M.build(G, s);
+      if(s.kind==='stair'){ /* a rail round the stairwell on the upper floor */ var L1=P.levels[1], hy=L1.y+0.95;
+        G.beam(s.u1+0.05, hy, s.va, s.u1+0.05, hy, s.vb, 0.06, 0.06, TIMBERC[1], 'timber'); } });
+    /* furniture */
+    P.furniture.forEach(function(f){ var p=intToWorld(b, f.at[0], f.at[1]); buildFurn(f.furn, p[0], p[1], b.yaw+f.yaw, { variant:f.variant, seed:f.seed, y:b.y+f.y }); });
+  }, function(sink, BK, MK){
+    var group = new THREE.Group(); group.name = 'Interior.'+P.bid; group.userData.bid = P.bid;
+    emitBuckets({ buckets:BK, target:group, mat:matFn }); emitMerged({ buckets:MK, target:group, mat:matFn });
+    leaves.forEach(function(L){ L.bk = BK; });
+    return { group:group, leaves:leaves, lights:sink.lights, sites:sink.sites, BK:BK };
+  });
+}
+window._interiors = { plan:function(bid){ return interiorPlan(bid); } };
 /* ============================== 17. THE SUMMIT ==============================
    PLANNER-OWNED. "District buildings are not built on the upper surface of the butte, but there is a ruined
    spaceport there in the Ancient architecture style." One hand-placed landmark from the Ancients port.      */
@@ -10011,7 +10796,7 @@ function LANTERN(x,y,z, amp, rad, cool, hang){
   BOX(x, y-0.20, z, 0.26, 0.34, 0.26, 0.78, cool ? PAL.glowCool : PAL.glowWarm, 'glowmat');
   PYR(x, y+0.22, z, 0.50, 0.26, 0.50, 0, BRASSC[2], 'metal');
   if(hang) BOX(x, y+0.4, z, 0.04, hang, 0.04, 0, TIMBERC[3], 'timber');
-  nlLampAdd(x, y, z, amp==null?1:amp, rad==null?15:rad, cool);
+  nlLampAdd(x, y, z, amp==null?1:amp, rad==null?15:rad, cool, cool?'electric-lantern':'oil-lantern');
 }
 function LAMPPOST(x,y,z, h, amp, rad, cool){
   BOX(x, y, z, 0.20, h, 0.20, 0, TIMBERC[0], 'timber');
@@ -10023,7 +10808,7 @@ function ARCPOST(x,y,z, h, amp, rad){
   CYL(x, y, z, 0.17, h, 0, METALC[1], 'metal');
   TUBE('metal', [{x:x,y:y+h,z:z,r:0.17},{x:x,y:y+h+0.62,z:z,r:0.52},{x:x,y:y+h+0.92,z:z,r:0.14}], METALC[2], { seg:8 });
   BALL(x, y+h+0.34, z, 0.34, PAL.electric, 'glowmat');
-  nlLampAdd(x, y+h*0.5, z, amp==null?1.3:amp, rad==null?20:rad, true);
+  nlLampAdd(x, y+h*0.5, z, amp==null?1.3:amp, rad==null?20:rad, true, 'arc-standard');
 }
 /* WHO IS ON THE GRID. Inside the wall, and the market district with its circle and
    the caravanserai yard. Nothing else — the cable stops where the money does. */
@@ -10301,6 +11086,314 @@ var canalWater = (function(){
   var mw=new THREE.Mesh(g3, water.material); mw.renderOrder=2; mw.frustumCulled=false; mw.userData.inspectLabel='The canal';
   scene.add(mw); return mw;
 })();
+/* ============================== 20b. WORKING DOORS, INTERIORS, WALKING ==============================
+   PLANNER-OWNED runtime for 51-fixtures.js (what a door IS) and 64-interiors.js (what is behind it).
+
+   DOORS. Every leaf F.door drew sits in its own instanced bucket ('leaf|plank', 'leaf|cloth'),
+   hung from its hinge, so a door opens by rewriting one instance matrix: no per-door mesh. A door
+   wants to open when the walker is within reach, when someone in the life layer arrives at it
+   (DOORS.touch), or when the Doors control says so. Hinged leaves swing ~80 degrees, cloth mats
+   roll up. Reveals (the dark box behind a leaf) are hidden while open so you can see through.
+
+   SEEING IN. The city's walls are solid boxes, so an open door would show the wall behind it.
+   Each open door near the camera gets a PORTAL: a quad on the doorway that (1) marks its pixels
+   in the stencil buffer where nothing stands in front of it, then (2) resets their depth to the
+   far plane; the interior is drawn last and only where the stencil is marked. From outside you
+   see a room through the doorway and nowhere else, whatever the interior's size. Standing INSIDE
+   a building, its interior draws unmasked (the outer walls face outward and are culled).
+
+   STREAMING. Interior geometry is built only for the nearest buildings (their plans are cached
+   data; geometry is disposed when you walk away), so the city pays nothing for 1,700 interiors.
+
+   WALKING. "Walk" turns the orbit target into a person 1.6 m tall. WASD walks, drag looks, the
+   wheel pulls the camera back (third person) or in (first person). Building bodies are solid
+   except through their doors; inside, the rooms of the current level are the walkable area,
+   interior doorways join them, and a stair or ladder carries you between levels.               */
+reseed(760001);
+
+var DOORS = { mode:'auto', near:[], touched:{}, stats:{} };
+var WALK = { on:false, x:0, z:0, y:0, lvl:0, bid:null, speed:1.6 };
+var INT = { live:{}, order:[], occupied:null, cutaway:false, portals:[], matCache:{} };
+(function(){
+  var DOOR_GRID = {}, CELL = 24;
+  function cellKey(x,z){ return Math.floor(x/CELL)+','+Math.floor(z/CELL); }
+  FIX.doors.forEach(function(D){ var k=cellKey(D.x,D.z); (DOOR_GRID[k]||(DOOR_GRID[k]=[])).push(D); });
+  function doorsNear(x,z,r){ var out=[], n=Math.ceil(r/CELL), cx=Math.floor(x/CELL), cz=Math.floor(z/CELL);
+    for(var i=-n;i<=n;i++) for(var j=-n;j<=n;j++){ var L=DOOR_GRID[(cx+i)+','+(cz+j)]; if(L) for(var k=0;k<L.length;k++){ var D=L[k]; if(Math.hypot(D.x-x,D.z-z)<=r) out.push(D); } }
+    return out; }
+  var BLD_GRID = {};
+  FIX.buildings.forEach(function(b){ var k=cellKey(b.x,b.z); (BLD_GRID[k]||(BLD_GRID[k]=[])).push(b); });
+  function buildingsNear(x,z,r){ var out=[], n=Math.ceil((r+60)/CELL), cx=Math.floor(x/CELL), cz=Math.floor(z/CELL);
+    for(var i=-n;i<=n;i++) for(var j=-n;j<=n;j++){ var L=BLD_GRID[(cx+i)+','+(cz+j)]; if(L) for(var k=0;k<L.length;k++){ var b=L[k]; if(Math.hypot(b.x-x,b.z-z)<=r+Math.hypot(b.w,b.d)/2) out.push(b); } }
+    return out; }
+  DOORS.doorsNear = doorsNear; DOORS.buildingsNear = buildingsNear;
+
+  /* ---------------------------------------------------------------- door posing */
+  var _mx = new THREE.Matrix4(), ZERO = new THREE.Matrix4().makeScale(0,0,0), OPEN_ANG = 1.40;
+  function leafMesh(L){ var B=(L.bk||BUCKET)[L.key]; return B && B.mesh ? B : null; }
+  function poseLeaf(L, open){
+    var B=leafMesh(L); if(!B) return; var r=B.list[L.i]; if(!r) return; var r2=r.slice();
+    if(L.roll){ var k=0.82*open; r2[1]=r[1]+r[4]*k; r2[4]=r[4]*(1-k); }
+    else r2[6]=L.base + L.dir*open*OPEN_ANG;
+    B.mesh.setMatrixAt(L.i, kitMatrix(r2, _mx)); B.mesh.instanceMatrix.needsUpdate=true;
+  }
+  /* hide or restore every kit instance a building drew (its exterior shell), for standing inside it */
+  function showShell(b, on){ (b._ranges||[]).forEach(function(R){ var B=BUCKET[R[0]]; if(!B||!B.mesh) return;
+      for(var i=R[1];i<R[2];i++) B.mesh.setMatrixAt(i, on ? kitMatrix(B.list[i], _mx) : ZERO); B.mesh.instanceMatrix.needsUpdate=true; }); }
+  function showReveal(ref, on){ if(!ref) return; var B=BUCKET[ref.key]; if(!B||!B.mesh||!B.list[ref.i]) return;
+    B.mesh.setMatrixAt(ref.i, on ? kitMatrix(B.list[ref.i], _mx) : ZERO); B.mesh.instanceMatrix.needsUpdate=true; }
+  /* someone (the life layer, a script) wants this door open for a few seconds */
+  DOORS.touch = function(id, secs){ var D=FIX.byId[id]; if(D) DOORS.touched[id] = Math.max(DOORS.touched[id]||0, secs||3.5); };
+
+  var animating = {};
+  function setWant(D, w){ if(D.want!==w){ D.want=w; animating[D.id]=D; } }
+  function stepDoors(dt){
+    var fx = WALK.on ? WALK.x : ctl.tx, fz = WALK.on ? WALK.z : ctl.tz;
+    var near = doorsNear(fx, fz, 60); DOORS.near = near;
+    for(var id in DOORS.touched){ DOORS.touched[id]-=dt; if(DOORS.touched[id]<=0) delete DOORS.touched[id]; }
+    near.forEach(function(D){ if(D.style==='open'||D.style==='gate') return;
+      var w = DOORS.mode==='open' ? 1 : DOORS.mode==='shut' ? 0 : ((DOORS.touched[D.id] || (WALK.on && Math.hypot(D.x-WALK.x, D.z-WALK.z) < 2.6 && Math.abs(D.y-WALK.y) < 2.5)) ? 1 : 0);
+      setWant(D, w); });
+    for(var id2 in DOORS.touched){ var Dt=FIX.byId[id2]; if(Dt && Dt.style!=='open' && Dt.style!=='gate') setWant(Dt, 1); }
+    /* interior doors of the built interiors */
+    for(var bid in INT.live){ var I=INT.live[bid]; I.doors.forEach(function(d){
+      var w = DOORS.mode==='open' ? 1 : DOORS.mode==='shut' ? 0 : (WALK.on && WALK.bid===bid && Math.hypot(d.wx-WALK.x, d.wz-WALK.z) < 2.0 ? 1 : 0.0);
+      if(d.want!==w){ d.want=w; animating[d.id]=d; } }); }
+    var n=0;
+    for(var k in animating){ var A=animating[k], tgt=A.want||0, sp=dt*1.6;
+      A.open = A.open==null?0:A.open;
+      if(Math.abs(A.open-tgt) < 1e-3){ delete animating[k]; continue; }
+      A.open = A.open < tgt ? Math.min(tgt, A.open+sp) : Math.max(tgt, A.open-sp);
+      var e = A.open*A.open*(3-2*A.open);
+      (A._leaves||[]).forEach(function(L){ poseLeaf(L, e); });
+      if(A._rvl && !INT.cutaway && A.building!==INT.occupied) showReveal(A._rvl, A.open < 0.25 || !INT.live[A._lid||A.building]);
+      n++; }
+    DOORS.stats.animating = n;
+  }
+
+  /* ---------------------------------------------------------------- interior materials */
+  var IND = { uIndoorSun:{ value:0.22 }, uIndoorWarm:{ value:new THREE.Color(0.10,0.09,0.08) } };
+  var CLIP = new THREE.Plane(new THREE.Vector3(0,-1,0), 1e6);
+  function intMat(fam, inst, mode){
+    var key=(inst?'i':'m')+'|'+fam+'|'+mode; if(INT.matCache[key]) return INT.matCache[key];
+    var fm=FAMMAT[fam]||{}, m;
+    if(fm.basic) m=new THREE.MeshBasicMaterial({ color:0xffffff, vertexColors:!inst });
+    else { m=new THREE.MeshLambertMaterial({ color:0xffffff, vertexColors:!inst, map:fm.tex||null });
+      (function(needsUV, sc){ m.onBeforeCompile=function(sh){ if(needsUV) applyWorldUV(sh, sc);
+          sh.uniforms.uIndoorSun=IND.uIndoorSun; sh.uniforms.uIndoorWarm=IND.uIndoorWarm;
+          sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform float uIndoorSun;\nuniform vec3 uIndoorWarm;')
+            .replace('#include <aomap_fragment>','reflectedLight.directDiffuse *= uIndoorSun;\nreflectedLight.indirectDiffuse = reflectedLight.indirectDiffuse*0.75 + diffuseColor.rgb*uIndoorWarm;\n#include <aomap_fragment>'); };
+        m.customProgramCacheKey=function(){ return 'interior|'+(needsUV?'wuv'+sc[0]+'_'+sc[1]:''); }; })(inst && !!fm.tex, fm.scale||[3,3]); }
+    if(mode==='portal'){ m.stencilWrite=true; m.stencilFunc=THREE.EqualStencilFunc; m.stencilRef=1; m.stencilFail=THREE.KeepStencilOp; m.stencilZFail=THREE.KeepStencilOp; m.stencilZPass=THREE.KeepStencilOp; }
+    m.userData.intMode = mode; if(INT.cutaway) m.clippingPlanes=[CLIP];
+    INT.matCache[key]=m; return m;
+  }
+  function matFor(B){ return intMat(B.fam, B.shape!=='merged', 'portal'); }
+
+  /* exterior leaves drawn again in the interior pass, so a door swung inward shows through its own doorway */
+  var leafClones = [];
+  for(var k in BUCKET){ var B=BUCKET[k]; if(B.shape!=='leaf' || !B.mesh) continue;
+    var cm = B.mesh.material.clone(); cm.onBeforeCompile = B.mesh.material.onBeforeCompile; cm.customProgramCacheKey = B.mesh.material.customProgramCacheKey;
+    cm.stencilWrite=true; cm.stencilFunc=THREE.EqualStencilFunc; cm.stencilRef=1; cm.stencilZPass=THREE.KeepStencilOp;
+    var c2 = new THREE.InstancedMesh(B.mesh.geometry, cm, B.list.length);
+    c2.instanceMatrix = B.mesh.instanceMatrix; c2.instanceColor = B.mesh.instanceColor; c2.renderOrder = 52; c2.frustumCulled = false; c2.visible = false; c2.userData.noPick = true;
+    scene.add(c2); leafClones.push(c2); }
+
+  /* ---------------------------------------------------------------- portals */
+  var NPORT = 8, portGeo = new THREE.PlaneGeometry(1,1).translate(0,0.5,0);
+  var markMat = new THREE.MeshBasicMaterial({ colorWrite:false, depthWrite:false, side:THREE.DoubleSide });
+  markMat.stencilWrite=true; markMat.stencilFunc=THREE.AlwaysStencilFunc; markMat.stencilRef=1; markMat.stencilZPass=THREE.ReplaceStencilOp;
+  var resetMat = new THREE.ShaderMaterial({ vertexShader:'void main(){ gl_Position = projectionMatrix*modelViewMatrix*vec4(position,1.0); gl_Position.z = gl_Position.w*0.999999; }',
+    fragmentShader:'void main(){ gl_FragColor = vec4(0.0); }', colorWrite:false, depthWrite:true, depthTest:true, side:THREE.DoubleSide });
+  resetMat.depthFunc = THREE.AlwaysDepth; resetMat.stencilWrite=true; resetMat.stencilFunc=THREE.EqualStencilFunc; resetMat.stencilRef=1; resetMat.stencilZPass=THREE.KeepStencilOp;
+  for(var p=0;p<NPORT;p++){ var mk=new THREE.Mesh(portGeo, markMat), rs=new THREE.Mesh(portGeo, resetMat);
+    mk.renderOrder=50; rs.renderOrder=51; mk.frustumCulled=rs.frustumCulled=false; mk.visible=rs.visible=false; mk.userData.noPick=rs.userData.noPick=true;
+    scene.add(mk); scene.add(rs); INT.portals.push([mk,rs]); }
+  function placePortals(){
+    var cam=camera.position, list=[], used=0;
+    DOORS.near.forEach(function(D){ var bid=D.building; if(!bid || !INT.live[bid] || INT.occupied===bid || D.to!=='interior') return;
+      if((D.open||0) < 0.04 && D.style!=='open') return;
+      var nx=Math.sin(D.yaw), nz=Math.cos(D.yaw), s=(cam.x-D.x)*nx+(cam.z-D.z)*nz; if(s < 0.15) return;
+      list.push([Math.hypot(cam.x-D.x, cam.z-D.z), D]); });
+    list.sort(function(a,b){ return a[0]-b[0]; });
+    for(var i=0;i<NPORT;i++){ var P=INT.portals[i], it=list[i];
+      if(!it || it[0] > 45){ P[0].visible=P[1].visible=false; continue; }
+      var D=it[1], nx=Math.sin(D.yaw), nz=Math.cos(D.yaw);
+      P.forEach(function(m){ m.position.set(D.x+nx*0.24, D.y, D.z+nz*0.24); m.rotation.set(0, D.yaw, 0); m.scale.set(D.w+0.06, D.h+0.04, 1); m.visible=true; });
+      used++; }
+    leafClones.forEach(function(c){ c.visible = used>0; });
+    INT.stats.portals = used;
+  }
+  INT.stats = {};
+
+  /* ---------------------------------------------------------------- streaming */
+  function setMode(I, mode){ I.group.traverse(function(o){ if(!o.isMesh) return; var m=o.material; if(!m||!m.userData) return;
+    var want = intMat(o.userData.ifam, o.userData.iinst, mode); if(o.material!==want) o.material=want; }); I.mode=mode; }
+  function buildLive(bid){
+    var P=interiorPlan(bid); if(!P) return null;
+    var G = buildInteriorGeo(P, matFor); if(!G) return null;
+    G.group.traverse(function(o){ if(o.isMesh){ o.renderOrder=52; o.castShadow=false; o.receiveShadow=false; o.userData.noPick=false;
+      o.userData.ifam = o.userData.fam; o.userData.iinst = !!o.isInstancedMesh; } });
+    scene.add(G.group);
+    var b=FIX.byId[bid], I={ bid:bid, plan:P, group:G.group, leaves:G.leaves, sites:G.sites, mode:'portal', doors:[] };
+    G.sites.forEach(function(s){ s._int=bid; s.kind = s.kind||'furniture'; SITES.push(s); });
+    P.doors.forEach(function(d){ if(d.kind!=='interior') return; var w=intToWorld(b, d.at[0], d.at[1]);
+      I.doors.push({ id:d.id, wx:w[0], wz:w[1], open:0, want:0, _leaves:G.leaves.filter(function(L){ return L.door===d.id; }) }); });
+    I.lights = G.lights;
+    INT.live[bid]=I; INT.order.push(bid);
+    if(INT.cutaway) setMode(I,'open');
+    return I;
+  }
+  function dropLive(bid){ var I=INT.live[bid]; if(!I) return; scene.remove(I.group);
+    I.group.traverse(function(o){ if(o.geometry) o.geometry.dispose(); });
+    for(var i=SITES.length-1;i>=0;i--) if(SITES[i]._int===bid) SITES.splice(i,1);
+    delete INT.live[bid]; INT.order.splice(INT.order.indexOf(bid),1); }
+  var streamT = 0, MAXLIVE = SHEET ? 24 : 14;
+  function stream(dt){
+    streamT -= dt; if(streamT > 0) return; streamT = 0.35;
+    var fx = WALK.on ? WALK.x : ctl.tx, fz = WALK.on ? WALK.z : ctl.tz, R = INT.cutaway ? 70 : 42;
+    var want = buildingsNear(fx, fz, R).map(function(b){ return [Math.hypot(b.x-fx,b.z-fz), b]; }).sort(function(a,b){ return a[0]-b[0]; })
+      .filter(function(e){ return interiorPlan(e[1].id); }).slice(0, MAXLIVE).map(function(e){ return e[1].id; });
+    if(WALK.bid && want.indexOf(WALK.bid)<0) want.unshift(WALK.bid);
+    INT.order.slice().forEach(function(bid){ if(want.indexOf(bid)<0 && bid!==WALK.bid) dropLive(bid); });
+    for(var i=0;i<want.length;i++) if(!INT.live[want[i]]){ buildLive(want[i]); break; }      /* one per tick: no hitch */
+    INT.stats.live = INT.order.length;
+  }
+
+  /* ---------------------------------------------------------------- walking */
+  function inPoly(poly, x, z, m){ var inside=false; for(var i=0,j=poly.length-1;i<poly.length;j=i++){ var a=poly[i], c=poly[j];
+      if(((a[1]>z)!==(c[1]>z)) && (x < (c[0]-a[0])*(z-a[1])/(c[1]-a[1])+a[0])) inside=!inside; }
+    if(!inside || !m) return inside;
+    for(i=0,j=poly.length-1;i<poly.length;j=i++){ var A=poly[j], B=poly[i], dx=B[0]-A[0], dz=B[1]-A[1], L=Math.hypot(dx,dz)||1, t=clamp(((x-A[0])*dx+(z-A[1])*dz)/(L*L),0,1);
+      if(Math.hypot(x-(A[0]+dx*t), z-(A[1]+dz*t)) < m) return false; }
+    return true; }
+  function bodyHit(b, lx, lz){ for(var i=0;i<b.bodies.length;i++){ var B=b.bodies[i];
+      if(B.k==='box'){ var c=Math.cos(B.r), s=Math.sin(B.r), dx=lx-B.x, dz=lz-B.z, qx=dx*c-dz*s, qz=dx*s+dz*c; if(Math.abs(qx)<B.w/2+0.25 && Math.abs(qz)<B.d/2+0.25) return true; }
+      else { var r0=B.k==='lathe'?latheRmax(B.prof, 2.0):B.r; if(Math.hypot(lx-B.x,lz-B.z) < r0+0.25) return true; } }
+    return false; }
+  function doorway(D, x, z, inMax, outMax){ /* inside the door's corridor? returns signed distance (+ outside) or null */
+    var nx=Math.sin(D.yaw), nz=Math.cos(D.yaw), s=(x-D.x)*nx+(z-D.z)*nz, u=(x-D.x)*nz-(z-D.z)*nx;
+    if(Math.abs(u) < D.w/2-0.12 && s > -inMax && s < outMax) return s; return null; }
+  function stairAt(P, lx, lz){ for(var i=0;i<P.stairs.length;i++){ var s=P.stairs[i], g=P.groups[s.group], f=g.frame, dx=lx-f.O[0], dz=lz-f.O[1], u=dx*f.U[0]+dz*f.U[1], v=dx*f.V[0]+dz*f.V[1];
+      if(u>s.u0+0.08 && u<s.u1-0.08 && v>s.va-0.35 && v<s.vb+0.35) return { s:s, t:clamp((v-s.va)/s.run, 0, 1) }; } return null; }
+  function roomAt(P, lvl, lx, lz, m){ for(var i=0;i<P.rooms.length;i++){ var R=P.rooms[i]; if(R.lvl===lvl && inPoly(R.poly, lx, lz, m)) return R; } return null; }
+  function intDoorOk(P, lvl, lx, lz){ for(var i=0;i<P.doors.length;i++){ var d=P.doors[i]; if(d.kind!=='interior'||d.lvl!==lvl) continue;
+      var W=null; for(var j=0;j<P.walls.length;j++) if(P.walls[j].id===d.wall) W=P.walls[j]; if(!W) continue;
+      var dx=W.b[0]-W.a[0], dz=W.b[1]-W.a[1], L=Math.hypot(dx,dz), tx=dx/L, tz=dz/L, u=(lx-d.at[0])*tx+(lz-d.at[1])*tz, s=(lx-d.at[0])*tz-(lz-d.at[1])*tx;
+      if(Math.abs(u) < d.w/2-0.1 && Math.abs(s) < 0.65) return true; } return false; }
+  /* can the walker stand here? returns the new state or null */
+  function walkable(x, z){
+    if(!WALK.bid){
+      var bs = buildingsNear(x, z, 4);
+      for(var i=0;i<bs.length;i++){ var b=bs[i], l=intToLocal(b,x,z); if(!bodyHit(b, l[0], l[1])) continue;
+        /* inside a body: only through one of its doors, and only into a planned interior */
+        var P=interiorPlan(b.id), ds=(b.doors||[]).map(function(id){ return FIX.byId[id]; });
+        for(var k=0;k<ds.length;k++){ var D=ds[k]; if(!D || D.to!=='interior' || D.style==='gate') continue; var sd=doorway(D, x, z, 1.6, 1.2);
+          if(sd===null) continue; if(!P) return null; if(D.style!=='open' && (D.open||0) < 0.55 && DOORS.mode!=='open') return { wait:true };
+          if(sd < 0.0) return { bid:b.id, lvl:0, y:b.y+P.levels[0].y }; return { bid:null, lvl:0, y:Math.max(terrainH(x,z), D.y) }; }
+        return null; }
+      return { bid:null, lvl:0, y:terrainH(x,z) };
+    }
+    var b2=FIX.byId[WALK.bid], P2=interiorPlan(WALK.bid), lc=intToLocal(b2, x, z), lv=WALK.lvl;
+    var st = stairAt(P2, lc[0], lc[1]), cur = intToLocal(b2, WALK.x, WALK.z), stNow = stairAt(P2, cur[0], cur[1]);
+    if(st){ var y = st.s.y0 + st.s.rise*st.t;
+      if(!stNow){ if(lv===0 && st.t>0.3) return null; if(lv===1 && st.t<0.7) return null; }
+      return { bid:WALK.bid, lvl:st.t>0.5?1:0, y:b2.y+y }; }
+    if(stNow && lv===1 && stNow.t < 0.85) return null;
+    if(stNow && lv===0 && stNow.t > 0.15) return null;
+    var R = roomAt(P2, lv, lc[0], lc[1], 0.32);
+    if(R) return { bid:WALK.bid, lvl:lv, y:b2.y+R.y };
+    if(intDoorOk(P2, lv, lc[0], lc[1])) return { bid:WALK.bid, lvl:lv, y:b2.y+P2.levels[lv].y };
+    if(lv===0) for(var e=0;e<(b2.doors||[]).length;e++){ var D2=FIX.byId[b2.doors[e]]; if(!D2||D2.to!=='interior') continue; var sd2=doorway(D2, x, z, 1.6, 1.4);
+      if(sd2!==null){ if(D2.style!=='open' && (D2.open||0) < 0.55 && DOORS.mode!=='open') return { wait:true };
+        return sd2 > 0.35 ? { bid:null, lvl:0, y:terrainH(x,z) } : { bid:WALK.bid, lvl:0, y:b2.y+P2.levels[0].y }; } }
+    return null;
+  }
+  function stepWalk(dt){
+    var f=0, s=0; if(keys['w']||keys['arrowup']) f+=1; if(keys['s']||keys['arrowdown']) f-=1; if(keys['a']||keys['arrowleft']) s-=1; if(keys['d']||keys['arrowright']) s+=1;
+    if(f||s){ var sp=(keys['shift']?4.2:WALK.speed)*dt, fx=Math.cos(ctl.theta+Math.PI), fz=Math.sin(ctl.theta+Math.PI), L=Math.hypot(f,s);
+      var dx=(fx*f - fz*s)/L*sp, dz=(fz*f + fx*s)/L*sp;
+      /* try the full step, then each axis alone (slide along walls) */
+      [[dx,dz],[dx,0],[0,dz]].some(function(d){ var r=walkable(WALK.x+d[0], WALK.z+d[1]); if(!r || r.wait) return false;
+        WALK.x+=d[0]; WALK.z+=d[1]; WALK.bid=r.bid; WALK.lvl=r.lvl; WALK.y=r.y; return true; }); }
+    else if(!WALK.bid) WALK.y = terrainH(WALK.x, WALK.z);
+    INT.occupied = WALK.bid;
+    /* indoors the walls are an arm's length away: pull the near plane in (and back out in the street) */
+    var nr = WALK.bid ? 0.1 : 0.8; if(camera.near!==nr){ camera.near=nr; camera.updateProjectionMatrix(); }
+    ctl.tx=WALK.x; ctl.tz=WALK.z; ctl.ty=WALK.y+1.6;
+    var wantR = WALK.bid ? 0.12 : WALK.r3; if(Math.abs(ctl.radius-wantR) > 0.01) ctl.radius += (wantR-ctl.radius)*Math.min(1, dt*6);
+    applyCam();
+  }
+  DOORS.walk = function(on){
+    WALK.on = on==null ? !WALK.on : !!on;
+    if(WALK.on){ WALK.x=ctl.tx; WALK.z=ctl.tz; WALK.y=terrainH(WALK.x,WALK.z); WALK.bid=null; WALK.lvl=0; WALK.r3=2.6; ctl.phi=clamp(ctl.phi,1.2,1.75); }
+    else { INT.occupied=null; ctl.radius=Math.max(ctl.radius, 18); camera.near=0.8; camera.updateProjectionMatrix(); }
+    var bt=document.getElementById('walkToggle'); if(bt){ bt.textContent='Walk: '+(WALK.on?'On':'Off'); bt.classList.toggle('on', WALK.on); }
+  };
+  /* put the walker at a door, facing in — for views, tests and the sheet */
+  DOORS.walkTo = function(doorId){ var D=FIX.byId[doorId]; if(!D) return; var nx=Math.sin(D.yaw), nz=Math.cos(D.yaw);
+    if(!WALK.on) DOORS.walk(true); WALK.x=D.x+nx*2.2; WALK.z=D.z+nz*2.2; WALK.bid=null; WALK.lvl=0; WALK.y=Math.max(terrainH(WALK.x,WALK.z), D.y);
+    ctl.theta=Math.atan2(nz, nx); ctl.phi=1.5; };
+
+  /* ---------------------------------------------------------------- cutaway */
+  function setCutaway(on){
+    INT.cutaway=!!on;
+    scene.children.forEach(function(o){ if(!(o.userData.kit || o.userData.merged) || !o.material) return; o.material.clippingPlanes = on ? [CLIP] : null; o.material.needsUpdate=true; });
+    for(var k in INT.matCache){ INT.matCache[k].clippingPlanes = on ? [CLIP] : null; INT.matCache[k].needsUpdate=true; }
+    renderer.localClippingEnabled = !!on;
+    for(var bid in INT.live) setMode(INT.live[bid], on?'open':'portal');
+    var bt=document.getElementById('cutToggle'); if(bt){ bt.textContent='Cutaway: '+(on?'On':'Off'); bt.classList.toggle('on', on); }
+  }
+  DOORS.cutaway = setCutaway;
+
+  /* ---------------------------------------------------------------- UI */
+  (function(){
+    var host=document.getElementById('polyToggle'); if(!host) return; host=host.parentNode;
+    var box=document.createElement('div'); host.parentNode.insertBefore(box, host);
+    function btn(id, txt, fn){ var b=document.createElement('button'); b.id=id; b.textContent=txt; b.onclick=fn; box.appendChild(b); return b; }
+    btn('walkToggle', 'Walk: Off', function(){ DOORS.walk(); });
+    btn('doorMode', 'Doors: auto', function(){ DOORS.mode = DOORS.mode==='auto'?'open':DOORS.mode==='open'?'shut':'auto'; this.textContent='Doors: '+DOORS.mode; });
+    btn('cutToggle', 'Cutaway: Off', function(){ setCutaway(!INT.cutaway); });
+    btn('exportOne', 'Export building', function(){ var b=nearestBuilding(); if(b) KRATOR_EXPORT.download(KRATOR_EXPORT.building(b.id), 'yuni-'+b.id+'-'+b.asset+'.json'); });
+    btn('exportAll', 'Export fixtures', function(){ KRATOR_EXPORT.download(KRATOR_EXPORT.fixtures(), 'yuni-fixtures.json'); });
+  })();
+  function nearestBuilding(){ var x=WALK.on?WALK.x:ctl.tx, z=WALK.on?WALK.z:ctl.tz; if(WALK.bid) return FIX.byId[WALK.bid];
+    var best=null, bd=1e9; buildingsNear(x,z,40).forEach(function(b){ var d=Math.hypot(b.x-x,b.z-z); if(d<bd){ bd=d; best=b; } }); return best; }
+  DOORS.nearestBuilding = nearestBuilding;
+
+  /* inspector: name every door, window and light */
+  FIX.doors.forEach(function(D){ REGISTER({ name:'Door — '+D.style+(D.leaves?(D.leaves===2?' (double)':' (hinged '+D.hinge+', swings '+D.swing+')'):''), kind:'fixture',
+    label:'door · '+D.id+' · '+fixNodeName('door',D)+' · to '+D.to, x:D.x, y:D.y, z:D.z, r:D.w/2+0.25, h:D.h+0.2 }); });
+  FIX.lights.forEach(function(L){ REGISTER({ name:'Light — '+L.kind, kind:'fixture', label:'light · '+L.id+' · '+fixNodeName('light',L), x:L.x, y:L.y-0.4, z:L.z, r:0.45, h:0.8 }); });
+  FIX.windows.forEach(function(W){ REGISTER({ name:'Window', kind:'fixture', label:'window · '+W.id+' · '+fixNodeName('window',W)+' · '+W.w.toFixed(2)+' x '+W.h.toFixed(2)+' m', x:W.x, y:W.y-W.h/2, z:W.z, r:W.w/2+0.15, h:W.h }); });
+
+  /* ---------------------------------------------------------------- tick */
+  var lastOcc = null;
+  TICKS.push(function(dt, hour, nk){
+    if(WALK.on) stepWalk(dt);
+    stepDoors(dt);
+    stream(dt);
+    if(lastOcc!==INT.occupied){
+      /* inside a building its reveals would block the view out: hide its windows' and doors' dark boxes */
+      if(lastOcc && INT.live[lastOcc]){ if(!INT.cutaway) setMode(INT.live[lastOcc], 'portal'); var ob=FIX.byId[lastOcc];
+        (ob.windows||[]).forEach(function(id){ showReveal(FIX.byId[id]._rvl, true); }); (ob.doors||[]).forEach(function(id){ var D=FIX.byId[id]; showReveal(D._rvl, (D.open||0) < 0.25); }); showShell(ob, true); }
+      if(INT.occupied && INT.live[INT.occupied]){ setMode(INT.live[INT.occupied], 'open'); var nb=FIX.byId[INT.occupied];
+        (nb.windows||[]).forEach(function(id){ showReveal(FIX.byId[id]._rvl, false); }); (nb.doors||[]).forEach(function(id){ showReveal(FIX.byId[id]._rvl, false); }); showShell(nb, false); }
+      lastOcc = INT.occupied; }
+    else if(INT.occupied && INT.live[INT.occupied] && INT.live[INT.occupied].mode!=='open') setMode(INT.live[INT.occupied], 'open');
+    placePortals();
+    if(INT.cutaway){ var gy = WALK.on ? WALK.y : (SHEET ? 0 : terrainH(ctl.tx, ctl.tz)); CLIP.constant = gy + 2.4; }
+    /* lamps lit inside after dark; a little daylight from the windows by day */
+    var n = nk||0; IND.uIndoorSun.value = INT.cutaway ? 0.9 : 0.24*(1-n); IND.uIndoorWarm.value.setRGB(0.09+0.42*n, 0.08+0.27*n, 0.07+0.12*n);
+  });
+  window._doors = { stats:function(){ return { doors:FIX.doors.length, windows:FIX.windows.length, lights:FIX.lights.length, buildings:FIX.buildings.length,
+      live:INT.order.length, portals:INT.stats.portals||0, indoors:(typeof LIFE!=='undefined' && LIFE.agents) ? LIFE.agents.filter(function(a){ return a.inside; }).length : 0,
+      atDoors:(typeof LIFE!=='undefined' && LIFE.agents) ? LIFE.agents.filter(function(a){ return a.leg && a.leg.door; }).length : 0,
+      legs:(typeof LIFE!=='undefined' && LIFE.agents) ? LIFE.agents.filter(function(a){ return a.leg; }).length : 0, animating:DOORS.stats.animating||0, walk:WALK.on?{ x:+WALK.x.toFixed(2), z:+WALK.z.toFixed(2), y:+WALK.y.toFixed(2), lvl:WALK.lvl, bid:WALK.bid }:null }; },
+    walk:DOORS.walk, walkTo:DOORS.walkTo, lifeSim:function(s){ if(typeof LIFE!=='undefined' && LIFE.sim) LIFE.sim(s); },
+    /* fixed-step walking for headless tests, where frames are too slow for real time */
+    sim:function(key, secs){ keys[key]=true; for(var t=0;t<secs;t+=1/30){ stepWalk(1/30); stepDoors(1/30); } keys[key]=false; return WALK.bid; }, cutaway:setCutaway, touch:DOORS.touch, mode:function(m){ DOORS.mode=m; }, WALK:WALK, INT:INT, DOORS:DOORS, key:function(k,on){ keys[k]=!!on; } };
+})();
 /* ============================== 25. CAMERA, CONTROLS, FRAME LOOP ============================== */
 
 var CAM_FREE = false;   /* a view that is meant to be below ground (inside the antechamber) */
@@ -10311,7 +11404,7 @@ function applyCam(){
   var z = ctl.tz + ctl.radius*sp*Math.sin(ctl.theta);
   var y = ctl.ty + ctl.radius*cp;
   var floor = terrainH(x,z) + 1.6;
-  if(y < floor && !UNDER_ON && !CAM_FREE) y = floor;
+  if(y < floor && !UNDER_ON && !CAM_FREE && !(WALK.on && WALK.bid)) y = floor;
   camera.position.set(x,y,z);
   camera.lookAt(ctl.tx, ctl.ty, ctl.tz);
 }
@@ -10389,7 +11482,7 @@ camEl.addEventListener('pointermove', function(e){
     }
   }else if(ids.length === 2){
     var a=ptrs[ids[0]], b=ptrs[ids[1]], d = Math.hypot(a.x-b.x, a.y-b.y);
-    if(lastPinch) ctl.radius = clamp(ctl.radius * (lastPinch/d), 4, 9000);
+    if(lastPinch) ctl.radius = clamp(ctl.radius * (lastPinch/d), WALK.on?0.12:4, 9000);
     lastPinch = d;
   }
   applyCam();
@@ -10397,7 +11490,7 @@ camEl.addEventListener('pointermove', function(e){
 function ptrUp(e){ delete ptrs[e.pointerId]; lastPinch = 0; }
 camEl.addEventListener('pointerup', ptrUp); camEl.addEventListener('pointercancel', ptrUp);
 camEl.addEventListener('contextmenu', function(e){ e.preventDefault(); });
-camEl.addEventListener('wheel', function(e){ e.preventDefault(); ctl.radius = clamp(ctl.radius * (e.deltaY > 0 ? 1.11 : 0.90), 4, 9000); applyCam(); }, { passive:false });
+camEl.addEventListener('wheel', function(e){ e.preventDefault(); ctl.radius = clamp(ctl.radius * (e.deltaY > 0 ? 1.11 : 0.90), WALK.on?0.12:4, WALK.on?16:9000); if(WALK.on && !WALK.bid) WALK.r3 = ctl.radius; applyCam(); }, { passive:false });
 
 var keys = {};
 addEventListener('keydown', function(e){ if(e.target && /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return; keys[e.key.toLowerCase()] = true; });
@@ -10466,7 +11559,7 @@ var clock = new THREE.Clock(), fps=60, acc=0, frames=0, tmpV=new THREE.Vector3()
 function frame(){
   requestAnimationFrame(frame);
   var dt = Math.min(0.06, clock.getDelta());
-  panStep(dt);
+  if(!WALK.on) panStep(dt);           /* 76-doors.js: while walking, WASD moves the walker instead */
   skyAdvance(dt); updateSky(); updateDayNight();
   var hour = skyHour(), nk = DAYNIGHT_NIGHT_K;
   CLOTH_TIME.value += dt;
@@ -10699,7 +11792,7 @@ var LIFE = { agents:[], poi:{}, stats:{} };
   var POI = LIFE.poi;
   function P(cat, x, z, extra){
     var e = { x:x, z:z, r:(extra && extra.r) || 8, name:(extra && extra.name) || '',
-              doors:(extra && extra.doors) || null };
+              doors:(extra && extra.doors) || null, doorIds:(extra && extra.doorIds) || null };
     (POI[cat] || (POI[cat]=[])).push(e); return e;
   }
   function named(b, re){ return b.plotName && re.test(b.plotName); }
@@ -10716,7 +11809,7 @@ var LIFE = { agents:[], poi:{}, stats:{} };
   PLACED.forEach(function(b){
     var A = ASSET_BY_KEY[b.key]; if(!A) return;
     var rad = Math.max(A.w, A.d)*0.5 + 4;
-    var dr = doorsOf(b), f = A.family, EX = { r:rad, doors:dr };
+    var dr = doorsOf(b), f = A.family, EX = { r:rad, doors:dr, doorIds:b.doorIds ? b.doorIds.slice(0,6) : null };
     if(f==='poor') P('home_poor', b.x, b.z, EX);
     else if(f==='mid') P('home_mid', b.x, b.z, EX);
     else if(f==='rich') P('home_rich', b.x, b.z, EX);
@@ -10958,9 +12051,12 @@ var LIFE = { agents:[], poi:{}, stats:{} };
   function standPoint(w, fromX, fromZ){
     if(!w) return null;
     if(w.doors && w.doors.length){
-      var best=null, bd=1e9;
+      var best=null, bd=1e9, bi=-1;
       for(var i=0;i<w.doors.length;i++){ var d=w.doors[i], q=Math.hypot(d[0]-fromX, d[1]-fromZ);
-        if(q<bd){ bd=q; best=d; } }
+        if(q<bd){ bd=q; best=d; bi=i; } }
+      /* a WORKING door (76-doors.js): walk up to it, open it and go in, rather than loitering outside */
+      var D = (w.doorIds && bi>=0) ? FIX.byId[w.doorIds[bi]] : null;
+      if(best && bd < 70 && D && D.to==='interior' && D.style!=='gate') return { x:best[0], z:best[1], door:D.id };
       if(best && bd < 70) return { x:best[0] + rr(-1.2,1.2), z:best[1] + rr(-1.2,1.2) };
     }
     /* an open place — the market, a park, the forecourt — is stood IN, not at */
@@ -10971,14 +12067,21 @@ var LIFE = { agents:[], poi:{}, stats:{} };
 
   /* ---- movement ---- */
   function step(a, dt, hour){
-    if(a.wait > 0){ a.wait -= dt; return; }
+    if(a.wait > 0){ a.wait -= dt;
+      if(a.wait <= 0 && a.inside){ var Dx=FIX.byId[a.inside]; DOORS.touch(a.inside, 3.0); a.inside=null;   /* out through the door again */
+        if(Dx){ a.x=Dx.x+Math.sin(Dx.yaw)*0.9; a.z=Dx.z+Math.cos(Dx.yaw)*0.9; a.y=terrainH(a.x,a.z); } }
+      return; }
     /* THE LAST LEG COMES FIRST. It was below the no-path check, so an agent that had
        finished its route and was crossing to a doorstep looked path-less and was sent to
        ask for a new destination on the spot — which is what kept the caravans pinned to
        the depot flipping between states without ever setting out. */
     if(a.leg){
       var lx=a.leg.x-a.x, lz=a.leg.z-a.z, lL=Math.hypot(lx,lz);
-      if(lL < 0.5){ a.leg=null; if(!a.destFn){ var dl=a.cfg.dwell||[10,30]; a.wait=rr(dl[0],dl[1]); } a.step=0; return; }
+      if(lL < 0.5){
+        if(a.leg.door && !a.leg.inner){ var Dd=FIX.byId[a.leg.door]; DOORS.touch(Dd.id, 3.5);        /* at the threshold: open up, step in */
+          a.leg = { x:Dd.x-Math.sin(Dd.yaw)*1.4, z:Dd.z-Math.cos(Dd.yaw)*1.4, door:Dd.id, inner:true }; return; }
+        if(a.leg.inner){ a.inside = a.leg.door; }
+        a.leg=null; if(!a.destFn){ var dl=a.cfg.dwell||[10,30]; a.wait=rr(dl[0],dl[1]); } a.step=0; return; }
       var st = Math.min(lL, a.speed*0.72*dt);
       a.x += lx/lL*st; a.z += lz/lL*st; a.y = terrainH(a.x, a.z);
       a.ry = Math.atan2(lx, lz); a.step = (a.step||0) + a.speed*dt*2.2;
@@ -11066,6 +12169,8 @@ var LIFE = { agents:[], poi:{}, stats:{} };
     _c.setHex(col); mesh.setColorAt(idx, _c);
   }
 
+  /* fixed-step fast-forward for headless tests (frames there are far too slow to watch a day go by) */
+  LIFE.sim = function(secs, dt){ dt=dt||0.25; var h=skyHour(); for(var t=0;t<secs;t+=dt){ serve(); for(var i=0;i<AG.length;i++) step(AG[i], dt, h); } };
   var acc = 0;
   TICKS.push(function(dt, hour){
     serve();
@@ -11075,7 +12180,7 @@ var LIFE = { agents:[], poi:{}, stats:{} };
     for(var i=0;i<AG.length;i++){
       var a = AG[i];
       step(a, dt, hour);
-      if(nb >= MAXP) continue;
+      if(nb >= MAXP || a.inside) continue;                 /* indoors: not drawn until they come out */
       var ddx=a.x-cx, ddz=a.z-cz; if(ddx*ddx+ddz*ddz > far) continue;
       var bob = a.wait > 0 ? 0 : Math.abs(Math.sin(a.step))*0.055;
       var sway = a.wait > 0 ? 0 : Math.sin(a.step)*0.11;
