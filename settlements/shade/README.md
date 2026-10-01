@@ -13,7 +13,7 @@ house fronts on two galleries with rock-cut stairs, four stepped pueblo compound
 the walled Khan, black tents, market stalls, cliff dwellings round the whole rim and two
 watch towers (64 buildings, 6 draw calls). The basin's corners are round and uneven; three
 alcoves overhang dwellings in the north and south walls, the hall and the shrine stand in true
-niches, and the pool undercuts the lip behind the falls (carve patches, `36-core-carve.js`).
+niches, and the pool undercuts the lip behind the falls (carve patches, `core/terrain/36-core-carve.js`).
 The rock is the core's bedded strata (`35-core-strata.js`), shared by the ground, the patches
 and the carved stone. `API.md` is the builder contract, `KNOWN_ISSUES.md`
 what remains open.
@@ -41,7 +41,7 @@ passes its negative cannot fail, and fails the run.
 | Fragment | What |
 |---|---|
 | `00-head.html`, `99-tail.html` | page shell (tools panel, polygon box, inspector, HUD, error panel) |
-| `10..40-core-*` | biome core, vendored from `biomes/sedesert/src` (35: the bedded-rock strata shader; 36: carve patches, the overhangs) |
+| `10..40-core-*` | biome core, vendored from `biomes/sedesert/src` (35: the bedded-rock strata shader); `36-core-carve.js`, the overhangs, is read from `core/terrain` (shared, not vendored) |
 | `44-host-layout.js` | WHERE: the map, `terrainH`, `waterH`, the streams, the switchback, the traced foot and cliff runs, the carve patches, `PLACES`, `PORTS`, `SHADE_PLAN` (the seeded building plan) |
 | `45-host-stage.js` | renderer, the climate fields, the flora mask (places reserved), `BIO.init`, the ground, the carve patches' meshes (baked occlusion and hood shadow), the water and the falls |
 | `50..75-biome-sedesert-*` | the eastern high desert's flora and fauna, vendored |

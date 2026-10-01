@@ -3,6 +3,7 @@
 
   00-head.html          page shell, opens <script>
   10..40                BIOME CORE      vendored from biomes/sedesert/src
+  36-core-carve         the carve patches, read from core/terrain (one shared copy, not vendored)
   44-host-layout        HOST: where everything is (terrainH, waterH, the places, the switchback)
   45-host-stage         HOST: renderer, fields, flora mask, BIO.init, ground, water
   50..75                BIOME LEAVES    vendored from biomes/sedesert/src (flora and fauna)
@@ -21,7 +22,9 @@ import hashlib, json, os, re, subprocess, sys
 HERE = os.path.dirname(os.path.abspath(__file__)); SRC = os.path.join(HERE, 'src'); DIST = os.path.join(HERE, 'dist')
 UP = os.path.normpath(os.path.join(HERE, '..', '..', 'biomes', 'sedesert', 'src'))
 OUT = 'shade.html'
-VENDORED = ['10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '35-core-strata.js', '36-core-carve.js', '40-core-place.js',
+CORE_TERRAIN = ['36-core-carve.js']   # shared fragments read from core/terrain (opt-in by name; a local copy wins)
+CORE_T = os.path.normpath(os.path.join(HERE, '..', '..', 'core', 'terrain'))
+VENDORED = ['10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '35-core-strata.js', '40-core-place.js',
             '50-biome-sedesert-species.js', '55-biome-sedesert-trees.js', '60-biome-sedesert-floor.js',
             '65-biome-sedesert-dress.js', '70-biome-sedesert.js', '75-biome-sedesert-fauna.js',
             '82-host-sky.js', '99-tail.html']
@@ -38,10 +41,13 @@ def vendor_check():
     return 1 if drift else 0
 
 def main():
-    frags = sorted(f for f in os.listdir(SRC) if not f.startswith('.'))
+    path = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if not f.startswith('.')}
+    for f in CORE_TERRAIN:
+        if f not in path: path[f] = os.path.join(CORE_T, f)
+    frags = sorted(path)
     out, bad = [], []
     for f in frags:
-        s = open(os.path.join(SRC, f), encoding='utf8').read()
+        s = open(path[f], encoding='utf8').read()
         n = int(re.match(r'(\d+)', f).group(1))
         if 10 <= n < 80 and '-host-' not in f:
             for w in FORBID:

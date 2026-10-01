@@ -87,7 +87,7 @@ wall-contact check that compared the floor with itself. The second pass:
 
 ## Oct 2026: carve patches, round corners, the rock's colour
 
-- **Option 1 below is built** (`36-core-carve.js` in the biome core, vendored): three Mesa
+- **Option 1 below is built** (`36-core-carve.js`, now one shared copy in `core/terrain/` that any heightfield build can list): three Mesa
   Verde alcoves with a dwelling block under each, true niches round the hall and the shrine
   (the Treasury builder takes `niche:false`), and the undercut behind the falls (a view
   stands inside it, looking out through the curtain). Six patches, 0.33 M triangles, ~4 s to mesh and bake at load.

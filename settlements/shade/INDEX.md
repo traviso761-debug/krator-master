@@ -20,7 +20,6 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `20-core-kit.js` | 14 | merged buckets (58); bake (133); dynamic instances (158) |
 | `30-core-foliage.js` | 15 | alpha textures (18); card geometries (48); the foliage hook (110); colour (175) |
 | `35-core-strata.js` | 9 |  |
-| `36-core-carve.js` | 11 |  |
 | `40-core-place.js` | 7 | surface sampling (59) |
 | `44-host-layout.js` | 28 | the plateau (26); the basin and the canyon (34); the water (61); the switchback (71); terrain (115); the places (138); the foot of the wall, traced (172); the carve patches (overhangs; BIO.carve, 36-core (206); the building plan (229) |
 | `45-host-stage.js` | 25 | the climate fields (26); the flora mask (reserve before you build) (58); the host binding (87); the ground (97); the carve patches (the rock put back above alcov (162); the water (178) |

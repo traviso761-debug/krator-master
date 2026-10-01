@@ -8,7 +8,7 @@ Read before changing anything here. `build.py` prints the open count.
       built before the walkable grid (80), one mesh per material. Checked: inside their
       places, no overlap in plan and height, rock behind every carved front, every
       family and every plan placed, every entrance reachable (the upper row by its stair).
-- [x] OVERHANGS, by carve patches (`36-core-carve`, NOTES.md option 1): three alcoves with
+- [x] OVERHANGS, by carve patches (`core/terrain/36-core-carve.js`, shared; NOTES.md option 1): three alcoves with
       dwellings under them, true niches round the hall and the shrine, the undercut behind
       the falls. Checked: each void open under rock, nothing grows under a hood, the alcove
       dwellings clear their ceilings, no camera inside rock, the falls clear of the hood.
@@ -20,6 +20,22 @@ Read before changing anything here. `build.py` prints the open count.
       (into the rock, the ground under it and the alcove dwellings' tints), so a cliff's
       shadow onto the floor beside an alcove is still missing. Shadows are fixed to the sun.
 - [ ] Interiors are dark planes, not rooms (another session has the interiors).
+- [ ] LOAD TIME: meshing and baking the six patches takes ~4 s at load, on the main thread
+      (the occlusion and sun rays are most of it). Bake at build time, or move it to a worker.
+- [ ] The hood's top (the plateau over an alcove) takes its ground paint and rock weight from
+      the field cache, which reads the lowered heightfield of the recess, so from above it may
+      be painted as floor rather than plateau. Not yet checked from an aerial view.
+- [ ] The baked shadow and occlusion are per vertex (0.5 m on a patch, 1.25 m on the ground),
+      so their edges are soft steps, and they are fixed to the sun's one direction.
+- [ ] Only the alcove dwellings take the hood's shade, and from the analytic `floorOcc`/`floorSun`
+      in their vertex tints, not marched: their top storeys are as dark as their foot. The hall
+      and the shrine in their niches, and the run blocks beside an alcove, are not shaded at all.
+- [ ] A camera orbiting into a hood's rock is lifted onto the cliff top above it (90): correct,
+      but it pops. Pull it back along its view ray instead.
+- [ ] The carve checks sample one point per patch (the void at mid depth, the rock 2 m over the
+      ceiling), not the whole void; a hood thinner than 2 m somewhere would pass.
+- [ ] A darker ring on the plateau round the basin shows in the overhead views ('Over the basin',
+      'From afar'). Seen, not diagnosed: the ground paint or the flora mask's reserve.
 - [ ] The upper row of house fronts is reached by the rock-cut stairs, but the walkable
       grid is 2-D: the stairs are blocked cells and the upper doors are "reached" through
       the stair's foot. A climbing route is the life layer's job when people walk.
