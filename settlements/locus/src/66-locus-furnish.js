@@ -12,16 +12,24 @@
             while the interiors do not furnish that building, so ?interiors=1 never doubles it).
    Lights the pieces carry (catalog F.lamp, kept as data) become this engine's night lamps (nlLampAdd); lamp:[amp,rad]
    overrides their strength. Indoors, the rooms of every TOP-LEVEL building are the interiors kit's: its sets
-   (kits/interiors/sets/locus.js, abyss.js; item `<key>#<variant>`, else `<key>`) are planned and furnished through
-   the same catalog with ?interiors=1 (off by default: roofs hide it and it adds triangles). ?furniture=0 places
+   (kits/interiors/sets/locus.js, abyss.js) are planned and furnished through the same catalog with ?interiors=1 (off by
+   default: roofs hide it and it adds triangles). The item is `<key>` for variant 0 and `<key>#<variant>` for any other:
+   a variant with no item of its own is NOT furnished (never variant 0's rooms on another body), and is counted in
+   LOCF.unfurnished.noItem. ?furniture=0 places
    nothing (the records are still kept). A key the catalog lacks is counted in LOCF.missing, never thrown. */
 KratorFurniture.setDetail(.5);   /* settlement-scale: half the segments on round furniture parts */
 var LOCF = { on:!/[?&]furniture=0\b/.test(location.search), interiors:/[?&]interiors=1\b/.test(location.search),
-  batch:KratorFurniture.batch(), placed:[], missing:{}, buildings:[], stack:[], lastTop:null, deferred:0, group:null };
+  batch:KratorFurniture.batch(), placed:[], missing:{}, buildings:[], stack:[], lastTop:null, deferred:0, group:null,
+  unfurnished:{ noItem:{}, skip:{}, none:{} } };
 LOCF.adapter = KratorInteriors.runtimeAdapter(KratorFurniture, LOCF.batch);
 window._locf = LOCF;   /* for probes: the records, LOCF.missing, LOCF.buildings */
-/* the interior-set item that furnishes a building of this key and variant (null: none, or skipped) */
-LOCF.item = function(key, v){ var S=KratorInteriors.sets, it=(v?S.find(key+'#'+v):null)||S.find(key); return it && !it.skip ? it : null; };
+/* the interior-set item that furnishes a building of this key and variant (null: none, or skipped). Variant 0 is `<key>`,
+   variant n `<key>#n` ONLY: no fallback to `<key>`, whose rooms are measured on variant 0's body */
+LOCF.itemOf = function(key, v){ return KratorInteriors.sets.find(v ? key+'#'+v : key); };
+LOCF.item = function(key, v){ var it=LOCF.itemOf(key, v); return it && !it.skip ? it : null; };
+/* why a top-level building gets no interior: 'skip' (its item says so), 'noItem' (a variant > 0 whose key has an item but
+   the variant has none of its own), 'none' (the key has no item at all) */
+LOCF.why = function(key, v){ var it=LOCF.itemOf(key, v); return it ? 'skip' : (v && KratorInteriors.sets.find(key) ? 'noItem' : 'none'); };
 /* place a catalog piece at (lx,ly,lz) in frame F (the catalog origin: the footprint centre), turned lry */
 function furnishAt(F, key, lx,ly,lz, lry, o){ o=o||{};
   var F0=LOCF.stack[0]||F, top=F0.asset?F0.asset.key:'', setting=o.setting||'outdoor';
@@ -55,7 +63,8 @@ buildAsset = function(key, x,z,ry, opt){ var top=!LOCF.stack.length; LOCF.lastTo
     if(it){ var r=KratorInteriors.sets.furnish(it, x, z, ry||0, LOCF.adapter, { baseY:F.y, prefix:'lc.'+LOCF.buildings.length+'.' });
       rec.interior={ item:it.key, rooms:r.inst.rooms.length, pieces:Object.keys(r.plans).reduce(function(a,k){ return a+r.plans[k].placements.length; },0), residence:r.residence };
       r.inst.rooms.forEach(function(R){ var P=r.plans[R.id]; (P&&P.lights||[]).forEach(function(l){ nlLampAdd(l.x, l.y, l.z, l.intensity||0.7, l.distance||10, false); }); });
-      LOCF.buildings.push({ key:key, variant:F.variant|0, x:x, z:z, ry:ry||0, interior:rec.interior }); } }
+      LOCF.buildings.push({ key:key, variant:F.variant|0, x:x, z:z, ry:ry||0, interior:rec.interior }); }
+    else { var w=LOCF.why(key, F.variant|0), u=LOCF.unfurnished[w], k=key+((F.variant|0)?'#'+(F.variant|0):''); u[k]=(u[k]||0)+1; } }
   return rec; };
 /* the batch becomes meshes once, when the kit emits its instances (75-terrain.js); they take the night-glow hook */
 var locfEmit = emitBuckets;
@@ -66,5 +75,6 @@ emitBuckets = function(){ var g=LOCF.batch.flush(scene); g.traverse(function(m){
     var c=m.geometry.attributes.color; if(c){ var a=c.array, f=new Float32Array(a.length); for(var i=0;i<a.length;i++) f[i]=LOCF_LIN[a[i]]; m.geometry.setAttribute('color', new THREE.BufferAttribute(f, 3)); }
     if(!m.material.isMeshBasicMaterial) nlMaterial(m.material, 'kf-'+m.material.userData.family); });
   LOCF.group=g; window._furniture={ placed:LOCF.placed.length, deferred:LOCF.deferred, missing:LOCF.missing, meshes:g.children.length,
-    tris:Math.round(LOCF.batch.tris), interiors:LOCF.buildings.length };
+    tris:Math.round(LOCF.batch.tris), interiors:LOCF.buildings.length,
+    noItem:Object.keys(LOCF.unfurnished.noItem).reduce(function(a,k){ return a+LOCF.unfurnished.noItem[k]; },0) };
   return locfEmit(); };

@@ -13,7 +13,7 @@ catalog's own code. Nothing in the two kits draws furniture any more, and the ki
 
 The build carries two GENERATED fragments as one virtual file, `65z-furniture-bundle.js` (never in `src/`;
 `build.py` `virtual_bodies()`): `kits/catalog/furniture_bundle.py` `bundle(['eastabyss', 'nomad', 'reedlake',
-'generic'], harvested=True)` (the single global `KratorFurniture`; the harvested registry carries the Yuni pieces,
+'generic', 'scrap'], harvested=True)` (scrap for `pa_drum`, the standing oil drum) (the single global `KratorFurniture`; the harvested registry carries the Yuni pieces,
 `yuni_<culture>_<name>`) and `kits/interiors/kit_bundle.py` `bundle(['locus', 'abyss'])` (`KratorInteriors`,
 `ROOM`, `furnishRoom` and the two interior sets). The glue is `src/66-locus-furnish.js`.
 
@@ -38,12 +38,18 @@ ABYSS.lantern(F, x,y,z, lit, amp)  LOCUS.lantern(F, x,y,z, amp, rad)  // the hun
   `lamp: [amp, radius]` overrides them (the lanterns keep the amp and radius they had).
 - **Batch**: `KratorFurniture.batch()` at detail `0.5`, flushed ONCE into the scene when the kit emits its instances
   (`emitBuckets`, 75-terrain.js); the merged meshes take the night-glow hook. `window._furniture` =
-  `{ placed, deferred, missing, meshes, tris, interiors }`.
+  `{ placed, deferred, missing, meshes, tris, interiors, noItem }`.
 - **The inspector** labels every placed piece (`kind: 'furniture'`, `furniture · catalog · culture: ... · key ...`).
-- **`?interiors=1`**: after a TOP-LEVEL building is placed (`buildAsset` with nothing on the frame stack), the interior
-  set item `<key>#<variant>` (else `<key>`), when it has no `skip`, is planned and furnished there through
+- **`?interiors=1`**: after a TOP-LEVEL building is placed (`buildAsset` with nothing on the frame stack), its interior
+  set item — `<key>` for variant 0, `<key>#<variant>` for any other, NEVER the base item for a variant > 0 (its rooms are
+  measured on variant 0's body) — when it has no `skip`, is planned and furnished there through
   `KratorInteriors.sets.furnish(item, x, z, ry, KratorInteriors.runtimeAdapter(KratorFurniture, batch), { baseY, prefix })`;
-  the summary is `buildAsset(...).interior = { item, rooms, pieces, residence }` and `LOCF.buildings`. Off by default.
+  the summary is `buildAsset(...).interior = { item, rooms, pieces, residence }` and `LOCF.buildings`. A top-level
+  building that gets no interior is counted in `LOCF.unfurnished` by why (`LOCF.why(key, v)`): `skip` (its item says so),
+  `noItem` (a variant > 0 of a key that has an item, with no `#n` item of its own: a gap in the set; the total is
+  `window._furniture.noItem`, 0 on all three pages), `none` (a key with no item). `LOCF.item(key, v)` /
+  `LOCF.itemOf(key, v)` look the item up the same way. Every multi-variant kit building has its `#n` items
+  (`kits/interiors/sets/locus.js`, `abyss.js`) or a `skip`. Off by default.
 - **`?furniture=0`** builds no furniture; the records are still kept.
 - A key the catalog lacks is counted in `LOCF.missing` (`window._furniture.missing`), never thrown.
 - `ABYSS.burn(F, n)` / `LOCUS.burn(F, n)`: where inline drawing that drew colours from `F.rnd()` became a catalog piece,

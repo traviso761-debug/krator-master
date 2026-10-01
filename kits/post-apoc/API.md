@@ -70,8 +70,8 @@ Never use a different colour space: pass hex numbers to `jc`, never `new THREE.C
 ## Reclaimed cores (32-cores.js) and additions (34-adds.js). READ THESE FILES before writing a building
 Cores: `container({len:6.06|12.19,hi,col,open:'front'|'end'})` (long axis x, +z front; sizes in `CT`), `silo({r,h,col,roofCol,rise})`, `tankV({r,h})`, `tankH({r,L})`, `bus({len,col})`,
 `semi({trailer,col,tcol})`, `bulkhead({w,h,th,hatch:'round'|'door'})` (Ancient white ceramic slab, hatch or doorway). Each draws in the current frame centred on the origin, base at y=0: `W(x,0,z,ry,()=>container(...))`.
-Additions: `door win porthole patchWall plankWall sheetWall bottleWall tireWall tireRing gableRoof leanRoof tarp deck stairs ladder stovepipe solar barrel crate sacks pallet lamp fire
-tireStack junkPile antenna fenceRun bottleString waterButt`, and the steel access set for container and steel builds (timber `deck`/`stairs` read as wood):
+Additions: `door win porthole patchWall plankWall sheetWall bottleWall tireWall tireRing gableRoof leanRoof tarp deck stairs ladder stovepipe solar antenna fenceRun bottleString`,
+the yard furniture helpers `barrel crate sacks pallet lamp fire tireStack junkPile waterButt tireStool tireChair tireTable` (they place catalog pieces: see *Furniture* below), and the steel access set for container and steel builds (timber `deck`/`stairs` read as wood):
 ```
 stStairs(ax,ay,az, bx,by,bz, w, {tread:'plate'|'grate', rail})   channel stringers, checker-plate (or grating) treads with a nosing, pipe handrails on posts.
                                                                  Same contract as stairs(): the top tread's top is at by, its back edge at the top point. stairs(...,{steel:true}) calls it.
@@ -80,6 +80,29 @@ stFloor(x,y,z, w,d, {floor})     a grating (default) or checker-plate panel, top
 ``` Appliqué doors/windows (`door`, `win`) sit ON a wall facing +z at (x, y=sill, z=wall face); use `W(...)` with ry to put them on other faces.
 Real openings (an open-fronted shop, a walk-in porch) need `wallOpen` or a core with `open:'front'`.
 If you need a helper twice, add it at the top of YOUR fragment with your prefix. If you think the ENGINE (files 10-36, 80, 9x) needs a change, do not edit it: describe it in your report.
+
+## Furniture: placed from the catalog (FURNISH), never drawn
+Everything a building puts in or around itself that is not its structure (the core, the additions lashed to it, walls, fences, decks, stairs, ladders, outbuildings, the
+culture's sockets) is FURNITURE: a piece of the master catalog (`kits/catalog`: the `pa_*` pieces harvested from this kit in `krator-master-furniture-scrap.js` and
+`-post-apoc.js`, plus the `scrap_*`, `post-apoc_*` and `generic_*` pieces), placed as data and built by the catalog's own code. `build.py` inserts the generated
+bundle `38-furniture-bundle.js` (`kits/catalog/furniture_bundle.py` for the cultures `scrap`, `post-apoc`, `generic`, and `kits/interiors/kit_bundle.py` for the interior set
+`post-apoc`); `src/91f-furnish.js` is the glue.
+```
+FURNISH(key, lx, ly, lz, lry, {v, seed, setting, ax, az})   in the CURRENT frame (a builder's, or a W() frame inside it), like any primitive
+```
+`v` the catalog variant, `lry` turns the piece (+z is its front), `(ax, az)` is the point of the piece (in its own frame) that lands on `(lx, lz)` (a piece is centred on its
+footprint: a lamp post's pole is at `ax:-.23`). It returns the record `{key, variant, seed, lx, ly, lz, lry, x, y, z, ry, building, setting}` (`lx..lry` in the building's
+own frame, `x, y, z, ry` in the world) and pushes it on the building's REG record, `rec.furniture`. The pieces of the whole page go into one batch, flushed once per
+`buildWorld()` into about 20 merged meshes (`PAF.group`); their lights become HALO records (glow sprites, the night light pool, the lamp cones) and each piece but lamps and
+hung things leaves a collider box (`rec.coll`). A key the catalog lacks is counted, not thrown (`_api.furniture().missing`).
+The helpers in `34-adds.js` and the builders' own (`cvBench`, `shCrateProduce`, `shMannequin`, `fmScarecrow`, `fmCoop`, `fmWell` ...) call FURNISH and keep their names and
+arguments. Each still draws the random numbers its old drawing drew (`rngSkip(n)`), so the structure drawn after it keeps its random stream: every def, variant and culture
+pack draws exactly the same numbers as before the conversion.
+**Indoors** the rooms are the interiors kit's (`kits/interiors/sets/post-apoc.js`): a builder draws nothing inside a room the set plans (the shop boxes, the smithy shed,
+the longhouse and mess halls, the throne bay, the granary's loading bay ...). With **`?interiors=1`** every TOP-LEVEL placement (not a building a compound's slot places)
+whose key has a set item without `skip` is planned and furnished through the same batch: `rec.interior = {rooms, pieces, residence}`. Off by default (the roofs hide it).
+**`?furniture=0`** places no piece (the records are still kept). Probe: `_api.furniture()` = `{placed, keys, missing, tris, buildings, interiorBuildings, rooms, pieces,
+residenceFails}`; `_api.furniture(true)` adds every record; `window._build.furniture` the same counts for the last build.
 
 ## Night, and the invisible front door
 **Night:** the `Time` select (Day / Dusk / Night) or `?night=0..1` or `window._api.setNight(v)` drives sky (stars, dusk glow, moon), sun/moon light, hemisphere, fog, lit windows, lamp and fire glow, and a pool of six real point lights that follows the camera to the nearest lamps and fires.
@@ -121,7 +144,7 @@ vertex `p` in that frame (`clothRule('banner', {h})`, `clothRule('flag', {w})`, 
 A building never models a plant. Anything living (crops, planter fill, kitchen garden, shrubs, vines, moss, a shade tree) is `plant(kind,x,y,z,{h,r,s,ry,moisture,riparian,tags})`
 (end of `34-adds.js`). Kinds are ROLES, the biome picks the species: `crop crop-tall crop-vine groundcover shrub flower tree vine-wall grass moss`. The default draws a small muted
 placeholder; the host installs biome-appropriate flora once, with `PLANTS.draw = slot => plantFrame(slot, () => {...draw the local species...})`, and every plant in every building follows.
-Each slot carries tags (`class:'flora'`, `role`, `biome`, `moisture: arid|mild|wet`, `riparian`, `cultivated`). `window._api.plants()` lists what each building placed. Beds, planters and supports stay in the building; only the living plant is a `plant()`.
+Each slot carries tags (`class:'flora'`, `role`, `biome`, `moisture: arid|mild|wet`, `riparian`, `cultivated`). `window._api.plants()` lists what each building placed. Planters, cold frames and beds are catalog furniture (`pa_planter`, `pa_cold_frame`); crop rows and supports stay in the building; only the living plant is a `plant()`.
 Sockets must also keep clear of windows, doors and panels: give every emblem/paint/banner socket its own patch of wall.
 
 ## The look

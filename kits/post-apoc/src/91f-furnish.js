@@ -49,10 +49,15 @@ place=function(key,x,z,ry,o){const d=DEFS[key];if(!d)return pafPlace.apply(this,
     PAF.buildings.push({key,x,z,ry:ry||0,interior:rec.interior});}catch(err){reportErr('interiors '+key+': '+(err.stack||err));}}}
  return rec;};
 frontOf=function(key){PAF.dry++;try{return pafFrontOf(key);}finally{PAF.dry--;}};
+// the catalog's colours are sRGB values; this renderer works in linear light (outputEncoding sRGB, every kit colour through SRGB2LIN), so the
+// batch's vertex colours are converted once (to floats: linear uint8 would band the darks)
+const PAF_LIN=new Float32Array(256).map((_,i)=>{const c=i/255;return c<=.04045?c/12.92:Math.pow((c+.055)/1.055,2.4);});
+function pafLinear(geo){const a=geo.getAttribute('color');if(!a||a.array instanceof Float32Array)return;const src=a.array,out=new Float32Array(src.length);
+ for(let i=0;i<src.length;i++)out[i]=PAF_LIN[src[i]];geo.setAttribute('color',new THREE.BufferAttribute(out,3));}
 // ---- the batch becomes meshes ONCE per world build, after every building is placed
 const pafBuildWorld=buildWorld;
 buildWorld=function(cultureKey){pafNewBatch();const t0=performance.now();const W0=pafBuildWorld(cultureKey);
- const g=PAF.group=PAF.batch.flush(WORLD);g.traverse(m=>{if(m.isMesh){const f=m.material.userData.family;m.castShadow=f!=='glow'&&f!=='glass';m.receiveShadow=true;}});
+ const g=PAF.group=PAF.batch.flush(WORLD);g.traverse(m=>{if(m.isMesh){const f=m.material.userData.family;m.castShadow=f!=='glow'&&f!=='glass';m.receiveShadow=true;pafLinear(m.geometry);}});
  if(window._build)window._build.furniture={placed:PAF.placed.length,tris:Math.round(PAF.batch.tris),missing:Object.assign({},PAF.missing),interiors:PAF.buildings.length,ms:Math.round(performance.now()-t0)};
  return W0;};
 // probe: _api.furniture() = counts, missing keys, triangles; _api.furniture(true) adds every record; the interiors summary with ?interiors=1

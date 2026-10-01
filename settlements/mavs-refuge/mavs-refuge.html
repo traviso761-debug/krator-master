@@ -14599,6 +14599,7 @@ KratorFurniture.setDetail(.5);   /* settlement-scale: half the segments on round
 var BRF = { on: !/[?&]furniture=0\b/.test(location.search), interiors: /[?&]interiors=1\b/.test(location.search),
             batch: KratorFurniture.batch(), placed: [], missing: {}, buildings: [], cur: null, stack: [], frame: null, lights: 0, group: null };
 BRF.adapter = KratorInteriors.runtimeAdapter(KratorFurniture, BRF.batch);
+window._brf = BRF;                                                     /* read-only, for probes and the console */
 /* the catalog recentred some harvested pieces on their footprint (F.shift(dx,dz) in the piece's build): the
    placement undoes it, so the piece stands where the builder drew it */
 var BRF_SHIFT = { br_h_viewing_stand:[0,-0.1], br_h_reviewing_dais:[0,-0.36], br_h_speaker_rostrum:[0,-0.325],
@@ -15033,7 +15034,7 @@ function stall(f,y,lit){
   brfSkip(1); if(!chance(0.5)) brfSkip(1); brfSkip(2);              /* awning colours, timber, counter */
   for(var g=0;g<3;g++){ var k=ri(0,3); if(k===1||k===2) brfSkip(1); }  /* the goods on the counter */
   brfSkip(3); if(chance(0.5)) brfSkip(2);                             /* the crate, a barrel */
-  brfUse(f,y); FURNISH('br_market_stall',0,0,0,0,{lamp:lit?[0.7,10,false]:null});
+  brfUse(f,y); FURNISH('br_market_stall',0,0,0,0,{lamp:lit?[0.7,10,false]:null}); if(lit) ARCH.lamps++;
   ARCH.stalls++;
 }
 function bench(f,y){ brfUse(f,y); FURNISH('br_bench',0,0,0,0); }

@@ -104,7 +104,7 @@ reseed(647001);
       [4.4, 5.6, 6.8].forEach(function(ix){ F.cyl(ix, Y+8.78, -10.8, 0.08, 0.25, 0, 0xf2eee4, 'plaster'); });
       F.rod(11.8, Y+5.6, -6.6, 8.0, Y+7.3, -9.4, 0.035, 0x1e1a18, 'timber');                                                  /* switchboard to gantry */
       /* drums and a lamp-oil jar or two */
-      for(var d=0;d<4;d++) LOCUS.drum(F, 12.4+d*0.7, Y, -9.4, RUSTC[d%5]); LOCUS.drum(F, -13.6, Y, 6.8, RUSTC[2]); LOCUS.drum(F, -12.9, Y, 7.4, RUSTC[0]);
+      for(var d=0;d<4;d++) FURNISH('pa_drum', 12.4+d*0.7,Y,-9.4, 0); FURNISH('pa_drum', -13.6,Y,6.8, 0); FURNISH('pa_drum', -12.9,Y,7.4, 0);   /* the oil drums: FURNITURE (catalog pa_drum) */
       door(F, -2, 11.8); door(F, 11.8, 4.2);
     } });
 

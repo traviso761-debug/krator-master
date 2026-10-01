@@ -1,6 +1,7 @@
 /* ============================== 25. CAMERA, CONTROLS, FRAME LOOP ============================== */
 
 var ctl = { tx:0, ty:60, tz:0, theta:Math.PI*0.5, phi:1.2, radius:900 };
+var CAM_HOOK = null;     /* set by the walk mode (83-walk.js): it then moves the camera instead of the orbit/pan below */
 function applyCam(){
   var sp = Math.sin(ctl.phi), cp = Math.cos(ctl.phi);
   var x = ctl.tx + ctl.radius*sp*Math.cos(ctl.theta);
@@ -58,6 +59,7 @@ camEl.style.touchAction = 'none';
 camEl.addEventListener('pointerdown', function(e){ camEl.setPointerCapture(e.pointerId); ptrs[e.pointerId] = { x:e.clientX, y:e.clientY }; dragged = false; });
 camEl.addEventListener('pointermove', function(e){
   var p = ptrs[e.pointerId]; if(!p) return;
+  if(CAM_HOOK){ p.x = e.clientX; p.y = e.clientY; return; }
   var dx = e.clientX - p.x, dy = e.clientY - p.y; p.x = e.clientX; p.y = e.clientY;
   var ids = Object.keys(ptrs);
   if(Math.abs(dx)+Math.abs(dy) > 2) dragged = true;
@@ -80,7 +82,7 @@ camEl.addEventListener('pointermove', function(e){
 function ptrUp(e){ delete ptrs[e.pointerId]; lastPinch = 0; }
 camEl.addEventListener('pointerup', ptrUp); camEl.addEventListener('pointercancel', ptrUp);
 camEl.addEventListener('contextmenu', function(e){ e.preventDefault(); });
-camEl.addEventListener('wheel', function(e){ e.preventDefault(); ctl.radius = clamp(ctl.radius * (e.deltaY > 0 ? 1.11 : 0.90), 4, 5000); applyCam(); }, { passive:false });
+camEl.addEventListener('wheel', function(e){ e.preventDefault(); if(CAM_HOOK) return; ctl.radius = clamp(ctl.radius * (e.deltaY > 0 ? 1.11 : 0.90), 4, 5000); applyCam(); }, { passive:false });
 
 var keys = {};
 addEventListener('keydown', function(e){ if(e.target && /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return; keys[e.key.toLowerCase()] = true; });
@@ -149,7 +151,7 @@ var clock = new THREE.Clock(), fps=60, acc=0, frames=0, tmpV=new THREE.Vector3()
 function frame(){
   requestAnimationFrame(frame);
   var dt = Math.min(0.06, clock.getDelta());
-  panStep(dt);
+  if(CAM_HOOK) CAM_HOOK(dt); else panStep(dt);
   skyAdvance(dt); updateSky(); updateDayNight();
   var hour = skyHour(), nk = DAYNIGHT_NIGHT_K;
   CLOTH_TIME.value += dt;

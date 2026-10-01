@@ -34,7 +34,7 @@ reseed(654001);
         ABYSS.furn(F, 'abyss_counter', -1.5,-0.6, 0, { ly:0.15 }); ABYSS.furn(F, 'abyss_rack_spears', -5.0,1.2, PI/2, { ly:0.15 });
         LOCUS.pole(F, 1.8,1.0, 4.4, 0.09); LOCUS.pole(F, 5.6,1.0, 4.0, 0.09); LOCUS.pole(F, 5.6,4.2, 4.4, 0.09); LOCUS.pole(F, 1.8,4.2, 4.0, 0.09);
         ABYSS.sail(F, [[1.8,4.4,1.0],[5.6,4.0,1.0],[5.6,4.4,4.2],[1.8,4.0,4.2]], PAL.abSailOrange, { swoop:0.5, band:PAL.abSailOrange, bandW:0.5 });
-        ABYSS.furn(F, 'abyss_forge', 3.7,2.6, 0, { ly:0.15 }); ABYSS.furn(F, 'abyss_water_butt', 5.2,-1.5, 0, { ly:0.15 });
+        ABYSS.furn(F, 'abyss_forge', 3.7,2.6, 0, { ly:0.15, setting:'room' });   /* the forge under the sail: the smithy abyss_shop_weapons#1 plans */ ABYSS.furn(F, 'abyss_water_butt', 5.2,-1.5, 0, { ly:0.15 });
         signPost(F, -5.4,4.0, 'blade'); }
     } });
 

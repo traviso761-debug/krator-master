@@ -181,6 +181,47 @@ Own meshes: set `mesh.userData.inspectLabel = 'Giant bat'` (or
 **Path viz.** `PATHVIZ.push({ key, label, color, paths:function(){ return [ [[x,y,z],…], … ]; } })`
 (`var PATHVIZ` is declared in 10-core.js) — every moving population registers its routes.
 
+## Furniture (catalog pieces, placed as data)
+
+Everything a builder puts in or around a building that is not the building itself (walls, floors, roofs,
+stairs, decks, galleries, rails, fences, built-in masonry, facade signs and banners, outbuildings) is
+**furniture**: a master-catalog piece (`kits/catalog`), placed as data and built by the catalog's own code.
+`build.py` inserts one GENERATED fragment, `52-furniture-bundle.js` (never in `src/`): the catalog bundle
+(`furniture_bundle.bundle(['beast-rider','lizardmen','generic'], harvested=True)`, global `KratorFurniture`)
+and the interiors core with the `beast-rider` set (`kit_bundle.bundle(['beast-rider'])`: `KratorInteriors`,
+`ROOM`, `furnishRoom`). The glue is `53-furnish.js`:
+
+```
+brfUse(f, y); FURNISH(key, lx, ly, lz, lry, {v, seed, setting, lamp})   // in a FRM frame (55-arch): +z = front, +x = right
+FURNISH_AT(key, x, y, z, ry, {...})                                     // world space; ry = rotation.y, the piece's front is +z
+brfHead(fx,fz) / brfAlong(dx,dz)                                        // the ry that faces a piece's front / lays its width along a direction
+lvlFur(key, fr, u, v, dy, ry, o)                                        // 56-levels: at a lvlFrame point (u outward, v tangent)
+brfIn(name) ... brfDone(REGISTER({...}))                                // the building being furnished; its records go on site.furniture
+brfSkip(n)                                                              // draw the random numbers a removed drawing drew
+```
+
+- `o.v` is the catalog variant; `o.lamp = [amp, rad, cool, maxLights]` registers the piece's own lights
+  (`KratorFurniture.lightsOf`) in the night light volume, exactly as `LANTERN()` did (the lamp count is unchanged).
+- Every call returns and keeps the record `{key, variant, seed, lx, ly, lz, lry, x, y, z, ry, building, setting}`
+  (`BRF.placed`, `window._brf`). The seed is a position hash: placements never draw from `rnd()`.
+- The batch is flushed ONCE into the scene when the kit is emitted (`emitBuckets`, 75-terrain): one mesh per render
+  family (`userData.furniture`), wrapped with `nlMaterial` so the lamps light it. `window._furniture` has the counts.
+- A key the catalog lacks is counted in `BRF.missing` (`_furniture.missing`), never thrown.
+- `?furniture=0` places nothing (the records are still kept). `?interiors=1` plans and furnishes rooms from the
+  `beast-rider` interior set at a TOP-LEVEL building (`brfInterior(setKey, x, z, ry, baseY, site)`; the result is
+  `site.interior`, and `_furniture.interiors / interiorPieces`).
+- **Which builders have interiors.** The set's items are the catalog's rewrites of Mav's buildings (fixed
+  rectangles and rings), not Mav's polar sectors. Only the deck lot matches, and only where its 14 x 10 m body
+  fits inside the lot's walls with its door on the lot's door (`lotInterior` in 55-arch: 3 lots, one of them an
+  inn -> `br_bldg_deck_lot#2`). The nature shrine (9 posts on r 4 vs a 12-17 m sector pavilion), the council
+  chamber (a 12 m ring vs an annular hall round the trunk), the room fronts (12 x 3 m vs 9-17 m deep sector rooms)
+  and the roost gallery (17 x 13 m vs open roost levels) do not match: those builders keep their furniture as
+  FURNISH placements.
+- **RNG.** Every rerouted helper still draws what its drawing drew, so the stream after it is unchanged: the
+  SITES list (names and positions) is identical to the pre-furniture build.
+- **Budget.** `verify.py` counts `BUDGET.triangles` WITHOUT the furniture meshes and checks them against their own
+  line, `BUDGET.furnitureTriangles` (05-palette.js).
+
 ## Budget (whole build: 110 draw calls, 4.2 M triangles, 260k instances)
 
 | pass | triangles | instances | draw calls |

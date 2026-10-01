@@ -43,7 +43,7 @@ PALETTE_FILE = '05-palette.js'
 # KratorInteriors, ROOM, furnishRoom). Inserted after the kit builders (65-abyss-*) and before the glue
 # 66-locus-furnish.js (FURNISH, the interiors hook). Both generators' own text is exempt from the rules below.
 ROOT = os.path.dirname(os.path.dirname(HERE))
-FURN_CULTURES = ['eastabyss', 'nomad', 'reedlake', 'generic']
+FURN_CULTURES = ['eastabyss', 'nomad', 'reedlake', 'generic', 'scrap']   # scrap: pa_drum, the standing oil drum
 INTERIOR_SETS = ['locus', 'abyss']
 VIRTUAL = {'65z-furniture-bundle.js'}
 
