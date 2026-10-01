@@ -14,12 +14,14 @@ says which build holds what.
 |---|---|
 | `settlements/<name>/` | one world per folder: `src/`, `build.py`, `verify.py`, docs, `dist/` |
 | `kits/ancients/` | the Ancients building kit and its per-site targets |
+| `kits/ringsea/` | the Ring Sea watercraft kit: 21 vessels, one fragment each |
 | `kits/catalog/` | harvested master catalog: asset engine, 84 furniture pieces, plants, buildings (unverified) |
 | `kits/furniture/`, `kits/interiors/` | scaffolding only: read `SPEC.md` |
 | `biomes/<name>/` | flora and fauna kits on the shared biome core |
 | `core/materials/` | material fragments shared by the Ancients-lineage builds (`core/README.md`) |
 | `core/terrain/` | carve patches (overhangs on a heightfield), opt-in by any build through `CORE_TERRAIN` in its `build.py` |
 | `gallery/` | the shareable gallery page and the script that publishes it |
+| `host/` | the LAN site server: the gallery plus the World Menagerie's pages (`host/README.md`). The Menagerie is embedded at `host/WorldMenagerie/` as a git subtree. Core never references it: `tools/check_insulation.py` |
 | `archive/` | old scratch and exported snippets. Do not build from it |
 | `painting-to-3d-world.skill` | a zip. Read `painting-to-3d-world/SKILL.md` inside it before starting a new build or a large expansion |
 
@@ -27,7 +29,8 @@ says which build holds what.
 
 These files are big and generated. **Do not open or grep them:**
 `dist/`, `voth.html`, `yuni*.html`, `.syntax*.js`, `.origin.html`,
-`three.min.js`, `*.zip`, `shots/`, `archive/`.
+`three.min.js`, `*.zip`, `shots/`, `archive/`, `host/site/`, `host/menagerie/`,
+`host/WorldMenagerie/` (the Menagerie's own source: work on it only when asked; `.ignore` keeps it out of repo-wide searches, so name the path to search it).
 Pass `--glob '!**/dist/**'` (or search a `src/` folder) when using Grep.
 
 - **Edit only in `src/` and `targets/`.** The HTML is rebuilt from them.

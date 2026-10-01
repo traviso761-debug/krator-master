@@ -25,3 +25,15 @@ gallery/site/
 
 # verify.py variant-shot folders (shots-var etc.)
 shots-*/
+
+# host/: the LAN server's generated files (host/sync.py, host/sitectl build)
+host/site/
+host/site.toml
+host/menagerie/
+
+# kitshots.py item dumps (one per sheet)
+settlements/locus/sheet-items*.json
+# a local copy for headless verification only (Locus loads three.js from the CDN)
+settlements/locus/three.min.js
+host/address.json
+host/address.json.tmp

@@ -150,11 +150,18 @@ PORT_NIGHT.push(on=>{PK_SEA_RIM.value.setRGB(on?.03:.26,on?.045:.36,on?.075:.44)
 // builder makes itself with `new THREE.MeshStandardMaterial` is not patched:
 // put it in MAT at top level, or call portUW on it.
 const PK_UW={value:new THREE.Color(.018,.075,.095)};
-function portUWsh(sh){sh.uniforms.u_uw=PK_UW;
- sh.vertexShader='varying float vUWy;\n'+sh.vertexShader.replace('#include <project_vertex>',
-  '#include <project_vertex>\nvec4 _uwp=vec4(transformed,1.0);\n#ifdef USE_INSTANCING\n_uwp=instanceMatrix*_uwp;\n#endif\nvUWy=(modelMatrix*_uwp).y;');
- sh.fragmentShader='uniform vec3 u_uw;\nvarying float vUWy;\n'+sh.fragmentShader.replace('#include <tonemapping_fragment>',
-  'gl_FragColor.rgb=mix(gl_FragColor.rgb,u_uw,clamp(-vUWy/9.0,0.0,0.9));\n#include <tonemapping_fragment>');}
+// DRY MASK: inside a `dry` stamp (a pumped-out pit) nothing is under water,
+// so the fade is switched off there - up to PK_DRYN rects (a polygon stamp
+// uses its bounding box), filled in by portBuildTerrain. The normal kit and
+// MAT materials therefore work in a dry pit; no un-faded twins needed.
+const PK_DRYN=16,PK_DRY={value:Array.from({length:PK_DRYN},()=>new THREE.Vector4(0,0,-1,-1))},PK_NDRY={value:0};
+function portUWsh(sh){sh.uniforms.u_uw=PK_UW;sh.uniforms.u_dry=PK_DRY;sh.uniforms.u_ndry=PK_NDRY;
+ sh.vertexShader='varying vec3 vUWp;\n'+sh.vertexShader.replace('#include <project_vertex>',
+  '#include <project_vertex>\nvec4 _uwp=vec4(transformed,1.0);\n#ifdef USE_INSTANCING\n_uwp=instanceMatrix*_uwp;\n#endif\nvUWp=(modelMatrix*_uwp).xyz;');
+ sh.fragmentShader='uniform vec3 u_uw;\nuniform vec4 u_dry['+PK_DRYN+'];\nuniform int u_ndry;\nvarying vec3 vUWp;\n'+sh.fragmentShader.replace('#include <tonemapping_fragment>',
+  ['float _uwk=clamp(-vUWp.y/9.0,0.0,0.9);',
+   'for(int _i=0;_i<'+PK_DRYN+';_i++){if(_i>=u_ndry)break;vec4 _r=u_dry[_i];if(vUWp.x>_r.x&&vUWp.x<_r.z&&vUWp.z>_r.y&&vUWp.z<_r.w)_uwk=0.0;}',
+   'gl_FragColor.rgb=mix(gl_FragColor.rgb,u_uw,_uwk);','#include <tonemapping_fragment>'].join('\n'));}
 function portUW(sh){portUWsh(sh);}
 function portUWGlass(sh){portUWsh(sh);const g=MAT.glass.userData.fresnel;if(g)g(sh);}
 function portUnderwaterPatch(){
@@ -192,7 +199,7 @@ function portGroundColor(x,z,h,slope,paint,cs){let c;const fa=clamp(1-((cs||10)-
 // mesh has no T-junctions to crack. It is cut into chunks along x so frustum
 // culling works; normals come from the whole grid (minmod slopes: a plateau
 // stays flat-shaded right up to its edge) so chunk seams do not show.
-function portAxis(lo,hi,c0,c1,base,edges){const P=[];
+function portAxis(lo,hi,c0,c1,base,edges,exact){const P=[];
  for(let v=c0;v<=c1+1e-6;v+=base)P.push([v,0]);
  // spacing grows 12% a line to 90 m, holds to 3.5 km out (the visible
  // hinterland and sea), then grows 35% a line to the horizon
@@ -201,20 +208,30 @@ function portAxis(lo,hi,c0,c1,base,edges){const P=[];
  s=base;v=c1;while(v<hi){s=grow(s,v-c1);v+=s;P.push([Math.min(v,hi),0]);}
  for(const e of edges){if(e<lo||e>hi)continue;P.push([e,2]);
   for(const o of [.3,1.5,5])P.push([e-o,1],[e+o,1]);}
+ for(const e of exact||[])if(e>=lo&&e<=hi)P.push([e,2]);
  P.sort((a,b)=>a[0]-b[0]);const out=[];
  for(const p of P){const L=out[out.length-1];
   if(L&&p[0]-L[0]<.12){if(p[1]>L[1])out[out.length-1]=p;continue;}out.push(p);}
  return out.map(p=>p[0]);}
 function portBuildTerrain(scene,layout){
- let X0=1e9,X1=-1e9,Z0=-150,Z1=150;const xe=[],ze=[];
+ // Grid lines: every coastal and sea-platform edge is refined (lines 0.3 /
+ // 1.5 / 5 m either side keep its cliff inside the wall); a land block's
+ // edges (flush decks, soft rings) get the edge line only; the layout's own
+ // stamps (moorings) and `outside` strips none - each refined line runs
+ // across the whole 23 km grid, and far offshore they only cost triangles
+ // and shade as hairlines through the water.
+ let X0=1e9,X1=-1e9,Z0=-150,Z1=150;const xe=[],ze=[],xq=[],zq=[];
  for(const it of layout.items){const R=portRegOf(it.key);if(!R)continue;
   const w=R.W||PORT.W;X0=Math.min(X0,it.gx-w/2);X1=Math.max(X1,it.gx+w/2);
-  if(!it.vessel){Z0=Math.min(Z0,it.gz-R.LAND);Z1=Math.max(Z1,it.gz+R.SEA);xe.push(it.gx-w/2,it.gx+w/2);ze.push(it.gz,it.gz-R.LAND,it.gz+R.SEA);}}
+  if(it.vessel!==true){Z0=Math.min(Z0,it.gz-R.LAND);Z1=Math.max(Z1,it.gz+R.SEA);const q=portPlaceOf(it.key)==='land';
+   (q?xq:xe).push(it.gx-w/2,it.gx+w/2);(q?zq:ze).push(it.gz,it.gz-R.LAND,it.gz+R.SEA);}}
  if(X0>X1){X0=-500;X1=500;}
- for(const s of PORT_ST.list){if(s.poly){xe.push(s.x0,s.x1);ze.push(s.z0,s.z1);}else{xe.push(s.x0,s.x1);ze.push(s.z0,s.z1);}}
+ for(const s of PORT_ST.list){if(s.owner==='layout'||s.outside)continue;
+  const it=layout.items[+String(s.owner).split('@')[1]],q=it&&portPlaceOf(it.key)==='land';
+  (q?xq:xe).push(s.x0,s.x1);(q?zq:ze).push(s.z0,s.z1);}
  const cx=(X0+X1)/2;
- const xs=portAxis(cx-11500,cx+11500,X0-420,X1+420,10,xe);
- const zs=portAxis(-9500,11500,Z0-260,Z1+260,10,ze);
+ const xs=portAxis(cx-11500,cx+11500,X0-420,X1+420,10,xe,xq);
+ const zs=portAxis(-9500,11500,Z0-260,Z1+260,10,ze,zq);
  const nx=xs.length,nz=zs.length,H=new Float32Array(nx*nz);
  for(let j=0;j<nz;j++)for(let i=0;i<nx;i++)H[j*nx+i]=terrainH(xs[i],zs[j]);
  PORT_ST.grid={xs,zs,H,nx,nz};
@@ -246,19 +263,27 @@ function portBuildTerrain(scene,layout){
   const m=mesh(g,MAT.pkGround,scene);m.userData.probeSkip=true;m.name='terrain';chunks.push(m);}
  // THE SEA: one flat sheet at y=0 over the whole grid. It is drawn over land
  // too, where the terrain (above 0) simply hides it. Only a `dry` stamp cuts
- // it: rows crossing one are split into runs of non-dry cells. (Runs were
- // tried for every row, skipping dry land: the T-junctions between rows of
- // different extents showed as hairline cracks across the open sea.)
- const WP=[],WI=[];const anyDry=PORT_ST.list.some(s=>s.dry);
+ // it. Then every row of cells in the dry stamps' z range is cut at the UNION
+ // of all those rows' wet/dry boundaries, so neighbouring rows share their
+ // vertices: rows split independently met in T-junctions that showed as
+ // hairline cracks across the whole open sea along the pit's z lines (the
+ // fix from ddSeaFix, 82-dd-dock.js, folded in here).
+ const WP=[],WI=[],WU=[];const dry=PORT_ST.list.filter(s=>s.dry);
  const quad=(xa,xb,za,zb)=>{const b=WP.length/3;WP.push(xa,0,za, xb,0,za, xa,0,zb, xb,0,zb);WI.push(b,b+2,b+1,b+1,b+2,b+3);};
- if(!anyDry)quad(xs[0],xs[nx-1],zs[0],zs[nz-1]);
- else for(let j=0;j<nz-1;j++){const wet=i=>!portDry((xs[i]+xs[i+1])/2,(zs[j]+zs[j+1])/2);let i=0;
-  while(i<nx-1){if(!wet(i)){i++;continue;}let e=i;while(e+1<nx-1&&wet(e+1))e++;quad(xs[i],xs[e+1],zs[j],zs[j+1]);i=e+1;}}
+ if(!dry.length)quad(xs[0],xs[nx-1],zs[0],zs[nz-1]);
+ else{const zlo=Math.min(...dry.map(s=>s.z0))-1,zhi=Math.max(...dry.map(s=>s.z1))+1,wet=new Map(),cut=new Set([0,nx-1]);
+  for(let j=0;j<nz-1;j++){const zc=(zs[j]+zs[j+1])/2;if(zc<zlo||zc>zhi)continue;const row=new Uint8Array(nx-1);
+   for(let i=0;i<nx-1;i++){row[i]=portDry((xs[i]+xs[i+1])/2,zc)?0:1;if(i>0&&row[i]!==row[i-1])cut.add(i);}wet.set(j,row);}
+  const B=[...cut].sort((a,b)=>a-b);
+  for(let j=0;j<nz-1;j++){const row=wet.get(j);
+   for(let k=0;k<B.length-1;k++){if(row&&!row[B[k]])continue;quad(xs[B[k]],xs[B[k+1]],zs[j],zs[j+1]);}}}
+ dry.slice(0,PK_DRYN).forEach((s,i)=>PK_DRY.value[i].set(s.x0,s.z0,s.x1,s.z1));PK_NDRY.value=Math.min(dry.length,PK_DRYN);
+ if(dry.length>PK_DRYN)reportErr('more than '+PK_DRYN+' dry stamps: the underwater fade is only masked in the first '+PK_DRYN);
  const wg=new THREE.BufferGeometry();wg.setAttribute('position',new THREE.Float32BufferAttribute(WP,3));
- const WU=[];for(let q=0;q<WP.length;q+=3)WU.push(WP[q]/46,WP[q+2]/46);
+ for(let q=0;q<WP.length;q+=3)WU.push(WP[q]/46,WP[q+2]/46);
  wg.setAttribute('uv',new THREE.Float32BufferAttribute(WU,2));
  const WN=[];for(let q=0;q<WP.length;q+=3)WN.push(0,1,0);wg.setAttribute('normal',new THREE.Float32BufferAttribute(WN,3));
- wg.setIndex(WI);
+ wg.setIndex(WP.length/3>65535?new THREE.Uint32BufferAttribute(WI,1):new THREE.Uint16BufferAttribute(WI,1));
  const sea=mesh(wg,MAT.pkSea,scene);sea.userData.probeSkip=true;sea.name='sea';sea.renderOrder=1;
  portNatureScatter(X0,X1);
  return {chunks,sea,nx,nz};}

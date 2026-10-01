@@ -97,7 +97,42 @@
       path-less and was sent to ask for a new destination instead of finishing. Carts went 20 → 57 corridors.
 - [x] `gridRy` gained an 11-entry nudge table (along and across the frontage). Refused district candidates fell
       from 667 to 165 and the city grew from 1700 to 1822 buildings.
-- [ ] The life layer has no collision between agents and no interiors — people stand at the door, not inside.
+- [ ] The life layer has no collision between agents.
+- [x] WORKING DOORS AND INTERIORS. Doors swing, open doorways show the room behind them, and 60 of the
+      sheet's buildings get a planned interior: rooms, partitions with doors, a stair or ladder to a second level,
+      furniture by layout, and a walk graph. Walk mode goes in through the door and up the stairs. Townspeople open
+      doors and go inside. Everything is tagged for Blender and Godot (`GAME_EXPORT.md`).
+- [ ] Interiors are only planned for the Yuni vernacular (poor, mid, trade, rich, civic). The Ancients
+      megastructures, the parks, the props, the Library and the School (which draw their own interiors), the
+      Emir's palace and the caravanserai get none. Open-sided sheds (smithy, craft shed, market hall) and the
+      salvage shacks have no body to fit a room in.
+- [ ] Only the body behind each door is furnished. A compound's other wings, and upper floors reached only from
+      a roof terrace, are solid. Two levels at most, and only in rectangular bodies.
+- [ ] Rooms are fitted inside the captured body with a flat ceiling. Domes and cones read as a plain drum with a
+      beamed ceiling inside, and rounded corners (`rbody`) can leave a corner of a room a few centimetres
+      outside the shell. You only see that from inside, since the portal limits the view from outside.
+- [ ] The doorway portal is a rectangle. Parabolic arch heads show a little of the dark plug above it.
+- [ ] Interior lighting is a uniform indoor term (dimmed sun by day, warm lamp glow by night). Interior hearths
+      and braziers are exported as lights but do not light the room individually.
+- [ ] The egg hut's registered opening is its forecourt gap, so it has no interior. Its mouth needs an F.opening.
+- [ ] Walk-mode collision outside uses the captured bodies only. Compound walls and fences can be walked through.
+- [ ] DARK FLOORS. Many interiors read as a black floor: the floor slab's colour and texture are lost
+      under the dimmed indoor light, and on dark plinths ("black podiums") the floor and the plinth merge.
+      Every floor needs a finish that reads: floor tile, beaten-earth pattern or planks, and a rug or mat in
+      the main room. Check it from inside, through the doorway and in cutaway.
+- [ ] SHACKS NEED A DETAIL PASS, especially the lean-tos and salvage shacks built against reclaimed Ancient
+      buildings. They have no captured body, so no interior. Their join to the host building is not modelled,
+      and they read thin up close.
+- [ ] EVERY DWELLING NEEDS A MINIMUM KIT. Each residential building (types `dwelling-single` / `dwelling-multi`)
+      must have at least one slot each for a BED, a FOOD CONTAINER and an ITEM CONTAINER, and more where it
+      makes sense: one bed per bedroom, more in multi-family buildings, a larger store in compounds. Today a
+      layout may drop optional pieces when a room is tight, and a dwelling with no planned interior has
+      no slots at all.
+- [ ] CONTAINER TAGS. Furniture `type` has no `container-item` / `container-food` distinction yet. Add those
+      tags. Then every building, residential or not, gets at least one item container, and more where it makes
+      sense. Food containers go where food is kept or served: kitchens, stores, shops, taverns, granaries,
+      farmsteads, and the caravanserai (which has no interior plan yet). The slot must exist in the plan data,
+      so it exports for the game (loot and inventory), even where the building has no furnished room to draw it in.
 - [ ] CARAVANS DO NOT MOVE. Nine are spawned and drawn as four-beast carts with a caravanserai bias, but they
       register zero corridors and `want` reads null even on the cart code path they now share. Tried: their own
       `destFn`, a synchronous vehicle route, an off-map road-end state machine, and finally unifying them onto

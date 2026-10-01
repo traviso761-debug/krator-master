@@ -1,0 +1,113 @@
+#!/usr/bin/env bash
+# Manage the Krator site server. Run ./sitectl help for commands.
+# Adapted from the World Menagerie's sitectl; wraps the systemd *user* service "krator", so never run with sudo.
+set -euo pipefail
+
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT="$(dirname "$DIR")"
+UNIT=krator
+CONFIG="$DIR/site.toml"
+UNIT_FILE="$HOME/.config/systemd/user/$UNIT.service"
+
+if [[ $EUID -eq 0 ]]; then
+  echo "sitectl: don't run with sudo; it manages $USER's user service" >&2
+  exit 1
+fi
+
+sc() { systemctl --user "$@"; }
+
+check() {
+  python3 "$DIR/sitectl.py" address >/dev/null   # address.json: what /share shows other devices
+  [[ -f $CONFIG ]] || { echo "sitectl: no site.toml yet: run ./sitectl sync" >&2; return 1; }
+  python3 "$DIR/server.py" --config "$CONFIG" --check
+}
+
+port() { python3 -c 'import sys,tomllib;print(tomllib.load(open(sys.argv[1],"rb")).get("server",{}).get("port",8001))' "$DIR/krator.toml"; }
+
+urls() {
+  local p; p="$(port)"
+  echo "http://127.0.0.1:$p/"
+  for ip in $(hostname -I); do [[ $ip == *:* ]] || echo "http://$ip:$p/"; done
+}
+
+# The gallery, built for the LAN: three.js from host/site/worlds/ rather than cdnjs, and each world's level of detail
+# from lod.toml. gallery/site/ (the artifact) is not touched.
+build() { python3 "$ROOT/gallery/build_gallery.py" --out "$DIR/site" --local-three /worlds/three.min.js --lod "$DIR/lod.toml" "$@"; }
+
+install_unit() {
+  mkdir -p "$(dirname "$UNIT_FILE")"
+  cat > "$UNIT_FILE" <<EOF
+[Unit]
+Description=Krator site server (routes in $CONFIG)
+After=network.target
+
+[Service]
+WorkingDirectory=$DIR
+ExecStartPre=/usr/bin/python3 $DIR/sitectl.py address
+ExecStartPre=/usr/bin/python3 $DIR/server.py --config $CONFIG --check
+ExecStart=/usr/bin/python3 $DIR/server.py --config $CONFIG
+ExecReload=/bin/kill -HUP \$MAINPID
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=default.target
+EOF
+  sc daemon-reload
+  echo "wrote $UNIT_FILE"
+}
+
+cmd="${1:-help}"; shift || true
+case "$cmd" in
+  status)   sc status "$UNIT" --no-pager || true; echo; python3 "$DIR/sitectl.py" share ;;
+  share)    python3 "$DIR/sitectl.py" share ;;
+  start)    check && sc start "$UNIT" && urls ;;
+  stop)     sc stop "$UNIT" ;;
+  restart)  check && sc restart "$UNIT" && sc is-active "$UNIT" && urls ;;
+  reload|apply)
+            check && sc reload "$UNIT" && sleep 0.5 && journalctl --user -u "$UNIT" -n 3 --no-pager -o cat ;;
+  check)    check ;;
+  sync)     python3 "$DIR/sync.py" "$@" ;;
+  build)    build "$@" ;;
+  update)   python3 "$DIR/sync.py" && build "$@" && check >/dev/null && { sc is-active -q "$UNIT" && sc reload "$UNIT" || true; } ;;
+  serve)    check >/dev/null && exec python3 "$DIR/server.py" --config "$CONFIG" "$@" ;;
+  logs)     journalctl --user -u "$UNIT" -n "${1:-50}" --no-pager ;;
+  follow|tail)
+            journalctl --user -fu "$UNIT" ;;
+  enable)   check && sc enable --now "$UNIT" && urls ;;
+  disable)  sc disable --now "$UNIT" ;;
+  install)  install_unit; echo "now run: $0 enable" ;;
+  url|urls) urls ;;
+  health)   curl -fsS "http://127.0.0.1:$(port)/healthz" ;;
+  boot)     echo "Starting at boot needs root once:"; echo "  sudo loginctl enable-linger $USER"
+            loginctl show-user "$USER" -p Linger ;;
+  help|-h|--help)
+    cat <<EOF
+Usage: ./sitectl <command>
+
+  sync [--check]  pull the World Menagerie's pages into menagerie/ and write site.toml (--check: drift only)
+  build [--no-build]  build the gallery into site/ with local three.js (--no-build: reuse built pages)
+  update     sync, build, and reload the service if it is running
+  serve      run the server in the foreground (no systemd)
+  status     service state and site URLs
+  start      check config, then start
+  stop       stop the server
+  restart    check config, then restart (after editing server.py, host or port)
+  reload     check config, then apply site.toml without downtime (alias: apply)
+  check      validate site.toml and list every URL
+  logs [N]   last N log lines (default 50)
+  follow     live log (Ctrl+C to quit)
+  enable     start now and at every login
+  disable    stop now and don't start at login
+  install    (re)write the systemd unit for this folder
+  url        print the site URLs
+  share      the address other devices on the network use, in plain words (the /share page shows it with a QR code)
+  health     ask the running server if it's up
+  boot       how to start the site at boot without a login
+
+Rebuilding a Krator page needs ./sitectl build; a Menagerie change needs ./sitectl sync. Neither needs a
+restart: files are read on every request.
+EOF
+    ;;
+  *) echo "unknown command: $cmd (try ./sitectl help)" >&2; exit 2 ;;
+esac

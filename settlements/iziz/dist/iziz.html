@@ -38,10 +38,19 @@ function reseed(s){_seed=s>>>0;}
 function rng(){_seed|=0;_seed=_seed+0x6D2B79F5|0;let t=Math.imul(_seed^_seed>>>15,1|_seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;}
 function rr(a,b){return a+(b-a)*rng();}
 function h3(x,y,z){const s=Math.sin(x*12.9898+y*78.233+z*37.719)*43758.5453;return s-Math.floor(s);}
+// Each h3 is a Math.sin, and sampling a terrain or a texture asks for the same lattice cells again and again: a
+// cell's eight corners are kept in a small direct-mapped cache (exact: the same h3 values, the same arithmetic in
+// the same order, so the same results bit for bit). It was most of every biome's load.
+var _vnK,_vnV;
 function vnoise(x,y,z){const xi=Math.floor(x),yi=Math.floor(y),zi=Math.floor(z),xf=x-xi,yf=y-yi,zf=z-zi;
- const sm=t=>t*t*(3-2*t);const u=sm(xf),v=sm(yf),w=sm(zf);const l=(a,b,t)=>a+(b-a)*t;
- return l(l(l(h3(xi,yi,zi),h3(xi+1,yi,zi),u),l(h3(xi,yi+1,zi),h3(xi+1,yi+1,zi),u),v),
-          l(l(h3(xi,yi,zi+1),h3(xi+1,yi,zi+1),u),l(h3(xi,yi+1,zi+1),h3(xi+1,yi+1,zi+1),u),v),w);}
+ if(_vnK===undefined){_vnK=new Float64Array(4096*3).fill(NaN);_vnV=new Float64Array(4096*8);}
+ const s=(Math.imul(xi|0,73856093)^Math.imul(yi|0,19349663)^Math.imul(zi|0,83492791))&4095,k=s*3,o=s*8,V=_vnV;
+ if(_vnK[k]!==xi||_vnK[k+1]!==yi||_vnK[k+2]!==zi){_vnK[k]=xi;_vnK[k+1]=yi;_vnK[k+2]=zi;
+  V[o]=h3(xi,yi,zi);V[o+1]=h3(xi+1,yi,zi);V[o+2]=h3(xi,yi+1,zi);V[o+3]=h3(xi+1,yi+1,zi);
+  V[o+4]=h3(xi,yi,zi+1);V[o+5]=h3(xi+1,yi,zi+1);V[o+6]=h3(xi,yi+1,zi+1);V[o+7]=h3(xi+1,yi+1,zi+1);}
+ const u=xf*xf*(3-2*xf),v=yf*yf*(3-2*yf),w=zf*zf*(3-2*zf);
+ const a=V[o]+(V[o+1]-V[o])*u,b=V[o+2]+(V[o+3]-V[o+2])*u,c=V[o+4]+(V[o+5]-V[o+4])*u,d=V[o+6]+(V[o+7]-V[o+6])*u;
+ const e=a+(b-a)*v,f=c+(d-c)*v;return e+(f-e)*w;}
 function fbm(x,y,z,o){o=o||3;let a=0,f=1,s=0;for(let i=0;i<o;i++){a+=vnoise(x*f,y*f,z*f)/f;s+=1/f;f*=2.03;}return a/s;}
 const clamp=(v,a,b)=>v<a?a:v>b?b:v, lerp=(a,b,t)=>a+(b-a)*t, TAU=Math.PI*2;
 
@@ -74,8 +83,18 @@ function finite3(a){return !!a&&isFinite(a[0])&&isFinite(a[1])&&isFinite(a[2]);}
 // tile is about 8 m across, because `lathe` sets uS = rFn(0)*TAU/8 and vS = cut/8.
 // At 512 px that is 64 px per metre, which is what the panel and board sizes
 // below are picked against — change the tile size and they stop meaning anything.
-function canvasTex(w,h,fn,rep){const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');fn(g,w,h);
- const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=8;t.encoding=THREE.sRGBEncoding;if(rep)t.repeat.set(rep,rep);return t;}
+//
+// Painting waits until something first reads the texture's `.image`, which three.js does when it uploads the
+// texture for a draw: a page pays only for the textures it shows. Painting every texture up front was ~11 s of
+// each Ancients page's load, before its first frame. Pass eager=true when fn draws from rng(): deferring it would
+// shift every later draw in the seeded stream (Screamers' flBarkTex). The pixels are the same either way.
+function canvasTex(w,h,fn,rep,eager){const c=document.createElement('canvas');c.width=w;c.height=h;
+ let paint=()=>{paint=null;fn(c.getContext('2d'),w,h);};if(eager)paint();
+ const t=new THREE.CanvasTexture(c);
+ if(paint)Object.defineProperty(t,'image',{configurable:true,enumerable:true,
+  get(){if(paint)paint();return c;},
+  set(v){paint=null;Object.defineProperty(t,'image',{value:v,writable:true,configurable:true,enumerable:true});}});
+ t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=8;t.encoding=THREE.sRGBEncoding;if(rep)t.repeat.set(rep,rep);return t;}
 // A roughness/metalness map is DATA, not colour. Leaving it sRGB-encoded (which
 // canvasTex does, correctly, for albedo) bends every value through a gamma curve
 // and the surface comes back wrong.
@@ -927,9 +946,28 @@ const STATE=d=>d===3?'repaired':d>0?'ruined':'intact';
 // its three legs stand at 30, 150 and 270 degrees, and a random bearing within
 // half a radian of east laid the fallen body straight through the 30-degree leg.
 // The rr() is drawn either way, so the PRNG stream is unchanged.
-function toppledUpper(G,cx,cz,hc,r0,bodyFn,d,dir,angF){const s=dir===-1?-1:1;const U=new THREE.Group();const a0=rr(-.5,.5),ang=angF!=null?angF+a0*.12:a0;
- U.position.set(cx+s*Math.cos(ang)*(r0*1.6),r0*.82,cz+s*Math.sin(ang)*(r0*1.6));U.rotation.set(0,-ang,-s*Math.PI/2*.94);G.add(U);useGroupXF(U);bodyFn(U,1,hc,null,true);endGroupXF();
+// THE BROKEN FALL. `TOPPLE_BREAK` ({x,z} in the builder's local frame, or null) breaks the fallen body in two near that
+// point: the first piece runs from the stump to the break; the second lies on beyond a gap, kinked toward the point's
+// side of the fall line, lying flatter and slumped lower, with rubble at the break. Only a builder that passes
+// `partFn(U,y0,y1)` (a body built from absolute y0 to y1, or to the top when y1 is null) can break: bodyGroup does,
+// so Skyscrapers D, E and F. A placer sets it around one call and clears it; null leaves every builder unchanged.
+// The second piece's bearing and foot are written back to TOPPLE_BREAK.out (local frame) for the placer.
+let TOPPLE_BREAK=null;
+function toppledUpper(G,cx,cz,hc,r0,bodyFn,d,dir,angF,partFn){const s=dir===-1?-1:1;const U=new THREE.Group();const a0=rr(-.5,.5),ang=angF!=null?angF+a0*.12:a0;
+ U.position.set(cx+s*Math.cos(ang)*(r0*1.6),r0*.82,cz+s*Math.sin(ang)*(r0*1.6));U.rotation.set(0,-ang,-s*Math.PI/2*.94);G.add(U);
+ if(TOPPLE_BREAK&&partFn)toppleBreak(G,U,ang,s,r0,hc,partFn);else{useGroupXF(U);bodyFn(U,1,hc,null,true);endGroupXF();}
  rubbleRing(cx+s*Math.cos(ang)*(r0*2),0,cz+s*Math.sin(ang)*(r0*2),r0*.5,r0*3,140,3.5);}
+function toppleBreak(G,U,ang,s,r0,hc,partFn){const B=TOPPLE_BREAK,ux=s*Math.cos(ang),uz=s*Math.sin(ang),k=Math.sin(Math.PI/2*.94);
+ const dx=B.x-U.position.x,dz=B.z-U.position.z,along=Math.max(12,dx*ux+dz*uz),side=-dx*uz+dz*ux,sg=side<0?-1:1;
+ const t=along/k;   // metres of body before the break (the body lies a little off the horizontal)
+ useGroupXF(U);partFn(U,hc,hc+t);endGroupXF();
+ const kink=(B.kink!=null?B.kink:.3)*sg,gap=B.gap!=null?B.gap:4,shift=Math.min(Math.abs(side),r0*.6)*sg;
+ const ang2=ang+kink*s,u2x=s*Math.cos(ang2),u2z=s*Math.sin(ang2);
+ const bx=U.position.x+ux*along,bz=U.position.z+uz*along;
+ const U2=new THREE.Group();U2.position.set(bx+u2x*gap-uz*shift,U.position.y*.82,bz+u2z*gap+ux*shift);U2.rotation.set(0,-ang2,-s*Math.PI/2*.99);G.add(U2);
+ useGroupXF(U2);partFn(U2,hc+t,null);endGroupXF();
+ rubbleRing(bx,0,bz,r0*.3,r0*1.3,70,3);
+ B.out={x:U2.position.x,z:U2.position.z,ux:u2x,uz:u2z,bx,bz};}
 function skyPlinth(G,d,R){mesh(lathe({rFn:()=>R,H:5,nu:96,nv:1}),SHELL(d),G);kput('slab',[0,5,0],null,[R,.6,R],new THREE.Color(d>0?0x5a4a40:0xd8d4cc));
  for(let k=0;k<48;k++){const th=k/48*TAU,r=R*.93;if(d>0&&rng()<.2)continue;kput(d>0?'colR':'colW',[r*Math.cos(th),5,r*Math.sin(th)],null,[1.8,12,1.8],null);}
  kput(d>0?'ringR':'ringW',[0,17.3,0],qEuler(Math.PI/2,0,0),[R*.94,R*.94,8],null);
@@ -1162,7 +1200,7 @@ function se(th,n){return 1/Math.pow(Math.pow(Math.abs(Math.cos(th)),n)+Math.pow(
 // rehabilitated tower was a three-storey stump. `stand` predates the fix (the
 // Projects, decay 4, pass it) and is now redundant but harmless.
 function bodyGroup(G,y0,d,dd,build,cutY,topR,stand){const P=new THREE.Group();P.position.set(0,y0,0);G.add(P);useGroupXF(P);if(d!==2||stand)build(P,dd,y0,null,false);else build(P,1,y0,cutY,false);endGroupXF();
- if(d===2)toppledUpper(G,0,0,cutY,topR,(U)=>build(U,1,cutY,null,true),d);}
+ if(d===2)toppledUpper(G,0,0,cutY,topR,(U)=>build(U,1,cutY,null,true),d,1,null,(U,a,b)=>build(U,1,a,b,b==null));}
 
 // ================================================================= SKYSCRAPER D — "the Monolith" (bare concrete, Torre Velasca head)
 // DECAY 4 IS "PROJECT D": rehabilitated and still standing, the same idea as
@@ -1726,6 +1764,11 @@ function vnWedgeGeo(tx,tz){const p=[],uv=[],idx=[];const c=[[-.5,0,-.5],[.5,0,-.
 // 1 x 1 x 1 box whose uv is scaled by the caller through the instance? No —
 // instances share one geometry, so the texture tiles per unit of scale; the
 // maps are drawn at 2 m per tile so a 6 m slab shows 3 courses. Good enough.
+// an open SKIRT: the four sloping faces of a hip from a 1 x 1 base (y 0) to a tx x tz opening (y 1), both sides, no
+// top and no soffit — the lower tier of a two-tier roof, so the clerestory between the tiers shows from below
+function vnSkirtGeo(tx,tz){const p=[],uv=[],idx=[];const c=[[-.5,0,-.5],[.5,0,-.5],[.5,0,.5],[-.5,0,.5],[-tx/2,1,-tz/2],[tx/2,1,-tz/2],[tx/2,1,tz/2],[-tx/2,1,tz/2]];
+ for(const f of[[0,1,5,4],[1,2,6,5],[2,3,7,6],[3,0,4,7]])for(const g of[f,f.slice().reverse()]){const b=p.length/3;g.forEach((vi,i)=>{p.push(...c[vi]);uv.push(i===1||i===2?1:0,i>=2?1:0);});idx.push(b,b+1,b+2,b,b+2,b+3);}
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(p,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setIndex(idx);g.computeVertexNormals();return g;}
 const VBOX=new THREE.BoxGeometry(1,1,1);
 const VPOST=new THREE.CylinderGeometry(1,1,1,8).translate(0,.5,0);           // base at y=0
 const VPOSTB=new THREE.CylinderGeometry(.85,1,1,8).translate(0,.5,0);        // tapering
@@ -1746,7 +1789,7 @@ kdef('vConeT',VCONE,MAT.thatch);kdef('vConeC',VCONE,MAT.verdigris);kdef('vConeI'
 kdef('vGableS',VGABLE,MAT.shingle);kdef('vGableT',VGABLE,MAT.thatch);kdef('vGableC',VGABLE,MAT.corrugate);kdef('vGableCu',VGABLE,MAT.verdigris);kdef('vGableP',VGABLE,MAT.white);kdef('vGableW',VGABLE,MAT.wood);kdef('vGableSt',VGABLE,MAT.stone);kdef('vGablePl',VGABLE,MAT.plaster);
 kdef('vPyrS',VPYR,MAT.stone);kdef('vPyrCu',VPYR,MAT.verdigris);kdef('vPyrT',VPYR,MAT.thatch);kdef('vPyrSh',VPYR,MAT.shingle);kdef('vPyrC',VPYR,MAT.corrugate);
 kdef('vBatterS',VBATTER,MAT.stone);kdef('vBatterP',VBATTER,MAT.plaster);kdef('vBatterW',VBATTER,MAT.wood);
-kdef('vHipS',VHIP,MAT.shingle);kdef('vHipT',VHIP,MAT.thatch);kdef('vHipCu',VHIP,MAT.verdigris);kdef('vHipC',VHIP,MAT.corrugate);
+kdef('vSkirtT',vnSkirtGeo(.4,.46),MAT.thatch);kdef('vHipS',VHIP,MAT.shingle);kdef('vHipT',VHIP,MAT.thatch);kdef('vHipCu',VHIP,MAT.verdigris);kdef('vHipC',VHIP,MAT.corrugate);
 MAT.ember=new THREE.MeshBasicMaterial({color:0xff7a2a});               // forge/kiln fire — not electric, so allowed anywhere
 kdef('vEmber',VBALL,MAT.ember);
 kdef('vWinLit',VBOX,MAT.warmPane);kdef('vWinGlass',VBOX,MAT.darkGlass);kdef('vBulb',VBALL,MAT.bulb);kdef('vHoop',new THREE.TorusGeometry(1,.06,5,16),MAT.iron);
@@ -1817,8 +1860,9 @@ function vBeam(a,b,w,c,item){beam(item||'vWood',a,b,w,w,c||null);}
 function vnFrame(x,y,z,w,h,d,ry,c,pr){pr=pr||.14;const nx=Math.max(1,Math.round(w/2.4)),nz=Math.max(1,Math.round(d/2.4));
  for(let i=0;i<=nx;i++){const lx=-w/2+w*i/nx;for(const s of[-1,1]){const p=loc(x,z,lx,s*d/2,ry);vPst('vPost',p[0],y,p[1],pr,h,c);}}
  for(let j=1;j<nz;j++){const lz=-d/2+d*j/nz;for(const s of[-1,1]){const p=loc(x,z,s*w/2,lz,ry);vPst('vPost',p[0],y,p[1],pr,h,c);}}
- for(const yy of[y+.12,y+h-.12]){   // sill and head rails on all four faces
-  for(const s of[-1,1]){const p=loc(x,z,0,s*d/2,ry);vB('vWood',p[0],yy-.1,p[1],w+pr*2,.2,pr*2.2,ry,c);const q=loc(x,z,s*w/2,0,ry);vB('vWood',q[0],yy-.1,q[1],pr*2.2,.2,d+pr*2,ry,c);}}}
+ for(const yy of y>=.15?[y+h-.12]:[y+.12,y+h-.12]){   // head rails on all four faces; a sill rail too, unless the frame stands on a plinth (the plinth's top is the sill)
+  // the long-face rails run through; the end-face rails butt into them (they used to cross at every corner)
+  for(const s of[-1,1]){const p=loc(x,z,0,s*d/2,ry);vB('vWood',p[0],yy-.1,p[1],w+pr*2,.2,pr*2.2,ry,c);const q=loc(x,z,s*w/2,0,ry);vB('vWood',q[0],yy-.1,q[1],pr*2.2,.2,Math.max(.2,d-pr*2.2),ry,c);}}}
 // Stilts under a raised floor: posts at the corners and along the long sides, with a diagonal brace on each face.
 function vnStilts(x,y,z,w,d,h,ry,c,pr){pr=pr||.18;const nx=Math.max(1,Math.round(w/2.6)),nz=Math.max(1,Math.round(d/2.6));const pts=[];
  for(let i=0;i<=nx;i++)for(let j=0;j<=nz;j++){if(i>0&&i<nx&&j>0&&j<nz&&rng()<.5)continue;const p=loc(x,z,-w/2+w*i/nx,-d/2+d*j/nz,ry);vPst('vPostB',p[0],y-.3,p[1],pr,h+.3,c);pts.push(p);}
@@ -1847,15 +1891,34 @@ function vnGableRoof(x,y,z,w,d,rise,ry,slabItem,slabC,over,endItem,endC,thick){o
  for(const s of[-1,1]){const zc=s*ext/2,yc=y+(rise-over*rise/(d/2))/2;const p=loc(x,z,0,zc,ry);
   const q=vQ(ry,s*a,0);const n=new THREE.Vector3(0,1,0).applyQuaternion(q).multiplyScalar(thick*.5);
   kput(slabItem,[p[0]+n.x,yc+n.y,p[1]+n.z],q,[w+2*over,thick,S],slabC||null);}
+ // the ridge fill: the slabs are pushed out along their normals, so on a steep pitch their tops part in a V that the
+ // cap hides from the side but not from above. A slab-material bar, rotated to a diamond, closes it
+ {const p=loc(x,z,0,0,ry);kput(slabItem,[p[0],y+rise+thick*.15,p[1]],vQ(ry,Math.PI/4,0),[w+2*over,thick*1.5,thick*1.5],slabC||null);}
  vB('vWood',x,y+rise+thick*.35,z,w+2*over+.1,.22,.5,ry,slabC?slabC.clone().multiplyScalar(.8):vC(0x6a4a30));     // ridge cap
- for(const s of[-1,1]){const p=loc(x,z,0,s*(ext+.02),ry);vB('vWood',p[0],y-over*rise/(d/2)-.32+thick*.2,p[1],w+2*over,.28,.12,ry,vC(0x6a4a30));}}   // fascia
+ for(const s of[-1,1]){const p=loc(x,z,0,s*(ext+.02),ry);vB('vWood',p[0],y-over*rise/(d/2)-.32+thick*.2,p[1],w+2*over,.28,.12,ry,vC(0x6a4a30));}   // fascia
+ if(slabItem==='vThatchB')vnThatchDress(x,y,z,w,d,rise,ry,slabC,over,thick,S,a,ext);}
+// THATCH (Round 1 issue: a stripe field at eye level): a second frond layer laid over the first, a touch shorter and
+// darker so its lower edge reads as a course, and a ragged eave — a fringe of short tilted bundles of uneven length
+function vnThatchDress(x,y,z,w,d,rise,ry,c,over,thick,S,a,ext){const c2=c?c.clone().multiplyScalar(.86):vC(0x8a7448);const ye=y-over*rise/(d/2);
+ for(const s of[-1,1]){const zc=s*ext/2*.92,yc=y+(rise-over*rise/(d/2))/2+.05;const p=loc(x,z,0,zc,ry);const q=vQ(ry,s*a,0);
+  const n=new THREE.Vector3(0,1,0).applyQuaternion(q).multiplyScalar(thick*1.15);kput('vThatchB',[p[0]+n.x,yc+n.y+rise*.04,p[1]+n.z],q,[w+2*over-.3,thick*.7,S*.84],c2);
+  const L=w+2*over,nb=Math.max(4,Math.round(L/.55));for(let i=0;i<nb;i++){const lx=-L/2+(i+.5)*L/nb,len=rr(.35,.8);const e=loc(x,z,lx,s*(ext-.05),ry);
+   kput('vThatchB',[e[0],ye-len*.35,e[1]],vQ(ry,s*(a+rr(-.15,.25)),rr(-.12,.12)),[L/nb+.08,.1,len],(i%3?c2:c)||null);}}}
 // Shed: one slab, high at the back (-z), low at the front (+z).
 function vnShedRoof(x,y,z,w,d,rise,ry,item,c,over,thick){over=over===undefined?.7:over;thick=thick||.2;const a=Math.atan2(rise,d);const ext=d+2*over,S=ext/Math.cos(a);
  const p=loc(x,z,0,0,ry);const q=vQ(ry,a,0);const n=new THREE.Vector3(0,1,0).applyQuaternion(q).multiplyScalar(thick*.5);
  kput(item,[p[0]+n.x,y+rise/2+n.y,p[1]+n.z],q,[w+2*over,thick,S],c||null);}
 // Solid hipped / pyramidal roofs (the wedge items). `over` widens the base; the base drops a little so the wall top is buried.
 function vnHipRoof(item,x,y,z,w,d,rise,ry,c,over){over=over===undefined?.8:over;kput(item,[x,y-.35,z],ry?qEuler(0,ry,0):null,[w+2*over,rise+.35,d+2*over],c||null);
- vB('vWood',x,y-.62,z,w+2*over+.06,.28,d+2*over+.06,ry,c?c.clone().multiplyScalar(.75):vC(0x5a3e2a));}   // eaves board
+ vB('vWood',x,y-.62,z,w+2*over+.06,.28,d+2*over+.06,ry,c?c.clone().multiplyScalar(.75):vC(0x5a3e2a));   // eaves board
+ // a thatched hip: a second, steeper frond layer and a ragged fringe round all four eaves
+ if(item==='vHipT'||item==='vPyrT'){const c2=c?c.clone().multiplyScalar(.86):vC(0x8a7448);kput(item,[x,y+rise*.18,z],ry?qEuler(0,ry,0):null,[(w+2*over)*.8,rise*.85,(d+2*over)*.8],c2);
+  vnThatchFringe(x,y-.5,z,w+2*over,d+2*over,ry,c);}}
+// a ragged fringe of short tilted thatch bundles round the four eaves of a W x D roof whose eave line is at y
+function vnThatchFringe(x,y,z,W,D,ry,c){const c2=c?c.clone().multiplyScalar(.86):vC(0x8a7448);
+ for(const [L,lz,rot] of[[W,D/2,0],[W,-D/2,Math.PI],[D,W/2,Math.PI/2],[D,-W/2,-Math.PI/2]]){const nb=Math.max(4,Math.round(L/.55));
+  for(let i=0;i<nb;i++){const lx=-L/2+(i+.5)*L/nb,len=rr(.3,.7);const e=loc(x,z,...(rot===0?[lx,lz]:rot===Math.PI?[-lx,lz]:rot>0?[lz,-lx]:[lz,lx]),ry);
+   kput('vThatchB',[e[0],y-len*.3,e[1]],vQ(ry+rot,.5+rr(-.15,.2),rr(-.1,.1)),[L/nb+.08,.1,len],(i%3?c2:c)||null);}}}
 function vnPyrRoof(item,x,y,z,w,d,rise,ry,c,over){vnHipRoof(item,x,y,z,w,d,rise,ry,c,over);}
 // A thatch cone on a round building; ragged eave by a second slightly larger, shorter cone.
 function vnThatchCone(x,y,z,r,rise,c){kput('vConeT',[x,y-.3,z],null,[r*1.18,rise+.3,r*1.18],c||null);kput('vConeT',[x,y-.55,z],null,[r*1.28,.9,r*1.28],c?c.clone().multiplyScalar(.85):null);}
@@ -1912,7 +1975,9 @@ function vnAwning(x,y,z,ry,w,out,c){const q=vQ(ry,.42,0);const p=loc(x,z,0,out/2
  for(const s of[-1,1]){const pp=loc(x,z,s*(w/2-.1),out-.1,ry);vPst('vPost',pp[0],y-3,pp[1],.05,y-Math.tan(.42)*out+.3-(y-3),vC(0x6a5a48));}}
 function vnBannerPole(x,y,z,ry,h,c){vPst('vPost',x,y,z,.08,h,vC(0x5a4632));const p=loc(x,z,.55,0,ry);vB('vWood',p[0],y+h-.2,p[1],1.1,.08,.08,ry,vC(0x5a4632));
  kput('vCloth',[p[0],y+h-1.6,p[1]],vQ(ry+Math.PI/2,0,0),[.7,2.7,1],c||vC(vPick(VPAL.orange)));}
-function vnChimney(x,y,z,h,r,rusty){vPst(rusty?'vPipeR':'vPipe',x,y,z,r,h,null);vB('vIron',x,y+h+.1,z,r*3,.08,r*3,0,vC(0x2e2a26));for(const s of[-1,1])vB('vIron',x+s*r*1.1,y+h-.05,z,.06,.2,.06,0,vC(0x2e2a26));}
+function vnChimney(x,y,z,h,r,rusty){vPst(rusty?'vPipeR':'vPipe',x,y,z,r,h,null);vB('vIron',x,y+h+.1,z,r*3,.08,r*3,0,vC(0x2e2a26));for(const s of[-1,1])vB('vIron',x+s*r*1.1,y+h-.05,z,.06,.2,.06,0,vC(0x2e2a26));
+ // a world that keeps a CHIMNEYS list (the city: smoke) gets every chimney top, in world space, like DOORS
+ if(window.CHIMNEYS&&VERN.cur){const c=VERN.cur,sc=c.o.scale||1;const wp=loc(c.x,c.z,x*sc,z*sc,c.ry);CHIMNEYS.push([wp[0],(c.o.y||0)+(y+h+.2)*sc,wp[1],0]);}}
 // Fence of posts and two rails around a rectangle (gap at the front centre of width `gate`).
 function vnFence(x,y,z,w,d,ry,c,gate,h){h=h||1.3;const segs=[[[-w/2,-d/2],[w/2,-d/2]],[[w/2,-d/2],[w/2,d/2]],[[-w/2,d/2],[-w/2,-d/2]]];
  if(gate){segs.push([[-w/2,d/2],[-gate/2,d/2]],[[gate/2,d/2],[w/2,d/2]]);}else segs.push([[w/2,d/2],[-w/2,d/2]]);
@@ -2072,8 +2137,13 @@ function buildVernRichA(G,o){reseed(7301+(o.v|0));const W=14,D=12,H1=4.6,W2=11,D
  const c1=vnCornice('vStone',0,Y0+H1+.2,0,W*.86,D*.86,0,st,3);
  // fluted deco strips and lit windows on the battered face (face recedes with height: offset by vBatHalf)
  {const y=Y0+1.6,hf=vBatHalf(W,H1,1.6),df=vBatHalf(D,H1,1.6);
-  for(const x of[-4.6,-2.3,2.3,4.6])vnWin(x,y,df,0,1.2,1.7,'lit','vStone',st);for(const x of[-3.45,0,3.45])vnStrip(x,Y0+.9,df+.02,0,.7,3.2,'vStone',stD);
-  for(const s of[-1,1])for(const z of[-3.2,0,3.2])vnWin(s*hf,y,z,s*Math.PI/2,1.2,1.7,'lit','vStone',st);for(const x of[-3.5,0,3.5])vnWin(x,y,-df,Math.PI,1.2,1.7,'glass','vStone',st);}
+  // each window sits in a flat REVEAL block: its front is vertical and flush with the face at the sill, its back buried
+  // where the face recedes, so the frame no longer stands proud at the head and sinks at the sill (Round 1 issue)
+  const bw=(px,pz,ry,L,kind)=>{const nx=Math.sin(ry),nz=Math.cos(ry),tx=Math.cos(ry),tz=-Math.sin(ry),al=px*tx+pz*tz;
+   const f0=vBatHalf(L,H1,1.6-.3)+.04,f1=vBatHalf(L,H1,1.6+1.7+.35),dep=f0-f1+.25;
+   vB('vStone',tx*al+nx*(f0-dep/2),y-.3,tz*al+nz*(f0-dep/2),1.2+.7,1.7+.65,dep,ry,st);vnWin(tx*al+nx*f0,y,tz*al+nz*f0,ry,1.2,1.7,kind,'vStone',st);};
+  for(const x of[-4.6,-2.3,2.3,4.6])bw(x,df,0,D,'lit');for(const x of[-3.45,0,3.45])vnStrip(x,Y0+.9,df+.02,0,.7,3.2,'vStone',stD);
+  for(const s of[-1,1])for(const z of[-3.2,0,3.2])bw(s*hf,z,s*Math.PI/2,W,'lit');for(const x of[-3.5,0,3.5])bw(x,-df,Math.PI,D,'glass');}
  vnStairs(0,0,D/2+1.9,0,3.2,Y0,3,'vStone',st);vnDoor(0,Y0,vBatHalf(D,H1,1.3),0,1.7,2.9,'vStone',st,vC(0x4a2e1c));
  // gallery storey in hardwood, balcony to the front
  vB('vWood',0,c1,0,W2,H2,D2,0,wood);for(const sx of[-1,1])for(const sz of[-1,1])vPst('vPost',sx*(W2/2-.02),c1,sz*(D2/2-.02),.2,H2,wood.clone().multiplyScalar(.8));
@@ -2263,7 +2333,8 @@ function buildVernMarket(G,o){reseed(7451+(o.v|0));const W=24,D=17,H=5.2;const w
  for(const s of[-1,1]){vB('vWood',0,H-.15,s*D/2,W+.4,.3,.3,0,wood);vB('vWood',s*W/2,H-.15,0,.3,.3,D+.4,0,wood);}
  for(let i=0;i<=nx;i++)vB('vWood',-W/2+W*i/nx,H-.15,0,.22,.22,D,0,wood);                       // tie beams
  // lower thatch skirt all round (two long slabs, two short) and an upper hip over the middle third
- vnHipRoof('vHipT',0,H,0,W,D,2.6,0,th,1.3);
+ // (an open skirt, not a solid hip: from under it the clerestory and the upper roof show — Round 1 issue)
+ kput('vSkirtT',[0,H-.35,0],null,[W+2.6,2.95,D+2.6],th);vB('vWood',0,H-.62,0,W+2.66,.28,D+2.66,0,th.clone().multiplyScalar(.75));vnThatchFringe(0,H-.5,0,W+2.6,D+2.6,0,th);
  for(const sx of[-1,1])for(const sz of[-1,1])vPst('vPostB',sx*W/6,H+1.4,sz*D/8,.16,2.2,wood);
  vnHipRoof('vHipT',0,H+3.4,0,W*.42,D*.5,2.0,0,th,.9);
  vB('vWood',0,H+3.4,0,W*.42+.4,.25,.25,0,wood);vB('vWood',0,H+3.4,0,.25,.25,D*.5+.4,0,wood);
@@ -2335,7 +2406,7 @@ function buildVernSchool(G,o){reseed(7501+(o.v|0));const st=vC(vPick(VPAL.stone)
   vB('vWood',tx,TH+2.9,tz,.1,.4,.1,0,wood);kput('vBall',[tx,TH+2.0,tz],null,[.5,.6,.5],vC(0x7a6a2a));}
  // classroom wings: single storey stone with timber verandas facing the yard, copper shed roofs
  for(const s of[-1,1]){const wx=s*10.5,WW=7,WD=13,wz=1.5;vB('vStone',wx,Y0,wz,WW,3.6,WD,0,st);const t=vnCornice('vStone',wx,Y0+3.6,wz,WW,WD,0,st,1);
-  vnShedRoof(wx,t,wz,WD,WW,1.4,s*Math.PI/2,'vCopperB',cu,.9,.16);
+  vnShedRoof(wx,t,wz,WD,WW,1.4,-s*Math.PI/2,'vCopperB',cu,.9,.16);   // high on the outer wall: the roof drains toward the yard, onto the veranda roof below it
   const fx=wx-s*WW/2;for(const z of[-4.2,-1.4,1.4,4.2])vnWin(fx,Y0+1.2,wz+z,-s*Math.PI/2,1.3,1.7,'lit','vStone',st);vnDoor(fx,Y0,wz-5.6,-s*Math.PI/2,1.2,2.4,'vStone',st,vC(0x4a2e1c),false);
   vnVeranda(fx-s*1.3,Y0,wz,WD,2.6,-s*Math.PI/2,.04,3.0,wood);vnShedRoof(fx-s*1.3,Y0+3.0,wz,WD,2.6,.6,-s*Math.PI/2,'vCopperB',cu,.4,.12);
   for(const z of[-3,0,3])vnWin(wx+s*WW/2,Y0+1.4,wz+z,s*Math.PI/2,1.1,1.3,'glass','vStone',st);}
@@ -3486,6 +3557,17 @@ const DEADNAME={winI:'winD',winBigI:'winBigD',winSmI:'winSmD',ovalI:'ovalD',mull
 // ---- generic post-build passes: 'ruin' and 'rehab' ---------------------------------------------------------------
 // P is the (possibly transformed) group the pair built into; `root` is an IDENTITY group in the scene that receives
 // the cut geometry (which is computed in world space). ranges = KIT.items lengths before the pair ran.
+// SLIVERS (Travis: the Tyrell block read as see-through). The cut keeps or drops whole triangles, and a lathed shell's
+// triangles are long and thin (the Tyrell's are 0.6 x 2.5 m): dropping one of a quad's pair left a vertical slit, and a
+// shell full of them read as a basket of slats you could see through. Every triangle is split along its longest edge
+// until no edge is over `maxE` metres, so holes come out as ragged blobs. (UVs are rebuilt in metres after the cut.)
+function wreckRefine(p,maxE){const out=[];const m2=maxE*maxE;const st=[];
+ for(let i=0;i<p.length;i+=9){st.push([p[i],p[i+1],p[i+2],p[i+3],p[i+4],p[i+5],p[i+6],p[i+7],p[i+8],0]);
+  while(st.length){const t=st.pop();const e=[0,3,6].map(k=>{const a=k,b=(k+3)%9;return (t[a]-t[b])**2+(t[a+1]-t[b+1])**2+(t[a+2]-t[b+2])**2;});
+   const k=e[0]>=e[1]&&e[0]>=e[2]?0:e[1]>=e[2]?1:2;if(e[k]<=m2||t[9]>=6){for(let j=0;j<9;j++)out.push(t[j]);continue;}
+   const a=k*3,b=((k+1)%3)*3,c=((k+2)%3)*3,mx=(t[a]+t[b])/2,my=(t[a+1]+t[b+1])/2,mz=(t[a+2]+t[b+2])/2;
+   st.push([t[a],t[a+1],t[a+2],mx,my,mz,t[c],t[c+1],t[c+2],t[9]+1],[mx,my,mz,t[b],t[b+1],t[b+2],t[c],t[c+1],t[c+2],t[9]+1]);}}
+ return new Float32Array(out);}
 function wreck(P,root,ranges,mode,cx,cz,seed){reseed(seed);const rehab=mode==='rehab';
  const bb=new THREE.Box3();P.updateMatrixWorld(true);const meshes=[];P.traverse(o=>{if(o.isMesh)meshes.push(o);});
  for(const m of meshes){m.geometry.computeBoundingBox();bb.union(m.geometry.boundingBox.clone().applyMatrix4(m.matrixWorld));}
@@ -3507,7 +3589,7 @@ function wreck(P,root,ranges,mode,cx,cz,seed){reseed(seed);const rehab=mode==='r
  const hf=clamp(2.6/R,.07,.5);const holeT=rehab?.17:.25;const hole=(x,y,z)=>fbm(x*hf+seed*.7,y*hf,z*hf,3)<holeT;let topKept=y0;
  const gone=[],cutGeos=[];
  for(const m of meshes){if(m.material===MAT.glass){m.parent.remove(m);continue;}
-  const g=(m.geometry.index?m.geometry.toNonIndexed():m.geometry).clone();g.applyMatrix4(m.matrixWorld);const p=g.attributes.position.array,uv=g.attributes.uv?g.attributes.uv.array:null;
+  const g=(m.geometry.index?m.geometry.toNonIndexed():m.geometry).clone();g.applyMatrix4(m.matrixWorld);const p=wreckRefine(g.attributes.position.array,2.4),uv=null;
   const np=[],nu=[];for(let i=0;i<p.length;i+=9){const x=(p[i]+p[i+3]+p[i+6])/3,y=(p[i+1]+p[i+4]+p[i+7])/3,z=(p[i+2]+p[i+5]+p[i+8])/3;
    const keep=y<cut+jag(x,z)&&!hole(x,y,z);
    if(keep){for(let k=0;k<9;k++)np.push(p[i+k]);for(let k=1;k<9;k+=3)if(p[i+k]>topKept&&Math.hypot(p[i+k-1]-cx,p[i+k+1]-cz)<R*.8)topKept=p[i+k];
@@ -3712,27 +3794,57 @@ MAT.concRust=MAT.rust.clone();MAT.concRust.color=new THREE.Color(1,.93,.86);if(M
 // Skyscraper D is bare concrete in the kit: its ruined and reclaimed skins go to rust-streaked steel (Travis)
 function izsRustSkin(G){G.traverse(m=>{if(m.isMesh&&(m.material===MAT.concreteR||m.material===MAT.concrete))m.material=MAT.concRust;});}
 // T: {awnings (array the caller bakes), post, ball, rope (kit item names), col (hex -> Color), stall(col) (builds
-// one stall at the current group transform; the group is passed too), culture (REG tag)}
+// one stall at the current group transform; the group is passed too), culture (REG tag), stalls (optional array: every
+// stall's {x,y,z,face} is pushed to it — the life layer's market destinations), maxCanopies (default 90)}
 // THE TRIPOD MARKET (Travis): a reclaimed Skyscraper C hangs a great awning from each side of its leg triangle, sloping out to
 // a mast at the opposite point, so from above the legs' triangle and the three awnings make a six-pointed star; market
 // stalls stand in the shade under each awning and in the open triangle between the legs.
+// DENSER (Travis, round 4): the great awnings reach half again further out; their stalls stand on a lattice that fills the
+// shade, not on one line; and a ring of smaller canopies — a sloping cloth on four poles over a stall each — fills the
+// star's notches and the ground round it out to the lot's edge, clear of the leg feet, the masts and their guy ropes.
+// The whole market registers as ONE market (type market/shop, tags.market, tags.destination 'market').
 function tripodMarket(G,o,y,scale,ry,gx,gz,y0,T){const legAt=(k,ly)=>{const th=k/3*TAU+Math.PI/6,r=62-42*(ly-5)/150;return loc2(gx,gz,Math.cos(th)*r*scale,Math.sin(th)*r*scale,ry);};
- const hb=38,rb=62-42*(hb-5)/150;const Y=ly=>y0+ly*scale;const cols=[0xe07a2a,0xc9442a,0xe0a030];
- for(let k=0;k<3;k++){const a=legAt(k,hb),b=legAt((k+1)%3,hb);const tm=(k+.5)/3*TAU+Math.PI/6;const ap=loc2(gx,gz,Math.cos(tm)*rb*scale*1.05,Math.sin(tm)*rb*scale*1.05,ry);
-  const ya=Y(hb),yp=y+6.5;
-  // the awning: a sagging cloth triangle, 6 x 6 subdivided so the fall line reads
-  const pos=[],uv=[],N=6;const P=(u,v)=>{const w=1-u-v;const sag=-1.4*Math.sin(Math.PI*Math.min(1,u+v))*(1-Math.abs(u-v));return[a[0]*w+b[0]*u+ap[0]*v,ya*(w+u)+yp*v+sag,a[1]*w+b[1]*u+ap[1]*v];};
+ const hb=38,rb=62-42*(hb-5)/150;const Y=ly=>y0+ly*scale;const cols=[0xe07a2a,0xc9442a,0xe0a030];const yg=y+1.55;
+ const tris=[],masts=[],feet=[0,1,2].map(k=>legAt(k,5));let nStall=0;
+ const stallAt=(x,z,face,c)=>{const Gs=new THREE.Group();Gs.position.set(x,yg,z);Gs.rotation.y=face;scene.add(Gs);useGroupXF(Gs);try{T.stall(c,Gs);}finally{endGroupXF();}
+  nStall++;if(T.stalls)T.stalls.push({x,y:yg,z,face});};
+ const clothQuad=(c,P)=>{const pos=[],uv=[],N=3;const at=(u,v)=>P(u,v);for(let i=0;i<N;i++)for(let j=0;j<N;j++){for(const[a,b]of[[0,0],[1,0],[0,1],[1,0],[1,1],[0,1]]){const q=at((i+a)/N,(j+b)/N);pos.push(...q);uv.push(q[0]*.5,q[2]*.5);}}
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.computeVertexNormals();T.awnings.push({g,c});};
+ for(let k=0;k<3;k++){const a=legAt(k,hb),b=legAt((k+1)%3,hb);const tm=(k+.5)/3*TAU+Math.PI/6;const ap=loc2(gx,gz,Math.cos(tm)*rb*scale*1.5,Math.sin(tm)*rb*scale*1.5,ry);
+  const ya=Y(hb),yp=y+6.5;tris.push([a,b,ap]);masts.push(ap);
+  // the awning: a sagging cloth triangle, 8 x 8 subdivided so the fall line reads
+  const pos=[],uv=[],N=8;const P=(u,v)=>{const w=1-u-v;const sag=-1.8*Math.sin(Math.PI*Math.min(1,u+v))*(1-Math.abs(u-v));return[a[0]*w+b[0]*u+ap[0]*v,ya*(w+u)+yp*v+sag,a[1]*w+b[1]*u+ap[1]*v];};
   for(let i=0;i<N;i++)for(let j=0;j<N-i;j++){const q=[[i,j],[i+1,j],[i,j+1]];const add=t=>{for(const[ii,jj]of t){const p=P(ii/N,jj/N);pos.push(...p);uv.push(p[0]*.5,p[2]*.5);}};add(q);if(i+j<N-1)add([[i+1,j],[i+1,j+1],[i,j+1]]);}
   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.computeVertexNormals();
   T.awnings.push({g,c:cols[k]});
   // the mast at the point, guy ropes, a valance along the leading edges
   kput(T.post,[ap[0],y,ap[1]],null,[.35,yp-y+.4,.35],T.col(0xe2b676));kput(T.ball,[ap[0],yp+.5,ap[1]],null,[.4,.4,.4],T.col(0x8a6a2a));
   for(const s2 of[-1,1]){const g2=loc2(ap[0],ap[1],s2*3,0,tm);beam(T.rope,[ap[0],yp+.3,ap[1]],[g2[0]+(ap[0]-gx)*.15,y,g2[1]+(ap[1]-gz)*.15],.05,.05,T.col(0xa89878));}
-  // stalls in the shade: three per awning along the triangle's centre line
-  for(let t=0;t<3;t++){const f=.25+t*.22;const m=[(a[0]+b[0])/2*(1-f)+ap[0]*f,(a[1]+b[1])/2*(1-f)+ap[1]*f];const Gs=new THREE.Group();Gs.position.set(m[0],y+1.55,m[1]);Gs.rotation.y=Math.atan2(ap[0]-gx,ap[1]-gz)+Math.PI/2;scene.add(Gs);useGroupXF(Gs);try{T.stall(T.col(cols[(k+t)%3]),Gs);}finally{endGroupXF();}}}
+  // stalls in the shade: a lattice over the awning's footprint, each facing along the fall line
+  const face=Math.atan2(ap[0]-gx,ap[1]-gz)+Math.PI/2,L=6;
+  for(let i=1;i<L;i++)for(let j=1;i+j<L;j++){const u=i/L,v=j/L,w=1-u-v;if(w<.1)continue;const x=a[0]*w+b[0]*u+ap[0]*v,z=a[1]*w+b[1]*u+ap[1]*v;
+   if(feet.some(f=>Math.hypot(x-f[0],z-f[1])<6))continue;if(Math.hypot(x-ap[0],z-ap[1])<5)continue;stallAt(x,z,face,T.col(cols[(k+i+j)%3]));}}
  // and the open triangle between the legs
- for(let t=0;t<3;t++){const th=t/3*TAU+Math.PI/2,r=rb*scale*.3;const Gs=new THREE.Group();Gs.position.set(o.x+Math.cos(th)*r,y+1.55,o.z+Math.sin(th)*r);Gs.rotation.y=-th;scene.add(Gs);useGroupXF(Gs);try{T.stall(undefined,Gs);}finally{endGroupXF();}}
- REG.push({name:'Tripod market',x:o.x,y:y,z:o.z,r:rb*scale*1.1,h:12,cls:'building',key:'city_tripod_market',tags:{culture:T.culture,type:['market/shop'],wealth:'middle',lit:true,note:'awnings hung from a reclaimed Skyscraper C'}});}
+ for(let t=0;t<3;t++){const th=t/3*TAU+Math.PI/2,r=rb*scale*.3;stallAt(o.x+Math.cos(th)*r,o.z+Math.sin(th)*r,-th,undefined);}
+ // the ring of canopies: on rings 7.6 m apart from just outside the leg triangle to the lot's edge (or the star's reach
+ // plus a margin, whichever is nearer), every 8 m round each ring; a canopy goes where none of its corners is under a
+ // great awning, near a leg foot or a mast, or off the lot
+ const inTri=(x,z,t)=>{const s=(p,q,r)=>(p[0]-r[0])*(q[1]-r[1])-(q[0]-r[0])*(p[1]-r[1]);const P=[x,z],d1=s(P,t[0],t[1]),d2=s(P,t[1],t[2]),d3=s(P,t[2],t[0]);return!((d1<0||d2<0||d3<0)&&(d1>0||d2>0||d3>0));};
+ const oc=Math.cos(o.ry||0),os=Math.sin(o.ry||0);const onLot=(x,z)=>{const dx=x-o.x,dz=z-o.z;return Math.abs(dx*oc-dz*os)<o.hx-1.5&&Math.abs(dx*os+dz*oc)<o.hz-1.5;};
+ const reach=Math.min(Math.hypot(o.hx,o.hz),rb*scale*1.5+14),CW=3.4,CD=2.7,ccols=[0xe07a2a,0xc9442a,0xe0a030,0xd8623a,0xb8862a,0x3a7a5a];let nc=0;const maxC=T.maxCanopies||90;
+ for(let R=rb*scale*.62+4;R<=reach&&nc<maxC;R+=7.6){const n=Math.max(6,Math.floor(TAU*R/8));const off=R*.37;
+  for(let i=0;i<n&&nc<maxC;i++){const th=i/n*TAU+off,x=o.x+R*Math.cos(th),z=o.z+R*Math.sin(th),cry=Math.atan2(o.x-x,o.z-z);
+   const cs=[[-CW,-CD],[CW,-CD],[CW,CD],[-CW,CD]].map(c=>loc2(x,z,c[0],c[1],cry));
+   if(!cs.every(c=>onLot(c[0],c[1])))continue;
+   if(cs.concat([[x,z]]).some(c=>tris.some(t=>inTri(c[0],c[1],t))))continue;
+   if(feet.some(f=>Math.hypot(x-f[0],z-f[1])<CW+4.5))continue;if(masts.some(m=>Math.hypot(x-m[0],z-m[1])<CW+5))continue;
+   const c=ccols[(i+Math.round(R))%ccols.length],hi=yg+3.7,lo=yg+2.7;
+   // the cloth: high on the side facing the tripod, low on the outside, a little sag
+   clothQuad(c,(u,v)=>{const p=loc2(x,z,(u*2-1)*(CW+.3),(v*2-1)*(CD+.3),cry);return[p[0],lo+(hi-lo)*v-.25*Math.sin(Math.PI*u)*Math.sin(Math.PI*v),p[1]];});
+   for(const q of cs){const h=(q===cs[2]||q===cs[3])?hi:lo;kput(T.post,[q[0],yg,q[1]],null,[.16,h-yg,.16],T.col(0xe2b676));}
+   stallAt(x,z,cry+Math.PI,T.col(c));nc++;}}
+ REG.push({name:'Tripod market',x:o.x,y:y,z:o.z,r:Math.max(rb*scale*1.6,reach),h:12,cls:'building',key:'city_tripod_market',
+  tags:{culture:T.culture,type:['market/shop'],wealth:'middle',lit:true,market:true,destination:'market',stalls:nStall,canopies:nc,note:'awnings hung from a reclaimed Skyscraper C; a life-layer market destination'}});}
 // an instanced item's world-space box: the def geometry's own bounds through the item's scale and rotation (a torus or
 // cylinder is radius 1, a box half-size .5 — measuring by the scale alone got every ring half its real size)
 const _defBB={};function itemBox(n,q){let bb=_defBB[n];if(!bb){const g=KIT.defs[n]&&KIT.defs[n].geo;if(!g){return null;}g.computeBoundingBox();bb=_defBB[n]=g.boundingBox.clone();}
@@ -3759,14 +3871,17 @@ function measureKit(cat){if(cat.meas)return cat.meas;const parts=kitBuildParts(c
  // a tower's PODIUM top: the highest low part wider than the shaft. Everything at or under it is the kit's podium and goes;
  // the shaft is lowered so that level lands on the city's own square plinth.
  let baseY=0;if(cat.kind==='sky'){const cw=Math.max(core.max.x-core.min.x,core.max.z-core.min.z);for(const b of parts){if(b.max.y>bb.max.y*.12||b.max.y<0)continue;if(Math.max(b.max.x-b.min.x,b.max.z-b.min.z)<cw*1.1)continue;baseY=Math.max(baseY,b.max.y);}}
- cat.meas={cx:(core.min.x+core.max.x)/2,cz:(core.min.z+core.max.z)/2,hx:Math.max(4,(core.max.x-core.min.x)/2),hz:Math.max(4,(core.max.z-core.min.z)/2),h:bb.max.y,th:cat.kind==='sky'?coreTh:th,baseY,
-  full:{hx:(bb.max.x-bb.min.x)/2,hz:(bb.max.z-bb.min.z)/2}};return cat.meas;}
+ // the SHAFT: everything above the podium, legs included (Skyscraper A's legs lean out past its core; a placer that must
+ // keep them on the lot fits by this, measured about the core centre)
+ const cxm=(core.min.x+core.max.x)/2,czm=(core.min.z+core.max.z)/2;let shx=0,shz=0;for(const b of parts){if(b.max.y<=baseY+1)continue;shx=Math.max(shx,Math.abs(b.min.x-cxm),Math.abs(b.max.x-cxm));shz=Math.max(shz,Math.abs(b.min.z-czm),Math.abs(b.max.z-czm));}
+ cat.meas={cx:cxm,cz:czm,hx:Math.max(4,(core.max.x-core.min.x)/2),hz:Math.max(4,(core.max.z-core.min.z)/2),h:bb.max.y,th:cat.kind==='sky'?coreTh:th,baseY,
+  full:{hx:(bb.max.x-bb.min.x)/2,hz:(bb.max.z-bb.min.z)/2},shaft:{hx:Math.max(4,shx),hz:Math.max(4,shz)}};return cat.meas;}
 // drop what a kit builder laid BEYOND the plot below the plinth line (plinths, plazas, aprons, the colonnade round a
 // tower's podium): an instanced item or a mesh goes when it is low and any part of it leaves the plot by more than 2 m.
-// `keep` (an OBB) protects a region — the toppled tower's fallen body.
+// `keep` (an OBB, or a list of them) protects a region — the toppled tower's fallen body (both pieces of a broken one).
 function trimPlinths(G,snap,o,y,scale,th,keep,podY){const c=Math.cos(o.ry),s=Math.sin(o.ry);const pod=podY!=null?podY:-1e9;
  const outOf=(wx,wz,e,B)=>{const dx=wx-B.x,dz=wz-B.z,cc=Math.cos(B.ry),ss=Math.sin(B.ry);const lx=cc*dx-ss*dz,lz=ss*dx+cc*dz;return Math.abs(lx)+e>B.hx+2||Math.abs(lz)+e>B.hz+2;};
- const kept=(wx,wz)=>keep&&!outOf(wx,wz,0,keep);const lowY=y+th*scale*.9;
+ const K=keep?(Array.isArray(keep)?keep:[keep]):[];const kept=(wx,wz)=>K.some(B=>!outOf(wx,wz,0,B));const lowY=y+th*scale*.9;   // keep: one OBB or a list
  for(const n in KIT.items){const it=KIT.items[n];const a=snap[n]||0;if(it.length<=a)continue;let w=a;
   for(let i=a;i<it.length;i++){const q=it[i],b=itemBox(n,q);if(!b){it[w++]=q;continue;}const cx=(b.min.x+b.max.x)/2,cz=(b.min.z+b.max.z)/2,e=Math.max(b.max.x-b.min.x,b.max.z-b.min.z)/2;
    if(((b.max.y<lowY&&outOf(cx,cz,e,o))||b.max.y<pod+.3)&&!kept(cx,cz))continue;it[w++]=q;}it.length=w;}
@@ -3864,7 +3979,7 @@ izOrig('palace','Palace fortress',150,true,(P,x,z)=>{const sm=0xd4a05a,sl=0xe6bd
  kput('frus88',[x+8,28,z-15],null,[46,22,26],tC(sm));kput('frus88',[x-12.5,28,z+5],null,[5,22,14],tC(sm));kput('frus88',[x+19.5,28,z+5],null,[23,22,14],tC(sm));kput('frus88',[x-1,39,z+5],null,[18,11,14],tC(sm));
  kput('frus85',[x+16,50,z-10],null,[20,30,20],tC(sm));kput('frus85',[x+16,80,z-10],null,[14,11,14],tC(sl));kput('frus60',[x+16,91,z-10],null,[8,7,8],tC(sm));kput('frusPyr',[x+16,98,z-10],null,[5,6,5],tC(sl));
  kput('boxW',[x,12.6+.75,z],null,[91,1.5,80],tC(sl));kput('boxW',[x+4,26.6+.75,z-4],null,[63,1.5,54],tC(sl));kput('boxW',[x+8,48.6+.75,z-8],null,[42,1.5,37],tC(sl));kput('boxW',[x+16,78.8+.7,z-10],null,[18.5,1.4,18.5],tC(sl));
- izWin(0,0,96,84,.93,14,0,7,9,3,4);izWin(4,-4,68,58,.9,14,14,20,6,3,4);izWin(8,-8,46,40,.88,22,28,34,6,2.2,4,xx=>xx>-11&&xx<9);izWin(8,-8,46,40,.88,22,28,43,6,2.2,3,xx=>xx>-11&&xx<9);for(let i=0;i<3;i++)izWin(16,-10,20,20,.85,30,50,56+i*8,2,3,3);
+ izWin(0,0,96,84,.93,14,0,7,9,3,4,xx=>Math.abs(xx)<12);izWin(4,-4,68,58,.9,14,14,20,6,3,4);izWin(8,-8,46,40,.88,22,28,34,6,2.2,4,xx=>xx>-11&&xx<9);izWin(8,-8,46,40,.88,22,28,43,6,2.2,3,xx=>xx>-11&&xx<9);for(let i=0;i<3;i++)izWin(16,-10,20,20,.85,30,50,56+i*8,2,3,3);
  // THE HALL (Travis): the hangar converted for entertaining Izani and foreign nobles — 18 x 14 m, 11 m high, open to the
  // terrace: a lit floor, two rows of pale columns, a coffered ceiling of warm lamps, a great doorway into the palace at the back
  {const hy=28.1,hx=x-1,hz=z+5;kput('slab',[hx,hy-.05,hz],null,[9.6,.3,9.6],tC(0xe6d6b0));                      // the floor medallion
@@ -3891,9 +4006,29 @@ izOrig('palace','Palace fortress',150,true,(P,x,z)=>{const sm=0xd4a05a,sl=0xe6bd
  {const ty=14.1;for(let i=0;i<10;i++){const sx=-40+i*8.9;if(Math.abs(sx-4)<12)continue;kput('hedge',[x+sx,ty+.6,z+36],null,[4.6,1.2,1.4],vC(0x3f6a34));}
   for(const sx of[-40,-24,32,44])vnLampPost(x+sx,ty,z+38.6,3.2);
   for(let i=0;i<22;i++)kput('boxW',[x-44+i*4.2,ty+1.1,z+39.4],null,[1.6,1.0,1.0],tC(sl));for(let i=0;i<15;i++)kput('boxW',[x+4-30+i*4.3,28.1+1.1,z-4-26.4],null,[1.6,1.0,1.0],tC(sl));}
- // banner poles and lamp columns along the front of the base tier
- for(let i=0;i<7;i++){const sx=-42+i*14;vnBannerPole(x+sx,0,z+44.5,0,9,vC(i%2?0xe07a2a:0xc9442a));}
- for(const sx of[-36,-12,12,36])vnLampPost(x+sx,0,z+46,4.2);
+ // banner poles and lamp columns along the front of the base tier (the middle pole gave way to the grand entrance)
+ for(let i=0;i<7;i++){if(i===3)continue;const sx=-42+i*14;vnBannerPole(x+sx,0,z+44.5,0,9,vC(i%2?0xe07a2a:0xc9442a));}
+ for(const sx of[-36,-17,17,36])vnLampPost(x+sx,0,z+46,4.2);
+ // THE GRAND ENTRANCE (Travis, round 4): the base tier had no door. On the axis road from the triumphal plaza: a raised
+ // landing and a broad flight of steps, two stepped pylons with hanging banners and sconces, a deep lit doorway whose
+ // bronze leaves stand open, a stepped deco lintel with a drip band, and a crest carrying the orb; orb pedestals and
+ // lamp posts at the foot of the steps
+ {const fz=z+42,L=1.2;
+  kput('boxW',[x,L/2,fz+2.4],null,[14,L,4.8],tC(sl));                                                                     // the landing
+  for(let k=1;k<=5;k++){const h=L-k*.2;kput('boxW',[x,h/2,fz+4.8+k*.9-.45],null,[14+k*2.2,h,.9],tC(k%2?sl:0xe6d6b0));}    // the steps down to the plaza
+  kput('boxD',[x,L+4.1,fz-.6],null,[8.4,8.2,3.2],null);kput('dot',[x,L+4.1,fz-2.1],null,[7.6,7.8,.3],WARM.clone().multiplyScalar(.85));   // the doorway and the lit vestibule
+  for(const sd of[-1,1]){const a=1.05,cx=x+sd*4.2-sd*2*Math.cos(a),cz=fz+1+2*Math.sin(a);kput('boxW',[cx,L+3.9,cz],qEuler(0,sd*a,0),[4,7.8,.35],tC(0x8a6a2a));   // bronze leaves, open
+   for(const yy of[2.2,5.6])kput('boxW',[cx,L+yy,cz],qEuler(0,sd*a,0),[3.6,.25,.5],tC(0xc8962a));}
+  for(const sd of[-1,1]){const px=x+sd*8.3;
+   kput('boxW',[px,7,fz+1.8],null,[4.2,14,6.4],tC(sm));kput('boxW',[px,14.3,fz+1.8],null,[5,.6,7.2],tC(sl));kput('boxW',[px,14.9,fz+1.8],null,[4,.6,6.2],tC(sm,.9));   // the pylons, stepped caps
+   for(const k of[-1.3,0,1.3])kput('finW',[px+k,6.6,fz+5.05],null,[.45,10,.3],null);                                     // deco fins
+   kput('vCloth',[px,8.4,fz+5.25],null,[3,7.4,1],vC(sd<0?0xe07a2a:0xc9442a));kput('vBall',[px,12.3,fz+5.3],null,[.35,.35,.35],vC(0x8a6a2a));   // the banners
+   kput('dot',[x+sd*5.6,L+6.4,fz+3.6],null,[.6,1.3,.5],WARM);                                                            // sconces in the reveal
+   kput('boxW',[x+sd*11.6,1.2,fz+10.4],null,[2.2,2.4,2.2],tC(sl));kput('vFinial',[x+sd*11.6,3.3,fz+10.4],null,[1,1,1],vC(0xe0b050));   // orb pedestals
+   vnLampPost(x+sd*12.6,0,fz+13,5.2);}
+  kput('boxW',[x,L+9.2,fz+1.8],null,[12.4,2.2,6.4],tC(sl));kput('boxW',[x,L+8.05,fz+5.05],null,[12.8,.35,.5],tC(sm,.9));   // the lintel and its drip band
+  kput('boxW',[x,L+10.8,fz+1.4],null,[10,1,5],tC(sm));kput('boxW',[x,L+11.8,fz+1],null,[7,1,4],tC(sl));kput('boxW',[x,L+12.7,fz+.7],null,[4,.9,3],tC(sm));   // the stepped crest
+  kput('vFinial',[x,L+14.6,fz+.7],null,[1.5,1.5,1.5],vC(0xe0b050));kput('lampI',[x,L+7.2,fz+3],null,[1.2,.5,1.2],WARM);}
  // pyramidal roofs and pavilions on the terrace tops, the beacon (from the Iziz Ancients Mix palace)
  // the terrace pavilions (Travis: develop the bare pyramids and cubes): each PYRAMID becomes an open pavilion — a paved
  // floor, four columns, an architrave, the pyramid roof lifted onto it with a lantern — and each CUBE a belvedere — a
@@ -4430,10 +4565,12 @@ function buildAmphitheater(scene,gx,gz,d){reseed(9960+d);KOFF=[gx,0,gz];const G=
 // Everything about WHERE things are: the wall, the gates, the three hills, the precinct discs, the terrain function.
 // Metres; x east, z south (+z is toward the painting's viewer, the south gate is the painting's approach).
 window.CITY=true;
+window.DOORS=[];window.CHIMNEYS=[];   // filled by vnDoor / vnChimney as the vernacular builds: the Paths overlay's doors, the smoke's sources
 const CITY={
  WORLD:1900,                 // side of the terrain plane
  PLATEAU:18,CHASM:-16,       // the plateau stands 34 m above the moat floor
- R:470,                      // mean wall radius: 4x the old map's area
+ R:470,                      // mean radius of the CORE (the round-3 wall line): 4x the old map's area
+ WALL_K:Math.sqrt(1.2),      // the wall stands this much further out (round 4, Travis): the enclosed area is 20% larger
  GATES:[90,200,315,30].map(d=>d*Math.PI/180),
  // the three hills: palace (largest), temple, arena. Each is a MESA: a level top of radius r0 standing H above the
  // plateau, an escarpment E metres wide (rock, unbuildable), then a gentle skirt. `ring` is the ring road's radius,
@@ -4442,7 +4579,8 @@ const CITY={
   palace:{x:200,z:-130,H:40,r0:96,E:34,ring:144},
   temple:{x:266,z:168,H:27,r0:94,E:26,ring:134},
   arena:{x:-240,z:20,H:23,r0:92,E:26,ring:130}},
- SPACEPORT_A:315*Math.PI/180,SPACEPORT_R:760,SPACEPORT_H:4,SPACEPORT_RAD:94,
+ SPACEPORT_A:315*Math.PI/180,SPACEPORT_R:800,   // out with the wall (round 4): the causeway ends at R+240
+SPACEPORT_H:4,SPACEPORT_RAD:94,
  QUALITY:1,                  // scales counts (biome, folk); 1 = the artifact
 };
 const GATES=CITY.GATES;
@@ -4450,9 +4588,13 @@ const FRAME_HOOKS_PRE=[];   // per-frame fns registered before 90-scene defines 
 const SEED_CITY=424242;
 function polar(x,z){return{r:Math.hypot(x,z),t:Math.atan2(z,x)};}
 function smoothstep(e0,e1,x){const t=clamp((x-e0)/(e1-e0),0,1);return t*t*(3-2*t);}
-// the wall: the old Iziz outline, doubled, straight and flush around each gatehouse
+// the wall: the old Iziz outline, doubled, straight and flush around each gatehouse. coreR is the round-3 wall line:
+// the hills' districts, the ancient quarters and the settler lattice were laid out inside it and still are (so nothing
+// there moved when the wall went out); wallR is the wall now, WALL_K further out, and the ring between the two is the
+// farm belt with its own street grid (90b, pass 4b).
 function wallRaw(t){return CITY.R+44*Math.sin(3*t+1)+20*Math.sin(7*t+2)+12*Math.sin(11*t);}
-function wallR(t){let r=wallRaw(t);for(const g of GATES){const d=angDiff(t,g);if(d<.18){const k=1-smoothstep(.03,.18,d);r=r*(1-k)+wallRaw(g)*k;}}return r;}
+function coreR(t){let r=wallRaw(t);for(const g of GATES){const d=angDiff(t,g);if(d<.18){const k=1-smoothstep(.03,.18,d);r=r*(1-k)+wallRaw(g)*k;}}return r;}
+function wallR(t){return CITY.WALL_K*coreR(t);}
 function gatePos(g){const R=wallR(g);return[R*Math.cos(g),R*Math.sin(g)];}
 // hills: mesa profile (1 on top, S-curve down the escarpment) or the skirt, whichever is higher; plus the ramp
 // corridor up the gate bearing (20 m wide, rising over ~E+40 m so the road is steep but walkable)
@@ -4485,6 +4627,8 @@ function terrainBase(x,z){const p=polar(x,z),R=wallR(p.t),ro=p.r-R;
 terrainH=function(x,z){let h=terrainBase(x,z);const L=FLATGRID[Math.floor(x/FLATCELL)+','+Math.floor(z/FLATCELL)];if(L)for(const f of L){const d=Math.hypot(x-f[0],z-f[1]);if(d<f[2]+f[3]){const k=1-smoothstep(f[2],f[2]+f[3],d);h=h*(1-k)+f[4]*k;}}return h;};
 // inside the wall (with a margin), on the plateau
 function insideWall(x,z,margin){const p=polar(x,z);return p.r<wallR(p.t)-(margin||0);}
+// inside the round-3 wall line: the core layout (clusters, parks, settler lattice, the deliberate towers) keeps to it
+function insideCore(x,z,margin){const p=polar(x,z);return p.r<coreR(p.t)-(margin||0);}
 function nearestHill(x,z){let best=null,bd=1e9;for(const k in CITY.HILLS){const H=CITY.HILLS[k];const d=Math.hypot(x-H.x,z-H.z)-H.ring;if(d<bd){bd=d;best=k;}}return{key:best,d:bd};}
 // a point on the hill's ring road / top at bearing a
 function hillPt(H,a,r){return[H.x+r*Math.cos(a),H.z+r*Math.sin(a)];}
@@ -4564,7 +4708,7 @@ function inPrecinct(x,z,pad){for(const p of PRECINCTS)if(Math.hypot(x-p.x,z-p.z)
  const outer=[],inner=[],wallb=[];for(let i=0;i<=240;i++){const t=i/240*TAU;outer.push([(wallR(t)+48)*Math.cos(t),(wallR(t)+48)*Math.sin(t)]);inner.push([(wallR(t)+4)*Math.cos(t),(wallR(t)+4)*Math.sin(t)]);}
  cpoly(cg,outer,'#3a2818');cpoly(mg,outer,'#000');cpoly(cg,inner,'#b88a5a');cpoly(mg,inner,'#fff');
  cg.save();cg.beginPath();inner.forEach((q,i)=>i?cg.lineTo(px(q[0]),px(q[1])):cg.moveTo(px(q[0]),px(q[1])));cg.closePath();cg.clip();
- for(let i=0;i<3000;i++){const x=rr(-540,540),z=rr(-540,540);cg.beginPath();cg.arc(px(x),px(z),rr(5,34),0,7);cg.fillStyle=vPick(['rgba(160,100,50,.35)','rgba(110,60,30,.4)','rgba(190,130,70,.3)','rgba(80,50,30,.35)','rgba(120,100,60,.25)']);cg.fill();}
+ for(let i=0;i<3600;i++){const x=rr(-600,600),z=rr(-600,600);cg.beginPath();cg.arc(px(x),px(z),rr(5,34),0,7);cg.fillStyle=vPick(['rgba(160,100,50,.35)','rgba(110,60,30,.4)','rgba(190,130,70,.3)','rgba(80,50,30,.35)','rgba(120,100,60,.25)']);cg.fill();}
  cg.restore();
  // the wall band: nothing grows or builds from 16 m inside the wall to the far side of the moat
  const band=[];for(let i=0;i<=240;i++){const t=i/240*TAU;const r=wallR(t)+16;band.push([r*Math.cos(t),r*Math.sin(t)]);}cstroke(mg,band,66,'#000');cstroke(kg,band,66,KLCOL(KL.water));
@@ -4604,10 +4748,19 @@ function pick(arr){return arr[Math.floor(rng()*arr.length)%arr.length];}
 
 // ---------------------------------------------------------------- noise
 function h3(x,y,z){const s=Math.sin(x*12.9898+y*78.233+z*37.719)*43758.5453;return s-Math.floor(s);}
+// Each h3 is a Math.sin, and sampling a terrain or a texture asks for the same lattice cells again and again: a
+// cell's eight corners are kept in a small direct-mapped cache (exact: the same h3 values, the same arithmetic in
+// the same order, so the same results bit for bit). It was most of every biome's load.
+var _vnK,_vnV;
 function vnoise(x,y,z){const xi=Math.floor(x),yi=Math.floor(y),zi=Math.floor(z),xf=x-xi,yf=y-yi,zf=z-zi;
- const sm=t=>t*t*(3-2*t);const u=sm(xf),v=sm(yf),w=sm(zf);const l=(a,b,t)=>a+(b-a)*t;
- return l(l(l(h3(xi,yi,zi),h3(xi+1,yi,zi),u),l(h3(xi,yi+1,zi),h3(xi+1,yi+1,zi),u),v),
-          l(l(h3(xi,yi,zi+1),h3(xi+1,yi,zi+1),u),l(h3(xi,yi+1,zi+1),h3(xi+1,yi+1,zi+1),u),v),w);}
+ if(_vnK===undefined){_vnK=new Float64Array(4096*3).fill(NaN);_vnV=new Float64Array(4096*8);}
+ const s=(Math.imul(xi|0,73856093)^Math.imul(yi|0,19349663)^Math.imul(zi|0,83492791))&4095,k=s*3,o=s*8,V=_vnV;
+ if(_vnK[k]!==xi||_vnK[k+1]!==yi||_vnK[k+2]!==zi){_vnK[k]=xi;_vnK[k+1]=yi;_vnK[k+2]=zi;
+  V[o]=h3(xi,yi,zi);V[o+1]=h3(xi+1,yi,zi);V[o+2]=h3(xi,yi+1,zi);V[o+3]=h3(xi+1,yi+1,zi);
+  V[o+4]=h3(xi,yi,zi+1);V[o+5]=h3(xi+1,yi,zi+1);V[o+6]=h3(xi,yi+1,zi+1);V[o+7]=h3(xi+1,yi+1,zi+1);}
+ const u=xf*xf*(3-2*xf),v=yf*yf*(3-2*yf),w=zf*zf*(3-2*zf);
+ const a=V[o]+(V[o+1]-V[o])*u,b=V[o+2]+(V[o+3]-V[o+2])*u,c=V[o+4]+(V[o+5]-V[o+4])*u,d=V[o+6]+(V[o+7]-V[o+6])*u;
+ const e=a+(b-a)*v,f=c+(d-c)*v;return e+(f-e)*w;}
 function fbm(x,y,z,o){o=o||3;let a=0,f=1,s=0;for(let i=0;i<o;i++){a+=vnoise(x*f,y*f,z*f)/f;s+=1/f;f*=2.03;}return a/s;}
 
 // ---------------------------------------------------------------- host binding
@@ -4769,6 +4922,29 @@ BIO.surf=function(fam,fn,nu,nv,col,opt){opt=opt||{};const K=BIO.buckets[fam];if(
   pv(i,j);pv(i+1,j+1);pv(i+1,j);pv(i,j);pv(i,j+1);pv(i+1,j+1);tris+=2;}
  K.tris+=tris;BIO.tally(tris,0,0);return tris;};
 
+// ---------------------------------------------------------------- indexed buckets
+// The builders write every triangle's three vertices out in full, so a tube or a surface stores each of its
+// grid points up to six times: bark alone was 550 of SW Lowlands' 685 MB of geometry. Bake keeps one copy of each
+// distinct vertex (all eleven floats equal after the float32 rounding the GPU applies anyway) and draws by index:
+// the same triangles in the same order, so the same pixels, in about a third of the memory.
+function indexedGeo(T,P,N,U,C){const n=P.length/3,W=11,f=new Float32Array(n*W),w=new Uint32Array(f.buffer);
+ for(let i=0;i<n;i++){const o=i*W;f[o]=P[i*3];f[o+1]=P[i*3+1];f[o+2]=P[i*3+2];f[o+3]=N[i*3];f[o+4]=N[i*3+1];f[o+5]=N[i*3+2];
+  f[o+6]=U[i*2];f[o+7]=U[i*2+1];f[o+8]=C[i*3];f[o+9]=C[i*3+1];f[o+10]=C[i*3+2];}
+ let cap=1024;while(cap<n*2)cap*=2;const tab=new Int32Array(cap).fill(-1),idx=new Uint32Array(n);let m=0;
+ for(let i=0;i<n;i++){const o=i*W;let h=0x811C9DC5;for(let k=0;k<6;k++)h=Math.imul(h^w[o+k],0x01000193);   // position and normal: enough to spread them; a match still compares all 11
+  h^=h>>>16;h=Math.imul(h,0x85EBCA6B);h^=h>>>13;let s=h&(cap-1),j;
+  while((j=tab[s])>=0){const q=j*W;let k=0;while(k<W&&w[q+k]===w[o+k])k++;if(k===W)break;s=(s+1)&(cap-1);}
+  if(j<0){j=m++;if(j!==i)f.copyWithin(j*W,o,o+W);tab[s]=j;}
+  idx[i]=j;}
+ const pos=new Float32Array(m*3),nor=new Float32Array(m*3),uv=new Float32Array(m*2),col=new Float32Array(m*3);
+ for(let j=0;j<m;j++){const o=j*W;pos[j*3]=f[o];pos[j*3+1]=f[o+1];pos[j*3+2]=f[o+2];nor[j*3]=f[o+3];nor[j*3+1]=f[o+4];nor[j*3+2]=f[o+5];
+  uv[j*2]=f[o+6];uv[j*2+1]=f[o+7];col[j*3]=f[o+8];col[j*3+1]=f[o+9];col[j*3+2]=f[o+10];}
+ const g=new T.BufferGeometry();
+ g.setAttribute('position',new T.BufferAttribute(pos,3));g.setAttribute('normal',new T.BufferAttribute(nor,3));
+ g.setAttribute('uv',new T.BufferAttribute(uv,2));g.setAttribute('color',new T.BufferAttribute(col,3));
+ g.setIndex(new T.BufferAttribute(m>65535?idx:Uint16Array.from(idx),1));return g;}
+BIO.indexedGeo=indexedGeo;
+
 // ---------------------------------------------------------------- bake
 // Turns the stores into meshes. Call once per host after every biome has
 // built; a second call only emits what arrived since the first.
@@ -4785,9 +4961,7 @@ BIO.bake=function(){const T=BIO.host.THREE,scene=BIO.host.scene;if(!scene)throw 
   scene.add(im);BIO.baked.push(im);calls++;inst+=it.count;
   BIO.items[name]={m:[],c:[],n:[],c2:[],count:0};}
  for(const fam in BIO.buckets){const K=BIO.buckets[fam];if(!K.pos.length)continue;
-  const g=new T.BufferGeometry();
-  g.setAttribute('position',new T.Float32BufferAttribute(K.pos,3));g.setAttribute('normal',new T.Float32BufferAttribute(K.nor,3));
-  g.setAttribute('uv',new T.Float32BufferAttribute(K.uv,2));g.setAttribute('color',new T.Float32BufferAttribute(K.col,3));
+  const g=indexedGeo(T,K.pos,K.nor,K.uv,K.col);
   g.computeBoundingSphere();
   const m=new T.Mesh(g,K.mat);m.frustumCulled=false;m.userData.biome=true;m.userData.inspectLabel=K.label;m.name='biome:'+fam;
   scene.add(m);BIO.baked.push(m);calls++;
@@ -5064,7 +5238,9 @@ const RUIN_RECTS=[];           // ruined ancient clusters (world-space OBBs) whe
 function bioMaskFn(x,z){
  if(Math.abs(x)>CITY.WORLD/2-14||Math.abs(z)>CITY.WORLD/2-14)return 0;
  const p=polar(x,z),ro=p.r-wallR(p.t);
- if(ro>44){return maskAt(x,z)[0]>200?1:0;}                       // the jungle: everything not a road, pad or bunker
+ // the jungle: everything not a road, pad or bunker. In the belt the hypertrees are cleared from (ro < 130) the floor
+ // thins too — cut-over ground, not full jungle floor right up to the moat (Round 3 issue)
+ if(ro>44){return maskAt(x,z)[0]>200?(ro<130?.3+.7*smoothstep(60,130,ro):1):0;}
  if(ro>-20)return 0;                                              // the moat and the wall band
  const m=maskAt(x,z);if(m[1]>200&&m[0]<60)return .85;             // city parks: undergrowth only (the tree pass masks the city out)
  if(!canBuild(x,z))return 0;
@@ -5989,9 +6165,12 @@ function ringToRing(a,b){const A=HILL[a],B=HILL[b];const ang=Math.atan2(B.z-A.z,
  road([[A.x+A.ring*Math.cos(ang),A.z+A.ring*Math.sin(ang)],[B.x-B.ring*Math.cos(ang),B.z-B.ring*Math.sin(ang)]],16,KL.boulevard,{zone:'thoroughfare'});}
 ringToRing('palace','temple');ringToRing('temple','arena');ringToRing('arena','palace');
 // ---- 3. gate roads: each gate to the nearest point of the closest ring road ----
-for(const g of GATES){const [gx,gz]=gatePos(g);const ix=(wallR(g)-30)*Math.cos(g),iz=(wallR(g)-30)*Math.sin(g);
+// (from the round-3 gate line, coreR; the stretch from there out to the moved gate is its own road, pass 3b)
+for(const g of GATES){const [gx,gz]=gatePos(g);const ix=(coreR(g)-30)*Math.cos(g),iz=(coreR(g)-30)*Math.sin(g);
  let best=null;for(const k of HILLKEYS){const H=HILL[k];const d=Math.hypot(ix-H.x,iz-H.z)-H.ring;if(!best||d<best.d)best={k,d,H};}
- const H=best.H;const ang=Math.atan2(H.z-iz,H.x-ix);road([[ix,iz],[H.x-H.ring*Math.cos(ang),H.z-H.ring*Math.sin(ang)]],16,KL.boulevard,{zone:'gate:'+Math.round(g*180/Math.PI)});}
+ const H=best.H;const ang=Math.atan2(H.z-iz,H.x-ix);road([[ix,iz],[H.x-H.ring*Math.cos(ang),H.z-H.ring*Math.sin(ang)]],16,KL.boulevard,{zone:'gate:'+Math.round(g*180/Math.PI)});
+ // 3b. the gate road runs on through the farm belt to the gate where the wall stands now
+ road([[(wallR(g)-30)*Math.cos(g),(wallR(g)-30)*Math.sin(g)],[ix,iz]],16,KL.boulevard,{zone:'gate:'+Math.round(g*180/Math.PI)});}
 // the gate highways run on from the end of each causeway to the nearest edge of the map (Travis): straight, and the
 // jungle is kept off them (mask + a line of keep-clear discs for the hypertrees)
 for(const g of GATES){const R=wallR(g),p=[(R+240)*Math.cos(g),(R+240)*Math.sin(g)],E=CITY.WORLD/2-2;
@@ -6024,7 +6203,7 @@ function park(x,z,r,name){disc(x,z,r,'park');precinct(x,z,r+2,name||'park');PARK
 // a park near a hill: the first bearing (sweeping from a0) whose disc lies on the plateau, clear of every hill's
 // escarpment and skirt foot and of the wall band — a park never climbs a hill side (Travis)
 function parkNear(H,a0,r,rad,name){for(let k=0;k<20;k++){const a=a0+(k%2?1:-1)*Math.ceil(k/2)*.22;const x=H.x+r*Math.cos(a),z=H.z+r*Math.sin(a);
-  if(!insideWall(x,z,rad+30))continue;let ok=true;for(const kk of HILLKEYS){const Q=HILL[kk];if(Math.hypot(x-Q.x,z-Q.z)<Q.r0+Q.E+rad+8)ok=false;}
+  if(!insideCore(x,z,rad+30))continue;let ok=true;for(const kk of HILLKEYS){const Q=HILL[kk];if(Math.hypot(x-Q.x,z-Q.z)<Q.r0+Q.E+rad+8)ok=false;}
   if(!ok)continue;if(inPrecinct(x,z,rad))continue;park(x,z,rad,name);return[x,z];}reportErr('no ground for '+name);return null;}
 {const H=HILL.temple,g=H.gate;   // the temple's park district: two parks at the foot, either side of the ramp
  for(const s of[-1,1])parkNear(H,g+s*1.05,H.ring+64,42,'Temple park '+(s<0?'west':'east'));}
@@ -6077,10 +6256,10 @@ function agCellCentre(i,j){return agWorld((i+.5)*AG.pitch,(j+.5)*AG.pitch);}
 const AG_CELLS={};                                                          // 'i,j' -> cluster index
 function agCellOK(i,j){const c=agCellCentre(i,j);const h=AG.pitch/2;
  const pts=[c,agWorld((i)*AG.pitch,(j)*AG.pitch),agWorld((i+1)*AG.pitch,(j)*AG.pitch),agWorld((i)*AG.pitch,(j+1)*AG.pitch),agWorld((i+1)*AG.pitch,(j+1)*AG.pitch)];
- for(const p of pts){if(!insideWall(p[0],p[1],36))return false;if(!canBuild(p[0],p[1]))return false;if(klass(p[0],p[1])!==0)return false;if(inPrecinct(p[0],p[1],4))return false;}
+ for(const p of pts){if(!insideCore(p[0],p[1],36))return false;if(!canBuild(p[0],p[1]))return false;if(klass(p[0],p[1])!==0)return false;if(inPrecinct(p[0],p[1],4))return false;}
  return !AG_CELLS[i+','+j];}
 // buildable plateau area, for the quotas (sampled)
-function plotArea(){let n=0,N=0;for(let x=-560;x<=560;x+=6)for(let z=-560;z<=560;z+=6){if(!insideWall(x,z,22))continue;N++;if(canBuild(x,z)&&!inPrecinct(x,z,0))n++;}return{area:n*36,plateau:N*36};}
+function plotArea(){let n=0,N=0;for(let x=-560;x<=560;x+=6)for(let z=-560;z<=560;z+=6){if(!insideCore(x,z,22))continue;N++;if(canBuild(x,z)&&!inPrecinct(x,z,0))n++;}return{area:n*36,plateau:N*36};}
 const CITY_AREA=plotArea();
 const ANC_TARGET_CELLS=Math.round(.5*CITY_AREA.area/(AG.pitch*AG.pitch));
 const CLUSTERS=[];   // {i0,j0,nx,nz,cx,cz,hill,d,state:'ruin'|'rehab',slots:[]}
@@ -6101,6 +6280,27 @@ const CLUSTERS=[];   // {i0,j0,nx,nz,cx,cz,hill,d,state:'ruin'|'rehab',slots:[]}
  for(const C of byD){C.state=acc<half?'rehab':'ruin';acc+=C.nx*C.nz;}
  window._ancientCells=cells;window._ancientTarget=ANC_TARGET_CELLS;window._clusters=CLUSTERS.length;
 })();
+// SECOND PASS (Round 3 issue: ~84 of the ~125 cells the half-area rule asks for). The primary network, the precincts and
+// the parks cut the plateau into polygons the lattice's alignment wastes. The same 40 m lattice shifted by half a pitch
+// takes what is left: a cell here must clear every first-pass cluster (and its streets) as well as the usual tests. The
+// first pass is untouched, so no first-pass cluster moved; these clusters are marked `extra` and assigned after.
+(function pickClustersOffset(){reseed(SEED_CITY+43);let cells=window._ancientCells;const O=.5,K={};
+ const inOld=(x,z)=>CLUSTERS.some(C=>{if(C.extra)return false;const u=x*AG.c+z*AG.s,v=-x*AG.s+z*AG.c;return u>C.i0*AG.pitch-AG.street&&u<(C.i0+C.nx)*AG.pitch+AG.street&&v>C.j0*AG.pitch-AG.street&&v<(C.j0+C.nz)*AG.pitch+AG.street;});
+ const ok=(i,j)=>{if(K[i+','+j])return false;const pts=[];for(const a of[0,.5,1])for(const b of[0,.5,1])pts.push(agWorld((i+O+a)*AG.pitch,(j+O+b)*AG.pitch));
+  for(const p of pts){if(!insideCore(p[0],p[1],36)||!canBuild(p[0],p[1])||klass(p[0],p[1])!==0||inPrecinct(p[0],p[1],4)||inOld(p[0],p[1]))return false;}return true;};
+ const N=Math.ceil(CITY.R*1.15/AG.pitch);const order=[];for(let i=-N;i<=N;i++)for(let j=-N;j<=N;j++)order.push([i,j]);
+ for(let k=order.length-1;k>0;k--){const r=Math.floor(rng()*(k+1));const t=order[k];order[k]=order[r];order[r]=t;}
+ const SIZES=[[4,4],[4,3],[3,4],[3,3],[4,2],[2,4],[3,2],[2,3],[2,2]];let added=0;
+ for(const [i0,j0] of order){if(cells>=ANC_TARGET_CELLS)break;if(!ok(i0,j0))continue;let got=null;
+  for(const sz of SIZES){let good=true;for(let i=i0;i<i0+sz[0]&&good;i++)for(let j=j0;j<j0+sz[1]&&good;j++)if(!ok(i,j))good=false;if(good){got=sz;break;}}
+  if(!got)continue;const [nx,nz]=got;const cc=agWorld((i0+O+nx/2)*AG.pitch,(j0+O+nz/2)*AG.pitch);const nh=nearestHill(cc[0],cc[1]);
+  const C={i0:i0+O,j0:j0+O,nx,nz,cx:cc[0],cz:cc[1],hill:nh.key,d:nh.d,slots:[],idx:CLUSTERS.length,extra:true};
+  for(let i=i0;i<i0+nx;i++)for(let j=j0;j<j0+nz;j++)K[i+','+j]=1;CLUSTERS.push(C);cells+=nx*nz;added+=nx*nz;}
+ // reclaimed or ruined by the same rule: nearer a ring than the first pass's median goes reclaimed
+ const dMed=(()=>{const a=CLUSTERS.filter(c=>!c.extra).map(c=>c.d).sort((p,q)=>p-q);return a[Math.floor(a.length/2)]||0;})();
+ for(const C of CLUSTERS)if(C.extra)C.state=C.d<dMed?'rehab':'ruin';
+ window._ancientCells=cells;window._ancientExtra=added;window._clusters=CLUSTERS.length;
+})();
 // streets: every cell edge of every cluster (the ancient grid survives only where ancient buildings stand), then two
 // connectors per cluster to the network as it was before the cluster's own streets went in
 (function paintAncientStreets(){
@@ -6116,8 +6316,9 @@ function slotOBB(C,i,j,w,h){const c=agWorld((C.i0+i+w/2)*AG.pitch,(C.j0+j+h/2)*A
 function fitSlot(grid,nx,nz,w,h){for(let j=0;j+h<=nz;j++)for(let i=0;i+w<=nx;i++){let ok=true;for(let a=0;a<w&&ok;a++)for(let b=0;b<h&&ok;b++)if(grid[j+b][i+a])ok=false;if(ok)return[i,j];}return null;}
 const QUOTA={};for(const k of HILLKEYS)QUOTA[k]={sky:5,mid:15};
 (function assignSlots(){reseed(SEED_CITY+4);let campus=0,factory=0,gov=0;
- // biggest clusters first so the 4x4 campus and 3x3s find room
- for(const C of CLUSTERS.slice().sort((a,b)=>b.nx*b.nz-a.nx*a.nz)){const grid=[];for(let j=0;j<C.nz;j++){grid.push([]);for(let i=0;i<C.nx;i++)grid[j].push(0);}
+ // biggest clusters first so the 4x4 campus and 3x3s find room; the first pass's clusters, then (reseeded) the extras
+ const firstPass=CLUSTERS.filter(C=>!C.extra).sort((a,b)=>b.nx*b.nz-a.nx*a.nz),extras=CLUSTERS.filter(C=>C.extra).sort((a,b)=>b.nx*b.nz-a.nx*a.nz);
+ for(const C of firstPass.concat(extras)){if(C===extras[0])reseed(SEED_CITY+44);const grid=[];for(let j=0;j<C.nz;j++){grid.push([]);for(let i=0;i<C.nx;i++)grid[j].push(0);}
   const Q=QUOTA[C.hill],wish=[];const cells=C.nx*C.nz,big=cells>=12;
   // towers are 1x1 lots (four to a 2x2 block); the Tripod stands on a 2x2 (its legs splay 60 m) with its market under it.
   // Offices, apartments and houses come as ONE type per group (Travis): a row of parallel slabs, or a quad of 1-4 towers.
@@ -6154,7 +6355,10 @@ const QUOTA={};for(const k of HILLKEYS)QUOTA[k]={sky:5,mid:15};
  window._quota=JSON.stringify(QUOTA);
 })();
 (function toppledF(){const T=[-11,-432];let best=null,bd=1e9;for(const C of CLUSTERS)for(const o of C.slots){const d=Math.hypot(o.x-T[0],o.z-T[1]);if(d<bd){bd=d;best=o;}}
- if(best&&bd<40){best.kit='skyF';best.kind='sky';best.trans=null;best.group=null;best.cells=null;best.toppled=true;best.fallToward=[-12.6,-398.5];}})();   // Travis: it falls toward (-12.6,-398.5)
+ if(best&&bd<40){best.kit='skyF';best.kind='sky';best.trans=null;best.group=null;best.cells=null;best.toppled=true;best.fallToward=[-12.6,-398.5];best.breakAt=[-6.8,-375.7];}})();   // Travis: it falls toward (-12.6,-398.5) and breaks in two near (-6.8,-375.7)
+// Travis (round 4): the Skyscraper C near (-23.4,288.4) is repaired (decay 3, in a ruined quarter) and carries a tripod market
+(function tripodHere(){const T=[-23.4,288.4];let best=null,bd=1e9;for(const C of CLUSTERS)for(const o of C.slots){if(o.kit!=='skyC')continue;const d=Math.hypot(o.x-T[0],o.z-T[1]);if(d<bd){bd=d;best=o;}}
+ if(best&&bd<40){best.forceD=3;best.market=true;}})();
 // the ruined clusters, for the biome mask (undergrowth creeps back into the ruins)
 for(const C of CLUSTERS)if(C.state==='ruin')RUIN_RECTS.push({x:C.cx,z:C.cz,hx:C.nx*AG.pitch/2,hz:C.nz*AG.pitch/2,ry:-AG.rot});
 cityBakeMasks();
@@ -6261,6 +6465,339 @@ function buildFactory(scene,gx,gz,d){reseed(d>0?9201:9200);KOFF=[gx,0,gz];REGIST
  KOFF=[0,0,0];
  return G;}
 
+// ================================================================= ATMOS — core: the host binding, the clock, instanced sets, the glow registry
+// ATMOS is the portable atmosphere and street-dressing module (core/atmos/README.md): evening lights, glow, particles,
+// weather, ivy and window boxes, sewer grates, street lamps and fountains, culling. Every fragment is a closure that
+// adds to the one global `ATMOS`; nothing else is declared at top level, so any build can include the files.
+// A build binds it once:
+//   ATMOS.init({THREE, scene, camera, hour:()=>0..24, onFrame:fn=>{}, ground:(x,z)=>y, seed, err:msg=>{}, ui:element})
+// then places things with the module calls and ends with ATMOS.finish() (bakes the instanced sets, builds the glow).
+// Its own PRNG (ATMOS.seed / rnd / rr / pick): it never touches the host's stream.
+const ATMOS={};
+(function(){const A=ATMOS;
+ A.init=function(h){A.h=h;const T=A.T=h.THREE;A.root=new T.Group();A.root.name='atmos';h.scene.add(A.root);
+  A.sets={};A.glow=[];A.hooks=[];A.stats={};A.seed(h.seed||1);
+  A.U={hour:{value:0},night:{value:0},time:{value:0},rain:{value:0},fog:{value:0},flash:{value:0},wind:{value:new T.Vector2(.8,.35)},light:{value:1},px:{value:600}};
+  h.onFrame(()=>{const t=performance.now()/1000,hr=h.hour();const U=A.U;U.hour.value=hr;U.night.value=A.night(hr);U.time.value=t;U.light.value=1-.82*U.night.value;
+   U.px.value=innerHeight/(2*Math.tan(h.camera.fov*Math.PI/360));for(const f of A.hooks){try{f(t,hr);}catch(e){A.err('frame: '+e.message);}}});};
+ A.err=m=>{if(A.h&&A.h.err)A.h.err('atmos: '+m);else console.warn('atmos: '+m);};
+ A.hook=fn=>A.hooks.push(fn);
+ A.ground=(x,z)=>A.h.ground?A.h.ground(x,z):0;
+ // the clock: night factor, and a light's on/off window (on in the evening, off next morning; off may be past 24)
+ A.ss=(a,b,x)=>{const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t);};
+ A.night=h=>Math.min(1,Math.max(0,1-A.ss(5.5,7.2,h)+A.ss(17.2,18.8,h)));
+ A.litAt=(h,on,off)=>{const hh=h<12?h+24:h;return A.ss(on,on+.3,hh)*(1-A.ss(off-.3,off,hh));};
+ A.GLSL_LIT='float atmLit(float h,vec2 t){float hh=h<12.0?h+24.0:h;return smoothstep(t.x,t.x+0.3,hh)*(1.0-smoothstep(t.y-0.3,t.y,hh));}';
+ // PRNG (mulberry32)
+ let s=1;A.seed=n=>{s=(n>>>0)||1;};A.rnd=()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};
+ A.rr=(a,b)=>a+(b-a)*A.rnd();A.pick=a=>a[Math.floor(A.rnd()*a.length)];
+ A.col=hex=>new A.T.Color(hex).convertSRGBToLinear();
+ // shared geometry (unit sizes; posts and cones stand on y=0) and cached materials
+ const G={};A.geo=k=>{if(G[k])return G[k];const T=A.T;
+  G[k]=k==='box'?new T.BoxGeometry(1,1,1):k==='post'?new T.CylinderGeometry(1,1,1,8).translate(0,.5,0):k==='post16'?new T.CylinderGeometry(1,1,1,16).translate(0,.5,0):
+   k==='ball'?new T.SphereGeometry(1,8,6):k==='cone'?new T.ConeGeometry(1,1,7).translate(0,.5,0):k==='plane'?new T.PlaneGeometry(1,1):null;return G[k];};
+ const M={};A.mat=(k,make)=>M[k]||(M[k]=make());
+ A.lam=(hex,rough)=>A.mat('std'+hex+'_'+(rough||.85),()=>new A.T.MeshStandardMaterial({color:hex,roughness:rough||.85,metalness:0}));
+ // INSTANCED SETS: put() collects, finish() bakes one InstancedMesh per set. Item: [x,y,z, sx,sy,sz, ry|Quaternion, color]
+ A.set=(name,geo,mat)=>A.sets[name]||(A.sets[name]={geo:typeof geo==='string'?A.geo(geo):geo,mat,items:[]});
+ A.put=(name,item)=>{A.sets[name].items.push(item);};
+ A.bakeSets=()=>{const T=A.T,m=new T.Matrix4(),p=new T.Vector3(),sc=new T.Vector3(),q0=new T.Quaternion(),qy=new T.Quaternion(),Y=new T.Vector3(0,1,0),W=new T.Color(1,1,1);
+  for(const name in A.sets){const S=A.sets[name];if(!S.items.length||S.mesh)continue;const im=new T.InstancedMesh(S.geo,S.mat,S.items.length);let col=false;
+   S.items.forEach((o,i)=>{p.set(o[0],o[1],o[2]);sc.set(o[3],o[4],o[5]);const q=o[6]==null?q0:(o[6].isQuaternion?o[6]:qy.setFromAxisAngle(Y,o[6]));m.compose(p,q,sc);im.setMatrixAt(i,m);if(o[7]!=null)col=true;});
+   if(col)S.items.forEach((o,i)=>im.setColorAt(i,o[7]!=null?(o[7].isColor?o[7]:A.col(o[7])):W));
+   im.instanceMatrix.needsUpdate=true;if(im.instanceColor)im.instanceColor.needsUpdate=true;im.name='atmos:'+name;im.userData.atmos=name;A.root.add(im);S.mesh=im;A.stats[name]=S.items.length;}};
+ // the GLOW registry: a soft additive sprite over every light. on/off are the light's hours (on<0: follows the night)
+ A.glowAdd=(x,y,z,col,size,on,off)=>{A.glow.push([x,y,z,col[0],col[1],col[2],size||6,on==null?-1:on,off==null?30:off]);};
+ A.noRay=o=>{o.raycast=()=>{};o.userData.probeSkip=true;return o;};
+ A.add=o=>{A.root.add(o);return o;};
+ A.finish=()=>{A.bakeSets();if(A.buildGlow)A.buildGlow();return A.stats;};
+})();
+// ================================================================= ATMOS — street furniture: lamp posts, lamp rows, banners, planters, fountains
+// All positions are world metres; y defaults to the host's ground. Returns what a host may want to register.
+(function(){const A=ATMOS;
+ const iron=()=>A.lam(0x2e2a26,.6),wood=()=>A.lam(0x4a3a2a,.9),stone=()=>A.lam(0xcdb48a,.95);
+ const headMat=()=>A.mat('lampHead',()=>{const m=new A.T.MeshBasicMaterial({color:0xffe0a0});const day=new A.T.Color(0x6a6458),lit=new A.T.Color(0xffe0a0);
+  A.hook(()=>{m.color.copy(day).lerp(lit,A.U.night.value);});return m;});
+ // a boulevard lamp: iron pole, a short arm, a lamp head that glows from its hour on to its hour off
+ A.lamp=(x,z,o)=>{o=o||{};const y=o.y!=null?o.y:A.ground(x,z)-.2,h=o.h||6.2,hd=o.heading||0;A.set('lampPole','post',iron());A.set('lampHead','box',headMat());A.set('lampArm','box',iron());
+  A.put('lampPole',[x,y,z,.13,h,.13,0]);const ax=x+Math.sin(hd)*.55,az=z+Math.cos(hd)*.55;A.put('lampArm',[(x+ax)/2,y+h-.1,(z+az)/2,.08,.08,1.1,hd]);
+  A.put('lampHead',[ax,y+h-.45,az,.55,.5,.55,hd]);A.glowAdd(ax,y+h-.5,az,[1,.85,.45],o.glow||6,o.on!=null?o.on:17.6,o.off!=null?o.off:29.6);return[ax,y+h-.45,az];};
+ // lamps both sides of a polyline every `step` m, `off` m out from its centre line; ok(x,z) vetoes a spot.
+ // The evening runs down the row: the far end (fraction 1) lights `spread` hours after the near end.
+ A.lampRow=(pts,o)=>{o=o||{};const step=o.step||16,off=o.off||9.5,spread=o.spread==null?.5:o.spread;let L=0;const seg=[];for(let i=0;i<pts.length-1;i++){const l=Math.hypot(pts[i+1][0]-pts[i][0],pts[i+1][1]-pts[i][1]);seg.push(l);L+=l;}
+  const out=[];let acc=0;for(let i=0;i<pts.length-1;i++){const a=pts[i],b=pts[i+1],l=seg[i];if(l<1){continue;}const ux=(b[0]-a[0])/l,uz=(b[1]-a[1])/l;
+   for(let s=Math.ceil((acc-step/2)/step)*step+step/2-acc;s<l;s+=step){if(s<0)continue;const f=(acc+s)/Math.max(1,L);for(const sd of(o.sides||[-1,1])){const x=a[0]+ux*s-uz*off*sd,z=a[1]+uz*s+ux*off*sd;if(o.ok&&!o.ok(x,z))continue;
+     A.lamp(x,z,{heading:Math.atan2(uz*sd,-ux*sd),on:(o.on||17.55)+spread*f+(sd>0?.02:0),off:(o.off2||29.55)+spread*(1-f)});out.push([x,z,sd,f,ux,uz]);}}acc+=l;}return out;};
+ // a planter: timber box and a mound of leaves
+ A.planter=(x,z,ry,o)=>{o=o||{};const y=A.ground(x,z)-.1;A.set('planter','box',A.lam(0x8a6a3a,.9));A.set('planterLeaf','ball',A.lam(0x4f8a3e,.9));
+  A.put('planter',[x,y+.6,z,o.w||2.2,1.2,o.d||1.2,ry]);A.put('planterLeaf',[x,y+1.25,z,(o.w||2.2)*.48,.5,(o.d||1.2)*.48,ry]);};
+ // a banner: an 11 m pole, a cloth flag hung square across the bearing `ry` (radians, x toward z: the flag faces along it), a cap
+ A.banner=(x,z,ry,hex,o)=>{o=o||{};const y=A.ground(x,z)-.2,h=o.h||11;A.set('bannerPole','post',wood());A.set('bannerFlag','box',A.lam(0xffffff,.95));A.set('bannerCap','box',A.lam(0xc8a868,.8));
+  A.put('bannerPole',[x,y,z,.22,h,.22,0]);A.put('bannerFlag',[x,y+h*.32+3.2,z,.2,h*.6,2.2,-ry,hex]);A.put('bannerCap',[x,y+h-.35,z,.45,.45,2.8,-ry]);};
+ // a fountain: stone basin, rippling water, a fluted column, a top bowl, a lit spout
+ A.fountain=(x,z,o)=>{o=o||{};const r=o.r||4,y=(o.y!=null?o.y:A.ground(x,z))-.15;A.set('fountainStone','post16',stone());
+  const water=A.mat('fountainWater',()=>{const m=new A.T.MeshStandardMaterial({color:0x4aa8d8,roughness:.08,metalness:.1,transparent:true,opacity:.82});
+   A.hook(t=>{m.emissive.setRGB(.05,.12+.04*Math.sin(t*2.3),.2);});return m;});A.set('fountainWater','post16',water);
+  A.put('fountainStone',[x,y,z,r,1.1,r,0]);A.put('fountainStone',[x,y+1.05,z,r+.25,.2,r+.25,0]);A.put('fountainWater',[x,y+1.0,z,r-.4,.14,r-.4,0]);
+  A.put('fountainStone',[x,y+1,z,r*.14,3.2,r*.14,0]);A.put('fountainStone',[x,y+4.1,z,r*.34,.35,r*.34,0]);A.put('fountainWater',[x,y+4.35,z,r*.3,.08,r*.3,0]);
+  A.set('fountainJet','cone',A.mat('fountainJet',()=>new A.T.MeshBasicMaterial({color:0xcfeeff,transparent:true,opacity:.55,depthWrite:false})));A.put('fountainJet',[x,y+4.3,z,.25,1.4,.25,0]);
+  A.glowAdd(x,y+4.9,z,[.6,.85,1],4,-1,30);return{x,y,z,r:r+.4,h:5.8};};
+})();
+// ================================================================= ATMOS — the evening: searchlight beams, spot cones, beacons, braziers, floodlights
+// Beams and cones are additive cones whose brightness fades along their length (no real lights: they cost nothing per
+// fragment). Each has an on/off window in hours; the glow layer puts a soft sprite at its source. Real PointLights are
+// only made by floodLight(); a host should keep those to a handful (every lit material pays for every light).
+(function(){const A=ATMOS;
+ const fadeCone=(len,rad,seg)=>{const g=new A.T.ConeGeometry(rad,len,seg||12,1,true).translate(0,-len/2,0);const p=g.attributes.position,c=new Float32Array(p.count*3);
+  for(let i=0;i<p.count;i++){const f=1-Math.min(1,Math.abs(p.getY(i))/len),v=f*f;c[i*3]=c[i*3+1]=c[i*3+2]=v;}g.setAttribute('color',new A.T.BufferAttribute(c,3));return g;};   // apex at the origin, opening toward -y
+ const beamMat=hex=>new A.T.MeshBasicMaterial({color:hex||0xfff2d0,vertexColors:true,transparent:true,opacity:0,blending:A.T.AdditiveBlending,depthWrite:false,side:A.T.DoubleSide,fog:false});
+ const housing=()=>A.lam(0x2a2826,.6);
+ // a SEARCHLIGHT on a tower: sweeps ±sweep rad about `heading` (bearing, x toward z), tilted `tilt` below the horizontal.
+ // o.sky: points up and wanders round the sky instead (palace roofs).
+ A.sweepBeam=(x,y,z,o)=>{o=o||{};const T=A.T,piv=new T.Group();piv.position.set(x,y,z);A.add(piv);A.noRay(piv);
+  const hm=new T.Mesh(A.geo('post'),housing());hm.scale.set(1.3,1.4,1.3);hm.position.y=-.7;piv.add(hm);
+  const m=beamMat(o.color);const cone=new T.Mesh(fadeCone(o.len||220,o.rad||9),m);
+  const tilt=new T.Group();piv.add(tilt);tilt.add(cone);if(o.sky){cone.rotation.x=Math.PI;}else tilt.rotation.x=-(Math.PI/2-(o.tilt||.12));
+  const on=o.on!=null?o.on:17.9,off=o.off!=null?o.off:29.7,ph=A.rr(0,6.28),rate=A.rr(.2,.35),base=Math.PI/2-(o.heading||0),sw=o.sweep==null?.7:o.sweep;
+  A.glowAdd(x,y+.6,z,[1,.95,.8],o.glow||9,on,off);
+  A.hook((t,h)=>{const l=A.litAt(h,on,off);m.opacity=(o.opacity||.2)*l;cone.visible=l>.01;
+   if(o.sky){piv.rotation.z=.5*Math.sin(t*rate+ph);piv.rotation.y=t*.25+ph;}else piv.rotation.y=base+sw*Math.sin(t*rate+ph);});return piv;};
+ // a fixed SPOT CONE from (x,y,z) along dir (world vector): a gate lamp throwing light down on a bridge
+ A.spotCone=(x,y,z,dir,o)=>{o=o||{};const T=A.T,m=beamMat(o.color);const c=new T.Mesh(fadeCone(o.len||120,o.rad||14),m);c.position.set(x,y,z);
+  c.quaternion.setFromUnitVectors(new T.Vector3(0,-1,0),new T.Vector3(dir[0],dir[1],dir[2]).normalize());A.add(c);A.noRay(c);
+  const on=o.on!=null?o.on:17.75,off=o.off!=null?o.off:29.8;A.glowAdd(x,y,z,[1,.95,.8],o.glow||10,on,off);
+  A.hook((t,h)=>{const l=A.litAt(h,on,off);m.opacity=(o.opacity||.13)*l;c.visible=l>.01;});return c;};
+ // a rotating BEACON: two thin cones back to back, red by default, faint by day
+ A.beacon=(x,y,z,o)=>{o=o||{};const T=A.T,g=new T.Group();g.position.set(x,y,z);A.add(g);A.noRay(g);const m=beamMat(o.color||0xff6040);const geo=fadeCone(o.len||90,o.rad||4,10);
+  for(const a of[0,Math.PI]){const w=new T.Group();w.rotation.y=a;const c=new T.Mesh(geo,m);c.rotation.x=-(Math.PI/2-.05);w.add(c);g.add(w);}
+  A.glowAdd(x,y,z,[1,.3,.2],o.glow||10,0,30);A.hook(t=>{m.opacity=.35*A.U.night.value+.05;g.rotation.y=t*1.5;});return g;};
+ // a BRAZIER: an iron bowl on a post, a flickering flame (scaled to nothing when out)
+ A.brazier=(x,y,z,o)=>{o=o||{};A.set('brazier','post',A.lam(0x5c4a3a,.7));A.put('brazier',[x,y,z,.4,2.2,.4,0]);A.put('brazier',[x,y+2.2,z,1.05,.7,1.05,0]);
+  const T=A.T,fm=A.mat('flame',()=>new T.MeshBasicMaterial({color:0xffa040,transparent:true,opacity:.92,depthWrite:false}));const f=new T.Mesh(A.geo('cone'),fm);f.position.set(x,y+2.85,z);A.add(f);A.noRay(f);
+  const on=o.on!=null?o.on:17.5,off=o.off!=null?o.off:29.9;A.glowAdd(x,y+3.6,z,[1,.6,.2],o.glow||7,on,off);
+  A.hook((t,h)=>{const l=A.litAt(h,on,off),k=(.85+.2*Math.sin(t*7+x))*l;f.visible=l>.01;f.scale.set(.75*k+.001,1.7*k+.001,.75*k+.001);});return f;};
+ // a scheduled FLOODLIGHT (a real PointLight), warming up from dim orange as it comes on
+ A.floodLight=(x,y,z,o)=>{o=o||{};const L=new A.T.PointLight(0xffd9a0,0,o.dist||140,o.decay||1.6);L.position.set(x,y,z);A.add(L);const on=o.on!=null?o.on:17.1,off=o.off!=null?o.off:22.3;
+  A.glowAdd(x,y,z,[1,.85,.6],o.glow||12,on,off);
+  A.hook((t,h)=>{const hh=h<12?h+24:h,w=Math.min(1,Math.max(0,(hh-on)/.45));L.intensity=(o.intensity||1.1)*A.litAt(h,on,off)*(.3+.7*w);L.color.setRGB(1,.54+.31*w,.23+.4*w);});return L;};
+ // THE GLOW LAYER: one Points cloud over every registered light; a light's sprite follows its hours, a night light the night
+ A.buildGlow=()=>{const n=A.glow.length;if(!n)return null;const T=A.T;const pos=new Float32Array(n*3),col=new Float32Array(n*3),sz=new Float32Array(n),lt=new Float32Array(n*2);
+  A.glow.forEach((g,i)=>{pos.set([g[0],g[1],g[2]],i*3);col.set([g[3],g[4],g[5]],i*3);sz[i]=g[6];lt[i*2]=g[7];lt[i*2+1]=g[8];});
+  const gg=new T.BufferGeometry();gg.setAttribute('position',new T.BufferAttribute(pos,3));gg.setAttribute('color',new T.BufferAttribute(col,3));gg.setAttribute('psize',new T.BufferAttribute(sz,1));gg.setAttribute('lt',new T.BufferAttribute(lt,2));
+  const cv=document.createElement('canvas');cv.width=cv.height=64;const c2=cv.getContext('2d');const gr=c2.createRadialGradient(32,32,0,32,32,32);
+  gr.addColorStop(0,'rgba(255,255,255,1)');gr.addColorStop(.18,'rgba(255,255,255,.75)');gr.addColorStop(.5,'rgba(255,255,255,.18)');gr.addColorStop(1,'rgba(255,255,255,0)');c2.fillStyle=gr;c2.fillRect(0,0,64,64);
+  const gm=new T.ShaderMaterial({uniforms:{map:{value:new T.CanvasTexture(cv)},hour:A.U.hour,night:A.U.night,px:A.U.px,rain:A.U.rain},transparent:true,depthWrite:false,blending:T.AdditiveBlending,fog:false,
+   vertexShader:`attribute float psize;attribute vec3 color;attribute vec2 lt;uniform float hour;uniform float night;uniform float px;uniform float rain;varying vec3 vC;varying float vA;${A.GLSL_LIT}
+    void main(){float f=lt.x<0.0?0.25+0.75*night:(lt.x==0.0?1.0:atmLit(hour,lt));vec4 mv=modelViewMatrix*vec4(position,1.0);float d=max(-mv.z,1.0);
+     gl_PointSize=clamp(psize*px/d*(0.6+0.4*f)*(1.0+0.4*rain),2.0,160.0);vA=exp(-d*0.0022)*f*(0.15+0.85*night);vC=color;gl_Position=projectionMatrix*mv;}`,
+   fragmentShader:`uniform sampler2D map;varying vec3 vC;varying float vA;void main(){float a=texture2D(map,gl_PointCoord).a*vA;if(a<0.004)discard;gl_FragColor=vec4(vC*a*1.7,a);}`});
+  const pts=new T.Points(gg,gm);pts.frustumCulled=false;pts.renderOrder=6;pts.name='atmos:glow';A.add(pts);A.noRay(pts);A.stats.glow=n;return pts;};
+})();
+// ================================================================= ATMOS — particles: chimney smoke and vent steam, fireflies, a mist ring, fog banks
+// Each is one Points cloud animated in its vertex shader (no per-frame CPU work). Sizes are in world metres.
+(function(){const A=ATMOS;
+ const pmat=(vs,fs,additive,extra)=>new A.T.ShaderMaterial({uniforms:Object.assign({time:A.U.time,px:A.U.px,wind:A.U.wind,light:A.U.light,rain:A.U.rain,night:A.U.night,fog:A.U.fog,k:{value:0}},extra||{}),
+  vertexShader:`uniform float time;uniform float px;uniform vec2 wind;uniform float light;uniform float rain;uniform float night;uniform float fog;uniform float k;attribute vec4 pp;varying float vA;varying vec3 vC;
+   void main(){${vs}}`,fragmentShader:`varying float vA;varying vec3 vC;void main(){float d=length(gl_PointCoord-0.5);${fs}}`,
+  transparent:true,depthWrite:false,fog:false,blending:additive?A.T.AdditiveBlending:A.T.NormalBlending});
+ const cloud=(name,pos,pp,m,order)=>{const T=A.T,g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(pos,3));g.setAttribute('pp',new T.Float32BufferAttribute(pp,4));
+  const p=new T.Points(g,m);p.frustumCulled=false;p.renderOrder=order||3;p.name='atmos:'+name;A.add(p);A.noRay(p);A.stats[name]=pos.length/3;return p;};
+ // SMOKE: emitters [x,y,z,kind] (0 chimney smoke, 1 steam, 2 spray); each particle loops its age, rising and drifting downwind
+ A.smoke=(list,o)=>{o=o||{};if(!list.length)return null;const pos=[],pp=[];for(const e of list){const n=e[3]===0?(o.n||12):e[3]===1?14:16;for(let k=0;k<n;k++){pos.push(e[0],e[1],e[2]);pp.push(k/n+A.rr(-.02,.02),e[3],A.rnd(),A.rnd());}}
+  return cloud('smoke',pos,pp,pmat(`float kind=pp.y;float rate=kind<0.5?0.11:(kind<1.5?0.3:0.45);float age=fract(time*rate+pp.x);
+   float rise=kind<0.5?16.0:(kind<1.5?9.0:3.5);float drift=kind<0.5?9.0:(kind<1.5?4.0:1.5);
+   vec3 p=position+vec3(wind.x,0.0,wind.y)*age*drift+vec3(0.0,age*rise,0.0)+vec3(sin(pp.z*6.28+age*3.0),0.0,cos(pp.w*6.28+age*2.5))*age*1.2;
+   float s0=kind<0.5?1.2:0.8;float s1=kind<0.5?5.5:3.2;vec4 mv=modelViewMatrix*vec4(p,1.0);float dd=max(-mv.z,1.0);
+   gl_PointSize=clamp(mix(s0,s1,age)*px/dd,1.0,256.0);vA=smoothstep(0.0,0.12,age)*(1.0-age)*(kind<0.5?0.35*(1.0-0.5*rain):0.32)*exp(-dd*0.0018);
+   vC=(kind<0.5?vec3(0.46,0.44,0.42):vec3(0.92,0.94,0.96))*(0.3+0.7*light);gl_Position=projectionMatrix*mv;`,
+   `float a=(1.0-smoothstep(0.1,0.5,d))*vA;if(a<0.004)discard;gl_FragColor=vec4(vC,a);`));};
+ // FIREFLIES round centres [x,y,z]: n per centre, wandering within `spread` m, blinking, only at night and not in rain
+ A.fireflies=(centres,o)=>{o=o||{};const n=o.n||6,sp=o.spread||5,pos=[],pp=[];for(const c of centres)for(let i=0;i<n;i++){pos.push(c[0]+A.rr(-sp,sp),c[1]+A.rr(.5,3.5),c[2]+A.rr(-sp,sp));pp.push(A.rnd()*6.28,A.rr(.5,1.1),A.rnd()*2,A.rr(.5,.9));}
+  if(!pos.length)return null;return cloud('fireflies',pos,pp,pmat(`float t=time*pp.y+pp.x;vec3 p=position+vec3(sin(t*0.7)*1.8,sin(t*1.3+pp.z)*0.8+0.4,cos(t*0.6+pp.z*2.0)*1.8);
+   float blink=pow(max(sin(time*(1.2+pp.z)+pp.x*6.0),0.0),5.0);vec4 mv=modelViewMatrix*vec4(p,1.0);float dd=max(-mv.z,1.0);
+   gl_PointSize=clamp(pp.w*(0.5+blink)*px/dd*0.35,1.0,24.0);vA=blink*night*exp(-dd*0.004)*(1.0-rain);vC=vec3(0.75,1.0,0.35);gl_Position=projectionMatrix*mv;`,
+   `float a=(1.0-smoothstep(0.0,0.5,d))*vA;if(a<0.003)discard;gl_FragColor=vec4(vC*a,a);`,true));};
+ // a MIST RING drifting round a closed curve r(t) (a moat): `inner`..`outer` m out from it at heights y0..y1; thick at dawn
+ // and in rain (k is set each frame from the hour and the rain)
+ A.mistRing=(rFn,o)=>{o=o||{};const N=o.n||420,samples=256,R=[];for(let i=0;i<samples;i++)R.push(rFn(i/samples*Math.PI*2));
+  const pos=[],pp=[];for(let i=0;i<N;i++){pos.push(A.rnd()*Math.PI*2,A.rr(o.inner||8,o.outer||38),A.rr(o.y0||-9,o.y1||-3));pp.push(A.rr(26,60),A.rr(-.004,.004),A.rnd()*6.28,A.rnd());}
+  // each particle carries its own radius (the curve at its bearing plus its offset); it drifts slowly round in bearing
+  for(let i=0;i<N;i++){const t=pos[i*3];pos[i*3+1]+=R[Math.floor(((t/(Math.PI*2))%1)*samples)];}
+  const m=pmat(`float t=position.x+time*pp.y;float r=position.y;vec3 p=vec3(r*cos(t),position.z+sin(time*0.2+pp.z)*0.8,r*sin(t));vec4 mv=modelViewMatrix*vec4(p,1.0);float dd=max(-mv.z,1.0);
+   gl_PointSize=clamp(pp.x*px/dd,1.0,220.0);vA=k*0.12*exp(-dd*0.0012)*smoothstep(4.0,30.0,dd);vC=mix(vec3(0.1,0.11,0.19),vec3(0.86,0.88,0.92),smoothstep(0.3,1.0,light));gl_Position=projectionMatrix*mv;`,
+   `float a=(1.0-smoothstep(0.0,0.5,d))*vA;if(a<0.003)discard;gl_FragColor=vec4(vC,a);`);
+  const p=cloud('mist',pos,pp,m);A.hook((t,h)=>{const v=Math.min(1,A.ss(4.3,5.5,h)*(1-A.ss(7.8,9.4,h))+.25*A.U.rain.value+.4*A.U.fog.value);m.uniforms.k.value=v;p.visible=v>.07;});return p;};
+ // FOG BANKS: low soft sprites at the given points [x,y,z], seen only when the weather's fog is up
+ A.fogBank=(points,o)=>{o=o||{};const pos=[],pp=[];for(const q of points){pos.push(q[0],q[1]+A.rr(1,8),q[2]);pp.push(A.rr(30,70),A.rnd()*6.28,A.rnd(),A.rnd());}
+  const m=pmat(`vec3 p=position+vec3(wind.x,0.0,wind.y)*sin(time*0.05+pp.y)*14.0;p.y+=sin(time*0.13+pp.y)*0.8;vec4 mv=modelViewMatrix*vec4(p,1.0);float dd=max(-mv.z,1.0);
+   gl_PointSize=clamp(pp.x*px/dd,1.0,220.0);vA=fog*0.16*smoothstep(3.0,25.0,dd)*exp(-dd*0.0009);vC=mix(vec3(0.14,0.15,0.2),vec3(0.86,0.87,0.9),smoothstep(0.3,1.0,light));gl_Position=projectionMatrix*mv;`,
+   `float a=(1.0-smoothstep(0.0,0.5,d))*vA;if(a<0.003)discard;gl_FragColor=vec4(vC,a);`);
+  const p=cloud('fogbank',pos,pp,m);A.hook(()=>{p.visible=A.U.fog.value>.01;});return p;};
+})();
+// ================================================================= ATMOS — weather: modes, rain streaks, lightning, fog, wet ground
+// ATMOS.weather(o) starts it. Modes: auto (dawn fog, an evening shower 19:30-22:00, from the hour), clear, rain, storm
+// (rain with lightning), fog. The state eases toward the mode's target each frame: W.rain, W.fog, W.wet (rises in rain,
+// dries after), W.flash (lightning). The module draws the rain and the bolt; what the weather does to the HOST's scene
+// (fog density, sun, ground roughness) is the host's: o.apply(W) is called every frame after the state is updated.
+// o.ui: an element to put a Weather selector in. Never flashes when the viewer asks for reduced motion.
+(function(){const A=ATMOS;
+ A.weather=o=>{o=o||{};const T=A.T,W=A.W={mode:o.mode||'auto',rain:0,fog:0,wet:0,flash:0,MODES:['auto','clear','rain','storm','fog']};let last=performance.now();
+  const auto=h=>({rain:A.ss(19.5,19.9,h)*(1-A.ss(21.6,22,h)),fog:.7*A.ss(4.3,5.5,h)*(1-A.ss(8.4,9.6,h))});
+  // rain: streaks in a 240 m box that travels with the camera
+  const N=o.drops||7000,pos=new Float32Array(N*6),end=new Float32Array(N*2);for(let i=0;i<N;i++){const x=A.rr(-120,120),y=A.rr(-120,120),z=A.rr(-120,120);pos.set([x,y,z,x,y,z],i*6);end[i*2+1]=1;}
+  const g=new T.BufferGeometry();g.setAttribute('position',new T.BufferAttribute(pos,3));g.setAttribute('tip',new T.BufferAttribute(end,1));
+  const rm=new T.ShaderMaterial({uniforms:{time:A.U.time,wind:A.U.wind,light:A.U.light,rain:A.U.rain},transparent:true,depthWrite:false,fog:false,
+   vertexShader:`uniform float time;uniform vec2 wind;uniform float rain;attribute float tip;varying float vA;
+    void main(){vec3 p=position;p.y=mod(p.y-time*60.0,240.0)-120.0+cameraPosition.y;p.xz=mod(p.xz-cameraPosition.xz+120.0+wind*time*6.0,240.0)-120.0+cameraPosition.xz;
+     p+=normalize(vec3(wind.x*0.25,-1.0,wind.y*0.25))*tip*2.4;vec4 mv=viewMatrix*vec4(p,1.0);vA=rain*(1.0-smoothstep(50.0,120.0,length(mv.xyz)))*(0.35+0.65*tip);gl_Position=projectionMatrix*mv;}`,
+   fragmentShader:`uniform float light;varying float vA;void main(){gl_FragColor=vec4(vec3(0.72,0.77,0.86)*(0.35+0.65*light),vA*0.42);}`});
+  const rain=new T.LineSegments(g,rm);rain.frustumCulled=false;rain.renderOrder=4;rain.name='atmos:rain';A.add(rain);A.noRay(rain);
+  // lightning: a jagged ribbon far off, a double flash
+  const K=14,bp=new Float32Array((K+1)*6),idx=[];for(let k=0;k<K;k++){const q=k*2;idx.push(q,q+1,q+2,q+1,q+3,q+2);}
+  const bg=new T.BufferGeometry();bg.setAttribute('position',new T.BufferAttribute(bp,3));bg.setIndex(idx);
+  const bm=new T.MeshBasicMaterial({color:0xe8ecff,transparent:true,opacity:0,blending:T.AdditiveBlending,depthWrite:false,fog:false,side:T.DoubleSide});
+  const bolt=new T.Mesh(bg,bm);bolt.frustumCulled=false;bolt.visible=false;A.add(bolt);A.noRay(bolt);
+  const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;let next=performance.now()+6000,t0=-1e9;
+  const strike=()=>{const cam=A.h.camera.position,a=A.rnd()*Math.PI*2,dist=700+A.rnd()*500,cx=cam.x+Math.cos(a)*dist,cz=cam.z+Math.sin(a)*dist,top=380+A.rnd()*120,base=A.ground(cx,cz);
+   const sx=-Math.sin(a),sz=Math.cos(a);let x=cx,z=cz;for(let k=0;k<=K;k++){const y=top+(base-top)*k/K;if(k){x+=(A.rnd()-.5)*40;z+=(A.rnd()-.5)*40;}const w=3.2-2.4*k/K;bp.set([x-sx*w,y,z-sz*w,x+sx*w,y,z+sz*w],k*6);}
+   bg.attributes.position.needsUpdate=true;bg.computeBoundingSphere();t0=performance.now();next=t0+5000+A.rnd()*9000;};
+  A.hook((t,h)=>{const now=performance.now(),dt=Math.min(.1,(now-last)/1000);last=now;const M=W.mode,au=auto(h);
+   const tr=M==='rain'?.75:M==='storm'?1:M==='auto'?au.rain:0,tf=M==='fog'?1:M==='auto'?au.fog:M==='storm'?.3:0;
+   W.rain+=(tr-W.rain)*Math.min(1,dt*1.5);W.fog+=(tf-W.fog)*Math.min(1,dt*.8);W.wet=Math.min(1,Math.max(0,W.wet+dt*(W.rain>.15?.12*W.rain:-.02)));
+   if(M==='storm'&&!reduce&&W.rain>.6&&now>next&&!document.hidden)strike();const e=now-t0;W.flash=e<80?1:e<150?.25:e<230?.8:e<600?.8*(1-(e-230)/370):0;
+   A.U.rain.value=W.rain;A.U.fog.value=W.fog;A.U.flash.value=W.flash;rain.visible=W.rain>.01;bolt.visible=W.flash>.01;bm.opacity=Math.min(1,W.flash*1.5);
+   if(o.apply)o.apply(W);});
+  if(o.ui)A.weatherUI(o.ui);A.strike=strike;return W;};
+ // the Weather selector, appended to any element (a host may call it later, once its own toolbar is laid out)
+ A.weatherUI=el=>{const W=A.W;if(!W||!el)return null;const sel=document.createElement('select');sel.id='atmosWeather';sel.title='Weather';sel.setAttribute('aria-label','Weather');
+  for(const m of W.MODES){const op=document.createElement('option');op.value=m;op.textContent=m;sel.appendChild(op);}sel.value=W.mode;sel.onchange=()=>{W.mode=sel.value;};el.appendChild(sel);return sel;};
+})();
+// ================================================================= ATMOS — dressing on buildings: ivy, window boxes, rooftop cisterns
+// A.boxIndex(meshes) indexes every instance of box-geometry InstancedMeshes (walls, slabs, roofs) as an oriented box in an
+// 8 m grid; idx.ray(origin, dir, maxD) returns the nearest hit {t, p, n, top} exactly (slab test in the box's own frame).
+// dressBuilding() uses it to find a building's real walls and roof, so the dressing lands on fabric, not on a footprint.
+(function(){const A=ATMOS;
+ A.boxIndex=(meshes,o)=>{o=o||{};const T=A.T,C=8,cells={},list=[],m=new T.Matrix4(),p=new T.Vector3(),q=new T.Quaternion(),s=new T.Vector3(),min=o.minSize||2;
+  for(const im of meshes){if(!im||!im.isInstancedMesh||im.geometry.type!=='BoxGeometry')continue;im.geometry.computeBoundingBox();const bb=im.geometry.boundingBox;
+   for(let i=0;i<im.count;i++){im.getMatrixAt(i,m);m.decompose(p,q,s);const big=[s.x,s.y,s.z].filter(v=>v>=min).length;if(big<2)continue;
+    const M=m.clone(),inv=m.clone().invert(),box=new T.Box3().copy(bb).applyMatrix4(M);const e={M,inv,bb,top:box.max.y,box};list.push(e);
+    for(let cx=Math.floor(box.min.x/C);cx<=Math.floor(box.max.x/C);cx++)for(let cz=Math.floor(box.min.z/C);cz<=Math.floor(box.max.z/C);cz++)(cells[cx+','+cz]||(cells[cx+','+cz]=[])).push(e);}}
+  const lo=new T.Vector3(),ld=new T.Vector3(),nm=new T.Matrix3();
+  const ray=(org,dir,maxD)=>{const seen=new Set();let best=null;const L=maxD||60,step=C/2;
+   for(let t=0;t<=L+step;t+=step){const x=org[0]+dir[0]*t,z=org[2]+dir[2]*t;const cell=cells[Math.floor(x/C)+','+Math.floor(z/C)];if(!cell)continue;
+    for(const e of cell){if(seen.has(e))continue;seen.add(e);lo.set(org[0],org[1],org[2]).applyMatrix4(e.inv);ld.set(dir[0],dir[1],dir[2]);   // the direction goes through the linear part only: t is the same in both frames
+    const el=e.inv.elements;const dx=el[0]*ld.x+el[4]*ld.y+el[8]*ld.z,dy=el[1]*ld.x+el[5]*ld.y+el[9]*ld.z,dz=el[2]*ld.x+el[6]*ld.y+el[10]*ld.z;
+     let t0=-1e9,t1=1e9,ax=-1,sg=0;const O=[lo.x,lo.y,lo.z],D=[dx,dy,dz],mn=[e.bb.min.x,e.bb.min.y,e.bb.min.z],mx=[e.bb.max.x,e.bb.max.y,e.bb.max.z];let ok=true;
+     for(let k=0;k<3&&ok;k++){if(Math.abs(D[k])<1e-9){if(O[k]<mn[k]||O[k]>mx[k])ok=false;continue;}let a=(mn[k]-O[k])/D[k],b=(mx[k]-O[k])/D[k],s=-1;if(a>b){const c=a;a=b;b=c;s=1;}if(a>t0){t0=a;ax=k;sg=s;}if(b<t1)t1=b;if(t0>t1)ok=false;}
+     if(!ok||t0<0||t0>L||ax<0)continue;if(!best||t0<best.t){const n=new T.Vector3(ax===0?sg:0,ax===1?sg:0,ax===2?sg:0);nm.getNormalMatrix(e.M);n.applyMatrix3(nm).normalize();
+      best={t:t0,p:[org[0]+dir[0]*t0,org[1]+dir[1]*t0,org[2]+dir[2]*t0],n:[n.x,n.y,n.z],top:e.top,box:e.box};}}}
+   return best;};
+  A.stats.boxIndex=list.length;return{ray,count:list.length};};
+ // IVY: a canvas atlas of three leaf-sheet variants (vines rooted along the bottom, thinning to their tips)
+ let ivyTex=null;const ivyAtlas=()=>{if(ivyTex)return ivyTex;const cv=document.createElement('canvas');cv.width=768;cv.height=256;const g=cv.getContext('2d');const R=A.rnd;
+  const leaf=(x,y,sz,a,l)=>{g.save();g.translate(x,y);g.rotate(a);g.fillStyle=`rgb(${l-40},${l},${l-55})`;g.beginPath();g.moveTo(0,sz*.9);g.lineTo(-sz*.5,sz*.15);g.lineTo(-sz,-sz*.3);g.lineTo(-sz*.35,-sz*.28);g.lineTo(0,-sz);g.lineTo(sz*.35,-sz*.28);g.lineTo(sz,-sz*.3);g.lineTo(sz*.5,sz*.15);g.closePath();g.fill();g.restore();};
+  for(let v=0;v<3;v++){const ox=v*256,stems=[];for(let k=0;k<6+Math.floor(R()*3);k++){const x0=ox+28+R()*200,top=256*(.03+.62*R()),pts=[];let x=x0,y=256,ph=R()*6;while(y>top){pts.push([x,y]);y-=6;x=Math.max(ox+16,Math.min(ox+240,x+Math.sin(y*.05+ph)*2.2+(R()-.5)*3));}stems.push(pts);}
+   g.lineCap='round';for(const st of stems){g.strokeStyle='rgba(74,56,38,.95)';g.lineWidth=2.2;g.beginPath();st.forEach((q,i)=>i?g.lineTo(q[0],q[1]):g.moveTo(q[0],q[1]));g.stroke();}
+   for(const st of stems){const x0=st[0][0];for(let i=0;i<46;i++){const r=28*Math.sqrt(R()),a=R()*6.283,x=x0+Math.cos(a)*r*1.3,y=250+Math.sin(a)*r*.9;if(x<ox+8||x>ox+248)continue;leaf(x,y,6+R()*4,R()*6.283,150+Math.floor(R()*80));}
+    st.forEach((q,i)=>{const f=1-i/st.length;if(R()>.6+.4*f)return;const x=q[0]+(R()-.5)*(8+14*f),y=q[1]+(R()-.5)*8;if(x<ox+8||x>ox+248)return;leaf(x,y,5+R()*3+3*f,R()*6.283,155+Math.floor(R()*80));});}}
+  ivyTex=new A.T.CanvasTexture(cv);ivyTex.encoding=A.T.sRGBEncoding;ivyTex.anisotropy=4;return ivyTex;};
+ const IVYG=[0x3f9a4c,0x4cb35a,0x3a8a6a,0x52a870,0x62c488,0x6fb04a,0x80bf5a],FLOWER=[0xff5fa2,0xffd34a,0xe8443a,0xf4f0e6,0xb06adf,0xff8a3a];
+ const ivySet=v=>{const k='ivy'+v;if(A.sets[k])return k;const g=new A.T.PlaneGeometry(1,1).translate(0,.5,0);const uv=g.attributes.uv;for(let i=0;i<uv.count;i++)uv.setX(i,(v+uv.getX(i))/3);
+  A.set(k,g,A.mat('ivy',()=>new A.T.MeshLambertMaterial({color:0xffffff,map:ivyAtlas(),alphaTest:.35,side:A.T.DoubleSide})));return k;};
+ // an ivy panel climbing from (x,y,z) on a face whose outward normal has bearing `ry` (rotation about y; the panel faces +z)
+ A.ivy=(x,y,z,ry,w,h)=>{A.put(ivySet(Math.floor(A.rnd()*3)),[x,y,z,w,h,1,ry,A.pick(IVYG)]);};
+ A.ivyClump=(x,y,z,s)=>{A.set('ivyClump','ball',A.lam(0x4f9a4a,.9));A.put('ivyClump',[x,y,z,s,s*.7,s,A.rnd()*6.28,A.pick(IVYG)]);};
+ // a WINDOW BOX under a sill at (x,y,z), facing ry, w wide: timber trough, leaves, a few flowers
+ A.windowBox=(x,y,z,ry,w)=>{A.set('wbox','box',A.lam(0xffffff,.9));A.set('wboxLeaf','ball',A.lam(0xffffff,.9));A.set('wboxFlower','box',A.lam(0xffffff,.8));
+  A.put('wbox',[x,y,z,w,.38,.46,ry,A.pick([0xa8552a,0x8a5a3a,0x9c6a4a])]);A.put('wboxLeaf',[x,y+.3,z,w*.5,.3,.26,ry,A.pick(IVYG)]);
+  const c=Math.cos(ry),s=Math.sin(ry);for(let i=0,n=3+Math.floor(A.rnd()*4);i<n;i++){const lx=(A.rnd()-.5)*w*.85,lz=(A.rnd()-.3)*.2;A.put('wboxFlower',[x+lx*c+lz*s,y+.45+A.rnd()*.25,z-lx*s+lz*c,.16,.16,.16,A.rnd()*6.28,A.pick(FLOWER)]);}};
+ // a rooftop CISTERN: a timber tank with two iron hoops and a conical lid
+ A.cistern=(x,y,z,r,h)=>{A.set('cistern','post16',A.lam(0xffffff,.9));A.set('cisternHoop','post16',A.lam(0x3a3632,.6));A.set('cisternLid','cone',A.lam(0x5a4a3a,.9));
+  A.put('cistern',[x,y,z,r,h,r,0,A.pick([0x8a6a4a,0x9c7a55,0x7a5a3a])]);A.put('cisternHoop',[x,y+h*.2,z,r*1.04,.12,r*1.04,0]);A.put('cisternHoop',[x,y+h*.7,z,r*1.04,.12,r*1.04,0]);A.put('cisternLid',[x,y+h,z,r*1.05,r*.45,r*1.05,0]);};
+ // window boxes under pane instances: im an InstancedMesh of window panes whose local +z faces out; p the share dressed
+ A.windowBoxesOnPanes=(im,o)=>{o=o||{};if(!im)return 0;const T=A.T,m=new T.Matrix4(),p=new T.Vector3(),q=new T.Quaternion(),s=new T.Vector3(),n=new T.Vector3();let k=0;
+  for(let i=0;i<im.count;i++){if(A.rnd()>(o.p||.3))continue;im.getMatrixAt(i,m);m.decompose(p,q,s);if(s.x<.6||s.x>3||s.y<.8)continue;n.set(0,0,1).applyQuaternion(q);if(Math.abs(n.y)>.2)continue;
+   if(o.ok&&!o.ok(p.x,p.z))continue;const ry=Math.atan2(n.x,n.z),by=p.y-s.y/2-.24;A.windowBox(p.x+n.x*.3,by,p.z+n.z*.3,ry,s.x+.25);k++;}A.stats.windowBoxes=(A.stats.windowBoxes||0)+k;return k;};
+ // DRESS ONE BUILDING: b {x,z,y (ground), R (reach of its footprint), ry}; finds its walls by rays in from four sides and
+ // its roof by a ray down; o.ivy chance per side, o.cistern chance of a tank on a flat roof
+ A.dressBuilding=(idx,b,o)=>{o=o||{};let n=0;
+  for(let k=0;k<4;k++){if(A.rnd()>(o.ivy==null?.35:o.ivy))continue;const a=(b.ry||0)+k*Math.PI/2+A.rr(-.35,.35),dx=Math.sin(a),dz=Math.cos(a),R=b.R+4;
+   const hit=idx.ray([b.x+dx*R,b.y+1.3,b.z+dz*R],[-dx,0,-dz],R);if(!hit||Math.abs(hit.n[1])>.3)continue;const H=Math.min(A.rr(2.2,5.5),hit.top-b.y-.2);if(H<1.5)continue;
+   const ry=Math.atan2(hit.n[0],hit.n[2]),w=A.rr(1.2,2.6);A.ivy(hit.p[0]+hit.n[0]*.08,b.y,hit.p[2]+hit.n[2]*.08,ry,w,H);if(A.rnd()<.5)A.ivyClump(hit.p[0]+hit.n[0]*.3,b.y+H-.2,hit.p[2]+hit.n[2]*.3,A.rr(.5,.9));n++;}
+  if(A.rnd()<(o.cistern||0)){const x=b.x+A.rr(-1.5,1.5),z=b.z+A.rr(-1.5,1.5),hit=idx.ray([x,b.y+80,z],[0,-1,0],80);
+   if(hit&&hit.n[1]>.9&&hit.p[1]>b.y+2.6&&hit.box.max.x-hit.box.min.x>3.2&&hit.box.max.z-hit.box.min.z>3.2){A.cistern(hit.p[0],hit.p[1],hit.p[2],A.rr(.8,1.25),A.rr(1.6,2.3));n++;}}
+  return n;};
+})();
+// ================================================================= ATMOS — sewers: an outfall with its grate, a trickle to the water, a grated drain
+// A.outfall(x,y,z,ry,o): a culvert mouth set into a wall face at (x,y,z) (y = the culvert floor), the face's outward
+// normal at bearing ry (rotation about y; local +z is out). Jambs, a stepped lintel, an iron grate, a spill lip, and a
+// trickle that runs from the lip down the ground (A.ground) until it meets o.waterY. o.lean: the face's batter (m per m).
+// A.drain(pts,o): a grated channel along a polyline on the ground; A.inletGrate(): an iron grate over a dark opening.
+(function(){const A=ATMOS;
+ const dark=()=>A.mat('sewerDark',()=>new A.T.MeshBasicMaterial({color:0x0b0907})),iron=()=>A.lam(0x2f2b28,.55),stone=()=>A.lam(0x8f8272,.95),lintel=()=>A.lam(0xb8a07a,.9);
+ const flowTex=()=>A.mat('flowTex',()=>{const cv=document.createElement('canvas');cv.width=64;cv.height=256;const g=cv.getContext('2d');g.fillStyle='rgb(200,210,220)';g.fillRect(0,0,64,256);
+  for(let i=0;i<70;i++){const x=A.rnd()*64,w=1+A.rnd()*4,l=30+A.rnd()*60,v=A.rnd()<.5?255:150,y=A.rnd()*256;g.fillStyle=`rgba(${v},${v},${v},${.2+A.rnd()*.5})`;g.fillRect(x,y,w,l);if(y+l>256)g.fillRect(x,y-256,w,l);}
+  const t=new A.T.CanvasTexture(cv);t.wrapS=t.wrapT=A.T.RepeatWrapping;A.hook(tt=>{t.offset.y=-tt*.9;});return t;});
+ const P=(x,z,ry,lx,lz)=>[x+lx*Math.cos(ry)+lz*Math.sin(ry),z-lx*Math.sin(ry)+lz*Math.cos(ry)];
+ const box=(set,mat,x,y,z,ry,lx,ly,lz,w,h,d)=>{A.set(set,'box',mat);const p=P(x,z,ry,lx,lz);A.put(set,[p[0],y+ly,p[1],w,h,d,ry]);};
+ A.outfall=(x,y,z,ry,o)=>{o=o||{};const lean=o.lean||0,zf=yy=>-lean*yy;
+  box('sewerDark',dark(),x,y,z,ry,0,1.8,zf(1.8)-.9,3.8,3.6,2.4);
+  for(const sd of[-1,1])box('sewerStone',stone(),x,y,z,ry,sd*2.55,2.4,zf(2.4)+.15,1.1,4.8,1.7);
+  box('sewerLintel',lintel(),x,y,z,ry,0,5.1,zf(5.1)+.25,6.6,.9,2.0);box('sewerStone',stone(),x,y,z,ry,0,6.0,zf(6)+.05,5.2,.7,1.6);box('sewerLintel',lintel(),x,y,z,ry,0,6.7,zf(6.7)-.1,3.6,.55,1.3);
+  box('sewerStone',stone(),x,y,z,ry,0,.25,zf(.25)+1.15,5.4,.55,2.7);                                      // the spill lip
+  for(let k=-3;k<=3;k++)box('sewerIron',iron(),x,y,z,ry,k*.55,1.8,zf(1.8)+.35,.16,3.5,.16);                // the grate
+  for(const yy of[1.1,2.6])box('sewerIron',iron(),x,y,z,ry,0,yy,zf(yy)+.35,3.9,.16,.16);
+  // the trickle: a ribbon over the lip and down the ground to the water, widening as it goes
+  const T=A.T,pos=[],uv=[],idx=[];let v=0,prev=null;const wy=o.waterY!=null?o.waterY:-1e9;
+  for(let k=0;k<200;k++){const out=2.2+k*.5,c=P(x,z,ry,0,out),gy=A.ground(c[0],c[1]),yy=k===0?y+.55:Math.max(gy+.12,wy);if(prev){v+=Math.hypot(.5,yy-prev)/3;}
+   const w=1.2+Math.min(1.4,k*.03);for(const sd of[-1,1]){const q=P(x,z,ry,sd*w/2,out);pos.push(q[0],yy,q[1]);uv.push(sd<0?0:1,v);}
+   if(k){const b=(k-1)*2;idx.push(b,b+2,b+1,b+1,b+2,b+3);}prev=yy;if(gy<=wy+.05||k>8&&yy<=wy+.13)break;}
+  const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(pos,3));g.setAttribute('uv',new T.Float32BufferAttribute(uv,2));g.setIndex(idx);g.computeVertexNormals();
+  const m=A.mat('trickle',()=>new T.MeshStandardMaterial({color:0x8fb4c8,map:flowTex(),transparent:true,opacity:.8,roughness:.15,depthWrite:false,side:T.DoubleSide}));
+  const mesh=new T.Mesh(g,m);mesh.name='atmos:trickle';mesh.renderOrder=2;A.add(mesh);A.stats.outfalls=(A.stats.outfalls||0)+1;
+  const mouth=P(x,z,ry,0,1.5);return{x:mouth[0],y:y+2,z:mouth[1],r:4,h:7.5};};
+ // a grated channel along pts ([[x,z],...]) at the ground: a dark slot, stone kerbs, iron bars across every 0.55 m
+ A.drain=(pts,o)=>{o=o||{};const w=o.w||1.3;let n=0;for(let i=0;i<pts.length-1;i++){const a=pts[i],b=pts[i+1],len=Math.hypot(b[0]-a[0],b[1]-a[1]);if(len<.05)continue;
+   const ang=Math.atan2(b[1]-a[1],b[0]-a[0]),ry=-ang,mx=(a[0]+b[0])/2,mz=(a[1]+b[1])/2,y=A.ground(mx,mz)+.02;
+   A.set('sewerDark','box',dark());A.put('sewerDark',[mx,y,mz,len+.05,.06,w,ry]);A.set('sewerStone','box',stone());
+   for(const sd of[-1,1])A.put('sewerStone',[mx-Math.sin(ang)*sd*(w/2+.15),y+.02,mz+Math.cos(ang)*sd*(w/2+.15),len+.05,.12,.3,ry]);
+   A.set('sewerIron','box',iron());const nb=Math.floor(len/.55);for(let k=0;k<nb;k++){const f=(k+.5)/nb;A.put('sewerIron',[a[0]+(b[0]-a[0])*f,y+.05,a[1]+(b[1]-a[1])*f,.14,.05,w,ry]);n++;}}
+  A.stats.drainBars=(A.stats.drainBars||0)+n;return n;};
+ // an inlet grate on a wall foot at (x,y,z), facing ry: a dark opening behind five iron bars
+ A.inletGrate=(x,y,z,ry,o)=>{o=o||{};const w=o.w||2.4,h=o.h||1.3;box('sewerDark',dark(),x,y,z,ry,0,h/2-.1,-.05,w,h,.3);for(let k=-2;k<=2;k++)box('sewerIron',iron(),x,y,z,ry,k*w*.19,h/2-.1,.12,.12,h,.12);
+  box('sewerStone',stone(),x,y,z,ry,0,h+.05,.05,w+.6,.3,.5);};
+})();
+// ================================================================= ATMOS — culling for InstancedMeshes
+// three r128 culls an InstancedMesh by its base geometry's sphere at the origin, so every set built with frustumCulled
+// on vanishes when the origin leaves the view, and every set built with it off (the kits) is drawn always. cull():
+//  1. splits each big static set (count >= o.split, identity world matrix, not o.keep(mesh)) into K bearing sectors, so the
+//     far side of the map is skipped;
+//  2. gives every static set a bounding sphere computed from its instances, on a geometry of its own that shares the
+//     vertex buffers, and turns frustum culling on;
+//  3. keeps raycasting right: an InstancedMesh raycast tests each instance against the geometry's sphere, so the sets
+//     put the base sphere back for the duration of a raycast.
+// o.skip(mesh): leave a mesh alone entirely (moving sets, ones the host animates per instance).
+(function(){const A=ATMOS;
+ A.cull=(scene,o)=>{o=o||{};const T=A.T,K=o.sectors||8,SPLIT=o.split||1500,ident=new T.Matrix4();scene.updateMatrixWorld(true);
+  const sliceAttr=(a,idx)=>{const it=a.itemSize,arr=new a.array.constructor(idx.length*it);for(let d=0;d<idx.length;d++){const s0=idx[d]*it;for(let k=0;k<it;k++)arr[d*it+k]=a.array[s0+k];}const b=new T.InstancedBufferAttribute(arr,it);b.normalized=a.normalized;return b;};
+  const shareGeo=g=>{const g2=new T.BufferGeometry();g2.setIndex(g.index);for(const k in g.attributes)g2.setAttribute(k,g.attributes[k]);g2.groups=g.groups;
+   if(!g.boundingSphere)g.computeBoundingSphere();g2.userData.baseSphere=g.boundingSphere.clone();g2.userData.baseBox=g.boundingBox?g.boundingBox.clone():null;return g2;};
+  const fixRay=im=>{im.raycast=function(rc,out){const g=this.geometry,bs=g.boundingSphere;if(g.userData.baseSphere)g.boundingSphere=g.userData.baseSphere;try{T.InstancedMesh.prototype.raycast.call(this,rc,out);}finally{g.boundingSphere=bs;}};};
+  const list=[];scene.traverse(m=>{if(m.isInstancedMesh)list.push(m);});let split=0,bound=0;
+  for(const m of list){if(o.skip&&o.skip(m))continue;if(m.count>=SPLIT&&m.matrixWorld.equals(ident)&&!(o.keep&&o.keep(m))){
+    const bins=Array.from({length:K},()=>[]),M=m.instanceMatrix.array;for(let i=0;i<m.count;i++)bins[Math.min(K-1,Math.floor((Math.atan2(M[i*16+14],M[i*16+12])+Math.PI)/(2*Math.PI)*K))].push(i);
+    const parent=m.parent;for(const idx of bins){if(!idx.length)continue;const g=shareGeo(m.geometry);for(const k in m.geometry.attributes){const a=m.geometry.attributes[k];if(a.isInstancedBufferAttribute)g.setAttribute(k,sliceAttr(a,idx));}
+     const p=new T.InstancedMesh(g,m.material,idx.length);p.instanceMatrix=sliceAttr(m.instanceMatrix,idx);if(m.instanceColor)p.instanceColor=sliceAttr(m.instanceColor,idx);
+     p.name=m.name;p.renderOrder=m.renderOrder;p.userData=Object.assign({},m.userData,{sectorOf:m.name});p.visible=m.visible;parent.add(p);}
+    parent.remove(m);split++;}}
+  const v=new T.Vector3(),c=new T.Vector3(),tm=new T.Matrix4();
+  scene.traverse(m=>{if(!m.isInstancedMesh||(o.skip&&o.skip(m))||!m.count||!m.matrixWorld.equals(ident))return;if(!m.geometry.userData.baseSphere)m.geometry=shareGeo(m.geometry);
+   const g=m.geometry,r0=g.userData.baseSphere.radius,c0=g.userData.baseSphere.center,M=m.instanceMatrix.array,n=m.count,cs=new Float32Array(n*4);c.set(0,0,0);
+   for(let i=0;i<n;i++){tm.fromArray(M,i*16);v.copy(c0).applyMatrix4(tm);const s=Math.max(Math.hypot(M[i*16],M[i*16+1],M[i*16+2]),Math.hypot(M[i*16+4],M[i*16+5],M[i*16+6]),Math.hypot(M[i*16+8],M[i*16+9],M[i*16+10]));
+    cs[i*4]=v.x;cs[i*4+1]=v.y;cs[i*4+2]=v.z;cs[i*4+3]=r0*s;c.add(v);}c.multiplyScalar(1/n);let rad=0;for(let i=0;i<n;i++)rad=Math.max(rad,Math.hypot(cs[i*4]-c.x,cs[i*4+1]-c.y,cs[i*4+2]-c.z)+cs[i*4+3]);
+   g.boundingSphere=new T.Sphere(c.clone(),rad*1.02+(o.pad||0));m.frustumCulled=true;fixRay(m);bound++;});
+  A.stats.cull={split,bound};return A.stats.cull;};
+})();
 // ================================================================= 3. LABORATORY — "the Reliquary"
 function buildLab(scene,gx,gz,d){reseed(d>0?9301:9300);KOFF=[gx,0,gz];REGISTER({name:'Laboratory — the Reliquary ('+STATE(d)+')',x:0,z:0,r:40,h:125});REGISTER({name:'Laboratory — reactor hut',x:104,z:0,r:12,h:17});const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const skin=SHELL(d);
  const SH=4.4,NS=6;const phase=s=>s*.55;
@@ -6402,12 +6939,17 @@ const cityHemi=scene.children.find(o=>o.isHemisphereLight);
 function citySkyTick(){KratorSky.update(camera.position,CITYSKY.hour,CITYSKY.day,CITYSKY.dens);const L=KratorSky.lighting();
  sun.position.copy(L.sunDir).multiplyScalar(1500).add(camera.position);sun.target.position.copy(camera.position);sun.target.updateMatrixWorld();sun.intensity=L.sunIntensity;sun.color.copy(L.sunColor);
  fill.intensity=.22*L.dayF+.05;if(cityHemi)cityHemi.intensity=L.ambient;scene.fog.color.copy(L.fog);renderer.setClearColor(L.fog);
- if(typeof BIO!=='undefined'&&BIO.host)BIO.setSun([L.sunDir.x,L.sunDir.y,L.sunDir.z]);}
+ if(typeof BIO!=='undefined'&&BIO.host)BIO.setSun([L.sunDir.x,L.sunDir.y,L.sunDir.z]);
+ // the window schedule (Round 1 issue: lit panes read as bright glazing by day): electric panes and bulbs are glass in
+ // daylight and glow from dusk; the Ancients' lights (MAT.dot: strips, lamps) dim by day
+ const day=clamp(L.dayF,0,1);MAT.warmPane.color.copy(CITY_GLOW.pane).lerp(CITY_GLOW.paneDay,day);MAT.bulb.color.copy(CITY_GLOW.bulb).lerp(CITY_GLOW.bulbDay,day);
+ if(MAT.dot)MAT.dot.color.setScalar(1-.45*day);}
+const CITY_GLOW={pane:new THREE.Color(0xffcf8a),paneDay:new THREE.Color(0x5a5244),bulb:new THREE.Color(0xfff3d6),bulbDay:new THREE.Color(0xb8b0a0)};
 FRAME_HOOKS.push(citySkyTick);for(const f of FRAME_HOOKS_PRE)FRAME_HOOKS.push(f);
 citySkyTick();
 // ---------------------------------------------------------------- the outer wall, the gates and their bridges
 TSTAT.cur='iziz_wall/0';
-izOuterWall(scene,wallR,0,0,216,26,10,7,t=>GATES.some(g=>angDiff(t,g)<.105),6);
+izOuterWall(scene,wallR,0,0,Math.round(216*CITY.WALL_K),26,10,7,t=>GATES.some(g=>angDiff(t,g)<.105),6);
 TSTAT.cur='iziz_gate/0';
 GATES.forEach((g,i)=>{izGate(scene,g,wallR(g),CITY.PLATEAU,i);const R=wallR(g);BIO_OBSTACLES.push({x:(R+62)*Math.cos(g),z:(R+62)*Math.sin(g),r:30});});
 // ---------------------------------------------------------------- the palace hill: palace (old Iziz), Ancient curtain wall, barracks, the triumphal statue
@@ -6415,6 +6957,8 @@ GATES.forEach((g,i)=>{izGate(scene,g,wallR(g),CITY.PLATEAU,i);const R=wallR(g);B
  TSTAT.cur='trans_palace/0';
  TRANS.place(scene,'palace','orig',H.x-20*gx,H.z-20*gz,Math.atan2(gx,gz),1,SEED_CITY+11,{role:'palace',wealth:'civic'},top);
  occAdd({x:H.x-20*gx,z:H.z-20*gz,hx:53,hz:48,ry:Math.atan2(gx,gz)});
+ // the grand entrance on the base tier (built by the palace builder, 78-transplant.js): its own inspector volume
+ REG.push({name:'Palace — grand entrance',x:H.x+25*gx,y:top,z:H.z+25*gz,r:13,h:17,cls:'building',key:'iziz_palace_entrance',tags:{culture:'iziz-old',type:['civic'],wealth:'civic',lit:true,role:'palace entrance',place:'outdoor'}});
  TSTAT.cur='iziz_curtain/0';
  izCurtainWall(scene,t=>84,H.x,H.z,72,14,[g],9,null);
  // two barracks blocks inside the curtain, either side of the court, doors to the palace; drill yard between them and the wall
@@ -6436,6 +6980,17 @@ GATES.forEach((g,i)=>{izGate(scene,g,wallR(g),CITY.PLATEAU,i);const R=wallR(g);B
  occAdd({x:H.x,z:H.z,hx:56,hz:50,ry:0});
  for(let k=0;k<8;k++){const a=k/8*TAU+.2;izLampColumn(H.x+70*Math.cos(a),H.z+70*Math.sin(a));}
  TSTAT.cur='iziz_needle/0';izNeedle(scene,NEEDLE.x,NEEDLE.z,64);occAdd({x:NEEDLE.x,z:NEEDLE.z,hx:17,hz:17,ry:0});}
+// ---------------------------------------------------------------- the escarpments: a crag band on each hill's rock face
+// (Round 3 issue: the 4 m terrain cells cannot show a 26-34 m wide, 23-40 m tall S-curve as a cliff; the paint alone read
+// as a flat ring on a smooth slope.) A ring surface laid on the face, 2 m cells, pushed out and in by two noise octaves
+// into buttresses and crags, lifted a little off the terrain, its board-formed texture running along the contours as
+// strata; cut where the ramp climbs.
+{const ESC=new THREE.MeshStandardMaterial({map:TEX.concrete,color:0x9a8670,roughness:.97,metalness:0,side:THREE.DoubleSide});
+ for(const k of HILLKEYS){const H=HILL[k],rm=H.r0+H.E/2,nu=Math.round(TAU*rm/2.2),nv=Math.max(10,Math.round((H.E+4)/2));
+  const geo=gridSurface((u,v)=>{const a=u*TAU,r=H.r0-1+v*(H.E+4),bump=Math.sin(Math.PI*v);const n=fbm(a*9+H.x*.01,v*3,7.3,3),cr=fbm(a*33,v*8,5.1,2);
+    const dr=((n-.5)*5+(cr-.5)*2.4)*bump,R=r+dr;const x=H.x+R*Math.cos(a),z=H.z+R*Math.sin(a);
+    return[x,terrainH(H.x+r*Math.cos(a),H.z+r*Math.sin(a))+.3*bump+(cr-.5)*1.4*bump,z];},nu,nv,{uS:nu/3,vS:(H.E+4)/6,hole:(u,v)=>angDiff(u*TAU,H.gate)*rm<17});
+  const m=new THREE.Mesh(geo,ESC);m.name='escarpment:'+k;scene.add(m);TSTAT.by['iziz_escarpment/0']=TSTAT.by['iziz_escarpment/0']||{tris:0,inst:0,meshes:0};TSTAT.by['iziz_escarpment/0'].tris+=geo.index.count/3;TSTAT.by['iziz_escarpment/0'].meshes++;}}
 // ---------------------------------------------------------------- the ruined spaceport out along the north-west causeway
 TSTAT.cur='iziz_spaceport/0';
 izSpaceport(scene,SPORT,CITY.SPACEPORT_A,CITY.SPACEPORT_H);
@@ -6463,7 +7018,7 @@ const KITCAT={
  houseD:{fn:kitSection(buildHouses2,-30,30),name:'House D',smax:.7,smin:.22,type:['single-family dwelling'],kind:'house'},
  houseE:{fn:kitSection(buildHouses2,30,95),name:'House E',smax:.7,smin:.22,type:['single-family dwelling'],kind:'house'},
  houseF:{fn:kitSection(buildHouses2,95,170),name:'House F',smax:.7,smin:.22,type:['single-family dwelling'],kind:'house'},
- skyA:{fn:buildSkyA,name:'Skyscraper A',smax:.3,hmax:135,smin:.14,type:['multi-family dwelling','civic'],kind:'sky'},
+ skyA:{fn:buildSkyA,name:'Skyscraper A',smax:.3,hmax:135,smin:.14,fitShaft:true,type:['multi-family dwelling','civic'],kind:'sky'},
  skyB:{fn:buildSkyB,name:'Skyscraper B',smax:.3,hmax:135,smin:.14,type:['multi-family dwelling','civic'],kind:'sky'},
  skyC:{fn:buildSkyC,name:'Skyscraper C',smax:.3,hmax:135,smin:.14,coreFrac:.06,type:['multi-family dwelling','civic'],kind:'sky'},
  skyD:{fn:buildSkyD,name:'Skyscraper D',smax:.3,hmax:135,smin:.16,type:['multi-family dwelling','civic'],kind:'sky'},
@@ -6484,16 +7039,23 @@ const KITCAT={
  bunker:{fn:buildBunker,name:'Bunker',smax:.45,smin:.2,type:['military'],kind:'military'},
 };
 const DEADLIGHT=new THREE.Color(0x4a4744);
+const CITY_DEAD={light:new THREE.MeshStandardMaterial({color:0x4a4744,roughness:.8}),_g:null,glass(){if(!this._g){const g=MAT.glass.clone();g.onBeforeCompile=MAT.glass.onBeforeCompile;g.emissiveIntensity=0;g.color=new THREE.Color(0x2a4a5e);this._g=g;}return this._g;}};
 const AWNINGS=[];
+// the life layer's destinations (round 4): every tripod-market stall {x,y,z,face}, for the pathing layer when it comes
+const LIFE_DESTS={market:[]};
 // the tripod market in Iziz dress: Vernacular mast, finial, rope and stalls (the kit version is generic)
-const IZ_TRIPOD={awnings:AWNINGS,post:'vPostS',ball:'vBall',rope:'vRope',col:vC,stall:c=>vnStall(0,0,0,c),culture:'iziz-vernacular'};
+const IZ_TRIPOD={awnings:AWNINGS,post:'vPostS',ball:'vBall',rope:'vRope',col:vC,stall:c=>vnStall(0,0,0,c),culture:'iziz-vernacular',stalls:LIFE_DESTS.market};
 // on one of the three hills: the top, the escarpment or the skirt out to the ring road and a little beyond
 function onHill(x,z){for(const k of HILLKEYS){const H=HILL[k];if(Math.hypot(x-H.x,z-H.z)<H.ring+40)return true;}return false;}
 // run a kit builder at a plot: the long axis along the plot's, scaled to fit (capped), flora stripped, REG adopted.
 // opt: {d-state via arg, flip, noRot, y, smax, trim, keep(OBB), tint, lit, tags, name, repairs(n passes), level}
 function placeKit(key,o,d,opt){const cat=KITCAT[key];if(!cat)return null;opt=opt||{};const M=measureKit(cat);
  let rot=0;if(!opt.noRot&&((M.hx>=M.hz)!==(o.hx>=o.hz)))rot=Math.PI/2;const mhx=rot?M.hz:M.hx,mhz=rot?M.hx:M.hz;
- const scale=Math.min(opt.smax||cat.smax,(o.hx-1)/mhx,(o.hz-1)/mhz,cat.hmax?cat.hmax/M.h:9);if(scale<cat.smin)return null;
+ let scale=Math.min(opt.smax||cat.smax,(o.hx-1)/mhx,(o.hz-1)/mhz,cat.hmax?cat.hmax/M.h:9);
+ // a tower whose legs lean out past its core (Skyscraper A) is fitted by its whole shaft: the legs may reach the middle
+ // of the street, never over the neighbours' lots (Round 3c issue). The Project and a toppled tower keep the core fit.
+ if(cat.fitShaft&&!opt.fitCore&&d!==2&&M.shaft){const shx=rot?M.shaft.hz:M.shaft.hx,shz=rot?M.shaft.hx:M.shaft.hz;scale=Math.min(scale,(o.hx+AG.street/2)/shx,(o.hz+AG.street/2)/shz);}
+ if(scale<cat.smin)return null;
  const ry=(o.ry||0)+rot+(opt.flip?Math.PI:0);const y=opt.y!=null?opt.y:groundY(o);
  // a tower stands on the city's own square plinth (1.55 m): the kit's podium is trimmed, so its shaft is lowered onto it
  // (a toppled tower keeps its own podium: its fallen body was laid by the kit to rest on it)
@@ -6503,7 +7065,15 @@ function placeKit(key,o,d,opt){const cat=KITCAT[key];if(!cat)return null;opt=opt
  const gc=loc(0,0,M.cx*scale,M.cz*scale,ry);const gx=o.x-gc[0],gz=o.z-gc[1];
  const G=new THREE.Group();G.position.set(gx,y0,gz);G.rotation.y=ry;G.scale.setScalar(scale);scene.add(G);G.updateMatrix();
  const snap=kitSnapshot(),r0=REG.length;KOFF=[0,0,0];useGroupXF(G);TSTAT.cur=key+'/'+d;HOLES=d===3?.55:1;
+ // a broken fall (Travis, round 4): the kit breaks the fallen body near a world point, given to it in its local frame
+ if(opt.breakAt){const dx=opt.breakAt[0]-gx,dz=opt.breakAt[1]-gz,c=Math.cos(ry),s=Math.sin(ry);TOPPLE_BREAK={x:(dx*c-dz*s)/scale,z:(dx*s+dz*c)/scale};}
  let H=null;try{H=withFlatGround(()=>cat.fn(G,0,0,d));}catch(e){reportErr(key+' '+e.stack);}HOLES=1;KOFF=[0,0,0];
+ const brk=TOPPLE_BREAK;TOPPLE_BREAK=null;
+ // the break builds the body in two calls, which draws the PRNG differently: put the stream back where the unbroken
+ // build leaves it (fallInfo measured that), so nothing placed after this tower moves
+ if(opt.seedAfter!=null)_seed=opt.seedAfter;
+ if(brk&&brk.out&&opt.breakKeep){const p=loc(gx,gz,brk.out.x*scale,brk.out.z*scale,ry),u=loc(0,0,brk.out.ux,brk.out.uz,ry),L=Math.max(20,opt.breakKeep.L-Math.hypot(p[0]-o.x,p[1]-o.z))+6;
+  const piece={x:p[0]+u[0]*L/2,z:p[1]+u[1]*L/2,hx:L/2,hz:opt.breakKeep.W/2,ry:Math.atan2(-u[1],u[0]),pad:.5};opt.keep=[].concat(opt.keep||[],[piece]);o.piece2=piece;}
  // the salvage dressing runs INSIDE the group transform: repairPass samples the group in its local frame, so outside
  // it every shack and patch landed at the world origin
  if(d===3&&H){for(let k=0;k<(opt.repairs||1);k++){try{repairPass(H,3);}catch(e){reportErr('repair '+key+' '+e.stack);}}}
@@ -6518,14 +7088,18 @@ function placeKit(key,o,d,opt){const cat=KITCAT[key];if(!cat)return null;opt=opt
  if(sky)citySkyPlinth(opt.plinth||o,y,lit);
  // Skyscraper D is bare concrete in the kit: its ruined and reclaimed skins go to rust-streaked steel here (Travis)
  if(key==='skyD'&&d>0)izsRustSkin(G);
- if(!lit&&d===3){for(const n in KIT.items){if(!/^(strip|dot|cell|lampI|bulb|glow|izGlow|vBulb|tbulb)/.test(n))continue;const it=KIT.items[n];for(let i=snap[n]||0;i<it.length;i++)it[i].c=DEADLIGHT;}}
+ if(!lit&&d===3){for(const n in KIT.items){if(!/^(strip|dot|cell|lampI|bulb|glow|izGlow|vBulb|tbulb)/.test(n))continue;const it=KIT.items[n];for(let i=snap[n]||0;i<it.length;i++)it[i].c=DEADLIGHT;}
+  // and the MERGED light meshes (glass bands, strip runs) the kit builds outside the instancing: dead too (Round 3 issue)
+  G.traverse(m=>{if(!m.isMesh)return;if(m.material===MAT.strip||m.material===MAT.dot||m.material===MAT.bulb||m.material===MAT.warmPane)m.material=CITY_DEAD.light;else if(m.material===MAT.glass)m.material=CITY_DEAD.glass();});}
  for(let i=r0;i<REG.length;i++){const r=REG[i];const p=loc(gx,gz,r.x*scale,r.z*scale,ry);r.x=p[0];r.z=p[1];r.y=y0+(r.y||0)*scale;r.r=Math.max(6,Math.min(r.r*scale,Math.hypot(o.hx,o.hz)+(opt.keep?0:4)));r.h*=scale;
   if(opt.name)r.name=opt.name;
   r.cls='building';r.key='anc_'+key;r.tags=Object.assign({culture:d===3?'ancients-reclaimed':'ancients',type:cat.type,wealth:d===3?(civic?'civic':'middle'):'poor',state,lit},opt.tags||{});}
  if(key==='skyC'&&d===3)tripodMarket(G,o,y,scale,ry,gx,gz,y0,IZ_TRIPOD);   // after the REG adoption: the market registers itself in world space
  // level the ground under the plot (the terrain mesh is built after placement): no plinth floats or buries on a slope
  if(opt.level!==false)cityFlat(o.x,o.z,Math.hypot(o.hx,o.hz)*.95,8,y+.06);
+ if(d===1)RUIN_GROUPS.push(G);   // the jungle dresses the ruins (pass 7)
  TSTAT.cur=null;o.built=key;occAdd(o);return G;}
+const RUIN_GROUPS=[];
 // the skyscraper plinth (Travis, round 3): a stepped square of board-formed concrete the size of one grid block, so
 // four towers pack a 2x2 block. Two steps, a lip, lamp posts at the corners when the tower is lit.
 function citySkyPlinth(o,y,lit){const w=o.hx*2+1.5,d=o.hz*2+1.5,q=qEuler(0,o.ry,0);
@@ -6553,32 +7127,34 @@ function placeRow(key,s,d){const cat=KITCAT[key];const longX=s.hx>=s.hz,L=longX?
   const sub={x:c[0],z:c[1],hx:longX?L:S/n-1.5,hz:longX?S/n-1.5:L,ry:s.ry,pad:.5};if(placeKit(key,sub,d,{}))k++;}
  if(k){s.built=key;}return k;}
 // where a toppled tower's upper body lies, from a throwaway build at d=2 (the kit reseeds per state, so it falls the same way)
-const FALLINFO={};function fallInfo(key){if(FALLINFO[key])return FALLINFO[key];const cat=KITCAT[key],M=measureKit(cat);const parts=kitBuildParts(cat,2),R0=Math.max(M.hx,M.hz)*1.3;
+const FALLINFO={};function fallInfo(key){if(FALLINFO[key])return FALLINFO[key];const cat=KITCAT[key],M=measureKit(cat);const parts=kitBuildParts(cat,2),seedAfter=_seed,R0=Math.max(M.hx,M.hz)*1.3;
  let sx=0,sz=0,n=0;const far=[];for(const b of parts){const cx=(b.min.x+b.max.x)/2-M.cx,cz=(b.min.z+b.max.z)/2-M.cz;if(Math.hypot(cx,cz)<R0||b.max.y>M.h*.5)continue;far.push(b);const w=(b.max.x-b.min.x)*(b.max.z-b.min.z)+1;sx+=cx*w;sz+=cz*w;n+=w;}
  if(!n)return null;const dl=Math.hypot(sx,sz),ux=sx/dl,uz=sz/dl;let L=0,W=0;
  for(const b of far)for(const px of[b.min.x,b.max.x])for(const pz of[b.min.z,b.max.z]){const qx=px-M.cx,qz=pz-M.cz;L=Math.max(L,qx*ux+qz*uz);W=Math.max(W,Math.abs(-qx*uz+qz*ux));}
- return FALLINFO[key]={ux,uz,L,W};}
+ return FALLINFO[key]={ux,uz,L,W,seedAfter};}
 const FALL_BAD={1:1,2:1,3:1,8:1,9:1,11:1};   // plaza, park, boulevard (rings, thoroughfares, gate roads, highways), water, court, rock
 // try 16 headings for the fall; take the first that crosses nothing important, else (strict=false) the least bad
-function placeToppled(key,o,strict,target){const cat=KITCAT[key],M=measureKit(cat),F=fallInfo(key);if(!F)return null;
+function placeToppled(key,o,strict,target,breakAt){const cat=KITCAT[key],M=measureKit(cat),F=fallInfo(key);if(!F)return null;
  const scale=Math.min(cat.smax,(o.hx-1)/M.hx,(o.hz-1)/M.hz,cat.hmax/M.h);const Ls=F.L*scale+3,Ws=F.W*scale+3;let best=null;
  // a given target: the one heading that lays the fall toward it (a rotation by ry turns a local bearing phi into phi-ry)
  const heads=target?[Math.atan2(F.uz,F.ux)-Math.atan2(target[1]-o.z,target[0]-o.x)]:[...Array(16).keys()].map(k=>o.ry+k/16*TAU);
  for(const ry of heads){const dw=loc(0,0,F.ux,F.uz,ry);const fx=dw[0],fz=dw[1];
   const f0=Math.max(o.hx,o.hz)+1,fl=Math.max(4,(Ls-f0)/2);const fall={x:o.x+fx*(f0+fl),z:o.z+fz*(f0+fl),hx:fl,hz:Ws/2,ry:Math.atan2(-fz,fx),pad:.5};
-  let bad=occFree(fall,.5)?0:20;for(let t=f0;t<=Ls;t+=4)for(const w of[-Ws/2,0,Ws/2]){const x=o.x+fx*t-fz*w,z=o.z+fz*t+fx*w;if(!insideWall(x,z,30)||FALL_BAD[klass(x,z)]||inPrecinct(x,z,0))bad++;}
+  let bad=occFree(fall,.5)?0:20;for(let t=f0;t<=Ls;t+=4)for(const w of[-Ws/2,0,Ws/2]){const x=o.x+fx*t-fz*w,z=o.z+fz*t+fx*w;if(!insideCore(x,z,30)||FALL_BAD[klass(x,z)]||inPrecinct(x,z,0))bad++;}
   if(!best||bad<best.bad)best={bad,ry,fall};if(!bad)break;}
  if(!best||(strict&&best.bad))return null;
  const lot=Object.assign({},o,{ry:best.ry});// the plinth stays square to the street grid (the slot's own orientation), whatever way the tower fell
- const G=placeKit(key,lot,2,{noRot:true,lit:false,keep:best.fall,plinth:o,name:cat.name+' (toppled)',tags:{landmark:true}});
- if(G){best.fall.built='toppled';occAdd(best.fall);footprint(obbCorners(best.fall,0),'rgba(70,60,50,.5)');}return G;}
+ const G=placeKit(key,lot,2,{noRot:true,lit:false,keep:best.fall,plinth:o,name:cat.name+' (toppled'+(breakAt?', broken in two':'')+')',tags:{landmark:true},
+  breakAt,breakKeep:breakAt?{L:F.L*scale+4,W:Ws}:null,seedAfter:breakAt?F.seedAfter:null});
+ if(G){best.fall.built='toppled';occAdd(best.fall);footprint(obbCorners(best.fall,0),'rgba(70,60,50,.5)');
+  if(lot.piece2){const q=lot.piece2;q.built='toppled';q.piece=2;occAdd(q);footprint(obbCorners(q,0),'rgba(70,60,50,.5)');o.piece2=q;}}return G;}
 // ---------------------------------------------------------------- 1. the ancient quarters
 const KIT_TRI_CAP=9.0e6;   // past this the remaining kit slots become transplant lots (the budget is the whole scene)
 (function buildAncient(){reseed(SEED_CITY+6);let n=0,kitN=0,transN=0;
  // the toppled towers first, so the slots their falls cross stay empty (rubble lots)
- for(const C of CLUSTERS)for(const s of C.slots)if(s.toppled){if(placeToppled(s.kit,s,false,s.fallToward))kitN++;}
- for(const C of CLUSTERS){const d=C.state==='rehab'?3:1,mode=C.state==='rehab'?'ancrehab':'ancruin';
-  for(const s of C.slots){let G=null;if(s.toppled||!occFree(s,0))continue;
+ for(const C of CLUSTERS)for(const s of C.slots)if(s.toppled){if(placeToppled(s.kit,s,false,s.fallToward,s.breakAt))kitN++;}
+ for(const C of CLUSTERS){const dq=C.state==='rehab'?3:1,mode=C.state==='rehab'?'ancrehab':'ancruin';
+  for(const s of C.slots){let G=null;if(s.toppled||!occFree(s,0))continue;const d=s.forceD!=null?s.forceD:dq;   // a slot may override its quarter's state (the tripod market, round 4)
    if(s.group==='quad'&&s.cells){let k=0;const n=1+Math.floor(rng()*s.cells.length);for(const c of s.cells.slice(0,Math.max(n,Math.min(2,s.cells.length)))){if(placeKit(s.kit,c,d,{flip:rng()<.5})){k++;kitN++;}}if(k)continue;}
    else if(s.group==='row'){if(placeRow(s.kit,s,d)){kitN++;continue;}}
    else if(s.kit&&kitTris()<KIT_TRI_CAP){G=placeKit(s.kit,s,d,{flip:rng()<.5,trim:true});if(G)kitN++;}
@@ -6590,12 +7166,12 @@ const KIT_TRI_CAP=9.0e6;   // past this the remaining kit slots become transplan
 // ---------------------------------------------------------------- 3b. two deliberate towers: The Project (A, reclaimed, in the slums) and a toppled B
 // candidate lots on a 20 m grid over the plateau, free and on buildable ground
 function towerLots(hx){const out=[];for(let x=-460;x<=460;x+=20)for(let z=-460;z<=460;z+=20){const o={x,z,hx,hz:hx,ry:-AG.rot,pad:2};
- if(!insideWall(x,z,50))continue;if(!groundOK(o,{margin:40,ppad:4}))continue;if(!occFree(o,3))continue;out.push(o);}return out;}
+ if(!insideCore(x,z,50))continue;if(obbCorners(o,0).some(c=>!insideCore(c[0],c[1],40)))continue;if(!groundOK(o,{margin:40,ppad:4}))continue;if(!occFree(o,3))continue;out.push(o);}return out;}
 (function theProject(){reseed(SEED_CITY+31);
  // the slum: the free lot farthest from every hill's ring (the poor live far from the hills)
  const lots=towerLots(20).map(o=>({o,d:nearestHill(o.x,o.z).d})).sort((a,b)=>b.d-a.d);if(!lots.length){reportErr('no lot for The Project');return;}
  const o=lots[Math.min(2,lots.length-1)].o;
- const G=placeKit('skyA',o,3,{lit:true,smax:.42,tint:new THREE.Color(1.45,.8,.42),repairs:3,name:'The Project',
+ const G=placeKit('skyA',o,3,{lit:true,smax:.42,fitCore:true,tint:new THREE.Color(1.45,.8,.42),repairs:3,name:'The Project',
   tags:{role:'The Project',culture:'ancients-reclaimed',type:['multi-family dwelling'],wealth:'poor',note:'Skyscraper A, repaired and packed with Izani families; painted Iziz orange'}});
  if(G){landmark('The Project',G,o,140);connectRoad(o.x+Math.cos(-AG.rot)*(o.hx+3),o.z-Math.sin(-AG.rot)*(o.hx+3),6,KL.settler);window._project=[o.x|0,o.z|0];}
 })();
@@ -6612,15 +7188,53 @@ function towerLots(hx){const out=[];for(let x=-460;x<=460;x+=20)for(let z=-460;z
  // the Ancient amphitheatre: intact, in the arena's rust colours
  const o={x:AMPH.x,z:AMPH.z,hx:AMPH.r-2,hz:AMPH.r-2,ry:0};placeKit('amph',o,0,{noRot:true,trim:false,y:CITY.PLATEAU+.6,tint:new THREE.Color(.62,.34,.22),tags:{state:'intact',finish:'rust'}});
 })();
+// ---------------------------------------------------------------- 2b. the farm belt (round 4, Travis): the ring the wall gained when it went out
+// A street grid cuts it into blocks: the BELT ROAD runs round the old wall line (coreR-20), and radial lanes every
+// ~52 m of arc run from it to the wall's margin. Three blocks in four are farms, grown as runs (a block beside a farm is
+// likelier to be farmed); a farm block is reserved in the mask (class field) so nothing else is built on it, and its
+// plots are laid out in pass 6b. The rest are left buildable: the frontage walker and the infill (5, 5b) fill them by
+// the hill rules like any other street. Painted here, before the guilds and civic buildings, so those keep off it.
+const BELT={blocks:[],roads:0,farmBlocks:0,plots:0};
+(function farmBelt(){reseed(SEED_CITY+40);
+ const RIN=t=>coreR(t)-20,ROUT=t=>wallR(t)-24,at=(t,r)=>[r*Math.cos(t),r*Math.sin(t)];
+ const ok=(x,z)=>{const k=klass(x,z);return !inPrecinct(x,z,3)&&k!==KL.park&&k!==KL.plaza&&k!==KL.court&&k!==KL.rock;};
+ const nearGate=(t,r,w)=>GATES.some(g=>angDiff(t,g)*r<w);
+ // the belt road, in runs that stop at a precinct, a park or a plaza
+ {let run=[];const flush=()=>{if(run.length>1){road(run,8,KL.minor,{zone:'belt'});BELT.roads++;}run=[];};
+  for(let i=0;i<=720;i++){const t=i/720*TAU,p=at(t,RIN(t));if(ok(p[0],p[1]))run.push(p);else flush();}flush();}
+ // the radials and the blocks between them
+ const n=Math.round(TAU*(CITY.R+10)/52),rad=[];for(let i=0;i<n;i++)rad.push(i/n*TAU+.013);
+ for(const t of rad){if(nearGate(t,RIN(t),26))continue;const pts=[];for(let r=RIN(t)+4;r<=ROUT(t)+6;r+=4){const p=at(t,r);if(!ok(p[0],p[1]))break;pts.push(p);}
+  if(pts.length>2){road(pts,6,KL.settler,{zone:'belt'});BELT.roads++;}}
+ for(let i=0;i<n;i++){const t0=rad[i],t1=rad[(i+1)%n]+(i===n-1?TAU:0),tc=(t0+t1)/2,rm=(RIN(tc)+ROUT(tc))/2;
+  const B={i,t0:t0+5/rm,t1:t1-5/rm,tc,rin:t=>RIN(t)+6,rout:ROUT,farm:false};
+  // a block is usable when most of it is free plateau; a block a gate road crosses stays a building block
+  let good=0,N=0;for(let a=0;a<=4;a++)for(let b=0;b<=2;b++){const t=B.t0+(B.t1-B.t0)*a/4,r=B.rin(t)+(B.rout(t)-B.rin(t))*b/2,p=at(t,r);N++;if(ok(p[0],p[1])&&canBuild(p[0],p[1]))good++;}
+  B.usable=good/N>.6;B.gate=GATES.some(g=>angDiff(g,tc)<(t1-t0)/2+30/rm);BELT.blocks.push(B);}
+ // three in four farmed, as runs: each pick weighs a block by its farmed neighbours
+ const cand=BELT.blocks.filter(b=>b.usable&&!b.gate),target=Math.round(.75*cand.length);
+ const nb=b=>[BELT.blocks[(b.i+1)%n],BELT.blocks[(b.i+n-1)%n]].filter(q=>q.usable&&!q.gate&&q.farm).length;
+ for(let k=0;k<target;k++){const free=cand.filter(b=>!b.farm);let W=0;const w=free.map(b=>{const v=1+8*nb(b);W+=v;return v;});let r=rng()*W,j=0;while(j<free.length-1&&(r-=w[j])>0)j++;free[j].farm=true;}
+ // reserve the farm blocks: field class, unbuildable, a crop-earth albedo; then re-stroke any road that crosses one
+ for(const B of BELT.blocks){if(!B.farm)continue;BELT.farmBlocks++;const poly=[];
+  for(let a=0;a<=8;a++){const t=B.t0+(B.t1-B.t0)*a/8;poly.push(at(t,B.rin(t)));}for(let a=8;a>=0;a--){const t=B.t0+(B.t1-B.t0)*a/8;poly.push(at(t,B.rout(t)));}
+  B.poly=poly;cpoly(cg,poly,'#6e5a34');cpoly(mg,poly,'#000');cpoly(kg,poly,KLCOL(KL.field));}
+ for(const R of ROADS)if(R.pts.some(p=>!insideCore(p[0],p[1],40))){cstroke(cg,R.pts,R.w,ROADCOL[R.cls]||'#5a5652');cstroke(mg,R.pts,R.w+2.5,'#000');cstroke(kg,R.pts,R.w+1.5,KLCOL(R.cls));}
+ cityBakeMasks();
+ window._belt={blocks:BELT.blocks.length,usable:cand.length,farm:BELT.farmBlocks,roads:BELT.roads};
+})();
 // ---------------------------------------------------------------- 3. guilds, embassy, chapterhouse, forge, civic buildings — near the hills, on the network
 function placeNear(key,tx,tz,opt){opt=opt||{};const D=VERN.defs[key];const sc=opt.scale||1;let o=findSpot(D.w/2*sc+1,D.d/2*sc+1,tx,tz,0,{faceRoad:true,R:opt.R||160,step:opt.step||10,pad:2,margin:26,ppad:2});
  if(!o)o=findSpot(D.w/2*sc+1,D.d/2*sc+1,tx,tz,0,{faceRoad:true,R:(opt.R||160)*2.2,step:(opt.step||10)*1.4,pad:2,margin:26,ppad:2});
  if(!o){reportErr('no room for '+key+' near '+(tx|0)+','+(tz|0));return null;}return placeVern(key,o,{v:opt.v|0,scale:sc});}
 // a building on a hill TOP (the mask says plaza there, so the mask and precinct are ignored; occupancy and the top's edge are not)
-function placeOnTop(key,H,a0,r,opt){opt=opt||{};const D=VERN.defs[key];for(let k=0;k<11;k++){const a=a0+(k%2?1:-1)*Math.ceil(k/2)*.2;   /* sweep ±1 rad round a0, never round to the gate side */const x=H.x+r*Math.cos(a),z=H.z+r*Math.sin(a);const ry=Math.atan2(H.x-x,H.z-z);
+// The radius is a first choice, no longer the only one (Round 3 issue: a change of hill or landmark scale meant re-picking
+// every radius): when the bearing sweep finds no room at r it sweeps again further in, then a little further out
+function placeOnTop(key,H,a0,r,opt){opt=opt||{};const D=VERN.defs[key];for(const rr0 of[r,r-8,r+5,r-16,r-24]){if(rr0<12)continue;const g=placeOnTopAt(key,H,a0,rr0,opt,D);if(g)return g;}reportErr('no room on the '+key+' top');return null;}
+function placeOnTopAt(key,H,a0,r,opt,D){for(let k=0;k<11;k++){const a=a0+(k%2?1:-1)*Math.ceil(k/2)*.2;   /* sweep ±1 rad round a0, never round to the gate side */const x=H.x+r*Math.cos(a),z=H.z+r*Math.sin(a);const ry=Math.atan2(H.x-x,H.z-z);
   const o={x,z,hx:D.w/2+1,hz:D.d/2+1,ry,pad:2};if(Math.hypot(x-H.x,z-H.z)+Math.max(o.hx,o.hz)>H.r0-5)continue;if(!occFree(o,2))continue;
   let onRoad=false;for(const c of obbCorners(o,1)){const kk=klass(c[0],c[1]);if(kk>=3&&kk<=6)onRoad=true;}if(onRoad)continue;
-  return placeVern(key,o,opt);}reportErr('no room on the '+key+' top');return null;}
+  return placeVern(key,o,opt);}return null;}
 // the hills of Rome (Travis): the temple and arena tops carry a district of their own — random lots on the top, facing the centre
 function fillTop(H,picks,n,rmin){reseed(SEED_CITY+21+Math.round(H.x));let k=0;for(let t=0;t<n*40&&k<n;t++){const a=rng()*TAU,r=rmin+Math.sqrt(rng())*(H.r0-8-rmin);const x=H.x+r*Math.cos(a),z=H.z+r*Math.sin(a);
   const key=vPick(picks),D=VERN.defs[key];const ry=Math.atan2(H.x-x,H.z-z)+rr(-.3,.3);const o={x,z,hx:D.w/2+.5,hz:D.d/2+.5,ry,pad:1.5};
@@ -6665,11 +7279,11 @@ for(const o of OCC.list)footprint(obbCorners(o,0));cityBakeMasks();
   const W=(u,v)=>[u*c-v*s,u*s+v*c];
   // nodes of this district's lattice: on the plateau, this hill the nearest, jittered
   const N=Math.ceil(CITY.R*1.2/pitch);const mine={};
-  for(let i=-N;i<=N;i++)for(let j=-N;j<=N;j++){const w=W(i*pitch+rr(-4,4),j*pitch+rr(-4,4));if(!insideWall(w[0],w[1],30))continue;if(nearestHill(w[0],w[1]).key!==k)continue;if(inPrecinct(w[0],w[1],4))continue;
+  for(let i=-N;i<=N;i++)for(let j=-N;j<=N;j++){const w=W(i*pitch+rr(-4,4),j*pitch+rr(-4,4));if(!insideCore(w[0],w[1],30))continue;if(nearestHill(w[0],w[1]).key!==k)continue;if(inPrecinct(w[0],w[1],4))continue;
    let on=klass(w[0],w[1])>=3&&klass(w[0],w[1])<=6,bld=canBuild(w[0],w[1]);
    // a node that lands on a building slides to the nearest free ground within 16 m (it used to be dropped, and the
    // district's street network with it)
-   if(!on&&!bld){let f=null;for(let r=4;r<=16&&!f;r+=4)for(let a=0;a<8&&!f;a++){const x=w[0]+r*Math.cos(a*TAU/8),z=w[1]+r*Math.sin(a*TAU/8);if(canBuild(x,z)&&insideWall(x,z,30)&&!inPrecinct(x,z,4))f=[x,z];}
+   if(!on&&!bld){let f=null;for(let r=4;r<=16&&!f;r+=4)for(let a=0;a<8&&!f;a++){const x=w[0]+r*Math.cos(a*TAU/8),z=w[1]+r*Math.sin(a*TAU/8);if(canBuild(x,z)&&insideCore(x,z,30)&&!inPrecinct(x,z,4))f=[x,z];}
     if(!f)continue;w[0]=f[0];w[1]=f[1];bld=true;}
    mine[key(i,j)]={p:w,i,j,conn:on,done:false};}
   // is the straight run between two nodes clear (buildable or road all the way)?
@@ -6712,7 +7326,7 @@ function pickVern(x,z,r){const nh=nearestHill(x,z),d=nh.d,gd=gateDist(x,z);const
 })();
 // ---------------------------------------------------------------- 5b. infill: the chaotic settler fabric behind the frontages, each house on a footpath to its street
 (function infill(){reseed(SEED_CITY+17);let n=0;
- for(let x=-480;x<=480;x+=9)for(let z=-480;z<=480;z+=9){const jx=x+rr(-3,3),jz=z+rr(-3,3);if(!insideWall(jx,jz,30))continue;if(!canBuild(jx,jz)||inPrecinct(jx,jz,2))continue;
+ for(let x=-600;x<=600;x+=9)for(let z=-600;z<=600;z+=9){const jx=x+rr(-3,3),jz=z+rr(-3,3);if(!insideWall(jx,jz,30))continue;if(!canBuild(jx,jz)||inPrecinct(jx,jz,2))continue;
   const nr=nearestRoadPt(jx,jz);if(!nr||nr.d>64)continue;
   const nh=nearestHill(jx,jz).d,w=rng();const wealth=nh<80?(w<.5?1:2):nh<200?(w<.6?1:0):(w<.8?0:1);
   const pk=rng()<.12?{key:vPick(['vern_workshop_a','vern_workshop_b','vern_smithy'])}:{key:vPick(HOUSES[wealth]),v:Math.floor(rng()*6)};const D=VERN.defs[pk.key];
@@ -6723,18 +7337,30 @@ function pickVern(x,z,r){const nh=nearestHill(x,z),d=nh.d,gd=gateDist(x,z);const
 })();
 // ---------------------------------------------------------------- 6. farms: every open plot left inside the wall
 const cropMat=new THREE.MeshLambertMaterial({color:0xffffff});kdef('cityCrop',VBOX,cropMat);kdef('cityFencePost',VBOX,MAT.wood);
+// one fenced plot: furrowed earth on the albedo, crop rows along its local x, a post at each corner (any rectangle, any yaw)
+function cityFarmPlot(o,name){occAdd(o);o.built='farm';const c=Math.cos(o.ry),s=Math.sin(o.ry),hx=o.hx,hz=o.hz;
+ const corners=obbCorners(o,0);cpoly(cg,corners,vPick(['#7a6a3a','#6e5e34','#857240','#6a6a3a']));cpoly(kg,corners,KLCOL(KL.field));
+ for(let k=0;k<5;k++){const lz=-hz+2+k*(2*hz-4)/4;cstroke(cg,[loc(o.x,o.z,-hx+1,lz,o.ry),loc(o.x,o.z,hx-1,lz,o.ry)],1.2,'rgba(40,30,15,.5)');}
+ const green=new THREE.Color().setHSL(rr(.18,.3),rr(.35,.6),rr(.22,.36));const rows=Math.floor((2*hz-2)/2.4);const q=o.ry?qEuler(0,o.ry,0):null;
+ for(let k=0;k<rows;k++){const p=loc(o.x,o.z,0,-hz+1.6+k*2.4,o.ry);const y=terrainH(p[0],p[1]);kput('cityCrop',[p[0],y+.3,p[1]],q,[2*hx-2.4,rr(.5,.9),rr(.7,1.1)],green.clone().offsetHSL(rr(-.02,.02),0,rr(-.04,.04)));}
+ for(let k=0;k<4;k++){const cc=corners[k];kput('cityFencePost',[cc[0],terrainH(cc[0],cc[1])+.5,cc[1]],null,[.2,1.1,.2],vC(0x6a5a44));}
+ REG.push({name:name||'Farm plot',x:o.x,y:terrainH(o.x,o.z),z:o.z,r:Math.max(hx,hz)+.5,h:2,cls:'farm',key:'city_farm',tags:{culture:'iziz-vernacular',type:['farm'],wealth:'poor',lit:false,biome:'hypertropic/wet'}});}
 (function farms(){reseed(SEED_CITY+16);let n=0;
- for(let x=-500;x<=500;x+=11)for(let z=-500;z<=500;z+=11){const jx=x+rr(-2,2),jz=z+rr(-2,2);if(!insideWall(jx,jz,34))continue;let o=null;
+ for(let x=-500;x<=500;x+=11)for(let z=-500;z<=500;z+=11){const jx=x+rr(-2,2),jz=z+rr(-2,2);if(!insideCore(jx,jz,34))continue;let o=null;
   for(const CELL of[24,18,13]){const H=CELL/2-1;const t={x:jx,z:jz,hx:H,hz:H,ry:0,pad:1.5};if(groundOK(t,{margin:30,ppad:3})&&occFree(t,2)){o=t;break;}}
-  if(!o)continue;const H=o.hx;
-  occAdd(o);o.built='farm';
-  const corners=obbCorners(o,0);cpoly(cg,corners,vPick(['#7a6a3a','#6e5e34','#857240','#6a6a3a']));cpoly(kg,corners,KLCOL(KL.field));
-  for(let k=0;k<5;k++){cstroke(cg,[[jx-H+1,jz-H+2+k*(2*H-4)/4],[jx+H-1,jz-H+2+k*(2*H-4)/4]],1.2,'rgba(40,30,15,.5)');}
-  const green=new THREE.Color().setHSL(rr(.18,.3),rr(.35,.6),rr(.22,.36));const rows=Math.floor((2*H-2)/2.4);
-  for(let k=0;k<rows;k++){const rz=jz-H+1.6+k*2.4;const rx=jx;const y=terrainH(rx,rz);kput('cityCrop',[rx,y+.3,rz],null,[2*H-2.4,rr(.5,.9),rr(.7,1.1)],green.clone().offsetHSL(rr(-.02,.02),0,rr(-.04,.04)));}
-  for(let k=0;k<4;k++){const c=corners[k];kput('cityFencePost',[c[0],terrainH(c[0],c[1])+.5,c[1]],null,[.2,1.1,.2],vC(0x6a5a44));}
-  REG.push({name:'Farm plot',x:jx,y:terrainH(jx,jz),z:jz,r:H+.5,h:2,cls:'farm',key:'city_farm',tags:{culture:'iziz-vernacular',type:['farm'],wealth:'poor',lit:false,biome:'hypertropic/wet'}});n++;}
+  if(!o)continue;cityFarmPlot(o);n++;}
  window._farms=n;
+})();
+// ---------------------------------------------------------------- 6b. the belt's farm blocks: each cut into plots along and across the block,
+// furrows running round the ring; a plot goes where its corners are on the block, off every road and precinct
+(function beltFarms(){reseed(SEED_CITY+41);let n=0;const at=(t,r)=>[r*Math.cos(t),r*Math.sin(t)];
+ for(const B of BELT.blocks){if(!B.farm)continue;const rm=(B.rin(B.tc)+B.rout(B.tc))/2,D=B.rout(B.tc)-B.rin(B.tc),A=(B.t1-B.t0)*rm;
+  const nr=Math.max(1,Math.round(D/17)),nt=Math.max(1,Math.round(A/19));
+  for(let i=0;i<nt;i++)for(let j=0;j<nr;j++){const t=B.t0+(B.t1-B.t0)*(i+.5)/nt;const r0=B.rin(t),r1=B.rout(t),r=r0+(r1-r0)*(j+.5)/nr;const p=at(t,r);
+   const o={x:p[0],z:p[1],hx:A/nt/2-1.4,hz:(r1-r0)/nr/2-1.4,ry:Math.atan2(-Math.cos(t),-Math.sin(t)),pad:1};if(o.hx<4||o.hz<4)continue;
+   let bad=false;for(const c of obbCorners(o,.5).concat([[o.x,o.z]])){const k=klass(c[0],c[1]);if((k>=3&&k<=6)||inPrecinct(c[0],c[1],1)||!insideWall(c[0],c[1],20)){bad=true;break;}}
+   if(bad||!occFree(o,1.2))continue;cityFarmPlot(o,'Farm plot (belt)');n++;}}
+ BELT.plots=n;window._belt.plots=n;
 })();
 // ---------------------------------------------------------------- 7. footprints into the mask (for the jungle and the paths overlay), then the hyperjungle
 for(const o of OCC.list)footprint(obbCorners(o,.6));
@@ -6743,7 +7369,11 @@ cityTerrainMesh();   // now: every plot is levelled
 (function jungle(){BIO.setScene(scene);const q=CITY.QUALITY;const t0=performance.now();
  BIO.host.mask=bioTreeMaskFn;BIO.cur='jungle/trees';let T={};try{T=HYPERJUNGLE.buildTrees(2000,1800,q);}catch(e){reportErr('jungle trees: '+e.stack);}
  BIO.host.mask=bioMaskFn;BIO.cur='jungle/floor';let F={};try{F=HYPERJUNGLE.buildFloor(1500,q);}catch(e){reportErr('jungle floor: '+e.stack);}
- BIO.cur=null;const b=BIO.bake();window._biome={trees:T.trees,hyper:T.hyper,saplings:T.saplings,tris:T.tris&&T.tris.total,floorTris:F.tris,calls:b.calls,inst:b.inst,ms:Math.round(performance.now()-t0)};
+ // the jungle on the ruins (Round 3 issue: no dress ran on them): moss on the ledges, plants and the odd small tree,
+ // mats and roots under the soffits, curtains and brackets on the walls of every ruined Ancient building
+ BIO.cur='jungle/dress';let dressN=0;try{const geos=[];for(const G of RUIN_GROUPS){if(!G.parent)continue;G.updateMatrixWorld(true);G.traverse(m=>{if(m.isMesh&&!m.material.transparent){geos.push(m.geometry.clone().applyMatrix4(m.matrixWorld));}});}
+  dressN=geos.length;if(geos.length)HYPERJUNGLE.dressGeos(geos,{seed:41,ledges:{moss:900,plants:420,edges:260,treeH:9},soffits:{n:260,hang:12},walls:{n:520,hang:10}});for(const g of geos)g.dispose();}catch(e){reportErr('jungle dress: '+e.stack);}
+ BIO.cur=null;const b=BIO.bake();window._biome={trees:T.trees,hyper:T.hyper,saplings:T.saplings,tris:T.tris&&T.tris.total,floorTris:F.tris,calls:b.calls,inst:b.inst,ruinsDressed:dressN,ms:Math.round(performance.now()-t0)};
  BIO._tickWind&&BIO._tickWind();
 })();
 // ---------------------------------------------------------------- 8. bakes and labels
@@ -6752,6 +7382,79 @@ kbake(scene);TRANS.bake(scene);
 window._registered=REG.length;window._buildMs=Math.round(performance.now()-BUILD_T0);window._occ=OCC.list.length;
 LABELS=new THREE.Group();LABELS.userData.probeSkip=true;scene.add(LABELS);
 // building labels: the atlas in src/93-labels.js (one draw call, toggled by the Labels button); landmarks are the REG entries with a role tag
+// ================================================================= IZIZ CITY — the evening, the weather and the street dressing (round 5)
+// Binds the shared atmosphere module (core/atmos/, ATMOS) to the city and places its pieces. Everything here is a CALL
+// into the module with the city's positions; the module itself knows nothing of Iziz. Runs after 90b (all placed and
+// baked) and before the views. Order: street furniture, the evening lights, the glow over the city's own lamps,
+// particles, weather, the dressing on buildings, the sewer, then finish (bake + glow) and the culling pass.
+reseed(SEED_CITY+50);
+ATMOS.init({THREE,scene,camera,hour:()=>CITYSKY.hour,onFrame:fn=>FRAME_HOOKS.push(fn),ground:(x,z)=>terrainH(x,z),seed:SEED_CITY+50,err:reportErr});
+const CITY_ATM={t0:performance.now()};
+// the top of whatever stands at (x,z): a ray down through the scene, ignoring the ground, the jungle and the module's own
+function cityTopAt(x,z,from){const rc=new THREE.Raycaster(new THREE.Vector3(x,from||400,z),new THREE.Vector3(0,-1,0),0,1000);
+ const objs=scene.children.filter(o=>o!==groundM&&!(o.userData&&(o.userData.probeSkip||o.userData.biome))&&o.name!=='atmos'&&!(o.name||'').startsWith('biome'));
+ const h=rc.intersectObjects(objs,true).find(q=>!(q.object.userData&&(q.object.userData.probeSkip||q.object.userData.biome)));return h?h.point.y:null;}
+const cityClear=(x,z,r)=>insideWall(x,z,18)&&!isRoad(x,z)&&!inPrecinct(x,z,0)&&occFree({x,z,hx:r||.5,hz:r||.5,ry:0},.3);
+// ---------------------------------------------------------------- 1. street furniture: lamps on the gate roads and thoroughfares, banners, planters, fountains
+{let n=0;for(const R of ROADS){const z=R.zone||'';if(!(z.startsWith('gate:')||z==='thoroughfare'))continue;
+  const row=ATMOS.lampRow(R.pts,{off:R.w/2+1.6,step:z==='thoroughfare'?20:16,ok:(x,zz)=>cityClear(x,zz,.5)});n+=row.length;
+  row.forEach((q,i)=>{if(i%2)return;const px=q[0]+q[4]*4,pz=q[1]+q[5]*4;if(cityClear(px,pz,1.3))ATMOS.planter(px,pz,-Math.atan2(q[5],q[4]));});}
+ CITY_ATM.lamps=n;}
+{const BAN=[0xe07a2a,0x9c2d2d,0x2f8f8a];for(const g of GATES){const R=wallR(g)-30;for(let k=0;k<3;k++){const r=R-6-k*14;for(const sd of[-1,1]){const x=r*Math.cos(g)-sd*10.5*Math.sin(g),z=r*Math.sin(g)+sd*10.5*Math.cos(g);
+  if(cityClear(x,z,.6))ATMOS.banner(x,z,g,BAN[k]);}}}}
+{const sites=PARKS.map(p=>[p.x,p.z,4]);for(const k of['temple','arena']){const H=HILL[k],g=H.gate,r=k==='temple'?40:68;sites.push([H.x+r*Math.cos(g),H.z+r*Math.sin(g),3.5,H.top]);}
+ let n=0;for(const s of sites){const y=s[3]!=null?s[3]:terrainH(s[0],s[1]);if(!occFree({x:s[0],z:s[1],hx:s[2]+1,hz:s[2]+1,ry:0},.5))continue;const f=ATMOS.fountain(s[0],s[1],{r:s[2],y});occAdd({x:s[0],z:s[1],hx:f.r,hz:f.r,ry:0});
+  REG.push({name:'Fountain',x:f.x,y:f.y,z:f.z,r:f.r,h:f.h,cls:'furniture',key:'atmos_fountain',tags:{culture:'iziz-vernacular',type:['fountain'],place:'outdoor',wealth:'civic',lit:true}});n++;}CITY_ATM.fountains=n;}
+// ---------------------------------------------------------------- 2. the evening: arena floods, temple braziers, wall searchlights, palace sky beams, gate spots, the spaceport
+{const ar=REG.find(r=>r.tags&&r.tags.role==='arena');if(ar){const top=ar.y+ar.h;[0,2.1,4.2].forEach((t,k)=>ATMOS.floodLight(ar.x+38*Math.cos(t),top+8,ar.z+31*Math.sin(t),{on:17.05+k*.12,off:22.25+k*.1}));}}
+{const te=REG.find(r=>r.tags&&r.tags.role==='temple');if(te){const top=cityTopAt(te.x,te.z);if(top!=null){let k=0;for(const [dx,dz] of[[-3,3],[3,3],[-3,-3],[3,-3]]){const y=cityTopAt(te.x+dx,te.z+dz);if(y!=null&&Math.abs(y-top)<8){ATMOS.brazier(te.x+dx,y,te.z+dz,{on:17.45+k*.08,off:29.9-k*.06});k++;}}
+  const L=new THREE.PointLight(0xffa050,0,60,1.8);L.position.set(te.x,top+6,te.z);ATMOS.add(L);ATMOS.hook((t,h)=>{L.intensity=1.2*ATMOS.litAt(h,17.45,29.9);});CITY_ATM.braziers=k;}}}
+{let n=0;const towers=REG.filter(r=>r.key==='iziz_wall_tower');towers.forEach((r,i)=>{if(i%3)return;const t=Math.atan2(r.z,r.x);if(GATES.some(g=>angDiff(t,g)<.2))return;
+  ATMOS.sweepBeam(r.x,terrainH(r.x,r.z)-3+48.5,r.z,{heading:t,on:17.9+n*.07,off:29.7-n*.05});n++;});CITY_ATM.searchlights=n;}
+{const H=HILL.palace,g=H.gate,gx=Math.cos(g),gz=Math.sin(g),ry=Math.atan2(gx,gz),cx=H.x-20*gx,cz=H.z-20*gz;[[-42,-36],[42,-36],[-42,36],[42,36]].forEach((c,k)=>{const p=loc(cx,cz,c[0],c[1],ry);
+  ATMOS.sweepBeam(p[0],H.top+14.6,p[1],{sky:true,on:18.3+k*.06,off:29.4+k*.05,len:260,rad:7});});}
+{let n=0;GATES.forEach((g,gi)=>{const R=wallR(g);for(const sd of[-1,1]){const x=(R+2)*Math.cos(g)-sd*20*Math.sin(g),z=(R+2)*Math.sin(g)+sd*20*Math.cos(g),top=cityTopAt(x,z);
+  const y=(top!=null&&top>CITY.PLATEAU)?top+1.2:CITY.PLATEAU+40;const dir=[Math.cos(g)*60-sd*8*Math.sin(g),-35,Math.sin(g)*60+sd*8*Math.cos(g)];
+  ATMOS.spotCone(x,y,z,dir,{on:17.75+gi*.06+(sd>0?.025:0),off:29.8-gi*.04});n++;}});CITY_ATM.gateSpots=n;}
+{let best=null;for(let i=-2;i<=2;i++)for(let j=-2;j<=2;j++){const x=SPORT.x+i*22,z=SPORT.z+j*22,y=cityTopAt(x,z);if(y!=null&&(!best||y>best[1]))best=[x,y,z];}
+ if(best)ATMOS.beacon(best[0],best[1]+1.5,best[2]);for(let k=0;k<4;k++){const t=k*Math.PI/2+Math.PI/4;ATMOS.lamp(SPORT.x+70*Math.cos(t),SPORT.z+70*Math.sin(t),{h:22,glow:12,y:CITY.SPACEPORT_H,on:17.35+k*.07,off:29.75+k*.04});}}
+// the city's own lamps get glow sprites too: the vernacular bulbs, the lamp columns, the transplants' and the palace's lamps
+{let n=0;const take=(item,col,size,max)=>{const it=KIT.items[item]||[];const step=Math.max(1,Math.ceil(it.length/max));for(let i=0;i<it.length;i+=step){const p=it[i].p;ATMOS.glowAdd(p[0],p[1],p[2],col,size,-1);n++;}};
+ take('vBulb',[1,.82,.45],3.2,2500);take('izGlow',[1,.85,.5],6,400);take('lampI',[1,.8,.4],4,800);CITY_ATM.cityGlows=n;}
+// ---------------------------------------------------------------- 3. particles: chimney smoke, steam at the spaceport, fireflies, the moat's mist, fog banks
+{const src=(window.CHIMNEYS||[]).slice(0,260);for(let k=0;k<3;k++){const a=k*2.1;src.push([SPORT.x+28*Math.cos(a),CITY.SPACEPORT_H+3,SPORT.z+28*Math.sin(a),1]);}ATMOS.smoke(src);CITY_ATM.smoke=src.length;}
+{const c=[];for(const p of PARKS)for(let k=0;k<6;k++){const a=k/6*TAU,r=p.r*.6;c.push([p.x+r*Math.cos(a),terrainH(p.x+r*Math.cos(a),p.z+r*Math.sin(a)),p.z+r*Math.sin(a)]);}
+ for(const R of RUIN_RECTS)c.push([R.x,terrainH(R.x,R.z),R.z]);for(let k=0;k<70;k++){const t=k/70*TAU,r=wallR(t)+rr(70,130),x=r*Math.cos(t),z=r*Math.sin(t);c.push([x,terrainH(x,z),z]);}
+ ATMOS.fireflies(c,{n:6,spread:6});}
+ATMOS.mistRing(t=>wallR(t),{inner:8,outer:40,y0:CITY.CHASM+7.5,y1:CITY.CHASM+13});
+{const pts=[];for(let i=0;i<700;i++){const t=rng()*TAU,r=Math.sqrt(rng())*(wallR(t)+30),x=r*Math.cos(t),z=r*Math.sin(t);pts.push([x,Math.max(terrainH(x,z),CITY.CHASM+7),z]);}ATMOS.fogBank(pts);}
+// ---------------------------------------------------------------- 4. weather: what it does to the city's own scene (fog, sun, the wet ground, a lightning flash)
+{const g0=new THREE.Color(1,1,1),gWet=new THREE.Color(.72,.72,.74);
+ ATMOS.weather({apply:W=>{scene.fog.density=.00034*(1+4*W.fog+1.8*W.rain);sun.intensity*=1-.55*W.rain-.3*W.fog;if(cityHemi)cityHemi.intensity+=W.flash*1.4;
+  if(groundM){groundM.material.roughness=.96-.5*W.wet;groundM.material.color.copy(g0).lerp(gWet,W.wet);}}});}
+// ---------------------------------------------------------------- 5. dressing: ivy on walls, cisterns on flat roofs, window boxes under the vernacular panes
+{const idx=ATMOS.boxIndex(Object.keys(KIT.meshes).filter(n=>!/Win|Dark|boxD|Cloth|Tarp|Flag|Crop|Fence|Post|Sheet|Board|Plate|Sign|Pipe|Rope|Iron|Bulb|slab|strip|dot|cell|mull/i.test(n)).map(n=>KIT.meshes[n]),{minSize:2});
+ let n=0;for(const v of VERN_PLACED){const o=v.o,D=VERN.defs[v.key],w=D&&D.tags.wealth;n+=ATMOS.dressBuilding(idx,{x:o.x,z:o.z,y:terrainH(o.x,o.z),R:Math.max(o.hx,o.hz),ry:o.ry},{ivy:w==='poor'?.22:w==='rich'?.45:.32,cistern:w==='rich'?.15:.35});}
+ for(const o of OCC.list){if(!o.built||!/^trans_/.test(o.built))continue;n+=ATMOS.dressBuilding(idx,{x:o.x,z:o.z,y:terrainH(o.x,o.z),R:Math.max(o.hx,o.hz),ry:o.ry||0},{ivy:.25,cistern:.4});}
+ CITY_ATM.dressed=n;ATMOS.windowBoxesOnPanes(KIT.meshes.vWinLit,{p:.28});ATMOS.windowBoxesOnPanes(KIT.meshes.vWinGlass,{p:.18});}
+// ---------------------------------------------------------------- 6. the sewer: a grated drain down a belt lane in the north, an inlet at the wall's foot, the outfall
+// in the wall's outer face with its grate, and a trickle down the moat's bank to the water
+{const n=Math.round(TAU*(CITY.R+10)/52),want=257*Math.PI/180,i0=Math.round((want-.013)/TAU*n);
+ // the belt lane near 257 deg that lies furthest from a wall tower (izOuterWall: a tower every 6th of its segments)
+ const nw=Math.round(216*CITY.WALL_K),towerGap=t=>{let d=1e9;for(let k=0;k<nw;k+=6)d=Math.min(d,angDiff(t,k/nw*TAU));return d;};
+ let t=null,bestD=-1;for(let i=i0-3;i<=i0+3;i++){const tt=i/n*TAU+.013,d=towerGap(tt);if(d>bestD&&!GATES.some(g=>angDiff(tt,g)<.25)){bestD=d;t=tt;}}
+ const R=wallR(t),c=Math.cos(t),s=Math.sin(t),rin=coreR(t)-20+5,rout=R-6.5;const pts=[];for(let r=rin;r<=rout;r+=2)pts.push([r*c,r*s]);ATMOS.drain(pts,{w:1.3});
+ const iy=terrainH((R-5.3)*c,(R-5.3)*s);ATMOS.inletGrate((R-5.3)*c,iy,(R-5.3)*s,Math.atan2(-c,-s),{});
+ // the wall's rock foundation stands 1.5 m proud of its face (izOuterWall: wb+3 wide, its top 2.75 m under the wall line's
+ // ground), so the outfall is built out on the foundation's face, its floor on the foundation's top or the bank, whichever is higher
+ const ro=R+6.6,fy=Math.max(terrainH(R*c,R*s)-2.75,terrainH((ro+1)*c,(ro+1)*s))+.1,f=ATMOS.outfall(ro*c,fy,ro*s,Math.atan2(c,s),{lean:0,waterY:CITY.CHASM+7});
+ REG.push({name:'Sewer outfall',x:f.x,y:f.y-2,z:f.z,r:f.r,h:f.h,cls:'building',key:'atmos_outfall',tags:{culture:'iziz-old',type:['infrastructure'],wealth:'civic',lit:false}});
+ REG.push({name:'Drain channel (grated)',x:(rin+rout)/2*c,y:terrainH((rin+rout)/2*c,(rin+rout)/2*s),z:(rin+rout)/2*s,r:(rout-rin)/2,h:1.5,cls:'furniture',key:'atmos_drain',tags:{culture:'iziz-old',type:['infrastructure'],place:'outdoor',wealth:'civic'}});
+ CITY_ATM.sewer={x:f.x|0,z:f.z|0,bearing:Math.round(t*180/Math.PI),drain:pts.length};}
+// ---------------------------------------------------------------- 7. bake, glow, cull
+ATMOS.finish();
+ATMOS.cull(scene,{keep:m=>!!m.userData.biome,pad:2});
+CITY_ATM.ms=Math.round(performance.now()-CITY_ATM.t0);window._atmos=Object.assign({},CITY_ATM,{stats:ATMOS.stats});
 // ---------------------------------------------------------------- probe (window._api) — same contract as the Ancients kit's, so verify.py runs unchanged
 const BUDGET={
  showcase:{tris:3000000,calls:400},
@@ -6794,8 +7497,12 @@ const VIEWS={
  'South gate — from the causeway':[_G1[0]*1.46+30,44,_G1[1]*1.46,_G1[0],28,_G1[1]],
  'Reclaimed quarter — street':_eye(60,80,150,-40),
  'Ruined quarter — eye level':_eye(-60,-300,-60,-380),
- 'Settler streets — eye level':(()=>{const h=VERN_PLACED.filter(v=>/vern_house_poor/.test(v.key));const v=h[Math.floor(h.length*.37)]||h[0];if(!v)return _eye(0,0,10,10);const o=v.o;const f=loc(o.x,o.z,0,o.hz+9,o.ry),t=loc(o.x,o.z,-30,o.hz+6,o.ry);return _eye(f[0],f[1],t[0],t[1]);})(),
- 'The moat and the jungle':[720,60,420,520,30,300],
+ // a poor house whose camera spot (9 m out from its front) is on a street and clear of every plot — it used to take the
+ // 37th-percentile house whatever, and on some seeds the camera stood inside a yard fence
+ 'Settler streets — eye level':(()=>{const h=VERN_PLACED.filter(v=>/vern_house_poor/.test(v.key));const k0=Math.floor(h.length*.37);
+  for(let i=0;i<h.length;i++){const v=h[(k0+i)%h.length],o=v.o;const f=loc(o.x,o.z,0,o.hz+9,o.ry);if(!isRoad(f[0],f[1]))continue;if(!occFree({x:f[0],z:f[1],hx:.6,hz:.6,ry:0},.4))continue;
+   const t=loc(o.x,o.z,-30,o.hz+6,o.ry);return _eye(f[0],f[1],t[0],t[1]);}return _eye(0,0,10,10);})(),
+ 'The moat and the jungle':[760,60,444,560,30,323],   // out with the wall (round 4)
  'Spaceport (ruined)':[SPORT.x+160,90,SPORT.z+140,SPORT.x,10,SPORT.z],
  'Observation tower':[NEEDLE.x+140,_A.top+90,NEEDLE.z+120,NEEDLE.x,_A.top+40,NEEDLE.z],
 };
@@ -6805,6 +7512,13 @@ if(window._toppled){const t=window._toppled;VIEWS['Toppled Skyscraper B']=[t.x+9
 {const a=AMPH;VIEWS['Amphitheatre — seating']=[a.x-20,CITY.PLATEAU+16,a.z-8,a.x,CITY.PLATEAU+10,a.z+30];}
 {const f=OCC.list.find(o=>o.built==='toppled'&&o.z<0);if(f)VIEWS['Toppled Skyscraper F']=[f.x+30,150,f.z+10,f.x,18,f.z-20];}
 {const m=REG.find(r=>r.key==='city_tripod_market');if(m)VIEWS['Tripod market']=[m.x+45,m.y+22,m.z+45,m.x,m.y+6,m.z];}
+{const m=REG.filter(r=>r.key==='city_tripod_market').find(r=>Math.hypot(r.x+19,r.z-282)<20);if(m)VIEWS['Tripod market (west)']=[m.x+50,m.y+30,m.z+46,m.x,m.y+4,m.z];}
+{const H=_P,g=H.gate,c=Math.cos(g),s=Math.sin(g);VIEWS['Palace — grand entrance']=[H.x+56*c-24*s,H.top+6,H.z+56*s+24*c,H.x+25*c,H.top+7,H.z+25*s];}
+{const f=OCC.list.find(o=>o.piece===2);if(f)VIEWS['Toppled F — the break']=[f.x+70,95,f.z+40,f.x-6,20,f.z-14];}
+{const g=GATES[0],R=(coreR(g)+wallR(g))/2;VIEWS['Farm belt (south)']=[(R+140)*Math.cos(g+.18),150,(R+140)*Math.sin(g+.18),R*Math.cos(g+.1),22,R*Math.sin(g+.1)];}
+{const o=REG.find(r=>r.key==='atmos_outfall');if(o){const c=o.x/Math.hypot(o.x,o.z),s=o.z/Math.hypot(o.x,o.z);VIEWS['Sewer outfall']=[o.x+c*34-s*16,o.y+8,o.z+s*34+c*16,o.x,o.y-2,o.z];}}
+{const g=GATES[0],R=wallR(g);VIEWS['Evening — the south gate road']=[(R-70)*Math.cos(g)+14,CITY.PLATEAU+9,(R-70)*Math.sin(g),(R+40)*Math.cos(g),CITY.PLATEAU+6,(R+40)*Math.sin(g)];}
+{const p=PARKS[0];if(p)VIEWS['Park fountain']=[p.x+16,terrainH(p.x,p.z)+4,p.z+12,p.x,terrainH(p.x,p.z)+2,p.z];}
 {const h=REG.find(r=>/honeycomb/.test(r.name));if(h)VIEWS['Honeycomb rows']=[h.x+90,70,h.z+90,h.x,15,h.z];}
 // ---------------------------------------------------------------- camera, inspector, polygon tool, walk mode
 const ctl={target:new THREE.Vector3(0,10,0),theta:0,phi:1.1,radius:120};
@@ -6904,13 +7618,22 @@ uiButton('Jungle',true,()=>{const v=!BIO.baked[0].visible;for(const m of BIO.bak
 // hour of day
 {const wrap=document.createElement('span');wrap.style.cssText='display:inline-flex;align-items:center;gap:4px;margin-left:6px;font:12px system-ui;color:#ffe2b0';
  const lab=document.createElement('span');lab.textContent='hour '+CITYSKY.hour.toFixed(1);const sl=document.createElement('input');sl.type='range';sl.min=0;sl.max=24;sl.step=.1;sl.value=CITYSKY.hour;sl.style.width='120px';
- sl.oninput=()=>{CITYSKY.hour=parseFloat(sl.value);lab.textContent='hour '+CITYSKY.hour.toFixed(1);};wrap.appendChild(lab);wrap.appendChild(sl);ui.appendChild(wrap);}
+ sl.oninput=()=>{CITYSKY.hour=parseFloat(sl.value);lab.textContent='hour '+CITYSKY.hour.toFixed(1);};wrap.appendChild(lab);wrap.appendChild(sl);ATMOS.weatherUI(wrap);ui.appendChild(wrap);ui.style.maxWidth='calc(100vw - 24px)';}
+// the hour and the weather can come in the URL: #hour=20.5&weather=storm (shareable; also how the harness shoots the night)
+{const q=new URLSearchParams((location.hash||'').replace(/^#/,''));const h=parseFloat(q.get('hour'));if(isFinite(h)){CITYSKY.hour=h;const sl=ui.querySelector('input[type=range]');if(sl){sl.value=h;sl.oninput();}}
+ const w=q.get('weather');if(w&&ATMOS.W&&ATMOS.W.MODES.includes(w)){ATMOS.W.mode=w;const sel=document.getElementById('atmosWeather');if(sel)sel.value=w;}}
 window._api.city={CITY,HILL,ROADS:()=>ROADS.length,clusters:()=>CLUSTERS.map(C=>({state:C.state,hill:C.hill,cells:C.nx*C.nz,slots:C.slots.length,built:C.slots.filter(s=>s.built).length})),occ:()=>OCC.list.length,
- setHour:h=>{CITYSKY.hour=h;},quota:QUOTA,vern:()=>{const by={};for(const v of VERN_PLACED)by[v.key]=(by[v.key]||0)+1;return by;},biome:()=>window._biome};
+ setHour:h=>{CITYSKY.hour=h;},quota:QUOTA,vern:()=>{const by={};for(const v of VERN_PLACED)by[v.key]=(by[v.key]||0)+1;return by;},biome:()=>window._biome,
+ belt:()=>window._belt,atmos:()=>window._atmos,lifeDests:()=>({market:LIFE_DESTS.market.length,markets:REG.filter(r=>r.tags&&r.tags.destination==='market').map(r=>({name:r.name,x:r.x|0,z:r.z|0,stalls:r.tags.stalls,canopies:r.tags.canopies}))})};
+window.LIFE_DESTS=LIFE_DESTS;
 // ---------------------------------------------------------------- floating building labels (standard new-world package)
 // One label per registered volume (REG), drawn once into a texture atlas and rendered as ONE mesh of camera-facing
 // quads: a thousand labels cost one draw call. Labels keep a constant size on screen (150 px; landmarks 260 px)
 // and fade out past 300 m, landmarks never. Toggled with the Labels button (they live in the LABELS group).
+// ONE LABEL PER BUILDING: volumes that overlap and share a name before ' — ' (a kit building adopted as several REG
+// entries: the Salvagers' Guild) keep only the landmark or the largest. DECLUTTER: every few frames the labels are
+// projected to the screen and, landmarks first and then nearest first, a label whose box overlaps one already shown
+// is hidden (aHide), so near the camera they no longer pile up.
 // A world that already made LABELS (the city) gets the atlas added to it; one that did not gets the group made here.
 const LABEL_ATLAS={W:4096,H:4096,cw:409,ch:48};
 function labelsBuild(){
@@ -6920,29 +7643,43 @@ function labelsBuild(){
  const count={};for(const r of REG)count[r.name]=(count[r.name]||0)+1;
  let list=REG.filter(r=>r.name&&count[r.name]<8&&(!r.cls||r.cls==='building'||r.cls==='farm'||r.cls==='furniture')&&!(r.tags&&r.tags.part==='wall'));
  const isBig=r=>!!(r.tags&&(r.tags.role||r.tags.landmark));
+ {const head=r=>r.name.split(' — ')[0],better=(a,b)=>(isBig(a)-isBig(b))||(a.r-b.r);const drop=new Set();
+  for(let i=0;i<list.length;i++)for(let j=i+1;j<list.length;j++){const a=list[i],b=list[j];if(head(a)!==head(b))continue;if(Math.hypot(a.x-b.x,a.z-b.z)>(a.r+b.r)*.6)continue;drop.add(better(a,b)>=0?b:a);}
+  list=list.filter(r=>!drop.has(r));}
  list.sort((a,b)=>(isBig(b)-isBig(a))||(b.r-a.r));if(list.length>max)list=list.slice(0,max);
  const cv=document.createElement('canvas');cv.width=LABEL_ATLAS.W;cv.height=LABEL_ATLAS.H;const g=cv.getContext('2d');g.clearRect(0,0,cv.width,cv.height);
- const pos=[],apos=[],uv=[],cell=[],big=[],idx=[];
+ const pos=[],apos=[],uv=[],cell=[],big=[],idx=[],hide=[];
  list.forEach((r,i)=>{const cx=(i%cols)*LABEL_ATLAS.cw,cy=Math.floor(i/cols)*LABEL_ATLAS.ch;const B=isBig(r);
   g.fillStyle=B?'rgba(20,12,6,.72)':'rgba(0,0,0,.55)';g.fillRect(cx+1,cy+1,LABEL_ATLAS.cw-2,LABEL_ATLAS.ch-2);
   g.font=(B?'bold 34px':'bold 28px')+' system-ui,sans-serif';g.fillStyle=B?'#ffe2b0':'#f4e8d4';g.textAlign='center';g.textBaseline='middle';
   let t=r.name;while(g.measureText(t).width>LABEL_ATLAS.cw-10&&t.length>4)t=t.slice(0,-2);if(t!==r.name)t=t.slice(0,-1)+'…';g.fillText(t,cx+LABEL_ATLAS.cw/2,cy+LABEL_ATLAS.ch/2+1);
   const y=(r.y||0)+r.h+3,b=i*4;
-  for(const c of[[-.5,-.5],[.5,-.5],[.5,.5],[-.5,.5]]){pos.push(c[0],c[1],0);apos.push(r.x,y,r.z);uv.push((cx+(c[0]+.5)*LABEL_ATLAS.cw)/LABEL_ATLAS.W,1-(cy+(0.5-c[1])*LABEL_ATLAS.ch)/LABEL_ATLAS.H);cell.push(0,0);big.push(B?1:0);}
+  for(const c of[[-.5,-.5],[.5,-.5],[.5,.5],[-.5,.5]]){pos.push(c[0],c[1],0);apos.push(r.x,y,r.z);uv.push((cx+(c[0]+.5)*LABEL_ATLAS.cw)/LABEL_ATLAS.W,1-(cy+(0.5-c[1])*LABEL_ATLAS.ch)/LABEL_ATLAS.H);cell.push(0,0);big.push(B?1:0);hide.push(0);}
   idx.push(b,b+1,b+2,b,b+2,b+3);});
  if(!list.length)return null;
  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setAttribute('aPos',new THREE.Float32BufferAttribute(apos,3));
- geo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));geo.setAttribute('aBig',new THREE.Float32BufferAttribute(big,1));geo.setIndex(idx);
+ geo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));geo.setAttribute('aBig',new THREE.Float32BufferAttribute(big,1));geo.setAttribute('aHide',new THREE.Float32BufferAttribute(hide,1));geo.setIndex(idx);
  // the uv above already addresses the cell, so the shader only flips nothing: cell offsets are baked in
  const tex=new THREE.CanvasTexture(cv);tex.minFilter=THREE.LinearFilter;tex.generateMipmaps=false;
  const mat=new THREE.ShaderMaterial({transparent:true,depthWrite:false,depthTest:true,fog:false,
   uniforms:{map:{value:tex},uPxToWorld:{value:1}},
-  vertexShader:`attribute vec3 aPos;attribute float aBig;uniform float uPxToWorld;varying vec2 vUv;varying float vA;
+  vertexShader:`attribute vec3 aPos;attribute float aBig;attribute float aHide;uniform float uPxToWorld;varying vec2 vUv;varying float vA;
    void main(){vec4 mv=modelViewMatrix*vec4(aPos,1.0);float dist=-mv.z;float w=aBig>0.5?240.0:170.0;float k=dist*uPxToWorld;
-    mv.xy+=position.xy*vec2(w*k,w*k*48.0/409.0);vA=aBig>0.5?1.0:(1.0-smoothstep(320.0,560.0,dist));vUv=uv;gl_Position=projectionMatrix*mv;}`,
+    mv.xy+=position.xy*vec2(w*k,w*k*48.0/409.0);vA=(aBig>0.5?1.0:(1.0-smoothstep(320.0,560.0,dist)))*(1.0-aHide);vUv=uv;gl_Position=projectionMatrix*mv;}`,
   fragmentShader:`uniform sampler2D map;varying vec2 vUv;varying float vA;void main(){vec4 c=texture2D(map,vUv);c.a*=vA;if(c.a<0.02)discard;gl_FragColor=c;}`});
  const m=new THREE.Mesh(geo,mat);m.frustumCulled=false;m.userData.probeSkip=true;m.name='labels';m.renderOrder=10;LABELS.add(m);
  FRAME_HOOKS.push(()=>{mat.uniforms.uPxToWorld.value=2*Math.tan(camera.fov*Math.PI/360)/innerHeight;});
+ // the declutter pass, every 6th frame: greedy over the labels in priority order against a 64 px screen grid
+ {const H=geo.attributes.aHide,v=new THREE.Vector3(),cellPx=64;let tick=0;const ord=list.map((r,i)=>i);
+  FRAME_HOOKS.push(()=>{if(!m.visible||!LABELS.visible||(tick++%6))return;const W=innerWidth,Hh=innerHeight,grid={},items=[];
+   for(const i of ord){const r=list[i];v.set(r.x,(r.y||0)+r.h+3,r.z).project(camera);const d=camera.position.distanceTo(v.clone().set(r.x,(r.y||0)+r.h+3,r.z));
+    items.push({i,big:isBig(r),d,x:(v.x*.5+.5)*W,y:(.5-v.y*.5)*Hh,on:v.z<1&&v.z>-1&&(isBig(r)||d<560)});}   // a faded label takes no room
+   items.sort((a,b)=>(b.big-a.big)||(a.d-b.d));const ov=(a,b)=>Math.abs(a.x-b.x)<(a.w+b.w)/2&&Math.abs(a.y-b.y)<(a.h+b.h)/2;
+   for(const it of items){let hid=1;if(it.on){it.w=it.big?240:170;it.h=it.w*48/409;const x0=Math.floor((it.x-it.w/2)/cellPx),x1=Math.floor((it.x+it.w/2)/cellPx),y0=Math.floor((it.y-it.h/2)/cellPx),y1=Math.floor((it.y+it.h/2)/cellPx);
+     let clash=false;for(let gx=x0;gx<=x1&&!clash;gx++)for(let gy=y0;gy<=y1&&!clash;gy++){const L=grid[gx+','+gy];if(L)for(const o of L)if(ov(it,o)){clash=true;break;}}
+     if(!clash){hid=0;for(let gx=x0;gx<=x1;gx++)for(let gy=y0;gy<=y1;gy++)(grid[gx+','+gy]||(grid[gx+','+gy]=[])).push(it);}}
+    for(let k=0;k<4;k++)H.array[it.i*4+k]=hid;}
+   H.needsUpdate=true;});}
  window._labels=list.length;return m;}
 labelsBuild();
 </script>
