@@ -38,6 +38,15 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Done
 
+- [x] On the shared core (`core/biome/`, Oct 2026), with the core's helpers as globals in
+      `41-hyperjungle-globals.js`. Geometry checked by mesh fingerprints against the kit's own core:
+      every pass's triangles and every item's count identical, trees, dress and fauna bit for bit. Eight
+      floor items placed round the boles (fronds, moss mats, ribbons, fungus, rods, strands, blooms,
+      under-cards) differ in 32-813 instances each: `boleProfile` now reads the bark bucket's Float32
+      store (the GPU's precision) where it read doubles, so a ring or a keep-clear test can fall the
+      other way and that plant lands elsewhere by its tree. `standQuantiles` and the fauna read
+      `BIO.center()` (the core keeps `host.origin` as a list).
+
 - [x] Leaf cards are Lambert with a two-sided light mix, an up-bent (or per-clump)
       normal and distance-boosted alpha — no white-out from below, no lace at range.
 - [x] Colours are sRGB in / linear out at BIO.put and every bucket write.
