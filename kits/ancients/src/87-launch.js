@@ -498,6 +498,23 @@ function buildLaunch(scene,gx,gz,d,pad){reseed(9520+d);KOFF=[gx,0,gz];
     beam(PL,[A[0],yb,A[1]],[B[0],yb,B[1]],1.8,1.8);
     beam(PL,[A[0],ya,A[1]],[B[0],yb,B[1]],1.3,1.3);}}
   return cor;};
+ // A LATTICE LYING DOWN. The fallen mast head and the two downed service towers
+ // were a chain of single jittered beams: wreckage at distance, a scribble up
+ // close. They are now the same box lattice as the standing ones, on its side,
+ // its axis kinking where it hit, its section crushed toward the torn end and
+ // members missing. J holds the draws the old chain made, in the order it made
+ // them (dy0, dx, dy1, dz per segment), so the stream after it is unchanged.
+ const lyingLattice=(fa,r0,L,w,J,ylo,yhi)=>{const n=J.length,ux=Math.cos(fa),uz=Math.sin(fa),px=-uz,pz=ux;
+  const ax=[];let off=0;
+  for(let i=0;i<=n;i++){const j=J[Math.min(i,n-1)];off+=(i?j[1]+j[3]:0)*.18;
+   const r=r0+i/n*L,cr=lerp(1,.55,Math.pow(i/n,1.6))*(1-.08*(j[0]-ylo)/(yhi-ylo));
+   ax.push([ux*r+px*off,uz*r+pz*off,cr,j[2]]);}
+  const C=(i,c)=>{const A=ax[i],k=[[-1,-1],[1,-1],[1,1],[-1,1]][c],ww=w*A[2];
+   return[A[0]+px*k[0]*ww,APY+ww*(1+k[1])+.6,A[1]+pz*k[0]*ww];};
+  for(let i=0;i<n;i++)for(let c=0;c<4;c++){const gone=h3(i,c,9532+Math.round(fa*100))<.18;
+   if(!gone)beam(PL,C(i,c),C(i+1,c),2.6,2.6);
+   if(i%2===0&&h3(c,i,9533)>.25)beam(PL,C(i,c),C(i,(c+1)%4),1.8,1.8);
+   if(h3(i+7,c,9534)>.4)beam(PL,C(i,c),C(i+1,(c+1)%4),1.3,1.3);}};
 
  // ---- six gantry masts and the collar ---------------------------------------
  const mastBroke=k=>dd&&Math.abs(wrapA(SBEAR(k)-LA))<.2;
@@ -511,10 +528,9 @@ function buildLaunch(scene,gx,gz,d,pad){reseed(9520+d);KOFF=[gx,0,gz];
     kput(GRT,[ca*MSTR+Math.cos(th)*19,y+2.4,sa*MSTR+Math.sin(th)*19],TAN(th),[38,3.2,1.4],null);}
    if(!dd||rng()<.25)kput('strip',[ca*MSTR,y+3.4,sa*MSTR],TAN(a),[26,1.6,1.6],litC(true,.4,.9));}
   if(mastBroke(k)){                          // the head, down on the pad
-   const fa=a+rr(-.3,.3),fr=rr(140,230);
-   for(let i=0;i<16;i++){const t=i/16;
-    beam(PL,[Math.cos(fa)*(fr+t*110),APY+rr(1,9),Math.sin(fa)*(fr+t*110)],
-             [Math.cos(fa)*(fr+(t+1/16)*110)+rr(-9,9),APY+rr(1,9),Math.sin(fa)*(fr+(t+1/16)*110)+rr(-9,9)],3,3);}
+   const fa=a+rr(-.3,.3),fr=rr(140,230),J=[];
+   for(let i=0;i<16;i++){const y0=rr(1,9),dx=rr(-9,9),y1=rr(1,9),dz=rr(-9,9);J.push([y0,dx,y1,dz]);}
+   lyingLattice(fa,fr,110,15,J,1,9);
    lxRubble(Math.cos(fa)*(fr+55),APY,Math.sin(fa)*(fr+55),8,70,70,4.2);
    continue;}
   // the arm that carries the collar ring in from the mast
@@ -572,9 +588,9 @@ function buildLaunch(scene,gx,gz,d,pad){reseed(9520+d);KOFF=[gx,0,gz];
   // so the ring is not obviously symmetrical from any single view
   const down=dd&&(k===0||k===3);
   if(down){const fa=a+rr(-.25,.25);
-   for(let i=0;i<14;i++){const t=i/14;
-    beam(PL,[Math.cos(fa)*(SVR-20+t*150),APY+rr(1,7),Math.sin(fa)*(SVR-20+t*150)],
-             [Math.cos(fa)*(SVR-20+(t+1/14)*150)+rr(-8,8),APY+rr(1,7),Math.sin(fa)*(SVR-20+(t+1/14)*150)+rr(-8,8)],2.6,2.6);}
+   const J=[];
+   for(let i=0;i<14;i++){const y0=rr(1,7),dx=rr(-8,8),y1=rr(1,7),dz=rr(-8,8);J.push([y0,dx,y1,dz]);}
+   lyingLattice(fa,SVR-20,150,11,J,1,7);
    lxRubble(ca*SVR,APY,sa*SVR,6,46,44,3.6);
    continue;}
   // SIX-FOLD SYMMETRY WAS EXACT: from overhead the ground works were a perfect

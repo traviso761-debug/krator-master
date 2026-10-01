@@ -589,12 +589,12 @@ all follow from that single rotation rather than being modelled separately.
 - [x] ~~**Six-fold symmetry is exact**~~ FIXED (QA arcA): six tower heights, two with a second jib. — six trenches, masts, towers and umbilical
       bearings. From directly overhead it is a perfect rosette; only the three
       spheres and two ramps break it.
-- [ ] (QA arcA: scoops closed with cheeks, payload stack in panels with bays out and a spine, a fifth of debris is torn plate. Still open: the fallen mast and tower are beam chains.) Scoop back walls are single surfaces with no thickness — blast walls from
+- [x] (QA arcA, all four parts FIXED: scoops closed with cheeks, payload stack in panels with bays out and a spine, the fallen mast head and towers are lattices lying on their side, a fifth of debris is torn plate.) ~~Scoop back walls are single surfaces with no thickness — blast walls from
       the ground, thin dark sails from overhead. The payload frame inside the
       broken shroud is a smooth lathe. The fallen mast head and downed service
       tower are chains of jittered beams: wreckage at distance, a scribble up
       close. Trench slag, apron debris and crater rubble share one hue band with
-      no concrete/metal distinction.
+      no concrete/metal distinction.~~
 - [ ] **The six flame-trench volumes are the thinnest in the registry** (27
       probe samples each) because the trench geometry is inside one merged mesh
       and only its `kput` coping contributes points. They pass, but they are the
