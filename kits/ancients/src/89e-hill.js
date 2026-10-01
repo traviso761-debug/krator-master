@@ -77,6 +77,14 @@ TEX.hillGround=canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.
  g.putImageData(id,0,0);});
 MAT.hillSlope =new THREE.MeshStandardMaterial({map:TEX.hillGround,color:0xa39a76,roughness:1,metalness:0,side:DS});
 MAT.hillSlopeR=new THREE.MeshStandardMaterial({map:TEX.hillGround,color:0x74905a,roughness:1,metalness:0,side:DS});
+// Belt and braces for the dark band at the lip. The hill is a DoubleSide
+// surface, so wherever any sliver of it is seen from BELOW its back face takes
+// only the hemisphere's ground colour and renders maroon. lxBounce (defined in
+// 87-launch.js, which loads first) gives a downward-facing fragment a neutral
+// bounce from the same hemisphere term, so a stray underside reads as shaded
+// ground rather than as a dark stripe. Terrain never faces down on purpose, so
+// nothing else about the hill changes.
+lxBounce(MAT.hillSlope,3.2);lxBounce(MAT.hillSlopeR,3.2);   // stronger than the vehicle's: this should read as ground, not shade
 // The cut walls are rock, not mud: Arcoindian II's cliff read as smeared brown
 // at close range and this one stands right beside every terrace preset. Kept a
 // good deal darker than the city so 990 m of contact between the two reads as a
@@ -436,8 +444,26 @@ function buildHill(scene,gx,gz,d){reseed(9660+d);KOFF=[gx,0,gz];
  {const NU=176,NV=44;
   GR.push(gridSurface((u,v)=>{const th=u*TAU,r=lerp(C.RSUM,C.RTOE,Math.pow(v,.86));
     return pol(r,th,hillNat(r,th));},NU,NV,
-   {uS:330,vS:51,hole:(u,v)=>{const th=u*TAU,r=lerp(C.RSUM,C.RTOE,Math.pow(v,.86));
-     return Math.abs(hillCorr(r,th))<1.25&&hillNat(r,th)>hillFloorR(r)+1.5;}}));
+   {uS:330,vS:51,hole:(u,v)=>{
+     // THE DARK BAND. gridSurface tests a quad at its CENTRE, so a quad whose
+     // centre lay just outside |corr| 1.25 still reached half a cell (20-35 m)
+     // in over the cut at full natural height — an overhang, seen from the
+     // terraces as a strip of the hill's own UNDERSIDE, lit only by the
+     // hemisphere's ground colour: the dark maroon band along the lip in 'The
+     // cut wall'. Testing all four CORNERS drops every quad that reaches over
+     // the cut; the flank shoulder, which runs out to |corr| 2.37 at 0.4 m
+     // over the hill, covers the seam.
+     // Only inside the flank's radial reach (1 760 m): beyond it, near the
+     // forecourt and the ramp, dropping a quad opened a hole onto the ground
+     // plane, because there is no shoulder there to cover it.
+     const th0=u*TAU,r0=lerp(C.RSUM,C.RTOE,Math.pow(v,.86));
+     if(Math.abs(hillCorr(r0,th0))<1.25&&hillNat(r0,th0)>hillFloorR(r0)+1.5)return true;
+     let inside=false;
+     for(let a=-.5;a<=.5;a+=1)for(let b=-.5;b<=.5;b+=1){
+      const th=(u+a/NU)*TAU,r=lerp(C.RSUM,C.RTOE,Math.pow(clamp(v+b/NV,0,1),.86)),c=Math.abs(hillCorr(r,th));
+      if(r<C.RSUM+8||r>1740)return false;
+      if(c<1.3&&hillNat(r,th)>hillFloorR(r)+1.5)inside=true;}
+     return inside;}}));
   // the toe skirt, out to the plain, so the 40 km ground plane never shows a seam
   GR.push(gridSurface((u,v)=>{const th=u*TAU,r=lerp(C.RTOE,C.RTOE+260,v);
     return pol(r,th,lerp(hillNat(C.RTOE,th),.15,Math.pow(v,.7)));},NU,4,{uS:490,vS:11}));
@@ -459,7 +485,11 @@ function buildHill(scene,gx,gz,d){reseed(9660+d);KOFF=[gx,0,gz];
    const fl=hillFloorR(r),uu=lerp(u0,u1,u),e=hillEnv(r);
    // from the EDGE of the city's footprint at this radius, not from one
    // level's band: see hillEnv
-   const th=(sg<0?e[0]:e[1])+sg*(uu*.93-.03)*(TW*.5)/r;
+   // The shoulder (uu > .34) now runs out to |corr| 2.37 rather than 1.9, so
+   // it is under every hill quad the lip test below removes; the rock face
+   // keeps its old width.
+   const off=uu<=.34?uu*.93-.03:lerp(.2862,1.37,(uu-.34)/.66);
+   const th=(sg<0?e[0]:e[1])+sg*off*(TW*.5)/r;
    return pol(r,th,Math.max(fl-2,lerp(fl-2,hillNat(r,th)+.4,Math.pow(uu,.5))));};
  for(let sg=-1;sg<=1;sg+=2){
   RK.push(gridSurface(flankP(sg,0,.34),8,54,{uS:10,vS:190}));

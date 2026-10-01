@@ -127,8 +127,11 @@ function frArcGeo(W,Hh,t,D,N){const s=new THREE.Shape(),outer=[],inner=[];
  s.moveTo(outer[0][0],0);outer.forEach(p=>s.lineTo(p[0],p[1]));s.lineTo(W/2,0);s.lineTo(Wi/2,0);
  for(let i=N;i>=0;i--)s.lineTo(inner[i][0],inner[i][1]);s.lineTo(-Wi/2,0);s.lineTo(-W/2,0);
  const g=new THREE.ExtrudeGeometry(s,{depth:D,bevelEnabled:false});g.translate(0,0,-D/2);return g;}
-kdef('frArch',frArcGeo(20,26,2.6,7,8),MAT.concrete);
-kdef('frArchR',frArcGeo(20,26,2.6,7,8),MAT.concreteR);
+// 8 -> 14 segments once the leaf card had paid the budget back (ring/1 went
+// from 96% of ceiling to 79%): at 8 the soffits were visibly faceted from
+// directly underneath, which is where the foot and the hoop galleries are seen.
+kdef('frArch',frArcGeo(20,26,2.6,7,14),MAT.concrete);
+kdef('frArchR',frArcGeo(20,26,2.6,7,14),MAT.concreteR);
 // The same argument for the doors. The kit's archOpen is arcWindowGeo at 12
 // curve segments — 64 triangles — and there are some 680 doorways here, one on
 // every terrace dwelling and every house in the wheel town. At 5 segments a
@@ -138,7 +141,7 @@ function frDoorGeo(w,h,dep,N){const s=new THREE.Shape();
  for(let i=1;i<=N;i++){const a=Math.PI*i/N;s.lineTo(Math.cos(a)*w/2,h/2-w/2+Math.sin(a)*w/2);}
  s.lineTo(-w/2,-h/2);
  const g=new THREE.ExtrudeGeometry(s,{depth:dep,bevelEnabled:false});g.translate(0,0,-dep/2);return g;}
-kdef('frDoor',frDoorGeo(6,9,1.2,5),MAT.dark);
+kdef('frDoor',frDoorGeo(6,9,1.2,9),MAT.dark);           // 5 -> 9, same reason
 // The plan, published by the builder so the target's presets can be DERIVED
 // from what was actually placed instead of guessed at. targets/ring/91z-views.js
 // reads it; it loads after 90-scene.js, so the builder has already run.
@@ -219,6 +222,29 @@ function buildForestRing(scene,gx,gz,d){reseed(9480+d);KOFF=[gx,0,gz];
  // only rotation this builder uses for a piece meant to follow a ring.
  const TAN=th=>qEuler(0,-th-Math.PI/2,0);
  const OUT=th=>qFacing([Math.cos(th),0,Math.sin(th)]);
+ // A beam with its ROLL fixed. The kit's beam() leaves roll to
+ // setFromUnitVectors, so a near-horizontal spoke or chord came out with its
+ // cross-section at whatever angle the shortest arc happened to give — a
+ // 9 x 11 strut read as a twisted plank. Here local X (the `w` axis, which is
+ // the beam's DEPTH exactly as in beam()) is held in the vertical plane through
+ // the beam and local Z (`dp`, its width) is horizontal, so every strut in the
+ // wheel presents the same face to the same light.
+ const _rbX=new THREE.Vector3(),_rbY=new THREE.Vector3(),_rbZ=new THREE.Vector3(),_rbM=new THREE.Matrix4();
+ const rbeam=(a,b,w,dp,c)=>{_rbY.set(b[0]-a[0],b[1]-a[1],b[2]-a[2]);const L=_rbY.length();
+  if(!(L>1e-6))return;_rbY.multiplyScalar(1/L);
+  _rbZ.set(-_rbY.z,0,_rbY.x);if(_rbZ.lengthSq()<1e-8)_rbZ.set(0,0,1);_rbZ.normalize();
+  _rbX.crossVectors(_rbY,_rbZ);_rbM.makeBasis(_rbX,_rbY,_rbZ);
+  kput(BX,[(a[0]+b[0])*.5,(a[1]+b[1])*.5,(a[2]+b[2])*.5],
+   new THREE.Quaternion().setFromRotationMatrix(_rbM),[w,L,dp],c||null);};
+ // THE BRIDGES' BEARINGS, needed before the shell is built because each one now
+ // lands at a GATE in the barrel instead of at a balcony on a blank wall. The
+ // offset BRO is TAU/48 = 4 of the shell lathe's 192 columns exactly, so every
+ // bridge axis is a column boundary and the gate is two whole columns wide:
+ // the hole, its frame and its tunnel all agree to the vertex.
+ const NBRG=4,BRW=17,BRO=TAU/(NBAY);
+ const BRTH=[];for(let k=0;k<NBRG;k++)BRTH.push(k/NBRG*TAU+BRO);
+ const GCOL=TAU/192,GHW=GCOL,GY0=WY,GY1=WY+HB/72*3;        // gate: two columns, three rows
+ const nearBr=(th,hw)=>{for(let k=0;k<NBRG;k++)if(Math.abs(wrapA(th-BRTH[k]))<hw)return true;return false;};
 
  // ---- decay: one radial sector of the crown has come down --------------------
  // The wedge is narrow at the shoulder and widens as it goes in and up, because
@@ -277,10 +303,10 @@ function buildForestRing(scene,gx,gz,d){reseed(9480+d);KOFF=[gx,0,gz];
    const L=TAU*rn/n*.92,on=d>0?(rng()<.10):true;
    kput('strip',[cx+Math.cos(th)*rn,yy,cz+Math.sin(th)*rn],TAN(th),[L,1,1],
     on?(d>0&&rng()<.5?CYAN.clone().multiplyScalar(.5):CYAN):DEAD);}};
- const folk=(cy,r0,r1,n)=>{for(let j=0;j<n;j++){const th=rng()*TAU;
+ const folk=(cy,r0,r1,n,skip)=>{for(let j=0;j<n;j++){const th=rng()*TAU;
    const rn=Math.sqrt(lerp(r0*r0,r1*r1,rng()));
    const x=Math.cos(th)*rn,z=Math.sin(th)*rn;
-   if(fellXZ(x,z))continue;
+   if(fellXZ(x,z)||(skip&&skip(th)))continue;
    kput('figB',[x,cy,z],qEuler(0,rng()*TAU,0),1,new THREE.Color().setHSL(rr(0,.1),rr(.2,.5),rr(.25,.5)));
    kput('figH',[x,cy,z],null,1,new THREE.Color(0xc9a17e));}};
  // A rib lying on the surface between two heights, leaning with it. The kit's
@@ -312,12 +338,27 @@ function buildForestRing(scene,gx,gz,d){reseed(9480+d);KOFF=[gx,0,gz];
   qEuler(rng()*3,rng()*3,rng()*3),[s*rr(.9,1.6),s*rr(.4,.8),s*rr(.9,1.6)],leaf());
  // Soil is mounded by one fbm, sampled both by the loam surface and by every
  // tree, so trunks sit IN the ground instead of hovering over the swells.
- const soilAt=(x,z,i)=>1.1+2.0*fbm(x*.014,z*.014,9485+i,2);
+ // THE EIGHT RADIAL STAIRS, declared here because the soil has to know where
+ // they are. Each band's stair is a SLOT cut through its two treads and risers
+ // on the bearing, a whole number of the 176 tread columns wide (the bearings
+ // are column boundaries: 176/8 = 22), so the hole, its cheek walls and the
+ // flight in it agree exactly. Before this the flights were twelve blocks laid
+ // on a straight line from foot to head — which ran UNDER both treads, so from
+ // anywhere but the plan they were invisible and nothing connected.
+ const NST=8,SCOL=TAU/176,SHA=[3*SCOL,3*SCOL,2*SCOL];
+ const stairOff=th=>{const f=th/TAU*NST;return Math.abs(f-Math.round(f))*TAU/NST;};
+ const stairTh=(th,i)=>stairOff(th)<SHA[i===undefined?0:i]+.004;
+ // A path through each wood to the foot of its stair: the soil runs out to
+ // nothing across the stair's own width, so the flight lands on the deck and not
+ // in a mound of loam.
+ const soilAt=(x,z,i)=>{const s=1.1+2.0*fbm(x*.014,z*.014,9485+i,2);
+  if(i>2)return s;
+  return s*clamp((stairOff(Math.atan2(z,x))-SHA[i]+.006)/.03,0,1);};
  const plant=(i,r0,r1,y,per,nS)=>{
   const n=Math.max(6,Math.round(Math.PI*(r1*r1-r0*r0)/per));
   for(let j=0;j<n;j++){const th=rng()*TAU,rn=Math.sqrt(lerp(r0*r0,r1*r1,rng()));
    const x=Math.cos(th)*rn,z=Math.sin(th)*rn;
-   if(fell(th,rn))continue;
+   if(fell(th,rn)||(i<3&&stairOff(th)<SHA[i]+.012))continue;
    const sy=y+soilAt(x,z,i);
    if(rng()<.78)tree(x,sy,z,rr(9,d>0?28:21));else scrub(x,sy,z,rr(2.2,5.6));}
   for(let j=0;j<(nS||0);j++){const th=rng()*TAU,rn=Math.sqrt(lerp(r0*r0,r1*r1,rng()));
@@ -327,7 +368,6 @@ function buildForestRing(scene,gx,gz,d){reseed(9480+d);KOFF=[gx,0,gz];
  // The eight radial stairs. Cells and parapets leave a gap on these bearings,
  // so the bands are cut into eight blocks by eight streets rather than being
  // one unbroken ring of housing.
- const NST=8,stairTh=th=>{const f=((th/TAU*NST)%1+1)%1;return f<.11||f>.89;};
 
  // ---- the plinth -------------------------------------------------------------
  const plStep=rn=>rn<RFOOT?0:Math.min(3,1+Math.floor(clamp((rn-RFOOT)/(RPL-RFOOT),0,.999)*3));
@@ -361,6 +401,7 @@ function buildForestRing(scene,gx,gz,d){reseed(9480+d);KOFF=[gx,0,gz];
   for(let i=0;i<HOOPY.length;i++){const hy=HOOPY[i];
    if(y>hy+3&&y<hy+16&&f>.24&&f<.76)return true;}
   if(notch(th,y))return true;
+  if(y>GY0&&y<GY1&&nearBr(th,GHW))return true;               // the four bridge gates
   return rot?rot(u,y):false;};
  SH.push(lathe({rFn:BRf,H:HB,flutes:NBAY,amp:.022,sharp:2,nu:192,nv:72,hole:shellHole}));
  // The inner mass, so every one of those openings looks onto something — but
@@ -377,6 +418,7 @@ function buildForestRing(scene,gx,gz,d){reseed(9480+d);KOFF=[gx,0,gz];
  for(let k=0;k<NBAY;k++){const th=k/NBAY*TAU;
   for(let s=0;s<16;s++){const y0=s*HB/16,y1=(s+1)*HB/16;
    if(d>0&&(rng()<.20||(y1>HB-170&&fell(th,BRf((y0+y1)*.5)))))continue;
+   if(y1>GY0&&y0<GY1&&nearBr(th,.01))continue;               // not across a gate
    stave(th,y0,y1,1.030,6.0,3.0);}}
  // the window grid, in the flute troughs between the staves
  for(let row=0;row<48;row++){const y=52+row*12.2;if(y>HB-16)break;
@@ -393,6 +435,33 @@ function buildForestRing(scene,gx,gz,d){reseed(9480+d);KOFF=[gx,0,gz];
    const lit=d>0?rng()<.04:rng()<.52;
    kput('cell',[Math.cos(th)*(rn+.5),y,Math.sin(th)*(rn+.5)],OUT(th),[4.6,3.0,1],
     lit?CYAN.clone().multiplyScalar(rr(.22,.52)):DEAD);}}
+
+ // ---- the bridge gates ----------------------------------------------------------
+ // Each bridge used to arrive at a corbelled balcony on a blank stretch of drum:
+ // a crossing to nowhere. Now the shell is open two columns wide and three rows
+ // high behind every landing, a tunnel runs back through the 24 m of fabric to
+ // the inner mass, and the end of it is a glazed screen into the hall. The
+ // frame is a pair of jambs and a lintel standing proud of the flutes, because
+ // a rectangular hole in a fluted wall with nothing round it reads as damage.
+ for(let k=0;k<NBRG;k++){const bt=BRTH[k],ta=bt-GHW,tb=bt+GHW;
+  const rIn=y=>BRf(y)*.94-.5,rOut=y=>BRf(y)*1.0056;
+  for(const t of [ta,tb])SH.push(gridSurface((u,v)=>{const y=lerp(GY0,GY1,v),rn=lerp(rIn(y),rOut(y),u);
+    return[rn*Math.cos(t),y,rn*Math.sin(t)];},3,3,{uS:4,vS:3}));
+  SH.push(gridSurface((u,v)=>{const t=lerp(ta,tb,u),rn=lerp(rIn(GY1),rOut(GY1),v);
+    return[rn*Math.cos(t),GY1,rn*Math.sin(t)];},2,3,{uS:3,vS:4}));
+  SH.push(gridSurface((u,v)=>{const t=lerp(tb,ta,u),rn=lerp(rIn(GY0),rOut(GY0),v);
+    return[rn*Math.cos(t),GY0,rn*Math.sin(t)];},2,3,{uS:3,vS:4}));
+  const rS=rIn((GY0+GY1)*.5)+.6,wS=2*GHW*rS;
+  kput('cell',[Math.cos(bt)*rS,(GY0+GY1)*.5,Math.sin(bt)*rS],OUT(bt),[wS*.96,GY1-GY0-1,1],
+   d>0?DEAD:CYAN.clone().multiplyScalar(.30));
+  for(let q=0;q<5;q++){const t=lerp(ta,tb,(q+.5)/5);
+   kput(d>0?'mullR':'mullW',[Math.cos(t)*(rS+.4),(GY0+GY1)*.5,Math.sin(t)*(rS+.4)],qEuler(0,-t,0),[1.2,GY1-GY0,1.2],null);}
+  const rJ=BRf((GY0+GY1)*.5)*1.0056+1.6;
+  for(const t of [ta-1.6/rJ,tb+1.6/rJ])
+   kput(BX,[Math.cos(t)*rJ,(GY0+GY1+4)*.5,Math.sin(t)*rJ],TAN(t),[3.4,GY1-GY0+4,5.2],null);
+  kput(BX,[Math.cos(bt)*rJ,GY1+2.2,Math.sin(bt)*rJ],TAN(bt),[2*GHW*rJ+10,4.4,5.2],CAPC);
+  if(d===0){kput('strip',[Math.cos(bt)*(rJ+2.8),GY1+.6,Math.sin(bt)*(rJ+2.8)],TAN(bt),[2*GHW*rJ,1,1],CYAN);
+   kput('strip',[Math.cos(bt)*(rIn(GY1)+6),GY1-1.2,Math.sin(bt)*(rIn(GY1)+6)],TAN(bt),[2*GHW*rS*.8,1,1],CYAN);}}
 
  // ---- the hoop galleries ------------------------------------------------------
  const hoop=(hy,proj,dep,dwell)=>{const r0=BRf(hy),r1=r0+proj;
@@ -458,13 +527,44 @@ function buildForestRing(scene,gx,gz,d){reseed(9480+d);KOFF=[gx,0,gz];
   const rn=WRC+WRT*Math.cos(ph);
   return[rn*Math.cos(th),WY-WRT*Math.sin(ph),rn*Math.sin(th)];},224,14,
   {uS:72,vS:12,hole:u=>wgone(u*TAU)}));
- // The cut faces of the lost sector: a half-disc at each end, so the break
- // shows the tube's own section instead of looking through a hollow shell.
- if(d>0)for(let s=0;s<2;s++){const sg=s?1:-1;
-  SH.push(gridSurface((u,v)=>{const ph=u*Math.PI,q=v;
-   const rn=WRC+WRT*q*Math.cos(ph),yy=WY-WRT*q*Math.sin(ph);
-   const th=WA+sg*(.33+.26*(fbm(WA*2.1,4.4,9494,2)-.5));
-   return[rn*Math.cos(th),yy,rn*Math.sin(th)];},28,5,{uS:18,vS:8}));}
+ // THE SECTION THROUGH THE WHEEL. The cut faces used to be two plain
+ // half-discs in the shell's own pale concrete: the tube read as solid, which a
+ // 160 m ring carrying a town is not. This tube has the depth a section needs —
+ // 80 m under the deck — so the break now shows what it cut: seven floors of
+ // pale slab, each with a dark soffit a metre under it, standing a few ragged
+ // metres out of the tear, over a dark interior lined 36 m back to a cross wall.
+ // The edges are found on the same 224-column grid every wheel surface uses,
+ // so the section sits exactly where the shell, deck and loam stop.
+ if(d>0){const N=224,i0=Math.floor(WA/TAU*N);let a=i0,b=i0;
+  while(a>i0-N/2&&wgone((a-1+.5)/N*TAU))a--;
+  while(b<i0+N/2&&wgone((b+1+.5)/N*TAU))b++;
+  const WE=[[a/N*TAU,-1],[(b+1)/N*TAU,1]],dA=36/WRC;
+  const hc=h=>WRT*Math.sqrt(clamp(1-Math.pow(h/WRT,2),0,1));   // half-chord at depth h
+  WE.forEach((E,ei)=>{const tE=E[0],sgn=E[1],tIn=f=>tE+sgn*f*dA;
+   // the lining, 1% inside the tube, and the underside of the deck
+   DK.push(gridSurface((u,v)=>{const th=tIn(u),ph=v*Math.PI,rn=WRC+WRT*.985*Math.cos(ph);
+    return[rn*Math.cos(th),WY-WRT*.985*Math.sin(ph),rn*Math.sin(th)];},4,14,{uS:6,vS:12}));
+   DK.push(gridSurface((u,v)=>{const th=tIn(u),rn=lerp(WR0+1,WR1-1,v);
+    return[rn*Math.cos(th),WY-1.0,rn*Math.sin(th)];},4,6,{uS:6,vS:6}));
+   // the cross wall that closes the view 36 m in
+   DK.push(gridSurface((u,v)=>{const ph=u*Math.PI,q=v,th=tIn(1);
+    const rn=WRC+WRT*.99*q*Math.cos(ph),yy=WY-1-(WRT-1)*q*Math.sin(ph);
+    return[rn*Math.cos(th),yy,rn*Math.sin(th)];},14,4,{uS:18,vS:8}));
+   for(let f=1;f<=7;f++){const h=f*9.6,yf=WY-h,c=hc(h+1.2)*.985;
+    if(c<6)break;
+    const st=rr(2,7)/WRC,sd=9510+f*7+ei*3;
+    const tP=u=>lerp(tE-sgn*st,tIn(1),u);
+    SH.push(gridSurface((u,v)=>{const th=tP(u),rn=WRC+(v-.5)*2*c;
+     return[rn*Math.cos(th),yf,rn*Math.sin(th)];},10,8,{uS:8,vS:8,
+     hole:(u,v)=>{const out=st/(st+dA);return u<out&&fbm(v*6+f,u*3,sd,2)<.62*(1-u/out);}}));
+    DK.push(gridSurface((u,v)=>{const th=tIn(u),rn=WRC+(.5-v)*2*c;
+     return[rn*Math.cos(th),yf-1.1,rn*Math.sin(th)];},6,8,{uS:8,vS:8}));}
+   // partitions between the floors, so the storeys read as rooms
+   for(let q=0;q<6;q++){const hL=(2+Math.floor(rng()*5))*9.6,cL=hc(hL+1.2)*.985;
+    const rn=WRC+rr(-.8,.8)*cL;
+    if(cL<8)continue;
+    DK.push(gridSurface((u,v)=>{const t2=lerp(tE-sgn*1.5/WRC,tIn(1),u);
+     return[rn*Math.cos(t2),WY-hL+v*8.4,rn*Math.sin(t2)];},3,2,{uS:4,vS:2}));}});}
  // meridian ribs following the tube, like the hoops of the barrel turned
  // through ninety degrees. A bare 160 m tube soffit reads as a pipe.
  {const nR=NSPOKE*2;
@@ -472,7 +572,7 @@ function buildForestRing(scene,gx,gz,d){reseed(9480+d);KOFF=[gx,0,gz];
    if(wgone(th))continue;
    for(let j=0;j<6;j++){const p0=j/6*Math.PI,p1=(j+1)/6*Math.PI;
     const r0=WRC+WRT*1.012*Math.cos(p0),r1=WRC+WRT*1.012*Math.cos(p1);
-    beam(BX,[Math.cos(th)*r0,WY-WRT*1.012*Math.sin(p0),Math.sin(th)*r0],
+    rbeam([Math.cos(th)*r0,WY-WRT*1.012*Math.sin(p0),Math.sin(th)*r0],
          [Math.cos(th)*r1,WY-WRT*1.012*Math.sin(p1),Math.sin(th)*r1],3.0,4.0);}}}
  // THE SPOKES. Three cones: a radial strut in the plane of the deck, one stay
  // rising from 100 m below the hub and one falling from 110 m above it, so the
@@ -488,10 +588,10 @@ function buildForestRing(scene,gx,gz,d){reseed(9480+d);KOFF=[gx,0,gz];
   const rR=WR0+20,rL=WR0+44;
   const rE=snap?lerp(BRf(WY),rR,rr(.22,.62)):rR;
   const yE=snap?WY-26:wSurf(rR)+9;
-  beam(BX,[cs*BRf(WY)*.99,WY-26,sn*BRf(WY)*.99],[cs*rE,yE,sn*rE],9,11);
+  rbeam([cs*BRf(WY)*.99,WY-26,sn*BRf(WY)*.99],[cs*rE,yE,sn*rE],9,11);
   if(snap)continue;
-  beam(BX,[cs*BRf(WY-100)*.99,WY-100,sn*BRf(WY-100)*.99],[cs*rL,wSurf(rL)+8,sn*rL],6,7);
-  beam(BX,[cs*BRf(WY+110)*.99,WY+110,sn*BRf(WY+110)*.99],[cs*(WR0+3),WY-2,sn*(WR0+3)],5.5,6.5);}
+  rbeam([cs*BRf(WY-100)*.99,WY-100,sn*BRf(WY-100)*.99],[cs*rL,wSurf(rL)+8,sn*rL],6,7);
+  rbeam([cs*BRf(WY+110)*.99,WY+110,sn*BRf(WY+110)*.99],[cs*(WR0+3),WY-2,sn*(WR0+3)],5.5,6.5);}
  // ---- THE BRIDGES ---------------------------------------------------------------
  // Four of them, level, on the quarter bearings — 15 degrees clear of the
  // nearest pylon, which stands every 30 starting at 15. Until these went in the
@@ -503,7 +603,6 @@ function buildForestRing(scene,gx,gz,d){reseed(9480+d);KOFF=[gx,0,gz];
  // in the radial-vertical plane — came down the bridge's own centreline and
  // projected, from a camera standing on the deck, as a slab straight down the
  // middle of the view.
- const NBRG=4,BRW=17,BRO=TAU/(NSPOKE*2);
  for(let k=0;k<NBRG;k++){const th=k/NBRG*TAU+BRO,cs=Math.cos(th),sn=Math.sin(th);
   const tx=Math.cos(th+Math.PI/2),tz=Math.sin(th+Math.PI/2);
   const rA=BRf(WY)-6,rB=WR0+7;
@@ -512,12 +611,12 @@ function buildForestRing(scene,gx,gz,d){reseed(9480+d);KOFF=[gx,0,gz];
   const span=(u)=>lerp(rA,rB,u);
   const dead=u=>cut&&span(u)>c0&&span(u)<c1;
   // the landing on the barrel: a corbelled balcony with its own parapet
-  SH.push(gridSurface((u,v)=>{const a=th+(u-.5)*.20,rn=lerp(BRf(WY)-10,BRf(WY)+16,v);
+  SH.push(gridSurface((u,v)=>{const a=th+(u-.5)*.20,rn=lerp(BRf(WY)*1.0056,BRf(WY)+16,v);
    return[Math.cos(a)*rn,WY,Math.sin(a)*rn];},10,3,{uS:6,vS:3}));
   SH.push(gridSurface((u,v)=>{const a=th+(u-.5)*.20,rn=lerp(BRf(WY)+16,BRf(WY)-10,v);
    return[Math.cos(a)*rn,WY-7-5*Math.sin(Math.PI*v),Math.sin(a)*rn];},10,3,{uS:6,vS:3}));
   for(let j=0;j<5;j++){const a=th+(j/4-.5)*.19;
-   beam(BX,[Math.cos(a)*(BRf(WY)-14),WY-30,Math.sin(a)*(BRf(WY)-14)],
+   rbeam([Math.cos(a)*(BRf(WY)-14),WY-30,Math.sin(a)*(BRf(WY)-14)],
         [Math.cos(a)*(BRf(WY)+15),WY-2,Math.sin(a)*(BRf(WY)+15)],2.6,3.4);}
   // the deck and its soffit
   SH.push(gridSurface((u,v)=>{const rn=span(u),w=(v-.5)*BRW;
@@ -531,12 +630,27 @@ function buildForestRing(scene,gx,gz,d){reseed(9480+d);KOFF=[gx,0,gz];
    for(let j=0;j<nS3;j++){const u0=j/nS3,u1=(j+1)/nS3;
     if(dead((u0+u1)*.5))continue;
     const sag=u2=>WY-4-26*Math.sin(Math.PI*u2);
-    beam(BX,[cs*span(u0)+tx*w,sag(u0),sn*span(u0)+tz*w],
+    rbeam([cs*span(u0)+tx*w,sag(u0),sn*span(u0)+tz*w],
          [cs*span(u1)+tx*w,sag(u1),sn*span(u1)+tz*w],2.4,3.0);}
    for(let j=1;j<nS3;j++){const u2=j/nS3;
     if(dead(u2))continue;
-    beam(BX,[cs*span(u2)+tx*w,WY-26*Math.sin(Math.PI*u2)-4,sn*span(u2)+tz*w],
-         [cs*span(u2)+tx*w,WY-3.4,sn*span(u2)+tz*w],1.8,2.2);}}
+    rbeam([cs*span(u2)+tx*w,WY-26*Math.sin(Math.PI*u2)-4,sn*span(u2)+tz*w],
+         [cs*span(u2)+tx*w,WY-3.4,sn*span(u2)+tz*w],1.8,2.2);}
+   // THE DIAGONALS. Chord and verticals alone are a mechanism, not a truss —
+   // the old under-truss was a sagging line of boxes the deck would fold
+   // over. One diagonal a panel, running down toward mid-span on each half,
+   // triangulates every bay.
+   for(let j=0;j<nS3;j++){const u0=j/nS3,u1=(j+1)/nS3;
+    if(dead((u0+u1)*.5))continue;
+    const lo=u2=>[cs*span(u2)+tx*w,WY-26*Math.sin(Math.PI*u2)-4,sn*span(u2)+tz*w];
+    const hi=u2=>[cs*span(u2)+tx*w,WY-3.4,sn*span(u2)+tz*w];
+    if(j<nS3/2)rbeam(hi(u0),lo(u1),1.4,1.8);else rbeam(lo(u0),hi(u1),1.4,1.8);}}
+  // and the two trusses tied to each other at every panel point, so the pair
+  // is a box and not two fences
+  for(let j=1;j<10;j++){const u2=j/10;
+   if(dead(u2))continue;
+   const yl=WY-26*Math.sin(Math.PI*u2)-4,w=BRW*.42;
+   rbeam([cs*span(u2)-tx*w,yl,sn*span(u2)-tz*w],[cs*span(u2)+tx*w,yl,sn*span(u2)+tz*w],1.4,1.4);}
   // parapets, lamps and people on the crossing
   {const nP2=Math.round((rB-rA)/7);
    for(let s=-1;s<=1;s+=2)for(let j=0;j<nP2;j++){const u2=(j+.5)/nP2;
@@ -569,8 +683,8 @@ function buildForestRing(scene,gx,gz,d){reseed(9480+d);KOFF=[gx,0,gz];
   kput(BX,[cs*rp,WY+PH*.5,sn*rp],TAN(th),[15,PH,13],null);
   kput(BX,[cs*rp,WY+PH*.5,sn*rp],TAN(th),[9,PH*1.02,19],null);
   kput(SL,[cs*rp,WY+PH+2,sn*rp],null,[11,4,11],CAPC);
-  beam(BX,[cs*rp,WY+PH,sn*rp],[cs*BRf(WY+130)*.99,WY+130,sn*BRf(WY+130)*.99],4.4,5);
-  beam(BX,[cs*rp,WY+PH,sn*rp],[cs*(WR1-34),WY,sn*(WR1-34)],4.4,5);
+  rbeam([cs*rp,WY+PH,sn*rp],[cs*BRf(WY+130)*.99,WY+130,sn*BRf(WY+130)*.99],4.4,5);
+  rbeam([cs*rp,WY+PH,sn*rp],[cs*(WR1-34),WY,sn*(WR1-34)],4.4,5);
   if(d===0){kput('strip',[cs*rp,WY+PH+4.8,sn*rp],TAN(th),[10,1,1],CYAN);
    kput('finial',[cs*rp,WY+PH+9,sn*rp],null,[3,7,3],null);}}
  // parapets on both rims
@@ -578,6 +692,7 @@ function buildForestRing(scene,gx,gz,d){reseed(9480+d);KOFF=[gx,0,gz];
   const nP=Math.max(40,Math.round(TAU*rw/11));
   for(let j=0;j<nP;j++){const th=(j+.5)/nP*TAU;
    if(wgone(th)||(d>0&&rng()<.26))continue;
+   if(sg<0&&nearBr(th,(BRW*.5+2)/rw))continue;                // open where a bridge lands
    kput(BX,[Math.cos(th)*(rw+sg*1.6),WY+2.7,Math.sin(th)*(rw+sg*1.6)],TAN(th),
     [TAU*rw/nP*1.08,5.4,2.2],null);}
   if(d===0)lring(0,WY+4.6,0,rw+sg*2.6,Math.round(TAU*rw/19));});
@@ -591,14 +706,15 @@ function buildForestRing(scene,gx,gz,d){reseed(9480+d);KOFF=[gx,0,gz];
   for(let j=0;j<nK;j++){const th=(j+.5)/nK*TAU,x=WF0*Math.cos(th),z=WF0*Math.sin(th);
    if(wgone(th)||(d>0&&rng()<.28))continue;
    kput(BX,[x,WY+soilAt(x,z,3)-.5,z],TAN(th),[TAU*WF0/nK*1.1,2.0,2.4],CAPC);}}
- // 450 m2 a plant and two plants in three a tree, against the crown's 170 and
- // four in five: this is 260 000 m2 of annulus at the far edge of the building
- // and planting it at crown density would cost 200 000 triangles on its own.
- {const a0=WF0+5,a1=WF1-5,n=Math.round(Math.PI*(a1*a1-a0*a0)/450);
+ // 450 m2 a plant was open woodland, not forest — it was sized when a tree
+ // cost 130 triangles. On the leaf card it costs about 40, so the wood is now
+ // planted at 240 m2 a plant and three in four a tree: some 1 070 plants for
+ // ~20 000 triangles more than the old 570, and the canopy closes.
+ {const a0=WF0+5,a1=WF1-5,n=Math.round(Math.PI*(a1*a1-a0*a0)/240);
   for(let j=0;j<n;j++){const th=rng()*TAU,rn=Math.sqrt(lerp(a0*a0,a1*a1,rng()));
    if(wgone(th))continue;
    const x=Math.cos(th)*rn,z=Math.sin(th)*rn;
-   if(rng()<.66)tree(x,WY+soilAt(x,z,3),z,rr(9,d>0?26:20));
+   if(rng()<.75)tree(x,WY+soilAt(x,z,3),z,rr(9,d>0?26:20));
    else scrub(x,WY+soilAt(x,z,3),z,rr(2.2,6));}
   for(let j=0;j<170;j++){const th=rng()*TAU,rn=Math.sqrt(lerp(a0*a0,a1*a1,rng()));
    if(wgone(th))continue;
@@ -636,9 +752,30 @@ function buildForestRing(scene,gx,gz,d){reseed(9480+d);KOFF=[gx,0,gz];
   const nB=Math.round(TAU*rw/32);
   for(let j=0;j<nB;j++){const th=(j+.5*(fs>0?0:1))/nB*TAU;
    if(wgone(th))continue;
+   // a lane through the row every sixth plot, and the square at each bridge
+   // head, where the inner row opens to let the crossing into the street
+   if(j%6===3||nearBr(th,(fs>0?30:22)/rw))continue;
    if(d>0&&rng()<.34){if(rng()<.42)rubbleRing(Math.cos(th)*rw,WY,Math.sin(th)*rw,2,12,8,2.6);continue;}
    townBld(Math.cos(th)*rw,Math.sin(th)*rw,th,fs);}});
  if(d===0)lring(0,WY+1.2,0,WST,Math.round(TAU*WST/22));
+ // THE GATE SQUARES. The bridge now lands in a square cut through the inner
+ // row, paved in the cap stone, with a lamp-post ring and a watch tower on the
+ // far side of the street closing the axis — the one landmark on the wheel
+ // that can be read from the barrel, so each crossing has something to aim at.
+ for(let k=0;k<NBRG;k++){const bt=BRTH[k],cs=Math.cos(bt),sn=Math.sin(bt);
+  if(wgone(bt))continue;
+  kput(SL,[cs*(WST-8),WY+.15,sn*(WST-8)],TAN(bt),[52,.3,44],CAPC);
+  const tr=WST+22,TH=d>0?rr(18,30):44;
+  kput(BX,[cs*tr,WY+TH*.5,sn*tr],TAN(bt),[14,TH,14],null);
+  kput(SL,[cs*tr,WY+TH+1.2,sn*tr],TAN(bt),[17,2.4,17],CAPC);
+  if(d===0){kput(BX,[cs*tr,WY+TH+7.4,sn*tr],TAN(bt),[8,10,8],null);
+   kput('finial',[cs*tr,WY+TH+17,sn*tr],null,[3,7,3],null);
+   kput('strip',[cs*(tr-7.4),WY+TH-4,sn*(tr-7.4)],TAN(bt),[10,1,1],CYAN);}
+  kput('frDoor',[cs*(tr-7.2),WY+4.5,sn*(tr-7.2)],OUT(bt+Math.PI),[.9,1.0,.7],null);
+  for(let q=0;q<8;q++){const a=bt+(q-3.5)*.011,rq=WST-8+((q%2)?-16:16);
+   if(d>0&&rng()<.4)continue;
+   kput(PIER,[Math.cos(a)*rq,WY,Math.sin(a)*rq],null,[.8,7,.8],null);
+   if(d===0)kput('strip',[Math.cos(a)*rq,WY+7.4,Math.sin(a)*rq],null,[1.4,1.4,1.4],CYAN);}}
  folk(WY+.2,WST-14,WST+14,d>0?8:40);
  // what came down with the lost sector, on the ground 300 m below it
  if(d>0)for(let j=0;j<210;j++){const th=WA+rr(-.46,.46),rn=rr(WR0-70,WR1+50);
@@ -706,25 +843,29 @@ function buildForestRing(scene,gx,gz,d){reseed(9480+d);KOFF=[gx,0,gz];
    const rA=lerp(B.rf,B.rh,k/NTER),rB=lerp(B.rf,B.rh,(k+1)/NTER);
    const yA=B.y0+dy*k,yB=yA+dy;
    // the riser that holds this terrace up, and the tread it carries
+   // Both are cut on the stair bearings: the riser right up, the tread for
+   // five-sixths of its depth, leaving the last 3.7 m as the landing.
    SH.push(gridSurface((u,v)=>{const th=u*TAU;
     return[rA*Math.cos(th),lerp(yA,yB,v),rA*Math.sin(th)];},176,3,{uS:46,vS:2,
-    hole:u=>fell(u*TAU,rA)}));
+    hole:u=>fell(u*TAU,rA)||stairTh(u*TAU,i)}));
    SH.push(gridSurface((u,v)=>{const th=u*TAU,rn=lerp(rA,rB,v);
-    return[rn*Math.cos(th),yB,rn*Math.sin(th)];},176,3,{uS:46,vS:3,
-    hole:(u,v)=>fell(u*TAU,lerp(rA,rB,v))}));
+    return[rn*Math.cos(th),yB,rn*Math.sin(th)];},176,6,{uS:46,vS:6,
+    hole:(u,v)=>fell(u*TAU,lerp(rA,rB,v))||(stairTh(u*TAU,i)&&v<5/6)}));
    // the dwellings: a row backed against the riser above, fronted by a balcony
    const nC=Math.max(16,Math.round(TAU*rB/15));
    for(let j=0;j<nC;j++){const th=(j+.5*(k%2))/nC*TAU;
-    if(fell(th,rB)||stairTh(th))continue;
+    if(fell(th,rB)||stairOff(th)<SHA[i]+8/rB)continue;
     if(d>0&&rng()<.30){if(rng()<.42)rubbleRing(Math.cos(th)*rB,yB,Math.sin(th)*rB,2,10,7,2.2);continue;}
     // cd is sized so the block, its balcony and the balcony rail all land
     // INSIDE the tread: rB + 13 + 4.6 < rB + 22, the terrace depth.
     const hh=dy*rr(.80,.95),cw=TAU*rB/nC*rr(.74,.94),cd=rr(9,13),rc=rB+cd*.5;
     kput(BX,[Math.cos(th)*rc,yB+hh*.5,Math.sin(th)*rc],TAN(th),[cw,hh,cd],null);
     const rf2=rB+cd+.35;
+    // rows at .40/.62/.84 of the block, not .26/.52/.78: the lowest row sat
+    // across the head of the door below it
     for(let p=0;p<3;p++)
-     kput(PN,[Math.cos(th)*rf2,yB+hh*(.26+p*.26),Math.sin(th)*rf2],OUT(th),
-      [cw*(p?.50:.30),hh*.16,1],null);
+     kput(PN,[Math.cos(th)*rf2,yB+hh*(.40+p*.22),Math.sin(th)*rf2],OUT(th),
+      [cw*(p?.50:.30),hh*.14,1],null);
     // arcWindowGeo centres its shape on the origin, so a door placed at the
     // tread level is half buried in it; and archOpen is a SOLID slab, so set
     // just proud of the wall it stands off it like a headstone. Both fixed:
@@ -741,11 +882,11 @@ function buildForestRing(scene,gx,gz,d){reseed(9480+d);KOFF=[gx,0,gz];
    // the parapet on the terrace edge
    const np=Math.max(20,Math.round(TAU*rA/9));
    for(let j=0;j<np;j++){const th=(j+.5)/np*TAU;
-    if(fell(th,rA)||stairTh(th))continue;
+    if(fell(th,rA)||stairOff(th)<SHA[i]+4.6/rA)continue;
     if(d>0&&rng()<.26)continue;
     kput(BX,[Math.cos(th)*rA*1.004,yB+1.6,Math.sin(th)*rA*1.004],TAN(th),[TAU*rA/np*1.06,3.2,1.8],null);}
    if(d===0)lring(0,yB+3.6,0,rA*1.01,Math.max(18,Math.round(TAU*rA/16)));
-   folk(yB+.1,rB+13,rA-3,i===0?30:18);}
+   folk(yB+.1,rB+13,rA-3,i===0?30:18,th=>stairTh(th,i));}
   // the head arcade, standing at the rim of the torus above
   {const rh=RHEAD[i],nA=Math.max(14,Math.round(TAU*rh/18));
    for(let j=0;j<nA;j++){const th=j/nA*TAU;
@@ -763,17 +904,46 @@ function buildForestRing(scene,gx,gz,d){reseed(9480+d);KOFF=[gx,0,gz];
    if(d===0)lring(0,B.y1+13.6,0,rh,Math.max(16,Math.round(TAU*rh/17)));}}
 
  // ---- the eight radial stairs ----------------------------------------------------
- for(let s=0;s<NST;s++){const th=s/NST*TAU;
-  for(let i=0;i<3;i++){const B=BAND[i];
-   if(fell(th,(B.rf+B.rh)*.5))continue;
-   const nS2=12,wd=Math.max(11,TAU*B.rh/28);
-   for(let j=0;j<nS2;j++){const rn=lerp(B.rf,B.rh,(j+.5)/nS2),y2=lerp(B.y0,B.y1,(j+.6)/nS2);
-    if(d>0&&rng()<.22)continue;
-    kput(BX,[Math.cos(th)*rn,y2,Math.sin(th)*rn],TAN(th),[wd,1.8,(B.rf-B.rh)/nS2*1.15],CAPC);}
-   for(let sd=-1;sd<=1;sd+=2){const off=wd*.5+1.4;
-    const tx=Math.cos(th+Math.PI/2)*sd*off,tz=Math.sin(th+Math.PI/2)*sd*off;
-    beam(BX,[Math.cos(th)*B.rf+tx,B.y0+2.2,Math.sin(th)*B.rf+tz],
-         [Math.cos(th)*B.rh+tx,B.y1+2.2,Math.sin(th)*B.rh+tz],1.5,2.6);}}}
+ // One flight per terrace, in the slot the treads and risers leave for it:
+ // twenty steps from the foot of each riser up to a 3.7 m landing on the tread
+ // above, closed at the sides by cheek walls down to the pitch line, with a rail
+ // on posts inside each cheek. Quads, one vertex set each, merged with the
+ // shell: 88 triangles a flight.
+ const quads=Q=>{const pos=[],uv=[],idx=[];let o=0;
+  for(const q of Q){const a=q[0],b=q[1],c=q[2],e=q[3];
+   pos.push(a[0],a[1],a[2],b[0],b[1],b[2],c[0],c[1],c[2],e[0],e[1],e[2]);
+   const us=Math.hypot(b[0]-a[0],b[1]-a[1],b[2]-a[2])/8,vs=Math.hypot(e[0]-a[0],e[1]-a[1],e[2]-a[2])/8;
+   uv.push(0,0,us,0,us,vs,0,vs);idx.push(o,o+1,o+2,o,o+2,o+3);o+=4;}
+  const g=new THREE.BufferGeometry();
+  g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
+  g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));
+  g.setIndex(idx);g.computeVertexNormals();return g;};
+ const PP=(rn,th,y)=>[rn*Math.cos(th),y,rn*Math.sin(th)];
+ for(let s=0;s<NST;s++){const th0=s/NST*TAU;
+  for(let i=0;i<3;i++){const B=BAND[i],dy=(B.y1-B.y0)/NTER,hw=SHA[i];
+   if(fell(th0,(B.rf+B.rh)*.5))continue;
+   for(let k=0;k<NTER;k++){
+    const rA=lerp(B.rf,B.rh,k/NTER),rB=lerp(B.rf,B.rh,(k+1)/NTER),run=(rA-rB)*5/6;
+    const yA=B.y0+dy*k,yB=yA+dy,NS=20,ta=th0-hw,tb=th0+hw;
+    const Q=[];
+    for(let n=0;n<NS;n++){const r0=rA-run*n/NS,r1=rA-run*(n+1)/NS;
+     const y0=yA+dy*n/NS,y1=yA+dy*(n+1)/NS;
+     Q.push([PP(r0,ta,y0),PP(r0,tb,y0),PP(r0,tb,y1),PP(r0,ta,y1)]);      // riser
+     Q.push([PP(r0,ta,y1),PP(r0,tb,y1),PP(r1,tb,y1),PP(r1,ta,y1)]);}     // tread
+    SH.push(quads(Q));
+    // the cheek walls, from the pitch line up to the landing
+    for(const t of [ta,tb])SH.push(gridSurface((u,v)=>{const rn=rA-run*u,ys=yA+dy*u;
+      return PP(rn,t,lerp(ys,yB,v));},5,2,{uS:3,vS:2}));
+    // the rails and their posts, a metre inside each cheek
+    for(const sg of [-1,1]){if(d>0&&rng()<.45)continue;
+     const tr=rn=>th0+sg*(hw-1.1/rn),yr=u=>yA+dy*u+dy/NS+1.1;
+     rbeam(PP(rA,tr(rA),yr(0)),PP(rA-run,tr(rA-run),yr(1)),.35,.35,CAPC);
+     for(let q=0;q<=4;q++){const u=q/4,rn=rA-run*u;
+      kput(BX,PP(rn,tr(rn),yr(u)-.55),null,[.3,1.1,.3],null);}}
+    if(d===0&&k===0)kput('strip',PP(rA+.6,th0,yA+.5),TAN(th0),[2*hw*rA*.8,1,1],CYAN);}
+   // the foot of the flight: a paved apron where the path through the wood
+   // meets it, so the first step lands on something built
+   kput(SL,PP(B.rf+5,th0,B.y0+.25),TAN(th0),[2*hw*B.rf*.96,.5,10],CAPC);}}
 
  // ---- the three toruses of forest --------------------------------------------------
  // PWID is the paved promenade under a head arcade, and it is taken off the
@@ -805,7 +975,7 @@ function buildForestRing(scene,gx,gz,d){reseed(9480+d);KOFF=[gx,0,gz];
   // and a kerb on top of it, so the bed reads as built rather than tipped
   {const nK=Math.round(TAU*pOut/11);
    for(let j=0;j<nK;j++){const th=(j+.5)/nK*TAU,x=pOut*Math.cos(th),z=pOut*Math.sin(th);
-    if(fell(th,pOut)||stairTh(th))continue;
+    if(fell(th,pOut)||stairTh(th,i))continue;
     if(d>0&&rng()<.28)continue;
     kput(BX,[x,R.y+soilAt(x,z,i)-.5,z],TAN(th),[TAU*pOut/nK*1.1,2.0,2.4],CAPC);}}
   // 170 m2 a plant: dense enough that the canopies close and the plan view
