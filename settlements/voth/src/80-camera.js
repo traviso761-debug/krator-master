@@ -369,6 +369,11 @@ window._dbg = { setView:setView, ctl:ctl, camera:camera, applyCam:applyCam,
                 sky:skyMesh, skyScene:skyScene, skyCam:skyCam,
                 water:water, terrain:terrain, cantons:CANTONS, shore:SHORE,
                 polyPts:polyPts };
+/* LEVEL OF DETAIL (core/lod): 97-lod-auto.js takes over the finished city with these options. The life layer's
+   vehicles and crews are rewritten every frame, so they stay outside it; the panel sits bottom centre, clear of the
+   view list and the sky panel. */
+window.LOD_OPTIONS = { skip: function(o){ return !!o.userData.life; },
+                       panelStyle: 'right:auto;left:50%;bottom:8px;transform:translateX(-50%)' };
 VIEWS[0][1]();
 frame();
 document.getElementById('load').style.display = 'none';
