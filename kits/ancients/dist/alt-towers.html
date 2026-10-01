@@ -1,5 +1,5 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>Trigon — the three-faced pyramid</title>
+<title>Alternates — towers group</title>
 <style>
 html,body{margin:0;height:100%;overflow:hidden;background:#3a2a24;font:13px/1.4 system-ui,sans-serif;color:#eee}
 canvas{display:block}
@@ -23176,27 +23176,24 @@ function buildLighthouse(scene,gx,gz,d){reseed(9790+d);KOFF=[gx,0,gz];
  {const x=4,z=58;site.lookUp=[x,landH(x,z)+1.7,z];}   // for the 'Looking up' preset: clear of the base block's lip
  LH_SITE[d]=site;
  KOFF=[0,0,0];return G;}
-// TARGET: trigon — the Trigon, a pyramid on an equilateral base three times as
-// tall as it is wide, intact and ruined.
-//
-// 1 100 m to the apex on a 367 m base edge. Three faces, three cities: a
-// ziggurat of planted terraces (WNW), a sheer grid of balconies (S) and an ochre
-// face pierced by five nested triangular portals over lit atria (ENE).
-//
-// Its own target because it is a 700 k-triangle megastructure on its own and a
-// kilometre-tall spike needs its own stand-off.
-const TITLE='Trigon — the three-faced pyramid';
-const GROUND_C=0;
-const DECAYS=[0,1];
-// The mass is 424 m across its corners and the plinth 530; the ruin throws its
-// apex 700 m south-east. s = 2 400 puts 4 800 m between the two axes, so the
-// hero camera 1 750 m off one pyramid has the other only as a far silhouette.
-const ROWS={
- trigon:{z:0,s:2400,r:950},
-};
-const RUINS=[[-ROWS.trigon.s,0,ROWS.trigon.r*.7],
-             [ROWS.trigon.s,0,ROWS.trigon.r*1.05]];
-const EXTRA_BUILDERS={trigon:buildTrigon};
+// TARGET: alt-towers — queue item 3, towers group: from-scratch ALTERNATES of six
+// Ancient city types after the arco1/arco2 reference sets (src/8aj-alt-*.js).
+// One row per type along +z; along each row, the kit's decay layout:
+//   intact x=-s, rehabilitated x=0, ruined x=+s, RECLAIMED x=t (=2s).
+// Decay 2 here is reclaimed/reinhabited, not toppled: these builders read it so.
+const TITLE='Alternates — towers group';
+const GROUND_C=1600;
+const DECAYS=[0,1,2,3];
+const ALT_ROWS=[
+ ['altBole', 'The Bole (skyscraper)',          0,380,180,typeof buildAltBole!=='undefined'?buildAltBole:null],
+ ['altStack','The Pierced Stack (skyscraper)',  750,300,150,typeof buildAltStack!=='undefined'?buildAltStack:null],
+ ['altHotel','The Attraction (hotel)',        1400,300,150,typeof buildAltHotel!=='undefined'?buildAltHotel:null],
+ ['altFlat', 'The Undulant (flatiron)',       2000,260,130,typeof buildAltFlat!=='undefined'?buildAltFlat:null],
+ ['altPerch','The Rig (perch)',               2650,420,210,typeof buildAltPerch!=='undefined'?buildAltPerch:null],
+ ['altCult', 'The Bloom (cultural centre)',   3350,300,170,typeof buildAltCult!=='undefined'?buildAltCult:null]];
+const ROWS={},EXTRA_BUILDERS={},ALT_NAME={};
+for(const[k,name,z,s,r,fn]of ALT_ROWS){if(!fn)continue;ROWS[k]={z,s,r,t:2*s};EXTRA_BUILDERS[k]=fn;ALT_NAME[k]=name;}
+const RUINS=Object.values(ROWS).flatMap(R=>[[R.s,R.z,R.r],[R.t,R.z,R.r],[0,R.z,R.r*.7]]);
 // ================================================================= THE WING — a monument that is also a city
 // First of the memorial group. One figure against the sky: a coffered DRUM held
 // in a yoke on ONE pedestal, and two wings of stacked horizontal slabs lifting
@@ -27995,62 +27992,25 @@ window._api={
  setView:(cx,cy,cz,tx,ty,tz)=>setView(cx,cy,cz,tx,ty,tz),
  views:()=>Object.keys(VIEWS),
 };
-// Presets, DERIVED from TG_SITE, which buildTrigon fills before this runs. The
-// face normals are at 214 (terrace), 334 (portal) and 94 (balcony) degrees,
-// measured from +x toward +z; the portal/balcony arris is at 34.
-//
-// The camera is 50 degrees vertical, so a frame is 0.933 x the sight line tall:
-// nothing that holds all 1 100 m of the spike can stand closer than ~1 250 m.
-const TGDEF={x:0,z:0,RI:105.94,PL:18,YA:1100,YP:1030,HP:1082,RP:143.94,FALL:48*Math.PI/180,LAND:null,
- SPY0:300,SPY1:690,PORT:[{yb:18,yt:258,wb:82.6,db:-26.5}],
- DY:y=>105.94*(1100-y)/1082};
-const TGA=Object.assign({},TGDEF,{x:-2400},TG_SITE[0]||{});
-const TGB=Object.assign({},TGDEF,{x:2400},TG_SITE[1]||{});
-const TGAZ=a=>a*Math.PI/180;
-// a world point at azimuth a (degrees), horizontal radius r, height y, on site S
-const TGP=(S,a,r,y)=>[S.x+Math.cos(TGAZ(a))*r,y,S.z+Math.sin(TGAZ(a))*r];
-// a point ON face k (r from the axis, s along the face) — the builder's own map
-const TGF=(S,k,r,s,y)=>[S.x+Math.cos(TGAZ([214,334,94][k]))*r-Math.sin(TGAZ([214,334,94][k]))*s,y,
- S.z+Math.sin(TGAZ([214,334,94][k]))*r+Math.cos(TGAZ([214,334,94][k]))*s];
-const TGHERO=S=>TGP(S,28,1750,380).concat([S.x,540,S.z]);
-const VIEWS={
- // THE HERO: between the balcony face (lit, the grid of balconies and its
- // chevrons) and the portal face (in its own shade, five lit triangles), with
- // the chamfered arris between them running from the plinth to the beacon.
- 'Trigon':                TGHERO(TGA),
- // each face square on, from 1 500 m
- 'The terrace face':      TGP(TGA,214,1500,420).concat([TGA.x,520,TGA.z]),
- 'The balcony face':      TGP(TGA,94,1500,420).concat([TGA.x,520,TGA.z]),
- 'The portal face':       TGP(TGA,334,1500,420).concat([TGA.x,520,TGA.z]),
- // the terraces raking: standing off the face at mid-height and looking back
- // along the treads so their planting and the stair read as steps
- 'The terraces':          TGF(TGA,0,330,-190,640).concat(TGF(TGA,0,TGA.DY(470),40,470)),
- // UP THE ARRIS: off the portal/balcony corner, looking up it. QA (arcC): it
- // stood 150 m off the corner looking 64 degrees up, which is sky either side
- // of a knife edge and no ground; from 560 m, a little round toward the
- // balcony face, the plinth's cut corner and the stair sit in the bottom of the
- // frame and the arris runs up out of the top of it.
- 'Up the arris':          TGP(TGA,40,560,1.7).concat(TGP(TGA,34,2*TGA.DY(150),150)),
- // the pyramidion and beacon, 1 030-1 100 m up
- 'The apex':              TGP(TGA,70,175,1085).concat([TGA.x,1045,TGA.z]),
- // people on the portal-side stair and the great gate over them
- 'The plinth':            TGF(TGA,1,300,-40,1.7).concat(TGF(TGA,1,120,0,55)),
- // through the glass of the great portal into its atrium
- 'The portal atrium':     TGF(TGA,1,175,0,62).concat(TGF(TGA,1,-10,0,120)),
- 'Trigon at night':       TGHERO(TGA).concat([1]),
- 'Ruined':                TGHERO(TGB),
- // THE SHEAR, from above and behind the high side
- 'The shear':             TGP(TGB,140,300,1000).concat([TGB.x,780,TGB.z]),
- // THE FALLEN APEX, from across its length
- 'The fallen apex':       (function(S){const f=S.FALL,cx=S.x+Math.cos(f)*560,cz=S.z+Math.sin(f)*560;
-                            return[cx-Math.sin(f)*430,110,cz+Math.cos(f)*430,cx,25,cz];})(TGB),
- // THE SPALLED ARRIS, 300-690 m, floor plates laid open
- 'The spalled arris':     TGP(TGB,30,480,470).concat(TGP(TGB,34,2*TGB.DY(500),500)),
- // the portal face ruined: glazing gone, five black caves
- 'The dark portals':      TGP(TGB,334,1300,380).concat([TGB.x,430,TGB.z]),
- // the terraces slumped and overgrown
- 'Slumped terraces':      TGF(TGB,0,640,-150,420).concat(TGF(TGB,0,TGB.DY(380),20,360)),
-};
+// Presets: the overview, then per type a day hero of each decay, a night shot
+// of the reclaimed one (its fires only show at night) and close shots at eye
+// level, intact and reclaimed. ALT_FRAME per type: [hero target height, camera
+// distance, close-up [dx,y,dz,tx,ty,tz] relative to the site].
+const ALT_FRAME={altBole:[170,760,[70,4,150,0,40,0]],altStack:[180,700,[40,3,110,0,40,0]],altHotel:[100,520,[30,3,110,0,25,0]],
+ altFlat:[70,320,[40,2.5,70,20,30,10],.75],altPerch:[85,520,[-20,4,140,0,60,0]],altCult:[45,420,[0,2.5,97,0,38,0]]};
+const VIEWS=(function(){const V={};
+ const zs=Object.values(ROWS).map(R=>R.z),z0=Math.min(...zs),z1=Math.max(...zs);
+ V['The rows']=[1900,1500,(z0+z1)/2+300,300,60,(z0+z1)/2];
+ for(const k in ROWS){const R=ROWS[k],F=ALT_FRAME[k],n=ALT_NAME[k].replace(/ \(.*/,''),ty=F[0],D=F[1],c=F[2];
+  const hero=(x,ni)=>[x+D*(F[3]||-.35),ty*.9+D*.12,R.z+D,x,ty,R.z].concat(ni?[1]:[]);
+  V[n]=hero(-R.s);
+  V[n+' ruined']=hero(R.s);
+  V[n+' reclaimed']=hero(R.t);
+  V[n+' rehabilitated']=hero(0);
+  V[n+' by night']=hero(R.t,1);
+  V[n+' close']=[-R.s+c[0],c[1],R.z+c[2],-R.s+c[3],c[4],R.z+c[5]];
+  V[n+' reclaimed close']=[R.t+c[0],c[1],R.z+c[2],R.t+c[3],c[4],R.z+c[5]];}
+ return V;})();
 // ---------------------------------------------------------------- camera control
 // ---------------------------------------------------------------- DAY / NIGHT
 // There was no scene-state toggle in this kit before The Project needed one, so

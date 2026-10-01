@@ -17,7 +17,8 @@ const BUDGET={
        skyA:'sky',skyB:'sky',skyC:'sky',skyD:'sky',skyE:'sky',skyF:'sky',skyG:'sky',skyH:'sky',skyI:'sky',skyJ:'sky',skyK:'sky',lighthouse:'sky',
        mega:'mega',arc:'mega',dam:'mega',campus:'mega',spire:'mega',dalab:'mega',canyon:'mega',veladiga:'mega',hex:'mega',hexlush:'mega',biome:'mega',forest:'mega',darco:'mega',ring:'mega',launch:'mega',launchpad:'mega',plymouth:'mega',arcbeam:'mega',arcoindian:'mega',arcoindian2:'mega',hill:'mega',arcube:'mega',wing:'mega',drum:'mega',blades:'mega',trigon:'mega',monolith:'mega',crescent:'mega',ledge:'mega',wheel:'mega',
        fac:'medium',port:'medium',gov:'medium',lib:'medium',bunk:'medium',off:'medium',
-       apt:'medium',amph:'medium',lab:'medium',robo:'medium',dc:'medium',hosp:'medium',hotel:'medium'},
+       apt:'medium',amph:'medium',lab:'medium',robo:'medium',dc:'medium',hosp:'medium',hotel:'medium',
+       altBole:'sky',altStack:'sky',altFlat:'sky',altHotel:'medium',altCult:'medium',altPerch:'mega'},
 };
 // alternate domestic types (src/8ak-alt-*, target alt-domestic)
 Object.assign(BUDGET.type,{adWave:'small',adBridge:'small',adFuel:'small',adRadar:'small',adDish:'small',adFins:'medium',adAmph:'medium',adFac:'medium',adLab:'medium',adMega:'mega'});
