@@ -5,7 +5,7 @@
 // ALT_VIEW_H: a rough height per type, to aim the shots at the body.
 const ALT_VIEW_H={altOffT:60,altOffS:55,altOffF:45,altPort:50,altBunk:22,altLib:30,altGate:110,altRobo:30,altDc:35,altPolice:25,altHosp:40,altCampus:30,altGov:55};
 // ALT_VIEW_D: how far back the close shots stand (about 2.4 x the building's radius).
-const ALT_VIEW_D={altOffT:190,altOffS:160,altOffF:190,altPort:300,altBunk:160,altLib:140,altGate:420,altRobo:270,altDc:230,altPolice:130,altHosp:220,altCampus:300,altGov:240};
+const ALT_VIEW_D={altOffT:190,altOffS:160,altOffF:190,altPort:300,altBunk:160,altLib:140,altGate:420,altRobo:270,altDc:230,altPolice:130,altHosp:220,altCampus:230,altGov:240};
 const VIEWS={};
 {const ks=Object.keys(ROWS);
  if(ks.length){const R0=ROWS[ks[0]],RL=ROWS[ks[ks.length-1]];

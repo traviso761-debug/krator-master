@@ -189,3 +189,50 @@ flight up the base block; lower towers behind.
 - Ruin: the keep broke at 76 m, its head lying back across the rear towers; the
   west bastion's front split open to its floors; the flight cracked.
 - Weak: the bastions are half-drums with a flat back; few windows.
+
+## Triangles per decay (scene content, `verify.py --assert`, 2026-10-01)
+
+| type | key | budget class | 0 intact | 1 ruined | 2 reclaimed | 3 rehab |
+|---|---|---|---|---|---|---|
+| Office alt 1 — Terrace Wedge | altOffT | medium 250k | 12 784 | 17 942 | 24 774 | 18 942 |
+| Office alt 2 — Stacked Piers | altOffS | medium | 5 080 | 16 592 | 22 630 | 16 962 |
+| Office alt 3 — Sail Fins | altOffF | medium | 16 708 | 19 124 | 23 940 | 22 780 |
+| Starport alt — Saucer Deck | altPort | medium | 13 544 | 19 248 | 27 022 | 21 996 |
+| Bunker alt — Bastion Drum | altBunk | medium | 10 844 | 16 236 | 20 570 | 15 834 |
+| Library alt — Reading Star | altLib | medium | 13 360 | 21 152 | 23 372 | 22 828 |
+| Gate alt — the Horns | altGate | mega 700k | 30 540 | 38 528 | 41 852 | 43 082 |
+| Robotics alt — the Rig | altRobo | medium | 7 004 | 11 536 | 17 258 | 15 254 |
+| Data center alt — Perforated Stacks | altDc | medium | 94 612 | 80 124 | 84 300 | 102 746 |
+| Police alt — Watch Cup | altPolice | small 60k | 4 216 | 8 078 | 10 944 | 8 100 |
+| Hospital alt — Linked Blocks | altHosp | medium | 4 908 | 9 906 | 15 646 | 12 676 |
+| Campus alt — Garden Bowl | altCampus | mega | 25 844 | 38 124 | 44 650 | 39 060 |
+| Government alt — the Citadel | altGov | medium | 6 816 | 14 858 | 20 082 | 14 176 |
+
+Whole target: 1 289 184 scene triangles, 46 195 instances, 132 registered
+volumes, worst draw calls 356 (overview). Every type is far under its budget;
+most of the forms are merged boxes and lathes, and the decay dressing (rubble,
+moss, huts, repairPass) is what grows the ruins. The Data center is the only
+heavy one, from its instanced vent ovals.
+
+## For the coordinator
+
+- To lift a row into `targets/kit`: add `{z,s,r,t:2*s}` under its key, put the
+  builder in that target's `EXTRA_BUILDERS` (the kit has none yet; the scene
+  loop merges it), and its keys are already budgeted in `91-probe.js`
+  (`altGate`, `altCampus` mega, `altPolice` small; the rest default medium).
+- Shared-file edits: `build.py` (one line in `TARGET_OUT`), `src/91-probe.js`
+  (one line in `BUDGET.type`). Nothing else outside this target and
+  `src/8al-alt-*`.
+- `altReclaim()` in `8al-alt-00-lib.js` is generic (it samples the finished
+  group's flat and vertical faces), so any builder could use it for a
+  reclaimed level.
+
+## Open
+
+- Review shots were rendered at day for every row and at night for the
+  reclaimed variants; the `· rehabilitated` presets were not individually shot
+  (they appear in every row view, at x=0).
+- Weaknesses are listed per builder above. The biggest: Office 3's fins read
+  as spikes from afar, Office 1's fallen slab is a clean box, Starport's broken
+  deck edge is a clean radial cut, and the Campus ruin relies on growth more
+  than on damage.

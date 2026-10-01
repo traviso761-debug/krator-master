@@ -13,7 +13,7 @@
 function buildAltCampus(scene,gx,gz,d){reseed(9916);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);
  const dd=d>0?1:0,fall=d===1||d===2,CM=CONC(d),acc=[],br=[];
  REGISTER({name:'Campus alt — the Garden Bowl ('+(d===2?'reclaimed':STATE(d))+')',x:0,z:0,r:130,h:24});
- const FH=3.8,NS=4,DP=22,SB=3.6;
+ const FH=3.8,NS=6,DP=28,SB=3.6;
  // one terraced bar: centre (cx,cz) of its foot, length L, facing n = (sin ry, cos ry) into the bowl
  const bar=(cx,cz,L,ry,slump)=>{const s=Math.sin(ry),c=Math.cos(ry),t=[c,-s];
   const P=(a,b)=>[cx+t[0]*a+s*b,cz+t[1]*a+c*b];                          // a along the bar, b toward the bowl
