@@ -216,12 +216,18 @@ Everything is set in `host/krator.toml`. After an edit, run `sync`, then restart
 - Seven **development pages** that are not in the gallery: the Ancients kit's `skyi`, `skyj`, `skyk` and `dalab`
   targets, and Iziz's agent sheets `w-a`, `w-b`, `w-c`.
 
-## Level of detail (Krator worlds only)
+## The Krator bar and level of detail (Krator worlds only)
 
-Every Krator world on this site carries a level of detail (LOD): **high** (the page exactly as built), **medium**
-or **low**. A viewer switches it with the **LOD** button in the world's bottom-left corner (the page reloads, and that
-browser remembers the choice for that world), or for one visit with `?lod=low` at the end of the address. The World
-Menagerie's pages are not touched.
+Every Krator world on this site gets a bar at the top centre (at the bottom on a phone-width screen):
+
+- **Scenes**: every Krator world, grouped as on the gallery, the current one marked; then the links in `extra` in
+  `host/lod.toml` (the World Menagerie and the gallery). Escape closes it.
+- **LOD**: the world's level of detail: **high** (the page exactly as built), **medium** or **low**. Picking one
+  reloads the page, and that browser remembers the choice for that world. `?lod=low` at the end of the address sets
+  it for one visit.
+- **Home**: back to the gallery.
+
+Clicks on the bar never reach the world underneath. The World Menagerie's pages are not touched.
 
 **`host/lod.toml` sets each world's starting level and what each level does.** Edit it, then run `build` (on Linux
 `./sitectl build --no-build`); no restart is needed. A world is named by its file name under `/worlds/`
@@ -236,9 +242,10 @@ Menagerie's pages are not touched.
 | `cullPx` | skip drawing anything smaller than this many pixels on screen (0: never) |
 | `fps` | most frames drawn per second (0: no cap) |
 
-Levels can be added or renamed freely; the LOD button cycles through them in the file's order. How it works:
-`gallery/build_gallery.py --lod host/lod.toml` puts `gallery/lod.js` first in each world's page. That script adjusts
-three.js's renderer from outside: no world's code or build changes, and at **high** it changes nothing at all.
+Levels can be added or renamed freely; the LOD menu lists them in the file's order. How it works:
+`gallery/build_gallery.py --lod host/lod.toml` puts `gallery/krator-bar.js` first in each world's page. That script
+draws the bar and adjusts three.js's renderer from outside: no world's code or build changes, and at **high** it
+changes nothing about the world at all.
 
 ## Keep it on your network
 
