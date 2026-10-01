@@ -77,11 +77,15 @@
   var s=document.createElement('script');
   s.src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
   if(location.protocol!=='file:') s.crossOrigin='anonymous';
-  /* three.js loads async and can arrive (from cache, instantly) before the parser has reached the big BUILD
-     script below: calling BUILD() then threw 'BUILD is not defined' and the loading screen never cleared.
-     Wait until the whole document is parsed. */
-  function go(){ try{ BUILD(); }catch(e){ ERR('build: '+(e&&e.stack||e)); } }
-  s.onload=function(){ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', go); else go(); };
+  /* three.js loads async and can arrive before the big BUILD script below has run: calling BUILD() then threw
+     'BUILD is not defined'. Waiting for DOMContentLoaded is not enough: a viewer that injects the page's scripts
+     one by one after the document has loaded (Claude's about:srcdoc frame) reports readyState 'complete' while
+     the BUILD script is still to come. So it is a handshake: three.js's onload and the BUILD script's own tail
+     (window._krGo, in 99-tail.html) each call go(); whichever arrives second starts the build, exactly once. */
+  var threeOK=false, started=false;
+  function go(){ if(started || !threeOK || typeof BUILD!=='function') return; started=true; try{ BUILD(); }catch(e){ ERR('build: '+(e&&e.stack||e)); } }
+  window._krGo=go;
+  s.onload=function(){ threeOK=true; go(); };
   s.onerror=function(){ ERR('Could not load three.js from the CDN.'); };
   document.head.appendChild(s);
 })();
@@ -11572,6 +11576,7 @@ frame();
 document.getElementById('load').style.display = 'none';
 window._ready = true;
 }
+if(window._krGo) window._krGo();   /* the second half of the handshake in 00-head.html: three.js may already be here */
 </script>
 </body>
 </html>
