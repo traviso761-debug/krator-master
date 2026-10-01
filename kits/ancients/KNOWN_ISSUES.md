@@ -330,21 +330,25 @@ exceeded ceiling as `OVER`; `--strict-budget` makes it fail.
       on intact fabric. Reads fine — people board over cracks too — but a true
       hole-aware patch would need `holeFn` to record where it punched.
 
-## Vashtir, the recursive spire (`--target spire`)
+## The Hanging City, the lattice pyramid (`--target spire`; was Vashtir)
 
-- [x] ~~Open child bases.~~ Capped, swept from the same `rOf()` as the shell
-      because the rim is a star, not a circle.
-- [x] ~~Proportion is broader than the reference.~~ **This was my misreading**,
-      not a defect: the reference is itself about as wide as it is tall. What it
-      actually needed was translucency, now supplied by the parasol fans.
-- [x] ~~Radial symmetry is visible if you orbit directly overhead.~~ Kerb blocks,
-      causeways and stairs jittered by a hash of their index (qa/arcB.md).
-- [ ] Intact contrast is low — white on white at distance, and nothing in this
-      kit casts shadows, so all form comes from facet normals.
-      *Improved (qa/arcB.md):* a vertex colour picks out every arris and darkens
-      the valleys. Still white on white at hero distance.
-- [x] ~~The ruin's torn parasol fans left islands floating as grey plates in
-      mid-air.~~ Torn from the outer edge in now (qa/arcB.md).
+Round 3: Vashtir, the recursive spire, was REPLACED by a Shimizu Mega-City
+Pyramid type arcology (same file, builder, type key and target; git keeps the
+old code). Its four entries are closed by the replacement:
+
+- [x] ~~Vashtir: open child bases; proportion; radial symmetry overhead; torn
+      parasol fans floating~~ — the form they described is gone.
+- [x] ~~Vashtir: intact contrast low, white on white~~ — the new frame is white
+      tubes on darker steel nodes, sleeves and bands, read against the sky
+      through the lattice; the hung towers are blue glass.
+
+Open on the new build (see `targets/spire/NOTES.md`):
+
+- [ ] Debris does not rest on anything but water: a fallen member or tower that
+      would land on a podium block is moved, not laid across it.
+- [ ] No interiors in the decks and podium blocks: a ruined tower shows a dark
+      core and floor plates through its holes, nothing more.
+- [ ] Not in the `kit` target (it never was); it has only its own target.
 
 ## From the brief (the detail pass, not yet started)
 
