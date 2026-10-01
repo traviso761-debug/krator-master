@@ -1270,7 +1270,7 @@ function skyHoist(rFn,top,yFoot,seed){const a=Math.PI*.5+(h3(seed,1.7,2.3)-.5)*.
 function buildSkyA(scene,gx,gz,d){reseed(9100+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const dd=d>0?1:0;const skin=SHELL(dd);
  const PROJ=d===4,FLM=PROJ?fireLightMark():null,SM=skyShardMark();
  const H=420,Y0=64;const rFn=y=>{const t=clamp((y-Y0)/(H-Y0),0,1);return 40+26*Math.pow(Math.abs(t-.42)/.58,1.7)*(t<.42?1:1.15);};
- REGISTER({name:(PROJ?'Project A — Skyscraper A reoccupied whole (rehabilitated)':'Skyscraper A — the Conocylinder ('+(d===2?'toppled':STATE(d))+')'),x:0,z:0,r:110,h:H+60});
+ REGISTER({name:(PROJ?'Project A — Skyscraper A reoccupied whole (rehabilitated)':'Skyscraper A — the Conocylinder ('+(d===2?'toppled':STATE(d))+')'),x:0,z:0,r:100,h:H+60});
  // PLINTH. 120 was set by nothing: the 24 splayed struts land at r=98 and
  // skyPlinth's own column ring sits at R*.93, so 110 is the smallest circle
  // that still carries them with the columns outboard of the strut feet. The
@@ -1279,7 +1279,13 @@ function buildSkyA(scene,gx,gz,d){reseed(9100+d);KOFF=[gx,0,gz];const G=new THRE
  // STANCE (round 2): the struts' feet came in from 98 to 80 — steeper legs,
  // the same tower — so the podium comes in from 110 to 92 (ring at 85.6,
  // outboard of the 5.5 m strut feet). This was the Project's loosest podium.
- const SF=80,PR=92;
+ // RESTAND (A-H): the struts' heads meet the shaft's rim at r=52.8, 70 m up,
+ // so a foot at 80 leaned 27 m out over 65 m — a splay the rim does not need:
+ // the base cone carries the core and the struts carry the overhanging rim.
+ // Feet at 60 lean 7 m (6 degrees), nearly plumb under the load they carry,
+ // and the podium is 70 (ring at 65.1, 1.5 m outboard of the strut feet).
+ // The registered radius is set by the crown now (strut ring at ~95), 100.
+ const SF=60,PR=70;
  skyPlinth(G,dd,PR);
  mesh(lathe({rFn:y=>22-4*y/Y0,H:Y0,nu:48,nv:6,hole:holeFn(dd*.5,3,null,1.5)}),skin,G,0,5,0);
  const NS=24;for(let k=0;k<NS;k++){const th=(k+.5)/NS*TAU;const gone=dd>0&&(k===5||k===13||k===19);
@@ -1338,7 +1344,16 @@ function buildSkyA(scene,gx,gz,d){reseed(9100+d);KOFF=[gx,0,gz];const G=new THRE
   const scarY=d===1&&!upper?L*.42:1e9;
   if(!PROJ)for(let yy=25;yy<Math.min(L-20,scarY);yy+=25)stripRing(0,yy,0,rFn(yy+y0)*.9,dx,32);
   [.3,.62].forEach(f=>{const ya=Y0+(H-Y0)*f;const yl=ya-y0;if(yl<8||yl>L-10||yl>scarY-8)return;glassBand(P,y=>rFn(y+y0),yl,7,dx,0,0,0,48,PROJ);});
-  if(cut==null){const NR=32;for(let k=0;k<NR;k++){const th=k/NR*TAU;const r0=rFn(H)*1.02;beam(dx>0?'strutR':'strutW',[Math.cos(th)*r0,L-6,Math.sin(th)*r0],[Math.cos(th)*(r0+25),L-6+41,Math.sin(th)*(r0+25)],3.2,2.4);}
+  // TOPPLED A (restand): the fallen body lies on its two wide ends (base 45,
+  // crown 70; the waist is 40, so it bridges 4 m clear between them) and
+  // toppledUpper's 5 degrees is about the slope that puts both ends on the
+  // ground. What was wrong was the crown's strut ring: 25 m out from the shell
+  // all round, so the struts on the underside stood 30 m into the ground. The
+  // body's local +x points down (Rz of -0.94 * 90 degrees), so those struts
+  // sheared off when it landed; the stubs stay, the rest lie in the rubble.
+  if(cut==null){const NR=32;for(let k=0;k<NR;k++){const th=k/NR*TAU;const r0=rFn(H)*1.02;
+   if(upper&&Math.cos(th)>.2){beam('strutR',[Math.cos(th)*r0,L-6,Math.sin(th)*r0],[Math.cos(th)*(r0+3),L-6+5,Math.sin(th)*(r0+3)],3.2,2.4);continue;}
+   beam(dx>0?'strutR':'strutW',[Math.cos(th)*r0,L-6,Math.sin(th)*r0],[Math.cos(th)*(r0+25),L-6+41,Math.sin(th)*(r0+25)],3.2,2.4);}
    if(dx===0){mesh(lathe({rFn:y=>rFn(H)*(1+.35*y/40)*(1-.15*Math.pow(y/40,3)),H:40,nu:64,nv:12}),MAT.glass,P,0,L-4,0);mesh(lathe({rFn:y=>12*Math.sqrt(clamp(1-Math.pow(y/16,2),0,1)),H:16,nu:32,nv:8}),SHELL(dx),P,0,L+34,0);kput('finial',[0,L+56,0],null,[5,9,5],null);}}
   else if(!upper){for(let k=0;k<32;k++){const th=k/32*TAU;if(rng()<.5)continue;beam('strutR',[Math.cos(th)*rFn(cut)*1.02,L-6,Math.sin(th)*rFn(cut)*1.02],[Math.cos(th)*rFn(cut)*1.3,L-6+rr(8,26),Math.sin(th)*rFn(cut)*1.3],3.2,2.4);}}};
  const P=new THREE.Group();P.position.set(0,Y0,0);G.add(P);useGroupXF(P);
@@ -1352,7 +1367,7 @@ function buildSkyA(scene,gx,gz,d){reseed(9100+d);KOFF=[gx,0,gz];const G=new THRE
  // sky are the ones the Ancients left open.
  if(PROJ){const cy=Y0+Math.floor((H-Y0-10)/8)*8+.9;   // the topmost floor plate, not thin air
   for(let k=0;k<7;k++){const a=rng()*TAU,r=rr(8,rFn(Y0)*.8);firePit('A',r*Math.cos(a),Y0+2.6,r*Math.sin(a),rr(2,3.6));}
-  for(let k=0;k<9;k++){const a=rng()*TAU,r=rr(26,PR*.88);firePit('A',r*Math.cos(a),5.4,r*Math.sin(a),rr(1.8,3.4));}
+  for(let k=0;k<9;k++){const a=rng()*TAU,r=rr(26,SF-5);firePit('A',r*Math.cos(a),5.4,r*Math.sin(a),rr(1.8,3.4));}
   for(let k=0;k<5;k++){const a=rng()*TAU,r=rFn(cy)*rr(.25,.8);firePit('A',r*Math.cos(a),cy,r*Math.sin(a),rr(2,4));}}
  if(d===3)skyHoist(y=>rFn(y),H-8,5,9100);
  if(d>0&&!PROJ)skyShards(SM,d===3?.25:.5);
@@ -1360,17 +1375,26 @@ function buildSkyA(scene,gx,gz,d){reseed(9100+d);KOFF=[gx,0,gz];const G=new THRE
 // --- B: the Scallop Stack (Goldberg lobes, widening upward) -------------------------------------
 function buildSkyB(scene,gx,gz,d){reseed(9110+d);KOFF=[gx,0,gz];const SM=skyShardMark();const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const dd=d>0?1:0;const skin=SHELL(dd);
  const H=300,NL=12;const rFn=y=>26+10*Math.pow(clamp(y/H,0,1),1.4);const lobe=(th,y)=>rFn(y)*(1+.3*(.5+.5*Math.cos(NL*th)));
- REGISTER({name:'Skyscraper B — the Scallop Stack ('+(d===2?'toppled':STATE(d))+')',x:0,z:0,r:100,h:H+40});
+ REGISTER({name:'Skyscraper B — the Scallop Stack ('+(d===2?'toppled':STATE(d))+')',x:0,z:0,r:80,h:H+40});
  // 110 carried nothing past r=72: the twelve legs stand at 70 and their columns
  // are 4.5 wide. 82 puts skyPlinth's column ring at 76.3, just outboard of them.
  // STANCE (round 2): the legs came in from 70 to 56 (the struts off them are
  // steeper), so the podium is 66 with its ring at 61.4.
- const LR=56,PR=66;
+ // RESTAND (A-H): that was a vertical column 27 m tall at r=56 with a strut
+ // running HORIZONTALLY from its head 26 m in to the shaft — an outrigger that
+ // carried nothing down. Each leg is now one raked fluted column straight from
+ // the podium to the lobe tip it carries (r=30.4 at the shaft's foot, 32 m
+ // up), 23 degrees off plumb, its foot sunk into the podium and its head into
+ // the shaft so neither end shows a cut disc. The legs stand under the lobe
+ // tips (the lobes peak at th=k/12), so the load goes straight down.
+ // Feet at 42, outermost fabric 48.4, podium 54 (ring at 50.2).
+ const LR=42,PR=54;
  skyPlinth(G,dd,PR);
- // core + 12 lobed legs spreading out to the plinth
+ // core + 12 lobed legs raking out to the plinth
  mesh(lathe({rFn:y=>16,H:30,nu:32,nv:2}),skin,G,0,5,0);
- for(let k=0;k<NL;k++){const th=k/NL*TAU;const gone=dd>0&&(k===3||k===8);const a=[Math.cos(th)*LR,5,Math.sin(th)*LR],b=[Math.cos(th)*rFn(30)*1.15,32,Math.sin(th)*rFn(30)*1.15];
-  if(!gone){kput(dd>0?'colR':'colW',[a[0],5,a[2]],null,[4.5,27,4.5],null);beam(dd>0?'strutR':'strutW',[a[0],31,a[2]],b,5,4);}else rubbleRing(a[0],5,a[2],2,16,30,2.2);}
+ for(let k=0;k<NL;k++){const th=k/NL*TAU;const gone=dd>0&&(k===3||k===8);const c=Math.cos(th),s=Math.sin(th),rb=rFn(30)*1.15;
+  const ux=(rb-LR),uy=27,ul=Math.hypot(ux,uy),ex=ux/ul,ey=uy/ul,a=[c*(LR-ex*7),5-ey*7,s*(LR-ex*7)],b=[c*(rb+ex*6),32+ey*6,s*(rb+ex*6)];
+  if(!gone){const q=new THREE.Quaternion().setFromUnitVectors(_UP,new THREE.Vector3(c*ex,ey,s*ex));kput(dd>0?'colR':'colW',a,q,[3.4,ul+13,3.4],null);}else rubbleRing(c*LR,5,s*LR,2,16,30,2.2);}
  const body=(P,dx,y0,y1,upper)=>{const cut=(dx>0&&!upper&&y1!=null)?y1:(dx>0&&d===1?H*.8:null);const L=(cut!=null?cut:H)-y0;let hole=holeFn(dx,17+(upper?1:0),cut!=null?L:null,1.5);if(d===1&&!upper)hole=skyScarHole(hole,.3,.08,L*.45,L,17);
   mesh(lathe({rFn:y=>rFn(y+y0),H:H-y0,cut:cut!=null?L:null,jag:cut?4:0,flutes:NL,amp:.3,sharp:1,nu:144,nv:60,hole,seed:17}),SHELL(dx),P);
   // THE CUT SECTION, as on Skyscraper A: the lining shares the outer skin's
@@ -1398,19 +1422,28 @@ function buildSkyB(scene,gx,gz,d){reseed(9110+d);KOFF=[gx,0,gz];const SM=skyShar
  figures(-PR,PR*1.28,6,6);KOFF=[0,0,0];return G;}
 // --- C: the Tripod (three hyperboloid legs fusing into one fluted shaft) ---------------------------
 function buildSkyC(scene,gx,gz,d){reseed(9120+d);KOFF=[gx,0,gz];const SM=skyShardMark();const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const dd=d>0?1:0;const skin=SHELL(dd);
- const H=380,YM=150;REGISTER({name:'Skyscraper C — the Tripod ('+(d===2?'toppled':STATE(d))+')',x:0,z:0,r:130,h:H+30});
+ const H=380,YM=150;REGISTER({name:'Skyscraper C — the Tripod ('+(d===2?'toppled':STATE(d))+')',x:0,z:0,r:90,h:H+30});
  // The three hyperboloid legs stand at r=62 and are ~24 wide at the foot, so
  // the outermost fabric on the podium is at ~86. 96 puts the column ring at
  // 89.3 — outboard of the legs and 19 m tighter than the old 115.
  // STANCE (round 2): the legs' feet came in from 62 to 50 (their heads still
  // meet the shaft at r=20, so they stand steeper), outermost fabric ~72, and
  // the podium is 80 with its ring at 74.4.
- const LR=50,PR=80;
+ // RESTAND (A-H): feet 50 -> 38. The legs still meet the shaft at r=20, so
+ // each now leans 7 degrees (was 11): a tripod whose legs fuse into the shaft
+ // a third of the way up rather than a splayed stand. Outermost fabric ~60.5,
+ // podium 66 (ring at 61.4). The three feet are still 66 m apart and 22 m in
+ // radius, so the open triangle between them keeps a 16 m clear centre.
+ // A tilted lathe's foot is a tilted circle: its inner rim stood 2-4 m clear
+ // of the podium. Each leg's lathe now starts `sink` below its group origin
+ // (the group stays at y=5 on the leg's axis, which tripodLegR in
+ // 77z-iziz-style.js reads), so the foot is buried in the podium all round.
+ const LR=38,PR=66;
  skyPlinth(G,dd,PR);
  const legR=y=>15*Math.sqrt(1+1.2*Math.pow((y-YM*.5)/(YM*.5),2));
  for(let k=0;k<3;k++){const th=k/3*TAU+Math.PI/6;const Lg=new THREE.Group();Lg.position.set(Math.cos(th)*LR,5,Math.sin(th)*LR);const tilt=Math.atan2(LR-20,YM);Lg.rotation.set(0,-th,0);Lg.rotateZ(tilt);G.add(Lg);useGroupXF(Lg);
-  const LL=YM/Math.cos(tilt);mesh(lathe({rFn:legR,H:LL,flutes:10,amp:.1,sharp:2,nu:60,nv:30,hole:holeFn(dd*.8,27+k,null,1.5)}),skin,Lg);
-  if(dd>0)mesh(lathe({rFn:y=>legR(y)*.85,H:LL,nu:24,nv:4}),MAT.guts,Lg);
+  const LL=YM/Math.cos(tilt),sink=legR(0)*Math.tan(tilt)+1.5;mesh(lathe({rFn:y=>legR(Math.max(0,y-sink)),H:LL+sink,flutes:10,amp:.1,sharp:2,nu:60,nv:30,hole:holeFn(dd*.8,27+k,null,1.5)}),skin,Lg,0,-sink,0);
+  if(dd>0)mesh(lathe({rFn:y=>legR(Math.max(0,y-sink))*.85,H:LL+sink,nu:24,nv:4}),MAT.guts,Lg,0,-sink,0);
   for(let y=8;y<LL-8;y+=6)for(let j=0;j<10;j++){const u=(j+.5)/10;const a=u*TAU,r=legR(y)+.1;kput(dd>0?'winSmD':'winSmI',[r*Math.cos(a),y,r*Math.sin(a)],qFacing([Math.cos(a),0,Math.sin(a)]),[1.6,2.4,1],null);}
   for(let yy=20;yy<LL-10;yy+=30)stripRing(0,yy,0,legR(yy)*.9,dd,20);endGroupXF();}
  // sky bridges between legs
@@ -1500,12 +1533,16 @@ function bodyGroup(G,y0,d,dd,build,cutY,topR,stand){const P=new THREE.Group();P.
 // than individual panes. The mask itself is the shared one (fireMask).
 function buildSkyD(scene,gx,gz,d){reseed(9130+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const dd=d>0?1:0;
  const PROJ=d===4,FLM=PROJ?fireLightMark():null,SM=skyShardMark();
- const H=340,Y0=14;REGISTER({name:(PROJ?'Project D — the Monolith reoccupied whole (rehabilitated)':'Skyscraper D — the Monolith ('+(d===2?'toppled':STATE(d))+')'),x:0,z:0,r:120,h:H+20});
+ const H=340,Y0=14;REGISTER({name:(PROJ?'Project D — the Monolith reoccupied whole (rehabilitated)':'Skyscraper D — the Monolith ('+(d===2?'toppled':STATE(d))+')'),x:0,z:0,r:60,h:H+20});
  // PLINTH. Nothing at all stands on this podium except the tower: the shell at
  // its foot is rFn(14)*se(th,3.2) = 34 m at the corners of the superellipse and
  // the lift-core spine reaches 32. 110 was more than three times the building.
  // 48 puts skyPlinth's column ring at 44.6, clear of both.
- const PR=48;
+ // RESTAND (A-H): 44, ring at 40.9 — 6 m outboard of the corners, which is
+ // as close as the 1.8 m columns should stand to a 340 m wall. The Velasca
+ // head reaches 41.7 at its corners 300 m up, so the podium now matches the
+ // widest thing above it. Registered radius 120 -> 60 (the head, plus margin).
+ const PR=44;
  skyPlinth(G,dd,PR);
  const rFn=y=>{const t=clamp(y/H,0,1);return 30*(1-.12*t)+(t>.84?9*Math.pow((t-.84)/.16,.7):0);};
  const build=(P,dx,y0,y1,upper)=>{const cut=(dx>0&&!upper&&y1!=null)?y1:(dx>0&&d===1?H*.76:null);const L=(cut!=null?cut:H)-y0;let hole=holeFn(dx,47+(upper?1:0),cut!=null?L:null,1.2);if(d===1&&!upper)hole=skyScarHole(hole,.3,.13,L*.38,L,47);   // the collapse scar (52-sky-abc.js)
@@ -1551,7 +1588,7 @@ function buildSkyD(scene,gx,gz,d){reseed(9130+d);KOFF=[gx,0,gz];const G=new THRE
  // the one floor on this building open to the sky, and the podium.
  if(PROJ){const hy=Y0+(H-Y0)+2.6;
   for(let k=0;k<6;k++){const a=rng()*TAU,r=rFn(H)*rr(.25,1.5);firePit('D',r*Math.cos(a),hy,r*Math.sin(a),rr(1.8,3.4));}
-  for(let k=0;k<8;k++){const a=rng()*TAU,r=rr(34,PR*.9);firePit('D',r*Math.cos(a),5.4,r*Math.sin(a),rr(1.6,3));}}
+  for(let k=0;k<8;k++){const a=rng()*TAU,r=rr(36.5,PR*.92);firePit('D',r*Math.cos(a),5.4,r*Math.sin(a),rr(1.6,3));}}
  if(d===3)skyHoist((y,a)=>rFn(y)*se(a,3.2),H-4,5,9130);
  if(d>0&&!PROJ)skyShards(SM,d===3?.25:.5);
  figures(-PR,PR*1.28,6,6);if(PROJ)fireLights(FLM,3);KOFF=[0,0,0];return G;}
@@ -1564,12 +1601,14 @@ function buildSkyD(scene,gx,gz,d){reseed(9130+d);KOFF=[gx,0,gz];const G=new THRE
 // group moves merged meshes and instances together. See buildPerch for a
 // worked example -- a tower standing on a podium 90 m up.
 function buildSkyE(scene,gx,gz,d,gy,noPlinth,hcut){reseed(9140+d);gy=gy||0;KOFF=[gx,gy,gz];const G=new THREE.Group();G.position.set(gx,gy,gz);scene.add(G);const dd=d>0?1:0;
- const H=360,Y0=10;REGISTER({name:'Skyscraper E — the Sail ('+(d===2?'toppled':STATE(d))+')',x:0,y:gy,z:0,r:120,h:H+40});
+ const H=360,Y0=10;REGISTER({name:'Skyscraper E — the Sail ('+(d===2?'toppled':STATE(d))+')',x:0,y:gy,z:0,r:60,h:H+40});
  // PLINTH. The lens is 68 m across its long axis (aF(0)=34) and 26 deep; its
  // concrete edge fins add 3. Nothing else reaches the podium. 105 was a circle
  // three times the width of the building it carried; 48 puts the column ring at
  // 44.6, just outboard of the fins.
- const PR=48;
+ // RESTAND (A-H): 44, ring at 40.9, 3 m clear of the fins' outer faces at the
+ // foot (the lens only narrows and turns as it rises). Registered 120 -> 60.
+ const PR=44;
  if(!noPlinth)skyPlinth(G,dd,PR);
  const aF=y=>34*(1-.45*Math.pow(clamp(y/H,0,1),1.3)),bF=y=>13*(1-.3*clamp(y/H,0,1)),rot=y=>.8*clamp(y/H,0,1);
  const PT=(u,y,s)=>{const a=aF(y),b=bF(y),r=rot(y);const x=(u-.5)*2*a,z=s*b*(1-Math.pow(u*2-1,2));return[x*Math.cos(r)-z*Math.sin(r),y,x*Math.sin(r)+z*Math.cos(r)];};
@@ -1609,14 +1648,18 @@ function buildSkyE(scene,gx,gz,d,gy,noPlinth,hcut){reseed(9140+d);gy=gy||0;KOFF=
 // space one used to need. Every existing caller passes nothing and is unchanged.
 function buildSkyF(scene,gx,gz,d,gy,noPlinth,hcut,slim){reseed(9150+d);gy=gy||0;
  const PS=slim||1;KOFF=[gx,gy,gz];const G=new THREE.Group();G.position.set(gx,gy,gz);scene.add(G);const dd=d>0?1:0;
- const H=290,Y0=10,TS=12;REGISTER({name:'Skyscraper F — the Trays ('+(d===2?'toppled':STATE(d))+')',x:0,y:gy,z:0,r:(noPlinth?46:56)*PS,h:H+20});
+ const H=290,Y0=10,TS=12;REGISTER({name:'Skyscraper F — the Trays ('+(d===2?'toppled':STATE(d))+')',x:0,y:gy,z:0,r:(noPlinth?46:50)*PS,h:H+20});
  // PLINTH. The note above was written when 105 was still the radius; it is now
  // 48. The widest tray is RT(y)*1.22 = 38.4 at PS=1, so 48 puts skyPlinth's
  // column ring at 44.6 just outboard of it, and the registered radius below
  // stops being three times the building. Everything in skyPlinth derives from
  // this one number, so the columns, the cornice ring, the apron and the moss,
  // rubble and tree rings all move with it.
- const PR=48*PS;
+ // RESTAND (A-H): 44*PS, ring at 40.9. The trays are cantilevered off the
+ // core and the lowest one (19 m up, above the cornice ring at 17.3) reaches
+ // only 34.8; the 38.4 tray is mid-height, where overhanging the podium edge
+ // is what a cantilevered tray does.
+ const PR=44*PS;
  if(!noPlinth)skyPlinth(G,dd,PR);
  const RT=y=>(28*(1-.2*clamp(y/H,0,1))+6*Math.sin(Math.PI*clamp(y/H,0,1)))*PS;
  const build=(P,dx,y0,y1,upper)=>{const cut=(dx>0&&!upper&&y1!=null)?y1:(dx>0&&(d===1||(d===3&&hcut))?H*(hcut||.8):null);const L=(cut!=null?cut:H)-y0;
@@ -4073,7 +4116,7 @@ function buildHypertree(scene,gx,gz,d){reseed(9450+d);KOFF=[gx,0,gz];
  KOFF=[0,0,0];return G;}
 // ================================================================= SKYSCRAPER G — "the Ward" (SUNY: concrete block stack + dark glass drum)
 function buildSkyG(scene,gx,gz,d){reseed(9160+d);KOFF=[gx,0,gz];const SM=skyShardMark();const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const dd=d>0?1:0;
- const H=210,Y0=6;REGISTER({name:'Skyscraper G — the Ward ('+(d===2?'toppled':STATE(d))+')',x:0,z:0,r:150,h:H+30});
+ const H=210,Y0=6;REGISTER({name:'Skyscraper G — the Ward ('+(d===2?'toppled':STATE(d))+')',x:0,z:0,r:115,h:H+30});
  // PLINTH. This is the ONE skyscraper whose podium is genuinely full: the block
  // stack's outer stilts stand at (115, 30) and the block corners reach r=127.6,
  // so skyPlinth's column ring at R*.93 is already grazing them at R=130. It
@@ -4084,7 +4127,16 @@ function buildSkyG(scene,gx,gz,d){reseed(9160+d);KOFF=[gx,0,gz];const SM=skyShar
  // from -70 to -52 (the bridges between them shorten from 67 to 29 m). The
  // outer stilts are then at r=99.6 and the block corners at 104.2, so the
  // podium comes in from 130 to 116 with its column ring at 107.9.
- const PR=116;
+ // RESTAND (A-H): the composition was still off-centre on its podium (drum
+ // edge at x=-78, stack corners at +97). Now the drum is at -54 and the stack
+ // at 33, so the bridges are 14 m (was 29) and the whole stands -80..+80; and
+ // the eight stilts move from x +/-15, 45 and z +/-30 (the outer pair under
+ // the blocks' rims) to +/-13, 39 and z +/-26, under the blocks' quarter
+ // points, where the load is. Outer stilts at r=76.6; the drum's rim at 80 is
+ // now what the column ring clears: podium 90 (ring at 83.7). The upper
+ // blocks' corners (~89, from 32 m up) overhang the column ring, as a block
+ // on stilts does. The bar comes in to z=55 and 170 long (corners at r=110).
+ const PR=90;
  skyPlinth(G,dd,PR);
  // podium: long low concrete bar with a glass ribbon.
  // IT USED TO FLOAT. The bar is 240 long at z=90, so its ends are at r=150 —
@@ -4093,8 +4145,9 @@ function buildSkyG(scene,gx,gz,d){reseed(9160+d);KOFF=[gx,0,gz];const SM=skyShar
  // per-builder podium decor the plinth pass was told to look for: written
  // OUTSIDE skyPlinth with hardcoded numbers, so it does NOT follow R. It now
  // starts at the ground and rises through the podium instead.
- kput(BOXC(dd),[0,7.5,90],null,[240,15,30],null);kput(BOXC(dd),[0,17,90],null,[242,1.2,32],null);if(dd===0)kput('pane',[0,13,105.2],null,[236,4,1],null);else kput('boxD',[0,13,104],null,[236,4,1],null);
- for(let k=-8;k<=8;k++)kput(BOXC(dd),[k*14,13,105.4],null,[.8,5,.8],null);
+ const BZ=55,BL=170;
+ kput(BOXC(dd),[0,7.5,BZ],null,[BL,15,30],null);kput(BOXC(dd),[0,17,BZ],null,[BL+2,1.2,32],null);if(dd===0)kput('pane',[0,13,BZ+15.2],null,[BL-4,4,1],null);else kput('boxD',[0,13,BZ+14],null,[BL-4,4,1],null);
+ for(let k=-6;k<=6;k++)kput(BOXC(dd),[k*14,13,BZ+15.4],null,[.8,5,.8],null);
  // the drum tower (dark glass, a few lit cells)
  const R=26;const build=(P,dx,y0,y1,upper)=>{const cut=(dx>0&&!upper&&y1!=null)?y1:(dx>0&&d===1?H*.85:null);const L=(cut!=null?cut:H)-y0;const hole=holeFn(dx*.8,77+(upper?1:0),cut!=null?L:null,1.3);
   const drum=lathe({rFn:()=>R,H:L,nu:64,nv:Math.round(L/4),hole:hole,seed:77});mesh(drum,dx>0?MAT.guts:MAT.darkGlass,P);
@@ -4105,18 +4158,18 @@ function buildSkyG(scene,gx,gz,d){reseed(9160+d);KOFF=[gx,0,gz];const SM=skyShar
   for(let y=6;y<L-4;y+=8)for(let k=0;k<18;k++){const th=(k+.5)/18*TAU;if(hole&&hole(th/TAU,y))continue;if(rng()<.55)continue;const lit=dx>0?rng()<.04:true;const wc=lit?WARM.clone().multiplyScalar(rr(.4,.9)):null;kput(wc?'cell':'cellD',[R*1.01*Math.cos(th),y,R*1.01*Math.sin(th)],qFacing([Math.cos(th),0,Math.sin(th)]),[3,2.2,.5],wc);}
   for(let y=0;y<L;y+=4)kput(dx>0?'ringR':'ringW',[0,y,0],qEuler(Math.PI/2,0,0),[R+.2,R+.2,1.5],null);
   if(cut==null){mesh(lathe({rFn:()=>R+1.5,H:8,nu:64,nv:1}),CONC(dx),P,0,L,0);kput(SLABC(dx),[0,L+8,0],null,[R+1.6,.8,R+1.6],null);kput(BOXC(dx),[0,L+11,0],null,[10,6,10],null);}};
- const CX=-52;const D=new THREE.Group();D.position.set(CX,Y0,0);G.add(D);useGroupXF(D);if(d!==2)build(D,dd,Y0,null,false);else build(D,1,Y0,Y0+60,false);endGroupXF();
+ const CX=-54;const D=new THREE.Group();D.position.set(CX,Y0,0);G.add(D);useGroupXF(D);if(d!==2)build(D,dd,Y0,null,false);else build(D,1,Y0,Y0+60,false);endGroupXF();
  // The drum falls WEST, away from its own block stack. Toppling it east dropped
  // 200 m of tower straight through the stack it is meant to stand beside.
  if(d===2)toppledUpper(G,CX,0,Y0+60,R,(U)=>build(U,1,Y0+60,null,true),d,-1);
  // block stack: 2×2 concrete blocks in two tiers on stilts, porthole strips, service cores between
- const BX=50,BW=42,BH=34,gap=10;const tiers=[[26,0],[26+BH+gap,1]];
+ const BX=33,BW=42,BH=34,gap=10;const tiers=[[26,0],[26+BH+gap,1]];
  // Which blocks have come down. One gone out of eight read as barely touched;
  // the stack now loses most of its top tier, and a lower corner as well once
  // the tower itself has fallen. A lower block never goes without the one above
  // it, so nothing is left hanging in the air.
  const fallen=(tier,sx,sz)=>dd>0&&(tier===1?(sx>0||sz<0):(d===2&&sx>0&&sz<0));
- for(let k=0;k<8;k++){const x=BX+(k%4-1.5)*30,z=(k<4?-1:1)*30;kput(BOXC(dd),[x,Y0+13,z],null,[3.2,26,3.2],null);}
+ for(let k=0;k<8;k++){const x=BX+(k%4-1.5)*26,z=(k<4?-1:1)*26;kput(BOXC(dd),[x,Y0+13,z],null,[3.2,26,3.2],null);}
  tiers.forEach(t=>{const y=Y0+t[0];for(const sx of [-1,1])for(const sz of [-1,1]){const cx=BX+sx*(BW/2+gap/2),cz=sz*(BW/2+gap/2);const gone=fallen(t[1],sx,sz);
   if(gone){rubbleRing(cx+30,Y0,cz+20,5,40,50,3);continue;}
   const q=null;mesh(gridSurface((u,v)=>{const th=u*TAU;const r=BW/2*se(th,5)*(1+.03*Math.sin(v*Math.PI));return[cx+r*Math.cos(th),y+v*BH,cz+r*Math.sin(th)];},64,8,{uS:12,vS:6,hole:holeFn(dd*.7,78,null,2)}),CONC(dd),G);
@@ -4124,11 +4177,23 @@ function buildSkyG(scene,gx,gz,d){reseed(9160+d);KOFF=[gx,0,gz];const SM=skyShar
   // porthole columns on the outer faces
   for(const f of [[sx,0],[0,sz]]){for(let r=0;r<6;r++)for(let c=-1;c<=1;c+=2){const px=cx+f[0]*(BW/2+.3)+(f[1]?c*7:0),pz=cz+f[1]*(BW/2+.3)+(f[0]?c*7:0);
    kput(dd>0?'ovalD':'ovalI',[px,y+5+r*5,pz],qFacing([f[0],0,f[1]]),[1.4,1.4,1],null);}}
+  // THE TOP TIER FLOATED (restand; found by the stumps agent): it sat 10 m
+  // (`gap`) above the lower tier with nothing in between, intact or ruined, so
+  // the ruin's surviving upper block hung in the air. Each upper block now
+  // stands on four short stilts on the slab of the block under it, at the same
+  // quarter points as the ground stilts.
+  if(t[1]===1)for(const ex of [-1,1])for(const ez of [-1,1])kput(BOXC(dd),[cx+ex*BW/4,y-gap/2,cz+ez*BW/4],null,[2.6,gap,2.6],null);
   if(dd>0)mossOnRing(cx,y+BH+.5,cz,BW*.4,8,1.6);}
-  // glass core between the four blocks
-  if(dd===0)kput('pane',[BX,y+BH/2,0],null,[gap-1,BH,1],null);kput('boxD',[BX,y+BH/2,0],null,[gap-2,BH,gap-2],null);
-  // bridges to the drum
-  for(const bz of [-8,8]){const y1=y+BH*.55;if(dd>0&&t[1]===1&&bz===8)continue;
+  // glass core between the four blocks — and through the gap under the top
+  // tier. In a ruin the top tier keeps one block of four, which does not touch
+  // the core, so the upper core went with the other three (it hung 10 m over
+  // the lower one).
+  if(!(dd>0&&t[1]===1)){if(dd===0)kput('pane',[BX,y+BH/2,0],null,[gap-1,BH,1],null);kput('boxD',[BX,y+BH/2,0],null,[gap-2,BH,gap-2],null);
+   if(t[1]===1)kput(BOXC(dd),[BX,y-gap/2,0],null,[gap-2,gap,gap-2],null);}
+  // bridges to the drum. The ruin's surviving upper block is the one at
+  // sz>0 (sx<0 faces the drum), so its bridge is bz=+8; it was the -8 one
+  // that was kept, landing on a block that had fallen.
+  for(const bz of [-8,8]){const y1=y+BH*.55;if(dd>0&&t[1]===1&&bz===-8)continue;
    if(d===2&&y1>Y0+60)continue;                     // the drum is cut at Y0+60; do not bridge to thin air
    kput(BOXC(dd),[(CX+R+BX-BW-gap/2)/2,y1-1.5,bz],null,[BX-BW-gap/2-CX-R,1,6],null);
    if(dd===0)kput('pane',[(CX+R+BX-BW-gap/2)/2,y1+1.5,bz+3],null,[BX-BW-gap/2-CX-R,4,1],null);else kput('boxD',[(CX+R+BX-BW-gap/2)/2,y1+1.5,bz],null,[BX-BW-gap/2-CX-R-2,3,4],null);
@@ -4205,11 +4270,14 @@ function buildPerch(scene,gx,gz,d){reseed(9460+d);KOFF=[gx,0,gz];
 // "exposed decks" in the kit: four real terraces up the height of the keep.
 function buildSkyH(scene,gx,gz,d){reseed(9170+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const dd=d>0?1:0;
  const PROJ=d===4,FLM=PROJ?fireLightMark():null,SM=skyShardMark();
- const H=330,Y0=8;REGISTER({name:(PROJ?'Project H — the Warden reoccupied whole (rehabilitated)':'Skyscraper H — the Warden ('+(d===2?'toppled':STATE(d))+')'),x:0,z:0,r:120,h:H+30});
+ const H=330,Y0=8;REGISTER({name:(PROJ?'Project H — the Warden reoccupied whole (rehabilitated)':'Skyscraper H — the Warden ('+(d===2?'toppled':STATE(d))+')'),x:0,z:0,r:65,h:H+30});
  // PLINTH. The keep is half(0)*se(th,7) = 43.5 at its corners and the lowest
  // setback ledge reaches 45. Nothing else stands on the podium. 56 puts
  // skyPlinth's column ring at 52 — outboard of the ledge, half the old 110.
- const PR=56;
+ // RESTAND (A-H): only the keep's foot stands among the columns (the ledge is
+ // 66 m up), so 52, ring at 48.4, 4 m outboard of the corners. The lowest
+ // ledge's corners (48.6) now sit plumb over the ring. Registered 120 -> 65.
+ const PR=52;
  skyPlinth(G,dd,PR);
  const half=y=>{const t=clamp(y/H,0,1);const step=Math.floor(t*5)/5;return 34*(1-.45*step)-2*(t*5-step*5)*.3;};
  const build=(P,dx,y0,y1,upper)=>{const cut=(dx>0&&!upper&&y1!=null)?y1:(dx>0&&d===1?H*.7:null);const L=(cut!=null?cut:H)-y0;let hole=holeFn(dx*.9,87+(upper?1:0),cut!=null?L:null,1.1);if(d===1&&!upper)hole=skyScarHole(hole,.3,.12,L*.4,L,87);   // the collapse scar (52-sky-abc.js)
@@ -4246,7 +4314,7 @@ function buildSkyH(scene,gx,gz,d){reseed(9170+d);KOFF=[gx,0,gz];const G=new THRE
  if(dd>0)vinesOnRing(0,Y0+H/5,0,half(H/5)*1.05,20,30);
  if(PROJ){const ht=half(H);
   for(let k=0;k<4;k++)firePit('H',rr(-ht,ht),Y0+(H-Y0)+2.4,rr(-ht,ht),rr(1.6,2.8));   // the crown slab
-  for(let k=0;k<8;k++){const a=rng()*TAU,r=rr(40,PR*.9);firePit('H',r*Math.cos(a),5.4,r*Math.sin(a),rr(1.6,3));}}
+  for(let k=0;k<8;k++){const a=rng()*TAU,r=rr(44.5,PR*.9);firePit('H',r*Math.cos(a),5.4,r*Math.sin(a),rr(1.6,3));}}
  if(d===3)skyHoist((y,a)=>half(y)*se(a,7),H-2,5,9170);
  if(d>0&&!PROJ)skyShards(SM,d===3?.25:.5);
  figures(-PR,PR*1.28,6,6);if(PROJ)fireLights(FLM,3);KOFF=[0,0,0];return G;}
@@ -8533,7 +8601,7 @@ function izsRustSkin(G){G.traverse(m=>{if(m.isMesh&&(m.material===MAT.concreteR|
 // a mast at the opposite point, so from above the legs' triangle and the three awnings make a six-pointed star; market
 // stalls stand in the shade under each awning and in the open triangle between the legs.
 // The legs' foot radius is read off the built tower: Skyscraper C's three leg groups stand at y=5 on its podium, 62 m out
-// until the towers QA round 2 and 50 m since (their heads still meet the shaft at r=20, 150 m up). Hardcoding 62 hung
+// until the towers QA round 2, 50 m after it and 38 m since the restand (their heads still meet the shaft at r=20, 150 m up). Hardcoding 62 hung
 // every awning, mast and stall 12 m off the legs once they moved.
 function tripodLegR(G){let r=0;G.traverse(c=>{if(r||!c.isGroup||c===G||c.position.y!==5||!c.children.length)return;const h=Math.hypot(c.position.x,c.position.z);if(h>20&&h<120)r=h;});return r||62;}
 // DENSER (Travis, round 4): the great awnings reach half again further out; their stalls stand on a lattice that fills the
@@ -8543,6 +8611,9 @@ function tripodLegR(G){let r=0;G.traverse(c=>{if(r||!c.isGroup||c===G||c.positio
 function tripodMarket(G,o,y,scale,ry,gx,gz,y0,T){const LR=tripodLegR(G),legAt=(k,ly)=>{const th=k/3*TAU+Math.PI/6,r=LR-(LR-20)*(ly-5)/150;return loc2(gx,gz,Math.cos(th)*r*scale,Math.sin(th)*r*scale,ry);};
  const hb=38,rb=LR-(LR-20)*(hb-5)/150;const Y=ly=>y0+ly*scale;const cols=[0xe07a2a,0xc9442a,0xe0a030];const yg=y+1.55;
  const tris=[],masts=[],feet=[0,1,2].map(k=>legAt(k,5));let nStall=0;
+ // the legs are 22 m in radius at the foot (15*sqrt(2.2)): a stall or canopy nearer a foot than that stands INSIDE the
+ // leg. With the feet at 62 or 50 the lattice never got there; at 38 (the restand) six stalls did. LF is the clearance.
+ const LF=(15*Math.sqrt(2.2)+1.5)*scale;
  const stallAt=(x,z,face,c)=>{const Gs=new THREE.Group();Gs.position.set(x,yg,z);Gs.rotation.y=face;scene.add(Gs);useGroupXF(Gs);try{T.stall(c,Gs);}finally{endGroupXF();}
   nStall++;if(T.stalls)T.stalls.push({x,y:yg,z,face});};
  const clothQuad=(c,P)=>{const pos=[],uv=[],N=3;const at=(u,v)=>P(u,v);for(let i=0;i<N;i++)for(let j=0;j<N;j++){for(const[a,b]of[[0,0],[1,0],[0,1],[1,0],[1,1],[0,1]]){const q=at((i+a)/N,(j+b)/N);pos.push(...q);uv.push(q[0]*.5,q[2]*.5);}}
@@ -8560,7 +8631,7 @@ function tripodMarket(G,o,y,scale,ry,gx,gz,y0,T){const LR=tripodLegR(G),legAt=(k
   // stalls in the shade: a lattice over the awning's footprint, each facing along the fall line
   const face=Math.atan2(ap[0]-gx,ap[1]-gz)+Math.PI/2,L=6;
   for(let i=1;i<L;i++)for(let j=1;i+j<L;j++){const u=i/L,v=j/L,w=1-u-v;if(w<.1)continue;const x=a[0]*w+b[0]*u+ap[0]*v,z=a[1]*w+b[1]*u+ap[1]*v;
-   if(feet.some(f=>Math.hypot(x-f[0],z-f[1])<6))continue;if(Math.hypot(x-ap[0],z-ap[1])<5)continue;stallAt(x,z,face,T.col(cols[(k+i+j)%3]));}}
+   if(feet.some(f=>Math.hypot(x-f[0],z-f[1])<LF))continue;if(Math.hypot(x-ap[0],z-ap[1])<5)continue;stallAt(x,z,face,T.col(cols[(k+i+j)%3]));}}
  // and the open triangle between the legs
  for(let t=0;t<3;t++){const th=t/3*TAU+Math.PI/2,r=rb*scale*.3;stallAt(o.x+Math.cos(th)*r,o.z+Math.sin(th)*r,-th,undefined);}
  // the ring of canopies: on rings 7.6 m apart from just outside the leg triangle to the lot's edge (or the star's reach
@@ -8574,7 +8645,7 @@ function tripodMarket(G,o,y,scale,ry,gx,gz,y0,T){const LR=tripodLegR(G),legAt=(k
    const cs=[[-CW,-CD],[CW,-CD],[CW,CD],[-CW,CD]].map(c=>loc2(x,z,c[0],c[1],cry));
    if(!cs.every(c=>onLot(c[0],c[1])))continue;
    if(cs.concat([[x,z]]).some(c=>tris.some(t=>inTri(c[0],c[1],t))))continue;
-   if(feet.some(f=>Math.hypot(x-f[0],z-f[1])<CW+4.5))continue;if(masts.some(m=>Math.hypot(x-m[0],z-m[1])<CW+5))continue;
+   if(feet.some(f=>Math.hypot(x-f[0],z-f[1])<CW+Math.max(4.5,LF)))continue;if(masts.some(m=>Math.hypot(x-m[0],z-m[1])<CW+5))continue;
    const c=ccols[(i+Math.round(R))%ccols.length],hi=yg+3.7,lo=yg+2.7;
    // the cloth: high on the side facing the tripod, low on the outside, a little sag
    clothQuad(c,(u,v)=>{const p=loc2(x,z,(u*2-1)*(CW+.3),(v*2-1)*(CD+.3),cry);return[p[0],lo+(hi-lo)*v-.25*Math.sin(Math.PI*u)*Math.sin(Math.PI*v),p[1]];});
