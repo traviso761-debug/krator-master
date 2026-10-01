@@ -90,6 +90,12 @@ const VIEWS={
 // (decay 2, at t) by day and by night, framed off the row's own radius.
 for(const k in KIT_ALT_NAME){const R=ROWS[k],n=KIT_ALT_NAME[k],ty=Math.max(25,R.r*.45);
  VIEWS[n]=ROWV(k,Math.max(420,R.r*3.4),Math.max(90,R.r*1.1),ty);
+ if(!R.t)continue;
  VIEWS[n+' reclaimed']=[R.t-R.r*.6,Math.max(40,R.r*.5),R.z+Math.max(260,R.r*2.2),R.t,ty*.8,R.z];
  VIEWS[n+' reclaimed at night']=VIEWS[n+' reclaimed'].concat([1]);}
-VIEWS['The alternates']=[0,2200,ROWS.altBole?ROWS.altBole.z-1800:0,0,100,ROWS.altBole?(ROWS.altBole.z+KIT_Z1)/2:0];
+// One overview per group, from the east and above, so each group's rows fill the frame.
+for(const[n,test]of[['The alternates: towers',k=>/^alt(Bole|Stack|Hotel|Flat|Perch|Cult)$/.test(k)],
+ ['The alternates: domestic',k=>/^ad/.test(k)],['The Yuni variants',k=>/^yv/.test(k)],['The alternates: civic',k=>/^alt/.test(k)&&!/^alt(Bole|Stack|Hotel|Flat|Perch|Cult)$/.test(k)]]){
+ const zs=Object.keys(KIT_ALT_NAME).filter(test).map(k=>ROWS[k].z);if(!zs.length)continue;
+ const z0=Math.min(...zs),z1=Math.max(...zs),L=z1-z0+800;
+ VIEWS[n]=[L*.75+600,L*.45+300,(z0+z1)/2+L*.18,300,40,(z0+z1)/2];}
