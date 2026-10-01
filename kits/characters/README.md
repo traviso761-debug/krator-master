@@ -27,7 +27,7 @@ python3 strip.py              # shots/walk-strip.png and shots/walk.gif from the
 | `33-priest.js` | the desert priest: a floor-length robe skinned to the spine and both legs, patterned by vertex tint; his own `raise` clip |
 | `34-knight.js` | the horned knight: plate flagged `metal` for the metallic pass, curled horns, a longsword |
 | `35-warrior.js` | the lacquered warrior: shoulder cape with red seams, tabard panels, forked polearm |
-| `40-walk.js` | the rest, idle, walk and attack poses as functions of phase, `bakeClip()` that samples them into `THREE.AnimationClip`s, `mixamoClip()` that turns the data fragment into one, and the viewer (orbit, lights, scrolling ground, buttons) |
+| `50-walk.js` | the rest, idle, walk and attack poses as functions of phase, `bakeClip()` that samples them into `THREE.AnimationClip`s, `mixamoClip()` that turns the data fragment into one, and the viewer (orbit, lights, scrolling ground, buttons) |
 
 ## Adding a character
 

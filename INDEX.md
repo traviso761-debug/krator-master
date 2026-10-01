@@ -21,7 +21,7 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`settlements/xanadu`](settlements/xanadu/INDEX.md) | 51 | 599 | 66 | Xanadu: the building kit of the southern Sultanate (Tibetan massing, Indian, Turkish and Persian detail) and the city of Erewhon. |
 | [`settlements/yuni`](settlements/yuni/INDEX.md) | 47 | 972 | 195 | Yuni: the city, plus its building-kit, furniture and plant sheets. |
 | [`kits/ancients`](kits/ancients/INDEX.md) | 92 | 1732 | 89 | The Ancients kit: ruined megastructures of the ancient civilisation, 33 structure types, one target per site. |
-| [`kits/characters`](kits/characters/INDEX.md) | 14 | 161 | 44 | Characters: a procedural skinned humanoid rig on Mixamo-named bones, five characters (barbarian, pufferfish ogre, desert priest, horned knight, lacquered warrior) sharing procedural walk, idle and attack clips plus Mixamo walk, run and idle. |
+| [`kits/characters`](kits/characters/INDEX.md) | 18 | 189 | 44 | Characters: a procedural skinned humanoid rig on Mixamo-named bones, five characters (barbarian, pufferfish ogre, desert priest, horned knight, lacquered warrior) sharing procedural walk, idle and attack clips plus Mixamo walk, run and idle. |
 | [`kits/post-apoc`](kits/post-apoc/INDEX.md) | 24 | 356 | 34 | The Post-Apoc set: reclaimed and recycled buildings (containers, silos, tanks, buses, bulkheads, tyre and bottle walls) with sockets for any culture's marks. |
 | [`kits/ringsea`](kits/ringsea/INDEX.md) | 36 | 183 | 10 | Ring Sea watercraft: 21 procedural vessels (warships, cargo ships, barges, canoes, outriggers, rafts) of the cultures round the Ring Sea. |
 | [`biomes/eastabyss`](biomes/eastabyss/INDEX.md) | 17 | 208 | 54 | Biome kit: see `biomes/README.md`. |

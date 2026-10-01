@@ -45,7 +45,7 @@ function mountProps(){
   PROPS.forEach(function(pr){ var s = pr.side;
     pr.group.position.copy(pr.pos).applyQuaternion(_qHangInv[s]);
     pr.group.quaternion.setFromEuler(new THREE.Euler(pr.euler[0], pr.euler[1], pr.euler[2])).premultiply(_qHangInv[s]);
-    BONES[B(s, 'Hand')].add(pr.group); });
+    BONES[pr.bone || B(s, 'Hand')].add(pr.group); });
 }
 /* common materials for props */
 function propMat(hex, metal, rough){ return new THREE.MeshStandardMaterial({ color: C(hex), metalness: metal || 0, roughness: rough == null ? 0.8 : rough }); }
