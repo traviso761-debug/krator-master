@@ -1,7 +1,8 @@
 # Biomes
 
 The home tree of every Krator biome kit. Each kit is one self-contained flora (and fauna)
-system on the shared biome core (`BIOME-API.md` inside each kit): `src/` fragments,
+system on the shared biome core (`core/biome/`, read through `CORE_BIOME` in each kit's
+`build.py`; `BIOME-API.md` inside each kit), with `src/` fragments,
 `build.py` (concatenates them into `dist/<name>.html` and syntax-checks), `verify.py`
 (headless Chromium: error panel, probe invariants, screenshots), `NOTES.md` and
 `KNOWN_ISSUES.md`. `krator-biome-<name>.zip` is the same kit, packed.
@@ -27,6 +28,6 @@ Worlds that use a biome (`settlements/iziz/`, `settlements/screamers/`, `kits/an
 of its fragments. Edit the kit here, then copy across; `iziz/build.py --vendor-check` reports drift.
 
 **Merged buckets are baked indexed.** `BIO.bake` keeps one copy of each distinct vertex and draws by index
-(`indexedGeo` in `20-core-kit.js`, in every copy of the core). The triangles and their order are unchanged, so the
+(`indexedGeo` in `core/biome/20-core-kit.js` and in each kit's own copy). The triangles and their order are unchanged, so the
 picture is identical; tubes and surfaces take about half the GPU memory they did. Builders still write full
 triangles as before.

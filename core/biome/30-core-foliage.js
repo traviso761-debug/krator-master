@@ -172,4 +172,26 @@ BIO.barkMat=function(tex,col){const T=BIO.host.THREE;return new T.MeshLambertMat
 // a plain material for instanced solids (rods, lobes, boulders)
 BIO.solidMat=function(tex,col){const T=BIO.host.THREE;return new T.MeshLambertMaterial({color:col==null?0xffffff:col,map:tex||null,side:T.DoubleSide});};
 
+// ---------------------------------------------------------------- colour (sedesert-1)
+// The sRGB-aware colour maths every biome ends up needing (the abyss kit's
+// lesson): a designer's hex renders about twice as bright under the
+// sun+hemisphere rig, and a tinted near-grey texture needs its mean divided out.
+BIO.col=(function(){const T=()=>BIO.host.THREE,C=h=>new (T().Color)(h);let WHITE=null,DARK=null;
+ // toward white (f>0) or toward a warm black (f<0)
+ function shade(hex,f){const c=hex.isColor?hex.clone():C(hex);if(!WHITE){WHITE=C(0xffffff);DARK=C(0x120f0a);}if(f>=0)c.lerp(WHITE,f);else c.lerp(DARK,-f);return c;}
+ // multiply in linear light, back to sRGB
+ function bright(col,k){const c=col.isColor?col.clone():C(col);c.convertSRGBToLinear();c.r=Math.min(1,c.r*k);c.g=Math.min(1,c.g*k);c.b=Math.min(1,c.b*k);return c.convertLinearToSRGB();}
+ const _hsl={h:0,s:0,l:0};
+ // jitter hue / saturation / lightness by +-dh, +-ds, +-dl (three rng draws)
+ function vary(hex,dh,ds,dl){const c=hex.isColor?hex.clone():C(hex);c.getHSL(_hsl);c.setHSL(((_hsl.h+rr(-dh,dh))%1+1)%1,clamp(_hsl.s+rr(-ds,ds),0,1),clamp(_hsl.l+rr(-dl,dl),.03,.97));return c;}
+ // the linear mean of a canvas texture (sampled)
+ function texMean(tex){const im=tex&&tex.image;if(!im||!im.getContext)return[.25,.25,.25];
+  const d=im.getContext('2d').getImageData(0,0,im.width,im.height).data;let r=0,g=0,b=0,n=0;
+  for(let i=0;i<d.length;i+=4*13){r+=d[i];g+=d[i+1];b+=d[i+2];n++;}
+  const c=C(0).setRGB(r/n/255,g/n/255,b/n/255).convertSRGBToLinear();return[c.r,c.g,c.b];}
+ // the sRGB tint that renders `hex` on a texture of linear mean m
+ function tint(hex,m,k){const c=hex.isColor?hex.clone():C(hex);c.convertSRGBToLinear();k=k==null?1:k;
+  c.setRGB(Math.min(1,c.r*k/Math.max(.02,m[0])),Math.min(1,c.g*k/Math.max(.02,m[1])),Math.min(1,c.b*k/Math.max(.02,m[2])));return c.convertLinearToSRGB();}
+ return{shade,bright,vary,texMean,tint};})();
+
 })();

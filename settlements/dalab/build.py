@@ -259,7 +259,10 @@ def vendor_check():
     for label, files, up in (('ancients', VENDORED, os.path.join(ROOT, 'kits', 'ancients', 'src')),
                              ('iziz', VENDORED_IZIZ, os.path.join(os.path.dirname(HERE), 'iziz', 'src')),
                              ('highlands', VENDORED_HL, os.path.join(os.path.dirname(HERE), 'highlands', 'src')),
-                             ('biomes/swlowlands', [('86-bio-%s.js' % b, b + '.js') for b in BIO_VENDORED],
+                             # the biome core lives in core/biome since Oct 2026 (the kit reads it from there)
+                             ('core/biome', [('86-bio-%s.js' % b, b + '.js') for b in BIO_VENDORED if '-core-' in b],
+                              os.path.join(ROOT, 'core', 'biome')),
+                             ('biomes/swlowlands', [('86-bio-%s.js' % b, b + '.js') for b in BIO_VENDORED if '-core-' not in b],
                               os.path.join(ROOT, 'biomes', 'swlowlands', 'src'))):
         if not os.path.isdir(up):
             print('vendor-check: ../%s/src not found; skipped' % label)
