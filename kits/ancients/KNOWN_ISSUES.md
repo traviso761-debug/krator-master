@@ -701,6 +701,44 @@ looking at**: the lining is a mid-brown and the hemisphere lights it happily
 through 90 m of rock; void-black for the first 55 m of bore fixed it.
 
 
+## Lighthouse island (`--target lighthouse`)
+
+Skyscraper J's Whorl re-proportioned as a 234 m lighthouse on a cliffed island
+in its own sea (`src/89n-lighthouse.js`, seed 9790+d, kit row z=28800). The
+first moving thing in the kit: the beacon is swept by the `tick()` frame hook
+(`10-core.js`, called from `92-camera.js`). Verified 2026-10-01: 117 568 /
+90 460 / 118 678 / 118 560 per decay 0/1/2/3 of 400 000, worst 104 draw calls
+over 16 presets, all six invariants PASS, error panel clean, 29 registered
+volumes; the beam's `rotation.y` advances frame to frame. Details in
+`targets/lighthouse/NOTES.md`.
+
+- [x] ~~The berm's outer slope was culled with the seabed~~ (anything under
+      WL-.7 counted as "under the sea"), so the sand rim stopped at its 1.8 m
+      contour in a 4 m staircase. Culled only inside the basin now. **Any
+      builder that culls hidden ground by height must also ask which side of
+      the waterline's rim it is on.**
+- [x] ~~The ravine path was flagstones draped on a 50 degree slope.~~ It is a
+      three-flight cliff stair on a carved terrace now, down to the jetty deck.
+- [x] ~~Floating: ruined gallery rail posts and shards over roof holes,
+      ruined lodge chimneys on holed roofs, the toppled tower's rubble 30 m
+      out over the sea, the mole lamp off its rounded cap.~~ None of these
+      tripped `--assert`; a downward-ray probe over every instanced item found
+      them (it is in the target's NOTES; it is not yet an invariant).
+- [ ] The stair's terrace is cut with the 4 m ground grid: between flights
+      the ground is a steep stretched face, not a built retaining wall, and
+      the flights have posts but no parapet.
+- [ ] Cliffs are a smooth 4 m heightfield: no overhangs, no sea stacks.
+- [ ] The sea is Lambert (GGX blazed white with the fill light): no sun glint;
+      only the beams move.
+- [ ] The ruined lantern's astragals stand as loose bronze helices.
+- [ ] Beams re-aim on any camera jump over 250 m in a frame (fast WASD at a
+      large orbit counts). Screenshots are taken ~900 ms after a preset, so the
+      beam is up to ~.4 rad past its re-aim angle (less under software GL,
+      where each frame's dt is clamped), not exactly at it.
+- [ ] Kit target: the toppled site's ruin greening (RUINS radius r*1.4 = 420,
+      from the shared `targets/kit/89z-rows.js`) extends past its 308 m berm
+      as a yellow-green smear. The `lighthouse` target uses 300.
+
 ## Cutaways — the sixth attempt, and this one reads
 
 - [x] ~~Skyscraper A's ruined and toppled variants showed a dark hollow, not a

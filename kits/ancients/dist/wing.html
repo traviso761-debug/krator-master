@@ -22394,12 +22394,24 @@ function buildLighthouse(scene,gx,gz,d){reseed(9790+d);KOFF=[gx,0,gz];
   return h;};
  // pads the buildings stand on (y from the bare ground at their centre)
  const PADS=[[-46,12,15],[46,30,10],[-16,78,9]].map(p=>p.concat([Math.max(WL+1.2,islH(p[0],p[1]))]));
- const PATH=[];for(let k=0;k<=22;k++){const t=k/22,z=40+t*36;PATH.push([7*Math.sin(t*3.1)-3*t,z]);}
+ // THE CLIFF STAIR: the knoll stands 27 m over the cove on a ~50 degree slope,
+ // so the path down to the jetty is three flights cut into it, zigzagging
+ // across the cove. PATH is its centreline sampled every metre as [x, z, s, y]:
+ // y falls evenly with s (~25 degrees) from the knoll's rim to the jetty's deck
+ // (WL+.7 plus the sweep's 1.8 half-height). landH carves the ground to it.
+ const JA0=shoreR(TH_C)-6,LEGS=[[0,44],[-15,49],[11,57],[3,JA0+1]];
+ const PATH=[];{let s=0;for(let i=0;i<LEGS.length-1;i++){const a=LEGS[i],b=LEGS[i+1],L=Math.hypot(b[0]-a[0],b[1]-a[1]),n=Math.ceil(L);
+   for(let k=i?1:0;k<=n;k++)PATH.push([lerp(a[0],b[0],k/n),lerp(a[1],b[1],k/n),s+L*k/n]);s+=L;}
+  const S=PATH[PATH.length-1][2];for(const p of PATH)p.push(lerp(YK,WL+2.5,p[2]/S));}
+ const pathAt=(x,z)=>{let bd=1e9,bp=PATH[0];for(const p of PATH){const e=(x-p[0])*(x-p[0])+(z-p[1])*(z-p[1]);if(e<bd){bd=e;bp=p;}}return[Math.sqrt(bd),bp[3]];};
  // the fallen tower (d=2): the trench it lies in, a straight line down from the knoll
  const FALL={};
  if(d===2){const Rsh=shoreR(FANG);FALL.D0=26;FALL.DE=Rsh-17;FALL.yE=Math.min(top(Math.cos(FANG)*FALL.DE,Math.sin(FANG)*FALL.DE),YK-2);}
  const landH=(x,z)=>{let h=islH(x,z);
   for(const p of PADS){const dr=Math.hypot(x-p[0],z-p[1]);if(dr<p[2]+10){const w=clamp((p[2]+10-dr)/10,0,1);h=lerp(h,p[3],w*w*(3-2*w));}}
+  // the stair's terrace: flat 4.5 m either side of the centreline (a 4 m grid
+  // must not poke through the treads), blending out by 9 m
+  if(z>34&&z<JA0+11&&x>-25&&x<22){const pa=pathAt(x,z);if(pa[0]<9){const w=clamp((9-pa[0])/4.5,0,1);h=lerp(h,pa[1]-.25,w*w*(3-2*w));}}
   if(d===2){const ax=Math.cos(FANG),az=Math.sin(FANG),s=x*ax+z*az,o=Math.abs(-x*az+z*ax);
    if(s>FALL.D0-10&&s<FALL.DE+4&&o<30){const t=clamp((s-FALL.D0)/(FALL.DE-FALL.D0),0,1),y=lerp(YK,FALL.yE,t)-1.6,w=clamp((30-o)/12,0,1)*clamp((FALL.DE+4-s)/6,0,1);h=lerp(h,Math.min(h,y),w);}}
   return h;};
@@ -22416,7 +22428,10 @@ function buildLighthouse(scene,gx,gz,d){reseed(9790+d);KOFF=[gx,0,gz];
    const h=H(x,z);pos.push(x,h,z);uv.push((x+z)*.08,h/9+(x-z)*.04);hs.push(h);qs.push(q);}
   const C=nx+1;
   for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const a=j*C+i,b=a+1,c=a+C,e=c+1,m=Math.max(hs[a],hs[b],hs[c],hs[e]);
-   if(m<WL-.7)continue;                                              // under the sea: never seen
+   // under the sea: never seen. Only inside the basin (q<0): the berm's outer
+   // slope also falls below WL-.7, and culling it there cut the berm off along
+   // the 1.8 m contour in a 4 m staircase, a skirt short of its foot
+   if(m<WL-.7&&Math.max(qs[a],qs[b],qs[c],qs[e])<0)continue;
    if(Math.min(qs[a],qs[b],qs[c],qs[e])>QE)continue;                  // the plain itself
    idx.push(a,c,b,b,c,e);}
   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));
@@ -22459,10 +22474,20 @@ function buildLighthouse(scene,gx,gz,d){reseed(9790+d);KOFF=[gx,0,gz];
  const JA=shoreR(TH_C)-6,JB=shoreR(TH_C)+44,jp=[];for(let k=0;k<=6;k++){const r=lerp(JA,JB,k/6);jp.push([3,WL+.7,r]);}
  isl.push(sjSweep(jp,jp.map(()=>3.6),jp.map(()=>1.8),()=>[0,1,0],true,true));
  for(let k=0;k<6;k++){if(dd&&rng()<.3*HO)continue;const r=lerp(JA+10,JB-2,k/5);for(const sx of[-.3,6.3])kput(dd?'postR':'postW',[sx,WL+3,r],null,[.35,1.2,.35],null);}
- // the path from the beach up the ravine to the knoll: flagstones on the ground
- const pave=[sjGrid((u,v)=>{const f=u*(PATH.length-1),i0=Math.min(PATH.length-2,Math.floor(f)),t=f-i0,a=PATH[i0],b=PATH[i0+1];
-  const x=lerp(a[0],b[0],t),z=lerp(a[1],b[1],t),nx=-(b[1]-a[1]),nz=b[0]-a[0],L=Math.hypot(nx,nz),w=(v-.5)*4.4;
-  const px=x+nx/L*w,pz=z+nz/L*w;return[px,landH(px,pz)+.3,pz];},66,2,(u,v)=>[u*64/8*4,v*.55],dd?(u,v)=>fbm(u*30,v*3,41,2)<.45*HO:null)];
+ // the cliff stair: solid stone steps (~.3 m risers) down each flight, sunk
+ // into the carved terrace, a landing at each turn, a post rail on the sea
+ // side. The ruin has lost steps (the terrace shows through) and most posts.
+ const pave=[];
+ {const hp=s=>{const S=PATH[PATH.length-1][2];return lerp(YK,WL+2.5,clamp(s/S,0,1));};let s0=0;
+  for(let i=0;i<LEGS.length-1;i++){const a=LEGS[i],b=LEGS[i+1],L=Math.hypot(b[0]-a[0],b[1]-a[1]),ux=(b[0]-a[0])/L,uz=(b[1]-a[1])/L,ang=Math.atan2(uz,ux);
+   const n=Math.max(2,Math.round((hp(s0)-hp(s0+L))/.32)),tl=L/n;
+   const side=ux>0?1:-1,nx=-uz*side,nz=ux*side;      // (nx,nz): the flight's sea side (+z)
+   for(let k=0;k<n;k++){if(dd&&h3(i*7.1,k*1.3,47)<.3*HO)continue;
+    const ya=hp(s0+k*tl),yb=hp(s0+(k+1)*tl)-1,c=(k+.5)*tl;
+    pave.push(new THREE.BoxGeometry(tl+.06,ya-yb,4).rotateY(-ang).translate(a[0]+ux*c,(ya+yb)/2,a[1]+uz*c));
+    if(k%3===1&&!(dd&&h3(i*3.3,k*2.9,48)<.6*HO)){const px=a[0]+ux*c+nx*1.85,pz=a[1]+uz*c+nz*1.85;kput(dd?'postR':'postW',[px,ya+.6,pz],null,[.12,1.2,.12],null);}}
+   s0+=L;
+   if(i<LEGS.length-2)pave.push(new THREE.BoxGeometry(5.2,1.8,5.2).translate(b[0],hp(s0)-.9+.02,b[1]));}}
  // the knoll: paved round the tower
  pave.push(sjGrid((u,v)=>{const th=u*TAU,r=6+v*38;return[r*Math.cos(th),YK+.3,r*Math.sin(th)];},72,3,(u,v)=>[u*30,v*5],dd?(u,v)=>fbm(u*14,v*4,42,2)<.5*HO:null));
  pave.push(sjGrid((u,v)=>{const th=u*TAU;return[44*Math.cos(th),YK+.3-v*.6,44*Math.sin(th)];},72,1,(u,v)=>[u*30,v*.1]));
@@ -22537,7 +22562,9 @@ function buildLighthouse(scene,gx,gz,d){reseed(9790+d);KOFF=[gx,0,gz];
    const re=th=>{let r=rb(th);for(const b of RB){let a=Math.abs(th-b[0])%TAU;if(a>Math.PI)a=TAU-a;r+=b[1]*Math.exp(-Math.pow(a/b[2],2));}return r;};
    const wv=roof?null:ter?th=>.8*Math.sin(2*(th-ph)+1.1)+.35*Math.sin(3*(th-ps)):th=>.45*Math.sin(2*(th-ph)+.4);
    const ri=roof?(()=>0):th=>Math.min(E*.6,re(th)-5);
-   const hole=dx>0?(u,v)=>fbm(u*9+k*1.37,k*.61,71,2)<(.22+.26*t)*HO||(v>.3&&fbm(u*23+k,k*.3,72,2)<.36*HO):null;
+   // (the gallery, the roof plate, stays whole in a ruin: its rail posts, the
+   // lens shards and the dome's sheets lie on it, and over its holes they floated)
+   const hole=dx>0&&!roof?(u,v)=>fbm(u*9+k*1.37,k*.61,71,2)<(.22+.26*t)*HO||(v>.3&&fbm(u*23+k,k*.3,72,2)<.36*HO):null;
    const g=sjPlate(y+oy,re,ri,ter?SJ_PT:SJ_PM,ter?88:64,hole,wv);(BANDK(k)?band:stone).push(g);plates.push(g);
    if(ter&&!dx&&!roof)glow.push(sjGrid((u,v)=>{const th=u*TAU,r=re(th)-1.25-v*.9;return[r*Math.cos(th),y+oy-1.37+wv(th),r*Math.sin(th)];},88,1,(u,v)=>[u,v]));}
   // THE CORE: solid stone, with the stair slot glazed; one row per storey so a row dies with its floors
@@ -22624,7 +22651,9 @@ function buildLighthouse(scene,gx,gz,d){reseed(9790+d);KOFF=[gx,0,gz];
   // a floor, so the ruin is not a hollow ring
   bStone.push(sjGrid((u,v)=>{const th=u*TAU,r=v*(re(th)-.5);return[x+r*Math.cos(th),y0+.25,z+r*Math.sin(th)];},32,2,(u,v)=>[u*4,v*2]));
   // a chimney and a lamp by the door (also what the inspector's probe finds)
-  kput(dd?'postR':'postW',[x+R*.35*Math.cos(yaw),y0+nS*SH+2.2,z+R*.35*Math.sin(yaw)],null,[.7,3.2,.7],null);
+  // (the stack rises from the floor through the roof: a ruin's roof has holes,
+  // and a chimney set on it floated 8 m over the floor where one fell under it)
+  kput(dd?'postR':'postW',[x+R*.35*Math.cos(yaw),y0+.25+(nS*SH+3.55)/2,z+R*.35*Math.sin(yaw)],null,[.7,nS*SH+3.55,.7],null);
   if(!dd||d===3)kput('dot',[x+(re(TH_C)+.2)*Math.cos(TH_C),y0+2.6,z+(re(TH_C)+.2)*Math.sin(TH_C)],null,[.6,.6,.6],WARM);
   REGISTER({name:'Lighthouse island — '+name,x,z,y:y0-1,r:R*1.25+2,h:nS*SH+4});};
  lodge(PADS[0],12,2,.4,"the keeper's house");lodge(PADS[1],7.5,1,1.1,'the fog-signal house');lodge(PADS[2],7,1,-.3,'the boathouse');
@@ -22663,7 +22692,9 @@ function buildLighthouse(scene,gx,gz,d){reseed(9790+d);KOFF=[gx,0,gz];
   lay(CUT,CB,FALL.D0,YK-1.6,bA,false);
   const DB=FALL.DE+5,yB=Math.max(WL+2,FALL.yE-4),LB=YAP-CB;
   lay(CB,YAP+20,DB,yB,Math.atan2(yB-(WL-6),LB),true);
-  for(let k=0;k<=5;k++){const s=FALL.D0+(FALL.DE-FALL.D0)*k/5,hh=lerp(YK,FALL.yE,k/5);rubbleRing(ax*s,hh,az*s,Et(CUT)*.8,Et(CUT)*1.7,26,3.2);}
+  // (each ring stops at the cliff edge: the last ones reached 30 m out over the
+  // sea at cliff-top height. Same calls and counts, so the PRNG stream is unchanged.)
+  for(let k=0;k<=5;k++){const s=FALL.D0+(FALL.DE-FALL.D0)*k/5,hh=lerp(YK,FALL.yE,k/5),r1=Math.max(5,Math.min(Et(CUT)*1.7,FALL.DE+2-s));rubbleRing(ax*s,hh,az*s,Math.min(Et(CUT)*.8,r1*.5),r1,26,3.2);}
   rubbleRing(0,YK,0,24,46,90,3.6);
   const mid=(FALL.D0+DB+LB)/2;REGISTER({name:'the Lighthouse — fallen tower',x:ax*mid,z:az*mid,r:(DB+LB-FALL.D0)/2+16,h:70});
   site.fall={ang:FANG,D0:FALL.D0,DE:FALL.DE,DB,LB};}
@@ -22694,12 +22725,13 @@ function buildLighthouse(scene,gx,gz,d){reseed(9790+d);KOFF=[gx,0,gz];
   const fig=(x,y,z)=>{const c=new THREE.Color().setHSL(rr(0,.1),rr(.2,.5),rr(.25,.5));kput('figB',[x,y,z],qEuler(0,rng()*TAU,0),1,c);kput('figH',[x,y,z],null,1,new THREE.Color(0xc9a17e));};
   for(let k=0;k<12;k++){const th=rng()*TAU,r=rr(36,43);fig(r*Math.cos(th),YK+.3,r*Math.sin(th));}
   for(let k=0;k<5;k++)fig(rr(.5,5.5),WL+2.4,rr(JA+8,JB-4));
-  for(let k=0;k<4;k++){const p=PATH[(rng()*PATH.length)|0];fig(p[0]+rr(-1,1),landH(p[0],p[1])+.3,p[1]);}
+  for(let k=0;k<4;k++){const p=PATH[(rng()*PATH.length)|0];fig(p[0]+rr(-1,1),p[3]+.32,p[1]);}   // on the stair: a tread top is at most a riser over p[3]
   for(let k=0;k<3;k++)fig(rr(-2,2),YTOP+.9,rr(-LR-4,-LR-1.5));}
  // the harbour light at the mole head: a warm lamp by night (FIREKIT), dark in a ruin
- kput(dd?'postR':'postW',[mHead[0],WL+6,mHead[2]],null,[.45,6,.45],null);
- if(d!==1&&d!==2){kput('emberB',[mHead[0],WL+9.6,mHead[2]],qEuler(0,rng()*TAU,0),[3,3,3],new THREE.Color().setHSL(.1,1,.55));
-  kput('emberB',[mHead[0],WL+9.6,mHead[2]],qEuler(0,rng()*TAU,0),[9,8,9],new THREE.Color().setHSL(.1,1,.22));}
+ // (one point in from the head: the end cap is rounded, and the post stood off it over the water)
+ const mLamp=molePts[molePts.length-2];kput(dd?'postR':'postW',[mLamp[0],WL+6,mLamp[2]],null,[.45,6,.45],null);
+ if(d!==1&&d!==2){kput('emberB',[mLamp[0],WL+9.6,mLamp[2]],qEuler(0,rng()*TAU,0),[3,3,3],new THREE.Color().setHSL(.1,1,.55));
+  kput('emberB',[mLamp[0],WL+9.6,mLamp[2]],qEuler(0,rng()*TAU,0),[9,8,9],new THREE.Color().setHSL(.1,1,.22));}
  {const x=4,z=58;site.lookUp=[x,landH(x,z)+1.7,z];}   // for the 'Looking up' preset: clear of the base block's lip
  LH_SITE[d]=site;
  KOFF=[0,0,0];return G;}

@@ -100,7 +100,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `89k-sky-i.js` | 43 **big** | the skins (27); the form (108); geometry accumulators (165); the shaft (206); a strand (256); the builder (344) |
 | `89l-sky-j.js` | 25 |  |
 | `89m-sky-k.js` | 36 **big** |  |
-| `89n-lighthouse.js` | 40 **big** | materials (39); the beacon (81); hulls (103) |
+| `89n-lighthouse.js` | 43 **big** | materials (39); the beacon (81); hulls (103) |
 | `8ae-wing.js` | 46 **big** |  |
 | `8af-drum.js` | 48 **big** | the skins (38) |
 | `8ag-blades.js` | 56 **big** |  |

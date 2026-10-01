@@ -22,10 +22,13 @@ const VIEWS={
  'The harbour':             LHV(LHI,[-18,LHI.WL+7,LHI.jetty[1]+26],[4,34,40]),
  // the cove from the sea: the ravine path, the lodges, the tower over them
  'The cove':                LHV(LHI,[40,26,LHI.RS-10],[0,40,40]),
+ // the cliff stair: three flights down the cove's slope from the knoll to the jetty
+ 'The cliff stair':         LHV(LHI,[24,22,118],[-2,14,52]),
  'The wreck':               LHV(LHR,[LHW.x-40,20,LHW.z+70],[LHW.x,4,LHW.z]),
  'Looking up':              LHV(LHI,LHI.lookUp||[4,12,58],[0,LHI.YTOP-10,0]),
  'The fallen tower':        LHV(LHT,lhFP(LHF.DB+LHF.LB+70,30,60),lhFP(LHF.D0+30,20)),
  // NIGHT: the beams sweep (a preset re-aims them at a fixed angle to the camera)
  'Lighthouse at night':     LHV(LHI,[-560,150,760],[0,120,0],1),
+ 'The lantern at night':    LHV(LHI,[-46,LHI.YTOP+12,40],[0,LHI.YTOP+9,0],1),
  'The fire basket at night':LHV(LHH,[-150,LHH.YTOP+40,230],[0,LHH.YTOP,0],1),
 };
