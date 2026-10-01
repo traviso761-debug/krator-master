@@ -95,3 +95,8 @@ The runners' far ends had floated (Travis's second shot): a strut head was a ver
 above the kit's box, and the flare lay on a plane across the runner. A member is now a capsule or a box with its
 axes, `hykSegNearest` returns the surface point and its normal, the rib ends half a metre inside the member and
 the flare lies on its face: runners land on the strut heads' tops.
+Then (Travis's third note: end caps off centre, the fork a blob): a runner is a cubic that arrives along the face
+normal and goes straight in, so the flare is centred on the rib; a box is landed on a face, never an edge or a
+corner (the nearest point inside the face rectangle shrunk by the flare's radius, the top face preferred from
+above); the fork is a crotch tube from the parent's spine to the branch's spine through a knuckle, no ball.
+Travis's two viewpoints are presets now ("the way-in pod from above", "the landing from above").

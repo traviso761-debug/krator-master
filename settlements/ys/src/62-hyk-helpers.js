@@ -112,7 +112,9 @@ function hykBridge(A,B,o){o=o||{};const w=o.w||2.6;const col=o.col||hC(hPick(HPA
   const dx=to.x-P0.x,dz=to.z-P0.z;const dl=Math.hypot(dx,dz)||1;const rbx=-dz/dl,rbz=dx/dl;   // the branch's own right vector
   const E0=lerpPoly(main.rails[b.side],b.s0/L),E1=lerpPoly(main.rails[b.side],b.s1/L);const e0Right=(E0[0]-P0.x)*rbx+(E0[2]-P0.z)*rbz>0;
   run(P0,to,b.bw,b.br.rise!=null?b.br.rise:0,b.br.own||((o.own||'bridge')+' branch'),'bridge',{railStart:{1:e0Right?E0:E1,[-1]:e0Right?E1:E0}});
-  kput('hkBall',[P0.x,P0.y-.4,P0.z],null,[b.bw*.5,b.bw*.4,b.bw*.5],col);nb++;}
+  // the crotch: the branch's spine grows out of the parent's spine under the deck, through a knuckle, not a blob
+  const sp=[b.p[0],b.p[1]-.78,b.p[2]],bs=[P0.x,P0.y-.78,P0.z];const mid=[(sp[0]+bs[0])/2,sp[1]-.12,(sp[2]+bs[2])/2];
+  hykPut('hkBone',hykTube([sp,mid,bs,[bs[0]+dx/dl*1.6,bs[1],bs[2]+dz/dl*1.6]],t=>.3*(1-.2*t),{seg:9,col}));kput('hkBall',sp,null,[.42,.38,.42],col);nb++;}
  // runners: tendrils grown from the edge rib to the nearest member (a strut, a leg, a head) within reach, every so
  // many metres, one per side, sagging, knuckled, rooted on the member with a flare. One per member per stretch of span.
  let nr=0;if(o.runners&&o.runners.members&&o.runners.members.length){const Rn=o.runners;const reach=Rn.reach||12,every=Rn.every||6;const used=[];
@@ -121,20 +123,33 @@ function hykBridge(A,B,o){o=o||{};const w=o.w||2.6;const col=o.col||hC(hPick(HPA
     const sd=Math.sign((q[0]-p[0])*rx0+(q[2]-p[2])*rz0)||1;if(!best[sd]||d<best[sd].d)best[sd]={m,q,n:nq.n,d};}
    for(const sd of [-1,1]){const b=best[sd];if(!b)continue;if(used.some(u=>u.m===b.m&&Math.hypot(u.q[0]-b.q[0],u.q[1]-b.q[1],u.q[2]-b.q[2])<every*1.5))continue;used.push(b);nr++;
     const a=[p[0]+rx0*sd*w*.46,p[1]-.3,p[2]+rz0*sd*w*.46];   // on the edge rib's centre line: the runner grows out of the rib
-    const dx=b.q[0]-a[0],dy=b.q[1]-a[1],dz=b.q[2]-a[2];const dl=Math.hypot(dx,dy,dz)||1;
-    hykPut('hkBone',hykRib(a,[b.q[0]-b.n[0]*.5,b.q[1]-b.n[1]*.5,b.q[2]-b.n[2]*.5],{rise:-Math.min(2.5,dl*.18),r0:.26,r1:.17,knuckles:Math.max(2,Math.round(dl/2.2)),n:16,col}));   // ends inside the member
-    hykPut('hkBone',hykFlare(b.q,b.n,.3,.75,{col}));kput('hkBall',[a[0],a[1],a[2]],null,[.46,.4,.46],col);}}}
+    const q=b.q,n=b.n;const dx=q[0]-a[0],dy=q[1]-a[1],dz=q[2]-a[2];const dl=Math.hypot(dx,dy,dz)||1;
+    // a cubic from the rib to a point 1.1 m off the face, arriving along the normal, then straight in through the
+    // face: the flare on the face is centred on the rib. A landing on a top face takes no sag.
+    const h=[q[0]+n[0]*1.1,q[1]+n[1]*1.1,q[2]+n[2]*1.1];const pull=Math.min(2.2,dl*.3),sag=n[1]>.7?0:Math.min(2.5,dl*.18);
+    const c1=[a[0]+(h[0]-a[0])*.4,a[1]+(h[1]-a[1])*.4-sag,a[2]+(h[2]-a[2])*.4],c2=[h[0]+n[0]*pull,h[1]+n[1]*pull,h[2]+n[2]*pull];const pts=[];
+    for(let i=0;i<=14;i++){const t=i/14,u=1-t;const w0=u*u*u,w1=3*u*u*t,w2=3*u*t*t,w3=t*t*t;pts.push([w0*a[0]+w1*c1[0]+w2*c2[0]+w3*h[0],w0*a[1]+w1*c1[1]+w2*c2[1]+w3*h[1],w0*a[2]+w1*c1[2]+w2*c2[2]+w3*h[2]]);}
+    pts.push([q[0]+n[0]*.3,q[1]+n[1]*.3,q[2]+n[2]*.3],[q[0]-n[0]*.5,q[1]-n[1]*.5,q[2]-n[2]*.5]);
+    const kn=Math.max(2,Math.round(dl/2.2));hykPut('hkBone',hykTube(pts,t=>(.26-.09*t)*(1+.2*Math.max(0,Math.cos(t*kn*TAU))),{seg:10,col}));
+    hykPut('hkBone',hykFlare(q,n,.3,.75,{col}));kput('hkBall',[a[0],a[1],a[2]],null,[.46,.4,.46],col);}}}
  return {pts,runners:nr,branches:nb};}
 // the nearest point on a member's surface and the surface normal there. A member is a capsule {a,b,r} (a strut, a
 // leg) or a box {c,u,v,w,he} (a strut head): centre, three unit axes, half-extents. A runner ends half a metre
 // inside the member and its flare lies on the member's face with that normal, so the join is a join.
 function hykSegNearest(m,p){
  if(m.c){const d=[p[0]-m.c[0],p[1]-m.c[1],p[2]-m.c[2]];const ax=[m.u,m.v,m.w];const l=ax.map(a=>d[0]*a[0]+d[1]*a[1]+d[2]*a[2]);
-  const inside=l.every((x,i)=>Math.abs(x)<m.he[i]);const c=l.map((x,i)=>Math.max(-m.he[i],Math.min(m.he[i],x)));let n;
-  if(inside){let k=0,best=1e9;for(let i=0;i<3;i++){const gap=m.he[i]-Math.abs(l[i]);if(gap<best){best=gap;k=i;}}c[k]=Math.sign(l[k]||1)*m.he[k];n=ax[k].map(x=>x*Math.sign(l[k]||1));}
-  const q=[m.c[0]+c[0]*m.u[0]+c[1]*m.v[0]+c[2]*m.w[0],m.c[1]+c[0]*m.u[1]+c[1]*m.v[1]+c[2]*m.w[1],m.c[2]+c[0]*m.u[2]+c[1]*m.v[2]+c[2]*m.w[2]];
-  if(!inside){const e=[p[0]-q[0],p[1]-q[1],p[2]-q[2]];const el=Math.hypot(e[0],e[1],e[2])||1;n=[e[0]/el,e[1]/el,e[2]/el];}
-  return {q,n};}
+  // a box is landed on a FACE, never an edge or a corner: of the faces that face p, the nearest point inside the
+  // face's rectangle shrunk by the flare's radius, so the flare lies flat on that face
+  const mg=m.margin!=null?m.margin:1.1;let best=null;
+  for(let i=0;i<3;i++)for(const sg of [1,-1]){if(sg*l[i]<=m.he[i])continue;const n=ax[i].map(x=>x*sg);
+   const c=[0,1,2].map(j=>j===i?sg*m.he[i]:Math.max(-Math.max(0,m.he[j]-mg),Math.min(Math.max(0,m.he[j]-mg),l[j])));
+   const q=[m.c[0]+c[0]*m.u[0]+c[1]*m.v[0]+c[2]*m.w[0],m.c[1]+c[0]*m.u[1]+c[1]*m.v[1]+c[2]*m.w[1],m.c[2]+c[0]*m.u[2]+c[1]*m.v[2]+c[2]*m.w[2]];
+   // a top face wins by 3 m when p is above it: a runner grabs a strut head from above, where the head shows
+   const dist=Math.hypot(p[0]-q[0],p[1]-q[1],p[2]-q[2])-(n[1]>.7&&p[1]>q[1]?3:0);if(!best||dist<best.d)best={q,n,d:dist};}
+  if(best)return {q:best.q,n:best.n};
+  // p inside the box: out through the nearest face
+  let k=0,bg=1e9;for(let i=0;i<3;i++){const gap=m.he[i]-Math.abs(l[i]);if(gap<bg){bg=gap;k=i;}}const sg=Math.sign(l[k]||1);const c=l.slice();c[k]=sg*m.he[k];
+  return {q:[m.c[0]+c[0]*m.u[0]+c[1]*m.v[0]+c[2]*m.w[0],m.c[1]+c[0]*m.u[1]+c[1]*m.v[1]+c[2]*m.w[1],m.c[2]+c[0]*m.u[2]+c[1]*m.v[2]+c[2]*m.w[2]],n:ax[k].map(x=>x*sg)};}
  const ax=m.a[0],ay=m.a[1],az=m.a[2];const bx=m.b[0]-ax,by=m.b[1]-ay,bz=m.b[2]-az;const L2=bx*bx+by*by+bz*bz||1;
  let t=((p[0]-ax)*bx+(p[1]-ay)*by+(p[2]-az)*bz)/L2;t=Math.max(0,Math.min(1,t));const r=m.r||0;const o=[ax+bx*t,ay+by*t,az+bz*t];
  const dx=p[0]-o[0],dy=p[1]-o[1],dz=p[2]-o[2];const d=Math.hypot(dx,dy,dz)||1;const n=[dx/d,dy/d,dz/d];
