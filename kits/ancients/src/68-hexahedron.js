@@ -122,7 +122,17 @@ function buildHexahedron(scene,gx,gz,d){reseed(9430+d);KOFF=[gx,0,gz];
    const nb=fbm(p*13,k*.29,9437,3);
    for(let row=0;row<3;row++){const Q=W(PU,p,lerp(s0,s1,.10+row*.30));
     const h=lerp(4,15,nb)*(row===0?1:.78)*rr(.86,1.14);
-    kput(BOXC(d),[Q[0],y0+RU+h*.5,Q[1]],q,[rr(8,16),h,rr(6,12)],null);}}
+    const cw=rr(8,16),cd=rr(6,12);                 // same draws, same order as before
+    kput(BOXC(d),[Q[0],y0+RU+h*.5,Q[1]],q,[cw,h,cd],null);
+    // KNOWN_ISSUES: "the terrace cells are still boxes on a ring". The front
+    // row is the one every preset sees, so it gets a dwelling's face: a glazed
+    // band under a dark lintel on its outward side, one per storey it is tall.
+    // Hashed off (k,j) rather than rng(), so nothing after it moves.
+    if(row===0&&d!==2){const hs=Math.sin(k*91.7+j*12.9898)*43758.5,hk=hs-Math.floor(hs);
+     if(hk>.14)for(let st=0;st*4.4+3.6<h;st++){const wy=y0+RU+st*4.4+2.1,
+      fz=cd*.5+.08,ww=cw*(hk>.6?.72:.46);
+      kput(d===0?'pane':'paneD',[Q[0]+N[0]*fz,wy,Q[1]+N[1]*fz],q,[ww,2.2,1],null);
+      kput('boxD',[Q[0]+N[0]*(fz+.1),wy+1.45,Q[1]+N[1]*(fz+.1)],q,[ww+.8,.5,.6],null);}}}}
   // Windows belong to the terrace WALL -- the vertical riser below the tread.
   // They used to sit at the tread height but the riser radius, i.e. outside the
   // building, so they read as panes hung in the air among the balcony boxes.
