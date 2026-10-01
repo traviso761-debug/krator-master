@@ -165,7 +165,10 @@ function buildDalab(scene,gx,gz,d){reseed(9330+d);KOFF=[gx,0,gz];
   if(fbm(k*.09,1.1,9371,2)<.30)continue;                     // breaches
   kput(BOXC(d),[Math.cos(th)*r,rr(1.4,3.4)*K,Math.sin(th)*r],qEuler(0,-th,0),[rr(6,13)*K,rr(2.8,6.8)*K,rr(2.6,4.4)*K],null);}
  apron(G,0,0,300*K,352*K,d,1.6*K);
- scatterMoss(0,0,0,0,330*K,220,3.2*K);trees(0,0,150*K,420*K,150);
+ // moss from the great dome's foot outward: from r=0 it carpeted the chamber
+ // hall floor inside the dome with 13 m green blobs ('The chamber'). Same draw
+ // count, so nothing after it moves; only the moss itself is re-placed.
+ scatterMoss(0,0,0,DR*1.02,330*K,220,3.2*K);trees(0,0,150*K,420*K,150);
  rubbleRing(0,0,0,150*K,330*K,170,2.8*K);
  figures(0,260*K,14,60*K);figures(-210*K,-80*K,8,40*K);
  meshMerged(C.SH,skin,G);meshMerged(C.DK,MAT.guts,G);

@@ -235,3 +235,97 @@ dam/0 115 772 · /1 130 844 *(log)* -> 172 424 / 182 686 (+ leaf-card trees).
   disc. A `mat` override argument would help.
 - The kit 'rubble' (regular dodecahedron, untextured white) reads as pale eggs
   at any size over ~10 m; `aiBlock` in 89b (12 tris) is a drop-in candidate.
+
+---------------------------------------------------------------------------
+## Session 2 (resumed after the recovery)
+
+### Step 1: the recovered patch, re-verified
+The worktree was first cut from the wrong base (main, without the recovery);
+reset onto `ancients-resume`. Then every target rebuilt from the recovered
+source: the builds are byte-identical to the committed dist (git clean after
+build), all eight parse (jscheck PARSES OK), and `verify --assert`:
+
+| target | error panel | invariants | tris per decay |
+|---|---|---|---|
+| arcoindian | clean | all PASS | /0 300 094 · /1 290 912 |
+| arcoindian2 | clean | all PASS | /0 318 442 · /1 283 814 |
+| canyon | clean | all PASS | /0 91 180 · /1 106 140 · /2 117 152 |
+| dalab | clean | all PASS | /1 657 078 (exit 1 only from a 600 s screenshot timeout on 'The breach' under load ~50) |
+| hexahedron | clean | PASS but `biome/0` OVER (pre-existing hyperjungle row) | hex/0 548 664 · hex/2 385 634 · mav/0 168 252 |
+| spire | clean | all PASS | /0 125 438 · /1 85 574 |
+| theodiga | clean | all PASS | dam/0 172 424 · dam/1 181 916 |
+| veladiga | clean | all PASS | /0 194 804 · /2 202 220 |
+
+KNOWN_ISSUES.md ticked for what the recovered patch closed (Veladiga x2,
+Hexahedron x3, Span x2, Vashtir symmetry, Arcoindian I roofY, Arcoindian II
+mud/ruin/dead locals).
+
+Hero shots of every decay looked at (`Arcoindian I`/`Ruined`/`The roof fall`,
+`Arcoindian II`/`Ruined`, `The Span`/`Rusted span`/`Fallen`, `The compound`/
+`The chamber`, `Hexahedron`/`Sheared`/`Tree and arcology`, `Vashtir`/
+`Vashtir ruined`, `Theodiga`/`Theodiga ruin`, `Veladiga`/`Breached`/
+`Breached park`). Nothing in the recovered patch was broken. Found by looking:
+Dalab's chamber hall carpeted with moss; Vashtir's ruined fans floating as
+grey plates (both fixed below).
+
+### Step 3: continuing down the lists
+- **Arcoindian II, "the gardens are a hedge row rather than the fan"** — FIXED.
+  The hedges were each turned to a random bearing; now each is laid along the
+  ray from the walks' focus (FX,FZ) through it, ±3.4 deg, so the beds radiate
+  with the paths. The rng() draw is still taken (and used for the ruin's
+  bearing), so nothing downstream moves. Tri-neutral.
+- **Arcoindian II, "the access shaft is a blank pale column"** — FIXED. Slot
+  windows on dark reveals at every other landing on its two open faces, only
+  where it stands free in the hollow (skips the lens band and anything above
+  the vault). Hashed. arcoindian2/0 318 442 -> 318 904 · /1 283 814 -> 284 276.
+- **Hexahedron, "the terrace cells are still boxes on a ring"** — IMPROVED.
+  The front row of cells (the one every preset sees) gets a glazed band under
+  a dark lintel per 4.4 m storey on its outward face, hashed off (k,j), ~14%
+  left blank; intact only (d!==2). Same rng draws in the same order (width and
+  depth captured into locals). Cells are still boxes; they now read as houses.
+- **Dalab, found by looking** — `scatterMoss` started at r=0 and laid 13 m moss
+  blobs on the chamber hall floor INSIDE the great dome ('The chamber'). Now
+  from DR*1.02 outward; same draw count.
+- **Vashtir ruin, found by looking** — the torn parasol fans were cut with a
+  flat fbm threshold, which left islands anywhere across each fan, and the
+  outer ones hung as grey plates in mid-air off the ruin. The threshold now
+  rises with v (.30 + .60v), so what survives is a ragged collar still
+  attached to its tier.
+- **Veladiga breached park, found by looking** (custom high cam over the
+  washout): the recovered braids/bars/fan ARE in the geometry, but relief of a
+  few metres in one mud material with no shadows read as a flat sand sheet
+  from any height. Shallow water threads now lie in the braid troughs
+  (`brd()` factored out of `scour()`; same fbm, no PRNG), so the braiding
+  shows from above, splitting and rejoining below the notch.
+  veladiga/2 202 220 -> 206 956; /0 unchanged.
+
+Verified after these changes (build, jscheck PARSES OK, `verify --assert`,
+error panel clean, invariants PASS; shots looked at):
+arcoindian2/0 318 904 · /1 284 276 · hex/0 587 448 (hexlush/0 592 616) ·
+hex/2 385 634 · dalab/1 657 078 · spire/0 125 438 · spire/1 85 574 -> 86 410 ·
+veladiga/2 206 956.
+
+### Still open, and why
+- **Arcoindian I**: the massif is improved but still a loaf in plan; the
+  light-well mouths still read as dark shapes (the engine cannot shadow);
+  pods acceptable; the kit's default trees.
+- **Arcoindian II**: plan view impossible (inherent); the sun court floor and
+  the roof-fall scar are coarse (the vault is a 20-step grid, so a rockfall
+  relief needs a finer local patch); ceiling well mouths read as shapes in
+  'Coronal section'/'Head-on'; small pale passage portals on the back wall
+  have no ledge under them ('The gardens' view).
+- **Hexahedron**: cells are still boxes (they now have faces); the hypertree
+  is one species (an import job); the flank sag (may be correct in-world).
+- **Dalab**: the dome size needs the Voth palace's dimensions; room fit-out
+  needs the plates trimmed to the room ring inside the bite (~35-80k tris
+  against ~43k headroom); mounds, streets and so on are scope.
+- **Vashtir**: still white on white at hero distance (nothing casts shadows).
+- **The Span**: fallen-payload interiors (more holes dissolve the shells).
+- **Theodiga**: none open.
+
+### Kit fragments changed this session (for re-vendoring)
+`src/64-dalab.js` (vendored by `settlements/dalab`) and `src/68-hexahedron.js`
+(the hexahedron code vendored by `settlements/screamers`), plus
+`61-spire`, `65-veladiga`, `89c-arcoindian2`. The recovered patch before this
+session also changed `63-canyon`, `70-hypertree`, `77-dam`, `89b-arcoindian`.
+Neither settlement was touched.
