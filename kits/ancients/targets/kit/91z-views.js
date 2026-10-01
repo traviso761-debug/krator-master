@@ -93,6 +93,8 @@ for(const k in KIT_ALT_NAME){const R=ROWS[k],n=KIT_ALT_NAME[k],ty=Math.max(25,R.
  if(!R.t)continue;
  VIEWS[n+' reclaimed']=[R.t-R.r*.6,Math.max(40,R.r*.5),R.z+Math.max(260,R.r*2.2),R.t,ty*.8,R.z];
  VIEWS[n+' reclaimed at night']=VIEWS[n+' reclaimed'].concat([1]);}
+// The stumps: a three-quarter view of each from its row's front.
+for(const k in KIT_STUMPS){const R=ROWS[k];VIEWS['Stump '+k.slice(5)]=[R.s-260,110,R.z+420,R.s,45,R.z];}
 // One overview per group, from the east and above, so each group's rows fill the frame.
 for(const[n,test]of[['The alternates: towers',k=>/^alt(Bole|Stack|Hotel|Flat|Perch|Cult)$/.test(k)],
  ['The alternates: domestic',k=>/^ad/.test(k)],['The Yuni variants',k=>/^yv/.test(k)],['The alternates: civic',k=>/^alt/.test(k)&&!/^alt(Bole|Stack|Hotel|Flat|Perch|Cult)$/.test(k)]]){

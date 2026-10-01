@@ -103,6 +103,7 @@ TARGET_OUT = {
     'alt-towers': 'alt-towers.html',           # queue 3, towers group: arco alternates of six types
     'alt-civic': 'alt-civic.html',             # civic alternates (arco1/arco2), all decays
     'yuni-variants': 'yuni-variants.html',     # the Yuni fork's variants, ported (src/8am-yv-*)
+    'iziz-variants': 'iziz-variants.html',     # dev: Sky C tripod market, small-podium A-C, tower stumps (8an-iz-*)
 }
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell.

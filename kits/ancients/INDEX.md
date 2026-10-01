@@ -6,7 +6,7 @@ The Ancients kit: ruined megastructures of the ancient civilisation, 33 structur
 
 Docs: `API.md`, `DESIGN.md`, `HANDOVER.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `README.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/alt-civic.html`, `dist/alt-domestic.html`, `dist/alt-towers.html`, `dist/ancients-kit.html`, `dist/arcbeam.html`, `dist/arcoindian.html`, `dist/arcoindian2.html`, `dist/arcube.html`, `dist/blades.html`, `dist/canyon.html`, `dist/crescent.html`, `dist/dalab.html`, `dist/darco.html`, `dist/drum.html`, `dist/engines.html`, `dist/forest.html`, `dist/hexahedron.html`, `dist/hill.html`, `dist/iziz-style.html`, `dist/launch.html`, `dist/ledge.html`, `dist/lighthouse.html`, `dist/monolith.html`, `dist/plymouth.html`, `dist/ring.html`, `dist/skyi.html`, `dist/skyj.html`, `dist/skyk.html`, `dist/spire.html`, `dist/theodiga.html`, `dist/trigon.html`, `dist/veladiga.html`, `dist/wheel.html`, `dist/wing.html`, `dist/worn.html`, `dist/yuni-variants.html`
+Built output (never open it; edit `src/` and rebuild): `dist/alt-civic.html`, `dist/alt-domestic.html`, `dist/alt-towers.html`, `dist/ancients-kit.html`, `dist/arcbeam.html`, `dist/arcoindian.html`, `dist/arcoindian2.html`, `dist/arcube.html`, `dist/blades.html`, `dist/canyon.html`, `dist/crescent.html`, `dist/dalab.html`, `dist/darco.html`, `dist/drum.html`, `dist/engines.html`, `dist/forest.html`, `dist/hexahedron.html`, `dist/hill.html`, `dist/iziz-style.html`, `dist/iziz-variants.html`, `dist/launch.html`, `dist/ledge.html`, `dist/lighthouse.html`, `dist/monolith.html`, `dist/plymouth.html`, `dist/ring.html`, `dist/skyi.html`, `dist/skyj.html`, `dist/skyk.html`, `dist/spire.html`, `dist/theodiga.html`, `dist/trigon.html`, `dist/veladiga.html`, `dist/wheel.html`, `dist/wing.html`, `dist/worn.html`, `dist/yuni-variants.html`
 
 Build: `cd kits/ancients && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -71,7 +71,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `76-70-biome-hyperjungle.js` | <1 |  |
 | `76-campus.js` | 11 |  |
 | `77-dam.js` | 13 |  |
-| `77z-iziz-style.js` | 52 **big** | ANCIENT IZIZ STYLE (1) |
+| `77z-iziz-style.js` | 53 **big** | ANCIENT IZIZ STYLE (1) |
 | `78-factory-silo.js` | 2 |  |
 | `79-government.js` | 7 |  |
 | `80-aa-battery.js` | 1 |  |
@@ -134,8 +134,9 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `8am-yv-c-terrace.js` | 6 |  |
 | `8am-yv-d-dish.js` | 5 |  |
 | `8am-yv-e-hosp.js` | 6 |  |
+| `8an-iz-stumps.js` | 11 |  |
 | `90-scene.js` | 7 | scene (1) |
-| `91-probe.js` | 5 | probe (window._api) (1) |
+| `91-probe.js` | 6 | probe (window._api) (1) |
 | `92-camera.js` | 6 | camera control (1); DAY / NIGHT (2) |
 | `99-tail.html` | <1 |  |
 
@@ -163,7 +164,8 @@ Each target adds its own fragments to `src/` and builds one output.
 | `hexahedron` | `89z-rows.js`, `91z-views.js` | 7 |
 | `hill` | `89z-rows.js`, `91z-views.js` | 13 |
 | `iziz-style` | `89z-rows.js`, `91z-views.js` | 6 |
-| `kit` | `89z-rows.js`, `91z-views.js` | 17 |
+| `iziz-variants` | `89z-rows.js`, `91z-views.js` | 3 |
+| `kit` | `89z-rows.js`, `91z-views.js` | 18 |
 | `launch` | `89z-rows.js`, `91z-views.js` | 13 |
 | `ledge` | `89z-rows.js`, `91z-views.js` | 5 |
 | `lighthouse` | `89z-rows.js`, `91z-views.js` | 3 |

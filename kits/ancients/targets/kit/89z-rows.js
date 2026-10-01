@@ -81,6 +81,12 @@ const KIT_ALT_NAME={},KIT_ALT_BUILDERS={};
 {let z=ROWS.lighthouse.z,rp=ROWS.lighthouse.r;
  for(const[k,fn,s,r,name,ds]of KIT_ALTS){if(typeof self[fn]!=='function')continue;
   z+=rp+r+300;rp=r;ROWS[k]=ds?{z,s,r,ds}:{z,s,r,t:2*s};KIT_ALT_BUILDERS[k]=self[fn];KIT_ALT_NAME[k]=name;}}
+// TOWER STUMPS (src/8an-iz-stumps.js, built in targets/iziz-variants): the snapped
+// lower storeys of a sibling tower, one per skyscraper family, standing in its
+// tower's row 650 m beyond the toppled site (decay 1 only, at x=+s).
+const KIT_STUMPS={};
+for(const f of'ABCDEFGHIJK'){const T=ROWS['sky'+f],fn=self['buildStump'+f];if(!T||typeof fn!=='function')continue;
+ ROWS['stump'+f]={z:T.z,s:(T.t||1200)+650,r:T.r*.8,ds:[1]};KIT_STUMPS['stump'+f]=fn;}
 const KIT_Z1=Math.max(...Object.values(ROWS).map(r=>r.z))+1500;
 const GROUND_C=(KIT_Z1-9000)/2, GROUND_S=Math.max(40000,KIT_Z1+9000+4000);
 const RUINS=Object.values(ROWS).flatMap(r=>(r.t?[[r.s,r.z,r.r],[r.t,r.z,r.r*1.4]]:[[r.s,r.z,r.r]])
@@ -92,4 +98,4 @@ const RUINS=Object.values(ROWS).flatMap(r=>(r.t?[[r.s,r.z,r.r],[r.t,r.z,r.r*1.4]
 // third of the intact one. cult 400->640, perch 430->520, flat 300->380 and
 // hotel 260->300 each give the three sites their own ground; the presets of
 // those rows are written off ROWS.<k>.s, so they follow.
-const EXTRA_BUILDERS={cult:buildCultural,perch:buildPerch,flat:buildFlatiron,skyI:buildSkyI,skyJ:buildSkyJ,skyK:buildSkyK,lighthouse:buildLighthouse,...KIT_ALT_BUILDERS};
+const EXTRA_BUILDERS={cult:buildCultural,perch:buildPerch,flat:buildFlatiron,skyI:buildSkyI,skyJ:buildSkyJ,skyK:buildSkyK,lighthouse:buildLighthouse,...KIT_ALT_BUILDERS,...KIT_STUMPS};
