@@ -7,7 +7,7 @@ It is the furniture source for `kits/interiors/` and the starting point for `kit
 
 **Status: verified.** `build.py` builds `dist/catalog.html`, a contact sheet of every
 furniture entry and every variant, and `verify.py --assert` passes: all 1013 furniture pieces
-(1129 instances, every variant, seeds 1–4) build without error, carry no NaN geometry, fit
+(1313 instances, every variant, seeds 1–4) build without error, carry no NaN geometry, fit
 their declared size, keep their anchor's geometry, and carry their tags. Every furniture entry carries every field of
 `kits/furniture/SPEC.md` "The entry" and meets its style rules. What is still open is in `KNOWN_ISSUES.md`.
 
@@ -38,7 +38,7 @@ the inspector from here by path.
 ```
 cd kits/catalog && python3 build.py                 # dist/catalog.html, node --check, build-manifest.json
 python3 build.py --vendor-check                     # src/81-sky.js against settlements/iziz/src/81-sky.js
-python3 verify.py dist/catalog.html --assert        # the gate; exit 0 = pass (about 8 minutes: 1129 instances x 4 seeds)
+python3 verify.py dist/catalog.html --assert        # the gate; exit 0 = pass (about 10 minutes: 1313 instances x 4 seeds)
 python3 verify.py dist/catalog.html --out shots     # screenshots: initial view + one per section
 python3 verify.py dist/catalog.html --out shots --rows   # + one per row (slow on the full sheet)
 python3 verify.py dist/catalog.html --sheet furniture --query cultures=xanadu,voth --out shots --rows   # a quick partial sheet
@@ -256,7 +256,7 @@ for the Beast Riders). Each culture's trade pieces have their own row on the she
 | `still` | workstation (wall) | workshop, shop, study | pot over a fire box, swan neck, worm tub, receiver, flask shelf |
 | `bin` | storage (wall) | store, kitchen, shop, stable | lidded grain and feed bins (a FOOD container) |
 | `larder` | storage (wall) | kitchen, store, hall | tall food cupboard, screened door, crocks, onions (a FOOD container) |
-| `bunk` | bed | dormitory, barracks, bedroom | two-tier bunk with a ladder (counts as two beds) |
+| `bunk` | bed | dormitory, barracks | two-tier bunk with a ladder (counts as two beds) |
 | `locker` | storage (wall) | dormitory, barracks, bedroom, workshop | tall two-door locker (an ITEM container) |
 | `lathe` | workstation (wall) | workshop | treadle lathe with its flywheel and tool board |
 | `press` | workstation | workshop, shop | screw press (mint, printing, cider, oil) |

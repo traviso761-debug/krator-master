@@ -117,7 +117,7 @@
       if (b.h) shell.h = b.h;
       if (b.doors) shell.doors = b.doors.map(door);
       if (b.front != null) shell.front = b.front;
-      ['wall', 'partition', 'slab'].forEach(function (k) { if (b[k] != null) shell[k] = b[k]; });
+      ['wall', 'partition', 'slab', 'windows'].forEach(function (k) { if (b[k] != null) shell[k] = b[k]; });
       const po = { seed: o.seed || 0, register: o.register !== false };
       if (b.stair) po.stair = b.stair;
       if (b.minWidth) po.minWidth = b.minWidth;

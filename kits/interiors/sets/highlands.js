@@ -539,11 +539,11 @@
     rooms: [{ id: 'tank', kind: 'cottage', poly: rect(8.2, 3), y: 1.15, h: 2.3, doors: [{ at: [1, 1.5], w: 0.9 }] }],
     note: 'the fuel tank lying on its footing (4.2 m across) holds one room on a floor laid 0.7 m above its bottom (3 m wide there), entered through the log vestibule on its flank (the vestibule itself is not planned)' });
   add({ key: 'hl_rus_cont_chalet', name: 'Container chalet', culture: 'rustic', wealth: MID, types: ['multi-family dwelling', 'farm'], units: 2, lot: [20, 16],
-    bodies: [{ id: 'byre', poly: rect(12, 2.44, 0, 1.25), y: 0, levels: [{ h: 2.45 }], wall: 0.06, roof: 'flat',
-      doors: [{ at: [1.2, 2.47], w: 1.1 }], program: ['stable', 'store'] },
+    bodies: [{ id: 'byre', poly: rect(12, 2.44, 0, 1.25), y: 0, levels: [{ h: 2.45 }], wall: 0.06, roof: 'flat', windows: false,
+      doors: [{ at: [1.2, 2.47], w: 1.1 }], program: ['stable'] },
       { id: 'house', poly: rect(12.4, 5.4), y: 2.8, levels: [{ h: 2.6 }], wall: 0.3, roof: 'gable', pitch: pt(0.6),
         doors: [{ at: [-2, 2.7], w: 0.9 }], program: ['living', 'bedroom', 'kitchen', 'bedroom'] }],
-    note: 'the front container (byre and store) and the log storey on the pair, off its balcony; the back container has no door drawn' });
+    note: 'the front container (one byre: 12 m by 2.3 m inside is too narrow to split and keep a stall) and the log storey on the pair, off its balcony; the back container has no door drawn' });
   add({ key: 'hl_rus_hull_naust', name: 'Hull naust', culture: 'rustic', wealth: MID, types: ['industry', 'warehouse'], lot: [14, 26],
     bodies: [{ id: 'naust', poly: rect(8.9, 16), y: 0, levels: [{ h: 2.2 }], wall: 0.9, roof: 'gable', pitch: pt(0.9),
       doors: [{ at: [0, 8], w: 5 }], program: ['workshop', 'store'] }],

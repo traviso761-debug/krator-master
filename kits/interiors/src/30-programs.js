@@ -67,8 +67,10 @@
        piece). A one-room home is a `cottage`; a home's main room with the hearth is `living`; the
        sleeping rooms are `bedroom`s (each with a chest). KIND_ALIAS lets catalog pieces listing
        hall / kitchen / bedroom qualify for them. */
+    /* the chest before the food: a food slot has compact pieces (jars, a larder) as well as wide ones (bins,
+       a barrel cradle), and a small hut has room for a chest only if the food slot leaves it */
     cottage:  { require: [{ need: 'bed', types: ['bed'], n: 1 }, { need: 'hearth', types: ['stove', 'brazier'], n: 1 },
-                          { need: 'food', types: ['storage', 'vessel', 'stack'], roles: FOOD, n: 1 }, { need: 'chest', types: ['storage'], roles: ITEM, n: 1 }],
+                          { need: 'chest', types: ['storage'], roles: ITEM, n: 1 }, { need: 'food', types: ['storage', 'vessel', 'stack'], roles: FOOD, n: 1 }],
                 optional: [{ types: ['table'], max: 1 }, { types: SEATS, max: 2 }, { types: ['shelf', 'rack'], max: 1 }, { types: ['lamp'], max: 1 }, { types: ['rug'], max: 1 }, { types: ['art', 'banner'], max: 1 }, SURFACE],
                 extra: 5 },
     living:   { require: [{ need: 'hearth', types: ['stove', 'brazier'], n: 1 }, { need: 'table', types: ['table'], n: 1 }, { need: 'seats', types: SEATS, n: 2 },

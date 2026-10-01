@@ -7,6 +7,8 @@ Outputs (both deterministic; build-manifest.json holds a sha1 per input):
                            the walk grid, the audits.
                            No THREE, no DOM, no catalog. Load it by path or vendor it.
   dist/interiors.html      the demo: sample rooms furnished from the master catalog.
+  dist/interiors-walk.html the WALK MOCKUP, self-contained: a street of real buildings (walk/shells, from
+                           tools/export_shells.py) with their planned, furnished rooms; first-person walk.
   dist/interiors-sets.html the BUILDING SETS sheet: every interior set in sets/*.js (the Highlands,
                            Post-Apoc, Beast Rider, Locus and Abyss kits' interiors, as data in each
                            building's own frame: sets/README.md), planned, furnished and checked
@@ -52,6 +54,7 @@ OUT = 'interiors'
 ADAPTERS = ['adapters/catalog-adapter.js']
 SETS_DIR = os.path.join(HERE, 'sets')
 SRC_SETS = os.path.join(HERE, 'src-sets')
+SRC_WALK = os.path.join(HERE, 'src-walk')
 SETS_SHARED = ['72-hover.js', '78-polytool.js', '80-sky-hash.js', '81-sky.js']   # src/ fragments both pages use
 # the catalog files the page loads by path (00-head.html): our names must not clash with theirs
 CATALOG_LOADED = ['krator-asset-engine.js', 'krator-furniture-kit.js', 'krator-master-furniture.js', 'inspector.js'] + sorted(
@@ -174,6 +177,22 @@ def main():
     html = (''.join(read(os.path.join(SRC, f)) for f in head) + '<script>\n' + script +
             ''.join(read(os.path.join(SRC, f)) for f in tail))
     os.makedirs(DIST, exist_ok=True)
+    # the walk mockup: SELF-CONTAINED (three.js and the catalog inlined, one file to share): the core, the
+    # adapter, the views, every set, the real building shells (walk/shells/*.js, from tools/export_shells.py),
+    # the Beast Rider buildings (the catalog's ASSETs), then src-walk/ and the shared hover, polygon tool and sky
+    shells_dir = os.path.join(HERE, 'walk', 'shells')
+    shell_files = sorted(f for f in os.listdir(shells_dir) if f.endswith('.js')) if os.path.isdir(shells_dir) else []
+    walk_parts = (core_parts + [(a, read(os.path.join(HERE, a))) for a in ADAPTERS] +
+                  [('src/' + f, read(os.path.join(SRC, f))) for f in view if f < '70'] +
+                  [('sets/' + f, read(os.path.join(SETS_DIR, f))) for f in sorted(os.listdir(SETS_DIR)) if f.endswith('.js')] +
+                  [('src-walk/' + f, read(os.path.join(SRC_WALK, f))) for f in sorted(os.listdir(SRC_WALK)) if f.endswith('.js')] +
+                  [('src/' + f, read(os.path.join(SRC, f))) for f in SETS_SHARED])
+    walk_libs = ['three.min.js'] + CATALOG_LOADED + ['krator-master-buildings-beast-rider.js']
+    lib_tags = ''.join('<script>/* kits/catalog/%s */\n%s\n</script>\n' % (f, read(os.path.join(CATALOG, f))) for f in walk_libs)
+    lib_tags += ''.join('<script>/* walk/shells/%s */\n%s\n</script>\n' % (f, read(os.path.join(shells_dir, f))) for f in shell_files)
+    walk_script = join(walk_parts)
+    walk_head = read(os.path.join(SRC_WALK, '00-head.html')).replace('<!--CATALOG-->', lib_tags)
+    walk_html = walk_head + '<script>\n' + walk_script + read(os.path.join(SRC_WALK, '99-tail.html'))
     if only_sets:
         out_sets = os.path.join(DIST, 'interiors-sets.' + only_sets + '.html')
         with open(out_sets, 'w', encoding='utf-8', newline='') as fh:
@@ -189,11 +208,17 @@ def main():
     out_sets = os.path.join(DIST, 'interiors-sets.html')
     with open(out_sets, 'w', encoding='utf-8', newline='') as fh:
         fh.write(sets_html)
+    out_walk = os.path.join(DIST, 'interiors-walk.html')
+    with open(out_walk, 'w', encoding='utf-8', newline='') as fh:
+        fh.write(walk_html)
     manifest = {n: hashlib.sha1(b.encode()).hexdigest()[:12] for n, b in parts}
     manifest.update({n: hashlib.sha1(b.encode()).hexdigest()[:12] for n, b in sets_parts})
     for f in ('00-head.html', '99-tail.html'):
         manifest['src-sets/' + f] = hashlib.sha1(read(os.path.join(SRC_SETS, f)).encode()).hexdigest()[:12]
     manifest['dist/interiors-sets.html'] = hashlib.sha1(sets_html.encode()).hexdigest()[:12]
+    manifest['dist/interiors-walk.html'] = hashlib.sha1(walk_html.encode()).hexdigest()[:12]
+    for f in shell_files:
+        manifest['walk/shells/' + f] = hashlib.sha1(read(os.path.join(shells_dir, f)).encode()).hexdigest()[:12]
     for f in head + tail:
         manifest['src/' + f] = hashlib.sha1(read(os.path.join(SRC, f)).encode()).hexdigest()[:12]
     manifest['dist/interiors.html'] = hashlib.sha1(html.encode()).hexdigest()[:12]
@@ -204,6 +229,7 @@ def main():
     syn = node_check(OUT, script)
     node_check('core', core_js)
     node_check('sets', sets_script)
+    node_check('walk', walk_script)
     load = ''
     try:
         r = subprocess.run(['node', '-e', 'const IX=require(process.argv[1]);'
@@ -218,6 +244,7 @@ def main():
     print('built %s (%d files, %.0f KB), dist/interiors-core.js (%.0f KB) and dist/interiors-sets.html (%d sets, %.0f KB)  %s%s' % (
         os.path.relpath(out, HERE), len(parts) + len(head) + len(tail), os.path.getsize(out) / 1024,
         len(core_js.encode()) / 1024, len(set_files), os.path.getsize(out_sets) / 1024, syn, load))
+    print('built dist/interiors-walk.html (self-contained, %d building shells files, %.1f MB)' % (len(shell_files), os.path.getsize(out_walk) / 1048576))
     ki = os.path.join(HERE, 'KNOWN_ISSUES.md')
     if os.path.exists(ki):
         opened = [l.rstrip() for l in open(ki, encoding='utf-8') if l.startswith('- [ ]')]
