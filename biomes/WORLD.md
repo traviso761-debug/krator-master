@@ -111,10 +111,13 @@ host's ticks, swaying every leaf with no direction and no gusts. Iziz already lo
 its trees sway on their own clock while the banners and the smoke beside them ride ATMOS's
 wind. For one world:
 
-- **One clock and one wind.** When ATMOS is present the foliage hook takes its time from
-  `ATMOS.clock` (a pinned shot freezes the leaves too) and its sway from `atm_wind` and the
-  gust (a storm's 2.4x bends the trees, and a front crosses a forest visibly). Without ATMOS
-  it keeps `BIO.WIND`. This changes the motion, not the geometry.
+- **One clock and one wind** (in the core since Oct 2026). A host binds
+  `BIO.init({clock:()=>ATMOS.clock.t, wind:()=>[w.x/b, w.y/b]})` (w the atmosphere's wind,
+  `ATMOS.U.wind.value`; b the calm wind's length, `ATMOS.windBase.length()`): the foliage then
+  sways on the world's clock (a pinned shot freezes the leaves too), harder as the wind rises
+  (a storm's 2.4x), and leans downwind. A host that binds neither keeps the core's own clock
+  and exactly the old sway. No world binds them yet: Iziz, the one world with both, vendors an
+  older core (its `KNOWN_ISSUES.md`); the gust fronts (`atmGust`) are not in the leaves yet.
 - **Altitude in the air.** A steep border is also a pressure drop: haze and fog density
   should follow height (thicker below the scarp), which is the weather's business.
 - **In Godot** the clock and the wind are global shader parameters (`atm_time`, `atm_wind`,
