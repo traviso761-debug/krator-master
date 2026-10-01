@@ -30,3 +30,13 @@ the houses were too alike and the textures did not read as brick or marble.
 * **Verified**: build clean, vendor check clean, `--assert` passes (tag audit, NaN sweep, budgets:
   1.78 M triangles, about 530 draw calls), `solsticeCheck()` ok, and front/eye-level/aerial shots of every
   family looked at.
+
+## Round 3b: z-fighting (Oct 1 2026)
+Travis saw flicker on the great plaza, the temple and many podiums. Two causes: (1) about 9,200 pairs of
+instanced boxes and flat cylinders had coplanar overlapping faces (paving, decks, caps and inlays laid
+exactly in the plane of the podium or wall they sit on); (2) depth precision with a 0.25 m near plane is
+centimetres at a few hundred metres. Fixes: `src/63-jj-zfix.js` runs before `kbake`, turns every coplanar
+overlap into an edge between two faces, and lifts faces largest-first to the lowest free level (1.2 cm a
+level, at most 4 levels); repeated until a scan finds none (`window._zfix.remaining` is 0). The renderer
+uses a logarithmic depth buffer. Plain meshes (arch rings, lathes, the amphitheater seating) are not
+scanned.

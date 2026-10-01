@@ -15,3 +15,4 @@
 - [ ] Courts, pools and planting spots are empty by design (`plantSpots`, `fountainSpot`, `poolSpot` on the defs); a settlement places furniture and biome plants there.
 - [ ] Biome: none was specified, so the two plants are placeholders (`biome:'placeholder'`).
 - [ ] Life layer: none yet. Defs carry no activity/capacity data; add it with the city phase (README project rule).
+- [ ] The coplanar-face resolver (`63-jj-zfix.js`) scans instanced boxes and flat cylinders only; a plain mesh laid flush on another surface can still z-fight. Builders should still offset details by 1–2 cm themselves; the resolver is a net, not a licence.

@@ -1,7 +1,7 @@
 // Scene shell; shared Krator sky, sunrise preset, one registered kit gallery.
-const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=.95;document.body.appendChild(renderer.domElement);
+const renderer=new THREE.WebGLRenderer({antialias:true,logarithmicDepthBuffer:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=.95;document.body.appendChild(renderer.domElement);
 const scene=new THREE.Scene();scene.fog=new THREE.FogExp2(0x8a9cab,.0008);
-const camera=new THREE.PerspectiveCamera(50,innerWidth/innerHeight,.3,6000);
+const camera=new THREE.PerspectiveCamera(50,innerWidth/innerHeight,.25,6000);
 const JJ_HEMI=new THREE.HemisphereLight(0xffe9d6,0x46413a,.62);scene.add(JJ_HEMI);
 const JJ_SUN=new THREE.DirectionalLight(0xffefce,1.2);scene.add(JJ_SUN);scene.add(JJ_SUN.target);
 const JJ_FILL=new THREE.DirectionalLight(0x9dc9ef,.28);JJ_FILL.position.set(320,210,-340);scene.add(JJ_FILL);
@@ -21,7 +21,7 @@ groundM=new THREE.Mesh(new THREE.PlaneGeometry(2400,2400),JJ_GROUND_MAT);groundM
 for(const S of SITES){const K=S.key+'/'+((S.o&&S.o.v)||0);TSTAT.cur=K;const G=JJ.place(scene,S.key,S.x,S.z,S.ry||0,S.o);if(G)SITE_GROUPS.push({S,G});TSTAT.cur=null;}
 for(const S of JJ_FURN_SITES){JJFURN.place(scene,S.key,S.x,S.z,S.ry||0,S.o);}
 for(const S of JJ_FLORA_SITES){JJFLORA.place(scene,S.key,S.x,S.z,S.ry||0,S.o);}
-window._registered=REG.length;kbake(scene);
+window._registered=REG.length;jjZFix();kbake(scene);
 // Sun shadows: a 260 m box that follows the orbit target, so loggias, arches and cornices read.
 renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
 JJ_SUN.castShadow=true;JJ_SUN.shadow.mapSize.set(2048,2048);JJ_SUN.shadow.bias=-.0004;JJ_SUN.shadow.normalBias=.04;
