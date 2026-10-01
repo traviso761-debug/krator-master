@@ -16,28 +16,28 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`settlements/port`](settlements/port/INDEX.md) | 48 | 718 | 39 |  |
 | [`settlements/reedlake`](settlements/reedlake/INDEX.md) | 32 | 311 | 33 | Reed Lake: a floating reed-lake village and its kit. |
 | [`settlements/screamers`](settlements/screamers/INDEX.md) | 72 | 542 | 45 | Hexahedron: the Screamers' tribal village in and under a ruined arcology, forked from the Ancients kit. |
-| [`settlements/shade`](settlements/shade/INDEX.md) | 28 | 316 | 32 | Shade: the Eastern Nomads' sunken basin in the eastern high desert (falls, pool, carved face, switchback, slot canyon) on the sedesert biome kit: rock-cut and pueblo buildings, cliff dwellings round the rim, alcoves and an undercut behind the falls, the life layer's data and walkable grid. |
+| [`settlements/shade`](settlements/shade/INDEX.md) | 28 | 319 | 32 | Shade: the Eastern Nomads' sunken basin in the eastern high desert (falls, pool, carved face, switchback, slot canyon) on the sedesert biome kit: rock-cut and pueblo buildings, cliff dwellings round the rim, alcoves and an undercut behind the falls, the life layer's data and walkable grid. |
 | [`settlements/voth`](settlements/voth/INDEX.md) | 62 | 1787 | 70 | Voth: a Venice/Vivec-like Dunmer city on an enclosed brackish bay, with the most complete life layer and collision system. |
 | [`settlements/xanadu`](settlements/xanadu/INDEX.md) | 51 | 599 | 66 | Xanadu: the building kit of the southern Sultanate (Tibetan massing, Indian, Turkish and Persian detail) and the city of Erewhon. |
 | [`settlements/yuni`](settlements/yuni/INDEX.md) | 47 | 972 | 195 | Yuni: the city, plus its building-kit, furniture and plant sheets. |
 | [`kits/ancients`](kits/ancients/INDEX.md) | 92 | 1732 | 89 | The Ancients kit: ruined megastructures of the ancient civilisation, 33 structure types, one target per site. |
 | [`kits/post-apoc`](kits/post-apoc/INDEX.md) | 24 | 356 | 34 | The Post-Apoc set: reclaimed and recycled buildings (containers, silos, tanks, buses, bulkheads, tyre and bottle walls) with sockets for any culture's marks. |
 | [`kits/ringsea`](kits/ringsea/INDEX.md) | 36 | 183 | 10 | Ring Sea watercraft: 21 procedural vessels (warships, cargo ships, barges, canoes, outriggers, rafts) of the cultures round the Ring Sea. |
-| [`biomes/eastabyss`](biomes/eastabyss/INDEX.md) | 17 | 208 | 54 | Biome kit: see `biomes/README.md`. |
-| [`biomes/hyperjungle`](biomes/hyperjungle/INDEX.md) | 19 | 179 | 33 | Biome kit: see `biomes/README.md`. |
-| [`biomes/nhighlands`](biomes/nhighlands/INDEX.md) | 20 | 259 | 49 | Biome kit: see `biomes/README.md`. |
-| [`biomes/nwlowlands`](biomes/nwlowlands/INDEX.md) | 17 | 208 | 56 | Biome kit: see `biomes/README.md`. |
-| [`biomes/rift`](biomes/rift/INDEX.md) | 17 | 230 | 60 | Biome kit: see `biomes/README.md`. |
-| [`biomes/sedesert`](biomes/sedesert/INDEX.md) | 19 | 212 | 32 | Biome kit: see `biomes/README.md`. |
-| [`biomes/swbay`](biomes/swbay/INDEX.md) | 19 | 214 | 46 | Biome kit: see `biomes/README.md`. |
-| [`biomes/swlowlands`](biomes/swlowlands/INDEX.md) | 17 | 228 | 57 | Biome kit: see `biomes/README.md`. |
-| [`biomes/xanadu`](biomes/xanadu/INDEX.md) | 19 | 248 | 66 | Biome kit: see `biomes/README.md`. |
+| [`biomes/eastabyss`](biomes/eastabyss/INDEX.md) | 13 | 170 | 55 | Biome kit: see `biomes/README.md`. |
+| [`biomes/hyperjungle`](biomes/hyperjungle/INDEX.md) | 15 | 135 | 33 | Biome kit: see `biomes/README.md`. |
+| [`biomes/nhighlands`](biomes/nhighlands/INDEX.md) | 16 | 215 | 49 | Biome kit: see `biomes/README.md`. |
+| [`biomes/nwlowlands`](biomes/nwlowlands/INDEX.md) | 13 | 169 | 56 | Biome kit: see `biomes/README.md`. |
+| [`biomes/rift`](biomes/rift/INDEX.md) | 13 | 192 | 60 | Biome kit: see `biomes/README.md`. |
+| [`biomes/sedesert`](biomes/sedesert/INDEX.md) | 15 | 167 | 32 | Biome kit: see `biomes/README.md`. |
+| [`biomes/swbay`](biomes/swbay/INDEX.md) | 15 | 175 | 46 | Biome kit: see `biomes/README.md`. |
+| [`biomes/swlowlands`](biomes/swlowlands/INDEX.md) | 13 | 190 | 57 | Biome kit: see `biomes/README.md`. |
+| [`biomes/xanadu`](biomes/xanadu/INDEX.md) | 15 | 206 | 66 | Biome kit: see `biomes/README.md`. |
 
 ## Not builds
 
 | Path | What |
 |---|---|
-| `core/` | shared code: `core/materials/` (see `core/README.md`) and `core/sockets/` (cultural sockets, banners and awnings, with a runnable example) |
+| `core/` | shared code (see `core/README.md`): `core/materials/`, `core/biome/` (the biome core every kit reads), `core/terrain/` (carve patches), `core/atmos/` (atmosphere), `core/sockets/` (cultural sockets, banners and awnings, with a runnable example) |
 | `kits/catalog/` | harvested master catalog of furniture, plants and buildings (unverified) |
 | `kits/furniture/`, `kits/interiors/` | specs only |
 | `gallery/` | the shareable gallery of every built world |

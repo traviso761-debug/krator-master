@@ -11,6 +11,7 @@
 // aridity / abyssal / riparian. Every aridity tag is honoured by the placement
 // passes: an 'arid' plant is never put on wet ground and a 'humid' one never
 // on the flats.
+BIO.kit('eastabyss');   // this kit's own registry of items and buckets (core/biome: kits)
 var EASTABYSS={};
 (function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm,qEuler,qFacing,qUp}=BIO.fn;
 const T3=BIO.host.THREE,C=h=>new T3.Color(h);
@@ -291,7 +292,7 @@ BIO.iridBarkMat=function(tex){const m=BIO.barkMat(tex);
    .replace('#include <color_fragment>','#include <color_fragment>\n{vec3 V=normalize(cameraPosition-vIWP);vec3 N=normalize(vIWN);float fr=1.0-abs(dot(N,V));'+
     'float sh=0.5+0.5*sin(dot(vIWP,vec3(0.21,0.37,0.29))+uWindT*0.35);float k=smoothstep(0.12,0.82,fr*0.85+sh*0.3);'+
     'diffuseColor.rgb*=mix(vec3(0.78,1.18,0.92),vec3(1.45,0.82,0.74),k);}');};
- m.customProgramCacheKey=function(){return'bioiridbark';};BIO._tickWind();return m;};
+ const ck='bioiridbark|'+BIO.kitKey('x');m.customProgramCacheKey=function(){return ck;};BIO._tickWind();return m;};
 
 
 // ---------------------------------------------------------------- bark textures

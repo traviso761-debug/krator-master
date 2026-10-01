@@ -122,6 +122,10 @@ saying what fixed it.
 - [ ] BIOME DRIFT (deliberate): targets/city/86-bio-* wrap the hyperjungle biome in closures so it cannot
       clobber the city's globals (`var BIO`, `BIO.setScene`). Upstream (biomes/hyperjungle) has since added
       fauna (58, `opt.fauna`); porting it means re-applying the closure wrap to the new fragments.
+      **Oct 2026:** the biome core moved to `core/biome/` (one copy for every kit) and the kits
+      gained `BIO.kit` hooks, so `--vendor-check` reports the core and the hooked fragments as drift.
+      The kit's geometry is unchanged (mesh fingerprints, `core/README.md`). Re-vendor, or read
+      `core/biome` through a `CORE_BIOME` list, when this world is next rebuilt and verified.
 - [ ] The toppled Skyscraper B keeps its own podium (its fallen body was laid by
       the kit to rest on it) on a 60 m lot; the fall is checked against boulevards,
       plazas, parks, courts, water, rock, precincts and standing buildings.

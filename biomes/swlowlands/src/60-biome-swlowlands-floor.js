@@ -86,13 +86,13 @@ function chaparral(x,y,z,lv,st){const red=rng()<.22,set=red?PAL.chapRed:PAL.chap
 function boulder(x,y,z,lv,set,st){const n=lv===2?ri(1,3):1,Rb=rr(.8,2.6);
  for(let i=0;i<n;i++){const a=rr(0,TAU),d=i?Rb*rr(.7,1.2):0,r=Rb*(i?rr(.35,.7):1),bx=x+Math.cos(a)*d,bz=z+Math.sin(a)*d,by=Y(bx,bz),h=r*rr(.5,.9);
   BIO.put('boulder',[bx,by+h*.3,bz],qEuler(rr(-.25,.25),rr(0,TAU),rr(-.25,.25)),[r*rr(.9,1.3),h*.8,r*rr(.9,1.3)],rockTint(set));st.boulders++;}}
-function lily(x,z,lv,st,dense){const t=rng(),R=rr(.35,1.1);
- BIO.put('pad',[x,.04,z],qEuler(rr(-.03,.03),rr(0,TAU),rr(-.03,.03)),[R,1,R],bright(vary(pick(PAL.pad),.03,.1,.06),1.05));st.lilies++;
- if(lv===2&&rng()<.18)BIO.put('bloom',[x+rr(-.3,.3)*R,.2,z+rr(-.3,.3)*R],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),rr(.22,.4),bright(rng()<.6?C(0xf6f0e0):C(0xf4c0d0),1.1));
- for(let k=0,m=dense?ri(2,5):(rng()<.3?1:0);k<m;k++){const R2=R*rr(.5,1),a=rr(0,TAU),d=R*rr(1.3,2.6);BIO.put('pad',[x+Math.cos(a)*d,.035,z+Math.sin(a)*d],qEuler(0,rr(0,TAU),0),[R2,1,R2],bright(vary(pick(PAL.pad),.03,.1,.06),1.05));st.lilies++;}}
-function hyacinth(x,z,lv,st){for(let k=0,m=ri(2,5);k<m;k++){const px=x+rr(-.8,.8),pz=z+rr(-.8,.8),R=rr(.25,.45);BIO.put('pad',[px,.08,pz],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),[R,1,R],bright(vary(pick(PAL.aroid),.03,.1,.06),1.15));}
- if(lv>=1)blooms(x,.1,z,.6,ri(3,7),PAL.hyacinth,[.14,.24],.45);st.lilies++;}
-function duckweed(x,z,st){BIO.put('mossmat',[x,.03,z],qEuler(0,rr(0,TAU),0),[rr(1.5,4),1,rr(1.5,4)],leafCol(PAL.duckweed,1.1,.02));st.duckweed++;}
+function lily(x,z,lv,st,dense){const w=BIO.waterH(x,z),t=rng(),R=rr(.35,1.1);
+ BIO.put('pad',[x,w+.04,z],qEuler(rr(-.03,.03),rr(0,TAU),rr(-.03,.03)),[R,1,R],bright(vary(pick(PAL.pad),.03,.1,.06),1.05));st.lilies++;
+ if(lv===2&&rng()<.18)BIO.put('bloom',[x+rr(-.3,.3)*R,w+.2,z+rr(-.3,.3)*R],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),rr(.22,.4),bright(rng()<.6?C(0xf6f0e0):C(0xf4c0d0),1.1));
+ for(let k=0,m=dense?ri(2,5):(rng()<.3?1:0);k<m;k++){const R2=R*rr(.5,1),a=rr(0,TAU),d=R*rr(1.3,2.6);BIO.put('pad',[x+Math.cos(a)*d,w+.035,z+Math.sin(a)*d],qEuler(0,rr(0,TAU),0),[R2,1,R2],bright(vary(pick(PAL.pad),.03,.1,.06),1.05));st.lilies++;}}
+function hyacinth(x,z,lv,st){const w=BIO.waterH(x,z);for(let k=0,m=ri(2,5);k<m;k++){const px=x+rr(-.8,.8),pz=z+rr(-.8,.8),R=rr(.25,.45);BIO.put('pad',[px,w+.08,pz],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),[R,1,R],bright(vary(pick(PAL.aroid),.03,.1,.06),1.15));}
+ if(lv>=1)blooms(x,w+.1,z,.6,ri(3,7),PAL.hyacinth,[.14,.24],.45);st.lilies++;}
+function duckweed(x,z,st){BIO.put('mossmat',[x,BIO.waterH(x,z)+.03,z],qEuler(0,rr(0,TAU),0),[rr(1.5,4),1,rr(1.5,4)],leafCol(PAL.duckweed,1.1,.02));st.duckweed++;}
 // a fallen tree: a silvered tube with moss, ferns and bromeliads along its back
 function log(x,y,z,st,tropical){const a=rr(0,TAU),L=rr(14,40),r0=rr(.6,1.4),hx=Math.cos(a),hz=Math.sin(a),n=Math.ceil(L/7)+1,pts=[];
  for(let i=0;i<n;i++){const t=i/(n-1),px=x+hx*(t-.5)*L,pz=z+hz*(t-.5)*L;if(BIO.mask(px,pz)<=0||!okGround(px,pz,1.5))return false;
@@ -215,10 +215,10 @@ SWLOW.buildFloor=function(R,q){
     const set=Z.med>.5?(rng()<.15?PAL.stipa:PAL.grassGold):PAL.grassGreen;grassTuft(x,y,z,1,set,Z.med>.5?1.1:.8);st.tufts++;},{patch:.6,patchScale:.02,pad:.3});});
  // the water: lily pads carpeting still fresh water, hyacinth, duckweed; reeds in the shallows. The sea gets none.
  [[8,560,0],[16,1400,560]].forEach((b,bi)=>{const lv=2-bi;
-  BIO.grid(b[0],0,R,(x,z,d)=>{const ld=BIO.lodD(x,z);if(ld>=b[1]||ld<b[2])return 0;const h=Y(x,z);if(h>.3||h<-4)return 0;
+  BIO.grid(b[0],0,R,(x,z,d)=>{const ld=BIO.lodD(x,z);if(ld>=b[1]||ld<b[2])return 0;const h=Y(x,z)-BIO.waterH(x,z);if(h>.3||h<-4)return 0;   // h: the ground against the local water
     const Z=zones(x,z);if(Z.salt>.35)return 0;return q*(1-Z.flow*.85)*(.8*smooth(-4,-1,h)+.3*smooth(-.9,-.1,h));},
    (x,y,z,d)=>{if(!BIO.clearOf(x,z,1)||blocked(x,z,.5))return;const k=rng();
-    if(y>-.5&&k<.35){reed(x,Math.max(y,-.4),z,lv);st.tufts++;}
+    const w=BIO.waterH(x,z);if(y-w>-.5&&k<.35){reed(x,Math.max(y,w-.4),z,lv);st.tufts++;}
     else if(k<.72)lily(x,z,lv,st,dampK(x,z)>.45);
     else if(k<.86)hyacinth(x,z,lv,st);else duckweed(x,z,st);},{patch:.8,patchScale:.02,noMask:true,pad:.4});});
  // THE UNDERSTOREY: under every near and mid crown, a shade layer scattered over the
@@ -226,7 +226,7 @@ SWLOW.buildFloor=function(R,q){
  // follows the trees, so it is thickest where the canopy is.
  for(const T of SWLOW.TREES){if(T.lv<1||T.crownR<5)continue;const Rc=Math.max(T.spread||T.crownR,T.crownR)*.85,area=Math.PI*Rc*Rc,n=Math.round(Math.min(T.lv===2?48:8,area*(T.lv===2?.011:.0018))*q);   // by the ground the crown covers
   for(let i=0;i<n;i++){const a=rr(0,TAU),d=T.rb*2+.8+(Math.max(T.spread||T.crownR,T.crownR)*.85-T.rb*2)*Math.sqrt(rng()),x=T.x+Math.cos(a)*d,z=T.z+Math.sin(a)*d;
-   if(BIO.mask(x,z)<=0||!okGround(x,z,.7))continue;const y=Y(x,z);if(y<.3)continue;underPlant(x,y,z,zones(x,z),T.lv,st);st.understorey++;}}
+   if(BIO.mask(x,z)<=0||!okGround(x,z,.7))continue;const y=Y(x,z);if(y-BIO.waterH(x,z)<.3)continue;underPlant(x,y,z,zones(x,z),T.lv,st);st.understorey++;}}
  // fallen trees in the rainforest, the bayou and the plain
  BIO.grid(120,0,R,(x,z,d)=>{if(BIO.lodD(x,z)>1400)return 0;const Z=zones(x,z);return (Z.rain*.8+Z.swamp*.4+Z.sub*.35)*q;},
   (x,y,z,d)=>{const trop=zones(x,z).rain>.4;for(let t=0;t<4;t++)if(log(x+rr(-25,25),y,z+rr(-25,25),st,trop))break;},{patch:0,pad:3});

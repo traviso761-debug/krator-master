@@ -53,37 +53,49 @@ colour. Neither is compatible with `MAT`.
 
 The biome core: the engine-independent kit every biome in `biomes/` is written against
 (`BIO`: the host binding, the PRNG and noise, instanced items and merged buckets, the
-foliage hook, placement, the runtime LOD). One copy, merged from the nine copies the kits
-carried (Oct 2026). xanadu's is the base (runtime LOD); the others' additions are in it,
-each marked with the kit it came from:
+foliage hook, placement, the runtime LOD, kits, export). One copy, merged from the nine
+copies the kits carried (Oct 2026). xanadu's is the base (runtime LOD); the others'
+additions are in it, each marked with the kit it came from:
 
 | File | What |
 |---|---|
 | `10-core-head.js` | `BIO`, `BIO.fn` (rng, noise...), `BIO.init` and the host binding: fields (wet, salt, upland, flow, mist, cold, rock), `waterH`/`depth`, `register`, detail radii (`BIO.radii()`), windows, `eye` |
-| `20-core-kit.js` | items and buckets on Float32 stores, extra per-instance vec4s, the runtime LOD (`BIO.range`, `BIO.lodTick`), indexed bake, `BIO.dynamic`/`BIO.tick` |
+| `20-core-kit.js` | kits (`BIO.kit`, `BIO.kitEnd`), items and buckets on Float32 stores, extra per-instance vec4s, the runtime LOD (`BIO.LOD`, `BIO.range`, `BIO.lodTick`), indexed bake, `BIO.dynamic`/`BIO.tick` |
 | `30-core-foliage.js` | leaf textures and cards, the foliage and bark hooks, the wind clock, `BIO.col` |
 | `35-core-anim.js` | animated items (orbit, flit, walk; flapping wings, swinging legs) for fauna |
 | `40-core-place.js` | stands, `BIO.grid` (accept first, `depth`, `box`), `BIO.scatter`, keep-clear |
+| `42-core-export.js` | `BIO.export()` / `BIO.download()`: what a page placed, as data for Godot (`biomes/GODOT.md`) |
 
-**Used by** `biomes/eastabyss`, `nwlowlands`, `rift`, `swbay`, `swlowlands`: each lists the
-files in `CORE_BIOME` in its `build.py`, read from here unless its `src/` has a copy of the
-same name. The other four kits still carry their own copies (`CORE_BIOME=[]`) until each
-is switched and proven unchanged: hyperjungle (iziz, screamers and the Ancients kit vendor
-it), sedesert (Shade vendors it, and its `BIO.LOD()` is `BIO.radii()` here), xanadu and
-nhighlands. `build.py` stops if any of the four core files is missing (the syntax check
-cannot see an absent fragment).
+**Used by** all nine kits in `biomes/`: each lists the files in `CORE_BIOME` in its
+`build.py`, read from here unless its `src/` has a copy of the same name (none does).
+hyperjungle also lists `35-core-anim.js`, and takes the core's helpers as globals in its
+own `41-hyperjungle-globals.js` (it was written when the core declared them). `build.py`
+stops if any of the four base files is missing (the syntax check cannot see an absent fragment).
 
-**Proving a switch.** The page's HTML changes with the core, so its hash proves nothing.
+**Kits.** Several kits can share one page (`biomes/WORLD.md`). Each kit calls
+`BIO.kit('<name>')` at the top of its first fragment and `BIO.kitEnd(<API>)` at the end of
+its last: it gets its own registry of items and buckets (two kits may both have a `trunk`),
+its exported functions run in that registry, and material cache keys carry its name
+(`BIO.kitKey`), so two kits' `grass` cannot share one compiled shader. Mesh names stay
+`biome:<name>`; `userData.kit` says whose.
+
+**`BIO.LOD`** is both the runtime LOD's settings (`chunk`, `scale`) and, called, the detail
+radii (sedesert's `BIO.LOD()`, the same as `BIO.radii()`), so sedesert's fragments and
+Shade's copies of them run unchanged.
+
+**Proving a change.** The page's HTML changes with the core, so its hash proves nothing.
 Compare the baked geometry instead: every biome mesh's attributes and instance buffers,
-hashed per mesh name, before and after. Identical means the switch moved nothing.
+hashed per mesh name, before and after (fauna moved every frame by a script are hashed by
+their geometry only). Identical means the change moved nothing.
 
-Worlds that vendored a kit's core (dalab from swlowlands, locus and the Ancients kit from
+Worlds that vendored a kit (dalab from swlowlands, locus and the Ancients kit from
 eastabyss, iziz, screamers and the Ancients kit from hyperjungle, Shade from sedesert, the
-xanadu settlement) keep their copies; dalab's `--vendor-check` now compares its core
-against this folder and reports the drift. Re-vendor when that world is next rebuilt and
-verified, or switch it to read this folder.
+xanadu settlement) keep their copies. dalab's, iziz's and Shade's `--vendor-check` compare
+their core with this folder and report the drift; each records it in its `KNOWN_ISSUES.md`.
+Re-vendor when that world is next rebuilt and verified, or switch it to read this folder.
 
-`biomes/WORLD.md` is the plan this core grows toward: several kits resident in one open world.
+`biomes/WORLD.md` is the plan this core grows toward: several kits in one open world, and
+Godot (`biomes/GODOT.md`).
 
 ## `terrain/`
 

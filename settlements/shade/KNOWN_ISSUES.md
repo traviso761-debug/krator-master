@@ -74,3 +74,7 @@ Read before changing anything here. `build.py` prints the open count.
 - [ ] Vendored from `biomes/sedesert/src` with no local changes (`build.py --vendor-check`).
       The kit's budget note does not apply: Shade grows the biome over a 1.2 km radius,
       not 3.25 km.
+      **Oct 2026:** the biome core moved to `core/biome/` (one copy for every kit) and the kits
+      gained `BIO.kit` hooks, so `--vendor-check` reports the core and the hooked fragments as drift.
+      The kit's geometry is unchanged (mesh fingerprints, `core/README.md`). Re-vendor, or read
+      `core/biome` through a `CORE_BIOME` list, when this world is next rebuilt and verified.

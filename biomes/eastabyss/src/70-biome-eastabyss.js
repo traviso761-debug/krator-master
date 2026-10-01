@@ -10,3 +10,4 @@ EASTABYSS.build=function(opt){opt=opt||{};const R=opt.R||3000,q=opt.quality==nul
  BIO.cur=null;return out;};
 EASTABYSS.dress=function(geos,opt){if(EASTABYSS.dressGeos){BIO.cur='abyss/dress';EASTABYSS.dressGeos(geos,opt||{});BIO.cur=null;}};
 EASTABYSS.canopyH=function(x,z){return EASTABYSS._canopyH?EASTABYSS._canopyH(x,z):12;};
+BIO.kitEnd(EASTABYSS);   // its exports run in its registry; the default kit is current again

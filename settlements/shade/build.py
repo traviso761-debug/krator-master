@@ -35,8 +35,11 @@ def sha(p): return hashlib.sha1(open(p, 'rb').read()).hexdigest()[:12]
 def vendor_check():
     if not os.path.isdir(UP):
         print('vendor-check: %s not found; skipped' % UP); return 0
-    drift = [f for f in VENDORED if not os.path.exists(os.path.join(UP, f)) or sha(os.path.join(UP, f)) != sha(os.path.join(SRC, f))]
-    print('vendor-check: ' + ('all %d vendored fragments identical to biomes/sedesert/src' % len(VENDORED) if not drift
+    # the biome core lives in core/biome since Oct 2026 (the kit reads it from there)
+    CORE_UP = os.path.normpath(os.path.join(HERE, '..', '..', 'core', 'biome'))
+    up = lambda f: os.path.join(CORE_UP if f in ('10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '40-core-place.js') else UP, f)
+    drift = [f for f in VENDORED if not os.path.exists(up(f)) or sha(up(f)) != sha(os.path.join(SRC, f))]
+    print('vendor-check: ' + ('all %d vendored fragments identical to core/biome and biomes/sedesert/src' % len(VENDORED) if not drift
                               else 'DRIFT in ' + ', '.join(drift) + ' - fix upstream and re-vendor, or record it in KNOWN_ISSUES.md'))
     return 1 if drift else 0
 

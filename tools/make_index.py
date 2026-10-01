@@ -64,6 +64,19 @@ def core_files(build):
     return sorted(f for f in os.listdir(d) if f[0].isdigit())
 
 
+def core_lists(build):
+    """The core/biome and core/terrain fragments a build lists (CORE_BIOME, CORE_TERRAIN in its build.py)."""
+    import ast, re
+    out = []
+    for line in open(os.path.join(ROOT, build, 'build.py'), encoding='utf8'):
+        m = re.match(r'\s*(CORE_BIOME|CORE_TERRAIN)\s*=\s*(\[.*\])', line)
+        if m:
+            files = ast.literal_eval(m.group(2))
+            if files:
+                out.append(('core/biome' if m.group(1) == 'CORE_BIOME' else 'core/terrain', files))
+    return out
+
+
 def frag_table(build, folder, rel):
     rows = []
     for f in sorted(os.listdir(folder)):
@@ -108,6 +121,8 @@ def build_index(build):
     cf = core_files(build)
     if cf:
         lines += ['From `core/materials/` (shared; see `core/README.md`): ' + ', '.join('`%s`' % f for f in cf), '']
+    for where, files in core_lists(build):
+        lines += ['From `%s/` (shared; see `core/README.md`): ' % where + ', '.join('`%s`' % f for f in files), '']
     lines += ['## src/', '', '| Fragment | KB | Sections (line) |', '|---|---|---|']
     lines += frag_table(build, src, 'src')
     tdir = os.path.join(d, 'targets')
@@ -147,7 +162,7 @@ def main():
              '| Build | Fragments | src KB | Largest KB | What |', '|---|---|---|---|---|'] + rows + [
              '', '## Not builds', '',
              '| Path | What |', '|---|---|',
-             '| `core/` | shared code: `core/materials/` (see `core/README.md`) and `core/sockets/` (cultural sockets, banners and awnings, with a runnable example) |',
+             '| `core/` | shared code (see `core/README.md`): `core/materials/`, `core/biome/` (the biome core every kit reads), `core/terrain/` (carve patches), `core/atmos/` (atmosphere), `core/sockets/` (cultural sockets, banners and awnings, with a runnable example) |',
              '| `kits/catalog/` | harvested master catalog of furniture, plants and buildings (unverified) |',
              '| `kits/furniture/`, `kits/interiors/` | specs only |',
              '| `gallery/` | the shareable gallery of every built world |',

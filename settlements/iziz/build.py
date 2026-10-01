@@ -306,10 +306,15 @@ def vendor_check():
     if not os.path.isdir(bup):
         print('vendor-check: ../biomes/hyperjungle/src not found; biome check skipped')
         return
-    bdrift = [f for f in BIO_VENDORED
-              if open(os.path.join(TARGETS, 'city', '86-bio-%s.js' % f), 'rb').read()
-              != open(os.path.join(bup, f + '.js'), 'rb').read()]
-    print('vendor-check: %s' % ('all %d biome fragments identical to ../biomes/hyperjungle/src' % len(BIO_VENDORED)
+    cup = os.path.join(ROOT, 'core', 'biome')   # the biome core lives in core/biome since Oct 2026
+    bdrift = []
+    for f in BIO_VENDORED:
+        up_f = os.path.join(cup if '-core-' in f else bup, f + '.js')
+        if not os.path.exists(up_f):
+            bdrift.append(f + ' (missing upstream)')
+        elif open(os.path.join(TARGETS, 'city', '86-bio-%s.js' % f), 'rb').read() != open(up_f, 'rb').read():
+            bdrift.append(f)
+    print('vendor-check: %s' % ('all %d biome fragments identical to core/biome and ../biomes/hyperjungle/src' % len(BIO_VENDORED)
                                  if not bdrift else 'BIOME DRIFT in ' + ', '.join(bdrift)))
 
 
