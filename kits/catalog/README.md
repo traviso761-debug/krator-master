@@ -6,17 +6,17 @@ furniture sets** (2026-10): a parametric furniture kit and one file per culture.
 It is the furniture source for `kits/interiors/` and the starting point for `kits/furniture/`.
 
 **Status: verified.** `build.py` builds `dist/catalog.html`, a contact sheet of every
-furniture entry and every variant plus the Beast Rider buildings, and `verify.py --assert`
-passes: all 853 furniture pieces (1129 instances, every variant, seeds 1–4) and 13 buildings
-build without error, carry no NaN geometry, fit their declared size, keep their anchor's
-geometry, and carry their tags. Every furniture entry carries every field of
+furniture entry and every variant, and `verify.py --assert` passes: all 853 furniture pieces
+(1129 instances, every variant, seeds 1–4) build without error, carry no NaN geometry, fit
+their declared size, keep their anchor's geometry, and carry their tags. Every furniture entry carries every field of
 `kits/furniture/SPEC.md` "The entry" and meets its style rules. What is still open is in `KNOWN_ISSUES.md`.
 
-**Not on the sheet any more (2026-10):** the 48 plants (`krator-master-plants.js`) and the 13
-first-generation Voth buildings (`krator-master-buildings-voth.js`). Both files stay here, unbuilt:
-plants belong to their biome kits and each build's own plant sheet; the Voth buildings have their
-own sheet, `settlements/voth/catalog/index.html`, which loads that file by path. The main sheet
-is furniture (one row per culture and tier) and the Beast Rider buildings.
+**Not on the sheet any more (2026-10):** the 48 plants (`krator-master-plants.js`), the 13
+first-generation Voth buildings (`krator-master-buildings-voth.js`) and the 13 Beast Rider buildings
+(`krator-master-buildings-beast-rider.js`). The files stay here, unbuilt: plants belong to their
+biome kits and each build's own plant sheet; the Voth buildings have their own sheet,
+`settlements/voth/catalog/index.html`, which loads that file by path; the Beast Rider buildings
+are in Mav's Refuge and Girder. The catalog is the furniture sheet, one row per culture and tier.
 
 | File | What |
 |---|---|
@@ -25,8 +25,7 @@ is furniture (one row per culture and tier) and the Beast Rider buildings.
 | `inspector.js` | click-to-select inspector: measure, isolate, cycle variants, audit declared sizes |
 | `krator-master-furniture.js` | 122 harvested `FURN({...})` pieces in the SPEC shape (Voth 35, Iziz 9, Beast-Rider 16, Yuni 58, Ancients 4) |
 | `krator-master-furniture-<culture>.js` | **one file per culture** (17 files): its palette (`FURN_CULTURE`), its style sheets, `FK.set()` for its tiers and its bespoke pieces. `generic` and `scrap` are the poor-tier sets; `hykkousoi` is a palette only. See "Furniture by culture" |
-| `krator-master-buildings-beast-rider.js` | 13 `ASSET({...})` buildings, tagged by culture, `types: [...]` (README vocabulary) and `family` |
-| `krator-master-plants.js`, `krator-master-buildings-voth.js` | kept, **not built** (above) |
+| `krator-master-plants.js`, `krator-master-buildings-voth.js`, `krator-master-buildings-beast-rider.js` | kept, **not built** (above); the building files carry `ASSET({...})` entries tagged by culture, `types: [...]` and `family` for the pages that load them |
 | `src/` | only the page around them: head, sky, sheet layout, hover inspector, polygon tool, tail |
 | `three.min.js` | three.js r128, the copy every other build uses |
 
@@ -46,13 +45,13 @@ python3 verify.py dist/catalog.html --sheet furniture --query cultures=xanadu,vo
 ```
 
 `build.py` reads `SOURCES`: the engine, the kit, the harvested furniture, then every
-`krator-master-furniture-*.js` in filename order, the Beast Rider buildings and the inspector.
-A new culture is one new file; nothing else changes.
+`krator-master-furniture-*.js` in filename order, and the inspector. A new culture is one new
+file; nothing else changes.
 
-The page: `dist/catalog.html` shows both sections stacked; `?sheet=furniture` or
-`?sheet=buildings` shows one. Furniture rows are one per culture and tier (`Furniture · xanadu · court`),
-sorted by type; buildings by culture, sorted by family. The whole sheet is heavy (about 33 000 draw
-calls); `?sheet=buildings` is the quick page. The toolbar jumps to a row. Press **T** (or the
+The page: `dist/catalog.html` is the furniture sheet, one row per culture and tier
+(`Furniture · xanadu · court`), sorted by type. The whole sheet is heavy (about 33 000 draw
+calls); `?cultures=xanadu,voth` is the quick page. The sheet code still lays out plants and
+buildings (`?sheet=plants|buildings`) for a page that registers them. The toolbar jumps to a row. Press **T** (or the
 toolbar button) for the hover inspector: name, class and tags of whatever is
 under the pointer. Click anything for the full inspector (measure, isolate,
 variants, size audit). Press **P** for the polygon tool: click the ground to lay

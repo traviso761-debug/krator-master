@@ -303,7 +303,7 @@ async def run(a):
             three = os.path.join(HERE, 'three.min.js')
             await pg.route('**/three.min.js', lambda route: asyncio.ensure_future(
                 route.fulfill(path=three, content_type='application/javascript')))
-            q = ('' if a.sheet == 'all' else 'sheet=' + a.sheet) + (('&' if a.sheet != 'all' else '') + a.query if a.query else '')
+            q = ('' if a.sheet in ('all', 'furniture') else 'sheet=' + a.sheet) + (('&' if a.sheet not in ('all', 'furniture') else '') + a.query if a.query else '')
             q = '?' + q if q else ''
             await pg.goto('http://127.0.0.1:%d/%s%s' % (port, rel, q), timeout=300000)
             try:
@@ -407,7 +407,7 @@ if __name__ == '__main__':
     ap = argparse.ArgumentParser()
     ap.add_argument('html')
     ap.add_argument('--assert', dest='assert_', action='store_true')
-    ap.add_argument('--sheet', default='all', choices=['all', 'furniture', 'plants', 'buildings'])
+    ap.add_argument('--sheet', default='furniture', choices=['all', 'furniture', 'plants', 'buildings'], help='the catalog registers furniture only; plants and buildings are for a page that loads them')
     ap.add_argument('--out', default='')
     ap.add_argument('--rows', nargs='?', const='all', default='',
                     help="with --out: one screenshot per row; or a comma list of row-title words (--rows xanadu,court) for a few rows")

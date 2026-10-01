@@ -10,9 +10,8 @@
 - [ ] **The sheet is heavy.** 853 furniture pieces, 1129 instances and about 33 000 draw calls on the `all`
   sheet; `verify.py --assert` takes about 15 minutes under SwiftShader and a screenshot of the whole sheet
   several minutes each. Partial runs are cheap: `?cultures=xanadu,voth` (verify.py `--query cultures=...`)
-  lays out only those cultures, and `--rows xanadu,court` screenshots only the rows named. The `all` page
-  on a real GPU is fine; a gallery visitor on a weak machine should open `?sheet=buildings` or a
-  `?cultures=` page.
+  lays out only those cultures, and `--rows xanadu,court` screenshots only the rows named. The full page
+  on a real GPU is fine; a gallery visitor on a weak machine should open a `?cultures=` page.
 - [ ] **Kit tapestries draw a culture's device in blocks**, not the canvas `SYMBOLS` of
   `core/sockets/80-cultures.js` (those need the Post-Apoc engine's canvas helpers). The hyperboloid
   (Yuni) and triskele (Republic, approximated by `'spiral'`) have no block device yet.
@@ -27,9 +26,9 @@
 
 ## Decisions in the interiors furniture pass (2026-10)
 
-- **Plants and the Voth buildings left the sheet** (owner's call). The files stay; `build.py` no longer lists
-  them. The Voth catalog page (`settlements/voth/catalog`) still loads `krator-master-buildings-voth.js` by
-  path and is unaffected. `?sheet=plants` is gone.
+- **Plants, the Voth buildings and the Beast Rider buildings left the sheet** (owner's call). The files stay;
+  `build.py` no longer lists them. The Voth catalog page (`settlements/voth/catalog`) still loads
+  `krator-master-buildings-voth.js` by path and is unaffected. The catalog is the furniture sheet.
 - **One row per culture and tier** on the furniture sheet, so a culture's poor, common and court pieces read
   side by side.
 - **The engine's `F.cyl` is vertical only.** A disc that faces a wall (a plate, a shield, a medallion) is a

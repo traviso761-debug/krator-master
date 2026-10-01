@@ -39,14 +39,15 @@ OUT = 'catalog'
 # The furniture kit loads after the engine, then the harvested furniture, then every
 # interiors-phase culture file (krator-master-furniture-<culture>.js, in filename order).
 # Not built here any more: krator-master-plants.js (plants live in their biome kits and
-# in each build's own sheet) and krator-master-buildings-voth.js (the Voth buildings have
-# their own sheet, settlements/voth/catalog, which loads that file by path). Both files stay.
+# in each build's own sheet), krator-master-buildings-voth.js (the Voth buildings have
+# their own sheet, settlements/voth/catalog, which loads that file by path) and
+# krator-master-buildings-beast-rider.js (the Beast Rider buildings). The files stay.
+# The catalog is the furniture sheet.
 SOURCES = [
     'krator-asset-engine.js',
     'krator-furniture-kit.js',
     'krator-master-furniture.js',
     'krator-master-furniture-*.js',
-    'krator-master-buildings-beast-rider.js',
     'inspector.js',
 ]
 
