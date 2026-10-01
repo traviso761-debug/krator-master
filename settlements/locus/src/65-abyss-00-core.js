@@ -70,8 +70,9 @@ KIT_ROWS.abyss = ['Housing — poor','Housing — middle','Housing — rich','Sh
   /* ---------- 2. lanterns, masts, propeller-lanterns ----------
      ABYSS.lantern(F, x,y,z, lit): an oil lantern hung at (x,y,z). lit=false: dark glass, no light (poor and middle buildings);
      lit=true: the kit's warm LANTERN with a night lamp (rich, civic, sacred, palace).                                        */
-  ABYSS.lantern = function(F, x,y,z, lit, amp){ if(lit){ F.lantern(x,y,z, amp||0.7, 11, 0); return; }
-    F.box(x,y-0.28,z, 0.34,0.50,0.34, 0, TIMBERC[3], 'timber'); F.box(x,y-0.20,z, 0.27,0.34,0.27, 0.78, 0x6a5a3a, 'metal'); F.pyr(x,y+0.22,z, 0.50,0.26,0.50, 0, BRASSC[2], 'metal'); };
+  /* FURNITURE: the catalog's abyss_hanging_lantern (variant 1 lit, its night lamp at amp, radius 11), placed through
+     FURNISH (66-locus-furnish.js); (x,y,z) is the lantern's centre as before, the piece's origin its foot 0.28 below. */
+  ABYSS.lantern = function(F, x,y,z, lit, amp){ return furnishAt(F, 'abyss_hanging_lantern', x,y-0.28,z, 0, { v:lit?1:0, lamp:lit?[amp||0.7, 11]:null }); };
   /* ABYSS.mast(F, x,z,h, opt): a timber mast with optional guys (opt.guys = count, opt.guyR = radius), a lantern at the
      top (opt.lantern = 'lit' | 'unlit'), a propeller-lantern (opt.prop: a little three-bladed vane over a glowing bulb,
      opt.lit), a finial (opt.finial colour) and a pennant (opt.flag colour). Returns the top height.                     */
@@ -79,9 +80,8 @@ KIT_ROWS.abyss = ['Housing — poor','Housing — middle','Housing — rich','Sh
     LOCUS.pole(F, x,z, h, r, tc, false);
     var ng=opt.guys||0, gr=opt.guyR||h*0.45; for(var g=0;g<ng;g++){ var a=g/ng*TAU+0.4; LOCUS.guy(F, x,h*0.9,z, x+Math.cos(a)*gr, z+Math.sin(a)*gr); }
     if(opt.lantern){ F.rod(x,h-0.3,z, x+0.7,h-0.3,z, 0.04, tc, 'timber'); ABYSS.lantern(F, x+0.65,h-0.5,z, opt.lantern==='lit'); }
-    if(opt.prop){ var py=h+0.25; F.cyl(x,h,z, 0.05,0.45, 0, STEELDC[0], 'metal'); F.ball(x,py+0.2,z, 0.16, opt.lit?PAL.glowWarm:0x8a7a52, opt.lit?'glowmat':'metal');
-      for(var b=0;b<3;b++){ var ba=b/3*TAU; F.beam(x,py+0.38,z, x+Math.cos(ba)*0.55,py+0.42,z+Math.sin(ba)*0.55, 0.16,0.03, opt.propCol!=null?opt.propCol:PAL.abSailRed, 'metal'); }
-      if(opt.lit) F.lamp(x,py+0.2,z, 0.5, 9); }
+    /* the propeller-lantern is FURNITURE: the catalog's abyss_propeller_mast (its own 6 m pole hidden inside this mast) */
+    if(opt.prop) furnishAt(F, 'abyss_propeller_mast', x,h-6.0,z, 0, { v:opt.lit?1:0 });
     if(opt.finial!=null) F.ball(x,h+0.15,z, 0.16, opt.finial, 'metal');
     if(opt.flag!=null){ F.box(x+0.45,h-0.9,z, 0.9,0.5,0.03, 0, opt.flag, 'cloth'); }
     return h; };
@@ -277,9 +277,20 @@ KIT_ROWS.abyss = ['Housing — poor','Housing — middle','Housing — rich','Sh
 
 /* ==================== ABYSS 9. placing registered furniture and plants from inside a building ==================== */
   /* ---------- 9. placing registered furniture and plants from inside a building ----------
-     ABYSS.furn(F, key, lx,lz, yaw, opt): builds a FURN piece at (lx, opt.ly, lz) in the building's frame (the piece is
-     registered and labelled on its own). ABYSS.plant(F, key, lx,lz, yaw, opt): the same for a PLANT (opt.ly lifts it). */
-  ABYSS.furn = function(F, key, lx,lz, yaw, opt){ opt=opt||{}; var q=F.p(lx,lz); return buildFurn(key, q[0],q[1], F.ry+(yaw||0), { y:F.y+(opt.ly||0), variant:opt.variant||0, seed:opt.seed||((F.seed*37+Math.round(lx*11+lz*17)+997)&0xffff) }); };
+     ABYSS.furn(F, key, lx,lz, yaw, opt): places the CATALOG piece at (lx, opt.ly, lz) in the building's frame (FURNISH:
+     recorded on the building, built by the catalog, labelled for the inspector). ABYSS.plant(F, key, lx,lz, yaw, opt): the same for a PLANT (opt.ly lifts it). */
+  /* The pieces are the CATALOG's (kits/catalog/krator-master-furniture-eastabyss.js, "Harvested from settlements/locus/
+     src/65-abyss-*.js"), placed as data through FURNISH (66-locus-furnish.js). (lx,lz) is the piece's origin as this kit
+     drew it; the harvest re-centred a few pieces on their footprint (F.shift in the catalog), so ABYSS.SHIFT puts them
+     back where they stood. opt.setting: 'outdoor' (default) | 'indoor' | 'room' (in an open room the interior set plans). */
+  ABYSS.SHIFT = { abyss_lantern_post:[-0.4,0], abyss_counter:[0,-0.185], abyss_forge:[-0.175,0], abyss_shield_wall:[0,-0.05],
+                  abyss_crates:[-0.1,-0.245], abyss_canvas_bolts:[0,-0.175], abyss_well:[-0.365,0] };
+  ABYSS.furn = function(F, key, lx,lz, yaw, opt){ opt=opt||{}; var sh=ABYSS.SHIFT[key], a=yaw||0, seed=opt.seed||((F.seed*37+Math.round(lx*11+lz*17)+997)&0xffff);
+    if(sh){ lx-=sh[0]*Math.cos(a)+sh[1]*Math.sin(a); lz-=-sh[0]*Math.sin(a)+sh[1]*Math.cos(a); }
+    return furnishAt(F, key, lx, opt.ly||0, lz, a, { v:opt.variant||0, seed:seed, setting:opt.setting }); };
+  /* ABYSS.burn(F, n): draw n numbers from the builder's stream and drop them. Where inline drawing that took colours from
+     F.rnd() became a catalog piece, the builder burns the same count, so its LATER random choices (the structure) do not shift. */
+  ABYSS.burn = function(F, n){ for(var i=0;i<n;i++) F.rnd(); };
   ABYSS.plant = function(F, key, lx,lz, yaw, opt){ opt=opt||{}; var q=F.p(lx,lz); return buildPlant(key, q[0],q[1], F.ry+(yaw||0), { y:F.y+(opt.ly||0), variant:opt.variant||0, seed:opt.seed||((F.seed*31+Math.round(lx*7+lz*13))&0xffff) }); };
 
   /* ABYSS.sub(F, key, lx,lz, yaw, opt): build ANOTHER registered asset inside this one, in a sub-frame at (lx, opt.ly, lz)
