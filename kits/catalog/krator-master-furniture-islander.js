@@ -17,6 +17,7 @@ FURN_CULTURE('islander', { name: 'Ring Sea Islanders', pack: 'ringsea-islander',
   } });
 /* END PALETTE */
 const ISL_COMMON = {
+  emblem: { field: 'tapaBark', edge: 'timberKoaDark', band: 'tapaSand', ink: 'tapaWhite' },
   wood: 'timberKoa', woodDark: 'timberKoaDark', woodLight: 'timberKoaLight', woodFam: 'wood',
   cloth: ['tapaBark', 'tapaSand', 'tapaWhite', 'clothSea'], clothFam: 'cloth',
   accent: 'shellWhite', accentFam: 'bone', metal: 'iron', metalFam: 'metal',

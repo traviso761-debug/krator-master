@@ -16,6 +16,7 @@ FURN_CULTURE('rustic', { name: 'Rustic Highlanders', pack: null, influences: 'Al
   } });
 /* END PALETTE */
 const RUS_COMMON = {
+  emblem: { field: 'clothLoden', edge: 'timberLarchBlack', band: 'clothWool', ink: 'clothWool', ink2: 'clothRedCheck' },
   wood: 'timberLarch', woodDark: 'timberLarchDark', woodLight: 'timberLarchLight', woodFam: 'wood',
   cloth: ['clothLoden', 'clothRedCheck', 'clothWool', 'clothGreyWool'], clothFam: 'cloth',
   accent: 'hornGrey', accentFam: 'bone', metal: 'iron', metalFam: 'metal',

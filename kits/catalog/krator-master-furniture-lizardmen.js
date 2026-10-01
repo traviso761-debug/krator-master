@@ -17,6 +17,7 @@ FURN_CULTURE('lizardmen', { name: 'Lizardmen', pack: null, influences: 'reptilia
   } });
 /* END PALETTE */
 const LIZ_COMMON = {
+  emblem: { field: 'clothMoss', edge: 'timberSwampDark', band: 'clothOchre', ink: 'scaleTurquoise', ink2: 'clothBlack' },
   wood: 'timberDrift', woodDark: 'timberDriftDark', woodLight: 'timberDriftLight', woodFam: 'wood',
   cloth: ['clothMoss', 'clothOchre', 'clothRust', 'clothSand'], clothFam: 'cloth',
   accent: 'scaleJade', accentFam: 'jade', metal: 'copper', metalFam: 'bronze',

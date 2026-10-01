@@ -7,7 +7,8 @@
    krator-master-buildings-*.js.
 
    Provides: scene/camera/renderer, orbit + WASD/walk camera control, a
-   geometry kit (box/cyl/cone/dome/blob/ball/beam/rod/frustum/pyrRoof), a
+   geometry kit (box/cyl/cone/dome/blob/ball/beam/rod/frustum/pyrRoof, and
+   decal: a painted canvas panel for emblems and hangings), a
    procedural F.tree() helper, the three registries with per-variant
    variantDims support, buildAsset/buildFurn/buildPlant (each returning a
    selectable THREE.Group), rebuildInstance() and measureInstance(), the
@@ -330,6 +331,31 @@ function mkFrustum(x, y, z, rBottom, rTop, h, ry, color, family, sides) {
    The 4-sided cone is a diamond in plan, so the geometry is turned 45 deg first and
    then scaled, which makes the covered footprint exactly w by d rather than w+d over
    root two — and keeps a non-square roof square to its building. */
+/* a painted panel: a plane of w by h facing +z (turned by ry), bottom-centre at (x, y, z), with a
+   canvas texture painted ONCE per key by paint(ctx, W, H) and cached. Canvas pixels map 128 per metre
+   (clamped 32..512), so an emblem stays round on a tall banner and a wide frieze alike. The material
+   carries `family` like any other (cloth, hide, plaster ...). Deterministic as long as paint() is. */
+const _texCache = new Map();
+function mkDecal(x, y, z, w, h, ry, key, paint, family) {
+  let m = _texCache.get(key);
+  if (!m) {
+    const c = document.createElement('canvas');
+    c.width = Math.max(32, Math.min(512, Math.round(w * 128)));
+    c.height = Math.max(32, Math.min(512, Math.round(h * 128)));
+    paint(c.getContext('2d'), c.width, c.height);
+    const t = new THREE.CanvasTexture(c);
+    t.anisotropy = 4;
+    const rough = family === 'metal' || family === 'gold' ? 0.45 : 0.92;
+    m = new THREE.MeshStandardMaterial({ map: t, roughness: rough, metalness: family === 'gold' ? 0.6 : 0, side: THREE.DoubleSide });
+    m.userData.family = family || '';
+    _texCache.set(key, m);
+  }
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(w, h), m);
+  mesh.position.set(x, y + h / 2, z); mesh.rotation.y = ry || 0;
+  return _add(mesh);
+}
+/* a colour number as a CSS colour, for canvas painting */
+function cssCol(c) { return '#' + ('000000' + (c >>> 0 & 0xffffff).toString(16)).slice(-6); }
 function mkPyrRoof(x, y, z, w, h, d, ry, color, family) {
   const geo = new THREE.ConeGeometry(0.5, Math.max(h, 0.02), 4);
   geo.rotateY(Math.PI / 4);
@@ -791,6 +817,8 @@ function makeFrame(x, z, ry, opt) {
     }
   };
   F.rod = (ax, ay, az, bx, by, bz, r, color, family) => { const [ax2, az2] = toWorld(ax, az), [bx2, bz2] = toWorld(bx, bz); mkRod(ax2, F.y + ay, az2, bx2, F.y + by, bz2, r, color, family); };
+  F.decal = (lx, ly, lz, w, h, ry2, key, paint, family) => { const [x2, z2] = toWorld(lx, lz); mkDecal(x2, F.y + ly, z2, w, h, F.ry + (ry2 || 0), key, paint, family); };
+  F.css = cssCol;
   F.lamp = (lx, ly, lz, amp, rad) => { const [x2, z2] = toWorld(lx, lz); const l = new THREE.PointLight(0xffb066, amp || 1, rad || 10); l.position.set(x2, F.y + ly, z2); _add(l); };
   F.tree = (lx, lz, kind, h, ly) => treeHelper(F, lx, lz, kind, h, ly || 0);
   return F;

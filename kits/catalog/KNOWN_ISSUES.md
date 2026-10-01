@@ -12,9 +12,10 @@
   several minutes each. Partial runs are cheap: `?cultures=xanadu,voth` (verify.py `--query cultures=...`)
   lays out only those cultures, and `--rows xanadu,court` screenshots only the rows named. The full page
   on a real GPU is fine; a gallery visitor on a weak machine should open a `?cultures=` page.
-- [ ] **Kit tapestries draw a culture's device in blocks**, not the canvas `SYMBOLS` of
-  `core/sockets/80-cultures.js` (those need the Post-Apoc engine's canvas helpers). The hyperboloid
-  (Yuni) and triskele (Republic, approximated by `'spiral'`) have no block device yet.
+- [ ] **Painted hangings are one texture per key.** `F.decal` paints a canvas once per key (culture,
+  symbol, variant, size, colours) and caches the material, so a thousand tapestries cost a few dozen
+  canvases; a host that replaces `FPAL` colours after a piece was built keeps the old painting until
+  the page reloads. The paint functions draw from their own seeded stream, never the piece's.
 - [ ] **Under-size warnings** (a piece built more than 30 % smaller than declared on an axis) are expected for
   wall art, tapestries and racks: their declared depth leaves room for a skull or a hanging cloak to be swapped
   in by the second variant, so the first often builds shallower. The sheet has about 145 such WARN lines, none
@@ -34,6 +35,9 @@
 - **The engine's `F.cyl` is vertical only.** A disc that faces a wall (a plate, a shield, a medallion) is a
   short `F.rod` along z: `FK.disc()`. Early kit drafts turned cylinders with `ry` and got vertical discs
   poking through the wall; the anchor audit caught all of them.
+- **Emblems are the socket packs' own.** The first hangings drew each culture's device in blocks and the
+  Republic's triskele came out as a spiral; the packs' canvas `SYMBOLS` moved to `core/sockets/38-symbols.js`
+  (out of the Post-Apoc building-fragment number range 4x-7x) and the catalog vendors and paints them.
 - **`kits/interiors` gained a wealth band and the `art` type**; its walker smoothing now runs on the rounded
   route points (a layout from the new sets exposed a sub-millimetre mismatch between smoothing and the audit).
 
