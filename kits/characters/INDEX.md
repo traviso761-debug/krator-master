@@ -31,5 +31,6 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `38-pilgrim.js` | 6 | the desert pilgrim (1) |
 | `39-crescent.js` | 6 | the crescent priest (1) |
 | `40-sardaukar.js` | 7 | the Sardaukar (1) |
+| `41-moebius.js` | 16 | Moebius: the Dune costume sheet (1) |
 | `50-walk.js` | 19 | pose, walk cycle, scene (1); scene and loop (149) |
 | `99-tail.html` | <1 |  |
