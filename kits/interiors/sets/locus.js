@@ -39,9 +39,9 @@
         'not planned separately' },
     { key: 'stilt_mid#1', name: 'Pastel stilt house (variant 1: two storeys under a sail)', culture: 'eastabyss', wealth: 0.53,
       types: ['single-family dwelling'], lot: [16, 16],
-      bodies: [{ id: 'house', poly: rect(8.6, 6.6, 0, -2.0), y: 2.8, levels: [{ h: 3.1 }, { h: 2.8, poly: rect(8.0, 6.0, 0, -2.0) }], wall: 0.3,
+      bodies: [{ id: 'house', poly: rect(8.6, 6.6, 0, -2.0), y: 2.8, levels: [{ h: 3.1 }, { h: 2.8 }], wall: 0.3,
         roof: 'flat', doors: [{ at: [0, 1.3], w: 1.1 }], program: [['living', 'kitchen'], ['bedroom', 'bedroom']] }],
-      note: 'the upper storey is the 8.0 x 6.0 box set 0.3 m in on every side; the loggia balcony in front of it is open' },
+      note: 'the upper storey is the 8.0 x 6.0 box set 0.3 m in on every side, planned on the ground storey\'s outline (the planner fits its stair along an exterior wall of both); the loggia balcony in front of it is open' },
 
     /* ---------- Abyssal-desert canvas */
     { key: 'tent_pavilion', name: 'Great pavilion tent', culture: 'eastabyss', wealth: 0.4, types: ['prop', 'tavern/inn'], lot: [18, 14],
