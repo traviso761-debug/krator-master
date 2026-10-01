@@ -17,8 +17,8 @@
 // ---------------------------------------------------------------- helpers
 // the lawn gone rank: darker, untextured like MAT.lawn (a textured turf shows
 // the concrete map's boards as rings on a polar grid)
-MAT.adLawn=new THREE.MeshStandardMaterial({color:0x557a34,roughness:1,metalness:0,side:DS});
-MAT.adLawnR=new THREE.MeshStandardMaterial({color:0x3a5626,roughness:1,metalness:0,side:DS});
+MAT.adLawn=new THREE.MeshStandardMaterial({color:0x3a5a20,roughness:1,metalness:0,side:DS});
+MAT.adLawnR=new THREE.MeshStandardMaterial({color:0x2a3e1c,roughness:1,metalness:0,side:DS});
 // A loft through closed rings of equal count [[x,y,z],...], flat-shaded, with
 // fan caps on the first and last ring (rings must be convex for the caps).
 function adLoft(acc,rings,noCaps){const P=[];const tri=(a,b,c)=>P.push(a[0],a[1],a[2],b[0],b[1],b[2],c[0],c[1],c[2]);
