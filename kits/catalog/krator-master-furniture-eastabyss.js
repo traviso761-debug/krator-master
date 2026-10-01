@@ -196,7 +196,7 @@ FURN({
     [0, 1, 2].forEach(function (i) { const a = i / 3 * F.TAU; F.rod(Math.cos(a) * 0.32, 0, Math.sin(a) * 0.32, Math.cos(a) * 0.2, 0.5, Math.sin(a) * 0.2, 0.03, leg, 'rust'); });
     const prof = [[0.22, 0.45], [0.34, 0.7], [0.38, 0.95]];
     for (let i = 0; i + 1 < prof.length; i++) F.frustum(0, prof[i][1], 0, prof[i][0], prof[i + 1][0], prof[i + 1][1] - prof[i][1], 0, c, 'rust', 10);
-    F.cyl(0, 0.82, 0, 0.33, 0.06, 0, F.col(F.variant ? 'coalBed' : 'ashCold'), 'plaster');
+    F.cyl(0, 0.93, 0, 0.37, 0.04, 0, F.col(F.variant ? 'coalBed' : 'ashCold'), 'plaster');       /* the coals, at the rim (a frustum is capped) */
     if (F.variant) {
       const s = 0.25;
       F.cone(0, 0.9, 0, s * 0.5, s * 2.2, 0, F.col('flameFlare'), 'glow');
@@ -215,7 +215,7 @@ FURN({
     F.cyl(0, 0, 0, 0.9, 0.25, 0, F.col('lacquerRed'), 'plaster');
     const prof = [[0.35, 0.25], [0.25, 0.9], [0.5, 1.1], [1.05, 1.35], [1.15, 1.5]], gild = F.col('giltDeep');
     for (let i = 0; i + 1 < prof.length; i++) F.frustum(0, prof[i][1], 0, prof[i][0], prof[i + 1][0], prof[i + 1][1] - prof[i][1], 0, gild, 'gold', 18);
-    F.cyl(0, 1.32, 0, 1.0, 0.08, 0, F.col('coalDeep'), 'plaster');
+    F.cyl(0, 1.47, 0, 1.13, 0.04, 0, F.col('coalDeep'), 'plaster');                                  /* the coal bed, at the rim */
     if (F.variant) {
       const s = 0.55;
       F.cone(0, 1.4, 0, s * 0.5, s * 2.2, 0, F.col('flameFlare'), 'glow');
