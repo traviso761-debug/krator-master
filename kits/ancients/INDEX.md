@@ -6,7 +6,7 @@ The Ancients kit: ruined megastructures of the ancient civilisation, 33 structur
 
 Docs: `API.md`, `DESIGN.md`, `HANDOVER.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `README.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/ancients-kit.html`, `dist/arcbeam.html`, `dist/arcoindian.html`, `dist/arcoindian2.html`, `dist/arcube.html`, `dist/blades.html`, `dist/canyon.html`, `dist/crescent.html`, `dist/dalab.html`, `dist/darco.html`, `dist/drum.html`, `dist/engines.html`, `dist/forest.html`, `dist/hexahedron.html`, `dist/hill.html`, `dist/iziz-style.html`, `dist/launch.html`, `dist/ledge.html`, `dist/lighthouse.html`, `dist/monolith.html`, `dist/plymouth.html`, `dist/ring.html`, `dist/skyi.html`, `dist/skyj.html`, `dist/skyk.html`, `dist/spire.html`, `dist/theodiga.html`, `dist/trigon.html`, `dist/veladiga.html`, `dist/wheel.html`, `dist/wing.html`, `dist/worn.html`
+Built output (never open it; edit `src/` and rebuild): `dist/alt-domestic.html`, `dist/ancients-kit.html`, `dist/arcbeam.html`, `dist/arcoindian.html`, `dist/arcoindian2.html`, `dist/arcube.html`, `dist/blades.html`, `dist/canyon.html`, `dist/crescent.html`, `dist/dalab.html`, `dist/darco.html`, `dist/drum.html`, `dist/engines.html`, `dist/forest.html`, `dist/hexahedron.html`, `dist/hill.html`, `dist/iziz-style.html`, `dist/launch.html`, `dist/ledge.html`, `dist/lighthouse.html`, `dist/monolith.html`, `dist/plymouth.html`, `dist/ring.html`, `dist/skyi.html`, `dist/skyj.html`, `dist/skyk.html`, `dist/spire.html`, `dist/theodiga.html`, `dist/trigon.html`, `dist/veladiga.html`, `dist/wheel.html`, `dist/wing.html`, `dist/worn.html`
 
 Build: `cd kits/ancients && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -106,6 +106,9 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `8ag-blades.js` | 56 **big** |  |
 | `8ah-engines.js` | 33 **big** | THE HARROW (131); THE STRIDER (230); THE BREECH (314); THE GYRE (382); THE PRESS (435) |
 | `8ai-engines2.js` | 19 | THE SLEEPER (32); THE CARAPACE (101); THE RETORTS (148); THE NEEDLE (202); THE RAM (248) |
+| `8ak-alt-a-houses.js` | 25 | helpers (27) |
+| `8ak-alt-b-civic.js` | 27 | helpers (17) |
+| `8ak-alt-c-works.js` | 20 |  |
 | `90-scene.js` | 7 | scene (1) |
 | `91-probe.js` | 5 | probe (window._api) (1) |
 | `92-camera.js` | 6 | camera control (1); DAY / NIGHT (2) |
@@ -117,6 +120,7 @@ Each target adds its own fragments to `src/` and builds one output.
 
 | Target | Fragments | KB |
 |---|---|---|
+| `alt-domestic` | `89z-rows.js`, `91z-views.js` | 3 |
 | `arcbeam` | `89z-rows.js`, `91z-views.js` | 9 |
 | `arcoindian` | `89z-rows.js`, `91z-views.js` | 11 |
 | `arcoindian2` | `89z-rows.js`, `91z-views.js` | 12 |
