@@ -13,7 +13,7 @@ stages, and anything only one of them needs travels with that one.
 The front page at `/` lists whatever the server is serving, and every scene carries a Home button and a menu
 of the others. Both read `/scenes.json`, which the server builds from `site.toml`.
 
-**Site:** http://192.168.124.227:8000/
+**Site:** `http://<this computer's address>:8000/` (`./sitectl url` prints it for the computer it runs on)
 
 ## Controls
 
@@ -2044,11 +2044,11 @@ The systemd **user** service `menagerie` (`~/.config/systemd/user/menagerie.serv
 runs `server.py --check` before starting, so a missing page file stops start-up. Raw commands, without
 `sudo`: `systemctl --user status|start|stop|restart|reload menagerie`, `journalctl --user -fu menagerie`. With
 `sudo` they fail with `Failed to connect to user scope bus`. The service starts at login; for boot
-without a login run `sudo loginctl enable-linger snapwerks` once.
+without a login run `sudo loginctl enable-linger $USER` once.
 
 ## Network notes
 
-- The router assigns `192.168.124.227` and may change it (`hostname -I`; reserve it in the router).
+- The router assigns this computer's address and may change it (`hostname -I` shows it; reserve it in the router).
 - The firewall is off. If you enable one: `sudo ufw allow 8000/tcp`.
 - Everything is served locally; no page needs the internet.
 

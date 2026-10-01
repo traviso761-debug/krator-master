@@ -6,7 +6,11 @@ to gallery/site/worlds/<slug>.html, and writes gallery/site/index.html from
 index.template.html. Claude then publishes gallery/site/ as the Artifact named
 in gallery/README.md.
 
-Usage:  python3 gallery/build_gallery.py [--no-build | --build-missing] [--out DIR --local-three URL]
+Usage:  python3 gallery/build_gallery.py [--no-build | --build-missing] [--out DIR --local-three URL] [--lod CONFIG]
+
+--lod CONFIG (a TOML file: host/lod.toml) puts gallery/krator-bar.js first in every page: a bar to go to the other
+worlds, set the level of detail, or go home, and that world's level of detail; see both files. Without it the pages
+are exactly as built.
 
 --build-missing rebuilds only the worlds whose built page is absent (a fresh clone lacks the port's, which are
 not committed) and reuses every other built page as it is: what host/sitectl.bat does on Windows, where the
@@ -72,6 +76,7 @@ ENTRIES = [
     ('kit', 'reedlake-kit', 'settlements/reedlake/dist/reedlake.html', 'Reed Lake buildings', 'Dwellings, workshops, farms and islands.'),
     ('kit', 'screamers-furniture', 'settlements/screamers/dist/furniture.html', 'Screamer furniture', 'The Screamers\' furniture set.'),
     ('kit', 'locus-kit', 'settlements/locus/locus-kit.html', 'Locus buildings', 'Dwellings, farm, infrastructure, petroleum and power.'),
+    ('kit', 'abyss-kit', 'settlements/locus/abyss-kit.html', 'Eastern Abyssal buildings', 'The abyssal-desert city: salvage and stilt housing, shops, inn and tavern, caravanserai, cone-shell library, temple of the altar, the Headman\'s palace, walls and citadel, granary and windpump.'),
 
     # Arcologies: each its own kit target. 'new' marks this month's group (QA group arcC).
     ('arcology', 'arc-theodiga', 'kits/ancients/dist/theodiga.html', 'Theodiga',
@@ -204,6 +209,20 @@ def bundle(path, three=THREE_CDN):
     return re.sub(r'<script src="([^"]+)"></script>', inline, html).replace(THREE_CDN, three)
 
 
+def bar_head(cfg, slug):
+    """The <script>s that give a world its bar and level of detail: the config for this page, then krator-bar.js."""
+    tpl = open(os.path.join(HERE, 'index.template.html'), encoding='utf-8').read()
+    sections = [{'key': k, 'title': t} for k, t in re.findall(r"\{key:'([^']+)',\s*id:'[^']*',\s*title:'([^']+)'", tpl)]
+    conf = {'slug': slug, 'level': cfg.get('worlds', {}).get(slug, cfg.get('default', 'high')),
+            'levels': cfg.get('levels', {}), 'home': '/', 'share': cfg.get('share', '/share'), 'sections': sections,
+            'scenes': [{'slug': e[1], 'name': e[3], 'section': e[0], 'blurb': e[4], 'href': '/worlds/%s.html' % e[1]}
+                       for e in ENTRIES],
+            'extra': cfg.get('extra', [])}
+    js = open(os.path.join(HERE, 'krator-bar.js'), encoding='utf-8').read().replace('</script', '<\\/script')
+    return ('<script>window.KRATOR_BAR=%s;</script>\n<script>\n%s\n</script>\n'
+            % (json.dumps(conf, ensure_ascii=False).replace('</', '<\\/'), js))
+
+
 def arg(name):
     return sys.argv[sys.argv.index(name) + 1] if name in sys.argv else None
 
@@ -233,16 +252,33 @@ def main():
     os.makedirs(os.path.join(site, 'worlds'))
     if three != THREE_CDN:   # the same r128 build every settlement vendors
         shutil.copy(os.path.join(ROOT, 'settlements/voth/three.min.js'), os.path.join(site, 'worlds', 'three.min.js'))
+    lod = None
+    if arg('--lod'):
+        import tomllib   # Python 3.11+; only the LAN build needs it
+        with open(arg('--lod'), 'rb') as f:
+            lod = tomllib.load(f)
+        unknown = set(lod.get('worlds', {})) - {e[1] for e in ENTRIES}
+        if unknown:
+            print('lod: no gallery page named %s (names are the file names under /worlds/)' % ', '.join(sorted(unknown)))
     items = []
     for section, slug, path, name, blurb, *rest in ENTRIES:
         src = os.path.join(ROOT, path)
+        page = bundle(src, three)
+        if lod is not None:
+            page = page.replace('<head>', '<head>\n' + bar_head(lod, slug), 1)
         with open(os.path.join(site, 'worlds', slug + '.html'), 'w', encoding='utf-8') as fh:
-            fh.write(bundle(src, three))
+            fh.write(page)
         items.append({'section': section, 'slug': slug, 'name': name, 'blurb': blurb,
                       'mb': round(os.path.getsize(src) / 1048576, 1), 'source': path,
                       'tag': rest[0] if rest else None})
     tpl = open(os.path.join(HERE, 'index.template.html'), encoding='utf-8').read()
     page = tpl.replace('/*ENTRIES*/[]', json.dumps(items, ensure_ascii=False))
+    if lod is not None:   # the LAN site: a way to bring a phone or tablet in
+        share = lod.get('share', '/share')
+        page += ('\n<a id="krator-share" href="%s" style="position:fixed;top:12px;right:12px;z-index:10;'
+                 'background:rgba(18,14,58,.85);color:#e8c98a;border:1px solid #c99a55;padding:7px 12px;'
+                 'font:14px Georgia,serif;text-decoration:none;border-radius:2px">Open on your phone or tablet</a>\n'
+                 % html.escape(share))
     with open(os.path.join(site, 'index.html'), 'w', encoding='utf-8') as fh:
         fh.write(page)
     total = sum(os.path.getsize(os.path.join(site, 'worlds', i['slug'] + '.html')) for i in items)

@@ -1,7 +1,7 @@
 # Hosting Krator Worlds on your network
 
-**Not technical? Start with [START-HERE-WINDOWS.md](../START-HERE-WINDOWS.md)**: Windows and Chrome, step by step,
-no command line. This guide is for anyone who wants to run the Krator site on their own computer and open it from other devices on
+**Not technical? Start with [START-HERE.md](../START-HERE.md)**: Windows, Mac and Linux with Chrome, step by step,
+no programming. This guide is for anyone who wants to run the Krator site on their own computer and open it from other devices on
 the same network (phones, tablets, other PCs). It covers Windows, Linux and macOS. The short reference for
 maintainers is [README.md](README.md).
 
@@ -28,6 +28,7 @@ krator-master/                     (this repository, branch host-server)
 └── host/
     ├── WorldMenagerie/            the World Menagerie itself, embedded with its history (git subtree)
     ├── krator.toml                the settings you edit: port, Krator's routes, what to drop from the Menagerie
+    ├── lod.toml                   each Krator world's level of detail (see "Level of detail")
     ├── sync.py      ──────────►   menagerie/   the Menagerie pages to serve, minus its Voth   (generated)
     │                ──────────►   site.toml    the full route table the server reads         (generated)
     ├── gallery build ─────────►   site/        the gallery, with three.js served locally     (generated)
@@ -80,7 +81,8 @@ host\sitectl.bat serve
 Leave that window open: the site runs as long as it does. **Ctrl+C** stops it. Command Prompt then asks
 "Terminate batch job (Y/N)?"; answer `Y`.
 
-Open the address it prints, such as `http://127.0.0.1:8001/` on this computer or `http://192.168.1.20:8001/` from
+Open the address it prints: `http://localhost:8001/` on this computer, or the one with this computer's network address
+(`http://192.168.x.x:8001/` or similar; the numbers differ on every network) from
 another device on the network.
 
 ### 4. Let other devices in
@@ -116,16 +118,14 @@ git clone -b host-server https://github.com/traviso761-debug/krator-master.git
 cd krator-master/host
 python3 sitectl.py setup                    # copy, build what is missing, check
 ./sitectl install && ./sitectl enable       # a systemd user service named "krator"
-./sitectl health                            # prints ok
-./sitectl url                               # the addresses to open
+./sitectl status                            # running? and the address other devices use
 ```
 
 (`setup` rather than `./sitectl build --no-build`: a fresh download lacks the port's built pages, and only
 `setup` builds them without needing `node`.) To keep the service running after you log out and
 start it at boot, run `sudo loginctl enable-linger $USER` once (`./sitectl boot` shows this).
 
-Everyday commands: `./sitectl status`, `./sitectl logs`, `./sitectl restart`, `./sitectl reload` (applies a
-`krator.toml` change without downtime), `./sitectl update` (after a `git pull`), `./sitectl disable`.
+Day to day, see [Running it day to day](#running-it-day-to-day).
 
 ## macOS
 
@@ -139,6 +139,9 @@ python3 host/sitectl.py serve
 The `python3` that comes with macOS is too old (3.9). Install 3.11 or later from python.org first. macOS asks
 once whether Python may accept incoming connections; allow it.
 
+Or double-click **`Start Krator.command`** at the top of the repository (on Linux, `./start-krator.sh`): it finds a
+Python 3.11 or later and runs `sitectl.py run` (setup the first time, then serve), like `Start Krator.bat` on Windows.
+
 ## Command reference
 
 | Windows (`host\sitectl.bat …`) or any system (`python3 host/sitectl.py …`) | Linux service (`host/sitectl …`) | What it does |
@@ -151,7 +154,10 @@ once whether Python may accept incoming connections; allow it.
 | `build [--all \| --no-build]` | `build [--no-build]` | build only the gallery (see below) |
 | `check` | `check` | validate the route table and list every address |
 | `url` | `url` | print the addresses to open |
-| `health` | `health` | ask the running server whether it is up |
+| `share` | `share` | the address other devices use, in plain words (the `/share` page shows it with a QR code) |
+| `status` | `status` | is the server up, and at which address (on Linux, with the service's state) |
+| `health` | `health` | ask the running server whether it is up: prints `ok` |
+| `address` | | write `address.json` for the `/share` page (`check` and `serve` do it themselves) |
 | `firewall` | | print the Windows firewall commands |
 | | `status`, `logs`, `follow`, `restart`, `reload`, `stop`, `disable`, `boot` | manage the systemd service |
 
@@ -161,6 +167,56 @@ built page. `--all` rebuilds every world, which needs `node` for the biomes. `--
 
 Changes to Krator or Menagerie pages show up on the next page load, with no restart needed. A change to
 `krator.toml` needs `sync`, then a restart of `serve` (on Linux, `./sitectl reload`).
+
+## Running it day to day
+
+All commands below are run from the `host` folder of the repository (`cd krator-master/host`), or with the folder in
+front, as in `host/sitectl status`.
+
+**Linux, as the `krator` service** (installed with `./sitectl install && ./sitectl enable`):
+
+| To… | Run |
+|---|---|
+| see whether it is running, and its address | `./sitectl status` |
+| check it answers (prints `ok`) | `./sitectl health` |
+| apply a `krator.toml` change without dropping anyone | `./sitectl sync && ./sitectl reload` |
+| restart it (after changing the port, `host`, or `server.py`) | `./sitectl sync && ./sitectl restart` |
+| stop it / start it | `./sitectl stop` / `./sitectl start` |
+| stop it from starting at login (and stop it now) / undo that | `./sitectl disable` / `./sitectl enable` |
+| read what it has been doing | `./sitectl logs` (the last 50 lines), `./sitectl follow` (live; Ctrl+C to quit) |
+| bring in a `git pull` | `./sitectl update` (sync, build, reload) |
+
+`reload`, `restart`, `start` and `enable` check the configuration first and refuse a broken one, so a mistake in
+`krator.toml` never takes the site down: fix it and run the command again.
+
+**Windows, macOS, or Linux without the service** (the site runs in a terminal window, from `Start Krator` or
+`sitectl.py serve`):
+
+| To… | Do |
+|---|---|
+| see whether it is running | the window is open and its last lines show the addresses; or, in another terminal, `python3 host/sitectl.py status` (`host\sitectl.bat status` on Windows) |
+| stop it | close the window, or press Ctrl+C in it |
+| restart or reload it (after a `krator.toml` change, or a `git pull`) | stop it, run `update` (or `sync` for a config change), then start it again |
+
+**What needs what.** A rebuilt world or a Menagerie change is live on the next page load: no restart. A change to
+`host/lod.toml` needs `build`. A change to `krator.toml` needs `sync`, then `reload` (service) or a restart (window).
+A new port or `host` needs a restart in both cases.
+
+## Sharing the address with other devices
+
+Nothing in the repository names a computer or its address: the server works them out where it runs. Every check
+and start writes them to `host/address.json` (not committed), and three things show them:
+
+- **The `/share` page** (also `/phone`): the address in large type with a QR code to scan, a Copy button, and on Apple
+  devices the computer's `.local` name, which keeps working when the router hands out a new number. Linked from the
+  gallery (*Open on your phone or tablet*) and from the **Share** button in every world's Krator bar, which shares
+  that world's own address.
+- **`sitectl share`** (and `sitectl status`) prints the same address in plain words.
+- **The Start Krator window** prints it when the site starts, and opens the gallery in the browser.
+
+The address belongs to this network: on another network, or after the router gives the computer a new one, open
+`/share` again. For an address that never changes, reserve one for this computer in the router's settings (often
+called *DHCP reservation*).
 
 ## Keeping it up to date
 
@@ -212,6 +268,38 @@ Everything is set in `host/krator.toml`. After an edit, run `sync`, then restart
 - Seven **development pages** that are not in the gallery: the Ancients kit's `skyi`, `skyj`, `skyk` and `dalab`
   targets, and Iziz's agent sheets `w-a`, `w-b`, `w-c`.
 
+## The Krator bar and level of detail (Krator worlds only)
+
+Every Krator world on this site gets a bar: at the top centre, or the first of bottom centre, top right, bottom left
+and bottom right that the world's own controls leave free (checked again on resize and as a world adds controls):
+
+- **Scenes**: every Krator world, grouped as on the gallery, the current one marked; then the links in `extra` in
+  `host/lod.toml` (the World Menagerie and the gallery). Escape closes it.
+- **LOD**: the world's level of detail: **high** (the page exactly as built), **medium** or **low**. Picking one
+  reloads the page, and that browser remembers the choice for that world. `?lod=low` at the end of the address sets
+  it for one visit.
+- **Home**: back to the gallery.
+
+Clicks on the bar never reach the world underneath. The World Menagerie's pages are not touched.
+
+**`host/lod.toml` sets each world's starting level and what each level does.** Edit it, then run `build` (on Linux
+`./sitectl build --no-build`); no restart is needed. A world is named by its file name under `/worlds/`
+(`rift`, `arc-hill`, ...); `build` warns about a name it does not know. A level can set:
+
+| Setting | What it does |
+|---|---|
+| `pixelRatio` | cap on drawing resolution: 1 = one pixel per screen pixel; 0.75 renders smaller and scales up |
+| `antialias` | `false` turns edge smoothing off |
+| `shadows` | `false` turns shadow maps off |
+| `shadowMax` | largest shadow map, in pixels |
+| `cullPx` | skip drawing anything smaller than this many pixels on screen (0: never). Not used by the shipped levels: most worlds build a structure from many small meshes, so it takes buildings apart |
+| `fps` | most frames drawn per second (0: no cap) |
+
+Levels can be added or renamed freely; the LOD menu lists them in the file's order. How it works:
+`gallery/build_gallery.py --lod host/lod.toml` puts `gallery/krator-bar.js` first in each world's page. That script
+draws the bar and adjusts three.js's renderer from outside: no world's code or build changes, and at **high** it
+changes nothing about the world at all.
+
 ## Keep it on your network
 
 The server is for a home or office network. **Never forward its port on your router** or expose it to the
@@ -225,7 +313,7 @@ internet. It serves only the files its route table lists and nothing else, but i
 | Typing `python` opens the Microsoft Store | Windows' Store shortcut. Install Python from python.org, or turn the shortcut off: Settings → Apps → Advanced app settings → App execution aliases. |
 | `no site.toml yet` | Run `setup` first. |
 | `Address already in use`, or "only one usage of each socket address" | Another program, or another copy of the server, has the port. Stop it, or run `serve --port 8002`. |
-| Other devices cannot connect | They must be on the same network. Use the address with this computer's network IP, not `127.0.0.1`. On Windows, see step 4 above. |
+| Other devices cannot connect | They must be on the same network. Use the address `/share` (or `sitectl share`) shows, not `localhost` or `127.0.0.1`. On Windows, see step 4 above. |
 | A world's page is blank | Open the browser's developer console (F12). A "MIME type" error means an old `server.py`: run `git pull`. |
 | `build --all` fails on a biome | That build needs `node`. Use `build` without `--all`; the biomes' built pages are already in the repository. |
 | `sync --check` says `DIFFERS from upstream` | `host/server.py` no longer matches `host/WorldMenagerie/server.py`. Make the fix in the Menagerie copy, then copy it over `host/server.py`. |
