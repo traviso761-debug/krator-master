@@ -26,7 +26,7 @@
 // Small yellow maintenance robots and gantries crawl on the outer members.
 //
 // DECAY. The layout comes from its own stream (shzRng), so every decay is the
-// same building. 1, ruined: rust; a sector of the +x face round CC has failed,
+// same building. 1, ruined: rust; the NE corner round CC has failed,
 // its members and nodes and the towers hung in it lying in the lagoon below;
 // ~8% of the other members snapped into drooping stubs; glass gone, towers
 // eaten through to dark cores; the lagoon gone green; vines hanging off the
@@ -91,8 +91,12 @@ MAT.shzPodH=new THREE.MeshStandardMaterial({map:TEX.shzFac,color:0x857a6c,emissi
 // radius and length, so a whole member is placed at scale 1.
 function shzUV(g,su,sv){const U=g.attributes.uv;for(let i=0;i<U.count;i++)U.setXY(i,U.getX(i)*su,U.getY(i)*sv);return g;}
 const SHZ_TUBE=()=>shzUV(new THREE.CylinderGeometry(5,5,1,20,1,true),TAU*5/8,180/8);
+// The rust map is keyed to the foot of each tile (drips under ledges); wrapped
+// round a tube that read as a corrugated hose. On the rust tube u and v swap,
+// so the streaks run along the member.
+function shzSwapUV(g){const U=g.attributes.uv;for(let i=0;i<U.count;i++){const a=U.getX(i);U.setXY(i,U.getY(i),a);}return g;}
 const SHZ_NODE=()=>shzUV(new THREE.SphereGeometry(13,22,16),TAU*13/8,13*Math.PI/8);
-kdef('shzTubeW',SHZ_TUBE(),MAT.white);   kdef('shzTubeR',SHZ_TUBE(),MAT.rust);
+kdef('shzTubeW',SHZ_TUBE(),MAT.white);   kdef('shzTubeR',shzSwapUV(SHZ_TUBE()),MAT.rust);
 kdef('shzNodeW',SHZ_NODE(),MAT.shzSteel);kdef('shzNodeR',SHZ_NODE(),MAT.shzSteelR);
 kdef('shzSlvW',shzUV(new THREE.CylinderGeometry(6.6,6.6,1,20,1,true),TAU*6.6/8,1.3),MAT.shzSteel);
 kdef('shzSlvR',shzUV(new THREE.CylinderGeometry(6.6,6.6,1,20,1,true),TAU*6.6/8,1.3),MAT.shzSteelR);
@@ -149,8 +153,11 @@ function buildSpire(scene,gx,gz,d){reseed(9310+d);KOFF=[gx,0,gz];
   if(k<N)for(const q of[[0,0],[1,0],[0,1],[1,1]])addM(n,NI(k+1,i+q[0],j+q[1]),false);}
 
  // ---- the collapse (ruined and rehabilitated: the same sector) -----------------
- // on the south-east arris, mid height: the one the hero camera looks at
- const CC=[250,400,250],RC=240,inC=p=>len3(sub3(p,CC))<RC;
+ // THE NORTH-EAST CORNER, bitten off from the piers to ~420 m. A hole in the
+ // middle of a face does not read: the octet lattice is so redundant that the
+ // layers behind fill it in. A missing corner changes the silhouette (it is the
+ // hero's right-hand foot) and drops its debris outward into open water.
+ const CC=[400,250,-400],RC=300,inC=p=>len3(sub3(p,CC))<RC;
  const nGone=NP.map(p=>!!dd&&len3(sub3(p,CC))<RC*.92);
  const brokeP=d===1?.085:.035;
  for(const m of MEM){const mid=mul3(add3(NP[m.a],NP[m.b]),.5);m.state='ok';
@@ -247,6 +254,7 @@ function buildSpire(scene,gx,gz,d){reseed(9310+d);KOFF=[gx,0,gz];
  const OBS=[];   // footprints standing in the lagoon: [x,z,r]
  const TERR=[];  // terrace bands for planting: {cx,cz,hi,ho,y}
  const stepped=(cx,cz,hws,h0,dh,bk)=>{let y=h0;
+  if(dd&&Math.hypot(cx-CC[0],cz-CC[2])<RC*.9)hws=hws.slice(0,2);   // crushed under the fallen corner
   rectWalls(cx,cz,hws[0]+5,hws[0]+5,0,h0,null,bk.roof);rectTop(cx,cz,hws[0]+5,hws[0]+5,h0,bk.roof);   // plinth
   for(let s=0;s<hws.length;s++){const hw=hws[s];rectWalls(cx,cz,hw,hw,y,y+dh,null,bk.pod);rectTop(cx,cz,hw,hw,y+dh,bk.roof);
    if(s<hws.length-1)TERR.push({cx,cz,hi:hws[s+1],ho:hw,y:y+dh});y+=dh;}
@@ -299,11 +307,14 @@ function buildSpire(scene,gx,gz,d){reseed(9310+d);KOFF=[gx,0,gz];
   if(kind==='cyl')s.r=14+r1*8;else{s.hw=18+r1*8;s.hd=10+r2*5;if(r3<.5){const t=s.hw;s.hw=s.hd;s.hd=t;}}
   const rho=kind==='cyl'?s.r:Math.hypot(s.hw,s.hd);
   s.y0=WL+2;s.y1=Y(N-1)-(rho+4)*1.42-rs(0,28);
+  const gone=dd&&len3(sub3([cx,(s.y0+s.y1)/2,cz],CC))<RC;
   rectWalls(cx,cz,rho+6,rho+6,0,WL+2,null,BK.roof);rectTop(cx,cz,rho+6,rho+6,WL+2,BK.roof);OBS.push([cx,cz,(rho+6)*1.42]);
+  if(gone){DROP.push(s);continue;}
   towerGeo(s,BK,hole);
   if(r2<.7){if(kind==='cyl')frus(cx,cz,s.r*.94,RN*.5,s.y1,Y(N-1)-RN*.8,BK.head);else pyr(cx,cz,s.hw*.96,s.hd*.96,s.y1,Y(N-1)-RN*.8,.12,BK.head);}}
  // piers under every base node, a capital under the node and a fender at the waterline
- for(let i=0;i<=N;i++)for(let j=0;j<=N;j++){const p=NP[NI(N,i,j)];
+ for(let i=0;i<=N;i++)for(let j=0;j<=N;j++){const n=NI(N,i,j),p=NP[n];
+  if(nGone[n]){const hs=8+10*h3(i,j,9.59);kput(PIER,[p[0],hs/2,p[2]],null,[1,hs,1],null);OBS.push([p[0],p[2],18]);continue;}
   kput(PIER,[p[0],(YB-RN*.6-6)/2,p[2]],null,[1,YB-RN*.6-6,1],null);
   kput(CAP,[p[0],YB-RN*.6-3,p[2]],null,[1,6,1],null);
   beam('shzBand',[p[0],WL-.5,p[2]],[p[0],WL+1.6,p[2]],1.9,1.9);
