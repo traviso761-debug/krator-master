@@ -113,22 +113,26 @@ function stovepipe(x,y,z,h,o){o=o||{};const r=o.r||.09;const c=jc(pick([0x4a4038
 function solar(x,y,z,w,d,ry,tilt,o){o=o||{};W(x,y,z,ry||0,()=>{const t=tilt===undefined?.5:tilt;plane4('glass',[-w/2,0,-d/2*Math.cos(t)],[w/2,0,-d/2*Math.cos(t)],[-w/2,d*Math.sin(t),d/2*Math.cos(t)],[w/2,d*Math.sin(t),d/2*Math.cos(t)],.05,jc(0x1a2a4a,.05));
   beam('iron',[-w/2,0,-d/2*Math.cos(t)],[w/2,0,-d/2*Math.cos(t)],.05,jc(0x8a8a86,.05));const n=Math.round(w/1.6);for(let k=0;k<=n;k++){const px=-w/2+k*w/n;beam('iron',[px,-.05,-d/2*Math.cos(t)],[px,d*Math.sin(t),d/2*Math.cos(t)],.05,jc(0x8a8a86,.04));}
   for(const sx of [-1,1])beam('iron',[sx*w/2*.8,-y,d/4],[sx*w/2*.8,d*Math.sin(t)*.6,d/4*.4],.06,jc(0x4a4038,.05));});}
-function barrel(x,y,z,col,o){o=o||{};const c=col===undefined?jc(pick([0x8a3a2c,0x2f5f8f,0x4d6f3c,0x8a6a3a,0x9a9a92,0xc99a2e,0x5a5a56]),.08):(typeof col==='number'?jc(col,.05):col);cyl('sheet',x,y,z,.29,.88,c,10,.29,true);for(const f of [.18,.7])cyl('iron',x,y+f,z,.31,.05,jc(0x3a3430,.05),10);
- if(!o.open)cyl('iron',x,y+.88,z,.27,.02,jc(0x4a4038,.05),10);else cyl('rubber',x,y+.85,z,.26,.02,jc(0x201a12,.05),10);}
-function crate(x,y,z,s,ry,col){s=s||.6;box('plank',x,y,z,s,s,s,col===undefined?P('wood'):jc(col,.05),ry);box('plank',x,y+s*.42,z,s*1.02,.05,s*1.02,jc(0x4a3a2c,.05),ry);}
-function sacks(x,y,z,n,ry){W(x,y,z,ry||0,()=>{for(let k=0;k<n;k++){const r=k<3?k:k-3;const yy=k<3?0:.32;sph('cloth',-.4+r*.4,yy+.16,rr(-.05,.05),.22,jc(pick(PAL.cloth),.06),.7);}});}
-function pallet(x,y,z,w,d,ry){box('plank',x,y,z,w,.12,d,P('woodD'),ry);}
-function lamp(x,y,z,h,o){o=o||{};h=h||3.2;beam('iron',[x,y,z],[x,y+h,z],.05,jc(0x4a4038,.05),true,6);beam('iron',[x,y+h,z],[x+(o.arm||.35),y+h-.05,z],.04,jc(0x4a4038,.05),true,5);cone('iron',x+(o.arm||.35),y+h-.3,z,.16,.2,jc(0x5a4a3c,.05),8);sph('glow',x+(o.arm||.35),y+h-.34,z,.09,jc(0xffd890,.03));}
-function fire(x,y,z,r){r=r||.5;for(let k=0;k<7;k++){const a=k/7*TAU;box('plank',x+Math.cos(a)*r*.5,y+.05,z+Math.sin(a)*r*.5,.07,.07,r*.9,jc(0x3a2a1c,.06),a,0,rr(-.3,.3));}
- for(let k=0;k<8;k++){const a=k/8*TAU;box('conc',x+Math.cos(a)*r*1.05,y,z+Math.sin(a)*r*1.05,.16,.14,.16,jc(0x8a8478,.08),a);}cone('glow',x,y+.06,z,r*.42,r*1.1,jc(0xff9a3a,.08),7);cone('glow',x,y+.06,z,r*.22,r*1.5,jc(0xffe28a,.05),6);smokeAt(x,y+r*1.6,z,{r:r*.9,kind:'fire'});}
-function tireStack(x,z,n,o){o=o||{};for(let k=0;k<n;k++)tire(x+rr(-.03,.03),.12+k*.24,z+rr(-.03,.03),o.R||TYR.R,o.t||TYR.t,undefined,rng()*TAU);}
-function junkPile(x,z,r,n,o){o=o||{};for(let k=0;k<n;k++){const a=rng()*TAU,d=Math.sqrt(rng())*r;const px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d,py=(1-d/r)*r*.35;const t=rng();
- if(t<.3)box('sheet',px,py,pz,rr(.4,1.1),rr(.03,.06),rr(.4,1.0),pick([P('rust'),P('galv')]),rng()*TAU,rr(-.5,.5),rr(-.5,.5));
- else if(t<.5)beam('iron',[px,py,pz],[px+rr(-1,1),py+rr(.1,.9),pz+rr(-1,1)],rr(.04,.09),P('rust'),rng()<.5);
- else if(t<.65)tire(px,py+.15,pz,TYR.R,TYR.t,undefined,rng()*TAU,rr(-1,1),rr(-1,1));
- else if(t<.8)box('iron',px,py,pz,rr(.2,.5),rr(.15,.4),rr(.2,.5),P('black'),rng()*TAU);
- else if(t<.9)barrel(px,py,pz,undefined,{open:true});
- else box('plank',px,py,pz,rr(.6,1.4),.05,rr(.1,.2),P('woodD'),rng()*TAU,rr(-.4,.4),rr(-.4,.4));}}
+// YARD FURNITURE: master-catalog pieces placed through FURNISH (91f-furnish.js), not drawn here. Each helper keeps its name and
+// arguments, so no builder changed, and still draws the random numbers its old drawing drew (rngSkip), so the structure a builder
+// draws after it keeps its random stream (colours, patches, jitter). Keys: the pieces harvested from this kit (catalog scrap file).
+function rngSkip(n){for(let i=0;i<n;i++)rng();}
+function barrel(x,y,z,col,o){o=o||{};rngSkip(col===undefined?9:typeof col==='number'?8:6);return FURNISH('pa_drum',x,y,z,0,{v:o.open?1:0});}
+function crate(x,y,z,s,ry,col){s=s||.6;rngSkip(col===undefined?5:4);return FURNISH('pa_crate',x,y,z,ry||0,{v:s>.7?1:0});}   /* the catalog's crates: 0.6 and 0.8 m */
+function sacks(x,y,z,n,ry){rngSkip(4*n);return FURNISH('pa_sacks',x,y,z,ry||0,{v:n>3?1:0});}
+function pallet(x,y,z,w,d,ry){rngSkip(3);return FURNISH('pa_pallet_load',x,y,z,ry||0,{v:0});}
+/* a lamp post: the catalog's (3.2 or 3.8 m, arm toward +x, turned for a negative o.arm). A lamp under 2 m is a bracket light fixed to a
+   structure (a mast, a crane deck, a lookout rail), not a post: it stays drawn here */
+function lamp(x,y,z,h,o){o=o||{};h=h||3.2;if(h>=2){rngSkip(8);return FURNISH('pa_lamp_post',x,y,z,(o.arm||.35)<0?PI:0,{v:h>=3.5?1:0,ax:-.23});}
+ beam('iron',[x,y,z],[x,y+h,z],.05,jc(0x4a4038,.05),true,6);beam('iron',[x,y+h,z],[x+(o.arm||.35),y+h-.05,z],.04,jc(0x4a4038,.05),true,5);cone('iron',x+(o.arm||.35),y+h-.3,z,.16,.2,jc(0x5a4a3c,.05),8);sph('glow',x+(o.arm||.35),y+h-.34,z,.09,jc(0xffd890,.03));}
+/* a camp fire (the catalog's, r 0.5): the smoke stays the kit's (93-anim.js) */
+function fire(x,y,z,r){r=r||.5;rngSkip(41);FURNISH('pa_camp_fire',x,y,z,0,{v:0});smokeAt(x,y+r*1.6,z,{r:r*.9,kind:'fire'});}
+/* a stack of loose tyres (2, 3 or 5 in the catalog). o.fixed: tyres that carry something (a tank's cradle) are structure and stay drawn */
+function tireStack(x,z,n,o){o=o||{};if(o.fixed){for(let k=0;k<n;k++)tire(x+rr(-.03,.03),.12+k*.24,z+rr(-.03,.03),o.R||TYR.R,o.t||TYR.t,undefined,rng()*TAU);return null;}
+ rngSkip(3*n);return FURNISH('pa_tyre_stack',x,o.y||0,z,0,{v:n<=2?0:n===3?1:2});}
+/* a junk pile (the catalog's small r 1.0 or large r 1.4); the skip replays the old draw: three numbers per item, then what its kind drew */
+function junkPile(x,z,r,n,o){o=o||{};for(let k=0;k<n;k++){rng();rng();const t=rng();rngSkip(t<.3?13:t<.5?8:t<.65?3:t<.8?7:t<.9?9:8);}
+ return FURNISH('pa_junk_pile',x,o.y||0,z,0,{v:r>=1.3?1:0});}
 function antenna(x,y,z,h){beam('iron',[x,y,z],[x,y+h,z],.03,jc(0x8a8a86,.05),true,5);for(let k=1;k<4;k++)beam('iron',[x-.5+k*.05,y+h*(.35+k*.14),z],[x+.5-k*.05,y+h*(.35+k*.14),z],.02,jc(0x8a8a86,.05),true,4);}
 function fenceRun(x0,z0,x1,z1,h,o){o=o||{};h=h||1.6;const L=Math.hypot(x1-x0,z1-z0);if(L<.2)return;const n=Math.max(1,Math.round(L/2.4));const ang=Math.atan2(-(z1-z0),x1-x0);
  for(let k=0;k<=n;k++){const t=k/n;const px=x0+(x1-x0)*t,pz=z0+(z1-z0)*t;beam('wood',[px,0,pz],[px,h+.15,pz],.09,jc(0x5c4630,.06),true,6);}
@@ -141,8 +145,8 @@ function bottleString(a,b,n,o){o=o||{};for(let k=0;k<n;k++){const t=(k+.5)/n;con
  beam('plain',[x,y,z],[x,y-len,z],.006,jc(0x6a5a44,.05),true,3);const cl=pick([0x3f9a52,0xc98a2a,0x2f62b8,0xd5ecea,0xa04a2a]);cyl('glass',x,y-len-.26,z,.05,.24,jc(cl,.05),6);cyl('glass',x,y-len-.02,z,.02,.1,jc(cl,.05),6);}
  beam('plain',a,[(a[0]+b[0])/2,(a[1]+b[1])/2-.25,(a[2]+b[2])/2],.008,jc(0x6a5a44,.05),true,3);beam('plain',[(a[0]+b[0])/2,(a[1]+b[1])/2-.25,(a[2]+b[2])/2],b,.008,jc(0x6a5a44,.05),true,3);}
 // water butt on stilts: a small tank + legs + downpipe
-function waterButt(x,y,z,r,h,o){o=o||{};const c=o.col===undefined?jc(pick([0x3a6a8a,0x8a4a3a,0x6a7a78,0x4d6f3c]),.06):jc(o.col,.05);for(let k=0;k<4;k++){const a=k*PI/2+PI/4;beam('wood',[x+Math.cos(a)*r*.8,0,z+Math.sin(a)*r*.8],[x+Math.cos(a)*r*.8,y,z+Math.sin(a)*r*.8],.09,jc(0x5c4630,.06));}
- cyl('sheet',x,y,z,r,h,c,12,r,true);cyl('iron',x,y+h,z,r*.9,.05,jc(0x3a3430,.05),12);cone('iron',x,y+h+.05,z,r*.95,r*.3,jc(0x4a4038,.05),12);}
+/* the catalog's (tank on a 1.4 or a 1.1 m stand), standing on the ground (or on o.base: a deck); y was the old stand's height */
+function waterButt(x,y,z,r,h,o){o=o||{};rngSkip(o.col===undefined?15:14);return FURNISH('pa_water_butt',x,o.base||0,z,0,{v:y<1.25?1:0});}
 
 // ---------------------------------------------------------------- PLACEHOLDER FLORA
 // Buildings never model plants as part of themselves (README rule: a plant is its own tagged object, placed). Anything green a building wants
@@ -177,20 +181,7 @@ function plant(kind,x,y,z,o){o=o||{};const sl={kind,key:CURKEY,m:CM.clone().mult
 // (cord net inside it) in a timber frame with arms; a table is a tyre with a round wooden top. Cords stay in muted rope colours (ochre, olive, faded orange, dirty white).
 // All draw in the current frame, facing +z, base on y; pass ry to turn them. o: {n: tyres in the seat stack, wood: hex, cord: hex}
 const TYRE_CORDS=[0xa8892a,0x6a7a3a,0x9a5a2a,0xb8b0a0];
-function tireWeave(cx,cy,cz,r,cord,n,plane){n=n||5;const c=jc(cord,.05);for(let i=-n+1;i<n;i++){const off=i*r/n,h=Math.sqrt(Math.max(0,r*r-off*off));if(h<.03)continue;
- if(plane==='v'){box('plain',cx,cy+off-.008,cz,2*h,.018,.018,c);box('plain',cx+off-.008,cy-h,cz,.018,2*h,.018,c);}
- else{box('plain',cx,cy,cz+off-.008,2*h,.018,.018,c);box('plain',cx+off-.008,cy,cz-h,.018,.018,2*h,c);}}}
-function tireStool(x,y,z,o){o=o||{};const n=o.n||2,R=TYR.R,t=TYR.t,cord=o.cord||pick(TYRE_CORDS);for(let k=0;k<n;k++)tire(x,y+.12+k*.235,z,R,t,undefined,rng()*TAU);
- cyl('cloth',x,y+.02,z,R-t*1.1,n*.235-.1,jc(0x4a4034,.05),10);tireWeave(x,y+n*.235-.01,z,R-t,cord,5,'h');}   /* a sack-cloth pad in the hole, the cord lattice across the tyre top */
-function tireChair(x,y,z,ry,o){o=o||{};W(x,y,z,ry||0,()=>{const wc=jc(o.wood||pick([0x5a2a24,0xa88a5e,0x7a5236]),.06),n=o.n||2,R=TYR.R,t=TYR.t,cord=o.cord||pick(TYRE_CORDS),sy=n*.235;
-  tireStool(0,0,0,{n:n,cord:cord});
-  /* backrest: a tyre on edge behind the seat, cord net inside, held by two posts that run to the ground */
-  const bz=-.36,by=sy+.42;tire(0,by,bz,R*1.12,t,undefined,0,PI/2,0);tireWeave(0,by,bz,(R*1.12-t)*.98,cord,5,'v');
-  for(const sx of [-1,1]){beam('wood',[sx*.46,0,bz-.02],[sx*.46,by+.62,bz-.02],.06,wc,true,6);   /* back posts */
-   beam('wood',[sx*.46,sy+.04,bz],[sx*.5,sy+.3,.42],.055,wc,true,5);                              /* arm rails, sloping to the front */
-   beam('wood',[sx*.5,0,.4],[sx*.5,sy+.3,.4],.055,wc,true,5);}                                     /* front arm posts */
-  beam('wood',[-.46,by+.6,bz-.02],[.46,by+.6,bz-.02],.035,wc,true,5);beam('wood',[-.46,sy-.02,bz-.02],[.46,sy-.02,bz-.02],.035,wc,true,5);});}
-function tireTable(x,y,z,o){o=o||{};const wc=jc(o.wood||0x7a5236,.06),n=o.n||1,R=TYR.R*1.15,t=TYR.t*1.1,top=n*.24+.25;
- for(const k of [0,1].slice(0,n))tire(x,y+.13+k*.24,z,R,t,undefined,rng()*TAU);
- for(const a of [.6,2.2,3.8,5.4])beam('wood',[x+Math.cos(a)*(R+.02),y,z+Math.sin(a)*(R+.02)],[x+Math.cos(a)*(R+.02),y+top,z+Math.sin(a)*(R+.02)],.05,wc,true,6);
- cyl('wood',x,y+top,z,R+.1,.05,wc,14);}
+/* the catalog's tyre stool (two or three tyres), armchair and table (one or two tyres); the skips are the old draws (cord, tyre turns, colours) */
+function tireStool(x,y,z,o){o=o||{};const n=o.n||2;rngSkip(n+4+(o.cord?0:1));return FURNISH('pa_tyre_stool',x,y,z,o.ry||0,{v:n>=3?1:0});}
+function tireChair(x,y,z,ry,o){o=o||{};const n=o.n||2;rngSkip(n+6+(o.wood?2:3)+(o.cord?0:1));return FURNISH('pa_tyre_chair',x,y,z,ry||0);}
+function tireTable(x,y,z,o){o=o||{};const n=o.n||1;rngSkip(2+n);return FURNISH('pa_tyre_table',x,y,z,0,{v:n>=2?1:0});}

@@ -59,7 +59,12 @@ buildAsset = function(key, x,z,ry, opt){ var top=!LOCF.stack.length; LOCF.lastTo
   return rec; };
 /* the batch becomes meshes once, when the kit emits its instances (75-terrain.js); they take the night-glow hook */
 var locfEmit = emitBuckets;
-emitBuckets = function(){ var g=LOCF.batch.flush(scene); g.traverse(function(m){ if(m.isMesh && !m.material.isMeshBasicMaterial) nlMaterial(m.material, 'kf-'+m.material.userData.family); });
+/* the batch's vertex colours are the catalog's sRGB bytes; this renderer outputs sRGB from LINEAR colours (the kit converts
+   its own instance colours), so they are converted here, through a 256-entry table, into a float attribute */
+var LOCF_LIN = (function(){ var t=new Float32Array(256); for(var i=0;i<256;i++){ var v=i/255; t[i]=v<=0.04045?v/12.92:Math.pow((v+0.055)/1.055,2.4); } return t; })();
+emitBuckets = function(){ var g=LOCF.batch.flush(scene); g.traverse(function(m){ if(!m.isMesh) return;
+    var c=m.geometry.attributes.color; if(c){ var a=c.array, f=new Float32Array(a.length); for(var i=0;i<a.length;i++) f[i]=LOCF_LIN[a[i]]; m.geometry.setAttribute('color', new THREE.BufferAttribute(f, 3)); }
+    if(!m.material.isMeshBasicMaterial) nlMaterial(m.material, 'kf-'+m.material.userData.family); });
   LOCF.group=g; window._furniture={ placed:LOCF.placed.length, deferred:LOCF.deferred, missing:LOCF.missing, meshes:g.children.length,
     tris:Math.round(LOCF.batch.tris), interiors:LOCF.buildings.length };
   return locfEmit(); };

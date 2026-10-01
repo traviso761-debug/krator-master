@@ -51,9 +51,9 @@ function lgStack(o){
  // level 1: a 40 ft workshop box, and a 20 ft open-fronted shop bay
  lgBox(-3,0,-2,0,CT.L40,C[0],()=>{door(-4.5,.16,1.22,1.0,2.0,{step:true});win(-2.3,1.05,1.22,1.1,.9,{lit:o.v===1});porthole(0,1.5,1.22,.3);porthole(1.3,1.5,1.22,.3);win(3.4,1.05,1.22,.9,.9,{bars:true});lgPatch(-3.5,.3,1.23,3.2,.6,C[3]);});
  lgBox(6.5,0,-2,0,CT.L20,C[5],null);
- W(6.5,0,-2,0,()=>{box('plank',0,.16,1.14,5.4,.9,.5,jc(0x8a6a44,.06));box('plank',0,1.06,1.14,5.6,.08,.7,jc(0x5c4630,.06));
+ W(6.5,0,-2,0,()=>{rngSkip(4);FURNISH('pa_shop_counter',0,0,1.62,0,{v:1});   // the service counter of junk, standing outside the box face (the kit set it half into the wall)
   for(const sx of [-2.7,2.7])box('iron',sx,.16,1.2,.16,2.2,.16,jc(0x4a4038,.05));box('glow',0,2.0,1.12,5.0,.12,.05,jc(0xf2c26a,.05));
-  box('plank',-1.4,1.14,1.15,.5,.4,.4,P('wood'));sacks(1.2,1.14,1.15,4);});
+  rngSkip(3+16);});
  // level 2: door opens on the level-2 balcony (world x -8.5..-3.5); a 40 ft box turned across the front and cantilevered out
  lgBox(-1.5,y2,-2,0,CT.L40,C[1],()=>{door(-3.0,.16,1.22,1.0,1.95,{step:false});porthole(-5.5,1.4,1.22,.32);porthole(-4.4,1.4,1.22,.32);win(.5,1.05,1.22,1.2,1.0,{shutters:true});porthole(3.4,1.4,1.22,.3);});
  lgBox(7,y2,1,PI/2,CT.L40,C[2],()=>{door(-2.0,.16,1.22,1.0,1.95,{step:false});win(0.4,1.1,1.22,1.2,.9);porthole(2.8,1.4,1.22,.32);porthole(4.0,1.4,1.22,.32);win(-4.6,1.1,1.22,.9,.9,{lit:true});lgPatch(3.5,.2,1.23,3,.9,C[0]);});
@@ -83,7 +83,7 @@ function lgStack(o){
  // ---- ground clutter and workshop yard
  barrel(-9.8,0,-.6);barrel(-9.3,0,-.9);barrel(-9.5,0,.0);tireStack(-10.3,1.2,4);crate(4.4,0,3.6,.7,.4);crate(4.9,0,4.3,.6,-.2);
  lamp(2.3,0,2.4,3.6);waterButt(-8.8,1.4,-4.2,.6,1.0);junkPile(-9.5,-4.8,1.3,8);junkPile(10.5,-4.8,1.4,8);
- box('plank',6.5,0,4.0,3.0,.9,.7,jc(0x8a6a44,.06));box('iron',4.6,0,3.7,.16,1.5,.16,jc(0x4a4038,.05));box('iron',8.4,0,3.7,.16,1.5,.16,jc(0x4a4038,.05));
+ rngSkip(6);FURNISH('pa_vice_bench',6.5,0,4.0,0,{v:1});   // the yard workbench
  // ---- SOCKETS: awnings carried on wall brackets (or posts that reach the ground), banners on poles, emblem and paint on the big boxes
  sock('awning',6.5,2.5,-.72,0,{w:5.6,d:1.7,drop:.6,h:1.9});                                   // over the shop bay: posts to the ground
  sock('awning',-7.5,2.5,-.75,0,{w:1.7,d:1.1,drop:.4,h:2.1});                                  // over the workshop door
@@ -130,17 +130,8 @@ function lgTwinSilo(o){
  for(const px of [-4.3,4.3]){beam('wood',[px,py,fz+2.7],[px,py+3.6,fz+2.7],.09,jc(0x5c4630,.06),true,6);sock('banner',px,py+3.5,fz+2.75,0,{w:.7,h:2.2});}
  sock('emblem',-1.4,hy+.8,fz+.34,0,{w:.9,h:.9});sock('emblem',1.4,hy+.8,fz+.34,0,{w:.9,h:.9});sock('paint',-sx,7.7,sz+r+.02,0,{w:2.4,h:.9});sock('paint',sx,7.7,sz+r+.02,0,{w:2.4,h:.9});}
 
-// a proper well: tyre ring, dark recessed shaft, timber frame with windlass, rope, bucket and a little roof
-function lgWell(cx,cz){const R=.9,rope=jc(0x8a7a5a,.05),wd=jc(0x5c4630,.06);
- tireRing(cx,cz,R,3,0,TAU);
- sector('plain',cx,cz,.5,.68,0,TAU,.03,.62,jc(0x14100c,.02));                                  // dark shaft lining
- cyl('plain',cx,.03,cz,.66,.02,jc(0x0a1216,.02),16);                                            // black water, far below the rim
- sector('conc',cx,cz,.66,1.25,0,TAU,.64,.74,jc(0x9a9488,.05));                                  // stone rim
- for(const sx of [-1,1]){beam('wood',[cx+sx*1.15,0,cz],[cx+sx*1.15,2.5,cz],.13,wd,true,7);beam('wood',[cx+sx*1.15,.5,cz+.5],[cx+sx*1.15,1.9,cz],.07,wd,true,5);beam('wood',[cx+sx*1.15,.5,cz-.5],[cx+sx*1.15,1.9,cz],.07,wd,true,5);}
- cylH('wood',cx,2.3,cz,.1,2.3,jc(0x7a5c3c,.06),'x',8);cylH('plain',cx,2.3,cz,.2,.5,rope,'x',8);
- beam('iron',[cx+1.2,2.3,cz],[cx+1.6,2.3,cz],.04,jc(0x3a3430,.05),true,5);beam('iron',[cx+1.6,2.3,cz],[cx+1.6,1.95,cz+.28],.04,jc(0x3a3430,.05),true,5);sph('wood',cx+1.6,1.93,cz+.3,.06,wd);
- beam('plain',[cx,2.15,cz],[cx,1.05,cz],.02,rope,true,4);cyl('sheet',cx,.78,cz,.19,.28,jc(0x8a6a44,.06),10,.17);cyl('iron',cx,.78+.26,cz,.2,.03,jc(0x3a3430,.05),10);beam('iron',[cx-.19,1.06,cz],[cx+.19,1.06,cz],.02,jc(0x3a3430,.05),true,3);
- lgGable(cx,2.55,cz,2.7,1.7,.65,{ov:.15,col:0xb85a3a,col2:0xc99a2e});}
+// a proper well: tyre ring, dark shaft, windlass and a little roof: a catalog piece
+function lgWell(cx,cz){rngSkip(60);return FURNISH('pa_well',cx,0,cz,0,{v:0,ax:-.08});}   // the catalog's windlass well (its old drawing drew 60 random numbers)
 
 // ================================================================== lg-bulkhead: an Ancient bulkhead fronting a real three-storey house, deep portico, buttresses, attic and wings round a courtyard
 defBuilding({key:'lg-bulkhead',name:'Bulkhead manor',seed:4230,tags:{type:['multi-family dwelling'],size:'large',core:'arcology bulkhead',materials:['ancient ceramic','container','plank','tyres','sheet metal']},w:26,d:28,h:18,build:lgBulkhead});
@@ -212,8 +203,8 @@ function lgBulkhead(o){
  for(const s of [-1,1]){beam('wood',[s*1.9,0,wz],[s*1.9,3.2,wz],.16,jc(0x5c4630,.06),true,7);}beam('wood',[-1.9,3.1,wz],[1.9,3.1,wz],.14,jc(0x5c4630,.06),true,7);
  tireWall(-7.6,wz-.35,-7.6,7.7,5);tireWall(7.6,wz-.35,7.6,7.7,5);      // side runs start at the corner tyre and end against the wings' front faces (z 7.7)
  fire(-1.5,.02,4.2,.6);lgWell(3.6,4.6);
- for(const sx of [-3.2,-.4])box('plank',sx,.32,6.4,1.6,.1,.4,P('woodD'));
- tireRing(-4.4,8.4,.8,2,0,TAU);plant('groundcover',-4.4,.5,8.4,{r:.6,moisture:'mild'});tireRing(4.6,8.4,.8,2,0,TAU);plant('groundcover',4.6,.5,8.4,{r:.6,moisture:'mild'});
+ for(const sx of [-3.2,-.4]){rngSkip(3);FURNISH('pa_bench',sx,0,6.4,0);}   // benches by the fire
+ rngSkip(16);FURNISH('pa_planter',-4.4,0,8.4,0);plant('groundcover',-4.4,.5,8.4,{r:.6,moisture:'mild'});rngSkip(16);FURNISH('pa_planter',4.6,0,8.4,0);plant('groundcover',4.6,.5,8.4,{r:.6,moisture:'mild'});
  // ---- west roof terrace on the 2-high wing: reached by a steel stair that ends on the deck edge
  const ty=CT.H*2+.06;deck(-8.0,ty,-1.5,4.6,6.0,{rail:['l','r','b'],posts:false});
  lgPost(-5.85,-4.3,ty-.1,0);lgPost(-5.85,1.2,ty-.1,0);stairs(-6.6,0,6.6,-6.6,ty,1.5,1.1,{steel:true});

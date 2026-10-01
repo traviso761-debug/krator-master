@@ -67,3 +67,28 @@ Geometry checked against the source; file:line as of 36e1afb.
       `:117`); the library's small cones are centred on the plinth edge (`50-civic.js:140–141`); the granary catwalk
       runs inside the silos (`90-farm.js:49`); the blue tarps' back corners have no support (`90-farm.js:52–53`).
 - [ ] Minor: the alchemist's flue starts ~0.18 m above the tank roof (`40-shops.js:110`).
+
+## Furniture from the catalog (Oct 2026; `API.md` "Furniture")
+
+- [ ] **Interior-set variants.** `kits/interiors/sets/abyss.js` gives no `#n` item for several variants whose building is
+      different from variant 0, so `?interiors=1` plans variant 0's rooms on them (the interiors kit's rule: no `#n`
+      item = the base item): `abyss_shop_weapons` 1 (container smithy: the shop room floats 0.75 m over the yard),
+      `abyss_shop_general` 1 (cabin), `abyss_shop_food` 1 (drum kitchen on a deck: rooms under the deck),
+      `abyss_shop_salt` 1 and `abyss_shop_sailmaker` 1 (decks at 1.1 / 0.8 m: rooms at ground level), `abyss_inn` 1
+      (pastel wings 4.2 m deep, rooms are 2.3 m container boxes), `abyss_farmhouse` 1 (lives in a drum with no floor),
+      `abyss_warehouse` 1 (containers under a sail). The builders treat these variants by what they draw (their pieces
+      are outdoor FURNISH). The set needs `#1` items or `skip`s for them (the interiors kit's owner).
+- [ ] **Drums are still geometry** (`LOCUS.drum`): the tavern bar's three barrels and the warehouse (variant 1) yard's
+      eight drums. The catalog has no single oil-drum piece (standing / lying); `abyss_scrap_stock` variant 2 is a fixed
+      group. Needed: `abyss_oil_drum` (standing, lying) or similar.
+- [ ] The catalog's `abyss_hanging_lantern` carries its own 0.3 m hanger and ceiling plate: on a mast arm
+      (`ABYSS.mast { lantern }`) the stub shows above the arm.
+- [ ] The propeller-lanterns on sail masts are the catalog's free-standing `abyss_propeller_mast` set 6 m down the mast,
+      so its own pole hides inside the mast (a few hidden triangles each).
+- [ ] The salvage yard's drums: the catalog's `abyss_scrap_stock` variant 2 groups four standing drums with a lying stack
+      at the row's END (the kit drew the stack in front of the row); placed turned so the standing row stays where it
+      stood, the stack now sits in the yard's back corner.
+- [ ] The catalog's `source` fields still name `settlements/locus/src/65-abyss-10-furniture.js`, now deleted (it is in
+      git history); the catalog's owner may point them at the commit.
+- [ ] Lit catalog pieces carry their own lamps: the abyss sheet has 244 night lamps, 5 more than before (strings and
+      canopies the kit drew without one).
