@@ -8,10 +8,10 @@ The 2026-10 interiors pass added 38 indoor pieces: Yuni's interior set (64-inter
 Voth tavern and shrine furniture, an Ancients workstation, and `surface` pieces.
 
 **Status: verified.** `build.py` builds `dist/catalog.html`, a contact sheet of
-every entry and every variant, and `verify.py --assert` passes: all 122
-furniture pieces, 48 plants and 26 buildings (301 instances, every variant,
+every entry and every variant, and `verify.py --assert` passes: all 208
+furniture pieces, 48 plants and 26 buildings (511 instances, every variant,
 seeds 1–4) build without error, carry no NaN geometry, fit their declared size,
-keep their anchor's geometry, and carry their tags. The 122 furniture entries carry
+keep their anchor's geometry, and carry their tags. The 208 furniture entries carry
 every field of `kits/furniture/SPEC.md` "The entry" and meet its style rules: `F.*`
 only, `F.shade`/`F.TAU`, and every colour a palette key. What is still open is in `KNOWN_ISSUES.md`.
 
@@ -20,6 +20,8 @@ only, `F.shade`/`F.TAU`, and every colour a palette key. What is still open is i
 | `krator-asset-engine.js` | scene, camera, geometry kit (`F.box/cyl/cone/dome/blob/ball/beam/rod/frustum/pyrRoof/hipRoof`, `F.shift`), the `FURN`/`PLANT`/`ASSET` registries with `buildFurn/buildPlant/buildAsset`, `CATALOG_MATERIALS`, `furnAnchorY`, the furniture palette `FPAL` (`F.col`), `BUILDING_TYPES` |
 | `inspector.js` | click-to-select inspector: measure, isolate, cycle variants, audit declared sizes |
 | `krator-master-furniture.js` | 122 `FURN({...})` pieces in the SPEC shape (Voth 35, Iziz 9, Beast-Rider 16, Yuni 58, Ancients 4) |
+| `krator-master-generic.js` | 53 `generic` pieces: storage containers, food, drink and supplies, sized to the furniture above (below) |
+| `krator-master-fruit.js` | 33 `generic` biome fruit: one per fruiting plant the biome kits draw (`biomes/FRUIT.md`) |
 | `krator-master-plants.js` | 48 `PLANT({...})` species, tagged by climate and aridity |
 | `krator-master-buildings-voth.js`, `-beast-rider.js` | 26 `ASSET({...})` buildings, tagged by culture, `types: [...]` (README vocabulary) and `family` |
 | `src/` | only the page around them: head, sky, sheet layout, hover inspector, polygon tool, tail |
@@ -69,7 +71,7 @@ smaller than they declare.
 ## Using catalog pieces in another build
 
 Load, in order, three.js r128, `krator-asset-engine.js`, then any of the
-registry files, as `<script>`s or concatenated into one script (the build does
+registry files (`krator-master-generic.js` before `krator-master-fruit.js`, which uses its shapes), as `<script>`s or concatenated into one script (the build does
 the latter). The engine needs a `<div id="app">` for its renderer. Then:
 
 ```js
@@ -148,6 +150,31 @@ FURN({
 | ancient | ancients_workstation (wall) |
 | voth | tavern_table, tavern_bench, tavern_stool, tavern_bar, offering_table, candle_stand, prayer_mat, lantern_bracket (wall); tableware, candles (surface) |
 | beast-rider | br_tool_set (surface) |
+
+### Generic pieces (2026-10)
+
+Culture `generic`: pieces no single culture owns. `FPAL['generic']` is hand-picked (role + name: `bread*`,
+`cheese*`, `meat*`, `fruit*`, `veg*`, `drink*`), and `FURN_TYPES` gained `food`, `drink` and `supply`.
+`CATALOG_MATERIALS` gained `food` (family `food`). In `kits/interiors` every culture's chain ends in
+`generic`, so a room falls back to these after its own culture and its family.
+
+**Sizing.** A surface piece is at most 0.36 m deep and 0.42 m tall, so it fits a board of
+`yuni_common_wall_shelves` (0.38 m deep, 0.44 m between boards) or of `generic_pantry_shelf`, any counter
+and any table. Three are for tables only (0.38 to 0.42 m across): `generic_roast`, the `generic_fish` platter
+and the `generic_basket` flat tray. Floor containers stand beside a 0.8 m table or a 1.05 m counter.
+
+| Group | Pieces (anchor) |
+|---|---|
+| storage | barrel, crate, chest, floor_basket, sack, storage_jar, bottle_crate, meal_ark, churn, fuel (floor); pantry_shelf (wall, `empty`/`stocked`); keg, strongbox, basket, crock, canister_set, spice_box, pantry_boxes (surface) |
+| food | bread, bread_basket, cheese, cured_meat, roast, fish, fruit_bowl, veg_basket, produce, eggs, pie, cake, stew_pot, meal, preserves, dairy, snack_bowl, pastries, condiments, mushrooms (surface); hanging_larder (ceiling) |
+| drink | wine, ale, spirits, tea_set, water (surface) |
+| supply | candle_supply, lamp_oil, soap, medicine, herb_bundles, tobacco, writing_supplies, sewing, rations (surface) |
+| biome fruit | 33 `generic_fruit_*` (surface), each with `biome` and `source` fields naming the kit and species: `biomes/FRUIT.md` |
+
+Shared shapes are `KGEN` (bottle, jar, cloth-capped jar, plate, bowl, mug, goblet, crate, heap, fish, capsule,
+fruit) at the top of `krator-master-generic.js`, and `KFRUIT` (leaf, half, ridged pod, wedge, studded head) at
+the top of the fruit file. They take colours, never palette keys, so each piece still names its own colours. Text
+before a file's first `FURN` belongs to no entry in `verify.py`'s static checks (`FURN_FILES`).
 
 Yuni keys are `yuni_<culture>_<name>` (`yuni_common_rope_bed`, `yuni_nomad_rug_pile`);
 harvested from `settlements/yuni/src/64-interiors.js` "NEW PIECES": rope_bed, canopy_bed,

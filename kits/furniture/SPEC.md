@@ -14,13 +14,14 @@ type, and count outdoor fixtures (fountains, statues, benches) as furniture.
 | Source | Format |
 |---|---|
 | `kits/catalog/krator-master-furniture.js` | 122 `FURN({...})` pieces, harvested from six builds plus the 2026-10 interior set. **Start here.** |
+| `kits/catalog/krator-master-generic.js`, `krator-master-fruit.js` | 86 culture-neutral (`generic`) pieces: containers, food, drink, supplies and biome fruit |
 | `settlements/yuni/src/63-furniture.js`, `53-assets.js` | Yuni's own `FURN` seed set (same shape as the catalog) |
 | `settlements/yuni/src/61e-ancients-furniture.js` | Ancients furniture ported into Yuni |
 | `settlements/screamers/src/70c-furniture.js` | a different shape: `FURN.bunk(x,y,z,rot,s)` built from kit items |
 
 Standardise on the catalog's `FURN({...})` shape and port the Screamers pieces into it.
 
-**The catalog now conforms to "The entry" and to the rules below.** All 122 pieces carry `type`, `setting`,
+**The catalog now conforms to "The entry" and to the rules below.** All 208 pieces carry `type`, `setting`,
 `rooms`, `anchor`, `clearance` and `materials`, build only through `F.*` (`F.shade`, `F.TAU`), and name every
 colour as a palette key (`FPAL` in `kits/catalog/krator-asset-engine.js`). `kits/catalog/verify.py --assert`
 checks every field, that each piece builds within its declared `w × d × h` centred on the origin, that its

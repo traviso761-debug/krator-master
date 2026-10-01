@@ -7,9 +7,11 @@
  "93-polygon.js": "ba448968091f",
  "99-tail.html": "737d92a580d5",
  "inspector.js": "b2c275da7b7d",
- "krator-asset-engine.js": "fbbc8b463cd8",
+ "krator-asset-engine.js": "209d6abc6774",
  "krator-master-buildings-beast-rider.js": "183f37fc5513",
  "krator-master-buildings-voth.js": "bb70708f7706",
+ "krator-master-fruit.js": "380ddbacec25",
  "krator-master-furniture.js": "e10e0404026b",
+ "krator-master-generic.js": "193345a22f9c",
  "krator-master-plants.js": "c1667b4823d8"
 }

@@ -111,6 +111,10 @@
     'ancients-salvage': ['ancient'],
     'voth': ['iziz'],
     'iziz': ['voth'],
-    'beast-rider': []
+    'beast-rider': [],
+    'generic': []
   };
+  /* the catalog's culture-neutral pieces (kits/catalog krator-master-generic.js, -fruit.js: containers,
+     food, drink, supplies) close every chain, so a room reaches them only after its own culture and family */
+  for (const c in IX.CULTURE_FAMILY) if (c !== 'generic') IX.CULTURE_FAMILY[c].push('generic');
 })(KratorInteriors);

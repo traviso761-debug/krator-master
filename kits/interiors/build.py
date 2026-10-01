@@ -41,7 +41,8 @@ OUT = 'interiors'
 
 ADAPTERS = ['adapters/catalog-adapter.js']
 # the catalog files the page loads by path (00-head.html): our names must not clash with theirs
-CATALOG_LOADED = ['krator-asset-engine.js', 'krator-master-furniture.js', 'inspector.js']
+CATALOG_LOADED = ['krator-asset-engine.js', 'krator-master-furniture.js', 'krator-master-generic.js',
+                  'krator-master-fruit.js', 'inspector.js']
 VENDORED = {
     '80-sky-hash.js': os.path.join(ROOT, 'kits', 'catalog', 'src', '80-sky-hash.js'),
     '81-sky.js': os.path.join(ROOT, 'settlements', 'iziz', 'src', '81-sky.js'),
