@@ -370,11 +370,14 @@ cityTerrainMesh();   // now: every plot is levelled
 (function jungle(){BIO.setScene(scene);const q=CITY.QUALITY;const t0=performance.now();
  BIO.host.mask=bioTreeMaskFn;BIO.cur='jungle/trees';let T={};try{T=HYPERJUNGLE.buildTrees(2000,1800,q);}catch(e){reportErr('jungle trees: '+e.stack);}
  BIO.host.mask=bioMaskFn;BIO.cur='jungle/floor';let F={};try{F=HYPERJUNGLE.buildFloor(1500,q);}catch(e){reportErr('jungle floor: '+e.stack);}
+ // the jungle's animals (upstream fragment 58): flocks, darts, butterflies, motes, strider herds, sloths. They are
+ // placed against the TREE mask, so they live in the jungle outside the wall and none spawn in the streets
+ let A={};if(CITY.FAUNA!==false){BIO.host.mask=bioTreeMaskFn;BIO.cur='jungle/fauna';try{A=HYPERJUNGLE.buildFauna(2000,1800,q);}catch(e){reportErr('jungle fauna: '+e.stack);}BIO.host.mask=bioMaskFn;}
  // the jungle on the ruins (Round 3 issue: no dress ran on them): moss on the ledges, plants and the odd small tree,
  // mats and roots under the soffits, curtains and brackets on the walls of every ruined Ancient building
  BIO.cur='jungle/dress';let dressN=0;try{const geos=[];for(const G of RUIN_GROUPS){if(!G.parent)continue;G.updateMatrixWorld(true);G.traverse(m=>{if(m.isMesh&&!m.material.transparent){geos.push(m.geometry.clone().applyMatrix4(m.matrixWorld));}});}
   dressN=geos.length;if(geos.length)HYPERJUNGLE.dressGeos(geos,{seed:41,ledges:{moss:900,plants:420,edges:260,treeH:9},soffits:{n:260,hang:12},walls:{n:520,hang:10}});for(const g of geos)g.dispose();}catch(e){reportErr('jungle dress: '+e.stack);}
- BIO.cur=null;const b=BIO.bake();window._biome={trees:T.trees,hyper:T.hyper,saplings:T.saplings,tris:T.tris&&T.tris.total,floorTris:F.tris,calls:b.calls,inst:b.inst,ruinsDressed:dressN,ms:Math.round(performance.now()-t0)};
+ BIO.cur=null;const b=BIO.bake();window._biome={trees:T.trees,hyper:T.hyper,saplings:T.saplings,tris:T.tris&&T.tris.total,floorTris:F.tris,fauna:A.fauna,faunaTris:A.faunaTris,calls:b.calls,inst:b.inst,ruinsDressed:dressN,ms:Math.round(performance.now()-t0)};
  BIO._tickWind&&BIO._tickWind();
 })();
 // ---------------------------------------------------------------- 8. bakes and labels
