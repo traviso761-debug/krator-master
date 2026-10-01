@@ -296,13 +296,20 @@ function izsRustSkin(G){G.traverse(m=>{if(m.isMesh&&(m.material===MAT.concreteR|
 // THE TRIPOD MARKET (Travis): a reclaimed Skyscraper C hangs a great awning from each side of its leg triangle, sloping out to
 // a mast at the opposite point, so from above the legs' triangle and the three awnings make a six-pointed star; market
 // stalls stand in the shade under each awning and in the open triangle between the legs.
+// The legs' foot radius is read off the built tower: Skyscraper C's three leg groups stand at y=5 on its podium, 62 m out
+// until the towers QA round 2, 50 m after it and 38 m since the restand (their heads still meet the shaft at r=20, 150 m up). Hardcoding 62 hung
+// every awning, mast and stall 12 m off the legs once they moved.
+function tripodLegR(G){let r=0;G.traverse(c=>{if(r||!c.isGroup||c===G||c.position.y!==5||!c.children.length)return;const h=Math.hypot(c.position.x,c.position.z);if(h>20&&h<120)r=h;});return r||62;}
 // DENSER (Travis, round 4): the great awnings reach half again further out; their stalls stand on a lattice that fills the
 // shade, not on one line; and a ring of smaller canopies — a sloping cloth on four poles over a stall each — fills the
 // star's notches and the ground round it out to the lot's edge, clear of the leg feet, the masts and their guy ropes.
 // The whole market registers as ONE market (type market/shop, tags.market, tags.destination 'market').
-function tripodMarket(G,o,y,scale,ry,gx,gz,y0,T){const legAt=(k,ly)=>{const th=k/3*TAU+Math.PI/6,r=62-42*(ly-5)/150;return loc2(gx,gz,Math.cos(th)*r*scale,Math.sin(th)*r*scale,ry);};
- const hb=38,rb=62-42*(hb-5)/150;const Y=ly=>y0+ly*scale;const cols=[0xe07a2a,0xc9442a,0xe0a030];const yg=y+1.55;
+function tripodMarket(G,o,y,scale,ry,gx,gz,y0,T){const LR=tripodLegR(G),legAt=(k,ly)=>{const th=k/3*TAU+Math.PI/6,r=LR-(LR-20)*(ly-5)/150;return loc2(gx,gz,Math.cos(th)*r*scale,Math.sin(th)*r*scale,ry);};
+ const hb=38,rb=LR-(LR-20)*(hb-5)/150;const Y=ly=>y0+ly*scale;const cols=[0xe07a2a,0xc9442a,0xe0a030];const yg=y+1.55;
  const tris=[],masts=[],feet=[0,1,2].map(k=>legAt(k,5));let nStall=0;
+ // the legs are 22 m in radius at the foot (15*sqrt(2.2)): a stall or canopy nearer a foot than that stands INSIDE the
+ // leg. With the feet at 62 or 50 the lattice never got there; at 38 (the restand) six stalls did. LF is the clearance.
+ const LF=(15*Math.sqrt(2.2)+1.5)*scale;
  const stallAt=(x,z,face,c)=>{const Gs=new THREE.Group();Gs.position.set(x,yg,z);Gs.rotation.y=face;scene.add(Gs);useGroupXF(Gs);try{T.stall(c,Gs);}finally{endGroupXF();}
   nStall++;if(T.stalls)T.stalls.push({x,y:yg,z,face});};
  const clothQuad=(c,P)=>{const pos=[],uv=[],N=3;const at=(u,v)=>P(u,v);for(let i=0;i<N;i++)for(let j=0;j<N;j++){for(const[a,b]of[[0,0],[1,0],[0,1],[1,0],[1,1],[0,1]]){const q=at((i+a)/N,(j+b)/N);pos.push(...q);uv.push(q[0]*.5,q[2]*.5);}}
@@ -320,7 +327,7 @@ function tripodMarket(G,o,y,scale,ry,gx,gz,y0,T){const legAt=(k,ly)=>{const th=k
   // stalls in the shade: a lattice over the awning's footprint, each facing along the fall line
   const face=Math.atan2(ap[0]-gx,ap[1]-gz)+Math.PI/2,L=6;
   for(let i=1;i<L;i++)for(let j=1;i+j<L;j++){const u=i/L,v=j/L,w=1-u-v;if(w<.1)continue;const x=a[0]*w+b[0]*u+ap[0]*v,z=a[1]*w+b[1]*u+ap[1]*v;
-   if(feet.some(f=>Math.hypot(x-f[0],z-f[1])<6))continue;if(Math.hypot(x-ap[0],z-ap[1])<5)continue;stallAt(x,z,face,T.col(cols[(k+i+j)%3]));}}
+   if(feet.some(f=>Math.hypot(x-f[0],z-f[1])<LF))continue;if(Math.hypot(x-ap[0],z-ap[1])<5)continue;stallAt(x,z,face,T.col(cols[(k+i+j)%3]));}}
  // and the open triangle between the legs
  for(let t=0;t<3;t++){const th=t/3*TAU+Math.PI/2,r=rb*scale*.3;stallAt(o.x+Math.cos(th)*r,o.z+Math.sin(th)*r,-th,undefined);}
  // the ring of canopies: on rings 7.6 m apart from just outside the leg triangle to the lot's edge (or the star's reach
@@ -334,7 +341,7 @@ function tripodMarket(G,o,y,scale,ry,gx,gz,y0,T){const legAt=(k,ly)=>{const th=k
    const cs=[[-CW,-CD],[CW,-CD],[CW,CD],[-CW,CD]].map(c=>loc2(x,z,c[0],c[1],cry));
    if(!cs.every(c=>onLot(c[0],c[1])))continue;
    if(cs.concat([[x,z]]).some(c=>tris.some(t=>inTri(c[0],c[1],t))))continue;
-   if(feet.some(f=>Math.hypot(x-f[0],z-f[1])<CW+4.5))continue;if(masts.some(m=>Math.hypot(x-m[0],z-m[1])<CW+5))continue;
+   if(feet.some(f=>Math.hypot(x-f[0],z-f[1])<CW+Math.max(4.5,LF)))continue;if(masts.some(m=>Math.hypot(x-m[0],z-m[1])<CW+5))continue;
    const c=ccols[(i+Math.round(R))%ccols.length],hi=yg+3.7,lo=yg+2.7;
    // the cloth: high on the side facing the tripod, low on the outside, a little sag
    clothQuad(c,(u,v)=>{const p=loc2(x,z,(u*2-1)*(CW+.3),(v*2-1)*(CD+.3),cry);return[p[0],lo+(hi-lo)*v-.25*Math.sin(Math.PI*u)*Math.sin(Math.PI*v),p[1]];});

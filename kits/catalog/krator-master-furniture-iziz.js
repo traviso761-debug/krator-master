@@ -20,6 +20,7 @@ FURN_CULTURE('iziz', { name: 'Iziz', pack: 'iziz', influences: 'science fantasy;
   } });
 /* END PALETTE */
 const IZIZ_COMMON = {
+  emblem: { field: 'clothOrange', edge: 'clothTeal', band: 'clothCream', ink: 'clothCream', ink2: 'clothOrange' },
   wood: 'mahoganyRed', woodDark: 'mahoganyDark', woodLight: 'mahoganyLight', woodFam: 'mahogany',
   cloth: ['clothOrange', 'clothTeal', 'clothCream', 'clothCobalt'], clothFam: 'cloth',
   accent: 'bronze', accentFam: 'bronze', metal: 'bronzeDark', metalFam: 'bronze',

@@ -15,7 +15,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `00-head.html` | 5 |  |
+| `00-head.html` | 6 |  |
 | `10-core.js` | 10 | Interiors core: namespace, rng, geometry (1) |
 | `20-rooms.js` | 6 | ROOM(): room registration (1) |
 | `30-programs.js` | 15 | Room programs: what each room kind needs (1) |

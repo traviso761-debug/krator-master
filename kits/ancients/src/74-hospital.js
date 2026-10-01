@@ -3,7 +3,15 @@ function buildHospital(scene,gx,gz,d){reseed(9240+d);KOFF=[gx,0,gz];const G=new 
  REGISTER({name:'Hospital — the Cloister ('+STATE(d)+')',x:0,z:0,r:120,h:90});
  // podium: 3 storeys, glass ribbons between concrete slabs
  const PW=170,PD=110,SH=5;for(let f=0;f<=3;f++){kput(BOXC(d),[0,f*SH,0],null,[PW,.8,PD],null);if(f<3){if(d===0){kput('pane',[0,f*SH+2.8,PD/2],null,[PW-2,3.6,1],null);kput('pane',[0,f*SH+2.8,-PD/2],null,[PW-2,3.6,1],null);kput('pane',[PW/2,f*SH+2.8,0],qEuler(0,Math.PI/2,0),[PD-2,3.6,1],null);kput('pane',[-PW/2,f*SH+2.8,0],qEuler(0,Math.PI/2,0),[PD-2,3.6,1],null);}
-  kput('boxD',[0,f*SH+2.8,0],null,[PW-3,3.6,PD-3],null);
+  // WARDS (round 2): the dark core is pulled back 7.5 m from the ribbon, and the
+  // band in front of it is cut into bays at the facade posts, a bed in each,
+  // so the ribbon (glass or empty frame) shows rooms instead of a grey box face
+  // 1.5 m behind it. Hash-placed: no rng draw moves.
+  kput('boxD',[0,f*SH+2.8,0],null,[PW-15,3.6,PD-15],null);
+  if(f<3){for(let x=-PW/2+5;x<PW/2;x+=10)for(const s of [-1,1]){const hh=h3(x,f,1911+s);kput(BOXC(d),[x,f*SH+2.8,s*(PD/2-4)],null,[.25,4.2,7],null);
+    if(x+5<PW/2){const tip=d>0&&hh>.72;kput(d>0?'boxR':'boxW',[x+5+(hh-.5)*3,f*SH+.4+(tip?.55:.45),s*(PD/2-6.2)],tip?qEuler(.2,hh*4,1.3):null,[2.2,tip?1:.6,1.1],null);
+     if(hh<.4)kput('boxD',[x+1,f*SH+1.4,s*(PD/2-6.9)],null,[1.2,2,.6],null);}}
+   for(let z=-PD/2+10;z<PD/2-5;z+=10)for(const sx of [-1,1])kput(BOXC(d),[sx*(PW/2-4),f*SH+2.8,z],null,[7,4.2,.25],null);}
   // ruin: the ribbon glazing is gone but for teeth of it left in the frames
   if(d>0)for(let x=-PW/2+10;x<PW/2;x+=10)for(const sd of [-1,1]){const hh=h3(x,f,1905+sd);if(hh<.5)civShardAt([x,f*SH+2.8,sd*PD/2],qFacing([0,0,sd]),8.6,3.6,.1,hh*2);}for(let x=-PW/2+5;x<PW/2;x+=10)for(const s of [-1,1])kput(BOXC(d),[x,f*SH+2.8,s*PD/2],null,[.8,4,.8],null);
   for(let k=0;k<8;k++){const lit=d>0?rng()<.15:true;kput('strip',[-70+k*20,f*SH+4.4,PD/2-1],null,[12,1,1],lit?CYAN:DEAD);}}}
@@ -30,5 +38,5 @@ function buildHospital(scene,gx,gz,d){reseed(9240+d);KOFF=[gx,0,gz];const G=new 
  // ambulance apron
  kput(SLABC(d),[0,.3,0],null,[130,.6,130],null);for(let k=0;k<5;k++)kput('boxD',[-40+k*20,.7,PD/2+42],null,[6,.1,12],null);
  if(d>0){scatterMoss(0,3*SH+.4,0,0,80,60,2.5);rubbleRing(0,.6,0,60,120,50,2.5);trees(0,0,100,150,10);}
- figures(0,90,5,10);KOFF=[0,0,0];return G;}
+ figures(0,90,5,10);civFlatten(G);KOFF=[0,0,0];return G;}
 

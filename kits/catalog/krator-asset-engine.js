@@ -11,7 +11,8 @@
    scene, camera, renderer, controls, ground, labels and the frame loop.)
 
    Provides: scene/camera/renderer, orbit + WASD/walk camera control, a
-   geometry kit (box/cyl/cone/dome/blob/ball/beam/rod/frustum/pyrRoof), a
+   geometry kit (box/cyl/cone/dome/blob/ball/beam/rod/frustum/pyrRoof, and
+   decal: a painted canvas panel for emblems and hangings), a
    procedural F.tree() helper, the three registries with per-variant
    variantDims support, buildAsset/buildFurn/buildPlant (each returning a
    selectable THREE.Group), rebuildInstance() and measureInstance(), the

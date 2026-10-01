@@ -7,23 +7,23 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | Build | Fragments | src KB | Largest KB | What |
 |---|---|---|---|---|
 | [`settlements/dalab`](settlements/dalab/INDEX.md) | 46 | 631 | 57 | Dalab: the mound settlement of the southwestern lowlands, and its building set. |
-| [`settlements/girder`](settlements/girder/INDEX.md) | 27 | 512 | 88 | Girder: an outlying Beast Rider village in the central-crater hyperjungle. |
-| [`settlements/highlands`](settlements/highlands/INDEX.md) | 46 | 749 | 53 | Highlands: Republican, Rustic and Tribal building kits for the temperate highlands of the Inner Wall, and the town of Roketstad. |
+| [`settlements/girder`](settlements/girder/INDEX.md) | 29 | 549 | 88 | Girder: an outlying Beast Rider village in the central-crater hyperjungle. |
+| [`settlements/highlands`](settlements/highlands/INDEX.md) | 46 | 743 | 53 | Highlands: Republican, Rustic and Tribal building kits for the temperate highlands of the Inner Wall, and the town of Roketstad. |
 | [`settlements/iziz`](settlements/iziz/INDEX.md) | 51 | 504 | 52 | Iziz: the city rebuilt on the Iziz Vernacular style and the Ancients kit. |
 | [`settlements/jimjam`](settlements/jimjam/INDEX.md) | 32 | 412 | 56 |  |
-| [`settlements/locus`](settlements/locus/INDEX.md) | 65 | 984 | 84 | Locus: a fork of the Yuni engine in the eastern abyss, with its own kit sheet and plant catalogue. |
-| [`settlements/mavs-refuge`](settlements/mavs-refuge/INDEX.md) | 29 | 620 | 69 | Mav's Refuge: a refuge in the hypertropic jungle on the lee shore of the Ring Sea. |
+| [`settlements/locus`](settlements/locus/INDEX.md) | 65 | 986 | 84 | Locus: a fork of the Yuni engine in the eastern abyss, with its own kit sheet and plant catalogue. |
+| [`settlements/mavs-refuge`](settlements/mavs-refuge/INDEX.md) | 29 | 617 | 68 | Mav's Refuge: a refuge in the hypertropic jungle on the lee shore of the Ring Sea. |
 | [`settlements/port`](settlements/port/INDEX.md) | 48 | 718 | 39 |  |
 | [`settlements/reedlake`](settlements/reedlake/INDEX.md) | 32 | 311 | 33 | Reed Lake: a floating reed-lake village and its kit. |
-| [`settlements/screamers`](settlements/screamers/INDEX.md) | 72 | 542 | 45 | Hexahedron: the Screamers' tribal village in and under a ruined arcology, forked from the Ancients kit. |
+| [`settlements/screamers`](settlements/screamers/INDEX.md) | 72 | 564 | 63 | Hexahedron: the Screamers' tribal village in and under a ruined arcology, forked from the Ancients kit. |
 | [`settlements/shade`](settlements/shade/INDEX.md) | 28 | 319 | 32 | Shade: the Eastern Nomads' sunken basin in the eastern high desert (falls, pool, carved face, switchback, slot canyon) on the sedesert biome kit: rock-cut and pueblo buildings, cliff dwellings round the rim, alcoves and an undercut behind the falls, the life layer's data and walkable grid. |
 | [`settlements/voth`](settlements/voth/INDEX.md) | 62 | 1787 | 70 | Voth: a Venice/Vivec-like Dunmer city on an enclosed brackish bay, with the most complete life layer and collision system. |
 | [`settlements/xanadu`](settlements/xanadu/INDEX.md) | 51 | 599 | 66 | Xanadu: the building kit of the southern Sultanate (Tibetan massing, Indian, Turkish and Persian detail) and the city of Erewhon. |
-| [`settlements/yuni`](settlements/yuni/INDEX.md) | 47 | 973 | 195 | Yuni: the city, plus its building-kit, furniture and plant sheets. |
-| [`kits/ancients`](kits/ancients/INDEX.md) | 92 | 1732 | 89 | The Ancients kit: ruined megastructures of the ancient civilisation, 33 structure types, one target per site. |
-| [`kits/catalog`](kits/catalog/INDEX.md) | 33 | 1146 | 238 | The master catalog: asset engine, the parametric furniture kit and 1013 furniture pieces (kits/furniture SPEC shape, palette-keyed, tiered poor/common/court, plus trade and household pieces: forge, anvil, stall, vat, still, bunk, larder ...) over 24 cultures, one file per culture; a verified contact sheet. |
+| [`settlements/yuni`](settlements/yuni/INDEX.md) | 47 | 985 | 207 | Yuni: the city, plus its building-kit and plant sheets (its furniture is in kits/catalog). |
+| [`kits/ancients`](kits/ancients/INDEX.md) | 123 | 2245 | 89 | The Ancients kit: ruined megastructures of the ancient civilisation, 33 structure types, one target per site. |
+| [`kits/catalog`](kits/catalog/INDEX.md) | 36 | 1310 | 238 | The master catalog: asset engine, the parametric furniture kit and 1492 furniture pieces (kits/furniture SPEC shape, palette-keyed, tiered poor/common/court, plus trade and household pieces: forge, anvil, stall, vat, still, bunk, larder ..., and the furniture harvested from the Highlands, Post-Apoc, Beast Rider and Abyss kits) over 24 cultures, one file per culture, with generic goods (containers, food, drink, supplies) and biome fruit; a verified contact sheet. |
 | [`kits/interiors`](kits/interiors/INDEX.md) | 23 | 230 | 32 | Interiors: ROOM() registration and an engine-neutral furniture placer (ported from Yuni) with a catalog adapter; building planner (storeys, partitions, stairs), walkers and a light budget; the building SETS (Highlands, Post-Apoc, Beast Rider, Locus, Abyss: every building's rooms as data, the residence rule checked); a verified demo, a sets sheet, and a walkable mockup of furnished rooms inside the real buildings. |
-| [`kits/post-apoc`](kits/post-apoc/INDEX.md) | 26 | 400 | 32 | The Post-Apoc set: reclaimed and recycled buildings (containers, silos, tanks, buses, bulkheads, tyre and bottle walls) with sockets for any culture's marks. |
+| [`kits/post-apoc`](kits/post-apoc/INDEX.md) | 26 | 390 | 32 | The Post-Apoc set: reclaimed and recycled buildings (containers, silos, tanks, buses, bulkheads, tyre and bottle walls) with sockets for any culture's marks. |
 | [`kits/ringsea`](kits/ringsea/INDEX.md) | 37 | 227 | 18 | Ring Sea watercraft: 21 procedural vessels (warships, cargo ships, barges, canoes, outriggers, rafts) of the cultures round the Ring Sea. |
 | [`biomes/eastabyss`](biomes/eastabyss/INDEX.md) | 17 | 208 | 54 | Biome kit: see `biomes/README.md`. |
 | [`biomes/hyperjungle`](biomes/hyperjungle/INDEX.md) | 19 | 179 | 33 | Biome kit: see `biomes/README.md`. |

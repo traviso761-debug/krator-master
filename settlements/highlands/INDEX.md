@@ -34,7 +34,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `71-hl-mat.js` | 9 | world UV with separate u/v tile sizes (26); materials (41); geometry (60); kit items (80) |
 | `71b-hl-motif.js` | 33 **big** | Celtic drawing kit (16); motifs (unit box 100 x 100 unless noted) (50); shop-sign symbols (unit 100, drawn inside a roun (148); composing the textures (193); the textures and kit items (238) |
 | `72-hl-helpers.js` | 14 | vectors in the local frame (23); walls (39); roofs (113) |
-| `73-hl-carve.js` | 30 | totems and painted posts (9); round 2: branch rules, pillars, signs, emblem (30); dougong (painted bracket sets under eaves) (74); bargeboards, gable finials, horns (94); windows, porches, balconies (119); towers (Peles, clocktowers, wall towers) (152); bamboo (tribal and the poorest Republican/Rustic (181); cliff walkways (tribal cliff settlements) (194); yard furniture of the highlands (218); round 4: fitting murals and bracket rows (hlFlus (228) |
+| `73-hl-carve.js` | 31 **big** | totems and painted posts (9); round 2: branch rules, pillars, signs, emblem (33); dougong (painted bracket sets under eaves) (77); bargeboards, gable finials, horns (97); windows, porches, balconies (122); towers (Peles, clocktowers, wall towers) (155); bamboo (tribal and the poorest Republican/Rustic (184); cliff walkways (tribal cliff settlements) (197); yard furniture of the highlands (221); round 4: fitting murals and bracket rows (hlFlus (244) |
 | `73b-hl-frame.js` | 31 **big** | textures (29); the house's frame, chosen once (like the Fachwer (65); the pieces (76); a frame face (the new hnFachFace) (94); the four overrides (144); the frame and the roof (round 7b) (164); harlequin roofs (the Izmailovo temple, round 7b) (231); balustrades (round 7c) (245); the temple's great dome, flattened (round 7c) (263); glazed polychrome tile (round 10) (274) |
 | `74-rep-dwell.js` | 33 **big** | R-A kit items and helpers (prefix hRA / hnRA) (9); POOR (65); MIDDLE (96); RICH (135); RICH (cont.) (237) |
 | `75-rep-trade.js` | 52 **big** | R-A trade furniture (prefix hnRA) (9); TAVERNS AND INNS (73); SHOPS AND WORKSHOPS (214); SMITHIES (328); STABLES AND WAREHOUSES (378); registry (459) |
@@ -49,14 +49,14 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `79d-rep-scrap2.js` | 10 | 1. the stage tenement (11); 2. the smelter (28); 3. the wreck market hall (41); 4. the press works (53); 5. the gasholder tenement (65) |
 | `79e-rep-arco.js` | 13 |  |
 | `79f-rep-shipbreak.js` | 8 |  |
-| `80-rus-dwell.js` | 25 | Rustic kit items + helpers (prefix hRU / hnRU) (7); POOR (68); MIDDLE (107); RICH (156) |
-| `81-rus-village.js` | 33 **big** | helpers (prefix hnRU) (7); TEMPLE AND HALL (37); TRADE AND CRAFTS (126); FARMS AND MILLS (227) |
+| `80-rus-dwell.js` | 24 | Rustic kit items + helpers (prefix hRU / hnRU) (7); POOR (65); MIDDLE (104); RICH (153) |
+| `81-rus-village.js` | 29 | helpers (prefix hnRU) (7); TEMPLE AND HALL (22); TRADE AND CRAFTS (111); FARMS AND MILLS (197) |
 | `81b-rus-salvage.js` | 12 | 1. the tank stue (8); 2. the container chalet (36); 3. the hull naust (59); 4. the silo stabbur (84); 5. the scrap-iron market (101) |
-| `84-tri-dwell.js` | 33 **big** | package kit (prefix hTR / hnTR) (9); package helpers (69); the base: stilts, or the cliff cantilever (108); SMALL (126); LARGE (184); the CLIFF SETTLEMENT (showcase + reusable) (239) |
-| `85-tri-village.js` | 29 | the arched vault (longhouse roofs) (7); HALLS (34); SACRED (157); FARMS AND CRAFTS (169) |
+| `84-tri-dwell.js` | 33 **big** | package kit (prefix hTR / hnTR) (9); package helpers (69); the base: stilts, or the cliff cantilever (109); SMALL (127); LARGE (185); the CLIFF SETTLEMENT (showcase + reusable) (240) |
+| `85-tri-village.js` | 26 | the arched vault (longhouse roofs) (7); HALLS (34); SACRED (152); FARMS AND CRAFTS (163) |
 | `85b-tri-salvage.js` | 11 | 1. the tank roundhouse (7); 2. the container longhouse (29); 3. the hull meeting house (50); 4. the silo drum-house (68); 5. the scrap forge and trading shelter (87) |
 | `88-hl-dress.js` | 10 | RECLAIMED variants (round 3) (25); clocks (round 5) (87); glazed roof tile, per building (round 10e) (96) |
-| `89y-hl-furnish.js` | 3 | furniture: PLACED from the catalog, not drawn (1) |
+| `89y-hl-furnish.js` | 4 | furniture: PLACED from the catalog, not drawn (1) |
 | `90-scene.js` | 6 | scene (Highlands showcase) (1); build every site the target lists (60) |
 | `91-probe.js` | 3 | probe (window._api) — same contract as the Ancie (1) |
 | `92-camera.js` | 10 | camera, inspector, polygon tool, walk mode (1) |

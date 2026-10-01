@@ -19,6 +19,7 @@ FURN_CULTURE('post-apoc', { name: 'Post-Apoc salvage', pack: 'generic', influenc
   } });
 /* END PALETTE */
 const PA_COMMON = {
+  emblem: { field: 'clothSynthBlack', edge: 'steel', band: 'alloyGrey', ink: 'electric', ink2: 'alloyWhite' },
   wood: 'timberSalvage', woodDark: 'steel', woodLight: 'alloyGrey', woodFam: 'wood',
   cloth: ['clothSynthBlue', 'clothSynthRed', 'clothSynthWhite', 'clothSynthBlack'], clothFam: 'cloth',
   accent: 'alloyWhite', accentFam: 'metal', metal: 'steel', metalFam: 'metal',

@@ -6,7 +6,7 @@
 
 The text defines the single global `KratorFurniture` (krator-furniture-runtime.js: batches that
 build catalog pieces with the catalog's own code and merge them). Inside the closure: the core
-(krator-furniture-core.js), the parametric kit (krator-furniture-kit.js), the harvested
+(krator-furniture-core.js), the culture symbols (krator-symbols.js), the parametric kit (krator-furniture-kit.js), the harvested
 registry (krator-master-furniture.js) when `harvested` is True, the culture files asked for, and the
 runtime. Their top-level names (TAU, shade, mat, PAL, FURN, FK, ...) stay inside the closure, so
 they never meet the host build's own. A culture file's fallback chain (kits/interiors
@@ -15,7 +15,7 @@ IX.CULTURE_FAMILY) usually ends in `generic` and `scrap`: list them too.
 import os
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-CORE = ['krator-furniture-core.js', 'krator-furniture-kit.js']
+CORE = ['krator-furniture-core.js', 'krator-symbols.js', 'krator-furniture-kit.js']
 RUNTIME = 'krator-furniture-runtime.js'
 
 
