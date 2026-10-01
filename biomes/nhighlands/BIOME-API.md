@@ -92,7 +92,12 @@ plants ON geometry the host hands it.
 ## What the biome exports
 
 ```js
-NHL.build({R, quality}) -> {trees, heroes, far, colonies, bySpecies, ..., under}
+NHL.build({R, quality, box}) -> {trees, heroes, far, colonies, bySpecies, ..., under, ms}
+                                // box [x0,z0,x1,z1]: the world's own extent; the placement grids skip every cell
+                                // outside it (the disc of radius R is a third larger than a square map). ms: the
+                                // trees' and the floor's build times
+NHL.LOD                         // the runtime LOD ranges in metres: tree, floor, farFloor, dress, logs, glow (the
+                                // bell-bulbs and lantern pods; their halos keep the tree's range)
 NHL.dress(geometries, opt)      // growth on a structure: the HANGING FLORA (curtains of moss graded by
                                 // length, bell-bulb strings, lantern pods, vines under every soffit; ferns,
                                 // trumpet saplings and seedlings on the ledges); opt {y0,h,coldTop} makes the
@@ -102,7 +107,8 @@ NHL.setNight(k)                 // the glow, 0..1
 NHL.canopyH(x,z)                // approximate canopy top
 NHL.treeAt(x,y,z,key,opt)       // one tree at a point (a world's own placement)
 NHL.SPECIES, NHL.PLANTS, NHL.PAL, NHL.KEY
-NHL.zones(x,z)                  // the zone weights a world can reuse (the host's ground paint does)
+NHL.zones(x,z)                  // the zone weights a world can reuse (the host's ground paint does); `low` is the
+                                // foot of the temperate band, where the broadleaves lead
 NHL.TREES, NHL.COLONIES         // what was placed
 NHL.tagsOf(nameOrLabel)
 ```

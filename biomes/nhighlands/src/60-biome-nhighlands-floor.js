@@ -27,7 +27,7 @@ const okGround=(x,z,pad)=>!blocked(x,z,pad)&&BIO.clearOf(x,z,pad);
 // ---------------------------------------------------------------- small plants
 function frondCrown(item,x,y,z,Rf,n,p0,p1,col,c2){const a0=rr(0,TAU);
  for(let k=0;k<n;k++){const a=a0+k/n*TAU+rr(-.25,.25),L=Rf*rr(.8,1.1);BIO.put(item,[x,y,z],qEuler(rr(-.18,.18),-a,rr(p0,p1)),[L,L*rr(.85,1.05),L*rr(1.1,1.5)],bright(col,rr(.86,1.1)),c2?{c2}:null);}}
-function swordFern(x,y,z,lv,k){const hc=vary(pick(PAL.fern),.03,.1,.06);frondCrown('frond',x,y-.1,z,rr(1.1,1.9)*(k||1),lv===2?ri(6,9):lv===1?5:3,.15,.7,bright(hc,1.55));}
+function swordFern(x,y,z,lv,k){const hc=vary(pick(PAL.fern),.03,.1,.06);frondCrown('frond',x,y-.1,z,rr(1.1,1.9)*(k||1),lv===2?ri(6,9):lv===1?4:3,.15,.7,bright(hc,1.55));}
 function ladyFern(x,y,z,lv){const hc=vary(pick(PAL.fern),.03,.1,.06).lerp(C(0x7aa040),.3);frondCrown('lady',x,y-.1,z,rr(.8,1.4),lv===2?ri(6,9):4,.35,.9,bright(hc,1.6));}
 function laceFern(x,y,z,lv){const hc=vary(pick(PAL.lace),.02,.06,.04);frondCrown('lace',x,y-.05,z,rr(.7,1.3),lv===2?ri(5,8):3,.2,.75,bright(hc,1.3),bright(C(pick(PAL.irid.LG)),1.2));}
 function bracken(x,y,z,lv){const n=lv===2?ri(2,5):2;for(let i=0;i<n;i++){const a=rr(0,TAU),d=rr(0,1.2),h=rr(.5,1.1),px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d;
@@ -41,7 +41,8 @@ function grass(x,y,z,lv,set,k){const h=rr(.4,.9)*(k||1)*(lv===0?1.6:1);tuft('bla
 function heath(x,y,z,lv){const h=rr(.25,.5),n=lv===2?ri(2,4):1;for(let i=0;i<n;i++){const a=rr(0,TAU),d=i?rr(.4,1.2):0;tuft('heath',x+Math.cos(a)*d,y,z+Math.sin(a)*d,h,h*2.2,leafCol([0x3a5a2e,0x44602e,0x4a4a3a,0x3e4e34],1.2));}
  if(lv===2&&rng()<.45)for(let b=0;b<6;b++)BIO.put('berry',[x+rr(-.6,.6),y+h*rr(.4,.9),z+rr(-.6,.6)],null,rr(.035,.05),bright(C(pick(PAL.bilberry)),1.1));}
 function lichen(x,y,z,lv){const n=lv===2?ri(2,4):1;for(let i=0;i<n;i++){const a=rr(0,TAU),d=rr(0,.9),R=rr(.4,.9);BIO.put('mossmat',[x+Math.cos(a)*d,y+.08,z+Math.sin(a)*d],qEuler(rr(-.06,.06),rr(0,TAU),rr(-.06,.06)),[R,1,R],bright(vary(pick(PAL.lichen),.02,.05,.05),1.1));}}
-function mushrooms(x,y,z,lv,n,r,set){for(let i=0;i<n;i++){const a=rr(0,TAU),d=r*Math.sqrt(rng()),px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d,h=rr(.08,.24);BIO.put('mushroom',[px,Y(px,pz)-.02,pz],qEuler(rr(-.1,.1),rr(0,TAU),rr(-.1,.1)),[h,h,h],bright(C(pick(set||PAL.mush)),1.05));}}
+// past the near band a cap is under a pixel: two stand for the troop
+function mushrooms(x,y,z,lv,n,r,set){if(lv<2)n=Math.min(n,2);for(let i=0;i<n;i++){const a=rr(0,TAU),d=r*Math.sqrt(rng()),px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d,h=rr(.08,.24);BIO.put('mushroom',[px,Y(px,pz)-.02,pz],qEuler(rr(-.1,.1),rr(0,TAU),rr(-.1,.1)),[h,h,h],bright(C(pick(set||PAL.mush)),1.05));}}
 function bluebells(x,y,z,lv,n){for(let i=0;i<n;i++){const a=rr(0,TAU),d=rr(0,2.2)*Math.sqrt(rng()),h=rr(.28,.45);tuft('bell',x+Math.cos(a)*d,y,z+Math.sin(a)*d,h,h*1.2,leafCol(PAL.bluebell,1.15,.02));}}
 // DISC STALKS: a clump of slender stalks, each topped with a ribbed gold disc, tilted a little to the light
 function discStalks(x,y,z,lv,cold){const n=lv===2?ri(4,12):lv===1?3:2,amber=smooth(.4,.8,cold);
@@ -152,14 +153,27 @@ function plantBoreal(x,y,z,Z,lv,st){const t=rng();
  else if(t<.80){grass(x,y,z,lv,[0x6a7a3a,0x7a8a40,0x5a6a34]);st.tufts++;}
  else if(t<.88){swordFern(x,y,z,lv,.8);st.ferns++;}
  else if(t<.94)boulder(x,y,z,lv,st,rng()<.3,.5);else{lichen(x,y,z,lv);st.lichen++;}}
+// THE FAR FLOOR (lv 0, past ~950 m of the spine): only what still reads from there, as a speckle over the ground's
+// paint: ferns, shrubs, bracken in the glades, boulders and their moss, the smoke bush's dark patches. The small
+// things (mushrooms, sorrel, bluebells, discs, grass, heath and lichen tufts, canes) are under a pixel at that range,
+// and every item a band carries is one more draw call in every chunk it is drawn in: this band is drawn out to 2.4 km.
+function plantFar(x,y,z,Z,st){const t=rng();
+ if(Z.boreal*(1-Z.glade)>.5){if(t<.22)boulder(x,y,z,0,st,rng()<.3,.5);else if(t<.42){swordFern(x,y,z,0,.8);st.ferns++;}return;}   // up high the paint is the floor (heath, lichen): a few stones and ferns
+ if(Z.glade>.4){if(t<.45){bracken(x,y,z,0);st.bracken++;}else if(t<.72){swordFern(x,y,z,0);st.ferns++;}else if(t<.82){shrub(x,y,z,0);st.shrubs++;}return;}
+ if(Z.dark>.3&&t<Z.dark*.3){const R=rr(.7,1.5);BIO.put('smoke',[x,y+R*.4,z],qEuler(0,rr(0,TAU),0),[R,R*rr(.75,.95),R],bright(vary(pick(PAL.plum),.02,.06,.04),1.1));st.dark++;return;}
+ if(t<(Z.oldwood>.4?.4:Z.rip>.4?.3:.12)){boulder(x,y,z,0,st,Z.oldwood>.4||rng()<.3,.85);return;}
+ if(t<.62){swordFern(x,y,z,0,rng()<.3?1.2:1);st.ferns++;}
+ else if(t<.78){ladyFern(x,y,z,0);st.ferns++;}
+ else{shrub(x,y,z,0);st.shrubs++;}}
 function plantAlpine(x,y,z,Z,lv,st){const t=rng();
  if(t<.38){heath(x,y,z,lv);st.heath++;}else if(t<.62){lichen(x,y,z,lv);st.lichen++;}else if(t<.82){grass(x,y,z,lv,[0x7a8458,0x8a9460],.7);st.tufts++;}else if(t<.88)boulder(x,y,z,lv,st,rng()<.3,.3);}
 
 // ---------------------------------------------------------------- the pass
-NHL.buildFloor=function(R,q){
+NHL.buildFloor=function(R,q,box){
  reseed(600031);q=q==null?1:q;R=R||3300;means();
  const st={ferns:0,lace:0,moss:0,sorrel:0,shrubs:0,tufts:0,mush:0,zebra:0,boulders:0,bells:0,bracken:0,discs:0,fans:0,heath:0,lichen:0,spikes:0,dark:0,cane:0,logs:0,stones:0};
  function plant(x,y,z,lv){if(!okGround(x,z,.8))return;const Z=zones(x,z);
+  if(lv===0){plantFar(x,y,z,Z,st);return;}
   const w=[Z.temperate*(1-Z.glade)*(1-Z.oldwood)*(1-Z.rip),Z.glade*1.2,Z.rip*1.6,Z.oldwood*1.4,Z.montane*(1-Z.glade)*(1-Z.oldwood)*(1-Z.rip),Z.boreal*(1-Z.alpine)*(1-Z.glade)*(1-Z.rip),Z.alpine],P=[plantTemperate,plantGlade,plantBank,plantOldwood,plantMontane,plantBoreal,plantAlpine];
   let tot=0;for(const v of w)tot+=v;if(tot<=0)return;
   let r=rng()*tot,k=0;for(;k<w.length;k++){if(r<w[k])break;r-=w[k];}if(k>=w.length)k=w.length-1;
@@ -172,7 +186,7 @@ NHL.buildFloor=function(R,q){
   BIO.grid(b[0],0,1e9,(x,z)=>{if(nearest(x,z)!==oi)return 0;const ld=Math.hypot(x-o[0],z-o[1]);if(ld>=b[1]||ld<b[2])return 0;return .82*q*(lv===1?.85:1);},(x,y,z)=>plant(x,y,z,lv),
    {patch:.7,patchScale:.014,pad:.6,center:[0,0],box:[o[0]-b[1],o[1]-b[1],o[0]+b[1],o[1]+b[1]]});});});
  BIO.range=NHL.LOD.farFloor;
- BIO.grid(30,0,R*1.42,(x,z)=>{if(BIO.lodD(x,z)<950)return 0;return .55*q;},(x,y,z)=>plant(x,y,z,0),{patch:.7,patchScale:.014,pad:.6});
+ BIO.grid(30,0,R*1.42,(x,z)=>{if(BIO.lodD(x,z)<950)return 0;return .55*q;},(x,y,z)=>plant(x,y,z,0),{patch:.7,patchScale:.014,pad:.6,box});
  BIO.range=NHL.LOD.floor;
  // stepping stones in the stream: mossy boulders standing in the water (the depth window)
  O.forEach((o,oi)=>{BIO.grid(5,0,1e9,(x,z)=>{if(nearest(x,z)!==oi||Math.hypot(x-o[0],z-o[1])>900)return 0;return .16*q;},
@@ -181,7 +195,7 @@ NHL.buildFloor=function(R,q){
   {patch:.4,patchScale:.03,noMask:true,depth:[.15,1.6],pad:.3,center:[0,0],box:[o[0]-900,o[1]-900,o[0]+900,o[1]+900]});});
  BIO.range=NHL.LOD.logs;
  // the fallen giants: across the temperate and montane slopes, more in the old wood
- BIO.grid(85,0,R*1.42,(x,z)=>{if(BIO.lodD(x,z)>1200)return 0;const Z=zones(x,z);return (Z.temperate*.75+Z.montane*.5+Z.oldwood*.4+Z.boreal*.2)*(1-Z.rip)*q;},(x,y,z)=>{const c=BIO.field('cold',x,z);for(let t=0;t<4;t++)if(log(x+rr(-20,20),y,z+rr(-20,20),st,c))break;},{patch:0,pad:2});
+ BIO.grid(85,0,R*1.42,(x,z)=>{if(BIO.lodD(x,z)>1200)return 0;const Z=zones(x,z);return (Z.temperate*.75+Z.montane*.5+Z.oldwood*.4+Z.boreal*.2)*(1-Z.rip)*q;},(x,y,z)=>{const c=BIO.field('cold',x,z);for(let t=0;t<4;t++)if(log(x+rr(-20,20),y,z+rr(-20,20),st,c))break;},{patch:0,pad:2,box});
  BIO.range=null;
  return{under:st};};
 })();

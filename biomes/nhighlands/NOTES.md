@@ -109,9 +109,13 @@ up it, beard lichen replaces moss and the seedlings turn boreal (the probe count
 - 28, 35: mountain cane, in small patches only. 02, 31: the stream. 06, 03: the morning fog.
 
 ## The budget
-~26M triangles held (trees ~17M with their stand-ins, floor ~9M), ~1.9M instances, ~1450 LOD
-chunk meshes; 5–13M triangles and 200–480 draw calls at the preset views. Build ~27 s under
-SwiftShader. 35k trees: ~15k heroes near the spine, the rest impostors.
+~24M triangles held (trees ~16M with their stand-ins, floor ~8M), ~2.0M instances, ~1170 LOD
+chunk meshes; 5–12M triangles and 180–380 draw calls at the preset views. Build ~22 s under
+SwiftShader on a quiet machine (26 s before the Oct 2026 pass; `window._phases` has the breakdown:
+trees ~10 s, the core's bake ~5 s, floor ~4 s, ground ~2 s, everything before the build ~2 s).
+39k trees: ~16k heroes near the spine, the rest impostors. The far floor (past ~950 m of the
+spine) carries only ferns, shrubs, bracken, boulders, moss cushions and smoke bush, drawn to
+2.4 km; bell-bulbs and lantern pods draw within 650 m (`NHL.LOD`).
 
 ## Lessons this build cost
 - **A big map makes everything a hero.** With 22 spine points and a 1 km mid radius nearly every
@@ -148,3 +152,10 @@ SwiftShader. 35k trees: ~15k heroes near the spine, the rest impostors.
   was a pole with a few twigs, its full-length arm rods (solid, never alpha-tested) the most
   visible thing on it. Each tuft now has a shaded core under its needles, so a card stays a mass
   at range, and the rods stop inside the masses.
+- **Every item a band carries is a draw call in every chunk it is drawn in.** The far floor put ~30
+  item types (mushrooms, sorrel, bluebells, discs, tufts...) across 3.2 km, most of them under a
+  pixel there: ~110 of The stream's 477 calls. Eight types out to 2.4 km read the same.
+- **Paint at the resolution of the inputs.** The ground's 2048-square paint read zones on a 256
+  lattice, fields on an 18 m one and the shade on a 512 one, and allocated four colours a pixel:
+  painted at half size and scaled up by the canvas, with its noises on lattices, it is ~4x faster
+  and the same to the eye.
