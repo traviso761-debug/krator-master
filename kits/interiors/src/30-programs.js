@@ -34,17 +34,60 @@
 
   const SURFACE = { anchor: 'surface', max: 2 };
   IX.SURFACE_GROUP = SURFACE;
+  /* roles (the catalog's `role`: FK.ROLES' role names, or a bespoke piece's own) that make a piece a
+     FOOD container or an ITEM container. A require entry with `roles` takes only pieces whose role
+     is listed (the adapter infers a role for harvested pieces that carry none, from their key). */
+  const FOOD = ['store', 'larder', 'pantry', 'sacks', 'pots', 'crates', 'bin', 'barrel', 'basket', 'cold'];
+  const ITEM = ['chest', 'cabinet', 'trunk', 'locker', 'coffer', 'strongbox', 'wardrobe', 'footlocker'];
+  IX.FOOD_ROLES = FOOD;
+  IX.ITEM_ROLES = ITEM;
+  /* a room of kind K also takes pieces whose `rooms` list any of KIND_ALIAS[K] */
+  IX.KIND_ALIAS = {
+    cottage: ['hall', 'bedroom', 'kitchen'],
+    living: ['hall', 'kitchen'],
+    dormitory: ['barracks', 'bedroom'],
+    shop: ['store', 'market', 'tavern', 'hall'],
+    smithy: ['workshop', 'kitchen'],
+    stable: ['yard', 'store', 'roost']
+  };
+  IX.roomKinds = function (kind) { return [kind].concat(IX.KIND_ALIAS[kind] || []); };
 
   IX.PROGRAMS = {
     hall:     { require: [{ need: 'table', types: ['table'], n: 1 }, { need: 'seats', types: SEATS, n: 2 }],
                 optional: [{ types: ['lamp', 'brazier'], max: 2 }, { types: ['storage', 'shelf', 'rack'], max: 2 }, { types: ['screen', 'statue', 'banner'], max: 1 }, { types: ['art', 'banner'], max: 2 }, SURFACE],
                 extra: 7 },
-    bedroom:  { require: [{ need: 'bed', types: ['bed'], n: 1 }],
-                optional: [{ types: ['storage'], max: 2 }, { types: ['lamp'], max: 1 }, { types: ['screen'], max: 1 }, { types: ['chair', 'desk'], max: 1 }, { types: ['art', 'banner'], max: 1 }, SURFACE],
+    bedroom:  { require: [{ need: 'bed', types: ['bed'], n: 1 }, { need: 'chest', types: ['storage'], roles: ITEM, n: 1 }],
+                optional: [{ types: ['storage'], max: 1 }, { types: ['lamp'], max: 1 }, { types: ['screen'], max: 1 }, { types: ['chair', 'desk'], max: 1 }, { types: ['art', 'banner'], max: 1 }, SURFACE],
                 extra: 5 },
-    kitchen:  { require: [{ need: 'hearth', types: ['stove'], n: 1 }, { need: 'storage', types: ['storage', 'shelf', 'vessel'], n: 1 }],
+    kitchen:  { require: [{ need: 'hearth', types: ['stove'], n: 1 }, { need: 'food', types: ['storage', 'vessel', 'stack'], roles: FOOD, n: 1 }],
                 optional: [{ types: ['storage', 'shelf', 'rack', 'stack'], max: 2 }, { types: ['table'], max: 1 }, SURFACE],
                 extra: 5 },
+    /* RESIDENCE kinds (the interiors sets, sets/README.md): every residence must hold a bed, a FOOD
+       container (a store-role piece: jars, sacks, crocks, a larder) and an ITEM container (a chest-role
+       piece). A one-room home is a `cottage`; a home's main room with the hearth is `living`; the
+       sleeping rooms are `bedroom`s (each with a chest). KIND_ALIAS lets catalog pieces listing
+       hall / kitchen / bedroom qualify for them. */
+    cottage:  { require: [{ need: 'bed', types: ['bed'], n: 1 }, { need: 'hearth', types: ['stove', 'brazier'], n: 1 },
+                          { need: 'food', types: ['storage', 'vessel', 'stack'], roles: FOOD, n: 1 }, { need: 'chest', types: ['storage'], roles: ITEM, n: 1 }],
+                optional: [{ types: ['table'], max: 1 }, { types: SEATS, max: 2 }, { types: ['shelf', 'rack'], max: 1 }, { types: ['lamp'], max: 1 }, { types: ['rug'], max: 1 }, { types: ['art', 'banner'], max: 1 }, SURFACE],
+                extra: 5 },
+    living:   { require: [{ need: 'hearth', types: ['stove', 'brazier'], n: 1 }, { need: 'table', types: ['table'], n: 1 }, { need: 'seats', types: SEATS, n: 2 },
+                          { need: 'food', types: ['storage', 'vessel', 'stack'], roles: FOOD, n: 1 }],
+                optional: [{ types: ['storage', 'shelf', 'rack'], max: 2 }, { types: SEATS, max: 2 }, { types: ['lamp'], max: 1 }, { types: ['rug'], max: 1 }, { types: ['screen', 'statue', 'banner'], max: 1 }, { types: ['art', 'banner'], max: 2 }, SURFACE],
+                extra: 6 },
+    dormitory: { require: [{ need: 'beds', types: ['bed'], n: 2 }, { need: 'chest', types: ['storage'], roles: ITEM, n: 1 }],
+                optional: [{ types: ['bed'], max: 6 }, { types: ['storage'], max: 3 }, { types: ['lamp'], max: 1 }, { types: ['rack', 'shelf'], max: 1 }],
+                extra: 4 },
+    /* TRADE kinds: a shop's selling room and the industries */
+    shop:     { require: [{ need: 'counter', types: ['counter'], n: 1 }, { need: 'goods', types: ['shelf', 'rack', 'storage', 'stack', 'vessel', 'weapon'], n: 2 }],
+                optional: [{ types: ['shelf', 'rack', 'storage', 'stack', 'weapon'], max: 3 }, { types: ['table'], max: 1 }, { types: SEATS, max: 1 }, { types: ['lamp'], max: 1 }, { types: ['art', 'banner'], max: 1 }, SURFACE],
+                extra: 5 },
+    smithy:   { require: [{ need: 'forge', types: ['stove', 'workstation'], roles: ['forge', 'hearth'], n: 1 }, { need: 'anvil', types: ['workstation'], n: 1 }],
+                optional: [{ types: ['workstation', 'rack'], max: 2 }, { types: ['storage', 'stack', 'vessel'], max: 2 }, { types: ['bench', 'chair'], max: 1 }, SURFACE],
+                extra: 8 },
+    stable:   { require: [{ need: 'stalls', types: ['pen', 'rack'], n: 1 }],
+                optional: [{ types: ['pen', 'rack', 'stack', 'storage'], max: 4 }, { types: ['vessel'], max: 1 }],
+                extra: 9 },
     tavern:   { require: [{ need: 'counter', types: ['counter'], n: 1 }, { need: 'table', types: ['table'], n: 1 }, { need: 'seats', types: SEATS, n: 2 }],
                 optional: [{ types: ['table'], max: 2 }, { types: SEATS, max: 4 }, { types: ['storage', 'stack', 'rack'], max: 1 }, { types: ['lamp', 'brazier'], max: 2 }, { types: ['art', 'banner'], max: 1 }, SURFACE],
                 extra: 6 },
@@ -73,7 +116,8 @@
   };
   /* how big a room of each kind wants to be, relative to the others (the planner's area split) */
   IX.KIND_WEIGHT = { hall: 1.6, tavern: 2.2, shrine: 1.4, workshop: 1.6, library: 1.5, school: 1.6, barracks: 1.6,
-    kitchen: 1.0, bedroom: 1.0, study: 0.9, store: 0.7, antechamber: 0.6 };
+    kitchen: 1.0, bedroom: 1.0, study: 0.9, store: 0.7, antechamber: 0.6,
+    cottage: 1.4, living: 1.6, dormitory: 1.8, shop: 1.6, smithy: 1.8, stable: 1.8 };
   /* what a building of a given type is divided into, per storey (Yuni's ROOM_PROGRAM table,
      64-interiors.js): fn(level, area, shell) -> [kind, ...], the first kind holds the street door
      (ground floor) or the stair's top (upper floors). planBuilding() takes a name from here, an
@@ -85,7 +129,12 @@
     workshop: function (l) { return l ? ['study', 'store'] : ['workshop', 'store']; },
     civic:    function (l) { return l ? ['study', 'library'] : ['hall', 'study']; },
     temple:   function () { return ['shrine']; },
-    farm:     function () { return ['store']; }
+    farm:     function () { return ['store']; },
+    /* the sets' residence programmes (sets/README.md) */
+    cottage:  function () { return ['cottage']; },
+    house:    function (l, a) { return l ? (a >= 40 ? ['bedroom', 'bedroom', 'store'] : ['bedroom', 'store']) : (a >= 45 ? ['living', 'bedroom', 'store'] : ['living', 'bedroom']); },
+    smithy:   function (l) { return l ? ['bedroom', 'store'] : ['smithy', 'store']; },
+    stable:   function () { return ['stable']; }
   };
 
   IX.DEFAULT_PROGRAM = { require: [], optional: [{ types: ['table', 'storage', 'lamp'], max: 3 }], extra: 6 };
@@ -95,7 +144,7 @@
     storage: 'wall', shelf: 'wall', rack: 'wall', stack: 'wall', loom: 'wall', workstation: 'wall', desk: 'wall',
     screen: 'wall', banner: 'wall', ladder: 'wall', vessel: 'wall', weapon: 'wall', art: 'wall',
     table: 'centre', statue: 'centre', rug: 'centre', fountain: 'centre', well: 'centre',
-    lamp: 'corner', brazier: 'corner',
+    lamp: 'corner', brazier: 'corner', pen: 'wall',
     seating: 'seat', bench: 'seat', chair: 'seat'
   };
 

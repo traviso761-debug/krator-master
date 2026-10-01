@@ -4,7 +4,8 @@
    loaded first) onto the four calls the placer needs (45-placer.js header):
 
      list()                    FURNS -> descriptors { key, name, culture, type, setting, rooms, anchor, clearance, variants,
-                               tier, wealth: [lo, hi], role }   (tier and wealth: the catalog's wealth bands, 45-placer.js)
+                               tier, wealth: [lo, hi], role }   (tier and wealth: the catalog's wealth bands, 45-placer.js;
+                               role: the catalog's, else guessed from the key: ROLE_GUESS below)
      dims(key, v)              entryDims(A, v)
      anchorY(key, v, at)       furnAnchorY(A, v, at)
      build(placement, room)    buildFurn(key, x, z, ry, { variant, seed, y, wealth }) -> THREE.Group in the engine's scene
@@ -38,6 +39,21 @@
     for (const q of QUIRKS) if (q.key === A.key && q.when(A)) n = Math.min(n, q.variants);
     return n;
   }
+  /* the role of a harvested piece that carries none (FK.set() pieces carry FK.ROLES' role): what the
+     interiors programmes' FOOD and ITEM container slots read (30-programs.js). Named here, not in the
+     catalog, so a catalog entry that later declares `role` wins over the guess. */
+  const ROLE_GUESS = [
+    [/chest|trunk|locker|coffer|strongbox|cabinet|wardrobe|press/, 'chest'],
+    [/sack|grain|pot|jar|crate|barrel|bin|basket|larder|pantry|goods|stack|churn|crock/, 'store'],
+    [/forge|anvil/, 'forge']
+  ];
+  function roleOf(A) {
+    if (A.role) return A.role;
+    const k = (A.key + ' ' + (A.name || '')).toLowerCase();
+    for (const g of ROLE_GUESS) if (g[0].test(k)) return g[1];
+    return undefined;
+  }
+  IX.catalogRoleOf = roleOf;
   function stripLights(g) {
     const out = [];
     g.traverse(function (o) { if (o.isPointLight) out.push(o); });
@@ -68,7 +84,7 @@
         cache = FURNS.map(function (A) {
           return { key: A.key, name: A.name, culture: A.culture, type: A.type, setting: A.setting, rooms: A.rooms.slice(),
             anchor: A.anchor || 'floor', clearance: A.clearance || {},
-            tier: A.tier, wealth: A.wealth ? A.wealth.slice() : undefined, role: A.role,
+            tier: A.tier, wealth: A.wealth ? A.wealth.slice() : undefined, role: roleOf(A),
             variants: variantsOf(A) };
         });
         return cache;
