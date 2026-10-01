@@ -13,9 +13,9 @@ type, and count outdoor fixtures (fountains, statues, benches) as furniture.
 
 | Source | Format |
 |---|---|
-| `kits/catalog/krator-master-furniture.js` | 84 `FURN({...})` pieces, harvested from six builds. **Start here.** |
-| `settlements/yuni/src/63-furniture.js`, `53-assets.js` | Yuni's own `FURN` seed set (same shape as the catalog) |
-| `settlements/yuni/src/61e-ancients-furniture.js` | Ancients furniture ported into Yuni |
+| `kits/catalog/krator-master-furniture.js` | 87 `FURN({...})` pieces, harvested from six builds; includes all 35 of Yuni's pieces as `yuni_*`. **Start here.** |
+| `settlements/yuni/src/63-furniture.js`, `53-assets.js` | Yuni's own `FURN` seed set: folded into the catalog; Yuni keeps its copy so its build is unchanged |
+| `settlements/yuni/src/61e-ancients-furniture.js` | Ancients furniture ported into Yuni: folded into the catalog likewise |
 | `settlements/screamers/src/70c-furniture.js` | a different shape: `FURN.bunk(x,y,z,rot,s)` built from kit items |
 
 Standardise on the catalog's `FURN({...})` shape and port the Screamers pieces into it.

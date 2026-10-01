@@ -1,5 +1,5 @@
 /* ======================================================================
-   Krator Master Furniture Registry — 84 pieces
+   Krator Master Furniture Registry — 87 pieces
    Harvested from Voth, Iziz, Mav's Refuge, Girder, Yuni and the Ancients kit.
    Requires krator-asset-engine.js to be loaded first (defines FURN(), F.*, etc).
    Every piece is tagged with culture: one of ancient, ancients-salvage,
@@ -2192,7 +2192,7 @@ FURN({
   }
 });
 
-/* ================= Yuni (32 pieces) ================= */
+/* ================= Yuni (35 pieces: the whole Yuni furniture sheet) ================= */
 
 FURN({
   key: 'yuni_common_low_table', name: 'Low round table', culture: 'yuni-common', room: 'hall',
@@ -3003,6 +3003,60 @@ FURN({
       F.box(1.0, 0, 0.3, 0.35, 0.3, 0.3, 0, 0x8a6a4e, 'wood');
       F.ball(0.9, 0.35, 0.3, 0.05, metal, 'metal');
       F.ball(1.1, 0.35, 0.35, 0.045, metal, 'metal');
+    }
+  }
+});
+
+FURN({
+  key: 'yuni_poor_reed_mat_bed', name: 'Reed sleeping platform', culture: 'yuni-poor', room: 'bedroom',
+  w: 1.9, d: 1.0, h: 0.42, variants: 2,
+  build: function (F) {
+    const MUD = 0xbc8e58, REED = [0xb8a262, 0xc8b272, 0xa89256];
+    const CLOTH = [0x2e5a8a, 0xb83a2e, 0xd8a030, 0xf0ece0, 0x2f8a6a, 0x6a3a7a, 0xc8642a];
+    /* two mud kerbs carry the reed deck */
+    for (let s = -1; s <= 1; s += 2) F.box(s * 0.86, 0, 0, 0.12, 0.28, 0.92, 0, MUD, 'adobe');
+    for (let i = 0; i < 9; i++) {
+      const lz = -0.44 + i * 0.11;
+      F.rod(-0.90, 0.30, lz, 0.90, 0.30, lz, 0.035, shade(REED[2], F.rr(-0.06, 0.04)), 'thatch');
+    }
+    F.box(0, 0.33, 0, 1.76, 0.05, 0.90, 0, REED[0], 'thatch');   /* woven mat over the reeds */
+    if (F.variant === 1) F.box(0, 0.37, 0.08, 1.60, 0.05, 0.70, 0, F.pick(CLOTH), 'cloth');
+  }
+});
+
+FURN({
+  key: 'yuni_poor_hearth_stones', name: 'Three-stone hearth', culture: 'yuni-poor', room: 'kitchen',
+  w: 1.0, d: 1.0, h: 0.55, variants: 1,
+  build: function (F) {
+    const MUD = 0xb08250, STONE = 0x7e7a72, POT = 0xa85832;
+    F.cyl(0, 0, 0, 0.42, 0.06, 0, MUD, 'adobe');
+    for (let i = 0; i < 3; i++) {
+      const a = i / 3 * TAU + 0.5;
+      F.blob(Math.cos(a) * 0.26, 0.02, Math.sin(a) * 0.26, 0.13, 0.22, a, shade(STONE, F.rr(-0.06, 0.06)), 'stone');
+    }
+    /* the cooking pot on the stones: belly, shoulder, rim */
+    F.frustum(0, 0.24, 0, 0.16, 0.24, 0.10, 0, POT, 'tile', 10);
+    F.frustum(0, 0.34, 0, 0.24, 0.22, 0.12, 0, POT, 'tile', 10);
+    F.frustum(0, 0.46, 0, 0.22, 0.15, 0.06, 0, shade(POT, -0.08), 'tile', 10);
+    F.blob(0, 0.10, 0, 0.12, 0.08, 0, 0xff8a3a, 'glow');          /* embers */
+    F.lamp(0, 0.20, 0, 0.42, 3.2);
+  }
+});
+
+FURN({
+  key: 'yuni_salvage_panel_table', name: 'Salvaged panel table', culture: 'ancients-salvage', room: 'workshop',
+  w: 1.8, d: 0.9, h: 0.80, variants: 2,
+  build: function (F) {
+    const TARN = [0xb4b0a2, 0xa6a294, 0xc0bcae], RUST = 0x7a3b22;
+    F.box(0, 0.74, 0, 1.76, 0.06, 0.86, 0, TARN[0], 'metal');      /* a cut Ancient panel for the top */
+    for (let i = 0; i < 4; i++) F.box(-0.66 + i * 0.44, 0.71, 0, 0.03, 0.05, 0.86, 0, RUST, 'rust');
+    if (F.variant === 1) {
+      for (let s = -1; s <= 1; s += 2) F.box(s * 0.72, 0, 0, 0.26, 0.74, 0.74, 0, F.pick([0xc89a62, 0xbc8e58, 0xd4a66e]), 'adobe');
+    } else {
+      for (let k = 0; k < 4; k++) {
+        const sx = k < 2 ? -1 : 1, sz = k % 2 ? -1 : 1;
+        F.rod(sx * 0.74, 0, sz * 0.36, sx * 0.62, 0.74, sz * 0.28, 0.045, TARN[2], 'metal');
+      }
     }
   }
 });
