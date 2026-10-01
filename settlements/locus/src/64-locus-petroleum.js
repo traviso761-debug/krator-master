@@ -123,7 +123,7 @@ reseed(644001);
       [-0.5,6.5].forEach(function(pz){ LOCUS.pole(F, -19.6, pz, 3.4, 0.08, TIMBERC[1], false); });
       LOCUS.stripes(F, [-22.4,3.9,-0.9],[-22.4,3.9,6.9],[-19.6,3.4,6.5],[-19.6,3.4,-0.5], 5, CANVASC[1], GEOBROWNC[2], { sag:0.15 });
       FURNISH('yuni_common_workbench', -20.8,0,1.5, 0);                                                                          /* the fitters' bench: FURNITURE (catalog) */
-      for(var dr=0;dr<3;dr++) FURNISH('pa_drum', -20.6,0,4.1+dr*0.7, 0); LOCUS.drum(F, -21.6, 0, 4.8, RUSTC[3], true, 0.3);   /* standing oil drums: FURNITURE (catalog pa_drum); the lying one is still drawn */
+      for(var dr=0;dr<3;dr++) FURNISH('pa_drum', -20.6,0,4.1+dr*0.7, 0); FURNISH('job_oil_drum_lying', -21.6,0,4.8, 0.3);   /* oil drums: FURNITURE (catalog pa_drum standing; job_oil_drum_lying, Jobs) */
       F.lamp(-24.0, 2.6, 3.5, 0.9, 10);
       /* the fractionating column: an Ancient vessel on a mud-brick foundation, three walkways, a tarnished cap */
       var CX=3.5, CZ=-12; F.lathe('adobe', CX, CZ, [[3.2,0],[3.1,0.9],[2.9,1.1]], mud2, { seg:20 });
@@ -162,7 +162,7 @@ reseed(644001);
       var LX=21, LZ=10; [[LX-4,LZ-3.2],[LX+4,LZ-3.2],[LX+4,LZ+3.2],[LX-4,LZ+3.2]].forEach(function(p){ LOCUS.pole(F, p[0], p[1], 4.0, 0.09, TIMBERC[1], true); });
       LOCUS.stripes(F, [LX-4.4,4.0,LZ-3.6],[LX+4.4,4.0,LZ-3.6],[LX+4.4,4.0,LZ+3.6],[LX-4.4,4.0,LZ+3.6], 8, CANVASC[3], GEOBROWNC[2], { sag:0.4 });
       for(var dx=0;dx<5;dx++) for(var dz=0;dz<3;dz++){ FURNISH('pa_drum', LX-3.0+dx*0.75,0,LZ-2.4+dz*0.75, 0); if((dx+dz)%3===0) FURNISH('pa_drum', LX-3.0+dx*0.75,0.9,LZ-2.4+dz*0.75, 0); }   /* FURNITURE (catalog pa_drum) */
-      for(var l=0;l<4;l++) LOCUS.drum(F, LX+1.6, 0, LZ+1.2+l*0.7, RUSTC[l], true, PI/2);
+      FURNISH('job_oil_drum_rack', LX+1.6,0,LZ+2.25, PI/2, { v:0 });                                                  /* the row of four lying drums: FURNITURE (catalog, Jobs) */
       F.fr8(LX+0.5, 0, LZ+5.8, 6.0, 0.9, 2.2, 0, mud, 'adobe'); LOCUS.stain(F, LX-1.5, LZ+4.4, 1.0);                             /* the loading ramp */
       /* the control shed: Ancient white-metal panels, a strip of blue glass, a cable mast, and ELECTRIC light — the Geomancers have batteries */
       F.box(11, 0, 13, 6.4, 3.6, 4.6, 0, TARNC[0], 'metal'); F.box(11, 3.6, 13, 6.8, 0.25, 5.0, 0, TARNC[3], 'metal'); F.box(11, 1.9, 15.32, 3.4, 0.8, 0.06, 0, GLASSC[0], 'glass');

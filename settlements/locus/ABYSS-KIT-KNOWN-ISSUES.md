@@ -79,9 +79,10 @@ Geometry checked against the source; file:line as of 36e1afb.
       the base item for a variant > 0 (`API.md` "Furniture": a variant with no item is not furnished, `LOCF.unfurnished`).
       Builder pieces that stand in the newly planned open rooms became `setting:'room'` (the variant-1 forge, the tavern's
       raised-deck tables); the variant-1 tavern bar under the raised deck is `'indoor'` (not planned).
-- [ ] **Lying drums are still geometry** (`LOCUS.drum(..., true)`): the warehouse (variant 1) yard's two. The standing ones,
-      the tavern bar's three and the yard's six, are the catalog's `pa_drum` now (scrap culture, 'Oil drum', sealed; its
-      painted colours, not the kit's rust; each drawn drum's colour pick burnt). The catalog has no drum lying on its side.
+- [x] **Lying drums** (fixed Oct 2026): the warehouse (variant 1) yard's two are the catalog's `job_oil_drum_lying` (the
+      Jobs category, `kits/catalog/krator-master-furniture-jobs.js`; eastabyss, the kit's rust tones), each drawn drum's colour
+      pick burnt (`ABYSS.burn(F, 1)`). The standing ones, the tavern bar's three and the yard's six, are the catalog's
+      `pa_drum` (scrap culture, 'Oil drum', sealed; its painted colours, not the kit's rust; each colour pick burnt).
 - [ ] `abyss_tavern` variant 1: a pile of the raised back deck stands in the bar's counter (x -4.1, z -6.0), the space under
       the raised deck is about 1.9 m clear, and the kitchen drum rises 0.15 m through the raised deck.
 - [ ] The catalog's `abyss_hanging_lantern` carries its own 0.3 m hanger and ceiling plate: on a mast arm
