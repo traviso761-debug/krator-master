@@ -2,7 +2,7 @@
  "adapters/catalog-adapter.js": "14ca6f7c194f",
  "dist/interiors-core.js": "fa3e6620cb1a",
  "dist/interiors-sets.html": "26ea09c7dd35",
- "dist/interiors-walk.html": "bb5f328cea33",
+ "dist/interiors-walk.html": "d01bc28d2366",
  "dist/interiors.html": "f72c97ac289c",
  "sets/abyss.js": "b60340b64134",
  "sets/beast-rider.js": "c397de98dc46",
@@ -36,8 +36,8 @@
  "src/80-sky-hash.js": "67919cbcd4fa",
  "src/81-sky.js": "b13975f23277",
  "src/99-tail.html": "737d92a580d5",
- "walk/shells/abyss.js": "e78ba0c720a8",
- "walk/shells/highlands.js": "cf778ae96937",
- "walk/shells/locus.js": "76ab91863b52",
- "walk/shells/post-apoc.js": "3b1afcfda182"
+ "walk/shells/abyss.js": "04752ae8298d",
+ "walk/shells/highlands.js": "54124409d109",
+ "walk/shells/locus.js": "84abf9269b17",
+ "walk/shells/post-apoc.js": "ff92da03ba69"
 }
