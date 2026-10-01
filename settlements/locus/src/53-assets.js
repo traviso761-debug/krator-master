@@ -78,9 +78,10 @@ function PLANT(o){
   if(PLANT_CLIMATES.indexOf(o.climate)<0) ERR('plant '+o.key+': climate must be one of '+PLANT_CLIMATES.join(', '));
   if(PLANT_ARIDITY.indexOf(o.aridity)<0) ERR('plant '+o.key+': aridity must be one of '+PLANT_ARIDITY.join(', '));
   /* project biome tags (optional, LOCUS onward): tags:{ wet:'arid'|'mild'|'wet', abyssal:true|false, riparian:'yes'|'no'|'both' } */
+  /* use (optional, ABYSS onward): edibility / harvestability, free text ('edible (leaves)', 'ornamental') — shown by the inspector */
   o.variants=o.variants||1; PLANTS.push(o); PLANT_BY_KEY[o.key]=o; return o;
 }
-function plantTags(A){ var t=A.tags||{}; return A.climate+' · '+A.aridity+(t.wet?' · '+t.wet:'')+(t.abyssal!=null?(t.abyssal?' · abyssal':' · non-abyssal'):'')+(t.riparian?' · riparian: '+t.riparian:''); }
+function plantTags(A){ var t=A.tags||{}; return A.climate+' · '+A.aridity+(t.wet?' · '+t.wet:'')+(t.abyssal!=null?(t.abyssal?' · abyssal':' · non-abyssal'):'')+(t.riparian?' · riparian: '+t.riparian:'')+(A.use?' · use: '+A.use:''); }
 
 function assetFrame(x,z,ry,opt){
   opt=opt||{};

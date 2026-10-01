@@ -2972,7 +2972,7 @@ function texFill(S, fn){
       var rib = 0.5+0.5*Math.cos(x*TAU/S*20), lap = (x%128)<3 ? 0.62 : 1;
       return (0.66 + 0.26*rib + 0.16*(a(x,y)-0.5) + 0.10*(b(x,y*0.2)-0.5)) * lap; })); })();
   /* tinmirror (ABYSS): a patchwork of flattened cans and foil — jittered tiles of differing brightness, dark seams,
-     round bottle bottoms with a bright rim, and a few hard specks of mirror. Grey, tinted abTin; Phong adds the glint. */
+     round bottle bottoms with a bright rim, and a few hard specks of mirror. COLOUR texture (mostly grey, some gold foil and painted cans), tinted abTin; Phong adds the glint. */
   (function(){ var n=texNoise(S,40,321), cell=S/10;
     FAMMAT.tinmirror.tex = texFinish(texFill(S,function(x,y){
       var r=Math.floor(y/cell), off=(r%2)*cell*0.5, xx=(x+off)%S, c=Math.floor(xx/cell), lx=(xx%cell)/cell, ly=(y%cell)/cell;
@@ -2981,7 +2981,8 @@ function texFill(S, fn){
       else if(h2(id,5)>0.80){ var d=Math.hypot(lx-0.5,ly-0.5); v = d<0.26 ? 0.40+0.5*d : d<0.34 ? 1.0 : v; }   /* a bottle bottom */
       else if(h2(id,9)>0.86 && Math.abs(lx-ly)<0.08) v=1.0;                          /* a mirror shard's edge */
       else v += 0.10*Math.sin(ly*TAU*6)*(h2(id,7)>0.5?1:0);                         /* ribbed can wall */
-      return v*(0.93+0.14*(n(x,y)-0.5)); })); })();
+      var hue=h2(id,11), tint = hue>0.86 ? [1.0,0.80,0.48] : hue>0.76 ? [0.62,0.92,0.92] : hue>0.70 ? [1.0,0.58,0.52] : [1,1,1];   /* gold foil, teal and red cans */
+      var w=v*(0.93+0.14*(n(x,y)-0.5)); return [w*tint[0], w*tint[1], w*tint[2]]; })); })();
   /* rubble (ABYSS): rough fieldstone in pale mortar — Voronoi stones, each with its own tone and a rounded face */
   (function(){ var cells=7, pts=[], n=texNoise(S,48,331);
     for(var j=0;j<cells;j++) for(var i=0;i<cells;i++) pts.push([(i+0.15+0.7*h2(i*3+11,j*5+12))/cells*S, (j+0.15+0.7*h2(i*7+13,j*11+14))/cells*S, h2(i*13+15,j*17+16)]);
@@ -3207,9 +3208,10 @@ function PLANT(o){
   if(PLANT_CLIMATES.indexOf(o.climate)<0) ERR('plant '+o.key+': climate must be one of '+PLANT_CLIMATES.join(', '));
   if(PLANT_ARIDITY.indexOf(o.aridity)<0) ERR('plant '+o.key+': aridity must be one of '+PLANT_ARIDITY.join(', '));
   /* project biome tags (optional, LOCUS onward): tags:{ wet:'arid'|'mild'|'wet', abyssal:true|false, riparian:'yes'|'no'|'both' } */
+  /* use (optional, ABYSS onward): edibility / harvestability, free text ('edible (leaves)', 'ornamental') — shown by the inspector */
   o.variants=o.variants||1; PLANTS.push(o); PLANT_BY_KEY[o.key]=o; return o;
 }
-function plantTags(A){ var t=A.tags||{}; return A.climate+' · '+A.aridity+(t.wet?' · '+t.wet:'')+(t.abyssal!=null?(t.abyssal?' · abyssal':' · non-abyssal'):'')+(t.riparian?' · riparian: '+t.riparian:''); }
+function plantTags(A){ var t=A.tags||{}; return A.climate+' · '+A.aridity+(t.wet?' · '+t.wet:'')+(t.abyssal!=null?(t.abyssal?' · abyssal':' · non-abyssal'):'')+(t.riparian?' · riparian: '+t.riparian:'')+(A.use?' · use: '+A.use:''); }
 
 function assetFrame(x,z,ry,opt){
   opt=opt||{};
@@ -6785,11 +6787,682 @@ reseed(647001);
 /* ============================== 16X. ABYSS — the Eastern Abyssal kit: shared helpers ==============================
    The buildings of the abyssal-desert culture on the salt marshes and deltas at the edge of the eastern abyss,
    laid out on their own sheet (TARGET 'abyss', abyss-kit.html). Every helper here takes an asset frame F and
-   draws in its LOCAL frame; nothing is placed here. See ABYSS-KIT-NOTES.md for every signature.            */
+   draws in its LOCAL frame (+x right, +z FRONT, y up from the ground); nothing is placed here.
+   Signatures and options are listed in ABYSS-KIT-NOTES.md. The LOCUS.* helpers (piles, decks, rails, stairs,
+   ladders, canopies, poles, guys, drums, tanks) are reused, not rewritten.                                  */
 reseed(650001);
 var ABYSS = {};
 KIT_ROWS.abyss = ['Housing — poor','Housing — middle','Housing — rich','Shops','Hospitality','Civic','Temple','Palace and plaza',
                   'Military','Walls','Farming and storage','Industry (Geomancer)','Street furniture and docks'];
+(function(){
+  var PI=Math.PI;
+  function L3(a,b,t){ return [mix(a[0],b[0],t), mix(a[1],b[1],t), mix(a[2],b[2],t)]; }
+  function sub(a,b){ return [a[0]-b[0], a[1]-b[1], a[2]-b[2]]; }
+  function cross(a,b){ return [a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0]]; }
+  function dot(a,b){ return a[0]*b[0]+a[1]*b[1]+a[2]*b[2]; }
+  function norm(a){ var l=Math.hypot(a[0],a[1],a[2]); return l>1e-9 ? [a[0]/l,a[1]/l,a[2]/l] : null; }
+  ABYSS.C = { sail:PAL.abSailOrange, sailRed:PAL.abSailRed, yellow:PAL.abBrightYellow, teal:PAL.abBrightTeal, pink:PAL.abBrightPink,
+              rustA:PAL.abRustA, rustB:PAL.abRustB, tarp:PAL.abTarpBlue, tin:PAL.abTin, lacquer:PAL.abLacquer, gild:PAL.abGild,
+              crystal:PAL.abCrystal, salt:PAL.abSalt, rubble:PAL.abRubble };
+  ABYSS.bright = function(F){ return F.pick([PAL.abBrightYellow, PAL.abBrightTeal, PAL.abBrightPink, PAL.abSailOrange]); };
+  ABYSS.rust = function(F){ return F.pick([PAL.abRustA, PAL.abRustB, RUSTC[0], RUSTC[3]]); };
+  ABYSS.cont = function(F){ return F.pick(ABCONTC); };
+
+  /* ---------- 0. a smooth-shaded grid of the merged builder, with UVs of our own ----------
+     ABYSS.grid(F, fam, P, col, opt): P[i][j] = local [x,y,z]; i runs one way across the surface, j the other.
+     opt.uv[i][j] = [u,v] (texture units; default a planar projection like MTRI's). opt.hint = local [x,y,z] or
+     function(p, i, j) -> the side the face must look to. opt.under = colour of a second, inward face offset by
+     opt.off (0.03) so a sail or shell reads from below / inside. opt.wrap: column j=C-1 is column 0 (closed ring).
+     col may be a number or function(i,j). Normals are per vertex (central differences), so a sail curves smoothly. */
+  ABYSS.grid = function(F, fam, P, col, opt){ opt=opt||{}; var K=mbGet(fam), sc=(FAMMAT[fam]||{}).scale||[3,3], R=P.length, C=P[0].length, off=opt.off==null?0.03:opt.off;
+    var hint = typeof opt.hint==='function' ? opt.hint : (function(h){ return function(){ return h; }; })(opt.hint||[0,1,0]);
+    var N=[], cache={};
+    function cc(i,j){ var c = typeof col==='function' ? col(i,j) : col; return cache[c] || (cache[c]=mbCol(c)); }
+    for(var i=0;i<R;i++){ N.push([]); for(var j=0;j<C;j++){
+      var jp=j+1, jm=j-1; if(opt.wrap){ if(jp>C-1) jp=1; if(jm<0) jm=C-2; } else { jp=Math.min(C-1,jp); jm=Math.max(0,jm); }
+      var du=sub(P[Math.min(R-1,i+1)][j], P[Math.max(0,i-1)][j]), dv=sub(P[i][jp], P[i][jm]), n=norm(cross(du,dv)), h=hint(P[i][j],i,j);
+      if(!n) n=norm(h)||[0,1,0]; if(dot(n,h)<0) n=[-n[0],-n[1],-n[2]]; N[i].push(n); } }
+    function W(p){ var q=F.p(p[0],p[2]); return [q[0],F.y+p[1],q[1]]; }
+    function WN(n){ var d=F.dir(n[0],n[2]); return [d[0],n[1],d[1]]; }
+    function emit(sign, colf){
+      function vert(i,j){ var p=P[i][j], n=N[i][j], q=sign>0?p:[p[0]-n[0]*off, p[1]-n[1]*off, p[2]-n[2]*off], w=W(q), wn=WN(n);
+        var uv; if(opt.uv) uv=opt.uv[i][j]; else if(Math.abs(wn[1])>0.72) uv=[w[0]/sc[0], w[2]/sc[1]]; else { var hl=Math.hypot(wn[0],wn[2])||1; uv=[(w[0]*(-wn[2]/hl)+w[2]*(wn[0]/hl))/sc[0], w[1]/sc[1]]; }
+        return { p:q, w:w, n:[wn[0]*sign,wn[1]*sign,wn[2]*sign], ln:[n[0]*sign,n[1]*sign,n[2]*sign], uv:uv, c:colf(i,j) }; }
+      function tri(a,b,c){ var fn=cross(sub(b.p,a.p), sub(c.p,a.p)); if(Math.hypot(fn[0],fn[1],fn[2])<1e-7) return;
+        var avg=[a.ln[0]+b.ln[0]+c.ln[0], a.ln[1]+b.ln[1]+c.ln[1], a.ln[2]+b.ln[2]+c.ln[2]]; if(dot(fn,avg)<0){ var t=b; b=c; c=t; }
+        [a,b,c].forEach(function(v){ K.pos.push(v.w[0],v.w[1],v.w[2]); K.nor.push(v.n[0],v.n[1],v.n[2]); K.uv.push(v.uv[0],v.uv[1]); K.col.push(v.c[0],v.c[1],v.c[2]); }); K.tris++; }
+      for(var i=0;i<R-1;i++) for(var j=0;j<C-1;j++){ var a=vert(i,j), b=vert(i+1,j), c=vert(i+1,j+1), d=vert(i,j+1); tri(a,b,c); tri(a,c,d); } }
+    emit(1, cc);
+    if(opt.under!=null){ var uc=mbCol(opt.under); emit(-1, function(){ return uc; }); } };
+
+  /* ---------- 1. sails ----------
+     ABYSS.sail(F, pts, col, opt): a swooping canvas roof between 3-6 corner points [[x,y,z],...] in order round the edge.
+     opt.swoop  how far each edge's middle dips below the line between its corners (the tips seem to curve up) [0.6]
+     opt.sag    how far the centre sits below the corners' mean height [swoop*0.5]; opt.peak raises the centre instead (a mast)
+     opt.band   colour of a patterned border strip ('pattern' family) round the edge; opt.bandW its width in metres [0.7]
+     opt.under  colour of the underside [col a stop darker]; opt.n grid size along each edge [8]; opt.fam ['canvas']   */
+  ABYSS.sail = function(F, pts, col, opt){ opt=opt||{}; var n=pts.length, ns=opt.n||8, nt=6, sw=opt.swoop==null?0.6:opt.swoop, fam=opt.fam||'canvas';
+    var c=[0,0,0]; pts.forEach(function(p){ c[0]+=p[0]/n; c[1]+=p[1]/n; c[2]+=p[2]/n; }); c[1] += (opt.peak||0) - (opt.sag==null ? sw*0.5 : opt.sag);
+    var under=opt.under!=null?opt.under:shade(col,-0.2), bandW=opt.bandW||0.7;
+    for(var e=0;e<n;e++){ var a=pts[e], b=pts[(e+1)%n], L=Math.hypot(b[0]-a[0], b[2]-a[2]), m=L3(a,b,0.5), R0=Math.hypot(c[0]-m[0], c[2]-m[2])||1, tb=opt.band!=null?Math.min(0.45, bandW/R0):0;
+      var P=function(s,t){ var e0=L3(a,b,s), p=L3(e0,c,t); p[1] -= sw*Math.pow(Math.sin(PI*s),0.9)*(1-t)*(1-t); return p; };
+      var G=function(t0,t1,rows){ var g=[], uv=[]; for(var i=0;i<=rows;i++){ var t=mix(t0,t1,i/rows); g.push([]); uv.push([]); for(var j=0;j<=ns;j++){ var s=j/ns; g[i].push(P(s,t)); uv[i].push([s*L/1.6, tb>0?(t-t0)/(t1-t0):t]); } } return { g:g, uv:uv }; };
+      if(tb>0){ var B=G(0,tb,1); ABYSS.grid(F, 'pattern', B.g, opt.band, { uv:B.uv, hint:[0,1,0], under:shade(opt.band,-0.25) }); }
+      var M=G(tb,1,nt); ABYSS.grid(F, fam, M.g, col, { hint:[0,1,0], under:under }); } };
+
+  /* ---------- 2. lanterns, masts, propeller-lanterns ----------
+     ABYSS.lantern(F, x,y,z, lit): an oil lantern hung at (x,y,z). lit=false: dark glass, no light (poor and middle buildings);
+     lit=true: the kit's warm LANTERN with a night lamp (rich, civic, sacred, palace).                                        */
+  ABYSS.lantern = function(F, x,y,z, lit, amp){ if(lit){ F.lantern(x,y,z, amp||0.7, 11, 0); return; }
+    F.box(x,y-0.28,z, 0.34,0.50,0.34, 0, TIMBERC[3], 'timber'); F.box(x,y-0.20,z, 0.27,0.34,0.27, 0.78, 0x6a5a3a, 'metal'); F.pyr(x,y+0.22,z, 0.50,0.26,0.50, 0, BRASSC[2], 'metal'); };
+  /* ABYSS.mast(F, x,z,h, opt): a timber mast with optional guys (opt.guys = count, opt.guyR = radius), a lantern at the
+     top (opt.lantern = 'lit' | 'unlit'), a propeller-lantern (opt.prop: a little three-bladed vane over a glowing bulb,
+     opt.lit), a finial (opt.finial colour) and a pennant (opt.flag colour). Returns the top height.                     */
+  ABYSS.mast = function(F, x,z,h, opt){ opt=opt||{}; var tc=opt.col!=null?opt.col:F.pick(TIMBERC), r=opt.r||0.12;
+    LOCUS.pole(F, x,z, h, r, tc, false);
+    var ng=opt.guys||0, gr=opt.guyR||h*0.45; for(var g=0;g<ng;g++){ var a=g/ng*TAU+0.4; LOCUS.guy(F, x,h*0.9,z, x+Math.cos(a)*gr, z+Math.sin(a)*gr); }
+    if(opt.lantern){ F.rod(x,h-0.3,z, x+0.7,h-0.3,z, 0.04, tc, 'timber'); ABYSS.lantern(F, x+0.65,h-0.5,z, opt.lantern==='lit'); }
+    if(opt.prop){ var py=h+0.25; F.cyl(x,h,z, 0.05,0.45, 0, STEELDC[0], 'metal'); F.ball(x,py+0.2,z, 0.16, opt.lit?PAL.glowWarm:0x8a7a52, opt.lit?'glowmat':'metal');
+      for(var b=0;b<3;b++){ var ba=b/3*TAU; F.beam(x,py+0.38,z, x+Math.cos(ba)*0.55,py+0.42,z+Math.sin(ba)*0.55, 0.16,0.03, opt.propCol!=null?opt.propCol:PAL.abSailRed, 'metal'); }
+      if(opt.lit) F.lamp(x,py+0.2,z, 0.5, 9); }
+    if(opt.finial!=null) F.ball(x,h+0.15,z, 0.16, opt.finial, 'metal');
+    if(opt.flag!=null){ F.box(x+0.45,h-0.9,z, 0.9,0.5,0.03, 0, opt.flag, 'cloth'); }
+    return h; };
+
+  /* ---------- 3. cone shells ----------
+     ABYSS.coneShell(F, x,z, r,h, opt): a tall conical shell (lathed, smooth), open at the base in an arch on the side
+     facing opt.face (radians in the local frame, default +z = PI/2 in the (cos,sin) = (x,z) convention).
+     opt.fam 'thatch' | 'tile' (shingle) | 'tinmirror'; opt.col; opt.y0 base height; opt.k profile exponent (1 straight,
+     >1 flared like a bell tent, <1 bulging) [1.25]; opt.arch {w,h} or null; opt.thick shell thickness [0.35];
+     opt.inCol inner colour; opt.ring timber ring-beam colour (false = none); opt.finial colour (gild default; false = none).
+     The arch is cut by building the lower shell from columns that END at the opening's edge (no boolean subtraction).   */
+  ABYSS.coneShell = function(F, x,z, r,h, opt){ opt=opt||{}; var fam=opt.fam||'thatch', col=opt.col!=null?opt.col:F.pick(THATCHC), y0=opt.y0||0, k=opt.k==null?1.25:opt.k;
+    var na=opt.seg||28, th=opt.thick==null?0.35:opt.thick, inCol=opt.inCol!=null?opt.inCol:shade(col,-0.35), face=opt.face==null?PI/2:opt.face, ar=opt.arch;
+    function rad(t, R0){ return Math.max(0.02, R0*Math.pow(Math.max(0,1-t),k)); }
+    function shell(R0, Hh, out){
+      var hint=function(p){ var dx=p[0]-x, dz=p[2]-z, l=Math.hypot(dx,dz)||1; return out ? [dx/l, 0.4, dz/l] : [-dx/l,-0.4,-dz/l]; };
+      var cc = out ? col : inCol, ah = ar ? Math.min(ar.h, Hh*0.8) : 0;
+      function ang(y){ if(!ar || y>=ah) return 0; var t=(y)/Hh, rr=rad(t,R0), hw=ar.w/2*Math.sqrt(Math.max(0,1-Math.pow(y/ah,2))); return Math.asin(Math.min(0.97, hw/rr)); }
+      function ring(y, phi){ var t=y/Hh, rr=rad(t,R0), row=[]; for(var j=0;j<=na;j++){ var a=face+phi+(TAU-2*phi)*j/na; row.push([x+Math.cos(a)*rr, y0+y, z+Math.sin(a)*rr]); } return row; }
+      var lower=[], upper=[], nl=8, nu=12;
+      if(ar){ for(var i=0;i<=nl;i++){ var y=ah*Math.sin(PI/2*i/nl), phi=ang(y); lower.push(ring(y,phi)); }
+        ABYSS.grid(F, fam, lower, cc, { hint:hint }); }
+      for(var u=0;u<=nu;u++){ var yy=mix(ah, Hh, Math.pow(u/nu,0.9)); upper.push(ring(Math.min(yy,Hh*0.999),0)); }
+      ABYSS.grid(F, fam, upper, cc, { hint:hint, wrap:true });
+      return { lower:lower, ah:ah }; }
+    var O=shell(r, h, true), I=shell(Math.max(0.1, r-th), h-th*1.6, false);
+    /* the base rim and the arch's reveals: quads joining the outer and inner skins */
+    var rows0=O.lower.length?O.lower[0]:null; if(!rows0){ var ro=[], ri=[]; for(var j=0;j<=na;j++){ var a=face+TAU*j/na; ro.push([x+Math.cos(a)*r,y0,z+Math.sin(a)*r]); ri.push([x+Math.cos(a)*(r-th),y0,z+Math.sin(a)*(r-th)]); }
+      ABYSS.grid(F, fam, [ro,ri], shade(col,-0.25), { hint:[0,-1,0], wrap:true }); }
+    else { ABYSS.grid(F, fam, [O.lower[0], I.lower[0]], shade(col,-0.25), { hint:[0,-1,0] });
+      [0, na].forEach(function(jj, side){ var g=[]; for(var i=0;i<O.lower.length;i++) g.push([O.lower[i][jj], I.lower[Math.min(i,I.lower.length-1)][jj]]);
+        var a0=face+(side?-1:1)*0.01; ABYSS.grid(F, fam, g, shade(col,-0.15), { hint:function(p){ var dx=p[0]-x, dz=p[2]-z; return side ? [-dz,0,dx] : [dz,0,-dx]; } }); });
+      if(opt.archCol!=null){ for(var s=0;s<2;s++) for(var i2=0;i2<O.lower.length-1;i2++){ var p0=O.lower[i2][s?na:0], p1=O.lower[i2+1][s?na:0]; F.rod(p0[0],p0[1],p0[2], p1[0],p1[1],p1[2], 0.14, opt.archCol, opt.archFam||'timber'); } } }
+    if(opt.ring!==false){ var rc=opt.ring!=null?opt.ring:F.pick(TIMBERC), nseg=24, phi0=ar?Math.asin(Math.min(0.97,ar.w/2/r))+0.08:0;
+      for(var q=0;q<nseg;q++){ var a0=face+phi0+(TAU-2*phi0)*q/nseg, a1=face+phi0+(TAU-2*phi0)*(q+1)/nseg, rr=r+0.06;
+        F.rod(x+Math.cos(a0)*rr, y0+0.25, z+Math.sin(a0)*rr, x+Math.cos(a1)*rr, y0+0.25, z+Math.sin(a1)*rr, 0.14, rc, 'timber'); } }
+    if(opt.finial!==false){ var fc=opt.finial!=null?opt.finial:PAL.abGild; F.cyl(x,y0+h-0.2,z, 0.09, 1.4, 0, fc, 'metal'); F.ball(x,y0+h+1.3,z, 0.28, fc, 'metal'); F.cone(x,y0+h+1.5,z, 0.12,0.7, 0, fc, 'metal'); }
+    return { top:y0+h, archH:O.ah }; };
+
+  /* ---------- 4. repurposed vessels as rooms ----------
+     ABYSS.vessel(F, kind, x,y,z, opt) — kind 'tank' (vertical cylinder) | 'drum' (horizontal cylinder) | 'silo' (domed
+     cylinder) | 'container' (shipping box). (x,y,z) = the centre of its BASE. opt: r, h (tank/silo), len (drum/container),
+     yaw (radians, drum/container long axis = local x turned by yaw), col, fam ('rust' | 'corrugate' | 'metal'),
+     win = [[a, y], ...] windows (tank/silo: angle round the axis, PI/2 = front; drum/container: along-length offset, height);
+     port = true: windows are round portholes; door = angle (tank/silo) or 'end' | 'side' (drum/container);
+     balcony = height of a ring balcony (tank/silo) ; ladder = angle of an outside ladder to the top; awning = colour of a tarp
+     over the window(s); hatch = true: a hatch on top. Returns { top } (height of the roof above the ground).          */
+  ABYSS.vessel = function(F, kind, x,y,z, opt){ opt=opt||{}; var col=opt.col!=null?opt.col:(kind==='container'?ABYSS.cont(F):ABYSS.rust(F)), dk=shade(col,-0.25);
+    if(kind==='tank' || kind==='silo'){ var R=opt.r||2.2, H=opt.h||4.5, fam=opt.fam||(kind==='silo'?'corrugate':'rust');
+      F.lathe(fam, x,z, [[R,y],[R,y+H]], col, { seg:22 });
+      for(var b=1;b<=Math.floor(H/1.4);b++) F.lathe('rust', x,z, [[R+0.04,y+b*1.4-0.05],[R+0.04,y+b*1.4+0.05]], dk, { seg:22 });   /* seams / rivet bands */
+      F.cyl(x,y,z, R*0.995, 0.15, 0, dk, 'rust');
+      if(kind==='silo'){ F.edome(x,y+H,z, R+0.05, R*0.62, R+0.05, 0, opt.capCol!=null?opt.capCol:shade(col,0.08), fam==='corrugate'?'metal':fam); }
+      else { F.mcone('rust', x,y+H,z, R+0.12, 0.35, R*0.28, dk, 22, { under:true }); }
+      var top=y+H+(kind==='silo'?R*0.62:R*0.28);
+      (opt.win||[]).forEach(function(w){ var a=w[0], nx=Math.cos(a), nz=Math.sin(a), wx=x+nx*(R+0.02), wz=z+nz*(R+0.02);
+        if(opt.port){ F.disc(wx,y+w[1],wz, nx,nz, 0.48, 0.16, STEELDC[0], 'rust'); F.disc(wx+nx*0.03,y+w[1],wz+nz*0.03, nx,nz, 0.34, 0.16, opt.glass!=null?opt.glass:VOIDC[0], opt.glass!=null?'glowmat':'dark');
+          var q=F.p(wx,wz), d=F.dir(nx,nz); WINPANE(q[0]+d[0]*0.12, F.y+y+w[1], q[1]+d[1]*0.12, d[0],d[1], 0.5,0.5, false); }
+        else { F.window(wx,y+w[1],wz, nx,nz, 0.9,0.8); F.box(wx+nx*0.05, y+w[1]-0.5, wz+nz*0.05, 1.2,0.1,0.25, Math.atan2(nx,nz), dk, 'rust');
+          if(opt.awning!=null) F.box(wx+nx*0.45, y+w[1]+0.15, wz+nz*0.45, 1.4,0.05,0.9, [ 0.35, Math.atan2(nx,nz), 0 ], opt.awning, 'canvas'); } });
+      if(opt.door!=null){ var da=opt.door, dx=Math.cos(da), dz=Math.sin(da); F.door(x+dx*(R-0.05), z+dz*(R-0.05), dx,dz, 0.95, 2.05, dk, y+0.15); }
+      if(opt.balcony!=null) LOCUS.platform(F, x,z, R, y+opt.balcony, opt.balCol!=null?opt.balCol:STEELDC[0]);
+      if(opt.ladder!=null){ var la=opt.ladder; LOCUS.ladder(F, x+Math.cos(la)*(R+0.3), y, z+Math.sin(la)*(R+0.3), Math.cos(la),Math.sin(la), H+(kind==='silo'?0.3:0.1), STEELDC[0]); }
+      if(opt.hatch){ F.cyl(x+R*0.2, top-0.1, z, 0.42, 0.25, 0, STEELDC[1], 'rust'); }
+      return { top:top }; }
+    var yaw=opt.yaw||0, ca=Math.cos(yaw), sa=Math.sin(yaw);
+    function P(u,v){ return [x+ca*u+sa*v, z-sa*u+ca*v]; }                 /* u along the long axis, v across (local +z when yaw=0) */
+    if(kind==='drum'){ var Rd=opt.r||1.4, Ln=opt.len||5, yc=y+Rd+0.35, a0=P(-Ln/2,0), a1=P(Ln/2,0), famd=opt.fam||'rust';
+      F.tube(famd, [{x:a0[0],y:yc,z:a0[1],r:Rd},{x:a1[0],y:yc,z:a1[1],r:Rd}], col, { seg:18, cap:true, capCol:dk });
+      [-0.36,0,0.36].forEach(function(t){ var p=P(t*Ln,0), p2=P(t*Ln+0.12,0); F.tube('rust', [{x:p[0],y:yc,z:p[1],r:Rd+0.05},{x:p2[0],y:yc,z:p2[1],r:Rd+0.05}], dk, { seg:18 }); });
+      [-0.3,0.3].forEach(function(t){ var p=P(t*Ln,0); F.box(p[0],y,p[1], 0.3,0.55,Rd*1.5, yaw, F.pick(TIMBERC), 'timber'); });   /* saddles */
+      (opt.win||[[0,0]]).forEach(function(w){ var p=P(w[0], Rd*0.97); F.window(p[0], yc+0.45+w[1], p[1], sa,ca, 1.0,0.75);
+        F.box(p[0]+sa*0.04, yc-0.1+w[1], p[1]+ca*0.04, 1.3,0.08,0.18, yaw, dk, 'rust');
+        if(opt.awning!=null){ var q=P(w[0], Rd+0.45); F.box(q[0], yc+0.85+w[1], q[1], 1.6,0.05,1.0, [0.38, yaw, 0], opt.awning, 'canvas');
+          F.rod(q[0]+ca*0.8+sa*0.45, yc+0.6+w[1], q[1]-sa*0.8+ca*0.45, q[0]+ca*0.8+sa*0.45, yc+0.1+w[1], q[1]-sa*0.8+ca*0.45, 0.025, F.pick(TIMBERC), 'timber'); } });
+      if(opt.door==='end'){ var e=P(Ln/2+0.02,0); F.door(e[0], e[1], ca,-sa, 0.9, 1.85, PLANKC[1], yc-1.0); }
+      return { top:yc+Rd, axisY:yc }; }
+    /* container: 12.2 or 6.1 m long, 2.44 wide, 2.6 high; corrugated walls, corner posts, end doors with lock bars */
+    var Lc=opt.len||6.1, Wc=2.44, Hc=2.6, famc=opt.fam||'corrugate', c0=P(0,0);
+    F.box(c0[0],y,c0[1], Lc-0.1,Hc,Wc-0.06, yaw, col, famc);
+    F.box(c0[0],y+Hc-0.02,c0[1], Lc,0.12,Wc, yaw, dk, 'rust');
+    [[-1,-1],[1,-1],[1,1],[-1,1]].forEach(function(s){ var q=P(s[0]*(Lc/2-0.08), s[1]*(Wc/2-0.08)); F.box(q[0],y,q[1], 0.18,Hc+0.06,0.18, yaw, dk, 'rust'); });
+    F.box(c0[0],y,c0[1], Lc,0.16,Wc, yaw, dk, 'rust');
+    var endS = opt.doorEnd==null?1:opt.doorEnd, ep=P(endS*(Lc/2+0.01),0);
+    [-0.5,0.5].forEach(function(o){ var q=P(endS*(Lc/2+0.02), o*1.0); F.rod(q[0],y+0.2,q[1], q[0],y+Hc-0.2,q[1], 0.03, STEELDC[1], 'rust'); });
+    (opt.win||[]).forEach(function(w){ var s=w[2]==null?1:w[2], p=P(w[0], s*(Wc/2+0.02)); F.window(p[0], y+(w[1]||1.6), p[1], s*sa, s*ca, 1.1, 0.8);
+      if(opt.awning!=null){ var q=P(w[0], s*(Wc/2+0.5)); F.box(q[0], y+(w[1]||1.6)+0.25, q[1], 1.5,0.05,0.9, [s*0.35, yaw, 0], opt.awning, 'canvas'); } });
+    if(opt.door==='side'){ var dp=P(opt.doorAt||0, Wc/2+0.02); F.door(dp[0], dp[1], sa,ca, 0.9, 2.1, dk, y+0.1); }
+    if(opt.door==='end'){ F.door(ep[0], ep[1], endS*ca, -endS*sa, 1.0, 2.2, dk, y+0.1); }
+    return { top:y+Hc+0.1 }; };
+
+  /* ---------- 5. the swoop-and-horn roof ----------
+     ABYSS.swoopRoof(F, x,z, w,d, h, opt): a steep thatched saddle roof, ridge along local x, over a w x d plan whose
+     eave line sits at opt.y0. The ridge saddles (rises toward both ends) and sweeps on past the gables into HORNS
+     (opt.horn = horn length [h*0.6]) with gilded tips (opt.tip colour; false = none). opt.over eave overhang [1.2];
+     opt.eaveLift corners of the eave curl up [h*0.12]; opt.yaw turns the whole roof; opt.fam ['thatch']; opt.col;
+     opt.gable colour of the gable infill (false = open). The roof is a smooth grid: concave from ridge to eave.        */
+  ABYSS.swoopRoof = function(F, x,z, w,d, h, opt){ opt=opt||{}; var fam=opt.fam||'thatch', col=opt.col!=null?opt.col:F.pick(THATCHC), y0=opt.y0||0, ov=opt.over==null?1.2:opt.over;
+    var yaw=opt.yaw||0, ca=Math.cos(yaw), sa=Math.sin(yaw), hornL=opt.horn==null?h*0.6:opt.horn, lift=opt.eaveLift==null?h*0.12:opt.eaveLift, sad=opt.saddle==null?h*0.18:opt.saddle;
+    function T(u,y,v){ return [x+ca*u+sa*v, y, z-sa*u+ca*v]; }                 /* u along the ridge, v across */
+    var nu=14, nv=7, HW=w/2+ov, HD=d/2+ov;
+    function ridgeY(s){ return y0+h + sad*Math.pow(Math.abs(s),3); }             /* s in -1..1 */
+    function eaveY(s){ return y0 - 0.25 + lift*Math.pow(Math.abs(s),4); }
+    [1,-1].forEach(function(side){ var g=[];
+      for(var i=0;i<=nv;i++){ var t=i/nv; g.push([]); for(var j=0;j<=nu;j++){ var s=-1+2*j/nu, ry=ridgeY(s), ey=eaveY(s);
+        var yy = ey + (ry-ey)*Math.pow(1-t,1.6), vv = side*HD*t*(1+0.06*Math.pow(Math.abs(s),2)), uu = s*HW*(1+0.05*t*Math.pow(Math.abs(s),2));
+        g[i].push(T(uu, yy, vv)); } }
+      ABYSS.grid(F, fam, g, col, { hint:[sa*side*0.6, 1, ca*side*0.6], under:shade(col,-0.4), off:0.18 });
+      /* a fascia along the eave */
+      var fz=[]; for(var j=0;j<=nu;j++) fz.push(g[nv][j]); var fb=fz.map(function(p){ return [p[0],p[1]-0.32,p[2]]; });
+      ABYSS.grid(F, fam, [fz, fb], shade(col,-0.18), { hint:[sa*side, 0, ca*side] }); });
+    if(opt.gable!==false){ var gc=opt.gable!=null?opt.gable:shade(col,-0.25); [-1,1].forEach(function(e){ var u=e*w/2, s=u/HW, ry=ridgeY(s)-0.3, rows=[], n2=6;
+        for(var k=0;k<=n2;k++){ var t=k/n2, v=mix(-d/2,d/2,t), tt=Math.abs(v)/HD, yy=eaveY(s)+(ry-eaveY(s))*Math.pow(1-tt,1.6); rows.push([T(u,y0,v), T(u,Math.max(y0,yy-0.15),v)]); }
+        var g2=[rows.map(function(r){ return r[0]; }), rows.map(function(r){ return r[1]; })]; ABYSS.grid(F, opt.gableFam||'plaster', g2, gc, { hint:[ca*e,0,-sa*e] }); }); }
+    /* the ridge cap and the horns: a tapering tube that carries on from each ridge end, sweeping up and out */
+    var rc=opt.ridgeCol!=null?opt.ridgeCol:shade(col,-0.3), tip=opt.tip===false?null:(opt.tip!=null?opt.tip:PAL.abGild);
+    var rp=[]; for(var j2=0;j2<=nu;j2++){ var s2=-1+2*j2/nu, q=T(s2*HW, ridgeY(s2)+0.12, 0); rp.push({ x:q[0], y:q[1], z:q[2], r:0.28 }); }
+    F.tube(fam, rp, rc, { seg:8 });
+    [-1,1].forEach(function(e){ var pts=[], n3=7; for(var k=0;k<=n3;k++){ var t=k/n3, u=e*(HW+hornL*0.55*t), yy=ridgeY(e)+0.12+hornL*Math.pow(t,1.7), q2=T(u,yy,0); pts.push({ x:q2[0], y:q2[1], z:q2[2], r:0.30*(1-t*0.82) }); }
+      F.tube(fam, pts, rc, { seg:8, cap:true });
+      if(tip!=null){ var L=pts[n3]; var tp=[{x:L.x,y:L.y-0.1,z:L.z,r:0.11},{x:L.x+ca*e*0.25,y:L.y+0.7,z:L.z-sa*e*0.25,r:0.0}]; F.tube('metal', tp, tip, { seg:6 }); F.ball(L.x, L.y, L.z, 0.16, tip, 'metal'); } });
+    return { ridge:y0+h }; };
+
+  /* ---------- 6. tin-mirror cladding and salvaged trim ----------
+     ABYSS.tinClad(F, spec, col): spec.box = [cx,y0,cz,w,h,d] with spec.faces 'fblr' (front/back/left/right, default all)
+       -> plates 0.03 m outside each face; spec.lathe = [x,z,prof] (prof as F.lathe, [[r,y],...]) -> a shell 0.03 m outside.
+     ABYSS.trim(F, x,y,z, nx,nz, w,h): a frame of salvaged, mismatched strips round a window (centre x,y,z on the wall). */
+  ABYSS.tinClad = function(F, spec, col){ col=col!=null?col:PAL.abTin;
+    if(spec.box){ var b=spec.box, cx=b[0], y0=b[1], cz=b[2], w=b[3], h=b[4], d=b[5], f=spec.faces||'fblr', t=0.04, o=0.03;
+      if(f.indexOf('f')>=0) F.box(cx, y0, cz+d/2+o, w+0.02, h, t, 0, col, 'tinmirror');
+      if(f.indexOf('b')>=0) F.box(cx, y0, cz-d/2-o, w+0.02, h, t, 0, col, 'tinmirror');
+      if(f.indexOf('l')>=0) F.box(cx-w/2-o, y0, cz, t, h, d+0.02, 0, col, 'tinmirror');
+      if(f.indexOf('r')>=0) F.box(cx+w/2+o, y0, cz, t, h, d+0.02, 0, col, 'tinmirror'); }
+    if(spec.lathe){ var L=spec.lathe; F.lathe('tinmirror', L[0],L[1], L[2].map(function(p){ return [p[0]+0.03, p[1]]; }), col, { seg:spec.seg||20 }); } };
+  ABYSS.trim = function(F, x,y,z, nx,nz, w,h){ var px=-nz, pz=nx, yaw=Math.atan2(nx,nz), cs=[PAL.abGild, PAL.abBrightTeal, PAL.abSailRed, PAL.abTin, BRASSC[1]];
+    F.box(x+nx*0.06, y+h/2, z+nz*0.06, w+0.5, 0.16, 0.08, yaw, F.pick(cs), 'metal'); F.box(x+nx*0.06, y-h/2-0.16, z+nz*0.06, w+0.5, 0.16, 0.08, yaw, F.pick(cs), 'metal');
+    [-1,1].forEach(function(s){ F.box(x+px*s*(w/2+0.15)+nx*0.06, y-h/2, z+pz*s*(w/2+0.15)+nz*0.06, 0.16, h, 0.08, yaw, F.pick(cs), 'metal'); });
+    for(var i=0;i<5;i++){ var t=(i/4-0.5)*(w+0.4); F.ball(x+px*t+nx*0.1, y+h/2+0.08, z+pz*t+nz*0.1, 0.07, F.pick(cs), 'tinmirror'); } };
+
+  /* ---------- 7. overhead clutter ---------- */
+  /* ABYSS.cables(F, a, b, sag, n): n thin cables a->b ([x,y,z] local), each a 5-rod catenary-ish polyline. Use sparingly. */
+  ABYSS.cables = function(F, a, b, sag, n){ n=n||1; for(var c=0;c<n;c++){ var dy=-c*0.12, dz=c*0.08, prev=null, ns=5;
+      for(var i=0;i<=ns;i++){ var t=i/ns, p=[mix(a[0],b[0],t), mix(a[1],b[1],t)+dy-(sag+c*0.15)*4*t*(1-t), mix(a[2],b[2],t)+dz];
+        if(prev) F.rod(prev[0],prev[1],prev[2], p[0],p[1],p[2], 0.018, PAL.paintBlack[0], 'rust'); prev=p; } } };
+  /* ABYSS.antenna(F, x,y,z, kind): 'mast' (a whip with crossbars), 'dish' (a salvaged satellite dish on a stub, facing +z-ish),
+     'lattice' (a 6 m lattice tower with a dish and a whip). (x,y,z) = its foot. */
+  ABYSS.antenna = function(F, x,y,z, kind, opt){ opt=opt||{}; var mc=STEELDC[0];
+    if(kind==='dish'){ var a=opt.face==null?PI/2:opt.face, nx=Math.cos(a), nz=Math.sin(a), r=opt.r||0.6;
+      F.cyl(x,y,z, 0.05, 0.8, 0, mc, 'metal');
+      F.edome(x+nx*0.15, y+0.8+r*0.2, z+nz*0.15, r, r*0.35, r, [PI/2-0.35, Math.atan2(nx,nz), 0], opt.col!=null?opt.col:METALC[1], 'metal');
+      F.rod(x+nx*0.15, y+0.8+r*0.2, z+nz*0.15, x+nx*(0.15+r*0.9), y+0.95+r*0.4, z+nz*(0.15+r*0.9), 0.025, mc, 'metal'); return; }
+    if(kind==='lattice'){ var h=opt.h||6; ABYSS.lattice(F, x,z, 0.9, h, { y0:y, top:0.35 }); ABYSS.antenna(F, x,y+h,z, 'mast', { h:2.5 }); ABYSS.antenna(F, x+0.3,y+h*0.7,z+0.3, 'dish', { r:0.7 }); return; }
+    var hm=opt.h||3.2; F.rod(x,y,z, x,y+hm,z, 0.035, mc, 'metal');
+    for(var i=1;i<=3;i++){ var yy=y+hm*(0.45+i*0.15), L=0.9-i*0.2; F.rod(x-L,yy,z, x+L,yy,z, 0.02, mc, 'metal'); } };
+  /* ABYSS.lattice(F, x,z, w,h, opt): a square lattice tower of four legs, w wide at the foot (opt.top x w at the head),
+     a ring every ~1.6 m and a cross-brace in each face. opt.y0 foot height; opt.col. Returns the head width. */
+  ABYSS.lattice = function(F, x,z, w,h, opt){ opt=opt||{}; var y0=opt.y0||0, tw=w*(opt.top==null?0.4:opt.top), col=opt.col!=null?opt.col:STEELDC[2], n=Math.max(2,Math.round(h/1.6));
+    function hw(t){ return mix(w,tw,t)/2; }
+    var C=[[-1,-1],[1,-1],[1,1],[-1,1]];
+    C.forEach(function(c){ F.rod(x+c[0]*hw(0), y0, z+c[1]*hw(0), x+c[0]*hw(1), y0+h, z+c[1]*hw(1), 0.06, col, 'rust'); });
+    for(var i=1;i<=n;i++){ var t0=(i-1)/n, t1=i/n, ya=y0+h*t0, yb=y0+h*t1;
+      for(var k=0;k<4;k++){ var a=C[k], b=C[(k+1)%4];
+        F.rod(x+a[0]*hw(t1), yb, z+a[1]*hw(t1), x+b[0]*hw(t1), yb, z+b[1]*hw(t1), 0.035, col, 'rust');
+        F.rod(x+a[0]*hw(t0), ya, z+a[1]*hw(t0), x+b[0]*hw(t1), yb, z+b[1]*hw(t1), 0.025, col, 'rust'); } }
+    return tw; };
+
+  /* ---------- 8. the stepped square altar ----------
+     ABYSS.altar(F, x,z, size,h, opt): a stepped square platform `size` across at its base and `h` high in opt.steps
+     terraces (4), with a STAIR in the middle of all four sides, a salt-white top with a border of tin-mirror (or
+     opt.border colour in lacquer), and at its centre the fire bowl and the crystal ring (registered FURNITURE, placed
+     here through ABYSS.furn). opt.lit (default true) lights the bowl and the crystals. Returns { top }.             */
+  ABYSS.altar = function(F, x,z, size,h, opt){ opt=opt||{}; var n=opt.steps||4, sh=h/n, inset=size*0.07, stone=opt.col!=null?opt.col:PAL.abRubble, salt=PAL.abSalt;
+    for(var i=0;i<n;i++){ var s=size-i*2*inset; F.box(x,i*sh,z, s,sh,s, 0, i%2?shade(stone,0.06):stone, 'rubble');
+      F.box(x,(i+1)*sh-0.12,z, s+0.08,0.14,s+0.08, 0, i===n-1?salt:shade(salt,-0.08), 'plaster');
+      if(i<n-1) [[0,1],[0,-1],[1,0],[-1,0]].forEach(function(d){ F.box(x+d[0]*(s/2+0.02), i*sh+sh*0.35, z+d[1]*(s/2+0.02), d[0]?0.06:s-1.0, sh*0.3, d[1]?0.06:s-1.0, 0, opt.band!=null?opt.band:PAL.abLacquer, 'plaster'); }); }
+    var top=n*sh, ts=size-(n-1)*2*inset, bc=opt.border!=null?opt.border:PAL.abTin, bf=opt.border!=null?'plaster':'tinmirror';
+    [[0,1],[0,-1],[1,0],[-1,0]].forEach(function(d){ F.box(x+d[0]*(ts/2-0.35), top, z+d[1]*(ts/2-0.35), d[0]?0.7:ts, 0.12, d[1]?0.7:ts, 0, bc, bf); });
+    /* four stairs, each 3 m wide, climbing the middle of a side from the ground to the top */
+    var sw=Math.max(2.4, size*0.2), run=(size-ts)/2+0.6, ns=Math.round(h/0.2);
+    [[0,1],[0,-1],[1,0],[-1,0]].forEach(function(d){ var px=-d[1], pz=d[0];
+      for(var k=0;k<ns;k++){ var t=(k+0.5)/ns, r0=size/2+0.6-run*t, yy=h*k/ns; F.box(x+d[0]*r0, 0, z+d[1]*r0, d[0]?run/ns*1.15:sw, yy+h/ns, d[1]?run/ns*1.15:sw, 0, k%2?salt:shade(salt,-0.05), 'plaster'); }
+      [-1,1].forEach(function(s){ F.beam(x+d[0]*(size/2+0.6)+px*s*(sw/2+0.2), 0.0, z+d[1]*(size/2+0.6)+pz*s*(sw/2+0.2), x+d[0]*(ts/2)+px*s*(sw/2+0.2), h+0.3, z+d[1]*(ts/2)+pz*s*(sw/2+0.2), 0.26,0.34, opt.band!=null?opt.band:PAL.abLacquer, 'plaster'); }); });
+    var lit=opt.lit!==false;
+    ABYSS.furn(F, 'abyss_fire_bowl', x,z, 0, { ly:top, variant:lit?1:0 });
+    ABYSS.furn(F, 'abyss_crystal_ring', x,z, 0, { ly:top, variant:lit?1:0 });
+    return { top:top, topSize:ts }; };
+
+  /* ---------- 9. placing registered furniture and plants from inside a building ----------
+     ABYSS.furn(F, key, lx,lz, yaw, opt): builds a FURN piece at (lx, opt.ly, lz) in the building's frame (the piece is
+     registered and labelled on its own). ABYSS.plant(F, key, lx,lz, yaw, opt): the same for a PLANT (opt.ly lifts it). */
+  ABYSS.furn = function(F, key, lx,lz, yaw, opt){ opt=opt||{}; var q=F.p(lx,lz); return buildFurn(key, q[0],q[1], F.ry+(yaw||0), { y:F.y+(opt.ly||0), variant:opt.variant||0, seed:opt.seed||((F.seed*37+Math.round(lx*11+lz*17)+997)&0xffff) }); };
+  ABYSS.plant = function(F, key, lx,lz, yaw, opt){ opt=opt||{}; var q=F.p(lx,lz); return buildPlant(key, q[0],q[1], F.ry+(yaw||0), { y:F.y+(opt.ly||0), variant:opt.variant||0, seed:opt.seed||((F.seed*31+Math.round(lx*7+lz*13))&0xffff) }); };
+
+  /* ---------- 10. small building parts used across the kit ---------- */
+  /* ABYSS.platform(F, x0,x1,z0,z1, H, opt): piles + bearers + plank deck + edge beam from LOCUS, with piles every ~opt.span m (2.6) */
+  ABYSS.platform = function(F, x0,x1,z0,z1, H, opt){ opt=opt||{}; var sp=opt.span||2.6, nx=Math.max(2,Math.round((x1-x0)/sp)+1), nz=Math.max(2,Math.round((z1-z0)/sp)+1), pk=opt.plank!=null?opt.plank:F.pick(PLANKC);
+    LOCUS.pileGrid(F, x0+0.4,x1-0.4, z0+0.4,z1-0.4, nx,nz, H, { col:opt.pile!=null?opt.pile:F.pick(PILEC), r:opt.r||0.18, brace:opt.brace });
+    LOCUS.deck(F, (x0+x1)/2,(z0+z1)/2, x1-x0, z1-z0, H, pk);
+    F.box((x0+x1)/2, H-0.32, (z0+z1)/2, x1-x0+0.08, 0.22, z1-z0+0.08, 0, shade(pk,-0.25), 'timber'); return pk; };
+  /* ABYSS.railRect(F, x0,x1,z0,z1, y, gaps): a rail round a deck, gaps = [[side, from, to], ...] with side 'f'|'b'|'l'|'r' */
+  ABYSS.railRect = function(F, x0,x1,z0,z1, y, gaps, col){ col=col!=null?col:F.pick(TIMBERC); gaps=gaps||[];
+    function run(side, a0,a1, fixed, alongX){ var cuts=gaps.filter(function(g){ return g[0]===side; }).sort(function(a,b){ return a[1]-b[1]; }), s=a0;
+      cuts.concat([[side,a1,a1]]).forEach(function(g){ var e=Math.min(a1,g[1]); if(e-s>0.3){ if(alongX) LOCUS.rail(F, s,fixed, e,fixed, y, col, 1.0); else LOCUS.rail(F, fixed,s, fixed,e, y, col, 1.0); } s=Math.max(s,g[2]); }); }
+    run('f', x0,x1, z1, true); run('b', x0,x1, z0, true); run('l', z0,z1, x0, false); run('r', z0,z1, x1, false); };
+  /* ABYSS.flight(F, x,z, dx,dz, y0,y1, w, col): a straight timber stair from height y0 at (x,z) up to y1, running along the unit
+     direction (dx,dz) — LOCUS.stair always starts on the ground; this one starts on a deck or a terrace. Returns the top end [x,z]. */
+  ABYSS.flight = function(F, x,z, dx,dz, y0,y1, w, col){ col=col!=null?col:F.pick(PLANKC); w=w||1.0; var h=y1-y0, n=Math.max(3,Math.round(h/0.24)), run=h*1.15, px=-dz, pz=dx, yaw=Math.atan2(dx,dz);
+    for(var i=0;i<n;i++){ var t=(i+0.5)/n; F.box(x+dx*run*t, y0+h*(i+1)/n-0.1, z+dz*run*t, w,0.08,run/n*1.1, [0,yaw,0], col, 'plank'); }
+    [-1,1].forEach(function(s){ F.beam(x+px*s*w/2, y0, z+pz*s*w/2, x+dx*run+px*s*w/2, y1-0.05, z+dz*run+pz*s*w/2, 0.07,0.24, shade(col,-0.12), 'timber');
+      F.rod(x+px*s*w/2, y0+0.9, z+pz*s*w/2, x+dx*run+px*s*w/2, y1+0.9, z+dz*run+pz*s*w/2, 0.04, col, 'timber'); });
+    return [x+dx*run, z+dz*run]; };
+  /* ABYSS.corrRoof(F, cx,y,cz, w,d, rise, col, yaw): a mono-pitch corrugated roof sheet, w along x, falling `rise` from back to front */
+  ABYSS.corrRoof = function(F, cx,y,cz, w,d, rise, col, yaw){ var a=Math.atan2(rise,d); F.box(cx,y+rise/2-0.04,cz, w,0.07,Math.hypot(d,rise), [a, yaw||0, 0], col, 'corrugate'); };
+  /* ABYSS.water(F, x,z, w,d): a patch of shallow milky water on the sheet (the lake / delta the building stands over) */
+  ABYSS.water = function(F, x,z, w,d){ F.box(x,0.0,z, w,0.05,d, 0, SALTWATERC[0], 'plaster'); };
+  /* ABYSS.sign(F, x,y,z, nx,nz, w,h, pict, col): a shop board with a PICTOGRAPH in relief: 'blade' 'shield' 'sack' 'fish' 'flask'
+     'gear' 'salt' 'sail' 'bed' 'cup' 'book' — simple shapes, readable at street distance. */
+  ABYSS.sign = function(F, x,y,z, nx,nz, w,h, pict, col){ var yaw=Math.atan2(nx,nz), px=-nz, pz=nx, bc=col!=null?col:F.pick(PLANKC), ink=PAL.paintBlack[0], o=0.08;
+    F.box(x,y-h/2,z, w,h,0.08, yaw, bc, 'plank'); F.box(x,y-h/2-0.06,z, w+0.14,h+0.12,0.05, yaw, shade(bc,-0.3), 'timber');
+    function bx(u,v,ww,hh,c,r){ F.box(x+px*u+nx*o, y+v-hh/2, z+pz*u+nz*o, ww,hh,0.04, r==null?yaw:[0,yaw,r], c==null?ink:c, 'metal'); }
+    var s=Math.min(w,h)*0.8;
+    if(pict==='blade'){ bx(0,0.05*s,0.08*s,0.75*s,PAL.abTin,0.6); bx(-0.18*s,-0.18*s,0.36*s,0.07*s,ink,0.6); }
+    else if(pict==='shield'){ F.disc(x+nx*o,y,z+nz*o, nx,nz, 0.35*s, 0.05, PAL.abSailRed, 'metal'); F.disc(x+nx*(o+0.04),y,z+nz*(o+0.04), nx,nz, 0.12*s, 0.04, PAL.abGild, 'metal'); }
+    else if(pict==='sack'){ bx(0,-0.05*s,0.45*s,0.5*s,0xc8b080); bx(0,0.24*s,0.18*s,0.10*s,0x8a6a40); }
+    else if(pict==='fish'){ bx(-0.05*s,0,0.6*s,0.22*s,PAL.abBrightTeal); bx(0.3*s,0,0.16*s,0.3*s,PAL.abBrightTeal,0.785); }
+    else if(pict==='flask'){ bx(0,-0.12*s,0.4*s,0.36*s,PAL.abCrystal); bx(0,0.2*s,0.12*s,0.3*s,PAL.abCrystal); }
+    else if(pict==='gear'){ F.disc(x+nx*o,y,z+nz*o, nx,nz, 0.3*s, 0.05, PAL.abTin, 'metal'); for(var k=0;k<4;k++) bx(0,0,0.12*s,0.8*s,PAL.abTin,k*PI/4); F.disc(x+nx*(o+0.05),y,z+nz*(o+0.05), nx,nz, 0.1*s, 0.04, bc, 'metal'); }
+    else if(pict==='salt'){ [-0.22,0,0.22].forEach(function(u,i){ F.cone(x+px*u*s+nx*o, y-0.3*s, z+pz*u*s+nz*o, 0.13*s, (i===1?0.55:0.4)*s, 0, PAL.abSalt, 'plaster'); }); }
+    else if(pict==='sail'){ F.tri('canvas', [x+px*-0.2*s+nx*o, y-0.3*s, z+pz*-0.2*s+nz*o],[x+px*0.25*s+nx*o, y-0.3*s, z+pz*0.25*s+nz*o],[x+px*-0.2*s+nx*o, y+0.35*s, z+pz*-0.2*s+nz*o], PAL.abSailOrange, [nx,0,nz]); bx(-0.22*s,0,0.04*s,0.7*s,ink); }
+    else if(pict==='bed'){ bx(0,-0.05*s,0.7*s,0.12*s,PAL.abSailRed); bx(-0.3*s,0.05*s,0.12*s,0.3*s,ink); }
+    else if(pict==='cup'){ bx(0,-0.05*s,0.3*s,0.4*s,PAL.abGild); bx(0.2*s,0,0.1*s,0.2*s,PAL.abGild); }
+    else if(pict==='book'){ bx(-0.12*s,0,0.24*s,0.5*s,PAL.abSailRed,0.1); bx(0.12*s,0,0.24*s,0.5*s,PAL.abBrightTeal,-0.1); } };
+  /* ABYSS.mural(F, x,y,z, nx,nz, w,h): a painted panel on a facade (polychrome relief paint, the umbrella street) */
+  ABYSS.mural = function(F, x,y,z, nx,nz, w,h){ var yaw=Math.atan2(nx,nz); F.box(x+nx*0.03,y,z+nz*0.03, w,h,0.04, yaw, 0xffffff, 'paintcol'); };
+  /* ABYSS.balcony(F, x,y,z, nx,nz, w,dp, col): an iron balcony (slab + bars + rail) projecting dp from a wall at floor height y */
+  ABYSS.balcony = function(F, x,y,z, nx,nz, w,dp, col){ var yaw=Math.atan2(nx,nz), px=-nz, pz=nx, ic=col!=null?col:PAL.paintBlack[1], cx=x+nx*dp/2, cz=z+nz*dp/2;
+    F.box(cx,y-0.12,cz, w,0.12,dp, yaw, F.pick(STEELDC), 'rust');
+    F.rod(x+nx*dp+px*-w/2, y+1.0, z+nz*dp+pz*-w/2, x+nx*dp+px*w/2, y+1.0, z+nz*dp+pz*w/2, 0.03, ic, 'metal');
+    [-1,1].forEach(function(s){ F.rod(x+px*s*w/2, y+1.0, z+pz*s*w/2, x+nx*dp+px*s*w/2, y+1.0, z+nz*dp+pz*s*w/2, 0.03, ic, 'metal'); });
+    var nb=Math.round(w/0.25); for(var i=0;i<=nb;i++){ var t=(i/nb-0.5)*w; F.rod(x+nx*dp+px*t, y, z+nz*dp+pz*t, x+nx*dp+px*t, y+1.0, z+nz*dp+pz*t, 0.012, ic, 'metal'); }
+    [-0.3,0.3].forEach(function(t){ F.rod(x+px*t*w, y-0.7, z+pz*t*w, x+nx*dp*0.8+px*t*w, y-0.12, z+nz*dp*0.8+pz*t*w, 0.03, ic, 'metal'); }); };
+  /* ABYSS.billboard(F, x,y,z, nx,nz, w,h): a salvaged billboard on two legs (faded paint panel) */
+  ABYSS.billboard = function(F, x,y,z, nx,nz, w,h){ var yaw=Math.atan2(nx,nz), px=-nz, pz=nx;
+    [-0.35,0.35].forEach(function(t){ F.rod(x+px*t*w, y-0.2, z+pz*t*w, x+px*t*w, y+h, z+pz*t*w, 0.05, STEELDC[0], 'rust'); });
+    F.box(x+nx*0.06, y+0.3, z+nz*0.06, w,h,0.06, yaw, 0xd8d0c0, 'paintcol'); F.box(x, y+0.25, z, w+0.1,h+0.1,0.05, yaw, ABYSS.rust(F), 'rust'); };
+
+  /* ---------- the helper demo: every helper once (sheet-only, tag demo) ---------- */
+  ASSET({ key:'abyss_helpers_demo', name:'ABYSS helper demo', family:'prop', kit:'abyss', group:'Street furniture and docks', culture:'abyssal-desert', types:['prop'], tags:['demo'],
+    wealth:[0.5,0.5], w:64, d:36, h:16, variants:1,
+    build:function(F){
+      /* row 1 (back): sail, mast with propeller-lantern, cone shell with arch, swoop roof, altar */
+      ABYSS.mast(F, -28,-14, 5.2, { guys:2 }); ABYSS.mast(F, -20,-14, 5.8, { guys:2, prop:true, lit:true }); ABYSS.mast(F, -20,-6, 4.6, { lantern:'lit' }); ABYSS.mast(F, -28,-6, 4.4, { lantern:'unlit', flag:PAL.abSailRed });
+      ABYSS.sail(F, [[-28,5.2,-14],[-20,5.8,-14],[-20,4.6,-6],[-28,4.4,-6]], PAL.abSailOrange, { swoop:0.9, band:PAL.abSailOrange });
+      ABYSS.coneShell(F, -9,-9, 5, 12, { fam:'thatch', arch:{ w:4.2, h:5 }, archCol:PAL.abLacquer });
+      ABYSS.coneShell(F, 2,-12, 2.6, 9, { fam:'tinmirror', col:PAL.abTin, k:1.0, ring:PAL.abLacquer });
+      F.box(14,0,-10, 10,3,6, 0, PAL.abLacquer, 'plaster');
+      ABYSS.swoopRoof(F, 14,-10, 10,6, 5, { y0:3, horn:3 });
+      ABYSS.altar(F, 26,-9, 10, 3, {});
+      /* row 2 (front): each vessel kind, tin cladding, cables, antennas, lattice */
+      ABYSS.vessel(F, 'tank', -26,0,9, { r:2.2, h:4.2, win:[[PI/2,2.2]], door:PI*0.8, balcony:4.2, ladder:-PI*0.2 });
+      ABYSS.vessel(F, 'drum', -17,0,9, { r:1.3, len:5, awning:PAL.abTarpBlue, door:'end' });
+      ABYSS.vessel(F, 'silo', -8,0,9, { r:2.0, h:5, win:[[PI/2,2.0],[PI*0.9,3.2]], port:true, ladder:0, hatch:true, col:METALC[1] });
+      ABYSS.vessel(F, 'container', 2,0,9, { len:6.1, win:[[1.2,1.6]], door:'side', doorAt:-1.5, awning:PAL.abBrightYellow });
+      ABYSS.vessel(F, 'container', 2,2.7,9.6, { len:6.1, yaw:0.12, col:ABCONTC[1] });
+      F.box(12,0,9, 4,6,4, 0, PASTELC[1], 'plaster'); ABYSS.tinClad(F, { box:[12,0,9,4,6,4], faces:'fl' }); ABYSS.trim(F, 12,3.4,11.1, 0,1, 1.0,1.2); F.window(12,4.0,11.06, 0,1, 1.0,1.2);
+      F.lathe('rubble', 18,9, [[1.8,0],[1.8,1.5]], PAL.abRubble, { seg:16 }); ABYSS.tinClad(F, { lathe:[18,9,[[1.6,1.5],[1.1,7]]] }); F.lathe('plaster', 18,9, [[1.6,1.5],[1.1,7]], PASTELC[6], { seg:16 });
+      ABYSS.lattice(F, 26,9, 2.2, 12, {}); ABYSS.antenna(F, 26,12,9, 'mast'); ABYSS.antenna(F, 22,0,14, 'dish', {}); ABYSS.antenna(F, 30,0,14, 'lattice', { h:5 });
+      ABYSS.cables(F, [12,6,9],[26,10,9], 0.8, 3);
+      ABYSS.sign(F, -26,3.2,14.5, 0,1, 1.4,0.9, 'fish'); ABYSS.mural(F, 12,1.0,7.0-0.05, 0,-1, 3,2.4);
+    } });
+})();
+/* ============================== 16X-F. ABYSS — abyssal-desert furniture, indoor and outdoor ==============================
+   Registered with FURN (culture 'abyssal-desert'), never modelled inside a building: a building PLACES these through
+   ABYSS.furn(F, key, x,z, yaw, {ly, variant}). `room` says where it belongs; `place` is 'indoor' | 'outdoor' | 'both'.
+   Lighting rule: variant 0 of every light is UNLIT (oil, cold: poor and middle buildings); variant 1 is LIT (warm),
+   for rich, civic, sacred and palace buildings. The crystal ring glows blue (sacred only).                       */
+reseed(651001);
+(function(){
+  var PI=Math.PI, AB='abyssal-desert';
+  function wood(F){ return F.pick(TIMBERC); }
+
+  /* ---------- seating and tables ---------- */
+  FURN({ key:'abyss_bench', name:'Plank bench on trestles', culture:AB, room:'court', place:'both', w:2.2, d:0.6, h:0.9, variants:2, variantNames:['plain','with a back rail'],
+    build:function(F){ var pk=F.pick(PLANKC), tc=wood(F); F.box(0,0.42,0, 2.1,0.07,0.42, 0, pk, 'plank');
+      [-0.8,0.8].forEach(function(x){ F.box(x,0,0, 0.08,0.42,0.36, 0, tc, 'timber'); });
+      if(F.variant){ [-0.8,0.8].forEach(function(x){ F.box(x,0.42,-0.22, 0.07,0.45,0.06, 0, tc, 'timber'); }); F.box(0,0.78,-0.22, 2.1,0.10,0.05, 0, pk, 'plank'); } } });
+  FURN({ key:'abyss_table_stools', name:'Drum table and stools', culture:AB, room:'tavern', place:'both', w:2.0, d:2.0, h:1.0, variants:2, variantNames:['drum table','cable-reel table'],
+    build:function(F){ if(F.variant===0){ LOCUS.drum(F, 0,0,0, ABYSS.rust(F)); F.cyl(0,0.88,0, 0.55,0.06, 0, F.pick(PLANKC), 'plank'); }
+      else { F.cyl(0,0,0, 0.62,0.08, 0, wood(F), 'plank'); F.cyl(0,0.08,0, 0.22,0.62, 0, wood(F), 'timber'); F.cyl(0,0.70,0, 0.62,0.08, 0, wood(F), 'plank'); }
+      for(var i=0;i<3;i++){ var a=i/3*TAU+0.3; F.cyl(Math.cos(a)*0.8,0,Math.sin(a)*0.8, 0.18,0.45, 0, i%2?ABYSS.rust(F):F.pick(PLANKC), i%2?'rust':'plank'); } } });
+
+  /* ---------- light and fire ---------- */
+  FURN({ key:'abyss_lantern_post', name:'Lantern post', culture:AB, room:'street', place:'outdoor', w:1.0, d:0.6, h:3.2, variants:2, variantNames:['oil, unlit','lit'],
+    build:function(F){ var tc=wood(F); F.cyl(0,0,0, 0.09,3.0, 0, tc, 'timber'); F.rod(0,2.9,0, 0.7,2.9,0, 0.04, tc, 'timber'); ABYSS.lantern(F, 0.65,2.6,0, F.variant===1); } });
+  FURN({ key:'abyss_brazier', name:'Drum brazier', culture:AB, room:'court', place:'outdoor', w:0.9, d:0.9, h:1.1, variants:2, variantNames:['cold','burning'],
+    build:function(F){ var c=ABYSS.rust(F); [0,1,2].forEach(function(i){ var a=i/3*TAU; F.rod(Math.cos(a)*0.32,0,Math.sin(a)*0.32, Math.cos(a)*0.2,0.5,Math.sin(a)*0.2, 0.03, STEELDC[0], 'rust'); });
+      F.lathe('rust', 0,0, [[0.22,0.45],[0.34,0.7],[0.38,0.95]], c, { seg:10 }); F.cyl(0,0.82,0, 0.33,0.06, 0, F.variant?0x3a1a0a:0x2a2622, 'adobe');
+      if(F.variant){ LOCUS.flame(F, 0,0.9,0, 0.25, 0.9); } } });
+  FURN({ key:'abyss_fire_bowl', name:'Altar fire bowl', culture:AB, room:'shrine', place:'outdoor', w:2.4, d:2.4, h:2.2, variants:2, variantNames:['cold','burning'],
+    build:function(F){ F.cyl(0,0,0, 0.9,0.25, 0, PAL.abLacquer, 'plaster'); F.lathe('metal', 0,0, [[0.35,0.25],[0.25,0.9],[0.5,1.1],[1.05,1.35],[1.15,1.5]], PAL.abGild, { seg:18 });
+      F.cyl(0,1.32,0, 1.0,0.08, 0, 0x2a1810, 'adobe'); if(F.variant){ LOCUS.flame(F, 0,1.4,0, 0.55, 2.4); } } });
+  FURN({ key:'abyss_crystal_ring', name:'Ring of blue crystals', culture:AB, room:'shrine', place:'outdoor', w:5.6, d:5.6, h:1.6, variants:2, variantNames:['dark','glowing'],
+    build:function(F){ var n=8, R=2.4, cc=F.variant?PAL.abCrystal:shade(PAL.abCrystal,-0.45), fam=F.variant?'glowmat':'glass';
+      for(var i=0;i<n;i++){ var a=i/n*TAU, x=Math.cos(a)*R, z=Math.sin(a)*R, h=F.rr(0.9,1.5);
+        F.cyl(x,0,z, 0.28,0.16, 0, PAL.abGild, 'metal'); F.cone(x,0.12,z, 0.17,h, [F.rr(-0.15,0.15),0,F.rr(-0.15,0.15)], cc, fam); F.cone(x+0.12,0.12,z-0.08, 0.10,h*0.6, [0.3,a,0], cc, fam); }
+      if(F.variant) F.lamp(0,0.8,0, 0.9, 10); /* NOTE: the night volume has a cool channel; a crystal's blue reads through glowmat */ } });
+
+  /* ---------- canopies over streets ---------- */
+  /* strung lanterns between two masts, w apart (the mast feet are part of the piece) */
+  FURN({ key:'abyss_lantern_string', name:'String of lanterns on two masts', culture:AB, room:'street', place:'outdoor', w:12, d:0.8, h:5.4, variants:2, variantNames:['oil, unlit','lit'],
+    build:function(F){ var tc=wood(F), lit=F.variant===1; [-5.8,5.8].forEach(function(x){ LOCUS.pole(F, x,0, 5.2, 0.1, tc, true); });
+      var n=7, prev=null; for(var i=0;i<=n;i++){ var t=i/n, x=mix(-5.8,5.8,t), y=5.0-1.2*4*t*(1-t); if(prev) F.rod(prev[0],prev[1],0, x,y,0, 0.015, PAL.paintBlack[0], 'rust'); prev=[x,y];
+        if(i>0 && i<n){ var c=F.pick([PAL.abSailRed, PAL.abSailOrange, PAL.abBrightYellow]); F.box(x,y-0.75,0, 0.04,0.4,0.04, 0, PAL.paintBlack[0], 'timber');
+          F.ball(x,y-0.95,0, 0.2, lit?shade(c,0.35):c, lit?'glowmat':'cloth'); if(lit && i%2) F.lamp(x,y-0.95,0, 0.35, 7); } } } });
+  /* a canopy of coloured umbrellas hung on wires between four masts at the corners of a w x d bay */
+  FURN({ key:'abyss_umbrella_canopy', name:'Umbrella canopy on wires', culture:AB, room:'street', place:'outdoor', w:10, d:10, h:6.2, variants:2, variantNames:['umbrellas','umbrellas and lit lanterns'],
+    build:function(F){ var tc=wood(F), H=6.0, S=4.8, C=[[-S,-S],[S,-S],[S,S],[-S,S]];
+      C.forEach(function(c){ LOCUS.pole(F, c[0],c[1], H, 0.1, tc, true); });
+      var wires=[]; for(var i=0;i<4;i++){ var z=mix(-S,S,(i+0.5)/4); wires.push(z); F.rod(-S,H-0.3,z, S,H-0.3,z, 0.012, PAL.paintBlack[0], 'rust'); }
+      F.rod(-S,H-0.3,-S, -S,H-0.3,S, 0.012, PAL.paintBlack[0], 'rust'); F.rod(S,H-0.3,-S, S,H-0.3,S, 0.012, PAL.paintBlack[0], 'rust');
+      var cols=[PAL.abBrightYellow, PAL.abBrightTeal, PAL.abBrightPink, PAL.abSailOrange, PAL.abTarpBlue, PAL.abSailRed];
+      wires.forEach(function(z,wi){ for(var k=0;k<5;k++){ var x=mix(-S,S,(k+0.5)/5)+F.rr(-0.3,0.3), y=H-0.85+F.rr(-0.25,0.25), c=F.pick(cols), r=F.rr(0.7,0.85);
+          F.edome(x,y,z+F.rr(-0.2,0.2), r, r*0.42, r, [PI+F.rr(-0.25,0.25), F.rr(0,TAU), F.rr(-0.25,0.25)], c, 'canvas');   /* hung upside down: the canopy is open below */
+          F.edome(x,y+0.02,z, r*0.98, r*0.40, r*0.98, [PI,0,0], shade(c,-0.25), 'canvas');
+          F.rod(x,y-0.1,z, x,H-0.3,z, 0.012, PAL.paintBlack[0], 'rust');
+          if(F.variant===1 && (k+wi)%2===0){ F.ball(x+0.6,y-0.4,z, 0.16, PAL.glowWarm, 'glowmat'); if((k+wi)%4===0) F.lamp(x+0.6,y-0.4,z, 0.4, 8); } } }); } });
+
+  /* ---------- shop and work furniture ---------- */
+  FURN({ key:'abyss_counter', name:'Shop counter', culture:AB, room:'shop', place:'both', w:3.0, d:1.0, h:1.1, variants:2, variantNames:['planks on drums','bar in a cut tank'],
+    build:function(F){ if(F.variant===0){ [-1.0,0,1.0].forEach(function(x){ LOCUS.drum(F, x,0,0, ABYSS.rust(F)); }); F.box(0,0.9,0, 3.0,0.08,0.9, 0, F.pick(PLANKC), 'plank'); }
+      else { var c=ABYSS.rust(F); F.sector('rust', 0,1.6, 1.55,1.68, PI*1.18,PI*1.82, 0,1.05, c, { faces:'iots', step:0.4 }); F.box(0,1.0,-0.05, 2.9,0.08,0.7, 0, F.pick(PLANKC), 'plank');
+        F.box(0,0.55,-0.33, 2.6,0.06,0.04, 0, PAL.abGild, 'metal'); } } });
+  FURN({ key:'abyss_rack_spears', name:'Rack of spears and harpoons', culture:AB, room:'shop', place:'both', w:2.4, d:0.8, h:2.6, variants:1,
+    build:function(F){ var tc=wood(F); [-1.1,1.1].forEach(function(x){ F.box(x,0,0, 0.1,2.0,0.5, 0, tc, 'timber'); }); [0.6,1.6].forEach(function(y){ F.box(0,y,0.15, 2.3,0.08,0.08, 0, tc, 'timber'); });
+      for(var i=0;i<8;i++){ var x=-0.95+i*0.27, harp=i%3===0; F.rod(x,0.05,0.05, x+0.05,2.4,0.2, 0.025, tc, 'timber'); F.cone(x+0.05,2.38,0.2, harp?0.06:0.045, harp?0.32:0.26, [0.06,0,0], PAL.abTin, 'metal');
+        if(harp) F.box(x+0.05,2.4,0.2, 0.16,0.05,0.03, 0.4, PAL.abTin, 'metal'); } } });
+  FURN({ key:'abyss_forge', name:'Drum forge and anvil', culture:AB, room:'workshop', place:'both', w:2.4, d:1.6, h:2.4, variants:1,
+    build:function(F){ var c=ABYSS.rust(F); F.cyl(-0.5,0,0, 0.55,0.85, 0, c, 'rust'); F.cyl(-0.5,0.85,0, 0.5,0.04, 0, 0x3a1a0a, 'adobe'); F.ball(-0.5,0.92,0, 0.25, 0xff7a30, 'glowmat');
+      F.cyl(-0.5,0.9,0, 0.12,1.5, 0, STEELDC[0], 'rust'); F.box(0.7,0,0, 0.4,0.6,0.4, 0, wood(F), 'timber'); F.box(0.7,0.6,0, 0.7,0.22,0.26, 0, STEELDC[3], 'rust'); F.cone(1.05,0.62,0, 0.12,0.35, [0,0,-PI/2], STEELDC[3], 'rust'); } });
+  FURN({ key:'abyss_armor_stand', name:'Armour stand (Ancient plate)', culture:AB, room:'shop', place:'both', w:0.9, d:0.6, h:1.9, variants:2, variantNames:['breastplate','plate and helm'],
+    build:function(F){ var tc=wood(F); F.box(0,0,0, 0.5,0.06,0.4, 0, tc, 'timber'); F.cyl(0,0,0, 0.04,1.5, 0, tc, 'timber'); F.rod(-0.4,1.35,0, 0.4,1.35,0, 0.03, tc, 'timber');
+      F.box(0,0.85,0.02, 0.5,0.6,0.22, 0, F.pick(METALC), 'metal'); F.box(0,1.25,0.02, 0.62,0.14,0.24, 0, TARNC[0], 'metal');
+      if(F.variant) F.edome(0,1.52,0, 0.19,0.24,0.2, 0, F.pick(METALC), 'metal'); } });
+  FURN({ key:'abyss_shield_wall', name:'Shield wall (hung shields)', culture:AB, room:'shop', place:'both', w:3.2, d:0.4, h:2.6, variants:1,
+    build:function(F){ var tc=wood(F); F.box(0,0,0, 3.2,2.5,0.1, 0, tc, 'plank');
+      for(var i=0;i<6;i++){ var x=-1.1+(i%3)*1.1, y=0.75+Math.floor(i/3)*1.05, c=F.pick([PAL.abSailRed, PAL.abBrightTeal, METALC[1], PAL.abGild]); F.disc(x,y,0.06, 0,1, 0.42, 0.06, c, 'metal'); F.disc(x,y,0.1, 0,1, 0.12, 0.05, TARNC[1], 'metal'); } } });
+  FURN({ key:'abyss_shelf_jars', name:'Shelves of jars', culture:AB, room:'shop', place:'indoor', w:2.0, d:0.5, h:2.2, variants:2, variantNames:['clay jars','glass jars (alchemist)'],
+    build:function(F){ var tc=wood(F); [-0.95,0.95].forEach(function(x){ F.box(x,0,0, 0.06,2.1,0.42, 0, tc, 'timber'); });
+      [0.1,0.7,1.3,1.9].forEach(function(y){ F.box(0,y,0, 1.9,0.04,0.42, 0, tc, 'plank');
+        if(y<1.8) for(var i=0;i<5;i++){ var x=-0.75+i*0.37, s=F.rr(0.7,1.1); if(F.variant) F.cyl(x,y+0.04,0, 0.09*s,0.28*s, 0, F.pick([PAL.abCrystal, 0x6aa84a, 0xc84a8a, PAL.abBrightYellow]), 'glass');
+          else F.lathe('adobe', x,0, [[0.07*s,y+0.04],[0.12*s,y+0.16*s],[0.06*s,y+0.34*s]], F.pick(ADOBEREDC), { seg:7 }); } }); } });
+  FURN({ key:'abyss_crates', name:'Crates, sacks and barrels', culture:AB, room:'yard', place:'both', w:2.6, d:2.0, h:1.6, variants:3, variantNames:['crates','sacks','barrels and a crate'],
+    build:function(F){ var v=F.variant;
+      if(v===0){ F.box(-0.6,0,0, 0.9,0.8,0.9, 0.1, F.pick(PLANKC), 'plank'); F.box(0.5,0,0.1, 0.8,0.7,0.8, -0.2, F.pick(PLANKC), 'plank'); F.box(-0.5,0.8,0, 0.7,0.6,0.7, 0.3, F.pick(PLANKC), 'plank'); }
+      else if(v===1){ for(var i=0;i<5;i++){ var x=-0.8+(i%3)*0.8, y=Math.floor(i/3)*0.4; F.edome(x+(y?0.4:0),y,F.rr(-0.2,0.2), 0.42,0.42,0.3, F.rr(0,PI), 0xc8b080, 'cloth'); } }
+      else { LOCUS.drum(F, -0.7,0,-0.2); LOCUS.drum(F, 0,0,0.3); LOCUS.drum(F, 0.8,0,0.5, null, true, 0.3); F.box(-0.6,0,0.6, 0.6,0.5,0.6, 0, F.pick(PLANKC), 'plank'); } } });
+  FURN({ key:'abyss_hanging_goods', name:'Hanging goods on a rail', culture:AB, room:'shop', place:'both', w:2.6, d:0.5, h:2.4, variants:1,
+    build:function(F){ var tc=wood(F); [-1.2,1.2].forEach(function(x){ F.cyl(x,0,0, 0.05,2.3, 0, tc, 'timber'); }); F.rod(-1.25,2.2,0, 1.25,2.2,0, 0.04, tc, 'timber');
+      for(var i=0;i<7;i++){ var x=-1.0+i*0.33, k=i%3; F.rod(x,2.2,0, x,1.9,0, 0.01, PAL.paintBlack[0], 'timber');
+        if(k===0) F.box(x,1.25,0, 0.26,0.65,0.05, 0, F.pick(CLOTHC), 'cloth'); else if(k===1) F.lathe('adobe', x,0, [[0.06,1.55],[0.14,1.7],[0.06,1.88]], F.pick(ADOBEREDC), { seg:7 }); else F.box(x,1.5,0, 0.3,0.4,0.2, 0, 0xc8b080, 'cloth'); } } });
+  FURN({ key:'abyss_clay_oven', name:'Clay bread-and-fish oven', culture:AB, room:'kitchen', place:'outdoor', w:1.8, d:1.8, h:1.7, variants:1,
+    build:function(F){ var c=F.pick(ADOBEC); F.cyl(0,0,0, 0.85,0.5, 0, PAL.abRubble, 'rubble'); F.edome(0,0.5,0, 0.8,0.85,0.8, 0, c, 'adobe');
+      F.box(0,0.6,0.62, 0.45,0.4,0.3, 0, VOIDC[0], 'dark'); F.cyl(0.2,1.2,-0.2, 0.1,0.5, 0, shade(c,-0.2), 'adobe'); } });
+  FURN({ key:'abyss_smoking_rack', name:'Fish smoking and drying rack', culture:AB, room:'yard', place:'outdoor', w:2.8, d:1.2, h:2.0, variants:2, variantNames:['fish','nets and fish'],
+    build:function(F){ var tc=wood(F); [-1.3,1.3].forEach(function(x){ [-0.5,0.5].forEach(function(z){ F.cyl(x,0,z, 0.05,1.95, 0, tc, 'timber'); }); });
+      [1.0,1.5].forEach(function(y){ F.rod(-1.35,y,0, 1.35,y,0, 0.03, tc, 'timber'); for(var i=0;i<7;i++){ F.box(-1.1+i*0.36, y-0.38, 0, 0.1,0.36,0.03, 0, F.pick([0xb8a070,0x9a8058,0xc0a888]), 'cloth'); } });
+      if(F.variant) F.box(0,1.88,0, 2.6,0.04,1.1, 0, 0x8a7a5a, 'cloth'); } });
+  FURN({ key:'abyss_baskets', name:'Baskets of fish and salt-rice', culture:AB, room:'shop', place:'both', w:2.2, d:1.2, h:0.7, variants:1,
+    build:function(F){ for(var i=0;i<4;i++){ var x=-0.8+i*0.55, z=(i%2)*0.3-0.15, fish=i%2===0; F.lathe('thatch', x,z, [[0.18,0],[0.26,0.3],[0.27,0.4]], F.pick(REEDMATC), { seg:9 });
+        if(fish){ for(var k=0;k<3;k++) F.box(x+F.rr(-0.1,0.1),0.38,z+F.rr(-0.1,0.1), 0.3,0.06,0.08, F.rr(0,PI), 0x9aa8b0, 'metal'); } else F.edome(x,0.36,z, 0.24,0.1,0.24, 0, PAL.paddy[3], 'leafy'); } } });
+  FURN({ key:'abyss_salt_cone', name:'Salt cone', culture:AB, room:'yard', place:'outdoor', w:2.2, d:2.2, h:1.8, variants:2, variantNames:['white','grey, raked'],
+    build:function(F){ var c=F.variant?SALTCRUSTC[2]:PAL.abSalt; F.cone(0,0,0, 1.0,1.6, 0, c, 'plaster'); F.cyl(0,0,0, 1.05,0.06, 0, shade(c,-0.1), 'plaster'); } });
+  FURN({ key:'abyss_canvas_bolts', name:'Bolts of canvas and coils of rope', culture:AB, room:'shop', place:'both', w:2.4, d:1.2, h:1.0, variants:1,
+    build:function(F){ var cs=[PAL.abSailOrange, PAL.abSailRed, CANVASC[0], PAL.abBrightTeal]; for(var i=0;i<4;i++){ var x=-0.8+i*0.55; F.rod(x,0.22,-0.4, x,0.22,0.4, 0.2, cs[i], i%2?'pattern':'canvas'); }
+      for(var k=0;k<3;k++) F.lathe('thatch', -0.6+k*0.6,0.6, [[0.15,0],[0.35,0.02],[0.36,0.22],[0.15,0.24]], 0xa89060, { seg:10 });
+      F.rod(-0.9,0.66,-0.4, 0.9,0.66,-0.4, 0.21, CANVASC[1], 'canvas'); } });
+
+  /* ---------- yard and water ---------- */
+  FURN({ key:'abyss_water_butt', name:'Water butt', culture:AB, room:'yard', place:'outdoor', w:1.0, d:1.0, h:1.3, variants:1,
+    build:function(F){ var c=ABYSS.rust(F); F.cyl(0,0,0, 0.45,1.15, 0, c, 'rust'); F.cyl(0,1.15,0, 0.48,0.05, 0, F.pick(PLANKC), 'plank'); F.rod(0.45,0.3,0, 0.6,0.3,0, 0.03, BRASSC[1], 'metal'); } });
+  FURN({ key:'abyss_well', name:'Salt-marsh well with a sweep', culture:AB, room:'court', place:'outdoor', w:5.0, d:2.4, h:4.2, variants:1,
+    build:function(F){ var tc=wood(F); F.lathe('rubble', 0,0, [[1.0,0],[1.0,0.8]], PAL.abRubble, { seg:14 }); F.cyl(0,0.78,0, 0.8,0.04, 0, SALTWATERC[1], 'plaster');
+      F.cyl(1.6,0,0, 0.12,2.6, 0, tc, 'timber'); F.rod(-1.6,3.9,0, 2.4,1.8,0, 0.08, tc, 'timber'); F.box(2.3,1.2,0, 0.5,0.5,0.5, 0, PAL.abRubble, 'rubble'); F.rod(-1.5,3.85,0, -1.5,1.2,0, 0.015, PAL.people.hair[2], 'timber'); LOCUS.drum(F, -1.5,0.55,0, ABYSS.rust(F)); } });
+  FURN({ key:'abyss_planter', name:'Planter (a cut can or jar)', culture:AB, room:'balcony', place:'both', w:0.7, d:0.7, h:0.6, variants:2, variantNames:['cut tin','clay jar'],
+    build:function(F){ if(F.variant) F.lathe('adobe', 0,0, [[0.2,0],[0.3,0.3],[0.26,0.52]], F.pick(ADOBEREDC), { seg:9 }); else F.cyl(0,0,0, 0.28,0.5, 0, F.pick([PAL.abBrightTeal, PAL.abSailRed, PAL.abBrightYellow, PAL.abTin]), 'corrugate');
+      F.cyl(0,0.46,0, 0.24,0.04, 0, 0x3a2a1a, 'adobe'); } });
+  FURN({ key:'abyss_beast_shade', name:'Beast yard shade and trough', culture:AB, room:'yard', place:'outdoor', w:6.0, d:4.0, h:3.2, variants:1,
+    build:function(F){ var tc=wood(F); [[-2.8,-1.8],[2.8,-1.8],[2.8,1.8],[-2.8,1.8]].forEach(function(c){ LOCUS.pole(F, c[0],c[1], 3.0, 0.1, tc, false); });
+      LOCUS.canopy(F, [[-2.8,3.0,-1.8],[2.8,3.0,-1.8],[2.8,3.0,1.8],[-2.8,3.0,1.8]], F.pick(CANVASC), { sag:0.4 });
+      F.box(0,0,1.2, 4.0,0.6,0.7, 0, ABYSS.rust(F), 'rust'); F.box(0,0.5,1.2, 3.8,0.06,0.5, 0, SALTWATERC[0], 'plaster');
+      F.edome(-1.2,0,-0.6, 1.0,0.35,0.7, 0, 0xc8b070, 'thatch'); } });
+})();
+/* ============================== 16X-P. ABYSS — plants the abyssal kit needs that no catalogue had ==============================
+   Registered as PLANTs and placed by the buildings through ABYSS.plant (never drawn inside a build). Tagged for the
+   eastern-abyss biome (hypertropic · humid · wet · abyssal) plus `use` — the README's edibility / harvestability tag. */
+reseed(652001);
+(function(){
+  var PI=Math.PI;
+  /* water-lily pads: a raft of round pads and a few flowers on still, shallow, brackish water (under stilt houses) */
+  PLANT({ key:'abyss_lily_pads', name:'Salt-marsh water lilies', climate:'hypertropic', aridity:'humid', tags:{ wet:'wet', abyssal:true, riparian:'yes' }, use:'edible (roots, seeds)',
+    w:4, d:4, h:0.3, variants:2, variantNames:['pads','pads in flower'],
+    build:function(F){ var n=14; for(var i=0;i<n;i++){ var a=F.rr(0,TAU), r=Math.sqrt(F.rnd())*1.8, x=Math.cos(a)*r, z=Math.sin(a)*r, s=F.rr(0.25,0.45);
+        F.cyl(x,0.05,z, s,0.02, 0, F.pick(PAL.paddy), 'leafy');
+        if(F.variant && i%4===0){ F.cone(x+0.1,0.07,z, 0.12,0.16, 0, F.pick([PAL.abBrightPink, PASTELC[6]]), 'leafy'); } } } });
+  /* potted herbs: a clump of salt-tolerant herbs for a balcony planter (the planter is furniture: abyss_planter) */
+  PLANT({ key:'abyss_herbs', name:'Marsh herbs (potted)', climate:'hypertropic', aridity:'humid', tags:{ wet:'mild', abyssal:true, riparian:'no' }, use:'edible (leaves), medicinal',
+    w:0.6, d:0.6, h:0.6, variants:2, variantNames:['samphire and mint','flowering'],
+    build:function(F){ for(var i=0;i<5;i++){ var a=i/5*TAU, x=Math.cos(a)*0.12, z=Math.sin(a)*0.12; F.cone(x,0,z, 0.1,F.rr(0.3,0.5), [F.rr(-0.2,0.2),0,F.rr(-0.2,0.2)], F.pick(PAL.saltReed.slice(0,2)), 'leafy'); }
+      F.blob(0,0,0, 0.22,0.3, 0, F.pick(PAL.shrub), 'leafy'); if(F.variant) for(var k=0;k<4;k++) F.ball(F.rr(-0.15,0.15),F.rr(0.3,0.45),F.rr(-0.15,0.15), 0.05, PAL.abBrightPink, 'leafy'); } });
+  /* a climbing creeper trained up a post or a wall (on rich houses and the inn court) */
+  PLANT({ key:'abyss_creeper', name:'Salt-flower creeper', climate:'hypertropic', aridity:'humid', tags:{ wet:'mild', abyssal:true, riparian:'both' }, use:'ornamental (flowers dye canvas)',
+    w:1.6, d:0.6, h:3.0, variants:1,
+    build:function(F){ for(var i=0;i<6;i++){ var x=F.rr(-0.6,0.6), y=F.rr(0.4,2.7); F.blob(x,y,0, F.rr(0.3,0.5),F.rr(0.3,0.5), F.rr(0,PI), F.pick(PAL.shrub), 'leafy');
+        if(i%2) F.ball(x+0.1,y+0.3,0.15, 0.12, PAL.abBrightPink, 'leafy'); } F.rod(0,0,0, 0.2,2.9,0, 0.04, PAL.trunk[0], 'bark'); } });
+})();
+/* ============================== 16X-H. ABYSS — housing: poor, middle, rich ==============================
+   Poor: salvage on piles — a drum, a container, a reed-and-sheet lean-to; little paint, mostly rust and reed, no lamps.
+   Middle: stacked containers, a silo joined to a cabin by a tarp, a painted townhouse under a sail.
+   Rich: a cone-shell house over terraces and a pool court; a walled sail compound on piles with a dock; a tapering
+   tin-mirror tower on a rubble base. Lit lanterns only on the rich houses.                                       */
+reseed(653001);
+(function(){
+  var PI=Math.PI;
+  function plinthWin(F, x,y,z, nx,nz, w,h, col){ F.window(x,y,z, nx,nz, w,h); var yaw=Math.atan2(nx,nz); F.box(x+nx*0.06, y-h/2-0.12, z+nz*0.06, w+0.3,0.12,0.2, yaw, col, 'plaster'); }
+
+  /* =============================================================== POOR */
+  ASSET({ key:'abyss_house_poor', name:'Salvage shack', family:'poor', kit:'abyss', group:'Housing — poor', culture:'abyssal-desert', types:['single-family dwelling'],
+    wealth:[0,0.3], w:10, d:10, h:7, variants:3, variantNames:['drum house','container shack','reed-and-sheet lean-to'], sim:{ activity:'REST', capacity:5 },
+    build:function(F){ var v=F.variant, pc=F.pick(PILEC), tarp=PAL.abTarpBlue;
+      ABYSS.water(F, 0,-1, 10,8);
+      if(v===0){ /* (a) a horizontal salvaged drum on a pile deck */
+        var H=1.6; ABYSS.platform(F, -3.6,3.6, -3.4,2.0, H, { pile:pc });
+        var D=ABYSS.vessel(F, 'drum', -0.2,H,-1.2, { r:1.35, len:5.4, col:ABYSS.rust(F), win:[[-0.9,0]], awning:tarp, door:'end' });
+        F.box(2.75,H,-1.2, 0.6,0.55,1.0, 0, F.pick(PLANKC), 'plank');                                  /* the step up to the end door */
+        ABYSS.railRect(F, -3.6,3.6,-3.4,2.0, H, [['f',-1.6,-0.6],['b',-3.7,3.7],['r',-3.5,-0.4]]);
+        LOCUS.ladder(F, -1.1,0,2.35, 0,1, H+0.4);
+        ABYSS.furn(F, 'abyss_water_butt', 2.8,1.2, 0, { ly:H }); ABYSS.furn(F, 'abyss_smoking_rack', 1.5,3.6, 0.1);
+        ABYSS.cables(F, [-2.6,D.top+0.1,-1.2], [-4.6,3.2,3.6], 0.4, 1); F.cyl(-4.6,0,3.6, 0.07,3.4, 0, F.pick(TIMBERC), 'timber');
+        ABYSS.lantern(F, 1.2, H+2.3, -0.1, false); }
+      else if(v===1){ /* (b) a container shack on piles, corrugated porch, water butt */
+        var H1=1.2, cc=ABYSS.cont(F); ABYSS.platform(F, -4.4,4.4, -3.6,2.8, H1, { pile:pc });
+        ABYSS.vessel(F, 'container', 0,H1,-1.9, { len:6.1, col:cc, win:[[1.6,1.5]], door:'side', doorAt:-1.2, doorEnd:-1 });
+        F.box(0.6,H1+2.73,-1.9, 3.0,0.14,1.8, 0.05, ABYSS.rust(F), 'corrugate');                        /* a patch sheet on the roof */
+        var tc=F.pick(TIMBERC); [-2.9,2.9].forEach(function(x){ F.cyl(x,H1,2.5, 0.08,2.3, 0, tc, 'timber'); });
+        ABYSS.corrRoof(F, 0,H1+2.25,0.3, 6.6,2.6, 0.45, ABYSS.rust(F));
+        ABYSS.furn(F, 'abyss_water_butt', 3.6,-0.2, 0, { ly:H1 }); ABYSS.furn(F, 'abyss_bench', -1.6,1.6, PI, { ly:H1 });
+        LOCUS.stair(F, 1.8, 2.8+H1*1.15, 0,-1, H1, 1.0);
+        ABYSS.railRect(F, -4.4,4.4,-3.6,2.8, H1, [['f',1.2,2.4],['b',-4.5,4.5]]);
+        ABYSS.antenna(F, -2.2,H1+2.7,-1.9, 'mast', { h:2.4 }); ABYSS.lantern(F, -0.6, H1+2.15, 1.6, false); }
+      else { /* (c) reed mats and patched sheet: a lean-to with a two-pole porch canopy */
+        var H2=0.9, WH=2.5; ABYSS.platform(F, -4.0,4.0, -3.8,2.6, H2, { pile:pc });
+        var hw=3.4, hz0=-3.5, hz1=0.4;
+        LOCUS.matWall(F, 0, H2, hz0, 2*hw, WH+0.8, 0,-1); LOCUS.matWall(F, -hw, H2, (hz0+hz1)/2, hz1-hz0, WH, -1,0); LOCUS.matWall(F, hw, H2, (hz0+hz1)/2, hz1-hz0, WH, 1,0);
+        LOCUS.matWall(F, -2.2, H2, hz1, 2.4, WH, 0,1); LOCUS.matWall(F, 2.3, H2, hz1, 2.2, WH, 0,1);
+        F.box(2.3, H2+0.4, hz1+0.08, 1.6,1.3,0.05, 0.05, ABYSS.rust(F), 'corrugate');                  /* a patch nailed over the reed */
+        F.box(-hw-0.08, H2+0.6, -2.0, 0.05,1.6,1.8, 0, ABYSS.rust(F), 'corrugate');
+        F.door(-0.1, hz1+0.02, 0,1, 0.9, 1.9, F.pick(PLANKC), H2);
+        for(var i=0;i<4;i++) ABYSS.corrRoof(F, -2.7+i*1.8, H2+WH-0.1, (hz0+hz1)/2+F.rr(-0.1,0.1), 1.95, hz1-hz0+1.2, 0.9, ABYSS.rust(F));
+        LOCUS.pole(F, -3.5,2.3, H2+2.3, 0.08); LOCUS.pole(F, 3.5,2.3, H2+2.3, 0.08);
+        LOCUS.canopy(F, [[-3.6,H2+WH-0.1,hz1+0.1],[3.6,H2+WH-0.1,hz1+0.1],[3.5,H2+2.3,2.3],[-3.5,H2+2.3,2.3]], F.pick(CANVASC), { sag:0.25 });
+        LOCUS.stair(F, -2.4, 2.6+H2*1.15, 0,-1, H2, 1.0); ABYSS.furn(F, 'abyss_crates', 2.6,4.2, 0.2, { variant:1 }); ABYSS.furn(F, 'abyss_water_butt', 3.3,1.5, 0, { ly:H2 }); }
+    } });
+
+  /* =============================================================== MIDDLE */
+  ASSET({ key:'abyss_house_mid', name:'Abyssal family house', family:'mid', kit:'abyss', group:'Housing — middle', culture:'abyssal-desert', types:['single-family dwelling'],
+    wealth:[0.3,0.7], w:14, d:14, h:12, variants:3, variantNames:['stacked containers','silo house','painted townhouse'], sim:{ activity:'REST', capacity:8 },
+    build:function(F){ var v=F.variant, pc=F.pick(PILEC);
+      if(v===0){ /* (a) stacked, offset, cantilevered containers with an outside stair, balconies, cables and a dish */
+        var H=0.8; ABYSS.platform(F, -6.4,6.4, -6.0,4.4, H, { pile:pc });
+        var c1=ABYSS.cont(F), c2=ABYSS.cont(F), c3=ABYSS.cont(F), y2=H+2.7, y3=y2+2.7;
+        ABYSS.vessel(F, 'container', -0.4,H,-3.4, { len:12.2, col:c1, win:[[-3.5,1.5],[3.0,1.5]], door:'side', doorAt:0 });
+        ABYSS.vessel(F, 'container', 2.3,y2,-3.2, { len:6.1, col:c2, win:[[0.5,1.5]], door:'side', doorAt:-1.8, doorEnd:-1 });
+        ABYSS.vessel(F, 'container', -3.2,y2,-4.0, { len:6.1, yaw:0.08, col:ABYSS.rust(F), fam:'rust', win:[[1.0,1.5]] });
+        ABYSS.vessel(F, 'container', 0.4,y3,-3.6, { len:6.1, yaw:PI/2, col:c3, win:[[-1.0,1.5,1],[1.2,1.5,-1]] });      /* the top box turned across, cantilevered front and back */
+        /* a balcony deck on the lower box's roof in front of the second level, with a rail */
+        F.box(-0.4,y2-0.02,-1.4, 12.2,0.12,1.5, 0, F.pick(PLANKC), 'plank'); LOCUS.rail(F, -6.4,-0.65, 5.7,-0.65, y2+0.1, null, 1.0);
+        /* the outside stair: deck -> balcony, along the front */
+        ABYSS.flight(F, -5.6,-0.4, 1,0, H,y2, 1.0);
+        ABYSS.railRect(F, -6.4,6.4,-6.0,4.4, H, [['b',-6.5,6.5],['f',-1.2,1.2]]);
+        LOCUS.stair(F, 0, 4.4+H*1.15, 0,-1, H, 1.2);
+        ABYSS.corrRoof(F, 3.0,H+2.3,1.3, 6.0,3.2, 0.4, ABYSS.rust(F)); [0.3,5.7].forEach(function(x){ F.cyl(x,H,2.7, 0.08,2.0, 0, F.pick(TIMBERC), 'timber'); });
+        ABYSS.antenna(F, 1.3,y3+2.7,-3.6, 'dish', { r:0.75 }); ABYSS.antenna(F, -0.6,y3+2.7,-4.4, 'mast', { h:3 });
+        ABYSS.cables(F, [-0.6,y3+4.8,-4.4], [-6.6,5.5,4.0], 0.8, 2); F.cyl(-6.6,0,4.0, 0.08,6.5, 0, F.pick(TIMBERC), 'timber');
+        ABYSS.billboard(F, 5.5,y3-0.4,-3.6, 1,0, 3.2,1.6);
+        ABYSS.furn(F, 'abyss_planter', 4.6,-1.0, 0, { ly:y2 }); ABYSS.plant(F, 'abyss_herbs', 4.6,-1.0, 0, { ly:y2+0.48 });
+        ABYSS.furn(F, 'abyss_planter', -2.4,-1.0, 0, { ly:y2, variant:1 }); ABYSS.plant(F, 'abyss_herbs', -2.4,-1.0, 0, { ly:y2+0.5, variant:1 });
+        ABYSS.lantern(F, 2.5, H+2.0, 2.0, false); }
+      else if(v===1){ /* (b) a domed silo with portholes and a ring balcony, joined to a timber cabin by a tarp */
+        var H1=1.0; ABYSS.platform(F, -6.6,6.4, -6.2,4.6, H1, { pile:pc });
+        ABYSS.vessel(F, 'silo', -3.2,H1,-2.2, { r:2.7, h:6.4, col:F.pick(METALC), win:[[PI/2,1.6],[PI/2+0.7,4.4],[PI*0.95,4.4]], port:true, door:PI*0.35, balcony:3.6, ladder:PI*1.15, hatch:true });
+        var cw=5.4, cd=4.6, cx=3.4, cz=-2.6, WH=2.9, pk=F.pick(PLANKC);
+        F.box(cx,H1,cz, cw,WH,cd, 0, pk, 'plank'); F.box(cx,H1,cz, cw+0.06,0.4,cd+0.06, 0, shade(pk,-0.3), 'timber');
+        ABYSS.corrRoof(F, cx,H1+WH,cz, cw+0.8,cd+0.8, 0.6, ABYSS.rust(F));
+        F.door(cx-1.2, cz+cd/2+0.02, 0,1, 1.0, 2.1, PLANKC[3], H1); LOCUS.shutterWin(F, cx+1.2, H1+1.7, cz+cd/2+0.02, 0,1, 0.9,0.8);
+        LOCUS.shutterWin(F, cx+cw/2+0.02, H1+1.7, cz, 1,0, 0.9,0.8);
+        /* the tarp between silo and cabin, over the shared porch */
+        LOCUS.pole(F, -0.6,2.4, H1+2.6, 0.08); LOCUS.pole(F, 2.6,2.6, H1+2.5, 0.08);
+        ABYSS.sail(F, [[-0.6,H1+5.0,-2.4],[0.9,H1+WH+0.2,cz-1.0],[2.6,H1+2.5,2.6],[-0.6,H1+2.6,2.4]], PAL.abTarpBlue, { swoop:0.25, sag:0.3, fam:'canvas' });
+        ABYSS.railRect(F, -6.6,6.4,-6.2,4.6, H1, [['f',-1.6,-0.2],['b',-6.7,6.5]]);
+        LOCUS.stair(F, -0.9, 4.6+H1*1.15, 0,-1, H1, 1.1);
+        ABYSS.furn(F, 'abyss_table_stools', 1.0,0.8, 0, { ly:H1 }); ABYSS.furn(F, 'abyss_water_butt', 5.6,1.6, 0, { ly:H1 });
+        ABYSS.antenna(F, cx+1.6,H1+WH+0.5,cz-1.2, 'dish', { r:0.6 });
+        ABYSS.furn(F, 'abyss_planter', 4.6,1.9, 0, { ly:H1, variant:1 }); ABYSS.plant(F, 'abyss_herbs', 4.6,1.9, 0, { ly:H1+0.5 }); }
+      else { /* (c) a painted townhouse: three storeys of bright lime-wash, iron balconies, a mural, a roof terrace under a sail */
+        var col=F.pick([PAL.abBrightYellow, PAL.abBrightTeal, PAL.abBrightPink, PASTELC[1], PASTELC[0]]), band=shade(col,-0.3), W=9, D=8, P=0.9, FH=3.1, n=3;
+        F.box(0,0,-1, W+0.6,P,D+0.6, 0, PAL.abRubble, 'rubble');
+        F.box(0,P,-1, W,FH*n,D, 0, col, 'plaster'); F.box(0,P,-1, W+0.06,0.5,D+0.06, 0, band, 'plaster');
+        for(var f=1;f<n;f++) F.box(0,P+FH*f-0.1,-1, W+0.1,0.18,D+0.1, 0, band, 'relief');
+        F.box(0,P+FH*n,-1, W+0.3,0.25,D+0.3, 0, band, 'relief');                                       /* cornice */
+        var top=P+FH*n+0.25; LOCUS.parapet(F, 0,top,-1, W,D, 0.22,0.8, col, band);
+        F.door(0, -1+D/2+0.02, 0,1, 1.2, 2.3, PAL.abBrightTeal===col?PAL.abSailRed:PAL.abBrightTeal, P);
+        [-2.8,2.8].forEach(function(x){ plinthWin(F, x,P+1.7,-1+D/2+0.02, 0,1, 1.0,1.3, band); });
+        for(var fl=1; fl<n; fl++){ var yy=P+FH*fl; [-2.6,0,2.6].forEach(function(x){ plinthWin(F, x,yy+1.6,-1+D/2+0.02, 0,1, 1.0,1.6, band); F.box(x,yy+0.02,-1+D/2+0.06, 1.1,1.9,0.04, 0, VOIDC[1], 'dark'); });
+          ABYSS.balcony(F, 0,yy+0.02,-1+D/2, 0,1, 7.0, 1.0); }
+        [1,-1].forEach(function(s){ for(var fl2=0; fl2<n; fl2++) plinthWin(F, s*(W/2+0.02),P+FH*fl2+1.7,-1, s,0, 0.9,1.2, band); });
+        ABYSS.mural(F, W/2+0.02, P+FH*1.2, -1-1.8, 1,0, 2.6, 3.4);
+        /* the roof terrace sail on four poles */
+        var ph=top+2.6; [[-3.8,-4.4],[3.8,-4.4],[3.8,2.4],[-3.8,2.4]].forEach(function(c,i){ LOCUS.pole(F, c[0],c[1], ph+(i%2?0.4:0), 0.07, null, true); });
+        ABYSS.sail(F, [[-3.8,ph,-4.4],[3.8,ph+0.4,-4.4],[3.8,ph,2.4],[-3.8,ph+0.4,2.4]], F.pick(CANVASDYEC), { swoop:0.5, band:PAL.abSailOrange, bandW:0.5 });
+        ABYSS.furn(F, 'abyss_bench', 0,-3.0, 0, { ly:top }); ABYSS.furn(F, 'abyss_planter', 3.4,1.6, 0, { ly:top }); ABYSS.plant(F, 'abyss_herbs', 3.4,1.6, 0, { ly:top+0.48, variant:1 });
+        ABYSS.furn(F, 'abyss_planter', -1.2,-1+D/2+0.9, 0, { ly:P+FH+0.02, variant:1 }); ABYSS.plant(F, 'abyss_herbs', -1.2,-1+D/2+0.9, 0, { ly:P+FH+0.5 });
+        LOCUS.stair(F, 0, -1+D/2+0.3+P*1.15, 0,-1, P, 1.6);
+        ABYSS.sign(F, -3.4, P+FH-0.3, -1+D/2+0.06, 0,1, 1.2,0.7, 'cup');
+        ABYSS.lantern(F, 1.1, P+2.6, -1+D/2+0.35, false); }
+    } });
+
+  /* =============================================================== RICH */
+  ASSET({ key:'abyss_house_rich', name:'Abyssal great house', family:'rich', kit:'abyss', group:'Housing — rich', culture:'abyssal-desert', types:['single-family dwelling'],
+    wealth:[0.7,1.0], w:24, d:24, h:20, variants:3, variantNames:['cone shell over terraces','sail-roofed compound with a dock','tin-mirror tower house'], sim:{ activity:'REST', capacity:16 },
+    build:function(F){ var v=F.variant, pc=F.pick(PILEC);
+      if(v===0){ /* (a) a tall cone shell, open in a great arch, over three terraced floors with planting; a pool court in front */
+        var H=1.2; ABYSS.platform(F, -11,11, -11,4, H, { pile:pc, span:3.2 });
+        F.box(0,0,7.5, 16,H,7, 0, PAL.abRubble, 'rubble'); F.box(0,H-0.05,7.5, 15.4,0.1,6.4, 0, PAL.abSalt, 'plaster');   /* the court, on a rubble plinth */
+        F.box(0,H-0.02,8.0, 8,0.08,3.6, 0, SALTWATERC[1], 'plaster'); F.box(0,H-0.12,8.0, 8.6,0.2,4.2, 0, PAL.abRubble, 'rubble');   /* the pool */
+        ABYSS.plant(F, 'abyss_lily_pads', 1.5,8.0, 0, { ly:H+0.02, variant:1 });
+        var tc=F.pick(TIMBERC), cz=-3.5, R=8.6;
+        [[6.8,H,0.9],[4.8,H+2.6,0.9],[2.9,H+5.2,0.8]].forEach(function(t,i){ F.sector('plank', 0,cz, 0,t[0], 0,TAU, t[1],t[1]+t[2], F.pick(PLANKC), { faces:'tos', step:1.2 });
+          F.sector('plaster', 0,cz, t[0]-0.05,t[0]+0.12, 0,TAU, t[1]+t[2],t[1]+t[2]+0.55, PASTELC[(i*3+F.variant)%PASTELC.length], { faces:'tio', step:1.0 });
+          for(var k=0;k<5;k++){ var a=PI/2+(k-2)*0.45, rr=t[0]-0.5; ABYSS.furn(F, 'abyss_planter', Math.cos(a)*rr, cz+Math.sin(a)*rr, 0, { ly:t[1]+t[2], variant:k%2 });
+            ABYSS.plant(F, 'abyss_herbs', Math.cos(a)*rr, cz+Math.sin(a)*rr, 0, { ly:t[1]+t[2]+0.48, variant:(k+i)%2 }); } });
+        ABYSS.flight(F, 3.2,cz+5.9, -1,0, H+0.9,H+3.5, 0.9);
+        ABYSS.coneShell(F, 0,cz, R, 17.5, { y0:H+0.9, fam:F.pick(['thatch','tile']), col:F.pick([THATCHC[0], 0x8a7a68]), arch:{ w:7.5, h:7.0 }, archCol:PAL.abLacquer, ring:PAL.abLacquer, k:1.3 });
+        ABYSS.coneShell(F, -8.6,-8.6, 2.0, 7.5, { y0:H, fam:'tinmirror', col:PAL.abTin, k:1.0, ring:PAL.abLacquer, arch:null });
+        ABYSS.coneShell(F, 8.6,-8.6, 2.0, 7.5, { y0:H, fam:'tinmirror', col:PAL.abTin, k:1.0, ring:PAL.abLacquer, arch:null });
+        LOCUS.stair(F, -8-H*1.15, 9.0, 1,0, H, 1.8); ABYSS.railRect(F, -11,11,-11,4, H, [['f',-8,8]]);
+        [-7.4,7.4].forEach(function(x){ ABYSS.furn(F, 'abyss_lantern_post', x,10.6, PI, { variant:1 }); });
+        ABYSS.furn(F, 'abyss_bench', -5.0,6.0, 0, { ly:H, variant:1 }); ABYSS.furn(F, 'abyss_bench', 5.0,6.0, 0, { ly:H, variant:1 });
+        ABYSS.plant(F, 'abyss_creeper', -10.2,3.6, 0, { ly:H }); ABYSS.plant(F, 'abyss_creeper', 10.2,3.6, 0, { ly:H }); }
+      else if(v===1){ /* (b) a walled deck compound on piles with several swooping sail roofs and a private dock at the back */
+        var H1=1.8, wc=F.pick(PASTELC), band=PASTELDC[F.variant%PASTELDC.length];
+        ABYSS.water(F, 0,-2, 24,20);
+        ABYSS.platform(F, -11,11, -8,10, H1, { pile:pc, span:3.0 });
+        /* the compound wall, open at the front gate and onto the dock, with lattice screens */
+        var wall=function(x0,z0,x1,z1){ var L=Math.hypot(x1-x0,z1-z0), mx=(x0+x1)/2, mz=(z0+z1)/2, yaw=Math.atan2(x1-x0,z1-z0)+PI/2; F.box(mx,H1,mz, L,2.4,0.3, yaw, wc, 'plaster'); F.box(mx,H1+2.4,mz, L+0.1,0.2,0.45, yaw, band, 'relief'); };
+        wall(-11,10, -2.2,10); wall(2.2,10, 11,10); wall(-11,-8, -3,-8); wall(3,-8, 11,-8); wall(-11,-8,-11,10); wall(11,-8,11,10);
+        [-7,7].forEach(function(x){ LOCUS.lattice(F, x,H1+1.7,10.17, 0,1, 2.2,1.2); });
+        [-2.2,2.2].forEach(function(x){ F.box(x,H1,10, 0.8,3.6,0.8, 0, band, 'plaster'); F.ball(x,H1+3.85,10, 0.3, PAL.abGild, 'metal'); });
+        /* three pavilions, each under its own swooping sail */
+        var pav=[[-6,-3,6.5,5.5],[5.5,-3.5,7,6],[0,4.2,8,4.0]];
+        pav.forEach(function(p,i){ var x=p[0], z=p[1], w=p[2], d=p[3], wh=3.0, c=i===2?PAL.abBrightTeal:F.pick(PASTELC);
+          if(i<2){ F.box(x,H1,z, w-1.2,wh,d-1.6, 0, c, 'plaster'); F.box(x,H1,z, w-1.1,0.45,d-1.5, 0, shade(c,-0.3), 'plaster');
+            F.door(x, z+(d-1.6)/2+0.02, 0,1, 1.2, 2.3, PAL.abSailRed, H1); [-1.8,1.8].forEach(function(o){ LOCUS.lattice(F, x+o,H1+2.0,z+(d-1.6)/2+0.02, 0,1, 1.0,1.2); }); }
+          var ph=H1+wh+2.0, C=[[x-w/2,ph+0.6,z-d/2],[x+w/2,ph+0.3,z-d/2],[x+w/2,ph+0.6,z+d/2],[x-w/2,ph+0.3,z+d/2]];
+          C.forEach(function(q){ LOCUS.pole(F, q[0],q[2], q[1], 0.09, F.pick(TIMBERC), PAL.abGild); });
+          ABYSS.sail(F, C, i===2?PAL.abSailOrange:F.pick([PAL.abSailOrange, CANVASDYEC[0], CANVASDYEC[5]]), { swoop:1.3, band:PAL.abSailOrange, bandW:0.6 }); });
+        ABYSS.furn(F, 'abyss_table_stools', 0,4.2, 0, { ly:H1, variant:1 }); ABYSS.furn(F, 'abyss_bench', -2.6,5.8, PI, { ly:H1, variant:1 }); ABYSS.furn(F, 'abyss_bench', 2.6,5.8, PI, { ly:H1, variant:1 });
+        ABYSS.furn(F, 'abyss_umbrella_canopy', 0,-2.0, 0, { ly:H1, variant:1 });
+        /* the private dock out the back, over the water */
+        ABYSS.platform(F, -2.6,2.6, -11.8,-8.0, H1-0.5, { pile:pc }); F.box(0,H1-0.62,-8.0, 5.2,0.5,0.3, 0, F.pick(PLANKC), 'plank');
+        [-2.4,2.4].forEach(function(x){ F.cyl(x,0,-11.6, 0.14,H1+0.6, 0, PILEC[2], 'bark'); });
+        F.edome(4.4,0.02,-10.6, 1.0,0.35,2.6, 0, PAL.abSailRed, 'plank');                                /* a moored skiff */
+        LOCUS.stair(F, 0, 10+H1*1.15+0.2, 0,-1, H1, 2.6);
+        [-4,4].forEach(function(x){ ABYSS.furn(F, 'abyss_lantern_post', x,11.6, PI, { variant:1 }); });
+        ABYSS.plant(F, 'abyss_lily_pads', -6,-10.5, 0, { variant:1 }); ABYSS.plant(F, 'abyss_creeper', 10.2,6, -PI/2, { ly:H1 }); }
+      else { /* (c) a tapering tin-mirror tower on a rubble base, salvaged-trim windows, a lantern top; a pastel annex and court */
+        var B=3.4, tx=-3, tz=-4;
+        F.box(tx,0,tz, 11,B,11, 0, PAL.abRubble, 'rubble'); F.box(tx,B,tz, 11.3,0.3,11.3, 0, PAL.abSalt, 'plaster');
+        var prof=[[4.6,B+0.3],[4.1,B+5],[3.3,B+10],[2.5,B+14]], top=B+14;
+        F.lathe('plaster', tx,tz, prof, PASTELC[6], { seg:20 }); ABYSS.tinClad(F, { lathe:[tx,tz,prof], seg:20 });
+        F.lathe('relief', tx,tz, [[4.75,B+0.3],[4.75,B+0.9]], PAL.abLacquer, { seg:20 });
+        [[PI/2,B+2.6],[PI/2,B+7.2],[PI/2,B+11.4],[0.2,B+4.8],[PI-0.2,B+4.8],[0.5,B+9.6],[PI-0.5,B+9.6]].forEach(function(w){ var a=w[0], rr=mix(4.6,2.5,(w[1]-B)/14)+0.06, nx=Math.cos(a), nz=Math.sin(a);
+          F.window(tx+nx*rr, w[1], tz+nz*rr, nx,nz, 1.0,1.5); ABYSS.trim(F, tx+nx*rr, w[1]-0.75, tz+nz*rr, nx,nz, 1.0,1.5); });
+        /* the lantern top: a lacquered gallery, a glazed drum and a tin cone */
+        F.cyl(tx,top,tz, 2.9,0.3, 0, PAL.abLacquer, 'plaster'); F.cyl(tx,top+0.3,tz, 1.7,2.2, 0, PAL.glowWarm, 'glowmat'); F.lamp(tx,top+1.4,tz, 1.4, 22);
+        for(var k=0;k<8;k++){ var a2=k/8*TAU; F.cyl(tx+Math.cos(a2)*1.75,top+0.3,tz+Math.sin(a2)*1.75, 0.1,2.2, 0, PAL.abGild, 'metal'); }
+        F.mcone('tinmirror', tx,top+2.5,tz, 2.4, 0.05, 3.4, PAL.abTin, 20, { under:true }); F.ball(tx,top+6.2,tz, 0.3, PAL.abGild, 'metal');
+        F.door(tx, tz+4.62, 0,1, 1.3, 2.5, PAL.abLacquer, B+0.3);
+        LOCUS.stair(F, tx, tz+5.6+B*1.15, 0,-1, B, 2.2);
+        /* the annex and its court */
+        var ac=F.pick([PAL.abBrightPink, PASTELC[0], PASTELC[3]]); F.box(6.5,0,-3, 8,4.2,10, 0, ac, 'plaster'); F.box(6.5,0,-3, 8.1,0.6,10.1, 0, shade(ac,-0.3), 'plaster');
+        LOCUS.parapet(F, 6.5,4.2,-3, 8,10, 0.2,0.6, ac, shade(ac,-0.3)); [ -1,1 ].forEach(function(s){ LOCUS.lattice(F, 6.5+s*2,2.6,2.02, 0,1, 1.4,1.4); });
+        ABYSS.trim(F, 6.5,2.0,2.02, 0,1, 1.2,1.6); F.door(6.5, 2.02, 0,1, 1.2, 2.3, PAL.abBrightTeal, 0);
+        F.box(1,0,6.8, 22,0.12,9, 0, PAL.abSalt, 'plaster');                                         /* the court */
+        [-10.5,11].forEach(function(x){ F.box(x,0,6.8, 0.5,1.6,9, 0, PAL.abRubble, 'rubble'); }); F.box(-6,0,11.2, 9.5,1.6,0.5, 0, PAL.abRubble, 'rubble'); F.box(7.5,0,11.2, 7.5,1.6,0.5, 0, PAL.abRubble, 'rubble');
+        ABYSS.furn(F, 'abyss_well', 4,7, 0); ABYSS.furn(F, 'abyss_bench', -5,8.5, 0, { variant:1 }); ABYSS.furn(F, 'abyss_lantern_post', -1.6,10.4, PI, { variant:1 }); ABYSS.furn(F, 'abyss_lantern_post', 1.6,10.4, PI, { variant:1 });
+        ABYSS.plant(F, 'abyss_creeper', 10.6,4, -PI/2); }
+    } });
+})();
 /* ============================== 18b. THE PLACEMENT PASS — LOCUS ==============================
    PLANNER-OWNED. Turns 30-layout.js's SITES_L into buildings, furnishes the market and the
    park, lays the bridges, and then FILLS the town: every street's two frontages, packed with
