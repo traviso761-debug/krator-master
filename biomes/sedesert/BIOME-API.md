@@ -125,6 +125,8 @@ SEDESERT.zones(x,z)                 // the zone weights a world can reuse for it
 SEDESERT.PASSES                     // the species passes as data: {sp, cell, accept(Z,x,z), opt}
 SEDESERT.standOf(x,z)               // which big succulent's stand this is (0 candelabra, 1 cardon, 2 Joshua tree)
 SEDESERT.nearestTree(sp,x,z,minH)   // the nearest built hero of a species (a camera preset wants one)
+SEDESERT.spiresOf(T)                // a twist-candle clump's far impostor as data: [{x,z,foot,top,...}] per spire
+                                    //   (any clump, hero or not: a host checks the footing against its drawn water)
 SEDESERT.FAUNA                      // the four fauna kinds (tagged); SEDESERT.ROCKS the basking places the floor left
 SEDESERT.blooms / leafCol / small   // the shared plant helpers the floor and the dressing use
 ```

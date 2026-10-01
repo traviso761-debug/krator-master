@@ -123,6 +123,7 @@ SEDESERT.SPECIES=[
   tags:{climate:'tropic',aridity:'arid',abyssal:false,riparian:'no'}},
  /*12*/{key:'candle',name:'Twist-candles',H:[2,7],rb:[.3,.6],crownR:[2,4],barkK:2,bark:[0x9a8a78],
   leaf:PAL.candle,depth:[-.6,1.4],   // stands in the shallows
+  far:{spires:3},                    // the impostor: three twisted three-sided spires rooted in the bed (55)
   tags:{climate:'tropic',aridity:'humid',abyssal:false,riparian:'yes'}},
 ];
 SEDESERT.byKey={};SEDESERT.SPECIES.forEach(S=>SEDESERT.byKey[S.key]=S);
