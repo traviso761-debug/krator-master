@@ -939,7 +939,7 @@ function jjArcade(jjX,jjY,jjZ,jjN,jjBayW,jjH,jjRy,jjOptions){jjOptions=jjOptions
 function jjDome(jjX,jjY,jjZ,jjR,jjOptions){jjOptions=jjOptions||{};const jjKind=jjOptions.kind||'terracotta',jjShape=jjOptions.shape||'hemi',jjMat=jjKind==='gold'?'domeGold':jjKind==='slate'?'slate':'terracotta',jjGeo=jjDomeGeo(jjShape);jjPut('jj_dome_'+jjShape+'_'+jjMat,jjGeo,JMAT[jjMat],jjX,jjY,jjZ,jjR,jjR*(jjShape==='onion'?1.12:1),jjR);
  if(jjShape==='ribbed'||jjOptions.ribs){for(let jjI=0;jjI<12;jjI++){const jjA=jjI*TAU/12,jjPrev=[];for(let jjK=0;jjK<=12;jjK++){const jjT=jjK/12,jjPhi=jjT*Math.PI/2,jjRR=jjR*Math.sin(jjPhi),jjYY=jjY+jjR*Math.cos(jjPhi);const jjP=[jjX+Math.cos(jjA)*jjRR,jjYY,jjZ+Math.sin(jjA)*jjRR];if(jjPrev.length)jjBeam(jjPrev,jjP,.055,jjMat==='domeGold'?'gold':'marble');jjPrev.splice(0,jjPrev.length,...jjP);}}}
  const jjFin='jj_finial_'+jjMat;if(!KIT.defs[jjFin])kdef(jjFin,new THREE.SphereGeometry(.24,12,8),jjMat==='domeGold'?JMAT.gold:JMAT[jjMat]);const jjFs=Math.min(1,jjR/1.6);kput(jjFin,[jjX,jjY+jjR*(jjShape==='onion'?1.13:1),jjZ],null,[jjFs,1.5*jjFs,jjFs],jjColor(jjKind==='gold'?JPAL.gold:JPAL.marble));}
-function jjSpire(jjX,jjY,jjZ,jjR,jjStages,jjOptions){jjOptions=jjOptions||{};const jjN=Math.min(5,Math.max(1,jjStages|0)),jjStageH=jjOptions.stageH||3.1;for(let jjI=0;jjI<jjN;jjI++){const jjRR=jjR*Math.pow(.79,jjI),jjY0=jjY+jjI*jjStageH;jjBrickShaft(jjX,jjY0,jjZ,jjRR,jjStageH,{pattern:jjOptions.pattern||'tracery',section:jjI%2?'octagon':'round',relief:jjOptions.relief!==false,cap:'corbel'});jjCylinder(jjX,jjY0+jjStageH-.12,jjZ,jjRR*1.16,.24,'brickYellow',undefined,32);}if(jjOptions.terminal!==false)jjDome(jjX,jjY+jjN*jjStageH,jjZ,jjR*.48,{kind:jjOptions.kind||'gold',shape:'onion'});}
+function jjSpire(jjX,jjY,jjZ,jjR,jjStages,jjOptions){jjOptions=jjOptions||{};const jjN=Math.min(5,Math.max(1,jjStages|0)),jjStageH=jjOptions.stageH||3.1;for(let jjI=0;jjI<jjN;jjI++){const jjRR=jjR*Math.pow(.79,jjI),jjY0=jjY+jjI*jjStageH;jjBrickShaft(jjX,jjY0,jjZ,jjRR,jjStageH,{pattern:jjOptions.pattern||'tracery',section:jjI%2?'octagon':'round',relief:jjOptions.relief!==false,cap:'none',base:jjI===0});jjCylinder(jjX,jjY0+jjStageH-.34,jjZ,jjRR*1.1,.22,'brickYellow',undefined,32);jjCylinder(jjX,jjY0+jjStageH-.12,jjZ,jjRR*1.24,.24,'marble',undefined,32);jjCylinder(jjX,jjY0+jjStageH+.06,jjZ,jjRR*1.04,.14,'brickDeep',undefined,32);}if(jjOptions.terminal!==false)jjDome(jjX,jjY+jjN*jjStageH,jjZ,jjR*.48,{kind:jjOptions.kind||'gold',shape:'onion'});}
 function jjTurret(jjX,jjY,jjZ,jjR,jjH,jjOptions){jjOptions=jjOptions||{};jjBrickShaft(jjX,jjY,jjZ,jjR,jjH,{section:'round',pattern:jjOptions.pattern||'ogee',relief:true,cap:'crenel'});jjDome(jjX,jjY+jjH+.8,jjZ,jjR*.72,{kind:jjOptions.kind||'gold',shape:jjOptions.shape||'hemi'});}
 function jjPorthole(jjX,jjY,jjZ,jjRy,jjR){jjWithYaw(jjX,jjY,jjZ,jjRy,()=>{jjPut('jj_porthole_rim',new THREE.CylinderGeometry(1,1,1,32),JMAT.brickDeep,jjX,jjY,jjZ,jjR,.18,jjR,undefined,qEuler(Math.PI/2,0,0));const jjFrame=new THREE.TorusGeometry(jjR*.83,.12,8,36);jjMesh(jjFrame,JMAT.gold,jjX,jjY,jjZ+.11,0);jjMesh(new THREE.CircleGeometry(jjR*.69,32),JMAT.glass,jjX,jjY,jjZ+.205,0);});}
 function jjWindow(jjX,jjY,jjZ,jjW,jjH,jjRy,jjOptions){jjOptions=jjOptions||{};jjWithYaw(jjX,jjY,jjZ,jjRy,()=>{jjBox(jjX,jjY,jjZ,jjW+.34,jjH+.38,.12,'brickYellow');jjBox(jjX,jjY,jjZ+.09,jjW,jjH,.08,jjOptions.lit?'glass':'dark');jjBox(jjX,jjY,jjZ+.15,.09,jjH,.08,'marble');jjBox(jjX,jjY,jjZ+.16,jjW,.08,.08,'marble');if(jjOptions.shutter)for(const jjS of [-1,1])jjBox(jjX+jjS*(jjW/2+.13),jjY,jjZ+.18,.18,jjH,.16,'terracotta');});}
@@ -1104,42 +1104,597 @@ kdef('darkPane',new THREE.BoxGeometry(1,1,.3),MAT.darkGlass);
 kdef('hedge',new THREE.BoxGeometry(1,1,1),MAT.vine);
 const PLATE=d=>d>0?'plateR':'plateW';
 
-// Jimjam homes: three visibly distinct variants in each wealth tier.
-// Every builder uses its own deterministic seed and the local +z front frame.
-function jjHouseDoor(jjX,jjZ,jjW,jjH,jjPoor){jjBox(jjX,jjH*.5,jjZ,jjW,jjH,.16,'dark');jjBox(jjX,jjH*.48,jjZ+.1,jjW*.78,jjH*.82,.08,'terracotta');if(jjPoor)jjBox(jjX,jjH+.14,jjZ,.14,.24,.34,'marble');else{jjBox(jjX-jjW*.58,jjH*.5,jjZ,.18,jjH+.22,.26,'marble');jjBox(jjX+jjW*.58,jjH*.5,jjZ,.18,jjH+.22,.26,'marble');jjBox(jjX,jjH+.14,jjZ,.14,.26,.3,'marble');}}
-function jjHouseSqWindow(jjX,jjY,jjZ,jjW,jjH,jjShutter){jjBox(jjX,jjY,jjZ,jjW+.18,jjH+.18,.14,'brickDeep');jjBox(jjX,jjY,jjZ+.1,jjW,jjH,.09,'dark');if(jjShutter){for(const jjS of[-1,1])jjBox(jjX+jjS*(jjW*.62),jjY,jjZ+.15,jjW*.18,jjH*1.1,.16,'terracotta');}}
-function jjHousePorthole(jjX,jjY,jjZ,jjR){jjPut('jj_house_marble_porthole_rim',new THREE.CylinderGeometry(1,1,1,32),JMAT.brickDeep,jjX,jjY,jjZ,jjR,.16,jjR,undefined,qEuler(Math.PI/2,0,0));jjMesh(new THREE.TorusGeometry(jjR*.83,.1,8,32),JMAT.marble,jjX,jjY,jjZ+.11,0);jjMesh(new THREE.CircleGeometry(jjR*.68,32),JMAT.glass,jjX,jjY,jjZ+.19,0);}
-function jjHouseParapet(jjW,jjD,jjY,jjWithCrenels){const jjMat=jjWithCrenels?'brick':'brickDeep';jjBox(0,jjY+.36,-jjD/2,jjW,.72,.28,jjMat);jjBox(0,jjY+.36,jjD/2,jjW,.72,.28,jjMat);jjBox(-jjW/2,jjY+.36,0,.28,.72,jjD,jjMat);jjBox(jjW/2,jjY+.36,0,.28,.72,jjD,jjMat);if(jjWithCrenels){for(const jjS of[-1,1])jjCrenel(jjS*(jjW/2-.14),jjY,0,.28,jjD,.92);}}
-function jjHouseArchWindow(jjX,jjY,jjZ,jjW,jjH){jjWindow(jjX,jjY,jjZ,jjW,jjH,0,{shutter:true});jjArch(jjX,jjY-jjH/2,jjZ-.01,jjW+.54,jjH*.92,0,{depth:.22});}
-function jjHouseMiddleFacade(jjW,jjD,jjBase,jjLevels,jjShop){const jjFront=jjD/2+.07;for(let jjL=0;jjL<jjLevels;jjL++){const jjY=jjBase+jjL*3.15+2.05;if(jjShop&&jjL===0){jjBox(0,1.45,jjFront,3.7,2.6,.16,'dark');jjBox(0,.94,jjFront+.18,4.5,.22,.62,'brickDeep');jjBox(0,1.1,jjFront+.18,4.6,.14,.68,'marble');jjBox(0,2.8,jjFront,.18,.3,.24,'brickYellow');}else{jjHouseArchWindow(-jjW*.22,jjY,jjFront,.9,1.55);jjHouseArchWindow(jjW*.22,jjY,jjFront,.9,1.55);}}jjHouseDoor(0,jjFront+.12,1.35,2.45,2.55,false);jjHousePorthole(jjW*.34,jjBase+jjLevels*2.55,jjFront+.02,.58);}
-function jjRichCourtyard(jjW,jjD,jjBase,jjWallH,jjVariant){const jjFront=jjD/2-2.7,jjBack=-jjD/2+2.1,jjSide=jjW/2-1.55,jjWallD=2.8,jjWingW=3.1;
- jjWall(0,jjBase,jjBack,jjW-.7,jjWallH,jjWallD,0,{band:true});
- jjWall(-jjSide,jjBase,-.25,jjWingW,jjWallH,jjD-5.2,0,{band:true});jjWall(jjSide,jjBase,-.25,jjWingW,jjWallH,jjD-5.2,0,{band:true});
- jjWall(-jjW*.27,jjBase,jjFront,(jjW-4.8)/2,jjWallH,jjWallD,0,{band:true});jjWall(jjW*.27,jjBase,jjFront,(jjW-4.8)/2,jjWallH,jjWallD,0,{band:true});
- jjArch(0,jjBase,jjFront-.12,4.3,4.35,0,{depth:.8});
- jjArcade(0,jjBase,-.65,3,(jjW-5.8)/3,3.35,0,{depth:.6,r:.38});
- jjHouseMiddleFacade(jjW-1.1,jjD-1.2,jjBase,jjWallH>7?2:2,false);
- jjPorthole(-jjW*.27,jjBase+4.4,jjFront+.06,0,.62);jjPorthole(jjW*.27,jjBase+4.4,jjFront+.06,0,.62);
- jjStairs(0,0,jjFront+1.55,4.1,3.1,jjBase,6,0,{mat:'marble'});
-}
-function buildJjHousePoorA(jjG,jjO){reseed(9110+(jjO.v|0));const jjW=5.8,jjD=6.4,jjH=3.45,jjFront=jjD/2+.08;jjBox(0,.18,0,jjW,.36,jjD,'brickDeep');jjBox(0,jjH/2,0,jjW,jjH,jjD,'brick',jjColor(JPAL.brickDeep));jjBox(0,jjH+.12,0,jjW+.3,.24,jjD+.3,'brickDeep');jjHouseParapet(jjW,jjD,jjH+.24,false);jjHouseDoor(0,jjFront,1.05,1.05,2.1,true);jjHouseSqWindow(-1.75,2.25,jjFront,.65,.78,false);jjHouseSqWindow(1.75,2.25,jjFront,.65,.78,false);jjHouseSqWindow(-jjW/2-.06,2.2,-.45,.64,.7,false);jjHouseSqWindow(jjW/2+.06,2.2,-.45,.64,.7,false);jjStairs(-2.15,0,jjFront+1.6,.88,3.2,jjH+.15,8,0,{mat:'brickDeep'});}
-function buildJjHousePoorB(jjG,jjO){reseed(9120+(jjO.v|0));const jjW=7.2,jjD=6.2,jjH=6.45,jjFront=jjD/2+.08;jjBox(0,.22,0,jjW,.44,jjD,'brickDeep');jjBox(0,jjH/2,0,jjW,jjH,jjD,'brick',jjColor(JPAL.ochre));jjBox(0,jjH+.12,0,jjW+.28,.24,jjD+.28,'brickDeep');jjHouseParapet(jjW,jjD,jjH+.24,false);jjHouseDoor(0,jjFront,1.1,2.2,2.15,true);for(const jjY of[2.4,5.35])for(const jjX of[-2,2])jjHouseSqWindow(jjX,jjY,jjFront,.65,.82,true);jjStairs(-2.45,0,jjFront+1.4,.92,2.8,jjH+.15,10,0,{mat:'brickDeep'});jjBox(0,jjH+.55,-jjD/2+.8,2.8,.24,1.2,'terracotta');}
-function buildJjHousePoorC(jjG,jjO){reseed(9130+(jjO.v|0));const jjW=7.4,jjD=7.4,jjH=3.5,jjFront=jjD/2+.08;jjBox(0,.2,0,jjW,.4,jjD,'brickDeep');jjBox(0,jjH/2,0,jjW,jjH,jjD,'brick',jjColor(JPAL.ochre));jjBox(0,jjH+.12,0,jjW+.22,.24,jjD+.22,'brickDeep');jjHouseParapet(jjW,jjD,jjH+.24,false);jjHouseDoor(0,jjFront,1.1,2.15,2.1,true);for(const jjX of[-2.1,2.1])jjHouseSqWindow(jjX,2.25,jjFront,.72,.82,false);jjCylinder(0,jjH+.98,-.6,1.28,.5,'brickDeep',undefined,16);jjDome(0,jjH+1.23,-.6,1.26,{kind:'terracotta',shape:'hemi'});jjCylinder(0,jjH+2.1,-.6,.16,.42,'brickDeep',undefined,12);jjStairs(-2.55,0,jjFront+1.5,.82,3,jjH+.15,8,0,{mat:'brickDeep'});}
-function buildJjHouseMidA(jjG,jjO){reseed(9140+(jjO.v|0));const jjW=9,jjD=9,jjBase=.78,jjWallH=6.25,jjFront=jjD/2+.08;jjPlinth(0,0,0,jjW,jjBase,jjD,0,{band:true});jjWall(0,jjBase,0,jjW-.4,jjWallH,jjD-.4,0,{band:true});jjHouseMiddleFacade(jjW,jjD,jjBase,2,false);jjHouseParapet(jjW,jjD,jjBase+jjWallH+1.05,false);jjCylinder(0,jjBase+jjWallH+1.7,-1,1.38,.68,'brickYellow',undefined,16);jjDome(0,jjBase+jjWallH+2.04,-1,1.35,{kind:'terracotta',shape:'hemi'});jjStairs(0,0,jjFront+1.3,2.7,2.6,jjBase,5,0,{mat:'marble'});}
-function buildJjHouseMidB(jjG,jjO){reseed(9150+(jjO.v|0));const jjW=10.5,jjD=9.4,jjBase=.85,jjWallH=9.35,jjFront=jjD/2+.08;jjPlinth(0,0,0,jjW,jjBase,jjD,0,{band:true});jjWall(0,jjBase,0,jjW-.4,jjWallH,jjD-.4,0,{band:true});for(let jjL=0;jjL<3;jjL++){const jjY=jjBase+jjL*3.05+1.6;for(const jjX of[-2.6,2.6])jjHouseArchWindow(jjX,jjY,jjFront,.92,1.5);}jjHouseDoor(0,jjFront+.12,1.45,2.7,2.65,false);jjPorthole(0,jjBase+8.25,jjFront+.04,0,.62);jjHouseParapet(jjW,jjD,jjBase+jjWallH+1.05,false);jjSpire(-3.25,jjBase+jjWallH+1.35,-1.3,1.25,2,{stageH:1.65,kind:'terracotta',pattern:'diamond',relief:false});jjStairs(0,0,jjFront+1.25,2.9,2.5,jjBase,5,0,{mat:'marble'});}
-function buildJjHouseMidC(jjG,jjO){reseed(9160+(jjO.v|0));const jjW=11.5,jjD=9.6,jjBase=.8,jjWallH=6.4,jjFront=jjD/2+.08;jjPlinth(0,0,0,jjW,jjBase,jjD,0,{band:true});jjWall(0,jjBase,0,jjW-.4,jjWallH,jjD-.4,0,{band:true});jjHouseMiddleFacade(jjW,jjD,jjBase,2,true);for(const jjX of[-4.3,4.3])jjHouseSqWindow(jjX,2.05,jjFront,.75,1.05,true);jjHouseParapet(jjW,jjD,jjBase+jjWallH+1.05,false);jjBox(0,jjBase+jjWallH+.38,-jjD/2+.9,5.5,.15,1.6,'marble');jjCylinder(0,jjBase+jjWallH+1.65,-1.1,1.65,.55,'brickYellow',undefined,16);jjDome(0,jjBase+jjWallH+1.93,-1.1,1.58,{kind:'terracotta',shape:'onion'});jjStairs(0,0,jjFront+1.1,3.1,2.2,jjBase,5,0,{mat:'marble'});}
-function buildJjHouseRichA(jjG,jjO){reseed(9170+(jjO.v|0));const jjW=18,jjD=19.5,jjBase=1.25,jjWallH=7.0,jjFront=jjD/2-2.7;jjPlinth(0,0,0,jjW,jjBase,jjD,0,{band:true});jjRichCourtyard(jjW,jjD,jjBase,jjWallH,0);jjPorthole(-5,jjBase+4.8,jjFront+1.44,0,.68);jjPorthole(5,jjBase+4.8,jjFront+1.44,0,.68);jjCylinder(0,jjBase+jjWallH+.78,-jjD/2+2.4,2.25,1.15,'brickYellow',undefined,24);jjDome(0,jjBase+jjWallH+1.35,-jjD/2+2.4,2.45,{kind:'gold',shape:'onion',ribs:true});jjSpire(jjW/2-2.5,jjBase,jjFront-1.1,1.7,3,{stageH:2.35,kind:'gold',pattern:'spiral',relief:false});jjStairs(0,0,jjFront+1.5,4.2,3,jjBase,6,0,{mat:'marble'});}
-function buildJjHouseRichB(jjG,jjO){reseed(9180+(jjO.v|0));const jjW=21,jjD=20,jjBase=1.35,jjWallH=7.2,jjFront=jjD/2-2.7;jjPlinth(0,0,0,jjW,jjBase,jjD,0,{band:true});jjRichCourtyard(jjW,jjD,jjBase,jjWallH,1);jjPorthole(-6.2,jjBase+4.9,jjFront+1.44,0,.72);jjPorthole(6.2,jjBase+4.9,jjFront+1.44,0,.72);jjCylinder(0,jjBase+jjWallH+.9,-jjD/2+2.5,2.15,1.3,'brickDeep',undefined,24);jjDome(0,jjBase+jjWallH+1.5,-jjD/2+2.5,2.32,{kind:'slate',shape:'ribbed',ribs:true});jjCylinder(0,jjBase+jjWallH+4.2,-jjD/2+2.5,.72,.95,'brickYellow',undefined,16);jjDome(0,jjBase+jjWallH+4.65,-jjD/2+2.5,.68,{kind:'gold',shape:'hemi'});jjSpire(-jjW/2+2.5,jjBase,jjFront-1.1,1.6,3,{stageH:2.5,kind:'gold',pattern:'diamond',relief:false});jjStairs(0,0,jjFront+1.55,4.5,3.1,jjBase,7,0,{mat:'marble'});}
-function buildJjHouseRichC(jjG,jjO){reseed(9190+(jjO.v|0));const jjW=20,jjD=21,jjBase=1.3,jjWallH=7.05,jjFront=jjD/2-2.7;jjPlinth(0,0,0,jjW,jjBase,jjD,0,{band:true});jjRichCourtyard(jjW,jjD,jjBase,jjWallH,2);jjPorthole(-5.7,jjBase+4.8,jjFront+1.44,0,.7);jjPorthole(5.7,jjBase+4.8,jjFront+1.44,0,.7);jjCylinder(0,jjBase+jjWallH+.8,-jjD/2+2.4,2.05,1.05,'brickYellow',undefined,24);jjDome(0,jjBase+jjWallH+1.28,-jjD/2+2.4,2.22,{kind:'gold',shape:'onion'});jjTurret(-jjW/2+2.3,jjBase,-jjD/2+2.8,1.35,5.2,{kind:'terracotta',pattern:'fleur'});jjTurret(jjW/2-2.3,jjBase,-jjD/2+2.8,1.35,5.2,{kind:'gold',pattern:'ogee'});jjStairs(0,0,jjFront+1.55,4.45,3.1,jjBase,7,0,{mat:'marble'});}
-JJ.def({key:'jj_house_poor_a',name:'Poor house A — flat roof',family:'housing',row:'Housing — poor',w:6.6,d:7.4,h:4.9,r:5.1,cls:'building',tags:{type:['single-family dwelling'],wealth:'poor',lit:false},build:buildJjHousePoorA});
-JJ.def({key:'jj_house_poor_b',name:'Poor house B — roof stair',family:'housing',row:'Housing — poor',w:7.8,d:7.1,h:7.4,r:5.5,cls:'building',tags:{type:['single-family dwelling'],wealth:'poor',lit:false},build:buildJjHousePoorB});
-JJ.def({key:'jj_house_poor_c',name:'Poor house C — terracotta dome',family:'housing',row:'Housing — poor',w:8,d:8,h:6.1,r:6,cls:'building',tags:{type:['single-family dwelling'],wealth:'poor',lit:false},build:buildJjHousePoorC});
-JJ.def({key:'jj_house_mid_a',name:'Middle house A — terrace dome',family:'housing',row:'Housing — middle',w:9.5,d:9.5,h:10.6,r:7.2,cls:'building',tags:{type:['single-family dwelling'],wealth:'middle',lit:false},build:buildJjHouseMidA});
-JJ.def({key:'jj_house_mid_b',name:'Middle house B — three-storey turret',family:'housing',row:'Housing — middle',w:11,d:10,h:15.8,r:8.8,cls:'building',tags:{type:['single-family dwelling'],wealth:'middle',lit:false},build:buildJjHouseMidB});
-JJ.def({key:'jj_house_mid_c',name:'Middle house C — shop-front',family:'housing',row:'Housing — middle',w:12,d:10,h:11.8,r:8.2,cls:'building',tags:{type:['single-family dwelling','market/shop'],wealth:'middle',lit:false},build:buildJjHouseMidC});
-JJ.def({key:'jj_house_rich_a',name:'Rich house A — gold dome and spire',family:'housing',row:'Housing — rich',w:18.5,d:21,h:13.1,r:15,cls:'building',tags:{type:['single-family dwelling'],wealth:'rich',lit:true},build:buildJjHouseRichA});
-JJ.def({key:'jj_house_rich_b',name:'Rich house B — slate lantern dome',family:'housing',row:'Housing — rich',w:21.5,d:21.5,h:14.5,r:16.4,cls:'building',tags:{type:['single-family dwelling'],wealth:'rich',lit:true},build:buildJjHouseRichB});
-JJ.def({key:'jj_house_rich_c',name:'Rich house C — twin corner turrets',family:'housing',row:'Housing — rich',w:20.5,d:22,h:12.7,r:16.1,cls:'building',tags:{type:['single-family dwelling'],wealth:'rich',lit:true},build:buildJjHouseRichC});
+// Jimjam housing (round 2b): nine houses, three per tier. No two share a plan or a roofline.
+// Local frame: origin at the plot centre on the ground, +z is the front (entrance), y up.
+//   poor A  party-wall pair: a two-storey flat roof with a canvas awning + a one-storey barrel vault
+//   poor B  narrow two-storey slab with an external stair (side, then back) to the roof terrace
+//   poor C  L-plan round a walled yard: terracotta dome, bread oven, water jar, ladder
+//   mid A   stepped terraces (three storeys, each set back), corner turret, 3-shaft chimney stack
+//   mid B   tower plus wing: four storeys, stacked oriels, a bulbous corner turret, onion cap
+//   mid C   T-plan shop-house: arcaded loggia, balcony, yellow upper floors with portholes, 2 shafts
+//   rich A  courtyard mansion: two-storey arcades on four sides, pishtaq gate, hall with gold dome
+//   rich B  pavilion villa on a marble podium: loggias all round, gold onion on a drum, 4 chhatris
+//   rich C  L-plan tower compound: round-collared 3-stage spire, slate ribbed dome, walled garden
+// House-only helpers (jjHouse…) add the pieces the shared kit lacks: arched wall panels and
+// colonnades with real openings, jharokha oriels, chhatri kiosks, a bulbous onion, a barrel vault,
+// solid stairs, instanced portholes and a spire with round flared collars. All are instanced.
+
+/* ==== geometry cache and small utilities ==== */
+const JJHOUSE_GEO={};
+function jjHouseN(jjV){return typeof jjV==='number'?jjV.toFixed(2):String(jjV);}
+function jjHouseGeo(jjKey,jjMake){if(!JJHOUSE_GEO[jjKey])JJHOUSE_GEO[jjKey]=jjMake();return JJHOUSE_GEO[jjKey];}
+function jjHousePutGeo(jjKey,jjGeo,jjMat,jjX,jjY,jjZ,jjSX,jjSY,jjSZ,jjQ){jjPut('jj_house_'+jjKey+'_'+jjMat,jjGeo,JMAT[jjMat],jjX,jjY,jjZ,jjSX,jjSY,jjSZ,undefined,jjQ||null);}
+function jjHouseBoxQ(jjX,jjY,jjZ,jjW,jjH,jjD,jjMat,jjQ){jjPut('jj_box_'+jjMat,JJGEO.box,JMAT[jjMat],jjX,jjY,jjZ,jjW,jjH,jjD,undefined,jjQ);}
+// translate everything drawn inside (like jjWithYaw, but a shift): lets a builder centre its plot
+function jjHouseShift(jjDx,jjDz,jjFn){const jjPrev=JJ.frame,jjT=new THREE.Matrix4().makeTranslation(jjDx,0,jjDz);JJ.frame=jjPrev?jjPrev.clone().multiply(jjT):jjT;try{jjFn();}finally{JJ.frame=jjPrev;}}
+
+/* ==== masses: blocks, cornices, parapets, wall runs ==== */
+// a wall mass from x0..x1, z0..z1, y0..y1 with optional base course, string courses and a cap
+function jjHouseBlock(jjX0,jjX1,jjZ0,jjZ1,jjY0,jjY1,jjMat,jjO){jjO=jjO||{};
+  const w=jjX1-jjX0,d=jjZ1-jjZ0,cx=(jjX0+jjX1)/2,cz=(jjZ0+jjZ1)/2;
+  jjBox(cx,(jjY0+jjY1)/2,cz,w,jjY1-jjY0,d,jjMat);
+  if(jjO.base)jjBox(cx,jjY0+jjO.base/2,cz,w+.1,jjO.base,d+.1,jjO.baseMat||'brickDeep');
+  for(const b of (jjO.bands||[]))jjBox(cx,b,cz,w+.12,jjO.bandH||.2,d+.12,jjO.bandMat||'marble');
+  if(jjO.cap)jjBox(cx,jjY1+.08,cz,w+.3,.16,d+.3,jjO.cap);}
+// a three-step cornice round a block top; returns the top
+function jjHouseCornice(jjX0,jjX1,jjZ0,jjZ1,jjY,jjO){jjO=jjO||{};
+  const w=jjX1-jjX0,d=jjZ1-jjZ0,cx=(jjX0+jjX1)/2,cz=(jjZ0+jjZ1)/2;
+  jjBox(cx,jjY+.11,cz,w+.16,.22,d+.16,jjO.m1||'brick');jjBox(cx,jjY+.32,cz,w+.36,.2,d+.36,jjO.m2||'brickYellow');jjBox(cx,jjY+.52,cz,w+.6,.2,d+.6,jjO.m3||'marble');
+  return jjY+.62;}
+// a parapet round a rectangle (inset inside it). skip:'fblr' drops sides, gap:{side,a,b} leaves an opening,
+// merlon:spacing adds kangura merlons on top
+function jjHouseParapet(jjX0,jjX1,jjZ0,jjZ1,jjY,jjO){jjO=jjO||{};
+  const h=jjO.h||.9,t=jjO.t||.26,m=jjO.mat||'brick',skip=jjO.skip||'',gap=jjO.gap;
+  const run=(side,a0,a1,fixed,alongX)=>{let segs=[[a0,a1]];if(gap&&gap.side===side){segs=[];if(gap.a>a0)segs.push([a0,gap.a]);if(gap.b<a1)segs.push([gap.b,a1]);}
+    for(const s of segs){const L=s[1]-s[0],c=(s[0]+s[1])/2;if(L<.05)continue;
+      if(alongX){jjBox(c,jjY+h/2,fixed,L,h,t,m);if(jjO.cope)jjBox(c,jjY+h+.06,fixed,L+.08,.12,t+.14,jjO.cope);}
+      else{jjBox(fixed,jjY+h/2,c,t,h,L,m);if(jjO.cope)jjBox(fixed,jjY+h+.06,c,t+.14,.12,L+.08,jjO.cope);}
+      if(jjO.merlon){const n=Math.max(1,Math.round(L/jjO.merlon)),mw=jjO.merlon*.5,mh=jjO.merlonH||.5,top=jjY+h+(jjO.cope?.12:0)+mh/2;
+        for(let i=0;i<n;i++){const p=s[0]+L*(i+.5)/n;if(alongX)jjBox(p,top,fixed,mw,mh,t,jjO.merlonMat||m);else jjBox(fixed,top,p,t,mh,mw,jjO.merlonMat||m);}}}};
+  if(skip.indexOf('f')<0)run('f',jjX0,jjX1,jjZ1-t/2,true);
+  if(skip.indexOf('b')<0)run('b',jjX0,jjX1,jjZ0+t/2,true);
+  if(skip.indexOf('l')<0)run('l',jjZ0,jjZ1,jjX0+t/2,false);
+  if(skip.indexOf('r')<0)run('r',jjZ0,jjZ1,jjX1-t/2,false);}
+// a free-standing straight wall (axis-aligned) with a marble cap and merlons
+function jjHouseWallRun(jjX0,jjZ0,jjX1,jjZ1,jjH,jjO){jjO=jjO||{};const t=jjO.t||.32,alongX=Math.abs(jjX1-jjX0)>Math.abs(jjZ1-jjZ0),L=alongX?Math.abs(jjX1-jjX0):Math.abs(jjZ1-jjZ0),cx=(jjX0+jjX1)/2,cz=(jjZ0+jjZ1)/2,m=jjO.mat||'brick';
+  if(alongX){jjBox(cx,jjH/2,cz,L,jjH,t,m);jjBox(cx,jjH+.07,cz,L+.1,.14,t+.12,jjO.cap||'marble');}else{jjBox(cx,jjH/2,cz,t,jjH,L,m);jjBox(cx,jjH+.07,cz,t+.12,.14,L+.1,jjO.cap||'marble');}
+  if(jjO.base){if(alongX)jjBox(cx,jjO.base/2,cz,L+.06,jjO.base,t+.08,jjO.baseMat||'brickDeep');else jjBox(cx,jjO.base/2,cz,t+.08,jjO.base,L+.06,jjO.baseMat||'brickDeep');}
+  if(jjO.merlon){const n=Math.max(1,Math.round(L/jjO.merlon)),mw=jjO.merlon*.5;for(let i=0;i<n;i++){const p=-L/2+L*(i+.5)/n;if(alongX)jjBox(cx+p,jjH+.14+.25,cz,mw,.5,t,jjO.merlonMat||m);else jjBox(cx,jjH+.14+.25,cz+p,t,.5,mw,jjO.merlonMat||m);}}}
+
+/* ==== arched wall panels and colonnades (real openings, instanced) ==== */
+// a panel W wide and H tall (base at y=0, centred on x=0), with round-headed openings notched up from
+// its bottom edge: each opening centred at cx, ow wide, straight jambs to `spring`, then an arch of `rise`
+function jjHouseArchGeo(jjW,jjH,jjCxs,jjOw,jjSpring,jjRise,jjD){
+  return jjHouseGeo(['aw',jjW,jjH,jjCxs.map(jjHouseN).join(':'),jjOw,jjSpring,jjRise,jjD].map(jjHouseN).join('_'),()=>{
+    const s=new THREE.Shape(),N=16;s.moveTo(-jjW/2,0);
+    for(const cx of jjCxs){s.lineTo(cx-jjOw/2,0);if(jjSpring>.001)s.lineTo(cx-jjOw/2,jjSpring);
+      for(let i=1;i<N;i++){const a=Math.PI-Math.PI*i/N;s.lineTo(cx+Math.cos(a)*jjOw/2,jjSpring+Math.sin(a)*jjRise);}
+      if(jjSpring>.001)s.lineTo(cx+jjOw/2,jjSpring);s.lineTo(cx+jjOw/2,0);}
+    s.lineTo(jjW/2,0);s.lineTo(jjW/2,jjH);s.lineTo(-jjW/2,jjH);
+    const g=new THREE.ExtrudeGeometry(s,{depth:jjD,bevelEnabled:false});g.translate(0,0,-jjD/2);return g;});}
+// the archivolt: a ring of thickness t following an arch of width ow and rise (base at the springing)
+function jjHouseRingGeo(jjOw,jjRise,jjT,jjD){
+  return jjHouseGeo(['ring',jjOw,jjRise,jjT,jjD].map(jjHouseN).join('_'),()=>{
+    const s=new THREE.Shape(),N=16;s.moveTo(-jjOw/2-jjT,0);
+    for(let i=1;i<=N;i++){const a=Math.PI-Math.PI*i/N;s.lineTo(Math.cos(a)*(jjOw/2+jjT),Math.sin(a)*(jjRise+jjT));}
+    s.lineTo(jjOw/2,0);for(let i=1;i<N;i++){const a=Math.PI*i/N;s.lineTo(Math.cos(a)*jjOw/2,Math.sin(a)*jjRise);}s.lineTo(-jjOw/2,0);
+    const g=new THREE.ExtrudeGeometry(s,{depth:jjD,bevelEnabled:false});g.translate(0,0,-jjD/2);return g;});}
+// draw an arched panel at (x,y,z) (y = base, z = centre of its thickness), turned by ry like jjWithYaw
+function jjHouseArchWall(jjX,jjY,jjZ,jjW,jjH,jjCxs,jjOw,jjSpring,jjRy,jjO){jjO=jjO||{};
+  const rise=jjO.rise||jjOw/2,d=jjO.d||.5,mat=jjO.mat||'brick';
+  jjWithYaw(jjX,jjY,jjZ,jjRy,()=>{
+    const g=jjHouseArchGeo(jjW,jjH,jjCxs,jjOw,jjSpring,rise,d);
+    jjPut('jj_house_aw_'+[jjW,jjH,jjCxs.map(jjHouseN).join(':'),jjOw,jjSpring,rise,d].map(jjHouseN).join('_')+'_'+mat,g,JMAT[mat],jjX,jjY,jjZ,1,1,1,undefined,null);
+    if(jjO.trim!==false){const t=jjO.trimT||.2,rg=jjHouseRingGeo(jjOw,rise,t,.14);
+      for(const cx of jjCxs){jjPut('jj_house_ring_'+[jjOw,rise,t].map(jjHouseN).join('_')+'_'+(jjO.trimMat||'marble'),rg,JMAT[jjO.trimMat||'marble'],jjX+cx,jjY+jjSpring,jjZ+d/2+.05,1,1,1,undefined,null);
+        if(jjO.key)jjBox(jjX+cx,jjY+jjSpring+rise+t*.4,jjZ+d/2+.1,.3,t+.3,.2,jjO.key);}}});}
+// a column with marble base and capital; pattern is a shaft texture ('diamond' …) or 'marble'/'brick'
+function jjHouseCol(jjX,jjY,jjZ,jjR,jjH,jjPat){
+  jjBox(jjX,jjY+.15,jjZ,jjR*2.7,.3,jjR*2.7,'marble');jjCylinder(jjX,jjY+.38,jjZ,jjR*1.25,.16,'marble',undefined,16);
+  const sh=jjH-.96;jjCylinder(jjX,jjY+.46+sh/2,jjZ,jjR,sh,jjPat==='marble'||jjPat==='brick'?jjPat:'shaft_'+jjPat,undefined,32);
+  jjCylinder(jjX,jjY+jjH-.42,jjZ,jjR*1.22,.16,'marble',undefined,16);jjBox(jjX,jjY+jjH-.17,jjZ,jjR*2.8,.34,jjR*2.8,'marble');}
+// n bays of width `bay` on columns colH tall, with an arched spandrel panel spH tall above them
+function jjHouseColonnade(jjX,jjY,jjZ,jjN,jjBay,jjColH,jjSpH,jjRy,jjO){jjO=jjO||{};
+  const r=jjO.r||.3,span=jjN*jjBay,pats=jjO.patterns||['diamond'],cw=r*2.8,ow=jjBay-cw+.02,rise=Math.min(ow/2,jjSpH-.3),d=jjO.d||.6;
+  jjWithYaw(jjX,jjY,jjZ,jjRy,()=>{
+    for(let i=0;i<=jjN;i++){if(jjO.ends===false&&(i===0||i===jjN))continue;jjHouseCol(jjX-span/2+i*jjBay,jjY,jjZ,r,jjColH,pats[i%pats.length]);}
+    const cxs=[];for(let i=0;i<jjN;i++)cxs.push(-span/2+jjBay*(i+.5));
+    jjHouseArchWall(jjX,jjY+jjColH,jjZ,span+cw,jjSpH,cxs,ow,0,0,{rise,d,mat:jjO.mat||'brick',trimMat:jjO.trimMat,key:jjO.key});
+    if(jjO.cornice!==false)jjBox(jjX,jjY+jjColH+jjSpH+.1,jjZ,span+cw+.3,.2,d+.3,jjO.corniceMat||'marble');
+    if(jjO.rail)for(let i=0;i<jjN;i++)if(!(jjO.railSkip&&jjO.railSkip.indexOf(i)>=0))jjBox(jjX+cxs[i],jjY+.5,jjZ,ow,.9,.22,jjO.rail);});}
+
+/* ==== windows, doors, lamps, portholes ==== */
+// y = sill, z = wall face. Frame proud of the face; sill, hood (chhajja), shutters, bars optional.
+function jjHouseWin(jjX,jjY,jjZ,jjW,jjH,jjRy,jjO){jjO=jjO||{};const t=jjO.t||.2,fm=jjO.frame||'marble';
+  jjWithYaw(jjX,jjY,jjZ,jjRy,()=>{
+    jjBox(jjX,jjY+jjH/2,jjZ+.03,jjW,jjH,.1,jjO.lit?'glass':'dark');
+    if(jjO.arch)jjHouseArchWall(jjX,jjY,jjZ+.1,jjW+2*t,jjH+t,[0],jjW,jjH-jjW/2,0,{d:.12,mat:fm,trim:false});
+    else{jjBox(jjX-jjW/2-t/2,jjY+jjH/2,jjZ+.08,t,jjH,.12,fm);jjBox(jjX+jjW/2+t/2,jjY+jjH/2,jjZ+.08,t,jjH,.12,fm);jjBox(jjX,jjY+jjH+t/2,jjZ+.09,jjW+2*t+(jjO.lintelX||.1),t,.16,jjO.lintel||fm);}
+    if(jjO.sill!==false)jjBox(jjX,jjY-.06,jjZ+.12,jjW+2*t+.16,.12,.26,jjO.sillMat||fm);
+    if(jjO.hood)jjBox(jjX,jjY+jjH+t+.08,jjZ+.26,jjW+2*t+.3,.1,.52,jjO.hood);
+    if(jjO.shutter)for(const s of [-1,1])jjBox(jjX+s*(jjW/2+t+jjW*.25),jjY+jjH*.45,jjZ+.06,jjW*.48,jjH*.9,.07,jjO.shutter);
+    if(jjO.bars)for(let i=1;i<4;i++)jjBox(jjX-jjW/2+jjW*i/4,jjY+jjH/2,jjZ+.1,.04,jjH,.04,'iron');});}
+// y = threshold, z = wall face. arch:true gives a round head; lamps:true hangs a lit lamp either side
+function jjHouseDoor(jjX,jjY,jjZ,jjW,jjH,jjRy,jjO){jjO=jjO||{};const t=jjO.t||.28,fm=jjO.frame||'marble';
+  jjWithYaw(jjX,jjY,jjZ,jjRy,()=>{
+    jjBox(jjX,jjY+jjH/2,jjZ+.02,jjW,jjH,.1,'dark');
+    const lh=jjO.arch?jjH-jjW/2:jjH;
+    for(const s of [-1,1])jjBox(jjX+s*jjW/4,jjY+lh/2,jjZ+.08,jjW/2-.05,lh,.08,jjO.leaf||'wood');
+    if(jjO.studs)for(const s of [-1,1])for(let i=1;i<5;i++)jjBox(jjX+s*jjW/4,jjY+lh*i/5,jjZ+.13,jjW/2-.25,.05,.04,'gold');
+    if(jjO.arch)jjHouseArchWall(jjX,jjY,jjZ+.1,jjW+2*t,jjH+t,[0],jjW,jjH-jjW/2,0,{d:.16,mat:fm,trim:false});
+    else{jjBox(jjX-jjW/2-t/2,jjY+jjH/2,jjZ+.08,t,jjH,.14,fm);jjBox(jjX+jjW/2+t/2,jjY+jjH/2,jjZ+.08,t,jjH,.14,fm);jjBox(jjX,jjY+jjH+.11,jjZ+.1,jjW+2*t+.24,.22,.22,jjO.lintel||fm);}
+    jjBox(jjX,jjY+.05,jjZ+.25,jjW+2*t,.1,.5,jjO.step||fm);
+    if(jjO.lamps)for(const s of [-1,1])jjHouseLamp(jjX+s*(jjW/2+t+.32),jjY+Math.min(jjH*.8,2.4),jjZ);});}
+function jjHouseLamp(jjX,jjY,jjZ){jjBox(jjX,jjY+.25,jjZ+.2,.06,.06,.4,'iron');jjBox(jjX,jjY+.02,jjZ+.38,.2,.3,.2,'glow');jjBox(jjX,jjY+.2,jjZ+.38,.28,.06,.28,'iron');}
+// an instanced porthole: brick rim, a framed ring (gold for rich, marble for middle) and glass, facing +z
+function jjHousePorthole(jjX,jjY,jjZ,jjRy,jjR,jjFrame){
+  const torus=jjHouseGeo('torus',()=>new THREE.TorusGeometry(1,.17,8,28)),disc=jjHouseGeo('disc',()=>new THREE.CircleGeometry(1,24));
+  jjWithYaw(jjX,jjY,jjZ,jjRy,()=>{
+    jjPut('jj_house_rim_brickDeep',JJGEO.cyl,JMAT.brickDeep,jjX,jjY,jjZ,jjR,.24,jjR,undefined,qEuler(Math.PI/2,0,0));
+    jjHousePutGeo('torus',torus,jjFrame||'marble',jjX,jjY,jjZ+.13,jjR*.84,jjR*.84,jjR*.84);
+    jjHousePutGeo('disc',disc,'glass',jjX,jjY,jjZ+.125,jjR*.7,jjR*.7,1);});}
+
+/* ==== domes, vaults, finials ==== */
+function jjHouseOnionGeo(){return jjHouseGeo('onion',()=>new THREE.LatheGeometry([[0,0],[1,0],[1.1,.1],[1.17,.24],[1.14,.38],[1,.5],[.78,.62],[.52,.73],[.3,.83],[.15,.91],[.06,.97],[0,1]].map(q=>new THREE.Vector2(q[0],q[1])),24));}
+// a bulbous onion: base radius r on its drum, swelling to 1.17 r, h tall; then a finial
+function jjHouseOnion(jjX,jjY,jjZ,jjR,jjH,jjMat,jjFin){jjHousePutGeo('onion',jjHouseOnionGeo(),jjMat,jjX,jjY,jjZ,jjR,jjH,jjR);if(jjFin!==false)jjHouseFinial(jjX,jjY+jjH-.02,jjZ,jjR*.4,jjFin||'gold');}
+function jjHouseFinial(jjX,jjY,jjZ,jjS,jjMat){const ball=jjHouseGeo('ball',()=>new THREE.SphereGeometry(1,12,8));
+  jjCylinder(jjX,jjY+jjS*.2,jjZ,jjS*.14,jjS*.4,jjMat);jjHousePutGeo('ball',ball,jjMat,jjX,jjY+jjS*.55,jjZ,jjS*.22,jjS*.22,jjS*.22);jjCylinder(jjX,jjY+jjS*1.05,jjZ,jjS*.05,jjS*.8,jjMat);}
+function jjHouseHemi(jjX,jjY,jjZ,jjR,jjMat){jjHousePutGeo('hemi',jjHouseGeo('hemi',()=>new THREE.SphereGeometry(1,20,10,0,TAU,0,Math.PI/2)),jjMat,jjX,jjY,jjZ,jjR,jjR,jjR);}
+function jjHouseBarrelGeo(){return jjHouseGeo('barrel',()=>{const s=new THREE.Shape();s.moveTo(1,0);for(let i=1;i<=20;i++){const a=Math.PI*i/20;s.lineTo(Math.cos(a),Math.sin(a));}const g=new THREE.ExtrudeGeometry(s,{depth:1,bevelEnabled:false});g.translate(0,0,-.5);return g;});}
+// a closed barrel vault, w across, len along its axis (local z, turned by ry), rise high; y = springing
+function jjHouseBarrel(jjX,jjY,jjZ,jjW,jjLen,jjRise,jjRy,jjMat){jjHousePutGeo('barrel',jjHouseBarrelGeo(),jjMat,jjX,jjY,jjZ,jjW/2,jjRise,jjLen,jjRy?qEuler(0,jjRy,0):null);}
+
+/* ==== stairs, oriels, kiosks, spire ==== */
+// solid masonry stair: lowest step at z+run/2, climbing toward -z (turned by ry). Each step is solid
+// down to `base` (default y). cheek:[-1,1] adds stepped side walls on local -x/+x.
+function jjHouseStair(jjX,jjY,jjZ,jjW,jjRun,jjRise,jjN,jjRy,jjO){jjO=jjO||{};
+  const sh=jjRise/jjN,sd=jjRun/jjN,base=jjO.base===undefined?jjY:jjO.base,mat=jjO.mat||'marble',ct=jjO.cheekT||.25,chh=jjO.cheekH===undefined?.8:jjO.cheekH;
+  jjWithYaw(jjX,jjY,jjZ,jjRy,()=>{
+    for(let i=0;i<jjN;i++){const top=jjY+sh*(i+1),zc=jjZ+jjRun/2-sd*(i+.5);
+      jjBox(jjX,(base+top)/2,zc,jjW,top-base,sd+.02,mat);
+      if(jjO.tread)jjBox(jjX,top-.03,zc+.02,jjW+.04,.06,sd+.04,jjO.tread);
+      for(const s of (jjO.cheek||[]))jjBox(jjX+s*(jjW/2+ct/2),(base+top+chh)/2,zc,ct,top+chh-base,sd+.02,jjO.cheekMat||mat);}});}
+// a jharokha oriel: y = its floor, z = the wall face; it projects dep and is carried on stepped
+// brackets. roof: 'chhajja' (flat eave), 'pent' (sloped tile), 'dome', 'bangla' (curved vault)
+function jjHouseJharokha(jjX,jjY,jjZ,jjW,jjH,jjDep,jjRy,jjO){jjO=jjO||{};const m=jjO.mat||'brickYellow',tr=jjO.trim||'marble',zc=jjZ+jjDep/2;
+  jjWithYaw(jjX,jjY,jjZ,jjRy,()=>{
+    const nb=jjW>2.2?3:2;
+    for(let i=0;i<nb;i++){const bx=jjX-jjW/2+.22+(jjW-.44)*i/(nb-1);for(let k=0;k<3;k++){const bd=jjDep*(1-k*.3);jjBox(bx,jjY-.23-k*.26,jjZ+bd/2,.24,.26,bd,k===0?tr:m);}}
+    jjBox(jjX,jjY,zc,jjW+.14,.2,jjDep+.14,tr);
+    const sill=.75,wh=jjH-sill-.45,y0=jjY+.1;
+    jjBox(jjX,y0+sill/2,zc,jjW,sill,jjDep,m);jjBox(jjX,y0+sill+.04,zc,jjW+.08,.08,jjDep+.08,tr);
+    jjBox(jjX,y0+sill+wh/2,zc-.06,jjW-.24,wh,jjDep-.24,jjO.glass||'dark');
+    for(const s of [-1,1])for(const f of [0,1])jjBox(jjX+s*(jjW/2-.08),y0+sill+wh/2,jjZ+.08+f*(jjDep-.16),.16,wh,.16,tr);
+    for(let i=1;i<3;i++)jjBox(jjX-jjW/2+jjW*i/3,y0+sill+wh/2,jjZ+jjDep-.08,.1,wh,.1,tr);
+    if(jjO.lattice)for(let i=1;i<4;i++)jjBox(jjX,y0+sill+wh*i/4,jjZ+jjDep-.1,jjW-.2,.05,.05,tr);
+    jjBox(jjX,y0+sill+wh+.225,zc,jjW,.45,jjDep,m);
+    const top=y0+jjH;
+    if(jjO.roof==='pent'){jjHouseBoxQ(jjX,top+.22,zc+.12,jjW+.4,.12,jjDep+.65,'tile',qEuler(.38,0,0));}
+    else{jjBox(jjX,top+.06,zc+.12,jjW+.5,.12,jjDep+.45,tr);
+      if(jjO.roof==='dome')jjDome(jjX,top+.12,zc,Math.min(jjW,jjDep)*.62,{kind:jjO.kind||'terracotta',shape:'hemi'});
+      else if(jjO.roof==='bangla')jjHouseBarrel(jjX,top+.12,zc,jjDep+.1,jjW+.1,.55,Math.PI/2,jjO.kind==='gold'?'domeGold':'tile');
+      else if(jjO.roof==='onion'){const orr=Math.min(jjW,jjDep)*.5;jjCylinder(jjX,top+.24,zc,orr,.24,tr,undefined,16);jjHouseOnion(jjX,top+.36,zc,orr,orr*2.1,jjO.kind==='gold'?'domeGold':'terracotta',jjO.kind==='gold'?'gold':'marble');}}});}
+// a chhatri: an open marble kiosk on n columns (4 square, 6 or 8 round) with a small dome. y = base.
+function jjHouseChhatri(jjX,jjY,jjZ,jjS,jjO){jjO=jjO||{};const n=jjO.n||4,ch=jjO.h||jjS*1.05,cr=jjO.cr||Math.max(.1,jjS*.065),kind=jjO.dome||'gold',dm=kind==='gold'?'domeGold':kind;
+  if(n===4)jjBox(jjX,jjY+.15,jjZ,jjS+.5,.3,jjS+.5,'marble');else jjCylinder(jjX,jjY+.15,jjZ,jjS*.5+.3,.3,'marble',undefined,16);
+  const pts=[];if(n===4){for(const a of [-1,1])for(const b of [-1,1])pts.push([a*jjS/2,b*jjS/2]);}else for(let i=0;i<n;i++){const a=i*TAU/n+Math.PI/n;pts.push([Math.cos(a)*jjS/2,Math.sin(a)*jjS/2]);}
+  for(const p of pts){jjBox(jjX+p[0],jjY+.4,jjZ+p[1],cr*2.6,.2,cr*2.6,'marble');jjCylinder(jjX+p[0],jjY+.3+ch/2,jjZ+p[1],cr,ch,'marble',undefined,16);jjBox(jjX+p[0],jjY+.3+ch-.1,jjZ+p[1],cr*2.8,.2,cr*2.8,'marble');}
+  const y=jjY+.3+ch;
+  if(n===4){jjBox(jjX,y+.12,jjZ,jjS+cr*3,.24,jjS+cr*3,'marble');jjBox(jjX,y+.29,jjZ,jjS+.8,.1,jjS+.8,'marble');}
+  else{jjCylinder(jjX,y+.12,jjZ,jjS/2+cr*1.6,.24,'marble',undefined,16);jjCylinder(jjX,y+.29,jjZ,jjS/2+.42,.1,'marble',undefined,16);}
+  const dr=jjS*.4;jjCylinder(jjX,y+.5,jjZ,dr,.36,'marble',undefined,16);
+  if(jjO.shape==='onion'){jjHouseOnion(jjX,y+.68,jjZ,dr,dr*2,dm,kind==='gold'?'gold':'marble');return y+.68+dr*2.4;}
+  jjHouseHemi(jjX,y+.68,jjZ,dr*1.02,dm);jjHouseFinial(jjX,y+.68+dr,jjZ,dr*.5,kind==='gold'?'gold':'marble');return y+.68+dr*1.6;}
+// a thick staged round spire (image 2): each stage a narrower drum with a flared three-ring collar,
+// gold-framed portholes, a crenellated balcony over the first stage, an onion terminal. y = base.
+function jjHouseSpire(jjX,jjY,jjZ,jjR,jjO){jjO=jjO||{};const st=jjO.stages||3,sh=jjO.stageH||3.2,mats=jjO.mats||['brick','shaft_chevron','brickYellow'],ports=jjO.ports||[0,Math.PI/2,-Math.PI/2];
+  let y=jjY,r=jjR;
+  for(let i=0;i<st;i++){
+    jjCylinder(jjX,y+sh/2,jjZ,r,sh,mats[i%mats.length],undefined,32);
+    jjCylinder(jjX,y+.14,jjZ,r*1.07,.28,'brickDeep',undefined,32);
+    jjCylinder(jjX,y+sh*.62,jjZ,r*1.02,.14,'marble',undefined,32);
+    const pr=Math.min(.6,r*.26);for(const a of ports)jjHousePorthole(jjX+Math.sin(a)*r,y+sh*.36,jjZ+Math.cos(a)*r,a,pr,jjO.frame||'gold');
+    const top=y+sh;
+    jjCylinder(jjX,top-.3,jjZ,r*1.08,.2,'brickYellow',undefined,32);jjCylinder(jjX,top-.12,jjZ,r*1.18,.18,'marble',undefined,32);jjCylinder(jjX,top+.04,jjZ,r*1.28,.16,'brick',undefined,32);
+    if(i===0&&jjO.balcony!==false)for(let k=0;k<16;k++){const a=k*TAU/16;jjBox(jjX+Math.cos(a)*r*1.2,top+.4,jjZ+Math.sin(a)*r*1.2,.32,.56,.24,'brickYellow',undefined,-a+Math.PI/2);}
+    y=top+.12;r*=jjO.taper||.78;}
+  jjCylinder(jjX,y+.3,jjZ,r*.9,.6,'brickYellow',undefined,32);jjCylinder(jjX,y+.64,jjZ,r*.98,.1,'marble',undefined,32);
+  jjHouseOnion(jjX,y+.68,jjZ,r*.9,r*2.3,jjO.dome||'domeGold','gold');
+  return y+.68+r*2.3;}
+
+/* ==== planting spots (local points; plants are never part of a building) ==== */
+const JJHOUSE_SPOTS={
+  poorA:[[-.8,6.16,-2.9],[-0.4,0,3.9],[3.3,0,3.15]],
+  poorB:[[-2.3,6.1,-1.8],[1.2,6.1,-1.9],[-2.2,0,3.95]],
+  poorC:[[0,0,0],[3.15,0,3.1],[1.6,3.46,-2.4]],
+  midA:[[-1.9,4.64,3.92],[1.9,4.64,3.92],[3.5,7.44,-3.6],[-4.2,7.44,.4]],
+  midB:[[-4.1,4.16,-2.0],[-1.8,4.16,-2.0],[-4.4,.6,1.9]],
+  midC:[[-2,7.85,-5.0],[2,7.85,-5.0],[-5.4,5.27,5.6],[5.4,5.27,5.6]],
+  richA:[[-4.6,1.56,2.9],[4.6,1.56,2.9],[-4.6,1.56,-4.4],[4.6,1.56,-4.4],[-5,0,11.4],[5,0,11.4]],
+  richB:[[-7.8,2.7,6.4],[7.8,2.7,6.4],[-7.8,2.7,-11],[7.8,2.7,-11],[-6.2,0,10.6],[6.2,0,10.6]],
+  richC:[[-.35,0,-.1],[7.35,0,-.1],[-.35,0,7.1],[7.35,0,7.1],[9.8,0,-3.0],[-1.6,0,9.8]]};
+
+/* ==== POOR A: party-wall pair ==== */
+// left: two-storey ochre house over a brick base, flat roof with a stair hut and a canvas awning on poles;
+// right: one-storey deep-brick house set back 0.8 m, roofed by a shallow lime-plastered barrel vault.
+function buildJjHousePoorA(jjG,jjO){reseed(9110+(jjO.v|0));
+  const LX0=-4,LX1=0,LZ0=-3.5,LZ1=3.4,LH=6,RX0=0,RX1=3.7,RZ1=2.6,RH=3.4,fr={frame:'brickDeep',lintel:'wood'};
+  // left house
+  jjHouseBlock(LX0,LX1,LZ0,LZ1,0,LH,'ochre',{base:1.05,baseMat:'brickDeep',bands:[3.05],bandMat:'brickDeep',bandH:.14,cap:'brickDeep'});
+  jjHouseParapet(LX0,LX1,LZ0,LZ1,LH+.16,{h:.75,t:.24,mat:'ochre',cope:'brickDeep'});
+  jjHouseDoor(-2.75,0,LZ1,1,2.15,0,{frame:'brickDeep',lintel:'marble',step:'brickDeep',t:.16});
+  jjHouseWin(-1,1.3,LZ1,.7,.8,0,Object.assign({bars:true},fr));
+  jjHouseWin(-2.8,3.75,LZ1,.7,.95,0,Object.assign({shutter:'wood'},fr));jjHouseWin(-1,3.75,LZ1,.7,.95,0,Object.assign({shutter:'wood'},fr));
+  jjBox(-1,3.6,LZ1+.3,1.5,.1,.6,'wood');for(const s of [-1,1])jjBeam([-1+s*.6,3.55,LZ1+.58],[-1+s*.6,3.0,LZ1+.02],.04,'wood'); // a timber ledge for pots
+  jjHouseWin(LX0,3.9,-.4,.6,.8,-Math.PI/2,fr);jjHouseWin(LX0,1.4,-1.6,.6,.7,-Math.PI/2,Object.assign({bars:true},fr));
+  // stair hut (mumty) on the roof, its door facing back onto the terrace
+  jjHouseBlock(-3.76,-2.3,-3.26,-1.6,LH+.16,LH+2.2,'ochre',{cap:'brickDeep'});jjHouseDoor(-3.03,LH+.16,-1.6,.75,1.85,0,{frame:'brickDeep',lintel:'wood',t:.12});
+  // canvas awning on four poles over the front of the roof (the back edge higher, against the stair hut)
+  const ay=LH+.16;for(const px of [-3.5,-.45])for(const pz of [-1.2,2.95])jjBeam([px,ay,pz],[px,ay+(pz<0?2.25:2.0),pz],.05,'wood');
+  jjHouseBoxQ(-1.97,ay+2.14,.87,3.35,.04,4.25,'canvas',qEuler(.06,0,0));
+  jjBox(-1.97,ay+1.86,3.0,3.35,.3,.03,'canvas');jjBox(-1.97,ay+.22,.9,.9,.4,1.9,'wood'); // valance; a rope bed in its shade
+  // right house
+  jjHouseBlock(RX0,RX1,LZ0,RZ1,0,RH,'brickDeep',{base:.5,baseMat:'brickDark',bands:[RH-.1],bandMat:'brick',bandH:.2});
+  jjHouseBarrel((RX0+RX1)/2,RH,(LZ0+RZ1)/2,RX1-RX0-.04,RZ1-LZ0+.16,1.05,0,'ochre');
+  jjBox(1.85,RH+.42,RZ1+.09,.42,.3,.04,'dark'); // vent in the lunette
+  jjHouseDoor(1.25,0,RZ1,1,2.1,0,{frame:'brick',lintel:'marble',step:'brickDeep',t:.16});
+  jjHouseWin(2.85,1.25,RZ1,.62,.72,0,Object.assign({shutter:'wood'},fr));
+  jjBox(2.85,.23,RZ1+.48,1.3,.46,.9,'brickDeep'); // chabutra bench
+  jjBeam([RX1,RH+.12,-.4],[RX1+.38,RH+.06,-.4],.06,'wood'); // rain spout
+  jjHouseWin(RX1,1.5,-1.5,.55,.65,Math.PI/2,Object.assign({bars:true},fr));
+  jjReg('Party-wall house (two storeys)',-2,0,3.8,8.4,{part:'house'});jjReg('Vaulted house',1.85,-.45,3.2,4.5,{part:'house'});}
+
+/* ==== POOR B: narrow house, external stair ==== */
+// a narrow two-storey ochre slab; a solid brick stair climbs its right side to a first-floor door and a
+// corner landing, then turns along the back to the roof terrace. Timber jharokha over the front door.
+function buildJjHousePoorB(jjG,jjO){reseed(9120+(jjO.v|0));
+  const X0=-2.85,X1=1.75,Z0=-2.525,Z1=3.475,H=6.1,fr={frame:'brickDeep',lintel:'wood'};
+  jjHouseBlock(X0,X1,Z0,Z1,0,H,'ochre',{base:1.2,baseMat:'brick',bands:[3.1],bandMat:'brickDeep',bandH:.14,cap:'brickDeep'});
+  jjHouseParapet(X0,X1,Z0,Z1,H+.16,{h:.85,t:.24,mat:'ochre',cope:'brickDeep',gap:{side:'b',a:X0,b:X0+1.15}});
+  // flight 1 up the right side, landing at the back corner, flight 2 along the back to the roof
+  jjHouseStair(2.325,0,.525,1.05,6.1,3.1,14,0,{mat:'brick',tread:'brickDeep',cheek:[1],cheekT:.2,cheekH:.4});
+  jjBox(2.325,1.55,-3.05,1.05,3.1,1.05,'brick');jjBox(2.325,3.07,-3.05,1.09,.06,1.09,'brickDeep');
+  jjBox(2.95,3.5,-3.05,.2,.8,1.05,'brick');
+  jjHouseStair(-.525,3.1,-3.05,1.05,4.6,3.16,13,Math.PI/2,{base:0,mat:'brick',tread:'brickDeep',cheek:[1],cheekT:.2,cheekH:.4});
+  jjHouseDoor(X1,3.1,-1.95,.8,2,Math.PI/2,{frame:'brickDeep',lintel:'wood',step:'brickDeep',t:.12});
+  // front
+  jjHouseDoor(-.6,0,Z1,1,2.2,0,{frame:'brickDeep',lintel:'marble',step:'brickDeep',t:.16});
+  jjHouseJharokha(-.6,3.55,Z1,1.7,1.9,.7,0,{mat:'wood',trim:'wood',roof:'pent',lattice:true});
+  jjHouseWin(-2.1,1.4,Z1,.6,.72,0,Object.assign({bars:true},fr));jjHouseWin(1.05,3.85,Z1,.6,.9,0,Object.assign({shutter:'wood'},fr));
+  jjHouseWin(X0,3.9,.4,.6,.85,-Math.PI/2,fr);jjHouseWin(X0,1.4,-1.2,.55,.65,-Math.PI/2,Object.assign({bars:true},fr));
+  jjHouseWin(X1,1.4,1.4,.55,.65,Math.PI/2,Object.assign({bars:true},fr));
+  // plain square chimney and roof clutter
+  jjBox(1.15,H+.9,2.75,.7,1.8,.7,'brick');jjBox(1.15,H+1.86,2.75,.86,.12,.86,'brickDeep');jjBox(1.15,H+1.95,2.75,.4,.06,.4,'dark');
+  jjBox(-.5,H+.36,-.6,.85,.4,1.8,'wood');jjCylinder(-2.3,H+.5,1.9,.36,.68,'tile',undefined,16);
+  jjReg('Narrow house',-.55,.45,3.2,8.1,{part:'house'});jjReg('External stair',1.2,-1.6,2.6,6.4,{part:'stair'});}
+
+/* ==== POOR C: L-plan round a yard ==== */
+// a red-brick back wing and an ochre side wing round a tiny walled yard; the side wing's front room
+// carries a small terracotta dome. Bread-oven dome, water jar and a ladder to the roof in the yard.
+function buildJjHousePoorC(jjG,jjO){reseed(9130+(jjO.v|0));
+  const H=3.3,fr={frame:'brickDeep',lintel:'wood'};
+  jjHouseBlock(-3.8,3.8,-3.8,-.8,0,H,'brick',{base:.6,baseMat:'brickDeep',cap:'brickDeep'});
+  jjHouseBlock(-3.8,-.8,-.8,3.8,0,H,'ochre',{base:.6,baseMat:'brickDeep',cap:'brickDeep'});
+  jjHouseParapet(-3.8,3.8,-3.8,-.8,H+.16,{h:.7,t:.24,mat:'brick',cope:'brickDeep',skip:'f'});jjBox(1.5,H+.16+.35,-.92,4.6,.7,.24,'brick');jjBox(1.5,H+.16+.76,-.92,4.68,.12,.38,'brickDeep');
+  jjHouseParapet(-3.8,-.8,-.8,3.8,H+.16,{h:.45,t:.24,mat:'ochre',cope:'brickDeep',skip:'b'});
+  // the domed room: octagonal drum and a terracotta dome
+  jjBox(-2.3,H+.3,1.5,2.7,.28,2.7,'ochre');jjCylinder(-2.3,H+.44+.28,1.5,1.24,.56,'ochre',undefined,16);jjCylinder(-2.3,H+1.04,1.5,1.3,.1,'brickDeep',undefined,16);
+  jjHouseHemi(-2.3,H+1.08,1.5,1.2,'terracotta');jjCylinder(-2.3,H+2.38,1.5,.12,.4,'brickDeep',undefined,16);
+  for(let k=0;k<4;k++){const a=k*Math.PI/2+Math.PI/4;jjBox(-2.3+Math.sin(a)*1.25,H+.72,1.5+Math.cos(a)*1.25,.3,.26,.06,'dark',undefined,a);}
+  // yard: paving, walls, gate
+  jjBox(1.375,.03,1.375,4.35,.06,4.35,'brickDeep');
+  jjHouseWallRun(-.8,3.675,.6,3.675,1.8,{t:.26,mat:'ochre',cap:'brickDeep',base:.4});jjHouseWallRun(2.4,3.675,3.8,3.675,1.8,{t:.26,mat:'ochre',cap:'brickDeep',base:.4});
+  jjHouseWallRun(3.67,-.8,3.67,3.8,1.8,{t:.26,mat:'ochre',cap:'brickDeep',base:.4});
+  jjHouseArchWall(1.5,0,3.675,2.1,2.75,[0],1.2,1.75,0,{d:.34,mat:'brickDeep',trim:false});jjBox(1.5,2.83,3.675,2.3,.16,.5,'brickDeep');
+  jjBox(1.2,1,3.62,.58,1.9,.06,'wood');jjBox(1.97,1,3.34,.58,1.9,.06,'wood',undefined,-1.1);
+  // bread oven, water jar on a stand, ladder to the back roof
+  jjCylinder(2.75,.28,.35,.82,.56,'brickDeep',undefined,16);jjHouseHemi(2.75,.56,.35,.74,'terracotta');jjBox(2.75,.82,1.05,.4,.32,.12,'dark');jjCylinder(2.95,1.36,.15,.08,.3,'brickDeep',undefined,16);
+  const jar=jjHouseGeo('jar',()=>new THREE.LatheGeometry([[0,0],[.16,0],[.28,.14],[.34,.38],[.29,.6],[.14,.74],[.13,.82],[.18,.86],[0,.86]].map(q=>new THREE.Vector2(q[0],q[1])),16));
+  jjBox(.1,.15,3.1,.8,.3,.6,'brickDeep');jjHousePutGeo('jar',jar,'terracotta',.1,.3,3.1,1,1,1);jjHousePutGeo('jar',jar,'terracotta',-.25,0,2.4,.8,.8,.8);
+  for(const lx of [2.75,3.25])jjBeam([lx,0,-.25],[lx,H+.9,-.86],.045,'wood');for(let i=1;i<12;i++){const t=i/12;jjBeam([2.75,t*(H+.9),-.25-t*.61],[3.25,t*(H+.9),-.25-t*.61],.03,'wood');}
+  // doors and windows
+  jjHouseDoor(1.4,0,-.8,.95,2.1,0,{frame:'brickDeep',lintel:'marble',step:'brickDeep',t:.15});
+  jjHouseDoor(-.8,0,1.4,.95,2.1,Math.PI/2,{frame:'brickDeep',lintel:'marble',step:'brickDeep',t:.15});
+  jjHouseWin(-2.3,1.4,3.8,.7,.8,0,Object.assign({bars:true},fr));jjHouseWin(-3.8,1.4,1.5,.6,.75,-Math.PI/2,Object.assign({shutter:'wood'},fr));
+  jjHouseWin(-3.8,1.4,-2.3,.6,.75,-Math.PI/2,fr);jjHouseWin(3.8,1.4,-2.3,.6,.75,Math.PI/2,Object.assign({bars:true},fr));jjHouseWin(-.4,1.35,-.8,.6,.7,0,Object.assign({shutter:'wood'},fr));
+  jjReg('Yard house',-1,-1,4.2,4,{part:'house'});jjReg('Domed room',-2.3,1.5,1.6,5.8,{part:'dome'});jjReg('Yard',1.5,1.5,2.3,2,{part:'yard'});}
+
+/* ==== MIDDLE A: stepped terraces ==== */
+// three storeys, each set back from the one below: a terrace with built-in planters over the ground
+// floor, an arched loggia on the second floor, a narrower top floor with an oriel; red brick with
+// yellow bands. An engaged corner turret and a 3-shaft chimney stack break the stepped profile.
+function buildJjHouseMidA(jjG,jjO){reseed(9140+(jjO.v|0));
+  const X0=-5,X1=5,ZB=-5.3,P=.6,Y1=4,Y2=7.3,Y3=10.6,yel={bandMat:'brickYellow',bandH:.22};
+  jjHouseBlock(-5.2,5.2,-5.5,4.6,0,P,'brickDeep',{bands:[.53],bandMat:'marble',bandH:.14});
+  jjHouseStair(0,0,5.05,3,.9,P,3,0,{mat:'marble'});
+  // storey 1 (full depth)
+  jjHouseBlock(X0,X1,ZB,4.4,P,Y1,'brick',Object.assign({bands:[1.2,2.75]},yel));
+  jjBox(0,Y1+.07,-.45,10.3,.16,9.95,'marble');const T1=Y1+.15;
+  jjHouseDoor(0,P,4.4,1.2,2.45,0,{arch:true});
+  jjBox(0,3.55,4.92,2.7,.12,1.05,'marble');for(const s of [-1,1])for(let k=0;k<2;k++)jjBox(s*1.15,3.38-k*.24,4.4+.5*(1-k*.4),.2,.24,1*(1-k*.4),k?'brickYellow':'marble');
+  for(const s of [-1,1])jjHouseWin(s*3.1,1.45,4.4,.9,1.6,0,{arch:true,shutter:'wood'});
+  for(const s of [-1,1])for(const z of [-3,1.2])jjHouseWin(s*5,1.5,z,.8,1.4,s*Math.PI/2,{arch:true});
+  jjHousePorthole(5,3.1,-.9,Math.PI/2,.5,'marble');
+  // terrace 1: parapet with marble coping, built-in planters
+  jjHouseParapet(X0,X1,1.65,4.4,T1,{h:.85,t:.24,mat:'brick',cope:'marble',skip:'b'});
+  for(const s of [-1,1]){jjBox(s*1.9,T1+.25,3.92,1.9,.5,.7,'brickYellow');jjBox(s*1.9,T1+.47,3.92,1.66,.08,.5,'brickDark');}
+  // storey 2: solid block behind an arched loggia
+  jjHouseBlock(X0,X1,ZB,.25,T1,Y2,'brick',Object.assign({bands:[5.4]},yel));
+  for(const s of [-1,1])jjBox(s*4.78,(T1+Y2)/2,.75,.44,Y2-T1,1.0,'brick');
+  jjHouseArchWall(0,T1,1.42,10,Y2-T1,[-3.15,0,3.15],2.3,1.15,0,{d:.46,mat:'brick'});
+  for(const s of [-1,1])jjBox(s*3.15,T1+.45,1.5,2.3,.9,.2,'marble');
+  jjHouseDoor(0,T1,.25,1.1,2.3,0,{arch:true});for(const s of [-1,1])jjHouseWin(s*3.15,T1+.9,.25,.8,1.5,0,{arch:true});
+  for(const s of [-1,1])jjHouseWin(s*5,T1+1,-2.6,.8,1.4,s*Math.PI/2,{arch:true});
+  jjBox(0,Y2+.08,-2.5,10.3,.16,5.9,'marble');jjBox(0,Y2+.08,1.0,10.3,.16,1.5,'marble');const T2=Y2+.16;
+  jjHouseParapet(X0,X1,ZB,1.65,T2,{h:.85,t:.24,mat:'brick',cope:'marble'});
+  // storey 3: narrower, set back again, an oriel on its front
+  jjHouseBlock(X0,2,ZB,-1.4,T2,Y3,'brick',Object.assign({bands:[8.35]},yel));
+  jjHouseJharokha(-1.5,8.05,-1.4,2,1.8,.75,0,{mat:'brickYellow',trim:'marble',roof:'dome',kind:'terracotta'});
+  jjHouseWin(-4,8.15,-1.4,.75,1.4,0,{arch:true,shutter:'wood'});jjHouseWin(1,8.15,-1.4,.75,1.4,0,{arch:true,shutter:'wood'});
+  jjHouseWin(2,8.2,-3.4,.75,1.3,Math.PI/2,{arch:true});jjHouseWin(X0,8.2,-3.4,.75,1.3,-Math.PI/2,{arch:true});
+  const T3=jjHouseCornice(X0,2,ZB,-1.4,Y3);
+  jjHouseParapet(X0-.25,2.25,ZB-.25,-1.15,T3,{h:.45,t:.24,mat:'brick',merlon:.8,merlonMat:'brickYellow',merlonH:.45});
+  // engaged corner turret rising from terrace 1, and the chimney stack on the top roof
+  jjTurret(3.95,T1,3.35,.8,5.6,{kind:'terracotta',pattern:'ogee'});
+  jjChimneyStack(-3,Y3,-4.15,{n:3,h:2.4,r:.3,seed:1,patterns:['spiral','diamond','chevron']});
+  jjReg('Stepped house',0,-.4,5.6,11.4,{part:'house'});jjReg('Corner turret',3.95,3.35,1.2,11.4,{part:'turret'});jjReg('Chimney stack',-3,-4.15,1.4,15.3,{part:'chimney'});}
+
+/* ==== MIDDLE B: tower house with a wing ==== */
+// a four-storey banded-brick tower on a 6 x 6 m plan with a one-storey wing: stacked oriels up the
+// front, a bulbous turret corbelled out of the front-right corner, a terracotta onion on a drum.
+function buildJjHouseMidB(jjG,jjO){reseed(9150+(jjO.v|0));
+  jjHouseShift(-.55,-.55,()=>{
+    const P=.6,TX=2,TH=13;
+    jjHouseBlock(-5,5,-3,3,0,P,'brickDeep',{bands:[.53],bandMat:'marble',bandH:.14});
+    jjHouseStair(TX,0,3.45,2.4,.9,P,3,0,{mat:'marble'});
+    jjHouseBlock(-1,5,-3,3,P,TH,'bandBrick',{bands:[3.7,6.8,9.9],bandMat:'marble',bandH:.18});
+    const C=jjHouseCornice(-1,5,-3,3,TH);
+    jjHouseParapet(-1.3,5.3,-3.3,3.3,C,{h:.5,t:.28,mat:'brick',merlon:.75,merlonMat:'brickYellow',merlonH:.45});
+    // the front: door, stacked oriels, flanking windows
+    jjHouseDoor(TX,P,3,1.2,2.4,0,{arch:true});
+    for(let k=0;k<3;k++)jjHouseJharokha(TX,4.25+k*3.1,3,2.2,2,.8,0,{mat:'brickYellow',trim:'marble',roof:k===2?'bangla':'chhajja'});
+    for(const x of [0,4]){jjHousePorthole(x,2.35,3,0,.42,'marble');for(let k=0;k<3;k++)jjHouseWin(x,4.55+k*3.1,3,.62,1.3,0,{arch:true});}
+    // side and back faces
+    for(let k=0;k<4;k++){const y=P+1.1+k*3.1;
+      jjHouseWin(5,y,-.6,.75,1.4,Math.PI/2,{arch:true,shutter:k===0?'wood':undefined});jjHouseWin(TX,y,-3,.75,1.4,Math.PI,{arch:true});
+      if(k>0)jjHouseWin(-1,y,.4,.75,1.4,-Math.PI/2,{arch:true});}
+    jjHousePorthole(5,11.9,1.4,Math.PI/2,.45,'marble');
+    // onion on a drum
+    jjCylinder(TX,C+.7,0,1.9,1.4,'brickYellow',undefined,32);jjCylinder(TX,C+.12,0,2.05,.24,'marble',undefined,32);jjCylinder(TX,C+1.45,0,2.02,.14,'marble',undefined,32);
+    for(let k=0;k<4;k++){const a=k*Math.PI/2+Math.PI/4;jjHouseWin(TX+Math.sin(a)*1.9,C+.35,Math.cos(a)*1.9,.36,.75,a,{arch:true,t:.12,sill:false});}
+    jjHouseOnion(TX,C+1.52,0,1.92,3.3,'terracotta','marble');
+    // bulbous corner turret corbelled out at storey 3
+    const cx=5,cz=3;
+    for(let k=0;k<4;k++)jjCylinder(cx,6.95-k*.24,cz,1.05-k*.26,.24,k%2?'marble':'brickYellow',undefined,16);
+    jjCylinder(cx,(7.05+C+.7)/2,cz,1.05,C+.7-7.05,'brick',undefined,32);
+    for(const y of [9.9,TH])jjCylinder(cx,y,cz,1.09,.18,'marble',undefined,32);
+    for(const y of [8.1,11.2])jjHouseWin(cx+Math.sin(Math.PI/4)*1.05,y,cz+Math.cos(Math.PI/4)*1.05,.42,.95,Math.PI/4,{arch:true,t:.12});
+    jjCylinder(cx,C+.85,cz,1.22,.3,'brickYellow',undefined,32);
+    for(let k=0;k<8;k++){const a=k*TAU/8;jjBox(cx+Math.cos(a)*1.14,C+1.2,cz+Math.sin(a)*1.14,.36,.42,.22,'brick',undefined,-a+Math.PI/2);}
+    jjHouseOnion(cx,C+1,cz,.88,1.8,'terracotta','marble');
+    // the wing: one storey, roof terrace
+    jjHouseBlock(-5,-1,-3,1.6,P,4,'brick',{bands:[2.3],bandMat:'brickYellow',bandH:.2});
+    jjBox(-3,4.08,-.7,4.2,.16,4.8,'marble');
+    jjHouseParapet(-5,-1,-3,1.6,4.16,{h:.8,t:.22,mat:'brick',cope:'marble',skip:'r'});
+    jjHouseWin(-3,1.4,1.6,1.3,1.8,0,{arch:true,shutter:'wood'});jjHouseWin(-5,1.5,-.7,.8,1.5,-Math.PI/2,{arch:true});
+    jjHouseDoor(-1,4.16,-.9,.9,2.1,-Math.PI/2,{arch:true});
+    jjBox(-3.6,P+.22,2.4,1.8,.44,.6,'marble'); // bench on the wing's front terrace
+    jjReg('Tower house',TX,0,4.3,19.6,{part:'tower'});jjReg('Wing',-3,-.7,2.6,5,{part:'wing'});jjReg('Corner turret',cx,cz,1.3,17.6,{part:'turret'});});}
+
+/* ==== MIDDLE C: shop-house ==== */
+// a T-plan: a wide front block whose ground floor is an arcaded loggia (four arches on patterned
+// columns) in front of the shop, with a yellow-brick upper block (balcony floor, porthole floor) over
+// it, and a red two-storey rear wing with a roof terrace. Awning sockets over the arches.
+function buildJjHouseMidC(jjG,jjO){reseed(9160+(jjO.v|0));
+  const DZ=-.4;
+  jjHouseShift(0,DZ,()=>{
+    const P=.45,G=4.45,U=10.65,ZF=5.3;
+    jjHouseBlock(-6,6,-.4,5.4,0,P,'brickDeep',{bands:[.4],bandMat:'marble',bandH:.1});jjHouseBlock(-3,3,-5.4,-.4,0,P,'brickDeep');
+    jjBox(0,.11,5.6,12,.22,.4,'marble');
+    // ground: shop wall behind the loggia
+    jjHouseBlock(-6,6,-.4,3.4,P,G,'brick');
+    for(const s of [-1,1]){const x=s*3;jjBox(x,P+1.45,3.42,2.3,2.2,.1,'dark');jjBox(x,P+.45,3.62,2.5,.9,.45,'marble');jjBox(x,P+2.65,3.48,2.6,.2,.2,'wood');
+      for(const t of [-1,1])jjBox(x+t*1.22,P+1.45,3.5,.12,2.2,.14,'wood');
+      jjBox(x-.6,P+1.05,3.66,.5,.3,.36,'wood');jjCylinder(x+.5,P+1.1,3.66,.18,.4,'tile',undefined,16);}
+    jjHouseDoor(0,P,3.4,1.1,2.4,0,{arch:true});
+    jjHouseColonnade(0,P,5,4,3,2.6,G-P-2.6,0,{r:.3,patterns:['diamond','chevron','spiral','chevron','diamond'],mat:'brick',d:.6,cornice:false});
+    jjBox(0,G-.2,1.95,12,.4,6.7,'brick'); // loggia ceiling / first floor
+    // upper block, yellow-dominant with red bands
+    jjHouseBlock(-6,6,-.4,ZF,G,U,'brickYellow',{bands:[G+.15,7.55],bandMat:'brick',bandH:.3});
+    for(let i=0;i<4;i++){const x=-4.5+i*3;jjHouseWin(x,5.35,ZF,.9,1.75,0,{arch:true,shutter:'wood'});jjHousePorthole(x,9.15,ZF,0,.55,'marble');}
+    for(const x of [-3,0,3])jjHouseWin(x,8.6,ZF,.42,1.1,0,{arch:true,t:.14});
+    // balcony on brackets with balusters
+    jjBox(0,5.2,ZF+.45,11.6,.16,.9,'marble');for(let i=0;i<7;i++){const x=-5.4+i*1.8;for(let k=0;k<2;k++)jjBox(x,5.02-k*.24,ZF+.45*(1-k*.4),.18,.24,.9*(1-k*.4),k?'brick':'marble');}
+    jjBox(0,6.12,ZF+.84,11.6,.1,.14,'marble');for(let i=0;i<=29;i++)jjCylinder(-5.75+i*11.5/29,5.7,ZF+.84,.045,.82,'marble',undefined,16);
+    for(const s of [-1,1])jjBox(s*5.76,5.7,ZF+.48,.1,.9,.8,'marble');
+    for(const s of [-1,1]){jjHouseWin(s*6,5.4,1.2,.8,1.6,s*Math.PI/2,{arch:true});jjHousePorthole(s*6,9.15,1.2,s*Math.PI/2,.5,'marble');}
+    const C=jjHouseCornice(-6,6,-.4,ZF,U);
+    jjHouseParapet(-6.3,6.3,-.7,ZF+.3,C,{h:.55,t:.3,mat:'brickYellow',merlon:.9,merlonMat:'brick',merlonH:.55});
+    // raised nameboard gable over the centre, its sun emblem from the culture pack
+    jjHouseBlock(-1.7,1.7,ZF-.15,ZF+.25,C,C+1.75,'brick',{cap:'marble'});for(const s of [-1,1]){jjBox(s*1.7,C+1.2,ZF+.05,.4,2.4,.5,'marble');jjHouseFinial(s*1.7,C+2.4,ZF+.05,.6,'marble');}
+    // rear wing
+    jjHouseBlock(-3,3,-5.4,-.4,P,7.65,'brick',{bands:[G],bandMat:'brickYellow',bandH:.22});
+    jjBox(0,7.73,-2.9,6.2,.16,5.2,'marble');jjHouseParapet(-3,3,-5.4,-.4,7.81,{h:.85,t:.22,mat:'brick',cope:'marble',skip:'f'});
+    for(const s of [-1,1])for(const y of [1.5,5.3])jjHouseWin(s*3,y,-2.9,.8,1.5,s*Math.PI/2,{arch:true});
+    jjHouseDoor(0,P,-5.4,1,2.3,Math.PI,{arch:true});jjHouseWin(0,5.3,-5.4,.8,1.5,Math.PI,{arch:true});
+    jjChimneyStack(3.9,U,.7,{n:2,h:2.6,r:.34,seed:3,patterns:['diamond','spiral']});
+    jjReg('Shop-house',0,2.5,6.4,12.9,{part:'house'});jjReg('Loggia',0,4.4,6,4.5,{part:'loggia',type:['market/shop']});jjReg('Chimney stack',3.9,.7,1.2,15.4,{part:'chimney'});});
+  // awning sockets over the four arches (sockets ignore jjHouseShift, so the offset is added here)
+  for(let i=0;i<4;i++)jjAwning(-4.5+i*3,4.2,5.32+DZ,0,{w:2.3,d:.9,drop:.4,h:3.8});
+  sock('emblem',0,10.65+.62+.95,5.3+.27+DZ,0,{w:1.3,h:1.1});}
+
+/* ==== RICH A: courtyard mansion ==== */
+// four two-storey ranges round a court, each face of the court a two-storey arcade on patterned
+// columns; a pishtaq gate (tall framed arch, gold porthole, guldasta finials); a taller back hall
+// under a ribbed gold dome; a 4-shaft chimney stack; a sunray-paved basin spot in the court.
+function buildJjHouseRichA(jjG,jjO){reseed(9170+(jjO.v|0));
+  jjHouseShift(0,-.325,()=>{
+    const P=1.5,M=5.7,R=9.9,FZ=8.75,BZ=-11.75,lit={arch:true,lit:true};
+    jjHouseBlock(-11,11,BZ,FZ,0,P,'brickDeep',{bands:[P-.07],bandMat:'marble',bandH:.16});
+    jjHouseBlock(-3.9,3.9,FZ,FZ+1.15,0,P,'brickDeep',{bands:[P-.07],bandMat:'marble',bandH:.16});
+    jjHouseStair(0,0,FZ+1.15+1.25,6,2.5,P,7,0,{mat:'marble',cheek:[-1,1],cheekMat:'brickDeep'});
+    // the ranges (outer ring), solid down to the gallery line
+    const yb={bands:[3.6,M,7.8],bandMat:'brickYellow',bandH:.22};
+    jjHouseBlock(-11,11,5.75,FZ,P,R,'brick',yb);jjHouseBlock(-11,11,BZ,-7.25,P,R,'brick',yb);
+    jjHouseBlock(-11,-7.5,-7.25,5.75,P,R,'brick',yb);jjHouseBlock(7.5,11,-7.25,5.75,P,R,'brick',yb);
+    // gallery slabs (first floor and roof) round the court
+    for(const y of [M-.15,R-.15]){jjBox(0,y,4.75,15,.3,2,'marble');jjBox(0,y,-6.25,15,.3,2,'marble');jjBox(-6.5,y,-.75,2,.3,9,'marble');jjBox(6.5,y,-.75,2,.3,9,'marble');}
+    // two-storey court arcades on all four sides
+    const pa=['diamond','spiral','chevron','fleur'];
+    const arc=(y,ch,sp,rail)=>{jjHouseColonnade(0,y,3.75,3,11/3,ch,sp,Math.PI,{r:.3,patterns:pa,d:.5,rail,railSkip:[1]});jjHouseColonnade(0,y,-5.25,3,11/3,ch,sp,0,{r:.3,patterns:pa,d:.5,rail});
+      jjHouseColonnade(-5.5,y,-.75,3,3,ch,sp,Math.PI/2,{r:.3,patterns:pa,d:.5,ends:false,rail});jjHouseColonnade(5.5,y,-.75,3,3,ch,sp,-Math.PI/2,{r:.3,patterns:pa,d:.5,ends:false,rail});};
+    arc(P,2.6,M-.3-P-2.6);arc(M,2.3,R-.3-M-2.3,'marble');
+    // gallery back walls: doors and windows
+    for(const y of [P,M]){jjHouseDoor(0,y,5.75,1.3,2.6,Math.PI,{arch:true});jjHouseDoor(0,y,-7.25,1.3,2.6,0,{arch:true});
+      for(const s of [-1,1]){jjHouseDoor(s*7.5,y,-.75,1.2,2.5,-s*Math.PI/2,{arch:true});for(const x of [-4.2,4.2]){jjHouseWin(x,y+.9,5.75,.8,1.5,Math.PI,lit);jjHouseWin(x,y+.9,-7.25,.8,1.5,0,lit);}jjHouseWin(s*7.5,y+.9,-4.2,.8,1.5,-s*Math.PI/2,lit);jjHouseWin(s*7.5,y+.9,2.7,.8,1.5,-s*Math.PI/2,lit);}}
+    // court: marble floor and the basin spot (a sunray disc with a low octagonal kerb)
+    jjBox(0,P+.03,-.75,11,.06,9,'marble');
+    jjPut('jj_house_sunray_disc',jjHouseGeo('disc48',()=>new THREE.CylinderGeometry(1,1,1,48)),JMAT.sunray,0,P+.07,-.75,2.9,.04,2.9,undefined,null);
+    for(let k=0;k<8;k++){const a=k*TAU/8+Math.PI/8;jjBox(Math.sin(a)*1.55,P+.24,-.75+Math.cos(a)*1.55,1.28,.36,.26,'marble',undefined,a);}
+    jjCylinder(0,P+.1,-.75,1.45,.05,'brickDeep',undefined,16);
+    // pishtaq gate
+    const GZ=FZ+.575;
+    jjHouseArchWall(0,P,GZ,7.2,10.6,[0],3.6,4.3,0,{d:1.15,mat:'brick',trimMat:'marble',trimT:.3,key:'gold'});
+    for(const s of [-1,1]){jjBox(s*3.45,P+5.3,GZ+.62,.4,10.6,.1,'marble');jjBox(s*2.4,P+5.3,GZ+.6,.12,10.6,.06,'brickYellow');}
+    jjBox(0,P+10.65,GZ,7.6,.3,1.5,'marble');jjBox(0,P+7.5,GZ+.6,4.4,.14,.1,'marble');
+    for(let i=0;i<7;i++)jjBox(-3.15+i*1.05,P+11.05,GZ,.5,.5,1.1,'brickYellow');
+    jjHouseDoor(0,P,FZ,3,5.4,0,{arch:true,studs:true,t:.2});
+    jjHousePorthole(0,P+9.05,GZ+.58,0,.95,'gold');
+    for(const s of [-1,1]){jjHouseLamp(s*2.45,P+3.8,GZ+.58);
+      jjBrickShaft(s*3.45,P+10.8,GZ,.36,2.2,{pattern:'spiral',section:'octagon',cap:'none',base:false});jjCylinder(s*3.45,P+13.05,GZ,.46,.14,'marble',undefined,16);jjHouseOnion(s*3.45,P+13.12,GZ,.4,.9,'domeGold','gold');}
+    // outer façades
+    for(const s of [-1,1]){
+      jjHouseJharokha(s*7.2,M+.35,FZ,2.4,2.3,.9,0,{mat:'brickYellow',trim:'marble',roof:'onion',kind:'gold',glass:'glass'});
+      for(const x of [5,9.6])jjHouseWin(s*x,M+.9,FZ,.8,1.6,0,lit);for(const x of [5.4,8.9])jjHouseWin(s*x,P+1.1,FZ,.85,1.7,0,lit);
+      for(let i=0;i<5;i++){const z=-9.5+i*4.3;jjHouseWin(s*11,P+1.1,z,.85,1.7,s*Math.PI/2,lit);if(i!==2)jjHouseWin(s*11,M+.9,z,.8,1.6,s*Math.PI/2,lit);}
+      jjHouseJharokha(s*11,M+.35,-.9,2.4,2.3,.9,s*Math.PI/2,{mat:'brickYellow',trim:'marble',roof:'chhajja',glass:'glass'});
+      for(const x of [6.5,9.5])for(const y of [P+1.1,M+.9])jjHouseWin(s*x,y,BZ,.8,1.6,Math.PI,lit);}
+    // back hall under the gold dome
+    jjHouseBlock(-4.5,4.5,BZ,-6.75,R,12.6,'brick',{bands:[R+.1,11.4],bandMat:'brickYellow',bandH:.22});
+    for(const x of [-2.6,0,2.6]){jjHouseWin(x,R+.85,-6.75,.7,1.3,0,lit);jjHouseWin(x,R+.85,BZ,.7,1.3,Math.PI,lit);}
+    const HC=jjHouseCornice(-4.5,4.5,BZ,-6.75,12.6);
+    jjHouseParapet(-4.8,4.8,BZ-.3,-6.45,HC,{h:.35,t:.26,mat:'brick',merlon:.8,merlonMat:'brickYellow',merlonH:.4});
+    jjCylinder(0,HC+.9,-9.25,2.35,1.8,'brickYellow',undefined,32);jjCylinder(0,HC+.08,-9.25,2.5,.16,'marble',undefined,32);jjCylinder(0,HC+1.82,-9.25,2.5,.16,'marble',undefined,32);
+    for(let k=0;k<8;k++){const a=k*TAU/8;jjHouseWin(Math.sin(a)*2.35,HC+.45,-9.25+Math.cos(a)*2.35,.4,.95,a,{arch:true,t:.12,sill:false,lit:true});}
+    jjDome(0,HC+1.9,-9.25,2.45,{kind:'gold',shape:'hemi',ribs:true});
+    // roof: crenellated parapets outside, a plain one round the court, the chimney stack
+    jjHouseParapet(-11,11,BZ,FZ,R,{h:.75,t:.28,mat:'brick',cope:'marble',merlon:1,merlonMat:'brickYellow',merlonH:.5,gap:{side:'f',a:-3.6,b:3.6}});
+    jjHouseParapet(-5.5,5.5,-5.25,3.75,R,{h:.7,t:.22,mat:'brick',cope:'marble'});
+    jjChimneyStack(9.25,R,-1.5,{n:4,h:3,r:.34,seed:2});
+    jjReg('Courtyard mansion',0,-1.5,11,12,{part:'house'});jjReg('Court',0,-.75,5,6,{part:'court'});jjReg('Pishtaq gate',0,GZ,3.8,14.8,{part:'gate'});
+    jjReg('Gold dome',0,-9.25,2.6,17.5,{part:'dome'});jjReg('Chimney stack',9.25,-1.5,1.4,15,{part:'chimney'});});}
+
+/* ==== RICH B: pavilion villa ==== */
+// no courtyard: a compact yellow-brick block on a tall marble podium, reached by a wide frontal stair;
+// two storeys of deep loggias on all four sides; a big gold onion on a windowed drum; four open
+// six-column chhatris at the roof corners. A reflecting-pool spot (marble kerb) on the front terrace.
+function buildJjHouseRichB(jjG,jjO){reseed(9180+(jjO.v|0));
+  const P=2.7,ZC=-4.25,lit={arch:true,lit:true};
+  // podium with framed yellow panels
+  jjHouseBlock(-9,9,-11.75,7.25,0,P,'marble',{base:.45,baseMat:'brickDeep'});
+  jjBox(0,P-.08,-2.25,18.36,.16,19.36,'marble');jjBox(0,P-.3,-2.25,18.2,.12,19.2,'brickYellow');
+  const pan=(x,z,ry)=>jjWithYaw(x,0,z,ry,()=>{jjBox(x,1.45,z+.03,1.9,1.15,.06,'brickYellow');jjBox(x,1.45,z+.06,2.1,.1,.06,'marble');jjBox(x,.92,z+.06,2.1,.1,.06,'marble');jjBox(x,1.98,z+.06,2.1,.1,.06,'marble');for(const s of [-1,1])jjBox(x+s*1,1.45,z+.06,.1,1.15,.06,'marble');});
+  for(let i=0;i<7;i++){const t=-7.7+i*2.567;for(const s of [-1,1])pan(s*9,ZC+t*1.15+1.9,s*Math.PI/2);pan(t,-11.75,Math.PI);}
+  for(const s of [-1,1])for(const x of [5.95,7.85])pan(s*x,7.25,0);
+  jjHouseStair(0,0,9.5,9,4.5,P,12,0,{mat:'marble',cheek:[-1,1],cheekMat:'marble',cheekT:.4});
+  for(const s of [-1,1]){jjBox(s*4.7,.7,11.5,.6,1.4,.5,'marble');jjHouseFinial(s*4.7,1.4,11.5,.7,'gold');}
+  // pool spot on the front terrace (the pool is furniture)
+  for(const s of [-1,1]){jjBox(s*3,P+.14,4.4,.24,.28,3.6,'marble');jjBox(0,P+.14,4.4+s*1.68,6.24,.28,.24,'marble');}
+  jjBox(0,P+.015,4.4,5.8,.03,3.2,'brickDeep');
+  // block: solid yellow core inside two storeys of loggias
+  jjHouseBlock(-4,4,ZC-4,ZC+4,P,11.05,'brickYellow',{bands:[4.2,8.8],bandMat:'brick',bandH:.3});
+  const L1=3.1,S1=1.25,L2=2.6,S2=1.1,M=P+L1+S1;
+  const pa=['chevron','spiral','diamond','spiral','chevron'];
+  for(const [y,ch,sp,rail] of [[P,L1,S1,null],[M+.3,L2,S2,'marble']]){
+    jjHouseColonnade(0,y,ZC+6,4,3,ch,sp,0,{r:.32,patterns:pa,mat:'brickYellow',trimMat:'marble',key:'gold',d:.6,rail,railSkip:y===P?[1,2]:[]});
+    jjHouseColonnade(0,y,ZC-6,4,3,ch,sp,Math.PI,{r:.32,patterns:pa,mat:'brickYellow',key:'gold',d:.6,rail});
+    jjHouseColonnade(-6,y,ZC,4,3,ch,sp,-Math.PI/2,{r:.32,patterns:pa,mat:'brickYellow',key:'gold',d:.6,ends:false,rail});
+    jjHouseColonnade(6,y,ZC,4,3,ch,sp,Math.PI/2,{r:.32,patterns:pa,mat:'brickYellow',key:'gold',d:.6,ends:false,rail});}
+  jjBox(0,M+.15,ZC,12.5,.3,12.5,'marble');jjBox(0,11.2,ZC,12.6,.3,12.6,'marble');jjBox(0,10.95,ZC,12.3,.2,12.3,'brick');
+  // core façades seen through the loggias
+  jjHouseDoor(0,P,ZC+4,1.6,3.2,0,{arch:true,studs:true,lamps:true});
+  for(const s of [-1,1]){jjHouseWin(s*2.5,P+1,ZC+4,.9,2,0,lit);jjHouseWin(s*4,P+1,ZC,.9,2,s*Math.PI/2,lit);jjHouseWin(s*4,M+.9,ZC,.9,1.9,s*Math.PI/2,lit);jjHouseWin(s*2.5,P+1,ZC-4,.9,2,Math.PI,lit);}
+  for(const x of [-2.5,0,2.5]){jjHouseWin(x,M+.9,ZC+4,.85,1.9,0,lit);jjHouseWin(x,M+.9,ZC-4,.85,1.9,Math.PI,lit);}
+  // roof: marble balustrade, drum, gold onion, four chhatris
+  const RT=11.35;jjHouseParapet(-6.3,6.3,ZC-6.3,ZC+6.3,RT,{h:.7,t:.2,mat:'marble',cope:'marble'});
+  jjCylinder(0,RT+1.3,ZC,3.3,2.6,'brickYellow',undefined,32);jjCylinder(0,RT+.12,ZC,3.45,.24,'marble',undefined,32);jjCylinder(0,RT+1.9,ZC,3.33,.3,'brick',undefined,32);jjCylinder(0,RT+2.62,ZC,3.5,.2,'marble',undefined,32);
+  for(let k=0;k<8;k++){const a=k*TAU/8+Math.PI/8;jjHouseWin(Math.sin(a)*3.3,RT+.45,ZC+Math.cos(a)*3.3,.55,1.1,a,{arch:true,t:.14,sill:false,lit:true});}
+  jjHouseOnion(0,RT+2.7,ZC,3.3,5.8,'domeGold','gold');
+  for(const sx of [-1,1])for(const sz of [-1,1])jjHouseChhatri(sx*4.65,RT,ZC+sz*4.65,2.1,{n:6,h:2.1,dome:'gold',shape:'onion'});
+  jjReg('Pavilion villa',0,ZC,6.6,12,{part:'house'});jjReg('Podium',0,-2.25,9.5,P,{part:'podium'});jjReg('Gold onion dome',0,ZC,3.9,21.3,{part:'dome'});
+  for(const sx of [-1,1])for(const sz of [-1,1])jjReg('Chhatri',sx*4.65,ZC+sz*4.65,1.3,16.6,{part:'chhatri'});}
+
+/* ==== RICH C: tower compound ==== */
+// an L-plan: a main wing along the back and a side wing down the left; their corner rises as a square
+// tower into a thick three-stage round spire with gold portholes. A slate ribbed dome with a lantern
+// over the main wing; the open side of the L is a walled garden with an arched gate.
+function buildJjHouseRichC(jjG,jjO){reseed(9190+(jjO.v|0));
+  const P=1.2,M=5.3,R=9.4,TT=13,lit={arch:true,lit:true},bd={bands:[3.3,M,7.4],bandMat:'brickDark',bandH:.2};
+  // plinth under the L, front stair to the side wing
+  jjHouseBlock(-11,11,-11,-4,0,P,'brickDeep',{bands:[P-.07],bandMat:'marble',bandH:.14});jjHouseBlock(-11,-4,-4,8.6,0,P,'brickDeep',{bands:[P-.07],bandMat:'marble',bandH:.14});
+  jjHouseStair(-7.5,0,9.8,3,2.4,P,6,0,{mat:'marble',cheek:[-1,1],cheekMat:'brickDeep'});
+  // main wing (back) and side wing (left; its garden side is a ground-floor loggia)
+  jjHouseBlock(-4,11,-11,-4,P,R,'brick',bd);
+  jjHouseBlock(-11,-6,-4,8.6,P,R,'brick',bd);jjHouseBlock(-6,-4,-4,8.6,M,R,'brick',{bands:[7.4],bandMat:'brickDark',bandH:.2});
+  jjBox(-5,M-.15,2.3,2.1,.3,12.6,'marble');
+  jjHouseColonnade(-4.3,P,2.3,4,3,2.5,M-.3-P-2.5,Math.PI/2,{r:.3,patterns:['tracery','diamond','ogee'],trimMat:'marble',key:'gold',d:.5});
+  for(const z of [-1.9,4.1])jjHouseDoor(-6,P,z,1.2,2.5,Math.PI/2,{arch:true,lamps:z>0});for(const z of [1.1,7.1])jjHouseWin(-6,P+1,z,.85,1.7,Math.PI/2,lit);
+  // tower base at the corner of the L
+  jjHouseBlock(-11,-4,-11,-4,P,TT,'brick',{bands:[3.3,M,7.4,R,11.2],bandMat:'brickDark',bandH:.2});
+  const TC=jjHouseCornice(-11,-4,-11,-4,TT,{m2:'brickDark'});
+  jjHouseParapet(-11.3,-3.7,-11.3,-3.7,TC,{h:.55,t:.3,mat:'brick',merlon:.8,merlonMat:'brickYellow',merlonH:.5});
+  for(const [x,z] of [[-11,-11],[-11,-4],[-4,-11],[-4,-4]]){jjCylinder(x,TT-.6,z,.6,1.2,'brickYellow',undefined,16);for(let k=0;k<3;k++)jjCylinder(x,TT-1.35-k*.25,z,.5-k*.15,.25,'marble',undefined,16);
+    jjCylinder(x,TC+.9,z,.55,1.8,'brick',undefined,16);jjCylinder(x,TC+1.85,z,.64,.12,'marble',undefined,16);jjHouseOnion(x,TC+1.9,z,.55,1.1,'domeGold','gold');}
+  for(const [x,z,ry] of [[-7.5,-4,0],[-4,-7.5,Math.PI/2],[-11,-7.5,-Math.PI/2],[-7.5,-11,Math.PI]])jjHousePorthole(x,11.3,z,ry,.62,'gold');
+  for(const y of [P+1.1,M+.9])for(const [x,z,ry] of [[-11,-7.5,-Math.PI/2],[-7.5,-11,Math.PI]])jjHouseWin(x,y,z,.85,1.7,ry,lit);
+  // the spire
+  jjHouseSpire(-7.5,TC,-7.5,2.9,{stages:3,stageH:2.8,mats:['brick','shaft_chevron','brickYellow'],ports:[0,Math.PI/2,-Math.PI/2,Math.PI]});
+  // main wing façades
+  jjHouseDoor(3.5,P,-4,1.5,3,0,{arch:true,studs:true,lamps:true});
+  for(const x of [-1.5,1,6,8.5])jjHouseWin(x,P+.9,-4,.9,2,0,lit);
+  jjBox(3.5,M+.08,-3.55,13.6,.16,.9,'marble');jjBox(3.5,M+.88,-3.15,13.6,.08,.12,'marble');for(let i=0;i<=40;i++)jjCylinder(-3.2+i*13.4/40,M+.52,-3.15,.04,.72,'marble',undefined,16);
+  for(let i=0;i<8;i++)jjBox(-3+i*13/7,M-.2,-3.75,.18,.3,.5,'marble');
+  for(const x of [-2,1.2,5.8,9])jjHouseWin(x,M+.4,-4,.9,2.1,0,lit);jjHousePorthole(3.5,M+1.7,-4,0,.65,'gold');
+  for(const y of [P+1.1,M+.9]){for(const x of [-1,3.5,8])jjHouseWin(x,y,-11,.85,1.7,Math.PI,lit);for(const z of [-9,-6])jjHouseWin(11,y,z,.85,1.7,Math.PI/2,lit);
+    for(const z of [-1,2.5,6])jjHouseWin(-11,y,z,.85,1.7,-Math.PI/2,lit);}
+  // side wing: front door with an oriel over it, garden-side oriels
+  jjHouseDoor(-7.5,P,8.6,1.4,2.8,0,{arch:true,lamps:true});jjHouseJharokha(-7.5,M+.35,8.6,2.4,2.3,.9,0,{mat:'brickYellow',trim:'marble',roof:'onion',kind:'gold',glass:'glass'});
+  for(const x of [-10,-5])jjHouseWin(x,M+.9,8.6,.75,1.6,0,lit);
+  for(const z of [-.9,5.4])jjHouseJharokha(-4,M+.35,z,2.2,2.2,.85,Math.PI/2,{mat:'brickYellow',trim:'marble',roof:'chhajja',glass:'glass'});jjHouseWin(-4,M+.9,2.25,.8,1.6,Math.PI/2,lit);
+  // roofs: cornices, parapets, slate ribbed dome with a lantern, chimney stack
+  const RC=jjHouseCornice(-4,11,-11,-4,R,{m2:'brickDark'});jjHouseCornice(-11,-4,-4,8.6,R,{m2:'brickDark'});
+  jjHouseParapet(-4.3,11.3,-11.3,-3.7,RC,{h:.5,t:.28,mat:'brick',merlon:.85,merlonMat:'brickYellow',merlonH:.45,skip:'l'});
+  jjHouseParapet(-11.3,-3.7,-3.7,8.9,RC,{h:.5,t:.28,mat:'brick',merlon:.85,merlonMat:'brickYellow',merlonH:.45,skip:'b'});
+  const DX=3.5,DZ=-7.5;jjCylinder(DX,R+.75,DZ,2.6,1.5,'brick',undefined,32);jjCylinder(DX,RC+.05,DZ,2.75,.16,'marble',undefined,32);jjCylinder(DX,R+1.52,DZ,2.72,.16,'marble',undefined,32);
+  for(const a of [0,Math.PI/2,-Math.PI/2,Math.PI])jjHousePorthole(DX+Math.sin(a)*2.6,R+.78,DZ+Math.cos(a)*2.6,a,.42,'gold');
+  const DT=R+1.6;jjDome(DX,DT,DZ,2.6,{kind:'slate',shape:'ribbed'});
+  const LB=DT+2.45;jjCylinder(DX,LB+.08,DZ,.95,.2,'marble',undefined,16);
+  for(let k=0;k<6;k++){const a=k*TAU/6;jjCylinder(DX+Math.cos(a)*.7,LB+.75,DZ+Math.sin(a)*.7,.08,1.1,'marble',undefined,16);}
+  jjCylinder(DX,LB+.55,DZ,.45,.7,'glow',undefined,16);jjCylinder(DX,LB+1.38,DZ,1,.16,'marble',undefined,16);jjCylinder(DX,LB+1.52,DZ,.6,.14,'gold',undefined,16);
+  jjHouseOnion(DX,LB+1.58,DZ,.55,1.1,'domeGold','gold');
+  jjChimneyStack(-7.5,R,3.2,{n:3,h:2.8,r:.32,seed:4,patterns:['ogee','fleur','spiral']});
+  // walled garden on the open side of the L, with an arched gate and cross paths
+  jjHouseWallRun(-4,10.84,1.5,10.84,3,{t:.32,mat:'brick',merlon:.9,merlonMat:'brickYellow',base:.5});jjHouseWallRun(5.5,10.84,11,10.84,3,{t:.32,mat:'brick',merlon:.9,merlonMat:'brickYellow',base:.5});
+  jjHouseWallRun(10.84,-4,10.84,11,3,{t:.32,mat:'brick',merlon:.9,merlonMat:'brickYellow',base:.5});
+  jjHouseArchWall(3.5,0,10.84,4.2,4.7,[0],2.4,2.5,0,{d:.9,mat:'brick',trimMat:'marble',key:'gold'});jjBox(3.5,4.82,10.84,4.5,.24,1.1,'marble');
+  for(const s of [-1,1]){jjBox(3.5+s*1.85,5.3,10.84,.6,.7,.6,'brickYellow');jjHouseFinial(3.5+s*1.85,5.65,10.84,.8,'gold');}
+  for(const s of [-1,1])jjBox(3.5+s*.95,1.25,10.18+.1,.06,2.45,1.1,'wood',undefined,s*.35);
+  jjBox(3.5,.03,3.4,1.6,.06,14.8,'marble');jjBox(3.5,.03,3.5,14.6,.06,1.6,'marble');jjCylinder(3.5,.07,3.5,1.5,.1,'marble',undefined,32);
+  for(const sx of [-1,1])for(const sz of [-1,1]){const cx=3.5+sx*3.85,cz=3.5+sz*3.6;jjHouseParapet(cx-2.9,cx+2.9,cz-2.75,cz+2.75,0,{h:.32,t:.2,mat:'brickDeep',cope:'marble'});}
+  jjReg('Tower compound',-3,-4,8,10,{part:'house'});jjReg('Spire',-7.5,-7.5,3.6,27,{part:'spire'});jjReg('Slate dome',DX,DZ,2.8,17,{part:'dome'});
+  jjReg('Walled garden',3.5,3.5,7.4,3.5,{part:'garden'});jjReg('Chimney stack',-7.5,3.2,1.3,14.4,{part:'chimney'});}
+
+/* ==== registry ==== */
+JJ.def({key:'jj_house_poor_a',name:'Poor houses A — party-wall pair',family:'housing',row:'Housing — poor',w:8.4,d:7.8,h:8.5,r:4.3,cls:'building',plantSpots:JJHOUSE_SPOTS.poorA,tags:{type:['multi-family dwelling'],wealth:'poor',lit:false},build:buildJjHousePoorA});
+JJ.def({key:'jj_house_poor_b',name:'Poor house B — outside stair',family:'housing',row:'Housing — poor',w:6.2,d:8.4,h:8.1,r:3.9,cls:'building',plantSpots:JJHOUSE_SPOTS.poorB,tags:{type:['single-family dwelling'],wealth:'poor',lit:false},build:buildJjHousePoorB});
+JJ.def({key:'jj_house_poor_c',name:'Poor house C — yard and dome',family:'housing',row:'Housing — poor',w:8.1,d:8.1,h:5.9,r:4.2,cls:'building',plantSpots:JJHOUSE_SPOTS.poorC,tags:{type:['single-family dwelling'],wealth:'poor',lit:false},build:buildJjHousePoorC});
+JJ.def({key:'jj_house_mid_a',name:'Middle house A — stepped terraces',family:'housing',row:'Housing — middle',w:10.6,d:11.2,h:15.2,r:5.8,cls:'building',plantSpots:JJHOUSE_SPOTS.midA,tags:{type:['single-family dwelling'],wealth:'middle',lit:false},build:buildJjHouseMidA});
+JJ.def({key:'jj_house_mid_b',name:'Middle house B — tower house',family:'housing',row:'Housing — middle',w:11.5,d:7.8,h:19.6,r:5.8,cls:'building',plantSpots:JJHOUSE_SPOTS.midB,tags:{type:['single-family dwelling'],wealth:'middle',lit:false},build:buildJjHouseMidB});
+JJ.def({key:'jj_house_mid_c',name:'Middle house C — shop-house',family:'housing',row:'Housing — middle',w:12.9,d:12.4,h:15.4,r:6.6,cls:'building',plantSpots:JJHOUSE_SPOTS.midC,tags:{type:['single-family dwelling','market/shop'],wealth:'middle',lit:false},build:buildJjHouseMidC});
+JJ.def({key:'jj_house_rich_a',name:'Rich house A — courtyard mansion',family:'housing',row:'Housing — rich',w:24.5,d:24.5,h:18,r:12.2,cls:'building',plantSpots:JJHOUSE_SPOTS.richA,fountainSpot:[0,1.6,-1.075],tags:{type:['single-family dwelling'],wealth:'rich',lit:true},build:buildJjHouseRichA});
+JJ.def({key:'jj_house_rich_b',name:'Rich house B — pavilion villa',family:'housing',row:'Housing — rich',w:18.4,d:24,h:21.8,r:11.8,cls:'building',plantSpots:JJHOUSE_SPOTS.richB,poolSpot:[0,2.7,4.4],tags:{type:['single-family dwelling'],wealth:'rich',lit:true},build:buildJjHouseRichB});
+JJ.def({key:'jj_house_rich_c',name:'Rich house C — tower compound',family:'housing',row:'Housing — rich',w:23,d:23.2,h:27,r:11.4,cls:'building',plantSpots:JJHOUSE_SPOTS.richC,fountainSpot:[3.5,.12,3.5],tags:{type:['single-family dwelling'],wealth:'rich',lit:true},build:buildJjHouseRichC});
 // ---------------------------------------------------------------- JIMJAM SHOPS (row 'Shops', seeds 9200-9299, prefix jjShop / buildJjShop)
 // Eight two-storey shops: an open stall on the ground floor (counter, goods), living quarters above, a canvas awning and a trade
 // sign through the culture sockets (62-jj-culture.js draws them). Each differs in width, roof, colour and facade:
@@ -1493,6 +2048,475 @@ function buildJjShopSpice(jjG,jjO){reseed(9270+(jjO.v|0));
  jjBanner(-(S.ww/2-.35),y2-1.05,fz+.06,0,{w:.5,h:1.5});
  jjReg('Spice stall',0,(S.zp+fz)/2,3.4,y2);jjReg('Spice gallery',0,fz+.5,3.8,y3,{type:['single-family dwelling']});jjReg('Spice domes',0,-1.4,3.2,y3+2);}
 JJ.def({key:'jj_shop_spice',name:'Spice and pottery',family:'shops',row:'Shops',w:8,d:8.2,h:8.6,r:5.6,tags:JJ_SHOP_TAGS('middle'),build:buildJjShopSpice});
+// Jimjam hospitality: the inn, the tavern and the caravanserai. Local frame: origin at the plot
+// centre on the ground, +z is the front, y up. Seeds 9300-9349.
+// The jjHosp* drawing helpers below are also used by 73-jj-civic.js, which loads after this file.
+// Arched openings are real holes: a wall panel with a round-headed opening, extruded, cached per size
+// and instanced (one draw call per size and material), so courts and galleries can be seen into.
+const JJHOSP_GEO={};
+function jjHospKey(jjA){return jjA.map(jjV=>typeof jjV==='number'?jjV.toFixed(2):jjV).join('_');}
+// wall panel w x h (base at y=0, centred on x and z) with one round-headed opening of width ow springing at sp
+function jjHospPanelGeo(jjW,jjH,jjOW,jjSp,jjD){const jjK='p'+jjHospKey([jjW,jjH,jjOW,jjSp,jjD]);if(JJHOSP_GEO[jjK])return JJHOSP_GEO[jjK];
+ const jjR=jjOW/2,jjS=new THREE.Shape();jjS.moveTo(-jjW/2,0);jjS.lineTo(-jjR,0);jjS.lineTo(-jjR,jjSp);
+ for(let jjI=1;jjI<12;jjI++){const jjA=Math.PI-jjI*Math.PI/12;jjS.lineTo(Math.cos(jjA)*jjR,jjSp+Math.sin(jjA)*jjR);}
+ jjS.lineTo(jjR,jjSp);jjS.lineTo(jjR,0);jjS.lineTo(jjW/2,0);jjS.lineTo(jjW/2,jjH);jjS.lineTo(-jjW/2,jjH);
+ const jjG=new THREE.ExtrudeGeometry(jjS,{depth:jjD,bevelEnabled:false,curveSegments:1});jjG.translate(0,0,-jjD/2);return JJHOSP_GEO[jjK]=jjG;}
+// semicircular ring (archivolt), centre at the springing line
+function jjHospRingGeo(jjR,jjT,jjD){const jjK='r'+jjHospKey([jjR,jjT,jjD]);if(JJHOSP_GEO[jjK])return JJHOSP_GEO[jjK];
+ const jjS=new THREE.Shape(),jjO=jjR+jjT;jjS.moveTo(jjO,0);for(let jjI=1;jjI<=12;jjI++){const jjA=jjI*Math.PI/12;jjS.lineTo(Math.cos(jjA)*jjO,Math.sin(jjA)*jjO);}
+ jjS.lineTo(-jjR,0);for(let jjI=11;jjI>=1;jjI--){const jjA=jjI*Math.PI/12;jjS.lineTo(Math.cos(jjA)*jjR,Math.sin(jjA)*jjR);}jjS.lineTo(jjR,0);
+ const jjG=new THREE.ExtrudeGeometry(jjS,{depth:jjD,bevelEnabled:false,curveSegments:1});jjG.translate(0,0,-jjD/2);return JJHOSP_GEO[jjK]=jjG;}
+// half disc (lunette, gable infill), centre at its base line
+function jjHospLunetteGeo(jjR,jjD){const jjK='l'+jjHospKey([jjR,jjD]);if(JJHOSP_GEO[jjK])return JJHOSP_GEO[jjK];
+ const jjS=new THREE.Shape();jjS.moveTo(jjR,0);for(let jjI=1;jjI<16;jjI++){const jjA=jjI*Math.PI/16;jjS.lineTo(Math.cos(jjA)*jjR,Math.sin(jjA)*jjR);}jjS.lineTo(-jjR,0);
+ const jjG=new THREE.ExtrudeGeometry(jjS,{depth:jjD,bevelEnabled:false,curveSegments:1});jjG.translate(0,0,-jjD/2);return JJHOSP_GEO[jjK]=jjG;}
+// barrel vault shell along z, springing at y=0, UVs in metres (u round the arc, v along the length)
+function jjHospVaultGeo(jjR,jjLen){const jjK='v'+jjHospKey([jjR,jjLen]);if(JJHOSP_GEO[jjK])return JJHOSP_GEO[jjK];
+ const jjG=new THREE.CylinderGeometry(jjR,jjR,jjLen,24,1,true,Math.PI/2,Math.PI);jjG.rotateX(Math.PI/2);const jjUv=jjG.attributes.uv;
+ for(let jjI=0;jjI<jjUv.count;jjI++)jjUv.setXY(jjI,jjUv.getX(jjI)*Math.PI*jjR,jjUv.getY(jjI)*jjLen);return JJHOSP_GEO[jjK]=jjG;}
+function jjHospPut(jjName,jjGeo,jjMat,jjX,jjY,jjZ){jjPut('jjhosp_'+jjName+'_'+jjMat,jjGeo,JMAT[jjMat],jjX,jjY,jjZ,1,1,1);}
+// One arched bay: wall panel (base y, centred on z, faces +z before ry) with marble archivolt and imposts.
+// o: depth, mat, trim (archivolt material or false), back (material of a void plane behind the opening),
+// backOff, rail (balustrade height), lit (glass instead of the back plane)
+function jjHospBay(jjX,jjY,jjZ,jjW,jjH,jjOW,jjSpring,jjRy,jjO){jjO=jjO||{};const jjD=jjO.depth||.6,jjMat=jjO.mat||'brick',jjR=jjOW/2,jjSp=Math.max(.3,Math.min(jjSpring,jjH-.14-jjR));
+ jjWithYaw(jjX,jjY,jjZ,jjRy,()=>{
+  jjHospPut('p'+jjHospKey([jjW,jjH,jjOW,jjSp,jjD]),jjHospPanelGeo(jjW,jjH,jjOW,jjSp,jjD),jjMat,jjX,jjY,jjZ);
+  if(jjO.trim!==false){const jjT=Math.min(.3,jjR*.2),jjTm=jjO.trim||'marble';jjHospPut('r'+jjHospKey([jjR,jjT,jjD+.12]),jjHospRingGeo(jjR,jjT,jjD+.12),jjTm,jjX,jjY+jjSp,jjZ);
+   for(const jjS of [-1,1])jjBox(jjX+jjS*(jjR+jjT*.3),jjY+jjSp-.1,jjZ,jjT+.2,.2,jjD+.16,'marble');
+   jjBox(jjX,jjY+jjSp+jjR+jjT*.55,jjZ+jjD/2+.05,jjT*1.3,jjT*1.5,.12,jjTm);}
+  if(jjO.back)jjBox(jjX,jjY+(jjSp+jjR)/2,jjZ-jjD/2-(jjO.backOff||.04),jjOW+.3,jjSp+jjR+.1,.06,jjO.back);
+  if(jjO.rail){const jjRh=jjO.rail;jjBox(jjX,jjY+jjRh-.07,jjZ,jjOW+.04,.14,jjD*.9,'marble');jjBox(jjX,jjY+.06,jjZ,jjOW+.04,.12,jjD*.9,'marble');
+   const jjN=Math.max(3,Math.round(jjOW/.32));for(let jjI=0;jjI<jjN;jjI++)jjBox(jjX-jjOW/2+(jjI+.5)*jjOW/jjN,jjY+jjRh/2,jjZ,.11,jjRh-.2,.11,'cream');}
+ });}
+// n equal bays along local x, centred at (cx,cz), turned by ry. o.skip: bay indices to leave out; o.each(i,x): extra drawing
+function jjHospRow(jjCx,jjY,jjCz,jjLen,jjN,jjH,jjOW,jjSpring,jjRy,jjO){jjO=jjO||{};const jjBw=jjLen/jjN;
+ jjWithYaw(jjCx,jjY,jjCz,jjRy,()=>{for(let jjI=0;jjI<jjN;jjI++){const jjX=jjCx-jjLen/2+(jjI+.5)*jjBw;if(jjO.skip&&jjO.skip.indexOf(jjI)>=0)continue;jjHospBay(jjX,jjY,jjCz,jjBw,jjH,jjOW,jjSpring,0,jjO);if(jjO.each)jjO.each(jjI,jjX);}});}
+// a tall arched window on a solid wall face (sill at y, face at z, faces +z before ry), proud of the face
+function jjHospArchWin(jjX,jjY,jjZ,jjW,jjH,jjRy,jjO){jjO=jjO||{};const jjR=jjW/2,jjRect=Math.max(.2,jjH-jjR),jjFill=jjO.fill||(jjO.lit?'glass':'dark'),jjT=Math.min(.24,jjW*.14),jjTm=jjO.trim||'marble';
+ jjWithYaw(jjX,jjY,jjZ,jjRy,()=>{
+  jjBox(jjX,jjY+jjRect/2,jjZ+.05,jjW,jjRect,.1,jjFill);jjHospPut('l'+jjHospKey([jjR,.1]),jjHospLunetteGeo(jjR,.1),jjFill,jjX,jjY+jjRect,jjZ+.05);
+  jjHospPut('r'+jjHospKey([jjR,jjT,.24]),jjHospRingGeo(jjR,jjT,.24),jjTm,jjX,jjY+jjRect,jjZ+.12);
+  for(const jjS of [-1,1])jjBox(jjX+jjS*(jjR+jjT/2),jjY+jjRect/2,jjZ+.12,jjT,jjRect,.24,jjTm);
+  jjBox(jjX,jjY-.08,jjZ+.16,jjW+jjT*2+.22,.16,.36,'marble');
+  if(jjO.mullion)jjBox(jjX,jjY+jjRect/2+.1,jjZ+.12,.08,jjRect+jjR*.6,.06,'marble');
+  if(jjO.shutter)for(const jjS of [-1,1])jjBox(jjX+jjS*(jjR+jjT+jjW*.22),jjY+jjRect*.5,jjZ+.13,jjW*.42,jjRect*.95,.08,'terracotta');
+ });}
+// wall lamp: iron bracket and a glowing lantern, on a face at z (faces +z before ry)
+function jjHospLamp(jjX,jjY,jjZ,jjRy){jjWithYaw(jjX,jjY,jjZ,jjRy,()=>{jjBeam([jjX,jjY+.35,jjZ],[jjX,jjY+.35,jjZ+.55],.035,'iron');jjBox(jjX,jjY,jjZ+.55,.26,.42,.26,'glow');jjBox(jjX,jjY+.25,jjZ+.55,.34,.08,.34,'gold');jjBox(jjX,jjY-.25,jjZ+.55,.2,.08,.2,'gold');});}
+// a projecting balcony on corbels with a marble balustrade, floor at y, wall face at z
+function jjHospBalcony(jjX,jjY,jjZ,jjW,jjDep,jjRy){jjWithYaw(jjX,jjY,jjZ,jjRy,()=>{
+ jjBox(jjX,jjY-.1,jjZ+jjDep/2,jjW,.2,jjDep,'marble');jjBox(jjX,jjY-.32,jjZ+jjDep/2-.05,jjW-.2,.24,jjDep-.1,'brickYellow');
+ for(let jjI=0;jjI<4;jjI++)jjBox(jjX-jjW/2+.35+jjI*(jjW-.7)/3,jjY-.75,jjZ+jjDep*.3,.24,.7,jjDep*.55,'brickYellow');
+ jjBox(jjX,jjY+.95,jjZ+jjDep-.08,jjW,.12,.16,'marble');for(const jjS of [-1,1])jjBox(jjX+jjS*(jjW/2-.08),jjY+.95,jjZ+jjDep/2,.16,.12,jjDep,'marble');
+ const jjN=Math.round(jjW/.3);for(let jjI=0;jjI<=jjN;jjI++)jjBox(jjX-jjW/2+.08+jjI*(jjW-.16)/jjN,jjY+.45,jjZ+jjDep-.08,.1,.9,.1,'cream');
+ for(const jjS of [-1,1])for(let jjI=1;jjI<4;jjI++)jjBox(jjX+jjS*(jjW/2-.08),jjY+.45,jjZ+jjI*jjDep/4,.1,.9,.1,'cream');});}
+// Place a registered furniture piece at a LOCAL point of the building being built. JJFURN.place with the
+// building group as parent goes wrong (useGroupXF reads the child's local matrix, so the piece lands near
+// the world origin); place it in the scene at the world point instead.
+function jjHospFurn(jjKey,jjX,jjY,jjZ,jjRy,jjO){const jjC=JJ.cur;if(!jjC)return null;const jjP=new THREE.Vector3(jjX,jjY,jjZ).applyMatrix4(jjC.G.matrixWorld);
+ return JJFURN.place(JJ.scene,jjKey,jjP.x,jjP.z,(jjRy||0)+jjC.ry,Object.assign({},jjO||{},{y:jjP.y}));}
+// four strips round the outside of a w x d rectangle (string courses, cornices, base courses)
+function jjHospRing4(jjCx,jjCz,jjW,jjD,jjY,jjH,jjT,jjMat){jjBox(jjCx,jjY,jjCz+jjD/2+jjT/2-.02,jjW+jjT*2,jjH,jjT,jjMat);jjBox(jjCx,jjY,jjCz-jjD/2-jjT/2+.02,jjW+jjT*2,jjH,jjT,jjMat);
+ for(const jjS of [-1,1])jjBox(jjCx+jjS*(jjW/2+jjT/2-.02),jjY,jjCz,jjT,jjH,jjD,jjMat);}
+// crenellated parapet standing on the edge of a w x d rectangle (base y)
+function jjHospParapet(jjCx,jjY,jjCz,jjW,jjD,jjT,jjH){jjCrenel(jjCx,jjY,jjCz+jjD/2-jjT/2,jjW,jjT,jjH);jjCrenel(jjCx,jjY,jjCz-jjD/2+jjT/2,jjW,jjT,jjH);
+ for(const jjS of [-1,1]){const jjX=jjCx+jjS*(jjW/2-jjT/2);jjWithYaw(jjX,jjY,jjCz,Math.PI/2,()=>jjCrenel(jjX,jjY,jjCz,jjD-jjT*2,jjT,jjH));}}
+// a ring of merlons on a round tower top (base y)
+function jjHospRoundCrenel(jjX,jjY,jjZ,jjR,jjN){jjCylinder(jjX,jjY+.3,jjZ,jjR,.6,'brick',undefined,32);jjCylinder(jjX,jjY+.66,jjZ,jjR+.12,.14,'marble',undefined,32);
+ for(let jjI=0;jjI<jjN;jjI++){const jjA=jjI*TAU/jjN;jjBox(jjX+Math.cos(jjA)*(jjR-.22),jjY+1.05,jjZ+Math.sin(jjA)*(jjR-.22),.44,.7,TAU*jjR/jjN*.55,'brickYellow',undefined,-jjA);}}
+// barrel vault roof along z on walls whose tops are at y; outer shell, transverse marble ribs, ridge
+function jjHospVault(jjX,jjY,jjZ,jjR,jjLen,jjRibs,jjMat){jjHospPut('v'+jjHospKey([jjR,jjLen]),jjHospVaultGeo(jjR,jjLen),jjMat||'tile',jjX,jjY,jjZ);
+ for(let jjI=0;jjI<jjRibs;jjI++){const jjZ0=jjZ-jjLen/2+(jjI+.5)*jjLen/jjRibs;jjHospPut('r'+jjHospKey([jjR,.22,.34]),jjHospRingGeo(jjR,.22,.34),'marble',jjX,jjY,jjZ0);}
+ for(const jjS of [-1,1])jjBox(jjX,jjY,jjZ+jjS*(jjLen/2-.15),jjR*2+.3,.3,.4,'marble');}
+
+// ---------------------------------------------------------------------------------------------
+// INN: three storeys round a court. Galleries on arches on every floor face the court; the carriage
+// gate runs through a yellow gate tower with a slate ribbed lantern; stables and a yard at the back.
+const JJHOSP_INN={H:3.6,TOP:10.8};
+function buildJjHospInn(jjG,jjO){reseed(9300+(jjO.v|0));
+ const jjH=JJHOSP_INN.H,jjTop=JJHOSP_INN.TOP,jjCz=3.5,jjPi=Math.PI;
+ // court and gallery paving, with a raised round fountain plaza in the middle
+ jjBox(0,.05,jjCz,20.4,.1,15.4,'marble');jjRoundPlaza(0,0,jjCz,2.6,{raised:false,inlay:true});jjBox(0,.05,14.2,3.6,.1,6,'marble');
+ // room blocks (the gallery bands between them and the court arcades stay open)
+ jjBox(-8.4,jjTop/2,13.6,13.2,jjTop,4.8,'brick');jjBox(8.4,jjTop/2,13.6,13.2,jjTop,4.8,'brick');
+ jjBox(0,(3.45+jjTop)/2,13.6,3.6,jjTop-3.45,4.8,'brick');jjBox(0,3.38,13.6,3.6,.14,4.8,'brickYellow');
+ jjBox(0,jjTop/2,-6.6,30,jjTop,4.8,'brick');for(const jjS of [-1,1])jjBox(jjS*12.6,jjTop/2,jjCz,4.8,jjTop,15.4,'brick');
+ // roof slabs over each range (they also roof the top gallery) and the outer cornice and parapet
+ jjBox(0,jjTop+.17,12.375,30,.34,7.25,'brickDeep');jjBox(0,jjTop+.17,-5.375,30,.34,7.25,'brickDeep');for(const jjS of [-1,1])jjBox(jjS*11.375,jjTop+.17,jjCz,7.25,.34,10.5,'brickDeep');
+ for(const jjS of [-1,1]){jjBox(jjS*8.4,.45,16.09,13.6,.9,.22,'brickDeep');jjBox(jjS*8.4,.45,-9.09,13.6,.9,.22,'brickDeep');jjBox(jjS*15.09,.45,jjCz,.22,.9,25.4,'brickDeep');}for(const jjY of [jjH,jjH*2])jjHospRing4(0,jjCz,30,25,jjY,.24,.16,'brickYellow');
+ jjHospRing4(0,jjCz,30,25,jjTop+.12,.42,.36,'marble');jjHospParapet(0,jjTop+.34,jjCz,30.4,25.4,.45,1.25);
+ // court cornice over the top arcade
+ jjBox(0,jjTop+.42,8.95,16.9,.3,1,'marble');jjBox(0,jjTop+.42,-1.95,16.9,.3,1,'marble');for(const jjS of [-1,1])jjBox(jjS*7.95,jjTop+.42,jjCz,1,.3,11.9,'marble');
+ // GALLERIES: three floors of arcades round the court; the ground floor on patterned columns, the upper floors railed
+ const jjPats=['diamond','spiral','chevron','fleur'];
+ for(let jjF=0;jjF<3;jjF++){const jjY=jjF*jjH,jjOpt=jjF?{depth:.5,rail:1.0}:{depth:.5},jjOW=jjF?2.3:2.5,jjSp=jjF?1.55:1.85;
+  jjHospRow(0,jjY,9,16,5,jjH,jjOW,jjSp,jjPi,jjOpt);jjHospRow(0,jjY,-2,16,5,jjH,jjOW,jjSp,0,jjOpt);
+  jjHospRow(-8,jjY,jjCz,11,3,jjH,jjOW,jjSp,jjPi/2,jjOpt);jjHospRow(8,jjY,jjCz,11,3,jjH,jjOW,jjSp,-jjPi/2,jjOpt);
+  // room doors and small windows on the back wall of each gallery
+  for(const jjX of [-6.4,-3.2,0,3.2,6.4]){if(!(jjF===0&&jjX===0)){jjDoor(jjX,jjY,11.2,1.05,2.3,jjPi,{mat:'dark'});}jjDoor(jjX,jjY,-4.2,1.05,2.3,0,{mat:'dark'});}
+  for(const jjZ of [-.17,3.5,7.17])for(const jjS of [-1,1])jjDoor(jjS*10.2,jjY,jjZ,1.05,2.3,-jjS*jjPi/2,{mat:'dark'});
+  if(jjF>0){jjBox(0,jjY-.12,9.975,20.4,.3,2.45,'brickDeep');jjBox(0,jjY-.12,-3.075,20.4,.3,2.45,'brickDeep');for(const jjS of [-1,1])jjBox(jjS*9.1,jjY-.12,jjCz,2.2,.3,10.5,'brickDeep');}}
+ for(const jjX of [-8,8])for(const jjZ of [-2,9])jjBox(jjX,jjTop/2,jjZ,.9,jjTop,.9,'brickYellow');
+ let jjK=0;for(const jjX of [-4.8,-1.6,1.6,4.8]){jjColumn(jjX,0,8.5,.2,3.4,{pattern:jjPats[jjK++%4]});jjColumn(jjX,0,-1.5,.2,3.4,{pattern:jjPats[jjK++%4]});}
+ for(const jjZ of [1.67,5.33])for(const jjS of [-1,1])jjColumn(jjS*7.5,0,jjZ,.2,3.4,{pattern:jjPats[jjK++%4]});
+ // FRONT: the yellow gate tower with the carriage arch, a balcony, a gold porthole and a slate lantern dome
+ jjHospBay(0,0,16.6,8,13.6,3,1.85,0,{depth:1.2,mat:'brickYellow'});jjBox(0,(11.14+13.6)/2,14.05,8,13.6-11.14,4.1,'brickYellow');
+ for(const jjY of [jjH,jjH*2])jjBox(0,jjY,17.25,8.2,.24,.14,'marble');jjHospRing4(0,14.6,8,5.2,13.5,.4,.3,'marble');jjHospParapet(0,13.7,14.6,8.4,5.6,.4,1.2);
+ jjHospBalcony(0,7.25,17.2,4.2,1.3,0);jjHospArchWin(0,7.3,17.2,1.4,2.6,0,{fill:'dark'});jjPorthole(0,10.75,17.24,0,1.05);
+ jjCylinder(0,14.8,14.6,2.05,2.4,'brickYellow',undefined,32);jjCylinder(0,16.05,14.6,2.2,.14,'marble',undefined,32);
+ for(let jjI=0;jjI<8;jjI++){const jjA=jjI*TAU/8+TAU/16;jjBox(Math.cos(jjA)*2.06,15.2,14.6+Math.sin(jjA)*2.06,.5,.9,.1,'dark',undefined,-jjA+jjPi/2);}
+ jjDome(0,16.1,14.6,2.1,{kind:'slate',shape:'ribbed'});
+ for(const jjS of [-1,1])jjHospLamp(jjS*2.55,2.55,17.2,0);
+ // front windows: arched with shutters below, arched over balconies on the first floor, portholes at the top
+ for(const jjX of [-12,-7.5,7.5,12]){jjHospArchWin(jjX,.95,16,1.3,2.25,0,{shutter:true});jjHospArchWin(jjX,4.35,16,1.25,2.3,0,{});
+  if(Math.abs(jjX)<10)jjHospBalcony(jjX,4.3,16,2.2,.9,0);jjPorthole(jjX,9.05,16.02,0,.72);}
+ for(const jjS of [-1,1])jjBanner(jjS*5.25,9.6,16.1,0,{w:1.1,h:4.2});
+ // front corner turrets
+ for(const jjS of [-1,1])jjTurret(jjS*15,0,16,1.25,11.6,{kind:'terracotta',shape:'onion',pattern:jjS<0?'chevron':'spiral'});
+ // SIDES and BACK: windows on every floor
+ for(const jjS of [-1,1])for(const jjZ of [-5.5,-.5,4.5,9.5]){const jjRy=jjS*jjPi/2;jjHospArchWin(jjS*15,.95,jjZ,1.2,2.2,jjRy,{shutter:true});jjHospArchWin(jjS*15,4.35,jjZ,1.2,2.2,jjRy,{});jjPorthole(jjS*15.02,9.05,jjZ,jjRy,.62);}
+ for(const jjX of [-11,-6,6,11]){jjHospArchWin(jjX,.95,-9,1.2,2.2,jjPi,{shutter:true});jjHospArchWin(jjX,4.35,-9,1.2,2.2,jjPi,{});jjPorthole(jjX,9.05,-9.02,jjPi,.62);}
+ jjDoor(0,0,-9,1.6,2.6,jjPi,{mat:'dark'});jjHospLamp(1.5,2.4,-9,jjPi);
+ // chimney stacks on the side ranges and the back range
+ jjChimneyStack(-12.6,jjTop+.34,jjCz+2,{n:4,h:3.1,seed:1});jjChimneyStack(12.6,jjTop+.34,jjCz-1,{n:3,h:3.4,seed:3});jjChimneyStack(-6,jjTop+.34,-6.6,{n:2,h:2.6,seed:4});
+ // STABLES across the back of a small yard: arched stalls under a tiled barrel vault
+ const jjSz=-16.575;jjBox(0,2.1,-17.425,22,4.2,3.15,'brick');jjHospRow(0,0,-14.45,22,6,4.2,2.3,1.65,0,{depth:.6,back:'dark',backOff:.6,mat:'brick'});
+ for(const jjS of [-1,1])jjBox(jjS*10.7,2.1,jjSz,.6,4.2,4.85,'brick');
+ for(let jjI=0;jjI<6;jjI++){const jjX=-11+(jjI+.5)*22/6;jjBox(jjX,.7,-14.82,2.25,1.4,.1,'wood');jjBox(jjX,1.42,-14.82,2.3,.08,.16,'iron');}
+ jjBox(0,4.35,jjSz,22.4,.3,5.1,'marble');jjWithYaw(0,4.5,jjSz,jjPi/2,()=>jjHospVault(0,4.5,jjSz,2.45,22.2,5,'tile'));
+ for(const jjS of [-1,1]){jjWithYaw(jjS*11.1,4.5,jjSz,jjPi/2,()=>jjHospPut('l'+jjHospKey([2.45,.5]),jjHospLunetteGeo(2.45,.5),'brick',jjS*11.1,4.5,jjSz));jjPorthole(jjS*11.37,5.45,jjSz,jjS*jjPi/2,.55);}
+ // yard walls with an arched horse gate on the left, a trough and a hitching rail
+ jjWall(14.7,0,-14,.6,3.2,10,0,{band:true});jjWall(-14.7,0,-11,.6,3.2,4,0,{band:true});jjWall(-14.7,0,-18,.6,3.2,2,0,{band:true});
+ jjHospBay(-14.7,0,-15,4,3.64,2.5,1.9,-jjPi/2,{depth:.6,mat:'brickYellow'});
+ for(const jjS of [-1,1])jjWall(jjS*12.85,0,-18.7,3.1,3.2,.6,0,{band:true});
+ jjBox(9,.45,-11.2,3.2,.9,.9,'brickDeep');jjBox(9,.86,-11.2,2.9,.06,.6,'water');jjBeam([-6,1.1,-10.4],[-1.5,1.1,-10.4],.07,'wood');for(const jjX of [-6,-3.75,-1.5])jjBeam([jjX,0,-10.4],[jjX,1.15,-10.4],.08,'wood');
+ jjReg('Inn court and galleries',0,jjCz,8,jjTop,{});jjReg('Inn gate tower',0,14.6,4.2,17.4,{});jjReg('Inn stables',0,jjSz,11,7.5,{type:['farm']});}
+
+// ---------------------------------------------------------------------------------------------
+// TAVERN: one long hall under a tiled barrel vault with marble ribs, a lantern on the ridge,
+// an open arcade loggia across the front with benches, and a big clustered chimney at the back.
+function buildJjHospTavern(jjG,jjO){reseed(9310+(jjO.v|0));
+ const jjPi=Math.PI,jjB=.6,jjWallH=6,jjR=6.6,jjZ0=-11,jjZ1=7,jjLen=jjZ1-jjZ0,jjMid=(jjZ0+jjZ1)/2,jjSpr=jjB+jjWallH;
+ // plinth with a marble cap and front steps
+ jjBox(0,jjB/2,-1.2,15.6,jjB,25.6,'brickDeep');jjBox(0,jjB-.06,-1.2,15.9,.12,25.9,'marble');jjStairs(0,0,12.4,9,1.5,jjB,3,0,{});
+ // hall side walls with yellow buttress piers and tall arched windows
+ for(const jjS of [-1,1]){jjBox(jjS*6.2,jjSpr-jjWallH/2,jjMid,.8,jjWallH,jjLen,'brick');
+  for(let jjI=0;jjI<=5;jjI++){const jjZ=jjZ0+jjI*jjLen/5;jjBox(jjS*6.75,jjB+(jjWallH-.3)/2,jjZ,.7,jjWallH-.3,1.05,'brickYellow');jjBox(jjS*6.85,jjB+jjWallH-.15,jjZ,.9,.35,1.25,'marble');}
+  for(let jjI=0;jjI<5;jjI++){const jjZ=jjZ0+(jjI+.5)*jjLen/5;jjHospArchWin(jjS*6.6,jjB+1.3,jjZ,1.5,3.6,jjS*jjPi/2,{lit:true,mullion:true});}}
+ jjBox(-6.95,jjSpr-.05,jjMid,.6,.4,jjLen+.4,'marble');jjBox(6.95,jjSpr-.05,jjMid,.6,.4,jjLen+.4,'marble');
+ // the vault, its gable ends with rose portholes, and a slate lantern on the ridge
+ jjHospVault(0,jjSpr,jjMid,jjR,jjLen,5,'tile');
+ for(const jjZ of [jjZ1,jjZ0])jjHospPut('l'+jjHospKey([jjR,.8]),jjHospLunetteGeo(jjR,.8),'brick',0,jjSpr,jjZ);
+ jjBox(0,jjSpr/2+jjB/2,jjZ1,12.4,jjWallH,.8,'brick');jjBox(0,jjSpr/2+jjB/2,jjZ0,12.4,jjWallH,.8,'brick');
+ jjPorthole(0,jjSpr+3,jjZ1+.42,0,1.35);for(const jjS of [-1,1])jjPorthole(jjS*3.6,jjSpr+1.9,jjZ0-.42,jjPi,.75);
+ jjBox(0,jjSpr+jjR-.15,jjMid,2.6,1.1,2.6,'brickYellow');jjCylinder(0,jjSpr+jjR+.95,jjMid,1.05,1.1,'brickYellow',undefined,32);
+ for(let jjI=0;jjI<6;jjI++){const jjA=jjI*TAU/6;jjBox(Math.cos(jjA)*1.06,jjSpr+jjR+.95,jjMid+Math.sin(jjA)*1.06,.32,.6,.06,'glass',undefined,-jjA+jjPi/2);}
+ jjCylinder(0,jjSpr+jjR+1.56,jjMid,1.2,.14,'marble',undefined,32);jjDome(0,jjSpr+jjR+1.62,jjMid,1.1,{kind:'slate',shape:'ribbed'});
+ // front wall of the hall: a wide door with lamps, two windows
+ jjDoor(0,jjB,jjZ1+.4,1.8,2.9,0,{mat:'dark'});for(const jjS of [-1,1]){jjHospLamp(jjS*1.75,jjB+2.6,jjZ1+.4,0);jjHospArchWin(jjS*3.9,jjB+1.2,jjZ1+.4,1.3,2.5,0,{lit:true,shutter:true});}
+ // FRONT LOGGIA: an open arcade of three bays across the front and one at each side, roofed, crenellated
+ const jjLz=11,jjLh=5;
+ jjHospRow(0,jjB,jjLz,15.2,3,jjLh,3.5,2.8,0,{depth:.7,mat:'brick'});
+ for(const jjS of [-1,1])jjHospRow(jjS*7.25,jjB,(jjZ1+jjLz)/2+.2,3.9,1,jjLh,2.4,2.5,jjS*jjPi/2,{depth:.7});
+ for(const jjX of [-2.53,2.53])jjColumn(jjX,jjB,jjLz+.65,.24,jjLh,{pattern:jjX<0?'spiral':'diamond'});
+ jjBox(0,jjB+jjLh+.15,(jjZ1+jjLz)/2+.2,15.4,.3,4.6,'brickDeep');jjBox(0,jjB+jjLh+.42,jjLz+.1,15.9,.3,.95,'marble');jjCrenel(0,jjB+jjLh+.57,jjLz+.2,15.4,.5,1.1);
+ for(const jjS of [-1,1])jjWithYaw(jjS*7.4,jjB+jjLh+.57,(jjZ1+jjLz)/2+.2,jjPi/2,()=>jjCrenel(jjS*7.4,jjB+jjLh+.57,(jjZ1+jjLz)/2+.2,4.4,.5,1.1));
+ jjBox(0,jjB+.04,(jjZ1+jjLz)/2+.2,14,.08,4,'marble');for(const jjX of [-4.5,0,4.5])jjBox(jjX,jjB+.085,(jjZ1+jjLz)/2+.2,2.2,.02,2.2,'turquoise');
+ for(const jjS of [-1,1])jjBanner(jjS*4.3,11,jjZ1+.45,0,{w:.9,h:2.6});
+ for(const jjX of [-5.2,-2.4,2.4,5.2])jjHospFurn('jj_furn_bench',jjX,jjB+.08,8.0,0);
+ // the big chimney: a stepped breast against the back gable carrying a five-shaft ornamental stack
+ jjBox(0,(jjB+12.6)/2,jjZ0-1.6,4.4,12.6-jjB,2.6,'brickDark');jjBox(0,jjB+1.2,jjZ0-1.85,5.4,2.4,2.9,'brick');jjBox(0,jjB+2.5,jjZ0-1.85,5.6,.24,3.1,'marble');
+ for(const jjY of [5,8.5,11.5])jjBox(0,jjY,jjZ0-1.6,4.6,.22,2.8,'brickYellow');
+ jjChimneyStack(0,12.6,jjZ0-1.6,{n:5,h:3.6,r:.38,seed:2});
+ // barrels by the back door
+ for(let jjI=0;jjI<4;jjI++)jjCylinder(5.2-(jjI%2)*.9,jjB+.5,jjZ0-1+((jjI/2)|0)*-.9,.4,1,'wood',undefined,16);
+ jjReg('Tavern hall',0,jjMid,7,jjSpr+jjR,{});jjReg('Tavern loggia',0,9.2,7.6,jjLh+1.5,{});jjReg('Tavern chimney',0,jjZ0-1.25,2.5,17.5,{});}
+
+// ---------------------------------------------------------------------------------------------
+// CARAVANSERAI: a 50 m square walled court. Ground floor: deep arched cells (iwans) round the court;
+// upper floor: an arcaded gallery in front of the upper cells. A pishtaq gatehouse with a thick
+// staged spire either side, round corner towers, a domed well kiosk in the court and a beast yard behind.
+const JJHOSP_CS={Z:6.5,half:25,court:17,cell:19.7,g:5,top:9.5};
+function buildJjHospCaravanserai(jjG,jjO){reseed(9320+(jjO.v|0));
+ const jjC=JJHOSP_CS,jjZ=jjC.Z,jjA=jjC.half,jjK=jjC.court,jjL=jjC.cell,jjGh=jjC.g,jjTop=jjC.top,jjPi=Math.PI;
+ // court floor: earth with marble paths in a cross and a raised round well platform
+ jjBox(0,.04,jjZ,6,.08,34,'marble');jjBox(0,.04,jjZ,34,.08,6,'marble');jjBox(0,.02,jjZ,34,.04,34,'ochre');
+ // range blocks (ground: behind the cells; upper: behind the gallery), split by the gate and yard passages
+ const jjBand='bandBrick',jjRw=jjA-jjL;
+ for(const jjS of [-1,1]){jjBox(jjS*(1.9+(jjA-1.9)/2),jjTop/2,jjZ+(jjL+jjRw/2),jjA-1.9,jjTop,jjRw,jjBand);
+  jjBox(jjS*(1.9+(jjA-1.9)/2),jjTop/2,jjZ-(jjL+jjRw/2),jjA-1.9,jjTop,jjRw,jjBand);
+  jjBox(jjS*(jjL+jjRw/2),jjTop/2,jjZ,jjRw,jjTop,jjL*2,jjBand);}
+ for(const jjS of [-1,1])jjBox(0,(jjGh+jjTop)/2,jjZ+jjS*(jjL+jjRw/2),3.8,jjTop-jjGh,jjRw,jjBand);
+ // ground-floor cells: a thick arched front at the court line, piers, a ceiling band and a dark back
+ const jjN=9,jjBw=34/jjN,jjFrontZ=jjK+.6;
+ const jjSides=[[0,jjZ+jjFrontZ,jjPi],[0,jjZ-jjFrontZ,0],[-jjFrontZ,jjZ,jjPi/2],[jjFrontZ,jjZ,-jjPi/2]];
+ jjSides.forEach(([jjX,jjZZ,jjRy],jjSi)=>{
+  jjHospRow(jjX,0,jjZZ,34,jjN,jjGh,2.7,2.55,jjRy,{depth:1.2,mat:'brick',skip:jjSi<2?[4]:[]});
+  if(jjSi<2)jjHospRow(jjX,0,jjZZ,34,jjN,jjGh,3.3,2.2,jjRy,{depth:1.2,mat:'brickYellow',skip:[0,1,2,3,5,6,7,8]});
+  jjWithYaw(jjX,0,jjZZ,jjRy,()=>{for(let jjI=0;jjI<=jjN;jjI++){const jjPx=jjX-17+jjI*jjBw;jjBox(jjPx,jjGh/2,jjZZ-1.35,.9,jjGh,1.5,'brick');}
+   jjBox(jjX,(3.95+jjGh)/2,jjZZ-1.35,34,jjGh-3.95,1.5,'brick');
+   for(let jjI=0;jjI<jjN;jjI++){if(jjSi<2&&jjI===4)continue;const jjPx=jjX-17+(jjI+.5)*jjBw;jjBox(jjPx,1.98,jjZZ-2.06,jjBw-.9,3.95,.06,'dark');jjDoor(jjPx,0,jjZZ-2.0,1.1,2.3,0,{mat:'wood'});}});});
+ // upper floor: the gallery floor, the railed arcade at the court line, cell doors on the back wall
+ jjBox(0,jjGh-.15,jjZ+jjK+1.35,34+5.4,.3,2.7,'brickDeep');jjBox(0,jjGh-.15,jjZ-jjK-1.35,34+5.4,.3,2.7,'brickDeep');for(const jjS of [-1,1])jjBox(jjS*(jjK+1.35),jjGh-.15,jjZ,2.7,.3,34,'brickDeep');
+ jjSides.forEach(([jjX,jjZZ,jjRy])=>{const jjUz=jjZZ;jjWithYaw(jjX,0,jjZZ,jjRy,()=>{
+  jjHospRow(jjX,jjGh,jjUz+.35,34,jjN,jjTop-jjGh,2.5,1.85,0,{depth:.5,mat:'brickYellow',rail:1});
+  for(let jjI=0;jjI<jjN;jjI++){const jjPx=jjX-17+(jjI+.5)*jjBw;jjHospArchWin(jjPx,jjGh+.1,jjZZ-2.1,1.15,2.5,0,{fill:'dark',trim:'brickYellow'});}
+  jjBox(jjX,jjGh+.12,jjZZ+.35,34,.24,.62,'marble');});});
+ for(const jjX of [-jjK,jjK])for(const jjZZ of [jjZ-jjK,jjZ+jjK])jjBox(jjX,jjTop/2,jjZZ,1.4,jjTop,1.4,'brick');
+ // roof, court cornice, outer string course, cornice and crenellated parapet
+ jjBox(0,jjTop+.17,jjZ+(jjK+jjA)/2,jjA*2,.34,jjA-jjK+.4,'brickDeep');jjBox(0,jjTop+.17,jjZ-(jjK+jjA)/2,jjA*2,.34,jjA-jjK+.4,'brickDeep');for(const jjS of [-1,1])jjBox(jjS*(jjK+jjA)/2,jjTop+.17,jjZ,jjA-jjK+.4,.34,jjK*2-.4,'brickDeep');
+ jjHospRing4(0,jjZ,jjK*2-.8,jjK*2-.8,jjTop+.25,.4,.5,'marble');
+ jjHospRing4(0,jjZ,jjA*2,jjA*2,.45,.9,.24,'brickDeep');jjHospRing4(0,jjZ,jjA*2,jjA*2,jjGh,.26,.16,'marble');jjHospRing4(0,jjZ,jjA*2,jjA*2,jjTop+.12,.42,.36,'marble');
+ jjHospParapet(0,jjTop+.34,jjZ,jjA*2+.4,jjA*2+.4,.5,1.3);
+ // outer walls: small arched windows on the upper floor, half-round buttress towers mid-side
+ for(let jjI=0;jjI<10;jjI++){const jjT=-22.5+jjI*5;if(Math.abs(jjT)<4)continue;
+  if(Math.abs(Math.abs(jjT)-10)>3.5)jjHospArchWin(jjT,6.6,jjZ-jjA,.7,1.5,jjPi,{fill:'dark'});for(const jjS of [-1,1])jjHospArchWin(jjS*jjA,6.6,jjZ+jjT,.7,1.5,jjS*jjPi/2,{fill:'dark'});
+  if(Math.abs(jjT)>10)jjHospArchWin(jjT,6.6,jjZ+jjA,.7,1.5,0,{fill:'dark'});}
+ for(const [jjX,jjZZ] of [[-jjA,jjZ],[jjA,jjZ],[-10,jjZ-jjA],[10,jjZ-jjA]]){jjCylinder(jjX,5.4,jjZZ,2.1,10.8,'brick');jjCylinder(jjX,.45,jjZZ,2.25,.9,'brickDeep');jjCylinder(jjX,jjGh,jjZZ,2.18,.26,'marble');jjHospRoundCrenel(jjX,10.8,jjZZ,2.2,8);}
+ // corner towers: round, crenellated, with a small terracotta dome on a drum
+ for(const jjX of [-jjA,jjA])for(const jjZZ of [jjZ-jjA,jjZ+jjA]){jjCylinder(jjX,6.25,jjZZ,3.4,12.5,'brick',undefined,32);jjCylinder(jjX,.5,jjZZ,3.6,1,'brickDeep',undefined,32);
+  for(const jjY of [jjGh,9.2])jjCylinder(jjX,jjY,jjZZ,3.48,.3,'brickYellow',undefined,32);jjHospRoundCrenel(jjX,12.5,jjZZ,3.5,12);
+  jjCylinder(jjX,13.4,jjZZ,1.7,1.8,'brickYellow',undefined,32);jjDome(jjX,14.3,jjZZ,1.8,{kind:'terracotta',shape:'hemi'});
+  for(let jjI=0;jjI<4;jjI++){const jjAa=jjI*TAU/4+TAU/8;jjPorthole(jjX+Math.cos(jjAa)*3.4,7.4,jjZZ+Math.sin(jjAa)*3.4,Math.PI/2-jjAa,.42);}}
+ // GATEHOUSE: a tall yellow pishtaq with a deep arch, the inner gate in its back wall, a balcony and a crenel crown
+ const jjGz=jjZ+jjA,jjPd=3.4,jjPw=17,jjPh=17.5;
+ jjHospBay(0,0,jjGz+jjPd/2,jjPw,jjPh,7.4,6.2,0,{depth:jjPd,mat:'brickYellow'});
+ jjHospBay(0,0,jjGz+.3,7.6,10,3.8,3.0,0,{depth:.6,mat:'brick'});jjBox(0,(10+jjPh)/2,jjGz+.3,7.6,jjPh-10,.6,'brick');
+ jjBox(0,jjPh-.35,jjGz+jjPd/2,jjPw+.6,.7,jjPd+.6,'brickDeep');jjBox(0,jjPh+.12,jjGz+jjPd/2,jjPw+1,.3,jjPd+1,'marble');jjHospParapet(0,jjPh+.27,jjGz+jjPd/2,jjPw+.6,jjPd+.6,.45,1.4);
+ for(const jjS of [-1,1]){jjBox(jjS*(jjPw/2-.35),jjPh/2,jjGz+jjPd+.12,.5,jjPh-1,.3,'marble');jjBox(jjS*4.45,7.5,jjGz+jjPd+.1,.36,15,.2,'marble');}
+ jjBox(0,jjPh-1.6,jjGz+jjPd+.1,jjPw-1,.36,.2,'marble');jjPorthole(0,13.6,jjGz+jjPd+.06,0,1.25);
+ for(const jjS of [-1,1]){jjPorthole(jjS*6.4,13.6,jjGz+jjPd+.06,0,.8);jjHospLamp(jjS*2.5,3.2,jjGz+.6,0);jjBrickShaft(jjS*5.5,0,jjGz+jjPd+1.1,.55,6.5,{pattern:jjS<0?'spiral':'diamond',cap:'star',relief:true});}
+ jjBanner(-6.4,10.6,jjGz+jjPd+.25,0,{w:1,h:3.4});jjBanner(6.4,10.6,jjGz+jjPd+.25,0,{w:1,h:3.4});
+ jjBox(0,.04,jjGz+jjPd/2-.2,7.4,.08,jjPd+.4,'marble');jjBox(0,.04,jjZ+jjA-jjRw/2,3.8,.08,jjRw+.2,'marble');
+ // the two thick staged spires either side of the pishtaq
+ for(const jjS of [-1,1]){const jjX=jjS*(jjPw/2+2.9);jjCylinder(jjX,.6,jjGz+1.6,3.4,1.2,'brickDeep',undefined,32);jjCylinder(jjX,1.24,jjGz+1.6,3.55,.12,'marble',undefined,32);
+  jjSpire(jjX,1.3,jjGz+1.6,3.0,4,{stageH:5.2,pattern:jjS<0?'tracery':'chevron',kind:'gold'});}
+ // the well: a raised sunray platform, a round curb with water, and a kiosk of four patterned columns under a small gold dome
+ jjRoundPlaza(0,0,jjZ,5.2,{raised:true,inlay:true});for(const jjS of [-1,1])jjStairs(0,0,jjZ+jjS*(5.2+.75),3,1.5,.9,3,jjS<0?jjPi:0,{});
+ jjCylinder(0,1.45,jjZ,1.25,1.0,'brick',undefined,32);jjCylinder(0,2.0,jjZ,1.4,.1,'marble',undefined,32);jjCylinder(0,2.06,jjZ,1.02,.02,'water',undefined,32);
+ for(const jjX of [-2.2,2.2])for(const jjZZ of [jjZ-2.2,jjZ+2.2])jjColumn(jjX,.91,jjZZ,.24,4.04,{pattern:jjX*(jjZZ-jjZ)>0?'spiral':'chevron'});
+ jjBox(0,5.15,jjZ,5.4,.4,5.4,'brickYellow');jjBox(0,5.42,jjZ,5.7,.16,5.7,'marble');jjCylinder(0,5.9,jjZ,1.9,.8,'brick',undefined,32);jjDome(0,6.3,jjZ,2.0,{kind:'gold',shape:'onion'});
+ jjBeam([-1.6,4.7,jjZ],[1.6,4.7,jjZ],.08,'wood');jjCylinder(0,4.45,jjZ,.2,.3,'iron',undefined,16);jjBeam([0,4.3,jjZ],[0,2.2,jjZ],.02,'iron');
+ // BEAST YARD behind the back range: walls, an arched side gate, a lean-to shelter with troughs, hay
+ const jjYz0=jjZ-jjA,jjYz1=jjYz0-16,jjYm=(jjYz0+jjYz1)/2;
+ jjWall(0,0,jjYz1,jjA*2,3.6,.7,0,{band:true});for(const jjS of [-1,1]){jjWall(jjS*(jjA-.35),0,jjYm-3.5,.7,3.6,9,0,{band:true});jjWall(jjS*(jjA-.35),0,jjYz0-1.5,.7,3.6,3,0,{band:true});}
+ jjHospBay(jjA-.35,0,jjYz0-5,4,4.4,3.0,2.4,jjPi/2,{depth:.8,mat:'brickYellow'});jjHospBay(-(jjA-.35),0,jjYz0-5,4,4.4,3.0,2.4,-jjPi/2,{depth:.8,mat:'brickYellow'});
+ jjHospBay(0,0,jjYz0+.3,3.8,jjGh,2.8,2.6,jjPi,{depth:.6,mat:'brickYellow'});
+ for(let jjI=0;jjI<=8;jjI++){const jjX=-21+jjI*5.25;jjBeam([jjX,0,jjYz1+4.2],[jjX,3.2,jjYz1+4.2],.14,'wood');}
+ jjBox(0,3.35,jjYz1+2.3,43,.25,4.4,'tile');jjBox(0,3.2,jjYz1+4.25,43,.16,.25,'wood');
+ for(let jjI=0;jjI<4;jjI++){const jjX=-15.75+jjI*10.5;jjBox(jjX,.4,jjYz1+3.4,4.2,.8,.9,'brickDeep');jjBox(jjX,.76,jjYz1+3.4,3.9,.05,.6,'water');}
+ for(const [jjX,jjZZ] of [[-19,jjYz1+1.5],[-17.2,jjYz1+1.4],[18.5,jjYz1+1.6]])jjCylinder(jjX,.8,jjZZ,.9,1.6,'canvas',jjColor(0xd9b25a),16);
+ for(let jjI=0;jjI<5;jjI++){const jjX=-12+jjI*6;jjBeam([jjX,0,jjYm+2],[jjX,1.2,jjYm+2],.1,'wood');}jjBeam([-12,1.1,jjYm+2],[12,1.1,jjYm+2],.06,'wood');
+ jjReg('Caravanserai court',0,jjZ,17,jjTop,{});jjReg('Caravanserai gatehouse',0,jjGz+2,12,23,{});jjReg('Caravanserai well kiosk',0,jjZ,5.2,8.5,{type:['infrastructure']});
+ jjReg('Caravanserai beast yard',0,jjYm,13,4,{type:['farm']});}
+
+JJ.def({key:'jj_inn',name:'Inn',family:'hospitality',row:'Hospitality',w:33.4,d:37.5,h:18.8,r:18.8,cls:'building',tags:{type:['tavern/inn','multi-family dwelling'],wealth:'middle',lit:false},
+ plantSpots:[[-6,-1],[6,-1],[-6,8],[6,8]],views:{'Inn — into the court':{cam:[-1.2,2.0,24],tgt:[0,3.2,0]},'Inn — court galleries':{cam:[-5.5,1.7,7.6],tgt:[4,6.5,-2]}},build:buildJjHospInn});
+JJ.def({key:'jj_tavern',name:'Tavern',family:'hospitality',row:'Hospitality',w:16,d:27.4,h:18.4,r:13.7,cls:'building',tags:{type:['tavern/inn'],wealth:'middle',lit:false},
+ plantSpots:[[-7.8,12.4],[7.8,12.4]],views:{'Tavern — loggia':{cam:[-5.5,1.75,16],tgt:[1,2.6,8.5]}},build:buildJjHospTavern});
+JJ.def({key:'jj_caravanserai',name:'Caravanserai',family:'hospitality',row:'Hospitality',w:57.2,d:71.6,h:25,r:36,cls:'building',tags:{type:['tavern/inn','market/shop'],wealth:'civic',lit:true},
+ plantSpots:[[-10,-3],[10,-3],[-10,16],[10,16]],views:{'Caravanserai — court':{cam:[-12,2.2,21],tgt:[6,4.5,-4]},'Caravanserai — gate':{cam:[-8,2.0,50],tgt:[0,8,30]},'Caravanserai — aerial':{cam:[-55,48,70],tgt:[0,4,2]}},build:buildJjHospCaravanserai});
+// Jimjam civic buildings: the library, the school and the amphitheater. Local frame: origin at the
+// plot centre on the ground, +z is the front, y up. Seeds 9350-9399.
+// Uses the arched-bay helpers of 72-jj-hospitality.js (jjHospBay, jjHospRow, jjHospArchWin, ...).
+
+// A podium without gaps (the shared jjPlinth leaves open slits between its three courses).
+function jjCivPlinth(jjX,jjY,jjZ,jjW,jjH,jjD,jjO){jjO=jjO||{};jjBox(jjX,jjY+.22,jjZ,jjW+.24,.44,jjD+.24,'brickDark');jjBox(jjX,jjY+(jjH-.3)/2,jjZ,jjW-.2,jjH-.3,jjD-.2,jjO.mat||'brickDeep');
+ jjBox(jjX,jjY+jjH*.55,jjZ,jjW-.08,.22,jjD-.08,'brickYellow');jjBox(jjX,jjY+jjH-.17,jjZ,jjW+.1,.34,jjD+.1,'marble');}
+// marble stairs with stepped brick cheek blocks either side (base y; the top step meets a face at z-run/2)
+function jjCivStairs(jjX,jjY,jjZ,jjW,jjRun,jjRise,jjSteps,jjRy){jjStairs(jjX,jjY,jjZ,jjW,jjRun,jjRise,jjSteps,jjRy,{mat:'marble'});
+ jjWithYaw(jjX,jjY,jjZ,jjRy,()=>{for(const jjS of [-1,1])for(let jjI=0;jjI<3;jjI++){const jjL=jjRun*(1-jjI/3),jjHh=jjRise*(jjI+1)/3+.45;jjBox(jjX+jjS*(jjW/2+.45),jjY+jjHh/2,jjZ-jjRun/2+jjL/2,.9,jjHh,jjL,jjI===2?'marble':'brick');}});}
+// a small open pavilion (chhatri): four patterned columns, a slab and a gold onion dome (base y)
+function jjCivChhatri(jjX,jjY,jjZ,jjR){const jjC=jjR*.8;jjBox(jjX,jjY+.15,jjZ,jjR*2.3,.3,jjR*2.3,'marble');
+ for(const jjA of [-1,1])for(const jjB of [-1,1])jjColumn(jjX+jjA*jjC,jjY+.3,jjZ+jjB*jjC,jjR*.13,jjR*1.6,{pattern:'diamond',base:false});
+ jjBox(jjX,jjY+.3+jjR*1.6+.12,jjZ,jjR*2.3,.24,jjR*2.3,'brickYellow');jjBox(jjX,jjY+.3+jjR*1.6+.32,jjZ,jjR*2.5,.16,jjR*2.5,'marble');jjDome(jjX,jjY+.3+jjR*1.6+.4,jjZ,jjR*1.05,{kind:'gold',shape:'onion'});}
+
+// ---------------------------------------------------------------------------------------------
+// LIBRARY: a podium with a wide marble stair; a square reading hall under a tall windowed drum and a
+// great gold dome with a lantern; a yellow pishtaq entrance; two-storey arcaded wings either side.
+const JJCIV_LIB={P:2.4,hallH:13};
+function buildJjCivLibrary(jjG,jjO){reseed(9350+(jjO.v|0));
+ const jjP=JJCIV_LIB.P,jjHh=JJCIV_LIB.hallH,jjPi=Math.PI,jjHz=-1,jjWh=9.2,jjSt=4.6;
+ jjCivPlinth(0,0,1.25,45,jjP,25.5);jjCivStairs(0,0,14+2.6,16,5.2,jjP,8,0);
+ // the reading hall
+ jjBox(0,jjP+jjHh/2,jjHz,18,jjHh,18,'brick');jjHospRing4(0,jjHz,18,18,jjP+jjHh-.1,.5,.36,'marble');jjHospRing4(0,jjHz,18,18,jjP+jjWh+.1,.26,.16,'brickYellow');
+ jjHospParapet(0,jjP+jjHh+.15,jjHz,18.6,18.6,.45,1.2);
+ for(const jjX of [-5,0,5])jjHospArchWin(jjX,jjP+2.6,jjHz-9,2,7.4,jjPi,{lit:true,mullion:true});
+ for(const jjS of [-1,1]){jjHospArchWin(jjS*9,jjP+2.6,-7,1.8,6.6,jjS*jjPi/2,{lit:true,mullion:true});for(const jjZ of [-2.5,3.5])jjPorthole(jjS*9.02,jjP+11.2,jjZ,jjS*jjPi/2,.75);
+  for(const jjZ of [-10,8])jjTurret(jjS*8.2,jjP+jjHh+.15,jjZ+(jjZ<0?.8:-.8),.75,2.4,{kind:'gold',shape:'onion',pattern:'ogee'});}
+ // drum with tall arched windows between pilasters, the gold dome and its lantern
+ const jjD0=jjP+jjHh+.15,jjDr=7,jjDh=6.2;jjCylinder(0,jjD0+.4,jjHz,jjDr+.6,.8,'brickYellow',undefined,32);jjCylinder(0,jjD0+.8+jjDh/2,jjHz,jjDr,jjDh,'brick',undefined,32);
+ jjCylinder(0,jjD0+.8+jjDh+.15,jjHz,jjDr+.35,.3,'marble',undefined,32);jjCylinder(0,jjD0+6.35,jjHz,jjDr+.06,.2,'brickYellow',undefined,32);
+ for(let jjI=0;jjI<12;jjI++){const jjA=(jjI+.5)*TAU/12,jjAp=jjI*TAU/12;jjHospArchWin(Math.cos(jjA)*jjDr,jjD0+1.6,jjHz+Math.sin(jjA)*jjDr,1.25,3.7,jjPi/2-jjA,{lit:true});
+  jjBox(Math.cos(jjAp)*(jjDr+.1),jjD0+.8+jjDh/2,jjHz+Math.sin(jjAp)*(jjDr+.1),.6,jjDh,.3,'brickYellow',undefined,jjPi/2-jjAp);}
+ const jjDt=jjD0+.8+jjDh+.3;jjDome(0,jjDt,jjHz,7.3,{kind:'gold',shape:'hemi',ribs:true});
+ jjCylinder(0,jjDt+7.3+.55,jjHz,1.35,1.5,'brickYellow',undefined,32);for(let jjI=0;jjI<6;jjI++){const jjA=jjI*TAU/6;jjBox(Math.cos(jjA)*1.36,jjDt+7.9,jjHz+Math.sin(jjA)*1.36,.4,.75,.06,'glass',undefined,jjPi/2-jjA);}
+ jjCylinder(0,jjDt+8.66,jjHz,1.55,.16,'marble',undefined,32);jjDome(0,jjDt+8.73,jjHz,1.25,{kind:'gold',shape:'onion'});
+ // the pishtaq entrance: a yellow frame with a deep arch, the door and a lit lunette inside, a crenel crown
+ const jjPz=8,jjPd=3.2,jjPw=13,jjPh=15.6;jjHospBay(0,jjP,jjPz+jjPd/2,jjPw,jjPh,6.2,5.8,0,{depth:jjPd,mat:'brickYellow'});
+ jjBox(0,jjP+jjPh-.3,jjPz+jjPd/2,jjPw+.4,.6,jjPd+.4,'brickDeep');jjBox(0,jjP+jjPh+.08,jjPz+jjPd/2,jjPw+.8,.26,jjPd+.8,'marble');jjHospParapet(0,jjP+jjPh+.2,jjPz+jjPd/2,jjPw+.4,jjPd+.4,.42,1.3);
+ for(const jjS of [-1,1]){jjBox(jjS*(jjPw/2-.3),jjP+jjPh/2,jjPz+jjPd+.1,.45,jjPh-.8,.24,'marble');jjBox(jjS*4.0,jjP+(jjPh-1.6)/2,jjPz+jjPd+.08,.3,jjPh-1.6,.2,'marble');}
+ jjBox(0,jjP+jjPh-1.4,jjPz+jjPd+.08,jjPw-.9,.3,.2,'marble');jjPorthole(0,jjP+12.2,jjPz+jjPd+.05,0,1.15);
+ jjDoor(0,jjP,jjPz,2.6,4.4,0,{mat:'dark'});jjHospArchWin(0,jjP+5.3,jjPz,3.2,3.1,0,{lit:true,mullion:true});for(const jjS of [-1,1])jjHospLamp(jjS*2.1,jjP+3.3,jjPz,0);
+ for(const jjS of [-1,1]){jjBanner(jjS*4.9,jjP+jjPh-2,jjPz+jjPd+.25,0,{w:1,h:3.6});jjColumn(jjS*7.75,jjP,jjPz+1.1,.36,9.4,{pattern:jjS<0?'spiral':'chevron',lattice:true});jjBox(jjS*7.75,jjP+9.55,jjPz+1.1,1.1,.3,1.1,'marble');
+  jjHospArchWin(jjS*7.75,jjP+10.6,jjPz,1.2,2.2,0,{lit:true});}
+ // the wings: two storeys, an arcaded loggia on the front (patterned columns below, a railed gallery above)
+ for(const jjS of [-1,1]){const jjX=jjS*15;
+  jjBox(jjX,jjP+jjWh/2,.5,12,jjWh,9,'brick');jjHospRing4(jjX,2,12,12,jjP+jjSt,.24,.14,'brickYellow');
+  jjHospRow(jjX,jjP,7.6,12,3,jjSt,2.7,2.4,0,{depth:.8,mat:'brick'});jjHospRow(jjX,jjP+jjSt,7.6,12,3,jjWh-jjSt,2.5,2.2,0,{depth:.8,mat:'brick',rail:1});
+  jjHospRow(jjX+jjS*6-jjS*.4,jjP,6.6,2.4,1,jjSt,1.5,2.4,jjS*jjPi/2,{depth:.8});jjHospRow(jjX+jjS*6-jjS*.4,jjP+jjSt,6.6,2.4,1,jjWh-jjSt,1.4,2.2,jjS*jjPi/2,{depth:.8,rail:1});
+  jjBox(jjX,jjP+jjSt-.12,6.5,12,.3,3.2,'brickDeep');jjBox(jjX,jjP+jjWh+.15,2,12.6,.3,12.6,'brickDeep');jjBox(jjX,jjP+jjWh+.35,8.1,12.8,.3,1,'marble');
+  jjHospParapet(jjX,jjP+jjWh+.3,2,12.6,12.6,.4,1.1);
+  for(const jjCx of [jjX-2,jjX+2])jjColumn(jjCx,jjP,8.25,.24,jjSt-.2,{pattern:jjCx*jjS<15?'diamond':'fleur'});
+  for(const jjCx of [jjX-4,jjX,jjX+4]){jjHospArchWin(jjCx,jjP+.9,5,1.4,2.8,0,{lit:true});jjDoor(jjCx,jjP+jjSt,5,1.2,2.5,0,{mat:'dark'});}
+  for(const jjZ of [-1.5,2.5]){jjHospArchWin(jjS*21,jjP+.9,jjZ,1.4,3,jjS*jjPi/2,{lit:true,shutter:false});jjHospArchWin(jjS*21,jjP+jjSt+.8,jjZ,1.4,3,jjS*jjPi/2,{lit:true});}
+  for(const jjCx of [jjX-3.5,jjX+3.5]){jjHospArchWin(jjCx,jjP+.9,-4,1.4,2.8,jjPi,{lit:true});jjHospArchWin(jjCx,jjP+jjSt+.8,-4,1.4,2.8,jjPi,{lit:true});}
+  jjCivChhatri(jjS*19.4,jjP+jjWh+.3,-2.6,1.3);}
+ jjHospFurn('jj_furn_brazier',-9.6,jjP,13.1,0,{lit:true});jjHospFurn('jj_furn_brazier',9.6,jjP,13.1,0,{lit:true});
+ jjReg('Library reading hall and dome',0,jjHz,9.5,32.5,{});jjReg('Library west wing',-15,2,7,12,{});jjReg('Library east wing',15,2,7,12,{});jjReg('Library stair',0,16.6,8,2.4,{type:['infrastructure']});}
+
+// ---------------------------------------------------------------------------------------------
+// SCHOOL: a yellow-brick courtyard building. Classrooms round a red-arched cloister, a row of small
+// terracotta domes over the classrooms, a two-storey front range with the gate and an open bell turret.
+function buildJjCivSchool(jjG,jjO){reseed(9360+(jjO.v|0));
+ const jjB=.5,jjPi=Math.PI,jjRh=4.6,jjFh=8.4,jjY='brickYellow';
+ jjCivPlinth(0,0,0,30.8,jjB,26.8);jjStairs(0,0,14.15,5,1.1,jjB,3,0,{mat:'marble'});
+ jjBox(0,jjB+.03,0,21.4,.06,17.4,'marble');jjRoundPlaza(0,jjB-.76,0,3,{raised:false,inlay:true});
+ // classroom ranges and the two-storey front range (split by the gate passage)
+ for(const jjS of [-1,1])jjBox(jjS*12.85,jjB+jjRh/2,0,4.3,jjRh,17.4,jjY);
+ jjBox(0,jjB+jjRh/2,-10.85,30,jjRh,4.3,jjY);
+ for(const jjS of [-1,1])jjBox(jjS*8.3,jjB+jjFh/2,10.85,13.4,jjFh,4.3,jjY);jjBox(0,jjB+(3.7+jjFh)/2,10.85,3.2,jjFh-3.7,4.3,jjY);
+ // roofs: one slab per range over rooms and cloister walk, a red brick parapet with yellow merlons
+ for(const jjS of [-1,1])jjBox(jjS*11.75,jjB+jjRh+.15,0,6.5,.3,13,'brickDeep');jjBox(0,jjB+jjRh+.15,-9.75,30,.3,6.5,'brickDeep');jjBox(0,jjB+jjFh+.15,10.85,30,.3,4.3,'brickDeep');
+ jjBox(0,jjB+jjRh+.15,7.6,21.4,.3,2.2,'brickDeep');
+ jjHospRing4(0,0,30,26,jjB+jjRh-.05,.36,.3,'marble');jjHospRing4(0,0,30,26,jjB+.35,.5,.16,'brick');jjHospRing4(0,0,30,26,jjB+2.3,.2,.1,'brick');
+ jjCrenel(0,jjB+jjRh+.3,-12.8,30,.4,1);for(const jjS of [-1,1])jjWithYaw(jjS*14.8,jjB+jjRh+.3,-1.6,jjPi/2,()=>jjCrenel(jjS*14.8,jjB+jjRh+.3,-1.6,20.4,.4,1));
+ jjHospRing4(0,10.85,30,4.3,jjB+jjFh-.05,.36,.3,'marble');jjHospParapet(0,jjB+jjFh+.3,10.85,30.4,4.7,.4,1.1);jjHospRing4(0,10.85,30,4.3,jjB+jjRh,.22,.12,'brick');
+ jjBox(0,jjB+jjRh+.42,6.65,17.6,.3,.9,'marble');jjBox(0,jjB+jjRh+.42,-6.65,17.6,.3,.9,'marble');for(const jjS of [-1,1])jjBox(jjS*8.65,jjB+jjRh+.42,0,.9,.3,13.6,'marble');
+ // the cloister: red arches on patterned columns, classroom doors and windows behind
+ const jjO2={depth:.45,mat:'brick'},jjPats=['diamond','chevron','spiral','fleur'];let jjK=0;
+ jjHospRow(0,jjB,6.5,17,5,jjRh,2.3,2.2,jjPi,jjO2);jjHospRow(0,jjB,-6.5,17,5,jjRh,2.3,2.2,0,jjO2);
+ for(const jjS of [-1,1])jjHospRow(jjS*8.5,jjB,0,13,4,jjRh,2.3,2.2,-jjS*jjPi/2,jjO2);
+ for(const jjX of [-8.5,8.5])for(const jjZ of [-6.5,6.5])jjBox(jjX,jjB+jjRh/2,jjZ,.8,jjRh,.8,'brick');
+ for(let jjI=1;jjI<5;jjI++){const jjX=-8.5+jjI*3.4;jjColumn(jjX,jjB,6.05,.18,jjRh-.3,{pattern:jjPats[jjK++%4]});jjColumn(jjX,jjB,-6.05,.18,jjRh-.3,{pattern:jjPats[jjK++%4]});}
+ for(let jjI=1;jjI<4;jjI++){const jjZ=-6.5+jjI*3.25;for(const jjS of [-1,1])jjColumn(jjS*8.05,jjB,jjZ,.18,jjRh-.3,{pattern:jjPats[jjK++%4]});}
+ for(let jjI=0;jjI<5;jjI++){const jjX=-8.5+(jjI+.5)*3.4;if(jjI!==2)jjHospArchWin(jjX,jjB+1,8.7,1.2,2.2,jjPi,{lit:true});jjI%2?jjHospArchWin(jjX,jjB+1,-8.7,1.2,2.2,0,{lit:true}):jjDoor(jjX,jjB,-8.7,1.1,2.4,0,{mat:'wood'});}
+ for(const jjS of [-1,1])for(let jjI=0;jjI<4;jjI++){const jjZ=-6.5+(jjI+.5)*3.25;jjI%2?jjDoor(jjS*10.7,jjB,jjZ,1.1,2.4,-jjS*jjPi/2,{mat:'wood'}):jjHospArchWin(jjS*10.7,jjB+1,jjZ,1.2,2.2,-jjS*jjPi/2,{lit:true});}
+ // small terracotta domes over the classrooms
+ const jjDy=jjB+jjRh+.3;for(const jjS of [-1,1])for(const jjZ of [-4.4,0,4.4]){jjCylinder(jjS*12.85,jjDy+.35,jjZ,1.75,.7,jjY,undefined,32);jjCylinder(jjS*12.85,jjDy+.74,jjZ,1.85,.1,'marble',undefined,32);jjDome(jjS*12.85,jjDy+.78,jjZ,1.7,{kind:'terracotta',shape:'hemi'});}
+ for(const jjX of [-9,-3,3,9]){jjCylinder(jjX,jjDy+.35,-10.85,1.75,.7,jjY,undefined,32);jjCylinder(jjX,jjDy+.74,-10.85,1.85,.1,'marble',undefined,32);jjDome(jjX,jjDy+.78,-10.85,1.7,{kind:'terracotta',shape:'hemi'});}
+ jjChimneyStack(12.9,jjDy,-10.85,{n:2,h:2.2,r:.3,seed:5});
+ // the front: a red gate frontispiece, two floors of windows, portholes, lamps
+ jjHospBay(0,jjB,13.5,7.2,jjFh+1.6,2.8,2.2,0,{depth:1,mat:'brick'});jjBox(0,jjB+jjFh+1.75,13.5,7.6,.3,1.4,'marble');jjCrenel(0,jjB+jjFh+1.9,13.5,7.2,.6,1.1);
+ jjHospArchWin(0,jjB+4.8,14,1.6,2.6,0,{lit:true,mullion:true});jjPorthole(-2.3,jjB+6.1,14.02,0,.55);jjPorthole(2.3,jjB+6.1,14.02,0,.55);for(const jjS of [-1,1])jjHospLamp(jjS*2.2,jjB+2.6,14,0);
+ for(const jjX of [-12.5,-8.5,-4.8,4.8,8.5,12.5]){jjHospArchWin(jjX,jjB+1,13,1.3,2.4,0,{lit:true,shutter:Math.abs(jjX)>6});jjHospArchWin(jjX,jjB+jjRh+.6,13,1.2,2.2,0,{lit:true});}
+ for(const jjS of [-1,1])for(const jjZ of [-9,-3,3])jjHospArchWin(jjS*15,jjB+1,jjZ,1.2,2.2,jjS*jjPi/2,{lit:true});
+ for(const jjS of [-1,1]){jjHospArchWin(jjS*15,jjB+1,10.85,1.2,2.2,jjS*jjPi/2,{lit:true});jjPorthole(jjS*15.02,jjB+6.3,10.85,jjS*jjPi/2,.6);}
+ for(const jjX of [-10,-5,0,5,10])jjHospArchWin(jjX,jjB+1,-13,1.2,2.2,jjPi,{lit:true});
+ // the bell turret: an open arched belfry on a yellow base over the gate, a gold onion dome, the bell
+ const jjBy=jjB+jjFh+.3,jjBz=11.2,jjBw=3.2;jjBox(0,jjBy+.6,jjBz,jjBw,1.2,jjBw,jjY);jjBox(0,jjBy+1.27,jjBz,jjBw+.3,.14,jjBw+.3,'marble');
+ for(let jjI=0;jjI<4;jjI++){const jjA=jjI*jjPi/2;jjHospBay(Math.sin(jjA)*(jjBw/2-.17),jjBy+1.34,jjBz+Math.cos(jjA)*(jjBw/2-.17),jjBw,2.8,1.8,1.4,jjA,{depth:.34,mat:'brick'});}
+ jjBox(0,jjBy+4.3,jjBz,jjBw+.4,.3,jjBw+.4,'marble');jjCylinder(0,jjBy+4.65,jjBz,1.2,.4,jjY,undefined,32);jjDome(0,jjBy+4.85,jjBz,1.4,{kind:'gold',shape:'onion'});
+ jjPut('jjciv_bell',new THREE.CylinderGeometry(.22,.5,.75,16),JMAT.gold,0,jjBy+2.75,jjBz,1,1,1);jjBeam([-1.4,jjBy+3.25,jjBz],[1.4,jjBy+3.25,jjBz],.08,'wood');
+ for(const jjS of [-1,1])jjBanner(jjS*6.65,jjB+jjFh-.4,13.1,0,{w:.9,h:3});
+ for(const jjS of [-1,1])jjHospFurn('jj_furn_bench',jjS*10.1,jjB,0,-jjS*jjPi/2);
+ jjReg('School court and cloister',0,0,8.5,jjRh,{});jjReg('School bell turret',0,jjBz,2,jjBy+6.5,{});}
+
+// ---------------------------------------------------------------------------------------------
+// AMPHITHEATER: a semicircular cavea (open side to +z) of brick seat rows with marble edges, swept as
+// a few meshes; a praecinctio with vomitorium doors; a two-storey outer arcade; the stage, its
+// two-storey scaenae frons and two thick spires behind it; tribunals over the side entrances.
+const JJCIV_AMP={zc:10,T:.85,R:.42,n1:15,n2:12,r0:11.5,pod:1.2,walk:2,balt:2.6,top:2,Rf:39.0,NF:31};
+// the cavea profile as line segments [r0,y0,r1,y1,material], from the orchestra outward
+function jjCivAmpProfile(){const jjC=JJCIV_AMP,jjSeg=[];let jjR=jjC.r0,jjY=0;
+ const jjRow=()=>{jjSeg.push([jjR,jjY,jjR+.34,jjY,'marble'],[jjR+.34,jjY,jjR+jjC.T,jjY,'brickDeep']);jjR+=jjC.T;jjSeg.push([jjR,jjY,jjR,jjY+jjC.R-.1,'brick'],[jjR,jjY+jjC.R-.1,jjR,jjY+jjC.R,'marble']);jjY+=jjC.R;};
+ jjSeg.push([jjR,0,jjR,jjC.pod-.14,'marble'],[jjR,jjC.pod-.14,jjR,jjC.pod,'marble']);jjY=jjC.pod;
+ for(let jjI=0;jjI<jjC.n1;jjI++)jjRow();const jjLow={r:jjR,y:jjY};
+ jjSeg.push([jjR,jjY,jjR+jjC.walk,jjY,'marble']);jjR+=jjC.walk;const jjBalt={r:jjR,y:jjY};jjSeg.push([jjR,jjY,jjR,jjY+jjC.balt-.16,'brick'],[jjR,jjY+jjC.balt-.16,jjR,jjY+jjC.balt,'marble']);jjY+=jjC.balt;
+ for(let jjI=0;jjI<jjC.n2;jjI++)jjRow();jjSeg.push([jjR,jjY,jjC.Rf+.2,jjY,'brickDeep']);
+ return {seg:jjSeg,low:jjLow,balt:jjBalt,topY:jjY,topR:jjR};}
+// sweep the profile round the y axis from angle a0 to a1 (x = r cos a, z = -r sin a); one geometry per material
+function jjCivSweepGeos(jjSegs,jjA0,jjA1,jjN){const jjBy={};
+ for(const jjS of jjSegs){const jjM=jjS[4];const jjB=jjBy[jjM]||(jjBy[jjM]={p:[],n:[],u:[]});const [jjR0,jjY0,jjR1,jjY1]=jjS,jjDr=jjR1-jjR0,jjDy=jjY1-jjY0,jjL=Math.hypot(jjDr,jjDy),jjNr=-jjDy/jjL,jjNy=jjDr/jjL,jjRm=(jjR0+jjR1)/2;
+  const jjPt=(jjR,jjY,jjA)=>[jjR*Math.cos(jjA),jjY,-jjR*Math.sin(jjA)],jjNo=jjA=>[jjNr*Math.cos(jjA),jjNy,-jjNr*Math.sin(jjA)];
+  // winding: (B-A)x(D-A) must agree with the outward normal
+  const jjAm=(jjA0+jjA1)/2,jjPa=jjPt(jjR0,jjY0,jjA0),jjPb=jjPt(jjR0,jjY0,jjA1),jjPd=jjPt(jjR1,jjY1,jjA0),jjE1=[jjPb[0]-jjPa[0],jjPb[1]-jjPa[1],jjPb[2]-jjPa[2]],jjE2=[jjPd[0]-jjPa[0],jjPd[1]-jjPa[1],jjPd[2]-jjPa[2]];
+  const jjCr=[jjE1[1]*jjE2[2]-jjE1[2]*jjE2[1],jjE1[2]*jjE2[0]-jjE1[0]*jjE2[2],jjE1[0]*jjE2[1]-jjE1[1]*jjE2[0]],jjNm=jjNo(jjAm),jjFlip=(jjCr[0]*jjNm[0]+jjCr[1]*jjNm[1]+jjCr[2]*jjNm[2])<0;
+  for(let jjI=0;jjI<jjN;jjI++){const jjAa=jjA0+(jjA1-jjA0)*jjI/jjN,jjAb=jjA0+(jjA1-jjA0)*(jjI+1)/jjN;
+   const jjV=[[jjPt(jjR0,jjY0,jjAa),jjNo(jjAa),[jjAa*jjRm,0]],[jjPt(jjR0,jjY0,jjAb),jjNo(jjAb),[jjAb*jjRm,0]],[jjPt(jjR1,jjY1,jjAb),jjNo(jjAb),[jjAb*jjRm,jjL]],[jjPt(jjR1,jjY1,jjAa),jjNo(jjAa),[jjAa*jjRm,jjL]]];
+   const jjTri=jjFlip?[0,2,1,0,3,2]:[0,1,2,0,2,3];for(const jjK of jjTri){jjB.p.push(...jjV[jjK][0]);jjB.n.push(...jjV[jjK][1]);jjB.u.push(...jjV[jjK][2]);}}}
+ const jjOut={};for(const jjM in jjBy){const jjG=new THREE.BufferGeometry();jjG.setAttribute('position',new THREE.Float32BufferAttribute(jjBy[jjM].p,3));jjG.setAttribute('normal',new THREE.Float32BufferAttribute(jjBy[jjM].n,3));jjG.setAttribute('uv',new THREE.Float32BufferAttribute(jjBy[jjM].u,2));jjOut[jjM]=jjG;}return jjOut;}
+// the closing wall at a cut end of the cavea: the profile polygon down to the ground, extruded thin (in the x-y plane)
+function jjCivAmpCapGeo(jjSegs,jjOuter,jjD){const jjS=new THREE.Shape();jjS.moveTo(jjSegs[0][0],0);for(const jjG of jjSegs)jjS.lineTo(jjG[2],jjG[3]);const jjL=jjSegs[jjSegs.length-1];jjS.lineTo(jjOuter,jjL[3]);jjS.lineTo(jjOuter,0);
+ const jjG=new THREE.ExtrudeGeometry(jjS,{depth:jjD,bevelEnabled:false,curveSegments:1});jjG.translate(0,0,-jjD/2);return jjG;}
+function buildJjCivAmphitheater(jjG,jjO){reseed(9370+(jjO.v|0));
+ const jjC=JJCIV_AMP,jjZc=jjC.zc,jjPi=Math.PI,jjPr=jjCivAmpProfile(),jjTopY=jjPr.topY,jjNF=jjC.NF,jjRf=jjC.Rf;
+ // CAVEA: the seat rows (three swept meshes: brick risers, brick treads, marble edges), closed at both cut ends
+ const jjGeos=jjCivSweepGeos(jjPr.seg,0,jjPi,64);for(const jjM in jjGeos)jjMesh(jjGeos[jjM],JMAT[jjM],0,0,jjZc,0);
+ const jjCap=jjCivAmpCapGeo(jjPr.seg,jjRf+.6,.6);jjMesh(jjCap,JMAT.brick,0,0,jjZc+.3,0);jjMesh(jjCap,JMAT.brick,0,0,jjZc+.3,jjPi);
+ // aisle stairs (half steps) in the lower and upper cavea
+ const jjStep=(jjA,jjR,jjY)=>jjBox(Math.cos(jjA)*(jjR+jjC.T*.75),jjY+jjC.R/4,jjZc-Math.sin(jjA)*(jjR+jjC.T*.75),1.1,jjC.R/2,jjC.T/2,'marble',undefined,jjPi/2+jjA);
+ for(let jjK=0;jjK<6;jjK++){const jjA=(jjK+.5)*jjPi/6;for(let jjI=0;jjI<jjC.n1;jjI++)jjStep(jjA,jjC.r0+jjI*jjC.T,jjC.pod+jjI*jjC.R);}
+ const jjVom=[5,10,15,20,25].map(jjK=>(jjK+.5)*jjPi/jjNF);
+ for(const jjA of jjVom)for(let jjI=0;jjI<jjC.n2;jjI++)jjStep(jjA,jjPr.balt.r+jjI*jjC.T,jjPr.balt.y+jjC.balt+jjI*jjC.R);
+ // vomitorium doors in the praecinctio wall
+ for(const jjA of jjVom){const jjRr=jjPr.balt.r-.33;jjHospBay(Math.cos(jjA)*jjRr,jjPr.balt.y,jjZc-Math.sin(jjA)*jjRr,3.2,jjC.balt,1.9,1.25,jjA-jjPi/2,{depth:.6,back:'dark',backOff:-.02,mat:'brickYellow'});}
+ // orchestra: a sunray half disc and paving up to the stage
+ const jjOrc=new THREE.CircleGeometry(jjC.r0,48,0,jjPi);jjOrc.rotateX(-jjPi/2);jjMesh(jjOrc,JMAT.sunray,0,.07,jjZc,0);jjBox(0,.035,jjZc+1.5,jjC.r0*2,.07,3,'marble');
+ // OUTER ARCADE: two storeys of arches on a 31-sided half polygon, dark corridors behind, crenellated attic, velarium masts
+ const jjHalf=jjPi/(2*jjNF),jjChord=2*jjRf*Math.sin(jjHalf),jjRm=jjRf*Math.cos(jjHalf),jjGy=7.5;
+ for(let jjK=0;jjK<jjNF;jjK++){const jjA=(jjK+.5)*jjPi/jjNF,jjX=Math.cos(jjA)*jjRm,jjZ=jjZc-Math.sin(jjA)*jjRm,jjRy=jjPi/2+jjA,jjE=jjK%5===0&&jjK>0&&jjK<30;
+  jjHospBay(jjX,0,jjZ,jjChord+.14,jjGy,jjE?3.1:2.6,jjE?3.8:3.6,jjRy,{depth:1.2,back:'dark',backOff:.9,mat:jjE?'brickYellow':'brick'});
+  jjHospBay(jjX,jjGy,jjZ,jjChord+.14,jjTopY-jjGy,2.4,3.6,jjRy,{depth:1.0,back:'dark',backOff:.9,mat:'brick'});
+  jjBox(Math.cos(jjA)*(jjRm-1.6),jjTopY/2,jjZc-Math.sin(jjA)*(jjRm-1.6),jjChord+.25,jjTopY,.1,'dark',undefined,jjRy);
+  jjBox(jjX,jjGy,jjZ,jjChord+.3,.3,1.5,'marble',undefined,jjRy);jjBox(jjX,.45,jjZ,jjChord+.3,.9,1.5,'brickDeep',undefined,jjRy);jjBox(jjX,jjTopY+.15,jjZ,jjChord+.3,.3,1.6,'marble',undefined,jjRy);
+  jjWithYaw(jjX,jjTopY+.3,jjZ,jjRy,()=>jjCrenel(jjX,jjTopY+.3,jjZ+.2,jjChord+.2,.6,1.5));
+  if(jjE)jjBanner(Math.cos(jjA)*(jjRm+.75),jjTopY-.5,jjZc-Math.sin(jjA)*(jjRm+.75),jjRy,{w:1,h:2.2});}
+ for(let jjK=0;jjK<=jjNF;jjK++){const jjA=jjK*jjPi/jjNF,jjRp=jjRf+.72,jjX=Math.cos(jjA)*jjRp,jjZ=jjZc-Math.sin(jjA)*jjRp;
+  jjColumn(jjX,0,jjZ,.3,jjGy-.15,{pattern:['diamond','chevron','spiral'][jjK%3]});jjBox(jjX,(jjGy+jjTopY)/2,jjZ,.7,jjTopY-jjGy-.3,.36,'brickYellow',undefined,jjPi/2+jjA);
+  if(jjK%2===0&&jjK>0&&jjK<jjNF){const jjRq=jjRf-.2,jjXm=Math.cos(jjA)*jjRq,jjZm=jjZc-Math.sin(jjA)*jjRq;jjBeam([jjXm,jjTopY,jjZm],[jjXm,jjTopY+6.5,jjZm],.14,'wood');jjBox(jjXm,jjTopY+6.6,jjZm,.3,.3,.3,'gold');}}
+ // cap faces: portals into the ambulatory, string courses
+ for(const jjS of [-1,1]){for(const jjR of [29.5,35])jjHospBay(jjS*jjR,0,jjZc+.85,3.6,6.2,2.4,3,0,{depth:.5,back:'dark',backOff:-.03,mat:'brickYellow'});
+  jjBox(jjS*(24.6+jjRf+.6)/2,jjGy,jjZc+.66,jjRf+.6-24.6,.3,.12,'marble');}
+ // STAGE: the pulpitum with a marble front, steps to the orchestra
+ const jjSf=jjZc+3,jjSb=jjZc+10,jjSh=1.4,jjBk=jjZc+16;
+ jjBox(0,jjSh/2,(jjSf+jjSb)/2,48,jjSh,jjSb-jjSf,'brick');jjBox(0,jjSh-.08,(jjSf+jjSb)/2,48.3,.16,jjSb-jjSf+.1,'marble');jjBox(0,jjSh/2,jjSf-.06,48,jjSh-.3,.14,'marble');
+ for(let jjI=0;jjI<12;jjI++){const jjX=-22+jjI*4;if(Math.abs(jjX)<3)continue;jjBox(jjX,jjSh/2-.05,jjSf-.1,1.4,.8,.1,'dark');}
+ jjStairs(0,0,jjSf-.65,5,1.3,jjSh,4,jjPi,{mat:'marble'});
+ // SCAENAE FRONS: two storeys of arched niches with patterned columns before the piers, three doors, lamps
+ jjBox(0,7.5,(jjSb+jjBk)/2,48,15,jjBk-jjSb,'brick');
+ jjHospRow(0,jjSh,jjSb-.5,48,9,6,3.2,3.2,jjPi,{depth:1,back:'dark',backOff:-.05,mat:'brick'});
+ jjHospRow(0,jjSh+6,jjSb-.4,48,9,6.2,2.8,3.0,jjPi,{depth:.8,back:'dark',backOff:-.05,mat:'brickYellow',rail:1});
+ jjBox(0,jjSh+6,jjSb-1.25,48.4,.3,1.1,'marble');jjBox(0,jjSh+12.3,jjSb-1.05,48.6,.4,1,'marble');
+ for(let jjI=0;jjI<=9;jjI++){const jjX=-24+jjI*48/9;jjColumn(jjX,jjSh,jjSb-1.45,.34,5.85,{pattern:['spiral','diamond','chevron'][jjI%3]});jjColumn(jjX,jjSh+6.15,jjSb-1.3,.28,5.9,{pattern:['ogee','fleur','tracery'][jjI%3]});}
+ for(const jjX of [-48/9*2,0,48/9*2]){jjDoor(jjX,jjSh,jjSb-.12,1.8,3,jjPi,{mat:'wood'});for(const jjS of [-1,1])jjHospLamp(jjX+jjS*2.0,jjSh+3.3,jjSb-1,jjPi);}
+ jjHospParapet(0,15,(jjSb+jjBk)/2,48.4,jjBk-jjSb+.4,.45,1.3);jjHospRing4(0,(jjSb+jjBk)/2,48,jjBk-jjSb,14.85,.36,.3,'marble');
+ // the street front of the stage building: an entrance arcade, windows, portholes, banners
+ jjHospRow(0,0,jjBk+.5,48,9,7,2.8,3.4,0,{depth:1,back:'dark',backOff:-.05,mat:'brick'});jjBox(0,7.1,jjBk+.6,48.4,.3,1.4,'marble');
+ for(let jjI=0;jjI<9;jjI++){const jjX=-24+(jjI+.5)*48/9;if(Math.abs(Math.abs(jjX)-12)<3)continue;jjHospArchWin(jjX,8.6,jjBk,1.4,3.4,0,{lit:true});jjPorthole(jjX,13.3,jjBk+.02,0,.6);}
+ // two thick spires behind the stage
+ for(const jjS of [-1,1]){const jjX=jjS*12,jjZ=jjBk+1.2;jjCylinder(jjX,.7,jjZ,3.7,1.4,'brickDeep',undefined,32);jjCylinder(jjX,1.43,jjZ,3.85,.14,'marble',undefined,32);
+  jjSpire(jjX,1.5,jjZ,3.2,5,{stageH:4.9,pattern:jjS<0?'chevron':'tracery',kind:'gold'});jjBanner(jjX,12,jjZ+2.95,0,{w:1.2,h:4});}
+ // parascaenia (side wings of the stage) with gold-domed pavilions; tribunals bridging the side entrances
+ for(const jjS of [-1,1]){const jjX=jjS*28;jjBox(jjX,6,(jjSf+jjBk)/2,8,12,jjBk-jjSf,'bandBrick');jjHospRing4(jjX,(jjSf+jjBk)/2,8,jjBk-jjSf,11.85,.36,.3,'marble');
+  jjHospParapet(jjX,12.05,(jjSf+jjBk)/2,8.4,jjBk-jjSf+.4,.4,1.2);
+  jjHospBay(jjX,0,jjSf-.35,5,7,2.6,3.2,jjPi,{depth:.7,back:'dark',backOff:-.03,mat:'brickYellow'});
+  jjHospRow(jjS*32.35,0,(jjSf+jjBk)/2,jjBk-jjSf,3,7,2.6,3.2,jjS*jjPi/2,{depth:.7,back:'dark',backOff:-.03,mat:'brick'});
+  for(const jjZ of [jjSf+2.2,(jjSf+jjBk)/2,jjBk-2.2])jjHospArchWin(jjS*32,8,jjZ,1.2,2.6,jjS*jjPi/2,{lit:true});
+  jjCylinder(jjX,13.5,(jjSf+jjBk)/2,2.4,2.4,'brickYellow',undefined,32);jjCylinder(jjX,14.78,(jjSf+jjBk)/2,2.6,.16,'marble',undefined,32);jjDome(jjX,14.85,(jjSf+jjBk)/2,2.5,{kind:'gold',shape:'onion'});
+  // tribunal over the parodos and the arched side gate at its outer end
+  jjBox(jjS*(24+jjRf+.6)/2,8.25,jjZc+1.65,jjRf+.6-24,1.5,2.7,'brick');jjBox(jjS*(24+jjRf+.6)/2,9.1,jjZc+1.65,jjRf+.8-24,.2,2.9,'marble');
+  jjCrenel(jjS*(24+jjRf+.6)/2,9.2,jjZc+2.85,jjRf+.6-24,.4,1.1);
+  jjHospBay(jjS*(jjRf+.1),0,jjZc+1.65,3.2,9,2.5,4.2,jjS*jjPi/2,{depth:1,mat:'brickYellow'});}
+ jjReg('Amphitheater cavea',0,jjZc-18,22,jjTopY+2,{});jjReg('Amphitheater orchestra',0,jjZc,jjC.r0,1,{});jjReg('Amphitheater stage and scaenae frons',0,jjZc+9,24,16,{});
+ for(const jjS of [-1,1])jjReg('Amphitheater spire',jjS*12,jjBk+1.2,3.9,28,{});}
+
+JJ.def({key:'jj_library',name:'Library',family:'civic',row:'Civic',w:45.5,d:30.6,h:33,r:23,cls:'building',tags:{type:['civic'],wealth:'civic',lit:true},
+ plantSpots:[[-18,11],[18,11],[-21.5,-10],[21.5,-10]],views:{'Library — stair':{cam:[-4,1.7,26],tgt:[0,9,4]}},build:buildJjCivLibrary});
+JJ.def({key:'jj_school',name:'School',family:'civic',row:'Civic',w:31,d:29,h:16,r:15.5,cls:'building',tags:{type:['civic'],wealth:'civic',lit:true},
+ plantSpots:[[-5,-4],[5,-4],[-5,4],[5,4]],views:{'School — cloister':{cam:[-6.5,2.2,5],tgt:[4,3,-4]}},build:buildJjCivSchool});
+JJ.def({key:'jj_amphitheater',name:'Amphitheater',family:'civic',row:'Civic',w:80.4,d:61.2,h:28,r:41,cls:'building',tags:{type:['civic'],wealth:'civic',lit:true},
+ plantSpots:[[-36,24],[36,24]],views:{'Amphitheater — from the seats':{cam:[-8,13.6,-18.9],tgt:[0,6,20]},'Amphitheater — over the stage':{cam:[0,58,92],tgt:[0,2,-10]},'Amphitheater — outer arcade':{cam:[-46,1.7,-30],tgt:[-30,7,-14]}},build:buildJjCivAmphitheater});
 // Jimjam sacred: the solstice temple (jj_temple_sun). Prefix jjTemple…/buildJjTemple…, seeds 9400–9449.
 // Local frame: origin at the plot centre on the ground, +z front. From +z to -z: a long marble flight up
 // to the temple platform, the monumental gate arch at its head, a reflecting channel, a second flight
@@ -2564,6 +3588,8 @@ const JJ_ROWS=(()=>{const jjRows={};for(const jjK of JJ.order){const jjD=JJ.defs
 const SITES=[];
 const JJ_ROW_Z={};
 let GROUND_C=0;
+// rows sit JJ_ROW_GAP apart so a camera standing in front of a building is not inside the row before it
+const JJ_ROW_GAP=56;
 (()=>{let jjZ=0;const jjGap=16;
  for(const jjRow of JJ_ROWS){const jjDs=jjRow.keys.map(jjK=>JJ.defs[jjK]);const jjDepth=Math.max(...jjDs.map(jjD=>jjD.d||jjD.r*2||16));
   const jjTotal=jjDs.reduce((jjA,jjD)=>jjA+(jjD.w||jjD.r*2||16)+jjGap,0)-jjGap;let jjX=-jjTotal/2;
@@ -2572,7 +3598,7 @@ let GROUND_C=0;
    // ry = PI turns local +z (the front) to world -z (north); the plot centre sits on the row line
    // a def may fix its own world yaw (the temple aims its axis at the solstice sunset)
    SITES.push({key:jjD.key,x:jjX+jjW/2,z:jjZc,ry:jjD.ry!==undefined?jjD.ry:Math.PI,o:{v:0},row:jjRow.name});jjX+=jjW+jjGap;}
-  jjZ+=jjDepth+30;}
+  jjZ+=jjDepth+JJ_ROW_GAP;}
  GROUND_C=jjZ/2;})();
 // Furniture and flora rows, north of the buildings (z < 0), fronts facing north too.
 const JJ_FURN_SITES=[],JJ_FLORA_SITES=[];
@@ -2646,14 +3672,15 @@ const VIEWS={};
  const jjH=JJ_ROW_Z['Housing — poor']||(JJ_ROWS[0]?JJ_ROW_Z[JJ_ROWS[0].name]:{z:0,width:60});
  VIEWS['Opening']=[-jjH.width*.45,46,jjH.z-70,0,6,jjH.z+30];
  const jjLast=JJ_ROWS.length?JJ_ROW_Z[JJ_ROWS[JJ_ROWS.length-1].name]:{z:0};
- VIEWS['Overview']=[-420,380,-260,0,0,jjLast.z*.45];
+ // the sheet is a long north-south strip: look across it from the west so it spans the frame
+ VIEWS['Overview']=[-760,430,jjLast.z*.5,0,0,jjLast.z*.5];
  VIEWS['Furniture and flora — eye level']=[0,1.7,-62,0,1.8,-30];
  for(const jjRow of JJ_ROWS){const jjR=JJ_ROW_Z[jjRow.name];const jjDist=Math.max(60,jjR.width*.55);
-  VIEWS[jjRow.name+' — aerial']=[-jjR.width*.15,jjDist*.55,jjR.z-jjR.depth/2-jjDist*.7,0,4,jjR.z];}
+  VIEWS[jjRow.name+' — aerial']=[-jjR.width*.12,jjDist*.8,jjR.z-jjR.depth/2-jjDist*.42,0,4,jjR.z];}
  for(const jjK of JJ.order){const jjD=JJ.defs[jjK],jjS=jjSite(jjK);if(!jjS)continue;const jjNm=jjD.name||jjK;const jjSz=Math.max(jjD.w||16,jjD.h||10,(jjD.d||16)*.8);
   // front 3/4 from the north-west, and an eye-level shot standing in front of the door
-  VIEWS[jjNm+' — front']=jjToWorld(jjS,[-jjSz*.55,(jjD.h||10)*.55+jjSz*.25,(jjD.d||16)/2+jjSz*1.05]).concat(jjToWorld(jjS,[0,(jjD.h||10)*.38,0]));
-  VIEWS[jjNm+' — eye level']=jjToWorld(jjS,[-(jjD.w||16)*.12,1.7,(jjD.d||16)/2+Math.max(9,jjSz*.6)]).concat(jjToWorld(jjS,[0,Math.min(6,(jjD.h||10)*.35),0]));
+  VIEWS[jjNm+' — front']=jjToWorld(jjS,[-jjSz*.55,(jjD.h||10)*.55+jjSz*.45,(jjD.d||16)/2+Math.min(JJ_ROW_GAP*1.6,jjSz*1.05)]).concat(jjToWorld(jjS,[0,(jjD.h||10)*.38,0]));
+  VIEWS[jjNm+' — eye level']=jjToWorld(jjS,[-(jjD.w||16)*.12,1.7,(jjD.d||16)/2+Math.min(JJ_ROW_GAP-6,Math.max(9,jjSz*.6))]).concat(jjToWorld(jjS,[0,Math.min(6,(jjD.h||10)*.35),0]));
   if(jjD.views)for(const jjV in jjD.views){const jjP=jjD.views[jjV];const jjArr=jjToWorld(jjS,jjP.cam).concat(jjToWorld(jjS,jjP.tgt));if(jjP.sky)jjArr.push(jjP.sky);VIEWS[jjV]=jjArr;}}
 })();
 // ---------------------------------------------------------------- camera, inspector, polygon tool, walk mode

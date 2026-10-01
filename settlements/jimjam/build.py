@@ -23,7 +23,7 @@ MANIFEST_FILES = [
 DECL = re.compile(r'^(?:const|let|var|function)\s+([A-Za-z_$][\w$]*)', re.M)
 BUILDER = re.compile(r'^function\s+(buildJj\w*)\s*\([^)]*\)\s*\{(.{0,100})', re.M)
 PREFIX_FILES = {'60-jj-mat.js', '61-jj-helpers.js'}
-ALLOWED_TARGET_GLOBALS = {'TITLE', 'GROUND_C', 'SITES', 'VIEWS', 'JJ_FURN_SITES', 'JJ_FLORA_SITES', 'JJ_ROW_ORDER', 'JJ_ROWS', 'JJ_ROW_Z'}
+ALLOWED_TARGET_GLOBALS = {'TITLE', 'GROUND_C', 'SITES', 'VIEWS', 'JJ_FURN_SITES', 'JJ_FLORA_SITES', 'JJ_ROW_ORDER', 'JJ_ROWS', 'JJ_ROW_Z', 'JJ_ROW_GAP'}
 
 
 def source_paths():
