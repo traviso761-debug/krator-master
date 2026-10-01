@@ -234,12 +234,19 @@ function hnMenhir(x,y,z,ry,h,c,carved){hlRngSkip(c?2:3);return FURNISH('hl_tri_m
 // A free-standing carved post (by a door, a ladder, a deck corner), not one that carries a roof (hnTotemPost)
 function hnTotemPole(x,y,z,r,h,ry,painted){hlRngSkip(1);return FURNISH('hl_tri_totem_post',x,y,z,ry,{v:h>=4.5?2:painted?1:0});}
 // The Iziz Vernacular yard kit (vendored 69c draws them), placed instead: same arguments as vnBarrel, vnWaterButt,
-// vnCrate, vnSacks, vnDryingRack
+// vnCrate, vnSacks, vnDryingRack, vnPlanter, vnLampPost, vnLamp
 function hnBarrel(x,y,z,r,h){return FURNISH('iziz_vern_barrel',x,y,z,0,{v:r>.37?1:0});}
 function hnWaterButt(x,y,z,r,h){return FURNISH('iziz_vern_water_butt',x,y,z,0,{v:r>.42?1:0});}
 function hnCrate(x,y,z,s,ry,c){if(!c)rng();return FURNISH('iziz_vern_crate',x,y,z,ry||0,{v:s<.65?0:s<.9?1:2});}
 function hnSacks(x,y,z,n){hlRngSkip(4*n);return FURNISH('iziz_vern_sacks',x,y,z,0,{v:n>3?1:0});}
 function hnDryingRack(x,y,z,ry,L){hlRngSkip(Math.round(L/.9));return FURNISH('iziz_vern_drying_rack',x,y,z,ry,{v:L>3.3?1:0});}
+// ... and vnPlanter (its plants drew 6 numbers each), vnLampPost and vnLamp (electric: the callers keep their vLit() test).
+// A lamp post takes the catalog standard nearest the height asked for: the yard post (3.2, 3.8 m) or the Republic's
+// own lamp standard (3.4, 4.2 m), the Republic's on a tie. The wall lamp's arm is at y, as vnLamp's.
+function hnPlanter(x,y,z,w,d,ry,c){hlRngSkip(6*Math.max(1,Math.round(w*d/1.2)));return FURNISH('iziz_vern_planter',x,y,z,ry||0,{v:w*d>3?0:1});}
+function hnLampPost(x,y,z,h){const L=[[3.4,'hl_rep_lamp_standard',0],[4.2,'hl_rep_lamp_standard',1],[3.2,'iziz_vern_lamp_post',0],[3.8,'iziz_vern_lamp_post',1]];
+ let b=L[0];for(const l of L)if(Math.abs(l[0]-h)<Math.abs(b[0]-h)-1e-6)b=l;return FURNISH(b[1],x,y,z,0,{v:b[2]});}
+function hnWallLamp(x,y,z,ry){return hnFurn('iziz_vern_wall_lamp',x,y-.3,z,ry,{},0,.36);}
 
 // ---------------------------------------------------------------- round 4: fitting murals and bracket rows (hlFlush)
 // Travis: murals over entrances cut into the architecture (jetties, consoles, lintels — the Saxon buildings worst)

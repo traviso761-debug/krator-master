@@ -11,8 +11,9 @@ KratorFurniture.setDetail(.5);   // settlement-scale: half the segments on round
 const HLF={on:!/[?&]furniture=0\b/.test(location.search),interiors:/[?&]interiors=1\b/.test(location.search),
  batch:KratorFurniture.batch(),placed:[],missing:{},buildings:[]};
 HLF.adapter=KratorInteriors.runtimeAdapter(KratorFurniture,HLF.batch);
-function FURNISH(key,lx,ly,lz,lry,o){const c=VERN.cur;if(!c){reportErr('FURNISH '+key+' outside a builder');return null;}o=o||{};
+function FURNISH(key,lx,ly,lz,lry,o){const c=VERN.cur;o=o||{};if(!c&&!o.world){reportErr('FURNISH '+key+' outside a builder');return null;}
  if(!KratorFurniture.has(key)){HLF.missing[key]=(HLF.missing[key]||0)+1;return null;}
+ if(!c)return hlfWorld(key,lx,ly,lz,lry||0,o);
  const s=c.o.scale||1,p=loc(c.x,c.z,lx*s,lz*s,c.ry);
  const rec={key,variant:o.v|0,seed:o.seed||(HLF.placed.length+1),lx,ly,lz,lry:lry||0,x:p[0],y:(c.o.y||0)+ly*s,z:p[1],ry:c.ry+(lry||0),
   building:c.D.key,setting:o.setting||'outdoor'};
@@ -22,6 +23,12 @@ function FURNISH(key,lx,ly,lz,lry,o){const c=VERN.cur;if(!c){reportErr('FURNISH 
  // a builder's pieces stand outside, seen whole: full detail (at half, a disc drawn as a rod, a shield or a target face,
  // is a 4-sided diamond); the interiors' many pieces keep the half detail set above
  if(HLF.on){KratorFurniture.setDetail(1);HLF.batch.place(key,rec.x,rec.y,rec.z,rec.ry,{variant:rec.variant,seed:rec.seed,wealth:hlfWealth(c.D),building:c.D.key,setting:rec.setting});KratorFurniture.setDetail(.5);}
+ return rec;}
+// outside any builder (a town's own furniture, placed by its layout: Roketstad's market stalls), with {world: a name for
+// the record's `building`}: (x, y, z, ry) are world coordinates; the record goes on HLF.placed only
+function hlfWorld(key,x,y,z,ry,o){const rec={key,variant:o.v|0,seed:o.seed||(HLF.placed.length+1),lx:x,ly:y,lz:z,lry:ry,x,y,z,ry,building:o.world,setting:o.setting||'outdoor'};
+ HLF.placed.push(rec);
+ if(HLF.on){KratorFurniture.setDetail(1);HLF.batch.place(key,x,y,z,ry,{variant:rec.variant,seed:rec.seed,wealth:o.wealth!=null?o.wealth:.5,building:o.world,setting:rec.setting});KratorFurniture.setDetail(.5);}
  return rec;}
 function hlfWealth(D){const w=D.tags&&D.tags.wealth;return w==='poor'?.2:w==='rich'?.8:w==='civic'?.65:.5;}
 // the interiors hook: a TOP-LEVEL placement (not a sub-building a compound places) with an interior set item

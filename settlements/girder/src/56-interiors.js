@@ -175,31 +175,44 @@ function gixMaterial(m){
   m.castShadow = !FAST; m.receiveShadow = !FAST; m.frustumCulled = false; m.userData.furniture = true; m.userData.interiors = true;
   return m.material;
 }
+/* one accumulator per render family (vertex colours) and per painted material (decals: uv + map) */
+var GIX_SPEC = { col:[['position',3,Float32Array,false],['normal',3,Float32Array,false],['color',3,Uint8Array,true]],
+                 uv:[['position',3,Float32Array,false],['normal',3,Float32Array,false],['uv',2,Float32Array,false]] };
+function gixAccum(key, kind, material, geo){
+  var spec = GIX_SPEC[kind], A = GIX.acc[key], nv = geo.attributes.position.count;
+  if(!A || A.n + nv > A.cap){
+    var cap = Math.max(nv*2, A ? A.cap*2 : 60000); while(A && A.n + nv > cap) cap *= 2;
+    var g2 = new THREE.BufferGeometry(), arrs = {};
+    spec.forEach(function(s){ var a = new s[2](cap*s[1]); if(A) a.set(A.arrs[s[0]].subarray(0, A.n*s[1])); arrs[s[0]] = a; g2.setAttribute(s[0], new THREE.BufferAttribute(a, s[1], s[3])); });
+    if(A){ A.mesh.geometry.dispose(); A.mesh.geometry = g2; A.arrs = arrs; A.cap = cap; A.fresh = true; }
+    else {
+      var mesh = new THREE.Mesh(g2, material); mesh.name = 'interiors:'+key; gixMaterial(mesh, kind);
+      GIX.group.add(mesh); A = GIX.acc[key] = { n:0, cap:cap, arrs:arrs, mesh:mesh, fresh:true, spec:spec };
+    }
+  }
+  var at = A.mesh.geometry.attributes;
+  spec.forEach(function(s){ A.arrs[s[0]].set(geo.attributes[s[0]].array, A.n*s[1]); var b = at[s[0]];
+    if(A.fresh){ b.updateRange.offset = 0; b.updateRange.count = -1; } else { b.updateRange.offset = A.n*s[1]; b.updateRange.count = nv*s[1]; }
+    b.needsUpdate = true; });
+  A.fresh = false; A.n += nv;
+  A.mesh.geometry.setDrawRange(0, A.n);
+  A.mesh.geometry.boundingSphere = new THREE.Sphere(new THREE.Vector3(0,0,0), 1e5);
+  geo.dispose();
+}
+function gixMaterial(m, kind){
+  if(kind==='uv') gfDecalMaterial(m.material);
+  else if(m.material.isMeshBasicMaterial) m.material.onBeforeCompile = gfSRGBHook;
+  else nlMaterial(m.material, 'ix|'+m.material.userData.family, gfSRGBHook);
+  m.castShadow = !FAST; m.receiveShadow = !FAST; m.frustumCulled = false; m.userData.furniture = true; m.userData.interiors = true;
+}
 function gixMerge(){
-  if(!Object.keys(GIX.batch.buckets).length) return;
+  if(!Object.keys(GIX.batch.buckets).length && !GIX.batch.textured.length) return;
   GIX.mergedTris = GIX.batch.tris;            /* the batch's count runs on across flushes */
   var g = GIX.batch.flush(null);
   if(!GIX.group){ GIX.group = new THREE.Group(); GIX.group.name = 'interiors-furniture'; GIX.group.userData.inspectLabel = 'Furniture (interiors)'; scene.add(GIX.group); }
-  g.children.forEach(function(m){
-    var fam = m.material.userData.family || '', A = GIX.acc[fam], ga = m.geometry.attributes, np = ga.position.array.length;
-    if(!A || A.n + np > A.cap){
-      var cap = Math.max(np*2, A ? A.cap*2 : 3*60000); while(A && A.n + np > cap) cap *= 2;
-      var pos = new Float32Array(cap), nor = new Float32Array(cap), col = new Uint8Array(cap);
-      if(A){ pos.set(A.pos.subarray(0,A.n)); nor.set(A.nor.subarray(0,A.n)); col.set(A.col.subarray(0,A.n)); }
-      var geo = new THREE.BufferGeometry();
-      geo.setAttribute('position', new THREE.BufferAttribute(pos,3)); geo.setAttribute('normal', new THREE.BufferAttribute(nor,3));
-      geo.setAttribute('color', new THREE.BufferAttribute(col,3,true));
-      if(A){ A.mesh.geometry.dispose(); A.mesh.geometry = geo; A.pos=pos; A.nor=nor; A.col=col; A.cap=cap; A.fresh=true; }
-      else { var mesh = new THREE.Mesh(geo, m.material); mesh.name = 'interiors:'+(fam||'plain'); gixMaterial(mesh); GIX.group.add(mesh);
-             A = GIX.acc[fam] = { n:0, cap:cap, pos:pos, nor:nor, col:col, mesh:mesh, fresh:true }; }
-    } else m.material.dispose();
-    A.pos.set(ga.position.array, A.n); A.nor.set(ga.normal.array, A.n); A.col.set(ga.color.array, A.n);
-    var at = A.mesh.geometry.attributes;
-    ['position','normal','color'].forEach(function(k){ var b=at[k]; if(A.fresh){ b.updateRange.offset=0; b.updateRange.count=-1; } else { b.updateRange.offset=A.n; b.updateRange.count=np; } b.needsUpdate=true; });
-    A.fresh = false; A.n += np;
-    A.mesh.geometry.setDrawRange(0, A.n/3);
-    A.mesh.geometry.boundingSphere = new THREE.Sphere(new THREE.Vector3(0,0,0), 1e5);
-    m.geometry.dispose();
+  g.children.slice().forEach(function(m){
+    if(m.material.map) gixAccum('decal|'+m.material.uuid, 'uv', m.material, gfDecal(m));
+    else { var fam = m.material.userData.family || '', had = !!GIX.acc[fam]; gixAccum(fam, 'col', m.material, m.geometry); if(had) m.material.dispose(); }
   });
 }
 GIX.lastMerge = 0;

@@ -25,8 +25,7 @@ function buildHlRepArsenal(G,o){reseed(22001+(o.v|0));const W=46,D=34,S=.5,H1=4.
  // the magazine: a turf vault behind a stone portal
  kput('hBatterRub',[0,S,-D/2+5],null,[W-18,5.5,9],hC(0x6a7a4a));vB('vStone',0,S,-D/2+9.6,8,4.2,1.2,0,stone);vB('vDarkB',0,S,-D/2+10.22,3,3,.08,0);vB('vIron',0,S+3,-D/2+10.3,3.4,.2,.1,0,rust);
  // the drill court: rocket racks on trestles
- for(let r=0;r<3;r++){const z=-2+r*4;for(const s of[-1,1])vB('vWood',s*4,S,z,.3,1.1,1.4,0,hC(vPick(HPAL.aged)));for(let k=0;k<4;k++){const x=-5+k*3.3;
-  kput('hTankC',[x,S+1.35,z],qEuler(0,0,Math.PI/2),[.28,2.6,.28],hC(vPick([0x6a6a5a,0x8a3a2a])));kput('vConeI',[x+1.3,S+1.35,z],qEuler(0,0,-Math.PI/2),[.28,.6,.28],red);}}
+ for(let r=0;r<3;r++){hlRngSkip(6);hnFurn('hl_rep_rocket_rack',0,S,-2+r*4,0,{},.25,0);}   // (the trestles and rockets drew 6 colours)
  vnFolk(0,D/2+6,4,3);}
 // ---------------------------------------------------------------- 2. the Mint and Treasury
 // Rusticated stone below (the coin must feel safe), a piano nobile of lattice curtain wall and caihua on bracketed

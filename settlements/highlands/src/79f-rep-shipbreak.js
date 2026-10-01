@@ -52,13 +52,12 @@ function hlShipBreak(G,o,V){   // the shared body; the two builders below seed i
  {const ex=XS+(V?6:9),n=V?2:4;for(let k=0;k<n;k++){const z=(k-(n-1)/2)*(V?5:5.6),s=V?2.1:k%3===0?3:2.3;
    for(const dx of[-s,s])vB('hPlankB',ex+dx*.6,0,z,.5,.5,s*2.2,0,log);kput('hShipBell',[ex,s+.5,z],qEuler(0,0,Math.PI/2),[s,s*2.2,s],bell.clone().multiplyScalar(rr(.8,1.1)));}
   kput('hShipDisc',[ex+(V?6:8),0,V?-7:-12],qEuler(Math.PI/2-.12,.3,0),[R-.4,1,R-.4],hull.clone().multiplyScalar(.7));}
- for(let k=0;k<(V?3:5);k++){const x=X0+4+k*5.4,z=R*2+5;for(let i=0;i<hri(4,8);i++)kput('hShipB',[x+rr(-.2,.2),.18+i*.28,z+rr(-.2,.2)],qEuler(0,rr(-.08,.08),0),[4.2,.26,2.8],hull.clone().multiplyScalar(rr(.75,.95)));}
+ for(let k=0;k<(V?3:5);k++){for(let i=0;i<hri(4,8);i++)hlRngSkip(4);FURNISH('hl_rep_plate_stack',X0+4+k*5.4,0,R*2+5,0,{v:2});}   // stacks of hull plates
  for(let k=0;k<(V?2:3);k++){const x=X0+2+k*6,z=R*2+11;for(let i=0;i<4;i++)kput('hHullSeg',[x,1.2+i*.5,z],qEuler(0,0,Math.PI/2),[2.2,4,2.2],hull.clone().multiplyScalar(rr(.75,.95)));}
  // the camp: sheds of their own salvage, a forge fire under a lean-to, a winch hauling on the hull, carts, lamps, folk
  {const cx=V?16:28,cz=-15;for(const [dx,w,d] of[[0,6,4],[7.5,4.4,3.6]]){vB('vCorr',cx+dx,0,cz,w,2.6,d,0,corr);vnShedRoof(cx+dx,2.6,cz,w+.4,d+.4,.5,0,'vCorr',rust,.3,.08);vnDoor(cx+dx,0,cz+d/2+.02,0,1,2.1,'vWood',log,log,false);vnWin(cx+dx+w/4,1,cz+d/2+.02,0,.8,.6,lit,'vWood',log);}
-  const fx=cx-6;for(const [sx,sz] of[[-1,-1],[1,-1],[-1,1],[1,1]])vPst('vPipeR',fx+sx*1.4,0,cz+sz*1.2,.06,2.4,null);vnShedRoof(fx,2.4,cz,3.2,2.8,.4,0,'vCorr',rust,.2,.06);
-  vB('hRubB',fx,0,cz,1.4,.8,1.2,0,hC(vPick(HPAL.rubble)));vBall('vEmber',fx,.85,cz,.35,null,.1);vnChimney(fx+.4,.8,cz-.3,3.6,.12,true);
-  const wx=XC-4,wz=-(R+6);vB('hPlankB',wx,0,wz,3,.4,2,0,log);kput('hTankC',[wx,1.1,wz],qEuler(Math.PI/2,0,0),[.7,1.8,.7],iron);hnCable([wx,1.1,wz+.5],A(XC-4,0,-R+.2),iron);
+  const fx=cx-6;rng();FURNISH('hl_rep_salvage_forge',fx,0,cz,0);   // the forge fire under its lean-to
+  const wx=XC-4,wz=-(R+6);FURNISH('hl_rep_winch',wx,0,wz,0,{v:1});hnCable([wx,1.1,wz+.5],A(XC-4,0,-R+.2),iron);
   hnRCCart(cx-2,cz+7,.3,log,true);hnRCCart(XS+2,-(R+4),-.6,log,true);hnRBLamps([[cx-3,cz+4],[XC,R+5],[X0,-(R+4)]],3.6);vnFolk((X0+XS)/2,-(R+5),V?5:8,8);vnFolk(cx,cz+5,3,4);}}
 function buildHlRepShipBreak(G,o){reseed(22401+(o.v|0));hlShipBreak(G,o,0);}
 function buildHlRepShipBreakL(G,o){reseed(22411+(o.v|0));hlShipBreak(G,o,1);}

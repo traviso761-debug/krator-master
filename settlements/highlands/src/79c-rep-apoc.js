@@ -32,7 +32,8 @@ function hnSolar(x,y,z,ry,w,d){for(const s of[-1,1]){const p=loc(x,z,s*(w/2-.2),
 function hnDish(x,y,z,ry,r){vPst('vIron',x,y,z,.05,r*.8,hC(0x3a3430));kput('vDomeS',[x,y+r*.8,z],qEuler(0,ry,0).multiply(qEuler(Math.PI/2+.45,0,0)),[r,r*.32,r],hC(0xd8d4c8));}
 function hnMast(x,y,z,w,h,c){c=c||hC(0x4a4440);for(const sx of[-1,1])for(const sz of[-1,1])beam('vIron',[x+sx*w/2,y,z+sz*w/2],[x+sx*w*.2,y+h,z+sz*w*.2],.08,.08,c);
  const n=Math.round(h/2.2);for(let k=1;k<n;k++){const t=k/n,hw=w/2*(1-.8*t)+w*.1*t,yy=y+h*t;for(const [a,b] of[[[-1,-1],[1,-1]],[[1,-1],[1,1]],[[1,1],[-1,1]],[[-1,1],[-1,-1]]])beam('vIron',[x+a[0]*hw,yy,z+a[1]*hw],[x+b[0]*hw,yy,z+b[1]*hw],.05,.05,c);}}
-function hnLantern(x,y,z){vPst('vRope',x,y,z,.01,.3,hC(0x2e2a26));kput('hPaintBall',[x,y-.18,z],null,[.2,.27,.2],hC(vPick([0xc0302a,0xd84a2a,0xe0a030])));vBall('vBulb',x,y-.2,z,.1);}
+// a paper lantern hung from (x,y,z): furniture, the catalog's (its paper drew a colour); its hook rope ends at y+.3
+function hnLantern(x,y,z){rng();return FURNISH('hl_rep_paper_lantern',x,y-.45,z,0,{v:0});}
 function hnBunting(a,b,n){hnCable(a,b,hC(0x3a3028));for(let i=1;i<n;i++){const t=i/n,p=[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t-Math.sin(t*Math.PI)*.4,a[2]+(b[2]-a[2])*t];
  kput('hPaint',[p[0],p[1]-.18,p[2]],qEuler(0,Math.atan2(b[0]-a[0],b[2]-a[2])+Math.PI/2,0),[.3,.36,.02],hC(vPick([0xc0302a,0xd8a030,0x2e8a88,0x3a6aa8,0xefe7d6])));}}
 function hnPole(x,z,h,to){vPst('vPost',x,0,z,.14,h,hC(0x5a4636));vB('vWood',x,h-.6,z,1.4,.12,.12,0,hC(0x5a4636));for(const t of to||[])hnCable([x,h-.55,z],t,null);}
@@ -54,7 +55,7 @@ function buildHlRepHullVault(G,o){reseed(21841+(o.v|0));const L=26,R=8.2,arc=Mat
  const fx=L/2+.05;vB('vDarkB',fx,.4,0,.08,5.2,6,0);for(const s of[-1,1])vB('hPlankB',fx+.1,.4,s*2.4,.1,5.2,1.8,0,plank.clone().multiplyScalar(1.15));vB('vIron',fx+.2,5.7,0,.1,.12,8,0,iron);
  hnSignBoard(fx+.08,6.4,0,Math.PI/2,5,1.1,'rocket');
  for(const x of[-6,6]){vnBarrel(x,.4+yc+R-.05,0,.5,.8,rust);kput('vConeI',[x,.4+yc+R+.75,0],null,[.6,.35,.6],iron);}
- for(let k=0;k<4;k++){const x=L/2+2.5,z=-hw+1+k*1.4;for(let j=0;j<hri(3,6);j++)kput(vPick(['vPlate','vPlateW','vSheet']),[x+rr(-.4,.4),.3+j*.05,z],qEuler(-Math.PI/2+rr(-.1,.1),rr(-.3,.3),0),[2.2,1.2,1],null);}}
+ for(let k=0;k<4;k++)for(let j=0;j<hri(3,6);j++)hlRngSkip(4);FURNISH('hl_rep_plate_stack',L/2+2.5,0,-hw+3.1,Math.PI/2,{v:0});}   // the plates stacked by the doors
 
 // ---------------------------------------------------------------- 2. the Scrap Kontor
 // Where salvage is weighed, priced and paid for: two containers are the ground floor and the strongroom; a frame storey
@@ -164,12 +165,11 @@ function buildHlRepGarage(G,o){reseed(21901+(o.v|0));const lit=vLit()?'lit':'gla
  kput('vCorr',[3.8,3.2,0],qEuler(0,0,-.16),[6,.1,6.2],corr);
  vB('vRustB',4,.55,0,4.2,.9,1.9,0,rust);vB('vRustB',3.7,1.45,0,2.2,.7,1.8,0,rust);vB('vDarkB',3.7,1.5,0,2.3,.5,1.82,0);
  for(const x of[2.6,5.4])for(const z of[-.95,.95]){vB('boxCR',x,0,z,.4,.4,.4,0,hC(0x8a8478));}
- for(let k=0;k<4;k++)kput('vHoop',[7.6,.12+k*.22,-2],qEuler(Math.PI/2,0,0),[.42,.42,3],hC(0x201c1a));
+ FURNISH('pa_tyre_stack',7.6,0,-2,0,{v:1});   // tyres
  // the water tank on its stand, drums, the tool chest, the sign, a lamp
- for(const sx of[-1,1])for(const sz of[-1,1])beam('vIron',[-2.4+sx*1,0,-3.8+sz*1],[-2.4+sx*.8,8.2,-3.8+sz*.8],.08,.08,iron);vB('vIron',-2.4,8.2,-3.8,2,.12,2,0,iron);
- kput('hTankC',[-2.4,8.32+.9,-3.8],null,[.85,1.8,.85],rust);kput('hTankCap',[-2.4,10.1,-3.8],null,[.85,.3,.85],rust);
- vnBarrel(.4,0,2.6,.3,.85,hC(0x5a4a3e));vnBarrel(.9,0,3.1,.3,.85,hC(0xb89a30));vB('hPaint',-.2,0,-2.4,.6,1,.9,0,hC(0xb3322a));
- hnSign(.1,2.6,1.6,Math.PI/2,'gear');vnLampPost(8,0,3,4);}
+ FURNISH('hl_rep_cistern',-2.4,0,-3.8,0,{v:1});   // the water tank on its steel stand
+ hnBarrel(.4,0,2.6,.3,.85);hnBarrel(.9,0,3.1,.3,.85);   // (the red tool chest stood inside the tower's walls: the interiors' room)
+ hnSign(.1,2.6,1.6,Math.PI/2,'gear');hnLampPost(8,0,3,4);}
 
 // ---------------------------------------------------------------- 8. the container shop row
 // Three containers opened as shops under striped awnings, counters out front, goods piled, a hanging sign each; a frame
@@ -178,7 +178,7 @@ function buildHlRepContShops(G,o){reseed(21911+(o.v|0));const lit=vLit()?'lit':'
  vnReg('Container shops',0,0,10,9);
  const syms=['bread','key','boot','fish','candle','flask'];
  for(const [i,x] of[[0,-6.3],[1,0],[2,6.3]]){hnCont(x,0,0,0,6,hContC(),{shop:true});hnSign(x+2.6,2.3,1.3,0,syms[(i*2+hri(0,1))%syms.length]);
-  for(let k=0;k<4;k++){const u=x+rr(-2.2,2.2);if(rng()<.5)vnBarrel(u,0,2.2,.25,.7,hC(vPick([0x5a4a3e,0x6a5040])));else vB('vWood',u,0,2.2,.6,.5,.5,rr(0,1),log);}
+  for(let k=0;k<4;k++){const u=x+rr(-2.2,2.2);if(rng()<.5)hnBarrel(u,0,2.2,.25,.7,hC(vPick([0x5a4a3e,0x6a5040])));else hnCrate(u,0,2.2,.6,rr(0,1),log);}
   if(i!==1)vnShedRoof(x,2.6,0,6.2,2.6,.4,0,'vCorr',corr,.3);}
  hnFachBox(0,2.6,0,6,2.6,2.8,0,null,null,lit);hnGable(0,5.2,0,6,2.8,1.6,0,'vCorr',corr,.5,'vGableW',log);hnBarge(0,5.2,0,6,2.8,1.6*1.4,0,.5,hC(HPAL.white),'lace');
  hnBunting([-9.3,2.8,1.4],[-3,4.8,1.4],6);hnBunting([3,4.8,1.4],[9.3,2.8,1.4],6);for(const x of[-7.8,-4.8,4.8,7.8])hnLantern(x,2.55,2.4);}
@@ -191,13 +191,13 @@ function buildHlRepLanternStall(G,o){reseed(21921+(o.v|0));const lit=vLit()?'lit
  vnReg('Lantern stall',0,0,6,11);
  vB('hPlankB',0,0,-1.6,7,3,.12,0,plank);for(const s of[-1,1])vB('hPlankB',s*3.44,0,0,.12,3,3.3,0,plank);vB('vDarkB',0,.05,-1.5,6.7,2.9,.05,0);
  for(const x of[-3.4,-1.1,1.1,3.4])kput('hCol',[x,0,1.62],null,[.12,3,.12],post);vB('hPaint',0,2.9,1.62,7.1,.22,.2,0,post);
- for(let s=0;s<3;s++){vB('vWood',0,.6+s*.8,-1.35,6.4,.06,.5,0,log);for(let k=0;k<9;k++)kput(vPick(['vClayPot','vGourd','vBarrel']),[-3+k*.75,.66+s*.8,-1.35],null,[.16,.24,.16],hC(vPick([0x9a5a3a,0xc8a060,0x5a7a5a,0xb3322a,0xefe7d6])));}
- vB('vWood',0,0,.9,5.2,.95,.6,0,log);for(let k=0;k<7;k++)hnLantern(-3+k,2.75,1.9);
+ hlRngSkip(54);   // the shelves of pots and the counter stood in the stall: the interiors' room (the pots drew 54 numbers)
+ for(let k=0;k<7;k++)hnLantern(-3+k,2.75,1.9);
  kput('vCorr',[0,3.25,2.2],qEuler(.28,0,0),[7.6,.08,1.9],red);
  vB('vPlaster',0,3,0,6.2,2.8,3.6,0,hC(0xe8e2d4));hnLatWin(-1.5,3.8,1.82,0,1.1,1.1,lit,null);hnLatWin(1.5,3.8,1.82,0,1.1,1.1,lit,null);hnLatWin(3.12,3.8,0,Math.PI/2,.8,.9,lit,null);
  const top=hnGable(0,5.8,0,6.2,3.6,1.8,0,'hGableSc',red,.6,'vGablePl',hC(0xe8e2d4));hnBarge(0,5.8,0,6.2,3.6,1.8*1.8,0,.6,hC(HPAL.white),'lace');
  hnSignBoard(0,5,1.84,0,3,.7,'candle');
- hnStoneChimney(-3.6,0,-.6,9.6,.8);vB('vWood',1.6,top-.2,.2,1.6,.35,.8,0,log);for(let k=0;k<6;k++)kput('vLeaf',[1+k*.24,top+.25,.2+rr(-.2,.2)],null,[.2,.2,.2],hC(0x4a7a34));
+ hnStoneChimney(-3.6,0,-.6,9.6,.8);hlRngSkip(6);FURNISH('iziz_vern_planter',1.6,top-.2,.2,0,{v:1});   // the rooftop box of greens
  const px=4.8,pz=2.4;kput('vPost',[px,0,pz],qEuler(0,0,-.05),[.14,7.5,.14],hC(0x5a4636));vB('vWood',px+.3,6.8,pz,1.4,.12,.12,0,hC(0x5a4636));
  hnCable([px,6.9,pz],[3.1,5.4,1.8]);hnCable([px,6.9,pz],[9,6.4,4]);for(const y of[5.4,4.2])hnLantern(px+.5,y,pz);}
 
