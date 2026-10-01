@@ -70,7 +70,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `79a-convoys.js` | 12 | SILT STRIDER CONVOYS (moving) (1); WADING — the one tuning block (64) |
 | `79b-strider-nav.js` | 36 **big** | the strider's own nav grid + A (1) |
 | `79c-strider-model.js` | 42 **big** | THE BESPOKE SILT STRIDER MODEL (1) |
-| `80-camera.js` | 20 | 25. CAMERA & CONTROLS (1); 26. RENDER LOOP (297) |
+| `80-camera.js` | 21 | 25. CAMERA & CONTROLS (1); 26. RENDER LOOP (297) |
 | `82-daynight.js` | 45 **big** | DAY/NIGHT CYCLE (1); night-light props (143); moving-vehicle lanterns (280); the Guild canton's clock (478); NIGHT ILLUMINATION DRIVER (573) |
 | `83-weather.js` | 8 | WEATHER (1) |
 | `84-fauna.js` | 10 | AMBIENT WILDLIFE (1) |

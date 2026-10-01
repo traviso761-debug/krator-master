@@ -76,16 +76,18 @@ TARGETS = os.path.join(HERE, 'targets')
 DIST = os.path.join(HERE, 'dist')
 CORE = os.path.join(ROOT, 'core', 'materials')   # shared material fragments (core/README.md)
 CORE_FILES = sorted(f for f in os.listdir(CORE) if f[0].isdigit())
+LOD_DIR = os.path.join(ROOT, 'core', 'lod')        # shared level of detail (core/lod/README.md)
+LOD_FILES = sorted(f for f in os.listdir(LOD_DIR) if f[0].isdigit())
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell,
 # the port core, the per-target tables. Anything else must contain a builder.
 DETERMINISTIC = {
-    '00-head.html', '10-core.js', '12-stats.js', '20-textures.js', '22-materials.js',
+    '00-head.html', '09-lod.js', '10-core.js', '12-stats.js', '20-textures.js', '22-materials.js',
     '30-kit.js', '32-surfaces.js', '34-kitdefs.js', '36-decor.js', '38-helpers2.js',
     '50-registry.js', '54-mat-concrete.js', '68-mat-v5.js', '69-mat-salvage.js',
     '70-port-core.js', '71-port-terrain.js', '72-port-kit.js', '73-port-edges.js',
     '74-port-dress.js',
-    '90-scene.js', '91-probe.js', '92-camera.js', '99-tail.html',
+    '90-scene.js', '91-probe.js', '92-camera.js', '97-lod-auto.js', '99-tail.html',
     '89z-rows.js', '91z-views.js',
 }
 
@@ -194,6 +196,7 @@ def build_one(target, do_checks):
 
     src = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
     src.update({f: os.path.join(CORE, f) for f in CORE_FILES if f not in src})   # a src/ copy overrides
+    src.update({f: os.path.join(LOD_DIR, f) for f in LOD_FILES if f not in src})
     tgt = {f: os.path.join(tdir, f) for f in os.listdir(tdir) if f[0].isdigit()}
     clash = set(src) & set(tgt)
     if clash:
