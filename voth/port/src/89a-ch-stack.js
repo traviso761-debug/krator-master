@@ -228,14 +228,22 @@ function chTopple(G,x,z,P,nS,d,o){const D=CH.D,fd=o.fall||[1,0],lv=P.lv,S=lv[nS-
  const yawF=Math.atan2(-fd[1],fd[0]);let first=true;
  const lim=[-55+CH.CLR+3,-110+CH.CLR+3,55-CH.CLR-3,-CH.CLR-3];
  for(let i=nS;i<lv.length;i++)for(const u of lv[i].us){const big=u.big,L=big?CH.L40:CH.L20,col=chCol(1,o.burnt);
-  if(first){first=false;const sx=x+(S.bb[0]+S.bb[2])/2+fd[0]*L*.42,sz=z+(S.bb[1]+S.bb[3])/2+fd[1]*L*.42;
-   kput(big?'pkCont40R':'pkCont20R',[sx,top-L*.2,sz],qEuler(0,yawF,0).multiply(qEuler(0,0,-.5)),1,col);continue;}
+  if(first){first=false;
+   // leans against the stump's face on the fall side: lower edge on the
+   // ground, upper end resting on the face no higher than the stump's top
+   // (it used to hang half inside the stump's top level)
+   const he=Math.abs(fd[0])*(S.bb[2]-S.bb[0])/2+Math.abs(fd[1])*(S.bb[3]-S.bb[1])/2;
+   const th=Math.min(1.1,Math.asin(Math.min(1,(top-D-.4)/L))),off=he+.1+L/2*Math.cos(th);   // origin is the box's base centre
+   const sx=x+(S.bb[0]+S.bb[2])/2+fd[0]*off,sz=z+(S.bb[1]+S.bb[3])/2+fd[1]*off;
+   kput(big?'pkCont40R':'pkCont20R',[sx,D+L/2*Math.sin(th),sz],qEuler(0,yawF,0).multiply(qEuler(0,0,-th)),1,col);continue;}
   const dist=rr(3,6)+(i-nS)*rr(2.5,4),lat=rr(-4,4);
   const px=clamp(x+u.lx+fd[0]*dist-fd[1]*lat,lim[0],lim[2]),pz=clamp(z+u.lz+fd[1]*dist+fd[0]*lat,lim[1],lim[3]);
   const r=rng(),yw=yawF+rr(-1.2,1.2);let q,py;
   if(r<.4){q=qEuler(0,yw,0);py=D;}
   else if(r<.75){q=qEuler(0,yw,0).multiply(qEuler(Math.PI/2*(rng()<.5?1:-1),0,0));py=D+1.22;}
-  else{const b=rr(.3,.6);q=qEuler(0,yw,0).multiply(qEuler(0,0,b));py=D+L/2*Math.sin(b)-.4;}
+  else{// propped: one end up on a heap of rubble, the other dug in a little
+   const b=rr(.1,.2);q=qEuler(0,yw,0).multiply(qEuler(0,0,b));py=D+L/2*Math.sin(b)-.5;
+   portRubble(px+Math.cos(yw)*L*.42,D,pz-Math.sin(yw)*L*.42,3,8);}
   kput(big?'pkCont40R':'pkCont20R',[px,py,pz],q,1,col);
   if(rng()<.5)kput('vine',[px,py+2.4,pz],null,[1.2,2.2,1.2],null);}
  // a fallen balcony and a snapped mast at the stump
