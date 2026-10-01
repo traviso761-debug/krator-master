@@ -1,5 +1,9 @@
 // ---------------------------------------------------------------- instancing kit
-const KIT={defs:{},items:{},order:[]};
+// `meshes` is filled by kbake: name -> the one InstancedMesh that item baked
+// into. One kdef is one InstancedMesh, so anything that wants to switch a whole
+// class of instanced detail on or off at run time (the firelight, at night) can
+// do it with a single .visible, with no per-instance bookkeeping.
+const KIT={defs:{},items:{},order:[],meshes:{}};
 function kdef(name,geo,mat){KIT.defs[name]={geo,mat};KIT.items[name]=[];KIT.order.push(name);}
 let KOFF=[0,0,0],KXF=null; // builder offset; optional {m,q} transform (leaning spire)
 function kput(name,p,q,s,c){let P=p,Q=q;if(KXF){const v=new THREE.Vector3(p[0],p[1],p[2]).applyMatrix4(KXF.m);P=[v.x,v.y,v.z];Q=(q?q.clone():new THREE.Quaternion()).premultiply(KXF.q);}
@@ -21,7 +25,7 @@ function kbake(parent){KIT_BAKED=true;const m=new THREE.Matrix4(),pos=new THREE.
   it.forEach((o,i)=>{pos.set(o.p[0],o.p[1],o.p[2]);const s=typeof o.s==='number'?sc.set(o.s,o.s,o.s):sc.set(o.s[0],o.s[1],o.s[2]);
    m.compose(pos,o.q||q0,s);im.setMatrixAt(i,m);if(o.c)im.setColorAt(i,o.c);});
   if(im.instanceColor){const W=new THREE.Color(0xffffff);it.forEach((o,i)=>{if(!o.c)im.setColorAt(i,W);});}
-  if(im.instanceColor)im.instanceColor.needsUpdate=true;im.instanceMatrix.needsUpdate=true;im.frustumCulled=false;parent.add(im);tot+=it.length;}
+  if(im.instanceColor)im.instanceColor.needsUpdate=true;im.instanceMatrix.needsUpdate=true;im.frustumCulled=false;parent.add(im);KIT.meshes[name]=im;tot+=it.length;}
  window._instances=tot;}
 // orientation helpers
 const _M=new THREE.Matrix4(),_V0=new THREE.Vector3(),_UP=new THREE.Vector3(0,1,0),_X=new THREE.Vector3(1,0,0);
