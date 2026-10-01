@@ -1761,7 +1761,11 @@ function buildSpire(scene,gx,gz,d){reseed(9310+d);KOFF=[gx,0,gz];
     const rr0=lerp(rOf(R,sides,INNER[0],PW[0],SHELF[0],0,th,t)*.96,out*(.62+.38*w),v);
     // and it droops as it goes out, so it is a parasol and not a dinner plate
     return[rr0*Math.cos(th),c[0]+H*t-Math.pow(v,1.7)*out*(.16+.10*(1-w)),rr0*Math.sin(th)];},
-    sides*9,4,{uS:R/7,vS:2,hole:d>0?(u,v)=>fbm(u*13,v*5,9360+i*3+b,3)<.66:null});
+    // Torn from the OUTER edge in: a flat threshold left ~a fifth of each fan
+    // as islands anywhere across it, and the ones out past the shoulder read
+    // as grey plates floating in mid-air off the ruin. Rising with v, what is
+    // left of a fan is a ragged collar still hanging off its tier.
+    sides*9,4,{uS:R/7,vS:2,hole:d>0?(u,v)=>fbm(u*13,v*5,9360+i*3+b,3)<.30+.60*v:null});
    mesh(fan,d>0?MAT.guts:MAT.glass,G);}});
  // ---------------------------------------------------------------- cable stays
  tips.forEach(tp=>{if(rng()<(d>0?.74:.52))return;
@@ -2345,7 +2349,10 @@ function buildDalab(scene,gx,gz,d){reseed(9330+d);KOFF=[gx,0,gz];
   if(fbm(k*.09,1.1,9371,2)<.30)continue;                     // breaches
   kput(BOXC(d),[Math.cos(th)*r,rr(1.4,3.4)*K,Math.sin(th)*r],qEuler(0,-th,0),[rr(6,13)*K,rr(2.8,6.8)*K,rr(2.6,4.4)*K],null);}
  apron(G,0,0,300*K,352*K,d,1.6*K);
- scatterMoss(0,0,0,0,330*K,220,3.2*K);trees(0,0,150*K,420*K,150);
+ // moss from the great dome's foot outward: from r=0 it carpeted the chamber
+ // hall floor inside the dome with 13 m green blobs ('The chamber'). Same draw
+ // count, so nothing after it moves; only the moss itself is re-placed.
+ scatterMoss(0,0,0,DR*1.02,330*K,220,3.2*K);trees(0,0,150*K,420*K,150);
  rubbleRing(0,0,0,150*K,330*K,170,2.8*K);
  figures(0,260*K,14,60*K);figures(-210*K,-80*K,8,40*K);
  meshMerged(C.SH,skin,G);meshMerged(C.DK,MAT.guts,G);
@@ -2511,9 +2518,12 @@ function buildVeladiga(scene,gx,gz,d){reseed(9380+d);KOFF=[gx,0,gz];
  // terrace steps the flood cut through instead of leaving them standing in it.
  const scourK=(x,z)=>{if(d!==2)return 0;const w=150+Math.max(0,z-bz0)*.42;
   return Math.exp(-Math.pow((x-bx0)/w,2))*clamp((z-bz0+60)/220,0,1);};
+ // the braid phase: 0 in a channel thread, 1 on a bar between threads
+ const brd=(x,z)=>{const w=150+Math.max(0,z-bz0)*.42,dx=(x-bx0)/w;
+  return Math.abs(Math.sin(dx*4.4+z*.0045+fbm(x*.004,z*.003,9390,2)*4.5));};
  const scour=(x,z)=>{if(d!==2)return 0;
   const w=150+Math.max(0,z-bz0)*.42,dx=(x-bx0)/w,k=scourK(x,z);
-  const br=Math.abs(Math.sin(dx*4.4+z*.0045+fbm(x*.004,z*.003,9390,2)*4.5));
+  const br=brd(x,z);
   const fan=11*Math.exp(-Math.pow((z-bz0-980)/190,2))*Math.exp(-dx*dx*.45);
   return-30*k*(.45+.55*br)*clamp(1-(z-bz0-780)/500,.25,1)+fan;};
  const REC=46,FACE=[],PANEL=[],REV=[],PIER=[],DK=[];
@@ -2625,6 +2635,14 @@ function buildVeladiga(scene,gx,gz,d){reseed(9380+d);KOFF=[gx,0,gz];
   const sc=scour(x,z);return Math.max(.8,sc<0?b+sc*Math.max(0,b-1.6)/30:b+sc);};
  mesh(gridSurface((u,v)=>{const x=(u-.5)*2160,z=150+v*1340;return[x,pY(x,z),z];},d===2?96:54,d===2?76:42,{uS:32,vS:24}),
   d===2?MAT.mud:MAT.lawn,G);
+ // THE BRAIDS CARRY WATER. The breached reservoir still drains through the
+ // notch, and the braided washout is relief of a few metres on a kilometre of
+ // one mud material in a kit with no shadows: from any height it read as a
+ // flat sand sheet. Shallow threads of water lying in the braid troughs are
+ // what make a braided channel legible from above. No PRNG.
+ if(d===2)mesh(gridSurface((u,v)=>{const x=(u-.5)*2160,z=150+v*1340;return[x,pY(x,z)+.35,z];},
+  216,134,{hole:(u,v)=>{const x=(u-.5)*2160,z=150+v*1340;
+   return !(scourK(x,z)>.28&&brd(x,z)<.30*clamp(scourK(x,z)*1.4,0,1)+.06);}}),MAT.water,G);
  if(d!==2)mesh(gridSurface((u,v)=>{const x=(u-.5)*126+bx0*.35,z=170+v*1300;
   return[x,12+pTerr(z)-pCh(z)*.42,z];},10,34,{}),MAT.water,G);
  // ---- breach aftermath ----------------------------------------------------
@@ -3033,7 +3051,17 @@ function buildHexahedron(scene,gx,gz,d){reseed(9430+d);KOFF=[gx,0,gz];
    const nb=fbm(p*13,k*.29,9437,3);
    for(let row=0;row<3;row++){const Q=W(PU,p,lerp(s0,s1,.10+row*.30));
     const h=lerp(4,15,nb)*(row===0?1:.78)*rr(.86,1.14);
-    kput(BOXC(d),[Q[0],y0+RU+h*.5,Q[1]],q,[rr(8,16),h,rr(6,12)],null);}}
+    const cw=rr(8,16),cd=rr(6,12);                 // same draws, same order as before
+    kput(BOXC(d),[Q[0],y0+RU+h*.5,Q[1]],q,[cw,h,cd],null);
+    // KNOWN_ISSUES: "the terrace cells are still boxes on a ring". The front
+    // row is the one every preset sees, so it gets a dwelling's face: a glazed
+    // band under a dark lintel on its outward side, one per storey it is tall.
+    // Hashed off (k,j) rather than rng(), so nothing after it moves.
+    if(row===0&&d!==2){const hs=Math.sin(k*91.7+j*12.9898)*43758.5,hk=hs-Math.floor(hs);
+     if(hk>.14)for(let st=0;st*4.4+3.6<h;st++){const wy=y0+RU+st*4.4+2.1,
+      fz=cd*.5+.08,ww=cw*(hk>.6?.72:.46);
+      kput(d===0?'pane':'paneD',[Q[0]+N[0]*fz,wy,Q[1]+N[1]*fz],q,[ww,2.2,1],null);
+      kput('boxD',[Q[0]+N[0]*(fz+.1),wy+1.45,Q[1]+N[1]*(fz+.1)],q,[ww+.8,.5,.6],null);}}}}
   // Windows belong to the terrace WALL -- the vertical riser below the tread.
   // They used to sit at the tread height but the riser radius, i.e. outside the
   // building, so they read as panes hung in the air among the balcony boxes.
@@ -14690,6 +14718,22 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
    if(i%2===0)kput(BX,[S2.x-S2.w*.5,fy-.7,S2.z],null,[S2.w*.86,1.4,S2.w*.9],
     new THREE.Color(dd?0x6b6459:0xb7b0a2));
    if(!dd&&i%4===0)kput('strip',[S2.x-2,fy+3.8,S2.z],qEuler(0,Math.PI/2,0),[S2.w*.8,1.2,1.2],CYAN);}
+  // KNOWN_ISSUES: "the access shaft is a blank pale column except where the
+  // joint lays it open". Where it stands free in the hollow (under the lens,
+  // and between the lens and the vault) it gets a slot window at every other
+  // landing on its two open faces, on a dark reveal: the stair inside shows as
+  // a rising stagger. Hashed, not rng(), so nothing after it moves.
+  {const lyc=LYC-lth(S2.x-S2.w*.5,S2.z),lyt=LYC+lth(S2.x-S2.w*.5,S2.z),
+    rf=roofY(S2.x-S2.w*.5,S2.z);
+   const FCS=[[[0,0,1],u=>[S2.x-S2.w*(.25+.5*u),S2.z+S2.w*.5]],
+              [[-1,0,0],u=>[S2.x-S2.w,S2.z+S2.w*(.25-.5*u)]]];
+   for(let i=1;i*4.8<H2-8;i+=2){const fy=S2.y0+i*4.8+1.2;
+    if(fy<SILL+6||(fy>lyc-4&&fy<lyt+4)||(rf>0&&fy>rf-6))continue;
+    FCS.forEach(([n,P],f)=>{for(let k=0;k<2;k++){if(h3(i,f*2+k,8.3)<.12)continue;
+     const [px,pz]=P(k),q=qFacing(n);
+     kput(BXD,[px-n[0]*.2,fy,pz-n[2]*.2],q,[S2.w*.36,3.4,1],null);
+     kput('aiPane',[px+n[0]*.5,fy,pz+n[2]*.5],q,[S2.w*.28,2.6,1],
+      h3(i,f*2+k,9.7)<(dd?.04:.3)?WARM.clone().multiplyScalar(dd?.15:.5):ROOMC);}});}}
   REGISTER({name:'Arcoindian II — the access shaft',x:S2.x-S2.w*.5,z:S2.z,r:S2.w,y:S2.y0-2,h:H2+4});}
 
  // ---- the light wells ------------------------------------------------------
@@ -14862,14 +14906,18 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
  {const GX0=XA+40,GX1=LCX-LWX+30,GAX=(GX0+GX1)*.5;
   const onShelf=(x,z)=>x>GX0&&x<GX1&&z>ZB(x)+10&&z<shelfE(x)-14;
   let ng=0;
+  // the fan's focus, declared before the beds so they can be laid ON its rays:
+  // the first cut turned each hedge to a random bearing (one rng() draw, still
+  // taken so nothing downstream moves) and the fan read as a hedge row
+  const FX=GX1+40,FZ=ZB(FX)+8;
   for(let i=0;i<(dd?230:190);i++){const px=rr(GX0,GX1),pz=rr(ZB(px)+10,shelfE(px)-14);
    if(!onShelf(px,pz))continue;
    ng++;
    if(rng()<.58)VEG.tree(px,SILL,pz,i%3,rr(6,dd?18:12));
-   else kput('hedge',[px,SILL+.9,pz],qEuler(0,rng()*TAU,0),[rr(6,20),1.9,rr(2,5)],
-    new THREE.Color().setHSL(rr(.22,.34),rr(.3,.5),dd?rr(.08,.16):rr(.13,.24)));}
+   else{const _y=rng(),ray=Math.atan2(-(pz-FZ),px-FX);   // yaw that lays local +x along the ray
+    kput('hedge',[px,SILL+.9,pz],qEuler(0,dd?_y*TAU:ray+(_y-.5)*.12,0),[rr(6,20),1.9,rr(2,5)],
+    new THREE.Color().setHSL(rr(.22,.34),rr(.3,.5),dd?rr(.08,.16):rr(.13,.24)));}}
   // the walks: a fan of paths radiating from one point on the back wall
-  const FX=GX1+40,FZ=ZB(FX)+8;
   for(let i=0;i<13;i++){const th=Math.PI*(.56+i*.072);
    GRD.push(gridSurface((u,v)=>{const r2=lerp(30,430,u);
      return[FX+Math.cos(th)*r2,SILL+.3,FZ+Math.sin(th)*r2*.22+v*4];},20,1,{uS:20,vS:1,

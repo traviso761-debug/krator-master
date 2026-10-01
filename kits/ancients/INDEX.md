@@ -37,16 +37,16 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `57-sky-e.js` | 3 |  |
 | `58-sky-f.js` | 4 |  |
 | `60-gate.js` | 7 |  |
-| `61-spire.js` | 17 |  |
+| `61-spire.js` | 18 |  |
 | `62-robotics.js` | 8 |  |
 | `63-canyon.js` | 18 |  |
-| `64-dalab.js` | 11 |  |
+| `64-dalab.js` | 12 |  |
 | `64-houses-def.js` | 9 |  |
-| `65-veladiga.js` | 15 |  |
+| `65-veladiga.js` | 16 |  |
 | `66-office-c.js` | 2 |  |
 | `66b-flatiron.js` | 8 |  |
 | `67-cultural.js` | 6 |  |
-| `68-hexahedron.js` | 28 |  |
+| `68-hexahedron.js` | 29 |  |
 | `69-mat-salvage.js` | 16 | salvage (decay level 3) (1); FIRELIGHT (44) |
 | `69w-worn.js` | 12 | the WORN variant (decay 5) (1) |
 | `70-hypertree.js` | 7 |  |
@@ -89,7 +89,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `89-arcbeam.js` | 59 **big** |  |
 | `89-lab.js` | 7 |  |
 | `89b-arcoindian.js` | 81 **big** |  |
-| `89c-arcoindian2.js` | 80 **big** |  |
+| `89c-arcoindian2.js` | 82 **big** |  |
 | `89d-arcube.js` | 89 **big** | the dwelling grid (112); krShard (248) |
 | `89e-hill.js` | 65 **big** | materials (64); kit (159); the landform and the route (172) |
 | `89f-trigon.js` | 52 **big** |  |
@@ -158,7 +158,7 @@ Each target adds its own fragments to `src/` and builds one output.
 | `hexahedron` | `89z-rows.js`, `91z-views.js` | 7 |
 | `hill` | `89z-rows.js`, `91z-views.js` | 13 |
 | `iziz-style` | `89z-rows.js`, `91z-views.js` | 6 |
-| `kit` | `89z-rows.js`, `91z-views.js` | 13 |
+| `kit` | `89z-rows.js`, `91z-views.js` | 16 |
 | `launch` | `89z-rows.js`, `91z-views.js` | 13 |
 | `ledge` | `89z-rows.js`, `91z-views.js` | 5 |
 | `lighthouse` | `89z-rows.js`, `91z-views.js` | 3 |

@@ -836,6 +836,22 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
    if(i%2===0)kput(BX,[S2.x-S2.w*.5,fy-.7,S2.z],null,[S2.w*.86,1.4,S2.w*.9],
     new THREE.Color(dd?0x6b6459:0xb7b0a2));
    if(!dd&&i%4===0)kput('strip',[S2.x-2,fy+3.8,S2.z],qEuler(0,Math.PI/2,0),[S2.w*.8,1.2,1.2],CYAN);}
+  // KNOWN_ISSUES: "the access shaft is a blank pale column except where the
+  // joint lays it open". Where it stands free in the hollow (under the lens,
+  // and between the lens and the vault) it gets a slot window at every other
+  // landing on its two open faces, on a dark reveal: the stair inside shows as
+  // a rising stagger. Hashed, not rng(), so nothing after it moves.
+  {const lyc=LYC-lth(S2.x-S2.w*.5,S2.z),lyt=LYC+lth(S2.x-S2.w*.5,S2.z),
+    rf=roofY(S2.x-S2.w*.5,S2.z);
+   const FCS=[[[0,0,1],u=>[S2.x-S2.w*(.25+.5*u),S2.z+S2.w*.5]],
+              [[-1,0,0],u=>[S2.x-S2.w,S2.z+S2.w*(.25-.5*u)]]];
+   for(let i=1;i*4.8<H2-8;i+=2){const fy=S2.y0+i*4.8+1.2;
+    if(fy<SILL+6||(fy>lyc-4&&fy<lyt+4)||(rf>0&&fy>rf-6))continue;
+    FCS.forEach(([n,P],f)=>{for(let k=0;k<2;k++){if(h3(i,f*2+k,8.3)<.12)continue;
+     const [px,pz]=P(k),q=qFacing(n);
+     kput(BXD,[px-n[0]*.2,fy,pz-n[2]*.2],q,[S2.w*.36,3.4,1],null);
+     kput('aiPane',[px+n[0]*.5,fy,pz+n[2]*.5],q,[S2.w*.28,2.6,1],
+      h3(i,f*2+k,9.7)<(dd?.04:.3)?WARM.clone().multiplyScalar(dd?.15:.5):ROOMC);}});}}
   REGISTER({name:'Arcoindian II — the access shaft',x:S2.x-S2.w*.5,z:S2.z,r:S2.w,y:S2.y0-2,h:H2+4});}
 
  // ---- the light wells ------------------------------------------------------
@@ -1008,14 +1024,18 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
  {const GX0=XA+40,GX1=LCX-LWX+30,GAX=(GX0+GX1)*.5;
   const onShelf=(x,z)=>x>GX0&&x<GX1&&z>ZB(x)+10&&z<shelfE(x)-14;
   let ng=0;
+  // the fan's focus, declared before the beds so they can be laid ON its rays:
+  // the first cut turned each hedge to a random bearing (one rng() draw, still
+  // taken so nothing downstream moves) and the fan read as a hedge row
+  const FX=GX1+40,FZ=ZB(FX)+8;
   for(let i=0;i<(dd?230:190);i++){const px=rr(GX0,GX1),pz=rr(ZB(px)+10,shelfE(px)-14);
    if(!onShelf(px,pz))continue;
    ng++;
    if(rng()<.58)VEG.tree(px,SILL,pz,i%3,rr(6,dd?18:12));
-   else kput('hedge',[px,SILL+.9,pz],qEuler(0,rng()*TAU,0),[rr(6,20),1.9,rr(2,5)],
-    new THREE.Color().setHSL(rr(.22,.34),rr(.3,.5),dd?rr(.08,.16):rr(.13,.24)));}
+   else{const _y=rng(),ray=Math.atan2(-(pz-FZ),px-FX);   // yaw that lays local +x along the ray
+    kput('hedge',[px,SILL+.9,pz],qEuler(0,dd?_y*TAU:ray+(_y-.5)*.12,0),[rr(6,20),1.9,rr(2,5)],
+    new THREE.Color().setHSL(rr(.22,.34),rr(.3,.5),dd?rr(.08,.16):rr(.13,.24)));}}
   // the walks: a fan of paths radiating from one point on the back wall
-  const FX=GX1+40,FZ=ZB(FX)+8;
   for(let i=0;i<13;i++){const th=Math.PI*(.56+i*.072);
    GRD.push(gridSurface((u,v)=>{const r2=lerp(30,430,u);
      return[FX+Math.cos(th)*r2,SILL+.3,FZ+Math.sin(th)*r2*.22+v*4];},20,1,{uS:20,vS:1,
