@@ -71,7 +71,7 @@ reseed(645001);
         for(var r3=0;r3<3;r3++) for(var c3=0;c3<=r3;c3++){ var vy=WH-1.9-r3*0.42; F.pyr(wx+(c3-r3/2)*0.62, vy, wz+(WD/2)*(1-0.16*vy/WH)-0.1, 0.36,0.32,0.3, 0, VOIDC[0], 'dark'); }
         for(var t2=0;t2<5;t2++) F.toron(wx+(t2-2)*1.6, WH-0.9, wz+(WD/2)*(1-0.16*(WH-0.9)/WH), 0,1, 0.75);
         F.box(s*11.6, 0, -4.0, 2.0, 4.4, 5.0, 0, umber2, 'adobe'); F.box(s*11.6, 4.4, -4.0, 2.2, 0.35, 5.2, 0, dk, 'adobe');                /* the link passage */
-        F.lantern(wx-s*2.4, 3.0, fz+0.4, 0.8, 12, 0); });
+        LOCUS.lantern(F, wx-s*2.4, 3.0, fz+0.4, 0.8, 12); });
       /* ---- the survey tower behind: a tapering mud minaret with toron studs, a lookout, the brass sighting instrument ---- */
       var TX=0, TZ=-17.5, TH=19; F.fr5(TX, 0, TZ, 6.4, TH, 6.4, 0, umber, 'adobe'); F.box(TX, TH-0.05, TZ, 3.4, 0.6, 3.4, 0, dk, 'adobe');
       for(var rr=0;rr<5;rr++) for(var kk=0;kk<4;kk++){ var ty2=2.5+rr*3.2, in_=1-0.5*ty2/TH; F.toron(TX+(kk-1.5)*1.3*in_, ty2, TZ-3.2*in_, 0,-1, 0.7); F.toron(TX-3.2*in_, ty2, TZ+(kk-1.5)*1.3*in_, -1,0, 0.7); F.toron(TX+3.2*in_, ty2, TZ+(kk-1.5)*1.3*in_, 1,0, 0.7); }
@@ -85,7 +85,7 @@ reseed(645001);
         F.fr5(s*23.2, 0, 19.6, 1.3, 3.6, 1.3, 0, umber2, 'adobe'); F.cone(s*23.2, 3.55, 19.6, 0.36, 1.1, 0, ochre, 'adobe'); });
       F.archwall('adobe', 0, 0, 19.6, 0, 7.6, 5.0, 1.2, 3.6, 4.0, umber, { pointed:2.4, colIn:shade(umber,-0.2), seg:14 });
       F.archband('relief', 0, 0, 20.22, 0, 3.6, 4.0, 0.42, 0.1, relU, { pointed:2.4 }); F.edome(0, 5.0, 19.6, 3.9, 0.8, 0.9, 0, sienna, 'adobe');
-      F.lantern(-2.4, 3.2, 20.4, 0.8, 12, 0); F.lantern(2.4, 3.2, 20.4, 0.8, 12, 0);
+      LOCUS.lantern(F, -2.4, 3.2, 20.4, 0.8, 12); LOCUS.lantern(F, 2.4, 3.2, 20.4, 0.8, 12);
       /* the enclosure continues round the sides and the back: the same relief-banded ochre wall, pilaster-pinnacles every ~5 m,
          the survey tower standing in the middle of the back wall. No second gate: the compound is entered only from the front. */
       function wallRun(x0,z0,x1,z1){ var L=Math.hypot(x1-x0,z1-z0), cx=(x0+x1)/2, cz=(z0+z1)/2, yaw=Math.atan2(x1-x0,z1-z0)+PI/2;
