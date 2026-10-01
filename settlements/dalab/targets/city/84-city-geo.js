@@ -46,12 +46,21 @@ const LAB_OBST=(function(){const K=4.105*CITY.LAB.scale;const o=[{x:CITY.LAB.x,z
  for(const q of[[178,-52,46],[126,152,34],[-86,176,40],[-192,26,29],[-138,-148,37],[54,-186,24],[205,88,31]])o.push({x:CITY.LAB.x+q[0]*K,z:CITY.LAB.z+q[1]*K,r:q[2]*K+6});return o;})();
 function segD(x,z,a,b){const dx=b[0]-a[0],dz=b[1]-a[1],l2=dx*dx+dz*dz||1;const t=clamp(((x-a[0])*dx+(z-a[1])*dz)/l2,0,1);return Math.hypot(x-a[0]-dx*t,z-a[1]-dz*t);}
 function channelD(x,z){let best=1e9,w=0;for(const C of CHANNELS){for(let i=0;i<C.pts.length-1;i++){const d=segD(x,z,C.pts[i],C.pts[i+1]);if(d<best){best=d;w=C.w;}}}return{d:best,w};}
+// terrainH only asks whether a point lies within a channel's width (at most CH_WMAX), so it measures only the
+// channels whose box, grown by CH_WMAX+1, holds the point. The answer is exactly channelD's whenever it can matter:
+// any other channel is farther than CH_WMAX+1, wider than every channel, so it can be neither within its own width
+// nor the nearest one that is. It was ~7 s of Dalab's load: every ground sample measured every channel segment.
+const CH_WMAX=Math.max(0,...CHANNELS.map(C=>C.w)),CH_BOX=CHANNELS.map(C=>{const m=CH_WMAX+1;
+ let x0=1e9,z0=1e9,x1=-1e9,z1=-1e9;for(const p of C.pts){x0=Math.min(x0,p[0]);z0=Math.min(z0,p[1]);x1=Math.max(x1,p[0]);z1=Math.max(z1,p[1]);}
+ return[x0-m,z0-m,x1+m,z1+m];});
+function channelNear(x,z){let best=1e9,w=0;for(let c=0;c<CHANNELS.length;c++){const B=CH_BOX[c];if(x<B[0]||z<B[1]||x>B[2]||z>B[3])continue;
+ const C=CHANNELS[c];for(let i=0;i<C.pts.length-1;i++){const d=segD(x,z,C.pts[i],C.pts[i+1]);if(d<best){best=d;w=C.w;}}}return{d:best,w};}
 function riverD(x,z){return Math.abs(x-riverX(z));}
 // the terrain: flat lowland with a metre of roll, the river cut 3.5 m deep and 70 m wide, the channels 1.4 m deep
 // the ground sits ~2.2 m above the datum: the biome reads anything under 0.3 m as water
 terrainH=function(x,z){let h=2.2+.9*fbm(x*.0016+3,z*.0016-7,17,3)+.35*fbm(x*.009,z*.009,5,2)-.5;
  const rd=riverD(x,z);if(rd<60){const t=1-smoothstep(28,60,rd);h-=3.5*t;}
- const c=channelD(x,z);if(c.d<c.w){const t=1-smoothstep(c.w*.45,c.w,c.d);h-=1.4*t;}
+ const c=channelNear(x,z);if(c.d<c.w){const t=1-smoothstep(c.w*.45,c.w,c.d);h-=1.4*t;}
  return h;};
 const WATER_Y=1.25;
 function isWater(x,z){return terrainH(x,z)<WATER_Y+.1;}
