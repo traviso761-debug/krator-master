@@ -44,7 +44,7 @@ function ysChecks(){const R=[];
  {const t=tagAudit();R.push({name:'tags-complete',ok:t.bad===0,detail:t.bad?t.bad+' untagged: '+t.first.join(' | '):REG.length+' volumes tagged'});}
  // marks and rooms: every registered building has a door; every room has its polygon; every residence its three spots
  {const blds=REG.filter(r=>r.cls==='building');const doors=new Set(MARKS.filter(m=>m.kind==='door'||m.kind==='wetdoor').map(m=>m.bld));
-  const noDoor=blds.filter(r=>!doors.has(r.id));
+  const noDoor=blds.filter(r=>!doors.has(r.bld));
   R.push({name:'every-building-has-a-door',ok:!noDoor.length,detail:noDoor.length?noDoor.length+' of '+blds.length+': '+noDoor.slice(0,5).map(r=>r.name).join(' | '):blds.length+' buildings, '+MARKS.length+' marks'});
   const res=ROOMS.filter(r=>r.kind==='bedroom'||r.residence);const miss=[];
   for(const rm of res){const S=SPOTS.filter(s=>s.room===rm.id);const need=['bed','food','store'].filter(k=>!S.some(s=>s.kind===k));if(need.length)miss.push(rm.building+': '+need.join(','));}

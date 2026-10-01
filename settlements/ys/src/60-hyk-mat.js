@@ -11,7 +11,7 @@ const HPAL={
  coral:[0xe8a08c,0xdd8f7c,0xf0b5a2,0xcf7a6a,0xf2c0b0],          // coral pink (rich accents)
  teal:[0x3e9c96,0x2f8a86,0x57b2ab,0x7fcfc6],                    // sea teal (glass, pools, the nacre's shadow)
  seaGreen:[0x6aa892,0x4f8f7a,0x86bfa8],                         // sea-green accents (rich)
- barnacle:[0xb8b2a6,0xa9a398,0xc4bfb3,0x9a948a,0xaba69b],       // grey (poor)
+ barnacle:[0xcdc8bd,0xc0bbb0,0xd6d1c6,0xb3aea3,0xc8c3b8],       // grey-white (poor)
  bone:[0xf1e9d8,0xe9e0cc,0xf6efe2,0xe4dac6],                    // ivory ribs and bridges
  weed:[0x3c5a3a,0x2f4a30,0x4a6a42,0x35553a],
  crust:[0x2a2622,0x332e28,0x1f1c19,0x3a342c],
@@ -31,13 +31,14 @@ TEX.hkShell=canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.dat
   if(fbm(x/6,y/6,9.2,2)>.74)v-=9;                                                           // pitting
   d[i]=v;d[i+1]=v*.985;d[i+2]=v*.955;d[i+3]=255;}
  g.putImageData(id,0,0);});
-TEX.hkBarn=canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;   // barnacle: vertical ribs, pits, dirt in the grooves
- for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;const col=Math.floor(x/11),fx=x%11;
-  let v=186+(h3(col*1.7,0,2.1)-.5)*26+(fbm(x/18,y/18,4.4,2)-.5)*18;
-  if(fx<2)v-=34;else if(fx<3)v-=12;else if(fx>8)v+=6;                                       // the groove and the lit edge of each rib
-  if(fbm(x/5,y/5,7.7,2)>.70)v-=26;                                                          // pits
-  if(y%53<2)v-=10;                                                                          // growth steps
-  d[i]=v;d[i+1]=v*.98;d[i+2]=v*.95;d[i+3]=255;}
+TEX.hkBarn=canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;   // barnacle: plates of uneven width, growth lines across them, pits
+ const edges=[];let xx=0;while(xx<w){edges.push(xx);xx+=9+Math.floor(h3(xx*.37,1.1,4.4)*14);}edges.push(w);
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;let k=0;while(edges[k+1]<=x)k++;const fx=x-edges[k],pw=edges[k+1]-edges[k];
+  let v=198+(h3(k*1.7,0,2.1)-.5)*22+(fbm(x/24,y/9,4.4,3)-.5)*22;
+  const e=Math.min(fx,pw-1-fx);if(e<1)v-=30;else if(e<2)v-=10;else v+=6*Math.sin(fx/pw*Math.PI);   // a soft rounded plate with a dark seam
+  const gl=(y+Math.floor(h3(k*2.3,0,1.3)*20))%23;if(gl<1)v-=12;                               // growth lines across each plate, offset per plate
+  if(fbm(x/5,y/5,7.7,2)>.72)v-=22;                                                            // pits
+  d[i]=v;d[i+1]=v*.985;d[i+2]=v*.96;d[i+3]=255;}
  g.putImageData(id,0,0);});
 TEX.hkBone=canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;   // ivory: longitudinal grain, faint pores
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;

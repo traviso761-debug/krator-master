@@ -61,6 +61,12 @@ function toggleWalk(){WALK.on=!WALK.on;if(WALK.on){const d=new THREE.Vector3();c
  WALK.x=camera.position.x;WALK.z=camera.position.z;WALK.y=ysFloorY(WALK.x,WALK.z)+1.7;}else{setView(WALK.x-Math.sin(WALK.yaw)*-30,20,WALK.z-Math.cos(WALK.yaw)*-30,WALK.x-Math.sin(WALK.yaw)*10,4,WALK.z-Math.cos(WALK.yaw)*10);}
  for(const b of ui.querySelectorAll('button'))if(b.textContent.startsWith('Walk'))b.classList.toggle('on',WALK.on);}
 
+// ---- Inside: hide every exterior shell so floors, inner skins and the furniture spots can be judged (DESIGN §7).
+// Declared here, not in the UI fragment: the opening preset runs setView() before later fragments' consts exist.
+const INSIDE={on:false};
+function setInside(on){on=!!on;if(INSIDE.on===on)return on;INSIDE.on=on;if(typeof HYK_MESHES!=='undefined')for(const m of HYK_MESHES)if(m.userData.hyk==='out')m.visible=!on;
+ const bt=[...ui.querySelectorAll('button')].find(b=>b.textContent==='Inside');if(bt)bt.classList.toggle('on',on);if(on&&typeof setRooms==='function')setRooms(true);return on;}
+
 // ---- compass: a rose in the corner (north on screen, from the camera yaw) and a ground gizmo at the orbit target
 const COMP={on:false,el:document.getElementById('compass'),gizmo:null};
 function compassLetter(txt,col){const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d');g.font='bold 48px system-ui,sans-serif';g.textAlign='center';g.textBaseline='middle';

@@ -14,12 +14,15 @@ function buildHykMockPoor(G,o){reseed(30301+(o.v|0));const grey=()=>hC(hPick(HPA
   L.ops=ops;hykPut('hkBarn',hykLathe(L));
   const Li=Object.assign({},L,{rFn:y=>L.rFn(y)*.9,flip:true,col:hC(hPick(HPAL.barnacle),.85)});hykPut('hkIn',hykLathe(Li),true);
   hykPut('hkBarn',hykFlare([b.cx,-.35,b.cz],[0,1,0],b.rb*.98,b.rb*.32,{col}));
-  const top=hykLatheAt(L,0,b.h*(1-L.tilt.amp));kput('hkLip',[b.cx,top.p[1]-.05,b.cz],qEuler(Math.PI/2+L.tilt.amp*.6,0,0),[b.rt*1.0,b.rt*1.0,1.2],col);   // the vent at the top
+  // the lid: a domed plate over the tilted rim (the operculum), with the vent at its centre and its lip
+  const hAt=th=>b.h*(1-L.tilt.amp*.5*(1+Math.cos(th-L.tilt.dir)));const rtAt=th=>L.rFn(hAt(th))*(1+L.flute.amp*Math.pow(.5+.5*Math.cos(L.flute.n*th),L.flute.sharp))*(1+L.rings.amp*Math.sin(L.rings.n*TAU));
+  hykPut('hkBarn',hykSurf((u,v)=>{const th=u*TAU;const r=rtAt(th)*v;return [b.cx+r*Math.cos(th),L.yBase+hAt(th)+b.rt*.28*(1-v*v)-.04,b.cz+r*Math.sin(th)];},40,5,{col:hC(hPick(HPAL.barnacle),.9),flip:true,hole:(u,v)=>v<.22}));
+  const vy=L.yBase+hAt(L.tilt.dir+Math.PI)*.5+hAt(L.tilt.dir)*.5+b.rt*.26;kput('hkLip',[b.cx,vy,b.cz],qEuler(Math.PI/2,0,0),[b.rt*.24,b.rt*.24,1.2],col);   // the vent
   for(const op of ops){if(op.kind==='door')hykDoor(op,{level:'ground'});else hykWin(op,{});}
   hykFloor(b.cx,b.cz,.02,b.rb*.86,{col:hC(hPick(HPAL.floor),.9)});}
  // the room is the big cone; the small ones are stores
  const room=hykRoom('bedroom',hykCirclePoly(main.cx,main.cz,main.rb*.84,14),.02,3.2,{doors:[[main.cx,main.cz+main.rb,2.1]],residence:true,wealth:.15});
- hykSpot(room,'bed',main.cx-.2,main.cz-1.5,0,2.1,1.0);hykSpot(room,'store',main.cx-1.9,main.cz+.6,Math.PI/2,1.2,.7);hykSpot(room,'food',main.cx+1.8,main.cz+.7,0,.8,.8);hykSpot(room,'hearth',main.cx+.1,main.cz+.9,0,.8,.8);
+ hykSpot(room,'bed',main.cx-.2,main.cz-1.4,0,2.1,1.0);hykSpot(room,'store',main.cx-1.8,main.cz+.5,Math.PI/2,1.2,.7);hykSpot(room,'food',main.cx+1.7,main.cz+.5,0,.8,.8);hykSpot(room,'hearth',main.cx+.1,main.cz+.2,0,.8,.8);
  hykReg('Barnacle hut',0,0,4.9,5.2);}
 HYK.def({key:'mock_poor_barnacle',name:'Barnacle hut',family:'housing',row:'Housing — poor',w:10,d:10,h:5.6,tags:{type:['single-family dwelling'],wealth:'poor',lit:false},build:buildHykMockPoor});
 // ---- middle: a pod house. A superellipsoid body with a smaller sleeping pod grown onto its side, a lens dome on the crown
@@ -45,13 +48,13 @@ function buildHykMockMid(G,o){reseed(30311+(o.v|0));const col=hC(hPick(HPAL.shel
  const hall=hykRoom('hall',hykCirclePoly(0,0,A.a*.82,16),.12,3.6,{doors:[[0,A.c,2.3]],wealth:.5});
  hykSpot(hall,'hearth',1.3,-1.6,0,1.0,1.0);hykSpot(hall,'table',-.4,-.3,0,1.4,1.4);hykSpot(hall,'food',2.4,.9,0,.8,.8);hykSpot(hall,'seat',-1.9,1.6,.4,1.2,.9);
  const bed=hykRoom('bedroom',hykCirclePoly(-5.1,.6,2.0,12),.12,2.6,{doors:[[-3.4,.6,1.0,'hall']],residence:true,wealth:.5});
- hykSpot(bed,'bed',-5.8,.4,Math.PI/2,2.1,1.0);hykSpot(bed,'store',-4.6,1.9,0,1.2,.7);hykSpot(bed,'food',-4.5,-.9,0,.8,.8);
+ hykSpot(bed,'bed',-5.6,.5,Math.PI/2,2.1,1.0);hykSpot(bed,'store',-4.9,1.7,0,1.2,.7);hykSpot(bed,'food',-4.8,-.7,0,.8,.8);
  hykReg('Pod house',-1.2,0,7.2,8.2);}
 HYK.def({key:'mock_mid_pod',name:'Pod house',family:'housing',row:'Housing — middle',w:14,d:11,h:9.6,tags:{type:['single-family dwelling'],wealth:'middle',lit:false},build:buildHykMockMid});
 // ---- rich: a conch. A fluted log-spiral body whose flared lip is the porch and door, a nacre-lipped aperture, windows in
 // the outer whorl, a lens-domed annex grown onto the flank, a shell-paved forecourt, glow-pearls either side of the door.
 function buildHykMockRich(G,o){reseed(30321+(o.v|0));const col=hC(hPick(HPAL.nacre)),col2=hC(hPick(HPAL.coral));
- const C={R:3.3,turns:2.4,g:.78,flare:.32,flute:{n:11,amp:.05},rings:{n:26,amp:.018},nu:220,nv:28,col};
+ const C={R:3.3,turns:2.7,g:.78,flare:.32,apexLift:5.2,flute:{n:11,amp:.05},rings:{n:26,amp:.018},nu:240,nv:28,col};
  const pre=hykConch(C);   // a first pass only to find the opening points on the outer whorl
  const wins=[.80,.86].map(t=>{const Cc=pre.cen(t);const r=pre.rho(t);const C2=pre.cen(t+.002);const tx=C2[0]-Cc[0],tz=C2[2]-Cc[2];const L=Math.hypot(tx,tz)||1;const nx=tz/L,nz=-tx/L;   // outward from the whorl
   const chk=(Cc[0]+nx)*(Cc[0]+nx)+(Cc[2]+nz)*(Cc[2]+nz)>(Cc[0]-nx)*(Cc[0]-nx)+(Cc[2]-nz)*(Cc[2]-nz);const sx=chk?nx:-nx,sz=chk?nz:-nz;
@@ -60,7 +63,14 @@ function buildHykMockRich(G,o){reseed(30321+(o.v|0));const col=hC(hPick(HPAL.nac
  const Ci=Object.assign({},C,{R:C.R*.92,flip:true,col:hC(hPick(HPAL.shell),.92)});hykPut('hkIn',hykConch(Ci).geo,true);
  // the apex spire and the aperture
  const ap=sh.cen(0);hykPut('hkNacre',hykLathe({H:3.2,cx:ap[0],cz:ap[2],yBase:ap[1]-.6,rFn:y=>.9*Math.pow(1-y/3.2,.85)+.05,nu:16,nv:10,flute:{n:9,amp:.12,sharp:1.3},twist:.7,col}));
- const A=sh.aperture;hykDoor({p:[A.p[0],A.p[1]-.3,A.p[2]+.2],n:[0,.05,1],r:A.r*.62,ky:1.35},{level:'ground',nacre:true,depth:.9});
+ // the septum: a nacre wall a metre inside the mouth, with the real door through it, so the porch is a porch and not a cave
+ const A=sh.aperture;const Rt=C.R*1.22,dz=-1.1,dx=A.p[0],dy=A.p[1]-Rt*.42;const dr=1.15,dky=1.35;
+ hykPut('hkNacre',hykSurf((u,v)=>{const th=u*TAU;const r=v*Rt;return [A.p[0]+r*Math.cos(th),A.p[1]+r*Math.sin(th),A.p[2]+dz];},44,5,{col:hC(hPick(HPAL.coral)),hole:(u,v,p)=>Math.pow(p[0]-dx,2)+Math.pow((p[1]-dy)/dky,2)<dr*dr*1.05}));
+ hykDoor({p:[dx,dy,A.p[2]+dz],n:[0,0,1],r:dr,ky:dky},{level:'ground',nacre:true,depth:.7});
+ kput('hkLipN',[A.p[0],A.p[1]-.2,A.p[2]+.3],qEuler(0,0,0),[A.r*.96,A.r*.96,A.r*1.4],col);   // the mouth's own lip
+ // shoulder knobs along the body whorl: the shell's spines
+ for(let t=.5;t<.965;t+=.038){const Cc=sh.cen(t),Cn=sh.cen(t+.002);const r=sh.rho(t);const ox=Cc[0]-(-sh.rho(1)*1.3),oz=Cc[2];const ol=Math.hypot(ox,oz)||1;
+  const kx=Cc[0]+(ox/ol)*r*.72,ky2=Cc[1]+r*.78,kz=Cc[2]+(oz/ol)*r*.72;const s=r*.2;kput('hkBall',[kx,ky2,kz],qFacing([ox/ol,.6,oz/ol]),[s,s*.8,s*1.5],col);}
  for(const w of wins)hykWin(w,{nacre:true,lit:true});
  // the skirt into the forecourt, the forecourt, and the floor of the chamber
  for(const t of [.3,.55,.78,.97]){const Cc=sh.cen(t);const r=sh.rho(t);hykPut('hkNacre',hykFlare([Cc[0],.02,Cc[2]],[0,1,0],r*.96,r*.42,{col}));}
@@ -88,6 +98,6 @@ function buildHykMockRich(G,o){reseed(30321+(o.v|0));const col=hC(hPick(HPAL.nac
  const b1=sh.cen(.76),b2=sh.cen(.88),b3=sh.cen(.95);const bd=(t)=>{const a=sh.cen(t),b=sh.cen(t+.002);return Math.atan2(b[0]-a[0],b[2]-a[2]);};
  hykSpot(ch,'bed',b1[0],b1[2],bd(.76)+Math.PI/2,2.1,1.0);hykSpot(ch,'store',b2[0]+.9,b2[2],bd(.88),1.2,.7);hykSpot(ch,'food',b3[0]-1.1,b3[2]-.3,bd(.95),.8,.8);hykSpot(ch,'seat',b2[0]-1.0,b2[2]+.2,bd(.88),1.0,.9);
  const an=hykRoom('hall',hykCirclePoly(ax,az,DR*.84,14),.12,DY+DH*.6,{doors:[[Cc[0]+nx*(rr0+.4),Cc[2]+nz*(rr0+.4),1.2,'bedroom']],wealth:.9});
- hykSpot(an,'hearth',ax+nx*.9,az+nz*.9,0,1.0,1.0);hykSpot(an,'table',ax-nz*1.1,az+nx*1.1,0,1.3,1.3);hykSpot(an,'shrine',ax-nx*1.5,az-nz*1.5,Math.atan2(nx,nz),.9,.6);
+ hykSpot(an,'hearth',ax+nx*1.1,az+nz*1.1,0,1.0,1.0);hykSpot(an,'table',ax-nz*1.3,az+nx*1.3,0,1.3,1.3);hykSpot(an,'shrine',ax+nz*1.3,az-nx*1.3,Math.atan2(nx,nz),.9,.6);
  hykReg('Conch house',0,-1,9.5,9.8);}
 HYK.def({key:'mock_rich_conch',name:'Conch house',family:'housing',row:'Housing — rich',w:19,d:17,h:10.5,tags:{type:['single-family dwelling'],wealth:'rich',lit:true},build:buildHykMockRich});
