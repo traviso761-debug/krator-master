@@ -34,7 +34,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `78-life.js` | 61 **big** | 78. LIFE — GIRDER (2) |
 | `80-camera.js` | 11 | 25. CAMERA, CONTROLS, FRAME LOOP (1); RENDER LOOP (146) |
 | `81-glow.js` | 5 | 26. NIGHT GLOW (1) |
-| `82-daynight.js` | 5 | 27. DAY / NIGHT (1) |
+| `82-daynight.js` | 6 | 27. DAY / NIGHT (1) |
 | `84-flyers.js` | 88 **big** | 84. FLYERS (1) |
 | `85-probe.js` | <1 | 29. PROBE (1) |
 | `86-inspect.js` | 4 | 27. DEV INSPECTOR (1) |
