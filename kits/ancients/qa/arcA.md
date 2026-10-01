@@ -21,7 +21,7 @@ broken. Placeholders it left in this file are filled from those runs.
 | arcbeam | 488 454 / 472 468 | 565 462 / 550 068 |
 | plymouth | 449 262 / 378 270 | 460 002 / 470 262 |
 | launch | not recorded (417 072 / 473 360 at build) | 415 200 / 419 154 |
-| darco | 248 560 / 236 100 | 248 560 / 236 546 |
+| darco | 248 560 / 236 100 | 248 560 / 250 836 |
 | forest | 530 538 / 512 152 | 530 538 / 514 598 |
 | hill | 533 256 / 486 016 | 533 726 / 486 486 |
 
@@ -211,8 +211,9 @@ or the old draws re-used in their old order), so nothing already placed moved.
 - **launch**: trench volumes thin in the registry (pass); 'look down off the top
   terrace' unachievable as logged. Downward brown is fixed here only; kit-wide
   request below.
-- **darco**: nothing logged. From the shots: the fallen horn's eaten skin has
-  stair-stepped hole edges (hole test per grid quad at 96x40).
+- **darco**: nothing logged open. (Second pass: the fallen horn's skin grid
+  96x40 -> 168x70, so its eaten holes have fine edges, not stair steps;
+  darco/1 236 546 -> 250 836.)
 - **forest**: nothing logged open.
 - **hill**: no KNOWN_ISSUES section. From the shots: the summit city and
   terraces are only hazily legible from the hero (fog at 1.5-2 km, by design
