@@ -26,6 +26,7 @@ reseed(560001);
       else F.quad(fam, L0[i],L0[j],L1[j],L1[i], col, [mx,0.1,mz]);
       if(par>0){ F.quad(fam, L1[i],L1[j],L2[j],L2[i], shade(col,0.05), [0,1,0]); F.quad(fam, L2[i],L2[j],L3[j],L3[i], shade(col,-0.08), [-mx,0,-mz]); }
       F.tri(o.deckFam||'adobe', par>0?L3[i]:L1[i], par>0?L3[j]:L1[j], [cx,par>0?H:yt,cz], o.deck!=null?o.deck:PAL.lane[1], [0,1,0]); }
+    F.mass({ k:'box', x:cx, z:cz, y:y0, w:o.W, d:o.D, h:yt-y0, r:0, tk:1-k });      /* for the interior planner (64-interiors.js) */
     return { zf:function(y){ return cz+b0*sc(y); }, zb:function(y){ return cz-b0*sc(y); }, xr:function(y){ return cx+a0*sc(y); }, xl:function(y){ return cx-a0*sc(y); }, sc:sc, o:o };
   }
   /* a band hugging a rounded body between y1 and y2, standing `off` proud (frieze of relief / paint / tile) */

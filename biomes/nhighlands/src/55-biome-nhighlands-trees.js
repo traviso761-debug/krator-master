@@ -347,7 +347,7 @@ function buildFar(T,fi,st,lite){const K=BIO.bucket('nfar');if(!ICO){ICO=new T3.I
   [A,D,E,A,E,Bq].forEach(p=>vtx(p[0],p[1],p[2],p[3],.05,p[4],bc.r*sh,bc.g*sh,bc.b*sh));tris+=2;}
  if(hb!=='snag'){const L=S.leaf.length?S.leaf:[0x445544],A=bright(L[fi%L.length],.85),Bc=bright(L[(fi+1)%L.length],.7),R=T.crownR*(lite?1:1/Math.sqrt(Math.max(.3,BIO.lod(T.x,T.z))));
   if(hb==='cone')blob(T.x,T.y0+T.H*.62,T.z,R*.75,T.H*.36,A,Bc,fi);
-  else if(hb==='spire')blob(T.x,T.y0+T.H*.55,T.z,R*.8,T.H*.45,A,Bc,fi);
+  else if(hb==='spire')blob(T.x,T.y0+T.H*.55,T.z,R*1.15,T.H*.45,A,Bc,fi);
   else if(hb==='tall')blob(T.x,T.y0+T.H*.68,T.z,R*.85,T.H*.3,A,Bc,fi);
   else if(hb==='umbrella')blob(T.x,T.y0+T.H*.85,T.z,R,T.H*.14,A,Bc,fi);
   else if(hb==='low')blob(T.x,T.y0+T.H*.6,T.z,R,T.H*.32,A,Bc,fi);
@@ -367,7 +367,7 @@ NHL.buildTrees=function(R,q){
  const lvOf=(x,z,hero,mid)=>{const ld=BIO.lodD(x,z);return ld<hero?2:(ld<mid?1:0);};
  function pass(key,cell,accept,opt){opt=opt||{};const sp=KEY[key];let n=0;
   BIO.grid(cell,0,R,(x,z)=>{const Z=zones(x,z);const a=accept(Z,x,z);if(a<=0)return 0;return a*(opt.lodK?lerp(1,BIO.lod(x,z),opt.lodK):1)*q;},
-   (x,y,z)=>{if(blocked(x,z,opt.pad==null?4:opt.pad))return;if(!BIO.clearOf(x,z,(opt.pad==null?4:opt.pad)+2))return;
+   (x,y,z)=>{if(BIO.depth(x,z)>-.25||blocked(x,z,opt.pad==null?4:opt.pad))return;if(!BIO.clearOf(x,z,(opt.pad==null?4:opt.pad)+2))return;
     const T=mk(x,y,z,sp);if(opt.mod)opt.mod(T,zones(x,z));
     T.lv=lvOf(x,z,opt.hero,opt.mid);if(T.lv===0&&!opt.far)return;
     TREES.push(T);hadd({x,z,r:T.rb*1.4+(opt.own||1)});n++;},{patch:opt.patch==null?.55:opt.patch,patchScale:opt.patchScale||.01,pad:1});
@@ -377,7 +377,7 @@ NHL.buildTrees=function(R,q){
   const Z=zones(x,z),boreal=Z.boreal>.5&&Z.alpine<.4,sp=boreal?KEY.frosttrumpet:KEY.trumpet;if(Z.alpine>.4)return;
   const lvC=lvOf(x,z,300,520),nT=boreal?ri(3,8):(lvC===2?ri(8,28):ri(4,10)),rad=boreal?rr(6,12):rr(10,26),col={x,z,r:rad,n:0,sp,lv:lvC};if(lvC===0)return;
   for(let k=0;k<nT*2&&col.n<nT;k++){const a=rr(0,TAU),d=rad*Math.sqrt(rng()),px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d;
-   if(BIO.mask(px,pz)<.3||blocked(px,pz,.8)||!BIO.clearOf(px,pz,2))continue;
+   if(BIO.mask(px,pz)<.3||BIO.depth(px,pz)>-.25||blocked(px,pz,.8)||!BIO.clearOf(px,pz,2))continue;
    const T=mk(px,Y(px,pz),pz,sp);T.H*=lerp(1.1,.6,d/rad)*rr(.85,1.1);T.lv=lvC;TREES.push(T);hadd({x:px,z:pz,r:T.rb*1.5+.8});col.n++;}
   if(col.n){NHL.COLONIES.push(col);st.colonies++;}},{patch:0,pad:2});
  // the temperate old growth: the giants first (they claim their ground), then the rest of the canopy. Density falls

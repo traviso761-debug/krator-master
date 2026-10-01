@@ -16,8 +16,8 @@ const VIEWS={};
   const dx=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dx,dz)||1,nx=-dz/l,nz=dx/l,cx=p[0]+nx*side,cz=p[1]+nz*side,q=STREAM.P[k];
   return[cx,Math.max(G(cx,cz),STREAM.level[j])+up,cz,q[0],STREAM.level[k]+up*.6,q[1]];};
  add('The stream',streamView(-2350,4,7,2.2,6));
- {const f=STREAM.falls.length?STREAM.falls[STREAM.falls.length-1]:sIdx(420),i=clamp(f+8,0,STREAM.P.length-1),p=STREAM.P[i],q=STREAM.P[Math.max(0,f-1)];
-  add('The waterfall',[p[0],STREAM.level[i]+7,p[1],q[0],(STREAM.level[Math.max(0,f-3)]+STREAM.level[i])/2+4,q[1]]);}
+ {const f=STREAM.falls.length?STREAM.falls[STREAM.falls.length-1]:sIdx(420),i=clamp(f+11,0,STREAM.P.length-1),p=STREAM.P[i],q=STREAM.P[Math.max(0,f-1)];
+  add('The waterfall',[p[0],STREAM.level[i]+5,p[1],q[0],(STREAM.level[Math.max(0,f-3)]+STREAM.level[i])/2+4,q[1]]);}
  if(STREAM.falls.length>1){const f=STREAM.falls[0],i=clamp(f+7,0,STREAM.P.length-1),p=STREAM.P[i],q=STREAM.P[Math.max(0,f-1)];add('The upper fall',[p[0],STREAM.level[i]+6,p[1],q[0],(STREAM.level[Math.max(0,f-3)]+STREAM.level[i])/2+3,q[1]]);}
  {const a=Math.atan2(TARN.z-STREAM.P[20][1],TARN.x-STREAM.P[20][0]),cx=TARN.x+Math.cos(a)*(TARN.r+40),cz=TARN.z+Math.sin(a)*(TARN.r+40);add('The tarn',[cx,G(cx,cz)+6,cz,TARN.x,TARN.level+2,TARN.z]);}
  if(TOWER.top){const y=TOWER.y0,a=Math.atan2(TOWER.z-STREAM.P[sIdx(TOWER.s)][1],TOWER.x-STREAM.P[sIdx(TOWER.s)][0])+Math.PI,cx=TOWER.x+Math.cos(a)*120,cz=TOWER.z+Math.sin(a)*120;
