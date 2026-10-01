@@ -1963,7 +1963,7 @@ const HEX_SITE={};
 // hxNightDim() drops it at night, or the whole underside would glow.
 MAT.hxSoff =new THREE.MeshStandardMaterial({map:TEX.concrete,roughnessMap:TEX.concreteRM,color:0xb8b3aa,emissive:0x77726a,emissiveMap:TEX.concrete,roughness:1,metalness:0,side:DS});
 MAT.hxSoffR=new THREE.MeshStandardMaterial({map:TEX.concrete,roughnessMap:TEX.concreteRM,color:0x6f6861,emissive:0x3f3b36,emissiveMap:TEX.concrete,roughness:1,metalness:0,side:DS});
-function hxNightDim(o,m){if(o)o.onBeforeRender=()=>{m.emissiveIntensity=NIGHT?.06:1;};}
+function hxNightDim(o,m){if(o)o.onBeforeRender=()=>{m.emissiveIntensity=(typeof NIGHT!=="undefined"&&NIGHT)?.06:1;};}
 // THE DWELLING CELLS. KNOWN_ISSUES: "the terrace cells are still boxes on a
 // ring". Soleri's cells are not crates: each storey is a deep loggia between
 // party-wall fins with a planter on its lip, the terraces step back, the top
@@ -2903,7 +2903,8 @@ function buildHexahedron(scene,gx,gz,d){reseed(9430+d);KOFF=[gx,0,gz];
  {const bb=[1e9,-1e9,1e9,-1e9];
   for(const P of [PU,PL])for(let i=0;i<=240;i++){const Q=W(P,i/240,P===PU?1.14:1.12);   // the decks' reach
    bb[0]=Math.min(bb[0],Q[0]);bb[1]=Math.max(bb[1],Q[0]);bb[2]=Math.min(bb[2],Q[1]);bb[3]=Math.max(bb[3],Q[1]);}
-  const kS=Math.round(NU*.6),shQ=W(PU,WB,su(kS));
+  // WB (the kit's wedge bearing) is not defined here: the village replaced the wedge with its own cut
+  const WB=.567,kS=Math.round(NU*.6),shQ=W(PU,WB,su(kS));
   HEX_SITE[d]={UC:[(bb[0]+bb[1])/2,(bb[2]+bb[3])/2],BB:bb,COM:[COM[0]*SPAN,COM[1]*SPAN],
    CRATER:[CX,CZ],APEX:W(PU,.380,1.14),SUMMIT:[PU.O[0]*SPAN,PU.O[1]*SPAN],
    SHEAR:[shQ[0],YW+kS*RU,shQ[1]],SHEARN:pnorm(PU,WB),YB,YW,YT,
