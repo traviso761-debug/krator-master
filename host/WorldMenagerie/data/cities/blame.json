@@ -1,0 +1,31 @@
+{
+ "name": "The City",
+ "_": "Fan work after Tsutomu Nihei's Blame! (Kodansha, 1997-2003). Nothing from the manga or the 2017 film is used: every shape is generated here from the numbers below. The four layers are a sample, bottom to top; the City has thousands.",
+ "attribution": "Fan work. Blame! is Tsutomu Nihei's (Kodansha); nothing of his is used.",
+ "seed": 1997,
+ "block": 48000,
+ "_stack": "Bottom to top. A slab is Megastructure; a layer is the space between two slabs, with its floor on the slab below and its ceiling under the slab above. Heights in metres.",
+ "stack": [
+  {"slab": 1200},
+  {"layer": "arcade", "name": "The Arcade", "h": 3200, "fog": ["#8f8e89", 0.00016],
+   "note": "Walls of arched windows a thousand storeys high, copied by Builders from an older city nobody remembers, with bridges thrown across the canyons between them."},
+  {"slab": 1400},
+  {"layer": "works", "name": "The Works", "h": 2600, "fog": ["#66727e", 0.0002],
+   "note": "Machine towers packed floor to ceiling, girders at every angle, pipes kilometres long. The part of the City that still does something, though nobody knows what."},
+  {"slab": 1000},
+  {"layer": "plain", "name": "The Plain", "h": 9000, "fog": ["#a4aab0", 0.000064],
+   "note": "Nine kilometres from floor to ceiling, with weather in between. A floor ruled into panels to the horizon, towers clustered along the seams like components on a board, and a spire hanging from the ceiling."},
+  {"slab": 1600},
+  {"layer": "hanging", "name": "The Hanging", "h": 3600, "fog": ["#80858a", 0.00019],
+   "note": "Structure grown down from the ceiling like stalactites and dripping. Killy is here, on a platform fourteen hundred metres up."},
+  {"slab": 1200}
+ ],
+ "shaft": {"x": -2600, "z": -900, "r": 450, "_": "the great shaft: through the Hanging's floor and the Plain's, so from its rim you look down eleven kilometres"},
+ "killy": {"x": 0, "z": 0, "up": 1450, "_": "the platform's height over the Hanging's floor"},
+ "column": {"x": 1300, "z": -2100, "r": 650},
+ "spire": {"x": 4200, "z": -9500},
+ "trunks": [{"x": -11000, "z": 0, "w": 1800, "d": 2200}, {"x": 15500, "z": 8500, "w": 1600, "d": 2600}, {"x": 8500, "z": -16500, "w": 2200, "d": 2000}],
+ "_trunks": "Columns of Megastructure through every layer and slab, and on past the ends of the block.",
+ "city": {"diameterKm": 1.6e9, "innerKm": 1.496e8,
+   "_": "Nihei's figure: about the diameter of Jupiter's orbit. How deep the City goes the manga never says; drawn here from where the Earth was out to the skin."}
+}

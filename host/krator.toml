@@ -6,7 +6,7 @@
 # Relative file and dir paths are resolved from host/.
 
 [sync]
-menagerie = "../../WorldMenagerie"   # the World Menagerie checkout to pull from
+menagerie = "WorldMenagerie"   # the World Menagerie: the git subtree embedded here (a separate checkout works too)
 menagerie_index = "/menagerie"       # the Menagerie's front page moves here: / is Krator's
 drop_routes = ["/voth"]              # the Menagerie's Voth is not served: Krator's is (route below)
 drop_paths = ["voth.html", "src/voth", "css/voth.css"]   # and its files are not copied
@@ -40,6 +40,22 @@ file = "site/worlds/voth.html"
 title = "Voth: City of Cantons"
 scene = true
 blurb = "Krator's Voth: a city of cantons on an enclosed brackish bay."
+
+[[route]]
+path = "/share"
+aliases = ["/share.html", "/phone"]
+file = "share.html"
+title = "Open Krator on another device"
+# the address other devices use, with a code to scan: share.html reads it from address.json, which sitectl writes
+
+[[route]]
+path = "/address.json"
+file = "address.json"
+headers = { "Cache-Control" = "no-store" }
+
+[[route]]
+path = "/share/qrcode.js"
+file = "vendor/qrcode.js"
 
 [[mount]]
 prefix = "/worlds"      # every gallery page, and the local three.js they load

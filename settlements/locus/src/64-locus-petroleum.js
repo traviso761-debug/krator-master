@@ -7,7 +7,7 @@ reseed(644001);
   var PI=Math.PI, GROUP='Petroleum: pumpjack, tanks, pipe rack, refinery';
 
   /* =============================================================== 1. PUMPJACK */
-  ASSET({ key:'ind_pumpjack', name:'Pumpjack', family:'trade', kit:'locus', group:GROUP, culture:'geomancer', types:['industry','infrastructure'],
+  ASSET({ key:'ind_pumpjack', name:'Pumpjack', family:'trade', kit:['locus','abyss'], group:GROUP, kitGroup:{ abyss:'Industry (Geomancer)' }, culture:'geomancer', types:['industry','infrastructure'],
     districts:['poor'], wealth:[0.2,0.8], w:8, d:15, h:8, variants:2, variantNames:['rusted skid','tarnished white-metal gear'],
     build:function(F){
       var v=F.variant, rust=F.pick(RUSTC), rust2=shade(rust,-0.15), dk=STEELDC[0], gearCol = v ? TARNC[1] : rust2, gearFam = v ? 'metal' : 'rust', mud=F.pick(MUDBROWNC);
@@ -37,7 +37,7 @@ reseed(644001);
     } });
 
   /* =============================================================== 2. OIL STORAGE TANK */
-  ASSET({ key:'ind_oil_tank', name:'Oil storage tank', family:'trade', kit:'locus', group:GROUP, culture:'geomancer', types:['industry','infrastructure'],
+  ASSET({ key:'ind_oil_tank', name:'Oil storage tank', family:'trade', kit:['locus','abyss'], group:GROUP, kitGroup:{ abyss:'Industry (Geomancer)' }, culture:'geomancer', types:['industry','infrastructure'],
     districts:['market','poor'], wealth:[0.2,0.9], w:24, d:27, h:13, variants:3, variantNames:['riveted, cone roof, in a mud bund','squat floating-roof tank with a spiral stair','banco-clad tank in the Yuni manner'],
     build:function(F){
       var v=F.variant, rust=F.pick(RUSTC), mud=F.pick(MUDBROWNC), dk=STEELDC[0], R=[7.6,9.0,7.4][v], H=[9.0,6.8,8.6][v];
@@ -71,7 +71,7 @@ reseed(644001);
     } });
 
   /* =============================================================== 3. PIPE RACK SEGMENT */
-  ASSET({ key:'prop_pipe_rack', name:'Pipe rack segment', family:'prop', kit:'locus', group:GROUP, culture:'geomancer', types:['infrastructure','prop'],
+  ASSET({ key:'prop_pipe_rack', name:'Pipe rack segment', family:'prop', kit:['locus','abyss'], group:GROUP, kitGroup:{ abyss:'Industry (Geomancer)' }, culture:'geomancer', types:['infrastructure','prop'],
     districts:['market','poor'], wealth:[0,1], w:12, d:3, h:3.4, variants:2, variantNames:['straight, two lines','with a valve and a riser stub'],
     build:function(F){
       var v=F.variant, mud=F.pick(MUDBROWNC), dk=STEELDC[0];
@@ -82,7 +82,7 @@ reseed(644001);
     } });
 
   /* =============================================================== 3b. DRUM STACK (yard clutter) */
-  ASSET({ key:'prop_drum_stack', name:'Drum stack', family:'prop', kit:'locus', group:GROUP, culture:'geomancer', types:['industry','prop'],
+  ASSET({ key:'prop_drum_stack', name:'Drum stack', family:'prop', kit:['locus','abyss'], group:GROUP, kitGroup:{ abyss:'Industry (Geomancer)' }, culture:'geomancer', types:['industry','prop'],
     districts:['market','poor'], wealth:[0,1], w:5, d:4, h:2.4, variants:3, variantNames:['pyramid of drums','drums on a pallet with a tarp','crates and drums'],
     build:function(F){
       var v=F.variant;

@@ -30,7 +30,7 @@ var LIFE = { agents:[], poi:{}, stats:{} };
   var POI = LIFE.poi;
   function P(cat, x, z, extra){
     var e = { x:x, z:z, r:(extra && extra.r) || 8, name:(extra && extra.name) || '',
-              doors:(extra && extra.doors) || null };
+              doors:(extra && extra.doors) || null, doorIds:(extra && extra.doorIds) || null };
     (POI[cat] || (POI[cat]=[])).push(e); return e;
   }
   function named(b, re){ return b.plotName && re.test(b.plotName); }
@@ -47,7 +47,7 @@ var LIFE = { agents:[], poi:{}, stats:{} };
   PLACED.forEach(function(b){
     var A = ASSET_BY_KEY[b.key]; if(!A) return;
     var rad = Math.max(A.w, A.d)*0.5 + 4;
-    var dr = doorsOf(b), f = A.family, EX = { r:rad, doors:dr };
+    var dr = doorsOf(b), f = A.family, EX = { r:rad, doors:dr, doorIds:b.doorIds ? b.doorIds.slice(0,6) : null };
     if(f==='poor') P('home_poor', b.x, b.z, EX);
     else if(f==='mid') P('home_mid', b.x, b.z, EX);
     else if(f==='rich') P('home_rich', b.x, b.z, EX);
@@ -289,9 +289,12 @@ var LIFE = { agents:[], poi:{}, stats:{} };
   function standPoint(w, fromX, fromZ){
     if(!w) return null;
     if(w.doors && w.doors.length){
-      var best=null, bd=1e9;
+      var best=null, bd=1e9, bi=-1;
       for(var i=0;i<w.doors.length;i++){ var d=w.doors[i], q=Math.hypot(d[0]-fromX, d[1]-fromZ);
-        if(q<bd){ bd=q; best=d; } }
+        if(q<bd){ bd=q; best=d; bi=i; } }
+      /* a WORKING door (76-doors.js): walk up to it, open it and go in, rather than loitering outside */
+      var D = (w.doorIds && bi>=0) ? FIX.byId[w.doorIds[bi]] : null;
+      if(best && bd < 70 && D && D.to==='interior' && D.style!=='gate') return { x:best[0], z:best[1], door:D.id };
       if(best && bd < 70) return { x:best[0] + rr(-1.2,1.2), z:best[1] + rr(-1.2,1.2) };
     }
     /* an open place — the market, a park, the forecourt — is stood IN, not at */
@@ -302,14 +305,21 @@ var LIFE = { agents:[], poi:{}, stats:{} };
 
   /* ---- movement ---- */
   function step(a, dt, hour){
-    if(a.wait > 0){ a.wait -= dt; return; }
+    if(a.wait > 0){ a.wait -= dt;
+      if(a.wait <= 0 && a.inside){ var Dx=FIX.byId[a.inside]; DOORS.touch(a.inside, 3.0); a.inside=null;   /* out through the door again */
+        if(Dx){ a.x=Dx.x+Math.sin(Dx.yaw)*0.9; a.z=Dx.z+Math.cos(Dx.yaw)*0.9; a.y=terrainH(a.x,a.z); } }
+      return; }
     /* THE LAST LEG COMES FIRST. It was below the no-path check, so an agent that had
        finished its route and was crossing to a doorstep looked path-less and was sent to
        ask for a new destination on the spot — which is what kept the caravans pinned to
        the depot flipping between states without ever setting out. */
     if(a.leg){
       var lx=a.leg.x-a.x, lz=a.leg.z-a.z, lL=Math.hypot(lx,lz);
-      if(lL < 0.5){ a.leg=null; if(!a.destFn){ var dl=a.cfg.dwell||[10,30]; a.wait=rr(dl[0],dl[1]); } a.step=0; return; }
+      if(lL < 0.5){
+        if(a.leg.door && !a.leg.inner){ var Dd=FIX.byId[a.leg.door]; DOORS.touch(Dd.id, 3.5);        /* at the threshold: open up, step in */
+          a.leg = { x:Dd.x-Math.sin(Dd.yaw)*1.4, z:Dd.z-Math.cos(Dd.yaw)*1.4, door:Dd.id, inner:true }; return; }
+        if(a.leg.inner){ a.inside = a.leg.door; }
+        a.leg=null; if(!a.destFn){ var dl=a.cfg.dwell||[10,30]; a.wait=rr(dl[0],dl[1]); } a.step=0; return; }
       var st = Math.min(lL, a.speed*0.72*dt);
       a.x += lx/lL*st; a.z += lz/lL*st; a.y = terrainH(a.x, a.z);
       a.ry = Math.atan2(lx, lz); a.step = (a.step||0) + a.speed*dt*2.2;
@@ -397,6 +407,8 @@ var LIFE = { agents:[], poi:{}, stats:{} };
     _c.setHex(col); mesh.setColorAt(idx, _c);
   }
 
+  /* fixed-step fast-forward for headless tests (frames there are far too slow to watch a day go by) */
+  LIFE.sim = function(secs, dt){ dt=dt||0.25; var h=skyHour(); for(var t=0;t<secs;t+=dt){ serve(); for(var i=0;i<AG.length;i++) step(AG[i], dt, h); } };
   var acc = 0;
   TICKS.push(function(dt, hour){
     serve();
@@ -406,7 +418,7 @@ var LIFE = { agents:[], poi:{}, stats:{} };
     for(var i=0;i<AG.length;i++){
       var a = AG[i];
       step(a, dt, hour);
-      if(nb >= MAXP) continue;
+      if(nb >= MAXP || a.inside) continue;                 /* indoors: not drawn until they come out */
       var ddx=a.x-cx, ddz=a.z-cz; if(ddx*ddx+ddz*ddz > far) continue;
       var bob = a.wait > 0 ? 0 : Math.abs(Math.sin(a.step))*0.055;
       var sway = a.wait > 0 ? 0 : Math.sin(a.step)*0.11;
