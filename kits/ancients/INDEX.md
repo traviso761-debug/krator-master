@@ -41,7 +41,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `62-robotics.js` | 8 |  |
 | `63-canyon.js` | 18 |  |
 | `64-dalab.js` | 11 |  |
-| `64-houses-def.js` | 5 |  |
+| `64-houses-def.js` | 9 |  |
 | `65-veladiga.js` | 15 |  |
 | `66-office-c.js` | 2 |  |
 | `66b-flatiron.js` | 8 |  |
@@ -75,9 +75,9 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `78-factory-silo.js` | 2 |  |
 | `79-government.js` | 4 |  |
 | `80-aa-battery.js` | <1 |  |
-| `81-houses-abc.js` | 5 |  |
+| `81-houses-abc.js` | 6 |  |
 | `82-apartments.js` | 8 |  |
-| `83-amphitheater.js` | 5 |  |
+| `83-amphitheater.js` | 8 |  |
 | `84-fuel.js` | 4 |  |
 | `85-radar.js` | 3 |  |
 | `86-dish.js` | 3 |  |
@@ -87,7 +87,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `88-factory.js` | 9 |  |
 | `88-plymouth.js` | 57 **big** |  |
 | `89-arcbeam.js` | 59 **big** |  |
-| `89-lab.js` | 6 |  |
+| `89-lab.js` | 7 |  |
 | `89b-arcoindian.js` | 81 **big** |  |
 | `89c-arcoindian2.js` | 80 **big** |  |
 | `89d-arcube.js` | 89 **big** | the dwelling grid (112); krShard (248) |
