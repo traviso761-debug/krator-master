@@ -45,7 +45,7 @@ function buildHlTriContLong(G,o){reseed(26011+(o.v|0));const L=12.2,FL=1.8,Y=FL,
  const vz=gz+GD/2-.25;hnBambooRail([-L/2,Y,vz],[-1,Y,vz],bam,.95);hnBambooRail([1,Y,vz],[L/2,Y,vz],bam,.95);
  for(let k=0;k<6;k++)hnTRGourd(-L/2+1+k*2,y0-.15,vz+.1);
  vnLadder(0,0,vz+.55,0,FL+.3,log);vnLadder(-L/2-.7,0,.6,Math.PI/2,FL+.3,log);
- vnDryingRack(0,0,vz+3,0,6);hnTotem(4,0,vz+1.4,.26,5,0,{wings:1.4});hnFirepit(-3.5,0,vz+3.2,.6);vnFolk(2,vz+4,3,2.5);}
+ hnDryingRack(0,0,vz+3,0,6);hnTotem(4,0,vz+1.4,.26,5,0,{wings:1.4});hnFirepit(-3.5,0,vz+3.2,.6);vnFolk(2,vz+4,3,2.5);}
 
 // ---------------------------------------------------------------- 3. the hull meeting house
 // A curved panel of rocket hull, laid on two rows of carved house-posts, is the roof of a meeting house; the back is
@@ -61,8 +61,8 @@ function buildHlTriHullHall(G,o){reseed(26021+(o.v|0));const L=14,R=5.2,arc=Math
  for(let u=-hw+.4;u<hw;u+=.8){const h=yc+Math.sqrt(Math.max(0,R*R-u*u))-.1;vB('vWood',u,.3,-L/2+.1,.82,h,.14,0,log);}
  hnForm('hFormA',0,eave+.4,L/2-.1,0,5.4,2);
  hnTRHorns(0,.3+yc+R+.1,L/2-1,0,1.4);hnTRHorns(0,.3+yc+R+.1,-L/2+1,Math.PI,1.1);
- for(const s of[-1,1]){hnTRBrazier(s*2.4,.3,L/2+1.2,1);vPst('vPost',s*(hw+1.4),0,L/2+.8,.08,4.2,log);hnTRAntlers(s*(hw+1.4),4.2,L/2+.8,0,1.1);}
- hnFirepit(0,.3,0,.9);for(const s of[-1,1])for(const z of[-3,3])vB('vWood',s*2.2,.3,z,.4,.45,3,0,log);
+ for(const s of[-1,1]){hnTRBrazier(s*2.4,.3,L/2+1.2,1);hnFurn('hl_tri_antler_pole',s*(hw+1.4),0,L/2+.8,0,{},0,-.18);}
+ hnFirepit(0,.3,0,.9);for(const s of[-1,1])for(const z of[-3,3])FURNISH('hl_tri_hearth_bench',s*2.2,.3,z,Math.PI/2);
  hnTotem(-hw-2.2,0,L/2-1,.3,6,0,{wings:1.6,painted:true,hat:true});vnFolk(0,L/2+3.5,4,3);}
 
 // ---------------------------------------------------------------- 4. the silo drum-house
@@ -82,7 +82,7 @@ function buildHlTriSiloDrum(G,o){reseed(26031+(o.v|0));const R=3,H=3,RO=R+1.3;
  for(const s of[-1,1])kput('hWing',[s*.55,H+5.25,0],qEuler(0,0,s*-.2),[s*1.1,.55,1],null);
  for(let k=0;k<7;k++){const a=(k+.5)/7*TAU;(k%3===0?hnTRCage:hnTRGourd)(Math.sin(a)*(RO+.2),H+.1,Math.cos(a)*(RO+.2));}
  const gx=RO+3.2;vnStilts(gx,0,-1,2.2,2.2,1.6,0,log);vB('vWood',gx,1.6,-1,2.8,.16,2.8,0,log);kput('hTRMatCyl',[gx,1.76,-1],null,[1.1,1.4,1.1],bam);vnThatchCone(gx,3.16,-1,1.5,2,th);
- hnTotemPost(-RO-1.2,0,1.5,.16,3,0,true);hnFirepit(-1.5,0,RO+2.4,.6);vnDryingRack(1.5,0,RO+3.4,0,3.4);vnFolk(0,RO+2.2,2,1.8);}
+ hnTotemPole(-RO-1.2,0,1.5,.16,3,0,true);hnFirepit(-1.5,0,RO+2.4,.6);hnDryingRack(1.5,0,RO+3.4,0,3.4);vnFolk(0,RO+2.2,2,1.8);}
 
 // ---------------------------------------------------------------- 5. the scrap forge and trading shelter
 // A long open shelter under a thatch gable on painted posts, where scrap is beaten into blades and hoes and traded:
@@ -97,10 +97,10 @@ function buildHlTriScrapForge(G,o){reseed(26041+(o.v|0));const W=12,D=6,H=2.8;
  const pitch=1.05,rise=pitch*D/2;hnGable(0,H+.1,0,W,D,pitch,0,'vGableT',th,.8,'hGableBM',bam);hnBarge(0,H+.1,0,W,D,rise,0,.8,blk,'bird');
  hnTRHorns(W/2+.9,H+.1+rise+.2,0,Math.PI/2,1);hnTRHorns(-W/2-.9,H+.1+rise+.2,0,-Math.PI/2,1);
  // the forge
- vB('hRubB',-3.5,.2,-.8,1.8,.9,1.6,0,rub);for(let k=0;k<4;k++)vB('vRustB',-3.5,1.1+k*.08,-.8,1.9-k*.15,.08,1.7-k*.15,rr(-.1,.1),null);
- vBall('vEmber',-3.5,1.45,-.8,.4,null,.12);vnChimney(-3.5,1.5,-1.3,H+rise+.6,.18,true);
- vB('vWood',-5.2,.2,-.8,.9,.5,1.2,0,hC(0x5a3a26));vB('vIron',-1.8,.2,-.4,.3,.7,.3,0,iron);vB('vIron',-1.8,.9,-.4,.7,.18,.28,0,iron);
- vB('vWood',-1.2,.2,1.3,1.8,.5,.6,0,log);vB('vRustB',-1.2,.6,1.3,1.6,.08,.45,0,null);
+ // the stacked-plate forge with its bellows, the anvil and the quench trough are furniture from the catalog (the plates
+ // drew 4 numbers); the flue on up through the thatch from the forge's own stovepipe is the shelter's
+ hlRngSkip(4);hnFurn('hl_tri_forge',-3.5,.2,-.8,0,{v:1},-.6,0);vnChimney(-3.5,3.4,-1.3,H+rise+.6-1.9,.18,true);
+ FURNISH('hl_tri_scrap_anvil',-1.8,0,-.4,0,{v:1});FURNISH('hl_tri_quench_tub',-1.2,.2,1.3,0,{v:1});
  for(let k=0;k<5;k++)kput(vPick(['vPlate','vSheet','vPlateW']),[1+k*.9,1.1,-D/2+.5],qEuler(-.25,0,rr(-.1,.1)),[.8,1.6,1],null);
  for(let k=0;k<3;k++)kput('vHoop',[4.8,.7+k*.05,.6+k*.4],qEuler(0,Math.PI/2+rr(-.3,.3),0),[.6,.6,1.5],iron);
  hnTRBrazier(W/2-1,.2,D/2+1.2,.9);hnTRBrazier(-W/2+1,.2,D/2+1.2,.9);
