@@ -124,3 +124,19 @@ off the pod's own surface. The mock's seeds moved to 31950–31979 so the agents
 worktrees: A housing, B shops, C hospitality/sacred/markets, D Amphitriton and Citadel, E Tides, Winds, Pharos,
 F spans and harbour, F2 industry, G military and agriculture, H library, treasury, prison, I furniture, and the
 biome agent on `biomes/nwbay`.
+
+## Phase 3 prep (Oct 2026, while the agents build): the layout as data
+Prototyped in Python first (a map drawn with ImageMagick, judged before any code): one 200 m lattice rotated 12°
+anchored on the head of the bay, blocks from 820 m inland to 800 m offshore; the sink is the old city plane by signed
+shore distance (1.5° plus a 4 m step past 260 m: awash to 85 m out, canals to 270, open water beyond, −17 m at the
+Amphitriton, −22 at the seaward edge); the Amphitriton is the drowned block nearest 450 m offshore on the head's
+seaward line (it lands at 539 m), the Tides toward the shore from it, the plaza along the shore, the Library between,
+the Winds and the Pharos on the seaward edge either side of its line, the Citadel three blocks along the southern
+flank, the military harbour and the Wet Cells on the shore side to the south-west; on land the market block at the
+head, the civilian harbour and fishing docks along the shore south-west, the river mouth and the headland beyond, the
+foreign quarter two rows inland north of the market, industry either side, the pens in the shallows north-east; wealth
+by distance from the Amphitriton (300/620 m at sea, 520/900 on land); drowned blocks 75 % hosts (tall in open
+water, mid in the canals, low awash) and 25 % home-grown moles by a hash of the block. Ported number for number to
+`targets/city/87-city-layout.js`, which builds no geometry: the sink feeds `YS_NAT` through `ysSinkMix`, the
+overlay (`CITY.LAYOUT_DEBUG`) draws a quad per block with the named blocks labelled, and `_api.city.layoutCensus()`
+counts. The terrain's 10 m cells now cover the city core (`PORT_LAYOUT_DEF.fine`).
