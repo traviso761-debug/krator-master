@@ -25,6 +25,8 @@ function push(shape, fam, rec){
   var k = shape+'|'+fam;
   (BUCKET[k] || (BUCKET[k] = { shape:shape, fam:fam, list:[] })).list.push(rec);
 }
+/* the index the NEXT record pushed to (shape, fam) will take — a handle for re-posing it after emit */
+function kitIndex(shape, fam){ var B=BUCKET[shape+'|'+fam]; return { key:shape+'|'+fam, i:B?B.list.length:0 }; }
 function BOX (x,y,z,w,h,d,rot,c,f){ push('box',  f||'timber',[x,y,z,w,h,d,rot||0,c]); }
 function FR8 (x,y,z,w,h,d,rot,c,f){ push('fr8',  f||'timber',[x,y,z,w,h,d,rot||0,c]); }   /* gentle batter */
 function FR5 (x,y,z,w,h,d,rot,c,f){ push('fr5',  f||'timber',[x,y,z,w,h,d,rot||0,c]); }   /* strong taper */
@@ -85,7 +87,12 @@ var SHAPES = {
   cone: function(){ return new THREE.ConeGeometry(1,1,10).translate(0,0.5,0); },
   dome: function(){ return new THREE.SphereGeometry(1,12,6,0,Math.PI*2,0,Math.PI*0.5); },
   blob: function(){ return new THREE.SphereGeometry(1,7,4,0,Math.PI*2,0,Math.PI*0.5); },
-  ball: function(){ return new THREE.SphereGeometry(1,7,5).translate(0,1,0); }
+  ball: function(){ return new THREE.SphereGeometry(1,7,5).translate(0,1,0); },
+  /* a door leaf hung from its HINGE edge: x 0..1 from the hinge, y 0..1 up, z centred.
+     Its own bucket, so 76-doors.js can swing one instance without touching the rest. */
+  leaf: function(){ return new THREE.BoxGeometry(1,1,1).translate(0.5,0.5,0); },
+  /* an opening's dark reveal: a plain box in its own bucket, hidden when the door stands open */
+  rvl : function(){ return new THREE.BoxGeometry(1,1,1).translate(0,0.5,0); }
 };
 
 /* world-unit texture tiling for instanced primitives (see Voth 45-kit.js) */
@@ -138,13 +145,23 @@ var NLV_LAMP_GAIN = 0.55, NLV_WIN_GAIN = 0.30, NLV_COOL_GAIN = 0.50;
 var NLV_WIN_AMP = 0.5, NLV_WIN_RAD = 11;
 var NL_LAMPS = [];                    /* [x,y,z, amp, radius, cool(0|1)] — every static flame */
 var NL_WINDOWS = [];                  /* [x,y,z, nx,nz, w,h, hOn, hOff, allNight, cool] */
-function nlLampAdd(x,y,z,amp,rad,cool){ NL_LAMPS.push([x,y,z, amp==null?1:amp, rad==null?16:rad, cool?1:0]); }
+/* kind tags the fitting for the game export (51-fixtures.js LIGHT_KINDS). While an interior is
+   being built lazily (64-interiors.js) its lamps go to that interior, not to the baked volume. */
+function nlLampAdd(x,y,z,amp,rad,cool,kind){
+  if(typeof INTERIOR_SINK!=='undefined' && INTERIOR_SINK){ INTERIOR_SINK.lights.push({ x:x, y:y, z:z, amp:amp==null?1:amp, radius:rad==null?16:rad, electric:!!cool, kind:kind||(cool?'electric':'flame') }); return; }
+  NL_LAMPS.push([x,y,z, amp==null?1:amp, rad==null?16:rad, cool?1:0]);
+  if(typeof FIX!=='undefined' && FIX) FIX_LIGHT({ kind:kind||(cool?'electric':'flame'), x:x, y:y, z:z, amp:amp==null?1:amp, radius:rad==null?16:rad, electric:!!cool });
+}
 /* a lit window pane: centre, outward horizontal normal, size. Registered by
    WINPANE (below) — every window in the build goes through it. */
 function nlWinAdd(x,y,z,nx,nz,w,h,cool){
   NL_WINDOWS.push([x,y,z,nx,nz,w,h, phash(x,y,z,1.7), phash(x,y,z,5.3), phash(x,y,z,11.9) < 0.05, cool?1:0]);
 }
-function WINPANE(x,y,z,nx,nz,w,h,cool){ nlWinAdd(x,y,z,nx,nz,w,h,cool); }
+function WINPANE(x,y,z,nx,nz,w,h,cool){
+  if(typeof INTERIOR_SINK!=='undefined' && INTERIOR_SINK) return;
+  nlWinAdd(x,y,z,nx,nz,w,h,cool);
+  if(typeof FIX!=='undefined' && FIX) FIX_WINDOW({ x:x, y:y, z:z, yaw:Math.atan2(nx,nz), w:w, h:h, _nl:NL_WINDOWS.length-1 });
+}
 
 var nlvTex = new THREE.DataTexture(new Uint8Array(NLV_RES*NLV_COLS*NLV_RES*NLV_ROWS*4),
                                    NLV_RES*NLV_COLS, NLV_RES*NLV_ROWS, THREE.RGBAFormat);
@@ -230,18 +247,34 @@ function nlMaterial(mat, key, extraHook, wpName){
 }
 
 var _dm = new THREE.Object3D(), _col = new THREE.Color();
-function emitBuckets(){
-  var total=0, meshes=0;
-  for(var k in BUCKET){
-    var B = BUCKET[k];
+/* the instance matrix of one kit record (also used by 76-doors.js to re-pose a door leaf) */
+function kitMatrix(r, out){
+  var rot = r[6];
+  _dm.position.set(r[0],r[1],r[2]);
+  _dm.scale.set(r[3],r[4],r[5]);
+  if(typeof rot === 'number') _dm.rotation.set(0,rot,0,'YXZ');
+  else if(rot.q) _dm.quaternion.set(rot.q[0],rot.q[1],rot.q[2],rot.q[3]);
+  else _dm.rotation.set(rot[0],rot[1],rot[2],'YXZ');
+  _dm.updateMatrix();
+  return out ? out.copy(_dm.matrix) : _dm.matrix;
+}
+/* opt (all optional, for the lazy interior builder in 64-interiors.js):
+     buckets  the bucket table to drain (default the city's BUCKET)
+     target   where the meshes go (default the scene)
+     mat(B)   a material factory: return a material to use instead of the family default */
+function emitBuckets(opt){
+  opt = opt || {};
+  var total=0, meshes=0, BK = opt.buckets || BUCKET, target = opt.target || scene;
+  for(var k in BK){
+    var B = BK[k];
     if(!B.list.length) continue;
     var geo = SHAPES[B.shape]();
     var fm  = FAMMAT[B.fam] || {};
-    var mat = fm.basic ? new THREE.MeshBasicMaterial({ color:0xffffff })
+    var mat = opt.mat ? opt.mat(B) : fm.basic ? new THREE.MeshBasicMaterial({ color:0xffffff })
             : new THREE.MeshLambertMaterial({ color:0xffffff, map: fm.tex || null,
                   transparent:false, alphaTest: fm.alpha ? 0.35 : 0, side: (fm.alpha || B.shape==='cyl6') ? THREE.DoubleSide : THREE.FrontSide });
     mat.userData.fam = B.fam;
-    if(!fm.basic){
+    if(!fm.basic && !opt.mat){
       (function(needsUV, needsSway, sc){
         mat.onBeforeCompile = function(sh){ if(needsUV) applyWorldUV(sh, sc); if(needsSway) applyClothSway(sh); applyNightGlow(sh); };
         mat.customProgramCacheKey = function(){ return (needsUV ? 'wuv'+sc[0].toFixed(2)+'_'+sc[1].toFixed(2) : '') + (needsSway?'|sway':'') + '|nlv'; };
@@ -251,20 +284,15 @@ function emitBuckets(){
     im.userData.shape = B.shape; im.userData.fam = B.fam; im.userData.kit = true;
     im.castShadow = !FAST && !fm.basic; im.receiveShadow = !FAST && !fm.basic;
     for(var i=0;i<B.list.length;i++){
-      var r = B.list[i], rot = r[6];
-      _dm.position.set(r[0],r[1],r[2]);
-      _dm.scale.set(r[3],r[4],r[5]);
-      if(typeof rot === 'number') _dm.rotation.set(0,rot,0,'YXZ');
-      else if(rot.q) _dm.quaternion.set(rot.q[0],rot.q[1],rot.q[2],rot.q[3]);
-      else _dm.rotation.set(rot[0],rot[1],rot[2],'YXZ');
-      _dm.updateMatrix();
-      im.setMatrixAt(i,_dm.matrix);
+      var r = B.list[i];
+      im.setMatrixAt(i,kitMatrix(r));
       im.setColorAt(i,_col.set(r[7]).convertSRGBToLinear());
     }
     if(im.instanceColor) im.instanceColor.needsUpdate = true;
     im.instanceMatrix.needsUpdate = true;
     im.frustumCulled = false;
-    scene.add(im);
+    B.mesh = im;
+    target.add(im);
     total += B.list.length; meshes++;
   }
   return { instances:total, meshes:meshes };
@@ -418,10 +446,11 @@ function TUBE(fam, pts, col, opt){
   }
 }
 var MB_MESHES = {};
-function emitMerged(){
-  var tris=0, meshes=0;
-  for(var fam in MBK){
-    var K = MBK[fam]; if(!K.pos.length) continue;
+function emitMerged(opt){
+  opt = opt || {};
+  var tris=0, meshes=0, MK = opt.buckets || MBK, target = opt.target || scene;
+  for(var fam in MK){
+    var K = MK[fam]; if(!K.pos || !K.pos.length) continue;
     var g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.Float32BufferAttribute(K.pos,3));
     g.setAttribute('normal',   new THREE.Float32BufferAttribute(K.nor,3));
@@ -429,14 +458,14 @@ function emitMerged(){
     g.setAttribute('color',    new THREE.Float32BufferAttribute(K.col,3));
     g.computeBoundingSphere();
     var fm = FAMMAT[fam] || {};
-    var mat = fm.basic ? new THREE.MeshBasicMaterial({ color:0xffffff, vertexColors:true })
+    var mat = opt.mat ? opt.mat({ fam:fam, shape:'merged' }) : fm.basic ? new THREE.MeshBasicMaterial({ color:0xffffff, vertexColors:true })
             : new THREE.MeshLambertMaterial({ color:0xffffff, vertexColors:true, map:fm.tex||null,
                   alphaTest: fm.alpha?0.35:0, side: fm.alpha ? THREE.DoubleSide : THREE.FrontSide });
-    if(!fm.basic) nlMaterial(mat, 'mb'+fam);
+    if(!fm.basic && !opt.mat) nlMaterial(mat, 'mb'+fam);
     var m = new THREE.Mesh(g, mat);
     m.userData.fam = fam; m.userData.merged = true;
     m.castShadow = !FAST; m.receiveShadow = !FAST; m.frustumCulled = false;
-    scene.add(m); MB_MESHES[fam] = m; tris += K.tris; meshes++;
+    target.add(m); if(!opt.buckets) MB_MESHES[fam] = m; tris += K.tris; meshes++;
     K.pos = K.nor = K.uv = K.col = null;
   }
   return { tris:tris, meshes:meshes };
@@ -447,4 +476,4 @@ function emitMerged(){
    whatever is under the cursor: REGISTER({name, kind, x,y,z, r, h, plat}) —
    a vertical cylinder of radius r from y to y+h. Most specific (smallest) wins. */
 var SITES = [];
-function REGISTER(o){ SITES.push(o); return o; }
+function REGISTER(o){ if(typeof INTERIOR_SINK!=='undefined' && INTERIOR_SINK){ INTERIOR_SINK.sites.push(o); return o; } SITES.push(o); return o; }

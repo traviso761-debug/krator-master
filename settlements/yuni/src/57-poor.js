@@ -6,7 +6,8 @@ reseed(570001);
 (function(){
   var PI=Math.PI;
   /* ---------------------------------------------------------------- helpers */
-  function doorPt(F,lx,lz,nx,nz){ var q=F.p(lx+nx*0.9, lz+nz*0.9); (F.doors||(F.doors=[])).push([q[0],F.y,q[1]]); }
+  /* the hut mouths are drawn by hand below; register each as a leafless opening (tagged, exported, walkable) */
+  function doorPt(F,lx,lz,nx,nz,w,h,ly,to){ F.opening(lx,lz, nx,nz, w||0.8, h||1.6, ly||0, { style:'open', to:to||'interior' }); }
   function pot(F,x,y,z,s,col){ F.lathe('adobe',x,z,[[0.15*s,y],[0.34*s,y+0.24*s],[0.27*s,y+0.52*s],[0.13*s,y+0.64*s],[0.19*s,y+0.72*s]],col,{seg:6,cap:true,capCol:VOIDC[1]}); }
   function rockAt(F,x,z,s,F2){ F.fr5(x,-0.05,z, s*1.3,s*0.8,s, F.rr(0,3), F.pick(ROCKC), 'rock'); }
   function fire(F,x,z){
@@ -46,7 +47,7 @@ reseed(570001);
     F.cone(x,ry0+hc-0.5,z, 0.13,0.85, 0, shade(tc,-0.2), 'thatch');                        /* topknot */
     var c=Math.cos(da), s=Math.sin(da);
     F.box(x+c*(r-0.12),y0,z+s*(r-0.12), 0.72,1.5,0.34, PI/2-da, VOIDC[1], 'dark');
-    if(o.doorReg) doorPt(F, x+c*r, z+s*r, c, s);
+    if(o.doorReg!==false) doorPt(F, x+c*r, z+s*r, c, s, 0.72, 1.5, y0);     /* every hut mouth is a doorway (51-fixtures.js) */
   }
   /* a flat-roofed battered mud room. Local room frame: +z = its front, turned by yaw. o:{door:x|null, par, horns, torons, spouts, win, band} */
   function mudRoom(F,cx,cz,yaw,W,D,H,col,o){
@@ -146,7 +147,7 @@ reseed(570001);
       if(v===2) F.archband(painted?'paintbw':'adobe',0,spr,zF+0.25,0, ow+1.66,oh+0.86-spr, 0.30,0.2, painted?0xffffff:shade(col,-0.1), {seg:12});
       [-1,1].forEach(function(sd){ F.lathe('adobe', sd*(ow/2+0.60), zF-0.16,
         [[0.26,0],[0.31,0.7],[0.22,1.9]], shade(pcol,-0.04), {seg:6}); });                  /* the two jamb rolls */
-      doorPt(F,0,zF,0,1);
+      doorPt(F,0,zF,0,1, ow-0.1, oh-0.1);
       if(F.chance(0.7)) pot(F,2.6,0,zF-0.6,1.0,ADOBEREDC[2]);
     } });
 
@@ -162,7 +163,7 @@ reseed(570001);
         return (1+0.045*Math.sin(a*3+v)+0.03*Math.sin(a*5)) / Math.sqrt(Math.pow(c/ovZ,2)+Math.pow(sn/ovX,2)); }
       F.lathe('rock',0,0,[[1,0],[0.94,0.3],[0.80,0.44]],ROCKC[1],{seg:20,cap:true, rfn:oval});
       L.huts.forEach(function(h,i){ var r=h[2], y0=0.4+F.rr(0.05,0.55), da=Math.atan2(1.2-h[1], 0.2-h[0]);
-        coneHut(F,h[0],h[1],r, F.rr(1.7,2.1), r*F.rr(2.0,2.5)+0.6, y0, da, i%2?F.pick(ADOBEC):PAL.adobeDark[i%3], 'adobe', {stone:i%2===0, doorReg:i===0}); });
+        coneHut(F,h[0],h[1],r, F.rr(1.7,2.1), r*F.rr(2.0,2.5)+0.6, y0, da, i%2?F.pick(ADOBEC):PAL.adobeDark[i%3], 'adobe', {stone:i%2===0, doorReg:true}); });
       L.gran.forEach(function(g){ granary(F,g[0],g[1],0.72,0.38,F.pick(ADOBEC),true); });
       for(var k=0;k<6;k++){ var a=F.rr(0,TAU), rr2=F.rr(5.0,5.5); rockAt(F,Math.cos(a)*rr2,Math.sin(a)*rr2,F.rr(0.5,0.9)); }
     } });
@@ -204,7 +205,7 @@ reseed(570001);
       F.sector('adobe',0,0, RW-0.36,RW-0.04, PI/2-g,PI/2+g, 0,0.4, shade(wc,-0.1), {faces:'tio',step:2.0});       /* the stile */
       [-1,1].forEach(function(s){ var a=PI/2+s*(g+0.035); F.fr5(Math.cos(a)*(RW-0.2),0,Math.sin(a)*(RW-0.2), 0.8,1.7,0.8, 0, wc,'adobe'); F.dome(Math.cos(a)*(RW-0.2),1.62,Math.sin(a)*(RW-0.2),0.3,0.34,0,wc,'adobe'); });
       if(F.wealth>0.2) F.sector('paintbw',0,0, RW,RW+0.03, PI/2+g+0.12,PI/2+1.25, 0.45,1.15, 0xffffff, {faces:'o',step:2.0}), F.sector('paintbw',0,0, RW,RW+0.03, PI/2-1.25,PI/2-g-0.12, 0.45,1.15, 0xffffff, {faces:'o',step:2.0});
-      doorPt(F,0,RW,0,1);
+      doorPt(F,0,RW,0,1, 1.2,1.8,0,'court');                                   /* the stile into the yard */
       if(v===0){ [[-PI/2,2.3,4.4],[PI+0.35,2.0,4.6],[-0.3,1.85,4.75]].forEach(function(h,i){ var x=Math.cos(h[0])*h[2], z=Math.sin(h[0])*h[2];
           coneHut(F,x,z,h[1], 2.1, h[1]*2.0+0.8, 0, h[0]+PI, i===1?F.pick(ADOBEREDC):col, 'adobe', {}); });
         granary(F,3.8,-4.8,0.72,0,shade(col,0.05),false); }
