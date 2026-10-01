@@ -12,8 +12,8 @@ python3 kitshots.py shots --sheet abyss-kit.html --dump         # writes sheet-i
 python3 kitshots.py shots --sheet abyss-kit.html abyss_temple:0:f abyss_temple:0:c abyss_temple:0:n
 ```
 
-The brief's eight reference images (`abyss.zip`) were **not available** to this pass; the forms follow the brief's written
-description of each image.
+The first pass was built from the brief's written description of the eight reference images; the images themselves are
+now in `refs/abyss/` and are compared with the kit under "The reference images" below (2026-10-01).
 
 ## Fragments
 
@@ -88,7 +88,7 @@ All new assets: culture `abyssal-desert`, `kit:'abyss'`. Counted: **31 new keys,
 Not on this sheet, by the brief: `ind_refinery`, `ind_generator_house`, `trade_fuel_station`, `civic_geomancer_chapterhouse`,
 `locus_warehouse`, and the whole Yuni base kit (55–59), and none of them was used as a style reference.
 
-Budget on the sheet (`verify.py abyss-kit.html --assert`): 76 items, **102 draw calls, 691 k triangles, 20.9 k instances**;
+Budget on the sheet (`verify.py abyss-kit.html --assert`): 76 items, **103 draw calls, 716 k triangles, 21.6 k instances** (2026-10-01; 102 / 691 k / 20.9 k at the first pass);
 error panel clean. Largest single asset: the (old) salt-rice farm, 55 k; largest new: the palace, 52 k.
 
 ## The style, as built
@@ -116,7 +116,8 @@ glows blue (`glowmat` in `abCrystal`, with a warm night lamp for the fire bowl i
 `abSailOrange #E07B39`, `abSailRed #B8402E`, `abBrightYellow #F2C230`, `abBrightTeal #2FA59A`, `abBrightPink #E26D8E`,
 `abRustA #8A4A2B`, `abRustB #A5602F`, `abContainer [#3F6E8C #A23A2A #C9A33A #5D7D4A #7C7F80]` (alias `ABCONTC`),
 `abTarpBlue #2E6FB7`, `abTin #C9CDD2`, `abLacquer #9A2C26`, `abGild #D4A537`, `abCrystal #5BC8E6`, `abSalt #E9E4D6`,
-`abRubble #9C8E7C`. `ABYSS.C` mirrors them; `ABYSS.bright(F)`, `ABYSS.rust(F)`, `ABYSS.cont(F)` pick one.
+`abRubble #9C8E7C`, `abUmbrella` (six pastels, `umbrellas.jpg`), `abCream` + `abCreamCap` (the silo granary's render).
+`ABYSS.C` mirrors them; `ABYSS.bright(F)`, `ABYSS.rust(F)`, `ABYSS.cont(F)` pick one.
 
 ## Materials (new families; `05-palette.js` FAMMAT + `47-texture.js`)
 
@@ -140,9 +141,9 @@ glows blue (`glowmat` in `abCrystal`, with a warm night lamp for the fire bowl i
 | `mast` | `(F, x,z,h, opt)` — `guys`, `guyR`, `lantern:'lit'|'unlit'`, `prop` (propeller-lantern) + `lit`, `finial`, `flag`, `r`, `col`. Returns h. |
 | `coneShell` | `(F, x,z, r,h, opt)` — `fam` thatch/tile/tinmirror, `col`, `y0`, `k` profile (1.25), `arch:{w,h}` (on the side `face`, default +z), `archCol`, `thick`, `inCol`, `ring` (false = none), `finial`, `seg`. Inner skin, base rim and arch reveals drawn; the arch is cut by columns that end at its edge. Returns `{top, archH}`. |
 | `vessel` | `(F, kind, x,y,z, opt)` — kind `tank`/`drum`/`silo`/`container`; `r`, `h`, `len`, `yaw`, `col`, `fam`, `win:[[a or u, y, side]]`, `port`, `glass`, `door` (angle / 'end' / 'side'), `doorAt`, `doorEnd`, `balcony`, `ladder`, `awning`, `hatch`, `capCol`. Returns `{top}` (drum also `axisY`). |
-| `swoopRoof` | `(F, x,z, w,d, h, opt)` — ridge along local x; `y0` eave line, `horn` length, `tip` colour (false), `over`, `eaveLift`, `saddle`, `yaw`, `fam`, `col`, `gable` colour (false = open), `gableFam`, `ridgeCol`. Returns `{ridge}`. |
+| `swoopRoof` | `(F, x,z, w,d, h, opt)` — ridge along local x; `y0` eave line, `horn` length, `tip` colour (false), `over`, `eaveLift`, `saddle`, `yaw`, `fam`, `col`, `gable` colour (false = open), `gableFam`, `ridgeCol`, `fins` (n carved spines along the ridge, leaning to the horns) + `finCol`. Returns `{ridge}`. |
 | `tinClad` | `(F, spec, col)` — `spec.box=[cx,y0,cz,w,h,d]` + `spec.faces` 'fblr', or `spec.lathe=[x,z,prof]`; plates 0.03 m outside. |
-| `trim` | `(F, x,y,z, nx,nz, w,h)` — salvaged mismatched strips and studs round a window. |
+| `trim` | `(F, x,y,z, nx,nz, w,h, door)` — salvaged mismatched strips and studs round a w x h opening; **y = the opening's bottom** (a window's centre − h/2, a door's `ly`); `door` drops the sill strip. |
 | `cables` | `(F, a, b, sag, n)` — n thin sagging cables, 5 rods each. |
 | `antenna` | `(F, x,y,z, kind, opt)` — 'mast' (`h`), 'dish' (`r`, `face`, `col`), 'lattice' (`h`). |
 | `lattice` | `(F, x,z, w,h, opt)` — square tapering lattice tower; `y0`, `top` (head width fraction), `col`. |
@@ -202,14 +203,16 @@ Headman"** until the brief names the title.
 Segment `abyss_wall_seg`: **L = 12 m** (local x −6..+6), **H = 8 m**, 3 m thick, +z = the outside. Rubble to 4.5 m,
 salvaged plate above with merlons, a walkway at **6.4 m** on the inside with a rail. **Join rule:** nothing passes
 x = ±6, so segments with centres 12 m apart on the same line and yaw meet face to face, no gap, no overlap.
-Tower `abyss_wall_tower` (r 3.4) sits **centred on a joint**, doors at walkway height on ±x. Gate `abyss_wall_gate` is
-exactly **N = 2 segments** (24 m) long: place it as two segments; a 6 m wide, 6.5 m high cart gate under a swoop roof,
-the walkway carried over it. Corner `abyss_wall_corner` (r 4.2) is **centred on the corner point** where the two runs'
+Tower `abyss_wall_tower` (r 3.4) sits **centred on a joint**, doors at walkway height on ±x, on the walkway's line (z −1):
+**give it the same yaw as its segments** or its doors face out. Gate `abyss_wall_gate` is exactly **N = 2 segments** (24 m)
+long: place it as two segments; a 6 m wide, 6 m high cart gate under a swoop roof. Its towers rise full height only on
+their outer half (z 0..3.5); the walkway runs on behind them as a 2.5 m railed gallery over the gate's lintel, with a door
+into each tower. Corner `abyss_wall_corner` (r 4.2) is **centred on the corner point** where the two runs'
 axes meet; the next run starts at that point (its first segment's centre 6 m from it), doors on −x and −z (turn it so
 they face the two runs). `ABYSS.WALL = { L, H, T, walk, gateSegments }`. `abyss_wall_run` (tag demo) calls the builders
 through `ABYSS.sub` — segment, tower, segment, gate, segment, corner, segment (the last turned along −z) — and the
 citadel builds its whole circuit (front: segment + gate + segment; other sides four segments; corner towers; joint
-towers mid-side) the same way on a 4 m rubble mound.
+towers mid-side) the same way on a 4 m rubble mound (70 m at the foot, 58.8 m on top).
 
 ## The windpump (animated)
 
@@ -234,7 +237,20 @@ reads its phase (checked: 4.35 → 4.85 rad over 1.5 s).
 - `build.py`: target `abyss` → `abyss-kit.html`, `publish/abyss-building-kit.html`.
 - `kitshots.py`: `--sheet FILE` (default `locus-kit.html`); dumps to `sheet-items-<sheet>.json` (gitignored).
 
-## Verification (this pass)
+## Verification (2026-10-01 pass: review fixes and the reference images)
+
+- `python3 build.py`: clean (it rebuilds all four targets; `abyss-kit.html` is the kit's).
+- `verify.py abyss-kit.html --assert`: error panel clean, 76 unique items, 103 calls / 716 k tris / 21.6 k instances.
+- Looked at (one `kitshots.py` batch): warehouse, tower house, stacked-container house, inn court, wall run, citadel,
+  palace (back), alchemist, granary, temple.
+- Running `verify.py` in this container: Playwright 1.63 wants `chromium_headless_shell-1243`, but `/opt/pw-browsers`
+  holds 1194; point `PLAYWRIGHT_BROWSERS_PATH` at a scratch folder holding
+  `chromium_headless_shell-1243/chrome-headless-shell-linux64/chrome-headless-shell` → a symlink to
+  `/opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell` (plus empty `INSTALLATION_COMPLETE`).
+  The page loads three.js from the CDN; with no network, copy an r128 `three.min.js` next to the HTML (gitignored here)
+  and `verify.py` serves it.
+
+## Verification (first pass)
 
 - `python3 build.py`: clean.
 - `verify.py abyss-kit.html --assert`: error panel clean, 76 unique items, 102 calls / 691 k tris / 20.9 k instances.
@@ -246,3 +262,17 @@ reads its phase (checked: 4.35 → 4.85 rad over 1.5 s).
   run and plaza; interiors / close views of the inn court, tavern decks, caravanserai gate and rooms, library terraces,
   school court, amphitheatre seats, temple gate axis and altar top, palace hall front and loggia; night views of the
   temple, palace, tavern, inn, a poor house and the tower house.
+
+## The reference images (`refs/abyss/`, compared 2026-10-01)
+
+| image | what it shows | the kit | changed this pass |
+|---|---|---|---|
+| `recycled_house_closeup.jpg` | Two tapering towers clad in flattened cans, foil and mirror tiles, with gold-painted panel bands, rows of bottle-cap studs along every seam, and odd salvaged windows (white sashes, gilt frames) set proud of the wall. The right tower stands on a rough fieldstone drum; the left ends in a crown of thin rods tied with looped wire. A studded tin pavilion with pierced panels in front. | The tin-mirror tower house (rich, variant c): tapering tin tower on a rubble base, trim-framed windows, a lantern top. The `tinmirror` texture reads as smooth grey at any distance; no gold bands, no studs; the windows were buried in the wall. | Windows in proud salvaged casings (tin, plaster or yellow), a gold sheet band and four rows of studs, a crown of 14 thin rods with a wire ring and loops round the lantern gallery. The texture is unchanged (known issue). |
+| `umbrellas.jpg` | A steep street of brightly painted two- and three-storey houses (yellow, orange, pink, teal) with iron balconies and murals; overhead, hundreds of open umbrellas in pastel pink, lilac, sky blue, mint and lemon hang close together on sagging wires the length of the street. | Painted townhouse (bright lime-wash, balconies, mural) matches; `abyss_umbrella_canopy` had saturated kit brights (orange, red, teal) in a sparse grid on taut wires. | The canopy's wires sag, it hangs six umbrellas per wire, closer and lower, mostly in the picture's pastels (`PAL.abUmbrella`). Still a 10 m bay, not a street run. |
+| `wq.jpg` | A concept sheet: tall pale-grey thatched cones (fine vertical straw lines) opening in great parabolic arches over terraced floors spilling with planting, a pool court, lesser cones and a domed rotunda round it, paths through jungle. | Library under the great cone, the rich cone house and the school match the form (arched cone over terraces, lesser cones, pool court). The library's thatch was mid-brown. | The library's cone is pale silvery grey (`0xC9C1AC`). Its terraces are still bare. |
+| `2285020…jpg` | A desert salvage house: a rusty tank with a ring balcony on top of a yellow corrugated cabin, a green horizontal drum cut open as a shop front under an awning, a red tin-roofed shed, elbowed pipes, a ladder, an AC box, a billboard and a timber power pole with wires. | Drum houses, tank rooms with ring balconies and ladders, container cabins, billboards and cables are all in the kit. No big pipes, no power poles. | An elbowed salvage pipe off the alchemist's tank house down to a sump. |
+| `46f83d9…jpg` | A floating timber deck town: great orange sails with red patterned bands swooping between masts, propeller-lanterns hovering, round decks with blue crystals, stairs and rails, pale trees. | The sail-platform tavern, palace loggias and the temple's crystal ring follow it closely (sail colours, bands, propeller-lanterns). | Nothing. |
+| `679e20b…jpg` (豹族 Leopard) | A clan hall: an enormous swept saddle roof of dark, mossy thatch rising into twin horns with gilded tips, stepped eave tiers with carved ribs and spines along the ridges, a red lacquered plinth with a banded frieze, claw-like carved spurs at the front and a side stair with rope rails. Palette: browns, dark red, gold, teal. | Swoop-and-horn roofs over red lacquer with teal and gold bands (temple gate, palace, keep, barracks), claw buttresses on the temple gate. The thatch is clean and lighter; no tiers or spines. | `swoopRoof` gains `fins` (carved spines leaning out toward the horns); used on the palace (11) and the temple gate (7). The caption names a clan, not a ruler: the title stays "the Headman". |
+| `9512944…jpg` | A cluster of cream-rendered domed silos with grey bands, portholes and hatches, blue tarps on poles between them, small red and blue sheds, a tall lattice mast with dishes and a camera, on red desert. | The silo granary (domed silos, portholes, blue tarps, a lattice mast with dishes). Its silos were bare grey sheet; the tarps' back corners floated. | Silos in cream render with pale domes (`PAL.abCream`), poles under the tarps' back corners, the catwalk moved off the silos' insides. |
+| `e9a047f…jpg` | A stacked-container house on a plank deck over water: a pale blue container shack at the bottom, a yellow one on it, a rust-red one cantilevered on top, a grey-green corrugated box beside, a red tin-roofed shop front with a sign, rails and balconies, antennas, dishes, cables to poles, a billboard. | The stacked-containers family house and the container inn match it closely. | The house's second-floor containers no longer overlap; its outside stair lands on the balcony. |
+
