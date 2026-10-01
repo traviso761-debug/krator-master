@@ -1,0 +1,35 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1">
+<title>Krator Characters: Pink-Mustache Barbarian</title>
+<style>
+html,body{margin:0;height:100%;overflow:hidden;background:#e9e4dc;font:13px/1.4 system-ui,sans-serif;color:#222}
+canvas{display:block}
+#ui{position:fixed;left:10px;top:10px;display:flex;flex-wrap:wrap;gap:6px;max-width:72vw;z-index:5}
+#ui button{background:rgba(255,255,255,.7);color:#222;border:1px solid #9a8a7a;border-radius:4px;padding:5px 9px;cursor:pointer;font-size:12px}
+#ui button:hover{background:#fff}
+#ui button.on{background:#d94fa0;color:#fff;border-color:#a0306e}
+#cap{position:fixed;left:10px;top:44px;background:rgba(255,255,255,.55);padding:4px 8px;border-radius:4px;font-size:12px;color:#333;z-index:5;max-width:70vw}
+#hud{position:fixed;right:10px;bottom:10px;background:rgba(0,0,0,.55);color:#eee;padding:6px 9px;border-radius:4px;font-family:ui-monospace,monospace;font-size:12px;white-space:pre;z-index:5}
+#errs{position:fixed;left:10px;bottom:10px;max-width:60vw;max-height:30vh;overflow:auto;background:rgba(120,0,0,.85);color:#fff;padding:6px 9px;border-radius:4px;font-family:ui-monospace,monospace;font-size:12px;white-space:pre-wrap;display:none;z-index:9}
+</style></head><body>
+<div id="ui"></div>
+<div id="cap">Barbarian: procedural skinned rig, baked walk clip. Drag to orbit, wheel to zoom.</div>
+<div id="hud"></div>
+<pre id="errs"></pre>
+<script>
+var _errBox=document.getElementById('errs'), _errN=0;
+function ERR(m){ if(_errN++>14) return; _errBox.style.display='block'; _errBox.textContent += (_errBox.textContent?'\n':'')+m; }
+window.onerror=function(m,u,l,c,e){ ERR('error: '+m+' @'+l+':'+c+(e&&e.stack?'\n'+e.stack:'')); };
+/* three.js loader with the Voth handshake: three's onload and the tail each call go(); whichever comes second starts the build. */
+(function(){
+  var s=document.createElement('script');
+  s.src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+  if(location.protocol!=='file:') s.crossOrigin='anonymous';
+  var threeOK=false, started=false;
+  function go(){ if(started || !threeOK || typeof CHAR_MAIN!=='function') return; started=true; try{ CHAR_MAIN(); }catch(e){ ERR('build: '+(e&&e.stack||e)); } }
+  window._krGo=go;
+  s.onload=function(){ threeOK=true; go(); };
+  s.onerror=function(){ ERR('Could not load three.js from the CDN.'); };
+  document.head.appendChild(s);
+})();
+</script>
+<script>

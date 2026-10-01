@@ -1,0 +1,518 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1">
+<title>Krator Characters: Pink-Mustache Barbarian</title>
+<style>
+html,body{margin:0;height:100%;overflow:hidden;background:#e9e4dc;font:13px/1.4 system-ui,sans-serif;color:#222}
+canvas{display:block}
+#ui{position:fixed;left:10px;top:10px;display:flex;flex-wrap:wrap;gap:6px;max-width:72vw;z-index:5}
+#ui button{background:rgba(255,255,255,.7);color:#222;border:1px solid #9a8a7a;border-radius:4px;padding:5px 9px;cursor:pointer;font-size:12px}
+#ui button:hover{background:#fff}
+#ui button.on{background:#d94fa0;color:#fff;border-color:#a0306e}
+#cap{position:fixed;left:10px;top:44px;background:rgba(255,255,255,.55);padding:4px 8px;border-radius:4px;font-size:12px;color:#333;z-index:5;max-width:70vw}
+#hud{position:fixed;right:10px;bottom:10px;background:rgba(0,0,0,.55);color:#eee;padding:6px 9px;border-radius:4px;font-family:ui-monospace,monospace;font-size:12px;white-space:pre;z-index:5}
+#errs{position:fixed;left:10px;bottom:10px;max-width:60vw;max-height:30vh;overflow:auto;background:rgba(120,0,0,.85);color:#fff;padding:6px 9px;border-radius:4px;font-family:ui-monospace,monospace;font-size:12px;white-space:pre-wrap;display:none;z-index:9}
+</style></head><body>
+<div id="ui"></div>
+<div id="cap">Barbarian: procedural skinned rig, baked walk clip. Drag to orbit, wheel to zoom.</div>
+<div id="hud"></div>
+<pre id="errs"></pre>
+<script>
+var _errBox=document.getElementById('errs'), _errN=0;
+function ERR(m){ if(_errN++>14) return; _errBox.style.display='block'; _errBox.textContent += (_errBox.textContent?'\n':'')+m; }
+window.onerror=function(m,u,l,c,e){ ERR('error: '+m+' @'+l+':'+c+(e&&e.stack?'\n'+e.stack:'')); };
+/* three.js loader with the Voth handshake: three's onload and the tail each call go(); whichever comes second starts the build. */
+(function(){
+  var s=document.createElement('script');
+  s.src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+  if(location.protocol!=='file:') s.crossOrigin='anonymous';
+  var threeOK=false, started=false;
+  function go(){ if(started || !threeOK || typeof CHAR_MAIN!=='function') return; started=true; try{ CHAR_MAIN(); }catch(e){ ERR('build: '+(e&&e.stack||e)); } }
+  window._krGo=go;
+  s.onload=function(){ threeOK=true; go(); };
+  s.onerror=function(){ ERR('Could not load three.js from the CDN.'); };
+  document.head.appendChild(s);
+})();
+</script>
+<script>
+
+/* ---- 10-core.js ---- */
+/* ============================== core: scene, helpers, skinning ==============
+   Everything a procedural character needs that is not the character itself:
+   a seeded PRNG, geometry helpers that build in world (rest-pose) space, the
+   envelope skinning that assigns bone weights from distance to bone segments,
+   and the merge that folds every piece into one SkinnedMesh / one draw call.
+*/
+'use strict';
+
+function rng(seed){ var s = seed >>> 0; return function(){ s += 0x6D2B79F5; var t = Math.imul(s ^ (s >>> 15), 1 | s); t = t + Math.imul(t ^ (t >>> 7), 61 | t) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+var V3 = function(x, y, z){ return new THREE.Vector3(x, y, z); };
+function lerp(a, b, t){ return a + (b - a) * t; }
+function clamp(x, a, b){ return x < a ? a : x > b ? b : x; }
+function smooth(t){ t = clamp(t, 0, 1); return t * t * (3 - 2 * t); }
+
+/* ---- bone definitions: world rest positions, segment tips for leaf bones ---- */
+var BONE_DEFS = [];
+var BONES = {};
+function defBone(name, parent, x, y, z, tip){ BONE_DEFS.push({ name: name, parent: parent, pos: V3(x, y, z), tip: tip ? V3(tip[0], tip[1], tip[2]) : null }); }
+function boneSeg(name){
+  var d = BONE_DEFS.find(function(b){ return b.name === name; });
+  var tip = d.tip;
+  if(!tip){ var c = BONE_DEFS.find(function(b){ return b.parent === name; }); tip = c ? c.pos : d.pos.clone().add(V3(0, -0.1, 0)); }
+  return [d.pos, tip];
+}
+function buildSkeleton(){
+  var bones = [];
+  BONE_DEFS.forEach(function(d){
+    var b = new THREE.Bone(); b.name = d.name;
+    var p = d.parent ? BONE_DEFS.find(function(q){ return q.name === d.parent; }).pos : V3(0, 0, 0);
+    b.position.copy(d.pos).sub(p);
+    BONES[d.name] = b; bones.push(b);
+    if(d.parent) BONES[d.parent].add(b);
+  });
+  return bones;
+}
+
+/* ---- pieces: geometry in rest-pose world space + colour + candidate bones ---- */
+var PIECES = [];
+/* colours are authored as sRGB hex; vertex colours and material colours are linear in r128, so convert once here */
+function C(hex){ return new THREE.Color(hex).convertSRGBToLinear(); }
+function addPiece(geo, color, bones, opts){ PIECES.push({ geo: geo, color: color.isColor ? color : C(color), bones: bones, opts: opts || {} }); return geo; }
+
+var _segA, _segB, _segP;   /* created on first use: fragments run before three.js has loaded */
+function distToSeg(p, a, b){
+  if(!_segA){ _segA = new THREE.Vector3(); _segB = new THREE.Vector3(); _segP = new THREE.Vector3(); }
+  _segA.subVectors(b, a); _segB.subVectors(p, a);
+  var L2 = _segA.lengthSq(); var t = L2 > 0 ? clamp(_segB.dot(_segA) / L2, 0, 1) : 0;
+  _segP.copy(a).addScaledVector(_segA, t); return _segP.distanceTo(p);
+}
+/* Envelope skinning: weight each candidate bone by 1/d^4 from its segment,
+   keep the top four, drop anything under 2%, normalise. Limbs stay rigid
+   away from a joint and blend over the last few centimetres into it. */
+function weightsFor(p, bones, segs, power){
+  var ws = bones.map(function(n, i){ var d = distToSeg(p, segs[i][0], segs[i][1]); return { i: i, w: 1 / Math.pow(d + 0.004, power || 4) }; });
+  ws.sort(function(a, b){ return b.w - a.w; }); ws = ws.slice(0, 4);
+  var sum = ws.reduce(function(s, x){ return s + x.w; }, 0);
+  ws.forEach(function(x){ x.w /= sum; }); ws = ws.filter(function(x){ return x.w > 0.02; });
+  sum = ws.reduce(function(s, x){ return s + x.w; }, 0); ws.forEach(function(x){ x.w /= sum; });
+  return ws;
+}
+
+/* Fold every piece into one skinned BufferGeometry (non-indexed, vertex colours). */
+function mergePieces(boneList){
+  var index = {}; boneList.forEach(function(b, i){ index[b.name] = i; });
+  var pos = [], nor = [], col = [], si = [], sw = [], tris = 0;
+  PIECES.forEach(function(pc){
+    var g = pc.geo.index ? pc.geo.toNonIndexed() : pc.geo;
+    var P = g.attributes.position, N = g.attributes.normal, n = P.count;
+    var segs = pc.bones.map(boneSeg), ids = pc.bones.map(function(b){ return index[b]; });
+    var p = new THREE.Vector3();
+    for(var i = 0; i < n; i++){
+      p.fromBufferAttribute(P, i);
+      pos.push(p.x, p.y, p.z); nor.push(N.getX(i), N.getY(i), N.getZ(i));
+      var c = pc.opts.tint ? pc.opts.tint(p, i) : pc.color; col.push(c.r, c.g, c.b);
+      var ws = pc.bones.length === 1 ? [{ i: 0, w: 1 }] : weightsFor(p, pc.bones, segs, pc.opts.power);
+      for(var k = 0; k < 4; k++){ si.push(ws[k] ? ids[ws[k].i] : 0); sw.push(ws[k] ? ws[k].w : 0); }
+    }
+    tris += n / 3;
+  });
+  var geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  geo.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3));
+  geo.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
+  geo.setAttribute('skinIndex', new THREE.Uint16BufferAttribute(si, 4));
+  geo.setAttribute('skinWeight', new THREE.Float32BufferAttribute(sw, 4));
+  geo.userData.tris = tris;
+  return geo;
+}
+
+/* ---- geometry helpers (world space) ---- */
+/* A tube through a list of rings. Each ring: {c, u, v, rx, rz}. Winding is
+   checked against the first ring's outward direction and flipped if inward,
+   so callers need not think about handedness. */
+function ringTube(rings, sides, caps){
+  var pos = [], idx = [], i, j;
+  for(i = 0; i < rings.length; i++){ var r = rings[i]; for(j = 0; j < sides; j++){ var a = j / sides * Math.PI * 2;
+    var p = r.c.clone().addScaledVector(r.u, Math.cos(a) * r.rx).addScaledVector(r.v, Math.sin(a) * r.rz); pos.push(p.x, p.y, p.z); } }
+  for(i = 0; i < rings.length - 1; i++) for(j = 0; j < sides; j++){ var a0 = i * sides + j, a1 = i * sides + (j + 1) % sides, b0 = a0 + sides, b1 = a1 + sides; idx.push(a0, b0, a1, a1, b0, b1); }
+  var nv = rings.length * sides;
+  if(caps){
+    var r0 = rings[0], r1 = rings[rings.length - 1];
+    pos.push(r0.c.x, r0.c.y, r0.c.z); pos.push(r1.c.x, r1.c.y, r1.c.z);
+    for(j = 0; j < sides; j++){ idx.push(nv, j, (j + 1) % sides); var b = (rings.length - 1) * sides; idx.push(nv + 1, b + (j + 1) % sides, b + j); }
+  }
+  /* orientation check on the first quad */
+  var A = V3(pos[idx[0]*3], pos[idx[0]*3+1], pos[idx[0]*3+2]), B = V3(pos[idx[1]*3], pos[idx[1]*3+1], pos[idx[1]*3+2]), C = V3(pos[idx[2]*3], pos[idx[2]*3+1], pos[idx[2]*3+2]);
+  var nrm = B.clone().sub(A).cross(C.clone().sub(A)); var out = A.clone().sub(rings[0].c);
+  if(nrm.dot(out) < 0) for(i = 0; i < idx.length; i += 3){ var t = idx[i + 1]; idx[i + 1] = idx[i + 2]; idx[i + 2] = t; }
+  var g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx); g.computeVertexNormals(); return g;
+}
+/* frame for a tube axis: u, v perpendicular to w */
+function axisFrame(w, ref){
+  w = w.clone().normalize(); ref = ref || (Math.abs(w.y) < 0.9 ? V3(0, 1, 0) : V3(1, 0, 0));
+  var u = ref.clone().cross(w).normalize(); var v = u.clone().cross(w).normalize(); return { u: u, v: v, w: w };
+}
+/* Limb tube from p0 to p1. profile: [{t, r, rz?, cx?, cz?}] along the axis; cx/cz offset the ring sideways (u, v) */
+function limbTube(p0, p1, profile, sides, caps, ref){
+  var f = axisFrame(p1.clone().sub(p0), ref), rings = [];
+  profile.forEach(function(s){ var c = p0.clone().lerp(p1, s.t).addScaledVector(f.u, s.cx || 0).addScaledVector(f.v, s.cz || 0);
+    rings.push({ c: c, u: f.u, v: f.v, rx: s.r, rz: s.rz != null ? s.rz : s.r }); });
+  return ringTube(rings, sides || 14, caps !== false);
+}
+/* Upright elliptical lathe: profile [{y, rx, rz, cz?}] */
+function bodyTube(profile, sides, caps){
+  var rings = profile.map(function(s){ return { c: V3(0, s.y, s.cz || 0), u: V3(1, 0, 0), v: V3(0, 0, 1), rx: s.rx, rz: s.rz }; });
+  return ringTube(rings, sides || 18, caps !== false);
+}
+/* Tapered tube along a curve (mustache, horns, tails) */
+function curveTube(curve, segs, sides, radiusFn){
+  var pts = curve.getPoints(segs), fr = curve.computeFrenetFrames(segs, false), rings = [];
+  for(var i = 0; i <= segs; i++){ var r = radiusFn(i / segs); rings.push({ c: pts[i], u: fr.normals[i], v: fr.binormals[i], rx: r, rz: r }); }
+  return ringTube(rings, sides || 8, true);
+}
+function ellipsoid(cx, cy, cz, r, sx, sy, sz, rot){
+  var g = new THREE.SphereGeometry(r, 16, 12); g.scale(sx == null ? 1 : sx, sy == null ? 1 : sy, sz == null ? 1 : sz);
+  if(rot) g.applyMatrix4(new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(rot[0], rot[1], rot[2])));
+  g.translate(cx, cy, cz); return g;
+}
+function box(cx, cy, cz, w, h, d, rot){
+  var g = new THREE.BoxGeometry(w, h, d);
+  if(rot) g.applyMatrix4(new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(rot[0], rot[1], rot[2])));
+  g.translate(cx, cy, cz); return g;
+}
+/* one fur tuft: a 4-sided cone from base along dir */
+function tuft(base, dir, len, rBase){
+  var g = new THREE.CylinderGeometry(0, rBase, len, 4, 1, false);
+  var q = new THREE.Quaternion().setFromUnitVectors(V3(0, 1, 0), dir.clone().normalize());
+  g.applyMatrix4(new THREE.Matrix4().makeRotationFromQuaternion(q)); g.translate(base.x + dir.x * len / 2, base.y + dir.y * len / 2, base.z + dir.z * len / 2); return g;
+}
+/* a ring of tufts around an ellipse at height y, pointing out and tilted up (+) or down (-) */
+function furRing(y, rx, rz, n, len, tilt, color, bones, R, cx){
+  cx = cx || 0;
+  var base = new THREE.Color(color);
+  for(var i = 0; i < n; i++){
+    var a = (i + R() * 0.6) / n * Math.PI * 2, ca = Math.cos(a), sa = Math.sin(a);
+    var p = V3(cx + ca * rx, y + (R() - 0.5) * 0.04, sa * rz);
+    var out = V3(ca * rz, 0, sa * rx).normalize();
+    var dir = out.clone().multiplyScalar(1).add(V3((R() - 0.5) * 0.5, tilt + (R() - 0.5) * 0.5, (R() - 0.5) * 0.5)).normalize();
+    var L = len * (0.7 + R() * 0.6), c = base.clone().offsetHSL(0, 0, (R() - 0.5) * 0.18).convertSRGBToLinear();
+    addPiece(tuft(p, dir, L, 0.016 + R() * 0.012), c, bones);
+  }
+}
+
+
+/* ---- 30-barbarian.js ---- */
+/* ============================== the barbarian ==============================
+   Bald, pink handlebar mustache, bare chest, leather trousers with pink fur
+   trim at the belt and the boot cuffs, a bearded axe in each hand.
+   Rest pose: standing, facing +Z, arms down and a little out. Units: metres.
+   He is 2.2 m tall.
+*/
+var SKIN = 0xd4927a, SKIN_DARK = 0xc4826a, PINK = 0xd84aa0, LEATHER = 0x7a5838, LEATHER_LIGHT = 0x957046,
+    LEATHER_DARK = 0x4b3621, STEEL = 0xb9bec6, WOOD = 0x6a4a2b, EYE_WHITE = 0xf6f1e8, EYE_DARK = 0x2a1a14;
+
+function defineBarbarianBones(){
+  defBone('hips',  null,     0,     1.12, 0);
+  defBone('spine', 'hips',   0,     1.26, 0);
+  defBone('chest', 'spine',  0,     1.50, 0);
+  defBone('neck',  'chest',  0,     1.86, 0);
+  defBone('head',  'neck',   0,     1.98, 0, [0, 2.22, 0]);
+  [1, -1].forEach(function(s){
+    var S = s > 0 ? 'L' : 'R';
+    defBone('shoulder' + S, 'chest',     s * 0.16, 1.80, 0);
+    defBone('upperArm' + S, 'shoulder' + S, s * 0.40, 1.74, 0);
+    defBone('forearm'  + S, 'upperArm' + S, s * 0.50, 1.40, 0.02);
+    defBone('hand'     + S, 'forearm'  + S, s * 0.52, 1.08, 0.06, [s * 0.52, 0.94, 0.07]);
+    defBone('thigh' + S, 'hips',    s * 0.17, 1.08, 0);
+    defBone('shin'  + S, 'thigh' + S, s * 0.18, 0.62, 0.02);
+    defBone('foot'  + S, 'shin'  + S, s * 0.18, 0.12, 0, [s * 0.18, 0.02, 0.24]);
+  });
+}
+
+function buildBarbarianBody(){
+  var R = rng(7);
+  /* torso: pelvis to neck, V-shaped */
+  addPiece(bodyTube([
+    { y: 1.02, rx: 0.21, rz: 0.15 }, { y: 1.10, rx: 0.225, rz: 0.16 }, { y: 1.20, rx: 0.215, rz: 0.15 },
+    { y: 1.32, rx: 0.235, rz: 0.165 }, { y: 1.44, rx: 0.29, rz: 0.20 }, { y: 1.56, rx: 0.345, rz: 0.235 },
+    { y: 1.68, rx: 0.37, rz: 0.24 }, { y: 1.77, rx: 0.35, rz: 0.22 }, { y: 1.84, rx: 0.26, rz: 0.17 }, { y: 1.89, rx: 0.14, rz: 0.13 }
+  ], 20), SKIN, ['hips', 'spine', 'chest', 'neck']);
+  /* pecs, abs, traps, lats */
+  [1, -1].forEach(function(s){
+    addPiece(ellipsoid(s * 0.155, 1.60, 0.185, 0.13, 1.15, 0.78, 0.55), SKIN, ['chest']);
+    addPiece(ellipsoid(s * 0.07, 1.46, 0.185, 0.06, 1.1, 0.9, 0.5), SKIN, ['chest', 'spine']);
+    addPiece(ellipsoid(s * 0.07, 1.36, 0.165, 0.06, 1.1, 0.85, 0.5), SKIN, ['spine', 'chest']);
+    addPiece(ellipsoid(s * 0.075, 1.27, 0.15, 0.055, 1.1, 0.8, 0.5), SKIN, ['spine', 'hips']);
+    addPiece(ellipsoid(s * 0.30, 1.50, -0.04, 0.12, 0.9, 1.4, 0.9), SKIN, ['chest']);            /* lats */
+  });
+  addPiece(ellipsoid(0, 1.83, -0.03, 0.2, 2.1, 0.7, 1.2), SKIN, ['chest', 'neck']);               /* traps */
+  /* neck and head */
+  addPiece(limbTube(V3(0, 1.82, 0), V3(0, 2.00, 0.01), [{ t: 0, r: 0.125 }, { t: 0.5, r: 0.11 }, { t: 1, r: 0.10 }], 14), SKIN, ['chest', 'neck', 'head']);
+  addPiece(ellipsoid(0, 2.065, 0, 0.16, 0.95, 1.0, 1.0), SKIN, ['head']);
+  addPiece(ellipsoid(0, 1.975, 0.035, 0.12, 1.05, 0.72, 1.05), SKIN, ['head']);                   /* jaw */
+  addPiece(ellipsoid(0, 2.02, 0.155, 0.03, 0.85, 1.1, 0.8), SKIN, ['head']);                      /* nose */
+  [1, -1].forEach(function(s){
+    addPiece(ellipsoid(s * 0.152, 2.05, 0.0, 0.03, 0.6, 1.4, 1.0), SKIN, ['head']);               /* ear */
+    addPiece(ellipsoid(s * 0.055, 2.063, 0.128, 0.024, 1, 0.75, 0.6), EYE_WHITE, ['head']);
+    addPiece(ellipsoid(s * 0.052, 2.06, 0.146, 0.011, 1, 1, 0.6), EYE_DARK, ['head']);
+    addPiece(ellipsoid(s * 0.06, 2.09, 0.125, 0.045, 1.2, 0.45, 0.6), SKIN, ['head']);             /* brow ridge */
+    var brow = new THREE.CatmullRomCurve3([V3(s * 0.022, 2.072, 0.148), V3(s * 0.07, 2.098, 0.142), V3(s * 0.12, 2.112, 0.112)]);
+    addPiece(curveTube(brow, 8, 7, function(t){ return 0.022 - 0.012 * t; }), PINK, ['head']);        /* angry brow */
+    /* handlebar mustache: a tapered tube along a curve, out, down, then curling up */
+    var curve = new THREE.CatmullRomCurve3([
+      V3(s * 0.01, 1.985, 0.158), V3(s * 0.07, 1.975, 0.15), V3(s * 0.14, 1.955, 0.125),
+      V3(s * 0.205, 1.975, 0.09), V3(s * 0.245, 2.025, 0.055), V3(s * 0.235, 2.075, 0.035)
+    ]);
+    addPiece(curveTube(curve, 28, 8, function(t){ return 0.02 + 0.03 * Math.sin(Math.PI * Math.min(1, t * 1.25 + 0.1)) * (1 - t * 0.55); }), PINK, ['head']);
+  });
+  addPiece(ellipsoid(0, 1.985, 0.152, 0.036, 1, 0.8, 0.8), PINK, ['head']);                       /* under the nose */
+
+  /* arms */
+  [1, -1].forEach(function(s){
+    var S = s > 0 ? 'L' : 'R';
+    var sh = V3(s * 0.40, 1.74, 0), el = V3(s * 0.50, 1.40, 0.02), wr = V3(s * 0.52, 1.08, 0.06);
+    addPiece(ellipsoid(s * 0.40, 1.745, 0, 0.165, 1.05, 1.0, 0.95), SKIN, ['chest', 'upperArm' + S]);                     /* deltoid */
+    addPiece(limbTube(sh, el, [{ t: 0, r: 0.14 }, { t: 0.4, r: 0.15, rz: 0.145 }, { t: 0.75, r: 0.12 }, { t: 1, r: 0.10 }], 14), SKIN, ['upperArm' + S, 'forearm' + S]);
+    addPiece(ellipsoid(s * 0.52, 1.60, -0.05, 0.08, 1, 1.1, 0.8), SKIN, ['upperArm' + S]);                               /* tricep */
+    addPiece(ellipsoid(el.x, el.y, el.z, 0.10), SKIN, ['upperArm' + S, 'forearm' + S]);
+    addPiece(limbTube(el, wr, [{ t: 0, r: 0.10 }, { t: 0.3, r: 0.125 }, { t: 0.7, r: 0.095 }, { t: 1, r: 0.07 }], 14), SKIN, ['forearm' + S, 'hand' + S]);
+    addPiece(ellipsoid(s * 0.52, 1.00, 0.07, 0.085, 0.95, 1.15, 0.95), SKIN_DARK, ['hand' + S]);                          /* fist */
+    addPiece(ellipsoid(s * 0.47, 1.00, 0.10, 0.04, 0.9, 1.1, 1.0), SKIN_DARK, ['hand' + S]);                             /* thumb */
+  });
+
+  /* trousers, belt, fur, boots */
+  [1, -1].forEach(function(s){
+    var S = s > 0 ? 'L' : 'R';
+    var hp = V3(s * 0.17, 1.08, 0), kn = V3(s * 0.18, 0.62, 0.02), an = V3(s * 0.18, 0.12, 0);
+    addPiece(limbTube(hp, kn, [{ t: 0, r: 0.19, rz: 0.18 }, { t: 0.35, r: 0.185, rz: 0.19 }, { t: 0.8, r: 0.15 }, { t: 1, r: 0.14 }], 14), LEATHER, ['thigh' + S, 'shin' + S]);
+    addPiece(ellipsoid(kn.x, kn.y, kn.z + 0.02, 0.135, 1, 1.05, 0.95), LEATHER_LIGHT, ['thigh' + S, 'shin' + S]);        /* knee plate */
+    addPiece(limbTube(hp, kn, [{ t: 0.5, r: 0.178 }, { t: 0.62, r: 0.168 }], 14, false), LEATHER_DARK, ['thigh' + S]);      /* thigh strap */
+    addPiece(box(s * 0.17, 0.83, 0.17, 0.05, 0.06, 0.02), STEEL, ['thigh' + S]);
+    addPiece(limbTube(kn, an, [{ t: 0, r: 0.13 }, { t: 0.45, r: 0.125 }, { t: 1, r: 0.115 }], 14), LEATHER_DARK, ['shin' + S, 'foot' + S]);
+    addPiece(box(s * 0.18, 0.07, 0.07, 0.21, 0.14, 0.34), LEATHER_DARK, ['foot' + S]);
+    addPiece(ellipsoid(s * 0.18, 0.075, 0.22, 0.105, 1, 0.7, 0.9), LEATHER_DARK, ['foot' + S]);                           /* toe */
+    addPiece(box(s * 0.18, 0.055, -0.05, 0.22, 0.11, 0.18), LEATHER, ['foot' + S]);                                       /* heel strap */
+    /* boot cuff: a band and a ring of fur */
+    addPiece(limbTube(V3(s * 0.18, 0.42, 0.01), V3(s * 0.18, 0.52, 0.01), [{ t: 0, r: 0.14 }, { t: 1, r: 0.145 }], 14), PINK, ['shin' + S]);
+    furRing(0.44, 0.145, 0.145, 34, 0.11, -0.9, PINK, ['shin' + S], R, s * 0.18);
+  });
+  addPiece(ellipsoid(0, 1.03, -0.01, 0.2, 1.05, 0.55, 0.78), LEATHER, ['hips']);                 /* pelvis, closes the crotch */
+  /* belt with buckle, fur above and a fringe below */
+  addPiece(bodyTube([{ y: 1.12, rx: 0.235, rz: 0.17 }, { y: 1.20, rx: 0.235, rz: 0.165 }], 20), LEATHER_DARK, ['hips']);
+  addPiece(box(0, 1.16, 0.175, 0.09, 0.07, 0.02), STEEL, ['hips']);
+  addPiece(bodyTube([{ y: 1.20, rx: 0.245, rz: 0.18 }, { y: 1.31, rx: 0.25, rz: 0.185 }], 20), PINK, ['hips', 'spine']);
+  furRing(1.26, 0.245, 0.18, 60, 0.11, 0.5, PINK, ['hips', 'spine'], R);
+  furRing(1.10, 0.235, 0.17, 54, 0.12, -1.1, PINK, ['hips'], R);
+}
+
+/* The axe: built once in its own frame (grip at the origin, shaft along Y,
+   blade toward +X), as a plain Group that is parented to a hand bone. */
+function buildAxe(mirror){
+  var g = new THREE.Group(), m = mirror ? -1 : 1;
+  var metal = new THREE.MeshStandardMaterial({ color: C(STEEL), metalness: 0.85, roughness: 0.38 });
+  var wood = new THREE.MeshStandardMaterial({ color: C(WOOD), roughness: 0.85 });
+  var pink = new THREE.MeshStandardMaterial({ color: C(PINK), roughness: 0.9 });
+  function add(geo, mat, x, y, z){ var mesh = new THREE.Mesh(geo, mat); mesh.position.set(x || 0, y || 0, z || 0); mesh.castShadow = true; g.add(mesh); return mesh; }
+  add(new THREE.CylinderGeometry(0.02, 0.024, 0.98, 10), wood, 0, -0.10);
+  add(new THREE.CylinderGeometry(0.03, 0.03, 0.05, 10), metal, 0, 0.37);               /* pommel */
+  add(new THREE.CylinderGeometry(0.029, 0.029, 0.14, 10), pink, 0, 0.22);              /* wrap, butt end */
+  add(new THREE.CylinderGeometry(0.03, 0.03, 0.12, 10), pink, 0, -0.30);               /* wrap, head end */
+  add(new THREE.CylinderGeometry(0.034, 0.034, 0.04, 10), metal, 0, -0.38);            /* collar */
+  var pts = [[-0.02, -0.12], [0.03, -0.12], [0.09, -0.19], [0.19, -0.23], [0.29, -0.12], [0.33, 0.02], [0.28, 0.15],
+             [0.18, 0.21], [0.08, 0.18], [0.03, 0.12], [-0.02, 0.12], [-0.02, 0.06], [-0.13, 0.025], [-0.02, -0.02]];
+  var shape = new THREE.Shape(pts.map(function(p){ return new THREE.Vector2(p[0] * 0.85 * m, p[1] * 0.85); }));
+  var blade = new THREE.ExtrudeGeometry(shape, { depth: 0.028, bevelEnabled: true, bevelThickness: 0.008, bevelSize: 0.008, bevelSegments: 2 });
+  blade.translate(0, 0, -0.014);
+  add(blade, metal, 0, -0.50);
+  /* a pink filigree band across the blade root, as in the painting */
+  add(new THREE.BoxGeometry(0.06, 0.26, 0.036), pink, m * 0.05, -0.50);
+  return g;
+}
+
+
+/* ---- 40-walk.js ---- */
+/* ============================== pose, walk cycle, scene =====================
+   The walk is a procedural function of phase. It is sampled into a
+   THREE.AnimationClip so the same character plays through AnimationMixer
+   exactly as a glTF import would, and the clip can be exported.
+*/
+var WALK = { freq: 1.05, thigh: 0.36, knee: 0.8, arm: 0.3, bob: 0.025, sway: 0.03, twist: 0.12 };
+var POSE = {};   /* name -> {rx,ry,rz, px,py,pz} rest-relative */
+
+function setRot(name, x, y, z){ POSE[name] = POSE[name] || {}; POSE[name].rx = x; POSE[name].ry = y; POSE[name].rz = z; }
+function setPos(name, x, y, z){ POSE[name] = POSE[name] || {}; POSE[name].px = x; POSE[name].py = y; POSE[name].pz = z; }
+
+/* the standing pose every other pose is added to */
+function restPose(){
+  BONE_DEFS.forEach(function(d){ setRot(d.name, 0, 0, 0); setPos(d.name, 0, 0, 0); });
+  [1, -1].forEach(function(s){ var S = s > 0 ? 'L' : 'R';
+    setRot('upperArm' + S, 0.05, 0, s * 0.16);
+    setRot('forearm' + S, -0.18, 0, s * -0.05);
+    setRot('hand' + S, 0, s * -0.35, 0);
+    setRot('thigh' + S, 0, 0, s * 0.06);
+    setRot('shin' + S, 0.06, 0, 0);
+    setRot('foot' + S, -0.05, s * 0.12, s * -0.04);
+  });
+  setRot('chest', -0.04, 0, 0); setRot('head', 0.06, 0, 0);
+}
+
+/* u in [0,1): one full cycle, left heel strike at u=0.25 */
+function walkPose(u){
+  restPose();
+  var ph = u * Math.PI * 2, W = WALK;
+  setPos('hips', W.sway * Math.sin(ph), W.bob * Math.cos(2 * ph) - 0.015, 0);
+  setRot('hips', 0.04, W.twist * Math.sin(ph), 0.05 * Math.sin(ph));
+  setRot('spine', 0.02, -0.05 * Math.sin(ph), -0.03 * Math.sin(ph));
+  setRot('chest', -0.06, -W.twist * 0.9 * Math.sin(ph), -0.03 * Math.sin(ph));
+  setRot('neck', 0.02, 0.05 * Math.sin(ph), 0);
+  setRot('head', 0.08 - 0.02 * Math.cos(2 * ph), 0.03 * Math.sin(ph), 0.02 * Math.sin(ph));
+  [1, -1].forEach(function(s){ var S = s > 0 ? 'L' : 'R', lp = ph + (s > 0 ? 0 : Math.PI);
+    var thigh = -W.thigh * Math.sin(lp);
+    var knee = 0.08 + W.knee * Math.max(0, Math.cos(lp + 0.6)) + 0.15 * Math.max(0, Math.sin(lp - 2.2));
+    setRot('thigh' + S, thigh, 0, s * 0.07);
+    setRot('shin' + S, knee, 0, 0);
+    /* keep the sole roughly level in stance, toe off behind */
+    var toe = 0.5 * Math.max(0, Math.sin(lp + 2.0)) * Math.max(0, -Math.sin(lp));
+    setRot('foot' + S, -(thigh + knee) * 0.55 + toe, s * 0.12, s * -0.04);
+    var arm = W.arm * Math.sin(lp);
+    setRot('upperArm' + S, 0.05 + arm, 0, s * (0.16 + 0.03 * Math.cos(lp)));
+    setRot('forearm' + S, -0.22 - 0.18 * Math.max(0, arm), 0, s * -0.05);
+    setRot('hand' + S, 0, s * -0.35, 0);
+  });
+}
+function idlePose(u){
+  restPose();
+  var ph = u * Math.PI * 2;
+  setPos('hips', 0, 0.006 * Math.sin(ph), 0);
+  setRot('chest', -0.04 + 0.025 * Math.sin(ph), 0, 0);
+  setRot('head', 0.06 + 0.015 * Math.sin(ph + 1), 0, 0);
+  [1, -1].forEach(function(s){ var S = s > 0 ? 'L' : 'R';
+    setRot('upperArm' + S, 0.05, 0, s * (0.16 + 0.025 * Math.sin(ph))); });
+}
+function applyPose(){
+  for(var n in POSE){ var p = POSE[n], b = BONES[n]; if(!b) continue;
+    b.rotation.set(p.rx || 0, p.ry || 0, p.rz || 0);
+    b.position.copy(b.userData.rest).add(V3(p.px || 0, p.py || 0, p.pz || 0)); }
+}
+/* sample a pose function into an AnimationClip */
+function bakeClip(name, fn, duration, frames){
+  var times = [], q = {}, pos = {}, i;
+  BONE_DEFS.forEach(function(d){ q[d.name] = []; pos[d.name] = []; });
+  for(i = 0; i <= frames; i++){
+    var u = (i % frames) / frames; times.push(i / frames * duration); fn(u); applyPose();
+    BONE_DEFS.forEach(function(d){ var b = BONES[d.name]; q[d.name].push(b.quaternion.x, b.quaternion.y, b.quaternion.z, b.quaternion.w); pos[d.name].push(b.position.x, b.position.y, b.position.z); });
+  }
+  var tracks = [];
+  BONE_DEFS.forEach(function(d){
+    tracks.push(new THREE.QuaternionKeyframeTrack(d.name + '.quaternion', times, q[d.name]));
+    if(d.name === 'hips') tracks.push(new THREE.VectorKeyframeTrack(d.name + '.position', times, pos[d.name]));
+  });
+  return new THREE.AnimationClip(name, duration, tracks);
+}
+
+/* ============================== scene and loop ============================== */
+var CHAR = {};
+function CHAR_MAIN(){
+  var W = innerWidth, H = innerHeight;
+  var renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+  renderer.setSize(W, H); renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+  renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.outputEncoding = THREE.sRGBEncoding; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.0;
+  document.body.appendChild(renderer.domElement);
+  var scene = new THREE.Scene(); scene.background = new THREE.Color(0xe9e4dc);
+  scene.fog = new THREE.Fog(0xe9e4dc, 14, 40);
+  var camera = new THREE.PerspectiveCamera(32, W / H, 0.05, 100);
+  var orbit = { yaw: 0.45, pitch: 0.12, dist: 5.6, target: V3(0, 1.08, 0) };
+  function placeCamera(){ camera.position.set(orbit.target.x + Math.sin(orbit.yaw) * Math.cos(orbit.pitch) * orbit.dist, orbit.target.y + Math.sin(orbit.pitch) * orbit.dist, orbit.target.z + Math.cos(orbit.yaw) * Math.cos(orbit.pitch) * orbit.dist); camera.lookAt(orbit.target); }
+  placeCamera();
+
+  scene.add(new THREE.HemisphereLight(0xdfe6f2, 0x8a7a66, 0.6));
+  var sun = new THREE.DirectionalLight(0xfff1dc, 1.6); sun.position.set(3, 6, 4); sun.castShadow = true;
+  sun.shadow.mapSize.set(2048, 2048); sun.shadow.camera.left = sun.shadow.camera.bottom = -3; sun.shadow.camera.right = sun.shadow.camera.top = 3;
+  sun.shadow.camera.near = 1; sun.shadow.camera.far = 20; sun.shadow.bias = -0.0008; sun.shadow.normalBias = 0.02; scene.add(sun);
+  var rim = new THREE.DirectionalLight(0xc0d4ff, 0.7); rim.position.set(-4, 3, -5); scene.add(rim);
+
+  /* ground: a scrolling grid so the walk reads as travel */
+  var cv = document.createElement('canvas'); cv.width = cv.height = 256; var cx = cv.getContext('2d');
+  cx.fillStyle = '#d8d2c6'; cx.fillRect(0, 0, 256, 256); cx.strokeStyle = '#c4bdb0'; cx.lineWidth = 2;
+  cx.strokeRect(1, 1, 254, 254); cx.beginPath(); cx.moveTo(128, 0); cx.lineTo(128, 256); cx.moveTo(0, 128); cx.lineTo(256, 128); cx.stroke();
+  var gtex = new THREE.CanvasTexture(cv); gtex.wrapS = gtex.wrapT = THREE.RepeatWrapping; gtex.repeat.set(40, 40); gtex.encoding = THREE.sRGBEncoding;
+  var ground = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), new THREE.MeshStandardMaterial({ map: gtex, roughness: 1 }));
+  ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
+
+  /* the character */
+  defineBarbarianBones();
+  var bones = buildSkeleton();
+  bones.forEach(function(b){ b.userData.rest = b.position.clone(); });
+  buildBarbarianBody();
+  var geo = mergePieces(bones);
+  var mat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.72, metalness: 0.0, skinning: true });   /* r128: skinning must be opted into per material */
+  var mesh = new THREE.SkinnedMesh(geo, mat);
+  mesh.castShadow = true; mesh.receiveShadow = true; mesh.frustumCulled = false;
+  var rig = new THREE.Group(); rig.add(mesh); mesh.add(bones[0]);
+  mesh.bind(new THREE.Skeleton(bones));
+  scene.add(rig);
+  /* axes in the hands */
+  [1, -1].forEach(function(s){ var S = s > 0 ? 'L' : 'R', axe = buildAxe(s < 0);
+    axe.position.set(0, -0.08, 0.01); axe.rotation.set(-0.35, 0, s * -0.65); BONES['hand' + S].add(axe); });
+  var skel = new THREE.SkeletonHelper(mesh); skel.visible = false; scene.add(skel);
+
+  /* clips through the mixer: this is the path a game would use */
+  var clips = { walk: bakeClip('walk', walkPose, 1 / WALK.freq, 32), idle: bakeClip('idle', idlePose, 3.2, 24) };
+  var mixer = new THREE.AnimationMixer(mesh), actions = {};
+  for(var k in clips){ actions[k] = mixer.clipAction(clips[k]); }
+  var current = null;
+  function play(name){ var a = actions[name]; if(current === a) return; a.reset().setEffectiveWeight(1).fadeIn(0.3).play(); if(current) current.fadeOut(0.3); current = a; ui.walk.classList.toggle('on', name === 'walk'); ui.idle.classList.toggle('on', name === 'idle'); }
+  /* step length from the thigh swing; the ground scrolls at that speed */
+  var legLen = 0.96, stepLen = 2 * legLen * Math.sin(WALK.thigh), walkSpeed = stepLen * 2 * WALK.freq;
+
+  var state = { turntable: false, wire: false, dist: 0 };
+  var ui = {}, uiBox = document.getElementById('ui');
+  function button(key, label, fn){ var b = document.createElement('button'); b.textContent = label; b.onclick = fn; uiBox.appendChild(b); ui[key] = b; return b; }
+  button('walk', 'Walk', function(){ play('walk'); });
+  button('idle', 'Idle', function(){ play('idle'); });
+  button('turn', 'Turntable', function(){ state.turntable = !state.turntable; ui.turn.classList.toggle('on', state.turntable); });
+  button('bones', 'Bones', function(){ skel.visible = !skel.visible; ui.bones.classList.toggle('on', skel.visible); });
+  button('wire', 'Wireframe', function(){ state.wire = !state.wire; mat.wireframe = state.wire; ui.wire.classList.toggle('on', state.wire); });
+  button('front', 'Front', function(){ orbit.yaw = 0; orbit.pitch = 0.1; placeCamera(); });
+  button('side', 'Side', function(){ orbit.yaw = Math.PI / 2; orbit.pitch = 0.08; placeCamera(); });
+  button('face', 'Face', function(){ orbit.yaw = 0.35; orbit.pitch = 0.05; orbit.dist = 1.6; orbit.target.set(0, 1.95, 0); placeCamera(); });
+  button('reset', 'Reset view', function(){ orbit.yaw = 0.45; orbit.pitch = 0.12; orbit.dist = 5.6; orbit.target.set(0, 1.08, 0); placeCamera(); });
+
+  var drag = null;
+  renderer.domElement.addEventListener('pointerdown', function(e){ drag = { x: e.clientX, y: e.clientY }; });
+  addEventListener('pointerup', function(){ drag = null; });
+  addEventListener('pointermove', function(e){ if(!drag) return; orbit.yaw -= (e.clientX - drag.x) * 0.008; orbit.pitch = clamp(orbit.pitch + (e.clientY - drag.y) * 0.006, -0.2, 1.2); drag = { x: e.clientX, y: e.clientY }; placeCamera(); });
+  addEventListener('wheel', function(e){ orbit.dist = clamp(orbit.dist * (1 + e.deltaY * 0.001), 0.8, 14); placeCamera(); }, { passive: true });
+  addEventListener('resize', function(){ W = innerWidth; H = innerHeight; camera.aspect = W / H; camera.updateProjectionMatrix(); renderer.setSize(W, H); });
+
+  var hud = document.getElementById('hud'), clock = new THREE.Clock(), frames = 0, fpsT = 0, fps = 0;
+  function tick(){
+    requestAnimationFrame(tick);
+    var dt = Math.min(clock.getDelta(), 0.1);
+    if(!CHAR.frozen){
+      mixer.update(dt);
+      if(current === actions.walk){ state.dist += walkSpeed * dt; gtex.offset.y = (state.dist / 1.0) % 1; }
+      if(state.turntable) rig.rotation.y += dt * 0.5;
+    }
+    renderer.render(scene, camera);
+    frames++; fpsT += dt; if(fpsT > 0.5){ fps = Math.round(frames / fpsT); frames = 0; fpsT = 0; }
+    hud.textContent = 'tris ' + Math.round(geo.userData.tris) + ' body + ' + axeTris + ' axes\nbones ' + bones.length + '  draw calls ' + renderer.info.render.calls + '\n' + fps + ' fps  clip ' + (current === actions.walk ? 'walk' : 'idle') + ' ' + (1 / WALK.freq).toFixed(2) + 's';
+  }
+  var axeTris = 0; rig.traverse(function(o){ if(o.isMesh && !o.isSkinnedMesh){ var a = o.geometry.attributes.position; axeTris += (o.geometry.index ? o.geometry.index.count : a.count) / 3; } }); axeTris = Math.round(axeTris);
+  play('walk');
+  tick();
+
+  /* deterministic hooks for screenshots */
+  CHAR.mesh = mesh; CHAR.bones = BONES; CHAR.clips = clips; CHAR.mixer = mixer; CHAR.orbit = orbit; CHAR.rig = rig; CHAR.renderer = renderer; CHAR.scene = scene; CHAR.camera = camera;
+  CHAR.play = play;
+  CHAR.setPhase = function(name, u){
+    for(var k in actions) actions[k].stop();
+    var a = actions[name]; a.reset().setEffectiveWeight(1).play(); a.time = u * clips[name].duration; current = a;
+    mixer.update(0); CHAR.frozen = true; renderer.render(scene, camera); };
+  CHAR.view = function(yaw, pitch, dist, ty){ orbit.yaw = yaw; orbit.pitch = pitch; orbit.dist = dist; orbit.target.set(0, ty == null ? 1.08 : ty, 0); placeCamera(); renderer.render(scene, camera); };
+  CHAR.setRigYaw = function(y){ rig.rotation.y = y; };
+  window._ready = true;
+}
+
+window._krGo();
+</script>
+</body></html>

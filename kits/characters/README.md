@@ -1,0 +1,56 @@
+# Krator Characters
+
+A procedural, skinned humanoid rig for Three.js, demonstrated on one character:
+the bald, pink-mustached barbarian with two bearded axes. Built the Krator way:
+numbered `src/` fragments, one self-contained HTML, deterministic.
+
+```
+python3 build.py              # -> dist/barbarian.html
+node shots.js                 # headless screenshots into shots/ (needs playwright + chromium)
+python3 strip.py              # shots/walk-strip.png and shots/walk.gif from the walk frames
+```
+
+## What is here
+
+| Fragment | What |
+|---|---|
+| `10-core.js` | PRNG, geometry helpers that build in rest-pose world space (`limbTube`, `bodyTube`, `curveTube`, `ellipsoid`, `furRing`), envelope skinning (`weightsFor`), and the merge into one `SkinnedMesh` |
+| `30-barbarian.js` | the skeleton (19 bones), every body piece with its colour and candidate bones, and `buildAxe()` |
+| `40-walk.js` | the rest, idle and walk poses as functions of phase, `bakeClip()` that samples them into `THREE.AnimationClip`s, and the viewer (orbit, lights, scrolling ground, buttons) |
+
+## How the rig works
+
+1. **Bones** are declared with world rest positions (`defBone`). The skeleton
+   is built from them; a leaf bone carries a `tip` so it has a segment.
+2. **Pieces** are ordinary geometries authored in that rest pose, each with a
+   colour and the list of bones that may influence it. Weights are computed
+   by distance to the bone segments (1/d^4, top four, renormalised), so a
+   limb is rigid along its length and blends over a few centimetres at the
+   joint. A single-bone piece is rigid. Everything merges into one geometry
+   with vertex colours, `skinIndex` and `skinWeight`: one draw call for the body.
+3. **Poses** are functions of phase that set per-bone Euler rotations (and a
+   hips offset). `bakeClip` samples a pose into quaternion tracks, so the
+   character animates through `AnimationMixer` exactly like a glTF import,
+   and the clips are exportable.
+4. Rigid props (the axes) are plain meshes parented to a bone.
+
+r128 gotchas this build already handles: `material.skinning = true` is
+required (silently ignored bones otherwise); vertex colours are linear, so
+`C(hex)` converts authored sRGB hex once; `BufferGeometry.applyQuaternion`
+does not exist, use `applyMatrix4`.
+
+## Where this sits against real character assets
+
+This is a stylised, low-poly figure (18k triangles here, most of it fur tufts;
+2–4k without them): good for NPCs at mid distance and crowds, not a hero
+close-up. There is no face rig, no cloth, no hair, and joints are capsules
+with blended weights, not sculpted deformation. For hero characters the
+better path is a rigged glTF from Blender or Mixamo loaded with `GLTFLoader`
+and animated with the same `AnimationMixer` this kit already uses; both kinds
+can share one scene and one animation API.
+
+## Hooks for screenshots
+
+`CHAR.view(yaw, pitch, dist, targetY)`, `CHAR.setPhase('walk'|'idle', u)`
+(freezes the loop), `CHAR.play(name)`, `CHAR.clips`, `CHAR.mixer`,
+`CHAR.bones`, `CHAR.mesh`. `window._ready` is set once the build has run.
