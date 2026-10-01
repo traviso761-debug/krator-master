@@ -27,16 +27,16 @@ Python is a free program Krator uses to run its small web server.
 
 ### 2. Download Krator (one time only)
 
-1. In Chrome, go to **https://github.com/traviso761-debug/krator-master/archive/refs/heads/host-server.zip**.
+1. In Chrome, go to **https://github.com/traviso761-debug/krator-master/archive/refs/heads/main.zip**.
    The download (about 100 MB) starts by itself.
-2. Open your **Downloads** folder, right-click **krator-master-host-server.zip**, choose **Extract All…**, then
+2. Open your **Downloads** folder, right-click **krator-master-main.zip**, choose **Extract All…**, then
    **Extract**.
-3. You now have a folder called **krator-master-host-server**. Move it wherever you like (Desktop, Documents);
+3. You now have a folder called **krator-master-main**. Move it wherever you like (Desktop, Documents);
    keep everything inside it together.
 
 ### 3. Start Krator
 
-1. Open the **krator-master-host-server** folder and double-click **Start Krator** (`Start Krator.bat`).
+1. Open the **krator-master-main** folder and double-click **Start Krator** (`Start Krator.bat`).
 2. **Windows may ask whether to run it,** because it came from the internet: click **Run** on *"Open File - Security
    Warning"*, or **More info** then **Run anyway** on a blue *"Windows protected your PC"* box.
 3. A black window opens. **The first time only**, it prepares the worlds (up to a minute). Then it shows the
@@ -63,16 +63,16 @@ The Python a Mac may already have is too old for Krator, so install the current 
 
 ### 2. Download Krator (one time only)
 
-1. Go to **https://github.com/traviso761-debug/krator-master/archive/refs/heads/host-server.zip**.
+1. Go to **https://github.com/traviso761-debug/krator-master/archive/refs/heads/main.zip**.
    The download (about 100 MB) starts by itself.
-2. Open your **Downloads** folder in Finder and double-click **krator-master-host-server.zip** to unpack it
+2. Open your **Downloads** folder in Finder and double-click **krator-master-main.zip** to unpack it
    (Safari may already have unpacked it for you).
-3. You now have a folder called **krator-master-host-server**. Move it wherever you like; keep everything inside
+3. You now have a folder called **krator-master-main**. Move it wherever you like; keep everything inside
    it together.
 
 ### 3. Start Krator
 
-1. Open the **krator-master-host-server** folder and double-click **Start Krator** (`Start Krator.command`).
+1. Open the **krator-master-main** folder and double-click **Start Krator** (`Start Krator.command`).
 2. **The first time, macOS will probably refuse,** saying it cannot check the file for malicious software or that it
    is from an unidentified developer. That is because it came from the internet. To allow it:
    - Click **Done** (or **OK**), then open the Apple menu → **System Settings** → **Privacy & Security**, scroll down to the
@@ -100,15 +100,15 @@ Linux Mint 21, open **Terminal** and type `sudo apt install python3.11`, then pr
 
 ### 2. Download Krator (one time only)
 
-1. In Chrome, go to **https://github.com/traviso761-debug/krator-master/archive/refs/heads/host-server.zip**.
+1. In Chrome, go to **https://github.com/traviso761-debug/krator-master/archive/refs/heads/main.zip**.
    The download (about 100 MB) starts by itself.
-2. In your **Downloads** folder, right-click **krator-master-host-server.zip** and choose **Extract Here** (or
+2. In your **Downloads** folder, right-click **krator-master-main.zip** and choose **Extract Here** (or
    **Extract**).
-3. You now have a folder called **krator-master-host-server**. Move it wherever you like.
+3. You now have a folder called **krator-master-main**. Move it wherever you like.
 
 ### 3. Start Krator
 
-1. Open the **krator-master-host-server** folder, right-click an empty space in it, and choose **Open in Terminal**.
+1. Open the **krator-master-main** folder, right-click an empty space in it, and choose **Open in Terminal**.
 2. In the Terminal window, type `./start-krator.sh` and press Enter.
 3. **The first time only**, it prepares the worlds (up to a minute). Then it shows the addresses Krator answers at,
    [as described below](#what-the-window-shows).
