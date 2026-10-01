@@ -19,7 +19,9 @@ function FURNISH(key,lx,ly,lz,lry,o){const c=VERN.cur;if(!c){reportErr('FURNISH 
  (c.G.userData.furniture||(c.G.userData.furniture=[])).push(rec);HLF.placed.push(rec);
  const dm=KratorFurniture.entryDims(KratorFurniture.FURN_BY_KEY[key],rec.variant);   // murals fitted after the builder (hlFlush) keep clear of the piece
  if(!c.noRec)(c.inst||(c.inst=[])).push(['vWood',[lx,ly+dm.h/2,lz],qEuler(0,lry||0,0),[dm.w,dm.h,dm.d]]);
- if(HLF.on)HLF.batch.place(key,rec.x,rec.y,rec.z,rec.ry,{variant:rec.variant,seed:rec.seed,wealth:hlfWealth(c.D),building:c.D.key,setting:rec.setting});
+ // a builder's pieces stand outside, seen whole: full detail (at half, a disc drawn as a rod, a shield or a target face,
+ // is a 4-sided diamond); the interiors' many pieces keep the half detail set above
+ if(HLF.on){KratorFurniture.setDetail(1);HLF.batch.place(key,rec.x,rec.y,rec.z,rec.ry,{variant:rec.variant,seed:rec.seed,wealth:hlfWealth(c.D),building:c.D.key,setting:rec.setting});KratorFurniture.setDetail(.5);}
  return rec;}
 function hlfWealth(D){const w=D.tags&&D.tags.wealth;return w==='poor'?.2:w==='rich'?.8:w==='civic'?.65:.5;}
 // the interiors hook: a TOP-LEVEL placement (not a sub-building a compound places) with an interior set item

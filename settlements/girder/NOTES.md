@@ -30,6 +30,10 @@ towers/houses and fields; sentries patrol. Voth-style lighting.
 - Flyers: ~85 animals; outer bays (40) straight-in, slot bays (16) small species,
   court bays (12) static residents. Circuit flyers now land; bats return all night.
 - 59 draw calls, 2.70 M triangles, ~50k kit instances; 7 invariants pass.
+- Furniture and interiors (2026-10): every piece that is not structure is a kits/catalog piece placed
+  with FURNISH (1331 outdoors); every slot dwelling, house, the hall and a keeper's shelter per deck has
+  its rooms from the Beast Rider interior set (353 buildings, 589 rooms, 3809 pieces), furnished after
+  load; furniture has its own budget line (29 calls, 1.47 M tris). Walk mode on G (API.md).
 
 ## Fragments / owners
 Planner: 05,10,30,32,45,47,50,72,75(base),80,81,85–87. Subagents: 55 arch +

@@ -1,4 +1,4 @@
-/* ============================== 13c. INTERIORS: ROOMS PLANNED AND FURNISHED BY THE INTERIORS KIT ==============================
+/* ============================== 13c. INTERIORS (THE INTERIORS KIT) ==============================
    Every building Girder draws with an interior gets its rooms from the Beast Rider interior set
    (kits/interiors/sets/beast-rider.js, in 51-furniture-bundle.js), furnished from the catalog through the
    same KratorFurniture runtime as the outdoor pieces. ON by default; ?interiors=0 turns it off.

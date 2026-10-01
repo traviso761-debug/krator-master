@@ -13792,12 +13792,13 @@ function wkStep(dt){
   if(f||s){
     var sp=(k['shift']?W.run:W.walk), n=Math.hypot(f,s), fx=-Math.sin(W.yaw), fz=-Math.cos(W.yaw), rx=Math.cos(W.yaw), rz=-Math.sin(W.yaw);
     var mx=(fx*f+rx*s)/n*sp*dt, mz=(fz*f+rz*s)/n*sp*dt, dist=Math.hypot(mx,mz), sub=Math.max(1,Math.ceil(dist/0.15));
+    var stuck = wkBlocked(W.x, W.z, W.feet);        /* a piece furnished round the walker after it stood there: let it walk out */
     for(var i=0;i<sub;i++){
       var dx=mx/sub, dz=mz/sub, moved=false;
       [[dx,dz],[dx,0],[0,dz]].some(function(m){
         if(!m[0] && !m[1]) return false;
         var nx=W.x+m[0], nz=W.z+m[1];
-        if(wkBlocked(nx, nz, W.feet) || wkBridgeHold(W.x, W.z, nx, nz)) return false;
+        if((!stuck && wkBlocked(nx, nz, W.feet)) || wkBridgeHold(W.x, W.z, nx, nz)) return false;
         W.x=nx; W.z=nz; moved=true; return true;
       });
       if(!moved){ W.bumped=(W.bumped||0)+1; break; }
