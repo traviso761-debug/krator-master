@@ -25751,6 +25751,896 @@ function buildRam(scene,gx,gz,d){reseed(10190+d);KOFF=[gx,0,gz];
  REGISTER({name:'The Ram: the ridge',x:205,y:0,z:0,r:120,h:90});
  EN_SITE.ram={x:gx,z:gz};
  KOFF=[0,0,0];return G;}
+// ================================================================= ALT DOMESTIC (1 of 3): helpers, two houses, one apartment block
+// From-scratch ALTERNATES of the kit's domestic types, drawn from the user's
+// arco1 / arco2 reference sets (targets/alt-domestic/NOTES.md lists the images
+// each one draws on). Nothing here is a reproduction of a named building: each
+// takes one idea from the references and makes it Ancient.
+//
+//   THE UNDULANT HOUSE   (adWave)  a three-storey villa whose stone skin rolls
+//                        in horizontal waves at every floor line, deep-set
+//                        windows, an attic that swells into a roofscape of
+//                        twisted chimney cowls.
+//   THE BRIDGE HOUSE     (adBridge) a chamfered concrete tube lifted on two
+//                        splayed wall-legs, glazed at both ends, with a low
+//                        wing and a terrace behind it.
+//   THE FIN APARTMENTS   (adFins)  a concave twelve-storey slab whose bays are
+//                        divided by tall shark-fin blades that rise past the
+//                        roof, with a balcony tray in every bay.
+//
+// Decay, for every builder in the three 8ak-alt fragments:
+//   0 intact · 1 ruined · 2 RECLAIMED (the ruin, overgrown and then lived in by
+//   a later people: shacks, tarps, gardens, fire at night) · 3 rehabilitated
+//   (standing whole on worn fabric; the scene's HOLES and repairPass do the
+//   rest, as for every kit type).
+// `brk` = the structure has come down in places (1 and 2). `dd` = the fabric is
+// old (1, 2, 3) and drives materials and holes, as everywhere in the kit.
+// Seeds 9850-9899: five per builder, `reseed(98x0+d)` / `reseed(98x5+d)`.
+
+// ---------------------------------------------------------------- helpers
+// Box-projected UVs in world metres / 8, the kit's tile size, so board-formed
+// concrete and panel seams keep their scale on any extruded or boxed shape.
+function adUV(g){if(!g.attributes.normal)g.computeVertexNormals();const P=g.attributes.position,n=g.attributes.normal,uv=new Float32Array(P.count*2);
+ for(let i=0;i<P.count;i++){const ax=Math.abs(n.getX(i)),ay=Math.abs(n.getY(i)),az=Math.abs(n.getZ(i)),x=P.getX(i),y=P.getY(i),z=P.getZ(i);
+  let u,v;if(ay>=ax&&ay>=az){u=x;v=z;}else if(ax>=az){u=z;v=y;}else{u=x;v=y;}uv[i*2]=u/8;uv[i*2+1]=v/8;}
+ g.setAttribute('uv',new THREE.BufferAttribute(uv,2));return g;}
+// A box for a merge list: centre, size, then optional Euler rotation.
+function adBox(acc,cx,cy,cz,sx,sy,sz,ry,rx,rz){const g=new THREE.BoxGeometry(sx,sy,sz);
+ if(rx||rz)g.applyMatrix4(new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(rx||0,ry||0,rz||0)));else if(ry)g.rotateY(ry);
+ g.translate(cx,cy,cz);adUV(g);if(acc)acc.push(g);return g;}
+function adShape(pts){const s=new THREE.Shape();pts.forEach((p,i)=>i?s.lineTo(p[0],p[1]):s.moveTo(p[0],p[1]));return s;}
+// A vertical prism over a plan polygon [[x,z],...] from y0 to y1, capped.
+function adPrism(acc,pts,y0,y1){const g=new THREE.ExtrudeGeometry(adShape(pts.map(p=>[p[0],-p[1]])),{depth:y1-y0,bevelEnabled:false,curveSegments:6});
+ g.rotateX(-Math.PI/2);g.translate(0,y0,0);adUV(g);if(acc)acc.push(g);return g;}
+// A section [[x,y],...] (optionally with holes) extruded along z from z0 to z1.
+function adExtZ(acc,pts,z0,z1,holes){const s=adShape(pts);if(holes)for(const h of holes)s.holes.push(adShape(h));
+ const g=new THREE.ExtrudeGeometry(s,{depth:z1-z0,bevelEnabled:false,curveSegments:6});g.translate(0,0,z0);adUV(g);if(acc)acc.push(g);return g;}
+// Rubble banked against a wall along an arc of a plan: `rf(th)` is the wall's
+// radius at bearing th; blocks are biggest at the foot and thin outward.
+function adRubbleArc(cx,cz,th0,th1,rf,out,n,sMax){for(let i=0;i<n;i++){const th=rr(th0,th1),q=Math.pow(rng(),2),r=rf(th)+q*out,s=rr(.4,sMax)*(1.2-.6*q);
+ kput('rubble',[cx+r*Math.cos(th),s*.35+(1-q)*sMax*.4,cz+r*Math.sin(th)],qEuler(rng()*3,rng()*3,rng()*3),[s*rr(.7,1.5),s*rr(.5,1),s*rr(.7,1.5)],new THREE.Color().setHSL(rr(.05,.09),rr(.1,.3),rr(.32,.55)));}}
+// Rubble along a straight foot, from a to b, spilling `out` metres toward n.
+function adRubbleLine(a,b,nx,nz,out,n,sMax){for(let i=0;i<n;i++){const t=rng(),q=Math.pow(rng(),2),s=rr(.4,sMax)*(1.2-.6*q);
+ kput('rubble',[lerp(a[0],b[0],t)+nx*q*out,s*.35+(1-q)*sMax*.4,lerp(a[1],b[1],t)+nz*q*out],qEuler(rng()*3,rng()*3,rng()*3),[s*rr(.7,1.5),s*rr(.5,1),s*rr(.7,1.5)],new THREE.Color().setHSL(rr(.05,.09),rr(.1,.3),rr(.32,.55)));}}
+// THE RECLAIMED DRESSING (decay 2), the later people's half of the state: it
+// runs on the finished ruin, like repairPass, but where repairPass patches a
+// building that was put back into use, this is a camp inside one that was not.
+// Shacks and gardens stand on the flat surfaces the ruin offers, rain butts and
+// planks lie about, cook fires burn on floors (night only: FIREKIT), and a few
+// figures. `o.fires` is the builder's own list of openings that burn
+// [[x,y,z,nx,nz,w,h],...], because only the builder knows where its windows are.
+// `o.minY` keeps the camp up on the structure (0 lets it use the ground too);
+// `o.ok(p)` lets a builder say which of its flat surfaces are really floors.
+function adReclaim(G,o){o=o||{};const up=upFaces(G,o.up||40,.82),minY=o.minY!=null?o.minY:1.2;
+ for(const f of up){const p=f.p;if(p[1]<minY||(o.ok&&!o.ok(p)))continue;const r=rng();
+  if(r<.30){const w=rr(2.2,5),hh=rr(2,3.2),dp=rr(2.2,4.5),yaw=rng()*TAU;
+   kput('shantyBox',[p[0],p[1]+hh/2,p[2]],qEuler(0,yaw,0),[w,hh,dp],null);
+   kput('shantyRoof',[p[0],p[1]+hh+.2,p[2]],qEuler(rr(.08,.24),yaw,0),[w*1.3,1,dp*1.3],null);
+   if(rng()<.4)kput('spipe',[p[0]+w*.25,p[1]+hh+1.3,p[2]],null,[.25,2.8,.25],null);}
+  else if(r<.52){kput('planter',[p[0],p[1]+.35,p[2]],qEuler(0,rng()*TAU,0),[rr(1.6,4),.7,rr(1,2)],null);
+   for(let k=0;k<3;k++)kput('moss',[p[0]+rr(-1.2,1.2),p[1]+.95,p[2]+rr(-.8,.8)],null,[.8,.55,.8],new THREE.Color().setHSL(rr(.24,.34),.55,rr(.24,.34)));}
+  else if(r<.64)kput('waterButt',[p[0],p[1]+1.1,p[2]],null,[1.1,2.2,1.1],null);
+  else if(r<.78)firePit('adReclaim',p[0],p[1],p[2],rr(.7,1.3));
+  else if(r<.92)kput('plank',[p[0],p[1]+.12,p[2]],qEuler(0,rng()*TAU,0),[rr(2,5),.2,rr(.5,1.2)],null);
+  else kput('dot',[p[0],p[1]+1.6,p[2]],qEuler(0,rng()*TAU,0),[1,1,1],WARM);}
+ for(const w of (o.fires||[])){const n=[w[3],0,w[4]];fireWindow([w[0],w[1],w[2]],n,qFacing(n),w[5],w[6]);}
+ if(o.trees)trees(o.cx||0,o.cz||0,o.trees[0],o.trees[1],o.trees[2]);
+ if(o.treeBox)adTreesBox(...o.treeBox);
+ if(o.figs)figures(o.cx||0,o.cz||0,o.figs,o.spread||12);}
+// A tarp stretched over a break: a sloped patch from a to b (local points),
+// `w` wide, with two timber props under its low edge.
+function adTarp(a,b,w){const dx=b[0]-a[0],dy=b[1]-a[1],dz=b[2]-a[2],L=Math.hypot(dx,dy,dz),c=[(a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2];
+ const t=new THREE.Vector3(dx,dy,dz).normalize(),side=new THREE.Vector3(-dz,0,dx).normalize(),n=new THREE.Vector3().crossVectors(t,side).normalize();
+ if(n.y<0)n.negate();const m=new THREE.Matrix4().makeBasis(side,t,n);
+ kput('patchTarp',c,new THREE.Quaternion().setFromRotationMatrix(m),[w,L,1],null);
+ const lo=a[1]<b[1]?a:b;for(const s of[-1,1])if(lo[1]>1)beam('plank',[lo[0]+side.x*s*w*.4,0,lo[2]+side.z*s*w*.4],[lo[0]+side.x*s*w*.4,lo[1],lo[2]+side.z*s*w*.4],.22,.22);}
+// Trees in a rectangle (local), for sites where a ring round the origin would
+// plant them inside the building.
+function adTreesBox(x0,x1,z0,z1,n){n=biomeN(n);for(let i=0;i<n;i++){const x=rr(x0,x1),z=rr(z0,z1);VEG.tree(x,terrainH(x+KOFF[0],z+KOFF[2]),z,i%3,rr(6,14));}}
+const AD_STATE=['intact','ruined','reclaimed','rehabilitated'];
+
+// ================================================================= THE UNDULANT HOUSE (adWave)
+// A villa of three storeys and an attic on a lobed plan 34 x 23 m. The stone
+// skin is one surface that swells into a rolling ridge at every floor line, so
+// the window heads and sills wave with it; the attic rolls inward into a roof
+// carrying six twisted chimney cowls and two stair heads.
+// RUIN: the east end has come down — skin bitten to the first floor, the roof
+// and top floor gone over that arc, two cowls on the ground, a talus at the foot.
+function buildAltWaveHouse(scene,gx,gz,d){reseed(9850+d);KOFF=[gx,0,gz];
+ const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);
+ const dd=d>0?1:0,brk=d===1||d===2,stone=CONC(d);
+ REGISTER({name:'The Undulant house ('+AD_STATE[d]+')',x:0,z:0,r:22,h:20});
+ const A=17,B=11.5,NF=3,FH=3.6,H=NF*FH+.4,NW=26;
+ const lob=th=>1+.045*Math.cos(5*th+.6);
+ const rho=th=>se(th,2.6)*lob(th);                         // plan scale, unit superellipse
+ const plan=(th,off)=>{const s=rho(th),x=A*s*Math.cos(th),z=B*s*Math.sin(th),L=Math.hypot(x,z)||1;return[x+x/L*off,z+z/L*off];};
+ const wav=(th,f)=>f<=0?0:.55*Math.sin(th*6+f*1.7)+.22*Math.sin(th*11+f);
+ // the collapse: an arc about the east end, jagged
+ const fall=th=>{if(!brk)return 0;let a=((th+Math.PI)%TAU+TAU)%TAU-Math.PI;const w=clamp(1-Math.abs(a+.25)/.95,0,1);return w>0?Math.pow(w,.6):0;};
+ const topAt=th=>H-fall(th)*(7.6+1.6*(fbm(th*3,1.1,9850,2)-.5));
+ const bulge=(th,y)=>{let b=0;for(let f=1;f<=NF;f++){const t=(y-(f*FH-.25+wav(th,f)))/.85;b+=.95*Math.exp(-t*t);}return b;};
+ const skin=[],dark=[];
+ const hold=holeFn(dd,9850,null,2.2);
+ const winAt=(u,y)=>{const th=u*TAU,f=Math.floor(y/FH);if(f>=NF)return false;const fu=u*NW%1;
+  const fy=y-(f*FH+wav(th,f));return f===0?(fu>.2&&fu<.8&&fy<2.9):(fu>.3&&fu<.7&&fy>1.05&&fy<2.95);};
+ skin.push(gridSurface((u,v)=>{const th=u*TAU,y=v*topAt(th),p=plan(th,bulge(th,y));return[p[0],y,p[1]];},NW*6,52,
+  {uS:12,vS:H/8,hole:(u,v)=>{const y=v*topAt(u*TAU);return winAt(u,y)||(hold&&hold(u,y));}}));
+ // the recess behind the windows, and the floors (holed where the east end fell)
+ dark.push(gridSurface((u,v)=>{const th=u*TAU,p=plan(th,-1.5);return[p[0],v*Math.min(topAt(th),H-.4),p[1]];},64,2));
+ for(let f=1;f<=NF;f++)skin.push(gridSurface((u,v)=>{const th=u*TAU,p=plan(th,-.2);return[p[0]*v,f*FH-.05,p[1]*v];},48,3,
+  {hole:(u,v)=>topAt(u*TAU)<f*FH+.6&&v>.18}));
+ // ATTIC AND ROOF: the skin's top rolls inward and up to a crown; gone over the fall
+ const roofP=(th,v)=>{const p=plan(th,.35*(1-v));const k=1-.55*Math.pow(v,.8)-.45*Math.pow(v,3);
+  return[p[0]*k,H+3.3*Math.sin(Math.min(v,1)*Math.PI/2)+.45*Math.sin(th*7+v*3)*(1-v)*Math.min(v*4,1),p[1]*k];};
+ skin.push(gridSurface((u,v)=>roofP(u*TAU,v),104,10,{uS:20,vS:3,hole:(u,v)=>fall(u*TAU)>.05||(hold&&hold(u,v*20))}));
+ // cowls: twisted fluted cones; two fall in the ruin
+ const cowl=(h,r)=>lathe({rFn:y=>r*(.45+.55*Math.pow(clamp(1-y/h,0,1),.7))+.18*Math.sin(y*2.2),H:h,flutes:5,amp:.28,twist:1.3,sharp:1.4,nu:20,nv:8});
+ const cowls=[[.9,.5],[1.5,.55],[2.3,.5],[3.1,.45],[4.0,.5],[5.2,.55]];
+ cowls.forEach((c,i)=>{const p=roofP(c[0],c[1]),h=i%2?3.4:2.8;
+  if(fall(c[0])>.05){const m=mesh(cowl(h,.95),stone,G);m.position.set(p[0]*1.25,0,p[2]*1.25+(i-2)*1.5);m.rotation.set(rr(1.2,1.6),rng()*3,rr(-.4,.4));dropFragment(m,0,.25);return;}
+  const g=cowl(h,.95);g.translate(p[0],p[1]-.3,p[2]);skin.push(g);});
+ // two stair heads with a ball finial (the ball is glass, the ancients' own touch)
+ for(const th of[Math.PI*.62,Math.PI*1.38]){const p=roofP(th,.62);
+  const g=lathe({rFn:y=>1.9*Math.sqrt(clamp(1-Math.pow(y/4.2,2),0,1))+.05,H:4.2,flutes:8,amp:.12,nu:24,nv:8});g.translate(p[0],p[1]-.4,p[2]);skin.push(g);
+  if(fall(th)<.05)kput('finial',[p[0],p[1]+4.1,p[2]],null,.6,null);}
+ meshMerged(skin,stone,G);meshMerged(dark,MAT.dark,G);
+ kput(dd?'slabCR':'slabC',[0,.2,0],null,[A+3,.4,B+3],null);
+ // PANES, recessed in every opening that still has a wall round it; wrought-iron
+ // rails (instance-tinted strut) on the upper floors
+ const fires=[];
+ for(let f=0;f<NF;f++)for(let i=0;i<NW;i++){const u=(i+.5)/NW,th=u*TAU,yc=f*FH+wav(th,f)+(f?2:1.45);if(yc>topAt(th)-.6)continue;
+  const p=plan(th,-1),n=plan(th,3),nx=(n[0]-p[0])/4,nz=(n[1]-p[1])/4,q=qFacing([nx,0,nz]),w=f?1.3:2.2,h=f?1.8:2.8;
+  if(d===0)kput('pane',[p[0],yc,p[1]],q,[w,h,1],null);
+  else if(d===3&&rng()<.6)kput('paneD',[p[0],yc,p[1]],q,[w,h,1],null);
+  if(d===2&&rng()<.22)fires.push([p[0],yc,p[1],nx,nz,w*.9,h*.9]);
+  if(f>0&&i%2===0){const a=plan(th-.05,.85),b=plan(th+.05,.85),yr=f*FH+wav(th,f)+.95;
+   beam('strutR',[a[0],yr,a[1]],[b[0],yr,b[1]],.07,.07,new THREE.Color(0x3a3634));
+   beam('strutR',[a[0],yr-.6,a[1]],[b[0],yr-.6,b[1]],.05,.05,new THREE.Color(0x3a3634));}}
+ // the door: a great arch on the south front
+ {const p=plan(Math.PI/2,.2);kput('archOpen',[p[0],1.9,p[1]+.2],qFacing([0,0,1]),[.55,.42,1],null);}
+ if(brk){adRubbleArc(0,0,-1.25,.75,th=>Math.hypot(...plan(th,0)),9,70,1.5);
+  // the top floor's slab, broken and hinged down into the bitten end
+  kput('slabCR',[A*.62,4.6,-1],qEuler(.05,.3,-.42),[6.5,.35,5],null);}
+ if(dd){mossOnSurface(G,0,0,0,40,1.1);vinesFromLedge(G,0,0,0,26,7,0,0);}
+ if(d===1){scatterMoss(0,0,0,20,34,30,1.4);trees(0,0,24,40,6);}
+ if(d===2){adReclaim(G,{up:60,fires,trees:[24,40,8],figs:7,spread:16,
+   // the camp is on the roof crown and on the floors laid open by the fall
+   ok:p=>(p[1]>H+2.2&&p[1]<H+3.6)||(fall(Math.atan2(p[2]/B,p[0]/A))>.25&&[FH,2*FH].some(y=>Math.abs(p[1]-y+.05)<.08))});
+  // a tarp roof over the bitten east end, from the standing wall down onto planks
+  const tp=th=>{const p=plan(th,-2);return[p[0],topAt(th)+.4,p[1]];};
+  adTarp(tp(-1.12),[A*.5,4.6,-4],8);adTarp(tp(.62),[A*.5,4.6,3],7);
+  kput('planter',[0,.35,B+3.5],null,[10,.7,1.6],null);}
+ if(d===0||d===3)figures(0,B+5,3,6);
+ KOFF=[0,0,0];return G;}
+
+// ================================================================= THE BRIDGE HOUSE (adBridge)
+// A chamfered concrete tube 30 m long, its six-sided section deliberately
+// lopsided, lifted 4.2 m on two wall-legs that splay outward to the ground.
+// Both ends are glazed whole; a ribbon of glass runs the south upper chamfer.
+// A glazed entrance box stands under its belly and a low terraced wing lies
+// behind it. RUIN: the east leg has burst; the tube has pivoted on the west leg
+// and its east end lies on the ground, glass gone, the shell eaten through.
+function buildAltBridgeHouse(scene,gx,gz,d){reseed(9855+d);KOFF=[gx,0,gz];
+ const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);
+ const dd=d>0?1:0,brk=d===1||d===2,conc=CONC(d);
+ REGISTER({name:'The Bridge house ('+AD_STATE[d]+')',x:0,z:-4,r:20,h:12});
+ const L=30,Y0=4.2,SEC=[[-5,0],[5,0],[6.8,2.8],[5.2,6.4],[-4.6,6.4],[-6.6,3.2]];   // (z,y)
+ const PX=-8.7,TH=brk?-Math.atan((Y0-.25)/(L/2-PX)):0;
+ // THE TUBE, in a group pivoted on the west leg's inner top corner
+ const P=new THREE.Group();P.position.set(PX,Y0,0);P.rotation.z=TH;G.add(P);P.updateMatrix();
+ const shell=[],inner=[],hold=holeFn(dd,9855,null,2.5);
+ const tx=u=>-L/2+u*L-PX;
+ for(let e=0;e<6;e++){const a=SEC[e],b=SEC[(e+1)%6],rib=e===2;
+  shell.push(gridSurface((u,v)=>[tx(u),lerp(a[1],b[1],v),lerp(a[0],b[0],v)],30,4,{uS:L/8,vS:1,
+   hole:(u,v)=>(rib&&v>.18&&v<.86&&u>.06&&u<.94&&(u*10%1)>.08)||(hold&&hold(u+e*.17,v*7))||(brk&&u>.84&&fbm(u*9,v*3+e,9856,2)>.42)}));
+  inner.push(gridSurface((u,v)=>[tx(u),lerp(a[1]*.9+.3,b[1]*.9+.3,v),lerp(a[0]*.9,b[0]*.9,v)],6,1));}
+ // end frames, 0.8 m deep, so the tube reads as a solid at its mouths
+ const ring=x0=>{const sh=adShape(SEC.map(p=>[-p[0],p[1]]));sh.holes.push(adShape(SEC.map(p=>[-p[0]*.88,p[1]*.88+.38])));
+  const g=new THREE.ExtrudeGeometry(sh,{depth:.8,bevelEnabled:false});g.rotateY(Math.PI/2);g.translate(x0,0,0);return adUV(g);};
+ shell.push(ring(tx(0)),ring(tx(1)-.8));
+ meshMerged(shell,conc,P);meshMerged(inner,MAT.dark,P);
+ useGroupXF(P);
+ for(const s of[-1,1]){const x0=tx(s<0?0:1)-s*.5;
+  if(d===0||(d===3&&s<0)){const sh=new THREE.ShapeGeometry(adShape(SEC.map(p=>[-p[0]*.87,p[1]*.87+.4])));sh.rotateY(Math.PI/2);mesh(sh,MAT.glass,P,x0,0,0);}
+  if(!(brk&&s>0))for(let k=-3;k<=3;k++)kput(dd?'strutR':'strutW',[x0,3.3,k*1.4],null,[.14,5.6,.14],null);}
+ if(d===0)mesh(gridSurface((u,v)=>[tx(.06+u*.88),lerp(3.1,6.0,v),lerp(6.4,4.9,v)],1,1),MAT.glass,P);
+ // the floor plate inside, and lit (or dead) cells along the ribbon
+ kput(dd?'boxCR':'boxC',[tx(.5),.7,0],null,[L-1.6,.3,9.6],null);
+ for(let i=1;i<10;i++){if(brk&&i>8)continue;kput(d===0?'cell':'cellD',[tx(i/10),4.3,4.6],qFacing([0,.4,1]),[2.2,1.4,1],d===0&&i%3?WARM:DEAD);}
+ endGroupXF();
+ // LEGS: trapezoid walls splayed outward to the ground; the east one burst in the ruin
+ const solid=[];
+ for(const s of[-1,1]){const hgt=brk&&s>0?1.1:Y0,t=hgt/Y0;
+  const pts=[[s*8.6,0],[s*12.6,0],[s*lerp(12.6,10.2,t),hgt],[s*lerp(8.6,7.2,t),hgt]];
+  adExtZ(solid,s<0?pts.slice().reverse():pts,-4.2,4.2);}
+ if(brk){const m=mesh(adExtZ(null,[[0,0],[3,0],[2.2,3.1],[-.8,3.1]],-4,4),MAT.concreteR,G);m.position.set(15,0,7.5);m.rotation.set(0,.5,1.35);dropFragment(m,0,.3);}
+ // THE WING behind: a long low block, chamfered at its front top edge, with a roof terrace
+ {const sec=[[-17,0],[-7,0],[-7,3.2],[-8.2,4.4],[-17,4.4]];
+  const sh=adShape(sec.map(p=>[-p[0],p[1]]));const g=new THREE.ExtrudeGeometry(sh,{depth:22,bevelEnabled:false});
+  g.rotateY(Math.PI/2);g.translate(-16,0,0);solid.push(adUV(g));}
+ meshMerged(solid,conc,G);
+ for(let i=0;i<9;i++){const x=-14.5+i*2.3;kput(d===0?'cell':'cellD',[x,1.9,-6.85],null,[1.8,1.5,1],d===0&&i%2?WARM:DEAD);}
+ for(let i=0;i<12;i++)kput(dd?'strutR':'strutW',[-15.5+i*1.85,5,-8.4],null,[.08,1.1,.08],null);
+ beam(dd?'strutR':'strutW',[-15.6,5.5,-8.4],[4.8,5.5,-8.4],.1,.1);
+ // the glazed entrance box under the belly (a dark box with a broken face in the ruin)
+ if(!brk){for(const[x,z,ry,w]of[[0,1.6,0,6],[0,-1.6,0,6],[-3,0,Math.PI/2,3.2],[3,0,Math.PI/2,3.2]])
+  kput(d===0?'pane':'paneD',[x,1.6,z],qEuler(0,ry,0),[w,3.2,1],null);
+  kput(dd?'boxCR':'boxC',[0,3.4,0],null,[6.4,.3,3.6],null);}
+ else kput('boxD',[0,1.2,0],qEuler(0,.1,.06),[6,2.4,3.2],null);
+ kput(dd?'boxCR':'boxC',[-1,.12,-3],null,[36,.24,26],null);
+ if(brk){adRubbleLine([9,-4],[15,4],1,.2,6,40,1.4);adRubbleLine([12,4],[16,-3],0,1,5,20,1.1);}
+ if(dd){mossOnSurface(G,0,0,0,26,1);vinesFromLedge(G,0,0,0,14,4,0,0);}
+ if(d===1){scatterMoss(0,0,0,12,28,24,1.4);trees(0,0,22,36,6);}
+ if(d===2){
+  // the later people walled the space under the tube with salvage and live in it
+  for(const[x,z,ry,w]of[[-1.5,4.3,0,10],[-1.5,-4.3,0,10],[-6.8,0,Math.PI/2,8.4]])kput('patchSheet',[x,1.3,z],qEuler(0,ry,rr(-.05,.05)),[w,2.6,1],null);
+  kput('shantyRoof',[-1.5,2.75,0],qEuler(.05,0,0),[11,1,9],null);
+  adTarp([13,1.6,0],[19,0,0],8);
+  for(let i=0;i<5;i++)kput('planter',[-14+i*3.4,.35,9],null,[2.6,.7,4],null);
+  for(let i=0;i<15;i++)kput('moss',[-14+rr(0,14),.95,9+rr(-1.6,1.6)],null,[.8,.55,.8],new THREE.Color().setHSL(rr(.24,.34),.55,.3));
+  const fires=[];for(let i=1;i<8;i++)if(rng()<.5){const v=new THREE.Vector3(tx(i/10),4.3,4.9).applyMatrix4(P.matrix);fires.push([v.x,v.y,v.z,0,1,1.9,1.2]);}
+  fires.push([-6.9,1.5,2,-1,0,1.2,1.6]);
+  adReclaim(G,{up:16,fires,trees:[22,36,7],figs:6,spread:12,minY:.6});
+  firePit('adReclaim',2,.1,6,1.1);}
+ if(d===0||d===3)figures(0,8,3,5);
+ KOFF=[0,0,0];return G;}
+
+// ================================================================= THE FIN APARTMENTS (adFins)
+// A twelve-storey slab 14 m deep on a shallow arc (radius 150 m, about 120 m of
+// chord), its concave face to the south. Fifteen shark-fin blades of white
+// metal divide that face into bays: each is 7.5 m deep at the ground and tapers
+// up the facade, runs free past the roof and ends in a tip leaning outward at
+// 50 m. Every bay has a balcony tray on every storey, its soffit warm-tinted.
+// RUIN: the east third has come down to about half height in a jagged bite —
+// floors exposed in section, fins snapped (two lie on the forecourt), trays
+// left hanging at the break, talus on both faces.
+function buildAltFinApartments(scene,gx,gz,d){reseed(9860+d);KOFF=[gx,0,gz];
+ const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);
+ const dd=d>0?1:0,brk=d===1||d===2,conc=CONC(d),metal=SHELL(d);
+ const Rc=150,CZ=150,DP=14,NS=12,FH=3.2,H=NS*FH,PHI=.4,NB=14,HT=50;
+ REGISTER({name:'The Fin apartments ('+AD_STATE[d]+')',x:0,z:-4,r:66,h:52});
+ const P=(ph,r)=>[r*Math.sin(ph),CZ-r*Math.cos(ph)];          // r=Rc is the south face
+ const phU=u=>-PHI+2*PHI*u;
+ const fall=ph=>{if(!brk)return 0;const t=clamp((ph-.06)/.16,0,1);return t*t*(3-2*t);};
+ const topY=ph=>H-fall(ph)*H*(.5+.12*(fbm(ph*14,2.2,9860,2)-.5));
+ const hold=holeFn(dd,9860,null,1.6),body=[],win=[];
+ const cut=(u,y)=>y>topY(phU(u))||(hold&&hold(u,y));
+ // faces: the south (window strips between spandrels) and the north (punched)
+ const face=(r,winF,nu)=>gridSurface((u,v)=>{const p=P(phU(u),r);return[p[0],v*(H+1.2),p[1]];},nu,NS*4,
+  {uS:2*PHI*r/8,vS:H/8,hole:(u,v)=>{const y=v*(H+1.2);return cut(u,y)||(y<H&&winF(u,y));}});
+ body.push(face(Rc,(u,y)=>{const fy=y%FH;return fy>.95&&fy<2.85;},NB*6));
+ body.push(face(Rc+DP,(u,y)=>{const fy=y%FH,fu=u*NB*3%1;return fy>1.1&&fy<2.6&&fu>.3&&fu<.75;},NB*12));
+ for(const r of[Rc+.7,Rc+DP-.7])win.push(gridSurface((u,v)=>{const p=P(phU(u),r);return[p[0],v*H,p[1]];},NB*2,NS,{hole:(u,v)=>v*H>topY(phU(u))-.3}));
+ // the two end walls, the roof (with a parapet), and a plate at every storey
+ for(const ph of[-PHI,PHI])body.push(gridSurface((u,v)=>{const p=P(ph,Rc+u*DP);return[p[0],v*(H+1.2),p[1]];},6,NS*2,
+  {uS:DP/8,vS:H/8,hole:(u,v)=>v*(H+1.2)>topY(ph)||(hold&&hold(u*.3+ph,v*H))}));
+ for(let f=1;f<=NS;f++)body.push(gridSurface((u,v)=>{const p=P(phU(u),Rc+.2+v*(DP-.4));return[p[0],f*FH-.05,p[1]];},NB*3,1,
+  {hole:(u,v)=>f*FH>topY(phU(u))+.6}));
+ // ground-floor lobby recess and plinth
+ kput(dd?'boxCR':'boxC',[0,.25,6],qEuler(0,0,0),[2*Rc*Math.sin(PHI)+12,.5,40],null);
+ // FINS
+ const finGeo=()=>{const pts=[[0,0]];const lean=y=>2.6*Math.pow(y/HT,4);
+  for(let k=0;k<=14;k++){const y=HT*k/14;pts.push([1.1+6.4*Math.pow(1-y/HT,1.5)+lean(y),y]);}
+  for(let k=5;k>=0;k--){const y=H+(HT-H)*k/6;pts.push([(1.1+lean(HT))*Math.pow((y-H)/(HT-H),1.6),y]);}
+  const g=new THREE.ExtrudeGeometry(adShape(pts),{depth:.6,bevelEnabled:false,curveSegments:2});g.translate(0,0,-.3);return g;};
+ const fins=[],finCut=[];
+ for(let i=0;i<=NB;i++){const ph=-PHI+2*PHI*i/NB,p=P(ph,Rc),g=finGeo();
+  const X=new THREE.Vector3(-Math.sin(ph),0,Math.cos(ph)),Y=new THREE.Vector3(0,1,0),Z=new THREE.Vector3(-Math.cos(ph),0,-Math.sin(ph));
+  const M=new THREE.Matrix4().makeBasis(X,Y,Z).setPosition(p[0],0,p[1]);
+  const t=topY(ph);
+  if(t<H-1){// snapped: keep the stump below the break, lay the rest on the forecourt
+   const pos=g.attributes.position;for(let k=0;k<pos.count;k++)if(pos.getY(k)>t+2)pos.setY(k,t+2+(pos.getY(k)-t)*.02);
+   g.computeVertexNormals();
+   if(i%3===1){const m=mesh(adUV(finGeo()),metal,G);m.position.set(p[0]+18-i,0,p[1]+26+i*.8);m.rotation.set(-Math.PI/2+.08,.2+i*.2,.04);dropFragment(m,0,.2);}}
+  g.applyMatrix4(M);fins.push(adUV(g));}
+ meshMerged(body,conc,G);meshMerged(fins,metal,G);meshMerged(win,WIN(d),G);
+ // BALCONIES: a tray and a parapet in every bay on every storey (hanging at the break)
+ const soff=new THREE.Color(dd?0x9a7a62:0xf0c8a0);
+ for(let b=0;b<NB;b++){const ph=-PHI+2*PHI*(b+.5)/NB,t=topY(ph),q=qFacing([-Math.sin(ph),0,Math.cos(ph)]),bw=2*PHI*Rc/NB-.8;
+  for(let f=1;f<=NS;f++){const y=f*FH-.12;if(y>t+.3)continue;
+   const hang=brk&&y>t-FH&&t<H-1;const p=P(ph,Rc-1.25),pp=P(ph,Rc-2.45);
+   const qq=hang?q.clone().multiply(qEuler(rr(.25,.6),0,rr(-.2,.2))):q;
+   kput(dd?'boxCR':'boxC',[p[0],y-(hang?.9:0),p[1]],qq,[bw,.28,2.5],soff);
+   if(!hang)kput(dd?'boxCR':'boxC',[pp[0],y+.6,pp[1]],q,[bw,1.05,.16],null);}}
+ // roof plant rooms
+ for(const ph of[-.28,-.05,.2])if(topY(ph)>=H-.1){const p=P(ph,Rc+DP/2);kput(dd?'boxCR':'boxC',[p[0],H+1.6,p[1]],qFacing([-Math.sin(ph),0,Math.cos(ph)]),[9,3.2,7],null);}
+ // lit windows behind the strips (intact), firelight territories (reclaimed)
+ const fm=d===2?fireMask('adFins',NB,NS,9862,2):null,fires=[];
+ for(let b=0;b<NB;b++)for(let f=0;f<NS;f++){const ph=-PHI+2*PHI*(b+.5)/NB;if(f*FH+2>topY(ph))continue;const p=P(ph,Rc+.45);
+  if(d===0&&rng()<.3)kput('cell',[p[0],f*FH+1.9,p[1]],qFacing([-Math.sin(ph),0,Math.cos(ph)]),[2.4,1.4,1],rng()<.5?WARM:CYAN);
+  if(fm&&fm(b,f))fires.push([p[0],f*FH+1.9,p[1],-Math.sin(ph),Math.cos(ph),3.2,1.5]);}
+ if(brk){const a=P(.07,Rc-3),b=P(PHI,Rc-3),c=P(.07,Rc+DP+3),e=P(PHI,Rc+DP+3);
+  adRubbleLine(a,b,-Math.sin(.25),Math.cos(.25),16,150,3);adRubbleLine(c,e,Math.sin(.25),-Math.cos(.25),12,90,2.6);}
+ if(dd){mossOnSurface(G,0,0,0,90,1.6);vinesFromLedge(G,0,0,0,50,14,0,CZ);stainsFromLedge(G,0,0,0,40,16,0,CZ);}
+ if(d===1){scatterMoss(0,0,20,20,70,50,2);adTreesBox(-75,75,24,80,14);adTreesBox(-75,75,-50,-28,8);}
+ if(d===2){
+  // laundry strung across balconies, and tarps hung off the trays at the break
+  for(let k=0;k<26;k++){const b=(rng()*NB)|0,f=1+((rng()*NS)|0),ph=-PHI+2*PHI*(b+.5)/NB;if(f*FH+1>topY(ph))continue;
+   const a=P(ph-.012,Rc-2.3),c=P(ph+.012,Rc-2.3),y=f*FH+1.7;beam('strutR',[a[0],y,a[1]],[c[0],y,c[1]],.04,.04);
+   kput('patchTarp',[(a[0]+c[0])/2,y-.5,(a[1]+c[1])/2],qFacing([-Math.sin(ph),0,Math.cos(ph)]),[rr(1,2.4),rr(.6,1),1],new THREE.Color().setHSL(rng(),.45,.6));}
+  adReclaim(G,{up:70,fires,treeBox:[-75,75,26,80,16],figs:14,spread:30,cz:40,
+   ok:p=>Math.abs(p[1]-(H+.0))<.3||(p[1]>2&&Math.abs((p[1]+.05)%FH)<.1)});}
+ if(d===0||d===3)figures(0,30,8,30);
+ KOFF=[0,0,0];return G;}
+// ================================================================= ALT DOMESTIC (2 of 3): amphitheater, fuel station, radar, dish
+// Same conventions as 8ak-alt-a-houses.js (decay 0 intact, 1 ruined, 2
+// reclaimed, 3 rehabilitated; `brk` = parts have come down; `dd` = old fabric).
+//
+//   THE GARDEN AMPHITHEATER (adAmph)  a lawn bowl raised in an earth berm, its
+//        slope crossed by sinuous concrete seat ribbons, a white bandshell over
+//        the stage, and a stepped brick gallery wrapping the north rim with a
+//        planter at every terrace edge.
+//   THE TRESTLE FUEL STATION (adFuel) a lens-shaped canopy 50 m across held
+//        20 m up on three raked wall-legs round a glazed lift core.
+//   THE ROTOR RADAR TOWER (adRadar)   fourteen cruciform blocks stacked with a
+//        quarter-turn twist between them, a cantilevered T-head carrying the
+//        radome and the scanner, in a court of crenellated walls.
+//   THE FLOWER DISH (adDish)          four thick concrete petals opening out of
+//        a round plinth, cupping a ribbed sphere that carries the dish.
+
+// ---------------------------------------------------------------- helpers
+// A loft through closed rings of equal count [[x,y,z],...], flat-shaded, with
+// fan caps on the first and last ring (rings must be convex for the caps).
+function adLoft(acc,rings,noCaps){const P=[];const tri=(a,b,c)=>P.push(a[0],a[1],a[2],b[0],b[1],b[2],c[0],c[1],c[2]);
+ for(let k=0;k+1<rings.length;k++){const A=rings[k],B=rings[k+1],n=A.length;
+  for(let i=0;i<n;i++){const j=(i+1)%n;tri(A[i],B[i],B[j]);tri(A[i],B[j],A[j]);}}
+ if(!noCaps)for(const R of[rings[0],rings[rings.length-1]])for(let i=1;i+1<R.length;i++)tri(R[0],R[i],R[i+1]);
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(P,3));g.computeVertexNormals();adUV(g);
+ if(acc)acc.push(g);return g;}
+// A solid of revolution through a profile polyline [[r,y],...] (smooth shaded).
+function adRev(prof,nu,hole){const L=[0];for(let i=1;i<prof.length;i++)L.push(L[i-1]+Math.hypot(prof[i][0]-prof[i-1][0],prof[i][1]-prof[i-1][1]));
+ const T=L[L.length-1];const at=v=>{const s=v*T;let i=1;while(i<L.length-1&&L[i]<s)i++;const t=(s-L[i-1])/((L[i]-L[i-1])||1);
+  return[lerp(prof[i-1][0],prof[i][0],t),lerp(prof[i-1][1],prof[i][1],t)];};
+ return gridSurface((u,v)=>{const p=at(v),th=u*TAU;return[p[0]*Math.cos(th),p[1],p[0]*Math.sin(th)];},nu,Math.max(4,prof.length*3),
+  {uS:prof[0][0]*TAU/8||4,vS:T/8,hole});}
+// An inclined slab between a bottom and a top centre-line, each a [x,y,z] with
+// a half-width along `side` and a thickness along the other horizontal.
+function adLeg(acc,b,t,wb,wt,thk,ang){const c=Math.cos(ang),s=Math.sin(ang),q=[-s,c];   // side dir (perp. to ang)
+ const ring=(p,w)=>[[p[0]+q[0]*w+c*thk/2,p[1],p[2]+q[1]*w+s*thk/2],[p[0]-q[0]*w+c*thk/2,p[1],p[2]-q[1]*w+s*thk/2],
+  [p[0]-q[0]*w-c*thk/2,p[1],p[2]-q[1]*w-s*thk/2],[p[0]+q[0]*w-c*thk/2,p[1],p[2]+q[1]*w-s*thk/2]];
+ return adLoft(acc,[ring(b,wb),ring(t,wt)]);}
+
+// ================================================================= THE GARDEN AMPHITHEATER (adAmph)
+// No stepped stone cavea: the audience sits on a LAWN. An earth berm rises in a
+// crescent round the north of a stage, its slope crossed by ten sinuous
+// concrete seat ribbons that wander across the contours rather than follow
+// them. A white bandshell stands behind the stage. Along the north rim a brick
+// gallery steps back in three terraces, each edged with a planter whose growth
+// hangs over the terrace below. RUIN: the west wing of the gallery has lost its
+// two upper terraces down the lawn, the bandshell's east half has fallen onto
+// the stage, the ribbons are broken and the bowl is taken by trees.
+function buildAltAmphitheater(scene,gx,gz,d){reseed(9865+d);KOFF=[gx,0,gz];
+ const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);
+ const dd=d>0?1:0,brk=d===1||d===2,conc=CONC(d),white=SHELL(d);
+ REGISTER({name:'The Garden amphitheater ('+AD_STATE[d]+')',x:0,z:-20,r:100,h:28});
+ const SZ=30,EX=1.25,RIM=11.9;
+ const PT=(a,r)=>[EX*r*Math.cos(a),SZ-r*Math.sin(a)];              // a = pi/2 is due north of the stage
+ const wN=a=>{const t=clamp((Math.sin(a)+.1)/.55,0,1);return t*t*(3-2*t);};
+ const slope=r=>r<14?0:r<62?(r-14)/48*RIM:r<72?RIM:r<106?RIM*Math.pow(1-(r-72)/34,1.4):0;
+ const hf=(a,r)=>.4+slope(r)*wN(a);
+ // THE LAWN: one polar height field round the stage
+ // it runs out to the berm's foot on the north and only 46 m south of the stage,
+ // and its last ring comes down to the ground so it has no lip. Textured turf:
+ // an untextured green goes white at the grazing angles a lawn is seen at.
+ const rMax=a=>lerp(46,106,wN(a));
+ mesh(gridSurface((u,v)=>{const a=u*TAU,r=v*rMax(a),p=PT(a,r);return[p[0],v>.97?.02:hf(a,r),p[1]];},96,44,{uS:80,vS:13}),dd?MAT.turfR:MAT.turf,G);
+ const solid=[],brick=[],shell=[],dark=[];
+ const hold=holeFn(dd,9865,null,1.5);
+ // SEAT RIBBONS: a riser and a tread, on a wobbling radius, base on the lawn
+ for(let i=0;i<10;i++){const r0=18+4.4*i,a0=.3+.03*i,a1=Math.PI-.3-.03*i;
+  const rad=a=>r0+2.6*Math.sin(3*a+i*.9);
+  const gone=(u,v)=>brk&&fbm(u*6+i,v,9866,2)<.38;
+  solid.push(gridSurface((u,v)=>{const a=lerp(a0,a1,u),r=rad(a),p=PT(a,r);return[p[0],hf(a,r)+v*.55-.15,p[1]];},64,1,{uS:r0*2.6/8,vS:.1,hole:gone}));
+  solid.push(gridSurface((u,v)=>{const a=lerp(a0,a1,u),r=rad(a)+v*.5,p=PT(a,r);return[p[0],hf(a,rad(a))+.4,p[1]];},64,1,{uS:r0*2.6/8,vS:.1,hole:gone}));}
+ // THE STAGE and THE BANDSHELL (a stretched quarter-sphere opening north)
+ kput(dd?'slabCR':'slabC',[0,.55,SZ],null,[14,.5,12],null);
+ const BC=[0,.6,SZ+4],BR=13;
+ const shellGone=(u,v)=>brk&&u<.5&&v>.25+.2*fbm(u*8,1,9867,2);
+ shell.push(gridSurface((u,v)=>{const al=u*Math.PI,ph=v*Math.PI/2;return[BC[0]+1.3*BR*Math.cos(ph)*Math.cos(al),BC[1]+BR*Math.sin(ph),BC[2]+BR*Math.cos(ph)*Math.sin(al)];},28,10,
+  {uS:6,vS:3,hole:(u,v)=>shellGone(u,v)||(hold&&hold(u,v*12))}));
+ for(let k=1;k<8;k++){const al=k/8*Math.PI;if(brk&&k<4)continue;
+  for(let j=0;j<4;j++){const p0=j/4*Math.PI/2,p1=(j+1)/4*Math.PI/2,P=ph=>[BC[0]+1.3*(BR+.3)*Math.cos(ph)*Math.cos(al),BC[1]+(BR+.3)*Math.sin(ph),BC[2]+(BR+.3)*Math.cos(ph)*Math.sin(al)];
+   beam(dd?'strutR':'strutW',P(p0),P(p1),.5,.7);}}
+ if(brk){const m=mesh(gridSurface((u,v)=>{const al=u*Math.PI*.5,ph=(.3+v*.7)*Math.PI/2;return[1.3*BR*Math.cos(ph)*Math.cos(al),BR*Math.sin(ph),BR*Math.cos(ph)*Math.sin(al)];},12,6,{uS:3,vS:2}),white,G);
+  m.position.set(8,0,SZ-2);m.rotation.set(.9,.4,.5);dropFragment(m,.8,.2);}
+ // THE GALLERY: three brick terraces stepping back along the north rim
+ const GA0=.36,GA1=Math.PI-.36,RB=90,TY=k=>RIM+4.2*k;
+ const fallW=(a,k)=>brk&&k>=1&&a>2.05+.12*(fbm(a*5,k,9868,2)-.5)*2;   // the west wing's upper terraces
+ for(let k=0;k<3;k++){const rf=68+6*k,rn=k<2?68+6*(k+1):RB,y0=TY(k),y1=TY(k+1);
+  const win=(u,y)=>{const fu=u*48%1,fy=(y-y0)/(y1-y0);return fu>.3&&fu<.72&&fy>.28&&fy<.78;};
+  brick.push(gridSurface((u,v)=>{const a=lerp(GA0,GA1,u),p=PT(a,rf);return[p[0],lerp(y0,y1,v),p[1]];},48*4,8,
+   {uS:rf*2.4/8,vS:.6,hole:(u,v)=>win(u,lerp(y0,y1,v))||fallW(lerp(GA0,GA1,u),k)||(hold&&hold(u,v*4+k*9))}));
+  dark.push(gridSurface((u,v)=>{const a=lerp(GA0,GA1,u),p=PT(a,rf+1.6);return[p[0],lerp(y0,y1,v),p[1]];},64,1,{hole:u=>fallW(lerp(GA0,GA1,u),k)}));
+  solid.push(gridSurface((u,v)=>{const a=lerp(GA0,GA1,u),p=PT(a,lerp(rf,rn,v));return[p[0],y1,p[1]];},96,2,
+   {uS:rf*2.4/8,vS:(rn-rf)/8,hole:u=>fallW(lerp(GA0,GA1,u),k)||(k<2&&fallW(lerp(GA0,GA1,u),k+1)&&false)}));
+  // a planter at every terrace edge, its growth hanging over the facade below
+  for(let i=0;i<46;i++){const a=lerp(GA0,GA1,(i+.5)/46);if(fallW(a,k))continue;const p=PT(a,rf+.9),q=qFacing([Math.cos(a)*EX,0,-Math.sin(a)]);
+   kput('planter',[p[0],y1+.45,p[1]],q,[EX*rf*(GA1-GA0)/46*.95,.9,1.2],new THREE.Color(dd?0x6a5a4a:0xb08a6a));
+   kput('moss',[p[0],y1+1,p[1]],qEuler(0,rng()*3,0),[2.2,.8,1],new THREE.Color().setHSL(rr(.24,.32),.5,dd?.16:.3));
+   if(i%2)kput('vine',[PT(a,rf-.1)[0],y1+.6,PT(a,rf-.1)[1]],null,[1.6,rr(1.5,y1-y0-.4),1.6],null);}}
+ // the back wall and the two end walls close the gallery
+ brick.push(gridSurface((u,v)=>{const a=lerp(GA0,GA1,u),p=PT(a,RB);return[p[0],v*TY(3),p[1]];},64*3,10,
+  {uS:RB*2.4/8,vS:TY(3)/8,hole:(u,v)=>{const y=v*TY(3);return(fallW(lerp(GA0,GA1,u),1)&&y>TY(1)+.2)||(u*64%1>.35&&u*64%1<.65&&(y%4.2)>1.6&&(y%4.2)<3.2&&y>2)||(hold&&hold(u,y));}}));
+ for(const a of[GA0,GA1])brick.push(gridSurface((u,v)=>{const p=PT(a,lerp(66,RB,u));return[p[0],v*(a>2&&brk?TY(1):TY(3)),p[1]];},8,6,{uS:3,vS:3}));
+ meshMerged(solid,conc,G);meshMerged(brick,MAT.brick,G);meshMerged(shell,white,G);meshMerged(dark,MAT.dark,G);
+ if(brk){// the fallen terraces lie down the lawn
+  for(let i=0;i<70;i++){const a=rr(2.1,GA1),r=rr(50,70),p=PT(a,r),s=rr(.6,2.2);
+   kput('rubble',[p[0],hf(a,r)+s*.3,p[1]],qEuler(rng()*3,rng()*3,rng()*3),[s*1.4,s*.7,s],new THREE.Color().setHSL(.04,.35,rr(.3,.45)));}
+  for(let i=0;i<8;i++){const a=rr(2.15,2.7),r=rr(56,66),p=PT(a,r);kput('brick',[p[0],hf(a,r)+.6,p[1]],qEuler(rr(-.4,.4),rng()*3,rr(-.3,.3)),[rr(4,9),1.2,rr(2,4)],null);}}
+ if(dd){mossOnSurface(G,0,0,0,60,1.4);stainsFromLedge(G,0,0,0,30,5,0,SZ);}
+ if(brk){for(let i=0;i<biomeN(26);i++){const a=rr(.3,Math.PI-.3),r=rr(16,64),p=PT(a,r);VEG.tree(p[0],hf(a,r),p[1],i%3,rr(6,13));}}
+ if(d===2){
+  // a market on the stage, gardens on the terraces, crops on the forecourt
+  for(let i=0;i<6;i++){const x=-10+i*4,z=SZ+rr(-4,4);kput('shantyRoof',[x,3.2,z],qEuler(rr(-.1,.1),rr(-.2,.2),0),[3.6,1,3],new THREE.Color().setHSL(rng(),.4,.6));
+   for(const s of[-1,1])kput('plank',[x+s*1.6,1.9,z],null,[.15,2.6,.15],null);}
+  for(let i=0;i<9;i++)kput('planter',[-40+i*10,.35,SZ+30],null,[7,.6,9],null);
+  for(let i=0;i<40;i++)kput('moss',[rr(-44,48),.8,SZ+30+rr(-4,4)],null,[.8,.5,.8],new THREE.Color().setHSL(rr(.22,.32),.55,.32));
+  const fires=[];for(let k=0;k<3;k++)for(let i=0;i<48;i++){const a=lerp(GA0,GA1,(i+.5)/48);if(fallW(a,k)||rng()>.16)continue;const p=PT(a,68+6*k+.2);
+   fires.push([p[0],TY(k)+2.2,p[1],-Math.cos(a),Math.sin(a),1.6,1.6]);}
+  adReclaim(G,{up:50,fires,figs:22,spread:30,cz:SZ,ok:p=>p[1]>RIM+1&&Math.abs((p[1]-RIM)%4.2)<.1});}
+ if(d===0||d===3)figures(0,SZ+22,16,24);
+ KOFF=[0,0,0];return G;}
+
+// ================================================================= THE TRESTLE FUEL STATION (adFuel)
+// A lens 50 m across — flat soffit, rolled rim with a band of round windows, a
+// low dome — held 19 m up on three raked wall-legs that land 34 m out, round a
+// glazed lift core. Eight pumps stand in a ring under it; a glass kiosk wraps
+// the foot of the core; two capsule tanks lie on cradles to the north.
+// RUIN: the south-east leg has buckled at a third of its height; the lens has
+// swung down on that side about the line of the other two leg heads and lies
+// tilted, its low rim down on the broken leg; the core is a stump.
+function buildAltFuelStation(scene,gx,gz,d){reseed(9870+d);KOFF=[gx,0,gz];
+ const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);
+ const dd=d>0?1:0,brk=d===1||d===2,conc=CONC(d),skin=SHELL(d);
+ REGISTER({name:'The Trestle fuel station ('+AD_STATE[d]+')',x:0,z:0,r:40,h:26});
+ const CY=19,RD=25,A0=.75,legA=i=>A0+i*TAU/3,LT=i=>[17*Math.cos(legA(i)),CY-.4,17*Math.sin(legA(i))],LB=i=>[34*Math.cos(legA(i)),0,34*Math.sin(legA(i))];
+ kput(dd?'slabCR':'slabC',[0,.15,0],null,[42,.3,42],null);
+ // LEGS (leg 0 is the one that buckles)
+ const solid=[];
+ for(let i=0;i<3;i++){const b=LB(i),t=LT(i);
+  if(brk&&i===0){const m=[lerp(b[0],t[0],.34),lerp(b[1],t[1],.34)+.6,lerp(b[2],t[2],.34)];adLeg(solid,b,m,4,3.4,1.6,legA(i));
+   const g=adLeg(null,m,t,3.4,1.8,1.6,legA(i));g.translate(-m[0],-m[1],-m[2]);const fm=mesh(g,MAT.concreteR,G);
+   fm.position.set(b[0]*1.15,0,b[2]*1.15+6);fm.rotation.set(1.2,legA(i)+.4,.3);dropFragment(fm,0,.4);}
+  else adLeg(solid,b,t,4,1.8,1.6,legA(i));}
+ // THE CORE: concrete shaft in a glass drum (a broken stump in the ruin)
+ const coreH=brk?9:CY-.6;
+ solid.push(lathe({rFn:()=>2.6,H:coreH,nu:20,nv:3,cut:brk?coreH:null,jag:brk?1.6:0,seed:9871}));
+ if(d===0)mesh(lathe({rFn:()=>3.4,H:CY-.6,nu:24,nv:1}),MAT.glass,G);
+ // the kiosk: a low glass drum round the core's foot
+ if(!brk){mesh(lathe({rFn:()=>8,H:3.6,nu:32,nv:1}),d===0?MAT.glass:MAT.dark,G);kput(dd?'slabCR':'slabC',[0,3.75,0],null,[8.6,.3,8.6],null);}
+ else{solid.push(lathe({rFn:()=>8,H:1,nu:32,nv:1}));kput('shantyBox',[0,1.3,0],qEuler(0,.3,0),[9,2.6,6],null);}
+ // THE LENS, in a group that swings about the two good leg heads in the ruin
+ const D=new THREE.Group();G.add(D);
+ if(brk){const t1=LT(1),t2=LT(2),M=new THREE.Vector3((t1[0]+t2[0])/2,(t1[1]+t2[1])/2,(t1[2]+t2[2])/2);
+  const ax=new THREE.Vector3(t2[0]-t1[0],0,t2[2]-t1[2]).normalize();
+  const tilt=s=>{const q=new THREE.Quaternion().setFromAxisAngle(ax,s*.45);const rim=new THREE.Vector3(RD*Math.cos(legA(0)),CY,RD*Math.sin(legA(0))).sub(M).applyQuaternion(q).add(M);return{q,y:rim.y};};
+  const T=tilt(1).y<tilt(-1).y?tilt(1):tilt(-1);D.quaternion.copy(T.q);D.position.copy(M.clone().sub(M.clone().applyQuaternion(T.q)));}
+ D.updateMatrix();
+ const hold=holeFn(dd,9872,null,1.6);
+ const lens=[adRev([[0,CY-.6],[23,CY-.8],[RD,CY+.6],[RD-.6,CY+2.3],[12,CY+3.7],[0,CY+4.2]],96,hold?(u,v)=>v>.55&&hold(u,v*20):null)];
+ meshMerged(lens,skin,D);
+ useGroupXF(D);
+ for(let i=0;i<40;i++){const a=i/40*TAU;kput(d===0?'ovalI':'ovalD',[(RD+.1)*Math.cos(a),CY+.6,(RD+.1)*Math.sin(a)],qFacing([Math.cos(a),0,Math.sin(a)]),[.7,.7,1],null);}
+ for(let i=0;i<24;i++){const a=(i+.5)/24*TAU;kput('strip',[21*Math.cos(a),CY-1.05,21*Math.sin(a)],qEuler(0,-a+Math.PI/2,0),[5,1,1],d===0||(d===3&&i%3)?CYAN:DEAD);}
+ // a railing round the dome's shoulder
+ for(let i=0;i<36;i++){const a=i/36*TAU;kput(dd?'strutR':'strutW',[18*Math.cos(a),CY+3.6,18*Math.sin(a)],null,[.12,1.2,.12],null);}
+ endGroupXF();
+ // PUMPS in a ring under the lens
+ for(let i=0;i<8;i++){const a=(i+.5)/8*TAU,x=12*Math.cos(a),z=12*Math.sin(a),q=qEuler(0,-a,0);if(brk&&i===0)continue;
+  kput(dd?'boxCR':'boxC',[x,.4,z],q,[2.6,.5,6.5],null);
+  kput(dd?'boxR':'boxW',[x,1.75,z],q,[1,2.4,1.4],null);kput('boxD',[x,2.4,z+.0],q,[1.05,.7,1],null);
+  kput('tube',[x+.6*Math.cos(a+1.57),1.5,z+.6*Math.sin(a+1.57)],qEuler(.5,0,0),[.12,2.2,.12],null);}
+ // TANKS: two capsules on cradles to the north, a pipe to the core
+ for(const x of[-14,6]){const R=4,L=20;
+  const g=lathe({rFn:y=>y<R?Math.sqrt(Math.max(0,R*R-(R-y)*(R-y)))+.01:y>L-R?Math.sqrt(Math.max(0,R*R-(y-L+R)*(y-L+R)))+.01:R,H:L,nu:24,nv:14,hole:holeFn(dd,9873+x,null,2)});
+  g.rotateZ(-Math.PI/2);g.translate(x,R+1.4,-44);mesh(g,skin,G);
+  for(const k of[3,10,17])kput(dd?'boxCR':'boxC',[x+k,.9,-44],null,[1.2,1.8,6.5],null);}
+ kput(dd?'pipeR':'pipe',[0,1.2,-22],qEuler(Math.PI/2,0,0),[.5,40,.5],null);
+ meshMerged(solid,conc,G);
+ if(brk){adRubbleArc(0,0,legA(0)-.35,legA(0)+.35,()=>30,12,40,1.6);adRubbleArc(0,0,0,TAU,()=>4,6,20,1.1);}
+ if(dd){mossOnSurface(G,0,0,0,40,1.2);vinesFromLedge(G,0,0,0,20,10,0,0);}
+ if(d===1){scatterMoss(0,0,0,10,44,40,1.6);trees(0,0,40,60,9);}
+ if(d===2){
+  // a caravanserai under the fallen lens: tarps hung from its low rim as walls,
+  // the tanks fitted out as houses, a garden on the forecourt
+  for(let i=-2;i<=2;i++){const a=legA(0)+i*.22,p=new THREE.Vector3(22*Math.cos(a),CY,22*Math.sin(a)).applyMatrix4(D.matrix);
+   kput('patchTarp',[p.x,p.y/2,p.z],qFacing([Math.cos(a),0,Math.sin(a)]),[7,p.y-.5,1],new THREE.Color().setHSL(rr(0,.12),.45,.62));}
+  for(let i=0;i<5;i++){const a=legA(0)+Math.PI+rr(-.8,.8),r=rr(8,16);kput('shantyBox',[r*Math.cos(a),1.4,r*Math.sin(a)],qEuler(0,rng()*3,0),[rr(3,5),2.8,rr(3,4)],null);}
+  for(const x of[-14,6]){kput('boxD',[x+10,2.6,-39.9],null,[1.6,2.6,.3],null);kput('spipe',[x+14,10,-44],null,[.3,2.6,.3],null);}
+  for(let i=0;i<6;i++)kput('planter',[-24+i*4.2,.35,30],null,[3.2,.6,7],null);
+  adReclaim(G,{up:20,fires:[[-14,6,-39.6,0,1,1.2,1.4],[6,6,-39.6,0,1,1.2,1.4]],trees:[42,62,10],figs:10,spread:18,minY:.2,
+   ok:p=>Math.hypot(p[0],p[2])<18||p[1]>4});
+  firePit('adReclaim',4,.3,10,1.2);}
+ if(d===0||d===3)figures(0,22,5,8);
+ KOFF=[0,0,0];return G;}
+
+// ================================================================= THE ROTOR RADAR TOWER (adRadar)
+// Fourteen cruciform blocks, each 3.4 m high with a dark half-metre joint over
+// a round core, each turned 15 degrees on the one below, so the shaft reads as
+// a slow screw of fins. At 56 m a T-head: a narrow neck, a broad cantilevered
+// deck with a crenellated parapet, the radome and the scanner bar on its mast.
+// It stands in a 64 m court whose walls are built of blocks of unequal height.
+// RUIN: the head and the top four blocks have come down into the court — the
+// head on its side, the radome split — and the two highest blocks left standing
+// have slewed on their joints. The court wall is breached on the east.
+function buildAltRadar(scene,gx,gz,d){reseed(9875+d);KOFF=[gx,0,gz];
+ const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);
+ const dd=d>0?1:0,brk=d===1||d===2,conc=CONC(d),skin=SHELL(d);
+ REGISTER({name:'The Rotor radar tower ('+AD_STATE[d]+')',x:0,z:0,r:36,h:70});
+ const NT=14,TH=3.4,GP=.5,Y0=1.4,yK=k=>Y0+k*(TH+GP),YH=yK(NT),NK=brk?10:NT;
+ const plus=(L,h,rot)=>[[L,-h],[L,h],[h,h],[h,L],[-h,L],[-h,h],[-L,h],[-L,-h],[-h,-h],[-h,-L],[h,-L],[h,-h]].map(p=>[p[0]*Math.cos(rot)-p[1]*Math.sin(rot),p[0]*Math.sin(rot)+p[1]*Math.cos(rot)]);
+ const solid=[],block=k=>{const L=6.6+.9*Math.sin(k*.9),h=1.25+.2*Math.cos(k*1.3);return adPrism(null,plus(L,h,k*Math.PI/12),0,TH);};
+ kput(dd?'boxCR':'boxC',[0,.7,0],qEuler(0,0,0),[18,1.4,18],null);
+ solid.push(lathe({rFn:()=>2.3,H:brk?yK(NK)+1:YH,nu:16,nv:2}));
+ for(let k=0;k<NK;k++){const g=block(k);let ry=0,dx=0,dz=0;
+  if(brk&&k>=NK-2){ry=rr(.15,.35)*(k-NK+3);dx=rr(-.8,.8);dz=rr(-.8,.8);}
+  g.rotateY(ry);g.translate(dx,yK(k),dz);solid.push(g);}
+ // THE HEAD (built at the origin, then placed: on the shaft, or on its side in the court)
+ const head=[];adBox(head,0,2,0,7,4,7);adBox(head,0,6.2,0,17,4.4,17);
+ for(let i=0;i<8;i++)for(const s of[-1,1]){adBox(head,-7.5+i*2.15,9.2,s*8.2,1.1,1.6,.6);adBox(head,s*8.2,9.2,-7.5+i*2.15,.6,1.6,1.1);}
+ const dome=gridSurface((u,v)=>{const th=u*TAU,ph=v*Math.PI*.62;return[4.8*Math.sin(ph)*Math.cos(th),8.4+4.8-4.8*Math.cos(ph)+0,4.8*Math.sin(ph)*Math.sin(th)];},24,10,
+  {uS:4,vS:2,hole:brk?(u,v)=>u<.38&&v>.3:null});
+ if(!brk){head.forEach(g=>g.translate(0,YH,0));solid.push(...head);dome.translate(0,YH,0);mesh(dome,skin,G);
+  // the scanner bar on its mast, and an aviation light
+  kput(dd?'pipeR':'pipe',[0,YH+15,0],null,[.5,4,.5],null);
+  kput(dd?'boxR':'boxW',[0,YH+17.4,0],qEuler(0,.6,0),[14,2.2,.7],null);kput('boxD',[0,YH+17.4,.4],qEuler(0,.6,0),[13,1.6,.2],null);
+  kput('dot',[0,YH+19,0],null,[.6,.6,.6],d===0?new THREE.Color(0xff5040):DEAD);
+  for(let i=0;i<16;i++){const a=i/16*TAU;kput('strip',[8.6*Math.cos(a),YH+6.4,8.6*Math.sin(a)],qEuler(0,-a+Math.PI/2,0),[3,1,1],d===0||(d===3&&i%2)?CYAN:DEAD);}}
+ else{const M=new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(.2,.5,2.7)).setPosition(18,9.5,13);head.forEach(g=>g.applyMatrix4(M));solid.push(...head);
+  const dm=mesh(dome,skin,G);dm.position.set(-14,0,15);dm.rotation.set(.3,1,2.3);dropFragment(dm,0,1.2);
+  // the fallen blocks, scattered where they landed
+  for(let k=NK;k<NT;k++){const g=block(k);g.translate(0,-TH/2,0);g.applyMatrix4(new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(rr(-1.4,1.4),rng()*3,rr(-.4,.4))).setPosition(rr(-22,22),3,rr(4,24)*(k%2?1:-1)));solid.push(g);}
+  kput('boxR',[-8,1,24],qEuler(.2,.6,1.4),[14,2.2,.7],null);}
+ // THE COURT: walls of unequal blocks with a gate to the south (a breach to the east in the ruin)
+ for(let s=0;s<4;s++)for(let i=0;i<16;i++){const t=-30+i*4;const gate=s===0&&(i===7||i===8),breach=brk&&s===1&&i>=6&&i<=10;if(gate)continue;
+  const h=breach?rr(.5,1.5):[2.6,4.2,3.2,5.6,2.4,4.8][(i*7+s*3)%6],x=[t,32,t,-32][s],z=[32,t,-32,t][s],w=[4,1.4,4,1.4][s],dp=[1.4,4,1.4,4][s];
+  adBox(solid,x,h/2,z,w*.98,h,dp*.98);}
+ if(brk)adRubbleLine([32,-8],[32,10],1,0,10,40,1.5);
+ meshMerged(solid,conc,G);
+ if(brk){adRubbleArc(0,0,0,TAU,()=>7,18,60,1.6);}
+ if(dd){mossOnSurface(G,0,0,0,40,1.1);vinesFromLedge(G,0,0,0,26,9,0,0);}
+ if(d===1){scatterMoss(0,0,0,8,30,40,1.6);trees(0,0,10,28,8);}
+ if(d===2){
+  // a lookout: a timber stage on the stump, a ladder up the shaft, a beacon fire
+  const top=yK(NK)+.2;
+  kput('plank',[0,top+.3,0],qEuler(0,.3,0),[12,.4,12],null);
+  for(let i=0;i<4;i++){const a=.3+i*Math.PI/2;kput('plank',[6*Math.cos(a),top+1.4,6*Math.sin(a)],qEuler(0,-a,0),[.3,2.2,8],null);}
+  beam('plank',[2.6,0,7.4],[2.6,top,7.4],.25,.25);beam('plank',[3.6,0,7.4],[3.6,top,7.4],.25,.25);
+  for(let y=1;y<top;y+=1.2)kput('plank',[3.1,y,7.4],null,[1.2,.12,.12],null);
+  firePit('adReclaim',0,top+.5,0,1.8);
+  for(let i=0;i<3;i++)kput('patchTarp',[5.5,top+5+i*1.4,0],qEuler(0,0,0),[2.4,1.2,1],new THREE.Color().setHSL(i*.3,.6,.5));
+  kput('plank',[5.5,top+4,0],null,[.15,8,.15],null);
+  // houses against the inside of the court wall, gardens in the court
+  for(let i=0;i<9;i++){const s=i%3,t=rr(-24,24),x=[t,28,t][s],z=[-28,t,28][s];if(s===2&&Math.abs(t)<6)continue;
+   kput('shantyBox',[x,1.5,z],null,[s===1?3.4:5,3,s===1?5:3.4],null);kput('shantyRoof',[x,3.2,z],qEuler(.12,0,0),[s===1?4.4:6,1,s===1?6:4.4],null);}
+  for(let i=0;i<6;i++)kput('planter',[-20+i*8,.35,-14],null,[6,.6,4],null);
+  adReclaim(G,{up:16,trees:[34,56,10],figs:8,spread:20,minY:.2,ok:p=>p[1]<4&&Math.hypot(p[0],p[2])>12});}
+ if(d===0||d===3)figures(0,20,4,8);
+ KOFF=[0,0,0];return G;}
+
+// ================================================================= THE FLOWER DISH (adDish)
+// Four thick concrete petals open out of a round plinth like a flower, each
+// 1.4 m thick, cupped across its width and leaning out to 20 m at its tip. In
+// the middle a stem carries a ribbed sphere, and the sphere carries the dish:
+// a white paraboloid 38 m across, tipped 25 degrees to the south, its feed horn
+// on four struts. A long low wall curves round the north of the plinth.
+// RUIN: the south-east petal has snapped at mid-height; the dish has torn off
+// the sphere and lies on its rim against two petals, half its panels gone; the
+// sphere is holed. RECLAIMED: the fallen dish is a roof — rain pools in it and
+// a settlement lives in the shade under its lifted rim.
+function buildAltDish(scene,gx,gz,d){reseed(9880+d);KOFF=[gx,0,gz];
+ const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);
+ const dd=d>0?1:0,brk=d===1||d===2,conc=CONC(d),skin=SHELL(d);
+ REGISTER({name:'The Flower dish ('+AD_STATE[d]+')',x:0,z:0,r:44,h:50});
+ kput(dd?'slabCR':'slabC',[0,.75,0],null,[24,1.5,24],null);
+ const solid=[],hold=holeFn(dd,9880,null,1.8);
+ // PETALS: a cupped blade of two skins and an edge band
+ const PH=38,THK=1.4;
+ const petal=(a,v0,v1)=>{const c=Math.cos(a),s=Math.sin(a),out=[];
+  const pt=(u,v,o)=>{const sw=u*2-1,R=5+15*Math.pow(v,1.7),y=1.5+PH*v,w=7*Math.pow(Math.sin(Math.PI*(.08+.92*v)),.7)*(1-.25*v)+.6;
+   const r=R-2.2*sw*sw*w/7+o;return[r*c-s*sw*w,y,r*s+c*sw*w];};
+  const V=v=>lerp(v0,v1,v);
+  for(const o of[0,THK])out.push(gridSurface((u,v)=>pt(u,V(v),o),10,16,{uS:2,vS:(v1-v0)*PH/8}));
+  out.push(gridSurface((u,v)=>{const e=u<.5?0:1,t=u<.5?u*2:(u-.5)*2;return pt(e,V(v),t*THK);},2,16,{uS:.4,vS:(v1-v0)*PH/8}));
+  out.push(gridSurface((u,v)=>pt(u,V(1),v*THK),10,1));
+  return out;};
+ for(let i=0;i<4;i++){const a=Math.PI/4+i*Math.PI/2;
+  if(brk&&i===0){solid.push(...petal(a,0,.46));const fr=petal(a,.46,1);const m=meshMerged(fr.map(g=>adUV(g)),MAT.concreteR,G);
+   m.position.set(26,0,22);m.rotation.set(1.3,.4,.2);dropFragment(m,0,.5);}
+  else solid.push(...petal(a,0,1));}
+ // THE STEM AND THE SPHERE
+ solid.push(lathe({rFn:y=>2.4+1.2*Math.pow(1-y/20,2),H:20,nu:16,nv:3}));
+ const SY=26,SR=7;
+ mesh(gridSurface((u,v)=>{const th=u*TAU,ph=v*Math.PI;return[SR*Math.sin(ph)*Math.cos(th),SY-SR*Math.cos(ph),SR*Math.sin(ph)*Math.sin(th)];},28,14,
+  {uS:6,vS:3,hole:brk?(u,v)=>fbm(u*5,v*4,9881,2)<.4:null}),skin,G);
+ for(let k=0;k<12;k++){const th=k/12*TAU;for(let j=0;j<6;j++){const p0=j/6*Math.PI,p1=(j+1)/6*Math.PI,P=ph=>[(SR+.25)*Math.sin(ph)*Math.cos(th),SY-(SR+.25)*Math.cos(ph),(SR+.25)*Math.sin(ph)*Math.sin(th)];
+  beam(dd?'strutR':'strutW',P(p0),P(p1),.35,.5);}}
+ for(const ph of[Math.PI/3,Math.PI/2,2*Math.PI/3])kput(dd?'ringR':'ringW',[0,SY-SR*Math.cos(ph),0],qEuler(Math.PI/2,0,0),(SR+.25)*Math.sin(ph),null);
+ // THE DISH, in its own group: on the sphere and tipped south, or fallen
+ const DR=19,F=11,Dg=new THREE.Group();G.add(Dg);
+ if(!brk){Dg.position.set(0,SY+SR-.5,0);Dg.rotation.x=.44;}
+ else if(d===1){Dg.position.set(-12,0,24);Dg.rotation.set(1.25,-.5,.15);}   // on its rim against two petals
+ else{Dg.position.set(-6,0,34);Dg.rotation.set(.3,0,.1);}                  // bowl-up, its rim propped on the snapped petal
+ const dishHole=d===1?(u,v)=>v>.35&&fbm(u*6,v*3,9882,2)<.45:d===2?(u,v)=>v>.55&&fbm(u*6,v*3,9882,2)<.4:(hold?(u,v)=>v>.5&&hold(u,v*10):null);
+ mesh(gridSurface((u,v)=>{const th=u*TAU,r=v*DR;return[r*Math.cos(th),r*r/(4*F),r*Math.sin(th)];},48,10,{uS:12,vS:3,hole:dishHole}),skin,Dg);
+ // the fallen dish is placed BEFORE its ribs are, so the instanced ribs follow it
+ if(brk)dropFragment(Dg,0,.6);
+ Dg.updateMatrix();
+ if(d===2){// rain pooled in the fallen bowl (level, whatever the bowl's tilt)
+  const p=new THREE.Vector3(0,2.1,0).applyMatrix4(Dg.matrix);
+  mesh(gridSurface((u,v)=>{const th=u*TAU,r=v*7;return[p.x+r*Math.cos(th),p.y,p.z+r*Math.sin(th)];},24,2),MAT.water,G);}
+ useGroupXF(Dg);
+ for(let k=0;k<16;k++){const th=k/16*TAU;if(brk&&k%3===0)continue;
+  for(let j=0;j<4;j++){const r0=j/4*DR,r1=(j+1)/4*DR;beam(dd?'strutR':'strutW',[r0*Math.cos(th),r0*r0/(4*F)-.5,r0*Math.sin(th)],[r1*Math.cos(th),r1*r1/(4*F)-.5,r1*Math.sin(th)],.4,.6);}}
+ // the rim: a ring of straight members (a kit torus this big would be 1.7 m thick)
+ for(let k=0;k<24;k++){const a0=k/24*TAU,a1=(k+1)/24*TAU,y=DR*DR/(4*F);if(d===1&&k%5===0)continue;
+  beam(dd?'strutR':'strutW',[DR*Math.cos(a0),y,DR*Math.sin(a0)],[DR*Math.cos(a1),y,DR*Math.sin(a1)],.6,.9);}
+ if(!brk){for(let k=0;k<4;k++){const th=k/4*TAU+.4;beam(dd?'strutR':'strutW',[17*Math.cos(th),17*17/(4*F),17*Math.sin(th)],[0,F,0],.35,.35);}
+  kput(dd?'boxR':'boxW',[0,F+.8,0],null,[2.2,2.6,2.2],null);kput(dd?'pipeR':'pipe',[0,F-.9,0],null,[.9,1.4,.9],null);}
+ endGroupXF();
+ // THE NORTH WALL: long, low, curving
+ solid.push(gridSurface((u,v)=>{const a=lerp(Math.PI*1.12,Math.PI*1.88,u);return[40*Math.cos(a),v*4.2,40*Math.sin(a)];},40,2,{uS:10,vS:.5,hole:(u,v)=>brk&&u>.6&&u<.7}));
+ solid.push(gridSurface((u,v)=>{const a=lerp(Math.PI*1.12,Math.PI*1.88,u),r=40+v*1.4;return[r*Math.cos(a),4.2,r*Math.sin(a)];},40,1,{hole:u=>brk&&u>.6&&u<.7}));
+ solid.push(gridSurface((u,v)=>{const a=lerp(Math.PI*1.12,Math.PI*1.88,u);return[41.4*Math.cos(a),v*4.2,41.4*Math.sin(a)];},40,2,{uS:10,vS:.5,hole:(u,v)=>brk&&u>.6&&u<.7}));
+ meshMerged(solid.map(g=>g.attributes.uv?g:adUV(g)),conc,G);
+ if(brk){adRubbleArc(0,0,.4,1.2,()=>14,16,40,1.5);adRubbleArc(0,0,0,TAU,()=>3,8,20,1);}
+ if(dd){mossOnSurface(G,0,0,0,40,1.2);vinesFromLedge(G,0,0,0,24,9,0,0);}
+ if(d===1){scatterMoss(0,0,0,8,40,40,1.6);trees(0,0,46,64,10);}
+ if(d===2){
+  // a settlement under the fallen dish's lifted rim and round the plinth
+  for(let i=0;i<7;i++){const a=rr(1.4,2.6),r=rr(16,30);kput('shantyBox',[r*Math.cos(a),1.5,r*Math.sin(a)],qEuler(0,rng()*3,0),[rr(3,5),3,rr(3,4.5)],null);
+   kput('shantyRoof',[r*Math.cos(a),3.2,r*Math.sin(a)],qEuler(.12,rng()*3,0),[5.5,1,5],null);}
+  for(let i=0;i<5;i++)kput('planter',[-16+i*7,1.85,-16],null,[5,.7,4],null);
+  kput('boxD',[0,22,5.8],null,[2,3,.4],null);
+  beam('plank',[0,1.5,9.5],[0,20.6,6.1],.3,1.6);
+  adReclaim(G,{up:24,fires:[[0,22,5.9,0,1,1.6,2.4]],trees:[46,64,12],figs:12,spread:22,minY:1.4,ok:p=>p[1]<2.2});}
+ if(d===0||d===3)figures(0,30,4,8);
+ KOFF=[0,0,0];return G;}
+// ================================================================= ALT DOMESTIC (3 of 3): megastructure, factory, laboratory
+// Same conventions as 8ak-alt-a-houses.js (decay 0 intact, 1 ruined, 2
+// reclaimed, 3 rehabilitated; `brk` = parts have come down; `dd` = old fabric).
+//
+//   THE RAMPART (adMega)        a battered wall 760 m long and 230 m high whose
+//        south face is a field of triangular relief facets, each carrying its
+//        own embossed glyph panels; a giant arcade at its foot, buttresses
+//        behind, three towers on the top.
+//   THE PILOTIS WORKS (adFac)   a stack of heavy boxes raised on columns, a
+//        dark banded drum, two sky-bridges between them, sawtooth halls and
+//        stacks at their feet.
+//   THE STAR LABORATORY (adLab) a domed drum with six radial lobes at two
+//        levels, each ending in a great round eye window with a spoked frame,
+//        reached by a ramp.
+
+// A section [[z,y],...] extruded along x from x0 to x1.
+function adExtX(acc,pts,x0,x1){const g=new THREE.ExtrudeGeometry(adShape(pts.map(p=>[-p[0],p[1]])),{depth:x1-x0,bevelEnabled:false,curveSegments:4});
+ g.rotateY(Math.PI/2);g.translate(x0,0,0);adUV(g);if(acc)acc.push(g);return g;}
+// A raw triangle list -> geometry (flat-shaded, metre UVs).
+function adTris(P){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(P,3));g.computeVertexNormals();return adUV(g);}
+
+// ================================================================= THE RAMPART (adMega)
+// RUIN: a breach 150 m wide has opened in the middle — the wall down to 60 m at
+// its floor, rising in jagged steps to full height at its flanks — with a talus
+// fanning out on both sides, facet plates lying on it, and the east tower
+// thrown down. RECLAIMED: a town has grown in the breach and on its talus,
+// with a timber bridge strung across the gap and scaffolds up the flanks.
+function buildAltMega(scene,gx,gz,d){reseed(9885+d);KOFF=[gx,0,gz];
+ const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);
+ const dd=d>0?1:0,brk=d===1||d===2,conc=CONC(d);
+ REGISTER({name:'The Rampart ('+AD_STATE[d]+')',x:0,z:0,r:400,h:300});
+ const L=760,H=230,ZF=y=>45-y*30/H,ZB=y=>-45+y*30/H,BX=-10;
+ const bt=x=>{if(!brk)return H+1;const t=clamp(Math.abs(x-BX)/75,0,1);return 60+(H-60)*Math.pow(t,1.6)+(t<1?14*(fbm(x*.05,1,9885,2)-.5):0);};
+ const nF=new THREE.Vector3(0,30/H,1).normalize(),PF=(x,y)=>[x,y,ZF(y)];
+ // THE FACE: rows of triangles, each with a raised inner triangle (a relief frame)
+ const tri=[],glyph=[];const T=(a,b,c)=>tri.push(a[0],a[1],a[2],b[0],b[1],b[2],c[0],c[1],c[2]);
+ const NR=10,RH=H/NR,TW=30;
+ for(let r=0;r<NR;r++){const y0=r*RH,y1=y0+RH,off=(r%2)*TW/2;
+  for(let i=-1;i*TW/2<L+TW;i++){const xa=-L/2+i*TW/2-off;const up=(i%2===0);
+   const A=up?[xa,y0]:[xa,y1],B=up?[xa+TW,y0]:[xa+TW,y1],C=up?[xa+TW/2,y1]:[xa+TW/2,y0];
+   const cl=p=>[clamp(p[0],-L/2,L/2),p[1]];const a=cl(A),b=cl(B),c=cl(C);
+   if(Math.abs(b[0]-a[0])<1&&Math.abs(c[0]-a[0])<1)continue;
+   const cx=(a[0]+b[0]+c[0])/3,cy=(a[1]+b[1]+c[1])/3;if(cy>bt(cx))continue;
+   const dep=4+2.5*h3(r,i,9885),k=.72;
+   const pa=PF(...a),pb=PF(...b),pc=PF(...c);
+   const inn=p=>{const q=[cx+(p[0]-cx)*k,cy+(p[1]-cy)*k];const w=PF(q[0],q[1]);return[w[0]+nF.x*dep,w[1]+nF.y*dep,w[2]+nF.z*dep];};
+   const ia=inn(a),ib=inn(b),ic=inn(c);
+   T(pa,pb,ib);T(pa,ib,ia);T(pb,pc,ic);T(pb,ic,ib);T(pc,pa,ia);T(pc,ia,ic);T(ia,ib,ic);
+   // glyph panels on the raised face: a few embossed rectangles per facet
+   if(Math.abs(b[0]-a[0])>TW*.8){const nG=3+((h3(i,r,1)*3)|0);
+    for(let g=0;g<nG;g++){const u=rr(-.35,.35),v=rr(-.25,.25)*(up?1:-1),gw=rr(2,6),gh=rr(1.5,4.5);
+     const q=PF(cx+u*TW*.5,cy+v*RH*.6);glyph.push([q[0]+nF.x*(dep+.4),q[1]+nF.y*(dep+.4),q[2]+nF.z*(dep+.4),gw,gh]);}}}}
+ const solid=[adTris(tri)];
+ // BACK FACE, TOP, ENDS
+ solid.push(gridSurface((u,v)=>{const x=-L/2+u*L,y=v*H;return[x,y,ZB(y)];},152,46,{uS:L/8,vS:H/8,hole:(u,v)=>v*H>bt(-L/2+u*L)}));
+ solid.push(gridSurface((u,v)=>{const x=-L/2+u*L,y=Math.min(H,bt(x)),zf=ZF(y)+(y<H?0:0),zb=ZB(y);return[x,y,lerp(zb,zf,v)];},brk?304:8,brk?6:1,{uS:L/8,vS:4}));
+ for(const x of[-L/2,L/2])solid.push(gridSurface((u,v)=>{const y=v*H;return[x,y,lerp(ZB(y),ZF(y),u)];},4,8,{uS:10,vS:H/8}));
+ // the front plane UNDER the facets, so no gap shows at the ends and the breach
+ solid.push(gridSurface((u,v)=>{const x=-L/2+u*L,y=v*H;return[x,y,ZF(y)-.3];},152,46,{uS:L/8,vS:H/8,hole:(u,v)=>v*H>bt(-L/2+u*L)}));
+ // buttresses behind, every 64 m
+ for(let x=-L/2+40;x<L/2-20;x+=64){const top=Math.min(180,bt(x)-6);if(top<20)continue;
+  adPrism(solid,[[x-6,ZB(0)],[x+6,ZB(0)],[x+3,ZB(0)-38],[x-3,ZB(0)-38]].map(p=>[p[0],p[1]]),0,top*.55);
+  adPrism(solid,[[x-5,ZB(0)],[x+5,ZB(0)],[x+2,ZB(0)-20],[x-2,ZB(0)-20]],top*.55,top);}
+ // three towers on the top (the east one thrown down in the ruin)
+ for(const tx of[-280,40,250]){if(brk&&tx===40)continue;
+  if(brk&&tx===250){const g=[];adBox(g,0,30,0,34,60,26);adBox(g,0,64,0,22,8,18);const m=meshMerged(g,MAT.concreteR,G);m.position.set(tx+30,0,95);m.rotation.set(0,.4,1.48);dropFragment(m,0,4);continue;}
+  adBox(solid,tx,H+30,0,34,60,26);adBox(solid,tx,H+64,0,22,8,18);}
+ meshMerged(solid,conc,G);
+ for(const g of glyph){const q=new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,0,1),nF);kput(BOXC(d),[g[0],g[1],g[2]],q,[g[3],g[4],.8],null);}
+ // THE ARCADE: giant arched gates at the foot; lit slits in the top band
+ for(let i=0;i<11;i++){const x=-300+i*60;if(bt(x)<50)continue;const q=new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,0,1),nF);
+  kput('archOpen',[x,18,ZF(18)+6.5],q,[3.4,4,8],null);}
+ for(let r=0;r<3;r++)for(let i=0;i<64;i++){const x=-L/2+12+i*(L-24)/63,y=H-14-r*9;if(y>bt(x)-4)continue;
+  const p=PF(x,y),q=new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,0,1),nF);
+  kput(d===0?'cell':'cellD',[p[0],p[1],p[2]+7.5],q,[4,1.3,1],d===0&&h3(r,i,3)<.55?WARM:DEAD);}
+ // parapets
+ for(let i=0;i<70;i++){const x=-L/2+6+i*(L-12)/69;if(bt(x)<H)continue;for(const z of[ZF(H)-1,ZB(H)+1])kput(BOXC(d),[x,H+2,z],null,[6,4,1.6],null);}
+ if(brk){// the talus, both faces, and facet plates lying on it
+  for(const s of[1,-1])for(let i=0;i<260;i++){const x=BX+rr(-110,110)*(1-Math.pow(rng(),2)*.5),q=Math.pow(rng(),1.6),z=s*(45+q*130),sz=rr(2,9)*(1.3-q);
+   kput('rubble',[x,(1-q)*28*clamp(1-Math.abs(x-BX)/120,0,1)+sz*.3,z],qEuler(rng()*3,rng()*3,rng()*3),[sz*1.5,sz*.8,sz*1.3],new THREE.Color().setHSL(rr(.05,.09),rr(.1,.3),rr(.3,.5)));}
+  for(let i=0;i<14;i++)kput(BOXC(1),[BX+rr(-90,90),rr(3,14),rr(60,150)],qEuler(rr(-.4,.4),rng()*3,rr(-.4,.4)),[rr(14,28),2.5,rr(10,20)],null);
+  // floors in section on the breach flanks
+  for(let y=70;y<H-10;y+=13)for(const s of[-1,1]){let x=BX+s*75;for(let k=0;k<40&&Math.abs(bt(x)-y)>4;k++)x-=s*2;
+   kput('boxCR',[x+s*1.5,y,0],null,[7,1.2,ZF(y)-ZB(y)-4],null);}}
+ if(dd){mossOnSurface(G,0,0,0,220,4);vinesFromLedge(G,0,0,0,140,40,0,-200);stainsFromLedge(G,0,0,0,120,60,0,-200);}
+ if(d===1)adTreesBox(-L/2,L/2,60,200,60);
+ if(d===2){
+  // the town in the breach: houses on the floor and the talus, terraces of
+  // gardens, a timber bridge across the gap at 130 m, scaffolds up the flanks
+  for(let i=0;i<70;i++){const x=BX+rr(-70,70),z=rr(-40,40),y=bt(x);if(y>100)continue;const w=rr(4,9),hh=rr(3,6),yaw=rr(-.2,.2);
+   kput('shantyBox',[x,y+hh/2,z],qEuler(0,yaw,0),[w,hh,rr(4,8)],null);kput('shantyRoof',[x,y+hh+.25,z],qEuler(rr(.06,.2),yaw,0),[w*1.3,1,9],null);}
+  for(let i=0;i<50;i++){const x=BX+rr(-90,90),q=rng(),z=45+q*110,y=(1-q)*28*clamp(1-Math.abs(x-BX)/120,0,1);
+   kput(rng()<.5?'shantyBox':'planter',[x,y+1.4,z],qEuler(0,rng()*3,0),[rr(4,8),2.8,rr(4,7)],null);}
+  const yb=130;let xl=BX-75,xr=BX+75;for(let k=0;k<60&&bt(xl)>yb;k++)xl+=1.5;for(let k=0;k<60&&bt(xr)>yb;k++)xr-=1.5;
+  for(const z of[-3,3])beam('plank',[xl-6,yb,z],[xr+6,yb,z],.5,.5);
+  for(let x=xl;x<xr;x+=2.2)kput('plank',[x,yb+.3,0],null,[1.8,.25,6.6],null);
+  for(const s of[-1,1])for(let k=0;k<8;k++){const x=BX+s*(78+k*7),top=Math.min(bt(x)-2,170);
+   beam('plank',[x,0,ZF(0)+8],[x,top,ZF(top)+8],.5,.5);for(let y=10;y<top;y+=12)beam('plank',[x-3.5,y,ZF(y)+8],[x+3.5,y,ZF(y)+8],.35,.35);}
+  const fires=[];for(let i=0;i<11;i++){const x=-300+i*60;if(bt(x)<50||rng()<.4)continue;fires.push([x,14,ZF(14)+7.5,0,1,14,18]);}
+  adReclaim(G,{up:120,fires,treeBox:[-L/2,L/2,70,200,50],figs:40,spread:80,cz:90,ok:p=>p[1]<bt(p[0])+2&&Math.abs(p[0]-BX)<90});}
+ if(d===0||d===3)figures(0,90,14,120);
+ KOFF=[0,0,0];return G;}
+
+// ================================================================= THE PILOTIS WORKS (adFac)
+// THE STACK: four heavy concrete boxes, each 36 x 13 x 30 m, slid alternately
+// east and west and parted by a recessed band of dark glazing, on a podium
+// held 12 m up on a grid of square columns. THE DRUM: a dark glass cylinder
+// 84 m high banded every six metres. Two enclosed sky-bridges join them at 40
+// and 58 m. Three sawtooth halls lie to the south, two stacks to the east, and
+// conveyor tubes climb from the halls into the stack's belly.
+// RUIN: the top box has slid off and hangs tilted over the east edge; the lower
+// bridge lies broken on the yard and the upper one hangs from the drum; the
+// drum is glazed only to 40 m, bare mullions above; the middle hall's roof is
+// down; one stack lies across the halls.
+function buildAltFactory(scene,gx,gz,d){reseed(9890+d);KOFF=[gx,0,gz];
+ const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);
+ const dd=d>0?1:0,brk=d===1||d===2,conc=CONC(d);
+ REGISTER({name:'The Pilotis works ('+AD_STATE[d]+')',x:0,z:10,r:170,h:110});
+ REGISTER({name:'The Pilotis works — the stack',x:-60,z:0,r:30,h:80});
+ const SX=-60,DX=40,DZ=-10,DR=14,DH=84,solid=[],dark=[];
+ kput(dd?'boxCR':'boxC',[0,.2,15],null,[300,.4,150],null);
+ // pilotis and podium
+ for(let i=0;i<4;i++)for(let j=0;j<3;j++)adBox(solid,SX-15+i*10,6,-11+j*11,2.2,12,2.2);
+ adBox(solid,SX,13,0,40,2,34);
+ // THE STACK
+ const boxY=k=>14+k*15,bx=k=>SX+(k%2?3:-3);
+ for(let k=0;k<4;k++){const g=adBox(null,0,6.5,0,36,13,30);const slid=brk&&k===3;
+  if(slid){g.applyMatrix4(new THREE.Matrix4().makeRotationZ(-.32));g.translate(bx(k)+11,boxY(k)-1.5,2);}else g.translate(bx(k),boxY(k),0);
+  solid.push(g);if(k<3||!brk)adBox(dark,SX,boxY(k)+14,0,30,2.2,24);}
+ adBox(solid,SX+4,boxY(4)+(brk?-17:0)+3,-4,12,6,10);
+ // window slots on every face of every box (fire in the reclaimed ones)
+ const fm=d===2?fireMask('adFac',48,8,9892,3):null,fires=[];
+ for(let k=0;k<4;k++){if(brk&&k===3)continue;for(let row=0;row<2;row++)for(let f=0;f<4;f++)for(let i=0;i<8;i++){
+  const y=boxY(k)+3.6+row*5.6,t=-14+i*4,n=[[0,1],[1,0],[0,-1],[-1,0]][f],hw=f%2?15:18;
+  const x=bx(k)+(f%2?n[0]*18.3:t),z=f%2?t*.8:n[1]*15.3,q=qFacing([n[0],0,n[1]]);
+  kput(d===0?'cell':'cellD',[x,y,z],q,[2.6,2.4,1],d===0&&h3(k,i,f+row)<.4?WARM:DEAD);
+  if(fm&&fm(f*12+i,k*2+row))fires.push([x,y,z,n[0],n[1],2.4,2.2]);}}
+ // THE DRUM: dark glass banded every 6 m; glazed only to 40 m in the ruin, mullions above
+ const gH=brk?40:DH;
+ mesh(lathe({rFn:()=>DR,H:gH,nu:40,nv:6,cut:brk?gH:null,jag:brk?3:0,seed:9891}),MAT.darkGlass,G,DX,0,DZ);
+ for(let y=6;y<=DH;y+=6){if(brk&&y>40&&h3(y,1,9890)<.35)continue;kput(dd?'slabCR':'slabC',[DX,y,DZ],null,[DR+.6,.7,DR+.6],null);}
+ if(brk)for(let i=0;i<32;i++){const a=i/32*TAU;kput('strutR',[DX+DR*Math.cos(a),40+(DH-40)/2,DZ+DR*Math.sin(a)],null,[.3,DH-40,.3],null);}
+ adBox(solid,DX,DH+2,DZ,10,4,10);kput(dd?'pipeR':'pipe',[DX,DH+12,DZ],null,[.5,16,.5],null);
+ if(d===0)for(let i=0;i<40;i++){const a=i/40*TAU;kput('strip',[DX+(DR+.7)*Math.cos(a),DH-3,DZ+(DR+.7)*Math.sin(a)],qEuler(0,-a+Math.PI/2,0),[2.2,1,1],CYAN);}
+ // SKY-BRIDGES: from the stack's east face (x=SX+18) to the drum's west face
+ for(const y of[40,58]){const len=DX-DR-(SX+18)+1,cx=(SX+18+DX-DR)/2;
+  if(brk&&y===40){for(const s of[-1,1]){const g=adBox(null,0,0,0,len/2-1,5,6);g.applyMatrix4(new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(rr(-.1,.1),rr(-.3,.3),s*.25)));
+    g.translate(cx+s*len/4,3,8+s*3);solid.push(g);}continue;}
+  if(brk&&y===58){const g=adBox(null,-len/2,0,0,len,5,6);g.applyMatrix4(new THREE.Matrix4().makeRotationZ(.9));g.translate(DX-DR,y,DZ+4);solid.push(g);continue;}
+  adBox(solid,cx,y,DZ*.4,len,5,6);
+  for(let i=0;i<9;i++)kput(d===0?'cell':'cellD',[cx-len/2+4+i*(len-8)/8,y+.4,DZ*.4+3.1],null,[3.4,1.6,1],d===0?WARM:DEAD);}
+ // THE HALLS: sawtooth roofs, glazed north lights (the middle roof is down in the ruin)
+ const saw=(x0,x1)=>{const pts=[[x0,0],[x1,0],[x1,9]];for(let x=x1;x>x0+.1;x-=12){pts.push([x,15]);pts.push([Math.max(x0,x-12),9]);}return pts;};
+ for(let h=0;h<3;h++){const x0=-135+h*82,x1=x0+72;
+  if(brk&&h===1){adExtZ(solid,[[x0,0],[x1,0],[x1,9],[x0,9]],48,50);adExtZ(solid,[[x0,0],[x1,0],[x1,9],[x0,9]],86,88);
+   adExtZ(solid,saw(x0,x1),48,58);adExtZ(solid,saw(x0,x1),80,88);
+   for(let i=0;i<50;i++)kput('rubble',[rr(x0,x1),rr(.5,2),rr(58,80)],qEuler(rng()*3,rng()*3,rng()*3),[rr(1,3),rr(.5,1.4),rr(1,3)],null);continue;}
+  adExtZ(solid,saw(x0,x1),48,88);
+  for(let x=x1;x>x0+.1;x-=12)for(let z=52;z<86;z+=6)kput(d===0?'pane':'paneD',[x-.2,12,z],qEuler(0,Math.PI/2,0),[5.6,5.6,1],null);}
+ // conveyors from the halls up into the podium
+ for(const [x,z] of[[-110,48],[-30,48]])beam(dd?'pipeR':'pipe',[x,9,z],[SX+(x<-60?-12:12),13,14],2.2,2.2);
+ // STACKS (one lies across the halls in the ruin)
+ for(const [x,z,i] of[[115,-40,0],[135,-15,1]]){const g=lathe({rFn:y=>5-2*y/100,H:100,nu:20,nv:4});
+  if(brk&&i===1){const m=mesh(g,MAT.concreteR,G);m.position.set(x-40,0,z+60);m.rotation.set(0,.3,Math.PI/2-.06);dropFragment(m,9,.3);continue;}
+  g.translate(x,0,z);solid.push(g);kput(dd?'ringR':'ringW',[x,96,z],qEuler(Math.PI/2,0,0),3.4,null);}
+ meshMerged(solid,conc,G);meshMerged(dark,WIN(d),G);
+ if(brk){adRubbleLine([SX+18,-15],[SX+18,15],1,0,14,60,2);adRubbleArc(DX,DZ,0,TAU,()=>DR+1,10,40,1.4);}
+ if(dd){mossOnSurface(G,0,0,0,120,1.6);vinesFromLedge(G,0,0,0,60,12,SX,0);stainsFromLedge(G,0,0,0,40,14,SX,0);}
+ if(d===1){scatterMoss(0,0,15,20,140,80,2);adTreesBox(-150,150,96,150,24);adTreesBox(-150,-100,-70,30,10);}
+ if(d===2){
+  // tarps over the fallen hall roof, gardens in the yard, a plank way up to the podium
+  for(let i=0;i<4;i++)adTarp([-53+i*18,9.5,58],[-53+i*18,9.5,80],15);
+  for(let i=0;i<10;i++)kput('planter',[-130+i*26,.45,110],null,[20,.6,10],null);
+  for(let i=0;i<60;i++)kput('moss',[rr(-140,130),.95,110+rr(-4,4)],null,[1,.6,1],new THREE.Color().setHSL(rr(.22,.32),.55,.32));
+  beam('plank',[SX+20,0,20],[SX+12,13,12],.4,3);
+  adReclaim(G,{up:90,fires,treeBox:[-150,150,120,160,20],figs:24,spread:60,cz:30,minY:8});}
+ if(d===0||d===3)figures(0,30,10,60);
+ KOFF=[0,0,0];return G;}
+
+// ================================================================= THE STAR LABORATORY (adLab)
+// A domed drum 24 m across with six lobes radiating from it, alternately on
+// the ground and lifted 7 m on piers. Each lobe is a squarish tube that swells
+// toward its end and closes in a great round eye: a glass disc in a thick
+// frame, with a ring and eight spokes. A ramp climbs from the south to a portal
+// in the drum, between two lobes.
+// RUIN: the south-east lifted lobe has broken off its piers and lies on the
+// plinth; every eye is shattered to its spokes; the dome is holed; the ramp has
+// failed in the middle. RECLAIMED: the lobes are houses with salvage walls in
+// their eyes, fires behind them at night, gardens on the plinth.
+function buildAltLab(scene,gx,gz,d){reseed(9895+d);KOFF=[gx,0,gz];
+ const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);
+ const dd=d>0?1:0,brk=d===1||d===2,conc=CONC(d);
+ REGISTER({name:'The Star laboratory ('+AD_STATE[d]+')',x:0,z:10,r:64,h:30});
+ const DR=12,DHt=18,solid=[],hold=holeFn(dd,9895,null,2);
+ kput(dd?'slabCR':'slabC',[0,.3,0],null,[36,.6,36],null);
+ solid.push(lathe({rFn:()=>DR,H:DHt,nu:48,nv:4}));
+ solid.push(lathe({rFn:y=>DR*Math.sqrt(clamp(1-Math.pow(y/7,2),0,1))+.4,H:7,nu:48,nv:8,hole:hold?(u,y)=>hold(u,y*3):null}).translate(0,DHt,0));
+ kput(dd?'ringR':'ringW',[0,DHt+6.6,0],qEuler(Math.PI/2,0,0),3,null);
+ for(let i=0;i<24;i++){const a=i/24*TAU;kput(d===0?'ovalI':'ovalD',[(DR+.1)*Math.cos(a),DHt-2.2,(DR+.1)*Math.sin(a)],qFacing([Math.cos(a),0,Math.sin(a)]),[.7,.7,1],null);}
+ // LOBES
+ const HW=4.6,HH=4.6,NS=24,sec=th=>{const r=se(th,4);return[HW*r*Math.cos(th),HH*r*Math.sin(th)];};
+ const lobeRings=(a,yc,s0,s1)=>{const c=Math.cos(a),s=Math.sin(a),out=[];
+  for(const t of[0,.25,.6,.85,1]){const sd=lerp(s0,s1,t),k=1+.16*Math.pow(t,2);
+   const R=[];for(let j=0;j<NS;j++){const p=sec(j/NS*TAU);R.push([sd*c-s*p[0]*k,yc+p[1]*k,sd*s+c*p[0]*k]);}out.push(R);}
+  return out;};
+ // the eye: a frame (superellipse with a round hole) facing out along a, at radius s1
+ const eyeFrame=(a,yc,s1,k)=>{const sh=new THREE.Shape();for(let j=0;j<=NS;j++){const p=sec(j/NS*TAU);j?sh.lineTo(p[0]*k,p[1]*k):sh.moveTo(p[0]*k,p[1]*k);}
+  const hp=new THREE.Path();hp.absarc(0,0,3.6,0,TAU,false);sh.holes.push(hp);const g=new THREE.ShapeGeometry(sh,16);
+  g.applyMatrix4(new THREE.Matrix4().makeRotationFromQuaternion(qFacing([Math.cos(a),0,Math.sin(a)])).setPosition(s1*Math.cos(a),yc,s1*Math.sin(a)));return adUV(g);};
+ const fires=[],eyes=[];
+ for(let i=0;i<6;i++){const a=Math.PI/2+Math.PI/6+i*Math.PI/3,up=i%2===1,yc=up?11.8:4.8,S1=27;
+  if(brk&&i===5){// broken off: a stump at the drum, the rest on the plinth
+   adLoft(solid,lobeRings(a,yc,DR-2,15).slice(0,3),true);
+   const fr=adLoft(null,lobeRings(a,yc,15,S1).slice(2),true);const fg=[fr,eyeFrame(a,yc,S1,1.16)];
+   const m=meshMerged(fg,MAT.concreteR,G);m.position.set(Math.cos(a)*30,0,Math.sin(a)*30);m.rotation.set(.1,.25,-.18);dropFragment(m,0,.3);continue;}
+  adLoft(solid,lobeRings(a,yc,DR-2,S1),true);solid.push(eyeFrame(a,yc,S1,1.16));
+  if(up)for(const s of[-1,1]){const px=21*Math.cos(a)-Math.sin(a)*s*2.6,pz=21*Math.sin(a)+Math.cos(a)*s*2.6;adBox(solid,px,(yc-HH)/2,pz,1.8,yc-HH,1.8,-a);}
+  eyes.push([a,yc,S1]);}
+ // eyes: glass, ring and spokes (the glass gone in the ruin; salvage in the reclaimed)
+ for(const[a,yc,S1]of eyes){const c=Math.cos(a),s=Math.sin(a),q=qFacing([c,0,s]),p=[S1*c,yc,S1*s];
+  if(d===0){const g=new THREE.CircleGeometry(3.6,24);g.applyMatrix4(new THREE.Matrix4().makeRotationFromQuaternion(q).setPosition(p[0]-c*.3,p[1],p[2]-s*.3));mesh(g,MAT.glass,G);}
+  kput(dd?'ringR':'ringW',[p[0]+c*.2,p[1],p[2]+s*.2],q,3.6,null);kput(dd?'ringR':'ringW',[p[0]+c*.2,p[1],p[2]+s*.2],q,1.6,null);
+  for(let k=0;k<8;k++){if(brk&&h3(k,a,1)<.3)continue;const th=k/8*TAU,ex=Math.cos(th),ey=Math.sin(th);
+   beam(dd?'strutR':'strutW',[p[0]+c*.2-s*ex*1.6,p[1]+ey*1.6,p[2]+s*.2+c*ex*1.6],[p[0]+c*.2-s*ex*3.6,p[1]+ey*3.6,p[2]+s*.2+c*ex*3.6],.22,.22);}
+  if(d===2){kput('patchSheet',[p[0]-c*.4,p[1]-1.2,p[2]-s*.4],q,[6.4,2.6,1],null);kput('patchBoard',[p[0]-c*.4,p[1]+1.5,p[2]-s*.4],q.clone().multiply(qEuler(0,0,.1)),[5,2.4,1],null);
+   fires.push([p[0]-c*.5,p[1]+.2,p[2]-s*.5,c,s,1.4,1.2]);}}
+ // THE RAMP: a sloped deck with parapets, from the south up to the portal
+ const ramp=(z0,z1,y0,y1)=>{const R=(z,y,w,h)=>[[-w,y,z],[w,y,z],[w,y+h,z],[-w,y+h,z]];
+  adLoft(solid,[R(z0,y0-.8,3.6,.8),R(z1,y1-.8,3.6,.8)]);for(const s of[-1,1])adLoft(solid,[[[s*3.6,y0,z0],[s*3.2,y0,z0],[s*3.2,y0+1.1,z0],[s*3.6,y0+1.1,z0]],[[s*3.6,y1,z1],[s*3.2,y1,z1],[s*3.2,y1+1.1,z1],[s*3.6,y1+1.1,z1]]]);};
+ const rY=z=>8*(64-z)/(64-DR+.5);
+ if(brk){ramp(64,44,rY(64)+.01,rY(44));ramp(36,DR-.5,rY(36),rY(DR-.5));adRubbleLine([-3,36],[3,44],0,0,3,24,1.4);
+  const g=[];adBox(g,0,0,0,7,.8,8);const m=meshMerged(g,MAT.concreteR,G);m.position.set(1,0,40);m.rotation.set(.35,.1,.15);dropFragment(m,0,.1);}
+ else ramp(64,DR-.5,.01,8);
+ for(const s of[-1,1])adBox(solid,s*2.4,(8+(brk?0:0))/2,DR-.2,1.2,8,1.2);
+ kput('archOpen',[0,10.3,DR+.2],null,[.7,.55,1],null);
+ meshMerged(solid,conc,G);
+ if(brk){adRubbleArc(0,0,Math.PI/3-.3,Math.PI/3+.3,()=>14,14,40,1.4);}
+ if(dd){mossOnSurface(G,0,0,0,50,1.2);vinesFromLedge(G,0,0,0,30,8,0,0);stainsFromLedge(G,0,0,0,24,8,0,0);}
+ if(d===1){scatterMoss(0,0,0,20,46,40,1.6);trees(0,0,40,62,12);}
+ if(d===2){
+  for(let i=0;i<5;i++){const z=58-i*8;kput('shantyRoof',[5.6,3+rY(z),z],qEuler(0,0,-.2),[3,1,6],new THREE.Color().setHSL(rng(),.4,.6));}
+  for(let i=0;i<8;i++){const a=rr(0,TAU);if(Math.sin(a)>.6)continue;kput('planter',[30*Math.cos(a),.95,30*Math.sin(a)],qEuler(0,-a,0),[3,.7,5],null);}
+  adReclaim(G,{up:40,fires,trees:[40,64,14],figs:12,spread:24,cz:20,minY:.4});}
+ if(d===0||d===3)figures(0,44,5,8);
+ KOFF=[0,0,0];return G;}
 // ---------------------------------------------------------------- scene
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);
 renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;document.body.appendChild(renderer.domElement);
@@ -25844,6 +26734,8 @@ const BUDGET={
        fac:'medium',port:'medium',gov:'medium',lib:'medium',bunk:'medium',off:'medium',
        apt:'medium',amph:'medium',lab:'medium',robo:'medium',dc:'medium',hosp:'medium',hotel:'medium'},
 };
+// alternate domestic types (src/8ak-alt-*, target alt-domestic)
+Object.assign(BUDGET.type,{adWave:'small',adBridge:'small',adFuel:'small',adRadar:'small',adDish:'small',adFins:'medium',adAmph:'medium',adFac:'medium',adLab:'medium',adMega:'mega'});
 
 // --- sample points, one pass over the scene ---------------------------------
 // An instanced item contributes its translation; a mesh contributes its world
