@@ -4,6 +4,8 @@
 
 Docs: `API.md`, `CONTRACT.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `README.md`
 
+Built output (never open it; edit `src/` and rebuild): `dist/cgBox.html`, `dist/cgCrane.html`, `dist/cgEdges.html`, `dist/cgStore.html`, `dist/chHousing.html`, `dist/ddDock.html`, `dist/ddShed.html`, `dist/ddYard.html`, `dist/edges.html`, `dist/harbour.html`, `dist/hbEdges.html`, `dist/hbFish.html`, `dist/hbHaven.html`, `dist/hbMarina.html`, `dist/lbAuthority.html`, `dist/lbBlocks.html`, `dist/lbStores.html`, `dist/lbTanks.html`, `dist/segment.html`, `dist/showcase.html`, `dist/slBerth.html`, `dist/slCarrier.html`, `dist/slPen.html`, `dist/slSub.html`, `dist/spYard.html`, `dist/tmEdges.html`, `dist/tmHeli.html`, `dist/tmPass.html`, `dist/tmShip.html`, `dist/vsFeeder.html`, `dist/vsGiant.html`, `dist/vsPanamax.html`
+
 Build: `cd settlements/port && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
@@ -24,14 +26,14 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `50-registry.js` | <1 | v3: inspector registry + group transforms (1) |
 | `54-mat-concrete.js` | 4 | v4: concrete, brick, glass panes (1) |
 | `69-mat-salvage.js` | 12 | salvage (decay level 3) (1); FIRELIGHT (44) |
-| `70-port-core.js` | 18 | registry (23); layout (48); vessels (134); stats keys (159); geometry batching (167) |
-| `71-port-terrain.js` | 19 | the natural coast (7); stamps (23); materials (101); the terrain grid (187) |
+| `70-port-core.js` | 38 **big** | registry (24); layout (53); vessels (272); stats keys (308); geometry batching (316); inspector tags (434); the salvage pass, port edition (469) |
+| `71-port-terrain.js` | 22 | the natural coast (7); stamps (23); materials (101); the terrain grid (194) |
 | `72-port-kit.js` | 9 | materials (11); geometry (56) |
-| `73-port-edges.js` | 14 | paving (11); the quay wall (27); revetment (92); side closure (115); deck on columns (151) |
+| `73-port-edges.js` | 17 | paving (11); the quay wall (27); revetment (92); side closure (115); deck on columns (151); land blocks and sea platforms (190) |
 | `74-port-dress.js` | 12 | the stacked-container house (23); lamps, rails, boats (60); the shed (118) |
 | `80-pq-quay.js` | 4 |  |
 | `81-pp-pier.js` | 11 |  |
-| `82-dd-dock.js` | 29 | small helpers (41); the sea over a dry pit (WORKAROUND) (56); the stepped pit (84); the hull (109); the travelling gantry (173); sides of a segment that stands out to sea (214) |
+| `82-dd-dock.js` | 27 | small helpers (41); the stepped pit (59); the hull (84); the travelling gantry (148); sides of a segment that stands out to sea (189) |
 | `82-dd-shed.js` | 12 |  |
 | `82-dd-yard.js` | 13 |  |
 | `83-cg-box.js` | 15 |  |
@@ -50,9 +52,16 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `87-sl-b-sub.js` | 7 |  |
 | `87-sl-c-berth.js` | 13 |  |
 | `87-sl-d-pen.js` | 13 |  |
-| `90-scene.js` | 6 | scene (1); THE PORT (27) |
+| `88-lb-a-authority.js` | 39 **big** | sides (36); small pieces (106); the dev layout (191) |
+| `88-lb-b-stores.js` | 12 |  |
+| `88-lb-c-tanks.js` | 14 |  |
+| `89a-ch-stack.js` | 32 **big** | materials and kit (28); small helpers (51); the container dwelling (94); the stacked tower (120); the block: ground, footways, sides (254); chStack: tall stacked towers (306) |
+| `89b-ch-court.js` | 13 | yard props (16); the compound (50); chCourt (125) |
+| `89c-ch-tank.js` | 16 |  |
+| `89y-sp-1-yard.js` | 34 **big** | sides (47); stamps (89); small geometry (106); edges (116); containers (203); the warehouse (226); the yard office (273); the gantry (297); the reach stacker (328); floating things (d=3) (350) |
+| `90-scene.js` | 7 | scene (1); THE PORT (27) |
 | `91-probe.js` | 6 | probe (window._api) (1) |
-| `92-camera.js` | 6 | camera control (1); DAY / NIGHT (2) |
+| `92-camera.js` | 13 | camera control (1); DAY / NIGHT (2); SEGMENT BOUNDARIES (29); INSPECTOR (68) |
 | `99-tail.html` | <1 |  |
 
 ## targets/
@@ -65,20 +74,27 @@ Each target adds its own fragments to `src/` and builds one output.
 | `cgCrane` | `89z-rows.js`, `91z-views.js` | 1 |
 | `cgEdges` | `89z-rows.js`, `91z-views.js` | <1 |
 | `cgStore` | `89z-rows.js`, `91z-views.js` | 1 |
+| `chHousing` | `89z-rows.js`, `91z-views.js` | 3 |
 | `ddDock` | `89z-rows.js`, `91z-views.js` | 2 |
 | `ddShed` | `89z-rows.js`, `91z-views.js` | 2 |
 | `ddYard` | `89z-rows.js`, `91z-views.js` | 2 |
 | `edges` | `89z-rows.js`, `91z-views.js` | <1 |
+| `harbour` | `89z-rows.js`, `91z-views.js` | 5 |
 | `hbEdges` | `89z-rows.js`, `91z-views.js` | <1 |
 | `hbFish` | `89z-rows.js`, `91z-views.js` | <1 |
 | `hbHaven` | `89z-rows.js`, `91z-views.js` | <1 |
 | `hbMarina` | `89z-rows.js`, `91z-views.js` | <1 |
+| `lbAuthority` | `89z-rows.js`, `91z-views.js` | <1 |
+| `lbBlocks` | `89z-rows.js`, `91z-views.js` | <1 |
+| `lbStores` | `89z-rows.js`, `91z-views.js` | <1 |
+| `lbTanks` | `89z-rows.js`, `91z-views.js` | <1 |
 | `segment` | `89z-rows.js`, `91z-views.js` | 1 |
-| `showcase` | `89z-rows.js`, `91z-views.js` | 1 |
+| `showcase` | `89z-rows.js`, `91z-views.js` | 2 |
 | `slBerth` | `89z-rows.js`, `91z-views.js` | 1 |
 | `slCarrier` | `89z-rows.js`, `91z-views.js` | 1 |
 | `slPen` | `89z-rows.js`, `91z-views.js` | 1 |
 | `slSub` | `89z-rows.js`, `91z-views.js` | 1 |
+| `spYard` | `89z-rows.js`, `91z-views.js` | 3 |
 | `tmEdges` | `89z-rows.js`, `91z-views.js` | <1 |
 | `tmHeli` | `89z-rows.js`, `91z-views.js` | 1 |
 | `tmPass` | `89z-rows.js`, `91z-views.js` | 1 |

@@ -1,0 +1,60 @@
+127.0.0.1 - - [21/Sep/2026 06:07:31] "GET /repaired.html HTTP/1.1" 200 -
+ERROR PANEL: clean
+draw calls: 258 triangles: 2515532
+counters: {"_instances": 51129, "_ready": true, "_registered": 52}
+
+--- invariants ---
+  FAIL  registered-volumes-non-empty : 1 empty of 52: Campus Wing 7 — halls
+  PASS  no-nan-geometry : clean
+  PASS  per-type-triangle-budget : 30 type/decay pairs, heaviest mega/3 249710/700000
+  PASS  showcase-triangle-budget : 2690178 / 6000000 scene triangles
+  PASS  showcase-draw-calls : 258 / 900 draw calls at this camera
+  PASS  registry-and-bake-ran : 52 registered volumes, 51129 baked instances
+
+--- per type (scene triangles, instances, meshes) ---
+  mega/3          249710 /  700000  mega    inst    4325  meshes    15
+  skyC/3          202088 /  400000  sky     inst    2590  meshes    10
+  fac/3           170080 /  250000  medium  inst    2271  meshes    61
+  campus/3        157580 /  700000  mega    inst    4248  meshes     8
+  skyB/3          144788 /  400000  sky     inst    1900  meshes     6
+  skyA/3          132074 /  400000  sky     inst    2020  meshes     5
+  skyG/3          116470 /  400000  sky     inst    1901  meshes     9
+  arc/3           113960 /  700000  mega    inst    2022  meshes    22
+  apt/3           104182 /  250000  medium  inst    1698  meshes    22
+  lab/3           103930 /  250000  medium  inst    1794  meshes    23
+  skyH/3          100854 /  400000  sky     inst    1503  meshes     4
+  skyD/3           92020 /  400000  sky     inst    1526  meshes     5
+  skyF/3           91134 /  400000  sky     inst    1614  meshes     7
+  port/3           90880 /  250000  medium  inst    1705  meshes    15
+  skyE/3           88404 /  400000  sky     inst    1674  meshes     4
+  gov/3            76992 /  250000  medium  inst    1634  meshes    14
+  hotel/3          75840 /  250000  medium  inst    2592  meshes     6
+  off/3            68662 /  250000  medium  inst    1424  meshes    10
+  robo/3           63454 /  250000  medium  inst    1443  meshes    20
+  dc/3             62142 /  250000  medium  inst    1354  meshes    17
+  lib/3            54858 /  250000  medium  inst    1181  meshes     6
+  dish/3           51564 /   60000  small   inst     979  meshes     7
+  hosp/3           50554 /  250000  medium  inst    1393  meshes     6
+  amph/3           43552 /  250000  medium  inst    1063  meshes     6
+  bunk/3           36490 /  250000  medium  inst     878  meshes     4
+  fuel/3           35608 /   60000  small   inst     895  meshes     8
+  house/3          35448 /   60000  small   inst     929  meshes    25
+  radar/3          34536 /   60000  small   inst    1155  meshes     3
+  house2/3         29294 /   60000  small   inst     917  meshes     5
+  police/3         13030 /   60000  small   inst     501  meshes     2
+shot: ./shots/rep\view_Lab.png   calls 272  tris 2.58M
+shot: ./shots/rep\view_Skyscraper_A.png   calls 52  tris 2.23M
+shot: ./shots/rep\view_Hotel.png   calls 244  tris 2.38M
+shot: ./shots/rep\view_Houses_intact.png   calls 244  tris 2.56M
+shot: ./shots/rep\view_Apartments_intact.png   calls 206  tris 2.54M
+shot: ./shots/rep\view_Offices.png   calls 185  tris 2.50M
+
+--- worst draw calls over 6 views ---
+  Lab                          calls   272  tris 2.58M
+  Hotel                        calls   244  tris 2.38M
+  Houses intact                calls   244  tris 2.56M
+  Apartments intact            calls   206  tris 2.54M
+  Offices                      calls   185  tris 2.50M
+  Skyscraper A                 calls    52  tris 2.23M
+
+FAILED: assert registered-volumes-non-empty
