@@ -2,6 +2,10 @@
 
 - [ ] **The eight reference images were not available** to this pass (`abyss.zip` was not in the repo or the upload);
       every form follows the brief's written description of the image. Compare against the pictures and list mismatches.
+- [ ] **Stuck on "Laying out the abyssal kit…" on the user's machine** (LAN host site and Claude), not reproducible headless
+      (WebGL 1 and 2, FAST and full path, through host/server.py). Any build error was hidden under the loading screen (z 30
+      over the error panel's z 20); ERR() now takes the loading screen down, so the next failure shows its message.
+      Headless runs always take the FAST path (`navigator.webdriver`): test the full path by masking it.
 - [ ] **The ruler's title** is a placeholder: "the Headman" (palace and plaza names).
 - [ ] **Hospitality lighting is a judgement call:** the inn, tavern and caravanserai burn lit oil lanterns (public
       houses open at night); the brief lights only rich, civic, sacred and palace buildings. Say if they should be unlit.
