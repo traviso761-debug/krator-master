@@ -21,6 +21,33 @@ kdef('spFinW',new THREE.ShapeGeometry(new THREE.Shape([new THREE.Vector2(0,-.5),
 kdef('spFinR',new THREE.ShapeGeometry(new THREE.Shape([new THREE.Vector2(0,-.5),new THREE.Vector2(1,-.05),new THREE.Vector2(1,.05),new THREE.Vector2(0,.5)])),MAT.rust);
 kdef('spSpikeW',new THREE.ConeGeometry(1,1,5).translate(0,.5,0),MAT.white);
 kdef('spSpikeR',new THREE.ConeGeometry(1,1,5).translate(0,.5,0),MAT.rust);
+// CONTRAST. KNOWN_ISSUES: "white on white at distance, and nothing in this kit
+// casts shadows, so all form comes from facet normals". The facets alone gave
+// too little: at the hero distance a crest and the valley beside it differ by a
+// few percent. So the valleys are PAINTED -- the skin carries a vertex colour
+// that is 1 on every arris and drops to VAL in the re-entrant between two, with
+// a little more at the recessed foot of each shelf band, which is where a
+// real mass this deep would hold its shade. The panel map still reads through.
+MAT.spWhiteV=MAT.white.clone();MAT.spWhiteV.vertexColors=true;
+MAT.spRustV=MAT.rust.clone();MAT.spRustV.vertexColors=true;
+// meshMerged() drops every attribute but position, normal and uv, so the
+// painted skin is merged here instead: same packing, plus the colour (1 where a
+// piece carries none). It still goes out through mesh(), so it is counted.
+function spMerge(geos,mat,parent){
+ const keep=geos.filter(g=>g&&g.attributes.position&&g.attributes.position.count);
+ let nv=0,ni=0;for(const g of keep){nv+=g.attributes.position.count;ni+=g.index?g.index.count:g.attributes.position.count;}
+ const P=new Float32Array(nv*3),N=new Float32Array(nv*3),U=new Float32Array(nv*2),C=new Float32Array(nv*3).fill(1);
+ const I=nv>65535?new Uint32Array(ni):new Uint16Array(ni);let vo=0,io=0;
+ for(const g of keep){const A=g.attributes,c=A.position.count;
+  P.set(A.position.array,vo*3);if(A.normal)N.set(A.normal.array,vo*3);if(A.uv)U.set(A.uv.array,vo*2);
+  if(A.color)C.set(A.color.array,vo*3);
+  if(g.index){const ix=g.index.array;for(let i=0;i<ix.length;i++)I[io+i]=ix[i]+vo;io+=ix.length;}
+  else{for(let i=0;i<c;i++)I[io+i]=vo+i;io+=c;}
+  vo+=c;}
+ const M=new THREE.BufferGeometry();
+ M.setAttribute('position',new THREE.BufferAttribute(P,3));M.setAttribute('normal',new THREE.BufferAttribute(N,3));
+ M.setAttribute('uv',new THREE.BufferAttribute(U,2));M.setAttribute('color',new THREE.BufferAttribute(C,3));
+ M.setIndex(new THREE.BufferAttribute(I,1));return mesh(M,mat,parent);}
 
 function buildSpire(scene,gx,gz,d){reseed(9310+d);KOFF=[gx,0,gz];
  const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);
@@ -38,9 +65,16 @@ function buildSpire(scene,gx,gz,d){reseed(9310+d);KOFF=[gx,0,gz];
   const f=(th+tw*t)*sides/TAU;
   const w=Math.abs(2*(f-Math.floor(f))-1);
   return R*Math.pow(1-t,pw)*(inner+(1-inner)*w)*(1+.16*((t*shelf)%1));};
- const tierGeo=(R,H,sides,inner,pw,shelf,tw,nu,nv,hole)=>gridSurface((u,v)=>{
+ const VAL=.50;
+ const tierGeo=(R,H,sides,inner,pw,shelf,tw,nu,nv,hole)=>{const g=gridSurface((u,v)=>{
   const th=u*TAU,t=v*.997,r=rOf(R,sides,inner,pw,shelf,tw,th,t);
   return[r*Math.cos(th),H*v,r*Math.sin(th)];},nu,nv,{uS:R*TAU/24,vS:H/24,hole});
+  const C=new Float32Array((nu+1)*(nv+1)*3);
+  for(let j=0;j<=nv;j++)for(let i=0;i<=nu;i++){const th=i/nu*TAU,t=j/nv*.997;
+   const f=(th+tw*t)*sides/TAU,w=Math.abs(2*(f-Math.floor(f))-1);   // 1 on an arris, 0 in a valley
+   const sp=(t*shelf)%1;                                             // 0 at the foot of a shelf band
+   const k=(j*(nu+1)+i)*3;C[k]=C[k+1]=C[k+2]=lerp(VAL,1,Math.pow(w,.75))*(1-.22*Math.pow(1-sp,5));}
+  g.setAttribute('color',new THREE.BufferAttribute(C,3));return g;};
 
  const shells=[],cores=[],tips=[];
  const INNER=[.60,.63,.67,.72],PW=[1.05,1.12,1.18,1.22],SHELF=[3,2,2,2];
@@ -128,7 +162,7 @@ function buildSpire(scene,gx,gz,d){reseed(9310+d);KOFF=[gx,0,gz];
    qEuler(rr(-.012,.012),c[4],rr(-.012,.012)),new THREE.Vector3(1,1,1)),
    c[1],c[2],c[3],0,c[5],i*17+3);
   lx+=rr(-4,4);lz+=rr(-4,4);});
- meshMerged(shells,skin,G);
+ spMerge(shells,d>0?MAT.spRustV:MAT.spWhiteV,G);
  meshMerged(cores,d>0?MAT.guts:MAT.dark,G);
 
  // ---------------------------------------------------------------- infill webs
@@ -181,10 +215,15 @@ function buildSpire(scene,gx,gz,d){reseed(9310+d);KOFF=[gx,0,gz];
  kput(SLABC(d),[0,2,0],null,[BASE+72,4,BASE+72],null);       // outer terrace
  kput(SLABC(d),[0,6,0],null,[BASE+42,4,BASE+42],null);
  kput(SLABC(d),[0,10,0],null,[BASE+16,4,BASE+16],null);      // plinth the mass stands on
- for(let k=0;k<44;k++){const th=k/44*TAU;                             // massive kerb blocks round the rim
-  kput(BOXC(d),[Math.cos(th)*(BASE+70),rr(2,5),Math.sin(th)*(BASE+70)],qEuler(0,-th,0),
+ // THE ROSETTE BROKEN UP. From overhead 44 evenly spaced kerb blocks, six
+ // causeways and six stairs at exact sixths made a regular rosette. Angles and
+ // radii are now jittered by a HASH of the index, not by rng(), so the PRNG
+ // stream -- and everything built after this -- is exactly what it was.
+ const PTH=k=>k/6*TAU+.3+.36*(h3(k,4.2,9.3)-.5);                    // causeway / portal bearings
+ for(let k=0;k<44;k++){const th=(k+.8*(h3(k,1.3,7.7)-.5))/44*TAU,rk=BASE+70+9*(h3(k,5.1,2.2)-.5);
+  kput(BOXC(d),[Math.cos(th)*rk,rr(2,5),Math.sin(th)*rk],qEuler(0,-th,0),
    [rr(8,15),rr(4,9),rr(40,58)],null);}
- for(let k=0;k<6;k++){const th=k/6*TAU+.3,L=rr(130,270);              // a causeway out from each portal stair
+ for(let k=0;k<6;k++){const th=PTH(k),L=rr(130,270);                  // a causeway out from each portal stair
   kput(BOXC(d),[Math.cos(th)*(BASE+66+L/2),2,Math.sin(th)*(BASE+66+L/2)],qEuler(0,-th,0),[L,4,rr(30,44)],null);
   for(const sg of[-1,1])kput(BOXC(d),[Math.cos(th)*(BASE+66+L/2)-Math.sin(th)*sg*20,4,Math.sin(th)*(BASE+66+L/2)+Math.cos(th)*sg*20],
    qEuler(0,-th,0),[L*.94,8,5],null);}                                // its parapet walls
@@ -195,7 +234,7 @@ function buildSpire(scene,gx,gz,d){reseed(9310+d);KOFF=[gx,0,gz];
   kput(BOXC(d),[Math.cos(th)*rO,rr(8,17),Math.sin(th)*rO],qEuler(0,-th,0),[rr(22,38),rr(16,34),rr(20,36)],null);}
  // The only human-scale thing anywhere on it: six portals at the foot, each with
  // a threshold slab and a flight of 0.5 m steps running down across the terraces.
- for(let k=0;k<6;k++){const th=k/6*TAU+.3,r=rOf(BASE,6,INNER[0],PW[0],SHELF[0],0,th,.05)*.985;
+ for(let k=0;k<6;k++){const th=PTH(k),r=rOf(BASE,6,INNER[0],PW[0],SHELF[0],0,th,.05)*.985;
   kput('archOpen',[Math.cos(th)*r,16.5,Math.sin(th)*r],qFacing([Math.cos(th),0,Math.sin(th)]),1,null);
   kput(BOXC(d),[Math.cos(th)*(r+13),13.2,Math.sin(th)*(r+13)],qEuler(0,-th,0),[24,2.4,32],null);
   for(let j=0;j<23;j++){const rs=BASE+17+j*3.3,ys=12-j*.52;if(ys<.4)break;

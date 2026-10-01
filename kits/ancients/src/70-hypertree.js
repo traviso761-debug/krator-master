@@ -114,7 +114,9 @@ function buildHypertree(scene,gx,gz,d){reseed(9450+d);KOFF=[gx,0,gz];
     qEuler(rng()*3,rng()*3,rng()*3),[s,s*.62,s],
     new THREE.Color(LEAFC[Math.floor(rng()*LEAFC.length)]));}});
 
- apron(G,0,0,RB*2.4,RB*7,d,2);
+ // NO APRON. apron() lays a graded disc of pale rock (d=0) or mud, and under
+ // a tree either read as a paper disc laid on the plain in every preset. The
+ // buttress flare and the surface roots are the ground contact.
  scatterMoss(0,0,0,RB*1.2,CR*.7,90,3.2);
  figures(RB*2.2,0,6,40);
  KOFF=[0,0,0];return G;}

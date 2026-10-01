@@ -46,14 +46,30 @@ function buildVeladiga(scene,gx,gz,d){reseed(9380+d);KOFF=[gx,0,gz];
  // foundation out beneath. So this is a ragged notch, WIDER AT THE TOP, severing
  // the crest completely and cutting down almost to the riverbed.
  const BT=.355,BW=.052,BFLOOR=12;
+ // THE UNDERCUT. A notch that only widens with height is a V; a real breach
+ // scallops back UNDER the crest on both sides, because the jet works the
+ // softer fill below while the crest's own mass and reinforcement hang on.
+ // Two lobes of extra width below the crest, none at it, so the crest band
+ // overhangs the tear. scal() is shared with the floor-plate stubs below, which
+ // must stay attached to whatever edge the tear actually has at their level.
+ const scal=y=>1+.58*Math.exp(-Math.pow((y-(H-62))/30,2))+.32*Math.exp(-Math.pow((y-(H-150))/26,2));
  const blast=d===2?(t,y)=>{const rag=.34*fbm(t*22+y*.004,y*.045,9381,3)-.17;
-  const w=BW*(.40+1.35*clamp(y/H,0,1))*(1+rag*1.5);
+  const w=BW*(.40+1.35*clamp(y/H,0,1))*scal(y)*(1+rag*1.5);
   return Math.abs(t-BT)<w&&y>BFLOOR+rag*46;}:()=>false;
  const bx0=fp(BT,60,0)[0],bz0=fp(BT,60,0)[2];        // where the water came out
  // the washout: everything downstream of the notch is gouged into a channel
+ // It used to be one Gaussian trough widening with distance. A washout
+ // BRAIDS: the flow splits round bars of its own gravel and rejoins, and where
+ // it spreads and slows at the distal end it drops its load as a fan. scourK is
+ // the channel's strength, 0..1, which the park also uses to plane off the
+ // terrace steps the flood cut through instead of leaving them standing in it.
+ const scourK=(x,z)=>{if(d!==2)return 0;const w=150+Math.max(0,z-bz0)*.42;
+  return Math.exp(-Math.pow((x-bx0)/w,2))*clamp((z-bz0+60)/220,0,1);};
  const scour=(x,z)=>{if(d!==2)return 0;
-  const w=150+Math.max(0,z-bz0)*.42;
-  return-30*Math.exp(-Math.pow((x-bx0)/w,2))*clamp((z-bz0+60)/220,0,1);};
+  const w=150+Math.max(0,z-bz0)*.42,dx=(x-bx0)/w,k=scourK(x,z);
+  const br=Math.abs(Math.sin(dx*4.4+z*.0045+fbm(x*.004,z*.003,9390,2)*4.5));
+  const fan=11*Math.exp(-Math.pow((z-bz0-980)/190,2))*Math.exp(-dx*dx*.45);
+  return-30*k*(.45+.55*br)*clamp(1-(z-bz0-780)/500,.25,1)+fan;};
  const REC=46,FACE=[],PANEL=[],REV=[],PIER=[],DK=[];
  // ---- face, recessed panels, reveals --------------------------------------
  FACE.push(gridSurface((u,v)=>fp(u,v*H,0),NB*18,76,{uS:64,vS:16,
@@ -154,9 +170,14 @@ function buildVeladiga(scene,gx,gz,d){reseed(9380+d);KOFF=[gx,0,gz];
  const pV=z=>clamp((z-150)/1340,0,1);
  const pTerr=z=>-Math.floor(pV(z)*7)*1.4;
  const pCh=z=>7-4*pV(z);
- const pY=(x,z)=>Math.max(.8,12+pTerr(z)-pCh(z)*Math.exp(-Math.pow((x-bx0*.35)/115,2))
-   +3*fbm(x*.004+3,z*.004,9385,3)+scour(x,z));
- mesh(gridSurface((u,v)=>{const x=(u-.5)*2160,z=150+v*1340;return[x,pY(x,z),z];},54,42,{uS:32,vS:24}),
+ // The scour is scaled into the height the park actually HAS above the plain.
+ // Added raw, a 30 m trough in a park standing 4-12 m up hit the 0.8 m floor
+ // clamp everywhere in the channel, and the braids and bars all came out as
+ // one flat sheet at the clamp.
+ const pY=(x,z)=>{const b=12+lerp(pTerr(z),-pV(z)*7*1.4,clamp(scourK(x,z)*1.6,0,1))
+   -pCh(z)*Math.exp(-Math.pow((x-bx0*.35)/115,2))+3*fbm(x*.004+3,z*.004,9385,3);
+  const sc=scour(x,z);return Math.max(.8,sc<0?b+sc*Math.max(0,b-1.6)/30:b+sc);};
+ mesh(gridSurface((u,v)=>{const x=(u-.5)*2160,z=150+v*1340;return[x,pY(x,z),z];},d===2?96:54,d===2?76:42,{uS:32,vS:24}),
   d===2?MAT.mud:MAT.lawn,G);
  if(d!==2)mesh(gridSurface((u,v)=>{const x=(u-.5)*126+bx0*.35,z=170+v*1300;
   return[x,12+pTerr(z)-pCh(z)*.42,z];},10,34,{}),MAT.water,G);
@@ -167,7 +188,7 @@ function buildVeladiga(scene,gx,gz,d){reseed(9380+d);KOFF=[gx,0,gz];
   // they would NOT do: a plate whose lateral span has been blown away is a
   // cantilever with nothing holding its free end. So each level keeps only a
   // stub off each edge of the tear, and the stub droops as it projects.
-  const bhw=y=>BW*(.40+1.35*clamp(y/H,0,1));   // tear half-width in t at height y
+  const bhw=y=>BW*(.40+1.35*clamp(y/H,0,1))*scal(y);   // tear half-width in t at height y
   const ARC=RA*2*A;                            // metres per unit of t
   for(let y=Y0;y<Y1;y+=11){const hw=bhw(y);
    for(let si=0;si<2;si++){const sg=si?1:-1;
