@@ -40,6 +40,15 @@ const VIEWS={
  // under the soffit's edge and look up into it.
  'Crater soffit':(()=>{const C=HS2.CRATER,M=HS2.COM,dx=C[0]-M[0],dz=C[1]-M[1],L=Math.hypot(dx,dz)||1;
    return AT(HR,C,340,dx/L*250,-300,dz/L*250);})(),
+ // CLOSE RANGE, for the dwelling cells (qa/arcB.md round 3): 190 m off the
+ // upper city's +x+z leg at the twelfth level, by day and by night, and up at
+ // the cells hung under the lower city's tenth soffit.
+ 'Terrace cells':(()=>{const S=HS.SHEAR,Nn=HS.SHEARN||[.6,.8];
+   return[HX+S[0]+Nn[0]*190,S[1]+40,S[2]+Nn[1]*190,HX+S[0],S[1]-5,S[2]];})(),
+ 'Terrace cells at night':(()=>{const S=HS.SHEAR,Nn=HS.SHEARN||[.6,.8];
+   return[HX+S[0]+Nn[0]*190,S[1]+40,S[2]+Nn[1]*190,HX+S[0],S[1]-5,S[2],1];})(),
+ 'Hung cells':(()=>{const L=HS.LOWQ||[300,460,300],Nn=HS.LOWN||[.7,.7];
+   return[HX+L[0]+Nn[0]*420,L[1]-95,L[2]+Nn[1]*420,HX+L[0],L[1]-15,L[2]];})(),
  'The hypertree':[-ROWS.mav.s+520,180,ROWS.mav.z+700,-ROWS.mav.s,220,ROWS.mav.z],
  'Tree and arcology':[-ROWS.mav.s-900,420,ROWS.mav.z+1900,HX+CXL-300,400,CZL],
  'Both':[(HX+HR)/2,1100,5400,(HX+HR)/2,480,239],
