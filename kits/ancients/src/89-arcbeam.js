@@ -66,6 +66,16 @@ function buildArcbeam(scene,gx,gz,d){reseed(9560+d);KOFF=[gx,0,gz];
   kput('rubble',[cx+Math.cos(a)*r,cy+(1-q)*(1-q)*sMax*.55+sz*.4,cz+Math.sin(a)*r],
    qEuler(rng()*3,rng()*3,rng()*3),[sz*rr(.7,1.5),sz*rr(.5,1),sz*rr(.7,1.5)],
    new THREE.Color().setHSL(rr(.05,.10),rr(.12,.30),rr(.09,.21)));}};
+ // HEDGES were the kit's 'hedge' — a green box — and read as flat green bricks
+ // at any distance a preset uses. A row of leaf cards along the same footprint,
+ // same arguments: one card per ~4 m of run, each with its own small twist.
+ // The colour is lifted because it multiplies the leaf texture's own green.
+ const _hdir=new THREE.Vector3(),_hsl={};
+ const abHedge=(p,q,sc,c)=>{const L=sc[0],H=sc[1],W=sc[2],n=Math.max(1,Math.round(L/4));
+  _hdir.set(1,0,0).applyQuaternion(q);c.getHSL(_hsl);
+  for(let i=0;i<n;i++){const t=((i+.5)/n-.5)*L;
+   kput('leafCard',[p[0]+_hdir.x*t,p[1]-H*.5+H*.62,p[2]+_hdir.z*t],q.clone().multiply(qEuler(0,rr(-.5,.5),0)),
+    [L/n*.78,H*.72,W*.62],new THREE.Color().setHSL(_hsl.h,_hsl.s,clamp(_hsl.l*2.5,.28,.62)));}};
 
  // ---- the numbers ----------------------------------------------------------
  // The gorge is 520 deep against a 960 clear span — 1 : 1.85. The first pass cut
@@ -190,9 +200,16 @@ function buildArcbeam(scene,gx,gz,d){reseed(9560+d);KOFF=[gx,0,gz];
     // The failure plane DIPS: 40% of the depth at the foot of the scar and the
     // full depth at its head, so the fresh face is a slope a slab slid off,
     // not a second wall parallel to the first one.
+    // The fresh face carries its own bedding: the first cut had only one
+    // 45 m noise on it and read as a smooth scoop set into a bedded cliff.
+    // Same kinds of term as the wall — a dipping stratum, a quantised bench
+    // and a fine break-up — at a shorter period, because it is fresh rock.
     if(k>0){const dp=SCAR.dep*(.40+.60*clamp((y-(SCAR.y-SCAR.ry))/(2*SCAR.ry),0,1));
-     x=lerp(x,WX+dp+13*fbm(z*.022,y*.022,9581,2)-6,k);}}
-   return[x,y,z];},240,68,{uS:LEN/30,vS:CANY/30,
+     const bed=7*Math.sin(y*.11+z*.0026+fbm(z*.011,0,9582,2)*5)
+              +6*Math.round(Math.sin(y*.058+fbm(z*.006,0,9583,2)*4)*2)/2
+              +9*fbm(z*.034,y*.030,9584,3);
+     x=lerp(x,WX+dp+13*fbm(z*.022,y*.022,9581,2)-6+bed,k);}}
+   return[x,y,z];},420,80,{uS:LEN/30,vS:CANY/30,      // 240x68 was 11 m columns against 50 m gullies (now 6 m): soft at close range (QA arcA)
    hole:(u,v)=>{const z=-LEN*.5+u*LEN;return inPortal(z,v*rimY(z));}}));
   // the portal linings: a sill and two reveals, so the mouth is a cutting driven
   // into the rock and not a rectangle of missing wall with daylight behind it
@@ -203,10 +220,19 @@ function buildArcbeam(scene,gx,gz,d){reseed(9560+d);KOFF=[gx,0,gz];
   // lined on every face the eye can reach.
   const PX1=BX1+24;
   for(const sd2 of [-1,1]){
+   // In the ruin the rockfall has taken the rock these linings were cut into:
+   // wherever the scar's face lies behind a lining, that part of the lining is
+   // gone, and the buried 87 m of beam stands open in the bowl. Left standing,
+   // they were two thin sheets of rock hiding exactly what the scar was for.
+   const scarGone=(x,z,y)=>{if(!(s>0&&SCAR))return false;const k=inScar(z,y);
+    return k>.25&&x<WX+SCAR.dep*k*(.40+.60*clamp((y-(SCAR.y-SCAR.ry))/(2*SCAR.ry),0,1))-10;};
    ROCK.push(gridSurface((u,v)=>[s*lerp(WX-40,PX1,v),PY0,
-    sd2*BZ+(u-.5)*2*(bhw(BY0)+PCL)],6,8,{uS:6,vS:10}));
+    sd2*BZ+(u-.5)*2*(bhw(BY0)+PCL)],6,8,{uS:6,vS:10,
+    hole:(u,v)=>scarGone(lerp(WX-40,PX1,(v)),sd2*BZ+(u-.5)*2*(bhw(BY0)+PCL),PY0)}));
    for(const f2 of [-1,1])ROCK.push(gridSurface((u,v)=>{const y=PY0+u*(CANY+4-PY0);
-    return[s*lerp(WX-40,PX1,v),y,sd2*BZ+f2*(bhw(Math.min(y,BY1))+PCL)];},14,8,{uS:10,vS:10}));
+    return[s*lerp(WX-40,PX1,v),y,sd2*BZ+f2*(bhw(Math.min(y,BY1))+PCL)];},14,8,{uS:10,vS:10,
+    hole:(u,v)=>{const y=PY0+u*(CANY+4-PY0);
+     return scarGone(lerp(WX-40,PX1,v),sd2*BZ+f2*(bhw(Math.min(y,BY1))+PCL),y);}}));
    ROCK.push(gridSurface((u,v)=>{const y=PY0+v*(CANY+4-PY0);
     return[s*PX1,y,sd2*BZ+(u-.5)*2*(bhw(Math.min(y,BY1))+PCL)];},10,10,{uS:8,vS:10}));}
   // No head slab: the plateau surface already runs across the top of the cutting
@@ -449,7 +475,7 @@ function buildArcbeam(scene,gx,gz,d){reseed(9560+d);KOFF=[gx,0,gz];
     if(zoneAt(x,L)[2]==='ind'||inBay(x,ty,sd)||inFigCourt(x,ty))continue;
     const zo=lerp(zAt(x,ty+3),zAt(x,ty-3),rr(.25,.8));
     if(rng()<.5)VEG.tree(x,ty,zo,i%3,rr(6,dd?15:11));
-    else kput('hedge',[x,ty+.9,zo],qEuler(0,rr(-.2,.2),0),[rr(5,15),1.8,rr(2,4)],
+    else abHedge([x,ty+.9,zo],qEuler(0,rr(-.2,.2),0),[rr(5,15),1.8,rr(2,4)],
      new THREE.Color().setHSL(rr(.22,.34),rr(.3,.5),dd?rr(.08,.16):rr(.13,.24)));}
    if(!dd)for(let i=0;i<12;i++){const x=rr(-BXE,BXE);
     if(zoneAt(x,L)[2]==='ind'||inFigCourt(x,ty))continue;
@@ -503,8 +529,22 @@ function buildArcbeam(scene,gx,gz,d){reseed(9560+d);KOFF=[gx,0,gz];
    if(inBay(x,BY1,sd))continue;
    const z2=lerp(zo(x,BY1,-1),zo(x,BY1,1),rr(.12,.88));
    if(rng()<.62)VEG.tree(x,BY1,z2,i%3,rr(7,dd?18:13));
-   else kput('hedge',[x,BY1+1,z2],qEuler(0,rng()*TAU,0),[rr(6,20),2,rr(3,6)],
+   else abHedge([x,BY1+1,z2],qEuler(0,rng()*TAU,0),[rr(6,20),2,rr(3,6)],
     new THREE.Color().setHSL(rr(.22,.34),rr(.3,.5),dd?rr(.08,.16):rr(.13,.24)));}
+  // THE ROOF WAS 1 200 x 82 m OF BLANK PAVING with trees dropped on it. Two
+  // ranks of rooflights now run the length of each beam either side of the
+  // axis — they light the top storeys, and they are what gives the deck a
+  // grain from the rim — with a lamp and a bench on the axis between them.
+  {const pitch=26,nR=Math.floor(BXE*2/pitch);
+   for(let i=0;i<nR;i++){const x=-BXE+(i+.5)*pitch;
+    if(inBay(x,BY1,sd))continue;
+    for(const f2 of [-1,1]){if(dd&&rng()<.30)continue;
+     const zc=sd*BZ+f2*22;
+     kput(BX,[x,BY1+.8,zc],null,[11,1.6,6.5],null);
+     kput(dd?'abCell':'abGlaze',[x,BY1+1.65,zc],qFacing([0,1,0]),[9.6,5.2,1],dd?DEAD:null);}
+    if(i%2===0){kput(BX,[x,BY1+.35,sd*BZ],null,[5,.7,1.4],null);
+     if(!dd)kput('strip',[x,BY1+4.2,sd*BZ],null,[1.2,1.2,1.2],CYAN);
+     if(!dd||rng()<.4)kput(PIER,[x,BY1,sd*BZ+2.2],null,[.6,4,.6],null);}}}
   // roof pavilions, one per zone that asks for one
   L.forEach(Z=>{if(Z[2]==='ind'||Z[2]==='gar')return;
    const cx=(Z[0]+Z[1])*.5;if(Math.abs(cx)>BXE-40)return;
@@ -609,7 +649,7 @@ function buildArcbeam(scene,gx,gz,d){reseed(9560+d);KOFF=[gx,0,gz];
   // planting and people on the span top
   for(let i=0;i<(dd?22:16);i++){const z2=rr(-76,76);
    if(rng()<.55)VEG.tree(S.x+rr(-S.w*.4,S.w*.4),S.y,z2,i%3,rr(6,dd?15:11));
-   else kput('hedge',[S.x+rr(-S.w*.4,S.w*.4),S.y+.9,z2],qEuler(0,rng()*TAU,0),
+   else abHedge([S.x+rr(-S.w*.4,S.w*.4),S.y+.9,z2],qEuler(0,rng()*TAU,0),
     [rr(4,12),1.8,rr(2,4)],new THREE.Color().setHSL(rr(.22,.34),rr(.3,.5),dd?rr(.08,.16):rr(.13,.24)));}
   if(!dd)for(let i=0;i<10;i++){const z2=rr(-78,78);
    kput('figB',[S.x+rr(-S.w*.4,S.w*.4),S.y,z2],qEuler(0,rng()*TAU,0),1,
@@ -660,7 +700,7 @@ function buildArcbeam(scene,gx,gz,d){reseed(9560+d);KOFF=[gx,0,gz];
   for(let i=0;i<(dd?46:34);i++){const x=rr(CC.x0,CC.x1),z2=rr(-76,76);
    if(Math.hypot(x-20,z2)<54)continue;
    if(rng()<.55)VEG.tree(x,CC.y,z2,i%3,rr(6,dd?16:11));
-   else kput('hedge',[x,CC.y+.9,z2],qEuler(0,rng()*TAU,0),[rr(5,14),1.8,rr(2,4)],
+   else abHedge([x,CC.y+.9,z2],qEuler(0,rng()*TAU,0),[rr(5,14),1.8,rr(2,4)],
     new THREE.Color().setHSL(rr(.22,.34),rr(.3,.5),dd?rr(.08,.16):rr(.13,.24)));}
   if(!dd)for(let i=0;i<26;i++){const x=rr(CC.x0,CC.x1),z2=rr(-76,76);
    kput('figB',[x,CC.y,z2],qEuler(0,rng()*TAU,0),1,new THREE.Color().setHSL(rr(0,.1),rr(.2,.5),rr(.25,.5)));
@@ -688,12 +728,21 @@ function buildArcbeam(scene,gx,gz,d){reseed(9560+d);KOFF=[gx,0,gz];
    // A dressed rectangular portal frame standing proud of the rock face, on the
    // cutting's own line (bhw + clearance) rather than on a guessed ellipse.
    const zo2=y=>bhw(Math.min(y,BY1))+PCL+5;
+   // On the scar side the frame came down with the rock it was keyed into:
+   // what stood inside the bite is lying on the talus below it.
+   const fGone=(z,y)=>s2>0&&SCAR&&inScar(z,y)>.3;
+   const fFall=(z,sc)=>{if(!SCAR)return;
+    kput(BX,[s2*(WX-rr(80,200)),rr(17,24),z+rr(-40,40)],qEuler(rr(-1,1),rng()*TAU,rr(-1,1)),sc,null);};
    for(let i=0;i<16;i++){const y=PY0-4+(i+.5)*((BY1+22-PY0)/16);
-    for(const f2 of [-1,1])kput(BX,[s2*(WX-3),y,sd*BZ+f2*zo2(y)],null,[9,(BY1+22-PY0)/16*1.05,9],null);}
+    for(const f2 of [-1,1]){const zf=sd*BZ+f2*zo2(y),sc=[9,(BY1+22-PY0)/16*1.05,9];
+     if(fGone(zf,y)){if(rng()<.6)fFall(zf,sc);continue;}
+     kput(BX,[s2*(WX-3),y,zf],null,sc,null);}}
    for(let i=0;i<14;i++){const t=(i+.5)/14;
-    const zz=sd*BZ+(t-.5)*2*zo2(PY0);
-    kput(BX,[s2*(WX-3),PY0-8,zz],null,[9,9,zo2(PY0)*2/14*1.05],null);
-    kput(BX,[s2*(WX-3),BY1+26,sd*BZ+(t-.5)*2*zo2(BY1)],null,[9,9,zo2(BY1)*2/14*1.05],null);}
+    const zz=sd*BZ+(t-.5)*2*zo2(PY0),zt=sd*BZ+(t-.5)*2*zo2(BY1);
+    if(fGone(zz,PY0-8)){if(rng()<.5)fFall(zz,[9,9,zo2(PY0)*2/14*1.05]);}
+    else kput(BX,[s2*(WX-3),PY0-8,zz],null,[9,9,zo2(PY0)*2/14*1.05],null);
+    if(fGone(zt,BY1+26)){if(rng()<.5)fFall(zt,[9,9,zo2(BY1)*2/14*1.05]);}
+    else kput(BX,[s2*(WX-3),BY1+26,zt],null,[9,9,zo2(BY1)*2/14*1.05],null);}
    if(!dd)for(let i=0;i<7;i++)kput('strip',[s2*(WX-6),BY1+22,sd*BZ+(i/6-.5)*2*zo2(BY1)*.9],
     qEuler(0,Math.PI/2,0),[9,1.6,1.6],CYAN);}
   // SURFACE WORKS. Two compounds per rim, not a scatter: the first pass threw
@@ -706,14 +755,30 @@ function buildArcbeam(scene,gx,gz,d){reseed(9560+d);KOFF=[gx,0,gz];
    GRD.push(gridSurface((u,v)=>[cx+(u-.5)*300,CANY+1.6,cz+(v-.5)*230],10,8,{uS:10,vS:8}));
    for(let i=0;i<22;i++)                                            // the yard wall
     kput(dd?'boxR':'boxW',[cx+((i%11)/10-.5)*300,CANY+4,cz+(i<11?-1:1)*115],null,[30,8,4],null);
-   for(let r2=0;r2<3;r2++)for(let c2=0;c2<5;c2++){
-    if(dd&&rng()<.34)continue;
-    const hh=[34,22,15][r2]*rr(.85,1.15);
-    kput(dd?'boxR':'boxW',[cx+(c2-2)*56,CANY+1.6+hh*.5,cz+(r2-1)*68],null,
-     [rr(28,42),hh,rr(24,38)],null);
-    if(r2===0)kput(dd?'pipeR':'pipe',[cx+(c2-2)*56,CANY+1.6+hh+13,cz-68],null,[3.6,26,3.6],null);
-    if(!dd&&rng()<.4)kput('strip',[cx+(c2-2)*56,CANY+2.6+hh,cz+(r2-1)*68],
-     qEuler(0,Math.PI/2,0),[18,1.6,1.6],new THREE.Color(0xffb257));}
+   // Four compounds, four layouts. The first pass stamped the same 3 x 5 block
+   // into every yard, mirrored, and from the plan view it read as one rubber
+   // stamp used four times. Rank count, file count, pitch, heights and which
+   // rank carries the stacks now differ per compound; so does a big shed or a
+   // tank row standing in for one rank.
+   const pi=(s2>0?2:0)+(sd>0?1:0),NR=[3,2,4,3][pi],NC=[5,4,3,6][pi];
+   const pX=[56,70,82,46][pi],pZ=[68,90,52,62][pi],stk=[0,1,2,1][pi];
+   const HT=[[34,22,15],[40,18],[26,30,14,20],[16,34,22]][pi];
+   for(let r2=0;r2<NR;r2++){const zr=cz+(r2-(NR-1)*.5)*pZ;
+    if(pi===1&&r2===1){                                    // a single long shed
+     kput(dd?'boxR':'boxW',[cx,CANY+1.6+11,zr],null,[pX*(NC-1)+30,22,40],null);
+     if(!dd)kput('strip',[cx,CANY+24,zr+20.5],null,[pX*(NC-1),1.6,1.6],new THREE.Color(0xffb257));
+     continue;}
+    if(pi===2&&r2===3){                                    // a tank row
+     for(let c2=0;c2<NC+2;c2++){if(dd&&rng()<.3)continue;
+      kput(dd?'pipeR':'pipe',[cx+(c2-(NC+1)*.5)*pX*.62,CANY+1.6+12,zr],null,[13,24,13],null);}
+     continue;}
+    for(let c2=0;c2<NC;c2++){
+     if(dd&&rng()<.34)continue;
+     const xc=cx+(c2-(NC-1)*.5)*pX,hh=HT[r2%HT.length]*rr(.85,1.15);
+     kput(dd?'boxR':'boxW',[xc,CANY+1.6+hh*.5,zr],null,[rr(.5,.75)*pX,hh,rr(.4,.6)*pZ],null);
+     if(r2===stk)kput(dd?'pipeR':'pipe',[xc,CANY+1.6+hh+13,zr-pZ*.3],null,[3.6,26,3.6],null);
+     if(!dd&&rng()<.4)kput('strip',[xc,CANY+2.6+hh,zr],
+      qEuler(0,Math.PI/2,0),[18,1.6,1.6],new THREE.Color(0xffb257));}}
    // the conveyor gallery: yard to portal, on trestles
    const ay=CANY+26;
    beam(BX,[s2*(WX+18),ay,sd*(BZ+96)],[cx,ay+4,cz-104],7,8);
@@ -736,7 +801,7 @@ function buildArcbeam(scene,gx,gz,d){reseed(9560+d);KOFF=[gx,0,gz];
   for(let i=0;i<22;i++){const x=s2*rr(WX+30,WX+330),z2=rr(-300,300);
    if(Math.abs(Math.abs(z2)-BZ)<70)continue;
    if(rng()<.55)VEG.tree(x,CANY+1.2,z2,i%3,rr(7,dd?18:12));
-   else kput('hedge',[x,CANY+2,z2],qEuler(0,rng()*TAU,0),[rr(6,18),2,rr(3,6)],
+   else abHedge([x,CANY+2,z2],qEuler(0,rng()*TAU,0),[rr(6,18),2,rr(3,6)],
     new THREE.Color().setHSL(rr(.22,.34),rr(.3,.5),dd?rr(.08,.16):rr(.13,.24)));}
   if(!dd)for(let i=0;i<10;i++){const x=s2*rr(WX+40,WX+300),z2=rr(-260,260);
    kput('figB',[x,CANY+1.2,z2],qEuler(0,rng()*TAU,0),1,
@@ -744,42 +809,83 @@ function buildArcbeam(scene,gx,gz,d){reseed(9560+d);KOFF=[gx,0,gz];
    kput('figH',[x,CANY+1.2,z2],null,1,new THREE.Color(0xc9a17e));}}
 
  // ---- the dropped span -----------------------------------------------------
- // The whole of secondary span 4 is on the canyon floor, 196 m down, broken
- // across its own length. Built in its own frame and seated on its true lowest
- // vertex, because fragBox over-reaches badly for a long piece lying at an angle.
+ // The whole of secondary span 4 is on the canyon floor, 196 m down. It used to
+ // lie there as ONE 150 m box, perforated but whole, and from every preset it
+ // read as a fairly intact white block somebody had set down in the gorge. A
+ // span that falls 316 m does not arrive in one piece: it BROKE across its own
+ // length on impact. So it is two pieces now, kinked and rolled against each
+ // other with a gap full of debris between, and every end is TORN — each face
+ // bitten back a different ragged depth — with the floors running on a few
+ // metres past the shell as broken stubs, a dark lining inside the walls so a
+ // torn end shows a wall with a thickness, and the fabric's own dark cells on
+ // both long faces so it reads as a piece of the building and not as a plate.
  let FALL=null;
- if(dd){const S=SEC[DROP],ww=S.w,hh=S.h,ll=150;
-  // It fell 316 m. A piece that lands that hard does not come to rest level:
-  // the roll is 0.34-0.62 rad and the pitch is real, so it reads as dropped
-  // rather than parked.
-  const F=new THREE.Group();FALL=[S.x+rr(-40,40),0,rr(-40,60)];
-  F.position.set(FALL[0],0,FALL[2]);F.rotation.set(rr(-.34,.20),rr(.5,1.1),rr(.34,.62));G.add(F);
-  const fg=[];
-  for(const s3 of [-1,1])fg.push(gridSurface((u,v)=>[s3*ww*.5,(v-.5)*hh,(u-.5)*ll],30,8,
-   {uS:20,vS:6,hole:holeFn(1,9598,null,1.6)}));
-  fg.push(gridSurface((u,v)=>[(u-.5)*ww,-hh*.5,(v-.5)*ll],6,28,{uS:5,vS:20}));
-  fg.push(gridSurface((u,v)=>[(u-.5)*ww,hh*.5,(v-.5)*ll],6,28,{uS:5,vS:20,
-   hole:holeFn(1,9599,null,1.8)}));
-  meshMerged(fg,skin,F);
-  // Floor plates inside it, so the broken ends are rooms and not an empty shell
-  // — pale slab, dark soffit, same rule as the collapsed bay.
-  {const fp=[],fs=[];for(let p=0;p<3;p++){
-    const hl=(u,v)=>fbm(u*4+p,v*7,9602+p,3)<.30;
-    const pl=dy=>gridSurface((u,v)=>[(u-.5)*ww*.92,(p-1)*hh*.3+dy,(v-.5)*ll*.96],4,20,
+ if(dd){const S=SEC[DROP],ww=S.w,hh=S.h,LL=150;
+  const hA=holeFn(1,9598,null,1.6),hB=holeFn(1,9599,null,1.8);
+  const jag=(v,k)=>3+13*fbm(v*4.3+k*1.7,k*.9,9603+k,2);
+  const piece=(F,ll,pk)=>{const fg=[],lin=[],fp=[],fs=[];
+   const cut=(zl,v,f,x)=>zl>ll*.5-jag(v,f*2+pk*9)+(x||0)||zl<-ll*.5+jag(v,f*2+1+pk*9)-(x||0);
+   for(const s3 of [-1,1]){const f=s3>0?0:1;
+    fg.push(gridSurface((u,v)=>[s3*ww*.5,(v-.5)*hh,(u-.5)*ll],30,8,{uS:20,vS:6,
+     hole:(u,v)=>cut((u-.5)*ll,v,f)||hA(u*ll/216+s3+pk,v*hh)}));
+    lin.push(gridSurface((u,v)=>[s3*(ww*.5-.9),(v-.5)*hh,(u-.5)*ll],30,8,{uS:20,vS:6,
+     hole:(u,v)=>cut((u-.5)*ll,v,f,-1.5)}));}
+   fg.push(gridSurface((u,v)=>[(u-.5)*ww,-hh*.5,(v-.5)*ll],6,28,{uS:5,vS:20,
+    hole:(u,v)=>cut((v-.5)*ll,u,2)}));
+   fg.push(gridSurface((u,v)=>[(u-.5)*ww,hh*.5,(v-.5)*ll],6,28,{uS:5,vS:20,
+    hole:(u,v)=>cut((v-.5)*ll,u,3)||hB(v*ll/216+pk,u*40)}));
+   lin.push(gridSurface((u,v)=>[(u-.5)*ww*.96,hh*.5-.9,(v-.5)*ll],6,28,{uS:5,vS:20,
+    hole:(u,v)=>cut((v-.5)*ll,u,3,-1.5)}));
+   // floor plates, running 2-6 m on past the shell as broken stubs
+   for(let p=0;p<3;p++){
+    const hl=(u,v)=>cut((v-.5)*ll,u,4+p,4)||fbm(u*4+p,v*7,9602+p,3)<.26;
+    const pl=dy=>gridSurface((u,v)=>[(u-.5)*ww*.94,(p-1)*hh*.3+dy,(v-.5)*ll],4,24,
      {uS:3,vS:14,hole:hl});
     fp.push(pl(0));fs.push(pl(-1.1));}
-   meshMerged(fp,skin,F);meshMerged(fs,MAT.guts,F);}
-  dropFragment(F,4,1.5);
-  {F.updateMatrix();const v3=new THREE.Vector3();let my=Infinity;
+   // cross walls, so the torn end opens on rooms and not on a tube
+   for(let q=0;q<Math.floor(ll/16);q++){const zc=-ll*.5+(q+.5)*ll/Math.floor(ll/16);
+    if(rng()<.35)continue;
+    lin.push(gridSurface((u,v)=>[(u-.5)*ww*.9,(v-.5)*hh*.92,zc],4,3,{uS:4,vS:3,
+     hole:(u,v)=>cut(zc,u,5)||fbm(u*3,v*3,9607+q,2)<.30}));}
+   meshMerged(fg,skin,F);meshMerged(fp,skin,F);meshMerged(lin.concat(fs),MAT.guts,F);
+   return {fg,cut};};
+  // piece A where the span landed; piece B snapped off its east end and rolled
+  const l1=LL*rr(.52,.60),gap=rr(8,16),l2=LL-l1-4;
+  const FA=new THREE.Group();FA.position.set(S.x+rr(-40,40),0,rr(-40,60));
+  FA.rotation.set(rr(-.34,.20),rr(.5,1.1),rr(.34,.62));G.add(FA);
+  const PA=piece(FA,l1,0);
+  const FB=new THREE.Group();G.add(FB);
+  {FA.updateMatrix();const ax=new THREE.Vector3(0,0,1).applyQuaternion(FA.quaternion);ax.y=0;ax.normalize();
+   const off=l1*.5+gap+l2*.5;
+   FB.position.set(FA.position.x+ax.x*off,0,FA.position.z+ax.z*off);
+   FB.rotation.set(FA.rotation.x+rr(.10,.26),FA.rotation.y+rr(.28,.52)*(rng()<.5?-1:1),-FA.rotation.z*rr(.3,.8));}
+  const PB=piece(FB,l2,1);
+  // seat each on its own lowest vertex, as before: fragBox over-reaches badly
+  // for a long piece lying at an angle
+  const seat=(F,fg)=>{dropFragment(F,4,1.5);F.updateMatrix();const v3=new THREE.Vector3();let my=Infinity;
    for(const g of fg){const p=g.attributes.position.array;
     for(let i=0;i<p.length;i+=3){v3.set(p[i],p[i+1],p[i+2]).applyMatrix4(F.matrix);if(v3.y<my)my=v3.y;}}
-   if(isFinite(my))F.position.y+=4-my;F.updateMatrix();}
-  FALL=[F.position.x,F.position.y+hh*.5,F.position.z];
-  REGISTER({name:'Arcbeam — the dropped span',x:F.position.x,z:F.position.z,r:120,h:80});
-  abDebris(F.position.x,4,F.position.z,24,190,200,7);
+   if(isFinite(my))F.position.y+=4-my;F.updateMatrix();};
+  seat(FA,PA.fg);seat(FB,PB.fg);
+  // the cells and the moss follow each piece through useGroupXF
+  const dress=(F,ll,P,pk)=>{useGroupXF(F);
+   const nz=Math.round(ll/8.2),ny=Math.round(hh/6.4);
+   for(const s3 of [-1,1])for(let j=0;j<ny;j++)for(let i=0;i<nz;i++){
+    const zl=-ll*.5+(i+((j%2)?.25:.75))*(ll/nz),yl=-hh*.5+(j+.5)*(hh/ny),u=zl/ll+.5,v=yl/hh+.5;
+    if(P.cut(zl,v,s3>0?0:1,-3)||hA(u*ll/216+s3+pk,v*hh)||rng()<.22)continue;
+    kput('abCell',[s3*(ww*.5+.35),yl,zl],qFacing([s3,0,0]),[6.6,4.2,1],DEAD);}
+   mossOnSurface(P.fg,0,0,0,46,4.2);
+   endGroupXF();};
+  dress(FA,l1,PA,0);dress(FB,l2,PB,1);
+  FALL=[FA.position.x,FA.position.y+hh*.5,FA.position.z];
+  const mx=(FA.position.x+FB.position.x)*.5,mz=(FA.position.z+FB.position.z)*.5;
+  REGISTER({name:'Arcbeam — the dropped span',x:mx,z:mz,r:150,h:80});
+  abDebris(FA.position.x,4,FA.position.z,24,190,170,7);
+  abDebris(mx,4,mz,4,60,90,9);                          // the break
+  abDebris(FB.position.x,4,FB.position.z,20,120,70,6);
   for(let i=0;i<14;i++){const a=rng()*TAU,r2=rr(40,170);
-   beam(BX,[F.position.x+Math.cos(a)*r2,rr(4,14),F.position.z+Math.sin(a)*r2],
-    [F.position.x+Math.cos(a)*(r2+rr(20,70)),rr(4,10),F.position.z+Math.sin(a)*(r2+rr(14,60))],
+   beam(BX,[mx+Math.cos(a)*r2,rr(4,14),mz+Math.sin(a)*r2],
+    [mx+Math.cos(a)*(r2+rr(20,70)),rr(4,10),mz+Math.sin(a)*(r2+rr(14,60))],
     rr(4,9),rr(4,9));}}
 
  // ---- the collapsed bay's interior and its debris --------------------------
@@ -830,7 +936,15 @@ function buildArcbeam(scene,gx,gz,d){reseed(9560+d);KOFF=[gx,0,gz];
   abDebris(0,4,0,80,460,150,6);
   trees(0,0,120,470,38);}
  else{trees(0,0,150,460,26);}
- figures(0,240,8,90);figures(0,-260,6,80);
+ // People on the gorge floor, stood ON it. figures() puts everyone at y=0, and
+ // this floor is 14-26 m up with a river in the middle, so the two crowds it
+ // used to place were knee-deep in mud or wading. Same wash maths as the floor.
+ {const flY=(x,z)=>{const u=x/(2*(WX+70))+.5,v=(z+LEN*.5)/LEN,w=Math.exp(-Math.pow(x/150,2));
+   return 14+12*fbm(u*7,v*11,9571,3)*(1-w)-12*w;};
+  for(const C of [[1,240,8],[-1,-260,6]])for(let i=0;i<C[2];i++){
+   const x=C[0]*rr(190,330),z=C[1]+rr(-70,70),c=new THREE.Color().setHSL(rr(0,.1),rr(.2,.5),rr(.25,.5));
+   kput('figB',[x,flY(x,z),z],qEuler(0,rng()*TAU,0),1,c);
+   kput('figH',[x,flY(x,z),z],null,1,new THREE.Color(0xc9a17e));}}
 
  // ---- what the presets are derived from ------------------------------------
  AB_SITE[d]={x:gx,z:gz,d:d,dd:dd,CANY:CANY,GAP:GAP,WX:WX,BY0:BY0,BY1:BY1,BDEP:BDEP,

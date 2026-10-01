@@ -14,7 +14,7 @@ BIG = 30 * 1024          # CLAUDE.md: never read a fragment this size whole
 
 ABOUT = {
     'settlements/voth': 'Voth: a Venice/Vivec-like Dunmer city on an enclosed brackish bay, with the most complete life layer and collision system.',
-    'settlements/yuni': 'Yuni: the city, plus its building-kit, furniture and plant sheets.',
+    'settlements/yuni': 'Yuni: the city, plus its building-kit and plant sheets (its furniture is in kits/catalog).',
     'settlements/dalab': 'Dalab: the mound settlement of the southwestern lowlands, and its building set.',
     'settlements/highlands': 'Highlands: Republican, Rustic and Tribal building kits for the temperate highlands of the Inner Wall, and the town of Roketstad.',
     'settlements/iziz': 'Iziz: the city rebuilt on the Iziz Vernacular style and the Ancients kit.',
@@ -23,11 +23,14 @@ ABOUT = {
     'settlements/locus': 'Locus: a fork of the Yuni engine in the eastern abyss, with its own kit sheet and plant catalogue.',
     'settlements/girder': 'Girder: an outlying Beast Rider village in the central-crater hyperjungle.',
     'settlements/mavs-refuge': "Mav's Refuge: a refuge in the hypertropic jungle on the lee shore of the Ring Sea.",
+    'settlements/ys': 'Ys: the half-drowned Hykkousoi capital on the ruins of an Ancient city at the head of the north-west bay of the Ring Sea (phase 0: harness and empty world).',
     'settlements/xanadu': 'Xanadu: the building kit of the southern Sultanate (Tibetan massing, Indian, Turkish and Persian detail) and the city of Erewhon.',
     'settlements/shade': "Shade: the Eastern Nomads' sunken basin in the eastern high desert (falls, pool, carved face, switchback, slot canyon) on the sedesert biome kit: rock-cut and pueblo buildings, cliff dwellings round the rim, alcoves and an undercut behind the falls, the life layer's data and walkable grid.",
     'kits/ringsea': 'Ring Sea watercraft: 21 procedural vessels (warships, cargo ships, barges, canoes, outriggers, rafts) of the cultures round the Ring Sea.',
     'kits/post-apoc': 'The Post-Apoc set: reclaimed and recycled buildings (containers, silos, tanks, buses, bulkheads, tyre and bottle walls) with sockets for any culture\'s marks.',
     'kits/ancients': 'The Ancients kit: ruined megastructures of the ancient civilisation, 33 structure types, one target per site.',
+    'kits/interiors': 'Interiors: ROOM() registration and an engine-neutral furniture placer (ported from Yuni) with a catalog adapter; building planner (storeys, partitions, stairs), walkers and a light budget; a verified demo of planned buildings and furnished rooms with outline view and storey cut-away.',
+    'kits/catalog': 'The master catalog: asset engine, the parametric furniture kit and 1051 furniture pieces (kits/furniture SPEC shape, palette-keyed, tiered poor/common/court) over 24 cultures, one file per culture, with generic goods (containers, food, drink, supplies) and biome fruit; a verified contact sheet.',
 }
 # Files that are generated or duplicated elsewhere: never edit or read them whole.
 GENERATED = {
@@ -123,6 +126,17 @@ def build_index(build):
         lines += ['From `core/materials/` (shared; see `core/README.md`): ' + ', '.join('`%s`' % f for f in cf), '']
     for where, files in core_lists(build):
         lines += ['From `%s/` (shared; see `core/README.md`): ' % where + ', '.join('`%s`' % f for f in files), '']
+    top = [f for f in sorted(os.listdir(d)) if f.endswith('.js') and not f.startswith('.') and f != 'three.min.js']
+    if top:
+        lines += ['## Top-level sources', '',
+                  'Read by `build.py` in its own order (`SOURCES`), and loaded by path by other builds, so they stay here.', '',
+                  '| File | KB | Sections (line) |', '|---|---|---|']
+        for f in top:
+            p = os.path.join(d, f)
+            size = os.path.getsize(p)
+            lines.append('| `%s` | %s%s | %s |' % (f, kb(size), ' **big**' if size >= BIG else '',
+                                                  '; '.join([t for t in sections(p) if not t.startswith('= (')][:10])))
+        lines += ['']
     lines += ['## src/', '', '| Fragment | KB | Sections (line) |', '|---|---|---|']
     lines += frag_table(build, src, 'src')
     tdir = os.path.join(d, 'targets')
@@ -139,6 +153,7 @@ def build_index(build):
     with open(os.path.join(d, 'INDEX.md'), 'w', encoding='utf-8') as fh:
         fh.write('\n'.join(lines) + '\n')
     sizes = [os.path.getsize(os.path.join(src, f)) for f in os.listdir(src) if f[0].isdigit()]
+    sizes += [os.path.getsize(os.path.join(d, f)) for f in top]
     return len(sizes), sum(sizes), max(sizes), outs
 
 
@@ -163,8 +178,7 @@ def main():
              '', '## Not builds', '',
              '| Path | What |', '|---|---|',
              '| `core/` | shared code (see `core/README.md`): `core/materials/`, `core/biome/` (the biome core every kit reads), `core/terrain/` (carve patches), `core/atmos/` (atmosphere), `core/sockets/` (cultural sockets, banners and awnings, with a runnable example) |',
-             '| `kits/catalog/` | harvested master catalog of furniture, plants and buildings (unverified) |',
-             '| `kits/furniture/`, `kits/interiors/` | specs only |',
+             '| `kits/furniture/` | spec only |',
              '| `gallery/` | the shareable gallery of every built world |',
              '| `host/` | the LAN site server: Krator Worlds plus the World Menagerie pages (`host/README.md`) |',
              '| `tools/` | repo-wide scripts: this index |',

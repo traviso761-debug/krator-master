@@ -22,6 +22,7 @@ Rules it enforces (the same ones the Ancients-lineage builds use):
      deterministic: identical hashes prove nothing changed.
 
 Usage:  python3 build.py [--no-checks]
+        python3 build.py --vendor-check   (compare vendored files with upstream; exit 1 on undeclared drift)
 Syntax: node --check runs when node is installed; otherwise run
         python3 jscheck.py .syntax-ringsea.js (headless Chromium's parser).
 """
@@ -128,5 +129,75 @@ def main():
                 print('  ' + l[6:])
 
 
+# ---------------------------------------------------------------- vendor check
+# Files copied from settlements/reedlake. DELIBERATE drift is recorded in KNOWN_ISSUES.md;
+# anything else that differs from upstream is an error (fix upstream, then re-vendor).
+REEDLAKE = os.path.join(ROOT, 'settlements', 'reedlake')
+VENDORED = ['src/00-head.html', 'src/10-core.js', 'src/12-stats.js', 'src/30-kit.js',
+            'src/92-camera.js', 'src/93-labels.js', 'src/99-tail.html', 'verify.py', 'jscheck.py']
+DELIBERATE = {'src/00-head.html': 'own title',
+              'src/92-camera.js': 'Labels button starts off',
+              'src/93-labels.js': "labels cls:'vessel', shrinks long names",
+              'verify.py': 'vessel invariants in _api.extra(), Chromium fallback',
+              'jscheck.py': 'pre-installed Chromium fallback'}
+SOCKETS = os.path.join(ROOT, 'core', 'sockets', '80-cultures.js')
+
+
+def _js_fn_body(src, start):
+    """The text of the balanced {...} block that opens at or after index `start`."""
+    i = src.index('{', start); depth = 0
+    for j in range(i, len(src)):
+        depth += {'{': 1, '}': -1}.get(src[j], 0)
+        if depth == 0:
+            return src[i:j + 1]
+    raise ValueError('unbalanced')
+
+
+def vendor_check():
+    bad = []
+    for rel in VENDORED:
+        local, up = os.path.join(HERE, rel), os.path.join(REEDLAKE, rel)
+        if not os.path.exists(up):
+            print('  ?  %-18s upstream missing (%s)' % (rel, os.path.relpath(up, ROOT))); continue
+        same = open(local, 'rb').read() == open(up, 'rb').read()
+        if same:
+            print('  =  %-18s identical' % rel)
+        elif rel in DELIBERATE:
+            print('  ~  %-18s drifts (deliberate: %s)' % (rel, DELIBERATE[rel]))
+        else:
+            print('  !  %-18s DRIFTS from %s' % (rel, os.path.relpath(up, ROOT))); bad.append(rel)
+    for rel in DELIBERATE:   # a deliberate drift that disappeared means KNOWN_ISSUES.md is stale
+        up = os.path.join(REEDLAKE, rel)
+        if os.path.exists(up) and open(os.path.join(HERE, rel), 'rb').read() == open(up, 'rb').read():
+            print('  note: %s is now identical to upstream; drop it from DELIBERATE and KNOWN_ISSUES.md' % rel)
+    # the faction liveries copied by hand into 41-rs-tex.js (README "Faction colours")
+    tex = open(os.path.join(SRC, '41-rs-tex.js'), encoding='utf-8').read()
+    cult = open(SOCKETS, encoding='utf-8').read()
+    norm = lambda t: re.sub(r'\s+', '', t)
+    m = re.search(r'const RS_CULT=\{(.*?)\};', tex, re.S)
+    rs = dict(re.findall(r"(\w+):\{([^}]*)\}", m.group(1))) if m else {}
+    for k, body in sorted(rs.items()):
+        pk = re.search(r"mkCulture\(\{key:'%s',(.*?)\}\);" % k, cult, re.S)
+        if not pk:
+            print('  !  RS_CULT.%-9s no pack `%s` in core/sockets' % (k, k)); bad.append('RS_CULT.' + k); continue
+        diffs = [f for f, v in re.findall(r"(\w+):'([^']*)'", body)
+                 if not re.search(r"\b%s:'%s'" % (f, re.escape(v)), pk.group(1))]
+        if diffs:
+            print('  !  RS_CULT.%-9s differs from the core/sockets pack in: %s' % (k, ', '.join(diffs))); bad.append('RS_CULT.' + k)
+        else:
+            print('  =  RS_CULT.%-9s matches the core/sockets pack' % k)
+    for mine, theirs in (('rsSymSun', 'sun'), ('rsSymDiamond', 'diamond')):
+        a = _js_fn_body(tex, tex.index('function %s(' % mine))
+        b = _js_fn_body(cult, re.search(r'\n %s:\(' % theirs, cult).end())
+        if norm(a) == norm(b):
+            print('  =  %-18s matches SYMBOLS.%s' % (mine, theirs))
+        else:
+            print('  !  %-18s differs from SYMBOLS.%s in core/sockets/80-cultures.js' % (mine, theirs)); bad.append(mine)
+    print('vendor-check: ' + ('OK (only the deliberate drift in KNOWN_ISSUES.md)' if not bad else 'DRIFT: ' + ', '.join(bad)))
+    return not bad
+
+
 if __name__ == '__main__':
+    if '--vendor-check' in sys.argv:
+        sys.exit(0 if vendor_check() else 1)
     main()

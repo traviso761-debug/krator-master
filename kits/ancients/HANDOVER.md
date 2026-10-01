@@ -1,5 +1,31 @@
 # Krator Ancients — handover
 
+## ROUND 3 (2026-10-01, user-approved) — in flight, one agent each
+- Shared-code pass: soffit bounce kit-wide, holeFn height term, shared rbeam, meshMerged colours, apron
+  material override, new rubble shape, darker MAT.dark, one shared moulding() helper, kit row re-spacing.
+- Vashtir REBUILT as a Shimizu Mega-City Pyramid type arcology (refs: Shimizu diagram and render, user-supplied).
+- Hexahedron polish: real cells, more hypertree species, flank sag.
+- Skyscraper I/J/K design passes; restand of A-H (tighter stances, smaller podiums).
+- The Iziz spaceport ported into the kit with every decay (target `spaceport`).
+- Dalab: the user calls it settled ("looks good in the settlement"); its dome-size and room-fit-out items are closed.
+
+## RESUMED 2026-10-01 on branch `ancients-resume` — state at end of day, read first
+All merged into `ancients-resume`, built, jscheck'ed and verified (full kit: error panel clean, every invariant
+PASS, showcase 17.4M tris OVER the 6M soft ceiling by the user's choice, worst draw calls ~620/900). Gallery
+republished (https://claude.ai/artifact/UhTfQ2kioZEbrzZR1agHv9, version 23).
+- QA round 2 on the original types: towers, civic, domestic (`qa/<group>.md`); Houses A-C petals restored.
+- QA arcologies set A and B recovered from `wip/` and continued (`qa/arcA.md`, `qa/arcB.md`).
+- Lighthouse island finished (`targets/lighthouse/NOTES.md`).
+- Item 3 done: 29 arco1/arco2 alternates (`alt-towers`, `alt-domestic`, `alt-civic`), PLUS kit rows north of the
+  Lighthouse (decay 2 = reclaimed at t=2s), one overview preset per group.
+- Yuni-only variants ported into the kit (`yuni-variants`, src/8am-yv-*), with kit rows (decays 0/1/3).
+- Tower stumps (src/8an-iz-stumps.js, `iziz-variants`), with kit rows at x=t+650 in each tower's row.
+  Open: a floating block on Stump G (agent asked to fix).
+- Yuni's Ancients port now generated from the live kit (`settlements/yuni/ANCIENTS-SYNC.md`,
+  `tools/gen_ancients.py --check`); Yuni sheet and city verified.
+- Items 4 (machines) and 5 (port arcology) were SCRATCHED by the user. The stale root `voth/` tree was deleted.
+- NOT done: re-vendoring the kit into settlements/iziz, dalab and screamers (each needs its own verify).
+
 ## PAUSED 2026-09-29 (user stopped to save usage) — resume here
 - Merged and published: QA domestic, towers, civic, this month's arcologies (arcC). Kit artifact https://claude.ai/artifact/FSKTzZ3duwQ2zrbdEEqYYf.
 - PORT round 3 DONE 2026-10-01 (settlements/port): land blocks (lb*, ch*), sea platform spYard, infra (inspector, bounds toggle `b`, grid placement, every vessel, `harbour` target); showcase 9.06M tris / 883 calls.
@@ -90,6 +116,7 @@ expands `N+d` over decays 0-4.
 | `skyI` (89k) | 9760 | 38 980 / 65 844 / 69 746 / 71 468 | the Braid; kit row z=26400 |
 | `skyJ` (89l) | 9770 | 175 520 / 114 292 / 133 290 / 173 834 | the Whorl; kit row z=27200 |
 | `skyK` (89m) | 9780 | 160 499 / 174 692 / 229 042 / 197 700 | the Sail; kit row z=28000 |
+| `lighthouse` (89n) | 9790 | 117 568 / 90 460 / 118 678 / 118 560 | Skyscraper J as a lighthouse on an island in its own sea, swept beacon (`tick` hook); kit row z=28800; finished 2026-10-01, see `targets/lighthouse/NOTES.md` |
 
 The three towers keep dev targets (`skyi`/`skyj`/`skyk`) and also have kit
 rows. The kit is now **9 967 649** scene triangles (OVER the 6M soft ceiling

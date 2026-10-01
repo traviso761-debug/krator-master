@@ -40,8 +40,8 @@ function buildRsBeastRookery(){reseed(72500);
  for(let i=0;i<6;i++){const x=rr(-3,3),z=rr(-5,-2);rsCyl(B,'thatch',.4,.3,.6,[x,yD+.3,z],null,0xb89a60,10);rsSphere(B,'paint',.2,[x,yD+.62,z],[1.4,.5,.6],0xa8b8c0,6,4);}
  // one tall crab-claw on the centre hull, forward of the tower
  const mx=6.5;rsLink(B,'wood',[mx,yD,0],[mx-.8,yD+8,0],.14,0x5a3a24,8,.1);
- const S=rsSail(B,{key:'rookery-claw',O:[mx,yD+.4,0],U:[-1,0,0],V:[0,1,0],belly:1,nu:22,nv:12,A:t=>[t*3+Math.sin(Math.PI*t)*.9,t*13.5],Bf:t=>[t*6.8,t*4.4+Math.sin(Math.PI*t)*1.1],draw:rsRookeryClaw});
- rsSailEdge(B,S,0,.1,0x6a4a2c,0,1.04);rsSailEdge(B,S,1,.09,0x6a4a2c,0,1.02);rsRope(B,S.at(.6,0),[mx+6,yT+.3,0]);
+ rsRig(B,[[mx,yD,0],[mx-.8,yD+8,0]],{gain:.6});const S=rsSail(B,{key:'rookery-claw',O:[mx,yD+.4,0],U:[-1,0,0],V:[0,1,0],belly:1,nu:22,nv:12,A:t=>[t*3+Math.sin(Math.PI*t)*.9,t*13.5],Bf:t=>[t*6.8,t*4.4+Math.sin(Math.PI*t)*1.1],draw:rsRookeryClaw});
+ rsSailEdge(B,S,0,.1,0x6a4a2c,0,1.04);rsSailEdge(B,S,1,.09,0x6a4a2c,0,1.02);rsRope(B,S.at(.6,0),[mx+6,yT+.3,0]);rsRigEnd(B);
  rsLink(B,'wood',[-9.5,yT+1.4,.6],[-14,-.9,1.2],.09,0x6a4a30,6);
  for(const [x,z] of[[-9,1],[-2,-2],[1.5,2.2],[5,-1.8]])rsFigure(B,[x,yD,z],rr(-.6,.6),[0x6a1c2a,0x2a5a3a,0xd8c08a][Math.floor(rng()*3)],false,0x6a4028);
  rsBake(B,V.group,'beastRookery');V.deckY=yD;return V;}

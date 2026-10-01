@@ -29,9 +29,9 @@ function buildRsBeastWaa(){reseed(71400);
  rsLink(B,'wood',[1.2,yT+.3,0],[1.2,yT+6.2,0],.12,0x4a2e1c,8);rsLink(B,'wood',[1.2,yT+6.2,-1.4],[1.2,yT+6.2,1.4],.1,0x4a2e1c,8);for(const s of[-1,1])rsRope(B,[1.2,yT+6.2,s*1.4],[1.2,yT+.4,s*2.8]);
  // two masts and crab-claw sails, the claws raked aft
  [[4.6,12],[-5,10.5]].forEach(([mx,mh])=>{const base=yT+.3;rsLink(B,'wood',[mx,base,0],[mx-.6,base+mh*.55,0],.13,0x5a3a24,8,.09);
-  const S=rsSail(B,{key:'beast-crab',O:[mx,base+.3,0],U:[-1,0,0],V:[0,1,0],belly:.9,nu:22,nv:12,
+  rsRig(B,[[mx,base,0],[mx-.6,base+mh*.55,0]]);const S=rsSail(B,{key:'beast-crab',O:[mx,base+.3,0],U:[-1,0,0],V:[0,1,0],belly:.9,nu:22,nv:12,
    A:t=>[t*mh*.22+Math.sin(Math.PI*t)*.8,t*mh],Bf:t=>[t*mh*.62,t*mh*.34+Math.sin(Math.PI*t)*mh*.08],draw:rsCrabMaroon});
-  rsSailEdge(B,S,0,.09,0x6a4a2c,0,1.04);rsSailEdge(B,S,1,.08,0x6a4a2c,0,1.02);rsRope(B,S.at(.6,0),[mx+5,yT+.3,0]);rsRope(B,S.at(1,1),[mx-7,yT+.4,2]);});
+  rsSailEdge(B,S,0,.09,0x6a4a2c,0,1.04);rsSailEdge(B,S,1,.08,0x6a4a2c,0,1.02);rsRope(B,S.at(.6,0),[mx+5,yT+.3,0]);rsRope(B,S.at(1,1),[mx-7,yT+.4,2]);});rsRigEnd(B);
  // the steering sweep, the crew
  rsLink(B,'wood',[-8.5,yT+1.4,.6],[-13,-.9,1.2],.09,0x6a4a30,6);rsBox(B,'wood',[1.4,.08,.5],[-12.6,-.7,1.15],[0,0,.45],0x6a4a30);
  for(const [x,z] of[[-8,1],[-2,1.5],[0,-1.2],[3,1.4],[6.5,-.8]])rsFigure(B,[x,yT+.3,z],rr(-.5,.5),[0x6a1c2a,0x2a5a3a,0xd8c08a][Math.floor(rng()*3)],false,0x6a4028);

@@ -229,15 +229,15 @@ function fmGranary(o){
  box('conc',0,0,0,24,.14,18,jc(0x9a9688,.04));
  for(let k=0;k<5;k++)box('conc',-9.6+k*4.8,.14,-.2,.06,.02,17.6,jc(0x6a6660,.05));   // expansion joints
  for(const [x,z,r,h,c,rc] of sil){W(x,.14,z,0,()=>silo({r:r,h:h,col:c,roofCol:rc}));}
- // catwalk in front of the three tall silos at y 7.4, on steel legs, with rails and stubs to each silo door
+ // catwalk in front of the three tall silos at y 7.4: steel grating (stFloor) on steel legs, with rails and grating stubs to each silo door
  const cy=7.4,cz=-.4;
- box('plank',-.3,cy-.1,cz,19.6,.1,1.0,jc(0x6a5a44,.06));beam('iron',[-10,cy-.15,cz-.5],[9.5,cy-.15,cz-.5],.08,jc(0x4a4038,.05));beam('iron',[-10,cy-.15,cz+.5],[9.5,cy-.15,cz+.5],.08,jc(0x4a4038,.05));
+ stFloor(-.3,cy,cz,19.6,1.0);beam('iron',[-10,cy-.15,cz-.5],[9.5,cy-.15,cz-.5],.08,jc(0x4a4038,.05));beam('iron',[-10,cy-.15,cz+.5],[9.5,cy-.15,cz+.5],.08,jc(0x4a4038,.05));
  for(const x of [-9.4,-4.8,-.2,4.4,9.0]){for(const s of [-1,1])beam('iron',[x+s*.3,0,cz+.5],[x,cy-.15,cz+.5],.08,jc(0x5a5a56,.05));beam('iron',[x-.3,2.5,cz+.5],[x+.3,4.6,cz+.5],.04,jc(0x5a5a56,.05),true,4);beam('iron',[x+.3,2.5,cz+.5],[x-.3,4.6,cz+.5],.04,jc(0x5a5a56,.05),true,4);}
  for(const [a,b] of [[-10,9.6]]){beam('iron',[a,cy+1.0,cz+.5],[b,cy+1.0,cz+.5],.05,jc(0x8a8a86,.05));beam('iron',[a,cy+1.0,cz-.5],[b,cy+1.0,cz-.5],.05,jc(0x8a8a86,.05));beam('iron',[a,cy+.5,cz+.5],[b,cy+.5,cz+.5],.03,jc(0x8a8a86,.05));
   for(let x=a;x<=b+.01;x+=1.6){beam('iron',[x,cy,cz+.5],[x,cy+1.0,cz+.5],.04,jc(0x8a8a86,.05),true,4);beam('iron',[x,cy,cz-.5],[x,cy+1.0,cz-.5],.04,jc(0x8a8a86,.05),true,4);}}
- for(const [x,z,r] of sil.slice(0,3)){const zf=z+Math.sqrt(Math.max(0,r*r-.0))-.1;box('plank',x,cy-.1,(cz-.5+zf)/2,1.0,.1,zf-(cz-.5)+.0,jc(0x6a5a44,.06));
+ for(const [x,z,r] of sil.slice(0,3)){const zf=z+Math.sqrt(Math.max(0,r*r-.0))-.1;stFloor(x,cy,(cz-.5+zf)/2,1.0,Math.abs(zf-(cz-.5)));
   W(x,0,z+r+.1,0,()=>{door(0,cy-.05,-.05,.9,1.8,{step:false,col:pick([0x8a3a2c,0x2f5f8f,0x4d6f3c])});});}
- // stub from catwalk to silo doors: made as boards reaching the wall face
+ // stub from catwalk to silo doors: grating reaching the wall face
  // ladders: catwalk end, silo C east side to its roof, silo D
  ladder(-10.2,0,cz+.1,cy+1.0,0);ladder(8.85,0,-5.5,8.9,PI/2);ladder(-8.5,.14,3.4+2.5+.02,6.6,0);
  for(const [x,z,r,h] of [[6.2,-5.5,2.6,8.6]])W(x+r*.0,0,z,0,()=>{});

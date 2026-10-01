@@ -23,7 +23,13 @@ function buildFactory(scene,gx,gz,d){reseed(d>0?9201:9200);KOFF=[gx,0,gz];REGIST
   for(let k=0;k<30;k++){const x=rr(-38,38),z=rr(z0+5,z0+L-5);kput('pipeR',[hx+x,yb+(Hh-1.2)*(1-Math.pow(2*x/(W-2),2))*.9,z],qEuler(Math.PI/2,0,0),[.6,rr(10,40),.6],null);}}
  // end walls with big arched glass openings
  [z0,z0+L].forEach((zz,i)=>{M.add(paraFill(W,Hh,34,40),skin,hx,yb,zz);
+  // round 2: a bone archivolt round the great opening, swelling at its joints
+  M.add(domMould(t=>{const x=-17+34*t;return[hx+x,yb+40*(1-Math.pow(2*x/34,2)),zz];},[0,0,1],1.1,6,72),skin);
   if(d===0){const gl=mesh(paraFill(34,40,0,0),MAT.glass,G,hx,yb,zz+(i?-.3:.3));}
+  // ruin: the great arched glazing is gone but for teeth left in the panes
+  else domShards([hx,yb,zz],qFacing([0,0,i?1:-1]),[[-15.7,2.6],[-12,4.8],[-7.2,4.8],[-2.4,4.8],[2.4,4.8],[7.2,4.8],[12,4.8],[15.7,2.6]],
+   x=>40*(1-Math.pow(clamp(2*(Math.abs(x)+1.3)/34,0,1),2)),5,.35);
+  if(d>0)for(let j=1;j<8;j++){const y=j*5;kput('mullR',[hx,yb+y,zz],qEuler(0,0,Math.PI/2),[.8,34*Math.sqrt(1-y/40),.8],null);}
   mullions(hx,yb,zz,0,0,0,d);for(let k=-3;k<=3;k++)kput(d>0?'mullR':'mullW',[hx+k*4.8,yb+19,zz],null,[1,36*(1-Math.pow(k/3.6,2)),1],null);});
  // interior strips along the hall
  for(let k=0;k<12;k++){const z=z0+8+k*13;const lit=d>0?rng()<.12:true;kput('strip',[hx,yb+Hh-4,z],null,[60,1,1],lit?CYAN:DEAD);}
@@ -39,7 +45,7 @@ function buildFactory(scene,gx,gz,d){reseed(d>0?9201:9200);KOFF=[gx,0,gz];REGIST
    // rim + oval windows facing outward from the core
    kput(d>0?'ringR':'ringW',[cx+ox,legH+lobeH,cz+oz],qEuler(Math.PI/2,0,0),[Rl+.2,Rl+.2,3],null);
    for(let yy=4;yy<lobeH-3;yy+=5.5)for(let k=-2;k<=2;k++){const th=a+k*.42;const u=((th%TAU)+TAU)%TAU/TAU;if(hole&&hole(u,yy))continue;
-    kput(d>0?'ovalD':'ovalI',[cx+ox+Rl*Math.cos(th),legH+yy,cz+oz+Rl*Math.sin(th)],qFacing([Math.cos(th),0,Math.sin(th)]),[.9,1.4,1],null);}
+    civWin(d>0?'ovalD':'ovalI',[cx+ox+Rl*Math.cos(th),legH+yy,cz+oz+Rl*Math.sin(th)],qFacing([Math.cos(th),0,Math.sin(th)]),[.9,1.4,1],null);}
    if(d>0)vinesOnRing(cx+ox,legH+lobeH,cz+oz,Rl,10,30);}
   kput('slab',[cx,legH+lobeH+2,cz],null,[7,1,7],new THREE.Color(d>0?0x5a4a40:0xd8d4cc));
   if(d>0)mossOnRing(cx,legH+lobeH+2.3,cz,6,10,2);}

@@ -52,6 +52,8 @@ Read before changing anything here. `build.py` prints the open count.
 - [ ] No fauna yet.
 - [ ] verify.py: under `--assert` a page that never initialised raises in the per-type
       table instead of reporting (inherited). The error panel line above it says why.
+- [ ] **Put the biome fruit in the kit** (`biomes/FRUIT.md`): madrone berries, rattlepods, ember tamarind, pillar figs. Each has a catalog piece in
+      `kits/catalog/krator-master-furniture-generic-fruit.js` (`biome: 'swlowlands'`). The berries and pods are drawn. Draw figs on `pillarfig` (purple, clustered on the limbs and the fused bole). Add harvest tags. Bay laurel berries, skirt-palm fruit and acorns are not drawn.
 
 ## Done
 
