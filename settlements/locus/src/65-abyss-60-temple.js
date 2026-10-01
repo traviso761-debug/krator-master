@@ -21,7 +21,7 @@ reseed(656001);
       /* the ambulatory: a raised walk on all four sides, lacquered posts on both edges, a back wall, swoop-and-horn roofs */
       var mid=(AMB0+AMB1)/2, dep=AMB1-AMB0;
       [[0,1],[0,-1],[1,0],[-1,0]].forEach(function(d){ var along=d[0]===0, yaw=along?0:PI/2;
-        var runs = (d[1]===1) ? [[-(AMB1+0),-8],[8,AMB1]] : [[-AMB1,AMB1]];                              /* the front walk is split by the gate */
+        var runs = (d[1]===1) ? [[-AMB1,-15],[15,AMB1]] : [[-AMB1,AMB1]];                               /* the front walk is split by the gate: it starts at the gate plinth's ends (x +-15), clear of the pylons and claws */
         runs.forEach(function(r){ var c0=(r[0]+r[1])/2, L=r[1]-r[0], cx=along?c0:d[0]*mid, cz=along?d[1]*mid:c0;
           F.box(cx,0,cz, along?L:dep, 0.5, along?dep:L, 0, PAL.abRubble, 'rubble'); F.box(cx,0.5,cz, along?L:dep, 0.06, along?dep:L, 0, salt, 'plaster');
           /* posts on the inner and outer edges, ~4.4 m apart */
@@ -45,13 +45,14 @@ reseed(656001);
       var gz=mid, gw=8.0;
       F.box(0,0,gz, 30,1.2,dep+4, 0, lac, 'plaster'); [0.3,0.75].forEach(function(y,i){ F.box(0,y,gz, 30.1,0.14,dep+4.1, 0, i?gild:PAL.abBrightTeal, 'relief'); });
       [-1,1].forEach(function(s){ var px=s*(gw/2+3.0);
-        F.box(px,1.2,gz, 6,9.0,dep+1, 0, lac, 'plaster'); F.box(px,1.2,gz, 6.2,1.0,dep+1.2, 0, shade(lac,-0.25), 'plaster');
+        F.box(px,1.2,gz, 6,9.0,dep+1, 0, lac, 'plaster');
+        F.box(s*12.5,1.2,AMB1+0.25, 5.0,3.0,0.5, 0, lac, 'plaster'); F.box(s*12.5,3.3,AMB1+0.25, 5.0,0.3,0.6, 0, PAL.abBrightTeal, 'relief');   /* the precinct wall from pylon to walk, on the plinth */ F.box(px,1.2,gz, 6.2,1.0,dep+1.2, 0, shade(lac,-0.25), 'plaster');
         for(var b=0;b<3;b++) F.box(px,3.4+b*2.2,gz, 6.08,0.22,dep+1.08, 0, b%2?gild:PAL.abBrightTeal, 'relief');
         /* claw buttresses: tapering curved spurs at the pylon's outer corners, gilded tips */
         [-1,1].forEach(function(e){ var bx=px+s*3.0, bz=gz+e*(dep/2+0.5), pts=[]; for(var k=0;k<=6;k++){ var t=k/6; pts.push({ x:bx+s*(0.2+2.6*Math.pow(t,1.4)), y:1.2+6.0*(1-t)-0.2, z:bz+e*0.8*t, r:0.7*(1-0.85*t) }); }
           F.tube('plaster', pts, lac, { seg:8, cap:true }); F.cone(pts[6].x, 0.9, pts[6].z, 0.18, 0.7, [0,0,s*-1.2], gild, 'metal'); }); });
       F.box(0,8.4,gz, gw,1.8,dep+1, 0, lac, 'plaster'); F.box(0,8.4,gz, gw+0.1,0.3,dep+1.1, 0, gild, 'relief');
-      ABYSS.swoopRoof(F, 0,gz, 18, dep+2, 11, { y0:10.4, horn:6.5, over:1.6, col:THATCHC[0], eaveLift:1.6, saddle:2.6 });
+      ABYSS.swoopRoof(F, 0,gz, 18, dep+2, 11, { y0:10.4, horn:6.5, over:1.6, col:THATCHC[0], eaveLift:1.6, saddle:2.6, fins:7 });
       /* stair from the front ground up onto the gate plinth (1.2 m) */
       for(var s2=0;s2<5;s2++) F.box(0,0,gz+(dep+4)/2+2.2-s2*0.45, gw+4, 0.24*(s2+1), 0.45, 0, s2%2?salt:shade(salt,-0.05), 'plaster');
       ABYSS.furn(F, 'abyss_brazier', -gw/2+0.6,gz+(dep+4)/2+3.4, 0, { variant:1 }); ABYSS.furn(F, 'abyss_brazier', gw/2-0.6,gz+(dep+4)/2+3.4, 0, { variant:1 });

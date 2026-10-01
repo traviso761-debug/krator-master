@@ -119,9 +119,25 @@ saying what fixed it.
       city now places 612 registered buildings (was 599) at 5.2 M tris. The page renders with a clean error
       panel; `verify.py --assert` was not run after the re-vendor.
       **Round 4:** `verify.py --assert` now passes on the round-4 build (see NOTES round 4).
-- [ ] BIOME DRIFT (deliberate): targets/city/86-bio-* wrap the hyperjungle biome in closures so it cannot
+- [x] BIOME DRIFT (deliberate): targets/city/86-bio-* wrap the hyperjungle biome in closures so it cannot
       clobber the city's globals (`var BIO`, `BIO.setScene`). Upstream (biomes/hyperjungle) has since added
       fauna (58, `opt.fauna`); porting it means re-applying the closure wrap to the new fragments.
+      2026-10-01: the wrap is now code, `bio_wrap()` in build.py. `build.py --vendor-bio` rewrites every
+      86-bio-* copy from upstream through it, and `--vendor-check` compares bio_wrap(upstream) with the copy
+      ("all 11 biome fragments match"), so the wrap is no longer reported as drift. Re-vendored: the biome now
+      has the upstream six species (mahogany, kapok), the belt understorey and epiphyte gardens, the
+      animation core (86-bio-35) and the fauna (86-bio-58). 90b runs `HYPERJUNGLE.buildFauna(2000,1800,q)`
+      against the TREE mask (the jungle outside the wall; nothing spawns in the streets); `CITY.FAUNA:false`
+      leaves it out. verify --assert passes: Overview 858 calls / 6.52 M tris, Palace hill 700 / 6.23 M
+      (budget 900 / 16 M; it was 684 calls before, so the calls budget is now nearly spent).
+      2026-10-01 (merging main): the biome core moved to `core/biome/` and now carries the closure wrap
+      itself, so `bio_wrap()` copies the core verbatim from there and still wraps the kit fragments;
+      re-vendored, `--vendor-check` matches all 11.
+- [x] World-UV materials all drew at one K: `vWorldUV` (69b) and its copy `izsWorldUV` (77z) were closures whose
+      source, three.js's program key, is the same for every K. 2026-10-01: one shared `vWorldUV` in
+      core/materials/opt/69a-world-uv.js (per-K program, survives kbake's clone), opted in through `CORE_OPT_FILES`;
+      both local copies removed (77z re-vendored from kits/ancients). Stone and the Ancient panels now tile at their
+      own, coarser K.
 - [ ] The toppled Skyscraper B keeps its own podium (its fallen body was laid by
       the kit to rest on it) on a 60 m lot; the fall is checked against boulevards,
       plazas, parks, courts, water, rock, precincts and standing buildings.
@@ -158,7 +174,7 @@ saying what fixed it.
       **Round 4:** a declutter pass every 6th frame hides a label whose screen box overlaps a higher-priority one (landmarks first, then nearest first).
 
 ## Harness
-- [ ] `verify.py` is the Ancients copy; its `--assert` budgets come from this
+- [x] **Fixed: on the city (`window.CITY`) `verify.py` names them `city-triangle-budget` / `city-draw-calls`.** `verify.py` is the Ancients copy; its `--assert` budgets come from this
       repo's `91-probe.js` (3 M tris / 400 calls; the city raises them to 16 M /
       900 in `93-city-ui.js`) but the wording still says "showcase". Fine for now.
 - [ ] `build.py` has a SCOPED exemption (`86-bio-*`) for the IIFE-scoped biome
@@ -181,7 +197,8 @@ saying what fixed it.
 - [ ] Tripod canopies sit on the 1.55 m skyscraper plinth (the whole lot); a canopy is not checked against the
       kit's leg geometry above 4 m, only the leg feet.
 - [ ] Scene: 7.1 M triangles, 684 draw calls at the worst view (budget 16 M / 900); the jungle dress on the ruins
-      adds about 0.5 M.
+      adds about 0.5 M. 2026-10-01 (biome re-vendor with fauna): 858 calls / 6.52 M at the Overview, 42 calls
+      under the budget. The next draw-call cost here needs a cut elsewhere (or `CITY.FAUNA:false`).
 
 ## Round 5 (the atmosphere module, core/atmos)
 - [ ] The URL hash (`#hour=…&weather=…`) works when the page is served as a file or from the host. Inside a claude.ai
@@ -206,3 +223,13 @@ match. Iziz has no FURN or PLANT registry, so there is no declaration to correct
 pole with a crossarm, is a rewrite and has no counterpart here. The closest are `vnBannerPole()` and
 `vpBannerPole()`, which are called 19 times in world coordinates with the pole as the origin. Recentring them would
 mean offsetting every call to keep the city where it is, and would gain nothing. The catalog copy is the centred one.
+
+## Open after merging main (2026-10-01): not addressed
+- [ ] Ancients vendor drift from main. Main's Ancients work (towers restand, Hanging City, shared-code pass, Hexahedron
+      polish) changed `kits/ancients/src`, so `--vendor-check` here reports 28 drifted fragments: 10-core, 32-surfaces,
+      34-kitdefs, 36-decor, 38-helpers2, 50-registry, 69-mat-salvage, 77z-iziz-style and the kit-type fragments
+      (40-factory-extras through 89-lab). The same shared fragments drift in Highlands (10-core, 32-surfaces,
+      34-kitdefs, 36-decor, 38-helpers2, 50-registry, 69-mat-salvage) and Jimjam (10-core through 50-registry);
+      Xanadu and Reed Lake vendor from Highlands and will follow. Re-vendor the chain together
+      (Ancients -> Iziz -> Highlands -> Xanadu / Reed Lake, and Jimjam), rebuild, `--assert` and look: the changes
+      alter geometry and looks. Its own session.

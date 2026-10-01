@@ -7,7 +7,7 @@ files. The root INDEX.md lists every build.
 
 Usage:  python3 tools/make_index.py      (from anywhere; rewrites every INDEX.md)
 """
-import os, re
+import ast, os, re
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BIG = 30 * 1024          # CLAUDE.md: never read a fragment this size whole
@@ -61,10 +61,28 @@ def kb(n):
 def core_files(build):
     """Files a build pulls from core/materials/ (see srcpath() in its build.py)."""
     bp = os.path.join(ROOT, build, 'build.py')
-    if 'CORE_FILES' not in open(bp).read():
+    text = open(bp).read()
+    if 'CORE_FILES' not in text:
         return []
     d = os.path.join(ROOT, 'core', 'materials')
-    return sorted(f for f in os.listdir(d) if f[0].isdigit())
+    out = [f for f in os.listdir(d) if f[0].isdigit()]
+    m = re.search(r'^CORE_OPT_FILES\s*=\s*(\[[^\]]*\])', text, re.M)   # opt-in files from core/materials/opt/
+    if m:
+        out += ['opt/' + f for f in ast.literal_eval(m.group(1))]
+    return sorted(out, key=lambda f: f.split('/')[-1])
+
+
+def core_lists(build):
+    """The core/biome and core/terrain fragments a build lists (CORE_BIOME, CORE_TERRAIN in its build.py)."""
+    import ast, re
+    out = []
+    for line in open(os.path.join(ROOT, build, 'build.py'), encoding='utf8'):
+        m = re.match(r'\s*(CORE_BIOME|CORE_TERRAIN)\s*=\s*(\[.*\])', line)
+        if m:
+            files = ast.literal_eval(m.group(2))
+            if files:
+                out.append(('core/biome' if m.group(1) == 'CORE_BIOME' else 'core/terrain', files))
+    return out
 
 
 def frag_table(build, folder, rel):
@@ -111,6 +129,8 @@ def build_index(build):
     cf = core_files(build)
     if cf:
         lines += ['From `core/materials/` (shared; see `core/README.md`): ' + ', '.join('`%s`' % f for f in cf), '']
+    for where, files in core_lists(build):
+        lines += ['From `%s/` (shared; see `core/README.md`): ' % where + ', '.join('`%s`' % f for f in files), '']
     top = [f for f in sorted(os.listdir(d)) if f.endswith('.js') and not f.startswith('.') and f != 'three.min.js']
     if top:
         lines += ['## Top-level sources', '',
@@ -162,7 +182,7 @@ def main():
              '| Build | Fragments | src KB | Largest KB | What |', '|---|---|---|---|---|'] + rows + [
              '', '## Not builds', '',
              '| Path | What |', '|---|---|',
-             '| `core/` | shared code: `core/materials/` (see `core/README.md`) and `core/sockets/` (cultural sockets, banners and awnings, with a runnable example) |',
+             '| `core/` | shared code (see `core/README.md`): `core/materials/`, `core/biome/` (the biome core every kit reads), `core/terrain/` (carve patches), `core/atmos/` (atmosphere), `core/sockets/` (cultural sockets, banners and awnings, with a runnable example) |',
              '| `kits/furniture/` | spec only |',
              '| `gallery/` | the shareable gallery of every built world |',
              '| `host/` | the LAN site server: Krator Worlds plus the World Menagerie pages (`host/README.md`) |',

@@ -27,9 +27,76 @@ TWO THINGS THAT WILL WASTE A ROUND IF YOU FORGET THEM:
     TypeError that reads like a real regression. Re-run before believing it.
 
 Requires: pip install playwright && python -m playwright install chromium
-(or set PW_CHROME=/path/to/chrome to use an already-installed Chromium)
+  (KRATOR_CHROME=/path/to/chrome launches a Chromium already on the machine)
 """
-import argparse, asyncio, http.server, json, os, socketserver, sys, threading
+import argparse, asyncio, glob, http.server, json, os, re, socketserver, sys, threading
+
+# --------------------------------------------------------------------------
+# Harness helpers. Every verify.py in the repo carries this same block: a fix
+# here belongs in all of them (grep for "Harness helpers").
+GL_ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
+# Every page builds its world in one synchronous script, so "load" fires only when
+# the world is built: minutes under software GL on a shared box (Dalab's city took
+# 285 s with seven other agents running; 180 s timed Locus out mid-build).
+LOAD_MS = 900000
+# KRATOR_CHROME names a Chromium to launch. The other names are the ones single
+# copies of this harness used before they were merged; they still work.
+CHROME_ENV = ("KRATOR_CHROME", "PW_CHROME", "PW_CHROMIUM", "CHROME_PATH", "VERIFY_CHROME", "CHROMIUM")
+
+
+async def launch_chromium(p, args=GL_ARGS):
+    """$KRATOR_CHROME (or an older name in CHROME_ENV), else playwright's own
+    build, else a pinned build under /opt/pw-browsers: a cloud container ships
+    one that need not match the pip playwright's pin."""
+    for k in CHROME_ENV:
+        if os.environ.get(k):
+            return await p.chromium.launch(executable_path=os.environ[k], args=args)
+    try:
+        return await p.chromium.launch(args=args)
+    except Exception as e:
+        if "Executable doesn't exist" not in str(e):
+            raise
+        for c in ["/opt/pw-browsers/chromium"] + sorted(
+                glob.glob("/opt/pw-browsers/chromium-*/chrome-linux/chrome"), reverse=True):
+            if os.path.exists(c):
+                return await p.chromium.launch(executable_path=c, args=args)
+        raise
+
+
+def local_three(folder):
+    """The pinned three.js r128 to serve in place of the CDN copy: this build's
+    own, the page folder's, else the repo's copy in kits/ancients (a build that
+    keeps none still runs offline). Returns a path that may not exist."""
+    here = os.path.dirname(os.path.abspath(__file__))
+    cands = [os.path.join(here, "three.min.js"), os.path.join(folder, "three.min.js")]
+    d = here
+    for _ in range(4):
+        d = os.path.dirname(d)
+        cands.append(os.path.join(d, "kits", "ancients", "three.min.js"))
+    return next((c for c in cands if os.path.exists(c)), cands[0])
+
+
+def parse_views(spec, names=()):
+    """--views. Names separated by '|' or ';' are taken exactly, so a name may
+    hold commas. Separated by commas, consecutive pieces are joined back up
+    whenever that spells an existing preset's name, longest first: so
+    "Overview,Town types — row, stacked house, well, tower" is two views."""
+    spec = (spec or "").strip()
+    if not spec:
+        return []
+    if "|" in spec or ";" in spec:
+        return [v.strip() for v in re.split(r"[|;]", spec) if v.strip()]
+    names = set(names or ())
+    toks, out, i = spec.split(","), [], 0
+    while i < len(toks):
+        j = next((j for j in range(len(toks), i + 1, -1)
+                  if ",".join(toks[i:j]).strip() in names), i + 1)
+        v = ",".join(toks[i:j]).strip()
+        if v:
+            out.append(v)
+        i = j
+    return out
+
 
 # Structure names contain em dashes; the Windows console default codepage
 # mangles them, which makes a failing assertion hard to read.
@@ -103,19 +170,18 @@ async def run(a):
     fails = []
     try:
         async with async_playwright() as p:
-            b = await p.chromium.launch(executable_path=os.environ.get("PW_CHROME") or None, args=["--use-gl=swiftshader", "--enable-webgl",
-                                              "--ignore-gpu-blocklist"])
+            b = await launch_chromium(p)
             W, H = [int(t) for t in a.size.split("x")]
             pg = await b.new_page(viewport={"width": W, "height": H})
             pg.set_default_timeout(600000)
             errs = []
             pg.on("pageerror", lambda e: errs.append(str(e)))
             # serve three.js from the repo instead of the CDN: offline, pinned to r128
-            three = os.path.join(here, "three.min.js")
+            three = local_three(folder)
             if os.path.exists(three):
                 await pg.route("**/three.min.js", lambda route: asyncio.ensure_future(
                     route.fulfill(path=three, content_type="application/javascript")))
-            await pg.goto(f"http://127.0.0.1:{port}/{name}", timeout=300000)
+            await pg.goto(f"http://127.0.0.1:{port}/{name}", timeout=LOAD_MS)
             try:
                 await pg.wait_for_function(
                     "window._ready===true || (document.getElementById('errs')&&"
@@ -179,7 +245,9 @@ async def run(a):
                 if not shown:
                     print("  identical")
 
-            views = [v.strip() for v in a.views.split(",") if v.strip()]
+            presets = await pg.evaluate(
+                "()=>[...document.querySelectorAll('#ui button')].map(b=>b.textContent.trim())")
+            views = parse_views(a.views, presets)
             if a.all_views:
                 views = await pg.evaluate(
                     "()=>[...document.querySelectorAll('#ui button')].map(b=>b.textContent.trim())")

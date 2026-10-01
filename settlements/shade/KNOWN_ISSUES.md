@@ -12,6 +12,14 @@ Read before changing anything here. `build.py` prints the open count.
       dwellings under them, true niches round the hall and the shrine, the undercut behind
       the falls. Checked: each void open under rock, nothing grows under a hood, the alcove
       dwellings clear their ceilings, no camera inside rock, the falls clear of the hood.
+- [ ] **Trees and sun shades in the city** (Travis). Every built place is reserved in the
+      flora mask (`RESERVED`, 45-host-stage), so the streets and courts are bare stone with
+      no shade. Plant street and court trees: places marked `grows`, or the sedesert species
+      one at a time (the kit has no single-tree entry yet; xanadu's 55-trees "one tree at a
+      point" is the model, added upstream in biomes/sedesert and re-vendored). Hang sun shades (awnings, sails, reed mats)
+      over doors, the market and the Khan court; `core/sockets` (awnings) and `core/atmos`
+      (street dressing) are the shared candidates. Keep the walkable grid and the entrances
+      clear.
 - [ ] Overhangs exist only where a patch is declared (a ~30 m box each, ~0.06 M triangles,
       ~0.8 s to mesh and bake at load); a cave system or an arch anywhere along the rim
       needs option 2 (a volumetric wall band). The walkable grid is still 2-D: a floor
@@ -66,3 +74,7 @@ Read before changing anything here. `build.py` prints the open count.
 - [ ] Vendored from `biomes/sedesert/src` with no local changes (`build.py --vendor-check`).
       The kit's budget note does not apply: Shade grows the biome over a 1.2 km radius,
       not 3.25 km.
+      **Oct 2026:** the biome core moved to `core/biome/` (one copy for every kit) and the kits
+      gained `BIO.kit` hooks, so `--vendor-check` reports the core and the hooked fragments as drift.
+      The kit's geometry is unchanged (mesh fingerprints, `core/README.md`). Re-vendor, or read
+      `core/biome` through a `CORE_BIOME` list, when this world is next rebuilt and verified.

@@ -6,7 +6,7 @@ Interiors: ROOM() registration and an engine-neutral furniture placer (ported fr
 
 Docs: `API.md`, `KNOWN_ISSUES.md`, `README.md`, `SPEC.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/interiors-sets.beast-rider.html`, `dist/interiors-sets.highlands.html`, `dist/interiors-sets.html`, `dist/interiors-sets.locus+abyss.html`, `dist/interiors-sets.post-apoc.html`, `dist/interiors-walk.html`, `dist/interiors.html`
+Built output (never open it; edit `src/` and rebuild): `dist/interiors-sets.html`, `dist/interiors-walk.html`, `dist/interiors.html`
 
 Build: `cd kits/interiors && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.

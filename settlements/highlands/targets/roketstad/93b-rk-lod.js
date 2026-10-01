@@ -25,3 +25,7 @@ FRAME_HOOKS.push(()=>rkLodUpdate(false));rkLodUpdate(true);
 window._api.town.lod=()=>({meshes:RKLOD.meshes.length,total:RKLOD.total,kept:RKLOD.kept,K:RKLOD.K});
 RKLOD.on=true;
 uiButton('LOD',true,()=>{RKLOD.on=!RKLOD.on;if(RKLOD.on){RKLOD.last=null;rkLodUpdate(true);}else rkLodFull();return RKLOD.on;});
+// The shared LOD (core/lod) leaves these instanced sets to RKLOD, which already rewrites them as the camera moves;
+// it takes over the rest (merged meshes, the biome, sets under 24 instances).
+{const rk=new Set(RKLOD.meshes.map(L=>L.o)),O=window.LOD_OPTIONS||{},s0=O.skip;
+ window.LOD_OPTIONS=Object.assign(O,{skip:o=>rk.has(o)||(s0?s0(o):false)});}

@@ -41,6 +41,114 @@ kdef('waterButt',new THREE.CylinderGeometry(1,1,1,10),MAT.corrugate);
 kdef('planter',new THREE.BoxGeometry(1,1,1),MAT.timber);
 kdef('plank',new THREE.BoxGeometry(1,1,1),MAT.timber);
 
+// ---------------------------------------------------------------- FIRELIGHT
+// The kit's lit window is CYAN — `litC`, `stripRing`, `MAT.strip` — because
+// that is the Ancients' own electric light, and every intact structure in the
+// showcase still carries it. Fire is the opposite signal: a later people
+// burning things inside a building that has had no power for five thousand
+// years. So it gets its own materials, its own kit items, and its own
+// InstancedMeshes — which is also what makes the night state a two-line
+// visibility toggle instead of a rebuild (see setNight in 92-camera.js).
+//
+// Everything here is UNLIT (MeshBasicMaterial): a scene light cannot make a
+// window brighter than the sunlit wall around it — that is a standing kit-wide
+// complaint (see Plymouth in KNOWN_ISSUES) — so the fire has to BE the light
+// rather than receive it.
+TEX.ember=canvasTex(64,64,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;
+  const rad=Math.hypot(x-w/2,y-h/2)/(w/2);
+  const a=Math.pow(clamp(1-rad,0,1),2.2)*(.72+.28*(fbm(x/7,y/7,3.7,2)-.5)*2);
+  d[i]=255;d[i+1]=178;d[i+2]=96;d[i+3]=clamp(a,0,1)*255;}
+ g.putImageData(id,0,0);});
+TEX.ember.wrapS=TEX.ember.wrapT=THREE.ClampToEdgeWrapping;
+// The flame itself, seen through an opening: hot and pale in the middle, going
+// to a deep ember at the edges, mottled so no two windows read the same.
+TEX.flame=canvasTex(64,64,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;
+  const fy=1-y/h;                                   // hotter low, where the fuel is
+  let v=clamp(.30+.85*fy*fy+(fbm(x/9,y/6,5.1,3)-.5)*1.1,0,1);
+  d[i]=255*clamp(v*1.25,0,1);d[i+1]=255*clamp(v*v*1.05,0,1);d[i+2]=255*clamp(v*v*v*.8,0,1);d[i+3]=255;}
+ g.putImageData(id,0,0);});
+TEX.flame.wrapS=TEX.flame.wrapT=THREE.ClampToEdgeWrapping;
+MAT.flame=new THREE.MeshBasicMaterial({map:TEX.flame,color:0xffffff,side:DS});
+MAT.ember=new THREE.MeshBasicMaterial({map:TEX.ember,color:0xffffff,transparent:true,
+ blending:THREE.AdditiveBlending,depthWrite:false,fog:false,side:DS});
+// Three quads crossed about the vertical, like the leaf card: a glow has to
+// read from any bearing, and this kit has no billboard. Six triangles.
+function crossGeo(){const P=[],N=[],U=[];
+ for(let q=0;q<3;q++){const a=q*Math.PI/3,c=Math.cos(a),s=Math.sin(a);
+  const V=[[-c,-1,-s],[c,-1,s],[c,1,s],[-c,-1,-s],[c,1,s],[-c,1,-s]];
+  const T=[[0,0],[1,0],[1,1],[0,0],[1,1],[0,1]];
+  for(let i=0;i<6;i++){P.push(V[i][0],V[i][1],V[i][2]);N.push(0,1,0);U.push(T[i][0],T[i][1]);}}
+ const g=new THREE.BufferGeometry();
+ g.setAttribute('position',new THREE.Float32BufferAttribute(P,3));
+ g.setAttribute('normal',new THREE.Float32BufferAttribute(N,3));
+ g.setAttribute('uv',new THREE.Float32BufferAttribute(U,2));return g;}
+kdef('fireWin',new THREE.PlaneGeometry(1,1),MAT.flame);   // the opening, filled with fire
+kdef('ember',new THREE.PlaneGeometry(1,1),MAT.ember);     // the spill out of it
+kdef('emberB',crossGeo(),MAT.ember);                      // a glow seen from any bearing
+const FIREKIT=['fireWin','ember','emberB'];               // what setNight() toggles
+
+// FIRE TERRITORIES over (bay, storey).
+//
+// A 50% coin flip per cell renders as dither, and dither is exactly what this
+// must not be. What has to read is that PARTICULAR PARTS of the building are
+// occupied: contiguous blocks of bays and floors, with dark floors and dark
+// bays between them, so the elevation says "these four storeys of this side,
+// and that stack over there, and nothing in between" — different gangs, each
+// holding a piece. So the mask is a handful of seeded rectangles, one per
+// gang, frayed at their edges by an fbm so none of them is a clean lit
+// rectangle and so a few rooms inside each are dark.
+//
+// Takes and restores the global PRNG, because it is called once in the middle
+// of a builder and must not shift that builder's stream.
+function fireTerritories(nBay,nSto,seed,n){const T=[],s0=_seed;reseed(seed);
+ for(let i=0;i<n;i++)T.push({b:Math.floor(rng()*nBay),w:Math.round(rr(6,14)),
+  y:Math.round(rr(-8,Math.max(1,nSto-6))),h:Math.round(rr(12,34)),k:rr(0,99)});
+ _seed=s0;return T;}
+function fireBurns(T,nBay,b,s){
+ for(const t of T){const db=((b-t.b)%nBay+nBay)%nBay;if(db>=t.w)continue;
+  const ds=s-t.y;if(ds<0||ds>=t.h)continue;
+  const e=clamp(Math.min(Math.min(db,t.w-1-db)/(t.w*.42),Math.min(ds,t.h-1-ds)/(t.h*.40)),0,1);
+  if(fbm(b*.42+t.k,s*.30,t.k,2)<.30+.52*e)return true;}
+ return false;}
+// THE ONE ENTRY POINT. Three buildings want this (Projects A, D and H) on three
+// completely different window grids — A's 32 bays of cell windows, D's 28 bays
+// of glazed ribbon, H's 20 slits on four flat faces — and the one thing this kit
+// has been bitten by repeatedly is a helper reimplemented privately in two or
+// three fragments (stripRing, the canopy blob). So the grid is the CALLER's and
+// the mask is shared: hand it your bay and storey counts and a seed, get back a
+// predicate. It keeps the tally too, because "roughly 50%" cannot be eyeballed
+// on a clustered mask and has to be counted — window._projectFire, which
+// verify.py prints in its counters line.
+const PROJFIRE={};
+window._projectFire=PROJFIRE;
+function fireMask(key,nBay,nSto,seed,n){
+ const T=fireTerritories(nBay,Math.max(1,nSto),seed,n);
+ const rec=PROJFIRE[key]||(PROJFIRE[key]={lit:0,cells:0,pits:0});
+ const f=(b,s)=>{const on=fireBurns(T,nBay,b,s);rec.cells++;if(on)rec.lit++;return on;};
+ f.raw=(b,s)=>fireBurns(T,nBay,b,s);     // same question, asked off the record
+ return f;}
+// One burning window: the opening filled with flame, proud of the shell, and an
+// additive card of spill over it. `n` is the outward normal, `q` its quaternion.
+function fireWindow(p,n,q,w,h){const b=rr(.55,1);
+ kput('fireWin',[p[0]+n[0]*.45,p[1],p[2]+n[2]*.45],q,[w,h,1],
+  new THREE.Color().setHSL(rr(.035,.075),rr(.85,1),clamp(.30+b*.34,0,.72)));
+ kput('ember',[p[0]+n[0]*.85,p[1]+h*.15,p[2]+n[2]*.85],q,[w*4.2,h*4.8,1],
+  new THREE.Color().setHSL(rr(.035,.08),1,clamp(.14+b*.34,0,.46)));}
+// A fire on a floor: a pool of light on the deck, the flame over it, and a
+// halo over that. All three are the radial ember card — a flat quad of the
+// FLAME texture laid horizontal read as a glowing rectangle of carpet, which
+// is what the first cut of this looked like.
+function firePit(key,x,y,z,s){
+ if(PROJFIRE[key])PROJFIRE[key].pits++;
+ kput('ember',[x,y+.15,z],qEuler(-Math.PI/2,rng()*TAU,0),[s*3.4,s*3.4,1],
+  new THREE.Color().setHSL(rr(.04,.075),1,.32));
+ kput('emberB',[x,y+s*.7,z],qEuler(0,rng()*TAU,0),[s*1.35,s*1.5,s*1.35],
+  new THREE.Color().setHSL(rr(.03,.065),1,.50));
+ kput('emberB',[x,y+s*1.5,z],qEuler(0,rng()*TAU,0),[s*2.8,s*2.3,s*2.8],
+  new THREE.Color().setHSL(rr(.04,.09),1,.19));}
+
 // THE REPAIRED PASS.
 //
 // Runs over a FINISHED structure — the group the builder returned — rather than

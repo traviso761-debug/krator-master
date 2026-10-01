@@ -1,6 +1,6 @@
 # Known issues
 
-- Vendored drift from `settlements/reedlake/src`: `93-labels.js` also labels `cls:'vessel'` and shrinks the font before truncating a long name; `92-camera.js` starts with the Labels button off. `00-head.html` has its own title.
+- Vendored drift from `settlements/reedlake/src`: `93-labels.js` also labels `cls:'vessel'` and shrinks the font before truncating a long name; `92-camera.js` starts with the Labels button off. `00-head.html` has its own title. 2026-10-01: re-vendored after Reedlake's re-vendor from Highlands: `30-kit.js` verbatim (adds `KIT.meshes`), and `93-labels.js` is Reedlake's new one (with the label declutter) plus the same two vessel changes.
 - Walk mode stands on a 0.4 m heightfield of each vessel's flat surfaces and is stopped by anything in a 0.4 m-round
   body 0.5-1.7 m above its feet (masts, walls, rails, crew, cargo). It boards from the water over the side without a
   climb, and leaves by flying over the rail (E). Narrow gaps between crew or cargo (under ~0.8 m) do not pass; a

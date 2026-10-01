@@ -11,6 +11,7 @@
 // is DATA and kit definitions; no placement. Tags follow the project rule:
 // climate / aridity / abyssal / riparian; an 'arid'/'semiarid' plant reads
 // only the savannah weight, a 'humid' one never does.
+BIO.kit('swbay');   // this kit's own registry of items and buckets (core/biome: kits)
 var SWBAY={};
 (function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm,qEuler,qFacing,qUp}=BIO.fn;
 const T3=BIO.host.THREE,C=h=>new T3.Color(h);

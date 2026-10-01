@@ -1,5 +1,6 @@
 {
  "00-head.html": "d167a84a665c",
+ "09-lod.js": "e1f7db612b83",
  "10-core.js": "ea36e1d844e8",
  "12-stats.js": "36c73fdcde3d",
  "20-textures.js": "bf2447777724",
@@ -33,6 +34,7 @@
  "68-hexahedron.js": "4941fe1e23a7",
  "68-mat-v5.js": "67b714b0f87c",
  "69-mat-salvage.js": "346781f9e5cd",
+ "69a-world-uv.js": "98f4ca6c8e84",
  "69w-worn.js": "3d93cfdb531f",
  "70-hypertree.js": "7db21a8bd08f",
  "70-sky-g.js": "c5018f12af50",
@@ -56,7 +58,7 @@
  "76-70-biome-hyperjungle.js": "8e5a63d65b01",
  "76-campus.js": "3598a36deef8",
  "77-dam.js": "a0df081a5761",
- "77z-iziz-style.js": "49212d2f3fd7",
+ "77z-iziz-style.js": "2e108b6a8849",
  "78-factory-silo.js": "15e48e179c16",
  "79-government.js": "72bcf46cdb0a",
  "80-aa-battery.js": "5043b92bbe55",
@@ -126,5 +128,6 @@
  "91-probe.js": "0eb346cf44bd",
  "91z-views.js": "88c8c58a8e8e",
  "92-camera.js": "895a30bdd4c9",
+ "97-lod-auto.js": "88ec9e581127",
  "99-tail.html": "d3aaf402992e"
 }

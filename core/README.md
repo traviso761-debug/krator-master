@@ -1,8 +1,8 @@
 # core/
 
 Code shared by more than one build, kept here once instead of copied into each:
-`materials/` (the Ancients-lineage materials), `terrain/` (carve patches for any
-heightfield world), `atmos/` (atmosphere and street dressing) and `sockets/` (cultural sockets).
+`materials/` (the Ancients-lineage materials), `biome/` (the biome core every biome kit
+runs on), `terrain/` (carve patches for any heightfield world), `atmos/` (atmosphere and street dressing) and `sockets/` (cultural sockets).
 
 ## `materials/`
 
@@ -34,12 +34,45 @@ page's start-up. The pixels are the same either way.
 seeded stream shifts and the world changes. Screamers' `TEX.thatch`, `TEX.lash`, `flBarkTex` and `skyTex` do.
 Painters that use only `h3`/`vnoise`/`fbm`, or `Math.random`, need nothing.
 
+### `materials/opt/`: opt-in shared fragments
+
+Every digit-named file in `materials/` goes into every build that reads it (kits/ringsea takes them all). A
+fragment only some builds want lives in `materials/opt/` instead, and a build takes it by naming it in
+`CORE_OPT_FILES` in its `build.py` (`srcpath()` and `build_one()` fall back to it; a local copy still wins).
+
+| File | What | Opted in by |
+|---|---|---|
+| `opt/69a-world-uv.js` | `vWorldUV(mat,K[,Kv])`: world-unit UVs for instanced boxes, re-tiled by instance scale per face. One shader program per K | `kits/ancients`, `settlements/iziz`, `highlands`, `xanadu`, `reedlake` |
+
+**The world-UV fix (2026-10-01).** The hook used to be a closure copied into several places (`69b-vern-mat.js` in
+Iziz, Highlands, Xanadu, Reedlake and Dalab; `izsWorldUV` in `77z-iziz-style.js`). three.js keys a compiled program
+on `onBeforeCompile.toString()`, and a closure prints the same source whatever K it captured, so every world-UV
+material in a page rendered at the K of whichever compiled first. Xanadu worked round it (`xUVKey`). The shared copy
+builds the hook with `Function()`, so K is in the hook's source text (the key differs per K and survives `kbake`'s
+material clone, so `30-kit.js` needs no change), and sets `customProgramCacheKey` as well.
+
+**Still on the old closure:** only `settlements/dalab` (its own `69b-vern-mat.js` and `71-hl-mat.js`; Dalab is
+left alone, its drift is deliberate). To move it over: delete `vWorldUV` from its `69b`, re-vendor `71-hl-mat.js`
+(whose `hWorldUV` now calls the shared hook), add `CORE_OPT_FILES` and the `srcpath`/`build_one` fallback to its
+`build.py` (copy them from `settlements/reedlake`), and rebuild. Highlands' `hWorldUV` (Ku != Kv, 71-hl-mat) was
+the same kind of closure and now calls `vWorldUV(mat,Ku,Kv)`.
+
+Checked and not affected: `settlements/jimjam` (`jjWorldUV` is already keyed per K; it also scales plain meshes, so
+it is a different function); the Voth-lineage `applyWorldUV` in girder, mavs-refuge and locus (each material sets
+`customProgramCacheKey` with its scale); port, screamers, kits/post-apoc, kits/ringsea and biomes/* have no
+world-UV hook.
+
 ### What is not here yet
 
 These material fragments drifted between builds, so they stay vendored:
-- `54-mat-concrete.js`: three versions (ancients+highlands, dalab, iziz+reedlake+screamers)
-- `69-mat-salvage.js`: three versions (ancients+dalab+highlands, iziz+reedlake, screamers)
+- `54-mat-concrete.js`: three versions (ancients+highlands+iziz+jimjam+port+reedlake+xanadu, dalab, screamers)
+- `69-mat-salvage.js`: two versions (ancients+dalab+highlands+iziz+port+reedlake+xanadu, screamers)
 - the local layers `69b-vern-mat`, `71-hl-mat`, `74-rl-mat`, `69d-dalab-mat`
+
+The Ancients versions of `54` and `69` are byte-identical in seven builds and belong in `materials/opt/`, but Dalab,
+Port and Reedlake vendor-check them against `kits/ancients/src` and `settlements/highlands/src`: take the copies out
+of those folders and those checks report the files as missing upstream. Move them in a pass that may also change
+those builds' `build.py`.
 
 Merge a drifted file only once its differences have been read and the merged
 version renders correctly in every build that uses it.
@@ -48,6 +81,55 @@ Voth and Yuni use a separate system: a frozen `PAL` palette and `FAMMAT`
 material families, instanced per family under a draw-call budget. The catalog
 in `kits/catalog/` uses family strings (`'wood'`, `'cloth'`, `'plank'`…) plus a
 colour. Neither is compatible with `MAT`.
+
+## `biome/`
+
+The biome core: the engine-independent kit every biome in `biomes/` is written against
+(`BIO`: the host binding, the PRNG and noise, instanced items and merged buckets, the
+foliage hook, placement, the runtime LOD, kits, export). One copy, merged from the nine
+copies the kits carried (Oct 2026). xanadu's is the base (runtime LOD); the others'
+additions are in it, each marked with the kit it came from:
+
+| File | What |
+|---|---|
+| `10-core-head.js` | `BIO`, `BIO.fn` (rng, noise...), `BIO.init` and the host binding: fields (wet, salt, upland, flow, mist, cold, rock), `waterH`/`depth`, `register`, detail radii (`BIO.radii()`), windows, `eye`, the world's `clock` and `wind` (one wind for leaves and atmosphere) |
+| `20-core-kit.js` | kits (`BIO.kit`, `BIO.kitEnd`), items and buckets on Float32 stores, extra per-instance vec4s, the runtime LOD (`BIO.LOD`, `BIO.range`, `BIO.lodTick`), indexed bake, `BIO.dynamic`/`BIO.tick` |
+| `30-core-foliage.js` | leaf textures and cards, the foliage and bark hooks, the wind clock, `BIO.col` |
+| `35-core-anim.js` | animated items (orbit, flit, walk; flapping wings, swinging legs) for fauna |
+| `40-core-place.js` | stands, `BIO.grid` (accept first, `depth`, `box`), `BIO.scatter`, keep-clear, surface sampling for `dress()` (`BIO.faceSamples` takes shells: `{geos, share}`) |
+| `test-place.js` | `node core/biome/test-place.js`: the surface sampler's contract, each check with a negative |
+| `42-core-export.js` | `BIO.export()` / `BIO.download()`: what a page placed, as data for Godot (`biomes/GODOT.md`) |
+
+**Used by** all nine kits in `biomes/`: each lists the files in `CORE_BIOME` in its
+`build.py`, read from here unless its `src/` has a copy of the same name (none does).
+hyperjungle also lists `35-core-anim.js`, and takes the core's helpers as globals in its
+own `41-hyperjungle-globals.js` (it was written when the core declared them). `build.py`
+stops if any of the four base files is missing (the syntax check cannot see an absent fragment).
+
+**Kits.** Several kits can share one page (`biomes/WORLD.md`). Each kit calls
+`BIO.kit('<name>')` at the top of its first fragment and `BIO.kitEnd(<API>)` at the end of
+its last: it gets its own registry of items and buckets (two kits may both have a `trunk`),
+its exported functions run in that registry, and material cache keys carry its name
+(`BIO.kitKey`), so two kits' `grass` cannot share one compiled shader. Mesh names stay
+`biome:<name>`; `userData.kit` says whose.
+
+**`BIO.LOD`** is both the runtime LOD's settings (`chunk`, `scale`) and, called, the detail
+radii (sedesert's `BIO.LOD()`, the same as `BIO.radii()`), so sedesert's fragments and
+Shade's copies of them run unchanged.
+
+**Proving a change.** The page's HTML changes with the core, so its hash proves nothing.
+Compare the baked geometry instead: every biome mesh's attributes and instance buffers,
+hashed per mesh name, before and after (fauna moved every frame by a script are hashed by
+their geometry only). Identical means the change moved nothing.
+
+Worlds that vendored a kit (dalab from swlowlands, locus and the Ancients kit from
+eastabyss, iziz, screamers and the Ancients kit from hyperjungle, Shade from sedesert, the
+xanadu settlement) keep their copies. dalab's, iziz's and Shade's `--vendor-check` compare
+their core with this folder and report the drift; each records it in its `KNOWN_ISSUES.md`.
+Re-vendor when that world is next rebuilt and verified, or switch it to read this folder.
+
+`biomes/WORLD.md` is the plan this core grows toward: several kits in one open world, and
+Godot (`biomes/GODOT.md`).
 
 ## `terrain/`
 
@@ -87,6 +169,20 @@ The atmosphere and street-dressing module: evening lights and a glow layer, part
 sewer grates, lamps and fountains, InstancedMesh culling. One global (`ATMOS`) behind a five-item host binding, so any
 three.js r128 build can take it. Read `atmos/README.md`. **Used by** `settlements/iziz` (city target; its `build.py`
 reads it through `TARGET_CORE`).
+
+## `lod/`
+
+Level of detail for any three.js r128 build: `09-lod.js` (the `LOD` global) and `97-lod-auto.js` (applies it to the
+build's `scene` once everything is built). It works on the finished scene: big merged meshes are cut into frustum-culled
+chunks that share the original vertex buffers and switch to clustered proxies with distance, InstancedMeshes keep one
+draw call and drop their smallest instances first, and the originals stay the raycast targets, so inspectors and
+probes see full detail. `LOD.enabled=false` restores the exact scene graph; `LOD.stats()` and `LOD.measure()` report
+draw calls and triangles with it off and on. Read `lod/README.md`.
+
+**Used by** every settlement and `kits/ancients`: `port`, `jimjam`, `reedlake`, `screamers`, `voth`, `yuni`, `locus`,
+`iziz`, `highlands`, `xanadu`, `dalab`, `mavs-refuge`, `girder`. Each `build.py` adds the `core/lod/` files to its
+fragment list next to its `CORE_FILES`/`CORE_OPT_FILES` (a `src/` copy with the same name overrides) and lists both in
+`DETERMINISTIC`. A build passes options through `window.LOD_OPTIONS` (port, screamers, voth, highlands, dalab).
 
 ## `sockets/`
 

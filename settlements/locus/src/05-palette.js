@@ -131,6 +131,8 @@ var PAL = {
   abContainer : [0x3f6e8c, 0xa23a2a, 0xc9a33a, 0x5d7d4a, 0x7c7f80],            /* shipping-container colours (pick) */
   abTarpBlue : 0x2e6fb7, abTin : 0xc9cdd2,                                     /* tarps; the tin-mirror base */
   abLacquer : 0x9a2c26, abGild : 0xd4a537, abCrystal : 0x5bc8e6,              /* lacquered plinths; horn tips; blue crystals (sacred, glowing) */
+  abUmbrella : [0xe58fb8, 0xb59ad8, 0x7db8e8, 0x86d3b4, 0xf1da6a, 0xf4a98a],    /* umbrellas.jpg: strung-umbrella pastels (pick) */
+  abCream : [0xd8ccb2, 0xcfc1a3, 0xe0d6c0], abCreamCap : 0xe6ded0,             /* the silo-cluster picture: cream-rendered silos, pale domes */
   abSalt : 0xe9e4d6, abRubble : 0x9c8e7c,                                      /* salt crust and plaza paving; rubble-stone bases */
   /* --- LOCUS world ground: the delta's own tones (from the eastern-abyss host, a stop darker) --- */
   ground : { mud:0x3d3526, alga:0x4c5c36, litter:0x3a3022, litterRed:0x4a3628, crust:0xf1ede6, silt:0x9a8c74, delta:0x574836, bed:0x8a6a5a,

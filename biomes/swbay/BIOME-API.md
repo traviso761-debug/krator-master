@@ -57,14 +57,43 @@ river's banks and the delta are lush because `wet` and `flow` are both high ther
 
 ```js
 SWBAY.build({R:2400, quality:1, bayHue:.5, fauna:true}) -> {trees, heroes, far, bySpecies, ..., under, fauna, tris}
-SWBAY.dress(geometries, opt)     // growth on a structure (the hyperjungle pass, in this palette)
+SWBAY.dress(geometries, opt)     // growth on a structure (the hyperjungle pass, in this palette); takes shells (below)
 SWBAY.canopyH(x,z)               // approximate canopy top
 SWBAY.SPECIES                    // the 13 tree species (tagged), SWBAY.PAL the palettes
 SWBAY.zones(x,z)                 // the zone weights a world can reuse for its own placement
 SWBAY.FAUNA.species              // the 8 animal kinds (tagged, + diet); SWBAY.FAUNA.herd where the herd started, .pods the swimmers' loops
+SWBAY.LOD                        // the runtime LOD ranges (below)
 ```
 
-Then `BIO.bake()` once. Draw calls: one per instanced item + one per merged family (~48), four for the fauna, plus the host's far country and plume.
+Then `BIO.bake()` once. `quality` scales every count.
+
+**Runtime LOD** (the core's, as xanadu and swlowlands use it). The passes build under
+`BIO.range`, so bake splits every item and bucket into one mesh per 1200 m chunk and range,
+and the host calls `BIO.lodTick(camera)` every frame (after `camera.updateMatrixWorld()`): a
+chunk's mesh is drawn only while the camera is within its range of the chunk and the chunk is
+in view. The ranges are `SWBAY.LOD` (metres; `BIO.LOD.scale` multiplies them all):
+
+| key | what | m |
+|---|---|---|
+| `tree` | a hero tree in full (its foot keys it: bole, limbs, caps, foliage, epiphytes) | 1200 |
+| `floor`, `floorMid`, `farFloor` | the floor's near / mid / far bands | 800, 1200, 1200 |
+| `reeds` | the reeds standing in the shallows | 800 |
+| `logs` | fallen trees, driftwood, dead wood | 1200 |
+| `dress` | `SWBAY.dress` on a world's structures (`opt.range` overrides) | 1200 |
+
+Behind every hero stands a lite impostor (`minRange` = its range), drawn only past it; a far
+tree (beyond the spine's mid ring) is only its impostor, always drawn. The scene therefore
+HOLDS more than before (the stand-ins) and DRAWS far less: `BIO.lodShown` reports the chunk
+meshes and triangles drawn. Draw calls rise to one per item per chunk in view (KNOWN_ISSUES).
+The fauna keeps its own LOD (the `eye` hook) and is not chunked: its meshes are always drawn.
+
+**Shells.** `SWBAY.dress(geos)` takes the core's shells as well as plain geometries:
+`[{geos:[deck], share:1}, {geos:[piers], share:.6}, ...]`. Each pass (ledges, soffits, walls)
+splits its samples across the shells by share, then by area within a shell, so a big deck no
+longer takes the moss from the small ledges round it. A shell with no face a pass grows on
+(no up face for the ledges, no down face for the soffits) sits that pass out and the others
+split its share. Hand only faces something can grow on: the ideal-type jetty leaves out the
+buried feet, the pier tops under the deck and the piers below the water (86-host-jetty).
 
 The fauna needs `ticks` and `scene` at build time (it adds its own meshes and updates them every frame); a host without `ticks` gets frozen animals, one without `eye` animates everything whatever the range.
 

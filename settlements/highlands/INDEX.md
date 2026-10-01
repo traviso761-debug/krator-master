@@ -11,7 +11,7 @@ Built output (never open it; edit `src/` and rebuild): `dist/highlands.html`, `d
 Build: `cd settlements/highlands && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
-From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-materials.js`, `68-mat-v5.js`
+From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-materials.js`, `68-mat-v5.js`, `opt/69a-world-uv.js`
 
 ## src/
 
@@ -28,10 +28,10 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `50-registry.js` | <1 | v3: inspector registry + group transforms (1) |
 | `54-mat-concrete.js` | 4 | v4: concrete, brick, glass panes (1) |
 | `69-mat-salvage.js` | 12 | salvage (decay level 3) (1); FIRELIGHT (44) |
-| `69b-vern-mat.js` | 14 | textures (world units: a 128px tile = 2 m) (30); world-unit UVs (93); materials (116); geometry (133); kit items (153) |
-| `69c-vern-helpers.js` | 19 | primitives (local frame; y = BASE of the piece) (51); walls, frames, plinths (60); roofs (ridge along local x unless noted) (87); openings (108); porches, stairs, yards (134) |
+| `69b-vern-mat.js` | 14 | textures (world units: a 128px tile = 2 m) (30); world-unit UVs (93); materials (97); geometry (114); kit items (139) |
+| `69c-vern-helpers.js` | 22 | primitives (local frame; y = BASE of the piece) (51); walls, frames, plinths (60); roofs (ridge along local x unless noted) (88); openings (128); porches, stairs, yards (154) |
 | `70-hl-tex.js` | 27 | formline palette (NW-coast inspired) (13); wood: round logs (horizontal), 2 m tile, 6 cours (16); fish-scale shingle / slate: 2 m tile, 0.25 m sca (26); fieldstone (rubble) socle: 4 m tile (35); turf (sod roofs): 2 m tile (45); bamboo: culm (vertical, nodes every ~0.45 m) and (53); the painted carving: formline primitives (67); the animals (the kit's default subjects) (122); crest panels (colour-carrying, plane UV 0..1) (170); totem column (colour-carrying, wraps a cylinder) (194) |
-| `71-hl-mat.js` | 9 | world UV with separate u/v tile sizes (26); materials (41); geometry (60); kit items (80) |
+| `71-hl-mat.js` | 8 | world UV with separate u/v tile sizes (26); materials (32); geometry (51); kit items (71) |
 | `71b-hl-motif.js` | 33 **big** | Celtic drawing kit (16); motifs (unit box 100 x 100 unless noted) (50); shop-sign symbols (unit 100, drawn inside a roun (148); composing the textures (193); the textures and kit items (238) |
 | `72-hl-helpers.js` | 14 | vectors in the local frame (23); walls (39); roofs (113) |
 | `73-hl-carve.js` | 32 **big** | totems and painted posts (9); round 2: branch rules, pillars, signs, emblem (33); dougong (painted bracket sets under eaves) (77); bargeboards, gable finials, horns (97); windows, porches, balconies (122); towers (Peles, clocktowers, wall towers) (155); bamboo (tribal and the poorest Republican/Rustic (184); cliff walkways (tribal cliff settlements) (197); yard furniture of the highlands (221); round 4: fitting murals and bracket rows (hlFlus (251) |
@@ -60,7 +60,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `90-scene.js` | 6 | scene (Highlands showcase) (1); build every site the target lists (60) |
 | `91-probe.js` | 3 | probe (window._api) — same contract as the Ancie (1) |
 | `92-camera.js` | 10 | camera, inspector, polygon tool, walk mode (1) |
-| `93-labels.js` | 4 | floating building labels (standard new-world pac (1) |
+| `93-labels.js` | 6 | floating building labels (standard new-world pac (1) |
 | `94-hl-anim.js` | 2 | animation: orreries turn, clocks keep time (roun (1) |
 | `99-tail.html` | <1 |  |
 
@@ -71,4 +71,4 @@ Each target adds its own fragments to `src/` and builds one output.
 | Target | Fragments | KB |
 |---|---|---|
 | `highlands` | `89z-rows.js`, `91z-views.js` | <1 |
-| `roketstad` | `81-rk-sky.js`, `82a-anc-fuel.js`, `82b-anc-starport.js`, `82c-anc-launch.js`, `82d-anc-bunker.js`, `82e-anc-aa.js`, `84-rk-geo.js`, `85-rk-paint.js`, `86-bio-10-core-head.js`, `86-bio-20-core-kit.js`, `86-bio-30-core-foliage.js`, `86-bio-40-core-place.js`, `86-bio-45-init.js`, `86-bio-50-biome-nwlowlands-species.js`, `86-bio-55-biome-nwlowlands-trees.js`, `86-bio-60-biome-nwlowlands-floor.js`, `86-bio-65-biome-nwlowlands-dress.js`, `86-bio-70-biome-nwlowlands.js`, `87-rk-layout.js`, `88-rk-place.js`, `89z-rows.js`, `90a-rk-world.js`, `90b-rk-build.js`, `91z-views.js`, `93-rk-ui.js`, `93b-rk-lod.js` | 338 |
+| `roketstad` | `81-rk-sky.js`, `82a-anc-fuel.js`, `82b-anc-starport.js`, `82c-anc-launch.js`, `82d-anc-bunker.js`, `82e-anc-aa.js`, `84-rk-geo.js`, `85-rk-paint.js`, `86-bio-10-core-head.js`, `86-bio-20-core-kit.js`, `86-bio-30-core-foliage.js`, `86-bio-40-core-place.js`, `86-bio-45-init.js`, `86-bio-50-biome-nwlowlands-species.js`, `86-bio-55-biome-nwlowlands-trees.js`, `86-bio-60-biome-nwlowlands-floor.js`, `86-bio-65-biome-nwlowlands-dress.js`, `86-bio-70-biome-nwlowlands.js`, `87-rk-layout.js`, `88-rk-place.js`, `89z-rows.js`, `90a-rk-world.js`, `90b-rk-build.js`, `91z-views.js`, `93-rk-ui.js`, `93b-rk-lod.js` | 339 |

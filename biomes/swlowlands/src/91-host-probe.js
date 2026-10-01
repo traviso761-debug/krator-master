@@ -2,7 +2,11 @@
 // What verify.py --assert measures. Budgets per biome pass come from
 // BIO.stats (charged by BIO.cur inside the biome).
 const BUDGET={
- showcase:{tris:12000000,calls:120},   // raised for the lowlands (Sep 2026): the eastabyss ceilings were 7.6M / 5.6M
+ // held in memory (the heroes' lite stand-ins included) / drawn at any one camera, with the runtime LOD /
+ // draw calls (KNOWN_ISSUES, BUDGET). Measured Oct 2026 at the 27 presets: 11.6M held; 4.1-8.1M drawn
+ // (renderer.info; BIO.lodShown counts the chunk meshes only, ~0.9M less) in 216-403 calls; 1.3M / 99 from afar.
+ // Before the LOD every camera drew all 11.7M in ~63 calls. `rendered` is tracked, not asserted by verify.py.
+ showcase:{tris:12000000,calls:450,rendered:9000000},
  cls:{pass:9000000,host:900000},
  type:{'lowlands/trees':'pass','lowlands/floor':'pass','lowlands/dress':'pass','host':'host'},
 };
@@ -23,7 +27,7 @@ function nanSweep(){const bad=[];let badInst=0;
  return {meshes:bad.length,first:bad.slice(0,8),instances:badInst,firstInstances:[]};}
 function typeStats(){const out={};for(const k in BIO.stats){const t=BIO.stats[k],cls=BUDGET.type[k]||'pass';out[k]={tris:t.tris,inst:t.inst,meshes:t.meshes,cls,limit:BUDGET.cls[cls],over:t.tris>BUDGET.cls[cls]};}return out;}
 window._api={BUDGET,REG,
- get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
+ get totals(){const t=BIO.totals();return {rendered:BIO.lodShown?BIO.lodShown.tris:null,lodMeshes:BIO.lodMeshes.length,tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
  typeStats,regOccupancy,nanSweep,
  setView:(cx,cy,cz,tx,ty,tz)=>setView(cx,cy,cz,tx,ty,tz),views:()=>Object.keys(VIEWS),
  biome:()=>window._biome};

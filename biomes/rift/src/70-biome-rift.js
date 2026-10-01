@@ -9,3 +9,4 @@ RIFT.build=function(opt){opt=opt||{};const R=opt.R||3000,q=opt.quality==null?1:o
  BIO.cur=null;return out;};
 RIFT.dress=function(geos,opt){if(RIFT.dressGeos){BIO.cur='rift/dress';RIFT.dressGeos(geos,opt||{});BIO.cur=null;}};
 RIFT.canopyH=function(x,z){return RIFT._canopyH?RIFT._canopyH(x,z):12;};
+BIO.kitEnd(RIFT);   // its exports run in its registry; the default kit is current again

@@ -244,6 +244,383 @@ var ADOBEC=PAL.adobe, ADOBEREDC=PAL.adobeRed, WHITEC=PAL.whitewash, BLUELC=PAL.b
     MOSBLUEC=PAL.mosaicBlue, MOSWARMC=PAL.mosaicWarm, MOSGREENC=PAL.mosaicGreen, METALC=PAL.metal, TARNC=PAL.metalTarn,
     RUSTC=PAL.rust, CONCRETEC=PAL.concrete, GLASSC=PAL.glass, VOIDC=PAL.darkVoid, ROCKC=PAL.rock, TIMBERC=PAL.timber,
     TORONC=PAL.toron, PLANKC=PAL.plank, THATCHC=PAL.thatch, TILEC=PAL.tile, CLOTHC=PAL.cloth, AWNINGC=PAL.awning, BRASSC=PAL.brass;
+// ================================================================= LOD: shared level of detail (core/lod, read core/lod/README.md)
+// One global, `LOD`, declared nothing else at top level. It works on a FINISHED scene, so a build adopts it with three
+// calls and no change to how it makes geometry:
+//   LOD.init({THREE, scene, camera, renderer, ...options});   // after the world is built
+//   LOD.apply();                                               // takes over the static meshes and instanced meshes
+//   LOD.update();                                              // every frame, before renderer.render
+// How it draws less, without touching what the build made:
+//  * Every object it manages is moved to a layer the camera does not draw (layer 30) and a render COPY stands in for
+//    it under `LOD.root`. The original stays where it was, with its userData, visibility and instance order, and stays
+//    the raycast target: Raycaster.intersectObject(s) is patched to see layer 30, and the copies do not raycast. So
+//    inspectors, picking, labels and probes keep seeing full detail.
+//  * A big merged mesh is cut into chunks (a k-d split by triangle centroid: at most `maxTris` triangles and `maxExtent`
+//    metres a chunk). The chunks share the original's vertex buffers, so the cut costs only index memory and three.js
+//    can frustum-cull each chunk. A chunk switches to a simplified proxy (vertex clustering on a grid of `levels[k]`
+//    metres) once that grid is under `errPx` pixels on screen, and drops out when the whole chunk is under `minPx`.
+//  * An InstancedMesh keeps ONE draw call. Its instances are bucketed in `cell`-metre cells and sorted by size inside
+//    each cell; every update copies, cell by cell, the prefix of instances still bigger than `minPx` on screen into
+//    the copy's buffers. Instances with a detailed base geometry switch to a clustered base geometry beyond `errPx`
+//    (a second copy, one more draw call). Small detail (figures, clutter, trim, vines) therefore drops first.
+//  * The copies follow the originals' `visible` and `material` (night toggles keep working). An original whose matrix,
+//    geometry, instance matrices or count change after apply() is animated: it is handed back and drawn as before.
+//  * Bands have hysteresis (`hyst`) and the update is throttled (`throttle` ms, `moveEps` m): a still camera costs, per
+//    managed object a frame, a matrix compare, two version reads and a walk up its parents for visibility.
+// It draws nothing from any PRNG and changes no build output. LOD.enabled=false (or the panel's button, the `l` key,
+// or ?lod=0 in the URL) takes the copies out of the scene and puts the originals back: the scene graph is then exactly
+// the one the build made, for verify asserts that count full-detail triangles.
+(function(){
+ 'use strict';
+ const LAYER=30,HIDE=1<<LAYER;
+ const DEF={cell:64,maxTris:40000,maxExtent:400,minChunkTris:10000,errPx:3,minPx:1,levels:[1,4,16,64],simplifyMinTris:64,
+ instFarMinTris:48,instFarMinTotal:20000,instFarDiv:6,throttle:200,moveEps:.5,hyst:1.12,buildMs:10,ui:true,key:'l',
+ skip:null,classify:null,classes:{},enabled:true,render:null,pad:1,auto:true,panelStyle:''};
+ const L={root:null,managed:0,_on:false,lastMeasure:null};
+ let T=null,S=null,CAM=null,R=null,O=null;
+ const recs=[],queue=[];let skipRoots=new Set();
+ let dirty=true,lastBand=-1e9,lastSync=-1e9,panel=null,txt=null,btn=null,live={calls:0,tris:0};
+ let _cam=null,_camL=null,_inv=null,_lastCam=null;
+
+ // ---------------------------------------------------------------- small helpers
+ const triCount=g=>g.index?(g.index.count/3|0):(g.attributes.position.count/3|0);
+ const noRay=function(){};
+ function effVisible(o){for(let p=o;p;p=p.parent){if(!p.visible)return false;if(p===S)return true;}return false;}
+ function pxPerMetre(){const h=(R&&R.domElement&&R.domElement.clientHeight)||innerHeight||640;
+ return h/2/Math.tan((CAM.fov||50)*Math.PI/360)*(CAM.zoom||1);}
+ function matEq(a,b){const x=a.elements,y=b.elements;for(let i=0;i<16;i++)if(x[i]!==y[i])return false;return true;}
+ function getC(a,i,c){return c===0?a.getX(i):c===1?a.getY(i):c===2?a.getZ(i):a.getW(i);}
+ function copyProps(c,o){c.name=o.name;c.renderOrder=o.renderOrder;c.castShadow=o.castShadow;c.receiveShadow=o.receiveShadow;
+ c.frustumCulled=o.frustumCulled;if(o.customDepthMaterial)c.customDepthMaterial=o.customDepthMaterial;
+ if(o.customDistanceMaterial)c.customDistanceMaterial=o.customDistanceMaterial;
+ c.onBeforeRender=o.onBeforeRender;c.onAfterRender=o.onAfterRender;
+ c.userData=Object.assign({},o.userData,{lodCopy:true,probeSkip:true});c.raycast=noRay;
+ c.matrixAutoUpdate=false;c.matrix.copy(o.matrixWorld);c.matrixWorldNeedsUpdate=true;}
+ // a geometry that shares every vertex buffer of g, with its own index (never dispose it: that frees the shared buffers)
+ function shareGeo(g,index){const s=new T.BufferGeometry();for(const k in g.attributes)s.setAttribute(k,g.attributes[k]);
+ if(index)s.setIndex(index);else if(g.index)s.setIndex(g.index);s.groups=g.groups.slice();return s;}
+ // bounding sphere of the vertices a triangle list uses
+ function sphereOf(pos,idx,tris){let x0=1e30,y0=1e30,z0=1e30,x1=-1e30,y1=-1e30,z1=-1e30;
+ const v=t=>idx?idx.getX(t):t;
+ for(let i=0;i<tris.length;i++){const t=tris[i]*3;for(let k=0;k<3;k++){const j=v(t+k),x=pos.getX(j),y=pos.getY(j),z=pos.getZ(j);
+  if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y;if(z<z0)z0=z;if(z>z1)z1=z;}}
+ const c=new T.Vector3((x0+x1)/2,(y0+y1)/2,(z0+z1)/2);let r=0;
+ for(let i=0;i<tris.length;i++){const t=tris[i]*3;for(let k=0;k<3;k++){const j=v(t+k);
+  const d=Math.hypot(pos.getX(j)-c.x,pos.getY(j)-c.y,pos.getZ(j)-c.z);if(d>r)r=d;}}
+ return new T.Sphere(c,r);}
+
+ // ---------------------------------------------------------------- an int-keyed hash (4 int32 per key)
+ function IHash(n){let cap=16;while(cap<n*2)cap<<=1;this.mask=cap-1;this.k=new Int32Array(cap*4);this.v=new Int32Array(cap).fill(-1);this.n=0;}
+ IHash.prototype.get=function(a,b,c,d){const k=this.k,v=this.v,m=this.mask;
+ let h=(Math.imul(a,73856093)^Math.imul(b,19349663)^Math.imul(c,83492791)^Math.imul(d,2654435761|0))&m;
+ for(;;){const id=v[h];if(id<0){v[h]=this.n;k[h*4]=a;k[h*4+1]=b;k[h*4+2]=c;k[h*4+3]=d;return -1-(this.n++);}
+  if(k[h*4]===a&&k[h*4+1]===b&&k[h*4+2]===c&&k[h*4+3]===d)return id;h=(h+1)&m;}};
+
+ // ---------------------------------------------------------------- vertex clustering
+ // Snap every vertex to a grid of s (in the geometry's own units), keeping vertices whose normals face different ways
+ // apart (6 buckets), average position / normal / colour per cell, take other attributes from the first vertex, drop
+ // triangles that collapse, and drop duplicates. `tris` (optional) limits it to those triangle ids. Returns
+ // {geo (attributes only), index:Uint32Array, from:Int32Array (source triangle of each output triangle)}.
+ function cluster(g,s,tris,pin){const P=g.attributes.position,N=g.attributes.normal,I=g.index,nv=P.count;
+ const nt=tris?tris.length:triCount(g),H=new IHash(Math.min(nv,nt*3)+8),cid=new Int32Array(nv).fill(-1);
+ const vi=t=>I?I.getX(t):t;
+ const cnt=[],first=[];let sp=new Float64Array(1024*3),sn=new Float64Array(1024*3);
+ const C=g.attributes.color,sc=C?[]:null;
+ const idOf=j=>{let c=cid[j];if(c>=0)return c;const x=P.getX(j),y=P.getY(j),z=P.getZ(j);let nb=0;
+  if(N){const a=N.getX(j),b=N.getY(j),e=N.getZ(j),A=Math.abs(a),B=Math.abs(b),E=Math.abs(e);nb=A>=B&&A>=E?(a<0?1:0):B>=E?(b<0?3:2):(e<0?5:4);}
+  const r=(pin&&pin[j])?H.get(j,-7,-7,-7):H.get(Math.floor(x/s),Math.floor(y/s),Math.floor(z/s),nb);
+  if(r<0){c=-1-r;if(c*3+3>sp.length){const a=new Float64Array(sp.length*2);a.set(sp);sp=a;const b2=new Float64Array(sn.length*2);b2.set(sn);sn=b2;}
+   cnt[c]=0;first[c]=j;if(sc)for(let k=0;k<C.itemSize;k++)sc[c*C.itemSize+k]=0;}else c=r;
+  cnt[c]++;sp[c*3]+=x;sp[c*3+1]+=y;sp[c*3+2]+=z;
+  if(N){sn[c*3]+=N.getX(j);sn[c*3+1]+=N.getY(j);sn[c*3+2]+=N.getZ(j);}
+  if(sc)for(let k=0;k<C.itemSize;k++)sc[c*C.itemSize+k]+=getC(C,j,k);
+  cid[j]=c;return c;};
+ const D=new IHash(nt+8),out=[],from=[];
+ for(let q=0;q<nt;q++){const t=tris?tris[q]:q;const a=idOf(vi(t*3)),b=idOf(vi(t*3+1)),c=idOf(vi(t*3+2));
+  if(a===b||b===c||a===c)continue;
+  let x=a,y=b,z=c,u;if(x>y){u=x;x=y;y=u;}if(y>z){u=y;y=z;z=u;}if(x>y){u=x;x=y;y=u;}
+  if(D.get(x,y,z,0)>=0)continue;out.push(a,b,c);from.push(t);}
+ const nc=cnt.length,geo=new T.BufferGeometry();
+ for(const name in g.attributes){const A=g.attributes[name],it=A.itemSize,arr=new (A.array.constructor)(nc*it);
+  if(name==='position'){for(let c=0;c<nc;c++)for(let k=0;k<3;k++)arr[c*3+k]=sp[c*3+k]/cnt[c];}
+  else if(name==='normal'){for(let c=0;c<nc;c++){const x=sn[c*3],y=sn[c*3+1],z=sn[c*3+2],l=Math.hypot(x,y,z)||1;arr[c*3]=x/l;arr[c*3+1]=y/l;arr[c*3+2]=z/l;}}
+  else if(name==='color'){for(let c=0;c<nc;c++)for(let k=0;k<it;k++)arr[c*it+k]=sc[c*it+k]/cnt[c];}
+  else{for(let c=0;c<nc;c++)for(let k=0;k<it;k++)arr[c*it+k]=getC(A,first[c],k);}
+  const B=new T.BufferAttribute(arr,it,A.normalized);geo.setAttribute(name,B);}
+ return {geo,index:out,from,nc};}
+ const mkIndex=(arr,nv)=>new T.BufferAttribute(nv>65535?new Uint32Array(arr):new Uint16Array(arr),1);
+
+ // Vertices that must not move: those on an open edge of the mesh (welded by position, so flat-shaded boxes count as
+ // closed) and those on an edge between two chunks. Pinning them keeps a proxy's rim exactly where its neighbour's is
+ // (another chunk at another level, or another mesh along a shared seam, like the port's terrain strips): no cracks.
+ function pins(g,leafOf){const P=g.attributes.position,I=g.index,nv=P.count,nt=triCount(g),q=1e4;
+  const W=new IHash(nv+8),pid=new Int32Array(nv);
+  for(let j=0;j<nv;j++){const r=W.get(Math.round(P.getX(j)*q),Math.round(P.getY(j)*q),Math.round(P.getZ(j)*q),0);pid[j]=r<0?-1-r:r;}
+  const E=new IHash(nt*3+8),cnt=[],ch=[],multi=[];const vi=t=>I?I.getX(t):t;
+  for(let t=0;t<nt;t++){const c=leafOf?leafOf[t]:0;for(let k=0;k<3;k++){let a=pid[vi(t*3+k)],b=pid[vi(t*3+(k+1)%3)];if(a===b)continue;if(a>b){const u=a;a=b;b=u;}
+   const r=E.get(a,b,0,0);if(r<0){const e=-1-r;cnt[e]=1;ch[e]=c;multi[e]=0;}else{cnt[r]++;if(ch[r]!==c)multi[r]=1;}}}
+  const pp=new Uint8Array(W.n);const K=E.k;
+  for(let h=0;h<E.v.length;h++){const e=E.v[h];if(e<0)continue;if(cnt[e]===1||multi[e]){pp[K[h*4]]=1;pp[K[h*4+1]]=1;}}
+  const out=new Uint8Array(nv);for(let j=0;j<nv;j++)out[j]=pp[pid[j]];return out;}
+
+ // ---------------------------------------------------------------- k-d split of a mesh into chunks
+ function kdSplit(cen,ids,maxT,maxE,minT,out){const st=[ids];
+ while(st.length){const a=st.pop();let x0=1e30,y0=1e30,z0=1e30,x1=-1e30,y1=-1e30,z1=-1e30;
+  for(let i=0;i<a.length;i++){const t=a[i]*3,x=cen[t],y=cen[t+1],z=cen[t+2];if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y;if(z<z0)z0=z;if(z>z1)z1=z;}
+  const ex=x1-x0,ey=y1-y0,ez=z1-z0,e=Math.max(ex,ey,ez);
+  // split while over maxTris, or over maxExtent and still worth a draw call (minChunkTris): sparse far ground stays whole
+  if((a.length<=maxT&&(e<=maxE||a.length<=minT))||a.length<2){out.push(a);continue;}
+  const ax=e===ex?0:e===ez?2:1,keys=new Float32Array(a.length);for(let i=0;i<a.length;i++)keys[i]=cen[a[i]*3+ax];
+  const srt=keys.slice().sort(),med=srt[srt.length>>1];let nl=0;for(let i=0;i<a.length;i++)if(keys[i]<med)nl++;
+  if(nl===0||nl===a.length){const h=a.length>>1;st.push(a.subarray(h),a.subarray(0,h));continue;}
+  const l=new Int32Array(nl),r=new Int32Array(a.length-nl);let p=0,q=0;for(let i=0;i<a.length;i++){if(keys[i]<med)l[p++]=a[i];else r[q++]=a[i];}
+  st.push(r,l);}
+ return out;}
+
+ // ---------------------------------------------------------------- what is managed
+ // the shared biome core (userData.biome) thins its instanced flora with distance on its own curve, so by default its
+ // sets keep every instance (class 'biome', minPx 0) and are only culled and simplified
+ const BIOME={minPx:0};
+ function clsOf(o){let name=O.classify?O.classify(o):null;if(!name&&o.userData.biome&&o.isInstancedMesh)name='biome';
+ const c=(name&&(O.classes[name]||(name==='biome'?BIOME:null)))||{};
+ return {name:name||null,minPx:c.minPx!=null?c.minPx:O.minPx,maxDist:c.maxDist!=null?c.maxDist:Infinity,simplify:c.simplify!==false};}
+ function wanted(o){if(!o.isMesh||o.isSkinnedMesh||o.userData.lodCopy||o.userData.lodSkip)return false;
+ const g=o.geometry,m=o.material;if(!g||!g.isBufferGeometry||!g.attributes.position||Array.isArray(m)||!m)return false;
+ if(g.morphAttributes&&g.morphAttributes.position&&g.morphAttributes.position.length)return false;
+ if(g.drawRange.start!==0||g.drawRange.count!==Infinity)return false;
+ if(m.transparent||m.depthWrite===false||m.side===T.BackSide)return false;
+ if(!(o.layers.mask&1))return false;if(o.isInstancedMesh&&!o.count)return false;
+ // things the build animates: buffers it declared dynamic, interleaved instance data, and the Krator flags for
+ // life layers, flyers and pick-less helpers (door leaves, overlays)
+ const u=o.userData;if(u.life||u.lifeLabel||u.flyers||u.noPick||u.lodSkip)return false;
+ const DYN=T.DynamicDrawUsage;if(g.attributes.position.usage===DYN)return false;
+ if(o.isInstancedMesh){if(o.instanceMatrix.usage===DYN||o.instanceMatrix.isInterleavedBufferAttribute)return false;
+  for(const k in g.attributes){const A=g.attributes[k];if((A.isInstancedBufferAttribute||A.isInstancedInterleavedBuffer||(A.data&&A.data.isInstancedInterleavedBuffer))&&(A.usage===DYN||A.isInterleavedBufferAttribute))return false;}}
+ if(O.skip&&O.skip(o))return false;
+ if(skipRoots.size)for(let p=o;p;p=p.parent)if(skipRoots.has(p))return false;
+ return true;}
+ function addMesh(o){const g=o.geometry,P=g.attributes.position,I=g.index,nt=triCount(g);if(!nt)return null;const cl=clsOf(o);
+ const rec={kind:'mesh',o,g,cl,nt,ver:P.version,iver:I?I.version:0,mw:o.matrixWorld.clone(),mask0:o.layers.mask,chunks:[],levels:[],copies:[]};
+ if(!g.boundingSphere)g.computeBoundingSphere();
+ let leaves;
+ if(nt<=O.maxTris&&g.boundingSphere.radius*2<=O.maxExtent*1.2)leaves=null;
+ else{const cen=new Float32Array(nt*3),v=t=>I?I.getX(t):t;
+  for(let t=0;t<nt;t++)for(let k=0;k<3;k++){const j=v(t*3+k);cen[t*3]+=P.getX(j)/3;cen[t*3+1]+=P.getY(j)/3;cen[t*3+2]+=P.getZ(j)/3;}
+  const ids=new Int32Array(nt);for(let t=0;t<nt;t++)ids[t]=t;leaves=kdSplit(cen,ids,O.maxTris,O.maxExtent,O.minChunkTris,[]);if(leaves.length<2)leaves=null;}
+ if(!leaves){rec.chunks.push({tris:null,full:g,sph:g.boundingSphere.clone(),lv:0,on:true,nt});rec.leafOf=null;}
+ else{rec.leafOf=new Int32Array(nt);leaves.forEach((tr,ci)=>{const ix=[];for(let i=0;i<tr.length;i++){rec.leafOf[tr[i]]=ci;const t=tr[i]*3;
+   ix.push(I?I.getX(t):t,I?I.getX(t+1):t+1,I?I.getX(t+2):t+2);}
+  const sg=shareGeo(g,mkIndex(ix,P.count));const sph=sphereOf(P,I,tr);sph.radius+=O.pad;sg.boundingSphere=sph.clone();
+  rec.chunks.push({tris:tr,full:sg,sph,lv:0,on:true,nt:tr.length});});}
+ // chunks are culled even where the original was not (the kits and biomes turn culling off on whole-world meshes,
+ // whose one sphere would never leave the view); `pad` covers a little vertex-shader sway. userData.lodNoCull opts out.
+ // A split mesh draws COMBINED: one copy per level in use, whose index is the concatenation of the chunks at that
+ // level, so chunking costs at most one draw call per level in use, not one per chunk. An unsplit mesh has one copy.
+ if(leaves){rec.comb=true;rec.lvM=[];for(const ch of rec.chunks){ch.key=-2;}}
+ else for(const ch of rec.chunks){const c=new T.Mesh(ch.full,o.material);copyProps(c,o);
+  ch.m=c;rec.copies.push(c);c._lodOn=true;}
+ rec.simp=cl.simplify&&nt>=O.simplifyMinTris;return rec;}
+ function addInst(o){const g=o.geometry,n=o.count,cl=clsOf(o);
+ // the BASE shape's own sphere, from its vertices: a build may have set geometry.boundingSphere round the whole set
+ // (core/atmos cull does, keeping the base one in userData.baseSphere), which would make every instance "huge"
+ const bs=g.userData.baseSphere||new T.Box3().setFromBufferAttribute(g.attributes.position).getBoundingSphere(new T.Sphere());
+ const r0=bs.radius,c0=bs.center,M=o.instanceMatrix.array;
+ const px=new Float32Array(n),py=new Float32Array(n),pz=new Float32Array(n),ri=new Float32Array(n),sm=new Float32Array(n);
+ const cells=new Map(),CS=O.cell;
+ for(let i=0;i<n;i++){const b=i*16;const sx=Math.hypot(M[b],M[b+1],M[b+2]),sy=Math.hypot(M[b+4],M[b+5],M[b+6]),sz=Math.hypot(M[b+8],M[b+9],M[b+10]);
+  const s=Math.max(sx,sy,sz);sm[i]=s;ri[i]=r0*s;
+  px[i]=M[b]*c0.x+M[b+4]*c0.y+M[b+8]*c0.z+M[b+12];py[i]=M[b+1]*c0.x+M[b+5]*c0.y+M[b+9]*c0.z+M[b+13];pz[i]=M[b+2]*c0.x+M[b+6]*c0.y+M[b+10]*c0.z+M[b+14];
+  const key=Math.floor(px[i]/CS)+','+Math.floor(pz[i]/CS);let L0=cells.get(key);if(!L0)cells.set(key,L0=[]);L0.push(i);}
+ const order=new Int32Array(n),C=[];let p=0,gx=0,gy=0,gz=0;
+ for(const L0 of cells.values()){L0.sort((a,b)=>ri[b]-ri[a]||a-b);let x=0,y=0,z=0,smax=0;
+  for(const i of L0){x+=px[i];y+=py[i];z+=pz[i];if(sm[i]>smax)smax=sm[i];}
+  x/=L0.length;y/=L0.length;z/=L0.length;let r=0;const rs=new Float32Array(L0.length);
+  L0.forEach((i,k)=>{order[p+k]=i;rs[k]=ri[i];const d=Math.hypot(px[i]-x,py[i]-y,pz[i]-z)+ri[i];if(d>r)r=d;});
+  C.push({start:p,len:L0.length,c:new T.Vector3(x,y,z),r,rs,smax,k:L0.length,lv:0});p+=L0.length;}
+ for(let i=0;i<n;i++){gx+=px[i];gy+=py[i];gz+=pz[i];}gx/=n;gy/=n;gz/=n;let gr=0;
+ for(let i=0;i<n;i++){const d=Math.hypot(px[i]-gx,py[i]-gy,pz[i]-gz)+ri[i];if(d>gr)gr=d;}
+ const sph=new T.Sphere(new T.Vector3(gx,gy,gz),gr*1.02+O.pad);
+ // instance data permuted into cell order, so each cell's kept prefix is one contiguous copy
+ const srcs=[{get:()=>o.instanceMatrix,it:16,src:null,name:'#m'}];
+ if(o.instanceColor)srcs.push({get:()=>o.instanceColor,it:o.instanceColor.itemSize,src:null,name:'#c'});
+ for(const k in g.attributes){const A=g.attributes[k];if(A.isInstancedBufferAttribute)srcs.push({get:()=>o.geometry.attributes[k],it:A.itemSize,src:null,name:k});}
+ const rec={kind:'inst',o,g,cl,n,cells:C,order,srcs,sph,r0,mver:o.instanceMatrix.version,cver:o.instanceColor?o.instanceColor.version:0,
+  mw:o.matrixWorld.clone(),mask0:o.layers.mask,copies:[],lvls:[],farS:0,far:null};
+ permute(rec);
+ rec.lvls.push(mkInstCopy(rec,g));rec.copies.push(rec.lvls[0].im);
+ // a far version costs a draw call: only for sets with enough triangles in all to be worth one
+ if(cl.simplify&&triCount(g)>=O.instFarMinTris&&n*triCount(g)>=O.instFarMinTotal)rec.farS=r0/O.instFarDiv;
+ return rec;}
+ function permute(rec){for(const s of rec.srcs){const A=s.get(),it=s.it,a=A.array;if(!s.src||s.src.length!==rec.n*it)s.src=new Float32Array(rec.n*it);
+  for(let q=0;q<rec.n;q++){const i=rec.order[q];for(let k=0;k<it;k++)s.src[q*it+k]=a[i*it+k];}}}
+ function mkInstCopy(rec,base){const o=rec.o,g=new T.BufferGeometry();
+ for(const k in base.attributes){const A=base.attributes[k];if(!A.isInstancedBufferAttribute)g.setAttribute(k,A);}
+ if(base.index)g.setIndex(base.index);g.groups=base.groups.slice();
+ const im=new T.InstancedMesh(g,o.material,rec.n),bufs={};
+ for(const s of rec.srcs){const B=new T.InstancedBufferAttribute(new Float32Array(rec.n*s.it),s.it);B.setUsage(T.DynamicDrawUsage);bufs[s.name]=B;
+  if(s.name==='#m')im.instanceMatrix=B;else if(s.name==='#c')im.instanceColor=B;else g.setAttribute(s.name,B);}
+ copyProps(im,o);im.frustumCulled=true;g.boundingSphere=rec.sph.clone();im.count=0;im._lodOn=false;im.visible=false;
+ return {im,bufs};}
+
+ // ---------------------------------------------------------------- level builds (lazy, time-budgeted)
+ function want(rec,lv){if(rec.levels[lv]!==undefined)return true;if(!rec.queued){rec.queued=new Set();}
+ if(!rec.queued.has(lv)){rec.queued.add(lv);queue.push([rec,lv]);}return false;}
+ function buildLevel(rec,lv){const s=O.levels[lv-1],g=rec.g;
+ if(!rec.pin)rec.pin=pins(g,rec.leafOf);
+ const res=cluster(g,s,null,rec.pin),prev=lv>1?rec.levels[lv-1]:null,prevN=prev?prev.nt:rec.nt;
+ // no real saving: reuse the level below (`same` names the level whose copy draws it)
+ if(res.index.length/3>prevN*.85){rec.levels[lv]=prev?{geos:prev.geos,nt:prev.nt,src:prev.src,same:prev.same!==undefined?prev.same:lv-1}:{geos:rec.chunks.map(ch=>ch.full),nt:rec.nt,src:rec.g,same:0};return;}
+ const per=rec.chunks.map(()=>[]);
+ for(let q=0;q<res.from.length;q++){const ci=rec.leafOf?rec.leafOf[res.from[q]]:0;per[ci].push(res.index[q*3],res.index[q*3+1],res.index[q*3+2]);}
+ const geos=per.map((ix,ci)=>{if(!ix.length)return null;const G=new T.BufferGeometry();for(const k in res.geo.attributes)G.setAttribute(k,res.geo.attributes[k]);
+  G.setIndex(mkIndex(ix,res.nc));G.boundingSphere=rec.chunks[ci].sph.clone();return G;});
+ rec.levels[lv]={geos,nt:res.index.length/3,src:res.geo};}
+ function pump(ms){const t0=performance.now();let n=0;
+ while(queue.length&&(n===0||performance.now()-t0<ms)){const [rec,lv]=queue.shift();if(!rec.dead){
+   for(let k=1;k<=lv;k++)if(rec.levels[k]===undefined)buildLevel(rec,k);dirty=true;}n++;}}
+ function instFar(rec){if(!rec.far){const res=cluster(rec.g,rec.farS,null),G=res.geo;G.setIndex(mkIndex(res.index,res.nc));
+  rec.far=mkInstCopy(rec,G);rec.lvls.push(rec.far);rec.copies.push(rec.far.im);L.root.add(rec.far.im);rec.farTris=res.index.length/3;}
+ return rec.far;}
+
+ // ---------------------------------------------------------------- the bands
+ // the copy that draws level l of a combined mesh, made on first use; its index buffer grows when it must
+ function lvMesh(rec,l){let L0=rec.lvM[l];if(L0)return L0;const o=rec.o,src=l?rec.levels[l].src:rec.g,g=new T.BufferGeometry();
+  for(const k in src.attributes)g.setAttribute(k,src.attributes[k]);
+  const m=new T.Mesh(g,o.material);copyProps(m,o);m.frustumCulled=!o.userData.lodNoCull;m._lodOn=false;m.visible=false;
+  L0=rec.lvM[l]={m,g,idx:null};rec.copies.push(m);if(L.root)L.root.add(m);return L0;}
+ function packMesh(rec){
+  for(let l=0;l<=O.levels.length;l++){let cnt=0;const parts=[];let x0=1e30,y0=1e30,z0=1e30,x1=-1e30,y1=-1e30,z1=-1e30;
+   rec.chunks.forEach((ch,ci)=>{if(ch.key!==l)return;const gg=l?rec.levels[l].geos[ci]:ch.full;if(!gg)return;const a=gg.index.array;parts.push(a);cnt+=a.length;
+    const c=ch.sph.center,r=ch.sph.radius;x0=Math.min(x0,c.x-r);y0=Math.min(y0,c.y-r);z0=Math.min(z0,c.z-r);x1=Math.max(x1,c.x+r);y1=Math.max(y1,c.y+r);z1=Math.max(z1,c.z+r);});
+   if(!cnt){if(rec.lvM[l])rec.lvM[l].m._lodOn=false;continue;}
+   const L0=lvMesh(rec,l);if(!L0.idx||L0.idx.array.length<cnt){L0.idx=new T.BufferAttribute(new Uint32Array(Math.ceil(cnt*1.25)),1);L0.idx.setUsage(T.DynamicDrawUsage);L0.g.setIndex(L0.idx);}
+   let off=0;for(const a of parts){L0.idx.array.set(a,off);off+=a.length;}
+   L0.idx.updateRange.offset=0;L0.idx.updateRange.count=cnt;L0.idx.needsUpdate=true;L0.g.setDrawRange(0,cnt);
+   const c=new T.Vector3((x0+x1)/2,(y0+y1)/2,(z0+z1)/2);let r=0;
+   rec.chunks.forEach(ch=>{if(ch.key===l)r=Math.max(r,c.distanceTo(ch.sph.center)+ch.sph.radius);});
+   L0.g.boundingSphere=new T.Sphere(c,r);L0.m._lodOn=true;}}
+ function bandMesh(rec,P,cam,h){const cl=rec.cl;let full=0,drawn=0;
+ if(rec.comb){let changed=!rec.packed;
+  for(let ci=0;ci<rec.chunks.length;ci++){const ch=rec.chunks[ci],d=Math.max(0,cam.distanceTo(ch.sph.center)-ch.sph.radius);
+   const px=d>0?ch.sph.radius*P/d:1e9;
+   ch.on=ch.on?(px>=cl.minPx/h&&d<=cl.maxDist*h):(px>cl.minPx*h&&d<cl.maxDist/h);
+   let lv=0;if(rec.simp)for(let k=1;k<=O.levels.length;k++){const thr=O.levels[k-1]*P/O.errPx*(k<=ch.lv?1/h:h);if(d>thr)lv=k;else break;}
+   let use=lv;if(lv&&!want(rec,lv)){use=0;for(let k=lv-1;k>=1;k--)if(rec.levels[k]!==undefined){use=k;break;}}
+   if(use&&rec.levels[use].same!==undefined)use=rec.levels[use].same;
+   ch.lv=lv;const key=ch.on?use:-1;if(key!==ch.key){ch.key=key;changed=true;}
+   full+=ch.nt;if(key>=0){const gg=key?rec.levels[key].geos[ci]:ch.full;if(gg)drawn+=gg.index.count/3;}}
+  if(changed){rec.packed=true;packMesh(rec);}
+  rec.full=full;rec.drawn=drawn;return;}
+ for(let ci=0;ci<rec.chunks.length;ci++){const ch=rec.chunks[ci],d=Math.max(0,cam.distanceTo(ch.sph.center)-ch.sph.radius);
+  const px=d>0?ch.sph.radius*P/d:1e9;
+  ch.on=ch.on?(px>=cl.minPx/h&&d<=cl.maxDist*h):(px>cl.minPx*h&&d<cl.maxDist/h);
+  let lv=0;if(rec.simp)for(let k=1;k<=O.levels.length;k++){const thr=O.levels[k-1]*P/O.errPx*(k<=ch.lv?1/h:h);if(d>thr)lv=k;else break;}
+  // the deepest level that is built and not past the wanted one
+  let use=lv;if(lv&&!want(rec,lv)){use=0;for(let k=lv-1;k>=1;k--)if(rec.levels[k]!==undefined){use=k;break;}}
+  ch.lv=lv;const geo=use?rec.levels[use].geos[ci]:ch.full;
+  if(ch.m.geometry!==geo&&geo)ch.m.geometry=geo;ch.m._lodOn=ch.on&&!!geo;
+  full+=ch.nt;if(ch.m._lodOn)drawn+=triCount(ch.m.geometry);}
+ rec.full=full;rec.drawn=drawn;}
+ function bandInst(rec,P,cam,h){const cl=rec.cl,cells=rec.cells;let changed=false;const far=rec.farS>0;
+ for(const c of cells){const d=Math.max(0,cam.distanceTo(c.c)-c.r);let k;
+  if(d>cl.maxDist*(c.k?h:1/h))k=0;
+  else if(d<=0)k=c.len;
+  else{const rmin=d*cl.minPx/P,cnt=th=>{let lo=0,hi=c.len;while(lo<hi){const m=(lo+hi)>>1;if(c.rs[m]>=th)lo=m+1;else hi=m;}return lo;};
+   const kA=cnt(rmin/h),kB=cnt(rmin*h);k=Math.min(kA,Math.max(kB,c.k));}
+  let lv=0;if(far){const thr=rec.farS*c.smax*P/O.errPx;lv=d>thr*(c.lv?1/h:h)?1:0;}
+  if(k!==c.k||lv!==c.lv){c.k=k;c.lv=lv;changed=true;}}
+ if(changed||rec.recolor||!rec.packed){rec.packed=true;rec.recolor=false;
+  if(far&&cells.some(c=>c.lv&&c.k))instFar(rec);
+  for(let l=0;l<rec.lvls.length;l++){const Lc=rec.lvls[l];let off=0;
+   for(const c of cells){if(c.lv!==l||!c.k)continue;for(const s of rec.srcs)Lc.bufs[s.name].array.set(s.src.subarray(c.start*s.it,(c.start+c.k)*s.it),off*s.it);off+=c.k;}
+   for(const s of rec.srcs){const B=Lc.bufs[s.name];B.updateRange.offset=0;B.updateRange.count=off*s.it;B.needsUpdate=true;}
+   Lc.im.count=off;Lc.im._lodOn=off>0;}}
+ let full=0,drawn=0;const t0=triCount(rec.g);full=rec.n*t0;
+ for(let l=0;l<rec.lvls.length;l++)drawn+=rec.lvls[l].im.count*(l?rec.farTris:t0);rec.full=full;rec.drawn=drawn;}
+ function band(){const P=pxPerMetre(),h=O.hyst;CAM.updateMatrixWorld();_cam.setFromMatrixPosition(CAM.matrixWorld);
+ for(const rec of recs){if(rec.dead)continue;_camL.copy(_cam);if(!rec.ident){_inv.copy(rec.mw).invert();_camL.applyMatrix4(_inv);}
+  if(rec.kind==='mesh')bandMesh(rec,P,_camL,h);else bandInst(rec,P,_camL,h);}
+ stale();sync();}
+ // hand back anything that moved or was rebuilt (every frame: a matrix compare and two version reads per object)
+ function stale(){for(const rec of recs){if(rec.dead)continue;const o=rec.o;
+  if(!o.parent||!matEq(o.matrixWorld,rec.mw)){release(rec);continue;}
+  if(rec.kind==='mesh'){const P=o.geometry.attributes.position;if(o.geometry!==rec.g||P.version!==rec.ver||(o.geometry.index&&o.geometry.index.version!==rec.iver))release(rec);}
+  else{if(o.instanceMatrix.version!==rec.mver||o.count!==rec.n||o.geometry!==rec.g){release(rec);continue;}
+   if(o.instanceColor&&o.instanceColor.version!==rec.cver){rec.cver=o.instanceColor.version;permute(rec);rec.recolor=true;dirty=true;}}}}
+ // follow the originals: visibility (with their parents') and material
+ function sync(){for(const rec of recs){if(rec.dead)continue;const o=rec.o,vis=effVisible(o),mat=o.material;
+  for(const c of rec.copies){if(c.material!==mat)c.material=mat;c.visible=vis&&c._lodOn;}}}
+ function release(rec){rec.dead=true;rec.o.layers.mask=rec.mask0;for(const c of rec.copies)if(c.parent)c.parent.remove(c);L.managed--;}
+
+ // ---------------------------------------------------------------- API
+ L.init=function(opt){O=Object.assign({},DEF,opt||{});T=O.THREE||window.THREE;S=O.scene;CAM=O.camera;R=O.renderer;
+ _cam=new T.Vector3();_camL=new T.Vector3();_inv=new T.Matrix4();_lastCam=new T.Vector3(1e9,1e9,1e9);
+ if(!new T.Raycaster().layers)throw new Error('LOD: this three.js has no Raycaster.layers');
+ if(!T.Raycaster.prototype._lodPatched){const RP=T.Raycaster.prototype;
+  for(const k of ['intersectObject','intersectObjects']){const f=RP[k];
+   RP[k]=function(){const m=this.layers.mask;this.layers.mask=m|HIDE;try{return f.apply(this,arguments);}finally{this.layers.mask=m;}};}
+  RP._lodPatched=true;}
+ L.root=new T.Group();L.root.name='LOD';L.root.userData.probeSkip=true;L.root.userData.lodCopy=true;L.root.matrixAutoUpdate=false;
+ const q=/[?&]lod=([01])/.exec(location.search||'');if(q)O.enabled=q[1]==='1';
+ // drive update() from the scene's own render: no edit to the build's frame loop, and it runs after three.js has
+ // updated every matrixWorld for this frame, so a moved original is caught before it is drawn stale
+ if(O.auto!==false){const prev=S.onBeforeRender;S.onBeforeRender=function(r,sc,cam){if(prev)prev.apply(this,arguments);if(cam===CAM)L.update();};}
+ return L;};
+ L.apply=function(root){const t0=performance.now();root=root||S;S.updateMatrixWorld(true);const list=[];
+ skipRoots=new Set((typeof O.skipUnder==='function'?O.skipUnder():O.skipUnder)||[]);
+ root.traverse(o=>{if(wanted(o))list.push(o);});
+ for(const o of list){let rec=null;try{rec=o.isInstancedMesh?addInst(o):addMesh(o);}catch(e){console.warn('LOD: skipped '+(o.name||o.type)+': '+e.message);}
+  if(!rec)continue;rec.ident=matEq(o.matrixWorld,new T.Matrix4());recs.push(rec);for(const c of rec.copies)L.root.add(c);L.managed++;}
+ L.applyMs=Math.round(performance.now()-t0);L._on=false;setEnabled(O.enabled);if(O.ui)mkUI();dirty=true;return L.stats();};
+ function setEnabled(on){on=!!on;if(on===L._on)return;L._on=on;
+ for(const rec of recs)if(!rec.dead)rec.o.layers.mask=on?HIDE:rec.mask0;
+ if(on){S.add(L.root);dirty=true;}else if(L.root.parent)L.root.parent.remove(L.root);paint();}
+ Object.defineProperty(L,'enabled',{get:()=>L._on,set:setEnabled});
+ L.update=function(force){if(!L._on||!CAM)return;const now=performance.now();
+ if(queue.length)pump(O.buildMs);
+ CAM.updateMatrixWorld();_cam.setFromMatrixPosition(CAM.matrixWorld);const moved=_cam.distanceTo(_lastCam)>O.moveEps;
+ stale();
+ if(force||((moved||dirty)&&now-lastBand>=O.throttle)){band();lastBand=now;_lastCam.copy(_cam);dirty=false;}
+ else sync();};
+ // build every pending proxy now and update (verify, screenshots)
+ L.flush=function(){band();while(queue.length)pump(1e9);band();lastBand=performance.now();paint();return L.stats();};
+ L._recs=recs;   // for diagnostics only
+ L.release=function(o){for(const rec of recs)if(rec.o===o&&!rec.dead)release(rec);};
+ L.stats=function(){let full=0,drawn=0,chunks=0,off=0,far=0,inst=0,kept=0,copies=0;
+ for(const rec of recs){if(rec.dead)continue;full+=rec.full||0;drawn+=rec.drawn||0;
+  if(rec.kind==='mesh'){chunks+=rec.chunks.length;for(const ch of rec.chunks){const on=rec.comb?ch.key>=0:ch.m._lodOn;if(!on)off++;else if(ch.lv)far++;}}
+  else{inst+=rec.n;for(const l of rec.lvls)kept+=l.im.count;}
+  for(const c of rec.copies)if(c.visible)copies++;}
+ return {enabled:L._on,managed:L.managed,applyMs:L.applyMs,chunks,chunksFar:far,chunksOff:off,instances:inst,instancesDrawn:kept,
+  managedTris:full,managedTrisDrawn:drawn,visibleCopies:copies,pending:queue.length,live:{calls:R.info.render.calls,tris:R.info.render.triangles},
+  measured:L.lastMeasure};};
+ // render the current view with LOD off and on; returns {off:{calls,tris,ms},on:{...}}
+ L.measure=function(frames){frames=frames||2;const was=L._on,draw=O.render||(()=>R.render(S,CAM)),gl=R.getContext();
+ const run=()=>{R.info.reset();draw();const c=R.info.render.calls,t=R.info.render.triangles;gl.finish();const t0=performance.now();
+  for(let i=0;i<frames;i++)draw();gl.finish();return {calls:c,tris:t,ms:+((performance.now()-t0)/frames).toFixed(1)};};
+ setEnabled(false);const off=run();setEnabled(true);L.flush();const on=run();setEnabled(was);
+ L.lastMeasure={off,on};paint();return L.lastMeasure;};
+
+ // ---------------------------------------------------------------- the panel (outside #ui, so view sweeps never click it)
+ function fmt(n){return n>=1e6?(n/1e6).toFixed(2)+'M':n>=1e3?(n/1e3).toFixed(1)+'k':String(n|0);}
+ function mkUI(){if(panel||!document.body)return;panel=document.createElement('div');panel.id='lodPanel';
+ panel.style.cssText='position:fixed;right:8px;bottom:64px;z-index:30;font:11px/1.35 ui-monospace,Menlo,monospace;color:#eee;background:rgba(0,0,0,.55);padding:4px 7px;border-radius:4px;max-width:46vw;'+(O.panelStyle||'');
+ btn=document.createElement('button');btn.style.cssText='font:11px system-ui;margin-right:6px';btn.onclick=()=>{setEnabled(!L._on);};
+ const mb=document.createElement('button');mb.textContent='measure';mb.style.cssText='font:11px system-ui';mb.onclick=()=>L.measure();
+ txt=document.createElement('pre');txt.style.cssText='margin:3px 0 0;white-space:pre-wrap;font:inherit';
+ panel.append(btn,mb,txt);document.body.appendChild(panel);
+ addEventListener('keydown',e=>{const tg=e.target&&e.target.tagName;if(tg==='INPUT'||tg==='TEXTAREA'||tg==='SELECT'||e.ctrlKey||e.metaKey||e.altKey)return;
+  if(e.key&&e.key.toLowerCase()===O.key)setEnabled(!L._on);});
+ setInterval(paint,600);paint();}
+ function paint(){if(!txt)return;btn.textContent='LOD '+(L._on?'on':'off')+' ('+O.key+')';
+ const s=L.stats(),m=L.lastMeasure;
+ let t='drawn  calls '+s.live.calls+'  tris '+fmt(s.live.tris);
+ if(m)t+='\nmeasured  off '+m.off.calls+' / '+fmt(m.off.tris)+'  on '+m.on.calls+' / '+fmt(m.on.tris);
+ if(L._on)t+='\nmanaged tris '+fmt(s.managedTrisDrawn)+' of '+fmt(s.managedTris)+'  inst '+fmt(s.instancesDrawn)+' of '+fmt(s.instances)+
+  '\nchunks '+s.chunks+' (far '+s.chunksFar+', off '+s.chunksOff+')'+(s.pending?'  building '+s.pending:'');
+ txt.textContent=t;}
+ window.LOD=L;
+})();
 /* ============================== 1. CORE ==============================
    YUNI. Units are METRES. x runs east, z runs SOUTH (north is -z), y up.
    A person is 1.75 tall. The origin is the centre of the walled circle.
@@ -1332,7 +1709,7 @@ var _skEclRim = new THREE.Color(SKYC_ECL_RIM), _skGlare = new THREE.Color(SKYC_S
 /* a totalised eclipse keeps this fraction of daylight in the mood (fog,
    hemisphere, water, night-light gate) and this much key light from the
    giant's refracted rim — deep twilight, never black. */
-var SKY_ECL_FLOOR = 0.15, SKY_ECL_KEY = 0.34;
+var SKY_ECL_FLOOR = 0.15, SKY_ECL_KEY = 0.34, SKY_SHINE_KEY = 0.18;
 /* strength of the giant's own atmospheric extinction at 2.0 atm; scaled by
    pk*pk so a plateau city (0.8 atm) gets none at all and a lowland city gets
    a visible but gentle wash on the lower limb. */
@@ -1531,7 +1908,9 @@ function updateSky(){
      the phase, warm (refracted, not reflected), and still coming from the
      giant's direction, so the shadows stay northern. */
   var sunI   = S.sunK;
-  var shineI = 0.44*S.lit*(1 - S.sunUp) + SKY_ECL_KEY*ecl;
+  /* (2026-10-01) planetshine 0.44 -> 0.18 of full sun-key units: a full giant is a
+     strong night light, but still night light — under a fifth of the day key. */
+  var shineI = SKY_SHINE_KEY*S.lit*(1 - S.sunUp) + SKY_ECL_KEY*ecl;
   var w = shineI/(sunI + shineI + 1e-6);
   _skKey.copy(S.sunDir);
   S.keyDir.copy(_skKey);
@@ -3398,6 +3777,8 @@ var KRATOR_EXPORT = {
       windows:(b.windows||[]).map(function(i){ return fixOut('window', FIX.byId[i]); }),
       lights:(b.lights||[]).map(function(i){ return fixOut('light', FIX.byId[i]); }) };
     if(typeof interiorPlan==='function'){ var P = interiorPlan(id); if(P) out.interior = interiorExport(P); }
+    /* beds and containers (loot, inventory), planned or not: 64-interiors.js buildingKit() */
+    if(typeof buildingKit==='function') out.kit = buildingKit(id);
     return out;
   },
   fixtures: function(){
@@ -3855,8 +4236,13 @@ function assetFrame(x,z,ry,opt){
      shrinks by the top (0.16 for fr8). Free outside the capture; never draws anything. */
   F.mass=function(o){ if(opt.capture) opt.capture.push(o); };
   if(opt.capture){ var CAP=opt.capture, WALLF={adobe:1,plaster:1,mosaic:1,paintbw:1,paintcol:1,relief:1,metal:1,rust:1,concrete:1,rock:1};
+    /* PLINTHS: a low box laid over most of the footprint (a tarred base band, a podium). Its top
+       face covers the floor of any room fitted inside, so 76-doors.js hides it in the cutaway. */
+    var PL=opt.plinths;
     ['box','fr8','fr5'].forEach(function(k){ var f0=F[k]; F[k]=function(lx,ly,lz,w,h,d,r,c,f){
       if(WALLF[f] && h>=2.2 && Math.min(w,d)>=2.4 && (r==null||typeof r==='number')) CAP.push({ k:'box', x:lx, y:ly, z:lz, w:w, h:h, d:d, r:r||0, tk:k==='fr8'?0.16:k==='fr5'?0.5:0 });
+      if(PL && F.asset && ly<=0.3 && h>=0.25 && h<=1.6 && (r==null||typeof r==='number') && (w*d >= 0.35*F.asset.w*F.asset.d ||
+         CAP.some(function(Bc){ return Bc.k==='box' && Math.hypot(Bc.x-lx, Bc.z-lz) < 0.5*Math.min(Bc.w,Bc.d) && w*d >= 0.6*Bc.w*Bc.d; }))) PL.push(kitIndex(k, f||'timber'));
       f0(lx,ly,lz,w,h,d,r,c,f); }; });
     var cy0=F.cyl; F.cyl=function(lx,ly,lz,r0,h,r,c,f){ if(WALLF[f] && h>=1.7 && r0>=1.4 && (r==null||typeof r==='number')) CAP.push({ k:'cyl', x:lx, y:ly, z:lz, r:r0, h:h }); cy0(lx,ly,lz,r0,h,r,c,f); };
     var dm0=F.dome; F.dome=function(lx,ly,lz,r0,h,r,c,f){ if(WALLF[f] && h>=2.2 && r0>=1.6) CAP.push({ k:'dome', x:lx, y:ly, z:lz, r:r0, h:h }); dm0(lx,ly,lz,r0,h,r,c,f); };
@@ -3870,9 +4256,9 @@ function assetFrame(x,z,ry,opt){
 /* build one instance; returns its record (name, footprint, door points) and registers it with the inspector */
 function buildAsset(key, x,z,ry, opt){
   var A=ASSET_BY_KEY[key]; if(!A){ ERR('no such asset: '+key); return null; }
-  opt=opt||{}; var cap=[], o2={}; for(var k in opt) o2[k]=opt[k]; o2.capture=cap;
+  opt=opt||{}; var cap=[], pl=[], o2={}; for(var k in opt) o2[k]=opt[k]; o2.capture=cap; o2.plinths=pl;
   var F=assetFrame(x,z,ry,o2); F.asset=A;
-  var B=FIX_BUILDING_BEGIN(A, F); B.bodies=cap;
+  var B=FIX_BUILDING_BEGIN(A, F); B.bodies=cap; B._plinths=pl;
   var len0={}; for(var bk in BUCKET) len0[bk]=BUCKET[bk].list.length;
   try{ A.build(F); }catch(e){ ERR('asset '+key+': '+(e&&e.stack||e)); }
   FIX_BUILDING_END();
@@ -4883,30 +5269,53 @@ reseed(570001);
       pot(F,1.2,0.06,1.3,1.2,ADOBEREDC[1]); pot(F,0.55,0.06,1.6,0.9,ADOBEREDC[2]); pot(F,-1.3,0.06,1.2,1.0,ADOBEREDC[0]);
     } });
 
-  ASSET({ key:'poor_shack', name:'Lean-to shack of salvage', family:'poor', districts:['poor'], wealth:[0,0.15], w:5, d:4, h:3, variants:2,
+  ASSET({ key:'poor_shack', name:'Lean-to shack of salvage', family:'poor', districts:['poor'], wealth:[0,0.15], w:5, d:4, h:3.4, variants:2,
     build:function(F){
-      var v=F.variant, col=F.pick(PAL.adobeDark);
-      F.fr8(0,0,-1.55, 4.7,2.4,0.6, 0, col,'adobe');
-      [-1.95,1.95].forEach(function(x){ F.rod(x,0,1.35, x,1.85,1.35, 0.06,TIMBERC[1],'timber'); }); F.rod(-2.2,1.82,1.35, 2.2,1.86,1.35, 0.05,TIMBERC[0],'timber');
-      if(v===0){ /* a tarnished Ancient panel for a roof, matting for walls */
-        F.beam(0,2.42,-1.6, 0,1.9,1.75, 4.4,0.07, F.pick(TARNC),'metal'); F.beam(0,2.47,-0.5, 0,2.29,0.55, 4.46,0.05, TARNC[3],'metal');
-        F.box(-2.05,0,-0.05, 0.08,1.9,2.7, 0, THATCHC[3],'thatch'); F.box(2.05,0,-0.5, 0.08,1.85,1.7, 0, THATCHC[1],'thatch');
-        F.box(-1.0,0,1.38, 1.9,1.7,0.07, 0, THATCHC[4],'thatch');
-        F.box(1.05,0.75,1.4, 1.1,1.05,0.04, 0, F.pick(CLOTHC),'cloth');
-        rockAt(F,-1.2,0.2,0.3); F.fr5(-1.3,2.1,0.4, 0.4,0.25,0.35, 0.4, ROCKC[0],'rock'); F.fr5(1.4,2.22,-0.3, 0.45,0.25,0.35, 1.0, ROCKC[2],'rock'); }
-      else { /* rusted panels for walls, thatch thrown over poles */
-        F.box(-2.05,0,-0.1, 0.07,2.1,2.8, 0, F.pick(RUSTC),'rust'); F.box(-2.0,0.9,-0.1, 0.1,0.12,2.84, 0, PAL.rustStain[0],'rust');
-        F.box(1.0,0,1.38, 2.0,1.75,0.07, 0, RUSTC[3],'rust'); F.box(1.0,1.2,1.4, 2.04,0.1,0.1, 0, PAL.rustStain[1],'rust');
-        F.box(2.05,0,-0.3, 0.08,1.85,2.2, 0, THATCHC[3],'thatch');
-        /* loose thatch thrown over the poles: every strip sags and overhangs by a different amount */
+      /* DETAIL PASS. A lean-to built against its own mud back wall (the "host"), tall enough to
+         stand in: a timber frame (corner posts, top plate, sill rail) carries walls with real
+         thickness, the roof is laid on purlins and lashed and weighted, and the joins are made —
+         a mud fillet where the roof meets the back wall, cover strips over the panel seams.
+         It declares its room (F.mass), so 64-interiors.js plans and furnishes it. */
+      var v=F.variant, col=F.pick(PAL.adobeDark), HB=3.1, HF=2.72, ZB=-1.25, ZF=1.38, XW=2.05;
+      function roofY(z){ return HB + (HF-HB)*(z-ZB)/(ZF-ZB); }
+      F.fr8(0,0,-1.55, 4.7,HB+0.25,0.62, 0, col,'adobe');                                      /* the mud back wall */
+      F.box(0,HB+0.22,-1.55, 4.5,0.12,0.5, 0, shade(col,-0.08),'adobe');                       /* its capping */
+      [-1,1].forEach(function(s){ F.box(s*2.1,0,0.05, 0.32,0.12,2.9, 0, shade(col,-0.12),'adobe'); });   /* a mud kerb under the walls */
+      F.box(0,0,ZF+0.04, 4.5,0.12,0.3, 0, shade(col,-0.12),'adobe');
+      F.box(0,0,0.05, 3.9,0.012,2.4, 0, VOIDC[1],'dark');                                       /* the shadowed floor (under the room's own) */
+      /* the frame: four corner posts, a top plate front and sides, a sill rail */
+      [[-XW,ZF],[XW,ZF],[-XW,ZB+0.05],[XW,ZB+0.05]].forEach(function(p){ F.rod(p[0],0,p[1], p[0],roofY(p[1])-0.02,p[1], 0.075,TIMBERC[1],'timber'); });
+      F.rod(-XW-0.15,HF-0.04,ZF, XW+0.15,HF-0.02,ZF, 0.065,TIMBERC[0],'timber');
+      [-XW,XW].forEach(function(x){ F.beam(x,HB-0.06,ZB, x,HF-0.06,ZF, 0.11,0.11, TIMBERC[2],'timber'); F.box(x,0.12,0.05, 0.1,0.1,2.7, 0, TIMBERC[0],'timber'); });
+      F.box(0,0.12,ZF, 4.1,0.1,0.1, 0, TIMBERC[0],'timber');
+      /* the roof: three purlins, the covering, a mud fillet sealing it to the back wall, lashings and stones */
+      for(var p=0;p<3;p++){ var zp=ZB+0.35+p*(ZF-ZB-0.5)/2; F.rod(-XW-0.25,roofY(zp)+0.02,zp, XW+0.25,roofY(zp)+0.02,zp, 0.05,TIMBERC[p%3],'timber'); }
+      F.beam(0,HB+0.05,-1.32, 0,HB-0.05,-1.0, 4.5,0.22, shade(col,0.05),'adobe');             /* the fillet where roof meets wall */
+      if(v===0){ /* a tarnished Ancient panel for a roof, matting walls in a frame */
+        F.beam(0,HB+0.10,-1.4, 0,HF+0.06,ZF+0.35, 4.5,0.08, F.pick(TARNC),'metal');
+        F.beam(-1.1,HB+0.16,-1.2, -1.1,HF+0.12,ZF+0.3, 0.12,0.04, TARNC[3],'metal'); F.beam(1.1,HB+0.16,-1.2, 1.1,HF+0.12,ZF+0.3, 0.12,0.04, TARNC[3],'metal');   /* seam cover strips */
+        F.box(-XW,0.22,-0.05, 0.14,HF-0.3,2.6, 0, THATCHC[3],'thatch'); F.box(XW,0.22,-0.05, 0.14,HF-0.3,2.6, 0, THATCHC[1],'thatch');
+        F.box(-0.72,0.22,ZF, 2.55,HF-0.3,0.14, 0, THATCHC[4],'thatch'); F.box(1.8,0.22,ZF, 0.42,HF-0.3,0.14, 0, THATCHC[3],'thatch');
+        F.box(1.05,1.92,ZF, 0.9,HF-1.95,0.14, 0, THATCHC[2],'thatch'); F.rod(0.6,1.9,ZF+0.08, 1.5,1.9,ZF+0.08, 0.05,TIMBERC[0],'timber');   /* over the door, and its lintel */
+        for(var w=0;w<3;w++) F.rod(-XW-0.02,0.6+w*0.6,-1.2, -XW-0.02,0.6+w*0.6,1.3, 0.025,TIMBERC[2],'timber');   /* binding withies */
+        F.box(-0.9,0.9,ZF+0.09, 0.8,0.7,0.03, 0, F.pick(CLOTHC),'cloth');
+        rockAt(F,-1.2,1.85,0.3); F.fr5(-1.3,HB-0.2,-0.4, 0.4,0.25,0.35, 0.4, ROCKC[0],'rock'); F.fr5(1.4,roofY(0.4)+0.1,0.4, 0.45,0.25,0.35, 1.0, ROCKC[2],'rock'); }
+      else { /* rusted panels for walls, riveted and seamed, thatch thrown over the purlins */
+        F.box(-XW,0.22,-0.05, 0.12,HF-0.25,2.7, 0, F.pick(RUSTC),'rust'); F.box(XW,0.22,-0.05, 0.12,HF-0.3,2.6, 0, THATCHC[3],'thatch');
+        F.box(-XW-0.07,0.9,-0.05, 0.04,0.12,2.74, 0, PAL.rustStain[0],'rust'); F.box(-XW-0.07,1.75,-0.05, 0.04,0.1,2.74, 0, PAL.rustStain[1],'rust');
+        F.box(-XW-0.07,0.22,-0.05, 0.04,HF-0.3,0.1, 0, PAL.rustStain[1],'rust');                 /* a seam cover strip */
+        F.box(0.9,0.22,ZF, 2.3,HF-0.3,0.12, 0, RUSTC[3],'rust'); F.box(0.9,1.2,ZF+0.07, 2.34,0.1,0.04, 0, PAL.rustStain[1],'rust');
+        F.box(-1.8,0.22,ZF, 0.45,HF-0.3,0.12, 0, RUSTC[1],'rust'); F.box(-1.0,1.92,ZF, 0.9,HF-1.95,0.12, 0, RUSTC[2],'rust');
         for(var t=0;t<7;t++){ var x=-1.80+t*0.60+F.rr(-0.05,0.05), wq=F.rr(0.55,0.82), sag=F.rr(0.10,0.30), ov=F.rr(0.0,0.30);
-          F.beam(x,2.46-sag*0.5,-1.60-F.rr(0,0.22), x+F.rr(-0.10,0.10),2.02-sag,1.60+ov, wq,F.rr(0.09,0.16), F.pick(THATCHC),'thatch');
-          if(F.chance(0.6)) F.beam(x+F.rr(-0.18,0.18),2.30-sag*0.4,F.rr(-0.9,0.3), x+F.rr(-0.22,0.22),1.94-sag,1.66+ov*0.5, F.rr(0.3,0.5),0.07, shade(F.pick(THATCHC),-0.18),'thatch'); }
-        F.beam(-2.25,2.48,-1.0, 2.25,2.40,-1.05, 0.14,0.12, TIMBERC[0],'timber');                 /* the ridge pole, showing through */
-        for(var t2=0;t2<4;t2++){ var xr=-1.5+t2*1.0; F.beam(xr,2.38-F.rr(0,0.1),1.50, xr+F.rr(-0.2,0.2),1.86,1.82+F.rr(0,0.14), F.rr(0.18,0.34),0.06, shade(F.pick(THATCHC),-0.28),'thatch'); }
-        F.box(-1.0,0.8,1.4, 1.0,1.0,0.04, 0, F.pick(CLOTHC),'cloth'); }
-      F.box(0,0,0, 3.6,0.04,2.2, 0, VOIDC[1],'dark');                                       /* the shadowed floor */
-      pot(F,1.5,0,0.5,0.9,ADOBEREDC[1]); doorPt(F,v?-1.0:1.05,1.4,0,1);
+          F.beam(x,HB+0.08-sag*0.3,-1.45-F.rr(0,0.15), x+F.rr(-0.10,0.10),HF+0.06-sag*0.5,ZF+0.2+ov, wq,F.rr(0.09,0.16), F.pick(THATCHC),'thatch');
+          if(F.chance(0.6)) F.beam(x+F.rr(-0.18,0.18),HB-sag*0.3,F.rr(-0.9,0.3), x+F.rr(-0.22,0.22),HF-sag*0.5,ZF+0.3+ov*0.5, F.rr(0.3,0.5),0.07, shade(F.pick(THATCHC),-0.18),'thatch'); }
+        for(var t2=0;t2<4;t2++){ var xr=-1.5+t2*1.0; F.beam(xr,HF+0.02,ZF+0.1, xr+F.rr(-0.2,0.2),HF-0.45,ZF+0.42+F.rr(0,0.14), F.rr(0.18,0.34),0.06, shade(F.pick(THATCHC),-0.28),'thatch'); }
+        F.box(-1.0,0.8,ZF+0.08, 0.9,1.0,0.03, 0, F.pick(CLOTHC),'cloth'); }
+      /* the rope lashings over the roof, pegged to the kerb */
+      [-1.5,1.5].forEach(function(x){ F.rod(x,HB+0.2,-1.3, x,HF+0.12,ZF+0.3, 0.018,PAL.thatch[3],'timber'); F.rod(x,HF+0.12,ZF+0.3, x,0.1,ZF+0.45, 0.018,PAL.thatch[3],'timber'); });
+      pot(F,1.5,0,ZF+0.5,0.9,ADOBEREDC[1]);
+      doorPt(F, v?-1.0:1.05, ZF+0.02, 0,1, 0.85, 1.85);
+      F.mass({ k:'box', x:0, y:0, z:0.05, w:4.3, d:2.9, h:2.95, r:0 });                           /* the room inside */
     } });
 })();
 /* ============================== 16d. ASSETS: WEALTHY COMPOUNDS + THE EMIR'S PALACE ==============================
@@ -9192,6 +9601,18 @@ function ancDress(F, walls, W, D, light){
     var white=F.chance(0.6), col=white?F.pick(WHITEC):F.pick(ADOBEC), fam=white?'plaster':'adobe'; used.push(s);
     F.box(cx,0,cz, w,h,dd, yaw, col, fam); F.box(cx,h,cz, w+0.25,0.32,dd+0.25, yaw, shade(col,-0.10), fam);
     if(white) F.box(cx,0,cz, w+0.1,0.7,dd+0.1, yaw, PAL.paintBlack[1], 'plaster');
+    /* THE JOIN TO THE HOST. Mud fillets packed into the angle at both sides, a mud roll sealing the
+       roof to the Ancient wall, a render patch where the wall was made good above it, and a
+       footing course round the three free sides, so the lean-to reads as built ONTO the old fabric. */
+    var jc=shade(col,-0.07), mud=F.pick(ADOBEC);
+    for(var e0=-1;e0<=1;e0+=2){ F.box(s[0]+tx*e0*(w/2+0.12)+nx*0.12, 0, s[2]+tz*e0*(w/2+0.12)+nz*0.12, 0.34, h+0.18, 0.62, yaw, jc, fam);
+      F.box(s[0]+tx*e0*(w/2+0.12)+nx*0.5, 0, s[2]+tz*e0*(w/2+0.12)+nz*0.5, 0.24, h*0.55, 0.3, yaw, shade(jc,-0.05), fam); }
+    F.beam(s[0]+nx*0.05, h+0.32, s[2]+nz*0.05, s[0]+nx*0.42, h+0.30, s[2]+nz*0.42, w+0.6, 0.26, shade(mud,-0.08), 'adobe');
+    F.box(s[0]+nx*0.03+tx*F.rr(-0.6,0.6), h+0.55, s[2]+nz*0.03+tz*F.rr(-0.6,0.6), w*F.rr(0.45,0.7), F.rr(0.7,1.3), 0.08, yaw, mud, 'adobe');
+    [[0, dd-0.6+0.08, w+0.16, 0.16],[-1, 0, 0.16, dd],[1, 0, 0.16, dd]].forEach(function(q){
+      var ox = q[0] ? q[0]*(w/2+0.02) : 0, oz = q[0] ? (dd/2-0.6) : q[1];
+      F.box(s[0]+tx*ox+nx*oz, 0, s[2]+tz*ox+nz*oz, q[2], 0.32, q[3], yaw, F.pick(ROCKC), 'rock'); });
+    F.box(fx+nx*0.03, h-0.9, fz+nz*0.03, 0.12, 0.9, 0.06, yaw, shade(col,-0.25), fam);       /* the drip stain under the spout */
     if(i%3===1){ /* an upper room, set back against the ancient wall, with its own lit window and a laundry line */
       var uw=w*0.6, ux=cx-tx*w*0.18-nx*0.3, uz=cz-tz*w*0.18-nz*0.3, uc=white?F.pick(BLUELC):F.pick(ADOBEREDC);
       F.box(ux,h+0.3,uz, uw,2.5,dd-0.5, yaw, uc, fam); F.box(ux,h+2.8,uz, uw+0.2,0.28,dd-0.3, yaw, shade(uc,-0.1), fam);
@@ -9741,15 +10162,19 @@ function ROOM_PROGRAM(type, fn){ ROOM_PROGRAMS[type] = fn; }
   /* ============================ FURNITURE TAGS ============================
      README rule: furniture is tagged by culture, TYPE and SETTING (indoor/outdoor/both).
      The pieces registered before this fragment get their type + setting here. */
-  var T = { common_low_table:'table', common_floor_seating:'seating', common_storage_chest:'storage', common_water_jars:'storage',
+  /* CONTAINERS are typed by what they hold, because the game reads them as loot and inventory:
+       container-item  chests, presses, lockers, baskets, cell walls: tools, cloth, coin, belongings
+       container-food  grain sacks, clay pots, water jars, grain bins: what a kitchen or store keeps
+     `capacity` is a rough number of inventory slots, so an engine can size the inventory. */
+  var T = { common_low_table:'table', common_floor_seating:'seating', common_storage_chest:'container-item', common_water_jars:'container-food',
     court_mosaic_divan:'seating', court_brass_brazier:'lighting', court_writing_desk:'table', sahelian_carved_stool:'seating',
     sahelian_loom:'tool', order_reading_desk:'table', order_shelf_run:'shelving', poor_reed_mat_bed:'bed', poor_hearth_stones:'hearth',
-    salvage_panel_table:'table', ancient_moulded_bench:'seating', ancient_glass_console:'table', ancient_cell_wall:'storage',
+    salvage_panel_table:'table', ancient_moulded_bench:'seating', ancient_glass_console:'table', ancient_cell_wall:'container-item',
     ancient_berth:'bed', ancient_light_stem:'lighting', ancient_refectory_run:'table', ancient_socket_rack:'shelving',
-    salvage_strut_bed:'bed', salvage_panel_screen:'screen', salvage_locker_press:'storage', salvage_hearth_hood:'hearth',
+    salvage_strut_bed:'bed', salvage_panel_screen:'screen', salvage_locker_press:'container-item', salvage_hearth_hood:'hearth',
     salvage_lamp_stand:'lighting', order_bookcase:'shelving', order_reading_table:'table', order_lectern:'table',
     order_library_ladder:'tool', order_globe_stand:'decoration', order_pupil_desk:'table', order_master_chair:'seating',
-    order_writing_board:'decoration', order_mat_rack:'storage' };
+    order_writing_board:'decoration', order_mat_rack:'container-item' };
   var OUT = { court_mosaic_divan:'both', sahelian_carved_stool:'both', poor_hearth_stones:'both', court_brass_brazier:'both', sahelian_loom:'both' };
   FURNS.forEach(function(f){ if(!f.type) f.type = T[f.key] || 'decoration'; if(!f.setting) f.setting = OUT[f.key] || 'indoor'; });
 
@@ -9787,25 +10212,66 @@ function ROOM_PROGRAM(type, fn){ ROOM_PROGRAMS[type] = fn; }
   FURN({ key:'common_workbench', name:'Workbench with tools', culture:'yuni-common', room:'workshop', type:'table', setting:'both', w:2.2, d:0.9, h:1.0, variants:1,
     build:function(F){ F.box(0,0.82,0, 2.2,0.12,0.85, 0, PLANKC[3], 'plank'); legs(F, 2.1,0.75, 0.82, 0.07, TIMBERC[2]);
       F.box(0,0.12,0, 1.9,0.05,0.6, 0, PLANKC[2], 'plank'); F.box(-0.6,0.94,0.1, 0.5,0.05,0.12, 0.3, METALC[2], 'metal'); F.box(0.4,0.94,-0.1, 0.06,0.05,0.4, 0, TIMBERC[0], 'timber'); } });
-  FURN({ key:'common_grain_sacks', name:'Stacked grain sacks', culture:'yuni-common', room:'store', type:'storage', setting:'both', w:1.4, d:0.9, h:0.9, variants:1,
+  FURN({ key:'common_grain_sacks', name:'Stacked grain sacks', culture:'yuni-common', room:'store', type:'container-food', setting:'both', w:1.4, d:0.9, h:0.9, variants:1,
     build:function(F){ for(var k=0;k<4;k++) F.edome(-0.38+(k%2)*0.76, (k>>1)*0.42, (k>>1)?0:0.1, 0.34,0.42,0.30, F.rr(-0.3,0.3), F.pick(PAL.thatch||THATCHC), 'cloth'); } });
   FURN({ key:'court_carpet', name:'Knotted carpet', culture:'yuni-court', room:'hall', type:'rug', setting:'indoor', w:2.8, d:2.0, h:0.03, variants:2,
     build:function(F){ F.box(0,0.005,0, 2.8,0.022,2.0, 0, F.pick(CLOTHC), 'cloth'); F.box(0,0.012,0, 2.3,0.022,1.5, 0, F.variant?MOSBLUEC[1]:PAL.paintRed[1], 'cloth'); } });
-  FURN({ key:'poor_clay_pots', name:'Clay storage pots', culture:'yuni-poor', room:'store', type:'storage', setting:'both', w:1.1, d:0.8, h:0.9, variants:1,
+  FURN({ key:'poor_clay_pots', name:'Clay storage pots', culture:'yuni-poor', room:'store', type:'container-food', setting:'both', w:1.1, d:0.8, h:0.9, variants:1,
     build:function(F){ for(var k=0;k<3;k++){ var x=-0.32+k*0.32, s=F.rr(0.8,1.1);
       F.lathe('tile', x, F.rr(-0.12,0.12), [[0.08*s,0],[0.17*s,0.25*s],[0.16*s,0.55*s],[0.08*s,0.75*s],[0.10*s,0.82*s]], F.pick(ADOBEREDC), {seg:8}); } } });
   FURN({ key:'nomad_rug_pile', name:'Pile of rugs and saddle-bags', culture:'nomad', room:'hall', type:'seating', setting:'both', w:2.2, d:1.6, h:0.6, variants:1,
     build:function(F){ for(var k=0;k<3;k++) F.box(F.rr(-0.1,0.1), k*0.07, F.rr(-0.1,0.1), 2.1-k*0.2, 0.07, 1.5-k*0.15, F.rr(-0.1,0.1), F.pick(CLOTHC), 'cloth');
       F.edome(-0.6,0.21,-0.4, 0.35,0.3,0.25, 0, F.pick(CLOTHC), 'cloth'); F.edome(0.5,0.21,-0.45, 0.3,0.26,0.22, 0, F.pick(CLOTHC), 'cloth'); } });
+  /* the minimum kit's small pieces: something a poor house keeps its things in, a big grain store for
+     a compound, and the floor coverings every main room gets */
+  FURN({ key:'poor_lidded_basket', name:'Lidded storage basket', culture:'yuni-poor', room:'hut', type:'container-item', setting:'indoor', w:0.55, d:0.55, h:0.74, variants:2, variantNames:['plain','bundle on the lid'],
+    build:function(F){ var c=F.pick(THATCHC);
+      F.lathe('thatch', 0,0, [[0.15,0],[0.24,0.08],[0.26,0.36],[0.23,0.48]], c, {seg:9});
+      F.lathe('thatch', 0,0, [[0.25,0.47],[0.26,0.52],[0.15,0.58],[0.04,0.61]], shade(c,-0.12), {seg:9});
+      F.box(0,0.24,0.25, 0.04,0.05,0.04, 0, TIMBERC[0], 'timber');
+      if(F.variant===1) F.edome(0.02,0.58,0, 0.17,0.14,0.13, 0.3, F.pick(CLOTHC), 'cloth'); } });
+  /* the smallest of each, for a hut too tight for the usual piece */
+  FURN({ key:'poor_food_pot', name:'Covered food pot', culture:'yuni-poor', room:'hut', type:'container-food', setting:'both', w:0.55, d:0.55, h:0.78, variants:1,
+    build:function(F){ var c=F.pick(ADOBEREDC);
+      F.lathe('adobe', 0,0, [[0.12,0],[0.25,0.22],[0.24,0.5],[0.14,0.64],[0.17,0.7]], c, {seg:9});
+      F.cyl(0,0.7,0, 0.19,0.05, 0, F.pick(THATCHC), 'thatch'); F.box(0,0,0, 0.5,0.04,0.5, 0, shade(c,-0.2), 'adobe'); } });
+  FURN({ key:'poor_sleeping_mat', name:'Rolled-out sleeping mat', culture:'yuni-poor', room:'hut', type:'bed', setting:'indoor', w:1.85, d:0.8, h:0.12, variants:1,
+    build:function(F){ var c=F.pick(THATCHC); F.box(0,0,0, 1.85,0.05,0.8, 0, shade(c,0.08), 'thatch');
+      F.box(0,0.05,0.05, 1.7,0.04,0.66, 0, F.pick(CLOTHC), 'cloth'); F.cyl(-0.72,0.1,0, 0.08,0.6, [Math.PI/2,0,0], PAL.whitewash[1], 'cloth'); } });
+  FURN({ key:'common_grain_bin', name:'Mud-brick grain bin', culture:'yuni-common', room:'store', type:'container-food', setting:'both', w:1.3, d:1.3, h:1.75, variants:1,
+    build:function(F){ var c=F.pick(ADOBEC);
+      F.lathe('adobe', 0,0, [[0.48,0],[0.62,0.25],[0.62,1.15],[0.46,1.45],[0.2,1.55]], c, {seg:10});
+      F.cone(0,1.5,0, 0.42,0.28, 0, F.pick(THATCHC), 'thatch');
+      F.box(0,0.85,0.55, 0.36,0.36,0.1, 0, PLANKC[1], 'plank'); F.box(0,0,0.0, 1.0,0.12,1.0, 0, shade(c,-0.15), 'adobe'); } });
+  FURN({ key:'poor_reed_mat', name:'Woven reed floor mat', culture:'yuni-poor', room:'hut', type:'rug', setting:'indoor', w:2.2, d:1.5, h:0.03, variants:2,
+    build:function(F){ var c=F.pick(THATCHC); F.box(0,0.005,0, 2.2,0.018,1.5, 0, shade(c,0.10), 'thatch');
+      for(var k=0;k<5;k++) F.box(0,0.012,-0.6+k*0.3, 2.1,0.016,0.07, 0, shade(c,-0.18), 'thatch');
+      if(F.variant===1) F.box(0,0.014,0, 0.5,0.016,1.4, 0, F.pick(PAL.paintRed), 'cloth'); } });
+  FURN({ key:'common_kilim', name:'Flat-woven kilim', culture:'yuni-common', room:'hall', type:'rug', setting:'indoor', w:2.6, d:1.7, h:0.03, variants:2,
+    build:function(F){ var c=F.pick(CLOTHC), r0=F.variant ? MOSBLUEC[3] : PAL.paintRed[0];
+      F.box(0,0.005,0, 2.6,0.018,1.7, 0, PAL.whitewash[2], 'cloth'); F.box(0,0.011,0, 2.3,0.018,1.4, 0, c, 'cloth');
+      F.box(0,0.017,0, 0.9,0.016,0.9, Math.PI/4, r0, 'cloth'); F.box(0,0.021,0, 0.42,0.016,0.42, Math.PI/4, PAL.whitewash[0], 'cloth');
+      [-1,1].forEach(function(s){ F.box(s*0.85,0.017,0, 0.3,0.016,0.3, Math.PI/4, r0, 'cloth'); }); } });
+  var CAP = { common_storage_chest:12, common_water_jars:3, common_grain_sacks:8, poor_clay_pots:6, ancient_cell_wall:24, salvage_locker_press:16,
+              order_mat_rack:6, poor_lidded_basket:4, common_grain_bin:24, poor_food_pot:3 };
+  FURNS.forEach(function(f){ if(f.type==='container-item' || f.type==='container-food') f.capacity = CAP[f.key] || 6; });
 
   /* ============================ FINISHES ============================ */
-  FINISH({ key:'mud_plain',     cultures:['yuni-poor'],               wealth:[0,1],    wall:{fam:'adobe',  cols:ADOBEC},  floor:{fam:'adobe', cols:PAL.lane},   ceil:{fam:'thatch', cols:THATCHC}, beams:true });
-  FINISH({ key:'mud_banco',     cultures:['sahelian','nomad'],        wealth:[0,1],    wall:{fam:'adobe',  cols:ADOBEREDC}, floor:{fam:'adobe', cols:PAL.lane},  ceil:{fam:'plank', cols:PLANKC},  beams:true });
-  FINISH({ key:'lime_wash',     cultures:['yuni-common'],             wealth:[0,0.55], wall:{fam:'plaster',cols:WHITEC},  floor:{fam:'adobe', cols:PAL.paving}, ceil:{fam:'plank', cols:PLANKC},  beams:true });
-  FINISH({ key:'blue_wash',     cultures:['yuni-common'],             wealth:[0.4,1],  wall:{fam:'plaster',cols:BLUELC},  floor:{fam:'tile',  cols:TILEC},      ceil:{fam:'plank', cols:PLANKC},  beams:true });
-  FINISH({ key:'court_mosaic',  cultures:['yuni-court'],              wealth:[0,1],    wall:{fam:'plaster',cols:WHITEC},  floor:{fam:'mosaic',cols:MOSBLUEC},   ceil:{fam:'plaster',cols:BLUELC}, beams:false, dado:{fam:'mosaic', cols:MOSWARMC} });
-  FINISH({ key:'order_stone',   cultures:['order'],                   wealth:[0,1],    wall:{fam:'plaster',cols:WHITEC},  floor:{fam:'rock',  cols:PAL.pavingRich}, ceil:{fam:'plank', cols:PLANKC}, beams:true });
-  FINISH({ key:'ancient_panel', cultures:['ancient','ancients-salvage'],wealth:[0,1],  wall:{fam:'metal',  cols:TARNC},   floor:{fam:'concrete',cols:CONCRETEC}, ceil:{fam:'metal', cols:TARNC},  beams:false });
+  /* FLOORS READ. A floor is a light base, a pattern drawn over it and a border band, by culture and
+     class: beaten earth with swept patches (the poor, the Sahelian banco, the salvage lean-tos),
+     planks (the plain common house), fired tile (the washed townhouse), a cream mosaic with a blue
+     border and medallion (the court), flagstones (the Order, the Ancients). The base colours are
+     the LIGHT end of each palette: an interior is lit at a quarter of the sun, and a mid-tone floor
+     there reads as black. `pattern` is exported on each room as `floor`. */
+  FINISH({ key:'mud_plain',     cultures:['yuni-poor'],               wealth:[0,1],    wall:{fam:'adobe',  cols:ADOBEC},  floor:{fam:'adobe', cols:PAL.paving, pattern:'earth'},   ceil:{fam:'thatch', cols:THATCHC}, beams:true });
+  FINISH({ key:'mud_banco',     cultures:['sahelian','nomad'],        wealth:[0,1],    wall:{fam:'adobe',  cols:ADOBEREDC}, floor:{fam:'adobe', cols:[ADOBEC[2], ADOBEC[4]], pattern:'earth'},  ceil:{fam:'plank', cols:PLANKC},  beams:true });
+  FINISH({ key:'lime_wash',     cultures:['yuni-common'],             wealth:[0,0.55], wall:{fam:'plaster',cols:WHITEC},  floor:{fam:'plank', cols:[PLANKC[0], PLANKC[2]], pattern:'plank'}, ceil:{fam:'plank', cols:PLANKC},  beams:true });
+  FINISH({ key:'blue_wash',     cultures:['yuni-common'],             wealth:[0.4,1],  wall:{fam:'plaster',cols:BLUELC},  floor:{fam:'tile',  cols:[TILEC[0], TILEC[2]], pattern:'tile'},      ceil:{fam:'plank', cols:PLANKC},  beams:true });
+  FINISH({ key:'court_mosaic',  cultures:['yuni-court'],              wealth:[0,1],    wall:{fam:'plaster',cols:WHITEC},  floor:{fam:'mosaic',cols:PAL.pavingRich, pattern:'mosaic', accent:MOSBLUEC},   ceil:{fam:'plaster',cols:BLUELC}, beams:false, dado:{fam:'mosaic', cols:MOSWARMC} });
+  FINISH({ key:'order_stone',   cultures:['order'],                   wealth:[0,1],    wall:{fam:'plaster',cols:WHITEC},  floor:{fam:'rock',  cols:PAL.pavingRich, pattern:'flag'}, ceil:{fam:'plank', cols:PLANKC}, beams:true });
+  FINISH({ key:'ancient_panel', cultures:['ancient'],                 wealth:[0,1],    wall:{fam:'metal',  cols:TARNC},   floor:{fam:'concrete',cols:[CONCRETEC[2], CONCRETEC[0]], pattern:'flag'}, ceil:{fam:'metal', cols:TARNC},  beams:false });
+  /* the lean-tos against the Ancients' buildings: mud walls, swept earth, the tarnished panel they roofed it with */
+  FINISH({ key:'salvage_mud',   cultures:['ancients-salvage'],        wealth:[0,1],    wall:{fam:'adobe',  cols:ADOBEC},  floor:{fam:'adobe', cols:PAL.paving, pattern:'earth'}, ceil:{fam:'metal', cols:TARNC}, beams:true });
 
   /* ============================ PARTITIONS ============================ */
   PARTITION({ key:'mud_partition',  cultures:['yuni-poor','sahelian'], thick:0.22, fam:'adobe',   door:{ style:'mat',    w:0.85, h:1.9 } });
@@ -9842,8 +10308,8 @@ function ROOM_PROGRAM(type, fn){ ROOM_PROGRAMS[type] = fn; }
   /* ============================ LAYOUTS ============================ */
   var C='yuni-common', P='yuni-poor', K='yuni-court', S='sahelian', O='order', N='nomad';
   LAYOUT({ key:'living_common', room:'living', cultures:[C,S], wealth:[0,1], items:[ {furn:'common_rope_bed',at:'back'}, {furn:'common_floor_seating',at:'left'}, {furn:'common_low_table',at:'centre',opt:1}, {furn:'common_water_jars',at:'corner'}, {furn:'common_storage_chest',at:'right',opt:1} ] });
-  LAYOUT({ key:'hut_poor',      room:'hut',    cultures:[P], wealth:[0,1], items:[ {furn:'poor_reed_mat_bed',at:'back'}, {furn:'poor_hearth_stones',at:'centre'}, {furn:'poor_clay_pots',at:'corner'}, {furn:'common_floor_seating',at:'left',opt:1,variant:0} ] });
-  LAYOUT({ key:'living_poor',   room:'living', cultures:[P], wealth:[0,1], items:[ {furn:'poor_reed_mat_bed',at:'back'}, {furn:'poor_hearth_stones',at:'centre'}, {furn:'poor_clay_pots',at:'corner'} ] });
+  LAYOUT({ key:'hut_poor',      room:'hut',    cultures:[P], wealth:[0,1], items:[ {furn:'poor_reed_mat_bed',at:'back'}, {furn:'poor_hearth_stones',at:'centre'}, {furn:'poor_clay_pots',at:'corner'}, {furn:'poor_lidded_basket',at:'corner'}, {furn:'common_floor_seating',at:'left',opt:1,variant:0} ] });
+  LAYOUT({ key:'living_poor',   room:'living', cultures:[P], wealth:[0,1], items:[ {furn:'poor_reed_mat_bed',at:'back'}, {furn:'poor_hearth_stones',at:'centre'}, {furn:'poor_clay_pots',at:'corner'}, {furn:'poor_lidded_basket',at:'corner'} ] });
   LAYOUT({ key:'hall_common',   room:'hall',   cultures:[C], wealth:[0,1], items:[ {furn:'common_floor_seating',at:'back',variant:1}, {furn:'common_low_table',at:'centre'}, {furn:'common_floor_seating',at:'left',opt:1}, {furn:'common_water_jars',at:'corner',opt:1} ] });
   LAYOUT({ key:'hall_sahelian', room:'hall',   cultures:[S,N], wealth:[0,1], items:[ {furn:'nomad_rug_pile',at:'back'}, {furn:'common_low_table',at:'centre'}, {furn:'sahelian_carved_stool',at:'centre',opt:1}, {furn:'sahelian_carved_stool',at:'centre',opt:1}, {furn:'sahelian_loom',at:'right',opt:1} ] });
   LAYOUT({ key:'hall_court',    room:'hall',   cultures:[K], wealth:[0,1], items:[ {furn:'court_carpet',at:'centre'}, {furn:'court_mosaic_divan',at:'back',variant:1}, {furn:'court_mosaic_divan',at:'left',opt:1}, {furn:'court_brass_brazier',at:'corner'}, {furn:'court_brass_brazier',at:'corner',opt:1}, {furn:'common_low_table',at:'centre',opt:1,variant:1} ] });
@@ -9859,6 +10325,13 @@ function ROOM_PROGRAM(type, fn){ ROOM_PROGRAMS[type] = fn; }
   LAYOUT({ key:'tavern_common', room:'tavern', cultures:[C,K,S,N,P], wealth:[0,1], items:[ {furn:'common_shop_counter',at:'back',variant:1}, {furn:'common_tavern_table',at:'grid'}, {furn:'common_water_jars',at:'corner',opt:1} ] });
   LAYOUT({ key:'workshop_common',room:'workshop',cultures:[C,K,S,N,P], wealth:[0,1], items:[ {furn:'common_workbench',at:'back'}, {furn:'common_wall_shelves',at:'left',variant:0}, {furn:'sahelian_carved_stool',at:'centre',opt:1}, {furn:'common_grain_sacks',at:'corner',opt:1} ] });
   LAYOUT({ key:'study_order',   room:'study',  cultures:[O,K,C], wealth:[0,1], items:[ {furn:'order_reading_desk',at:'back'}, {furn:'order_shelf_run',at:'run-left'}, {furn:'order_master_chair',at:'centre',opt:1} ] });
+  /* the salvage lean-tos against the Ancients: one room, furnished from what the building shed */
+  var V='ancients-salvage';
+  LAYOUT({ key:'living_salvage',room:'living', cultures:[V], wealth:[0,1], items:[ {furn:'salvage_strut_bed',at:'back'}, {furn:'salvage_locker_press',at:'left'}, {furn:'poor_clay_pots',at:'corner'}, {furn:'salvage_lamp_stand',at:'corner',opt:1}, {furn:'salvage_panel_table',at:'right',opt:1} ] });
+  LAYOUT({ key:'hut_salvage',   room:'hut',    cultures:[V], wealth:[0,1], items:[ {furn:'salvage_strut_bed',at:'back'}, {furn:'poor_clay_pots',at:'corner'}, {furn:'poor_lidded_basket',at:'corner'}, {furn:'salvage_lamp_stand',at:'corner',opt:1} ] });
+  /* the caravanserai's cells: a guest room is a bed and a chest, a storeroom is sacks and bales */
+  LAYOUT({ key:'guest_nomad',   room:'bedroom',cultures:[N], wealth:[0,1], items:[ {furn:'common_rope_bed',at:'back',variant:1}, {furn:'common_storage_chest',at:'left'}, {furn:'nomad_rug_pile',at:'right',opt:1} ] });
+  LAYOUT({ key:'store_caravan', room:'store',  cultures:[N], wealth:[0,1], items:[ {furn:'common_grain_sacks',at:'run-back'}, {furn:'common_water_jars',at:'corner'}, {furn:'common_storage_chest',at:'left'}, {furn:'poor_clay_pots',at:'corner',opt:1} ] });
 })();
 
 /* ============================ THE PLANNER ============================ */
@@ -9901,29 +10374,81 @@ function interiorPlan(bid){
   INTERIOR_CACHE[bid] = P; return P;
 }
 
+/* INTERIOR_CUSTOM[assetKey] = function(b, rng) -> plan | null: a hand-written planner for a building
+   the automatic one cannot read (the caravanserai's rooms sit behind galleries, with no F.door) */
+var INTERIOR_CUSTOM = {};
 function planBuilding(b){
-  var A = ASSET_BY_KEY[b.asset];
-  if(!A || INTERIOR_SKIP[A.key] || !INTERIOR_FAMS[A.family] || !b.doors || !b.bodies.length) return null;
-  var rng = intRng(b.seed*7+b.variant*131+3), plan = { bid:b.id, asset:b.asset, culture:b.culture, types:b.types,
+  var A = ASSET_BY_KEY[b.asset]; if(!A) return null;
+  if(INTERIOR_CUSTOM[A.key]){ var rc = intRng(b.seed*7+b.variant*131+3), Pc = INTERIOR_CUSTOM[A.key](b, rc); if(Pc) ensureKit(Pc, b, rc); return Pc; }
+  /* AN ANCIENT BUILDING is not fitted out, but the lean-tos its new owners built against it are:
+     a door into a small captured body (61d-ancients-assets.js) is planned as a salvage dwelling */
+  var lean = A.family==='ancient';
+  if(INTERIOR_SKIP[A.key] || !(INTERIOR_FAMS[A.family] || lean) || !b.doors || !b.bodies.length) return null;
+  var bp = lean ? planView(b, 'ancients-salvage', ['dwelling-single']) : b;
+  var rng = intRng(b.seed*7+b.variant*131+3), plan = { bid:b.id, asset:b.asset, culture:bp.culture, types:bp.types,
     levels:[], rooms:[], walls:[], doors:[], stairs:[], furniture:[], groups:[], nav:{ nodes:[], edges:[] } };
-  var finish = intPickMod(rng, FINISHES, b), part = intPickMod(rng, PARTITIONS_LIST(), b);
-  plan.finish = finish.key; plan.partition = part.key;
+  var finish = intPickMod(rng, FINISHES, bp), part = intPickMod(rng, PARTITIONS_LIST(), bp);
+  plan.finish = finish.key; plan.partition = part.key; plan.floor = finish.floor.pattern || 'earth';
   var used = [];
   b.doors.forEach(function(did){
     var D = FIX.byId[did]; if(!D || D.to!=='interior') return;
     var p = intToLocal(b, D.x, D.z), ly = D.y - b.y, yawL = D.yaw - b.yaw, nx=Math.sin(yawL), nz=Math.cos(yawL);
     var B = intBodyAt(b, p[0]-nx*0.7, p[1]-nz*0.7, ly); if(!B) return;
+    if(lean && !(B.k==='box' && B.w*B.d < 45)) return;
     var gi = used.indexOf(B);
-    if(gi<0){ used.push(B); gi = plan.groups.length; plan.groups.push(planGroup(plan, b, B, { p:p, nx:nx, nz:nz, ly:ly, D:D }, rng, finish, part)); }
+    if(gi<0){ used.push(B); gi = plan.groups.length; plan.groups.push(planGroup(plan, bp, B, { p:p, nx:nx, nz:nz, ly:ly, D:D }, rng, finish, part)); }
     else plan.groups[gi].extraDoors.push({ p:p, nx:nx, nz:nz, ly:ly, D:D });
   });
   plan.groups = plan.groups.filter(function(g){ return g && g.ok; });
   if(!plan.groups.length) return null;
-  plan.groups.forEach(function(g){ emitGroup(plan, b, g, rng, part); });
+  plan.groups.forEach(function(g){ emitGroup(plan, bp, g, rng, part); });
   plan.levels = plan.groups[0].levels;
   if(INTERIOR_PLANS[b.asset]) INTERIOR_PLANS[b.asset](plan, { building:b, rng:rng });
+  ensureKit(plan, b, rng);
   return plan;
 }
+/* the building as the planner should read it (a lean-to is a salvage dwelling, whatever its host is) */
+function planView(b, culture, types){ var o = Object.create(b); o.culture = culture; o.types = types; return o; }
+
+/* THE CARAVANSERAI (56-mid.js, 96 x 72): its rooms are the cells of the ranges round the court, each
+   behind one of the dark doorways under the gallery. Those doorways are painted, not F.door, so the
+   automatic planner sees nothing; this lays one room per doorway along the back range (stores, the
+   kitchen, the common room, guest rooms) and the right-hand range (guest rooms and a store), on the
+   court level. The left range is the stables. Rooms are data first, like every other plan: they
+   draw in the cutaway, and their beds and containers export. */
+INTERIOR_CUSTOM.trade_caravanserai = function(b, rng){
+  var X=47, Z=35, RB=4.7, G=7.5, xi=X-G, zi=Z-G, LB=2*xi, LS=2*zi, y0=0.08, H=3.7, DEP=RB-0.6;
+  var plan = { bid:b.id, asset:b.asset, culture:b.culture, types:b.types, levels:[], rooms:[], walls:[], doors:[], stairs:[], furniture:[], groups:[], nav:{ nodes:[], edges:[] } };
+  var finish = intPickMod(rng, FINISHES, b), part = PARTITIONS.cloth_screen;
+  plan.finish = finish.key; plan.partition = part.key; plan.floor = finish.floor.pattern || 'earth';
+  var cells = [];
+  var back = ['store','kitchen','store','tavern','bedroom','bedroom','bedroom','store'];
+  for(var i=0;i<15;i+=2) cells.push({ c:[(i-7)*LB/15, -Z+RB+0.3], V:[0,-1], hw:LB/15-0.2, kind:back[i/2] });
+  var right = ['bedroom','bedroom','store','bedroom','bedroom','bedroom'];
+  for(i=0;i<11;i+=2) cells.push({ c:[X-RB-0.3, (i-5)*LS/11], V:[1,0], hw:LS/11-0.2, kind:right[i/2] });
+  cells.forEach(function(C, n){
+    var V=C.V, U=[-V[1], V[0]], O=C.c, gid=plan.groups.length;
+    var g = { ok:true, body:null, door:null, extraDoors:[], levels:[], zones:[], round:false, hv0:DEP/2,
+              frame:{ O:O, U:U, V:V, C:[O[0]+V[0]*DEP/2, O[1]+V[1]*DEP/2] } };
+    g.RF = function(u,v){ return [O[0]+U[0]*u+V[0]*v, O[1]+U[1]*u+V[1]*v]; };
+    var L = { k:0, y:y0, H:H, hu:C.hw, v0:0, v1:DEP }, z = { kind:C.kind, u0:-C.hw, u1:C.hw, v0:0, v1:DEP };
+    L.zones=[z]; g.levels.push(L); plan.groups.push(g);
+    var id = plan.bid+'.room.'+plan.rooms.length, poly=[g.RF(z.u0,z.v0), g.RF(z.u1,z.v0), g.RF(z.u1,z.v1), g.RF(z.u0,z.v1)];
+    z.id=id; z.lvl=0; z.group=gid;
+    plan.rooms.push({ id:id, lvl:0, kind:z.kind, group:gid, poly:poly.map(function(p){ return [+p[0].toFixed(3), +p[1].toFixed(3)]; }), y:y0, h:H, finish:plan.finish, floor:plan.floor, layout:null, _z:z });
+    /* the doorway to the gallery, in the middle of the court face */
+    var dp = g.RF(0, -0.15), did = plan.bid+'.cell.'+n+'.door';
+    plan.doors.push({ id:did, kind:'interior', style:'open', at:[+dp[0].toFixed(3), +dp[1].toFixed(3)], y:y0, yaw:+Math.atan2(-V[0], -V[1]).toFixed(4),
+      w:1.1, h:2.1, rooms:[id, 'court'], group:gid, wall:null, lvl:0 });
+    var pd = { p:dp, nx:-V[0], nz:-V[1], ly:y0, D:{ id:did, w:1.1, h:2.1 } };
+    var c4 = [[-L.hu,L.v0],[L.hu,L.v0],[L.hu,L.v1],[-L.hu,L.v1]];
+    for(var j=0;j<4;j++) addShell(plan, b, g, L, g.RF(c4[j][0],c4[j][1]), g.RF(c4[(j+1)%4][0],c4[(j+1)%4][1]), [pd]);
+    furnishGroup(plan, b, g, rng);
+    navGroup(plan, b, g);
+  });
+  plan.levels = plan.groups[0].levels;
+  return plan;
+};
 function PARTITIONS_LIST(){ var o=[]; for(var k in PARTITIONS) o.push(PARTITIONS[k]); return o; }
 
 /* one body -> a group: frame, levels, zones */
@@ -10005,7 +10530,7 @@ function emitGroup(plan, b, g, rng, part){
       if(g.round){ poly=[]; var ad=Math.atan2(-f.V[1], -f.V[0]); for(var i=0;i<10;i++){ var a=ad+(i-0.5)/10*TAU; poly.push([f.C[0]+Math.cos(a)*g.R, f.C[1]+Math.sin(a)*g.R]); } }
       else poly = [RF(z.u0,z.v0), RF(z.u1,z.v0), RF(z.u1,z.v1), RF(z.u0,z.v1)];
       z.id = id; z.lvl = L.k; z.group = gid;
-      plan.rooms.push({ id:id, lvl:L.k, kind:z.kind, group:gid, poly:poly.map(function(p){ return [+p[0].toFixed(3), +p[1].toFixed(3)]; }), y:L.y, h:L.H, finish:plan.finish, layout:null, _z:z });
+      plan.rooms.push({ id:id, lvl:L.k, kind:z.kind, group:gid, poly:poly.map(function(p){ return [+p[0].toFixed(3), +p[1].toFixed(3)]; }), y:L.y, h:L.H, finish:plan.finish, floor:plan.floor, layout:null, _z:z });
     });
     /* partitions (internal splits). A wall the stair passes through stops short of it. */
     if(zones.length>1){
@@ -10072,13 +10597,12 @@ function addShell(plan, b, g, L, A, B, doors){
 
 /* ---- the furniture placer: anchors resolved in each zone's own (u,v) rectangle ---- */
 function furnishGroup(plan, b, g, rng){
+  var gid = plan.groups.indexOf(g);
   plan.rooms.forEach(function(R){
-    if(R.group !== plan.groups.indexOf(g)) return;
-    var z = R._z, cand = LAYOUTS.filter(function(l){ return l.room===z.kind && l.cultures.indexOf(b.culture)>=0 && b.wealth>=l.wealth[0] && b.wealth<=l.wealth[1]; });
+    if(R.group !== gid) return;
+    var z = R._z, cand = LAYOUTS.filter(function(l){ return l.room===z.kind && l.cultures.indexOf(plan.culture)>=0 && b.wealth>=l.wealth[0] && b.wealth<=l.wealth[1]; });
     if(!cand.length) cand = LAYOUTS.filter(function(l){ return l.room===z.kind && l.cultures.indexOf('yuni-common')>=0; });
     if(!cand.length) cand = LAYOUTS.filter(function(l){ return l.room===z.kind; });
-    if(!cand.length) return;
-    var lay = intPick(rng, cand); R.layout = lay.key;
     var U0=z.u0+0.08, U1=z.u1-0.08, V0=z.v0+0.08, V1=z.v1-0.08, placed=[], keep=[];
     if(g.round){ var r2=g.R*0.70; U0=-r2; U1=r2; V0=g.R-r2; V1=g.R+r2; }
     /* keep-outs: every door's swing and approach, the stair and its landing */
@@ -10088,13 +10612,38 @@ function furnishGroup(plan, b, g, rng){
     if(g.stair){ var s=g.stair; keep.push([s.u0-0.1, s.va-1.0, s.u1+0.1, s.vb+1.0]); }
     function free(r){ if(r[0]<U0-1e-6||r[2]>U1+1e-6||r[1]<V0-1e-6||r[3]>V1+1e-6) return false;
       var all=placed.concat(keep); for(var i=0;i<all.length;i++){ var q=all[i]; if(r[0]<q[2]-0.02 && r[2]>q[0]+0.02 && r[1]<q[3]-0.02 && r[3]>q[1]+0.02) return false; } return true; }
+    function record(it, Fd, u, v, face, extra){
+      var fw = [g.frame.U[0]*face[0]+g.frame.V[0]*face[1], g.frame.U[1]*face[0]+g.frame.V[1]*face[1]], p=g.RF(u,v);
+      var rec = { id:R.id+'.f'+plan.furniture.length, furn:Fd.key, variant:it.variant!=null?it.variant%Fd.variants:Math.floor(rng()*Fd.variants), room:R.id,
+        at:[+p[0].toFixed(3), +p[1].toFixed(3)], y:R.y, yaw:+Math.atan2(fw[0], fw[1]).toFixed(4), seed:Math.floor(rng()*1e6) };
+      if(extra) for(var k in extra) rec[k]=extra[k];
+      plan.furniture.push(rec); return rec; }
     function tryAt(it, Fd, u, v, face){ /* face: unit (fu,fv) the piece's front looks along */
       var along = Math.abs(face[1])>0.5, ew = along?Fd.w:Fd.d, ed = along?Fd.d:Fd.w, r=[u-ew/2, v-ed/2, u+ew/2, v+ed/2];
-      if(!free(r)) return false; placed.push(r);
-      var fw = [g.frame.U[0]*face[0]+g.frame.V[0]*face[1], g.frame.U[1]*face[0]+g.frame.V[1]*face[1]], p=g.RF(u,v);
-      plan.furniture.push({ id:R.id+'.f'+plan.furniture.length, furn:Fd.key, variant:it.variant!=null?it.variant%Fd.variants:Math.floor(rng()*Fd.variants), room:R.id,
-        at:[+p[0].toFixed(3), +p[1].toFixed(3)], y:R.y, yaw:+Math.atan2(fw[0], fw[1]).toFixed(4), seed:Math.floor(rng()*1e6) });
-      return true; }
+      if(!free(r)) return false; placed.push(r); record(it, Fd, u, v, face); return true; }
+    /* anywhere it fits: against each wall in turn, sliding along it, then out in the room */
+    function fitAnywhere(Fd, it){
+      var st=0.3, u, v;
+      for(var k=0; k<=Math.ceil((U1-U0)/st); k++){ u=U0+Fd.w/2+k*st; if(u>U1-Fd.w/2+1e-6) break; if(tryAt(it,Fd, u, V1-Fd.d/2, [0,-1])) return true; }
+      for(k=0; k<=Math.ceil((V1-V0)/st); k++){ v=V1-Fd.w/2-k*st; if(v<V0+Fd.w/2-1e-6) break; if(tryAt(it,Fd, U0+Fd.d/2, v, [1,0])) return true; if(tryAt(it,Fd, U1-Fd.d/2, v, [-1,0])) return true; }
+      for(k=0; k<=Math.ceil((U1-U0)/st); k++){ u=U0+Fd.w/2+k*st; if(u>U1-Fd.w/2+1e-6) break; if(tryAt(it,Fd, u, V0+Fd.d/2, [0,1])) return true; }
+      for(u=U0+Fd.w/2; u<=U1-Fd.w/2+1e-6; u+=st) for(v=V0+Fd.d/2; v<=V1-Fd.d/2+1e-6; v+=st) if(tryAt(it,Fd, u, v, [0,-1])) return true;
+      return false; }
+    R._fit = { fitAnywhere:fitAnywhere, record:record };
+    /* THE FLOOR COVERING. The room you walk into gets a rug or a mat, laid first and outside
+       the collision test (furniture stands on it). Culture picks it; size picks whether it fits. */
+    var main = R.lvl===0 && plan.rooms.filter(function(q){ return q.group===gid && q.lvl===0; })[0]===R;
+    if(main && !(cand.length===1 && cand[0].items.some(function(it){ var F0=FURN_BY_KEY[it.furn]; return F0 && F0.type==='rug'; }))){
+      var rugs = RUG_BY_CULTURE[plan.culture] || RUG_BY_CULTURE['yuni-common'];
+      for(var ri=0; ri<rugs.length; ri++){ var RF0=FURN_BY_KEY[rugs[ri]]; if(!RF0) continue;
+        var spanU=U1-U0, spanV=V1-V0, rot = (spanU < RF0.w+0.3 && spanV >= RF0.w+0.3);
+        var ew=rot?RF0.d:RF0.w, ed=rot?RF0.w:RF0.d;
+        if(ew+0.3 <= spanU && ed+0.3 <= spanV){ record({}, RF0, (U0+U1)/2, (V0+V1)/2, rot?[1,0]:[0,-1], { cover:true }); break; } } }
+    if(!cand.length) return;
+    var lay = intPick(rng, cand); R.layout = lay.key;
+    /* THE KIT IS NEVER DROPPED. Items go down in the layout's order (the room's main piece — the
+       hearth, the counter — first); a required bed or container that misses its anchor goes
+       wherever it fits, and ensureKit() tops up whatever is still missing after every room. */
     lay.items.forEach(function(it){
       var Fd = FURN_BY_KEY[it.furn]; if(!Fd) return;
       var W=U1-U0, um=(U0+U1)/2, vm=(V0+V1)/2, ok=false, at=it.at, i, list;
@@ -10108,8 +10657,109 @@ function furnishGroup(plan, b, g, rng){
         if(rng()<0.5) cs=[cs[1],cs[0],cs[3],cs[2]]; for(i=0;i<cs.length && !ok;i++) ok=tryAt(it,Fd, cs[i][0], cs[i][1], cs[i][2]); }
       else if(at==='grid'){ var sx=Fd.w+1.1, sz=Fd.d+1.1; for(var gu=U0+Fd.w/2+0.4; gu<=U1-Fd.w/2-0.4; gu+=sx) for(var gv=V0+Fd.d/2+0.9; gv<=V1-Fd.d/2-0.4; gv+=sz) tryAt(it,Fd, gu, gv, [0,-1]); }
       else { list=[[0,0],[0.18,0],[-0.18,0],[0,0.15],[0,-0.15],[0.22,0.2],[-0.22,0.2]]; for(i=0;i<list.length && !ok;i++) ok=tryAt(it,Fd, um+list[i][0]*W, vm+list[i][1]*(V1-V0), [0,-1]); }
+      /* a required kit piece that missed its anchor goes wherever it fits */
+      if(!ok && !it.opt && KIT_TYPES[Fd.type] && at!=='grid' && at.indexOf('run-')<0) fitAnywhere(Fd, it);
     });
   });
+}
+
+/* ============================ THE MINIMUM KIT ============================
+   Every building has to hold things, and every home has to be slept in and eaten from, because
+   the game reads these slots as beds, loot and inventory:
+     dwelling (dwelling-single / dwelling-multi)  a bed per bedroom (and at least 1; 2 in a
+        multi-family building), a food container (2 in a compound, a multi-family building or a
+        wealthy house) and an item container (2 in a compound or multi-family building)
+     every building  at least one item container
+     food            a food container in every kitchen, store, shop and tavern room, and in every
+                     building typed shop, tavern, inn or farm (granaries, farmsteads, the caravanserai)
+   ensureKit() runs after a plan is furnished and places what the layouts did not, in the room
+   that suits it, wherever it fits. A slot that fits nowhere is still recorded, `virtual:true`,
+   with no geometry, so the game always has it. Buildings with no planned interior get a
+   minimal data-only plan of virtual slots (buildingKit()). */
+var KIT_TYPES = { 'bed':1, 'container-item':1, 'container-food':1 };
+var KIT_PIECES = {
+  'yuni-poor':        { bed:['poor_reed_mat_bed','poor_sleeping_mat'], food:['poor_clay_pots','common_water_jars','poor_food_pot'], item:['poor_lidded_basket','common_storage_chest'], store:['common_grain_bin','common_grain_sacks','poor_food_pot'] },
+  'yuni-common':      { bed:['common_rope_bed','poor_reed_mat_bed','poor_sleeping_mat'], food:['common_grain_sacks','common_water_jars','poor_clay_pots','poor_food_pot'], item:['common_storage_chest','poor_lidded_basket'], store:['common_grain_bin','common_grain_sacks','poor_food_pot'] },
+  'yuni-court':       { bed:['court_canopy_bed','common_rope_bed','poor_reed_mat_bed','poor_sleeping_mat'], food:['common_water_jars','common_grain_sacks','poor_clay_pots','poor_food_pot'], item:['common_storage_chest','poor_lidded_basket'], store:['common_grain_bin','common_grain_sacks','poor_food_pot'] },
+  'sahelian':         { bed:['common_rope_bed','poor_reed_mat_bed','poor_sleeping_mat'], food:['poor_clay_pots','common_grain_sacks','common_water_jars','poor_food_pot'], item:['common_storage_chest','poor_lidded_basket'], store:['common_grain_bin','common_grain_sacks','poor_food_pot'] },
+  'nomad':            { bed:['common_rope_bed','poor_reed_mat_bed','poor_sleeping_mat'], food:['common_grain_sacks','common_water_jars','poor_clay_pots','poor_food_pot'], item:['common_storage_chest','poor_lidded_basket'], store:['common_grain_sacks','common_grain_bin','poor_food_pot'] },
+  'order':            { bed:['common_rope_bed','poor_reed_mat_bed','poor_sleeping_mat'], food:['common_water_jars','common_grain_sacks','poor_clay_pots','poor_food_pot'], item:['common_storage_chest','poor_lidded_basket'], store:['common_grain_sacks','common_grain_bin','poor_food_pot'] },
+  'ancients-salvage': { bed:['salvage_strut_bed','poor_reed_mat_bed','poor_sleeping_mat'], food:['poor_clay_pots','common_water_jars','poor_food_pot'], item:['salvage_locker_press','poor_lidded_basket'], store:['common_grain_sacks','poor_clay_pots','poor_food_pot'] },
+  'ancient':          { bed:['ancient_berth','salvage_strut_bed','poor_reed_mat_bed','poor_sleeping_mat'], food:['poor_clay_pots','common_water_jars','poor_food_pot'], item:['ancient_cell_wall','salvage_locker_press','poor_lidded_basket'], store:['common_grain_sacks','poor_clay_pots','poor_food_pot'] }
+};
+var RUG_BY_CULTURE = { 'yuni-poor':['poor_reed_mat'], 'ancients-salvage':['poor_reed_mat'], 'yuni-court':['court_carpet','common_kilim','poor_reed_mat'],
+  'yuni-common':['common_kilim','poor_reed_mat'], 'sahelian':['common_kilim','poor_reed_mat'], 'nomad':['common_kilim','poor_reed_mat'], 'order':['poor_reed_mat'] };
+var FOOD_ROOMS = { kitchen:1, store:1, shop:1, tavern:1 };
+var FOOD_TYPES = { shop:1, tavern:1, inn:1, farm:1 };
+function kitPieces(culture){ return KIT_PIECES[culture] || KIT_PIECES['yuni-common']; }
+function isDwelling(b){ return b.types.some(function(t){ return t==='dwelling-single' || t==='dwelling-multi'; }); }
+function kitNeeds(b, P){
+  var dw = isDwelling(b), multi = b.types.indexOf('dwelling-multi')>=0, compound = multi || /compound|apartments/.test(b.asset);
+  var bedrooms = P ? P.rooms.filter(function(r){ return r.kind==='bedroom'; }).length : 0;
+  return { bed: dw ? Math.max(1, bedrooms, multi?2:1) : 0,
+           food: dw ? ((compound || b.wealth>0.7) ? 2 : 1) : (b.types.some(function(t){ return FOOD_TYPES[t]; }) ? 1 : 0),
+           item: compound ? 2 : 1, dwelling:dw, compound:compound };
+}
+function kitKind(type){ return type==='bed' ? 'bed' : type==='container-food' ? 'food' : type==='container-item' ? 'item' : null; }
+function ensureKit(plan, b, rng){
+  var need = kitNeeds(b, plan), K = kitPieces(plan.culture);
+  function inRoom(kind, rid){ return plan.furniture.filter(function(f){ var F0=FURN_BY_KEY[f.furn]; return F0 && kitKind(F0.type)===kind && (!rid || f.room===rid); }).length; }
+  function place(keys, R){ if(!R || !R._fit) return false;
+    for(var i=0;i<keys.length;i++){ var Fd=FURN_BY_KEY[keys[i]]; if(Fd && R._fit.fitAnywhere(Fd, {})) return true; } return false; }
+  function virtualSlot(keys, R){ var R0 = R || plan.rooms[0], c=[0,0]; R0.poly.forEach(function(p){ c[0]+=p[0]/R0.poly.length; c[1]+=p[1]/R0.poly.length; });
+    plan.furniture.push({ id:R0.id+'.f'+plan.furniture.length, furn:keys[0], variant:0, room:R0.id, at:[+c[0].toFixed(3), +c[1].toFixed(3)], y:R0.y, yaw:0, seed:0, virtual:true }); }
+  function rank(prefer){ return plan.rooms.slice().sort(function(p,q){ return (prefer.indexOf(p.kind)<0?9:prefer.indexOf(p.kind)) - (prefer.indexOf(q.kind)<0?9:prefer.indexOf(q.kind)); }); }
+  /* per room: a bed in each bedroom, food where food is kept */
+  plan.rooms.forEach(function(R){
+    if(R.kind==='bedroom' && !inRoom('bed', R.id) && !place(K.bed, R)) virtualSlot(K.bed, R);
+    if(FOOD_ROOMS[R.kind] && !inRoom('food', R.id) && !place(R.kind==='store' && need.compound ? K.store.concat(K.food) : K.food, R)) virtualSlot(K.food, R);
+  });
+  /* per building: the totals */
+  [['bed', need.bed, K.bed, ['bedroom','hut','living','hall']],
+   ['food', need.food, need.compound ? K.store.concat(K.food) : K.food, ['kitchen','store','hut','living','shop','tavern','hall']],
+   ['item', need.item, K.item, ['bedroom','store','hut','living','hall','study','workshop','shop']]].forEach(function(n){
+    var guard=0;
+    while(inRoom(n[0]) < n[1] && guard++ < 6){
+      var rooms = rank(n[3]), ok=false;
+      for(var i=0;i<rooms.length && !ok;i++) ok = place(n[2], rooms[i]);
+      if(!ok){ virtualSlot(n[2], rooms[0]); }
+    } });
+}
+/* the kit of any building, planned or not: { bid, needs, slots[], minimal } — slots are the beds and
+   containers by kind, with their furniture id when a planned room holds them */
+var KIT_CACHE = {};
+function buildingKit(bid){
+  if(bid in KIT_CACHE) return KIT_CACHE[bid];
+  var b = FIX.byId[bid]; if(!b) return null;
+  var P = interiorPlan(bid), need = kitNeeds(b, P), out = { bid:bid, needs:{ bed:need.bed, food:need.food, item:need.item }, slots:[], minimal:!P };
+  if(P){ P.furniture.forEach(function(f){ var F0=FURN_BY_KEY[f.furn], k=F0 && kitKind(F0.type); if(!k) return;
+    out.slots.push({ id:f.id, kind:k, type:F0.type, furn:f.furn, capacity:F0.capacity||0, room:f.room, at:f.at, y:f.y, virtual:!!f.virtual }); }); }
+  else {
+    /* MINIMAL PLAN: no room could be fitted (an open shed, a megastructure, a hut whose mouth is not a
+       door), so the slots stand at the footprint centre, data only, in the building's own frame */
+    var K = kitPieces(b.culture === 'ancient' && need.dwelling ? 'ancients-salvage' : b.culture), n=0;
+    function add(kind, keys, count){ for(var i=0;i<count;i++){ var F0=FURN_BY_KEY[keys[0]];
+      out.slots.push({ id:bid+'.slot.'+(n++), kind:kind, type:F0.type, furn:F0.key, capacity:F0.capacity||0, room:null, at:[0,0], y:0, virtual:true }); } }
+    add('bed', K.bed, need.bed); add('food', need.compound ? K.store : K.food, need.food); add('item', K.item, need.item);
+  }
+  KIT_CACHE[bid] = out; return out;
+}
+/* THE AUDIT. Counts what the rules above promise; every number but the totals should read 0. */
+function kitAudit(){
+  var r = { buildings:0, dwellings:0, planned:0, dwellingsMissingKit:0, buildingsMissingItem:0, foodPlacesMissingFood:0, bedroomsWithoutBed:0,
+            slots:0, virtualSlots:0, minimalPlans:0, plannedDwellingsWithVirtualSlots:0 };
+  FIX.buildings.forEach(function(b){
+    var P = interiorPlan(b.id), K = buildingKit(b.id); if(!K) return; r.buildings++; if(P) r.planned++; else r.minimalPlans++;
+    var c = { bed:0, food:0, item:0 }, virt=0; K.slots.forEach(function(s){ c[s.kind]++; r.slots++; if(s.virtual){ r.virtualSlots++; virt++; } });
+    if(K.needs.bed){ r.dwellings++; if(c.bed < K.needs.bed || c.food < K.needs.food || c.item < K.needs.item) r.dwellingsMissingKit++; if(P && virt) r.plannedDwellingsWithVirtualSlots++; }
+    if(c.item < 1) r.buildingsMissingItem++;
+    if(c.food < K.needs.food) r.foodPlacesMissingFood++;
+    if(P) P.rooms.forEach(function(R){
+      var has = function(kind){ return K.slots.some(function(s){ return s.room===R.id && s.kind===kind; }); };
+      if(R.kind==='bedroom' && !has('bed')) r.bedroomsWithoutBed++;
+      if(FOOD_ROOMS[R.kind] && !has('food')) r.foodPlacesMissingFood++; });
+  });
+  return r;
 }
 
 /* ---- the interior walk graph, in Mav's Refuge's vocabulary ---- */
@@ -10135,19 +10785,19 @@ function interiorExport(P){
   function clean(o){ var r={}; for(var k in o){ if(k.charAt(0)==='_') continue; r[k]=o[k]; } return r; }
   var lights = interiorLights(P);
   return { frame:'building-local (parent under the building node)', levels:P.levels.map(function(L){ return { k:L.k, y:L.y, H:L.H }; }),
-    finish:P.finish, partition:P.partition,
+    finish:P.finish, floor:P.floor||null, partition:P.partition,
     rooms:P.rooms.map(function(r){ var c=clean(r); c.node='Room.'+P.bid+'.'+r.id.split('.').pop(); return c; }),
     walls:P.walls.map(function(w){ var c=clean(w); c.node='Wall.'+P.bid+'.'+w.id.split('.').pop()+'-col'; return c; }),
     doors:P.doors.map(function(d){ var c=clean(d); c.node = d.kind==='exterior' ? fixNodeName('door', FIX.byId[d.fixture]) : 'InteriorDoor.'+P.bid+'.'+d.id.split('.').slice(-3).join('_'); return c; }),
     stairs:P.stairs.map(function(s){ return { id:s.id, module:s.module, kind:s.kind, lvl0:s.lvl0, lvl1:s.lvl1, w:s.w, rise:+s.rise.toFixed(3), run:+s.run.toFixed(3),
       foot:P.groups[s.group].RF(s.u, s.va).map(function(v){ return +v.toFixed(3); }), top:P.groups[s.group].RF(s.u, s.vb).map(function(v){ return +v.toFixed(3); }), node:'Stair.'+P.bid+'.'+s.id.split('.').pop()+'-col' }; }),
-    furniture:P.furniture.map(function(f){ var F=FURN_BY_KEY[f.furn], c=clean(f); c.culture=F.culture; c.type=F.type; c.setting=F.setting; c.node='Furniture.'+P.bid+'.'+f.id.split('.').pop(); return c; }),
+    furniture:P.furniture.map(function(f){ var F=FURN_BY_KEY[f.furn], c=clean(f); c.culture=F.culture; c.type=F.type; c.setting=F.setting; if(F.capacity) c.capacity=F.capacity; c.node='Furniture.'+P.bid+'.'+f.id.split('.').pop(); return c; }),
     lights:lights, nav:P.nav };
 }
 /* lights come from the furniture's own build (hearths, braziers): build it into a throwaway sink */
 function interiorLights(P){
   var b = FIX.byId[P.bid], out=[];
-  intWithSink(function(){ P.furniture.forEach(function(f){ var p=intToWorld(b, f.at[0], f.at[1]);
+  intWithSink(function(){ P.furniture.forEach(function(f){ if(f.virtual) return; var p=intToWorld(b, f.at[0], f.at[1]);
     buildFurn(f.furn, p[0], p[1], b.yaw+f.yaw, { variant:f.variant, seed:f.seed, y:b.y+f.y }); }); }, function(S){
     S.lights.forEach(function(L, i){ var q=intToLocal(b, L.x, L.z); out.push({ id:P.bid+'.light.'+i, kind:L.kind, at:[+q[0].toFixed(3), +q[1].toFixed(3)], y:+(L.y-b.y).toFixed(3), amp:L.amp, radius:L.radius, node:'Light.'+P.bid+'.interior.'+i }); }); });
   return out;
@@ -10185,17 +10835,53 @@ function buildInteriorGeo(P, matFn){
           [u0-0.04, u1+0.04].forEach(function(uj){ F.box(ax+tx*uj+nx*jc, y+o.y0, az+tz*uj+nz*jc, 0.08, o.y1-o.y0, dd, r, col, fam); });
           F.box(ax+tx*(u0+u1)/2+nx*jc, y+o.y1, az+tz*(u0+u1)/2+nz*jc, u1-u0+0.16, 0.08, dd, r, col, fam);
           if(o.y0>0.05) F.box(ax+tx*(u0+u1)/2+nx*jc, y+o.y0-0.06, az+tz*(u0+u1)/2+nz*jc, u1-u0+0.16, 0.06, dd, r, shade(col,-0.06), fam);
-          else F.box(ax+tx*(u0+u1)/2+nx*(jc+0.1), y-0.08, az+tz*(u0+u1)/2+nz*(jc+0.1), u1-u0+0.16, 0.08, dd+0.2, r, floorCol, fin.floor.fam); }   /* the threshold */
+          else F.box(ax+tx*(u0+u1)/2+nx*(jc+0.1), y-0.08, az+tz*(u0+u1)/2+nz*(jc+0.1), u1-u0+0.16, 0.08, dd+0.2, r, shade(floorCol,-0.12), 'fl-'+fin.floor.fam); }   /* the threshold */
         cur=u1; });
       piece(cur, L, 0, H);
       return { tx:tx, tz:tz, r:r, nx:nx, nz:nz };
     }
     /* floors and ceilings per room; slabs between levels with the stair cut out */
+    /* FLOOR FINISHES (see FINISH): a light base under a pattern and a border band, drawn in the
+       'fl-' families, which the interior shader lifts (76-doors.js) so a floor reads at a quarter
+       of the sun and stays apart from a dark plinth. Pattern pieces stand 4-8 mm proud of the base. */
+    var FP = fin.floor.pattern || 'earth', FL = 'fl-'+fin.floor.fam, prng = intRng(b.seed*29+11);
+    var grout = shade(floorCol, FP==='plank' ? -0.32 : -0.24), band = fin.floor.accent ? intPick(prng, fin.floor.accent) : shade(floorCol, -0.16);
+    function floorPattern(R, g, list, z, slab){
+      var y = R.y;
+      function ps(u0,v0,u1,v1, col, h, fam){ if(u1-u0<0.01 || v1-v0<0.01) return; slab([u0,v0,u1,v1], y-0.004, 0.004+(h||0.004), fam||FL, col); }
+      list.forEach(function(r4){ var u0=r4[0], v0=r4[1], u1=r4[2], v1=r4[3], u, v, k;
+        if(FP==='tile' || FP==='mosaic'){ var s = FP==='tile' ? 0.5 : 0.4, gw = 0.03;
+          for(u=Math.ceil((u0-z.u0)/s)*s+z.u0; u<u1-0.05; u+=s) if(u>u0+0.05) ps(u-gw/2, v0, u+gw/2, v1, grout);
+          for(v=Math.ceil((v0-z.v0)/s)*s+z.v0; v<v1-0.05; v+=s) if(v>v0+0.05) ps(u0, v-gw/2, u1, v+gw/2, grout); }
+        else if(FP==='flag'){ var fs = 0.8, fg = 0.035;
+          for(v=z.v0, k=0; v<v1; v+=fs, k++){ var va=Math.max(v,v0), vb=Math.min(v+fs,v1); if(vb<=va) continue;
+            if(v>v0+0.05) ps(u0, v-fg/2, u1, v+fg/2, grout);
+            for(u=z.u0+(k%2?fs/2:0)+fs; u<u1-0.05; u+=fs) if(u>u0+0.05) ps(u-fg/2, va, u+fg/2, vb, grout); } }
+        else if(FP==='plank'){ var bw = 0.2; ps(u0, v0, u1, v1, grout, 0.001);                        /* the gaps */
+          for(u=z.u0; u<u1; u+=bw){ var ua=Math.max(u+0.012,u0), ub=Math.min(u+bw-0.012,u1); if(ub-ua<0.03) continue;
+            ps(ua, v0, ub, v1, shade(floorCol, 0.10+prng()*0.10-0.05), 0.005); } }
+        else { /* beaten earth: swept patches, lighter and darker, never quite the same twice */
+          var area=(u1-u0)*(v1-v0), np=Math.min(12, Math.max(3, Math.round(area/2.2)));
+          for(k=0;k<np;k++){ var rr0=0.35+prng()*0.55, pu=u0+rr0+prng()*Math.max(0,(u1-u0)-2*rr0), pv=v0+rr0+prng()*Math.max(0,(v1-v0)-2*rr0);
+            if(u1-u0 < 2*rr0 || v1-v0 < 2*rr0) continue; var pc=g.RF(pu,pv);
+            F.cyl(pc[0], y-0.004, pc[1], rr0, 0.006+k*0.0004, 0, shade(floorCol, (k%2?0.07:-0.06)), FL); } }
+      });
+      /* the border band, along the room's own four edges */
+      var bwid = FP==='mosaic' ? 0.32 : FP==='plank' ? 0 : 0.2;
+      if(bwid){ ps(z.u0, z.v0, z.u1, z.v0+bwid, band, 0.007, FP==='mosaic'?'fl-mosaic':FL); ps(z.u0, z.v1-bwid, z.u1, z.v1, band, 0.007, FP==='mosaic'?'fl-mosaic':FL);
+        ps(z.u0, z.v0+bwid, z.u0+bwid, z.v1-bwid, band, 0.007, FP==='mosaic'?'fl-mosaic':FL); ps(z.u1-bwid, z.v0+bwid, z.u1, z.v1-bwid, band, 0.007, FP==='mosaic'?'fl-mosaic':FL); }
+      /* the court's medallion */
+      if(FP==='mosaic'){ var mc=g.RF((z.u0+z.u1)/2,(z.v0+z.v1)/2), ms=Math.min(z.u1-z.u0, z.v1-z.v0)*0.42, ry=Math.atan2(-g.frame.V[1], g.frame.V[0]);
+        if(ms>0.6){ F.box(mc[0], y-0.004, mc[1], ms, 0.013, ms, ry+Math.PI/4, band, 'fl-mosaic'); F.box(mc[0], y-0.004, mc[1], ms*0.55, 0.016, ms*0.55, ry+Math.PI/4, intPick(prng, MOSWARMC), 'fl-mosaic'); } }
+    }
     P.rooms.forEach(function(R){ var g=P.groups[R.group], poly=R.poly, n=poly.length;
       if(g.round || n!==4){ var c=[0,0]; poly.forEach(function(p){ c[0]+=p[0]/n; c[1]+=p[1]/n; });
         for(var i=0;i<n;i++){ var a=poly[i], q=poly[(i+1)%n];
-          F.tri(fin.floor.fam, [c[0],R.y,c[1]], [a[0],R.y,a[1]], [q[0],R.y,q[1]], floorCol, [0,1,0]);
+          F.tri(FL, [c[0],R.y,c[1]], [a[0],R.y,a[1]], [q[0],R.y,q[1]], floorCol, [0,1,0]);
           F.tri(fin.ceil.fam, [c[0],R.y+R.h,c[1]], [a[0],R.y+R.h,a[1]], [q[0],R.y+R.h,q[1]], ceilCol, [0,-1,0]); }
+        /* a round floor: swept rings of earth (or of tile), darker toward the wall, the centre kept clean */
+        var Rr = g.R || 1.5, rings = [[0.94, -0.14, 0.004], [0.72, 0.06, 0.008], [0.42, -0.05, 0.012], [0.2, 0.08, 0.016]];
+        rings.forEach(function(rg){ F.cyl(c[0], R.y-0.004, c[1], Rr*rg[0], rg[2], 0, shade(floorCol, rg[1]), FL); });
         if(fin.beams) for(var k=0;k<6;k++){ var a2=k/6*Math.PI; F.beam(c[0]+Math.cos(a2)*g.R, R.y+R.h-0.12, c[1]+Math.sin(a2)*g.R, c[0]-Math.cos(a2)*g.R, R.y+R.h-0.12, c[1]-Math.sin(a2)*g.R, 0.14, 0.14, TORONC[0], 'timber'); }
         return; }
       var z=R._z, holes = (g.stair) ? [[g.stair.u0-0.05, g.stair.va, g.stair.u1+0.05, g.stair.vb+0.15]] : [];
@@ -10206,7 +10892,9 @@ function buildInteriorGeo(P, matFn){
         /* box local x along V (depth), z along U */
         F.box(c[0], y, c[1], r4[3]-r4[1], t, r4[2]-r4[0], ry, col, fam); }
       var lvlUp = P.levels.length>1 && R.lvl===0, top = R.lvl===P.levels.length-1;
-      rects(z.u0,z.v0,z.u1,z.v1, R.lvl===1?holes[0]:null).forEach(function(r4){ slab(r4, R.y-0.06, 0.06, fin.floor.fam, floorCol); });
+      var fl = rects(z.u0,z.v0,z.u1,z.v1, R.lvl===1?holes[0]:null);
+      fl.forEach(function(r4){ slab(r4, R.y-0.06, 0.06, FL, floorCol); });
+      floorPattern(R, g, fl, z, slab);
       rects(z.u0,z.v0,z.u1,z.v1, lvlUp?holes[0]:null).forEach(function(r4){ slab(r4, R.y+R.h, lvlUp?(P.levels[1].y-0.06-(R.y+R.h)):0.08, fin.ceil.fam, ceilCol); });
       if(fin.beams){ var nb=Math.floor((z.u1-z.u0)/0.95);
         for(var j=1;j<=nb;j++){ var u=z.u0+j*(z.u1-z.u0)/(nb+1); if(lvlUp && u>holes[0][0]-0.1 && u<holes[0][2]+0.1) continue;
@@ -10242,7 +10930,7 @@ function buildInteriorGeo(P, matFn){
       if(s.kind==='stair'){ /* a rail round the stairwell on the upper floor */ var L1=P.levels[1], hy=L1.y+0.95;
         G.beam(s.u1+0.05, hy, s.va, s.u1+0.05, hy, s.vb, 0.06, 0.06, TIMBERC[1], 'timber'); } });
     /* furniture */
-    P.furniture.forEach(function(f){ var p=intToWorld(b, f.at[0], f.at[1]); buildFurn(f.furn, p[0], p[1], b.yaw+f.yaw, { variant:f.variant, seed:f.seed, y:b.y+f.y }); });
+    P.furniture.forEach(function(f){ if(f.virtual) return; var p=intToWorld(b, f.at[0], f.at[1]); buildFurn(f.furn, p[0], p[1], b.yaw+f.yaw, { variant:f.variant, seed:f.seed, y:b.y+f.y }); });
   }, function(sink, BK, MK){
     var group = new THREE.Group(); group.name = 'Interior.'+P.bid; group.userData.bid = P.bid;
     emitBuckets({ buckets:BK, target:group, mat:matFn }); emitMerged({ buckets:MK, target:group, mat:matFn });
@@ -10250,7 +10938,11 @@ function buildInteriorGeo(P, matFn){
     return { group:group, leaves:leaves, lights:sink.lights, sites:sink.sites, BK:BK };
   });
 }
-window._interiors = { plan:function(bid){ return interiorPlan(bid); } };
+window._interiors = { plan:function(bid){ return interiorPlan(bid); }, kit:function(bid){ return buildingKit(bid); }, audit:function(){ return kitAudit(); } };
+/* THE KIT AUDIT as a counter: verify.py prints every small window._* value, so the numbers land in its
+   counters line without a new invariant. Planned on first read (about 2 s for the whole city), then cached. */
+(function(){ var cache=null; try{ Object.defineProperty(window, '_kitAudit', { enumerable:true, configurable:true,
+  get:function(){ if(!cache && typeof FIX!=='undefined' && FIX.buildings.length) cache = kitAudit(); return cache; } }); }catch(e){} })();
 /* ============================== 17. THE SUMMIT ==============================
    PLANNER-OWNED. "District buildings are not built on the upper surface of the butte, but there is a ruined
    spaceport there in the Ancient architecture style." One hand-placed landmark from the Ancients port.      */
@@ -11499,6 +12191,9 @@ var INT = { live:{}, order:[], occupied:null, cutaway:false, portals:[], matCach
   /* hide or restore every kit instance a building drew (its exterior shell), for standing inside it */
   function showShell(b, on){ (b._ranges||[]).forEach(function(R){ var B=BUCKET[R[0]]; if(!B||!B.mesh) return;
       for(var i=R[1];i<R[2];i++) B.mesh.setMatrixAt(i, on ? kitMatrix(B.list[i], _mx) : ZERO); B.mesh.instanceMatrix.needsUpdate=true; }); }
+  /* a building's plinths (53-assets.js: low boxes over most of the footprint) cover the floors of its
+     rooms when the cutaway takes the walls off above them: hidden while the cutaway shows its interior */
+  function showPlinths(b, on){ if(!b) return; (b._plinths||[]).forEach(function(ref){ showReveal(ref, on); }); }
   function showReveal(ref, on){ if(!ref) return; var B=BUCKET[ref.key]; if(!B||!B.mesh||!B.list[ref.i]) return;
     B.mesh.setMatrixAt(ref.i, on ? kitMatrix(B.list[ref.i], _mx) : ZERO); B.mesh.instanceMatrix.needsUpdate=true; }
   /* someone (the life layer, a script) wants this door open for a few seconds */
@@ -11531,18 +12226,21 @@ var INT = { live:{}, order:[], occupied:null, cutaway:false, portals:[], matCach
   }
 
   /* ---------------------------------------------------------------- interior materials */
-  var IND = { uIndoorSun:{ value:0.22 }, uIndoorWarm:{ value:new THREE.Color(0.10,0.09,0.08) } };
+  /* uFloorLift: the light a floor gets back from the room (bounce off the walls, the open door, the
+     lamps at night). Only the 'fl-' families (64-interiors.js floors) take it, so a floor reads at a
+     quarter of the sun and never merges with a dark plinth; walls and furniture are unchanged. */
+  var IND = { uIndoorSun:{ value:0.22 }, uIndoorWarm:{ value:new THREE.Color(0.10,0.09,0.08) }, uFloorLift:{ value:0.30 } };
   var CLIP = new THREE.Plane(new THREE.Vector3(0,-1,0), 1e6);
   function intMat(fam, inst, mode){
     var key=(inst?'i':'m')+'|'+fam+'|'+mode; if(INT.matCache[key]) return INT.matCache[key];
-    var fm=FAMMAT[fam]||{}, m;
+    var floor = fam.indexOf('fl-')===0, fm=FAMMAT[floor ? fam.slice(3) : fam]||{}, m;
     if(fm.basic) m=new THREE.MeshBasicMaterial({ color:0xffffff, vertexColors:!inst });
     else { m=new THREE.MeshLambertMaterial({ color:0xffffff, vertexColors:!inst, map:fm.tex||null });
-      (function(needsUV, sc){ m.onBeforeCompile=function(sh){ if(needsUV) applyWorldUV(sh, sc);
-          sh.uniforms.uIndoorSun=IND.uIndoorSun; sh.uniforms.uIndoorWarm=IND.uIndoorWarm;
-          sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform float uIndoorSun;\nuniform vec3 uIndoorWarm;')
-            .replace('#include <aomap_fragment>','reflectedLight.directDiffuse *= uIndoorSun;\nreflectedLight.indirectDiffuse = reflectedLight.indirectDiffuse*0.75 + diffuseColor.rgb*uIndoorWarm;\n#include <aomap_fragment>'); };
-        m.customProgramCacheKey=function(){ return 'interior|'+(needsUV?'wuv'+sc[0]+'_'+sc[1]:''); }; })(inst && !!fm.tex, fm.scale||[3,3]); }
+      (function(needsUV, sc, floor){ m.onBeforeCompile=function(sh){ if(needsUV) applyWorldUV(sh, sc);
+          sh.uniforms.uIndoorSun=IND.uIndoorSun; sh.uniforms.uIndoorWarm=IND.uIndoorWarm; sh.uniforms.uFloorLift=IND.uFloorLift;
+          sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform float uIndoorSun;\nuniform vec3 uIndoorWarm;\nuniform float uFloorLift;')
+            .replace('#include <aomap_fragment>','reflectedLight.directDiffuse *= uIndoorSun;\nreflectedLight.indirectDiffuse = reflectedLight.indirectDiffuse*0.75 + diffuseColor.rgb*uIndoorWarm'+(floor?' + diffuseColor.rgb*uFloorLift':'')+';\n#include <aomap_fragment>'); };
+        m.customProgramCacheKey=function(){ return 'interior|'+(needsUV?'wuv'+sc[0]+'_'+sc[1]:'')+(floor?'|floor':''); }; })(inst && !!fm.tex, fm.scale||[3,3], floor); }
     if(mode==='portal'){ m.stencilWrite=true; m.stencilFunc=THREE.EqualStencilFunc; m.stencilRef=1; m.stencilFail=THREE.KeepStencilOp; m.stencilZFail=THREE.KeepStencilOp; m.stencilZPass=THREE.KeepStencilOp; }
     m.userData.intMode = mode; if(INT.cutaway) m.clippingPlanes=[CLIP];
     INT.matCache[key]=m; return m;
@@ -11600,10 +12298,10 @@ var INT = { live:{}, order:[], occupied:null, cutaway:false, portals:[], matCach
       I.doors.push({ id:d.id, wx:w[0], wz:w[1], open:0, want:0, _leaves:G.leaves.filter(function(L){ return L.door===d.id; }) }); });
     I.lights = G.lights;
     INT.live[bid]=I; INT.order.push(bid);
-    if(INT.cutaway) setMode(I,'open');
+    if(INT.cutaway){ setMode(I,'open'); showPlinths(b, false); }
     return I;
   }
-  function dropLive(bid){ var I=INT.live[bid]; if(!I) return; scene.remove(I.group);
+  function dropLive(bid){ var I=INT.live[bid]; if(!I) return; scene.remove(I.group); showPlinths(FIX.byId[bid], true);
     I.group.traverse(function(o){ if(o.geometry) o.geometry.dispose(); });
     for(var i=SITES.length-1;i>=0;i--) if(SITES[i]._int===bid) SITES.splice(i,1);
     delete INT.live[bid]; INT.order.splice(INT.order.indexOf(bid),1); }
@@ -11700,7 +12398,7 @@ var INT = { live:{}, order:[], occupied:null, cutaway:false, portals:[], matCach
     scene.children.forEach(function(o){ if(!(o.userData.kit || o.userData.merged) || !o.material) return; o.material.clippingPlanes = on ? [CLIP] : null; o.material.needsUpdate=true; });
     for(var k in INT.matCache){ INT.matCache[k].clippingPlanes = on ? [CLIP] : null; INT.matCache[k].needsUpdate=true; }
     renderer.localClippingEnabled = !!on;
-    for(var bid in INT.live) setMode(INT.live[bid], on?'open':'portal');
+    for(var bid in INT.live){ setMode(INT.live[bid], on?'open':'portal'); showPlinths(FIX.byId[bid], !on); }
     var bt=document.getElementById('cutToggle'); if(bt){ bt.textContent='Cutaway: '+(on?'On':'Off'); bt.classList.toggle('on', on); }
   }
   DOORS.cutaway = setCutaway;
@@ -11735,7 +12433,7 @@ var INT = { live:{}, order:[], occupied:null, cutaway:false, portals:[], matCach
     if(lastOcc!==INT.occupied){
       /* inside a building its reveals would block the view out: hide its windows' and doors' dark boxes */
       if(lastOcc && INT.live[lastOcc]){ if(!INT.cutaway) setMode(INT.live[lastOcc], 'portal'); var ob=FIX.byId[lastOcc];
-        (ob.windows||[]).forEach(function(id){ showReveal(FIX.byId[id]._rvl, true); }); (ob.doors||[]).forEach(function(id){ var D=FIX.byId[id]; showReveal(D._rvl, (D.open||0) < 0.25); }); showShell(ob, true); }
+        (ob.windows||[]).forEach(function(id){ showReveal(FIX.byId[id]._rvl, true); }); (ob.doors||[]).forEach(function(id){ var D=FIX.byId[id]; showReveal(D._rvl, (D.open||0) < 0.25); }); showShell(ob, true); if(INT.cutaway) showPlinths(ob, false); }
       if(INT.occupied && INT.live[INT.occupied]){ setMode(INT.live[INT.occupied], 'open'); var nb=FIX.byId[INT.occupied];
         (nb.windows||[]).forEach(function(id){ showReveal(FIX.byId[id]._rvl, false); }); (nb.doors||[]).forEach(function(id){ showReveal(FIX.byId[id]._rvl, false); }); showShell(nb, false); }
       lastOcc = INT.occupied; }
@@ -11744,6 +12442,7 @@ var INT = { live:{}, order:[], occupied:null, cutaway:false, portals:[], matCach
     if(INT.cutaway){ var gy = WALK.on ? WALK.y : (SHEET ? 0 : terrainH(ctl.tx, ctl.tz)); CLIP.constant = gy + 2.4; }
     /* lamps lit inside after dark; a little daylight from the windows by day */
     var n = nk||0; IND.uIndoorSun.value = INT.cutaway ? 0.9 : 0.24*(1-n); IND.uIndoorWarm.value.setRGB(0.09+0.42*n, 0.08+0.27*n, 0.07+0.12*n);
+    IND.uFloorLift.value = INT.cutaway ? 0.12 : 0.30*(1-n) + 0.14*n;
   });
   window._doors = { stats:function(){ return { doors:FIX.doors.length, windows:FIX.windows.length, lights:FIX.lights.length, buildings:FIX.buildings.length,
       live:INT.order.length, portals:INT.stats.portals||0, indoors:(typeof LIFE!=='undefined' && LIFE.agents) ? LIFE.agents.filter(function(a){ return a.inside; }).length : 0,
@@ -12045,13 +12744,22 @@ function dnBodyDir(hour, az0, elevMax, out){
 }
 
 var DN_SUN_I = PAL.sunIntensity, DN_HEMI_I = PAL.hemiIntensity, DN_AMB_I = PAL.ambientIntensity;
-/* night floors: a Krator night is READABLE. Under the canopy there is a lot
-   of occlusion already, so these sit a little above Voth's. */
-var DN_HEMI_NIGHT_I = 0.30, DN_AMB_NIGHT_I = 0.22;
-/* extra fill under a well-lit giant (planetshine), also the eclipse floor */
-var DN_SHINE_HEMI = 0.15, DN_SHINE_AMB = 0.08;
-/* how much a full giant softens the city's own night lighting */
-var DN_SHINE_NL_CUT = 0.28;
+/* night floors. (2026-10-01) These were 0.30 / 0.22 with a daytime-coloured
+   sky fill: with the planetshine on top and the thick-air multiplier, 21:00
+   under a full giant read as an overcast afternoon. A night is now dark: a
+   little cool fill so silhouettes survive, the giant's directional key
+   (21-sky) for shape and shadows, and the lamps, windows and fires as the
+   lights you actually see by. Same fix as Mav's Refuge and Girder. */
+var DN_HEMI_NIGHT_I = 0.07, DN_AMB_NIGHT_I = 0.035;
+/* extra fill under a well-lit giant (planetshine scattered by the air) */
+var DN_SHINE_HEMI = 0.07, DN_SHINE_AMB = 0.03;
+/* an eclipse is deep twilight, not night: the refracted rim and the sky beyond
+   the giant keep a fill of their own (this used to ride on the night floors) */
+var DN_ECL_HEMI = 0.16, DN_ECL_AMB = 0.10;
+/* how much a full giant softens the city's own night lighting (lamps stay the main light) */
+var DN_SHINE_NL_CUT = 0.08;
+/* the night fill's colour: moonlit blue-grey above, the valley's dark sand and mud brick below */
+var DN_HEMI_SKY_NIGHT = new THREE.Color(0x5f7193), DN_HEMI_GND_NIGHT = new THREE.Color(0x2e2519);
 var DN_SKY_SAMPLE = 0.45, DN_SOIL_SAMPLE = 0.40;
 
 var DN_HAZE_DAY = new THREE.Color(PAL.haze), DN_HAZE_NIGHT = new THREE.Color(PAL.hazeNight);
@@ -12074,8 +12782,9 @@ function updateDayNight(){
   /* one key light: sun by day, the giant by night and through an eclipse */
   sun.color.copy(S.keyCol);
   sun.intensity = DN_SUN_I * S.keyI;
-  hemiLight.intensity = DN_HEMI_NIGHT_I + DN_SHINE_HEMI*shine + (DN_HEMI_I-DN_HEMI_NIGHT_I)*daylight;
-  ambLight.intensity  = DN_AMB_NIGHT_I  + DN_SHINE_AMB*shine  + (DN_AMB_I-DN_AMB_NIGHT_I)*daylight + 0.02*moonUp;
+  var eclK = S.ecl*S.sunUp;
+  hemiLight.intensity = DN_HEMI_NIGHT_I + DN_SHINE_HEMI*shine + DN_ECL_HEMI*eclK + (DN_HEMI_I-DN_HEMI_NIGHT_I)*daylight;
+  ambLight.intensity  = DN_AMB_NIGHT_I  + DN_SHINE_AMB*shine  + DN_ECL_AMB*eclK  + (DN_AMB_I-DN_AMB_NIGHT_I)*daylight + 0.01*moonUp;
   /* thick air scatters: a milky low-contrast key at ~2 atm, a hard one at 0.8 */
   sun.intensity       *= 1.16 - 0.30*S.shadowSoft;
   hemiLight.intensity *= 0.80 + 0.42*S.shadowSoft;
@@ -12085,6 +12794,9 @@ function updateDayNight(){
   /* (sampled less at night: the night zenith is near-black and would cancel the floors) */
   hemiLight.color.setHex(PAL.hemiSky).lerp(S.hemiSky, DN_SKY_SAMPLE*(0.25 + 0.75*daylight));
   hemiLight.groundColor.setHex(PAL.hemiGround).lerp(S.hemiGround, DN_SOIL_SAMPLE);
+  /* ...and at night the fill goes cool and dark, not a dimmed copy of the day's */
+  hemiLight.color.lerp(DN_HEMI_SKY_NIGHT, 1 - daylight);
+  hemiLight.groundColor.lerp(DN_HEMI_GND_NIGHT, 1 - daylight);
 
   /* fog: jungle haze by day, a warm cast while the sun is low, blue-black at night */
   _dnFog.copy(DN_HAZE_NIGHT).lerp(DN_HAZE_DAY, daylight);
@@ -12176,7 +12888,11 @@ var LIFE = { agents:[], poi:{}, stats:{} };
       if(b.key==='civic_library') P('yunilib', b.x, b.z, EX);
       if(b.key==='civic_archive' || b.key==='civic_chapter_house' || b.key==='civic_school') P('order', b.x, b.z, EX); }
     else if(f==='trade'){
-      if(b.key==='trade_caravanserai') P('caravanserai', b.x, b.z, EX);
+      if(b.key==='trade_caravanserai'){ var cv = P('caravanserai', b.x, b.z, EX);
+        /* its gate (local +z, 56-mid.js) and the court behind it, so a caravan drives in
+           through the gate and stands in the yard rather than anywhere within 50 m */
+        var Ag = A, gp = loc(b.x, b.z, 0, Ag.d/2 + 7, b.ry||0);
+        cv.gate = { x:gp[0], z:gp[1] }; cv.court = function(){ var q = loc(b.x, b.z, rr(-16,16), rr(-14,6), b.ry||0); return { x:q[0], z:q[1] }; }; }
       else if(named(b, /Vault depot/)) P('depot', b.x, b.z, EX);
       else if(b.key==='trade_market_hall') P('warehouse', b.x, b.z, EX);
       else P('shop', b.x, b.z, EX);
@@ -12275,7 +12991,9 @@ var LIFE = { agents:[], poi:{}, stats:{} };
     var best = {};
     NAV.nodes.forEach(function(n){
       if(n.tag!=='highway' && n.tag!=='road') return;
-      var r = Math.hypot(n.x, n.z); if(r < 1300) return;
+      /* out past the farm belt and far beyond drawing range, but not the 5 km map edge: at a
+         camel's pace that is an hour and a half each way, and nobody would ever see one arrive */
+      var r = Math.hypot(n.x, n.z); if(r < 1300 || r > 2100) return;
       var q = Math.round(clockOf(n.x, n.z));
       if(!best[q] || r > best[q].r) best[q] = { id:n.id, x:n.x, z:n.z, r:r };
     });
@@ -12314,16 +13032,18 @@ var LIFE = { agents:[], poi:{}, stats:{} };
   }
   for(var k in KINDS){ for(var i=0;i<KINDS[k].n;i++) spawn(k, KINDS[k]); }
 
+  /* A CARAVAN'S DAY is a loop, held as data on the caravan (`next`): in off the desert road
+     to the caravanserai's yard, a long stand there, sometimes a trip to the market circle and
+     back, then out along a highway to the map edge, where it is off the map (hidden) for a
+     while before it comes in again. Carts potter between the goods places. */
   function vehDestination(v){
     if(v.caravan){
-      /* A caravan's business is the caravanserai: two trips in three end in its yard, where
-         it stands for five to twelve minutes before moving on. */
-      /* and it does not set out for the yard it is already standing in — with a dwell of
-         several minutes that is how a caravan spends the whole day parked */
-      var yard = pool(['caravanserai'])[0];
-      var here = yard && Math.hypot(yard.x - v.x, yard.z - v.z) < 70;
-      if(!here && rnd() < 0.66) return yard;
-      return pick(pool(['market','warehouse','depot','shop']));
+      if(v.next==='out' && ROAD_END.length){ var re = pick(ROAD_END); return { x:re.x, z:re.z, r:4, name:'road end', roadEnd:true }; }
+      if(v.next==='market') return pick(pool(['market']));
+      var Y = pool(['caravanserai'])[0];
+      /* route to the street before the gate, then the last leg goes in through it to the court */
+      if(Y && Y.gate) return { x:Y.gate.x, z:Y.gate.z, r:6, name:'caravanserai yard', yard:Y };
+      return Y;
     }
     return pick(pool(v.cfg.order.concat(['plaza'])));
   }
@@ -12348,11 +13068,22 @@ var LIFE = { agents:[], poi:{}, stats:{} };
      city. Two code paths for one behaviour is how that happens; `viz` keeps them apart for
      the devtool and the draw without forking the simulation. */
   function spawnVeh(kind, cfg, nBeast){
-    var s0 = pick(kind==='caravan' ? pool(['caravanserai','market']) : pool(['depot','warehouse','market','shop']));
-    var s = { x:s0.x + rr(-10,10), z:s0.z + rr(-10,10) };
-    VEH.push({ kind:'cart', viz:kind, caravan:(kind==='caravan'), cfg:cfg, x:s.x, z:s.z, y:terrainH(s.x,s.z), ry:rr(0,TAU), path:null, seg:0, t:0,
-               leg:null, wait:rr(0,30), speed:cfg.speed*rr(0.85,1.1), want:null, node:-1, beasts:nBeast||1,
-               leg2:(kind==='caravan' ? (rnd()<0.5?'in':'rest') : null), atRoad:false, hidden:false, destFn:vehDestination,
+    var car = (kind==='caravan'), s0, next = null, hid = false, w0 = rr(0,30);
+    /* A caravan starts either out on the desert road, about to come in (off the map until it
+       has a route), or standing in the caravanserai's yard, about to leave. */
+    if(car && ROAD_END.length && rnd() < 0.5){ var re = pick(ROAD_END); s0 = { x:re.x, z:re.z }; next = 'yard'; hid = true; w0 = rr(0,25); }
+    var Y = car ? pool(['caravanserai'])[0] : null, court = null;
+    if(car && !hid){ s0 = Y.court ? Y.court() : Y; court = Y.gate || null; next = rnd() < 0.3 ? 'market' : 'out'; w0 = rr(5,60); }
+    else if(!car) s0 = pick(pool(['depot','warehouse','market','shop']));
+    var jit = car ? 0 : 10, s = { x:s0.x + rr(-jit,jit), z:s0.z + rr(-jit,jit) };
+    /* `off` and `step` are what step() reads to keep a walker to one side of the centre line
+       and to swing its gait. Vehicles never had them: off was undefined, so the first metre of
+       every route turned x and z into NaN and the vehicle vanished from the draw for good. That,
+       not the state machine, is why no caravan ever moved (and every cart stopped after its
+       first set-out). A vehicle keeps to the right of the road's centre line. */
+    VEH.push({ kind:'cart', viz:kind, caravan:car, cfg:cfg, x:s.x, z:s.z, y:terrainH(s.x,s.z), ry:rr(0,TAU), path:null, seg:0, t:0,
+               leg:null, wait:w0, speed:cfg.speed*rr(0.85,1.1), want:null, node:-1, beasts:nBeast||1,
+               off:rr(1.2,2.0), step:0, phase:rr(0,TAU), next:next, atRoad:hid, hidden:hid, court:court, destFn:vehDestination, trips:0,
                hide:pick(PAL.trunk), load:pick(PAL.cloth), garb:pick(PAL.people.garb), skin:pick(PAL.people.skin) });
   }
   for(i=0;i<CARTS.n;i++) spawnVeh('cart', CARTS, 1);
@@ -12384,7 +13115,7 @@ var LIFE = { agents:[], poi:{}, stats:{} };
     return elsewhere(a, roll(), 5, roll);
   }
   /* ---- the request queue: a few routes solved per frame, never a stampede ---- */
-  var QUEUE = [], QPF = 5, failed = 0;
+  var QUEUE = [], QPF = 5, failed = 0, vfailed = 0;
   function ask(a, want, deep){ a.want = want; a.pathPending = true; QUEUE.push({ a:a, deep:!!deep }); }
   function serve(){
     var n = 0;
@@ -12407,9 +13138,10 @@ var LIFE = { agents:[], poi:{}, stats:{} };
   }
 
   /* which threshold of this place, and is it worth crossing to? */
-  function standPoint(w, fromX, fromZ){
+  function standPoint(w, fromX, fromZ, vehicle){
     if(!w) return null;
-    if(w.doors && w.doors.length){
+    if(w.yard && w.yard.court) return w.yard.court();               /* a caravan, through the gate into the court */
+    if(w.doors && w.doors.length && !vehicle){                       /* carts do not drive in at a door */
       var best=null, bd=1e9, bi=-1;
       for(var i=0;i<w.doors.length;i++){ var d=w.doors[i], q=Math.hypot(d[0]-fromX, d[1]-fromZ);
         if(q<bd){ bd=q; best=d; bi=i; } }
@@ -12455,7 +13187,7 @@ var LIFE = { agents:[], poi:{}, stats:{} };
     var A = NAV.nodes[a.path[a.seg]], B = NAV.nodes[a.path[a.seg+1]];
     if(!B){ /* arrived at the street; now cross to the door */
       a.node = a.path[a.seg]; a.path = null;
-      a.leg = standPoint(a.want, a.x, a.z);
+      a.leg = standPoint(a.want, a.x, a.z, !!a.destFn);
       if(!a.leg){ var d = a.cfg.dwell || [10,30]; a.wait = rr(d[0], d[1]); a.step = 0; }
       return;
     }
@@ -12463,7 +13195,7 @@ var LIFE = { agents:[], poi:{}, stats:{} };
     a.t += a.speed*dt / L;
     while(a.t >= 1){ a.t -= 1; a.seg++;
       A = NAV.nodes[a.path[a.seg]]; B = NAV.nodes[a.path[a.seg+1]];
-      if(!B){ a.node = a.path[a.seg]; a.path=null; a.leg = standPoint(a.want, a.x, a.z);
+      if(!B){ a.node = a.path[a.seg]; a.path=null; a.leg = standPoint(a.want, a.x, a.z, !!a.destFn);
         if(!a.leg){ var d2=a.cfg.dwell||[10,30]; a.wait=rr(d2[0],d2[1]); } return; }
       dx=B.x-A.x; dz=B.z-A.z; L=Math.hypot(dx,dz)||1;
     }
@@ -12480,27 +13212,38 @@ var LIFE = { agents:[], poi:{}, stats:{} };
      it impossible to see which of the two was asking. A vehicle asks for itself. */
   function stepVeh(v, dt, hour){
     if(v.wait > 0){ v.wait -= dt; return; }
+    if(!v.path && !v.leg && v.court){                  /* out of the court through the gate first */
+      v.leg = { x:v.court.x, z:v.court.z }; v.court = null; v.exiting = true; return; }
     if(!v.path && !v.leg){
       var w = v.destFn(v); v.want = w;
       var sN = v.node >= 0 ? v.node : navNear(v.x, v.z), gN = navNear(w.x, w.z);
       var pth = route(sN, gN, false);
       if(pth && pth.length > 1){
-        v.path = pth; v.seg = 0; v.t = 0; v.node = -1; v.hidden = false; remember(v.viz||v.kind, pth);
-      } else {
-        v.node = sN;
-        v.leg = standPoint(w, v.x, v.z);
+        v.path = pth; v.seg = 0; v.t = 0; v.node = -1; v.hidden = false; v.atRoad = false; remember(v.viz||v.kind, pth);
+      } else if(pth){                                   /* already at the nearest node: cross to the place */
+        v.node = sN; v.hidden = false;
+        v.leg = standPoint(w, v.x, v.z, true);
         if(!v.leg) arriveVeh(v, w);
+      } else {                                          /* no route: think again shortly */
+        v.node = sN; v.want = null; v.wait = rr(5,15); vfailed++; v.fails = (v.fails||0) + 1;
       }
       return;
     }
     var w2 = v.want;
     step(v, dt, hour);
-    if(!v.path && !v.leg && v.wait <= 0) arriveVeh(v, w2);
+    if(!isFinite(v.x) || !isFinite(v.z)){ ERR('life: a vehicle position went NaN'); v.path = null; v.leg = null; v.x = w2.x; v.z = w2.z; v.y = terrainH(v.x, v.z); }
+    /* step() has just finished the trip (it may have set a pedestrian's dwell: arriveVeh decides) */
+    if(!v.path && !v.leg){ if(v.exiting){ v.exiting = false; v.wait = 0; } else arriveVeh(v, w2); }
   }
   function arriveVeh(v, w){
     var d = v.cfg.dwell || [20,60];
+    v.trips++;
     if(v.caravan){
-      v.wait = rr(d[0], d[1]); return;                            /* the long stand in the yard */
+      if(w && w.roadEnd){ v.hidden = true; v.atRoad = true; v.next = 'yard'; v.wait = rr(60, 240); return; }   /* off the map */
+      if(v.next==='market'){ v.next = 'yard'; v.wait = rr(40, 110); return; }
+      v.next = rnd() < 0.3 ? 'market' : 'out';
+      if(w && w.yard){ var nd = NAV.nodes[v.node]; if(nd) v.court = { x:nd.x, z:nd.z }; }   /* the way back out */
+      v.wait = rr(d[0], d[1]); return;                           /* the long stand in the yard */
     }
     v.wait = rr(d[0], d[1]);
   }
@@ -12529,7 +13272,7 @@ var LIFE = { agents:[], poi:{}, stats:{} };
   }
 
   /* fixed-step fast-forward for headless tests (frames there are far too slow to watch a day go by) */
-  LIFE.sim = function(secs, dt){ dt=dt||0.25; var h=skyHour(); for(var t=0;t<secs;t+=dt){ serve(); for(var i=0;i<AG.length;i++) step(AG[i], dt, h); } };
+  LIFE.sim = function(secs, dt){ dt=dt||0.25; var h=skyHour(); for(var t=0;t<secs;t+=dt){ serve(); for(var i=0;i<AG.length;i++) step(AG[i], dt, h); for(i=0;i<VEH.length;i++) stepVeh(VEH[i], dt, h); } };
   var acc = 0;
   TICKS.push(function(dt, hour){
     serve();
@@ -12608,7 +13351,10 @@ var LIFE = { agents:[], poi:{}, stats:{} };
   LIFE.stats.poi = counts;
   window._life = { all:AG, veh:VEH, places:POI, agents:AG.length, vehicles:VEH.length, byKind:byKind, poi:counts, roadEnds:ROAD_END.length,
                    corridors:function(){ var o={}; for(var k in USED) o[k]=Object.keys(USED[k]).length; return o; },
-                   routeFailures:function(){ return failed; }, stats:LIFE.stats };
+                   routeFailures:function(){ return failed; }, vehicleRouteFailures:function(){ return vfailed; }, stats:LIFE.stats, sim:LIFE.sim,
+                   /* the caravans' loop, for the verifier and the console */
+                   caravans:function(){ return VEH.filter(function(v){ return v.caravan; }).map(function(v){
+                     return { x:+v.x.toFixed(1), z:+v.z.toFixed(1), next:v.next, moving:!!(v.path||v.leg), offMap:v.hidden, trips:v.trips, wait:+Math.max(0,v.wait).toFixed(1) }; }); } };
 })();
 /* ============================== 29. PROBE ==============================
    Read-only surface for the verifier and for debugging from the console. */
@@ -12794,6 +13540,16 @@ var sheetFocus = null;
   document.getElementById('hint').innerHTML += '<br><b>Left / Right arrows</b> step through the assets. Inspector on = hover for name + key. The blue tab on a footprint marks its FRONT (street side).';
   window._sheetui = { focus:focus, n:SHEET_ITEMS.length };
   setTimeout(function(){ focus(0); }, 0);
+})();
+// ================================================================= LOD: take over the finished scene (core/lod)
+// Sorts after every build's scene, camera and frame loop, and before 99-tail. It reads the build's `scene`, `camera`
+// and `renderer` (every Krator build names them so) and the build's options from window.LOD_OPTIONS, if it set any.
+// A build that calls LOD.init itself (LOD.root already made) is left alone; so is one that sets LOD_OPTIONS=false.
+(function(){
+ if(typeof LOD==='undefined'||LOD.root)return;
+ const opt=(typeof window.LOD_OPTIONS==='undefined')?{}:window.LOD_OPTIONS;if(opt===false)return;
+ try{LOD.init(Object.assign({THREE,scene,camera,renderer},opt));LOD.applied=LOD.apply();}
+ catch(e){const m='LOD: '+(e&&e.stack||e);if(typeof reportErr==='function')reportErr(m);else if(typeof ERR==='function')ERR(m);else console.error(m);}
 })();
 /* ============================== 99. START ============================== */
 updateSky(); updateDayNight();

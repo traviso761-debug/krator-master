@@ -11,6 +11,8 @@ Built output (never open it; edit `src/` and rebuild): `dist/shade.html`
 Build: `cd settlements/shade && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
+From `core/terrain/` (shared; see `core/README.md`): `36-core-carve.js`
+
 ## src/
 
 | Fragment | KB | Sections (line) |

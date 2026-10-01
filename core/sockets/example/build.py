@@ -10,6 +10,32 @@ core/sockets/ (the socket + culture system) and one tiny demo building. The outp
 To start your own build on the socket system: copy the fragment list below, replace 40-demo.js with your buildings, keep 37-sockets.js, 38-symbols.js and 80-cultures.js from core/sockets/.
 """
 import os, re, subprocess, sys
+
+
+def find_node():
+    """node for the syntax check: $NODE, then PATH, then the usual install places
+    (/opt/node*/bin, /usr/local/bin, ~/.nvm, ~/.volta; the newest first). None when
+    there is none: the build then says plainly that the syntax was NOT checked.
+    Every build.py carries this same function; a fix belongs in all of them."""
+    import glob as _g, shutil as _sh
+    env = os.environ.get('NODE')
+    if env:
+        hit = _sh.which(env) or (env if os.path.isfile(env) else None)
+        if hit:
+            return hit
+        print('NOTE: $NODE=%s is not a node binary; looking elsewhere' % env)
+    hit = _sh.which('node')
+    if hit:
+        return hit
+    ver = lambda p: [int(x) for x in re.findall(r'\d+', p)]
+    for pat in ('/opt/node*/bin/node', '/usr/local/bin/node',
+                os.path.expanduser('~/.nvm/versions/node/*/bin/node'),
+                os.path.expanduser('~/.volta/bin/node')):
+        hits = [h for h in sorted(_g.glob(pat), key=ver, reverse=True) if os.access(h, os.X_OK)]
+        if hits:
+            return hits[0]
+    return None
+
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(os.path.dirname(os.path.dirname(HERE)))
 KIT = os.path.join(ROOT, 'kits', 'post-apoc', 'src'); CORE = os.path.join(HERE, '..')
 # every post-apoc engine fragment, none of its buildings (4x-5x) or its showcase table (89): a hand-kept list
@@ -22,7 +48,7 @@ html = re.sub(r'<title>.*?</title>', '<title>Culture Socket Sheet</title>', html
 out = os.path.join(HERE, 'sockets-example.html'); open(out, 'w', encoding='utf-8', newline='').write(html)
 body = html.rsplit('<script>', 1)[1].rsplit('</script>', 1)[0]; chk = os.path.join(HERE, '.syntax.js'); open(chk, 'w', encoding='utf-8').write(body)
 try:
-    r = subprocess.run(['node', '--check', chk], capture_output=True, text=True)
+    r = subprocess.run([find_node() or 'node', '--check', chk], capture_output=True, text=True)
     if r.returncode: print(r.stderr); sys.exit(1)
     print('built sockets-example.html (%d fragments, %.0f KB)  syntax OK' % (len(FRAGS), os.path.getsize(out) / 1024))
 except FileNotFoundError: print('built (no node: syntax not checked)')

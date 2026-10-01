@@ -43,12 +43,16 @@ reseed(659001);
     build:function(F){ var H=1.6;
       ABYSS.platform(F, -13,13, -10,8, H, { span:3.0 });
       var S=[[-8,-4.5,3.2,7.5],[-1,-5,3.6,8.5],[6.6,-4.5,3.0,7],[-4.5,3.5,2.6,6],[3.0,3.6,2.8,6.5]];
-      S.forEach(function(s,i){ ABYSS.vessel(F, 'silo', s[0],H,s[1], { r:s[2], h:s[3], col:i%2?METALC[1]:F.pick([METALC[0],METALC[3],PAL.abTin]), fam:'corrugate', port:true, win:[[PI/2,s[3]*0.55]], hatch:true, ladder:i%2?0:PI, door:i<3?PI/2:null }); });
-      /* a catwalk joining the tops of the back three */
-      var cy=H+7.2; F.box(-0.8,cy,-4.7, 14,0.12,1.0, 0, STEELDC[0], 'rust'); LOCUS.rail(F, -7.6,-4.2, 6.2,-4.2, cy, STEELDC[0], 0.9);
+      /* the silo-cluster picture: cream render with grey bands and pale domes, not bare grey sheet */
+      S.forEach(function(s,i){ ABYSS.vessel(F, 'silo', s[0],H,s[1], { r:s[2], h:s[3], col:F.pick(PAL.abCream), capCol:PAL.abCreamCap, fam:'plaster', port:true, win:[[PI/2,s[3]*0.55]], hatch:true, ladder:i%2?0:PI, door:i<3?PI/2:null }); });
+      /* a catwalk joining the back three near their tops: it runs along their FRONT faces (z -1.1..-0.1, the nearest silo
+         face is at z -1.4), a bracket back to each silo wall */
+      var cy=H+7.2; F.box(-0.8,cy,-0.6, 14,0.12,1.0, 0, STEELDC[0], 'rust'); LOCUS.rail(F, -7.6,-0.15, 6.2,-0.15, cy, STEELDC[0], 0.9);
+      S.slice(0,3).forEach(function(s){ var zf=s[1]+s[2]; F.box(s[0],cy-0.25,(zf-1.1)/2, 0.8,0.25,Math.abs(zf+1.1)+0.3, 0, STEELDC[0], 'rust'); });
       /* blue tarps over a working deck between the silos, and a small shed */
       LOCUS.pole(F, -10.8,6.8, H+3.2, 0.08); LOCUS.pole(F, -6.6,7.4, H+3.0, 0.08);
       ABYSS.sail(F, [[-9.6,H+4.0,0.6],[-6.4,H+4.4,0.0],[-6.6,H+3.0,7.4],[-10.8,H+3.2,6.8]], PAL.abTarpBlue, { swoop:0.3, sag:0.25 });
+      [[-9.6,0.6,H+4.0],[-6.4,0.0,H+4.4],[0.4,-0.2,H+4.6],[5.6,0.4,H+4.0]].forEach(function(p){ LOCUS.pole(F, p[0],p[1], p[2], 0.08); });   /* the back corners' poles */
       ABYSS.sail(F, [[0.4,H+4.6,-0.2],[5.6,H+4.0,0.4],[6.4,H+3.0,7.6],[-0.4,H+3.2,7.2]], PAL.abTarpBlue, { swoop:0.3, sag:0.3 });
       LOCUS.pole(F, 6.4,7.6, H+3.0, 0.08); LOCUS.pole(F, -0.4,7.2, H+3.2, 0.08);
       F.box(9.6,H,4.0, 4,2.6,4.6, 0, F.pick(PLANKC), 'plank'); ABYSS.corrRoof(F, 9.6,H+2.6,4.0, 4.6,5.2, 0.4, ABYSS.rust(F));
@@ -96,7 +100,8 @@ reseed(659001);
         F.box(0,H,-0.5, W,WH,D, 0, c, 'corrugate');
         for(var k=-5;k<=5;k++) F.box(k*W/11,H,-0.5+D/2+0.03, 0.12,WH,0.06, 0, STEELDC[0], 'rust');
         /* a gabled corrugated roof */
-        [1,-1].forEach(function(s){ F.box(0,H+WH-0.15,-0.5+s*D/4, W+1.2,0.08,D/2+1.2, [s*-0.32,0,0], ABYSS.rust(F), 'corrugate'); });
+        var pa=Math.atan2(2.2,D/2), ph=D/2+0.6;                                                          /* +pitch lowers the front (as ABYSS.corrRoof) */
+        [1,-1].forEach(function(s){ F.box(0,H+WH+2.2-ph/2*Math.tan(pa)+0.02,-0.5+s*ph/2, W+1.2,0.08,ph/Math.cos(pa), [s*pa,0,0], ABYSS.rust(F), 'corrugate'); });
         F.tri('corrugate', [-W/2,H+WH,-0.5-D/2],[-W/2,H+WH,-0.5+D/2],[-W/2,H+WH+2.2,-0.5], c, [-1,0,0]); F.tri('corrugate', [W/2,H+WH,-0.5-D/2],[W/2,H+WH,-0.5+D/2],[W/2,H+WH+2.2,-0.5], c, [1,0,0]);
         /* the sliding doors on their top rail, one slid open */
         F.box(0,H+4.9,-0.5+D/2+0.25, W-2,0.18,0.18, 0, STEELDC[1], 'rust');

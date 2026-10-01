@@ -4,9 +4,11 @@
                         +z = the OUTSIDE face. Rubble to 4.5 m, salvaged plate above with merlons, a walkway at 6.4 m on the
                         inside. Nothing it draws passes x = +-6, so segments placed end to end (centres 12 m apart, same yaw)
                         join with no gap and no overlap.
-     abyss_wall_tower   a round silo tower (r 3.4) centred ON A JOINT between two segments; doors at walkway height on +-x.
-     abyss_wall_gate    exactly N = 2 segments long (24 m, x -12..+12), a 6 m wide, 6.5 m high cart gate under a swoop roof;
-                        the walkway carries straight over it. Place it as if it were two segments.
+     abyss_wall_tower   a round silo tower (r 3.4) centred ON A JOINT between two segments; doors at walkway height on +-x,
+                        on the walkway's line (z -1), so turn it with the segments' yaw.
+     abyss_wall_gate    exactly N = 2 segments long (24 m, x -12..+12), a 6 m wide, 6 m high cart gate under a swoop roof;
+                        the gate towers rise full height only on the outer half (z 0..+3.5): on the inner half the walkway
+                        runs on at 6.4 m as a gallery behind them and over the gate's lintel. Place it as if two segments.
      abyss_wall_corner  a round silo tower (r 4.2) centred on the CORNER POINT, where the axes of two runs meet at 90 deg;
                         the run beyond starts at that point (its first segment's centre is 6 m from the corner).
      abyss_wall_run     sheet-only demo (tag demo): segment, tower, segment, gate, segment, corner, segment — built by calling
@@ -35,7 +37,9 @@ reseed(658001);
     F.lathe('relief', 0,0, [[R+0.08,Hh-0.5],[R+0.08,Hh]], PAL.abLacquer, { seg:22 });
     F.edome(0,Hh,0, R+0.2, R*0.6, R+0.2, 0, PAL.abTin, 'tinmirror'); F.cyl(0,Hh+R*0.6-0.1,0, 0.08,1.6, 0, PAL.abGild, 'metal'); F.ball(0,Hh+R*0.6+1.6,0, 0.2, PAL.abGild, 'metal');
     for(var k=0;k<8;k++){ var a=k/8*TAU+0.2; F.box(Math.cos(a)*(R+0.02), RUB+2.2, Math.sin(a)*(R+0.02), 0.25,1.0,0.12, -a+PI/2, VOIDC[0], 'dark'); F.box(Math.cos(a)*(R+0.02), Hh-2.2, Math.sin(a)*(R+0.02), 0.25,1.0,0.12, -a+PI/2, VOIDC[0], 'dark'); }
-    doors.forEach(function(d){ F.door(d[0]*(R+0.02), d[1]*(R+0.02), d[0],d[1], 1.0, 2.2, PLANKC[3], WALK); }); }
+    /* doors[i] = [nx,nz] the side it faces, [ox,oz] its offset along the wall line: it opens onto the walkway (1 m inside the axis) */
+    doors.forEach(function(d){ var o=-1.0, ax=d[0]?0:o, az=d[1]?0:o, r=Math.sqrt(Math.max(0,(R+0.02)*(R+0.02)-o*o)), x=d[0]*r+ax, z=d[1]*r+az, l=Math.hypot(x,z);
+      F.door(x, z, x/l, z/l, 1.0, 2.2, PLANKC[3], WALK); }); }
   ASSET({ key:'abyss_wall_tower', name:'Wall tower (on a joint)', family:'civic', kit:'abyss', group:'Walls', culture:'abyssal-desert', types:['military','infrastructure'],
     wealth:[0.4,1.0], w:8, d:8, h:15, variants:1, sim:{ activity:'GARRISON', capacity:10 },
     build:function(F){ silo(F, 3.4, 12, [[1,0],[-1,0]]); } });
@@ -45,13 +49,18 @@ reseed(658001);
 
   ASSET({ key:'abyss_wall_gate', name:'Wall gate (2 segments)', family:'civic', kit:'abyss', group:'Walls', culture:'abyssal-desert', types:['military','infrastructure'],
     wealth:[0.4,1.0], w:2*L, d:10, h:18, variants:1, sim:{ activity:'GARRISON', capacity:12 },
-    build:function(F){ var gw=6, gh=6.5, tw=2.4;
-      body(F, -L, -gw/2-tw); body(F, gw/2+tw, L);
+    build:function(F){ var gw=6, gh=6.0, tw=2.4, gx=gw/2+tw, WB=WALK-0.15;
+      body(F, -L, -gx); body(F, gx, L);
+      /* the gate towers: full depth (z -2.5..3.5) up to the walkway, then only the outer half (z 0..3.5) to 10.5 m */
       [-1,1].forEach(function(s){ var cx=s*(gw/2+tw/2);
-        F.box(cx,0,0.5, tw,RUB+1.5,T+3, 0, PAL.abRubble, 'rubble'); F.box(cx,RUB+1.5,0.5, tw,10.5-RUB-1.5,T+3, 0, plateCol(F), 'rust');
-        F.box(cx,10.5,0.5, tw+0.2,0.4,T+3.2, 0, PAL.abLacquer, 'relief'); });
-      F.box(0,gh,0.5, gw,10.5-gh,T+3, 0, plateCol(F), 'rust'); F.box(0,gh-0.3,2.0, gw,0.3,0.4, 0, PAL.abLacquer, 'plaster');
-      F.box(0,WALK-0.15,-1.0, gw+2*tw,0.15,2.0, 0, F.pick(PLANKC), 'plank');                                                /* the walkway carried over the gate */
+        F.box(cx,0,0.5, tw,RUB+1.5,T+3, 0, PAL.abRubble, 'rubble'); F.box(cx,RUB+1.5,0.5, tw,WB-RUB-1.5,T+3, 0, plateCol(F), 'rust');
+        F.box(cx,WB,1.75, tw,10.5-WB,3.5, 0, plateCol(F), 'rust');
+        F.box(cx,10.5,1.75, tw+0.2,0.4,3.7, 0, PAL.abLacquer, 'relief'); });
+      F.box(0,gh,0.5, gw,WB-gh,T+3, 0, plateCol(F), 'rust'); F.box(0,WB,1.75, gw,10.5-WB,3.5, 0, plateCol(F), 'rust');     /* the lintel, under and beside the walkway */
+      F.box(0,gh-0.3,2.0, gw,0.3,0.4, 0, PAL.abLacquer, 'plaster');
+      F.box(0,WB,-1.25, 2*gx,0.15,2.5, 0, F.pick(PLANKC), 'plank');                                                       /* the walkway: a gallery behind the towers, over the gate */
+      LOCUS.rail(F, -gx,-2.45, gx,-2.45, WALK, F.pick(TIMBERC), 1.0);
+      [-1,1].forEach(function(s){ F.door(s*(gw/2+tw/2), 0.02, 0,-1, 1.0, 2.2, PLANKC[3], WALK); });                       /* doors into the towers' upper rooms */
       /* the gate leaves, swung open */
       [-1,1].forEach(function(s){ F.box(s*(gw/2-0.15),0,2.6, 0.15,gh-0.2,2.9, 0, F.pick(PLANKC), 'plank'); });
       ABYSS.swoopRoof(F, 0,0.5, gw+2*tw, T+3, 4.2, { y0:10.9, horn:2.4, over:0.9 });
@@ -73,15 +82,16 @@ reseed(658001);
   ASSET({ key:'abyss_fortress', name:'Citadel on the rubble mound', family:'civic', kit:'abyss', group:'Military', culture:'abyssal-desert', types:['military','civic'],
     wealth:[0.6,1.0], w:72, d:72, h:28, variants:1, sim:{ activity:'GARRISON', capacity:400 },
     build:function(F){ var M=4.0, S=24;
-      F.fr8(0,0,0, 66,M,66, 0, PAL.abRubble, 'rubble'); F.box(0,M-0.05,0, 55,0.1,55, 0, PAL.abSalt, 'plaster');
+      var MB=70, MT=MB*0.84;                                    /* fr8 battered 0.84: the top is 58.8 m, so the corner towers (r 4.5 at +-24) stand on it */
+      F.fr8(0,0,0, MB,M,MB, 0, PAL.abRubble, 'rubble'); F.box(0,M-0.05,0, MT-0.3,0.1,MT-0.3, 0, PAL.abSalt, 'plaster');
       /* the circuit, from the wall system's own pieces: front = segment, gate, segment; the other sides four segments each */
       var o={ ly:M };
       ABYSS.sub(F, 'abyss_wall_seg', -18,S, 0, o); ABYSS.sub(F, 'abyss_wall_gate', 0,S, 0, o); ABYSS.sub(F, 'abyss_wall_seg', 18,S, 0, o);
       [-18,-6,6,18].forEach(function(t){ ABYSS.sub(F, 'abyss_wall_seg', t,-S, PI, o); ABYSS.sub(F, 'abyss_wall_seg', -S,t, -PI/2, o); ABYSS.sub(F, 'abyss_wall_seg', S,t, PI/2, o); });
       [[-S,-S,PI],[S,-S,PI/2],[S,S,0],[-S,S,-PI/2]].forEach(function(c){ ABYSS.sub(F, 'abyss_wall_corner', c[0],c[1], c[2], o); });   /* turned so its two walkway doors face the two runs */
-      ABYSS.sub(F, 'abyss_wall_tower', 0,-S, 0, o); ABYSS.sub(F, 'abyss_wall_tower', -S,0, PI/2, o); ABYSS.sub(F, 'abyss_wall_tower', S,0, PI/2, o);
+      ABYSS.sub(F, 'abyss_wall_tower', 0,-S, PI, o); ABYSS.sub(F, 'abyss_wall_tower', -S,0, -PI/2, o); ABYSS.sub(F, 'abyss_wall_tower', S,0, PI/2, o);   /* same yaw as their segments: doors on the walkway */
       /* the approach: a broad flight up the mound to the gate */
-      ABYSS.flight(F, 0,S+3+M*1.15+2.4, 0,-1, 0,M, 6.0);
+      ABYSS.flight(F, 0,MT/2+M*1.15, 0,-1, 0,M, 6.0);                                         /* its top tread lands on the mound's top edge */
       /* inside: the keep under a swoop roof, two silo stores, the lattice signal mast with dishes, a drill yard */
       var kc=PASTELC[5]; F.box(0,M,-8, 20,6,11, 0, kc, 'plaster'); F.box(0,M,-8, 20.2,0.8,11.2, 0, PAL.abLacquer, 'plaster');
       F.door(0,-8+5.52, 0,1, 2.2, 3.4, PAL.abLacquer, M); [-6,-3,3,6].forEach(function(x){ LOCUS.lattice(F, x,M+4.2,-2.48, 0,1, 1.4,2.0); });

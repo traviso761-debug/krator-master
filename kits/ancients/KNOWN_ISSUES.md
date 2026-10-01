@@ -22,7 +22,7 @@ and ticking it, not by deleting it.
       the kit's `slab` now use `MAT.mud/.turf/.rock/.spray/.slab`. They were flat
       untextured colour and washed out badly once the lighting had real roughness
       to work with. A few inline materials remain in ruin-only one-offs.
-- [ ] **`build.py` cannot check syntax.** `node` is not installed on this
+- [x] **Fixed (Oct 2026): `find_node()` finds node via `$NODE`, PATH, `/opt/node*/bin`, `~/.nvm`; `node --check` runs.** **`build.py` cannot check syntax.** `node` is not installed on this
       machine, so `node --check` never runs. `build.py` says so instead of
       claiming "syntax OK". The only syntax check this project actually has is
       `verify.py` reading the on-screen error panel — always run it.
