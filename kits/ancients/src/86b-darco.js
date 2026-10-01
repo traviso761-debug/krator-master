@@ -382,7 +382,7 @@ function buildDarco(scene,gx,gz,d){reseed(9650+d);KOFF=[gx,0,gz];
   // eaten harder than the standing fabric — it hit the ground from 250 m — so
   // the black inner mass shows through it in patches tens of metres across.
   const fHole=holeFn(.95,9658,null,1.3);
-  const fg=gridSurface((u,v)=>P(u,fv(v),1),96,40,{uS:30,vS:16,
+  const fg=gridSurface((u,v)=>P(u,fv(v),1),168,70,{uS:30,vS:16,   // 96x40 left the eaten holes stair-stepped (QA arcA)
    hole:(u,v)=>fv(v)<cutV(u)+.010||fHole(u,fv(v)*LEN)});
   const fi=gridSurface((u,v)=>P(u,fv(v),INS),56,22,{uS:16,vS:9});
   const fk=gridSurface((u,w)=>P(u,Math.max(fv(0),cutV(u)+.010),lerp(1,INS,w)),56,3,{uS:14,vS:2});

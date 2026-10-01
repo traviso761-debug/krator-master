@@ -403,14 +403,14 @@ exceeded ceiling as `OVER`; `--strict-budget` makes it fail.
       Icosahedron is non-indexed, so coincident vertices displace together and
       the shell stays closed) and the forest stopped reading as a bag of
       marbles.
-- [ ] **The Forest Tower is within 7 000 triangles of its 700 000 ceiling**
+- [x] ~~**The Forest Tower is within 7 000 triangles of its 700 000 ceiling**~~ obsolete (leaf card): 76% after QA arcA.
       (693 652 ruined / 691 542 intact). The tower took ~95 000 and the budget
       for it came off the bole geometry (24 triangles to 10, open-ended: both
       caps were buried) and the plinth groves, which are 90% under the building
       where nobody can see them. There is no easy headroom left: the next
       addition to this type has to be paid for by a matching cut, and the
       obvious remaining candidate is `figH`, a 48-triangle sphere for a head.
-- [ ] **The Forest Tower's shear reveals a flat back wall.** The dark
+- [x] ~~**The Forest Tower's shear reveals a flat back wall.**~~ FIXED (QA arcA): pale floors with dark soffits, stubs, cross walls, dead windows, hanging slabs. The dark
       `MAT.guts` lining and its floor plates give the bite depth and a proper
       cross-section read, but the lining is one smooth surface — no cell walls,
       no partitions, no fallen slabs hanging. Compare the Veladiga breach,
@@ -443,36 +443,36 @@ and did not touch shared `arcShape` / `arcWindowGeo`.
       I re-aimed `'The section'` myself: it looked 38 degrees DOWN into the
       wedge, which shows the slot's floor and rubble and none of its side faces.
       It now runs nearly level along the slot at mid-stack height.
-- [ ] **Nothing connects.** The four bridges land on the rim but there is no
+- [x] ~~**Nothing connects.**~~ FIXED (QA arcA, `qa/arcA.md`): gates through the barrel at every bridge, gate squares, real stair flights with landings and rails. The four bridges land on the rim but there is no
       stair, ramp or gate down into the town's street, and the barrel-end
       landing is a balcony on a blank wall. The eight radial stairs in the crown
       have no landings or handrails. 236 houses on the rim are still effectively
       unreachable — the bridges made this better-looking, not solved.
-- [ ] **The under-truss is decorative** — a sagging line of boxes with
+- [x] ~~**The under-truss is decorative**~~ FIXED (QA arcA): roll-fixed `rbeam`, diagonals and lateral ties. — a sagging line of boxes with
       verticals; the deck would not stand on it. Spokes are single straight
       boxes whose roll `beam` leaves to `setFromUnitVectors`, so a
       near-horizontal strut's cross-section is arbitrarily oriented.
-- [ ] **The half-torus has no interior**, and the ruin's cut face is a plain
+- [x] ~~**The half-torus has no interior**~~ FIXED (QA arcA): the ruin's cut face is a section of floors, soffits, lining and cross walls., and the ruin's cut face is a plain
       half-disc — the cutaway treatment given to the crown and shoulder stops at
       the wheel.
-- [ ] **The wheel's wood is open woodland, not forest** — 450 m² a plant against
+- [x] ~~**The wheel's wood is open woodland, not forest**~~ FIXED (QA arcA): 240 m2 a plant, lanes and four gate squares in the town. — 450 m² a plant against
       the crown's 170, because the annulus at crown density would be 200k
       triangles alone. The town is one building type in two even rows on one
       circular street: no squares, side lanes, or corner treatment.
 - [ ] **A stepped crown cannot be seen into below 36 degrees of depression**, so
       the three-torus idea reads properly only from the air. The two inner
       toruses carry 24 m of planting against torus 0's 36.
-- [ ] **The arches and doors are visibly faceted from directly underneath** — 8
+- [x] ~~**The arches and doors are visibly faceted from directly underneath**~~ FIXED (QA arcA): 14 and 9 segments. — 8
       and 5 curve segments instead of 24 and 12. This bought 81k triangles to
       pay for the wheel (445 arches, ~680 doorways). Worth knowing the lever
       exists; worth knowing it shows.
-- [ ] **ring/1 is at 96% of budget** — ~27k of headroom. Anything further wants
+- [x] ~~**ring/1 is at 96% of budget**~~ obsolete (leaf card): 76% after QA arcA. — ~27k of headroom. Anything further wants
       something taken out first.
 - [ ] The ruined shell thins toward the foot: `holeFn` has no height term
       without a `cut`. A `holeFn` limitation that will recur in any type eroding
       a tall shell. The breach is a single wedge that widens inward but never
       undercuts — as logged against Veladiga. Decay 2 unsupported.
-- [ ] **Canopy coarse at eye level on BOTH forest types.** `frCrown` and
+- [x] ~~**Canopy coarse at eye level on BOTH forest types.**~~ Solved by the shared leaf card. `frCrown` and
       `foCrown` are each a displaced 80-triangle icosahedron. Raising the
       displacement frequency fixed the "green boulder" read, but at 10 m they
       are still faceted lumps. **This wants a different tree, not a different
@@ -509,7 +509,7 @@ which satisfies "thinner than it is tall".
       Ring's crown wedge, now this). The pattern is clear: a section needs deep
       solid fabric, and none of these forms has any. Stop attempting cutaways on
       thin-skinned types; model a real interior or leave the opening dark.
-- [ ] **The dropped span reads as a fairly intact white box** on the gorge
+- [x] ~~**The dropped span reads as a fairly intact white box**~~ FIXED (QA arcA): two torn pieces, lining, stubs, cross walls, debris in the break. on the gorge
       floor. `holeFn` at d=1 eats the faces less than intended at that grid
       resolution, so its new interior plates are barely visible. It needs the
       shell broken open at one end, not merely perforated.
@@ -518,22 +518,22 @@ which satisfies "thinner than it is tall".
       `FogExp2` at 0.00022 leaves transmittance 0.55. Legible but washed out,
       with both outer ends cropped. This is a general problem with the
       two-site showcase convention at this scale, not an Arcbeam bug.
-- [ ] **The rockfall scar is the weakest ruin feature** — smoother than the
+- [x] ~~**The rockfall scar is the weakest ruin feature**~~ FIXED (QA arcA): bedded fresh face, portal linings holed where the scar took the rock, fallen portal frame. — smoother than the
       bedded wall around it, and the buried section it was meant to lay open is
       mostly hidden behind the portal frame. It is a rockfall beside the
       landing, not a cutaway of the buried city.
-- [ ] Canyon walls are soft at close range (13 m grid columns; gullies are the
+- [x] ~~Canyon walls are soft at close range~~ FIXED (QA arcA): wall grid 240x68 -> 420x80 (6 m columns); rooflights, benches and lamps on the decks; four different yard layouts. (13 m grid columns; gullies are the
       finest feature that survives). Roof decks are under-furnished — 1 200 x
       82 m of pale paving per beam. The industrial yards are the same layout
       four times, mirrored, which is obvious from the plan view.
-- [ ] **Vegetation is the kit default** and reads as toys close up; hedges are
+- [x] ~~**Vegetation is the kit default**~~ FIXED (QA arcA): leaf-card trees, hedges laid as rows of leaf cards. and reads as toys close up; hedges are
       flat green boxes. The agent deliberately stayed off `foCrown`/`foBole`
       because they belong to another builder. **That restraint is correct per
       fragment but wrong for the kit** — see the shared-tree item below.
-- [ ] **Both decays sit at 92% of ceiling.** The biggest single line item is
+- [x] ~~**Both decays sit at 92% of ceiling.**~~ obsolete: 81% / 79% after QA arcA. The biggest single line item is
       moss: `MAT.moss` on `IcosahedronGeometry(1,1)` is 80 triangles a blob, and
       the ruin's moss and tree counts were already cut by a third to fit.
-- [ ] `figures()` places people at y=0 on a gorge floor at y=14–26, so the two
+- [x] ~~`figures()` places people at y=0 on a gorge floor~~ FIXED (QA arcA): crowds on the banks at the floor's own height. at y=14–26, so the two
       ground-level crowds are knee-deep in it. Never visible from a preset.
 
 ## Plymouth (`--target plymouth`)
@@ -562,12 +562,12 @@ balconies, 4 391 washing lines, 693 arcade arches, 188 stair runs.
       windows cannot out-shine a sunlit wall, so this type's intended warm glow
       only works in the covered street and the court. Same root cause as the
       kit-wide "intact contrast is low" item.
-- [ ] **The assembly hall is thin** — a drum, a dome, a colonnade and a portal,
+- [x] ~~**The assembly hall is thin**~~ FIXED (QA arcA): two stoas and a 112 m campanile. — a drum, a dome, a colonnade and a portal,
       and it is the only civic object in a settlement of 17 000 homes.
-- [ ] **The ruin is "intact with patches" above the slump.** Below level 6
+- [x] ~~**The ruin is "intact with patches" above the slump.**~~ FIXED (QA arcA): eleven secondary failures, risers and maisonettes down onto the terrace below. Below level 6
       nothing has gone but fabric; a mountain abandoned for millennia would have
       lost far more terraces, parapets and maisonettes.
-- [ ] Crown's near end is sparse and the mast has no guys; terrace clutter is
+- [ ] (QA arcA: the mast has four guys; the terrace clutter has hash-picked variants, benches and pergolas. Still open: the crown's near end, chamfer correspondence.) Crown's near end is sparse and the mast has no guys; terrace clutter is
       seven item types on a weighted roll, so at 16 000 bays the eye starts
       seeing the same water butt; chamfer correspondence between levels is
       approximate (decks lerp between two octagons at equal arc length, which
@@ -609,21 +609,21 @@ pivot at the throat, so the shroud tip swings 62 m off axis, the skirt rim goes
 20 m down and 10 m THROUGH its own apron, and the collar, clamps, mast and gash
 all follow from that single rotation rather than being modelled separately.
 
-- [ ] **Everything facing down is brown.** The hemisphere light's ground colour
+- [x] ~~**Everything facing down is brown.**~~ FIXED for Launch (QA arcA): `lxBounce` on its bell and local skin/plate clones. Kit-wide it is still open: see `qa/arcA.md` for the request to move it into shared materials. The hemisphere light's ground colour
       is 0x6a3a2a and nothing casts shadows, so collar soffits and the plug
       ceiling read warm brown. Dropping `lxBell`'s metalness from 1 to 0.5 put
       the diffuse back and helped — a fully metallic soffit with no envMap is
       flat brown — but this is mitigation, not a fix, and it affects **every
       type with a large soffit**, not just this one.
-- [ ] **Six-fold symmetry is exact** — six trenches, masts, towers and umbilical
+- [x] ~~**Six-fold symmetry is exact**~~ FIXED (QA arcA): six tower heights, two with a second jib. — six trenches, masts, towers and umbilical
       bearings. From directly overhead it is a perfect rosette; only the three
       spheres and two ramps break it.
-- [ ] Scoop back walls are single surfaces with no thickness — blast walls from
+- [x] (QA arcA, all four parts FIXED: scoops closed with cheeks, payload stack in panels with bays out and a spine, the fallen mast head and towers are lattices lying on their side, a fifth of debris is torn plate.) ~~Scoop back walls are single surfaces with no thickness — blast walls from
       the ground, thin dark sails from overhead. The payload frame inside the
       broken shroud is a smooth lathe. The fallen mast head and downed service
       tower are chains of jittered beams: wreckage at distance, a scribble up
       close. Trench slag, apron debris and crater rubble share one hue band with
-      no concrete/metal distinction.
+      no concrete/metal distinction.~~
 - [ ] **The six flame-trench volumes are the thinnest in the registry** (27
       probe samples each) because the trench geometry is inside one merged mesh
       and only its `kput` coping contributes points. They pass, but they are the
