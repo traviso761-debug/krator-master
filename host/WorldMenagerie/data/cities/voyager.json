@@ -1,0 +1,149 @@
+{
+ "name": "Voyager",
+ "note": "Fan work. Star Trek belongs to Paramount; nothing from any film, series or game is used, and every shape on this page is this project's own geometry, built from the published dimensions and the silhouette. USS Voyager NCC-74656, Intrepid class: 344 m long, fifteen decks. No interior. The nacelle pylons move, which is the one animated thing on any of these pages.",
+ "attribution": "Voyager is fan work: original geometry in src/voyager/. Star Trek belongs to Paramount. No assets used.",
+ "view0": {
+  "az": 2.35,
+  "el": 0.2,
+  "d": 600
+ },
+ "views": {
+  "Three-quarter, from above": {
+   "az": 2.35,
+   "el": 0.3,
+   "d": 620
+  },
+  "Alongside": {
+   "az": 1.57,
+   "el": 0.04,
+   "d": 560
+  },
+  "Head on": {
+   "az": 0.0,
+   "el": 0.05,
+   "d": 520
+  },
+  "From astern": {
+   "az": 3.1416,
+   "el": 0.1,
+   "d": 560
+  },
+  "Plan": {
+   "az": 1.57,
+   "el": 1.4,
+   "d": 640
+  },
+  "From below": {
+   "az": 2.2,
+   "el": -1.05,
+   "d": 600
+  },
+  "The bridge": {
+   "az": 2.6,
+   "el": 0.4,
+   "d": 110,
+   "tx": 84,
+   "ty": 22,
+   "tz": 0
+  },
+  "A nacelle": {
+   "az": 2.0,
+   "el": 0.18,
+   "d": 180,
+   "tx": -76,
+   "ty": -24,
+   "tz": -62
+  },
+  "The deflector": {
+   "az": 0.35,
+   "el": 0.02,
+   "d": 130,
+   "tx": 140,
+   "ty": -15,
+   "tz": 0
+  },
+  "Far off": {
+   "az": 2.35,
+   "el": 0.18,
+   "d": 2600
+  }
+ },
+ "space": {
+  "seed": 74656,
+  "stars": 3600,
+  "starSize": 1500,
+  "far": 900000,
+  "starLight": {
+   "colour": "#ffe8d8",
+   "az": 0.9,
+   "el": 0.34,
+   "intensity": 2.0,
+   "ambient": 0.4,
+   "lamp": 0.3
+  },
+  "fill": {
+   "colour": "#8a5fb0",
+   "az": -1.6,
+   "el": -0.2,
+   "intensity": 0.6
+  },
+  "bodies": [
+   {
+    "kind": "gas",
+    "az": -1.05,
+    "el": -0.1,
+    "dist": 0.6,
+    "deg": 9,
+    "seg": 176,
+    "bands": 11,
+    "colours": [
+     "#8a6a4a",
+     "#b49a70",
+     "#6e5238",
+     "#c8b48e",
+     "#9a7a54"
+    ],
+    "ring": {
+     "colour": "#c0b096",
+     "inner": 1.5,
+     "bands": 6,
+     "opacity": 0.5,
+     "tilt": 0.32
+    },
+    "rate": 4e-05
+   },
+   {
+    "kind": "rock",
+    "az": -0.2,
+    "el": 0.42,
+    "dist": 0.86,
+    "deg": 1.4,
+    "seg": 24,
+    "colours": [
+     "#5a5048",
+     "#6e6258",
+     "#857a6c",
+     "#a8a096"
+    ],
+    "ice": 1.1
+   }
+  ],
+  "nebulae": [
+   {
+    "colour": "#6a2a7e",
+    "az": -0.9,
+    "el": 0.3,
+    "dist": 0.88,
+    "size": 510000
+   },
+   {
+    "colour": "#2a5a8e",
+    "az": -2.1,
+    "el": -0.22,
+    "dist": 0.9,
+    "size": 390000
+   }
+  ],
+  "_": "the Delta Quadrant: a ringed giant, a dead moon and a great deal of gas nobody has named"
+ }
+}
