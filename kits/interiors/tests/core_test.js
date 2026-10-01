@@ -169,6 +169,13 @@ ok(climbed > 0, 'some walker climbs a stair (' + climbed + ' of ' + walkersAll +
   ok(IX.audit(C, pc, cat).ok, 'the cottage audits clean');
 })();
 
+/* ---- a thick wall (0.9 m banco): the street door on the outer face still snaps into its room */
+(function () {
+  const Bt = IX.planBuilding({ id: 'thick', poly: [[60, 0], [70, 0], [70, 8], [60, 8]], wall: 0.9, doors: [{ at: [65, 8], w: 1.2 }], culture: 'y' }, ['hall', 'kitchen'], {});
+  ok(Bt.rooms.length === 2 && Bt.rooms.some(function (R) { return R.doors.some(function (d) { return d.to === 'street' && Math.abs(d.at[1] - 7.1) < 0.01; }); }),
+    'a street door in a 0.9 m wall lands on its room\'s inner face');
+})();
+
 /* ---- interior sets: a kit's buildings as data in their own frame, instantiated anywhere, and the residence rule */
 (function () {
   const SHP = IX.sets.shape;

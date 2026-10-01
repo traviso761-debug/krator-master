@@ -206,7 +206,8 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
             culture, wealth, id?, seed?, level?, fixtures? })
 
    poly is the floor outline at the INNER face of the walls, either winding. A door or window
-   is snapped onto the nearest wall of the polygon; `at` may sit anywhere within 0.6 m of it.
+   is snapped onto the nearest wall of the polygon; `at` may sit anywhere within 0.6 m of it (a door's
+   `snap` widens that: the planner gives a street door on the OUTER face of a thick wall snap = wall + 0.6).
    Door extras this kit adds (all optional): swing 'in' (default) | 'out' | 'none' (an open
    doorway or curtain), hinge 'left' | 'right' (seen from inside, looking out; default 'left'),
    h (opening height, 2.1), leaf: false (another room draws this door's leaf: a shared door).
@@ -235,13 +236,13 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
   IX.ROOM_KINDS_KNOWN = ['hall', 'bedroom', 'kitchen', 'store', 'workshop', 'shrine', 'tavern', 'library', 'school',
     'study', 'barracks', 'court', 'yard', 'rooftop', 'antechamber'];
 
-  function snap(room, at, what) {
+  function snap(room, at, what, tol) {
     let best = null, bd = Infinity;
     for (const W of room.walls) {
       const d = G.segDist(at[0], at[1], W.a, W.b);
       if (d < bd) { bd = d; best = W; }
     }
-    if (!best || bd > 0.6) throw new Error('ROOM ' + room.id + ': ' + what + ' at [' + at + '] is ' + bd.toFixed(2) + ' m from every wall');
+    if (!best || bd > (tol || 0.6)) throw new Error('ROOM ' + room.id + ': ' + what + ' at [' + at + '] is ' + bd.toFixed(2) + ' m from every wall');
     const u = Math.max(0, Math.min(best.len, (at[0] - best.a[0]) * best.t[0] + (at[1] - best.a[1]) * best.t[1]));
     return { W: best, u: u, at: [best.a[0] + best.t[0] * u, best.a[1] + best.t[1] * u] };
   }
@@ -268,7 +269,7 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
       R.walls.push({ i: R.walls.length, a: a, b: b, len: len, t: t, n: n, ry: Math.atan2(n[0], n[1]) });
     }
     (o.doors || []).forEach(function (d, k) {
-      const s = snap(R, d.at, 'door ' + k);
+      const s = snap(R, d.at, 'door ' + k, d.snap);
       R.doors.push({ i: k, id: d.id || null, at: s.at, w: +(d.w || 1.0), to: d.to || 'street', swing: d.swing || 'in', hinge: d.hinge || 'left',
         h: +(d.h || 2.1), leaf: d.leaf !== false, wall: s.W.i, u: s.u, n: s.W.n, ry: s.W.ry });
     });
@@ -1564,7 +1565,7 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
         for (const lf of leaves) { const dd = G.edgeDist(lf.poly, f[0], f[1]) + (G.inside(lf.poly, f[0], f[1]) ? 0 : 0.001); if (dd < bd) { bd = dd; best = lf; } }
         const did = id + '.street.' + i;
         doors.push({ id: did, kind: 'street', level: 0, at: [R3(d.at[0]), R3(d.at[1])], w: d.w, rooms: [best.id, 'street'], into: best.id });
-        best.doors.push({ id: did, at: d.at, w: d.w, to: 'street', swing: d.swing || 'in', hinge: d.hinge || 'left' });
+        best.doors.push({ id: did, at: d.at, w: d.w, to: 'street', swing: d.swing || 'in', hinge: d.hinge || 'left', snap: wallT + 0.6 });
       });
     });
 
@@ -2372,7 +2373,7 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
     return out;
   };
 
-  /* the residence check: per unit a bed, a FOOD container and an ITEM container somewhere in the building */
+  /* the residence check: per unit a bed (a bunk counts two), a FOOD container and an ITEM container somewhere in the building */
   S.auditResidence = function (inst, plans) {
     const item = inst.item, out = { residence: item.residence, units: item.units, beds: 0, food: 0, items: 0, fails: [] };
     if (!item.residence || item.skip) return out;
@@ -2380,7 +2381,7 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
     inst.rooms.forEach(function (R) {
       const P = plans[R.id]; if (!P) return;
       P.placements.forEach(function (p) {
-        if (p.type === 'bed') out.beds++;
+        if (p.type === 'bed') out.beds += p.catRole === 'bunk' ? 2 : 1;     /* a bunk sleeps two */
         if (p.catRole && FOOD.indexOf(p.catRole) >= 0 && (p.type === 'storage' || p.type === 'vessel' || p.type === 'stack') && p.anchor !== 'surface') out.food++;
         if (p.catRole && ITEM.indexOf(p.catRole) >= 0 && p.type === 'storage') out.items++;
       });
