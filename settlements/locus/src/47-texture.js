@@ -170,7 +170,7 @@ function texFill(S, fn){
       var rib = 0.5+0.5*Math.cos(x*TAU/S*20), lap = (x%128)<3 ? 0.62 : 1;
       return (0.66 + 0.26*rib + 0.16*(a(x,y)-0.5) + 0.10*(b(x,y*0.2)-0.5)) * lap; })); })();
   /* tinmirror (ABYSS): a patchwork of flattened cans and foil — jittered tiles of differing brightness, dark seams,
-     round bottle bottoms with a bright rim, and a few hard specks of mirror. Grey, tinted abTin; Phong adds the glint. */
+     round bottle bottoms with a bright rim, and a few hard specks of mirror. COLOUR texture (mostly grey, some gold foil and painted cans), tinted abTin; Phong adds the glint. */
   (function(){ var n=texNoise(S,40,321), cell=S/10;
     FAMMAT.tinmirror.tex = texFinish(texFill(S,function(x,y){
       var r=Math.floor(y/cell), off=(r%2)*cell*0.5, xx=(x+off)%S, c=Math.floor(xx/cell), lx=(xx%cell)/cell, ly=(y%cell)/cell;
@@ -179,7 +179,8 @@ function texFill(S, fn){
       else if(h2(id,5)>0.80){ var d=Math.hypot(lx-0.5,ly-0.5); v = d<0.26 ? 0.40+0.5*d : d<0.34 ? 1.0 : v; }   /* a bottle bottom */
       else if(h2(id,9)>0.86 && Math.abs(lx-ly)<0.08) v=1.0;                          /* a mirror shard's edge */
       else v += 0.10*Math.sin(ly*TAU*6)*(h2(id,7)>0.5?1:0);                         /* ribbed can wall */
-      return v*(0.93+0.14*(n(x,y)-0.5)); })); })();
+      var hue=h2(id,11), tint = hue>0.86 ? [1.0,0.80,0.48] : hue>0.76 ? [0.62,0.92,0.92] : hue>0.70 ? [1.0,0.58,0.52] : [1,1,1];   /* gold foil, teal and red cans */
+      var w=v*(0.93+0.14*(n(x,y)-0.5)); return [w*tint[0], w*tint[1], w*tint[2]]; })); })();
   /* rubble (ABYSS): rough fieldstone in pale mortar — Voronoi stones, each with its own tone and a rounded face */
   (function(){ var cells=7, pts=[], n=texNoise(S,48,331);
     for(var j=0;j<cells;j++) for(var i=0;i<cells;i++) pts.push([(i+0.15+0.7*h2(i*3+11,j*5+12))/cells*S, (j+0.15+0.7*h2(i*7+13,j*11+14))/cells*S, h2(i*13+15,j*17+16)]);
