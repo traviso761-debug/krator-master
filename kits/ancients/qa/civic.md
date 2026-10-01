@@ -184,7 +184,10 @@ error panel clean, all invariants PASS.
   meshes: off 13-16 -> 6-8, port 16 -> 4-8, gov 15 -> 4-5, dc 16-17 -> 2,
   hosp 7-8 -> 2, robo 8-15 -> 3-11 (its glass roofs stay separate). Civic-only
   page, worst view: 310 -> 167 (Police ruin); Data center ruin 308 -> 163,
-  Robotics yard 274 -> 160, opening 236 -> 134. Full kit: FULLKIT.
+  Robotics yard 274 -> 160, opening 236 -> 134. Full kit (vs the end of
+  round 1): **Robotics yard 910 -> 619** (no longer over 900), Data center ruin
+  786 -> 608, opening 797 -> 519, Hospital ruin 593, Police ruin 575. Showcase
+  10 297 805 triangles (OVER the 6M target, as before; this branch adds ~70k).
   **What moved:** repairPass/wornPass sample G's faces in mesh order, so the
   decay-3 salvage dressing (and the worn pass) lands on different faces of the
   same shells.
