@@ -23,10 +23,8 @@ Read before changing anything here. `build.py` prints the open count.
 - [ ] Bark canvases are near-grey and tinted (the hyperjungle's open issue is closed
       here), but texMean is still measured at run time; the species' bark colours are
       written a stop darker than they read because the sun+hemisphere rig doubles them.
-- [ ] The lily pads sit at y=.05 on a plane at y=0 whose ripples are shader-only, so
-      they never bob. Fine at any distance; wrong if a world animates its water mesh.
-- [ ] Stilt-woods root on terrain under the water (prop roots to the bed); with a world
-      whose water is not at y=0 the `inWater` band in 55-trees (-1.6 .. 1.2) must move.
+- [ ] The water's ripples are shader-only, so the lily pads and rafts (at the local water level
+      +.04 to +.08) never bob. Fine at any distance; wrong if a world animates its water mesh.
 - [ ] The far ring is fixed by distance from the LOD spine, not from the camera: a camera
       standing in it (the south marsh past z ~1.9 km, the north shore) sees the canopy
       blobs and the small species' hulls up close, crude. A world with a free camera
@@ -36,7 +34,7 @@ Read before changing anything here. `build.py` prints the open count.
       at range; seen only from a camera inside the far ring.
 - [ ] The east river's climb up the slope is a ribbon in the water material with no
       cataracts; the west river has no slope reach at all (it stays in the basin).
-- [ ] Only one Girder tower dresses. `dress()` samples by triangle area (inherited).
+- [ ] Only one Girder tower dresses. `dress()` samples by triangle area within a shell: the core takes shells (`{geos, share}`: the roof, the walls, the ledges, each with its own share of the samples, `core/biome/40-core-place.js`), but this host's tower still passes one list.
 - [ ] No fauna yet.
 - [ ] The mat-reed beds are registered per bed (a few hundred volumes); a world that
       registers its own structures densely may want only `EASTABYSS.REEDBEDS`.
@@ -56,6 +54,11 @@ Read before changing anything here. `build.py` prints the open count.
       barely reaches 1.9 km from the spine); the preset "The far ring" frames them.
 
 ## Done
+
+- [x] Water-bound heights read the local water (`BIO.waterH`, Oct 2026): the zones' shore height, the stilt-woods'
+      `inWater` band and their prop-root base, the keep-outs, the reed beds, the lily pads, rafts and hyacinths, the
+      shallows' reeds and the water band of the floor. With this host's level of 0 the geometry is the same bit for
+      bit (mesh fingerprints).
 
 - [x] Every species carries to the horizon: past its mid radius a small species is a far
       hull (`buildFarSmall`: 20 triangles, 12 past 2.2 km, shaped per habit in `FARHAB`,
