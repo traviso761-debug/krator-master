@@ -240,12 +240,61 @@ three townhouse kinds), the Historians' chapterhouse (the Yuni `civic_chapter_ho
 **Ships** (Ring Sea kit): trireme and siege hexareme at the military harbour, pearl baghlah and amphora
 corbita at the civilian, an Iziz dhoni at the foreign quay. Three Hykkousoi and one Iziz, as briefed.
 
-## 7. Marks for the interior build-out and the Godot conversion
+## 7. Marks, rooms and the interior rule
+
+**Interiors are designed now, at the kit stage.** Yuni is the only build with working interiors
+(`settlements/yuni/src/53-assets.js`: one build frame `F` shared by buildings, furniture and plants;
+`buildFurn(key,x,z,ry,{y,seed,variant,wealth})`; the Library and the School place their furniture from
+the registry through that frame; `F.door` records the doorstep a pace in front of every door and the
+life layer walks to it; the underground rooms are built hollow with inward faces in their own tagged
+buckets so a cutaway view can show them). Everything else in Yuni still "stands at the door, not
+inside" (its `KNOWN_ISSUES.md`), because the rooms were never data. Ys avoids that by making every
+Hykkousoi builder lay out its rooms as data and leave the geometry hollow enough to hold them, following
+`kits/interiors/SPEC.md` and `kits/furniture/SPEC.md` (written for exactly this, not yet exercised by
+any build: Ys is the first).
+
+- **`ROOM()`** per the interiors spec: `{building, kind, poly, y, h, doors, windows, culture:'hykkousoi',
+  wealth}`, one per room, in world units, registered by the builder through `hykRoom(...)` in its local
+  frame. Kinds here: `hall bedroom kitchen store workshop shrine tavern library cell vault court
+  landing`.
+- **`SPOTS`**: in each room the builder marks the anchors the later placer must fill,
+  `{room, kind, x,z, ry, w,d}`. **Every residence has at least a bed spot (2.1 × 1.0, with 0.6 m clear
+  along one long side), a food-container spot (0.8 × 0.8, by the hearth or the door) and an
+  item-container spot (1.2 × 0.7).** Middle adds a hearth (fire-cooked food is canon) and a table or
+  seating ring; rich adds rooms (court, study, shrine niche) and more of each. Inns, the barracks and
+  the Wet Cells carry a bed spot per bunk or cell. Accreted pods count as residences when tagged so.
+- **Hollow by construction.** A Hykkousoi shell is a lathe, so its inside exists; the builder adds the
+  floor plate (a flat chord disc at the datum), the inner surface where the lathe is thick-walled, the
+  door's reveal through the shell, and tags all of it `userData.interior` in its own bucket (Yuni's
+  `userData.under`), so the roof-off and Below-the-tide views can strip the outside. Minimums: a
+  residence pod's floor disc ≥ 4.6 m across with ≥ 2.4 m clear over 70 % of it; clear height ≥ 2.4 m
+  poor, ≥ 2.8 m middle, ≥ 3.2 m rich and civic; a room ≥ 3.2 m across; doors 2.1–2.4 m.
+- **Drowned hosts** get lots on their inhabited floors the way Girder cuts its ruined towers
+  (`SLOTS`: perimeter bays, two per side bay, one per corner, door facing out), each lot a `ROOM` with
+  the same spots. The Ancients' own furniture already exists in Yuni (`ancient_berth`,
+  `ancient_cell_wall`, `salvage_strut_bed`, `salvage_locker_press`) and is the stock for those lots.
+- **The Hykkousoi furniture set** is written to the furniture spec's `FURN` shape (`type setting rooms
+  anchor clearance materials`), about fourteen pieces, before or alongside housing so the spots are sized
+  from real pieces: a shell-cradle bed (a hammock slung in a half-shell), a nacre-lidded chest, oyster-jar
+  larder (sealed shell jars: the food container), a net-and-float rack, a pearl-sorting table, low shell
+  stools, a bioluminescent jar lamp, a sea-chest, a tide-shrine niche, a salt-fish hanging rack, a hearth
+  basin, a cushion ring, a chart table (the Navigator's), a scroll-cell rack (the Library). A piece builds
+  only through `F.*`, so it needs the Ancients-lineage `F` adapter the furniture spec asks for
+  (`kits/furniture/host/`); Ys writes it.
+- **Seen, not assumed.** The kit sheet gets a `<name> — inside` preset per residence with the roof or
+  upper shell hidden and a `Rooms` overlay (outlines and spots as coloured discs, the spec's
+  "room-outline debug view"); the mockup gate judges the inside of the three houses as well as the
+  outside. The probe checks every residence: the three spots exist, lie inside the polygon, clear every
+  door swing (a 1.0 m arc) and each other, meet their minimum sizes, and a path ≥ 0.8 m wide reaches
+  every spot from every door (a 0.2 m flood fill inside the polygon minus the spot rectangles); free
+  floor stays ≥ 35 % of the room.
+- The foreign quarter's buildings keep no rooms until their own kits register them (a known gap).
 
 Every opening and every light source is data, not just geometry. The helpers that draw them also record them:
 `hykDoor(…,{level:'ground'|'quay'|'wet'|'L1'|'L2', kind})`, `hykWin(…,{shape, lit})`,
 `hykLight(…,{kind:'pearl'|'jar'|'brazier', warm})` push `{bld, key, kind, x,y,z, nx,nz, w,h, level}` in
-world space into `MARKS`; `_api.marks()` returns it as JSON and `verify.py --marks` writes
+world space into `MARKS` (a door also records its doorstep a pace outside and its threshold a pace inside,
+Yuni's `F.door` extended, and names the `ROOM` it opens into); `_api.marks()` returns it as JSON and `verify.py --marks` writes
 `dist/ys-marks.json`. A "Marks" overlay in the page shows them. Invariants: every building has a door;
 every drowned building has a wet door and a bridge-level door; every lit building has a light.
 The foreign sets already push `DOORS` (the Iziz vern helpers); the Ancients hosts get door marks at their

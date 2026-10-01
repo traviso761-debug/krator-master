@@ -68,7 +68,9 @@ first build; resolve by renumbering the Ys-side copy and recording it.
 |---|---|---|---|
 | `60-hyk-mat.js` | 30000 | textures: shell (growth rings), barnacle, bone, mosaic scale, lens glass, weed, crust; materials; the **nacre hook** (`onBeforeCompile` iridescence keyed with `customProgramCacheKey`, built with `new Function` so the constant is in the source: the Jimjam lesson) | planner |
 | `61-hyk-shell.js` | 30010 | the shell kit: `hykLathe` (profile × r(θ) lobes/ribs/whorls × growth noise), `hykConch`, `hykBarnacle`, `hykCluster`, `hykPod` (superellipsoid with rimmed holes), `hykRib`, `hykVault`, `hykSpire`, `hykDome`+lenses, `hykSkirt` (fillet to ground or host, drips) | planner |
-| `62-hyk-helpers.js` | 30020 | `hykDoor hykWin hykLight` (draw + `MARKS`), `hykLanding`, `hykStairSpiral`, `hykLadder`, `hykLip`, `hykReg`, the building frame (`HYK.cur`, local +z front) | planner |
+| `62-hyk-helpers.js` | 30020 | `hykDoor hykWin hykLight` (draw + `MARKS`), `hykRoom hykSpot` (`ROOMS`, `SPOTS`), `hykFloor` (the chord floor plate + interior bucket), `hykLanding`, `hykStairSpiral`, `hykLadder`, `hykLip`, `hykReg`, the building frame (`HYK.cur`, local +z front) | planner |
+| `35-furn-frame.js` | — | the Ancients-lineage `F` adapter for furniture (`F.box cyl cone dome blob lathe tube pick rr p dir`, `buildFurn`), per `kits/furniture/SPEC.md`; promoted to `kits/furniture/host/` when a second build needs it | planner |
+| `66-hyk-furniture.js` | 30250–30299 | the Hykkousoi `FURN` set (DESIGN §7), ~14 pieces, sized first so the housing spots are real | agent I |
 | `63-hyk-culture.js` | 30030 | the hykkousoi socket pack | planner |
 | `64-hyk-accrete.js` | 30100 | the tideline dressing of hosts; `hykAccrete(host,{ring,levels})`: the grown-on scheduler and placer | planner |
 | `65-hyk-spans.js` | 30200 | rib bridges L1/L2, drawbridge, grown walkways, piers, boom chain, lily-pad landings; `bridgeY` | agent F |
@@ -107,20 +109,26 @@ eye-level shot of every building before reporting.
   middle pod house with a lens dome, a rich conch; an accreted cluster on the tower at L1 and L2 with a
   spiral stair down the face, a rib bridge to a second stump, a wet landing with a boat; presets at eye
   level on the bridge, from the water, and a 300 m aerial; day and night.
+- The three mockup houses are built hollow with their rooms and spots registered, and the sheet carries
+  their `— inside` presets and the `Rooms` overlay: the gate judges the inside too.
 - Write `API.md` (the contract: units, the yaw conventions, every helper's signature and its y
-  convention, the materials, the MARKS schema, the host interface for `G` builders, budgets, the
-  build/verify loop, pitfalls) and `AGENT-BRIEF.md`.
+  convention, the materials, the MARKS / ROOMS / SPOTS schemas and the residence minimum, the host
+  interface for `G` builders, budgets, the build/verify loop, pitfalls) and `AGENT-BRIEF.md`.
 - **Gate: Travis judges the sheet.** Iterate the kit until it is grown. Budget note: lathes and tubes are
   merged meshes (one draw call per material), so the organic kit is cheap in draw calls and expensive in
   triangles; measure the mockup and set the per-building caps from it.
 
-### P2 — Fan-out (eight building agents + the biome agent, in parallel)
+### P2 — Fan-out (nine building agents + the biome agent, in parallel)
 - Each agent: its own copy of the tree (`cp -r` or a worktree started from this branch), its fragments,
   prefix and seed block, `targets/kit` for its views, 2–6 views per verify run, `timeout 900`, shots to
   `/tmp`. Report: keys · w×d×h · triangles · what is weak · helper bugs worked around.
 - Agent D (Amphitriton, Citadel) and E (Tides, Winds) read `refs/civic.jpg` first: A is the petal-vault
   hall with the spire and the ringed pools; B the vaulted hall with the pearl sphere and the water inside;
   D the spire cluster, built wider and airier; E the terraced arena-fortress on its stack.
+- Agent I writes the furniture set first (a week ahead of housing if the schedule allows, else in
+  parallel with the spots sized from the spec's declared dimensions and corrected at merge). Every
+  building agent's brief requires rooms and spots for every residence, inn, barracks and cell, an
+  `— inside` preset per residence, and the probe's room checks green on its own sheet before reporting.
 - Agent H (library, treasury, prison) and agent E's Pharos crown are landmark-grade: the Treasury must
   read as a strongroom (one door, nacre-sealed), the Wet Cells as a place with no bridge, the Pharos beam
   as a `TICKS` animation registered as a light mark.
@@ -174,6 +182,10 @@ Life layer on NAV (Voth's model), the animated tide, interiors behind the marks,
 - kit audit: every `HYK.def` key placed at least once in the city; zero-count list printed.
 - every building has a door mark; every drowned building a wet door and an L1 or L2 door; every lit
   building a light mark (`_api.marks()`).
+- rooms: every residence (and every inhabited-floor lot on a drowned host) has at least one `ROOM` with a
+  bed, a food-container and an item-container spot; spots inside the polygon, clear of door swings and
+  each other, at or above their minimum sizes; a path ≥ 0.8 m wide from every door to every spot; free
+  floor ≥ 35 %; clear height at or above the tier minimum (`_api.rooms()`).
 - NAV connected: every land door → main market on foot; every wet door → civilian harbour by lane; the
   Amphitriton has exactly one foot link to land and it is the drawbridge.
 - no building footprint in a road (OBB sample grid, 4 m); no plant inside a building; no tree on a lane.
@@ -227,7 +239,9 @@ Locus, Girder and Mav's Refuge (the `var` kit engine) only the **pattern** moves
 | Voth `65g-coastguard-dock` | a dock built before its vessel, with the mooring record | military harbour berths | pattern |
 | Voth `78c/78d/78e`, `82` moving lanterns, `83-weather`, `84-fauna` | ships cycling quays, water taxis, dhows, tracked vehicle lanterns, clear/storm/ash, ambient gulls | P5 | pattern |
 | Voth `65k` | mill animation rig | the windmill | pattern (Jimjam's `77-jj-agri` windmill is the same-engine code) |
-| Yuni `54-under`, `88-underview` | cutaway rooms in their own buckets, `userData.under`, a view that hides the surface | the Below-the-tide view | pattern |
+| Yuni `54-under`, `88-underview` | cutaway rooms in their own buckets, `userData.under`, a view that hides the surface | the Below-the-tide and roof-off views | pattern |
+| Yuni `53-assets`, `59-civic`, `63-furniture`, `61e` | one build frame for buildings, furniture and plants; `buildFurn`; the Library and School placing furniture through the frame; `F.door` doorsteps; 26 pieces incl. beds and containers for the Ancients and their salvagers | the `F` adapter, the furniture set, the drowned hosts' lots | pattern (frame), code (the Ancients pieces, through the adapter) |
+| `kits/interiors/SPEC.md`, `kits/furniture/SPEC.md` | `ROOM()` and `FURN()` contracts, the placer order, the debug view | followed as written; Ys is their first build | contract |
 | Yuni `68-place` | OBB box tests, kit audit, refusal counters | the placer (Iziz `88` already carries most of it) | pattern |
 | Yuni `66-canal` | weir, sluices, towpath | the river's head-works above the terraces | pattern |
 | Girder `30-layout` | `floors[k]` with `use`, room `SLOTS` with door facing, core stairs as walking points | HOST floors (DESIGN §5) | pattern |
@@ -272,5 +286,8 @@ Locus, Girder and Mav's Refuge (the `var` kit engine) only the **pattern** moves
     precinct, military harbour's far side).
 11. The new land species are the cliff fig, the flame-crown and the cinder pine, sized under the eastern
     abyss's canopy.
-12. The foreign quarter uses what is ported today (Iziz Vernacular, Republic, the Voth Embassy compound and
+12. The residence minimum is one bed, one food container and one item container; middle adds a hearth and
+    a table or seating; rich adds rooms. Inns, the barracks and the Wet Cells carry one bed spot per bunk
+    or cell. Drowned hosts get lots per inhabited floor on Girder's pattern.
+13. The foreign quarter uses what is ported today (Iziz Vernacular, Republic, the Voth Embassy compound and
     townhouses, the chapterhouse); slots are tagged for later swaps.
