@@ -27,9 +27,10 @@ The quality bar: recognisably its type at a glance, a silhouette distinct from i
   'Sacred' 'Markets' 'Civic' 'Harbour' 'Industry' 'Military' 'Agriculture' 'Spans'`; the sheet lays the rows out
   and makes `'<name> — front'`, `'<name> — eye level'` and `'<name> inside'` presets for you.
 - Local frame: origin at the plot centre on the ground, **+z the front**, y up, metres. Never world coordinates.
-- A **grown-on (G) builder** takes a host: `build(G,o)` with `o.host = {x,z,rAt(y,a),n}` resolved by the placer, and
-  roots itself with `hykFlare`; `hykAccrete` in 64 is the pattern. A pod on a host's floor plate may be the host's
-  **way in** (`into:true`, declared on the host as a way: API.md "Ways in"); every host needs one.
+- A **grown-on (G) builder** is a def with `grown:true` built by `HYK.placeOn` in the **G frame**: origin on the host's
+  face at the pod's floor level, **+z out of the face**, x along it (API.md "Grown-on builders"). `build(G,o)` gets
+  `o.host`, `o.a`, `o.rs`, `o.faceZ`, `o.landing` and, for a way-in pod (`into:true` on the def), `o.way`. Root it
+  with `hykFlare` on the face; `hykAccrete` in 64 is the pattern (satellites, drips, the lamp on a bracket).
 - A **span** is `hykBridge`: a backbone deck that can `branch` to a perch or landing and send `runners` to the
   host's `members` it passes (API.md). Never a plain plank between two points.
 - The helpers are in `API.md`. Every opening through `hykDoor`/`hykWin`, every lamp through `hykLight`, every
@@ -49,12 +50,20 @@ The quality bar: recognisably its type at a glance, a silhouette distinct from i
 | H library, treasury, prison | `src/74f-hyk-civic-minor.js` | `hykLib… hykTreas… hykCell…` | 30900–30949 |
 | I furniture | `src/66-hyk-furniture.js` | `hykFurn…` | 30250–30299 |
 
+- **Furniture** is `FURN({...})` + `build(F)` through `F.*` only (API.md "Furniture"); a building that places its own
+  pieces calls `placeFurn(key,wx,wz,ry,{y})` with world coordinates from `hykW`. The spot sizes the probe checks are
+  bed 2.1 × 1.0, food 0.8 × 0.8, store 1.2 × 0.7 (DESIGN §7); size your pieces to them.
+- **Every lamp is anchored**: `hykLight(...,{bracket:[lx,ly,lz]})` with the anchor on a shell. Nothing floats, nothing
+  is capped by an open tube end: a rib that meets a surface ends inside it with a flare and a knuckle (62's runners
+  are the pattern).
+
 ## 4. Build and verify (you can run all of it)
 
 ```
 cd settlements/ys
 python3 build.py                       # must print "syntax OK" for every target
 python3 verify.py dist/kit.html --assert --views "<Name> — front,<Name> — eye level,<Name> inside" --out /tmp/ys-<you>
+# the sheet makes those presets from your HYK.def names; '<Row> — row' shows a whole row, 'Kit host N — the host' a grown-on host
 python3 verify.py dist/kit.html --cam=x,y,z,tx,ty,tz --cam-name close --out /tmp/ys-<you>
 ```
 Software rendering is slow and other agents render at the same time: 2–6 views a run, `timeout 900`. If a run
@@ -64,6 +73,8 @@ every residence its spots, every spot inside its room. Write shots to `/tmp`, ne
 
 ## 5. When you finish
 
-Commit only your fragment files to your worktree branch (no `dist/`, manifests, `VENDOR.json`, shots). Report:
-the files, every key (key · name · w×d×h · triangles · rooms and spots), what you looked at, what is still
-weak, and any shared-helper bug you worked around (do not edit `60–64`; report instead).
+You work in your own git worktree on its own branch. Commit only your fragment files there (no `dist/`, manifests,
+`VENDOR.json`, shots; `git add src/<your files>` by name), in one or a few commits, and leave the worktree in place.
+Report: the branch name and the last commit hash, the files, every key (key · name · w×d×h · triangles · rooms and
+spots), what you looked at, what is still weak, and any shared-helper bug you worked around (do not edit
+`35`, `60–64`, `build.py`, `verify.py` or `targets/`; report instead, with the line and the fix you propose).

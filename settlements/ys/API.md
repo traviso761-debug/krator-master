@@ -116,6 +116,7 @@ hykBridge(A,B,{w,rise,col,own,                          // a backbone deck betwe
   -> {pts,runners,branches}
 hykSegNearest(member,p) -> {q,n}                        // the nearest surface point on a capsule or box member, and its normal
 hykPad(x,y,z,R,{...,rail:{a0,gap,col}})                 // a rail on posts round the rim, open `gap` radians about bearing a0
+hykLight(lx,ly,lz,{...,bracket:[lx,ly,lz]})            // a tube from an anchor on the shell to the lamp's socket: no lamp floats
 ```
 - `podium` shrinks the kit's plinth to that radius (the apron and the plinth's moss, rubble and trees are dropped);
   the podium decides nothing above the sea, so the `cap` is the footprint at the waterline (struts, legs), given
@@ -137,6 +138,51 @@ hykPad(x,y,z,R,{...,rail:{a0,gap,col}})                 // a rail on posts round
 A host's HOST record (DESIGN §3) carries its real cap, its floors table (`kind: drowned|tide|inhabited|wild`,
 `way` on the entry floor), its landings, its ways and its members; every deck over water registers itself in
 `NAV_EXTRA` through `ysDeck` (`kind: bridge | pad | hostfloor`).
+
+## Grown-on builders (HYK.placeOn)
+
+```js
+HYK.def({key,name,family,row:'Grown-on housing'|'Grown-on shops',grown:true,into?,w,d,h,tags,build})
+HYK.placeOn(scene,key,host,{y,a,level,into,v})          // the sheet and the city call this; builders never do
+build(G,o)  // o = {host, a, rs, y, level, v, way, faceZ(lx,ly), landing(lx,ly,lz,R,opt)}
+```
+The **G frame**: origin on the host's face at bearing `a`, at height `y` (the pod's floor datum: a plate top when
+it is a way in), **+z pointing out of the face**, x along the face, y up. Draw the pod proud of the origin (centre
+at about `+z = 0.3 R`, or `-0.2 R` bedded when `o.way` is set), root it with `hykFlare([0,R*.45,0],[0,0,1],...)`
+on the face, put the door at +z and the landing in front of it with `o.landing(0,0,R*1.6,2.8)`; `o.faceZ(lx,ly)`
+is the face's local z at local x (≤ 0, the host curves away behind), `o.host.rAt(y,a)` its world radius. A way-in
+pod (`into:true` on the def) gets `o.way = {a,y,R}` and must put a back door at −z onto the plate (the hole in the
+wall is already cut to `R = w/2`). All helpers work in the local frame as in HYK.place; `hykPad` and
+`hykStairSpiral` take world coordinates (`hykW`). `w,d,h` are the pod's size; satellites and drips are the
+builder's to add (`hykAccrete` in 64 is the pattern, including the lamp on a bracket).
+
+## Furniture (35-furn-frame.js, kits/furniture/SPEC.md)
+
+```js
+FURN({key:'hykkousoi_<name>',name,culture:'hykkousoi',type,setting:'indoor'|'outdoor'|'both',rooms:[...],
+      w,d,h,variants?,anchor:'floor'|'wall'|'ceiling'|'surface',clearance:{front},materials:['shell',...],build(F)})
+placeFurn(key,x,z,ry,{y,seed,variant,wealth,room})       // one piece in WORLD space (buildFurn is an alias)
+F: rnd rr chance pick(paletteKey|hexes) p P dir y wealth variant seed
+   box(lx,ly,lz,w,h,d,rot,col,m) cyl(lx,ly,lz,r,h,col,m,rot) cone(lx,ly,lz,r,h,col,m) ball(lx,ly,lz,r,col,m)
+   blob(lx,ly,lz,rx,ry,rz,col,m,rot) dome(lx,ly,lz,r,h,col,m)      // instanced; ly = the centre's height
+   lathe(lx,lz,[[r,y],...],col,m,{nu,nv,lobes,flute,inside}) tube([[x,y,z],...],r|fn,col,m,{seg})   // merged shells
+   light(lx,ly,lz,{cool,r,bare,bracket})
+```
+`m` is a material family: `shell` (matte) `nacre` `bone` `weed` (cloth) `lens` (glass) `dark`. Colours come
+from `F.pick('shell'|'nacre'|'coral'|'teal'|'bone'|'weed'|'floor'|...)` (HPAL keys) or an array of hexes; never a
+literal colour on a piece. A piece is drawn in the local frame (origin at the footprint centre on the anchor
+plane, +z the front) and lands in world space; a building builder placing its own furniture converts the spot
+with `hykW` first. `FURN_PLACED` records every placed piece.
+
+## The kit sheet (targets/kit → dist/kit.html)
+
+The sheet lays every `HYK.def` out by `row`: free-standing rows march north from z = −40 on a land shelf at
++3.2 m, the Harbour row stands at the shore (z = 8, the water at z > 30) and the Spans row just inland of it;
+grown-on rows hang on Scallop Stack hosts in the sea to the east (x = 560), one host per eleven pieces, pods on
+the plate at +37.25 in the lobe troughs, each host with its own way-in pod. Presets are generated:
+`'<name> — front'`, `'<name> — eye level'`, `'<name> inside'` (for dwellings, taverns and barracks, or
+`inside:true` on the def), `'<row> — row'`, `'<host> — the host'`, `'Kit — overview'`. The three mock houses sit
+in the housing rows as worked examples until the merge.
 
 ## Presets
 

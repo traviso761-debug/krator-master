@@ -31,6 +31,10 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
 - [ ] `ysHostMembers` mirrors the kit's strut and leg constants for Skyscrapers A and B (positions, counts,
       which are gone when ruined). Re-read `kits/ancients/src/52-sky-abc.js` whenever the kit is re-vendored,
       and add C, D–K as hosts of those kinds are placed.
+- [x] (Oct 1 2026) The rich pod's door lamp floated beside the lip: a pearl on nothing. Lamps take a `bracket` anchor
+      on the shell now, and the accreted pod's lamp sits on its own surface beside the door.
+- [x] (Oct 1 2026) The drips under an accreted pod did not meet the shell (an approximate underside). They are read
+      off the superellipsoid itself and bedded .22 m into it.
 - [ ] A strut's shaft is modelled as a capsule (r 2.75) though the kit draws a 5.5 x 4 beam: a runner rooted on a
       shaft lands up to .65 m proud of or inside the beam's corners. Heads are boxes and land exactly.
 - [ ] The kit's towers have no stairs between their floor plates (`kits/ancients/KNOWN_ISSUES.md`, "Found by

@@ -36,4 +36,7 @@ const HYK={defs:{},order:[],cur:null,
   if(!t.wealth)reportErr('HYK.def '+o.key+': tags.wealth is required (poor|middle|rich|civic)');
   if(!(o.w>0&&o.d>0&&o.h>0))reportErr('HYK.def '+o.key+': w, d, h must be positive');
   if(typeof o.build!=='function')reportErr('HYK.def '+o.key+': build must be a function');
-  o.tags=Object.assign({culture:'hykkousoi'},t);o.r=o.r||Math.max(o.w,o.d)/2;this.defs[o.key]=o;this.order.push(o.key);return o;}};
+  o.tags=Object.assign({culture:'hykkousoi'},t);o.r=o.r||Math.max(o.w,o.d)/2;o.grown=!!o.grown;this.defs[o.key]=o;this.order.push(o.key);return o;}};
+// A grown-on def (`grown:true`) is built by HYK.placeOn (62) in the G frame: origin at the host's face at the pod's floor
+// level, +z outward from the face, x along it; w,d,h are the pod's size and `into:true` asks the sheet to declare a
+// way through the host's wall for it (API.md).
