@@ -22,6 +22,7 @@ function buildKnightBody(){
   addPiece(box(0, 1.1, 0.19, 0.12, 0.08, 0.02), KN_GOLD, ['mixamorigHips'], M);                                  /* belt buckle */
   hemTrim(1.83, 0.205, 0.175, 0.02, KN_GOLD, ['mixamorigNeck', 'mixamorigSpine2'], true);                       /* gorget edge */
   addPiece(box(-0.24, 0.8, -0.02, 0.05, 0.6, 0.03, [0, 0, 0.12]), KN_BLUE_DARK, ['mixamorigHips', B(-1, 'UpLeg')], { power: 2 }); addPiece(box(-0.21, 1.08, -0.02, 0.09, 0.03, 0.04), KN_GOLD, ['mixamorigHips'], M);   /* scabbard */
+  addPiece(box(0.22, 1.0, 0.1, 0.03, 0.22, 0.015, [0, 0, 0.2]), KN_STEEL_DARK, ['mixamorigHips'], M); addPiece(box(0.2, 1.1, 0.11, 0.06, 0.015, 0.02), KN_GOLD, ['mixamorigHips'], M);   /* dagger */
   /* tassets */
   [1, -1].forEach(function(s){ addPiece(box(s * 0.2, 0.92, 0.12, 0.2, 0.3, 0.03, [0.15, 0, s * -0.2]), KN_STEEL, ['mixamorigHips', B(s, 'UpLeg')], M);
     addPiece(box(s * 0.2, 0.92, 0.14, 0.03, 0.12, 0.01, [0.15, 0, s * -0.2]), KN_RED, ['mixamorigHips', B(s, 'UpLeg')]); addPiece(box(s * 0.2, 0.94, 0.14, 0.09, 0.03, 0.01, [0.15, 0, s * -0.2]), KN_RED, ['mixamorigHips', B(s, 'UpLeg')]); });
@@ -64,6 +65,7 @@ function buildKnightBody(){
     studRing(l.an.x, 0.5, 0, 0.117, 0.117, 8, 0.01, KN_GOLD, [LEG, FOOT]); seam(V3(l.kn.x, l.kn.y - 0.1, 0.12), V3(l.an.x, 0.2, 0.1), KN_STEEL_DARK, [LEG, FOOT], 0.012);   /* greave ridge */
     addPiece(box(l.an.x, 0.06, 0.08, 0.18, 0.11, 0.32), KN_STEEL, [FOOT], M);
     addPiece(spike(V3(l.an.x, 0.05, 0.24), V3(0, 0.1, 1), 0.14, 0.05, 4), KN_STEEL, [FOOT], M);                   /* pointed sabaton */
+    var spur = new THREE.TorusGeometry(0.025, 0.006, 5, 8); spur.rotateY(Math.PI / 2); spur.translate(l.an.x, 0.07, -0.1); addPiece(spur, KN_GOLD, [FOOT], M); addPiece(spike(V3(l.an.x, 0.07, -0.1), V3(0, 0, -1), 0.05, 0.012, 4), KN_GOLD, [FOOT], M);   /* spur */
   });
 }
 function buildSword(){

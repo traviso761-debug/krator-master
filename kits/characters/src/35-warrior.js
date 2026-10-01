@@ -41,6 +41,7 @@ function buildWarriorBody(){
   [1, -1].forEach(function(s){ addPiece(ellipsoid(s * 0.04, 2.07, 0.19, 0.015, 1, 0.7, 0.6), 0x301010, ['mixamorigHead']); addPiece(box(s * 0.04, 2.1, 0.19, 0.04, 0.008, 0.01, [0, 0, s * -0.3]), 0x301010, ['mixamorigHead']); });   /* brows */
   var gemRing = new THREE.TorusGeometry(0.05, 0.008, 6, 16); gemRing.translate(0, 1.6, 0.3); addPiece(gemRing, WR_GOLD, ['mixamorigSpine2'], M);
   addPiece(box(0, 1.98, 0.17, 0.05, 0.12, 0.03), WR_GOLD, ['mixamorigHead'], M);                                   /* chin guard */
+  seam(V3(-0.14, 2.0, 0.08), V3(0.14, 2.0, 0.08), 0x6a4a2a, ['mixamorigHead'], 0.008);                                /* chin strap */
   for(var i = 0; i < 2; i++) addPiece(bodyTube([{ y: 2.12 + i * 0.1, rx: 0.2 - i * 0.03, rz: 0.2 - i * 0.03 }, { y: 2.2 + i * 0.1, rx: 0.21 - i * 0.03, rz: 0.21 - i * 0.03 }], 20), WR_YELLOW, ['mixamorigHead'], { tint: capeTint(10, 0) });
   addPiece(ellipsoid(0, 2.31, 0.0, 0.15, 1, 0.45, 1), WR_YELLOW, ['mixamorigHead']);
   studRing(0, 2.16, 0, 0.205, 0.205, 16, 0.011, WR_RED, ['mixamorigHead'], false); studRing(0, 2.26, 0, 0.175, 0.175, 12, 0.011, WR_RED, ['mixamorigHead'], false);   /* helmet rivets */
@@ -65,6 +66,7 @@ function buildWarriorBody(){
     var UP = B(s, 'UpLeg'), LEG = B(s, 'Leg'), FOOT = B(s, 'Foot'), l = legPts(s);
     addPiece(limbTube(l.hp, l.kn, [{ t: 0, r: 0.17 }, { t: 0.5, r: 0.16 }, { t: 1, r: 0.13 }], 14), WR_PLATE, [UP, LEG], M);
     addPiece(ellipsoid(l.kn.x, l.kn.y, l.kn.z + 0.01, 0.13), WR_PLATE_DARK, [UP, LEG], M);
+    addPiece(ellipsoid(l.kn.x, l.kn.y, l.kn.z + 0.13, 0.03, 0.8, 1, 0.5), WR_GEM, [UP, LEG]);   /* knee gem */
     addPiece(limbTube(l.kn, l.an, [{ t: 0, r: 0.12 }, { t: 0.5, r: 0.12 }, { t: 1, r: 0.1 }], 14), WR_PLATE, [LEG, FOOT], M);
     addPiece(box(l.an.x, 0.07, 0.08, 0.2, 0.13, 0.34), WR_BROWN, [FOOT]);
     addPiece(box(l.an.x, 0.03, 0.1, 0.22, 0.05, 0.38), 0x2a2420, [FOOT]);

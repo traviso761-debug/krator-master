@@ -17,6 +17,8 @@ function buildSardaukarBody(){
   [[-0.14, 0.12], [0.08, 0.14], [0.18, 0.02]].forEach(function(pp){ addPiece(box(pp[0], 0.98, pp[1], 0.07, 0.09, 0.05), SD_BLACK, ['mixamorigHips']); addPiece(box(pp[0], 1.02, pp[1] + 0.03, 0.07, 0.02, 0.01), SD_BRASS, ['mixamorigHips'], M); });   /* pouches */
   seam(V3(-0.2, 1.74, 0.16), V3(0.2, 1.2, 0.17), SD_GREY, ['mixamorigSpine2', 'mixamorigSpine1', 'mixamorigSpine'], 0.012); seam(V3(0.2, 1.74, 0.16), V3(-0.2, 1.2, 0.17), SD_GREY, ['mixamorigSpine2', 'mixamorigSpine1', 'mixamorigSpine'], 0.012);   /* chest straps */
   addPiece(ellipsoid(0, 1.3, 0.2, 0.035), SD_BRASS, ['mixamorigSpine1'], M);
+  studRing(0, 1.58, 0.29, 0.1, 0.1, 10, 0.007, SD_BRASS, ['mixamorigSpine2']);                                                                       /* roundel rivets */
+  for(var gr = 0; gr < 3; gr++){ addPiece(limbTube(V3(-0.22 + gr * 0.05, 0.9, -0.14), V3(-0.22 + gr * 0.05, 1.04, -0.14), [{ t: 0, r: 0.018 }, { t: 1, r: 0.018 }], 8), SD_GREY, ['mixamorigHips'], M); addPiece(ellipsoid(-0.22 + gr * 0.05, 1.05, -0.14, 0.012), SD_RED, ['mixamorigHips']); }   /* grenades */
   [1, -1].forEach(function(s){ addPiece(ellipsoid(s * 0.22, 1.8, 0.02, 0.03), SD_BRASS, ['mixamorigSpine2'], M); });                                   /* cape clasps */
   /* pleated skirt */
   for(i = 0; i < 12; i++){ var a = i / 12 * Math.PI * 2 + 0.13, px = Math.cos(a) * 0.23, pz = Math.sin(a) * 0.18;
@@ -57,7 +59,7 @@ function buildSardaukarBody(){
     studRing(l.kn.x, l.kn.y, l.kn.z + 0.06, 0.07, 0.04, 6, 0.008, SD_BRASS, [UP, LEG]);
     addPiece(limbTube(l.kn, l.an, [{ t: 0, r: 0.105 }, { t: 0.5, r: 0.1 }, { t: 1, r: 0.09 }], 14), SD_BLACK_GLOSS, [LEG, FOOT], M);
     addPiece(box(l.an.x, 0.06, 0.08, 0.17, 0.12, 0.32), SD_BLACK, [FOOT], M);
-    for(var bs = 0; bs < 3; bs++) addPiece(limbTube(V3(l.an.x, 0.16 + bs * 0.12, 0), V3(l.an.x, 0.18 + bs * 0.12, 0), [{ t: 0, r: 0.105 }, { t: 1, r: 0.105 }], 12, false), SD_BRASS, [LEG, FOOT], M);   /* boot straps */
+    for(var bs = 0; bs < 3; bs++) addPiece(limbTube(V3(l.an.x, 0.16 + bs * 0.12, 0), V3(l.an.x, 0.18 + bs * 0.12, 0), [{ t: 0, r: 0.118 }, { t: 1, r: 0.118 }], 14, false), SD_BRASS, [LEG, FOOT], M);   /* boot straps */
     addPiece(spike(V3(l.an.x, 0.04, 0.24), V3(0, 0.05, 1), 0.1, 0.045, 4), SD_BLACK, [FOOT], M);
   });
   /* sword at the left hip, hanging from the belt */

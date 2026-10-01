@@ -60,6 +60,7 @@ function buildLizardBody(){
   for(i = 0; i < 10; i++){ var fa = -1.3 + i * 0.29; addPiece(spike(V3(Math.sin(fa) * 0.12, 1.86, -0.02 + Math.cos(fa) * -0.1), V3(Math.sin(fa) * 0.8, 0.5, -0.6), 0.1, 0.02, 4), LZ_RED, ['mixamorigNeck', 'mixamorigHead']); }
   addPiece(limbTube(V3(0, 1.915, 0.3), V3(0.02, 1.9, 0.46), [{ t: 0, r: 0.012 }, { t: 1, r: 0.006 }], 5), 0xb83a4a, ['mixamorigHead']);
   addPiece(ellipsoid(0, 1.82, 0.08, 0.08, 1.1, 0.7, 0.9), LZ_BELLY, ['mixamorigNeck'], { tint: tint });
+  [1, -1].forEach(function(s){ addPiece(ellipsoid(s * 0.3, 1.78, -0.02, 0.09, 1.2, 0.4, 1.0), LZ_SCALE, ['mixamorigSpine2', B(s, 'Arm')], { tint: tint }); addPiece(ellipsoid(s * 0.33, 1.8, -0.02, 0.05, 1.1, 0.35, 0.9), LZ_CLAW, ['mixamorigSpine2', B(s, 'Arm')]); });   /* shoulder bone plates */
   /* dorsal crest: head to tail base */
   for(i = 0; i < 9; i++){ var y = 2.1 - i * 0.13, zc = -0.05 - (i < 3 ? 0 : (i - 3) * 0.05) - (i > 6 ? 0.12 : 0), bone = i < 2 ? 'mixamorigHead' : i < 4 ? 'mixamorigNeck' : i < 6 ? 'mixamorigSpine2' : i < 8 ? 'mixamorigSpine1' : 'mixamorigSpine';
     addPiece(spike(V3(0, y, zc - 0.1), V3(0, 0.6, -1), 0.1 + (i % 3) * 0.02, 0.02, 4), LZ_RED, [bone]); }

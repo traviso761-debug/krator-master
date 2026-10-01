@@ -49,6 +49,8 @@ function buildBarbarianBody(){
     addPiece(curveTube(curve, 28, 8, function(t){ return 0.02 + 0.03 * Math.sin(Math.PI * Math.min(1, t * 1.25 + 0.1)) * (1 - t * 0.55); }), PINK, ['mixamorigHead']);
   });
   addPiece(ellipsoid(0, 1.985, 0.152, 0.036, 1, 0.8, 0.8), PINK, ['mixamorigHead']);                       /* under the nose */
+  addPiece(box(0, 1.955, 0.146, 0.07, 0.014, 0.01), 0xf4f0e8, ['mixamorigHead']); addPiece(box(0, 1.955, 0.148, 0.07, 0.003, 0.01), 0x6a3a3a, ['mixamorigHead']);   /* gritted teeth */
+  [1, -1].forEach(function(s){ addPiece(ellipsoid(s * 0.014, 2.0, 0.175, 0.006), 0xb07060, ['mixamorigHead']); });   /* nostrils */
 
   /* arms, authored in the T-pose: shoulder (0.40) -> elbow (0.74) -> wrist (1.06), all at y 1.74 */
   [1, -1].forEach(function(s){
@@ -61,6 +63,7 @@ function buildBarbarianBody(){
     addPiece(limbTube(el, wr, [{ t: 0, r: 0.10 }, { t: 0.3, r: 0.125 }, { t: 0.7, r: 0.095 }, { t: 1, r: 0.07 }], 14), SKIN, [FA, HAND]);
     seam(el.clone().add(V3(0, 0.09, 0.03)), wr.clone().add(V3(-s * 0.06, 0.05, 0.04)), 0xc48068, [FA, HAND], 0.007); seam(el.clone().add(V3(s * 0.08, 0.08, -0.04)), wr.clone().add(V3(-s * 0.02, 0.045, -0.02)), 0xc48068, [FA, HAND], 0.006);   /* veins */
     fist(s, SKIN_DARK, [HAND]);
+    addPiece(limbTube(V3(a.wr.x + s * 0.09, a.wr.y + 0.02, -0.04), V3(a.wr.x + s * 0.09, a.wr.y + 0.02, 0.04), [{ t: 0, r: 0.028 }, { t: 1, r: 0.028 }], 8, false), PINK, [HAND]);   /* knuckle wrap */
   });
 
   /* trousers, belt, fur, boots */

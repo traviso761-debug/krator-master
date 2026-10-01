@@ -401,6 +401,8 @@ function buildBarbarianBody(){
     addPiece(curveTube(curve, 28, 8, function(t){ return 0.02 + 0.03 * Math.sin(Math.PI * Math.min(1, t * 1.25 + 0.1)) * (1 - t * 0.55); }), PINK, ['mixamorigHead']);
   });
   addPiece(ellipsoid(0, 1.985, 0.152, 0.036, 1, 0.8, 0.8), PINK, ['mixamorigHead']);                       /* under the nose */
+  addPiece(box(0, 1.955, 0.146, 0.07, 0.014, 0.01), 0xf4f0e8, ['mixamorigHead']); addPiece(box(0, 1.955, 0.148, 0.07, 0.003, 0.01), 0x6a3a3a, ['mixamorigHead']);   /* gritted teeth */
+  [1, -1].forEach(function(s){ addPiece(ellipsoid(s * 0.014, 2.0, 0.175, 0.006), 0xb07060, ['mixamorigHead']); });   /* nostrils */
 
   /* arms, authored in the T-pose: shoulder (0.40) -> elbow (0.74) -> wrist (1.06), all at y 1.74 */
   [1, -1].forEach(function(s){
@@ -413,6 +415,7 @@ function buildBarbarianBody(){
     addPiece(limbTube(el, wr, [{ t: 0, r: 0.10 }, { t: 0.3, r: 0.125 }, { t: 0.7, r: 0.095 }, { t: 1, r: 0.07 }], 14), SKIN, [FA, HAND]);
     seam(el.clone().add(V3(0, 0.09, 0.03)), wr.clone().add(V3(-s * 0.06, 0.05, 0.04)), 0xc48068, [FA, HAND], 0.007); seam(el.clone().add(V3(s * 0.08, 0.08, -0.04)), wr.clone().add(V3(-s * 0.02, 0.045, -0.02)), 0xc48068, [FA, HAND], 0.006);   /* veins */
     fist(s, SKIN_DARK, [HAND]);
+    addPiece(limbTube(V3(a.wr.x + s * 0.09, a.wr.y + 0.02, -0.04), V3(a.wr.x + s * 0.09, a.wr.y + 0.02, 0.04), [{ t: 0, r: 0.028 }, { t: 1, r: 0.028 }], 8, false), PINK, [HAND]);   /* knuckle wrap */
   });
 
   /* trousers, belt, fur, boots */
@@ -566,6 +569,8 @@ function buildPufferBody(){
   /* rope belt (a ring of knots), sashes, skirt plates */
   for(i = 0; i < 26; i++){ var ang2 = i / 26 * Math.PI * 2; addPiece(ellipsoid(Math.cos(ang2) * 0.64, 0.98 + (i % 2) * 0.03, Math.sin(ang2) * 0.56, 0.085, 1, 0.8, 1), PF_ROPE, ['mixamorigHips', 'mixamorigSpine']); }
   addPiece(bodyTube([{ y: 0.86, rx: 0.60, rz: 0.52 }, { y: 0.95, rx: 0.63, rz: 0.55 }], 28), PF_PURPLE, ['mixamorigHips']);
+  addPiece(ellipsoid(-0.3, 0.88, 0.5, 0.045, 0.9, 1.1, 0.9), PF_BONE, ['mixamorigHips']); [1, -1].forEach(function(s){ addPiece(ellipsoid(-0.3 + s * 0.015, 0.89, 0.54, 0.01), 0x101010, ['mixamorigHips']); });   /* skull charm */
+  [1, -1].forEach(function(s){ addPiece(ellipsoid(s * 0.045, 1.72, 0.44, 0.012, 1, 0.7, 0.5), 0x3a3a30, ['mixamorigHead']); });   /* nostrils */
   for(i = 0; i < 8; i++){ var ang3 = i / 8 * Math.PI * 2 + 0.2, px = Math.cos(ang3) * 0.5, pz = Math.sin(ang3) * 0.44;
     addPiece(box(px, 0.70, pz, 0.26, 0.34, 0.03, [0, -ang3 + Math.PI / 2, 0]), PF_NAVY, ['mixamorigHips', B(px > 0 ? 1 : -1, 'UpLeg')]);
     addPiece(box(px * 1.02, 0.74, pz * 1.02, 0.2, 0.05, 0.03, [0, -ang3 + Math.PI / 2, 0]), PF_RED, ['mixamorigHips', B(px > 0 ? 1 : -1, 'UpLeg')]); }
@@ -635,6 +640,8 @@ function buildPriestBody(){
   /* the mitre */
   addPiece(limbTube(V3(0, 2.36, -0.02), V3(0, 2.98, -0.04), [{ t: 0, r: 0.23 }, { t: 0.5, r: 0.17 }, { t: 0.9, r: 0.07 }, { t: 1, r: 0.03 }], 24), PR_BLACK, ['mixamorigHead'], { tint: priestTint(7, 14) });
   addPiece(ellipsoid(0, 3.0, -0.04, 0.045), 0xffe02a, ['mixamorigHead']);
+  addPiece(limbTube(V3(0, 3.0, -0.04), V3(0.08, 2.85, -0.12), [{ t: 0, r: 0.006 }, { t: 1, r: 0.005 }], 4), 0xff2a8a, ['mixamorigHead']); addPiece(ellipsoid(0.08, 2.84, -0.12, 0.025, 1, 1.4, 1), 0xff2a8a, ['mixamorigHead']);   /* tassel */
+  [1, -1].forEach(function(s){ addPiece(ellipsoid(s * 0.05, 2.28, 0.205, 0.012), 0xff3aa0, ['mixamorigHead']); });   /* glowing eyes */
   for(i = 0; i < 8; i++){ var a = i / 8 * Math.PI * 2; addPiece(spike(V3(Math.cos(a) * 0.04, 3.02, -0.04 + Math.sin(a) * 0.04), V3(Math.cos(a), 1.2, Math.sin(a)), 0.07, 0.008, 4), 0xffe02a, ['mixamorigHead']); }
   [1, -1].forEach(function(s){ addPiece(box(s * 0.26, 2.52, -0.02, 0.1, 0.14, 0.02, [0, 0, s * 0.3]), 0xd8c070, ['mixamorigHead'], { metal: true }); }); /* side fins */
   /* the sun disc over the brow */
@@ -704,6 +711,7 @@ function buildKnightBody(){
   addPiece(box(0, 1.1, 0.19, 0.12, 0.08, 0.02), KN_GOLD, ['mixamorigHips'], M);                                  /* belt buckle */
   hemTrim(1.83, 0.205, 0.175, 0.02, KN_GOLD, ['mixamorigNeck', 'mixamorigSpine2'], true);                       /* gorget edge */
   addPiece(box(-0.24, 0.8, -0.02, 0.05, 0.6, 0.03, [0, 0, 0.12]), KN_BLUE_DARK, ['mixamorigHips', B(-1, 'UpLeg')], { power: 2 }); addPiece(box(-0.21, 1.08, -0.02, 0.09, 0.03, 0.04), KN_GOLD, ['mixamorigHips'], M);   /* scabbard */
+  addPiece(box(0.22, 1.0, 0.1, 0.03, 0.22, 0.015, [0, 0, 0.2]), KN_STEEL_DARK, ['mixamorigHips'], M); addPiece(box(0.2, 1.1, 0.11, 0.06, 0.015, 0.02), KN_GOLD, ['mixamorigHips'], M);   /* dagger */
   /* tassets */
   [1, -1].forEach(function(s){ addPiece(box(s * 0.2, 0.92, 0.12, 0.2, 0.3, 0.03, [0.15, 0, s * -0.2]), KN_STEEL, ['mixamorigHips', B(s, 'UpLeg')], M);
     addPiece(box(s * 0.2, 0.92, 0.14, 0.03, 0.12, 0.01, [0.15, 0, s * -0.2]), KN_RED, ['mixamorigHips', B(s, 'UpLeg')]); addPiece(box(s * 0.2, 0.94, 0.14, 0.09, 0.03, 0.01, [0.15, 0, s * -0.2]), KN_RED, ['mixamorigHips', B(s, 'UpLeg')]); });
@@ -746,6 +754,7 @@ function buildKnightBody(){
     studRing(l.an.x, 0.5, 0, 0.117, 0.117, 8, 0.01, KN_GOLD, [LEG, FOOT]); seam(V3(l.kn.x, l.kn.y - 0.1, 0.12), V3(l.an.x, 0.2, 0.1), KN_STEEL_DARK, [LEG, FOOT], 0.012);   /* greave ridge */
     addPiece(box(l.an.x, 0.06, 0.08, 0.18, 0.11, 0.32), KN_STEEL, [FOOT], M);
     addPiece(spike(V3(l.an.x, 0.05, 0.24), V3(0, 0.1, 1), 0.14, 0.05, 4), KN_STEEL, [FOOT], M);                   /* pointed sabaton */
+    var spur = new THREE.TorusGeometry(0.025, 0.006, 5, 8); spur.rotateY(Math.PI / 2); spur.translate(l.an.x, 0.07, -0.1); addPiece(spur, KN_GOLD, [FOOT], M); addPiece(spike(V3(l.an.x, 0.07, -0.1), V3(0, 0, -1), 0.05, 0.012, 4), KN_GOLD, [FOOT], M);   /* spur */
   });
 }
 function buildSword(){
@@ -812,6 +821,7 @@ function buildWarriorBody(){
   [1, -1].forEach(function(s){ addPiece(ellipsoid(s * 0.04, 2.07, 0.19, 0.015, 1, 0.7, 0.6), 0x301010, ['mixamorigHead']); addPiece(box(s * 0.04, 2.1, 0.19, 0.04, 0.008, 0.01, [0, 0, s * -0.3]), 0x301010, ['mixamorigHead']); });   /* brows */
   var gemRing = new THREE.TorusGeometry(0.05, 0.008, 6, 16); gemRing.translate(0, 1.6, 0.3); addPiece(gemRing, WR_GOLD, ['mixamorigSpine2'], M);
   addPiece(box(0, 1.98, 0.17, 0.05, 0.12, 0.03), WR_GOLD, ['mixamorigHead'], M);                                   /* chin guard */
+  seam(V3(-0.14, 2.0, 0.08), V3(0.14, 2.0, 0.08), 0x6a4a2a, ['mixamorigHead'], 0.008);                                /* chin strap */
   for(var i = 0; i < 2; i++) addPiece(bodyTube([{ y: 2.12 + i * 0.1, rx: 0.2 - i * 0.03, rz: 0.2 - i * 0.03 }, { y: 2.2 + i * 0.1, rx: 0.21 - i * 0.03, rz: 0.21 - i * 0.03 }], 20), WR_YELLOW, ['mixamorigHead'], { tint: capeTint(10, 0) });
   addPiece(ellipsoid(0, 2.31, 0.0, 0.15, 1, 0.45, 1), WR_YELLOW, ['mixamorigHead']);
   studRing(0, 2.16, 0, 0.205, 0.205, 16, 0.011, WR_RED, ['mixamorigHead'], false); studRing(0, 2.26, 0, 0.175, 0.175, 12, 0.011, WR_RED, ['mixamorigHead'], false);   /* helmet rivets */
@@ -836,6 +846,7 @@ function buildWarriorBody(){
     var UP = B(s, 'UpLeg'), LEG = B(s, 'Leg'), FOOT = B(s, 'Foot'), l = legPts(s);
     addPiece(limbTube(l.hp, l.kn, [{ t: 0, r: 0.17 }, { t: 0.5, r: 0.16 }, { t: 1, r: 0.13 }], 14), WR_PLATE, [UP, LEG], M);
     addPiece(ellipsoid(l.kn.x, l.kn.y, l.kn.z + 0.01, 0.13), WR_PLATE_DARK, [UP, LEG], M);
+    addPiece(ellipsoid(l.kn.x, l.kn.y, l.kn.z + 0.13, 0.03, 0.8, 1, 0.5), WR_GEM, [UP, LEG]);   /* knee gem */
     addPiece(limbTube(l.kn, l.an, [{ t: 0, r: 0.12 }, { t: 0.5, r: 0.12 }, { t: 1, r: 0.1 }], 14), WR_PLATE, [LEG, FOOT], M);
     addPiece(box(l.an.x, 0.07, 0.08, 0.2, 0.13, 0.34), WR_BROWN, [FOOT]);
     addPiece(box(l.an.x, 0.03, 0.1, 0.22, 0.05, 0.38), 0x2a2420, [FOOT]);
@@ -925,6 +936,7 @@ function buildLizardBody(){
   for(i = 0; i < 10; i++){ var fa = -1.3 + i * 0.29; addPiece(spike(V3(Math.sin(fa) * 0.12, 1.86, -0.02 + Math.cos(fa) * -0.1), V3(Math.sin(fa) * 0.8, 0.5, -0.6), 0.1, 0.02, 4), LZ_RED, ['mixamorigNeck', 'mixamorigHead']); }
   addPiece(limbTube(V3(0, 1.915, 0.3), V3(0.02, 1.9, 0.46), [{ t: 0, r: 0.012 }, { t: 1, r: 0.006 }], 5), 0xb83a4a, ['mixamorigHead']);
   addPiece(ellipsoid(0, 1.82, 0.08, 0.08, 1.1, 0.7, 0.9), LZ_BELLY, ['mixamorigNeck'], { tint: tint });
+  [1, -1].forEach(function(s){ addPiece(ellipsoid(s * 0.3, 1.78, -0.02, 0.09, 1.2, 0.4, 1.0), LZ_SCALE, ['mixamorigSpine2', B(s, 'Arm')], { tint: tint }); addPiece(ellipsoid(s * 0.33, 1.8, -0.02, 0.05, 1.1, 0.35, 0.9), LZ_CLAW, ['mixamorigSpine2', B(s, 'Arm')]); });   /* shoulder bone plates */
   /* dorsal crest: head to tail base */
   for(i = 0; i < 9; i++){ var y = 2.1 - i * 0.13, zc = -0.05 - (i < 3 ? 0 : (i - 3) * 0.05) - (i > 6 ? 0.12 : 0), bone = i < 2 ? 'mixamorigHead' : i < 4 ? 'mixamorigNeck' : i < 6 ? 'mixamorigSpine2' : i < 8 ? 'mixamorigSpine1' : 'mixamorigSpine';
     addPiece(spike(V3(0, y, zc - 0.1), V3(0, 0.6, -1), 0.1 + (i % 3) * 0.02, 0.02, 4), LZ_RED, [bone]); }
@@ -1072,6 +1084,7 @@ function buildNagaBody(){
   addPiece(curveTube(curve, 56, 16, function(t){ return 0.2 * (1 - t * 0.85) + 0.02 * Math.sin(t * 40) * (1 - t); }), NG_SCALE, bones, { tint: tint, power: 3 });
   for(i = 2; i < 30; i++){ var st = i / 30, sp = curve.getPoint(st), sr = 0.2 * (1 - st * 0.85); addPiece(ellipsoid(sp.x, sp.y + (st < 0.25 ? 0 : sr * 0.95), sp.z - (st < 0.25 ? sr * 0.95 : 0), 0.02 * (1 - st * 0.6) + 0.006, 1, 0.6, 1.4), NG_SCALE_DARK, [bones[Math.min(7, Math.max(1, Math.round(st * 7)))]]); }   /* dorsal ridge scales */
   addPiece(bodyTube([{ y: 1.0, rx: 0.2, rz: 0.16 }, { y: 1.06, rx: 0.2, rz: 0.16 }], 20), 0x6a2a2a, ['mixamorigHips']);                           /* the sash at the join */
+  for(i = 0; i < 16; i++){ var ca = i / 16 * Math.PI * 2; addPiece(limbTube(V3(Math.cos(ca) * 0.2, 1.0, Math.sin(ca) * 0.16), V3(Math.cos(ca) * 0.2, 0.95, Math.sin(ca) * 0.16), [{ t: 0, r: 0.004 }, { t: 1, r: 0.004 }], 4), NG_GOLD, ['mixamorigHips'], { metal: true }); addPiece(ellipsoid(Math.cos(ca) * 0.2, 0.94, Math.sin(ca) * 0.16, 0.014, 1, 1, 0.4), NG_GOLD, ['mixamorigHips'], { metal: true }); }   /* coin fringe */
 }
 function buildDagger(iceBlade){
   var g = new THREE.Group(), steel = propMat(iceBlade ? NG_ICE : NG_BLADE, 0.9, iceBlade ? 0.2 : 0.3), grip = propMat(0x2a2020), gold = propMat(NG_GOLD, 0.9, 0.35);
@@ -1148,6 +1161,8 @@ function buildPilgrimBody(){
   faceHuman(2.05, PG_SKIN, { r: 0.11, iris: 0x3a4a5a, brow: 0x3a2a20 });
   addPiece(bodyTube([{ y: 2.1, rx: 0.14, rz: 0.14 }, { y: 2.16, rx: 0.15, rz: 0.15 }, { y: 2.42, rx: 0.12, rz: 0.12 }, { y: 2.56, rx: 0.07, rz: 0.07 }, { y: 2.62, rx: 0.02, rz: 0.02 }], 18), PG_WHITE, ['mixamorigHead']);
   addPiece(box(0, 2.3, 0.13, 0.05, 0.1, 0.02), PG_GOLD, ['mixamorigHead'], M); addPiece(ellipsoid(0, 2.36, 0.14, 0.02), PG_RED, ['mixamorigHead']);
+  addPiece(limbTube(V3(0, 2.62, 0), V3(0.06, 2.5, -0.1), [{ t: 0, r: 0.008 }, { t: 1, r: 0.006 }], 4), PG_BLUE, ['mixamorigHead']); addPiece(ellipsoid(0.06, 2.49, -0.1, 0.018), PG_GOLD, ['mixamorigHead'], M);   /* hat tassel */
+  for(var sb = 0; sb < 3; sb++) addPiece(ellipsoid(0, 1.72 - sb * 0.05, 0.215, 0.009), PG_GOLD, ['mixamorigSpine2'], M);   /* collar buttons */
   [1, -1].forEach(function(s){ addPiece(box(s * 0.14, 2.0, 0.0, 0.03, 0.2, 0.12), PG_WHITE, ['mixamorigHead']); addPiece(ellipsoid(s * 0.16, 2.0, 0.0, 0.03, 0.5, 1, 1), PG_BLUE, ['mixamorigHead']); });  /* ear flaps */
   /* arms: white sleeves, bare hands with bracelets */
   [1, -1].forEach(function(s){
@@ -1167,10 +1182,10 @@ function buildPilgrimBody(){
     addPiece(limbTube(l.hp, l.kn, [{ t: 0, r: 0.15 }, { t: 0.5, r: 0.14 }, { t: 1, r: 0.11 }], 14), PG_GREY, [UP, LEG]);
     addPiece(ellipsoid(l.kn.x, l.kn.y, l.kn.z, 0.105), PG_GREY, [UP, LEG]);
     addPiece(limbTube(l.kn, l.an, [{ t: 0, r: 0.105 }, { t: 0.5, r: 0.1 }, { t: 1, r: 0.09 }], 14), PG_GREY, [LEG, FOOT]);
-    addPiece(limbTube(V3(l.an.x, 0.1, 0), V3(l.an.x, 0.42, 0), [{ t: 0, r: 0.1 }, { t: 1, r: 0.105 }], 12), PG_WHITE, [LEG, FOOT]);
+    addPiece(limbTube(V3(l.an.x, 0.1, 0), V3(l.an.x, 0.42, 0), [{ t: 0, r: 0.118 }, { t: 1, r: 0.12 }], 14), PG_WHITE, [LEG, FOOT]);
     addPiece(box(l.an.x, 0.06, 0.07, 0.17, 0.12, 0.3), PG_WHITE, [FOOT]);
     addPiece(ellipsoid(l.an.x, 0.06, 0.2, 0.085, 1, 0.7, 0.9), PG_WHITE, [FOOT]);
-    addPiece(limbTube(V3(l.an.x, 0.14, 0), V3(l.an.x, 0.17, 0), [{ t: 0, r: 0.105 }, { t: 1, r: 0.105 }], 12, false), PG_ORANGE, [FOOT]); addPiece(box(l.an.x + s * 0.1, 0.155, 0.02, 0.02, 0.04, 0.03), PG_GOLD, [FOOT], M);   /* boot strap */
+    addPiece(limbTube(V3(l.an.x, 0.14, 0), V3(l.an.x, 0.17, 0), [{ t: 0, r: 0.125 }, { t: 1, r: 0.125 }], 14, false), PG_ORANGE, [FOOT]); addPiece(box(l.an.x + s * 0.1, 0.155, 0.02, 0.02, 0.04, 0.03), PG_GOLD, [FOOT], M);   /* boot strap */
   });
 }
 function buildStaff(color, headFn){
@@ -1222,6 +1237,7 @@ function buildCrescentBody(){
   addPiece(box(0, 0.9, 0.315, 0.03, 0.8, 0.01), CR_GOLD, ['mixamorigSpine', 'mixamorigHips', B(1, 'UpLeg'), B(-1, 'UpLeg')], { metal: true, power: 2 });
   for(i = 0; i < 3; i++) addPiece(ellipsoid(-0.12 + i * 0.12, 0.26, 0.4, 0.025), CR_GOLD, [B(1, 'Leg'), B(-1, 'Leg')], M);
   addPiece(ellipsoid(0, 1.68, 0.26, 0.05, 1, 1, 0.4), CR_GOLD, ['mixamorigSpine2'], M);
+  seam(V3(-0.2, 1.3, 0.24), V3(0.2, 1.3, 0.24), CR_GOLD, ['mixamorigSpine1'], 0.008); [1, -1].forEach(function(s){ var a2 = armPts(s); seam(a2.el.clone().add(V3(0, 0.12, 0.05)), a2.wr.clone().add(V3(0, 0.16, 0.06)), CR_GOLD, [B(s, 'ForeArm'), B(s, 'Hand')], 0.006); });   /* belt cord, sleeve glyph lines */
   /* head: gold mask, white hair */
   addPiece(ellipsoid(0, 2.04, 0.0, 0.11, 0.95, 1.15, 1.0), CR_SKIN, ['mixamorigHead']);
   addPiece(ellipsoid(0, 2.03, 0.075, 0.09, 1.0, 1.2, 0.6), CR_GOLD, ['mixamorigHead'], M);                                                      /* the mask */
@@ -1288,6 +1304,8 @@ function buildSardaukarBody(){
   [[-0.14, 0.12], [0.08, 0.14], [0.18, 0.02]].forEach(function(pp){ addPiece(box(pp[0], 0.98, pp[1], 0.07, 0.09, 0.05), SD_BLACK, ['mixamorigHips']); addPiece(box(pp[0], 1.02, pp[1] + 0.03, 0.07, 0.02, 0.01), SD_BRASS, ['mixamorigHips'], M); });   /* pouches */
   seam(V3(-0.2, 1.74, 0.16), V3(0.2, 1.2, 0.17), SD_GREY, ['mixamorigSpine2', 'mixamorigSpine1', 'mixamorigSpine'], 0.012); seam(V3(0.2, 1.74, 0.16), V3(-0.2, 1.2, 0.17), SD_GREY, ['mixamorigSpine2', 'mixamorigSpine1', 'mixamorigSpine'], 0.012);   /* chest straps */
   addPiece(ellipsoid(0, 1.3, 0.2, 0.035), SD_BRASS, ['mixamorigSpine1'], M);
+  studRing(0, 1.58, 0.29, 0.1, 0.1, 10, 0.007, SD_BRASS, ['mixamorigSpine2']);                                                                       /* roundel rivets */
+  for(var gr = 0; gr < 3; gr++){ addPiece(limbTube(V3(-0.22 + gr * 0.05, 0.9, -0.14), V3(-0.22 + gr * 0.05, 1.04, -0.14), [{ t: 0, r: 0.018 }, { t: 1, r: 0.018 }], 8), SD_GREY, ['mixamorigHips'], M); addPiece(ellipsoid(-0.22 + gr * 0.05, 1.05, -0.14, 0.012), SD_RED, ['mixamorigHips']); }   /* grenades */
   [1, -1].forEach(function(s){ addPiece(ellipsoid(s * 0.22, 1.8, 0.02, 0.03), SD_BRASS, ['mixamorigSpine2'], M); });                                   /* cape clasps */
   /* pleated skirt */
   for(i = 0; i < 12; i++){ var a = i / 12 * Math.PI * 2 + 0.13, px = Math.cos(a) * 0.23, pz = Math.sin(a) * 0.18;
@@ -1328,7 +1346,7 @@ function buildSardaukarBody(){
     studRing(l.kn.x, l.kn.y, l.kn.z + 0.06, 0.07, 0.04, 6, 0.008, SD_BRASS, [UP, LEG]);
     addPiece(limbTube(l.kn, l.an, [{ t: 0, r: 0.105 }, { t: 0.5, r: 0.1 }, { t: 1, r: 0.09 }], 14), SD_BLACK_GLOSS, [LEG, FOOT], M);
     addPiece(box(l.an.x, 0.06, 0.08, 0.17, 0.12, 0.32), SD_BLACK, [FOOT], M);
-    for(var bs = 0; bs < 3; bs++) addPiece(limbTube(V3(l.an.x, 0.16 + bs * 0.12, 0), V3(l.an.x, 0.18 + bs * 0.12, 0), [{ t: 0, r: 0.105 }, { t: 1, r: 0.105 }], 12, false), SD_BRASS, [LEG, FOOT], M);   /* boot straps */
+    for(var bs = 0; bs < 3; bs++) addPiece(limbTube(V3(l.an.x, 0.16 + bs * 0.12, 0), V3(l.an.x, 0.18 + bs * 0.12, 0), [{ t: 0, r: 0.118 }, { t: 1, r: 0.118 }], 14, false), SD_BRASS, [LEG, FOOT], M);   /* boot straps */
     addPiece(spike(V3(l.an.x, 0.04, 0.24), V3(0, 0.05, 1), 0.1, 0.045, 4), SD_BLACK, [FOOT], M);
   });
   /* sword at the left hip, hanging from the belt */
@@ -1385,11 +1403,11 @@ function mbHat(spec){
   if(h.type === 'tallcyl'){ addPiece(bodyTube([{ y: 2.05, rx: 0.14, rz: 0.14 }, { y: 2.4, rx: 0.15, rz: 0.15 }, { y: 2.42, rx: 0.1, rz: 0.1 }], 16), h.color, H);
     for(var i = 0; i < 9; i++){ var a = -1.4 + i * 0.35; addPiece(spike(V3(Math.cos(a) * 0.08, 2.42, Math.sin(a) * 0.08 + 0.02), V3(Math.cos(a) * 0.4, 1, Math.sin(a) * 0.4), 0.14, 0.012, 4), MB_GOLD, H, M); }
     addPiece(ellipsoid(0, 2.22, 0.15, 0.04, 1, 1, 0.4), 0xc02a2a, H); addPiece(ellipsoid(0, 2.22, 0.14, 0.06, 1, 1, 0.3), MB_GOLD, H, M); }
-  if(h.type === 'winged'){ addPiece(ellipsoid(0, 2.12, -0.02, 0.13, 1, 0.8, 1.05), h.color, H);
+  if(h.type === 'winged'){ addPiece(ellipsoid(0, 2.12, -0.02, 0.13, 1, 0.8, 1.05), h.color, H); addPiece(box(0, 2.3, 0.05, 0.05, 0.07, 0.02), 0x101014, H); addPiece(ellipsoid(0, 2.22, 0.1, 0.02), 0xc02a3a, H);
     addPiece(box(0, 2.42, -0.04, 0.16, 0.4, 0.03, [-0.15, 0, 0]), h.color, H); addPiece(box(0, 2.5, -0.02, 0.06, 0.22, 0.035, [-0.2, 0, 0]), 0x101014, H);
     [1, -1].forEach(function(s){ addPiece(box(s * 0.16, 2.2, -0.04, 0.03, 0.3, 0.14, [0, 0, s * -0.4]), h.color, H); }); }
   if(h.type === 'feathers'){ addPiece(ellipsoid(0, 2.1, -0.02, 0.125, 1, 0.9, 1.0), h.color, H);
-    for(i = 0; i < 9; i++){ var ang = -1.2 + i * 0.3; addPiece(box(Math.sin(ang) * 0.1, 2.3, -0.08, 0.05, 0.4, 0.012, [0.3, 0, -ang]), i % 2 ? h.color : h.color2, H); } }
+    for(i = 0; i < 9; i++){ var ang = -1.2 + i * 0.3; addPiece(box(Math.sin(ang) * 0.1, 2.3, -0.08, 0.05, 0.4, 0.012, [0.3, 0, -ang]), i % 2 ? h.color : h.color2, H); addPiece(ellipsoid(Math.sin(ang) * 0.17, 2.49, -0.14, 0.014), i % 2 ? h.color2 : h.color, H); } }
   if(h.type === 'crown'){ addPiece(bodyTube([{ y: 2.08, rx: 0.14, rz: 0.14 }, { y: 2.26, rx: 0.15, rz: 0.15 }, { y: 2.3, rx: 0.1, rz: 0.1 }], 16), h.color, H, M);
     [1, -1].forEach(function(s){ var horn = new THREE.CatmullRomCurve3([V3(s * 0.14, 2.2, 0.02), V3(s * 0.26, 2.3, 0.0), V3(s * 0.28, 2.45, -0.02), V3(s * 0.2, 2.56, -0.04)]);
       addPiece(curveTube(horn, 12, 6, function(t){ return 0.03 * (1 - t * 0.7); }), h.color, H, M); });
@@ -1433,17 +1451,18 @@ function buildMoebiusFigure(spec){
     addPiece(ellipsoid(l.kn.x, l.kn.y, l.kn.z, 0.105), spec.pants, [UP, LEG]);
     addPiece(limbTube(l.kn, l.an, [{ t: 0, r: 0.105 }, { t: 0.5, r: 0.1 }, { t: 1, r: 0.085 }], 14), spec.pants, [LEG, FOOT], { tint: spec.pantsTint }); }
     var bh = spec.bootHeight || 0.3;
-    addPiece(limbTube(V3(l.an.x, 0.1, 0), V3(l.an.x, 0.1 + bh, 0), [{ t: 0, r: 0.1 }, { t: 1, r: 0.105 }], 12), spec.boots, [LEG, FOOT], { metal: spec.bootsMetal });
-    addPiece(limbTube(V3(l.an.x, 0.08 + bh, 0), V3(l.an.x, 0.13 + bh, 0), [{ t: 0, r: 0.11 }, { t: 1, r: 0.112 }], 12, false), spec.bootCuff || spec.boots, [LEG, FOOT], { metal: spec.bootsMetal });   /* cuff */
+    addPiece(limbTube(V3(l.an.x, 0.1, 0), V3(l.an.x, 0.1 + bh, 0), [{ t: 0, r: 0.118 }, { t: 1, r: 0.122 }], 14), spec.boots, [LEG, FOOT], { metal: spec.bootsMetal });
+    addPiece(limbTube(V3(l.an.x, 0.08 + bh, 0), V3(l.an.x, 0.13 + bh, 0), [{ t: 0, r: 0.128 }, { t: 1, r: 0.13 }], 14, false), spec.bootCuff || spec.boots, [LEG, FOOT], { metal: spec.bootsMetal });   /* cuff */
     addPiece(box(l.an.x + s * 0.1, 0.14, 0.04, 0.02, 0.04, 0.03), spec.bootBuckle || MB_GOLD, [FOOT], M);
-    addPiece(box(l.an.x, 0.06, 0.07, 0.17, 0.12, 0.3), spec.boots, [FOOT], { metal: spec.bootsMetal });
+    addPiece(box(l.an.x, 0.06, 0.07, 0.2, 0.12, 0.3), spec.boots, [FOOT], { metal: spec.bootsMetal });
     addPiece(ellipsoid(l.an.x, 0.06, 0.2, 0.085, 1, 0.7, 0.9), spec.boots, [FOOT], { metal: spec.bootsMetal });
   });
   if(spec.robe) [1, -1].forEach(function(s){ var l = legPts(s); addPiece(box(l.an.x, 0.05, 0.1, 0.12, 0.08, 0.26), spec.boots || 0x2a2420, [B(s, 'Foot')]); });
   /* tabard, belt */
   if(spec.tabard) [1, -1].forEach(function(f){ if(f < 0 && spec.tabard.frontOnly) return;
     addPiece(box(0, spec.tabard.y || 0.9, f * 0.2, spec.tabard.w || 0.3, spec.tabard.h || 0.8, 0.02), spec.tabard.color, ['mixamorigSpine1', 'mixamorigSpine', 'mixamorigHips', B(1, 'UpLeg'), B(-1, 'UpLeg')], { power: 2, tint: spec.tabard.tint });
-    addPiece(box(0, (spec.tabard.y || 0.9) - (spec.tabard.h || 0.8) / 2, f * 0.205, spec.tabard.w || 0.3, 0.03, 0.015), spec.tabard.trim || MB_GOLD, [B(1, 'Leg'), B(-1, 'Leg'), 'mixamorigHips'], { power: 2 }); });
+    addPiece(box(0, (spec.tabard.y || 0.9) - (spec.tabard.h || 0.8) / 2, f * 0.205, spec.tabard.w || 0.3, 0.03, 0.015), spec.tabard.trim || MB_GOLD, [B(1, 'Leg'), B(-1, 'Leg'), 'mixamorigHips'], { power: 2 });
+    for(var e = 0; e < 3; e++) seam(V3(-0.08 + e * 0.08, (spec.tabard.y || 0.9) + 0.3, f * 0.212), V3(-0.08 + e * 0.08, (spec.tabard.y || 0.9) - 0.3, f * 0.212), spec.tabard.trim || MB_GOLD, ['mixamorigSpine', 'mixamorigHips', B(1, 'UpLeg'), B(-1, 'UpLeg')], 0.005); });
   if(spec.belt){ addPiece(bodyTube([{ y: 1.08, rx: 0.215, rz: 0.165 }, { y: 1.18, rx: 0.215, rz: 0.165 }], 18), spec.belt.color, ['mixamorigHips', 'mixamorigSpine'], { metal: spec.belt.metal });
     studRing(0, 1.13, 0, 0.218, 0.168, 12, 0.011, spec.belt.buckle || MB_GOLD, ['mixamorigHips']);
     if(spec.pouches) [[-0.15, 0.1], [0.16, 0.08]].forEach(function(pp){ addPiece(box(pp[0], 0.98, pp[1], 0.08, 0.1, 0.05), spec.pouches, ['mixamorigHips']); addPiece(box(pp[0], 1.03, pp[1] + 0.03, 0.08, 0.02, 0.01), MB_GOLD, ['mixamorigHips'], M); });
@@ -1466,6 +1485,8 @@ function buildMoebiusFigure(spec){
     if(spec.boxy) addPiece(box((a.el.x + a.wr.x) / 2, a.el.y, 0, Math.abs(a.wr.x - a.el.x), 0.2, 0.2), spec.sleeves || spec.top, [FA, HAND], { tint: spec.sleeveTint });
     else addPiece(limbTube(a.el, a.wr, [{ t: 0, r: 0.085 }, { t: 1, r: spec.wideSleeves ? 0.13 : 0.075 }], 12), spec.sleeves || spec.top, [FA, HAND], { tint: spec.sleeveTint });
     if(spec.cuffs) addPiece(limbTube(a.el.clone().lerp(a.wr, 0.8), a.wr, [{ t: 0, r: 0.09 }, { t: 1, r: 0.085 }], 12, false), spec.cuffs, [FA, HAND], M);
+    addPiece(limbTube(a.el.clone().lerp(a.wr, 0.88), a.wr.clone().add(V3(s * 0.01, 0, 0)), [{ t: 0, r: spec.wideSleeves ? 0.14 : 0.095 }, { t: 1, r: spec.wideSleeves ? 0.14 : 0.095 }], 12, false), spec.cuffColor || spec.trimColor || MB_GOLD, [FA, HAND], { metal: !spec.cuffColor });   /* wrist cuff */
+    if(spec.earrings && s){ addPiece(ellipsoid(s * 0.105, 1.95, 0.0, 0.02), spec.earrings, ['mixamorigHead'], M); }
     fist(s, spec.gloves || skin, [HAND]);
       if(spec.fringe) for(var fr = 0; fr < 5; fr++){ var fp = V3(s * (0.2 + fr * 0.02), 1.06, -0.1 + fr * 0.05); addPiece(limbTube(fp, V3(fp.x + s * 0.02, 0.4, fp.z - 0.03), [{ t: 0, r: 0.012 }, { t: 1, r: 0.008 }], 5), spec.fringe, ['mixamorigHips', B(s, 'UpLeg'), B(s, 'Leg')], { power: 2 }); }   /* hip fringe */
     if(spec.streamers) for(var k = 0; k < 4; k++){ var sp = V3(a.sh.x + s * 0.05, a.sh.y - 0.05, -0.1 + k * 0.06);
@@ -1495,14 +1516,14 @@ var MOEBIUS_SPECS = [
   { key: 'padishah', name: 'Moebius: hooded priest', skin: 0xd8b090, hat: { type: 'tallcyl', color: 0x101418 }, top: 0x14181e, robe: { color: 0x14181e, tint: function(){ var k, s, o; return function(p){ if(!k){ k = C(0x14181e); s = C(0xc8c0b8); o = C(0xe88a3a); } if(p.y > 0.45) return k; var v = Math.atan2(p.z, p.x) * 8; return (Math.floor(v) % 2 + 2) % 2 ? s : o; }; }() },
     sleeves: 0x14181e, wideSleeves: true, discs: 5, emblem: { color: 0xf0e8e0, r: 0.06 }, staff: { color: 0xc8302a, head: spiralStaffHead }, boots: 0x101418, hatDiscs: true },
   { key: 'jessica', name: 'Moebius: lady with streamers', skin: 0xe0c0a8, hair: { type: 'bob', color: 0x14121a }, hat: { type: 'ruff', color: 0x2a4aa8 }, top: 0x2a4aa8, bareMidriff: true, pants: 0x2a3a8a, pantsTint: blotchTint(0x2a3a8a, 0x4a6ad0), boots: 0x8a9ab8, bootsMetal: true, bootHeight: 0.5,
-    emblem: { color: 0xd84a3a, r: 0.06 }, streamers: 0x7a9a3a, sleeves: 0x3a4a9a, gloves: 0x8a9ab8, belt: { color: 0x2a3a8a, buckle: 0xd84a3a }, holster: 0x4a3a3a, staff: { color: 0xd8dce4, head: null, thick: true }, face: { r: 0.1, iris: 0x3a6a9a, brow: 0x14121a, lips: 0xc02a4a } },
+    emblem: { color: 0xd84a3a, r: 0.06 }, streamers: 0x7a9a3a, sleeves: 0x3a4a9a, gloves: 0x8a9ab8, belt: { color: 0x2a3a8a, buckle: 0xd84a3a }, holster: 0x4a3a3a, earrings: 0xd8b048, cuffColor: 0x8a9ab8, staff: { color: 0xd8dce4, head: null, thick: true }, face: { r: 0.1, iris: 0x3a6a9a, brow: 0x14121a, lips: 0xc02a4a } },
   { key: 'harkonnen', name: 'Moebius: pink baron', skin: 0xe8b0a0, hat: { type: 'pinkhelm', color: 0xf0b0c8, color2: 0xf08a3a }, top: 0xf0b0c8, topTint: blotchTint(0xf0b0c8, 0x3a2a3a), pants: 0xf0b0c8, pantsTint: blotchTint(0xf0b0c8, 0x3a2a3a), boots: 0xf0b0c8, bootHeight: 0.2,
-    sleeves: 0xc8d0a0, sleeveTint: stripeTint(0xc8d0a0, 0x4a7a3a, 14, false), shoulders: { type: 'balls', color: 0xf08a3a, color2: 0xf0b0c8 }, belt: { color: 0xe8c040, buckle: 0x9a6a2a }, gloves: 0xf0b0c8, boxy: true, kneeBalls: 0xf08a3a },
+    sleeves: 0xc8d0a0, sleeveTint: stripeTint(0xc8d0a0, 0x4a7a3a, 14, false), shoulders: { type: 'balls', color: 0xf08a3a, color2: 0xf0b0c8 }, belt: { color: 0xe8c040, buckle: 0x9a6a2a }, gloves: 0xf0b0c8, boxy: true, kneeBalls: 0xf08a3a, cuffColor: 0xf08a3a },
   { key: 'stilgar', name: 'Moebius: desert captain', skin: 0xc89870, hair: { type: 'curly', color: 0x8a5a2a }, top: 0x4a7a4a, pants: 0x8a7a5a, boots: 0x6a4a2a, bootHeight: 0.3,
     cape: { color: 0xd89a3a, length: 1.5, width: 0.4, trim: 0x8a5a1a }, emblem: { color: 0xc02a3a, r: 0.09 }, belt: { color: 0xd8b048, metal: true }, pouches: 0x6a4a2a, cuffs: 0xd8b048, gloves: 0x6a4a2a, sword: true, face: { r: 0.105, iris: 0x3a5a3a, brow: 0x6a4a2a, beard: 0x8a5a2a } },
   { key: 'goldpriest', name: 'Moebius: gold priest', skin: 0x6a9a6a, hat: { type: 'crown', color: 0xd8b048, color2: 0x4a8a5a }, top: 0xe8a030, robe: { color: 0xe8a030, tint: stripeTint(0xe8a030, 0xd84a2a, 4, false) },
     sleeves: 0xe8a030, wideSleeves: true, shoulders: { type: 'pleated', color: 0xe8a030, color2: 0xf0d060 }, emblem: { color: 0xc8302a, r: 0.06 }, discs: 5, ornaments: true, boots: 0x6a4a2a },
-  { key: 'greenwoman', name: 'Moebius: woman in green', skin: 0xe0c0a8, hat: { type: 'hood', color: 0xd83a2a }, top: 0x2a6a3a, robe: { color: 0x2a6a3a }, sleeves: 0x9a9aa0, gloves: 0x9a9aa0, hook: true, beltCord: 0xd8b048, boots: 0x2a2a2a, face: { r: 0.1, iris: 0x3a7a5a, brow: 0xb83a2a, lips: 0xc04a5a } }
+  { key: 'greenwoman', name: 'Moebius: woman in green', skin: 0xe0c0a8, hat: { type: 'hood', color: 0xd83a2a }, top: 0x2a6a3a, robe: { color: 0x2a6a3a }, sleeves: 0x9a9aa0, gloves: 0x9a9aa0, hook: true, beltCord: 0xd8b048, boots: 0x2a2a2a, cuffColor: 0x6a6a70, face: { r: 0.1, iris: 0x3a7a5a, brow: 0xb83a2a, lips: 0xc04a5a } }
 ];
 MOEBIUS_SPECS.forEach(function(spec){
   registerCharacter({ key: spec.key, name: spec.name, clips: ['idle', 'mixamo', 'walk', 'midle', 'run'], defaultClip: 'idle',

@@ -38,6 +38,8 @@ function buildPriestBody(){
   /* the mitre */
   addPiece(limbTube(V3(0, 2.36, -0.02), V3(0, 2.98, -0.04), [{ t: 0, r: 0.23 }, { t: 0.5, r: 0.17 }, { t: 0.9, r: 0.07 }, { t: 1, r: 0.03 }], 24), PR_BLACK, ['mixamorigHead'], { tint: priestTint(7, 14) });
   addPiece(ellipsoid(0, 3.0, -0.04, 0.045), 0xffe02a, ['mixamorigHead']);
+  addPiece(limbTube(V3(0, 3.0, -0.04), V3(0.08, 2.85, -0.12), [{ t: 0, r: 0.006 }, { t: 1, r: 0.005 }], 4), 0xff2a8a, ['mixamorigHead']); addPiece(ellipsoid(0.08, 2.84, -0.12, 0.025, 1, 1.4, 1), 0xff2a8a, ['mixamorigHead']);   /* tassel */
+  [1, -1].forEach(function(s){ addPiece(ellipsoid(s * 0.05, 2.28, 0.205, 0.012), 0xff3aa0, ['mixamorigHead']); });   /* glowing eyes */
   for(i = 0; i < 8; i++){ var a = i / 8 * Math.PI * 2; addPiece(spike(V3(Math.cos(a) * 0.04, 3.02, -0.04 + Math.sin(a) * 0.04), V3(Math.cos(a), 1.2, Math.sin(a)), 0.07, 0.008, 4), 0xffe02a, ['mixamorigHead']); }
   [1, -1].forEach(function(s){ addPiece(box(s * 0.26, 2.52, -0.02, 0.1, 0.14, 0.02, [0, 0, s * 0.3]), 0xd8c070, ['mixamorigHead'], { metal: true }); }); /* side fins */
   /* the sun disc over the brow */

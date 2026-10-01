@@ -33,6 +33,8 @@ function buildPilgrimBody(){
   faceHuman(2.05, PG_SKIN, { r: 0.11, iris: 0x3a4a5a, brow: 0x3a2a20 });
   addPiece(bodyTube([{ y: 2.1, rx: 0.14, rz: 0.14 }, { y: 2.16, rx: 0.15, rz: 0.15 }, { y: 2.42, rx: 0.12, rz: 0.12 }, { y: 2.56, rx: 0.07, rz: 0.07 }, { y: 2.62, rx: 0.02, rz: 0.02 }], 18), PG_WHITE, ['mixamorigHead']);
   addPiece(box(0, 2.3, 0.13, 0.05, 0.1, 0.02), PG_GOLD, ['mixamorigHead'], M); addPiece(ellipsoid(0, 2.36, 0.14, 0.02), PG_RED, ['mixamorigHead']);
+  addPiece(limbTube(V3(0, 2.62, 0), V3(0.06, 2.5, -0.1), [{ t: 0, r: 0.008 }, { t: 1, r: 0.006 }], 4), PG_BLUE, ['mixamorigHead']); addPiece(ellipsoid(0.06, 2.49, -0.1, 0.018), PG_GOLD, ['mixamorigHead'], M);   /* hat tassel */
+  for(var sb = 0; sb < 3; sb++) addPiece(ellipsoid(0, 1.72 - sb * 0.05, 0.215, 0.009), PG_GOLD, ['mixamorigSpine2'], M);   /* collar buttons */
   [1, -1].forEach(function(s){ addPiece(box(s * 0.14, 2.0, 0.0, 0.03, 0.2, 0.12), PG_WHITE, ['mixamorigHead']); addPiece(ellipsoid(s * 0.16, 2.0, 0.0, 0.03, 0.5, 1, 1), PG_BLUE, ['mixamorigHead']); });  /* ear flaps */
   /* arms: white sleeves, bare hands with bracelets */
   [1, -1].forEach(function(s){
@@ -52,10 +54,10 @@ function buildPilgrimBody(){
     addPiece(limbTube(l.hp, l.kn, [{ t: 0, r: 0.15 }, { t: 0.5, r: 0.14 }, { t: 1, r: 0.11 }], 14), PG_GREY, [UP, LEG]);
     addPiece(ellipsoid(l.kn.x, l.kn.y, l.kn.z, 0.105), PG_GREY, [UP, LEG]);
     addPiece(limbTube(l.kn, l.an, [{ t: 0, r: 0.105 }, { t: 0.5, r: 0.1 }, { t: 1, r: 0.09 }], 14), PG_GREY, [LEG, FOOT]);
-    addPiece(limbTube(V3(l.an.x, 0.1, 0), V3(l.an.x, 0.42, 0), [{ t: 0, r: 0.1 }, { t: 1, r: 0.105 }], 12), PG_WHITE, [LEG, FOOT]);
+    addPiece(limbTube(V3(l.an.x, 0.1, 0), V3(l.an.x, 0.42, 0), [{ t: 0, r: 0.118 }, { t: 1, r: 0.12 }], 14), PG_WHITE, [LEG, FOOT]);
     addPiece(box(l.an.x, 0.06, 0.07, 0.17, 0.12, 0.3), PG_WHITE, [FOOT]);
     addPiece(ellipsoid(l.an.x, 0.06, 0.2, 0.085, 1, 0.7, 0.9), PG_WHITE, [FOOT]);
-    addPiece(limbTube(V3(l.an.x, 0.14, 0), V3(l.an.x, 0.17, 0), [{ t: 0, r: 0.105 }, { t: 1, r: 0.105 }], 12, false), PG_ORANGE, [FOOT]); addPiece(box(l.an.x + s * 0.1, 0.155, 0.02, 0.02, 0.04, 0.03), PG_GOLD, [FOOT], M);   /* boot strap */
+    addPiece(limbTube(V3(l.an.x, 0.14, 0), V3(l.an.x, 0.17, 0), [{ t: 0, r: 0.125 }, { t: 1, r: 0.125 }], 14, false), PG_ORANGE, [FOOT]); addPiece(box(l.an.x + s * 0.1, 0.155, 0.02, 0.02, 0.04, 0.03), PG_GOLD, [FOOT], M);   /* boot strap */
   });
 }
 function buildStaff(color, headFn){

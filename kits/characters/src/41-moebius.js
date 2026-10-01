@@ -31,11 +31,11 @@ function mbHat(spec){
   if(h.type === 'tallcyl'){ addPiece(bodyTube([{ y: 2.05, rx: 0.14, rz: 0.14 }, { y: 2.4, rx: 0.15, rz: 0.15 }, { y: 2.42, rx: 0.1, rz: 0.1 }], 16), h.color, H);
     for(var i = 0; i < 9; i++){ var a = -1.4 + i * 0.35; addPiece(spike(V3(Math.cos(a) * 0.08, 2.42, Math.sin(a) * 0.08 + 0.02), V3(Math.cos(a) * 0.4, 1, Math.sin(a) * 0.4), 0.14, 0.012, 4), MB_GOLD, H, M); }
     addPiece(ellipsoid(0, 2.22, 0.15, 0.04, 1, 1, 0.4), 0xc02a2a, H); addPiece(ellipsoid(0, 2.22, 0.14, 0.06, 1, 1, 0.3), MB_GOLD, H, M); }
-  if(h.type === 'winged'){ addPiece(ellipsoid(0, 2.12, -0.02, 0.13, 1, 0.8, 1.05), h.color, H);
+  if(h.type === 'winged'){ addPiece(ellipsoid(0, 2.12, -0.02, 0.13, 1, 0.8, 1.05), h.color, H); addPiece(box(0, 2.3, 0.05, 0.05, 0.07, 0.02), 0x101014, H); addPiece(ellipsoid(0, 2.22, 0.1, 0.02), 0xc02a3a, H);
     addPiece(box(0, 2.42, -0.04, 0.16, 0.4, 0.03, [-0.15, 0, 0]), h.color, H); addPiece(box(0, 2.5, -0.02, 0.06, 0.22, 0.035, [-0.2, 0, 0]), 0x101014, H);
     [1, -1].forEach(function(s){ addPiece(box(s * 0.16, 2.2, -0.04, 0.03, 0.3, 0.14, [0, 0, s * -0.4]), h.color, H); }); }
   if(h.type === 'feathers'){ addPiece(ellipsoid(0, 2.1, -0.02, 0.125, 1, 0.9, 1.0), h.color, H);
-    for(i = 0; i < 9; i++){ var ang = -1.2 + i * 0.3; addPiece(box(Math.sin(ang) * 0.1, 2.3, -0.08, 0.05, 0.4, 0.012, [0.3, 0, -ang]), i % 2 ? h.color : h.color2, H); } }
+    for(i = 0; i < 9; i++){ var ang = -1.2 + i * 0.3; addPiece(box(Math.sin(ang) * 0.1, 2.3, -0.08, 0.05, 0.4, 0.012, [0.3, 0, -ang]), i % 2 ? h.color : h.color2, H); addPiece(ellipsoid(Math.sin(ang) * 0.17, 2.49, -0.14, 0.014), i % 2 ? h.color2 : h.color, H); } }
   if(h.type === 'crown'){ addPiece(bodyTube([{ y: 2.08, rx: 0.14, rz: 0.14 }, { y: 2.26, rx: 0.15, rz: 0.15 }, { y: 2.3, rx: 0.1, rz: 0.1 }], 16), h.color, H, M);
     [1, -1].forEach(function(s){ var horn = new THREE.CatmullRomCurve3([V3(s * 0.14, 2.2, 0.02), V3(s * 0.26, 2.3, 0.0), V3(s * 0.28, 2.45, -0.02), V3(s * 0.2, 2.56, -0.04)]);
       addPiece(curveTube(horn, 12, 6, function(t){ return 0.03 * (1 - t * 0.7); }), h.color, H, M); });
@@ -79,17 +79,18 @@ function buildMoebiusFigure(spec){
     addPiece(ellipsoid(l.kn.x, l.kn.y, l.kn.z, 0.105), spec.pants, [UP, LEG]);
     addPiece(limbTube(l.kn, l.an, [{ t: 0, r: 0.105 }, { t: 0.5, r: 0.1 }, { t: 1, r: 0.085 }], 14), spec.pants, [LEG, FOOT], { tint: spec.pantsTint }); }
     var bh = spec.bootHeight || 0.3;
-    addPiece(limbTube(V3(l.an.x, 0.1, 0), V3(l.an.x, 0.1 + bh, 0), [{ t: 0, r: 0.1 }, { t: 1, r: 0.105 }], 12), spec.boots, [LEG, FOOT], { metal: spec.bootsMetal });
-    addPiece(limbTube(V3(l.an.x, 0.08 + bh, 0), V3(l.an.x, 0.13 + bh, 0), [{ t: 0, r: 0.11 }, { t: 1, r: 0.112 }], 12, false), spec.bootCuff || spec.boots, [LEG, FOOT], { metal: spec.bootsMetal });   /* cuff */
+    addPiece(limbTube(V3(l.an.x, 0.1, 0), V3(l.an.x, 0.1 + bh, 0), [{ t: 0, r: 0.118 }, { t: 1, r: 0.122 }], 14), spec.boots, [LEG, FOOT], { metal: spec.bootsMetal });
+    addPiece(limbTube(V3(l.an.x, 0.08 + bh, 0), V3(l.an.x, 0.13 + bh, 0), [{ t: 0, r: 0.128 }, { t: 1, r: 0.13 }], 14, false), spec.bootCuff || spec.boots, [LEG, FOOT], { metal: spec.bootsMetal });   /* cuff */
     addPiece(box(l.an.x + s * 0.1, 0.14, 0.04, 0.02, 0.04, 0.03), spec.bootBuckle || MB_GOLD, [FOOT], M);
-    addPiece(box(l.an.x, 0.06, 0.07, 0.17, 0.12, 0.3), spec.boots, [FOOT], { metal: spec.bootsMetal });
+    addPiece(box(l.an.x, 0.06, 0.07, 0.2, 0.12, 0.3), spec.boots, [FOOT], { metal: spec.bootsMetal });
     addPiece(ellipsoid(l.an.x, 0.06, 0.2, 0.085, 1, 0.7, 0.9), spec.boots, [FOOT], { metal: spec.bootsMetal });
   });
   if(spec.robe) [1, -1].forEach(function(s){ var l = legPts(s); addPiece(box(l.an.x, 0.05, 0.1, 0.12, 0.08, 0.26), spec.boots || 0x2a2420, [B(s, 'Foot')]); });
   /* tabard, belt */
   if(spec.tabard) [1, -1].forEach(function(f){ if(f < 0 && spec.tabard.frontOnly) return;
     addPiece(box(0, spec.tabard.y || 0.9, f * 0.2, spec.tabard.w || 0.3, spec.tabard.h || 0.8, 0.02), spec.tabard.color, ['mixamorigSpine1', 'mixamorigSpine', 'mixamorigHips', B(1, 'UpLeg'), B(-1, 'UpLeg')], { power: 2, tint: spec.tabard.tint });
-    addPiece(box(0, (spec.tabard.y || 0.9) - (spec.tabard.h || 0.8) / 2, f * 0.205, spec.tabard.w || 0.3, 0.03, 0.015), spec.tabard.trim || MB_GOLD, [B(1, 'Leg'), B(-1, 'Leg'), 'mixamorigHips'], { power: 2 }); });
+    addPiece(box(0, (spec.tabard.y || 0.9) - (spec.tabard.h || 0.8) / 2, f * 0.205, spec.tabard.w || 0.3, 0.03, 0.015), spec.tabard.trim || MB_GOLD, [B(1, 'Leg'), B(-1, 'Leg'), 'mixamorigHips'], { power: 2 });
+    for(var e = 0; e < 3; e++) seam(V3(-0.08 + e * 0.08, (spec.tabard.y || 0.9) + 0.3, f * 0.212), V3(-0.08 + e * 0.08, (spec.tabard.y || 0.9) - 0.3, f * 0.212), spec.tabard.trim || MB_GOLD, ['mixamorigSpine', 'mixamorigHips', B(1, 'UpLeg'), B(-1, 'UpLeg')], 0.005); });
   if(spec.belt){ addPiece(bodyTube([{ y: 1.08, rx: 0.215, rz: 0.165 }, { y: 1.18, rx: 0.215, rz: 0.165 }], 18), spec.belt.color, ['mixamorigHips', 'mixamorigSpine'], { metal: spec.belt.metal });
     studRing(0, 1.13, 0, 0.218, 0.168, 12, 0.011, spec.belt.buckle || MB_GOLD, ['mixamorigHips']);
     if(spec.pouches) [[-0.15, 0.1], [0.16, 0.08]].forEach(function(pp){ addPiece(box(pp[0], 0.98, pp[1], 0.08, 0.1, 0.05), spec.pouches, ['mixamorigHips']); addPiece(box(pp[0], 1.03, pp[1] + 0.03, 0.08, 0.02, 0.01), MB_GOLD, ['mixamorigHips'], M); });
@@ -112,6 +113,8 @@ function buildMoebiusFigure(spec){
     if(spec.boxy) addPiece(box((a.el.x + a.wr.x) / 2, a.el.y, 0, Math.abs(a.wr.x - a.el.x), 0.2, 0.2), spec.sleeves || spec.top, [FA, HAND], { tint: spec.sleeveTint });
     else addPiece(limbTube(a.el, a.wr, [{ t: 0, r: 0.085 }, { t: 1, r: spec.wideSleeves ? 0.13 : 0.075 }], 12), spec.sleeves || spec.top, [FA, HAND], { tint: spec.sleeveTint });
     if(spec.cuffs) addPiece(limbTube(a.el.clone().lerp(a.wr, 0.8), a.wr, [{ t: 0, r: 0.09 }, { t: 1, r: 0.085 }], 12, false), spec.cuffs, [FA, HAND], M);
+    addPiece(limbTube(a.el.clone().lerp(a.wr, 0.88), a.wr.clone().add(V3(s * 0.01, 0, 0)), [{ t: 0, r: spec.wideSleeves ? 0.14 : 0.095 }, { t: 1, r: spec.wideSleeves ? 0.14 : 0.095 }], 12, false), spec.cuffColor || spec.trimColor || MB_GOLD, [FA, HAND], { metal: !spec.cuffColor });   /* wrist cuff */
+    if(spec.earrings && s){ addPiece(ellipsoid(s * 0.105, 1.95, 0.0, 0.02), spec.earrings, ['mixamorigHead'], M); }
     fist(s, spec.gloves || skin, [HAND]);
       if(spec.fringe) for(var fr = 0; fr < 5; fr++){ var fp = V3(s * (0.2 + fr * 0.02), 1.06, -0.1 + fr * 0.05); addPiece(limbTube(fp, V3(fp.x + s * 0.02, 0.4, fp.z - 0.03), [{ t: 0, r: 0.012 }, { t: 1, r: 0.008 }], 5), spec.fringe, ['mixamorigHips', B(s, 'UpLeg'), B(s, 'Leg')], { power: 2 }); }   /* hip fringe */
     if(spec.streamers) for(var k = 0; k < 4; k++){ var sp = V3(a.sh.x + s * 0.05, a.sh.y - 0.05, -0.1 + k * 0.06);
@@ -141,14 +144,14 @@ var MOEBIUS_SPECS = [
   { key: 'padishah', name: 'Moebius: hooded priest', skin: 0xd8b090, hat: { type: 'tallcyl', color: 0x101418 }, top: 0x14181e, robe: { color: 0x14181e, tint: function(){ var k, s, o; return function(p){ if(!k){ k = C(0x14181e); s = C(0xc8c0b8); o = C(0xe88a3a); } if(p.y > 0.45) return k; var v = Math.atan2(p.z, p.x) * 8; return (Math.floor(v) % 2 + 2) % 2 ? s : o; }; }() },
     sleeves: 0x14181e, wideSleeves: true, discs: 5, emblem: { color: 0xf0e8e0, r: 0.06 }, staff: { color: 0xc8302a, head: spiralStaffHead }, boots: 0x101418, hatDiscs: true },
   { key: 'jessica', name: 'Moebius: lady with streamers', skin: 0xe0c0a8, hair: { type: 'bob', color: 0x14121a }, hat: { type: 'ruff', color: 0x2a4aa8 }, top: 0x2a4aa8, bareMidriff: true, pants: 0x2a3a8a, pantsTint: blotchTint(0x2a3a8a, 0x4a6ad0), boots: 0x8a9ab8, bootsMetal: true, bootHeight: 0.5,
-    emblem: { color: 0xd84a3a, r: 0.06 }, streamers: 0x7a9a3a, sleeves: 0x3a4a9a, gloves: 0x8a9ab8, belt: { color: 0x2a3a8a, buckle: 0xd84a3a }, holster: 0x4a3a3a, staff: { color: 0xd8dce4, head: null, thick: true }, face: { r: 0.1, iris: 0x3a6a9a, brow: 0x14121a, lips: 0xc02a4a } },
+    emblem: { color: 0xd84a3a, r: 0.06 }, streamers: 0x7a9a3a, sleeves: 0x3a4a9a, gloves: 0x8a9ab8, belt: { color: 0x2a3a8a, buckle: 0xd84a3a }, holster: 0x4a3a3a, earrings: 0xd8b048, cuffColor: 0x8a9ab8, staff: { color: 0xd8dce4, head: null, thick: true }, face: { r: 0.1, iris: 0x3a6a9a, brow: 0x14121a, lips: 0xc02a4a } },
   { key: 'harkonnen', name: 'Moebius: pink baron', skin: 0xe8b0a0, hat: { type: 'pinkhelm', color: 0xf0b0c8, color2: 0xf08a3a }, top: 0xf0b0c8, topTint: blotchTint(0xf0b0c8, 0x3a2a3a), pants: 0xf0b0c8, pantsTint: blotchTint(0xf0b0c8, 0x3a2a3a), boots: 0xf0b0c8, bootHeight: 0.2,
-    sleeves: 0xc8d0a0, sleeveTint: stripeTint(0xc8d0a0, 0x4a7a3a, 14, false), shoulders: { type: 'balls', color: 0xf08a3a, color2: 0xf0b0c8 }, belt: { color: 0xe8c040, buckle: 0x9a6a2a }, gloves: 0xf0b0c8, boxy: true, kneeBalls: 0xf08a3a },
+    sleeves: 0xc8d0a0, sleeveTint: stripeTint(0xc8d0a0, 0x4a7a3a, 14, false), shoulders: { type: 'balls', color: 0xf08a3a, color2: 0xf0b0c8 }, belt: { color: 0xe8c040, buckle: 0x9a6a2a }, gloves: 0xf0b0c8, boxy: true, kneeBalls: 0xf08a3a, cuffColor: 0xf08a3a },
   { key: 'stilgar', name: 'Moebius: desert captain', skin: 0xc89870, hair: { type: 'curly', color: 0x8a5a2a }, top: 0x4a7a4a, pants: 0x8a7a5a, boots: 0x6a4a2a, bootHeight: 0.3,
     cape: { color: 0xd89a3a, length: 1.5, width: 0.4, trim: 0x8a5a1a }, emblem: { color: 0xc02a3a, r: 0.09 }, belt: { color: 0xd8b048, metal: true }, pouches: 0x6a4a2a, cuffs: 0xd8b048, gloves: 0x6a4a2a, sword: true, face: { r: 0.105, iris: 0x3a5a3a, brow: 0x6a4a2a, beard: 0x8a5a2a } },
   { key: 'goldpriest', name: 'Moebius: gold priest', skin: 0x6a9a6a, hat: { type: 'crown', color: 0xd8b048, color2: 0x4a8a5a }, top: 0xe8a030, robe: { color: 0xe8a030, tint: stripeTint(0xe8a030, 0xd84a2a, 4, false) },
     sleeves: 0xe8a030, wideSleeves: true, shoulders: { type: 'pleated', color: 0xe8a030, color2: 0xf0d060 }, emblem: { color: 0xc8302a, r: 0.06 }, discs: 5, ornaments: true, boots: 0x6a4a2a },
-  { key: 'greenwoman', name: 'Moebius: woman in green', skin: 0xe0c0a8, hat: { type: 'hood', color: 0xd83a2a }, top: 0x2a6a3a, robe: { color: 0x2a6a3a }, sleeves: 0x9a9aa0, gloves: 0x9a9aa0, hook: true, beltCord: 0xd8b048, boots: 0x2a2a2a, face: { r: 0.1, iris: 0x3a7a5a, brow: 0xb83a2a, lips: 0xc04a5a } }
+  { key: 'greenwoman', name: 'Moebius: woman in green', skin: 0xe0c0a8, hat: { type: 'hood', color: 0xd83a2a }, top: 0x2a6a3a, robe: { color: 0x2a6a3a }, sleeves: 0x9a9aa0, gloves: 0x9a9aa0, hook: true, beltCord: 0xd8b048, boots: 0x2a2a2a, cuffColor: 0x6a6a70, face: { r: 0.1, iris: 0x3a7a5a, brow: 0xb83a2a, lips: 0xc04a5a } }
 ];
 MOEBIUS_SPECS.forEach(function(spec){
   registerCharacter({ key: spec.key, name: spec.name, clips: ['idle', 'mixamo', 'walk', 'midle', 'run'], defaultClip: 'idle',

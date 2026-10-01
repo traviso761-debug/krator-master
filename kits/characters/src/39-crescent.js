@@ -26,6 +26,7 @@ function buildCrescentBody(){
   addPiece(box(0, 0.9, 0.315, 0.03, 0.8, 0.01), CR_GOLD, ['mixamorigSpine', 'mixamorigHips', B(1, 'UpLeg'), B(-1, 'UpLeg')], { metal: true, power: 2 });
   for(i = 0; i < 3; i++) addPiece(ellipsoid(-0.12 + i * 0.12, 0.26, 0.4, 0.025), CR_GOLD, [B(1, 'Leg'), B(-1, 'Leg')], M);
   addPiece(ellipsoid(0, 1.68, 0.26, 0.05, 1, 1, 0.4), CR_GOLD, ['mixamorigSpine2'], M);
+  seam(V3(-0.2, 1.3, 0.24), V3(0.2, 1.3, 0.24), CR_GOLD, ['mixamorigSpine1'], 0.008); [1, -1].forEach(function(s){ var a2 = armPts(s); seam(a2.el.clone().add(V3(0, 0.12, 0.05)), a2.wr.clone().add(V3(0, 0.16, 0.06)), CR_GOLD, [B(s, 'ForeArm'), B(s, 'Hand')], 0.006); });   /* belt cord, sleeve glyph lines */
   /* head: gold mask, white hair */
   addPiece(ellipsoid(0, 2.04, 0.0, 0.11, 0.95, 1.15, 1.0), CR_SKIN, ['mixamorigHead']);
   addPiece(ellipsoid(0, 2.03, 0.075, 0.09, 1.0, 1.2, 0.6), CR_GOLD, ['mixamorigHead'], M);                                                      /* the mask */

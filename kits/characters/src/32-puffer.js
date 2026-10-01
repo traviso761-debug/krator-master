@@ -85,6 +85,8 @@ function buildPufferBody(){
   /* rope belt (a ring of knots), sashes, skirt plates */
   for(i = 0; i < 26; i++){ var ang2 = i / 26 * Math.PI * 2; addPiece(ellipsoid(Math.cos(ang2) * 0.64, 0.98 + (i % 2) * 0.03, Math.sin(ang2) * 0.56, 0.085, 1, 0.8, 1), PF_ROPE, ['mixamorigHips', 'mixamorigSpine']); }
   addPiece(bodyTube([{ y: 0.86, rx: 0.60, rz: 0.52 }, { y: 0.95, rx: 0.63, rz: 0.55 }], 28), PF_PURPLE, ['mixamorigHips']);
+  addPiece(ellipsoid(-0.3, 0.88, 0.5, 0.045, 0.9, 1.1, 0.9), PF_BONE, ['mixamorigHips']); [1, -1].forEach(function(s){ addPiece(ellipsoid(-0.3 + s * 0.015, 0.89, 0.54, 0.01), 0x101010, ['mixamorigHips']); });   /* skull charm */
+  [1, -1].forEach(function(s){ addPiece(ellipsoid(s * 0.045, 1.72, 0.44, 0.012, 1, 0.7, 0.5), 0x3a3a30, ['mixamorigHead']); });   /* nostrils */
   for(i = 0; i < 8; i++){ var ang3 = i / 8 * Math.PI * 2 + 0.2, px = Math.cos(ang3) * 0.5, pz = Math.sin(ang3) * 0.44;
     addPiece(box(px, 0.70, pz, 0.26, 0.34, 0.03, [0, -ang3 + Math.PI / 2, 0]), PF_NAVY, ['mixamorigHips', B(px > 0 ? 1 : -1, 'UpLeg')]);
     addPiece(box(px * 1.02, 0.74, pz * 1.02, 0.2, 0.05, 0.03, [0, -ang3 + Math.PI / 2, 0]), PF_RED, ['mixamorigHips', B(px > 0 ? 1 : -1, 'UpLeg')]); }

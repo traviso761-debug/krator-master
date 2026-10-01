@@ -66,6 +66,7 @@ function buildNagaBody(){
   addPiece(curveTube(curve, 56, 16, function(t){ return 0.2 * (1 - t * 0.85) + 0.02 * Math.sin(t * 40) * (1 - t); }), NG_SCALE, bones, { tint: tint, power: 3 });
   for(i = 2; i < 30; i++){ var st = i / 30, sp = curve.getPoint(st), sr = 0.2 * (1 - st * 0.85); addPiece(ellipsoid(sp.x, sp.y + (st < 0.25 ? 0 : sr * 0.95), sp.z - (st < 0.25 ? sr * 0.95 : 0), 0.02 * (1 - st * 0.6) + 0.006, 1, 0.6, 1.4), NG_SCALE_DARK, [bones[Math.min(7, Math.max(1, Math.round(st * 7)))]]); }   /* dorsal ridge scales */
   addPiece(bodyTube([{ y: 1.0, rx: 0.2, rz: 0.16 }, { y: 1.06, rx: 0.2, rz: 0.16 }], 20), 0x6a2a2a, ['mixamorigHips']);                           /* the sash at the join */
+  for(i = 0; i < 16; i++){ var ca = i / 16 * Math.PI * 2; addPiece(limbTube(V3(Math.cos(ca) * 0.2, 1.0, Math.sin(ca) * 0.16), V3(Math.cos(ca) * 0.2, 0.95, Math.sin(ca) * 0.16), [{ t: 0, r: 0.004 }, { t: 1, r: 0.004 }], 4), NG_GOLD, ['mixamorigHips'], { metal: true }); addPiece(ellipsoid(Math.cos(ca) * 0.2, 0.94, Math.sin(ca) * 0.16, 0.014, 1, 1, 0.4), NG_GOLD, ['mixamorigHips'], { metal: true }); }   /* coin fringe */
 }
 function buildDagger(iceBlade){
   var g = new THREE.Group(), steel = propMat(iceBlade ? NG_ICE : NG_BLADE, 0.9, iceBlade ? 0.2 : 0.3), grip = propMat(0x2a2020), gold = propMat(NG_GOLD, 0.9, 0.35);
