@@ -134,7 +134,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `8am-yv-c-terrace.js` | 6 |  |
 | `8am-yv-d-dish.js` | 5 |  |
 | `8am-yv-e-hosp.js` | 6 |  |
-| `8an-iz-stumps.js` | 11 |  |
+| `8an-iz-stumps.js` | 14 |  |
 | `90-scene.js` | 7 | scene (1) |
 | `91-probe.js` | 6 | probe (window._api) (1) |
 | `92-camera.js` | 6 | camera control (1); DAY / NIGHT (2) |
