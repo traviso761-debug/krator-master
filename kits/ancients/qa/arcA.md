@@ -8,15 +8,22 @@ intermediate rounds `qa_<t>_r1..r5/`). Seeds unchanged.
 
 Triangles are scene triangles per decay (d0 / d1), ceiling 700 000.
 
+**Resumed 2026-10-01 (second agent).** The first agent was stopped mid-pass
+and its diff recovered as commit 8fafcd2. Re-verified on `ancients-resume`
+before anything else: all seven targets build, `jscheck` PARSES OK, `verify.py
+--assert` error panel clean and every invariant PASS (shots `qa_<t>_v1/`, hero,
+ruin and the views this pass touched). Nothing the recovered code did was
+broken. Placeholders it left in this file are filled from those runs.
+
 | type | before | after |
 |---|---|---|
 | ring | 540 922 / 502 668 | 575 366 / 532 580 |
 | arcbeam | 488 454 / 472 468 | 499 174 / 483 780 |
 | plymouth | 449 262 / 378 270 | 454 530 / 460 890 |
-| launch | LAUNCH_BEFORE | 415 200 / 416 058 |
-| darco | 248 560 / 236 100 | DARCO_AFTER |
+| launch | not recorded (417 072 / 473 360 at build) | 415 200 / 416 058 |
+| darco | 248 560 / 236 100 | 248 560 / 236 546 |
 | forest | 530 538 / 512 152 | 530 538 / 514 598 |
-| hill | 533 256 / 486 016 | HILL_AFTER |
+| hill | 533 256 / 486 016 | 533 022 / 485 782 (recovered state) |
 
 ## Forest Ring (`ring`)
 Fixed:
@@ -161,7 +168,7 @@ geometrically unachievable (as logged).
   1.9, and the slope material carries `lxBounce(...,3.2)`. Measured on 'The cut
   wall', column x=900: band was ~75 px at (65,30,18); now ~24 px at
   (110,60,35) before the stronger bounce (r4), see r5/after for the final.
-  HILL_REMAINS
+  The recovered state still showed a red-brown band (bounce-lit underside) above a pale shoulder in that shot: see the second pass below.
 
 ## Requests for shared code (not done — outside this group's files)
 - Move `lxBounce` into shared materials (22/54) and apply it to BOXC/SLABC/
