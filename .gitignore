@@ -37,3 +37,4 @@ settlements/locus/sheet-items*.json
 settlements/locus/three.min.js
 host/address.json
 host/address.json.tmp
+.claude/worktrees/
