@@ -147,3 +147,21 @@ the bucketed deck records, the host caps and the placed footprints; A* with a he
 flood-fill connectivity). On the empty city: 36 800 lattice cells (17 154 land, 1 762 shallows, 3 499 canal, 14 385
 open), the head 76 m from the real waterline, the Amphitriton block 508 m under it; a foot path 860 m inland in 17 ms,
 a boat path across the bay, the head connected to the far shore on foot. Nobody walks it until P5.
+
+## Phase 2 merge (Oct 1 2026): finishing the fan-out from HANDOFF.md
+Ten of the eleven agents had been stopped by the rate limit before reporting; their fragments were committed as they
+stood. The merge, in HANDOFF's order: `--assert` on the whole sheet failed only on agent A's spots (the Scallop court's
+hall spots were written in the house frame, not about the hall pod's centre; the Conch stair house's hearth and table
+sat too close along the chamber) and reported the seven sheet hosts over the medium budget, which was an accounting
+artefact (the probe summed every copy of a type): a host type is now budgeted per placement under the host class, and
+a def says it is a landmark with `cls:'landmark'` (the Amphitriton's load-time `setTimeout` is gone). The shared-helper
+bugs the agents had reported and worked around: `hykPad` and `o.landing` double-applied the builder frame (fixed at the
+source, with `hykBridge` and the pontoon, records marked `world:true` so agent C's fixer leaves them alone);
+`hykLatheAt` ignoring the lathe's modulation is recorded, not yet fixed. The look-round showed the sheet's row presets
+looking through the Spans row's 28 m pylons and the landmarks hiding their neighbours: the free-standing rows start at
+z = -75 and each row camera backs off with the row's width; hosts got two close pod views each. Read at row scale the
+kit holds together: distinct silhouettes in every row, nothing floating, the civic pieces at landmark grade.
+The Citadel (agent D's unwritten half) is written to the brief: it crowns the stack the city's terrain already makes
+(r 95 m, 62 m) as a ring arena-fortress, 84 k triangles; the one defect the shots found (the gate's wall seen through
+from inside: the lathe is one-sided) is fixed with an inner face across the cutting. The three mock houses left the
+sheet. Kit, mock and city all pass `--assert` with a clean error panel.

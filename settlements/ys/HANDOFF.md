@@ -1,5 +1,9 @@
 # Ys — handoff from the phase 2 fan-out (Oct 1 2026)
 
+> **Done (Oct 1 2026).** The merge below is finished: `--assert` green on kit, mock and city, the Citadel written,
+> the mock houses off the sheet, the agents' helper reports fixed or recorded. See NOTES.md "Phase 2 merge" and
+> KNOWN_ISSUES.md. Kept for the record of who built what.
+
 Ten of the eleven phase 2 agents (AGENT-BRIEF.md) were stopped twice by the session's rate limit before they could
 commit or report; only agent I finished. Their fragments were copied from the worktrees into `src/` as they stood and
 committed here so a fresh session can finish the merge without re-running the agents. **The three targets build and pass
