@@ -139,6 +139,7 @@ function hykBridge(A,B,o){o=o||{};const w=o.w||2.6;const col=o.col||hC(hPick(HPA
     pts.push([q[0]+n[0]*.3,q[1]+n[1]*.3,q[2]+n[2]*.3],[q[0]-n[0]*.5,q[1]-n[1]*.5,q[2]-n[2]*.5]);
     const kn=Math.max(2,Math.round(dl/2.2));hykPut('hkBone',hykTube(pts,t=>(.26-.09*t)*(1+.2*Math.max(0,Math.cos(t*kn*TAU))),{seg:10,col}));
     hykPut('hkBone',hykFlare([q[0]-n[0]*.3,q[1]-n[1]*.3,q[2]-n[2]*.3],n,.3,.7,{col}));   // set .3 m into the face: the rim is buried, the rib roots
+    kput('hkBall',[q[0]-n[0]*.5,q[1]-n[1]*.5,q[2]-n[2]*.5],null,[.24,.24,.24],col);   // caps the tube's open end should it show
     kput('hkBall',[a[0],a[1],a[2]],null,[.46,.4,.46],col);}}}
  return {pts,runners:nr,branches:nb};}
 // the nearest point on a member's surface and the surface normal there. A member is a capsule {a,b,r} (a strut, a

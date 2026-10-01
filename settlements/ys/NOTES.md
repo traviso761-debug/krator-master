@@ -105,3 +105,7 @@ landing): the flare is set .3 m into the face; a branch's start is mitred, its c
 direction onto the parent's edge line, one cut back and one extended by the same amount (Travis's "rotate the
 clipping piece and staple it to the other side"), and the parent's rail opens exactly between those corners;
 the branch leaves further along the span and the perch sits on the head's outer half, clear of the landing.
+Fifth note (the perch inside the wall, a runner's open end showing): "outer half" had been sideways along the
+head, at the same radius, so the pad stood mostly inside the skin; the perch now cantilevers out along the
+strut's radial axis on a rib from the head's outer face, 2.5 m clear of the wall, and every runner's buried end
+carries a ball.
