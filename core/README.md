@@ -1,6 +1,8 @@
 # core/
 
-Code shared by more than one build, kept here once instead of copied into each.
+Code shared by more than one build, kept here once instead of copied into each:
+`materials/` (the Ancients-lineage materials), `terrain/` (carve patches for any
+heightfield world), `atmos/` (atmosphere and street dressing) and `sockets/` (cultural sockets).
 
 ## `materials/`
 
@@ -46,6 +48,45 @@ Voth and Yuni use a separate system: a frozen `PAL` palette and `FAMMAT`
 material families, instanced per family under a draw-call budget. The catalog
 in `kits/catalog/` uses family strings (`'wood'`, `'cloth'`, `'plank'`…) plus a
 colour. Neither is compatible with `MAT`.
+
+## `terrain/`
+
+| File | What |
+|---|---|
+| `36-core-carve.js` | carve patches: overhangs (alcoves, niches, undercuts, or a shape a build registers) on a heightfield world. Global `KCARVE`; with the biome core loaded also `BIO.carve` |
+| `test-carve.js` | `node core/terrain/test-carve.js`: the module's contract on a synthetic cliff, each check with a negative |
+
+**Used by** `biomes/sedesert` and `settlements/shade`. Opt-in by name: every
+biome's `build.py` has a `CORE_TERRAIN` list (empty in the biomes that do not use
+it), and a listed file is read from here unless the build's `src/` has a copy with
+the same name, which then wins for that build only (record why in its
+`KNOWN_ISSUES.md`). A biome that lists nothing builds byte-identical.
+
+The module needs nothing but THREE (at `mesh()` only, from `opt.THREE`,
+`BIO.host.THREE` or the global) and works outside the biome core too (an
+Ancients-lineage settlement can load it as an ordinary fragment). To use it a
+build must:
+
+1. **declare patches** with `KCARVE.add({...})` before it builds its ground, each
+   with a `base(x,z)`: its ground height WITHOUT the patch;
+2. **fold `KCARVE.recessD(x,z)` into its wall function** (`min` with its own
+   distance to the floor's edge), so the floor runs in under each hood;
+3. **mesh the rock back** with `KCARVE.mesh(groundMaterial, {sun})` and give the
+   meshes the ground's material (the patch is in world space, so a triplanar or
+   world-position shader joins without a seam); `aOcc` and `aSun` are vertex
+   attributes for the material to multiply in;
+4. **teach its consumers**: no flora where `topAt(x,z)` is set, a camera pushed
+   out of `rockAt`, walkable cells blocked where `rockAt(x, ground+1, z)`.
+
+Shade's `45-host-stage.js` and `84-host-life.js` are the worked example. The
+contract and its tunables are in the header of `36-core-carve.js`.
+
+## `atmos/`
+
+The atmosphere and street-dressing module: evening lights and a glow layer, particles, weather, ivy and window boxes,
+sewer grates, lamps and fountains, InstancedMesh culling. One global (`ATMOS`) behind a five-item host binding, so any
+three.js r128 build can take it. Read `atmos/README.md`. **Used by** `settlements/iziz` (city target; its `build.py`
+reads it through `TARGET_CORE`).
 
 ## `sockets/`
 
