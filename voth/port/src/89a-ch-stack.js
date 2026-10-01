@@ -233,7 +233,7 @@ function chTopple(G,x,z,P,nS,d,o){const D=CH.D,fd=o.fall||[1,0],lv=P.lv,S=lv[nS-
    // ground, upper end resting on the face no higher than the stump's top
    // (it used to hang half inside the stump's top level)
    const he=Math.abs(fd[0])*(S.bb[2]-S.bb[0])/2+Math.abs(fd[1])*(S.bb[3]-S.bb[1])/2;
-   const th=Math.min(1.1,Math.asin(Math.min(1,(top-D-.4)/L))),off=he+.1+L/2*Math.cos(th);   // origin is the box's base centre
+   const th=Math.min(.8,Math.asin(Math.min(1,(top-D-.4)/L))),off=he+.1+L/2*Math.cos(th);   // origin is the box's base centre
    const sx=x+(S.bb[0]+S.bb[2])/2+fd[0]*off,sz=z+(S.bb[1]+S.bb[3])/2+fd[1]*off;
    kput(big?'pkCont40R':'pkCont20R',[sx,D+L/2*Math.sin(th),sz],qEuler(0,yawF,0).multiply(qEuler(0,0,-th)),1,col);continue;}
   const dist=rr(3,6)+(i-nS)*rr(2.5,4),lat=rr(-4,4);
