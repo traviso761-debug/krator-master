@@ -1,5 +1,5 @@
 {
- "00-head.html": "e4219087060a",
+ "00-head.html": "5c6fd71e68ac",
  "05-palette.js": "0d1abb17afd6",
  "10-core.js": "5aa423680a7f",
  "20-stage.js": "1dbee40c412a",
@@ -26,5 +26,5 @@
  "86-inspect.js": "313a88ef9414",
  "87-pathviz.js": "0e170507edef",
  "98-start.js": "03f796a2b3d8",
- "99-tail.html": "7e2d229e2c8d"
+ "99-tail.html": "7501a65f821c"
 }

@@ -1,5 +1,5 @@
 {
- "00-head.html": "68534fcf8f00",
+ "00-head.html": "72e2bc629d33",
  "05-palette.js": "11723bc3e0ac",
  "10-core.js": "938b27ad2ab3",
  "20-stage.js": "00270fcf358b",
@@ -45,5 +45,5 @@
  "88-underview.js": "229047c6be84",
  "89-sheetui.js": "416fe0e54eea",
  "98-start.js": "05665ea7386d",
- "99-tail.html": "7e2d229e2c8d"
+ "99-tail.html": "7501a65f821c"
 }
