@@ -13,7 +13,8 @@
 // target, not a gate), so --assert will report the showcase as OVER.
 const TITLE='Krator Ancients kit';
 const DECAYS=[0,1,2,3];
-const GROUND_C=11000;        // z centre of the ground plane and its paint
+// GROUND_C (z centre of the ground plane and its paint) and GROUND_S (its side)
+// are set after ROWS, below: the alternates rows run the kit far north.
 // skyA, skyD and skyH carry a fourth variant the other types do not: `ds`
 // overrides the target's DECAYS for that row alone and `j` is its x, the way
 // `t` is the toppled x. Decay 4 is THE PROJECTS — Skyscraper A, the Monolith
@@ -31,6 +32,50 @@ const ROWS={skyA:{z:0,s:300,r:280,t:1200,j:-1150,ds:[0,1,2,3,4]},skyB:{z:800,s:3
  // The Lighthouse island (a modified Skyscraper J, 2026-09-29): its own sea,
  // shared by the three sites at -320/0/+320; built in targets/lighthouse first.
  lighthouse:{z:28800,s:320,r:300,t:1250}};
+// THE ALTERNATES (queue item 3, 2026-10-01): 29 from-scratch builders after the
+// arco1/arco2 references, built in their own dev targets (alt-towers,
+// alt-domestic, alt-civic) and given rows here north of the Lighthouse. Their
+// decay 2 is RECLAIMED (the ruin lived in), not toppled, and stands at t=2s,
+// the site SITEX gives decay 2. Spacing: each row clears the last by both
+// radii plus 300 m. A row is listed only when its builder exists.
+const KIT_ALTS=[
+ // key       builder                  s    r   name
+ ['altBole', 'buildAltBole',         380, 180,'The Bole'],
+ ['altStack','buildAltStack',        300, 150,'The Pierced Stack'],
+ ['altHotel','buildAltHotel',        300, 150,'The Attraction'],
+ ['altFlat', 'buildAltFlat',         260, 130,'The Undulant'],
+ ['altPerch','buildAltPerch',        420, 210,'The Rig (perch)'],
+ ['altCult', 'buildAltCult',         300, 170,'The Bloom'],
+ ['adWave',  'buildAltWaveHouse',     80,  40,'Undulant house'],
+ ['adBridge','buildAltBridgeHouse',   80,  40,'Bridge house'],
+ ['adFins',  'buildAltFinApartments',190, 110,'Fin apartments'],
+ ['adAmph',  'buildAltAmphitheater', 170,  95,'Garden amphitheater'],
+ ['adFuel',  'buildAltFuelStation',  110,  55,'Trestle fuel station'],
+ ['adRadar', 'buildAltRadar',         90,  45,'Rotor radar'],
+ ['adDish',  'buildAltDish',         120,  60,'Flower dish'],
+ ['adFac',   'buildAltFactory',      380, 200,'Pilotis works'],
+ ['adLab',   'buildAltLab',          230, 120,'Star laboratory'],
+ ['adMega',  'buildAltMega',         900, 420,'The Rampart'],
+ ['altOffT', 'buildAltOfficeTerrace',170, 110,'Terrace Wedge office'],
+ ['altOffS', 'buildAltOfficeStack',  150, 100,'Stacked Piers office'],
+ ['altOffF', 'buildAltOfficeFins',   190, 120,'Sail Fins office'],
+ ['altPort', 'buildAltStarport',     330, 260,'Saucer Deck starport'],
+ ['altBunk', 'buildAltBunker',       170, 110,'Bastion Drum bunker'],
+ ['altLib',  'buildAltLibrary',      170, 110,'Reading Star library'],
+ ['altGate', 'buildAltGate',         380, 220,'The Horns gate'],
+ ['altRobo', 'buildAltRobotics',     230, 160,'Robotics rig'],
+ ['altDc',   'buildAltDataCenter',   200, 140,'Perforated Stacks data center'],
+ ['altPolice','buildAltPolice',      130,  80,'Watch Cup police'],
+ ['altHosp', 'buildAltHospital',     200, 140,'Linked Blocks hospital'],
+ ['altCampus','buildAltCampus',      300, 220,'Garden Bowl campus'],
+ ['altGov',  'buildAltGovernment',   220, 150,'The Citadel'],
+];
+const KIT_ALT_NAME={},KIT_ALT_BUILDERS={};
+{let z=ROWS.lighthouse.z,rp=ROWS.lighthouse.r;
+ for(const[k,fn,s,r,name]of KIT_ALTS){if(typeof self[fn]!=='function')continue;
+  z+=rp+r+300;rp=r;ROWS[k]={z,s,r,t:2*s};KIT_ALT_BUILDERS[k]=self[fn];KIT_ALT_NAME[k]=name;}}
+const KIT_Z1=Math.max(...Object.values(ROWS).map(r=>r.z))+1500;
+const GROUND_C=(KIT_Z1-9000)/2, GROUND_S=Math.max(40000,KIT_Z1+9000+4000);
 const RUINS=Object.values(ROWS).flatMap(r=>(r.t?[[r.s,r.z,r.r],[r.t,r.z,r.r*1.4]]:[[r.s,r.z,r.r]])
  .concat((r.ds||DECAYS).indexOf(3)<0?[]:[[0,r.z,r.r]])
  .concat(r.j==null?[]:[[r.j,r.z,r.r]]));
@@ -40,4 +85,4 @@ const RUINS=Object.values(ROWS).flatMap(r=>(r.t?[[r.s,r.z,r.r],[r.t,r.z,r.r*1.4]
 // third of the intact one. cult 400->640, perch 430->520, flat 300->380 and
 // hotel 260->300 each give the three sites their own ground; the presets of
 // those rows are written off ROWS.<k>.s, so they follow.
-const EXTRA_BUILDERS={cult:buildCultural,perch:buildPerch,flat:buildFlatiron,skyI:buildSkyI,skyJ:buildSkyJ,skyK:buildSkyK,lighthouse:buildLighthouse};
+const EXTRA_BUILDERS={cult:buildCultural,perch:buildPerch,flat:buildFlatiron,skyI:buildSkyI,skyJ:buildSkyJ,skyK:buildSkyK,lighthouse:buildLighthouse,...KIT_ALT_BUILDERS};

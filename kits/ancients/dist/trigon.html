@@ -28892,14 +28892,16 @@ const giant=new THREE.Sprite(new THREE.SpriteMaterial({map:giantTex,fog:false,tr
 const giantDir=new THREE.Vector3(Math.sin(66*Math.PI/180)*Math.cos(25*Math.PI/180),Math.sin(25*Math.PI/180),-Math.cos(66*Math.PI/180)*Math.cos(25*Math.PI/180));
 
 // ground: red Tharnish soil, greener where the ruins stand
-(function paintGround(){const c=TEX.ground.image,g=c.getContext('2d'),w=c.width,h=c.height;const id=g.getImageData(0,0,w,h),d=id.data;const S=40000;
+// A target may widen the ground with GROUND_S (its side in metres; default 40 000).
+const GROUND_SIDE=typeof GROUND_S!=='undefined'?GROUND_S:40000;
+(function paintGround(){const c=TEX.ground.image,g=c.getContext('2d'),w=c.width,h=c.height;const id=g.getImageData(0,0,w,h),d=id.data;const S=GROUND_SIDE;
  const ruins=RUINS.map(s=>[(s[0]/S+.5)*w,((s[1]-GROUND_C)/S+.5)*h,s[2]*w/S]);
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;const n=fbm(x/30,y/30,.3,2),n2=fbm(x/5,y/5,7,1),n3=fbm(x/12,y/12,3,1);
   let r=150+(n-.5)*70+(n2-.5)*20,gg=82+(n-.5)*40+(n2-.5)*12,b=58+(n-.5)*30;
   let gr=0;for(const R of ruins){const dx=x-R[0],dy=y-R[1];const dd=Math.sqrt(dx*dx+dy*dy)/R[2];gr=Math.max(gr,clamp(1.1-dd,0,1)*clamp((n3-.35)*2.5,0,1));}
   r=lerp(r,70+n2*30,gr);gg=lerp(gg,110+n2*40,gr);b=lerp(b,45,gr);d[i]=r;d[i+1]=gg;d[i+2]=b;d[i+3]=255;}
  g.putImageData(id,0,0);TEX.ground.needsUpdate=true;})();
-const groundM=new THREE.Mesh(new THREE.PlaneGeometry(40000,40000),MAT.ground);groundM.rotation.x=-Math.PI/2;groundM.position.set(0,-.05,GROUND_C);groundM.userData.probeSkip=true;scene.add(groundM);
+const groundM=new THREE.Mesh(new THREE.PlaneGeometry(GROUND_SIDE,GROUND_SIDE),MAT.ground);groundM.rotation.x=-Math.PI/2;groundM.position.set(0,-.05,GROUND_C);groundM.userData.probeSkip=true;scene.add(groundM);
 
 // A target may add builders of its own by declaring EXTRA_BUILDERS in its
 // 89z-rows.js fragment, so new work can live entirely in its own target and

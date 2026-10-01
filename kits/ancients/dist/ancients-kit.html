@@ -23198,7 +23198,8 @@ function buildLighthouse(scene,gx,gz,d){reseed(9790+d);KOFF=[gx,0,gz];
 // target, not a gate), so --assert will report the showcase as OVER.
 const TITLE='Krator Ancients kit';
 const DECAYS=[0,1,2,3];
-const GROUND_C=11000;        // z centre of the ground plane and its paint
+// GROUND_C (z centre of the ground plane and its paint) and GROUND_S (its side)
+// are set after ROWS, below: the alternates rows run the kit far north.
 // skyA, skyD and skyH carry a fourth variant the other types do not: `ds`
 // overrides the target's DECAYS for that row alone and `j` is its x, the way
 // `t` is the toppled x. Decay 4 is THE PROJECTS — Skyscraper A, the Monolith
@@ -23216,6 +23217,50 @@ const ROWS={skyA:{z:0,s:300,r:280,t:1200,j:-1150,ds:[0,1,2,3,4]},skyB:{z:800,s:3
  // The Lighthouse island (a modified Skyscraper J, 2026-09-29): its own sea,
  // shared by the three sites at -320/0/+320; built in targets/lighthouse first.
  lighthouse:{z:28800,s:320,r:300,t:1250}};
+// THE ALTERNATES (queue item 3, 2026-10-01): 29 from-scratch builders after the
+// arco1/arco2 references, built in their own dev targets (alt-towers,
+// alt-domestic, alt-civic) and given rows here north of the Lighthouse. Their
+// decay 2 is RECLAIMED (the ruin lived in), not toppled, and stands at t=2s,
+// the site SITEX gives decay 2. Spacing: each row clears the last by both
+// radii plus 300 m. A row is listed only when its builder exists.
+const KIT_ALTS=[
+ // key       builder                  s    r   name
+ ['altBole', 'buildAltBole',         380, 180,'The Bole'],
+ ['altStack','buildAltStack',        300, 150,'The Pierced Stack'],
+ ['altHotel','buildAltHotel',        300, 150,'The Attraction'],
+ ['altFlat', 'buildAltFlat',         260, 130,'The Undulant'],
+ ['altPerch','buildAltPerch',        420, 210,'The Rig (perch)'],
+ ['altCult', 'buildAltCult',         300, 170,'The Bloom'],
+ ['adWave',  'buildAltWaveHouse',     80,  40,'Undulant house'],
+ ['adBridge','buildAltBridgeHouse',   80,  40,'Bridge house'],
+ ['adFins',  'buildAltFinApartments',190, 110,'Fin apartments'],
+ ['adAmph',  'buildAltAmphitheater', 170,  95,'Garden amphitheater'],
+ ['adFuel',  'buildAltFuelStation',  110,  55,'Trestle fuel station'],
+ ['adRadar', 'buildAltRadar',         90,  45,'Rotor radar'],
+ ['adDish',  'buildAltDish',         120,  60,'Flower dish'],
+ ['adFac',   'buildAltFactory',      380, 200,'Pilotis works'],
+ ['adLab',   'buildAltLab',          230, 120,'Star laboratory'],
+ ['adMega',  'buildAltMega',         900, 420,'The Rampart'],
+ ['altOffT', 'buildAltOfficeTerrace',170, 110,'Terrace Wedge office'],
+ ['altOffS', 'buildAltOfficeStack',  150, 100,'Stacked Piers office'],
+ ['altOffF', 'buildAltOfficeFins',   190, 120,'Sail Fins office'],
+ ['altPort', 'buildAltStarport',     330, 260,'Saucer Deck starport'],
+ ['altBunk', 'buildAltBunker',       170, 110,'Bastion Drum bunker'],
+ ['altLib',  'buildAltLibrary',      170, 110,'Reading Star library'],
+ ['altGate', 'buildAltGate',         380, 220,'The Horns gate'],
+ ['altRobo', 'buildAltRobotics',     230, 160,'Robotics rig'],
+ ['altDc',   'buildAltDataCenter',   200, 140,'Perforated Stacks data center'],
+ ['altPolice','buildAltPolice',      130,  80,'Watch Cup police'],
+ ['altHosp', 'buildAltHospital',     200, 140,'Linked Blocks hospital'],
+ ['altCampus','buildAltCampus',      300, 220,'Garden Bowl campus'],
+ ['altGov',  'buildAltGovernment',   220, 150,'The Citadel'],
+];
+const KIT_ALT_NAME={},KIT_ALT_BUILDERS={};
+{let z=ROWS.lighthouse.z,rp=ROWS.lighthouse.r;
+ for(const[k,fn,s,r,name]of KIT_ALTS){if(typeof self[fn]!=='function')continue;
+  z+=rp+r+300;rp=r;ROWS[k]={z,s,r,t:2*s};KIT_ALT_BUILDERS[k]=self[fn];KIT_ALT_NAME[k]=name;}}
+const KIT_Z1=Math.max(...Object.values(ROWS).map(r=>r.z))+1500;
+const GROUND_C=(KIT_Z1-9000)/2, GROUND_S=Math.max(40000,KIT_Z1+9000+4000);
 const RUINS=Object.values(ROWS).flatMap(r=>(r.t?[[r.s,r.z,r.r],[r.t,r.z,r.r*1.4]]:[[r.s,r.z,r.r]])
  .concat((r.ds||DECAYS).indexOf(3)<0?[]:[[0,r.z,r.r]])
  .concat(r.j==null?[]:[[r.j,r.z,r.r]]));
@@ -23225,7 +23270,7 @@ const RUINS=Object.values(ROWS).flatMap(r=>(r.t?[[r.s,r.z,r.r],[r.t,r.z,r.r*1.4]
 // third of the intact one. cult 400->640, perch 430->520, flat 300->380 and
 // hotel 260->300 each give the three sites their own ground; the presets of
 // those rows are written off ROWS.<k>.s, so they follow.
-const EXTRA_BUILDERS={cult:buildCultural,perch:buildPerch,flat:buildFlatiron,skyI:buildSkyI,skyJ:buildSkyJ,skyK:buildSkyK,lighthouse:buildLighthouse};
+const EXTRA_BUILDERS={cult:buildCultural,perch:buildPerch,flat:buildFlatiron,skyI:buildSkyI,skyJ:buildSkyJ,skyK:buildSkyK,lighthouse:buildLighthouse,...KIT_ALT_BUILDERS};
 // ================================================================= THE WING — a monument that is also a city
 // First of the memorial group. One figure against the sky: a coffered DRUM held
 // in a yoke on ONE pedestal, and two wings of stacked horizontal slabs lifting
@@ -28914,14 +28959,16 @@ const giant=new THREE.Sprite(new THREE.SpriteMaterial({map:giantTex,fog:false,tr
 const giantDir=new THREE.Vector3(Math.sin(66*Math.PI/180)*Math.cos(25*Math.PI/180),Math.sin(25*Math.PI/180),-Math.cos(66*Math.PI/180)*Math.cos(25*Math.PI/180));
 
 // ground: red Tharnish soil, greener where the ruins stand
-(function paintGround(){const c=TEX.ground.image,g=c.getContext('2d'),w=c.width,h=c.height;const id=g.getImageData(0,0,w,h),d=id.data;const S=40000;
+// A target may widen the ground with GROUND_S (its side in metres; default 40 000).
+const GROUND_SIDE=typeof GROUND_S!=='undefined'?GROUND_S:40000;
+(function paintGround(){const c=TEX.ground.image,g=c.getContext('2d'),w=c.width,h=c.height;const id=g.getImageData(0,0,w,h),d=id.data;const S=GROUND_SIDE;
  const ruins=RUINS.map(s=>[(s[0]/S+.5)*w,((s[1]-GROUND_C)/S+.5)*h,s[2]*w/S]);
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;const n=fbm(x/30,y/30,.3,2),n2=fbm(x/5,y/5,7,1),n3=fbm(x/12,y/12,3,1);
   let r=150+(n-.5)*70+(n2-.5)*20,gg=82+(n-.5)*40+(n2-.5)*12,b=58+(n-.5)*30;
   let gr=0;for(const R of ruins){const dx=x-R[0],dy=y-R[1];const dd=Math.sqrt(dx*dx+dy*dy)/R[2];gr=Math.max(gr,clamp(1.1-dd,0,1)*clamp((n3-.35)*2.5,0,1));}
   r=lerp(r,70+n2*30,gr);gg=lerp(gg,110+n2*40,gr);b=lerp(b,45,gr);d[i]=r;d[i+1]=gg;d[i+2]=b;d[i+3]=255;}
  g.putImageData(id,0,0);TEX.ground.needsUpdate=true;})();
-const groundM=new THREE.Mesh(new THREE.PlaneGeometry(40000,40000),MAT.ground);groundM.rotation.x=-Math.PI/2;groundM.position.set(0,-.05,GROUND_C);groundM.userData.probeSkip=true;scene.add(groundM);
+const groundM=new THREE.Mesh(new THREE.PlaneGeometry(GROUND_SIDE,GROUND_SIDE),MAT.ground);groundM.rotation.x=-Math.PI/2;groundM.position.set(0,-.05,GROUND_C);groundM.userData.probeSkip=true;scene.add(groundM);
 
 // A target may add builders of its own by declaring EXTRA_BUILDERS in its
 // 89z-rows.js fragment, so new work can live entirely in its own target and
@@ -29131,6 +29178,13 @@ const VIEWS={
  // Theodiga's views moved to targets/theodiga/91z-views.js with the site.
  'Office C':[-ROWS.off.s+160,22,ROWS.off.z-5,-ROWS.off.s+95,10,ROWS.off.z-75],
 };
+// THE ALTERNATES (rows in 89z-rows.js): per type a row shot, the reclaimed site
+// (decay 2, at t) by day and by night, framed off the row's own radius.
+for(const k in KIT_ALT_NAME){const R=ROWS[k],n=KIT_ALT_NAME[k],ty=Math.max(25,R.r*.45);
+ VIEWS[n]=ROWV(k,Math.max(420,R.r*3.4),Math.max(90,R.r*1.1),ty);
+ VIEWS[n+' reclaimed']=[R.t-R.r*.6,Math.max(40,R.r*.5),R.z+Math.max(260,R.r*2.2),R.t,ty*.8,R.z];
+ VIEWS[n+' reclaimed at night']=VIEWS[n+' reclaimed'].concat([1]);}
+VIEWS['The alternates']=[0,2200,ROWS.altBole?ROWS.altBole.z-1800:0,0,100,ROWS.altBole?(ROWS.altBole.z+KIT_Z1)/2:0];
 // ---------------------------------------------------------------- camera control
 // ---------------------------------------------------------------- DAY / NIGHT
 // There was no scene-state toggle in this kit before The Project needed one, so
