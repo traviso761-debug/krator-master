@@ -46,10 +46,10 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `66-office-c.js` | 2 |  |
 | `66b-flatiron.js` | 8 |  |
 | `67-cultural.js` | 7 |  |
-| `68-hexahedron.js` | 29 |  |
+| `68-hexahedron.js` | 39 **big** |  |
 | `69-mat-salvage.js` | 16 | salvage (decay level 3) (1); FIRELIGHT (44) |
 | `69w-worn.js` | 12 | the WORN variant (decay 5) (1) |
-| `70-hypertree.js` | 7 |  |
+| `70-hypertree.js` | 12 |  |
 | `70-sky-g.js` | 8 |  |
 | `70b-perch.js` | 4 |  |
 | `71-sky-h.js` | 5 |  |
@@ -162,7 +162,7 @@ Each target adds its own fragments to `src/` and builds one output.
 | `drum` | `89z-rows.js`, `91z-views.js` | 6 |
 | `engines` | `89z-rows.js`, `91z-views.js` | 4 |
 | `forest` | `89z-rows.js`, `91z-views.js` | 5 |
-| `hexahedron` | `89z-rows.js`, `91z-views.js` | 7 |
+| `hexahedron` | `89z-rows.js`, `91z-views.js` | 8 |
 | `hill` | `89z-rows.js`, `91z-views.js` | 13 |
 | `iziz-style` | `89z-rows.js`, `91z-views.js` | 6 |
 | `iziz-variants` | `89z-rows.js`, `91z-views.js` | 3 |
