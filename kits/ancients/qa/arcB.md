@@ -252,7 +252,42 @@ build), all eight parse (jscheck PARSES OK), and `verify --assert`:
 | canyon | clean | all PASS | /0 91 180 · /1 106 140 · /2 117 152 |
 | dalab | clean | all PASS | /1 657 078 (exit 1 only from a 600 s screenshot timeout on 'The breach' under load ~50) |
 | hexahedron | clean | PASS but `biome/0` OVER (pre-existing hyperjungle row) | hex/0 548 664 · hex/2 385 634 · mav/0 168 252 |
+| spire | clean | all PASS | /0 125 438 · /1 85 574 |
+| theodiga | clean | all PASS | dam/0 172 424 · dam/1 181 916 |
+| veladiga | clean | all PASS | /0 194 804 · /2 202 220 |
 
 KNOWN_ISSUES.md ticked for what the recovered patch closed (Veladiga x2,
 Hexahedron x3, Span x2, Vashtir symmetry, Arcoindian I roofY, Arcoindian II
 mud/ruin/dead locals).
+
+Hero shots of every decay looked at (`Arcoindian I`/`Ruined`/`The roof fall`,
+`Arcoindian II`/`Ruined`, `The Span`/`Rusted span`/`Fallen`, `The compound`/
+`The chamber`, `Hexahedron`/`Sheared`/`Tree and arcology`, `Vashtir`/
+`Vashtir ruined`, `Theodiga`/`Theodiga ruin`, `Veladiga`/`Breached`/
+`Breached park`). Nothing in the recovered patch was broken. Found by looking:
+Dalab's chamber hall carpeted with moss; Vashtir's ruined fans floating as
+grey plates (both fixed below).
+
+### Step 3: continuing down the lists
+- **Arcoindian II, "the gardens are a hedge row rather than the fan"** — FIXED.
+  The hedges were each turned to a random bearing; now each is laid along the
+  ray from the walks' focus (FX,FZ) through it, ±3.4 deg, so the beds radiate
+  with the paths. The rng() draw is still taken (and used for the ruin's
+  bearing), so nothing downstream moves. Tri-neutral.
+- **Arcoindian II, "the access shaft is a blank pale column"** — FIXED. Slot
+  windows on dark reveals at every other landing on its two open faces, only
+  where it stands free in the hollow (skips the lens band and anything above
+  the vault). Hashed. arcoindian2/0 318 442 -> 318 904 · /1 283 814 -> 284 276.
+- **Hexahedron, "the terrace cells are still boxes on a ring"** — IMPROVED.
+  The front row of cells (the one every preset sees) gets a glazed band under
+  a dark lintel per 4.4 m storey on its outward face, hashed off (k,j), ~14%
+  left blank; intact only (d!==2). Same rng draws in the same order (width and
+  depth captured into locals). Cells are still boxes; they now read as houses.
+- **Dalab, found by looking** — `scatterMoss` started at r=0 and laid 13 m moss
+  blobs on the chamber hall floor INSIDE the great dome ('The chamber'). Now
+  from DR*1.02 outward; same draw count.
+- **Vashtir ruin, found by looking** — the torn parasol fans were cut with a
+  flat fbm threshold, which left islands anywhere across each fan, and the
+  outer ones hung as grey plates in mid-air off the ruin. The threshold now
+  rises with v (.30 + .60v), so what survives is a ragged collar still
+  attached to its tier.
