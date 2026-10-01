@@ -1,0 +1,43 @@
+127.0.0.1 - - [21/Sep/2026 21:20:22] "GET /hexahedron.html HTTP/1.1" 200 -
+ERROR PANEL: clean
+draw calls: 27 triangles: 1139970
+counters: {"_instances": 60722, "_ready": true, "_registered": 12}
+
+--- invariants ---
+  PASS  registered-volumes-non-empty : 12 volumes; thinnest: Ironbark hypertree — the bole (47), Hexahedron — automated industries (589), Hexahedron — the vertical structure (674)
+  PASS  no-nan-geometry : clean
+  PASS  per-type-triangle-budget : 3 type/decay pairs, heaviest hex/0 548588/700000
+  PASS  showcase-triangle-budget : 1176040 / 6000000 scene triangles
+  PASS  showcase-draw-calls : 27 / 900 draw calls at this camera
+  PASS  registry-and-bake-ran : 12 registered volumes, 60722 baked instances
+
+--- per type (scene triangles, instances, meshes) ---
+  hex/0           548588 /  700000  mega    inst   31730  meshes     2
+  hex/2           453032 /  700000  mega    inst   21751  meshes     3
+  mav/0           174420 /  250000  medium  inst    7241  meshes     2
+shot: ./shots/hx17\view_Hexahedron.png   calls 27  tris 1.14M
+shot: ./shots/hx17\view_Plan_from_above.png   calls 27  tris 1.14M
+shot: ./shots/hx17\view_From_below.png   calls 27  tris 1.14M
+shot: ./shots/hx17\view_The_waist.png   calls 27  tris 1.14M
+shot: ./shots/hx17\view_The_upper_city.png   calls 27  tris 1.14M
+shot: ./shots/hx17\view_The_apex.png   calls 27  tris 1.14M
+shot: ./shots/hx17\view_The_vertical_structure.png   calls 26  tris 1.14M
+shot: ./shots/hx17\view_Summit.png   calls 25  tris 1.13M
+shot: ./shots/hx17\view_Industries.png   calls 27  tris 1.14M
+shot: ./shots/hx17\view_Sheared.png   calls 26  tris 1.13M
+shot: ./shots/hx17\view_The_shear.png   calls 26  tris 1.13M
+shot: ./shots/hx17\view_The_failed_cluster.png   calls 26  tris 1.13M
+shot: ./shots/hx17\view_Crater_soffit.png   calls 26  tris 1.13M
+shot: ./shots/hx17\view_The_hypertree.png   calls 26  tris 1.10M
+shot: ./shots/hx17\view_Tree_and_arcology.png   calls 31  tris 1.18M
+shot: ./shots/hx17\view_Both.png   calls 28  tris 1.17M
+
+--- worst draw calls over 16 views ---
+  Tree and arcology            calls    31  tris 1.18M
+  Both                         calls    28  tris 1.17M
+  Hexahedron                   calls    27  tris 1.14M
+  Plan from above              calls    27  tris 1.14M
+  From below                   calls    27  tris 1.14M
+  The waist                    calls    27  tris 1.14M
+
+OK
