@@ -25,9 +25,9 @@
   const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(pos,3));g.setAttribute('uv',new T.Float32BufferAttribute(uv,2));g.setIndex(idx);g.computeVertexNormals();
   const m=A.mat('trickle',()=>new T.MeshStandardMaterial({color:0x8fb4c8,map:flowTex(),transparent:true,opacity:.8,roughness:.15,depthWrite:false,side:T.DoubleSide}));
   const mesh=new T.Mesh(g,m);mesh.name='atmos:trickle';mesh.renderOrder=2;A.add(mesh);A.stats.outfalls=(A.stats.outfalls||0)+1;
-  const mouth=P(x,z,ry,0,1.5);return{x:mouth[0],y:y+2,z:mouth[1],r:4,h:7.5};};
+  const mouth=P(x,z,ry,0,1.5);A.rec('outfall',{at:[x,y,z],ry,lean,waterY:o.waterY,trickle:pos.length/6});return{x:mouth[0],y:y+2,z:mouth[1],r:4,h:7.5};};
  // a grated channel along pts ([[x,z],...]) at the ground: a dark slot, stone kerbs, iron bars across every 0.55 m
- A.drain=(pts,o)=>{o=o||{};const w=o.w||1.3;let n=0;for(let i=0;i<pts.length-1;i++){const a=pts[i],b=pts[i+1],len=Math.hypot(b[0]-a[0],b[1]-a[1]);if(len<.05)continue;
+ A.drain=(pts,o)=>{o=o||{};const w=o.w||1.3;let n=0;A.rec('drain',{pts:pts.map(p=>[p[0],p[1]]),w});for(let i=0;i<pts.length-1;i++){const a=pts[i],b=pts[i+1],len=Math.hypot(b[0]-a[0],b[1]-a[1]);if(len<.05)continue;
    const ang=Math.atan2(b[1]-a[1],b[0]-a[0]),ry=-ang,mx=(a[0]+b[0])/2,mz=(a[1]+b[1])/2,y=A.ground(mx,mz)+.02;
    A.set('sewerDark','box',dark());A.put('sewerDark',[mx,y,mz,len+.05,.06,w,ry]);A.set('sewerStone','box',stone());
    for(const sd of[-1,1])A.put('sewerStone',[mx-Math.sin(ang)*sd*(w/2+.15),y+.02,mz+Math.cos(ang)*sd*(w/2+.15),len+.05,.12,.3,ry]);
