@@ -195,6 +195,11 @@ waterDepth(x,z) surfAt(x,z) -> 'land'|'shallows'|'canal'|'open'|'deck'|'cliff'  
 hostEdge(h,dx,dz) hostBlocks(h,x,z,margin) NAV_MARGIN steerMargin(r)
 YS_AFTER.push(fn)   // city hooks run after every builder and the shell flush, before the bake (the lattice builds here)
 ```
+**NAV** (`87b-city-nav.js`): grids of 6 m cells over the core, one per layer `ground | L1 | L2 | boat | swim`, classified
+once after the lattice: `navBlocked(layer,x,z)`, `navPath(layer,ax,az,bx,bz)` (A* + line-of-sight simplification, world
+points), `navConnected(layer,ax,az,bx,bz)`, `navReach`, `navCensus()`; a deck's layer comes from its `level` or its y
+(`NAV_LEVELS`); stairs and ladders are `NAV_EXTRA` records of kind `stair`/`ladder` (links between layers, read by the
+life layer). `_api.city.nav()` and `_api.city.navPath(...)`.
 The lattice (12 m cells over the city core) is classified once after the build from the real terrain and the real
 `NAV_EXTRA` records; before that, `landDist` falls back to the design shoreline. `_api.city.surf()` counts the classes;
 `_api.city.surfAt(x,z)` and `_api.city.landDist(x,z)` read them.
