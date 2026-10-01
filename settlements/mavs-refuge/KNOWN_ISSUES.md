@@ -30,8 +30,9 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
   counter, no catalog piece; their goods are br_h_stall_goods), the shared kitchens' hearth and hood (built into the
   core wall), washing lines between gallery posts (lvlWashing) and the hut-side lines' posts, the hoists' hanging
   loads, the carpenter's half-built frame and leaning poles, the ropewalk trestles and ropes, the cooper's hoop,
-  the potter's clay block, the weavers' hanging cloths, the scaffold's flag, the signal tower's drum and horn, the
-  spider nests' sacs and cocoons.
+  the potter's clay block, the weavers' hanging cloths, the scaffold's flag, the signal tower's drum and horn.
+- [ ] To do (future, owner's call): the spiders, the spider nests' egg sacs and cocoons, and the other flyers go to a
+  fauna kit, not the furniture catalog (`biomes/README.md` "To do: a fauna kit"). Not started.
 - [ ] Interiors (?interiors=1): only 3 deck lots are furnished: the beast-rider set's items are the catalog's fixed
   rewrites (14 x 10 m deck lot, 9-post shrine ring, 12 m council ring, 12 x 3 m room fronts, 17 x 13 m roost gallery),
   and only the deck lot fits inside Mav's own walls, and only where it fits (API.md, Furniture). Sector-shaped items
