@@ -468,3 +468,16 @@ Tripod market, C stump, G stump, A stump, and a top-down of the market.
 - E and F were only pulled in 4 m: their podiums are already about the building.
 - A's crown (strut ring ~95) is now wider than its podium (70): a denser city must space
   A by its crown, not its podium. The registered r (100) says so.
+
+## Re-check after merging ancients-resume (I/J/K design pass, stumps support check)
+
+Rebuilt `tow` (scratch), `iziz-variants`, `iziz-style`: PARSES OK, error panel clean.
+- Scratch kit rows and `iziz-variants`: every invariant PASS. The stumps' new support
+  check (`window._stumpFell`) drops nothing in either target, so G's top tier now
+  stands on its own stilts in every stump. Shots: Ruin feet G, Stump G, Stump C,
+  Feet B, Tripod market (all read; nothing hangs, market under the legs).
+- `iziz-style`: the two OVERs are pre-existing (built from the pre-restand source for
+  comparison): `izpod_skyC/3` 668 314 -> 533 086 and `izpod_skyB/3` 277 502 -> 276 584
+  against 250 000; draw calls at the overview 1 813 -> 1 566. The tripod market is
+  smaller because its reach follows the legs (fewer ring canopies), and none stand
+  inside a leg. Shots: A, B and C on a small plinth.
