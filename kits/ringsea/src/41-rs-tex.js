@@ -58,9 +58,10 @@ function rsSailMat(key,W,H,draw,outline){const mk='sail:'+key;if(RSMAT[mk])retur
 // wind: the cloth breathes and flutters in the vertex shader. rsSail stores each vertex's flutter vector in
 // its (otherwise unused) colour, 0.5+0.5*D with |D|<=1: D runs along the belly side, scaled by the belly
 // profile (0 on the edge spars, the luff and the battens), so spars stay put and the cloth never swings
-// back through its mast. White (|D|>1) means rigid. The geometry stays the rest pose the probes check.
+// back through its mast; it is zero on every edge and corner (rsSail), so the sheets, yards and battens stay
+// attached. White (|D|>1) means rigid. The geometry stays the rest pose the probes check.
 function rsSailWind(sh){sh.uniforms.uRsTime=RS_U.uTime;
- sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nuniform float uRsTime;\n#ifndef USE_COLOR\nattribute vec3 color;\n#endif')
+ sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n#ifndef RS_UTIME\n#define RS_UTIME\nuniform float uRsTime;\n#endif\n#ifndef USE_COLOR\nattribute vec3 color;\n#endif')
   .replace('#include <begin_vertex>','#include <begin_vertex>\n{vec3 rsD=color*2.-1.;if(dot(rsD,rsD)<1.01){vec3 rsP=(modelMatrix*vec4(position,1.)).xyz;'+
    'float rsF=.55+.3*sin(uRsTime*1.3+rsP.x*.11+rsP.z*.07)+.15*sin(uRsTime*4.1+rsP.x*.7-rsP.y*.9+rsP.z*.5);transformed+=rsD*rsF;}}');}
 // helpers the sail painters share

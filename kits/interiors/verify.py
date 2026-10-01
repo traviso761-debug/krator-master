@@ -2,7 +2,7 @@
 """Headless verification for kits/interiors (dist/interiors.html).
 
 Usage:
-  python3 verify.py dist/interiors.html [--assert] [--seeds 3] [--out ./shots] [--rooms] [--eval "()=>..."]
+  python3 verify.py dist/interiors.html [--assert] [--seeds 3] [--out ./shots] [--rooms] [--eval "()=>..."] [--query lights=keep]
 
 What it does:
   1. Serves kits/ over HTTP (the page loads ../../catalog/*.js by path) and routes
@@ -21,12 +21,25 @@ What it does:
        determinism      furnishing again gives identical placements; and the whole sheet
                         re-furnished at seed 0 after other seeds hashes the same
        builds           every piece built, has a mesh, no NaN
+       building         every planned building (IX.auditBuilding): rooms inside the footprint and
+                        apart, every interior door in both its rooms, stairs joining storey k to
+                        k + 1 as a fixture of a room on each, every room reachable from the street
+                        on the walk graph AND walked to on the grids through doors and stairs
+       plan-determinism planning every building again gives the same JSON
+       walkers          every walker routes from the street, reaches its target's use zone, dwells
+                        there, never crosses a blocked cell; made again, it stands at the same
+                        place at the same time
+       lights           at most the pool's point lights in the scene (the catalog's are stripped
+                        and kept as data), and some lamp light exported as data
      plus tests/core_test.js in node on dist/interiors-core.js with a fake catalog (surface,
-     ceiling and wall pieces, a rotated L-shaped room, an empty culture, 12 seeds), and coverage:
-     at least 20 rooms, the kinds hall bedroom kitchen tavern workshop store
-     shrine, at least 5 cultures, at least one rectangular and one non-rectangular room.
+     ceiling and wall pieces, a rotated L-shaped room, an empty culture, 12 seeds, the planner,
+     backtracking, the 0.2 m / 4-neighbour grid, walkers), and coverage: at least 20 rooms, the
+     kinds hall bedroom kitchen tavern workshop store shrine, at least 5 cultures, rectangular
+     and non-rectangular rooms, at least 3 planned buildings (one of 2+ storeys, with a stair),
+     at least 6 walkers, some of them climbing a stair.
   5. --out: screenshots: overview, overview with outlines, a close-up per row (--rooms: every
-     room), one with the walk grid and paths, one per cut-away mode.
+     room), one with the walk grid and paths, one per cut-away mode, the buildings row, the
+     town house cut at storey 0 and 1, the tower at storey 2, and the walkers.
 
 Exit code is non-zero if the error panel is dirty, the page threw, or an assertion fails.
 Requires: pip install playwright (Chromium at /opt/pw-browsers/chromium or PW_CHROMIUM).
@@ -51,7 +64,9 @@ def _exe():
     return {}
 
 
-SNAP_JS = "()=>JSON.stringify(window._interiors.plans.map(p=>KratorInteriors.exportPlan(p)))"
+SNAP_JS = ("()=>{const I=window._interiors;return JSON.stringify({plans:I.plans.map(p=>KratorInteriors.exportPlan(p)),"
+           "buildings:I.buildings.map(b=>KratorInteriors.exportBuilding(b)),"
+           "walkers:I.walkers.map(w=>[0,15,30,45,60,90,119].map(t=>w.at(t)))})}")
 
 
 async def run(a):
@@ -80,7 +95,7 @@ async def run(a):
             pg.on('pageerror', lambda e: errs.append(str(e)))
             await pg.route('**/three.min.js', lambda route: asyncio.ensure_future(
                 route.fulfill(path=THREE, content_type='application/javascript')))
-            await pg.goto('http://127.0.0.1:%d/%s' % (port, rel), timeout=300000)
+            await pg.goto('http://127.0.0.1:%d/%s%s' % (port, rel, ('?' + a.query) if a.query else ''), timeout=300000)
             try:
                 await pg.wait_for_function("window._ready===true || document.getElementById('errs').textContent.length>0",
                                            timeout=300000)
@@ -123,6 +138,14 @@ async def run(a):
                     if k not in cov['kinds']: fails.append('coverage: no %s room' % k)
                 if len(cov['cultures']) < 5: fails.append('coverage: fewer than 5 cultures')
                 if not cov['rect'] or not cov['irregular']: fails.append('coverage: need rectangular and irregular rooms')
+                bc = await pg.evaluate("""()=>{const I=window._interiors;return {n:I.buildings.length,
+                    multi:I.buildings.filter(b=>b.levels.length>1).length, stairs:I.stairs.length, walkers:I.walkers.length,
+                    climb:I.walkers.filter(w=>w.route.pts&&w.route.pts.some(p=>p.kind==='stair')).length}}""")
+                print('planned: %d buildings (%d multi-storey, %d stairs), %d walkers (%d climb a stair)'
+                      % (bc['n'], bc['multi'], bc['stairs'], bc['walkers'], bc['climb']))
+                if bc['n'] < 3: fails.append('coverage: fewer than 3 planned buildings')
+                if not bc['multi'] or not bc['stairs']: fails.append('coverage: no multi-storey building with a stair')
+                if bc['walkers'] < 6 or not bc['climb']: fails.append('coverage: fewer than 6 walkers, or none climbs a stair')
                 tot_fail = 0
                 for s in range(a.seeds):
                     if s:
@@ -136,11 +159,23 @@ async def run(a):
                             extra = '; '.join(x for x in (r['fallbacks'], r['missing'], 'thin culture' if r['thin'] else '') if x)
                             print('  %-30s %-6d %-6s %-34s %s%s' % (r['id'], r['pieces'], '%d/%d' % (r['reached'], r['usable']),
                                                                    r['required'], extra, '  FAIL x%d' % r['fails'] if r['fails'] else ''))
+                    if s == 0 or a.verbose:
+                        print('  %-12s %-7s %-6s %-22s %-6s %-11s %-8s %-7s %s' % ('building', 'storeys', 'rooms', 'stairs', 'doors', 'partitions', 'roof', 'routes', 'fails'))
+                        for b in res['buildings']:
+                            print('  %-12s %-7d %-6d %-22s %-6d %-11d %-8s %-7s %s' % (b['id'], b['levels'], b['rooms'], b['stairs'] or '-', b['doors'],
+                                                                                 b['partitions'], b['roof'], '%d/%d' % (b['routes'], b['rooms']), b['fails'] or 'ok'))
+                        ok = sum(1 for w in res['walkers'] if w['ok'])
+                        print('  walkers: %d/%d route and arrive; %s' % (ok, len(res['walkers']), ', '.join(
+                            '%s->%s %.1fm %d storey(s)' % (w['id'].split('.')[0], w['type'], w['len'], w['storeys']) for w in res['walkers'])))
+                    L = res['lights']
+                    print('  lights: %d point lights in the scene (budget %s%s), %d lamp lights carried as data; placement %.0f ms over %d runs%s; %d surface pieces'
+                          % (L['pointLights'], L['budget'], ', kept' if L['kept'] else '', L['data'], res['ms'], res['runs'],
+                             ('; backtracked: ' + ', '.join(res['backtracked'])) if res['backtracked'] else '', res['surface']))
                     by = {}
                     for f in res['fails']:
                         by.setdefault(f['check'], []).append(f['msg'])
                     for c in ['inside', 'measured-inside', 'height', 'measured-height', 'overlap', 'door', 'clearance', 'reach',
-                              'required', 'determinism', 'builds']:
+                              'required', 'determinism', 'builds', 'building', 'plan-determinism', 'walkers', 'lights']:
                         n = len(by.get(c, []))
                         print('  %-16s %s' % (c, 'ok' if not n else 'FAIL x%d' % n))
                         for m in by.get(c, [])[:6]:
@@ -181,6 +216,19 @@ async def run(a):
                     await pg.evaluate("(m)=>window._interiors.cutaway(m)", m)
                     await shot('cutaway_%s' % m)
                 await pg.evaluate("()=>window._interiors.cutaway('cut')")
+                await pg.evaluate("()=>{const I=window._interiors;I.setTime(24);I.cutaway('off');I.gotoBuilding(1,null);ctl.target.set(36,0,-153);ctl.dist=58;ctl.el=0.75;updateCamera();}")
+                await shot('buildings_roofs')
+                await pg.evaluate("()=>window._interiors.cutaway('cut')")
+                for b, lv in (('townhouse', 0), ('townhouse', 1), ('tower', 2), ('inn', 0)):
+                    await pg.evaluate("([b,lv])=>{const I=window._interiors;I.gotoBuilding(I.buildings.findIndex(x=>x.id===b),lv);I.assignLights();}", [b, lv])
+                    await shot('building_%s_storey%d' % (b, lv))
+                await pg.evaluate("()=>{const I=window._interiors;I.setLevel(1);I.setOutline(true,false);I.gotoBuilding(1,1);}")
+                await shot('building_townhouse_storey1_outline')
+                await pg.evaluate("()=>{const I=window._interiors;I.setOutline(false,false);I.setTime(16);I.gotoBuilding(2,0);ctl.dist=15;ctl.el=0.95;updateCamera();}")
+                await shot('walkers_inn')
+                await pg.evaluate("()=>{const I=window._interiors;I.setTime(40);I.gotoBuilding(1,1);ctl.dist=14;updateCamera();}")
+                await shot('walkers_townhouse_storey1')
+                await pg.evaluate("()=>{const I=window._interiors;I.setLevel(null);I.overview();}")
         httpd.shutdown()
     finally:
         pass
@@ -201,4 +249,5 @@ if __name__ == '__main__':
     ap.add_argument('--rooms', action='store_true', help='with --out: a close-up of every room, not one per kind')
     ap.add_argument('--eval', action='append')
     ap.add_argument('--size', default='1280x800')
+    ap.add_argument('--query', default='', help="page query string, e.g. lights=keep (the catalog's real lights, no pool)")
     sys.exit(asyncio.run(run(ap.parse_args())))

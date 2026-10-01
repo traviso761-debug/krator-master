@@ -2,7 +2,17 @@
 // nightSet(v): v = 0 day, 0.5 dusk, 1 night (any value between). Drives the sky (stars, dusk glow), the sun/moon light, hemisphere and fog, the lit windows,
 // lamp and fire glow, and a small POOL of real point lights that follows the camera to the nearest lamps and fires.
 // The lights are found automatically: emit() records every 'glow' piece as a HALO (lamp bulbs, fire), so no building had to change.
-const NIGHT={v:0,pool:[],halos:null,halosBig:null,lastPool:-1,active:false};
+const NIGHT={v:0,pool:[],halos:null,halosBig:null,lastPool:-1,active:false,clock:13,run:0};
+/* the evening SCHEDULE. A sim clock (hours) sets the share of windows lit: most at dusk, fewer as the night deepens, a few early risers before dawn.
+   Every pane has its own place in the order (aWin, a position hash written by emit()), so windows go dark one by one, not by a fixed pattern.
+   The Time select sets the clock (Day 13:00, Dusk 19:30, Night 23:30; ?night=v maps in between); the Clock button or ?clock=N (sim minutes per real
+   second) lets it run, and then the sky follows the clock. _api.setNight(v) / nightSet(v) set it too; nightClock(h) sets the hour directly. */
+const WIN_SCHED=[[12,0],[16.5,0],[19,.85],[21.5,.82],[26,.22],[28.5,.08],[29.6,.3],[30.6,0],[36,0]];
+function winFrac(h){h=((h%24)+24)%24;if(h<12)h+=24;for(let i=1;i<WIN_SCHED.length;i++){const a=WIN_SCHED[i-1],b=WIN_SCHED[i];if(h<=b[0])return lerp(a[1],b[1],(h-a[0])/(b[0]-a[0]));}return 0;}
+function clockOfV(v){return v<=.5?13+v*13:19.5+(v-.5)*8;}
+function vOfClock(h){h=((h%24)+24)%24;if(h<12)h+=24;const K=[[12,0],[13,0],[19.5,.5],[23.5,1],[28.5,1],[30,.5],[32,0],[36,0]];
+ for(let i=1;i<K.length;i++)if(h<=K[i][0])return lerp(K[i-1][1],K[i][1],(h-K[i-1][0])/(K[i][0]-K[i-1][0]));return 0;}
+function nightClock(h){NIGHT.clock=((h%24)+24)%24;nightSet(vOfClock(NIGHT.clock),true,NIGHT.clock);}
 const NCOL={day:{hemiS:new THREE.Color(0xffe6c8),hemiG:new THREE.Color(0x6a4a34),fog:new THREE.Color(0xd2b894),sun:new THREE.Color(0xfff0dc)},
  dusk:{hemiS:new THREE.Color(0xffb890),hemiG:new THREE.Color(0x4a3038),fog:new THREE.Color(0xb88a6a),sun:new THREE.Color(0xff9a58)},
  night:{hemiS:new THREE.Color(0x4a5e96),hemiG:new THREE.Color(0x24202e),fog:new THREE.Color(0x141c30),sun:new THREE.Color(0x8ea0d8)}};
@@ -23,7 +33,8 @@ function nightRebuild(){for(const k of ['halos','halosBig']){if(NIGHT[k]){scene.
   const m=new THREE.PointsMaterial({map:haloTex,size:size,sizeAttenuation:true,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,vertexColors:true,opacity:0,fog:false});
   const P_=new THREE.Points(g,m);P_.userData.probeSkip=true;P_.frustumCulled=false;scene.add(P_);NIGHT[key]=P_;}
  nightSet(NIGHT.v,true);}
-function nightSet(v,force){v=clamp(v,0,1);const changed=v!==NIGHT.v||force;NIGHT.v=v;if(!changed)return;
+function nightSet(v,force,clk){v=clamp(v,0,1);NIGHT.clock=clk===undefined?clockOfV(v):clk;ANIMU.uWinFrac.value=winFrac(NIGHT.clock);
+ const changed=v!==NIGHT.v||force;NIGHT.v=v;if(!changed)return;
  const nt=NSTEP(.3,.9,v),lightK=NSTEP(.25,.85,v);   // nt: how night it is (windows, glow); lightK: sun to moon hand-over
  skyMat.uniforms.u_n.value=NSTEP(.35,1,v);skyMat.uniforms.u_d.value=Math.sin(clamp(v,0,1)*PI)*.9;
  hemi.color.copy(nmix('hemiS',v));hemi.groundColor.copy(nmix('hemiG',v));hemi.intensity=lerp(.85,.62,NSTEP(0,1,v));
@@ -35,15 +46,22 @@ function nightSet(v,force){v=clamp(v,0,1);const changed=v!==NIGHT.v||force;NIGHT
  MAT.glow.color.setScalar(lerp(.55,1.5,nt));MAT.winlit.color.setRGB(lerp(.16,1.35,nt),lerp(.6,1.15,nt),lerp(1.1,.85,nt));   /* by day a lit window reads as ordinary teal glass */
  for(const k of ['halos','halosBig'])if(NIGHT[k]){NIGHT[k].material.opacity=nt*.9;NIGHT[k].visible=nt>.02;}
  const on=nt>.02;if(on!==NIGHT.active){NIGHT.active=on;for(const L of NIGHT.pool)L.visible=on;for(const k in MAT)MAT[k].needsUpdate=true;}   // light count changed: recompile once
- NIGHT.k=nt;NIGHT.lastPool=-1;}
+ NIGHT.k=nt;ANIMU.uNightK.value=nt;NIGHT.lastPool=-1;}
 FRAME_HOOKS.push(()=>{moonDisc.position.copy(camera.position).addScaledVector(MOONDIR,4700);});   /* the moon rides the sky sphere like the sun disc */
 /* each frame (every few): give the six pool lights to the halos nearest the camera focus */
 FRAME_HOOKS.push((dt,now)=>{if(!NIGHT.active||!HALOS.length)return;if(now-NIGHT.lastPool<120)return;NIGHT.lastPool=now;
  const fx=WALK.on?WALK.x:ctl.target.x,fz=WALK.on?WALK.z:ctl.target.z;const c=HALOS.map((q,i)=>({i,d:(q.x-fx)*(q.x-fx)+(q.z-fz)*(q.z-fz)})).sort((a,b)=>a.d-b.d);
- NIGHT.pool.forEach((L,k)=>{const q=c[k]&&HALOS[c[k].i];if(!q){L.intensity=0;return;}L.position.set(q.x,q.y+.4,q.z);L.color.setRGB(Math.min(1,q.r*1.2),Math.min(1,q.g*1.05),Math.min(1,q.b*.9));L.distance=q.big?26:18;L.intensity=(q.big?3.4:2.2)*NIGHT.k;});});
+ NIGHT.pool.forEach((L,k)=>{const q=c[k]&&HALOS[c[k].i];if(!q){L.intensity=L.userData.base=0;return;}L.position.set(q.x,q.y+.4,q.z);L.color.setRGB(Math.min(1,q.r*1.2),Math.min(1,q.g*1.05),Math.min(1,q.b*.9));L.distance=q.big?26:18;L.userData.base=(q.big?3.4:2.2)*NIGHT.k;L.userData.fk=q.big?.3:.1;L.userData.ph=h3(q.x,q.y,q.z)*TAU;L.intensity=L.userData.base;});});
+/* flicker: fires strongly, lamps a little; the same three-sine noise as the glow shader (GLSL_FLICK), a pure function of the animation clock */
+FRAME_HOOKS.push(()=>{if(!NIGHT.active)return;const t=ANIMU.uTime.value;for(const L of NIGHT.pool){const u=L.userData;if(!u.base)continue;
+ L.intensity=u.base*(1+u.fk*(.5*Math.sin(t*9.1+u.ph)+.3*Math.sin(t*15.3+u.ph*2.1)+.2*Math.sin(t*23.7+u.ph*3.7)));}});
+FRAME_HOOKS.push(dt=>{if(NIGHT.run)nightClock(NIGHT.clock+dt*NIGHT.run/60);});
 // ---- the time-of-day control, and ?night=0..1
 {const ui_=document.getElementById('ui');const ts=document.createElement('select');ts.id='timesel';ts.title='time of day';for(const [l,v] of [['Time: Day',0],['Time: Dusk',.5],['Time: Night',1]]){const o=document.createElement('option');o.value=v;o.textContent=l;ts.appendChild(o);}
- ts.onchange=()=>nightSet(parseFloat(ts.value));ui_.appendChild(ts);const db=document.createElement('button');db.textContent='Doors';db.title='show each building\'s front door direction (data marker, off by default)';db.onclick=()=>{DOORVIZ.visible=!DOORVIZ.visible;db.classList.toggle('on',DOORVIZ.visible);};ui_.appendChild(db);const q=parseFloat((new URLSearchParams(location.search)).get('night'));if(isFinite(q)){nightSet(q);ts.value=q>=.75?1:q>=.25?.5:0;}}
+ ts.onchange=()=>nightSet(parseFloat(ts.value),true);ui_.appendChild(ts);
+ const ck=parseFloat((new URLSearchParams(location.search)).get('clock'));if(isFinite(ck)&&ck>0)NIGHT.run=ck;
+ const cb=document.createElement('button');cb.textContent='Clock';cb.title='let the clock run (4 sim minutes a second): the sky, and which windows are lit, follow it';if(NIGHT.run)cb.classList.add('on');
+ cb.onclick=()=>{NIGHT.run=NIGHT.run?0:4;cb.classList.toggle('on',!!NIGHT.run);};ui_.appendChild(cb);const db=document.createElement('button');db.textContent='Doors';db.title='show each building\'s front door direction (data marker, off by default)';db.onclick=()=>{DOORVIZ.visible=!DOORVIZ.visible;db.classList.toggle('on',DOORVIZ.visible);};ui_.appendChild(db);const q=parseFloat((new URLSearchParams(location.search)).get('night'));if(isFinite(q)){nightSet(q);ts.value=q>=.75?1:q>=.25?.5:0;}}
 // ---- FRONT DOORS: invisible data (rec.front), with an optional debug overlay: the 'Doors' button draws an arrow at each building's front door, facing out
 const DOORVIZ=new THREE.Group();DOORVIZ.visible=false;DOORVIZ.userData.probeSkip=true;scene.add(DOORVIZ);
 function doorsRebuild(){while(DOORVIZ.children.length){const o=DOORVIZ.children.pop();o.geometry&&o.geometry.dispose();}

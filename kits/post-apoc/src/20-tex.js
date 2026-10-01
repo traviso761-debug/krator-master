@@ -1,8 +1,20 @@
 // ---------------------------------------------------------------- procedural textures
 // Grayscale by design: vertex colours tint them (paint, rust, culture livery). Every texture tiles in WORLD units:
 // TILE[matKey] is the metres one repeat covers, used by the geometry engine to write UVs.
+let TEXANISO=4;   /* 90-scene.js raises it to the renderer's maximum (capped at 8) once the renderer exists, and re-applies it to every map made before */
 function canvasTex(w,h,fn){const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');fn(g,w,h);
- const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.encoding=THREE.sRGBEncoding;t.anisotropy=4;return t;}
+ const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.encoding=THREE.sRGBEncoding;t.anisotropy=TEXANISO;return t;}
+/* DISTANT MIPS. Ribbed and patched sheet shimmered at long range: box-filtered mips keep the full rib contrast right down to the level where the ribs alias.
+   softMips(t,keep) builds the chain itself (2x2 averages of the RAW level above) and pulls each level from 2 down toward the texture's mean colour by keep^(level-1),
+   so a far wall reads as its average tone instead of crawling. Levels 0 and 1 (near and middle distance) are untouched. Bump maps share the map, so they calm down too. */
+function softMips(t,keep){keep=keep||.65;const src=t.image,W0=src.width,H0=src.height;const d0=src.getContext('2d').getImageData(0,0,W0,H0).data;let mr=0,mg=0,mb=0;
+ for(let i=0;i<d0.length;i+=4){mr+=d0[i];mg+=d0[i+1];mb+=d0[i+2];}const n=W0*H0;mr/=n;mg/=n;mb/=n;
+ const mips=[src];let raw=src,w=W0,h=H0,lv=0;
+ while(w>1||h>1){w=Math.max(1,w>>1);h=Math.max(1,h>>1);lv++;const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');g.imageSmoothingEnabled=true;g.drawImage(raw,0,0,w,h);raw=c;
+  const k=lv<=1?1:Math.pow(keep,lv-1);if(k>.999){mips.push(c);continue;}
+  const o=document.createElement('canvas');o.width=w;o.height=h;const og=o.getContext('2d');const id=g.getImageData(0,0,w,h),d=id.data;
+  for(let i=0;i<d.length;i+=4){d[i]=mr+(d[i]-mr)*k;d[i+1]=mg+(d[i+1]-mg)*k;d[i+2]=mb+(d[i+2]-mb)*k;}og.putImageData(id,0,0);mips.push(o);}
+ t.mipmaps=mips;t.generateMipmaps=false;t.minFilter=THREE.LinearMipmapLinearFilter;t.magFilter=THREE.LinearFilter;t.needsUpdate=true;return t;}
 function gray(v,a){v=clamp(v|0,0,255);return a===undefined?`rgb(${v},${v},${v})`:`rgba(${v},${v},${v},${a})`;}
 function speckle(g,w,h,n,amin,amax,dark){for(let i=0;i<n;i++){const x=rng()*w,y=rng()*h,s=rng()*2+.6;g.fillStyle=dark?`rgba(0,0,0,${rr(amin,amax)})`:`rgba(255,255,255,${rr(amin,amax)})`;g.fillRect(x,y,s,s);}}
 // rust is COLOUR, not just darkness: orange-brown scale over the grey, dark pitting at its edges (vertex tints multiply into it)
@@ -65,3 +77,5 @@ reseed(9019);TEX.steel=canvasTex(128,128,(g,w,h)=>{g.fillStyle=gray(176);g.fillR
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const v=184+fbm(x/24,y/3,4.4,2)*18-4+fbm(x/3,y/3,8,1)*5;const i=(y*w+x)*4;d[i]=d[i+1]=d[i+2]=v;}g.putImageData(id,0,0);
  for(let i=0;i<40;i++){g.fillStyle=`rgba(255,255,255,${rr(.04,.12)})`;g.fillRect(rng()*w,rng()*h,rr(8,40),1);}
  for(let i=0;i<14;i++){const x=rng()*w,y=rng()*h,r=rr(1.5,4);const gr=g.createRadialGradient(x,y,0,x,y,r);gr.addColorStop(0,'rgba(130,64,26,.75)');gr.addColorStop(1,'rgba(130,64,26,0)');g.fillStyle=gr;g.fillRect(x-r,y-r,r*2,r*2);}});TILE.steel=1.2;
+// the tiling material maps get the soft distant mips (chain-link keeps its own: its alpha diamonds must stay crisp for the alpha test)
+for(const k of ['corr','corrH','cont','sheet','plank','earth','conc','iron','wood','bottle','weave','steel'])softMips(TEX[k],.65);softMips(TEX.dirt,.8);

@@ -4,9 +4,15 @@ A generic post-apocalyptic building kit, made of **reclaimed and recycled materi
 a Voth river shanty, a Republic frontier stop) and then dressed in that culture's marks. Not to be confused with the Ancients' reclaimed buildings
 (`kits/ancients`, the Ancient Iziz Style): this set is called **post-apoc** everywhere.
 
-`dist/post-apoc.html` shows every building in rows by family. Toolbar: **Time** (Day / Dusk / Night), **Doors** (shows each building's front-door marker), view select, Inspector (hover: name, class, tags), Shadows, **Culture** (Generic /
+`dist/post-apoc.html` shows every building in rows by family. Toolbar: **Time** (Day / Dusk / Night), **Clock** (lets the sim clock run: the sky and the lit windows follow it), **Doors** (shows each building's front-door marker), view select, Inspector (hover: name, class, tags), Shadows, **Culture** (Generic /
 Iziz / Voth / Republic: rebuilds the whole set with that culture's marks), Polygon (click-to-coordinates), Walk (F).
-URL parameters: `?culture=iziz`, `?only=shop-food,dw-silo`.
+URL parameters: `?culture=iziz`, `?only=shop-food,dw-silo`, `?night=0..1`, `?clock=N` (run the clock at N sim minutes a second), `?t=12.5` (pin the animation time, for screenshots), `?anim=0` (t = 0).
+
+## Animation and night
+
+Cloth flutters (culture awnings, banners, flags, `tarp()` sheets), fires and lamps flicker, smoke rises from every `stovepipe()`, `fire()` and the two big stacks, turbines and fans
+turn (`spin()`). All of it is a pure function of the animation time and moves only in shaders or in objects outside the registry, so footprints and bboxes are what the builders drew.
+At night windows light by an evening schedule (most at dusk, fewer as the night deepens), lamps cast a cone of light and lit front doors a spill on the ground. Details and hooks: `API.md`, *Night and animation*.
 
 ## Architecture: reclaimed CORE + recycled ADDITIONS + cultural SOCKETS
 

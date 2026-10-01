@@ -44,6 +44,12 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 TOL_M, TOL_FRAC, UNDER_FRAC, ROOT_FRAC = 0.05, 0.04, 0.30, 0.10
 # key -> reason; only for pieces recorded as deferred in KNOWN_ISSUES.md
 ALLOW = {}
+# anchor geometry audit. wall: nothing more than `behind` m behind z = -d/2, and the vertices
+# within max(band, bandFrac*d) of the back plane span at least backW of w and backH of h.
+# ceiling: reaches within `top` m of y = h, and the top band spans at least topSpan m.
+# surface: the lowest point within `base` m of y = 0 (it stands on the top, not above or in it).
+ANCHOR_AUDIT = {'behind': 0.02, 'band': 0.06, 'bandFrac': 0.08, 'backW': 0.3, 'backH': 0.25,
+                'top': 0.03, 'topSpan': 0.05, 'base': 0.02}
 
 HOST_GLOBALS = re.compile(r'\b(kput|BOX|FAMMAT|MAT|PAL|scene|THREE|mk[A-Z]\w*|_target|treeHelper)\b')
 BARE_HELPERS = re.compile(r'(?<![\w.$])(shade|TAU)\b')
@@ -70,9 +76,23 @@ def furn_blocks():
     return out
 
 
+PAL_KEY_CALLS = re.compile(r"F\.(?:col|shade)\(\s*'([^']+)'")
+PAL_KEY_LISTS = re.compile(r"F\.(?:cols|pick)\(\s*\[([^\]]*)\]")
+
+
+def palette_keys(body):
+    """the palette keys a piece names: F.col('k'), F.shade('k', ..), F.cols([..]), F.pick(['k', ..])"""
+    keys = set(PAL_KEY_CALLS.findall(body))
+    for lst in PAL_KEY_LISTS.findall(body):
+        keys.update(re.findall(r"'([^']+)'", lst))
+    return sorted(keys)
+
+
 def static_checks():
-    """SPEC source conformance and the two style rules, from the source text."""
-    res, warns = [], []
+    """SPEC source conformance and the style rules ("No host globals", "Colour", F.* helpers),
+    from the source text. All are assertions now; the palette keys a piece names are
+    returned for the in-page check that its culture's FPAL defines them."""
+    res = []
     blocks = furn_blocks()
     old_room = [k for k, head, _ in blocks if re.search(r'(?<![\w])room\s*:', head)]
     res.append({'name': 'spec-source', 'ok': not old_room,
@@ -80,24 +100,32 @@ def static_checks():
                 if old_room else '%d FURN entries, none uses the old room: key' % len(blocks)})
     hg = [(k, sorted(set(HOST_GLOBALS.findall(body)))) for k, _, body in blocks]
     hg = [(k, g) for k, g in hg if g]
+    res.append({'name': 'style-host-globals', 'ok': not hg,
+                'detail': ('%d of %d pieces use kput/BOX/FAMMAT/MAT/PAL/scene/THREE/mk*: %s'
+                           % (len(hg), len(blocks), '; '.join('%s: %s' % (k, ','.join(g)) for k, g in hg[:8])))
+                if hg else '%d pieces build only through F.*' % len(blocks)})
     bare = [k for k, _, body in blocks if BARE_HELPERS.search(body)]
+    res.append({'name': 'style-helpers', 'ok': not bare,
+                'detail': ('%d of %d pieces call shade/TAU bare: %s' % (len(bare), len(blocks), ', '.join(bare[:10])))
+                if bare else '%d pieces use F.shade / F.TAU, none the bare engine globals' % len(blocks)})
     lit = [(k, len(HEX.findall(body))) for k, _, body in blocks]
     lit = [(k, n) for k, n in lit if n]
     arr = [k for k, _, body in blocks if HEX_ARRAY.search(body)]
-    warns.append('host globals (kput/BOX/FAMMAT/MAT/PAL/scene/THREE/mk*): %d of %d pieces%s'
-                 % (len(hg), len(blocks), (' - ' + '; '.join('%s: %s' % (k, ','.join(g)) for k, g in hg[:6])) if hg else ''))
-    warns.append('engine helpers used bare (shade/TAU instead of F.shade/F.TAU): %d of %d pieces'
-                 % (len(bare), len(blocks)))
-    warns.append('literal colours (0x...): %d of %d pieces, %d literals in all'
-                 % (len(lit), len(blocks), sum(n for _, n in lit)))
-    warns.append('literal colour arrays ([0x.., 0x..]): %d of %d pieces' % (len(arr), len(blocks)))
-    return res, warns
+    res.append({'name': 'style-colour', 'ok': not lit and not arr,
+                'detail': ('%d of %d pieces carry %d literal colours (%d build literal arrays): %s'
+                           % (len(lit), len(blocks), sum(n for _, n in lit), len(arr), ', '.join(k for k, _ in lit[:10])))
+                if lit or arr else '%d pieces, 0 literal colours: every colour is a palette key (FPAL)' % len(blocks)})
+    keys = {k: palette_keys(body) for k, _, body in blocks}
+    return res, keys
 
 
 ASSERT_JS = r"""(cfg)=>{
 const out={per:[],warn:[]};
 const V=new THREE.Vector3();
-function measure(g,fams){
+/* pr (optional): the anchor probe. Vertices in the instance's local frame (built at ry = 0)
+   feed: the back band (z within band of -d/2) and anything behind the back plane, for wall
+   pieces; the top band (y within band of h), for ceiling pieces. */
+function measure(g,fams,pr){
   g.updateMatrixWorld(true);
   let meshes=0,nan=0;const box=new THREE.Box3();
   g.traverse(o=>{
@@ -108,7 +136,11 @@ function measure(g,fams){
     const p=o.geometry.attributes.position;
     for(let i=0;i<p.count;i++){V.fromBufferAttribute(p,i);
       if(!isFinite(V.x)||!isFinite(V.y)||!isFinite(V.z)){nan++;continue;}
-      V.applyMatrix4(o.matrixWorld);box.expandByPoint(V);}
+      V.applyMatrix4(o.matrixWorld);box.expandByPoint(V);
+      if(pr){const lx=V.x-pr.ox,ly=V.y-pr.oy,lz=V.z-pr.oz;
+        if(lz<-pr.d/2)pr.behind=Math.max(pr.behind,-pr.d/2-lz);
+        if(lz<=-pr.d/2+pr.band){pr.bx0=Math.min(pr.bx0,lx);pr.bx1=Math.max(pr.bx1,lx);pr.by0=Math.min(pr.by0,ly);pr.by1=Math.max(pr.by1,ly);}
+        if(ly>=pr.h-pr.tband){pr.tx0=Math.min(pr.tx0,lx);pr.tx1=Math.max(pr.tx1,lx);pr.tz0=Math.min(pr.tz0,lz);pr.tz1=Math.max(pr.tz1,lz);}}}
   });
   return {meshes,nan,box};
 }
@@ -118,11 +150,14 @@ for(const g of INSTANCES.slice()){
   const r={kind:u.kind,key:u.key,variant:v,fail:[],warn:[]};
   if(u.error) r.fail.push('build threw: '+u.error);
   const fams=new Set();
-  let {meshes,nan,box}=measure(g,fams);
+  const AC=cfg.anchor;
+  const pr=u.kind==='furniture'?{ox:u.x,oy:u.opt.y||0,oz:u.z,d:d.d,h:d.h,band:Math.max(AC.band,AC.bandFrac*d.d),
+    tband:Math.max(AC.band,AC.bandFrac*d.h),behind:0,bx0:1e9,bx1:-1e9,by0:1e9,by1:-1e9,tx0:1e9,tx1:-1e9,tz0:1e9,tz1:-1e9}:null;
+  let {meshes,nan,box}=measure(g,fams,pr);
   /* sweep more seeds: the declared box must hold for every instance, not one */
   for(let s=2;s<=cfg.seeds;s++){
     const g2=_buildInstance(u.kind,REG[u.kind],u.key,u.x,u.z,0,{variant:v,seed:s,y:u.opt.y});
-    const m2=measure(g2,fams);
+    const m2=measure(g2,fams,pr);
     if(g2.userData.error) r.fail.push('build threw (seed '+s+'): '+g2.userData.error);
     nan+=m2.nan; if(!m2.meshes) meshes=0; box.union(m2.box);
     scene.remove(g2); INSTANCES.splice(INSTANCES.indexOf(g2),1);
@@ -152,6 +187,24 @@ for(const g of INSTANCES.slice()){
     if((m.z1-m.z0)<d.d*(1-cfg.under))under.push('d '+(m.z1-m.z0).toFixed(2)+'/'+d.d);
     if(m.y1<d.h*(1-cfg.under))under.push('h '+m.y1.toFixed(2)+'/'+d.h);
     if(under.length)r.warn.push('under-size '+under.join(', '));
+    /* anchor geometry (kits/furniture/SPEC.md "anchor"): what the anchor promises, the geometry must do */
+    if(pr){
+      const sp=(a,b)=>b>=a?b-a:0, f2=t=>t.toFixed(2);
+      if(A.anchor==='wall'){
+        if(pr.behind>AC.behind)r.fail.push('anchor: wall piece reaches '+f2(pr.behind)+' m behind its back plane z = -d/2');
+        const sx=sp(pr.bx0,pr.bx1),sy=sp(pr.by0,pr.by1);
+        if(sx<AC.backW*d.w||sy<AC.backH*d.h)r.fail.push('anchor: wall piece has too little at its back plane (within '+f2(pr.band)+
+          ' m of z = -d/2: '+f2(sx)+' m of w '+d.w+', '+f2(sy)+' m of h '+d.h+')');
+        r.back=[sx,sy].map(t=>Math.round(t*100)/100);
+      }else if(A.anchor==='ceiling'){
+        if(m.y1<d.h-AC.top)r.fail.push('anchor: ceiling piece stops '+f2(d.h-m.y1)+' m short of its top y = h');
+        const sx=sp(pr.tx0,pr.tx1),sz=sp(pr.tz0,pr.tz1);
+        if(Math.max(sx,sz)<AC.topSpan)r.fail.push('anchor: ceiling piece has almost nothing at its top ('+f2(sx)+' x '+f2(sz)+' m)');
+      }else if(A.anchor==='surface'){
+        if(m.y0>AC.base)r.fail.push('anchor: surface piece floats '+f2(m.y0)+' m above the top it stands on');
+        if(m.y0<-AC.base)r.fail.push('anchor: surface piece sinks '+f2(-m.y0)+' m into the top it stands on');
+      }
+    }
   }
   /* tags */
   const isStr=s=>typeof s==='string'&&s.length>0;
@@ -169,12 +222,18 @@ for(const g of INSTANCES.slice()){
     else{const miss=r.families.map(f=>FAMILY_TO_MATERIAL[f]||('?'+f)).filter(k=>A.materials.indexOf(k)<0);
       if(miss.length)r.fail.push('materials missing '+[...new Set(miss)].join(','));}
     if(A.variantNames&&A.variantNames.length!==A.variants)r.fail.push('variantNames length');
+    /* every palette key the piece names exists in its culture's palette */
+    const pal=FPAL[A.culture]||{}, miss=(cfg.palKeys[u.key]||[]).filter(k=>pal[k]==null);
+    if(!FPAL[A.culture])r.fail.push('palette: no FPAL for culture '+A.culture);
+    else if(miss.length)r.fail.push('palette: keys not in FPAL["'+A.culture+'"]: '+miss.join(', '));
   }else if(u.kind==='plant'){
     if(PLANT_CLIMATES.indexOf(A.climate)<0)r.fail.push('bad climate '+A.climate);
     if(PLANT_ARIDITY.indexOf(A.aridity)<0)r.fail.push('bad aridity '+A.aridity);
   }else{
     if(ASSET_CULTURES.indexOf(A.culture)<0)r.fail.push('bad culture '+A.culture);
-    if(!isStr(A.family)||A.family==='other')r.fail.push('no type (family)');
+    if(!isStr(A.family)||A.family==='other')r.fail.push('no family');
+    if(!Array.isArray(A.types)||!A.types.length)r.fail.push('no types');
+    else{const bad=A.types.filter(t=>BUILDING_TYPES.indexOf(t)<0);if(bad.length)r.fail.push('types not in BUILDING_TYPES: '+bad.join(', '));}
   }
   out.per.push(r);
 }
@@ -224,16 +283,20 @@ async def run(a):
             print('ready:', info['ready'], ' rows:', info['rows'], ' draw calls:', info['calls'], ' triangles:', info['tris'])
 
             if a.assert_:
-                res = await pg.evaluate(ASSERT_JS, {'tolM': TOL_M, 'tolF': TOL_FRAC, 'under': UNDER_FRAC, 'rootFrac': ROOT_FRAC, 'seeds': a.seeds})
+                sres, palkeys = static_checks()
+                res = await pg.evaluate(ASSERT_JS, {'tolM': TOL_M, 'tolF': TOL_FRAC, 'under': UNDER_FRAC, 'rootFrac': ROOT_FRAC,
+                                                    'seeds': a.seeds, 'palKeys': palkeys, 'anchor': ANCHOR_AUDIT})
                 c = res['counts']
                 print('\n--- catalog: %d furniture, %d plants, %d buildings -> %d instances (every variant) ---'
                       % (c['furniture'], c['plants'], c['buildings'], c['instances']))
                 per = res['per']
+                other = ('build threw', 'no meshes', 'outside declared', 'anchor:', 'palette:')
                 checks = [('builds', lambda f: f.startswith('build threw') or f == 'no meshes'),
                           ('no-nan-geometry', lambda f: 'NaN' in f),
                           ('declared-size', lambda f: f.startswith('outside declared')),
-                          ('tags', lambda f: not (f.startswith('build threw') or f == 'no meshes' or 'NaN' in f
-                                                  or f.startswith('outside declared')))]
+                          ('anchor-geometry', lambda f: f.startswith('anchor:')),
+                          ('palette', lambda f: f.startswith('palette:')),
+                          ('tags', lambda f: not (f.startswith(other) or 'NaN' in f))]
                 print('\n--- invariants ---')
                 for name, sel in checks:
                     bad, allowed = [], []
@@ -253,14 +316,11 @@ async def run(a):
                         print('          %s #%d [%s]: %s' % (r['key'], r['variant'] + 1, r['kind'], '; '.join(fs)))
                     if not ok:
                         fails.append('assert ' + name)
-                sres, swarn = static_checks()
                 for r in sres:
                     print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + r['detail'])
                     if not r['ok']:
                         fails.append('assert ' + r['name'])
                 print('\n--- warnings (reported, not failed) ---')
-                for w in swarn:
-                    print('  WARN  ' + w)
                 under = [r for r in per if r['warn']]
                 print('  WARN  under-size (>%d%% smaller than declared on an axis): %d instances' % (UNDER_FRAC * 100, len(under)))
                 for r in under[:40]:

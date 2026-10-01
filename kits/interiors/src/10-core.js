@@ -138,6 +138,45 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
     const e = r.hw * Math.abs(A[0][0] * ax[0] + A[0][1] * ax[1]) + r.hd * Math.abs(A[1][0] * ax[0] + A[1][1] * ax[1]);
     return [c - e, c + e];
   }
+  /* ---------- convex polygons (door swing quarter-discs, fixtures): SAT overlap depth > tol */
+  G.rectPoly = function (r) { return G.corners(r); };
+  G.convexOverlap = function (A, B, tol) {
+    let minPen = Infinity;
+    for (const P of [A, B]) for (let i = 0, n = P.length; i < n; i++) {
+      const p = P[i], q = P[(i + 1) % n], ex = q[0] - p[0], ez = q[1] - p[1], l = Math.hypot(ex, ez);
+      if (l < 1e-9) continue;
+      const ax = -ez / l, az = ex / l;
+      let a0 = Infinity, a1 = -Infinity, b0 = Infinity, b1 = -Infinity;
+      for (const v of A) { const d = v[0] * ax + v[1] * az; if (d < a0) a0 = d; if (d > a1) a1 = d; }
+      for (const v of B) { const d = v[0] * ax + v[1] * az; if (d < b0) b0 = d; if (d > b1) b1 = d; }
+      const pen = Math.min(a1, b1) - Math.max(a0, b0);
+      if (pen <= (tol || 0)) return false;
+      if (pen < minPen) minPen = pen;
+    }
+    return minPen;
+  };
+  /* a quarter disc (a door leaf's sweep): hinge h, radius r, from unit direction c (closed leaf)
+     to unit direction o (open leaf), as a convex polygon that CONTAINS the true arc (n segments,
+     vertices pushed out to r / cos(step / 2)) */
+  G.quarterDisc = function (h, r, c, o, n) {
+    n = n || 6;
+    const step = Math.PI / 2 / n, R = r / Math.cos(step / 2), out = [[h[0], h[1]]];
+    out.push([h[0] + c[0] * r, h[1] + c[1] * r]);
+    for (let i = 0; i < n; i++) {
+      const a = (i + 0.5) * step, ca = Math.cos(a), sa = Math.sin(a);
+      out.push([h[0] + (c[0] * ca + o[0] * sa) * R, h[1] + (c[1] * ca + o[1] * sa) * R]);
+    }
+    out.push([h[0] + o[0] * r, h[1] + o[1] * r]);
+    return out;
+  };
+  G.polyInside = function (poly, pts, m) {      /* every point inside poly, m metres clear of its edges */
+    for (const c of pts) {
+      if (!G.inside(poly, c[0], c[1])) return false;
+      if (m && G.edgeDist(poly, c[0], c[1]) < m - 1e-9) return false;
+    }
+    return true;
+  };
+
   /* a rectangle lies inside a polygon: its corners are inside (by margin m from every edge)
      and no polygon edge crosses it (an L-shaped room's reflex corner cannot poke into it) */
   G.rectInPoly = function (poly, r, m) {

@@ -2,6 +2,8 @@
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);
 renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
 renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;document.body.appendChild(renderer.domElement);
+/* texture filtering: full anisotropy (capped at 8) on every canvas map made so far; canvasTex() uses TEXANISO for the ones made later (culture banners) */
+TEXANISO=Math.max(1,Math.min(8,renderer.capabilities.getMaxAnisotropy()||1));for(const k in TEX)TEX[k].anisotropy=TEXANISO;for(const k in MAT){const m=MAT[k];if(m.map)m.map.anisotropy=TEXANISO;}
 const scene=new THREE.Scene();scene.fog=new THREE.FogExp2(0xd2b894,.00075);
 const camera=new THREE.PerspectiveCamera(50,innerWidth/innerHeight,.3,9000);
 const hemi=new THREE.HemisphereLight(0xffe6c8,0x6a4a34,.85);scene.add(hemi);
@@ -39,16 +41,21 @@ const SITEKEY=k=>{if(typeof k!=='string')return {key:k.key,o:Object.assign({v:0}
  z+=dmax/2;let x=-total/2;keys.forEach((k,i)=>{SITES.push({key:k.key,x:x+ws[i]/2,z,ry:0,o:k.o});x+=ws[i];});
  ROWS.push({family:F.name,z,d:dmax,w:total,h:hmax,keys:keys.map(k=>k.key)});z+=dmax/2+Math.max(26,hmax*1.3)+8;}})();
 const GROUND_C=ROWS.length?ROWS[ROWS.length-1].z/2:0;groundM.position.set(0,0,GROUND_C);
+/* smoke from the two big stacks built without stovepipe() (which marks its own): the smithy's forge flue and the fuel generator's exhaust, by their tops in
+   the def's local frame. Wrapping the builder keeps the building fragments untouched; smokeAt() reads CM, so the puffs follow any placement (compounds too). */
+const SMOKE_STACKS={smithy:[[-2.2,9.5,-3.55,.6]],'gen-fuel':[[-4.8,CT.H+5.85,-2.6,.55]]};
+for(const k in SMOKE_STACKS){const d=DEFS[k];if(!d||d._smoke)continue;const b=d.build;d._smoke=true;d.build=o=>{const r=b(o);for(const q of SMOKE_STACKS[k])smokeAt(q[0],q[1],q[2],{r:q[3],kind:'stack'});return r;};}
 // ---------------------------------------------------------------- (re)build the world for a culture
 let WORLD=null;
 function buildWorld(cultureKey){if(WORLD){scene.remove(WORLD);WORLD.traverse(o=>{if(o.geometry)o.geometry.dispose();});}
- WORLD=new THREE.Group();scene.add(WORLD);GB={};GTARGET=GB;SPINNERS.length=0;regClear();plantsReset();halosReset();SOCK_ALL.length=0;GSTAT.tris=0;SBS.length=0;SB=null;resetCM();
+ WORLD=new THREE.Group();scene.add(WORLD);GB={};GTARGET=GB;SPINNERS.length=0;regClear();plantsReset();halosReset();SMOKES=[];clothWrapPacks();SOCK_ALL.length=0;GSTAT.tris=0;SBS.length=0;SB=null;resetCM();
  CULT.cur=CULT.packs[cultureKey]||CULT.generic;const t0=performance.now();
  window._compounds=[];for(const S of SITES)place(S.key,S.x,S.z,S.ry||0,S.o);
  flushBuckets(GB,WORLD,true);
  for(const sp of SPINNERS){const grp=new THREE.Group();grp.matrixAutoUpdate=false;grp.matrix.copy(sp.world);const inner=new THREE.Group();grp.add(inner);flushBuckets(sp.buckets,inner,true);sp.node=inner;WORLD.add(grp);}
  if(typeof nightRebuild==='function')nightRebuild();
  if(typeof doorsRebuild==='function')doorsRebuild();
+ if(typeof animRebuild==='function')animRebuild();   /* smoke puffs and light volumes (93-anim.js; it is not ready on the very first build and runs it itself) */
  window._build={ms:performance.now()-t0,tris:GSTAT.tris,culture:CULT.cur.key,sites:SITES.length,spinners:SPINNERS.length};return WORLD;}
 FRAME_HOOKS.push(dt=>{for(const sp of SPINNERS)if(sp.node)sp.node.rotation[sp.axis]+=sp.rate*dt;});
 // views: an opening, an overview, a row shot per family and an eye-level shot per building

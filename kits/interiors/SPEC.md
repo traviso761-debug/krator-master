@@ -1,15 +1,19 @@
 # kits/interiors/ — spec
 
-**Status (2026-10): implemented here.** `ROOM()` registration, the placer (`furnishRoom`, SPEC
-"Placement" 1–4), the occupancy grid that keeps every door connected to every usable piece, the
-room-outline debug view (build-first #1), a placer for every room kind in `IX.PROGRAMS`, not just
-hall and bedroom (#2), and the cut-away (#4) are built and verified: see `README.md`, `API.md`
-and `KNOWN_ISSUES.md`. The placer is engine-neutral and reads furniture through an adapter; the
-demo furnishes from the master catalog (`kits/catalog`, which replaces `kits/furniture/` below
-until that kit exists). Still open: #3 (doors joined to a life layer; the grid is exposed for
-it), and the part of Yuni's planner that FINDS rooms inside a building (here a build registers
-them). Additions to the contract below: door `swing`, `hinge`, `h`, `leaf`; window `h`; room
-`id` and `seed` (API.md "Registering rooms").
+**Status (2026-10): implemented here, all four "What to build first" steps.** `ROOM()`
+registration and the room-outline debug view (#1); a placer for every room kind in
+`IX.PROGRAMS`, not just hall and bedroom (#2), greedy with bounded backtracking, on a 0.1 m
+8-neighbour walk grid; doors joined to a life layer (#3: `IX.life`, walkers from the street
+through doors and up stairs to a seat, bed or bench and out, deterministic in time); the
+cut-away with a storey selector (#4). And the part of Yuni's planner that FINDS rooms inside a
+building: `IX.planBuilding(shell, program)` cuts a footprint into rooms per storey, with
+partitions, a door in each, stairs between storeys, windows and a walk graph. The catalog's
+lights come back as data and are stripped by default (a light budget). See `README.md`,
+`API.md` and `KNOWN_ISSUES.md`. Everything is engine-neutral and reads furniture through an
+adapter; the demo furnishes from the master catalog (`kits/catalog`, which replaces
+`kits/furniture/` below until that kit exists). Additions to the contract below: door `swing`,
+`hinge`, `h`, `leaf`, `id`; window `h`; room `id`, `seed`, `level`, `fixtures` (API.md
+"Registering rooms").
 
 **Implemented first in Yuni** (`settlements/yuni/src/64-interiors.js`, runtime in `76-doors.js`, data contract in
 `settlements/yuni/GAME_EXPORT.md`). Start there before building interiors for another settlement: the planner

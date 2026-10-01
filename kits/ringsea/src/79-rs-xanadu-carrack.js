@@ -22,14 +22,14 @@ function buildRsXanaduCarrack(){reseed(72900);
  for(const a of rsAlong(H,.25,.8,26,1))rsLink(B,'metal',a.p,[a.p[0],a.p[1]+1,a.p[2]],.04,GOLD,5);
  // masts: fore (square), main (course + topsail, fighting top), mizzen (lateen above the aftcastle)
  const mast=(mx,mh,r)=>{const b=dY(H.uAt(mx));rsLink(B,'wood',[mx,b-.5,0],[mx,b+mh,0],r,WOOD,10,r*.6);return b;};
- const sq=(mx,y0,y1,w,a,key,bel)=>{const U=[Math.sin(a),0,Math.cos(a)];const S=rsSail(B,{key,O:[mx+.5,y0,0],U,V:[0,1,0],belly:bel,A:t=>[(t-.5)*w,y1-y0],Bf:t=>[(t-.5)*w*.92,0],draw:rsXanaduWheel});
-  rsSailEdge(B,S,0,.17,WOOD);rsSailEdge(B,S,1,.1,WOOD);return S;};
+ const sq=(mx,y0,y1,w,a,key,bel)=>{rsRig(B,[mx,0]);const U=[Math.sin(a),0,Math.cos(a)];const S=rsSail(B,{key,O:[mx+.5,y0,0],U,V:[0,1,0],belly:bel,A:t=>[(t-.5)*w,y1-y0],Bf:t=>[(t-.5)*w*.92,0],draw:rsXanaduWheel});
+  rsSailEdge(B,S,0,.17,WOOD);rsSailEdge(B,S,1,.1,WOOD);rsRigEnd(B);return S;};
  const fb=mast(11,20,.3);sq(11,fTop+1.4,fb+17,11,1,'xanadu-wheel',-1.2);
  const mb=mast(0,31,.42);const cT=mb+21;sq(0,mb+5,cT,15,1,'xanadu-wheel',-1.6);sq(0,cT+1.4,mb+29,10,1,'xanadu-wheel',-.9);
  rsCyl(B,'wood',1.1,.9,1.1,[0,cT+.7,0],null,MAR,14);rsCyl(B,'wood',.9,.75,.9,[11,fb+17.6,0],null,MAR,12);
- const zb=mast(-12,17,.24);const S3=rsSail(B,{key:'xanadu-wheel',O:[0,0,.35],U:[1,0,0],V:[0,1,0],belly:.8,nu:16,nv:8,
+ const zb=mast(-12,17,.24);rsRig(B,[-12,0],{gain:.5});const S3=rsSail(B,{key:'xanadu-wheel',O:[0,0,.35],U:[1,0,0],V:[0,1,0],belly:.8,nu:16,nv:8,
   A:t=>[lerp(-6.5,-20,t),lerp(aTop+.2,zb+19,t)],Bf:t=>[lerp(-17,-20,t),lerp(aTop,zb+19,t)],draw:rsXanaduWheel});
- {const yd=[];for(let k=0;k<=10;k++)yd.push(S3.at(k/10,0));rsTube(B,'wood',yd,.14,WOOD,20,6);}
+ {const yd=[];for(let k=0;k<=10;k++)yd.push(S3.at(k/10,0));rsTube(B,'wood',yd,.14,WOOD,20,6);}rsRigEnd(B);
  for(const [mx,top] of[[11,fb+20],[0,mb+31],[-12,zb+17]]){rsRope(B,[mx,top,0],[mx+ (mx>5?9:-8),mx>5?fTop:aTop-1.4,0]);rsPennant(B,[mx,top+.2,0],4.5,.9,[MAR,GOLD]);}
  // the bullion: iron-bound chests stacked amidships, guards in maroon
  for(let i=0;i<12;i++){const x=rr(-4,4),z=rr(-3,3),y=dY(H.uAt(x))+.35+(i%3)*.72;rsBox(B,'wood',[1.2,.7,.8],[x,y,z],[0,rr(-.2,.2),0],WOOD);rsBox(B,'metal',[1.24,.1,.84],[x,y+.25,z],[0,0,0],GOLD);rsBox(B,'metal',[.1,.72,.84],[x,y,z],[0,0,0],0x2a2a2a);}

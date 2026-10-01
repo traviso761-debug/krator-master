@@ -4,6 +4,8 @@
      furniture   the catalog entry (culture, type, setting, rooms, anchor) plus the room it
                  furnishes, the requirement it fills and the role it was placed in
      room        a demo shell's floor, wall, roof or door: room kind, culture, wealth, size
+     building    a planned building's floor, wall, stair, door or roof: storeys, rooms, roof
+     walker      a figure of the life layer
    The click inspector (kits/catalog/inspector.js) still measures and audits pieces.
    ====================================================================== */
 (function () {
@@ -32,6 +34,15 @@
         (A.variants > 1 ? ' <span style="opacity:.6">#' + (u.opt.variant + 1) + '/' + A.variants + '</span>' : '') +
         '<br>' + furnTags(hit.g).map(function (s) { return '<span class="tag">' + s + '</span>'; }).join('');
     }
+    if (hit.kind === 'building') {
+      const I = window._interiors, B = I && I.buildings ? I.buildings.filter(function (b) { return b.id === hit.building; })[0] : null;
+      if (!B) return '<div class="cls">building</div><b>' + hit.building + '</b>';
+      const t = [B.levels.length + ' storey(s)', B.rooms.length + ' rooms', B.stairs.length + ' stair(s)', 'roof: ' + B.roof.kind, 'culture: ' + B.culture,
+        'part: ' + hit.part + (hit.level != null ? ' (storey ' + hit.level + ')' : '')];
+      return '<div class="cls">planned building</div><b>' + B.id + '</b><br>' + t.map(function (s) { return '<span class="tag">' + s + '</span>'; }).join('') +
+        '<br><span style="opacity:.7">' + B.rooms.map(function (R) { return R.kind + '@' + R.level; }).join(' · ') + '</span>';
+    }
+    if (hit.kind === 'walker') return '<div class="cls">walker</div><b>' + hit.walker + '</b>';
     const R = IX.roomById[hit.room];
     const t = ['kind: ' + R.kind, 'culture: ' + R.culture, 'wealth: ' + R.wealth, R.area.toFixed(1) + ' m²', 'h ' + R.h + ' m',
       R.doors.length + ' door(s)', R.windows.length + ' window(s)', 'part: ' + hit.part];
@@ -43,7 +54,7 @@
     ndc.x = ((cx - r.left) / r.width) * 2 - 1;
     ndc.y = -((cy - r.top) / r.height) * 2 + 1;
     ray.setFromCamera(ndc, camera);
-    const shells = (window._interiors ? window._interiors.shells : []);
+    const shells = (window._interiors ? window._interiors.shells.concat(window._interiors.pickables || []) : []);
     const hits = ray.intersectObjects(INSTANCES.concat(shells), true);
     for (const h of hits) {
       let o = h.object;
@@ -52,6 +63,8 @@
       for (let p = o; p; p = p.parent) if (!p.visible) { vis = false; break; }
       if (!vis) continue;
       if (o.userData.room && o.userData.part) return { kind: 'room', room: o.userData.room, part: o.userData.part };
+      if (o.userData.building && o.userData.part) return { kind: 'building', building: o.userData.building, part: o.userData.part, level: o.userData.level };
+      if (o.userData.walker) return { kind: 'walker', walker: o.userData.walker };
       while (o && INSTANCES.indexOf(o) < 0) o = o.parent;
       if (o) return { kind: 'furniture', g: o };
     }

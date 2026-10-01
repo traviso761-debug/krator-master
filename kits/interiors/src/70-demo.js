@@ -2,14 +2,22 @@
    The demo, not the kit: sample rooms on a sheet, one row per room kind, each a procedural
    shell (50-shell.js) around a ROOM(), furnished by furnishRoom() from the master catalog
    through adapters/catalog-adapter.js. Shapes: rectangles, L-shapes, trapezoids, an
-   irregular pentagon, a rotated room and a two-room house joined by an interior door.
-   Exposes window._interiors (rooms, plans, gotoRoom, reseed, ...) and sets window._ready.
+   irregular pentagon, a rotated room. Then a row of PLANNED buildings (planBuilding,
+   46-planner.js; drawn by 51-building.js): a two-room house, a two-storey town house, an
+   L-shaped inn and a three-storey tower, furnished end to end, with WALKERS (47-life.js,
+   57-figures.js) coming in from the street, through doors and up stairs, to a seat, bed or
+   bench, and out again. LIGHTS: the adapter strips the catalog's PointLights (their data is in
+   each plan's lights) and a fixed pool of LIGHT_POOL lights is moved to the rooms nearest the
+   camera; ?lights=keep keeps the catalog's real lights instead.
+   Exposes window._interiors (rooms, plans, buildings, walkers, gotoRoom, setLevel, setTime,
+   reseed, ...) and sets window._ready.
    ====================================================================== */
 (function () {
   'use strict';
   const IX = KratorInteriors, G = IX.geom;
-  const catalog = IX.catalogAdapter();
-  const FLOOR_Y = 0.2;
+  const KEEP_LIGHTS = /[?&]lights=keep\b/.test(location.search);
+  const catalog = IX.catalogAdapter({ lights: KEEP_LIGHTS ? 'keep' : 'strip' });
+  const FLOOR_Y = 0.2, LIGHT_POOL = 6;
 
   /* ---------- shapes, in plot-local metres; edge 0 is the back (-z), the camera sits at +z */
   function rect(w, d) { return [[-w / 2, -d / 2], [w / 2, -d / 2], [w / 2, d / 2], [-w / 2, d / 2]]; }
@@ -84,28 +92,44 @@
       } });
     });
   });
-  /* a two-room house: a salvage hall and bedroom sharing a wall and an interior door */
-  (function () {
-    const ri = ROWS.length, oz = -ri * DZ, ox = 0;
-    const hall = [[-6, -2.6], [0, -2.6], [0, 2.6], [-6, 2.6]].map(function (p) { return xf(p, ox + 2, oz, 0); });
-    const bed = [[0, -2.6], [4.4, -2.6], [4.4, 2.6], [0, 2.6]].map(function (p) { return xf(p, ox + 2, oz, 0); });
-    const shared = xf([0, -0.9], ox + 2, oz, 0);
-    defs.push({ plot: { ox: ox, oz: oz, row: ri, col: 0, rot: 0, house: true }, room: {
-      id: 'house.hall', building: 'demo_house', kind: 'hall', culture: 'ancients-salvage', poly: hall, y: FLOOR_Y, h: 3.0, wealth: 0.45,
-      doors: [{ at: xf([-3.6, 2.6], ox + 2, oz, 0), w: 1.0, to: 'street' }, { at: shared, w: 0.9, to: 'house.bedroom', swing: 'in', hinge: 'right' }],
-      windows: [{ at: xf([-3, -2.6], ox + 2, oz, 0), w: 1.2, sill: 0.95 }, { at: xf([-6, 0], ox + 2, oz, 0), w: 1.0, sill: 0.95 }] } });
-    defs.push({ plot: { ox: ox, oz: oz, row: ri, col: 1, rot: 0, house: true }, room: {
-      id: 'house.bedroom', building: 'demo_house', kind: 'bedroom', culture: 'ancients-salvage', poly: bed, y: FLOOR_Y, h: 3.0, wealth: 0.45,
-      doors: [{ at: shared, w: 0.9, to: 'house.hall', swing: 'out', hinge: 'left', leaf: false }],
-      windows: [{ at: xf([4.4, 0], ox + 2, oz, 0), w: 1.0, sill: 0.95 }] } });
-  })();
+  /* ---------- planned buildings (planBuilding): the footprint is the OUTER face of the walls */
+  function brect(cx, cz, w, d, rot) {
+    const c = Math.cos(rot || 0), sn = Math.sin(rot || 0);
+    return [[-w / 2, -d / 2], [w / 2, -d / 2], [w / 2, d / 2], [-w / 2, d / 2]].map(function (p) { return [IX.round(cx + p[0] * c + p[1] * sn), IX.round(cz - p[0] * sn + p[1] * c)]; });
+  }
+  const BZ = -ROWS.length * DZ;
+  const BUILDINGS = [
+    { label: 'house', sub: 'hall + bedroom, one storey', program: ['hall', 'bedroom'],
+      shell: { id: 'house', poly: brect(1.2, BZ, 10.9, 5.7), y: FLOOR_Y, levels: [{ h: 3.0 }], doors: [{ at: [-1.2, BZ + 2.85], w: 1.0 }],
+        culture: 'ancients-salvage', wealth: 0.45, roof: 'gable', pitch: 0.55 } },
+    { label: 'town house', sub: 'two storeys, programme "dwelling"', program: 'dwelling',
+      shell: { id: 'townhouse', poly: brect(19, BZ, 10.5, 8.5), y: FLOOR_Y, levels: [{ h: 3.0 }, { h: 2.8 }], doors: [{ at: [17.5, BZ + 4.25], w: 1.1 }],
+        culture: 'yuni-common', wealth: 0.55, roof: 'gable', pitch: 0.6 } },
+    { label: 'inn', sub: 'L-shaped, one storey, hip roof', program: ['tavern', 'kitchen', 'store'],
+      shell: { id: 'inn', poly: [[32, BZ - 5], [45, BZ - 5], [45, BZ + 0.5], [38.5, BZ + 0.5], [38.5, BZ + 5.5], [32, BZ + 5.5]].map(function (p) { return [p[0], p[1]]; }),
+        y: FLOOR_Y, levels: [{ h: 3.4 }], doors: [{ at: [35.2, BZ + 5.5], w: 1.4 }], culture: 'voth', wealth: 0.6, roof: 'hip', pitch: 0.5 } },
+    { label: 'tower', sub: 'three storeys, rotated, hip roof', program: [['workshop', 'store'], ['study', 'bedroom'], ['bedroom']],
+      shell: { id: 'tower', poly: brect(55, BZ, 9.5, 7.5, 0.3), y: FLOOR_Y, levels: [{ h: 3.2 }, { h: 3.0 }, { h: 3.0 }], front: 2,
+        culture: 'ancient', wealth: 0.6, roof: 'hip', pitch: 0.65 } }
+  ];
 
   /* ---------- register, shell, furnish, build */
-  const rooms = defs.map(function (d) { return ROOM(d.room); });
-  const shells = rooms.map(function (R) { const s = IX.view.shell(R); scene.add(s); IX.view.cutaway.add(s); return s; });
-  let seed = 0, plans = [], outlines = [];
-  const S = { outline: false, grid: false };
+  const single = defs.map(function (d) { return ROOM(d.room); });
+  const shells = single.map(function (R) { const s = IX.view.shell(R); scene.add(s); IX.view.cutaway.add(s); return s; });
+  const buildings = BUILDINGS.map(function (b) {
+    const B = IX.planBuilding(b.shell, b.program, { register: true });
+    const s = IX.view.building(B); scene.add(s); IX.view.cutaway.add(s); shells.push(s);
+    B.label = b.label; B.sub = b.sub;
+    return B;
+  });
+  const rooms = single.concat([].concat.apply([], buildings.map(function (B) { return B.rooms; })));
+  const stairs = [].concat.apply([], buildings.map(function (B) { return B.stairs; }));
+  const buildingOf = {};
+  buildings.forEach(function (B) { B.rooms.forEach(function (R) { buildingOf[R.id] = B; }); });
+  let seed = 0, plans = [], outlines = [], nav = null, walkers = [], figures = null;
+  const S = { outline: false, grid: false, walkers: true };
   function clearFurniture() {
+    IX.view.cutaway.tagged = [];
     for (const P of plans) for (const g of (P.objects || [])) {
       if (!g) continue;
       scene.remove(g);
@@ -118,20 +142,71 @@
     plans = rooms.map(function (R) {
       const P = furnishRoom(R, catalog, { seed: seed });
       IX.buildRoom(P, catalog, R);
+      if (R.level) for (const g of P.objects) IX.view.cutaway.tag(g, R.level);
       return P;
     });
+    populate();
     drawOutlines();
     report();
   }
+  /* ---------- the life layer: a nav over every room, a few walkers per planned building */
+  function populate() {
+    if (figures) { scene.remove(figures); figures = null; }
+    nav = IX.life.nav({ rooms: rooms, plans: plans, stairs: stairs });
+    walkers = makeWalkers(nav);
+    figures = IX.view.figures(walkers);
+    figures.visible = S.walkers;
+    scene.add(figures);
+  }
+  function makeWalkers(nv) {
+    let out = [];
+    buildings.forEach(function (B, bi) {
+      const ws = IX.life.populate(nv, { rooms: B.rooms.map(function (R) { return R.id; }), count: B.levels.length > 1 ? 5 : 3,
+        seed: 11 + bi * 7 + seed, t0: bi * 3, spacing: 7, dwell: 30, period: 120 });
+      ws.forEach(function (W) { W.id = B.id + '.' + W.id; });
+      out = out.concat(ws);
+    });
+    return out;
+  }
+  const levelOfRoom = {};
+  rooms.forEach(function (R) { levelOfRoom[R.id] = R.level || 0; });
+  function figureShows(p) { return p.room == null || IX.view.cutaway.shows(levelOfRoom[p.room]); }
   function drawOutlines() {
-    for (const o of outlines) scene.remove(o);
+    for (const o of outlines) { scene.remove(o); IX.view.cutaway.untag(o); }
     outlines = [];
     if (!S.outline && !S.grid) return;
     rooms.forEach(function (R, i) {
       const o = IX.view.outline(R, plans[i], { grid: S.grid, paths: S.grid });
       scene.add(o); outlines.push(o);
+      if (R.level) IX.view.cutaway.tag(o, R.level);
     });
   }
+
+  /* ---------- light budget: a fixed pool of point lights, moved to the rooms nearest the camera.
+     The count never changes, so three.js never recompiles a material for it. */
+  const pool = [];
+  if (!KEEP_LIGHTS) for (let i = 0; i < LIGHT_POOL; i++) { const l = new THREE.PointLight(0xffc488, 0, 9, 2); l.name = 'interiors-pool-' + i; scene.add(l); pool.push(l); }
+  let poolFrame = 0;
+  function assignLights() {
+    if (!pool.length) return;
+    const tx = ctl.target.x, tz = ctl.target.z, cand = [];
+    rooms.forEach(function (R, i) {
+      if (!IX.view.cutaway.shows(R.level)) return;
+      const d = Math.hypot(R.centroid[0] - tx, R.centroid[1] - tz);
+      cand.push({ i: i, d: d });
+    });
+    cand.sort(function (a, b) { return a.d - b.d || a.i - b.i; });
+    pool.forEach(function (l, k) {
+      const c = cand[k];
+      if (!c || c.d > 40) { l.intensity = 0; return; }
+      const R = rooms[c.i], P = plans[c.i], n = P && P.lights ? P.lights.length : 0;
+      const b = R.bbox, span = Math.max(b[2] - b[0], b[3] - b[1]);
+      l.position.set(R.centroid[0], R.y + R.h * 0.8, R.centroid[1]);
+      l.distance = span * 1.4 + 2; l.intensity = 0.55 + 0.25 * Math.min(2, n);
+      l.userData.room = R.id;
+    });
+  }
+  function pointLights() { let n = 0; scene.traverse(function (o) { if (o.isPointLight && o.visible !== false) n++; }); return n; }
 
   /* ---------- labels (the catalog sheet's ground labels) */
   function labelTex(text, sub, dark) {
@@ -164,6 +239,7 @@
     for (const m of labels) { scene.remove(m); m.material.map.dispose(); }
     labels.length = 0;
     rooms.forEach(function (R, i) {
+      if (buildingOf[R.id]) return;
       const P = plans[i], rp = P.report, b = R.bbox;
       const bits = [P.placements.length + ' pieces', R.area.toFixed(1) + ' m²'];
       if (rp.fallbacks.length) bits.push(rp.fallbacks.length + ' fallback');
@@ -172,7 +248,12 @@
       label(R.kind + ' · ' + R.culture, bits.join(' · '), (b[0] + b[2]) / 2, b[3] + 1.5, 7.5, false);
     });
     ROWS.forEach(function (row, ri) { label(row[0], row[1].length + ' rooms', -11, -ri * DZ, 7, true); });
-    label('house', 'hall + bedroom', -11, -ROWS.length * DZ, 7, true);
+    label('buildings', 'planned: rooms, doors, stairs', -11, BZ, 7, true);
+    buildings.forEach(function (B) {
+      const bb = G.bbox(B.outer), n = B.rooms.reduce(function (a, R) { return a + plans[rooms.indexOf(R)].placements.length; }, 0);
+      label(B.label + ' · ' + B.culture, B.levels.length + ' storey(s) · ' + B.rooms.length + ' rooms · ' + n + ' pieces · roof ' + B.roof.kind,
+        (bb[0] + bb[2]) / 2, bb[3] + 1.8, 8.5, false);
+    });
   }
 
   /* ---------- the standard Krator sky, mid-morning (vendored 81-sky.js) */
@@ -181,9 +262,14 @@
     KratorSky.update(camera.position, 10.5, 200, 1.6);
     scene.fog.color.copy(KratorSky.lighting().fog);
   }
-  (window._frameHooks = window._frameHooks || []).push(function () {
+  let simT = 0, frozen = null, lastNow = null;
+  (window._frameHooks = window._frameHooks || []).push(function (now) {
     if (window.KratorSky) KratorSky.update(camera.position, 10.5, 200, 1.6);
+    if (lastNow != null && frozen == null) simT += Math.min(0.1, (now - lastNow) / 1000);
+    lastNow = now;
     IX.view.cutaway.update(camera);
+    if (figures && S.walkers) figures.userData.update(frozen != null ? frozen : simT, figureShows);
+    if ((poolFrame++ % 15) === 0) assignLights();
   });
 
   /* ---------- toolbar */
@@ -195,6 +281,7 @@
     const R = rooms[i]; if (!R) return;
     current = i;
     if (ctl.walk) window._setWalk(false);
+    setLevel(buildingOf[R.id] ? R.level : null);
     const b = R.bbox, span = Math.max(b[2] - b[0], b[3] - b[1]);
     ctl.target.set((b[0] + b[2]) / 2, R.y + 0.6, (b[1] + b[3]) / 2);
     ctl.dist = Math.max(9, span * 1.45 + R.h); ctl.az = 0.35; ctl.el = 0.82;
@@ -202,8 +289,20 @@
     rs.value = String(i);
     report();
   }
+  function gotoBuilding(i, level) {
+    const B = buildings[i]; if (!B) return;
+    current = -1;
+    if (ctl.walk) window._setWalk(false);
+    setLevel(level);
+    const b = G.bbox(B.outer), span = Math.max(b[2] - b[0], b[3] - b[1]);
+    const lv = B.levels[Math.min(level == null ? 0 : level, B.levels.length - 1)];
+    ctl.target.set((b[0] + b[2]) / 2, lv.y + 0.6, (b[1] + b[3]) / 2);
+    ctl.dist = Math.max(10, span * 1.35 + 3); ctl.az = 0.4; ctl.el = 0.85;
+    updateCamera(); assignLights(); rs.value = ''; report();
+  }
   function overview() {
     current = -1;
+    setLevel(null);
     ctl.target.set(24, 0, -24); ctl.dist = 72; ctl.az = 0.3; ctl.el = 1.05; updateCamera();
     rs.value = '';
     report();
@@ -214,9 +313,14 @@
     const el = $('rep');
     const tot = plans.reduce(function (a, P) { return a + P.placements.length; }, 0);
     $('count').textContent = rooms.length + ' rooms · ' + tot + ' pieces · seed ' + seed;
-    if (current < 0) { el.innerHTML = '<span class="n">Pick a room for its report. O outlines, G walk grid, C cut-away, T tags, P polygon tool, F walk.</span>'; return; }
+    const nl = plans.reduce(function (a, P) { return a + (P.lights ? P.lights.length : 0); }, 0);
+    const ms = plans.reduce(function (a, P) { return a + (P.stats ? P.stats.ms : 0); }, 0);
+    $('count').textContent += ' · ' + walkers.length + ' walkers · ' + nl + ' lamp lights as data, ' + (KEEP_LIGHTS ? 'kept real' : pool.length + ' pooled') + ' · placed in ' + Math.round(ms) + ' ms';
+    if (current < 0) { el.innerHTML = '<span class="n">Pick a room for its report. O outlines, G walk grid, C cut-away, L storey, V walkers, T tags, P polygon tool, F walk.</span>'; return; }
     const R = rooms[current], P = plans[current], rp = P.report, h = [];
-    h.push('<b>' + esc(R.id) + '</b> ' + R.kind + ' · ' + R.culture + ' · wealth ' + R.wealth + ' · ' + R.area.toFixed(1) + ' m² · ' + R.doors.length + ' door(s)');
+    h.push('<b>' + esc(R.id) + '</b> ' + R.kind + ' · ' + R.culture + ' · wealth ' + R.wealth + ' · ' + R.area.toFixed(1) + ' m² · ' + R.doors.length + ' door(s)' +
+      (buildingOf[R.id] ? ' · storey ' + R.level + ' of ' + buildingOf[R.id].id : '') + (R.fixtures.length ? ' · ' + R.fixtures.map(function (f) { return f.kind; }).join(', ') : '') +
+      ' · ' + (P.lights || []).length + ' light(s) · ' + (P.stats ? P.stats.ms + ' ms, ' + P.stats.runs + ' run(s)' : ''));
     h.push(rp.required.map(function (q) { return '<span class="' + (q.placed >= q.n ? 'ok' : 'miss') + '">' + q.need + ' ' + q.placed + '/' + q.n + '</span>'; }).join(' · ') +
       ' · optional ' + rp.optional + (rp.thin ? ' · <span class="fb">thin culture: ' + rp.own + ' own pieces</span>' : ''));
     rp.fallbacks.forEach(function (f) { h.push('<span class="fb">fallback: ' + f.need + ' from ' + f.used + ' (' + f.key + ')</span>'); });
@@ -228,6 +332,19 @@
   $('olBtn').onclick = function () { toggle('olBtn', 'outline'); };
   $('gridBtn').onclick = function () { toggle('gridBtn', 'grid'); };
   function cutLabel() { $('cutBtn').textContent = 'Cut-away: ' + IX.view.cutaway.mode + ' (C)'; }
+  function setLevel(k) {
+    const v = IX.view.cutaway.setLevel(k == null ? Infinity : k);
+    $('levelBtn').textContent = 'Storey: ' + (v === Infinity ? 'all' : v) + ' (L)';
+    $('levelBtn').classList.toggle('on', v !== Infinity);
+    return v;
+  }
+  function nextLevel() {
+    const m = IX.view.cutaway.maxLevel(), v = IX.view.cutaway.level;
+    setLevel(v === Infinity ? 0 : v >= m ? null : v + 1);
+  }
+  $('levelBtn').onclick = nextLevel;
+  function toggleWalkers() { S.walkers = !S.walkers; $('walkBtn').classList.toggle('on', S.walkers); if (figures) figures.visible = S.walkers; }
+  $('walkBtn').onclick = toggleWalkers;
   $('cutBtn').onclick = function () { IX.view.cutaway.next(); cutLabel(); };
   function reseed(s) { seed = s == null ? seed + 1 : s; $('seedBtn').textContent = 'Seed ' + seed + ' (R)'; furnishAll(); roomLabels(); }
   $('seedBtn').onclick = function () { reseed(); };
@@ -239,6 +356,8 @@
     else if (k === 'g') toggle('gridBtn', 'grid');
     else if (k === 'c') { IX.view.cutaway.next(); cutLabel(); }
     else if (k === 'r') reseed();
+    else if (k === 'l') nextLevel();
+    else if (k === 'v') toggleWalkers();
   });
 
   furnishAll();
@@ -246,6 +365,10 @@
   overview();
   window._interiors = {
     rooms: rooms, get plans() { return plans; }, catalog: catalog, shells: shells, gotoRoom: gotoRoom, overview: overview,
+    buildings: buildings, buildingSpecs: BUILDINGS, makeWalkers: makeWalkers, stairs: stairs, gotoBuilding: gotoBuilding, setLevel: setLevel,
+    get nav() { return nav; }, get walkers() { return walkers; }, get pickables() { return figures ? [figures] : []; },
+    setTime: function (t) { frozen = t; if (figures) figures.userData.update(t, figureShows); return t; }, time: function () { return frozen != null ? frozen : simT; },
+    lightBudget: KEEP_LIGHTS ? null : LIGHT_POOL, keepLights: KEEP_LIGHTS, pointLights: pointLights, assignLights: assignLights,
     reseed: reseed, setOutline: function (on, grid) { S.outline = !!on; S.grid = !!grid; $('olBtn').classList.toggle('on', S.outline); $('gridBtn').classList.toggle('on', S.grid); drawOutlines(); },
     cutaway: function (m) { const r = IX.view.cutaway.setMode(m); cutLabel(); return r; }
   };

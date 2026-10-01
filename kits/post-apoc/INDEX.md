@@ -17,12 +17,12 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 |---|---|---|
 | `00-head.html` | 3 |  |
 | `10-core.js` | 2 | error panel (1); rng + noise (7) |
-| `20-tex.js` | 9 | procedural textures (1) |
-| `22-mat.js` | 5 | materials (1); the palette (culture-neutral) (40) |
-| `30-geo.js` | 15 | geometry engine (1) |
+| `20-tex.js` | 11 | procedural textures (1) |
+| `22-mat.js` | 8 | materials (1); the palette (culture-neutral) (40); animated materials (shader-side only: geometry a (56) |
+| `30-geo.js` | 19 | geometry engine (1) |
 | `32-cores.js` | 11 | the reclaimed large objects (1) |
-| `34-adds.js` | 24 | additions and recycled-material constructions (1); PLACEHOLDER FLORA (144); TYRE FURNITURE (stools, chairs, tables): stacked (172) |
-| `36-def.js` | 5 | registry, placement, cultural sockets (1) |
+| `34-adds.js` | 25 | additions and recycled-material constructions (1); PLACEHOLDER FLORA (147); TYRE FURNITURE (stools, chairs, tables): stacked (175) |
+| `36-def.js` | 22 | registry, placement, cultural sockets (1); COLLISION: per-building colliders, walkable surf (40); NAV GRID: a coarse 2.5-D walk grid for the whole (112) |
 | `40-dw-small.js` | 32 **big** | small dwellings: 7 types (4x fragments: 40 dw-sm (2); shared helpers for the small dwellings (51); dw-tire: earthship-style round hut (94); dw-bus: a wrecked school bus as the home (146); dw-tank: a storage tank as a pod (lying, or stan (197); dw-bottle: the pretty one, a timber-framed cotta (265); dw-stilt: a plank-and-sheet box up on tall poles (311) |
 | `42-lg-dwell.js` | 34 **big** | large dwellings: container stack, twin silo hall (2) |
 | `44-civic.js` | 30 | civic and religious: longhouse, mess hall, big m (2) |
@@ -32,10 +32,11 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `52-defence.js` | 24 | defence and justice: watchtower, prisoner cages (2); watchtower (7); prisoner cages (100) |
 | `54-compound.js` | 29 | WALLED COMPOUND (infrastructure + civic). Gate f (2); wall segments. Frame: x along the wall (centred) (54); the gate tower (container piers, hinged leaves,  (97); corner towers. Each returns nothing; all sockets (133); the ground plan (198); the builder (229) |
 | `56-arena.js` | 18 | THUNDERDOME ARENA (civic). Half scrap colosseum, (2) |
-| `58-dock.js` | 18 | DOCK (infrastructure). Land at the back (-z), ha (2) |
+| `58-dock.js` | 19 | DOCK (infrastructure). Land at the back (-z), ha (2) |
 | `89-rows.js` | <1 | the showcase table: rows of the kit, by family.  (1) |
-| `90-scene.js` | 7 | scene: renderer, sky, ground, lights, the showca (1); layout: rows by family, front (+z) toward the ca (31); (re)build the world for a culture (42) |
-| `91-probe.js` | 2 | probe (window._api): everything a headless check (1) |
-| `91n-night.js` | 8 | NIGHT and dusk, and the invisible front-door mar (1) |
+| `90-scene.js` | 9 | scene: renderer, sky, ground, lights, the showca (1); layout: rows by family, front (+z) toward the ca (33); (re)build the world for a culture (48) |
+| `91-probe.js` | 3 | probe (window._api): everything a headless check (1) |
+| `91n-night.js` | 10 | NIGHT and dusk, and the invisible front-door mar (1) |
 | `92-camera.js` | 11 | camera, inspector, polygon tool, walk mode (1) |
+| `93-anim.js` | 9 | ANIMATION: the clock, smoke, light volumes (1) |
 | `99-tail.html` | <1 |  |

@@ -3,11 +3,23 @@
 // Walls of MIXED reclaimed segments (stacked containers, earth-filled tyre wall with timber cap + sheet fence, corrugated sheet on posts, container bastions),
 // an inner wall-walk gantry, a bulkhead-style container gate tower with two hinged leaves, four corner towers (silo, water tank on stilts, scaffold lookout,
 // container tower). The interior takes buildings modularly: cpSlots(w,d) -> slot rectangles, cpFit(def,slot) -> yaw or null; o.slots = list of def keys.
-defBuilding({key:'compound',name:'Walled compound',seed:5410,front:{x:0,z:27,yaw:0},tags:{type:['infrastructure','civic'],size:'large',core:'shipping container',materials:['containers','earth-filled tyres','corrugated sheet','wrecked cars','timber','scaffold']},w:64,d:54,h:15,budget:240000,sizes:{large:{w:82,d:76,front:{x:0,z:38,yaw:0}}},build:cpBuild});
-function cpGeom(v,size){if(size==='large')return {v:0,L:1,w:82,d:76,xr:82/2-3.4,zb:-(76/2-3.4),zf:76/2-4.9};   // o.size 'large': an 82 x 76 yard (variant ignored)
+defBuilding({key:'compound',name:'Walled compound',seed:5410,front:{x:0,z:27,yaw:0},tags:{type:['infrastructure','civic'],size:'large',core:'shipping container',materials:['containers','earth-filled tyres','corrugated sheet','wrecked cars','timber','scaffold']},w:64,d:54,h:15,budget:240000,sizes:{large:{w:82,d:76,front:{x:0,z:38,yaw:0}},xl:{w:106,d:76,budget:400000,front:{x:0,z:38,yaw:0}}},build:cpBuild});
+function cpGeom(v,size){if(size==='xl')return {v:0,L:1,XL:1,w:106,d:76,xr:106/2-3.4,zb:-(76/2-3.4),zf:76/2-4.9};   // o.size 'xl': a 106 x 76 yard with two great slots (the large plan, wider)
+ if(size==='large')return {v:0,L:1,w:82,d:76,xr:82/2-3.4,zb:-(76/2-3.4),zf:76/2-4.9};   // o.size 'large': an 82 x 76 yard (variant ignored)
  const Wc=v===1?44:64,Dc=v===1?38:54;return {v:v,w:Wc,d:Dc,xr:Wc/2-3.4,zb:-(Dc/2-3.4),zf:Dc/2-4.9};}
 // ---- slots: rectangles inside the walls (world x,z of the centre; w along x, d along z; facing = yaw that turns a building's +z front toward the yard)
 function cpSlots(w,d){const v=(w<50)?1:0;const S=[];const PIH=Math.PI/2;
+ if(w>=100){  // xl (106 x 76): interior clear x +-47, z -32..30.5; yard x +-10, z 5..18. TWO great slots (41 x 35) so two of the longhouse / chief class share a yard
+  S.push({x:-26.5,z:-14.5,w:41,d:35,facing:0,name:'great-left'});
+  S.push({x:26.5,z:-14.5,w:41,d:35,facing:0,name:'great-right'});
+  S.push({x:0,z:-24.5,w:11,d:15,facing:0,name:'back-mid'});
+  S.push({x:-22,z:12,w:20,d:13,facing:PIH,name:'left-mid'});
+  S.push({x:22,z:12,w:20,d:13,facing:-PIH,name:'right-mid'});
+  S.push({x:-40,z:12,w:14,d:14,facing:PIH,name:'west'});
+  S.push({x:40,z:12,w:14,d:14,facing:-PIH,name:'east'});
+  S.push({x:-29.5,z:25,w:35,d:10,facing:Math.PI,name:'front-left'});
+  S.push({x:29.5,z:25,w:35,d:10,facing:Math.PI,name:'front-right'});
+  return S;}
  if(w>=80){   // large (82 x 76): interior clear x +-35, z -32..30.5; yard x +-10, z 5..18. 'great' takes any building def in the kit (longhouse 40 x 18, chief 25 x 34,
               // bulkhead 26 x 28, farm 28 x 22); 'back-right' the 26 x 18 class (warehouse, lg-stack, granary, cages, mess); mid and front slots as in the standard yard
   S.push({x:-14.5,z:-14.5,w:41,d:35,facing:0,name:'great'});
@@ -35,6 +47,12 @@ function cpSlots(w,d){const v=(w<50)?1:0;const S=[];const PIH=Math.PI/2;
 // the yaw at which the def's declared footprint (w x d) fits the slot: try the slot's facing, then the other three quarter turns
 function cpFit(def,slot){const f=slot.facing||0;const tries=[0,PI/2,-PI/2,PI];
  for(const t of tries){const swap=Math.abs(t)===PI/2;const bw=swap?def.d:def.w,bd=swap?def.w:def.d;if(bw<=slot.w+1e-6&&bd<=slot.d+1e-6)return f+t;}return null;}
+// why a key was turned away, and which size of yard would take it (std 64 x 54 takes up to ~21.5 x 16; large one building of any size; xl two)
+function cpSizeName(G){return G.XL?'xl':G.L?'large':G.v?'small':'std';}
+function cpWhy(def,G,slots){const fits=(w,d)=>cpSlots(w,d).filter(s=>cpFit(def,s)!==null).length;const here=slots.filter(s=>cpFit(def,s)!==null).length;
+ let sug=null;for(const [n,w,d] of [['large',82,76],['xl',106,76]])if(w>G.w&&fits(w,d)>here){sug=n;break;}
+ return 'no free slot fits '+def.w+' x '+def.d+' in the '+cpSizeName(G)+' yard ('+G.w+' x '+G.d+')'+(here?': the '+here+' slot'+(here>1?'s':'')+' that fit it '+(here>1?'are':'is')+' taken':'')+
+  (sug?"; size:'"+sug+"' would take it"+(sug==='xl'?' (two great slots)':''):'');}
 // ---- small helpers
 function cpTire(x,y,z,R,col,ry,rx,rz){if(!_G.cpTor){const g=new THREE.TorusGeometry(.67,.33,4,9);g.rotateX(PI/2);_G.cpTor=g;}
  const m=TF(x,y,z,ry,rx,rz);m.scale(new THREE.Vector3(R,R,R));emit('rubber',_G.cpTor,m,col===undefined?jc(0x252220,.05):col);}
@@ -235,7 +253,7 @@ function cpBuild(o){const G=cpGeom(o.v===1?1:0,o.size);const v=G.v;const xr=G.xr
  const placed=[],rejected=[],used=new Set();
  for(const key of want){const def=DEFS[key];if(!def||key==='compound'){rejected.push({key,reason:'no such def'});continue;}
   let done=false;for(const i of order){if(used.has(i))continue;const yaw=cpFit(def,slots[i]);if(yaw!==null){used.add(i);placed.push({key,slot:slots[i],slotIndex:i,yaw:yaw,def:def});done=true;break;}}
-  if(!done)rejected.push({key,reason:'no free slot fits '+def.w+'x'+def.d});}
+  if(!done)rejected.push({key,reason:cpWhy(def,G,slots)});}
  // 2. ground plan, walls, gantry, towers, gate
  cpGround(G,placed);
  if(G.L){
@@ -272,4 +290,4 @@ function cpBuild(o){const G=cpGeom(o.v===1?1:0,o.size);const v=G.v;const xr=G.xr
  // 3. the buildings (last, so the wall drawing never depends on their random use), then vacant plots
  const res=[];for(const p of placed){const r=place(p.key,p.slot.x,p.slot.z,p.yaw,{});res.push({key:p.key,slot:p.slot.name});}
  reseed(5499);for(let i=0;i<slots.length;i++)if(!used.has(i))cpVacant(slots[i]);
- const rep={placed:res,rejected:rejected,slots:slots.length,size:G.L?'large':'std'};window._compound=rep;(window._compounds||(window._compounds=[])).push(rep);}
+ const rep={placed:res,rejected:rejected,slots:slots.length,size:cpSizeName(G)};window._compound=rep;(window._compounds||(window._compounds=[])).push(rep);}
