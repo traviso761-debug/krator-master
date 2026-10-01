@@ -6,7 +6,7 @@
 // ground gizmo (N E S W) at the orbit target, so "north-east of the harbour" is never a guess.
 const ctl={target:new THREE.Vector3(0,10,0),theta:0,phi:1.1,radius:120};
 function setView(cx,cy,cz,tx,ty,tz,hour,compass){WALK.on=false;ctl.target.set(tx,ty,tz);const dx=cx-tx,dy=cy-ty,dz=cz-tz;ctl.radius=Math.sqrt(dx*dx+dy*dy+dz*dz);ctl.theta=Math.atan2(dx,dz);ctl.phi=Math.acos(clamp(dy/ctl.radius,-1,1));
- if(hour!=null&&typeof setHour==='function')setHour(hour);
+ if(typeof setHour==='function')setHour(hour!=null?hour:YSCLOCK.hour0);   // no hour = the default day
  if(compass!=null&&typeof setCompass==='function')setCompass(!!compass);}   // an EIGHTH element: the compass overlay on
 function ysFloorY(x,z){return Math.max(terrainH(x,z),0);}   // the ground, or the sea surface over water
 function applyCam(){if(WALK.on){camera.position.set(WALK.x,WALK.y,WALK.z);camera.rotation.set(0,0,0);camera.rotation.order='YXZ';camera.rotation.y=WALK.yaw;camera.rotation.x=WALK.pitch;return;}
@@ -81,7 +81,7 @@ function compassTick(){if(!COMP.on)return;
  g.font='bold 26px system-ui,sans-serif';g.textAlign='center';g.textBaseline='middle';
  for(const [t,a] of [['N',0],['E',Math.PI/2],['S',Math.PI],['W',-Math.PI/2]]){g.save();g.rotate(a);g.fillStyle=t==='N'?'#ff5a4a':'#e8e8e8';g.fillText(t,0,-c+34);g.restore();}
  g.restore();
- g.fillStyle='#d8f4f0';g.font='12px ui-monospace,monospace';g.textAlign='center';g.fillText('x east · z south',c,c+18);
+ g.fillStyle='#d8f4f0';g.font='13px ui-monospace,monospace';g.textAlign='center';g.fillText('x east · z south',c,W-12);
  if(COMP.gizmo){const T=WALK.on?new THREE.Vector3(WALK.x,0,WALK.z):ctl.target;const s=WALK.on?6:clamp(ctl.radius*.09,4,400);
   COMP.gizmo.position.set(T.x,ysFloorY(T.x,T.z)+.3,T.z);COMP.gizmo.scale.setScalar(s);}}
 function setCompass(on){COMP.on=!!on;if(!COMP.gizmo)COMP.gizmo=compassBuild();COMP.gizmo.visible=COMP.on;COMP.el.style.display=COMP.on?'block':'none';if(COMP.on)compassTick();
