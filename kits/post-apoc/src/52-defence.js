@@ -126,32 +126,17 @@ function dfCage(x,z,w,d,h,ry,o){o=o||{};W(x,0,z,ry||0,()=>{const y=o.stilt||(o.w
  dfPadlock(dw/2-.02,y+h*.42,d/2+.07);for(const yy of [.3,h-.5])box('iron',-dw/2,y+yy,d/2+.05,.16,.06,.05,jc(0x3a3430,.05));
  // straw and a bucket inside
  sph('plain',-w/4,y+.12,-d/4,.4,jc(0xb89a48,.08),.4);sph('plain',w/5,y+.1,-d/5,.3,jc(0xa8883e,.08),.4);cyl('sheet',w/3,y,d/4,.16,.24,jc(0x8a8a86,.06),8);});}
-// drum cage: barrel hoops and bars in a ring, a hoop lid, door gap
-function dfDrum(x,z,r,h,ry){W(x,0,z,ry||0,()=>{const y=.1,n=22;box('plank',0,0,0,r*2.1,.1,r*2.1,jc(0x6a5238,.08));cyl('iron',0,0,0,r+.05,.1,jc(0x3a3430,.05),16);
- for(let k=0;k<n;k++){const a=k/n*TAU;if(Math.abs(Math.sin(a-PI/2))<.11&&Math.cos(a-PI/2)>.5)continue;dfBar([Math.cos(a)*r,y,Math.sin(a)*r],[Math.cos(a)*r,y+h,Math.sin(a)*r]);}
- for(const f of [0,.33,.66,1]){const yy=y+h*f;for(let k=0;k<20;k++){const a=k/20*TAU,c=(k+1)/20*TAU;beam('iron',[Math.cos(a)*r,yy,Math.sin(a)*r],[Math.cos(c)*r,yy,Math.sin(c)*r],.045,jc(0x3a3430,.05),true,4);}}
- for(let k=0;k<6;k++){const a=k*PI/3;beam('iron',[0,y+h,0],[Math.cos(a)*r,y+h-.1,Math.sin(a)*r],.03,jc(0x4a4038,.05),true,4);}
- beam('iron',[0,y+h,0],[0,y+h+.3,0],.04,jc(0x4a4038,.05),true,4);sph('iron',0,y+h+.3,0,.07,jc(0x4a4038,.05),1);
- // door bars (hinged wider), padlock; chain to a stake
- dfPadlock(.15,y+h*.45,r+.05);for(const s of [-1,1])beam('iron',[s*.45,y,r*.9],[s*.45,y+h-.2,r*.9],.05,jc(0x3a3430,.05),true,5);beam('iron',[-.45,y+h-.2,r*.9],[.45,y+h-.2,r*.9],.05,jc(0x3a3430,.05),true,5);
- for(let k=0;k<4;k++)dfBar([-.3+k*.2,y,r*.9],[-.3+k*.2,y+h-.2,r*.9]);
- sph('plain',-.2,y+.1,-.3,.4,jc(0xb89a48,.08),.4);});}
-// hanging gibbet cage: a man-shaped cage of bands
-function dfGibbet(x,y,z){W(x,y,z,0,()=>{const c=jc(0x3a3430,.05);
- for(const [yy,r] of [[0,.14],[.35,.3],[.75,.34],[1.15,.26],[1.5,.2],[1.8,.13]]){for(let k=0;k<10;k++){const a=k/10*TAU,b=(k+1)/10*TAU;beam('iron',[Math.cos(a)*r,yy,Math.sin(a)*r*.7],[Math.cos(b)*r,yy,Math.sin(b)*r*.7],.04,c,true,4);}}
- const rs=[.14,.3,.34,.26,.2,.13],ys=[0,.35,.75,1.15,1.5,1.8];for(let k=0;k<8;k++){const a=k/8*TAU;for(let i=0;i<5;i++)beam('iron',[Math.cos(a)*rs[i],ys[i],Math.sin(a)*rs[i]*.7],[Math.cos(a)*rs[i+1],ys[i+1],Math.sin(a)*rs[i+1]*.7],.03,c,true,4);}
- sph('plain',0,1.05,0,.16,jc(0x4a3a2c,.08),1.5);   // a dark shape within
- beam('iron',[0,1.8,0],[0,2.3,0],.04,c,true,4);sph('iron',0,2.32,0,.09,c,1);});}
-function dfStocks(x,z,ry){W(x,0,z,ry||0,()=>{const c=jc(0x5c4630,.06);for(const s of [-1,1]){beam('wood',[s*.9,0,0],[s*.9,1.5,0],.15,c);}
- box('plank',0,.65,-.06,1.9,.14,.1,jc(0x6a5238,.06));box('plank',0,.95,.06,1.9,.14,.1,jc(0x6a5238,.06));   // two halves, hole gaps between
- for(const s of [-.5,.05,.55])box('plank',s,.79,0,.22,.16,.12,jc(0x2a2018,.05));
- beam('wood',[-.9,1.5,0],[.9,1.5,0],.1,c);for(const s of [-1,1])box('iron',s*.9,.85,.09,.06,.3,.04,jc(0x3a3430,.05));
- box('plank',0,0,.9,1.6,.16,.6,jc(0x6a5238,.08));   // bench for the prisoner
- box('iron',.15,.5,.5,.14,.12,.06,jc(0xb8983a,.05));});}
-function dfWhipPost(x,z){beam('wood',[x,0,z],[x,2.6,z],.18,jc(0x5c4630,.06),true,8);cyl('conc',x,0,z,.4,.14,jc(0x8a8478,.05),10);beam('wood',[x-.7,2.15,z],[x+.7,2.15,z],.1,jc(0x5c4630,.06));
- for(const s of [-1,1]){cyl('iron',x+s*.55,1.85,z,.09,.09,jc(0x4a4038,.05),8);beam('iron',[x+s*.55,1.85,z],[x+s*.5,1.3,z+.1],.02,jc(0x3a3430,.05),true,3);}
- for(let k=0;k<5;k++)beam('iron',[x,1.15,z+.15],[x+rr(-.2,.2),.55+k*.02,z+.2],.02,jc(0x3a3430,.05),true,3);
- cyl('plain',x+.5,0,z+.6,.7,.02,jc(0x4a2c24,.05),10);}
+// the catalog's rebar cage (on skids, on stilts, on wheels) where the kit drew one of those three: the skip replays the old drawing's draw.
+// (dfCage still draws the small 1.3 m kennel cage, which the catalog has no piece for.)
+function dfCageFurn(x,z,w,d,h,ry,o){o=o||{};let n=2+(o.stilt?12:0)+(o.wheel?8:0);const nx=Math.round(w/.17),nz=Math.round(d/.17);
+ for(let k=0;k<=nx;k++){const xx=-w/2+k*w/nx;n+=Math.abs(xx)>.5?6:3;}for(let k=1;k<nz;k++)n+=6;rngSkip(n+102);
+ return FURNISH('pa_prisoner_cage',x,0,z,ry||0,o.wheel?{v:2,ax:-.6675}:{v:o.stilt?1:0});}
+// drum cage: barrel hoops and bars in a ring, a hoop lid, door gap (the catalog's; the skip replays the old draw)
+function dfDrumFurn(x,z,r,h,ry){let nb=0;for(let k=0;k<22;k++){const a=k/22*TAU;if(Math.abs(Math.sin(a-PI/2))<.11&&Math.cos(a-PI/2)>.5)continue;nb++;}
+ rngSkip(4+3*nb+160+12+4+8+6+12+2);return FURNISH('pa_drum_cage',x,0,z,ry||0);}
+// stocks and a whipping post: the catalog's (its post without the stain on the ground, which stays drawn here)
+function dfStocks(x,z,ry){rngSkip(20);return FURNISH('pa_stocks',x,0,z,ry||0,{az:-.545});}
+function dfWhipPost(x,z){rngSkip(29);FURNISH('pa_whipping_post',x,0,z,0);cyl('plain',x+.5,0,z+.6,.7,.02,jc(0x4a2c24,.05),10);}
 function dfMud(x,z,r,w){cyl('plain',x,.02,z,r,.03,jc(pick([0x4a3624,0x3e2c1e,0x52402a]),.06),12);if(w)cyl('water',x+r*.1,.05,z,r*.55,.01,jc(0x4e4634,.04),10);}
 function dfChain(a,b,n){for(let k=0;k<n;k++){const t=(k+.5)/n;const p=[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t-Math.sin(t*PI)*.12,a[2]+(b[2]-a[2])*t];box('iron',p[0],p[1],p[2],.06,.06,.06,jc(0x4a4038,.05),k%2?.7:0,0,0);}
  beam('iron',a,b,.015,jc(0x4a4038,.05),true,3);}
@@ -193,10 +178,9 @@ function dfGuard(o){
  for(const [px,pz,pw,pd] of [[lx,lz-1.15,2.3,.04]])box('corr',px,ly,pz,pw,1.1,pd,pick([P('rust'),P('paint')]));   // shield of sheet on the back rail
  dfRoof('corr',lx-1.5,lx+1.5,lz+1.4,ly+1.95,lz-1.4,ly+2.35,.07,jc(0xc45a30,.06));
  ladder(lx-.3,0,lz+1.2,ly,0);lamp(lx+1.1,ly,lz+.9,1.6,{arm:.3});
- box('iron',lx-.5,ly,lz-.2,.7,.4,.4,jc(0x3a3430,.05));   // ammo crate / searchlight base
+ rngSkip(2);FURNISH('pa_crate',lx-.5,ly,lz-.2,0);   // the ammo crate
  // sandbags at the shack door
- for(let k=0;k<5;k++)sph('cloth',gx-2.4+k*.4,.18,gz+1.9,.24,jc(pick([0xa89a70,0x8a7c58]),.06),.7);
- sph('cloth',gx-2.2,.5,gz+1.9,.24,jc(0x8a7c58,.06),.7);
+ rngSkip(17);FURNISH('pa_sacks',gx-1.8,0,gz+1.9,0,{v:1});
  sock('banner',gx+1.7,3.1,gz+1.28,0,{w:.9,h:2.0});
  beam('wood',[gx+1.7,2.5,gz+1.35],[gx+1.7,3.15,gz+1.35],.08,jc(0x5c4630,.06));beam('wood',[gx+1.7,3.1,gz+1.35],[gx+1.7,3.1,gz+1.28],.05,jc(0x5c4630,.06));
  sock('awning',gx+.15,2.35,gz+1.2,0,{w:1.5,d:1.0,drop:.3,h:2.0});}
@@ -214,14 +198,14 @@ function dfCages(o){
  dfChain([-2.0,1.2,fz+.05],[-1.0,1.1,fz+.05],6);dfPadlock(-1.05,1.0,fz+.1);
  // cell block against the back fence, cages along the right, stocks and post on the left
  dfCells(o);
- dfCage(5.2,-6.3,2.4,2.4,2.2,0.1,{});dfDrum(9.6,-6.0,1.0,2.2,.4);
- dfCage(6.0,-1.2,2.3,2.3,2.1,-.2,{stilt:1.3});ladder(6.9,0,-.05,1.3,0);
- dfCage(9.6,-1.6,2.2,1.8,1.8,PI-.15,{wheel:true});
+ dfCageFurn(5.2,-6.3,2.4,2.4,2.2,0.1,{});dfDrumFurn(9.6,-6.0,1.0,2.2,.4);
+ dfCageFurn(6.0,-1.2,2.3,2.3,2.1,-.2,{stilt:1.3});ladder(6.9,0,-.05,1.3,0);
+ dfCageFurn(9.6,-1.6,2.2,1.8,1.8,PI-.15,{wheel:true});
  dfCage(3.7,-3.2,1.3,1.1,1.0,.3,{});
  // gallows-arm crane: post, arm, brace, hanging gibbet
  const px=-1.2,pz=-1.8;box('conc',px,0,pz,.9,.25,.9,jc(0x8a8478,.05));beam('wood',[px,0,pz],[px,5.3,pz],.24,jc(0x5c4630,.06),true,8);
  beam('wood',[px,5.1,pz],[px+3.2,5.1,pz],.2,jc(0x5c4630,.06));beam('wood',[px,3.4,pz],[px+2.0,5.0,pz],.12,jc(0x5c4630,.06));beam('wood',[px,3.4+.3,pz],[px-1.2,0,pz],.08,jc(0x5c4630,.06));
- dfChain([px+2.9,5.0,pz],[px+2.9,4.2,pz],4);dfGibbet(px+2.9,2.2,pz);
+ rngSkip(10+4);FURNISH('pa_gibbet',px+2.9,2.1,pz,0);   // the hanging gibbet cage and its chain
  sph('iron',px+2.9,5.05,pz,.1,jc(0x3a3430,.05),1);
  // left side: stocks, whipping post, chained bench
  dfStocks(-8.0,-1.2,.3);dfWhipPost(-6.2,.8);

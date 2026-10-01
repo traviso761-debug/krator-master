@@ -18,7 +18,7 @@
    default: the roofs hide it). Only the builders whose walls match a set item call it (API.md, Furniture). */
 KratorFurniture.setDetail(.5);   /* settlement-scale: half the segments on round furniture parts */
 var BRF = { on: !/[?&]furniture=0\b/.test(location.search), interiors: /[?&]interiors=1\b/.test(location.search),
-            batch: KratorFurniture.batch(), placed: [], missing: {}, buildings: [], cur: null, frame: null, lights: 0, group: null };
+            batch: KratorFurniture.batch(), placed: [], missing: {}, buildings: [], cur: null, stack: [], frame: null, lights: 0, group: null };
 BRF.adapter = KratorInteriors.runtimeAdapter(KratorFurniture, BRF.batch);
 /* the catalog recentred some harvested pieces on their footprint (F.shift(dx,dz) in the piece's build): the
    placement undoes it, so the piece stands where the builder drew it */
@@ -26,8 +26,10 @@ var BRF_SHIFT = { br_h_viewing_stand:[0,-0.1], br_h_reviewing_dais:[0,-0.36], br
   br_h_smithy_forge:function(v){ return v?null:[0.497,0]; }, br_h_banner_pole:[-0.5,0], br_market_stall:[0.04,-0.14],
   br_h_barrel_cluster:function(v){ return [-0.443, v?0.304:-0.069]; }, br_h_hitching_rail:function(v){ return v?null:[0.43,-0.43]; } };
 function brfSkip(n){ for(var i=0;i<n;i++) rnd(); }                    /* draw what a removed drawing drew, so the stream after it does not move */
-function brfIn(name){ BRF.cur = (name==null) ? null : { name:name, furniture:[] }; return BRF.cur; }
-function brfDone(site){ if(BRF.cur && site) site.furniture = BRF.cur.furniture; BRF.cur = null; return site; }
+/* the building a builder is furnishing: brfIn(name) opens it (nested: the outer one comes back after), brfDone(site)
+   hands its records to the REGISTER()ed site and closes it, brfIn(null) closes it without a site */
+function brfIn(name){ if(name==null){ BRF.cur = BRF.stack.pop()||null; return null; } BRF.stack.push(BRF.cur); BRF.cur = { name:name, furniture:[] }; return BRF.cur; }
+function brfDone(site){ if(BRF.cur && site) site.furniture = BRF.cur.furniture; BRF.cur = BRF.stack.pop()||null; return site; }
 function brfUse(f, y){ BRF.frame = { x:f.x, z:f.z, y:y, fx:f.fx, fz:f.fz }; }
 function brfHead(fx, fz){ return Math.atan2(fx, fz); }                 /* the ry that turns a piece's front (+z) to (fx,fz) */
 function brfAlong(dx, dz){ return Math.atan2(-dz, dx); }               /* the ry that lays a piece's width (+x) along (dx,dz) */

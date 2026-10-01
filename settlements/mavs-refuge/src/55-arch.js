@@ -479,6 +479,7 @@ MAINS.forEach(function(P){
   var y=P.y, rA=P.rt+9.6, rB=1e9; P.slots.forEach(function(S){ rB=Math.min(rB,S.r0); }); rB-=3.4;
   if(rB-rA < 5) return;
   var segs=doorPaths(P), placed=[];
+  brfIn(P.name+' deck');
   if(P.kind==='rook') provingGround(P,rA,rB,segs,placed);
   if(P.kind==='gate') gateYard(P,rA,rB,segs,placed);
   /* fruit-gathering squads stack their pods beside the stair heads */
@@ -501,6 +502,7 @@ MAINS.forEach(function(P){
     else { pl=tryPlace(P,rA,rB,0.8,segs,placed,40); if(pl){ LAMPPOST(pl.x,y,pl.z,3.6,0.9,14,cool); ARCH.lamps++; } }
     if(pl) ARCH.furniture++;
   }
+  brfIn(null);
 });
 
 /* ================================================================== 3. MAV'S CROWN */
@@ -827,7 +829,7 @@ SATS.forEach(function(P){
         mBox('leafy',p[0],y+0.3,p[1],len-0.3,tall?0.95:0.42,tall?0.8:1.15,ry,(i%4===3)?shade(cc,0.12):cc,true);
         ARCH.beds++; }
     }
-    var farmSite=REGISTER({name:P.name+' gardens',kind:'farm',label:'Bough farm — raised crop beds',plat:P.id,x:P.x,y:y,z:P.z,r:P.R*0.8,h:2.5});
+    REGISTER({name:P.name+' gardens',kind:'farm',label:'Bough farm — raised crop beds',plat:P.id,x:P.x,y:y,z:P.z,r:P.R*0.8,h:2.5});
   }
   /* ---- wayposts ---- */
   if(P.use==='waypost'){
