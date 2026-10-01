@@ -62,7 +62,10 @@ function hykMilConeL(s){const rb=s.rb,rt=s.rt,h=s.h;return {H:h,cx:s.cx,cz:s.cz,
   flute:{n:s.fluteN||16,amp:s.fluteAmp!=null?s.fluteAmp:.07,sharp:1.5},rings:{n:s.ringsN||7,amp:.025},noise:{amp:.035,su:5,sv:1.2,seed:s.seed||1},tilt:{amp:s.tilt!=null?s.tilt:.2,dir:s.dir!=null?s.dir:rng()*TAU},col:s.col||hC(hPick(HPAL.shell)),ops:s.ops||[]};}
 function hykMilCone(s){const mat=s.mat||'hkShell';const rb=s.rb,rt=s.rt,h=s.h;const L=s.L||hykMilConeL(s);const col=L.col,yB=L.yBase;L.ops=s.ops||L.ops||[];
  hykPut(mat,hykMilLathe(L));
- if(s.inner!==false)hykPut('hkIn',hykMilLathe(Object.assign({},L,{rFn:y=>L.rFn(y)*.9,flip:true,col:hC(hPick(mat==='hkBarn'?HPAL.barnacle:HPAL.shell),.85)})),true);
+ // the inner skin's holes sit on the inner skin (a wall's thickness in along each opening's normal), at a size that
+ // clears the reveal: centred on the outer surface they came out smaller and lower, and the lining half-closed the doors
+ const inOps=L.ops.map(op=>{const t=Math.hypot(op.p[0]-s.cx,op.p[2]-s.cz)*.1;return Object.assign({},op,{p:[op.p[0]-op.n[0]*t,op.p[1]-op.n[1]*t,op.p[2]-op.n[2]*t],r:op.r*1.04});});
+ if(s.inner!==false)hykPut('hkIn',hykMilLathe(Object.assign({},L,{ops:inOps,rFn:y=>L.rFn(y)*.9,flip:true,col:hC(hPick(mat==='hkBarn'?HPAL.barnacle:HPAL.shell),.85)})),true);
  hykPut(mat,hykMilFlare([s.cx,yB+.06,s.cz],[0,1,0],rb*.98,rb*(s.flare||.32),{col}));
  const hAt=th=>h*(1-L.tilt.amp*.5*(1+Math.cos(th-L.tilt.dir)));const hMid=h*(1-L.tilt.amp*.5);
  const rAt=(th,y)=>hykMilLatheR(L,th,y);
@@ -104,7 +107,7 @@ function hykMilBarracks(G,o){reseed(30800+(o.v|0));
  {const q=hykMilLatheAt(Lh,-Math.PI/2,FY+1.1-Lh.yBase);hallOps.push({p:q.p,n:q.n,r:1.1,ky:1.0,kind:'pass',to:0});}
  for(const [th,y,r] of [[Math.PI/2+1.05,4.2,.6],[Math.PI/2-1.05,4.4,.6],[Math.PI/2+.5,5.6,.42],[Math.PI/2-.5,5.4,.42],[-Math.PI/2+1.3,4.0,.5],[-Math.PI/2-1.3,4.3,.5]]){const q=hykMilLatheAt(Lh,th,y);hallOps.push({p:q.p,n:q.n,r,kind:'window'});}
  const H=hykMilCone(hall);
- for(const op of hallOps){if(op.kind==='door')hykDoor(op,{level:'ground',nacre:true});else if(op.kind==='pass')hykDoor(op,{level:'ground',nacre:true,room:'hall',depth:.5});else hykWin(op,{nacre:true,lit:true});}
+ for(const op of hallOps){if(op.kind==='door')hykDoor(op,{level:'ground',nacre:true,depth:.85});else if(op.kind==='pass')hykDoor(op,{level:'ground',nacre:true,room:'hall',depth:.5});else hykWin(op,{nacre:true,lit:true});}
  hykFloor(HX,HZ,FY,HR*.88,{lobes:{n:12,amp:.03}});
  // the crown: a ring of urchin spines on the lid's shoulder, leaning out, each rooted with a fillet
  for(let i=0;i<7;i++){const th=i/7*TAU+.3;const rr0=H.rAt(th,H.hAt(th))*.62;const x=HX+rr0*Math.cos(th),z=HZ+rr0*Math.sin(th);const y=Lh.yBase+H.hAt(th)*.62+H.hMid*.38+1.6*(1-.62*.62)-.08;
