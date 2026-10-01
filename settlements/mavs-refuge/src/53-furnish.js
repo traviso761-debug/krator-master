@@ -25,6 +25,8 @@ BRF.adapter = KratorInteriors.runtimeAdapter(KratorFurniture, BRF.batch);
 var BRF_SHIFT = { br_h_viewing_stand:[0,-0.1], br_h_reviewing_dais:[0,-0.36], br_h_speaker_rostrum:[0,-0.325],
   br_h_smithy_forge:function(v){ return v?null:[0.497,0]; }, br_h_banner_pole:[-0.5,0], br_market_stall:[0.04,-0.14],
   br_h_barrel_cluster:function(v){ return [-0.443, v?0.304:-0.069]; }, br_h_hitching_rail:function(v){ return v?null:[0.43,-0.43]; } };
+/* the pieces the many small benches, tables and spear racks use (one place to trade look for triangles) */
+var BRF_BENCH = 'br_bench', BRF_TABLE = 'br_table', BRF_SPEARS = 'br_weapon_rack';
 function brfSkip(n){ for(var i=0;i<n;i++) rnd(); }                    /* draw what a removed drawing drew, so the stream after it does not move */
 /* the building a builder is furnishing: brfIn(name) opens it (nested: the outer one comes back after), brfDone(site)
    hands its records to the REGISTER()ed site and closes it, brfIn(null) closes it without a site */

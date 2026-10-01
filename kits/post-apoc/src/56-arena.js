@@ -7,24 +7,8 @@ defBuilding({key:'arena',name:'Thunderdome arena',seed:5610,tags:{type:['civic']
 const arQ=[[.2,PI/2-.34],[PI/2+.34,PI-.2],[PI+.2,1.5*PI-.42],[1.5*PI+.42,TAU-.2]];      // stand quadrants (gaps: E/W gates, S tunnel, N loge)
 function arRad(r,a,y,fn){W(Math.cos(a)*r,y,Math.sin(a)*r,PI/2-a,fn);}     // frame with local +z pointing radially outward
 function arTire(x,y,z,R,col,ry,rx){if(!_G.arTor){const g=new THREE.TorusGeometry(.67,.33,4,9);g.rotateX(PI/2);_G.arTor=g;}const m=TF(x,y,z,ry,rx||0,0);m.scale(new THREE.Vector3(R,R,R));emit('rubber',_G.arTor,m,col===undefined?jc(0x252220,.05):col);}
-/* LOW-POLY TYRE FURNITURE for the stands (~250 seats): the same seat, chair and table as tireStool / tireChair / tireTable (34-adds.js) and the same
-   random draws in the same order (so every colour in the arena is unchanged), drawn cheaper: 72-tri tyres (arTire) instead of 144, a 3 x 3 cord lattice
-   instead of 9 x 9, square timber instead of round. Stool 240 tris (was 544), chair ~460 (1072), table ~150 (296). */
-const arTYRE=0x232120;
-function arWeave(cx,cy,cz,r,cord,plane){const c=jc(cord,.05);for(let i=-1;i<=1;i++){const off=i*r/2,h=Math.sqrt(Math.max(0,r*r-off*off));
- if(plane==='v'){box('plain',cx,cy+off-.008,cz,2*h,.018,.018,c);box('plain',cx+off-.008,cy-h,cz,.018,2*h,.018,c);}
- else{box('plain',cx,cy,cz+off-.008,2*h,.018,.018,c);box('plain',cx+off-.008,cy,cz-h,.018,.018,2*h,c);}}}
-function arStool(x,y,z,o){o=o||{};const n=o.n||2,R=TYR.R,t=TYR.t,cord=o.cord||pick(TYRE_CORDS);for(let k=0;k<n;k++)arTire(x,y+.12+k*.235,z,R,arTYRE,rng()*TAU);
- cyl('cloth',x,y+.02,z,R-t*1.1,n*.235-.1,jc(0x4a4034,.05),6);arWeave(x,y+n*.235-.01,z,R-t,cord,'h');}
-function arChair(x,y,z,ry,o){o=o||{};W(x,y,z,ry||0,()=>{const wc=jc(o.wood||pick([0x5a2a24,0xa88a5e,0x7a5236]),.06),n=o.n||2,R=TYR.R,t=TYR.t,cord=o.cord||pick(TYRE_CORDS),sy=n*.235;
-  arStool(0,0,0,{n:n,cord:cord});
-  const bz=-.36,by=sy+.42;arTire(0,by,bz,R*1.12,arTYRE,0,PI/2);arWeave(0,by,bz,(R*1.12-t)*.98,cord,'v');
-  for(const sx of [-1,1]){beam('wood',[sx*.46,0,bz-.02],[sx*.46,by+.62,bz-.02],.1,wc);beam('wood',[sx*.46,sy+.04,bz],[sx*.5,sy+.3,.42],.09,wc);beam('wood',[sx*.5,0,.4],[sx*.5,sy+.3,.4],.09,wc);}
-  beam('wood',[-.46,by+.6,bz-.02],[.46,by+.6,bz-.02],.06,wc);beam('wood',[-.46,sy-.02,bz-.02],[.46,sy-.02,bz-.02],.06,wc);});}
-function arTable(x,y,z,o){o=o||{};const wc=jc(o.wood||0x7a5236,.06),n=o.n||1,R=TYR.R*1.15,top=n*.24+.25;
- for(const k of [0,1].slice(0,n))arTire(x,y+.13+k*.24,z,R,arTYRE,rng()*TAU);
- for(const a of [.6,2.2,3.8,5.4])beam('wood',[x+Math.cos(a)*(R+.02),y,z+Math.sin(a)*(R+.02)],[x+Math.cos(a)*(R+.02),y+top,z+Math.sin(a)*(R+.02)],.08,wc);
- cyl('wood',x,y+top,z,R+.1,.05,wc,10);}
+/* the stands' tyre seats, armchairs and tables are the catalog's (tireStool, tireChair, tireTable in 34-adds.js: FURNISH), the low-poly copies
+   the arena drew are gone; the helpers draw the same random numbers the copies drew, so every colour in the arena is unchanged */
 function arBright(){return pick([0xc45a30,0xd8a020,0x3b7f8e,0x4d6f3c,0x9a3a2c,0xd8d0c0,0x2f5f8f,0x8a6a3a,0xc98a2a]);}
 function arWood(){return jc(pick([0x6a5238,0x7a6244,0x5c4630,0x8a7050]),.08);}
 function arSearch(x,y,z,ry,rx){W(x,y,z,ry,()=>{cylH('iron',0,0,0,.24,.6,jc(0x3a3430,.05),'z',10);sph('glow',0,0,.3,.17,jc(0xfff2c0,.03));box('iron',-.18,-.32,-.1,.36,.32,.2,jc(0x4a4038,.05));});}
@@ -42,7 +26,7 @@ function arRow(r0,w,top,a0,a1,k,tier,mode){const mid=(r0+r0+w)/2;const dk=jc(0x4
   sector('plank',0,0,r0+.5,r0+.56,a0,a1,top+.3,top+.72,jc(0x5c4630,.06));}
  else{const sp=(mode==='chair'?arCHSP:arSTSP)/rc;const cnt=Math.max(1,Math.floor((a1-a0)/sp));const off=((a1-a0)-(cnt-1)*sp)/2;
   for(let i=0;i<cnt;i++){const a=a0+off+i*sp;const x=Math.cos(a)*rc,z=Math.sin(a)*rc;
-   if(mode==='chair'){if(i%4===2)arTable(x,top,z,{});else arChair(x,top,z,arFace(a),{});}else arStool(x,top,z,{});}}
+   if(mode==='chair'){if(i%4===2)tireTable(x,top,z,{});else tireChair(x,top,z,arFace(a),{});}else tireStool(x,top,z,{});}}
  if(tier===2&&k===4){const rr_=r0+w+.05;for(let i=0;i<=n;i++){const a=a0+i*st;beam('wood',[Math.cos(a)*rr_,top,Math.sin(a)*rr_],[Math.cos(a)*rr_,top+1.1,Math.sin(a)*rr_],.05,jc(0x5c4630,.06),true,5);}sector('wood',0,0,rr_-.03,rr_+.03,a0,a1,top+1.05,top+1.11,jc(0x5c4630,.06));}}
 function arStands(){for(const [q0,q1] of arQ){
   const m1=['chair','bench','chair'];for(let k=0;k<3;k++)arRow(13.3+k*1.25,1.25,.9+k*.65,q0,q1,k,1,m1[k]);
@@ -105,11 +89,10 @@ function arEntry(){
  const bx=9.6,bz=25.4;W(bx,0,bz,0,()=>container({len:CT.L20,doorEnd:false,col:jc(0x3b7f8e,.05)}));
  win(bx-.8,1.1,bz+CT.W/2,1.6,.9,{});door(bx+1.8,.16,bz+CT.W/2,.9,2.0,{step:true});
  sock('awning',bx-.8,2.05,bz+CT.W/2,0,{w:2.4,d:1.2,drop:.35,h:1.55});sock('sign',bx+.2,2.4,bz+CT.W/2+.05,0,{w:2.2,h:.4,trade:'TICKETS'});
- stovepipe(bx+2.2,CT.H,bz-.3,1.2);arQueue(bx);arStool(bx-2.6,0,bz+2.0,{});
+ stovepipe(bx+2.2,CT.H,bz-.3,1.2);arQueue(bx);tireStool(bx-2.6,0,bz+2.0,{});
  // two stalls: lean-to counters with awnings
- for(const [sx,c] of [[-9.6,0x8a3a2c],[-15.4,0x3b7f6e]]){W(sx,0,25.4,0,()=>{box('plank',0,0,0,4.0,.1,2.4,jc(0x6a5a44,.06));wallOpen('plank',0,.1,-1.1,4.0,2.4,.1,[],jc(c,.06));
-   for(const px of [-1.9,1.9])beam('wood',[px,0,1.1],[px,2.5,1.1],.07,jc(0x5c4630,.06),true,6);box('plank',0,.1,.95,4.0,.9,.1,jc(0x8a6a3a,.06));box('plank',0,1.0,.95,4.2,.07,.5,jc(0x6a5a44,.06));
-   roofP('corr',-2.2,2.2,1.3,2.5,-1.3,2.9,.07,pick([P('galv'),P('paint')]));barrel(1.4,.0,-.5);crate(-1.3,0,-.5,.6,.2);sock('awning',0,2.55,1.35,0,{w:4.0,d:1.0,drop:.4,h:2.3});});}
+ for(const [sx,c] of [[-9.6,0x8a3a2c],[-15.4,0x3b7f6e]]){W(sx,0,25.4,0,()=>{rngSkip(35);FURNISH('pa_lean_to_stall',0,0,0,0,{v:1});   // the food stall (its drum and crate included)
+   sock('awning',0,2.55,1.35,0,{w:4.0,d:1.0,drop:.4,h:2.3});});}
  sock('sign',-12.5,3.2,24.2,0,{w:2.6,h:.6,trade:'FOOD'});box('wood',-12.5,2.7,24.15,2.7,.5,.08,jc(0x5c4630,.06));
 }
 function arQueue(bx){for(let k=0;k<4;k++){beam('wood',[bx-2.6+k*1.7,0,27.3],[bx-2.6+k*1.7,1.0,27.3],.05,jc(0x5c4630,.06),true,5);}beam('wood',[bx-2.6,.95,27.3],[bx+.8,.95,27.3],.04,jc(0x5c4630,.06));}
@@ -130,7 +113,7 @@ function arLoge(){const dy=3.6;box('plank',0,dy-.14,-18.7,13.6,.14,7.6,jc(0x6a5a
  sock('emblem',0,dy+6.6,-22.4+.16,0,{w:2.4,h:2.4});
  sock('banner',-6.2,dy+3.5,-14.95,0,{w:1.2,h:2.6});sock('banner',6.2,dy+3.5,-14.95,0,{w:1.2,h:2.6});
  sock('awning',0,dy+2.2,-14.6,0,{w:4.0,d:1.0,drop:.4,h:1.8});
- for(const x of [-4.2,-3.0,3.0,4.2])arChair(x,dy,-16.5,0,{});arTable(0,dy,-16.3,{n:2});arChair(-.9,dy,-17.3,0,{});arChair(.9,dy,-17.3,0,{});
+ for(const x of [-4.2,-3.0,3.0,4.2])tireChair(x,dy,-16.5,0,{});tireTable(0,dy,-16.3,{n:2});tireChair(-.9,dy,-17.3,0,{});tireChair(.9,dy,-17.3,0,{});
  // stair to the loge from behind
  arRail(-6.8,-22.45,6.8,-22.45,dy);arRail(-6.8,-22.45,-6.8,-15.05,dy);arRail(6.8,-22.45,6.8,-15.05,dy);
 }

@@ -146,7 +146,7 @@ function bottleString(a,b,n,o){o=o||{};for(let k=0;k<n;k++){const t=(k+.5)/n;con
  beam('plain',a,[(a[0]+b[0])/2,(a[1]+b[1])/2-.25,(a[2]+b[2])/2],.008,jc(0x6a5a44,.05),true,3);beam('plain',[(a[0]+b[0])/2,(a[1]+b[1])/2-.25,(a[2]+b[2])/2],b,.008,jc(0x6a5a44,.05),true,3);}
 // water butt on stilts: a small tank + legs + downpipe
 /* the catalog's (tank on a 1.4 or a 1.1 m stand), standing on the ground (or on o.base: a deck); y was the old stand's height */
-function waterButt(x,y,z,r,h,o){o=o||{};rngSkip(o.col===undefined?15:14);return FURNISH('pa_water_butt',x,o.base||0,z,0,{v:y<1.25?1:0});}
+function waterButt(x,y,z,r,h,o){o=o||{};rngSkip(o.col===undefined?15:14);return FURNISH('pa_water_butt',x,o.base||0,z,0,{v:y-(o.base||0)<1.25?1:0});}
 
 // ---------------------------------------------------------------- PLACEHOLDER FLORA
 // Buildings never model plants as part of themselves (README rule: a plant is its own tagged object, placed). Anything green a building wants
@@ -179,9 +179,9 @@ function plant(kind,x,y,z,o){o=o||{};const sl={kind,key:CURKEY,m:CM.clone().mult
 // ---------------------------------------------------------------- TYRE FURNITURE (stools, chairs, tables): stacked tyres, woven cord, timber frames
 // After the reference photos: two tyres stacked make a seat with a lattice of cord over the hole; a chair adds a tyre standing on edge as the backrest
 // (cord net inside it) in a timber frame with arms; a table is a tyre with a round wooden top. Cords stay in muted rope colours (ochre, olive, faded orange, dirty white).
-// All draw in the current frame, facing +z, base on y; pass ry to turn them. o: {n: tyres in the seat stack, wood: hex, cord: hex}
-const TYRE_CORDS=[0xa8892a,0x6a7a3a,0x9a5a2a,0xb8b0a0];
-/* the catalog's tyre stool (two or three tyres), armchair and table (one or two tyres); the skips are the old draws (cord, tyre turns, colours) */
+// They are the catalog's pieces now (pa_tyre_stool, pa_tyre_chair, pa_tyre_table, harvested from the kit's drawing): placed in the current frame,
+// facing +z, base on y; pass ry to turn a chair. o: {n: tyres in the seat stack, wood, cord: given colours draw no random number}
+/* the skips are the old draws (cord, tyre turns, colours) */
 function tireStool(x,y,z,o){o=o||{};const n=o.n||2;rngSkip(n+4+(o.cord?0:1));return FURNISH('pa_tyre_stool',x,y,z,o.ry||0,{v:n>=3?1:0});}
 function tireChair(x,y,z,ry,o){o=o||{};const n=o.n||2;rngSkip(n+6+(o.wood?2:3)+(o.cord?0:1));return FURNISH('pa_tyre_chair',x,y,z,ry||0);}
 function tireTable(x,y,z,o){o=o||{};const n=o.n||1;rngSkip(2+n);return FURNISH('pa_tyre_table',x,y,z,0,{v:n>=2?1:0});}
