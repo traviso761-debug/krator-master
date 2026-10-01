@@ -11,7 +11,7 @@
 function buildAltStarport(scene,gx,gz,d){reseed(9908);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);
  const dd=d>0?1:0,fall=d===1||d===2,CM=CONC(d),SK=SHELL(d),acc=[],sk=[];
  REGISTER({name:'Starport alt — the Saucer Deck ('+(d===2?'reclaimed':STATE(d))+')',x:0,z:0,r:120,h:100});
- const DY=72,DR=90,brk=fall?[.15,1.25]:null;            // the broken sector (azimuth range, radians: front-east)
+ const DY=72,DR=90,brk=fall?[.1,1.4]:null;            // the broken sector (azimuth range, radians: front-east)
  const inBrk=a=>brk&&a>brk[0]&&a<brk[1];
  // the terminal: four glazed rings stepping in toward the core
  const tiers=[[62,0,7],[52,7,6],[42,13,6],[32,19,6]];
@@ -25,7 +25,7 @@ function buildAltStarport(scene,gx,gz,d){reseed(9908);KOFF=[gx,0,gz];const G=new
  altCyl(acc,0,0,0,10,8,DY-2,32);
  for(let k=0;k<6;k++){const a=k/6*TAU;kput(d>0?'boxD':'darkPane',[9.2*Math.cos(a),45,9.2*Math.sin(a)],qFacing([Math.cos(a),0,Math.sin(a)]),[2,40,1],null);}
  // THE DECK, in its own group so a ruin can list it
- const D=new THREE.Group();D.position.set(0,DY,0);G.add(D);if(fall)D.rotation.set(.035,0,-.03);
+ const D=new THREE.Group();D.position.set(0,DY,0);G.add(D);if(fall)D.rotation.set(.06,0,-.05);
  useGroupXF(D);const da=[],hole=brk?(u)=>inBrk(u*TAU):null;
  altRev(da,0,0,6,0,DR,0,0,TAU,96,hole);                     // the deck top
  altRev(da,0,0,DR,0,DR+3,2.5,0,TAU,96,hole);                // the upturned rim
