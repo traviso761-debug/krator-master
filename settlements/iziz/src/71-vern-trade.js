@@ -138,7 +138,8 @@ function buildVernMarket(G,o){reseed(7451+(o.v|0));const W=24,D=17,H=5.2;const w
  for(const s of[-1,1]){vB('vWood',0,H-.15,s*D/2,W+.4,.3,.3,0,wood);vB('vWood',s*W/2,H-.15,0,.3,.3,D+.4,0,wood);}
  for(let i=0;i<=nx;i++)vB('vWood',-W/2+W*i/nx,H-.15,0,.22,.22,D,0,wood);                       // tie beams
  // lower thatch skirt all round (two long slabs, two short) and an upper hip over the middle third
- vnHipRoof('vHipT',0,H,0,W,D,2.6,0,th,1.3);
+ // (an open skirt, not a solid hip: from under it the clerestory and the upper roof show — Round 1 issue)
+ kput('vSkirtT',[0,H-.35,0],null,[W+2.6,2.95,D+2.6],th);vB('vWood',0,H-.62,0,W+2.66,.28,D+2.66,0,th.clone().multiplyScalar(.75));vnThatchFringe(0,H-.5,0,W+2.6,D+2.6,0,th);
  for(const sx of[-1,1])for(const sz of[-1,1])vPst('vPostB',sx*W/6,H+1.4,sz*D/8,.16,2.2,wood);
  vnHipRoof('vHipT',0,H+3.4,0,W*.42,D*.5,2.0,0,th,.9);
  vB('vWood',0,H+3.4,0,W*.42+.4,.25,.25,0,wood);vB('vWood',0,H+3.4,0,.25,.25,D*.5+.4,0,wood);

@@ -9,17 +9,18 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`settlements/dalab`](settlements/dalab/INDEX.md) | 46 | 631 | 57 | Dalab: the mound settlement of the southwestern lowlands, and its building set. |
 | [`settlements/girder`](settlements/girder/INDEX.md) | 26 | 504 | 88 | Girder: an outlying Beast Rider village in the central-crater hyperjungle. |
 | [`settlements/highlands`](settlements/highlands/INDEX.md) | 45 | 746 | 53 | Highlands: Republican, Rustic and Tribal building kits for the temperate highlands of the Inner Wall, and the town of Roketstad. |
-| [`settlements/iziz`](settlements/iziz/INDEX.md) | 51 | 488 | 47 | Iziz: the city rebuilt on the Iziz Vernacular style and the Ancients kit. |
-| [`settlements/jimjam`](settlements/jimjam/INDEX.md) | 32 | 411 | 56 |  |
+| [`settlements/iziz`](settlements/iziz/INDEX.md) | 51 | 504 | 52 | Iziz: the city rebuilt on the Iziz Vernacular style and the Ancients kit. |
+| [`settlements/jimjam`](settlements/jimjam/INDEX.md) | 32 | 412 | 56 |  |
 | [`settlements/locus`](settlements/locus/INDEX.md) | 65 | 991 | 84 | Locus: a fork of the Yuni engine in the eastern abyss, with its own kit sheet and plant catalogue. |
 | [`settlements/mavs-refuge`](settlements/mavs-refuge/INDEX.md) | 28 | 616 | 69 | Mav's Refuge: a refuge in the hypertropic jungle on the lee shore of the Ring Sea. |
 | [`settlements/port`](settlements/port/INDEX.md) | 48 | 718 | 39 |  |
 | [`settlements/reedlake`](settlements/reedlake/INDEX.md) | 32 | 311 | 33 | Reed Lake: a floating reed-lake village and its kit. |
 | [`settlements/screamers`](settlements/screamers/INDEX.md) | 72 | 542 | 45 | Hexahedron: the Screamers' tribal village in and under a ruined arcology, forked from the Ancients kit. |
+| [`settlements/shade`](settlements/shade/INDEX.md) | 28 | 316 | 32 | Shade: the Eastern Nomads' sunken basin in the eastern high desert (falls, pool, carved face, switchback, slot canyon) on the sedesert biome kit: rock-cut and pueblo buildings, cliff dwellings round the rim, alcoves and an undercut behind the falls, the life layer's data and walkable grid. |
 | [`settlements/voth`](settlements/voth/INDEX.md) | 62 | 1787 | 70 | Voth: a Venice/Vivec-like Dunmer city on an enclosed brackish bay, with the most complete life layer and collision system. |
 | [`settlements/xanadu`](settlements/xanadu/INDEX.md) | 51 | 599 | 66 | Xanadu: the building kit of the southern Sultanate (Tibetan massing, Indian, Turkish and Persian detail) and the city of Erewhon. |
 | [`settlements/yuni`](settlements/yuni/INDEX.md) | 47 | 972 | 195 | Yuni: the city, plus its building-kit, furniture and plant sheets. |
-| [`kits/ancients`](kits/ancients/INDEX.md) | 92 | 1726 | 89 | The Ancients kit: ruined megastructures of the ancient civilisation, 33 structure types, one target per site. |
+| [`kits/ancients`](kits/ancients/INDEX.md) | 92 | 1732 | 89 | The Ancients kit: ruined megastructures of the ancient civilisation, 33 structure types, one target per site. |
 | [`kits/catalog`](kits/catalog/INDEX.md) | 13 | 571 | 238 | The master catalog: asset engine, 122 furniture pieces (kits/furniture SPEC shape, palette-keyed), 48 plants and 26 typed buildings, harvested from six builds plus an interiors set; a verified contact sheet. |
 | [`kits/interiors`](kits/interiors/INDEX.md) | 22 | 209 | 32 | Interiors: ROOM() registration and an engine-neutral furniture placer (ported from Yuni) with a catalog adapter; building planner (storeys, partitions, stairs), walkers and a light budget; a verified demo of planned buildings and furnished rooms with outline view and storey cut-away. |
 | [`kits/post-apoc`](kits/post-apoc/INDEX.md) | 25 | 408 | 34 | The Post-Apoc set: reclaimed and recycled buildings (containers, silos, tanks, buses, bulkheads, tyre and bottle walls) with sockets for any culture's marks. |
@@ -29,7 +30,7 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`biomes/nhighlands`](biomes/nhighlands/INDEX.md) | 20 | 259 | 49 | Biome kit: see `biomes/README.md`. |
 | [`biomes/nwlowlands`](biomes/nwlowlands/INDEX.md) | 17 | 208 | 56 | Biome kit: see `biomes/README.md`. |
 | [`biomes/rift`](biomes/rift/INDEX.md) | 17 | 230 | 60 | Biome kit: see `biomes/README.md`. |
-| [`biomes/sedesert`](biomes/sedesert/INDEX.md) | 18 | 194 | 32 | Biome kit: see `biomes/README.md`. |
+| [`biomes/sedesert`](biomes/sedesert/INDEX.md) | 19 | 212 | 32 | Biome kit: see `biomes/README.md`. |
 | [`biomes/swbay`](biomes/swbay/INDEX.md) | 19 | 214 | 46 | Biome kit: see `biomes/README.md`. |
 | [`biomes/swlowlands`](biomes/swlowlands/INDEX.md) | 17 | 228 | 57 | Biome kit: see `biomes/README.md`. |
 | [`biomes/xanadu`](biomes/xanadu/INDEX.md) | 19 | 248 | 66 | Biome kit: see `biomes/README.md`. |
