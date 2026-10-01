@@ -47,6 +47,19 @@ function treeClear(C, x,y,z, rad, vr){
   return true;
 }
 
+/* ---- the Prism gum's rainbow bark was too loud: pull the planner's colour texture (and the palette tints
+        used on the far trunks) ~30 % toward its own luminance ---- */
+var TREE_DESAT = 0.30;
+function treeDesat(hex, k){ var c=new THREE.Color(hex), l=0.30*c.r+0.59*c.g+0.11*c.b; c.r=mix(c.r,l,k); c.g=mix(c.g,l,k); c.b=mix(c.b,l,k); return c.getHex(); }
+(function(){
+  var tx=FAMMAT.bark2 && FAMMAT.bark2.tex, cv=tx && tx.image;
+  if(!cv || !cv.getContext) return;
+  var g=cv.getContext('2d'), im=g.getImageData(0,0,cv.width,cv.height), d=im.data;
+  for(var o=0;o<d.length;o+=4){ var l=0.30*d[o]+0.59*d[o+1]+0.11*d[o+2];
+    d[o]=mix(d[o],l,TREE_DESAT); d[o+1]=mix(d[o+1],l,TREE_DESAT); d[o+2]=mix(d[o+2],l,TREE_DESAT); }
+  g.putImageData(im,0,0); tx.needsUpdate=true;
+})();
+
 /* ------------------------------------------------------------ textures */
 function treeAlphaTex(S, draw, fillRGB){
   var c=texCanvas(S), g=c.getContext('2d'); g.clearRect(0,0,S,S); draw(g,S);
@@ -499,7 +512,7 @@ var podTris=treeEmit(treePod, treePodGeo(),
       vtx(x+dx*rx*m, y+dy*ry*m-(dy<0?ry*0.25*dy*dy:0), z+dz*rx*m, dx/nl,ny/nl,dz/nl, mix(cb.r,ca.r,t)*sh, mix(cb.g,ca.g,t)*sh, mix(cb.b,ca.b,t)*sh); }
   }
   FARTREES.forEach(function(T, fi){
-    var sp=T.sp, Hend=T.H*(sp===3?0.92:0.95), us=[0,0.015,0.05,0.14,0.45,0.75,1], seg=7, bc=new THREE.Color(sp===2?PAL.bark[2][(fi%3)*2]:PAL.bark[sp][fi%3]).convertSRGBToLinear(), rings=[];
+    var sp=T.sp, Hend=T.H*(sp===3?0.92:0.95), us=[0,0.015,0.05,0.14,0.45,0.75,1], seg=7, bc=new THREE.Color(sp===2?treeDesat(PAL.bark[2][(fi%3)*2],TREE_DESAT+0.15):PAL.bark[sp][fi%3]).convertSRGBToLinear(), rings=[];
     us.forEach(function(u){ var y=T.y0+Hend*u, r=Math.max(1.2,trunkR(T,y))*(u<0.02?1.25:1), ring=[];
       for(var s=0;s<=seg;s++){ var a=s/seg*TAU; ring.push([T.x+Math.cos(a)*r, y, T.z+Math.sin(a)*r, Math.cos(a), Math.sin(a)]); } rings.push(ring); });
     for(var r2=0;r2<rings.length-1;r2++) for(var s2=0;s2<seg;s2++){

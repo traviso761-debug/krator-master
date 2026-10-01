@@ -30,7 +30,7 @@ level via 3 stairs per level; soldiers at the gates; Voth-style dev tools.
   Hold, Riders' Rest, The Silk Loft, South Gate. 35 near hypertrees, 210 far.
 - 79 platforms (11 main + council + 67 satellites), 82 rope bridges (longest
   76 m), 379 bough skeletons (satellites sit on `under` boughs or hang from
-  `over` boughs), 555 roost bays, walk graph ~7.7k nodes (fully connected,
+  `over` boughs), 554 roost bays, walk graph ~7.7k nodes (fully connected,
   includes a forest-floor trail over the log bridge between the S and E gates).
 - Platform section: deck; each lower level steps in 3 m; open gallery at the
   rim, rooms behind, core wall at Rin. 3 stair bays per main platform: lane A

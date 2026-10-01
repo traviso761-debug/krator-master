@@ -398,8 +398,11 @@ PLATS.forEach(function(P){
     var r = Lv.Rout - 1.2, step = Lv.kind==='hangar' ? 15 : 10.5;
     var n = Math.max(1, Math.floor(TAU*r*(P.sx+P.sz)/2/step));
     if(!P.main) n = Math.min(n, 2);
+    /* the gallery posts (50-structure / 56-levels lvlPostCount): each roost sits in the MIDDLE of a gap between
+       two of them, so a landing lip, and a beast walking in off it, never straddles a post */
+    var np = P.main ? Math.round(TAU*Lv.Rout/5.2) : Math.max(6, Math.round(TAU*Lv.Rout/3.4)), stepA = TAU/np;
     for(var i=0;i<n;i++){
-      var a = (i+0.5)/n*TAU, skip=false;
+      var a = Math.round((i+0.5)/n*TAU/stepA)*stepA, skip=false;
       P.bays.forEach(function(b){ if(angDist(b.ang,a) < (LANE_W+2)/r) skip=true; });
       if(skip) continue;
       var p = platXZ(P, r, a), o = platOutDir(P, a);
