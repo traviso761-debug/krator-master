@@ -54,7 +54,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `76-doors.js` | 26 | 20b. WORKING DOORS, INTERIORS, WALKING (1) |
 | `80-camera.js` | 13 | 25. CAMERA, CONTROLS, FRAME LOOP (1); RENDER LOOP (160) |
 | `81-glow.js` | 5 | 26. NIGHT GLOW (1) |
-| `82-daynight.js` | 5 | 27. DAY / NIGHT (1) |
+| `82-daynight.js` | 6 | 27. DAY / NIGHT (1) |
 | `84-life.js` | 29 | 20. THE LIFE LAYER (1) |
 | `85-probe.js` | 1 | 29. PROBE (1) |
 | `86-inspect.js` | 4 | 27. DEV INSPECTOR (1) |
