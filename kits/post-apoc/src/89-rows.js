@@ -8,7 +8,7 @@ const FAMILIES=[
  {name:'Industry and power',keys:['smithy','gen-wind','gen-fuel','warehouse']},
  {name:'Farm',keys:['farm','farmhouse','granary']},
  {name:'Defence and justice',keys:['watchtower','cages']},
- {name:'Walled compound',keys:['compound']},
+ {name:'Walled compound',keys:['compound',{key:'compound',o:{size:'large',slots:['lg-stack','warehouse','dw-silo']}}]},
  {name:'Arena',keys:['arena']},
  {name:'Dock',keys:['dock']},
 ];

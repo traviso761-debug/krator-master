@@ -13,11 +13,11 @@ URL parameters: `?culture=iziz`, `?only=shop-food,dw-silo`.
 1. **Cores** (`src/32-cores.js`): the large reclaimed objects at real scale. Shipping containers (20 ft / 40 ft), grain silos, storage tanks (vertical, lying),
    school buses, semi trucks, and arcology **bulkheads** (the Ancients' white ceramic slab with a round hatch or a doorway).
 2. **Additions** (`src/34-adds.js`): what is lashed onto a core out of scrap. Sheet-metal lean-tos and gable roofs, earth-filled **tyre walls and rings** (real tori
-   packed with earth), **bottle-glass walls**, patchwork plank-and-sheet walls, decks, stairs, ladders, stovepipes, solar panels, water butts, barrels, tarps, fences, junk piles.
+   packed with earth), **bottle-glass walls**, patchwork plank-and-sheet walls, decks, stairs, steel stairs / landings / pipe rails, ladders, stovepipes, solar panels, water butts, barrels, tarps, fences, junk piles.
 3. **Sockets** (`src/36-def.js`, `sock()`): every building declares where a culture's marks go (`awning`, `banner`, `flag`, `emblem`, `sign`, `paint`) with a
    local frame and size. Buildings never mention a culture.
 4. **Culture packs** (`core/sockets/80-cultures.js`, shared, see `core/sockets/README.md`): fill the sockets. Shipped: `generic` (faded tarps and rags), `iziz` (orange, teal, striped awnings, a sun),
-   `republic` (Voth's deep red with the triskelion), `voth` (deep blue with an ash-white glyph, ragged cloth), `yuni` (yellow, the hyperboloid), `beastriders` (green, the claw).
+   `republic` (Voth's deep red with the triskelion), `voth` (deep blue with an ash-white glyph, ragged cloth), `yuni` (yellow, the hyperboloid), `beast-rider` (green, the claw).
    A pack may also supply a `paint` list that the containers' livery (`PAINT()`) draws from. To add a culture: one `mkCulture({...})`, no building changes. `place(key,x,z,ry,{culture:'yuni'})` dresses one building in a pack.
 
 ## The buildings (33 defs, tags per README: culture, type)
@@ -44,7 +44,10 @@ its biome's real plants once (`PLANTS.draw`) and every building follows. See `AP
 ## The compound
 
 `compound` builds a walled yard from mixed reclaimed wall segments and takes buildings through **slots**: `place('compound', x, z, ry, {slots:['smithy','dw-silo','gen-fuel','shop-general']})`.
-Each key goes into the first free slot its declared footprint fits (rotated as needed); `window._compound` reports placed and rejected.
+Each key goes into the first free slot its declared footprint fits (rotated as needed); `window._compound` reports placed and rejected (`window._compounds` lists every compound in the world).
+The standard yard (64 x 54) takes buildings up to ~21.5 x 16 m. For the big ones pass `size:'large'`: an 82 x 76 yard (declared through the def's `sizes`, so the footprint check follows)
+whose `great` slot (41 x 35) takes any building in the kit (longhouse, chief, bulkhead, farm) and whose `back-right` slot (27 x 19) takes the warehouse / `lg-stack` class; it fills the
+smallest free slot that fits. The showcase row places one: `place('compound', x, z, 0, {size:'large', slots:['lg-stack','warehouse','dw-silo']})`. The default output is unchanged.
 
 ## Build and verify
 

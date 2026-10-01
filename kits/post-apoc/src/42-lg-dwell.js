@@ -47,7 +47,7 @@ function lgAwn(x,y,z,ry,w,d,drop,o){o=o||{};W(x,y,z,ry||0,()=>{sock('awning',0,0
 defBuilding({key:'lg-stack',name:'Container stack',seed:4210,tags:{type:['multi-family dwelling'],size:'large',core:'shipping container',materials:['container','steel stairs','sheet metal','plank']},w:22,d:18,h:14,build:lgStack});
 function lgStack(o){
  let C=[0xd8a020,0xa83a2c,0x2f7f8e,0x4d6f3c,0xd8d4c8,0x2f5f8f,0xc45a30];if(o.v===1)C=C.slice().reverse();
- const y2=CT.H,y3=CT.H*2,y4=CT.H*3,T={steel:true};
+ const y2=CT.H,y3=CT.H*2,y4=CT.H*3;
  // level 1: a 40 ft workshop box, and a 20 ft open-fronted shop bay
  lgBox(-3,0,-2,0,CT.L40,C[0],()=>{door(-4.5,.16,1.22,1.0,2.0,{step:true});win(-2.3,1.05,1.22,1.1,.9,{lit:o.v===1});porthole(0,1.5,1.22,.3);porthole(1.3,1.5,1.22,.3);win(3.4,1.05,1.22,.9,.9,{bars:true});lgPatch(-3.5,.3,1.23,3.2,.6,C[3]);});
  lgBox(6.5,0,-2,0,CT.L20,C[5],null);
@@ -62,17 +62,17 @@ function lgStack(o){
  lgBox(7,y3,-2.5,PI/2,CT.L20,C[6],()=>{win(0,1.1,1.22,1.4,.9,{lit:o.v!==1});porthole(-1.7,1.4,1.22,.3);lgPatch(1.6,1.6,1.23,1.4,.7,C[3]);});
  // level 4: penthouse; door opens on its perch
  lgBox(-4,y4,-2,0,CT.L20,C[2],()=>{door(-.5,.16,1.22,.95,1.95,{step:false});win(1.8,1.1,1.22,1.1,1.0,{lit:true});porthole(-2.0,1.5,1.22,.3);});
- // ---- balconies, steel stairs and landings: every flight ends on a deck edge at the floor height of a door
- deck(-6,y2,.1,5,1.7,{rail:['l','f']});                                          // level 2 balcony, posts to the ground
- stairs(-.4,0,.1,-3.5,y2,.1,1.1,T);                                              // ground -> level 2 (top tread ends at the deck edge x=-3.5)
- deck(-3,y3,.1,5,1.7,{rail:['r','f'],posts:false});                              // level 3 balcony, carried by wall brackets and two posts
+ // ---- balconies, steel stairs and landings (stLanding/stStairs: grating, checker-plate treads, pipe rails): every flight ends on a landing edge at a door's floor height
+ stLanding(-6,y2,.1,5,1.7,{rail:['l','f']});                                        // level 2 balcony, posts to the ground
+ stStairs(-.4,0,.1,-3.5,y2,.1,1.1);                                           // ground -> level 2 (top tread ends at the deck edge x=-3.5)
+ stLanding(-3,y3,.1,5,1.7,{rail:['r','f'],posts:false});                            // level 3 balcony, carried by wall brackets and two posts
  for(const bx of [-5.2,-.8])beam('iron',[bx,y3-.95,-.76],[bx,y3-.12,.85],.07,jc(0x4a4038,.05));
  lgPost(-.65,.85,y3-.12,0,.12);lgPost(-5.35,.85,y3-.12,y2,.12);
- stairs(-8.4,y2,.1,-5.5,y3,.1,1.1,T);                                            // level 2 -> level 3 (top tread ends at the deck edge x=-5.5)
- ladder(-3.2,y3,-.72,y4-y3,0);deck(-4.5,y4,-.4,2.4,1.1,{rail:['f','l'],posts:false});   // ladder to the penthouse perch
+ stStairs(-8.4,y2,.1,-5.5,y3,.1,1.1);                                         // level 2 -> level 3 (top tread ends at the deck edge x=-5.5)
+ ladder(-3.2,y3,-.72,y4-y3,0);stLanding(-4.5,y4,-.4,2.4,1.1,{rail:['f','l'],posts:false});   // ladder to the penthouse perch
  for(const bx of [-5.5,-3.5])beam('iron',[bx,y4-.95,-.8],[bx,y4-.12,.1],.06,jc(0x4a4038,.05),true,5);
  // east side: balcony on the turned box, steel stair down to the yard, brackets and posts
- deck(9.0,y2,3.0,1.6,5.0,{rail:['r','b'],posts:false});stairs(9.0,0,8.3,9.0,y2,5.5,1.1,T);
+ stLanding(9.0,y2,3.0,1.6,5.0,{rail:['r','b'],posts:false});stStairs(9.0,0,8.3,9.0,y2,5.5,1.1);
  for(const pz of [.6,5.4])lgPost(9.7,pz,y2-.12,0,.1);for(const bz of [1.0,3.0,5.0])beam('iron',[8.22,y2-.95,bz],[9.7,y2-.12,bz],.06,jc(0x4a4038,.05),true,5);
  lgPost(5.95,6.7,y2,0,.16);lgPost(8.05,6.7,y2,0,.16);beam('iron',[5.95,1.6,6.7],[6.6,y2,5.6],.07,jc(0x4a4038,.05));beam('iron',[8.05,1.6,6.7],[7.4,y2,5.6],.07,jc(0x4a4038,.05));
  // ---- rooftop: water tank, dish, solar, stovepipes, antenna, a tarp on four posts (all on roofs)
@@ -174,7 +174,7 @@ function lgBulkhead(o){
   if(s===2)W(0,0,rz,PI,()=>win(0,sill,0,1.2,1.2,{lit:true}));}
  W(0,0,rz,PI,()=>lgDoor(0,F[0],0,1.1,2.2,{step:true,col:0x7a2e28}));W(0,0,rz,PI,()=>lgDoor(0,F[1],0,1.1,2.1,{step:false,col:0x2f5f8f}));                 // ground door and the door onto the rear balcony
  for(const sd of [-1,1]){const xo=sd*7.9,xr=sd*8.7,ry=sd>0?PI/2:-PI/2,rl=sd>0?['r','b']:['l','b'];
-  deck(xo,F[1],-10.5,1.7,3.8,{rail:rl,posts:false});deck(xo,F[2],-10.5,1.7,3.4,{rail:sd>0?['r','b']:['l','b'],posts:false});
+  stLanding(xo,F[1],-10.5,1.7,3.8,{rail:rl,posts:false});stLanding(xo,F[2],-10.5,1.7,3.4,{rail:sd>0?['r','b']:['l','b'],posts:false});
   for(const z of [-12.1,-10.5,-8.9])beam('iron',[sd*7.05,F[1]-1.0,z],[xr-sd*.02,F[1]-.12,z],.06,jc(0x4a4038,.05),true,5);
   for(const z of [-11.8,-9.2])beam('iron',[sd*7.05,F[2]-1.0,z],[xr-sd*.02,F[2]-.12,z],.06,jc(0x4a4038,.05),true,5);
   lgPost(xr,-12.3,F[1]-.12,0,.12);lgPost(xr,-9.3,F[1]-.12,0,.12);lgPost(xr,-12.1,F[2]-.12,F[1],.1);lgPost(xr,-8.95,F[2]-.12,F[1],.1);
@@ -261,7 +261,7 @@ function lgTankTower(o){
  }
  // ---- stair: a steel switchback on the right side. Landings sit at the floor height of each door; every flight ends exactly on a landing edge
  //      odd floors have the landing at the north end (z -1.8..-.4), even floors at the south end (z 3.2..4.6)
- for(let s=1;s<=4;s++){const north=s%2===1,xc=X1(s)+.9,zc=north?-1.1:3.9;deck(xc,U(s),zc,1.6,1.4,{posts:false,rail:north?['r','b']:['r','f'],col:0x8a8a86});
+ for(let s=1;s<=4;s++){const north=s%2===1,xc=X1(s)+.9,zc=north?-1.1:3.9;stLanding(xc,U(s),zc,1.6,1.4,{posts:false,rail:north?['r','b']:['r','f']});
   for(const dz of [-.65,.65])lgPost(xc+.7,zc+dz,U(s)-.12,0,.1);beam('iron',[X1(s)+.02,U(s)-.9,zc],[xc-.1,U(s)-.12,zc],.06,jc(0x4a4038,.05),true,5);}
  stairs(X1(0)+.9,0,3.2,X1(1)+.9,U(1),-.4,1.0,{steel:true});
  stairs(X1(1)+.9,U(1),-.4,X1(2)+.9,U(2),3.2,1.0,{steel:true});

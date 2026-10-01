@@ -60,17 +60,49 @@ function deck(x,y,z,w,d,o){o=o||{};const th=.12;box('plank',x,y-th,z,w,th,d,o.co
   const cs=[[x-w/2,z-d/2],[x+w/2,z-d/2],[x+w/2,z+d/2],[x-w/2,z+d/2]];const names=['b','r','f','l'];
   for(let i=0;i<4;i++)if(sides.indexOf(names[i])>=0)seg(cs[i],cs[(i+1)%4]);}}
 // stair from a foot point to a top point (x,y,z each), width w: treads on two stringers
-function stairs(ax,ay,az,bx,by,bz,w,o){o=o||{};const dx=bx-ax,dz=bz-az,dy=by-ay;const run=Math.hypot(dx,dz);const n=Math.max(2,Math.round(dy/.2));const ang=Math.atan2(dx,dz);
+function stairs(ax,ay,az,bx,by,bz,w,o){o=o||{};if(o.steel)return stStairs(ax,ay,az,bx,by,bz,w,o);   // steel: stStairs() below (o.steel keeps old call sites working)
+ const dx=bx-ax,dz=bz-az,dy=by-ay;const run=Math.hypot(dx,dz);const n=Math.max(2,Math.round(dy/.2));const ang=Math.atan2(dx,dz);
  const wc=jc(0x5c4630,.06),ic=jc(0x4a4038,.05);
  W(ax,ay,az,ang,()=>{const nx=[-w/2,w/2];
-  if(o.steel){ // steel: channel stringers, grating treads with a nosing, pipe handrails on posts (o.steel=true)
-   for(const sx of nx){beam('iron',[sx,0,0],[sx,dy,run],.09,ic);}
-   for(let k=1;k<=n;k++){const y=dy*k/n-.04,z=run*(k-.5)/n;box('iron',0,y,z,w,.04,run/n+.03,jc(0x6a5a4c,.06));box('iron',0,y+.04,z+run/n*.5-.03,w,.03,.04,jc(0x3a3430,.04));}
-   if(o.rail!==false)for(const sx of nx){const xs=sx*1.02;beam('iron',[xs,1.0,0],[xs,dy+1.0,run],.035,ic,true,6);beam('iron',[xs,.5,0],[xs,dy+.5,run],.025,ic,true,5);
-    const np=Math.max(2,Math.round(run/1.4)+1);for(let k=0;k<np;k++){const t=k/(np-1);beam('iron',[xs,dy*t,run*t],[xs,dy*t+1.0,run*t],.04,ic,true,5);}}
-  }else{for(const sx of nx)beam('iron',[sx,0,0],[sx,dy,run],.07,ic);
+  {for(const sx of nx)beam('iron',[sx,0,0],[sx,dy,run],.07,ic);
    for(let k=1;k<=n;k++){box('plank',0,dy*k/n-.05,run*(k-.5)/n,w,.05,run/n+.04,jc(pick(PAL.wood),.07));}
    if(o.rail!==false)for(const sx of nx){beam('wood',[sx,1.0,0],[sx,dy+1.0,run],.05,wc);beam('wood',[sx,0,0],[sx,1.0,0],.05,wc,true,5);beam('wood',[sx,dy,run],[sx,dy+1.0,run],.05,wc,true,5);}}});}
+// ---- STEEL access: stairs, landings and pipe railings for container and steel builds (stacks, tank towers, catwalks). Same frames and heights as
+//      stairs()/deck(): a flight from a foot point to a top point ends with its top tread level with, and against the edge of, a landing whose top is y.
+//      Materials: 'iron' (heavy rust weathering) for the frame, stringers, grating and rails; 'steel' (light weathering) for checker-plate treads.
+const STC={frame:0x4a4038,grate:0x5a5550,rail:0x5a524a,plate:0x8a8680};
+// floor panel, TOP at y, centred (x,z), w along x, d along z. o.floor: 'grate' (default: bearing bars along the long side, cross rods, edge frame) or 'plate' (checker plate)
+function stFloor(x,y,z,w,d,o){o=o||{};const fc=jc(STC.frame,.05);
+ if(o.floor==='plate'){box('steel',x,y-.04,z,w,.04,d,jc(STC.plate,.06));return;}
+ const gc=jc(STC.grate,.06),alongX=w>=d,L=alongX?w:d,S=alongX?d:w,nb=Math.max(2,Math.round(S/.12)),nr=Math.max(1,Math.round(L/.6));
+ for(let k=0;k<=nb;k++){const t=-S/2+.03+k*(S-.06)/nb;if(alongX)box('iron',x,y-.045,z+t,L-.04,.045,.022,gc);else box('iron',x+t,y-.045,z,.022,.045,L-.04,gc);}
+ for(let k=1;k<nr;k++){const t=-L/2+k*L/nr;if(alongX)box('iron',x+t,y-.03,z,.014,.014,S-.04,gc);else box('iron',x,y-.03,z+t,S-.04,.014,.014,gc);}
+ for(const s of [-1,1]){box('iron',x,y-.06,z+s*(d/2-.025),w,.06,.05,fc);box('iron',x+s*(w/2-.025),y-.06,z,.05,.06,d-.1,fc);}}
+// pipe handrail along a->b ([x,z] pairs) standing on a floor at y: round posts every ~1.4 m, top rail at h (1.0), knee rail, toe plate
+function stRail(a,b,y,o){o=o||{};const h=o.h||1.0,c=o.col===undefined?jc(STC.rail,.05):jc(o.col,.05);const dx=b[0]-a[0],dz=b[1]-a[1],L=Math.hypot(dx,dz);if(L<.1)return;const n=Math.max(1,Math.round(L/1.4));
+ for(let k=0;k<=n;k++){const t=k/n;beam('iron',[a[0]+dx*t,y,a[1]+dz*t],[a[0]+dx*t,y+h,a[1]+dz*t],.045,c,true,6);}
+ beam('iron',[a[0],y+h,a[1]],[b[0],y+h,b[1]],.05,c,true,6);beam('iron',[a[0],y+h*.5,a[1]],[b[0],y+h*.5,b[1]],.032,c,true,5);
+ if(o.toe!==false)W((a[0]+b[0])/2,y,(a[1]+b[1])/2,Math.atan2(-dz,dx),()=>box('iron',0,0,0,L,.1,.012,c));}
+// landing / balcony: deck() with a steel floor (o.floor), a channel frame under the edge, square-tube posts to the ground when y>.5 (o.posts:false for
+// wall-bracketed ones), pipe rails on the named sides (o.rail: 'b','r','f','l' = -z, +x, +z, -x)
+function stLanding(x,y,z,w,d,o){o=o||{};const fc=jc(STC.frame,.05);stFloor(x,y,z,w,d,o);
+ for(const s of [-1,1]){box('iron',x,y-.2,z+s*(d/2-.05),w,.14,.1,fc);box('iron',x+s*(w/2-.05),y-.2,z,.1,.14,d-.2,fc);}
+ if(y>.5&&o.posts!==false){for(const sx of [-1,1])for(const sz of [-1,1]){const px=x+sx*(w/2-.1),pz=z+sz*(d/2-.1);beam('iron',[px,0,pz],[px,y-.2,pz],.11,fc);box('iron',px,0,pz,.26,.03,.26,fc);}}
+ if(o.rail){const cs=[[x-w/2,z-d/2],[x+w/2,z-d/2],[x+w/2,z+d/2],[x-w/2,z+d/2]],names=['b','r','f','l'];
+  for(let i=0;i<4;i++)if(o.rail.indexOf(names[i])>=0)stRail(cs[i],cs[(i+1)%4],y,{h:o.h});}}
+// steel stair, foot (ax,ay,az) -> top (bx,by,bz), width w: channel stringers (web + flanges), checker-plate treads with a nosing angle (o.tread:'grate' for
+// open grating), pipe handrails with posts (o.rail:false drops them). The top tread's top is at by and its back edge at the top point.
+function stStairs(ax,ay,az,bx,by,bz,w,o){o=o||{};const dx=bx-ax,dz=bz-az,dy=by-ay;const run=Math.hypot(dx,dz);const n=Math.max(2,Math.round(dy/.2));const ang=Math.atan2(dx,dz);
+ const fc=jc(STC.frame,.05),rc=jc(STC.rail,.05),tc=jc(o.tread==='grate'?STC.grate:STC.plate,.06),td=run/n;
+ W(ax,ay,az,ang,()=>{
+  for(const sx of [-w/2-.035,w/2+.035]){plane4('iron',[sx,-.16,0],[sx,dy-.16,run],[sx,.08,0],[sx,dy+.08,run],.025,fc);
+   for(const sy of [-.16,.08])beam('iron',[sx,sy,0],[sx,dy+sy,run],.05,fc);}
+  for(let k=1;k<=n;k++){const y=dy*k/n,z=td*(k-.5);
+   if(o.tread==='grate'){for(let q=0;q<5;q++)box('iron',0,y-.04,z-td/2+.02+q*(td-.04)/4,w,.04,.018,tc);for(const sx of [-1,1])box('iron',sx*(w/2-.02),y-.05,z,.04,.05,td,fc);}
+   else box('steel',0,y-.035,z,w,.035,td+.02,tc);
+   box('iron',0,y-.07,z-td/2+.02,w,.07,.04,fc);}
+  if(o.rail!==false)for(const s of [-1,1]){const xs=s*(w/2+.09);beam('iron',[xs,1.0,0],[xs,dy+1.0,run],.045,rc,true,6);beam('iron',[xs,.5,0],[xs,dy+.5,run],.03,rc,true,5);
+   const np=Math.max(2,Math.round(run/1.4)+1);for(let k=0;k<np;k++){const t=k/(np-1);beam('iron',[xs,dy*t,run*t],[xs,dy*t+1.0,run*t],.045,rc,true,6);}}});}
 function ladder(x,y,z,h,ry,o){o=o||{};W(x,y,z,ry||0,()=>{const c=jc(0x5a5048,.05);beam('iron',[-.22,0,0],[-.22,h,0],.05,c);beam('iron',[.22,0,0],[.22,h,0],.05,c);for(let k=1;k*.32<h;k++)beam('iron',[-.22,k*.32,0],[.22,k*.32,0],.035,c,true,5);});}
 // ---- roof and yard furniture
 function stovepipe(x,y,z,h,o){o=o||{};const r=o.r||.09;const c=jc(pick([0x4a4038,0x5a4a3c,0x6a5a4c]),.05);cyl('iron',x,y,z,r,h,c,8);cyl('iron',x,y+h,z,r*1.5,.06,c,8);cone('iron',x,y+h+.06,z,r*2.2,.16,jc(0x3a3430,.05),8);
