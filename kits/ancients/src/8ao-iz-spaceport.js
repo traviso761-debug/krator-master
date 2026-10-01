@@ -342,7 +342,10 @@ function buildIzSpaceport(scene,gx,gz,d){reseed(10460);KOFF=[gx,0,gz];const G=ne
  {const hf=dd?(u,v)=>fbm(u*40,v*9,7.7,2)<(WRECK?.36:.3):null;
   pv.push(gridSurface((u,v)=>{const a=u*TAU,r=lerp(PA0+.2,WR+1,v);return[r*Math.cos(a),.25,r*Math.sin(a)];},96,10,{uS:(WR*TAU)/8,vS:(WR-PA0)/8,hole:hf}));}
  apron(G,0,0,WR+1,WR+12,d,.25);
- meshMerged(cm,CM,G);meshMerged(pv,CM,G);meshMerged(sk,SK,G);meshMerged(dk,MAT.dark,G);
+ // the field is a darker, warmer concrete than the hub (Iziz painted its plaza #7a7068), so the white reads on it
+ const pvK=dd?'izpPaveR':'izpPave';if(!MAT[pvK]){const m=CM.clone();m.color=new THREE.Color(dd?0x6a625a:0xa89e92);if(CM.onBeforeCompile)m.onBeforeCompile=CM.onBeforeCompile;
+  m.polygonOffset=true;m.polygonOffsetFactor=-1;m.polygonOffsetUnits=-2;MAT[pvK]=m;}   // 0.3 m over the ground plane: without the offset it z-fights from far off
+ meshMerged(cm,CM,G);meshMerged(pv,MAT[pvK],G);meshMerged(sk,SK,G);meshMerged(dk,MAT.dark,G);
 
  // ================================================================ DECAY DRESSING (own stream)
  reseed(10461+d);
