@@ -26,6 +26,9 @@ const KF_API = (function () {
   API.FURNS = FURNS; API.FURN_BY_KEY = FURN_BY_KEY; API.FPAL = FPAL; API.FURN_TYPES = FURN_TYPES;
   API.entryDims = entryDims; API.furnAnchorY = furnAnchorY; API.CATALOG_MATERIALS = CATALOG_MATERIALS;
   API.has = function (key) { return !!FURN_BY_KEY[key]; };
+  /* round primitives' detail for everything built after the call (1 = the catalog page's; 0.5 halves the
+     segments of cylinders, cones, domes, balls and rods: a settlement's furniture is about half the triangles) */
+  API.setDetail = function (k) { _LOD = Math.max(0.25, Math.min(1, +k || 1)); return _LOD; };
   API.cultures = function () { return FURN_CULTURES.slice(); };
 
   const _m = new THREE.Matrix4(), _n = new THREE.Matrix3(), _v = new THREE.Vector3(), _w = new THREE.Vector3();
@@ -64,8 +67,16 @@ const KF_API = (function () {
     this.placements = [];
     this.tris = 0;
   }
+  /* a growable typed buffer: positions and normals as float32, colours as uint8 (a settlement holds millions
+     of furniture triangles; plain arrays of doubles would take several times the memory) */
+  function Buf(T) { this.T = T; this.a = new T(3 * 4096); this.n = 0; }
+  Buf.prototype.push3 = function (x, y, z) {
+    if (this.n + 3 > this.a.length) { const b = new this.T(this.a.length * 2); b.set(this.a); this.a = b; }
+    this.a[this.n++] = x; this.a[this.n++] = y; this.a[this.n++] = z;
+  };
+  Buf.prototype.view = function () { return this.a.subarray(0, this.n); };
   Batch.prototype.bucket = function (family) {
-    return this.buckets[family] || (this.buckets[family] = { family: family, pos: [], nor: [], col: [] });
+    return this.buckets[family] || (this.buckets[family] = { family: family, pos: new Buf(Float32Array), nor: new Buf(Float32Array), col: new Buf(Uint8Array) });
   };
   Batch.prototype.absorb = function (g) {
     const self = this;
@@ -80,9 +91,9 @@ const KF_API = (function () {
       for (let i = 0; i < n; i++) {
         const j = idx ? idx.getX(i) : i;
         _v.fromBufferAttribute(pos, j).applyMatrix4(_m);
-        b.pos.push(_v.x, _v.y, _v.z);
-        if (nor) { _w.fromBufferAttribute(nor, j).applyMatrix3(_n).normalize(); b.nor.push(_w.x, _w.y, _w.z); } else b.nor.push(0, 1, 0);
-        b.col.push(c.r, c.g, c.b);
+        b.pos.push3(_v.x, _v.y, _v.z);
+        if (nor) { _w.fromBufferAttribute(nor, j).applyMatrix3(_n).normalize(); b.nor.push3(_w.x, _w.y, _w.z); } else b.nor.push3(0, 1, 0);
+        b.col.push3(Math.round(c.r * 255), Math.round(c.g * 255), Math.round(c.b * 255));
       }
       self.tris += n / 3;
     });
@@ -102,11 +113,11 @@ const KF_API = (function () {
     grp.name = 'catalog-furniture';
     for (const f in this.buckets) {
       const b = this.buckets[f];
-      if (!b.pos.length) continue;
+      if (!b.pos.n) continue;
       const geo = new THREE.BufferGeometry();
-      geo.setAttribute('position', new THREE.Float32BufferAttribute(b.pos, 3));
-      geo.setAttribute('normal', new THREE.Float32BufferAttribute(b.nor, 3));
-      geo.setAttribute('color', new THREE.Float32BufferAttribute(b.col, 3));
+      geo.setAttribute('position', new THREE.BufferAttribute(b.pos.view().slice(), 3));
+      geo.setAttribute('normal', new THREE.BufferAttribute(b.nor.view().slice(), 3));
+      geo.setAttribute('color', new THREE.BufferAttribute(b.col.view().slice(), 3, true));   /* uint8, normalised */
       let mt;
       if (f === 'glow') mt = new THREE.MeshBasicMaterial({ vertexColors: true });
       else {

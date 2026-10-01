@@ -65,6 +65,11 @@ function mat(color, family) {
    buildPlant can collect an instance's meshes into a single selectable group.
    _target stays null for scenery (ground, labels), which lands straight in the scene. */
 let _target = null;
+/* level of detail for round primitives: 1 = the catalog's own (every page); a build that places thousands
+   of pieces (krator-furniture-runtime.js: KF.setDetail) lowers it, so cylinders, cones, domes, balls and rods
+   get fewer segments. Boxes, and frustums of 8 sides or fewer (square and hexagonal blocks), never change. */
+let _LOD = 1;
+function _seg(n, min) { return _LOD === 1 ? n : Math.max(min, Math.round(n * _LOD)); }
 function _add(m) { (_target || scene).add(m); return m; }
 function mkBox(x, y, z, w, h, d, ry, color, family) {
   const m = new THREE.Mesh(new THREE.BoxGeometry(Math.max(w, 0.02), Math.max(h, 0.02), Math.max(d, 0.02)), mat(color, family));
@@ -72,31 +77,31 @@ function mkBox(x, y, z, w, h, d, ry, color, family) {
   return _add(m);
 }
 function mkCyl(x, y, z, r, h, ry, color, family) {
-  const m = new THREE.Mesh(new THREE.CylinderGeometry(Math.max(r, 0.01), Math.max(r, 0.01), Math.max(h, 0.02), 16), mat(color, family));
+  const m = new THREE.Mesh(new THREE.CylinderGeometry(Math.max(r, 0.01), Math.max(r, 0.01), Math.max(h, 0.02), _seg(16, 6)), mat(color, family));
   m.position.set(x, y + h / 2, z); m.rotation.y = ry || 0;
   return _add(m);
 }
 function mkCone(x, y, z, r, h, ry, color, family) {
-  const m = new THREE.Mesh(new THREE.ConeGeometry(Math.max(r, 0.01), Math.max(h, 0.02), 14), mat(color, family));
+  const m = new THREE.Mesh(new THREE.ConeGeometry(Math.max(r, 0.01), Math.max(h, 0.02), _seg(14, 6)), mat(color, family));
   m.position.set(x, y + h / 2, z); m.rotation.y = ry || 0;
   return _add(m);
 }
 function mkDome(x, y, z, r, h, ry, color, family) {
-  const geo = new THREE.SphereGeometry(Math.max(r, 0.02), 16, 10, 0, TAU, 0, Math.PI / 2);
+  const geo = new THREE.SphereGeometry(Math.max(r, 0.02), _seg(16, 6), _seg(10, 3), 0, TAU, 0, Math.PI / 2);
   geo.scale(1, Math.max(h, 0.02) / Math.max(r, 0.02), 1);
   const m = new THREE.Mesh(geo, mat(color, family));
   m.position.set(x, y, z); m.rotation.y = ry || 0;
   return _add(m);
 }
 function mkBlob(x, y, z, r, h, ry, color, family) {
-  const geo = new THREE.SphereGeometry(Math.max(r, 0.02), 10, 8);
+  const geo = new THREE.SphereGeometry(Math.max(r, 0.02), _seg(10, 6), _seg(8, 4));
   geo.scale(1, Math.max(h, 0.02) / (2 * Math.max(r, 0.02)), 1);
   const m = new THREE.Mesh(geo, mat(color, family));
   m.position.set(x, y, z); m.rotation.y = ry || 0;
   return _add(m);
 }
 function mkBall(x, y, z, r, color, family) {
-  const m = new THREE.Mesh(new THREE.SphereGeometry(Math.max(r, 0.02), 14, 10), mat(color, family));
+  const m = new THREE.Mesh(new THREE.SphereGeometry(Math.max(r, 0.02), _seg(14, 6), _seg(10, 4)), mat(color, family));
   m.position.set(x, y, z);
   return _add(m);
 }
@@ -111,7 +116,7 @@ function mkBeam(ax, ay, az, bx, by, bz, w, d, color, family) {
 function mkRod(ax, ay, az, bx, by, bz, r, color, family) {
   const dx = bx - ax, dy = by - ay, dz = bz - az;
   const len = Math.max(Math.hypot(dx, dy, dz), 0.02);
-  const m = new THREE.Mesh(new THREE.CylinderGeometry(Math.max(r, 0.005), Math.max(r, 0.005), len, 8), mat(color, family));
+  const m = new THREE.Mesh(new THREE.CylinderGeometry(Math.max(r, 0.005), Math.max(r, 0.005), len, _seg(8, 4)), mat(color, family));
   m.position.set((ax + bx) / 2, (ay + by) / 2, (az + bz) / 2);
   m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), new THREE.Vector3(dx, dy, dz).normalize());
   return _add(m);
@@ -123,7 +128,7 @@ function mkRod(ax, ay, az, bx, by, bz, r, color, family) {
    (For sides=4 the geometry is a diamond in plan, so it is over-sized by sqrt(2) and
    turned 45 deg to put the faces — not the corners — on the axes.) */
 function mkFrustum(x, y, z, rBottom, rTop, h, ry, color, family, sides) {
-  const n = sides || 8;
+  const n = (sides || 8) > 8 ? _seg(sides, 8) : (sides || 8);
   const k = (n === 4) ? Math.SQRT2 : 1;
   const geo = new THREE.CylinderGeometry(Math.max(rTop, 0.02) * k, Math.max(rBottom, 0.02) * k, Math.max(h, 0.02), n);
   const m = new THREE.Mesh(geo, mat(color, family));
