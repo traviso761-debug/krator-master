@@ -116,6 +116,23 @@
       and braziers are exported as lights but do not light the room individually.
 - [ ] The egg hut's registered opening is its forecourt gap, so it has no interior. Its mouth needs an F.opening.
 - [ ] Walk-mode collision outside uses the captured bodies only. Compound walls and fences can be walked through.
+- [ ] DARK FLOORS. Many interiors read as a black floor: the floor slab's colour and texture are lost
+      under the dimmed indoor light, and on dark plinths ("black podiums") the floor and the plinth merge.
+      Every floor needs a finish that reads: floor tile, beaten-earth pattern or planks, and a rug or mat in
+      the main room. Check it from inside, through the doorway and in cutaway.
+- [ ] SHACKS NEED A DETAIL PASS, especially the lean-tos and salvage shacks built against reclaimed Ancient
+      buildings. They have no captured body, so no interior. Their join to the host building is not modelled,
+      and they read thin up close.
+- [ ] EVERY DWELLING NEEDS A MINIMUM KIT. Each residential building (types `dwelling-single` / `dwelling-multi`)
+      must have at least one slot each for a BED, a FOOD CONTAINER and an ITEM CONTAINER, and more where it
+      makes sense: one bed per bedroom, more in multi-family buildings, a larger store in compounds. Today a
+      layout may drop optional pieces when a room is tight, and a dwelling with no planned interior has
+      no slots at all.
+- [ ] CONTAINER TAGS. Furniture `type` has no `container-item` / `container-food` distinction yet. Add those
+      tags. Then every building, residential or not, gets at least one item container, and more where it makes
+      sense. Food containers go where food is kept or served: kitchens, stores, shops, taverns, granaries,
+      farmsteads, and the caravanserai (which has no interior plan yet). The slot must exist in the plan data,
+      so it exports for the game (loot and inventory), even where the building has no furnished room to draw it in.
 - [ ] CARAVANS DO NOT MOVE. Nine are spawned and drawn as four-beast carts with a caravanserai bias, but they
       register zero corridors and `want` reads null even on the cart code path they now share. Tried: their own
       `destFn`, a synchronous vehicle route, an off-map road-end state machine, and finally unifying them onto
