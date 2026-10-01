@@ -64,7 +64,7 @@ function buildHypertree(scene,gx,gz,d){reseed(9450+d);KOFF=[gx,0,gz];
  KOFF=[0,0,0];return G;}
 // One hypertree of species T.sp at builder-local (T.x,T.z). `full` is the
 // Ironbark's original detail and draw order; the grove's companions take
-// fewer segments, secondaries and satellites.
+// fewer bough segments and a coarser bole.
 function hyTree(G,gx,gz,T,BIOK){
  const S=HYSP[T.sp],H=T.H,RB=T.RB,CR=T.CR,CROWN0=S.crown0,OX=T.x,OZ=T.z,FULL=T.full;
  const BARK=BIOK?'hyBark'+T.sp:'bough',LEAF=BIOK?'hyLeaf'+T.sp:'frond';
