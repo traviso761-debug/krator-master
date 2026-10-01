@@ -235,3 +235,24 @@ dam/0 115 772 · /1 130 844 *(log)* -> 172 424 / 182 686 (+ leaf-card trees).
   disc. A `mat` override argument would help.
 - The kit 'rubble' (regular dodecahedron, untextured white) reads as pale eggs
   at any size over ~10 m; `aiBlock` in 89b (12 tris) is a drop-in candidate.
+
+---------------------------------------------------------------------------
+## Session 2 (resumed after the recovery)
+
+### Step 1: the recovered patch, re-verified
+The worktree was first cut from the wrong base (main, without the recovery);
+reset onto `ancients-resume`. Then every target rebuilt from the recovered
+source: the builds are byte-identical to the committed dist (git clean after
+build), all eight parse (jscheck PARSES OK), and `verify --assert`:
+
+| target | error panel | invariants | tris per decay |
+|---|---|---|---|
+| arcoindian | clean | all PASS | /0 300 094 · /1 290 912 |
+| arcoindian2 | clean | all PASS | /0 318 442 · /1 283 814 |
+| canyon | clean | all PASS | /0 91 180 · /1 106 140 · /2 117 152 |
+| dalab | clean | all PASS | /1 657 078 (exit 1 only from a 600 s screenshot timeout on 'The breach' under load ~50) |
+| hexahedron | clean | PASS but `biome/0` OVER (pre-existing hyperjungle row) | hex/0 548 664 · hex/2 385 634 · mav/0 168 252 |
+
+KNOWN_ISSUES.md ticked for what the recovered patch closed (Veladiga x2,
+Hexahedron x3, Span x2, Vashtir symmetry, Arcoindian I roofY, Arcoindian II
+mud/ruin/dead locals).
