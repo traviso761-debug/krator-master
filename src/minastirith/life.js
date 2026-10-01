@@ -10,7 +10,7 @@
 import { mkRng } from '../core/rng.js';
 
 export function life(api){
-  const {THREE,C,ctx,scene,animHooks,groundH,roofAt,box,mergeParts,nightF,hour}=api;
+  const {THREE,C,ctx,scene,animHooks,groundH,roofAt,buildingsAt,inPoly,box,mergeParts,nightF,hour}=api;
   const K=C.life;if(!K)return;
   const R=mkRng(K.seed||3019);
   const R_OUT=K.outer||520, R_STEP=K.step||66, TIERS=K.tiers||7, BASE=K.base||76, LIFT=K.lift||30;
@@ -25,6 +25,10 @@ export function life(api){
   const iron=new THREE.MeshLambertMaterial({color:0x35322e});
 
   const statics=[],banners=[],smokes=[],fires=[];
+  // Is there a house here, and how high is its roof? Only a point inside a building's own outline counts:
+  // roofAt, asked about open ground, answers with the tallest roof within twenty metres, and taking that for a
+  // roof hung chimneys and fires in the air beside every hall and wall in the city.
+  const house=(x,z)=>{let h=0;for(const b of buildingsAt(x,z,0))if(inPoly(x,z,b.ring))h=Math.max(h,b.h);return h>groundH(x,z)+3?h:0;};
   const warStatics=[];                      // the siege damage, kept apart so peace can hide it
 
   // ---- the banners ----
@@ -52,7 +56,7 @@ export function life(api){
   for(let k=0;k<(K.chimneys||0);k++){
     const a=R()*Math.PI*2, r=R()*(R_OUT-30);
     const x=Math.cos(a)*r, z=Math.sin(a)*r;
-    const h=roofAt(x,z);if(h<5)continue;
+    const h=house(x,z);if(!h)continue;
     statics.push(box(x,h,z,1.1,1.8,1.1,wood));
     for(let i=0;i<3;i++){
       const p=new THREE.Mesh(new THREE.SphereGeometry(1.0+R()*1.1,6,5),smokeM);
@@ -110,7 +114,7 @@ export function life(api){
   for(let k=0;k<(K.burning||0);k++){
     const a=R()*Math.PI*2, r=(0.4+R()*0.6)*(R_OUT-40);
     const x=Math.cos(a)*r, z=Math.sin(a)*r;
-    const h=roofAt(x,z);if(h<5)continue;
+    const h=house(x,z);if(!h)continue;
     warStatics.push(box(x,h-2.4,z,4+R()*5,3.2,4+R()*5,charM));   // the roof fallen in
     for(let i=0;i<3;i++){                                      // the rafters left standing
       const b=box(x+(R()-0.5)*5,h-1,z+(R()-0.5)*5,0.4,2.6+R()*2.6,0.4,charM);
@@ -125,7 +129,7 @@ export function life(api){
   for(let k=0;k<(K.damaged||0);k++){
     const a=R()*Math.PI*2, r=(0.35+R()*0.65)*(R_OUT-30);
     const x=Math.cos(a)*r, z=Math.sin(a)*r;
-    const h=roofAt(x,z);if(h<4)continue;
+    const h=house(x,z);if(!h)continue;
     warStatics.push(box(x+(R()-0.5)*4,h-1.8,z+(R()-0.5)*4,3+R()*4,2.4,3+R()*4,charM));
     spill(x,z,3,false);
   }

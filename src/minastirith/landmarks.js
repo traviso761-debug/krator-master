@@ -4,7 +4,7 @@
 //
 // None of this appears in any other city, so it travels with this page rather than living in the shared
 // engine, and src/minastirith/main.js hands it to build() as ctx.models.
-import { mkRng } from '../core/rng.js';
+import { mkRng, makeNoise } from '../core/rng.js';
 
 export function landmarks(api){
   const {THREE,ctx,animHooks,scene,nightF,hour,box,group,gh,mergeParts}=api;
@@ -12,213 +12,209 @@ export function landmarks(api){
 
   keel(L,x,z){
     // ---- the rock the city is built round ----
-    // "A tall bastion of rock, whose sheer front looks east": a shoulder of Mindolluin that comes out
-    // through the middle of the city, level with the Citadel the whole way, and stops dead in mid-air over
-    // the lower circles with its point overhanging. The seven circles are horseshoes because of it.
+    // "A vast pier of rock whose huge out-thrust bulk divided in two all the circles of the City save the
+    // first... a towering bastion of stone, its edge sharp as a ship-keel facing east. Up it rose, even to the
+    // level of the topmost circle, and there was crowned by a battlement; so that those in the Citadel might,
+    // like mariners in a mountainous ship, look from its peak sheer down upon the Gate seven hundred feet
+    // below." (The Return of the King, v.1.)
     //
-    // Every picture of the place agrees on the one thing that matters and that a heightfield cannot do: it
-    // is a BLADE. One unbroken sheer face on each side, smooth, fluted vertically, coming to a point - not
-    // a ridge, and not a row of crags, which is what the first two versions of this were and why they read
-    // as rubble tipped through the middle of the city. So the faces are one continuous mesh built to the
-    // same half-width function the terrain uses (keel_half in tools/make-minastirith.py), the striations
-    // are thin flutes laid on it, and the prow leans out over its own foot.
-    const A=L.turn||0, TOP=L.top||286, W=L.width||80, EAST=L.east||450, WEST=L.west||-1100;
+    // So: in plan it is a ship's bow - wide where it comes out of the Citadel, drawing in along a curve to a
+    // point, so that what faces east is an edge and not an end. Its top is the Citadel's own pavement carried
+    // out to that point, with a battlement along both edges that meets at it. The stem leans out over its
+    // own foot, so the point hangs over the court behind the Great Gate. It rises out of the Citadel; the
+    // western circles back onto the mountain, not onto the rock.
+    //
+    // Earlier versions got the one thing wrong that matters: the east end was a thirty-metre wall with a
+    // platform on it, so from the Pelennor it read as a causeway; the faces were boxes stood against a slab,
+    // which read as a row of grey skyscrapers; and the rock ran a kilometre west as a wall across open ground,
+    // cutting the western circles in two a hundred and fifty metres over their roofs.
+    // Now the faces are one mesh, fluted and weathered by displacement and vertex colour rather than by
+    // things stood in front of it, and the plan is keel_half in tools/make-minastirith.py, exactly.
+    const A=L.turn||0, TOP=L.top||286, HALF=(L.width||120)/2, EAST=L.east||450, ROOT=L.root||160,
+      WEST=L.west||-160, LEAN=L.lean||60;
     const parts=[], KR=mkRng(1447);
-    const rock=new THREE.MeshLambertMaterial({color:0x7c7972,flatShading:true});
-    const dark=new THREE.MeshLambertMaterial({color:0x5f5d58,flatShading:true});
-    const pale=new THREE.MeshLambertMaterial({color:0x928d84,flatShading:true});
     const stone=new THREE.MeshLambertMaterial({color:0xe6e0cd,flatShading:true});
-    const shadow=new THREE.MeshLambertMaterial({color:0x3f3d39});
+    const shadow=new THREE.MeshLambertMaterial({color:0x2e2c29});
     const at=(u,v,y)=>[x+u*Math.cos(A)-v*Math.sin(A),y,z+u*Math.sin(A)+v*Math.cos(A)];
 
-    // half the width of the blade, its foot, and its crest, along the run
-    const HW=u=>{const t=Math.max(0,Math.min(1,(u-120)/(EAST-120)));
-      let h=W/2*(1-0.62*t*t);
-      if(u<-520)h+=Math.min(60,(-520-u)*0.09);
-      return h;};
-    const FOOT=u=>26+150*(1-Math.max(0,Math.min(1,(u-WEST)/(EAST-WEST))));
-    const CREST=u=>TOP+3*Math.sin(u*0.0062)+2*Math.sin(u*0.017);
-    // the overhang: over the last hundred metres the top edge stands out past the foot, so the point of the
-    // rock hangs over the circles under it instead of sitting on a slope
-    const OVER=u=>{const t=Math.max(0,Math.min(1,(u-(EAST-120))/120));return 74*t*t;};
+    // half the width of the top, along the run (keel_half); the foot is battered out an eighth past it
+    const HW=u=>{if(u>EAST||u<WEST)return 0;
+      if(u>ROOT){const t=(u-ROOT)/(EAST-ROOT);return HALF*(1-t*t);}
+      return HALF;};
+    const BAT=1.15;
+    // the lean of the stem: over the last hundred and sixty metres the top stands out past the foot
+    const OVER=u=>{const t=Math.max(0,Math.min(1,(u-(EAST-160))/160));return LEAN*t*t;};
+    const CREST=()=>TOP;
 
     // ---- the faces, as one mesh ----
-    {
-      const N=120,P=[],NR=[],IDX=[];
-      const push=(p,n)=>{P.push(p[0],p[1],p[2]);NR.push(n[0],n[1],n[2]);return P.length/3-1;};
-      const cols=[];                                   // [sd][i] = {foot, crest} vertex indices
-      for(const sd of [-1,1]){
-        const c=[];
-        for(let i=0;i<=N;i++){
-          const u=WEST+(EAST-WEST)*(i/N), w=HW(u), f=FOOT(u), cr=CREST(u);
-          const nx=Math.sin(A)*0, nz=0;                 // the face normal, turned with the rock
-          const n=[Math.sin(A)*sd,0.06,Math.cos(A)*sd];
-          const nl=Math.hypot(n[0],n[1],n[2]);n[0]/=nl;n[1]/=nl;n[2]/=nl;
-          c.push({f:push(at(u,sd*w,f-40),n),c:push(at(u+OVER(u),sd*w,cr),n)});
-        }
-        cols.push(c);
-      }
-      for(let q=0;q<2;q++){const c=cols[q],flip=q===0;
-        for(let i=0;i<N;i++){
-          const a=c[i],b=c[i+1];
-          if(flip)IDX.push(a.f,b.f,b.c, a.f,b.c,a.c);
-          else    IDX.push(a.f,b.c,b.f, a.f,a.c,b.c);
-        }}
-      // the top of it: bare rock east of the Citadel, and the court's own pavement west of that
-      for(let i=0;i<N;i++){
-        const l0=cols[0][i].c,l1=cols[0][i+1].c,r0=cols[1][i].c,r1=cols[1][i+1].c;
-        IDX.push(l0,r0,r1, l0,r1,l1);
-      }
-      // the end cap under the point
-      {const a=cols[0][N],b=cols[1][N];IDX.push(a.f,b.f,b.c, a.f,b.c,a.c);}
-      const g=new THREE.BufferGeometry();
-      g.setAttribute('position',new THREE.Float32BufferAttribute(P,3));
-      g.setAttribute('normal',new THREE.Float32BufferAttribute(NR,3));
-      g.setIndex(IDX);
-      const face=new THREE.Mesh(g,rock);face.castShadow=true;face.receiveShadow=true;
-      face.userData.wireCat='landmark';parts.push(face);
-    }
+    // Columns along the run, rows down the face. Every vertex between the top edge and the foot is pushed in
+    // or out along the face: mostly by waves that run up and down it, which is what a cliff of this stuff
+    // looks like and what gives it its scale, with a little bedding across. The top row is not moved, so the
+    // battlement sits on a clean edge, and the displacement dies away towards the stem, where the two faces
+    // meet and would otherwise go through each other.
+    const rows=12, cols=[];
+    for(let u=WEST;u<EAST;u+=u>ROOT?3:4.5)cols.push(u);cols.push(EAST);
+    // Noise stretched sixfold up the face, so it runs in irregular flutes rather than in the regular ribs a
+    // sum of sines gave, which read as corrugated sheet.
+    const NZ=makeNoise(mkRng(4012));
+    const flute=(u,sd,y)=>7*(NZ.fbm(u/10+sd*50,y/62)-0.44)+1.6*(NZ.vn(u/2.6+sd*9,y/22)-0.5);
+    const P=[],CL=[],IDX=[];
+    const base=new THREE.Color(0xb3ada1),dark=new THREE.Color(0x6f6a61),pale=new THREE.Color(0xd8d2c4),grime=new THREE.Color(0x5b5750),c=new THREE.Color();
+    const footY=u=>{const w=HW(u)*BAT+2;return Math.min(gh(...at(u,w,0).filter((_,q)=>q!==1)),gh(...at(u,-w,0).filter((_,q)=>q!==1)))-14;};
+    const idx=[[],[]];
+    for(const [s,sd] of [[0,-1],[1,1]]){
+      for(let i=0;i<cols.length;i++){
+        const u=cols[i],w=HW(u),fy=Math.min(footY(u),TOP-20),col=[];
+        const damp=Math.min(1,w/14);
+        for(let r=0;r<=rows;r++){
+          const k=r/rows;                                   // 0 at the top edge, 1 at the foot
+          const y=TOP+(fy-TOP)*k, uu=u+OVER(u)*(1-k), ww=w+(w*BAT-w)*k;
+          const d=(r===0?0:1)*damp*(flute(u,sd,y)*(0.5+0.5*Math.min(1,k*3))+0.9*Math.sin(y*0.37+u*0.02)*k);
+          const [px,py,pz]=at(uu,sd*(ww+d),y);P.push(px,py,pz);
+          // colour: pale near the top, where the weather washes it; stained in streaks down from the parapet;
+          // bedded; and grimed at the foot where the city's smoke and the street's dirt reach it
+          const streak=Math.max(0,NZ.fbm(u/7+sd*30,y/90)*2.2-1.05);
+          const bed=0.5+0.5*Math.sin(y*0.21+Math.sin(u*0.013)*2);
+          c.copy(base).lerp(pale,0.35*(1-k)*(1-streak)).lerp(dark,0.22*streak*(0.3+k)+0.08*bed)
+            .lerp(grime,0.45*Math.max(0,(k-0.72)/0.28));
+          c.multiplyScalar(0.92+0.14*NZ.vn(u/3+sd*20,y/5));
+          CL.push(c.r,c.g,c.b);col.push(P.length/3-1);}
+        idx[s].push(col);}}
+    for(let s=0;s<2;s++){const C2=idx[s];
+      for(let i=0;i<C2.length-1;i++)for(let r=0;r<rows;r++){
+        const a=C2[i][r],b=C2[i+1][r],c2=C2[i+1][r+1],d2=C2[i][r+1];
+        if(s===0)IDX.push(a,b,c2,a,c2,d2);else IDX.push(a,c2,b,a,d2,c2);}}
+    // the top: the Citadel's pavement carried out to the point, paler than the faces
+    {const top0=P.length/3;
+     const pave=new THREE.Color(0xcbc5b5);
+     for(let i=0;i<cols.length;i++)for(const s of [0,1]){const v=idx[s][i][0];P.push(P[v*3],P[v*3+1],P[v*3+2]);
+       CL.push(pave.r,pave.g,pave.b);}
+     for(let i=0;i<cols.length-1;i++){const l0=top0+i*2,r0=l0+1,l1=l0+2,r1=l0+3;IDX.push(l0,r0,r1,l0,r1,l1);}
+     // and the end under the shoulder, which nobody sees but which keeps the solid closed
+     const a=idx[0][0],b=idx[1][0];IDX.push(a[0],a[rows],b[rows],a[0],b[rows],b[0]);}
+    const g=new THREE.BufferGeometry();
+    g.setAttribute('position',new THREE.Float32BufferAttribute(P,3));
+    g.setAttribute('color',new THREE.Float32BufferAttribute(CL,3));
+    g.setIndex(IDX);g.computeVertexNormals();
+    const face=new THREE.Mesh(g,new THREE.MeshLambertMaterial({vertexColors:true,flatShading:true,side:THREE.DoubleSide}));
+    face.castShadow=true;face.receiveShadow=true;face.userData.wireCat='landmark';
 
-    // ---- the striations ----
-    // Thin flutes down the face, which is what a cliff of this stuff actually looks like and what tells the
-    // eye its scale. Narrow and tall: anything chunky here turns back into rubble.
-    for(let k=0;k<340;k++){
-      const u=WEST+(EAST-WEST)*Math.pow(KR(),0.7), w=HW(u), f=FOOT(u), cr=CREST(u);
-      if(cr-f<24)continue;
-      const sd=KR()<0.5?-1:1;
-      const y0=f+KR()*(cr-f)*0.35, hh=(cr-y0)*(0.45+KR()*0.55);
-      const bw=3+KR()*13, bd=1.6+KR()*3.4;
-      const m=new THREE.Mesh(new THREE.BoxGeometry(bw,hh,bd).translate(0,hh/2,0),
-        KR()<0.34?dark:(KR()<0.6?pale:rock));
-      const [px,py,pz]=at(u+OVER(u)*((y0-f)/Math.max(1,cr-f)),sd*(w+bd*0.4),y0);
-      m.position.set(px,py,pz);m.rotation.set(0,-A+(KR()-0.5)*0.05,(KR()-0.5)*0.03);parts.push(m);
-    }
-    // a handful of bigger fracture slabs, and the scree at the foot
-    for(let k=0;k<26;k++){
-      const u=WEST+(EAST-WEST)*KR(), w=HW(u), f=FOOT(u), cr=CREST(u);
-      if(cr-f<50)continue;
-      const sd=KR()<0.5?-1:1, hh=(cr-f)*(0.3+KR()*0.4);
-      const m=new THREE.Mesh(new THREE.BoxGeometry(18+KR()*40,hh,5+KR()*7).translate(0,hh/2,0),dark);
-      const [px,py,pz]=at(u,sd*(w+3),f+KR()*(cr-f)*0.3);
-      m.position.set(px,py,pz);m.rotation.set(0,-A+(KR()-0.5)*0.12,sd*(0.03+KR()*0.05));parts.push(m);
-    }
-    for(let k=0;k<180;k++){
-      const u=WEST+(EAST-WEST)*KR(), w=HW(u), f=FOOT(u);
-      const sd=KR()<0.5?-1:1, sz=2+KR()*7;
-      const m=new THREE.Mesh(new THREE.BoxGeometry(sz*1.6,sz,sz*1.3),KR()<0.5?dark:rock);
-      const [px,py,pz]=at(u+(KR()-0.5)*20,sd*(w+2+KR()*9),f+KR()*14);
-      m.position.set(px,py,pz);m.rotation.set(KR(),KR()*3,KR());parts.push(m);
-    }
-
-    // ---- the prow ----
-    // Under the point, where the rock hangs over the circles: the underside of the overhang, and the
-    // parapet on top of it that everyone who has ever described this city has stood on.
-    {
-      const cr=CREST(EAST), w=HW(EAST);
-      const lip=new THREE.Mesh(new THREE.BoxGeometry(56,10,w*2.1),dark);
-      const [lx,ly,lz]=at(EAST+OVER(EAST)-20,0,cr-13);
-      lip.position.set(lx,ly,lz);lip.rotation.set(0,-A,0.05);parts.push(lip);
-      const walk=new THREE.Mesh(new THREE.BoxGeometry(60,3,w*1.9),stone);
-      const [wx,wy,wz]=at(EAST+OVER(EAST)-26,0,cr);walk.position.set(wx,wy,wz);walk.rotation.y=-A;parts.push(walk);
-      for(let k=0;k<15;k++){
-        const th=k/14*Math.PI-Math.PI/2;
-        const [mx,my,mz]=at(EAST+OVER(EAST)-26+Math.sin(th)*30,Math.cos(th)*w*0.92,cr+1.5);
-        parts.push(box(mx,my,mz,4.5,6,4.5,stone));
-      }
-    }
+    // ---- the battlement ----
+    // Along both edges of the top from where the rock leaves the Citadel to the point, where the two meet:
+    // a parapet with merlons, set a metre and a half in from the edge.
+    const edge=(u0,u1)=>{
+      for(const sd of [-1,1]){let prev=null;
+        for(let u=u0;u<=u1+0.01;u+=4){const uu=Math.min(u,EAST),w=Math.max(0,HW(uu)-1.5);
+          const p=at(uu+OVER(uu),sd*w,TOP);
+          if(prev){const dx=p[0]-prev[0],dz=p[2]-prev[2],len=Math.hypot(dx,dz);if(len>0.3){
+            const m=new THREE.Mesh(new THREE.BoxGeometry(len+0.4,1.5,1.1),stone);
+            m.position.set((p[0]+prev[0])/2,TOP+0.75,(p[2]+prev[2])/2);m.rotation.y=-Math.atan2(dz,dx);parts.push(m);
+            const me=new THREE.Mesh(new THREE.BoxGeometry(1.6,1.2,1.2),stone);
+            me.position.set(p[0],TOP+2.1,p[2]);me.rotation.y=-Math.atan2(dz,dx);parts.push(me);}}
+          prev=p;}}};
+    edge(ROOT,EAST);
+    // a turret where the battlement meets at the point
+    {const [tx,,tz]=at(EAST+OVER(EAST)-5,0,0);
+     const t=new THREE.Mesh(new THREE.CylinderGeometry(3.2,3.6,4,8),stone);t.position.set(tx,TOP+2,tz);parts.push(t);}
 
     // ---- the tunnels ----
-    // Where the Way crosses, at the level of the tier it belongs to and out at the face of the rock.
+    // Where the Way goes through, at the level of the tier it belongs to, on the face at that height.
     for(const [u,tier] of (L.tunnels||[])){
-      const y=(L.base||76)+tier*(L.lift||30), tw=HW(u);
+      const y=(L.base||76)+tier*(L.lift||30), fy=footY(u), k=Math.max(0,Math.min(1,(y-TOP)/(fy-TOP))), w=HW(u)*(1+(BAT-1)*k);
       for(const sd of [-1,1]){
-        const [px,py,pz]=at(u,sd*(tw+2),y);
-        const mouth=new THREE.Mesh(new THREE.CylinderGeometry(9,9,16,10,1,true).rotateZ(Math.PI/2),shadow);
-        mouth.position.set(px,py+9,pz);mouth.rotation.y=-A+Math.PI/2;parts.push(mouth);
-        const arch=new THREE.Mesh(new THREE.BoxGeometry(6,26,26),stone);
-        arch.position.set(px,py+13,pz);arch.rotation.y=-A+Math.PI/2;parts.push(arch);
+        const [px,py,pz]=at(u+OVER(u)*(1-k),sd*(w+1),y);
+        const mouth=new THREE.Mesh(new THREE.CylinderGeometry(6,6,10,10,1,true).rotateZ(Math.PI/2),shadow);
+        mouth.position.set(px,py+6,pz);mouth.rotation.y=-A+Math.PI/2;parts.push(mouth);
+        const arch=new THREE.Mesh(new THREE.BoxGeometry(4,17,17),stone);
+        arch.position.set(px+Math.sin(A)*sd*0.5,py+8.5,pz);arch.rotation.y=-A+Math.PI/2;parts.push(arch);
       }
     }
 
-    // ---- the wall along the top ----
-    // The Citadel's own wall runs out along the crest of the rock to the prow, which is what makes the
-    // seventh circle a horseshoe rather than a ring.
-    for(let i=0;i<30;i++){
-      const u=EAST-40-i*18;
-      if(Math.hypot(...at(u,0,0).filter((_,q)=>q!==1))<150)continue;
-      const w=HW(u), cr=CREST(u);
-      for(const sd of [-1,1]){
-        const [px,py,pz]=at(u,sd*(w-3),cr);
-        const b=box(px,py,pz,19,13,7,stone);b.rotation.y=-A;parts.push(b);
-        if(i%5===0){const t2=box(px,py,pz,12,20,12,stone);t2.rotation.y=-A;parts.push(t2);}
-      }
+    // scree at the foot, sparse: the rock is dressed where the city is built against it
+    const screeM=new THREE.MeshLambertMaterial({color:0x8f897e,flatShading:true});
+    for(let k=0;k<70;k++){
+      const u=ROOT+(EAST-ROOT)*KR(), w=HW(u)*BAT, sd=KR()<0.5?-1:1, sz=1.5+KR()*4;
+      const [px,,pz]=at(u,sd*(w+1.5+KR()*5),0);
+      const m=new THREE.Mesh(new THREE.DodecahedronGeometry(sz,0),screeM);
+      m.position.set(px,gh(px,pz)+sz*0.3,pz);m.rotation.set(KR()*3,KR()*3,KR()*3);parts.push(m);
     }
+
+    // what an event needs to put somebody on top of it (src/minastirith/events.js)
+    ctx.keel={x,z,A,EAST,TOP,HW,CREST,OVER,at,tip:EAST+OVER(EAST)};
 
     const byMat=new Map();
-    for(const m of parts){if(m.isBufferGeometry)continue;let a=byMat.get(m.material);if(!a){a=[];byMat.set(m.material,a);}a.push(m);}
-    const merged=[];for(const [mat,list] of byMat)merged.push(mergeParts(list,mat));
+    for(const m of parts){let a=byMat.get(m.material);if(!a){a=[];byMat.set(m.material,a);}a.push(m);}
+    const merged=[face];for(const [mat,list] of byMat)merged.push(mergeParts(list,mat));
     return group(L,merged);},
 
   whitetower(L,x,z){
     // ---- the Tower of Ecthelion ----
-    // Fifty fathoms of white stone on the Citadel, and the Citadel is seven hundred feet over the Pelennor,
-    // so the standard at the top of it stands a thousand feet above the fields. What makes it read at any
-    // distance is not the height - the city is a kilometre across and the tower is a hundred metres - but
-    // that it is ten times as tall as it is wide, whiter than anything else on the hill, and that it does
-    // not stop flat: it corbels out over the shaft, steps back twice and goes to a point.
-    const H=L.height||118,base=L.base!==undefined?L.base:gh(x,z),parts=[];
-    const W=L.width||H*0.1;                             // half the width of the shaft at its foot
-    const white=new THREE.MeshLambertMaterial({color:0xf6f2e6});
-    const shade=new THREE.MeshLambertMaterial({color:0xdfd9c7});
-    const lead=new THREE.MeshLambertMaterial({color:0x6c7278});
+    // "Shining like a spike of pearl and silver, tall and fair and shapely, and its pinnacle glittered as if it
+    // were wrought of crystals": fifty fathoms of white stone on the Citadel, which is seven hundred feet over the
+    // Pelennor, so the standard at the top stands a thousand feet above the fields. What makes it read at any
+    // distance is that it is far taller than it is wide and whiter than anything else on the hill - and that it
+    // does not stop flat: a stepped plinth, a shaft in courses with pilasters up its angles and lancets in its
+    // faces, a machicolated gallery near the top, a lighter belfry stage with pinnacles at its corners, and a
+    // spire to a silver point.
+    const H=L.height||91,base=L.base!==undefined?L.base:gh(x,z),parts=[];
+    const RW=L.width||7.6;                              // the shaft's radius at its foot
+    const white=new THREE.MeshLambertMaterial({color:0xf5f1e6});
+    const shade=new THREE.MeshLambertMaterial({color:0xddd7c6});
     const dark=new THREE.MeshLambertMaterial({color:0x1b1a1f});
-    const oct=(w,h,mat)=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(0.5,0.5,1,8,1).rotateY(Math.PI/8).translate(0,0.5,0),mat);
-      m.scale.set(w/0.9239,h,w/0.9239);return m;};
+    const lead=new THREE.MeshLambertMaterial({color:0x6c7278});
+    const silver=new THREE.MeshPhongMaterial({color:0xe4ebf2,specular:0xffffff,shininess:140,emissive:0x2a2e34});
+    const k=H/91;                                       // everything below is laid out for fifty fathoms
+    const oct=(r,h,mat,y)=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,8,1).rotateY(Math.PI/8).translate(0,h/2,0),mat);m.position.set(x,base+y,z);parts.push(m);return m;};
+    const taper=(r0,r1,h,mat,y)=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(r1,r0,h,8,1).rotateY(Math.PI/8).translate(0,h/2,0),mat);m.position.set(x,base+y,z);parts.push(m);return m;};
+    const ring=(n,r,fn)=>{for(let i=0;i<n;i++){const a=i/n*Math.PI*2;fn(a,x+Math.cos(a)*r,z+Math.sin(a)*r);}};
+    const face=(m,a)=>{m.rotation.y=-a;return m;};
 
-    // the court it stands on, and the plinth
-    const court=oct(W*3.4,H*0.03,shade);court.position.set(x,base,z);parts.push(court);
-    const plinth=oct(W*2.5,H*0.055,shade);plinth.position.set(x,base+H*0.03,z);parts.push(plinth);
-
-    // the shaft: an octagon tapering a fifth over its height, in courses
-    const FOOT=base+H*0.085, SH=H*0.78, SEG=11;
-    for(let k=0;k<SEG;k++){
-      const t0=k/SEG,t1=(k+1)/SEG;
-      const w=W*2*(1-0.2*t0);
-      const seg=oct(w,SH*(t1-t0)*1.02,k%4===3?shade:white);
-      seg.position.set(x,FOOT+SH*t0,z);parts.push(seg);
-    }
-    // the flutes up each face, and the slit windows, which are the only openings in the whole thing
-    for(let k=0;k<8;k++){
-      const a=k/8*Math.PI*2+Math.PI/8;
-      const b=new THREE.Mesh(new THREE.BoxGeometry(W*0.22,SH*0.97,W*0.3).translate(0,SH*0.485,0),white);
-      b.position.set(x+Math.cos(a)*W*0.92,FOOT,z+Math.sin(a)*W*0.92);b.rotation.y=-a;parts.push(b);
-      for(let w2=0;w2<7;w2++){
-        const win=new THREE.Mesh(new THREE.BoxGeometry(W*0.1,SH*0.045,W*0.05),dark);
-        win.position.set(x+Math.cos(a)*W*1.06,FOOT+SH*(0.1+w2*0.12),z+Math.sin(a)*W*1.06);
-        win.rotation.y=-a;parts.push(win);
-      }
-    }
-
-    // the crown: out over the shaft, back in twice, and a point on top
-    const CW=FOOT+SH;
-    {const c1=oct(W*2.6,H*0.03,shade);c1.position.set(x,CW,z);parts.push(c1);
-     const c2=oct(W*2.9,H*0.025,white);c2.position.set(x,CW+H*0.03,z);parts.push(c2);
-     const c3=oct(W*2.1,H*0.045,white);c3.position.set(x,CW+H*0.055,z);parts.push(c3);
-     const c4=oct(W*1.5,H*0.03,shade);c4.position.set(x,CW+H*0.1,z);parts.push(c4);}
-    for(let k=0;k<8;k++){
-      const a=k/8*Math.PI*2+Math.PI/8;
-      const p=new THREE.Mesh(new THREE.ConeGeometry(W*0.2,H*0.11,6),white);
-      p.position.set(x+Math.cos(a)*W*1.3,CW+H*0.09,z+Math.sin(a)*W*1.3);parts.push(p);
-    }
-    const spike=new THREE.Mesh(new THREE.ConeGeometry(W*0.72,H*0.17,8).translate(0,H*0.085,0),lead);
-    spike.position.set(x,CW+H*0.13,z);spike.rotation.y=Math.PI/8;parts.push(spike);
-    const staff=box(x,CW+H*0.3,z,W*0.07,H*0.16,W*0.07,lead);parts.push(staff);
+    // the plinth, in three steps
+    oct(RW*1.9,2*k,shade,0);oct(RW*1.62,3*k,white,2*k);oct(RW*1.36,3.5*k,shade,5*k);
+    // the shaft: tapering a little, in courses
+    const S0=8.5*k,SH=56*k;
+    taper(RW*1.08,RW*0.94,SH,white,S0);
+    for(let c=1;c<6;c++)oct(RW*(1.1-0.14*c/6)+0.25,0.7*k,shade,S0+SH*c/6);
+    // pilasters up the eight angles, and lancets in the faces between them, rising in tiers
+    ring(8,RW*1.02,(a,px,pz)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(1.1*k,SH,1.1*k).translate(0,SH/2,0),white);
+      m.position.set(px,base+S0,pz);face(m,a);parts.push(m);});
+    ring(8,RW*1.0,(a0,_x,_z)=>{const a=a0+Math.PI/8;
+      for(let t=0;t<6;t++){if((t+Math.round(a0*4/Math.PI))%2)continue;
+        const y=S0+SH*(0.08+t*0.155),rr=RW*(1.07-0.12*t/6);
+        const w=new THREE.Mesh(new THREE.BoxGeometry(0.5,4.2*k,1.0*k),dark);w.position.set(x+Math.cos(a)*rr,base+y,z+Math.sin(a)*rr);face(w,a);parts.push(w);
+        const arch=new THREE.Mesh(new THREE.ConeGeometry(0.62*k,1.1*k,4).rotateY(Math.PI/4),dark);arch.scale.set(0.5,1,1);
+        arch.position.set(x+Math.cos(a)*rr,base+y+2.6*k,z+Math.sin(a)*rr);face(arch,a);parts.push(arch);}});
+    // the gallery: corbels under a projecting walk, and a battlement round it
+    const G0=S0+SH;
+    ring(16,RW*1.02,(a,px,pz)=>{for(let c=0;c<3;c++){const m=new THREE.Mesh(new THREE.BoxGeometry(1.2+c*0.9,0.9*k,0.9*k),shade);
+      m.position.set(x+Math.cos(a)*(RW*0.98+0.4+c*0.45),base+G0-2.4*k+c*0.8*k,z+Math.sin(a)*(RW*0.98+0.4+c*0.45));face(m,a);parts.push(m);}});
+    oct(RW*1.36,1.3*k,white,G0);
+    ring(24,RW*1.3,(a,px,pz)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(1.5*k,1.9*k,0.8*k),white);m.position.set(px,base+G0+1.3*k+0.95*k,pz);face(m,a+Math.PI/2);parts.push(m);});
+    // the belfry stage: set back, open in each face, pinnacles at its angles
+    const B0=G0+1.3*k,BH=10*k;
+    oct(RW*0.9,BH,white,B0);
+    ring(8,RW*0.9,(a0)=>{const a=a0+Math.PI/8,rr=RW*0.87;const w=new THREE.Mesh(new THREE.BoxGeometry(0.5,6*k,2.2*k),dark);
+      w.position.set(x+Math.cos(a)*rr,base+B0+4.6*k,z+Math.sin(a)*rr);face(w,a);parts.push(w);});
+    oct(RW*0.98,0.9*k,shade,B0+BH);
+    ring(8,RW*0.92,(a,px,pz)=>{const m=new THREE.Mesh(new THREE.ConeGeometry(0.6*k,5*k,6).translate(0,2.5*k,0),white);m.position.set(px,base+B0+BH+0.9*k,pz);parts.push(m);
+      const f=new THREE.Mesh(new THREE.SphereGeometry(0.28*k,6,4),silver);f.position.set(px,base+B0+BH+6*k,pz);parts.push(f);});
+    // the spire, and its point
+    const P0=B0+BH+0.9*k,PH=H-P0-3*k;
+    {const m=new THREE.Mesh(new THREE.ConeGeometry(RW*0.8,PH,8).rotateY(Math.PI/8).translate(0,PH/2,0),white);m.position.set(x,base+P0,z);parts.push(m);}
+    ring(8,RW*0.42,(a,px,pz)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(0.35*k,PH*0.8,0.35*k).translate(0,PH*0.4,0),shade);m.position.set(px,base+P0,pz);
+      m.rotation.set(Math.sin(a)*0.18,0,-Math.cos(a)*0.18);parts.push(m);});
+    {const m=new THREE.Mesh(new THREE.OctahedronGeometry(1.1*k,0),silver);m.scale.set(1,2.2,1);m.position.set(x,base+H-1.8*k,z);parts.push(m);}
+    const staffTop=H+9*k;
+    {const s=box(x,base+H,z,0.3*k,9*k,0.3*k,lead);parts.push(s);}
 
     // the banner: black, because Denethor is Steward and there is no king to fly a white tree
     const flagM=new THREE.MeshLambertMaterial({color:0x14131a,side:THREE.DoubleSide});
-    const flag=new THREE.Mesh(new THREE.PlaneGeometry(H*0.09,H*0.05,6,1),flagM);
-    flag.position.set(x+H*0.045,CW+H*0.38,z);scene.add(flag);
+    const FW=H*0.09,FH=H*0.05;
+    const flag=new THREE.Mesh(new THREE.PlaneGeometry(FW,FH,6,1),flagM);
+    flag.position.set(x+FW/2,base+staffTop-FH/2-0.3,z);scene.add(flag);
     const pos=flag.geometry.attributes.position,base0=pos.array.slice();
+    // the events swap it for the King's banner in peace, and break it out at the coronation (events.js)
+    ctx.towerFlag={mesh:flag,mat:flagM,FW,FH};
 
     const byMat=new Map();
     for(const m of parts){let a=byMat.get(m.material);if(!a){a=[];byMat.set(m.material,a);}a.push(m);}
@@ -227,44 +223,119 @@ export function landmarks(api){
     animHooks.push(now=>{
       const t=now*0.0016;
       for(let i=0;i<pos.count;i++){const px=base0[i*3];
-        pos.array[i*3+2]=base0[i*3+2]+Math.sin(t+px*0.55)*Math.max(0,px+H*0.05)*0.16;}
+        pos.array[i*3+2]=base0[i*3+2]+Math.sin(t+px*0.55)*Math.max(0,px+FW/2)*0.16;}
       pos.needsUpdate=true;
     });
     return g;},
 
-  whitetree(L,x,z){   // the Court of the Fountain: the sward, the fountain, and the dead tree standing in it
-    const base=L.base!==undefined?L.base:gh(x,z),parts=[],TR=mkRng(2931);
-    const white=new THREE.MeshLambertMaterial({color:0xe6e0ce});
+  kingshall(L,x,z){
+    // ---- the Hall of the Kings ----
+    // In the book the hall is inside the Tower; every picture since has put it at the Tower's foot, and so
+    // does this: a long hall against the Tower's west face, its door on the Court of the Fountain. Inside,
+    // "tall pillars of black marble" and the kings in stone between them, and at the far end the throne under
+    // its canopy with the Steward's black chair on the lowest step. From outside that is: a high nave under a
+    // lead roof with a clerestory, lower aisles either side lit by deep windows between buttresses, and a
+    // portico of six columns under a pediment at the west end, with the great doors behind it.
+    const base=L.base!==undefined?L.base:gh(x,z),A=L.turn||0,LEN=L.length||56,NW=L.nave||14,AW=L.aisle||8;
+    const parts=[];
+    const white=new THREE.MeshLambertMaterial({color:0xefeadd});
+    const shade=new THREE.MeshLambertMaterial({color:0xd6d0bf});
+    const dark=new THREE.MeshLambertMaterial({color:0x1d1c21});
+    const lead=new THREE.MeshLambertMaterial({color:0x5f666d,flatShading:true});
+    const doorM=new THREE.MeshPhongMaterial({color:0x3a3a40,specular:0xaab0b8,shininess:40});
+    // u runs east along the hall (towards the Tower), v across it
+    const at=(u,v)=>[x+u*Math.cos(A)-v*Math.sin(A),z+u*Math.sin(A)+v*Math.cos(A)];
+    const blk=(u,v,y,lu,h,lv,mat)=>{const [px,pz]=at(u,v);const m=new THREE.Mesh(new THREE.BoxGeometry(lu,h,lv).translate(0,h/2,0),mat);m.position.set(px,base+y,pz);m.rotation.y=-A;parts.push(m);return m;};
+    const W0=-LEN/2,W1=LEN/2;
+    // podium and steps up to the portico
+    blk(0,0,0,LEN+4,1.6,NW+2*AW+4,shade);
+    for(let s=0;s<4;s++)blk(W0-4-s*1.6,0,0,1.6,1.6-s*0.4,NW+6,shade);
+    // the aisles, their windows and buttresses
+    const AH=13,NH=23;
+    for(const sd of [-1,1]){
+      blk(0,sd*(NW/2+AW/2),1.6,LEN,AH,AW,white);
+      blk(0,sd*(NW/2+AW/2),1.6+AH,LEN+0.8,0.8,AW+0.8,shade);
+      for(let i=0;i<7;i++){const u=W0+LEN*(i+0.5)/7;
+        blk(u,sd*(NW/2+AW+0.3),3.4,1.6,8.6,0.3,dark);
+        if(i<6)blk(W0+LEN*(i+1)/7,sd*(NW/2+AW+0.9),1.6,1.6,AH-1,1.8,shade);}
+      // the lean-to roof over the aisle
+      const [rx,rz]=at(0,sd*(NW/2+AW/2));const r=new THREE.Mesh(new THREE.BoxGeometry(LEN+1,0.6,AW*1.1),lead);
+      r.position.set(rx,base+1.6+AH+2.3,rz);r.rotation.set(0,-A,0);r.rotateX(-sd*0.42);parts.push(r);}
+    // the nave, its clerestory windows, and the roof over it
+    blk(0,0,1.6,LEN,NH,NW,white);
+    blk(0,0,1.6+NH,LEN+0.8,0.9,NW+0.8,shade);
+    for(const sd of [-1,1])for(let i=0;i<9;i++){const u=W0+LEN*(i+0.5)/9;blk(u,sd*(NW/2+0.15),1.6+AH+2.8,1.3,5,0.3,dark);}
+    {const RH=6.5,rw=Math.hypot(NW/2+1,RH);
+     for(const sd of [-1,1]){const [rx,rz]=at(0,sd*(NW/4+0.25));const r=new THREE.Mesh(new THREE.BoxGeometry(LEN+1.4,0.7,rw),lead);
+       r.position.set(rx,base+1.6+NH+0.9+RH/2,rz);r.rotation.set(0,-A,0);r.rotateX(sd*Math.atan2(RH,NW/2+1));parts.push(r);}
+     // the gable over the portico, as a solid wedge
+     const shape=new THREE.Shape();shape.moveTo(-(NW/2+AW*0.6),0);shape.lineTo(NW/2+AW*0.6,0);shape.lineTo(0,RH+1.2);shape.lineTo(-(NW/2+AW*0.6),0);
+     const ped=new THREE.Mesh(new THREE.ExtrudeGeometry(shape,{depth:2.2,bevelEnabled:false}),white);
+     const [px,pz]=at(W0-7.2,0);ped.position.set(px,base+1.6+NH-4.2,pz);ped.rotation.y=-A-Math.PI/2;parts.push(ped);}
+    // the portico: six columns, an entablature, and the doors behind
+    blk(W0-4.6,0,1.6+NH-5.6,9.2,1.6,NW+AW*1.2,shade);
+    for(let c=0;c<6;c++){const v=(c-2.5)*(NW+AW*1.1)/5.5;const [px,pz]=at(W0-8,v);
+      const col=new THREE.Mesh(new THREE.CylinderGeometry(0.85,1.0,NH-6.4,12).translate(0,(NH-6.4)/2,0),white);col.position.set(px,base+1.6+0.4,pz);parts.push(col);
+      const cap=new THREE.Mesh(new THREE.BoxGeometry(2.4,0.8,2.4),shade);cap.position.set(px,base+1.6+NH-6.2,pz);parts.push(cap);
+      const bs=new THREE.Mesh(new THREE.BoxGeometry(2.3,0.5,2.3),shade);bs.position.set(px,base+1.8,pz);parts.push(bs);}
+    blk(W0-0.3,0,1.6,0.8,12,7.5,doorM);
+    blk(W0-0.6,0,1.6+12,0.9,2.4,9,shade);
+    // the east end runs into the Tower, and a lower range behind the aisles on either side of it
+    blk(W1+2,0,1.6,4,NH-2,NW+2*AW,white);
+
+    const byMat=new Map();
+    for(const m of parts){let a=byMat.get(m.material);if(!a){a=[];byMat.set(m.material,a);}a.push(m);}
+    const merged=[];for(const [mat,list] of byMat){const g2=mergeParts(list,mat);g2.castShadow=true;g2.receiveShadow=true;merged.push(g2);}
+    return group(L,merged);},
+
+  whitetree(L,x,z){
+    // ---- the Court of the Fountain ----
+    // "A sweet fountain played in the morning sun, and a sward of bright green lay about it; but in the midst,
+    // drooping over the pool, stood a dead tree." The court in front of the Hall's door: a paved square, the
+    // sward laid in it, the pool with its jet, the tree leaning out over the water, benches, and the guard of
+    // the Citadel in black and silver at the Hall's door and by the tree.
+    const base=L.base!==undefined?L.base:gh(x,z),A=L.turn||0,parts=[],TR=mkRng(2931);
+    const S=L.size||[92,88];
+    const pave=new THREE.MeshLambertMaterial({color:0xe2dccb});
+    const joint=new THREE.MeshLambertMaterial({color:0xcfc8b5});
+    const white=new THREE.MeshLambertMaterial({color:0xefe9da});
     const bone=new THREE.MeshLambertMaterial({color:0xd9d3c4});
-    const sward=new THREE.MeshLambertMaterial({color:0x5f7a46});
-    const waterM=new THREE.MeshPhongMaterial({color:0xaecad8,specular:0xffffff,shininess:90,transparent:true,opacity:0.8});
-    // the court itself, walled round, and the pavement of it
-    const floor=new THREE.Mesh(new THREE.CylinderGeometry(72,72,1.2,40),white);
-    floor.position.set(x,base,z);parts.push(floor);
-    const grass=new THREE.Mesh(new THREE.CylinderGeometry(52,52,0.6,36),sward);
-    grass.position.set(x,base+1.1,z);parts.push(grass);
-    for(let k=0;k<36;k++){const a=k/36*Math.PI*2;
-      parts.push(box(x+Math.cos(a)*71,base+1,z+Math.sin(a)*71,3,2.6,3,white));}
-    // the fountain: a basin, a jet, and the spray coming off it
-    const basin=new THREE.Mesh(new THREE.CylinderGeometry(9,9.6,2.4,20),white);
-    basin.position.set(x,base+1.4,z);parts.push(basin);
-    const water=new THREE.Mesh(new THREE.CylinderGeometry(8.4,8.4,0.5,20),waterM);
-    water.position.set(x,base+3.3,z);parts.push(water);
-    const jet=new THREE.Mesh(new THREE.CylinderGeometry(0.5,0.9,7,8),waterM);
-    jet.position.set(x,base+6.6,z);scene.add(jet);
-    // the tree: dead, white, and left standing
-    const trunk=new THREE.Mesh(new THREE.CylinderGeometry(0.8,2.1,16,7).translate(0,8,0),bone);
-    trunk.position.set(x+13,base+2,z+2);parts.push(trunk);
+    const sward=new THREE.MeshLambertMaterial({color:0x5c7a44});
+    const waterM=new THREE.MeshPhongMaterial({color:0x9cc0d2,specular:0xffffff,shininess:90,transparent:true,opacity:0.85});
+    const at=(u,v)=>[x+u*Math.cos(A)-v*Math.sin(A),z+u*Math.sin(A)+v*Math.cos(A)];
+    const blk=(u,v,y,lu,h,lv,mat)=>{const [px,pz]=at(u,v);const m=new THREE.Mesh(new THREE.BoxGeometry(lu,h,lv).translate(0,h/2,0),mat);m.position.set(px,base+y,pz);m.rotation.y=-A;parts.push(m);return m;};
+    // the paving, with a border and a joint grid that gives it its scale
+    blk(0,0,0,S[0],0.5,S[1],pave);
+    for(let i=-4;i<=4;i++){blk(i*S[0]/9,0,0.5,0.35,0.06,S[1],joint);blk(0,i*S[1]/9,0.5,S[0],0.06,0.35,joint);}
+    // the sward, square, with the pool in the midst of it
+    const SW=S[1]*0.58;
+    blk(0,0,0.5,SW,0.35,SW,sward);
+    blk(0,0,0.5,SW+1.6,0.55,1.2,white);blk(0,0,0.5,1.2,0.55,SW+1.6,white);        // the paths across it, and its kerb
+    for(const sd of [-1,1]){blk(0,sd*(SW/2+0.4),0.5,SW+1.6,0.6,0.8,white);blk(sd*(SW/2+0.4),0,0.5,0.8,0.6,SW+1.6,white);}
+    // the pool and the jet
+    const [cx,cz]=at(0,0);
+    {const rim=new THREE.Mesh(new THREE.CylinderGeometry(7,7.4,1.1,8).rotateY(Math.PI/8),white);rim.position.set(cx,base+0.9,cz);parts.push(rim);
+     const water=new THREE.Mesh(new THREE.CylinderGeometry(6.3,6.3,0.3,8).rotateY(Math.PI/8),waterM);water.position.set(cx,base+1.35,cz);parts.push(water);
+     const bowl=new THREE.Mesh(new THREE.CylinderGeometry(1.8,0.6,1.2,10),white);bowl.position.set(cx,base+2.6,cz);parts.push(bowl);
+     const stem=new THREE.Mesh(new THREE.CylinderGeometry(0.4,0.6,1.6,8),white);stem.position.set(cx,base+1.7,cz);parts.push(stem);}
+    const jet=new THREE.Mesh(new THREE.CylinderGeometry(0.2,0.45,4.2,8),waterM);jet.position.set(cx,base+5,cz);scene.add(jet);
+    // benches round the sward
+    for(const sd of [-1,1])for(let i=-2;i<=2;i++){if(!i)continue;blk(i*SW/5,sd*(SW/2+4),0.5,4.5,0.9,1.2,white);blk(sd*(SW/2+4),i*SW/5,0.5,1.2,0.9,4.5,white);}
+    // the tree: dead, white, and leaning out over the water
+    const [tx,tz]=at(3,-8);
+    const trunk=new THREE.Mesh(new THREE.CylinderGeometry(0.8,2.0,15,7).translate(0,7.5,0),bone);
+    trunk.position.set(tx,base+0.8,tz);trunk.rotation.set(0.28,0,-0.06);parts.push(trunk);
+    const top=new THREE.Vector3(0,15,0).applyEuler(trunk.rotation).add(trunk.position);
     const limbs=[],tips=[];
     const grow=(px,py,pz,ax,ay,az,len,rad,depth)=>{
       const m=new THREE.Mesh(new THREE.CylinderGeometry(rad*0.45,rad,len,6).translate(0,len/2,0),bone);
       m.position.set(px,py,pz);m.rotation.set(ax,ay,az);limbs.push(m);
-      if(depth<=0){tips.push([px+Math.sin(az)*len*0.9,py+Math.cos(az)*Math.cos(ax)*len*0.92,pz-Math.sin(ax)*len*0.9]);return;}
-      const ex=px+Math.sin(az)*len*0.9,ey=py+Math.cos(az)*Math.cos(ax)*len*0.92,ez=pz-Math.sin(ax)*len*0.9;
-      for(let k=0;k<2;k++)grow(ex,ey,ez,ax+(TR()-0.5)*0.9,ay+(TR()-0.5)*1.4,az+(TR()-0.5)*1.0,
-        len*(0.62+TR()*0.16),rad*0.6,depth-1);
+      const e=new THREE.Vector3(0,len*0.92,0).applyEuler(m.rotation).add(m.position);
+      if(depth<=0){tips.push([e.x,e.y,e.z]);return;}
+      for(let k2=0;k2<2;k2++)grow(e.x,e.y,e.z,ax+(TR()-0.5)*0.9,ay+(TR()-0.5)*1.4,az+(TR()-0.5)*1.0,len*(0.62+TR()*0.16),rad*0.6,depth-1);
     };
-    for(let k=0;k<4;k++)grow(x+13,base+17,z+2,(TR()-0.5)*0.5,TR()*6.28,(TR()-0.5)*0.7,9,1.1,3);
+    // it droops: the limbs lean out over the pool, towards +v
+    for(let k2=0;k2<4;k2++)grow(top.x,top.y,top.z,0.35+(TR()-0.5)*0.5,TR()*6.28,(TR()-0.5)*0.8,8,1.1,3);
     parts.push(...limbs);
     // ---- and what it does when the war is over ----
     // The tree is dead and left standing because nobody will cut it down; it comes into flower when the
@@ -275,11 +346,11 @@ export function landmarks(api){
       const blossomM=new THREE.MeshLambertMaterial({color:0xfdf6ee,emissive:0x2a2426,flatShading:true});
       const leafM=new THREE.MeshLambertMaterial({color:0x6f8f52,flatShading:true});
       const bl=[];
-      for(const [tx,ty,tz] of tips){
-        for(let k=0;k<7;k++){
+      for(const [bx,by,bz] of tips){
+        for(let k2=0;k2<7;k2++){
           const r=0.55+TR()*0.8;
           const m=new THREE.Mesh(new THREE.IcosahedronGeometry(r,0),TR()<0.72?blossomM:leafM);
-          m.position.set(tx+(TR()-0.5)*4.5,ty+(TR()-0.5)*4.2,tz+(TR()-0.5)*4.5);
+          m.position.set(bx+(TR()-0.5)*4.5,by+(TR()-0.5)*4.2,bz+(TR()-0.5)*4.5);
           m.rotation.set(TR()*3,TR()*3,TR()*3);bl.push(m);
         }
       }
@@ -288,16 +359,21 @@ export function landmarks(api){
       const P2=ctx.peaceParts=ctx.peaceParts||[];
       for(const [mat,list] of byB){const g2=mergeParts(list,mat);g2.visible=false;scene.add(g2);P2.push(g2);}
     }
-    // the guard of the Citadel, one at each end of the court
-    const mail=new THREE.MeshLambertMaterial({color:0x2a2c33});
-    for(const s of [-1,1])for(const q of [-1,1]){
-      parts.push(box(x+q*40,base+1.7,z+s*40,1,1.9,0.7,mail));
-      parts.push(box(x+q*40+0.5,base+2.6,z+s*40,0.16,3.4,0.16,mail));}
-    const g=group(L,parts);
-    animHooks.push(now=>{const t=now*0.002;jet.scale.y=0.92+0.12*Math.sin(t);jet.position.y=base+6.6+0.4*Math.sin(t);});
+    // the guard of the Citadel: two at the Hall's door, two by the tree, in black with the silver of the tree
+    const mail=new THREE.MeshLambertMaterial({color:0x24262d}),argent=new THREE.MeshLambertMaterial({color:0xc9ced6});
+    const guard=(u,v)=>{blk(u,v,0.5,0.7,1.9,1.0,mail);blk(u,v,2.4,0.55,0.35,0.6,argent);blk(u+0.2,v+0.6,0.5,0.14,3.6,0.14,mail);};
+    guard(S[0]/2-2,-5);guard(S[0]/2-2,5);guard(1,-15);guard(-4,-14);
+    // where it all is, for the coronation (events.js)
+    ctx.court={x,z,A,base,S,SW,tree:[top.x,top.y+6,top.z],pool:[cx,cz]};
+
+    const byMat=new Map();
+    for(const m of parts){let a=byMat.get(m.material);if(!a){a=[];byMat.set(m.material,a);}a.push(m);}
+    const merged=[];for(const [mat,list] of byMat)merged.push(mergeParts(list,mat));
+    const g=group(L,merged);
+    animHooks.push(now=>{const t=now*0.002;jet.scale.y=0.9+0.14*Math.sin(t);jet.position.y=base+5+0.3*Math.sin(t);});
     return g;},
 
-  greatgate(L,x,z){   // the gate in the first wall: black stone, and the steel doors standing open
+  greatgate(L,x,z){   // the gate in the first wall: black stone, and steel doors - shut in the siege, open in peace
     const H=L.height||34,a=L.turn||0,g0=gh(x,z),parts=[];
     const black=new THREE.MeshLambertMaterial({color:0x3c3b3f});
     const steel=new THREE.MeshPhongMaterial({color:0x585f66,specular:0xaab0b8,shininess:40,flatShading:true});
@@ -312,12 +388,25 @@ export function landmarks(api){
         m.rotation.y=-a;parts.push(m);}
     }
     const lintel=box(x,g0+H-6,z,14,10,20,black);lintel.rotation.y=-a;parts.push(lintel);
-    // the doors, thrown back against the wall inside
+    // In peace the doors are thrown back against the wall inside. In the siege they are shut - it is what the
+    // whole host is outside for - and each leaf is its own object on a pivot at its foot, so that it can be
+    // broken in (src/minastirith/events.js); ctx.onWar puts it back up whenever the page goes to war again.
+    const PEACE=ctx.peaceParts=ctx.peaceParts||[],WAR=ctx.warParts=ctx.warParts||[];
     for(const s of [-1,1]){
       const dx=x-ux*7+vx*s*8.5,dz=z-uz*7+vz*s*8.5;
       const d=new THREE.Mesh(new THREE.BoxGeometry(1.6,H-8,15).translate(0,(H-8)/2,0),steel);
-      d.position.set(dx,g0,dz);d.rotation.y=-a+s*0.5;parts.push(d);
+      d.position.set(dx,g0,dz);d.rotation.y=-a+s*0.5;scene.add(d);PEACE.push(d);
     }
+    const leaves=[];
+    for(const s of [-1,1]){
+      const p=new THREE.Group();p.rotation.order='YXZ';p.position.set(x-ux*1.5+vx*s*3.5,g0,z-uz*1.5+vz*s*3.5);
+      const m=new THREE.Mesh(new THREE.BoxGeometry(1.6,H-8,6.9).translate(0,(H-8)/2,0),steel);
+      for(let k=0;k<4;k++){const band=new THREE.Mesh(new THREE.BoxGeometry(1.9,1.1,7.1),black);band.position.y=4+k*(H-12)/3.4;p.add(band);}
+      p.add(m);p.rotation.y=-a;scene.add(p);WAR.push(p);leaves.push({p,s,home:p.position.clone()});
+    }
+    const gate=ctx.gate={x,z,a,g0,H,ux,uz,vx,vz,leaves,broken:false,
+      reset(){for(const q of leaves){q.p.position.copy(q.home);q.p.rotation.set(0,-a,0);}gate.broken=false;}};
+    (ctx.onWar=ctx.onWar||[]).push(()=>gate.reset());
     return group(L,parts);},
 
   };

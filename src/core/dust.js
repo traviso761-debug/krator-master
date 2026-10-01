@@ -1,8 +1,9 @@
 // ---------- dust ----------
-// Fan work. Everything thrown into the air on Arrakis - a spice blow, the sand a worm throws up, a carryall's
-// downwash, a storm - is dust in an atmosphere: it goes up, the air slows it, the wind takes it, and it hangs
-// and thins before it settles. Soft round points in one buffer per look, each with its own life, fading as it
-// goes; the drag and the wind are what make it read as dust rather than as grains in a vacuum (Europa's).
+// Fan work. Anything thrown into the air - a spice blow or a worm's wake on Arrakis, the smoke off a burning man
+// or a charge across the Pelennor - is dust in an atmosphere: it goes up, the air slows it, the wind takes it,
+// and it hangs and thins before it settles. Soft round points in one buffer per look, each with its own life,
+// fading as it goes; the drag and the wind are what make it read as dust rather than as grains in a vacuum
+// (Europa's). A negative gravity makes it rise: smoke.
 
 let DOT=null;
 function dot(THREE){if(DOT)return DOT;const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d');

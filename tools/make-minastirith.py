@@ -47,7 +47,10 @@ CITY_BASE = PLAIN + 36.0         # the ground the first wall stands on: the spur
 CIT = CITY_BASE + TIERS * LIFT   # the Citadel: seven hundred feet over the Pelennor
 TOWER = 91.0                     # the White Tower: fifty fathoms over the Citadel
 MOUNT = (-6200.0, 400.0)         # Mindolluin, west of the city
-KEEL_X = 450.0                   # the point of the rock, just inside the outer wall
+KEEL_X = 450.0                   # the foot of the stem, at the back of the court behind the Great Gate
+KEEL_ROOT = 160.0                # the seventh wall: east of it the rock is a pier, drawing in to the stem
+KEEL_W = 60.0                    # its half-width where it comes out of the Citadel
+KEEL_WEST = KEEL_ROOT - 20.0     # its end is buried just inside the Citadel, whose court is its top
 RAMMAS = 6400.0                  # the Rammas Echor, round the townlands
 HARLOND = (7300.0, 3100.0)       # the quays, downstream on the near bank
 OSGILIATH = (8600.0, -600.0)     # the ruin, astride the Anduin where the great bridge went
@@ -115,7 +118,15 @@ def terrain_height(x, z):
     # bell. The city's spur is the lowest of those ridges.
     m = smoothstep(5600, 700, mt)
     h += 2500 * (m ** 0.62)
-    h += 620 * smoothstep(8200, 3400, mt)
+    # The mountain's broad skirt stops at a front behind the city that curves away west on either side, so
+    # the city stands at the foot of it on a spur, with the Pelennor round its flanks. Carried on to the east
+    # as it was, the skirt put the ground round the city two hundred metres up, and levelling the city into it
+    # left a crater with a steep rim all the way round.
+    # In front of the front it is capped rather than cut, so the fields before the Great Gate stay level with it.
+    front = -380.0 - 0.00012 * z * z
+    skirt = 620 * smoothstep(8200, 3400, mt)
+    foot = smoothstep(front + 250.0, front - 1100.0, x)
+    h += skirt * foot + min(skirt, 44.0) * (1 - foot)
     if m > 0.02:
         ang = math.atan2(z - MOUNT[1], x - MOUNT[0])
         spine = (math.sin(ang * 3.0 + 0.7) * 0.55 + math.sin(ang * 7.0 - 1.4) * 0.28)
@@ -146,22 +157,38 @@ def terrain_height(x, z):
     if d < R_OUT + 900:
         t = smoothstep(R_OUT + 900, R_OUT + 120, d)
         h = h * (1 - t) + min(h, CITY_BASE) * t     # the land is levelled into the city's own base
+    # Behind the city the shoulder of Mindolluin comes down to meet it: a steep bank rising from the outer wall
+    # to above the Citadel, which is what the city is built against. Levelling the land into the city's base
+    # all the way round left a bowl behind it, and the rock ran out across the bowl as a free-standing wall
+    # a kilometre long.
+    if x < 0 and d > R_OUT - 10:
+        back = smoothstep(0.25, -0.55, x / max(d, 1.0))
+        # and it keeps climbing into the mountain rather than stopping in a terrace, which read as the rim of
+        # an amphitheatre with the city in the bottom of it
+        # - but only until it meets the mountain's own slope, never past it
+        sh = min(CITY_BASE + (CIT + 50 - CITY_BASE) * smoothstep(R_OUT + 15, R_OUT + 230, d)
+                 + max(0.0, d - (R_OUT + 230)) * 0.8, max(h, CIT + 50))
+        h = max(h, h * (1 - back) + sh * back)
     if d < R_OUT + 130:
+        # Each step up is made just inside its wall rather than under it. On a fifty-metre grid a step centred on
+        # the wall spilled its slope out in front of it, as a pale skirt under every wall that was worst under
+        # the first; made behind the wall, the wall hides it and the ground in front is flat to its foot.
         step = CITY_BASE
+        # The Citadel is the exception: it is one level court to its own wall, and the pier comes out of it
+        # at that level, so its step is made outside its wall instead.
         for k in range(TIERS):
-            step += LIFT * smoothstep(R_OUT - k * R_STEP + 16, R_OUT - k * R_STEP - 16, d)
+            rk = R_OUT - k * R_STEP
+            if k == TIERS - 1:
+                step += LIFT * smoothstep(rk + 26, rk - 4, d)
+            else:
+                step += LIFT * smoothstep(rk - 12, rk - 44, d)
         h = max(h, step)
 
-    # the keel: a wall of rock from the mountain out to its point inside the Great Gate, level with the
-    # Citadel the whole way and cut off sheer at the end, which is the prow the city is built around
-    kz = abs(z)
-    kh = keel_half(x)
-    keel = (smoothstep(kh + 22, kh - 4, kz) * smoothstep(KEEL_X + 24, KEEL_X - 40, x)
-            * smoothstep(-3400, -2600, x)) if kh > 0 else 0.0
-    if keel > 0:
-        # Level with the Citadel the whole way, so the court at the top of the city and the top of the rock
-        # are one surface, which is what every picture of the place shows.
-        h = h * (1 - keel) + max(CIT, h) * keel
+    # The keel is NOT in the heightfield. It used to be: a ridge at the Citadel's height, eighty metres wide,
+    # on a fifty-metre grid - so every grid triangle that straddled its edge was a slope from the Citadel down
+    # to the tier, and those slopes stuck out through the sheer faces the model builds as a sawtooth of grass
+    # triangles. The model in src/minastirith/landmarks.js is a closed solid with its foot below the tiers;
+    # the ground under it is just the tiers.
 
     h *= smoothstep(HX, HX - 900, abs(x)) * smoothstep(HZ, HZ - 900, abs(z))
     return h
@@ -170,22 +197,26 @@ def terrain_height(x, z):
 # ---------------------------------------------------------------- the city
 
 def keel_half(x):
-    """Half the width of the rock at this x. It is a blade, not a ridge: eighty metres across where it runs
-    through the city, drawing in to a point at the prow and spreading into the mountain behind. The model in
+    """Half the width of the top of the rock at this x. "A vast pier of rock whose huge out-thrust bulk
+    divided in two all the circles of the City save the first... its edge sharp as a ship-keel facing east":
+    in plan it is a ship's bow - a hundred and twenty metres across where it comes out of the Citadel, drawing
+    in along a curve to a point, so the east end is an edge and not an end wall. It comes out of the Citadel,
+    whose court is its top, through the east side of the seventh wall; it does not cross the western circles,
+    which back onto the mountain. The model in
     src/minastirith/landmarks.js builds its faces to exactly this line, so the two cannot disagree."""
-    if x > KEEL_X or x < -2600.0:
+    if x > KEEL_X or x < KEEL_WEST:
         return 0.0
-    t = max(0.0, min(1.0, (x - 120.0) / (KEEL_X - 120.0)))
-    h = 40.0 * (1.0 - 0.62 * t * t)
-    if x < -520.0:
-        h += min(60.0, (-520.0 - x) * 0.09)
-    return h
+    if x > KEEL_ROOT:
+        t = (x - KEEL_ROOT) / (KEEL_X - KEEL_ROOT)
+        return KEEL_W * (1.0 - t * t)
+    return KEEL_W
 
 
 def rock_half(x):
-    """What the city has to keep off: the blade and a few metres either side of it."""
+    """What the city has to keep off: the foot of the rock, which is battered out past the top by an eighth,
+    and a few metres for a lane along it. The houses stand against the rock, not a street's width off it."""
     h = keel_half(x)
-    return 0.0 if h <= 0.0 else h + 14.0
+    return 0.0 if h <= 0.0 else h * 1.15 + 7.0
 
 
 def on_rock(x, z):
@@ -412,11 +443,8 @@ def main():
                 put(rect(math.cos(ta) * (r0 - 4), math.sin(ta) * (r0 - 4), 12, 12, ta),
                     top + 8, "tower", col, roof="f", minh=-22)
 
-    # ---- the keel of rock, and the prow that stands out of the city ----
-    # The rock is terrain, but its point is cut sheer, and the Citadel's wall runs out along the top of it
-    # to a buttress overhanging the first circle. That buttress is the one thing everyone remembers.
-    put(rect(KEEL_X - 62, 0, 120, 74), 22, "rock", "#8d8a84", roof="f", minh=-70)
-    put(rect(KEEL_X - 30, 0, 44, 40), 30, "rock", "#96938c", roof="f", minh=16)
+    # The keel of rock, and the prow that stands out of the city, are the model's (landmarks.js): two boxes
+    # of "rock" stood here once to stand in for the prow, and read as grey warehouses under it.
 
     # ---- the houses, tier by tier ----
     # Packed tight and low against the wall in front of them, and thinning as they climb: the sixth circle
@@ -448,18 +476,19 @@ def main():
                         SLATE[R.randrange(len(SLATE))], roof="g", minh=h)
 
     # ---- the seventh circle: the Citadel ----
-    # The Tower is a landmark and is built in src/minastirith/landmarks.js; what is here is the ground it
-    # stands on - the hall of the kings behind it, the guard houses either side, the Hallows in the rock.
+    # The Tower, the Hall of the Kings at its foot and the Court of the Fountain before it are landmarks, built
+    # in src/minastirith/landmarks.js; what is here is the rest of the Citadel - the houses of the guard either
+    # side, and the Closed Door in the rear wall that leads out to the Hallows. The Hall used to be a box here,
+    # a hundred and twenty metres long across the seventh wall, and it read as a warehouse.
     # Everything here is inside the seventh wall, which is a circle a hundred and sixty metres in the
     # radius, and everything stands on ground the terrain already put at the Citadel's own height. The rock
     # runs through the middle of it, but at this level its top is the pavement, so the court is laid over it
     # and only the Tower stands on the point.
-    put(rect(-104, 0, 128, 96), 26, "civic", "#d8d2c2", name="The Hall of the Kings", roof="f")
     for s in (-1, 1):
         put(rect(-36, s * 112, 74, 30, 0.2 * s), 12, "civic", "#cdc6b6", roof="g")
         put(rect(-118, s * 92, 46, 34, -0.3 * s), 10, "civic", "#cdc6b6", roof="g")
         put(rect(46, s * 118, 34, 26), 9, "civic", "#cdc6b6", roof="g")
-    put(rect(-142, 0, 34, 70), 8, "civic", "#b8b2a4", name="The Hallows", roof="f")
+    put(rect(-150, 0, 14, 22), 13, "civic", "#b8b2a4", name="The Closed Door", roof="f")
 
     # ---- the Rammas Echor, and the Causeway Forts on the road through it ----
     put(ring_poly(0, 0, RAMMAS, 128, RAMMAS - 7), 9, "wall", "#b6ae9c", roof="f", minh=-14)

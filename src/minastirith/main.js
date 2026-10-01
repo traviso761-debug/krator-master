@@ -8,6 +8,10 @@ import {landmarks} from './landmarks.js';
 import {hosts} from '../middleearth/hosts.js';
 import {life} from './life.js';
 import {warmode} from './war.js';
+import {events} from './events.js';
+import {decals} from './decals.js';
+import {shadow} from './shadow.js';
+import {garrison} from './garrison.js';
 installErrorHandlers();window.LOAD=LOAD;
 configureLoading({
   // What you read while it builds. See src/core/diag.js: these are shuffled and one of them is
@@ -23,10 +27,11 @@ configureLoading({
     'Six thousand Rohirrim are drawn up on the north of the field and have not moved yet.',
     'The engines throw from both sides. A ring of them round a silent city leaves out half of a siege.',
     'The rock is a blade: one sheer face to each side, fluted, coming to a point that hangs over the lower circles.',
+    'Things happen in the siege: the Steward, the horns of Rohan, black sails on the river. Press Events to make one.',
     'Osgiliath is downstream, in rings, with the piers of the great bridge still in the water.',
   ],
-  prefix:'raising Minas Tirith… ',labels:{'map-data':'reading the townlands',ground:'cutting the seven circles',buildings:'building the tiers',details:'planting the Pelennor',landmarks:'raising the White Tower',el:'',traffic:'launching the boats',ui:'opening the windows'}});
+  prefix:'raising Minas Tirith… ',labels:{'map-data':'reading the townlands',ground:'cutting the seven circles',buildings:'building the tiers',details:'planting the Pelennor',landmarks:'raising the White Tower',el:'',traffic:'launching the boats',ui:'opening the windows',events:'watching from the walls',decals:'marking the field',shadow:'drawing the Darkness out of Mordor',garrison:'manning the walls'}});
 // The Tower, the Court and the Great Gate are this city's own. The hosts are Mordor's, and so is the war:
 // the same module marches them up the Causeway that marches them across Gorgoroth.
-const ctx=window._iz={defaultCity:'minastirith',models:[landmarks],extras:[{name:'life',fn:life},{name:'hosts',fn:hosts},{name:'war',fn:warmode}]};
+const ctx=window._iz={defaultCity:'minastirith',models:[landmarks],extras:[{name:'life',fn:life},{name:'hosts',fn:hosts},{name:'shadow',fn:shadow},{name:'garrison',fn:garrison},{name:'decals',fn:decals},{name:'war',fn:warmode},{name:'events',fn:events}]};
 boot(()=>build(ctx));

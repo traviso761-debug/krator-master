@@ -24,6 +24,10 @@
 //     with the reactor, the radiator fins and the cargo pods
 //   The Babylon Project wiki (via search): the rotating section is 840 m across; 0.9 g at 60 mph; the Cobra
 //     bays are named for the four structural elements of the forward sphere, each like a cobra's raised hood
+//   "Exploring the Station" (oocities.org/davesb5page/xplor.htm) and search summaries of the Babylon Project
+//     wiki: the defence grid is hull-mounted - pulse cannons, and particle beams after the upgrade; C&C is in
+//     Observation Dome 1, with a backup in Dome 2 across the axis from it; the Core Shuttle runs the length of
+//     the habitable section along the axis, thirteen stops; Epsilon Eridani, an orange dwarf
 //   Model-kit build logs (CultTVman, Starship Modeler's R/M kit preview): twelve radiator panels at the rear;
 //     the complex hull patterns are decals - a checkerboard on the front section, long plates down the drum;
 //     the stand goes behind the arrays so the hull can still turn
@@ -44,6 +48,7 @@ import {lathe} from '../starship/parts.js';
 import {mkRng} from '../core/rng.js';
 import {trackKeys,trackPointers} from '../core/input.js';
 import {createCylinderWalker} from '../core/cylinder.js';
+import {makeVisitors} from './visitors.js';
 
 export function model(api){
   const {THREE,C,scene,camera,renderer,animHooks,fold}=api;
@@ -224,6 +229,52 @@ export function model(api){
       FINS.push({x:c*r1,y:yc+FH/2,z:s*r1});}
     piece(G,'The Yellow Sector: the reactor and the radiators','The zero-g rear of the station, which does not turn: the fusion reactor behind the aft bearing, the spine with its cargo pods, the thrusters that hold the station at the L5 point, and the blue heat radiator fins - twelve of them, in three rows of four - that frame the stern.',[...parts,...glow]);}
 
+  // ---------- the defence grid ----------
+  // Pulse cannon turrets on the hull - a low dome on a base with twin barrels - in rings round the sphere and
+  // either side of the carousel's trench bands, and a few round the reactor; and the particle beam emitters,
+  // bigger blisters on the sphere's flanks. Those on the sphere and the drum turn with them. The raid
+  // (visitors.js) fires from them, so each one's place and outward normal is kept.
+  const GUNS=[];
+  {const tM=P(0x7c776c),bM=P(0x4a4843);
+    const domeG=new THREE.SphereGeometry(8,10,5,0,Math.PI*2,0,Math.PI/2),baseG=new THREE.CylinderGeometry(10,11,3,10).translate(0,1.5,0);
+    const barG=new THREE.BoxGeometry(1.4,1.4,22);barG.translate(0,0,11);barG.rotateX(-0.45);barG.translate(0,5.5,0);
+    const barL=barG.clone().translate(-2.2,0,0),barR=barG.clone().translate(2.2,0,0);
+    const spots=[];const up=new THREE.Vector3(0,1,0);
+    const at=(parent,x,y,z,nx,ny,nz,sc)=>spots.push({parent,p:new THREE.Vector3(x,y,z),n:new THREE.Vector3(nx,ny,nz).normalize(),sc:sc||1});
+    // the sphere: three rings, clear of the Cobra arms
+    for(const [ph,n] of [[0.38,12],[-0.05,16],[-0.45,12]])for(let k=0;k<n;k++){const a=k/n*Math.PI*2+Math.PI/12,c=Math.cos(ph);at(SPIN,Math.cos(a)*SR*c,SY+Math.sin(ph)*SR,Math.sin(a)*SR*c,Math.cos(a)*c,Math.sin(ph),Math.sin(a)*c);}
+    // the particle beams: six blisters, twice the size, on the sphere's waist
+    for(let k=0;k<6;k++){const a=k/6*Math.PI*2,ph=0.16,c=Math.cos(ph);at(SPIN,Math.cos(a)*SR*c,SY+Math.sin(ph)*SR,Math.sin(a)*SR*c,Math.cos(a)*c,Math.sin(ph),Math.sin(a)*c,2.3);}
+    // the carousel, either side of each trench band
+    for(let s=1;s<5;s++)for(const dy of [-58,58])for(let k=0;k<10;k++){const a=k/10*Math.PI*2+(dy>0?0.31:0);at(SPIN,Math.cos(a)*(DR+2),DA+860*s+dy,Math.sin(a)*(DR+2),Math.cos(a),0,Math.sin(a));}
+    // the reactor housing, which does not turn
+    for(let k=0;k<10;k++){const a=k/10*Math.PI*2+0.2;at(G,Math.cos(a)*352,DA-470,Math.sin(a)*352,Math.cos(a),0,Math.sin(a));}
+    const q=new THREE.Quaternion(),D=new THREE.Object3D();
+    for(const parent of [SPIN,G]){const mine=spots.filter(s=>s.parent===parent);
+      for(const [geo,mat] of [[domeG,tM],[baseG,bM],[barL,bM],[barR,bM]]){const im=new THREE.InstancedMesh(geo,mat,mine.length);
+        mine.forEach((s,i)=>{q.setFromUnitVectors(up,s.n);D.position.copy(s.p);D.quaternion.copy(q);D.rotateY(i*1.7);D.scale.setScalar(s.sc);D.updateMatrix();im.setMatrixAt(i,D.matrix);});
+        im.userData.noWire=true;parent.add(im);}}
+    for(const s of spots)GUNS.push(s);}
+
+  // ---------- the observation domes ----------
+  // Observation Dome 1 on the forward face of the sphere, and across the axis from it, its twin, Dome 2, the
+  // backup C&C: glass bubbles with the lit floor of the dome under them. Up there the commander stands at the
+  // rail and watches the traffic come in.
+  {const glass=new THREE.MeshPhongMaterial({color:0x9ac8f0,specular:0xffffff,shininess:140,transparent:true,opacity:0.32,depthWrite:false,side:THREE.DoubleSide});
+    const floorM=new THREE.MeshBasicMaterial({color:0x5a98d0}),ribM=P(0x6c675e);
+    const parts=[],up=new THREE.Vector3(0,1,0),ph=0.6,c=Math.cos(ph);
+    for(const a of [-Math.PI/2,Math.PI/2]){const n=new THREE.Vector3(Math.cos(a)*c,Math.sin(ph),Math.sin(a)*c),p=new THREE.Vector3(Math.cos(a)*SR*c,SY+Math.sin(ph)*SR,Math.sin(a)*SR*c).addScaledVector(n,-6);
+      const g=new THREE.Group();g.position.copy(p);g.quaternion.setFromUnitVectors(up,n);
+      g.add(new THREE.Mesh(new THREE.SphereGeometry(52,24,10,0,Math.PI*2,0,Math.PI/2),glass));
+      const fl=new THREE.Mesh(new THREE.CircleGeometry(50,24),floorM);fl.rotation.x=-Math.PI/2;fl.position.y=3;g.add(fl);
+      g.add(new THREE.Mesh(new THREE.TorusGeometry(53,3.2,6,32).rotateX(Math.PI/2),ribM));
+      for(let k=0;k<6;k++){const r=new THREE.Mesh(new THREE.TorusGeometry(52.5,1.3,4,16,Math.PI),ribM);r.rotation.y=k/6*Math.PI;g.add(r);}
+      // the consoles round the rail, and the raised deck
+      for(let k=0;k<10;k++){const b=new THREE.Mesh(new THREE.BoxGeometry(6,3,3),new THREE.MeshBasicMaterial({color:k%3?0x9adcff:0xffc070}));const t=k/10*Math.PI*2;b.position.set(Math.cos(t)*38,5,Math.sin(t)*38);b.rotation.y=-t;g.add(b);}
+      parts.push(g);}
+    const dg=new THREE.Group();for(const g of parts)dg.add(g);dg.traverse(o=>{o.userData.noWire=true;});SPIN.add(dg);
+    dg.userData.info={name:'The observation domes',info:'Observation Dome 1, on the forward face of the sphere, is C&C: two levels, the operations floor below and the command deck above it, under glass, where the traffic through the bay is marshalled. Across the axis from it Dome 2 is its twin, the backup. They turn with the sphere.'};pick.push(dg);}
+
   // ---------- the running lights ----------
   const blink=[];
   {const mk=(parent,x,y,z,mat,r)=>{const b=new THREE.Mesh(new THREE.SphereGeometry(r||9,8,6),mat);b.position.set(x,y,z);b.userData.noWire=true;parent.add(b);blink.push(b);};
@@ -251,8 +302,9 @@ export function model(api){
 
   // ---------- the traffic, the gate and the planet ----------
   const traffic=makeTraffic(api,{SPIN,COBRA,DISH,OMEGA,spinAt});
-  pick.push(makeGate(api));
+  const gate=makeGate(api);pick.push(gate);
   makeEpsilon(api);
+  const V=makeVisitors(api,{G,SPIN,GUNS,DR,DA,DF,SY,SR,DISH,gate,makeFury:makeFury,pick});
 
   const ship={radius:K.radius||4400,group:G,pick,minD:K.minD||260,
     get adaptiveNear(){return !IN.active();},
@@ -260,10 +312,12 @@ export function model(api){
     camFrame:now=>IN.camFrame(now),
     hashExtra:()=>(IN.active()?'&inside='+IN.where():'')+(cutOn&&!IN.active()?'&cutaway':''),
     hudOnly:now=>IN.active()?IN.hud(now):null,
-    hud:now=>'spin '+Math.round(spinAt(now)/Math.PI*180)+'°'+(traffic.inbound?' · '+traffic.inbound+' inbound':''),
-    buttons:{'Cutaway':()=>{if(IN.active())IN.exit();setCut(!cutOn);},'Inside':()=>{if(IN.active())IN.exit();else{setCut(false);IN.enter('garden');}}}};
+    hud:now=>'spin '+Math.round(spinAt(now)/Math.PI*180)+'°'+(traffic.inbound?' · '+traffic.inbound+' inbound':'')+(V.status()?' · '+V.status():''),
+    buttons:{'Raiders':()=>{if(IN.active())IN.exit();V.raid();},'Cutaway':()=>{if(IN.active())IN.exit();setCut(!cutOn);},'Inside':()=>{if(IN.active())IN.exit();else{setCut(false);IN.enter('garden');}}}};
   // #inside=garden|axis|zocalo|below opens there
   {const q=/(^|&)inside(=([a-z]+))?(&|$)/.exec(H0);if(q)setTimeout(()=>{setCut(false);IN.enter(q[3]||'garden');},0);}
+  // #raid starts the raiders' attack
+  if(/(^|&)raid(&|$)/.test(H0))setTimeout(()=>V.raid(),1500);
   return ship;
 }
 
@@ -380,7 +434,14 @@ function buildInterior(api,O){
     // the sun: a rod down the axis the length of the Garden, and the zero-g train's tube inside it
     {const rod=new THREE.Mesh(new THREE.CylinderGeometry(7,7,GF-GA,24),new THREE.MeshBasicMaterial({color:0xfff6dc,clippingPlanes:[cut],fog:true}));rod.position.y=(GA+GF)/2;IN.add(rod);
       const halo=new THREE.Mesh(new THREE.CylinderGeometry(16,16,GF-GA,24,1,true),new THREE.MeshBasicMaterial({color:0xfff2c8,transparent:true,opacity:0.18,depthWrite:false,clippingPlanes:[cut],fog:true}));halo.position.y=(GA+GF)/2;IN.add(halo);
-      for(const y of [GA,GF]){const hub=new THREE.Mesh(bake(new THREE.CylinderGeometry(24,30,20,24).translate(0,y,0),col('#8c877e'),0.6),vM());IN.add(hub);}}}
+      for(const y of [GA,GF]){const hub=new THREE.Mesh(bake(new THREE.CylinderGeometry(24,30,20,24).translate(0,y,0),col('#8c877e'),0.6),vM());IN.add(hub);}
+      // the Core Shuttle: cars running the length of the axis beside the sun, in weightlessness, stopping at the
+      // stations along it; two of them, one each way
+      const carG=bake(new THREE.BoxGeometry(5,34,5),col('#d8d4cc'),0.7),winG=bake(new THREE.BoxGeometry(5.3,28,1.4),col('#fff0c0'),1);
+      const cars=[];for(const [a,dir] of [[0,1],[Math.PI,-1]]){const g=new THREE.Group();g.add(new THREE.Mesh(carG,vM()));g.add(new THREE.Mesh(winG,vM()));g.position.set(Math.cos(a)*15,0,Math.sin(a)*15);IN.add(g);cars.push({g,dir,ph:a});}
+      const L=GF-GA-60,STOPS=13;
+      animHooks.push(now=>{if(!IN.visible)return;for(const c of cars){const cyc=(now/1000/90+c.ph/7)%1,u=cyc<0.5?cyc*2:2-cyc*2,s=u*(STOPS-1),i=Math.floor(s),f=s-i,e=f<0.7?f/0.7:1;
+        const k=(i+e*e*(3-2*e))/(STOPS-1);c.g.position.y=GA+30+(c.dir>0?k:1-k)*L;}});}}
 
   // ================= the Zocalo =================
   // Red Sector, forward of the Garden: a ring forty metres high down by the hull, which is where the
@@ -548,6 +609,14 @@ void main(){
   api.animHooks.push(()=>{planet.rotation.y+=1.2e-5;});
 }
 
+// a Starfury: the cockpit pod forward, and four engine arms in an X with a pod on each - it faces +x
+function makeFury(THREE,grey,darkM){const g=new THREE.Group();
+  g.add(new THREE.Mesh(new THREE.BoxGeometry(9,2.4,2.4),grey));
+  const nose=new THREE.Mesh(new THREE.ConeGeometry(1.3,3,6),grey);nose.rotation.z=-Math.PI/2;nose.position.x=6;g.add(nose);
+  for(const [sy,sz] of [[1,1],[1,-1],[-1,1],[-1,-1]]){const arm=new THREE.Mesh(new THREE.BoxGeometry(1.6,6,0.8),grey);arm.position.set(-2.6,sy*2.4,sz*2.4);arm.rotation.x=sy*sz*-0.785;g.add(arm);
+    const pod=new THREE.Mesh(new THREE.BoxGeometry(4,1.3,1.3),darkM);pod.position.set(-3,sy*4.4,sz*4.4);g.add(pod);}
+  g.traverse(o=>o.userData.noWire=true);return g;}
+
 // ---------- the ships ----------
 // Nothing here is part of the model the test suite checks, so all of it is noWire. At this scale a Starfury
 // is fifteen metres on a station of eight thousand, so each carries an engine light drawn at a fixed size
@@ -561,13 +630,7 @@ function makeTraffic(api,O){
   const glows=(n,colour,size)=>{const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(new Float32Array(n*3).fill(-1e7),3));
     const p=new THREE.Points(g,new THREE.PointsMaterial({color:colour,size,sizeAttenuation:false,transparent:true,opacity:0.95,depthWrite:false}));
     p.frustumCulled=false;p.userData.noWire=true;scene.add(p);return p;};
-  // a Starfury: the cockpit pod forward, and four engine arms in an X with a pod on each - it faces +x
-  const fury=()=>{const g=new THREE.Group();
-    g.add(new THREE.Mesh(new THREE.BoxGeometry(9,2.4,2.4),grey));
-    const nose=new THREE.Mesh(new THREE.ConeGeometry(1.3,3,6),grey);nose.rotation.z=-Math.PI/2;nose.position.x=6;g.add(nose);
-    for(const [sy,sz] of [[1,1],[1,-1],[-1,1],[-1,-1]]){const arm=new THREE.Mesh(new THREE.BoxGeometry(1.6,6,0.8),grey);arm.position.set(-2.6,sy*2.4,sz*2.4);arm.rotation.x=sy*sz*-0.785;g.add(arm);
-      const pod=new THREE.Mesh(new THREE.BoxGeometry(4,1.3,1.3),darkM);pod.position.set(-3,sy*4.4,sz*4.4);g.add(pod);}
-    g.traverse(o=>o.userData.noWire=true);return g;};
+  const fury=()=>makeFury(THREE,grey,darkM);
   const transport=len=>{const g=new THREE.Group();
     g.add(new THREE.Mesh(new THREE.BoxGeometry(len,len*0.18,len*0.22),grey));
     const pods=new THREE.Mesh(new THREE.BoxGeometry(len*0.3,len*0.26,len*0.34),darkM);pods.position.x=-len*0.4;g.add(pods);
@@ -638,42 +701,62 @@ function makeTraffic(api,O){
 }
 
 // ---------- the jump gate ----------
-// Four long prongs standing out from a square frame, their inner faces studded with emitters. When it opens
-// the emitters flare and the space between the prongs tears into a vortex - orange at the rim, blue and white
-// at the throat - and something comes through towards the station.
+// Four long prongs standing out from a square frame, their inner faces studded with emitters. Before it opens
+// the emitters light in a chase down each prong from the frame to the tips; then the space in front of the
+// prongs tears into a vortex - orange at the rim, blue and white at the throat, turning - and something comes
+// through towards the station. The raid (visitors.js) can open it out of turn: G.userData.openNow().
 function makeGate(api){
   const {THREE,C,scene,animHooks}=api;
   const K=(C.station&&C.station.gate)||{};
-  const at=K.at||[9000,1600,-12000],S=K.size||1400;
+  const at=K.at||[9000,1600,-12000],S=K.size||1400,NS=8;
   const G=new THREE.Group();G.position.set(at[0],at[1],at[2]);G.lookAt(0,0,0);scene.add(G);
   const frame=new THREE.MeshPhongMaterial({color:0x8a857a,flatShading:true,shininess:8}),dark=new THREE.MeshPhongMaterial({color:0x4a4843,flatShading:true});
-  const emit=new THREE.MeshBasicMaterial({color:0xc89a3a});
+  // one emitter material per step along the prongs, so the chase can run down them
+  const EM=[];for(let i=0;i<NS;i++)EM.push(new THREE.MeshBasicMaterial({color:0x5a4a2a}));
   for(let k=0;k<4;k++){const a=k/4*Math.PI*2+Math.PI/4,g=new THREE.Group();g.rotation.z=a;
     // the base of the prong on the frame, and the prong itself, tapering, standing forward toward the station
     const base=new THREE.Mesh(new THREE.BoxGeometry(260,160,260),dark);base.position.set(S*0.72,0,-120);g.add(base);
-    for(let i=0;i<8;i++){const t=i/8,len=S*0.28,w=90-t*55;const seg=new THREE.Mesh(new THREE.BoxGeometry(w,w*0.8,len),i%2?frame:dark);
+    for(let i=0;i<NS;i++){const t=i/NS,len=S*0.28,w=90-t*55;const seg=new THREE.Mesh(new THREE.BoxGeometry(w,w*0.8,len),i%2?frame:dark);
       seg.position.set(S*(0.72-t*0.08),0,len*(i+0.5));g.add(seg);
-      const e=new THREE.Mesh(new THREE.BoxGeometry(12,w*0.5,len*0.7),emit);e.position.set(S*(0.72-t*0.08)-w/2-4,0,len*(i+0.5));g.add(e);}
+      const e=new THREE.Mesh(new THREE.BoxGeometry(12,w*0.5,len*0.7),EM[i]);e.position.set(S*(0.72-t*0.08)-w/2-4,0,len*(i+0.5));g.add(e);}
+    // and a beacon on each tip
+    const tip=new THREE.Mesh(new THREE.SphereGeometry(18,8,6),EM[NS-1]);tip.position.set(S*0.64,0,S*0.28*NS+20);g.add(tip);
     G.add(g);}
   // the frame joining the four bases
   for(let k=0;k<4;k++){const a=k/4*Math.PI*2,b=new THREE.Mesh(new THREE.BoxGeometry(S*1.05,70,90),frame);b.position.set(Math.cos(a)*S*0.52,Math.sin(a)*S*0.52,-120);b.rotation.z=a+Math.PI/2;G.add(b);}
-  G.userData.info={name:'The jump gate',info:'A few kilometres off the bow. Most ships have no jump engines of their own and come and go through here: the gate tears a vortex into hyperspace between its four prongs and they go through it. It is why a station is parked in this system at all.'};
-  const V=new THREE.Group();V.position.z=S*1.1;G.add(V);
-  const coreM=new THREE.MeshBasicMaterial({color:0xcfe4ff,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide});
-  const rimM=new THREE.MeshBasicMaterial({color:0xff9a3a,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide});
-  const midM=new THREE.MeshBasicMaterial({color:0x4a8aff,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide});
-  V.add(new THREE.Mesh(new THREE.CircleGeometry(S*0.2,40),coreM));
-  const rings=[];
-  for(let i=0;i<10;i++){const r=new THREE.Mesh(new THREE.RingGeometry(S*(0.18+i*0.055),S*(0.22+i*0.055),56,1,0,Math.PI*(1.2+(i%3)*0.25)),i<5?midM:rimM);r.position.z=-i*S*0.06;V.add(r);rings.push(r);}
-  const funnel=new THREE.Mesh(new THREE.CylinderGeometry(S*0.7,S*0.05,S*1.8,40,1,true),midM);funnel.rotation.x=Math.PI/2;funnel.position.z=-S*0.9;V.add(funnel);
+  G.userData.info={name:'The jump gate',info:'A few kilometres off the bow. Most ships have no jump engines of their own and come and go through here: the lights chase down its four prongs, it tears a vortex into hyperspace in front of them, and they go through it. It is why a station is parked in this system at all.'};
+  // the vortex: discs painted with a spiral, orange at the rim and blue-white at the throat, one behind the
+  // other and turning opposite ways, and a flash at the throat as it opens
+  const swirl=(inner,outer,arms)=>{const cv=document.createElement('canvas');cv.width=cv.height=512;const g=cv.getContext('2d');
+    const gr=g.createRadialGradient(256,256,0,256,256,256);gr.addColorStop(0,inner);gr.addColorStop(0.35,'rgba(90,150,255,0.8)');gr.addColorStop(0.75,outer);gr.addColorStop(1,'rgba(0,0,0,0)');
+    g.fillStyle=gr;g.fillRect(0,0,512,512);g.globalCompositeOperation='destination-in';
+    // keep the spiral arms, lose the rest
+    // all the arms in one path, stroked once: stroked one at a time, each would cut away the ones before it
+    g.lineCap='round';g.beginPath();for(let k=0;k<arms;k++){for(let t=0;t<1;t+=0.01){const r=20+t*236,a=k/arms*Math.PI*2+t*5.2;const x=256+Math.cos(a)*r,y=256+Math.sin(a)*r;if(t===0)g.moveTo(x,y);else g.lineTo(x,y);}}
+    g.lineWidth=46;g.strokeStyle='rgba(255,255,255,0.95)';g.stroke();
+    g.globalCompositeOperation='source-over';const c2=g.createRadialGradient(256,256,0,256,256,90);c2.addColorStop(0,'rgba(255,255,255,1)');c2.addColorStop(1,'rgba(200,225,255,0)');g.fillStyle=c2;g.fillRect(0,0,512,512);
+    return new THREE.CanvasTexture(cv);};
+  const V=new THREE.Group();V.position.z=S*1.15;G.add(V);
+  const discs=[];
+  [['#ffffff','rgba(255,150,60,0.9)',5,1.25,0],['#e8f0ff','rgba(255,120,40,0.8)',3,1.0,-S*0.12],['#cfe0ff','rgba(80,120,255,0.7)',4,0.75,-S*0.24]].forEach(([i,o,arms,sc,z],k)=>{
+    const mt=new THREE.MeshBasicMaterial({map:swirl(i,o,arms),transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide});
+    const d=new THREE.Mesh(new THREE.CircleGeometry(S*0.62*sc,48),mt);d.position.z=z;V.add(d);discs.push({d,mt,dir:k%2?1:-1});});
+  const flashM=new THREE.MeshBasicMaterial({color:0xeaf2ff,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false});
+  const flash=new THREE.Mesh(new THREE.SphereGeometry(S*0.18,16,12),flashM);V.add(flash);
   V.traverse(o=>{o.userData.noWire=true;o.frustumCulled=false;});
   const ship=new THREE.Mesh(new THREE.BoxGeometry(60,40,260),new THREE.MeshPhongMaterial({color:0x9d968a,flatShading:true}));ship.userData.noWire=true;G.add(ship);
-  const PERIOD=(K.period||40)*1000,OPEN=(K.open||9)*1000;
-  animHooks.push(now=>{const t=now%PERIOD;let f=0;
-    if(t<OPEN){const u=t/OPEN;f=Math.pow(Math.sin(u*Math.PI),0.6);}
-    coreM.opacity=0.9*f;midM.opacity=0.5*f;rimM.opacity=0.65*f;V.scale.setScalar(0.15+0.85*f);V.visible=f>0.01;
-    rings.forEach((r,i)=>{r.rotation.z=now*0.0012*(i%2?1:-1)+i*0.7;});
-    const su=(t-OPEN*0.35)/(PERIOD*0.5);ship.visible=su>0&&su<1;ship.position.set(0,0,S*1.1-200+su*8000);
-    emit.color.setHex(f>0.01?0xfff0b0:0xc89a3a);});
+  const PERIOD=(K.period||40)*1000,OPEN=(K.open||9)*1000,CHASE=3200;
+  let forced=-1e9;G.userData.openNow=()=>{forced=performance.now()+CHASE;};
+  const idle=new THREE.Color(0x5a4a2a),hot=new THREE.Color(0xfff0b0);
+  animHooks.push(now=>{
+    // the gate's own cycle, or a forced opening, whichever is sooner; t runs from -CHASE (the lights start)
+    let t=now%PERIOD;if(t>PERIOD-CHASE)t-=PERIOD;const tf=now-forced;const own=!(tf>-CHASE&&tf<OPEN);if(!own)t=tf;
+    let f=0;if(t>=0&&t<OPEN){const u=t/OPEN;f=Math.pow(Math.sin(u*Math.PI),0.6);}
+    // the chase: each step lights in turn and stays lit while the vortex is open
+    for(let i=0;i<NS;i++){const on=t>-CHASE+i*CHASE/NS&&t<OPEN*0.9;const pulse=on?1:0;EM[i].color.copy(idle).lerp(hot,pulse*(0.75+0.25*Math.sin(now*0.02+i)));}
+    for(const q of discs){q.mt.opacity=f*0.9;q.d.rotation.z=now*0.0009*q.dir;}
+    flashM.opacity=t>=0&&t<900?(1-t/900)*0.9:0;flash.scale.setScalar(1+t/300);
+    V.scale.setScalar(0.1+0.9*f);V.visible=f>0.01||flashM.opacity>0.01;
+    const su=(t-OPEN*0.35)/(PERIOD*0.5);ship.visible=own&&su>0&&su<1;ship.position.set(0,0,S*1.1-200+su*8000);});
   return G;
 }

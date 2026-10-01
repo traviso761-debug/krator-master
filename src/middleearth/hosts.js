@@ -99,7 +99,8 @@ export function hosts(api){
         const beast=new THREE.Mesh(new THREE.BoxGeometry(2.6,2.2,1.4).translate(0,1.1,0),fleshM);
         beast.position.set(x,0,z+3.6);beast.rotation.copy(bed.rotation);g.add(beast);}}
      // banners over the column
-     {const bits=[],flagM=new THREE.MeshLambertMaterial({color:0x5a1712,side:THREE.DoubleSide});
+     // a page can give its hosts their own colours (banner): Isengard's are white
+     {const bits=[],flagM=new THREE.MeshLambertMaterial({color:K.banner?col2(K.banner):0x5a1712,side:THREE.DoubleSide});
       for(let b=0;b<6;b++){const bx=(HR()-0.5)*FILE*STEP*0.8,bz=-HR()*ranks*STEP;
         const pole=new THREE.Mesh(new THREE.BoxGeometry(0.22,9,0.22).translate(0,4.5,0),ironM);pole.position.set(bx,0,bz);
         const flag=new THREE.Mesh(new THREE.PlaneGeometry(3.4,2.2),flagM);
@@ -144,8 +145,10 @@ export function hosts(api){
        const [px,pz]=polyAt(a.r,a.s,true),[ax,az]=polyAt(a.r,a.s+a.dir*120,true);
        const head=Math.atan2(az-pz,ax-px),gy=groundH(px,pz);
        a.g.position.set(px,gy+Math.abs(Math.sin(now*0.004))*0.12,pz);a.g.rotation.y=-head+Math.PI/2;
+       // Behind it. `head` is already the way it is going, whichever way along the road that is; multiplying
+       // by dir again put the dust out in front of every army marching the road backwards - half of them.
        a.dust.forEach((p,i)=>{const t=((now*0.00004)+p.userData.t)%1,back=a.ranks*a.STEP*(0.6+t*2.2);
-         p.position.set(px-Math.cos(head)*a.dir*back,gy+8+t*34,pz-Math.sin(head)*a.dir*back);
+         p.position.set(px-Math.cos(head)*back,gy+8+t*34,pz-Math.sin(head)*back);
          p.scale.setScalar(0.7+t*3.2);});}
      if(ctx.details&&now-(ctx._hT||0)>1000){ctx._hT=now;
        ctx.details.hostAt=armies.slice(0,3).map(a=>Math.round(a.g.position.x)+','+Math.round(a.g.position.z)).join(' | ');}});}
@@ -169,6 +172,8 @@ export function hosts(api){
     const emberM=new THREE.MeshBasicMaterial({color:0xff9a3c,transparent:true,opacity:0.85,depthWrite:false});
     const shaftM=new THREE.MeshLambertMaterial({color:0xcfc4a6});
     const aim=(x,z)=>-Math.atan2(ccz-z,ccx-x)+Math.PI/2;      // face whatever is being besieged
+    // what a page's events move about: the blocks (which scatter) and the riders (who charge)
+    ctx.siege={blocks:[],riders:null};
 
     // ---- the blocks, drawn up facing the wall ----
     {const NB=S.blocks||0,PER=S.per||1000,FL=S.file||42,ST=K.step||1.9;
@@ -194,7 +199,7 @@ export function hosts(api){
           flag.position.set(qx+1.7,8,qz);bits.push(pole,flag);}
         fold(g,bits);}
        g.position.set(bx,groundH(bx,bz),bz);g.rotation.y=aim(bx,bz);
-       add(g);flying.blocks++;}}
+       add(g);ctx.siege.blocks.push(g);flying.blocks++;}}
 
     // ---- the camps, behind them ----
     // Tents in clumps round a fire, which is the only thing that makes a plain look occupied.
@@ -226,6 +231,16 @@ export function hosts(api){
          smokeInst.count=smoke2.length;smokeInst.frustumCulled=false;smokeInst.userData.noWire=true;add(smokeInst);
        }}}
 
+    // a wall tower near this angle on the circle of radius rr, not yet taken: the roof of the smallest, tallest
+    // footprint the ring passes through - the towers are twelve metres square and stand eight over the wall
+    const takenTowers=new Set();ctx.siege.engineSpots=[];
+    const onTower=(cx0,cz0,rr,a)=>{
+      for(let k=0;k<=200;k++){const da=(k%2?1:-1)*Math.ceil(k/2)*0.002;
+        for(const off of [4,0]){const r=rr-off,x=cx0+Math.cos(a+da)*r,z=cz0+Math.sin(a+da)*r;
+          let best=null;for(const b of api.buildingsAt(x,z,0))if(api.inPoly(x,z,b.ring)&&b.x1-b.x0<22&&b.z1-b.z0<22&&(!best||b.h>best.h))best=b;
+          if(best&&!takenTowers.has(best)&&best.h>groundH(x,z)+12){takenTowers.add(best);
+            const p=[(best.x0+best.x1)/2,best.h,(best.z0+best.z1)/2];ctx.siege.engineSpots.push(p);return p;}}}
+      return null;};
     // ---- the engines ----
     // A counterweight trebuchet: two legs, a beam on a pivot with the weight on the short arm, and a base.
     // It winds down, hangs a moment, and throws; the stone leaves the sling at the top of the swing.
@@ -263,6 +278,14 @@ export function hosts(api){
        // adding the lift again put the city's engines a hundred metres over their own walls.
        const ring=Math.floor(HR()*(S.rings||3));
        const rr=(S.wall||560)-40-ring*(S.ringStep||66);
+       // A city whose walls have towers on them (defendOn: "towers") puts its engines up on the towers, which
+       // is where they stood: the one nearest this angle on this circle that has not got one, on its roof,
+       // throwing out. Placed at the foot of the circle instead, on the line of the wall, they stood half in
+       // the wall and half in the air, because that is exactly where the ground steps up a tier.
+       if(S.defendOn==='towers'&&api.buildingsAt){
+         const spot=onTower(ccx,ccz,rr,a);
+         if(spot){mkEngine(spot[0],spot[2],spot[1],Math.atan2(spot[2]-ccz,spot[0]-ccx),true,0.62);continue;}
+         continue;}                                    // no tower free on this stretch: this one is not built
        const ex=ccx+Math.cos(a)*rr, ez=ccz+Math.sin(a)*rr;
        mkEngine(ex,ez,groundH(ex,ez)+(S.ringY||0),a,true,0.62);}}
 
@@ -406,7 +429,7 @@ export function hosts(api){
         g.add(pole,flag);}
       g.position.set(RD.at[0],groundH(RD.at[0],RD.at[1]),RD.at[1]);
       g.rotation.y=RD.facing!==undefined?RD.facing:(-Math.atan2(ccz-RD.at[1],ccx-RD.at[0])+Math.PI/2);
-      add(g);flying.riders=m2;
+      add(g);ctx.siege.riders={g};flying.riders=m2;
     }
 
     // ---- what is in the air ----
@@ -462,10 +485,14 @@ export function hosts(api){
         const u=q.t0===undefined?-1:(now-q.t0)/900;
         if(u>=0&&u<=1){q.pivot.rotation.x=-1.0+2.1*u*u;
           if(!q.fired&&u>0.72){q.fired=true;
-            // out at the host on the plain, or in at the wall, depending which side it belongs to
-            const rr=q.out?R0*(0.85+HR()*0.45):(WALL-30);
-            const tx=ccx+Math.cos(q.a)*rr+(HR()-0.5)*190, tz=ccz+Math.sin(q.a)*rr+(HR()-0.5)*190;
-            const st=launch(stones,q.x,q.y+18*q.k,q.z,tx,groundH(tx,tz)+(q.out?4:WY*0.8),tz,3.4+HR(),200+HR()*90);
+            // out at the host on the plain, or in at the wall, depending which side it belongs to - and a city
+            // can ask (overWall) for some of those to clear the wall and come down in its streets and on its
+            // roofs, which is where a lit one does its work
+            const over=!q.out&&HR()<(S.overWall||0);
+            const rr=q.out?R0*(0.85+HR()*0.45):over?(S.cityR||WALL)*(0.25+HR()*0.7):(WALL-30);
+            const tx=ccx+Math.cos(q.a+(over?(HR()-0.5)*0.5:0))*rr+(HR()-0.5)*(over?40:190), tz=ccz+Math.sin(q.a+(over?(HR()-0.5)*0.5:0))*rr+(HR()-0.5)*(over?40:190);
+            const ty=over?Math.max(groundH(tx,tz),api.roofAt?api.roofAt(tx,tz)||0:0)+1:groundH(tx,tz)+(q.out?4:WY*0.8);
+            const st=launch(stones,q.x,q.y+18*q.k,q.z,tx,ty,tz,3.4+HR(),200+HR()*90+(over?60:0));
             if(st)st.fire=!q.out&&HR()<(S.firePart===undefined?0.4:S.firePart);}}
         else q.pivot.rotation.x=-1.0;}
       const step=(pool,mesh,spin)=>{
@@ -485,7 +512,8 @@ export function hosts(api){
       {let i=0,ti=0;
        for(const q of stones){
          if(q.fire&&q.t>1&&!q.landed){q.landed=true;
-           const h2=hits[hitN++%hits.length];h2.t=0;h2.g.position.set(q.bx,q.by,q.bz);h2.g.visible=true;}
+           const h2=hits[hitN++%hits.length];h2.t=0;h2.g.position.set(q.bx,q.by,q.bz);h2.g.visible=true;
+           if(ctx.onSiegeHit)ctx.onSiegeHit(q.bx,q.by,q.bz);}
          if(q.t>1||!q.fire){D.position.set(0,-9999,0);D.scale.setScalar(0.0001);D.rotation.set(0,0,0);}
          else{const u=Math.min(1,q.t),x=q.ax+(q.bx-q.ax)*u,z=q.az+(q.bz-q.az)*u,
                 y=q.ay+(q.by-q.ay)*u+q.h*4*u*(1-u);
