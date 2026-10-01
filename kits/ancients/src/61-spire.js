@@ -202,7 +202,11 @@ function buildSpire(scene,gx,gz,d){reseed(9310+d);KOFF=[gx,0,gz];
     const rr0=lerp(rOf(R,sides,INNER[0],PW[0],SHELF[0],0,th,t)*.96,out*(.62+.38*w),v);
     // and it droops as it goes out, so it is a parasol and not a dinner plate
     return[rr0*Math.cos(th),c[0]+H*t-Math.pow(v,1.7)*out*(.16+.10*(1-w)),rr0*Math.sin(th)];},
-    sides*9,4,{uS:R/7,vS:2,hole:d>0?(u,v)=>fbm(u*13,v*5,9360+i*3+b,3)<.66:null});
+    // Torn from the OUTER edge in: a flat threshold left ~a fifth of each fan
+    // as islands anywhere across it, and the ones out past the shoulder read
+    // as grey plates floating in mid-air off the ruin. Rising with v, what is
+    // left of a fan is a ragged collar still hanging off its tier.
+    sides*9,4,{uS:R/7,vS:2,hole:d>0?(u,v)=>fbm(u*13,v*5,9360+i*3+b,3)<.30+.60*v:null});
    mesh(fan,d>0?MAT.guts:MAT.glass,G);}});
  // ---------------------------------------------------------------- cable stays
  tips.forEach(tp=>{if(rng()<(d>0?.74:.52))return;
