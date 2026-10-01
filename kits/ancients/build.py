@@ -104,6 +104,7 @@ TARGET_OUT = {
     'alt-civic': 'alt-civic.html',             # civic alternates (arco1/arco2), all decays
     'yuni-variants': 'yuni-variants.html',     # the Yuni fork's variants, ported (src/8am-yv-*)
     'iziz-variants': 'iziz-variants.html',     # dev: Sky C tripod market, small-podium A-C, tower stumps (8an-iz-*)
+    'spaceport': 'spaceport.html',             # dev: the Iziz spaceport in every decay (8ao-iz-spaceport)
 }
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell.

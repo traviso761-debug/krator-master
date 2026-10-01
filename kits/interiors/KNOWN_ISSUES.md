@@ -26,6 +26,12 @@ What follows is what the checks do not cover, or what the kit does not do yet.
   3 m storey), else a ladder; when neither fits, the storey above is unreachable and the plan
   says so (`report.warnings`, failed by `auditBuilding`). When no cut fits, a storey gets fewer
   rooms than its programme (`report.dropped`).
+- [ ] **The demo furnishes seven cultures.** The catalog now carries 24 (the interiors furniture pass:
+  `kits/catalog/README.md` "Furniture by culture"), with a wealth band per piece (`tier`, `wealth`) that the
+  placer honours: a room tries its culture's in-band pieces, then its other tiers, then the chain in
+  `IX.CULTURE_FAMILY` (which ends in the generic poor sets). The demo rooms do not yet show a poor room
+  falling back to `generic`, a court room with a tapestry, or any of the new cultures; add rooms to
+  `70-demo.js` when those sets are placed in a world. `art` is a wall type with no walk-up access.
 - [ ] **Walkers do not see each other.** Each walker's route is planned alone on the room grids, so
   two walkers can pass through each other or share a seat; doors stand open (the leaves are
   drawn at 75 degrees) and nobody opens them; a seated walker is a figure lowered onto the seat,
