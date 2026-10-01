@@ -67,6 +67,10 @@ rep("window._projectFire=PROJFIRE;", "")
 # output material, so in Yuni it buys nothing — and it would defeat ANC_build's per-mesh footprint cull (a merged
 # mesh keeps the fragments that fell outside the plot). A no-op here.
 rep("function civFlatten(G){", "function civFlatten(G){if(YFLAT)return;")
+# The Foundry's merge sink (40-factory-extras.js facSink) does the same thing for buildFactory, and Yuni cuts TWO
+# assets out of that one builder (the Foundry, and the clover silo at x=72): merged, the silo's skin went with the
+# hall's merged mesh, whose centre is outside the silo's plot. Flushed as one mesh per surface here.
+rep("flush(parent){for(const [mat,gs] of B)meshMerged(gs,mat,parent);B.clear();}", "flush(parent){for(const [mat,gs] of B){if(YFLAT)for(const g of gs)mesh(g,mat,parent);else meshMerged(gs,mat,parent);}B.clear();}")
 
 # ------------------------------------------------------------------------------------------- cost patches
 # central segment multiplier

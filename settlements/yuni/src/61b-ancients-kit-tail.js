@@ -18,7 +18,7 @@ function repairPassY(G,S){
   else if(r<.8){kput('planter',[p[0],p[1]+.25*K,p[2]],qEuler(0,rng()*TAU,0),[rr(1.2,2.6)*K,.5*K,rr(.7,1.2)*K],null);
    for(let k=0;k<2;k++)kput('moss',[p[0]+rr(-.8,.8)*K,p[1]+.75*K,p[2]+rr(-.4,.4)*K],null,[.6*K,.45*K,.6*K],new THREE.Color().setHSL(rr(.26,.34),.55,.28));}
   else kput('plank',[p[0],p[1]+.1*K,p[2]],qEuler(0,rng()*TAU,0),[rr(2,4)*K,.15*K,rr(.4,.9)*K],null);}}
-function buildGreatSilo(scene,gx,gz,d){reseed(9205+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);factorySilo(G,d,SHELL(d));if(d>0)rubbleRing(110,6,-60,10,44,30,2);KOFF=[0,0,0];return G;}
+function buildGreatSilo(scene,gx,gz,d){reseed(9205+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const M=facSink();factorySilo(G,d,SHELL(d),M);M.flush(G);if(d>0)rubbleRing(110,6,-60,10,44,30,2);KOFF=[0,0,0];return G;}
 
 /* ================= THE WORN SKIN =================
    White metal that nobody has repainted for a thousand years: the same panel grid, with rust bleeding out of the
@@ -267,9 +267,13 @@ function buildCombShort(scene,gx,gz,d){reseed(9620+d);KOFF=[gx,0,gz];const G=new
   if(d>0&&rng()<.4)continue; kput(PLATE(d),[p[0]*.99,H+1.9,p[2]*.99],qEuler(0,-th,0),[1.4,1.1,1.4],null);}
  if(d>0){mossOnRing(0,H+1.3,0,RX*.9,26,1.3);vinesOnRing(0,H,0,RX*.95,14,10);rubbleRing(0,0,0,RX+2,RX+16,40,1.5);scatterMoss(0,0,0,RX,RX+20,40,1.2);}
  KOFF=[0,0,0];return G;}
-const B={gsilo:buildGreatSilo,quad:buildQuad,combShort:buildCombShort,skyA:buildSkyA,skyB:buildSkyB,skyC:buildSkyC,mega:buildMega,fac:buildFactory,port:buildStarport,gov:buildGovernment,lib:buildLibrary,bunk:buildBunker,off:buildOffices,apt:buildApartments,amph:buildAmphitheater,fuel:buildFuelStation,radar:buildRadarTower,dish:buildDish,house:buildHouses,lab:buildLab,house2:buildHouses2,skyD:buildSkyD,skyE:buildSkyE,skyF:buildSkyF,arc:buildArc,robo:buildRobotics,campus:buildCampus,skyG:buildSkyG,skyH:buildSkyH,dc:buildDataCenter,police:buildPolice,hosp:buildHospital,hotel:buildHotel,dam:buildDam};
+/* the builders the slice carries (tools/gen_ancients.py FRAGS); add a fragment there to place another type */
+const B={gsilo:buildGreatSilo,quad:buildQuad,combShort:buildCombShort,skyA:buildSkyA,skyB:buildSkyB,skyC:buildSkyC,fac:buildFactory,port:buildStarport,lib:buildLibrary,off:buildOffices,apt:buildApartments,fuel:buildFuelStation,radar:buildRadarTower,dish:buildDish,lab:buildLab,house2:buildHouses2,skyD:buildSkyD,skyE:buildSkyE,robo:buildRobotics,skyH:buildSkyH,dc:buildDataCenter,hosp:buildHospital};
 return { B:B, MAT:MAT, KIT:KIT, TSTAT:TSTAT, rust:rustPass,
   setWorn:function(w){WORN=!!w;}, setDish:function(k){DISHOK=!!k;}, setTight:function(t){LABTIGHT=!!t;},
+  /* the kit's frame hook (10-core.js TICKS) and day/night flag (92-camera.js NIGHT): Yuni's render loop calls tick,
+     its day/night pass calls setNight. Only the fire flicker and firelight (69-mat-salvage.js, decay 4) listen. */
+  tick:function(dt,t){for(let i=0;i<TICKS.length;i++)TICKS[i](dt,t);}, setNight:function(on){NIGHT=!!on;},
   setTH:function(f){ANC_TH=f;}, setHoles:function(h){HOLES=h;}, setRSC:function(k){RSC=k;}, resetXF:function(){KXF=null;KOFF=[0,0,0];KSKIP=false;},
   setSeg:function(k,t,names,uvk){SEGK=k;KTHIN=t;KTN=0;KTNAMES=names||[];UVK=uvk||1;}, triOf:triOf, repair:repairPassY, weather:weatherPass };
 })();

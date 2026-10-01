@@ -132,5 +132,11 @@ function ANC_finish(){
     scene.add(me); nMesh++; nTri+=ni/3; B.parts=[]; }
   window._anc = { meshes:(window._anc?window._anc.meshes:0)+nMesh, tris:(window._anc?window._anc.tris:0)+Math.round(nTri), stat:ANC_STAT, over:ANC_OVER };
 }
+/* THE KIT'S FRAME HOOK. The kit animates through tick(fn) (its 10-core.js) and reads a NIGHT flag (its 92-camera.js);
+   inside Yuni both are driven from Yuni's own frame loop. Only the fire flicker and firelight of 69-mat-salvage.js
+   listen, and they act on decay-4 fires, which no Yuni variant places: the hook is wired so the kit code runs as
+   written, not because anything flickers yet. */
+var _ancT = 0;
+TICKS.push(function(dt, hour, nk){ _ancT += dt; ANCK.setNight(nk > 0.5); ANCK.tick(dt, _ancT % 1000); });
 window.ANC_build=ANC_build; window.ANC_finish=ANC_finish;
 (window.YUNI_FINISHERS = (window.YUNI_FINISHERS||[])).push(ANC_finish);
