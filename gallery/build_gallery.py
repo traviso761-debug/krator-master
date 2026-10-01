@@ -55,7 +55,7 @@ ENTRIES = [
     ('kit', 'post-apoc-kit', 'kits/post-apoc/dist/post-apoc.html', 'Post-Apoc set',
      'Reclaimed-and-recycled buildings (containers, silos, tanks, buses, tyre and bottle walls) with sockets for any culture\'s marks: switch between Generic, Iziz, Voth and Republic.'),
     ('kit', 'ancients-kit', 'kits/ancients/dist/ancients-kit.html', 'Ancients',
-     'Ruined megastructures of the ancient civilisation: 33 structure types at every level of decay.'),
+     'Ruined megastructures of the ancient civilisation at every level of decay: the 33 original types, the Lighthouse, 29 arco alternates and five Yuni variants, each intact, ruined and rehabilitated.', 'new'),
     ('kit', 'ancients-worn', 'kits/ancients/dist/worn.html', 'Ancients, worn',
      'Every Ancients type intact beside its worn twin: whole, rust-streaked, the white skin tarnished.'),
     ('kit', 'ancient-iziz-style', 'kits/ancients/dist/iziz-style.html', 'Ancient Iziz Style',
