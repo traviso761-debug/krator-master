@@ -1,0 +1,143 @@
+// ================================================================= HOST — probe (window._api)
+// What verify.py --assert measures. Every Shade check reads the built world
+// (the ground's height function, the water meshes' own vertices, the biome's
+// instance matrices, the walkable grid), never the constants that built it.
+// Each check is a function of its inputs, and NEGATIVES feeds each one a
+// deliberately broken input: a check that passes its negative cannot fail,
+// and verify.py fails the run for it.
+const BUDGET={
+ showcase:{tris:6000000,calls:120},
+ cls:{pass:3500000,host:900000},
+ type:{'desert/trees':'pass','desert/floor':'pass','desert/fauna':'pass','desert/dress':'pass','host':'host'},
+};
+function _probePoints(){
+ const pts=[],m=new THREE.Matrix4(),pos=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3(),bb=new THREE.Box3();
+ scene.traverse(o=>{if(o.userData&&o.userData.probeSkip)return;
+  if(o.isInstancedMesh){for(let i=0;i<o.count;i++){o.getMatrixAt(i,m);m.decompose(pos,q,sc);pts.push([pos.x,pos.y,pos.z]);}return;}
+  if(!o.isMesh)return;bb.setFromObject(o);if(!isFinite(bb.min.x)||!isFinite(bb.max.x))return;
+  pts.push([(bb.min.x+bb.max.x)/2,(bb.min.y+bb.max.y)/2,(bb.min.z+bb.max.z)/2]);});
+ return pts;}
+function regOccupancy(){const n=new Array(REG.length).fill(0);const P=_probePoints();
+ // the water volumes are drawn by probeSkip meshes: count their own vertices
+ const W=[];for(const k in WATER){const a=WATER[k].geometry.attributes.position;for(let i=0;i<a.count;i+=3)W.push([a.getX(i),a.getY(i),a.getZ(i)]);}
+ REG.forEach((r,i)=>{for(const p of (r.cls==='water'?W:P))if(regHas(r,p[0],p[1],p[2]))n[i]++;});
+ return REG.map((r,i)=>({name:r.name,n:n[i]}));}
+function nanSweep(){const bad=[];let badInst=0;
+ scene.traverse(o=>{if(!o.isMesh&&!o.isInstancedMesh)return;if(o.userData&&o.userData.probeSkip)return;
+  const p=o.geometry&&o.geometry.attributes&&o.geometry.attributes.position;if(p){const a=p.array;for(let i=0;i<a.length;i++)if(!isFinite(a[i])){bad.push({geo:o.name||o.geometry.type,at:i});break;}}
+  if(o.isInstancedMesh){const a=o.instanceMatrix.array;for(let i=0;i<a.length;i++)if(!isFinite(a[i])){badInst++;break;}}});
+ return {meshes:bad.length,first:bad.slice(0,8),instances:badInst,firstInstances:[]};}
+function typeStats(){const out={};for(const k in BIO.stats){const t=BIO.stats[k],cls=BUDGET.type[k]||'pass';out[k]={tris:t.tris,inst:t.inst,meshes:t.meshes,cls,limit:BUDGET.cls[cls],over:t.tris>BUDGET.cls[cls]};}return out;}
+
+// ---------------------------------------------------------------- the Shade checks
+const worldVerts=m=>{m.updateMatrixWorld(true);const a=m.geometry.attributes.position,v=new THREE.Vector3(),out=[];for(let i=0;i<a.count;i++){v.fromBufferAttribute(a,i).applyMatrix4(m.matrixWorld);out.push([v.x,v.y,v.z]);}return out;};
+const CHK={
+ // the falls: every vertex of the curtain in front of the rock, the lowest ones inside the pool at its surface
+ falls(V){const minY=Math.min(...V.map(v=>v[1]));const low=V.filter(v=>v[1]<minY+.01);
+  const inRock=V.filter(v=>terrainH(v[0],v[2])>v[1]+.15).length,out=low.filter(v=>Math.hypot(v[0]-POOL.x,v[2]-POOL.z)>POOL.r-1||waterH(v[0],v[2])<v[1]-.05).length;
+  return{ok:inRock===0&&out===0,detail:V.length+' curtain vertices; '+inRock+' inside the rock; '+out+'/'+low.length+' of the lowest outside the pool'};},
+ // a stream ribbon: its centre above the bed everywhere, its edges hidden under the banks (a stream on a dyke shows its edges)
+ ribbon(V,NW,name){let bed=0,edge=0,rows=0,worst=9;for(let r=0;r*(NW+1)<V.length;r++){const row=V.slice(r*(NW+1),(r+1)*(NW+1));if(row.length<NW+1)break;rows++;
+  const c=row[NW>>1],dh=c[1]-terrainH(c[0],c[2]);worst=Math.min(worst,dh);if(dh<.3)bed++;for(const e of [row[0],row[NW]])if(terrainH(e[0],e[2])<e[1]-.05)edge++;}
+  return{ok:bed===0&&edge<=rows*.02,detail:name+': '+rows+' rows; centre within .3 m of the bed '+bed+' (least depth '+worst.toFixed(2)+' m); edges showing '+edge};},
+ // a trail: the steepest grade of the GROUND along its centreline, every half metre
+ grade(P,lim){let mg=0,at=null;for(let k=0;k<P.length-1;k++){const a=P[k],b=P[k+1],l=Math.hypot(b[0]-a[0],b[1]-a[1]),n=Math.max(1,Math.ceil(l/.5));let px=a[0],pz=a[1],py=terrainH(px,pz);
+  for(let i=1;i<=n;i++){const x=mix(a[0],b[0],i/n),z=mix(a[1],b[1],i/n),y=terrainH(x,z),g=Math.abs(y-py)/Math.hypot(x-px,z-pz);if(g>mg){mg=g;at=[x|0,z|0];}px=x;pz=z;py=y;}}
+  return{ok:mg<=lim,detail:'steepest '+mg.toFixed(3)+' (limit '+lim+') at '+JSON.stringify(at)};},
+ // a facade line lies on a sheer face: 1 m out on the floor, 3 m in at the top, at least 30 m apart (84 degrees)
+ sheer(F,name){const n=12;let worst=1e9;for(let i=0;i<=n;i++){const x=mix(F.a[0],F.b[0],i/n),z=mix(F.a[1],F.b[1],i/n),fx=F.face[0],fz=F.face[1];
+  const rise=terrainH(x-fx*3,z-fz*3)-terrainH(x+fx*1,z+fz*1);worst=Math.min(worst,rise);}
+  return{ok:worst>=30,detail:name+': least rise over 4 m '+worst.toFixed(1)+' m'};},
+ // a place on open ground: flat (grade <= .2 over 1 m) and dry, sampled on a 2 m grid inside it
+ flat(poly,name){let n=0,steep=0,wet=0,worst=0;const xs=poly.map(p=>p[0]),zs=poly.map(p=>p[1]);
+  for(let x=Math.min(...xs)+1;x<Math.max(...xs);x+=2)for(let z=Math.min(...zs)+1;z<Math.max(...zs);z+=2){if(!polyHas(poly,x,z))continue;n++;const y=terrainH(x,z),g=Math.max(Math.abs(terrainH(x+1,z)-y),Math.abs(terrainH(x,z+1)-y));
+   worst=Math.max(worst,g);if(g>.2)steep++;if(waterH(x,z)>y)wet++;}
+  return{ok:n>0&&steep===0&&wet===0,detail:name+': '+n+' samples, '+steep+' steep (worst '+worst.toFixed(2)+'), '+wet+' under water'};},
+ // a shore place: some of it wet, most of it dry
+ shore(poly,name){let n=0,wet=0;const xs=poly.map(p=>p[0]),zs=poly.map(p=>p[1]);
+  for(let x=Math.min(...xs)+1;x<Math.max(...xs);x+=2)for(let z=Math.min(...zs)+1;z<Math.max(...zs);z+=2){if(!polyHas(poly,x,z))continue;n++;if(waterH(x,z)>terrainH(x,z))wet++;}
+  return{ok:wet>0&&wet<n*.6,detail:name+': '+wet+'/'+n+' samples under water'};},
+ // no flora rooted inside a reserved place: the biome's registered trees and every instance near the ground
+ noFlora(polys){let trees=0,items=0;const inAny=(x,z)=>polys.some(p=>polyHas(p,x,z));
+  for(const r of REG)if(r.cls==='flora'&&r.r<60&&inAny(r.x,r.z))trees++;
+  const m=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),s=new THREE.Vector3();
+  scene.traverse(o=>{if(!o.isInstancedMesh||!o.userData.biome||o.count>2e6||o.instanceMatrix.usage===THREE.DynamicDrawUsage)return;   // fauna move: a strider crossing a place is not rooted in it
+ for(let i=0;i<o.count;i++){o.getMatrixAt(i,m);m.decompose(p,q,s);if(p.y-terrainH(p.x,p.z)<1.2&&inAny(p.x,p.z))items++;}});
+  return{ok:trees===0&&items===0,detail:trees+' registered trees and '+items+' ground-level instances inside '+polys.length+' reserved polygons'};},
+ // no two places overlap (a vertex of one inside the other, or crossing edges)
+ overlap(list){const bad=[];const X=(a,b,c,d)=>{const o=(p,q,r)=>Math.sign((q[0]-p[0])*(r[1]-p[1])-(q[1]-p[1])*(r[0]-p[0]));return o(a,b,c)*o(a,b,d)<0&&o(c,d,a)*o(c,d,b)<0;};
+  for(let i=0;i<list.length;i++)for(let j=i+1;j<list.length;j++){const A=list[i].poly,B=list[j].poly;let hit=A.some(p=>polyHas(B,p[0],p[1]))||B.some(p=>polyHas(A,p[0],p[1]));
+   for(let a=0;a<A.length&&!hit;a++)for(let b=0;b<B.length&&!hit;b++)if(X(A[a],A[(a+1)%A.length],B[b],B[(b+1)%B.length]))hit=true;if(hit)bad.push(list[i].id+'/'+list[j].id);}
+  return{ok:!bad.length,detail:bad.length?bad.join(', '):list.length+' places, none overlapping'};},
+ // a water surface faces UP: every triangle's normal has y > 0 (a ribbon wound the other way is culled from above)
+ facesUp(meshes){const bad=[];for(const m of meshes){const g=m.geometry,P=g.attributes.position,I=g.index?g.index.array:null,n=I?I.length:P.count;let down=0,tot=0;
+  const A=new THREE.Vector3(),B=new THREE.Vector3(),C=new THREE.Vector3();
+  for(let i=0;i<n;i+=3){const ia=I?I[i]:i,ib=I?I[i+1]:i+1,ic=I?I[i+2]:i+2;A.fromBufferAttribute(P,ia);B.fromBufferAttribute(P,ib);C.fromBufferAttribute(P,ic);
+   B.sub(A);C.sub(A);const y=B.z*C.x-B.x*C.z;tot++;if(y<=0)down++;}
+  if(down)bad.push((m.userData.inspectLabel||m.name)+' '+down+'/'+tot);}
+  return{ok:!bad.length,detail:bad.length?'facing down: '+bad.join(', '):meshes.length+' water surfaces face up'};},
+ // nothing rooted on a cliff: a ground-level instance where the ground's grade, centred on it over 1 m,
+ // exceeds 1.3 (centred: a stone on the rim's top at the lip is not on the face)
+ noCliffFlora(P,trees){const G=new Map(),C=20,key=(x,z)=>Math.floor(x/C)*4096+Math.floor(z/C);
+  const grade=(x,z)=>Math.max(Math.abs(terrainH(x+.5,z)-terrainH(x-.5,z)),Math.abs(terrainH(x,z+.5)-terrainH(x,z-.5)));
+  let bad=0,at=null,inTree=0;const T=trees||[];
+  for(const r of T){if(grade(r.x,r.z)>1.3){bad++;if(!at)at=['tree '+r.name,r.x|0,r.z|0];}
+   for(let i=Math.floor((r.x-r.r)/C);i<=Math.floor((r.x+r.r)/C);i++)for(let j=Math.floor((r.z-r.r)/C);j<=Math.floor((r.z+r.r)/C);j++){const k=i*4096+j;if(!G.has(k))G.set(k,[]);G.get(k).push(r);}}
+  for(const p of P){const h=terrainH(p[0],p[2]);if(p[1]-h>1.2)continue;
+   const L=G.get(key(p[0],p[2]));if(L&&L.some(r=>Math.hypot(p[0]-r.x,p[2]-r.z)<r.r)){inTree++;continue;}   // a tree's part: the tree is tested at its root
+   if(grade(p[0],p[2])>1.3){bad++;if(!at)at=[p[0]|0,p[2]|0];}}
+  return{ok:bad===0,detail:bad+' rooted on a cliff, of '+T.length+' trees (at their roots) and '+(P.length-inTree)+' ground-level items outside them'+(at?' (first '+JSON.stringify(at)+')':'')};},
+ // the preset cameras stand clear of the trees (no registered tree within its crown's radius + 3 m)
+ camerasClear(cams){const bad=[];for(const c of cams){for(const r of REG){if(r.cls!=='flora'||r.r>60)continue;if(Math.hypot(c.x-r.x,c.z-r.z)<r.r+3&&c.y<(r.y||0)+r.h+2){bad.push(c.view+' in '+r.name);break;}}}
+  return{ok:!bad.length,detail:bad.length?bad.slice(0,5).join('; '):cams.length+' cameras clear'};},
+ // the canyon is open: its east port reachable from the Khan over the ground (optionally with cells blocked)
+ canyonOpen(block){const K=polyCentre(PLACES.find(p=>p.id==='khan').poly),S=LIFE.reach(K[0],K[1],block),P=PORTS.canyon_east;
+  const k=Math.round((P.x-LIFE.NAV.x0)/LIFE.NAV.c)+Math.round((P.z-LIFE.NAV.z0)/LIFE.NAV.c)*LIFE.NAV.nx;return{ok:!!S[k],detail:'the canyon\'s east port '+(S[k]?'reachable':'UNREACHABLE')+' from the Khan'};},
+};
+function shadeChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r));
+ add('falls-land-in-the-pool',CHK.falls(worldVerts(WATER.falls)));
+ add('water-faces-up',CHK.facesUp([WATER.upper,WATER.lower,WATER.pool]));
+ add('upper-stream-in-its-channel',CHK.ribbon(worldVerts(WATER.upper),WATER.upper.userData.NW,'upper'));
+ add('lower-stream-in-its-channel',CHK.ribbon(worldVerts(WATER.lower),WATER.lower.userData.NW,'lower'));
+ add('switchback-grade',CHK.grade(SWB.pts,.15));
+ {const s=SWB.spacing,mn=Math.min(...s);add('switchback-legs-apart',{ok:mn>=SWB.bank*2,detail:'leg spacing '+s.join(', ')+' m (needs '+(SWB.bank*2)+')'});}
+ const u=LIFE.OUT.onlyWayUp;add('switchback-is-the-only-way-up',{ok:u.withSwitchback&&!u.withoutSwitchback,detail:'gatehouse reachable with the switchback: '+u.withSwitchback+'; with it blocked ('+u.blockedCells+' cells): '+u.withoutSwitchback});
+ for(const p of PLACES){if(p.kind==='wall')add('sheer-face: '+p.id,CHK.sheer(p.facade,p.id));
+  else if(p.kind==='ground'||p.kind==='plateau')add('flat-and-dry: '+p.id,CHK.flat(p.poly,p.id));else if(p.kind==='shore')add('on-the-shore: '+p.id,CHK.shore(p.poly,p.id));}
+ add('places-do-not-overlap',CHK.overlap(PLACES));
+ add('no-flora-in-reserved-places',CHK.noFlora(RESERVED.filter(p=>p.kind!=='shore').map(p=>p.poly)));
+ add('canyon-mouth-open',CHK.canyonOpen());
+ {const P=[],m=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3();scene.traverse(o=>{if(!o.isInstancedMesh||!o.userData.biome||o.instanceMatrix.usage===THREE.DynamicDrawUsage)return;for(let i=0;i<o.count;i++){o.getMatrixAt(i,m);m.decompose(p,q,sc);if(Math.abs(p.x)<700&&Math.abs(p.z)<700)P.push([p.x,p.y,p.z]);}});
+  add('no-flora-on-cliffs',CHK.noCliffFlora(P,REG.filter(r=>r.cls==='flora'&&r.r<60&&Math.abs(r.x)<700&&Math.abs(r.z)<700)));}
+ add('preset-cameras-clear-of-trees',CHK.camerasClear(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
+ const L=LIFE.OUT;
+ add('life: every place reachable',{ok:!L.unreachable.length,detail:L.unreachable.length?'unreachable: '+L.unreachable.join(', '):L.places+' places and '+Object.keys(PORTS).length+' ports reachable from the Khan'});
+ add('life: capacity every hour',{ok:!L.capacity.length,detail:L.capacity.length?L.capacity.slice(0,6).map(c=>c.hour+'h '+c.activity+' short '+c.short).join('; '):L.people+' people, '+L.jobs+' jobs, 24 hours, no shortfall'});
+ add('life: activities known and offered',{ok:!L.unknownActivities.length,detail:L.unknownActivities.join(', ')||'all '+L.activities});
+ const ev=L.events.raider_convoy;add('life: raider convoy routed',{ok:!ev.missing.length&&ev.exitOnSwitchback_m>=200,detail:ev.legs.map(l=>l.to+' '+l.len+' m').join(' -> ')+'; exit on the switchback '+ev.exitOnSwitchback_m+' m'+(ev.missing.length?'; MISSING '+ev.missing.join(', '):'')});
+ const unr=Object.keys(L.routes).filter(j=>L.routes[j].unrouted);add('life: every job\'s commute routed',{ok:!unr.length,detail:unr.length?unr.join(', '):Object.keys(L.routes).length+' jobs'});
+ return R;}
+// each check fed a broken input; every one of these must FAIL
+function shadeNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail});
+ add('falls pushed 3 m into the rock',CHK.falls(worldVerts(WATER.falls).map(v=>[v[0]-3,v[1],v[2]])));
+ {const g=WATER.pool.geometry.clone(),I=g.index.array;for(let i=0;i<I.length;i+=3){const t=I[i+1];I[i+1]=I[i+2];I[i+2]=t;}add('the pool wound the wrong way',CHK.facesUp([new THREE.Mesh(g)]));}
+ add('upper stream lifted 1.2 m (a dyke)',CHK.ribbon(worldVerts(WATER.upper).map(v=>[v[0],v[1]+1.2,v[2]]),WATER.upper.userData.NW,'upper+1.2'));
+ add('lower stream sunk 1 m',CHK.ribbon(worldVerts(WATER.lower).map(v=>[v[0],v[1]-1,v[2]]),WATER.lower.userData.NW,'lower-1'));
+ add('a trail straight up the north slope',CHK.grade([[60,SWB.zEdge+2],[60,SWB.zEdge-SWB.W-4]],.15));
+ const pe=PLACES.find(p=>p.id==='petra').facade;add('the carved face moved 20 m onto the floor',CHK.sheer({a:[pe.a[0],pe.a[1]-20],b:[pe.b[0],pe.b[1]-20],face:pe.face},'petra-20'));
+ {const F=PLACES.find(p=>p.id==='petra').facade,P=[];for(let i=0;i<=10;i++){const x=mix(F.a[0],F.b[0],i/10),z=F.a[1]+1;P.push([x,terrainH(x,z),z]);}add('plants on the carved face',CHK.noCliffFlora(P));}
+ add('a place across the north wall',CHK.flat([[-20,-90],[0,-90],[0,-70],[-20,-70]],'across the wall'));
+ add('a place across the lower stream',CHK.flat([[-10,-8],[10,-8],[10,8],[-10,8]],'across the stream'));
+ add('a shore place with no water',CHK.shore([[-35,-46],[5,-46],[5,-14],[-35,-14]],'the market as a shore'));
+ add('a reserved box over planted plateau',CHK.noFlora([[[-600,-150],[-300,-150],[-300,150],[-600,150]]]));
+ const m=PLACES.find(p=>p.id==='market');add('two places overlapping',CHK.overlap([m,{id:'market+5',poly:m.poly.map(p=>[p[0]+5,p[1]+5])}]));
+ {const T=REG.find(r=>r.cls==='flora'&&r.r<60);if(T)add('a camera inside a tree',CHK.camerasClear([{view:'in-tree',x:T.x,y:(T.y||0)+2,z:T.z}]));}
+ {const N=LIFE.NAV,b=new Uint8Array(N.nx*N.nz);for(let j=0;j<N.nz;j++)for(let i=0;i<N.nx;i++){const x=N.x0+i*N.c;if(x>=150&&x<=153)b[j*N.nx+i]=1;}add('a wall across the canyon',CHK.canyonOpen(b));}
+ return R;}
+window._api={BUDGET,REG,
+ get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
+ typeStats,regOccupancy,nanSweep,shadeChecks,shadeNegatives,
+ setView:(cx,cy,cz,tx,ty,tz)=>setView(cx,cy,cz,tx,ty,tz),views:()=>Object.keys(VIEWS),
+ biome:()=>window._biome,life:()=>LIFE.OUT};
+window._registered=REG.length;
+window._shade={places:PLACES.length,switchback:{len:Math.round(SWB.len),grade:+SWB.grade.toFixed(3),legs:SWB.legs},pool:POOL,people:LIFE.OUT.people};
