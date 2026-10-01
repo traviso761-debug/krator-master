@@ -74,10 +74,10 @@ Krabi-like, karst stacks standing in it and on the shore. The **volcano** is far
 | The old grid | **one continuous square lattice** (pitch ~180–220 m, streets 12–16 m, rotated ~12°): it starts on the land quarter and runs straight on under the water to about 700 m beyond the shoreline; the shore crosses it diagonally, so the same street is dry, then awash, then a canal, then open water between towers | the land quarter's streets follow it loosely (the Hykkousoi bend it); the drowned quarter's hosts stand exactly on it. One block holds one Ancient host (tower or mid-rise) at full storey height; the Hykkousoi fill the rest |
 | The sink | the old city plane tilts ~1.5° to the SE plus a step | shore streets awash (±1 m), 200 m out canals 4–6 m deep, 500 m out open water 12–18 m deep between towers |
 | Amphitriton island | centre of the drowned quarter, ~450 m offshore | its own island/plinth; drawbridge to the land, rib bridges to the neighbours |
-| Military harbour | between the Amphitriton and the shore, west side | ship sheds, hexareme berth, boom chain |
+| Military harbour | between the Amphitriton and the shore, west side | an Ancient covered wet pen (the port kit's `slPen`) reused as the navy's ship shed, hexareme berth, boom chain |
 | Civilian harbour | shore, SW of the main market | pearl baghlah, corbita; the Navigator's and Pearlmonger's guilds on the quay |
 | Fishing docks | the far end of the civilian harbour | fishmongers behind them |
-| Grown raised plaza | drowned quarter, a lily-pad plaza grown off the Amphitriton's neighbours | the second market |
+| Grown raised plaza | drowned quarter, a lily-pad plaza grown off the Amphitriton's neighbours | the second market; its substrate is a reclaimed mole (the port kit's `spYard` stamps: fill to deck, quay wall on every water side), the Amphitriton island the same at larger size |
 | Temple of the Tides (B) | drowned quarter, on the shore side of the Amphitriton | water enters the hall |
 | Temple of the Winds (D) | drowned quarter, the seaward edge, on a karst stack or tower stump | tallest spires after the Amphitriton; wider and airier than the reference |
 | Archon's Citadel (E) | a karst stack at the drowned quarter's southern flank | terraced, arena-like, bridges to the Amphitriton; the **Treasury** stands inside its precinct |
@@ -89,7 +89,7 @@ Krabi-like, karst stacks standing in it and on the shore. The **volcano** is far
 | Neighbourhoods | land: three (NW, N, S); drowned: rings of blocks round the Amphitriton | each with a shrine and the two small markets split between them |
 | Barracks, ballistas, mustering ground | on the southern headland, facing the sea | ballistas also on three drowned tower tops and the sea wall |
 | Farms and farmhouses | outlying, up the river valley on the travertine terraces and along the NW highway | |
-| Aquaculture pens | the shoreline NE of the city, away from the harbours | |
+| Aquaculture pens | the shoreline NE of the city, away from the harbours | rows offset from the real shoreline curve with a boat canal between rows and a sanity pass that proves the canal open (Voth's chinampa placement); fish weirs and duck runs (Reed Lake) |
 | River | enters from the NW, descends in travertine terraces (Semuc Champey), reaches the bay west of the civilian harbour | the city's fresh water; the windmill and generator stand on it |
 
 **Wealth gradient** (brief): poorer further from the Amphitriton, in both halves. Drowned quarter: 75 %
@@ -125,6 +125,21 @@ positions and a walk GRAPH with heights replaces the walkable mask. Ys has five 
   quay, L1, L2) linked by stair and ladder cells, and **BOAT**, water cells with depth ≥ the vessel's
   draught and span clearance ≥ its air draught (both read from the Ring Sea vessel defs). A third mode,
   **SWIM**, is the BOAT grid at zero draught: the Hykkousoi walk into the water.
+
+**Every drowned host is a canton** (Voth `30a-layout-districts.js`, `78a-life-core.js`, `78b-life-nav.js`,
+`65e-docks-ferry-fishing.js`). A layout record, geometry-free, exists before anything is drawn:
+```
+HOST = { n, key, x, z, ry, cap:{hw | poly} (the builder's REAL footprint, measured, not a radius),
+         cutY, floors[], landings[], heads[], piers[], ring (wealth), lit }
+```
+and the tests Voth paid for come with it: `hostEdge(h, dirX, dirZ)` is the exact distance to the cap's
+edge along a bearing (a square's corner lies at `hw / max(|cos|,|sin|)`, not at `hw`: three Voth piers
+stood in open water before that was learned); the nav grid classifies a cell blocked from the exact cap
+plus a small margin (Voth's +10), while mid-route steering keeps a generous one (Voth's `1.45 r + 40`),
+and the two are never confused (that confusion marked every Voth dock as blocked); a pier roots at
+`edge − 3` so its near end reads flush with the deck; every landing, berth and ferry stop is a record the
+builder fills and a later consumer reads (`BERTHS`, `FERRY_STOPS`, `WET_DOORS`, Voth's `LIFE_*_BERTHS`),
+so the life layer finds them without re-deriving a thing. `landDist` is never asked about a host.
 
 `NAV`: nodes `{x,y,z,level,tag}`, edges tagged `ground quay stair bridge ladder lane(boat) swim`, a height
 function per arched span. Invariants: every land door reaches the main market on foot; every wet door
@@ -182,6 +197,13 @@ The Ancients kit's structure types are the substrate of the drowned quarter and 
 - Every drowned host gets the **tideline dressing**: a black crust band at y 0 ± 1.2, weed ribbons under
   it, barnacle rings, foam at the waterline, the lowest floors flooded (floor slabs under water, visible
   through it). Materials under the water plane take the port kit's underwater fade.
+- **Every host carries its floors as data** (Girder `30-layout.js`: `T.floors[k] = {k, y, H, use, kind,
+  missing}` and the room `SLOTS` cut into the open floors with their door facing). For a drowned host:
+  `floors[k] = {k, y, H, kind:'drowned'|'tide'|'inhabited'|'wild'|'roof', use}`, `y` and `H` taken from
+  the builder's own storey pitch at scale 1, `kind` from `y` against the datums (under 0 drowned, within
+  the tide band tide, at L1/L2 inhabited, else wild). Accreted pods, bridge landings and the later
+  interiors all address a floor by `k`. This is the data half of "floors stay human": a host whose storeys
+  the table cannot describe is a host that cannot be shortened.
 - Then **accretion** (§4.7): a scheduler chooses pods per host by wealth ring and host size, at datums
   L1 and L2 and at the wet landing, and the biome's `dress()` grows curtains and moss off the ledges.
 
@@ -204,7 +226,8 @@ Tags per the project rule (`culture:'hykkousoi'`, `type`, `wealth`, `lit`; a pla
 | Civic, minor | Library of Ys, Treasury, the Wet Cells (prison): all three in the Hykkousoi vocabulary (3) |
 | Infrastructure | the Pharos crown: the beacon lantern room grown onto a full-height host, with its turning beam (1) |
 | Agriculture | farm field, farmhouse ×2 (3) |
-| Spans | rib bridge L1, rib bridge L2, drawbridge, spiral stair on a host, ladder, lily-pad landing, grown walkway (7) |
+| Spans | rib bridge L1, rib bridge L2, drawbridge, spiral stair on a host, ladder, lily-pad landing, grown walkway, **pontoon walkway** at the wet datum (the poor blocks' link: Reed Lake's pontoon bridges, grown over) (8) |
+| Optional, from the survey | **hulk-breakers' strand**: a beached hulk being cut up for the scrap smithies (the Highlands shipbreakers' yard as the pattern; "unrusted metal" is the lore's reason); a **harbour light** on the civilian mole (the port kit's small lighthouse); one half-drowned Ancient **Engine** standing in the bay as a reef (the kit's `engines` target) if Travis wants a second far landmark |
 
 About 90 Hykkousoi builders: Yuni-kit scale. The five "other" stores are a proposal; swap freely.
 
@@ -257,11 +280,17 @@ The north-west bay of the Ring Sea, as its own kit on the shared biome core, for
 ## 9. Dev tools (project rule) and the compass
 
 Inspector (hover: name · class · tags), polygon tool, walk mode (F), labels, night (n), the port kit's
-footprint bounds (b), the Paths and Marks overlays, the hour slider, and a **Compass** toggle: a rose in
-the corner that turns with the camera yaw and a ground gizmo (N E S W) at the orbit target. The compass
-goes into the standard `92-camera.js` pack so later builds inherit it.
+footprint bounds (b), the Paths and Marks overlays, the hour slider, a **Below the tide** view (Yuni's
+underground cutaway: hide the water plane and the dry city, show the drowned floors and the seabed, so
+the flooded storeys can be judged and later furnished), and a **Compass** toggle: a rose in the corner
+that turns with the camera yaw and a ground gizmo (N E S W) at the orbit target. The compass goes into
+the standard `92-camera.js` pack so later builds inherit it.
 
 ## 10. Later
 
-Life layer (Voth's pathing and collision as the model; `NAV` is built now so it has something to walk);
+Life layer (Voth's pathing and collision as the model; `NAV`, `HOSTS`, `BERTHS` and `FERRY_STOPS` are
+built now so it has something to walk and somewhere to dock): ships cycling the quays, water taxis
+between the wet landings, fishing dhows, swimmers; moving-vehicle lanterns (Voth's reserved tracked
+night-light slots); weather as a three-state cycle layered over the clock (Voth's `83-weather.js`:
+clear / squall / sea-fog here); ambient gulls over the bay on their own clock (Voth's `84-fauna.js`);
 an animated tide (±1.2 m, the tideline band is painted for it already); interiors behind the marks.
