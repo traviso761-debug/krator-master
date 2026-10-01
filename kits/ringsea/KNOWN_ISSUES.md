@@ -1,14 +1,19 @@
 # Known issues
 
 - Vendored drift from `settlements/reedlake/src`: `93-labels.js` also labels `cls:'vessel'` and shrinks the font before truncating a long name; `92-camera.js` starts with the Labels button off. `00-head.html` has its own title.
-- No life-layer pathing or collision; decks are not walkable surfaces for the walk mode.
-- The swell is a heightfield of four sines (no Gerstner crests, no whitecaps); it fades flat 440-600 m from the
-  roadstead's centre, so the far sea is the old flat plane with the scrolled normal map.
-- Sail flutter moves only the cloth (at most 0.12 m, along the belly side): sheets, ropes and edge tubes stay at the
-  rest pose, so a rope's end can sit a few centimetres off a fluttering clew. Pennants and flags do not move.
-  The sails do not trim to the wind or the heading.
-- Under way: every vessel makes the same speed and wraps round its row, so it pops from the east end of the row to
-  the west end (and a preset view following it jumps with it). Labels are baked at station and do not follow.
-  Turning it off puts every vessel back on station at once. Heading is always east; there is no turning.
-- The verify invariants (vessels-float, no-vessel-overlap, sails-*) check the rest pose at station, not the swell
-  or under-way poses.
+- Walk mode stands on a 0.4 m heightfield of each vessel's flat surfaces and is stopped by anything in a 0.4 m-round
+  body 0.5-1.7 m above its feet (masts, walls, rails, crew, cargo). It boards from the water over the side without a
+  climb, and leaves by flying over the rail (E). Narrow gaps between crew or cargo (under ~0.8 m) do not pass; a
+  covered deck (the turtle ship's shell, the chitin bireme's carapace) is reached only from its roof. Ladders and
+  stairs between deck levels are not modelled: a step up of more than 0.65 m stops the walker.
+- The swell's displacement fades out 570-680 m from the roadstead's centre (the sea grid is too coarse beyond); the
+  normals and whitecaps continue per pixel to the horizon. The wake strip is straight astern, so it does not curve
+  through a turn.
+- Trim: a sail's rig turns about its mast as one; a link whose far end is on deck stretches with it (a sheet) and
+  any other piece moves whole only if a quarter of it lies on the cloth. Artemons, the tug's jib and the dhoni's
+  mizzen do not trim. The Xanadu carrack's fore course (0.7) and mizzen (0.5) and the rookery's claw (0.6) trim less
+  so they clear the next sail or the tower (`sails-clear-trimmed`). The flutter is zero on every sail edge, so the leech
+  no longer flutters.
+- Under way: every vessel makes the same speed (1.8 m/s): a row is one train on one racetrack, which is what keeps the
+  courses clear. The half-turns are 19.5 m in radius (a quarter of the row spacing), tight for the 56 m flagship and
+  the 55 m hexareme. Turned off, a row runs home along its course at up to ~60 m/s for a few seconds.

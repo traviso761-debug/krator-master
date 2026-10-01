@@ -49,7 +49,7 @@ RS_SEA.onBeforeCompile=sh=>{sh.uniforms.uRsTime=RS_U.uTime;const G=rsSwellGLSL(R
    'float rsNoise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(rsHash(i),rsHash(i+vec2(1.,0.)),f.x),mix(rsHash(i+vec2(0.,1.)),rsHash(i+vec2(1.,1.)),f.x),f.y);}')
   .replace('#include <color_fragment>','#include <color_fragment>\nfloat rsMpp=length(fwidth(vRsP0));vec4 rsNJ=rsSwellNJ(vRsP0,rsMpp);'+
    // whitecaps: where the crests crowd the water together (the Jacobian drops), broken up by drifting noise
-   'float rsFoam=smoothstep(.56,.34,rsNJ.w)*smoothstep(.5,.85,rsNoise(vRsP0*.16+vec2(uRsTime*.05,-uRsTime*.03))*.55+rsNoise(vRsP0*.9-uRsTime*.2)*.45);'+
+   'float rsFoam=.8*smoothstep(.5,.3,rsNJ.w)*smoothstep(.55,.85,rsNoise(vRsP0*.16+vec2(uRsTime*.05,-uRsTime*.03))*.55+rsNoise(vRsP0*.9-uRsTime*.2)*.45);'+
    'rsFoam*=mix(1.,.45,smoothstep(1.,6.,rsMpp));diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.72,.80,.82),rsFoam);')
   .replace('#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\nroughnessFactor=mix(roughnessFactor,.85,rsFoam);')
   .replace('#include <metalnessmap_fragment>','#include <metalnessmap_fragment>\nmetalnessFactor*=1.-rsFoam;')

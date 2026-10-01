@@ -47,3 +47,23 @@ toggle (off by default) sails the fleet east at 1.8 m/s, wrapping round each row
 Overview before: 199 draw calls, 0.52M triangles. After: 199 draw calls, 0.64M triangles (the sea grid);
 Opening 189 calls, 0.57M. Under way adds the one wake call (Overview 190 calls at t=40 s, as vessels move). All verify checks pass.
 Lesson: the build's name rule rejects a top-level-looking `g=` even inside an IIFE; name such locals distinctly.
+
+## 2026-10-01: the sea, the rig and the decks (KNOWN_ISSUES round)
+The swell is now Gerstner: the four waves keep their amplitudes but gain steepness (0.32, 0.26, 0.18, 0.12), so crests
+sharpen and troughs flatten. The CPU finds the height at a world point by Newton on the horizontal map (3 steps, exact to
+2e-5 m; plain fixed-point needed 6+ for 2 mm), the wake's GLSL by 2. The sea shades its normal and its whitecaps (where the
+Jacobian of the horizontal map drops) per pixel at the rest point, each wave faded where it is finer than a pixel, so the
+far sea swells to the horizon although the grid's displacement fades out beyond ~600 m. Sail flutter is zero on every
+edge (ropes stay on their clews); pennants flutter and swing to the apparent wind; rigs trim about their masts through
+per-vertex pivot attributes and a per-vessel material clone (no draw calls). Under way is a racetrack per row: one train
+per track, so nothing crosses, nothing pops, and turning it off runs each train home along its own track. Labels and
+preset views follow. Walk mode stands on a per-vessel heightfield + body-bin grid built lazily from the baked meshes;
+`_api.decks()` publishes it. Verify poses the fleet at several times at rest and under way.
+
+Overview before: 199 draw calls, 0.64M triangles. After: 199 calls, 0.64M (Opening 189, 0.57M): the trim and flags are
+material clones, the whitecaps a fragment term. Under way at t=51 s: Overview 191 calls, 0.62M. 20 checks pass, 9 new.
+Lessons: rsSailWind and the trim shader both declared `uRsTime` (guard it with `RS_UTIME`); a `//` comment inserted
+mid-line by a scripted edit swallowed the rest of the line again (syntax error, page never ready): use `/* */`. A hollow
+mast leaves its centre cell empty: the walker's body tests the cell and its four neighbours. Boarding from the water must
+ignore the waterline foam ring and the wales, or the walker stands on them inside the hull.
+
