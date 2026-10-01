@@ -1,2 +1,0 @@
-If you can see this file in File Explorer at C:\Users\travi\voth\SANDBOX_TEST.txt, sandbox isolation is NOT the problem.
-Written at: 2026-09-16 (this session)
