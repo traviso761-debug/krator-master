@@ -55,6 +55,8 @@ Read before changing anything here. `build.py` prints the open count.
 - [ ] TODO: the wadi gorge could take alcoves (Shade's are the model); not started.
 - [ ] The ground's detail texture is still projected on x-z (Shade's is triplanar now), so
       the gorge and butte faces may show vertical grain. Not checked here.
+- [ ] **Put the biome fruit in the kit** (`biomes/FRUIT.md`): mesquite pods, wadi dates, desert tunas. Each has a catalog piece in
+      `kits/catalog/krator-master-furniture-generic-fruit.js` (`biome: 'sedesert'`). The mesquite pods and dates are drawn. The prickly pear scrub has only flat blooms: draw the tunas, orange-red fruit along the pad edges (as xanadu's `opuntia` does). Add harvest tags.
 
 ## Done
 
