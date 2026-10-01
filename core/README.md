@@ -1,8 +1,8 @@
 # core/
 
 Code shared by more than one build, kept here once instead of copied into each:
-`materials/` (the Ancients-lineage materials), `terrain/` (carve patches for any
-heightfield world), `atmos/` (atmosphere and street dressing) and `sockets/` (cultural sockets).
+`materials/` (the Ancients-lineage materials), `biome/` (the biome core every biome kit
+runs on), `terrain/` (carve patches for any heightfield world), `atmos/` (atmosphere and street dressing) and `sockets/` (cultural sockets).
 
 ## `materials/`
 
@@ -48,6 +48,42 @@ Voth and Yuni use a separate system: a frozen `PAL` palette and `FAMMAT`
 material families, instanced per family under a draw-call budget. The catalog
 in `kits/catalog/` uses family strings (`'wood'`, `'cloth'`, `'plank'`…) plus a
 colour. Neither is compatible with `MAT`.
+
+## `biome/`
+
+The biome core: the engine-independent kit every biome in `biomes/` is written against
+(`BIO`: the host binding, the PRNG and noise, instanced items and merged buckets, the
+foliage hook, placement, the runtime LOD). One copy, merged from the nine copies the kits
+carried (Oct 2026). xanadu's is the base (runtime LOD); the others' additions are in it,
+each marked with the kit it came from:
+
+| File | What |
+|---|---|
+| `10-core-head.js` | `BIO`, `BIO.fn` (rng, noise...), `BIO.init` and the host binding: fields (wet, salt, upland, flow, mist, cold, rock), `waterH`/`depth`, `register`, detail radii (`BIO.radii()`), windows, `eye` |
+| `20-core-kit.js` | items and buckets on Float32 stores, extra per-instance vec4s, the runtime LOD (`BIO.range`, `BIO.lodTick`), indexed bake, `BIO.dynamic`/`BIO.tick` |
+| `30-core-foliage.js` | leaf textures and cards, the foliage and bark hooks, the wind clock, `BIO.col` |
+| `35-core-anim.js` | animated items (orbit, flit, walk; flapping wings, swinging legs) for fauna |
+| `40-core-place.js` | stands, `BIO.grid` (accept first, `depth`, `box`), `BIO.scatter`, keep-clear |
+
+**Used by** `biomes/eastabyss`, `nwlowlands`, `rift`, `swbay`, `swlowlands`: each lists the
+files in `CORE_BIOME` in its `build.py`, read from here unless its `src/` has a copy of the
+same name. The other four kits still carry their own copies (`CORE_BIOME=[]`) until each
+is switched and proven unchanged: hyperjungle (iziz, screamers and the Ancients kit vendor
+it), sedesert (Shade vendors it, and its `BIO.LOD()` is `BIO.radii()` here), xanadu and
+nhighlands. `build.py` stops if any of the four core files is missing (the syntax check
+cannot see an absent fragment).
+
+**Proving a switch.** The page's HTML changes with the core, so its hash proves nothing.
+Compare the baked geometry instead: every biome mesh's attributes and instance buffers,
+hashed per mesh name, before and after. Identical means the switch moved nothing.
+
+Worlds that vendored a kit's core (dalab from swlowlands, locus and the Ancients kit from
+eastabyss, iziz, screamers and the Ancients kit from hyperjungle, Shade from sedesert, the
+xanadu settlement) keep their copies; dalab's `--vendor-check` now compares its core
+against this folder and reports the drift. Re-vendor when that world is next rebuilt and
+verified, or switch it to read this folder.
+
+`biomes/WORLD.md` is the plan this core grows toward: several kits resident in one open world.
 
 ## `terrain/`
 

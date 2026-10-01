@@ -2,7 +2,7 @@
 // The engine-independent kit every Krator biome fragment is written against.
 // Nothing below names a world's kit. The host hands in what a biome needs
 // through BIO.init(...) (see BIOME-API.md) and everything else lives here.
-var BIO={host:null,stats:{},cur:null,version:'eastabyss-1'};
+var BIO={host:null,stats:{},cur:null,version:'core-1'};
 // EVERYTHING BELOW IS LOCAL. The core declares no generic global (rng, clamp,
 // TAU...): a world that already has those would be clobbered. Biome fragments
 // pull what they need from BIO.fn at the top of their own closure.
@@ -40,7 +40,8 @@ function fbm(x,y,z,o){o=o||3;let a=0,f=1,s=0;for(let i=0;i<o;i++){a+=vnoise(x*f,
 
 // ---------------------------------------------------------------- host binding
 // host = { THREE, scene, terrainH(x,z), mask(x,z), obstacles[], ticks(fn), seed,
-//          origin[x,z], err(msg), stat(key,tris,inst) }
+//          origin[x,z] | [[x,z]...], center, fields{}, waterH(x,z), register(o),
+//          lod{}, windows{}, eye(), err(msg), stat(key,tris,inst) }   (BIOME-API.md)
 BIO.init=function(h){
  if(!h||!h.THREE)throw new Error('BIO.init: host needs THREE');
  // scene may arrive later (a world that creates its scene after its kit loads
@@ -48,7 +49,10 @@ BIO.init=function(h){
  BIO.host={
   THREE:h.THREE,scene:h.scene||null,
   terrainH:h.terrainH||((x,z)=>0),
-  mask:h.mask||((x,z)=>1),
+  // the default mask: everything may root, or, when the host hands in its water
+  // (sedesert-1), nothing roots under the local water surface. A world with
+  // footprints or its own rule passes its own.
+  mask:h.mask||(h.waterH?((x,z)=>{const d=BIO.terrainH(x,z)-BIO.waterH(x,z);return d<.15?0:d<.7?(d-.15)/.55:1;}):((x,z)=>1)),
   obstacles:h.obstacles||[],
   ticks:h.ticks||(fn=>{}),
   seed:h.seed==null?1:h.seed,
@@ -60,8 +64,26 @@ BIO.init=function(h){
   center:h.center||null,
   // fields: optional climate fields a multi-zone biome asks for, each
   // (x,z)->0..1. Missing ones fall back to BIO.fieldDefault. wet: 0 arid ..
-  // 1 saturated; salt: 0 .. 1 crust; upland: 0 basin floor .. 1 the high edge.
+  // 1 saturated; salt: 0 .. 1 crust; upland: 0 basin floor .. 1 the high edge;
+  // flow: 0 still .. 1 a bank; mist: 0 .. 1 the cloud-forest band.
   fields:h.fields||{},
+  // waterH(x,z) (sedesert-1, additive): the LOCAL water surface. The earlier kits keep
+  // their water at y=0 (the default); a stream that descends, or a tarn in a hollow,
+  // hands its own level in, and a biome reads depth as BIO.depth = waterH - terrainH.
+  // Where there is no water at all the host returns -1e9.
+  waterH:h.waterH||((x,z)=>0),
+  // register(o) (sedesert-1, additive): a volume the world's inspector and probe can name
+  // ({name,key,x,z,y,r,h}); a world without an inspector leaves it out
+  register:h.register||(o=>{}),
+  // lod (sedesert-1): the detail radii from the spine, a property of the world's spine, not of
+  // a species pass: hero (full detail), mid, far (impostors stop), floor bands. BIO.radii().
+  lod:Object.assign({hero:800,mid:1500,far:2200,floor:[500,1250]},h.lod||{}),
+  // windows (sedesert-1): named rectangles [x0,z0,x1,z1] a biome may ask for (BIO.window('water')):
+  // where the world's water is, so a water-bound pass looks nowhere else
+  windows:h.windows||{},
+  // eye (swbay-1): optional ()->[x,y,z], where the viewer is right now. Only a pass that
+  // animates (fauna) reads it, to leave what is far alone; null means no LOD.
+  eye:h.eye||null,
   err:h.err||(m=>console.error(m)),
   stat:h.stat||null};
  reseed(BIO.host.seed*7919+11);
@@ -70,11 +92,28 @@ BIO.setScene=function(s){BIO.host.scene=s;};
 BIO.err=function(m){if(BIO.host)BIO.host.err(m);else console.error(m);};
 BIO.terrainH=function(x,z){return BIO.host?BIO.host.terrainH(x,z):0;};
 BIO.mask=function(x,z){return BIO.host?BIO.host.mask(x,z):1;};
+BIO.waterH=function(x,z){return BIO.host?BIO.host.waterH(x,z):0;};
+// depth of the ground under the local water surface (negative: above it)
+BIO.depth=function(x,z){return BIO.waterH(x,z)-BIO.terrainH(x,z);};
+BIO.register=function(o){if(BIO.host)BIO.host.register(o);};
+// the detail radii (sedesert-1, where it was BIO.LOD(); BIO.LOD is the runtime LOD's settings)
+BIO.radii=function(){return BIO.host?BIO.host.lod:{hero:800,mid:1500,far:2200,floor:[500,1250]};};
+BIO.window=function(n){return (BIO.host&&BIO.host.windows[n])||null;};
+BIO.eye=function(){return BIO.host&&BIO.host.eye?BIO.host.eye():null;};
+// the bounding box of the LOD spine, padded: every point within `pad` of an origin lies inside it
+BIO.originBox=function(pad){const O=BIO.host?BIO.host.origin:[[0,0]];let x0=1e9,z0=1e9,x1=-1e9,z1=-1e9;for(const o of O){x0=Math.min(x0,o[0]);z0=Math.min(z0,o[1]);x1=Math.max(x1,o[0]);z1=Math.max(z1,o[1]);}return[x0-pad,z0-pad,x1+pad,z1+pad];};
 // distance from the LOD origin, for the detail curve
 BIO.lodD=function(x,z){const O=BIO.host?BIO.host.origin:[[0,0]];let m=1e9;for(let i=0;i<O.length;i++){const d=Math.hypot(x-O[i][0],z-O[i][1]);if(d<m)m=d;}return m;};
 BIO.center=function(){const h=BIO.host;return h?(h.center||h.origin[0]):[0,0];};
-BIO.fieldDefault={wet:(x,z)=>BIO.terrainH(x,z)<2?1:.6,salt:(x,z)=>0,upland:(x,z)=>0};
-BIO.field=function(n,x,z){const f=BIO.host&&BIO.host.fields[n];return f?f(x,z):BIO.fieldDefault[n](x,z);};
+// flow and mist are additive (rift-1): a river bank, and the cloud-forest band a ridge wears on its wet face.
+// cold and rock are additive (nhighlands-1): 0 temperate .. 1 boreal (altitude and aspect: the boreal band
+// comes down lower on the north-facing slopes), and 0 soil .. 1 boulder ground and crag. An older biome
+// never reads them; a host that never heard of them gets 0 for both.
+BIO.fieldDefault={wet:(x,z)=>BIO.terrainH(x,z)<2?1:.6,salt:(x,z)=>0,upland:(x,z)=>0,flow:(x,z)=>0,mist:(x,z)=>0,cold:(x,z)=>0,rock:(x,z)=>0};
+// a field a world does not bind is 0, except the ones with a meaningful default (sedesert-1)
+const ZEROF=(x,z)=>0;
+BIO.field=function(n,x,z){const f=BIO.host&&BIO.host.fields[n];return f?f(x,z):(BIO.fieldDefault[n]||ZEROF)(x,z);};
+BIO.hasField=function(n){return !!(BIO.host&&BIO.host.fields[n]);};
 // LOD is a CURVE, not two steps: full detail under ~700 m, a quarter by 3 km.
 BIO.lod=function(x,z){return clamp(1.18-BIO.lodD(x,z)/2600,.22,1);};
 

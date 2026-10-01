@@ -3,7 +3,8 @@
 //   INSTANCED ITEMS   BIO.def(name,geo,mat) once, BIO.put(name,...) thousands of
 //                     times, one InstancedMesh per item at bake. Per-instance
 //                     colour, and optional per-instance extras (aN normal, aC2
-//                     second colour) for the foliage shaders.
+//                     second colour) for the foliage shaders, or any other
+//                     named vec4 (aP0, aP1...) for the animation shaders.
 //   MERGED BUCKET     BIO.tri/quad/tube/lathe/surf write vertex-coloured
 //                     triangles into a bucket per material family; one Mesh per
 //                     family at bake. Boles, limbs, logs, boulders go here.
@@ -16,13 +17,18 @@ BIO.defs={};BIO.order=[];BIO.items={};
 function F32(){this.a=new Float32Array(4096);this.length=0;}
 F32.prototype.push=function(){const n=arguments.length;let a=this.a;if(this.length+n>a.length){const b=new Float32Array(Math.max(a.length*2,this.length+n));b.set(a);this.a=a=b;}
  for(let i=0;i<n;i++)a[this.length++]=arguments[i];return this.length;};
-BIO.F32=F32;
-const newItem=()=>({m:new F32(),c:new F32(),n:new F32(),c2:new F32(),k:[],count:0});
+// sedesert's Store, merged (sedesert-1): the same store under its name, with its n and data()
+Object.defineProperty(F32.prototype,'n',{get:function(){return this.length;}});
+F32.prototype.data=function(){return this.a.slice(0,this.length);};   // a copy: the store can be dropped after bake
+BIO.F32=F32;BIO.Store=F32;
+// x: the extra named vec4 attributes an item asked for (hyperjungle-1: aP0, aP1 for 35-core-anim)
+const newItem=attrs=>{const it={m:new F32(),c:new F32(),n:new F32(),c2:new F32(),x:{},k:[],count:0};
+ if(attrs)attrs.forEach(a=>{if(a!=='aN'&&a!=='aC2')it.x[a]=new F32();});return it;};
 BIO.def=function(name,geo,mat,opt){opt=opt||{};
  if(BIO.defs[name])BIO.err('BIO.def: '+name+' defined twice');
  const g=geo.index?geo.toNonIndexed():geo;
  BIO.defs[name]={geo:g,mat,tris:g.attributes.position.count/3,attrs:opt.attrs||null,label:opt.label||name};
- BIO.items[name]=newItem();BIO.order.push(name);};
+ BIO.items[name]=newItem(opt.attrs);BIO.order.push(name);};
 const _bm=new (function(){return {}})();   // scratch holder, filled after THREE binds
 BIO._scratch=function(){const T=BIO.host.THREE;if(!_bm.m){_bm.m=new T.Matrix4();_bm.q=new T.Quaternion();_bm.e=new T.Euler();_bm.p=new T.Vector3();_bm.s=new T.Vector3();_bm.c=new T.Color();_bm.up=new T.Vector3(0,1,0);_bm.v=new T.Vector3();}return _bm;};
 // rotation helpers: qEuler(rx,ry,rz) or qFacing([nx,ny,nz]) (local +z toward n)
@@ -43,7 +49,8 @@ BIO.put=function(name,pos,q,sc,col,extra){
  const def=BIO.defs[name];
  if(def.attrs){
   if(def.attrs.indexOf('aN')>=0){const n=(extra&&extra.n)||[0,1,0];it.n.push(n[0],n[1],n[2]);}
-  if(def.attrs.indexOf('aC2')>=0){const c2=extra&&extra.c2;if(c2==null)it.c2.push(S.c.r,S.c.g,S.c.b);else{if(c2.isColor)S.c.copy(c2);else S.c.set(c2);S.c.convertSRGBToLinear();it.c2.push(S.c.r,S.c.g,S.c.b);}}}
+  if(def.attrs.indexOf('aC2')>=0){const c2=extra&&extra.c2;if(c2==null)it.c2.push(S.c.r,S.c.g,S.c.b);else{if(c2.isColor)S.c.copy(c2);else S.c.set(c2);S.c.convertSRGBToLinear();it.c2.push(S.c.r,S.c.g,S.c.b);}}
+  for(const a in it.x){const v=(extra&&extra[a])||[0,0,0,0];it.x[a].push(v[0]||0,v[1]||0,v[2]||0,v[3]||0);}}
  it.k.push(BIO._lodKey(pos[0],pos[2]));it.count++;BIO.tally(def.tris,1,0);};
 // a beam of instanced item `name` (a unit cylinder along y, centred) from a to b
 BIO.beam=function(name,a,b,r0,r1,col){const T=BIO.host.THREE,S=BIO._scratch();
@@ -159,7 +166,7 @@ function indexedGeo(T,P,N,U,C){const n=P.length/3,W=11,f=new Float32Array(n*W),w
  for(let i=0;i<n;i++){const o=i*W;f[o]=P[i*3];f[o+1]=P[i*3+1];f[o+2]=P[i*3+2];f[o+3]=N[i*3];f[o+4]=N[i*3+1];f[o+5]=N[i*3+2];
   f[o+6]=U[i*2];f[o+7]=U[i*2+1];f[o+8]=C[i*3];f[o+9]=C[i*3+1];f[o+10]=C[i*3+2];}
  let cap=1024;while(cap<n*2)cap*=2;const tab=new Int32Array(cap).fill(-1),idx=new Uint32Array(n);let m=0;
- for(let i=0;i<n;i++){const o=i*W;let h=0x811C9DC5;for(let k=0;k<W;k++)h=Math.imul(h^w[o+k],0x01000193);
+ for(let i=0;i<n;i++){const o=i*W;let h=0x811C9DC5;for(let k=0;k<6;k++)h=Math.imul(h^w[o+k],0x01000193);   // position and normal: enough to spread them; a match still compares all 11
   h^=h>>>16;h=Math.imul(h,0x85EBCA6B);h^=h>>>13;let s=h&(cap-1),j;
   while((j=tab[s])>=0){const q=j*W;let k=0;while(k<W&&w[q+k]===w[o+k])k++;if(k===W)break;s=(s+1)&(cap-1);}
   if(j<0){j=m++;if(j!==i)f.copyWithin(j*W,o,o+W);tab[s]=j;}
@@ -186,13 +193,14 @@ BIO.bake=function(){const T=BIO.host.THREE,scene=BIO.host.scene;if(!scene)throw 
    const IM=it.m.a,IC=it.c.a,INN=it.n.a,IC2=it.c2.a;idx.forEach((i,j)=>{for(let q=0;q<16;q++)mA[j*16+q]=IM[i*16+q];for(let q=0;q<3;q++){cA[j*3+q]=IC[i*3+q];if(nA)nA[j*3+q]=INN[i*3+q];if(c2A)c2A[j*3+q]=IC2[i*3+q];}const y=IM[i*16+13];if(y<y0)y0=y;if(y>y1)y1=y;});
    if(def.attrs&&nA)geo.setAttribute('aN',new T.InstancedBufferAttribute(nA,3));
    if(def.attrs&&c2A)geo.setAttribute('aC2',new T.InstancedBufferAttribute(c2A,3));
+   for(const a in it.x){const X=it.x[a].a,xA=new Float32Array(n*4);idx.forEach((i,j)=>{for(let q=0;q<4;q++)xA[j*4+q]=X[i*4+q];});geo.setAttribute(a,new T.InstancedBufferAttribute(xA,4));}
    const im=new T.InstancedMesh(geo,def.mat,n);
    im.instanceMatrix.array.set(mA);im.instanceMatrix.needsUpdate=true;
    im.instanceColor=new T.InstancedBufferAttribute(cA,3);
    im.frustumCulled=false;im.userData.biome=true;im.userData.inspectLabel=def.label;im.userData.tris=n*def.tris;im.name='biome:'+name;
    if(key)_lodEntry(im,key,y0,y1);
    scene.add(im);BIO.baked.push(im);calls++;inst+=n;}
-  BIO.items[name]=newItem();}
+  BIO.items[name]=newItem(def.attrs);}
  for(const fam in BIO.buckets){const K=BIO.buckets[fam];if(!K.pos.length)continue;
   const G=new Map(),nt=K.pos.length/9;for(let t=0;t<nt;t++){const k=K.k[t]||'';let g=G.get(k);if(!g){g=[];G.set(k,g);}g.push(t);}
   for(const [key,tl] of G){const n=tl.length,P=new Float32Array(n*9),N=new Float32Array(n*9),U=new Float32Array(n*6),Cc=new Float32Array(n*9);let y0=1e9,y1=-1e9;
@@ -204,6 +212,16 @@ BIO.bake=function(){const T=BIO.host.THREE,scene=BIO.host.scene;if(!scene)throw 
    scene.add(m);BIO.baked.push(m);calls++;}
   K.pos=new F32();K.nor=new F32();K.uv=new F32();K.col=new F32();K.k=[];}
  BIO.lastBake={calls,inst,lodMeshes:BIO.lodMeshes.length};return BIO.lastBake;};
+
+// ---------------------------------------------------------------- dynamic instances (sedesert-1)
+// A biome's moving things (fauna) are InstancedMeshes it updates itself every
+// frame through BIO.tick; the core makes the mesh, charges it, and adds it to
+// the scene at once (it is not a store, so it needs no bake).
+BIO.dynamic=function(name,geo,mat,count,opt){opt=opt||{};const T=BIO.host.THREE,scene=BIO.host.scene;if(!scene)throw new Error('BIO.dynamic: no scene');
+ const g=geo.index?geo.toNonIndexed():geo,im=new T.InstancedMesh(g,mat,count);
+ im.frustumCulled=false;im.userData.biome=true;im.userData.inspectLabel=opt.label||name;im.name='biome:'+name;im.instanceMatrix.setUsage(T.DynamicDrawUsage);
+ scene.add(im);BIO.baked.push(im);BIO.tally(g.attributes.position.count/3*count,count,1);return im;};
+BIO.tick=function(fn){BIO.host.ticks(fn);};
 
 Object.assign(BIO.fn,{qEuler,qFacing,qUp});
 })();
