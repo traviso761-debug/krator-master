@@ -5,7 +5,8 @@ and ticking it, not by deleting it.
 
 ## Found by the split (pre-existing in the single-file kit)
 
-- [ ] **Seed collision: Library and Campus.** `buildLibrary` calls
+- [x] **Seed collision: Library and Campus.** FIXED (civic QA, 2026-09-29): `buildCampus` is `reseed(9810+d)`; the build.py exception is gone.
+      Was: `buildLibrary` calls
       `reseed(d>0?9801:9800)` and `buildCampus` calls `reseed(9800+d)`, so the
       two share a PRNG stream: the campus's decay pattern is a copy of the
       library's. Fix by moving the campus to a free block (9810). Whitelisted in
@@ -328,13 +329,14 @@ exceeded ceiling as `OVER`; `--strict-budget` makes it fail.
       common bond, and a fresnel rim on the glass. See NOTES.md for the three
       traps (sRGB on data maps, metalness with no envMap, clone() dropping
       onBeforeCompile).
-- [ ] No Gaudí bone-work yet: window mouldings, finials, bulb tops, bone-rib
+- [ ] *Civic, round 2: hood-and-sill mouldings on the Government's arched windows (`civHoodGeo`) and a flared cornice on each tier. No general `moulding()` helper yet.*
+      No Gaudí bone-work yet: window mouldings, finials, bulb tops, bone-rib
       buttresses, and the `moulding(profile, path)` sweep helper they need.
       *Started (domestic QA round 2):* `domMould(pathFn, wallNormal, r, knots)`
       in `64-houses-def.js` sweeps a knuckled bone roll along a path and returns
       a geometry to merge (no draw call). Used on the Foundry's end-wall arches,
       the Amphitheater's vomitoria and House D's apse edge.
-- [ ] Interiors are floor slabs only — DONE for civic (`civRooms`) and towers (`skyRooms`, in the
+- [ ] Interiors are floor slabs only — DONE for civic (`civRooms`; round 2 added the Hospital podium's ward bays) and towers (`skyRooms`, in the
       bays that are actually open). Interiors are floor slabs only — no corridor light strips, touchpad
       panels, conduit bundles or machinery silhouettes behind the openings.
       *Done for the civic builders (`civRooms`) and for the domestic ones whose
@@ -360,8 +362,11 @@ exceeded ceiling as `OVER`; `--strict-budget` makes it fail.
       meeting the ground asks it. `apron()` lays a graded skirt; it is inside
       `skyPlinth`, so all eight skyscrapers have one, plus the Laboratory and
       Starport. **Remaining types still meet the ground on a hard line** — the
-      call is one line each where it is wanted.
-- [ ] Campus wings should bend (UFM); the data-centre fin row needs hatches and
+      call is one line each where it is wanted. *Civic types done (qa/civic.md):
+      aprons on Offices A, Library, Government and the Gate's feet; the rest stand
+      on berms, a hill, discs or plinths.*
+- [ ] *Civic parts DONE (qa/civic.md): data-centre hatches and ducts, the Gate crest lattice, legged robot chassis (round 1); Campus wings bend (round 2). Open: Mega warts, Skyscraper B's crown (other groups).*
+      Campus wings should bend (UFM); the data-centre fin row needs hatches and
       ducts; the Gate deck needs an organic lattice; Megastructure "Unnamed"
       wants irregular Beksiński warts (DONE, domestic QA round 1); the robot chassis are placeholders;
       Skyscraper B's crown is undersized.

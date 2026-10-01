@@ -26,7 +26,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `36-decor.js` | 13 | decoration helpers (1); THE BIOME (127) |
 | `38-helpers2.js` | 3 | v2 helpers (1) |
 | `40-factory-extras.js` | 4 |  |
-| `42-offices.js` | 11 |  |
+| `42-offices.js` | 14 |  |
 | `44-starport.js` | 5 |  |
 | `46-bunker.js` | 5 |  |
 | `48-library.js` | 4 |  |
@@ -55,7 +55,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `71-sky-h.js` | 5 |  |
 | `71b-forest.js` | 49 **big** |  |
 | `71c-ring.js` | 73 **big** |  |
-| `72-datacenter.js` | 7 |  |
+| `72-datacenter.js` | 8 |  |
 | `73-police.js` | 5 |  |
 | `74-hospital.js` | 5 |  |
 | `75-biome-10-core-head.js` | 6 | PRNG (14); noise (24); host binding (41); accounting (81) |
@@ -69,12 +69,12 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `76-60-biome-hyperjungle-floor.js` | 27 | colour (18); keep-clear (54); bole profiles (68); fields (87); the plants (93); fallen hypertrees (160); lianas (211); the pass (219) |
 | `76-65-biome-hyperjungle-dress.js` | 7 |  |
 | `76-70-biome-hyperjungle.js` | <1 |  |
-| `76-campus.js` | 9 |  |
+| `76-campus.js` | 11 |  |
 | `77-dam.js` | 13 |  |
 | `77z-iziz-style.js` | 47 **big** | ANCIENT IZIZ STYLE (1) |
 | `78-factory-silo.js` | 2 |  |
-| `79-government.js` | 4 |  |
-| `80-aa-battery.js` | <1 |  |
+| `79-government.js` | 7 |  |
+| `80-aa-battery.js` | 1 |  |
 | `81-houses-abc.js` | 6 |  |
 | `82-apartments.js` | 8 |  |
 | `83-amphitheater.js` | 8 |  |
