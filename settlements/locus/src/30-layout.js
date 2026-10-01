@@ -95,6 +95,7 @@ function stEdge(a,b,cls){
   var e={ id:ST.edges.length, a:a.id, b:b.id, cls:cls, w:ST_CLASS[cls].w, len:Math.hypot(a.x-b.x,a.z-b.z) }; ST.edges.push(e); ST_EKEY[k]=e; return e;
 }
 function stChain(nodes, cls){ for(var i=0;i<nodes.length-1;i++) stEdge(nodes[i], nodes[i+1], cls); }
+var PADDY_FIELDS = [];
 var HIGHWAYS = [], BRIDGES = [], AVENUES = [], CITY_RINGS = [], PUMPJACKS = [], DOCKS = [], STILT_SITES = [], FARMS = [];
 var CITY_EDGE_H = 2.6;                 /* the town builds where the ground stands clear of the wet season */
 function cityGround(x,z){ return terrainH(x,z) > CITY_EDGE_H && lakeDist(x,z) > 60 && riverDist(x,z) > 30; }
@@ -199,7 +200,10 @@ function findBridges(pts, cls, name){
                        name:name+' '+(cls==='track'?'trestle ':'')+(W[3]==='canal'?'canal bridge':'bridge over the '+W[0]) });
         return; } } });
 }
-function bridgeDeckAt(x,z){ for(var i=0;i<BRIDGES.length;i++){ var B=BRIDGES[i]; if(B.y==null) continue; var q=loc(0,0,x-B.x,z-B.z,-Math.atan2(-B.dz,B.dx)); if(Math.abs(q[0])<B.L/2 && Math.abs(q[1])<B.w/2) return B.y; } return null; }
+/* the walking surface of a bridge or a pool crossing at (x,z), or null on the ground. XING_AT is filled by
+   68c-locus-crossings.js (plank bridges and causeways over the marsh pools); before that only the river bridges answer. */
+var XINGS = [], XING_AT = null;
+function bridgeDeckAt(x,z){ for(var i=0;i<BRIDGES.length;i++){ var B=BRIDGES[i]; if(B.y==null) continue; var q=loc(0,0,x-B.x,z-B.z,-Math.atan2(-B.dz,B.dx)); if(Math.abs(q[0])<B.L/2 && Math.abs(q[1])<B.w/2) return B.y; } return XING_AT ? XING_AT(x,z) : null; }
 
 (function(){
   if(SHEET) return;
@@ -355,6 +359,48 @@ function bridgeDeckAt(x,z){ for(var i=0;i<BRIDGES.length;i++){ var B=BRIDGES[i];
   });
   /* the farms' own lane: a spur off the riverside lane east of the quarter to the farm fronts */
   ST.edges.forEach(function(e){ var A=ST.nodes[e.a], B=ST.nodes[e.b]; rgMarkSeg(A.x,A.z,B.x,B.z, e.w/2, RG.ROAD, 1); });
+
+  /* ---------- 7b. THE PADDY FIELDS (2026-10-01): salt-rice at five times the old acreage ----------
+     The three farms hold 18 paddies; nine paddy blocks of eight (farm_saltrice_paddies) bring it to 90.
+     A block wants low, dry, nearly level ground 22-110 m from the river, a mouth or the canal (never the
+     lake's brine edge, never a marsh pool), clear of every road cell, site and reserved circle. It turns
+     its feed channel (-z) to the water and its verge (+z) to the land, is levelled like the farms, and
+     gets a lane from its verge to the nearest street node (a lane over a pool is bridged by 68c).
+     Candidates are ranked by water distance plus town distance, so the fields gather along the canal
+     and the river below the town before they spread up the delta.                                    */
+  (function(){
+    var want=9, cands=[], laid=0;
+    function wd(x,z){ return Math.min(riverDist(x,z), canalDist(x,z)); }
+    for(var x=-1300;x<=1300;x+=16) for(var z=-1300;z<=1300;z+=16){
+      var r=Math.hypot(x,z); if(r<300 || r>1300) continue;
+      var h=terrainH(x,z); if(h<0.7 || h>3.2 || lakeDist(x,z)<120) continue;
+      var w=wd(x,z); if(w<30 || w>110) continue;
+      var k=rgIdx(x,z); if(k<0 || RG.BLOCK[k] || RG.ROAD[k]) continue;
+      cands.push([x, z, w + 0.06*r + 25*phash(x,3,z,7)]);
+    }
+    cands.sort(function(a,b){ return a[2]-b[2]; });
+    for(var ci=0; ci<cands.length && laid<want; ci++){
+      var cx=cands[ci][0], cz=cands[ci][1], gx=wd(cx+6,cz)-wd(cx-6,cz), gz=wd(cx,cz+6)-wd(cx,cz-6);
+      if(Math.hypot(gx,gz) < 1e-3) continue;
+      var ry=faceRy(gx,gz), W=48, D=38, ok=true, lo=1e9, hi=-1e9;
+      for(var lx=-W/2-3; lx<=W/2+3.01 && ok; lx+=4) for(var lz=-D/2-3; lz<=D/2+3.01 && ok; lz+=4){
+        var p=loc(cx,cz,lx,lz,ry), px=p[0], pz=p[1], ph=terrainH(px,pz), pk=rgIdx(px,pz);
+        if(ph<0.45 || ph>3.8 || lakeDist(px,pz)<90 || riverDist(px,pz)<10 || canalDist(px,pz)<CANAL_W[3]) ok=false;
+        else if(pk<0 || RG.ROAD[pk] || RG.BLOCK[pk] || inAnySite(px,pz,4) || inCircle(px,pz,4)) ok=false;
+        lo=Math.min(lo,ph); hi=Math.max(hi,ph); }
+      if(!ok || hi-lo > 2.2) continue;
+      /* the lane from the verge to the network: short, dry, and through no site */
+      var front=loc(cx,cz,0,D/2+2.5,ry), to=nearestNodeTo(front[0], front[1], 150, function(n){ return !n.dead && n.tag!=='pumpjack'; });
+      if(!to || segHitsSite(front[0],front[1],to.x,to.z,1)) continue;
+      var wet=false; for(var t=0;t<=1.0001;t+=0.05){ var qx=mix(front[0],to.x,t), qz=mix(front[1],to.z,t); if(riverDist(qx,qz)<4 || canalDist(qx,qz)<CANAL_W[1] || lakeDist(qx,qz)<20) wet=true; } if(wet) continue;
+      var S=schedule('farm_saltrice_paddies', laid%2, cx, cz, ry, W, D, 'Salt-rice paddies', 'farm');
+      TERRAIN_RECTS.push([cx, cz, W/2+2, D/2+2, ry, 8, clamp((lo+hi)/2, 1.0, 2.6)]);
+      rgMarkRect(S, 1, RG.BLOCK, 1); FARMS.push(S); PADDY_FIELDS.push(S);
+      var sp=stNode(front[0], front[1], 'spur'); stEdge(to, sp, 'lane'); S.spur=sp; rgMarkSeg(to.x,to.z,sp.x,sp.z,2,RG.ROAD,1);
+      laid++;
+    }
+    if(laid < want) ERR('layout: only '+laid+' of '+want+' paddy blocks found ground');
+  })();
 
   /* ---------- 8. THE PUMPJACKS: two dozen on the oil bed, each with its own track ---------- */
   (function(){

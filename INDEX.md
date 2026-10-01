@@ -11,7 +11,7 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`settlements/highlands`](settlements/highlands/INDEX.md) | 45 | 746 | 53 | Highlands: Republican, Rustic and Tribal building kits for the temperate highlands of the Inner Wall, and the town of Roketstad. |
 | [`settlements/iziz`](settlements/iziz/INDEX.md) | 51 | 504 | 52 | Iziz: the city rebuilt on the Iziz Vernacular style and the Ancients kit. |
 | [`settlements/jimjam`](settlements/jimjam/INDEX.md) | 32 | 412 | 56 |  |
-| [`settlements/locus`](settlements/locus/INDEX.md) | 65 | 991 | 84 | Locus: a fork of the Yuni engine in the eastern abyss, with its own kit sheet and plant catalogue. |
+| [`settlements/locus`](settlements/locus/INDEX.md) | 67 | 1021 | 84 | Locus: a fork of the Yuni engine in the eastern abyss, with its own kit sheet and plant catalogue. |
 | [`settlements/mavs-refuge`](settlements/mavs-refuge/INDEX.md) | 28 | 616 | 69 | Mav's Refuge: a refuge in the hypertropic jungle on the lee shore of the Ring Sea. |
 | [`settlements/port`](settlements/port/INDEX.md) | 48 | 718 | 39 |  |
 | [`settlements/reedlake`](settlements/reedlake/INDEX.md) | 32 | 311 | 33 | Reed Lake: a floating reed-lake village and its kit. |
