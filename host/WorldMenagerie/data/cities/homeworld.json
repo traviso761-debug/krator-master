@@ -1,0 +1,153 @@
+{
+ "name": "Homeworld",
+ "note": "Fan work. Homeworld belongs to its makers (Relic Entertainment, and now Gearbox); nothing from the game, its models, its art or its sound is used, and every shape on this page is this project's own geometry, after the general silhouettes. The first mission of the campaign (the Kharak System) and the third (Return to Kharak), and a switch between them. Built by src/homeworld/ on the starship page (src/starship/page.js); 'fleet' holds its numbers and 'kharak' the planet.",
+ "attribution": "Homeworld is fan work: original geometry in src/homeworld/. Homeworld belongs to its makers. No assets used.",
+ "view0": {
+  "az": 2.4,
+  "el": 0.12,
+  "d": 8200
+ },
+ "views": {
+  "Three-quarter": {
+   "az": 2.4,
+   "el": 0.12,
+   "d": 8200
+  },
+  "The Mothership, side on": {
+   "az": 1.5708,
+   "el": 0.04,
+   "d": 6200
+  },
+  "The prow": {
+   "az": 0.45,
+   "el": 0.1,
+   "d": 2600,
+   "tx": 300,
+   "ty": 300,
+   "tz": 0
+  },
+  "The engines": {
+   "az": 2.0,
+   "el": -0.05,
+   "d": 1700,
+   "tx": -450,
+   "ty": -900,
+   "tz": 0
+  },
+  "The hangar bay": {
+   "az": 1.3,
+   "el": 0.05,
+   "d": 1300,
+   "tx": 150,
+   "ty": 0,
+   "tz": 300
+  },
+  "The Scaffold (mission 1)": {
+   "az": 2.3,
+   "el": 0.18,
+   "d": 6400,
+   "tx": -1400,
+   "ty": 0,
+   "tz": 0
+  },
+  "The cryo trays and the lifters (mission 1)": {
+   "az": 2.3,
+   "el": 0.2,
+   "d": 2300,
+   "tx": -2800,
+   "ty": -150,
+   "tz": 0
+  },
+  "The Disassembler (mission 1)": {
+   "az": 2.0,
+   "el": 0.3,
+   "d": 2200,
+   "tx": -1250,
+   "ty": 1400,
+   "tz": 0
+  },
+  "The trials (mission 1)": {
+   "az": 0.9,
+   "el": 0.35,
+   "d": 2400,
+   "tx": 2200,
+   "ty": 250,
+   "tz": 1200
+  },
+  "The asteroid field (mission 1)": {
+   "az": -0.6,
+   "el": 0.35,
+   "d": 3000,
+   "tx": 900,
+   "ty": -500,
+   "tz": -2600
+  },
+  "The cryo trays (mission 3)": {
+   "az": 0.6,
+   "el": 0.3,
+   "d": 3400,
+   "tx": 1900,
+   "ty": 0,
+   "tz": 1700
+  },
+  "The wreck of the Scaffold (mission 3)": {
+   "az": -1.4,
+   "el": 0.2,
+   "d": 3200,
+   "tx": -900,
+   "ty": -500,
+   "tz": -2600
+  },
+  "Kharak below": {
+   "az": 2.2,
+   "el": -0.35,
+   "d": 14000
+  },
+  "Far off": {
+   "az": 2.4,
+   "el": 0.15,
+   "d": 30000
+  }
+ },
+ "fleet": {
+  "radius": 5200,
+  "minD": 60,
+  "trialEvery": 48,
+  "_": "the Mothership stands upright, height along y, her prow +x, at the origin; the Scaffold stands behind her; the numbers are metres",
+  "height": 3000
+ },
+ "kharak": {
+  "dist": 600000,
+  "deg": 30,
+  "az": -0.75,
+  "el": -0.42,
+  "sun": [
+   2.6,
+   0.35
+  ],
+  "_": "the planet: how far off, how many degrees wide, which way; sun is the star's azimuth and elevation, as starLight's"
+ },
+ "space": {
+  "seed": 7,
+  "stars": 4200,
+  "starSize": 1800,
+  "far": 1500000,
+  "starLight": {
+   "colour": "#fff0dc",
+   "az": 2.6,
+   "el": 0.35,
+   "intensity": 1.7,
+   "ambient": 0.42,
+   "lamp": 0.35
+  },
+  "fill": {
+   "colour": "#c08050",
+   "az": -0.75,
+   "el": -0.42,
+   "intensity": 0.4
+  },
+  "bodies": [],
+  "nebulae": [],
+  "_": "Kharak and the sky are drawn by src/homeworld/kharak.js; the star is behind the camera's usual side, the planet's glow comes up from below"
+ }
+}
