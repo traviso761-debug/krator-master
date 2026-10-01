@@ -123,7 +123,11 @@ function buildOffices(scene,gx,gz,d){reseed(d>0?9501:9500);KOFF=[gx,0,gz];const 
     rubbleRing(F.position.x,0,F.position.z,3,16,26,2.4);}
    for(let k=0;k<14;k++){const a=SEC+rr(-.5,.5),r=rr(46,78);kput('plateR',[Math.cos(a)*r,rr(.4,1.2),Math.sin(a)*r],qEuler(rr(-.5,.5),rng()*TAU,rr(-.5,.5)),[rr(3,7),.5,rr(2,5)],null);}}}
  // B — lobed tower (Marina / Hilliard scallops)
- {const bx=190;REGISTER({name:'Office B — lobed tower ('+STATE(d)+')',x:bx,z:0,r:20,h:60});const B=new THREE.Group();B.position.set(bx,0,0);G.add(B);const R=13,H=52,cut=d>0?H*.72:null;
+ // B and C used to stand at x=190 and x=330, so one site spanned 430 m on a
+ // 265 m row pitch: the rehabilitated Office C stood in the ruined Office A, and
+ // the intact C against the rehabilitated A. Round 2: B moves in to x=105 and C
+ // stands behind them at (95,-75); the site is now 195 m wide.
+ {const bx=105;REGISTER({name:'Office B — lobed tower ('+STATE(d)+')',x:bx,z:0,r:20,h:60});const B=new THREE.Group();B.position.set(bx,0,0);G.add(B);const R=13,H=52,cut=d>0?H*.72:null;
   const lobe=th=>R*(1+.32*(.5+.5*Math.cos(8*th)));
   mesh(lathe({rFn:()=>6,H:12,nu:24,nv:2}),skin,B);for(let k=0;k<16;k++){const th=k/16*TAU;if(d>0&&(k===4||k===11))continue;kput(d>0?'colR':'colW',[bx+Math.cos(th)*13.5,0,Math.sin(th)*13.5],null,[1.3,12,1.3],null);}
   const hole=holeFn(d,210,cut,1.8);
@@ -141,5 +145,6 @@ function buildOffices(scene,gx,gz,d){reseed(d>0?9501:9500);KOFF=[gx,0,gz];const 
   if(!cut){kput('slab',[bx,H+.2,0],null,[R*1.1,.6,R*1.1],new THREE.Color(0xd8d4cc));mesh(lathe({rFn:y=>7*Math.sqrt(clamp(1-Math.pow(y/6,2),0,1)),H:6,nu:24,nv:6}),skin,B,0,H+.5,0);}
   else{rubbleRing(bx,0,0,15,26,60,2.5);mossOnRing(bx,cut,0,R,10,1.5);}
   if(d>0){vinesOnRing(bx,12,0,R*1.05,20,10);scatterMoss(bx,0,0,15,28,40,2);}}
- officeC(G,d);figures(60,50,5,5);figures(190,22,3,3);civFlatten(G);KOFF=[0,0,0];return G;}
+ {const OCX=95,OCZ=-75,CG=new THREE.Group();CG.position.set(OCX-330,0,OCZ);G.add(CG);KOFF=[gx+OCX-330,0,gz+OCZ];officeC(CG,d);KOFF=[gx,0,gz];}
+ figures(60,50,5,5);figures(105,22,3,3);civFlatten(G);KOFF=[0,0,0];return G;}
 
