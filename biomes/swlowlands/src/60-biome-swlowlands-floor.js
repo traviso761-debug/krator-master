@@ -204,17 +204,18 @@ SWLOW.buildFloor=function(R,q){
   const w=[Z.rain*1.3,Z.swamp*1.2,Z.sub*.95,Z.med*1.1,Z.beach*.6,Z.rip*.5];let tot=0;for(const v of w)tot+=v;if(tot<=0)return;
   let r=rng()*Math.max(1,tot),k=0;for(;k<w.length;k++){if(r<w[k])break;r-=w[k];}if(k>=w.length)return;
   planters[k](x,y,z,Z,lv,st);}
- // three bands along the LOD spine (the spine runs NW-SE, so no box window: the disc is cheap to walk)
- const bands=[[10,560,0],[19,1400,560],[40,1e9,1400]];
- bands.forEach((b,bi)=>{const lv=2-bi;
+ // three bands along the LOD spine (the spine runs NW-SE, so no box window: the disc is cheap to walk).
+ // Runtime LOD (SWLOW.LOD): each band is also drawn only within its range of the camera, by chunk.
+ const L=SWLOW.LOD,bands=[[10,560,0],[19,1400,560],[40,1e9,1400]],bandR=[L.floor,L.floorMid,L.farFloor];
+ bands.forEach((b,bi)=>{const lv=2-bi;BIO.range=bandR[bi];
   BIO.grid(b[0],0,R,(x,z,d)=>{const ld=BIO.lodD(x,z);if(ld>=b[1]||ld<b[2])return 0;return .56*q*(lv===0?.42:1);},(x,y,z,d)=>plant(x,y,z,lv),{patch:.72,patchScale:.014,pad:.5});});
  // a second, cheap pass of grass: the ground cover of the hills and the glades (tufts are 6 triangles)
- [[5,480,0],[10,1200,480]].forEach((b,bi)=>{const lv=2-bi;
+ [[5,480,0],[10,1200,480]].forEach((b,bi)=>{const lv=2-bi;BIO.range=bandR[bi];
   BIO.grid(b[0],0,R,(x,z,d)=>{const ld=BIO.lodD(x,z);if(ld>=b[1]||ld<b[2])return 0;return q*.7;},(x,y,z,d)=>{if(blocked(x,z,.4))return;const Z=zones(x,z);
     const w=(Z.med*(1-Z.chapK*.6)+Z.sub*.4*(1-Z.pineK)+Z.beach*.3)*.75;if(rng()>w)return;
     const set=Z.med>.5?(rng()<.15?PAL.stipa:PAL.grassGold):PAL.grassGreen;grassTuft(x,y,z,1,set,Z.med>.5?1.1:.8);st.tufts++;},{patch:.6,patchScale:.02,pad:.3});});
  // the water: lily pads carpeting still fresh water, hyacinth, duckweed; reeds in the shallows. The sea gets none.
- [[8,560,0],[16,1400,560]].forEach((b,bi)=>{const lv=2-bi;
+ [[8,560,0],[16,1400,560]].forEach((b,bi)=>{const lv=2-bi;BIO.range=bandR[bi];
   BIO.grid(b[0],0,R,(x,z,d)=>{const ld=BIO.lodD(x,z);if(ld>=b[1]||ld<b[2])return 0;const h=Y(x,z)-BIO.waterH(x,z);if(h>.3||h<-4)return 0;   // h: the ground against the local water
     const Z=zones(x,z);if(Z.salt>.35)return 0;return q*(1-Z.flow*.85)*(.8*smooth(-4,-1,h)+.3*smooth(-.9,-.1,h));},
    (x,y,z,d)=>{if(!BIO.clearOf(x,z,1)||blocked(x,z,.5))return;const k=rng();
@@ -223,13 +224,17 @@ SWLOW.buildFloor=function(R,q){
     else if(k<.86)hyacinth(x,z,lv,st);else duckweed(x,z,st);},{patch:.8,patchScale:.02,noMask:true,pad:.4});});
  // THE UNDERSTOREY: under every near and mid crown, a shade layer scattered over the
  // ground the crown covers (clear of the bole), heavier than the open floor's mix. It
- // follows the trees, so it is thickest where the canopy is.
- for(const T of SWLOW.TREES){if(T.lv<1||T.crownR<5)continue;const Rc=Math.max(T.spread||T.crownR,T.crownR)*.85,area=Math.PI*Rc*Rc,n=Math.round(Math.min(T.lv===2?48:8,area*(T.lv===2?.011:.0018))*q);   // by the ground the crown covers
+ // follows the trees, so it is thickest where the canopy is. Keyed by its tree's foot, to SWLOW.LOD.under.
+ BIO.range=L.under;
+ for(const T of SWLOW.TREES){if(T.lv<1||T.crownR<5)continue;BIO.owner=[T.x,T.z];const Rc=Math.max(T.spread||T.crownR,T.crownR)*.85,area=Math.PI*Rc*Rc,n=Math.round(Math.min(T.lv===2?48:8,area*(T.lv===2?.011:.0018))*q);   // by the ground the crown covers
   for(let i=0;i<n;i++){const a=rr(0,TAU),d=T.rb*2+.8+(Math.max(T.spread||T.crownR,T.crownR)*.85-T.rb*2)*Math.sqrt(rng()),x=T.x+Math.cos(a)*d,z=T.z+Math.sin(a)*d;
    if(BIO.mask(x,z)<=0||!okGround(x,z,.7))continue;const y=Y(x,z);if(y-BIO.waterH(x,z)<.3)continue;underPlant(x,y,z,zones(x,z),T.lv,st);st.understorey++;}}
+ BIO.owner=null;
  // fallen trees in the rainforest, the bayou and the plain
+ BIO.range=L.logs;
  BIO.grid(120,0,R,(x,z,d)=>{if(BIO.lodD(x,z)>1400)return 0;const Z=zones(x,z);return (Z.rain*.8+Z.swamp*.4+Z.sub*.35)*q;},
   (x,y,z,d)=>{const trop=zones(x,z).rain>.4;for(let t=0;t<4;t++)if(log(x+rr(-25,25),y,z+rr(-25,25),st,trop))break;},{patch:0,pad:3});
+ BIO.range=null;
  return{under:st};};
 // ONE PLANT AT A POINT, by name, for a world's gardens: the same small-plant builders the floor pass
 // uses, at an explicit (x,y,z) with the near LOD. kinds: fern forkfern giantfern shrub azalea palmetto
