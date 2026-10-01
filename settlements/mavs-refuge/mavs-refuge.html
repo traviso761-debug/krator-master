@@ -3595,6 +3595,12 @@ const FURN_TYPES = ['table', 'chair', 'bench', 'seating', 'bed', 'storage', 'she
   'ladder', 'board', 'stack', 'brazier', 'book', 'tool', 'art', 'food', 'drink', 'supply'];
 /* 'art' is wall-mounted art (a mask, a plate, a painted panel, a mounted skull): anchor wall,
    no walk-up access. Tapestries and hangings are 'banner'. */
+/* the trade or occupation a work item serves (2026-10): every entry of krator-master-furniture-jobs.js
+   carries `job: '<one of these>'` next to its type, and the sheet's Jobs page has a row per job. The trade
+   roles FK.ROLES.trade registers (forge, anvil, vat ...) are work furniture too: they sit on the Jobs page
+   by their roleSet, a row per culture, and carry no job. verify.py rejects a job not listed here. */
+const FURN_JOBS = ['farming', 'fishing', 'salt', 'oil', 'smithing', 'milling', 'warehousing', 'brewing',
+  'weaving', 'tanning', 'pottery', 'carpentry', 'mining', 'herding', 'trading'];
 const FURNS = [], FURN_BY_KEY = {};
 function FURN(o) {
   if (FURN_BY_KEY[o.key]) { console.error('duplicate furniture key', o.key); return; }
@@ -6057,6 +6063,11 @@ const FK = (function () {
   /* FK.set({ culture, tier, S, names?, dims?, override?, skip?, rooms?, prefix?, roles? }):
      registers every role of the tier as FURN entries keyed <culture>_<tier>_<role>; with
      roles: 'trade' it registers FK.ROLES.trade instead (keyed <culture>_trade_<role>) at the tier given. */
+  /* the job (FURN_JOBS) of each trade role: the catalog's Jobs page groups work pieces by job. Roles left out
+     (bunk, locker, altar) are a trade set's household and shrine pieces: they keep a `Jobs · trade · <culture>` row. */
+  K.TRADE_JOB = { forge: 'smithing', anvil: 'smithing', grindstone: 'smithing', armour_stand: 'smithing', weapon_rack: 'smithing',
+    trough: 'herding', hayrack: 'herding', stall: 'trading', display: 'trading', vat: 'weaving', still: 'brewing', barrel: 'brewing',
+    bin: 'warehousing', larder: 'warehousing', lathe: 'carpentry', press: 'milling', kiln: 'pottery' };
   K.set = function (spec) {
     const culture = spec.culture, tier = spec.tier || 'common', S = spec.S;
     const prefix = spec.prefix || (culture + '_' + (spec.roles || tier) + '_');
@@ -6082,6 +6093,8 @@ const FK = (function () {
         build: function (F) { const vd = entry.variantDims && entry.variantDims[F.variant] || d; build(F, S, Object.assign({ w: vd.w, d: vd.d, h: vd.h, variant: F.variant, court: tier === 'court', culture: culture }, opts)); }
       };
       if (entry.variantNames && entry.variantNames.length !== entry.variants) entry.variantNames = undefined;
+      const job = o.job || R.job || (spec.roles === 'trade' ? K.TRADE_JOB[R.role] : null);
+      if (job) entry.job = job;
       FURN(entry);
       made.push(entry.key);
     }
@@ -12031,7 +12044,7 @@ FURN({
    ====================================================================== */
 const KF_API = (function () {
   const API = {};
-  API.FURNS = FURNS; API.FURN_BY_KEY = FURN_BY_KEY; API.FPAL = FPAL; API.FURN_TYPES = FURN_TYPES;
+  API.FURNS = FURNS; API.FURN_BY_KEY = FURN_BY_KEY; API.FPAL = FPAL; API.FURN_TYPES = FURN_TYPES; API.FURN_JOBS = FURN_JOBS;
   API.entryDims = entryDims; API.furnAnchorY = furnAnchorY; API.CATALOG_MATERIALS = CATALOG_MATERIALS;
   API.has = function (key) { return !!FURN_BY_KEY[key]; };
   /* round primitives' detail for everything built after the call (1 = the catalog page's; 0.5 halves the
