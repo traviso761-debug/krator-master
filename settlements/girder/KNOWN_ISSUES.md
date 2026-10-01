@@ -18,4 +18,5 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
 - [ ] Arch: house yards sparse, no animals in pens; dwellings under low slabs have no roofs
 - [ ] Forest: no trodden-ground tone on gate tracks; fireflies hard to see; brook bed strip only inside |x|,|z|<1200; FAST-off (shadows) build never run
 - [ ] Forest: 62-jungle hard-codes four camera positions from 80-camera to keep them clear — publish viewpoints from the layout instead
-- [ ] Night at 21:00 is too bright under the gas giant (shared with Mav's Refuge)
+- [x] Night at 21:00 is too bright under the gas giant (shared with Mav's Refuge)
+  2026-10-01: night floors cut (hemi 0.30 -> 0.07, ambient 0.22 -> 0.035, planetshine fill 0.15/0.08 -> 0.07/0.03) and the night fill turned cool blue-grey instead of a dimmed day colour (82-daynight); the giant's key 0.44 -> 0.18 x phase (21-sky); a full giant now cuts the lamps by 8 % instead of 28 %, so lamps, windows and fires are the main light. An eclipse keeps its own fill (DN_ECL_*) so it still reads as twilight. 21:00 lights: hemi 0.53 -> ~0.17, ambient 0.38 -> ~0.09, key 0.45 -> ~0.19. Same code in both builds.
