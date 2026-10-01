@@ -18,6 +18,7 @@ FURN_CULTURE('xanadu', { name: 'Xanadu', pack: 'xanadu', influences: 'Mughal; Yu
   } });
 /* END PALETTE */
 const XAN_COMMON = {
+  emblem: { field: 'clothSaffron', edge: 'clothMaroon', band: 'clothGoldBand', ink: 'clothMaroon', ink2: 'clothGoldBand' },
   wood: 'timberRose', woodDark: 'timberRoseDark', woodLight: 'timberRoseLight', woodFam: 'wood',
   cloth: ['clothSaffron', 'clothMaroon', 'clothTurquoise', 'clothIvory'], clothFam: 'cloth',
   accent: 'goldDark', accentFam: 'gold', metal: 'brass', metalFam: 'metal',

@@ -84,6 +84,10 @@ mounts it (`kits/catalog/README.md`, and `furnAnchorY()` in the engine).
   keys (`krator-furniture-kit.js`, header). A kit piece is still a `FURN` entry with every field
   above, built only through `F.*`; the kit ships with the registry, not the host, so a host that
   supplies `F` runs kit pieces unchanged. Bespoke pieces are plain `FURN()` calls.
+- **Painted panels.** `F.decal(lx, ly, lz, w, h, ry, key, paint, family)` is a plane with a canvas texture
+  painted once per key; the kit's hangings paint the culture's emblem with the socket packs' `SYMBOLS`
+  (`core/sockets/38-symbols.js`, vendored as `kits/catalog/krator-symbols.js`). A paint function uses CSS
+  colours from palette keys (`F.css(F.col(key))`) and its own seeded stream (`FK.paintRng`).
 - **Palettes.** A culture file registers its palette with `FURN_CULTURE(key, { palette })`
   between `/* PALETTE */` and `/* END PALETTE */`: the one place a literal colour may appear.
   `verify.py` asserts no literal anywhere else, kit included.

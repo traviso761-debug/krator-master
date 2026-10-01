@@ -1,8 +1,8 @@
 {
  "adapters/catalog-adapter.js": "02139c6ebb11",
  "dist/interiors-core.js": "253bfe928360",
- "dist/interiors.html": "d8e5ce9b9f90",
- "src/00-head.html": "26a7a00904b9",
+ "dist/interiors.html": "94b004c3d89a",
+ "src/00-head.html": "3c0ff05ced99",
  "src/10-core.js": "15d71a0a4549",
  "src/20-rooms.js": "d9012af2404e",
  "src/30-programs.js": "fd681b8dd96e",

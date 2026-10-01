@@ -18,6 +18,7 @@ FURN_CULTURE('republican', { name: 'Republicans', pack: 'republic', influences: 
   } });
 /* END PALETTE */
 const REP_COMMON = {
+  emblem: { field: 'clothRepublicRed', edge: 'timberBirchDark', band: 'clothOchreBand', disc: 'clothCream', ink: 'clothRepublicRed', ink2: 'clothTealInk' },
   wood: 'bambooStraw', woodDark: 'bambooDark', woodLight: 'bambooPale', woodFam: 'bamboo',
   cloth: ['clothRepublicRed', 'clothCream', 'clothBlue', 'clothGreen'], clothFam: 'cloth',
   accent: 'brass', accentFam: 'metal', metal: 'ironBlack', metalFam: 'metal',

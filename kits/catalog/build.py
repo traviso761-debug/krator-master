@@ -45,6 +45,7 @@ OUT = 'catalog'
 # The catalog is the furniture sheet.
 SOURCES = [
     'krator-asset-engine.js',
+    'krator-symbols.js',
     'krator-furniture-kit.js',
     'krator-master-furniture.js',
     'krator-master-furniture-*.js',
@@ -60,7 +61,10 @@ def sources():
         else:
             out.append(s)
     return out
-VENDORED = {'81-sky.js': os.path.join(ROOT, 'settlements', 'iziz', 'src', '81-sky.js')}
+VENDORED = {'81-sky.js': os.path.join(ROOT, 'settlements', 'iziz', 'src', '81-sky.js'),
+            # the culture symbols, shared with the socket packs; vendored here because other builds load the
+            # catalog's files by relative path from kits/ and cannot reach core/. Re-copy after editing upstream.
+            'krator-symbols.js': os.path.join(ROOT, 'core', 'sockets', '38-symbols.js')}
 
 RE_DECL = re.compile(r'^(?:const|let|var|function|class)\s+([A-Za-z_$][\w$]*)', re.M)
 RE_DECL_MULTI = re.compile(r'^(?:const|let|var)\s+[^;\n]*?,\s*([A-Za-z_$][\w$]*)\s*=', re.M)
@@ -97,7 +101,8 @@ def vendor_check():
         if not os.path.exists(up):
             print('vendor-check: %s: upstream %s missing' % (f, os.path.relpath(up, ROOT)))
             continue
-        same = read(up) == read(os.path.join(SRC, f))
+        local = os.path.join(SRC, f) if os.path.exists(os.path.join(SRC, f)) else os.path.join(HERE, f)
+        same = read(up) == read(local)
         drift += not same
         print('vendor-check: %-12s %s (%s)' % (f, 'identical' if same else 'DRIFTED', os.path.relpath(up, ROOT)))
     return drift

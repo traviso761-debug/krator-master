@@ -17,6 +17,7 @@ FURN_CULTURE('eastabyss', { name: 'East Abyss', pack: null, influences: 'Maghreb
   } });
 /* END PALETTE */
 const EA_COMMON = {
+  emblem: { field: 'clothIndigo', edge: 'clothMadder', band: 'clothSaffron', ink: 'clothWhite', ink2: 'clothSaffron' },
   wood: 'timberCedar', woodDark: 'timberCedarDark', woodLight: 'timberCedarLight', woodFam: 'wood',
   cloth: ['clothIndigo', 'clothSaffron', 'clothMadder', 'clothWhite'], clothFam: 'cloth',
   accent: 'brass', accentFam: 'metal', metal: 'iron', metalFam: 'metal',

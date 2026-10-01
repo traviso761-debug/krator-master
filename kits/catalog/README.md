@@ -6,8 +6,8 @@ furniture sets** (2026-10): a parametric furniture kit and one file per culture.
 It is the furniture source for `kits/interiors/` and the starting point for `kits/furniture/`.
 
 **Status: verified.** `build.py` builds `dist/catalog.html`, a contact sheet of every
-furniture entry and every variant, and `verify.py --assert` passes: all 853 furniture pieces
-(1129 instances, every variant, seeds 1–4) build without error, carry no NaN geometry, fit
+furniture entry and every variant, and `verify.py --assert` passes: all 965 furniture pieces
+(1381 instances, every variant, seeds 1–4) build without error, carry no NaN geometry, fit
 their declared size, keep their anchor's geometry, and carry their tags. Every furniture entry carries every field of
 `kits/furniture/SPEC.md` "The entry" and meets its style rules. What is still open is in `KNOWN_ISSUES.md`.
 
@@ -20,7 +20,8 @@ are in Mav's Refuge and Girder. The catalog is the furniture sheet, one row per 
 
 | File | What |
 |---|---|
-| `krator-asset-engine.js` | scene, camera, geometry kit (`F.box/cyl/cone/dome/blob/ball/beam/rod/frustum/pyrRoof/hipRoof`, `F.shift`), the `FURN`/`PLANT`/`ASSET` registries with `buildFurn/buildPlant/buildAsset`, `CATALOG_MATERIALS` and `CORE_MATERIAL_MAP`, `furnAnchorY`, the furniture palette `FPAL` (`F.col`), `FURN_CULTURE()` and `FURN_TIERS`, `BUILDING_TYPES` |
+| `krator-symbols.js` | VENDORED from `core/sockets/38-symbols.js`: the culture symbols (`SYMBOLS`, `SYMBOL_OF`) the hangings paint |
+| `krator-asset-engine.js` | scene, camera, geometry kit (`F.box/cyl/cone/dome/blob/ball/beam/rod/frustum/pyrRoof/hipRoof`, `F.shift`, and `F.decal`: a painted canvas panel, cached per key), the `FURN`/`PLANT`/`ASSET` registries with `buildFurn/buildPlant/buildAsset`, `CATALOG_MATERIALS` and `CORE_MATERIAL_MAP`, `furnAnchorY`, the furniture palette `FPAL` (`F.col`), `FURN_CULTURE()` and `FURN_TIERS`, `BUILDING_TYPES` |
 | `krator-furniture-kit.js` | **the furniture kit `FK`**: one parametric builder per role (bed, throne, hearth, tapestry, wall art ...) driven by a culture's style sheet, motif and finial helpers, `FK.ROLES` per tier and `FK.set()`, which registers a whole tier for a culture. Read its header before writing a set |
 | `inspector.js` | click-to-select inspector: measure, isolate, cycle variants, audit declared sizes |
 | `krator-master-furniture.js` | 122 harvested `FURN({...})` pieces in the SPEC shape (Voth 35, Iziz 9, Beast-Rider 16, Yuni 58, Ancients 4) |
@@ -44,7 +45,7 @@ python3 verify.py dist/catalog.html --out shots --rows   # + one per row (slow o
 python3 verify.py dist/catalog.html --sheet furniture --query cultures=xanadu,voth --out shots --rows   # a quick partial sheet
 ```
 
-`build.py` reads `SOURCES`: the engine, the kit, the harvested furniture, then every
+`build.py` reads `SOURCES`: the engine, the symbols, the kit, the harvested furniture, then every
 `krator-master-furniture-*.js` in filename order, and the inspector. A new culture is one new
 file; nothing else changes.
 
@@ -180,7 +181,8 @@ pieces; Yuni's own tiers are its culture tags. Hykkousoi is in progress and has 
 its file says how to add them.
 
 **Tiers and wealth.** Every piece carries `tier` (`poor | common | court`) and `wealth: [lo, hi]`
-(`FURN_TIERS`: poor 0–0.35, common 0.3–0.75, court 0.7–1). The poor tier is the two generic sets:
+(`FURN_TIERS`: poor 0–0.35, common 0.3–0.75, court 0.7–1). The sheet is 965 pieces: 731 kit and bespoke
+pieces of the first pass, 112 hangings of the second, and the 122 harvested ones. The poor tier is the two generic sets:
 a culture's poor buildings pull from them through `kits/interiors`' culture chain
 (`IX.CULTURE_FAMILY`), and the placer tries a culture's in-band pieces before its other tiers.
 The sheet, the hover inspector (T) and the interiors adapter all carry the tier.
@@ -191,12 +193,23 @@ render look (`MAT_FAMILY_LOOK`): `bamboo`, `reed`, `hyperMahogany`, `nacre`, `go
 says which `MAT.*` (Ancients lineage, `core/materials/`) and `FAMMAT` family (Voth and Yuni lineage)
 each canonical name lands on, the bridge `core/README.md` "Planned: a material registry" asks for.
 
-**Socket packs.** `FURN_CULTURE_INFO[culture].pack` names the culture's pack in
-`core/sockets/80-cultures.js`; tapestries, hangings and cloth take the pack's banner colours
-(each palette's comment quotes them), so a building dressed by `fillSockets()` and the furniture
-inside it match. `FK.build.tapestry` draws the pack's device in blocks (`'sun'`, `'diamond'`,
-`'wheel'`, `'claw'`, `'moon'`, the hyperboloid is still to do); the canvas `SYMBOLS` of the pack
-file need the Post-Apoc engine and are not loaded here.
+**Socket packs and emblems.** `FURN_CULTURE_INFO[culture].pack` names the culture's pack in
+`core/sockets/80-cultures.js`, and the hangings carry the pack's own emblem: the packs' canvas
+`SYMBOLS` live in `core/sockets/38-symbols.js`, vendored here as `krator-symbols.js`
+(`build.py --vendor-check`), and `F.decal` paints them onto a plane. `FK.symbolOf(S, culture)`
+picks the symbol (the sheet's `sym`, else the pack's through `SYMBOL_OF`, else the culture's own:
+the symbols file gained `serpent star horns fir raven fish skull gear` for the cultures without a
+pack); the sheet's `emblem: { field, edge, band, disc?, ink, ink2? }` keys are the pack's banner
+colours, so a building dressed by `fillSockets()` and the tapestry inside it match.
+
+**Wall hangings.** Every culture has, in its common tier, a `banner` (crossbar, emblem, swallow-tail
+or fringed), a `scroll` (rollers; glyph columns and a seal, or a painted scene) and a string of
+`pennants`; in its court tier a four-variant `tapestry` (emblem on the pack colours, emblem on the
+second cloth, the woven block device, a banded field with an emblem row), a taller `banner`, a long
+`frieze` (emblems and lozenges on a rail), a knotted `wall_rug` with the emblem as its medallion, a
+`scroll` and a `painted_hanging` (a hide or cloth on a frame of poles: the emblem over a procession
+or a hunt). All are type `banner`, anchor `wall`, and the placer hangs them in halls, shrines,
+bedrooms, taverns and antechambers.
 
 **Adding a culture** is one file, `krator-master-furniture-<culture>.js`:
 

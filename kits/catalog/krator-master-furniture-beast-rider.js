@@ -16,6 +16,7 @@ FURN_CULTURE('beast-rider', { name: 'Beast Riders', pack: 'beast-rider', influen
   } });
 /* END PALETTE */
 const BR_COMMON = {
+  emblem: { field: 'clothClawGreen', edge: 'clothMossDark', band: 'leafOlive', ink: 'clothClawPale' },
   wood: 'timberMud', woodDark: 'timberSepia', woodLight: 'timberStraw', woodFam: 'wood',
   cloth: ['clothVermilion', 'clothSaffron', 'clothTeal', 'hideOak'], clothFam: 'hide',
   accent: 'boneIvory', accentFam: 'bone', metal: 'iron', metalFam: 'metal',
