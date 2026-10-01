@@ -27,6 +27,13 @@ DEFAULT_CONFIG = os.path.join(ROOT, "site.toml")
 TEXT_TYPES = ("application/javascript", "application/json", "image/svg+xml", "application/toml")
 GZIP_MIN = 1024   # smaller bodies are not worth compressing
 
+# On Windows, mimetypes reads the registry, which often maps .js to text/plain: browsers then refuse to run the
+# pages' modules. Pin the types the pages need there; elsewhere the defaults are already right.
+if os.name == "nt":
+    for ext, t in ((".js", "application/javascript"), (".mjs", "application/javascript"), (".css", "text/css"),
+                   (".json", "application/json"), (".svg", "image/svg+xml"), (".wasm", "application/wasm")):
+        mimetypes.add_type(t, ext)
+
 # Compressing a fourteen-megabyte city on every request costs the server about a third of a second and it
 # is the same third of a second every time, because the file only changes when somebody regenerates it. So
 # the compressed body is kept, keyed by path and by the file's own mtime and size: a rebuild invalidates it
@@ -243,7 +250,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
                         self.wfile.write(body)
                     else:
                         shutil.copyfileobj(f, self.wfile)
-                except (BrokenPipeError, ConnectionResetError):
+                except (BrokenPipeError, ConnectionResetError, ConnectionAbortedError):   # the last: Windows
                     pass
 
     def not_modified(self, etag, mtime):
@@ -326,7 +333,8 @@ def main():
         print(f"reloaded {args.config}: {len(new.route_list)} routes, {len(new.mounts)} mounts",
               file=sys.stderr, flush=True)
 
-    signal.signal(signal.SIGHUP, reload)
+    if hasattr(signal, "SIGHUP"):   # not on Windows: there, restart the server to apply a config change
+        signal.signal(signal.SIGHUP, reload)
 
     with http.server.ThreadingHTTPServer((host, port), Handler) as httpd:
         print(f"serving {len(SITE.route_list)} routes on http://{host}:{port}/", file=sys.stderr, flush=True)
