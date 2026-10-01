@@ -18,7 +18,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 3 |  |
-| `10-core.js` | 2 | error panel (1); rng + noise (7) |
+| `10-core.js` | 3 | error panel (1); rng + noise (7) |
 | `12-stats.js` | 1 | per-type accounting (1) |
 | `30-kit.js` | 3 | instancing kit (1) |
 | `32-surfaces.js` | 7 | surfaces (1) |
@@ -47,8 +47,8 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `84-xa-grandbath.js` | 10 | textures and kit items of the baths (7); pieces (prefix xnXK) (28); the Grand Baths (41) |
 | `85-xa-water.js` | 12 | the slope pieces (48) |
 | `85b-xa-garden.js` | 20 | the five tile maps (9) |
-| `86-bio-10-core-head.js` | 5 | PRNG (14); noise (24); host binding (32); accounting (74) |
-| `86-bio-20-core-kit.js` | 15 | merged buckets (46); runtime LOD (xanadu-1, additive) (121); bake (145) |
+| `86-bio-10-core-head.js` | 6 | PRNG (14); noise (24); host binding (41); accounting (83) |
+| `86-bio-20-core-kit.js` | 17 | merged buckets (46); runtime LOD (xanadu-1, additive) (121); indexed buckets (145); bake (168) |
 | `86-bio-30-core-foliage.js` | 13 | alpha textures (18); card geometries (48); the foliage hook (110) |
 | `86-bio-40-core-place.js` | 6 | surface sampling (53) |
 | `86-bio-45-init.js` | 1 |  |

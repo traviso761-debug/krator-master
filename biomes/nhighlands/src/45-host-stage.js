@@ -126,7 +126,10 @@ function terrainH(x,z){let h=baseH(x,z);
  // the stream's channel: a bed, a low bank, then the valley floor
  const r=streamNear(x,z);
  if(r){const w=r.w,t=Math.max(0,r.d-w),bank=Math.max(r.bank,r.level-.35)+.55+t*.2+Math.max(0,t-8)*.9;
-  if(r.d<w)h=Math.min(h,r.bed-.35*(1-r.d/w)+.0);else if(bank<h)h=bank;}
+  if(r.d<w)h=Math.min(h,r.bed-.35*(1-r.d/w)+.0);else if(bank<h)h=bank;
+  // under the whole water ribbon the ground stays below the surface: the ground mesh (9 m) is coarser than the
+  // channel (4-13 m), and without this its triangles bridge the banks over the water and cut it into slabs
+  if(r.d<w+4.5)h=Math.min(h,r.level-.55-.25*(1-r.d/(w+4.5)));}
  return h;}
 // the local water surface: the stream's level across its channel, the tarn's level in its bowl, none elsewhere
 function waterH(x,z){if(Math.hypot(x-TARN.x,z-TARN.z)<TARN.r+8)return TARN.level;
