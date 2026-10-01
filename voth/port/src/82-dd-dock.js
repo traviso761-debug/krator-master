@@ -53,33 +53,8 @@ function ddLight(x,y,z,d,s){if(d===1)return;kput('dot',[x,y,z],null,s||[.9,.5,.9
 // ShapeGeometry UVs are raw metres; the kit's textures want ~8 m a tile.
 function ddShapeUV(g,t){const uv=g.attributes.uv;for(let i=0;i<uv.count;i++)uv.setXY(i,uv.getX(i)/(t||8),uv.getY(i)/(t||8));return g;}
 
-// ---------------------------------------------------------------- the sea over a dry pit (WORKAROUND)
-// A `dry` stamp makes portBuildTerrain (71-port-terrain.js) emit the sea as
-// one run of quads per terrain row, split round the dry cells. The rows next
-// to a pit's z edges then meet in T-junctions: a row-long edge (23 km) against
-// the split edges of its neighbour. They render as hairline cracks right
-// across the open sea along the pit's z lines (seen and confirmed: the lines
-// go when the pit is not dry). Until the shared sea is fixed (request in
-// notes/drydocks.md) the first dry-pit builder re-meshes it once: every row is
-// cut at the UNION of all rows' wet/dry boundaries, so neighbouring rows share
-// every vertex. Same sheet, same material, same UVs; a no-op without dry stamps.
-let DD_SEAFIXED=false;
-function ddSeaFix(){if(DD_SEAFIXED)return;DD_SEAFIXED=true;
- const T=(typeof PORT_TERRAIN!=='undefined')?PORT_TERRAIN:null,Gd=PORT_ST.grid;if(!T||!T.sea||!Gd)return;
- const dry=PORT_ST.list.filter(s=>s.dry);if(!dry.length)return;
- const {xs,zs,nx,nz}=Gd,zlo=Math.min(...dry.map(s=>s.z0))-1,zhi=Math.max(...dry.map(s=>s.z1))+1;
- const wet=new Map(),cut=new Set([0,nx-1]);
- for(let j=0;j<nz-1;j++){const zc=(zs[j]+zs[j+1])/2;if(zc<zlo||zc>zhi)continue;const row=new Uint8Array(nx-1);
-  for(let i=0;i<nx-1;i++){row[i]=portDry((xs[i]+xs[i+1])/2,zc)?0:1;if(i>0&&row[i]!==row[i-1])cut.add(i);}wet.set(j,row);}
- const B=[...cut].sort((a,b)=>a-b),P=[],I=[],U=[],N=[];
- for(let j=0;j<nz-1;j++){const row=wet.get(j);
-  for(let k=0;k<B.length-1;k++){if(row&&!row[B[k]])continue;const xa=xs[B[k]],xb=xs[B[k+1]],za=zs[j],zb=zs[j+1],b=P.length/3;
-   P.push(xa,0,za, xb,0,za, xa,0,zb, xb,0,zb);I.push(b,b+2,b+1,b+1,b+2,b+3);
-   U.push(xa/46,za/46, xb/46,za/46, xa/46,zb/46, xb/46,zb/46);N.push(0,1,0,0,1,0,0,1,0,0,1,0);}}
- const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(P,3));
- g.setAttribute('uv',new THREE.Float32BufferAttribute(U,2));g.setAttribute('normal',new THREE.Float32BufferAttribute(N,3));
- g.setIndex(P.length/3>65535?new THREE.Uint32BufferAttribute(I,1):new THREE.Uint16BufferAttribute(I,1));g.computeBoundingSphere();
- const old=T.sea.geometry;T.sea.geometry=g;old.dispose();}
+// (The sea over a dry pit: ddSeaFix's union-cut re-mesh now lives in
+// portBuildTerrain, 71-port-terrain.js, so the workaround is gone.)
 
 // ---------------------------------------------------------------- the stepped pit
 // ddPit(G,o): the altar walls, the head and the floor of a graving dock, as
@@ -251,7 +226,7 @@ function ddDockStamps(o){const d=o.d,D=PORT.DECK,K=DDK,h=o.W/2;
  if(d===3)s.push({kind:'fill',x0:K.X0,z0:K.Z0,x1:K.X1,z1:K.Z0+34,y:DDK.GY,paint:'grass'});      // the garden terrace
  return s.concat(portEdgeStamps(o,{LAND:K.LAND,SEA:K.SEA}));}
 
-function buildDdDock(scene,gx,gz,d,opt){reseed(20100+d);ddSeaFix();
+function buildDdDock(scene,gx,gz,d,opt){reseed(20100+d);
  const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);KOFF=[gx,0,gz];
  const D=PORT.DECK,K=DDK,h=opt.W/2,dry=d===0,FL=DD.FLOOR;
  // ---- paving round the pit and the entrance; walls; the mole's sides
