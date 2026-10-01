@@ -4669,12 +4669,21 @@ const LAB_OBST=(function(){const K=4.105*CITY.LAB.scale;const o=[{x:CITY.LAB.x,z
  for(const q of[[178,-52,46],[126,152,34],[-86,176,40],[-192,26,29],[-138,-148,37],[54,-186,24],[205,88,31]])o.push({x:CITY.LAB.x+q[0]*K,z:CITY.LAB.z+q[1]*K,r:q[2]*K+6});return o;})();
 function segD(x,z,a,b){const dx=b[0]-a[0],dz=b[1]-a[1],l2=dx*dx+dz*dz||1;const t=clamp(((x-a[0])*dx+(z-a[1])*dz)/l2,0,1);return Math.hypot(x-a[0]-dx*t,z-a[1]-dz*t);}
 function channelD(x,z){let best=1e9,w=0;for(const C of CHANNELS){for(let i=0;i<C.pts.length-1;i++){const d=segD(x,z,C.pts[i],C.pts[i+1]);if(d<best){best=d;w=C.w;}}}return{d:best,w};}
+// terrainH only asks whether a point lies within a channel's width (at most CH_WMAX), so it measures only the
+// channels whose box, grown by CH_WMAX+1, holds the point. The answer is exactly channelD's whenever it can matter:
+// any other channel is farther than CH_WMAX+1, wider than every channel, so it can be neither within its own width
+// nor the nearest one that is. It was ~7 s of Dalab's load: every ground sample measured every channel segment.
+const CH_WMAX=Math.max(0,...CHANNELS.map(C=>C.w)),CH_BOX=CHANNELS.map(C=>{const m=CH_WMAX+1;
+ let x0=1e9,z0=1e9,x1=-1e9,z1=-1e9;for(const p of C.pts){x0=Math.min(x0,p[0]);z0=Math.min(z0,p[1]);x1=Math.max(x1,p[0]);z1=Math.max(z1,p[1]);}
+ return[x0-m,z0-m,x1+m,z1+m];});
+function channelNear(x,z){let best=1e9,w=0;for(let c=0;c<CHANNELS.length;c++){const B=CH_BOX[c];if(x<B[0]||z<B[1]||x>B[2]||z>B[3])continue;
+ const C=CHANNELS[c];for(let i=0;i<C.pts.length-1;i++){const d=segD(x,z,C.pts[i],C.pts[i+1]);if(d<best){best=d;w=C.w;}}}return{d:best,w};}
 function riverD(x,z){return Math.abs(x-riverX(z));}
 // the terrain: flat lowland with a metre of roll, the river cut 3.5 m deep and 70 m wide, the channels 1.4 m deep
 // the ground sits ~2.2 m above the datum: the biome reads anything under 0.3 m as water
 terrainH=function(x,z){let h=2.2+.9*fbm(x*.0016+3,z*.0016-7,17,3)+.35*fbm(x*.009,z*.009,5,2)-.5;
  const rd=riverD(x,z);if(rd<60){const t=1-smoothstep(28,60,rd);h-=3.5*t;}
- const c=channelD(x,z);if(c.d<c.w){const t=1-smoothstep(c.w*.45,c.w,c.d);h-=1.4*t;}
+ const c=channelNear(x,z);if(c.d<c.w){const t=1-smoothstep(c.w*.45,c.w,c.d);h-=1.4*t;}
  return h;};
 const WATER_Y=1.25;
 function isWater(x,z){return terrainH(x,z)<WATER_Y+.1;}
@@ -4946,7 +4955,7 @@ function indexedGeo(T,P,N,U,C){const n=P.length/3,W=11,f=new Float32Array(n*W),w
  for(let i=0;i<n;i++){const o=i*W;f[o]=P[i*3];f[o+1]=P[i*3+1];f[o+2]=P[i*3+2];f[o+3]=N[i*3];f[o+4]=N[i*3+1];f[o+5]=N[i*3+2];
   f[o+6]=U[i*2];f[o+7]=U[i*2+1];f[o+8]=C[i*3];f[o+9]=C[i*3+1];f[o+10]=C[i*3+2];}
  let cap=1024;while(cap<n*2)cap*=2;const tab=new Int32Array(cap).fill(-1),idx=new Uint32Array(n);let m=0;
- for(let i=0;i<n;i++){const o=i*W;let h=0x811C9DC5;for(let k=0;k<W;k++)h=Math.imul(h^w[o+k],0x01000193);
+ for(let i=0;i<n;i++){const o=i*W;let h=0x811C9DC5;for(let k=0;k<6;k++)h=Math.imul(h^w[o+k],0x01000193);   // position and normal: enough to spread them; a match still compares all 11
   h^=h>>>16;h=Math.imul(h,0x85EBCA6B);h^=h>>>13;let s=h&(cap-1),j;
   while((j=tab[s])>=0){const q=j*W;let k=0;while(k<W&&w[q+k]===w[o+k])k++;if(k===W)break;s=(s+1)&(cap-1);}
   if(j<0){j=m++;if(j!==i)f.copyWithin(j*W,o,o+W);tab[s]=j;}
