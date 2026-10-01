@@ -793,6 +793,30 @@ function civRooms(o){const rIn=o.rIn||.72,cx=o.cx||0,cy=o.cy||0,cz=o.cz||0,step=
     kput('boxD',[cx+c*rb,cy+y+.25+hgt/2,cz+s*rb],qEuler(0,-th,0),[1+hh*1.4,hgt,w],null);}
    if(hh>.8){const on=!(d>0&&hh<.93);kput(on?'cell':'cellD',[cx+c*R*(rIn+.02),cy+y+1.5,cz+s*R*(rIn+.02)],qFacing([c,0,s]),[.5,.7,1],on?CYAN:null);}
    if(k%5===2)for(let j=-1;j<=1;j++){const t2=th+j*.012;kput('tube',[cx+Math.cos(t2)*R*(rIn+.03),cy+y+step/2,cz+Math.sin(t2)*R*(rIn+.03)],null,[.22,step,.22],null);}}}}
+// Drop kit instances put since `mark` ({name: KIT.items[name].length}) whose
+// builder-local position fn(x,y,z) says lie in a collapse. For helpers that draw
+// rng per item (stripRing, mossOnRing): calling them whole and culling after
+// keeps every later rng draw where it was. Takes the per-type stats back out.
+function civCull(mark,fn){for(const nm in mark){const it=KIT.items[nm];const keep=it.slice(0,mark[nm]);
+ for(let i=mark[nm];i<it.length;i++){const o=it[i];if(fn(o.p[0]-KOFF[0],o.p[1]-KOFF[1],o.p[2]-KOFF[2])){const t=tcur();if(t){t.inst--;t.tris-=ktri(nm);}}else keep.push(o);}
+ KIT.items[nm]=keep;}}
+// DRAW CALLS (round 2). Every opaque Mesh under G (groups included) that shares
+// a material is merged into one, in G's frame, at the end of each civic builder.
+// Triangle-neutral, and pixel-neutral bar float rounding (positions and normals
+// are transformed, not recomputed). Transparent meshes keep their own sort.
+// What moves: repairPass/wornPass sample G's faces in mesh order, so the
+// salvage dressing at decay 3 (and the worn pass) lands on other faces.
+function civFlatten(G){G.updateMatrixWorld(true);const inv=new THREE.Matrix4().copy(G.matrixWorld).invert();const by=new Map();
+ G.traverse(o=>{if(!o.isMesh||o.isInstancedMesh||!o.geometry||Array.isArray(o.material)||o.material.transparent)return;
+  if(!by.has(o.material))by.set(o.material,[]);by.get(o.material).push(o);});
+ const t=tcur();
+ for(const [mat,list] of by){if(list.length<2)continue;const geos=[];
+  for(const o of list){const m=inv.clone().multiply(o.matrixWorld);const g=o.geometry.index?o.geometry.clone():o.geometry.clone();g.applyMatrix4(m);geos.push(g);o.parent.remove(o);}
+  const t0=t?t.tris:0;meshMerged(geos,mat,G);if(t){t.tris=t0;t.meshes-=list.length;}}}
+// MOULDING for an arcWindowGeo(w,h) window: a half-round hood following the arch
+// and a sill under it, both proud of the window's face (+z). One kit mesh.
+function civHoodGeo(w,h){const t=new THREE.TorusGeometry(w/2+.2,.15,3,9,Math.PI);t.translate(0,h/2-w/2,.3);   // ~70 tris a window
+ return civMergeGeo([t,new THREE.BoxGeometry(w+.7,.24,.5).translate(0,-h/2-.12,.25)]);}
 // Angular distance, for sector tests.
 function civDA(a,b){const x=((a-b)%TAU+TAU)%TAU;return Math.min(x,TAU-x);}
 
@@ -835,7 +859,11 @@ function buildOffices(scene,gx,gz,d){reseed(d>0?9501:9500);KOFF=[gx,0,gz];const 
     rubbleRing(F.position.x,0,F.position.z,3,16,26,2.4);}
    for(let k=0;k<14;k++){const a=SEC+rr(-.5,.5),r=rr(46,78);kput('plateR',[Math.cos(a)*r,rr(.4,1.2),Math.sin(a)*r],qEuler(rr(-.5,.5),rng()*TAU,rr(-.5,.5)),[rr(3,7),.5,rr(2,5)],null);}}}
  // B — lobed tower (Marina / Hilliard scallops)
- {const bx=190;REGISTER({name:'Office B — lobed tower ('+STATE(d)+')',x:bx,z:0,r:20,h:60});const B=new THREE.Group();B.position.set(bx,0,0);G.add(B);const R=13,H=52,cut=d>0?H*.72:null;
+ // B and C used to stand at x=190 and x=330, so one site spanned 430 m on a
+ // 265 m row pitch: the rehabilitated Office C stood in the ruined Office A, and
+ // the intact C against the rehabilitated A. Round 2: B moves in to x=105 and C
+ // stands behind them at (95,-75); the site is now 195 m wide.
+ {const bx=105;REGISTER({name:'Office B — lobed tower ('+STATE(d)+')',x:bx,z:0,r:20,h:60});const B=new THREE.Group();B.position.set(bx,0,0);G.add(B);const R=13,H=52,cut=d>0?H*.72:null;
   const lobe=th=>R*(1+.32*(.5+.5*Math.cos(8*th)));
   mesh(lathe({rFn:()=>6,H:12,nu:24,nv:2}),skin,B);for(let k=0;k<16;k++){const th=k/16*TAU;if(d>0&&(k===4||k===11))continue;kput(d>0?'colR':'colW',[bx+Math.cos(th)*13.5,0,Math.sin(th)*13.5],null,[1.3,12,1.3],null);}
   const hole=holeFn(d,210,cut,1.8);
@@ -853,7 +881,8 @@ function buildOffices(scene,gx,gz,d){reseed(d>0?9501:9500);KOFF=[gx,0,gz];const 
   if(!cut){kput('slab',[bx,H+.2,0],null,[R*1.1,.6,R*1.1],new THREE.Color(0xd8d4cc));mesh(lathe({rFn:y=>7*Math.sqrt(clamp(1-Math.pow(y/6,2),0,1)),H:6,nu:24,nv:6}),skin,B,0,H+.5,0);}
   else{rubbleRing(bx,0,0,15,26,60,2.5);mossOnRing(bx,cut,0,R,10,1.5);}
   if(d>0){vinesOnRing(bx,12,0,R*1.05,20,10);scatterMoss(bx,0,0,15,28,40,2);}}
- officeC(G,d);figures(60,50,5,5);figures(190,22,3,3);KOFF=[0,0,0];return G;}
+ {const OCX=95,OCZ=-75,CG=new THREE.Group();CG.position.set(OCX-330,0,OCZ);G.add(CG);KOFF=[gx+OCX-330,0,gz+OCZ];officeC(CG,d);KOFF=[gx,0,gz];}
+ figures(60,50,5,5);figures(105,22,3,3);civFlatten(G);KOFF=[0,0,0];return G;}
 
 // ================================================================= STARPORT — "the Starfish"
 function buildStarport(scene,gx,gz,d){reseed(d>0?9601:9600);KOFF=[gx,0,gz];REGISTER({name:'Starport — the Starfish ('+STATE(d)+')',x:0,z:0,r:360,h:120});const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const skin=SHELL(d);
@@ -904,7 +933,7 @@ function buildStarport(scene,gx,gz,d){reseed(d>0?9601:9600);KOFF=[gx,0,gz];REGIS
  for(let yy=14;yy<NH-16;yy+=14){if(ncut&&yy>ncut-3)break;kput(d>0?'ringR':'ringW',[0,HD-2+yy,0],qEuler(Math.PI/2,0,0),[5.2,5.2,5],null);}
  apron(G,0,0,RD*1.16,RD*1.7,d,1.6);
  if(d>0){scatterMoss(0,0,0,80,330,260,3);rubbleRing(0,3,0,60,120,80,2.5);trees(0,0,120,330,26);}
- figures(0,120,8,10);KOFF=[0,0,0];return G;}
+ figures(0,120,8,10);civFlatten(G);KOFF=[0,0,0];return G;}
 
 // ================================================================= MILITARY BUNKER — "the Redoubt"
 function buildBunker(scene,gx,gz,d){reseed(d>0?9701:9700);KOFF=[gx,0,gz];REGISTER({name:'Bunker — the Redoubt ('+STATE(d)+')',x:0,z:0,r:90,h:60});const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const skin=SHELL(d);
@@ -946,10 +975,10 @@ function buildBunker(scene,gx,gz,d){reseed(d>0?9701:9700);KOFF=[gx,0,gz];REGISTE
  for(let k=0;k<5;k++){const th=(k/5)*TAU+.9;const fallen=d>0&&(k===1||k===3);
   const a=[Math.cos(th)*38,26.4,Math.sin(th)*38],b=[Math.cos(th)*9,26+CH*(ccut?.5:.85),Math.sin(th)*9];
   if(!fallen)beam(d>0?'strutR':'strutW',a,b,3.2,2.4);else beam('strutR',[a[0],27.6,a[2]],[a[0]*.3+rr(-6,6),28,a[2]*.3+rr(-6,6)],3.2,2.4);}
- if(!ccut){kput('slab',[0,26+CH+.6,0],null,[22,1.2,22],new THREE.Color(0xd8d4cc));aaBattery(G,d,0,26+CH+1.2,0,2.6);}else{aaBattery(G,d,0,26+ccut-2,0,2.6);}
- aaBattery(G,d,26,26.4,-24,3.2);aaBattery(G,d,-30,26.4,-10,3.2);
+ if(!ccut){kput('slab',[0,26+CH+.6,0],null,[22,1.2,22],new THREE.Color(0xd8d4cc));aaBattery(G,d,0,26+CH+1.2,0,2.6,Math.PI/2);}else{aaBattery(G,d,0,26+ccut-2,0,2.6,Math.PI/2);}
+ aaBattery(G,d,26,26.4,-24,3.2,Math.PI/2-.7);aaBattery(G,d,-30,26.4,-10,3.2,Math.PI/2+.8);
  if(d>0){mossOnRing(0,10.4,0,50,60,2.5);mossOnRing(0,26.3,0,30,30,2);vinesOnRing(0,26,0,R1*1.02,30,12);rubbleRing(0,10,0,50,72,60,2.5);trees(0,0,90,150,14);}
- figures(0,110,6,8);KOFF=[0,0,0];return G;}
+ figures(0,110,6,8);civFlatten(G);KOFF=[0,0,0];return G;}
 
 // ================================================================= LIBRARY — "the Crown"
 function buildLibrary(scene,gx,gz,d){reseed(d>0?9801:9800);KOFF=[gx,0,gz];REGISTER({name:'Library — the Crown ('+STATE(d)+')',x:0,z:0,r:60,h:65});REGISTER({name:'Library — reading hall',x:74,z:0,r:22,h:16});const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const skin=SHELL(d);
@@ -981,7 +1010,7 @@ function buildLibrary(scene,gx,gz,d){reseed(d>0?9801:9800);KOFF=[gx,0,gz];REGIST
  mesh(gridSurface((u,v)=>[42+u*18,7.2+.4*Math.sin(u*9),(v-.5)*10],16,4,{hole:d>0?(u,v)=>fbm(u*5,v*2,520,2)<.35:null}),skin,G);
  kput('archOpen',[34.5,4,0],qFacing([1,0,0]),[.5,.5,1],null);
  if(d>0){mossOnRing(0,2.4,0,36,40,2);scatterMoss(0,0,0,44,110,90,2);trees(0,0,60,120,12);vinesOnRing(0,36,0,16,12,20);}
- figures(0,60,6,8);KOFF=[0,0,0];return G;}
+ figures(0,60,6,8);civFlatten(G);KOFF=[0,0,0];return G;}
 
 // ---------------------------------------------------------------- v3: inspector registry + group transforms
 const REG=[];function REGISTER(o){REG.push({name:o.name,x:o.x+KOFF[0],y:o.y||0,z:o.z+KOFF[2],r:o.r,h:o.h});}
@@ -1526,7 +1555,7 @@ function buildArc(scene,gx,gz,d){reseed(9820+d);KOFF=[gx,0,gz];const G=new THREE
     const pts=[e];for(let k=1;k<=4;k++)pts.push(new THREE.Vector3(e.x-6*k/4+3*Math.sin(k+ci),e.y-L*k/4,e.z+2*Math.cos(k*1.7+ci)));
     hg.push(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),10,ci<2?2.2:1.6,6,false));});meshMerged(hg,MAT.rust,G);}
   rubbleRing(p[0]+20,0,30,10,90,140,4);scatterMoss(0,0,0,0,420,220,3.5);trees(0,0,60,420,40);vinesOnRing(ap[0],ap[1]-20,0,20,20,40);}
- figures(0,120,6,14);KOFF=[0,0,0];return G;}
+ figures(0,120,6,14);civFlatten(G);KOFF=[0,0,0];return G;}
 
 // ================================================================= MEGASTRUCTURE 3 — "Vashtir" (recursive spire)
 // A pale pyramid-mountain grown, not stacked. One broad, shallow, many-sided
@@ -1876,7 +1905,7 @@ function buildRobotics(scene,gx,gz,d){reseed(9210+d);KOFF=[gx,0,gz];const G=new 
  for(let i=0;i<4;i++){const x=-170,z=-90+i*30;mesh(lathe({rFn:y=>7*(1-.05*Math.pow(y/24,6)),H:24,nu:24,nv:6,hole:holeFn(d*.7,1430+i,null,2.5)}),skin,G,x,4,z);kput(d>0?'ringR':'ringW',[x,28,z],qEuler(Math.PI/2,0,0),[7.3,7.3,2],null);}
  kput(BOXC(d),[-40,5.5,-HD/2-14],null,[HW*.6,3,14],null);for(let k=0;k<6;k++)kput('archOpen',[-100+k*24,10,-HD/2-.8],qFacing([0,0,-1]),[.9,.9,1.5],null);
  if(d>0){scatterMoss(0,4,0,0,190,150,2.4);rubbleRing(-40,4,0,30,150,60,2.2);trees(0,0,210,290,22);vinesOnRing(-40,4+HH,0,HD/2,20,10);}
- figures(0,60,5,10);KOFF=[0,0,0];return G;}
+ figures(0,60,5,10);civFlatten(G);KOFF=[0,0,0];return G;}
 
 // ================================================================= CANYON WORKS — "the Span"
 // Colossal pipes bridge a gorge; structures hang beneath them on cables, like
@@ -6033,6 +6062,11 @@ function buildDataCenter(scene,gx,gz,d){reseed(9220+d);KOFF=[gx,0,gz];const G=ne
  else{// the dark mass keeps clear of the bite; three server floors inside it
   const xi=X0-6,zi=Z0-6,xe=W*.47,ze=Dp*.47;
   kput('boxD',[(-xe+xi)/2,8+H/2,0],null,[xe+xi,H,Dp*.94],null);kput('boxD',[(xi+xe)/2,8+H/2,(-ze+zi)/2],null,[xe-xi,H,ze+zi],null);
+  // the dark mass's two cut faces read as flat grey walls; give them a building
+  // section: floor edges at every server level and a column at every bay (round 2)
+  for(let j=1;j<4;j++){const fy=8+j*15.5;kput(BOXC(d),[xi+.7,fy+.4,(zi+ze)/2],null,[1.4,.9,ze-zi],null);kput(BOXC(d),[(xi+xe)/2,fy+.4,zi+.7],null,[xe-xi,.9,1.4],null);
+   for(let z=zi+4;z<ze;z+=8.5)if(h3(z,j,1707)<.5)kput('strip',[xi+.3,fy+3.4,z],qEuler(0,Math.PI/2,0),[4,1,1],h3(j,z,1708)<.2?new THREE.Color(0x8fd0ff):DEAD);}
+  for(let z=zi+8.5;z<ze;z+=8.5)kput(BOXC(d),[xi+.6,8+H/2,z],null,[1.2,H,1.2],null);for(let x=xi+6;x<xe;x+=6)kput(BOXC(d),[x,8+H/2,zi+.6],null,[1.2,H,1.2],null);
   for(let j=0;j<4;j++){const fy=8+j*15.5;const lim=j===0?1:.93-.18*j;
    kput(BOXC(d),[xi+(W/2*.97-xi)*lim/2,fy+.4,zi+(Dp/2*.97-zi)*lim/2],null,[(W/2*.97-xi)*lim,.8,(Dp/2*.97-zi)*lim],null);
    if(j===3)break;
@@ -6070,7 +6104,7 @@ function buildDataCenter(scene,gx,gz,d){reseed(9220+d);KOFF=[gx,0,gz];const G=ne
  for(let k=0;k<4;k++)kput(d>0?'colR':'colW',[W/2+10+k*22,0,60],null,[1,12,1],null);kput(d>0?'pipeR':'pipe',[W/2+43,11,60],qEuler(0,0,Math.PI/2),[.8,70,.8],null);
  for(let k=-10;k<=10;k++)for(const sz of [-1,1]){const lit=d>0?rng()<.1:true;if(bite(k*12,H,sz*Dp*.42))continue;kput('strip',[k*12,8+H+.6,sz*Dp*.42],null,[8,1,1],lit?new THREE.Color(0x8fd0ff):DEAD);}
  if(d>0){scatterMoss(0,8,0,0,180,120,3);mossOnRing(0,8+H+.3,0,50,30,3);for(let i=0;i<30;i++){const a=rng()*TAU,L=rr(4,30),q=qEuler(rr(-.12,.12),0,rr(-.12,.12)),sx=rr(.8,1.6),sz=rr(.8,1.6);const x=Dp/2*.9*Math.cos(a),z=Dp/2*.9*Math.sin(a);if(!bite(x,H,z))kput('vine',[x,8+H,z],q,[sx,L,sz],null);}rubbleRing(0,8,0,100,200,70,3);trees(0,0,200,290,20);}
- figures(0,120,4,8);KOFF=[0,0,0];return G;}
+ figures(0,120,4,8);civFlatten(G);KOFF=[0,0,0];return G;}
 
 // ================================================================= POLICE STATION — "the Watch"
 function buildPolice(scene,gx,gz,d){reseed(9230+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);
@@ -6110,14 +6144,22 @@ function buildPolice(scene,gx,gz,d){reseed(9230+d);KOFF=[gx,0,gz];const G=new TH
  kput(BOXC(d),[46,6,44],null,[3,12,3],null);kput(BOXC(d),[-46,6,44],null,[3,12,3],null);kput('boxD',[0,3,44],null,[1,6,1],null);
  for(let k=0;k<6;k++){const x=-30+k*12;kput(BOXC(d),[x,.8,60],null,[5,.5,10],null);}
  if(d>0){mossOnRing(0,.8+HM+.5,0,26,20,2);rubbleRing(0,.8,0,36,60,40,2);vinesOnRing(0,.8+HM,0,R1,12,10);}
- figures(0,50,4,6);KOFF=[0,0,0];return G;}
+ figures(0,50,4,6);civFlatten(G);KOFF=[0,0,0];return G;}
 
 // ================================================================= HOSPITAL — "the Cloister" (Prentice quatrefoil over a podium)
 function buildHospital(scene,gx,gz,d){reseed(9240+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);
  REGISTER({name:'Hospital — the Cloister ('+STATE(d)+')',x:0,z:0,r:120,h:90});
  // podium: 3 storeys, glass ribbons between concrete slabs
  const PW=170,PD=110,SH=5;for(let f=0;f<=3;f++){kput(BOXC(d),[0,f*SH,0],null,[PW,.8,PD],null);if(f<3){if(d===0){kput('pane',[0,f*SH+2.8,PD/2],null,[PW-2,3.6,1],null);kput('pane',[0,f*SH+2.8,-PD/2],null,[PW-2,3.6,1],null);kput('pane',[PW/2,f*SH+2.8,0],qEuler(0,Math.PI/2,0),[PD-2,3.6,1],null);kput('pane',[-PW/2,f*SH+2.8,0],qEuler(0,Math.PI/2,0),[PD-2,3.6,1],null);}
-  kput('boxD',[0,f*SH+2.8,0],null,[PW-3,3.6,PD-3],null);
+  // WARDS (round 2): the dark core is pulled back 7.5 m from the ribbon, and the
+  // band in front of it is cut into bays at the facade posts, a bed in each,
+  // so the ribbon (glass or empty frame) shows rooms instead of a grey box face
+  // 1.5 m behind it. Hash-placed: no rng draw moves.
+  kput('boxD',[0,f*SH+2.8,0],null,[PW-15,3.6,PD-15],null);
+  if(f<3){for(let x=-PW/2+5;x<PW/2;x+=10)for(const s of [-1,1]){const hh=h3(x,f,1911+s);kput(BOXC(d),[x,f*SH+2.8,s*(PD/2-4)],null,[.25,4.2,7],null);
+    if(x+5<PW/2){const tip=d>0&&hh>.72;kput(d>0?'boxR':'boxW',[x+5+(hh-.5)*3,f*SH+.4+(tip?.55:.45),s*(PD/2-6.2)],tip?qEuler(.2,hh*4,1.3):null,[2.2,tip?1:.6,1.1],null);
+     if(hh<.4)kput('boxD',[x+1,f*SH+1.4,s*(PD/2-6.9)],null,[1.2,2,.6],null);}}
+   for(let z=-PD/2+10;z<PD/2-5;z+=10)for(const sx of [-1,1])kput(BOXC(d),[sx*(PW/2-4),f*SH+2.8,z],null,[7,4.2,.25],null);}
   // ruin: the ribbon glazing is gone but for teeth of it left in the frames
   if(d>0)for(let x=-PW/2+10;x<PW/2;x+=10)for(const sd of [-1,1]){const hh=h3(x,f,1905+sd);if(hh<.5)civShardAt([x,f*SH+2.8,sd*PD/2],qFacing([0,0,sd]),8.6,3.6,.1,hh*2);}for(let x=-PW/2+5;x<PW/2;x+=10)for(const s of [-1,1])kput(BOXC(d),[x,f*SH+2.8,s*PD/2],null,[.8,4,.8],null);
   for(let k=0;k<8;k++){const lit=d>0?rng()<.15:true;kput('strip',[-70+k*20,f*SH+4.4,PD/2-1],null,[12,1,1],lit?CYAN:DEAD);}}}
@@ -6144,7 +6186,7 @@ function buildHospital(scene,gx,gz,d){reseed(9240+d);KOFF=[gx,0,gz];const G=new 
  // ambulance apron
  kput(SLABC(d),[0,.3,0],null,[130,.6,130],null);for(let k=0;k<5;k++)kput('boxD',[-40+k*20,.7,PD/2+42],null,[6,.1,12],null);
  if(d>0){scatterMoss(0,3*SH+.4,0,0,80,60,2.5);rubbleRing(0,.6,0,60,120,50,2.5);trees(0,0,100,150,10);}
- figures(0,90,5,10);KOFF=[0,0,0];return G;}
+ figures(0,90,5,10);civFlatten(G);KOFF=[0,0,0];return G;}
 
 // ================================================================= BIOME CORE — head
 // The engine-independent kit every Krator biome fragment is written against.
@@ -7770,45 +7812,70 @@ function buildCampus(scene,gx,gz,d){reseed(9810+d);KOFF=[gx,0,gz];const G=new TH
  // through each other in a seam, and coplanar turf z-fighting where both were 0.
  const hm=gridSurface((u,v)=>{const x=(u-.5)*596,z=(v-.5)*740;return[x,hill(x,z),z];},70,86,{uS:23,vS:28});mesh(hm,d>0?MAT.turfR:MAT.turf,G);
  const SH=4.2,DEP=18,SB=3.2;const wings=[];const GREEN=new THREE.Color().setHSL(.29,.5,d>0?.14:.24);
- // wing: bar from p0→p1 (horizontal), floors nf, base y0, terraces stepping toward `up` (unit vector, uphill)
- function wing(p0,p1,nf,y0,up,name){const dx=p1[0]-p0[0],dz=p1[1]-p0[1];const L=Math.hypot(dx,dz);const ax=dx/L,az=dz/L;const ang=Math.atan2(az,ax);const q=qEuler(0,-ang,0);
+ // wing: bar from P0→P1 (horizontal), floors nf, base y0, terraces stepping toward `up` (unit vector, uphill).
+ // BENT (round 2, after UFM): the bar follows a bow, f(T)=bow*(1-cos 2πT)/2, pushed
+ // DOWNHILL (-up), so each wing swells toward the valley like a contour line while
+ // its ends keep the straight bar's position AND tangent - the joints to the next
+ // wing in the chain are exactly where they were. bow <= 10 m stays inside the
+ // forest's 12 m keep-clear margin. Every loop and every rng draw is the one the
+ // straight bar made; long boxes become chord segments along the curve.
+ // `sub` [ta,tb] builds only that stretch of the P0→P1 bar (the ruin's broken wing).
+ function wingBow(P0,P1){return Math.min(10,Math.hypot(P1[0]-P0[0],P1[1]-P0[1])*.045);}
+ function wing(P0,P1,nf,y0,up,name,sub){const ta=sub?sub[0]:0,tb=sub?sub[1]:1;const DX=P1[0]-P0[0],DZ=P1[1]-P0[1];const LF=Math.hypot(DX,DZ);const bow=wingBow(P0,P1);
+  const L=LF*(tb-ta);
+  const at=(t,off)=>{const T=ta+(tb-ta)*t;const f=bow*.5*(1-Math.cos(TAU*T)),fp=bow*Math.PI*Math.sin(TAU*T);
+   let tx=DX-up[0]*fp,tz=DZ-up[1]*fp;const tl=Math.hypot(tx,tz);tx/=tl;tz/=tl;let nx=-tz,nz=tx;if(nx*up[0]+nz*up[1]<0){nx=-nx;nz=-nz;}
+   return{x:P0[0]+DX*T-up[0]*f+nx*off,z:P0[1]+DZ*T-up[1]*f+nz*off,ang:Math.atan2(tz,tx),n:[nx,nz],t:[tx,tz]};};
+  const qa=t=>qEuler(0,-at(t,0).ang,0);
+  const p0=[P0[0]+DX*ta,P0[1]+DZ*ta],p1=[P0[0]+DX*tb,P0[1]+DZ*tb];
+  // a long box laid as chord segments of the bow at offset `off`; `ext` lengthens its two ends
+  const segBox=(nm,off,y,h,dp,ext,c,t0,t1,noLap)=>{t0=t0||0;t1=t1==null?1:t1;const S=Math.max(1,Math.round(L*(t1-t0)/26));
+   for(let s=0;s<S;s++){const a=at(t0+(t1-t0)*s/S,off),b=at(t0+(t1-t0)*(s+1)/S,off);const vx=b.x-a.x,vz=b.z-a.z,len=Math.hypot(vx,vz),ux=vx/len,uz=vz/len;
+    const e0=s===0?ext:0,e1=s===S-1?ext:0;kput(nm,[(a.x+b.x)/2+ux*(e1-e0)/2,y,(a.z+b.z)/2+uz*(e1-e0)/2],qEuler(0,-Math.atan2(uz,ux),0),[len+e0+e1+(S>1&&!noLap?.8:0),h,dp],c);}};
   const mid=[(p0[0]+p1[0])/2,(p0[1]+p1[1])/2];wings.push({p0,p1,y0,nf,up});REGISTER({name,x:mid[0],z:mid[1],y:y0-8,r:L/2+10,h:nf*SH+14});
   // platform cut into the hill: retaining walls
-  kput(BOXC(d),[mid[0]-up[0]*4,y0-6,mid[1]-up[1]*4,],q,[L+6,12,DEP+12],null);
-  for(let f=0;f<=nf;f++){const y=y0+f*SH;const off=f*SB;const cx=mid[0]+up[0]*(off+DEP/2),cz=mid[1]+up[1]*(off+DEP/2);const gone=d>0&&f===nf&&rng()<.5;
-   if(!gone){kput(BOXC(d),[cx,y,cz],q,[L+2,.6,DEP+1.5],null);
+  segBox(BOXC(d),-4,y0-6,12,DEP+12,3,null);
+  for(let f=0;f<=nf;f++){const y=y0+f*SH;const off=f*SB;const gone=d>0&&f===nf&&rng()<.5;
+   if(!gone){segBox(BOXC(d),off+DEP/2,y,.6,DEP+1.5,1,null);
     // planted front edge on every terrace, parapet on the top
-    for(let k=0;k<Math.round(L/6);k++){const t=(k+.5)/Math.round(L/6);const x=p0[0]+dx*t+up[0]*(off+.8),z=p0[1]+dz*t+up[1]*(off+.8);if(d>0&&rng()<.3)continue;if(rng()<.55)kput('hedge',[x,y+.7,z],q,[5.4,.9,1.6],GREEN);
-     if(d>0)kput('vine',[x,y+.3,z-up[1]*.6],qEuler(rr(-.1,.1),0,rr(-.1,.1)),[1.2,rr(3,SH*2),1.2],null);}
-    if(f===nf){kput('brick',[cx+up[0]*(DEP/2-.5),y+.6,cz+up[1]*(DEP/2-.5)],q,[L+2,1.2,.5],null);for(let k=0;k<3;k++)kput('hedge',[mid[0]+up[0]*(off+DEP*.6)+ax*(k-1)*L*.3,y+1.1,mid[1]+up[1]*(off+DEP*.6)+az*(k-1)*L*.3],q,[8,1,3],GREEN);}}
-   if(f<nf){const ff=f*SB;const fcx=mid[0]+up[0]*(ff+DEP/2),fcz=mid[1]+up[1]*(ff+DEP/2);
-    kput('boxD',[fcx,y+SH/2,fcz],q,[L-1,SH-.8,DEP-2],null);
+    for(let k=0;k<Math.round(L/6);k++){const t=(k+.5)/Math.round(L/6);const p=at(t,off+.8);if(d>0&&rng()<.3)continue;if(rng()<.55)kput('hedge',[p.x,y+.7,p.z],qa(t),[5.4,.9,1.6],GREEN);
+     if(d>0){const pv=at(t,off+.2);kput('vine',[pv.x,y+.3,pv.z],qEuler(rr(-.1,.1),0,rr(-.1,.1)),[1.2,rr(3,SH*2),1.2],null);}}
+    if(f===nf){segBox('brick',off+DEP-.5,y+.6,1.2,.5,1,null);for(let k=0;k<3;k++){const t=.5+(k-1)*.3,p=at(t,off+DEP*.6);kput('hedge',[p.x,y+1.1,p.z],qa(t),[8,1,3],GREEN);}}}
+   if(f<nf){const ff=f*SB;
+    segBox('boxD',ff+DEP/2,y+SH/2,SH-.8,DEP-2,-.5,null);
     // front: columns + spandrel brick + glass; back wall brick; ends brick
-    const nx=Math.round(L/5);for(let k=0;k<=nx;k++){const t=k/nx;const x=p0[0]+dx*t+up[0]*(ff+1.2),z=p0[1]+dz*t+up[1]*(ff+1.2);if(d>0&&rng()<.06)continue;kput(BOXC(d),[x,y+SH/2,z],q,[.7,SH,.7],null);}
-    kput('brick',[mid[0]+up[0]*(ff+1.4),y+.9,mid[1]+up[1]*(ff+1.4)],q,[L,1.2,.4],null);
-    if(d===0)kput('pane',[mid[0]+up[0]*(ff+1.4),y+2.8,mid[1]+up[1]*(ff+1.4)],q,[L,2.8,1],null);else if(rng()<.5)kput('paneD',[mid[0]+up[0]*(ff+1.4),y+2.7,mid[1]+up[1]*(ff+1.4)],q,[L*.6,2.4,1],null);
-    kput('brick',[mid[0]+up[0]*(ff+DEP-.6),y+SH/2,mid[1]+up[1]*(ff+DEP-.6)],q,[L+1,SH,.6],null);
-    for(const s of [-1,1])kput('brick',[mid[0]+ax*s*(L/2)+up[0]*(ff+DEP/2),y+SH/2,mid[1]+az*s*(L/2)+up[1]*(ff+DEP/2)],q,[.6,SH,DEP-1],null);
-    for(let k=0;k<Math.round(L/10);k++){const t=(k+.5)/Math.round(L/10);const lit=d>0?rng()<.1:true;kput('strip',[p0[0]+dx*t+up[0]*(ff+4),y+SH-.5,p0[1]+dz*t+up[1]*(ff+4)],q,[7,1,1],lit?CYAN:DEAD);}
-    if(f===0){const t=.5;kput('archOpen',[p0[0]+dx*t+up[0]*(ff+1.3),y+2.4,p0[1]+dz*t+up[1]*(ff+1.3)],qFacing([-up[0],0,-up[1]]),[.45,.45,1],null);}}}
+    const nx=Math.round(L/5);for(let k=0;k<=nx;k++){const t=k/nx;const p=at(t,ff+1.2);if(d>0&&rng()<.06)continue;kput(BOXC(d),[p.x,y+SH/2,p.z],qa(t),[.7,SH,.7],null);}
+    segBox('brick',ff+1.4,y+.9,1.2,.4,0,null);
+    if(d===0)segBox('pane',ff+1.4,y+2.8,2.8,1,0,null,0,1,true);else if(rng()<.5)segBox('paneD',ff+1.4,y+2.7,2.4,1,0,null,.2,.8,true);
+    segBox('brick',ff+DEP-.6,y+SH/2,SH,.6,.5,null);
+    for(const s of [-1,1]){const t=s<0?0:1,p=at(t,ff+DEP/2);kput('brick',[p.x,y+SH/2,p.z],qa(t),[.6,SH,DEP-1],null);}
+    for(let k=0;k<Math.round(L/10);k++){const t=(k+.5)/Math.round(L/10);const lit=d>0?rng()<.1:true;const p=at(t,ff+4);kput('strip',[p.x,y+SH-.5,p.z],qa(t),[7,1,1],lit?CYAN:DEAD);}
+    if(f===0){const p=at(.5,ff+1.3);kput('archOpen',[p.x,y+2.4,p.z],qFacing([-p.n[0],0,-p.n[1]]),[.45,.45,1],null);}}}
   // external stair down the front at one end
-  for(let k=0;k<8;k++)kput(BOXC(d),[p1[0]-ax*3-up[0]*(2+k*1.5),y0-.4-k*.9,p1[1]-az*3-up[1]*(2+k*1.5)],q,[3,.4,1.5],null);
-  if(d>0){for(let k=0;k<4;k++){const t=rng();kput('vine',[p0[0]+dx*t+up[0]*.8,y0+nf*SH,p0[1]+dz*t+up[1]*.8],null,[1.4,rr(6,nf*SH),1.4],null);}}}
+  {const e=at(1,0);for(let k=0;k<8;k++)kput(BOXC(d),[e.x-e.t[0]*3-e.n[0]*(2+k*1.5),y0-.4-k*.9,e.z-e.t[1]*3-e.n[1]*(2+k*1.5)],qa(1),[3,.4,1.5],null);}
+  if(d>0){for(let k=0;k<4;k++){const t=rng();const p=at(t,.8);kput('vine',[p.x,y0+nf*SH,p.z],null,[1.4,rr(6,nf*SH),1.4],null);}}}
  // the chain: zigzag up the hill (uphill = −z); each wing's base is the hill height at its downhill face
  const chain=[[[-190,230],[30,230],3,'Wing 1 — academic'],[[30,150],[30,230],3,'Wing 2 — link'],[[30,150],[-170,150],4,'Wing 3 — library floors'],[[-170,60],[-170,150],3,'Wing 4 — link'],[[-170,60],[70,60],4,'Wing 5 — laboratories'],[[70,-30],[70,60],3,'Wing 6 — link'],[[70,-30],[-130,-30],3,'Wing 7 — halls']];
  chain.forEach((c,i)=>{const isX=c[0][1]===c[1][1];const up=isX?[0,-1]:[(c[0][0]<0?1:-1),0];const zf=Math.max(c[0][1],c[1][1]);const y0=Math.round(hill((c[0][0]+c[1][0])/2,zf+2)+1);
   // RUIN: the library floors (wing 3) have come down across a 40 m bay and the
   // west end stands one storey high, so the ruin changes the skyline instead of
   // repeating the intact terraces in rust. Upper slabs lie tilted in the bay.
-  if(d>0&&i===2){wing(c[0],[-60,150],c[2],y0,up,'Campus '+c[3]);wing([-100,150],c[1],1,y0,up,'Campus '+c[3]+' (fallen end)');
-   for(let k=0;k<9;k++){const x=rr(-98,-62),z=rr(128,150);kput('boxCR',[x,y0+rr(1,5),z],qEuler(rr(-.6,.6),rr(-.3,.3),rr(-.7,.7)),[rr(8,16),.7,rr(6,12)],null);}
-   for(let k=0;k<80;k++){const q=rng(),x=rr(-100,-60),z=150-q*34,sz=rr(.8,2.6);kput('rubble',[x,y0+(1-q)*4+sz*.3,z],qEuler(rng()*3,rng()*3,rng()*3),[sz*rr(.8,1.5),sz*rr(.5,1),sz*rr(.8,1.5)],new THREE.Color().setHSL(rr(.03,.08),rr(.15,.35),rr(.3,.5)));}
-   for(let k=0;k<6;k++){const x=rr(-165,-105);kput('brick',[x,y0+SH+rr(.5,1.5),rr(132,148)],qEuler(rr(-.4,.4),rng()*3,rr(-.4,.4)),[rr(4,9),rr(1.5,3),.6],null);}}
+  if(d>0&&i===2){wing(c[0],c[1],c[2],y0,up,'Campus '+c[3],[0,.45]);wing(c[0],c[1],1,y0,up,'Campus '+c[3]+' (fallen end)',[.65,1]);
+   // the debris follows the bow (wing 3 swells toward +z, downhill)
+   const bw=wingBow(c[0],c[1]),fz=x=>bw*.5*(1-Math.cos(TAU*(c[0][0]-x)/(c[0][0]-c[1][0])));
+   for(let k=0;k<9;k++){const x=rr(-98,-62),z=rr(128,150)+fz(x);kput('boxCR',[x,y0+rr(1,5),z],qEuler(rr(-.6,.6),rr(-.3,.3),rr(-.7,.7)),[rr(8,16),.7,rr(6,12)],null);}
+   for(let k=0;k<80;k++){const q=rng(),x=rr(-100,-60),z=150-q*34+fz(x),sz=rr(.8,2.6);kput('rubble',[x,y0+(1-q)*4+sz*.3,z],qEuler(rng()*3,rng()*3,rng()*3),[sz*rr(.8,1.5),sz*rr(.5,1),sz*rr(.8,1.5)],new THREE.Color().setHSL(rr(.03,.08),rr(.15,.35),rr(.3,.5)));}
+   for(let k=0;k<6;k++){const x=rr(-165,-105);kput('brick',[x,y0+SH+rr(.5,1.5),rr(132,148)+fz(x)],qEuler(rr(-.4,.4),rng()*3,rr(-.4,.4)),[rr(4,9),rr(1.5,3),.6],null);}}
   else wing(c[0],c[1],c[2],y0,up,'Campus '+c[3]);});
  // courtyards between wings: big trees, paths, an atrium bridge across each
  [[-70,190,-190,150,30,230],[-70,105,-170,60,30,150],[-50,15,-130,-30,70,60]].forEach((c,i)=>{const [cx,cz,x0,z0,x1,z1]=c;const y=hill(cx,cz);REGISTER({name:'Campus courtyard '+(i+1),x:cx,z:cz,y:y-2,r:60,h:30});
-  for(let k=0;k<5;k++){const x=rr(x0+20,x1-20),z=rr(z0+20,z1-20);const h=rr(18,30);kput('trunk',[x,y-2,z],null,[4,h,4],null);for(let j=0;j<4;j++){const s=rr(8,14);kput('moss',[x+rr(-4,4),y+h*.6+j*3,z+rr(-4,4)],qEuler(rng(),rng(),rng()),[s,s*.55,s],new THREE.Color().setHSL(rr(.25,.34),rr(.4,.55),rr(.15,.26)));}}
-  for(let k=0;k<12;k++)kput('hedge',[rr(x0+8,x1-8),y+.4,rr(z0+8,z1-8)],qEuler(0,rng()*3,0),[rr(3,8),.8,rr(2,4)],GREEN);
+  // The courtyard's trees and hedges are drawn as before but mapped into the box
+  // the wings actually leave open (round 2): the old box ran 8-30 m into the
+  // terraces of the wing behind it and the link wing beside it, so trunks grew
+  // through the floors. Same draws, so nothing else moves.
+  const S=[[-180,-4,166,198],[-136,24,76,116],[-120,36,-14,26]][i],mx=(v,a,b)=>S[0]+(v-a)/(b-a)*(S[1]-S[0]),mz=(v,a,b)=>S[2]+(v-a)/(b-a)*(S[3]-S[2]);
+  for(let k=0;k<5;k++){const x=mx(rr(x0+20,x1-20),x0+20,x1-20),z=mz(rr(z0+20,z1-20),z0+20,z1-20);const h=rr(18,30);kput('trunk',[x,y-2,z],null,[4,h,4],null);for(let j=0;j<4;j++){const s=rr(8,14);kput('moss',[x+rr(-4,4),y+h*.6+j*3,z+rr(-4,4)],qEuler(rng(),rng(),rng()),[s,s*.55,s],new THREE.Color().setHSL(rr(.25,.34),rr(.4,.55),rr(.15,.26)));}}
+  for(let k=0;k<12;k++)kput('hedge',[mx(rr(x0+8,x1-8),x0+8,x1-8),y+.4,mz(rr(z0+8,z1-8),z0+8,z1-8)],qEuler(0,rng()*3,0),[rr(3,8),.8,rr(2,4)],GREEN);
   kput(BOXC(d),[cx,y+.1,cz],qEuler(0,rr(0,.6),0),[3,.3,Math.abs(z1-z0)-10],null);kput(BOXC(d),[cx,y+.1,cz],qEuler(0,rr(0,.6),0),[Math.abs(x1-x0)-10,.3,3],null);});
   // The atrium bridge that used to run diagonally over each courtyard is gone.
   // It cut across the one open void in the plan at a 0.5 rad angle that matched
@@ -7828,7 +7895,7 @@ function buildCampus(scene,gx,gz,d){reseed(9810+d);KOFF=[gx,0,gz];const G=new TH
  // forest — big canopies, none on platforms/lawn
  for(let i=0;i<300;i++){const x=rr(-290,290),z=rr(-350,350);let on=z>240&&x>-200&&x<70;for(const w of wings){const minx=Math.min(w.p0[0],w.p1[0])-12,maxx=Math.max(w.p0[0],w.p1[0])+12,minz=Math.min(w.p0[1],w.p1[1])-12-(w.up[1]<0?DEP+w.nf*SB:0),maxz=Math.max(w.p0[1],w.p1[1])+12;const wx=w.up[0];const mx0=minx-(wx>0?0:DEP+w.nf*SB),mx1=maxx+(wx>0?DEP+w.nf*SB:0);if(x>mx0&&x<mx1&&z>minz&&z<maxz)on=true;}
   if(on||(Math.abs(x+40)<36&&Math.abs(z+110)<36))continue;const y=hill(x,z);const h=rr(16,34);kput('trunk',[x,y,z],null,[3.5,h,3.5],null);for(let k=0;k<4;k++){const s=(4-k)*2.6*(h/24);kput('moss',[x+rr(-2,2),y+h*.5+k*h*.14,z+rr(-2,2)],qEuler(0,rng()*TAU,0),[s,s*.65,s],new THREE.Color().setHSL(rr(.25,.35),rr(.35,.5),rr(.1,.2)));}}
- figures(-80,300,10,30);figures(-70,190,6,20);KOFF=[0,0,0];return G;}
+ figures(-80,300,10,30);figures(-70,190,6,20);civFlatten(G);KOFF=[0,0,0];return G;}
 
 // ================================================================= DAM ARCOLOGY — "Theodiga" (after Soleri)
 function buildDam(scene,gx,gz,d){reseed(9260+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const skin=SHELL(d);
@@ -8351,16 +8418,35 @@ function factorySilo(G,d,skin,M){const ax=110,az=-60;REGISTER({name:'Factory —
 function buildGovernment(scene,gx,gz,d){reseed(9900+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const skin=SHELL(d);
  REGISTER({name:'Government — the Assembly ('+STATE(d)+')',x:0,z:0,r:150,h:120});
  const tiers=[[92,84,14],[66,60,14],[42,38,14]];let y=0;apron(G,0,0,91,104,d,1.4);
+ // RUIN (round 2): the upper tiers have SLUMPED in a sector west of the portico,
+ // toward the ruin camera, so the stack no longer keeps the intact silhouette.
+ // Tier 3 is open almost to its foot, tier 2 above its first floor; the roofs
+ // are bitten, the floors inside stand exposed, the spill lies on the terraces
+ // below (placed after figures(), so no earlier rng draw moves).
+ const COL=2.45,colW=(i,yl,h)=>(i===2?.5:.32)*(.62+.38*clamp(yl/h,0,1))+.07*(fbm(yl*.25,i*3.1,671+i,2)-.5),
+  colY=i=>i===2?1.6:6.5,colG=(th,yl,i)=>d>0&&i>0&&yl>colY(i)+1.2*(fbm(th*7,i,672,2)-.5)&&civDA(th,COL)<colW(i,yl,14);
+ const govMark={};for(const nm of ['strip','moss','tube','cell','cellD'])govMark[nm]=KIT.items[nm].length;
+ const roofs=[];
  tiers.forEach((t,i)=>{const [a,b,h]=t;const hole=holeFn(d*(i===2?1:.5),600+i,null,1.3);
-  mesh(lathe({rFn:yy=>a-(a-b)*yy/h,H:h,flutes:24-i*6,amp:.05,sharp:2,nu:120,nv:6,hole:hole?(u,yy)=>hole(u,yy+i*30)&&(u>.15&&u<.42):null}),skin,G,0,y,0);
+  const wallHole=hole||(d>0&&i>0)?(u,yy)=>colG(u*TAU,yy,i)||(hole?hole(u,yy+i*30)&&(u>.15&&u<.42):false):null;
+  mesh(lathe({rFn:yy=>a-(a-b)*yy/h,H:h,flutes:24-i*6,amp:.05,sharp:2,nu:120,nv:6,hole:wallHole}),skin,G,0,y,0);
+  // MOULDING (round 2): a flared cornice lip crowns every tier (merged into the skin by civFlatten)
+  {const ch=holeFn(d*.6,640+i,null,2);mesh(lathe({rFn:yy=>b+.15+.85*Math.sin(Math.PI*.5*Math.min(1,yy/.9)),H:1.3,nu:120,nv:3,hole:d>0?(u,yy)=>colG(u*TAU,h,i)||(ch?ch(u,yy*20):false):null}),skin,G,0,y+h-.25,0);}
   // behind the holes (they are confined to u .15-.42): two floors of rooms per
   // tier, only in that arc, in front of a liner pushed back to .8
-  if(d>0){mesh(lathe({rFn:yy=>(a-(a-b)*yy/h)*.8,H:h,nu:48,nv:1}),MAT.guts,G,0,y,0);
+  if(d>0){mesh(lathe({rFn:yy=>(a-(a-b)*yy/h)*.8,H:h,nu:48,nv:6,hole:i>0?(u,yy)=>colG(u*TAU,yy+1.5,i):null}),MAT.guts,G,0,y,0);
    civRooms({cy:y,rFn:yy=>a-(a-b)*yy/h,y0:.3,y1:h,step:7,d,seed:620+i,rIn:.8,gap:th=>{const u=th/TAU;return u<.13||u>.44;}});}
-  kput('slab',[0,y+h,0],null,[b*.99,.6,b*.99],new THREE.Color(d>0?0x5a4a40:0xd8d4cc));
-  const n=Math.round(a*.42);for(let k=0;k<n;k++)for(let row=0;row<2;row++){const th=(k+.5)/n*TAU;const yy=y+3.5+row*6;const r=a-(a-b)*(yy-y)/h+.2;const u=th/TAU;if(hole&&hole(u,yy+i*30))continue;
-   if(i===0&&row===0&&Math.abs(th-Math.PI/2)<.5)continue;civWin(d>0?'winD':'winI',[r*Math.cos(th),yy,r*Math.sin(th)],qFacing([Math.cos(th),0,Math.sin(th)]),[.9,.9,1],null);}
+  if(d>0&&i>0){const rIn=i===2?26:44;roofs.push(gridSurface((u,v)=>{const th=u*TAU,r=lerp(rIn,b*.99,v);return[r*Math.cos(th),y+h+.3,r*Math.sin(th)];},96,4,{hole:(u,v)=>civDA(u*TAU,COL)<colW(i,h,h)+.05*v}),
+    gridSurface((u,v)=>{const th=u*TAU,r=rIn*v;return[r*Math.cos(th),y+h+.3,r*Math.sin(th)];},48,2,{}));}
+  else kput('slab',[0,y+h,0],null,[b*.99,.6,b*.99],new THREE.Color(d>0?0x5a4a40:0xd8d4cc));
+  const n=Math.round(a*.42);for(let k=0;k<n;k++)for(let row=0;row<2;row++){const th=(k+.5)/n*TAU;const yy=y+3.5+row*6;const r=a-(a-b)*(yy-y)/h+.2;const u=th/TAU;if(hole&&hole(u,yy+i*30))continue;if(colG(th,yy-y,i))continue;
+   if(i===0&&row===0&&Math.abs(th-Math.PI/2)<.5)continue;civWin(d>0?'winD':'winI',[r*Math.cos(th),yy,r*Math.sin(th)],qFacing([Math.cos(th),0,Math.sin(th)]),[.9,.9,1],null);
+   // MOULDING (round 2): a hood over the arch and a sill under it; a ruin has lost some
+   if(!(d>0&&h3(k,row,690+i)<.3))kput(civDef('civHood',()=>civHoodGeo(2.2,4.2),MAT.white),[r*Math.cos(th),yy,r*Math.sin(th)],qFacing([Math.cos(th),0,Math.sin(th)]),[.9,.9,1],d>0?new THREE.Color(0x8c7466):null);}
   stripRing(0,y+h-1.2,0,b*1.01,d,48);if(d>0)mossOnRing(0,y+h+.2,0,b*.9,Math.round(b*.8),2.2);y+=h;});
+ if(roofs.length)meshMerged(roofs,MAT.concreteR,G);
+ // what the slump left hanging in air: strips, moss and conduit in the open sector
+ if(d>0)civCull(govMark,(x,yy,z)=>{const th=Math.atan2(z,x),r=Math.hypot(x,z);for(const i of [1,2]){const top=14*(i+1);if(yy>top-14+colY(i)&&yy<top+4&&civDA(th,COL)<colW(i,14,14)+.05&&r>(i===2?24:43))return true;}return false;});
  // portico: a fan of leaning struts on the +z face, rising to a ring beam at tier 2, roofed by a curved shell that grows out of the tier wall
  const NP=11;const struts=[];for(let k=0;k<NP;k++){const a=Math.PI/2+(k-(NP-1)/2)*.11;const fallen=d>0&&(k===2||k===7);
   const A=[Math.cos(a)*130,0,Math.sin(a)*130],B=[Math.cos(a)*64,29,Math.sin(a)*64];struts.push([a,A,B]);
@@ -8377,18 +8463,32 @@ function buildGovernment(scene,gx,gz,d){reseed(9900+d);KOFF=[gx,0,gz];const G=ne
  for(let k=0;k<3;k++)kput(d>0?'boxR':'boxW',[0,.4+k*1.2,88+k*3],null,[30,1.2,3],null);
  // petal council chamber + spire
  const P=new THREE.Group();P.position.set(0,42,0);G.add(P);useGroupXF(P);
- petalRing(P,8,23,36,15,4,1,0,d,650,skin,d>0?(i=>i===1||i===4||i===6):null);
+ // petalRing's holes scale with d itself, so at decay 3 (d=3: fbm<.9) the petals were
+ // all hole and the rehabilitated chamber stood bare; pass the decay-1 amount times HOLES.
+ petalRing(P,8,23,36,15,4,1,0,d>0?HOLES:0,650,skin,d>0?(i=>i===1||i===4||i===6):null);
  if(d===0)mesh(lathe({rFn:yy=>19*Math.pow(clamp(1-Math.pow(yy/27,2),0,1),.6),H:27,nu:48,nv:14}),MAT.glass,P,0,1,0);
  else mesh(lathe({rFn:yy=>18*Math.pow(clamp(1-Math.pow(yy/27,2),0,1),.6),H:27,nu:48,nv:14,hole:(u,yy)=>fbm(u*3,yy*.1,660,2)<.5}),MAT.dark,P,0,1,0);
  stripRing(0,4,0,17,d,32);const SH=40,scut=d>0?SH*.45:null;mesh(lathe({rFn:yy=>3*(1-.6*yy/SH)+.4,H:SH,cut:scut,jag:scut?1.5:0,flutes:6,amp:.25,nu:24,nv:16}),skin,P,0,27,0);
  if(!scut)kput('finial',[0,27+SH+2,0],null,[3,5,3],null);endGroupXF();
  if(d>0){const fm=mesh(petalGeo(23,36,15,4,1,holeFn(1,661,null,1.5)),MAT.rust,G,-60,4,70);fm.rotation.set(0,1.2,Math.PI/2*.85);dropFragment(fm);rubbleRing(-60,0,70,5,30,50,2.5);
   scatterMoss(0,0,0,100,190,140,3);rubbleRing(0,0,0,96,150,70,2.5);trees(0,0,120,220,18);}
- figures(0,150,8,10);figures(-70,110,4,5);KOFF=[0,0,0];return G;}
+ figures(0,150,8,10);figures(-70,110,4,5);
+ // the slump's spill: on tier 2's exposed floor, on the tier-1 terrace, a talus
+ // off its edge, and broken roof slabs lying tilted in it (round 2; drawn last)
+ if(d>0){for(let k=0;k<110;k++){const q=rng(),a=COL+rr(-.45,.45)*(1-.4*q),sz=rr(.8,3.2)*(1.2-.5*q);
+   const r=q<.3?rr(44,58):q<.85?rr(67,86):rr(93,112),yb=q<.3?21.6:q<.85?14.3:0;
+   kput('rubble',[r*Math.cos(a),yb+sz*.35+(q<.3?0:Math.max(0,1-(r-66)/24)*1.4),r*Math.sin(a)],qEuler(rng()*3,rng()*3,rng()*3),[sz*rr(.7,1.5),sz*rr(.5,1),sz*rr(.7,1.5)],new THREE.Color().setHSL(rr(.05,.09),rr(.1,.3),rr(.3,.5)));}
+  for(let k=0;k<7;k++){const a=COL+rr(-.35,.35),r=k<3?rr(46,56):rr(64,82),yb=k<3?22:15;
+   kput('boxCR',[r*Math.cos(a),yb+rr(.5,1.5),r*Math.sin(a)],qEuler(rr(-.5,.5),rng()*TAU,rr(-.5,.5)),[rr(7,14),.9,rr(5,10)],null);}}
+ civFlatten(G);KOFF=[0,0,0];return G;}
 
 // ================================================================= bunker: AA battery on the cupola
-function aaBattery(G,d,x,y,z,s){s=s||1;kput(d>0?'boxR':'boxW',[x,y+1.2*s,z],null,[6*s,2.4*s,6*s],null);kput('tube',[x,y+3.6*s,z],null,[2.2*s,2.4*s,2.2*s],null);
- const yaw=rr(0,TAU),pitch=d>0?.1:.9;const q=qEuler(0,-yaw,0).multiply(qEuler(0,0,pitch));const bx=x+Math.cos(yaw)*1.5*s,bz=z+Math.sin(yaw)*1.5*s;
+// `aim` (round 2): the yaw to face, outward over the parapet. The ruin keeps the
+// intact mount's facing and its pods sag nose-DOWN on dead elevation gear
+// (they used to lie level, pointing anywhere). The rr() draw is kept unused so
+// nothing after it moves.
+function aaBattery(G,d,x,y,z,s,aim){s=s||1;kput(d>0?'boxR':'boxW',[x,y+1.2*s,z],null,[6*s,2.4*s,6*s],null);kput('tube',[x,y+3.6*s,z],null,[2.2*s,2.4*s,2.2*s],null);
+ const yaw0=rr(0,TAU),yaw=aim==null?yaw0:aim,pitch=d>0?(aim==null?.1:-.32):.9;const q=qEuler(0,-yaw,0).multiply(qEuler(0,0,pitch));const bx=x+Math.cos(yaw)*1.5*s,bz=z+Math.sin(yaw)*1.5*s;
  kput(d>0?'boxR':'boxW',[bx,y+5.5*s,bz],q,[8*s,4*s,5*s],null);
  for(let i=0;i<2;i++)for(let j=0;j<4;j++){const off=new THREE.Vector3(0,(i-.5)*1.7*s,(j-1.5)*1.15*s).applyQuaternion(q);const tip=new THREE.Vector3(4.6*s,0,0).applyQuaternion(q);
   kput('tube',[bx+off.x+tip.x*.5,y+5.5*s+off.y+tip.y*.5,bz+off.z+tip.z*.5],q.clone().multiply(qEuler(0,0,-Math.PI/2)),[.7*s,8*s,.7*s],null);}
@@ -27153,7 +27253,7 @@ const VIEWS={
  'Houses DEF intact':[-ROWS.house2.s+65,22,ROWS.house2.z+120,-ROWS.house2.s+65,6,ROWS.house2.z],'Houses DEF ruined':[ROWS.house2.s+65,22,ROWS.house2.z+120,ROWS.house2.s+65,6,ROWS.house2.z],
  'Skyscraper D':ROWV('skyD',900,300,180),'Skyscraper E':ROWV('skyE',900,300,190),'Skyscraper F':ROWV('skyF',900,300,160),
  'Toppled D':[ROWS.skyD.t-200,120,ROWS.skyD.z+420,ROWS.skyD.t+120,40,ROWS.skyD.z],'Toppled E':[ROWS.skyE.t-200,120,ROWS.skyE.z+420,ROWS.skyE.t+120,40,ROWS.skyE.z],'Toppled F':[ROWS.skyF.t-200,120,ROWS.skyF.z+420,ROWS.skyF.t+120,40,ROWS.skyF.z],
- 'The Gate':[-ROWS.arc.s,380,ROWS.arc.z+700,-ROWS.arc.s,170,ROWS.arc.z],'The Gate ruin':[ROWS.arc.s-500,20,ROWS.arc.z+560,ROWS.arc.s,160,ROWS.arc.z],
+ 'The Gate':[-ROWS.arc.s,330,ROWS.arc.z+1000,-ROWS.arc.s,235,ROWS.arc.z],'The Gate ruin':[ROWS.arc.s-500,20,ROWS.arc.z+560,ROWS.arc.s,160,ROWS.arc.z],
  'Robotics factory':ROWV('robo',600,220,30),'Robotics yard':[-ROWS.robo.s-60,6,ROWS.robo.z+230,-ROWS.robo.s+60,25,ROWS.robo.z-30],
  'Campus':[0,420,ROWS.campus.z+900,0,40,ROWS.campus.z],'Campus intact':[-ROWS.campus.s+40,90,ROWS.campus.z+560,-ROWS.campus.s-40,40,ROWS.campus.z+60],'Campus ruined':[ROWS.campus.s+40,90,ROWS.campus.z+560,ROWS.campus.s-40,40,ROWS.campus.z+60],'Campus lawn':[-ROWS.campus.s-60,14,ROWS.campus.z+400,-ROWS.campus.s-60,30,ROWS.campus.z+200],'Campus courtyard':[-ROWS.campus.s-70,60,ROWS.campus.z+250,-ROWS.campus.s-70,15,ROWS.campus.z+170],
  'Skyscraper G':ROWV('skyG',800,200,110),'Skyscraper H':ROWV('skyH',900,300,170),'Toppled G':[ROWS.skyG.t-250,120,ROWS.skyG.z+450,ROWS.skyG.t+60,40,ROWS.skyG.z],'Toppled H':[ROWS.skyH.t-200,120,ROWS.skyH.z+420,ROWS.skyH.t+120,40,ROWS.skyH.z],
@@ -27182,7 +27282,7 @@ const VIEWS={
  'Lighthouse':ROWV('lighthouse',1000,300,70),
  'Lighthouse at night':[-ROWS.lighthouse.s-560,150,ROWS.lighthouse.z+760,-ROWS.lighthouse.s,120,ROWS.lighthouse.z,1],
  // Theodiga's views moved to targets/theodiga/91z-views.js with the site.
- 'Office C':[-ROWS.off.s+330,20,ROWS.off.z+120,-ROWS.off.s+330,10,ROWS.off.z-20],
+ 'Office C':[-ROWS.off.s+160,22,ROWS.off.z-5,-ROWS.off.s+95,10,ROWS.off.z-75],
 };
 // ---------------------------------------------------------------- camera control
 // ---------------------------------------------------------------- DAY / NIGHT

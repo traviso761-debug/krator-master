@@ -60,5 +60,5 @@ function buildArc(scene,gx,gz,d){reseed(9820+d);KOFF=[gx,0,gz];const G=new THREE
     const pts=[e];for(let k=1;k<=4;k++)pts.push(new THREE.Vector3(e.x-6*k/4+3*Math.sin(k+ci),e.y-L*k/4,e.z+2*Math.cos(k*1.7+ci)));
     hg.push(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),10,ci<2?2.2:1.6,6,false));});meshMerged(hg,MAT.rust,G);}
   rubbleRing(p[0]+20,0,30,10,90,140,4);scatterMoss(0,0,0,0,420,220,3.5);trees(0,0,60,420,40);vinesOnRing(ap[0],ap[1]-20,0,20,20,40);}
- figures(0,120,6,14);KOFF=[0,0,0];return G;}
+ figures(0,120,6,14);civFlatten(G);KOFF=[0,0,0];return G;}
 
