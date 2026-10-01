@@ -5,9 +5,9 @@
 const BUDGET={
  showcase:{tris:12000000,calls:220},
  cls:{env:2500000,small:60000,medium:250000,landmark:600000,host:400000,seg:200000,vessel:250000},
- type:{},   // stat-key base -> cls; a port registration's cls wins; everything else defaults to 'medium'
+ type:{},   // stat-key base -> cls; then a HYK.def's cls (cls:'landmark'), a port registration's cls; else 'medium'
 };
-function ysClsOf(statKey){const base=statKey.split('/')[0];if(base==='env')return 'env';if(BUDGET.type[base])return BUDGET.type[base];
+function ysClsOf(statKey){const base=statKey.split('/')[0];if(base==='env')return 'env';if(BUDGET.type[base])return BUDGET.type[base];if(HYK.defs[base]&&HYK.defs[base].cls)return HYK.defs[base].cls;
  const R=portRegOf(base);return R?R.cls:'medium';}
 function _probePoints(){
  const pts=[],m=new THREE.Matrix4(),pos=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3();const bb=new THREE.Box3();

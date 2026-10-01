@@ -225,6 +225,4 @@ function buildHykAmph(G,o){reseed(30600+(o.v|0));
  for(const s of [-1,1]){const an=dAt(Math.PI/2+s*.17,4.0,0,1);hykLight(an.p[0]+an.n[0]*.45,an.p[1]+.1,an.p[2]+an.n[2]*.45,{r:.22,nacre:true,level:'L1',bracket:an.p});}
  for(let i=0;i<6;i++){const a=i/6*TAU+.4;const r=DR*.93;const A=[HX+r*Math.cos(a),16.5,HZ+r*Math.sin(a)];hykLight(A[0]-Math.cos(a)*.5,16.6,A[2]-Math.sin(a)*.5,{r:.22,nacre:true,level:'L1',bracket:A});}
  hykReg('The Amphitriton',0,0,62,108,{landmark:true});}
-// the landmark budget (91's BUDGET.type is declared after this fragment and read only at probe time)
-setTimeout(function(){if(typeof BUDGET!=='undefined'&&BUDGET.type)BUDGET.type.hyk_amphitriton='landmark';},0);
-HYK.def({key:'hyk_amphitriton',name:'The Amphitriton',family:'civic',row:'Civic',w:108,d:110,h:108,r:62,inside:true,tags:{type:['civic'],wealth:'civic',lit:true,landmark:true},build:buildHykAmph});
+HYK.def({key:'hyk_amphitriton',name:'The Amphitriton',family:'civic',row:'Civic',w:108,d:110,h:108,r:62,cls:'landmark',inside:true,tags:{type:['civic'],wealth:'civic',lit:true,landmark:true},build:buildHykAmph});
