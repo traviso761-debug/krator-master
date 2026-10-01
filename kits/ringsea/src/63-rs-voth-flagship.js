@@ -36,11 +36,11 @@ function buildRsVothFlagship(){reseed(71300);
  // masts and sails: fore (raked forward), main (its foot clears the castle roofs), mizzen stepped on the castle
  [[15,26,-.12,'voth-green',5.2],[2,36,0,'voth-wave',castleTop-dY(H.uAt(2))+1.2],[-17,13,.05,'voth-green',castleTop-dY(H.uAt(-17))+.6]].forEach(([mx,mh,lean,key,foot],i)=>{
   const base=dY(H.uAt(mx));const tp=[mx+Math.sin(-lean)*mh,base+mh,0];rsLink(B,'wood',[mx,base-.5,0],tp,.32,0x2a1a10,8,.2);
-  const sh=mh-foot-1,w=Math.min(sh*.72,i===2?8.5:20);
+  rsRig(B,[[mx,base-.5,0],tp]);const sh=mh-foot-1,w=Math.min(sh*.72,i===2?8.5:20);
   const S=rsSail(B,{key,O:[mx+.4,base+foot,-.5],U:[-1,0,-.18],V:[Math.sin(-lean),1,0],belly:.9,scallop:7,
    A:t=>[-w*.12,t*sh],Bf:t=>[w*(.74+.2*Math.sin(t*Math.PI*.9)),t*sh*.95+sh*.03],draw:key==='voth-wave'?rsVothWave:rsVothGreen});
   for(let k=0;k<=7;k++){const pts=[];for(let j=0;j<=8;j++)pts.push(S.at(k/7,j/8));rsTube(B,'wood',pts,.06,0x140c08,16,5);}
-  rsRope(B,tp,[H.xAt(1,1)+.5,H.ys(1),0]);rsPennant(B,[tp[0],tp[1]+.3,0],4,.9,[RED,GOLD]);});
+  rsRope(B,tp,[H.xAt(1,1)+.5,H.ys(1),0]);rsPennant(B,[tp[0],tp[1]+.3,0],4,.9,[RED,GOLD]);});rsRigEnd(B);
  // the great rudder, lanterns, the windlass, two bolt-throwers, the Ordinators
  {const p=H.pt(0,0,.2);rsBox(B,'wood',[3,4.4,.4],[p[0]-1.4,p[1]-.4,0],null,BLK);rsLink(B,'wood',[p[0]-.2,H.ys(0)+1,0],[p[0]-.4,p[1]-2,0],.28,BLK);}
  for(const s of[-1,1])for(const x of[-22,-17])rsSphere(B,'glow',.35,[x,H.ys(H.uAt(x))+1.4,s*4.2],[1,1.3,1],0xff8a3a,10,8);

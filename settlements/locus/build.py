@@ -28,6 +28,7 @@ OUT_SHEET = os.path.join(HERE, 'yuni-assets.html')
 OUT_FURN = os.path.join(HERE, 'yuni-furniture.html')
 OUT_FLORA = os.path.join(HERE, 'locus-plants.html')
 OUT_LOCUS = os.path.join(HERE, 'locus-kit.html')
+OUT_ABYSS = os.path.join(HERE, 'abyss-kit.html')
 MANIFEST = os.path.join(HERE, 'build-manifest.json')
 
 # fragments that legitimately contain no top-level generation
@@ -139,11 +140,13 @@ def main():
         t = t.replace('<script>', "<script>window.YUNI_TARGET='%s';</script>\n<script>" % target, 1)
         return t.replace('<h1 id="ttl">Locus</h1>', '<h1 id="ttl">%s</h1>' % h1, 1).replace('Raising Locus…', loading, 1)
     locus = flavour('locus', 'Locus Building Kit', 'Locus — building kit', 'Laying out the Locus kit…')
+    abyss = flavour('abyss', 'Abyssal Building Kit', 'Eastern Abyss — building kit', 'Laying out the abyssal kit…')
     flora = flavour('flora', 'Locus Plants', 'Locus — plants', 'Laying out the plants…')
     with open(OUT_LOCUS, 'w') as fh: fh.write(locus)
+    with open(OUT_ABYSS, 'w') as fh: fh.write(abyss)
     with open(OUT_FLORA, 'w') as fh: fh.write(flora)
     os.makedirs(os.path.join(HERE,'publish'), exist_ok=True)
-    for src_html, name in ((html,'locus.html'),(locus,'locus-building-kit.html'),(flora,'locus-plants.html')):
+    for src_html, name in ((html,'locus.html'),(locus,'locus-building-kit.html'),(abyss,'abyss-building-kit.html'),(flora,'locus-plants.html')):
         a_ = src_html
         for tag in ('<!DOCTYPE html>','<html lang="en">','<head>','</head>','<body>','</body>','</html>','<meta charset="utf-8">','<meta name="viewport" content="width=device-width,initial-scale=1">'):
             a_ = a_.replace(tag,'')

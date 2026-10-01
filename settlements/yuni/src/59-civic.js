@@ -12,9 +12,7 @@ reseed(590001);
   function rwin(F, lx,ly,lz, nx,nz, r, ringCol){ hdisc(F,lx,ly,lz,nx,nz, r*1.38, 0.14, ringCol, 'relief'); hdisc(F,lx,ly,lz,nx,nz, r, 0.20, VOIDC[0], 'dark');
     var p=F.P(lx+nx*0.27,ly,lz+nz*0.27), n=F.dir(nx,nz); WINPANE(p.x,p.y,p.z, n[0],n[1], r*1.25, r*1.25, false); }
   /* a door at any height (F.door is ground-only) */
-  function doorAt(F, lx,ly,lz, nx,nz, w,h, col){ var a=Math.atan2(nx,nz);
-    F.box(lx-nx*0.12, ly, lz-nz*0.12, w+0.3, h+0.2, 0.34, a, VOIDC[1], 'dark'); F.box(lx+nx*0.04, ly, lz+nz*0.04, w, h, 0.10, a, col, 'plank');
-    var q=F.p(lx+nx*0.9, lz+nz*0.9); (F.doors||(F.doors=[])).push([q[0], F.y+ly, q[1]]); }
+  function doorAt(F, lx,ly,lz, nx,nz, w,h, col){ return F.door(lx,lz, nx,nz, w,h, col, ly); }   /* the working, tagged door (53-assets.js) */
   /* brass studs on a door leaf facing +z */
   function studs(F, lx,ly,lz, w,h, col){ for(var i=0;i<3;i++) for(var j=0;j<4;j++) F.box(lx+(i-1)*w*0.3, ly+h*(0.14+j*0.22), lz+0.06, 0.10,0.10,0.09, 0, col!=null?col:GILDC[0], 'metal'); }
   /* parameters at equal arc length round an ellipse */
@@ -871,7 +869,9 @@ reseed(590001);
       if(F.variant===1){ for(var r=0;r<4;r++){ F.rod(-0.85,1.05+r*0.20,0.14, 0.85,1.05+r*0.20,0.14, 0.02, BRASSC[0], 'metal');
         for(var b=0;b<6;b++) F.ball(-0.75+b*0.28, 1.05+r*0.20, 0.14, 0.055, F.pick([MOSBLUEC[0],MOSWARMC[0],MOSGREENC[0]]), 'mosaic'); } } } });
 
-  FURN({ key:'order_mat_rack', name:'Rack of rolled mats', culture:'order', room:'school', w:1.75, d:0.70, h:1.40, variants:2,
+  /* w covers x -1.20..+0.87 centred (the mat rolls grow from their base along -x and hang 0.29 m out of the
+     left end: KNOWN_ISSUES.md); h covers the basket on variant 1. */
+  FURN({ key:'order_mat_rack', name:'Rack of rolled mats', culture:'order', room:'school', w:2.4, d:0.70, h:1.70, variants:2,
     variantNames:['four mats','six mats and a basket'],
     build:function(F){ [-1,1].forEach(function(sg){ F.box(sg*0.82,0,0, 0.10,1.35,0.62, 0, TIMBERC[0], 'timber'); });
       F.box(0,0.55,0, 1.70,0.08,0.58, 0, PLANKC[2], 'plank'); F.box(0,1.25,0, 1.74,0.09,0.62, 0, PLANKC[0], 'plank');

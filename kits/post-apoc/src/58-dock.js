@@ -159,8 +159,10 @@ function dkBuild(o){
  dkQuay();W(0,dkQ,0,0,()=>dkLand());
  dkPier();
  W(12.6,0,7.5,.06,()=>dkTug());W(-14.5,0,1.7,-.04,()=>dkRaft());W(1.2,0,10.2,0,()=>dkBarge());
- // gangplank to the raft-house, mooring lines
- box('plank',-14.5-.5,.75,-4.8,1.0,.08,3.4,jc(0x6a5a44,.06),0,-.05);
+ // gangplank to the raft-house (quay edge at z -5.2 to the raft deck at z -1.5, sloping down to it), mooring lines
+ box('plank',-14.5-.5,.77,-3.45,1.0,.08,4.3,jc(0x6a5a44,.06),0,.05);
  dkRope([-14,1.2,-1.4],[-14,dkQ+.4,-5.4],.5);dkRope([-12.3,1.2,.5],[-10.6,dkQ+.4,-5.5],.5);
  dkRope([9.0,1.6,2.5],[8.3,1.3,1.5],.2);dkRope([4.2,1.3,2.0],[5.2,1.2,1.4],.2);
+ // land-side steps: a timber flight up the back wall of the quay from the street (drawn last: the rest of the dock keeps its random draws)
+ stairs(17,0,-24.55,17,dkQ+.03,-23.05,1.4,{rail:false});
 }

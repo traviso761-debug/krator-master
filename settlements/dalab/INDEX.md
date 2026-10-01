@@ -18,7 +18,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 3 |  |
-| `10-core.js` | 2 | error panel (1); rng + noise (7) |
+| `10-core.js` | 3 | error panel (1); rng + noise (7) |
 | `12-stats.js` | 1 | per-type accounting (1) |
 | `30-kit.js` | 3 | instancing kit (1) |
 | `32-surfaces.js` | 7 | surfaces (1) |
@@ -47,8 +47,8 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `75-port-embassy.js` | 24 | textures (near-grey, tinted per instance; 128 px (10); materials (35); geometry (43); kit items (58); local helpers (vp prefix) (68); the embassy (84) |
 | `76-port-chapterhouse.js` | 17 |  |
 | `81-sky.js` | 10 |  |
-| `86-bio-10-core-head.js` | 5 | PRNG (14); noise (24); host binding (32); accounting (72) |
-| `86-bio-20-core-kit.js` | 12 | merged buckets (46); bake (121) |
+| `86-bio-10-core-head.js` | 6 | PRNG (14); noise (24); host binding (41); accounting (81) |
+| `86-bio-20-core-kit.js` | 13 | merged buckets (46); indexed buckets (121); bake (144) |
 | `86-bio-30-core-foliage.js` | 13 | alpha textures (18); card geometries (48); the foliage hook (110) |
 | `86-bio-40-core-place.js` | 6 | surface sampling (53) |
 | `86-bio-45-init.js` | 2 |  |
@@ -70,5 +70,5 @@ Each target adds its own fragments to `src/` and builds one output.
 
 | Target | Fragments | KB |
 |---|---|---|
-| `city` | `63-anc-dalab.js`, `84-city-geo.js`, `85-city-paint.js`, `87-city-layout.js`, `88-city-place.js`, `89z-rows.js`, `90a-city-world.js`, `90b-city-build.js`, `91z-views.js`, `93-city-ui.js`, `95-city-life.js` | 75 |
+| `city` | `63-anc-dalab.js`, `84-city-geo.js`, `85-city-paint.js`, `87-city-layout.js`, `88-city-place.js`, `89z-rows.js`, `90a-city-world.js`, `90b-city-build.js`, `91z-views.js`, `93-city-ui.js`, `95-city-life.js` | 76 |
 | `set` | `89z-rows.js`, `91z-views.js` | 6 |

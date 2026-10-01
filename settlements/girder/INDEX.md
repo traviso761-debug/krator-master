@@ -15,7 +15,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `00-head.html` | 5 |  |
+| `00-head.html` | 6 |  |
 | `05-palette.js` | 7 | 0. PALETTE (1) |
 | `10-core.js` | 8 | 1. CORE (1); 2. WORLD CONSTANTS (79); 3. TERRAIN FIELD (140) |
 | `20-stage.js` | 14 | 4. STAGE (1); 5. BAKED HORIZON DOME (48); 6. ERUPTION CYCLE (285) |

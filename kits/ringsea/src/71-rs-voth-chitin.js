@@ -30,10 +30,10 @@ function buildRsVothChitin(){reseed(72100);
  // the fore fan sweeps less far aft and the aft mast stands further back: the fans must not touch (sails-clear-sails)
  [[2,12.5,1,1.02],[-9.2,9.5,.85,1.2]].forEach(([mx,mh,k,a1])=>{const base=cy+2.2;rsLink(B,'paint',[mx,base-1.5,0],[mx,base+mh,0],.18,0xe8dcc0,8,.12);
   const R=mh*.95,a0=.1,A0=[0,0];
-  const S=rsSail(B,{key:'voth-fan-blue',O:[mx,base+.6,.3],U:[-1,0,0],V:[0,1,0],belly:.6,nu:24,nv:10,
+  rsRig(B,[mx,0]);const S=rsSail(B,{key:'voth-fan-blue',O:[mx,base+.6,.3],U:[-1,0,0],V:[0,1,0],belly:.6,nu:24,nv:10,
    A:t=>A0,Bf:t=>{const a=lerp(Math.PI/2-a0,Math.PI/2-a1,t);const rr0=R*(1-.07*Math.sin(t*Math.PI*6)**2);return[Math.cos(a)*rr0,Math.sin(a)*rr0];},draw:rsFanVoth});
   for(let i=0;i<=6;i++){const t=i/6,pts=[];for(let j=0;j<=6;j++)pts.push(S.at(t,j/6));rsTube(B,'paint',pts,t=>.07*(1-.5*t),0xe8dcc0,12,5);}
-  rsRope(B,[mx,base+mh,0],[H.xAt(1,1),H.ys(1),0]);rsRope(B,S.at(1,1),[mx-7*k,cy+.5,0]);});
+  rsRope(B,[mx,base+mh,0],[H.xAt(1,1),H.ys(1),0]);rsRope(B,S.at(1,1),[mx-7*k,cy+.5,0]);});rsRigEnd(B);
  for(const x of[-12,-1,6])rsFigure(B,[x,x<-11?dY(H.uAt(x)):cy+2.1,rr(-.4,.4)],rr(0,TAU),[0x4a3a5a,0x8a3a1c,0x2a2a2a][Math.floor(rng()*3)],false,0x8a8aa0);
  rsBake(B,V.group,'vothChitin');V.deckY=cy;return V;}
 RS_VESSEL({key:'vothChitin',name:'Voth Chitin Bireme',culture:'voth',L:34,B:17,H:16,

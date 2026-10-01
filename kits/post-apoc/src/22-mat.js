@@ -53,3 +53,21 @@ const PAL={
  black:[0x2a2826,0x33302c],
 };
 function P(k){return jc(pick(PAL[k]),.07);}
+// ---------------------------------------------------------------- animated materials (shader-side only: geometry and bboxes never move)
+// ANIMU are shared uniforms: 93-anim.js sets uTime (seconds, a pure function of the clock, or pinned by ?t=), 91n-night.js sets uNightK and uWinFrac.
+// animPatch(mk, material) is called by flushBuckets() for every bucket; it patches each material once:
+//   cloth ('cloth', 'awn:*', 'ban:*'): vertices move by aFlut x a two-sine wave whose phase runs across world space (pinned edges have aFlut = 0)
+//   glow: colour x flicker (aFlk: flames 1, bulbs .45, coals .2), phase per 1.5 m cell so one fire flickers as one
+//   winlit / glass windows: lit when the pane's aWin < uWinFrac (the evening schedule), scaled by uNightK; a dark pane otherwise
+const ANIMU={uTime:{value:0},uWind:{value:1},uWinFrac:{value:0},uNightK:{value:0}};
+const GLSL_FLICK='float flick(vec3 p,float t){vec3 c=floor(p/1.5);float ph=fract(sin(dot(c,vec3(12.9898,78.233,37.719)))*43758.5453)*6.2832;return .5*sin(t*9.1+ph)+.3*sin(t*15.3+ph*2.1)+.2*sin(t*23.7+ph*3.7);}\n';
+function animPatch(mk,m){if(!m||m.userData.anim)return;let kind=null;
+ if(clothKey(mk))kind='cloth';else if(mk==='glow')kind='glow';else if(mk==='winlit')kind='winlit';else if(mk==='glass')kind='glass';if(!kind)return;m.userData.anim=kind;
+ m.onBeforeCompile=sh=>{for(const u in ANIMU)sh.uniforms[u]=ANIMU[u];const U='uniform float uTime;uniform float uWind;uniform float uWinFrac;uniform float uNightK;\n';
+  if(kind==='cloth'){sh.vertexShader=U+'attribute vec3 aFlut;\n'+sh.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\n{float ph=dot(position,vec3(.9,.7,1.3));float s=.62*sin(uTime*3.1+ph*1.7)+.38*sin(uTime*5.3+ph*3.1+1.7);transformed+=aFlut*s*uWind;}');}
+  else if(kind==='glow'){sh.vertexShader=U+GLSL_FLICK+'attribute float aFlk;varying float vFlk;\n'+sh.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nvFlk=1.+aFlk*.28*flick(position,uTime);');
+   sh.fragmentShader='varying float vFlk;\n'+sh.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\ndiffuseColor.rgb*=vFlk;');}
+  else{sh.vertexShader=U+'attribute float aWin;varying float vLit;varying float vBr;\n'+sh.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nvLit=step(aWin,uWinFrac)*uNightK;vBr=.75+.5*fract(aWin*13.7);');
+   if(kind==='winlit')sh.fragmentShader='uniform float uNightK;varying float vLit;varying float vBr;\n'+sh.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\ndiffuseColor.rgb=mix(diffuseColor.rgb,vec3(.018,.022,.03),uNightK-vLit)*mix(1.,vBr,vLit);');
+   else sh.fragmentShader='varying float vLit;varying float vBr;\n'+sh.fragmentShader.replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\ntotalEmissiveRadiance+=vec3(1.,.58,.24)*1.15*vLit*vBr;');}};
+ m.customProgramCacheKey=()=>'anim-'+kind;m.needsUpdate=true;}   /* the key: winlit and glow are both MeshBasic and share one onBeforeCompile source */

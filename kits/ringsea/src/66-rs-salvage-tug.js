@@ -36,9 +36,9 @@ function buildRsSalvageTug(){reseed(71600);
   const dg=rsBake(DB,null,'dinghy');dg.rotation.x=Math.PI;dg.position.set(-4.6,dY(H.uAt(-4.6))+.62,0);V.group.add(dg);}
  // the pipe masts, gaffs, booms and patched gaff sails; the pipe bowsprit and the jib
  const gaff=(mx,mh,foot,boomL,gaffL,key)=>{const base=dY(H.uAt(mx));rsCyl(B,'metal',.16,.2,mh,[mx,base+mh/2,0],null,0x5a5a5c,10);
-  const lu=mh-foot-1.2;const S=rsSail(B,{key,O:[mx-.2,base+foot,.18],U:[-1,0,0],V:[0,1,0],belly:.7,nu:14,nv:10,
+  rsRig(B,[mx,0]);const lu=mh-foot-1.2;const S=rsSail(B,{key,O:[mx-.2,base+foot,.18],U:[-1,0,0],V:[0,1,0],belly:.7,nu:14,nv:10,
    A:t=>[0,t*lu],Bf:t=>[lerp(boomL,gaffL*.86,t),lerp(0,lu+gaffL*.5,t)],draw:rsTugPatch});
-  rsLink(B,'wood',S.at(0,0),S.at(0,1),.1,0x5a4a3a,6);rsLink(B,'wood',S.at(1,0),S.at(1,1),.09,0x5a4a3a,6);rsRope(B,[mx,base+mh,0],S.at(1,1));rsRope(B,[mx,base+mh,0],S.at(1,.5));return[mx,base+mh,0];};
+  rsLink(B,'wood',S.at(0,0),S.at(0,1),.1,0x5a4a3a,6);rsLink(B,'wood',S.at(1,0),S.at(1,1),.09,0x5a4a3a,6);rsRope(B,[mx,base+mh,0],S.at(1,1));rsRope(B,[mx,base+mh,0],S.at(1,.5));rsRigEnd(B);return[mx,base+mh,0];};
  const topF=gaff(7,14.5,5.2,6.2,6,'tug-patch'),topM=gaff(-5.5,14,3.5,6.8,6.2,'tug-patch');   // main boom rides on the old towing arch, the gallows
  const bs=[H.xAt(1,1)+5,H.ys(1)+.5,0];rsLink(B,'metal',[H.xAt(1,1)-1,H.ys(1)-.2,0],bs,.1,0x5a5a5c,8);
  rsSail(B,{key:'tug-patch',O:[0,0,.05],U:[1,0,0],V:[0,1,0],belly:-.5,nu:10,nv:8,A:t=>[lerp(bs[0]-.2,topF[0]+.3,t),lerp(bs[1]+.3,topF[1]-1.2,t)],Bf:t=>[lerp(H.xAt(1,1)-2.5,topF[0]+.3,t),lerp(H.ys(1)+1.2,topF[1]-1.2,t)],draw:rsTugPatch});

@@ -6,7 +6,7 @@ reseed(643001);
 (function(){
   var PI=Math.PI, GROUP='Salt-rice farm';
   function sheaf(F,x,z,y){ F.cone(x,y,z, 0.32,0.9, [F.rr(-0.1,0.1),0,F.rr(-0.1,0.1)], PADDYC[3], 'leafy'); F.cyl(x,y+0.45,z, 0.14,0.08, 0, TIMBERC[2], 'timber'); }
-  ASSET({ key:'farm_saltrice', name:'Salt-rice farm', family:'trade', kit:'locus', group:GROUP, culture:'abyssal-desert', types:['farm','single-family dwelling'],
+  ASSET({ key:'farm_saltrice', name:'Salt-rice farm', family:'trade', kit:['locus','abyss'], group:GROUP, kitGroup:{ abyss:'Farming and storage' }, culture:'abyssal-desert', types:['farm','single-family dwelling'],
     districts:['poor'], wealth:[0.1,0.5], w:48, d:38, h:9, variants:2, variantNames:['six paddies, house to the right','six paddies, house to the left'],
     build:function(F){
       var v=F.variant, mud=F.pick(MUDBROWNC), mud2=shade(mud,-0.12), water=SALTWATERC[v], sx = v ? -1 : 1;   /* sx mirrors the plan */

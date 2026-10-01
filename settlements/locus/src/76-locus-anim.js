@@ -6,7 +6,9 @@
    skid it stands on. Kinds:
      pumpjack — walking beam, horsehead, equalizer, pitman arms, crank arms, counterweights, bridle,
                 carrier bar and polished rod. Crank turns at p.speed rad/s; the beam angle is solved
-                each frame as the circle-circle intersection of the tail arc and the pitman.      */
+                each frame as the circle-circle intersection of the tail arc and the pitman.
+     windpump (ABYSS) — the multi-blade wheel of a salvaged windpump (p.n blades from radius p.R0 to p.R1 about
+                p.hub, the wheel facing local +z turned by p.yaw) and its pump rod, which rises and falls once a turn.  */
 reseed(760001);
 var LOCUS_ANIM_MESHES = [];
 (function(){
@@ -22,6 +24,8 @@ var LOCUS_ANIM_MESHES = [];
                   cw:[part('cyl','rust',p.colCw), part('cyl','rust',p.colCw)], bridle:[part('cyl6','rust',p.colCw), part('cyl6','rust',p.colCw)],
                   carrier:part('box','rust',p.colCw), prod:part('cyl','metal',TARNC[0]) };
       A.t = p.phase || 0; }
+    if(A.kind==='windpump'){ var w=A.p; A.parts = { blades:[] }; for(var kb=0;kb<(w.n||16);kb++) A.parts.blades.push(part('box', w.fam||'corrugate', kb%2?w.col:shade(w.col,-0.12)));
+      A.parts.rod = part('cyl','rust',STEELDC[0]); A.t = w.phase || 0; }
     if(A.kind==='flywheel'){ var q=A.p; A.parts = { spokes:[] }; for(var k=0;k<(q.n||6);k++) A.parts.spokes.push(part('box','rust',q.col)); A.parts.pin = part('cyl','rust',q.col); A.t = q.phase || 0; }
   });
   /* ---- one InstancedMesh per pool, dressed like the kit ---- */
@@ -33,7 +37,7 @@ var LOCUS_ANIM_MESHES = [];
     (function(needsUV, sc){ mat.onBeforeCompile = function(sh){ if(needsUV) applyWorldUV(sh, sc); applyNightGlow(sh); };
       mat.customProgramCacheKey = function(){ return (needsUV ? 'wuv'+sc[0].toFixed(2)+'_'+sc[1].toFixed(2) : '') + '|nlv'; }; })(!!fm.tex, fm.scale || [3,3]);
     var im = new THREE.InstancedMesh(geo, mat, P.n);
-    im.userData.shape=P.shape; im.userData.fam=P.fam; im.userData.kit=true; im.userData.inspectLabel='Moving machinery (pumpjack beam and crank / generator flywheel)';
+    im.userData.shape=P.shape; im.userData.fam=P.fam; im.userData.kit=true; im.userData.inspectLabel='Moving machinery (pumpjack beam and crank / generator flywheel / windpump wheel)';
     im.castShadow = !FAST; im.receiveShadow = !FAST; im.frustumCulled = false;
     _o0.scale.set(0,0,0); _o0.updateMatrix();
     for(var i=0;i<P.n;i++){ im.setColorAt(i, _c.set(P.cols[i]).convertSRGBToLinear()); im.setMatrixAt(i, _o0.matrix); }   /* nothing shows until the first tick places it */
@@ -80,9 +84,17 @@ var LOCUS_ANIM_MESHES = [];
   function flywheel(A, dt){ var p=A.p, C=p.C, R=p.R, K=A.parts, n=K.spokes.length; A.t += dt*p.speed;
     for(var k=0;k<n;k++){ var a=A.t + k/n*TAU; setAB(A, K.spokes[k], [C[0], C[1], C[2]], [C[0], C[1]+Math.sin(a)*R, C[2]+Math.cos(a)*R], 0.16, 0.26); }
     var a0=A.t; setAB(A, K.pin, [C[0]-0.22, C[1]+Math.sin(a0)*R*0.7, C[2]+Math.cos(a0)*R*0.7], [C[0]+0.22, C[1]+Math.sin(a0)*R*0.7, C[2]+Math.cos(a0)*R*0.7], 0.22, 0.22); }
+  /* windpump: each blade a box rooted at R0 on its radius, turned about the wheel's axis (Euler YXZ: yaw, then roll) */
+  function windpump(A, dt){ var p=A.p, K=A.parts, n=K.blades.length, hub=W(A, p.hub[0],p.hub[1],p.hub[2]), phi=A.ry+(p.yaw||0), cp=Math.cos(phi), sp=Math.sin(phi);
+    A.t += dt*p.speed;
+    for(var k=0;k<n;k++){ var th=A.t + k/n*TAU, ox=-Math.sin(th)*p.R0, oy=Math.cos(th)*p.R0;
+      _o.position.set(hub[0]+ox*cp, hub[1]+oy, hub[2]-ox*sp); _o.rotation.set(0, phi, th, 'YXZ'); _o.scale.set(p.bw||0.42, p.R1-p.R0, 0.04); _o.updateMatrix();
+      K.blades[k].p.im.setMatrixAt(K.blades[k].i, _o.matrix); }
+    var r=p.rod; if(r){ var yb=r.y0 + r.amp*(0.5+0.5*Math.sin(A.t)); setAB(A, K.rod, [r.x, yb, r.z], [r.x, yb+r.len, r.z], 0.05, 0.05); } }
   var first=true;
   TICKS.push(function(dt){ if(!(dt>0) || dt>0.25) dt=0.016;
-    for(var i=0;i<LOCUS_ANIM.length;i++){ var A=LOCUS_ANIM[i]; if(A.kind==='pumpjack') pumpjack(A, first?0:dt); else if(A.kind==='flywheel') flywheel(A, first?0:dt); }
+    for(var i=0;i<LOCUS_ANIM.length;i++){ var A=LOCUS_ANIM[i]; if(A.kind==='pumpjack') pumpjack(A, first?0:dt); else if(A.kind==='flywheel') flywheel(A, first?0:dt); else if(A.kind==='windpump') windpump(A, first?0:dt); }
     for(var k in pools) pools[k].im.instanceMatrix.needsUpdate = true; first=false; });
-  window._locusAnim = { records:LOCUS_ANIM.length, meshes:LOCUS_ANIM_MESHES.length, sample:function(){ var A=LOCUS_ANIM[0]; return A && +A.t.toFixed(3); } };
+  window._locusAnim = { records:LOCUS_ANIM.length, meshes:LOCUS_ANIM_MESHES.length, sample:function(){ var A=LOCUS_ANIM[0]; return A && +A.t.toFixed(3); },
+    sampleKind:function(k){ for(var i=0;i<LOCUS_ANIM.length;i++) if(LOCUS_ANIM[i].kind===k) return +LOCUS_ANIM[i].t.toFixed(3); return null; } };
 })();

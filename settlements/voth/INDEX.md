@@ -16,7 +16,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `00-head.html` | 5 |  |
+| `00-head.html` | 6 |  |
 | `05-palette.js` | 25 | 0. PALETTE — FROZEN (1); BUDGET (263) |
 | `10-core.js` | 11 | 1. CORE (1); 2. WORLD CONSTANTS (72); 3. TERRAIN FIELD (174) |
 | `15-shore.js` | 4 | 4. THE SHORELINE (1) |

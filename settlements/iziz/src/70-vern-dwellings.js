@@ -142,8 +142,13 @@ function buildVernRichA(G,o){reseed(7301+(o.v|0));const W=14,D=12,H1=4.6,W2=11,D
  const c1=vnCornice('vStone',0,Y0+H1+.2,0,W*.86,D*.86,0,st,3);
  // fluted deco strips and lit windows on the battered face (face recedes with height: offset by vBatHalf)
  {const y=Y0+1.6,hf=vBatHalf(W,H1,1.6),df=vBatHalf(D,H1,1.6);
-  for(const x of[-4.6,-2.3,2.3,4.6])vnWin(x,y,df,0,1.2,1.7,'lit','vStone',st);for(const x of[-3.45,0,3.45])vnStrip(x,Y0+.9,df+.02,0,.7,3.2,'vStone',stD);
-  for(const s of[-1,1])for(const z of[-3.2,0,3.2])vnWin(s*hf,y,z,s*Math.PI/2,1.2,1.7,'lit','vStone',st);for(const x of[-3.5,0,3.5])vnWin(x,y,-df,Math.PI,1.2,1.7,'glass','vStone',st);}
+  // each window sits in a flat REVEAL block: its front is vertical and flush with the face at the sill, its back buried
+  // where the face recedes, so the frame no longer stands proud at the head and sinks at the sill (Round 1 issue)
+  const bw=(px,pz,ry,L,kind)=>{const nx=Math.sin(ry),nz=Math.cos(ry),tx=Math.cos(ry),tz=-Math.sin(ry),al=px*tx+pz*tz;
+   const f0=vBatHalf(L,H1,1.6-.3)+.04,f1=vBatHalf(L,H1,1.6+1.7+.35),dep=f0-f1+.25;
+   vB('vStone',tx*al+nx*(f0-dep/2),y-.3,tz*al+nz*(f0-dep/2),1.2+.7,1.7+.65,dep,ry,st);vnWin(tx*al+nx*f0,y,tz*al+nz*f0,ry,1.2,1.7,kind,'vStone',st);};
+  for(const x of[-4.6,-2.3,2.3,4.6])bw(x,df,0,D,'lit');for(const x of[-3.45,0,3.45])vnStrip(x,Y0+.9,df+.02,0,.7,3.2,'vStone',stD);
+  for(const s of[-1,1])for(const z of[-3.2,0,3.2])bw(s*hf,z,s*Math.PI/2,W,'lit');for(const x of[-3.5,0,3.5])bw(x,-df,Math.PI,D,'glass');}
  vnStairs(0,0,D/2+1.9,0,3.2,Y0,3,'vStone',st);vnDoor(0,Y0,vBatHalf(D,H1,1.3),0,1.7,2.9,'vStone',st,vC(0x4a2e1c));
  // gallery storey in hardwood, balcony to the front
  vB('vWood',0,c1,0,W2,H2,D2,0,wood);for(const sx of[-1,1])for(const sz of[-1,1])vPst('vPost',sx*(W2/2-.02),c1,sz*(D2/2-.02),.2,H2,wood.clone().multiplyScalar(.8));

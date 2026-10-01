@@ -38,6 +38,8 @@ Read before changing anything here. `build.py` prints the open count.
       full sun a painted orchid shows mostly its first colour.
 - [ ] Only one test structure dresses (the dome ruin). `dress()` samples by triangle area (inherited).
 - [ ] No fauna yet.
+- [ ] **Put the biome fruit in the kit** (`biomes/FRUIT.md`): cacao, pitaya, violet plantains, wingnut chains, strawberry-tree berries, whorl olives, lotus seeds, tunas, lantern fruit. Each has a catalog piece in
+      `kits/catalog/krator-master-furniture-generic-fruit.js` (`biome: 'xanadu'`). Most are drawn. Draw the striped olives on `whorlolive`, and the lotus seed head on the shore flowers after they bloom. Add harvest tags.
 
 ## Done
 

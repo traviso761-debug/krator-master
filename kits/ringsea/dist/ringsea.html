@@ -38,10 +38,19 @@ function reseed(s){_seed=s>>>0;}
 function rng(){_seed|=0;_seed=_seed+0x6D2B79F5|0;let t=Math.imul(_seed^_seed>>>15,1|_seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;}
 function rr(a,b){return a+(b-a)*rng();}
 function h3(x,y,z){const s=Math.sin(x*12.9898+y*78.233+z*37.719)*43758.5453;return s-Math.floor(s);}
+// Each h3 is a Math.sin, and sampling a terrain or a texture asks for the same lattice cells again and again: a
+// cell's eight corners are kept in a small direct-mapped cache (exact: the same h3 values, the same arithmetic in
+// the same order, so the same results bit for bit). It was most of every biome's load.
+var _vnK,_vnV;
 function vnoise(x,y,z){const xi=Math.floor(x),yi=Math.floor(y),zi=Math.floor(z),xf=x-xi,yf=y-yi,zf=z-zi;
- const sm=t=>t*t*(3-2*t);const u=sm(xf),v=sm(yf),w=sm(zf);const l=(a,b,t)=>a+(b-a)*t;
- return l(l(l(h3(xi,yi,zi),h3(xi+1,yi,zi),u),l(h3(xi,yi+1,zi),h3(xi+1,yi+1,zi),u),v),
-          l(l(h3(xi,yi,zi+1),h3(xi+1,yi,zi+1),u),l(h3(xi,yi+1,zi+1),h3(xi+1,yi+1,zi+1),u),v),w);}
+ if(_vnK===undefined){_vnK=new Float64Array(4096*3).fill(NaN);_vnV=new Float64Array(4096*8);}
+ const s=(Math.imul(xi|0,73856093)^Math.imul(yi|0,19349663)^Math.imul(zi|0,83492791))&4095,k=s*3,o=s*8,V=_vnV;
+ if(_vnK[k]!==xi||_vnK[k+1]!==yi||_vnK[k+2]!==zi){_vnK[k]=xi;_vnK[k+1]=yi;_vnK[k+2]=zi;
+  V[o]=h3(xi,yi,zi);V[o+1]=h3(xi+1,yi,zi);V[o+2]=h3(xi,yi+1,zi);V[o+3]=h3(xi+1,yi+1,zi);
+  V[o+4]=h3(xi,yi,zi+1);V[o+5]=h3(xi+1,yi,zi+1);V[o+6]=h3(xi,yi+1,zi+1);V[o+7]=h3(xi+1,yi+1,zi+1);}
+ const u=xf*xf*(3-2*xf),v=yf*yf*(3-2*yf),w=zf*zf*(3-2*zf);
+ const a=V[o]+(V[o+1]-V[o])*u,b=V[o+2]+(V[o+3]-V[o+2])*u,c=V[o+4]+(V[o+5]-V[o+4])*u,d=V[o+6]+(V[o+7]-V[o+6])*u;
+ const e=a+(b-a)*v,f=c+(d-c)*v;return e+(f-e)*w;}
 function fbm(x,y,z,o){o=o||3;let a=0,f=1,s=0;for(let i=0;i<o;i++){a+=vnoise(x*f,y*f,z*f)/f;s+=1/f;f*=2.03;}return a/s;}
 const clamp=(v,a,b)=>v<a?a:v>b?b:v, lerp=(a,b,t)=>a+(b-a)*t, TAU=Math.PI*2;
 
@@ -74,8 +83,18 @@ function finite3(a){return !!a&&isFinite(a[0])&&isFinite(a[1])&&isFinite(a[2]);}
 // tile is about 8 m across, because `lathe` sets uS = rFn(0)*TAU/8 and vS = cut/8.
 // At 512 px that is 64 px per metre, which is what the panel and board sizes
 // below are picked against — change the tile size and they stop meaning anything.
-function canvasTex(w,h,fn,rep){const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');fn(g,w,h);
- const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=8;t.encoding=THREE.sRGBEncoding;if(rep)t.repeat.set(rep,rep);return t;}
+//
+// Painting waits until something first reads the texture's `.image`, which three.js does when it uploads the
+// texture for a draw: a page pays only for the textures it shows. Painting every texture up front was ~11 s of
+// each Ancients page's load, before its first frame. Pass eager=true when fn draws from rng(): deferring it would
+// shift every later draw in the seeded stream (Screamers' flBarkTex). The pixels are the same either way.
+function canvasTex(w,h,fn,rep,eager){const c=document.createElement('canvas');c.width=w;c.height=h;
+ let paint=()=>{paint=null;fn(c.getContext('2d'),w,h);};if(eager)paint();
+ const t=new THREE.CanvasTexture(c);
+ if(paint)Object.defineProperty(t,'image',{configurable:true,enumerable:true,
+  get(){if(paint)paint();return c;},
+  set(v){paint=null;Object.defineProperty(t,'image',{value:v,writable:true,configurable:true,enumerable:true});}});
+ t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=8;t.encoding=THREE.sRGBEncoding;if(rep)t.repeat.set(rep,rep);return t;}
 // A roughness/metalness map is DATA, not colour. Leaving it sRGB-encoded (which
 // canvasTex does, correctly, for albedo) bends every value through a gamma curve
 // and the surface comes back wrong.
@@ -286,7 +305,7 @@ function rsDefMat(key,m){RSMAT[key]=m;return m;}
 // one BufferGeometry (position, normal, uv, color). Pieces are CONSUMED: never reuse a geometry
 // after rsPut. Indexed stock geometry is expanded through toNonIndexed(), which walks the index
 // (the Three.js pitfall: never concatenate an indexed position array by hand).
-function rsBucket(){return {m:{},tris:0,solids:[],sail:[]};}
+function rsBucket(){return {m:{},tris:0,solids:[],sail:[],rigs:[],rig:null};}
 // solids: boxes sails must not pass through (cabins, castles); rsSolid adds one by hand
 function rsSolid(B,min,max){B.solids.push({min,max});}
 const _rsM=new THREE.Matrix4(),_rsQ=new THREE.Quaternion(),_rsE=new THREE.Euler(),_rsP=new THREE.Vector3(),_rsS=new THREE.Vector3();
@@ -300,15 +319,45 @@ function rsPut(B,mk,geo,pos,rot,scl,col){
  if(!g.attributes.color){const C=rsCol(col),a=new Float32Array(n*3);for(let i=0;i<n;i++){a[i*3]=C.r;a[i*3+1]=C.g;a[i*3+2]=C.b;}g.setAttribute('color',new THREE.Float32BufferAttribute(a,3));}
  if(pos||rot||scl){_rsP.set(pos?pos[0]:0,pos?pos[1]:0,pos?pos[2]:0);const s=scl==null?1:scl;if(typeof s==='number')_rsS.set(s,s,s);else _rsS.set(s[0],s[1],s[2]);
   _rsM.compose(_rsP,rsQ(rot),_rsS);g.applyMatrix4(_rsM);}
- (B.m[mk]||(B.m[mk]=[])).push(g);B.tris+=n/3;return g;}
-function rsBake(B,parent,name){const G=parent||new THREE.Group();
+ (B.m[mk]||(B.m[mk]=[])).push(g);B.tris+=n/3;if(B.rig)B.rig.geos.push(g);return g;}
+function rsBake(B,parent,name){const G=parent||new THREE.Group();if(B.rig)rsRigEnd(B);
  for(const mk of Object.keys(B.m).sort()){const L=B.m[mk];let n=0;for(const g of L)n+=g.attributes.position.count;
   const P=new Float32Array(n*3),N=new Float32Array(n*3),U=new Float32Array(n*2),C=new Float32Array(n*3);let o=0;
-  for(const g of L){const c=g.attributes.position.count;P.set(g.attributes.position.array,o*3);N.set(g.attributes.normal.array,o*3);U.set(g.attributes.uv.array,o*2);C.set(g.attributes.color.array,o*3);o+=c;g.dispose();}
+  const aux=L.some(g=>g.attributes.rsAux),X1=aux?new Float32Array(n*4):null,X2=aux?new Float32Array(n*4):null;
+  for(const g of L){const c=g.attributes.position.count;P.set(g.attributes.position.array,o*3);N.set(g.attributes.normal.array,o*3);U.set(g.attributes.uv.array,o*2);C.set(g.attributes.color.array,o*3);
+   if(aux&&g.attributes.rsAux){X1.set(g.attributes.rsAux.array,o*4);X2.set(g.attributes.rsAux2.array,o*4);}o+=c;g.dispose();}
   const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.BufferAttribute(P,3));geo.setAttribute('normal',new THREE.BufferAttribute(N,3));
-  geo.setAttribute('uv',new THREE.BufferAttribute(U,2));geo.setAttribute('color',new THREE.BufferAttribute(C,3));geo.computeBoundingSphere();
-  const me=new THREE.Mesh(geo,rsMat(mk));me.name=(name||'vessel')+':'+mk;G.add(me);}
- G.userData.solids=(G.userData.solids||[]).concat(B.solids);G.userData.sail=(G.userData.sail||[]).concat(B.sail);B.m={};B.solids=[];B.sail=[];return G;}
+  geo.setAttribute('uv',new THREE.BufferAttribute(U,2));geo.setAttribute('color',new THREE.BufferAttribute(C,3));
+  if(aux){geo.setAttribute('rsAux',new THREE.BufferAttribute(X1,4));geo.setAttribute('rsAux2',new THREE.BufferAttribute(X2,4));}geo.computeBoundingSphere();
+  const me=new THREE.Mesh(geo,aux?rsAuxMat(mk,G):rsMat(mk));me.name=(name||'vessel')+':'+mk;G.add(me);}
+ G.userData.solids=(G.userData.solids||[]).concat(B.solids);G.userData.sail=(G.userData.sail||[]).concat(B.sail);G.userData.rigs=(G.userData.rigs||[]).concat(B.rigs||[]);
+ B.m={};B.solids=[];B.sail=[];B.rigs=[];return G;}
+// ---- trim and flags: per-vertex rsAux (pivot x,y,z, kind) and rsAux2 (axis lean ax,az, weight, distance along a flag)
+// kind 0 rigid; 1 a sail's rig: rotates by uRsTrim*weight about the mast axis through the pivot (axis (ax,1,az));
+// 2 a flag: flutters by its distance from the root and rotates by uRsFlag about the vertical through the root;
+// 3 a flag on a yard: flutters, then rotates with the rig. A mesh that carries rsAux gets its own clone of
+// the material with the vessel's uniforms (G.userData.rsU, set each frame by the host; 0 = the rest pose),
+// so trimming costs no draw call. The baked geometry stays the rest pose (the probes and the raycasts use it).
+const RS_AUX_GLSL=`#ifndef RS_UTIME
+#define RS_UTIME
+uniform float uRsTime;
+#endif
+attribute vec4 rsAux;attribute vec4 rsAux2;uniform float uRsTrim;uniform float uRsFlag;
+mat3 rsAuxR(){float a=(abs(rsAux.w-2.)<.5?uRsFlag:uRsTrim)*rsAux2.z;vec3 k=normalize(vec3(rsAux2.x,1.,rsAux2.y));float c=cos(a),s=sin(a),t=1.-c;
+ return mat3(t*k.x*k.x+c,t*k.x*k.y+s*k.z,t*k.x*k.z-s*k.y,t*k.x*k.y-s*k.z,t*k.y*k.y+c,t*k.y*k.z+s*k.x,t*k.x*k.z+s*k.y,t*k.y*k.z-s*k.x,t*k.z*k.z+c);}
+`;
+function rsAuxVS(sh,U){sh.uniforms.uRsTime=RS_U.uTime;sh.uniforms.uRsTrim=U.uRsTrim;sh.uniforms.uRsFlag=U.uRsFlag;
+ sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+RS_AUX_GLSL)
+  .replace('#include <beginnormal_vertex>','#include <beginnormal_vertex>\nif(rsAux.w>.5)objectNormal=rsAuxR()*objectNormal;')
+  .replace('#include <morphtarget_vertex>','if(rsAux.w>.5){float rsd=rsAux2.w;if(rsd>0.){float rsw=sin(uRsTime*5.3-rsd*1.9+rsAux.x*.37+rsAux.z*.23);'+
+   'transformed.z+=rsd*(.05+.01*rsd)*rsw;transformed.y+=rsd*.025*sin(uRsTime*3.1-rsd*1.3+rsAux.x*.2);}transformed=rsAux.xyz+rsAuxR()*(transformed-rsAux.xyz);}\n#include <morphtarget_vertex>');}
+function rsAuxMat(mk,G){const U=G.userData.rsU||(G.userData.rsU={uRsTrim:{value:0},uRsFlag:{value:0}});const C=G.userData.rsAuxMats||(G.userData.rsAuxMats={});if(C[mk])return C[mk];
+ const base=rsMat(mk),m=base.clone(),pre=base.onBeforeCompile,key=base.customProgramCacheKey();
+ m.onBeforeCompile=(sh,r)=>{pre.call(base,sh,r);rsAuxVS(sh,U);};m.customProgramCacheKey=()=>'rsAux|'+key;return C[mk]=m;}
+// the same rotation on the CPU (the probes pose the sails with it): point q [x,y,z] of rig R at trim angle a
+const _rsAQ=new THREE.Quaternion(),_rsAV=new THREE.Vector3(),_rsAA=new THREE.Vector3();
+function rsRigPose(q,R,a){if(!R||!a)return q;_rsAA.set(R.ax,1,R.az).normalize();_rsAQ.setFromAxisAngle(_rsAA,a*R.gain);
+ _rsAV.set(q[0]-R.p[0],q[1]-R.p[1],q[2]-R.p[2]).applyQuaternion(_rsAQ);return[R.p[0]+_rsAV.x,R.p[1]+_rsAV.y,R.p[2]+_rsAV.z];}
 
 // world-unit UVs, triplanar by the face normal: a 2 m plank tile stays 2 m on a 0.3 m cleat and
 // a 30 m wale alike. Call on a geometry at its REAL size, before rsPut moves it.
@@ -328,7 +377,7 @@ function rsCone(B,mk,r,h,pos,rot,col,seg){const g=new THREE.ConeGeometry(r,h,seg
 const _rsUp=new THREE.Vector3(0,1,0);
 function rsLink(B,mk,a,b,r0,col,seg,r1){const A=rsV(a),Bv=rsV(b),d=Bv.clone().sub(A);const L=d.length();if(L<1e-4)return null;
  const g=rsUV(new THREE.CylinderGeometry(r1==null?r0:r1,r0,L,seg||8,1),Math.max(.5,L),false);
- const q=new THREE.Quaternion().setFromUnitVectors(_rsUp,d.normalize());const m=A.add(Bv).multiplyScalar(.5);return rsPut(B,mk,g,[m.x,m.y,m.z],q,null,col);}
+ const q=new THREE.Quaternion().setFromUnitVectors(_rsUp,d.normalize());const m=A.add(Bv).multiplyScalar(.5);const r=rsPut(B,mk,g,[m.x,m.y,m.z],q,null,col);r.userData.rsEnds=1;return r;}   // rsEnds: a rig moves each end on its own (rsRigEnd)
 // a smooth tube through points (CatmullRom); r may be a function of t (0..1) for taper
 function rsTube(B,mk,pts,r,col,seg,rad){const curve=new THREE.CatmullRomCurve3(pts.map(rsV));seg=seg||Math.max(8,pts.length*6);rad=rad||8;
  const g=new THREE.TubeGeometry(curve,seg,typeof r==='number'?r:1,rad,false);
@@ -337,9 +386,9 @@ function rsTube(B,mk,pts,r,col,seg,rad){const curve=new THREE.CatmullRomCurve3(p
   g.computeVertexNormals();}
  const L=curve.getLength(),uv=g.attributes.uv;for(let i=0;i<uv.count;i++)uv.setXY(i,uv.getX(i)*L/2,uv.getY(i)*.5);
  // cap the ends so a thick tube (a neck, a prow) is not a hollow pipe from the side
- rsPut(B,mk,g,null,null,null,col);
+ const tg=rsPut(B,mk,g,null,null,null,col);
  const tr=t=>typeof r==='number'?r:r(t);for(const t of[0,1]){const rr0=tr(t);if(rr0<.02)continue;const P=curve.getPointAt(t),T=curve.getTangentAt(t);
-  const cg=new THREE.CircleGeometry(rr0,rad);rsPut(B,mk,cg,[P.x,P.y,P.z],new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,0,1),t?T:T.clone().negate()),null,col);}
+  const cg=new THREE.CircleGeometry(rr0,rad);rsPut(B,mk,cg,[P.x,P.y,P.z],new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,0,1),t?T:T.clone().negate()),null,col).userData.rsWith=tg;}
  return curve;}
 // a parametric surface fn(u,v)->[x,y,z] (u,v in 0..1) with its own uv fn (default: u,v scaled)
 function rsGrid(fn,nu,nv,uvFn){const pos=[],uv=[],idx=[];
@@ -358,6 +407,62 @@ function rsRoof(B,mk,w,d,h,pos,rot,col,flare,top){top=top==null?.08:top;flare=fl
 function rsFigure(B,pos,yaw,cloth,sit,skin){const q=qEuler(0,yaw||0,0),s=skin||0x8a5a3c;const P=(dx,dy,dz)=>{const v=new THREE.Vector3(dx,dy,dz).applyQuaternion(q);return[pos[0]+v.x,pos[1]+v.y,pos[2]+v.z];};
  if(sit){rsCyl(B,'cloth',.17,.2,.62,P(0,.55,0),q,cloth,7);rsBox(B,'cloth',[.42,.16,.34],P(.18,.26,0),q,cloth);rsSphere(B,'paint',.12,P(.02,.98,0),null,s,8,6);}
  else{rsCyl(B,'cloth',.17,.21,.72,P(0,1.12,0),q,cloth,7);rsCyl(B,'paint',.07,.08,.8,P(0,.4,-.1),q,s,5);rsCyl(B,'paint',.07,.08,.8,P(0,.4,.1),q,s,5);rsSphere(B,'paint',.12,P(0,1.6,0),null,s,8,6);}}
+
+// ---------------------------------------------------------------- the swell, the wind, riding
+// ONE wave function drives the sea's vertex shader and every hull's heave, pitch and roll, so a hull
+// sits in the water it is drawn on. The swell is a sum of Gerstner (trochoidal) waves: a water particle
+// at rest point p0 moves to p0 + sum H_i D_i cos(th_i) horizontally and sum A_i sin(th_i) up, with
+// th_i = k_i D_i.p0 - w_i t + ph_i, deep-water dispersion w = sqrt(g k), and H_i = steep_i / k_i, so the
+// crests sharpen and the troughs flatten (sum of steep < 1 keeps the surface from looping).
+// RS_SWELL.waves are [Dx,Dz,k,A,w,ph,H]; rsSwellSet replaces them. The height at a WORLD point needs the rest
+// point that lands there: rsSeaH solves p0 + d(p0) = p by Newton's method (3 steps on the CPU, 2 in GLSL,
+// both well under a millimetre). fade {cx,cz,r0,r1} (optional) scales the whole swell down beyond r0..r1
+// to the fraction fade.min (default 0: flat).
+// RS_U.uTime is the one clock every animated shader reads (seconds); the host sets it each frame.
+// A host world with its own sea skips the RS sea: it calls rsRide with its own seaH(x,z,t).
+const RS_U={uTime:{value:0}};
+const RS_SWELL={waves:[],fade:null};
+function rsSwellSet(list,fade){RS_SWELL.waves=list.map(([A,lam,deg,ph,st])=>{const k=TAU/lam,a=deg*Math.PI/180;return[Math.cos(a),Math.sin(a),k,A,Math.sqrt(9.81*k),ph||0,(st||0)/k];});RS_SWELL.fade=fade||null;}
+function rsSwellFade(x,z){const F=RS_SWELL.fade;if(!F)return 1;const d=Math.hypot(x-F.cx,z-F.cz);const s=clamp((d-F.r0)/(F.r1-F.r0),0,1);return 1-(1-(F.min||0))*s*s*(3-2*s);}
+// displacement of the rest point (x0,z0) at t: [dx, h, dz, Jxx, Jxz, Jzz] (J = d(p0+d)/dp0, its determinant < 1 on the crests)
+function rsSwellD(x0,z0,t){let dx=0,h=0,dz=0,jxx=1,jxz=0,jzz=1;const f=rsSwellFade(x0,z0);
+ for(const w of RS_SWELL.waves){const th=w[2]*(w[0]*x0+w[1]*z0)-w[4]*t+w[5],c=Math.cos(th),s=Math.sin(th),hh=w[6]*f,q=hh*w[2]*s;
+  h+=w[3]*s;dx+=hh*w[0]*c;dz+=hh*w[1]*c;jxx-=q*w[0]*w[0];jxz-=q*w[0]*w[1];jzz-=q*w[1]*w[1];}
+ return[dx,h*f,dz,jxx,jxz,jzz];}
+// the rest point that the swell carries to world (x,z): Newton on p0 + d(p0) = p
+function rsSwellRest(x,z,t,n){let x0=x,z0=z;for(let k=0;k<(n||3);k++){const d=rsSwellD(x0,z0,t);const rx=x0+d[0]-x,rz=z0+d[2]-z,det=d[3]*d[5]-d[4]*d[4];
+  x0-=(d[5]*rx-d[4]*rz)/det;z0-=(d[3]*rz-d[4]*rx)/det;}return[x0,z0];}
+function rsSeaH(x,z,t){const p=rsSwellRest(x,z,t);return rsSwellD(p[0],p[1],t)[1];}
+// the same functions in GLSL (needs uniform uRsTime, declared here once):
+//   vec3 rsSwellD(vec2 p0)            displacement (dx, h, dz) of the rest point p0
+//   float rsSwellH(vec2 p)            the height at world point p (2 Newton steps)
+//   vec4 rsSwellNJ(vec2 p0,float mpp) world normal (xyz) and Jacobian determinant (w) at p0, each wave faded out
+//                                     where it is finer than the pixel footprint mpp (metres per pixel)
+// lod (optional) {cx,cz,r:[[r0,r1] per wave]} fades each wave's DISPLACEMENT (not its normal) beyond r0..r1
+// from (cx,cz): a sea mesh whose cells grow toward the horizon cannot draw short waves out there.
+function rsSwellGLSL(lod){const f=n=>(+n).toFixed(6),F=RS_SWELL.fade,W=RS_SWELL.waves;
+ const fade=F?`float rsFd(vec2 p){float s=smoothstep(${f(F.r0)},${f(F.r1)},length(p-vec2(${f(F.cx)},${f(F.cz)})));return 1.-${f(1-(F.min||0))}*s;}\n`:'float rsFd(vec2 p){return 1.;}\n';
+ const th=(w)=>`${f(w[2]*w[0])}*p.x+${f(w[2]*w[1])}*p.y-${f(w[4])}*uRsTime+${f(w[5])}`;
+ let s='#ifndef RS_UTIME\n#define RS_UTIME\nuniform float uRsTime;\n#endif\n'+fade;
+ s+='vec3 rsSwellD(vec2 p){vec3 r=vec3(0.);float a,l;float fd=rsFd(p);'+(lod?`float rd=length(p-vec2(${f(lod.cx)},${f(lod.cz)}));`:'')+'\n';
+ W.forEach((w,i)=>{s+=` a=${th(w)};l=fd${lod?`*(1.-smoothstep(${f(lod.r[i][0])},${f(lod.r[i][1])},rd))`:''};r+=vec3(cos(a)*${f(w[6]*w[0])},sin(a)*${f(w[3])},cos(a)*${f(w[6]*w[1])})*l;\n`;});
+ s+=' return r;}\n';
+ s+='vec4 rsSwellNJ(vec2 p,float mpp){float a,c,sn,q,l;float fd=rsFd(p);vec3 gx=vec3(1.,0.,0.),gz=vec3(0.,0.,1.);\n';
+ W.forEach(w=>{s+=` a=${th(w)};c=cos(a);sn=sin(a);l=fd*(1.-smoothstep(.35,1.1,${f(w[2])}*mpp));q=${f(w[6]*w[2])}*sn*l;`+
+  `gx+=vec3(-q*${f(w[0]*w[0])},c*${f(w[3]*w[2]*w[0])}*l,-q*${f(w[0]*w[1])});gz+=vec3(-q*${f(w[0]*w[1])},c*${f(w[3]*w[2]*w[1])}*l,-q*${f(w[1]*w[1])});\n`;});
+ s+=' return vec4(normalize(cross(gz,gx)),gx.x*gz.z-gx.z*gz.x);}\n';
+ // Newton on the horizontal map, with its Jacobian (full amplitude: the hulls and the wakes ride this one)
+ s+='float rsSwellH(vec2 p){vec2 p0=p;float a,c,sn,q,fd;vec2 d;vec3 j;\n for(int k=0;k<2;k++){fd=rsFd(p0);d=vec2(0.);j=vec3(1.,0.,1.);\n';
+ W.forEach(w=>{s+=`  a=${f(w[2]*w[0])}*p0.x+${f(w[2]*w[1])}*p0.y-${f(w[4])}*uRsTime+${f(w[5])};c=cos(a)*fd;q=${f(w[6]*w[2])}*sin(a)*fd;d+=vec2(${f(w[6]*w[0])},${f(w[6]*w[1])})*c;j-=q*vec3(${f(w[0]*w[0])},${f(w[0]*w[1])},${f(w[1]*w[1])});\n`;});
+ s+='  vec2 r=p0+d-p;float det=j.x*j.z-j.y*j.y;p0-=vec2(j.z*r.x-j.y*r.y,j.x*r.y-j.y*r.x)/det;}\n return rsSwellD(p0).y;}\n';
+ return s;}
+// ride: pose a vessel group G (definition D: L, B) at world x,z, heading yaw, on the sea seaH at time t.
+// Heave is the mean of five samples (amidships, bow, stern, both beams); pitch and roll are the slopes
+// between them, so a long hull averages short waves out and a canoe follows them. heel (rad, optional)
+// is added to the roll: + lays the starboard side down (a turn to starboard heels into it).
+function rsRide(G,D,x,z,yaw,t,seaH,heel){seaH=seaH||rsSeaH;const lx=D.L*.36,bz=clamp(D.B*.28,.5,6),c=Math.cos(yaw||0),s=Math.sin(yaw||0);
+ const at=(f,q)=>seaH(x+c*f+s*q,z-s*f+c*q,t);const h0=at(0,0),hb=at(lx,0),hs=at(-lx,0),hst=at(0,bz),hp=at(0,-bz);
+ G.position.set(x,(2*h0+hb+hs+hst+hp)/6,z);G.rotation.set(-Math.atan2(hst-hp,2*bz)+(heel||0),yaw||0,Math.atan2(hb-hs,2*lx),'YXZ');}
 // ---------------------------------------------------------------- ring sea textures (surfaces)
 // All near-white or mid-grey so the vertex colour carries the hue. World tiles: plank 4 m (hull),
 // 3 m (deck); thatch and tile 2 m; the turtle's hex plate and the chitin scale 3 m.
@@ -414,7 +519,16 @@ rsDefMat('woodI',RSMAT.wood.clone());
 // edges (the Dalab key-border, the Voth roundels). rsSailMat caches one material per key.
 function rsSailMat(key,W,H,draw,outline){const mk='sail:'+key;if(RSMAT[mk])return mk;
  const t=canvasTex(W,H,(g,w,h)=>draw(g,w,h,outline));t.wrapS=t.wrapT=THREE.ClampToEdgeWrapping;
- rsDefMat(mk,new THREE.MeshStandardMaterial({map:t,roughness:.92,side:DS,alphaTest:.5}));return mk;}   // alphaTest: a painter may cut the cloth (the crab-claw's hollow leech)
+ const m=rsDefMat(mk,new THREE.MeshStandardMaterial({map:t,roughness:.92,side:DS,alphaTest:.5}));m.onBeforeCompile=rsSailWind;return mk;}   // alphaTest: a painter may cut the cloth (the crab-claw's hollow leech)
+// wind: the cloth breathes and flutters in the vertex shader. rsSail stores each vertex's flutter vector in
+// its (otherwise unused) colour, 0.5+0.5*D with |D|<=1: D runs along the belly side, scaled by the belly
+// profile (0 on the edge spars, the luff and the battens), so spars stay put and the cloth never swings
+// back through its mast; it is zero on every edge and corner (rsSail), so the sheets, yards and battens stay
+// attached. White (|D|>1) means rigid. The geometry stays the rest pose the probes check.
+function rsSailWind(sh){sh.uniforms.uRsTime=RS_U.uTime;
+ sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n#ifndef RS_UTIME\n#define RS_UTIME\nuniform float uRsTime;\n#endif\n#ifndef USE_COLOR\nattribute vec3 color;\n#endif')
+  .replace('#include <begin_vertex>','#include <begin_vertex>\n{vec3 rsD=color*2.-1.;if(dot(rsD,rsD)<1.01){vec3 rsP=(modelMatrix*vec4(position,1.)).xyz;'+
+   'float rsF=.55+.3*sin(uRsTime*1.3+rsP.x*.11+rsP.z*.07)+.15*sin(uRsTime*4.1+rsP.x*.7-rsP.y*.9+rsP.z*.5);transformed+=rsD*rsF;}}');}
 // helpers the sail painters share
 function rsPolyPath(g,P){g.beginPath();P.forEach((p,i)=>i?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1]));g.closePath();}
 function rsInset(P,d){let cx=0,cy=0;for(const p of P){cx+=p[0];cy+=p[1];}cx/=P.length;cy/=P.length;return P.map(p=>{const dx=p[0]-cx,dy=p[1]-cy,l=Math.hypot(dx,dy)||1;return[p[0]-dx/l*d,p[1]-dy/l*d];});}
@@ -540,12 +654,42 @@ function rsSail(B,o){const nu=o.nu||20,nv=o.nv||12;const U=rsV(o.U).normalize(),
    let off=bel*Math.sin(Math.PI*v)*smooth01(u/.25);if(sc)off*=.55+.45*Math.abs(Math.sin(Math.PI*u*sc));
    return[o.O[0]+U.x*s+Vv.x*t+N.x*off,o.O[1]+U.y*s+Vv.y*t+N.y*off,o.O[2]+U.z*s+Vv.z*t+N.z*off];},nu,nv,
   (u,v)=>{const i=Math.round(u*nu);const a=A[i],b=Bf[i];return[(lerp(a[0],b[0],v)-s0)/dS,(lerp(a[1],b[1],v)-t0)/dT];});
+ {const amp=o.flutter==null?Math.min(.12,.04+.06*Math.abs(bel)):o.flutter,D=N.clone().multiplyScalar((bel<0?-1:1)*amp),c=[];   // the wind's flutter vector (41-rs-tex.js rsSailWind)
+  for(let j=0;j<=nv;j++)for(let i=0;i<=nu;i++){const u=i/nu,v=j/nv;let w=Math.sin(Math.PI*v)*smooth01(u/.25)*smooth01((1-u)/.2);if(sc)w*=Math.abs(Math.sin(Math.PI*u*sc));c.push(.5+.5*D.x*w,.5+.5*D.y*w,.5+.5*D.z*w);}
+  g.setAttribute('color',new THREE.Float32BufferAttribute(c,3));}
  rsPut(B,mk,g,null,null,null,0xffffff);
- {const pa=g.attributes.position,sid=B.sailN=(B.sailN||0)+1;for(let i=0;i<pa.count;i+=3)B.sail.push([pa.getX(i),pa.getY(i),pa.getZ(i),sid]);}
+ {const pa=g.attributes.position,sid=B.sailN=(B.sailN||0)+1;for(let i=0;i<pa.count;i+=3)B.sail.push([pa.getX(i),pa.getY(i),pa.getZ(i),sid,B.rig]);}
+ // the cloth, densely sampled (<= ~0.3 m apart), for rsRigEnd: what lies on this sail turns with it
+ if(B.rig){const col=(i,v)=>{const a=A[i],b=Bf[i];const s=lerp(a[0],b[0],v),t=lerp(a[1],b[1],v);const u=i/nu;let off=bel*Math.sin(Math.PI*v)*smooth01(u/.25);if(sc)off*=.55+.45*Math.abs(Math.sin(Math.PI*u*sc));
+   return[o.O[0]+U.x*s+Vv.x*t+N.x*off,o.O[1]+U.y*s+Vv.y*t+N.y*off,o.O[2]+U.z*s+Vv.z*t+N.z*off];};
+  const m=Math.max(2,Math.ceil(Math.max(dS,dT)/nu/.3)),kv=Math.max(nv*2,Math.ceil(Math.max(dS,dT)/.3));
+  for(let j=0;j<=kv;j++){const v=j/kv;let prev=col(0,v);B.rig.pts.push(prev);for(let i=1;i<=nu;i++){const c=col(i,v);for(let k=1;k<=m;k++){const f=k/m;B.rig.pts.push([lerp(prev[0],c[0],f),lerp(prev[1],c[1],f),lerp(prev[2],c[2],f)]);}prev=c;}}}
  // a point on the sail in the vessel frame (for battens, sheets, spars that follow the cloth)
  const at=(u,v)=>{const i=Math.round(clamp(u,0,1)*nu);const a=A[i],b=Bf[i];const s=lerp(a[0],b[0],v),t=lerp(a[1],b[1],v);let off=bel*Math.sin(Math.PI*v)*smooth01(u/.25);if(sc)off*=.55+.45*Math.abs(Math.sin(Math.PI*u*sc));
   return[o.O[0]+U.x*s+Vv.x*t+N.x*off,o.O[1]+U.y*s+Vv.y*t+N.y*off,o.O[2]+U.z*s+Vv.z*t+N.z*off];};
  return{mk,at,A,Bf};}
+// ---- trim: a rig is everything that turns with a sail about its mast when the vessel trims to the wind.
+// rsRig(B, mast, {gain}) opens one (mast: [x,z] for a vertical mast, or [[x,y,z],[x,y,z]] base and head of a
+// raked one); every piece put until rsRigEnd(B) (or the next rsRig, or rsBake) is collected, and each of its
+// vertices within 0.45 m of a sail of the rig turns with it (weight 1): yards, battens, edge spars (whole, when a
+// quarter of the piece lies on the cloth), a sheet's end on the clew (a link's two ends move on their own). The other end of a sheet, on deck, stays put; the mast stands on the axis, so it does not
+// move. gain scales the vessel's trim angle for this rig (0.0 = never trims).
+function rsRig(B,mast,o){if(B.rig)rsRigEnd(B);o=o||{};let p,ax=0,az=0;
+ if(Array.isArray(mast[0])){const a=mast[0],b=mast[1],dy=b[1]-a[1];p=a.slice();ax=(b[0]-a[0])/dy;az=(b[2]-a[2])/dy;}else p=[mast[0],0,mast[1]];
+ B.rig={p,ax,az,gain:o.gain==null?1:o.gain,geos:[],pts:[]};return B.rig;}
+function rsRigEnd(B){const R=B.rig;if(!R)return;B.rig=null;const H=new Map(),cs=.5,key=(x,y,z)=>x+','+y+','+z;
+ for(const q of R.pts){const k=key(Math.floor(q[0]/cs),Math.floor(q[1]/cs),Math.floor(q[2]/cs));(H.get(k)||H.set(k,[]).get(k)).push(q);}
+ const near=(x,y,z,r)=>{const r2=r*r,i0=Math.floor(x/cs),j0=Math.floor(y/cs),k0=Math.floor(z/cs);
+  for(let i=-1;i<=1;i++)for(let j=-1;j<=1;j++)for(let k=-1;k<=1;k++){const L=H.get(key(i0+i,j0+j,k0+k));if(L)for(const q of L)if((q[0]-x)**2+(q[1]-y)**2+(q[2]-z)**2<r2)return true;}return false;};
+ for(const g of R.geos){const pa=g.attributes.position,n=pa.count,ex=g.attributes.rsAux;
+  if(ex){if(ex.getW(0)===2&&near(ex.getX(0),ex.getY(0),ex.getZ(0),.6)){const a2=g.attributes.rsAux2;   // a flag on a yard turns with the yard
+    for(let i=0;i<n;i++){ex.setXYZW(i,R.p[0],R.p[1],R.p[2],3);a2.setXYZW(i,R.ax,R.az,R.gain,a2.getW(i));}}continue;}
+  // a link (spar, rope: rsLink) moves each end on its own; any other piece moves whole when a quarter of it lies on the sail
+  const X1=new Float32Array(n*4),X2=new Float32Array(n*4),hit=[];for(let i=0;i<n;i++)hit.push(near(pa.getX(i),pa.getY(i),pa.getZ(i),.45));
+  const cnt=hit.filter(Boolean).length,W=g.userData.rsWith,whole=W?!!W.userData.rsWhole:!g.userData.rsEnds&&cnt>=.25*n;g.userData.rsWhole=whole;let any=false;   // a tube's caps go with the tube
+  for(let i=0;i<n;i++)if(g.userData.rsEnds?hit[i]:whole){any=true;X1.set([R.p[0],R.p[1],R.p[2],1],i*4);X2.set([R.ax,R.az,R.gain,0],i*4);}
+  if(any){g.setAttribute('rsAux',new THREE.BufferAttribute(X1,4));g.setAttribute('rsAux2',new THREE.BufferAttribute(X2,4));}}
+ B.rigs.push({p:R.p,ax:R.ax,az:R.az,gain:R.gain});R.geos=null;R.pts=null;}
 function smooth01(x){x=clamp(x,0,1);return x*x*(3-2*x);}
 // a spar along the edge of a sail (v=0 or v=1), as a tube following the cloth
 function rsSailEdge(B,S,v,r,col,uA,uB,mk){const pts=[];uA=uA||0;uB=uB==null?1:uB;for(let i=0;i<=16;i++)pts.push(S.at(lerp(uA,uB,i/16),v));return rsTube(B,mk||'wood',pts,r,col,48,6);}
@@ -554,10 +698,13 @@ function rsSailEdge(B,S,v,r,col,uA,uB,mk){const pts=[];uA=uA||0;uB=uB==null?1:uB
 function rsBamboo(B,a,b,r,col,node,ringCol){rsLink(B,'wood',a,b,r,col,8);if(!node)return;const A=rsV(a),Bv=rsV(b),L=A.distanceTo(Bv);const d=Bv.clone().sub(A).normalize();
  const q=new THREE.Quaternion().setFromUnitVectors(_rsUp,d);for(let x=node;x<L-.2;x+=node){const p=A.clone().addScaledVector(d,x);rsPut(B,'rope',new THREE.CylinderGeometry(r*1.25,r*1.25,r*1.2,8,1),[p.x,p.y,p.z],q,null,ringCol||0x5a4128);}}
 function rsRope(B,a,b,r,col){return rsLink(B,'rope',a,b,r||.025,col||0x3a3026,4);}
-// a pennant streaming aft from p: length, width, colours alternate per segment
+// a pennant streaming aft from p: length, width, colours alternate per segment. It flutters in the vertex shader
+// (rsAux kind 2, by its distance from the root) and swings about its root to the apparent wind (uRsFlag).
 function rsPennant(B,p,len,w,cols,droop){const segs=6,pts=[];for(let i=0;i<=segs;i++){const t=i/segs;pts.push([p[0]-t*len,p[1]-(droop||.15)*len*t*t+Math.sin(t*5)*.25*t,p[2]+Math.sin(t*4)*.3*t]);}
  for(let i=0;i<segs;i++){const a=pts[i],b=pts[i+1],hw=w*(1-i/segs)/2,hw2=w*(1-(i+1)/segs)/2;const g=new THREE.BufferGeometry();
   g.setAttribute('position',new THREE.Float32BufferAttribute([a[0],a[1]+hw,a[2],a[0],a[1]-hw,a[2],b[0],b[1]+hw2,b[2],a[0],a[1]-hw,a[2],b[0],b[1]-hw2,b[2],b[0],b[1]+hw2,b[2]],3));g.computeVertexNormals();
+  const d0=i/segs*len,d1=(i+1)/segs*len,X1=new Float32Array(24),X2=new Float32Array(24);[d0,d0,d1,d0,d1,d1].forEach((d,k)=>{X1.set([p[0],p[1],p[2],2],k*4);X2.set([0,0,1,d],k*4);});
+  g.setAttribute('rsAux',new THREE.BufferAttribute(X1,4));g.setAttribute('rsAux2',new THREE.BufferAttribute(X2,4));
   rsPut(B,'cloth',g,null,null,null,cols[i%cols.length]);}}
 // a round shield hung on the rail at hull point a (from rsAlong)
 function rsShield(B,a,r,col,boss){const N=a.n;const q=new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,0,1),N);const p=[a.p[0]+N.x*.05,a.p[1]+N.y*.05,a.p[2]+N.z*.05];
@@ -654,13 +801,13 @@ function buildRsHykTrireme(){reseed(71000);
  rsOars(V,H,{name:'thranites',points:Array.from({length:25},(_,i)=>[lerp(H.xAt(.24,1),H.xAt(.76,1),i/24),H.ys(.5)+.1,H.hb(.5)+.65]),len:7.4,inb:2,r:.05,col:0x9a7a54,phase:.3});
  // three masts, braced yards, roundel sails
  const masts=[[-9.5,13],[1,16.5],[10.5,12]];masts.forEach(([mx,mh],i)=>{const base=cy+1.1+1.35;rsLink(B,'wood',[mx,base-1.5,0],[mx,base+mh,0],.2,0x7a5634,8,.13);
-  const w=mh*.8,a=.95,U=[Math.sin(a),0,Math.cos(a)];
+  rsRig(B,[mx,0]);const w=mh*.8,a=.95,U=[Math.sin(a),0,Math.cos(a)];
   const S=rsSail(B,{key:'hyk-roundel',O:[mx+.35,base+mh*.12,0],U,V:[0,1,0],belly:-1.1,
    A:t=>{const s=(t-.5)*w;return[s,mh*.84+Math.pow(Math.abs(s)/(w/2),1.6)*mh*.12];},Bf:t=>{const s=(t-.5)*w*.55;return[s,mh*.05*Math.abs(t-.5)];},draw:rsHykRoundel});
   rsSailEdge(B,S,0,.13,0x6a4a2c);rsSailEdge(B,S,1,.05,0x6a4a2c);
   const top=[mx,base+mh,0];rsRope(B,top,S.at(0,0));rsRope(B,top,S.at(1,0));rsRope(B,S.at(0,1),[mx-2.5,cy+1.2,-hw]);
   rsRope(B,top,[H.xAt(1,1),H.ys(1),0]);rsRope(B,top,[H.xAt(0,1)+1,H.ys(0)-.5,0]);
-  rsPennant(B,[mx,base+mh+.2,0],4,.7,[BLUE,0xf0e8d8]);});
+  rsPennant(B,[mx,base+mh+.2,0],4,.7,[BLUE,0xf0e8d8]);});rsRigEnd(B);
  // crew on the vault walk and the steersman aft; two steering oars
  for(const x of[-14,-6,4,9,14])rsFigure(B,[x,x>-10&&x<12?cy+2.45:dY(H.uAt(x)),rr(-.5,.5)],rr(-.6,.6),[0x3a5a78,0xe0d8c8,0x8a3020][Math.floor(rng()*3)]);
  for(const s of[-1,1]){const p=H.pt(.08,s,.9);rsLink(B,'wood',[p[0]+1,p[1]+.6,p[2]*1.05],[p[0]-2.4,-1.4,p[2]*1.25],.1,0x7a5634,6);rsBox(B,'wood',[1.6,.9,.08],[p[0]-2.1,-1.1,p[2]*1.24],[0,0,.55],0x7a5634);}
@@ -709,11 +856,11 @@ function buildRsIzizTurtle(){reseed(71100);
  // sweeps and two lowering masts
  rsOars(V,H,{name:'sweeps',uA:.2,uB:.82,n:10,hF:.62,len:8.5,inb:2.6,r:.07,bladeW:.32,col:0x7a6040,sweep:.36,rate:.32});
  for(const [mx,mh] of[[4,15],[-6,13]]){const base=y0+rise;rsLink(B,'wood',[mx,y0-.5,0],[mx,base+mh,0],.24,0x6a4a30,8,.16);const w=mh*.62;
-  const S=rsSail(B,{key:'iziz-batten',O:[mx,base+1.2,0],U:[.35,0,-.94],V:[0,1,0],belly:.6,scallop:6,
+  rsRig(B,[mx,0]);const S=rsSail(B,{key:'iziz-batten',O:[mx,base+1.2,0],U:[.35,0,-.94],V:[0,1,0],belly:.6,scallop:6,
    A:t=>[-w*.3,t*mh*.9],Bf:t=>[w*.7+Math.sin(t*Math.PI)*w*.08,t*mh*.84+mh*.06],draw:rsIzizBatten});
   for(let k=0;k<=6;k++){const pts=[];for(let i=0;i<=8;i++)pts.push(S.at(k/6,i/8));rsTube(B,'wood',pts,.05,0x4a3a26,16,5);}
   rsRope(B,[mx,base+mh,0],[H.xAt(.98,1),H.ys(.98)+.5,0]);rsRope(B,[mx,base+mh,0],[H.xAt(.02,1),H.ys(.02)+.5,0]);
-  rsPennant(B,[mx,base+mh+.2,0],3.2,.8,[TEAL,OCHRE]);}
+  rsPennant(B,[mx,base+mh+.2,0],3.2,.8,[TEAL,OCHRE]);}rsRigEnd(B);
  for(const x of[-15.5,-14.6])rsFigure(B,[x,dY(.03)+.1,rr(-1,1)],0,[0xe8dcc0,OCHRE][x<-15?0:1]);
  {const p=H.pt(0,0,.3);rsBox(B,'wood',[.3,3.4,2.2],[p[0]-.6,p[1]-.8,0],null,0x3a2a1c);}
  rsBake(B,V.group,'izizTurtle');V.deckY=y0+rise;return V;}
@@ -801,11 +948,11 @@ function buildRsVothFlagship(){reseed(71300);
  // masts and sails: fore (raked forward), main (its foot clears the castle roofs), mizzen stepped on the castle
  [[15,26,-.12,'voth-green',5.2],[2,36,0,'voth-wave',castleTop-dY(H.uAt(2))+1.2],[-17,13,.05,'voth-green',castleTop-dY(H.uAt(-17))+.6]].forEach(([mx,mh,lean,key,foot],i)=>{
   const base=dY(H.uAt(mx));const tp=[mx+Math.sin(-lean)*mh,base+mh,0];rsLink(B,'wood',[mx,base-.5,0],tp,.32,0x2a1a10,8,.2);
-  const sh=mh-foot-1,w=Math.min(sh*.72,i===2?8.5:20);
+  rsRig(B,[[mx,base-.5,0],tp]);const sh=mh-foot-1,w=Math.min(sh*.72,i===2?8.5:20);
   const S=rsSail(B,{key,O:[mx+.4,base+foot,-.5],U:[-1,0,-.18],V:[Math.sin(-lean),1,0],belly:.9,scallop:7,
    A:t=>[-w*.12,t*sh],Bf:t=>[w*(.74+.2*Math.sin(t*Math.PI*.9)),t*sh*.95+sh*.03],draw:key==='voth-wave'?rsVothWave:rsVothGreen});
   for(let k=0;k<=7;k++){const pts=[];for(let j=0;j<=8;j++)pts.push(S.at(k/7,j/8));rsTube(B,'wood',pts,.06,0x140c08,16,5);}
-  rsRope(B,tp,[H.xAt(1,1)+.5,H.ys(1),0]);rsPennant(B,[tp[0],tp[1]+.3,0],4,.9,[RED,GOLD]);});
+  rsRope(B,tp,[H.xAt(1,1)+.5,H.ys(1),0]);rsPennant(B,[tp[0],tp[1]+.3,0],4,.9,[RED,GOLD]);});rsRigEnd(B);
  // the great rudder, lanterns, the windlass, two bolt-throwers, the Ordinators
  {const p=H.pt(0,0,.2);rsBox(B,'wood',[3,4.4,.4],[p[0]-1.4,p[1]-.4,0],null,BLK);rsLink(B,'wood',[p[0]-.2,H.ys(0)+1,0],[p[0]-.4,p[1]-2,0],.28,BLK);}
  for(const s of[-1,1])for(const x of[-22,-17])rsSphere(B,'glow',.35,[x,H.ys(H.uAt(x))+1.4,s*4.2],[1,1.3,1],0xff8a3a,10,8);
@@ -848,9 +995,9 @@ function buildRsBeastWaa(){reseed(71400);
  rsLink(B,'wood',[1.2,yT+.3,0],[1.2,yT+6.2,0],.12,0x4a2e1c,8);rsLink(B,'wood',[1.2,yT+6.2,-1.4],[1.2,yT+6.2,1.4],.1,0x4a2e1c,8);for(const s of[-1,1])rsRope(B,[1.2,yT+6.2,s*1.4],[1.2,yT+.4,s*2.8]);
  // two masts and crab-claw sails, the claws raked aft
  [[4.6,12],[-5,10.5]].forEach(([mx,mh])=>{const base=yT+.3;rsLink(B,'wood',[mx,base,0],[mx-.6,base+mh*.55,0],.13,0x5a3a24,8,.09);
-  const S=rsSail(B,{key:'beast-crab',O:[mx,base+.3,0],U:[-1,0,0],V:[0,1,0],belly:.9,nu:22,nv:12,
+  rsRig(B,[[mx,base,0],[mx-.6,base+mh*.55,0]]);const S=rsSail(B,{key:'beast-crab',O:[mx,base+.3,0],U:[-1,0,0],V:[0,1,0],belly:.9,nu:22,nv:12,
    A:t=>[t*mh*.22+Math.sin(Math.PI*t)*.8,t*mh],Bf:t=>[t*mh*.62,t*mh*.34+Math.sin(Math.PI*t)*mh*.08],draw:rsCrabMaroon});
-  rsSailEdge(B,S,0,.09,0x6a4a2c,0,1.04);rsSailEdge(B,S,1,.08,0x6a4a2c,0,1.02);rsRope(B,S.at(.6,0),[mx+5,yT+.3,0]);rsRope(B,S.at(1,1),[mx-7,yT+.4,2]);});
+  rsSailEdge(B,S,0,.09,0x6a4a2c,0,1.04);rsSailEdge(B,S,1,.08,0x6a4a2c,0,1.02);rsRope(B,S.at(.6,0),[mx+5,yT+.3,0]);rsRope(B,S.at(1,1),[mx-7,yT+.4,2]);});rsRigEnd(B);
  // the steering sweep, the crew
  rsLink(B,'wood',[-8.5,yT+1.4,.6],[-13,-.9,1.2],.09,0x6a4a30,6);rsBox(B,'wood',[1.4,.08,.5],[-12.6,-.7,1.15],[0,0,.45],0x6a4a30);
  for(const [x,z] of[[-8,1],[-2,1.5],[0,-1.2],[3,1.4],[6.5,-.8]])rsFigure(B,[x,yT+.3,z],rr(-.5,.5),[0x6a1c2a,0x2a5a3a,0xd8c08a][Math.floor(rng()*3)],false,0x6a4028);
@@ -898,12 +1045,12 @@ function buildRsHykGalley(){reseed(71500);
  // the fore sail is stepped just abaft the tarp and cut short so its clew and yard end a metre
  // forward of the aft mast: the two sails must not pass through each other (sails-clear-sails)
  [[1.2,15,.42],[-7.6,12,.5]].forEach(([mx,mh,span],i)=>{const base=dY(H.uAt(mx));rsBamboo(B,[mx,base-.3,0],[mx,base+mh*.62+2,0],.16,0x9a7a44,1.2);rsSolid(B,[mx-.2,base,-.2],[mx+.2,base+mh*.62+2,.2]);
-  const S=rsSail(B,{key:'hyk-scroll',O:[mx+.3,base+3.3,.35],U:[-1,0,0],V:[0,1,0],belly:-.8,nu:22,nv:12,
+  rsRig(B,[mx,0]);const S=rsSail(B,{key:'hyk-scroll',O:[mx+.3,base+3.3,.35],U:[-1,0,0],V:[0,1,0],belly:-.8,nu:22,nv:12,
    A:t=>[t*.9,t*mh],Bf:t=>[lerp(mh*span,.9,t)+Math.sin(Math.PI*t)*mh*.1,lerp(.1,mh,Math.pow(t,1.1))],draw:rsHykScroll});
   // the curved yard runs past the head and the clew; the boom along the foot
   const yd=[];for(let k=0;k<=18;k++)yd.push(S.at(k/18,1));const e0=yd[0],e1=yd[yd.length-1];yd.unshift([e0[0]+1.2,e0[1]-.6,e0[2]]);yd.push([e1[0]+.4,e1[1]+1.6,e1[2]]);
   rsTube(B,'wood',yd,t=>.17*(1-.5*t),0x9a7a44,60,8);for(let k=1;k<yd.length-1;k+=2)rsSphere(B,'rope',.19,yd[k],[1,.5,1],0x5a4128,8,4);
-  rsLink(B,'wood',S.at(0,0),S.at(0,1),.1,0x9a7a44,6);rsRope(B,e1,[H.xAt(1,1),H.ys(1)+.4,0]);rsRope(B,S.at(1,0),[mx+.3,base,0]);});
+  rsLink(B,'wood',S.at(0,0),S.at(0,1),.1,0x9a7a44,6);rsRope(B,e1,[H.xAt(1,1),H.ys(1)+.4,0]);rsRope(B,S.at(1,0),[mx+.3,base,0]);});rsRigEnd(B);
  // the paddle-rudder and the stern sweep; cargo; crew
  {const p=H.pt(.92,1,1);rsLink(B,'wood',[p[0],p[1]+1.6,p[2]+.2],[p[0]+.6,-2.2,p[2]+.5],.12,0x6a4a2c,6);rsBox(B,'wood',[1,2.2,.12],[p[0]+.5,-1.5,p[2]+.5],null,0x6a4a2c);}
  for(let i=0;i<8;i++){const x=rr(-6,-3),z=rr(-1.8,1.8);rsCyl(B,'wood',.35,.35,.9,[x,dY(H.uAt(x))+.45,z],null,0x7a5a36,10);}
@@ -950,9 +1097,9 @@ function buildRsSalvageTug(){reseed(71600);
   const dg=rsBake(DB,null,'dinghy');dg.rotation.x=Math.PI;dg.position.set(-4.6,dY(H.uAt(-4.6))+.62,0);V.group.add(dg);}
  // the pipe masts, gaffs, booms and patched gaff sails; the pipe bowsprit and the jib
  const gaff=(mx,mh,foot,boomL,gaffL,key)=>{const base=dY(H.uAt(mx));rsCyl(B,'metal',.16,.2,mh,[mx,base+mh/2,0],null,0x5a5a5c,10);
-  const lu=mh-foot-1.2;const S=rsSail(B,{key,O:[mx-.2,base+foot,.18],U:[-1,0,0],V:[0,1,0],belly:.7,nu:14,nv:10,
+  rsRig(B,[mx,0]);const lu=mh-foot-1.2;const S=rsSail(B,{key,O:[mx-.2,base+foot,.18],U:[-1,0,0],V:[0,1,0],belly:.7,nu:14,nv:10,
    A:t=>[0,t*lu],Bf:t=>[lerp(boomL,gaffL*.86,t),lerp(0,lu+gaffL*.5,t)],draw:rsTugPatch});
-  rsLink(B,'wood',S.at(0,0),S.at(0,1),.1,0x5a4a3a,6);rsLink(B,'wood',S.at(1,0),S.at(1,1),.09,0x5a4a3a,6);rsRope(B,[mx,base+mh,0],S.at(1,1));rsRope(B,[mx,base+mh,0],S.at(1,.5));return[mx,base+mh,0];};
+  rsLink(B,'wood',S.at(0,0),S.at(0,1),.1,0x5a4a3a,6);rsLink(B,'wood',S.at(1,0),S.at(1,1),.09,0x5a4a3a,6);rsRope(B,[mx,base+mh,0],S.at(1,1));rsRope(B,[mx,base+mh,0],S.at(1,.5));rsRigEnd(B);return[mx,base+mh,0];};
  const topF=gaff(7,14.5,5.2,6.2,6,'tug-patch'),topM=gaff(-5.5,14,3.5,6.8,6.2,'tug-patch');   // main boom rides on the old towing arch, the gallows
  const bs=[H.xAt(1,1)+5,H.ys(1)+.5,0];rsLink(B,'metal',[H.xAt(1,1)-1,H.ys(1)-.2,0],bs,.1,0x5a5a5c,8);
  rsSail(B,{key:'tug-patch',O:[0,0,.05],U:[1,0,0],V:[0,1,0],belly:-.5,nu:10,nv:8,A:t=>[lerp(bs[0]-.2,topF[0]+.3,t),lerp(bs[1]+.3,topF[1]-1.2,t)],Bf:t=>[lerp(H.xAt(1,1)-2.5,topF[0]+.3,t),lerp(H.ys(1)+1.2,topF[1]-1.2,t)],draw:rsTugPatch});
@@ -1065,10 +1212,10 @@ function buildRsIzizDhoni(){reseed(71800);
  // the mast (raked forward), the long yard and the lateen
  const mx=1.2,base=dY(H.uAt(mx)),mh=9.5,rk=.12;const top=[mx+Math.sin(rk)*mh,base+mh,0];rsLink(B,'wood',[mx,base-.2,0],top,.14,0x6a4a2c,8,.09);
  const tack=[7.2,1.4],peak=[-7.6,12.2],clew=[-2.1,1.4];   // the clew stays forward of the shade
- const S=rsSail(B,{key:'iziz-lateen',O:[0,base,.32],U:[1,0,0],V:[0,1,0],belly:-.9,nu:20,nv:10,
+ rsRig(B,[[mx,base-.2,0],top]);const S=rsSail(B,{key:'iziz-lateen',O:[0,base,.32],U:[1,0,0],V:[0,1,0],belly:-.9,nu:20,nv:10,
   A:t=>[lerp(tack[0],peak[0],t),lerp(tack[1],peak[1],t)+Math.sin(Math.PI*t)*.5],Bf:t=>[lerp(clew[0],peak[0],t)+Math.sin(Math.PI*t)*.4,lerp(clew[1],peak[1],t)],draw:rsLateenCream});
  const yd=[];for(let k=0;k<=16;k++)yd.push(S.at(k/16,0));yd.unshift([yd[0][0]+1,yd[0][1]-.4,yd[0][2]]);rsTube(B,'wood',yd,t=>.13*(1-.5*Math.abs(t-.35)),0x7a5634,40,6);
- rsRope(B,top,S.at(.45,0));rsRope(B,S.at(0,1),[-6,dY(.1)+.4,1.4]);rsRope(B,top,[H.xAt(0,1),H.ys(0),0]);rsRope(B,yd[0],[pb[0],pb[1]+.2,0]);
+ rsRope(B,top,S.at(.45,0));rsRope(B,S.at(0,1),[-6,dY(.1)+.4,1.4]);rsRope(B,top,[H.xAt(0,1),H.ys(0),0]);rsRope(B,yd[0],[pb[0],pb[1]+.2,0]);rsRigEnd(B);
  // round 2: a painted chevron strake, a small mizzen lateen, rods out over the side, fish drying on
  // a line to the stem, a pennant off the stem finial, a lantern at the helm
  for(const a of rsAlong(H,.12,.9,22,.87)){const q=new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,0,1),a.n).multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,0,1),Math.PI/2));
@@ -1101,9 +1248,9 @@ function buildRsIslanderOruwa(){reseed(71900);
  for(const x of[-1.4,1.6]){const y=H.ys(.5);rsTube(B,'wood',[[x,y+.05,-.4],[x,y+.25,1.2],[x,y+.1,2.6],[x,.2,3.6]],.07,0x7a5a38,20,6);rsRope(B,[x,.22,3.45],[x,.05,3.6],.03,0xc8b080);}
  // mast and the two-spar sail
  const mx=.4,y0=H.ys(.5);rsLink(B,'wood',[mx,.1,0],[mx,y0+6.4,0],.07,0x6a4a2c,6,.05);for(const s of[-1,1])rsRope(B,[mx,y0+6.4,0],[mx,y0,s*.45]);rsRope(B,[mx,y0+6.4,0],[mx,.3,3.6]);
- const S=rsSail(B,{key:'islander-moon',O:[mx-.2,y0+.5,.12],U:[-.98,0,-.2],V:[0,1,0],belly:.35,nu:10,nv:10,
+ rsRig(B,[mx,0]);const S=rsSail(B,{key:'islander-moon',O:[mx-.2,y0+.5,.12],U:[-.98,0,-.2],V:[0,1,0],belly:.35,nu:10,nv:10,
   A:t=>[lerp(-.6,3.2,t),lerp(5.8,6.6,t)],Bf:t=>[lerp(-.4,3,t),lerp(.3,.1,t)],draw:rsMoonSail});
- rsSailEdge(B,S,0,.06,0x7a5a38,-.05,1.05);rsSailEdge(B,S,1,.05,0x7a5a38,-.05,1.05);
+ rsSailEdge(B,S,0,.06,0x7a5a38,-.05,1.05);rsSailEdge(B,S,1,.05,0x7a5a38,-.05,1.05);rsRigEnd(B);
  rsFigure(B,[-3,.1,0],0,0xe0d0b0,true,0x6a4028);rsFigure(B,[2.2,.1,0],Math.PI,0x2a6a8a,true,0x6a4028);
  rsLink(B,'wood',[-3.4,.9,.2],[-5.6,-.5,.4],.04,0x7a5a38,5);rsSphere(B,'rope',.35,[1.3,.4,0],[1.4,.6,1],0x9a8a60,8,6);
  rsBake(B,V.group,'islanderOruwa');V.deckY=.1;return V;}
@@ -1146,9 +1293,9 @@ function buildRsIslanderKarakoa(){reseed(72000);
  for(let i=0;i<9;i++){const x=rr(fx0+.5,fx1-.5),z=rr(-1.8,1.8);rsFigure(B,[x,fy,z],rr(0,TAU),[RED,0x3a2a1c,YEL][Math.floor(rng()*3)],false,0x6a4028);rsLink(B,'wood',[x+.2,fy+.3,z],[x+.4,fy+3,z],.025,0x5a4028,4);rsCone(B,'metal',.05,.3,[x+.41,fy+3.15,z],null,0xb0b4b8,4);}
  // bipod mast and the tilted tanja sail
  const mx=1.5,mh=9.5;for(const s of[-1,1])rsLink(B,'wood',[mx,fy,s*1.6],[mx+.4,fy+mh,0],.1,0x6a4a2c,6);
- const S=rsSail(B,{key:'islander-tanja',O:[mx+.2,fy+1.6,.2],U:[-.97,.26,0],V:[.3,1,0],belly:.7,nu:12,nv:10,
+ rsRig(B,[[mx,fy,0],[mx+.4,fy+mh,0]]);const S=rsSail(B,{key:'islander-tanja',O:[mx+.2,fy+1.6,.2],U:[-.97,.26,0],V:[.3,1,0],belly:.7,nu:12,nv:10,
   A:t=>[lerp(-2.8,7.4,t),6.6],Bf:t=>[lerp(-2,6.6,t),0],draw:rsTanjaStripes});
- rsSailEdge(B,S,0,.08,0x6a4a2c,-.04,1.04);rsSailEdge(B,S,1,.07,0x6a4a2c,-.04,1.04);rsRope(B,[mx+.4,fy+mh,0],S.at(.3,0));rsRope(B,[mx+.4,fy+mh,0],[pb[0],pb[1],0]);rsRope(B,S.at(1,1),[-9,yB,0]);
+ rsSailEdge(B,S,0,.08,0x6a4a2c,-.04,1.04);rsSailEdge(B,S,1,.07,0x6a4a2c,-.04,1.04);rsRope(B,[mx+.4,fy+mh,0],S.at(.3,0));rsRope(B,[mx+.4,fy+mh,0],[pb[0],pb[1],0]);rsRope(B,S.at(1,1),[-9,yB,0]);rsRigEnd(B);
  for(const x of[-10,10])rsFigure(B,[x,dY(H.uAt(x)),0],x>0?0:Math.PI,0x2a2a2a,false,0x6a4028);
  rsLink(B,'wood',[-10.5,dY(.05)+1,.4],[-13.5,-.6,.8],.06,0x6a4a2c,5);
  rsBake(B,V.group,'islanderKarakoa');V.deckY=fy;return V;}
@@ -1187,10 +1334,10 @@ function buildRsVothChitin(){reseed(72100);
  // the fore fan sweeps less far aft and the aft mast stands further back: the fans must not touch (sails-clear-sails)
  [[2,12.5,1,1.02],[-9.2,9.5,.85,1.2]].forEach(([mx,mh,k,a1])=>{const base=cy+2.2;rsLink(B,'paint',[mx,base-1.5,0],[mx,base+mh,0],.18,0xe8dcc0,8,.12);
   const R=mh*.95,a0=.1,A0=[0,0];
-  const S=rsSail(B,{key:'voth-fan-blue',O:[mx,base+.6,.3],U:[-1,0,0],V:[0,1,0],belly:.6,nu:24,nv:10,
+  rsRig(B,[mx,0]);const S=rsSail(B,{key:'voth-fan-blue',O:[mx,base+.6,.3],U:[-1,0,0],V:[0,1,0],belly:.6,nu:24,nv:10,
    A:t=>A0,Bf:t=>{const a=lerp(Math.PI/2-a0,Math.PI/2-a1,t);const rr0=R*(1-.07*Math.sin(t*Math.PI*6)**2);return[Math.cos(a)*rr0,Math.sin(a)*rr0];},draw:rsFanVoth});
   for(let i=0;i<=6;i++){const t=i/6,pts=[];for(let j=0;j<=6;j++)pts.push(S.at(t,j/6));rsTube(B,'paint',pts,t=>.07*(1-.5*t),0xe8dcc0,12,5);}
-  rsRope(B,[mx,base+mh,0],[H.xAt(1,1),H.ys(1),0]);rsRope(B,S.at(1,1),[mx-7*k,cy+.5,0]);});
+  rsRope(B,[mx,base+mh,0],[H.xAt(1,1),H.ys(1),0]);rsRope(B,S.at(1,1),[mx-7*k,cy+.5,0]);});rsRigEnd(B);
  for(const x of[-12,-1,6])rsFigure(B,[x,x<-11?dY(H.uAt(x)):cy+2.1,rr(-.4,.4)],rr(0,TAU),[0x4a3a5a,0x8a3a1c,0x2a2a2a][Math.floor(rng()*3)],false,0x8a8aa0);
  rsBake(B,V.group,'vothChitin');V.deckY=cy;return V;}
 RS_VESSEL({key:'vothChitin',name:'Voth Chitin Bireme',culture:'voth',L:34,B:17,H:16,
@@ -1240,9 +1387,9 @@ function buildRsHykHexareme(){reseed(72200);
  // the great square sail on the mainmast, braced; the artemon on its raked foremast
  const base=dY(.5),mx=-1,mh=24;rsLink(B,'wood',[mx,base-1,0],[mx,base+mh,0],.3,0x7a5634,8,.18);
  const w=17,a=.95,U=[Math.sin(a),0,Math.cos(a)];
- const S=rsSail(B,{key:'hyk-wavesun',O:[mx+.4,base+6,0],U,V:[0,1,0],belly:-1.4,A:t=>[(t-.5)*w,mh-6.8+Math.abs(t-.5)*1.2],Bf:t=>[(t-.5)*w*.92,0],draw:rsHykWaveSun});
+ rsRig(B,[mx,0]);const S=rsSail(B,{key:'hyk-wavesun',O:[mx+.4,base+6,0],U,V:[0,1,0],belly:-1.4,A:t=>[(t-.5)*w,mh-6.8+Math.abs(t-.5)*1.2],Bf:t=>[(t-.5)*w*.92,0],draw:rsHykWaveSun});
  rsSailEdge(B,S,0,.2,0x6a4a2c);rsSailEdge(B,S,1,.1,0x6a4a2c);const tp=[mx,base+mh,0];rsRope(B,tp,S.at(0,0));rsRope(B,tp,S.at(1,0));rsRope(B,tp,[H.xAt(1,1),H.ys(1),0]);rsRope(B,tp,[H.xAt(0,1)+1,H.ys(0),0]);
- rsPennant(B,[mx,base+mh+.2,0],5,.9,[BLUE,0xf0e8d8]);
+ rsPennant(B,[mx,base+mh+.2,0],5,.9,[BLUE,0xf0e8d8]);rsRigEnd(B);
  {const fx=18.5,fy=dY(H.uAt(fx)),ft=[fx+4.5,fy+9,0];rsLink(B,'wood',[fx,fy,0],ft,.14,0x7a5634,8,.1);const w2=5.5;
   const S2=rsSail(B,{key:'hyk-wavesun',O:[ft[0]-2.4,fy+3.6,0],U:[Math.sin(.9),0,Math.cos(.9)],V:[.25,1,0],belly:-.6,A:t=>[(t-.5)*w2,4.6],Bf:t=>[(t-.5)*w2*.9,0],draw:rsHykWaveSun});rsSailEdge(B,S2,0,.09,0x6a4a2c);}
  for(const x of[-8,-4,2,9])rsFigure(B,[x,dY(H.uAt(x)),rr(-2,2)],rr(0,TAU),[0x3a5a78,0xe0d8c8,0x8a3020][Math.floor(rng()*3)]);
@@ -1278,9 +1425,9 @@ function buildRsHykPearl(){reseed(72300);
  // two masts raked forward, great lateens
  const lateen=(mx,mh,tack,peak,clew,key,zs)=>{const base=dY(H.uAt(mx)),rk=.14,top=[mx+Math.sin(rk)*mh,base+mh,0];rsLink(B,'wood',[mx,base-.3,0],top,.34,0x6a4a2c,8,.2);
   // the two lateens hang on opposite sides of their masts and belly apart, so they never touch (sails-clear-sails)
-  const S=rsSail(B,{key,O:[0,base,.45*zs],U:[1,0,0],V:[0,1,0],belly:1.2*zs,nu:22,nv:12,A:t=>[lerp(tack[0],peak[0],t),lerp(tack[1],peak[1],t)+Math.sin(Math.PI*t)*.9],Bf:t=>[lerp(clew[0],peak[0],t)+Math.sin(Math.PI*t)*.8,lerp(clew[1],peak[1],t)],draw:rsHykPearlLateen});
+  rsRig(B,[[mx,base-.3,0],top]);const S=rsSail(B,{key,O:[0,base,.45*zs],U:[1,0,0],V:[0,1,0],belly:1.2*zs,nu:22,nv:12,A:t=>[lerp(tack[0],peak[0],t),lerp(tack[1],peak[1],t)+Math.sin(Math.PI*t)*.9],Bf:t=>[lerp(clew[0],peak[0],t)+Math.sin(Math.PI*t)*.8,lerp(clew[1],peak[1],t)],draw:rsHykPearlLateen});
   const yd=[];for(let k=0;k<=16;k++)yd.push(S.at(k/16,0));yd.unshift([yd[0][0]+1.4,yd[0][1]-.5,yd[0][2]]);rsTube(B,'wood',yd,t=>.24*(1-.5*Math.abs(t-.35)),0x7a5634,40,6);
-  rsRope(B,top,S.at(.45,0));rsRope(B,top,[mx-6,H.ys(H.uAt(mx-6)),-3.6]);rsRope(B,top,[mx-6,H.ys(H.uAt(mx-6)),3.6]);rsPennant(B,[top[0],top[1]+.3,0],4,.8,[TURQ,GOLD]);};
+  rsRope(B,top,S.at(.45,0));rsRope(B,top,[mx-6,H.ys(H.uAt(mx-6)),-3.6]);rsRope(B,top,[mx-6,H.ys(H.uAt(mx-6)),3.6]);rsPennant(B,[top[0],top[1]+.3,0],4,.8,[TURQ,GOLD]);rsRigEnd(B);};
  lateen(3,24,[18,2.6],[-13,30],[-7,2.4],'hyk-pearl',1);lateen(-9.5,15,[-3.5,4.6],[-19,19],[-14.5,4.4],'hyk-pearl',-1);
  // the diving booms: six spars out over the starboard side, each with a stone-weighted line; divers
  // in the water between dives; the hauling crew at the rail
@@ -1336,8 +1483,8 @@ function buildRsIzizWheel(){reseed(72400);
  rsCabin(B,{x:-12.5,y:dY(.1),w:3.4,d:4.4,h:2,wall:WHITE,win:2,roof:'gable',roofMk:'wood',roofCol:OCHRE,rh:.9,over:.25});
  // the small lateen forward, its foot above the deckhouse roof
  const mx=11.5,base=dY(H.uAt(mx)),mh=13;rsLink(B,'wood',[mx,base-.2,0],[mx+1,base+mh,0],.16,0x6a4a2c,8,.1);
- const S=rsSail(B,{key:'iziz-sun-lateen',O:[0,base,.3],U:[1,0,0],V:[0,1,0],belly:-.8,nu:18,nv:10,A:t=>[lerp(16.5,1,t),lerp(1.6,14.5,t)],Bf:t=>[lerp(6,1,t),lerp(4.4,14.5,t)],draw:rsIzizWheelSail});
- const yd2=[];for(let k=0;k<=12;k++)yd2.push(S.at(k/12,0));rsTube(B,'wood',yd2,.1,0x7a5634,30,6);rsRope(B,[mx+1,base+mh,0],S.at(.5,0));
+ rsRig(B,[[mx,base-.2,0],[mx+1,base+mh,0]]);const S=rsSail(B,{key:'iziz-sun-lateen',O:[0,base,.3],U:[1,0,0],V:[0,1,0],belly:-.8,nu:18,nv:10,A:t=>[lerp(16.5,1,t),lerp(1.6,14.5,t)],Bf:t=>[lerp(6,1,t),lerp(4.4,14.5,t)],draw:rsIzizWheelSail});
+ const yd2=[];for(let k=0;k<=12;k++)yd2.push(S.at(k/12,0));rsTube(B,'wood',yd2,.1,0x7a5634,30,6);rsRope(B,[mx+1,base+mh,0],S.at(.5,0));rsRigEnd(B);
  rsLink(B,'wood',[-14,dY(.04)+.9,0],[-17,-.8,0],.08,DK,5);rsBox(B,'wood',[1.3,1.5,.12],[-16.8,-.9,0],null,DK);
  for(const [x,z] of[[-13,1.8],[12,-1.5],[14,1.2]])rsFigure(B,[x,dY(H.uAt(x)),z],rr(0,TAU),[WHITE,TEAL,OCHRE][Math.floor(rng()*3)]);
  rsBake(B,V.group,'izizWheel');V.deckY=yd;return V;}
@@ -1388,8 +1535,8 @@ function buildRsBeastRookery(){reseed(72500);
  for(let i=0;i<6;i++){const x=rr(-3,3),z=rr(-5,-2);rsCyl(B,'thatch',.4,.3,.6,[x,yD+.3,z],null,0xb89a60,10);rsSphere(B,'paint',.2,[x,yD+.62,z],[1.4,.5,.6],0xa8b8c0,6,4);}
  // one tall crab-claw on the centre hull, forward of the tower
  const mx=6.5;rsLink(B,'wood',[mx,yD,0],[mx-.8,yD+8,0],.14,0x5a3a24,8,.1);
- const S=rsSail(B,{key:'rookery-claw',O:[mx,yD+.4,0],U:[-1,0,0],V:[0,1,0],belly:1,nu:22,nv:12,A:t=>[t*3+Math.sin(Math.PI*t)*.9,t*13.5],Bf:t=>[t*6.8,t*4.4+Math.sin(Math.PI*t)*1.1],draw:rsRookeryClaw});
- rsSailEdge(B,S,0,.1,0x6a4a2c,0,1.04);rsSailEdge(B,S,1,.09,0x6a4a2c,0,1.02);rsRope(B,S.at(.6,0),[mx+6,yT+.3,0]);
+ rsRig(B,[[mx,yD,0],[mx-.8,yD+8,0]],{gain:.6});const S=rsSail(B,{key:'rookery-claw',O:[mx,yD+.4,0],U:[-1,0,0],V:[0,1,0],belly:1,nu:22,nv:12,A:t=>[t*3+Math.sin(Math.PI*t)*.9,t*13.5],Bf:t=>[t*6.8,t*4.4+Math.sin(Math.PI*t)*1.1],draw:rsRookeryClaw});
+ rsSailEdge(B,S,0,.1,0x6a4a2c,0,1.04);rsSailEdge(B,S,1,.09,0x6a4a2c,0,1.02);rsRope(B,S.at(.6,0),[mx+6,yT+.3,0]);rsRigEnd(B);
  rsLink(B,'wood',[-9.5,yT+1.4,.6],[-14,-.9,1.2],.09,0x6a4a30,6);
  for(const [x,z] of[[-9,1],[-2,-2],[1.5,2.2],[5,-1.8]])rsFigure(B,[x,yD,z],rr(-.6,.6),[0x6a1c2a,0x2a5a3a,0xd8c08a][Math.floor(rng()*3)],false,0x6a4028);
  rsBake(B,V.group,'beastRookery');V.deckY=yD;return V;}
@@ -1420,10 +1567,10 @@ function buildRsIslanderLakatoi(){reseed(72600);
  for(let i=0;i<22;i++){const x=rr(-2.6,2.6),z=rr(-4.2,4.2),y=yD+(i%3)*.45;if(Math.abs(z)<.6&&Math.abs(x)<1)continue;rsSphere(B,'paint',.3,[x,y+.28,z],[1,.85,1],[0xb05a30,0x9a4a28,0xc06a3a][i%3],10,8);rsCyl(B,'paint',.12,.16,.16,[x,y+.58,z],null,0x8a3a20,8);}
  // two crab-claw sails side by side, masts leaning aft
  for(const z of[-2.2,2.2]){const mx=2.4;rsLink(B,'wood',[mx,yD,z],[mx-.7,yD+8.5,z],.12,0x5a3a24,8,.08);
-  const S=rsSail(B,{key:'lakatoi-claw',O:[mx,yD+.3,z],U:[-1,0,0],V:[0,1,0],belly:.8*Math.sign(z),nu:24,nv:12,
+  rsRig(B,[[mx,yD,z],[mx-.7,yD+8.5,z]]);const S=rsSail(B,{key:'lakatoi-claw',O:[mx,yD+.3,z],U:[-1,0,0],V:[0,1,0],belly:.8*Math.sign(z),nu:24,nv:12,
    A:t=>[t*2.2+Math.sin(Math.PI*t)*.7-Math.pow(t,6)*1.6,t*14],Bf:t=>[t*5.4+Math.pow(t,5)*1.2,t*3.2+Math.sin(Math.PI*t)*.9+Math.pow(t,5)*2.4],draw:rsPandanusClaw});
   rsSailEdge(B,S,0,.09,0x6a4a2c,0,1.05);rsSailEdge(B,S,1,.08,0x6a4a2c,0,1.05);rsRope(B,S.at(.55,0),[mx+5.5,yD,z]);
-  const tip=S.at(1.05,0);rsPennant(B,tip,2.2,.25,[0xe8e0c8,0x2a2a2a,0xc83a24]);}
+  const tip=S.at(1.05,0);rsPennant(B,tip,2.2,.25,[0xe8e0c8,0x2a2a2a,0xc83a24]);}rsRigEnd(B);
  rsLink(B,'wood',[-6.5,yD+.8,0],[-10,-.8,.4],.08,0x6a4a30,6);
  for(const [x,z] of[[-6.2,.5],[0,.4],[3.8,-3.8],[6,3.5]])rsFigure(B,[x,yD,z],rr(0,TAU),[0xe0d0b0,0x8a3a1c,0x2a6a8a][Math.floor(rng()*3)],false,0x6a4028);
  rsBake(B,V.group,'islanderLakatoi');V.deckY=yD;return V;}
@@ -1457,11 +1604,11 @@ function buildRsVothHulk(){reseed(72700);
  const boomTip=[5,hy+6.5,3.8];rsLink(B,'wood',[mx,hy+1.4,.3],boomTip,.13,WOOD,6);rsRope(B,[mx,hy+10,0],boomTip,.03);rsRope(B,boomTip,[5,hy+3.2,3.8],.03);
  for(let i=0;i<6;i++)rsSphere(B,'cloth',.32,[5+rr(-.4,.4),hy+2.6+rr(-.3,.3),3.8+rr(-.4,.4)],[1.2,.6,.8],0xc8b890,8,6);rsSphere(B,'rope',.9,[5,hy+2.7,3.8],[1,.9,1],0x3a3026,8,6);
  // the square sail, braced round, its foot above the castle rails
- const w=15,a=.95,foot=Math.max(fT,aT)-hy+1.2;const S=rsSail(B,{key:'voth-hulk',O:[mx+.5,hy+foot,0],U:[Math.sin(a),0,Math.cos(a)],V:[0,1,0],belly:-1.6,
+ rsRig(B,[mx,0]);const w=15,a=.95,foot=Math.max(fT,aT)-hy+1.2;const S=rsSail(B,{key:'voth-hulk',O:[mx+.5,hy+foot,0],U:[Math.sin(a),0,Math.cos(a)],V:[0,1,0],belly:-1.6,
   A:t=>[(t-.5)*w,mh-foot-2.6],Bf:t=>[(t-.5)*w*.94,0],draw:rsVothHulkSail});
  rsSailEdge(B,S,0,.2,WOOD);rsSailEdge(B,S,1,.12,WOOD);const tp=[mx,hy+mh,0];rsRope(B,tp,[H.xAt(1,1),H.ys(1),0]);rsRope(B,tp,[H.xAt(0,1),H.ys(0),0]);
  for(const s of[-1,1]){rsRope(B,S.at(s<0?0:1,1),[mx-5,dY(.35)+.4,s*4.6]);rsRope(B,tp,[mx,H.ys(.46),s*4.9]);}
- rsPennant(B,[mx,hy+mh+.2,0],5,.9,[BLUE,ASH]);
+ rsPennant(B,[mx,hy+mh+.2,0],5,.9,[BLUE,ASH]);rsRigEnd(B);
  {const p=H.pt(0,0,.3);rsBox(B,'wood',[2.8,4.8,.4],[p[0]-1.2,p[1]+.8,0],null,TAR2);}
  for(let i=0;i<8;i++){const x=rr(6,9),z=rr(-3,3),y=dY(H.uAt(x))+.5;if(i%2)rsBox(B,'wood',[1,1,1],[x,y,z],[0,rr(0,1),0],WOOD);else rsCyl(B,'wood',.45,.45,1,[x,y,z],null,WOOD,10);}
  for(const [x,z] of[[-11,1.5],[1,3],[4.2,2.6],[8,-2]])rsFigure(B,[x,x<-9?aT:dY(H.uAt(x)),z],rr(0,TAU),[BLUE,rsLin(0x6a5a44),ASH][Math.floor(rng()*3)],false,0x8a8aa0);
@@ -1500,10 +1647,10 @@ function buildRsHykCorbita(){reseed(72800);
  for(const s of[-1,1])for(let i=0;i<7;i++)rsAmphora(B,[5.5+i*.55,dY(H.uAt(6))+.35,s*2.2],.7,[TERR,0xa85a30][i%2],s*Math.PI/2);
  // the mainmast: square course and a triangular topsail above the yard; the artemon forward
  const mx=0,mh=17;rsLink(B,'wood',[mx,hy-1,0],[mx,hy+mh,0],.3,0x7a5634,8,.18);const w=13,a=.95,U=[Math.sin(a),0,Math.cos(a)];const foot=3.2,yard=mh-4.6;
- const S=rsSail(B,{key:'hyk-corbita',O:[mx+.4,hy+foot,0],U,V:[0,1,0],belly:-1.3,A:t=>[(t-.5)*w,yard-foot],Bf:t=>[(t-.5)*w*.9,0],draw:rsHykCorbitaSail});
+ rsRig(B,[mx,0]);const S=rsSail(B,{key:'hyk-corbita',O:[mx+.4,hy+foot,0],U,V:[0,1,0],belly:-1.3,A:t=>[(t-.5)*w,yard-foot],Bf:t=>[(t-.5)*w*.9,0],draw:rsHykCorbitaSail});
  rsSailEdge(B,S,0,.18,0x6a4a2c);rsSailEdge(B,S,1,.1,0x6a4a2c);
  for(const s of[-1,1]){const T=rsSail(B,{key:'hyk-corbita-top',O:[mx+.4,hy+yard+.7,0],U,V:[0,1,0],belly:-.3,nu:6,nv:6,A:t=>[s*lerp(.3,w*.45,t),lerp(3.6,0,t)],Bf:t=>[s*.3,lerp(3.6,0,t)],draw:(g,W,H2,P)=>{rsCloth(g,W,H2,'#ece6d6',3,'v');g.save();rsPolyPath(g,P);g.clip();g.strokeStyle='#3f86a6';g.lineWidth=W*.08;rsPolyPath(g,P);g.stroke();g.restore();}});}
- const tp=[mx,hy+mh,0];rsRope(B,tp,[H.xAt(1,1),H.ys(1),0]);rsRope(B,tp,[pS[0]+1,pS[1]+3.3,0]);for(const s of[-1,1])rsRope(B,S.at(s<0?0:1,1),[mx-4,dY(.35)+.4,s*3.6]);
+ const tp=[mx,hy+mh,0];rsRope(B,tp,[H.xAt(1,1),H.ys(1),0]);rsRope(B,tp,[pS[0]+1,pS[1]+3.3,0]);for(const s of[-1,1])rsRope(B,S.at(s<0?0:1,1),[mx-4,dY(.35)+.4,s*3.6]);rsRigEnd(B);
  {const fx=H.xAt(.94,1),fy=H.ys(.94),ft=[fx+4,fy+6.5,0];rsLink(B,'wood',[fx-1,fy-.4,0],ft,.13,0x7a5634,8,.09);
   const S2=rsSail(B,{key:'hyk-corbita',O:[ft[0]-1.6,fy+2.6,0],U:[Math.sin(.9),0,Math.cos(.9)],V:[.3,1,0],belly:-.5,A:t=>[(t-.5)*4,3.4],Bf:t=>[(t-.5)*3.6,0],draw:rsHykCorbitaSail});rsSailEdge(B,S2,0,.08,0x6a4a2c);}
  rsPennant(B,[mx,hy+mh+.2,0],3.4,.7,[BLUE,0xf0e8d8]);
@@ -1537,14 +1684,14 @@ function buildRsXanaduCarrack(){reseed(72900);
  for(const a of rsAlong(H,.25,.8,26,1))rsLink(B,'metal',a.p,[a.p[0],a.p[1]+1,a.p[2]],.04,GOLD,5);
  // masts: fore (square), main (course + topsail, fighting top), mizzen (lateen above the aftcastle)
  const mast=(mx,mh,r)=>{const b=dY(H.uAt(mx));rsLink(B,'wood',[mx,b-.5,0],[mx,b+mh,0],r,WOOD,10,r*.6);return b;};
- const sq=(mx,y0,y1,w,a,key,bel)=>{const U=[Math.sin(a),0,Math.cos(a)];const S=rsSail(B,{key,O:[mx+.5,y0,0],U,V:[0,1,0],belly:bel,A:t=>[(t-.5)*w,y1-y0],Bf:t=>[(t-.5)*w*.92,0],draw:rsXanaduWheel});
-  rsSailEdge(B,S,0,.17,WOOD);rsSailEdge(B,S,1,.1,WOOD);return S;};
- const fb=mast(11,20,.3);sq(11,fTop+1.4,fb+17,11,1,'xanadu-wheel',-1.2);
+ const sq=(mx,y0,y1,w,a,key,bel,gain)=>{rsRig(B,[mx,0],{gain});const U=[Math.sin(a),0,Math.cos(a)];const S=rsSail(B,{key,O:[mx+.5,y0,0],U,V:[0,1,0],belly:bel,A:t=>[(t-.5)*w,y1-y0],Bf:t=>[(t-.5)*w*.92,0],draw:rsXanaduWheel});
+  rsSailEdge(B,S,0,.17,WOOD);rsSailEdge(B,S,1,.1,WOOD);rsRigEnd(B);return S;};
+ const fb=mast(11,20,.3);sq(11,fTop+1.4,fb+17,11,1,'xanadu-wheel',-1.2,.7);   // the fore course trims less: braced as far as the main, it meets the main's leech
  const mb=mast(0,31,.42);const cT=mb+21;sq(0,mb+5,cT,15,1,'xanadu-wheel',-1.6);sq(0,cT+1.4,mb+29,10,1,'xanadu-wheel',-.9);
  rsCyl(B,'wood',1.1,.9,1.1,[0,cT+.7,0],null,MAR,14);rsCyl(B,'wood',.9,.75,.9,[11,fb+17.6,0],null,MAR,12);
- const zb=mast(-12,17,.24);const S3=rsSail(B,{key:'xanadu-wheel',O:[0,0,.35],U:[1,0,0],V:[0,1,0],belly:.8,nu:16,nv:8,
+ const zb=mast(-12,17,.24);rsRig(B,[-12,0],{gain:.5});const S3=rsSail(B,{key:'xanadu-wheel',O:[0,0,.35],U:[1,0,0],V:[0,1,0],belly:.8,nu:16,nv:8,
   A:t=>[lerp(-6.5,-20,t),lerp(aTop+.2,zb+19,t)],Bf:t=>[lerp(-17,-20,t),lerp(aTop,zb+19,t)],draw:rsXanaduWheel});
- {const yd=[];for(let k=0;k<=10;k++)yd.push(S3.at(k/10,0));rsTube(B,'wood',yd,.14,WOOD,20,6);}
+ {const yd=[];for(let k=0;k<=10;k++)yd.push(S3.at(k/10,0));rsTube(B,'wood',yd,.14,WOOD,20,6);}rsRigEnd(B);
  for(const [mx,top] of[[11,fb+20],[0,mb+31],[-12,zb+17]]){rsRope(B,[mx,top,0],[mx+ (mx>5?9:-8),mx>5?fTop:aTop-1.4,0]);rsPennant(B,[mx,top+.2,0],4.5,.9,[MAR,GOLD]);}
  // the bullion: iron-bound chests stacked amidships, guards in maroon
  for(let i=0;i<12;i++){const x=rr(-4,4),z=rr(-3,3),y=dY(H.uAt(x))+.35+(i%3)*.72;rsBox(B,'wood',[1.2,.7,.8],[x,y,z],[0,rr(-.2,.2),0],WOOD);rsBox(B,'metal',[1.24,.1,.84],[x,y+.25,z],[0,0,0],GOLD);rsBox(B,'metal',[.1,.72,.84],[x,y,z],[0,0,0],0x2a2a2a);}
@@ -1580,8 +1727,8 @@ function buildRsIzizLighter(){reseed(73000);
  const wT=rsCabin(B,{x:-11,y:dY(.1),w:3.4,d:3.6,h:2.3,mk:'paint',wall:CREAM,win:2,winCol:0x101418,roof:'gable',roofMk:'paint',roofCol:OR,rh:.8,over:.25});
  rsLink(B,'wood',[-11,wT,0],[-11,wT+2.4,0],.04,DK,4);rsPennant(B,[-11,wT+2.4,0],2.4,.7,[OR,TEAL]);
  const mx=-6.2,mb=dY(H.uAt(mx)),mh=15;rsLink(B,'wood',[mx,mb-.3,0],[mx,mb+mh,0],.22,0x6a4a2c,8,.14);
- const S=rsSail(B,{key:'iziz-lug',O:[mx+.3,mb+3.2,.35],U:[1,0,0],V:[0,1,0],belly:-.9,nu:14,nv:10,A:t=>[lerp(-2.6,-3.4,t),lerp(0,11,t)],Bf:t=>[lerp(6,5.6,t),lerp(0,8.6,t)],draw:rsIzizLug});
- rsLink(B,'wood',S.at(1,0),S.at(1,1),.1,0x6a4a2c,6);rsLink(B,'wood',S.at(0,0),S.at(0,1),.09,0x6a4a2c,6);rsRope(B,[mx,mb+mh,0],S.at(1,.2));rsRope(B,[mx,mb+mh,0],[H.xAt(1,1),H.ys(1),0]);
+ rsRig(B,[mx,0]);const S=rsSail(B,{key:'iziz-lug',O:[mx+.3,mb+3.2,.35],U:[1,0,0],V:[0,1,0],belly:-.9,nu:14,nv:10,A:t=>[lerp(-2.6,-3.4,t),lerp(0,11,t)],Bf:t=>[lerp(6,5.6,t),lerp(0,8.6,t)],draw:rsIzizLug});
+ rsLink(B,'wood',S.at(1,0),S.at(1,1),.1,0x6a4a2c,6);rsLink(B,'wood',S.at(0,0),S.at(0,1),.09,0x6a4a2c,6);rsRope(B,[mx,mb+mh,0],S.at(1,.2));rsRope(B,[mx,mb+mh,0],[H.xAt(1,1),H.ys(1),0]);rsRigEnd(B);
  for(const [x,z] of[[-11,1.2],[8.5,2],[9.2,-2.4],[2,3.8]])rsFigure(B,[x,dY(H.uAt(x)),z],rr(0,TAU),[OR,TEAL,CREAM][Math.floor(rng()*3)]);
  rsBake(B,V.group,'izizLighter');V.deckY=hy;return V;}
 RS_VESSEL({key:'izizLighter',name:'Iziz Salvage Lighter',culture:'iziz-vernacular',L:34,B:13,H:20,
@@ -1619,11 +1766,35 @@ const giantTex=canvasTex(512,512,(g,w,h)=>{g.clearRect(0,0,w,h);const grd=g.crea
 giantTex.wrapS=giantTex.wrapT=THREE.ClampToEdgeWrapping;
 const giant=new THREE.Sprite(new THREE.SpriteMaterial({map:giantTex,fog:false,transparent:true,depthWrite:false}));giant.scale.set(1500,1500,1);giant.userData.probeSkip=true;scene.add(giant);
 
-// ---- the sea: one plane, scrolled normal map (94-rs-anim.js), the waterline at y=0
+// ---- the sea: one plane, displaced in its vertex shader by the Gerstner swell (40-rs-core.js: the same
+// function the hulls ride, 94-rs-anim.js), with the scrolled normal map for the ripples; the waterline at y=0.
+// The grid is fine (6.5 m) over the roadstead and stretches toward the horizon. Out there the cells are too
+// coarse to draw a wave, so each wave's DISPLACEMENT fades out beyond ~600 m (lod), but the surface normal and
+// the whitecaps are computed per pixel from the same waves at the rest point (vRsP0), each wave faded only
+// where it is finer than a pixel: the swell runs to the horizon in the shading at no geometry cost.
 TEX.rsWater.repeat.set(260,260);
-const RS_SEA=new THREE.MeshStandardMaterial({color:0x06222e,roughness:.24,metalness:.45,normalMap:TEX.rsWater,normalScale:new THREE.Vector2(.55,.55)});
 const RS_CZ=(Math.ceil(RS.order.length/RS_COLS)-1)*RS_PZ/2;
-const groundM=new THREE.Mesh(new THREE.PlaneGeometry(12000,12000),RS_SEA);groundM.rotation.x=-Math.PI/2;groundM.position.set(0,0,RS_CZ);groundM.userData.probeSkip=true;groundM.userData.isGround=true;scene.add(groundM);
+rsSwellSet([[.28,70,18,0,.32],[.16,43,-34,1.7,.26],[.09,27,71,4.1,.18],[.05,17,-8,2.6,.12]]);
+const RS_SEALOD={cx:0,cz:RS_CZ,r:[[600,680],[590,650],[580,630],[570,620]]};
+const RS_SEA=new THREE.MeshStandardMaterial({color:0x06222e,roughness:.24,metalness:.45,normalMap:TEX.rsWater,normalScale:new THREE.Vector2(.55,.55)});
+RS_SEA.onBeforeCompile=sh=>{sh.uniforms.uRsTime=RS_U.uTime;const G=rsSwellGLSL(RS_SEALOD);
+ sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+G+'varying vec2 vRsP0;')
+  .replace('#include <begin_vertex>','#include <begin_vertex>\nvec2 rsP0=(modelMatrix*vec4(position,1.)).xz;vec3 rsD=rsSwellD(rsP0);vRsP0=rsP0;transformed+=vec3(rsD.x,-rsD.z,rsD.y);');   // the plane is rotated flat: local z is world up, local y is world -z
+ sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+G+'varying vec2 vRsP0;\n'+
+   'float rsHash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}\n'+
+   'float rsNoise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(rsHash(i),rsHash(i+vec2(1.,0.)),f.x),mix(rsHash(i+vec2(0.,1.)),rsHash(i+vec2(1.,1.)),f.x),f.y);}')
+  .replace('#include <color_fragment>','#include <color_fragment>\nfloat rsMpp=length(fwidth(vRsP0));vec4 rsNJ=rsSwellNJ(vRsP0,rsMpp);'+
+   // whitecaps: where the crests crowd the water together (the Jacobian drops), broken up by drifting noise
+   'float rsFoam=.8*smoothstep(.5,.3,rsNJ.w)*smoothstep(.55,.85,rsNoise(vRsP0*.16+vec2(uRsTime*.05,-uRsTime*.03))*.55+rsNoise(vRsP0*.9-uRsTime*.2)*.45);'+
+   'rsFoam*=mix(1.,.45,smoothstep(1.,6.,rsMpp));diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.72,.80,.82),rsFoam);')
+  .replace('#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\nroughnessFactor=mix(roughnessFactor,.85,rsFoam);')
+  .replace('#include <metalnessmap_fragment>','#include <metalnessmap_fragment>\nmetalnessFactor*=1.-rsFoam;')
+  .replace('#include <normal_fragment_begin>','#include <normal_fragment_begin>\nnormal=normalize((viewMatrix*vec4(rsNJ.xyz,0.)).xyz);');};
+const RS_SEAGEO=(()=>{const SN=240,sg=new THREE.PlaneGeometry(2,2,SN,SN),p=sg.attributes.position,uv=sg.attributes.uv;
+ const warp=s=>{const a=Math.abs(s);return Math.sign(s)*(a<=.8?a/.8*620:620+5380*((a-.8)/.2)**2);};
+ for(let i=0;i<p.count;i++){const x=warp(p.getX(i)),y=warp(p.getY(i));p.setXY(i,x,y);uv.setXY(i,(x+6000)/12000,(y+6000)/12000);}
+ sg.computeBoundingSphere();return sg;})();
+const groundM=new THREE.Mesh(RS_SEAGEO,RS_SEA);groundM.rotation.x=-Math.PI/2;groundM.position.set(0,0,RS_CZ);groundM.userData.probeSkip=true;groundM.userData.isGround=true;scene.add(groundM);
 // ---- the far shore: the volcano NW across the sea, low islands, all unfogged and pre-hazed
 {reseed(79001);const far=(col,x,z,r,h,seg)=>{const m=new THREE.Mesh(new THREE.ConeGeometry(r,h,seg||24,1,true),new THREE.MeshBasicMaterial({color:col,fog:false}));m.position.set(x,h/2-2,z);m.userData.probeSkip=true;scene.add(m);return m;};
  const vx=-3000,vz=-3900;far(0x7d93a4,vx,vz,1100,620,32);far(0x8499a8,vx+520,vz+260,520,260,20);
@@ -1641,7 +1812,7 @@ const groundM=new THREE.Mesh(new THREE.PlaneGeometry(12000,12000),RS_SEA);ground
   const t=tcur();if(t){t.tris+=tris;t.meshes+=G.children.length;t.inst+=V.oars||0;}TSTAT.cur=null;
   const bb=new THREE.Box3().setFromObject(G);
   REG.push({name:D.name,cls:'vessel',key:k,x,y:bb.min.y,z,r:Math.max(D.L,D.B)/2+1,h:bb.max.y-bb.min.y,tags:Object.assign({culture:D.culture},D.tags)});
-  RS_PLACED.push({k,D,V,G,x,z,ph:h3(i,3,7)*TAU,bb});});
+  RS_PLACED.push({k,D,V,G,x,z,ph:h3(i,3,7)*TAU,bb,reg:REG[REG.length-1]});});
  window._registered=REG.length;window._instances=RS_PLACED.reduce((a,p)=>a+(p.V.oars||0),0)||1;window._vessels=RS_PLACED.length;}
 
 // ---- preset views: an opening, an overview, then each vessel from its starboard bow and abeam
@@ -1685,17 +1856,71 @@ function rsExtra(){const R=[];const P=RS_PLACED;
    for(let i=0;i<im.count;i++){im.getMatrixAt(i,m);v.set(0,0,g.boundingBox.max.z).applyMatrix4(m);lo=Math.min(lo,v.y);}if(lo>.2)bad.push(p.D.name+' '+im.name+' tip '+lo.toFixed(2));});
   R.push({name:'oars-reach-water',ok:!bad.length,detail:bad.length?bad.join(' | '):'every bank dips'});}
  // 5. sails clear the cabins: no sail vertex inside a registered solid (castles, deckhouses)
- {const bad=[];for(const p of P){const S=p.G.userData.solids||[],Q=p.G.userData.sail||[];let n=0;for(const q of Q)for(const b of S){if(q[0]>b.min[0]+.05&&q[0]<b.max[0]-.05&&q[1]>b.min[1]+.05&&q[1]<b.max[1]-.05&&q[2]>b.min[2]+.05&&q[2]<b.max[2]-.05){n++;break;}}if(n)bad.push(p.D.name+' '+n+' sail pts');}
-  R.push({name:'sails-clear-cabins',ok:!bad.length,detail:bad.length?bad.join(' | '):'no sail passes through a cabin'});}
+ {const bad=rsSailsInCabins(0);R.push({name:'sails-clear-cabins',ok:!bad.length,detail:bad.length?bad.join(' | '):'no sail passes through a cabin'});}
  // 5b. sails clear each other: no point of one sail within 0.3 m of another sail's (hashed on a 0.5 m grid)
- {const bad=[];for(const p of P){const Q=p.G.userData.sail||[],grid=new Map(),key=(x,y,z)=>Math.floor(x/.5)+','+Math.floor(y/.5)+','+Math.floor(z/.5);let n=0;
-   for(const q of Q){const k=key(q[0],q[1],q[2]);(grid.get(k)||grid.set(k,[]).get(k)).push(q);}
-   for(const q of Q){let hit=false;for(let dx=-1;dx<=1&&!hit;dx++)for(let dy=-1;dy<=1&&!hit;dy++)for(let dz=-1;dz<=1&&!hit;dz++){const L=grid.get((Math.floor(q[0]/.5)+dx)+','+(Math.floor(q[1]/.5)+dy)+','+(Math.floor(q[2]/.5)+dz));
-     if(L)for(const r of L){if(r[3]!==q[3]&&(r[0]-q[0])**2+(r[1]-q[1])**2+(r[2]-q[2])**2<.09){hit=true;break;}}}if(hit)n++;}
-   if(n)bad.push(p.D.name+' '+n+' pts');}
-  R.push({name:'sails-clear-sails',ok:!bad.length,detail:bad.length?bad.join(' | '):'no two sails touch'});}
+ {const bad=rsSailsTouch(0);R.push({name:'sails-clear-sails',ok:!bad.length,detail:bad.length?bad.join(' | '):'no two sails touch'});}
+ // 7-11. the same invariants posed: on the swell at several times, at rest and under way (91-rs-probe.js rsPosedChecks)
+ for(const r of rsPosedChecks())R.push(r);
+ // 12. decks (95-rs-deck.js): every vessel boards from the water amidships onto its deck, and each mast stops a walker
+ {const bad=[],bm=[];let minA=1e9,minK='';for(const p of P){const D=rsDeckData(p);if(D.walkArea<minA){minA=D.walkArea;minK=p.D.name;}
+   let top=-1e9;for(const f of[0,.12,-.12,.25,-.25]){   // walk north across the vessel on a few lines from the water south of it
+    let v=-1,x=p.way.x+f*p.D.L,z=p.way.z+(p.bb.max.z-p.z)+2,fy=rsSeaH(x,z,RS_U.uTime.value),n=0;const z1=p.way.z+(p.bb.min.z-p.z)-2;
+    while(z>z1&&n++<3000){const r=rsWalkResolve(x,z-.1,fy,v);if(r.blocked)break;z-=.1;v=r.v;fy=r.y;if(v>=0)top=Math.max(top,r.ly);}}
+   if(top<D.deckY-1.2||top>D.deckY+2.2)bad.push(p.D.name+(top<-1e8?' never boards':' stands at '+top.toFixed(2)+' (deck '+D.deckY.toFixed(2)+')'));
+   for(const m of D.masts){const mx=m.x+m.ax*(D.deckY-m.y),mz=m.z+m.az*(D.deckY-m.y),g0=rsDeckCell(D,mx,mz,D.deckY,true),g=g0&&rsDeckCell(D,mx,mz,g0.y,false);/* standing on the deck at the mast's foot */if(g&&!g.blocked)bm.push(p.D.name+' mast at '+m.x);}}
+  R.push({name:'decks-walkable',ok:!bad.length,detail:bad.length?bad.join(' | '):P.length+' vessels board from the water onto their decks (or a roof within 2.2 m: the chitin carapace); least walkable deck '+minA.toFixed(0)+' m2 ('+minK+')'});
+  R.push({name:'masts-block-walker',ok:!bm.length,detail:bm.length?bm.join(' | '):'every mast stops the walker'});}
  // 6. project tags
  {const t=tagAudit();R.push({name:'tags-complete',ok:!t.bad,detail:t.bad?t.first.join(' | '):REG.length+' vessels tagged culture/type/wealth/propulsion/hull'});}
+ return R;}
+// a vessel's sail points as trimmed by angle a (rsRigPose, the shader's rotation on the CPU)
+function rsSailPts(p,a){return(p.G.userData.sail||[]).map(q=>{if(!a||!q[4])return q;const r=rsRigPose(q,q[4],a);return[r[0],r[1],r[2],q[3]];});}
+function rsSailsInCabins(a){const bad=[];for(const p of RS_PLACED){const S=p.G.userData.solids||[],Q=rsSailPts(p,a);let n=0;for(const q of Q)for(const b of S){if(q[0]>b.min[0]+.05&&q[0]<b.max[0]-.05&&q[1]>b.min[1]+.05&&q[1]<b.max[1]-.05&&q[2]>b.min[2]+.05&&q[2]<b.max[2]-.05){n++;break;}}if(n)bad.push(p.D.name+(a?' (trim '+a.toFixed(2)+')':'')+' '+n+' sail pts');}return bad;}
+function rsSailsTouch(a){const bad=[];for(const p of RS_PLACED){const Q=rsSailPts(p,a),grid=new Map(),key=(x,y,z)=>Math.floor(x/.5)+','+Math.floor(y/.5)+','+Math.floor(z/.5);let n=0;
+  for(const q of Q){const k=key(q[0],q[1],q[2]);(grid.get(k)||grid.set(k,[]).get(k)).push(q);}
+  for(const q of Q){let hit=false;for(let dx=-1;dx<=1&&!hit;dx++)for(let dy=-1;dy<=1&&!hit;dy++)for(let dz=-1;dz<=1&&!hit;dz++){const L=grid.get((Math.floor(q[0]/.5)+dx)+','+(Math.floor(q[1]/.5)+dy)+','+(Math.floor(q[2]/.5)+dz));
+    if(L)for(const r of L){if(r[3]!==q[3]&&(r[0]-q[0])**2+(r[1]-q[1])**2+(r[2]-q[2])**2<.09){hit=true;break;}}}if(hit)n++;}
+  if(n)bad.push(p.D.name+(a?' (trim '+a.toFixed(2)+')':'')+' '+n+' pts');}return bad;}
+// a vessel's plan box (vessel frame, oars and sails included) as a rectangle at pose w -> its four corners in the world
+function rsPlanEnv(p){if(p.env)return p.env;const b=p.bb,e=[b.min.x-p.x,b.max.x-p.x,b.min.z-p.z,b.max.z-p.z];   // grown to hold the sails trimmed either way
+ for(const a of[RS_WAY.trimMax,-RS_WAY.trimMax])for(const q of rsSailPts(p,a)){e[0]=Math.min(e[0],q[0]);e[1]=Math.max(e[1],q[0]);e[2]=Math.min(e[2],q[2]);e[3]=Math.max(e[3],q[2]);}return p.env=e;}
+function rsPlanRect(p,w,m){const e=rsPlanEnv(p),x0=e[0]-m,x1=e[1]+m,z0=e[2]-m,z1=e[3]+m,c=Math.cos(w.yaw),s=Math.sin(w.yaw);
+ return[[x0,z0],[x1,z0],[x1,z1],[x0,z1]].map(([x,z])=>[w.x+x*c+z*s,w.z-x*s+z*c]);}
+function rsRectsHit(A,B){for(const P of[A,B])for(let i=0;i<4;i++){const a=P[i],b=P[(i+1)%4],nx=-(b[1]-a[1]),nz=b[0]-a[0];let a0=1e9,a1=-1e9,b0=1e9,b1=-1e9;
+  for(const q of A){const d=q[0]*nx+q[1]*nz;a0=Math.min(a0,d);a1=Math.max(a1,d);}for(const q of B){const d=q[0]*nx+q[1]*nz;b0=Math.min(b0,d);b1=Math.max(b1,d);}if(a1<b0||b1<a0)return false;}return true;}
+// run fn with the Under way state set to st, then put everything back as it was (and re-pose at the clock)
+function rsWithWay(st,fn){const W=RS_WAY,keep={on:W.on,tOn:W.tOn,tOff:W.tOff,sOn:W.sOn,sOff:W.sOff,kOff:W.kOff};Object.assign(W,st);
+ try{return fn();}finally{Object.assign(W,keep);rsFleetPose(rsClock());}}
+const RS_PROBE={rest:[0,7.3,21.1],way:[7.3,21.1,60,140,260]};
+function rsPosedChecks(){const R=[],P=RS_PLACED,v=new THREE.Vector3(),m=new THREE.Matrix4();
+ const fl=[],ov=[],oa=[];let minFb=1e9,minDip=-1e9;
+ const atPose=(lab)=>{for(const p of P)p.G.updateMatrixWorld(true);const t=RS_U.uTime.value;
+  // the hull floats on the swell: deck at bow, amidships and stern above the water there, the keel below it
+  for(const p of P){const dy=p.V.deckY;if(dy==null)continue;let worst=1e9;
+   for(const x of[-.3,0,.3]){v.set(x*p.D.L,dy,0).applyMatrix4(p.G.matrixWorld);worst=Math.min(worst,v.y-rsSeaH(v.x,v.z,t));}
+   v.set(0,p.bb.min.y,0).applyMatrix4(p.G.matrixWorld);const keel=v.y-rsSeaH(v.x,v.z,t);minFb=Math.min(minFb,worst);
+   if(worst<.03||keel>-.1)fl.push(lab+' '+p.D.name+' deck '+worst.toFixed(2)+' keel '+keel.toFixed(2));}
+  // no two vessels' plan boxes (oars included) overlap at their poses
+  const rc=P.map(p=>rsPlanRect(p,p.way,.5));for(let i=0;i<P.length;i++)for(let j=i+1;j<P.length;j++)if(rsRectsHit(rc[i],rc[j]))ov.push(lab+' '+P[i].D.name+' x '+P[j].D.name);
+  // every oar bank still dips at its catch on the swell
+  for(const p of P)p.G.children.filter(o=>o.isInstancedMesh).forEach(im=>{const g=im.geometry;g.computeBoundingBox();if(im.userData.pose)im.userData.pose(im.userData.tCatch);let lo=1e9;
+   for(let i=0;i<im.count;i++){im.getMatrixAt(i,m);v.set(0,0,g.boundingBox.max.z).applyMatrix4(m).applyMatrix4(p.G.matrixWorld);lo=Math.min(lo,v.y-rsSeaH(v.x,v.z,t));}
+   minDip=Math.max(minDip,lo);if(lo>.2)oa.push(lab+' '+p.D.name+' '+im.name+' tip '+lo.toFixed(2));});};
+ const trims=new Set();
+ rsWithWay({on:false,sOff:0,kOff:0,tOff:-1e9},()=>{for(const t of RS_PROBE.rest){rsFleetPose(t);atPose('rest t='+t);}});
+ rsWithWay({on:true,tOn:0,sOn:0},()=>{for(const t of RS_PROBE.way){rsFleetPose(t);atPose('way t='+t);for(const p of P)trims.add(+p.way.trim.toFixed(2));}});
+ R.push({name:'vessels-float-swell',ok:!fl.length,detail:fl.length?fl.slice(0,6).join(' | '):'deck above and keel below the swell at t='+RS_PROBE.rest.join(',')+' at rest and t='+RS_PROBE.way.join(',')+' under way; least freeboard '+minFb.toFixed(2)+' m'});
+ R.push({name:'no-vessel-overlap-posed',ok:!ov.length,detail:ov.length?ov.slice(0,6).join(' | '):'plan boxes (+0.5 m) clear at every sampled pose'});
+ R.push({name:'oars-reach-water-swell',ok:!oa.length,detail:oa.length?oa.slice(0,6).join(' | '):'every bank dips at its catch on the swell (worst tip '+minDip.toFixed(2)+' m from the surface)'});
+ // the courses: a whole lap (and the run home after a toggle mid-lap) sampled every 1.5 s (0.25 s home): no two plan boxes meet
+ {const W=RS_WAY,lap=W.P/W.speed+3*W.ease,hits=[];let n=0,minGap=1e9;
+  const chk=(lab)=>{const rc=P.map(p=>rsPlanRect(p,rsWayPose(p,RS_U.uTime.value),.5));n++;for(let i=0;i<P.length;i++)for(let j=i+1;j<P.length;j++)if(rsRectsHit(rc[i],rc[j]))hits.push(lab+' '+P[i].D.name+' x '+P[j].D.name);};
+  rsWithWay({on:true,tOn:0,sOn:0},()=>{for(let t=0;t<=lap;t+=1.5){RS_U.uTime.value=t;chk('t='+t.toFixed(1));}});
+  rsWithWay({on:false,sOff:W.speed*150,kOff:1,tOff:0},()=>{for(let t=0;t<=10;t+=.25){RS_U.uTime.value=t;chk('home t='+t.toFixed(2));}});
+  R.push({name:'courses-clear',ok:!hits.length,detail:hits.length?hits.slice(0,6).join(' | '):n+' poses over a full lap ('+lap.toFixed(0)+' s) and a run home: no two vessels meet'});}
+ // sails clear the cabins and each other trimmed as far as they go, either way (and at the sampled trims)
+ {const bad=[];for(const a of[...trims,RS_WAY.trimMax,-RS_WAY.trimMax,RS_WAY.trimMax/2,-RS_WAY.trimMax/2]){if(!a)continue;bad.push(...rsSailsInCabins(a),...rsSailsTouch(a));}
+  R.push({name:'sails-clear-trimmed',ok:!bad.length,detail:bad.length?bad.slice(0,8).join(' | '):'no sail through a cabin or another sail at trims to +-'+RS_WAY.trimMax+' rad'});}
  return R;}
 window._api={BUDGET,REG,
  get totals(){let tris=0,inst=0,meshes=0;for(const k in TSTAT.by){tris+=TSTAT.by[k].tris;inst+=TSTAT.by[k].inst;meshes+=TSTAT.by[k].meshes;}return{tris,inst,meshes,registered:REG.length,types:Object.keys(TSTAT.by).length};},
@@ -1820,17 +2045,199 @@ function labelsBuild(){
  FRAME_HOOKS.push(()=>{mat.uniforms.uPxToWorld.value=2*Math.tan(camera.fov*Math.PI/360)/innerHeight;});
  window._labels=list.length;return m;}
 labelsBuild();
-// ---------------------------------------------------------------- animation: the swell, the oars, the sea's normal map
-// Each vessel heaves, rolls and pitches on its own phase; its builder's anims (oar strokes) run on
-// the same clock. window._api.pause(t) freezes the clock at t seconds (verify.py shots are then
-// repeatable).
-FRAME_HOOKS.push((dt,now)=>{const t=window._rsPause!=null?window._rsPause:now/1000;
+// ---------------------------------------------------------------- animation: the swell, the wind, the oars, under way
+// One clock t (seconds) drives everything: RS_U.uTime feeds the sea's, the sails' and the flags' vertex shaders,
+// rsRide (40-rs-core.js) poses each hull on the same swell, and each builder's anims (oar strokes, wheels)
+// run on it. window._api.pause(t) freezes the clock at t seconds (verify.py shots are then repeatable).
+// Every pose is a pure function of t and of the times the Under way toggle was set (RS_WAY.tOn/tOff).
+//
+// Under way (toolbar button, off by default so the sheet and its preset views stay put): each row of the
+// sheet sails one closed course, a racetrack: east along the row's own line, a half-turn to port (radius
+// RS_PZ/4) onto a lane midway to the next row, west, and a half-turn back. The row's vessels keep their
+// spacing (they all make RS_WAY.speed, so they move like one train), heading follows the course's tangent and
+// they heel gently into the turns. s(t) is the distance run (easing up over RS_WAY.ease s); a vessel is at
+// course distance (its station's) + s. Turned off, s eases forward or back along the course to the nearest
+// whole lap, so each train runs back to station along its own track in a few seconds without crossing any
+// other. A Kelvin wake (one InstancedMesh, riding the swell) streams astern; labels and a preset view of a
+// vessel follow it.
+//
+// The wind: RS_WIND blows toward (wx,wz) at speed. Under way each vessel trims to the apparent wind
+// (true wind minus its own way): its rigs turn about their masts by RS_WAY.trimMax*sin(angle off the bow)
+// (zero head to wind and dead downwind, the most on a beam reach) and its pennants swing to stream with it.
+// At rest both are zero: the built pose.
+const RS_WIND={x:-.35,z:.94,speed:5};   // blowing toward SSW (from NNE), m/s
+const RS_WAY={on:false,tOn:0,tOff:-1e9,sOn:0,sOff:0,kOff:0,speed:1.8,ease:8,trimMax:.45,heel:.07,
+ R:RS_PZ/4,xW:-RS_COLS*RS_PX/2,xE:RS_COLS*RS_PX/2,follow:null,last:null};
+RS_WAY.S=RS_WAY.xE-RS_WAY.xW;RS_WAY.P=2*RS_WAY.S+TAU*RS_WAY.R;
+const rsClock=()=>window._rsPause!=null?window._rsPause:performance.now()/1000;
+const rsSmoother=x=>{x=clamp(x,0,1);return x*x*x*(x*(x*6-15)+10);};
+// the way's return leg: from sOff, ease to the nearest whole lap in Tb seconds
+function rsWayBack(){const W=RS_WAY,tg=Math.round(W.sOff/W.P)*W.P,d=tg-W.sOff;return{tg,d,Tb:clamp(3+Math.abs(d)/60,3,10)};}
+// s(t): distance run along the course (every vessel the same); k(t): how far under way (0 rest .. 1)
+function rsWayS(t){const W=RS_WAY;if(W.on){const s=Math.max(0,t-W.tOn),T=W.ease;return W.sOn+W.speed*(s-T*(1-Math.exp(-s/T)));}
+ const b=rsWayBack();return W.sOff+b.d*rsSmoother((t-W.tOff)/b.Tb);}
+function rsWayK(t){const W=RS_WAY;if(W.on)return 1-Math.exp(-Math.max(0,t-W.tOn)/W.ease);const b=rsWayBack();return W.kOff*(1-rsSmoother((t-W.tOff)/b.Tb));}
+// the course: u in [0,P) from the west end of the row's line -> x, z, yaw (unwrapped, + = turning to port)
+function rsCourseAt(zr,u){const W=RS_WAY,R=W.R,S=W.S,lap=Math.floor(u/W.P);u-=lap*W.P;let x,z,y;
+ if(u<S){x=W.xW+u;z=zr;y=0;}
+ else if(u<S+Math.PI*R){const f=(u-S)/R;x=W.xE+R*Math.sin(f);z=zr-R+R*Math.cos(f);y=f;}
+ else if(u<2*S+Math.PI*R){const w=u-S-Math.PI*R;x=W.xE-w;z=zr-2*R;y=Math.PI;}
+ else{const f=(u-2*S-Math.PI*R)/R;x=W.xW-R*Math.sin(f);z=zr-R-R*Math.cos(f);y=Math.PI+f;}
+ return{x,z,yaw:y+lap*TAU};}
+// a vessel's pose at t: {x,z,yaw,heel,k,trim,flag}; at rest exactly its station
+function rsWayPose(p,t){const k=rsWayK(t),s=rsWayS(t);
+ if(Math.abs(s)<1e-9&&k<1e-9)return{x:p.x,z:p.z,yaw:0,heel:0,k:0,trim:0,flag:0};
+ const u=p.x-RS_WAY.xW+s,c=rsCourseAt(p.z,u),w=12,a=rsCourseAt(p.z,u+w),b=rsCourseAt(p.z,u-w);
+ const kap=(a.yaw-b.yaw)/(2*w);   // the turn rate, smoothed over 24 m so the heel eases in and out
+ // apparent wind in the vessel frame (x bow, z starboard): true wind minus the vessel's own way
+ const v=RS_WAY.speed*k,wx=RS_WIND.x*RS_WIND.speed-Math.cos(c.yaw)*v,wz=RS_WIND.z*RS_WIND.speed+Math.sin(c.yaw)*v;
+ const co=Math.cos(c.yaw),si=Math.sin(c.yaw),lx=wx*co-wz*si,lz=wx*si+wz*co,L=Math.hypot(lx,lz)||1;
+ const ang=Math.atan2(lz,-lx);   // 0: the wind blows straight aft (from ahead), +: toward starboard
+ const fx=-(1-k)+k*lx/L,fz=k*lz/L;
+ return{x:c.x,z:c.z,yaw:c.yaw,heel:-RS_WAY.heel*kap*RS_WAY.R*Math.min(1,k),k,trim:RS_WAY.trimMax*Math.sin(ang)*k,flag:Math.atan2(fz,-fx)};}
+
+// ---- the wake: a foam texture (Kelvin arms from the bow, churn from the stern) on a strip that rides the swell
+const RS_WAKE=(()=>{const tex=canvasTex(256,512,(g,W,H)=>{g.clearRect(0,0,W,H);   // canvas y = distance astern of the bow, x = across
+  const arm=(sd)=>{for(let i=0;i<260;i++){const t=i/260,y=t*H,x=W/2+sd*t*W*.49;const a=.55*(1-t)*(1-t)*Math.min(1,t*14);
+    g.fillStyle=`rgba(235,245,248,${a})`;g.beginPath();g.ellipse(x,y,2+t*7,3+t*4,sd*.35,0,TAU);g.fill();
+    if(i%9===0){g.fillStyle=`rgba(225,238,242,${a*.6})`;for(let k=1;k<5;k++){g.beginPath();g.arc(x-sd*k*t*9,y+k*2,1+t*3,0,TAU);g.fill();}}}};
+  arm(-1);arm(1);
+  for(let i=0;i<900;i++){const t=.38+.62*h3(i,5,1),x=W/2+(h3(i,6,2)-.5)*(10+t*70),y=t*H;const a=.5*(1-(t-.38)/.62)**1.5;
+   g.fillStyle=`rgba(240,248,250,${a*(.4+.6*h3(i,7,3))})`;g.beginPath();g.arc(x,y,1+h3(i,8,4)*4,0,TAU);g.fill();}});
+ tex.wrapS=tex.wrapT=THREE.ClampToEdgeWrapping;
+ const mat=new THREE.MeshBasicMaterial({map:tex,transparent:true,depthWrite:false,opacity:0,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2});
+ mat.onBeforeCompile=sh=>{sh.uniforms.uRsTime=RS_U.uTime;sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+rsSwellGLSL())
+  .replace('#include <project_vertex>','vec4 rsW=modelMatrix*instanceMatrix*vec4(transformed,1.);rsW.y+=rsSwellH(rsW.xz)+.05;vec4 mvPosition=viewMatrix*rsW;gl_Position=projectionMatrix*mvPosition;');};
+ // unit strip: x from 0 (the bow) to -1 (astern), z +-0.36; scaled per vessel by 2.6 L
+ const geo=new THREE.PlaneGeometry(1,.72,24,10);geo.rotateX(-Math.PI/2);geo.translate(-.5,0,0);
+ {const uv=geo.attributes.uv,p=geo.attributes.position;for(let i=0;i<p.count;i++)uv.setXY(i,.5+p.getZ(i)/.72,1+p.getX(i));}   // v=1 at the bow (canvas top)
+ const im=new THREE.InstancedMesh(geo,mat,Math.max(1,RS_PLACED.length));im.frustumCulled=false;im.visible=false;im.userData.probeSkip=true;im.name='wakes';scene.add(im);return im;})();
+const _rsWM=new THREE.Matrix4(),_rsWQ=new THREE.Quaternion(),_rsWP=new THREE.Vector3(),_rsWS=new THREE.Vector3(),_rsWY=new THREE.Vector3(0,1,0);
+
+// ---- labels follow their vessel: map each label quad (93-labels.js bakes its anchor at station) to its vessel
+const RS_LABQ=(()=>{const m=LABELS&&LABELS.getObjectByName('labels');if(!m)return null;const a=m.geometry.attributes.aPos,q=[];
+ for(let i=0;i<a.count;i+=4){const p=RS_PLACED.find(p=>Math.abs(p.x-a.getX(i))<1e-3&&Math.abs(p.z-a.getZ(i))<1e-3);q.push(p?{p,y:a.getY(i)}:null);}return{a,q};})();
+
+// pose the whole fleet at t (the frame hook, and the probes in 91-rs-probe.js)
+function rsFleetPose(t){RS_U.uTime.value=t;
+ RS_PLACED.forEach((p,i)=>{const w=rsWayPose(p,t);p.way=w;rsRide(p.G,p.D,w.x,w.z,w.yaw,t,null,w.heel);
+  const U=p.G.userData.rsU;if(U){U.uRsTrim.value=w.trim;U.uRsFlag.value=w.flag;}
+  if(p.reg){p.reg.x=w.x;p.reg.z=w.z;}for(const f of p.V.anims)f(t);
+  if(w.k>0){const L=Math.max(6,p.D.L)*2.6;_rsWP.set(w.x+Math.cos(w.yaw)*p.D.L*.5,0,w.z-Math.sin(w.yaw)*p.D.L*.5);_rsWQ.setFromAxisAngle(_rsWY,w.yaw);_rsWS.set(L,1,L);
+   _rsWM.compose(_rsWP,_rsWQ,_rsWS);RS_WAKE.setMatrixAt(i,_rsWM);}});
+ const k=rsWayK(t);RS_WAKE.visible=k>.002;if(RS_WAKE.visible){RS_WAKE.instanceMatrix.needsUpdate=true;RS_WAKE.material.opacity=.85*Math.min(1,k);}
+ if(RS_LABQ){const a=RS_LABQ.a;RS_LABQ.q.forEach((e,j)=>{if(!e)return;const G=e.p.G;for(let c=0;c<4;c++)a.setXYZ(j*4+c,G.position.x,e.y+G.position.y,G.position.z);});a.needsUpdate=true;}}
+FRAME_HOOKS.push((dt,now)=>{const t=rsClock();rsFleetPose(t);
  TEX.rsWater.offset.x=(t*.004)%1;TEX.rsWater.offset.y=(t*.0025)%1;
- for(const p of RS_PLACED){const k=1/Math.sqrt(Math.max(8,p.D.L)/12);const a=t*.55+p.ph;
-  p.G.position.y=.18*k*Math.sin(a);p.G.rotation.set(.035*k*Math.sin(a*.8+1.3),0,.018*k*Math.sin(a*.6+.4),'YXZ');
-  for(const f of p.V.anims)f(t);}});
+ // a preset view of a vessel follows it (translation and turn) while it is under way or running home
+ const f=RS_WAY.follow;if(f&&!WALK.on){const w=f.way,l=RS_WAY.last||{x:f.x,z:f.z,yaw:0};
+  ctl.target.x+=w.x-l.x;ctl.target.z+=w.z-l.z;const dy=w.yaw-l.yaw;if(dy){const ox=ctl.target.x-w.x,oz=ctl.target.z-w.z,c=Math.cos(dy),s=Math.sin(dy);
+   ctl.target.x=w.x+ox*c+oz*s;ctl.target.z=w.z-ox*s+oz*c;ctl.theta+=dy;}
+  RS_WAY.last={x:w.x,z:w.z,yaw:w.yaw};}});
+// which vessel a preset view looks at (re-armed whenever a view is picked: setView puts the camera back at station,
+// and the first frame carries it to wherever the vessel is now)
+function rsFollowView(name){RS_WAY.follow=RS_PLACED.find(p=>name===p.D.name||name===p.D.name+' — abeam')||null;RS_WAY.last=null;}
+sel.addEventListener('change',()=>rsFollowView(sel.value));for(const b of hb.querySelectorAll('button'))b.addEventListener('click',()=>rsFollowView(b.textContent));
+rsFollowView(Object.keys(VIEWS)[0]);
+// toggle (on: true/false/undefined = flip) at time t0 (default now). The state at t0 is carried over, so a toggle
+// mid-return or mid-ease never jumps.
+function rsUnderWay(on,t0){const W=RS_WAY,next=on==null?!W.on:!!on,t=t0==null?rsClock():t0;
+ if(next!==W.on){const s=rsWayS(t),k=rsWayK(t);if(next){W.sOn=s;W.tOn=t-(k>0?-W.ease*Math.log(1-Math.min(k,.999)):0);}else{W.sOff=s;W.kOff=k;W.tOff=t;}W.on=next;
+  if(next&&k>0){W.sOn=s-W.speed*((t-W.tOn)-W.ease*(1-Math.exp(-(t-W.tOn)/W.ease)));}}
+ for(const b of ui.querySelectorAll('button'))if(b.textContent==='Under way')b.classList.toggle('on',W.on);return W.on;}
+uiButton('Under way',false,()=>rsUnderWay());
+window._api.underWay=rsUnderWay;
+window._api.wayState=()=>({on:RS_WAY.on,tOn:RS_WAY.tOn,tOff:RS_WAY.tOff,sOn:RS_WAY.sOn,sOff:RS_WAY.sOff,kOff:RS_WAY.kOff});
 // labels start hidden on this sheet (the Labels button shows them): twelve names over one roadstead crowd every wide shot
 if(LABELS)LABELS.visible=false;
+// ---------------------------------------------------------------- decks: walkable surfaces, collision, the life-layer data
+// Walk mode (F, 92-camera.js) stands on the decks. Per vessel, on first use, in the VESSEL FRAME, from its baked
+// meshes (the sails and the oar banks left out, everything else in):
+//   floor  a 0.4 m grid of the surfaces flatter than ~57 degrees: each cell keeps its distinct heights (layers)
+//   body   per cell, a 32-bit mask of 0.3 m height bins (from deckY-4 m) holding any geometry at all
+// The walker stands on the highest layer at most RS_DECK.step above its feet; it is stopped by a cell with no
+// such layer (a wall, a castle side) or with anything in its body's bins (0.5..1.7 m above its feet: masts,
+// cabin walls, rails, crew, cargo). It boards from the water by walking into a hull (onto the main deck, the
+// highest layer within 1.2 m of deckY) and leaves by climbing the rail (E, then walk). Aboard, it is carried
+// with the vessel (heave, roll, pitch, the course and its turns); in the water it stands on the swell.
+// Everything is a query on the rest-pose geometry through the vessel's live matrix, so it costs nothing per
+// frame beyond one matrix inverse per nearby vessel. window._api.decks() publishes the same data for a life layer.
+const RS_DECK={cell:.4,bin:.3,nb:32,step:.65,body:[.5,1.7],board:1.2};
+const _rsDV=new THREE.Vector3(),_rsDM=new THREE.Matrix4(),_rsDA=new THREE.Vector3(),_rsDB=new THREE.Vector3(),_rsDC=new THREE.Vector3();
+function rsHull2(P){P=P.slice().sort((a,b)=>a[0]-b[0]||a[1]-b[1]);if(P.length<3)return P;const cr=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]);const lo=[],up=[];
+ for(const p of P){while(lo.length>1&&cr(lo[lo.length-2],lo[lo.length-1],p)<=0)lo.pop();lo.push(p);}
+ for(let i=P.length-1;i>=0;i--){const p=P[i];while(up.length>1&&cr(up[up.length-2],up[up.length-1],p)<=0)up.pop();up.push(p);}
+ lo.pop();up.pop();return lo.concat(up).map(q=>[+q[0].toFixed(2),+q[1].toFixed(2)]);}
+function rsDeckData(p){if(p.deck)return p.deck;const C=RS_DECK,c=C.cell,b=p.bb,dY=p.V.deckY==null?1:p.V.deckY;
+ const x0=b.min.x-p.x-.5,z0=b.min.z-p.z-.5,nx=Math.ceil((b.max.x-b.min.x+1)/c),nz=Math.ceil((b.max.z-b.min.z+1)/c),y0=dY-4,yTop=y0+C.nb*C.bin;
+ const L=new Array(nx*nz),M=new Uint32Array(nx*nz),foot=[];
+ const mark=(x,y,z)=>{const i=Math.floor((x-x0)/c),k=Math.floor((z-z0)/c),j=Math.floor((y-y0)/C.bin);if(i<0||k<0||i>=nx||k>=nz||j<0||j>=C.nb)return;M[k*nx+i]|=1<<j;};
+ const layer=(i,k,y)=>{const id=k*nx+i,A=L[id]||(L[id]=[]);for(let q=0;q<A.length;q++)if(Math.abs(A[q]-y)<.15){A[q]=Math.max(A[q],y);return;}if(A.length<8)A.push(y);};
+ p.G.updateMatrixWorld(true);const inv=new THREE.Matrix4().copy(p.G.matrixWorld).invert();
+ p.G.traverse(o=>{if(!o.isMesh||o.isInstancedMesh||!o.geometry||/:sail:/.test(o.name))return;const pa=o.geometry.attributes.position,rel=new THREE.Matrix4().multiplyMatrices(inv,o.matrixWorld);
+  const ix=o.geometry.index,n=ix?ix.count:pa.count,vi=k=>ix?ix.getX(k):k;
+  for(let t=0;t<n;t+=3){_rsDA.fromBufferAttribute(pa,vi(t)).applyMatrix4(rel);_rsDB.fromBufferAttribute(pa,vi(t+1)).applyMatrix4(rel);_rsDC.fromBufferAttribute(pa,vi(t+2)).applyMatrix4(rel);
+   const A=_rsDA,B=_rsDB,Cc=_rsDC,lo=Math.min(A.y,B.y,Cc.y),hi=Math.max(A.y,B.y,Cc.y);
+   if(lo<.2)for(const q of[A,B,Cc])if(q.y<.2)foot.push([q.x,q.z]);   // the hull below the waterline: its footprint
+   if(hi<y0||lo>yTop)continue;
+   const ux=B.x-A.x,uy=B.y-A.y,uz=B.z-A.z,vx=Cc.x-A.x,vy=Cc.y-A.y,vz=Cc.z-A.z,Nx=uy*vz-uz*vy,Ny=uz*vx-ux*vz,Nz=ux*vy-uy*vx,Nl=Math.hypot(Nx,Ny,Nz);if(Nl<1e-9)continue;
+   if(Math.abs(Ny)/Nl>.55){   // a floor (either winding: the materials are double-sided): rasterise it at the cell centres
+    const i0=Math.max(0,Math.floor((Math.min(A.x,B.x,Cc.x)-x0)/c)),i1=Math.min(nx-1,Math.floor((Math.max(A.x,B.x,Cc.x)-x0)/c)),k0=Math.max(0,Math.floor((Math.min(A.z,B.z,Cc.z)-z0)/c)),k1=Math.min(nz-1,Math.floor((Math.max(A.z,B.z,Cc.z)-z0)/c));
+    const d=ux*vz-uz*vx;if(Math.abs(d)<1e-12)continue;
+    for(let k=k0;k<=k1;k++)for(let i=i0;i<=i1;i++){const px=x0+(i+.5)*c-A.x,pz=z0+(k+.5)*c-A.z,s=(px*vz-pz*vx)/d,r=(ux*pz-uz*px)/d;if(s<-.02||r<-.02||s+r>1.02)continue;
+     const y=A.y+s*uy+r*vy;layer(i,k,y);const j=Math.floor((y-y0)/C.bin);if(j>=0&&j<C.nb)M[k*nx+i]|=1<<j;}}
+   else{const e=Math.max(Math.hypot(ux,uy,uz),Math.hypot(vx,vy,vz),Math.hypot(B.x-Cc.x,B.y-Cc.y,B.z-Cc.z)),m=Math.min(120,Math.ceil(e/.2));
+    for(let i=0;i<=m;i++)for(let j=0;j<=m-i;j++){const s=i/m,r=j/m;mark(A.x+s*ux+r*vx,A.y+s*uy+r*vy,A.z+s*uz+r*vz);}}}});
+ for(const A of L)if(A)A.sort((a,b)=>a-b);
+ const D={x0,z0,nx,nz,y0,L,M,deckY:dY};
+ // published: the walkable main deck's outline, the hull's footprint, the masts and the cabins (vessel frame)
+ const walk=[];for(let k=0;k<nz;k++)for(let i=0;i<nx;i++){const g=rsDeckCell(D,x0+(i+.5)*c,z0+(k+.5)*c,dY,true);if(g&&!g.blocked&&Math.abs(g.y-dY)<1.2)walk.push([x0+(i+.5)*c,z0+(k+.5)*c]);}
+ D.walkArea=walk.length*c*c;D.outline=rsHull2(walk);D.footprint=rsHull2(foot);
+ D.masts=(p.G.userData.rigs||[]).map(R=>({x:+R.p[0].toFixed(2),z:+R.p[2].toFixed(2),y:+R.p[1].toFixed(2),ax:R.ax,az:R.az}));
+ D.solids=(p.G.userData.solids||[]).map(s=>({min:s.min.slice(),max:s.max.slice()}));
+ return p.deck=D;}
+// the ground in cell (lx,lz) of deck D for feet at local height f: {y, blocked} or null (no deck there: water)
+// board: arriving from the water, so take the main deck (deckY-0.8 .. deckY+1.2) rather than the step rule
+function rsDeckCell(D,lx,lz,f,board){const C=RS_DECK,i=Math.floor((lx-D.x0)/C.cell),k=Math.floor((lz-D.z0)/C.cell);if(i<0||k<0||i>=D.nx||k>=D.nz)return null;
+ const A=D.L[k*D.nx+i];if(!A)return null;let y=null;const lim=board?D.deckY+C.board:f+C.step;for(const h of A)if(h<=lim&&(!board||h>=D.deckY-.8))y=h;
+ if(y==null)return board?null:{y:A[0],blocked:true};   // boarding: only a deck-level surface counts (the foam ring and the wales are still the sea)
+ if(board)return{y,blocked:false};   // climbing over the side: the rail and the bulwark do not stop a boarder
+ const j0=Math.max(0,Math.floor((y+C.body[0]-D.y0)/C.bin)),j1=Math.min(C.nb-1,Math.floor((y+C.body[1]-D.y0)/C.bin));let m=0;for(let j=j0;j<=j1;j++)m|=1<<j;
+ let o=0;for(const [di,dk] of[[0,0],[1,0],[-1,0],[0,1],[0,-1]]){const ii=i+di,kk=k+dk;if(ii>=0&&kk>=0&&ii<D.nx&&kk<D.nz)o|=D.M[kk*D.nx+ii];}   // the body is ~0.4 m round
+ return{y,blocked:!!(o&m)};}
+// world point (x,z) for feet at world height fy (onVessel: the index the walker stands on now, -1 in the water):
+// {v, lx, ly, lz, y} where y is the world height of the ground, or {blocked:true}
+function rsWalkResolve(x,z,fy,onV){const t=RS_U.uTime.value;
+ for(let i=0;i<RS_PLACED.length;i++){const p=RS_PLACED[i],w=p.way||{x:p.x,z:p.z},r=Math.max(p.D.L,p.D.B)*.75+2;if((x-w.x)**2+(z-w.z)**2>r*r)continue;
+  const D=rsDeckData(p);p.G.updateMatrixWorld(true);_rsDM.copy(p.G.matrixWorld).invert();_rsDV.set(x,fy,z).applyMatrix4(_rsDM);
+  const g=rsDeckCell(D,_rsDV.x,_rsDV.z,_rsDV.y,onV!==i);if(!g)continue;if(g.blocked)return{blocked:true};
+  const lx=_rsDV.x,lz=_rsDV.z;_rsDV.set(lx,g.y,lz).applyMatrix4(p.G.matrixWorld);return{v:i,lx,ly:g.y,lz,y:_rsDV.y};}
+ return{v:-1,y:rsSeaH(x,z,t)};}
+const RS_WALKER={v:-1,init:false,wx:0,wz:0,lx:0,ly:0,lz:0,yaw:0};
+FRAME_HOOKS.push(()=>{const K=RS_WALKER;if(!WALK.on){K.init=false;K.v=-1;return;}
+ if(!K.init){K.init=true;K.v=-1;K.wx=WALK.x;K.wz=WALK.z;}
+ const dx=WALK.x-K.wx,dz=WALK.z-K.wz,fly=keys.e||keys.q;let bx=K.wx,bz=K.wz,fy=WALK.y-1.7;
+ if(K.v>=0){const p=RS_PLACED[K.v];p.G.updateMatrixWorld(true);_rsDV.set(K.lx,K.ly,K.lz).applyMatrix4(p.G.matrixWorld);bx=_rsDV.x;bz=_rsDV.z;if(!fly)fy=_rsDV.y;
+  const yw=p.way?p.way.yaw:0;WALK.yaw+=yw-K.yaw;K.yaw=yw;}   // carried with the vessel, turning with it
+ let r=null;for(const [cx,cz] of[[bx+dx,bz+dz],[bx+dx,bz],[bx,bz+dz],[bx,bz]]){r=rsWalkResolve(cx,cz,fy,K.v);if(!r.blocked){WALK.x=cx;WALK.z=cz;break;}r=null;}   // slide along a wall
+ if(!r){WALK.x=bx;WALK.z=bz;r={v:K.v,lx:K.lx,ly:K.ly,lz:K.lz,y:fy};}
+ WALK.y=fly?Math.max(WALK.y,r.y+1.7):r.y+1.7;
+ if(r.v>=0&&r.v!==K.v)K.yaw=RS_PLACED[r.v].way?RS_PLACED[r.v].way.yaw:0;
+ K.v=r.v;K.wx=WALK.x;K.wz=WALK.z;
+ if(K.v>=0){const p=RS_PLACED[K.v];_rsDM.copy(p.G.matrixWorld).invert();_rsDV.set(WALK.x,WALK.y-1.7,WALK.z).applyMatrix4(_rsDM);K.lx=_rsDV.x;K.lz=_rsDV.z;K.ly=fly?_rsDV.y:r.ly;}});
+// the life-layer contract: per vessel, its deck and collision data in the vessel frame plus its live pose
+function rsDecksApi(){return RS_PLACED.map(p=>{const D=rsDeckData(p),w=p.way||{x:p.x,z:p.z,yaw:0};p.G.updateMatrixWorld(true);
+ return{key:p.k,name:p.D.name,deckY:+D.deckY.toFixed(2),walkArea:+D.walkArea.toFixed(1),outline:D.outline,footprint:D.footprint,masts:D.masts,solids:D.solids,
+  pose:{x:+w.x.toFixed(2),z:+w.z.toFixed(2),yaw:+(w.yaw||0).toFixed(4),y:+p.G.position.y.toFixed(3),matrix:p.G.matrixWorld.elements.map(e=>+e.toFixed(5))}};});}
+Object.assign(window._api,{decks:rsDecksApi,
+ // the ground at vessel-frame (lx,lz) for feet at local height f (default: the main deck): {y, blocked} or null
+ deckAt:(key,lx,lz,f)=>{const p=RS_PLACED.find(p=>p.k===key);if(!p)return null;const D=rsDeckData(p);return rsDeckCell(D,lx,lz,f==null?D.deckY:f,f==null);},
+ // what a walker at world (x,z) would stand on: {vessel key or null, y}
+ walkGround:(x,z)=>{const r=rsWalkResolve(x,z,0,-1);return r.blocked?{blocked:true}:{vessel:r.v>=0?RS_PLACED[r.v].k:null,y:r.y};},
+ // put the walker aboard vessel key at vessel-frame (lx,lz), looking along vessel-frame heading yaw (0 = forward)
+ walkAboard:(key,lx,lz,yaw,pitch)=>{const i=RS_PLACED.findIndex(p=>p.k===key);if(i<0)return false;const p=RS_PLACED[i],D=rsDeckData(p),g=rsDeckCell(D,lx,lz,D.deckY,true);if(!g)return false;
+  if(!WALK.on)toggleWalk();p.G.updateMatrixWorld(true);_rsDV.set(lx,g.y,lz).applyMatrix4(p.G.matrixWorld);const K=RS_WALKER,yw=p.way?p.way.yaw:0;
+  WALK.x=_rsDV.x;WALK.z=_rsDV.z;WALK.y=_rsDV.y+1.7;WALK.yaw=yw+(yaw||0)-Math.PI/2;WALK.pitch=pitch||0;Object.assign(K,{init:true,v:i,wx:WALK.x,wz:WALK.z,lx,ly:g.y,lz,yaw:yw});return{y:g.y,blocked:g.blocked};}});
 </script>
 
 </body></html>

@@ -12,7 +12,7 @@ var UNDER_MESHES = [];
   if(SHEET) return;
   var savedB=BUCKET, savedM=MBK, n0=scene.children.length; BUCKET={}; MBK={};
   var A=ANTE, T=TUNNEL, FY=A.floorY, PF=platFrame(A.x,A.z,0), MET=METALC, LIT=PAL.electric, BLU=PAL.electricBlue;
-  function ELEC(x,y,z,amp,rad){ nlLampAdd(x,y,z,amp,rad,true); }
+  function ELEC(x,y,z,amp,rad){ nlLampAdd(x,y,z,amp,rad,true,'electric'); }
 
   /* ---- antechamber: floor, drum wall, ribbed parabolic dome with an oculus of light ---- */
   SECTOR('metal', PF, 0, A.R, 0, TAU, FY-1, FY, MET[1], { faces:'t', step:6 });

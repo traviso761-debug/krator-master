@@ -38,10 +38,19 @@ function reseed(s){_seed=s>>>0;}
 function rng(){_seed|=0;_seed=_seed+0x6D2B79F5|0;let t=Math.imul(_seed^_seed>>>15,1|_seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;}
 function rr(a,b){return a+(b-a)*rng();}
 function h3(x,y,z){const s=Math.sin(x*12.9898+y*78.233+z*37.719)*43758.5453;return s-Math.floor(s);}
+// Each h3 is a Math.sin, and sampling a terrain or a texture asks for the same lattice cells again and again: a
+// cell's eight corners are kept in a small direct-mapped cache (exact: the same h3 values, the same arithmetic in
+// the same order, so the same results bit for bit). It was most of every biome's load.
+var _vnK,_vnV;
 function vnoise(x,y,z){const xi=Math.floor(x),yi=Math.floor(y),zi=Math.floor(z),xf=x-xi,yf=y-yi,zf=z-zi;
- const sm=t=>t*t*(3-2*t);const u=sm(xf),v=sm(yf),w=sm(zf);const l=(a,b,t)=>a+(b-a)*t;
- return l(l(l(h3(xi,yi,zi),h3(xi+1,yi,zi),u),l(h3(xi,yi+1,zi),h3(xi+1,yi+1,zi),u),v),
-          l(l(h3(xi,yi,zi+1),h3(xi+1,yi,zi+1),u),l(h3(xi,yi+1,zi+1),h3(xi+1,yi+1,zi+1),u),v),w);}
+ if(_vnK===undefined){_vnK=new Float64Array(4096*3).fill(NaN);_vnV=new Float64Array(4096*8);}
+ const s=(Math.imul(xi|0,73856093)^Math.imul(yi|0,19349663)^Math.imul(zi|0,83492791))&4095,k=s*3,o=s*8,V=_vnV;
+ if(_vnK[k]!==xi||_vnK[k+1]!==yi||_vnK[k+2]!==zi){_vnK[k]=xi;_vnK[k+1]=yi;_vnK[k+2]=zi;
+  V[o]=h3(xi,yi,zi);V[o+1]=h3(xi+1,yi,zi);V[o+2]=h3(xi,yi+1,zi);V[o+3]=h3(xi+1,yi+1,zi);
+  V[o+4]=h3(xi,yi,zi+1);V[o+5]=h3(xi+1,yi,zi+1);V[o+6]=h3(xi,yi+1,zi+1);V[o+7]=h3(xi+1,yi+1,zi+1);}
+ const u=xf*xf*(3-2*xf),v=yf*yf*(3-2*yf),w=zf*zf*(3-2*zf);
+ const a=V[o]+(V[o+1]-V[o])*u,b=V[o+2]+(V[o+3]-V[o+2])*u,c=V[o+4]+(V[o+5]-V[o+4])*u,d=V[o+6]+(V[o+7]-V[o+6])*u;
+ const e=a+(b-a)*v,f=c+(d-c)*v;return e+(f-e)*w;}
 function fbm(x,y,z,o){o=o||3;let a=0,f=1,s=0;for(let i=0;i<o;i++){a+=vnoise(x*f,y*f,z*f)/f;s+=1/f;f*=2.03;}return a/s;}
 const clamp=(v,a,b)=>v<a?a:v>b?b:v, lerp=(a,b,t)=>a+(b-a)*t, TAU=Math.PI*2;
 
@@ -74,8 +83,18 @@ function finite3(a){return !!a&&isFinite(a[0])&&isFinite(a[1])&&isFinite(a[2]);}
 // tile is about 8 m across, because `lathe` sets uS = rFn(0)*TAU/8 and vS = cut/8.
 // At 512 px that is 64 px per metre, which is what the panel and board sizes
 // below are picked against — change the tile size and they stop meaning anything.
-function canvasTex(w,h,fn,rep){const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');fn(g,w,h);
- const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=8;t.encoding=THREE.sRGBEncoding;if(rep)t.repeat.set(rep,rep);return t;}
+//
+// Painting waits until something first reads the texture's `.image`, which three.js does when it uploads the
+// texture for a draw: a page pays only for the textures it shows. Painting every texture up front was ~11 s of
+// each Ancients page's load, before its first frame. Pass eager=true when fn draws from rng(): deferring it would
+// shift every later draw in the seeded stream (Screamers' flBarkTex). The pixels are the same either way.
+function canvasTex(w,h,fn,rep,eager){const c=document.createElement('canvas');c.width=w;c.height=h;
+ let paint=()=>{paint=null;fn(c.getContext('2d'),w,h);};if(eager)paint();
+ const t=new THREE.CanvasTexture(c);
+ if(paint)Object.defineProperty(t,'image',{configurable:true,enumerable:true,
+  get(){if(paint)paint();return c;},
+  set(v){paint=null;Object.defineProperty(t,'image',{value:v,writable:true,configurable:true,enumerable:true});}});
+ t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=8;t.encoding=THREE.sRGBEncoding;if(rep)t.repeat.set(rep,rep);return t;}
 // A roughness/metalness map is DATA, not colour. Leaving it sRGB-encoded (which
 // canvasTex does, correctly, for albedo) bends every value through a gamma curve
 // and the surface comes back wrong.
@@ -927,9 +946,28 @@ const STATE=d=>d===3?'repaired':d>0?'ruined':'intact';
 // its three legs stand at 30, 150 and 270 degrees, and a random bearing within
 // half a radian of east laid the fallen body straight through the 30-degree leg.
 // The rr() is drawn either way, so the PRNG stream is unchanged.
-function toppledUpper(G,cx,cz,hc,r0,bodyFn,d,dir,angF){const s=dir===-1?-1:1;const U=new THREE.Group();const a0=rr(-.5,.5),ang=angF!=null?angF+a0*.12:a0;
- U.position.set(cx+s*Math.cos(ang)*(r0*1.6),r0*.82,cz+s*Math.sin(ang)*(r0*1.6));U.rotation.set(0,-ang,-s*Math.PI/2*.94);G.add(U);useGroupXF(U);bodyFn(U,1,hc,null,true);endGroupXF();
+// THE BROKEN FALL. `TOPPLE_BREAK` ({x,z} in the builder's local frame, or null) breaks the fallen body in two near that
+// point: the first piece runs from the stump to the break; the second lies on beyond a gap, kinked toward the point's
+// side of the fall line, lying flatter and slumped lower, with rubble at the break. Only a builder that passes
+// `partFn(U,y0,y1)` (a body built from absolute y0 to y1, or to the top when y1 is null) can break: bodyGroup does,
+// so Skyscrapers D, E and F. A placer sets it around one call and clears it; null leaves every builder unchanged.
+// The second piece's bearing and foot are written back to TOPPLE_BREAK.out (local frame) for the placer.
+let TOPPLE_BREAK=null;
+function toppledUpper(G,cx,cz,hc,r0,bodyFn,d,dir,angF,partFn){const s=dir===-1?-1:1;const U=new THREE.Group();const a0=rr(-.5,.5),ang=angF!=null?angF+a0*.12:a0;
+ U.position.set(cx+s*Math.cos(ang)*(r0*1.6),r0*.82,cz+s*Math.sin(ang)*(r0*1.6));U.rotation.set(0,-ang,-s*Math.PI/2*.94);G.add(U);
+ if(TOPPLE_BREAK&&partFn)toppleBreak(G,U,ang,s,r0,hc,partFn);else{useGroupXF(U);bodyFn(U,1,hc,null,true);endGroupXF();}
  rubbleRing(cx+s*Math.cos(ang)*(r0*2),0,cz+s*Math.sin(ang)*(r0*2),r0*.5,r0*3,140,3.5);}
+function toppleBreak(G,U,ang,s,r0,hc,partFn){const B=TOPPLE_BREAK,ux=s*Math.cos(ang),uz=s*Math.sin(ang),k=Math.sin(Math.PI/2*.94);
+ const dx=B.x-U.position.x,dz=B.z-U.position.z,along=Math.max(12,dx*ux+dz*uz),side=-dx*uz+dz*ux,sg=side<0?-1:1;
+ const t=along/k;   // metres of body before the break (the body lies a little off the horizontal)
+ useGroupXF(U);partFn(U,hc,hc+t);endGroupXF();
+ const kink=(B.kink!=null?B.kink:.3)*sg,gap=B.gap!=null?B.gap:4,shift=Math.min(Math.abs(side),r0*.6)*sg;
+ const ang2=ang+kink*s,u2x=s*Math.cos(ang2),u2z=s*Math.sin(ang2);
+ const bx=U.position.x+ux*along,bz=U.position.z+uz*along;
+ const U2=new THREE.Group();U2.position.set(bx+u2x*gap-uz*shift,U.position.y*.82,bz+u2z*gap+ux*shift);U2.rotation.set(0,-ang2,-s*Math.PI/2*.99);G.add(U2);
+ useGroupXF(U2);partFn(U2,hc+t,null);endGroupXF();
+ rubbleRing(bx,0,bz,r0*.3,r0*1.3,70,3);
+ B.out={x:U2.position.x,z:U2.position.z,ux:u2x,uz:u2z,bx,bz};}
 function skyPlinth(G,d,R){mesh(lathe({rFn:()=>R,H:5,nu:96,nv:1}),SHELL(d),G);kput('slab',[0,5,0],null,[R,.6,R],new THREE.Color(d>0?0x5a4a40:0xd8d4cc));
  for(let k=0;k<48;k++){const th=k/48*TAU,r=R*.93;if(d>0&&rng()<.2)continue;kput(d>0?'colR':'colW',[r*Math.cos(th),5,r*Math.sin(th)],null,[1.8,12,1.8],null);}
  kput(d>0?'ringR':'ringW',[0,17.3,0],qEuler(Math.PI/2,0,0),[R*.94,R*.94,8],null);
@@ -1162,7 +1200,7 @@ function se(th,n){return 1/Math.pow(Math.pow(Math.abs(Math.cos(th)),n)+Math.pow(
 // rehabilitated tower was a three-storey stump. `stand` predates the fix (the
 // Projects, decay 4, pass it) and is now redundant but harmless.
 function bodyGroup(G,y0,d,dd,build,cutY,topR,stand){const P=new THREE.Group();P.position.set(0,y0,0);G.add(P);useGroupXF(P);if(d!==2||stand)build(P,dd,y0,null,false);else build(P,1,y0,cutY,false);endGroupXF();
- if(d===2)toppledUpper(G,0,0,cutY,topR,(U)=>build(U,1,cutY,null,true),d);}
+ if(d===2)toppledUpper(G,0,0,cutY,topR,(U)=>build(U,1,cutY,null,true),d,1,null,(U,a,b)=>build(U,1,a,b,b==null));}
 
 // ================================================================= SKYSCRAPER D — "the Monolith" (bare concrete, Torre Velasca head)
 // DECAY 4 IS "PROJECT D": rehabilitated and still standing, the same idea as
@@ -1726,6 +1764,11 @@ function vnWedgeGeo(tx,tz){const p=[],uv=[],idx=[];const c=[[-.5,0,-.5],[.5,0,-.
 // 1 x 1 x 1 box whose uv is scaled by the caller through the instance? No —
 // instances share one geometry, so the texture tiles per unit of scale; the
 // maps are drawn at 2 m per tile so a 6 m slab shows 3 courses. Good enough.
+// an open SKIRT: the four sloping faces of a hip from a 1 x 1 base (y 0) to a tx x tz opening (y 1), both sides, no
+// top and no soffit — the lower tier of a two-tier roof, so the clerestory between the tiers shows from below
+function vnSkirtGeo(tx,tz){const p=[],uv=[],idx=[];const c=[[-.5,0,-.5],[.5,0,-.5],[.5,0,.5],[-.5,0,.5],[-tx/2,1,-tz/2],[tx/2,1,-tz/2],[tx/2,1,tz/2],[-tx/2,1,tz/2]];
+ for(const f of[[0,1,5,4],[1,2,6,5],[2,3,7,6],[3,0,4,7]])for(const g of[f,f.slice().reverse()]){const b=p.length/3;g.forEach((vi,i)=>{p.push(...c[vi]);uv.push(i===1||i===2?1:0,i>=2?1:0);});idx.push(b,b+1,b+2,b,b+2,b+3);}
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(p,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setIndex(idx);g.computeVertexNormals();return g;}
 const VBOX=new THREE.BoxGeometry(1,1,1);
 const VPOST=new THREE.CylinderGeometry(1,1,1,8).translate(0,.5,0);           // base at y=0
 const VPOSTB=new THREE.CylinderGeometry(.85,1,1,8).translate(0,.5,0);        // tapering
@@ -1746,7 +1789,7 @@ kdef('vConeT',VCONE,MAT.thatch);kdef('vConeC',VCONE,MAT.verdigris);kdef('vConeI'
 kdef('vGableS',VGABLE,MAT.shingle);kdef('vGableT',VGABLE,MAT.thatch);kdef('vGableC',VGABLE,MAT.corrugate);kdef('vGableCu',VGABLE,MAT.verdigris);kdef('vGableP',VGABLE,MAT.white);kdef('vGableW',VGABLE,MAT.wood);kdef('vGableSt',VGABLE,MAT.stone);kdef('vGablePl',VGABLE,MAT.plaster);
 kdef('vPyrS',VPYR,MAT.stone);kdef('vPyrCu',VPYR,MAT.verdigris);kdef('vPyrT',VPYR,MAT.thatch);kdef('vPyrSh',VPYR,MAT.shingle);kdef('vPyrC',VPYR,MAT.corrugate);
 kdef('vBatterS',VBATTER,MAT.stone);kdef('vBatterP',VBATTER,MAT.plaster);kdef('vBatterW',VBATTER,MAT.wood);
-kdef('vHipS',VHIP,MAT.shingle);kdef('vHipT',VHIP,MAT.thatch);kdef('vHipCu',VHIP,MAT.verdigris);kdef('vHipC',VHIP,MAT.corrugate);
+kdef('vSkirtT',vnSkirtGeo(.4,.46),MAT.thatch);kdef('vHipS',VHIP,MAT.shingle);kdef('vHipT',VHIP,MAT.thatch);kdef('vHipCu',VHIP,MAT.verdigris);kdef('vHipC',VHIP,MAT.corrugate);
 MAT.ember=new THREE.MeshBasicMaterial({color:0xff7a2a});               // forge/kiln fire — not electric, so allowed anywhere
 kdef('vEmber',VBALL,MAT.ember);
 kdef('vWinLit',VBOX,MAT.warmPane);kdef('vWinGlass',VBOX,MAT.darkGlass);kdef('vBulb',VBALL,MAT.bulb);kdef('vHoop',new THREE.TorusGeometry(1,.06,5,16),MAT.iron);
@@ -1817,8 +1860,9 @@ function vBeam(a,b,w,c,item){beam(item||'vWood',a,b,w,w,c||null);}
 function vnFrame(x,y,z,w,h,d,ry,c,pr){pr=pr||.14;const nx=Math.max(1,Math.round(w/2.4)),nz=Math.max(1,Math.round(d/2.4));
  for(let i=0;i<=nx;i++){const lx=-w/2+w*i/nx;for(const s of[-1,1]){const p=loc(x,z,lx,s*d/2,ry);vPst('vPost',p[0],y,p[1],pr,h,c);}}
  for(let j=1;j<nz;j++){const lz=-d/2+d*j/nz;for(const s of[-1,1]){const p=loc(x,z,s*w/2,lz,ry);vPst('vPost',p[0],y,p[1],pr,h,c);}}
- for(const yy of[y+.12,y+h-.12]){   // sill and head rails on all four faces
-  for(const s of[-1,1]){const p=loc(x,z,0,s*d/2,ry);vB('vWood',p[0],yy-.1,p[1],w+pr*2,.2,pr*2.2,ry,c);const q=loc(x,z,s*w/2,0,ry);vB('vWood',q[0],yy-.1,q[1],pr*2.2,.2,d+pr*2,ry,c);}}}
+ for(const yy of y>=.15?[y+h-.12]:[y+.12,y+h-.12]){   // head rails on all four faces; a sill rail too, unless the frame stands on a plinth (the plinth's top is the sill)
+  // the long-face rails run through; the end-face rails butt into them (they used to cross at every corner)
+  for(const s of[-1,1]){const p=loc(x,z,0,s*d/2,ry);vB('vWood',p[0],yy-.1,p[1],w+pr*2,.2,pr*2.2,ry,c);const q=loc(x,z,s*w/2,0,ry);vB('vWood',q[0],yy-.1,q[1],pr*2.2,.2,Math.max(.2,d-pr*2.2),ry,c);}}}
 // Stilts under a raised floor: posts at the corners and along the long sides, with a diagonal brace on each face.
 function vnStilts(x,y,z,w,d,h,ry,c,pr){pr=pr||.18;const nx=Math.max(1,Math.round(w/2.6)),nz=Math.max(1,Math.round(d/2.6));const pts=[];
  for(let i=0;i<=nx;i++)for(let j=0;j<=nz;j++){if(i>0&&i<nx&&j>0&&j<nz&&rng()<.5)continue;const p=loc(x,z,-w/2+w*i/nx,-d/2+d*j/nz,ry);vPst('vPostB',p[0],y-.3,p[1],pr,h+.3,c);pts.push(p);}
@@ -1847,15 +1891,34 @@ function vnGableRoof(x,y,z,w,d,rise,ry,slabItem,slabC,over,endItem,endC,thick){o
  for(const s of[-1,1]){const zc=s*ext/2,yc=y+(rise-over*rise/(d/2))/2;const p=loc(x,z,0,zc,ry);
   const q=vQ(ry,s*a,0);const n=new THREE.Vector3(0,1,0).applyQuaternion(q).multiplyScalar(thick*.5);
   kput(slabItem,[p[0]+n.x,yc+n.y,p[1]+n.z],q,[w+2*over,thick,S],slabC||null);}
+ // the ridge fill: the slabs are pushed out along their normals, so on a steep pitch their tops part in a V that the
+ // cap hides from the side but not from above. A slab-material bar, rotated to a diamond, closes it
+ {const p=loc(x,z,0,0,ry);kput(slabItem,[p[0],y+rise+thick*.15,p[1]],vQ(ry,Math.PI/4,0),[w+2*over,thick*1.5,thick*1.5],slabC||null);}
  vB('vWood',x,y+rise+thick*.35,z,w+2*over+.1,.22,.5,ry,slabC?slabC.clone().multiplyScalar(.8):vC(0x6a4a30));     // ridge cap
- for(const s of[-1,1]){const p=loc(x,z,0,s*(ext+.02),ry);vB('vWood',p[0],y-over*rise/(d/2)-.32+thick*.2,p[1],w+2*over,.28,.12,ry,vC(0x6a4a30));}}   // fascia
+ for(const s of[-1,1]){const p=loc(x,z,0,s*(ext+.02),ry);vB('vWood',p[0],y-over*rise/(d/2)-.32+thick*.2,p[1],w+2*over,.28,.12,ry,vC(0x6a4a30));}   // fascia
+ if(slabItem==='vThatchB')vnThatchDress(x,y,z,w,d,rise,ry,slabC,over,thick,S,a,ext);}
+// THATCH (Round 1 issue: a stripe field at eye level): a second frond layer laid over the first, a touch shorter and
+// darker so its lower edge reads as a course, and a ragged eave — a fringe of short tilted bundles of uneven length
+function vnThatchDress(x,y,z,w,d,rise,ry,c,over,thick,S,a,ext){const c2=c?c.clone().multiplyScalar(.86):vC(0x8a7448);const ye=y-over*rise/(d/2);
+ for(const s of[-1,1]){const zc=s*ext/2*.92,yc=y+(rise-over*rise/(d/2))/2+.05;const p=loc(x,z,0,zc,ry);const q=vQ(ry,s*a,0);
+  const n=new THREE.Vector3(0,1,0).applyQuaternion(q).multiplyScalar(thick*1.15);kput('vThatchB',[p[0]+n.x,yc+n.y+rise*.04,p[1]+n.z],q,[w+2*over-.3,thick*.7,S*.84],c2);
+  const L=w+2*over,nb=Math.max(4,Math.round(L/.55));for(let i=0;i<nb;i++){const lx=-L/2+(i+.5)*L/nb,len=rr(.35,.8);const e=loc(x,z,lx,s*(ext-.05),ry);
+   kput('vThatchB',[e[0],ye-len*.35,e[1]],vQ(ry,s*(a+rr(-.15,.25)),rr(-.12,.12)),[L/nb+.08,.1,len],(i%3?c2:c)||null);}}}
 // Shed: one slab, high at the back (-z), low at the front (+z).
 function vnShedRoof(x,y,z,w,d,rise,ry,item,c,over,thick){over=over===undefined?.7:over;thick=thick||.2;const a=Math.atan2(rise,d);const ext=d+2*over,S=ext/Math.cos(a);
  const p=loc(x,z,0,0,ry);const q=vQ(ry,a,0);const n=new THREE.Vector3(0,1,0).applyQuaternion(q).multiplyScalar(thick*.5);
  kput(item,[p[0]+n.x,y+rise/2+n.y,p[1]+n.z],q,[w+2*over,thick,S],c||null);}
 // Solid hipped / pyramidal roofs (the wedge items). `over` widens the base; the base drops a little so the wall top is buried.
 function vnHipRoof(item,x,y,z,w,d,rise,ry,c,over){over=over===undefined?.8:over;kput(item,[x,y-.35,z],ry?qEuler(0,ry,0):null,[w+2*over,rise+.35,d+2*over],c||null);
- vB('vWood',x,y-.62,z,w+2*over+.06,.28,d+2*over+.06,ry,c?c.clone().multiplyScalar(.75):vC(0x5a3e2a));}   // eaves board
+ vB('vWood',x,y-.62,z,w+2*over+.06,.28,d+2*over+.06,ry,c?c.clone().multiplyScalar(.75):vC(0x5a3e2a));   // eaves board
+ // a thatched hip: a second, steeper frond layer and a ragged fringe round all four eaves
+ if(item==='vHipT'||item==='vPyrT'){const c2=c?c.clone().multiplyScalar(.86):vC(0x8a7448);kput(item,[x,y+rise*.18,z],ry?qEuler(0,ry,0):null,[(w+2*over)*.8,rise*.85,(d+2*over)*.8],c2);
+  vnThatchFringe(x,y-.5,z,w+2*over,d+2*over,ry,c);}}
+// a ragged fringe of short tilted thatch bundles round the four eaves of a W x D roof whose eave line is at y
+function vnThatchFringe(x,y,z,W,D,ry,c){const c2=c?c.clone().multiplyScalar(.86):vC(0x8a7448);
+ for(const [L,lz,rot] of[[W,D/2,0],[W,-D/2,Math.PI],[D,W/2,Math.PI/2],[D,-W/2,-Math.PI/2]]){const nb=Math.max(4,Math.round(L/.55));
+  for(let i=0;i<nb;i++){const lx=-L/2+(i+.5)*L/nb,len=rr(.3,.7);const e=loc(x,z,...(rot===0?[lx,lz]:rot===Math.PI?[-lx,lz]:rot>0?[lz,-lx]:[lz,lx]),ry);
+   kput('vThatchB',[e[0],y-len*.3,e[1]],vQ(ry+rot,.5+rr(-.15,.2),rr(-.1,.1)),[L/nb+.08,.1,len],(i%3?c2:c)||null);}}}
 function vnPyrRoof(item,x,y,z,w,d,rise,ry,c,over){vnHipRoof(item,x,y,z,w,d,rise,ry,c,over);}
 // A thatch cone on a round building; ragged eave by a second slightly larger, shorter cone.
 function vnThatchCone(x,y,z,r,rise,c){kput('vConeT',[x,y-.3,z],null,[r*1.18,rise+.3,r*1.18],c||null);kput('vConeT',[x,y-.55,z],null,[r*1.28,.9,r*1.28],c?c.clone().multiplyScalar(.85):null);}
@@ -1912,7 +1975,9 @@ function vnAwning(x,y,z,ry,w,out,c){const q=vQ(ry,.42,0);const p=loc(x,z,0,out/2
  for(const s of[-1,1]){const pp=loc(x,z,s*(w/2-.1),out-.1,ry);vPst('vPost',pp[0],y-3,pp[1],.05,y-Math.tan(.42)*out+.3-(y-3),vC(0x6a5a48));}}
 function vnBannerPole(x,y,z,ry,h,c){vPst('vPost',x,y,z,.08,h,vC(0x5a4632));const p=loc(x,z,.55,0,ry);vB('vWood',p[0],y+h-.2,p[1],1.1,.08,.08,ry,vC(0x5a4632));
  kput('vCloth',[p[0],y+h-1.6,p[1]],vQ(ry+Math.PI/2,0,0),[.7,2.7,1],c||vC(vPick(VPAL.orange)));}
-function vnChimney(x,y,z,h,r,rusty){vPst(rusty?'vPipeR':'vPipe',x,y,z,r,h,null);vB('vIron',x,y+h+.1,z,r*3,.08,r*3,0,vC(0x2e2a26));for(const s of[-1,1])vB('vIron',x+s*r*1.1,y+h-.05,z,.06,.2,.06,0,vC(0x2e2a26));}
+function vnChimney(x,y,z,h,r,rusty){vPst(rusty?'vPipeR':'vPipe',x,y,z,r,h,null);vB('vIron',x,y+h+.1,z,r*3,.08,r*3,0,vC(0x2e2a26));for(const s of[-1,1])vB('vIron',x+s*r*1.1,y+h-.05,z,.06,.2,.06,0,vC(0x2e2a26));
+ // a world that keeps a CHIMNEYS list (the city: smoke) gets every chimney top, in world space, like DOORS
+ if(window.CHIMNEYS&&VERN.cur){const c=VERN.cur,sc=c.o.scale||1;const wp=loc(c.x,c.z,x*sc,z*sc,c.ry);CHIMNEYS.push([wp[0],(c.o.y||0)+(y+h+.2)*sc,wp[1],0]);}}
 // Fence of posts and two rails around a rectangle (gap at the front centre of width `gate`).
 function vnFence(x,y,z,w,d,ry,c,gate,h){h=h||1.3;const segs=[[[-w/2,-d/2],[w/2,-d/2]],[[w/2,-d/2],[w/2,d/2]],[[-w/2,d/2],[-w/2,-d/2]]];
  if(gate){segs.push([[-w/2,d/2],[-gate/2,d/2]],[[gate/2,d/2],[w/2,d/2]]);}else segs.push([[w/2,d/2],[-w/2,d/2]]);
@@ -2072,8 +2137,13 @@ function buildVernRichA(G,o){reseed(7301+(o.v|0));const W=14,D=12,H1=4.6,W2=11,D
  const c1=vnCornice('vStone',0,Y0+H1+.2,0,W*.86,D*.86,0,st,3);
  // fluted deco strips and lit windows on the battered face (face recedes with height: offset by vBatHalf)
  {const y=Y0+1.6,hf=vBatHalf(W,H1,1.6),df=vBatHalf(D,H1,1.6);
-  for(const x of[-4.6,-2.3,2.3,4.6])vnWin(x,y,df,0,1.2,1.7,'lit','vStone',st);for(const x of[-3.45,0,3.45])vnStrip(x,Y0+.9,df+.02,0,.7,3.2,'vStone',stD);
-  for(const s of[-1,1])for(const z of[-3.2,0,3.2])vnWin(s*hf,y,z,s*Math.PI/2,1.2,1.7,'lit','vStone',st);for(const x of[-3.5,0,3.5])vnWin(x,y,-df,Math.PI,1.2,1.7,'glass','vStone',st);}
+  // each window sits in a flat REVEAL block: its front is vertical and flush with the face at the sill, its back buried
+  // where the face recedes, so the frame no longer stands proud at the head and sinks at the sill (Round 1 issue)
+  const bw=(px,pz,ry,L,kind)=>{const nx=Math.sin(ry),nz=Math.cos(ry),tx=Math.cos(ry),tz=-Math.sin(ry),al=px*tx+pz*tz;
+   const f0=vBatHalf(L,H1,1.6-.3)+.04,f1=vBatHalf(L,H1,1.6+1.7+.35),dep=f0-f1+.25;
+   vB('vStone',tx*al+nx*(f0-dep/2),y-.3,tz*al+nz*(f0-dep/2),1.2+.7,1.7+.65,dep,ry,st);vnWin(tx*al+nx*f0,y,tz*al+nz*f0,ry,1.2,1.7,kind,'vStone',st);};
+  for(const x of[-4.6,-2.3,2.3,4.6])bw(x,df,0,D,'lit');for(const x of[-3.45,0,3.45])vnStrip(x,Y0+.9,df+.02,0,.7,3.2,'vStone',stD);
+  for(const s of[-1,1])for(const z of[-3.2,0,3.2])bw(s*hf,z,s*Math.PI/2,W,'lit');for(const x of[-3.5,0,3.5])bw(x,-df,Math.PI,D,'glass');}
  vnStairs(0,0,D/2+1.9,0,3.2,Y0,3,'vStone',st);vnDoor(0,Y0,vBatHalf(D,H1,1.3),0,1.7,2.9,'vStone',st,vC(0x4a2e1c));
  // gallery storey in hardwood, balcony to the front
  vB('vWood',0,c1,0,W2,H2,D2,0,wood);for(const sx of[-1,1])for(const sz of[-1,1])vPst('vPost',sx*(W2/2-.02),c1,sz*(D2/2-.02),.2,H2,wood.clone().multiplyScalar(.8));
@@ -2263,7 +2333,8 @@ function buildVernMarket(G,o){reseed(7451+(o.v|0));const W=24,D=17,H=5.2;const w
  for(const s of[-1,1]){vB('vWood',0,H-.15,s*D/2,W+.4,.3,.3,0,wood);vB('vWood',s*W/2,H-.15,0,.3,.3,D+.4,0,wood);}
  for(let i=0;i<=nx;i++)vB('vWood',-W/2+W*i/nx,H-.15,0,.22,.22,D,0,wood);                       // tie beams
  // lower thatch skirt all round (two long slabs, two short) and an upper hip over the middle third
- vnHipRoof('vHipT',0,H,0,W,D,2.6,0,th,1.3);
+ // (an open skirt, not a solid hip: from under it the clerestory and the upper roof show — Round 1 issue)
+ kput('vSkirtT',[0,H-.35,0],null,[W+2.6,2.95,D+2.6],th);vB('vWood',0,H-.62,0,W+2.66,.28,D+2.66,0,th.clone().multiplyScalar(.75));vnThatchFringe(0,H-.5,0,W+2.6,D+2.6,0,th);
  for(const sx of[-1,1])for(const sz of[-1,1])vPst('vPostB',sx*W/6,H+1.4,sz*D/8,.16,2.2,wood);
  vnHipRoof('vHipT',0,H+3.4,0,W*.42,D*.5,2.0,0,th,.9);
  vB('vWood',0,H+3.4,0,W*.42+.4,.25,.25,0,wood);vB('vWood',0,H+3.4,0,.25,.25,D*.5+.4,0,wood);
@@ -2335,7 +2406,7 @@ function buildVernSchool(G,o){reseed(7501+(o.v|0));const st=vC(vPick(VPAL.stone)
   vB('vWood',tx,TH+2.9,tz,.1,.4,.1,0,wood);kput('vBall',[tx,TH+2.0,tz],null,[.5,.6,.5],vC(0x7a6a2a));}
  // classroom wings: single storey stone with timber verandas facing the yard, copper shed roofs
  for(const s of[-1,1]){const wx=s*10.5,WW=7,WD=13,wz=1.5;vB('vStone',wx,Y0,wz,WW,3.6,WD,0,st);const t=vnCornice('vStone',wx,Y0+3.6,wz,WW,WD,0,st,1);
-  vnShedRoof(wx,t,wz,WD,WW,1.4,s*Math.PI/2,'vCopperB',cu,.9,.16);
+  vnShedRoof(wx,t,wz,WD,WW,1.4,-s*Math.PI/2,'vCopperB',cu,.9,.16);   // high on the outer wall: the roof drains toward the yard, onto the veranda roof below it
   const fx=wx-s*WW/2;for(const z of[-4.2,-1.4,1.4,4.2])vnWin(fx,Y0+1.2,wz+z,-s*Math.PI/2,1.3,1.7,'lit','vStone',st);vnDoor(fx,Y0,wz-5.6,-s*Math.PI/2,1.2,2.4,'vStone',st,vC(0x4a2e1c),false);
   vnVeranda(fx-s*1.3,Y0,wz,WD,2.6,-s*Math.PI/2,.04,3.0,wood);vnShedRoof(fx-s*1.3,Y0+3.0,wz,WD,2.6,.6,-s*Math.PI/2,'vCopperB',cu,.4,.12);
   for(const z of[-3,0,3])vnWin(wx+s*WW/2,Y0+1.4,wz+z,s*Math.PI/2,1.1,1.3,'glass','vStone',st);}
@@ -3486,6 +3557,17 @@ const DEADNAME={winI:'winD',winBigI:'winBigD',winSmI:'winSmD',ovalI:'ovalD',mull
 // ---- generic post-build passes: 'ruin' and 'rehab' ---------------------------------------------------------------
 // P is the (possibly transformed) group the pair built into; `root` is an IDENTITY group in the scene that receives
 // the cut geometry (which is computed in world space). ranges = KIT.items lengths before the pair ran.
+// SLIVERS (Travis: the Tyrell block read as see-through). The cut keeps or drops whole triangles, and a lathed shell's
+// triangles are long and thin (the Tyrell's are 0.6 x 2.5 m): dropping one of a quad's pair left a vertical slit, and a
+// shell full of them read as a basket of slats you could see through. Every triangle is split along its longest edge
+// until no edge is over `maxE` metres, so holes come out as ragged blobs. (UVs are rebuilt in metres after the cut.)
+function wreckRefine(p,maxE){const out=[];const m2=maxE*maxE;const st=[];
+ for(let i=0;i<p.length;i+=9){st.push([p[i],p[i+1],p[i+2],p[i+3],p[i+4],p[i+5],p[i+6],p[i+7],p[i+8],0]);
+  while(st.length){const t=st.pop();const e=[0,3,6].map(k=>{const a=k,b=(k+3)%9;return (t[a]-t[b])**2+(t[a+1]-t[b+1])**2+(t[a+2]-t[b+2])**2;});
+   const k=e[0]>=e[1]&&e[0]>=e[2]?0:e[1]>=e[2]?1:2;if(e[k]<=m2||t[9]>=6){for(let j=0;j<9;j++)out.push(t[j]);continue;}
+   const a=k*3,b=((k+1)%3)*3,c=((k+2)%3)*3,mx=(t[a]+t[b])/2,my=(t[a+1]+t[b+1])/2,mz=(t[a+2]+t[b+2])/2;
+   st.push([t[a],t[a+1],t[a+2],mx,my,mz,t[c],t[c+1],t[c+2],t[9]+1],[mx,my,mz,t[b],t[b+1],t[b+2],t[c],t[c+1],t[c+2],t[9]+1]);}}
+ return new Float32Array(out);}
 function wreck(P,root,ranges,mode,cx,cz,seed){reseed(seed);const rehab=mode==='rehab';
  const bb=new THREE.Box3();P.updateMatrixWorld(true);const meshes=[];P.traverse(o=>{if(o.isMesh)meshes.push(o);});
  for(const m of meshes){m.geometry.computeBoundingBox();bb.union(m.geometry.boundingBox.clone().applyMatrix4(m.matrixWorld));}
@@ -3507,7 +3589,7 @@ function wreck(P,root,ranges,mode,cx,cz,seed){reseed(seed);const rehab=mode==='r
  const hf=clamp(2.6/R,.07,.5);const holeT=rehab?.17:.25;const hole=(x,y,z)=>fbm(x*hf+seed*.7,y*hf,z*hf,3)<holeT;let topKept=y0;
  const gone=[],cutGeos=[];
  for(const m of meshes){if(m.material===MAT.glass){m.parent.remove(m);continue;}
-  const g=(m.geometry.index?m.geometry.toNonIndexed():m.geometry).clone();g.applyMatrix4(m.matrixWorld);const p=g.attributes.position.array,uv=g.attributes.uv?g.attributes.uv.array:null;
+  const g=(m.geometry.index?m.geometry.toNonIndexed():m.geometry).clone();g.applyMatrix4(m.matrixWorld);const p=wreckRefine(g.attributes.position.array,2.4),uv=null;
   const np=[],nu=[];for(let i=0;i<p.length;i+=9){const x=(p[i]+p[i+3]+p[i+6])/3,y=(p[i+1]+p[i+4]+p[i+7])/3,z=(p[i+2]+p[i+5]+p[i+8])/3;
    const keep=y<cut+jag(x,z)&&!hole(x,y,z);
    if(keep){for(let k=0;k<9;k++)np.push(p[i+k]);for(let k=1;k<9;k+=3)if(p[i+k]>topKept&&Math.hypot(p[i+k-1]-cx,p[i+k+1]-cz)<R*.8)topKept=p[i+k];
@@ -3712,27 +3794,57 @@ MAT.concRust=MAT.rust.clone();MAT.concRust.color=new THREE.Color(1,.93,.86);if(M
 // Skyscraper D is bare concrete in the kit: its ruined and reclaimed skins go to rust-streaked steel (Travis)
 function izsRustSkin(G){G.traverse(m=>{if(m.isMesh&&(m.material===MAT.concreteR||m.material===MAT.concrete))m.material=MAT.concRust;});}
 // T: {awnings (array the caller bakes), post, ball, rope (kit item names), col (hex -> Color), stall(col) (builds
-// one stall at the current group transform; the group is passed too), culture (REG tag)}
+// one stall at the current group transform; the group is passed too), culture (REG tag), stalls (optional array: every
+// stall's {x,y,z,face} is pushed to it — the life layer's market destinations), maxCanopies (default 90)}
 // THE TRIPOD MARKET (Travis): a reclaimed Skyscraper C hangs a great awning from each side of its leg triangle, sloping out to
 // a mast at the opposite point, so from above the legs' triangle and the three awnings make a six-pointed star; market
 // stalls stand in the shade under each awning and in the open triangle between the legs.
+// DENSER (Travis, round 4): the great awnings reach half again further out; their stalls stand on a lattice that fills the
+// shade, not on one line; and a ring of smaller canopies — a sloping cloth on four poles over a stall each — fills the
+// star's notches and the ground round it out to the lot's edge, clear of the leg feet, the masts and their guy ropes.
+// The whole market registers as ONE market (type market/shop, tags.market, tags.destination 'market').
 function tripodMarket(G,o,y,scale,ry,gx,gz,y0,T){const legAt=(k,ly)=>{const th=k/3*TAU+Math.PI/6,r=62-42*(ly-5)/150;return loc2(gx,gz,Math.cos(th)*r*scale,Math.sin(th)*r*scale,ry);};
- const hb=38,rb=62-42*(hb-5)/150;const Y=ly=>y0+ly*scale;const cols=[0xe07a2a,0xc9442a,0xe0a030];
- for(let k=0;k<3;k++){const a=legAt(k,hb),b=legAt((k+1)%3,hb);const tm=(k+.5)/3*TAU+Math.PI/6;const ap=loc2(gx,gz,Math.cos(tm)*rb*scale*1.05,Math.sin(tm)*rb*scale*1.05,ry);
-  const ya=Y(hb),yp=y+6.5;
-  // the awning: a sagging cloth triangle, 6 x 6 subdivided so the fall line reads
-  const pos=[],uv=[],N=6;const P=(u,v)=>{const w=1-u-v;const sag=-1.4*Math.sin(Math.PI*Math.min(1,u+v))*(1-Math.abs(u-v));return[a[0]*w+b[0]*u+ap[0]*v,ya*(w+u)+yp*v+sag,a[1]*w+b[1]*u+ap[1]*v];};
+ const hb=38,rb=62-42*(hb-5)/150;const Y=ly=>y0+ly*scale;const cols=[0xe07a2a,0xc9442a,0xe0a030];const yg=y+1.55;
+ const tris=[],masts=[],feet=[0,1,2].map(k=>legAt(k,5));let nStall=0;
+ const stallAt=(x,z,face,c)=>{const Gs=new THREE.Group();Gs.position.set(x,yg,z);Gs.rotation.y=face;scene.add(Gs);useGroupXF(Gs);try{T.stall(c,Gs);}finally{endGroupXF();}
+  nStall++;if(T.stalls)T.stalls.push({x,y:yg,z,face});};
+ const clothQuad=(c,P)=>{const pos=[],uv=[],N=3;const at=(u,v)=>P(u,v);for(let i=0;i<N;i++)for(let j=0;j<N;j++){for(const[a,b]of[[0,0],[1,0],[0,1],[1,0],[1,1],[0,1]]){const q=at((i+a)/N,(j+b)/N);pos.push(...q);uv.push(q[0]*.5,q[2]*.5);}}
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.computeVertexNormals();T.awnings.push({g,c});};
+ for(let k=0;k<3;k++){const a=legAt(k,hb),b=legAt((k+1)%3,hb);const tm=(k+.5)/3*TAU+Math.PI/6;const ap=loc2(gx,gz,Math.cos(tm)*rb*scale*1.5,Math.sin(tm)*rb*scale*1.5,ry);
+  const ya=Y(hb),yp=y+6.5;tris.push([a,b,ap]);masts.push(ap);
+  // the awning: a sagging cloth triangle, 8 x 8 subdivided so the fall line reads
+  const pos=[],uv=[],N=8;const P=(u,v)=>{const w=1-u-v;const sag=-1.8*Math.sin(Math.PI*Math.min(1,u+v))*(1-Math.abs(u-v));return[a[0]*w+b[0]*u+ap[0]*v,ya*(w+u)+yp*v+sag,a[1]*w+b[1]*u+ap[1]*v];};
   for(let i=0;i<N;i++)for(let j=0;j<N-i;j++){const q=[[i,j],[i+1,j],[i,j+1]];const add=t=>{for(const[ii,jj]of t){const p=P(ii/N,jj/N);pos.push(...p);uv.push(p[0]*.5,p[2]*.5);}};add(q);if(i+j<N-1)add([[i+1,j],[i+1,j+1],[i,j+1]]);}
   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.computeVertexNormals();
   T.awnings.push({g,c:cols[k]});
   // the mast at the point, guy ropes, a valance along the leading edges
   kput(T.post,[ap[0],y,ap[1]],null,[.35,yp-y+.4,.35],T.col(0xe2b676));kput(T.ball,[ap[0],yp+.5,ap[1]],null,[.4,.4,.4],T.col(0x8a6a2a));
   for(const s2 of[-1,1]){const g2=loc2(ap[0],ap[1],s2*3,0,tm);beam(T.rope,[ap[0],yp+.3,ap[1]],[g2[0]+(ap[0]-gx)*.15,y,g2[1]+(ap[1]-gz)*.15],.05,.05,T.col(0xa89878));}
-  // stalls in the shade: three per awning along the triangle's centre line
-  for(let t=0;t<3;t++){const f=.25+t*.22;const m=[(a[0]+b[0])/2*(1-f)+ap[0]*f,(a[1]+b[1])/2*(1-f)+ap[1]*f];const Gs=new THREE.Group();Gs.position.set(m[0],y+1.55,m[1]);Gs.rotation.y=Math.atan2(ap[0]-gx,ap[1]-gz)+Math.PI/2;scene.add(Gs);useGroupXF(Gs);try{T.stall(T.col(cols[(k+t)%3]),Gs);}finally{endGroupXF();}}}
+  // stalls in the shade: a lattice over the awning's footprint, each facing along the fall line
+  const face=Math.atan2(ap[0]-gx,ap[1]-gz)+Math.PI/2,L=6;
+  for(let i=1;i<L;i++)for(let j=1;i+j<L;j++){const u=i/L,v=j/L,w=1-u-v;if(w<.1)continue;const x=a[0]*w+b[0]*u+ap[0]*v,z=a[1]*w+b[1]*u+ap[1]*v;
+   if(feet.some(f=>Math.hypot(x-f[0],z-f[1])<6))continue;if(Math.hypot(x-ap[0],z-ap[1])<5)continue;stallAt(x,z,face,T.col(cols[(k+i+j)%3]));}}
  // and the open triangle between the legs
- for(let t=0;t<3;t++){const th=t/3*TAU+Math.PI/2,r=rb*scale*.3;const Gs=new THREE.Group();Gs.position.set(o.x+Math.cos(th)*r,y+1.55,o.z+Math.sin(th)*r);Gs.rotation.y=-th;scene.add(Gs);useGroupXF(Gs);try{T.stall(undefined,Gs);}finally{endGroupXF();}}
- REG.push({name:'Tripod market',x:o.x,y:y,z:o.z,r:rb*scale*1.1,h:12,cls:'building',key:'city_tripod_market',tags:{culture:T.culture,type:['market/shop'],wealth:'middle',lit:true,note:'awnings hung from a reclaimed Skyscraper C'}});}
+ for(let t=0;t<3;t++){const th=t/3*TAU+Math.PI/2,r=rb*scale*.3;stallAt(o.x+Math.cos(th)*r,o.z+Math.sin(th)*r,-th,undefined);}
+ // the ring of canopies: on rings 7.6 m apart from just outside the leg triangle to the lot's edge (or the star's reach
+ // plus a margin, whichever is nearer), every 8 m round each ring; a canopy goes where none of its corners is under a
+ // great awning, near a leg foot or a mast, or off the lot
+ const inTri=(x,z,t)=>{const s=(p,q,r)=>(p[0]-r[0])*(q[1]-r[1])-(q[0]-r[0])*(p[1]-r[1]);const P=[x,z],d1=s(P,t[0],t[1]),d2=s(P,t[1],t[2]),d3=s(P,t[2],t[0]);return!((d1<0||d2<0||d3<0)&&(d1>0||d2>0||d3>0));};
+ const oc=Math.cos(o.ry||0),os=Math.sin(o.ry||0);const onLot=(x,z)=>{const dx=x-o.x,dz=z-o.z;return Math.abs(dx*oc-dz*os)<o.hx-1.5&&Math.abs(dx*os+dz*oc)<o.hz-1.5;};
+ const reach=Math.min(Math.hypot(o.hx,o.hz),rb*scale*1.5+14),CW=3.4,CD=2.7,ccols=[0xe07a2a,0xc9442a,0xe0a030,0xd8623a,0xb8862a,0x3a7a5a];let nc=0;const maxC=T.maxCanopies||90;
+ for(let R=rb*scale*.62+4;R<=reach&&nc<maxC;R+=7.6){const n=Math.max(6,Math.floor(TAU*R/8));const off=R*.37;
+  for(let i=0;i<n&&nc<maxC;i++){const th=i/n*TAU+off,x=o.x+R*Math.cos(th),z=o.z+R*Math.sin(th),cry=Math.atan2(o.x-x,o.z-z);
+   const cs=[[-CW,-CD],[CW,-CD],[CW,CD],[-CW,CD]].map(c=>loc2(x,z,c[0],c[1],cry));
+   if(!cs.every(c=>onLot(c[0],c[1])))continue;
+   if(cs.concat([[x,z]]).some(c=>tris.some(t=>inTri(c[0],c[1],t))))continue;
+   if(feet.some(f=>Math.hypot(x-f[0],z-f[1])<CW+4.5))continue;if(masts.some(m=>Math.hypot(x-m[0],z-m[1])<CW+5))continue;
+   const c=ccols[(i+Math.round(R))%ccols.length],hi=yg+3.7,lo=yg+2.7;
+   // the cloth: high on the side facing the tripod, low on the outside, a little sag
+   clothQuad(c,(u,v)=>{const p=loc2(x,z,(u*2-1)*(CW+.3),(v*2-1)*(CD+.3),cry);return[p[0],lo+(hi-lo)*v-.25*Math.sin(Math.PI*u)*Math.sin(Math.PI*v),p[1]];});
+   for(const q of cs){const h=(q===cs[2]||q===cs[3])?hi:lo;kput(T.post,[q[0],yg,q[1]],null,[.16,h-yg,.16],T.col(0xe2b676));}
+   stallAt(x,z,cry+Math.PI,T.col(c));nc++;}}
+ REG.push({name:'Tripod market',x:o.x,y:y,z:o.z,r:Math.max(rb*scale*1.6,reach),h:12,cls:'building',key:'city_tripod_market',
+  tags:{culture:T.culture,type:['market/shop'],wealth:'middle',lit:true,market:true,destination:'market',stalls:nStall,canopies:nc,note:'awnings hung from a reclaimed Skyscraper C; a life-layer market destination'}});}
 // an instanced item's world-space box: the def geometry's own bounds through the item's scale and rotation (a torus or
 // cylinder is radius 1, a box half-size .5 — measuring by the scale alone got every ring half its real size)
 const _defBB={};function itemBox(n,q){let bb=_defBB[n];if(!bb){const g=KIT.defs[n]&&KIT.defs[n].geo;if(!g){return null;}g.computeBoundingBox();bb=_defBB[n]=g.boundingBox.clone();}
@@ -3759,14 +3871,17 @@ function measureKit(cat){if(cat.meas)return cat.meas;const parts=kitBuildParts(c
  // a tower's PODIUM top: the highest low part wider than the shaft. Everything at or under it is the kit's podium and goes;
  // the shaft is lowered so that level lands on the city's own square plinth.
  let baseY=0;if(cat.kind==='sky'){const cw=Math.max(core.max.x-core.min.x,core.max.z-core.min.z);for(const b of parts){if(b.max.y>bb.max.y*.12||b.max.y<0)continue;if(Math.max(b.max.x-b.min.x,b.max.z-b.min.z)<cw*1.1)continue;baseY=Math.max(baseY,b.max.y);}}
- cat.meas={cx:(core.min.x+core.max.x)/2,cz:(core.min.z+core.max.z)/2,hx:Math.max(4,(core.max.x-core.min.x)/2),hz:Math.max(4,(core.max.z-core.min.z)/2),h:bb.max.y,th:cat.kind==='sky'?coreTh:th,baseY,
-  full:{hx:(bb.max.x-bb.min.x)/2,hz:(bb.max.z-bb.min.z)/2}};return cat.meas;}
+ // the SHAFT: everything above the podium, legs included (Skyscraper A's legs lean out past its core; a placer that must
+ // keep them on the lot fits by this, measured about the core centre)
+ const cxm=(core.min.x+core.max.x)/2,czm=(core.min.z+core.max.z)/2;let shx=0,shz=0;for(const b of parts){if(b.max.y<=baseY+1)continue;shx=Math.max(shx,Math.abs(b.min.x-cxm),Math.abs(b.max.x-cxm));shz=Math.max(shz,Math.abs(b.min.z-czm),Math.abs(b.max.z-czm));}
+ cat.meas={cx:cxm,cz:czm,hx:Math.max(4,(core.max.x-core.min.x)/2),hz:Math.max(4,(core.max.z-core.min.z)/2),h:bb.max.y,th:cat.kind==='sky'?coreTh:th,baseY,
+  full:{hx:(bb.max.x-bb.min.x)/2,hz:(bb.max.z-bb.min.z)/2},shaft:{hx:Math.max(4,shx),hz:Math.max(4,shz)}};return cat.meas;}
 // drop what a kit builder laid BEYOND the plot below the plinth line (plinths, plazas, aprons, the colonnade round a
 // tower's podium): an instanced item or a mesh goes when it is low and any part of it leaves the plot by more than 2 m.
-// `keep` (an OBB) protects a region — the toppled tower's fallen body.
+// `keep` (an OBB, or a list of them) protects a region — the toppled tower's fallen body (both pieces of a broken one).
 function trimPlinths(G,snap,o,y,scale,th,keep,podY){const c=Math.cos(o.ry),s=Math.sin(o.ry);const pod=podY!=null?podY:-1e9;
  const outOf=(wx,wz,e,B)=>{const dx=wx-B.x,dz=wz-B.z,cc=Math.cos(B.ry),ss=Math.sin(B.ry);const lx=cc*dx-ss*dz,lz=ss*dx+cc*dz;return Math.abs(lx)+e>B.hx+2||Math.abs(lz)+e>B.hz+2;};
- const kept=(wx,wz)=>keep&&!outOf(wx,wz,0,keep);const lowY=y+th*scale*.9;
+ const K=keep?(Array.isArray(keep)?keep:[keep]):[];const kept=(wx,wz)=>K.some(B=>!outOf(wx,wz,0,B));const lowY=y+th*scale*.9;   // keep: one OBB or a list
  for(const n in KIT.items){const it=KIT.items[n];const a=snap[n]||0;if(it.length<=a)continue;let w=a;
   for(let i=a;i<it.length;i++){const q=it[i],b=itemBox(n,q);if(!b){it[w++]=q;continue;}const cx=(b.min.x+b.max.x)/2,cz=(b.min.z+b.max.z)/2,e=Math.max(b.max.x-b.min.x,b.max.z-b.min.z)/2;
    if(((b.max.y<lowY&&outOf(cx,cz,e,o))||b.max.y<pod+.3)&&!kept(cx,cz))continue;it[w++]=q;}it.length=w;}
@@ -3864,7 +3979,7 @@ izOrig('palace','Palace fortress',150,true,(P,x,z)=>{const sm=0xd4a05a,sl=0xe6bd
  kput('frus88',[x+8,28,z-15],null,[46,22,26],tC(sm));kput('frus88',[x-12.5,28,z+5],null,[5,22,14],tC(sm));kput('frus88',[x+19.5,28,z+5],null,[23,22,14],tC(sm));kput('frus88',[x-1,39,z+5],null,[18,11,14],tC(sm));
  kput('frus85',[x+16,50,z-10],null,[20,30,20],tC(sm));kput('frus85',[x+16,80,z-10],null,[14,11,14],tC(sl));kput('frus60',[x+16,91,z-10],null,[8,7,8],tC(sm));kput('frusPyr',[x+16,98,z-10],null,[5,6,5],tC(sl));
  kput('boxW',[x,12.6+.75,z],null,[91,1.5,80],tC(sl));kput('boxW',[x+4,26.6+.75,z-4],null,[63,1.5,54],tC(sl));kput('boxW',[x+8,48.6+.75,z-8],null,[42,1.5,37],tC(sl));kput('boxW',[x+16,78.8+.7,z-10],null,[18.5,1.4,18.5],tC(sl));
- izWin(0,0,96,84,.93,14,0,7,9,3,4);izWin(4,-4,68,58,.9,14,14,20,6,3,4);izWin(8,-8,46,40,.88,22,28,34,6,2.2,4,xx=>xx>-11&&xx<9);izWin(8,-8,46,40,.88,22,28,43,6,2.2,3,xx=>xx>-11&&xx<9);for(let i=0;i<3;i++)izWin(16,-10,20,20,.85,30,50,56+i*8,2,3,3);
+ izWin(0,0,96,84,.93,14,0,7,9,3,4,xx=>Math.abs(xx)<12);izWin(4,-4,68,58,.9,14,14,20,6,3,4);izWin(8,-8,46,40,.88,22,28,34,6,2.2,4,xx=>xx>-11&&xx<9);izWin(8,-8,46,40,.88,22,28,43,6,2.2,3,xx=>xx>-11&&xx<9);for(let i=0;i<3;i++)izWin(16,-10,20,20,.85,30,50,56+i*8,2,3,3);
  // THE HALL (Travis): the hangar converted for entertaining Izani and foreign nobles — 18 x 14 m, 11 m high, open to the
  // terrace: a lit floor, two rows of pale columns, a coffered ceiling of warm lamps, a great doorway into the palace at the back
  {const hy=28.1,hx=x-1,hz=z+5;kput('slab',[hx,hy-.05,hz],null,[9.6,.3,9.6],tC(0xe6d6b0));                      // the floor medallion
@@ -3891,9 +4006,29 @@ izOrig('palace','Palace fortress',150,true,(P,x,z)=>{const sm=0xd4a05a,sl=0xe6bd
  {const ty=14.1;for(let i=0;i<10;i++){const sx=-40+i*8.9;if(Math.abs(sx-4)<12)continue;kput('hedge',[x+sx,ty+.6,z+36],null,[4.6,1.2,1.4],vC(0x3f6a34));}
   for(const sx of[-40,-24,32,44])vnLampPost(x+sx,ty,z+38.6,3.2);
   for(let i=0;i<22;i++)kput('boxW',[x-44+i*4.2,ty+1.1,z+39.4],null,[1.6,1.0,1.0],tC(sl));for(let i=0;i<15;i++)kput('boxW',[x+4-30+i*4.3,28.1+1.1,z-4-26.4],null,[1.6,1.0,1.0],tC(sl));}
- // banner poles and lamp columns along the front of the base tier
- for(let i=0;i<7;i++){const sx=-42+i*14;vnBannerPole(x+sx,0,z+44.5,0,9,vC(i%2?0xe07a2a:0xc9442a));}
- for(const sx of[-36,-12,12,36])vnLampPost(x+sx,0,z+46,4.2);
+ // banner poles and lamp columns along the front of the base tier (the middle pole gave way to the grand entrance)
+ for(let i=0;i<7;i++){if(i===3)continue;const sx=-42+i*14;vnBannerPole(x+sx,0,z+44.5,0,9,vC(i%2?0xe07a2a:0xc9442a));}
+ for(const sx of[-36,-17,17,36])vnLampPost(x+sx,0,z+46,4.2);
+ // THE GRAND ENTRANCE (Travis, round 4): the base tier had no door. On the axis road from the triumphal plaza: a raised
+ // landing and a broad flight of steps, two stepped pylons with hanging banners and sconces, a deep lit doorway whose
+ // bronze leaves stand open, a stepped deco lintel with a drip band, and a crest carrying the orb; orb pedestals and
+ // lamp posts at the foot of the steps
+ {const fz=z+42,L=1.2;
+  kput('boxW',[x,L/2,fz+2.4],null,[14,L,4.8],tC(sl));                                                                     // the landing
+  for(let k=1;k<=5;k++){const h=L-k*.2;kput('boxW',[x,h/2,fz+4.8+k*.9-.45],null,[14+k*2.2,h,.9],tC(k%2?sl:0xe6d6b0));}    // the steps down to the plaza
+  kput('boxD',[x,L+4.1,fz-.6],null,[8.4,8.2,3.2],null);kput('dot',[x,L+4.1,fz-2.1],null,[7.6,7.8,.3],WARM.clone().multiplyScalar(.85));   // the doorway and the lit vestibule
+  for(const sd of[-1,1]){const a=1.05,cx=x+sd*4.2-sd*2*Math.cos(a),cz=fz+1+2*Math.sin(a);kput('boxW',[cx,L+3.9,cz],qEuler(0,sd*a,0),[4,7.8,.35],tC(0x8a6a2a));   // bronze leaves, open
+   for(const yy of[2.2,5.6])kput('boxW',[cx,L+yy,cz],qEuler(0,sd*a,0),[3.6,.25,.5],tC(0xc8962a));}
+  for(const sd of[-1,1]){const px=x+sd*8.3;
+   kput('boxW',[px,7,fz+1.8],null,[4.2,14,6.4],tC(sm));kput('boxW',[px,14.3,fz+1.8],null,[5,.6,7.2],tC(sl));kput('boxW',[px,14.9,fz+1.8],null,[4,.6,6.2],tC(sm,.9));   // the pylons, stepped caps
+   for(const k of[-1.3,0,1.3])kput('finW',[px+k,6.6,fz+5.05],null,[.45,10,.3],null);                                     // deco fins
+   kput('vCloth',[px,8.4,fz+5.25],null,[3,7.4,1],vC(sd<0?0xe07a2a:0xc9442a));kput('vBall',[px,12.3,fz+5.3],null,[.35,.35,.35],vC(0x8a6a2a));   // the banners
+   kput('dot',[x+sd*5.6,L+6.4,fz+3.6],null,[.6,1.3,.5],WARM);                                                            // sconces in the reveal
+   kput('boxW',[x+sd*11.6,1.2,fz+10.4],null,[2.2,2.4,2.2],tC(sl));kput('vFinial',[x+sd*11.6,3.3,fz+10.4],null,[1,1,1],vC(0xe0b050));   // orb pedestals
+   vnLampPost(x+sd*12.6,0,fz+13,5.2);}
+  kput('boxW',[x,L+9.2,fz+1.8],null,[12.4,2.2,6.4],tC(sl));kput('boxW',[x,L+8.05,fz+5.05],null,[12.8,.35,.5],tC(sm,.9));   // the lintel and its drip band
+  kput('boxW',[x,L+10.8,fz+1.4],null,[10,1,5],tC(sm));kput('boxW',[x,L+11.8,fz+1],null,[7,1,4],tC(sl));kput('boxW',[x,L+12.7,fz+.7],null,[4,.9,3],tC(sm));   // the stepped crest
+  kput('vFinial',[x,L+14.6,fz+.7],null,[1.5,1.5,1.5],vC(0xe0b050));kput('lampI',[x,L+7.2,fz+3],null,[1.2,.5,1.2],WARM);}
  // pyramidal roofs and pavilions on the terrace tops, the beacon (from the Iziz Ancients Mix palace)
  // the terrace pavilions (Travis: develop the bare pyramids and cubes): each PYRAMID becomes an open pavilion — a paved
  // floor, four columns, an architrave, the pyramid roof lifted onto it with a lantern — and each CUBE a belvedere — a
@@ -4806,6 +4941,10 @@ frame();window._ready=true;
 // One label per registered volume (REG), drawn once into a texture atlas and rendered as ONE mesh of camera-facing
 // quads: a thousand labels cost one draw call. Labels keep a constant size on screen (150 px; landmarks 260 px)
 // and fade out past 300 m, landmarks never. Toggled with the Labels button (they live in the LABELS group).
+// ONE LABEL PER BUILDING: volumes that overlap and share a name before ' — ' (a kit building adopted as several REG
+// entries: the Salvagers' Guild) keep only the landmark or the largest. DECLUTTER: every few frames the labels are
+// projected to the screen and, landmarks first and then nearest first, a label whose box overlaps one already shown
+// is hidden (aHide), so near the camera they no longer pile up.
 // A world that already made LABELS (the city) gets the atlas added to it; one that did not gets the group made here.
 const LABEL_ATLAS={W:4096,H:4096,cw:409,ch:48};
 function labelsBuild(){
@@ -4815,29 +4954,43 @@ function labelsBuild(){
  const count={};for(const r of REG)count[r.name]=(count[r.name]||0)+1;
  let list=REG.filter(r=>r.name&&count[r.name]<8&&(!r.cls||r.cls==='building'||r.cls==='farm'||r.cls==='furniture')&&!(r.tags&&r.tags.part==='wall'));
  const isBig=r=>!!(r.tags&&(r.tags.role||r.tags.landmark));
+ {const head=r=>r.name.split(' — ')[0],better=(a,b)=>(isBig(a)-isBig(b))||(a.r-b.r);const drop=new Set();
+  for(let i=0;i<list.length;i++)for(let j=i+1;j<list.length;j++){const a=list[i],b=list[j];if(head(a)!==head(b))continue;if(Math.hypot(a.x-b.x,a.z-b.z)>(a.r+b.r)*.6)continue;drop.add(better(a,b)>=0?b:a);}
+  list=list.filter(r=>!drop.has(r));}
  list.sort((a,b)=>(isBig(b)-isBig(a))||(b.r-a.r));if(list.length>max)list=list.slice(0,max);
  const cv=document.createElement('canvas');cv.width=LABEL_ATLAS.W;cv.height=LABEL_ATLAS.H;const g=cv.getContext('2d');g.clearRect(0,0,cv.width,cv.height);
- const pos=[],apos=[],uv=[],cell=[],big=[],idx=[];
+ const pos=[],apos=[],uv=[],cell=[],big=[],idx=[],hide=[];
  list.forEach((r,i)=>{const cx=(i%cols)*LABEL_ATLAS.cw,cy=Math.floor(i/cols)*LABEL_ATLAS.ch;const B=isBig(r);
   g.fillStyle=B?'rgba(20,12,6,.72)':'rgba(0,0,0,.55)';g.fillRect(cx+1,cy+1,LABEL_ATLAS.cw-2,LABEL_ATLAS.ch-2);
   g.font=(B?'bold 34px':'bold 28px')+' system-ui,sans-serif';g.fillStyle=B?'#ffe2b0':'#f4e8d4';g.textAlign='center';g.textBaseline='middle';
   let t=r.name;while(g.measureText(t).width>LABEL_ATLAS.cw-10&&t.length>4)t=t.slice(0,-2);if(t!==r.name)t=t.slice(0,-1)+'…';g.fillText(t,cx+LABEL_ATLAS.cw/2,cy+LABEL_ATLAS.ch/2+1);
   const y=(r.y||0)+r.h+3,b=i*4;
-  for(const c of[[-.5,-.5],[.5,-.5],[.5,.5],[-.5,.5]]){pos.push(c[0],c[1],0);apos.push(r.x,y,r.z);uv.push((cx+(c[0]+.5)*LABEL_ATLAS.cw)/LABEL_ATLAS.W,1-(cy+(0.5-c[1])*LABEL_ATLAS.ch)/LABEL_ATLAS.H);cell.push(0,0);big.push(B?1:0);}
+  for(const c of[[-.5,-.5],[.5,-.5],[.5,.5],[-.5,.5]]){pos.push(c[0],c[1],0);apos.push(r.x,y,r.z);uv.push((cx+(c[0]+.5)*LABEL_ATLAS.cw)/LABEL_ATLAS.W,1-(cy+(0.5-c[1])*LABEL_ATLAS.ch)/LABEL_ATLAS.H);cell.push(0,0);big.push(B?1:0);hide.push(0);}
   idx.push(b,b+1,b+2,b,b+2,b+3);});
  if(!list.length)return null;
  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setAttribute('aPos',new THREE.Float32BufferAttribute(apos,3));
- geo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));geo.setAttribute('aBig',new THREE.Float32BufferAttribute(big,1));geo.setIndex(idx);
+ geo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));geo.setAttribute('aBig',new THREE.Float32BufferAttribute(big,1));geo.setAttribute('aHide',new THREE.Float32BufferAttribute(hide,1));geo.setIndex(idx);
  // the uv above already addresses the cell, so the shader only flips nothing: cell offsets are baked in
  const tex=new THREE.CanvasTexture(cv);tex.minFilter=THREE.LinearFilter;tex.generateMipmaps=false;
  const mat=new THREE.ShaderMaterial({transparent:true,depthWrite:false,depthTest:true,fog:false,
   uniforms:{map:{value:tex},uPxToWorld:{value:1}},
-  vertexShader:`attribute vec3 aPos;attribute float aBig;uniform float uPxToWorld;varying vec2 vUv;varying float vA;
+  vertexShader:`attribute vec3 aPos;attribute float aBig;attribute float aHide;uniform float uPxToWorld;varying vec2 vUv;varying float vA;
    void main(){vec4 mv=modelViewMatrix*vec4(aPos,1.0);float dist=-mv.z;float w=aBig>0.5?240.0:170.0;float k=dist*uPxToWorld;
-    mv.xy+=position.xy*vec2(w*k,w*k*48.0/409.0);vA=aBig>0.5?1.0:(1.0-smoothstep(320.0,560.0,dist));vUv=uv;gl_Position=projectionMatrix*mv;}`,
+    mv.xy+=position.xy*vec2(w*k,w*k*48.0/409.0);vA=(aBig>0.5?1.0:(1.0-smoothstep(320.0,560.0,dist)))*(1.0-aHide);vUv=uv;gl_Position=projectionMatrix*mv;}`,
   fragmentShader:`uniform sampler2D map;varying vec2 vUv;varying float vA;void main(){vec4 c=texture2D(map,vUv);c.a*=vA;if(c.a<0.02)discard;gl_FragColor=c;}`});
  const m=new THREE.Mesh(geo,mat);m.frustumCulled=false;m.userData.probeSkip=true;m.name='labels';m.renderOrder=10;LABELS.add(m);
  FRAME_HOOKS.push(()=>{mat.uniforms.uPxToWorld.value=2*Math.tan(camera.fov*Math.PI/360)/innerHeight;});
+ // the declutter pass, every 6th frame: greedy over the labels in priority order against a 64 px screen grid
+ {const H=geo.attributes.aHide,v=new THREE.Vector3(),cellPx=64;let tick=0;const ord=list.map((r,i)=>i);
+  FRAME_HOOKS.push(()=>{if(!m.visible||!LABELS.visible||(tick++%6))return;const W=innerWidth,Hh=innerHeight,grid={},items=[];
+   for(const i of ord){const r=list[i];v.set(r.x,(r.y||0)+r.h+3,r.z).project(camera);const d=camera.position.distanceTo(v.clone().set(r.x,(r.y||0)+r.h+3,r.z));
+    items.push({i,big:isBig(r),d,x:(v.x*.5+.5)*W,y:(.5-v.y*.5)*Hh,on:v.z<1&&v.z>-1&&(isBig(r)||d<560)});}   // a faded label takes no room
+   items.sort((a,b)=>(b.big-a.big)||(a.d-b.d));const ov=(a,b)=>Math.abs(a.x-b.x)<(a.w+b.w)/2&&Math.abs(a.y-b.y)<(a.h+b.h)/2;
+   for(const it of items){let hid=1;if(it.on){it.w=it.big?240:170;it.h=it.w*48/409;const x0=Math.floor((it.x-it.w/2)/cellPx),x1=Math.floor((it.x+it.w/2)/cellPx),y0=Math.floor((it.y-it.h/2)/cellPx),y1=Math.floor((it.y+it.h/2)/cellPx);
+     let clash=false;for(let gx=x0;gx<=x1&&!clash;gx++)for(let gy=y0;gy<=y1&&!clash;gy++){const L=grid[gx+','+gy];if(L)for(const o of L)if(ov(it,o)){clash=true;break;}}
+     if(!clash){hid=0;for(let gx=x0;gx<=x1;gx++)for(let gy=y0;gy<=y1;gy++)(grid[gx+','+gy]||(grid[gx+','+gy]=[])).push(it);}}
+    for(let k=0;k<4;k++)H.array[it.i*4+k]=hid;}
+   H.needsUpdate=true;});}
  window._labels=list.length;return m;}
 labelsBuild();
 </script>
