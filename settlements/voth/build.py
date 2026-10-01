@@ -153,6 +153,15 @@ def main():
           % (os.path.basename(OUT), len(order), os.path.getsize(OUT) / 1024,
              '' if do_checks else '  [checks skipped]'))
 
+    ki = os.path.join(HERE, 'KNOWN_ISSUES.md')
+    if os.path.exists(ki):
+        with open(ki, encoding='utf-8') as fh:
+            open_items = [l.rstrip() for l in fh if l.startswith('- [ ]')]
+        if open_items:
+            print('\nOPEN ISSUES (%d) - KNOWN_ISSUES.md:' % len(open_items))
+            for l in open_items:
+                print('  ' + l[6:])
+
 
 if __name__ == '__main__':
     main()
