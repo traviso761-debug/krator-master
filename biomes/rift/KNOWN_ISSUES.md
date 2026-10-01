@@ -21,8 +21,8 @@ Read before changing anything here. `build.py` prints the open count.
       need the overlay dome (a second 4096x2048 canvas, ~16 MB of texture).
 - [ ] The streams have no cataracts and do not climb the ridge: they rise at its south
       foot. The savannah's dry wash is a shallow gravel bed with no bank flora of its own.
-- [ ] The scum mats sit at y=.04 on a plane at y=0 whose ripples are shader-only, so
-      they never bob. Fine at any distance; wrong if a world animates its water mesh.
+- [ ] The water's ripples are shader-only, so the scum mats (at the local water level +.04)
+      never bob. Fine at any distance; wrong if a world animates its water mesh.
 - [ ] The far impostors are the hyperjungle's blob technique; the small species stop at
       ~1.3 km from the LOD spine instead of becoming impostors. The frill tree's impostor
       is a tall blob and a cap, with no fins.
@@ -33,6 +33,10 @@ Read before changing anything here. `build.py` prints the open count.
 - [ ] No fauna yet.
 
 ## Done
+
+- [x] Water-bound heights read the local water (`BIO.waterH`, Oct 2026): the zones' shore height, the
+      keep-out above the water, the scum mats, the shallows' reeds and the water band of the floor. With
+      this host's level of 0 the geometry is the same bit for bit (mesh fingerprints).
 
 - [x] The Rift's two walls painted twice (dome + overlay in front of the giant), with the
       far lakes east and west and the far jungle / savannah lines by azimuth.
