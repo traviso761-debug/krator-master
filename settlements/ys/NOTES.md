@@ -110,4 +110,6 @@ head, at the same radius, so the pad stood mostly inside the skin; the perch now
 strut's radial axis on a rib from the head's outer face, 2.5 m clear of the wall, and every runner's buried end
 carries a ball.
 Sixth note: the ball moved to the flare's lip, centred on it at the lip's diameter, so the rib enters through a
-knuckle and the flare-to-rib step is gone.
+knuckle and the flare-to-rib step is gone. Seventh: a second ball at the flare's rim, the rim's diameter, half in
+the face: the root. (A concave fillet always lies inside the sphere on its rim, so the bell is now the hidden
+transition between the two balls; the look is rib, knuckle, root.)
