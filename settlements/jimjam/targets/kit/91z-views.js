@@ -6,7 +6,7 @@
 const VIEWS={};
 (()=>{const jjSite=jjK=>SITES.find(jjS=>jjS.key===jjK);
  const jjToWorld=(jjS,jjP)=>{const jjC=Math.cos(jjS.ry),jjSn=Math.sin(jjS.ry);return[jjS.x+jjP[0]*jjC+jjP[2]*jjSn,jjP[1],jjS.z-jjP[0]*jjSn+jjP[2]*jjC];};
- const jjH=JJ_ROWS[0]?JJ_ROW_Z[JJ_ROWS[0].name]:{z:0,width:60};
+ const jjH=JJ_ROW_Z['Housing — poor']||(JJ_ROWS[0]?JJ_ROW_Z[JJ_ROWS[0].name]:{z:0,width:60});
  VIEWS['Opening']=[-jjH.width*.45,46,jjH.z-70,0,6,jjH.z+30];
  const jjLast=JJ_ROWS.length?JJ_ROW_Z[JJ_ROWS[JJ_ROWS.length-1].name]:{z:0};
  VIEWS['Overview']=[-420,380,-260,0,0,jjLast.z*.45];

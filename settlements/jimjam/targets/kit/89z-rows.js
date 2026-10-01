@@ -3,7 +3,8 @@
 // lights the facades. A family fragment adds a building with JJ.def({... row:'Shops' ...}); nothing
 // here needs editing. Furniture and placeholder flora get their own rows at the end.
 const TITLE='Jimjam City Kit';
-const JJ_ROW_ORDER=['Housing — poor','Housing — middle','Housing — rich','Shops','Hospitality','Civic','Temple','Palace and plaza','Military','Walls','Agriculture and storage','Helper gallery'];
+// The temple row is LAST (southmost): its solstice sightline runs south-west, over open ground.
+const JJ_ROW_ORDER=['Helper gallery','Housing — poor','Housing — middle','Housing — rich','Shops','Hospitality','Civic','Palace and plaza','Military','Walls','Agriculture and storage','Temple'];
 const JJ_ROWS=(()=>{const jjRows={};for(const jjK of JJ.order){const jjD=JJ.defs[jjK];const jjR=jjD.row||'Other';(jjRows[jjR]=jjRows[jjR]||[]).push(jjK);}
  const jjNames=JJ_ROW_ORDER.filter(jjR=>jjRows[jjR]).concat(Object.keys(jjRows).filter(jjR=>JJ_ROW_ORDER.indexOf(jjR)<0));
  return jjNames.map(jjR=>({name:jjR,keys:jjRows[jjR]}));})();
@@ -16,7 +17,8 @@ let GROUND_C=0;
   const jjZc=jjZ+jjDepth/2;JJ_ROW_Z[jjRow.name]={z:jjZc,depth:jjDepth,width:jjTotal};
   for(const jjD of jjDs){const jjW=jjD.w||jjD.r*2||16;
    // ry = PI turns local +z (the front) to world -z (north); the plot centre sits on the row line
-   SITES.push({key:jjD.key,x:jjX+jjW/2,z:jjZc,ry:Math.PI,o:{v:0},row:jjRow.name});jjX+=jjW+jjGap;}
+   // a def may fix its own world yaw (the temple aims its axis at the solstice sunset)
+   SITES.push({key:jjD.key,x:jjX+jjW/2,z:jjZc,ry:jjD.ry!==undefined?jjD.ry:Math.PI,o:{v:0},row:jjRow.name});jjX+=jjW+jjGap;}
   jjZ+=jjDepth+30;}
  GROUND_C=jjZ/2;})();
 // Furniture and flora rows, north of the buildings (z < 0), fronts facing north too.
