@@ -1,0 +1,125 @@
+# Biomes in one open world
+
+Every biome kit today is its own page: one kit, one host, built whole at load. Krator is
+meant to become one open-world map, crossed without a load screen, so several kits must
+be resident at once and hand over to each other at their borders. This file is the plan
+and the contract changes it needs. Nothing here is built yet.
+
+## The regions (Travis, Oct 2026)
+
+The formal regions are not drawn anywhere yet; this is the adjacency as given. There is a
+scale Krator map for rough placement, not in this repo.
+
+| region | kit | neighbours (transition) |
+|---|---|---|
+| central hyperjungle | `hyperjungle` | nhighlands (steep), shighlands (steep) |
+| eastern abyss | `eastabyss` | sedesert (steep) |
+| eastern high desert | `sedesert` | eastabyss (steep), ebadlands, shighlands (gentle) |
+| the Rift | `rift` | xanadu |
+| southwest bay | `swbay` | shighlands (steep) |
+| southwestern lowlands | `swlowlands` | nwlowlands, shighlands (gentle) |
+| East Rift Highlands | `xanadu` | rift |
+| northwestern lowlands | `nwlowlands` | swlowlands, nhighlands, korona |
+| northern highlands | `nhighlands` | nwlowlands, hyperjungle (steep), "nw bay" (steep), korona |
+| *planned* eastern badlands | `ebadlands` | sedesert |
+| *planned* Korona | `korona` | nwlowlands, nhighlands |
+| *planned* southern highlands | `shighlands` | swbay (steep), hyperjungle (steep), swlowlands, sedesert |
+| *possible* | `ehighlands`, `sbadlands`, micro-biomes | |
+
+To confirm: the nwlowlands row reads "nwhighlands ... swhighlands and nihighlands" in the
+note it came from; "nw bay" is not a kit.
+
+## Two kinds of border
+
+- **Gradual (an ecotone).** Most borders. Both kits plant across a band a few hundred
+  metres wide, each at a density that falls off toward the other's side, so their species
+  interpenetrate. The band's line is warped by noise so it never reads as a straight edge.
+- **Steep (an altitude and pressure drop).** sedesert to eastabyss (the cataract over the
+  Abyss), nhighlands to hyperjungle and "nw bay", shighlands to swbay and hyperjungle. The
+  border follows the terrain: the high kit owns the ground above the scarp's crest, the low
+  kit the ground below its foot, and the face between is rock with each kit's cliff flora
+  on its own side. Weight comes from height (and slope) rather than from distance in plan.
+  The air changes with it: haze, fog density and the sky's colour blend by altitude, so
+  the atmosphere is the world's, not a kit's.
+
+## Regions and climate: the biome tool (planned, Travis)
+
+The full map will be built from two painted layers, marked with a biome tool (the polygon
+and path tool in `nhighlands/src/93-host-polytool.js` is the nearest thing in the repo):
+
+- **Regions.** Which kit owns the ground. A kit's weight `w(x,z)` is its region blurred:
+  wide at a gradual border, narrow and keyed to height at a steep one.
+- **Köppen climate classes inside a region.** Flora is placed by Köppen type (Af, Aw, BWh,
+  Csb, Cfb, Dfc, ET...): each species carries the classes it grows in, and the world hands
+  the kit the class at a point. Some classes are blurred in some areas, so a point carries
+  soft weights over several classes, not one label.
+
+What that asks of the kits and the core:
+
+- **Every species tagged with its Köppen classes.** The inspector tags exist; this is one
+  more tag per species, and can be done kit by kit before the tool exists.
+- **Köppen as fields.** The core takes the classes as soft weights (`BIO.field('koppen:Cfb')`
+  or a weight vector), the same way it takes `wet` or `cold` now. A kit's own zone thresholds
+  stay as the fallback when the world binds no classes (every demo host today).
+- **The weight is one function the core multiplies in,** so whether it comes from a hand
+  border, a height band or a blurred painted raster does not matter to a kit.
+
+## What blocks it today (checked in the code, Oct 2026)
+
+1. **One global `BIO`, five versions of its core.** Whichever kit loads last replaces the
+   other's core functions; hyperjungle declares `const BIO`, a syntax error beside any other
+   kit's `var BIO`. Every kit must run on one core.
+2. **Item and bucket names collide.** 59 item names are used by more than one kit (`trunk`,
+   `rod`, `boulder`, `grass`, `frond`...). `BIO.def` runs at load, reports a repeat as an
+   error and keeps the second kit's definition, so the first kit plants with the second's
+   geometry and material. Bucket families (`bark0`...) collide the same way.
+3. **Shader cache keys collide, silently.** `leafMat(tex,'grass')` caches as `biofol|grass`
+   in four kits, and the hook bakes each kit's options (sway amplitude and more) into the
+   shader source. three.js reuses the first program it compiled for the key, so the second
+   kit's foliage sways and shades with the first kit's settings, with no error.
+4. **One host binding.** One mask, one set of fields, one LOD spine. Every kit's
+   `KNOWN_ISSUES.md` warns that its zone thresholds are tuned to its own fields' scale.
+5. **Whole-map builds, all held.** nhighlands holds ~26M triangles, rift ~24M. Runtime LOD
+   (xanadu, nhighlands) hides far chunks; it does not free them or skip building them.
+6. **Placement depends on build order, not on place.** Each pass reseeds once and walks its
+   whole grid, so a chunk built alone gets different plants from the same chunk in a full
+   build, and a border changes with which side built first.
+7. **Water at y=0** in eastabyss, rift and swlowlands (their in-water bands and floating
+   pads). An open world has many water levels; `BIO.waterH` exists in the newer kits.
+
+## The contract it needs
+
+- **One core, `core/biome/`,** read by every kit's `build.py` by name (as `core/terrain/`
+  is), with every kit's additions merged in.
+- **A namespace per kit.** The core prefixes item names, bucket families and material cache
+  keys with the kit's name, set where the kit loads and where it builds.
+- **Biome weights.** The world hands each kit a weight `w(x,z)` in 0..1 (plan distance for a
+  gradual border, height and slope for a steep one). The core multiplies the kit's mask by
+  it; `BIO.grid` already accepts a cell with probability proportional to the mask, so the
+  density cross-fade comes from the existing acceptance test. A shared occupancy index keeps
+  two kits' trees apart in the band. The world's ground shader blends the kits' ground
+  palettes by the same weights.
+- **World fields, per-kit remap.** One set of climate fields for the world, and a per-kit
+  adapter where a kit was tuned to a differently scaled field.
+- **Placement seeded by cell.** A grid cell's draws seeded from its coordinates and the
+  pass, so any region builds the same whatever was built before it. This moves every
+  plant in every kit once: baselines and gallery shots change with it.
+- **Streaming.** The runtime-LOD chunk (1200 m in xanadu) becomes the unit built when the
+  camera comes near and freed when it leaves, far chunks drawn as stand-in impostors, under
+  one budget for the world.
+
+## Order
+
+1. `core/biome/`, kits switched one at a time and proven unchanged (mesh fingerprints).
+2. Namespaces and the cache-key fix in the core.
+3. `waterH` in every kit; the shared fields contract.
+4. Runtime LOD in every kit.
+5. Cell seeding, chunk build and free, weights, the occupancy index: proven on one gradual
+   pair and one steep pair.
+
+Prototype pairs, proposed: **nwlowlands and swlowlands** (gradual; one kit was cloned from
+the other, so the core work is tested without species surprises) and **sedesert and
+eastabyss** (steep; the same cliff already exists from both sides: sedesert's cataract
+falls to the Abyss floor, and eastabyss paints the shelf on an overlay dome). rift and
+xanadu add one problem of their own: eight of xanadu's species are altered copies of the
+Rift ridge's, so a world with both should carry one of each.
