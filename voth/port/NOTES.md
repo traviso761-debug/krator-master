@@ -52,3 +52,48 @@ the old one put a 110 m quay 80 m proud of a 220 m one, clear of its apron.
 **Anchors.** `quay` (60 + 40) and `pier` (80 + 420): measured 24-93 k
 triangles per decay, 45-115 draw calls per view, showcase 0.82 M triangles
 with env (terrain, sea, 3 k natural trees) 0.52 M.
+
+## Round 3 — shared code (foundation owner, seed block 20000-20099)
+
+**Inspector.** "unregistered mesh" is gone: `mesh()` and `kput()` are wrapped
+in `70` to tag every mesh and instance with the stat key being built and a
+part name (`portPart`); the scene records `PORT_OWN[stat]` (segment/vessel
+name, decay, host) and hands each InstancedMesh its per-instance owner list
+(`instanceId` -> item). The click names the REGISTER volume round the hit
+(preferring one of the same owner), else "Owner (decay) — near <nearest
+volume of that owner>" and the part / kit item or material. The sea sheet is
+looked through; terrain is named by the stamp that shaped it. REGISTER
+applies KXF (vessels' own pre-transformed `C.reg` passes `xf:false`).
+
+**Floating shacks.** Cause: the reclaimed haven's two lighthouse beams
+(`hbBeams`, 90 m additive cones, invisible by day) were sampled by the kit's
+`repairPass`, which walks every mesh: shanties, patches and planters were
+stuck along 90 m of invisible cone ~30 m up. `portRepairPass` replaces it
+for the port: visible opaque standard meshes only, no noRepair/probeSkip
+subtrees, nothing under y 0.4, no patches on thin members, no shanties on
+open deck/paving (only raised flat faces >= 3 m), counts scaled by sampled
+area not the bounding box.
+
+**Segment boundaries.** `b` / button / 8th preset element / `_api.setBounds`.
+
+**Grid placement.** `place:'land'|'sea'`, `nb` N/S/E/W from footprints
+(`portLinkNb`, run by the scene on every layout), `portBehind`, `portOff`,
+`portMoor`, `portSideOpen`, `portBlockStamps`, `portBlockClose`; the pier
+registers `seaEnd` and leaves its head end open (no fascia, rail or
+fenders) where a platform abuts; the platform (spYard) builds the 8 m link
+span. Real land blocks (lbAuthority, lbStores, lbTanks) are placed. Showcase: land row behind each run's middle, platform chain
+of two off the pier. `targets/harbour`: Long-Beach-like composition. Tested
+with throwaway `tmpLand` / `tmpSea` blocks (deleted).
+
+**Fleet.** Every vessel in every decay of the showcase: the giant in the
+pier's slip, the drone carrier in the deep-water berth (the only berth it
+fits), the Panamax and feeder moored along the platform chain (or off the
+pier head), the submarine in its pen. `portVesselFor` honours `opt.fleet` /
+`opt.vessel`; `PORT_VPLACED` records every placement; the showcase has a
+preset per vessel per decay and 'Reclaimed drone carrier — flight deck'.
+
+**Sea and dry pits.** ddSeaFix's union-cut sea folded into
+`portBuildTerrain` (and removed from 82-dd-dock/82-dd-shed); the underwater
+fade is masked inside `dry` stamps (up to 16 rects, a uniform array), so dry
+pits can use the normal kit.
+
