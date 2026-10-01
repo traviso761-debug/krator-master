@@ -50,7 +50,7 @@ var LIFE = { agents:[], veh:[], boats:[], squads:[], poi:{}, stats:{}, doors:[] 
     else if(t==='caravanserai') place('caravanserai', b, { cap:60 });
     else if(t==='dock') place('dock', b, { cap:6, head:loc(b.x,b.z,0,-b.d/2-2.5,b.ry) });
     else if(t==='stilt') place('fisher_home', b, { cap:6 });
-    else if(t==='farm') place('farm', b, { cap:8 });
+    else if(t==='farm') place(k==='farm_saltrice_paddies' ? 'paddy' : 'farm', b, { cap:8 });      /* paddy blocks: worked, never a home */
     else if(t==='civic'){ if(k==='civic_geomancer_chapterhouse') place('geochapter', b, { cap:30 }); else if(k==='locus_warehouse') place('warehouse', b, { cap:12 }); else place('civic', b, { cap:20 }); }
     else if(t==='rich') place('home_rich', b, { cap:10 });
     else if(t==='market') { if(k==='trade_market_hall') place('market', b, { cap:20 }); }
@@ -98,7 +98,7 @@ var LIFE = { agents:[], veh:[], boats:[], squads:[], poi:{}, stats:{}, doors:[] 
   var KINDS = {
     rambler:  { n:170, speed:1.25, order:['market','park','shop','tavern','civic','ring','caravanserai','home'], dwell:[8,30], hours:[6,21] },
     geomancer:{ n: 56, speed:1.35, order:['refinery','refinery','tank','pumpjack','generator','geochapter','warehouse','fuel'], dwell:[30,90], hours:[6,18.5], uniform:true },
-    farmer:   { n: 12, speed:1.15, order:['farm'], dwell:[20,50], hours:[6,17.5] },
+    farmer:   { n: 30, speed:1.15, order:['farm','paddy'], dwell:[20,50], hours:[6,17.5] },
     fisher:   { n: 14, speed:1.2,  order:['dock'], dwell:[4,8],  hours:[5,17] },
     merchant: { n: 34, speed:1.15, order:['market','warehouse','shop','caravanserai'], dwell:[30,80], hours:[7,19] }
   };
@@ -125,7 +125,7 @@ var LIFE = { agents:[], veh:[], boats:[], squads:[], poi:{}, stats:{}, doors:[] 
     var c=a.cfg, on = hour >= c.hours[0] && hour < c.hours[1];
     if(!on) return a.home;
     if(a.kind==='fisher') return a.boat ? a.boat.dock : pick(POI.dock||[a.home]);
-    if(a.kind==='farmer'){ if(!a.farm) a.farm=pick(POI.farm||[a.home]); return a.farm; }
+    if(a.kind==='farmer'){ if(!a.farm) a.farm=pick(pool(['farm','paddy'])); return a.farm; }
     return elsewhere(a, function(){ var cat=pick(c.order); return cat==='home' ? a.home : pick(pool([cat])); });
   }
   var QUEUE=[], QPF=6, FAILED=0;
@@ -146,7 +146,7 @@ var LIFE = { agents:[], veh:[], boats:[], squads:[], poi:{}, stats:{}, doors:[] 
     if(w){ w.entries++; }
     if(w && w===a.home){ a.inside=true; a.wait=rr(40,140); return; }          /* gone indoors: not drawn until he comes out */
     if(a.kind==='fisher' && w && w.cat==='dock' && a.boat && a.boat.state==='moored' && skyHour() < a.cfg.hours[1]-2){ boardBoat(a); return; }
-    if(a.kind==='farmer' && w && w.cat==='farm'){ a.inField = 3 + Math.floor(rnd()*4); fieldLeg(a); return; }
+    if(a.kind==='farmer' && w && (w.cat==='farm' || w.cat==='paddy')){ a.inField = 3 + Math.floor(rnd()*4); fieldLeg(a); return; }
   }
   /* farmers work INTO the paddies: legs to points inside the farm's rectangle, bent over while they wait */
   function fieldLeg(a){ var F=a.farm.rec, lx=rr(-22,10), lz=rr(-12,12); if(F.variant===1) lx=-lx; var p=loc(F.x,F.z,lx,lz,F.ry); a.leg={ x:p[0], z:p[1], field:true }; }

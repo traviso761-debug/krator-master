@@ -695,8 +695,10 @@ function makeSkyTexture(volc){
     var an=az*Math.PI/180, cx=Math.cos(an), sz=Math.sin(an);
     var n = nfb(so + cx*R, so + sz*R), n2 = nfb(so*3 + cx*R*3.1, so*3 + sz*R*3.1), n3 = vn(so*7 + cx*R*11, so*7 + sz*R*11);
     var v = 0.62*n + 0.28*n2 + 0.10*n3*2; return ridged ? 1-Math.abs(2*v-1)*0.9 : v; }
+  var SIL=[]; for(var xs=0;xs<=W;xs+=2) SIL.push(HZ);   /* the cliff's skyline (min y over the ranges): the occluder mask below */
   function drawRange(heightFn, fillTop, fillBase, strata){
     var ys=[]; for(var x=0;x<=W;x+=2) ys.push(HZ - heightFn(azOf(x))*DEG);
+    for(var ks=0;ks<ys.length;ks++) if(ys[ks]<SIL[ks]) SIL[ks]=ys[ks];
     function trace(){ g.beginPath(); g.moveTo(0,HZ+12); for(var k=0;k<ys.length;k++) g.lineTo(k*2, ys[k]); g.lineTo(W,HZ+12); g.closePath(); }
     var top=Math.min.apply(null, ys), gr=g.createLinearGradient(0,top,0,HZ+6); gr.addColorStop(0,fillTop); gr.addColorStop(1,fillBase);
     g.fillStyle=gr; trace(); g.fill();
@@ -733,6 +735,14 @@ function makeSkyTexture(volc){
 
   var tex=new THREE.CanvasTexture(c);
   tex.encoding=THREE.sRGBEncoding;
+  /* LOCUS: the shelf's SILHOUETTE as an alpha mask (white = cliff or below the horizon). 21-sky.js draws
+     the dome a second time through it AFTER the sun, the giant, its ring and the stars, so the painted
+     cliff occludes them instead of their being drawn over it. Half-res is plenty: linear filtering
+     gives a one-texel soft edge. */
+  var mc=document.createElement('canvas'); mc.width=W/2; mc.height=H/2; var mg=mc.getContext('2d');
+  mg.fillStyle='#000'; mg.fillRect(0,0,W/2,H/2); mg.fillStyle='#fff';
+  mg.beginPath(); mg.moveTo(0,H/2); for(var km=0;km<SIL.length;km++) mg.lineTo(km, (SIL[km]-1.0)/2); mg.lineTo(W/2,H/2); mg.closePath(); mg.fill();
+  tex.silMask = new THREE.CanvasTexture(mc);
   return tex;
 }
 
@@ -1038,6 +1048,24 @@ skyMesh.material.onBeforeCompile = function(sh){
 };
 skyMesh.material.customProgramCacheKey = function(){ return 'kratorDomeMav'; };
 skyMesh.material.needsUpdate = true;
+
+/* ---- LOCUS: the cliff in front (KNOWN_ISSUES 2026-10-01) ----------------
+   The abyss shelf is painted INTO layer 0, so everything drawn after it (the
+   giant, its ring, the stars, the sun disc and glare) landed on top of the
+   cliff. skyFront draws the same dome a second time, through the shelf's
+   silhouette mask from 20-stage.js (alphaMap), as the LAST thing in the sky
+   pass: same texture, same tint, same shader (it shares SKY_DOME_U), so it is
+   invisible except that the cliff now occludes whatever is behind it. One
+   extra draw call; the geometry is shared. Its map and colour are re-synced
+   in skyRender() (the eruption swap and 82-daynight.js's tint). */
+var skyFrontMat = new THREE.MeshBasicMaterial({ map:skyMesh.material.map, alphaMap:volcTex.idle.silMask,
+  side:THREE.BackSide, fog:false, depthWrite:false, depthTest:false, transparent:true });
+skyFrontMat.onBeforeCompile = skyMesh.material.onBeforeCompile;
+skyFrontMat.customProgramCacheKey = function(){ return 'kratorDomeFront'; };
+var skyFront = new THREE.Mesh(skyMesh.geometry, skyFrontMat);
+skyFront.renderOrder = 50;
+skyFront.frustumCulled = false;
+skyScene.add(skyFront);
 
 /* ---- layer 1: the stars ------------------------------------------------
    Positions from a PRIVATE LCG (skyRnd), never the shared rnd() stream —
@@ -1578,6 +1606,8 @@ function skyRender(){
   if(skyCam.fov !== camera.fov || skyCam.aspect !== camera.aspect){
     skyCam.fov = camera.fov; skyCam.aspect = camera.aspect; skyCam.updateProjectionMatrix();
   }
+  skyFrontMat.color.copy(skyMesh.material.color);
+  if(skyFrontMat.map !== skyMesh.material.map){ skyFrontMat.map = skyMesh.material.map; skyFrontMat.needsUpdate = true; }
   renderer.render(skyScene, skyCam);
 }
 
@@ -1892,6 +1922,7 @@ function stEdge(a,b,cls){
   var e={ id:ST.edges.length, a:a.id, b:b.id, cls:cls, w:ST_CLASS[cls].w, len:Math.hypot(a.x-b.x,a.z-b.z) }; ST.edges.push(e); ST_EKEY[k]=e; return e;
 }
 function stChain(nodes, cls){ for(var i=0;i<nodes.length-1;i++) stEdge(nodes[i], nodes[i+1], cls); }
+var PADDY_FIELDS = [];
 var HIGHWAYS = [], BRIDGES = [], AVENUES = [], CITY_RINGS = [], PUMPJACKS = [], DOCKS = [], STILT_SITES = [], FARMS = [];
 var CITY_EDGE_H = 2.6;                 /* the town builds where the ground stands clear of the wet season */
 function cityGround(x,z){ return terrainH(x,z) > CITY_EDGE_H && lakeDist(x,z) > 60 && riverDist(x,z) > 30; }
@@ -1996,7 +2027,10 @@ function findBridges(pts, cls, name){
                        name:name+' '+(cls==='track'?'trestle ':'')+(W[3]==='canal'?'canal bridge':'bridge over the '+W[0]) });
         return; } } });
 }
-function bridgeDeckAt(x,z){ for(var i=0;i<BRIDGES.length;i++){ var B=BRIDGES[i]; if(B.y==null) continue; var q=loc(0,0,x-B.x,z-B.z,-Math.atan2(-B.dz,B.dx)); if(Math.abs(q[0])<B.L/2 && Math.abs(q[1])<B.w/2) return B.y; } return null; }
+/* the walking surface of a bridge or a pool crossing at (x,z), or null on the ground. XING_AT is filled by
+   68c-locus-crossings.js (plank bridges and causeways over the marsh pools); before that only the river bridges answer. */
+var XINGS = [], XING_AT = null;
+function bridgeDeckAt(x,z){ for(var i=0;i<BRIDGES.length;i++){ var B=BRIDGES[i]; if(B.y==null) continue; var q=loc(0,0,x-B.x,z-B.z,-Math.atan2(-B.dz,B.dx)); if(Math.abs(q[0])<B.L/2 && Math.abs(q[1])<B.w/2) return B.y; } return XING_AT ? XING_AT(x,z) : null; }
 
 (function(){
   if(SHEET) return;
@@ -2152,6 +2186,48 @@ function bridgeDeckAt(x,z){ for(var i=0;i<BRIDGES.length;i++){ var B=BRIDGES[i];
   });
   /* the farms' own lane: a spur off the riverside lane east of the quarter to the farm fronts */
   ST.edges.forEach(function(e){ var A=ST.nodes[e.a], B=ST.nodes[e.b]; rgMarkSeg(A.x,A.z,B.x,B.z, e.w/2, RG.ROAD, 1); });
+
+  /* ---------- 7b. THE PADDY FIELDS (2026-10-01): salt-rice at five times the old acreage ----------
+     The three farms hold 18 paddies; nine paddy blocks of eight (farm_saltrice_paddies) bring it to 90.
+     A block wants low, dry, nearly level ground 22-110 m from the river, a mouth or the canal (never the
+     lake's brine edge, never a marsh pool), clear of every road cell, site and reserved circle. It turns
+     its feed channel (-z) to the water and its verge (+z) to the land, is levelled like the farms, and
+     gets a lane from its verge to the nearest street node (a lane over a pool is bridged by 68c).
+     Candidates are ranked by water distance plus town distance, so the fields gather along the canal
+     and the river below the town before they spread up the delta.                                    */
+  (function(){
+    var want=9, cands=[], laid=0;
+    function wd(x,z){ return Math.min(riverDist(x,z), canalDist(x,z)); }
+    for(var x=-1300;x<=1300;x+=16) for(var z=-1300;z<=1300;z+=16){
+      var r=Math.hypot(x,z); if(r<300 || r>1300) continue;
+      var h=terrainH(x,z); if(h<0.7 || h>3.2 || lakeDist(x,z)<120) continue;
+      var w=wd(x,z); if(w<30 || w>110) continue;
+      var k=rgIdx(x,z); if(k<0 || RG.BLOCK[k] || RG.ROAD[k]) continue;
+      cands.push([x, z, w + 0.06*r + 25*phash(x,3,z,7)]);
+    }
+    cands.sort(function(a,b){ return a[2]-b[2]; });
+    for(var ci=0; ci<cands.length && laid<want; ci++){
+      var cx=cands[ci][0], cz=cands[ci][1], gx=wd(cx+6,cz)-wd(cx-6,cz), gz=wd(cx,cz+6)-wd(cx,cz-6);
+      if(Math.hypot(gx,gz) < 1e-3) continue;
+      var ry=faceRy(gx,gz), W=48, D=38, ok=true, lo=1e9, hi=-1e9;
+      for(var lx=-W/2-3; lx<=W/2+3.01 && ok; lx+=4) for(var lz=-D/2-3; lz<=D/2+3.01 && ok; lz+=4){
+        var p=loc(cx,cz,lx,lz,ry), px=p[0], pz=p[1], ph=terrainH(px,pz), pk=rgIdx(px,pz);
+        if(ph<0.45 || ph>3.8 || lakeDist(px,pz)<90 || riverDist(px,pz)<10 || canalDist(px,pz)<CANAL_W[3]) ok=false;
+        else if(pk<0 || RG.ROAD[pk] || RG.BLOCK[pk] || inAnySite(px,pz,4) || inCircle(px,pz,4)) ok=false;
+        lo=Math.min(lo,ph); hi=Math.max(hi,ph); }
+      if(!ok || hi-lo > 2.2) continue;
+      /* the lane from the verge to the network: short, dry, and through no site */
+      var front=loc(cx,cz,0,D/2+2.5,ry), to=nearestNodeTo(front[0], front[1], 150, function(n){ return !n.dead && n.tag!=='pumpjack'; });
+      if(!to || segHitsSite(front[0],front[1],to.x,to.z,1)) continue;
+      var wet=false; for(var t=0;t<=1.0001;t+=0.05){ var qx=mix(front[0],to.x,t), qz=mix(front[1],to.z,t); if(riverDist(qx,qz)<4 || canalDist(qx,qz)<CANAL_W[1] || lakeDist(qx,qz)<20) wet=true; } if(wet) continue;
+      var S=schedule('farm_saltrice_paddies', laid%2, cx, cz, ry, W, D, 'Salt-rice paddies', 'farm');
+      TERRAIN_RECTS.push([cx, cz, W/2+2, D/2+2, ry, 8, clamp((lo+hi)/2, 1.0, 2.6)]);
+      rgMarkRect(S, 1, RG.BLOCK, 1); FARMS.push(S); PADDY_FIELDS.push(S);
+      var sp=stNode(front[0], front[1], 'spur'); stEdge(to, sp, 'lane'); S.spur=sp; rgMarkSeg(to.x,to.z,sp.x,sp.z,2,RG.ROAD,1);
+      laid++;
+    }
+    if(laid < want) ERR('layout: only '+laid+' of '+want+' paddy blocks found ground');
+  })();
 
   /* ---------- 8. THE PUMPJACKS: two dozen on the oil bed, each with its own track ---------- */
   (function(){
@@ -6264,7 +6340,10 @@ reseed(641001);
 /* ============================== 16O. LOCUS — the salt-rice farm ==============================
    Six flooded paddies behind mud bunds, fed from an irrigation channel along the back through timber sluices;
    a farmstead on piles to one side with a granary, a threshing floor, a shadoof and the drying racks. The
-   rice is a registered PLANT placed through buildPlant, never drawn by the farm itself.               */
+   rice is a registered PLANT placed through buildPlant, never drawn by the farm itself.
+   farm_saltrice_paddies (2026-10-01) is the same farming without the farmstead: eight paddies in a block
+   behind one feed channel, a field shelter and a scarecrow pole. 30-layout.js lays nine of them along
+   the canal and the river (7b), worked from the farms.                                                  */
 reseed(643001);
 (function(){
   var PI=Math.PI, GROUP='Salt-rice farm';
@@ -6321,6 +6400,38 @@ reseed(643001);
       LOCUS.plant(F, 'marsh_palmetto', X(22.6), 9.4, 0.4, { variant:1 }); LOCUS.plant(F, 'marsh_palmetto', X(11.2), 1.2, 2.1, { variant:0 });
       LOCUS.plant(F, 'salt_reed', X(-22.4), 15.4, 0.7, { variant:0 }); LOCUS.plant(F, 'salt_reed', X(5.6), 16.6, 1.9, { variant:1 });
       F.lantern(hx-2.0, 2.4, 11.6, 0.6, 9, 0);
+    } });
+  /* ---- the paddy block: the outlying fields. Same frame and footprint as the farm (48 x 38, +z the
+          lane, -z the feed channel toward the water), so a farmer's field leg lands in a paddy either way. ---- */
+  ASSET({ key:'farm_saltrice_paddies', name:'Salt-rice paddies', family:'trade', kit:'locus', group:GROUP, culture:'abyssal-desert', types:['farm'],
+    districts:['poor'], wealth:[0.1,0.4], w:48, d:38, h:4, variants:2, variantNames:['eight paddies, shelter to the right','eight paddies, shelter to the left'],
+    build:function(F){
+      var v=F.variant, mud=F.pick(MUDBROWNC), mud2=shade(mud,-0.12), water=SALTWATERC[v], sx = v ? -1 : 1;
+      function X(x){ return x*sx; }
+      var cz=-16.2; F.box(0, 0, cz, 46, 0.55, 3.4, 0, mud2, 'adobe');
+      F.box(0, 0.30, cz, 45.4, 0.30, 1.9, 0, water, 'plaster');
+      F.box(0, 0.55, cz-1.35, 46, 0.35, 0.7, 0, mud, 'adobe'); F.box(0, 0.55, cz+1.35, 46, 0.35, 0.7, 0, mud, 'adobe');
+      F.box(0, 0.88, cz-1.35, 46.2, 0.04, 0.5, 0, SALTCRUSTC[1], 'plaster'); F.box(0, 0.88, cz+1.35, 46.2, 0.04, 0.5, 0, SALTCRUSTC[1], 'plaster');
+      /* 4 columns x 2 rows; the rice in each is green or ripe by the plot's own hash, so a block is patchy, never uniform */
+      var cols=[-16.2,-5.4,5.4,16.2], rows=[-7.2,7.0], PW=9.8, PD=13.4;
+      cols.forEach(function(px,ci){ rows.forEach(function(pz,ri){ var x=X(px), ripe = phash(F.seed, ci, ri, 3.3) < 0.45 ? 1 : 0;
+        F.box(x, 0.0, pz, PW+0.8, 0.42, PD+0.8, 0, mud, 'adobe');
+        F.box(x, 0.30, pz, PW, 0.14, PD, 0, water, 'plaster');
+        for(var i=0;i<3;i++) for(var j=0;j<4;j++){ var rx=x+(i-1)*PW/3.0, rz=pz+(j-1.5)*PD/4.0;          /* 12 field-detail stands: the triangle budget */
+          LOCUS.plant(F, 'salt_rice_stand', rx+F.rr(-0.2,0.2), rz+F.rr(-0.2,0.2), F.rr(0,TAU), { variant:2+ripe }); }
+        var sz = ri===0 ? cz+1.7 : pz-PD/2-0.5, sxx=x+PW*0.32;
+        F.box(sxx, 0.3, sz, 0.9, 0.9, 0.25, 0, F.pick(TIMBERC), 'timber'); F.box(sxx, 0.9, sz+0.02, 0.7, 0.55, 0.06, 0, PLANKC[2], 'plank');
+        if(ri===0) F.box(sxx, 0.40, cz+1.35, 0.6, 0.06, 0.8, 0, water, 'plaster'); }); });
+      [-10.8, 0, 10.8].forEach(function(bx){ F.box(X(bx), 0.42, 0, 0.5, 0.03, 28.6, 0, PAL.lane[1], 'adobe'); });
+      F.box(0, 0.02, 16.2, 44, 0.03, 3.4, 0, PAL.lane[0], 'adobe');                                             /* the lane-side verge */
+      /* the field shelter at the verge end: four poles and a thatch lean-to, a water jar, a sheaf */
+      var hx=X(22.4), hz=14.6; [[-1.1,-1.0],[1.1,-1.0],[1.1,1.0],[-1.1,1.0]].forEach(function(p){ F.cyl(hx+p[0], 0, hz+p[1], 0.08, 2.2+(p[1]<0?0.3:0), 0, PILEC[2], 'bark'); });
+      F.box(hx, 2.3, hz, 2.8, 0.12, 2.6, [0,0,0], F.pick(THATCHC), 'thatch'); F.lathe('adobe', hx-0.5, hz+0.3, [[0.2,0],[0.36,0.32],[0.3,0.75],[0.2,0.9]], ADOBEREDC[2], { seg:8 });
+      sheaf(F, hx+0.6, hz-0.4, 0);
+      /* a scarecrow pole of rags and tin over the middle bund */
+      var px0=X(0), pz0=-0.2; F.cyl(px0, 0.42, pz0, 0.06, 3.0, 0, TIMBERC[2], 'timber'); F.rod(px0-0.9, 2.8, pz0, px0+0.9, 2.8, pz0, 0.04, TIMBERC[2], 'timber');
+      F.box(px0, 2.0, pz0, 0.7, 0.9, 0.12, 0.3, F.pick(CANVASDYEC), 'canvas'); F.cyl(px0+0.8, 2.3, pz0, 0.12, 0.4, 0, METALC[1], 'metal');
+      for(var q=0;q<7;q++) LOCUS.plant(F, 'salt_reed', X(-21.5+q*7.2+F.rr(-0.8,0.8)), cz-2.2-F.rr(0,0.6), F.rr(0,TAU), { variant:q%2 });
     } });
 })();
 /* ============================== 16R. LOCUS — the warehouse, the fishing dock, and Yuni's tags ==============================
@@ -6592,8 +6703,13 @@ reseed(642001);
   var PI=Math.PI;
   /* salt-rice: a 2 x 2 m stand of tussocks, planted in flooded paddies. Yellower than upland rice; heads droop when ripe. */
   PLANT({ key:'salt_rice_stand', name:'Salt-rice stand', climate:'hypertropic', aridity:'humid', tags:{ wet:'wet', abyssal:true, riparian:'yes' },
-    w:3.0, d:3.0, h:1.3, variants:2, variantNames:['green, in flower','ripe, heads drooping'],
+    w:3.0, d:3.0, h:1.3, variants:4, variantNames:['green, in flower','ripe, heads drooping','green, planted out in rows (field detail)','ripe, planted out in rows (field detail)'],
     build:function(F){
+      /* variants 2-3: the outlying paddy blocks' planting, four tussocks in a row-set (~80 triangles, a quarter of the full stand) */
+      if(F.variant >= 2){ var rp=F.variant===3;
+        for(var q=0;q<4;q++){ var qx=(q%2?0.6:-0.6)+F.rr(-0.15,0.15), qz=(q<2?0.65:-0.65)+F.rr(-0.15,0.15);
+          F.cone(qx, 0, qz, F.rr(0.42,0.55), F.rr(0.95,1.2)*(rp?1.05:0.9), [F.rr(-0.08,0.08),0,F.rr(-0.08,0.08)], rp ? (q%2?PADDYC[3]:PADDYC[1]) : (q%2?PADDYC[0]:PADDYC[2]), 'leafy'); }
+        return; }
       var v=F.variant, base = v ? PADDYC[3] : PADDYC[0], n=v?11:10;
       for(var i=0;i<n;i++){ var a=i/n*TAU+F.rr(-0.3,0.3), r=F.rr(0.45,1.25), x=Math.cos(a)*r, z=Math.sin(a)*r, h=F.rr(0.9,1.25)*(v?1.05:0.9);
         var c = v ? (i%2 ? PADDYC[3] : PADDYC[1]) : (i%2 ? PADDYC[0] : PADDYC[2]);
@@ -8477,6 +8593,117 @@ function placedAt(x,z,pad){
     var q=loc(0,0,x-b.x,z-b.z,-b.ry); if(Math.abs(q[0]) <= b.w/2+(pad||0) && Math.abs(q[1]) <= b.d/2+(pad||0)) return b; }
   return null;
 }
+/* ============================== 18c. POOL CROSSINGS — LOCUS (2026-10-01) ==============================
+   The routed roads (highways, the dock road, the paddy lanes, the pumpjack tracks, and any street the
+   connectivity pass threw across low ground) were laid at a COST over the marsh pools (30-layout.js,
+   roadCost: "a causeway of fill") but nothing was ever built there: the road ran under the water plane.
+   This pass builds what the cost promised, wherever any street-graph edge is under water:
+     - a short crossing (<= XING_BRIDGE_MAX m of open water): a PLANK BRIDGE on piles, railed, its deck
+       ramping down to the banks;
+     - a long one: a raised EARTH CAUSEWAY, the road surface on its crest, battered sides down into the
+       pool, and a stone-headed CULVERT through it every ~22 m so the pool is not cut in two.
+   Each crossing is grouped across the edges it spans (a wet node joins them) and gets one deck level.
+   The walk surface is published through XING_AT (30-layout.js bridgeDeckAt), which the life layer, the
+   highway ribbons and the lamps already read, so walkers, carts, caravans and riders cross ON the deck
+   along the same NAV/RG routes as before. Geometry: merged quads ('adobe', 'plank') and kit primitives in
+   existing families: no new draw calls.                                                                */
+reseed(686001);
+var XING_BRIDGE_MAX = 30, XING_STATS = { bridges:0, causeways:0, culverts:0, pieces:0, wetLength:0 };
+(function(){
+  if(SHEET) return;
+  var STEP=2, PAD_C=8, PAD_B=4, BED=-0.9, CELL=24, GRID={};
+  var SURF={ track:PAL.lane[0], lane:PAL.lane[0], alley:PAL.lane[2], street:PAL.paving[1], road:PAL.lane[2], boulevard:PAL.paving[0], ring:PAL.paving[0], highway:PAL.paving[3] };
+  function wetAt(x,z){ return terrainH(x,z) < 0.3 && lakeDist(x,z) > 12 && riverDist(x,z) > 2 && canalDist(x,z) > CANAL_W[1] && bridgeDeckAt(x,z) == null; }
+  /* 1. the wet runs on every edge */
+  var pieces=[];
+  ST.edges.forEach(function(e){ var A=ST.nodes[e.a], B=ST.nodes[e.b], L=e.len; if(!(L>0.5)) return;
+    var n=Math.max(1,Math.ceil(L/STEP)), wet=[];
+    for(var i=0;i<=n;i++){ var t=i/n; wet.push(wetAt(mix(A.x,B.x,t), mix(A.z,B.z,t))); }
+    var runs=[], i0=-1;
+    for(var i2=0;i2<=n+1;i2++){ var w=i2<=n && wet[i2];
+      if(w && i0<0) i0=i2;
+      if(!w && i0>=0){ var last=runs[runs.length-1]; if(last && i0-last[1] <= 3) last[1]=i2-1; else runs.push([i0,i2-1]); i0=-1; } }
+    runs.forEach(function(R){ var s0=Math.max(0,(R[0]-0.5)*L/n), s1=Math.min(L,(R[1]+0.5)*L/n);
+      pieces.push({ e:e, A:A, B:B, L:L, s0:s0, s1:s1, atA:R[0]===0, atB:R[1]===n }); });
+  });
+  /* 2. group the runs that meet at a wet node into one crossing */
+  var par=pieces.map(function(p,i){ return i; });
+  function f(i){ while(par[i]!==i){ par[i]=par[par[i]]; i=par[i]; } return i; }
+  var atNode={}; pieces.forEach(function(p,i){ [[p.atA,p.e.a],[p.atB,p.e.b]].forEach(function(q){ if(!q[0]) return; var k=q[1]; if(atNode[k]!=null){ var a=f(i), b=f(atNode[k]); if(a!==b) par[a]=b; } else atNode[k]=i; }); });
+  var groups={}, gorder=[];
+  pieces.forEach(function(p,i){ var r=f(i); if(!groups[r]){ groups[r]={ pieces:[], wet:0, nodes:{} }; gorder.push(r); }
+    groups[r].pieces.push(p); groups[r].wet += p.s1-p.s0; if(p.atA) groups[r].nodes[p.e.a]=1; if(p.atB) groups[r].nodes[p.e.b]=1; });
+  function gridAdd(item, x0,z0,x1,z1){ for(var i=Math.floor(x0/CELL);i<=Math.floor(x1/CELL);i++) for(var j=Math.floor(z0/CELL);j<=Math.floor(z1/CELL);j++){ var k=i+','+j; (GRID[k]||(GRID[k]=[])).push(item); } }
+  /* a quad whose face is turned toward `out` (a rough outward vector): the merged builder wants CCW from outside */
+  function quadOut(fam, a,b,c,d, col, out){ var ux=b[0]-a[0], uy=b[1]-a[1], uz=b[2]-a[2], vx=c[0]-a[0], vy=c[1]-a[1], vz=c[2]-a[2];
+    var nx=uy*vz-uz*vy, ny=uz*vx-ux*vz, nz=ux*vy-uy*vx; if(nx*out[0]+ny*out[1]+nz*out[2] < 0) MQUAD(fam, a,d,c,b, col); else MQUAD(fam, a,b,c,d, col); }
+  /* 3. build each crossing */
+  gorder.forEach(function(gk){ var G=groups[gk], bridge = G.wet <= XING_BRIDGE_MAX, deck = bridge ? 1.05 : 0.85, P = bridge ? PAD_B : PAD_C;
+    var cx=0, cz=0, cn=0, maxW=0, cls='lane';
+    G.pieces.forEach(function(p){ var e=p.e, L=p.L, dx=(p.B.x-p.A.x)/L, dz=(p.B.z-p.A.z)/L, nx=-dz, nz=dx;
+      var a0 = p.atA ? 0 : Math.max(0, p.s0-P), a1 = p.atB ? L : Math.min(L, p.s1+P), hw = e.w/2 + (bridge?0.5:1.0);
+      if(ST_CLASS[e.cls].pri > ST_CLASS[cls].pri) cls=e.cls; maxW=Math.max(maxW, hw);
+      var n=Math.max(1,Math.ceil((a1-a0)/STEP)), ys=[], pts=[];
+      for(var i=0;i<=n;i++){ var s=mix(a0,a1,i/n), x=p.A.x+dx*s, z=p.A.z+dz*s, th0=terrainH(x,z), gh=Math.max(th0,0)+0.05, out = s<p.s0 ? (p.s0-s)/P : s>p.s1 ? (s-p.s1)/P : 0;
+        ys.push(Math.max(th0+0.05, mix(deck, gh, smooth(0,1,Math.min(1,out))))); pts.push([x,z]); }
+      var rec={ ax:p.A.x+dx*a0, az:p.A.z+dz*a0, dx:dx, dz:dz, L:a1-a0, hw:hw, ys:ys, n:n };
+      var ex=rec.ax+dx*rec.L, ez=rec.az+dz*rec.L;
+      gridAdd(rec, Math.min(rec.ax,ex)-hw-1, Math.min(rec.az,ez)-hw-1, Math.max(rec.ax,ex)+hw+1, Math.max(rec.az,ez)+hw+1); XING_STATS.pieces++;
+      cx += (rec.ax+ex)/2; cz += (rec.az+ez)/2; cn++;
+      if(!bridge){
+        /* the causeway: the road on the crest, battered earth sides into the pool */
+        var top=SURF[e.cls]||PAL.lane[0], earth=shade(MUDBROWNC[1], 0.06), earthD=shade(MUDBROWNC[3], -0.05);
+        for(var k=0;k<n;k++){ var P0=pts[k], P1=pts[k+1], y0=ys[k], y1=ys[k+1];
+          var L0=[P0[0]+nx*hw, y0, P0[1]+nz*hw], L1=[P1[0]+nx*hw, y1, P1[1]+nz*hw], R0=[P0[0]-nx*hw, y0, P0[1]-nz*hw], R1=[P1[0]-nx*hw, y1, P1[1]-nz*hw];
+          quadOut('adobe', L0, L1, R1, R0, top, [0,1,0]);
+          var bL0=hw+1.6*(y0-BED), bL1=hw+1.6*(y1-BED);
+          quadOut('adobe', L0, L1, [P1[0]+nx*bL1, BED, P1[1]+nz*bL1], [P0[0]+nx*bL0, BED, P0[1]+nz*bL0], earth, [nx,0.6,nz]);
+          quadOut('adobe', R0, R1, [P1[0]-nx*bL1, BED, P1[1]-nz*bL1], [P0[0]-nx*bL0, BED, P0[1]-nz*bL0], earthD, [-nx,0.6,-nz]); }
+        /* culverts: a stone headwall each side and a dark pipe through, every ~22 m of open water */
+        for(var s2=p.s0+9; s2<p.s1-6; s2+=22){ var ci=Math.round((s2-a0)/STEP); if(ci<0||ci>n) continue; var yc=ys[ci]; if(yc < 0.6) continue;
+          var xc=p.A.x+dx*s2, zc=p.A.z+dz*s2, off=hw+1.6*(yc-0.55), ryc=Math.atan2(nx,nz);
+          ROD(xc-nx*(off+0.15), 0.0, zc-nz*(off+0.15), xc+nx*(off+0.15), 0.0, zc+nz*(off+0.15), 0.42, VOIDC[0], 'dark');
+          [-1,1].forEach(function(sd){ BOX(xc+nx*sd*off, -0.7, zc+nz*sd*off, 2.6, 1.35, 0.35, ryc, STONEC[sd>0?1:3], 'rock'); });
+          XING_STATS.culverts++; }
+      } else {
+        /* the plank bridge: a deck following the ramp, fascia boards, paired piles, a rail over the water */
+        var dk=PLANKC[1], fas=TIMBERC[1], th=0.22;
+        for(var k2=0;k2<n;k2++){ var Q0=pts[k2], Q1=pts[k2+1], z0=ys[k2], z1=ys[k2+1];
+          var l0=[Q0[0]+nx*hw, z0, Q0[1]+nz*hw], l1=[Q1[0]+nx*hw, z1, Q1[1]+nz*hw], r0=[Q0[0]-nx*hw, z0, Q0[1]-nz*hw], r1=[Q1[0]-nx*hw, z1, Q1[1]-nz*hw];
+          quadOut('plank', l0, l1, r1, r0, k2%3===1?PLANKC[2]:dk, [0,1,0]);
+          quadOut('plank', l0, l1, [l1[0],z1-th,l1[2]], [l0[0],z0-th,l0[2]], fas, [nx,0,nz]);
+          quadOut('plank', r0, r1, [r1[0],z1-th,r1[2]], [r0[0],z0-th,r0[2]], fas, [-nx,0,-nz]); }
+        for(var s3=a0+1; s3<=a1-0.5; s3+=4){ var ki=Math.min(n, Math.round((s3-a0)/STEP)), yy=ys[ki], xx=p.A.x+dx*s3, zz=p.A.z+dz*s3;
+          if(yy - terrainH(xx,zz) < 0.35) continue;
+          [-1,1].forEach(function(sd){ CYL(xx+nx*sd*(hw-0.25), -2.2, zz+nz*sd*(hw-0.25), 0.14, yy+2.2-th, 0, PILEC[(ki+sd+4)%4], 'bark'); });
+          BEAM(xx-nx*hw, yy-th-0.12, zz-nz*hw, xx+nx*hw, yy-th-0.12, zz+nz*hw, 0.2, 0.2, TIMBERC[2], 'timber');
+          if(s3 > p.s0-1 && s3 < p.s1+1) [-1,1].forEach(function(sd){ BOX(xx+nx*sd*(hw-0.08), yy, zz+nz*sd*(hw-0.08), 0.12, 1.0, 0.12, 0, TIMBERC[0], 'timber'); }); }
+        [-1,1].forEach(function(sd){ var r0s=Math.max(a0, p.s0-1), r1s=Math.min(a1, p.s1+1); if(r1s-r0s < 2) return;
+          var ka=Math.round((r0s-a0)/STEP), kb=Math.min(n, Math.round((r1s-a0)/STEP));
+          ROD(p.A.x+dx*r0s+nx*sd*(hw-0.08), ys[ka]+0.95, p.A.z+dz*r0s+nz*sd*(hw-0.08), p.A.x+dx*r1s+nx*sd*(hw-0.08), ys[kb]+0.95, p.A.z+dz*r1s+nz*sd*(hw-0.08), 0.05, TIMBERC[2], 'timber'); });
+      }
+    });
+    /* a wet node: a round pad where the pieces meet, so a bend has no notch in it */
+    Object.keys(G.nodes).forEach(function(id){ var N=ST.nodes[id], r=maxW+0.5, rec={ pad:true, x:N.x, z:N.z, r:r, y:deck };
+      gridAdd(rec, N.x-r, N.z-r, N.x+r, N.z+r);
+      if(bridge){ BOX(N.x, deck-0.22, N.z, r*1.6, 0.22, r*1.6, 0.3, PLANKC[1], 'plank'); [[-1,-1],[1,-1],[1,1],[-1,1]].forEach(function(q){ CYL(N.x+q[0]*r*0.6, -2.2, N.z+q[1]*r*0.6, 0.15, deck+2.0, 0, PILEC[1], 'bark'); }); }
+      else CYL(N.x, BED, N.z, r+0.8*(deck-BED), deck-BED, 0, SURF[cls]||PAL.lane[0], 'adobe'); });
+    cx/=cn; cz/=cn; var rad=0; G.pieces.forEach(function(p){ rad=Math.max(rad, Math.hypot(p.A.x-cx,p.A.z-cz), Math.hypot(p.B.x-cx,p.B.z-cz)); });
+    var X = { kind:bridge?'bridge':'causeway', x:+cx.toFixed(1), z:+cz.toFixed(1), wet:+G.wet.toFixed(1), y:deck, edges:G.pieces.length, cls:cls,
+              name: bridge ? 'Plank bridge on piles' : 'Causeway with culverts' };
+    XINGS.push(X); XING_STATS[bridge?'bridges':'causeways']++; XING_STATS.wetLength += G.wet;
+    REGISTER({ name:X.name+' ('+Math.round(G.wet)+' m of open water)', kind:'bridge', label:'infrastructure · culture: abyssal-desert · type: infrastructure · '+(bridge?'timber deck on piles over a marsh pool':'earth fill over a marsh pool, stone-headed culverts'),
+      x:cx, y:BED, z:cz, r:Math.min(rad, 40), h:deck-BED+1.5 });
+  });
+  XING_STATS.wetLength = Math.round(XING_STATS.wetLength);
+  XING_AT = function(x,z){ var cell=GRID[Math.floor(x/CELL)+','+Math.floor(z/CELL)]; if(!cell) return null;
+    for(var i=0;i<cell.length;i++){ var R=cell[i];
+      if(R.pad){ if(Math.hypot(x-R.x,z-R.z) < R.r) return R.y; continue; }
+      var rx=x-R.ax, rz=z-R.az, al=rx*R.dx+rz*R.dz; if(al<0 || al>R.L) continue; var lat=-rx*R.dz+rz*R.dx; if(Math.abs(lat) > R.hw) continue;
+      var f2=al/R.L*R.n, k=Math.min(R.n-1, Math.floor(f2)); return mix(R.ys[k], R.ys[k+1], f2-k); }
+    return null; };
+  window._xings = { stats:XING_STATS, list:XINGS, at:function(x,z){ return XING_AT(x,z); } };
+})();
 // ================================================================= BIOME CORE — head
 // The engine-independent kit every Krator biome fragment is written against.
 // Nothing below names a world's kit. The host hands in what a biome needs
@@ -10153,6 +10380,110 @@ reseed(700051);
     gc.fillStyle='rgba(40,60,110,0.9)'; gc.fillRect(it.x-0.16, it.z-it.d/2-0.34, 0.32, 0.34); });
   gc.restore();
 })();
+/* ============================== 18a. THE TOWN GRID — LOCUS (2026-10-01) ==============================
+   The Geomancers' generator house (64-locus-power.js) already had an insulator gantry "where the town's
+   lines leave" and a first pole; now the lines go somewhere. A two-wire distribution line on timber
+   poles runs out from that pole to the refinery ring, round it, down every avenue to the edge of the hill
+   and along the inner streets (ring, boulevards, the streets inside ~330 m):
+     - one pole per electrified street edge, on a consistent side (radial runs: the clockwise side;
+       round runs: the outer side), a crossarm with two insulators, an ELECTRIC LAMP on a bracket over
+       the carriageway (cool white, registered with the night-light volume and the halo cloud);
+     - spans chosen as a minimum spanning tree over adjacent poles (no redundant wires), each wire a
+       CATENARY (sag ~2.5% of the span plus 0.15 m) drawn in five straight pieces (three on a short drop);
+     - a service drop from a pole to the nearest one or two houses, shops or taverns;
+     - only poles the tree actually reaches from the generator are kept: a street is lit electrically
+       only if it is on the line.
+   72-lights.js reads GRID_EDGE (no oil post on an electrified edge) and gridNear() (a window near the
+   line is WIRED: cool-white panes that burn later into the night).
+   Everything is kit primitives in families already drawn (timber, plaster, metal, glowmat): zero new
+   draw calls.                                                                                          */
+reseed(716001);
+var GRID_EDGE = {}, GRID_POLES = [], GRID_STATS = { poles:0, spans:0, drops:0, lamps:0, edges:0 };
+var GRIDP_CELL = 40, GRIDP_HASH = {};
+function gridNear(x,z,r){ var cell=GRIDP_HASH[Math.floor(x/GRIDP_CELL)+','+Math.floor(z/GRIDP_CELL)]; if(!cell) return false;
+  for(var i=0;i<cell.length;i++){ var P=cell[i]; if(Math.hypot(P.x-x,P.z-z) < r) return true; } return false; }
+(function(){
+  if(SHEET || !GENERATOR) return;
+  var WIREC=0x1e1a18, INSC=0xf2eee4, POLE_H=8.2, ARM=0.85;
+  function groundY(x,z){ var d=bridgeDeckAt(x,z); return d!=null ? d : terrainH(x,z); }
+  function blocked(x,z){ return maskAt(x,z)===4 || placedAt(x,z,0.5) || onStreet(x,z,0.3); }
+  /* 1. which edges carry the line */
+  var want = function(e){ var A=ST.nodes[e.a], B=ST.nodes[e.b], mid=Math.hypot((A.x+B.x)/2,(A.z+B.z)/2);
+    return e.cls==='ring' || (e.cls==='boulevard' && mid < 470) || (e.cls==='street' && mid < 330); };
+  var poles=[], byNode={};
+  ST.edges.forEach(function(e){ if(!want(e)) return; var A=ST.nodes[e.a], B=ST.nodes[e.b], L=e.len; if(!(L>4)) return;
+    var dx=(B.x-A.x)/L, dz=(B.z-A.z)/L, nx=-dz, nz=dx, mx=(A.x+B.x)/2, mz=(A.z+B.z)/2, mr=Math.hypot(mx,mz)||1, rx=mx/mr, rz=mz/mr;
+    var radial = Math.abs(dx*rx+dz*rz) > 0.7, sd = radial ? ((nx*-rz+nz*rx) > 0 ? 1 : -1) : ((nx*rx+nz*rz) > 0 ? 1 : -1);
+    var off=e.w/2+1.0, spot=null;
+    [[0.5,sd],[0.5,-sd],[0.3,sd],[0.7,sd],[0.3,-sd],[0.7,-sd]].some(function(c){ var x=mix(A.x,B.x,c[0])+nx*c[1]*off, z=mix(A.z,B.z,c[0])+nz*c[1]*off;
+      if(blocked(x,z)) return false; spot={ x:x, z:z, sd:c[1] }; return true; });
+    if(!spot) return;
+    var P={ id:poles.length, e:e, x:spot.x, z:spot.z, y:groundY(spot.x,spot.z), nx:nx*spot.sd, nz:nz*spot.sd, dx:dx, dz:dz, adj:[] };
+    poles.push(P); [e.a,e.b].forEach(function(nid){ (byNode[nid]||(byNode[nid]=[])).push(P.id); });
+  });
+  /* 2. the feeder: from the generator's own first pole (local 5.6,-10.8; arm at plinth + 8.6) toward the nearest line pole */
+  var G=GENERATOR, f0=loc(G.x,G.z,5.6,-10.8,G.ry), feed={ id:poles.length, x:f0[0], z:f0[1], y:terrainH(f0[0],f0[1]), feeder:true, adj:[], top:terrainH(G.x,G.z)+0.6+8.9 };
+  poles.push(feed);
+  var near=null, nd=1e9; poles.forEach(function(P){ if(P.feeder) return; var d=Math.hypot(P.x-feed.x,P.z-feed.z); if(d<nd){ nd=d; near=P; } });
+  var cand=[];                                                   /* [dist, i, j] */
+  if(near){ var nStep=Math.max(0, Math.ceil(nd/34)-1), prev=feed;
+    for(var s=1;s<=nStep;s++){ var t=s/(nStep+1), x=mix(feed.x,near.x,t), z=mix(feed.z,near.z,t);
+      for(var tries=0; tries<6 && blocked(x,z); tries++){ x+=near.dz*2.5; z-=near.dx*2.5; }
+      var Q={ id:poles.length, x:x, z:z, y:groundY(x,z), relay:true, adj:[], nx:-(near.z-feed.z)/nd, nz:(near.x-feed.x)/nd };
+      poles.push(Q); cand.push([Math.hypot(Q.x-prev.x,Q.z-prev.z), prev.id, Q.id, true]); prev=Q; }
+    cand.push([Math.hypot(near.x-prev.x,near.z-prev.z), prev.id, near.id, true]); }
+  /* 3. candidate spans between poles of edges that meet at a node; Kruskal keeps a tree */
+  Object.keys(byNode).forEach(function(nid){ var L=byNode[nid];
+    for(var i=0;i<L.length;i++) for(var j=i+1;j<L.length;j++){ var a=poles[L[i]], b=poles[L[j]], d=Math.hypot(a.x-b.x,a.z-b.z);
+      if(d < 3 || d > 52) continue; if(placedAt((a.x+b.x)/2,(a.z+b.z)/2,0)) continue; cand.push([d, a.id, b.id, false]); } });
+  cand.sort(function(p,q){ return (q[3]-p[3]) || (p[0]-q[0]); });
+  var par=poles.map(function(p,i){ return i; }); function f(i){ while(par[i]!==i){ par[i]=par[par[i]]; i=par[i]; } return i; }
+  var spans=[]; cand.forEach(function(c){ var a=f(c[1]), b=f(c[2]); if(a===b) return; par[a]=b; spans.push([c[1],c[2]]); poles[c[1]].adj.push(c[2]); poles[c[2]].adj.push(c[1]); });
+  /* 4. keep only what the generator reaches */
+  var live={}; live[feed.id]=1; var stack=[feed.id]; while(stack.length){ var c=stack.pop(); poles[c].adj.forEach(function(o){ if(!live[o]){ live[o]=1; stack.push(o); } }); }
+  /* 5. build: poles, arms, insulators, lamps */
+  function attach(P){                                           /* the two wire points on the crossarm */
+    if(P.feeder) return [4.4, 6.8].map(function(lx){ var o=loc(G.x,G.z,lx,-10.8,G.ry); return [o[0], P.top, o[1]]; });
+    var top=P.y+POLE_H-0.25;                                   /* the arm lies across the line, along the pole's normal */
+    return [[P.x+P.nx*ARM, top, P.z+P.nz*ARM],[P.x-P.nx*ARM, top, P.z-P.nz*ARM]];
+  }
+  poles.forEach(function(P){ if(!live[P.id] || P.feeder) return;
+    var y=P.y, ryA=Math.atan2(-P.nz, P.nx);
+    CYL(P.x, y-0.4, P.z, 0.14, POLE_H+0.4, 0, TIMBERC[0], 'timber');
+    BOX(P.x, y+POLE_H-0.55, P.z, 2.2, 0.16, 0.16, ryA, TIMBERC[1], 'timber');
+    [-1,1].forEach(function(sd){ BOX(P.x+P.nx*ARM*sd, y+POLE_H-0.42, P.z+P.nz*ARM*sd, 0.12, 0.2, 0.12, ryA, INSC, 'plaster'); });
+    if(P.e){                                                     /* the lamp: a bracket out over the carriageway, a shade, a bare globe */
+      var lx=P.x-P.nx*1.7, lz=P.z-P.nz*1.7, ly=y+6.0;
+      ROD(P.x, ly-0.5, P.z, lx, ly+0.05, lz, 0.05, METALC[1], 'metal');
+      PYR(lx, ly-0.14, lz, 0.6, 0.2, 0.6, ryA, METALC[2], 'metal');
+      BOX(lx, ly-0.42, lz, 0.24, 0.28, 0.24, ryA+0.78, PAL.electric, 'glowmat');
+      nlLampAdd(lx, ly-0.4, lz, 1.25, 19, true); GRID_STATS.lamps++;
+      GRID_EDGE[P.e.id]=true; GRID_STATS.edges++; }
+    GRID_POLES.push(P); GRID_STATS.poles++;
+    var k=Math.floor(P.x/GRIDP_CELL)+','+Math.floor(P.z/GRIDP_CELL);
+    for(var i=-1;i<=1;i++) for(var j=-1;j<=1;j++){ var kk=(Math.floor(P.x/GRIDP_CELL)+i)+','+(Math.floor(P.z/GRIDP_CELL)+j); (GRIDP_HASH[kk]||(GRIDP_HASH[kk]=[])).push(P); }
+  });
+  /* 6. the wires: two per span, paired so they do not cross, each a catenary */
+  function wire(a, b){ var L=Math.hypot(b[0]-a[0], b[2]-a[2]), sag=0.025*L+0.15, N=L>12?5:3, prev=a;
+    for(var i=1;i<=N;i++){ var t=i/N, p=[mix(a[0],b[0],t), mix(a[1],b[1],t) - 4*sag*t*(1-t), mix(a[2],b[2],t)];
+      ROD(prev[0],prev[1],prev[2], p[0],p[1],p[2], 0.03, WIREC, 'timber'); prev=p; } }
+  spans.forEach(function(S){ var A=poles[S[0]], B=poles[S[1]]; if(!live[A.id] || !live[B.id]) return;
+    var a=attach(A), b=attach(B), d0=Math.hypot(a[0][0]-b[0][0],a[0][2]-b[0][2])+Math.hypot(a[1][0]-b[1][0],a[1][2]-b[1][2]),
+        d1=Math.hypot(a[0][0]-b[1][0],a[0][2]-b[1][2])+Math.hypot(a[1][0]-b[0][0],a[1][2]-b[0][2]);
+    if(d1 < d0) b=[b[1],b[0]];
+    wire(a[0], b[0]); wire(a[1], b[1]); GRID_STATS.spans++; });
+  /* 7. service drops: a pole feeds the nearest one or two dwellings, shops or taverns within 16 m */
+  var DROP_TAGS={ home_poor:1, home_mid:1, home_rich:1, rich:1, shop:1, tavern:1 };
+  GRID_POLES.forEach(function(P){ if(!P.e) return; var got=[];
+    PLACED.forEach(function(b){ if(!DROP_TAGS[b.tag] || b.w==null) return; var d=Math.hypot(b.x-P.x,b.z-P.z); if(d > 16+Math.max(b.w,b.d)/2) return;
+      var q=loc(0,0,P.x-b.x,P.z-b.z,-b.ry), qx=clamp(q[0],-b.w/2,b.w/2), qz=clamp(q[1],-b.d/2,b.d/2), w=loc(b.x,b.z,qx,qz,b.ry), dd=Math.hypot(w[0]-P.x,w[1]-P.z);
+      if(dd < 16 && dd > 1.5) got.push([dd, w, b]); });
+    got.sort(function(p,q){ return p[0]-q[0]; });
+    got.slice(0,2).forEach(function(g,i){ var a=attach(P)[i], hy=terrainH(g[1][0],g[1][1])+Math.min(4.2, ((ASSET_BY_KEY[g[2].key]||{}).h||6)*0.55);
+      wire(a, [g[1][0], hy, g[1][1]]); BOX(g[1][0], hy-0.15, g[1][1], 0.12, 0.3, 0.12, 0, INSC, 'plaster'); GRID_STATS.drops++; });
+  });
+  window._grid = { stats:GRID_STATS, poles:function(){ return GRID_POLES.map(function(P){ return [+P.x.toFixed(1), +P.z.toFixed(1)]; }); } };
+})();
 /* ============================== 18. FIXED LAMPS ==============================
    PLANNER-OWNED. Two lighting systems, and the boundary between them is the
    point of the fragment.
@@ -10191,18 +10522,22 @@ function ARCPOST(x,y,z, h, amp, rad){
 }
 /* WHO IS ON THE GRID. In Locus there is no Order cable: the only electric light is the
    Geomancers' own, run off their batteries — the refinery ring, the tank row and the forecourt of
-   their Chapterhouse. Everything else, the whole town, burns oil (its own oil). */
-function onTheGrid(x,z){ if(Math.hypot(x,z) < RING0_R + 12) return true; if(GEOCHAPTER && Math.hypot(x-GEOCHAPTER.x, z-GEOCHAPTER.z) < 40) return true; return false; }
+   their Chapterhouse. Everything else, the whole town, burns oil (its own oil).
+   2026-10-01: the generator house's line now runs out into the town (71g-locus-grid.js), so a window within
+   reach of a pole on that line is wired too, and an electrified street carries the line's own lamps
+   instead of oil posts. */
+function onTheGrid(x,z){ if(Math.hypot(x,z) < RING0_R + 12) return true; if(GEOCHAPTER && Math.hypot(x-GEOCHAPTER.x, z-GEOCHAPTER.z) < 40) return true; return gridNear(x,z,34); }
+function lampY(x,z){ var d=bridgeDeckAt(x,z); return d!=null ? d : terrainH(x,z); }
 var FIXED_LAMPS = 0, ELECTRIC_LAMPS = 0;
 (function(){
   if(SHEET) return;
   ST.edges.forEach(function(e){ var A=ST.nodes[e.a], B=ST.nodes[e.b], mid=Math.hypot((A.x+B.x)/2,(A.z+B.z)/2);
     var want = e.cls==='ring' || (e.cls==='boulevard' && mid < 460) || (e.cls==='street' && mid < 300 && phash(A.x,1,B.z,3)<0.6) || (e.cls==='road' && phash(A.x,2,B.z,4)<0.35) || (A.tag==='riverlane' && B.tag==='riverlane' && phash(A.x,5,B.z,6)<0.5);
-    if(!want) return; var n=Math.floor(e.len/(e.cls==='ring'?26:36)), px=-(B.z-A.z)/e.len, pz=(B.x-A.x)/e.len;
+    if(!want || GRID_EDGE[e.id]) return; var n=Math.floor(e.len/(e.cls==='ring'?26:36)), px=-(B.z-A.z)/e.len, pz=(B.x-A.x)/e.len;
     for(var k=0;k<=n;k++){ var t=(k+0.5)/(n+1), sg=((k+e.id)%2?1:-1), x=mix(A.x,B.x,t)+px*sg*(e.w/2+0.7), z=mix(A.z,B.z,t)+pz*sg*(e.w/2+0.7);
       if(maskAt(x,z)===4 || placedAt(x,z,0.6)) continue;
-      if(e.cls==='ring' && Math.hypot(x,z) < RING0_R){ ARCPOST(x, terrainH(x,z), z, 5.0, 1.5, 22); ELECTRIC_LAMPS++; }
-      else LAMPPOST(x, terrainH(x,z), z, 3.6, 1.0, 16, false);
+      if(e.cls==='ring' && Math.hypot(x,z) < RING0_R){ ARCPOST(x, lampY(x,z), z, 5.0, 1.5, 22); ELECTRIC_LAMPS++; }
+      else LAMPPOST(x, lampY(x,z), z, 3.6, 1.0, 16, false);
       FIXED_LAMPS++; } });
   /* the refinery ring's inner verge: the Geomancers' arc standards, cool white */
   for(var m=0;m<12;m++){ var a=m/12*TAU+0.13, x=Math.cos(a)*(RING0_R-RING_W/2-1.2), z=Math.sin(a)*(RING0_R-RING_W/2-1.2);
@@ -10210,7 +10545,10 @@ var FIXED_LAMPS = 0, ELECTRIC_LAMPS = 0;
   /* the market square: oil lanterns on posts round the rim */
   for(m=0;m<10;m++){ var a2=m/10*TAU, x2=MARKET.x+Math.cos(a2)*(MARKET.r-2), z2=MARKET.z+Math.sin(a2)*(MARKET.r-2);
     if(placedAt(x2,z2,0.5)) continue; LAMPPOST(x2, terrainH(x2,z2), z2, 3.8, 1.2, 18, false); FIXED_LAMPS++; }
-  var wired=0; NL_WINDOWS.forEach(function(W){ if(onTheGrid(W[0], W[2])){ W[10] = 1; wired++; } });
+  /* a wired window is cool-white, and electric light is cheap to the Geomancers' tenants: it goes out later
+     (the off-time hash is pushed into the late half) and one in seven burns till dawn */
+  var wired=0; NL_WINDOWS.forEach(function(W){ if(onTheGrid(W[0], W[2])){ W[10] = 1; wired++; W[8] = 0.45 + 0.55*W[8]; if(phash(W[0],W[1],W[2],23.1) < 0.14) W[9] = true; } });
+  ELECTRIC_LAMPS += GRID_STATS.lamps; FIXED_LAMPS += GRID_STATS.lamps;
   window._wiredWindows = wired;
 })();
 window._fixedLamps = FIXED_LAMPS; window._electricLamps = ELECTRIC_LAMPS;
@@ -11009,7 +11347,7 @@ var LIFE = { agents:[], veh:[], boats:[], squads:[], poi:{}, stats:{}, doors:[] 
     else if(t==='caravanserai') place('caravanserai', b, { cap:60 });
     else if(t==='dock') place('dock', b, { cap:6, head:loc(b.x,b.z,0,-b.d/2-2.5,b.ry) });
     else if(t==='stilt') place('fisher_home', b, { cap:6 });
-    else if(t==='farm') place('farm', b, { cap:8 });
+    else if(t==='farm') place(k==='farm_saltrice_paddies' ? 'paddy' : 'farm', b, { cap:8 });      /* paddy blocks: worked, never a home */
     else if(t==='civic'){ if(k==='civic_geomancer_chapterhouse') place('geochapter', b, { cap:30 }); else if(k==='locus_warehouse') place('warehouse', b, { cap:12 }); else place('civic', b, { cap:20 }); }
     else if(t==='rich') place('home_rich', b, { cap:10 });
     else if(t==='market') { if(k==='trade_market_hall') place('market', b, { cap:20 }); }
@@ -11057,7 +11395,7 @@ var LIFE = { agents:[], veh:[], boats:[], squads:[], poi:{}, stats:{}, doors:[] 
   var KINDS = {
     rambler:  { n:170, speed:1.25, order:['market','park','shop','tavern','civic','ring','caravanserai','home'], dwell:[8,30], hours:[6,21] },
     geomancer:{ n: 56, speed:1.35, order:['refinery','refinery','tank','pumpjack','generator','geochapter','warehouse','fuel'], dwell:[30,90], hours:[6,18.5], uniform:true },
-    farmer:   { n: 12, speed:1.15, order:['farm'], dwell:[20,50], hours:[6,17.5] },
+    farmer:   { n: 30, speed:1.15, order:['farm','paddy'], dwell:[20,50], hours:[6,17.5] },
     fisher:   { n: 14, speed:1.2,  order:['dock'], dwell:[4,8],  hours:[5,17] },
     merchant: { n: 34, speed:1.15, order:['market','warehouse','shop','caravanserai'], dwell:[30,80], hours:[7,19] }
   };
@@ -11084,7 +11422,7 @@ var LIFE = { agents:[], veh:[], boats:[], squads:[], poi:{}, stats:{}, doors:[] 
     var c=a.cfg, on = hour >= c.hours[0] && hour < c.hours[1];
     if(!on) return a.home;
     if(a.kind==='fisher') return a.boat ? a.boat.dock : pick(POI.dock||[a.home]);
-    if(a.kind==='farmer'){ if(!a.farm) a.farm=pick(POI.farm||[a.home]); return a.farm; }
+    if(a.kind==='farmer'){ if(!a.farm) a.farm=pick(pool(['farm','paddy'])); return a.farm; }
     return elsewhere(a, function(){ var cat=pick(c.order); return cat==='home' ? a.home : pick(pool([cat])); });
   }
   var QUEUE=[], QPF=6, FAILED=0;
@@ -11105,7 +11443,7 @@ var LIFE = { agents:[], veh:[], boats:[], squads:[], poi:{}, stats:{}, doors:[] 
     if(w){ w.entries++; }
     if(w && w===a.home){ a.inside=true; a.wait=rr(40,140); return; }          /* gone indoors: not drawn until he comes out */
     if(a.kind==='fisher' && w && w.cat==='dock' && a.boat && a.boat.state==='moored' && skyHour() < a.cfg.hours[1]-2){ boardBoat(a); return; }
-    if(a.kind==='farmer' && w && w.cat==='farm'){ a.inField = 3 + Math.floor(rnd()*4); fieldLeg(a); return; }
+    if(a.kind==='farmer' && w && (w.cat==='farm' || w.cat==='paddy')){ a.inField = 3 + Math.floor(rnd()*4); fieldLeg(a); return; }
   }
   /* farmers work INTO the paddies: legs to points inside the farm's rectangle, bent over while they wait */
   function fieldLeg(a){ var F=a.farm.rec, lx=rr(-22,10), lz=rr(-12,12); if(F.variant===1) lx=-lx; var p=loc(F.x,F.z,lx,lz,F.ry); a.leg={ x:p[0], z:p[1], field:true }; }
@@ -11422,7 +11760,8 @@ window._api = { TARGET:TARGET, terrainH:terrainH, riverDist:riverDist, lakeDist:
   nearestStreet:nearestStreet, onStreet:onStreet, CANAL:CANAL, RIVER:RIVER, DISTRIB:DISTRIB, FARM_PLOTS:FARM_PLOTS,
   MARKET:MARKET, PARK:PARK, CARAVANSERAI:CARAVANSERAI, REFINERY:REFINERY, TANKS:TANKS, BRIDGES:BRIDGES, HIGHWAYS:HIGHWAYS, PUMPJACKS:PUMPJACKS, DOCKS:DOCKS, STILT_SITES:STILT_SITES, FARMS:FARMS, SITES_L:SITES_L,
   ST:ST, NAV:NAV, SITES:SITES, ASSETS:ASSETS, PLACED:PLACED, SHEET_ITEMS:SHEET_ITEMS, FURNS:FURNS, PLANTS:PLANTS, FURN_CULTURES:FURN_CULTURES, PLANT_CLIMATES:PLANT_CLIMATES, PLANT_ARIDITY:PLANT_ARIDITY, TREE_SITES:TREE_SITES,
-  NL_LAMPS:NL_LAMPS, NL_WINDOWS:NL_WINDOWS, BUDGET:BUDGET, skyHour:skyHour, skySetHour:skySetHour, platXZ:platXZ, RG:RG };
+  NL_LAMPS:NL_LAMPS, NL_WINDOWS:NL_WINDOWS, BUDGET:BUDGET, skyHour:skyHour, skySetHour:skySetHour, platXZ:platXZ, RG:RG,
+  PADDY_FIELDS:PADDY_FIELDS, XINGS:XINGS, bridgeDeckAt:bridgeDeckAt, GRID_POLES:GRID_POLES };
 /* ============================== 27. DEV INSPECTOR ==============================
    Toggle on, hover anything: the tooltip names the most specific thing known
    about what is under the cursor. Read-only. Sources, most specific first:
