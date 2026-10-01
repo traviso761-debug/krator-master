@@ -24,6 +24,7 @@ FURN_CULTURE('eastabyss', { name: 'East Abyss', pack: null, influences: 'Maghreb
     tinMirror: 0xc9cdd2, giltDeep: 0xd4a537, lacquerRed: 0x9a2c26, crystalBlue: 0x5bc8e6,
     sailOrange: 0xe07b39, sailRed: 0xb8402e, paintYellow: 0xf2c230, paintTeal: 0x2fa59a, paintPink: 0xe26d8e, tarpBlue: 0x2e6fb7,
     saltWhite: 0xe9e4d6, saltGrey: 0xdcd4c4, stoneRubble: 0x9c8e7c, waterBrackish: 0x9fb9b0, waterSalt: 0xb3c8bf,
+    umbPink: 0xe58fb8, umbLilac: 0xb59ad8, umbSky: 0x7db8e8, umbMint: 0x86d3b4, umbLemon: 0xf1da6a, umbPeach: 0xf4a98a,   /* umbrellas.jpg: strung-umbrella pastels */
     wireBlack: 0x1e1a18, ropePale: 0xd8d0c0, ropeCoir: 0xa89060, brassBright: 0xc29a44, brassDark: 0x9a7228,
     clayOchre: 0xc89a62, clayMud: 0xbc8e58, clayStraw: 0xd4a66e, clayBrown: 0xb08250,
     clayLaterite: 0xb4683e, clayRust: 0xa85c36, clayRed: 0xc07448, clayDarkRed: 0x9c5230,
@@ -275,17 +276,23 @@ FURN({
   build: function (F) {
     const tc = F.pick(EAB.wood), H = 6.0, S = 4.8, wire = F.col('wireBlack'), mix = function (a, b, t) { return a + (b - a) * t; };
     [[-S, -S], [S, -S], [S, S], [-S, S]].forEach(function (c) { F.cyl(c[0], 0, c[1], 0.1, H, 0, tc, 'wood'); F.ball(c[0], H + 0.12, c[1], 0.11, F.col('brassBright'), 'metal'); });
+    /* the wires sag between the side wires (umbrellas.jpg: rows of open umbrellas hung close along sagging wires) */
+    const SAG = 0.45, wy = function (x) { const t = (x + S) / (2 * S); return H - 0.3 - SAG * 4 * t * (1 - t); };
     const wires = [];
-    for (let i = 0; i < 4; i++) { const z = mix(-S, S, (i + 0.5) / 4); wires.push(z); F.rod(-S, H - 0.3, z, S, H - 0.3, z, 0.012, wire, 'rust'); }
+    for (let i = 0; i < 4; i++) {
+      const z = mix(-S, S, (i + 0.5) / 4); wires.push(z);
+      for (let q = 0; q < 4; q++) { const xa = mix(-S, S, q / 4), xb = mix(-S, S, (q + 1) / 4); F.rod(xa, wy(xa), z, xb, wy(xb), z, 0.012, wire, 'rust'); }
+    }
     F.rod(-S, H - 0.3, -S, -S, H - 0.3, S, 0.012, wire, 'rust'); F.rod(S, H - 0.3, -S, S, H - 0.3, S, 0.012, wire, 'rust');
-    const cols = ['paintYellow', 'paintTeal', 'paintPink', 'sailOrange', 'tarpBlue', 'sailRed'];
+    /* mostly the picture's pastels, a few of the kit's brights among them */
+    const past = ['umbPink', 'umbLilac', 'umbSky', 'umbMint', 'umbLemon', 'umbPeach'], cols = past.concat(past, ['paintTeal', 'sailOrange']);
     wires.forEach(function (z, wi) {
-      for (let k = 0; k < 5; k++) {
-        const x = mix(-S, S, (k + 0.5) / 5) + F.rr(-0.3, 0.3), y = H - 0.85 + F.rr(-0.25, 0.25), c = F.pick(cols), r = F.rr(0.7, 0.85);
+      for (let k = 0; k < 6; k++) {
+        const x = mix(-S, S, (k + 0.5) / 6) + F.rr(-0.15, 0.15), y = wy(x) - 0.55 + F.rr(-0.12, 0.12), c = F.pick(cols), r = F.rr(0.66, 0.78);
         F.dome(x, y, z, r, r * 0.42, F.rr(0, F.TAU), c, 'cloth');                        /* the open umbrella */
         F.cyl(x, y - 0.02, z, r * 0.96, 0.02, 0, F.shade(c, -0.3), 'cloth');                /* its underside, seen from the street */
         F.rod(x, y - 0.75, z, x, y + r * 0.42 + 0.12, z, 0.015, wire, 'rust');
-        F.rod(x, y + r * 0.42, z, x, H - 0.3, z, 0.01, wire, 'rust');
+        F.rod(x, y + r * 0.42, z, x, wy(x), z, 0.01, wire, 'rust');
         if (F.variant === 1 && (k + wi) % 2 === 0) {
           F.ball(x + 0.6, y - 0.4, z, 0.16, F.col('glowWarm'), 'glow');
           if ((k + wi) % 4 === 0) F.lamp(x + 0.6, y - 0.4, z, 0.4, 8);
