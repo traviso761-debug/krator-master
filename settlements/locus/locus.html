@@ -6807,6 +6807,7 @@ KIT_ROWS.abyss = ['Housing — poor','Housing — middle','Housing — rich','Sh
   ABYSS.rust = function(F){ return F.pick([PAL.abRustA, PAL.abRustB, RUSTC[0], RUSTC[3]]); };
   ABYSS.cont = function(F){ return F.pick(ABCONTC); };
 
+/* ==================== ABYSS 0. a smooth-shaded grid of the merged builder, with UVs of our own ==================== */
   /* ---------- 0. a smooth-shaded grid of the merged builder, with UVs of our own ----------
      ABYSS.grid(F, fam, P, col, opt): P[i][j] = local [x,y,z]; i runs one way across the surface, j the other.
      opt.uv[i][j] = [u,v] (texture units; default a planar projection like MTRI's). opt.hint = local [x,y,z] or
@@ -6834,6 +6835,7 @@ KIT_ROWS.abyss = ['Housing — poor','Housing — middle','Housing — rich','Sh
     emit(1, cc);
     if(opt.under!=null){ var uc=mbCol(opt.under); emit(-1, function(){ return uc; }); } };
 
+/* ==================== ABYSS 1. sails ==================== */
   /* ---------- 1. sails ----------
      ABYSS.sail(F, pts, col, opt): a swooping canvas roof between 3-6 corner points [[x,y,z],...] in order round the edge.
      opt.swoop  how far each edge's middle dips below the line between its corners (the tips seem to curve up) [0.6]
@@ -6849,6 +6851,7 @@ KIT_ROWS.abyss = ['Housing — poor','Housing — middle','Housing — rich','Sh
       if(tb>0){ var B=G(0,tb,1); ABYSS.grid(F, 'pattern', B.g, opt.band, { uv:B.uv, hint:[0,1,0], under:shade(opt.band,-0.25) }); }
       var M=G(tb,1,nt); ABYSS.grid(F, fam, M.g, col, { hint:[0,1,0], under:under }); } };
 
+/* ==================== ABYSS 2. lanterns, masts, propeller-lanterns ==================== */
   /* ---------- 2. lanterns, masts, propeller-lanterns ----------
      ABYSS.lantern(F, x,y,z, lit): an oil lantern hung at (x,y,z). lit=false: dark glass, no light (poor and middle buildings);
      lit=true: the kit's warm LANTERN with a night lamp (rich, civic, sacred, palace).                                        */
@@ -6868,6 +6871,7 @@ KIT_ROWS.abyss = ['Housing — poor','Housing — middle','Housing — rich','Sh
     if(opt.flag!=null){ F.box(x+0.45,h-0.9,z, 0.9,0.5,0.03, 0, opt.flag, 'cloth'); }
     return h; };
 
+/* ==================== ABYSS 3. cone shells ==================== */
   /* ---------- 3. cone shells ----------
      ABYSS.coneShell(F, x,z, r,h, opt): a tall conical shell (lathed, smooth), open at the base in an arch on the side
      facing opt.face (radians in the local frame, default +z = PI/2 in the (cos,sin) = (x,z) convention).
@@ -6903,6 +6907,7 @@ KIT_ROWS.abyss = ['Housing — poor','Housing — middle','Housing — rich','Sh
     if(opt.finial!==false){ var fc=opt.finial!=null?opt.finial:PAL.abGild; F.cyl(x,y0+h-0.2,z, 0.09, 1.4, 0, fc, 'metal'); F.ball(x,y0+h+1.3,z, 0.28, fc, 'metal'); F.cone(x,y0+h+1.5,z, 0.12,0.7, 0, fc, 'metal'); }
     return { top:y0+h, archH:O.ah }; };
 
+/* ==================== ABYSS 4. repurposed vessels as rooms ==================== */
   /* ---------- 4. repurposed vessels as rooms ----------
      ABYSS.vessel(F, kind, x,y,z, opt) — kind 'tank' (vertical cylinder) | 'drum' (horizontal cylinder) | 'silo' (domed
      cylinder) | 'container' (shipping box). (x,y,z) = the centre of its BASE. opt: r, h (tank/silo), len (drum/container),
@@ -6955,6 +6960,7 @@ KIT_ROWS.abyss = ['Housing — poor','Housing — middle','Housing — rich','Sh
     if(opt.door==='end'){ F.door(ep[0], ep[1], endS*ca, -endS*sa, 1.0, 2.2, dk, y+0.1); }
     return { top:y+Hc+0.1 }; };
 
+/* ==================== ABYSS 5. the swoop-and-horn roof ==================== */
   /* ---------- 5. the swoop-and-horn roof ----------
      ABYSS.swoopRoof(F, x,z, w,d, h, opt): a steep thatched saddle roof, ridge along local x, over a w x d plan whose
      eave line sits at opt.y0. The ridge saddles (rises toward both ends) and sweeps on past the gables into HORNS
@@ -6987,6 +6993,7 @@ KIT_ROWS.abyss = ['Housing — poor','Housing — middle','Housing — rich','Sh
       if(tip!=null){ var L=pts[n3]; var tp=[{x:L.x,y:L.y-0.1,z:L.z,r:0.11},{x:L.x+ca*e*0.25,y:L.y+0.7,z:L.z-sa*e*0.25,r:0.0}]; F.tube('metal', tp, tip, { seg:6 }); F.ball(L.x, L.y, L.z, 0.16, tip, 'metal'); } });
     return { ridge:y0+h }; };
 
+/* ==================== ABYSS 6. tin-mirror cladding and salvaged trim ==================== */
   /* ---------- 6. tin-mirror cladding and salvaged trim ----------
      ABYSS.tinClad(F, spec, col): spec.box = [cx,y0,cz,w,h,d] with spec.faces 'fblr' (front/back/left/right, default all)
        -> plates 0.03 m outside each face; spec.lathe = [x,z,prof] (prof as F.lathe, [[r,y],...]) -> a shell 0.03 m outside.
@@ -7003,6 +7010,7 @@ KIT_ROWS.abyss = ['Housing — poor','Housing — middle','Housing — rich','Sh
     [-1,1].forEach(function(s){ F.box(x+px*s*(w/2+0.15)+nx*0.06, y-h/2, z+pz*s*(w/2+0.15)+nz*0.06, 0.16, h, 0.08, yaw, F.pick(cs), 'metal'); });
     for(var i=0;i<5;i++){ var t=(i/4-0.5)*(w+0.4); F.ball(x+px*t+nx*0.1, y+h/2+0.08, z+pz*t+nz*0.1, 0.07, F.pick(cs), 'tinmirror'); } };
 
+/* ==================== ABYSS 7. overhead clutter ==================== */
   /* ---------- 7. overhead clutter ---------- */
   /* ABYSS.cables(F, a, b, sag, n): n thin cables a->b ([x,y,z] local), each a 5-rod catenary-ish polyline. Use sparingly. */
   ABYSS.cables = function(F, a, b, sag, n){ n=n||1; for(var c=0;c<n;c++){ var dy=-c*0.12, dz=c*0.08, prev=null, ns=5;
@@ -7030,6 +7038,7 @@ KIT_ROWS.abyss = ['Housing — poor','Housing — middle','Housing — rich','Sh
         F.rod(x+a[0]*hw(t0), ya, z+a[1]*hw(t0), x+b[0]*hw(t1), yb, z+b[1]*hw(t1), 0.025, col, 'rust'); } }
     return tw; };
 
+/* ==================== ABYSS 8. the stepped square altar ==================== */
   /* ---------- 8. the stepped square altar ----------
      ABYSS.altar(F, x,z, size,h, opt): a stepped square platform `size` across at its base and `h` high in opt.steps
      terraces (4), with a STAIR in the middle of all four sides, a salt-white top with a border of tin-mirror (or
@@ -7051,6 +7060,7 @@ KIT_ROWS.abyss = ['Housing — poor','Housing — middle','Housing — rich','Sh
     ABYSS.furn(F, 'abyss_crystal_ring', x,z, 0, { ly:top, variant:lit?1:0 });
     return { top:top, topSize:ts }; };
 
+/* ==================== ABYSS 9. placing registered furniture and plants from inside a building ==================== */
   /* ---------- 9. placing registered furniture and plants from inside a building ----------
      ABYSS.furn(F, key, lx,lz, yaw, opt): builds a FURN piece at (lx, opt.ly, lz) in the building's frame (the piece is
      registered and labelled on its own). ABYSS.plant(F, key, lx,lz, yaw, opt): the same for a PLANT (opt.ly lifts it). */
@@ -7066,6 +7076,7 @@ KIT_ROWS.abyss = ['Housing — poor','Housing — middle','Housing — rich','Sh
      a vertical cylinder of radius r and height h from (lx,ly,lz); the smallest volume under the cursor wins, so it names itself. */
   ABYSS.part = function(F, name, lx,ly,lz, r,h, label){ var q=F.p(lx,lz); return REGISTER({ name:name, kind:'part', label:label||'part', x:q[0], y:F.y+ly, z:q[1], r:r, h:h }); };
 
+/* ==================== ABYSS 10. small building parts used across the kit ==================== */
   /* ---------- 10. small building parts used across the kit ---------- */
   /* ABYSS.platform(F, x0,x1,z0,z1, H, opt): piles + bearers + plank deck + edge beam from LOCUS, with piles every ~opt.span m (2.6) */
   ABYSS.platform = function(F, x0,x1,z0,z1, H, opt){ opt=opt||{}; var sp=opt.span||2.6, nx=Math.max(2,Math.round((x1-x0)/sp)+1), nz=Math.max(2,Math.round((z1-z0)/sp)+1), pk=opt.plank!=null?opt.plank:F.pick(PLANKC);
@@ -7119,6 +7130,7 @@ KIT_ROWS.abyss = ['Housing — poor','Housing — middle','Housing — rich','Sh
     [-0.35,0.35].forEach(function(t){ F.rod(x+px*t*w, y-0.2, z+pz*t*w, x+px*t*w, y+h, z+pz*t*w, 0.05, STEELDC[0], 'rust'); });
     F.box(x+nx*0.06, y+0.3, z+nz*0.06, w,h,0.06, yaw, 0xd8d0c0, 'paintcol'); F.box(x, y+0.25, z, w+0.1,h+0.1,0.05, yaw, ABYSS.rust(F), 'rust'); };
 
+/* ==================== ABYSS the helper demo: every helper once (sheet-only, tag demo) ==================== */
   /* ---------- the helper demo: every helper once (sheet-only, tag demo) ---------- */
   ASSET({ key:'abyss_helpers_demo', name:'ABYSS helper demo', family:'prop', kit:'abyss', group:'Street furniture and docks', culture:'abyssal-desert', types:['prop'], tags:['demo'],
     wealth:[0.5,0.5], w:64, d:36, h:16, variants:1,

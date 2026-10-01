@@ -4,9 +4,9 @@
 
 Locus: a fork of the Yuni engine in the eastern abyss, with its own kit sheet and plant catalogue.
 
-Docs: `KNOWN_ISSUES.md`, `LOCUS-KIT-KNOWN-ISSUES.md`, `LOCUS-KIT-NOTES.md`, `LOCUS-NOTES.md`
+Docs: `ABYSS-KIT-KNOWN-ISSUES.md`, `ABYSS-KIT-NOTES.md`, `KNOWN_ISSUES.md`, `LOCUS-KIT-KNOWN-ISSUES.md`, `LOCUS-KIT-NOTES.md`, `LOCUS-NOTES.md`
 
-Built output (never open it; edit `src/` and rebuild): `locus-kit.html`, `locus-plants.html`, `locus.html`
+Built output (never open it; edit `src/` and rebuild): `abyss-kit.html`, `locus-kit.html`, `locus-plants.html`, `locus.html`
 
 Build: `cd settlements/locus && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -16,14 +16,14 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 5 |  |
-| `05-palette.js` | 11 | 0. PALETTE (1) |
+| `05-palette.js` | 12 | 0. PALETTE (1) |
 | `10-core.js` | 17 | 1. CORE (1); 2. WORLD CONSTANTS — LOCUS (100); 4. TERRAIN FIELD (220) |
 | `20-stage.js` | 13 | 4. STAGE (1); 5. BAKED HORIZON DOME (48); 6. ERUPTION CYCLE (218) |
 | `21-sky.js` | 55 **big** | 5b. KRATOR SKY (1) |
 | `30-layout.js` | 36 **big** | 8. LAYOUT — LOCUS (1); 1-2. THE SITES (32); STREET NETWORK (same contract as Yuni) (87); THE ROUTE GRID (102); WALK GRAPH (the life layer's network) (443) |
 | `40-ground.js` | 7 | 9. GROUND CANVAS + MASK — LOCUS (1) |
 | `45-kit.js` | 26 | 10. KIT (1); NIGHT LIGHT VOLUME (123) |
-| `47-texture.js` | 11 | 11. TEXTURES (1) |
+| `47-texture.js` | 15 | 11. TEXTURES (1) |
 | `50-structure.js` | 10 | 12. STRUCTURE (massing) (1) |
 | `53-assets.js` | 17 | 13b. ASSET REGISTRY + BUILD FRAME (1) |
 | `55-mid-example.js` | 3 | 16a. ASSETS: reference example (1) |
@@ -42,6 +42,16 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `64-locus-petroleum.js` | 22 | 16P. LOCUS — the petroleum works (1) |
 | `64-locus-plants.js` | 3 | 16N. LOCUS — crops and marsh-edge plants (1) |
 | `64-locus-power.js` | 18 | 16W. LOCUS — power and fuel (1) |
+| `65-abyss-00-core.js` | 40 **big** | 16X. ABYSS — the Eastern Abyssal kit: shared hel (1); ABYSS 0. a smooth-shaded grid of the merged buil (25); ABYSS 1. sails (53); ABYSS 2. lanterns, masts, propeller-lanterns (69); ABYSS 3. cone shells (89); ABYSS 4. repurposed vessels as rooms (125); ABYSS 5. the swoop-and-horn roof (178); ABYSS 6. tin-mirror cladding and salvaged trim (211); ABYSS 7. overhead clutter (228); ABYSS 8. the stepped square altar (256) |
+| `65-abyss-10-furniture.js` | 17 | 16X-F. ABYSS — abyssal-desert furniture, indoor  (1) |
+| `65-abyss-20-plants.js` | 3 | 16X-P. ABYSS — plants the abyssal kit needs that (1) |
+| `65-abyss-30-housing.js` | 19 | 16X-H. ABYSS — housing: poor, middle, rich (1) |
+| `65-abyss-40-shops.js` | 20 | 16X-S. ABYSS — shops (1) |
+| `65-abyss-50-civic.js` | 20 | 16X-C. ABYSS — hospitality and civic (1) |
+| `65-abyss-60-temple.js` | 7 | 16X-T. ABYSS — the temple of the altar (1) |
+| `65-abyss-70-palace.js` | 8 | 16X-K. ABYSS — the Headman's palace and its plaz (1) |
+| `65-abyss-80-military.js` | 12 | 16X-M. ABYSS — military: the wall system, the fo (1) |
+| `65-abyss-90-farm.js` | 12 | 16X-G. ABYSS — farming and storage (1) |
 | `68-place.js` | 16 | 18b. THE PLACEMENT PASS — LOCUS (1) |
 | `69a1-bio-core-head.js` | 5 | PRNG (14); noise (24); host binding (32); accounting (72) |
 | `69a2-bio-core-kit.js` | 12 | merged buckets (46); bake (121) |
@@ -54,11 +64,11 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `69c4-bio-eastabyss-dress.js` | 7 |  |
 | `69c5-bio-eastabyss.js` | <1 |  |
 | `69z-locus-flora.js` | 4 | 19Z. LOCUS — planting the biome (1) |
-| `70-sheet.js` | 3 | 19. THE INSPECTION SHEET (1) |
+| `70-sheet.js` | 4 | 19. THE INSPECTION SHEET (1) |
 | `71-catalog.js` | 4 | 19b. THE FURNITURE + PLANT CATALOGUES (1) |
 | `72-lights.js` | 4 | 18. FIXED LAMPS (1) |
 | `75-terrain.js` | 12 | 20. EMIT + GROUND + WATER — LOCUS (1) |
-| `76-locus-anim.js` | 7 | 20L. LOCUS — animated machinery (1) |
+| `76-locus-anim.js` | 9 | 20L. LOCUS — animated machinery (1) |
 | `80-camera.js` | 11 | 25. CAMERA, CONTROLS, FRAME LOOP (1); RENDER LOOP (149) |
 | `81-glow.js` | 5 | 26. NIGHT GLOW (1) |
 | `82-daynight.js` | 5 | 27. DAY / NIGHT (1) |
