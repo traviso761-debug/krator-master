@@ -278,3 +278,13 @@ still exists in the tree as a stale copy.
   changes signature, `domShards` follows it.
 - Not rendered on the full kit page (load > 300 s under nine agents); per-type
   numbers above are from the scratch target, whose accounting is the same.
+
+### Follow-up (after merging ancients-resume)
+
+- **Rehabilitated Houses A–C had no petals** (civic found the same in the Government):
+  `petalRing` scales its holes by `d`, so at d=3 the threshold was fbm<.9 and every petal
+  was hole. Houses A–C now use a local `housePetals()` that scales by `HOLES` (decay 1
+  unchanged) and returns geometries. House A (base, drum, 16 petals) and House C
+  (column, lobes, caps; liners) are each merged per material.
+  Tris house/3 12 848 → 20 778 (petals back); house/0 and /1 unchanged.
+  **Meshes 28 · 25 · 25 → 6 · 7 · 7.**
