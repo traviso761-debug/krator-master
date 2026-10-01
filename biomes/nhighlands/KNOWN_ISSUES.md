@@ -9,6 +9,15 @@
 - [ ] **Memory.** ~26M triangles held (trees ~17M, floor ~9M), ~1.9M instances. Plain-array
       buckets crashed the page at ~16M; the core now stores Float32 (BIOME-API.md). Software GL
       (SwiftShader) takes ~25 s to build and 20–60 s a screenshot.
+- [ ] **More deciduous trees at the lower elevations** (Travis). The temperate band reads conifer-heavy:
+      raise the share of broadleaves there (moss maple, blue beech, mountain maple, alder; perhaps a
+      new oak/lime/ash-like canopy species) against the great spruce and cedar.
+- [ ] **The pines are not bushy enough** (Travis). The conifer builder's crowns (and the crag pine's
+      pads) read thin and twiggy, especially at mid range: more and larger needle masses, fewer
+      visible branch rods.
+- [ ] **Optimization pass** (Travis): ~25M triangles held, ~27 s build, up to ~510 draw calls at the
+      stream views. Candidates: merge small floor items per chunk, cheaper mid-range trees, fewer
+      bulbs and pods far from the spine, smaller dome texture, a lower total budget.
 - [ ] Fauna deferred (a stub, as in the other kits).
 - [ ] The far country's lake shore is a little polygonal (its grid is ~460 m out there), and
       the Outer Wall reads as an even band (82-host-sky.js).
