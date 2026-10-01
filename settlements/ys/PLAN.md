@@ -49,7 +49,7 @@ their own (ancients 9xxx, port 19990–20699); `build.py`'s overlap check covers
 
 | from | fragments |
 |---|---|
-| `kits/ancients` | `00-head 10-core 12-stats 30-kit 32-surfaces 34-kitdefs 36-decor 38-helpers2 50-registry 54-mat-concrete 69-mat-salvage 99-tail`; the builders used as hosts: `52-sky-abc 56-sky-d 57-sky-e 58-sky-f 70-sky-g 71-sky-h 89k-sky-i 89l-sky-j 89m-sky-k 82-apartments 42-offices 66-office-c 75-hotel 74-hospital 79-government 48-library 83-amphitheater 66b-flatiron 64-houses-def 81-houses-abc 73-police` |
+| `kits/ancients` | `00-head 10-core 12-stats 30-kit 32-surfaces 34-kitdefs 36-decor 38-helpers2 50-registry 69-mat-salvage 99-tail`; **adapted**: `54-mat-concrete` (`bodyGroup` takes a per-site cut at decay 1: a standing stump with full-size storeys, optional fallen body); the builders used as hosts: `52-sky-abc 56-sky-d 57-sky-e 58-sky-f 70-sky-g 71-sky-h 89k-sky-i 89l-sky-j 89m-sky-k 82-apartments 42-offices 66-office-c 75-hotel 74-hospital 79-government 48-library 83-amphitheater 66b-flatiron 64-houses-def 81-houses-abc 73-police` |
 | `core/materials` | `20-textures 22-materials 68-mat-v5` via the resolver |
 | `settlements/port` | `70-port-core 72-port-kit 73-port-edges 74-port-dress 80-pq-quay 81-pp-pier 82-dd-yard 85-hb-1-fish 83-cg-store`; **adapted**: `71-port-terrain` (the stamp system, water plane, `portUnderwaterPatch`, ground painter kept; `portNatH` replaced by the Ys coast, karst and travertine) |
 | `settlements/iziz` | `69b-vern-mat 69c-vern-helpers 70-vern-dwellings 71-vern-trade 72-vern-civic 75-port-embassy 76-port-chapterhouse 81-sky 92-camera 93-labels`; `92-camera` **adapted** (compass; the ground clamp reads the water) |
@@ -73,12 +73,13 @@ first build; resolve by renumbering the Ys-side copy and recording it.
 | `65-hyk-spans.js` | 30200 | rib bridges L1/L2, drawbridge, grown walkways, piers, boom chain, lily-pad landings; `bridgeY` | agent F |
 | `70-hyk-housing.js` | 30300–30399 | 9 I + 6 G | agent A |
 | `71-hyk-shops.js` | 30400–30499 | 10 I + 10 G, fishmongers | agent B |
-| `72-hyk-hospitality.js`, `73-hyk-sacred.js`, `79-hyk-markets.js` | 30500–30599 | taverns, inn, caravanserai; shrines; the four markets (the grown plaza is a span-kit client) | agent C |
+| `72-hyk-hospitality.js`, `73-hyk-sacred.js`, `79-hyk-markets.js` | 30500–30599, 30950–30999 | taverns, inn, caravanserai; shrines; the four markets (the grown plaza is a span-kit client) | agent C |
 | `74a-hyk-amphitriton.js`, `74b-hyk-citadel.js` | 30600–30649 | A and E | agent D |
-| `74c-hyk-tides.js`, `74d-hyk-winds.js` | 30650–30699 | B and D | agent E |
+| `74c-hyk-tides.js`, `74d-hyk-winds.js`, `74e-hyk-pharos.js` | 30650–30699 | B and D; the Pharos crown and its beam | agent E |
+| `74f-hyk-civic-minor.js` | 30900–30949 | Library of Ys, Treasury, the Wet Cells | agent H |
 | `75-hyk-harbour.js`, `76-hyk-industry.js` | 30700–30799 | docks, sheds, shipwright, the two guilds, aquaculture; warehouses, smithies, granary, windmill, generator | agent F |
 | `77-hyk-military.js`, `78-hyk-agri.js` | 30800–30899 | barracks, ballista, muster; farm, farmhouses | agent G |
-| `targets/city/84-city-geo.js … 93-city-ui.js`, `87b-city-nav.js` | 31000+ | terrain, paint, layout, NAV, placement, build order, UI | planner |
+| `targets/city/84-city-geo.js … 93-city-ui.js`, `84b-city-shore.js`, `87b-city-nav.js` | 31000+ | terrain, paint, layout, the land–sea model (`landDist`, shore loops, `surfAt`, the FOOT/BOAT/SWIM grids: Voth's, built now for the life layer), placement, build order, UI | planner |
 
 Rules every agent gets (`AGENT-BRIEF.md`, written in P1 from the Jimjam brief): local frame with +z the
 front; honest `w d h`; `r` for the inspector; `tags.type` from the project list; `reseed` first; no
@@ -99,8 +100,9 @@ eye-level shot of every building before reporting.
   when** `verify.py --assert` is green on an empty scene and the compass toggle works.
 
 ### P1 — The mockup gate (planner, one to two sessions)
-- `60–64`: materials, the shell kit, helpers, culture pack, accretion. `targets/mock`: one decay-1
-  `skyA` at scale 0.45 standing in 10 m of water with the tideline dressing; a poor barnacle cluster, a
+- `60–64`: materials, the shell kit, helpers, culture pack, accretion; the `bodyGroup` cut adaptation.
+  `targets/mock`: one decay-1 `skyA` at scale 1 cut at ~110 m (a storey boundary) standing in 10 m of
+  water with the tideline dressing; a poor barnacle cluster, a
   middle pod house with a lens dome, a rich conch; an accreted cluster on the tower at L1 and L2 with a
   spiral stair down the face, a rib bridge to a second stump, a wet landing with a boat; presets at eye
   level on the bridge, from the water, and a 300 m aerial; day and night.
@@ -111,14 +113,18 @@ eye-level shot of every building before reporting.
   merged meshes (one draw call per material), so the organic kit is cheap in draw calls and expensive in
   triangles; measure the mockup and set the per-building caps from it.
 
-### P2 — Fan-out (seven building agents + the biome agent, in parallel)
+### P2 — Fan-out (eight building agents + the biome agent, in parallel)
 - Each agent: its own copy of the tree (`cp -r` or a worktree started from this branch), its fragments,
   prefix and seed block, `targets/kit` for its views, 2–6 views per verify run, `timeout 900`, shots to
   `/tmp`. Report: keys · w×d×h · triangles · what is weak · helper bugs worked around.
 - Agent D (Amphitriton, Citadel) and E (Tides, Winds) read `refs/civic.jpg` first: A is the petal-vault
   hall with the spire and the ringed pools; B the vaulted hall with the pearl sphere and the water inside;
   D the spire cluster, built wider and airier; E the terraced arena-fortress on its stack.
-- The biome agent builds `biomes/nwbay` as its own ideal-type artifact (DESIGN §8) with `BIOME-API.md`,
+- Agent H (library, treasury, prison) and agent E's Pharos crown are landmark-grade: the Treasury must
+  read as a strongroom (one door, nacre-sealed), the Wet Cells as a place with no bridge, the Pharos beam
+  as a `TICKS` animation registered as a light mark.
+- The biome agent builds `biomes/nwbay` as its own ideal-type artifact (DESIGN §8, including the cliff fig,
+  flame-crown and cinder pine, and the eastern-abyss height ceiling) with `BIOME-API.md`,
   `NOTES.md`, `KNOWN_ISSUES.md`, `verify.py`, then hands over the species table and the fields it needs
   (`wet salt upland flow karst`).
 - Merge by copying owned fragments back; diff the rest; rebuild; `--assert`; kit sheet shots of every row.
@@ -133,7 +139,10 @@ eye-level shot of every building before reporting.
 3. `87-city-layout.js`: the old lattice from land into the water; the three highways through the main
    market; the harbours; districts and wealth rings about the Amphitriton; the river and its terraces;
    farms; aquaculture; the bridge graph (which blocks link at L1, which towers at L2, the drawbridge).
-4. `87b-city-nav.js`: NAV (DESIGN §3) with the connectivity invariants.
+4. `84b-city-shore.js` + `87b-city-nav.js`: the land–sea model and NAV (DESIGN §3): `landDist`, the shore
+   loops, `surfAt` cached, the FOOT (per datum), BOAT and SWIM grids classified once from the real
+   obstacles with every deck registering itself, A* + smoothing, the connectivity invariants. Built now,
+   walked by nobody until P5, so the life layer starts on a finished floor.
 5. `88-city-place.js`: occupancy (OBB), ground tests on the mask, the drowned/land split, the Ancients
    slot tiling by wishlist with scale ranges, the accretion scheduler per host, the Hykkousoi frontage
    walker by wealth ring, the foreign-quarter slots with their swap list, the two guilds and the
@@ -190,7 +199,7 @@ Life layer on NAV (Voth's model), the animated tide, interiors behind the marks,
 | The kit looks assembled, not grown | the P1 gate; lathes with r(θ) modulation and growth noise; fillets everywhere; no box primitive in `hyk*` builders; nacre only where it reads |
 | Four upstreams vendored into one build | `VENDOR.json` + `--vendor-check`; the union seed check; adapt only `71-port-terrain` and `92-camera` and say so |
 | Water: half-submerged geometry reads wrong | the port's underwater fade on every material (hook the Hykkousoi materials too); depth-tinted water vertex colour from swbay; coplanar faces at y = 0 (decks, floors) offset ≥ 0.05; consider Jimjam's coplanar resolver and the logarithmic depth buffer |
-| Scale: 400 m towers dwarf the Amphitriton | place hosts at 0.35–0.6, a few full height far out; measure in the mockup |
+| Scale: 400 m towers dwarf the Amphitriton, but shrunk towers break the interiors | never scale a host below 0.85; vary height by the `bodyGroup` cut at a storey boundary; three to five at full height (the Pharos one of them); the grid pitch grows to 180–220 m to hold full-size hosts; measure in the mockup |
 | Budget creep across 85 builders plus accretion | per-building caps asserted on the kit sheet; far pods as impostors; the biome's quality knob |
 | Agents die mid-file | briefs on disk; write fragments early and grow them; recover from worktrees; a truncated file is finished, not rewritten |
 | Software-GL time | `run.sh` backgrounded; named presets; `--cam` for ad-hoc; `window._ready` |
@@ -199,8 +208,10 @@ Life layer on NAV (Voth's model), the animated tide, interiors behind the marks,
 ## 7. Assumptions to confirm (defaults the plan proceeds on)
 
 1. Map 3.2 km, the drowned grid ~700 m offshore, the Amphitriton ~450 m out.
-2. Drowned hosts: the eleven skyscraper types plus the mid-rise types, at decay 1, scaled 0.35–0.6, three to
-   five at full height. The Iziz-style Ancient variants are not used.
+2. Drowned hosts: the eleven skyscraper types plus the mid-rise types, at decay 1, at scale 1 (never below
+   0.85), cut to 80–200 m at storey boundaries, three to five at full height including the Pharos. The
+   Iziz-style Ancient variants are not used. Snapping the cut to each builder's storey pitch means reading
+   each host builder once; that list goes in `API.md`.
 3. The sea is a fixed plane at y = 0 with a painted tide band; the moving tide is P5.
 4. The Amphitriton is ~120 m to the spire tip on a ~90 m island; Tides ~45 m; Winds ~110 m spires; Citadel
    on a ~60 m stack.
@@ -211,5 +222,9 @@ Life layer on NAV (Voth's model), the animated tide, interiors behind the marks,
    fork of `hyperjungle`'s flat floor: the brief's "modified from baseline hyperjungle" is met because swbay
    is already the hyperjungle's bay variant.
 9. Travertine terraces are inland on the river, with a few shelf pools on the shore.
-10. The foreign quarter uses what is ported today (Iziz Vernacular, Republic, the Voth Embassy compound and
+10. The Library of Ys, the Treasury and the Wet Cells stand where DESIGN §2 puts them (plaza, Citadel
+    precinct, military harbour's far side).
+11. The new land species are the cliff fig, the flame-crown and the cinder pine, sized under the eastern
+    abyss's canopy.
+12. The foreign quarter uses what is ported today (Iziz Vernacular, Republic, the Voth Embassy compound and
     townhouses, the chapterhouse); slots are tagged for later swaps.
