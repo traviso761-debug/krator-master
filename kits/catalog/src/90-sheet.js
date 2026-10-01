@@ -21,6 +21,9 @@
   /* ?cultures=xanadu,voth lays out only those cultures' furniture: a light page for one set */
   const onlyCultures = (qs.get('cultures') || '').split(',').map(function (c) { return c.trim().toLowerCase(); }).filter(Boolean);
   const cultureShown = function (c) { return !onlyCultures.length || onlyCultures.indexOf(c) >= 0; };
+  /* ?keys=_trade_,forge lays out only the pieces whose key holds one of these strings */
+  const onlyKeys = (qs.get('keys') || '').split(',').map(function (c) { return c.trim().toLowerCase(); }).filter(Boolean);
+  const keyShown = function (k) { return !onlyKeys.length || onlyKeys.some(function (s) { return k.toLowerCase().indexOf(s) >= 0; }); };
 
   /* --- labels: a ground plane sized to its slot, readable from the default orbit */
   const _labelCache = new Map();
@@ -59,12 +62,13 @@
   function groups(kind) {
     const out = [];
     if (kind === 'furniture') {
-      /* one row per culture and tier (poor, common, court), sorted by type */
-      for (const c of FURN_CULTURES) for (const tier of ['poor', 'common', 'court']) {
+      /* one row per culture and tier (poor, common, court), sorted by type; a culture's trade pieces
+         (FK.ROLES.trade, A.roleSet 'trade') get a row of their own after its tiers */
+      for (const c of FURN_CULTURES) for (const tier of ['poor', 'common', 'court', 'trade']) {
         if (!cultureShown(c)) continue;
-        const list = FURNS.filter(A => A.culture === c && A.tier === tier)
+        const list = FURNS.filter(A => A.culture === c && keyShown(A.key) && (tier === 'trade' ? A.roleSet === 'trade' : A.tier === tier && A.roleSet !== 'trade'))
           .sort((a, b) => (a.type || '').localeCompare(b.type || '') || a.key.localeCompare(b.key));
-        const tiers = new Set(FURNS.filter(A => A.culture === c).map(A => A.tier));
+        const tiers = new Set(FURNS.filter(A => A.culture === c).map(A => A.roleSet === 'trade' ? 'trade' : A.tier));
         if (list.length) out.push({ title: 'Furniture · ' + c + (tiers.size > 1 ? ' · ' + tier : ''), items: list });
       }
     } else if (kind === 'plants') {

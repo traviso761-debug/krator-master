@@ -62,3 +62,8 @@ FURN({
     F.frustum(0.3, 0, 0.05, 0.1, 0.13, 0.4, 0, crock, 'stone', 10);
   }
 });
+
+/* trades and households (FK.ROLES.trade, the 2026-10 interiors-sets pass): forge, anvil, stall, vat, still,
+   bins, larder, bunk, locker ... in this culture's style sheet, keyed rustic_trade_<role> */
+FK.set({ culture: 'rustic', tier: 'common', roles: 'trade', prefix: 'rustic_trade_', S: RUS_COMMON, names: {
+  forge: 'Village forge', anvil: 'Anvil on a larch stump', trough: 'Larch trough', stall: 'Byre stall', hayrack: 'Hay heck', display: 'Market steps', armour_stand: 'Mail on a stand', weapon_rack: 'Axe and spear rack', vat: 'Cheese vat', still: 'Schnapps still', bin: 'Meal bins', larder: 'Pantry cupboard', bunk: "Herder's bunk", locker: 'Larch press', lathe: 'Pole lathe', press: 'Cider press', kiln: 'Lime kiln', grindstone: 'Grindstone', barrel: 'Cellar barrels', altar: 'Stave-church altar' } });
