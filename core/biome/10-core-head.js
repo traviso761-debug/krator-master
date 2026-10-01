@@ -84,6 +84,10 @@ BIO.init=function(h){
   // eye (swbay-1): optional ()->[x,y,z], where the viewer is right now. Only a pass that
   // animates (fauna) reads it, to leave what is far alone; null means no LOD.
   eye:h.eye||null,
+  // clock / wind (one world, one wind: biomes/WORLD.md): clock()->seconds drives the foliage's sway
+  // instead of the core's own clock; wind()->[x,z] (1 = the calm breeze) bends it downwind. A world
+  // with core/atmos binds clock:()=>ATMOS.clock.t and wind:()=>the base wind over its calm length.
+  clock:h.clock||null,wind:h.wind||null,
   err:h.err||(m=>console.error(m)),
   stat:h.stat||null};
  reseed(BIO.host.seed*7919+11);
