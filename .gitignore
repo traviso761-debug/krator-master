@@ -38,3 +38,7 @@ settlements/locus/three.min.js
 host/address.json
 host/address.json.tmp
 .claude/worktrees/
+
+# a local three.js copy for verify.py when the CDN is blocked (not committed)
+settlements/girder/three.min.js
+settlements/mavs-refuge/three.min.js
