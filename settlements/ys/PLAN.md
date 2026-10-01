@@ -51,9 +51,10 @@ their own (ancients 9xxx, port 19990–20699); `build.py`'s overlap check covers
 |---|---|
 | `kits/ancients` | `00-head 10-core 12-stats 30-kit 32-surfaces 34-kitdefs 36-decor 38-helpers2 50-registry 69-mat-salvage 99-tail`; **adapted**: `54-mat-concrete` (`bodyGroup` takes a per-site cut at decay 1: a standing stump with full-size storeys, optional fallen body); the builders used as hosts: `52-sky-abc 56-sky-d 57-sky-e 58-sky-f 70-sky-g 71-sky-h 89k-sky-i 89l-sky-j 89m-sky-k 82-apartments 42-offices 66-office-c 75-hotel 74-hospital 79-government 48-library 83-amphitheater 66b-flatiron 64-houses-def 81-houses-abc 73-police` |
 | `core/materials` | `20-textures 22-materials 68-mat-v5` via the resolver |
-| `settlements/port` | `70-port-core 72-port-kit 73-port-edges 74-port-dress 80-pq-quay 81-pp-pier 82-dd-yard 85-hb-1-fish 83-cg-store`; **adapted**: `71-port-terrain` (the stamp system, water plane, `portUnderwaterPatch`, ground painter kept; `portNatH` replaced by the Ys coast, karst and travertine) |
-| `settlements/iziz` | `69b-vern-mat 69c-vern-helpers 70-vern-dwellings 71-vern-trade 72-vern-civic 75-port-embassy 76-port-chapterhouse 81-sky 92-camera 93-labels`; `92-camera` **adapted** (compass; the ground clamp reads the water) |
-| `settlements/highlands` | `70-hl-tex 71-hl-mat 71b-hl-motif 72-hl-helpers 73-hl-carve 73b-hl-frame 74-rep-dwell 75-rep-trade 76-rep-civic` |
+| `settlements/port` | `70-port-core 72-port-kit 73-port-edges 74-port-dress 80-pq-quay 81-pp-pier 82-dd-yard 82-dd-dock 85-hb-1-fish 85-hb-3-haven 87-sl-d-pen 89y-sp-1-yard 83-cg-store`; **adapted**: `71-port-terrain` (the stamp system, water plane, `portUnderwaterPatch`, ground painter kept; `portNatH` replaced by the Ys coast, karst and travertine) |
+| `settlements/iziz` | `69b-vern-mat 69c-vern-helpers 70-vern-dwellings 71-vern-trade 72-vern-civic 75-port-embassy 76-port-chapterhouse 78-transplant 81-sky 92-camera 93-labels`; `92-camera` **adapted** (compass, the Below-the-tide view; the ground clamp reads the water) |
+| `settlements/xanadu` | **adapted**: `85-xa-water` (the tiling 8 m water modules: rill, basin, cascade, fall; re-skinned to shell and travertine for the Amphitriton's ringed pools and the terraces' lips) |
+| `settlements/highlands` | `70-hl-tex 71-hl-mat 71b-hl-motif 72-hl-helpers 73-hl-carve 73b-hl-frame 74-rep-dwell 75-rep-trade 76-rep-civic`; for the land quarter's post-apoc dwellings and the optional hulk strand: `79b-rep-salvage 79c-rep-apoc 79d-rep-scrap2 79e-rep-arco 79f-rep-shipbreak` |
 | `core/sockets` | `37-sockets 80-cultures` (+ a `hykkousoi` pack: nautilus whorl symbol, nacre-white and sea-teal livery) |
 | `kits/ringsea` | `40-rs-core 41-rs-tex 42-rs-hull 43-rs-rig 44-rs-parts 60-rs-hyk-trireme 65-rs-hyk-galley 68-rs-iziz-dhoni 72-rs-hyk-hexareme 73-rs-hyk-pearl 78-rs-hyk-corbita 94-rs-anim` |
 | `biomes/nwbay` | `86-bio-10…70` as the Iziz city vendors the hyperjungle, plus `86-bio-45-init` written here |
@@ -140,9 +141,11 @@ eye-level shot of every building before reporting.
    market; the harbours; districts and wealth rings about the Amphitriton; the river and its terraces;
    farms; aquaculture; the bridge graph (which blocks link at L1, which towers at L2, the drawbridge).
 4. `84b-city-shore.js` + `87b-city-nav.js`: the land–sea model and NAV (DESIGN §3): `landDist`, the shore
-   loops, `surfAt` cached, the FOOT (per datum), BOAT and SWIM grids classified once from the real
-   obstacles with every deck registering itself, A* + smoothing, the connectivity invariants. Built now,
-   walked by nobody until P5, so the life layer starts on a finished floor.
+   loops, `surfAt` cached, the `HOSTS` table (cap, floors, landings, heads, piers: the canton model) with
+   `hostEdge` and the two margins, the FOOT (per datum), BOAT and SWIM grids classified once from the
+   real obstacles with every deck registering itself, A* + smoothing, the connectivity invariants, and the
+   `BERTHS` / `FERRY_STOPS` / `WET_DOORS` records. Built now, walked by nobody until P5, so the life layer
+   starts on a finished floor.
 5. `88-city-place.js`: occupancy (OBB), ground tests on the mask, the drowned/land split, the Ancients
    slot tiling by wishlist with scale ranges, the accretion scheduler per host, the Hykkousoi frontage
    walker by wealth ring, the foreign-quarter slots with their swap list, the two guilds and the
@@ -179,6 +182,9 @@ Life layer on NAV (Voth's model), the animated tide, interiors behind the marks,
 - every drowned host's base is below y = 0 and every land building's above it; every L1 span clears
   the water by ≥ 6 m at mid-span on a lane (the ships' air draught decides the number; take it from the
   vessel defs); vessels float and do not overlap (the Ring Sea kit's `_api.extra()` checks).
+- every drowned host has a HOST record whose cap contains every vertex of its built footprint at the
+  waterline (measured by a probe, Voth's pier lesson made an invariant) and a floors table whose storeys
+  are all ≥ 3.0 m clear.
 - deterministic: two builds hash-identical.
 
 ## 5. Budgets (to agree with Travis)
@@ -205,7 +211,47 @@ Life layer on NAV (Voth's model), the animated tide, interiors behind the marks,
 | Software-GL time | `run.sh` backgrounded; named presets; `--cam` for ad-hoc; `window._ready` |
 | The old grid vs the Hykkousoi's loose streets | the lattice is painted first as "existing network"; Hykkousoi streets are the Iziz frontage walker fronting the lattice with bends allowed; drowned blocks sit exactly on it |
 
-## 7. Assumptions to confirm (defaults the plan proceeds on)
+## 7. Reuse survey (every other build, Oct 2026)
+
+Two engines exist. **Code** moves between builds on the Ancients lineage (`kits/ancients`, `port`,
+`iziz`, `highlands`, `dalab`, `reedlake`, `xanadu`, `jimjam`, `screamers`, `ringsea`); from Voth, Yuni,
+Locus, Girder and Mav's Refuge (the `var` kit engine) only the **pattern** moves, re-implemented.
+`kits/post-apoc` has a third geometry engine: its builders are pattern-only too.
+
+| from | what | Ys use | how |
+|---|---|---|---|
+| Voth `30a`, `78a`, `78b`, `65e` | cantons: real cap edge per bearing, nav margin vs steering margin, piers rooted flush, builder-fills/consumer-reads berth records | every drowned host is a HOST record (DESIGN §3) | pattern |
+| Voth `15-shore` | shore by arc length | shore loops | pattern (done) |
+| Voth `55-chinampa` | rows offset from the real shoreline, canal between rows, sanity pass | aquaculture pens | pattern |
+| Voth `50f-spans-build` | pylon + landing + stair foot on a square cap (`landing(c,…,foot)`) | bridgeheads on hosts; the drawbridge's land stair | pattern |
+| Voth `65g-coastguard-dock` | a dock built before its vessel, with the mooring record | military harbour berths | pattern |
+| Voth `78c/78d/78e`, `82` moving lanterns, `83-weather`, `84-fauna` | ships cycling quays, water taxis, dhows, tracked vehicle lanterns, clear/storm/ash, ambient gulls | P5 | pattern |
+| Voth `65k` | mill animation rig | the windmill | pattern (Jimjam's `77-jj-agri` windmill is the same-engine code) |
+| Yuni `54-under`, `88-underview` | cutaway rooms in their own buckets, `userData.under`, a view that hides the surface | the Below-the-tide view | pattern |
+| Yuni `68-place` | OBB box tests, kit audit, refusal counters | the placer (Iziz `88` already carries most of it) | pattern |
+| Yuni `66-canal` | weir, sluices, towpath | the river's head-works above the terraces | pattern |
+| Girder `30-layout` | `floors[k]` with `use`, room `SLOTS` with door facing, core stairs as walking points | HOST floors (DESIGN §5) | pattern |
+| Mav's Refuge `30`, `45`, `50` | layout-owns-positions, NAV with levels, the 3-D night light volume | NAV; the light volume is a stretch goal (the Ancients night is instanced lit windows + halos) | pattern |
+| Locus `76-locus-anim`, `64-locus-power` | one InstancedMesh per moving part, matrices rewritten per frame; a generator hall with a flywheel | the generator, the drawbridge, the Pharos beam | pattern |
+| port `87-sl-d-pen` | a covered Ancient wet pen, three bays | the navy's ship shed | code |
+| port `89y-sp-1-yard` | reclaimed-land mole: fill stamp, quay wall on every water side | the grown plaza's and the Amphitriton island's substrate | code |
+| port `82-dd-yard`, `82-dd-dock` | slipway, hull on cradle, fabrication shed, jib crane; graving dock | the shipwright's substrate | code |
+| port `85-hb-1-fish`, `85-hb-3-haven` | four boat types, boat-house, stilt house, rope bridge between two points; slipway, lifeboat house, lighthouse | fishing docks; the civilian harbour light | code |
+| port `73-port-edges`, `74-port-dress`, `92-camera` | quay wall, revetment, deck on columns; lamps, rails, boats; bounds overlay | harbours; dev tools | code |
+| highlands `79f-rep-shipbreak`, `79e` | a wreck being cut up: scaffolded fore, stripped midships, gantry, plates in stacks, camp | the hulk-breakers' strand (optional) | code |
+| highlands `79b/79c/79d`, `88-hl-dress` | salvage-forward buildings, reclaimed variants | the land quarter's post-apoc dwellings alongside `repairPass` | code |
+| highlands `76c-rep-capital` | the Mint and Treasury | programme reference for the Hykkousoi Treasury (one door, vault, counting hall) | reference |
+| iziz `78-transplant` | placing another kit's buildings (`placeTrans`, `TREFHALF`) | the foreign quarter | code |
+| xanadu `85-xa-water` | tiling water modules with slope pieces (step, ramp, cascade, fall) | the Amphitriton's pools, the terrace lips | code, re-skinned |
+| xanadu `84-xa-grandbath`, `81-xa-public`; dalab `71c` bath house | baths | a Hykkousoi bathhouse if wanted (not in the brief) | reference |
+| jimjam `63-jj-zfix`, `72-jj-hospitality`, `37-sockets` | coplanar resolver + log depth; the caravanserai; sockets | z-fighting at the waterline; caravanserai reference; the hykkousoi pack | code |
+| reedlake `78-rl-work`, `80-rl-islands` | fish weir, duck run, pontoon bridges, floating islands, reed boats | aquaculture pens; the poor blocks' pontoon walkways | code (same lineage) |
+| post-apoc `58-dock`, `52-defence` | tyre quay, pier on pilings, scrap gantry, fish racks; prisoner cages | fishing-dock dressing; the Wet Cells' furniture | pattern |
+| kits/ancients `engines` target | ten ruined cyclopean machines | one half-drowned Engine as a reef landmark (optional) | code |
+| kits/catalog | 84 culture-tagged furniture pieces | the interiors pass, after verification | reference |
+| screamers `72a-wind` | foliage sway in the vertex shader | nothing new: the biome core already has it | none |
+
+## 8. Assumptions to confirm (defaults the plan proceeds on)
 
 1. Map 3.2 km, the drowned grid ~700 m offshore, the Amphitriton ~450 m out.
 2. Drowned hosts: the eleven skyscraper types plus the mid-rise types, at decay 1, at scale 1 (never below
