@@ -15,10 +15,6 @@
 //        a round plinth, cupping a ribbed sphere that carries the dish.
 
 // ---------------------------------------------------------------- helpers
-// the lawn gone rank: darker, untextured like MAT.lawn (a textured turf shows
-// the concrete map's boards as rings on a polar grid)
-MAT.adLawn=new THREE.MeshStandardMaterial({color:0x3a5a20,roughness:1,metalness:0,side:DS});
-MAT.adLawnR=new THREE.MeshStandardMaterial({color:0x2a3e1c,roughness:1,metalness:0,side:DS});
 // A loft through closed rings of equal count [[x,y,z],...], flat-shaded, with
 // fan caps on the first and last ring (rings must be convex for the caps).
 function adLoft(acc,rings,noCaps){const P=[];const tri=(a,b,c)=>P.push(a[0],a[1],a[2],b[0],b[1],b[2],c[0],c[1],c[2]);
@@ -60,9 +56,10 @@ function buildAltAmphitheater(scene,gx,gz,d){reseed(9865+d);KOFF=[gx,0,gz];
  const hf=(a,r)=>.4+slope(r)*wN(a);
  // THE LAWN: one polar height field round the stage
  // it runs out to the berm's foot on the north and only 46 m south of the stage,
- // and its last ring comes down to the ground so it has no lip
+ // and its last ring comes down to the ground so it has no lip. Textured turf:
+ // an untextured green goes white at the grazing angles a lawn is seen at.
  const rMax=a=>lerp(46,106,wN(a));
- mesh(gridSurface((u,v)=>{const a=u*TAU,r=v*rMax(a),p=PT(a,r);return[p[0],v>.97?.02:hf(a,r),p[1]];},96,44),dd?MAT.adLawnR:MAT.adLawn,G);
+ mesh(gridSurface((u,v)=>{const a=u*TAU,r=v*rMax(a),p=PT(a,r);return[p[0],v>.97?.02:hf(a,r),p[1]];},96,44,{uS:80,vS:13}),dd?MAT.turfR:MAT.turf,G);
  const solid=[],brick=[],shell=[],dark=[];
  const hold=holeFn(dd,9865,null,1.5);
  // SEAT RIBBONS: a riser and a tread, on a wobbling radius, base on the lawn
