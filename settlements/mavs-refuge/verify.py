@@ -184,8 +184,17 @@ R.push({name:'nav-connected', ok:A.NAV.reachable===A.NAV.nodes.length, detail:A.
   R.push({name:'trees-out-of-river', ok:!bad.length, detail: bad.length? JSON.stringify(bad):'no trunk stands in the channel'}); }
 return R;}"""
 
+# The catalog furniture (53-furnish.js: the 'catalog-furniture' group, meshes tagged userData.furniture) has
+# its own budget line: BUDGET.triangles keeps guarding the world's own fabric as it did before the furniture
+# moved into the catalog, so its count EXCLUDES the furniture the camera draws. The furniture's own line counts it at
+# full detail: core/lod keeps each original on layer 30 (unseen; mask bit 0x40000000) and draws copies (userData.lodCopy,
+# carrying the original's userData), so the originals give a figure that does not move with the view.
 BUDGET_JS = """()=>{const B=(typeof BUDGET!=='undefined')?BUDGET:(window._api&&window._api.BUDGET); if(!B) return null;
-return {budget:B, calls:renderer.info.render.calls, tris:renderer.info.render.triangles,
+const L30=0x40000000, tri=g=>{ const n=g.index?g.index.count:g.attributes.position.count, dr=g.drawRange; return Math.floor(Math.min(n, dr.count===Infinity?n:dr.count)/3); };
+let ft=0, fd=0, fc=0; scene.traverseVisible(o=>{ if(!o.isMesh||!o.userData.furniture) return;
+  if(!o.userData.lodCopy) ft+=tri(o.geometry);                  /* the furniture at full detail: its budget */
+  if(!(o.layers.mask&L30)){ fd+=tri(o.geometry); fc++; } });    /* what the camera draws of it: taken off the world's count */
+return {budget:B, calls:renderer.info.render.calls, tris:renderer.info.render.triangles-fd, furnTris:ft, furnCalls:fc,
         instances:(window._stats&&window._stats.instances)||0};}"""
 
 
@@ -245,8 +254,11 @@ async def run(a):
                 bg = await pg.evaluate(BUDGET_JS)
                 if bg:
                     print("\n--- budget ---")
-                    for k, cur in (("drawCalls", bg["calls"]), ("triangles", bg["tris"]),
-                                   ("instances", bg["instances"])):
+                    rows = [("drawCalls", bg["calls"]), ("triangles", bg["tris"]), ("instances", bg["instances"])]
+                    if "furnitureTriangles" in bg["budget"]:
+                        rows.append(("furnitureTriangles", bg["furnTris"]))
+                    print("  (triangles = the world without the catalog furniture; drawCalls include its %d meshes)" % bg["furnCalls"])
+                    for k, cur in rows:
                         lim = bg["budget"][k]
                         ok = cur <= lim
                         print("  %s  %-10s %9d / %9d  (%d%%)" % ("PASS" if ok else "OVER", k, cur, lim, 100 * cur // lim))

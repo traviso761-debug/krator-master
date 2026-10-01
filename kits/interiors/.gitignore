@@ -1,3 +1,4 @@
 .syntax-*.js
 __pycache__/
 shots/
+dist/interiors-sets.*.html

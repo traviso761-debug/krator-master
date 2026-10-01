@@ -59,6 +59,7 @@
 </script>
 <!-- the master catalog, loaded by path (kits/catalog/README.md "Using catalog pieces in another build") -->
 <script src="../../catalog/three.min.js"></script>
+<script src="../../catalog/krator-furniture-core.js"></script>
 <script src="../../catalog/krator-asset-engine.js"></script>
 <script src="../../catalog/krator-symbols.js"></script>
 <script src="../../catalog/krator-furniture-kit.js"></script>
@@ -291,7 +292,8 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
             culture, wealth, id?, seed?, level?, fixtures? })
 
    poly is the floor outline at the INNER face of the walls, either winding. A door or window
-   is snapped onto the nearest wall of the polygon; `at` may sit anywhere within 0.6 m of it.
+   is snapped onto the nearest wall of the polygon; `at` may sit anywhere within 0.6 m of it (a door's
+   `snap` widens that: the planner gives a street door on the OUTER face of a thick wall snap = wall + 0.6).
    Door extras this kit adds (all optional): swing 'in' (default) | 'out' | 'none' (an open
    doorway or curtain), hinge 'left' | 'right' (seen from inside, looking out; default 'left'),
    h (opening height, 2.1), leaf: false (another room draws this door's leaf: a shared door).
@@ -320,13 +322,13 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
   IX.ROOM_KINDS_KNOWN = ['hall', 'bedroom', 'kitchen', 'store', 'workshop', 'shrine', 'tavern', 'library', 'school',
     'study', 'barracks', 'court', 'yard', 'rooftop', 'antechamber'];
 
-  function snap(room, at, what) {
+  function snap(room, at, what, tol) {
     let best = null, bd = Infinity;
     for (const W of room.walls) {
       const d = G.segDist(at[0], at[1], W.a, W.b);
       if (d < bd) { bd = d; best = W; }
     }
-    if (!best || bd > 0.6) throw new Error('ROOM ' + room.id + ': ' + what + ' at [' + at + '] is ' + bd.toFixed(2) + ' m from every wall');
+    if (!best || bd > (tol || 0.6)) throw new Error('ROOM ' + room.id + ': ' + what + ' at [' + at + '] is ' + bd.toFixed(2) + ' m from every wall');
     const u = Math.max(0, Math.min(best.len, (at[0] - best.a[0]) * best.t[0] + (at[1] - best.a[1]) * best.t[1]));
     return { W: best, u: u, at: [best.a[0] + best.t[0] * u, best.a[1] + best.t[1] * u] };
   }
@@ -353,7 +355,7 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
       R.walls.push({ i: R.walls.length, a: a, b: b, len: len, t: t, n: n, ry: Math.atan2(n[0], n[1]) });
     }
     (o.doors || []).forEach(function (d, k) {
-      const s = snap(R, d.at, 'door ' + k);
+      const s = snap(R, d.at, 'door ' + k, d.snap);
       R.doors.push({ i: k, id: d.id || null, at: s.at, w: +(d.w || 1.0), to: d.to || 'street', swing: d.swing || 'in', hinge: d.hinge || 'left',
         h: +(d.h || 2.1), leaf: d.leaf !== false, wall: s.W.i, u: s.u, n: s.W.n, ry: s.W.ry });
     });
@@ -414,17 +416,78 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
 
   const SURFACE = { anchor: 'surface', max: 2 };
   IX.SURFACE_GROUP = SURFACE;
+  /* roles (the catalog's `role`: FK.ROLES' role names, or a bespoke piece's own) that make a piece a
+     FOOD container or an ITEM container. A require entry with `roles` takes only pieces whose role
+     is listed (the adapter infers a role for harvested pieces that carry none, from their key). */
+  const FOOD = ['store', 'larder', 'pantry', 'sacks', 'pots', 'crates', 'bin', 'barrel', 'basket', 'cold'];
+  const ITEM = ['chest', 'cabinet', 'trunk', 'locker', 'coffer', 'strongbox', 'wardrobe', 'footlocker'];
+  IX.FOOD_ROLES = FOOD;
+  IX.ITEM_ROLES = ITEM;
+  /* a room of kind K also takes pieces whose `rooms` list any of KIND_ALIAS[K] */
+  IX.KIND_ALIAS = {
+    cottage: ['hall', 'bedroom', 'kitchen'],
+    living: ['hall', 'kitchen'],
+    dormitory: ['barracks', 'bedroom'],
+    shop: ['store', 'market', 'tavern', 'hall'],
+    smithy: ['workshop', 'kitchen'],
+    stable: ['yard', 'store', 'roost']
+  };
+  IX.roomKinds = function (kind) { return [kind].concat(IX.KIND_ALIAS[kind] || []); };
+  /* a catalog piece's role, for the FOOD and ITEM container slots: its own `role` (FK.set() pieces and
+     harvested pieces that declare one), else guessed from its key and name (harvested pieces without one) */
+  IX.ROLE_GUESS = [
+    [/chest|trunk|locker|coffer|strongbox|cabinet|wardrobe|press/, 'chest'],
+    [/sack|grain|pot|jar|crate|barrel|bin|basket|larder|pantry|goods|stack|churn|crock/, 'store'],
+    [/forge|anvil/, 'forge']
+  ];
+  IX.guessRole = function (A) {
+    if (A.role) return A.role;
+    const k = (A.key + ' ' + (A.name || '')).toLowerCase();
+    for (const g of IX.ROLE_GUESS) if (g[0].test(k)) return g[1];
+    return undefined;
+  };
 
   IX.PROGRAMS = {
     hall:     { require: [{ need: 'table', types: ['table'], n: 1 }, { need: 'seats', types: SEATS, n: 2 }],
                 optional: [{ types: ['lamp', 'brazier'], max: 2 }, { types: ['storage', 'shelf', 'rack'], max: 2 }, { types: ['screen', 'statue', 'banner'], max: 1 }, { types: ['art', 'banner'], max: 2 }, SURFACE],
                 extra: 7 },
-    bedroom:  { require: [{ need: 'bed', types: ['bed'], n: 1 }],
-                optional: [{ types: ['storage'], max: 2 }, { types: ['lamp'], max: 1 }, { types: ['screen'], max: 1 }, { types: ['chair', 'desk'], max: 1 }, { types: ['art', 'banner'], max: 1 }, SURFACE],
+    bedroom:  { require: [{ need: 'bed', types: ['bed'], n: 1 }, { need: 'chest', types: ['storage'], roles: ITEM, n: 1 }],
+                optional: [{ types: ['storage'], max: 1 }, { types: ['lamp'], max: 1 }, { types: ['screen'], max: 1 }, { types: ['chair', 'desk'], max: 1 }, { types: ['art', 'banner'], max: 1 }, SURFACE],
                 extra: 5 },
-    kitchen:  { require: [{ need: 'hearth', types: ['stove'], n: 1 }, { need: 'storage', types: ['storage', 'shelf', 'vessel'], n: 1 }],
+    kitchen:  { require: [{ need: 'hearth', types: ['stove'], n: 1 }, { need: 'food', types: ['storage', 'vessel', 'stack'], roles: FOOD, n: 1 }],
                 optional: [{ types: ['storage', 'shelf', 'rack', 'stack'], max: 2 }, { types: ['table'], max: 1 }, SURFACE],
                 extra: 5 },
+    /* RESIDENCE kinds (the interiors sets, sets/README.md): every residence must hold a bed, a FOOD
+       container (a store-role piece: jars, sacks, crocks, a larder) and an ITEM container (a chest-role
+       piece). A one-room home is a `cottage`; a home's main room with the hearth is `living`; the
+       sleeping rooms are `bedroom`s (each with a chest). KIND_ALIAS lets catalog pieces listing
+       hall / kitchen / bedroom qualify for them. */
+    /* the chest before the food: a food slot has compact pieces (jars, a larder) as well as wide ones (bins,
+       a barrel cradle), and a small hut has room for a chest only if the food slot leaves it */
+    cottage:  { require: [{ need: 'bed', types: ['bed'], n: 1 }, { need: 'hearth', types: ['stove', 'brazier'], n: 1 },
+                          { need: 'chest', types: ['storage'], roles: ITEM, n: 1 }, { need: 'food', types: ['storage', 'vessel', 'stack'], roles: FOOD, n: 1 }],
+                optional: [{ types: ['table'], max: 1 }, { types: SEATS, max: 2 }, { types: ['shelf', 'rack'], max: 1 }, { types: ['lamp'], max: 1 }, { types: ['rug'], max: 1 }, { types: ['art', 'banner'], max: 1 }, SURFACE],
+                extra: 5 },
+    living:   { require: [{ need: 'hearth', types: ['stove', 'brazier'], n: 1 }, { need: 'table', types: ['table'], n: 1 }, { need: 'seats', types: SEATS, n: 2 },
+                          { need: 'food', types: ['storage', 'vessel', 'stack'], roles: FOOD, n: 1 }],
+                optional: [{ types: ['storage', 'shelf', 'rack'], max: 2 }, { types: SEATS, max: 2 }, { types: ['lamp'], max: 1 }, { types: ['rug'], max: 1 }, { types: ['screen', 'statue', 'banner'], max: 1 }, { types: ['art', 'banner'], max: 2 }, SURFACE],
+                extra: 6 },
+    dormitory: { require: [{ need: 'beds', types: ['bed'], n: 2 }, { need: 'chest', types: ['storage'], roles: ITEM, n: 1 }],
+                optional: [{ types: ['bed'], max: 6 }, { types: ['storage'], max: 3 }, { types: ['lamp'], max: 1 }, { types: ['rack', 'shelf'], max: 1 }],
+                extra: 4 },
+    /* TRADE kinds: a shop's selling room and the industries */
+    shop:     { require: [{ need: 'counter', types: ['counter'], n: 1 }, { need: 'goods', types: ['shelf', 'rack', 'storage', 'stack', 'vessel', 'weapon'], n: 2 }],
+                optional: [{ types: ['stack'], max: 1 }, { types: ['shelf', 'rack', 'storage', 'stack', 'weapon'], max: 3 }, { types: ['table'], max: 1 }, { types: SEATS, max: 1 }, { types: ['lamp'], max: 1 }, { types: ['art', 'banner'], max: 1 }, SURFACE],
+                extra: 5 },
+    /* smithy and stable draw on the catalog's trade pieces (kits/catalog FK.ROLES.trade: forge, anvil,
+       trough, grindstone, stall, hayrack ...), registered for the generic set every chain ends in */
+    smithy:   { require: [{ need: 'forge', types: ['stove', 'workstation'], roles: ['forge', 'hearth'], n: 1 },
+                          { need: 'anvil', types: ['workstation'], roles: ['anvil', 'workbench'], n: 1 }],
+                optional: [{ types: ['vessel'], max: 1 }, { types: ['workstation'], max: 2 }, { types: ['rack', 'weapon'], max: 2 }, { types: ['storage', 'stack'], max: 1 }, { types: ['bench', 'chair'], max: 1 }, SURFACE],
+                extra: 7 },
+    stable:   { require: [{ need: 'stalls', types: ['pen'], roles: ['stall'], n: 1 }],
+                optional: [{ types: ['pen'], max: 3 }, { types: ['rack'], max: 2 }, { types: ['vessel', 'storage'], max: 2 }],
+                extra: 8 },
     tavern:   { require: [{ need: 'counter', types: ['counter'], n: 1 }, { need: 'table', types: ['table'], n: 1 }, { need: 'seats', types: SEATS, n: 2 }],
                 optional: [{ types: ['table'], max: 2 }, { types: SEATS, max: 4 }, { types: ['storage', 'stack', 'rack'], max: 1 }, { types: ['lamp', 'brazier'], max: 2 }, { types: ['art', 'banner'], max: 1 }, SURFACE],
                 extra: 6 },
@@ -453,7 +516,8 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
   };
   /* how big a room of each kind wants to be, relative to the others (the planner's area split) */
   IX.KIND_WEIGHT = { hall: 1.6, tavern: 2.2, shrine: 1.4, workshop: 1.6, library: 1.5, school: 1.6, barracks: 1.6,
-    kitchen: 1.0, bedroom: 1.0, study: 0.9, store: 0.7, antechamber: 0.6 };
+    kitchen: 1.0, bedroom: 1.0, study: 0.9, store: 0.7, antechamber: 0.6,
+    cottage: 1.4, living: 1.6, dormitory: 1.8, shop: 1.6, smithy: 1.8, stable: 1.8 };
   /* what a building of a given type is divided into, per storey (Yuni's ROOM_PROGRAM table,
      64-interiors.js): fn(level, area, shell) -> [kind, ...], the first kind holds the street door
      (ground floor) or the stair's top (upper floors). planBuilding() takes a name from here, an
@@ -465,7 +529,12 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
     workshop: function (l) { return l ? ['study', 'store'] : ['workshop', 'store']; },
     civic:    function (l) { return l ? ['study', 'library'] : ['hall', 'study']; },
     temple:   function () { return ['shrine']; },
-    farm:     function () { return ['store']; }
+    farm:     function () { return ['store']; },
+    /* the sets' residence programmes (sets/README.md) */
+    cottage:  function () { return ['cottage']; },
+    house:    function (l, a) { return l ? (a >= 40 ? ['bedroom', 'bedroom', 'store'] : ['bedroom', 'store']) : (a >= 45 ? ['living', 'bedroom', 'store'] : ['living', 'bedroom']); },
+    smithy:   function (l) { return l ? ['bedroom', 'store'] : ['smithy', 'store']; },
+    stable:   function () { return ['stable']; }
   };
 
   IX.DEFAULT_PROGRAM = { require: [], optional: [{ types: ['table', 'storage', 'lamp'], max: 3 }], extra: 6 };
@@ -475,7 +544,7 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
     storage: 'wall', shelf: 'wall', rack: 'wall', stack: 'wall', loom: 'wall', workstation: 'wall', desk: 'wall',
     screen: 'wall', banner: 'wall', ladder: 'wall', vessel: 'wall', weapon: 'wall', art: 'wall',
     table: 'centre', statue: 'centre', rug: 'centre', fountain: 'centre', well: 'centre',
-    lamp: 'corner', brazier: 'corner',
+    lamp: 'corner', brazier: 'corner', pen: 'wall',
     seating: 'seat', bench: 'seat', chair: 'seat'
   };
 
@@ -744,7 +813,7 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
    furnishRoom(room, catalog, opts) -> plan. Pure data; nothing is built (IX.buildRoom does that).
 
    SPEC "Placement", in its fixed order:
-   1. FILTER  setting in {indoor, both}, rooms contains room.kind, fits under the ceiling;
+   1. FILTER  setting in {indoor, both}, rooms contains room.kind (or one of IX.KIND_ALIAS[kind]), fits under the ceiling;
               culture tried along the chain own -> CULTURE_FAMILY -> any (opts.fallback:
               'any' default | 'family' | 'none'); every step down the chain is reported.
    2. REQUIRE the room kind's PROGRAMS[kind].require slots first, then its optional pieces.
@@ -780,7 +849,8 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
                                                   frame [{ lx, ly, lz, color, intensity, distance }]
 
    plan = { room, kind, culture, seed, placements[], lights[], grid, zones{ doors[][], windows[] }, report, stats }
-   placement = { id, key, variant, seed, x, z, ry, y, anchor, type, role, culture, need, host, lights? }
+   placement = { id, key, variant, seed, x, z, ry, y, anchor, type, role, catRole, culture, need, host, lights? }
+               (role: the slot it took, back/wall/centre/seat/...; catRole: the catalog's role, chest/store/...)
    plan.lights = every placement's lights in world terms, { placement, x, y, z, color, intensity, distance }:
    a host lights the room from this data (or a budget of it) instead of one real light per lamp.
    ====================================================================== */
@@ -909,8 +979,12 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
 
     /* ---- 1. FILTER */
     const all = catalog.list();
+    const kinds = IX.roomKinds ? IX.roomKinds(room.kind) : [room.kind];   /* the kind and its aliases (30-programs.js) */
     const base = all.filter(function (d) {
-      return (d.setting === 'indoor' || d.setting === 'both') && (d.rooms || []).indexOf(room.kind) >= 0;
+      if (d.setting !== 'indoor' && d.setting !== 'both') return false;
+      const rs = d.rooms || [];
+      for (const k of kinds) if (rs.indexOf(k) >= 0) return true;
+      return false;
     });
     const chain = [room.culture].concat(IX.CULTURE_FAMILY[room.culture] || []);
     report.own = base.filter(function (d) { return d.culture === room.culture; }).length;
@@ -1158,7 +1232,7 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
     let nItem = 0;
     for (const rq of reqs) {
       const L = levels(fallback).map(function (lv) {
-        return { culture: lv.culture, list: lv.list.filter(function (d) { return rq.types.indexOf(d.type) >= 0; }) };
+        return { culture: lv.culture, list: lv.list.filter(function (d) { return rq.types.indexOf(d.type) >= 0 && (!rq.roles || rq.roles.indexOf(d.role) >= 0); }) };
       }).filter(function (lv) { return lv.list.length; });
       const rec = { need: rq.need, types: rq.types, n: rq.n || 1, placed: 0 };
       report.required.push(rec);
@@ -1213,7 +1287,7 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
       const hostQ = Q.host ? placed.filter(function (H) { return H.id === Q.host; })[0] : null;
       const y = catalog.anchorY(P.key, P.variant, { floorY: room.y, surfaceY: hostQ ? hostQ.top : null, ceilingY: room.y + room.h });
       const p = { id: Q.id, key: P.key, variant: P.variant, seed: 1 + ((seed + i * 7919) % 99991), x: Q.x, z: Q.z, ry: Q.ry, y: R3(y),
-        anchor: P.anchor, type: P.type, role: Q.role, culture: P.culture, need: Q.need || null, host: Q.host,
+        anchor: P.anchor, type: P.type, role: Q.role, catRole: P.desc.role || null, culture: P.culture, need: Q.need || null, host: Q.host,
         w: R3(P.w), d: R3(P.d), h: R3(P.h), clearance: P.clear };
       const L = catalog.lights ? catalog.lights(P.key, P.variant, { seed: p.seed, wealth: room.wealth }) : null;
       if (L && L.length) {
@@ -1248,7 +1322,7 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
                doors: [{ at:[x,z], w }]          street doors on the footprint edge (ground floor);
                                                  none given: one in the middle of edge `front` (0)
                culture, wealth, wall: 0.25, partition: 0.12, slab: 0.25,
-               roof: 'gable' | 'hip' | 'flat', pitch: 0.6 (radians) }
+               roof: 'gable' | 'hip' | 'flat', pitch: 0.6 (radians), windows: false (none; default on every exterior wall) }
      program = a name in IX.BUILDING_PROGRAMS | [kind, ...] (every storey) | [[kinds of storey 0], [storey 1], ...]
                | fn(level, area, shell) -> [kind, ...].  The first kind of a storey gets the street
                door (ground floor) or the top of the stair (upper floors).
@@ -1595,7 +1669,7 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
         for (const lf of leaves) { const dd = G.edgeDist(lf.poly, f[0], f[1]) + (G.inside(lf.poly, f[0], f[1]) ? 0 : 0.001); if (dd < bd) { bd = dd; best = lf; } }
         const did = id + '.street.' + i;
         doors.push({ id: did, kind: 'street', level: 0, at: [R3(d.at[0]), R3(d.at[1])], w: d.w, rooms: [best.id, 'street'], into: best.id });
-        best.doors.push({ id: did, at: d.at, w: d.w, to: 'street', swing: d.swing || 'in', hinge: d.hinge || 'left' });
+        best.doors.push({ id: did, at: d.at, w: d.w, to: 'street', swing: d.swing || 'in', hinge: d.hinge || 'left', snap: wallT + 0.6 });
       });
     });
 
@@ -1622,8 +1696,9 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
         for (let i = 0; i < n; i++) d.push(onCut(Lv, P[i], P[(i + 1) % n]) ? partT / 2 : 0);
         const polyF = insetEdges(P, d);
         const poly = polyF.map(toW);
-        /* windows: on the exterior walls, clear of doors and corners */
-        for (let i = 0; i < n; i++) {
+        /* windows: on the exterior walls, clear of doors and corners (shell.windows === false: none, a
+           container, a byre, a store with no openings drawn) */
+        for (let i = 0; i < n && shell.windows !== false; i++) {
           if (d[i]) continue;
           const a = toW(P[i]), b = toW(P[(i + 1) % n]), len = Math.hypot(b[0] - a[0], b[1] - a[1]);
           if (len < 1.8) continue;
@@ -2255,6 +2330,191 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
   };
 
 })(KratorInteriors);
+/* ---------- src/48b-sets.js ---------- */
+/* ======================== Interior sets: a building kit's interiors as data ========================
+   IX.sets holds, per building SET (a kit or a settlement's building registry), the interior each
+   building key declares: the bodies planBuilding() cuts into rooms, or explicit ROOM() outlines,
+   in the building's OWN frame (origin at the plot centre on the ground, +z the front/door side,
+   metres: the frame every kit's builders draw in). The files live in kits/interiors/sets/<set>.js
+   (sets/README.md) and are inlined into dist/interiors-sets.html by build.py. Engine-neutral: a
+   world that places a building at (x, z, ry) calls IX.sets.instantiate(item, x, z, ry) and gets
+   planned buildings and rooms in world metres, ready for furnishRoom().
+
+     IX.sets.add({ set, title, culture?, wealth?, items: [item, ...] })
+     item = {
+       key, name,                      the set's registry key and display name
+       culture, wealth,                catalog furniture culture (kits/catalog FURN_CULTURES) and 0..1
+       types: [...],                   the building's types (the set's tags); a dwelling type makes it a residence
+       lot: [w, d],                    the set's declared footprint (layout only)
+       residence: true|false, units: n a residence must hold, per unit, a bed, a FOOD container and an
+                                       ITEM container (30-programs.js FOOD_ROLES / ITEM_ROLES); default:
+                                       residence when types holds a dwelling type, units 1
+       bodies: [{ id, poly, y, levels: n | [{ h, poly? }], doors: [{ at, w, hinge?, swing? }], program,
+                  roof, pitch, wall, partition, slab, front, stair, minWidth, culture?, wealth? }]
+                                       each a planBuilding() shell in the LOCAL frame (poly = the OUTER
+                                       face of the walls; program as planBuilding takes it)
+       rooms: [{ id, kind, poly, y, h, doors, windows, fixtures, culture?, wealth? }]
+                                       explicit rooms (round huts, open halls, a tent) in the local frame
+       like: '<key>',                  copy another item's bodies and rooms (a reclaimed variant)
+       skip: 'reason',                 no interior: open structure, a field, or GEOMETRY THAT PRECLUDES
+                                       ROOMS (noted for the kit's author; the page lists them)
+       note: 'free text'               caveats worth keeping
+     }
+     IX.sets.instantiate(item, ox, oz, ry, { seed, register, baseY, prefix }) ->
+       { item, id, buildings: [B], specs: [{ shell, program }], rooms: [R] (every room, world metres) }
+     IX.sets.auditResidence(inst, plansByRoomId) -> { residence, units, beds, food, items, fails: [] }
+     IX.sets.shape: rect(w, d, cx, cz), circle(r, n, cx, cz), ell(w, d, cw, cd, cx, cz), offset(poly, dx, dz)
+   ====================================================================== */
+(function (IX) {
+  'use strict';
+  const R3 = IX.round;
+  const DWELLING = ['single-family dwelling', 'multi-family dwelling', 'dwelling-single', 'dwelling-multi', 'dwelling'];
+  const S = IX.sets = { list: [], byName: {} };
+
+  S.shape = {
+    rect: function (w, d, cx, cz) { cx = cx || 0; cz = cz || 0; return [[cx - w / 2, cz - d / 2], [cx + w / 2, cz - d / 2], [cx + w / 2, cz + d / 2], [cx - w / 2, cz + d / 2]]; },
+    circle: function (r, n, cx, cz) {
+      cx = cx || 0; cz = cz || 0; n = n || 12; const out = [];
+      for (let i = 0; i < n; i++) { const a = (i + 0.5) / n * Math.PI * 2; out.push([R3(cx + r * Math.sin(a)), R3(cz + r * Math.cos(a))]); }
+      return out;
+    },
+    /* a w x d rectangle with its back-right cw x cd corner taken out (back = -z) */
+    ell: function (w, d, cw, cd, cx, cz) {
+      cx = cx || 0; cz = cz || 0;
+      return [[cx - w / 2, cz - d / 2], [cx + w / 2 - cw, cz - d / 2], [cx + w / 2 - cw, cz - d / 2 + cd], [cx + w / 2, cz - d / 2 + cd], [cx + w / 2, cz + d / 2], [cx - w / 2, cz + d / 2]];
+    },
+    offset: function (poly, dx, dz) { return poly.map(function (p) { return [p[0] + dx, p[1] + dz]; }); }
+  };
+
+  S.isResidence = function (item) {
+    if (item.residence != null) return !!item.residence;
+    return (item.types || []).some(function (t) { return DWELLING.indexOf(t) >= 0; });
+  };
+  S.add = function (def) {
+    if (!def || !def.set) throw new Error('IX.sets.add needs { set, items }');
+    if (S.byName[def.set]) throw new Error('interior set ' + def.set + ' added twice');
+    const set = { set: def.set, title: def.title || def.set, culture: def.culture || null, wealth: def.wealth, items: [], byKey: {} };
+    (def.items || []).forEach(function (it) {
+      if (!it.key) throw new Error('set ' + def.set + ': an item has no key');
+      if (set.byKey[it.key]) throw new Error('set ' + def.set + ': item ' + it.key + ' twice');
+      const item = Object.assign({}, it);
+      item.set = def.set;
+      if (item.like) {
+        const src = set.byKey[item.like];
+        if (!src) throw new Error('set ' + def.set + ': ' + it.key + ' is like unknown ' + item.like);
+        if (!item.bodies) item.bodies = src.bodies;
+        if (!item.rooms) item.rooms = src.rooms;
+        if (item.culture == null) item.culture = src.culture;
+        if (item.wealth == null) item.wealth = src.wealth;
+        if (item.types == null) item.types = src.types;
+        if (item.lot == null) item.lot = src.lot;
+        if (item.units == null) item.units = src.units;
+        if (item.residence == null && src.residence != null) item.residence = src.residence;
+        if (item.skip == null && src.skip) item.skip = src.skip;
+      }
+      if (item.culture == null) item.culture = set.culture;
+      if (item.wealth == null) item.wealth = set.wealth == null ? 0.5 : set.wealth;
+      item.bodies = item.bodies || [];
+      item.rooms = item.rooms || [];
+      item.units = item.units == null ? 1 : item.units;
+      item.residence = S.isResidence(item);
+      if (!item.skip && !item.bodies.length && !item.rooms.length) throw new Error('set ' + def.set + ': ' + it.key + ' has no bodies, no rooms and no skip reason');
+      set.items.push(item); set.byKey[item.key] = item;
+    });
+    S.list.push(set); S.byName[set.set] = set;
+    return set;
+  };
+
+  function xf(ox, oz, ry) {
+    const c = Math.cos(ry || 0), s = Math.sin(ry || 0);
+    return function (p) { return [R3(ox + p[0] * c + p[1] * s), R3(oz - p[0] * s + p[1] * c)]; };
+  }
+  S.instantiate = function (item, ox, oz, ry, o) {
+    o = o || {};
+    const T = xf(ox, oz, ry), baseY = o.baseY || 0, id = (o.prefix || item.set + '.') + item.key;
+    const out = { item: item, id: id, buildings: [], specs: [], rooms: [], x: ox, z: oz, ry: ry || 0 };
+    if (item.skip) return out;
+    const poly = function (P) { return P.map(T); };
+    const door = function (d) {
+      const q = Object.assign({}, d); q.at = T(d.at);
+      if (q.to == null) q.to = 'street';
+      return q;
+    };
+    item.bodies.forEach(function (b, bi) {
+      const shell = {
+        id: id + '.' + (b.id || 'b' + bi), poly: poly(b.poly), y: baseY + (b.y || 0),
+        levels: Array.isArray(b.levels) ? b.levels.map(function (l) { return Object.assign({}, l, l.poly ? { poly: poly(l.poly) } : {}); }) : (b.levels || 1),
+        culture: b.culture || item.culture, wealth: b.wealth == null ? item.wealth : b.wealth,
+        roof: b.roof || 'gable', pitch: b.pitch
+      };
+      if (b.h) shell.h = b.h;
+      if (b.doors) shell.doors = b.doors.map(door);
+      if (b.front != null) shell.front = b.front;
+      ['wall', 'partition', 'slab', 'windows'].forEach(function (k) { if (b[k] != null) shell[k] = b[k]; });
+      const po = { seed: o.seed || 0, register: o.register !== false };
+      if (b.stair) po.stair = b.stair;
+      if (b.minWidth) po.minWidth = b.minWidth;
+      if (b.door) po.door = b.door;
+      const B = IX.planBuilding(shell, b.program || 'dwelling', po);
+      B.setItem = item; B.body = b;
+      out.buildings.push(B); out.specs.push({ shell: shell, program: b.program || 'dwelling', opts: po });
+      B.rooms.forEach(function (R) { R.setItem = item; R.setBody = b.id || 'b' + bi; out.rooms.push(R); });
+    });
+    item.rooms.forEach(function (r, ri) {
+      const def = {
+        id: id + '.' + (r.id || 'r' + ri), building: id, kind: r.kind || 'hall', poly: poly(r.poly), y: baseY + (r.y || 0), h: r.h || 3.0,
+        culture: r.culture || item.culture, wealth: r.wealth == null ? item.wealth : r.wealth, level: r.level || 0,
+        doors: (r.doors || []).map(door),
+        windows: (r.windows || []).map(function (w) { const q = Object.assign({}, w); q.at = T(w.at); return q; }),
+        fixtures: (r.fixtures || []).map(function (f) {
+          const q = Object.assign({}, f), p = T([f.x, f.z]); q.x = p[0]; q.z = p[1]; q.ry = (f.ry || 0) + (ry || 0); return q;
+        })
+      };
+      if (r.seed != null) def.seed = r.seed;
+      const R = o.register !== false ? IX.ROOM(def) : IX.normRoom(def);
+      R.setItem = item; R.setBody = r.id || 'r' + ri; R.explicit = true;
+      out.rooms.push(R);
+    });
+    return out;
+  };
+
+  /* furnish a PLACED building in one call (a kit page, a settlement): instantiate the item at the building's
+     placement, furnish every room through `catalog` (an adapter: IX.runtimeAdapter for a batch), build them.
+     o: { baseY, seed, prefix, register (default false: a world of many buildings need not fill IX.rooms) }
+     -> { inst, plans: { roomId: plan }, residence: IX.sets.auditResidence(...) } */
+  S.furnish = function (item, ox, oz, ry, catalog, o) {
+    o = o || {};
+    const inst = S.instantiate(item, ox, oz, ry, { baseY: o.baseY || 0, register: !!o.register, seed: o.seed || 0, prefix: o.prefix });
+    const plans = {};
+    inst.rooms.forEach(function (R) {
+      const P = IX.furnishRoom(R, catalog, { seed: o.seed || 0 });
+      IX.buildRoom(P, catalog, R);
+      plans[R.id] = P;
+    });
+    return { inst: inst, plans: plans, residence: S.auditResidence(inst, plans) };
+  };
+  S.find = function (key) { for (const set of S.list) if (set.byKey[key]) return set.byKey[key]; return null; };
+
+  /* the residence check: per unit a bed (a bunk counts two), a FOOD container and an ITEM container somewhere in the building */
+  S.auditResidence = function (inst, plans) {
+    const item = inst.item, out = { residence: item.residence, units: item.units, beds: 0, food: 0, items: 0, fails: [] };
+    if (!item.residence || item.skip) return out;
+    const FOOD = IX.FOOD_ROLES || [], ITEM = IX.ITEM_ROLES || [];
+    inst.rooms.forEach(function (R) {
+      const P = plans[R.id]; if (!P) return;
+      P.placements.forEach(function (p) {
+        if (p.type === 'bed') out.beds += p.catRole === 'bunk' ? 2 : 1;     /* a bunk sleeps two */
+        if (p.catRole && FOOD.indexOf(p.catRole) >= 0 && (p.type === 'storage' || p.type === 'vessel' || p.type === 'stack') && p.anchor !== 'surface') out.food++;
+        if (p.catRole && ITEM.indexOf(p.catRole) >= 0 && p.type === 'storage') out.items++;
+      });
+    });
+    const n = item.units;
+    if (out.beds < n) out.fails.push(inst.id + ': residence of ' + n + ' unit(s) holds ' + out.beds + ' bed(s)');
+    if (out.food < n) out.fails.push(inst.id + ': residence of ' + n + ' unit(s) holds ' + out.food + ' food container(s)');
+    if (out.items < n) out.fails.push(inst.id + ': residence of ' + n + ' unit(s) holds ' + out.items + ' item container(s)');
+    return out;
+  };
+})(KratorInteriors);
 /* ---------- src/49-exports.js ---------- */
 /* ======================== Build, export and the global names ========================
    IX.buildRoom(plan, catalog, room?) builds every placement through catalog.build() and
@@ -2278,7 +2538,7 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
       room: plan.room, kind: plan.kind, culture: plan.culture, seed: plan.seed, opts: plan.opts,
       placements: plan.placements.map(function (p) {
         return { id: p.id, key: p.key, variant: p.variant, seed: p.seed, x: p.x, z: p.z, ry: p.ry, y: p.y, anchor: p.anchor,
-          type: p.type, culture: p.culture, need: p.need, host: p.host, lights: p.lights };
+          type: p.type, catRole: p.catRole, culture: p.culture, need: p.need, host: p.host, lights: p.lights };
       }),
       lights: plan.lights || [],
       doorZones: plan.zones.doors.map(function (zs) { return zs.map(polyJSON); }),
@@ -2297,7 +2557,8 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
    loaded first) onto the four calls the placer needs (45-placer.js header):
 
      list()                    FURNS -> descriptors { key, name, culture, type, setting, rooms, anchor, clearance, variants,
-                               tier, wealth: [lo, hi], role }   (tier and wealth: the catalog's wealth bands, 45-placer.js)
+                               tier, wealth: [lo, hi], role }   (tier and wealth: the catalog's wealth bands, 45-placer.js;
+                               role: the catalog's, else guessed from the key: IX.guessRole)
      dims(key, v)              entryDims(A, v)
      anchorY(key, v, at)       furnAnchorY(A, v, at)
      build(placement, room)    buildFurn(key, x, z, ry, { variant, seed, y, wealth }) -> THREE.Group in the engine's scene
@@ -2331,6 +2592,9 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
     for (const q of QUIRKS) if (q.key === A.key && q.when(A)) n = Math.min(n, q.variants);
     return n;
   }
+  /* a piece's role (its own, else guessed: IX.guessRole, 30-programs.js) is what the FOOD and ITEM slots read */
+  const roleOf = IX.guessRole;
+  IX.catalogRoleOf = roleOf;
   function stripLights(g) {
     const out = [];
     g.traverse(function (o) { if (o.isPointLight) out.push(o); });
@@ -2361,7 +2625,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
         cache = FURNS.map(function (A) {
           return { key: A.key, name: A.name, culture: A.culture, type: A.type, setting: A.setting, rooms: A.rooms.slice(),
             anchor: A.anchor || 'floor', clearance: A.clearance || {},
-            tier: A.tier, wealth: A.wealth ? A.wealth.slice() : undefined, role: A.role,
+            tier: A.tier, wealth: A.wealth ? A.wealth.slice() : undefined, role: roleOf(A),
             variants: variantsOf(A) };
         });
         return cache;

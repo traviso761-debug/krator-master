@@ -89,11 +89,11 @@ function hnRCJib(x,z,h,L,a,c,load){const iron=hC(0x2e2a26);vB('vStone',x,0,z,1.4
  const e=[x+Math.sin(a)*L,jy,z+Math.cos(a)*L];vBeam([x,jy,z],e,.26,c);vBeam([x,h+.4,z],[e[0],e[1]+.1,e[2]],.05,iron,'vRope');vBeam([x+Math.sin(a)*L*.5,jy-1.6,z+Math.cos(a)*L*.5],[x,jy-3.2,z],.2,c);
  vB('vIron',e[0],jy-.4,e[2],.4,.4,.4,a,iron);const hy=Math.max(1.4,jy*.35);vBeam([e[0],jy-.4,e[2]],[e[0],hy+.5,e[2]],.04,iron,'vRope');vB('vIron',e[0],hy+.2,e[2],.3,.3,.3,a,iron);
  if(load)kput(load,[e[0],hy-.4,e[2]],qEuler(0,a,0),[1.8,.7,.9],null);}
-// Scattered salvage: sheets, plates, white Ancient panels, rusted pipe and boxes (the Iziz note).
-function hnRCScrap(x,z,rx,rz,n){const IT=['vSheet','vPlate','vPlateW','vSheet','vPlate'];for(let i=0;i<n;i++){const px=x+rr(-rx,rx),pz=z+rr(-rz,rz),r=rng();
- if(r<.5)kput(vPick(IT),[px,rr(.3,1.2),pz],qEuler(rr(-1.2,1.2),rng()*TAU,rr(-.6,.6)),[rr(1,2.6),rr(.8,2),1],null);
- else if(r<.75)kput('vPipeR',[px,rr(.15,.6),pz],qEuler(Math.PI/2+rr(-.3,.3),rng()*TAU,0),[rr(.1,.3),rr(1.5,4),rr(.1,.3)],null);
- else kput('vRustB',[px,rr(.2,.5),pz],qEuler(rr(-.3,.3),rng()*TAU,rr(-.3,.3)),[rr(.5,1.4),rr(.4,.9),rr(.5,1.2)],null);}}
+// Scattered salvage (the Iziz note): heaps of Ancient salvage from the catalog, one per ~20 scraps asked for, spread
+// along the area's long side. Each scrap drew 10 numbers (9 for a pipe).
+function hnRCScrap(x,z,rx,rz,n){for(let i=0;i<n;i++){hlRngSkip(2);const r=rng();hlRngSkip(r<.5?7:r<.75?6:7);}
+ const m=Math.max(1,Math.round(n/20)),X=rx>=rz;for(let k=0;k<m;k++){const t=m>1?-1+2*k/(m-1):0;
+  FURNISH('hl_rep_scrap_heap',x+(X?t*(rx-1.8):0),0,z+(X?0:t*(rz-1.8)),X?0:Math.PI/2,{v:1});}}
 // A tapering brick stack from y: three stages, iron bands, a soot cap. Returns the top.
 function hnRCStack(x,y,z,b,h,c){c=c||hC(vPick([0x8a4a36,0x7a4232,0x965640]));let yy=y,w=b;const iron=hC(0x2e2a26);for(let k=0;k<3;k++){const hh=h/3;vB('vStone',x,yy,z,w,hh+.02,w,0,c);
  vB('vIron',x,yy+hh-.5,z,w+.08,.14,w+.08,0,iron);yy+=hh;w*=.84;}
@@ -102,9 +102,8 @@ function hnRCStack(x,y,z,b,h,c){c=c||hC(vPick([0x8a4a36,0x7a4232,0x965640]));let
 function hnRCRails(a,b,gauge){gauge=gauge||1.0;const dx=b[0]-a[0],dz=b[1]-a[1],L=Math.hypot(dx,dz),ry=Math.atan2(dx,dz),iron=hC(0x3a3632),wd=hC(vPick(HPAL.aged));
  for(const s of[-1,1]){const p=loc((a[0]+b[0])/2,(a[1]+b[1])/2,s*gauge/2,0,ry);vB('vIron',p[0],.1,p[1],.08,.1,L,ry,iron);}
  const n=Math.round(L/.8);for(let i=0;i<=n;i++){vB('vWood',a[0]+dx*i/n,0,a[1]+dz*i/n,gauge+.6,.1,.22,ry,wd);}}
-// An ore tub on the rails at (x,z) heading ry, with a load (coal / ore colour).
-function hnRCTub(x,z,ry,loadC){vB('vRustB',x,.45,z,1.0,.8,1.5,ry,null);for(const sx of[-1,1])for(const sz of[-1,1]){const p=loc(x,z,sx*.5,sz*.45,ry);kput('vHoop',[p[0],.3,p[1]],qEuler(0,ry+Math.PI/2,0),[.24,.24,2],hC(0x2e2a26));}
- if(loadC)kput('hRCHeap',[x,1.2,z],qEuler(0,ry,0),[.6,.45,.8],loadC);}
+// An ore tub on the rails at (x,z) heading ry, loaded: furniture, the catalog's coal tub.
+function hnRCTub(x,z,ry,loadC){return FURNISH('hl_rep_rail_tub',x,0,z,ry,{v:0});}
 
 // ---------------------------------------------------------------- the Peles tower (wall towers, gate, fortress)
 // o: {roof:'spire'|'tent'|'tiers', tiers, loggia(default true), clock, lit, rubbleTo (fraction), cream, roofC,
@@ -173,7 +172,7 @@ function hnRCWallRun(x,z,len,ry,o){o=o||{};const H=o.H||9,T=o.T||3.2,rub=o.c||hC
   for(let i=0;i<nm;i++){const q=P(-len/2+len*(i+.5)/nm,T/2-.3);vB('hRubB',q[0],H+1.0,q[1],1.2,1.1,.6,ry,rub);vB('vStone',q[0],H+2.1,q[1],1.36,.16,.74,ry,ash);}
   p=P(0,-T/2+.2);vB('vStone',p[0],H,p[1],len,.9,.4,ry,ash);}
  if(o.stair){const s=o.stair,n=Math.round((H+.1)/.26),tr=.3;for(let k=0;k<n;k++){const u=s*(len/2-.6)-s*(k+.5)*tr;const q=P(u,-T/2-.75);vB('vStone',q[0],0,q[1],tr+.01,(H+.1)*(k+1)/n,1.5,ry,ash.clone().multiplyScalar(.92));}}
- if(o.lamps&&vLit()){const nl=Math.max(1,Math.round(len/14));for(let i=0;i<nl;i++){const q=P(-len/2+len*(i+.5)/nl,-T/2);vnLamp(q[0],H-1.4,q[1],ry+Math.PI);}}}
+ if(o.lamps&&vLit()){const nl=Math.max(1,Math.round(len/14));for(let i=0;i<nl;i++){const q=P(-len/2+len*(i+.5)/nl,-T/2);hnWallLamp(q[0],H-1.4,q[1],ry+Math.PI);}}}
 // Gable slabs with the ridge along local x and SEPARATE overhangs: `over` at the eaves, `overX` along the run (0 so
 // that runs tile without overlapping slabs); optional end wedges. (vnGableRoof uses one overhang for both.)
 function hnRCGableX(x,y,z,w,d,rise,ry,slabItem,slabC,over,overX,endItem,endC){const thick=.22;if(endItem)kput(endItem,[x,y,z],ry?qEuler(0,ry,0):null,[w,rise,d],endC||null);
@@ -202,7 +201,7 @@ function hnRCGate(x,z,ry,o){o=o||{};const TW=o.tw||8.5,TH=o.th||17,BW=10,BD=10,R
   p=P(0,0);vB('vStone',p[0],0,p[1],2*R,.04,BD+2,ry,hC(vPick(HPAL.rubble)).multiplyScalar(.8));}
  // over the arch on the field side: the painted crest, the clock, lamps
  {const f=P(0,BD/2);hnForm('hFormA',f[0],8.5,f[1],ry,4.4,2.2);if(o.clock!==false){const q=P(0,BD/2+.06);vB('vStone',q[0],10.9,q[1],2.9,2.2*1.3,.1,ry,ash);const c2=P(0,BD/2+.14);kput('hClock',[c2[0],12.0,c2[1]],qEuler(0,ry,0),[2.4,2.4,1],null);}
-  if(lit)for(const s of[1,-1])for(const t of[-1,1]){const q=P(t*(R+1.1),s*BD/2);vnLamp(q[0],4.2,q[1],ry+(s>0?0:Math.PI));}
+  if(lit)for(const s of[1,-1])for(const t of[-1,1]){const q=P(t*(R+1.1),s*BD/2);hnWallLamp(q[0],4.2,q[1],ry+(s>0?0:Math.PI));}
   const b=P(0,-BD/2);hnForm('hFormA',b[0],8.6,b[1],ry+Math.PI,3.6,1.8);}
  // jettied half-timber storey and the steep gable, gable end to the field, with a flèche on the ridge
  p=P(0,0);vB('vStone',p[0],top,p[1],BW+.6,.25,BD+.6,ry,ash);hnJetty(p[0],top+.6,p[1],BW,BD,ry,wood,.4);
@@ -213,7 +212,7 @@ function hnRCGate(x,z,ry,o){o=o||{};const TW=o.tw||8.5,TH=o.th||17,BW=10,BD=10,R
  // the twin towers, pushed a little toward the field
  for(const s of[-1,1]){const q=P(s*(BW/2+TW/2),.8);hnRCTower(q[0],0,q[1],TW,TH,ry,{roof:'spire',tile:o.tile,lit,roofC,beamC:wood,cream,flag:s>0});}
  if(o.stubs){for(const s of[-1,1]){const q=P(s*(BW/2+TW+o.stubs/2-.4),0);hnRCWallRun(q[0],q[1],o.stubs+.8,ry,{roofC,wood,c:rub,ends:true});}}
- if(lit)for(const s of[-1,1]){const q=P(s*(BW/2+1.2),BD/2+4);vnLampPost(q[0],0,q[1],4.2);}}
+ if(lit)for(const s of[-1,1]){const q=P(s*(BW/2+1.2),BD/2+4);hnLampPost(q[0],0,q[1],4.2);}}
 
 // ================================================================= MONUMENTS
 // ---------------------------------------------------------------- Hall of the Republic
@@ -231,7 +230,7 @@ function buildHlRepHallRepublic(G,o){reseed(21201+(o.v|0));
  hnRCPave(0,44,34,13.6,0,hC(vPick(HPAL.ashlar)).multiplyScalar(.95),2.6);
  for(const s of[-1,1]){vB('vStone',s*16.5,0,39.6,2.6,1.3,2.6,0,ash);vB('vStone',s*16.5,1.3,39.6,2.2,.2,2.2,0,rub);hnTotem(s*16.5,1.5,39.6,.62,12.5,0,{wings:3.4,wingAt:.8,hat:true,painted:s>0});
   for(let k=0;k<2;k++){vB('vStone',s*(8+k*9),0,48.6,1.1,.6,1.1,0,ash);vnBannerPole(s*(8+k*9),.6,48.6,0,9,k%2?flagC:hC(HPAL.teal));}
-  if(vLit())for(let k=0;k<2;k++)vnLampPost(s*(5+k*8),0,41.5,4.2);}
+  if(vLit())for(let k=0;k<2;k++)hnLampPost(s*(5+k*8),0,41.5,4.2);}
  // ---- the ring hall: cream stucco with quoins and pilasters, arched lit windows, a cornice with dougong
  const RW=62,RD=52,RH=7.5,rz0=ZC-RD/2,rz1=ZC+RD/2;hnStucco(0,FL,ZC,RW,RH,RD,0,cream,ash);vB('vStone',0,FL+RH-.4,ZC,RW+.3,.4,RD+.3,0,ash);
  vB('vStone',0,FL,ZC,RW+.3,.6,RD+.3,0,rub);
@@ -269,7 +268,7 @@ function buildHlRepHallRepublic(G,o){reseed(21201+(o.v|0));
   vB('vStone',0,FL,fz+.02,11,7.6,.12,0,ash);kput('hKeelP',[0,FL+6.1,fz+.04],null,[11,3.0,.12],ash);
   vB('vDarkB',0,FL,fz+.1,8.2,6.2,.1,0);kput('hKeelDark',[0,FL+6.1,fz+.12],null,[8.2,2.4,.1]);hnForm('hFormW',0,FL+5.95,fz+.1,0,5.2,2.0);
   for(const s of[-1,1])hnForm('hFormV',s*2.05,FL+.15,fz+.12,0,3.9,5.7);
-  if(vLit())for(const s of[-1,1])vnLamp(s*6.4,FL+4.8,fz,0);
+  if(vLit())for(const s of[-1,1])hnWallLamp(s*6.4,FL+4.8,fz,0);
   for(const s of[-1,1])for(const z of[EZ-3,EZ+3]){const q=[s*EW/2,z];vnWin(q[0],FL+2.2,q[1],s*Math.PI/2,1.3,2.8,lit,'vStone',ash);}
   // flanking spire-pavilions in front of the veranda
   for(const s of[-1,1]){const px=s*(EW/2+4.2),pz=fz-2.5;hnSocle(px,FL,pz,5.6,1.0,5.6,0,rub,ash);hnStucco(px,FL+1.0,pz,5.2,6.2,5.2,0,cream,ash);
@@ -343,19 +342,21 @@ function buildHlRepFortress(G,o){reseed(21211+(o.v|0));const X=36,Z=32,TW=10,TH=
   for(const z of[-8,-3,3,8]){vnWin(bx+BW/2,1.6,bz+z,Math.PI/2,.9,1.3,'glass','vStone',ash);hnNal(bx+BW/2,4.3,bz+z,Math.PI/2,.8,1.1,'glass',hC(HPAL.white));}
   vnDoor(bx+BW/2,.6,bz+.5,Math.PI/2,1.3,2.3,'vWood',log,tar,false);vnStairs(bx+BW/2+.9,0,bz+.5,Math.PI/2,1.6,.6,3,'vStone',ash);
   hnForm('hFormA',bx+BW/2+.02,3.05,bz+.5,Math.PI/2,1.8,.5);
-  for(let k=0;k<4;k++){vPst('vPost',bx+BW/2+5,0,bz-6+k*1.6,.12,1.9,log);kput('hPaintBall',[bx+BW/2+5,1.7,bz-6+k*1.6],null,[.3,.35,.3],hC(0xc8b890));}}
+  for(let k=0;k<4;k++)FURNISH('hl_rep_training_butt',bx+BW/2+5,0,bz-6+k*1.6,0,{v:1});}   // the pells
  // stables and the smithy lean-to along the east wall
  {const sx=27.5,sz=6,SL=22,wood=hC(vPick(HPAL.aged));for(let k=0;k<=5;k++)vPst('vPostB',sx-2.6,0,sz-SL/2+k*SL/5,.14,3.1,wood);vB('vWood',sx+2.8,0,sz,.2,4.4,SL,0,wood);
   vnShedRoof(sx,3.1,sz,SL,5.6,1.4,-Math.PI/2,'vShingleB',hC(vPick(HPAL.shingle)),.4);
   for(let k=0;k<4;k++){vB('vWood',sx,0,sz-SL/2+2.8+k*4.6,5,1.3,.12,0,wood);}
   for(let k=0;k<3;k++){const z=sz-SL/2+5+k*4.6;vB('vWood',sx+.4,.9,z,1.9,.9,.8,Math.PI/2,hC(vPick([0x5a3a28,0x3a2a22,0x7a5a3a])));vB('vWood',sx-.7,1.4,z,.7,.55,.4,Math.PI/2,hC(0x4a3224));
    for(const dx of[-.6,1.2])for(const dz of[-.25,.25])vPst('vPost',sx+dx,0,z+dz,.07,.95,hC(0x3a2a20));}
-  const fz=sz+SL/2-2.4;vB('vStone',sx+.8,0,fz,1.8,1.0,1.8,0,ash);for(let k=0;k<4;k++)vBall('vEmber',sx+.8+rr(-.4,.4),1.08,fz+rr(-.4,.4),rr(.1,.18));
-  vPst('vIron',sx-.8,0,fz,.2,.75,hC(0x3a3632));vB('vIron',sx-.8,.75,fz,.7,.24,.26,0,hC(0x2e2a26));vnChimney(sx+1.3,1.0,fz-.5,6.4,.25,true);}
+  // the smithy: the bailey forge and an iron block anvil from the catalog (the embers drew 12 numbers); its stack on
+  // up through the lean-to roof is the lean-to's own
+  const fz=sz+SL/2-2.4;hlRngSkip(12);FURNISH('hl_rep_hooded_forge',sx+.8,0,fz,0,{v:1});FURNISH('hl_rep_anvil',sx-.8,0,fz,0,{v:1});
+  vnChimney(sx+1.3,4.08,fz-.5,3.32,.25,true);}
  // the bailey: a well, a cart, barrels, a pell-post and the garrison
- vPst('vPostS',6,0,2,1.1,.9,ash);vB('vDarkB',6,.9,2,1.4,.04,1.4,0);for(const s of[-1,1])vPst('vPost',6+s*1.05,.9,2,.08,1.9,red);vB('vWood',6,2.8,2,2.6,.14,.14,0,red);
+ FURNISH('hl_rep_civic_well',6,0,2,0,{v:1});   // the windlass well
  hnRCPave(0,22,8,14,0,hC(vPick(HPAL.rubble)),2.2);
- for(let k=0;k<4;k++)vnBarrel(20+k*.8,0,-10+(k%2)*.8,.35,.9);vnCrate(18,0,-9,1,.3);
+ for(let k=0;k<4;k++)hnBarrel(20+k*.8,0,-10+(k%2)*.8,.35,.9);hnCrate(18,0,-9,1,.3);
  vnFolk(0,14,8,8);vnFolk(-18,4,4,3);}
 
 // ================================================================= WALLS AND GATES
@@ -375,8 +376,8 @@ function buildHlRepGate(G,o){reseed(21241+(o.v|0));
 
 // ================================================================= INDUSTRY
 // The glowing hearth seen through a doorway (face at z, facing +z): a stone hearth, its fire, embers, an iron hood.
-function hnRCHearth(x,y,z,big){const w=big?2.6:1.8;vB('vStone',x,y,z+.1,w+.6,.9,.3,0,hC(vPick(HPAL.rubble)));vB('hRCGlow',x,y+.9,z+.02,w,.55,.12,0);
- for(let k=0;k<5;k++)vBall('vEmber',x+rr(-w/2+.2,w/2-.2),y+.95,z+.18,rr(.08,.16));kput('vRustB',[x,y+2.2,z+.12],null,[w+.4,.9,.3],null);vB('vIron',x,y+2.6,z+.08,.5,1.6,.16,0,hC(0x2e2a26));}
+// Furniture: the catalog's Forgehouse hearth, standing in the doorway against its dark (the drawing drew 11 numbers).
+function hnRCHearth(x,y,z,big){hlRngSkip(11);return hnFurn('hl_rep_wall_forge',x,y,z,0,{v:big?1:0},0,.145);}
 // ---------------------------------------------------------------- the Forgehouse
 // The Republic's great smithy: a long stone-and-timber forge hall with a clerestory lantern on the ridge and iron
 // stacks through the roof, a perpendicular finishing hall, two masonry furnaces with brick stacks and glowing tap
@@ -407,7 +408,7 @@ function buildHlRepForgehouse(G,o){reseed(21301+(o.v|0));
   vB('vDarkB',px,S1,fz+.12,5,4.6,.08,0);kput('hKeelDark',[px,S1+4.6,fz+.14],null,[5,1.3,.08]);
   if(i%2){hnRCHearth(px,S1,fz+.16,true);for(const s of[-1,1])kput('vWood',[px+s*3.1,S1+2.25,fz+1.1],qEuler(0,s*1.2,0),[2.4,4.5,.12],tar);}
   else{for(const s of[-1,1])vB('vWood',px+s*1.26,S1,fz+.2,2.4,4.5,.12,0,tar);for(const yy of[1,3.2])vB('vIron',px,S1+yy,fz+.28,4.9,.14,.06,0,iron);}
-  hnRCFlight(px,0,fz+2.8,0,6,S1,'vStone',ash);if(vLit())vnLamp(px+3.5,S1+3.2,fz+.1,0);}
+  hnRCFlight(px,0,fz+2.8,0,6,S1,'vStone',ash);if(vLit())hnWallLamp(px+3.5,S1+3.2,fz+.1,0);}
  hnForm('hFormA',MX,H1+H2-1.7,MZ+MD/2+.02,0,4,1.6);
  // iron stacks through the roof, guyed
  for(const u of[-20,-2,16]){const x=MX+u,z=MZ-3;vPst('vPipeR',x,Y2,z,.75,24,null);for(const yy of[Y2+6,Y2+12,Y2+18])kput('vHoop',[x,yy,z],qEuler(Math.PI/2,0,0),[.78,.78,2],iron);
@@ -422,7 +423,7 @@ function buildHlRepForgehouse(G,o){reseed(21301+(o.v|0));
   for(const s of[-1,1])vnWin(FX+s*6,S1+1.4,fz,0,1.4,2.2,lit,'vStone',ash);hnForm('hFormT',FX,y3+1.4,fz+.45,0,3.2,1.6);vnWin(FX,y3+4.2,fz+.42,0,1,1.1,lit,'hPaint',red);
   for(let z=-15;z<=15;z+=5)for(const s of[-1,1])vnWin(FX+s*FW/2,S1+1.4,FZ+z,s*Math.PI/2,1.4,2.2,lit,'vStone',ash);
   vPst('vPipeR',FX+4,y3+2,FZ-8,.5,14,null);vB('vIron',FX+4,y3+16,FZ-8,1.4,.14,1.4,0,iron);
-  if(vLit())vnLamp(FX+3.3,S1+3.4,fz+.1,0);}
+  if(vLit())hnWallLamp(FX+3.3,S1+3.4,fz+.1,0);}
  // ---- the water wheel on its stone race at the west end, driving the hammer shaft into the hall
  {const RX=-41,RW=4.4;for(const s of[-1,1])vB('hRubB',RX+s*(RW/2+.4),0,-8,.8,1.5,34,0,rub);vB('hRCWater',RX,0,-8,RW,.45,34,0,hC(0x4a6874));
   for(let k=0;k<9;k++)vBall('vBallW',RX+rr(-1.6,1.6),.46,-8+rr(-3,3),rr(.15,.35),hC(0xe8eef0),.04);
@@ -442,7 +443,7 @@ function buildHlRepForgehouse(G,o){reseed(21301+(o.v|0));
  hnRCScrap(14,24,8,4,40);hnRCHeap(7,0,26,3,1.8,hC(0x7a5040),4);kput('vPlateW',[22,2.0,28],qEuler(-.25,.3,0),[4.2,4.4,1],null);kput('vPlateW',[19.5,1.6,28.6],qEuler(-.3,-.2,.1),[3,3.4,1],null);
  // ---- jib cranes, lamps, the smiths
  hnRCJib(-3,12,9,7,.9,red,'vRustB');hnRCJib(25,14,8,6,-.5,red,'vRustB');
- if(vLit()){for(const x of[-40,-20,0,20,40])vnLampPost(x,0,31,4.4);vnLampPost(-8,0,8,4.4);}
+ if(vLit()){for(const x of[-40,-20,0,20,40])hnLampPost(x,0,31,4.4);hnLampPost(-8,0,8,4.4);}
  vnFolk(0,8,5,3.5);vnFolk(-18,23,3,2);vnFolk(14,20,3,4);vnFolk(32,16,2,3);}
 
 // ---------------------------------------------------------------- the generator
@@ -461,7 +462,7 @@ function buildHlRepGenerator(G,o){reseed(21311+(o.v|0));
   kput('vPipeC',[HX,S+1.1,f-.2],qEuler(0,0,Math.PI/2),[.8,2.4,.8],null);vB('vIron',HX,S,f-.2,2.6,.5,1.2,0,iron);
   for(const s of[-1,1])kput('vWood',[HX+s*2.2,S+2,f+.8],qEuler(0,s*1.25,0),[1.6,4,.1],red);hnRCFlight(HX,0,f+2.6,0,4.4,S,'vStone',ash);
   hnForm('hFormA',HX,S+5.6,f+.02,0,2.4,1.2);vB('vStone',HX,top-3.4,f+.02,1.8,1.8,.1,0,ash);vB('vWinLit',HX,top-3.2,f+.06,1.4,1.4,.06,0);
-  if(vLit())for(const s of[-1,1])vnLamp(HX+s*2.6,S+3.4,f,0);}
+  if(vLit())for(const s of[-1,1])hnWallLamp(HX+s*2.6,S+3.4,f,0);}
  // ridge vent
  vB('vWood',HX,top-.4,HZ,1.8,1.2,8,0,aged);vnGableRoof(HX,top+.8,HZ,8,1.8,.7,Math.PI/2,'hScaleB',slate,.35);
  // boiler house lean-to, coal, the brick stack
@@ -480,8 +481,8 @@ function buildHlRepGenerator(G,o){reseed(21311+(o.v|0));
   vBeam([HX+HW/2,S+H-.6,HZ+4],[tx+3,7.9,tz-5],.03,iron,'vRope');vBeam([HX+HW/2,S+H-.6,HZ+5],[tx+3,7.9,tz-3],.03,iron,'vRope');
   let last=[tx+3,7.9,tz+5];for(const [px,pz] of [[18,7],[17,13]]){vPst('vPost',px,0,pz,.14,8.6,aged);vB('vWood',px,8.0,pz,1.8,.14,.14,0,aged);for(const s of[-1,1])vBall('vBallW',px+s*.7,8.25,pz,.09,por,.12);
    vBeam(last,[px-.7,8.25,pz],.025,iron,'vRope');last=[px-.7,8.25,pz];}}
- if(vLit()){vnLampPost(HX+6,0,HZ+HD/2+3,4);vnLampPost(HX-6,0,HZ+HD/2+3,4);vnLampPost(16,0,-5,4);}
- vnCrate(HX-8,0,HZ+8,1,.3);vnBarrel(HX+7,0,HZ-8,.4,1);vnFolk(HX,HZ+HD/2+4,2,2);}
+ if(vLit()){hnLampPost(HX+6,0,HZ+HD/2+3,4);hnLampPost(HX-6,0,HZ+HD/2+3,4);hnLampPost(16,0,-5,4);}
+ hnCrate(HX-8,0,HZ+8,1,.3);hnBarrel(HX+7,0,HZ-8,.4,1);vnFolk(HX,HZ+HD/2+4,2,2);}
 // the stoker's fire-door in the boiler house wall (face toward -x)
 function hnRCStoke(x,z){vB('hRCGlow',x,.5,z,.06,.7,1.2,0);for(let k=0;k<3;k++)vBall('vEmber',x-.15,.6+rr(0,.3),z+rr(-.4,.4),.1);}
 

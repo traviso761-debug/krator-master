@@ -45,9 +45,9 @@ function hnRUFolk(x,y,z,n,spread){for(let i=0;i<n;i++){const px=x+rr(-spread,spr
 // Carved portal: two tall formline boards as jambs, a crest board as lintel (door is placed separately).
 function hnRUPortal(x,y,z,ry,w,h){for(const s of[-1,1]){const p=loc(x,z,s*(w/2+.26),.03,ry);hnForm('hFormV',p[0],y,p[1],ry,.46,h+.1);}
  const p=loc(x,z,0,.04,ry);hnForm('hFormA',p[0],y+h+.08,p[1],ry,w+.9,(w+.9)*.38);}
-// Painted round shield hung on a wall face (ry = outward), or standing on a rack.
-function hnRUShield(x,y,z,ry,r,c1,c2){const p=loc(x,z,0,.06,ry);kput('hRUDisc',[p[0],y,p[1]],qEuler(0,ry,0).multiply(qEuler(Math.PI/2,0,0)),[r,.05,r],c1);
- const q=loc(x,z,0,.09,ry);kput('hRUDisc',[q[0],y,q[1]],qEuler(0,ry,0).multiply(qEuler(Math.PI/2,0,0)),[r*.55,.03,r*.55],c2);vBall('hGold',q[0]+(p[0]-x)*.4,y,q[1]+(p[1]-z)*.4,r*.18,hC(HPAL.gold[1]));}
+// Painted round shield hung on a wall face (ry = outward), centred at y: furniture, placed from the catalog (its colours
+// are the catalog's; c1, c2 are kept so the callers' random picks stay where they were).
+function hnRUShield(x,y,z,ry,r,c1,c2){return hnFurn('hl_rus_shield',x,y-.43,z,ry,{},0,.135);}
 // Box-built farm animals facing +z of ry: 'cow' | 'horse' | 'sheep' | 'goat' | 'pig'.
 function hnRUBeast(x,z,ry,kind,c){const K={cow:[1.9,.75,.68,.62,.5],horse:[1.8,.7,.55,.85,.62],sheep:[1.0,.52,.5,.34,.3],goat:[.95,.42,.36,.45,.28],pig:[1.1,.5,.5,.28,.34]}[kind]||[1,.5,.5,.4,.3];
  const [L,H,Wd,LG,HD]=K;c=c||hC(vPick({cow:[0x6a4a34,0x8a6a4a,0xe8e0d0,0x3a2e28],horse:[0x5a3a26,0x3a2a20,0x8a6a48,0xb89a70],sheep:[0xe8e2d4,0xd8d0c0,0x4a4038],goat:[0xd8d0c0,0x8a7258,0x4a3a30],pig:[0xe0b0a0,0xc89a88,0x5a4a44]}[kind]||[0x8a6a4a]));
@@ -59,11 +59,8 @@ function hnRUBeast(x,z,ry,kind,c){const K={cow:[1.9,.75,.68,.62,.5],horse:[1.8,.
  else{vB('hPaint',p[0],LG+H*.45+neckUp,p[1],HD*.85,HD*.9,HD,ry,kind==='sheep'?dk:c);}
  if(kind==='cow'||kind==='goat'){for(const s of[-1,1]){const q=P(s*HD*.35,L/2+HD*.3);kput('vConeI',[q[0],LG+H*.45+neckUp+HD*.8,q[1]],vQ(ry,-.5,s*.5),[.04,kind==='goat'?.28:.2,.04],hC(0xe0d8c0));}}
  p=P(0,-L/2-.04);kput('hPaint',[p[0],LG+H*.5,p[1]],vQ(ry,.3,0),[.06,H*.9,.06],dk);}
-// A small hay-drying rack (hesje): posts with wires, hung with hay.
-function hnRUHesje(x,z,ry,L,h){h=h||1.9;const n=Math.max(2,Math.round(L/2.2));const c=hC(vPick(HPAL.aged)),hay=hC(vPick([0xc8b070,0xb8a060,0xd0b878]));
- for(let i=0;i<=n;i++){const p=loc(x,z,-L/2+L*i/n,0,ry);vPst('vPost',p[0],0,p[1],.05,h+.2,c);}
- const p=loc(x,z,0,0,ry);for(let k=0;k<3;k++)vB('vThatchB',p[0],.45+k*.52,p[1],L-.2,.44,.34,ry,hay.clone().multiplyScalar(1-.05*k));
- vB('vThatchB',p[0],.45+1.56,p[1],L-.5,.2,.24,ry,hay);}
+// A hay-drying rack (hesje): posts with wires, hung with hay. Furniture, placed from the catalog (it drew 2 colours).
+function hnRUHesje(x,z,ry,L,h){hlRngSkip(2);return FURNISH('hl_rus_hay_rack',x,0,z,ry,{v:L>6.2?1:0});}
 
 // ---------------------------------------------------------------- POOR
 // A — Norse turf-roofed log cabin (the "årestue"): low log walls on a few stones, a turf gable to the front whose
@@ -76,12 +73,12 @@ function buildHlRusPoorA(G,o){reseed(22001+(o.v|0));const W=6,D=5,F=.3,H=2.3,P=1
  // porch: plank deck, two posts under the front of the gable, a beam, a bench
  vB('vWood',0,0,D/2+P/2,W-.2,F,P,0,dk);for(const s of[-1,1]){vPst('vPostB',s*(W/2-.25),F,D/2+P-.2,.11,H,log);}
  vB('vWood',0,F+H-.24,D/2+P-.2,W+.1,.24,.24,0,log);
- vnDoor(0,F,D/2,0,.9,1.85,'vWood',log,dk,false);vB('vWood',-1.9,F,D/2+.35,1.4,.42,.36,0,log);
+ vnDoor(0,F,D/2,0,.9,1.85,'vWood',log,dk,false);FURNISH('hl_rus_porch_bench',-1.9,F,D/2+.35,0,{v:0});
  vnWin(1.7,F+.95,D/2,0,.6,.6,'shut','vWood',log);for(const z of[-1.2])vnWin(W/2,F+.95,z,Math.PI/2,.6,.6,'open','vWood',log);
  vnStairs(0,0,D/2+P+.3,0,1.2,F,2,'vStone',hC(vPick(HPAL.rubble)));
  vnWin(0,F+H+.8,D/2+P+.02,0,.5,.5,'open','vWood',log);                                          // loft hatch in the gable
  hnStoneChimney(-1.3,F+H-.4,-1,top-F-H-.1,.62);
- hnWoodpile(-W/2-.75,0,.2,Math.PI/2,3.4,1.5);vnBarrel(W/2+.6,0,D/2+.6,.32,.8,dk);
+ hnWoodpile(-W/2-.75,0,.2,Math.PI/2,3.4,1.5);hnBarrel(W/2+.6,0,D/2+.6,.32,.8);
  hnRUBeast(W/2+2.3,-1.2,2.4,'goat');hnRUBeast(W/2+1.6,.6,1.6,'goat');
  vnFence(0,0,1,W+7,D+7,0,hC(vPick(HPAL.aged)),2,1);vnFolk(-1.5,D/2+P+2,1,1);}
 // B — the poorest: a board-and-bamboo shack half dug into a sod bank, under a low turf roof, with an open
@@ -101,7 +98,7 @@ function buildHlRusPoorB(G,o){reseed(22011+(o.v|0));const W=5.2,D=4.2,H=2.1;
  // woodshed: four poles, a board shed roof, the winter's wood
  const sx=W/2+1.7;for(const u of[-1,1])for(const v of[-1,1])vPst('vPost',sx+u*.9,0,v*1.4,.07,v<0?2.1:1.7,wd);
  vnShedRoof(sx,1.7,0,2,3,.4,0,'vWood',wd,.25,.08);hnWoodpile(sx,0,-.9,0,1.6,1.3);
- vnBarrel(sx+.4,0,.9,.28,.7,wd);hnBambooRail([-W/2-2.6,0,D/2+2.6],[-W/2-2.6,0,-D/2-1],bam,.9);
+ hnBarrel(sx+.4,0,.9,.28,.7);hnBambooRail([-W/2-2.6,0,D/2+2.6],[-W/2-2.6,0,-D/2-1],bam,.9);
  hnFirepit(-W/2-1,0,D/2+1.2,.45);hnRUBeast(-W/2-1.6,-.2,.8,'pig');vnFolk(1,D/2+1.8,1,1);}
 
 // ---------------------------------------------------------------- MIDDLE
@@ -126,8 +123,8 @@ function buildHlRusMidA(G,o){reseed(22101+(o.v|0));const W=11,D=10,H1=2.8,H2=2.8
  // purlin ends under the eaves, carved
  for(const u of[-4.5,-1.5,1.5,4.5])vB('vWood',u,H1+H2+pitch*(W/2-Math.abs(u))-.2,D/2+.9,.24,.3,1.8,0,log);
  hnStoneChimney(-2,top-1.6,-2.2,2.2,.7);
- hnWoodpile(W/2+.9,0,0,Math.PI/2,D-2,1.8);vB('vWood',-2.2,0,D/2+.9,2,.45,.4,0,log);                    // woodpile under the eave, bench
- vnWaterButt(-W/2-.7,0,D/2-1,.4,1);vnFolk(1,D/2+3,2,1.8);}
+ hnWoodpile(W/2+.9,0,0,Math.PI/2,D-2,1.8);FURNISH('hl_rus_porch_bench',-2.2,0,D/2+.9,0,{v:1});             // woodpile under the eave, bench
+ hnWaterButt(-W/2-.7,0,D/2-1,.4,1);vnFolk(1,D/2+3,2,1.8);}
 // B — Norse falu-red board house on a stone footing: long side to the front, a steep shingle roof with crossed
 // horn bargeboards, a cross-gable (ark) over the carved door, white window trim, a turf-roofed stabbur-style
 // woodshed at the side.
@@ -204,8 +201,8 @@ function buildHlRusRichA(G,o){reseed(22151+(o.v|0));const W=13,D=11,DB=10,H1=3,H
  vnStairs(SX,0,D/2-1.4,Math.PI,1.2,y2-.1,10,'vWood',log);
  hnDeckRail([SX-.65,0,D/2-3],[SX-.65,y2-.1,D/2],0,log,1);hnDeckRail([SX-.65,y2-.1,D/2],[SX-.65,y2-.1,D/2+1.4],0,log,1);
  // fountain trough, woodpile, bench, a cow
- vB('vWood',4.5,0,D/2+3,2.8,.7,.7,0,log);vB('hRUWater',4.5,.6,D/2+3,2.6,.12,.5,0);vPst('vPost',2.9,0,D/2+3,.1,1.3,log);beam('vIron',[2.95,1.1,D/2+3],[3.6,1.02,D/2+3],.05,.05,hC(0x3a3632));
- hnWoodpile(-W/2-.9,0,-2.5,Math.PI/2,5,1.9);vB('vWood',2.4,0,D/2+1,2.2,.45,.4,0,log);
+ FURNISH('hl_rus_fountain_trough',4.35,0,D/2+3,0);
+ hnWoodpile(-W/2-.9,0,-2.5,Math.PI/2,5,1.9);FURNISH('hl_rus_porch_bench',2.4,0,D/2+1,0,{v:1});
  hnStoneChimney(-2.2,top-2,-1.5,2.4,.8);hnRUBeast(W/2+3,bz+1,-.4,'cow');hnRUBeast(W/2+3.5,bz-2.4,.3,'cow');
  vnFolk(0,D/2+4,3,2.2);}
 // B — the chieftain's hall-house: a long tarred-log hall on a stone footing, dragon-head bargeboards, a steep
@@ -241,7 +238,7 @@ function buildHlRusRichB(G,o){reseed(22161+(o.v|0));const W=18,D=8,F=.7,H=3.2;
  vPst('vPost',tx,ttop+3.3,0,.07,1.3,tar);kput('vConeI',[tx,ttop+4.5,0],null,[.12,.5,.12],hC(HPAL.red));
  hnStoneChimney(4,top-2.2,-1.2,2.8,.8);
  // yard: firepit, a banner pole, a rack of shields, folk
- hnFirepit(-5,0,D/2+4.5,.8);vnBannerPole(6,0,D/2+3,0,6.5,hC(HPAL.red));vnBarrel(-W/2-.8,0,2,.35,.9,tar);vnBarrel(-W/2-.8,0,1.1,.35,.9,tar);
+ hnFirepit(-5,0,D/2+4.5,.8);vnBannerPole(6,0,D/2+3,0,6.5,hC(HPAL.red));hnBarrel(-W/2-.8,0,2,.35,.9);hnBarrel(-W/2-.8,0,1.1,.35,.9);
  vnFolk(-2,D/2+5,3,2.5);}
 
 const HRU_SF={type:['single-family dwelling']},HRU_MF={type:['multi-family dwelling']};

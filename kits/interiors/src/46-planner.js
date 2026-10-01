@@ -9,7 +9,7 @@
                doors: [{ at:[x,z], w }]          street doors on the footprint edge (ground floor);
                                                  none given: one in the middle of edge `front` (0)
                culture, wealth, wall: 0.25, partition: 0.12, slab: 0.25,
-               roof: 'gable' | 'hip' | 'flat', pitch: 0.6 (radians) }
+               roof: 'gable' | 'hip' | 'flat', pitch: 0.6 (radians), windows: false (none; default on every exterior wall) }
      program = a name in IX.BUILDING_PROGRAMS | [kind, ...] (every storey) | [[kinds of storey 0], [storey 1], ...]
                | fn(level, area, shell) -> [kind, ...].  The first kind of a storey gets the street
                door (ground floor) or the top of the stair (upper floors).
@@ -356,7 +356,7 @@
         for (const lf of leaves) { const dd = G.edgeDist(lf.poly, f[0], f[1]) + (G.inside(lf.poly, f[0], f[1]) ? 0 : 0.001); if (dd < bd) { bd = dd; best = lf; } }
         const did = id + '.street.' + i;
         doors.push({ id: did, kind: 'street', level: 0, at: [R3(d.at[0]), R3(d.at[1])], w: d.w, rooms: [best.id, 'street'], into: best.id });
-        best.doors.push({ id: did, at: d.at, w: d.w, to: 'street', swing: d.swing || 'in', hinge: d.hinge || 'left' });
+        best.doors.push({ id: did, at: d.at, w: d.w, to: 'street', swing: d.swing || 'in', hinge: d.hinge || 'left', snap: wallT + 0.6 });
       });
     });
 
@@ -383,8 +383,9 @@
         for (let i = 0; i < n; i++) d.push(onCut(Lv, P[i], P[(i + 1) % n]) ? partT / 2 : 0);
         const polyF = insetEdges(P, d);
         const poly = polyF.map(toW);
-        /* windows: on the exterior walls, clear of doors and corners */
-        for (let i = 0; i < n; i++) {
+        /* windows: on the exterior walls, clear of doors and corners (shell.windows === false: none, a
+           container, a byre, a store with no openings drawn) */
+        for (let i = 0; i < n && shell.windows !== false; i++) {
           if (d[i]) continue;
           const a = toW(P[i]), b = toW(P[(i + 1) % n]), len = Math.hypot(b[0] - a[0], b[1] - a[1]);
           if (len < 1.8) continue;

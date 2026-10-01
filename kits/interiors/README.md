@@ -31,11 +31,45 @@ inspector and the polygon tool.
 | `adapters/catalog-adapter.js` | the only file that knows `kits/catalog`: `list / dims / anchorY / build / lights` |
 | `src/50-59` | THREE views (no catalog): room shells, planned-building shells (`51`), the outline debug view, the cut-away and storey selector (`55`), walker figures (`57`) |
 | `src/70-98` | the demo page: sample rooms and buildings, light pool, hover inspector, page audit, polygon tool; `80-81` the vendored sky |
+| `src/48b-sets.js` | **building sets** (core): `IX.sets` holds each kit's interiors as data in the building's own frame, instantiates them anywhere, and checks the residence rule |
+| `sets/*.js` | the sets' interiors, one file per building set: Highlands, Post-Apoc, Beast Rider, Locus, Abyss (`sets/README.md`) |
+| `src-sets/` | the sets sheet's page: head, sheet layout and report, page audit |
+| `src-walk/`, `walk/shells/`, `tools/` | the walk mockup's page, the real building shells it shows, the shell exporter and its screenshot check |
 | `tests/core_test.js` | the core in node with a fake catalog: surface, ceiling and wall pieces, a rotated L room, fallback, both grids, the door arc, backtracking, three planned buildings, walkers |
 | `dist/interiors-core.js` | built: the core alone, for another build to load by path or vendor |
 | `dist/interiors.html` | built: the demo |
+| `dist/interiors-sets.html` | built: the building-sets sheet, every set's buildings planned, furnished and checked |
+| `dist/interiors-walk.html` | built, self-contained: the walk mockup, furnished rooms inside the real buildings |
 
 How to use it from another build: `API.md`. What is open: `KNOWN_ISSUES.md`.
+
+## The building sets
+
+`dist/interiors-sets.html` lays out every building of the Highlands, Post-Apoc, Beast Rider, Locus and
+Abyss kits with its interior: the bodies each building draws, cut into rooms by the planner, or its
+round huts, tents and vessels as explicit rooms, all furnished from the master catalog. Every
+residence holds, per household, at least a bed, a food container (jars, sacks, bins, a larder, a
+barrel rack) and an item container (a chest, a cabinet, a locker); shops, smithies and stables have
+their own room kinds and draw on the catalog's trade pieces (forge, anvil, stall, display, vat,
+still, press ...). Buildings whose geometry precludes rooms say why on the sheet and in their set
+file. How to write and check a set: `sets/README.md`; the API: `API.md` section 10.
+
+## The walk mockup
+
+`dist/interiors-walk.html` (self-contained: three.js and the catalog inlined, one file to share) is a street
+of 14 buildings, two to five from each set, standing in their **real** geometry with their planned rooms
+furnished inside. The real shells are cut out of each kit's own page by `tools/export_shells.py` (flat colours,
+textures dropped; the Beast Rider buildings are the catalog's ASSETs, built directly) into `walk/shells/*.js`;
+the planner's partitions, door leaves, stairs and upper floors stand inside them. **F** walks at eye level:
+in through the front doors, round the furniture, up the stairs (**G** jumps to the next front door); in orbit
+**C** cuts every building 1.5 m above the storey **L** picks, **B** swaps the real shells for the planned walls,
+**O** draws the room outlines. Limits: `KNOWN_ISSUES.md`.
+
+```
+python3 tools/export_shells.py                  # re-cut the real shells after a kit changes (headless, a few minutes)
+python3 build.py                                # builds the walk page with the others
+python3 tools/walkshots.py shots --walk 1       # error panel, a shot per building, a walk in through a front door
+```
 
 ## Build and verify
 
@@ -43,6 +77,8 @@ How to use it from another build: `API.md`. What is open: `KNOWN_ISSUES.md`.
 cd kits/interiors && python3 build.py                     # dist/interiors.html + dist/interiors-core.js, node --check, build-manifest.json
 python3 build.py --vendor-check                           # src/80-sky-hash.js (kits/catalog), src/81-sky.js (settlements/iziz)
 python3 verify.py dist/interiors.html --assert            # the gate; exit 0 = pass (about 25 s)
+python3 verify.py dist/interiors-sets.html --sets --assert --seeds 2      # the sets' gate (every set; residences)
+python3 build.py --sets-page highlands                    # one set's working page: dist/interiors-sets.highlands.html (not committed)
 python3 verify.py dist/interiors.html --assert --seeds 8  # audit seeds 0..7 of every room
 python3 verify.py dist/interiors.html --out shots         # overview, outlines, a close-up per kind, grid, cut-away modes,
                                                           #   the buildings (roofs; storeys 0, 1, 2), walkers

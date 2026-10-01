@@ -44,6 +44,7 @@ OUT = 'catalog'
 # krator-master-buildings-beast-rider.js (the Beast Rider buildings). The files stay.
 # The catalog is the furniture sheet.
 SOURCES = [
+    'krator-furniture-core.js',
     'krator-asset-engine.js',
     'krator-symbols.js',
     'krator-furniture-kit.js',

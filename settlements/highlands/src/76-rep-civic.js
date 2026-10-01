@@ -56,7 +56,7 @@ function hnRBIronDoor(x,y,z,ry,w,h,frame,c,leafC){frame=frame||'vStone';const f=
   const r=loc(x,z,s*.12,.16,ry);vBall('vBall',r[0],y+h*.5,r[1],.08,I);}
  for(const s of[-1,1]){const q=loc(x,z,s*(w/2+.12),.12,ry);vB(frame,q[0],y,q[1],.24,h+.2,.24,ry,c);}
  const p=loc(x,z,0,.12,ry);vB(frame,p[0],y+h+.08,p[1],w+.6,.26,.3,ry,c);
- if(vLit())vnLamp(x,y+h+.6,z,ry);
+ if(vLit())hnWallLamp(x,y+h+.6,z,ry);
  if(window.DOORS&&VERN.cur){const C=VERN.cur,sc=C.o.scale||1;const wp=loc(C.x,C.z,x*sc,z*sc,C.ry);DOORS.push({x:wp[0],z:wp[1],ry:ry+C.ry,y:(C.o.y||0)+y*sc,key:C.D.key});}}
 // a bell hung from (x,y,z): headstock beam, bronze bell below
 function hnRBBell(x,y,z,r,ry,c){kput('hRBBell',[x,y-.1-r*1.25,z],null,[r,r*1.25,r],c||hC(0xa0783a));vB('vWood',x,y-.12,z,r*1.8,.2,.22,ry||0,hC(0x3a2a20));
@@ -70,20 +70,16 @@ function hnRBFlag(x,y,z,ry,h,c,crest){vPst('vPipe',x,y,z,.07,h,hC(hRBIRON));vBal
  if(crest!==false)for(const s of[-1,1]){const q=loc(x,z,1.05,s*.03,ry);kput('hFormA',[q[0],y+h-.8,q[1]],qEuler(0,ry+(s<0?Math.PI:0),0),[1.4,.7,1],null);}}
 // hazard pennant: a thin pole with a triangular pennant pointing along ry
 function hnRBPennant(x,y,z,ry,h,c){vPst('vPost',x,y,z,.05,h,hC(0x4a3a2a));kput('hGablePaint',[x,y+h-.4,z],qEuler(0,ry,0).multiply(qEuler(Math.PI/2,0,0)),[.03,1.3,.6],c||hC(HPAL.red));}
-// a round painted target facing ry
-function hnRBTarget(x,y,z,ry,r){const cs=[0xefe7d6,0xb3322a,0xefe7d6,0x201a18];cs.forEach((c,i)=>{const p=loc(x,z,0,.02+i*.02,ry);kput('hRBDisc',[p[0],y,p[1]],qEuler(0,ry,0),[r*(1-i*.24),r*(1-i*.24),.04],hC(c));});}
-// weapon rack: two trestles, a rail, spears leaning on it and a few round shields
-function hnRBRack(x,z,ry,L){const c=hC(0x5a4030);for(const s of[-1,1]){const p=loc(x,z,s*L/2,0,ry);vPst('vPost',p[0],0,p[1],.06,1.6,c);}
- const a=loc(x,z,-L/2,0,ry),b=loc(x,z,L/2,0,ry);vBeam([a[0],1.5,a[1]],[b[0],1.5,b[1]],.08,c);vBeam([a[0],.3,a[1]],[b[0],.3,b[1]],.08,c);
- for(let i=0;i<Math.round(L/.3);i++){const p=loc(x,z,-L/2+.2+i*.3,.1,ry);kput('vWood',[p[0],1.2,p[1]],vQ(ry,-.12,0),[.04,2.5,.04],c);kput('vConeI',[hnOn(x,0,z,ry,-L/2+.2+i*.3,-.06)[0],2.45,hnOn(x,0,z,ry,-L/2+.2+i*.3,-.06)[2]],vQ(ry,-.12,0),[.04,.25,.04]);}
- for(let i=0;i<Math.floor(L/1.2);i++){const p=loc(x,z,-L/2+.7+i*1.2,.3,ry);kput('hRBDisc',[p[0],.75,p[1]],vQ(ry,-.2,0),[.36,.36,.05],hC(vPick([HPAL.red,HPAL.teal,HPAL.black])));}}
+// weapon rack: two trestles, a rail, spears leaning on it and a few round shields. Furniture, placed from the catalog
+// (2.4 or 3.4 m); its shields drew a colour each.
+function hnRBRack(x,z,ry,L){hlRngSkip(Math.floor(L/1.2));return hnFurn('hl_rep_weapon_rack',x,0,z,ry,{v:L>2.9?1:0},0,.155);}
 // ranks of soldiers (the kit figure, in the Republic's dark red), n x m, facing +z of ry
 function hnRBRanks(x,z,ry,n,m,dx,dz,c){c=c||hC(0x7a2a22);for(let i=0;i<n;i++)for(let j=0;j<m;j++){const p=loc(x,z,(i-(n-1)/2)*dx,(j-(m-1)/2)*dz,ry);
  kput('figB',[p[0],0,p[1]],qEuler(0,ry,0),1,c);kput('figH',[p[0],0,p[1]],null,1,hC(0xc9a17e));const g=loc(p[0],p[1],.24,.05,ry);kput('vWood',[g[0],1.2,g[1]],null,[.04,1.3,.04],hC(0x3a2a20));}}
 // a tree: trunk and a few leaf masses
 function hnRBTree(x,z,h){vPst('vPostB',x,0,z,.16,h*.55,hC(0x5a4632));for(let k=0;k<5;k++)kput('vLeaf',[x+rr(-.8,.8),h*rr(.55,.85),z+rr(-.8,.8)],null,[rr(1,1.5),rr(.9,1.3),rr(1,1.5)],hC(vPick([0x3f7a34,0x4f8a3a,0x2f6a2a])));}
-// lamp posts at a list of local points (electric: only under vLit)
-function hnRBLamps(pts,h){if(!vLit())return;for(const [x,z] of pts)vnLampPost(x,0,z,h||3.4);}
+// lamp posts at a list of local points (electric: only under vLit): the Republic's lamp standard from the catalog
+function hnRBLamps(pts,h){if(!vLit())return;for(const [x,z] of pts)FURNISH('hl_rep_lamp_standard',x,0,z,0,{v:(h||3.4)>=3.8?1:0});}
 
 // ================================================================= TEMPLE
 // Round 7b (Travis: "redesign grand temple so it's more like this structure from the Izmailovo kremlin"): the
@@ -232,7 +228,7 @@ function buildHlRepTownHall(G,o){reseed(20711+(o.v|0));const HX=-4,W=22,D=13,S=.
  hnRBClockTower(TX,TZ,{B,TH,roof,oak,tar,rub,ash});
  // the square: paving, a fountain, flags of the Republic, lamps
  vnPaving(HX+2,0,14,20,6,0,ash,14);
- kput('hOctS',[HX+2,0,14.2],null,[2,.7,2],ash);kput('hOctS',[HX+2,.7,14.2],null,[.35,1.2,.35],ash);vBall('hGold',HX+2,2.1,14.2,.3,hC(HPAL.gold[0]));kput('vTankW',[HX+2,.66,14.2],null,[1.75,.06,1.75],hC(0x5a7a88));
+ FURNISH('hl_rep_fountain',HX+2,0,14.2,0);
  for(const s of[-1,1])hnRBFlag(HX+s*5.2,0,11.2,0,8,hC(vPick([HPAL.red,HPAL.teal])));
  hnRBLamps([[HX-3.4,11],[HX+3.4,11],[TX,TZ+5.2]],3.4);
  vnFolk(HX+2,15,4,4);}
@@ -258,9 +254,9 @@ function buildHlRepHospital(G,o){reseed(20721+(o.v|0));const S=.6,H1=3.6,H2=3.2,
  // the court: an arcaded wall either side of the chapel, paths, beds, trees, a well
  for(const s of[-1,1]){for(const u of[-1.62,1.62])hnRBArch(s*6.75+u,0,9.6,0,3.25,3.3,.5,'hRBArchP',cream);vB('vStone',s*6.75,3.3,9.6,6.6,.22,.8,0,ash);vnGableRoof(s*6.75,3.52,9.6,6.5,.8,.35,0,'hGableSc',roof,.12);}
  vnPaving(0,0,1.5,3,15,0,ash,8);vnPaving(0,0,1.5,18,2.4,0,ash,8);
- for(const sx of[-1,1])for(const sz of[-1,1]){vnPlanter(sx*5,0,1.5+sz*4.2,4,2.4,0,oak);hnRBTree(sx*7.5,1.5+sz*5.6,5);}
- kput('hOctS',[0,0,1.5],null,[1,.8,1],ash);for(const s of[-1,1])vPst('vPost',s*.8,.8,1.5,.07,1.6,oak);vnGableRoof(0,2.4,1.5,2,1.6,.7,Math.PI/2,'hGableSc',roof,.2);
- for(const s of[-1,1])vB('vWood',s*3.2,0,-6.8,2,.45,.45,0,oak);
+ for(const sx of[-1,1])for(const sz of[-1,1]){hnPlanter(sx*5,0,1.5+sz*4.2,4,2.4,0,oak);hnRBTree(sx*7.5,1.5+sz*5.6,5);}
+ FURNISH('hl_rep_civic_well',0,0,1.5,0,{v:0});
+ for(const s of[-1,1])FURNISH('hl_rep_door_bench',s*3.2,0,-6.8,0,{v:1});
  // the chapel pavilion: stucco cube, keel gables, a green onion; porch on carved posts
  hnSocle(0,0,10.2,7,S,7);hnStucco(0,S,10.2,7,5,7,0,white,ash);
  for(let k=0;k<4;k++){const a=k*Math.PI/2,p=loc(0,10.2,0,3.62,a);hnKokoshnik(p[0],S+5,p[1],a,5,2.8,'hKeelSc',grn);
@@ -299,9 +295,7 @@ function buildHlRepWatch(G,o){reseed(20731+(o.v|0));const BX=2.5,W=13,D=9,H1=3.8
  const tip=hnTent(TX,FY+2.6,TZ,3.7,6.4,'hTentSh',sh);vPst('vIron',TX,tip-.3,TZ,.04,1.2,hC(hRBIRON));vBall('hGold',TX,tip+.3,TZ,.15,hC(HPAL.gold[0]));
  kput('figB',[TX+1.6,FY,TZ+1.8],qEuler(0,.4,0),1,hC(0x7a2a22));kput('figH',[TX+1.6,FY,TZ+1.8],null,1,hC(0xc9a17e));
  // the yard: stocks, a notice board, a rack of halberds, a lamp
- const oak=hC(0x6a4a30);for(const s of[-1,1])vPst('vPost',BX+8+s*.9,0,6.5,.09,1.2,oak);vB('vWood',BX+8,.7,6.5,2.2,.35,.18,0,oak);
- for(const s of[-1,1])vPst('vPost',BX+5.3+s*.7,0,D/2+1.3,.07,2.1,oak);vB('vWood',BX+5.3,1.1,D/2+1.3,1.6,1,.08,0,oak);vnHipRoof('hHipSc',BX+5.3,2.15,D/2+1.3,1.4,.3,.25,0,slate,.2);
- kput('hPaint',[BX+5.1,1.6,D/2+1.36],null,[.5,.6,.02],hC(0xefe7d6));kput('hPaint',[BX+5.6,1.5,D/2+1.36],null,[.4,.5,.02],hC(0xe8d9a8));
+ FURNISH('hl_rep_stocks',BX+8,0,6.5,0);FURNISH('hl_rep_notice_board',BX+5.3,0,D/2+1.3,0);
  hnRBRack(TX+2.8,TZ+4.2,0,2.4);hnRBLamps([[BX-3,D/2+2.5],[BX+10,3]],3.2);vnFolk(BX,D/2+3,2,2);}
 
 // Theatre: a round timber playhouse — a galleried sixteen-sided drum with formline friezes and dougong under a
@@ -361,11 +355,8 @@ function buildHlRepSchool(G,o){reseed(20751+(o.v|0));const W=16,D=8,S=.7,H=3.4,Z
  hnStoneChimney(4.5,S+H+2,Z-1.2,3.6,.6);
  // the yard
  vnFence(0,0,2.5,25,19,0,log,2.4,1.2);vnPaving(0,0,8.5,2,6,0,hC(vPick(HPAL.ashlar)),5);
- vPst('vPost',-6,0,7,.12,.5,oak);kput('vWood',[-6,.62,7],qEuler(0,0,.18),[4,.08,.35],oak);                       // seesaw
- for(const s of[-1,1]){kput('vWood',[6+s*1.1,1.2,7],qEuler(0,0,s*.18),[.1,2.5,.1],oak);}vB('vWood',6,2.35,7,2.6,.12,.12,0,oak);
- for(const s of[-1,1])beam('vRope',[6+s*.25,2.35,7],[6+s*.25,.55,7],.02,.02,hC(0xb8a888));vB('vWood',6,.5,7,.7,.06,.3,0,oak);
- for(const s of[-1,1])kput('vWood',[3.2+s*.5,.8,9.6],vQ(0,s*.2,0),[.06,1.7,.06],oak);kput('hPaint',[3.2,1.2,9.62],qEuler(-.1,0,0),[1.2,.8,.04],hC(0x2a3430));
- for(const x of[-9,9])vB('vWood',x,0,4.5,2.2,.45,.4,0,oak);hnRBTree(-9.5,-8,5.5);hnWoodpile(9.6,0,Z-1,Math.PI/2,4,1.4);
+ FURNISH('hl_rep_swing',-6,0,7,0,{v:1});FURNISH('hl_rep_swing',6,0,7,0,{v:0});FURNISH('hl_rep_slate_board',3.2,0,9.6,0);   // seesaw, swing, slate board
+ for(const x of[-9,9])FURNISH('hl_rep_door_bench',x,0,4.5,0,{v:2});hnRBTree(-9.5,-8,5.5);hnWoodpile(9.6,0,Z-1,Math.PI/2,4,1.4);
  for(let i=0;i<7;i++){const x=rr(-8,8),z=rr(4,10);kput('figB',[x,0,z],qEuler(0,rng()*TAU,0),.66,hC(vPick([0xc9442a,0x2f8f8a,0x3b4a8a,0xe0a030,0xe8d9b8])));kput('figH',[x,0,z],null,.66,hC(0xc9a17e));}
  vnFolk(2.4,8.6,1,.3);hnRBLamps([[-1.8,12.5],[1.8,12.5]],3);}
 
@@ -398,7 +389,7 @@ function buildHlRepBarracks(G,o){reseed(20761+(o.v|0));const H1=3.4,H2=3,P=1.1;
  vB('hRubB',7,0,-4,8,3.6,5,0,rub);hnRBQuoins(7,0,-4,8,3.6,5,0,ash);vnHipRoof('hHipSc',7,3.6,-4,8,5,2.4,0,slate,.4);
  hnRBIronDoor(3,0,-4,-Math.PI/2,1.6,2.4,'vStone',ash);for(const z of[-5.6,-2.4]){vnWin(3,1.8,z,-Math.PI/2,.35,.8,'open','vStone',ash);}hnForm('hFormA',3,2.75,-4,-Math.PI/2,1.8,.6);
  // the yard: well, racks, a company at drill, lamps
- kput('hOctS',[-6,0,-4],null,[1,.8,1],ash);for(const s of[-1,1])vPst('vPost',-6+s*.8,.8,-4,.07,1.6,tar);vnGableRoof(-6,2.4,-4,2,1.6,.7,0,'hGableSc',slate,.2);
+ FURNISH('hl_rep_civic_well',-6,0,-4,0,{v:0});
  hnRBRack(-10.4,-7,Math.PI/2,3);hnRBRack(10.4,5,-Math.PI/2,3);hnRBRanks(-1,4,0,6,3,1.1,1.1);kput('figB',[-1,0,7.2],qEuler(0,Math.PI,0),1,hC(0x3a2a3a));kput('figH',[-1,0,7.2],null,1,hC(0xc9a17e));
  hnRBLamps([[-4.2,17],[4.2,17],[-9,-9],[9,9]],3.4);}
 
@@ -427,7 +418,7 @@ function buildHlRepMuster(G,o){reseed(20771+(o.v|0));const FX=25.5,FZ0=-15.6,FZ1
  [-20,-12,12,20].forEach((x,i)=>hnRBFlag(x,0,14.8,0,7.5,hC([HPAL.red,HPAL.teal,HPAL.ochre,HPAL.red][i])));
  for(const z of[-7,-1,5,11])hnRBRack(-23.6,z,Math.PI/2,3.4);
  kput('hRBBerm',[23.2,0,1],qEuler(0,Math.PI/2,0),[22,3,3.2],hC(vPick(HPAL.turf)));
- for(const z of[-7,-2.5,2,6.5,11]){vB('vThatchB',21.2,0,z,.6,1.5,1.5,0,hC(0xc8b070));hnRBTarget(20.88,1.05,z,-Math.PI/2,.55);}
+ for(const z of[-7,-2.5,2,6.5,11])hnFurn('hl_rep_training_butt',21.2,0,z,-Math.PI/2,{v:0},0,.05);   // straw butts with their targets
  for(const z of[-7,-2.5,2,6.5,11]){vB('vWood',8,.22,z,.3,.03,1.2,0,white);kput('figB',[7.4,0,z],qEuler(0,Math.PI/2,0),1,hC(0x7a2a22));kput('figH',[7.4,0,z],null,1,hC(0xc9a17e));
   kput('vWood',[7.7,1.35,z],qEuler(0,0,-Math.PI/2+.1),[.04,1.1,.04],hC(0x2e2a26));}
  // two field guns (the Republic's trade), a company in ranks with an officer

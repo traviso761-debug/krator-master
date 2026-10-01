@@ -31,7 +31,7 @@ reseed(644001);
       LOCUS.pipe(F, [[0.45,1.12,4.8],[2.4,1.12,4.8],[2.4,0.6,4.8],[3.95,0.6,4.8]], 0.09, PIPEC[1]); LOCUS.valve(F, 1.4, 1.12, 4.8, 0.10, rust);
       LOCUS.flange(F, 3.9, 0.6, 4.8, 1,0,0, 0.09, dk);
       /* a marker post with the Geomancers' brown pennant, and a lantern on it */
-      F.cyl(-2.4, 0, 3.2, 0.06, 3.6, 0, TIMBERC[1], 'timber'); F.box(-2.4+0.45, 2.9, 3.2, 0.9, 0.5, 0.03, PI/2, GEOBROWNC[0], 'cloth'); F.lantern(-2.4, 2.2, 3.35, 0.5, 8, 0);
+      F.cyl(-2.4, 0, 3.2, 0.06, 3.6, 0, TIMBERC[1], 'timber'); F.box(-2.4+0.45, 2.9, 3.2, 0.9, 0.5, 0.03, PI/2, GEOBROWNC[0], 'cloth'); LOCUS.lantern(F, -2.4, 2.2, 3.35, 0.5, 8);
       /* the moving gear: registered for 76-locus-anim.js */
       LOCUS.anim(F, 'pumpjack', { O:[0,5.62,0], Lt:3.5, Lp:3.75, C:[1.95,-4.3], rc:1.15, wellZ:4.8, speed:F.rr(0.42,0.62), phase:F.rr(0,TAU), colBeam:rust, colHead:rust2, colCw:dk, colArm:gearCol, famArm:gearFam });
     } });
@@ -67,7 +67,7 @@ reseed(644001);
       LOCUS.flange(F, -2.2, 0.6, 12.0, 0,0,1, 0.20, dk); LOCUS.flange(F, 2.6, 0.6, 12.0, 0,0,1, 0.14, dk);
       [-2.2,2.6].forEach(function(x){ F.cyl(x, 0.5, 8.2, 0.08, yb-0.4, 0, dk, 'rust'); });
       F.cyl(-6.0, 0.5, 6.5, 0.32, 0.6, 0, dk, 'rust'); LOCUS.stain(F, -6.0, 7.3, 0.7);                                             /* the drain and its puddle */
-      F.lantern(1.6, 2.3, 12.4, 0.6, 10, 0);
+      LOCUS.lantern(F, 1.6, 2.3, 12.4, 0.6, 10);
     } });
 
   /* =============================================================== 3. PIPE RACK SEGMENT */
@@ -105,7 +105,7 @@ reseed(644001);
       [-17.9,17.9].forEach(function(x){ F.fr8(x, 0, 23.5, 27.2, 2.8, 0.7, 0, mud, 'adobe'); for(var i=0;i<5;i++){ var px=x+(i/4-0.5)*26; F.fr5(px, 0, 23.5, 1.0, 3.3, 1.0, 0, mud, 'adobe'); F.cone(px, 3.25, 23.5, 0.28, 0.9, 0, mud, 'adobe'); } });
       F.archwall('adobe', 0, 0, 23.5, 0, 8.6, 5.6, 1.4, 5.0, 4.6, mud, { pointed:2.4, colIn:mud2, seg:16 });
       F.archband('relief', 0, 0, 24.22, 0, 5.0, 4.6, 0.5, 0.1, shade(mud,0.18), { pointed:2.4 });
-      [-3.6,3.6].forEach(function(x){ F.cone(x, 5.5, 23.5, 0.42, 1.4, 0, mud, 'adobe'); F.lantern(x, 3.4, 24.4, 0.8, 12, 0); });
+      [-3.6,3.6].forEach(function(x){ F.cone(x, 5.5, 23.5, 0.42, 1.4, 0, mud, 'adobe'); LOCUS.lantern(F, x, 3.4, 24.4, 0.8, 12); });
       F.box(-2.0, 0, 22.6, 0.12, 4.2, 2.4, 0.9, PLANKC[3], 'plank');                                                              /* one gate leaf, swung open */
       /* the gatehouse: a Sankore-type mud tower with toron studs and the Geomancers' brown banner */
       var GX=-12.5; F.fr5(GX, 0, 18.5, 5.2, 9.5, 5.2, 0, mud, 'adobe'); F.box(GX, 9.4, 18.5, 2.9, 0.5, 2.9, 0, mud2, 'adobe'); F.cone(GX, 9.85, 18.5, 0.6, 2.0, 0, mud, 'adobe');
@@ -122,8 +122,8 @@ reseed(644001);
       F.fr8(-26.5, 0, 3.0, 8.0, 4.4, 9.0, 0, mud, 'adobe'); F.box(-26.5, 4.35, 3.0, 6.3, 0.4, 7.2, 0, mud2, 'adobe'); F.box(-22.7, 0, 3.0, 0.8, 3.0, 5.0, 0, VOIDC[1], 'dark');
       [-0.5,6.5].forEach(function(pz){ LOCUS.pole(F, -19.6, pz, 3.4, 0.08, TIMBERC[1], false); });
       LOCUS.stripes(F, [-22.4,3.9,-0.9],[-22.4,3.9,6.9],[-19.6,3.4,6.5],[-19.6,3.4,-0.5], 5, CANVASC[1], GEOBROWNC[2], { sag:0.15 });
-      F.box(-20.8, 0.8, 1.5, 2.2, 0.12, 0.9, 0, PLANKC[1], 'plank'); [-1,1].forEach(function(s){ F.box(-20.8+s*0.9, 0, 1.5, 0.3, 0.8, 0.8, 0, mud2, 'adobe'); });
-      for(var dr=0;dr<3;dr++) LOCUS.drum(F, -20.6, 0, 4.1+dr*0.7, RUSTC[(dr+1)%5]); LOCUS.drum(F, -21.6, 0, 4.8, RUSTC[3], true, 0.3);
+      FURNISH('yuni_common_workbench', -20.8,0,1.5, 0);                                                                          /* the fitters' bench: FURNITURE (catalog) */
+      for(var dr=0;dr<3;dr++) FURNISH('pa_drum', -20.6,0,4.1+dr*0.7, 0); FURNISH('job_oil_drum_lying', -21.6,0,4.8, 0.3);   /* oil drums: FURNITURE (catalog pa_drum standing; job_oil_drum_lying, Jobs) */
       F.lamp(-24.0, 2.6, 3.5, 0.9, 10);
       /* the fractionating column: an Ancient vessel on a mud-brick foundation, three walkways, a tarnished cap */
       var CX=3.5, CZ=-12; F.lathe('adobe', CX, CZ, [[3.2,0],[3.1,0.9],[2.9,1.1]], mud2, { seg:20 });
@@ -161,8 +161,8 @@ reseed(644001);
       F.rod(-22, 4.1, 14, -22, 1.6, 14, 0.02, PAL.people.hair[2], 'timber'); F.cyl(-22, 1.2, 14, 0.28, 0.45, 0, dk, 'rust');
       var LX=21, LZ=10; [[LX-4,LZ-3.2],[LX+4,LZ-3.2],[LX+4,LZ+3.2],[LX-4,LZ+3.2]].forEach(function(p){ LOCUS.pole(F, p[0], p[1], 4.0, 0.09, TIMBERC[1], true); });
       LOCUS.stripes(F, [LX-4.4,4.0,LZ-3.6],[LX+4.4,4.0,LZ-3.6],[LX+4.4,4.0,LZ+3.6],[LX-4.4,4.0,LZ+3.6], 8, CANVASC[3], GEOBROWNC[2], { sag:0.4 });
-      for(var dx=0;dx<5;dx++) for(var dz=0;dz<3;dz++){ LOCUS.drum(F, LX-3.0+dx*0.75, 0, LZ-2.4+dz*0.75, RUSTC[(dx+dz)%5]); if((dx+dz)%3===0) LOCUS.drum(F, LX-3.0+dx*0.75, 0.9, LZ-2.4+dz*0.75, RUSTC[(dx+dz+2)%5]); }
-      for(var l=0;l<4;l++) LOCUS.drum(F, LX+1.6, 0, LZ+1.2+l*0.7, RUSTC[l], true, PI/2);
+      for(var dx=0;dx<5;dx++) for(var dz=0;dz<3;dz++){ FURNISH('pa_drum', LX-3.0+dx*0.75,0,LZ-2.4+dz*0.75, 0); if((dx+dz)%3===0) FURNISH('pa_drum', LX-3.0+dx*0.75,0.9,LZ-2.4+dz*0.75, 0); }   /* FURNITURE (catalog pa_drum) */
+      FURNISH('job_oil_drum_rack', LX+1.6,0,LZ+2.25, PI/2, { v:0 });                                                  /* the row of four lying drums: FURNITURE (catalog, Jobs) */
       F.fr8(LX+0.5, 0, LZ+5.8, 6.0, 0.9, 2.2, 0, mud, 'adobe'); LOCUS.stain(F, LX-1.5, LZ+4.4, 1.0);                             /* the loading ramp */
       /* the control shed: Ancient white-metal panels, a strip of blue glass, a cable mast, and ELECTRIC light — the Geomancers have batteries */
       F.box(11, 0, 13, 6.4, 3.6, 4.6, 0, TARNC[0], 'metal'); F.box(11, 3.6, 13, 6.8, 0.25, 5.0, 0, TARNC[3], 'metal'); F.box(11, 1.9, 15.32, 3.4, 0.8, 0.06, 0, GLASSC[0], 'glass');
@@ -176,6 +176,6 @@ reseed(644001);
       [[30.8,-23.0],[26.2,-23.0],[27.0,-19.0]].forEach(function(g){ F.rod(29.2, 16, -21.6, g[0], 0.1, g[1], 0.025, PAL.people.hair[2], 'timber'); });
       F.cyl(30.0, 0.3, -18.6, 0.9, 2.4, 0, rust, 'rust'); LOCUS.pipe(F, [[27.5,3.5,-4.6],[27.5,3.5,-18.6],[29.2,3.5,-18.6]], 0.14, PIPEC[2]); LOCUS.pipe(F, [[30.0,2.7,-18.6],[30.0,3.2,-18.6],[29.2,3.2,-21.6],[29.2,21.0,-21.6]], 0.10, PIPEC[2]);
       LOCUS.stain(F, 4, 8, 2.2); LOCUS.stain(F, -8, 6, 1.4); LOCUS.stain(F, 16, -2, 1.6);
-      F.lantern(-4.6, 3.0, 22.6, 0.7, 12, 0); F.lantern(4.6, 3.0, 22.6, 0.7, 12, 0);
+      LOCUS.lantern(F, -4.6, 3.0, 22.6, 0.7, 12); LOCUS.lantern(F, 4.6, 3.0, 22.6, 0.7, 12);
     } });
 })();

@@ -14,25 +14,23 @@ function fmLean(x,zw,w,out,yHigh,yLow,o){o=o||{};const c=o.col===undefined?pick(
 const fmG=[0x4d8a3c,0x5c9a3a,0x6aa63f,0x3f7a34,0x7ab04a];          // leaf greens
 const fmS=[0x4a3220,0x5a3d26,0x3e2a1c];                              // soil browns
 // soil bed (raised, rectangular) with planted rows along local x. kind: 'leaf' | 'corn' | 'sun' | 'bean'
-function fmRows(x,z,w,d,n,kind,ry){W(x,0,z,ry||0,()=>{box('plain',0,0,0,w,.14,d,jc(pick(fmS),.08));
- for(let r=0;r<n;r++){const zz=-d/2+d*(r+.5)/n;box('plain',0,.14,zz,w-.1,.09,d/n*.45,jc(0x4a301c,.08));
+// lift: rows planted in a catalog bed (fmPlankBed): the bed holds the soil, so the rows draw none and their plants stand on its soil
+function fmRows(x,z,w,d,n,kind,ry,lift){const y0=lift||0;W(x,0,z,ry||0,()=>{if(lift)rngSkip(3);else box('plain',0,0,0,w,.14,d,jc(pick(fmS),.08));
+ for(let r=0;r<n;r++){const zz=-d/2+d*(r+.5)/n;if(lift)rngSkip(2);else box('plain',0,.14,zz,w-.1,.09,d/n*.45,jc(0x4a301c,.08));
   const step=kind==='leaf'||kind==='bean'?.42:.7;
   for(let xx=-w/2+.3;xx<=w/2-.25;xx+=step){const px=xx+rr(-.05,.05);
-   if(kind==='corn')plant('crop-tall',px,.15,zz,{h:rr(1.5,2.2),moisture:'mild',tags:{crop:'corn'}});
-   else if(kind==='sun')plant('crop-tall',px,.15,zz,{h:rr(1.5,2.0),moisture:'mild',tags:{crop:'sunflower'}});
-   else if(kind==='bean'){for(const s of [-1,1])beam('wood',[px+s*.18,.15,zz],[px,.95,zz],.03,jc(0x6a5238,.06),true,4);plant('crop-vine',px,.15,zz,{h:.9,moisture:'mild',tags:{crop:'beans'}});}
-   else plant('crop',px,.15,zz,{r:rr(.17,.24),moisture:'mild'});}}});}
-function fmTyreBed(x,z,R,o){o=o||{};tireRing(x,z,R,2,0,TAU);cyl('plain',x,.3,z,R-.3,.22,jc(pick(fmS),.08),12);
- const n=o.n||4;for(let k=0;k<n;k++){const a=k/n*TAU+rng(),d=rng()*(R-.55);plant('crop',x+Math.cos(a)*d,.4,z+Math.sin(a)*d,{r:rr(.2,.3),moisture:'mild'});}}
-function fmBarrelBed(x,z,o){o=o||{};const c=jc(pick([0x8a3a2c,0x2f5f8f,0x4d6f3c,0x8a6a3a,0xc99a2e]),.08);cyl('sheet',x,0,z,.42,.5,c,10,.42,true);for(const f of [.1,.4])cyl('iron',x,f,z,.44,.04,jc(0x3a3430,.05),10);
- cyl('plain',x,.46,z,.38,.06,jc(pick(fmS),.08),10);for(let k=0;k<4;k++){const a=k*PI/2+.5;plant('crop',x+Math.cos(a)*.16,.48,z+Math.sin(a)*.16,{r:.15,moisture:'mild'});}}
-function fmPlankBed(x,z,w,d,ry,kind){W(x,0,z,ry||0,()=>{const h=.4;for(const sz of [-1,1])box('plank',0,0,sz*(d/2-.03),w,h,.06,jc(pick(PAL.wood),.07));for(const sx of [-1,1])box('plank',sx*(w/2-.03),0,0,.06,h,d,jc(pick(PAL.wood),.07));
-  box('plain',0,.02,0,w-.1,h-.06,d-.1,jc(pick(fmS),.08));if(kind)fmRows(0,0,w-.3,d-.3,Math.max(1,Math.round(d/.45)),kind);});}
-function fmScarecrow(x,z,ry){W(x,0,z,ry||0,()=>{beam('wood',[0,0,0],[0,2.1,0],.08,jc(0x5c4630,.06),true,6);beam('wood',[-.85,1.7,0],[.85,1.7,0],.07,jc(0x5c4630,.06),true,6);
- box('cloth',0,1.0,0,.5,.8,.24,jc(0xa04a2a,.08));box('cloth',-.6,1.45,0,.7,.25,.08,jc(0xc99a2e,.08),0,0,.15);box('cloth',.6,1.45,0,.7,.25,.08,jc(0x3b7f8e,.08),0,0,-.15);
- sph('cloth',0,2.05,0,.2,jc(0xd8c090,.05),1);cyl('sheet',0,2.2,0,.3,.05,jc(0x6a5a44,.05),8);cyl('sheet',0,2.24,0,.17,.2,jc(0x6a5a44,.05),8);
- for(const s of [-1,1])box('cloth',s*.15,.35,0,.1,.65,.06,jc(0x4a5a6a,.06));
- box('cloth',.3,1.7,.1,.04,.5,.02,jc(0xc23a2a,.1));box('cloth',-.3,1.7,.1,.04,.4,.02,jc(0xe8dcc0,.1));});}
+   if(kind==='corn')plant('crop-tall',px,.15+y0,zz,{h:rr(1.5,2.2),moisture:'mild',tags:{crop:'corn'}});
+   else if(kind==='sun')plant('crop-tall',px,.15+y0,zz,{h:rr(1.5,2.0),moisture:'mild',tags:{crop:'sunflower'}});
+   else if(kind==='bean'){for(const s of [-1,1])beam('wood',[px+s*.18,.15+y0,zz],[px,.95+y0,zz],.03,jc(0x6a5238,.06),true,4);plant('crop-vine',px,.15+y0,zz,{h:.9,moisture:'mild',tags:{crop:'beans'}});}
+   else plant('crop',px,.15+y0,zz,{r:rr(.17,.24),moisture:'mild'});}}});}
+// PLANTERS, a cold frame, a scarecrow, a coop, a trough: catalog pieces (FURNISH); what grows in them stays plant() flora. The skips are
+// the random numbers the old drawing drew (a tyre ring's turns, soil and paint colours), so the plants and the structure keep their stream
+function fmTyreBed(x,z,R,o){o=o||{};rngSkip(2*Math.max(3,Math.round(TAU*R/(TYR.R*2*.98)))+2+3);FURNISH('pa_planter',x,0,z,0,{v:R<.7?1:0});   // a tyre ring (a half drum for a small one)
+ const n=o.n||4;for(let k=0;k<n;k++){const a=k/n*TAU+rng(),d=rng()*(R-.55);plant('crop',x+Math.cos(a)*d,.5,z+Math.sin(a)*d,{r:rr(.2,.3),moisture:'mild'});}}
+function fmBarrelBed(x,z,o){o=o||{};rngSkip(10);FURNISH('pa_planter',x,0,z,0,{v:1});
+ for(let k=0;k<4;k++){const a=k*PI/2+.5;plant('crop',x+Math.cos(a)*.16,.48,z+Math.sin(a)*.16,{r:.15,moisture:'mild'});}}
+function fmPlankBed(x,z,w,d,ry,kind){W(x,0,z,ry||0,()=>{rngSkip(15);FURNISH('pa_planter',0,0,0,0,{v:2});if(kind)fmRows(0,0,w-.3,d-.3,Math.max(1,Math.round(d/.45)),kind,0,.23);});}
+function fmScarecrow(x,z,ry){rngSkip(24);return FURNISH('pa_scarecrow',x,0,z,ry||0);}
 // water pump windmill: lattice tower, spinning multi-blade wheel, tail vane
 function fmWindpump(x,z,H,ry){W(x,0,z,ry||0,()=>{const b=1.0,t=.35,c=jc(0x6a6a66,.05);
  const at=(y,s)=>{const k=b+(t-b)*y/H;return k*s;};
@@ -50,14 +48,7 @@ function fmWindpump(x,z,H,ry){W(x,0,z,ry||0,()=>{const b=1.0,t=.35,c=jc(0x6a6a66
  // pump rod down the tower
  beam('iron',[0,H-.1,0],[0,.3,0],.04,jc(0x8a8a86,.05),true,5);cyl('sheet',0,0,0,.28,.6,jc(0x2f5f8f,.06),8);});}
 // chicken coop on wheels
-function fmCoop(x,z,ry){W(x,0,z,ry||0,()=>{const w=2.0,d=1.3;const c=jc(pick([0x3b7f6e,0xc99a2e,0x8a3a2c]),.06);
- box('plank',0,.55,0,w,.1,d,jc(0x6a5a44,.06));box('sheet',0,.65,-d/2+.03,w,.85,.06,c);box('sheet',0,.65,d/2-.03,w*.6,.85,.06,c);for(const sx of [-1,1])box('sheet',sx*(w/2-.03),.65,0,.06,.85,d,c);
- fmRoof('corr',-w/2-.1,w/2+.1,d/2+.1,1.5,-d/2-.1,1.75,.05,P('galv'));door(-.35,.75,d/2+.03,.4,.6,{step:false,col:0xc45a30});
- box('plank',.75,.7,d/2+.02,.5,.5,.04,jc(0x3a2a1c,.05));   // nest hatch
- tire(-.8,.36,d/2+.05,.36,.1,undefined,0,PI/2,0);tire(.8,.36,d/2+.05,.36,.1,undefined,0,PI/2,0);tire(-.8,.36,-d/2-.05,.36,.1,undefined,0,PI/2,0);tire(.8,.36,-d/2-.05,.36,.1,undefined,0,PI/2,0);
- beam('iron',[-.8,.36,-d/2],[-.8,.36,d/2],.05,jc(0x4a4038,.05),true,5);beam('iron',[.8,.36,-d/2],[.8,.36,d/2],.05,jc(0x4a4038,.05),true,5);
- beam('wood',[-w/2,.55,0],[-w/2-1.1,.2,0],.07,jc(0x5c4630,.06));   // tow bar
- box('plank',w/2+.3,.02,.1,.9,.35,.05,jc(0x6a5a44,.06),.8,-.05);beam('wood',[w/2-.05,.62,.35],[w/2+.8,.02,.8],.05,jc(0x6a5a44,.06));   // ramp
+function fmCoop(x,z,ry){W(x,0,z,ry||0,()=>{const w=2.0,d=1.3;rngSkip(26);FURNISH('pa_chicken_coop',0,0,0,0,{ax:.155});   // the coop on its tyres; the hens are animals and stay
  for(let k=0;k<4;k++){const a=k*1.7;const px=w/2+.7+Math.cos(a)*.45,pz=.9+Math.sin(a)*.4;sph('plain',px,.16,pz,.13,jc(pick([0xd8c8a0,0xa04a2a,0x8a5a30]),.08),1.05);sph('plain',px+.09,.3,pz,.07,jc(0xc23a2a,.05),1);}});}
 // goat / pig pen
 function fmPen(x,z,w,d,gate){const x0=x-w/2,x1=x+w/2,z0=z-d/2,z1=z+d/2,o={type:'pickets'};
@@ -71,15 +62,10 @@ function fmPen(x,z,w,d,gate){const x0=x-w/2,x1=x+w/2,z0=z-d/2,z1=z+d/2,o={type:'
  // goat on a tyre
  tire(x1-1.2,.12,z1-1.4,TYR.R,TYR.t);sph('plain',x1-1.2,.85,z1-1.4,.28,jc(0xe8e0d0,.05),.8);sph('plain',x1-1.0,1.05,z1-1.4,.14,jc(0xe8e0d0,.05),1);
  fmTrough(x1-.9,z0+.8);}
-function fmTrough(x,z){box('plank',x,.0,z,1.1,.3,.4,jc(0x5c4630,.06));box('water',x,.3,z,1.0,.02,.3,jc(0x3a6a70,.05));}
-function fmCold(x,z,w,d,ry){W(x,0,z,ry||0,()=>{const hb=.4,ht=.85;
- for(const sx of [-1,1])poly('plank',[[sx*w/2,0,-d/2],[sx*w/2,0,d/2],[sx*w/2,ht,d/2],[sx*w/2,hb,-d/2]],jc(pick(PAL.wood),.07),true);
- box('plank',0,0,-d/2,w,hb,.08,jc(pick(PAL.wood),.07));box('plank',0,0,d/2-.04,w,ht,.08,jc(pick(PAL.wood),.07));
- box('plain',0,.05,0,w-.2,.2,d-.2,jc(pick(fmS),.08));for(let k=0;k<Math.round(w/.4);k++)plant('crop',-w/2+.3+k*.4,.2,rr(-d/4,d/4),{r:.13,moisture:'mild'});
- const n=Math.max(2,Math.round(w/1.2)),pw=w/n;for(let k=0;k<n;k++){const x0=-w/2+k*pw;const op=k===n-1?.5:0;
-  fmPlane('bottle',[x0+.02,ht+.02,d/2],[x0+pw-.02,ht+.02,d/2],[x0+.02,hb+.05+op,-d/2],.3,null);}
- for(let k=0;k<=n;k++){const x=-w/2+k*pw;beam('wood',[x,ht+.02,d/2+.03],[x,hb+.06,-d/2-.03],.07,jc(0x6a5238,.06));}
- beam('wood',[-w/2,ht+.03,d/2+.04],[w/2,ht+.03,d/2+.04],.08,jc(0x6a5238,.06));beam('wood',[-w/2,hb+.05,-d/2-.04],[w/2,hb+.05,-d/2-.04],.08,jc(0x6a5238,.06));});}
+function fmTrough(x,z){rngSkip(4);return FURNISH('pa_water_trough',x,0,z,0);}
+function fmCold(x,z,w,d,ry){W(x,0,z,ry||0,()=>{const hb=.4,ht=.85;rngSkip(15);FURNISH('pa_cold_frame',0,0,0,0);   // the catalog's bottle-glass cold frame
+ for(let k=0;k<Math.round(w/.4);k++)plant('crop',-w/2+.3+k*.4,.2,rr(-d/4,d/4),{r:.13,moisture:'mild'});
+ const n=Math.max(2,Math.round(w/1.2));rngSkip(2*(n+1)+4);});}
 function fmCompost(x,z,r){for(let k=0;k<3;k++)fenceRun(x-r,z-r,x+r,z-r,.9,{type:'pickets'});
  for(const [a,b,c,d] of [[x-r,z-r,x+r,z-r],[x-r,z-r,x-r,z+r],[x+r,z-r,x+r,z+r]])fenceRun(a,b,c,d,1.0,{type:'pickets'});
  sph('plain',x,.2,z,r*.95,jc(0x4a3220,.1),.55);for(let k=0;k<5;k++){const a=rng()*TAU,d=rng()*r*.7;plant('groundcover',x+Math.cos(a)*d,.5+rr(0,.1),z+Math.sin(a)*d,{r:rr(.2,.3),moisture:'mild'});}}
@@ -141,14 +127,10 @@ function fmFarm(o){
  });}
 
 // ---------------------------------------------------------------- farmhouse: silo stair-core fused to a long plank-and-sheet house
-function fmRocker(x,z,ry,col){W(x,0,z,ry||0,()=>{const c=jc(col||0x8a5a30,.06);
- for(const s of [-1,1]){beam('wood',[s*.28,.55,-.3],[s*.28,.55,.3],.04,c);beam('wood',[s*.28,.12,-.4],[s*.28,.05,0],.04,c);beam('wood',[s*.28,.05,0],[s*.28,.12,.4],.04,c);
-  beam('wood',[s*.28,.12,-.4],[s*.28,.55,-.3],.035,c);beam('wood',[s*.28,.12,.4],[s*.28,.55,.3],.035,c);beam('wood',[s*.28,.55,-.3],[s*.28,1.0,-.38],.04,c);}
- box('plank',0,.5,0,.6,.05,.6,c);box('plank',0,.7,-.34,.6,.4,.04,jc(0xc99a2e,.08),0,-.15);box('cloth',0,.56,.05,.5,.06,.4,jc(0xa04a2a,.08));});}
-function fmWell(x,z,r){tireRing(x,z,r,3,0,TAU);cyl('plain',x,.5,z,r-.32,.02,jc(0x1a2a30,.03),12);
- for(const s of [-1,1])beam('wood',[x+s*(r+.05),0,z],[x+s*(r+.05),2.1,z],.09,jc(0x5c4630,.06));
- beam('wood',[x-r-.1,2.1,z],[x+r+.1,2.1,z],.09,jc(0x5c4630,.06));cylH('wood',x,1.7,z,.09,r*2,jc(0x7a5a38,.06),'x',8);
- fmRoof('corr',x-r-.35,x+r+.35,z+.8,2.0,z-.8,2.5,.05,P('rust'));beam('plain',[x,1.65,z],[x,1.0,z],.012,jc(0x6a5a44,.05),true,3);cyl('sheet',x,.75,z,.13,.26,jc(0x8a8a86,.06),8);}
+// a rocking chair (the catalog's), standing on the veranda deck (y): the kit drew it at the ground, half sunk in the deck
+function fmRocker(x,z,ry,col,y){rngSkip(6);return FURNISH('pa_rocking_chair',x,y||0,z,ry||0);}
+// the farm well (the catalog's): its old drawing drew a tyre ring (3 courses) and 17 more numbers
+function fmWell(x,z,r){rngSkip(3*Math.max(3,Math.round(TAU*r/(TYR.R*2*.98)))+2+17);return FURNISH('pa_well',x,0,z,0,{v:1});}
 defBuilding({key:'farmhouse',name:'Farmhouse',seed:5020,tags:{type:['farm','single-family dwelling'],size:'medium',core:'grain silo',materials:['plank','galvanised sheet','tyres','timber']},w:21,d:14,h:10.4,build:fmFarmhouse});
 function fmFarmhouse(o){
  const sx=-6.6,sz=-1.6,r=3.0,sh=7.6,hx0=-4.2,hx1=7.8,hz0=-5,hz1=2,wh=5.4;
@@ -201,14 +183,13 @@ function fmFarmhouse(o){
  // east barn lean-to for the cart
  W(hx1,0,-1.9,PI/2,()=>{fmLean(0,0,5.0,2.9,3.9,2.7,{col:0x8a3a2c});box('plank',0,0,1.4,5.0,.08,2.9,jc(0x6a5a44,.08));
   for(const s of [-1,1])box('plank',s*2.45,0,1.4,.08,2.7,2.8,jc(pick(PAL.wood),.07));
-  box('plank',0,.55,1.5,1.3,.1,2.2,jc(0x7a5a38,.06));for(const s of [-1,1]){tire(s*.78,.5,1.3,.5,.09,undefined,0,0,PI/2);cyl('iron',s*.74,.5,1.3,.16,.06,jc(0x8a8a86,.05),8);}
-  for(const s of [-1,1])beam('wood',[s*.55,.6,1.5],[s*.5,.5,3.4],.06,jc(0x6a5238,.06));sph('plain',0,.95,1.2,.55,jc(0xd8b840,.08),.6);for(const s of [-1,1])box('plank',s*.6,.65,1.5,.06,.4,2.2,jc(0x7a5a38,.06));
-  for(let k=0;k<3;k++)tire(1.9,.12+k*.24,.6+rr(-.05,.05),TYR.R,TYR.t);barrel(-1.9,0,.7);crate(-1.9,0,2.2,.6,.2);});
+  rngSkip(16);FURNISH('pa_hand_cart',0,0,1.5,0,{v:2,az:-.415});   // the hay cart under the lean-to
+  rngSkip(3);FURNISH('pa_tyre_stack',1.9,0,.6,0,{v:1});barrel(-1.9,0,.7);crate(-1.9,0,2.2,.6,.2);});
  // kitchen garden behind a picket fence, front left
- fmPlankBed(-8.4,6.2,2.2,1.0,0,'leaf');fmPlankBed(-5.8,6.2,2.2,1.0,0,'bean');fmTyreBed(-10.0,6.1,.65,{cols:[0xc23a2a,0xd8a020]});
+ fmPlankBed(-8.4,6.2,2.2,1.0,0,'leaf');fmPlankBed(-5.8,6.2,2.2,1.0,0,'bean');fmTyreBed(-10.15,6.1,.65,{cols:[0xc23a2a,0xd8a020]});
  fenceRun(-10.7,4.95,-4.4,4.95,1.0,{type:'pickets'});fenceRun(-10.7,4.95,-10.7,7.0,1.0,{type:'pickets'});fenceRun(-4.4,4.95,-4.4,7.0,1.0,{type:'pickets'});fenceRun(-10.7,7.0,-4.4,7.0,1.0,{type:'pickets'});
  // well with a tyre rim, rocking chairs, water butt at the back, yard junk
- fmWell(9.4,2.8,.62);fmRocker(2.7,3.7,PI,0x8a5a30);fmRocker(4.4,3.6,PI+.15,0x3f7fc0);fmRocker(-.3,3.9,PI-.1,0xc45a30);fmRocker(-2.6,3.8,PI,0x8a5a30);
+ fmWell(9.4,2.8,.62);fmRocker(2.7,3.7,PI,0x8a5a30,.5);fmRocker(4.4,3.6,PI+.15,0x3f7fc0,.5);fmRocker(-.3,3.9,PI-.1,0xc45a30,.5);fmRocker(-2.6,3.8,PI,0x8a5a30,.5);
  waterButt(-1.5,1.5,hz0-.6,.55,.9);barrel(6.6,0,5.2);barrel(7.1,0,4.7);tireStack(-3.0,6.6,3);lamp(-3.0,0,4.3,3.0,{arm:.3});
  W(-2.0,0,-6.2,0,()=>{crate(0,0,0,.6,.2);crate(.7,0,.1,.6,-.2);sacks(-.3,0,.7,5,.1);});
  // sockets
@@ -259,8 +240,8 @@ function fmGranary(o){
  const bx=6.6,bz=5.6;W(bx,.14,bz,0,()=>container({len:CT.L20,open:'front',col:o.v===1?0x3fa08e:0xc45a30}));
  deck(bx,.9,bz+1.22+.75,6.0,1.5,{rail:['l','r'],posts:false});for(const s of [-1,1])for(const x of [-2.8,0,2.8])beam('wood',[bx+x,.14,bz+2.3+s*.6],[bx+x,.78,bz+2.3+s*.6],.12,jc(0x5c4630,.06));
  stairs(bx-1,.14,bz+4.6,bx-1,.9,bz+3.5,1.3,{rail:true});
- sacks(bx-2.2,.28,bz+.2,6,.05);sacks(bx-1.2,.28,bz-.6,6,-.05);sacks(bx+.5,.28,bz-.5,6,.05);sacks(bx+2.0,.28,bz+.3,5,0);sacks(bx-1.8,1.0,bz+2.9,6,.1);sacks(bx+1.5,1.0,bz+2.8,6,-.1);
- for(let k=0;k<3;k++)for(let j=0;j<3-k;j++)box('cloth',bx-2.2+j*.55+k*.27,.28+.95+k*.32,bz-.55,.5,.3,.34,jc(pick([0xd8c8a0,0xc8b888,0xb8a878]),.05),0,0,0);
+  rngSkip(24+24+24+20);sacks(bx-1.8,.9,bz+2.9,6,.1);sacks(bx+1.5,.9,bz+2.8,6,-.1);   // the bay is a store the interior set plans: its sacks are the interiors'; these stand on the deck
+ rngSkip(18);
  fmScale(-.4,6.6,0);
  W(bx+CT.L20/2+.1,0,bz,PI/2,()=>{fmLean(0,0,2.8,2.6,3.0,2.4,{col:0x3fa08e,mat:'sheet'});box('plank',0,.1,1.3,2.8,.05,2.6,jc(0x6a5a44,.08));barrel(-.8,.14,1.3);barrel(0,.14,1.9);crate(.9,.14,1.5,.6,.3);});
  // yard: pallets, barrels, tyres, lamp

@@ -7,7 +7,8 @@
             culture, wealth, id?, seed?, level?, fixtures? })
 
    poly is the floor outline at the INNER face of the walls, either winding. A door or window
-   is snapped onto the nearest wall of the polygon; `at` may sit anywhere within 0.6 m of it.
+   is snapped onto the nearest wall of the polygon; `at` may sit anywhere within 0.6 m of it (a door's
+   `snap` widens that: the planner gives a street door on the OUTER face of a thick wall snap = wall + 0.6).
    Door extras this kit adds (all optional): swing 'in' (default) | 'out' | 'none' (an open
    doorway or curtain), hinge 'left' | 'right' (seen from inside, looking out; default 'left'),
    h (opening height, 2.1), leaf: false (another room draws this door's leaf: a shared door).
@@ -36,13 +37,13 @@
   IX.ROOM_KINDS_KNOWN = ['hall', 'bedroom', 'kitchen', 'store', 'workshop', 'shrine', 'tavern', 'library', 'school',
     'study', 'barracks', 'court', 'yard', 'rooftop', 'antechamber'];
 
-  function snap(room, at, what) {
+  function snap(room, at, what, tol) {
     let best = null, bd = Infinity;
     for (const W of room.walls) {
       const d = G.segDist(at[0], at[1], W.a, W.b);
       if (d < bd) { bd = d; best = W; }
     }
-    if (!best || bd > 0.6) throw new Error('ROOM ' + room.id + ': ' + what + ' at [' + at + '] is ' + bd.toFixed(2) + ' m from every wall');
+    if (!best || bd > (tol || 0.6)) throw new Error('ROOM ' + room.id + ': ' + what + ' at [' + at + '] is ' + bd.toFixed(2) + ' m from every wall');
     const u = Math.max(0, Math.min(best.len, (at[0] - best.a[0]) * best.t[0] + (at[1] - best.a[1]) * best.t[1]));
     return { W: best, u: u, at: [best.a[0] + best.t[0] * u, best.a[1] + best.t[1] * u] };
   }
@@ -69,7 +70,7 @@
       R.walls.push({ i: R.walls.length, a: a, b: b, len: len, t: t, n: n, ry: Math.atan2(n[0], n[1]) });
     }
     (o.doors || []).forEach(function (d, k) {
-      const s = snap(R, d.at, 'door ' + k);
+      const s = snap(R, d.at, 'door ' + k, d.snap);
       R.doors.push({ i: k, id: d.id || null, at: s.at, w: +(d.w || 1.0), to: d.to || 'street', swing: d.swing || 'in', hinge: d.hinge || 'left',
         h: +(d.h || 2.1), leaf: d.leaf !== false, wall: s.W.i, u: s.u, n: s.W.n, ry: s.W.ry });
     });

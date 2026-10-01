@@ -29,7 +29,7 @@ function buildHlRusTankStue(G,o){reseed(25001+(o.v|0));const R=2.1,L=9,yc=.45+R;
  const vz=R+.75;hnLogBox(1,.45,vz,2.4,2.2,1.5,0,log,.26);vnDoor(1,.45,vz+.76,0,.9,1.85,'vWood',log,dk,false);
  hnRUTurf(1,2.65,vz,1.9,2.4,.9,Math.PI/2,.3,'hGableLog',log,2);vnStairs(1,0,vz+1.15,0,1.2,.45,2,'vStone',rub);
  hnRUShield(-.35,1.7,vz,-Math.PI/2,.4,hC(HPAL.red),hC(HPAL.white));
- hnWoodpile(-W/2-.4,0,-.5,Math.PI/2,3.6,1.4);vnBarrel(-2.2,0,R+1,.32,.8,dk);
+ hnWoodpile(-W/2-.4,0,-.5,Math.PI/2,3.6,1.4);hnBarrel(-2.2,0,R+1,.32,.8);
  hnRUHesje(-1,-D/2-2.4,0,6);hnRUBeast(W/2+1.8,1.5,2.2,'goat');hnRUBeast(W/2+1.2,3,1.2,'goat');
  vnFence(0,0,.8,W+5,D+6.5,0,hC(vPick(HPAL.aged)),2,1);vnFolk(-2.5,vz+2,1,1);}
 
@@ -79,7 +79,7 @@ function buildHlRusHullNaust(G,o){reseed(25021+(o.v|0));const L=16,R=4.6,arc=Mat
  for(const e of[-1,1]){const a=[0,.4,e*(bl/2-.4)],b=[0,1.7,e*(bl/2+.4)],c=[0,2.6,e*(bl/2+.2)];beam('vWood',a,b,.2,.24,bc);beam('vWood',b,c,.18,.2,bc);
   kput('vConeI',[0,2.75,e*(bl/2+.05)],vQ(e>0?0:Math.PI,Math.PI/2,0),[.1,.4,.14],hC(HPAL.red));}
  beam('vWood',[0,.5,1],[0,6,1],.14,.14,bc);
- for(let k=0;k<4;k++)vnBarrel(hw+.9,0,-L/2+2+k*1.1,.3,.8,tar);hnWoodpile(-hw-.9,0,0,Math.PI/2,6,1.2);vnFolk(2.5,L/2+3,2,1.5);}
+ for(let k=0;k<4;k++)hnBarrel(hw+.9,0,-L/2+2+k*1.1,.3,.8);hnWoodpile(-hw-.9,0,0,Math.PI/2,6,1.2);vnFolk(2.5,L/2+3,2,1.5);}
 
 // ---------------------------------------------------------------- 4. the silo stabbur
 // A corrugated grain silo, its roof long gone, stood on a fieldstone ring: the village crowned it with a log loft
@@ -96,7 +96,7 @@ function buildHlRusSiloStabbur(G,o){reseed(25031+(o.v|0));const R=2.3,SH=7.2,W=5
  vnWin(0,SH+1,W/2,0,.6,.6,'shut','vWood',log);vnDoor(-1.6,SH+.22,W/2,0,.8,1.7,'vWood',log,tar,false);
  const pitch=1.15,y0=SH+.22+H,rise=pitch*W/2;hnGable(0,y0,0,W,W,pitch,0,'vShingleB',sh,.6,'vGableW',log);hnRUDragons(0,y0,0,W,W,rise,0,.6,tar,.8);
  vnLadder(-1.6,0,W/2+.6,0,SH+.4,log);
- hnRUHesje(-6,3,Math.PI/2,6);hnRUHesje(6,-1,Math.PI/2,5);hnRUCart(4.5,4,.6);vnBarrel(2.4,0,R+.9,.3,.8,tar);vnFolk(-2.5,R+3,1,1);}
+ hnRUHesje(-6,3,Math.PI/2,6);hnRUHesje(6,-1,Math.PI/2,5);hnRUCart(4.5,4,.6);hnBarrel(2.4,0,R+.9,.3,.8);vnFolk(-2.5,R+3,1,1);}
 
 // ---------------------------------------------------------------- 5. the scrap-iron market
 // A long open market hall on log posts under a turf gable, its gable ends boarded with salvaged container doors and

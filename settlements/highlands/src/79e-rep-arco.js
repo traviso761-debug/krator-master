@@ -98,5 +98,5 @@ function buildHlRepArcoQuarter(G,o){reseed(22201+(o.v|0));
   const n=ax(B,-4,B.yc+R-.2,0);hnBunting([m[0],m[1]+5,m[2]],[n[0],n[1]+1.5,n[2]],12);}
  // the mouth of the cleft: small houses, a stall, a lamp
  for(const [key,x,z,ry] of[['hl_rep_house_poor_a',-12,24,0],['hl_rep_lantern_stall',12,24.5,0],['hl_rep_house_poor_b',-23,26,.1]]){if(VERN.defs[key])hnSub(key,x,0,z,ry);}
- hnStall(0,0,19,0);vnLampPost(3,0,17,3.8);vnFolk(0,18,4,4);}
+ hnStall(0,0,19,0);hnLampPost(3,0,17,3.8);vnFolk(0,18,4,4);}
 HL.def({key:'hl_rep_arco_quarter',name:'The Fallen Arcology',branch:'republican',family:'Monuments',tags:{type:['multi-family dwelling','ruin'],wealth:'poor',lit:true,salvage:true,landmark:true},w:118,d:70,h:34,build:buildHlRepArcoQuarter});

@@ -22,6 +22,7 @@
 - [ ] Town grid: poles stand one per street edge, so spacing follows the edge lengths (17-45 m); spans may cross a yard corner at a bend; service drops end at the house's nearest wall point, not a fitted bracket.
 - [ ] Fauna ignores the life layer (flamingos don't flush from boats; emus don't avoid riders).
 - [ ] The kit's own open items (LOCUS-KIT-KNOWN-ISSUES.md) still stand, except the chapterhouse wall/fountain, now fixed.
+- [ ] Kit furniture is the catalog's now (API.md "Furniture"); what is left drawn is listed under "Furniture from the catalog" in ABYSS-KIT-KNOWN-ISSUES.md and LOCUS-KIT-KNOWN-ISSUES.md. (The interior-set variant gaps are closed: every kit variant has its own item or a skip.)
 
 ## Level of detail (core/lod)
 

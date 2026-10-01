@@ -20,7 +20,6 @@ now in `refs/abyss/` and are compared with the kit under "The reference images" 
 | fragment | seed | what |
 |---|---|---|
 | `65-abyss-00-core.js` | 650001 | `ABYSS.*` helpers, `KIT_ROWS.abyss`, the helper demo asset |
-| `65-abyss-10-furniture.js` | 651001 | 27 abyssal-desert FURN pieces |
 | `65-abyss-20-plants.js` | 652001 | 3 PLANTs (lily pads, potted herbs, creeper) |
 | `65-abyss-30-housing.js` | 653001 | poor / middle / rich houses |
 | `65-abyss-40-shops.js` | 654001 | eight shops |
@@ -137,7 +136,7 @@ glows blue (`glowmat` in `abCrystal`, with a warm night lamp for the fire bowl i
 |---|---|
 | `grid` | `(F, fam, P, col, opt)` — P[i][j] local points → a smooth-shaded merged surface. `opt.uv`, `opt.hint` (vector or fn(p)), `opt.under` (a back face colour, offset `opt.off`), `opt.wrap` (closed ring). The base of sails, cone shells and swoop roofs. |
 | `sail` | `(F, pts, col, opt)` — 3–6 corners; `swoop` (edge dip, tips curve up, 0.6), `sag` / `peak` (centre), `band` colour + `bandW` (patterned border), `under`, `n`, `fam`. Both faces. |
-| `lantern` | `(F, x,y,z, lit, amp)` — oil lantern; `lit=false` dark glass and no light. |
+| `lantern` | `(F, x,y,z, lit, amp)` — oil lantern: the catalog's `abyss_hanging_lantern` through FURNISH; `lit=false` dark glass and no light. |
 | `mast` | `(F, x,z,h, opt)` — `guys`, `guyR`, `lantern:'lit'|'unlit'`, `prop` (propeller-lantern) + `lit`, `finial`, `flag`, `r`, `col`. Returns h. |
 | `coneShell` | `(F, x,z, r,h, opt)` — `fam` thatch/tile/tinmirror, `col`, `y0`, `k` profile (1.25), `arch:{w,h}` (on the side `face`, default +z), `archCol`, `thick`, `inCol`, `ring` (false = none), `finial`, `seg`. Inner skin, base rim and arch reveals drawn; the arch is cut by columns that end at its edge. Returns `{top, archH}`. |
 | `vessel` | `(F, kind, x,y,z, opt)` — kind `tank`/`drum`/`silo`/`container`; `r`, `h`, `len`, `yaw`, `col`, `fam`, `win:[[a or u, y, side]]`, `port`, `glass`, `door` (angle / 'end' / 'side'), `doorAt`, `doorEnd`, `balcony`, `ladder`, `awning`, `hatch`, `capCol`. Returns `{top}` (drum also `axisY`). |
@@ -148,7 +147,8 @@ glows blue (`glowmat` in `abCrystal`, with a warm night lamp for the fire bowl i
 | `antenna` | `(F, x,y,z, kind, opt)` — 'mast' (`h`), 'dish' (`r`, `face`, `col`), 'lattice' (`h`). |
 | `lattice` | `(F, x,z, w,h, opt)` — square tapering lattice tower; `y0`, `top` (head width fraction), `col`. |
 | `altar` | `(F, x,z, size,h, opt)` — stepped square altar, `steps` (4), stairs mid-side ×4, salt top with a tin-mirror (or `border` colour) edge, lacquer `band`s; places `abyss_fire_bowl` and `abyss_crystal_ring` (variant lit unless `lit:false`). Returns `{top, topSize}`. |
-| `furn` / `plant` | `(F, key, lx,lz, yaw, opt)` — place a FURN / PLANT at local (lx, `opt.ly`, lz); `variant`, `seed`. |
+| `furn` / `plant` | `(F, key, lx,lz, yaw, opt)` — place a CATALOG furniture piece (FURNISH, `API.md`) / a PLANT at local (lx, `opt.ly`, lz); `variant`, `seed`, `setting`. |
+| `burn` | `(F, n)` — drop n numbers from the builder's stream (inline drawing replaced by a catalog piece keeps the stream stable). |
 | `sub` | `(F, key, lx,lz, yaw, opt)` — build another ASSET inside this one (`ly`, `variant`); used by the wall run and the citadel. |
 | `part` | `(F, name, lx,ly,lz, r,h, label)` — register a named part with the inspector (the altar). |
 | `platform` | `(F, x0,x1,z0,z1, H, opt)` — piles every `span` (2.6) m, bearers, deck, edge beam; `pile`, `plank`, `r`, `brace`. |
@@ -160,6 +160,13 @@ glows blue (`glowmat` in `abCrystal`, with a warm night lamp for the fire bowl i
 | `mural`, `balcony`, `billboard` | facade pieces: a `paintcol` panel; an iron balcony (`w`, depth `dp`); a salvaged billboard on legs. |
 
 ## Furniture and plants
+
+**Oct 2026 (catalog pass):** the furniture is the master catalog's now. The 27 FURN pieces below, and eight pieces the
+buildings drew inline (hung lanterns, propeller-lantern masts, the salvage dealer's sorted scrap, the sailmaker's
+stitching frame, the alchemist's counter crystal, the plaza's lacquered standards, the farmhouse's granary basket, the
+windpump's trough), live in `kits/catalog/krator-master-furniture-eastabyss.js` (same keys, culture `eastabyss`);
+`65-abyss-10-furniture.js` is gone. `ABYSS.furn`, `ABYSS.lantern` and `ABYSS.mast { prop }` place them through
+`FURNISH` (`src/66-locus-furnish.js`; `API.md` "Furniture"). The list below is kept as the record of what the kit made:
 
 FURN (culture `abyssal-desert`, `room`, `place` indoor/outdoor/both; FURN_CULTURES gains `'abyssal-desert'`):
 `abyss_bench` (2), `abyss_table_stools` (2), `abyss_lantern_post` (unlit/lit), `abyss_brazier` (cold/burning),

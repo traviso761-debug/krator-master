@@ -41,9 +41,9 @@ const SITEKEY=k=>{if(typeof k!=='string')return {key:k.key,o:Object.assign({v:0}
  z+=dmax/2;let x=-total/2;keys.forEach((k,i)=>{SITES.push({key:k.key,x:x+ws[i]/2,z,ry:0,o:k.o});x+=ws[i];});
  ROWS.push({family:F.name,z,d:dmax,w:total,h:hmax,keys:keys.map(k=>k.key)});z+=dmax/2+Math.max(26,hmax*1.3)+8;}})();
 const GROUND_C=ROWS.length?ROWS[ROWS.length-1].z/2:0;groundM.position.set(0,0,GROUND_C);
-/* smoke from the two big stacks built without stovepipe() (which marks its own): the smithy's forge flue and the fuel generator's exhaust, by their tops in
+/* smoke from the big stack built without stovepipe() (which marks its own): the fuel generator's exhaust, by its top in
    the def's local frame. Wrapping the builder keeps the building fragments untouched; smokeAt() reads CM, so the puffs follow any placement (compounds too). */
-const SMOKE_STACKS={smithy:[[-2.2,9.5,-3.55,.6]],'gen-fuel':[[-4.8,CT.H+5.85,-2.6,.55]]};
+const SMOKE_STACKS={'gen-fuel':[[-4.8,CT.H+5.85,-2.6,.55]]};   /* the smithy's forge (and its flue) is the interiors' now: no stack */
 for(const k in SMOKE_STACKS){const d=DEFS[k];if(!d||d._smoke)continue;const b=d.build;d._smoke=true;d.build=o=>{const r=b(o);for(const q of SMOKE_STACKS[k])smokeAt(q[0],q[1],q[2],{r:q[3],kind:'stack'});return r;};}
 // ---------------------------------------------------------------- (re)build the world for a culture
 let WORLD=null;

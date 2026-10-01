@@ -43,3 +43,7 @@ host/address.json.tmp
 
 # A kit's local three.js copy for verify.py (the CDN may be blocked); sedesert keeps a tracked one.
 biomes/*/three.min.js
+
+# a local three.js copy for verify.py when the CDN is blocked (not committed)
+settlements/girder/three.min.js
+settlements/mavs-refuge/three.min.js
