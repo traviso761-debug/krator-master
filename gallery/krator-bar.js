@@ -7,6 +7,7 @@
  * own controls covers (checked again after a resize, and as a world adds controls late):
  *   Scenes   a panel of every Krator world, grouped as on the gallery, the current one marked (Escape closes it)
  *   LOD      the level of detail: pick one and the page reloads with it
+ *   Share    the /share page for this world: its address on this network, with a code to scan (LAN site only)
  *   Home     back to the gallery
  * Clicks and keys on the bar stop there, so a world never sees them as a click on the scene.
  *
@@ -168,6 +169,8 @@
       popper('LOD: ' + level, 'Level of detail for this world (the page reloads)', lodP);
     }
 
+    if (C.share) button('Share', 'Open this world on a phone, tablet or another computer: the address, and a code to scan',
+      function () { location.href = C.share + '?page=' + encodeURIComponent(location.pathname); });
     button('Home', 'Back to the Krator Worlds gallery', function () { location.href = C.home || '/'; });
 
     [b, scenesP, lodP].forEach(shield);

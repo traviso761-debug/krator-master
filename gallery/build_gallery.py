@@ -212,7 +212,7 @@ def bar_head(cfg, slug):
     tpl = open(os.path.join(HERE, 'index.template.html'), encoding='utf-8').read()
     sections = [{'key': k, 'title': t} for k, t in re.findall(r"\{key:'([^']+)',\s*id:'[^']*',\s*title:'([^']+)'", tpl)]
     conf = {'slug': slug, 'level': cfg.get('worlds', {}).get(slug, cfg.get('default', 'high')),
-            'levels': cfg.get('levels', {}), 'home': '/', 'sections': sections,
+            'levels': cfg.get('levels', {}), 'home': '/', 'share': cfg.get('share', '/share'), 'sections': sections,
             'scenes': [{'slug': e[1], 'name': e[3], 'section': e[0], 'blurb': e[4], 'href': '/worlds/%s.html' % e[1]}
                        for e in ENTRIES],
             'extra': cfg.get('extra', [])}
@@ -271,6 +271,12 @@ def main():
                       'tag': rest[0] if rest else None})
     tpl = open(os.path.join(HERE, 'index.template.html'), encoding='utf-8').read()
     page = tpl.replace('/*ENTRIES*/[]', json.dumps(items, ensure_ascii=False))
+    if lod is not None:   # the LAN site: a way to bring a phone or tablet in
+        share = lod.get('share', '/share')
+        page += ('\n<a id="krator-share" href="%s" style="position:fixed;top:12px;right:12px;z-index:10;'
+                 'background:rgba(18,14,58,.85);color:#e8c98a;border:1px solid #c99a55;padding:7px 12px;'
+                 'font:14px Georgia,serif;text-decoration:none;border-radius:2px">Open on your phone or tablet</a>\n'
+                 % html.escape(share))
     with open(os.path.join(site, 'index.html'), 'w', encoding='utf-8') as fh:
         fh.write(page)
     total = sum(os.path.getsize(os.path.join(site, 'worlds', i['slug'] + '.html')) for i in items)
