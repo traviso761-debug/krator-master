@@ -23725,9 +23725,16 @@ const EXTRA_BUILDERS={hex:buildHexahedron,mav:buildHypertree,
   // invisible on a 1.5 km arcology — BIO.upFaces weights by triangle AREA, so on
   // a structure this size the default scatter is a few dozen specks nobody will
   // ever find. Scaled up by roughly the ratio of surface areas.
-  HYPERJUNGLE.dress(geos,{ledges:{moss:9000,plants:5200,edges:3200,hang:24,mossR:5},
-                          soffits:{mats:3000,curtains:1800},
-                          walls:{n:4000}});
+  // BUT THE BUDGET IS. At moss 9000 / plants 5200 / edges 3200 / walls 4000
+  // the dressing alone was 1.34M triangles and biome/0 stood at 1.55M against
+  // a 700k mega budget (qa/arcB.md round 3). The walls are the dear part --
+  // every bracket is 2-4 fungus half-spheres of 81 triangles -- so they are
+  // cut hardest; moss mats (7 triangles) are kept densest. The soffits pass
+  // reads opt.n (default 400): the mats/curtains keys it was given were never
+  // read, so n:400 here is what it always did.
+  HYPERJUNGLE.dress(geos,{ledges:{moss:5000,plants:2000,edges:1300,hang:24,mossR:5},
+                          soffits:{n:400},
+                          walls:{n:700}});
   BIO.bake();
  })};
 // ================================================================= THE WING — a monument that is also a city
