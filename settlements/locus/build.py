@@ -33,8 +33,27 @@ MANIFEST = os.path.join(HERE, 'build-manifest.json')
 
 # fragments that legitimately contain no top-level generation
 DETERMINISTIC = {'00-head.html', '05-palette.js', '10-core.js', '80-camera.js', '81-glow.js',
-                 '85-probe.js', '86-inspect.js', '69z-locus-flora.js', '84-life.js', '76-locus-anim.js', '69b-locus-biohost.js', '87-pathviz.js', '88-underview.js', '89-sheetui.js', '53-assets.js', '71-catalog.js', '98-start.js', '99-tail.html'}
+                 '85-probe.js', '86-inspect.js', '69z-locus-flora.js', '84-life.js', '76-locus-anim.js', '69b-locus-biohost.js', '87-pathviz.js', '88-underview.js', '89-sheetui.js', '53-assets.js', '71-catalog.js', '98-start.js', '99-tail.html',
+                 '66-locus-furnish.js'}
 PALETTE_FILE = '05-palette.js'
+
+# GENERATED fragments, never written to src/: the catalog's furniture (kits/catalog/furniture_bundle.py: one closure
+# exposing KratorFurniture: the eastabyss culture and its fallback chain, plus the harvested registry for the Yuni
+# pieces) and the interiors core with the Locus and Abyss interior sets (kits/interiors/kit_bundle.py:
+# KratorInteriors, ROOM, furnishRoom). Inserted after the kit builders (65-abyss-*) and before the glue
+# 66-locus-furnish.js (FURNISH, the interiors hook). Both generators' own text is exempt from the rules below.
+ROOT = os.path.dirname(os.path.dirname(HERE))
+FURN_CULTURES = ['eastabyss', 'nomad', 'reedlake', 'generic']
+INTERIOR_SETS = ['locus', 'abyss']
+VIRTUAL = {'65z-furniture-bundle.js'}
+
+
+def virtual_bodies():
+    sys.path.insert(0, os.path.join(ROOT, 'kits', 'catalog'))
+    sys.path.insert(0, os.path.join(ROOT, 'kits', 'interiors'))
+    import furniture_bundle, kit_bundle
+    return {'65z-furniture-bundle.js': furniture_bundle.bundle(FURN_CULTURES, harvested=True) + kit_bundle.bundle(INTERIOR_SETS)}
+
 
 RE_HEAD_SEED = re.compile(r'^reseed\(\s*(-?\d+)\s*\)\s*;')
 RE_ANY_SEED = re.compile(r'\breseed\(\s*(-?\d+)\s*\)')
@@ -62,7 +81,7 @@ def strip_head_comments(text):
 def check(order, bodies):
     errs, seeds = [], {}
     for f in order:
-        if not f.endswith('.js'):
+        if not f.endswith('.js') or f in VIRTUAL:
             continue
         body = bodies[f]
 
@@ -89,7 +108,7 @@ def check(order, bodies):
     # column-0 `var x` / `function x` declared in two fragments silently clobbers.
     decl = {}
     for f in order:
-        if not f.endswith('.js'):
+        if not f.endswith('.js') or f in VIRTUAL:
             continue
         head = RE_HEAD_SEED.sub('', strip_head_comments(bodies[f]), 1)
         if strip_head_comments(head).startswith('(function'):
@@ -118,9 +137,12 @@ def check(order, bodies):
 
 def main():
     do_checks = '--no-checks' not in sys.argv
-    order = sorted(f for f in os.listdir(SRC) if f[0].isdigit())
-    bodies = {}
+    vb = virtual_bodies()
+    order = sorted([f for f in os.listdir(SRC) if f[0].isdigit()] + list(vb))
+    bodies = dict(vb)
     for f in order:
+        if f in vb:
+            continue
         with open(os.path.join(SRC, f)) as fh:
             bodies[f] = fh.read()
 
