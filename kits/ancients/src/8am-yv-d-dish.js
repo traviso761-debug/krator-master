@@ -52,4 +52,9 @@ function buildYvDish(scene,gx,gz,d){reseed(d>0?9988:9987);KOFF=[gx,0,gz];const G
   adReclaim(G,{up:70,minY:.5,ok:p=>p[1]<6&&Math.hypot(p[0],p[2])<48&&Math.hypot(p[0]-HC[0],p[2]-HC[1])>8,figs:6,spread:20});
   kput('dot',[HC[0]-6.5,3.4,HC[1]],null,[.8,.8,.8],WARM);
   beam('tube',[30,2.2,0],[HC[0]-5.6,2.2,HC[1]+.5],.18,.18);beam('tube',[30,2.2,0],[8.5,31.5,0],.18,.18);}
+ // The keepers keep the bowl clear: repairPass, run by the scene on the group
+ // this returns, would stand shacks on any upward face, the tilted bowl
+ // included. At decay 3 the bowl leaves G for the scene (same place), so the
+ // pass never sees it; it costs two draw calls of its own.
+ if(d===3){G.remove(D);D.position.set(gx,36,gz);scene.add(D);}
  civFlatten(G);KOFF=[0,0,0];return G;}
