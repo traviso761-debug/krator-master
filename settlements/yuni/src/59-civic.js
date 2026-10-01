@@ -12,9 +12,7 @@ reseed(590001);
   function rwin(F, lx,ly,lz, nx,nz, r, ringCol){ hdisc(F,lx,ly,lz,nx,nz, r*1.38, 0.14, ringCol, 'relief'); hdisc(F,lx,ly,lz,nx,nz, r, 0.20, VOIDC[0], 'dark');
     var p=F.P(lx+nx*0.27,ly,lz+nz*0.27), n=F.dir(nx,nz); WINPANE(p.x,p.y,p.z, n[0],n[1], r*1.25, r*1.25, false); }
   /* a door at any height (F.door is ground-only) */
-  function doorAt(F, lx,ly,lz, nx,nz, w,h, col){ var a=Math.atan2(nx,nz);
-    F.box(lx-nx*0.12, ly, lz-nz*0.12, w+0.3, h+0.2, 0.34, a, VOIDC[1], 'dark'); F.box(lx+nx*0.04, ly, lz+nz*0.04, w, h, 0.10, a, col, 'plank');
-    var q=F.p(lx+nx*0.9, lz+nz*0.9); (F.doors||(F.doors=[])).push([q[0], F.y+ly, q[1]]); }
+  function doorAt(F, lx,ly,lz, nx,nz, w,h, col){ return F.door(lx,lz, nx,nz, w,h, col, ly); }   /* the working, tagged door (53-assets.js) */
   /* brass studs on a door leaf facing +z */
   function studs(F, lx,ly,lz, w,h, col){ for(var i=0;i<3;i++) for(var j=0;j<4;j++) F.box(lx+(i-1)*w*0.3, ly+h*(0.14+j*0.22), lz+0.06, 0.10,0.10,0.09, 0, col!=null?col:GILDC[0], 'metal'); }
   /* parameters at equal arc length round an ellipse */
