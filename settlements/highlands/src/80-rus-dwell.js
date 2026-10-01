@@ -59,11 +59,8 @@ function hnRUBeast(x,z,ry,kind,c){const K={cow:[1.9,.75,.68,.62,.5],horse:[1.8,.
  else{vB('hPaint',p[0],LG+H*.45+neckUp,p[1],HD*.85,HD*.9,HD,ry,kind==='sheep'?dk:c);}
  if(kind==='cow'||kind==='goat'){for(const s of[-1,1]){const q=P(s*HD*.35,L/2+HD*.3);kput('vConeI',[q[0],LG+H*.45+neckUp+HD*.8,q[1]],vQ(ry,-.5,s*.5),[.04,kind==='goat'?.28:.2,.04],hC(0xe0d8c0));}}
  p=P(0,-L/2-.04);kput('hPaint',[p[0],LG+H*.5,p[1]],vQ(ry,.3,0),[.06,H*.9,.06],dk);}
-// A small hay-drying rack (hesje): posts with wires, hung with hay.
-function hnRUHesje(x,z,ry,L,h){h=h||1.9;const n=Math.max(2,Math.round(L/2.2));const c=hC(vPick(HPAL.aged)),hay=hC(vPick([0xc8b070,0xb8a060,0xd0b878]));
- for(let i=0;i<=n;i++){const p=loc(x,z,-L/2+L*i/n,0,ry);vPst('vPost',p[0],0,p[1],.05,h+.2,c);}
- const p=loc(x,z,0,0,ry);for(let k=0;k<3;k++)vB('vThatchB',p[0],.45+k*.52,p[1],L-.2,.44,.34,ry,hay.clone().multiplyScalar(1-.05*k));
- vB('vThatchB',p[0],.45+1.56,p[1],L-.5,.2,.24,ry,hay);}
+// A hay-drying rack (hesje): posts with wires, hung with hay. Furniture, placed from the catalog (it drew 2 colours).
+function hnRUHesje(x,z,ry,L,h){hlRngSkip(2);return FURNISH('hl_rus_hay_rack',x,0,z,ry,{v:L>6.2?1:0});}
 
 // ---------------------------------------------------------------- POOR
 // A — Norse turf-roofed log cabin (the "årestue"): low log walls on a few stones, a turf gable to the front whose

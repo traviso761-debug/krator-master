@@ -45,8 +45,9 @@ ABYSS.lantern(F, x,y,z, lit, amp)  LOCUS.lantern(F, x,y,z, amp, rad)  // the hun
   measured on variant 0's body) — when it has no `skip`, is planned and furnished there through
   `KratorInteriors.sets.furnish(item, x, z, ry, KratorInteriors.runtimeAdapter(KratorFurniture, batch), { baseY, prefix })`;
   the summary is `buildAsset(...).interior = { item, rooms, pieces, residence }` and `LOCF.buildings`. A top-level
-  building that gets no interior is counted in `LOCF.unfurnished` by why (`LOCF.why(key, v)`): `skip` (its item says so),
-  `noItem` (a variant > 0 of a key that has an item, with no `#n` item of its own: a gap in the set; the total is
+  building that gets no interior is counted in `LOCF.unfurnished` by why (`LOCF.why(key, v)`): `skip` (its item says so,
+  or the key's base item skips it as a whole: a jetty, a prop), `noItem` (a variant > 0 of a key whose base item plans
+  rooms, with no `#n` item of its own: a gap in the set; the total is
   `window._furniture.noItem`, 0 on all three pages), `none` (a key with no item). `LOCF.item(key, v)` /
   `LOCF.itemOf(key, v)` look the item up the same way. Every multi-variant kit building has its `#n` items
   (`kits/interiors/sets/locus.js`, `abyss.js`) or a `skip`. Off by default.

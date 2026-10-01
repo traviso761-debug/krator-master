@@ -21,7 +21,7 @@
    A residence that fails the set's rule (a bed, a food and an item container per unit) is furnished again
    with another placement seed (twice at most); what still fails is listed in _interiors.residenceFails. */
 var GIX = { jobs:[], total:0, done:0, rooms:0, pieces:0, partitions:0, dropped:[], fallbacks:0, residenceFails:[], retries:0,
-            missingItems:{}, ms:0, msPlan:0, t0:0, acc:{}, group:null, mergedTris:0 };
+            missingItems:{}, ms:0, msPlan:0, t0:0, acc:{}, group:null, mergedTris:0, byKey:{} };
 GIX.batch = KratorFurniture.batch();
 GIX.adapter = KratorInteriors.runtimeAdapter(KratorFurniture, GIX.batch);
 (function(){
@@ -158,6 +158,7 @@ function gixFurnish(J){
   var n = 0;
   J.inst.rooms.forEach(function(R){ var P=plans[R.id]; IX.buildRoom(P, GIX.adapter, R); n += P.placements.length;
     P.placements.forEach(function(p){
+      var kv=p.key+'|'+(p.variant|0); GIX.byKey[kv]=(GIX.byKey[kv]||0)+1;
       if(p.anchor==='ceiling' || p.anchor==='surface' || p.h < 0.3 || p.type==='rug') return;
       gwBox(p.x, p.y, p.z, p.w, p.h, p.d, p.ry, 'furniture');                  /* the walk mode bumps into it */
     }); });

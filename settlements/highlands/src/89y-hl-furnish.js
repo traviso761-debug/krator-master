@@ -33,4 +33,7 @@ VERN.place=function(sc,key,x,z,ry,o){const top=!VERN.cur;const G=hlfPlace.call(V
  return G;};
 // the batch becomes meshes once, when the kit bakes its instances
 const hlfBake=kbake;
-kbake=function(sc){const g=HLF.batch.flush(sc);g.userData.probeSkip=false;HLF.group=g;return hlfBake(sc);};
+// the catalog's colours are sRGB values taken as they are; this kit's materials are linear (hC converts every colour), so
+// the furniture keeps its 8-bit vertex colours and linearises them in the vertex shader (as Girder and Locus do)
+function hlfSRGB(sh){sh.vertexShader=sh.vertexShader.replace('#include <color_vertex>','#include <color_vertex>\n#ifdef USE_COLOR\n  vColor.rgb = pow(max(vColor.rgb, vec3(0.0)), vec3(2.2));\n#endif');}
+kbake=function(sc){const g=HLF.batch.flush(sc);g.userData.probeSkip=false;HLF.group=g;g.children.forEach(m=>{m.material.onBeforeCompile=hlfSRGB;});return hlfBake(sc);};
