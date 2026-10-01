@@ -8,6 +8,10 @@ const look=(cx,cz,dyc,tx,tz,dyt)=>[cx,gh(cx,cz,dyc),cz,tx,gh(tx,tz,dyt),tz];
 const PC=id=>polyCentre(PLACES.find(p=>p.id===id).poly);
 const SWmid=SWB.pts[Math.floor(SWB.pts.length*.55)];
 const GD=new THREE.Vector3(Math.sin(66*Math.PI/180)*Math.cos(25*Math.PI/180),Math.sin(25*Math.PI/180),-Math.cos(66*Math.PI/180)*Math.cos(25*Math.PI/180));
+// a view of a carve patch: from `d` m out of its mouth (negative: inside it), `dy` above its floor
+const CV=(id,d,dy,tq,tdy)=>{const Q=BIO.carve.patches.find(q=>q.id===id),x=Q.c[0]+Q.n[0]*d,z=Q.c[1]+Q.n[1]*d,tx=Q.c[0]-Q.n[0]*tq,tz=Q.c[1]-Q.n[1]*tq;
+ return[x,Math.max(Q.floorY,d>0?terrainH(x,z):Q.floorY)+dy,z,tx,Q.floorY+tdy,tz];};
+const UF=BIO.carve.patches.find(q=>q.id==='undercut-falls');
 const VIEWS={
  'The basin from the lip':look(LIPX-40,zU(LIPX-40)+34,22,30,0,4),
  'The falls and the pool':[POOL.x+34,POOL.y+10,POOL.z+26,LIPX,POOL.y+22,0],
@@ -28,6 +32,9 @@ const VIEWS={
  'The tent grounds':look(36,-12,6,74,-44,1),
  'The north cliff dwellings':look(-30,-40,6,-30,BASIN.z0,9),
  'The south cliff dwellings':look(50,40,8,50,BASIN.z1,9),
+ 'The north alcove':CV('alcove-n1',42,10,6,9),
+ 'The south alcove':CV('alcove-s1',42,10,6,9),
+ 'Behind the falls':[UF.c[0]-UF.n[0]*2.6,POOL.y+2.4,UF.c[1]-UF.n[1]*2.6,POOL.x+20,POOL.y+3,POOL.z+8],
  'The gatehouse tower':look(10,-150,8,36,-168,8),
  'The upper stream':look(LIPX-130,zU(LIPX-130)+26,16,LIPX-10,zU(LIPX-10),-2),
  'Over the basin':look(-10,-260,190,15,0,0),

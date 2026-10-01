@@ -22,7 +22,8 @@ function regOccupancy(){const n=new Array(REG.length).fill(0);const P=_probePoin
  const W=[];for(const k in WATER){const a=WATER[k].geometry.attributes.position;for(let i=0;i<a.count;i+=3)W.push([a.getX(i),a.getY(i),a.getZ(i)]);}
  // the buildings are merged into one mesh per material: count their own vertices too
  const Bv=[];for(const m of (BUILDINGS.meshes||[])){const a=m.geometry.attributes.position;for(let i=0;i<a.count;i+=9)Bv.push([a.getX(i),a.getY(i),a.getZ(i)]);}
- REG.forEach((r,i)=>{for(const p of (r.cls==='water'?W:r.cls==='building'?Bv:P))if(regHas(r,p[0],p[1],p[2]))n[i]++;});
+ const Cv=[];for(const m of (typeof CARVE_MESHES!=='undefined'?CARVE_MESHES:[])){const a=m.geometry.attributes.position;for(let i=0;i<a.count;i+=7)Cv.push([a.getX(i),a.getY(i),a.getZ(i)]);}
+ REG.forEach((r,i)=>{for(const p of (r.cls==='water'?W:r.cls==='building'?Bv:r.cls==='carve'?Cv:P))if(regHas(r,p[0],p[1],p[2]))n[i]++;});
  return REG.map((r,i)=>({name:r.name,n:n[i]}));}
 function nanSweep(){const bad=[];let badInst=0;
  scene.traverse(o=>{if(!o.isMesh&&!o.isInstancedMesh)return;if(o.userData&&o.userData.probeSkip)return;
@@ -33,23 +34,30 @@ function typeStats(){const out={};for(const k in BIO.stats){const t=BIO.stats[k]
 
 // ---------------------------------------------------------------- the Shade checks
 const worldVerts=m=>{m.updateMatrixWorld(true);const a=m.geometry.attributes.position,v=new THREE.Vector3(),out=[];for(let i=0;i<a.count;i++){v.fromBufferAttribute(a,i).applyMatrix4(m.matrixWorld);out.push([v.x,v.y,v.z]);}return out;};
+// the rock's top at (x,z): over a carve patch, the patch's top; elsewhere the ground
+const rockTop=(x,z)=>{const t=BIO.carve.topAt(x,z);return t===null?terrainH(x,z):t;};
+// a point buried in rock (a carve patch's or the ground's) by more than `e` up and out
+const buried=(x,y,z,e)=>terrainH(x,z)>y+e||(BIO.carve.rockAt(x,y,z)&&BIO.carve.rockAt(x,y+e,z)&&BIO.carve.rockAt(x+e,y,z)&&BIO.carve.rockAt(x-e,y,z)&&BIO.carve.rockAt(x,y,z+e)&&BIO.carve.rockAt(x,y,z-e));
+// a facade's sample points [x,z,fx,fz]: a straight line {a,b,face} or a traced foot {pts}
+const facadePts=(F,n)=>F.pts?F.pts:Array.from({length:n+1},(_,i)=>[mix(F.a[0],F.b[0],i/n),mix(F.a[1],F.b[1],i/n),F.face[0],F.face[1]]);
 const CHK={
  // the falls: every vertex of the curtain in front of the rock, the lowest ones inside the pool at its surface
  falls(V){const minY=Math.min(...V.map(v=>v[1]));const low=V.filter(v=>v[1]<minY+.01);
-  const inRock=V.filter(v=>terrainH(v[0],v[2])>v[1]+.15).length,out=low.filter(v=>Math.hypot(v[0]-POOL.x,v[2]-POOL.z)>POOL.r-1||waterH(v[0],v[2])<v[1]-.05).length;
+  const inRock=V.filter(v=>buried(v[0],v[1],v[2],.15)).length,out=low.filter(v=>Math.hypot(v[0]-POOL.x,v[2]-POOL.z)>POOL.r-1||waterH(v[0],v[2])<v[1]-.05).length;
   return{ok:inRock===0&&out===0,detail:V.length+' curtain vertices; '+inRock+' inside the rock; '+out+'/'+low.length+' of the lowest outside the pool'};},
  // a stream ribbon: its centre above the bed everywhere, its edges hidden under the banks (a stream on a dyke shows its edges)
  ribbon(V,NW,name){let bed=0,edge=0,rows=0,worst=9;for(let r=0;r*(NW+1)<V.length;r++){const row=V.slice(r*(NW+1),(r+1)*(NW+1));if(row.length<NW+1)break;rows++;
-  const c=row[NW>>1],dh=c[1]-terrainH(c[0],c[2]);worst=Math.min(worst,dh);if(dh<.3)bed++;for(const e of [row[0],row[NW]])if(terrainH(e[0],e[2])<e[1]-.05)edge++;}
+  const c=row[NW>>1],dh=c[1]-terrainH(c[0],c[2]);worst=Math.min(worst,dh);if(dh<.3)bed++;for(const e of [row[0],row[NW]])if(rockTop(e[0],e[2])<e[1]-.05)edge++;}
   return{ok:bed===0&&edge<=rows*.02,detail:name+': '+rows+' rows; centre within .3 m of the bed '+bed+' (least depth '+worst.toFixed(2)+' m); edges showing '+edge};},
  // a trail: the steepest grade of the GROUND along its centreline, every half metre
  grade(P,lim){let mg=0,at=null;for(let k=0;k<P.length-1;k++){const a=P[k],b=P[k+1],l=Math.hypot(b[0]-a[0],b[1]-a[1]),n=Math.max(1,Math.ceil(l/.5));let px=a[0],pz=a[1],py=terrainH(px,pz);
   for(let i=1;i<=n;i++){const x=mix(a[0],b[0],i/n),z=mix(a[1],b[1],i/n),y=terrainH(x,z),g=Math.abs(y-py)/Math.hypot(x-px,z-pz);if(g>mg){mg=g;at=[x|0,z|0];}px=x;pz=z;py=y;}}
   return{ok:mg<=lim,detail:'steepest '+mg.toFixed(3)+' (limit '+lim+') at '+JSON.stringify(at)};},
  // a facade line lies on a sheer face: 1 m out on the floor, 3 m in at the top, at least 30 m apart (84 degrees)
- sheer(F,name){const n=12;let worst=1e9;for(let i=0;i<=n;i++){const x=mix(F.a[0],F.b[0],i/n),z=mix(F.a[1],F.b[1],i/n),fx=F.face[0],fz=F.face[1];
-  const rise=terrainH(x-fx*3,z-fz*3)-terrainH(x+fx*1,z+fz*1);worst=Math.min(worst,rise);}
-  return{ok:worst>=30,detail:name+': least rise over 4 m '+worst.toFixed(1)+' m'};},
+ // a wall place: 3 m into the rock the rock's top stands 30 m over the floor 1 m out (over a carve patch, the patch's top)
+ sheer(F,name){let worst=1e9,at=null;for(const [x,z,fx,fz] of facadePts(F,12)){
+  const rise=rockTop(x-fx*3,z-fz*3)-terrainH(x+fx*1,z+fz*1);if(rise<worst){worst=rise;at=[x|0,z|0];}}
+  return{ok:worst>=30,detail:name+': least rise over 4 m '+worst.toFixed(1)+' m at '+JSON.stringify(at)};},
  // a place on open ground: flat (grade <= .2 over 1 m) and dry, sampled on a 2 m grid inside it
  flat(poly,name){let n=0,steep=0,wet=0,worst=0;const xs=poly.map(p=>p[0]),zs=poly.map(p=>p[1]);
   for(let x=Math.min(...xs)+1;x<Math.max(...xs);x+=2)for(let z=Math.min(...zs)+1;z<Math.max(...zs);z+=2){if(!polyHas(poly,x,z))continue;n++;const y=terrainH(x,z),g=Math.max(Math.abs(terrainH(x+1,z)-y),Math.abs(terrainH(x,z+1)-y));
@@ -91,12 +99,25 @@ const CHK={
    if(hit)bad.push(P.id+'/'+Q.id);}
   return{ok:!bad.length,detail:bad.length?bad.slice(0,8).join(', '):list.length+' footprints, none overlapping in plan and height'};},
  // the back edge of every carved facade touches the wall line at its terrain height
- wallContact(list){const walls=list.filter(B=>B.backLine);let worst=1e9,at=null;
+ wallContact(list){const walls=list.filter(B=>B.backLine&&!B.inAlcove);let worst=1e9,at=null;
   for(const B of walls){const a=B.backLine[0],b=B.backLine[1],ex=b[0]-a[0],ez=b[1]-a[1],l=Math.hypot(ex,ez),nx=-ez/l,nz=ex/l;
    // the outward normal is the side the building's centre is on; the rock is on the other side
    const sgn=((B.center[0]-a[0])*nx+(B.center[1]-a[1])*nz)>0?-1:1;
-   for(let i=0;i<=8;i++){const t=i/8,x=mix(a[0],b[0],t)+nx*sgn*.6,z=mix(a[1],b[1],t)+nz*sgn*.6,margin=terrainH(x,z)-(B.baseY+B.lift+B.height*.9);if(margin<worst){worst=margin;at=B.id;}}}
+   for(let i=0;i<=8;i++){const t=i/8,x=mix(a[0],b[0],t)+nx*sgn*.6,z=mix(a[1],b[1],t)+nz*sgn*.6,y=B.baseY+B.lift+B.height*.9,margin=BIO.carve.rockAt(x,y,z)?0:terrainH(x,z)-y;if(margin<worst){worst=margin;at=B.id;}}}
   return{ok:walls.length>0&&worst>=0,detail:walls.length+' carved fronts; least rock above 90% of a front\'s height, 0.6 m behind it: '+worst.toFixed(1)+' m ('+at+')'};},
+ // the alcove dwellings stand under their hoods: every footprint point under the void's
+ // ceiling with half a metre of head room over the building's top, and the back line covered
+ underHood(list){const A=list.filter(B=>B.inAlcove);let worst=1e9,at=null,open=0;
+  for(const B of A){const pts=B.footprint.concat(B.backLine.map(p=>p));const top=B.y1;
+   for(const p of pts){const c=BIO.carve.covered(p[0],p[1]);if(c===null){if(B.backLine.includes(p))open++;continue;}if(c-top<worst){worst=c-top;at=B.id;}}}
+  return{ok:A.length>0&&!open&&worst>=.5,detail:A.length+' alcove dwellings; back corners in the open '+open+'; least head room '+worst.toFixed(1)+' m ('+at+')'};},
+ // each carve patch: the void open at mid height half way in, rock 2 m over its ceiling, nothing rooted under its hood
+ carveOpen(Q){const q=Q.depth*.45,x=Q.c[0]-Q.n[0]*q,z=Q.c[1]-Q.n[1]*q,ym=Q.floorY+Q.h*.45,c=BIO.carve.covered(x,z);
+  const voidOpen=!BIO.carve.rockAt(x,ym,z)&&terrainH(x,z)<ym,hood=c!==null&&BIO.carve.rockAt(x,c+2,z);
+  return{ok:voidOpen&&hood,detail:Q.id+': void at '+ym.toFixed(1)+' m '+(voidOpen?'open':'IN ROCK')+'; 2 m over the ceiling '+(c===null?'no ceiling':hood?'rock':'AIR')};},
+ noHoodFlora(trees){const bad=trees.filter(r=>BIO.carve.covered(r.x,r.z)!==null);
+  return{ok:!bad.length,detail:bad.length?bad.length+' under a hood (first '+bad[0].name+' at '+[bad[0].x|0,bad[0].z|0]+')':trees.length+' plants, none under a hood'};},
+ camerasOutOfRock(cams){const bad=cams.filter(c=>buried(c.x,c.y,c.z,.3));return{ok:!bad.length,detail:bad.length?'in the rock: '+bad.map(c=>c.view).join(', '):cams.length+' cameras in the open'};},
  buildingFamilies(B){const need=['treasury','tomb','stair','ledge','pueblo','cliffpueblo','khan','tent','stall','tower'],missing=need.filter(k=>!B.byFamily||!B.byFamily[k]);
   return{ok:!!B.count&&!missing.length,detail:missing.length?'missing family: '+missing.join(', '):need.map(k=>k+' '+B.byFamily[k]).join(', ')};},
  buildingDoorsReachable(list){const N=LIFE.NAV,start=polyCentre(PLACES.find(p=>p.id==='khan').poly),seen=LIFE.reach(start[0],start[1]),bad=[];
@@ -143,6 +164,7 @@ function shadeChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r));
  add('buildings: footprints inside places',CHK.buildingInside(B.records));
  add('buildings: footprints do not overlap',CHK.buildingOverlap(B.records));
  add('buildings: wall backs meet the cliff',CHK.wallContact(B.records));
+ add('buildings: alcove dwellings under their hoods',CHK.underHood(B.records));
  add('buildings: every family represented',CHK.buildingFamilies(B));
  add('buildings: entrances remain reachable',CHK.buildingDoorsReachable(B.records));
  {const sh=Object.keys(B.rejected||{}).filter(k=>/_short$/.test(k));add('buildings: every plan placed in full',{ok:!sh.length,detail:sh.length?sh.map(k=>k+' '+B.rejected[k]).join(', '):B.count+' buildings ('+Object.keys(B.byFamily).map(k=>k+' '+B.byFamily[k]).join(', ')+'), '+B.drawCalls+' draw calls'});}
@@ -150,6 +172,9 @@ function shadeChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r));
  add('canyon-mouth-open',CHK.canyonOpen());
  {const P=[],m=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3();scene.traverse(o=>{if(!o.isInstancedMesh||!o.userData.biome||o.instanceMatrix.usage===THREE.DynamicDrawUsage)return;for(let i=0;i<o.count;i++){o.getMatrixAt(i,m);m.decompose(p,q,sc);if(Math.abs(p.x)<700&&Math.abs(p.z)<700)P.push([p.x,p.y,p.z]);}});
   add('no-flora-on-cliffs',CHK.noCliffFlora(P,REG.filter(r=>r.cls==='flora'&&r.r<60&&Math.abs(r.x)<700&&Math.abs(r.z)<700)));}
+ for(const Q of BIO.carve.patches)add('carve: '+Q.id+' open under rock',CHK.carveOpen(Q));
+ add('carve: nothing grows under a hood',CHK.noHoodFlora(REG.filter(r=>r.cls==='flora'&&r.r<60)));
+ add('preset-cameras-out-of-the-rock',CHK.camerasOutOfRock(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
  add('preset-cameras-clear-of-trees',CHK.camerasClear(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
  const L=LIFE.OUT;
  add('life: every place reachable',{ok:!L.unreachable.length,detail:L.unreachable.length?'unreachable: '+L.unreachable.join(', '):L.places+' places and '+Object.keys(PORTS).length+' ports reachable from the Khan'});
@@ -166,8 +191,14 @@ function shadeNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,det
  add('lower stream sunk 1 m',CHK.ribbon(worldVerts(WATER.lower).map(v=>[v[0],v[1]-1,v[2]]),WATER.lower.userData.NW,'lower-1'));
  add('a trail straight up the north slope',CHK.grade([[60,SWB.zEdge+2],[60,SWB.zEdge-SWB.W-4]],.15));
  const pe=PLACES.find(p=>p.id==='petra').facade;add('the carved face moved 20 m onto the floor',CHK.sheer({a:[pe.a[0],pe.a[1]-20],b:[pe.b[0],pe.b[1]-20],face:pe.face},'petra-20'));
+ {const F=PLACES.find(p=>p.id==='cliff-nw').facade;add('a cliff run traced 15 m onto the floor',CHK.sheer({pts:F.pts.map(q=>[q[0]+q[2]*15,q[1]+q[3]*15,q[2],q[3]])},'cliff-nw+15'));}
+ {const A=window._buildings.records.find(b=>b.inAlcove);add('an alcove dwelling lifted 12 m into the hood',CHK.underHood([Object.assign({},A,{y1:A.y1+12})]));
+  add('an alcove dwelling pushed out of its alcove',CHK.underHood([Object.assign({},A,{footprint:A.footprint.map(p=>[p[0]+A.face[0]*14,p[1]+A.face[1]*14]),backLine:A.backLine.map(p=>[p[0]+A.face[0]*14,p[1]+A.face[1]*14])})]));}
+ {const Q=BIO.carve.patches[0];add('a carve patch probed 25 m above its floor',CHK.carveOpen(Object.assign({},Q,{floorY:Q.floorY+25})));
+  const x=Q.c[0]-Q.n[0]*Q.depth*.5,z=Q.c[1]-Q.n[1]*Q.depth*.5;add('a tree under an alcove\'s hood',CHK.noHoodFlora([{name:'test tree',x,z,r:3}]));
+  const c=BIO.carve.covered(x,z);add('a camera inside a hood',CHK.camerasOutOfRock([{view:'in-hood',x,y:c+3,z}]));}
  {const F=PLACES.find(p=>p.id==='petra').facade,P=[];for(let i=0;i<=10;i++){const x=mix(F.a[0],F.b[0],i/10),z=F.a[1]+1;P.push([x,terrainH(x,z),z]);}add('plants on the carved face',CHK.noCliffFlora(P));}
- add('a place across the north wall',CHK.flat([[-20,-90],[0,-90],[0,-70],[-20,-70]],'across the wall'));
+ add('a place across the north wall',CHK.flat([[-72,-90],[-60,-90],[-60,-70],[-72,-70]],'across the wall'));
  add('a place across the lower stream',CHK.flat([[-10,-8],[10,-8],[10,8],[-10,8]],'across the stream'));
  add('a shore place with no water',CHK.shore([[-35,-46],[5,-46],[5,-14],[-35,-14]],'the market as a shore'));
  add('a reserved box over planted plateau',CHK.noFlora([[[-600,-150],[-300,-150],[-300,150],[-600,150]]]));

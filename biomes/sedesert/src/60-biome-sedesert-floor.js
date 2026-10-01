@@ -22,7 +22,9 @@ const rodCol=(hex)=>shade(vary(hex,.02,.08,.06),rr(-.45,-.2));
 // the floor's blooms lie flat on the ground, small, one colour per patch
 const blooms=(x,y,z,r,n,set,sz)=>SEDESERT.blooms(x,y,z,r,n,set,sz,{flat:true,tilt:.4,s0:.16,s1:.34});
 // a RING SCATTER: n things round (x,z), the first at the centre, the rest dLo..dHi out (two draws each)
-function around(x,z,n,dLo,dHi,fn){for(let i=0;i<n;i++){const a=rr(0,TAU),d=i?rr(dLo,dHi):0;fn(x+Math.cos(a)*d,z+Math.sin(a)*d,i,a);}}
+// a cluster round a point the mask accepted: each satellite tests the mask itself (a reed
+// clump at a reserved place's edge put its outliers inside the place)
+function around(x,z,n,dLo,dHi,fn){for(let i=0;i<n;i++){const a=rr(0,TAU),d=i?rr(dLo,dHi):0,px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d;if(i&&BIO.mask(px,pz)<=0)continue;fn(px,pz,i,a);}}
 
 // ---------------------------------------------------------------- fields local to the floor
 const echK=(x,z)=>smooth(.5,.64,fbm(x*.0048+3,z*.0048-8,2121,2));      // the tower-of-jewels stands

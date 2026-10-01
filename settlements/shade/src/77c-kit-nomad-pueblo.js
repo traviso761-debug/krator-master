@@ -60,10 +60,10 @@ function buildPuebloCompound({cx=6,cz=6,cell=4,storeys=3,seed=1}={}){
 // (the host sets z = 0 inside the face), each row in front a storey or two
 // lower, so the roofs step down to the floor as terraces. Now and then a back
 // room climbs a storey higher up the face, and a tower stands out in front.
-function buildCliffPueblo({length=12,rows=3,storeys=3,cell=3.6,tower=true,seed=1}={}){
+function buildCliffPueblo({length=12,rows=3,storeys=3,cell=3.6,tower=true,climb=true,seed=1}={}){
  const K=K0(seed),r=K.rnd,cx=Math.max(2,Math.round(length/cell)),cz=Math.max(1,rows),L=cx*cell,D=cz*cell,x0=-L/2;
  const H=[];for(let i=0;i<cx;i++){H.push([]);for(let j=0;j<cz;j++){let h=storeys-Math.round(j*(storeys-1)/Math.max(1,cz-1)*.9)-(r()<.25?1:0);
-  if(j===0&&r()<.3)h+=1;                                   // a room that climbs the face
+  if(j===0&&r()<.3&&climb)h+=1;                           // a room that climbs the face (not under an alcove's ceiling)
   if(j===cz-1&&r()<.3)h=0;                                  // a gap in the front row: a court
   H[i].push(Math.max(j===0?2:0,h));}}
  const at=(i,j)=>i<0||j<0||i>=cx||j>=cz?(j<0?99:0):H[i][j];   // behind the back row is the rock
@@ -93,7 +93,7 @@ function buildCliffPueblo({length=12,rows=3,storeys=3,cell=3.6,tower=true,seed=1
   K.color(null,1);for(let s=0;s<storeys+1;s++)K.block('dark',tx,s*SH+1.2,tz+(round?1.52:1.42),.35,.4,.1);K.block('dark',tx,0,tz+(round?1.55:1.45),.6,1.6,.1);
   cells.push([tx-1.6,tz-1.6,tx+1.6,tz+1.6]);}
  return K.finish({kind:'building',name:'Cliff dwelling (pueblo against the rock)',culture:'eastern-nomad',types:['multi-family dwelling'],
-  footprint:NOMAD.rect(L,D+(tower?3.2:0),true),height:(storeys+1)*SH+.6,family:'cliffpueblo',seed:seed>>>0,cells});}
+  footprint:NOMAD.rect(L,D+(tower?3.2:0),true),height:(storeys+(climb?1:0))*SH+.6,family:'cliffpueblo',seed:seed>>>0,cells});}
 // buildPuebloTower({storeys,round,radius,seed}): a watch tower, round or square, rough stone, a flat roof and parapet
 function buildPuebloTower({storeys=4,round=true,radius=2.6,seed=1}={}){
  const K=K0(seed),r=K.rnd,th=storeys*SH,R=radius;K.color(null,.84);

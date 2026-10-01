@@ -8,12 +8,18 @@ Read before changing anything here. `build.py` prints the open count.
       built before the walkable grid (80), one mesh per material. Checked: inside their
       places, no overlap in plan and height, rock behind every carved front, every
       family and every plan placed, every entrance reachable (the upper row by its stair).
-- [ ] OVERHANGS. The ground is a heightfield (one height per x,z), so there are no alcoves,
-      caves or undercuts: the cliff dwellings stand against the face rather than in an
-      alcove under it. See NOTES.md for what it would take.
-- [ ] The carved fronts stand proud of a heightfield cliff: the niche round the hall and
-      the shrine is geometry (wedge cheeks and a hood), not a recess in the rock, because
-      the ground mesh has no overhangs. Interiors are dark planes, not rooms.
+- [x] OVERHANGS, by carve patches (`36-core-carve`, NOTES.md option 1): three alcoves with
+      dwellings under them, true niches round the hall and the shrine, the undercut behind
+      the falls. Checked: each void open under rock, nothing grows under a hood, the alcove
+      dwellings clear their ceilings, no camera inside rock, the falls clear of the hood.
+- [ ] Overhangs exist only where a patch is declared (a ~30 m box each, ~0.06 M triangles,
+      ~0.8 s to mesh and bake at load); a cave system or an arch anywhere along the rim
+      needs option 2 (a volumetric wall band). The walkable grid is still 2-D: a floor
+      under a hood is walkable, the hood's top is the heightfield's (not walkable over the void).
+- [ ] The world casts no shadows; the patches bake the HOOD's own shadow and occlusion
+      (into the rock, the ground under it and the alcove dwellings' tints), so a cliff's
+      shadow onto the floor beside an alcove is still missing. Shadows are fixed to the sun.
+- [ ] Interiors are dark planes, not rooms (another session has the interiors).
 - [ ] The upper row of house fronts is reached by the rock-cut stairs, but the walkable
       grid is 2-D: the stairs are blocked cells and the upper doors are "reached" through
       the stair's foot. A climbing route is the life layer's job when people walk.
@@ -38,8 +44,9 @@ Read before changing anything here. `build.py` prints the open count.
       is cut in at one end and built out at the other by ~4 m; the cut and fill faces are
       the terrain's steep blend, not retaining walls. Dry-stone retaining walls are
       still absent from this pass.
-- [ ] The sheer faces are 1.25 m mesh cells: vertical enough to carve against, but the
-      ground mesh has no overhangs, so the plunge pool cannot undercut the lip.
+- [ ] The sheer faces are 1.25 m mesh cells: vertical enough to carve against. Where a
+      patch meets them the heightfield's recess runs 2 m behind the void's wall, inside the
+      patch's rock, so no ground triangle spikes into the void.
 - [ ] Vendored from `biomes/sedesert/src` with no local changes (`build.py --vendor-check`).
       The kit's budget note does not apply: Shade grows the biome over a 1.2 km radius,
       not 3.25 km.

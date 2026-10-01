@@ -6,7 +6,9 @@
 const ctl={target:new THREE.Vector3(0,0,0),theta:0,phi:1.1,radius:600};
 function setView(cx,cy,cz,tx,ty,tz){ctl.target.set(tx,ty,tz);const dx=cx-tx,dy=cy-ty,dz=cz-tz;ctl.radius=Math.sqrt(dx*dx+dy*dy+dz*dz);ctl.theta=Math.atan2(dx,dz);ctl.phi=Math.acos(clamp(dy/ctl.radius,-1,1));}
 function applyCam(){const r=ctl.radius,sp=Math.sin(ctl.phi);camera.position.set(ctl.target.x+r*sp*Math.sin(ctl.theta),ctl.target.y+r*Math.cos(ctl.phi),ctl.target.z+r*sp*Math.cos(ctl.theta));
- const g=terrainH(camera.position.x,camera.position.z)+1.7;if(camera.position.y<g)camera.position.y=g;camera.lookAt(ctl.target);}
+ const cp=camera.position,g=terrainH(cp.x,cp.z)+1.7;if(cp.y<g)cp.y=g;
+ if(BIO.carve.rockAt(cp.x,cp.y,cp.z))cp.y=(BIO.carve.topAt(cp.x,cp.z)??cp.y)+1.7;   // inside a hood's rock: out on top of it
+ camera.lookAt(ctl.target);}
 // ---------------------------------------------------------------- the panel
 const INITIAL_VIEW='The market and the Khan';
 const ui=document.getElementById('ui');const sel=document.createElement('select');sel.id='viewsel';for(const k in VIEWS){const o=document.createElement('option');o.textContent=k;sel.appendChild(o);}sel.value=INITIAL_VIEW;sel.onchange=()=>setView(...VIEWS[sel.value]);ui.appendChild(sel);

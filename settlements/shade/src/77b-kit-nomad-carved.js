@@ -12,15 +12,16 @@ const K0=NOMAD.kit,MAT=NOMAD.MAT;
 // a column: base, shaft (slight entasis), a flared capital and its abacus
 function column(K,x,z,y0,h,r){K.color(null,1);K.cyl('stone',x,y0,z,r*1.32,r*1.4,h*.04,12);K.cyl('stone',x,y0+h*.04,z,r*.9,r,h*.82,12);
  K.cyl('stone',x,y0+h*.86,z,r*1.5,r*.95,h*.1,12);K.block('stone',x,y0+h*.96,z,r*3.2,h*.04,r*3.2);}
-function buildTreasury({width=24,height=36,seed=1}={}){
+// niche:false when the host cuts a real niche into the rock (a carve patch): no cheeks, no hood
+function buildTreasury({width=24,height=36,niche=true,seed=1}={}){
  const W=Math.max(10,width),H=Math.max(14,height),u=W/24,K=K0(seed),D=3.4*u;   // D: how far the niche's mouth stands out from its back
  // the niche: the rock bulges round a recess. Cheeks and a hood, wedge-shaped so
  // their outer edges die back into the face (a box would read as a crate).
  const m=2.6*u;
  K.color(null,.94);
- K.prism('stone',[[-W/2,0],[-W/2,D],[-W/2-m,0]],0,H+2.6*u);
- K.prism('stone',[[W/2,0],[W/2+m,0],[W/2,D]],0,H+2.6*u);
- K.extrudeX('stone',[[0,H],[D,H],[D,H+.8*u],[0,H+4.2*u]],-W/2-m*.6,W/2+m*.6);
+ if(niche){K.prism('stone',[[-W/2,0],[-W/2,D],[-W/2-m,0]],0,H+2.6*u);
+  K.prism('stone',[[W/2,0],[W/2+m,0],[W/2,D]],0,H+2.6*u);
+  K.extrudeX('stone',[[0,H],[D,H],[D,H+.8*u],[0,H+4.2*u]],-W/2-m*.6,W/2+m*.6);}
  K.color(null,.8);K.block('stone',0,0,.15,W,H,.3);                              // the niche's back, a shade darker
  // LOWER ORDER: steps, a portico of six columns, entablature, pediment
  const h1=H*.46,cz=D-.9*u,cr=.52*u;
@@ -50,7 +51,7 @@ function buildTreasury({width=24,height=36,seed=1}={}){
   // the broken pediment: each half rises toward the tholos
   const x0=sx<0?px-pw*.54:px+pw*.54,x1=sx<0?px+pw*.2:px-pw*.2;K.pediment('stone',Math.min(x0,x1),Math.max(x0,x1),yt+ht*.7+.7*u,H*.06,cz-1.3*u,cz+.4*u,x1);}
  return K.finish({kind:'building',name:'Rock-cut temple front (the Treasury)',culture:'eastern-nomad',types:['religious','civic'],
-  footprint:NOMAD.rect(W+2*m,D,true),height:H+2.6*u,family:'treasury',seed:seed>>>0});}
+  footprint:NOMAD.rect(niche?W+2*m:W,D,true),height:niche?H+2.6*u:H,family:'treasury',seed:seed>>>0});}
 function buildCrowTomb({width=7,height=10,ledge=false,seed=1}={}){
  const W=Math.max(4,width),H=Math.max(6,height),K=K0(seed),r=K.rnd,dp=.9,sh=.9+r()*.12;
  // the panel, cut a little proud, framed by pilasters

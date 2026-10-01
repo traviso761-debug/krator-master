@@ -11,12 +11,17 @@ respect. Units are metres; **x east, z south, north is −z**; y up. A person is
 | `waterH(x,z)` | the local water surface there, `-1e9` where there is none |
 | `basinD(x,z)`, `wallW(x,z)` | signed distance to the floor's edge (negative on the floor), and the wall face's horizontal width there |
 | `kSouth`, `kLip`, `kSwitch` | 0..1: how much a point is in the carved face, the lip, the switchback slope |
+| `terrainBase(x,z)` | the ground without the carve patches' recesses (a patch's rock top) |
+| `BASIN.r` | each corner's radius `{nw,ne,sw,se}`; `basinD0` is the rounded, bulging floor edge, `basinD` adds the patches' recesses |
+| `CONTOUR`, `footRun(a,b)` | the traced foot of the wall, clockwise `[x,z,nx,nz,s]` (n out of the rock), and a stretch of it |
+| `CLIFF_RUNS` | the cliff-dwelling runs: `{id,a,b,out,rows,tower,path,len}`; each is a 'wall' place whose `facade.pts` is its foot |
+| `ALCOVES`, `BIO.carve.patches` | the alcoves (`run`, `s` along it) and every carve patch; `BIO.carve.covered/topAt/rockAt` for what is over a point |
 | `BASIN`, `POOL`, `TERR`, `LIPX` | the basin's box, the pool `{x,z,r,y,depth}`, the map, the lip's top edge |
 | `zS(x)`, `WLL(x)`; `zU(x)`, `WLU(x)` | the lower and upper streams' centrelines and surfaces |
 | `zC(x)`, `cW(x)` | the canyon's centreline and half-width (x > 100) |
 | `SWB` | the switchback: `pts` `[[x,z,y],...]`, `len`, `grade`, `legs`, `half` (flat half-width 1.6), `bank` (3.5) |
 | `swNear(x,z)` | `{d,y}`: distance to the switchback's centreline and its height there, or null |
-| `PLACES` | every place: `{id,name,kind,poly,activities,capacity,tags,facade?}` |
+| `PLACES` | every place: `{id,name,kind,poly,activities,capacity,tags,facade?}`; a facade is `{a,b,face}` or `{pts:[[x,z,nx,nz],...]}` |
 | `PORTS` | the edges a traveller arrives from or leaves by |
 | `polyHas`, `polyDist`, `polyCentre` | polygon helpers on `[x,z]` lists |
 
@@ -48,7 +53,7 @@ A wall-backed piece has its back plane at z = 0 (the plan sets it 1 m inside the
 
 | Builder | Family | Notes |
 |---|---|---|
-| `buildTreasury({width,height,seed})` | treasury | the Khazneh: two orders, tholos, broken pediment, in a niche of wedge cheeks and a hood |
+| `buildTreasury({width,height,niche,seed})` | treasury | the Khazneh: two orders, tholos, broken pediment; in a niche of wedge cheeks and a hood unless `niche:false` (the host cuts a real one, a carve patch) |
 | `buildCrowTomb({width,height,ledge,seed})` | tomb | a Hegra house front: pilasters, two cornices, crow-steps, a pedimented door |
 | `buildRockStair({run,rise,width,dir,seed})` | stair | steps cut along the face, rising toward +x (dir 1) |
 | `buildLedge({length,depth,seed})` | ledge | the gallery an upper row stands on |
@@ -56,7 +61,7 @@ A wall-backed piece has its back plane at z = 0 (the plan sets it 1 m inside the
 | `buildCaravanserai({w,d,seed})` | khan | walls, towers, a pishtaq gate at +z, arcades, rooms, a well; `userData.ring`, `gate` |
 | `buildBlackTent({w,d,poles,seed})` | tent | goat-hair roof sagging between pole peaks, ropes, a rug and a hearth |
 | `buildMarketStall({w,d,dye,seed})` | stall | four poles, a striped awning, a counter and its goods |
-| `buildCliffPueblo({length,rows,storeys,cell,tower,seed})` | cliffpueblo | rooms against a cliff (back at z = 0), stepping down to the floor; rubble stone and plaster; a tower in front |
+| `buildCliffPueblo({length,rows,storeys,cell,tower,climb,seed})` | cliffpueblo | rooms against a cliff (back at z = 0), stepping down to the floor; rubble stone and plaster; a tower in front; `climb:false` (under an alcove's ceiling) keeps the back rooms from climbing the face |
 | `buildPuebloTower({storeys,round,radius,seed})` | tower | a round or square watch tower |
 
 Materials (`NOMAD.MAT`): `stone` (the host's strata: `NOMAD.useStrata(BIO.strata())`, so a
@@ -64,7 +69,8 @@ carving shows the bed lines of its face; level bands without one), `adobe`, `clo
 `canvas`, `wood`, `dark` (openings). Tints are sRGB hex,
 converted to linear by the collector. Textures tile in metres.
 
-`SHADE_PLAN.plans` (44): `{id,family,placeId,x,z,yaw,lift,group?,access?,params}`;
+`SHADE_PLAN.plans` (44): `{id,family,placeId,x,z,yaw,lift,group?,access?,inAlcove?,inNiche?,params}`
+(a building in an alcove is checked against its ceiling, not the rock behind it, and its tint takes the hood's shadow);
 `SHADE_PLAN.rejected` counts what did not fit (a `*_short` entry fails the probe).
 80 builds every plan before the walkable grid (84) and publishes `BUILDINGS.records`
 (world footprint, the cells the grid blocks, the door, base and lift) and

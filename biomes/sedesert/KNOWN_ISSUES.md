@@ -42,6 +42,16 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Done
 
+- [x] A cluster (`around()` in 60-floor: reeds, grass, stones...) tested the mask at its
+      centre only, so a reed clump at a reserved place's edge put outliers inside it (Shade's
+      canyon watch). Each satellite now tests the mask itself.
+- [x] Carve patches (36-core-carve, `BIO.carve`): alcoves, niches and undercuts on the
+      heightfield, meshed by surface nets with baked occlusion and hood shadow. The ideal
+      host declares none (the cataract's lip is a candidate); Shade uses six.
+- [x] The strata's colour pass: a warmer palette (buff bleached bands, purple-brown shales,
+      rare grey-green reduced beds), colour drifting along each bed, varnish hanging from the
+      bed tops, sand on ledges, an optional bleached cap and dust at a foot.
+
 - [x] The strata are the core's bedded-rock shader (35-core-strata): beds of irregular
       thickness that dip and warp, laminae, cross-bedding and varnish streaks, instead of
       six level 3.4 m bands. Shared with settlements/shade (its ground and its carved stone).

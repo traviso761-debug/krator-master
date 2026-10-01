@@ -20,7 +20,7 @@
 //   THE SWITCHBACK    six legs up the north slope with hairpins: the only way up
 const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,fbm}=BIO.fn;
 const TERR={R:1300,FLOOR:10,GROUND:4200};
-const BASIN={x0:-95,x1:119,z0:-80,z1:80,rc:22};
+const BASIN={x0:-95,x1:119,z0:-80,z1:80,r:{nw:32,ne:26,sw:34,se:38}};   // corner radii: as round as the straight faces allow
 const POOL={x:-83,z:0,r:14,y:9.3,depth:3.8};
 const LIPX=-96.6;                       // the top edge of the sheer west lip; its foot is x -95
 // ---------------------------------------------------------------- the plateau
@@ -35,8 +35,10 @@ function plateauH(x,z){return 59.4+6*fbm(x*.004+3,z*.004-2,17,3)+.8*(fbm(x*.03,z
 // basinD: signed distance to the edge of the floor (negative on the floor). A
 // rounded box for the basin, a half-strip for the canyon, joined by a smooth
 // minimum so the mouth has a fillet instead of a notch.
-function sdBox(x,z){const cx=(BASIN.x0+BASIN.x1)/2,cz=(BASIN.z0+BASIN.z1)/2,hx=(BASIN.x1-BASIN.x0)/2-BASIN.rc,hz=(BASIN.z1-BASIN.z0)/2-BASIN.rc;
- const qx=Math.abs(x-cx)-hx,qz=Math.abs(z-cz)-hz;return Math.hypot(Math.max(qx,0),Math.max(qz,0))+Math.min(Math.max(qx,qz),0)-BASIN.rc;}
+// a box with its own radius at each corner (north is -z)
+function sdBox(x,z){const cx=(BASIN.x0+BASIN.x1)/2,cz=(BASIN.z0+BASIN.z1)/2,hx=(BASIN.x1-BASIN.x0)/2,hz=(BASIN.z1-BASIN.z0)/2,px=x-cx,pz=z-cz;
+ const r=px>0?(pz>0?BASIN.r.se:BASIN.r.ne):(pz>0?BASIN.r.sw:BASIN.r.nw),qx=Math.abs(px)-hx+r,qz=Math.abs(pz)-hz+r;
+ return Math.hypot(Math.max(qx,0),Math.max(qz,0))+Math.min(Math.max(qx,qz),0)-r;}
 function zC(x){return 9*Math.sin(.0065*(x-119))*smooth(119,200,x)+4*Math.sin(.017*x+.5)*smooth(150,260,x);}   // the canyon's centreline
 function cW(x){return 17+4*Math.sin(.011*x+1)+3*Math.sin(.031*x);}                                             // its half-width
 function sdCanyon(x,z){return Math.max(Math.abs(z-zC(x))-cW(x),100-x);}
@@ -44,12 +46,18 @@ function smin(a,b,k){const h=clamp(.5+.5*(b-a)/k,0,1);return mix(b,a,h)-k*h*(1-h
 // the faces: how much of each special wall a point is in (0..1, smooth, so no fins where they meet)
 function kSouth(x,z){return smooth(-72,-60,x)*(1-smooth(0,12,x))*smooth(40,60,z);}              // the carved face
 function kLip(x,z){return smooth(-60,-80,x)*smooth(-52,-40,z)*(1-smooth(20,32,z));}             // the waterfall lip and the shrine
-function kSwitch(x,z){return smooth(16,30,x)*(1-smooth(98,110,x))*smooth(-40,-60,z);}           // the switchback slope
+function kSwitch(x,z){return smooth(10,24,x)*(1-smooth(92,104,x))*smooth(-40,-60,z);}           // the switchback slope
 // the width of the wall face (floor to plateau, horizontally)
 function kRow(x,z){return(1-kSwitch(x,z))*(1-smooth(126,134,x));}                              // the basin's own walls: the cliff dwellings stand against them
 function wallW(x,z){let W=12;W=mix(W,2.5,kRow(x,z));W=mix(W,2,kSouth(x,z));W=mix(W,1.6,kLip(x,z));W=mix(W,64,kSwitch(x,z));return W;}
-function basinD(x,z){const straight=Math.max(kSouth(x,z),kLip(x,z),kSwitch(x,z)),row=kRow(x,z)*(1-straight);
- return smin(sdBox(x,z),sdCanyon(x,z),10)+(fbm(x*.03+7,z*.03-3,41,2)-.5)*7*(1-straight)*(1-row*.86);}   // the faces the dwellings stand against wander no more than half a metre
+// basinD0: the wall without the carve patches. The ordinary walls bulge OUTWARD by up to
+// 7 m on a long wavelength (only outward: no place on the floor is ever cut into), so the
+// depression is not a box; the special faces (the lip, the carved face, the switchback)
+// stay straight. The faces the dwellings stand against wander no more than half a metre.
+function basinD0(x,z){const straight=Math.max(kSouth(x,z),kLip(x,z),kSwitch(x,z)),row=kRow(x,z)*(1-straight);
+ return smin(sdBox(x,z),sdCanyon(x,z),10)-7*fbm(x*.0065+11,z*.0065-5,51,2)*(1-straight)+(fbm(x*.03+7,z*.03-3,41,2)-.5)*7*(1-straight)*(1-row*.86);}
+// basinD: with the carve patches' recesses (alcoves, niches, the undercut) let into the walls
+function basinD(x,z){return Math.min(basinD0(x,z),BIO.carve.recessD(x,z));}
 // ---------------------------------------------------------------- the water
 // the lower stream's surface descends from the pool to the canyon; the floor
 // keeps at least 1.1 m above it so its banks always hide the ribbon's edges
@@ -67,7 +75,7 @@ const STREAM={lowHW:2.0,lowBank:4.5,upHW:1.6,upBank:4.5,bed:.7};
 // the slope's own height is the leg's middle height, so it cuts in at one end
 // and is built out at the other by about half a leg's rise; legs are kept at
 // least SWB.gap apart so the cut of one never reaches the next.
-const SWB={x0:36,x1:90,legs:6,zEdge:BASIN.z0,W:64,half:1.6,bank:3.5,gap:7.4,pts:null,len:0,y0:0,y1:0,grade:0,spacing:[]};
+const SWB={x0:30,x1:84,legs:6,zEdge:BASIN.z0,W:64,half:1.6,bank:3.5,gap:7.4,pts:null,len:0,y0:0,y1:0,grade:0,spacing:[]};
 (function(){const F=TERR.FLOOR,xm=(SWB.x0+SWB.x1)/2,W=SWB.W;
  const P=plateauH(xm,SWB.zEdge-W-6);
  const U=d=>F+(P-F)*(t=>t*t*(3-2*t))(clamp(d/W,0,1));              // the slope's height d metres in
@@ -106,9 +114,11 @@ function swNear(x,z){const L=SWB.bucket.get(SWB.key(Math.floor(x/SWB.cell),Math.
  return{d:bd,y:by};}
 // ---------------------------------------------------------------- terrain
 const _tm={x:NaN,z:NaN,h:0};
-function terrainH(x,z){if(x===_tm.x&&z===_tm.z)return _tm.h;const h=terrainH0(x,z);_tm.x=x;_tm.z=z;_tm.h=h;return h;}
-function terrainH0(x,z){
- const d=basinD(x,z);let h;
+function terrainH(x,z){if(x===_tm.x&&z===_tm.z)return _tm.h;const h=terrainH0(x,z,true);_tm.x=x;_tm.z=z;_tm.h=h;return h;}
+// the ground as it would be without the carve patches: their rock is rebuilt from this
+function terrainBase(x,z){return terrainH0(x,z,false);}
+function terrainH0(x,z,carved){
+ const d=carved?basinD(x,z):basinD0(x,z);let h;
  if(d<=0)h=floorH(x,z);
  else{const P=plateauH(x,z),W=wallW(x,z);if(d>=W)h=P;else{const F=floorH(x,z),t=d/W;h=F+(P-F)*t*t*(3-2*t);}}
  // the switchback: a flat trail 3.2 m wide, cut in or built out to its own height
@@ -132,9 +142,9 @@ function waterH(x,z){const dp=Math.hypot(x-POOL.x,z-POOL.z);if(dp<POOL.r+3&&x>BA
 // water), 'plateau' (up top). Polygons are [x,z]; capacity is people present.
 // Activities are the life layer's (84); a place offers them, a job asks for them.
 const PLACES=[
- {id:'shrine',name:'Shrine of the Deep Aquifer',kind:'wall',poly:[[-97,-42],[-80,-42],[-80,-24],[-97,-24]],
+ {id:'shrine',name:'Shrine of the Deep Aquifer',kind:'wall',poly:[[-100,-42],[-80,-42],[-80,-24],[-100,-24]],
   facade:{a:[-95,-40],b:[-95,-26],face:[1,0]},activities:['WORSHIP','SLEEP'],capacity:120,tags:{culture:'eastern-nomad',types:['religious']}},
- {id:'petra',name:'The carved dwellings (Petra face)',kind:'wall',poly:[[-58,66],[-2,66],[-2,82],[-58,82]],
+ {id:'petra',name:'The carved dwellings (Petra face)',kind:'wall',poly:[[-58,66],[-2,66],[-2,86],[-58,86]],
   facade:{a:[-58,80],b:[-2,80],face:[0,-1]},activities:['SLEEP','EAT','CRAFT','SOCIALIZE','REST','PLAY'],capacity:260,tags:{culture:'eastern-nomad',types:['multi-family dwelling']}},
  {id:'pool_shore',name:'The pool shore (watering place)',kind:'shore',poly:[[-72,-12],[-58,-12],[-58,12],[-72,12]],
   activities:['WATER_CAMELS','FETCH_WATER','PLAY'],capacity:60,tags:{types:['infrastructure']}},
@@ -144,7 +154,7 @@ const PLACES=[
   activities:['TRADE','SOCIALIZE','PLAY'],capacity:160,tags:{culture:'eastern-nomad',types:['market/shop']}},
  {id:'khan',name:'The Khan (caravanserai)',kind:'ground',poly:[[8,18],[52,18],[52,58],[8,58]],
   activities:['TRADE','SLEEP','EAT','SOCIALIZE','REST'],capacity:180,tags:{culture:'eastern-nomad',types:['tavern/inn','market/shop']}},
- {id:'pueblo',name:'The pueblo quarter',kind:'ground',poly:[[58,14],[108,14],[108,66],[58,66]],
+ {id:'pueblo',name:'The pueblo quarter',kind:'ground',poly:[[58,14],[100,14],[100,60],[58,60]],
   activities:['SLEEP','EAT','CRAFT','SOCIALIZE','REST','PLAY'],capacity:480,tags:{culture:'eastern-nomad',types:['multi-family dwelling']}},
  {id:'tents',name:'The tent grounds',kind:'ground',poly:[[40,-62],[104,-62],[104,-24],[40,-24]],
   activities:['SLEEP','EAT','REST','HERD','SOCIALIZE','PLAY'],capacity:220,tags:{culture:'eastern-nomad',types:['single-family dwelling']}},
@@ -159,18 +169,55 @@ const PLACES=[
  {id:'grazing',name:'The plateau grazing',kind:'plateau',poly:[[-40,-262],[80,-262],[80,-192],[-40,-192]],
   activities:['HERD'],capacity:120,tags:{types:['farm']},grows:true},
 ];
-// the cliff dwellings' runs: the foot of each sheer wall the pueblos stand against.
-// Each is a 'wall' place, reserved from 3 m inside the face to `out` metres onto the floor;
-// its facade line is the foot, its face the outward normal.
+// ---------------------------------------------------------------- the foot of the wall, traced
+// The nominal rounded box walked clockwise from above (north edge west to east,
+// the NE arc, east edge north to south, ...) every metre, each point pushed along
+// its inward normal to where basinD0 crosses zero: the foot as it actually runs,
+// bulges and all. n points from the rock toward the floor.
+const CONTOUR=(function(){const B=BASIN,r=B.r,pts=[];
+ const seg=(ax,az,bx,bz)=>{const L=Math.hypot(bx-ax,bz-az),n=Math.max(1,Math.round(L));for(let k=0;k<n;k++)pts.push([ax+(bx-ax)*k/n,az+(bz-az)*k/n]);};
+ const arc=(cx,cz,rad,a0,a1)=>{const n=Math.max(2,Math.round(Math.abs(a1-a0)*rad));for(let k=0;k<n;k++){const a=a0+(a1-a0)*k/n;pts.push([cx+Math.cos(a)*rad,cz+Math.sin(a)*rad]);}};
+ seg(B.x0+r.nw,B.z0,B.x1-r.ne,B.z0);arc(B.x1-r.ne,B.z0+r.ne,r.ne,-Math.PI/2,0);
+ seg(B.x1,B.z0+r.ne,B.x1,B.z1-r.se);arc(B.x1-r.se,B.z1-r.se,r.se,0,Math.PI/2);
+ seg(B.x1-r.se,B.z1,B.x0+r.sw,B.z1);arc(B.x0+r.sw,B.z1-r.sw,r.sw,Math.PI/2,Math.PI);
+ seg(B.x0,B.z1-r.sw,B.x0,B.z0+r.nw);arc(B.x0+r.nw,B.z0+r.nw,r.nw,Math.PI,Math.PI*1.5);
+ const N=pts.length,out=[];
+ for(let i=0;i<N;i++){const a=pts[(i+N-1)%N],b=pts[(i+1)%N],tx=b[0]-a[0],tz=b[1]-a[1],tl=Math.hypot(tx,tz),nx=-tz/tl,nz=tx/tl;   // clockwise: (-tz,tx) points inward
+  const p=pts[i];let lo=-14,hi=14;for(let k=0;k<30;k++){const m=(lo+hi)/2;if(basinD0(p[0]+nx*m,p[1]+nz*m)>0)lo=m;else hi=m;}
+  out.push([p[0]+nx*hi,p[1]+nz*hi,nx,nz]);}
+ let s=0;out[0].push(0);for(let i=1;i<N;i++){s+=Math.hypot(out[i][0]-out[i-1][0],out[i][1]-out[i-1][1]);out[i].push(s);}
+ return out;})();
+// the stretch of the traced foot from the sample nearest `a` forward to the one nearest `b`
+function footRun(a,b){const near=p=>{let bi=0,bd=1e9;CONTOUR.forEach((q,i)=>{const d=Math.hypot(q[0]-p[0],q[1]-p[1]);if(d<bd){bd=d;bi=i;}});return bi;};
+ const i0=near(a),i1=near(b),N=CONTOUR.length,o=[];for(let i=i0;;i=(i+1)%N){o.push(CONTOUR[i]);if(i===i1)break;}
+ let s=0;return o.map((q,k)=>{if(k)s+=Math.hypot(q[0]-o[k-1][0],q[1]-o[k-1][1]);return[q[0],q[1],q[2],q[3],s];});}
+// the cliff dwellings' runs along the foot: 'wall' places reserved from 3 m inside the face
+// to `out` metres onto the floor; the facade is the traced foot itself (its points and normals)
 const CLIFF_RUNS=[
- {id:'cliff-w',name:'The west cliff dwellings',a:[BASIN.x0,30],b:[BASIN.x0,56],n:[1,0],out:16,rows:3,tower:true,capacity:90},
- {id:'cliff-n',name:'The north cliff dwellings',a:[-71,BASIN.z0],b:[10,BASIN.z0],n:[0,1],out:16,rows:3,tower:true,capacity:220},
- {id:'cliff-s',name:'The south cliff dwellings',a:[95,BASIN.z1],b:[4,BASIN.z1],n:[0,-1],out:13,rows:2,tower:true,capacity:240},
- {id:'cliff-es',name:'The east cliff dwellings, south',a:[BASIN.x1,56],b:[BASIN.x1,34],n:[-1,0],out:10,rows:2,tower:false,capacity:80},
- {id:'cliff-en',name:'The east cliff dwellings, north',a:[BASIN.x1,-34],b:[BASIN.x1,-56],n:[-1,0],out:10,rows:2,tower:false,capacity:80}];
-for(const C of CLIFF_RUNS){const n=C.n,a=C.a,b=C.b,P=(p,k)=>[p[0]+n[0]*k,p[1]+n[1]*k];
- PLACES.push({id:C.id,name:C.name,kind:'wall',poly:[P(a,-3),P(b,-3),P(b,C.out),P(a,C.out)],facade:{a,b,face:n.slice()},
+ {id:'cliff-nw',name:'The north-west cliff dwellings',a:[BASIN.x0,-56],b:[8,BASIN.z0],out:16,rows:3,tower:true,capacity:300},
+ {id:'cliff-en',name:'The east cliff dwellings',a:[BASIN.x1,-50],b:[BASIN.x1,-34],out:10,rows:2,tower:false,capacity:60},
+ {id:'cliff-se',name:'The south-east cliff dwellings',a:[BASIN.x1,34],b:[4,BASIN.z1],out:10,rows:2,tower:true,capacity:300},
+ {id:'cliff-sw',name:'The south-west cliff dwellings',a:[-66,BASIN.z1],b:[BASIN.x0,28],out:12,rows:2,tower:true,capacity:140}];
+for(const C of CLIFF_RUNS){C.path=footRun(C.a,C.b);C.len=C.path[C.path.length-1][4];
+ const inner=C.path.map(q=>[q[0]-q[2]*3,q[1]-q[3]*3]),outer=C.path.map(q=>[q[0]+q[2]*C.out,q[1]+q[3]*C.out]).reverse();
+ const fac=C.path.filter((q,k)=>k%4===0);
+ PLACES.push({id:C.id,name:C.name,kind:'wall',poly:inner.concat(outer),facade:{pts:fac.map(q=>[q[0],q[1],q[2],q[3]])},
   activities:['SLEEP','EAT','CRAFT','SOCIALIZE','REST','PLAY'],capacity:C.capacity,tags:{culture:'eastern-nomad',types:['multi-family dwelling']}});}
+// ---------------------------------------------------------------- the carve patches (overhangs; BIO.carve, 36-core-carve)
+// Three Mesa Verde alcoves in the cliff-dwelling walls, a niche round the hall in the
+// carved face and round the shrine, and the undercut behind the falls. Each is let
+// into the heightfield (basinD) and its rock put back above the void (45 meshes them).
+const ALCOVES=[];
+(function(){const at=(run,x,z)=>{const R0=CLIFF_RUNS.find(c=>c.id===run);let b=null,bd=1e9;for(const q of R0.path){const d=Math.hypot(q[0]-x,q[1]-z);if(d<bd){bd=d;b=q;}}return b;};
+ for(const [id,run,x,z] of [['alcove-n1','cliff-nw',-38,BASIN.z0],['alcove-n2','cliff-nw',-8,BASIN.z0],['alcove-s1','cliff-se',34,BASIN.z1]]){const q=at(run,x,z);
+  ALCOVES.push(BIO.carve.add({id,name:'An alcove in the cliff ('+id+')',kind:'alcove',run,s:q[4],c:[q[0],q[1]],n:[q[2],q[3]],hw:12,depth:10,h:19,floorY:TERR.FLOOR-.4,base:terrainBase}));}
+ // a run's place reaches back into its alcoves (3 m behind the alcove's back wall)
+ for(const C of CLIFF_RUNS){const As=ALCOVES.filter(A=>A.run===C.id);if(!As.length)continue;
+  const dIn=q=>3+As.reduce((m,A)=>{const t=(q[4]-A.s)/(A.hw+1.5);return Math.abs(t)<1?Math.max(m,A.depth*Math.sqrt(1-t*t)):m;},0);
+  PLACES.find(p=>p.id===C.id).poly=C.path.map(q=>[q[0]-q[2]*dIn(q),q[1]-q[3]*dIn(q)]).concat(C.path.map(q=>[q[0]+q[2]*C.out,q[1]+q[3]*C.out]).reverse());}
+ BIO.carve.add({id:'niche-hall',name:'The niche of the hall',kind:'niche',c:[-30,BASIN.z1],n:[0,-1],hw:10.5,depth:4.2,h:33,floorY:TERR.FLOOR-.4,base:terrainBase});
+ BIO.carve.add({id:'niche-shrine',name:'The niche of the shrine',kind:'niche',c:[BASIN.x0,-33],n:[1,0],hw:6.5,depth:3.4,h:25,floorY:TERR.FLOOR-.4,base:terrainBase});
+ BIO.carve.add({id:'undercut-falls',name:'The undercut behind the falls',kind:'undercut',c:[BASIN.x0,0],n:[1,0],hw:9,depth:6.5,h:13,floorY:POOL.y-POOL.depth-.4,base:terrainBase});})();
 // the edges of the settlement a traveller arrives from or leaves by (the life layer's ports)
 const PORTS={canyon_east:{x:440,z:zC(440),name:'The canyon, east'},plateau_north:{x:40,z:-270,name:'The plateau, north'}};
 function polyHas(poly,x,z){let a=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const xi=poly[i][0],zi=poly[i][1],xj=poly[j][0],zj=poly[j][1];
@@ -200,7 +247,7 @@ const SHADE_PLAN=(function(){
  // ---- the carved face (south wall): the hall in the middle, a house front each side at the
  //      foot, a rock-cut stair at each end up to a gallery, and a row of house fronts on it
  const FZ=BASIN.z1+1,LIFT=12,N=Math.PI;
- add({id:'hall',family:'treasury',placeId:'petra',x:-30,z:FZ,yaw:N,params:{width:18,height:30}});
+ add({id:'hall',family:'treasury',placeId:'petra',x:-30,z:BASIN.z1+4.0,yaw:N,inNiche:'niche-hall',params:{width:18,height:30,niche:false}});
  add({id:'house-w0',family:'tomb',placeId:'petra',x:-44,z:FZ,yaw:N,params:{width:5,height:8.5}});
  add({id:'house-e0',family:'tomb',placeId:'petra',x:-16,z:FZ,yaw:N,params:{width:5,height:8.5}});
  // under yaw PI the builder's +x is the world's -x: dir 1 rises westward
@@ -211,9 +258,9 @@ const SHADE_PLAN=(function(){
  for(const [id,x,g,w] of [['house-w1',-53.5,'petra-w',5.2],['house-w2',-47.5,'petra-w',5.2],['house-e1',-5.3,'petra-e',4.8],['house-e2',-10.6,'petra-e',4.8],['house-e3',-15.9,'petra-e',4.8]])
   add({id,family:'tomb',placeId:'petra',x,z:FZ,yaw:N,lift:LIFT,group:g,access:g==='petra-w'?'stair-w':'stair-e',params:{width:w,height:7.6}});
  // ---- the shrine: a smaller temple front in the lip beside the falls, facing east
- add({id:'shrine',family:'treasury',placeId:'shrine',x:BASIN.x0-1,z:-33,yaw:Math.PI/2,params:{width:12,height:22}});
+ add({id:'shrine',family:'treasury',placeId:'shrine',x:BASIN.x0-3.2,z:-33,yaw:Math.PI/2,inNiche:'niche-shrine',params:{width:12,height:22,niche:false}});
  // ---- the pueblo quarter: four U compounds, the north pair opening north, the south pair south
- for(const [id,x,z,cx,cz,st,yaw] of [['pueblo-nw',70,26,6,6,3,N],['pueblo-ne',96.5,27,5,5,2,N],['pueblo-sw',70.5,54,5,6,3,0],['pueblo-se',96,54,6,5,3,0]])
+ for(const [id,x,z,cx,cz,st,yaw] of [['pueblo-nw',70,26,6,6,3,N],['pueblo-ne',91.5,27,4,5,2,N],['pueblo-sw',70.5,50,5,5,3,0],['pueblo-se',91.5,50,4,5,3,0]])
   add({id,family:'pueblo',placeId:'pueblo',x,z,yaw,params:{cx,cz,cell:4,storeys:st}});
  // ---- the Khan, its gate toward the market and the stream
  add({id:'khan',family:'khan',placeId:'khan',x:30,z:37.5,yaw:N,params:{w:38,d:32}});
@@ -230,17 +277,29 @@ const SHADE_PLAN=(function(){
  {const pl=place('market').poly,taken=[];let n=0;
   for(const [zr,yaw] of [[-37,0],[-23,N]])for(let x=-31;x<=2;x+=4.7){const w=rr(3.2,4),d=rr(2.4,3),xx=x+rr(-.4,.4),zz=zr+rr(-.5,.5),yy=yaw+rr(-.08,.08),pts=rectAt(xx,zz,w+.4,d+.8,yy);
    if(!inside(pl,pts)||!clearOf(pts,taken,.5)){rejected.stall=(rejected.stall||0)+1;continue;}taken.push(pts);n++;add({id:'stall-'+n,family:'stall',placeId:'market',x:xx,z:zz,yaw:yy,params:{w,d}});}}
- // ---- the cliff dwellings: along each run, blocks of 9-16 m with gaps, each turned to the
- //      foot as it actually runs (found by bisection on basinD) and set 0.6 m into the rock
- const footAt=(p,n)=>{let lo=-6,hi=6;for(let k=0;k<28;k++){const m=(lo+hi)/2;if(basinD(p[0]+n[0]*m,p[1]+n[1]*m)>0)lo=m;else hi=m;}return[p[0]+n[0]*hi,p[1]+n[1]*hi];};
- for(const C of CLIFF_RUNS){const a=C.a,b=C.b,L=Math.hypot(b[0]-a[0],b[1]-a[1]),t=[(b[0]-a[0])/L,(b[1]-a[1])/L];let s0=rr(.5,2.5),k=0;
-  while(s0<L-8){const len=Math.min(rr(9,16),L-s0-.5);if(len<8)break;
-   const A=footAt([a[0]+t[0]*s0,a[1]+t[1]*s0],C.n),B=footAt([a[0]+t[0]*(s0+len),a[1]+t[1]*(s0+len)],C.n);
-   const ex=B[0]-A[0],ez=B[1]-A[1],el=Math.hypot(ex,ez);let nx=-ez/el,nz=ex/el;if(nx*C.n[0]+nz*C.n[1]<0){nx=-nx;nz=-nz;}
-   const back=.6+.5*Math.abs(((A[0]-B[0])*C.n[0]+(A[1]-B[1])*C.n[1]));
-   const rows=C.rows===3&&R()<.65?3:2,storeys=rows===3?(R()<.5?4:3):3;
-   add({id:C.id+'-'+(++k),family:'cliffpueblo',placeId:C.id,x:(A[0]+B[0])/2-nx*back,z:(A[1]+B[1])/2-nz*back,yaw:Math.atan2(nx,nz),params:{length:el,rows,storeys,cell:3.6,tower:C.tower}});
+ // ---- the cliff dwellings: along each traced run, blocks of 9-16 m with gaps. A block's
+ //      back is the chord between its two foot points, pushed into the rock until every
+ //      foot point between them is in front of it (the sagitta of a curved wall), +0.6 m.
+ const runAt=(C,sv)=>{const p=C.path;let k=1;while(k<p.length-1&&p[k][4]<sv)k++;const a=p[k-1],b=p[k],t=clamp((sv-a[4])/((b[4]-a[4])||1),0,1);return[mix(a[0],b[0],t),mix(a[1],b[1],t),a[2],a[3]];};
+ const runTaken=[];
+ for(const C of CLIFF_RUNS){const holes=ALCOVES.filter(A=>A.run===C.id).map(A=>[A.s-A.hw-2.5,A.s+A.hw+2.5]);let s0=rr(.5,2.5),k=0;
+  while(s0<C.len-8){const len=Math.min(rr(9,16),C.len-s0-.5);if(len<8)break;
+   const hit=holes.find(h=>s0<h[1]&&s0+len>h[0]);if(hit){s0=hit[1]+rr(.5,2);continue;}
+   const A=runAt(C,s0),B=runAt(C,s0+len),ex=B[0]-A[0],ez=B[1]-A[1],el=Math.hypot(ex,ez);let nx=-ez/el,nz=ex/el;if(nx*A[2]+nz*A[3]<0){nx=-nx;nz=-nz;}
+   let mf=0;for(const q of C.path){if(q[4]<s0||q[4]>s0+len)continue;mf=Math.min(mf,(q[0]-A[0])*nx+(q[1]-A[1])*nz);}
+   const back=.6-mf,rows=C.rows===3&&R()<.65?3:2,storeys=rows===3?(R()<.5?4:3):3,Lr=Math.max(2,Math.floor(el/3.6))*3.6;
+   // the block's footprint as 80 will place it (back at the origin, rooms toward the floor): clear of the last one
+   const ox=(A[0]+B[0])/2-nx*back,oz=(A[1]+B[1])/2-nz*back,D=rows*3.6+(C.tower?3.2:0),tx=nz,tz=-nx;
+   const foot=[[-Lr/2,0],[Lr/2,0],[Lr/2,D],[-Lr/2,D]].map(p=>[ox+tx*p[0]+nx*p[1],oz+tz*p[0]+nz*p[1]]);
+   if(!clearOf(foot,runTaken,.8)){s0+=1;rejected.cliff_crowded=(rejected.cliff_crowded||0)+1;continue;}
+   if(!inside(place(C.id).poly,foot)){s0+=1;rejected.cliff_outside=(rejected.cliff_outside||0)+1;continue;}
+   runTaken.push(foot);
+   add({id:C.id+'-'+(++k),family:'cliffpueblo',placeId:C.id,x:ox,z:oz,yaw:Math.atan2(nx,nz),params:{length:Lr,rows,storeys,cell:3.6,tower:C.tower}});
    s0+=len+rr(1.5,4);}}
+ // ---- in each alcove: a block of two rows, three storeys, its back against the alcove's
+ //      curved back wall at the chord that fits (no room climbs: the ceiling is above)
+ for(const A of ALCOVES){const L=Math.floor(A.hw*1.44/3.6)*3.6,qb=A.depth*Math.sqrt(1-(L/2/A.hw)**2)-.25,nx=A.n[0],nz=A.n[1];
+  add({id:A.id+'-dwelling',family:'cliffpueblo',placeId:A.run,x:A.c[0]-nx*qb,z:A.c[1]-nz*qb,yaw:Math.atan2(nx,nz),inAlcove:A.id,params:{length:L,rows:2,storeys:3,cell:3.6,tower:false,climb:false}});}
  add({id:'gatehouse',family:'tower',placeId:'switchback_gate',x:36,z:-168,yaw:0,params:{storeys:5,round:true,radius:3.2}});
  add({id:'canyon-watch',family:'tower',placeId:'canyon_watch',x:120,z:-11.5,yaw:0,params:{storeys:3,round:false,radius:1.9}});
  return{plans:P,rejected};})();
