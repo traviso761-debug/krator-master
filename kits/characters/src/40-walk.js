@@ -1,10 +1,13 @@
 /* ============================== pose, walk cycle, scene =====================
-   The walk is a procedural function of phase. It is sampled into a
-   THREE.AnimationClip so the same character plays through AnimationMixer
-   exactly as a glTF import would, and the clip can be exported.
+   Two sources of animation on the same skeleton:
+   1. Procedural poses (walkPose, idlePose): functions of phase, written in a
+      "hanging arms" convention and converted to the T-pose bone frames by
+      applyPose. Sampled into AnimationClips by bakeClip.
+   2. A Mixamo clip (20-mixamo-walk.js): local quaternions copied straight onto
+      the bones, because both rigs share Mixamo's rest convention.
 */
 var WALK = { freq: 1.05, thigh: 0.36, knee: 0.8, arm: 0.3, bob: 0.025, sway: 0.03, twist: 0.12 };
-var POSE = {};   /* name -> {rx,ry,rz, px,py,pz} rest-relative */
+var POSE = {};   /* name -> {rx,ry,rz, px,py,pz} rest-relative, arms in the hanging convention */
 
 function setRot(name, x, y, z){ POSE[name] = POSE[name] || {}; POSE[name].rx = x; POSE[name].ry = y; POSE[name].rz = z; }
 function setPos(name, x, y, z){ POSE[name] = POSE[name] || {}; POSE[name].px = x; POSE[name].py = y; POSE[name].pz = z; }
@@ -12,53 +15,66 @@ function setPos(name, x, y, z){ POSE[name] = POSE[name] || {}; POSE[name].px = x
 /* the standing pose every other pose is added to */
 function restPose(){
   BONE_DEFS.forEach(function(d){ setRot(d.name, 0, 0, 0); setPos(d.name, 0, 0, 0); });
-  [1, -1].forEach(function(s){ var S = s > 0 ? 'L' : 'R';
-    setRot('upperArm' + S, 0.05, 0, s * 0.16);
-    setRot('forearm' + S, -0.18, 0, s * -0.05);
-    setRot('hand' + S, 0, s * -0.35, 0);
-    setRot('thigh' + S, 0, 0, s * 0.06);
-    setRot('shin' + S, 0.06, 0, 0);
-    setRot('foot' + S, -0.05, s * 0.12, s * -0.04);
+  [1, -1].forEach(function(s){
+    setRot(B(s, 'Arm'), 0.05, 0, s * 0.16);
+    setRot(B(s, 'ForeArm'), -0.18, 0, s * -0.05);
+    setRot(B(s, 'Hand'), 0, s * -0.35, 0);
+    setRot(B(s, 'UpLeg'), 0, 0, s * 0.06);
+    setRot(B(s, 'Leg'), 0.06, 0, 0);
+    setRot(B(s, 'Foot'), -0.05, s * 0.12, s * -0.04);
   });
-  setRot('chest', -0.04, 0, 0); setRot('head', 0.06, 0, 0);
+  setRot('mixamorigSpine2', -0.04, 0, 0); setRot('mixamorigHead', 0.06, 0, 0);
 }
 
 /* u in [0,1): one full cycle, left heel strike at u=0.25 */
 function walkPose(u){
   restPose();
   var ph = u * Math.PI * 2, W = WALK;
-  setPos('hips', W.sway * Math.sin(ph), W.bob * Math.cos(2 * ph) - 0.015, 0);
-  setRot('hips', 0.04, W.twist * Math.sin(ph), 0.05 * Math.sin(ph));
-  setRot('spine', 0.02, -0.05 * Math.sin(ph), -0.03 * Math.sin(ph));
-  setRot('chest', -0.06, -W.twist * 0.9 * Math.sin(ph), -0.03 * Math.sin(ph));
-  setRot('neck', 0.02, 0.05 * Math.sin(ph), 0);
-  setRot('head', 0.08 - 0.02 * Math.cos(2 * ph), 0.03 * Math.sin(ph), 0.02 * Math.sin(ph));
-  [1, -1].forEach(function(s){ var S = s > 0 ? 'L' : 'R', lp = ph + (s > 0 ? 0 : Math.PI);
+  setPos('mixamorigHips', W.sway * Math.sin(ph), W.bob * Math.cos(2 * ph) - 0.015, 0);
+  setRot('mixamorigHips', 0.04, W.twist * Math.sin(ph), 0.05 * Math.sin(ph));
+  setRot('mixamorigSpine', 0.02, -0.05 * Math.sin(ph), -0.03 * Math.sin(ph));
+  setRot('mixamorigSpine2', -0.06, -W.twist * 0.9 * Math.sin(ph), -0.03 * Math.sin(ph));
+  setRot('mixamorigNeck', 0.02, 0.05 * Math.sin(ph), 0);
+  setRot('mixamorigHead', 0.08 - 0.02 * Math.cos(2 * ph), 0.03 * Math.sin(ph), 0.02 * Math.sin(ph));
+  [1, -1].forEach(function(s){ var lp = ph + (s > 0 ? 0 : Math.PI);
     var thigh = -W.thigh * Math.sin(lp);
     var knee = 0.08 + W.knee * Math.max(0, Math.cos(lp + 0.6)) + 0.15 * Math.max(0, Math.sin(lp - 2.2));
-    setRot('thigh' + S, thigh, 0, s * 0.07);
-    setRot('shin' + S, knee, 0, 0);
+    setRot(B(s, 'UpLeg'), thigh, 0, s * 0.07);
+    setRot(B(s, 'Leg'), knee, 0, 0);
     /* keep the sole roughly level in stance, toe off behind */
     var toe = 0.5 * Math.max(0, Math.sin(lp + 2.0)) * Math.max(0, -Math.sin(lp));
-    setRot('foot' + S, -(thigh + knee) * 0.55 + toe, s * 0.12, s * -0.04);
+    setRot(B(s, 'Foot'), -(thigh + knee) * 0.55 + toe, s * 0.12, s * -0.04);
     var arm = W.arm * Math.sin(lp);
-    setRot('upperArm' + S, 0.05 + arm, 0, s * (0.16 + 0.03 * Math.cos(lp)));
-    setRot('forearm' + S, -0.22 - 0.18 * Math.max(0, arm), 0, s * -0.05);
-    setRot('hand' + S, 0, s * -0.35, 0);
+    setRot(B(s, 'Arm'), 0.05 + arm, 0, s * (0.16 + 0.03 * Math.cos(lp)));
+    setRot(B(s, 'ForeArm'), -0.22 - 0.18 * Math.max(0, arm), 0, s * -0.05);
+    setRot(B(s, 'Hand'), 0, s * -0.35, 0);
   });
 }
 function idlePose(u){
   restPose();
   var ph = u * Math.PI * 2;
-  setPos('hips', 0, 0.006 * Math.sin(ph), 0);
-  setRot('chest', -0.04 + 0.025 * Math.sin(ph), 0, 0);
-  setRot('head', 0.06 + 0.015 * Math.sin(ph + 1), 0, 0);
-  [1, -1].forEach(function(s){ var S = s > 0 ? 'L' : 'R';
-    setRot('upperArm' + S, 0.05, 0, s * (0.16 + 0.025 * Math.sin(ph))); });
+  setPos('mixamorigHips', 0, 0.006 * Math.sin(ph), 0);
+  setRot('mixamorigSpine2', -0.04 + 0.025 * Math.sin(ph), 0, 0);
+  setRot('mixamorigHead', 0.06 + 0.015 * Math.sin(ph + 1), 0, 0);
+  [1, -1].forEach(function(s){ setRot(B(s, 'Arm'), 0.05, 0, s * (0.16 + 0.025 * Math.sin(ph))); });
+}
+/* The procedural poses describe the arms as if they hung down (the old A-pose
+   convention); the bones rest in a T-pose. q_hang turns a T-pose upper arm into
+   a hanging one: the upper arm gets R_old * q_hang, and each child frame is the
+   old frame conjugated by q_hang. Everything else maps 1:1. */
+var _qHang = {}, _qHangInv = {}, _qTmp, _eTmp;
+function hangQuats(){
+  if(_qTmp) return;
+  _qTmp = new THREE.Quaternion(); _eTmp = new THREE.Euler();
+  [1, -1].forEach(function(s){ _qHang[s] = new THREE.Quaternion().setFromAxisAngle(V3(0, 0, 1), -s * Math.PI / 2); _qHangInv[s] = _qHang[s].clone().invert(); });
 }
 function applyPose(){
+  hangQuats();
   for(var n in POSE){ var p = POSE[n], b = BONES[n]; if(!b) continue;
-    b.rotation.set(p.rx || 0, p.ry || 0, p.rz || 0);
+    b.quaternion.setFromEuler(_eTmp.set(p.rx || 0, p.ry || 0, p.rz || 0));
+    var s = /Left/.test(n) ? 1 : -1;
+    if(/Left(Arm)$|Right(Arm)$/.test(n)) b.quaternion.multiply(_qHang[s]);
+    else if(/ForeArm$|Hand$/.test(n)) b.quaternion.premultiply(_qHangInv[s]).multiply(_qHang[s]);
     b.position.copy(b.userData.rest).add(V3(p.px || 0, p.py || 0, p.pz || 0)); }
 }
 /* sample a pose function into an AnimationClip */
@@ -72,9 +88,25 @@ function bakeClip(name, fn, duration, frames){
   var tracks = [];
   BONE_DEFS.forEach(function(d){
     tracks.push(new THREE.QuaternionKeyframeTrack(d.name + '.quaternion', times, q[d.name]));
-    if(d.name === 'hips') tracks.push(new THREE.VectorKeyframeTrack(d.name + '.position', times, pos[d.name]));
+    if(d.name === 'mixamorigHips') tracks.push(new THREE.VectorKeyframeTrack(d.name + '.position', times, pos[d.name]));
   });
   return new THREE.AnimationClip(name, duration, tracks);
+}
+/* A Mixamo clip (see 20-mixamo-walk.js) straight onto the bones. Rotations copy
+   as they are; the hips translation is re-based on this rig's hip height. */
+function mixamoClip(data, name){
+  var tracks = [], n = data.frames, times = [], i;
+  for(i = 0; i <= n; i++) times.push(i / data.fps);
+  var scale = data.unitScale * (BONES.mixamorigHips.userData.rest.y / data.hipHeight);
+  for(var bone in data.bones){
+    if(!BONES[bone]) continue;
+    var rec = data.bones[bone];
+    if(rec.q){ var q = rec.q.slice(); q.push(q[0], q[1], q[2], q[3]); tracks.push(new THREE.QuaternionKeyframeTrack(bone + '.quaternion', times, q)); }
+    if(rec.p){ var p = [], rest = BONES[bone].userData.rest;
+      for(i = 0; i <= n; i++){ var k = (i % n) * 3; p.push(rest.x + (rec.p[k] - data.hipsRest[0]) * scale, rest.y + (rec.p[k + 1] - data.hipsRest[1]) * scale, rest.z + (rec.p[k + 2] - data.hipsRest[2]) * scale); }
+      tracks.push(new THREE.VectorKeyframeTrack(bone + '.position', times, p)); }
+  }
+  return new THREE.AnimationClip(name, n / data.fps, tracks);
 }
 
 /* ============================== scene and loop ============================== */
@@ -120,23 +152,28 @@ function CHAR_MAIN(){
   mesh.bind(new THREE.Skeleton(bones));
   scene.add(rig);
   /* axes in the hands */
-  [1, -1].forEach(function(s){ var S = s > 0 ? 'L' : 'R', axe = buildAxe(s < 0);
-    axe.position.set(0, -0.08, 0.01); axe.rotation.set(-0.35, 0, s * -0.65); BONES['hand' + S].add(axe); });
+  hangQuats();
+  [1, -1].forEach(function(s){ var axe = buildAxe(s < 0);
+    /* placement was authored with the arm hanging: grip 8 cm below the wrist, shaft tilted in and forward */
+    axe.position.set(0, -0.08, 0.01).applyQuaternion(_qHangInv[s]);
+    axe.quaternion.setFromEuler(new THREE.Euler(-0.35, 0, s * -0.65)).premultiply(_qHangInv[s]);
+    BONES[B(s, 'Hand')].add(axe); });
   var skel = new THREE.SkeletonHelper(mesh); skel.visible = false; scene.add(skel);
 
   /* clips through the mixer: this is the path a game would use */
-  var clips = { walk: bakeClip('walk', walkPose, 1 / WALK.freq, 32), idle: bakeClip('idle', idlePose, 3.2, 24) };
+  var clips = { walk: bakeClip('walk', walkPose, 1 / WALK.freq, 32), idle: bakeClip('idle', idlePose, 3.2, 24), mixamo: mixamoClip(MIXAMO_WALK, 'mixamo walk') };
   var mixer = new THREE.AnimationMixer(mesh), actions = {};
   for(var k in clips){ actions[k] = mixer.clipAction(clips[k]); }
   var current = null;
-  function play(name){ var a = actions[name]; if(current === a) return; a.reset().setEffectiveWeight(1).fadeIn(0.3).play(); if(current) current.fadeOut(0.3); current = a; ui.walk.classList.toggle('on', name === 'walk'); ui.idle.classList.toggle('on', name === 'idle'); }
+  function play(name){ var a = actions[name]; if(current === a) return; a.reset().setEffectiveWeight(1).fadeIn(0.3).play(); if(current) current.fadeOut(0.3); current = a; for(var k in actions) if(ui[k]) ui[k].classList.toggle('on', k === name); }
   /* step length from the thigh swing; the ground scrolls at that speed */
   var legLen = 0.96, stepLen = 2 * legLen * Math.sin(WALK.thigh), walkSpeed = stepLen * 2 * WALK.freq;
 
   var state = { turntable: false, wire: false, dist: 0 };
   var ui = {}, uiBox = document.getElementById('ui');
   function button(key, label, fn){ var b = document.createElement('button'); b.textContent = label; b.onclick = fn; uiBox.appendChild(b); ui[key] = b; return b; }
-  button('walk', 'Walk', function(){ play('walk'); });
+  button('walk', 'Walk (procedural)', function(){ play('walk'); });
+  button('mixamo', 'Walk (Mixamo)', function(){ play('mixamo'); });
   button('idle', 'Idle', function(){ play('idle'); });
   button('turn', 'Turntable', function(){ state.turntable = !state.turntable; ui.turn.classList.toggle('on', state.turntable); });
   button('bones', 'Bones', function(){ skel.visible = !skel.visible; ui.bones.classList.toggle('on', skel.visible); });
@@ -159,12 +196,12 @@ function CHAR_MAIN(){
     var dt = Math.min(clock.getDelta(), 0.1);
     if(!CHAR.frozen){
       mixer.update(dt);
-      if(current === actions.walk){ state.dist += walkSpeed * dt; gtex.offset.y = (state.dist / 1.0) % 1; }
+      if(current === actions.walk || current === actions.mixamo){ state.dist += walkSpeed * dt; gtex.offset.y = (state.dist / 1.0) % 1; }
       if(state.turntable) rig.rotation.y += dt * 0.5;
     }
     renderer.render(scene, camera);
     frames++; fpsT += dt; if(fpsT > 0.5){ fps = Math.round(frames / fpsT); frames = 0; fpsT = 0; }
-    hud.textContent = 'tris ' + Math.round(geo.userData.tris) + ' body + ' + axeTris + ' axes\nbones ' + bones.length + '  draw calls ' + renderer.info.render.calls + '\n' + fps + ' fps  clip ' + (current === actions.walk ? 'walk' : 'idle') + ' ' + (1 / WALK.freq).toFixed(2) + 's';
+    hud.textContent = 'tris ' + Math.round(geo.userData.tris) + ' body + ' + axeTris + ' axes\nbones ' + bones.length + '  draw calls ' + renderer.info.render.calls + '\n' + fps + ' fps  clip ' + (current ? current.getClip().name + ' ' + current.getClip().duration.toFixed(2) + 's' : '-');
   }
   var axeTris = 0; rig.traverse(function(o){ if(o.isMesh && !o.isSkinnedMesh){ var a = o.geometry.attributes.position; axeTris += (o.geometry.index ? o.geometry.index.count : a.count) / 3; } }); axeTris = Math.round(axeTris);
   play('walk');

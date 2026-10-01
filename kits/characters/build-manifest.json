@@ -1,8 +1,9 @@
 {
  "00-head.html": "5cacefc61ffb9088e8e299f74c8b960ecccc149c",
  "10-core.js": "0895cd1902d62bd8702535a7d9d867587e3c551d",
- "30-barbarian.js": "4d801c2277b6197ab4332b65e7d6065ae53c615d",
- "40-walk.js": "563ec80238047102a8ffb6c409ada9e20044b8fb",
+ "20-mixamo-walk.js": "725e9bd0eedcdbca49d50837262171ddf498f23f",
+ "30-barbarian.js": "9ee8e2e6d752d7ded91a820138fa2349f2777db7",
+ "40-walk.js": "9e24d4065be03aa67092846bea7c98ff99681899",
  "99-tail.html": "7a7605b5f0a4ff1965cbbb49687581ccc223e5fb",
- "dist/barbarian.html": "f0b2f430a39bc5de515c0c75aeb3ce1832c935f8"
+ "dist/barbarian.html": "0ff5a384842699f006a1bc11b002012294fd017a"
 }

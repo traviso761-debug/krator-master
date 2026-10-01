@@ -17,6 +17,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 |---|---|---|
 | `00-head.html` | 2 |  |
 | `10-core.js` | 10 | core: scene, helpers, skinning (1) |
-| `30-barbarian.js` | 9 | the barbarian (1) |
-| `40-walk.js` | 12 | pose, walk cycle, scene (1); scene and loop (80) |
+| `20-mixamo-walk.js` | 18 | Mixamo clip: walk (1) |
+| `30-barbarian.js` | 10 | the barbarian (1) |
+| `40-walk.js` | 14 | pose, walk cycle, scene (1); scene and loop (112) |
 | `99-tail.html` | <1 |  |

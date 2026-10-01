@@ -1,6 +1,6 @@
 // Headless screenshots of dist/barbarian.html with the repo's three.min.js.
 //   node shots.js [outdir]
-// Writes: front.png side.png back.png face.png idle.png bones.png, walk-NN.png (16 frames)
+// Writes: front side back face idle bones tpose mixamo-side mixamo-front .png, walk-NN / mixamo-NN .png (16 frames each)
 const http = require('http'), fs = require('fs'), path = require('path');
 const { chromium } = require('playwright');
 const HERE = __dirname, OUT = process.argv[2] || path.join(HERE, 'shots');
@@ -31,6 +31,10 @@ fs.mkdirSync(OUT, { recursive: true });
   await pg.evaluate('CHAR.mesh.material.wireframe=false; CHAR.scene.children.forEach(o=>{if(o.isSkeletonHelper)o.visible=false})');
   const N = 16;
   for (let i = 0; i < N; i++) await shot('walk-' + String(i).padStart(2, '0'), `CHAR.view(0.6,0.1,5.6); CHAR.setPhase("walk",${i / N})`);
+  for (let i = 0; i < N; i++) await shot('mixamo-' + String(i).padStart(2, '0'), `CHAR.view(0.6,0.1,5.6); CHAR.setPhase("mixamo",${i / N})`);
+  await shot('mixamo-side', 'CHAR.view(Math.PI/2,0.08,5.6); CHAR.setPhase("mixamo",0.3)');
+  await shot('mixamo-front', 'CHAR.view(0.3,0.12,5.6); CHAR.setPhase("mixamo",0.3)');
+  await shot('tpose', 'CHAR.view(0.3,0.12,6.5); CHAR.mixer.stopAllAction(); CHAR.bones.mixamorigHips.traverse(b=>{if(b.isBone){b.quaternion.identity();b.position.copy(b.userData.rest)}}); CHAR.renderer.render(CHAR.scene,CHAR.camera)');
   await b.close(); srv.close();
   console.log('wrote', OUT);
 })().catch(e => { console.error(e); process.exit(1); });
