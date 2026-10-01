@@ -32,6 +32,37 @@ scale Krator map for rough placement, not in this repo.
 A new kit starts on the shared core: list the core in `CORE_BIOME` in its `build.py`
 (`core/biome/`, `core/README.md`) rather than copying a core into its `src/`.
 
+## The terrain and the fields: the scale model (Travis, Oct 2026)
+
+The world's terrain comes from the **Krator Scale Model** artifact's heightmap
+(https://claude.ai/artifact/N76KxfMXL5C7hfRGHKJK5q, version 4.9), with a couple of polishing
+passes before it goes to Godot. What the artifact holds, as PNG rasters on one grid
+(`fullW` x `fullH` = 1549 x 1393 at 2 km a pixel: 3,098 x 2,786 km):
+
+- `h`: elevation, 16 bits (R,G) from -2,600 to +17,100 m, plus a water flag (B); `wl` water level;
+- `z`: zones (basin, highland, outer rim, arctic, lake/sea, salt basin);
+- `p`: rain (mm/yr); `tm`/`th`/`tl`/`tw`/`tc`: temperatures; `wd`: wind power;
+- `c`: climate class, Köppen plus Krator's own (X abyssal above 1.9 atm, H hyperalpine
+  below 0.6 atm), with the class table (code, name, colour, group) in the page;
+- a `regions` collection in its database: named polygons drawn on the map. The 35 there now
+  are cultural and political (Inner Crater, Empire of Iziz, The Rift, Vale of Xanadu...); a
+  biome region could be a second kind of the same thing.
+
+What follows for the kits:
+
+- **The fields come from the rasters.** `wet` from rain, `cold` from temperature and
+  altitude, `salt` from the salt-basin zone, `upland` from elevation, and the Köppen weights
+  from `c` (blurred where Travis blurs them). One world, one set of fields, read by every kit.
+- **Scale.** A kit's showcase covers about 6 km: three pixels of the model. The polishing
+  passes have to make, procedurally, the landforms the kits plant on today (mesas, canyons,
+  ridges, river beds at 10 to 30 m), and every kit's demo host is a reference for what its
+  region's ground looks like close up.
+- **The flora cannot be baked for the whole map.** At a showcase's density (~10k instances a
+  km²) the continent is about 10^11 instances. Godot will have to grow the flora tile by
+  tile at run time from the same rules, so the generators must stay deterministic per cell
+  and driven by data (species tables, zone thresholds) to be portable, and what the three.js
+  kits export becomes the reference a Godot generator is tested against, tile for tile.
+
 ## Two kinds of border
 
 - **Gradual (an ecotone).** Most borders. Both kits plant across a band a few hundred
