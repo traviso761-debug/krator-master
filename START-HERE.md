@@ -157,7 +157,8 @@ so next time you only need to start Krator and click the bookmark.
 **System**, and make sure **Use graphics acceleration when available** is **on**. If you had to switch it on, click
 **Relaunch**.
 
-**Use the bar at the top of every Krator world** (at the bottom on a phone):
+**Use the Krator bar in every world.** It sits at the top centre, or wherever that world's own buttons leave room
+(often the bottom):
 
 - **Scenes** opens a list of every Krator world; click one to go there. The World Menagerie is at the end of the list.
 - **LOD** sets the level of detail (see below).
@@ -168,8 +169,8 @@ so next time you only need to start Krator and click the bookmark.
 | Level | What it does |
 |---|---|
 | **high** | the world exactly as made: the sharpest picture, the most work for the computer |
-| **medium** | a slightly softer picture and simpler shadows; tiny far-away objects are skipped |
-| **low** | a softer picture, no shadows, fewer small objects, and a steady 30 frames a second: for older or smaller computers, phones and tablets |
+| **medium** | simpler shadows, and a slightly softer picture on very sharp screens |
+| **low** | a softer picture, no shadows, no edge smoothing, and a steady 30 frames a second: for older or smaller computers, phones and tablets |
 
 The page reloads with the new level, and that browser remembers your choice for that world. The biggest landscapes
 start at **medium**. If a world is slow, jerky, or makes Chrome close the tab, try **low**. (The World Menagerie's

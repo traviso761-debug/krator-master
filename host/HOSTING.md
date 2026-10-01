@@ -218,7 +218,8 @@ Everything is set in `host/krator.toml`. After an edit, run `sync`, then restart
 
 ## The Krator bar and level of detail (Krator worlds only)
 
-Every Krator world on this site gets a bar at the top centre (at the bottom on a phone-width screen):
+Every Krator world on this site gets a bar: at the top centre, or the first of bottom centre, top right, bottom left
+and bottom right that the world's own controls leave free (checked again on resize and as a world adds controls):
 
 - **Scenes**: every Krator world, grouped as on the gallery, the current one marked; then the links in `extra` in
   `host/lod.toml` (the World Menagerie and the gallery). Escape closes it.
@@ -239,7 +240,7 @@ Clicks on the bar never reach the world underneath. The World Menagerie's pages 
 | `antialias` | `false` turns edge smoothing off |
 | `shadows` | `false` turns shadow maps off |
 | `shadowMax` | largest shadow map, in pixels |
-| `cullPx` | skip drawing anything smaller than this many pixels on screen (0: never) |
+| `cullPx` | skip drawing anything smaller than this many pixels on screen (0: never). Not used by the shipped levels: most worlds build a structure from many small meshes, so it takes buildings apart |
 | `fps` | most frames drawn per second (0: no cap) |
 
 Levels can be added or renamed freely; the LOD menu lists them in the file's order. How it works:

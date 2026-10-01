@@ -22,7 +22,8 @@ extra = [
 #   antialias   false turns edge smoothing off
 #   shadows     false turns shadows off
 #   shadowMax   largest shadow map, in pixels (smaller = softer, cheaper shadows)
-#   cullPx      hide anything smaller than this many pixels on screen (0 = never)
+#   cullPx      hide anything smaller than this many pixels on screen (0 = never). Use with care: most worlds build
+#               a structure from many small meshes, so this takes buildings apart (windows, trim, small houses)
 #   fps         most frames drawn per second (0 = no cap); lower keeps a weak GPU cool and responsive
 
 [levels.high]          # exactly as built: nothing is changed
@@ -30,13 +31,11 @@ extra = [
 [levels.medium]
 pixelRatio = 1
 shadowMax = 1024
-cullPx = 2
 
 [levels.low]
 pixelRatio = 0.75
 antialias = false
 shadows = false
-cullPx = 4
 fps = 30
 
 # ---- each world's starting level, by its name in the gallery (the file name under /worlds/) ----
