@@ -73,7 +73,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `76-locus-anim.js` | 9 | 20L. LOCUS — animated machinery (1) |
 | `80-camera.js` | 11 | 25. CAMERA, CONTROLS, FRAME LOOP (1); RENDER LOOP (149) |
 | `81-glow.js` | 5 | 26. NIGHT GLOW (1) |
-| `82-daynight.js` | 5 | 27. DAY / NIGHT (1) |
+| `82-daynight.js` | 6 | 27. DAY / NIGHT (1) |
 | `83-locus-fauna.js` | 12 | 19F. AMBIENT FAUNA — LOCUS (1) |
 | `84-life.js` | 43 **big** | 20. THE LIFE LAYER — LOCUS (1) |
 | `85-probe.js` | 1 | 29. PROBE (1) |
