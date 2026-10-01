@@ -453,6 +453,7 @@ PLOTS.forEach(function(p){
   var Lz=(Math.abs(f.fx)>0.5?p.w:p.d)/2, Lx=(Math.abs(f.fx)>0.5?p.d:p.w)/2, gp=LP(f,0,Lz), v=p.id%4;
   function gapFn(px,pz){ return Math.hypot(px-gp[0],pz-gp[1]) < 2.2; }
   var hx=p.w/2, hz=p.d/2, fcol=TIMBERC[p.id%4], fh = p.kind==='pen' ? 1.5 : 0.95;
+  gfAt(p, 'girder.plot.'+p.id, f, y, 0.4);
   if(p.kind==='pen' || p.kind==='garden' || p.kind==='orchard' || p.id%3!==0){
     fence(p.x-hx,p.z-hz,p.x+hx,p.z-hz,y,fh,fcol,gapFn); fence(p.x+hx,p.z-hz,p.x+hx,p.z+hz,y,fh,fcol,gapFn);
     fence(p.x+hx,p.z+hz,p.x-hx,p.z+hz,y,fh,fcol,gapFn); fence(p.x-hx,p.z+hz,p.x-hx,p.z-hz,y,fh,fcol,gapFn);
@@ -469,7 +470,7 @@ PLOTS.forEach(function(p){
       else { fmBox('leafy',f,X,0,y+0.12,0.95,0.2,len-0.3,CROPC[3],true); for(var t3=-len/2+0.8; t3<len/2; t3+=1.7){ var q3=LP(f,X+rr(-0.3,0.3),t3); pod(q3[0],y+0.3,q3[1],rr(0.2,0.32),FRUITC[Math.round(t3+lx)&1?0:2]); } }
     });
     /* a tool lean-to / scarecrow at the back */
-    var sc=LP(f,rr(-Lx+2,Lx-2),-Lz+1.2); BOX(sc[0],y,sc[1],0.1,2.0,0.1,0,TIMBERC[1],'timber'); BOX(sc[0],y+1.35,sc[1],1.3,0.08,0.08,f.ry,TIMBERC[1],'timber'); BOX(sc[0],y+0.8,sc[1],0.7,0.75,0.05,f.ry,pick(CLOTHC),'cloth'); PYR(sc[0],y+1.95,sc[1],0.7,0.35,0.7,0,THATCHC[0],'thatch');
+    var scx=rr(-Lx+2,Lx-2), scc=CLOTHC.indexOf(pick(CLOTHC)); FURNISH('br_h_scarecrow', scx, 0, -Lz+1.2, 0, { seed:scc+1 });
   } else if(p.kind==='paddy'){
     var bw=0.7; [[0,-Lz+bw/2,2*Lx,bw],[0,Lz-bw/2,2*Lx,bw],[-Lx+bw/2,0,bw,2*Lz],[Lx-bw/2,0,bw,2*Lz]].forEach(function(b){ fBOX(f,b[0],b[1],y-0.1,b[2],0.45,b[3],soilC(p.id),'rock'); });
     fBOX(f,0,0,y-0.1,2*Lx-bw,0.24,2*Lz-bw,shade(PAL.riverShallow,-0.12),'rock');
@@ -482,8 +483,8 @@ PLOTS.forEach(function(p){
       ROD(q5[0],y-0.1,q5[1],q5[0]+rr(-0.2,0.2),y+th+0.6,q5[1]+rr(-0.2,0.2),0.17,PAL.bark[3][1],'timber');
       bush(q5[0],y+th,q5[1],cr,cr*1.35,lc); bush(q5[0]+rr(-0.8,0.8),y+th+cr*0.5,q5[1]+rr(-0.8,0.8),cr*0.6,cr*0.9,shade(lc,0.1));
       for(var pd=0;pd<5;pd++){ var pa=pd*1.3+ox; pod(q5[0]+Math.cos(pa)*cr*0.8,y+th+0.2+rr(0,0.5),q5[1]+Math.sin(pa)*cr*0.8,0.2,(v===2?FLOWERC:FRUITC)[pd%3]); } }
-    var bk=LP(f,1.8,Lz-2.5); CYL(bk[0],y,bk[1],0.45,0.5,0,CRATEC[0],'timber'); pod(bk[0],y+0.5,bk[1],0.22,FRUITC[0]);
-    var ld=LP(f,-Lx+3,0.8); BEAM(ld[0],y,ld[1],ld[0]+0.5,y+3.0,ld[1]+0.4,0.5,0.06,TIMBERC[3],'timber');
+    FURNISH('br_common_store', 1.8, 0, Lz-2.5, 0);                    /* the pickers' gourds and baskets */
+    FURNISH('br_h_wall_ladder', -Lx+3, 0, 0.8, 0, { v:2 });           /* a picking ladder */
   } else if(p.kind==='garden'){
     for(var bx=-1; bx<=1; bx+=2) for(var bz=-1.5; bz<=1.5; bz+=1){ var cx2=bx*(Lx*0.5+0.6), cz2=bz*(Lz-2.2)/1.5, bwid=Lx-3.6;
       fBOX(f,cx2,cz2,y,bwid,0.42,2.0,PLANKC[(p.id+Math.round(bz+2))%4],'plank'); fmBox('leafy',f,cx2,cz2,y+0.4,bwid-0.25,0.08,1.75,soilC(p.id+1),true);
@@ -503,10 +504,10 @@ PLOTS.forEach(function(p){
     dQuad('thatch',L3(f,-sw/2-0.6,y+1.6,-Lz+0.6),L3(f,sw/2+0.6,y+1.6,-Lz+0.6),L3(f,sw/2+0.6,y+2.7,-Lz+5.0),L3(f,-sw/2-0.6,y+2.7,-Lz+5.0),pick(THATCHC));
     fmBox('thatch',f,0,-Lz+2.6,y+0.05,sw-1,0.12,3.0,shade(THATCHC[3],-0.1),true);
     /* feed trough, leaf-litter heaps, a wallow, a post rubbed smooth */
-    fBOX(f,Lx-2.0,1.0,y,0.8,0.55,4.2,PLANKC[3],'plank'); fmBox('leafy',f,Lx-2.0,1.0,y+0.5,0.6,0.12,4.0,UNDERC[p.id%5],true);
+    FURNISH('br_h_trough', Lx-2.0, 0, 1.0, Math.PI/2, { v:2 });        /* the feed trough, its front to the pen */
     for(var lh=0; lh<4; lh++){ var q7=LP(f,rr(-Lx+2.5,Lx-4),rr(-Lz+6,Lz-2.5)); if(Math.abs(q7[0]-p.x)<1.5&&Math.abs(q7[1]-p.z)<1.5) continue; mCone('leafy',q7[0],y,q7[1],rr(0.9,1.5),0.2,rr(0.4,0.8),shade(PAL.litter[lh%3],0.05),7,lh); }
     fBOX(f,-Lx+4,Lz-4,y-0.08,4.2,0.2,3.2,shade(PAL.riverDeep,0.1),'rock');
-    var rp=LP(f,-3.2,2.4); CYL(rp[0],y,rp[1],0.28,1.9,0,TIMBERC[3],'timber');
+    FURNISH('br_h_hitching_rail', -3.2, 0, 2.4, 0, { v:1 });           /* the tether post */
   }
   ARCH.plots++;
   REGISTER({ name:PLOT_LABEL[p.kind]+' '+(p.id+1), kind:'plot', label:PLOT_LABEL[p.kind]+' — farm plot', x:p.x, z:p.z, y:y-0.2, h:p.kind==='orchard'?6:3, r:Math.max(p.w,p.d)*0.52 });
@@ -515,6 +516,7 @@ PLOTS.forEach(function(p){
 /* ------------------------------------------------------------------ THE ASSEMBLY HALL: round, colonnaded, a steep three-tier tajug roof */
 (function(){
   var P=platFrame(HALL.x,HALL.z,0), y=SETTLE_Y, R=HALL.R, red=ORNATEC[0], gilt=ORNATEC[1], verd=ORNATEC[2], deep=ORNATEC[3];
+  gfAt(HALL, 'girder.hall', null, y, 0.65);
   var doors=HALL.doors.map(function(d){ return Math.atan2(d.z-HALL.z,d.x-HALL.x); }), rw=12.4, fy=y+0.5, wh=5.4, SEG=32;
   function pt(r,a,yy){ return [HALL.x+Math.cos(a)*r, yy, HALL.z+Math.sin(a)*r]; }
   function nearDoor(a,m){ for(var i=0;i<doors.length;i++) if(angDist(a,doors[i])<m) return true; return false; }
@@ -522,11 +524,15 @@ PLOTS.forEach(function(p){
   SECTOR('rock',P,0,R+0.55,0,TAU,y-0.1,y+0.25,shade(ROCKC[1],-0.05),{faces:'to',step:3});
   SECTOR('rock',P,0,R,0,TAU,y+0.25,fy,ROCKC[2],{faces:'to',step:3});
   SECTOR('plank',P,0,rw-0.1,0,TAU,fy,fy+0.06,PLANKC[1],{faces:'t',step:4});
+  gwDisc(HALL.x,HALL.z,R+0.55,y+0.25,y-0.1,'floor'); gwDisc(HALL.x,HALL.z,R,fy,y+0.25,'floor'); gwDisc(HALL.x,HALL.z,rw-0.1,fy+0.06,fy,'floor');
+  HALL.shell = { y:y, fy:fy+0.06, rw:rw, wh:wh, doors:doors.slice(), fixtures:[] };
   /* wall ring between the four doors, lintel panels over them */
   var dg=1.45/rw, wc=WALLC[2];
   var ds=doors.slice().sort(function(a,b){ return wrapPi(a)-wrapPi(b); }).map(wrapPi);
   ds.forEach(function(a,i){ var b=i<ds.length-1?ds[i+1]:ds[0]+TAU;
     SECTOR('wall',P,rw-0.3,rw,a+dg,b-dg,fy,fy+wh,wc,{faces:'ios',step:2.2,colInner:shade(wc,-0.25)});
+    for(var ws=0, wn=Math.ceil((b-a-2*dg)*rw/1.2); ws<wn; ws++){ var wa0=mix(a+dg,b-dg,ws/wn), wa1=mix(a+dg,b-dg,(ws+1)/wn), wp0=pt(rw-0.15,wa0,0), wp1=pt(rw-0.15,wa1,0);
+      gwSeg(wp0[0],wp0[2],wp1[0],wp1[2],0.34,fy,fy+wh,'wall'); }
     SECTOR('timber',P,rw-0.34,rw+0.06,a+dg,b-dg,fy,fy+0.55,deep,{faces:'tio',step:2.2});
     SECTOR('timber',P,rw-0.34,rw+0.06,a+dg,b-dg,fy+3.3,fy+3.55,red,{faces:'tbio',step:2.2});
     SECTOR('wall',P,rw-0.3,rw,a-dg,a+dg,fy+3.3,fy+wh,shade(wc,-0.1),{faces:'bio',step:2.2});
@@ -537,11 +543,10 @@ PLOTS.forEach(function(p){
     /* door posts, leaves standing open, banners, braziers */
     [-1,1].forEach(function(sd){
       var pp=pt(rw+0.05,a+sd*dg,fy); carvedPost(pp[0],fy,pp[2],3.3,0.36,red,gilt);
-      var lf=pt(rw+0.75,a+sd*(dg+0.02),fy); BOX(lf[0],fy,lf[2],1.4,3.0,0.1,-a,deep,'plank');
-      var bn=pt(R-0.55,a+sd*3.0/R,fy); BOX(bn[0],fy,bn[2],0.16,6.2,0.16,0,red,'timber'); BOX(bn[0],fy+6.0,bn[2],0.12,0.12,1.3,-a,gilt,'timber');
-      var bc=pt(R-0.5,a+sd*3.0/R,0); BOX(bc[0],fy+1.6,bc[2],0.05,4.3,1.0,-a,(i%2)?deep:CLOTHC[3],'cloth');
-      var bz=pt(R+2.0,a+sd*2.7/R,y); CYL(bz[0],y,bz[2],0.16,1.2,0,TIMBERC[0],'timber'); CYL(bz[0],y+1.2,bz[2],0.6,0.38,0,shade(ROCKC[3],-0.3),'timber');
-      BOX(bz[0],y+1.5,bz[2],0.72,0.36,0.72,0.6,PAL.glowWarm,'glowmat'); nlLampAdd(bz[0],y+2.0,bz[2],1.3,20,false); ARCH.lamps++;
+      var lf=pt(rw+0.75,a+sd*(dg+0.02),fy); BOX(lf[0],fy,lf[2],1.4,3.0,0.1,-a,deep,'plank'); gwBox(lf[0],fy,lf[2],1.4,3.0,0.1,-a,'door');
+      /* a banner pole either side of the door and a brazier on a post below the plinth: catalog pieces */
+      var bn=pt(R-0.55,a+sd*3.0/R,fy), ba=a+sd*3.0/R; FURNISHW('br_h_banner_pole', bn[0], fy, bn[2], Math.atan2(Math.cos(ba),Math.sin(ba)), { v:0, seed:(i%2)+1 });
+      var bz=pt(R+2.0,a+sd*2.7/R,y); nlLampAdd(bz[0],y+2.0,bz[2],1.3,20,false); ARCH.lamps++; FURNISHW('br_h_post_brazier', bz[0], y, bz[2], 0, { noLight:true });
     });
   });
   /* colonnade: carved posts under the great eave, a ring beam, a low rail between them */
@@ -570,9 +575,12 @@ PLOTS.forEach(function(p){
   BOX(HALL.x,yy+2.0,HALL.z,1.3,0.12,0.12,0,gilt,'timber'); BOX(HALL.x,yy+2.0,HALL.z,0.12,0.12,1.3,0,gilt,'timber'); BOX(HALL.x,yy+2.9,HALL.z,0.7,0.1,0.1,0.78,gilt,'timber');
   /* beast-head finials thrust out from the great eave over each door */
   doors.forEach(function(a){ var p=pt(t1b-0.2,a,fy+4.9); finial(p,Math.cos(a),Math.sin(a),1.9,gilt); });
-  /* inside: a ring of benches, the speaker's hearth */
-  SECTOR('plank',P,8.6,9.4,0,TAU,fy+0.06,fy+0.5,PLANKC[2],{faces:'tio',step:3}); SECTOR('plank',P,10.2,11.0,0,TAU,fy+0.06,fy+0.85,PLANKC[3],{faces:'tio',step:3});
-  CYL(HALL.x,fy,HALL.z,1.5,0.4,0,ROCKC[3],'timber'); BOX(HALL.x,fy+0.4,HALL.z,1.3,0.2,1.3,0.5,PAL.glowWarm,'glowmat'); nlLampAdd(HALL.x,fy+2,HALL.z,1.4,22,false); ARCH.lamps+=2;
+  /* inside: the two-tier ring of benches (twelve catalog arcs, an aisle at each door) and the speaker's hearth.
+     They are the hall's own seating: the interiors keep clear of them (fixtures) and furnish the rest */
+  for(var rq=0; rq<4; rq++) for(var rk=-1; rk<=1; rk++){ var ra=Math.PI/4+rq*Math.PI/2+rk*0.449, rx=9.7*Math.cos(ra), rz=9.7*Math.sin(ra), rry=Math.atan2(-Math.cos(ra),-Math.sin(ra));
+    FURNISH('br_h_ring_bench', rx, fy+0.06-y, rz, rry); HALL.shell.fixtures.push({ id:'bench'+rq+'_'+(rk+1), kind:'bench', x:rx, z:rz, ry:rry, w:4.8, d:2.62, h:0.85, reach:false }); }
+  nlLampAdd(HALL.x,fy+2,HALL.z,1.4,22,false); ARCH.lamps+=2; FURNISH('br_h_speakers_hearth', 0, fy+0.06-y, 0, 0, { noLight:true });
+  HALL.shell.fixtures.push({ id:'hearth', kind:'hearth', x:0, z:0, ry:0, w:3.0, d:3.0, h:0.6, reach:false });
   ARCH.hall=+(yy+3.8-y).toFixed(1);
   REGISTER({ name:'The Assembly Hall', kind:'hall', label:'Assembly hall — where the riders meet', x:HALL.x, z:HALL.z, y:y, h:yy+4-y, r:t1b+0.5 });
 })();
@@ -581,15 +589,17 @@ PLOTS.forEach(function(p){
 var STALL_GOODS = ['Fruit-seller','Tack & harness','Potter','Weaver','Herbalist','Fletcher','Dried meats','Rope & cord'];
 STALLS.forEach(function(s,i){
   var L=Math.hypot(s.x-HALL.x,s.z-HALL.z)||1, f=FRM(s.x,s.z,-(s.x-HALL.x)/L,-(s.z-HALL.z)/L), y=s.y, tc=TIMBERC[i%4];
-  [[-1.6,-1.1,2.9],[1.6,-1.1,2.9],[-1.6,1.1,2.35],[1.6,1.1,2.35]].forEach(function(c){ fBOX(f,c[0],c[1],y,0.14,c[2],0.14,tc,'timber'); });
+  gfAt(s, 'girder.stall.'+i, f, y, 0.5);
+  [[-1.6,-1.1,2.9],[1.6,-1.1,2.9],[-1.6,1.1,2.35],[1.6,1.1,2.35]].forEach(function(c){ fBOX(f,c[0],c[1],y,0.14,c[2],0.14,tc,'timber'); gwF(f,c[0],c[1],y,0.14,c[2],0.14,'post'); });
   clothAwning(f,-1.9,1.9,-1.3,y+2.95,2.9,0.62,AWNINGC[i%5],shade(AWNINGC[(i+2)%5],0.18));
-  fBOX(f,0,0.85,y,3.0,0.85,0.7,CRATEC[i%3],'plank'); fBOX(f,0,0.85,y+0.85,3.3,0.07,0.9,PLANKC[0],'plank');
-  fBOX(f,-1.35,-0.2,y,0.6,0.8,1.4,CRATEC[(i+1)%3],'plank'); fBOX(f,0.3,-0.95,y,2.2,1.5,0.35,PLANKC[3],'plank');
-  for(var g=0; g<5; g++){ var q=LP(f,-1.3+g*0.65,0.85+rr(-0.15,0.15)), k=(g+i)%4;
-    if(k===0){ for(var pz=0;pz<3;pz++) pod(q[0]+rr(-0.15,0.15),y+0.95+pz*0.12,q[1]+rr(-0.12,0.12),0.15,FRUITC[(pz+i)%3]); }
-    else if(k===1) BOX(q[0],y+0.92,q[1],0.5,0.22,0.4,f.ry+rr(-0.3,0.3),CLOTHC[(g+i)%6],'plank');
-    else if(k===2) CYL(q[0],y+0.92,q[1],0.2,0.36,0,CRATEC[g%3],'timber');
-    else pod(q[0],y+0.98,q[1],0.2,(i%2?FLOWERC:CROPC)[g%3]); }
+  /* the counter, a crate pair at its side, a shelf block at the back, goods on the counter top: catalog pieces */
+  FURNISH('br_h_work_counter', 0, 0, 0.85, 0, { v:0, seed:i+1 });
+  FURNISH('br_h_crate_stack', -1.35, 0, -0.2, Math.PI/2, { v:1, seed:i+2 });
+  FURNISH('br_h_workshop_shelves', 0.3, 0, -1.0, 0, { seed:i+1 });
+  for(var g=0; g<5; g++){ var gz=0.85+rr(-0.15,0.15), k=(g+i)%4;
+    if(k===0){ for(var pz=0;pz<3;pz++){ rr(-0.15,0.15); rr(-0.12,0.12); } }          /* the pods' draws, kept */
+    else if(k===1) rr(-0.3,0.3);
+    FURNISH('br_h_stall_goods', -1.0+g*0.5, 1.08, Math.max(0.75,Math.min(0.95,gz)), 0, { v:[0,1,2,2][k], seed:g+i+1, setting:'outdoor' }); }
   var bq=LP(f,1.35,-0.3); barrel(bq[0],y,bq[1],0.9); if(i%2){ var cq=LP(f,2.2,0.5); crate(cq[0],y,cq[1],0.7,f.ry+0.3); }
   if(i%3!==2){ var lq=LP(f,0.9,1.35); lamp(lq[0],y+2.0,lq[1],0.7,10,false,0.3); }
   ARCH.stalls++;

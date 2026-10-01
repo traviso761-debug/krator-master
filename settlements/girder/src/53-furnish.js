@@ -54,19 +54,35 @@ function FURNISHW(key, x, y, z, ry, o){ var c=GF.cur; return gfPlace(key, x, y, 
 /* the batch becomes meshes once, when the kit emits its instanced buckets (75-terrain.js) */
 var gfEmitKit = emitBuckets;
 emitBuckets = function(){ gfFlush(); return gfEmitKit(); };
+/* the catalog's colours are sRGB values; Girder's fabric is linear (45-kit converts every colour): the
+   furniture meshes keep their 8-bit vertex colours and linearise them in the vertex shader */
+function gfSRGBHook(sh){
+  sh.vertexShader = sh.vertexShader.replace('#include <color_vertex>',
+    '#include <color_vertex>\n#ifdef USE_COLOR\n  vColor.rgb = pow(max(vColor.rgb, vec3(0.0)), vec3(2.2));\n#endif');
+}
 function gfFlush(){
   if(GF.group) return GF.group;
-  var tris = GF.batch.tris, g = GF.batch.flush(scene); GF.group = g; g.userData.inspectLabel = 'Furniture (catalog)';
-  var lin = new THREE.Color();
+  GF.tris = GF.batch.tris|0;
+  var g = GF.batch.flush(scene); GF.group = g; g.userData.inspectLabel = 'Furniture (catalog)';
   g.children.forEach(function(m){
-    /* the catalog's colours are sRGB values; Girder's fabric is linear (convertSRGBToLinear): match it */
-    var ca = m.geometry.attributes.color, src = ca.array, out = new Float32Array(src.length);
-    for(var i=0;i<src.length;i+=3){ lin.setRGB(src[i]/255, src[i+1]/255, src[i+2]/255).convertSRGBToLinear(); out[i]=lin.r; out[i+1]=lin.g; out[i+2]=lin.b; }
-    m.geometry.setAttribute('color', new THREE.BufferAttribute(out, 3));
     m.geometry.computeBoundingSphere();
-    if(!m.material.isMeshBasicMaterial) nlMaterial(m.material, 'furn|'+m.material.userData.family);   /* lamp pools at night */
+    if(m.material.isMeshBasicMaterial) m.material.onBeforeCompile = gfSRGBHook;
+    else nlMaterial(m.material, 'furn|'+m.material.userData.family, gfSRGBHook);   /* + the lamp pools at night */
     m.castShadow = !FAST; m.receiveShadow = !FAST; m.frustumCulled = false;
   });
-  GF.tris = tris; GF.meshes = g.children.length;
+  GF.meshes = g.children.length;
   return g;
 }
+
+/* ---------------------------------------------------------------- walk-mode solids (83-walk.js)
+   What the builders draw that a walker stands on or bumps into, registered as they draw it: an oriented
+   box (BOX's convention: base y, centre x z, yaw ry turns local x to (cos ry, -sin ry)), a wall segment, a
+   disc. A solid supports a walker on its top and blocks one whose body overlaps its height (bot..top).
+   83-walk.js adds the ruin, the decks, the stairs and the bridges from the layout. */
+var GWALK = { solids:[], onAdd:null };
+function gwAdd(s){ GWALK.solids.push(s); if(GWALK.onAdd) GWALK.onAdd(s); return s; }
+function gwBox(x,y,z,w,h,d,ry,tag){ var c=Math.cos(ry||0), s=Math.sin(ry||0);
+  return gwAdd({ x:x, z:z, ux:c, uz:-s, hw:w/2, hd:d/2, top:y+h, bot:y, tag:tag||'' }); }
+function gwSeg(ax,az,bx,bz,th,y0,y1,tag){ var dx=bx-ax, dz=bz-az, L=Math.hypot(dx,dz); if(L<1e-3) return null;
+  return gwAdd({ x:(ax+bx)/2, z:(az+bz)/2, ux:dx/L, uz:dz/L, hw:L/2, hd:th/2, top:y1, bot:y0, tag:tag||'' }); }
+function gwDisc(x,z,r,top,bot,tag){ return gwAdd({ x:x, z:z, r:r, top:top, bot:bot, tag:tag||'' }); }

@@ -17,6 +17,8 @@ function FURNISH(key,lx,ly,lz,lry,o){const c=VERN.cur;if(!c){reportErr('FURNISH 
  const rec={key,variant:o.v|0,seed:o.seed||(HLF.placed.length+1),lx,ly,lz,lry:lry||0,x:p[0],y:(c.o.y||0)+ly*s,z:p[1],ry:c.ry+(lry||0),
   building:c.D.key,setting:o.setting||'outdoor'};
  (c.G.userData.furniture||(c.G.userData.furniture=[])).push(rec);HLF.placed.push(rec);
+ const dm=KratorFurniture.entryDims(KratorFurniture.FURN_BY_KEY[key],rec.variant);   // murals fitted after the builder (hlFlush) keep clear of the piece
+ if(!c.noRec)(c.inst||(c.inst=[])).push(['vWood',[lx,ly+dm.h/2,lz],qEuler(0,lry||0,0),[dm.w,dm.h,dm.d]]);
  if(HLF.on)HLF.batch.place(key,rec.x,rec.y,rec.z,rec.ry,{variant:rec.variant,seed:rec.seed,wealth:hlfWealth(c.D),building:c.D.key,setting:rec.setting});
  return rec;}
 function hlfWealth(D){const w=D.tags&&D.tags.wealth;return w==='poor'?.2:w==='rich'?.8:w==='civic'?.65:.5;}
