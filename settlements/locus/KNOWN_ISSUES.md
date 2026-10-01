@@ -19,3 +19,4 @@
 - [ ] Farmers whose home pool falls back to the farm itself stand at the farm gate overnight.
 - [ ] Fauna ignores the life layer (flamingos don't flush from boats; emus don't avoid riders).
 - [ ] The kit's own open items (LOCUS-KIT-KNOWN-ISSUES.md) still stand, except the chapterhouse wall/fountain, now fixed.
+- [ ] Kit furniture is the catalog's now (API.md "Furniture"); what is left drawn, and the interior-set variant gaps, are listed under "Furniture from the catalog" in ABYSS-KIT-KNOWN-ISSUES.md and LOCUS-KIT-KNOWN-ISSUES.md.

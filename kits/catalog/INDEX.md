@@ -18,24 +18,26 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | File | KB | Sections (line) |
 |---|---|---|
 | `inspector.js` | 19 |  |
-| `krator-asset-engine.js` | 54 **big** |  |
+| `krator-asset-engine.js` | 11 |  |
+| `krator-furniture-core.js` | 47 **big** |  |
 | `krator-furniture-kit.js` | 116 **big** | Palette resolve and frame helpers (56); Legs (84); Motifs, bands, finials, cushions (147); Role builders: beds and seating (bed, bedFine, b (233); Role builders: tables, desks and storage (table, (392); Role builders: fire and light (hearth, fire, lam (580); Role builders: soft, screens, trade and work (ru (775); Role builders: surface pieces (bowl, jug, books) (947); Role builders: tapestry, wall art, statues (1001); Role builders: trades and households (forge, anv (1172) |
-| `krator-master-buildings-beast-rider.js` | 71 **big** | Mav's Refuge (13); Girder (710) |
+| `krator-furniture-runtime.js` | 8 |  |
+| `krator-master-buildings-beast-rider.js` | 69 **big** | Mav's Refuge (24); Girder (677) |
 | `krator-master-buildings-voth.js` | 75 **big** |  |
-| `krator-master-furniture-beast-rider.js` | 6 |  |
-| `krator-master-furniture-eastabyss.js` | 6 |  |
+| `krator-master-furniture-beast-rider.js` | 72 **big** | Harvested from kits/catalog/krator-master-buildi (100) |
+| `krator-master-furniture-eastabyss.js` | 47 **big** | Harvested from settlements/locus/src/65-abyss-*. (108) |
 | `krator-master-furniture-generic.js` | 4 |  |
 | `krator-master-furniture-hykkousoi.js` | 1 |  |
 | `krator-master-furniture-islander.js` | 4 |  |
-| `krator-master-furniture-iziz.js` | 6 |  |
+| `krator-master-furniture-iziz.js` | 14 | Harvested from settlements/iziz/src/69c-vern-hel (88) |
 | `krator-master-furniture-lizardmen.js` | 6 |  |
 | `krator-master-furniture-nomad.js` | 5 |  |
-| `krator-master-furniture-painted.js` | 5 |  |
-| `krator-master-furniture-post-apoc.js` | 6 |  |
+| `krator-master-furniture-painted.js` | 50 **big** | Harvested from settlements/highlands (tribal bra (78) |
+| `krator-master-furniture-post-apoc.js` | 9 | Harvested from kits/post-apoc (3 pieces) (74) |
 | `krator-master-furniture-reedlake.js` | 4 |  |
-| `krator-master-furniture-republican.js` | 6 |  |
-| `krator-master-furniture-rustic.js` | 6 |  |
-| `krator-master-furniture-scrap.js` | 6 |  |
+| `krator-master-furniture-republican.js` | 74 **big** | Harvested from settlements/highlands (Republican (87) |
+| `krator-master-furniture-rustic.js` | 37 **big** | Harvested from settlements/highlands (rustic bra (82) |
+| `krator-master-furniture-scrap.js` | 97 **big** | Harvested from kits/post-apoc (61 pieces) (111) |
 | `krator-master-furniture-screamer.js` | 5 |  |
 | `krator-master-furniture-voth.js` | 6 |  |
 | `krator-master-furniture-xanadu.js` | 6 |  |
