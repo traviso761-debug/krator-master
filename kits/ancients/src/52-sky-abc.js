@@ -120,7 +120,7 @@ function skyHoist(rFn,top,yFoot,seed){const a=Math.PI*.5+(h3(seed,1.7,2.3)-.5)*.
 function buildSkyA(scene,gx,gz,d){reseed(9100+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const dd=d>0?1:0;const skin=SHELL(dd);
  const PROJ=d===4,FLM=PROJ?fireLightMark():null,SM=skyShardMark();
  const H=420,Y0=64;const rFn=y=>{const t=clamp((y-Y0)/(H-Y0),0,1);return 40+26*Math.pow(Math.abs(t-.42)/.58,1.7)*(t<.42?1:1.15);};
- REGISTER({name:(PROJ?'Project A — Skyscraper A reoccupied whole (rehabilitated)':'Skyscraper A — the Conocylinder ('+(d===2?'toppled':STATE(d))+')'),x:0,z:0,r:110,h:H+60});
+ REGISTER({name:(PROJ?'Project A — Skyscraper A reoccupied whole (rehabilitated)':'Skyscraper A — the Conocylinder ('+(d===2?'toppled':STATE(d))+')'),x:0,z:0,r:100,h:H+60});
  // PLINTH. 120 was set by nothing: the 24 splayed struts land at r=98 and
  // skyPlinth's own column ring sits at R*.93, so 110 is the smallest circle
  // that still carries them with the columns outboard of the strut feet. The
@@ -129,7 +129,13 @@ function buildSkyA(scene,gx,gz,d){reseed(9100+d);KOFF=[gx,0,gz];const G=new THRE
  // STANCE (round 2): the struts' feet came in from 98 to 80 — steeper legs,
  // the same tower — so the podium comes in from 110 to 92 (ring at 85.6,
  // outboard of the 5.5 m strut feet). This was the Project's loosest podium.
- const SF=80,PR=92;
+ // RESTAND (A-H): the struts' heads meet the shaft's rim at r=52.8, 70 m up,
+ // so a foot at 80 leaned 27 m out over 65 m — a splay the rim does not need:
+ // the base cone carries the core and the struts carry the overhanging rim.
+ // Feet at 60 lean 7 m (6 degrees), nearly plumb under the load they carry,
+ // and the podium is 70 (ring at 65.1, 1.5 m outboard of the strut feet).
+ // The registered radius is set by the crown now (strut ring at ~95), 100.
+ const SF=60,PR=70;
  skyPlinth(G,dd,PR);
  mesh(lathe({rFn:y=>22-4*y/Y0,H:Y0,nu:48,nv:6,hole:holeFn(dd*.5,3,null,1.5)}),skin,G,0,5,0);
  const NS=24;for(let k=0;k<NS;k++){const th=(k+.5)/NS*TAU;const gone=dd>0&&(k===5||k===13||k===19);
@@ -188,7 +194,16 @@ function buildSkyA(scene,gx,gz,d){reseed(9100+d);KOFF=[gx,0,gz];const G=new THRE
   const scarY=d===1&&!upper?L*.42:1e9;
   if(!PROJ)for(let yy=25;yy<Math.min(L-20,scarY);yy+=25)stripRing(0,yy,0,rFn(yy+y0)*.9,dx,32);
   [.3,.62].forEach(f=>{const ya=Y0+(H-Y0)*f;const yl=ya-y0;if(yl<8||yl>L-10||yl>scarY-8)return;glassBand(P,y=>rFn(y+y0),yl,7,dx,0,0,0,48,PROJ);});
-  if(cut==null){const NR=32;for(let k=0;k<NR;k++){const th=k/NR*TAU;const r0=rFn(H)*1.02;beam(dx>0?'strutR':'strutW',[Math.cos(th)*r0,L-6,Math.sin(th)*r0],[Math.cos(th)*(r0+25),L-6+41,Math.sin(th)*(r0+25)],3.2,2.4);}
+  // TOPPLED A (restand): the fallen body lies on its two wide ends (base 45,
+  // crown 70; the waist is 40, so it bridges 4 m clear between them) and
+  // toppledUpper's 5 degrees is about the slope that puts both ends on the
+  // ground. What was wrong was the crown's strut ring: 25 m out from the shell
+  // all round, so the struts on the underside stood 30 m into the ground. The
+  // body's local +x points down (Rz of -0.94 * 90 degrees), so those struts
+  // sheared off when it landed; the stubs stay, the rest lie in the rubble.
+  if(cut==null){const NR=32;for(let k=0;k<NR;k++){const th=k/NR*TAU;const r0=rFn(H)*1.02;
+   if(upper&&Math.cos(th)>.2){beam('strutR',[Math.cos(th)*r0,L-6,Math.sin(th)*r0],[Math.cos(th)*(r0+3),L-6+5,Math.sin(th)*(r0+3)],3.2,2.4);continue;}
+   beam(dx>0?'strutR':'strutW',[Math.cos(th)*r0,L-6,Math.sin(th)*r0],[Math.cos(th)*(r0+25),L-6+41,Math.sin(th)*(r0+25)],3.2,2.4);}
    if(dx===0){mesh(lathe({rFn:y=>rFn(H)*(1+.35*y/40)*(1-.15*Math.pow(y/40,3)),H:40,nu:64,nv:12}),MAT.glass,P,0,L-4,0);mesh(lathe({rFn:y=>12*Math.sqrt(clamp(1-Math.pow(y/16,2),0,1)),H:16,nu:32,nv:8}),SHELL(dx),P,0,L+34,0);kput('finial',[0,L+56,0],null,[5,9,5],null);}}
   else if(!upper){for(let k=0;k<32;k++){const th=k/32*TAU;if(rng()<.5)continue;beam('strutR',[Math.cos(th)*rFn(cut)*1.02,L-6,Math.sin(th)*rFn(cut)*1.02],[Math.cos(th)*rFn(cut)*1.3,L-6+rr(8,26),Math.sin(th)*rFn(cut)*1.3],3.2,2.4);}}};
  const P=new THREE.Group();P.position.set(0,Y0,0);G.add(P);useGroupXF(P);
@@ -202,7 +217,7 @@ function buildSkyA(scene,gx,gz,d){reseed(9100+d);KOFF=[gx,0,gz];const G=new THRE
  // sky are the ones the Ancients left open.
  if(PROJ){const cy=Y0+Math.floor((H-Y0-10)/8)*8+.9;   // the topmost floor plate, not thin air
   for(let k=0;k<7;k++){const a=rng()*TAU,r=rr(8,rFn(Y0)*.8);firePit('A',r*Math.cos(a),Y0+2.6,r*Math.sin(a),rr(2,3.6));}
-  for(let k=0;k<9;k++){const a=rng()*TAU,r=rr(26,PR*.88);firePit('A',r*Math.cos(a),5.4,r*Math.sin(a),rr(1.8,3.4));}
+  for(let k=0;k<9;k++){const a=rng()*TAU,r=rr(26,SF-5);firePit('A',r*Math.cos(a),5.4,r*Math.sin(a),rr(1.8,3.4));}
   for(let k=0;k<5;k++){const a=rng()*TAU,r=rFn(cy)*rr(.25,.8);firePit('A',r*Math.cos(a),cy,r*Math.sin(a),rr(2,4));}}
  if(d===3)skyHoist(y=>rFn(y),H-8,5,9100);
  if(d>0&&!PROJ)skyShards(SM,d===3?.25:.5);
@@ -210,17 +225,26 @@ function buildSkyA(scene,gx,gz,d){reseed(9100+d);KOFF=[gx,0,gz];const G=new THRE
 // --- B: the Scallop Stack (Goldberg lobes, widening upward) -------------------------------------
 function buildSkyB(scene,gx,gz,d){reseed(9110+d);KOFF=[gx,0,gz];const SM=skyShardMark();const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const dd=d>0?1:0;const skin=SHELL(dd);
  const H=300,NL=12;const rFn=y=>26+10*Math.pow(clamp(y/H,0,1),1.4);const lobe=(th,y)=>rFn(y)*(1+.3*(.5+.5*Math.cos(NL*th)));
- REGISTER({name:'Skyscraper B — the Scallop Stack ('+(d===2?'toppled':STATE(d))+')',x:0,z:0,r:100,h:H+40});
+ REGISTER({name:'Skyscraper B — the Scallop Stack ('+(d===2?'toppled':STATE(d))+')',x:0,z:0,r:80,h:H+40});
  // 110 carried nothing past r=72: the twelve legs stand at 70 and their columns
  // are 4.5 wide. 82 puts skyPlinth's column ring at 76.3, just outboard of them.
  // STANCE (round 2): the legs came in from 70 to 56 (the struts off them are
  // steeper), so the podium is 66 with its ring at 61.4.
- const LR=56,PR=66;
+ // RESTAND (A-H): that was a vertical column 27 m tall at r=56 with a strut
+ // running HORIZONTALLY from its head 26 m in to the shaft — an outrigger that
+ // carried nothing down. Each leg is now one raked fluted column straight from
+ // the podium to the lobe tip it carries (r=30.4 at the shaft's foot, 32 m
+ // up), 23 degrees off plumb, its foot sunk into the podium and its head into
+ // the shaft so neither end shows a cut disc. The legs stand under the lobe
+ // tips (the lobes peak at th=k/12), so the load goes straight down.
+ // Feet at 42, outermost fabric 48.4, podium 54 (ring at 50.2).
+ const LR=42,PR=54;
  skyPlinth(G,dd,PR);
- // core + 12 lobed legs spreading out to the plinth
+ // core + 12 lobed legs raking out to the plinth
  mesh(lathe({rFn:y=>16,H:30,nu:32,nv:2}),skin,G,0,5,0);
- for(let k=0;k<NL;k++){const th=k/NL*TAU;const gone=dd>0&&(k===3||k===8);const a=[Math.cos(th)*LR,5,Math.sin(th)*LR],b=[Math.cos(th)*rFn(30)*1.15,32,Math.sin(th)*rFn(30)*1.15];
-  if(!gone){kput(dd>0?'colR':'colW',[a[0],5,a[2]],null,[4.5,27,4.5],null);beam(dd>0?'strutR':'strutW',[a[0],31,a[2]],b,5,4);}else rubbleRing(a[0],5,a[2],2,16,30,2.2);}
+ for(let k=0;k<NL;k++){const th=k/NL*TAU;const gone=dd>0&&(k===3||k===8);const c=Math.cos(th),s=Math.sin(th),rb=rFn(30)*1.15;
+  const ux=(rb-LR),uy=27,ul=Math.hypot(ux,uy),ex=ux/ul,ey=uy/ul,a=[c*(LR-ex*7),5-ey*7,s*(LR-ex*7)],b=[c*(rb+ex*6),32+ey*6,s*(rb+ex*6)];
+  if(!gone){const q=new THREE.Quaternion().setFromUnitVectors(_UP,new THREE.Vector3(c*ex,ey,s*ex));kput(dd>0?'colR':'colW',a,q,[3.4,ul+13,3.4],null);}else rubbleRing(c*LR,5,s*LR,2,16,30,2.2);}
  const body=(P,dx,y0,y1,upper)=>{const cut=(dx>0&&!upper&&y1!=null)?y1:(dx>0&&d===1?H*.8:null);const L=(cut!=null?cut:H)-y0;let hole=holeFn(dx,17+(upper?1:0),cut!=null?L:null,1.5);if(d===1&&!upper)hole=skyScarHole(hole,.3,.08,L*.45,L,17);
   mesh(lathe({rFn:y=>rFn(y+y0),H:H-y0,cut:cut!=null?L:null,jag:cut?4:0,flutes:NL,amp:.3,sharp:1,nu:144,nv:60,hole,seed:17}),SHELL(dx),P);
   // THE CUT SECTION, as on Skyscraper A: the lining shares the outer skin's
@@ -248,19 +272,28 @@ function buildSkyB(scene,gx,gz,d){reseed(9110+d);KOFF=[gx,0,gz];const SM=skyShar
  figures(-PR,PR*1.28,6,6);KOFF=[0,0,0];return G;}
 // --- C: the Tripod (three hyperboloid legs fusing into one fluted shaft) ---------------------------
 function buildSkyC(scene,gx,gz,d){reseed(9120+d);KOFF=[gx,0,gz];const SM=skyShardMark();const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const dd=d>0?1:0;const skin=SHELL(dd);
- const H=380,YM=150;REGISTER({name:'Skyscraper C — the Tripod ('+(d===2?'toppled':STATE(d))+')',x:0,z:0,r:130,h:H+30});
+ const H=380,YM=150;REGISTER({name:'Skyscraper C — the Tripod ('+(d===2?'toppled':STATE(d))+')',x:0,z:0,r:90,h:H+30});
  // The three hyperboloid legs stand at r=62 and are ~24 wide at the foot, so
  // the outermost fabric on the podium is at ~86. 96 puts the column ring at
  // 89.3 — outboard of the legs and 19 m tighter than the old 115.
  // STANCE (round 2): the legs' feet came in from 62 to 50 (their heads still
  // meet the shaft at r=20, so they stand steeper), outermost fabric ~72, and
  // the podium is 80 with its ring at 74.4.
- const LR=50,PR=80;
+ // RESTAND (A-H): feet 50 -> 38. The legs still meet the shaft at r=20, so
+ // each now leans 7 degrees (was 11): a tripod whose legs fuse into the shaft
+ // a third of the way up rather than a splayed stand. Outermost fabric ~60.5,
+ // podium 66 (ring at 61.4). The three feet are still 66 m apart and 22 m in
+ // radius, so the open triangle between them keeps a 16 m clear centre.
+ // A tilted lathe's foot is a tilted circle: its inner rim stood 2-4 m clear
+ // of the podium. Each leg's lathe now starts `sink` below its group origin
+ // (the group stays at y=5 on the leg's axis, which tripodLegR in
+ // 77z-iziz-style.js reads), so the foot is buried in the podium all round.
+ const LR=38,PR=66;
  skyPlinth(G,dd,PR);
  const legR=y=>15*Math.sqrt(1+1.2*Math.pow((y-YM*.5)/(YM*.5),2));
  for(let k=0;k<3;k++){const th=k/3*TAU+Math.PI/6;const Lg=new THREE.Group();Lg.position.set(Math.cos(th)*LR,5,Math.sin(th)*LR);const tilt=Math.atan2(LR-20,YM);Lg.rotation.set(0,-th,0);Lg.rotateZ(tilt);G.add(Lg);useGroupXF(Lg);
-  const LL=YM/Math.cos(tilt);mesh(lathe({rFn:legR,H:LL,flutes:10,amp:.1,sharp:2,nu:60,nv:30,hole:holeFn(dd*.8,27+k,null,1.5)}),skin,Lg);
-  if(dd>0)mesh(lathe({rFn:y=>legR(y)*.85,H:LL,nu:24,nv:4}),MAT.guts,Lg);
+  const LL=YM/Math.cos(tilt),sink=legR(0)*Math.tan(tilt)+1.5;mesh(lathe({rFn:y=>legR(Math.max(0,y-sink)),H:LL+sink,flutes:10,amp:.1,sharp:2,nu:60,nv:30,hole:holeFn(dd*.8,27+k,null,1.5)}),skin,Lg,0,-sink,0);
+  if(dd>0)mesh(lathe({rFn:y=>legR(Math.max(0,y-sink))*.85,H:LL+sink,nu:24,nv:4}),MAT.guts,Lg,0,-sink,0);
   for(let y=8;y<LL-8;y+=6)for(let j=0;j<10;j++){const u=(j+.5)/10;const a=u*TAU,r=legR(y)+.1;kput(dd>0?'winSmD':'winSmI',[r*Math.cos(a),y,r*Math.sin(a)],qFacing([Math.cos(a),0,Math.sin(a)]),[1.6,2.4,1],null);}
   for(let yy=20;yy<LL-10;yy+=30)stripRing(0,yy,0,legR(yy)*.9,dd,20);endGroupXF();}
  // sky bridges between legs
