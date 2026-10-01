@@ -5,7 +5,7 @@
 //   <name> — night      the same shot at night, when the camp's fires show
 // [name, height of the thing in metres, radius of one site in metres]
 const AD_VIEWSPEC={adWave:['Undulant house',18,24],adBridge:['Bridge house',12,22],adFins:['Fin apartments',48,80],
- adAmph:['Garden amphitheater',16,80],adFuel:['Trestle fuel station',28,40],adRadar:['Rotor radar tower',64,30],
+ adAmph:['Garden amphitheater',16,80],adFuel:['Trestle fuel station',28,40],adRadar:['Rotor radar tower',64,48],
  adDish:['Flower dish',46,46],adMega:['The Rampart',230,300],adFac:['Pilotis works',70,190],adLab:['Star laboratory',30,64]};
 const VIEWS={};
 for(const k in ROWS){const R=ROWS[k],V=AD_VIEWSPEC[k];if(!V)continue;const[nm,h,rs]=V;
