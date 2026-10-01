@@ -52,6 +52,9 @@ var INT = { live:{}, order:[], occupied:null, cutaway:false, portals:[], matCach
   /* hide or restore every kit instance a building drew (its exterior shell), for standing inside it */
   function showShell(b, on){ (b._ranges||[]).forEach(function(R){ var B=BUCKET[R[0]]; if(!B||!B.mesh) return;
       for(var i=R[1];i<R[2];i++) B.mesh.setMatrixAt(i, on ? kitMatrix(B.list[i], _mx) : ZERO); B.mesh.instanceMatrix.needsUpdate=true; }); }
+  /* a building's plinths (53-assets.js: low boxes over most of the footprint) cover the floors of its
+     rooms when the cutaway takes the walls off above them: hidden while the cutaway shows its interior */
+  function showPlinths(b, on){ if(!b) return; (b._plinths||[]).forEach(function(ref){ showReveal(ref, on); }); }
   function showReveal(ref, on){ if(!ref) return; var B=BUCKET[ref.key]; if(!B||!B.mesh||!B.list[ref.i]) return;
     B.mesh.setMatrixAt(ref.i, on ? kitMatrix(B.list[ref.i], _mx) : ZERO); B.mesh.instanceMatrix.needsUpdate=true; }
   /* someone (the life layer, a script) wants this door open for a few seconds */
@@ -84,18 +87,21 @@ var INT = { live:{}, order:[], occupied:null, cutaway:false, portals:[], matCach
   }
 
   /* ---------------------------------------------------------------- interior materials */
-  var IND = { uIndoorSun:{ value:0.22 }, uIndoorWarm:{ value:new THREE.Color(0.10,0.09,0.08) } };
+  /* uFloorLift: the light a floor gets back from the room (bounce off the walls, the open door, the
+     lamps at night). Only the 'fl-' families (64-interiors.js floors) take it, so a floor reads at a
+     quarter of the sun and never merges with a dark plinth; walls and furniture are unchanged. */
+  var IND = { uIndoorSun:{ value:0.22 }, uIndoorWarm:{ value:new THREE.Color(0.10,0.09,0.08) }, uFloorLift:{ value:0.30 } };
   var CLIP = new THREE.Plane(new THREE.Vector3(0,-1,0), 1e6);
   function intMat(fam, inst, mode){
     var key=(inst?'i':'m')+'|'+fam+'|'+mode; if(INT.matCache[key]) return INT.matCache[key];
-    var fm=FAMMAT[fam]||{}, m;
+    var floor = fam.indexOf('fl-')===0, fm=FAMMAT[floor ? fam.slice(3) : fam]||{}, m;
     if(fm.basic) m=new THREE.MeshBasicMaterial({ color:0xffffff, vertexColors:!inst });
     else { m=new THREE.MeshLambertMaterial({ color:0xffffff, vertexColors:!inst, map:fm.tex||null });
-      (function(needsUV, sc){ m.onBeforeCompile=function(sh){ if(needsUV) applyWorldUV(sh, sc);
-          sh.uniforms.uIndoorSun=IND.uIndoorSun; sh.uniforms.uIndoorWarm=IND.uIndoorWarm;
-          sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform float uIndoorSun;\nuniform vec3 uIndoorWarm;')
-            .replace('#include <aomap_fragment>','reflectedLight.directDiffuse *= uIndoorSun;\nreflectedLight.indirectDiffuse = reflectedLight.indirectDiffuse*0.75 + diffuseColor.rgb*uIndoorWarm;\n#include <aomap_fragment>'); };
-        m.customProgramCacheKey=function(){ return 'interior|'+(needsUV?'wuv'+sc[0]+'_'+sc[1]:''); }; })(inst && !!fm.tex, fm.scale||[3,3]); }
+      (function(needsUV, sc, floor){ m.onBeforeCompile=function(sh){ if(needsUV) applyWorldUV(sh, sc);
+          sh.uniforms.uIndoorSun=IND.uIndoorSun; sh.uniforms.uIndoorWarm=IND.uIndoorWarm; sh.uniforms.uFloorLift=IND.uFloorLift;
+          sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform float uIndoorSun;\nuniform vec3 uIndoorWarm;\nuniform float uFloorLift;')
+            .replace('#include <aomap_fragment>','reflectedLight.directDiffuse *= uIndoorSun;\nreflectedLight.indirectDiffuse = reflectedLight.indirectDiffuse*0.75 + diffuseColor.rgb*uIndoorWarm'+(floor?' + diffuseColor.rgb*uFloorLift':'')+';\n#include <aomap_fragment>'); };
+        m.customProgramCacheKey=function(){ return 'interior|'+(needsUV?'wuv'+sc[0]+'_'+sc[1]:'')+(floor?'|floor':''); }; })(inst && !!fm.tex, fm.scale||[3,3], floor); }
     if(mode==='portal'){ m.stencilWrite=true; m.stencilFunc=THREE.EqualStencilFunc; m.stencilRef=1; m.stencilFail=THREE.KeepStencilOp; m.stencilZFail=THREE.KeepStencilOp; m.stencilZPass=THREE.KeepStencilOp; }
     m.userData.intMode = mode; if(INT.cutaway) m.clippingPlanes=[CLIP];
     INT.matCache[key]=m; return m;
@@ -153,10 +159,10 @@ var INT = { live:{}, order:[], occupied:null, cutaway:false, portals:[], matCach
       I.doors.push({ id:d.id, wx:w[0], wz:w[1], open:0, want:0, _leaves:G.leaves.filter(function(L){ return L.door===d.id; }) }); });
     I.lights = G.lights;
     INT.live[bid]=I; INT.order.push(bid);
-    if(INT.cutaway) setMode(I,'open');
+    if(INT.cutaway){ setMode(I,'open'); showPlinths(b, false); }
     return I;
   }
-  function dropLive(bid){ var I=INT.live[bid]; if(!I) return; scene.remove(I.group);
+  function dropLive(bid){ var I=INT.live[bid]; if(!I) return; scene.remove(I.group); showPlinths(FIX.byId[bid], true);
     I.group.traverse(function(o){ if(o.geometry) o.geometry.dispose(); });
     for(var i=SITES.length-1;i>=0;i--) if(SITES[i]._int===bid) SITES.splice(i,1);
     delete INT.live[bid]; INT.order.splice(INT.order.indexOf(bid),1); }
@@ -253,7 +259,7 @@ var INT = { live:{}, order:[], occupied:null, cutaway:false, portals:[], matCach
     scene.children.forEach(function(o){ if(!(o.userData.kit || o.userData.merged) || !o.material) return; o.material.clippingPlanes = on ? [CLIP] : null; o.material.needsUpdate=true; });
     for(var k in INT.matCache){ INT.matCache[k].clippingPlanes = on ? [CLIP] : null; INT.matCache[k].needsUpdate=true; }
     renderer.localClippingEnabled = !!on;
-    for(var bid in INT.live) setMode(INT.live[bid], on?'open':'portal');
+    for(var bid in INT.live){ setMode(INT.live[bid], on?'open':'portal'); showPlinths(FIX.byId[bid], !on); }
     var bt=document.getElementById('cutToggle'); if(bt){ bt.textContent='Cutaway: '+(on?'On':'Off'); bt.classList.toggle('on', on); }
   }
   DOORS.cutaway = setCutaway;
@@ -288,7 +294,7 @@ var INT = { live:{}, order:[], occupied:null, cutaway:false, portals:[], matCach
     if(lastOcc!==INT.occupied){
       /* inside a building its reveals would block the view out: hide its windows' and doors' dark boxes */
       if(lastOcc && INT.live[lastOcc]){ if(!INT.cutaway) setMode(INT.live[lastOcc], 'portal'); var ob=FIX.byId[lastOcc];
-        (ob.windows||[]).forEach(function(id){ showReveal(FIX.byId[id]._rvl, true); }); (ob.doors||[]).forEach(function(id){ var D=FIX.byId[id]; showReveal(D._rvl, (D.open||0) < 0.25); }); showShell(ob, true); }
+        (ob.windows||[]).forEach(function(id){ showReveal(FIX.byId[id]._rvl, true); }); (ob.doors||[]).forEach(function(id){ var D=FIX.byId[id]; showReveal(D._rvl, (D.open||0) < 0.25); }); showShell(ob, true); if(INT.cutaway) showPlinths(ob, false); }
       if(INT.occupied && INT.live[INT.occupied]){ setMode(INT.live[INT.occupied], 'open'); var nb=FIX.byId[INT.occupied];
         (nb.windows||[]).forEach(function(id){ showReveal(FIX.byId[id]._rvl, false); }); (nb.doors||[]).forEach(function(id){ showReveal(FIX.byId[id]._rvl, false); }); showShell(nb, false); }
       lastOcc = INT.occupied; }
@@ -297,6 +303,7 @@ var INT = { live:{}, order:[], occupied:null, cutaway:false, portals:[], matCach
     if(INT.cutaway){ var gy = WALK.on ? WALK.y : (SHEET ? 0 : terrainH(ctl.tx, ctl.tz)); CLIP.constant = gy + 2.4; }
     /* lamps lit inside after dark; a little daylight from the windows by day */
     var n = nk||0; IND.uIndoorSun.value = INT.cutaway ? 0.9 : 0.24*(1-n); IND.uIndoorWarm.value.setRGB(0.09+0.42*n, 0.08+0.27*n, 0.07+0.12*n);
+    IND.uFloorLift.value = INT.cutaway ? 0.12 : 0.30*(1-n) + 0.14*n;
   });
   window._doors = { stats:function(){ return { doors:FIX.doors.length, windows:FIX.windows.length, lights:FIX.lights.length, buildings:FIX.buildings.length,
       live:INT.order.length, portals:INT.stats.portals||0, indoors:(typeof LIFE!=='undefined' && LIFE.agents) ? LIFE.agents.filter(function(a){ return a.inside; }).length : 0,

@@ -97,6 +97,35 @@ in `51-fixtures.js` — add your new asset there). Interiors are NOT drawn by as
 each door to the body behind it and fits rooms, partitions, stairs and furniture inside from swappable
 modules. Use `F.door` for real doors so they open, export and can be walked through.
 
+If an asset builds its walls from quads, lathes or thin panels the body capture cannot see, declare
+the room volume with `F.mass({ k:'box', x, z, y, w, d, h, r })` (the salvage shack does). A room
+needs about 2.6 m of body height to be planned. A low box laid over most of the footprint (a tarred
+base band, a podium) is recorded as a PLINTH and hidden in the cutaway, so the floor shows.
+
+### Furniture types (`FURN({ ..., type, setting })`)
+
+`type` is one of: `bed table seating counter shelving hearth lighting rug screen tool decoration`
+and the two CONTAINER types, which the game reads as loot and inventory:
+
+| type | holds | pieces |
+|---|---|---|
+| `container-item` | belongings, tools, cloth, coin | `common_storage_chest`, `poor_lidded_basket`, `salvage_locker_press`, `ancient_cell_wall`, `order_mat_rack` |
+| `container-food` | grain, oil, water, provisions | `common_grain_sacks`, `poor_clay_pots`, `poor_food_pot`, `common_water_jars`, `common_grain_bin` |
+
+Every container carries `capacity` (rough inventory slots; `common_grain_bin` and
+`ancient_cell_wall` 24, a chest 12, a basket 4). There is no plain `storage` type any more: a new
+storage piece must say which of the two it is. Shelving stays `shelving` (not a container).
+
+**The minimum kit** (`64-interiors.js`, `KIT_PIECES`, `ensureKit`, `buildingKit`): every dwelling
+has a bed per bedroom (at least 1, 2 if multi-family), a food container (2 in a compound or a
+wealthy house) and an item container (2 in a compound); every building has an item container;
+every kitchen, store, shop and tavern room, and every shop / tavern / inn / farm building, has a
+food container. Layouts place their own pieces first; `ensureKit` tops up from the culture's
+`KIT_PIECES` (largest piece that fits, down to the smallest); a slot no room can hold is kept as
+data with `virtual:true`. Buildings with no planned interior get a minimal data-only kit.
+`window._kitAudit` (printed in verify.py's counters) must read 0 for `dwellingsMissingKit`,
+`buildingsMissingItem`, `foodPlacesMissingFood` and `bedroomsWithoutBed`.
+
 ## Material families (05-palette.js, FROZEN — ask the planner for additions; a new family is a new draw call)
 
 Textures are GRAYSCALE and tiled in world units; the colour you pass tints them. Exceptions are the two painted

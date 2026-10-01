@@ -289,3 +289,23 @@ indoors. It comes back out through the same door. `LIFE.sim(secs)` fast-forwards
 
 `python3 verify_walk.py <html> --asset <key> --variant <n> [--hour h]` walks up to a door, through it,
 up the stair, then takes a cutaway. It shoots each step and writes that building's export JSON.
+
+## Caravans, floors and the minimum kit (2026-10-01)
+
+**Debug a stuck agent in the page, not in the code.** The caravans took four rounds of rewrites
+because each one changed the state machine. Loading the page and printing one caravan's fields
+every few seconds showed the real faults in minutes: its `wait` fell at 0.04 s per real second
+(headless frames are that slow, and `LIFE.sim` never stepped vehicles), and the moment one was
+forced to set out its `x` and `z` became NaN, because `step()` reads `a.off` and vehicles never had
+one. When two "identical" code paths behave differently, look for a field one population has and
+the other lacks. `_life.caravans()` and `_life.vehicleRouteFailures()` exist for this now.
+
+**A black floor in the cutaway is usually the plinth.** Many assets lay a low dark box over the
+whole footprint (a tarred base band); its top face sits above the room's floor. buildAsset records
+those as `b._plinths`, and the cutaway hides them for the buildings whose interiors it shows.
+
+**Floors** draw in interior-only `fl-<family>` buckets (no new city draw calls), and the interior
+shader gives those a `uFloorLift` term. Patterns come from `FINISH.floor.pattern`.
+
+**The kit**: `window._kitAudit` (in verify.py's counters line) must read 0 for every `...Missing...`
+count. A kit slot that no room can hold stays as data, `virtual:true`.
