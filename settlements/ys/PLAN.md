@@ -158,6 +158,12 @@ eye-level shot of every building before reporting.
    slot tiling by wishlist with scale ranges, the accretion scheduler per host, the Hykkousoi frontage
    walker by wealth ring, the foreign-quarter slots with their swap list, the two guilds and the
    caravanserai placed by name, the four landmarks by name with one legal freedom each.
+   Travis's requirements (Oct 2026): **at least three refurbished full-height towers** in the drowned quarter
+   (not stumps; scale 1; clear of the stumps' skyline), one of them carrying the Pharos crown; **a fraction of
+   the land blocks are reclaimed Ancients (decay 3) that are hosts as well**, the smaller types with grown-on
+   pods, landings and roof growth at ground scale; the accretion scheduler **spreads a host's pods over its
+   inhabited plates** (different heights, every pod's floor a plate's top). `_api.city` counts the tall
+   towers, the land hosts and the pod heights per host, and the invariants check them.
 6. `90a/90b`: terrain mesh, water, sky, build order (ancients → tideline → accretion → spans → kit
    buildings → foreign → ships → farms → biome → bake → labels), the lighting rule.
 7. `91z-views.js`: the opening shot (the Amphitriton from the main market across the drawbridge), the
