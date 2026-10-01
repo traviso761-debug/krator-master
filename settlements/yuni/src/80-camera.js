@@ -8,7 +8,7 @@ function applyCam(){
   var z = ctl.tz + ctl.radius*sp*Math.sin(ctl.theta);
   var y = ctl.ty + ctl.radius*cp;
   var floor = terrainH(x,z) + 1.6;
-  if(y < floor && !UNDER_ON && !CAM_FREE) y = floor;
+  if(y < floor && !UNDER_ON && !CAM_FREE && !(WALK.on && WALK.bid)) y = floor;
   camera.position.set(x,y,z);
   camera.lookAt(ctl.tx, ctl.ty, ctl.tz);
 }
@@ -86,7 +86,7 @@ camEl.addEventListener('pointermove', function(e){
     }
   }else if(ids.length === 2){
     var a=ptrs[ids[0]], b=ptrs[ids[1]], d = Math.hypot(a.x-b.x, a.y-b.y);
-    if(lastPinch) ctl.radius = clamp(ctl.radius * (lastPinch/d), 4, 9000);
+    if(lastPinch) ctl.radius = clamp(ctl.radius * (lastPinch/d), WALK.on?0.12:4, 9000);
     lastPinch = d;
   }
   applyCam();
@@ -94,7 +94,7 @@ camEl.addEventListener('pointermove', function(e){
 function ptrUp(e){ delete ptrs[e.pointerId]; lastPinch = 0; }
 camEl.addEventListener('pointerup', ptrUp); camEl.addEventListener('pointercancel', ptrUp);
 camEl.addEventListener('contextmenu', function(e){ e.preventDefault(); });
-camEl.addEventListener('wheel', function(e){ e.preventDefault(); ctl.radius = clamp(ctl.radius * (e.deltaY > 0 ? 1.11 : 0.90), 4, 9000); applyCam(); }, { passive:false });
+camEl.addEventListener('wheel', function(e){ e.preventDefault(); ctl.radius = clamp(ctl.radius * (e.deltaY > 0 ? 1.11 : 0.90), WALK.on?0.12:4, WALK.on?16:9000); if(WALK.on && !WALK.bid) WALK.r3 = ctl.radius; applyCam(); }, { passive:false });
 
 var keys = {};
 addEventListener('keydown', function(e){ if(e.target && /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return; keys[e.key.toLowerCase()] = true; });
@@ -163,7 +163,7 @@ var clock = new THREE.Clock(), fps=60, acc=0, frames=0, tmpV=new THREE.Vector3()
 function frame(){
   requestAnimationFrame(frame);
   var dt = Math.min(0.06, clock.getDelta());
-  panStep(dt);
+  if(!WALK.on) panStep(dt);           /* 76-doors.js: while walking, WASD moves the walker instead */
   skyAdvance(dt); updateSky(); updateDayNight();
   var hour = skyHour(), nk = DAYNIGHT_NIGHT_K;
   CLOTH_TIME.value += dt;

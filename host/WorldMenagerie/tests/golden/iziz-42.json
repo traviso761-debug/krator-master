@@ -1,0 +1,8 @@
+{
+ "lots": 625,
+ "lotHash": "73278b5e418721b854b42c0b36d25ecacbccc182e7b75d7b56d4de06ba692133",
+ "doors": 1804,
+ "doorHash": "c7b2b593394b505e66b2d0b8e9bd44d7c178f87454489bb31847e054176fdba3",
+ "seed": 42,
+ "note": "building layout of the baseline page (commit 2447cc8); any change here means the city moved"
+}

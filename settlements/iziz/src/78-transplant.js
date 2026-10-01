@@ -69,7 +69,7 @@ izOrig('palace','Palace fortress',150,true,(P,x,z)=>{const sm=0xd4a05a,sl=0xe6bd
  kput('frus88',[x+8,28,z-15],null,[46,22,26],tC(sm));kput('frus88',[x-12.5,28,z+5],null,[5,22,14],tC(sm));kput('frus88',[x+19.5,28,z+5],null,[23,22,14],tC(sm));kput('frus88',[x-1,39,z+5],null,[18,11,14],tC(sm));
  kput('frus85',[x+16,50,z-10],null,[20,30,20],tC(sm));kput('frus85',[x+16,80,z-10],null,[14,11,14],tC(sl));kput('frus60',[x+16,91,z-10],null,[8,7,8],tC(sm));kput('frusPyr',[x+16,98,z-10],null,[5,6,5],tC(sl));
  kput('boxW',[x,12.6+.75,z],null,[91,1.5,80],tC(sl));kput('boxW',[x+4,26.6+.75,z-4],null,[63,1.5,54],tC(sl));kput('boxW',[x+8,48.6+.75,z-8],null,[42,1.5,37],tC(sl));kput('boxW',[x+16,78.8+.7,z-10],null,[18.5,1.4,18.5],tC(sl));
- izWin(0,0,96,84,.93,14,0,7,9,3,4);izWin(4,-4,68,58,.9,14,14,20,6,3,4);izWin(8,-8,46,40,.88,22,28,34,6,2.2,4,xx=>xx>-11&&xx<9);izWin(8,-8,46,40,.88,22,28,43,6,2.2,3,xx=>xx>-11&&xx<9);for(let i=0;i<3;i++)izWin(16,-10,20,20,.85,30,50,56+i*8,2,3,3);
+ izWin(0,0,96,84,.93,14,0,7,9,3,4,xx=>Math.abs(xx)<12);izWin(4,-4,68,58,.9,14,14,20,6,3,4);izWin(8,-8,46,40,.88,22,28,34,6,2.2,4,xx=>xx>-11&&xx<9);izWin(8,-8,46,40,.88,22,28,43,6,2.2,3,xx=>xx>-11&&xx<9);for(let i=0;i<3;i++)izWin(16,-10,20,20,.85,30,50,56+i*8,2,3,3);
  // THE HALL (Travis): the hangar converted for entertaining Izani and foreign nobles — 18 x 14 m, 11 m high, open to the
  // terrace: a lit floor, two rows of pale columns, a coffered ceiling of warm lamps, a great doorway into the palace at the back
  {const hy=28.1,hx=x-1,hz=z+5;kput('slab',[hx,hy-.05,hz],null,[9.6,.3,9.6],tC(0xe6d6b0));                      // the floor medallion
@@ -96,9 +96,29 @@ izOrig('palace','Palace fortress',150,true,(P,x,z)=>{const sm=0xd4a05a,sl=0xe6bd
  {const ty=14.1;for(let i=0;i<10;i++){const sx=-40+i*8.9;if(Math.abs(sx-4)<12)continue;kput('hedge',[x+sx,ty+.6,z+36],null,[4.6,1.2,1.4],vC(0x3f6a34));}
   for(const sx of[-40,-24,32,44])vnLampPost(x+sx,ty,z+38.6,3.2);
   for(let i=0;i<22;i++)kput('boxW',[x-44+i*4.2,ty+1.1,z+39.4],null,[1.6,1.0,1.0],tC(sl));for(let i=0;i<15;i++)kput('boxW',[x+4-30+i*4.3,28.1+1.1,z-4-26.4],null,[1.6,1.0,1.0],tC(sl));}
- // banner poles and lamp columns along the front of the base tier
- for(let i=0;i<7;i++){const sx=-42+i*14;vnBannerPole(x+sx,0,z+44.5,0,9,vC(i%2?0xe07a2a:0xc9442a));}
- for(const sx of[-36,-12,12,36])vnLampPost(x+sx,0,z+46,4.2);
+ // banner poles and lamp columns along the front of the base tier (the middle pole gave way to the grand entrance)
+ for(let i=0;i<7;i++){if(i===3)continue;const sx=-42+i*14;vnBannerPole(x+sx,0,z+44.5,0,9,vC(i%2?0xe07a2a:0xc9442a));}
+ for(const sx of[-36,-17,17,36])vnLampPost(x+sx,0,z+46,4.2);
+ // THE GRAND ENTRANCE (Travis, round 4): the base tier had no door. On the axis road from the triumphal plaza: a raised
+ // landing and a broad flight of steps, two stepped pylons with hanging banners and sconces, a deep lit doorway whose
+ // bronze leaves stand open, a stepped deco lintel with a drip band, and a crest carrying the orb; orb pedestals and
+ // lamp posts at the foot of the steps
+ {const fz=z+42,L=1.2;
+  kput('boxW',[x,L/2,fz+2.4],null,[14,L,4.8],tC(sl));                                                                     // the landing
+  for(let k=1;k<=5;k++){const h=L-k*.2;kput('boxW',[x,h/2,fz+4.8+k*.9-.45],null,[14+k*2.2,h,.9],tC(k%2?sl:0xe6d6b0));}    // the steps down to the plaza
+  kput('boxD',[x,L+4.1,fz-.6],null,[8.4,8.2,3.2],null);kput('dot',[x,L+4.1,fz-2.1],null,[7.6,7.8,.3],WARM.clone().multiplyScalar(.85));   // the doorway and the lit vestibule
+  for(const sd of[-1,1]){const a=1.05,cx=x+sd*4.2-sd*2*Math.cos(a),cz=fz+1+2*Math.sin(a);kput('boxW',[cx,L+3.9,cz],qEuler(0,sd*a,0),[4,7.8,.35],tC(0x8a6a2a));   // bronze leaves, open
+   for(const yy of[2.2,5.6])kput('boxW',[cx,L+yy,cz],qEuler(0,sd*a,0),[3.6,.25,.5],tC(0xc8962a));}
+  for(const sd of[-1,1]){const px=x+sd*8.3;
+   kput('boxW',[px,7,fz+1.8],null,[4.2,14,6.4],tC(sm));kput('boxW',[px,14.3,fz+1.8],null,[5,.6,7.2],tC(sl));kput('boxW',[px,14.9,fz+1.8],null,[4,.6,6.2],tC(sm,.9));   // the pylons, stepped caps
+   for(const k of[-1.3,0,1.3])kput('finW',[px+k,6.6,fz+5.05],null,[.45,10,.3],null);                                     // deco fins
+   kput('vCloth',[px,8.4,fz+5.25],null,[3,7.4,1],vC(sd<0?0xe07a2a:0xc9442a));kput('vBall',[px,12.3,fz+5.3],null,[.35,.35,.35],vC(0x8a6a2a));   // the banners
+   kput('dot',[x+sd*5.6,L+6.4,fz+3.6],null,[.6,1.3,.5],WARM);                                                            // sconces in the reveal
+   kput('boxW',[x+sd*11.6,1.2,fz+10.4],null,[2.2,2.4,2.2],tC(sl));kput('vFinial',[x+sd*11.6,3.3,fz+10.4],null,[1,1,1],vC(0xe0b050));   // orb pedestals
+   vnLampPost(x+sd*12.6,0,fz+13,5.2);}
+  kput('boxW',[x,L+9.2,fz+1.8],null,[12.4,2.2,6.4],tC(sl));kput('boxW',[x,L+8.05,fz+5.05],null,[12.8,.35,.5],tC(sm,.9));   // the lintel and its drip band
+  kput('boxW',[x,L+10.8,fz+1.4],null,[10,1,5],tC(sm));kput('boxW',[x,L+11.8,fz+1],null,[7,1,4],tC(sl));kput('boxW',[x,L+12.7,fz+.7],null,[4,.9,3],tC(sm));   // the stepped crest
+  kput('vFinial',[x,L+14.6,fz+.7],null,[1.5,1.5,1.5],vC(0xe0b050));kput('lampI',[x,L+7.2,fz+3],null,[1.2,.5,1.2],WARM);}
  // pyramidal roofs and pavilions on the terrace tops, the beacon (from the Iziz Ancients Mix palace)
  // the terrace pavilions (Travis: develop the bare pyramids and cubes): each PYRAMID becomes an open pavilion — a paved
  // floor, four columns, an architrave, the pyramid roof lifted onto it with a lantern — and each CUBE a belvedere — a

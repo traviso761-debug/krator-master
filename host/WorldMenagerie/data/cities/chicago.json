@@ -1,0 +1,980 @@
+{
+ "name": "Chicago",
+ "note": "Configuration for chicago.html. The geography (lake shore, river, parks, streets, rail, buildings with heights) comes from OpenStreetMap via tools/fetch-osm.py and tools/build-chicago-osm.py into chicago-osm.json. This file holds what OSM does not: landmark decorations and cards, the detailed street corners, viewpoints. Positions are [lat, lon].",
+ "origin": [
+  41.8819,
+  -87.6278
+ ],
+ "defaultSeed": 1871,
+ "defaultView": "Skyline from the lake",
+ "boulevard": "Michigan Avenue",
+ "expressway": "Lake Shore",
+ "trails": "Lakefront Trail",
+ "riverTours": "Chicago River",
+ "districts": {
+  "_": "[name, hex colour, base height, tallest, box as [lat south, lon west, lat north, lon east]]; the first box that contains a block wins",
+  "loop": [
+   "The Loop",
+   "#5c6a80",
+   60,
+   230,
+   [
+    41.8741,
+    -87.6375,
+    41.888,
+    -87.6245
+   ]
+  ],
+  "lakeshoreeast": [
+   "Lakeshore East",
+   "#6f8298",
+   50,
+   260,
+   [
+    41.8842,
+    -87.6245,
+    41.8886,
+    -87.613
+   ]
+  ],
+  "streeterville": [
+   "Streeterville",
+   "#6f7f92",
+   50,
+   240,
+   [
+    41.889,
+    -87.6245,
+    41.9008,
+    -87.608
+   ]
+  ],
+  "rivernorth": [
+   "River North",
+   "#8a5a48",
+   30,
+   150,
+   [
+    41.889,
+    -87.644,
+    41.8966,
+    -87.6245
+   ]
+  ],
+  "goldcoast": [
+   "Gold Coast",
+   "#9a8a78",
+   25,
+   190,
+   [
+    41.8966,
+    -87.634,
+    41.9107,
+    -87.62
+   ]
+  ],
+  "westloop": [
+   "West Loop",
+   "#7a6a5a",
+   25,
+   130,
+   [
+    41.8741,
+    -87.66,
+    41.8893,
+    -87.6375
+   ]
+  ],
+  "southloop": [
+   "South Loop",
+   "#8a7a68",
+   20,
+   110,
+   [
+    41.8577,
+    -87.634,
+    41.8741,
+    -87.619
+   ]
+  ],
+  "wickerpark": [
+   "Wicker Park",
+   "#9a5a44",
+   8,
+   24,
+   [
+    41.9036,
+    -87.6861,
+    41.9127,
+    -87.669
+   ]
+  ],
+  "bucktown": [
+   "Bucktown",
+   "#8a6a54",
+   7,
+   18,
+   [
+    41.9127,
+    -87.69,
+    41.92,
+    -87.669
+   ]
+  ],
+  "noblesquare": [
+   "Noble Square",
+   "#8e6252",
+   8,
+   22,
+   [
+    41.8966,
+    -87.669,
+    41.9107,
+    -87.657
+   ]
+  ],
+  "outer": [
+   "Neighbourhoods",
+   "#8a8478",
+   8,
+   22,
+   null
+  ]
+ },
+ "skylineCentre": [
+  41.883,
+  -87.628
+ ],
+ "landmarks": [
+  {
+   "name": "Willis Tower",
+   "at": [
+    41.87885,
+    -87.6359
+   ],
+   "info": "233 S Wacker Dr \u00b7 1974 \u00b7 442 m, 108 floors, 527 m to the antenna tips. Nine square tubes bundled together: all nine rise to the 50th floor, seven to the 66th, five to the 90th, and two go on to 108.",
+   "height": 442,
+   "aka": [
+    "Sears Tower"
+   ]
+  },
+  {
+   "name": "875 North Michigan",
+   "at": [
+    41.89889,
+    -87.62291
+   ],
+   "decor": [
+    [
+     "mast",
+     -8,
+     0,
+     105
+    ],
+    [
+     "mast",
+     8,
+     0,
+     105
+    ]
+   ],
+   "info": "The John Hancock Center \u00b7 1969 \u00b7 344 m; 457 m to the antennas. A tapered tube with X-bracing on the outside.",
+   "height": 344
+  },
+  {
+   "name": "Trump International Hotel & Tower",
+   "at": [
+    41.88885,
+    -87.62649
+   ],
+   "decor": [
+    [
+     "spire",
+     0,
+     0,
+     66
+    ]
+   ],
+   "info": "401 N Wabash Ave \u00b7 2009 \u00b7 423 m with the spire. Its setbacks answer the heights of its neighbours along the river.",
+   "height": 357
+  },
+  {
+   "name": "Aon Center",
+   "at": [
+    41.88527,
+    -87.62159
+   ],
+   "info": "200 E Randolph St \u00b7 1973 \u00b7 346 m. A plain white shaft, once clad in marble.",
+   "height": 346
+  },
+  {
+   "name": "St. Regis Chicago",
+   "at": [
+    41.88723,
+    -87.61735
+   ],
+   "info": "363 E Wacker Dr \u00b7 2020 \u00b7 363 m. Three stems of stacked frusta (Jeanne Gang).",
+   "height": 363
+  },
+  {
+   "name": "Aqua",
+   "at": [
+    41.8864,
+    -87.61991
+   ],
+   "info": "225 N Columbus Dr \u00b7 2009 \u00b7 262 m. Balconies of different depths make the facade ripple like water.",
+   "height": 262
+  },
+  {
+   "name": "Two Prudential Plaza",
+   "at": [
+    41.88539,
+    -87.62278
+   ],
+   "decor": [
+    [
+     "spire",
+     0,
+     0,
+     25
+    ]
+   ],
+   "info": "180 N Stetson Ave \u00b7 1990 \u00b7 303 m. Chevron setbacks and a spire.",
+   "height": 303
+  },
+  {
+   "name": "Marina City",
+   "at": [
+    41.88808,
+    -87.6288
+   ],
+   "info": "300 N State St \u00b7 1964 \u00b7 179 m. Two 'corn cob' towers: spiral parking below, petal balconies above.",
+   "height": 179
+  },
+  {
+   "name": "Merchandise Mart",
+   "at": [
+    41.8885,
+    -87.63526
+   ],
+   "info": "222 Merchandise Mart Plaza \u00b7 1930 \u00b7 Four million square feet, once the largest building in the world.",
+   "height": 100
+  },
+  {
+   "name": "Chicago Board of Trade Building",
+   "at": [
+    41.87799,
+    -87.63207
+   ],
+   "decor": [
+    [
+     "statue",
+     0,
+     0,
+     10
+    ]
+   ],
+   "info": "141 W Jackson Blvd \u00b7 1930 \u00b7 184 m. Art Deco, closing the view down LaSalle Street; Ceres on top.",
+   "height": 184
+  },
+  {
+   "name": "311 South Wacker Drive",
+   "at": [
+    41.87746,
+    -87.63566
+   ],
+   "decor": [
+    [
+     "crown",
+     0,
+     0,
+     32
+    ]
+   ],
+   "info": "311 S Wacker Dr \u00b7 1990 \u00b7 293 m. The glass crown is lit at night.",
+   "height": 293
+  },
+  {
+   "name": "Tribune Tower",
+   "at": [
+    41.89047,
+    -87.62359
+   ],
+   "info": "435 N Michigan Ave \u00b7 1925 \u00b7 141 m. Neo-Gothic; stones from famous buildings are set into its base.",
+   "height": 141
+  },
+  {
+   "name": "Wrigley Building",
+   "at": [
+    41.88984,
+    -87.62477
+   ],
+   "decor": [
+    [
+     "floodlit",
+     0,
+     0,
+     0
+    ]
+   ],
+   "info": "400 N Michigan Ave \u00b7 1924 \u00b7 130 m. White terra cotta, floodlit at night.",
+   "height": 130
+  },
+  {
+   "name": "DuSable Bridge",
+   "at": [
+    41.8885,
+    -87.62469
+   ],
+   "info": "Michigan Avenue over the river \u00b7 1920 \u00b7 a double-deck bascule bridge with four bridge houses carrying reliefs."
+  },
+  {
+   "name": "Chicago Riverwalk",
+   "at": [
+    41.88744,
+    -87.62813
+   ],
+   "info": "The south bank of the Main Branch, a promenade of caf\u00e9s, boat docks and the river theatre, from Lake Shore Drive to Lake Street."
+  },
+  {
+   "name": "Water Tower Place",
+   "at": [
+    41.89779,
+    -87.62246
+   ],
+   "info": "835 N Michigan Ave \u00b7 1976 \u00b7 262 m. A vertical mall under a hotel and apartments.",
+   "height": 262
+  },
+  {
+   "name": "Chicago Water Tower",
+   "at": [
+    41.89717,
+    -87.62445
+   ],
+   "info": "806 N Michigan Ave \u00b7 1869 \u00b7 47 m. Limestone; one of the few buildings to survive the Great Fire of 1871.",
+   "height": 47
+  },
+  {
+   "name": "Fourth Presbyterian Church",
+   "at": [
+    41.89901,
+    -87.62476
+   ],
+   "info": "126 E Chestnut St \u00b7 1914 \u00b7 Gothic Revival, with a cloister garden on Michigan Avenue."
+  },
+  {
+   "name": "The Drake Hotel",
+   "at": [
+    41.90035,
+    -87.62342
+   ],
+   "info": "140 E Walton Pl \u00b7 1920 \u00b7 the hotel at the top of the Magnificent Mile, facing Oak Street Beach."
+  },
+  {
+   "name": "Crain Communications Building",
+   "at": [
+    41.8848,
+    -87.62493
+   ],
+   "info": "150 N Michigan Ave \u00b7 1984 \u00b7 177 m. The slashed diamond top faces the park.",
+   "height": 177
+  },
+  {
+   "name": "Lake Point Tower",
+   "at": [
+    41.89163,
+    -87.61269
+   ],
+   "info": "505 N Lake Shore Dr \u00b7 1968 \u00b7 197 m. Three curved wings; the only skyscraper east of Lake Shore Drive.",
+   "height": 197
+  },
+  {
+   "name": "Cloud Gate",
+   "at": [
+    41.88269,
+    -87.62333
+   ],
+   "model": "bean",
+   "replace": [
+    "Cloud Gate"
+   ],
+   "w": 20,
+   "d": 13,
+   "h": 10,
+   "info": "Millennium Park \u00b7 2006 \u00b7 'The Bean'. 168 stainless-steel plates, 20 m long; walk under its arch."
+  },
+  {
+   "name": "Jay Pritzker Pavilion",
+   "at": [
+    41.88348,
+    -87.62186
+   ],
+   "model": "pavilion",
+   "info": "Millennium Park \u00b7 2004 \u00b7 Frank Gehry. Stainless-steel ribbons over the stage, a trellis of pipes over the Great Lawn."
+  },
+  {
+   "name": "Crown Fountain",
+   "at": [
+    41.88126,
+    -87.62374
+   ],
+   "info": "Millennium Park \u00b7 2004 \u00b7 Jaume Plensa. Two glass-brick towers with the faces of Chicagoans, a black granite pool between.",
+   "height": 15
+  },
+  {
+   "name": "BP Pedestrian Bridge",
+   "at": [
+    41.883,
+    -87.6205
+   ],
+   "info": "Millennium Park \u00b7 2004 \u00b7 Frank Gehry's winding steel bridge over Columbus Drive to Maggie Daley Park."
+  },
+  {
+   "name": "Buckingham Fountain",
+   "at": [
+    41.8758,
+    -87.61898
+   ],
+   "model": "fountain",
+   "replace": [
+    "Clarence Buckingham Memorial Fountain",
+    "Buckingham Fountain"
+   ],
+   "w": 85,
+   "info": "Grant Park \u00b7 1927. One of the largest fountains in the world; the centre jet reaches 46 m."
+  },
+  {
+   "name": "Art Institute of Chicago",
+   "at": [
+    41.87977,
+    -87.6224
+   ],
+   "info": "111 S Michigan Ave \u00b7 1893. Beaux-Arts; the bronze lions guard the steps."
+  },
+  {
+   "name": "Chicago Union Station",
+   "at": [
+    41.87868,
+    -87.64037
+   ],
+   "info": "225 S Canal St \u00b7 1925. The Great Hall's skylight is 35 m up."
+  },
+  {
+   "name": "Field Museum",
+   "at": [
+    41.86623,
+    -87.61667
+   ],
+   "info": "1400 S Lake Shore Dr \u00b7 1921. Sue the T. rex lives inside."
+  },
+  {
+   "name": "Shedd Aquarium",
+   "at": [
+    41.86755,
+    -87.61385
+   ],
+   "info": "1200 S DuSable Lake Shore Dr \u00b7 1930. An octagonal Beaux-Arts hall on the lake."
+  },
+  {
+   "name": "Adler Planetarium",
+   "at": [
+    41.86639,
+    -87.60665
+   ],
+   "info": "1300 S DuSable Lake Shore Dr \u00b7 1930. America's first planetarium, at the end of the peninsula."
+  },
+  {
+   "name": "Soldier Field",
+   "at": [
+    41.86124,
+    -87.61658
+   ],
+   "stadium": true,
+   "info": "1410 Museum Campus Dr \u00b7 1924, rebuilt 2003. Home of the Bears; the colonnades survive."
+  },
+  {
+   "name": "Navy Pier",
+   "at": [
+    41.89169,
+    -87.60748
+   ],
+   "model": "wheel",
+   "r": 28,
+   "info": "600 E Grand Ave \u00b7 1916. A kilometre into the lake; the Centennial Wheel is 60 m tall."
+  },
+  {
+   "name": "North Avenue Beach House",
+   "at": [
+    41.9135,
+    -87.62422
+   ],
+   "info": "1603 N Lake Shore Dr \u00b7 a beach house built like a steamship, with a rooftop deck."
+  },
+  {
+   "name": "Lincoln Park Zoo",
+   "at": [
+    41.92008,
+    -87.6334
+   ],
+   "info": "2001 N Clark St \u00b7 1868 \u00b7 one of the oldest zoos in North America, and free."
+  },
+  {
+   "name": "Wrigley Field",
+   "at": [
+    41.94828,
+    -87.6555
+   ],
+   "stadium": true,
+   "model": "wrigley",
+   "info": "1060 W Addison St \u00b7 1914 \u00b7 home of the Cubs. Ivy on the outfield walls, the hand-turned scoreboard in centre field, the red marquee at Clark and Addison.",
+   "marquee": [
+    41.94736,
+    -87.65641
+   ],
+   "scoreboard": [
+    41.94886,
+    -87.65461
+   ]
+  },
+  {
+   "name": "Montrose Harbor",
+   "at": [
+    41.96196,
+    -87.63949
+   ],
+   "info": "The northernmost harbour on this stretch of the lakefront, sheltered by Montrose Point."
+  },
+  {
+   "name": "Montrose Beach",
+   "at": [
+    41.967,
+    -87.6375
+   ],
+   "info": "Chicago's largest beach, north of the harbour, with dunes that are a protected habitat."
+  },
+  {
+   "name": "Montrose Point Bird Sanctuary",
+   "at": [
+    41.96318,
+    -87.63349
+   ],
+   "info": "The Magic Hedge \u00b7 a line of shrubs at the tip of Montrose Point where migrating birds land on the way across the lake."
+  },
+  {
+   "name": "Lakefront Trail",
+   "at": [
+    41.94,
+    -87.634
+   ],
+   "info": "18 miles of trail along the lake from Ardmore to 71st Street, split into bike and walking paths through most of this stretch."
+  },
+  {
+   "name": "Belmont Harbor",
+   "at": [
+    41.94352,
+    -87.63763
+   ],
+   "info": "A harbour behind a long breakwater at the foot of Belmont Avenue."
+  },
+  {
+   "name": "Diversey Harbor",
+   "at": [
+    41.9306,
+    -87.63332
+   ],
+   "info": "A lagoon harbour inside Lincoln Park, reached under Lake Shore Drive."
+  },
+  {
+   "name": "Northwest Tower",
+   "at": [
+    41.91061,
+    -87.67822
+   ],
+   "info": "1600 N Milwaukee Ave \u00b7 1929 \u00b7 12 storeys, Art Deco at the six corners; now The Robey hotel."
+  },
+  {
+   "name": "Flat Iron Building",
+   "at": [
+    41.91027,
+    -87.67673
+   ],
+   "info": "1579 N Milwaukee Ave \u00b7 1913 \u00b7 a three-storey wedge where Milwaukee Avenue meets North Avenue."
+  },
+  {
+   "name": "Wicker Park Fountain",
+   "at": [
+    41.90769,
+    -87.6762
+   ],
+   "model": "fountain",
+   "w": 12,
+   "info": "Wicker Park \u00b7 a 2002 recreation of the park's original cast-iron fountain."
+  },
+  {
+   "name": "Pulaski Park Fieldhouse",
+   "at": [
+    41.90671,
+    -87.66334
+   ],
+   "info": "1419 W Blackhawk St \u00b7 1914 \u00b7 William Carbys Zimmermann; gymnasium, auditorium and theatre."
+  },
+  {
+   "name": "St. Stanislaus Kostka Church",
+   "at": [
+    41.90595,
+    -87.66195
+   ],
+   "decor": [
+    [
+     "towers",
+     0,
+     -20,
+     60
+    ]
+   ],
+   "info": "1351 W Evergreen Ave \u00b7 1881 \u00b7 Chicago's first Polish parish."
+  },
+  {
+   "name": "Holy Trinity Polish Mission (Holy Trinity Catholic Church)",
+   "at": [
+    41.90232,
+    -87.66303
+   ],
+   "decor": [
+    [
+     "towers",
+     0,
+     -20,
+     52
+    ]
+   ],
+   "info": "1118 N Noble St \u00b7 1906 \u00b7 a Polish Baroque basilica with twin towers."
+  },
+  {
+   "name": "St. Mary of the Angels",
+   "at": [
+    41.91575,
+    -87.67219
+   ],
+   "decor": [
+    [
+     "dome",
+     0,
+     0,
+     42
+    ]
+   ],
+   "info": "1850 N Hermitage Ave \u00b7 1920 \u00b7 a copper dome modelled on St Peter's, over Bucktown."
+  }
+ ],
+ "el": {
+  "height": 8,
+  "trainCars": 6,
+  "_": "the L's elevated structure and trains follow the OSM tracks tagged as bridges"
+ },
+ "views": {
+  "Skyline from the lake": [
+   [
+    41.881,
+    -87.596,
+    150
+   ],
+   [
+    41.885,
+    -87.63,
+    20
+   ]
+  ],
+  "Cloud Gate": [
+   [
+    41.883,
+    -87.62365,
+    12
+   ],
+   [
+    41.88269,
+    -87.62333,
+    4
+   ]
+  ],
+  "Millennium Park": [
+   [
+    41.88,
+    -87.619,
+    70
+   ],
+   [
+    41.8826,
+    -87.6225,
+    4
+   ]
+  ],
+  "Riverwalk": [
+   [
+    41.8878,
+    -87.6195,
+    70
+   ],
+   [
+    41.8876,
+    -87.632,
+    12
+   ]
+  ],
+  "River forks (Wolf Point)": [
+   [
+    41.8905,
+    -87.6315,
+    90
+   ],
+   [
+    41.8868,
+    -87.6372,
+    4
+   ]
+  ],
+  "Magnificent Mile": [
+   [
+    41.8885,
+    -87.6241,
+    120
+   ],
+   [
+    41.899,
+    -87.6243,
+    40
+   ]
+  ],
+  "The Loop": [
+   [
+    41.8745,
+    -87.6245,
+    260
+   ],
+   [
+    41.882,
+    -87.63,
+    40
+   ]
+  ],
+  "Navy Pier": [
+   [
+    41.886,
+    -87.593,
+    90
+   ],
+   [
+    41.8917,
+    -87.604,
+    20
+   ]
+  ],
+  "Lake Michigan": [
+   [
+    41.879,
+    -87.606,
+    90
+   ],
+   [
+    41.888,
+    -87.6,
+    2
+   ]
+  ],
+  "Lakefront Trail (North Avenue Beach)": [
+   [
+    41.911,
+    -87.623,
+    80
+   ],
+   [
+    41.92,
+    -87.629,
+    4
+   ]
+  ],
+  "Lincoln Park and the lakefront": [
+   [
+    41.905,
+    -87.61,
+    300
+   ],
+   [
+    41.93,
+    -87.635,
+    0
+   ]
+  ],
+  "Wrigley Field": [
+   [
+    41.946,
+    -87.652,
+    70
+   ],
+   [
+    41.9485,
+    -87.6555,
+    5
+   ]
+  ],
+  "Montrose Harbor": [
+   [
+    41.96,
+    -87.625,
+    80
+   ],
+   [
+    41.965,
+    -87.633,
+    0
+   ]
+  ],
+  "Six corners (North, Damen, Milwaukee)": [
+   [
+    41.9092,
+    -87.679,
+    30
+   ],
+   [
+    41.9104,
+    -87.6768,
+    20
+   ]
+  ],
+  "Pulaski Park": [
+   [
+    41.907,
+    -87.6602,
+    45
+   ],
+   [
+    41.9085,
+    -87.6622,
+    5
+   ]
+  ],
+  "Overview": [
+   [
+    41.84,
+    -87.57,
+    3200
+   ],
+   [
+    41.91,
+    -87.635,
+    0
+   ]
+  ]
+ },
+ "bounds": [
+  41.855,
+  -87.6875,
+  41.972,
+  -87.595
+ ],
+ "focus": [
+  {
+   "name": "Magnificent Mile",
+   "at": [
+    41.895,
+    -87.6244
+   ],
+   "radius": 720,
+   "parked": false,
+   "planters": true,
+   "_": "Michigan Avenue from the river to Oak Street: planters, street lights, signals, shoppers; no parking"
+  },
+  {
+   "name": "Riverwalk",
+   "at": [
+    41.8878,
+    -87.628
+   ],
+   "radius": 620,
+   "parked": false
+  },
+  {
+   "name": "North & Ashland",
+   "at": [
+    41.9107,
+    -87.6666
+   ],
+   "radius": 280
+  },
+  {
+   "name": "Six Corners (North, Damen, Milwaukee)",
+   "at": [
+    41.9103,
+    -87.6768
+   ],
+   "radius": 340
+  },
+  {
+   "name": "Wrigleyville (Clark & Addison)",
+   "at": [
+    41.9473,
+    -87.6566
+   ],
+   "radius": 380
+  }
+ ],
+ "osm": "data/cities/chicago-osm.json",
+ "fetch": {
+  "bbox": [
+   41.855,
+   -87.69,
+   41.972,
+   -87.59
+  ],
+  "tiles": {
+   "buildings": [
+    4,
+    3
+   ],
+   "roads": [
+    2,
+    2
+   ]
+  },
+  "detailZones": [
+   [
+    41.855,
+    -87.65,
+    41.915,
+    -87.59
+   ],
+   [
+    41.915,
+    -87.662,
+    41.972,
+    -87.59
+   ],
+   [
+    41.942,
+    -87.665,
+    41.954,
+    -87.645
+   ],
+   [
+    41.9,
+    -87.69,
+    41.918,
+    -87.656
+   ]
+  ],
+  "lakeRelation": "Lake Michigan",
+  "_": "bbox and tiles for tools/fetch-osm.py; detailZones and lakeRelation for tools/build-osm-city.py"
+ },
+ "terrain": {
+  "zoom": 14,
+  "step": 30,
+  "_": "elevation grid spacing in metres; tiles from tools/fetch-terrain.py"
+ },
+ "terrainColours": {
+  "low": "#6b6a55",
+  "high": "#5d6b45",
+  "steep": "#6a6052",
+  "far": "#76837c"
+ },
+ "flight": true
+}

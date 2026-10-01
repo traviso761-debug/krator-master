@@ -106,3 +106,62 @@ office/apartment/house groups (rows and quads), rooftop canopies, D in rust,
 the Tripod market (repaired C), toppled F toward the given point with a grid
 plinth, bunkers facing out, Salvagers' dome whole, palace windows and terrace
 pavilions, bigger labels.
+
+### Round 4: Travis's fourth review (Oct 1 2026)
+- **The wall went out by √1.2**, so the enclosed area is 20% larger. The gates, wall towers, bunkers, causeways and
+  spaceport (now at 800 m) went with it. `coreR` keeps the round-3 line for everything laid out inside it, so the
+  clusters, the parks, The Project and the toppled B did not move.
+- **The farm belt** fills the ring between the two lines. A belt road runs round the old wall line, with radial
+  lanes every ~52 m. Of 58 blocks, 50 are usable and 38 are farmed. They grow as runs: each pick is weighted by its
+  farmed neighbours. That gives 90 fenced plots with furrows running round the ring. The other blocks are built by
+  the hill rules.
+- **Toppled F breaks in two** near (-6.8,-375.7). This is an upstream kit change (`TOPPLE_BREAK`, `bodyGroup`
+  partFn).
+- **The second tripod market** is the ruined Skyscraper C near (-23.4,288.4), repaired: slot `forceD:3`.
+  - **Both markets are denser.** The star awnings are larger, stalls fill a lattice under them, and a ring of
+    four-post canopies fills the rest, for about 46 stalls each.
+  - Each market is tagged `market:true, destination:'market'`. Every stall is listed in `LIFE_DESTS.market`, 116 in
+    all.
+- **The palace's grand entrance** is on the base tier, on the axis road: a landing and steps, two stepped pylons with
+  banners, a lit doorway with open bronze leaves, a deco lintel and crest with the orb, orb pedestals and lamps.
+- **The Tyrell transparency** came from `wreck()` cutting its lathed shell by whole long thin triangles. That left
+  slits, which read as slats. The kit's `wreckRefine` fixes it.
+- **The issue sweep** is listed in KNOWN_ISSUES. It covers:
+  - manor window reveals, the gable ridge fill, the open market skirt, thatch layers and fringe, the window
+    day/night schedule, the school roofs and the frame rails;
+  - dead merged lights on unlit reclaimed towers, crag bands on the escarpments, the `placeOnTop` radius search, the
+    thinned floor in the cleared belt, the jungle dress on the ruins, the settler view, one label per building and
+    the label declutter;
+  - Skyscraper A fitted by its shaft, and a half-pitch second pass for the ancient clusters (+4 cells).
+- **Measured:** `verify --assert` passes all six invariants with a clean error panel: 774 registered volumes,
+  7.1 M scene triangles, 684 draw calls at the worst view, build about 7 s.
+
+### Round 5: the atmosphere module (Oct 1 2026)
+Ported from the alternate Iziz build as a shared module, `core/atmos/` (`ATMOS`; see its README), so other builds can
+take it. The city wires it in `targets/city/90c-city-atmos.js`:
+- **Street furniture:** lamps both sides of the gate roads and the thoroughfares, lit down the row through the evening,
+  with planters beside every other lamp. Three banner pairs inside each gate. Fountains in every park and on the temple
+  and arena plazas, registered as furniture.
+- **The evening:**
+  - floodlights round the arena;
+  - braziers on the temple summit, with one warm light;
+  - searchlights sweeping the jungle from every third wall tower;
+  - sky beams from the palace's first-tier roof corners;
+  - spot cones from the gatehouses onto the bridges;
+  - a red beacon and four lamp masts at the spaceport.
+  Each light keeps its own hours. The glow layer puts a sprite over these and over the city's own lamps (vernacular
+  bulbs, lamp columns, transplant lamps).
+- **Particles:** chimney smoke (every `vnChimney` now records its top in `window.CHIMNEYS`), steam at the spaceport,
+  fireflies in the parks, the ruins and the cleared belt outside the moat, mist round the moat at dawn and in rain,
+  and fog banks.
+- **Weather:** a selector in the UI with auto, clear, rain, storm and fog. Auto brings fog at dawn and a shower from
+  19:30 to 22:00. The rain follows the camera and storms bring lightning. The city's `apply()` thickens the scene fog,
+  dims the sun and wets the ground.
+- **Dressing:** an exact ray index over the box instances finds each vernacular and transplant building's real walls
+  for ivy and its flat roof for a cistern. Window boxes go under 28% of lit panes and 18% of glazed ones.
+- **The sewer grate:** a grated drain runs down the belt lane at 257° to an inlet grate at the wall's foot. Outside,
+  an outfall in the wall's outer face has its own grate, a spill lip and a trickle down the bank to the moat.
+- **Culling:** big static instanced sets are split into 8 sectors and every set is bounded by its instances, so three
+  can frustum-cull them. Raycasts (the inspector) still test each instance.
+- **The URL** can set the hour and the weather (`#hour=20.5&weather=storm`).
+- **`window.DOORS`** is now defined in the city. Doors were never recorded before, so the Paths overlay showed none.

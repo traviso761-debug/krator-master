@@ -2,7 +2,7 @@
 
 Code shared by more than one build, kept here once instead of copied into each:
 `materials/` (the Ancients-lineage materials), `terrain/` (carve patches for any
-heightfield world) and `sockets/` (cultural sockets).
+heightfield world), `atmos/` (atmosphere and street dressing) and `sockets/` (cultural sockets).
 
 ## `materials/`
 
@@ -23,6 +23,16 @@ build's `KNOWN_ISSUES.md`.
 
 **After editing a file here,** rebuild all six builds and check each one by eye.
 A material change is visible everywhere at once.
+
+### Textures are painted lazily
+
+`canvasTex` paints a texture the first time something reads its `.image`, which three.js does when it first draws
+with it. A page pays only for the textures it shows: painting all of them at load was about 11 s of every Ancients
+page's start-up. The pixels are the same either way.
+
+**A texture whose painter calls `rng()` must pass `eager=true`** (the fifth argument), or every later draw in the
+seeded stream shifts and the world changes. Screamers' `TEX.thatch`, `TEX.lash`, `flBarkTex` and `skyTex` do.
+Painters that use only `h3`/`vnoise`/`fbm`, or `Math.random`, need nothing.
 
 ### What is not here yet
 
@@ -70,6 +80,13 @@ build must:
 
 Shade's `45-host-stage.js` and `84-host-life.js` are the worked example. The
 contract and its tunables are in the header of `36-core-carve.js`.
+
+## `atmos/`
+
+The atmosphere and street-dressing module: evening lights and a glow layer, particles, weather, ivy and window boxes,
+sewer grates, lamps and fountains, InstancedMesh culling. One global (`ATMOS`) behind a five-item host binding, so any
+three.js r128 build can take it. Read `atmos/README.md`. **Used by** `settlements/iziz` (city target; its `build.py`
+reads it through `TARGET_CORE`).
 
 ## `sockets/`
 

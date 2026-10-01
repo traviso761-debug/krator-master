@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>The Infinity Castle</title>
+<link rel="stylesheet" href="css/iziz.css">
+<link rel="stylesheet" href="css/chicago.css">
+<style>
+/* The shell's colours are the Izani night. The castle is lamplight on dark wood in a warm, dark haze: amber, and
+   the red-black of lacquer. */
+html,body{background:#0d0a10}
+#loading{background:#0d0a10;color:#f0c890}
+#title{color:#f6d8a8;letter-spacing:.36em}
+#seedtag{color:#a8845a}
+#ui button,#menagerie a,#views button{background:rgba(22,12,10,.84);color:#f0d2a4;border-color:#7a4a2a}
+#ui button:hover,#views button:hover{border-color:#e0923e}
+#ui button[aria-pressed="true"],#ui button[aria-expanded="true"],#menagerie a[aria-current="true"],#views button[aria-current="true"]{background:#e0923e;color:#1a0c06;border-color:#e0923e}
+#views,#menagerie{background:rgba(16,9,8,.95);border-color:#7a4a2a}
+#views .sub,#menagerie .sub{color:#b08660}
+#card{background:rgba(16,9,8,.92);border-color:#7a4a2a;color:#f0d2a4}
+#card h2{color:#ffe2b4;letter-spacing:.1em}
+#card .sub{color:#b08660}
+#timebar{background:rgba(16,9,8,.72);border-color:#7a4a2a;color:#f0d2a4;letter-spacing:.03em}
+/* the dark closing in at the edges, as it does round every lit room here */
+#vignette{position:fixed;inset:0;pointer-events:none;z-index:1;background:radial-gradient(ellipse at center,rgba(0,0,0,0) 55%,rgba(6,2,4,.5) 100%)}
+#caption{position:fixed;left:50%;bottom:calc(var(--barh,56px) + 70px);transform:translateX(-50%);width:min(640px,calc(100% - 32px));
+  text-align:center;pointer-events:none;z-index:4;opacity:0;transition:opacity .6s;text-shadow:0 1px 8px #000,0 0 2px #000}
+#caption.on{opacity:1}
+#caption b{display:block;font:400 30px Georgia,serif;letter-spacing:.14em;color:#ffe2b4;margin-bottom:6px}
+#caption span{font:15px/1.5 Georgia,serif;color:#f0d2a4}
+@media (max-width:700px){#caption b{font-size:22px}#caption span{font-size:13px}}
+canvas{cursor:grab}
+</style>
+</head>
+<body>
+<div id="loading">the doors are opening…</div>
+<div id="title">THE INFINITY CASTLE<span id="seedtag"></span></div>
+<div id="hint"><span class="for-mouse">Drag to look round, right-drag or shift-drag to pan, the wheel to go nearer or further. WASD and Q/E to move, F to fly. B and Nakime plays her biwa, and the castle moves; M for the sound. Fall goes in the way the Demon Slayer Corps did.</span><span class="for-touch">Drag to look round, pinch to go nearer or further, two fingers to pan. Biwa and the castle moves; Fall goes in the way the Demon Slayer Corps did.</span></div>
+<div id="vignette"></div><div id="caption" aria-live="polite"></div>
+<div id="ui"></div><div id="views" role="dialog" aria-label="Viewpoints"></div><div id="card" role="dialog" aria-label="Details" aria-live="polite"></div><div id="side"></div><div id="errs"></div>
+<script src="vendor/three/three.min.js"></script>
+<script type="module" src="src/infinitycastle/main.js"></script>
+</body>
+</html>

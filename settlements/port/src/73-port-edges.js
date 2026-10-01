@@ -186,3 +186,49 @@ function portDeckOnPiles(G,x0,z0,x1,z1,d,o){o=Object.assign({top:PORT.DECK,thick
    if(h<=0)continue;
    kput('pkCol',[x,gy,z],null,[o.colR,h,o.colR],d>0?new THREE.Color().setHSL(.07,.08,rr(.42,.55)):null);}}
  return info;}
+
+// ---------------------------------------------------------------- land blocks and sea platforms
+// portBlockStamps(opt, o) -> stamps for a place:'land' block or a place:'sea'
+// platform (concat your own after them). o = {y (DECK), soft (30), paint,
+// depth (-12), width (30), mole (true)}.
+//   land  a `flat` at deck level over the whole footprint (soft ring out).
+//   sea   mole:true - a `fill` to deck level over the footprint, and a dredged
+//         strip (outside:true, the one allowed exception to "inside the
+//         footprint") beyond every W/E/S stretch no neighbour covers;
+//         mole:false - the strips only (put your deck on portDeckOnPiles).
+function portBlockStamps(opt,o){const pl=opt.place||portPlaceOf(opt.key),W=opt.W,h=W/2;
+ o=Object.assign({y:PORT.DECK,soft:30,depth:-12,width:30,mole:true},o||{});const out=[];
+ if(pl==='land'){out.push({kind:'flat',x0:-h,z0:-opt.LAND,x1:h,z1:0,y:o.y,soft:o.soft,paint:o.paint||(opt.d>=1?'soil':'pave')});return out;}
+ const z0=0,z1=opt.SEA,w=o.width;
+ if(o.mole)out.push({kind:'fill',x0:-h,z0,x1:h,z1,y:o.y,paint:o.paint||(opt.d>=1?'soil':'pave')});
+ const side=(nm,a,b,mk)=>{for(const [p,q] of portSideOpen(opt.nb,nm,a,b))out.push(Object.assign({kind:'dig',y:o.depth,soft:o.soft,outside:true},mk(p,q)));};
+ side('W',z0,z1,(p,q)=>({x0:-h-w,x1:-h,z0:p,z1:q}));side('E',z0,z1,(p,q)=>({x0:h,x1:h+w,z0:p,z1:q}));
+ side('S',-h,h,(p,q)=>({x0:p,x1:q,z0:z1,z1:z1+w}));
+ return out;}
+// portBlockClose(G, opt, d, o) -> {N,S,W,E: [[a,b,'wall'|'retain'|'face'],...]}
+// Finishes all four sides of a land block or a sea platform from opt.nb (see
+// "NEIGHBOURS" in 70-port-core.js), stretch by stretch along each side:
+//   covered by a neighbour at the same deck  nothing (the deck continues);
+//   (sea platform) covered by a coastal      a plain face under the deck
+//     segment - the end of a pier's deck     (no coping or fenders);
+//   open, sea platform or a 'sea' side       a finished quay wall facing out:
+//                                            coping, fenders, ladders, bollards;
+//   open, land block                         a retaining wall with coping down
+//                                            to the ground outside, no
+//                                            fenders: the finished step where a
+//                                            neighbour block is set back, or
+//                                            the edge on natural land.
+// o = {wall:{portQuayWall options for every wall}, sea:{...}, land:{...}}.
+function portBlockClose(G,opt,d,o){o=o||{};const pl=opt.place||portPlaceOf(opt.key),h=opt.W/2;
+ const z0=pl==='sea'?0:-opt.LAND,z1=pl==='sea'?opt.SEA:0,out={};
+ const S={N:{a:-h,b:h,p:s=>[s,z0],face:[0,-1]},S:{a:-h,b:h,p:s=>[s,z1],face:[0,1]},
+  W:{a:z0,b:z1,p:s=>[-h,s],face:[-1,0]},E:{a:z0,b:z1,p:s=>[h,s],face:[1,0]}};
+ const base=Object.assign({},o.wall||{});
+ const seaW=Object.assign({},base,o.sea||{}),landW=Object.assign({tide:false,fenders:0,ladders:0,bollards:0},base,o.land||{});
+ for(const nm of ['N','S','W','E']){const s=S[nm],N=opt.nb&&opt.nb[nm];out[nm]=[];
+  const wall=(a,b,wo,tag)=>{const A=s.p(a),B=s.p(b);portQuayWall(G,A[0],A[1],B[0],B[1],d,Object.assign({face:s.face},wo));out[nm].push([a,b,tag]);};
+  for(const [a,b] of portSideOpen(opt.nb,nm,s.a,s.b)){
+   const sea=pl==='sea'||(N&&N.kind==='sea');wall(a,b,sea?seaW:landW,sea?'wall':'retain');}
+  if(pl==='sea')for(const l of (N&&N.list)||[])if(l.place==='coast'){const a=Math.max(s.a,l.span[0]),b=Math.min(s.b,l.span[1]);
+   if(b-a>.5)wall(a,b,Object.assign({},base,{cope:false,fenders:0,ladders:0,bollards:0,top:PORT.DECK-.2}),'face');}}
+ return out;}

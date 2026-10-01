@@ -25,7 +25,7 @@ function ddShedStamps(o){const d=o.d,D=PORT.DECK,K=DDS,h=o.W/2;
   s.push({kind:'fill',poly:[[-50,10],[0,6],[40,14],[30,30],[-30,32]],y:-1.8,soft:12,paint:'sand'});}
  return s.concat(portEdgeStamps(o,{LAND:K.LAND,SEA:K.SEA}));}
 
-function buildDdShed(scene,gx,gz,d,opt){reseed(20110+d);ddSeaFix();
+function buildDdShed(scene,gx,gz,d,opt){reseed(20110+d);
  const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);KOFF=[gx,0,gz];
  const D=PORT.DECK,K=DDS,h=opt.W/2,dry=d===0,FL=DD.FLOOR;
  const pv=(a,b,c,e)=>portPaving(G,a,b,c,e,d);
