@@ -166,7 +166,7 @@ registerWeapon('rod',     { name: 'Silver rod',    style: 'staff', up: true, rea
 registerWeapon('bow',     { name: 'Recurve bow',   style: 'staff', up: true, reach: [-0.7, 0.7], build: function(){ return buildBow(); } });
 registerWeapon('mace',    { name: 'Flanged mace',  style: 'carry', reach: [-0.62, 0.12], build: function(){ return buildMace(); } });
 registerWeapon('spear',   { name: 'Spear',         style: 'ground', reach: [-1.7, 0.5], build: function(){ return buildSpear(); } });
-registerWeapon('torch',   { name: 'Torch',         style: 'staff', up: true, reach: [-0.2, 0.5], build: function(){ return buildTorch(); } });
+registerWeapon('torch',   { name: 'Torch',         style: 'staff', up: true, reach: [-0.15, 0.95], build: function(){ return buildTorch(); } });
 
 function buildMace(){
   var g = new THREE.Group(), steel = propMat(0xb8bcc4, 0.9, 0.35), dark = propMat(0x3a3030, 0.3, 0.6);
@@ -186,10 +186,11 @@ function buildSpear(){
 }
 function buildTorch(){
   var g = new THREE.Group(), wood = propMat(0x5a3a22, 0.1, 0.8);
-  propMesh(g, new THREE.CylinderGeometry(0.02, 0.025, 0.6, 8), wood, 0, 0.1);
-  propMesh(g, new THREE.CylinderGeometry(0.04, 0.03, 0.12, 8), propMat(0x2a2020), 0, 0.42);
-  var flame = new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.18, 7), new THREE.MeshBasicMaterial({ color: 0xffa020 })); flame.position.y = 0.56; g.add(flame);
-  var inner = new THREE.Mesh(new THREE.ConeGeometry(0.025, 0.11, 7), new THREE.MeshBasicMaterial({ color: 0xffe080 })); inner.position.y = 0.54; g.add(inner);
-  var light = new THREE.PointLight(0xffa040, 0.8, 3); light.position.y = 0.55; g.add(light);
+  propMesh(g, new THREE.CylinderGeometry(0.02, 0.026, 0.9, 8), wood, 0, 0.3);                        /* grip near the foot of the handle */
+  for(var w = 0; w < 4; w++) propMesh(g, new THREE.TorusGeometry(0.022, 0.005, 5, 10), propMat(0x2a2020), 0, -0.08 + w * 0.05, 0);
+  propMesh(g, new THREE.CylinderGeometry(0.045, 0.032, 0.14, 8), propMat(0x2a2020), 0, 0.78);
+  var flame = new THREE.Mesh(new THREE.ConeGeometry(0.055, 0.2, 7), new THREE.MeshBasicMaterial({ color: 0xffa020 })); flame.position.y = 0.94; g.add(flame);
+  var inner = new THREE.Mesh(new THREE.ConeGeometry(0.028, 0.12, 7), new THREE.MeshBasicMaterial({ color: 0xffe080 })); inner.position.y = 0.92; g.add(inner);
+  var light = new THREE.PointLight(0xffa040, 0.8, 3); light.position.y = 0.92; g.add(light);
   return g;
 }
