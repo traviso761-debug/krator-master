@@ -140,3 +140,10 @@ water, mid in the canals, low awash) and 25 % home-grown moles by a hash of the 
 `targets/city/87-city-layout.js`, which builds no geometry: the sink feeds `YS_NAT` through `ysSinkMix`, the
 overlay (`CITY.LAYOUT_DEBUG`) draws a quad per block with the named blocks labelled, and `_api.city.layoutCensus()`
 counts. The terrain's 10 m cells now cover the city core (`PORT_LAYOUT_DEF.fine`).
+Then the land–sea model (`84b-city-shore.js`: shore loops by arc length, the 12 m surface lattice classified once
+after the build, `landDist` as a signed chamfer distance that sees decks, hosts as cantons with `hostEdge` and the two
+margins) and NAV (`87b-city-nav.js`: 6 m grids per layer, ground/L1/L2/boat/swim, classified once from the lattice,
+the bucketed deck records, the host caps and the placed footprints; A* with a heap and line-of-sight simplification,
+flood-fill connectivity). On the empty city: 36 800 lattice cells (17 154 land, 1 762 shallows, 3 499 canal, 14 385
+open), the head 76 m from the real waterline, the Amphitriton block 508 m under it; a foot path 860 m inland in 17 ms,
+a boat path across the bay, the head connected to the far shore on foot. Nobody walks it until P5.
